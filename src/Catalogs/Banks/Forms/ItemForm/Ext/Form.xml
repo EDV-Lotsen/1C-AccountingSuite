@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<WindowOpeningMode>LockOwnerWindow</WindowOpeningMode>
+	<VerticalScroll>useIfNecessary</VerticalScroll>
+	<UseForFoldersAndItems>Items</UseForFoldersAndItems>
+	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<ChildItems>
+		<InputField name="Description" id="25">
+			<DataPath>Object.Description</DataPath>
+			<ContextMenu name="DescriptionContextMenu" id="26"/>
+			<ExtendedTooltip name="DescriptionExtendedTooltip" id="27"/>
+		</InputField>
+		<InputField name="AddressLine1" id="3">
+			<DataPath>Object.AddressLine1</DataPath>
+			<EditMode>EnterOnInput</EditMode>
+			<ContextMenu name="AddressLine1ContextMenu" id="4"/>
+			<ExtendedTooltip name="AddressLine1ExtendedTooltip" id="28"/>
+		</InputField>
+		<InputField name="AddressLine2" id="5">
+			<DataPath>Object.AddressLine2</DataPath>
+			<EditMode>EnterOnInput</EditMode>
+			<ContextMenu name="AddressLine2ContextMenu" id="6"/>
+			<ExtendedTooltip name="AddressLine2ExtendedTooltip" id="29"/>
+		</InputField>
+		<InputField name="City" id="7">
+			<DataPath>Object.City</DataPath>
+			<EditMode>EnterOnInput</EditMode>
+			<ContextMenu name="CityContextMenu" id="8"/>
+			<ExtendedTooltip name="CityExtendedTooltip" id="30"/>
+		</InputField>
+		<InputField name="State" id="13">
+			<DataPath>Object.State</DataPath>
+			<EditMode>EnterOnInput</EditMode>
+			<ContextMenu name="StateContextMenu" id="14"/>
+			<ExtendedTooltip name="StateExtendedTooltip" id="31"/>
+		</InputField>
+		<InputField name="ZIP" id="9">
+			<DataPath>Object.ZIP</DataPath>
+			<EditMode>EnterOnInput</EditMode>
+			<ContextMenu name="ZIPContextMenu" id="10"/>
+			<ExtendedTooltip name="ZIPExtendedTooltip" id="32"/>
+		</InputField>
+		<InputField name="Country" id="11">
+			<DataPath>Object.Country</DataPath>
+			<EditMode>EnterOnInput</EditMode>
+			<ContextMenu name="CountryContextMenu" id="12"/>
+			<ExtendedTooltip name="CountryExtendedTooltip" id="33"/>
+		</InputField>
+		<InputField name="AccountNumber" id="15">
+			<DataPath>Object.AccountNumber</DataPath>
+			<EditMode>EnterOnInput</EditMode>
+			<ContextMenu name="AccountNumberContextMenu" id="16"/>
+			<ExtendedTooltip name="AccountNumberExtendedTooltip" id="34"/>
+		</InputField>
+		<InputField name="IBAN" id="17">
+			<DataPath>Object.IBAN</DataPath>
+			<EditMode>EnterOnInput</EditMode>
+			<ContextMenu name="IBANContextMenu" id="18"/>
+			<ExtendedTooltip name="IBANExtendedTooltip" id="35"/>
+		</InputField>
+		<InputField name="BIC" id="19">
+			<DataPath>Object.BIC</DataPath>
+			<EditMode>EnterOnInput</EditMode>
+			<ContextMenu name="BICContextMenu" id="20"/>
+			<ExtendedTooltip name="BICExtendedTooltip" id="36"/>
+		</InputField>
+		<InputField name="RoutingNumber" id="21">
+			<DataPath>Object.RoutingNumber</DataPath>
+			<EditMode>EnterOnInput</EditMode>
+			<ContextMenu name="RoutingNumberContextMenu" id="22"/>
+			<ExtendedTooltip name="RoutingNumberExtendedTooltip" id="37"/>
+		</InputField>
+		<InputField name="AccountHolder" id="23">
+			<DataPath>Object.AccountHolder</DataPath>
+			<EditMode>EnterOnInput</EditMode>
+			<ContextMenu name="AccountHolderContextMenu" id="24"/>
+			<ExtendedTooltip name="AccountHolderExtendedTooltip" id="38"/>
+		</InputField>
+	</ChildItems>
+	<Attributes>
+		<Attribute name="Object" id="1">
+			<Type>
+				<v8:Type>cfg:CatalogObject.Banks</v8:Type>
+			</Type>
+			<MainAttribute>true</MainAttribute>
+			<SavedData>true</SavedData>
+		</Attribute>
+	</Attributes>
+</Form>

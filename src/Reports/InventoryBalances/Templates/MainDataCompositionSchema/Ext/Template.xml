@@ -1,0 +1,167 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<DataCompositionSchema xmlns="http://v8.1c.ru/8.1/data-composition-system/schema" xmlns:dcscom="http://v8.1c.ru/8.1/data-composition-system/common" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<dataSource>
+		<name>DataSource1</name>
+		<dataSourceType>Local</dataSourceType>
+	</dataSource>
+	<dataSet xsi:type="DataSetQuery">
+		<name>DataSet1</name>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Location</dataPath>
+			<field>Location</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>QtyOnHand</dataPath>
+			<field>QtyOnHand</field>
+			<appearance>
+				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+					<dcscor:parameter>Format</dcscor:parameter>
+					<dcscor:value xsi:type="xs:string">ND=10; NFD=4</dcscor:value>
+				</dcscor:item>
+			</appearance>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Value</dataPath>
+			<field>Value</field>
+			<appearance>
+				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+					<dcscor:parameter>Format</dcscor:parameter>
+					<dcscor:value xsi:type="xs:string">ND=15; NFD=2</dcscor:value>
+				</dcscor:item>
+			</appearance>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Product</dataPath>
+			<field>Product</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Item</v8:content>
+				</v8:item>
+			</title>
+		</field>
+		<dataSource>DataSource1</dataSource>
+		<query>SELECT
+	InvLocation.QtyOnHand,
+	Journal.AdjCost * InvLocation.QtyOnHand AS Value,
+	InvDataset.Product,
+	InvLocation.Location
+FROM
+	InformationRegister.InventoryJournal AS Journal
+		INNER JOIN (SELECT
+			Journal.Product AS Product,
+			MAX(Journal.Row) AS Max_Row,
+			Temp.Max_Date AS Max_Date
+		FROM
+			InformationRegister.InventoryJournal AS Journal
+				INNER JOIN (SELECT
+					InventoryJournal.Product AS Product,
+					MAX(InventoryJournal.Date) AS Max_Date
+				FROM
+					InformationRegister.InventoryJournal AS InventoryJournal
+				WHERE
+					InventoryJournal.Product.CostingMethod = VALUE(Enum.InventoryCosting.WeightedAverage)
+				
+				GROUP BY
+					InventoryJournal.Product) AS Temp
+				ON Journal.Product = Temp.Product
+					AND Journal.Date = Temp.Max_Date
+		
+		GROUP BY
+			Journal.Product,
+			Temp.Max_Date) AS InvDataset
+		ON Journal.Date = InvDataset.Max_Date
+			AND Journal.Product = InvDataset.Product
+			AND Journal.Row = InvDataset.Max_Row
+		INNER JOIN (SELECT
+			LocationBalances.Product AS Product,
+			LocationBalances.QtyOnHandBalance AS QtyOnHand,
+			LocationBalances.Location AS Location
+		FROM
+			AccumulationRegister.LocationBalances.Balance AS LocationBalances) AS InvLocation
+		ON Journal.Product = InvLocation.Product
+
+UNION ALL
+
+SELECT
+	SUM(InvDataset.Qty),
+	SUM(InvDataset.Value),
+	InvDataset.Product,
+	InvDataset.Location
+FROM
+	(SELECT
+		InventoryJournal.Product AS Product,
+		InventoryJournal.Location AS Location,
+		InventoryJournal.QtyIn - InventoryJournal.QtyOut AS Qty,
+		(InventoryJournal.QtyIn - InventoryJournal.QtyOut) * InventoryJournal.DocCost AS Value
+	FROM
+		InformationRegister.InventoryJournal AS InventoryJournal
+	WHERE
+		(InventoryJournal.Product.CostingMethod = VALUE(Enum.InventoryCosting.LIFO)
+				OR InventoryJournal.Product.CostingMethod = VALUE(Enum.InventoryCosting.FIFO))) AS InvDataset
+
+GROUP BY
+	InvDataset.Product,
+	InvDataset.Location</query>
+	</dataSet>
+	<totalField>
+		<dataPath>Value</dataPath>
+		<expression>Sum(Value)</expression>
+	</totalField>
+	<parameter>
+		<name>Period</name>
+		<title xsi:type="v8:LocalStringType">
+			<v8:item>
+				<v8:lang>en</v8:lang>
+				<v8:content>Period</v8:content>
+			</v8:item>
+		</title>
+		<valueType>
+			<v8:Type>xs:dateTime</v8:Type>
+			<v8:DateQualifiers>
+				<v8:DateFractions>DateTime</v8:DateFractions>
+			</v8:DateQualifiers>
+		</valueType>
+		<value xsi:type="xs:dateTime">0001-01-01T00:00:00</value>
+		<useRestriction>false</useRestriction>
+	</parameter>
+	<settingsVariant>
+		<dcsset:name>Default</dcsset:name>
+		<dcsset:presentation xsi:type="xs:string">Default</dcsset:presentation>
+		<dcsset:settings xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows">
+			<dcsset:selection>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Product</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Location</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>QtyOnHand</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Value</dcsset:field>
+				</dcsset:item>
+			</dcsset:selection>
+			<dcsset:outputParameters>
+				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+					<dcscor:parameter>Title</dcscor:parameter>
+					<dcscor:value xsi:type="v8:LocalStringType">
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Inventory Balances</v8:content>
+						</v8:item>
+					</dcscor:value>
+				</dcscor:item>
+			</dcsset:outputParameters>
+			<dcsset:item xsi:type="dcsset:StructureItemGroup">
+				<dcsset:order>
+					<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
+				</dcsset:order>
+				<dcsset:selection>
+					<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+				</dcsset:selection>
+			</dcsset:item>
+		</dcsset:settings>
+	</settingsVariant>
+</DataCompositionSchema>

@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<MetaDataObject xmlns="http://v8.1c.ru/8.3/MDClasses" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:cmi="http://v8.1c.ru/8.2/managed-application/cmi" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xen="http://v8.1c.ru/8.3/xcf/enums" xmlns:xpr="http://v8.1c.ru/8.3/xcf/predef" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<FunctionalOption uuid="8959ad96-e840-4c1d-b353-ceaace16487b">
+		<Properties>
+			<Name>VATFinLocalization</Name>
+			<Synonym>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>VAT financial localization</v8:content>
+				</v8:item>
+			</Synonym>
+			<Comment/>
+			<Location>Constant.VATFinLocalization</Location>
+			<PrivilegedGetMode>true</PrivilegedGetMode>
+			<Content>
+				<xr:Object>Catalog.VATCodes</xr:Object>
+				<xr:Object>Catalog.VATReturnFormBoxes</xr:Object>
+				<xr:Object>Constant.DefaultPurchaseVAT</xr:Object>
+				<xr:Object>Constant.DefaultSalesVAT</xr:Object>
+				<xr:Object>Document.CashSale.TabularSection.LineItems.Attribute.VATCode</xr:Object>
+				<xr:Object>Document.CashSale.TabularSection.LineItems.Attribute.VAT</xr:Object>
+				<xr:Object>Document.SalesReturn.TabularSection.LineItems.Attribute.VATCode</xr:Object>
+				<xr:Object>Document.SalesReturn.TabularSection.LineItems.Attribute.VAT</xr:Object>
+				<xr:Object>Document.GoodsIssue.TabularSection.LineItems.Attribute.VATCode</xr:Object>
+				<xr:Object>Document.GoodsIssue.TabularSection.LineItems.Attribute.VAT</xr:Object>
+				<xr:Object>Document.GoodsReceipt.TabularSection.LineItems.Attribute.VATCode</xr:Object>
+				<xr:Object>Document.GoodsReceipt.TabularSection.LineItems.Attribute.VAT</xr:Object>
+				<xr:Object>Document.PurchaseOrder.TabularSection.LineItems.Attribute.VATCode</xr:Object>
+				<xr:Object>Document.PurchaseOrder.TabularSection.LineItems.Attribute.VAT</xr:Object>
+				<xr:Object>Document.SalesQuote.TabularSection.LineItems.Attribute.VAT</xr:Object>
+				<xr:Object>Document.SalesQuote.TabularSection.LineItems.Attribute.VATCode</xr:Object>
+				<xr:Object>Document.SalesInvoice.TabularSection.LineItems.Attribute.VATCode</xr:Object>
+				<xr:Object>Document.SalesInvoice.TabularSection.LineItems.Attribute.VAT</xr:Object>
+				<xr:Object>Document.SalesOrder.TabularSection.LineItems.Attribute.VATCode</xr:Object>
+				<xr:Object>Document.SalesOrder.TabularSection.LineItems.Attribute.VAT</xr:Object>
+				<xr:Object>Document.PurchaseInvoice.TabularSection.LineItems.Attribute.VATCode</xr:Object>
+				<xr:Object>Document.PurchaseInvoice.TabularSection.LineItems.Attribute.VAT</xr:Object>
+				<xr:Object>Document.CashPurchase.TabularSection.LineItems.Attribute.VATCode</xr:Object>
+				<xr:Object>Document.CashPurchase.TabularSection.LineItems.Attribute.VAT</xr:Object>
+				<xr:Object>Document.PurchaseQuote.TabularSection.LineItems.Attribute.VATCode</xr:Object>
+				<xr:Object>Document.PurchaseQuote.TabularSection.LineItems.Attribute.VAT</xr:Object>
+				<xr:Object>Document.PurchaseReturn.TabularSection.LineItems.Attribute.VATCode</xr:Object>
+				<xr:Object>Document.PurchaseReturn.TabularSection.LineItems.Attribute.VAT</xr:Object>
+				<xr:Object>Catalog.Products.Attribute.PurchaseVATCode</xr:Object>
+				<xr:Object>Catalog.Products.Attribute.SalesVATCode</xr:Object>
+				<xr:Object>Document.VATInvoice</xr:Object>
+				<xr:Object>Catalog.Companies.Attribute.VATNumber</xr:Object>
+				<xr:Object>Document.CashPurchase.Attribute.PriceIncludesVAT</xr:Object>
+				<xr:Object>Document.CashSale.Attribute.PriceIncludesVAT</xr:Object>
+				<xr:Object>Document.GoodsIssue.Attribute.PriceIncludesVAT</xr:Object>
+				<xr:Object>Document.GoodsReceipt.Attribute.PriceIncludesVAT</xr:Object>
+				<xr:Object>Document.PurchaseInvoice.Attribute.PriceIncludesVAT</xr:Object>
+				<xr:Object>Document.PurchaseOrder.Attribute.PriceIncludesVAT</xr:Object>
+				<xr:Object>Document.PurchaseQuote.Attribute.PriceIncludesVAT</xr:Object>
+				<xr:Object>Document.PurchaseReturn.Attribute.PriceIncludesVAT</xr:Object>
+				<xr:Object>Document.SalesInvoice.Attribute.PriceIncludesVAT</xr:Object>
+				<xr:Object>Document.SalesOrder.Attribute.PriceIncludesVAT</xr:Object>
+				<xr:Object>Document.SalesQuote.Attribute.PriceIncludesVAT</xr:Object>
+				<xr:Object>Document.SalesReturn.Attribute.PriceIncludesVAT</xr:Object>
+			</Content>
+		</Properties>
+	</FunctionalOption>
+</MetaDataObject>

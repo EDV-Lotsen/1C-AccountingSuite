@@ -1,0 +1,101 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<MetaDataObject xmlns="http://v8.1c.ru/8.3/MDClasses" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:cmi="http://v8.1c.ru/8.2/managed-application/cmi" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xen="http://v8.1c.ru/8.3/xcf/enums" xmlns:xpr="http://v8.1c.ru/8.3/xcf/predef" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<ChartOfCharacteristicTypes uuid="8fec4367-aa79-479b-93fc-8d6578092786">
+		<InternalInfo>
+			<xr:GeneratedType name="ChartOfCharacteristicTypesObject.Dimensions" category="Object">
+				<xr:TypeId>65564931-1d1b-4c72-b82b-8db5e655f80b</xr:TypeId>
+				<xr:ValueId>60eb66c6-5ea8-40ca-9558-6098df9790fe</xr:ValueId>
+			</xr:GeneratedType>
+			<xr:GeneratedType name="ChartOfCharacteristicTypesRef.Dimensions" category="Ref">
+				<xr:TypeId>7da0c08a-0939-4b95-b36b-57b4c876057f</xr:TypeId>
+				<xr:ValueId>6cf55d43-c31c-4976-8437-07248333c925</xr:ValueId>
+			</xr:GeneratedType>
+			<xr:GeneratedType name="ChartOfCharacteristicTypesSelection.Dimensions" category="Selection">
+				<xr:TypeId>c8437f9a-419f-4aa1-95ac-959ea59ceca8</xr:TypeId>
+				<xr:ValueId>52008fd9-3fbb-4b27-b2e8-7e006cd1c55f</xr:ValueId>
+			</xr:GeneratedType>
+			<xr:GeneratedType name="ChartOfCharacteristicTypesList.Dimensions" category="List">
+				<xr:TypeId>f5b0df15-4d37-491e-8612-24304d090093</xr:TypeId>
+				<xr:ValueId>0f03a757-25e6-4cf9-a680-dd21056b8b92</xr:ValueId>
+			</xr:GeneratedType>
+			<xr:GeneratedType name="Characteristic.Dimensions" category="Characteristic">
+				<xr:TypeId>d447628e-5846-4a20-a0f1-ff87fbdb70e7</xr:TypeId>
+				<xr:ValueId>46fddffd-7229-45c0-98a2-db42caef5aa3</xr:ValueId>
+			</xr:GeneratedType>
+			<xr:GeneratedType name="ChartOfCharacteristicTypesManager.Dimensions" category="Manager">
+				<xr:TypeId>91c7f8d1-59ab-477d-9c70-5b3e2694be2d</xr:TypeId>
+				<xr:ValueId>7014c062-6b43-42c8-8cc8-40bd6cfce582</xr:ValueId>
+			</xr:GeneratedType>
+		</InternalInfo>
+		<Properties>
+			<Name>Dimensions</Name>
+			<Synonym>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Dimensions</v8:content>
+				</v8:item>
+			</Synonym>
+			<Comment/>
+			<UseStandardCommands>false</UseStandardCommands>
+			<IncludeHelpInContents>false</IncludeHelpInContents>
+			<CharacteristicExtValues/>
+			<Type>
+				<v8:Type>cfg:DocumentRef.GoodsReceipt</v8:Type>
+				<v8:Type>cfg:DocumentRef.SalesReturn</v8:Type>
+				<v8:Type>cfg:DocumentRef.PurchaseInvoice</v8:Type>
+				<v8:Type>cfg:DocumentRef.GoodsIssue</v8:Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:Type>cfg:DocumentRef.SalesInvoice</v8:Type>
+				<v8:Type>cfg:DocumentRef.PurchaseReturn</v8:Type>
+				<v8:Type>cfg:CatalogRef.Companies</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>10</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+			<Hierarchical>false</Hierarchical>
+			<FoldersOnTop>true</FoldersOnTop>
+			<CodeLength>9</CodeLength>
+			<CodeAllowedLength>Variable</CodeAllowedLength>
+			<DescriptionLength>25</DescriptionLength>
+			<CodeSeries>WholeCharacteristicKind</CodeSeries>
+			<CheckUnique>true</CheckUnique>
+			<Autonumbering>true</Autonumbering>
+			<DefaultPresentation>AsDescription</DefaultPresentation>
+			<Characteristics/>
+			<PredefinedDataUpdate>Auto</PredefinedDataUpdate>
+			<EditType>InDialog</EditType>
+			<QuickChoice>false</QuickChoice>
+			<ChoiceMode>BothWays</ChoiceMode>
+			<InputByString>
+				<xr:Field>ChartOfCharacteristicTypes.Dimensions.StandardAttribute.Description</xr:Field>
+				<xr:Field>ChartOfCharacteristicTypes.Dimensions.StandardAttribute.Code</xr:Field>
+			</InputByString>
+			<CreateOnInput>DontUse</CreateOnInput>
+			<SearchStringModeOnInputByString>Begin</SearchStringModeOnInputByString>
+			<ChoiceDataGetModeOnInputByString>Directly</ChoiceDataGetModeOnInputByString>
+			<FullTextSearchOnInputByString>DontUse</FullTextSearchOnInputByString>
+			<ChoiceHistoryOnInput>Auto</ChoiceHistoryOnInput>
+			<DefaultObjectForm/>
+			<DefaultFolderForm/>
+			<DefaultListForm/>
+			<DefaultChoiceForm/>
+			<DefaultFolderChoiceForm/>
+			<AuxiliaryObjectForm/>
+			<AuxiliaryFolderForm/>
+			<AuxiliaryListForm/>
+			<AuxiliaryChoiceForm/>
+			<AuxiliaryFolderChoiceForm/>
+			<BasedOn/>
+			<DataLockFields/>
+			<DataLockControlMode>Automatic</DataLockControlMode>
+			<FullTextSearch>Use</FullTextSearch>
+			<ObjectPresentation/>
+			<ExtendedObjectPresentation/>
+			<ListPresentation/>
+			<ExtendedListPresentation/>
+			<Explanation/>
+		</Properties>
+		<ChildObjects/>
+	</ChartOfCharacteristicTypes>
+</MetaDataObject>

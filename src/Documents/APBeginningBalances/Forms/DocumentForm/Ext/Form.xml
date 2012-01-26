@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<VerticalScroll>useIfNecessary</VerticalScroll>
+	<AutoTime>CurrentOrLast</AutoTime>
+	<UsePostingMode>Auto</UsePostingMode>
+	<RepostOnWrite>true</RepostOnWrite>
+	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<Events>
+		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+	</Events>
+	<ChildItems>
+		<InputField name="Company" id="1">
+			<DataPath>Object.Company</DataPath>
+			<EditMode>EnterOnInput</EditMode>
+			<ContextMenu name="CompanyContextMenu" id="2"/>
+			<ExtendedTooltip name="CompanyExtendedTooltip" id="11"/>
+		</InputField>
+		<InputField name="Amount" id="3">
+			<DataPath>Object.Amount</DataPath>
+			<EditMode>EnterOnInput</EditMode>
+			<ContextMenu name="AmountContextMenu" id="4"/>
+			<ExtendedTooltip name="AmountExtendedTooltip" id="12"/>
+		</InputField>
+		<InputField name="AmountRC" id="5">
+			<DataPath>Object.AmountRC</DataPath>
+			<EditMode>EnterOnInput</EditMode>
+			<ContextMenu name="AmountRCContextMenu" id="6"/>
+			<ExtendedTooltip name="AmountRCExtendedTooltip" id="13"/>
+		</InputField>
+		<InputField name="Memo" id="7">
+			<DataPath>Object.Memo</DataPath>
+			<EditMode>EnterOnInput</EditMode>
+			<ContextMenu name="MemoContextMenu" id="8"/>
+			<ExtendedTooltip name="MemoExtendedTooltip" id="14"/>
+		</InputField>
+		<InputField name="DueDate" id="9">
+			<DataPath>Object.DueDate</DataPath>
+			<HorizontalAlign>Right</HorizontalAlign>
+			<EditMode>EnterOnInput</EditMode>
+			<EditFormat>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>DLF=D</v8:content>
+				</v8:item>
+			</EditFormat>
+			<ContextMenu name="DueDateContextMenu" id="10"/>
+			<ExtendedTooltip name="DueDateExtendedTooltip" id="15"/>
+		</InputField>
+	</ChildItems>
+	<Attributes>
+		<Attribute name="Object" id="1">
+			<Type>
+				<v8:Type>cfg:DocumentObject.APBeginningBalances</v8:Type>
+			</Type>
+			<MainAttribute>true</MainAttribute>
+			<SavedData>true</SavedData>
+			<UseAlways>
+				<Field>Object.RegisterRecords</Field>
+			</UseAlways>
+		</Attribute>
+	</Attributes>
+</Form>

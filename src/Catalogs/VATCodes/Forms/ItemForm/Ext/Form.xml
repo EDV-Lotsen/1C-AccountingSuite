@@ -1,0 +1,243 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<WindowOpeningMode>LockOwnerWindow</WindowOpeningMode>
+	<VerticalScroll>useIfNecessary</VerticalScroll>
+	<UseForFoldersAndItems>Items</UseForFoldersAndItems>
+	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<ChildItems>
+		<InputField name="Code" id="1">
+			<DataPath>1/-2</DataPath>
+			<Visible>false</Visible>
+			<EditMode>EnterOnInput</EditMode>
+			<ContextMenu name="CodeContextMenu" id="2"/>
+			<ExtendedTooltip name="CodeExtendedTooltip" id="52"/>
+		</InputField>
+		<InputField name="Description" id="3">
+			<DataPath>Object.Description</DataPath>
+			<EditMode>EnterOnInput</EditMode>
+			<Width>10</Width>
+			<HorizontalStretch>false</HorizontalStretch>
+			<ContextMenu name="DescriptionContextMenu" id="4"/>
+			<ExtendedTooltip name="DescriptionExtendedTooltip" id="53"/>
+		</InputField>
+		<InputField name="VATCode" id="5">
+			<DataPath>Object.VATDescription</DataPath>
+			<EditMode>EnterOnInput</EditMode>
+			<ContextMenu name="VATCodeContextMenu" id="6"/>
+			<ExtendedTooltip name="VATCodeExtendedTooltip" id="54"/>
+		</InputField>
+		<Pages name="Pages" id="7">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Pages</v8:content>
+				</v8:item>
+			</Title>
+			<ExtendedTooltip name="PagesExtendedTooltip" id="55"/>
+			<ChildItems>
+				<Page name="GroupSalesItems" id="8">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Sales items</v8:content>
+						</v8:item>
+					</Title>
+					<ExtendedTooltip name="GroupSalesItemsExtendedTooltip" id="56"/>
+					<ChildItems>
+						<Table name="SalesItems" id="9">
+							<Representation>List</Representation>
+							<AutoInsertNewRow>true</AutoInsertNewRow>
+							<EnableStartDrag>true</EnableStartDrag>
+							<EnableDrag>true</EnableDrag>
+							<DataPath>Object.SalesItems</DataPath>
+							<SearchStringLocation>None</SearchStringLocation>
+							<ViewStatusLocation>None</ViewStatusLocation>
+							<SearchControlLocation>None</SearchControlLocation>
+							<RowFilter xsi:nil="true"/>
+							<ContextMenu name="SalesItemsContextMenu" id="10"/>
+							<AutoCommandBar name="SalesItemsCommandBar" id="11"/>
+							<ExtendedTooltip name="SalesItemsExtendedTooltip" id="57"/>
+							<SearchStringAddition name="SalesItemsSearchString" id="58">
+								<AdditionSource>
+									<Item>SalesItems</Item>
+									<Type>SearchStringRepresentation</Type>
+								</AdditionSource>
+								<ContextMenu name="SalesItemsSearchStringContextMenu" id="59"/>
+								<ExtendedTooltip name="SalesItemsSearchStringExtendedTooltip" id="60"/>
+							</SearchStringAddition>
+							<ViewStatusAddition name="SalesItemsViewStatus" id="61">
+								<AdditionSource>
+									<Item>SalesItems</Item>
+									<Type>ViewStatusRepresentation</Type>
+								</AdditionSource>
+								<ContextMenu name="SalesItemsViewStatusContextMenu" id="62"/>
+								<ExtendedTooltip name="SalesItemsViewStatusExtendedTooltip" id="63"/>
+							</ViewStatusAddition>
+							<SearchControlAddition name="SalesItemsSearchControl" id="64">
+								<AdditionSource>
+									<Item>SalesItems</Item>
+									<Type>SearchControl</Type>
+								</AdditionSource>
+								<ContextMenu name="SalesItemsSearchControlContextMenu" id="65"/>
+								<ExtendedTooltip name="SalesItemsSearchControlExtendedTooltip" id="66"/>
+							</SearchControlAddition>
+							<ChildItems>
+								<InputField name="SalesItemsName" id="14">
+									<DataPath>Object.SalesItems.Name</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<Width>15</Width>
+									<HorizontalStretch>false</HorizontalStretch>
+									<ContextMenu name="SalesItemsNameContextMenu" id="15"/>
+									<ExtendedTooltip name="SalesItemsNameExtendedTooltip" id="67"/>
+								</InputField>
+								<InputField name="SalesItemsInclRate" id="42">
+									<DataPath>Object.SalesItems.InclRate</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="SalesItemsInclRateContextMenu" id="43"/>
+									<ExtendedTooltip name="SalesItemsInclRateExtendedTooltip" id="68"/>
+								</InputField>
+								<InputField name="SalesItemsExclRate" id="40">
+									<DataPath>Object.SalesItems.ExclRate</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="SalesItemsExclRateContextMenu" id="41"/>
+									<ExtendedTooltip name="SalesItemsExclRateExtendedTooltip" id="69"/>
+								</InputField>
+								<InputField name="SalesItemsReturnBox" id="20">
+									<DataPath>Object.SalesItems.ReturnBox</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<Width>7</Width>
+									<HorizontalStretch>false</HorizontalStretch>
+									<ContextMenu name="SalesItemsReturnBoxContextMenu" id="21"/>
+									<ExtendedTooltip name="SalesItemsReturnBoxExtendedTooltip" id="70"/>
+								</InputField>
+								<InputField name="SalesItemsAgency" id="36">
+									<DataPath>Object.SalesItems.Agency</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<Width>15</Width>
+									<HorizontalStretch>false</HorizontalStretch>
+									<ContextMenu name="SalesItemsAgencyContextMenu" id="37"/>
+									<ExtendedTooltip name="SalesItemsAgencyExtendedTooltip" id="71"/>
+								</InputField>
+								<InputField name="SalesItemsAccount" id="50">
+									<DataPath>Object.SalesItems.Account</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="SalesItemsAccountContextMenu" id="51"/>
+									<ExtendedTooltip name="SalesItemsAccountExtendedTooltip" id="72"/>
+								</InputField>
+							</ChildItems>
+						</Table>
+					</ChildItems>
+				</Page>
+				<Page name="GroupPurchaseItems" id="22">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Purchase items</v8:content>
+						</v8:item>
+					</Title>
+					<ExtendedTooltip name="GroupPurchaseItemsExtendedTooltip" id="73"/>
+					<ChildItems>
+						<Table name="PurchaseItems" id="23">
+							<Representation>List</Representation>
+							<AutoInsertNewRow>true</AutoInsertNewRow>
+							<EnableStartDrag>true</EnableStartDrag>
+							<EnableDrag>true</EnableDrag>
+							<DataPath>Object.PurchaseItems</DataPath>
+							<SearchStringLocation>None</SearchStringLocation>
+							<ViewStatusLocation>None</ViewStatusLocation>
+							<SearchControlLocation>None</SearchControlLocation>
+							<RowFilter xsi:nil="true"/>
+							<ContextMenu name="PurchaseItemsContextMenu" id="24"/>
+							<AutoCommandBar name="PurchaseItemsCommandBar" id="25"/>
+							<ExtendedTooltip name="PurchaseItemsExtendedTooltip" id="74"/>
+							<SearchStringAddition name="PurchaseItemsSearchString" id="75">
+								<AdditionSource>
+									<Item>PurchaseItems</Item>
+									<Type>SearchStringRepresentation</Type>
+								</AdditionSource>
+								<ContextMenu name="PurchaseItemsSearchStringContextMenu" id="76"/>
+								<ExtendedTooltip name="PurchaseItemsSearchStringExtendedTooltip" id="77"/>
+							</SearchStringAddition>
+							<ViewStatusAddition name="PurchaseItemsViewStatus" id="78">
+								<AdditionSource>
+									<Item>PurchaseItems</Item>
+									<Type>ViewStatusRepresentation</Type>
+								</AdditionSource>
+								<ContextMenu name="PurchaseItemsViewStatusContextMenu" id="79"/>
+								<ExtendedTooltip name="PurchaseItemsViewStatusExtendedTooltip" id="80"/>
+							</ViewStatusAddition>
+							<SearchControlAddition name="PurchaseItemsSearchControl" id="81">
+								<AdditionSource>
+									<Item>PurchaseItems</Item>
+									<Type>SearchControl</Type>
+								</AdditionSource>
+								<ContextMenu name="PurchaseItemsSearchControlContextMenu" id="82"/>
+								<ExtendedTooltip name="PurchaseItemsSearchControlExtendedTooltip" id="83"/>
+							</SearchControlAddition>
+							<ChildItems>
+								<LabelField name="PurchaseItemsLineNumber" id="26">
+									<DataPath>Object.PurchaseItems.LineNumber</DataPath>
+									<Visible>false</Visible>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="PurchaseItemsLineNumberContextMenu" id="27"/>
+									<ExtendedTooltip name="PurchaseItemsLineNumberExtendedTooltip" id="84"/>
+								</LabelField>
+								<InputField name="PurchaseItemsName" id="28">
+									<DataPath>Object.PurchaseItems.Name</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<Width>15</Width>
+									<HorizontalStretch>false</HorizontalStretch>
+									<ContextMenu name="PurchaseItemsNameContextMenu" id="29"/>
+									<ExtendedTooltip name="PurchaseItemsNameExtendedTooltip" id="85"/>
+								</InputField>
+								<InputField name="PurchaseItemsInclRate" id="44">
+									<DataPath>Object.PurchaseItems.InclRate</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="PurchaseItemsInclRateContextMenu" id="45"/>
+									<ExtendedTooltip name="PurchaseItemsInclRateExtendedTooltip" id="86"/>
+								</InputField>
+								<InputField name="PurchaseItemsExclRate" id="46">
+									<DataPath>Object.PurchaseItems.ExclRate</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="PurchaseItemsExclRateContextMenu" id="47"/>
+									<ExtendedTooltip name="PurchaseItemsExclRateExtendedTooltip" id="87"/>
+								</InputField>
+								<InputField name="PurchaseItemsReturnBox" id="34">
+									<DataPath>Object.PurchaseItems.ReturnBox</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<Width>7</Width>
+									<HorizontalStretch>false</HorizontalStretch>
+									<ContextMenu name="PurchaseItemsReturnBoxContextMenu" id="35"/>
+									<ExtendedTooltip name="PurchaseItemsReturnBoxExtendedTooltip" id="88"/>
+								</InputField>
+								<InputField name="PurchaseItemsAgency" id="38">
+									<DataPath>Object.PurchaseItems.Agency</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<Width>15</Width>
+									<HorizontalStretch>false</HorizontalStretch>
+									<ContextMenu name="PurchaseItemsAgencyContextMenu" id="39"/>
+									<ExtendedTooltip name="PurchaseItemsAgencyExtendedTooltip" id="89"/>
+								</InputField>
+								<InputField name="PurchaseItemsAccount" id="48">
+									<DataPath>Object.PurchaseItems.Account</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="PurchaseItemsAccountContextMenu" id="49"/>
+									<ExtendedTooltip name="PurchaseItemsAccountExtendedTooltip" id="90"/>
+								</InputField>
+							</ChildItems>
+						</Table>
+					</ChildItems>
+				</Page>
+			</ChildItems>
+		</Pages>
+	</ChildItems>
+	<Attributes>
+		<Attribute name="Object" id="1">
+			<Type>
+				<v8:Type>cfg:CatalogObject.VATCodes</v8:Type>
+			</Type>
+			<MainAttribute>true</MainAttribute>
+			<SavedData>true</SavedData>
+		</Attribute>
+	</Attributes>
+</Form>

@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<WindowOpeningMode>LockOwnerWindow</WindowOpeningMode>
+	<VerticalScroll>useIfNecessary</VerticalScroll>
+	<UseForFoldersAndItems>Items</UseForFoldersAndItems>
+	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<Events>
+		<Event name="BeforeWrite">BeforeWrite</Event>
+	</Events>
+	<ChildItems>
+		<InputField name="Description" id="11">
+			<DataPath>Object.Description</DataPath>
+			<ContextMenu name="DescriptionContextMenu" id="12"/>
+			<ExtendedTooltip name="DescriptionExtendedTooltip" id="13"/>
+		</InputField>
+		<InputField name="Abbreviation" id="3">
+			<DataPath>Object.Abbreviation</DataPath>
+			<EditMode>EnterOnInput</EditMode>
+			<ContextMenu name="AbbreviationContextMenu" id="4"/>
+			<ExtendedTooltip name="AbbreviationExtendedTooltip" id="14"/>
+		</InputField>
+		<InputField name="Type" id="9">
+			<DataPath>Object.Type</DataPath>
+			<EditMode>EnterOnInput</EditMode>
+			<ContextMenu name="TypeContextMenu" id="10"/>
+			<ExtendedTooltip name="TypeExtendedTooltip" id="15"/>
+		</InputField>
+		<InputField name="ParentUM" id="5">
+			<DataPath>Object.ParentUM</DataPath>
+			<EditMode>EnterOnInput</EditMode>
+			<ContextMenu name="ParentUMContextMenu" id="6"/>
+			<ExtendedTooltip name="ParentUMExtendedTooltip" id="16"/>
+		</InputField>
+		<InputField name="ConversionRatio" id="7">
+			<DataPath>Object.ConversionRatio</DataPath>
+			<EditMode>EnterOnInput</EditMode>
+			<ContextMenu name="ConversionRatioContextMenu" id="8"/>
+			<ExtendedTooltip name="ConversionRatioExtendedTooltip" id="17"/>
+		</InputField>
+	</ChildItems>
+	<Attributes>
+		<Attribute name="Object" id="1">
+			<Type>
+				<v8:Type>cfg:CatalogObject.UnitsOfMeasure</v8:Type>
+			</Type>
+			<MainAttribute>true</MainAttribute>
+			<SavedData>true</SavedData>
+		</Attribute>
+	</Attributes>
+</Form>

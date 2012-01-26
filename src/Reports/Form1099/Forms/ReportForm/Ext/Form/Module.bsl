@@ -1,0 +1,24 @@
+﻿
+&AtClient
+Procedure Run(Command)
+	
+	VendorAttribute = GeneralFunctions.GetAttributeValue(Report.Vendor, "Ref");
+	
+	If VendorAttribute = Undefined Then
+		DoMessageBox("Select a vendor");
+	Else
+		CreateReportOnServer();
+	EndIf;
+		
+EndProcedure
+
+&AtServer
+Procedure CreateReportOnServer()
+	
+	ReportObject = FormAttributeToValue("Report");
+	CreatedReport = ReportObject.Form1099(Period.StartDate, Period.EndDate);
+	
+	SDocument.Clear();
+	SDocument.Put(CreatedReport);
+	
+EndProcedure

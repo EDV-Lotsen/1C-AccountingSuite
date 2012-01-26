@@ -1,0 +1,109 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<WindowOpeningMode>LockOwnerWindow</WindowOpeningMode>
+	<VerticalScroll>useIfNecessary</VerticalScroll>
+	<UseForFoldersAndItems>Items</UseForFoldersAndItems>
+	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<Events>
+		<Event name="BeforeWrite">BeforeWrite</Event>
+		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+	</Events>
+	<ChildItems>
+		<InputField name="Code" id="1">
+			<DataPath>1/-2</DataPath>
+			<Visible>false</Visible>
+			<EditMode>EnterOnInput</EditMode>
+			<ContextMenu name="CodeContextMenu" id="2"/>
+			<ExtendedTooltip name="CodeExtendedTooltip" id="22"/>
+		</InputField>
+		<InputField name="Description" id="3">
+			<DataPath>Object.Description</DataPath>
+			<EditMode>EnterOnInput</EditMode>
+			<ContextMenu name="DescriptionContextMenu" id="4"/>
+			<ExtendedTooltip name="DescriptionExtendedTooltip" id="23"/>
+		</InputField>
+		<InputField name="Symbol" id="5">
+			<DataPath>Object.Symbol</DataPath>
+			<ContextMenu name="SymbolContextMenu" id="6"/>
+			<ExtendedTooltip name="SymbolExtendedTooltip" id="24"/>
+		</InputField>
+		<UsualGroup name="Group1" id="11">
+			<Group>Horizontal</Group>
+			<Representation>None</Representation>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="Group1ExtendedTooltip" id="25"/>
+			<ChildItems>
+				<InputField name="DefaultARAccount" id="7">
+					<DataPath>Object.DefaultARAccount</DataPath>
+					<HorizontalStretch>false</HorizontalStretch>
+					<ContextMenu name="DefaultARAccountContextMenu" id="8"/>
+					<ExtendedTooltip name="DefaultARAccountExtendedTooltip" id="26"/>
+					<Events>
+						<Event name="OnChange">DefaultARAccountOnChange</Event>
+					</Events>
+				</InputField>
+				<LabelDecoration name="ARAccountLabel" id="13">
+					<ContextMenu name="ARAccountLabelContextMenu" id="14"/>
+					<ExtendedTooltip name="ARAccountLabelExtendedTooltip" id="27"/>
+				</LabelDecoration>
+			</ChildItems>
+		</UsualGroup>
+		<UsualGroup name="Group2" id="12">
+			<Group>Horizontal</Group>
+			<Representation>None</Representation>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="Group2ExtendedTooltip" id="28"/>
+			<ChildItems>
+				<InputField name="DefaultAPAccount" id="9">
+					<DataPath>Object.DefaultAPAccount</DataPath>
+					<HorizontalStretch>false</HorizontalStretch>
+					<ContextMenu name="DefaultAPAccountContextMenu" id="10"/>
+					<ExtendedTooltip name="DefaultAPAccountExtendedTooltip" id="29"/>
+					<Events>
+						<Event name="OnChange">DefaultAPAccountOnChange</Event>
+					</Events>
+				</InputField>
+				<LabelDecoration name="APAccountLabel" id="15">
+					<ContextMenu name="APAccountLabelContextMenu" id="16"/>
+					<ExtendedTooltip name="APAccountLabelExtendedTooltip" id="30"/>
+				</LabelDecoration>
+			</ChildItems>
+		</UsualGroup>
+		<UsualGroup name="Group3" id="17">
+			<Group>Horizontal</Group>
+			<Representation>None</Representation>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="Group3ExtendedTooltip" id="31"/>
+			<ChildItems>
+				<InputField name="DefaultAccruedPurchasesAccount" id="18">
+					<DataPath>Object.DefaultAccruedPurchasesAccount</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Accrued purchases</v8:content>
+						</v8:item>
+					</Title>
+					<HorizontalStretch>false</HorizontalStretch>
+					<ContextMenu name="DefaultAccruedPurchasesAccountContextMenu" id="19"/>
+					<ExtendedTooltip name="DefaultAccruedPurchasesAccountExtendedTooltip" id="32"/>
+					<Events>
+						<Event name="OnChange">DefaultAccruedPurchasesAccountOnChange</Event>
+					</Events>
+				</InputField>
+				<LabelDecoration name="AccruedPurchasesLabel" id="20">
+					<ContextMenu name="AccruedPurchasesLabelContextMenu" id="21"/>
+					<ExtendedTooltip name="AccruedPurchasesLabelExtendedTooltip" id="33"/>
+				</LabelDecoration>
+			</ChildItems>
+		</UsualGroup>
+	</ChildItems>
+	<Attributes>
+		<Attribute name="Object" id="1">
+			<Type>
+				<v8:Type>cfg:CatalogObject.Currencies</v8:Type>
+			</Type>
+			<MainAttribute>true</MainAttribute>
+			<SavedData>true</SavedData>
+		</Attribute>
+	</Attributes>
+</Form>

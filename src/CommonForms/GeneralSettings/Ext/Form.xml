@@ -1,0 +1,736 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<Title>
+		<v8:item>
+			<v8:lang>en</v8:lang>
+			<v8:content>System options</v8:content>
+		</v8:item>
+	</Title>
+	<WindowOpeningMode>LockOwnerWindow</WindowOpeningMode>
+	<VerticalScroll>useIfNecessary</VerticalScroll>
+	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<Events>
+		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+		<Event name="FillCheckProcessingAtServer">FillCheckProcessingAtServer</Event>
+	</Events>
+	<ChildItems>
+		<Pages name="Group4" id="71">
+			<ExtendedTooltip name="Group4ExtendedTooltip" id="197"/>
+			<ChildItems>
+				<Page name="GeneralSettings" id="56">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>General settings</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>General settings</v8:content>
+						</v8:item>
+					</ToolTip>
+					<Width>50</Width>
+					<ExtendedTooltip name="GeneralSettingsExtendedTooltip" id="198"/>
+					<ChildItems>
+						<CheckBoxField name="UnitsOfMeasure" id="17">
+							<DataPath>ConstantsSet.UnitsOfMeasure</DataPath>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="UnitsOfMeasureContextMenu" id="18"/>
+							<ExtendedTooltip name="UnitsOfMeasureExtendedTooltip" id="199"/>
+							<Events>
+								<Event name="OnChange">UnitsOfMeasureOnChange</Event>
+							</Events>
+						</CheckBoxField>
+						<CheckBoxField name="HideNonUMReports" id="103">
+							<DataPath>1/0:8e99b801-3e31-422b-ac2d-419c2118b181</DataPath>
+							<Visible>false</Visible>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="HideNonUMReportsContextMenu" id="104"/>
+							<ExtendedTooltip name="HideNonUMReportsExtendedTooltip" id="200"/>
+						</CheckBoxField>
+						<CheckBoxField name="MultiLocation" id="27">
+							<DataPath>ConstantsSet.MultiLocation</DataPath>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="MultiLocationContextMenu" id="28"/>
+							<ExtendedTooltip name="MultiLocationExtendedTooltip" id="201"/>
+							<Events>
+								<Event name="OnChange">MultiLocationOnChange</Event>
+							</Events>
+						</CheckBoxField>
+						<CheckBoxField name="MultiCurrency" id="29">
+							<DataPath>ConstantsSet.MultiCurrency</DataPath>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="MultiCurrencyContextMenu" id="30"/>
+							<ExtendedTooltip name="MultiCurrencyExtendedTooltip" id="202"/>
+							<Events>
+								<Event name="OnChange">MultiCurrencyOnChange</Event>
+							</Events>
+						</CheckBoxField>
+						<CheckBoxField name="UnbalancedGLEntryPosting" id="42">
+							<DataPath>ConstantsSet.UnbalancedGLEntryPosting</DataPath>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="UnbalancedGLEntryPostingContextMenu" id="43"/>
+							<ExtendedTooltip name="UnbalancedGLEntryPostingExtendedTooltip" id="203"/>
+						</CheckBoxField>
+						<InputField name="BeginningBalancesDate" id="40">
+							<DataPath>ConstantsSet.BeginningBalancesDate</DataPath>
+							<HorizontalAlign>Right</HorizontalAlign>
+							<ContextMenu name="BeginningBalancesDateContextMenu" id="41"/>
+							<ExtendedTooltip name="BeginningBalancesDateExtendedTooltip" id="204"/>
+						</InputField>
+						<InputField name="PaymentTermsDefault" id="13">
+							<DataPath>ConstantsSet.PaymentTermsDefault</DataPath>
+							<ContextMenu name="PaymentTermsDefaultContextMenu" id="14"/>
+							<ExtendedTooltip name="PaymentTermsDefaultExtendedTooltip" id="205"/>
+							<Events>
+								<Event name="OnChange">PaymentTermsDefaultOnChange</Event>
+							</Events>
+						</InputField>
+						<InputField name="DefaultCurrency" id="155">
+							<DataPath>ConstantsSet.DefaultCurrency</DataPath>
+							<ContextMenu name="DefaultCurrencyContextMenu" id="156"/>
+							<ExtendedTooltip name="DefaultCurrencyExtendedTooltip" id="206"/>
+							<Events>
+								<Event name="OnChange">DefaultCurrencyOnChange</Event>
+							</Events>
+						</InputField>
+						<InputField name="BrazilICMSTaxDefault" id="11">
+							<DataPath>ConstantsSet.BrazilICMSTaxDefault</DataPath>
+							<Visible>false</Visible>
+							<ContextMenu name="BrazilICMSTaxDefaultContextMenu" id="12"/>
+							<ExtendedTooltip name="BrazilICMSTaxDefaultExtendedTooltip" id="207"/>
+						</InputField>
+						<InputField name="DefaultLocation" id="52">
+							<DataPath>ConstantsSet.DefaultLocation</DataPath>
+							<ContextMenu name="DefaultLocationContextMenu" id="53"/>
+							<ExtendedTooltip name="DefaultLocationExtendedTooltip" id="208"/>
+						</InputField>
+						<CheckBoxField name="DisableLIFO" id="177">
+							<DataPath>ConstantsSet.DisableLIFO</DataPath>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="DisableLIFOContextMenu" id="178"/>
+							<ExtendedTooltip name="DisableLIFOExtendedTooltip" id="209"/>
+						</CheckBoxField>
+						<CheckBoxField name="AdvancedPricing" id="105">
+							<DataPath>ConstantsSet.AdvancedPricing</DataPath>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="AdvancedPricingContextMenu" id="106"/>
+							<ExtendedTooltip name="AdvancedPricingExtendedTooltip" id="210"/>
+							<Events>
+								<Event name="OnChange">AdvancedPricingOnChange</Event>
+							</Events>
+						</CheckBoxField>
+						<CheckBoxField name="FirstStartCompleted" id="153">
+							<DataPath>ConstantsSet.FirstStartCompleted</DataPath>
+							<Visible>false</Visible>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="FirstStartCompletedContextMenu" id="154"/>
+							<ExtendedTooltip name="FirstStartCompletedExtendedTooltip" id="211"/>
+						</CheckBoxField>
+						<InputField name="VendorName" id="173">
+							<DataPath>ConstantsSet.VendorName</DataPath>
+							<HorizontalStretch>false</HorizontalStretch>
+							<ContextMenu name="VendorNameContextMenu" id="174"/>
+							<ExtendedTooltip name="VendorNameExtendedTooltip" id="212"/>
+							<Events>
+								<Event name="OnChange">VendorNameOnChange</Event>
+							</Events>
+						</InputField>
+						<InputField name="CustomerName" id="175">
+							<DataPath>ConstantsSet.CustomerName</DataPath>
+							<HorizontalStretch>false</HorizontalStretch>
+							<ContextMenu name="CustomerNameContextMenu" id="176"/>
+							<ExtendedTooltip name="CustomerNameExtendedTooltip" id="213"/>
+							<Events>
+								<Event name="OnChange">CustomerNameOnChange</Event>
+							</Events>
+						</InputField>
+						<CheckBoxField name="EmailClient" id="179">
+							<DataPath>1/0:63853625-fef6-40a8-a29c-7a0f5c05a63f</DataPath>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="EmailClientContextMenu" id="180"/>
+							<ExtendedTooltip name="EmailClientExtendedTooltip" id="214"/>
+							<Events>
+								<Event name="OnChange">EmailClientOnChange</Event>
+							</Events>
+						</CheckBoxField>
+					</ChildItems>
+				</Page>
+				<Page name="FinancialLocalization" id="59">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Financial localization</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Financial localization</v8:content>
+						</v8:item>
+					</ToolTip>
+					<Width>50</Width>
+					<ExtendedTooltip name="FinancialLocalizationExtendedTooltip" id="215"/>
+					<ChildItems>
+						<CheckBoxField name="USFinLocalization" id="44">
+							<DataPath>ConstantsSet.USFinLocalization</DataPath>
+							<VerticalAlign>Top</VerticalAlign>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="USFinLocalizationContextMenu" id="45"/>
+							<ExtendedTooltip name="USFinLocalizationExtendedTooltip" id="216"/>
+							<Events>
+								<Event name="OnChange">USFinLocalizationOnChange</Event>
+							</Events>
+						</CheckBoxField>
+						<CheckBoxField name="VATFinLocalization" id="157">
+							<DataPath>ConstantsSet.VATFinLocalization</DataPath>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="VATFinLocalizationContextMenu" id="158"/>
+							<ExtendedTooltip name="VATFinLocalizationExtendedTooltip" id="217"/>
+							<Events>
+								<Event name="OnChange">VATFinLocalizationOnChange</Event>
+							</Events>
+						</CheckBoxField>
+						<CheckBoxField name="BrazilFinLocalization" id="46">
+							<DataPath>ConstantsSet.BrazilFinLocalization</DataPath>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="BrazilFinLocalizationContextMenu" id="47"/>
+							<ExtendedTooltip name="BrazilFinLocalizationExtendedTooltip" id="218"/>
+							<Events>
+								<Event name="OnChange">BrazilFinLocalizationOnChange</Event>
+							</Events>
+						</CheckBoxField>
+					</ChildItems>
+				</Page>
+				<Page name="VAT" id="159">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>VAT</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>VAT</v8:content>
+						</v8:item>
+					</ToolTip>
+					<ExtendedTooltip name="VATExtendedTooltip" id="219"/>
+					<ChildItems>
+						<InputField name="DefaultPurchaseVAT" id="164">
+							<DataPath>ConstantsSet.DefaultPurchaseVAT</DataPath>
+							<Width>10</Width>
+							<HorizontalStretch>false</HorizontalStretch>
+							<ContextMenu name="DefaultPurchaseVATContextMenu" id="165"/>
+							<ExtendedTooltip name="DefaultPurchaseVATExtendedTooltip" id="220"/>
+						</InputField>
+						<InputField name="DefaultSalesVAT" id="166">
+							<DataPath>ConstantsSet.DefaultSalesVAT</DataPath>
+							<Width>10</Width>
+							<HorizontalStretch>false</HorizontalStretch>
+							<ContextMenu name="DefaultSalesVATContextMenu" id="167"/>
+							<ExtendedTooltip name="DefaultSalesVATExtendedTooltip" id="221"/>
+						</InputField>
+						<CheckBoxField name="PriceIncludesVAT" id="195">
+							<DataPath>ConstantsSet.PriceIncludesVAT</DataPath>
+							<Visible>false</Visible>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="PriceIncludesVATContextMenu" id="196"/>
+							<ExtendedTooltip name="PriceIncludesVATExtendedTooltip" id="222"/>
+							<Events>
+								<Event name="OnChange">PriceIncludesVATOnChange</Event>
+							</Events>
+						</CheckBoxField>
+					</ChildItems>
+				</Page>
+				<Page name="ExcelImport" id="183">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Excel import</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Excel import</v8:content>
+						</v8:item>
+					</ToolTip>
+					<ExtendedTooltip name="ExcelImportExtendedTooltip" id="223"/>
+					<ChildItems>
+						<CheckBoxField name="AddProductsWhenImporting" id="184">
+							<DataPath>ConstantsSet.AddProductsWhenImporting</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Add items when importing into documents</v8:content>
+								</v8:item>
+							</Title>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="AddProductsWhenImportingContextMenu" id="185"/>
+							<ExtendedTooltip name="AddProductsWhenImportingExtendedTooltip" id="224"/>
+						</CheckBoxField>
+						<InputField name="ProductTypeImport" id="186">
+							<DataPath>ConstantsSet.ProductTypeImport</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Item type for importing</v8:content>
+								</v8:item>
+							</Title>
+							<ContextMenu name="ProductTypeImportContextMenu" id="187"/>
+							<ExtendedTooltip name="ProductTypeImportExtendedTooltip" id="225"/>
+						</InputField>
+						<InputField name="ProductCostingImport" id="188">
+							<DataPath>ConstantsSet.ProductCostingImport</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Item costing for importing</v8:content>
+								</v8:item>
+							</Title>
+							<ContextMenu name="ProductCostingImportContextMenu" id="189"/>
+							<ExtendedTooltip name="ProductCostingImportExtendedTooltip" id="226"/>
+						</InputField>
+					</ChildItems>
+				</Page>
+				<Page name="PostingAccounts" id="74">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Posting accounts</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Posting accounts</v8:content>
+						</v8:item>
+					</ToolTip>
+					<ExtendedTooltip name="PostingAccountsExtendedTooltip" id="227"/>
+					<ChildItems>
+						<UsualGroup name="Group1" id="111">
+							<Group>Horizontal</Group>
+							<Representation>None</Representation>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="Group1ExtendedTooltip" id="228"/>
+							<ChildItems>
+								<InputField name="BankAccount" id="85">
+									<DataPath>ConstantsSet.BankAccount</DataPath>
+									<HorizontalStretch>false</HorizontalStretch>
+									<ContextMenu name="BankAccountContextMenu" id="86"/>
+									<ExtendedTooltip name="BankAccountExtendedTooltip" id="229"/>
+									<Events>
+										<Event name="OnChange">BankAccountOnChange</Event>
+									</Events>
+								</InputField>
+								<LabelDecoration name="BankAccountLabel" id="124">
+									<ContextMenu name="BankAccountLabelContextMenu" id="125"/>
+									<ExtendedTooltip name="BankAccountLabelExtendedTooltip" id="230"/>
+								</LabelDecoration>
+							</ChildItems>
+						</UsualGroup>
+						<UsualGroup name="Group2" id="112">
+							<Group>Horizontal</Group>
+							<Representation>None</Representation>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="Group2ExtendedTooltip" id="231"/>
+							<ChildItems>
+								<InputField name="IncomeAccount" id="75">
+									<DataPath>ConstantsSet.IncomeAccount</DataPath>
+									<HorizontalStretch>false</HorizontalStretch>
+									<ContextMenu name="IncomeAccountContextMenu" id="76"/>
+									<ExtendedTooltip name="IncomeAccountExtendedTooltip" id="232"/>
+									<Events>
+										<Event name="OnChange">IncomeAccountOnChange</Event>
+									</Events>
+								</InputField>
+								<LabelDecoration name="IncomeAccountLabel" id="126">
+									<ContextMenu name="IncomeAccountLabelContextMenu" id="127"/>
+									<ExtendedTooltip name="IncomeAccountLabelExtendedTooltip" id="233"/>
+								</LabelDecoration>
+							</ChildItems>
+						</UsualGroup>
+						<UsualGroup name="Group3" id="113">
+							<Group>Horizontal</Group>
+							<Representation>None</Representation>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="Group3ExtendedTooltip" id="234"/>
+							<ChildItems>
+								<InputField name="COGSAccount" id="77">
+									<DataPath>ConstantsSet.COGSAccount</DataPath>
+									<HorizontalStretch>false</HorizontalStretch>
+									<ContextMenu name="COGSAccountContextMenu" id="78"/>
+									<ExtendedTooltip name="COGSAccountExtendedTooltip" id="235"/>
+									<Events>
+										<Event name="OnChange">COGSAccountOnChange</Event>
+									</Events>
+								</InputField>
+								<LabelDecoration name="COGSAccountLabel" id="128">
+									<ContextMenu name="COGSAccountLabelContextMenu" id="129"/>
+									<ExtendedTooltip name="COGSAccountLabelExtendedTooltip" id="236"/>
+								</LabelDecoration>
+							</ChildItems>
+						</UsualGroup>
+						<UsualGroup name="Group5" id="114">
+							<Group>Horizontal</Group>
+							<Representation>None</Representation>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="Group5ExtendedTooltip" id="237"/>
+							<ChildItems>
+								<InputField name="ExpenseAccount" id="99">
+									<DataPath>ConstantsSet.ExpenseAccount</DataPath>
+									<HorizontalStretch>false</HorizontalStretch>
+									<ContextMenu name="ExpenseAccountContextMenu" id="100"/>
+									<ExtendedTooltip name="ExpenseAccountExtendedTooltip" id="238"/>
+									<Events>
+										<Event name="OnChange">ExpenseAccountOnChange</Event>
+									</Events>
+								</InputField>
+								<LabelDecoration name="ExpenseAccountLabel" id="130">
+									<ContextMenu name="ExpenseAccountLabelContextMenu" id="131"/>
+									<ExtendedTooltip name="ExpenseAccountLabelExtendedTooltip" id="239"/>
+								</LabelDecoration>
+							</ChildItems>
+						</UsualGroup>
+						<UsualGroup name="Group6" id="115">
+							<Group>Horizontal</Group>
+							<Representation>None</Representation>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="Group6ExtendedTooltip" id="240"/>
+							<ChildItems>
+								<InputField name="InventoryAccount" id="79">
+									<DataPath>ConstantsSet.InventoryAccount</DataPath>
+									<HorizontalStretch>false</HorizontalStretch>
+									<ContextMenu name="InventoryAccountContextMenu" id="80"/>
+									<ExtendedTooltip name="InventoryAccountExtendedTooltip" id="241"/>
+									<Events>
+										<Event name="OnChange">InventoryAccountOnChange</Event>
+									</Events>
+								</InputField>
+								<LabelDecoration name="InventoryAccountLabel" id="132">
+									<ContextMenu name="InventoryAccountLabelContextMenu" id="133"/>
+									<ExtendedTooltip name="InventoryAccountLabelExtendedTooltip" id="242"/>
+								</LabelDecoration>
+							</ChildItems>
+						</UsualGroup>
+						<UsualGroup name="Group9" id="118">
+							<Group>Horizontal</Group>
+							<Representation>None</Representation>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="Group9ExtendedTooltip" id="243"/>
+							<ChildItems>
+								<InputField name="ExchangeGain" id="87">
+									<DataPath>ConstantsSet.ExchangeGain</DataPath>
+									<HorizontalStretch>false</HorizontalStretch>
+									<ContextMenu name="ExchangeGainContextMenu" id="88"/>
+									<ExtendedTooltip name="ExchangeGainExtendedTooltip" id="244"/>
+									<Events>
+										<Event name="OnChange">ExchangeGainOnChange</Event>
+									</Events>
+								</InputField>
+								<LabelDecoration name="ExchangeGainLabel" id="138">
+									<ContextMenu name="ExchangeGainLabelContextMenu" id="139"/>
+									<ExtendedTooltip name="ExchangeGainLabelExtendedTooltip" id="245"/>
+								</LabelDecoration>
+							</ChildItems>
+						</UsualGroup>
+						<UsualGroup name="Group10" id="119">
+							<Group>Horizontal</Group>
+							<Representation>None</Representation>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="Group10ExtendedTooltip" id="246"/>
+							<ChildItems>
+								<InputField name="ExchangeLoss" id="97">
+									<DataPath>ConstantsSet.ExchangeLoss</DataPath>
+									<HorizontalStretch>false</HorizontalStretch>
+									<ContextMenu name="ExchangeLossContextMenu" id="98"/>
+									<ExtendedTooltip name="ExchangeLossExtendedTooltip" id="247"/>
+									<Events>
+										<Event name="OnChange">ExchangeLossOnChange</Event>
+									</Events>
+								</InputField>
+								<LabelDecoration name="ExchangeLossLabel" id="140">
+									<ContextMenu name="ExchangeLossLabelContextMenu" id="141"/>
+									<ExtendedTooltip name="ExchangeLossLabelExtendedTooltip" id="248"/>
+								</LabelDecoration>
+							</ChildItems>
+						</UsualGroup>
+						<UsualGroup name="Group11" id="120">
+							<Group>Horizontal</Group>
+							<Representation>None</Representation>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="Group11ExtendedTooltip" id="249"/>
+							<ChildItems>
+								<InputField name="SalesTaxPayableAccount" id="89">
+									<DataPath>ConstantsSet.SalesTaxPayableAccount</DataPath>
+									<HorizontalStretch>false</HorizontalStretch>
+									<ContextMenu name="SalesTaxPayableAccountContextMenu" id="90"/>
+									<ExtendedTooltip name="SalesTaxPayableAccountExtendedTooltip" id="250"/>
+									<Events>
+										<Event name="OnChange">SalesTaxPayableAccountOnChange</Event>
+									</Events>
+								</InputField>
+								<LabelDecoration name="SalesTaxAccountLabel" id="142">
+									<ContextMenu name="SalesTaxAccountLabelContextMenu" id="143"/>
+									<ExtendedTooltip name="SalesTaxAccountLabelExtendedTooltip" id="251"/>
+								</LabelDecoration>
+							</ChildItems>
+						</UsualGroup>
+						<UsualGroup name="Group12" id="121">
+							<Group>Horizontal</Group>
+							<Representation>None</Representation>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="Group12ExtendedTooltip" id="252"/>
+							<ChildItems>
+								<InputField name="UndepositedFundsAccount" id="91">
+									<DataPath>ConstantsSet.UndepositedFundsAccount</DataPath>
+									<HorizontalStretch>false</HorizontalStretch>
+									<ContextMenu name="UndepositedFundsAccountContextMenu" id="92"/>
+									<ExtendedTooltip name="UndepositedFundsAccountExtendedTooltip" id="253"/>
+									<Events>
+										<Event name="OnChange">UndepositedFundsAccountOnChange</Event>
+									</Events>
+								</InputField>
+								<LabelDecoration name="UndepositedFundsAccountLabel" id="147">
+									<ContextMenu name="UndepositedFundsAccountLabelContextMenu" id="148"/>
+									<ExtendedTooltip name="UndepositedFundsAccountLabelExtendedTooltip" id="254"/>
+								</LabelDecoration>
+							</ChildItems>
+						</UsualGroup>
+						<UsualGroup name="Group13" id="122">
+							<Group>Horizontal</Group>
+							<Representation>None</Representation>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="Group13ExtendedTooltip" id="255"/>
+							<ChildItems>
+								<InputField name="BankInterestEarnedAccount" id="95">
+									<DataPath>ConstantsSet.BankInterestEarnedAccount</DataPath>
+									<HorizontalStretch>false</HorizontalStretch>
+									<ContextMenu name="BankInterestEarnedAccountContextMenu" id="96"/>
+									<ExtendedTooltip name="BankInterestEarnedAccountExtendedTooltip" id="256"/>
+									<Events>
+										<Event name="OnChange">BankInterestEarnedAccountOnChange</Event>
+									</Events>
+								</InputField>
+								<LabelDecoration name="BankInterestEarnedAccountLabel" id="149">
+									<ContextMenu name="BankInterestEarnedAccountLabelContextMenu" id="150"/>
+									<ExtendedTooltip name="BankInterestEarnedAccountLabelExtendedTooltip" id="257"/>
+								</LabelDecoration>
+							</ChildItems>
+						</UsualGroup>
+						<UsualGroup name="Group14" id="123">
+							<Group>Horizontal</Group>
+							<Representation>None</Representation>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="Group14ExtendedTooltip" id="258"/>
+							<ChildItems>
+								<InputField name="BankServiceChargeAccount" id="93">
+									<DataPath>ConstantsSet.BankServiceChargeAccount</DataPath>
+									<HorizontalStretch>false</HorizontalStretch>
+									<ContextMenu name="BankServiceChargeAccountContextMenu" id="94"/>
+									<ExtendedTooltip name="BankServiceChargeAccountExtendedTooltip" id="259"/>
+									<Events>
+										<Event name="OnChange">BankServiceChargeAccountOnChange</Event>
+									</Events>
+								</InputField>
+								<LabelDecoration name="BankServiceChargeAccountLabel" id="151">
+									<ContextMenu name="BankServiceChargeAccountLabelContextMenu" id="152"/>
+									<ExtendedTooltip name="BankServiceChargeAccountLabelExtendedTooltip" id="260"/>
+								</LabelDecoration>
+							</ChildItems>
+						</UsualGroup>
+						<UsualGroup name="Group16" id="168">
+							<Group>Horizontal</Group>
+							<Representation>None</Representation>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="Group16ExtendedTooltip" id="261"/>
+							<ChildItems>
+								<InputField name="VATAccount" id="169">
+									<DataPath>ConstantsSet.VATAccount</DataPath>
+									<HorizontalStretch>false</HorizontalStretch>
+									<ContextMenu name="VATAccountContextMenu" id="170"/>
+									<ExtendedTooltip name="VATAccountExtendedTooltip" id="262"/>
+									<Events>
+										<Event name="OnChange">VATAccountOnChange</Event>
+									</Events>
+								</InputField>
+								<LabelDecoration name="VATAccountLabel" id="171">
+									<ContextMenu name="VATAccountLabelContextMenu" id="172"/>
+									<ExtendedTooltip name="VATAccountLabelExtendedTooltip" id="263"/>
+								</LabelDecoration>
+							</ChildItems>
+						</UsualGroup>
+						<UsualGroup name="Group7" id="190">
+							<Group>Horizontal</Group>
+							<Representation>None</Representation>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="Group7ExtendedTooltip" id="264"/>
+							<ChildItems>
+								<InputField name="AccumulatedOCIAccount" id="191">
+									<DataPath>ConstantsSet.AccumulatedOCIAccount</DataPath>
+									<HorizontalStretch>false</HorizontalStretch>
+									<ContextMenu name="AccumulatedOCIAccountContextMenu" id="192"/>
+									<ExtendedTooltip name="AccumulatedOCIAccountExtendedTooltip" id="265"/>
+									<Events>
+										<Event name="OnChange">AccumulatedOCIAccountOnChange</Event>
+									</Events>
+								</InputField>
+								<LabelDecoration name="AccumulatedOCIAccountLabel" id="193">
+									<ContextMenu name="AccumulatedOCIAccountLabelContextMenu" id="194"/>
+									<ExtendedTooltip name="AccumulatedOCIAccountLabelExtendedTooltip" id="266"/>
+								</LabelDecoration>
+							</ChildItems>
+						</UsualGroup>
+						<UsualGroup name="Group15" id="144">
+							<Group>Vertical</Group>
+							<ExtendedTooltip name="Group15ExtendedTooltip" id="267"/>
+							<ChildItems>
+								<LabelDecoration name="Decoration2" id="145">
+									<Title formatted="false">
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Accounts marked with * are overridden by Item and Company account setup</v8:content>
+										</v8:item>
+									</Title>
+									<ContextMenu name="Decoration2ContextMenu" id="146"/>
+									<ExtendedTooltip name="Decoration2ExtendedTooltip" id="268"/>
+								</LabelDecoration>
+							</ChildItems>
+						</UsualGroup>
+					</ChildItems>
+				</Page>
+				<Page name="EmptyDatabase" id="57">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Empty database</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Empty database</v8:content>
+						</v8:item>
+					</ToolTip>
+					<Width>50</Width>
+					<ExtendedTooltip name="EmptyDatabaseExtendedTooltip" id="269"/>
+					<ChildItems>
+						<LabelDecoration name="Decoration1" id="72">
+							<Width>50</Width>
+							<HorizontalStretch>false</HorizontalStretch>
+							<Title formatted="false">
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>These settings are for emptying the database. Don't perform unless you want to completely empty the database! Consult the manual.</v8:content>
+								</v8:item>
+							</Title>
+							<ContextMenu name="Decoration1ContextMenu" id="73"/>
+							<ExtendedTooltip name="Decoration1ExtendedTooltip" id="270"/>
+						</LabelDecoration>
+						<CheckBoxField name="AllowVoiding" id="48">
+							<DataPath>ConstantsSet.AllowVoiding</DataPath>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="AllowVoidingContextMenu" id="49"/>
+							<ExtendedTooltip name="AllowVoidingExtendedTooltip" id="271"/>
+						</CheckBoxField>
+						<Button name="ClearGeneralJournal" id="37">
+							<Type>UsualButton</Type>
+							<CommandName>Form.Command.ClearGeneralJournal</CommandName>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Clear General Journal</v8:content>
+								</v8:item>
+							</Title>
+							<ExtendedTooltip name="ClearGeneralJournalExtendedTooltip" id="272"/>
+						</Button>
+						<Button name="FormClearInvInfRegister" id="39">
+							<Type>UsualButton</Type>
+							<CommandName>Form.Command.ClearInvInfRegister</CommandName>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Clear Inventory Journal</v8:content>
+								</v8:item>
+							</Title>
+							<ExtendedTooltip name="FormClearInvInfRegisterExtendedTooltip" id="273"/>
+						</Button>
+						<Button name="ClearLocationBalances" id="58">
+							<Type>UsualButton</Type>
+							<CommandName>Form.Command.ClearLocationBalances</CommandName>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Clear Location Balances</v8:content>
+								</v8:item>
+							</Title>
+							<ExtendedTooltip name="ClearLocationBalancesExtendedTooltip" id="274"/>
+						</Button>
+					</ChildItems>
+				</Page>
+			</ChildItems>
+		</Pages>
+	</ChildItems>
+	<Attributes>
+		<Attribute name="ConstantsSet" id="1">
+			<Type>
+				<v8:Type>cfg:ConstantsSet</v8:Type>
+			</Type>
+			<MainAttribute>true</MainAttribute>
+			<SavedData>true</SavedData>
+			<UseAlways>
+				<Field>ConstantsSet.ProductTypeImport.Ref</Field>
+				<Field>ConstantsSet.ProductCostingImport.Ref</Field>
+			</UseAlways>
+		</Attribute>
+	</Attributes>
+	<Commands>
+		<Command name="ClearGeneralJournal" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Clear general journal</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Clear general journal</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>ClearGeneralJournal</Action>
+		</Command>
+		<Command name="ClearInvInfRegister" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Clear inv inf register</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Clear inv inf register</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>ClearInvInfRegister</Action>
+		</Command>
+		<Command name="ClearLocationBalances" id="4">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Clear location balances</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Clear location balances</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>ClearLocationBalances</Action>
+		</Command>
+	</Commands>
+</Form>

@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<MetaDataObject xmlns="http://v8.1c.ru/8.3/MDClasses" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:cmi="http://v8.1c.ru/8.2/managed-application/cmi" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xen="http://v8.1c.ru/8.3/xcf/enums" xmlns:xpr="http://v8.1c.ru/8.3/xcf/predef" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<Subsystem uuid="ce186b19-425f-4f46-acf4-8cbb746140ee">
+		<Properties>
+			<Name>Sales</Name>
+			<Synonym>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Sales</v8:content>
+				</v8:item>
+			</Synonym>
+			<Comment/>
+			<IncludeHelpInContents>true</IncludeHelpInContents>
+			<IncludeInCommandInterface>true</IncludeInCommandInterface>
+			<Explanation/>
+			<Picture>
+				<xr:Ref>CommonPicture.Sales</xr:Ref>
+				<xr:LoadTransparent>false</xr:LoadTransparent>
+			</Picture>
+			<Content>
+				<xr:Item xsi:type="xr:MDObjectRef">Document.SalesInvoice</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">InformationRegister.PriceList</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Enum.SalesTaxTypes</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Catalog.SalesTaxCodes</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">d5689792-4a45-4bdb-9748-b9611d21180e</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Document.SalesOrder</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Document.CashSale</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Document.SalesQuote</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Catalog.PaymentTerms</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">DocumentJournal.SalesDocuments</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Document.SalesReturn</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">c03b47bf-8552-4931-8ec7-39841d76e281</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Report.ARAging</xr:Item>
+			</Content>
+		</Properties>
+		<ChildObjects/>
+	</Subsystem>
+</MetaDataObject>

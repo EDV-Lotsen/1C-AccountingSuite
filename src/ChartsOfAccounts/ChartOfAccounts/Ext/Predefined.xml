@@ -1,0 +1,171 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<PredefinedData xmlns="http://v8.1c.ru/8.3/xcf/predef" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ChartOfAccountsPredefinedItems" version="2.2">
+	<Item id="331c7a56-3189-48d0-b102-0355ca3f42cb">
+		<Name>BankAccount</Name>
+		<Code>010</Code>
+		<Description>Bank account</Description>
+		<AccountType>ActivePassive</AccountType>
+		<OffBalance>false</OffBalance>
+		<Order/>
+		<AccountingFlags/>
+		<ExtDimensionTypes/>
+	</Item>
+	<Item id="1c0d1b61-77cb-4ded-a666-4c1363ef05f5">
+		<Name>UndepositedFunds</Name>
+		<Code>015</Code>
+		<Description>Undeposited funds</Description>
+		<AccountType>ActivePassive</AccountType>
+		<OffBalance>false</OffBalance>
+		<Order/>
+		<AccountingFlags/>
+		<ExtDimensionTypes/>
+	</Item>
+	<Item id="e2aa65dc-337e-4fc5-b4f1-4ee31d0f7a94">
+		<Name>AccountsReceivable</Name>
+		<Code>030</Code>
+		<Description>Accounts receivable</Description>
+		<AccountType>ActivePassive</AccountType>
+		<OffBalance>false</OffBalance>
+		<Order/>
+		<AccountingFlags/>
+		<ExtDimensionTypes>
+			<ExtDimensionType name="ChartOfCharacteristicTypes.Dimensions.Company">
+				<Turnover>false</Turnover>
+				<AccountingFlags/>
+			</ExtDimensionType>
+			<ExtDimensionType name="ChartOfCharacteristicTypes.Dimensions.Document">
+				<Turnover>false</Turnover>
+				<AccountingFlags/>
+			</ExtDimensionType>
+		</ExtDimensionTypes>
+	</Item>
+	<Item id="030b3ca0-3188-4bf8-96be-4232bee91c3d">
+		<Name>Inventory</Name>
+		<Code>080</Code>
+		<Description>Inventory</Description>
+		<AccountType>ActivePassive</AccountType>
+		<OffBalance>false</OffBalance>
+		<Order/>
+		<AccountingFlags/>
+		<ExtDimensionTypes/>
+	</Item>
+	<Item id="af499e9f-165e-4b86-9bef-00a0a77f0d69">
+		<Name>AccountsPayable</Name>
+		<Code>300</Code>
+		<Description>Accounts payable</Description>
+		<AccountType>ActivePassive</AccountType>
+		<OffBalance>false</OffBalance>
+		<Order/>
+		<AccountingFlags/>
+		<ExtDimensionTypes>
+			<ExtDimensionType name="ChartOfCharacteristicTypes.Dimensions.Company">
+				<Turnover>false</Turnover>
+				<AccountingFlags/>
+			</ExtDimensionType>
+			<ExtDimensionType name="ChartOfCharacteristicTypes.Dimensions.Document">
+				<Turnover>false</Turnover>
+				<AccountingFlags/>
+			</ExtDimensionType>
+		</ExtDimensionTypes>
+	</Item>
+	<Item id="649ab374-ae97-41dd-959e-f6bb6a308a03">
+		<Name>SalesTaxPayable</Name>
+		<Code>310</Code>
+		<Description>Sales tax payable</Description>
+		<AccountType>ActivePassive</AccountType>
+		<OffBalance>false</OffBalance>
+		<Order/>
+		<AccountingFlags/>
+		<ExtDimensionTypes/>
+	</Item>
+	<Item id="255d5a05-0f40-41a9-8c15-7c237d68dcff">
+		<Name>AccruedPurchases</Name>
+		<Code>320</Code>
+		<Description>Accrued purchases</Description>
+		<AccountType>ActivePassive</AccountType>
+		<OffBalance>false</OffBalance>
+		<Order/>
+		<AccountingFlags/>
+		<ExtDimensionTypes/>
+	</Item>
+	<Item id="f5996bcb-4f57-4179-aae3-c8c13af88d8e">
+		<Name>AccumulatedOCI</Name>
+		<Code>502</Code>
+		<Description>Accumulated OCI</Description>
+		<AccountType>ActivePassive</AccountType>
+		<OffBalance>false</OffBalance>
+		<Order/>
+		<AccountingFlags/>
+		<ExtDimensionTypes/>
+	</Item>
+	<Item id="b273a2b6-1e08-481f-8a58-9948213aa2d1">
+		<Name>Income</Name>
+		<Code>600</Code>
+		<Description>Income</Description>
+		<AccountType>ActivePassive</AccountType>
+		<OffBalance>false</OffBalance>
+		<Order/>
+		<AccountingFlags/>
+		<ExtDimensionTypes/>
+	</Item>
+	<Item id="960aa1f6-482f-481e-93c7-00e4bde32bd0">
+		<Name>COGS</Name>
+		<Code>700</Code>
+		<Description>COGS</Description>
+		<AccountType>ActivePassive</AccountType>
+		<OffBalance>false</OffBalance>
+		<Order/>
+		<AccountingFlags/>
+		<ExtDimensionTypes/>
+	</Item>
+	<Item id="e4ce9318-bbc5-48ff-918a-9e76a760e6c2">
+		<Name>BankServiceCharge</Name>
+		<Code>800</Code>
+		<Description>Bank service charge</Description>
+		<AccountType>ActivePassive</AccountType>
+		<OffBalance>false</OffBalance>
+		<Order/>
+		<AccountingFlags/>
+		<ExtDimensionTypes/>
+	</Item>
+	<Item id="8e0760a5-fe7c-4f79-bae4-0cc5375f376e">
+		<Name>BankInterestEarned</Name>
+		<Code>810</Code>
+		<Description>Bank interest earned</Description>
+		<AccountType>ActivePassive</AccountType>
+		<OffBalance>false</OffBalance>
+		<Order/>
+		<AccountingFlags/>
+		<ExtDimensionTypes/>
+	</Item>
+	<Item id="fb92eddd-9087-4da7-bccb-592431314ddb">
+		<Name>ExchangeGain</Name>
+		<Code>820</Code>
+		<Description>Exchange gain</Description>
+		<AccountType>ActivePassive</AccountType>
+		<OffBalance>false</OffBalance>
+		<Order/>
+		<AccountingFlags/>
+		<ExtDimensionTypes/>
+	</Item>
+	<Item id="c3327f9f-d139-4cd3-9e85-62aa3bb5f4cf">
+		<Name>ExchangeLoss</Name>
+		<Code>830</Code>
+		<Description>Exchange loss</Description>
+		<AccountType>ActivePassive</AccountType>
+		<OffBalance>false</OffBalance>
+		<Order/>
+		<AccountingFlags/>
+		<ExtDimensionTypes/>
+	</Item>
+	<Item id="b1480a8a-1c21-4181-b58e-35cfefae2f33">
+		<Name>Expense</Name>
+		<Code>840</Code>
+		<Description>Expense</Description>
+		<AccountType>ActivePassive</AccountType>
+		<OffBalance>false</OffBalance>
+		<Order/>
+		<AccountingFlags/>
+		<ExtDimensionTypes/>
+	</Item>
+</PredefinedData>
