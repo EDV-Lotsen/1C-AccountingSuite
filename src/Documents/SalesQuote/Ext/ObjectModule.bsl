@@ -35,7 +35,7 @@ Procedure Filling(FillingData, StandardProcessing)
 			NewRow.SalesTaxType = US_FL.GetSalesTaxType(Product);
 			VATCode = GeneralFunctions.GetAttributeValue(Product, "SalesVATCode");
 			NewRow.VATCode = VATCode;
-			NewRow.VAT = VAT_FL.VATLine(LTotal, VATCode, "Sales");
+			NewRow.VAT = SouthAfrica_FL.VATLine(LTotal, VATCode, "Sales");
 		EndDo;
 		
 		DocumentTotal = LineItems.Total("LineTotal") + LineItems.Total("VAT");
@@ -46,8 +46,6 @@ Procedure Filling(FillingData, StandardProcessing)
 	EndIf;
 
 EndProcedure
-
-
 
 
 

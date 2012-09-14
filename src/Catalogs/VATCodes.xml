@@ -30,6 +30,10 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>VAT codes</v8:content>
 				</v8:item>
+				<v8:item>
+					<v8:lang>pt</v8:lang>
+					<v8:content>Cόdigos VAT</v8:content>
+				</v8:item>
 			</Synonym>
 			<Comment/>
 			<Hierarchical>false</Hierarchical>
@@ -246,6 +250,10 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Code</v8:content>
 						</v8:item>
+						<v8:item>
+							<v8:lang>pt</v8:lang>
+							<v8:content>Código</v8:content>
+						</v8:item>
 					</xr:Synonym>
 					<xr:Comment/>
 					<xr:FullTextSearch>Use</xr:FullTextSearch>
@@ -311,6 +319,14 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>VAT code</v8:content>
 				</v8:item>
+				<v8:item>
+					<v8:lang>pt</v8:lang>
+					<v8:content>Cόdigo VAT</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>USt. Satz</v8:content>
+				</v8:item>
 			</ObjectPresentation>
 			<ExtendedObjectPresentation/>
 			<ListPresentation/>
@@ -327,6 +343,14 @@
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Description</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>pt</v8:lang>
+							<v8:content>Descrição</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Bezeichnung</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -363,6 +387,49 @@
 					<FullTextSearch>Use</FullTextSearch>
 				</Properties>
 			</Attribute>
+			<Attribute uuid="515148cd-68c4-4ffd-8009-edcfb69396f5">
+				<Properties>
+					<Name>Taxable</Name>
+					<Synonym>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Taxable</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>pt</v8:lang>
+							<v8:content>Tributável</v8:content>
+						</v8:item>
+					</Synonym>
+					<Comment/>
+					<Type>
+						<v8:Type>xs:boolean</v8:Type>
+					</Type>
+					<PasswordMode>false</PasswordMode>
+					<Format/>
+					<EditFormat/>
+					<ToolTip/>
+					<MarkNegatives>false</MarkNegatives>
+					<Mask/>
+					<MultiLine>false</MultiLine>
+					<ExtendedEdit>false</ExtendedEdit>
+					<MinValue xsi:nil="true"/>
+					<MaxValue xsi:nil="true"/>
+					<FillFromFillingValue>false</FillFromFillingValue>
+					<FillValue xsi:type="xs:boolean">true</FillValue>
+					<FillChecking>ShowError</FillChecking>
+					<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
+					<ChoiceParameterLinks/>
+					<ChoiceParameters/>
+					<QuickChoice>Auto</QuickChoice>
+					<CreateOnInput>Auto</CreateOnInput>
+					<ChoiceForm/>
+					<LinkByType/>
+					<ChoiceHistoryOnInput>Auto</ChoiceHistoryOnInput>
+					<Use>ForItem</Use>
+					<Indexing>DontIndex</Indexing>
+					<FullTextSearch>Use</FullTextSearch>
+				</Properties>
+			</Attribute>
 			<TabularSection uuid="100fb7c7-4a61-4e1e-96e4-b2e64cede315">
 				<InternalInfo>
 					<xr:GeneratedType name="CatalogTabularSection.VATCodes.SalesItems" category="TabularSection">
@@ -381,6 +448,10 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Sales items</v8:content>
 						</v8:item>
+						<v8:item>
+							<v8:lang>pt</v8:lang>
+							<v8:content>Itens de venda</v8:content>
+						</v8:item>
 					</Synonym>
 					<Comment/>
 					<ToolTip/>
@@ -395,6 +466,10 @@
 								<v8:item>
 									<v8:lang>en</v8:lang>
 									<v8:content>Name</v8:content>
+								</v8:item>
+								<v8:item>
+									<v8:lang>pt</v8:lang>
+									<v8:content>Nome </v8:content>
 								</v8:item>
 							</Synonym>
 							<Comment/>
@@ -430,52 +505,19 @@
 					</Attribute>
 					<Attribute uuid="24bec072-122f-4f89-adb5-d6297cfc9181">
 						<Properties>
-							<Name>InclRate</Name>
+							<Name>Rate</Name>
 							<Synonym>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Incl. rate, %</v8:content>
+									<v8:content>Rate, %</v8:content>
 								</v8:item>
-							</Synonym>
-							<Comment/>
-							<Type>
-								<v8:Type>xs:decimal</v8:Type>
-								<v8:NumberQualifiers>
-									<v8:Digits>15</v8:Digits>
-									<v8:FractionDigits>4</v8:FractionDigits>
-									<v8:AllowedSign>Any</v8:AllowedSign>
-								</v8:NumberQualifiers>
-							</Type>
-							<PasswordMode>false</PasswordMode>
-							<Format/>
-							<EditFormat/>
-							<ToolTip/>
-							<MarkNegatives>false</MarkNegatives>
-							<Mask/>
-							<MultiLine>false</MultiLine>
-							<ExtendedEdit>false</ExtendedEdit>
-							<MinValue xsi:nil="true"/>
-							<MaxValue xsi:nil="true"/>
-							<FillChecking>DontCheck</FillChecking>
-							<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
-							<ChoiceParameterLinks/>
-							<ChoiceParameters/>
-							<QuickChoice>Auto</QuickChoice>
-							<CreateOnInput>Auto</CreateOnInput>
-							<ChoiceForm/>
-							<LinkByType/>
-							<ChoiceHistoryOnInput>Auto</ChoiceHistoryOnInput>
-							<Indexing>DontIndex</Indexing>
-							<FullTextSearch>Use</FullTextSearch>
-						</Properties>
-					</Attribute>
-					<Attribute uuid="b585ed2f-348d-4eb9-bb44-dd58ae2eabdc">
-						<Properties>
-							<Name>ExclRate</Name>
-							<Synonym>
 								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Excl. rate, %</v8:content>
+									<v8:lang>pt</v8:lang>
+									<v8:content>Taxa,%</v8:content>
+								</v8:item>
+								<v8:item>
+									<v8:lang>de</v8:lang>
+									<v8:content>Steuersatz %</v8:content>
 								</v8:item>
 							</Synonym>
 							<Comment/>
@@ -518,6 +560,10 @@
 									<v8:lang>en</v8:lang>
 									<v8:content>Return box</v8:content>
 								</v8:item>
+								<v8:item>
+									<v8:lang>pt</v8:lang>
+									<v8:content>Caixa de retorno</v8:content>
+								</v8:item>
 							</Synonym>
 							<Comment/>
 							<Type>
@@ -554,46 +600,14 @@
 									<v8:lang>en</v8:lang>
 									<v8:content>Agency</v8:content>
 								</v8:item>
-							</Synonym>
-							<Comment/>
-							<Type>
-								<v8:Type>cfg:CatalogRef.Companies</v8:Type>
-							</Type>
-							<PasswordMode>false</PasswordMode>
-							<Format/>
-							<EditFormat/>
-							<ToolTip/>
-							<MarkNegatives>false</MarkNegatives>
-							<Mask/>
-							<MultiLine>false</MultiLine>
-							<ExtendedEdit>false</ExtendedEdit>
-							<MinValue xsi:nil="true"/>
-							<MaxValue xsi:nil="true"/>
-							<FillChecking>ShowError</FillChecking>
-							<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
-							<ChoiceParameterLinks/>
-							<ChoiceParameters/>
-							<QuickChoice>Auto</QuickChoice>
-							<CreateOnInput>Auto</CreateOnInput>
-							<ChoiceForm/>
-							<LinkByType/>
-							<ChoiceHistoryOnInput>Auto</ChoiceHistoryOnInput>
-							<Indexing>DontIndex</Indexing>
-							<FullTextSearch>Use</FullTextSearch>
-						</Properties>
-					</Attribute>
-					<Attribute uuid="d71ce209-b86b-4565-976f-a76f2bdacc6a">
-						<Properties>
-							<Name>Account</Name>
-							<Synonym>
 								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Account</v8:content>
+									<v8:lang>pt</v8:lang>
+									<v8:content>Agência</v8:content>
 								</v8:item>
 							</Synonym>
 							<Comment/>
 							<Type>
-								<v8:Type>cfg:ChartOfAccountsRef.ChartOfAccounts</v8:Type>
+								<v8:Type>cfg:CatalogRef.Companies</v8:Type>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -638,6 +652,10 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Purchase items</v8:content>
 						</v8:item>
+						<v8:item>
+							<v8:lang>pt</v8:lang>
+							<v8:content>Itens de compra</v8:content>
+						</v8:item>
 					</Synonym>
 					<Comment/>
 					<ToolTip/>
@@ -680,6 +698,10 @@
 									<v8:lang>en</v8:lang>
 									<v8:content>Name</v8:content>
 								</v8:item>
+								<v8:item>
+									<v8:lang>pt</v8:lang>
+									<v8:content>Nome </v8:content>
+								</v8:item>
 							</Synonym>
 							<Comment/>
 							<Type>
@@ -714,52 +736,19 @@
 					</Attribute>
 					<Attribute uuid="0c1fa6da-6ed3-476b-9595-c5ab219e159c">
 						<Properties>
-							<Name>InclRate</Name>
+							<Name>Rate</Name>
 							<Synonym>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Incl. rate, %</v8:content>
+									<v8:content>Rate, %</v8:content>
 								</v8:item>
-							</Synonym>
-							<Comment/>
-							<Type>
-								<v8:Type>xs:decimal</v8:Type>
-								<v8:NumberQualifiers>
-									<v8:Digits>15</v8:Digits>
-									<v8:FractionDigits>4</v8:FractionDigits>
-									<v8:AllowedSign>Any</v8:AllowedSign>
-								</v8:NumberQualifiers>
-							</Type>
-							<PasswordMode>false</PasswordMode>
-							<Format/>
-							<EditFormat/>
-							<ToolTip/>
-							<MarkNegatives>false</MarkNegatives>
-							<Mask/>
-							<MultiLine>false</MultiLine>
-							<ExtendedEdit>false</ExtendedEdit>
-							<MinValue xsi:nil="true"/>
-							<MaxValue xsi:nil="true"/>
-							<FillChecking>DontCheck</FillChecking>
-							<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
-							<ChoiceParameterLinks/>
-							<ChoiceParameters/>
-							<QuickChoice>Auto</QuickChoice>
-							<CreateOnInput>Auto</CreateOnInput>
-							<ChoiceForm/>
-							<LinkByType/>
-							<ChoiceHistoryOnInput>Auto</ChoiceHistoryOnInput>
-							<Indexing>DontIndex</Indexing>
-							<FullTextSearch>Use</FullTextSearch>
-						</Properties>
-					</Attribute>
-					<Attribute uuid="4b3bbc96-7b8c-4a27-b399-955115550603">
-						<Properties>
-							<Name>ExclRate</Name>
-							<Synonym>
 								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Excl. rate, %</v8:content>
+									<v8:lang>pt</v8:lang>
+									<v8:content>Taxa,%</v8:content>
+								</v8:item>
+								<v8:item>
+									<v8:lang>de</v8:lang>
+									<v8:content>Steuersatz %</v8:content>
 								</v8:item>
 							</Synonym>
 							<Comment/>
@@ -802,6 +791,10 @@
 									<v8:lang>en</v8:lang>
 									<v8:content>Return box</v8:content>
 								</v8:item>
+								<v8:item>
+									<v8:lang>pt</v8:lang>
+									<v8:content>Caixa de retorno</v8:content>
+								</v8:item>
 							</Synonym>
 							<Comment/>
 							<Type>
@@ -838,46 +831,14 @@
 									<v8:lang>en</v8:lang>
 									<v8:content>Agency</v8:content>
 								</v8:item>
-							</Synonym>
-							<Comment/>
-							<Type>
-								<v8:Type>cfg:CatalogRef.Companies</v8:Type>
-							</Type>
-							<PasswordMode>false</PasswordMode>
-							<Format/>
-							<EditFormat/>
-							<ToolTip/>
-							<MarkNegatives>false</MarkNegatives>
-							<Mask/>
-							<MultiLine>false</MultiLine>
-							<ExtendedEdit>false</ExtendedEdit>
-							<MinValue xsi:nil="true"/>
-							<MaxValue xsi:nil="true"/>
-							<FillChecking>ShowError</FillChecking>
-							<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
-							<ChoiceParameterLinks/>
-							<ChoiceParameters/>
-							<QuickChoice>Auto</QuickChoice>
-							<CreateOnInput>Auto</CreateOnInput>
-							<ChoiceForm/>
-							<LinkByType/>
-							<ChoiceHistoryOnInput>Auto</ChoiceHistoryOnInput>
-							<Indexing>DontIndex</Indexing>
-							<FullTextSearch>Use</FullTextSearch>
-						</Properties>
-					</Attribute>
-					<Attribute uuid="6663e753-70f4-4d34-af03-07e4e54c3318">
-						<Properties>
-							<Name>Account</Name>
-							<Synonym>
 								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Account</v8:content>
+									<v8:lang>pt</v8:lang>
+									<v8:content>Agência</v8:content>
 								</v8:item>
 							</Synonym>
 							<Comment/>
 							<Type>
-								<v8:Type>cfg:ChartOfAccountsRef.ChartOfAccounts</v8:Type>
+								<v8:Type>cfg:CatalogRef.Companies</v8:Type>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>

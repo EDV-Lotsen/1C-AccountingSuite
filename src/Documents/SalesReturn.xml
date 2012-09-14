@@ -30,6 +30,14 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>Sales return</v8:content>
 				</v8:item>
+				<v8:item>
+					<v8:lang>pt</v8:lang>
+					<v8:content>Rendimento por venda</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Storno</v8:content>
+				</v8:item>
 			</Synonym>
 			<Comment/>
 			<UseStandardCommands>true</UseStandardCommands>
@@ -133,7 +141,12 @@
 					<xr:PasswordMode>false</xr:PasswordMode>
 					<xr:MarkNegatives>false</xr:MarkNegatives>
 					<xr:MinValue xsi:nil="true"/>
-					<xr:Synonym/>
+					<xr:Synonym>
+						<v8:item>
+							<v8:lang>pt</v8:lang>
+							<v8:content>Data</v8:content>
+						</v8:item>
+					</xr:Synonym>
 					<xr:Comment/>
 					<xr:FullTextSearch>Use</xr:FullTextSearch>
 					<xr:ChoiceParameterLinks/>
@@ -158,7 +171,12 @@
 					<xr:PasswordMode>false</xr:PasswordMode>
 					<xr:MarkNegatives>false</xr:MarkNegatives>
 					<xr:MinValue xsi:nil="true"/>
-					<xr:Synonym/>
+					<xr:Synonym>
+						<v8:item>
+							<v8:lang>pt</v8:lang>
+							<v8:content>Número</v8:content>
+						</v8:item>
+					</xr:Synonym>
 					<xr:Comment/>
 					<xr:FullTextSearch>Use</xr:FullTextSearch>
 					<xr:ChoiceParameterLinks/>
@@ -192,7 +210,6 @@
 			<RegisterRecordsWritingOnPost>WriteSelected</RegisterRecordsWritingOnPost>
 			<SequenceFilling>AutoFill</SequenceFilling>
 			<RegisterRecords>
-				<xr:Item xsi:type="xr:MDObjectRef">AccumulationRegister.ReceivedInvoiced</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">AccumulationRegister.LocationBalances</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">AccountingRegister.GeneralJournal</xr:Item>
 			</RegisterRecords>
@@ -209,6 +226,14 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>Sales returns</v8:content>
 				</v8:item>
+				<v8:item>
+					<v8:lang>pt</v8:lang>
+					<v8:content>Rendimento por vendas</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Storni</v8:content>
+				</v8:item>
 			</ListPresentation>
 			<ExtendedListPresentation/>
 			<Explanation/>
@@ -222,6 +247,14 @@
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Company</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>pt</v8:lang>
+							<v8:content>Empresas</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Firma</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -265,6 +298,10 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Sales tax</v8:content>
 						</v8:item>
+						<v8:item>
+							<v8:lang>pt</v8:lang>
+							<v8:content>Imposto sobre vendas</v8:content>
+						</v8:item>
 					</Synonym>
 					<Comment/>
 					<Type>
@@ -282,6 +319,10 @@
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Sales tax, read-only</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>pt</v8:lang>
+							<v8:content>Imposto sobre vendas, somente leitura</v8:content>
 						</v8:item>
 					</ToolTip>
 					<MarkNegatives>false</MarkNegatives>
@@ -313,6 +354,14 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Document total FCY</v8:content>
 						</v8:item>
+						<v8:item>
+							<v8:lang>pt</v8:lang>
+							<v8:content>Documento de total de moeda estrangeira</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Gesamtsumme</v8:content>
+						</v8:item>
 					</Synonym>
 					<Comment/>
 					<Type>
@@ -330,6 +379,10 @@
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Document total in foreign currency - FCY (could be different from the reporting currency), read-only</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>pt</v8:lang>
+							<v8:content>Documento de total em moeda internacional (pode ser diferente de moeda relatada), somente leitura</v8:content>
 						</v8:item>
 					</ToolTip>
 					<MarkNegatives>false</MarkNegatives>
@@ -355,23 +408,38 @@
 			</Attribute>
 			<Attribute uuid="457d4e56-59a1-48e1-97d8-f9a51e2589fd">
 				<Properties>
-					<Name>ParentDocument</Name>
+					<Name>ParentSalesOrder</Name>
 					<Synonym>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Parent document</v8:content>
+							<v8:content>Sales order</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>pt</v8:lang>
+							<v8:content>Ordem de venda</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Auftrag</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
 					<Type>
-						<v8:Type>cfg:DocumentRef.GoodsIssue</v8:Type>
-						<v8:Type>cfg:DocumentRef.SalesInvoice</v8:Type>
 						<v8:Type>cfg:DocumentRef.SalesOrder</v8:Type>
 					</Type>
 					<PasswordMode>false</PasswordMode>
 					<Format/>
 					<EditFormat/>
-					<ToolTip/>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Parent sales order, read-only</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>pt</v8:lang>
+							<v8:content>Ordem de venda, somente leitura</v8:content>
+						</v8:item>
+					</ToolTip>
 					<MarkNegatives>false</MarkNegatives>
 					<Mask/>
 					<MultiLine>false</MultiLine>
@@ -401,6 +469,14 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Currency</v8:content>
 						</v8:item>
+						<v8:item>
+							<v8:lang>pt</v8:lang>
+							<v8:content>Moeda de circulação</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Währung</v8:content>
+						</v8:item>
 					</Synonym>
 					<Comment/>
 					<Type>
@@ -413,6 +489,10 @@
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Document currency</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>pt</v8:lang>
+							<v8:content>Documento de moeda</v8:content>
 						</v8:item>
 					</ToolTip>
 					<MarkNegatives>false</MarkNegatives>
@@ -443,6 +523,14 @@
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Exchange rate</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>pt</v8:lang>
+							<v8:content>Taxa de câmbio</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Wechselkurs</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -487,6 +575,14 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Document total</v8:content>
 						</v8:item>
+						<v8:item>
+							<v8:lang>pt</v8:lang>
+							<v8:content>Documento de total</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Gesamtsumme</v8:content>
+						</v8:item>
 					</Synonym>
 					<Comment/>
 					<Type>
@@ -504,6 +600,10 @@
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Document total in reporting currency, read-only</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>pt</v8:lang>
+							<v8:content>Documento de total em moeda relatada, somente leitura</v8:content>
 						</v8:item>
 					</ToolTip>
 					<MarkNegatives>false</MarkNegatives>
@@ -535,6 +635,10 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Location</v8:content>
 						</v8:item>
+						<v8:item>
+							<v8:lang>pt</v8:lang>
+							<v8:content>Localização </v8:content>
+						</v8:item>
 					</Synonym>
 					<Comment/>
 					<Type>
@@ -547,6 +651,14 @@
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Warehouse location</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>pt</v8:lang>
+							<v8:content>Localização do depόsito</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Lagerort</v8:content>
 						</v8:item>
 					</ToolTip>
 					<MarkNegatives>false</MarkNegatives>
@@ -577,6 +689,10 @@
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Doc posted</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>pt</v8:lang>
+							<v8:content>Documento postado</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -615,6 +731,14 @@
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Due date</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>pt</v8:lang>
+							<v8:content>Data  de vencimento</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Stichtag</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -657,6 +781,10 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Memo</v8:content>
 						</v8:item>
+						<v8:item>
+							<v8:lang>pt</v8:lang>
+							<v8:content>Anotações</v8:content>
+						</v8:item>
 					</Synonym>
 					<Comment/>
 					<Type>
@@ -698,6 +826,14 @@
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>VAT</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>pt</v8:lang>
+							<v8:content>VAT-valor adicionado do imposto</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>USt.</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -742,6 +878,14 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>A/R account</v8:content>
 						</v8:item>
+						<v8:item>
+							<v8:lang>pt</v8:lang>
+							<v8:content>Contas a receber</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Debitorenkonto</v8:content>
+						</v8:item>
 					</Synonym>
 					<Comment/>
 					<Type>
@@ -776,44 +920,6 @@
 					<FullTextSearch>Use</FullTextSearch>
 				</Properties>
 			</Attribute>
-			<Attribute uuid="4e525df9-9f83-48e5-a750-196edef7c8f3">
-				<Properties>
-					<Name>PriceIncludesVAT</Name>
-					<Synonym>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Price includes VAT</v8:content>
-						</v8:item>
-					</Synonym>
-					<Comment/>
-					<Type>
-						<v8:Type>xs:boolean</v8:Type>
-					</Type>
-					<PasswordMode>false</PasswordMode>
-					<Format/>
-					<EditFormat/>
-					<ToolTip/>
-					<MarkNegatives>false</MarkNegatives>
-					<Mask/>
-					<MultiLine>false</MultiLine>
-					<ExtendedEdit>false</ExtendedEdit>
-					<MinValue xsi:nil="true"/>
-					<MaxValue xsi:nil="true"/>
-					<FillFromFillingValue>true</FillFromFillingValue>
-					<FillValue xsi:nil="true"/>
-					<FillChecking>DontCheck</FillChecking>
-					<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
-					<ChoiceParameterLinks/>
-					<ChoiceParameters/>
-					<QuickChoice>Auto</QuickChoice>
-					<CreateOnInput>Auto</CreateOnInput>
-					<ChoiceForm/>
-					<LinkByType/>
-					<ChoiceHistoryOnInput>Auto</ChoiceHistoryOnInput>
-					<Indexing>DontIndex</Indexing>
-					<FullTextSearch>Use</FullTextSearch>
-				</Properties>
-			</Attribute>
 			<Form>DocumentForm</Form>
 			<Form>ChoiceForm</Form>
 			<Form>ListForm</Form>
@@ -835,12 +941,20 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Line items</v8:content>
 						</v8:item>
+						<v8:item>
+							<v8:lang>pt</v8:lang>
+							<v8:content>Especificação</v8:content>
+						</v8:item>
 					</Synonym>
 					<Comment/>
 					<ToolTip>
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Sales invoice products and services</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>pt</v8:lang>
+							<v8:content>Fatura de vendas/produtos e serviços</v8:content>
 						</v8:item>
 					</ToolTip>
 					<FillChecking>ShowError</FillChecking>
@@ -881,6 +995,10 @@
 									<v8:lang>en</v8:lang>
 									<v8:content>Item</v8:content>
 								</v8:item>
+								<v8:item>
+									<v8:lang>pt</v8:lang>
+									<v8:content>Item</v8:content>
+								</v8:item>
 							</Synonym>
 							<Comment/>
 							<Type>
@@ -893,6 +1011,10 @@
 								<v8:item>
 									<v8:lang>en</v8:lang>
 									<v8:content>Item (product or service)</v8:content>
+								</v8:item>
+								<v8:item>
+									<v8:lang>pt</v8:lang>
+									<v8:content>Item (produto ou serviço)</v8:content>
 								</v8:item>
 							</ToolTip>
 							<MarkNegatives>false</MarkNegatives>
@@ -922,6 +1044,14 @@
 									<v8:lang>en</v8:lang>
 									<v8:content>Price</v8:content>
 								</v8:item>
+								<v8:item>
+									<v8:lang>pt</v8:lang>
+									<v8:content>Preço</v8:content>
+								</v8:item>
+								<v8:item>
+									<v8:lang>de</v8:lang>
+									<v8:content>Preis</v8:content>
+								</v8:item>
 							</Synonym>
 							<Comment/>
 							<Type>
@@ -939,6 +1069,14 @@
 								<v8:item>
 									<v8:lang>en</v8:lang>
 									<v8:content>Price per unit of measure (U/M)</v8:content>
+								</v8:item>
+								<v8:item>
+									<v8:lang>pt</v8:lang>
+									<v8:content>Preço por unidade de medida</v8:content>
+								</v8:item>
+								<v8:item>
+									<v8:lang>de</v8:lang>
+									<v8:content>Preis pro Einheit</v8:content>
 								</v8:item>
 							</ToolTip>
 							<MarkNegatives>false</MarkNegatives>
@@ -968,6 +1106,14 @@
 									<v8:lang>en</v8:lang>
 									<v8:content>Qty</v8:content>
 								</v8:item>
+								<v8:item>
+									<v8:lang>pt</v8:lang>
+									<v8:content>Quantidade</v8:content>
+								</v8:item>
+								<v8:item>
+									<v8:lang>de</v8:lang>
+									<v8:content>Menge</v8:content>
+								</v8:item>
 							</Synonym>
 							<Comment/>
 							<Type>
@@ -985,6 +1131,10 @@
 								<v8:item>
 									<v8:lang>en</v8:lang>
 									<v8:content>Quantity in the base unit of measure (U/M)</v8:content>
+								</v8:item>
+								<v8:item>
+									<v8:lang>pt</v8:lang>
+									<v8:content>Quantidade baseada em unidade de medida</v8:content>
 								</v8:item>
 							</ToolTip>
 							<MarkNegatives>false</MarkNegatives>
@@ -1013,6 +1163,10 @@
 								<v8:item>
 									<v8:lang>en</v8:lang>
 									<v8:content>Line total</v8:content>
+								</v8:item>
+								<v8:item>
+									<v8:lang>pt</v8:lang>
+									<v8:content>Total da linha </v8:content>
 								</v8:item>
 							</Synonym>
 							<Comment/>
@@ -1055,6 +1209,10 @@
 									<v8:lang>en</v8:lang>
 									<v8:content>Sales tax type</v8:content>
 								</v8:item>
+								<v8:item>
+									<v8:lang>pt</v8:lang>
+									<v8:content>Tipo de imposto sobre venda</v8:content>
+								</v8:item>
 							</Synonym>
 							<Comment/>
 							<Type>
@@ -1067,6 +1225,10 @@
 								<v8:item>
 									<v8:lang>en</v8:lang>
 									<v8:content>Taxable or not</v8:content>
+								</v8:item>
+								<v8:item>
+									<v8:lang>pt</v8:lang>
+									<v8:content>Tributável ou não</v8:content>
 								</v8:item>
 							</ToolTip>
 							<MarkNegatives>false</MarkNegatives>
@@ -1096,6 +1258,14 @@
 									<v8:lang>en</v8:lang>
 									<v8:content>U/M</v8:content>
 								</v8:item>
+								<v8:item>
+									<v8:lang>pt</v8:lang>
+									<v8:content>Unidade de medida</v8:content>
+								</v8:item>
+								<v8:item>
+									<v8:lang>de</v8:lang>
+									<v8:content>ME</v8:content>
+								</v8:item>
 							</Synonym>
 							<Comment/>
 							<Type>
@@ -1108,6 +1278,14 @@
 								<v8:item>
 									<v8:lang>en</v8:lang>
 									<v8:content>Unit of measure (U/M)</v8:content>
+								</v8:item>
+								<v8:item>
+									<v8:lang>pt</v8:lang>
+									<v8:content>Unidade de medida (U/M)</v8:content>
+								</v8:item>
+								<v8:item>
+									<v8:lang>de</v8:lang>
+									<v8:content>Mengeneinheit M/E</v8:content>
 								</v8:item>
 							</ToolTip>
 							<MarkNegatives>false</MarkNegatives>
@@ -1137,6 +1315,14 @@
 									<v8:lang>en</v8:lang>
 									<v8:content>Qty U/M</v8:content>
 								</v8:item>
+								<v8:item>
+									<v8:lang>pt</v8:lang>
+									<v8:content>Quantidade - unidade de medida</v8:content>
+								</v8:item>
+								<v8:item>
+									<v8:lang>de</v8:lang>
+									<v8:content>Menge</v8:content>
+								</v8:item>
 							</Synonym>
 							<Comment/>
 							<Type>
@@ -1154,6 +1340,10 @@
 								<v8:item>
 									<v8:lang>en</v8:lang>
 									<v8:content>Quantity in the unit of measure (U/M)</v8:content>
+								</v8:item>
+								<v8:item>
+									<v8:lang>pt</v8:lang>
+									<v8:content>Quantidade em unidade de medida</v8:content>
 								</v8:item>
 							</ToolTip>
 							<MarkNegatives>false</MarkNegatives>
@@ -1183,6 +1373,10 @@
 									<v8:lang>en</v8:lang>
 									<v8:content>Taxable amount</v8:content>
 								</v8:item>
+								<v8:item>
+									<v8:lang>pt</v8:lang>
+									<v8:content>Valor tributável</v8:content>
+								</v8:item>
 							</Synonym>
 							<Comment/>
 							<Type>
@@ -1200,6 +1394,10 @@
 								<v8:item>
 									<v8:lang>en</v8:lang>
 									<v8:content>Line taxable amount, read-only</v8:content>
+								</v8:item>
+								<v8:item>
+									<v8:lang>pt</v8:lang>
+									<v8:content>Alinhar valor tributável, somente leitura</v8:content>
 								</v8:item>
 							</ToolTip>
 							<MarkNegatives>false</MarkNegatives>
@@ -1229,6 +1427,10 @@
 									<v8:lang>en</v8:lang>
 									<v8:content>Descr</v8:content>
 								</v8:item>
+								<v8:item>
+									<v8:lang>pt</v8:lang>
+									<v8:content>Descrição</v8:content>
+								</v8:item>
 							</Synonym>
 							<Comment/>
 							<Type>
@@ -1245,6 +1447,14 @@
 								<v8:item>
 									<v8:lang>en</v8:lang>
 									<v8:content>Description</v8:content>
+								</v8:item>
+								<v8:item>
+									<v8:lang>pt</v8:lang>
+									<v8:content>Descrição</v8:content>
+								</v8:item>
+								<v8:item>
+									<v8:lang>de</v8:lang>
+									<v8:content>Bezeichnung</v8:content>
 								</v8:item>
 							</ToolTip>
 							<MarkNegatives>false</MarkNegatives>
@@ -1273,6 +1483,14 @@
 								<v8:item>
 									<v8:lang>en</v8:lang>
 									<v8:content>VAT code</v8:content>
+								</v8:item>
+								<v8:item>
+									<v8:lang>pt</v8:lang>
+									<v8:content>Cόdigo VAT</v8:content>
+								</v8:item>
+								<v8:item>
+									<v8:lang>de</v8:lang>
+									<v8:content>USt. Satz</v8:content>
 								</v8:item>
 							</Synonym>
 							<Comment/>
@@ -1309,6 +1527,14 @@
 								<v8:item>
 									<v8:lang>en</v8:lang>
 									<v8:content>VAT</v8:content>
+								</v8:item>
+								<v8:item>
+									<v8:lang>pt</v8:lang>
+									<v8:content>VAT-valor adicionado do imposto</v8:content>
+								</v8:item>
+								<v8:item>
+									<v8:lang>de</v8:lang>
+									<v8:content>USt.</v8:content>
 								</v8:item>
 							</Synonym>
 							<Comment/>

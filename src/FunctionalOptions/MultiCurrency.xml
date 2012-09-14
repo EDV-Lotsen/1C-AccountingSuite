@@ -8,6 +8,10 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>Multi currency</v8:content>
 				</v8:item>
+				<v8:item>
+					<v8:lang>pt</v8:lang>
+					<v8:content>Múltiplas moedas</v8:content>
+				</v8:item>
 			</Synonym>
 			<Comment/>
 			<Location>Constant.MultiCurrency</Location>
@@ -61,13 +65,14 @@
 				<xr:Object>Document.PurchaseQuote.Attribute.DocumentTotal</xr:Object>
 				<xr:Object>Document.PurchaseReturn.Attribute.DocumentTotal</xr:Object>
 				<xr:Object>InformationRegister.PriceList.Dimension.Currency</xr:Object>
-				<xr:Object>Document.GeneralJournalEntry.Attribute.Currency</xr:Object>
 				<xr:Object>Document.GeneralJournalEntry.Attribute.ExchangeRate</xr:Object>
+				<xr:Object>Document.GeneralJournalEntry.Attribute.Currency</xr:Object>
 				<xr:Object>Document.GeneralJournalEntry.Attribute.DocumentTotal</xr:Object>
 				<xr:Object>Document.GeneralJournalEntry.Attribute.DontWriteFCY</xr:Object>
 				<xr:Object>ChartOfAccounts.ChartOfAccounts.Attribute.Currency</xr:Object>
-				<xr:Object>Document.Check.Attribute.DocumentTotal</xr:Object>
+				<xr:Object>Document.Payment.TabularSection.LineItems.Attribute.Currency</xr:Object>
 				<xr:Object>Document.Check.Attribute.ExchangeRate</xr:Object>
+				<xr:Object>Document.Check.Attribute.DocumentTotal</xr:Object>
 			</Content>
 		</Properties>
 	</FunctionalOption>

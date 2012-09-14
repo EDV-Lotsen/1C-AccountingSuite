@@ -21,6 +21,11 @@
 				<xr:Common>true</xr:Common>
 			</Visibility>
 		</Command>
+		<Command name="0:6b2340d7-687f-43a3-8eb8-8ddb86712466">
+			<Visibility>
+				<xr:Common>true</xr:Common>
+			</Visibility>
+		</Command>
 		<Command name="Catalog.Companies.StandardCommand.Create">
 			<Visibility>
 				<xr:Common>true</xr:Common>
@@ -49,6 +54,10 @@
 			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
+		<Command name="0:6b2340d7-687f-43a3-8eb8-8ddb86712466">
+			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
+			<Placement>Auto</Placement>
+		</Command>
 	</CommandsPlacement>
 	<CommandsOrder>
 		<Command name="Catalog.Companies.StandardCommand.OpenList">
@@ -58,9 +67,6 @@
 			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
 		</Command>
 		<Command name="Catalog.UnitsOfMeasure.StandardCommand.OpenList">
-			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
-		</Command>
-		<Command name="InformationRegister.UserPrintTemplates.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
 		</Command>
 		<Command name="Catalog.Currencies.StandardCommand.OpenList">
@@ -73,6 +79,9 @@
 			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
 		</Command>
 		<Command name="Catalog.States.StandardCommand.OpenList">
+			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
+		</Command>
+		<Command name="0:6b2340d7-687f-43a3-8eb8-8ddb86712466">
 			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
 		</Command>
 		<Command name="Catalog.Companies.StandardCommand.Create">
@@ -96,7 +105,7 @@
 		<Command name="Catalog.UnitsOfMeasure.StandardCommand.Create">
 			<CommandGroup>ActionsPanelCreate</CommandGroup>
 		</Command>
-		<Command name="InformationRegister.UserPrintTemplates.StandardCommand.Create">
+		<Command name="1:6b2340d7-687f-43a3-8eb8-8ddb86712466">
 			<CommandGroup>ActionsPanelCreate</CommandGroup>
 		</Command>
 	</CommandsOrder>

@@ -1,16 +1,16 @@
 ﻿Function CashFlow(StartDate, EndDate) Export
 	
-	//StartD = StartDate;
-	//EndD = EndDate;
+	StartD = StartDate;
+	EndD = EndDate;
 	
 	If StartDate =  Date(1,1,1) Then
 		WhereCase = "WHERE GeneralJournal.Period <= &EndDate";
-		PeriodLabel = "- " + Format(EndDate, "DLF=D");
+		PeriodLabel = "- " + Format(EndD, "DLF=D");
 	EndIf;
 	
 	If EndDate =  Date(1,1,1) Then
 		WhereCase = "WHERE GeneralJournal.Period >= &StartDate";
-		PeriodLabel = Format(StartDate, "DLF=D") + " -";
+		PeriodLabel = Format(StartD, "DLF=D") + " -";
 	EndIf;
 	
 	If StartDate = Date(1,1,1) AND EndDate = Date(1,1,1) Then
@@ -20,7 +20,7 @@
 	
 	If NOT StartDate = Date(1,1,1) AND NOT EndDate = Date(1,1,1) Then
 		WhereCase = "WHERE GeneralJournal.Period >= &StartDate AND GeneralJournal.Period <= &EndDate";
-		PeriodLabel = Format(StartDate, "DLF=D") + " - " + Format(EndDate, "DLF=D");
+		PeriodLabel = Format(StartD, "DLF=D") + " - " + Format(EndD, "DLF=D");
 	EndIf;
 	
 	OurCompany = Catalogs.Companies.OurCompany;
@@ -108,6 +108,7 @@
 				EndIf;
 				
 			EndDo;
+
 			
 			For z = 0 to NumLines Do
 				

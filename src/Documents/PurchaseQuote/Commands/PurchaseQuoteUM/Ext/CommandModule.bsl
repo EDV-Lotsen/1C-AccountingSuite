@@ -2,7 +2,7 @@
 &AtClient
 Procedure CommandProcessing(CommandParameter, CommandExecuteParameters)
 	
-	PrintManagementClient.ExecutePrintCommand("Document.PurchaseQuote",
-     "PurchaseQuoteUM", CommandParameter, CommandExecuteParameters, Undefined);
+	УправлениеПечатьюКлиент.ВыполнитьКомандуПечати("Document.PurchaseQuote",
+     "PurchaseQuoteUM", CommandParameter, CommandExecuteParameters, Неопределено);
 	 
 EndProcedure

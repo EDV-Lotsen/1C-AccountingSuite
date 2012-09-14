@@ -14,37 +14,37 @@
 			<Visible>false</Visible>
 			<EditMode>EnterOnInput</EditMode>
 			<ContextMenu name="CodeContextMenu" id="2"/>
-			<ExtendedTooltip name="CodeExtendedTooltip" id="22"/>
+			<ExtendedTooltip name="CodeExtendedTooltip" id="17"/>
 		</InputField>
 		<InputField name="Description" id="3">
 			<DataPath>Object.Description</DataPath>
 			<EditMode>EnterOnInput</EditMode>
 			<ContextMenu name="DescriptionContextMenu" id="4"/>
-			<ExtendedTooltip name="DescriptionExtendedTooltip" id="23"/>
+			<ExtendedTooltip name="DescriptionExtendedTooltip" id="18"/>
 		</InputField>
 		<InputField name="Symbol" id="5">
 			<DataPath>Object.Symbol</DataPath>
 			<ContextMenu name="SymbolContextMenu" id="6"/>
-			<ExtendedTooltip name="SymbolExtendedTooltip" id="24"/>
+			<ExtendedTooltip name="SymbolExtendedTooltip" id="19"/>
 		</InputField>
 		<UsualGroup name="Group1" id="11">
 			<Group>Horizontal</Group>
 			<Representation>None</Representation>
 			<ShowTitle>false</ShowTitle>
-			<ExtendedTooltip name="Group1ExtendedTooltip" id="25"/>
+			<ExtendedTooltip name="Group1ExtendedTooltip" id="20"/>
 			<ChildItems>
 				<InputField name="DefaultARAccount" id="7">
 					<DataPath>Object.DefaultARAccount</DataPath>
 					<HorizontalStretch>false</HorizontalStretch>
 					<ContextMenu name="DefaultARAccountContextMenu" id="8"/>
-					<ExtendedTooltip name="DefaultARAccountExtendedTooltip" id="26"/>
+					<ExtendedTooltip name="DefaultARAccountExtendedTooltip" id="21"/>
 					<Events>
 						<Event name="OnChange">DefaultARAccountOnChange</Event>
 					</Events>
 				</InputField>
 				<LabelDecoration name="ARAccountLabel" id="13">
 					<ContextMenu name="ARAccountLabelContextMenu" id="14"/>
-					<ExtendedTooltip name="ARAccountLabelExtendedTooltip" id="27"/>
+					<ExtendedTooltip name="ARAccountLabelExtendedTooltip" id="22"/>
 				</LabelDecoration>
 			</ChildItems>
 		</UsualGroup>
@@ -52,47 +52,20 @@
 			<Group>Horizontal</Group>
 			<Representation>None</Representation>
 			<ShowTitle>false</ShowTitle>
-			<ExtendedTooltip name="Group2ExtendedTooltip" id="28"/>
+			<ExtendedTooltip name="Group2ExtendedTooltip" id="23"/>
 			<ChildItems>
 				<InputField name="DefaultAPAccount" id="9">
 					<DataPath>Object.DefaultAPAccount</DataPath>
 					<HorizontalStretch>false</HorizontalStretch>
 					<ContextMenu name="DefaultAPAccountContextMenu" id="10"/>
-					<ExtendedTooltip name="DefaultAPAccountExtendedTooltip" id="29"/>
+					<ExtendedTooltip name="DefaultAPAccountExtendedTooltip" id="24"/>
 					<Events>
 						<Event name="OnChange">DefaultAPAccountOnChange</Event>
 					</Events>
 				</InputField>
 				<LabelDecoration name="APAccountLabel" id="15">
 					<ContextMenu name="APAccountLabelContextMenu" id="16"/>
-					<ExtendedTooltip name="APAccountLabelExtendedTooltip" id="30"/>
-				</LabelDecoration>
-			</ChildItems>
-		</UsualGroup>
-		<UsualGroup name="Group3" id="17">
-			<Group>Horizontal</Group>
-			<Representation>None</Representation>
-			<ShowTitle>false</ShowTitle>
-			<ExtendedTooltip name="Group3ExtendedTooltip" id="31"/>
-			<ChildItems>
-				<InputField name="DefaultAccruedPurchasesAccount" id="18">
-					<DataPath>Object.DefaultAccruedPurchasesAccount</DataPath>
-					<Title>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Accrued purchases</v8:content>
-						</v8:item>
-					</Title>
-					<HorizontalStretch>false</HorizontalStretch>
-					<ContextMenu name="DefaultAccruedPurchasesAccountContextMenu" id="19"/>
-					<ExtendedTooltip name="DefaultAccruedPurchasesAccountExtendedTooltip" id="32"/>
-					<Events>
-						<Event name="OnChange">DefaultAccruedPurchasesAccountOnChange</Event>
-					</Events>
-				</InputField>
-				<LabelDecoration name="AccruedPurchasesLabel" id="20">
-					<ContextMenu name="AccruedPurchasesLabelContextMenu" id="21"/>
-					<ExtendedTooltip name="AccruedPurchasesLabelExtendedTooltip" id="33"/>
+					<ExtendedTooltip name="APAccountLabelExtendedTooltip" id="25"/>
 				</LabelDecoration>
 			</ChildItems>
 		</UsualGroup>

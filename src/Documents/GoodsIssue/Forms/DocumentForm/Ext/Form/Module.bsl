@@ -56,13 +56,8 @@ EndProcedure
 //
 Procedure RecalcTotal()
 	
-	If Object.PriceIncludesVAT Then
-		Object.DocumentTotal = Object.LineItems.Total("LineTotal") + Object.SalesTax;
-		Object.DocumentTotalRC = (Object.LineItems.Total("LineTotal") + Object.SalesTax) * Object.ExchangeRate;		
-	Else
-		Object.DocumentTotal = Object.LineItems.Total("LineTotal") + Object.LineItems.Total("VAT") + Object.SalesTax;
-		Object.DocumentTotalRC = (Object.LineItems.Total("LineTotal") + Object.LineItems.Total("VAT") + Object.SalesTax) * Object.ExchangeRate;
-	EndIf;	
+	Object.DocumentTotal = Object.LineItems.Total("LineTotal") + Object.LineItems.Total("VAT") + Object.SalesTax;
+	Object.DocumentTotalRC = (Object.LineItems.Total("LineTotal") + Object.LineItems.Total("VAT") + Object.SalesTax) * Object.ExchangeRate;
 	Object.VATTotal = Object.LineItems.Total("VAT") * Object.ExchangeRate;
 	
 EndProcedure
@@ -90,6 +85,7 @@ EndProcedure
 Procedure CompanyOnChange(Item)
 	
 	Object.Currency = GeneralFunctions.GetAttributeValue(Object.Company, "DefaultCurrency");
+	Object.ARAccount = GeneralFunctions.GetAttributeValue(Object.Currency, "DefaultARAccount");
 	Object.ExchangeRate = GeneralFunctions.GetExchangeRate(Object.Date, GeneralFunctionsReusable.DefaultCurrency(), Object.Currency);
 	Items.ExchangeRate.Title = GeneralFunctionsReusable.DefaultCurrencySymbol() + "/" + GeneralFunctions.GetAttributeValue(Object.Currency, "Symbol");
 	Items.FCYCurrency.Title = GeneralFunctions.GetAttributeValue(Object.Currency, "Symbol");
@@ -113,7 +109,7 @@ Procedure LineItemsPriceOnChange(Item)
 		TabularPartRow.LineTotal = TabularPartRow.Quantity * TabularPartRow.Price;
 	EndIf;
 	
-	TabularPartRow.VAT = VAT_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Sales", Object.PriceIncludesVAT);
+	TabularPartRow.VAT = SouthAfrica_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Sales");
 	
 	RecalcTaxableAmount();
 	RecalcSalesTax();
@@ -142,6 +138,7 @@ EndProcedure
 Procedure CurrencyOnChange(Item)
 	
 	Object.ExchangeRate = GeneralFunctions.GetExchangeRate(Object.Date, GeneralFunctionsReusable.DefaultCurrency(), Object.Currency);
+	Object.ARAccount = GeneralFunctions.GetAttributeValue(Object.Currency, "DefaultARAccount");
 	Items.ExchangeRate.Title = GeneralFunctionsReusable.DefaultCurrencySymbol() + "/" + GeneralFunctions.GetAttributeValue(Object.Currency, "Symbol");
 	Items.FCYCurrency.Title = GeneralFunctions.GetAttributeValue(Object.Currency, "Symbol");
 	RecalcSalesTax();
@@ -168,7 +165,7 @@ Procedure LineItemsQuantityUMOnChange(Item)
 	EndIf;
 	
 	TabularPartRow.LineTotal = TabularPartRow.QuantityUM * TabularPartRow.Price;
-	TabularPartRow.VAT = VAT_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Sales", Object.PriceIncludesVAT);
+	TabularPartRow.VAT = SouthAfrica_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Sales");
 	
 	RecalcTaxableAmount();
 	RecalcSalesTax();
@@ -235,7 +232,7 @@ Procedure LineItemsQuantityOnChange(Item)
 	
 	TabularPartRow = Items.LineItems.CurrentData;
 	TabularPartRow.LineTotal = TabularPartRow.Quantity * TabularPartRow.Price;
-	TabularPartRow.VAT = VAT_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Sales", Object.PriceIncludesVAT);
+	TabularPartRow.VAT = SouthAfrica_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Sales");
 	
 	RecalcTaxableAmount();
 	RecalcSalesTax();
@@ -254,15 +251,11 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
 	//Title = "Goods issue " + Object.Number + " " + Format(Object.Date, "DLF=D");
 	
-	If Object.Ref.IsEmpty() Then
-    	// Object.PriceIncludesVAT = GeneralFunctionsReusable.PriceIncludesVAT();
-	EndIf;
-	
 	If NOT GeneralFunctionsReusable.FunctionalOptionValue("USFinLocalization") Then
 		Items.SalesTaxGroup.Visible = False;
 	EndIf;
 	
-	If NOT GeneralFunctionsReusable.FunctionalOptionValue("VATFinLocalization") Then
+	If NOT GeneralFunctionsReusable.FunctionalOptionValue("SAFinLocalization") Then
 		Items.VATGroup.Visible = False;
 	EndIf;
 	
@@ -279,6 +272,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 
 	If Object.Currency.IsEmpty() Then
 		Object.Currency = Constants.DefaultCurrency.Get();
+		Object.ARAccount = Object.Currency.DefaultARAccount;
 		Object.ExchangeRate = 1;	
 	Else
 	EndIf; 
@@ -342,7 +336,7 @@ EndProcedure
 Procedure LineItemsVATCodeOnChange(Item)
 	
 	TabularPartRow = Items.LineItems.CurrentData;
-	TabularPartRow.VAT = VAT_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Sales", Object.PriceIncludesVAT);
+	TabularPartRow.VAT = SouthAfrica_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Sales");
     RecalcTotal();
 
 EndProcedure

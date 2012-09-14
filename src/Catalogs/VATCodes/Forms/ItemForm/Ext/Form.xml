@@ -10,7 +10,7 @@
 			<Visible>false</Visible>
 			<EditMode>EnterOnInput</EditMode>
 			<ContextMenu name="CodeContextMenu" id="2"/>
-			<ExtendedTooltip name="CodeExtendedTooltip" id="52"/>
+			<ExtendedTooltip name="CodeExtendedTooltip" id="42"/>
 		</InputField>
 		<InputField name="Description" id="3">
 			<DataPath>Object.Description</DataPath>
@@ -18,22 +18,32 @@
 			<Width>10</Width>
 			<HorizontalStretch>false</HorizontalStretch>
 			<ContextMenu name="DescriptionContextMenu" id="4"/>
-			<ExtendedTooltip name="DescriptionExtendedTooltip" id="53"/>
+			<ExtendedTooltip name="DescriptionExtendedTooltip" id="43"/>
 		</InputField>
 		<InputField name="VATCode" id="5">
 			<DataPath>Object.VATDescription</DataPath>
 			<EditMode>EnterOnInput</EditMode>
 			<ContextMenu name="VATCodeContextMenu" id="6"/>
-			<ExtendedTooltip name="VATCodeExtendedTooltip" id="54"/>
+			<ExtendedTooltip name="VATCodeExtendedTooltip" id="44"/>
 		</InputField>
+		<CheckBoxField name="Taxable" id="40">
+			<DataPath>Object.Taxable</DataPath>
+			<CheckBoxType>Auto</CheckBoxType>
+			<ContextMenu name="TaxableContextMenu" id="41"/>
+			<ExtendedTooltip name="TaxableExtendedTooltip" id="45"/>
+		</CheckBoxField>
 		<Pages name="Pages" id="7">
 			<Title>
 				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Pages</v8:content>
 				</v8:item>
+				<v8:item>
+					<v8:lang>pt</v8:lang>
+					<v8:content>Páginas</v8:content>
+				</v8:item>
 			</Title>
-			<ExtendedTooltip name="PagesExtendedTooltip" id="55"/>
+			<ExtendedTooltip name="PagesExtendedTooltip" id="46"/>
 			<ChildItems>
 				<Page name="GroupSalesItems" id="8">
 					<Title>
@@ -41,8 +51,12 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Sales items</v8:content>
 						</v8:item>
+						<v8:item>
+							<v8:lang>pt</v8:lang>
+							<v8:content>Itens de venda</v8:content>
+						</v8:item>
 					</Title>
-					<ExtendedTooltip name="GroupSalesItemsExtendedTooltip" id="56"/>
+					<ExtendedTooltip name="GroupSalesItemsExtendedTooltip" id="47"/>
 					<ChildItems>
 						<Table name="SalesItems" id="9">
 							<Representation>List</Representation>
@@ -56,51 +70,74 @@
 							<RowFilter xsi:nil="true"/>
 							<ContextMenu name="SalesItemsContextMenu" id="10"/>
 							<AutoCommandBar name="SalesItemsCommandBar" id="11"/>
-							<ExtendedTooltip name="SalesItemsExtendedTooltip" id="57"/>
-							<SearchStringAddition name="SalesItemsSearchString" id="58">
+							<ExtendedTooltip name="SalesItemsExtendedTooltip" id="48"/>
+							<SearchStringAddition name="SalesItemsSearchString" id="49">
 								<AdditionSource>
 									<Item>SalesItems</Item>
 									<Type>SearchStringRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="SalesItemsSearchStringContextMenu" id="59"/>
-								<ExtendedTooltip name="SalesItemsSearchStringExtendedTooltip" id="60"/>
+								<ContextMenu name="SalesItemsSearchStringContextMenu" id="50"/>
+								<ExtendedTooltip name="SalesItemsSearchStringExtendedTooltip" id="51"/>
 							</SearchStringAddition>
-							<ViewStatusAddition name="SalesItemsViewStatus" id="61">
+							<ViewStatusAddition name="SalesItemsViewStatus" id="52">
 								<AdditionSource>
 									<Item>SalesItems</Item>
 									<Type>ViewStatusRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="SalesItemsViewStatusContextMenu" id="62"/>
-								<ExtendedTooltip name="SalesItemsViewStatusExtendedTooltip" id="63"/>
+								<ContextMenu name="SalesItemsViewStatusContextMenu" id="53"/>
+								<ExtendedTooltip name="SalesItemsViewStatusExtendedTooltip" id="54"/>
 							</ViewStatusAddition>
-							<SearchControlAddition name="SalesItemsSearchControl" id="64">
+							<SearchControlAddition name="SalesItemsSearchControl" id="55">
 								<AdditionSource>
 									<Item>SalesItems</Item>
 									<Type>SearchControl</Type>
 								</AdditionSource>
-								<ContextMenu name="SalesItemsSearchControlContextMenu" id="65"/>
-								<ExtendedTooltip name="SalesItemsSearchControlExtendedTooltip" id="66"/>
+								<ContextMenu name="SalesItemsSearchControlContextMenu" id="56"/>
+								<ExtendedTooltip name="SalesItemsSearchControlExtendedTooltip" id="57"/>
 							</SearchControlAddition>
 							<ChildItems>
+								<LabelField name="SalesItemsLineNumber" id="12">
+									<DataPath>Object.SalesItems.LineNumber</DataPath>
+									<Visible>false</Visible>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="SalesItemsLineNumberContextMenu" id="13"/>
+									<ExtendedTooltip name="SalesItemsLineNumberExtendedTooltip" id="58"/>
+								</LabelField>
 								<InputField name="SalesItemsName" id="14">
 									<DataPath>Object.SalesItems.Name</DataPath>
 									<EditMode>EnterOnInput</EditMode>
 									<Width>15</Width>
 									<HorizontalStretch>false</HorizontalStretch>
 									<ContextMenu name="SalesItemsNameContextMenu" id="15"/>
-									<ExtendedTooltip name="SalesItemsNameExtendedTooltip" id="67"/>
+									<ExtendedTooltip name="SalesItemsNameExtendedTooltip" id="59"/>
 								</InputField>
-								<InputField name="SalesItemsInclRate" id="42">
-									<DataPath>Object.SalesItems.InclRate</DataPath>
+								<InputField name="SalesItemsRate" id="18">
+									<DataPath>Object.SalesItems.Rate</DataPath>
 									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="SalesItemsInclRateContextMenu" id="43"/>
-									<ExtendedTooltip name="SalesItemsInclRateExtendedTooltip" id="68"/>
-								</InputField>
-								<InputField name="SalesItemsExclRate" id="40">
-									<DataPath>Object.SalesItems.ExclRate</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="SalesItemsExclRateContextMenu" id="41"/>
-									<ExtendedTooltip name="SalesItemsExclRateExtendedTooltip" id="69"/>
+									<Width>7</Width>
+									<HorizontalStretch>false</HorizontalStretch>
+									<Format>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>NZ=0.00</v8:content>
+										</v8:item>
+										<v8:item>
+											<v8:lang>pt</v8:lang>
+											<v8:content>NZ=0.00</v8:content>
+										</v8:item>
+									</Format>
+									<EditFormat>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>NZ=0.00</v8:content>
+										</v8:item>
+										<v8:item>
+											<v8:lang>pt</v8:lang>
+											<v8:content>NZ=0.00</v8:content>
+										</v8:item>
+									</EditFormat>
+									<ContextMenu name="SalesItemsRateContextMenu" id="19"/>
+									<ExtendedTooltip name="SalesItemsRateExtendedTooltip" id="60"/>
 								</InputField>
 								<InputField name="SalesItemsReturnBox" id="20">
 									<DataPath>Object.SalesItems.ReturnBox</DataPath>
@@ -108,7 +145,7 @@
 									<Width>7</Width>
 									<HorizontalStretch>false</HorizontalStretch>
 									<ContextMenu name="SalesItemsReturnBoxContextMenu" id="21"/>
-									<ExtendedTooltip name="SalesItemsReturnBoxExtendedTooltip" id="70"/>
+									<ExtendedTooltip name="SalesItemsReturnBoxExtendedTooltip" id="61"/>
 								</InputField>
 								<InputField name="SalesItemsAgency" id="36">
 									<DataPath>Object.SalesItems.Agency</DataPath>
@@ -116,13 +153,7 @@
 									<Width>15</Width>
 									<HorizontalStretch>false</HorizontalStretch>
 									<ContextMenu name="SalesItemsAgencyContextMenu" id="37"/>
-									<ExtendedTooltip name="SalesItemsAgencyExtendedTooltip" id="71"/>
-								</InputField>
-								<InputField name="SalesItemsAccount" id="50">
-									<DataPath>Object.SalesItems.Account</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="SalesItemsAccountContextMenu" id="51"/>
-									<ExtendedTooltip name="SalesItemsAccountExtendedTooltip" id="72"/>
+									<ExtendedTooltip name="SalesItemsAgencyExtendedTooltip" id="62"/>
 								</InputField>
 							</ChildItems>
 						</Table>
@@ -134,8 +165,12 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Purchase items</v8:content>
 						</v8:item>
+						<v8:item>
+							<v8:lang>pt</v8:lang>
+							<v8:content>Itens de compra</v8:content>
+						</v8:item>
 					</Title>
-					<ExtendedTooltip name="GroupPurchaseItemsExtendedTooltip" id="73"/>
+					<ExtendedTooltip name="GroupPurchaseItemsExtendedTooltip" id="63"/>
 					<ChildItems>
 						<Table name="PurchaseItems" id="23">
 							<Representation>List</Representation>
@@ -149,30 +184,30 @@
 							<RowFilter xsi:nil="true"/>
 							<ContextMenu name="PurchaseItemsContextMenu" id="24"/>
 							<AutoCommandBar name="PurchaseItemsCommandBar" id="25"/>
-							<ExtendedTooltip name="PurchaseItemsExtendedTooltip" id="74"/>
-							<SearchStringAddition name="PurchaseItemsSearchString" id="75">
+							<ExtendedTooltip name="PurchaseItemsExtendedTooltip" id="64"/>
+							<SearchStringAddition name="PurchaseItemsSearchString" id="65">
 								<AdditionSource>
 									<Item>PurchaseItems</Item>
 									<Type>SearchStringRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="PurchaseItemsSearchStringContextMenu" id="76"/>
-								<ExtendedTooltip name="PurchaseItemsSearchStringExtendedTooltip" id="77"/>
+								<ContextMenu name="PurchaseItemsSearchStringContextMenu" id="66"/>
+								<ExtendedTooltip name="PurchaseItemsSearchStringExtendedTooltip" id="67"/>
 							</SearchStringAddition>
-							<ViewStatusAddition name="PurchaseItemsViewStatus" id="78">
+							<ViewStatusAddition name="PurchaseItemsViewStatus" id="68">
 								<AdditionSource>
 									<Item>PurchaseItems</Item>
 									<Type>ViewStatusRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="PurchaseItemsViewStatusContextMenu" id="79"/>
-								<ExtendedTooltip name="PurchaseItemsViewStatusExtendedTooltip" id="80"/>
+								<ContextMenu name="PurchaseItemsViewStatusContextMenu" id="69"/>
+								<ExtendedTooltip name="PurchaseItemsViewStatusExtendedTooltip" id="70"/>
 							</ViewStatusAddition>
-							<SearchControlAddition name="PurchaseItemsSearchControl" id="81">
+							<SearchControlAddition name="PurchaseItemsSearchControl" id="71">
 								<AdditionSource>
 									<Item>PurchaseItems</Item>
 									<Type>SearchControl</Type>
 								</AdditionSource>
-								<ContextMenu name="PurchaseItemsSearchControlContextMenu" id="82"/>
-								<ExtendedTooltip name="PurchaseItemsSearchControlExtendedTooltip" id="83"/>
+								<ContextMenu name="PurchaseItemsSearchControlContextMenu" id="72"/>
+								<ExtendedTooltip name="PurchaseItemsSearchControlExtendedTooltip" id="73"/>
 							</SearchControlAddition>
 							<ChildItems>
 								<LabelField name="PurchaseItemsLineNumber" id="26">
@@ -180,7 +215,7 @@
 									<Visible>false</Visible>
 									<EditMode>EnterOnInput</EditMode>
 									<ContextMenu name="PurchaseItemsLineNumberContextMenu" id="27"/>
-									<ExtendedTooltip name="PurchaseItemsLineNumberExtendedTooltip" id="84"/>
+									<ExtendedTooltip name="PurchaseItemsLineNumberExtendedTooltip" id="74"/>
 								</LabelField>
 								<InputField name="PurchaseItemsName" id="28">
 									<DataPath>Object.PurchaseItems.Name</DataPath>
@@ -188,19 +223,35 @@
 									<Width>15</Width>
 									<HorizontalStretch>false</HorizontalStretch>
 									<ContextMenu name="PurchaseItemsNameContextMenu" id="29"/>
-									<ExtendedTooltip name="PurchaseItemsNameExtendedTooltip" id="85"/>
+									<ExtendedTooltip name="PurchaseItemsNameExtendedTooltip" id="75"/>
 								</InputField>
-								<InputField name="PurchaseItemsInclRate" id="44">
-									<DataPath>Object.PurchaseItems.InclRate</DataPath>
+								<InputField name="PurchaseItemsRate" id="32">
+									<DataPath>Object.PurchaseItems.Rate</DataPath>
 									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="PurchaseItemsInclRateContextMenu" id="45"/>
-									<ExtendedTooltip name="PurchaseItemsInclRateExtendedTooltip" id="86"/>
-								</InputField>
-								<InputField name="PurchaseItemsExclRate" id="46">
-									<DataPath>Object.PurchaseItems.ExclRate</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="PurchaseItemsExclRateContextMenu" id="47"/>
-									<ExtendedTooltip name="PurchaseItemsExclRateExtendedTooltip" id="87"/>
+									<Width>7</Width>
+									<HorizontalStretch>false</HorizontalStretch>
+									<Format>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>NZ=0.00</v8:content>
+										</v8:item>
+										<v8:item>
+											<v8:lang>pt</v8:lang>
+											<v8:content>NZ=0.00</v8:content>
+										</v8:item>
+									</Format>
+									<EditFormat>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>NZ=0.00</v8:content>
+										</v8:item>
+										<v8:item>
+											<v8:lang>pt</v8:lang>
+											<v8:content>NZ=0.00</v8:content>
+										</v8:item>
+									</EditFormat>
+									<ContextMenu name="PurchaseItemsRateContextMenu" id="33"/>
+									<ExtendedTooltip name="PurchaseItemsRateExtendedTooltip" id="76"/>
 								</InputField>
 								<InputField name="PurchaseItemsReturnBox" id="34">
 									<DataPath>Object.PurchaseItems.ReturnBox</DataPath>
@@ -208,7 +259,7 @@
 									<Width>7</Width>
 									<HorizontalStretch>false</HorizontalStretch>
 									<ContextMenu name="PurchaseItemsReturnBoxContextMenu" id="35"/>
-									<ExtendedTooltip name="PurchaseItemsReturnBoxExtendedTooltip" id="88"/>
+									<ExtendedTooltip name="PurchaseItemsReturnBoxExtendedTooltip" id="77"/>
 								</InputField>
 								<InputField name="PurchaseItemsAgency" id="38">
 									<DataPath>Object.PurchaseItems.Agency</DataPath>
@@ -216,13 +267,7 @@
 									<Width>15</Width>
 									<HorizontalStretch>false</HorizontalStretch>
 									<ContextMenu name="PurchaseItemsAgencyContextMenu" id="39"/>
-									<ExtendedTooltip name="PurchaseItemsAgencyExtendedTooltip" id="89"/>
-								</InputField>
-								<InputField name="PurchaseItemsAccount" id="48">
-									<DataPath>Object.PurchaseItems.Account</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="PurchaseItemsAccountContextMenu" id="49"/>
-									<ExtendedTooltip name="PurchaseItemsAccountExtendedTooltip" id="90"/>
+									<ExtendedTooltip name="PurchaseItemsAgencyExtendedTooltip" id="78"/>
 								</InputField>
 							</ChildItems>
 						</Table>

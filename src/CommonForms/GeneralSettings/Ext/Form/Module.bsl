@@ -251,9 +251,9 @@ Procedure VATAccountOnChange(Item)
 EndProcedure
 
 &AtClient
-Procedure VATFinLocalizationOnChange(Item)
+Procedure SAFinLocalizationOnChange(Item)
 	
-	//GeneralFunctions.VATSetup();
+	GeneralFunctions.VATSetup();
 	DoMessageBox("Restart the program for the setting to take effect");
 	RefreshInterface();
 
@@ -283,7 +283,7 @@ EndProcedure
 
 &AtServer
 Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
-	If GeneralFunctionsReusable.FunctionalOptionValue("VATFinLocalization") Then
+	If GeneralFunctionsReusable.FunctionalOptionValue("SAFinLocalization") Then
 		
 		If ConstantsSet.VATAccount.IsEmpty() Then
 			
@@ -311,12 +311,4 @@ EndProcedure
 Procedure AccumulatedOCIAccountOnChange(Item)
 	Items.AccumulatedOCIAccountLabel.Title =
 		GeneralFunctions.AccountName(Items.AccumulatedOCIAccount.SelectedText);
-EndProcedure
-
-&AtClient
-Procedure PriceIncludesVATOnChange(Item)
-	
-	DoMessageBox("Restart the program for the setting to take effect");
-	RefreshInterface();
-
 EndProcedure

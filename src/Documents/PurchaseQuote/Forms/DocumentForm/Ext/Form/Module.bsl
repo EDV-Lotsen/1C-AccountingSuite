@@ -28,7 +28,7 @@ Procedure LineItemsPriceOnChange(Item)
 		TabularPartRow.LineTotal = TabularPartRow.Quantity * TabularPartRow.Price;
 	EndIf;
 
-	TabularPartRow.VAT = VAT_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Purchase", Object.PriceIncludesVAT);
+	TabularPartRow.VAT = SouthAfrica_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Purchase");
 	
 	RecalcTotal();
 
@@ -41,13 +41,8 @@ EndProcedure
 //
 Procedure RecalcTotal()
 	
-	If Object.PriceIncludesVAT Then
-		Object.DocumentTotal = Object.LineItems.Total("LineTotal");
-		Object.DocumentTotalRC = Object.LineItems.Total("LineTotal") * Object.ExchangeRate;		
-	Else
-		Object.DocumentTotal = Object.LineItems.Total("LineTotal") + Object.LineItems.Total("VAT");
-		Object.DocumentTotalRC = (Object.LineItems.Total("LineTotal") + Object.LineItems.Total("VAT")) * Object.ExchangeRate;
-	EndIf;	
+	Object.DocumentTotal = Object.LineItems.Total("LineTotal") + Object.LineItems.Total("VAT");
+	Object.DocumentTotalRC = (Object.LineItems.Total("LineTotal") + Object.LineItems.Total("VAT")) * Object.ExchangeRate;
 	Object.VATTotal = Object.LineItems.Total("VAT") * Object.ExchangeRate;
 	
 EndProcedure
@@ -120,7 +115,7 @@ Procedure LineItemsQuantityUMOnChange(Item)
 	EndIf;
 	
 	TabularPartRow.LineTotal = TabularPartRow.QuantityUM * TabularPartRow.Price;
-	TabularPartRow.VAT = VAT_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Purchase", Object.PriceIncludesVAT);
+	TabularPartRow.VAT = SouthAfrica_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Purchase");
 
 	RecalcTotal();
 
@@ -146,7 +141,7 @@ Procedure LineItemsQuantityOnChange(Item)
 	
 	TabularPartRow = Items.LineItems.CurrentData;
 	TabularPartRow.LineTotal = TabularPartRow.Quantity * TabularPartRow.Price;
-	TabularPartRow.VAT = VAT_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Purchase", Object.PriceIncludesVAT);
+	TabularPartRow.VAT = SouthAfrica_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Purchase");
 	
 	RecalcTotal();
 
@@ -210,11 +205,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
 	//Title = "Purchase Quote " + Object.Number + " " + Format(Object.Date, "DLF=D");
 	
-	If Object.Ref.IsEmpty() Then
-    	// Object.PriceIncludesVAT = GeneralFunctionsReusable.PriceIncludesVAT();
-	EndIf;
-	
-	If NOT GeneralFunctionsReusable.FunctionalOptionValue("VATFinLocalization") Then
+	If NOT GeneralFunctionsReusable.FunctionalOptionValue("SAFinLocalization") Then
 		Items.VATGroup.Visible = False;
 	EndIf;
 	
@@ -273,193 +264,7 @@ EndProcedure
 Procedure LineItemsVATCodeOnChange(Item)
 	
 	TabularPartRow = Items.LineItems.CurrentData;
-	TabularPartRow.VAT = VAT_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Purchase", Object.PriceIncludesVAT);
+	TabularPartRow.VAT = SouthAfrica_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Purchase");
     RecalcTotal();
 	
 EndProcedure
-
-&AtClient
-Procedure UpdatePriceList(Command)
-	
-	If Items.LineItems.CurrentData = Undefined Then
-		DoMessageBox("Select a line item");
-		Return;
-	EndIf;
-	
-	If Items.LineItems.SelectedRows.Count() > 1 Then
-    	DoMessageBox("Select only one line");
-		Return;
-	EndIf;
-	
-	FormParameters = New Structure;
-	FormParameters.Insert("SelectedProduct", Items.LineItems.CurrentData.Product);
-	FormParameters.Insert("ProductCost", Items.LineItems.CurrentData.Price);
-	FormParameters.Insert("Vendor", Object.Company);
-	FormParameters.Insert("Customer", Object.EndCustomer);
-	FormParameters.Insert("Date", Object.Date);
-	//FormParameters.Insert("ExchangeRate", Object.ExchangeRate);	
-	
-	UpdateForm = GetForm("CommonForm.UpdatePriceList", FormParameters);
-	UpdatePrices = UpdateForm.DoModal();
-	
-EndProcedure
-
-&AtClient
-Procedure ImportXLS(Command)
-	
-	QuoteImportForm = GetForm("CommonForm.QuoteImport");
-	VATCodes = QuoteImportForm.DoModal();
-	
-	Mode = FileDialogMode.Open;
-	OpeningFileDialogue = New FileDialog(Mode);
-	OpeningFileDialogue.FullFileName = "";
-	Filter = "Excel(*.xlsx)|*.xlsx|Excel 97(*.xls)|*.xls";
-	OpeningFileDialogue.Filter = Filter;
-	OpeningFileDialogue.Multiselect = False;
-	OpeningFileDialogue.Title = "Select file";
-	If OpeningFileDialogue.Choose() Then
-		FilesArray = OpeningFileDialogue.SelectedFiles;
-		For Each FileName In FilesArray Do
-			Selection = New File(FileName);
-			//Message(FileName+"; Size = "+Selection.Size());
-		EndDo;
-		FillInSpec(Selection.FullName, VATCodes);
-	Else
-		DoMessageBox("File(s) not selected!");
-	EndIf;	
-	
-EndProcedure
-
-&AtServer
-Procedure FillInSpec(File, VATCodes)
-	
-	//DocumentTotal = 0;
-	
-	Spec = New ValueTable;
-	Spec.Columns.Add("Product");
-	Spec.Columns.Add("Descr");
-	Spec.Columns.Add("Quantity");
-	Spec.Columns.Add("Price");
-	Spec.Columns.Add("LineTotal");
-	Spec.Columns.Add("VATCode");
-	Spec.Columns.Add("VAT");
-	
-	try
-	      ExcelApp    = New  COMObject("Excel.Application");
-	except
-	      Message(ErrorDescription()); 
-	      Message("Can't initialize Excel"); 
-	      Return; 
-	EndTry; 
-
-	
-	try 
-	ExcelFile = ExcelApp.Workbooks.Open(File);
-
-		NRows  = ExcelApp.Sheets(1).UsedRange.Rows.Count;
-		
-		   For n= 2 To NRows Do
-			   
-			    ProductCreated = False;
-			   
-			    LineTotal = 0;
-				
-				ExcelProduct = ExcelApp.Sheets(1).Cells(n,1).Value; 
-				ExcelProduct_Descr = ExcelApp.Sheets(1).Cells(n,2).Value;
-				
-				If ExcelProduct = Undefined Then
-					ExcelApp.ActiveWorkbook.Close(False);
-					Object.LineItems.Load(Spec);	
-					
-					Object.DocumentTotal = Object.LineItems.Total("LineTotal");
-					Object.DocumentTotalRC = Object.LineItems.Total("LineTotal") * Object.ExchangeRate;
-					Object.VATTotal = Object.LineItems.Total("VAT") * Object.ExchangeRate;
-
-					Return;
-				EndIf;
-				
-				Product_ID = Catalogs.Products.FindByDescription(ExcelProduct);
-				Product_Descr = Catalogs.Products.FindByAttribute("Descr", ExcelProduct_Descr);
-				
-				If NOT Product_Descr = Undefined Then
-					Product = Product_Descr;
-				Else
-					Product = Product_ID;
-				EndIf;
-				
-				
-				If Product.Description = "" AND Constants.AddProductsWhenImporting.Get() Then
-					
-					NewProduct = Catalogs.Products.CreateItem();
-					ProductID = ExcelApp.Sheets(1).Cells(n,1).Value; 
-					NewProduct.Description = ProductID;
-					ProductDescr = ExcelApp.Sheets(1).Cells(n,2).Value;
-					NewProduct.Descr = ProductDescr; 		   
-					ProductType = Constants.ProductTypeImport.Get();
-					NewProduct.Type = ProductType;
-					If ProductType = Enums.InventoryTypes.Inventory Then
-						NewProduct.CostingMethod = Constants.ProductCostingImport.Get();
-					EndIf;
-					NewProduct.PurchaseVATCode = VATCodes.PurchaseVAT;
-					NewProduct.SalesVATCode = VATCodes.SalesVAT;					
-					NewProduct.InventoryOrExpenseAccount = GeneralFunctions.InventoryAcct(ProductType);
-					NewProduct.IncomeAccount = Constants.IncomeAccount.Get();
-					NewProduct.COGSAccount = Constants.COGSAccount.Get();					
-					NewProduct.Write();
-					
-					ProductCreated = True;
-					
-					Str = Spec.Add();
-					Product = NewProduct.Ref;       
-					Str.Product = Product;         
-					Str.Descr = Product.Descr; 
-					Quantity = ExcelApp.Sheets(1).Cells(n,3).Value;
-					Str.Quantity = Quantity;
-					Price = ExcelApp.Sheets(1).Cells(n,4).Value;
-					Str.Price = Price;
-					LineTotal = Quantity * Price;
-					Str.LineTotal = LineTotal;
-					VATCode = GeneralFunctions.GetAttributeValue(Product, "PurchaseVATCode");
-					Str.VATCode = VATCode;
-					Str.VAT = VAT_FL.VATLine(LineTotal, VATCode, "Purchase");
-					
-				EndIf;
-				
-				If Product.Description = "" AND NOT Constants.AddProductsWhenImporting.Get() Then
-					Message("Not imported: " + ExcelProduct);						
-				EndIf;
-				
-				If ProductCreated = False Then
-					
-					Str = Spec.Add();
-					Str.Product = Product;
-					Str.Descr = Product.Descr;
-					Quantity = ExcelApp.Sheets(1).Cells(n,3).Value;
-					Str.Quantity = Quantity;
-					Price = ExcelApp.Sheets(1).Cells(n,4).Value;
-					Str.Price = Price;
-					LineTotal = Quantity * Price;
-					Str.LineTotal = LineTotal;							
-					VATCode = GeneralFunctions.GetAttributeValue(Product, "PurchaseVATCode");
-					Str.VATCode = VATCode;
-					Str.VAT = VAT_FL.VATLine(LineTotal, VATCode, "Purchase");
-					
-				EndIf;	
-			   
-		   EndDo;
-	
-	Except
-	Message(ErrorDescription()); 
-	ExcelApp.Application.Quit();
-	EndTry;
-	
-	ExcelApp.ActiveWorkbook.Close(False);
-	
-	Object.LineItems.Load(Spec);
-	
-	Object.DocumentTotal = Object.LineItems.Total("LineTotal") + Object.LineItems.Total("VAT");
-	Object.DocumentTotalRC = (Object.LineItems.Total("LineTotal") + Object.LineItems.Total("VAT")) * Object.ExchangeRate;
-	Object.VATTotal = Object.LineItems.Total("VAT") * Object.ExchangeRate;
-	
-EndProcedure
-

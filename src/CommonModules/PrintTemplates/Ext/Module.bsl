@@ -45,13 +45,9 @@ EndFunction
 // Returned value:
 // Structure.
 //
-Function ContactInfo(Company, Type) Export
+Function ContactInfo(Company) Export
 	
-	If Type = "OurCompany" Then
-		Info = New Structure("OurCompanyName, OurCompanyAddress, OurCompanyZIP, OurCompanyCountry, OurCompanyPhone, OurCompanyFax, OurCompanyEmail");
-	ElsIf Type = "Counterparty" Then
-		Info = New Structure("CounterpartyName, CounterpartyAddress, CounterpartyZIP, CounterpartyCountry, CounterpartyPhone, CounterpartyFax, CounterpartyEmail");
-	EndIf;
+	Info = New Structure("Name, Address, ZIP, Country, Phone, Email");
 	
 	Query = New Query("SELECT
 	                  |	Companies.Name,
@@ -62,7 +58,6 @@ Function ContactInfo(Company, Type) Export
 	                  |	Companies.Country,
 	                  |	Companies.Email,
 	                  |	Companies.Phone,
-					  | Companies.Fax,
 	                  |	Companies.State
 	                  |FROM
 	                  |	Catalog.Companies AS Companies
@@ -82,36 +77,30 @@ Function ContactInfo(Company, Type) Export
 	Country = Dataset[0].Country;
 	Email = Dataset[0].Email;
 	Phone = Dataset[0].Phone;
-	Fax = Dataset[0].Fax;
-		
+	
+	Info.Insert("Name", Name);
+	
 	If AddressLine2 = "" Then
 		Address = AddressLine1;	
 	Else
 		Address = AddressLine1 + ", " + AddressLine2;
 	EndIf;
-		
+	
+	Info.Insert("Address", Address);
+	
 	ZIP = City + " " + State + " " + ZIP;
 
-	If Type = "OurCompany" Then
-		Info.Insert("OurCompanyName", Name);
-		Info.Insert("OurCompanyAddress", Address);
-		Info.Insert("OurCompanyZIP", ZIP);	
-		Info.Insert("OurCompanyPhone", Phone);
-		Info.Insert("OurCompanyFax", Fax);	
-		Info.Insert("OurCompanyEmail", Email);	
-		Info.Insert("OurCompanyCountry", Country);
-	ElsIf Type = "Counterparty" Then
-		Info.Insert("CounterpartyName", Name);
-		Info.Insert("CounterpartyAddress", Address);
-		Info.Insert("CounterpartyZIP", ZIP);	
-		Info.Insert("CounterpartyPhone", Phone);
-		Info.Insert("CounterpartyFax", Fax);	
-		Info.Insert("CounterpartyEmail", Email);	
-		Info.Insert("CounterpartyCountry", Country);
-	EndIf;
+	Info.Insert("ZIP", ZIP);
 	
-	Return Info;
+	Info.Insert("Phone", Phone);
+	
+	Info.Insert("Email", Email);
+	
+	Info.Insert("Country", Country);
 		
+	Return Info;
+	
+	
 EndFunction
 
 // Returns a bank's contact and bank specific (e.g. SWIFT code) information

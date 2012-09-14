@@ -4,8 +4,6 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
 	Items.ARAccountLabel.Title = GeneralFunctions.GetAttributeValue(Object.DefaultARAccount, "Description");
 	Items.APAccountLabel.Title = GeneralFunctions.GetAttributeValue(Object.DefaultAPAccount, "Description");
-	Items.AccruedPurchasesLabel.Title = GeneralFunctions.GetAttributeValue(Object.DefaultAccruedPurchasesAccount, "Description");
-
 	
 EndProcedure
 
@@ -25,10 +23,5 @@ EndProcedure
 
 &AtClient
 Procedure BeforeWrite(Cancel, WriteParameters)
-	DoMessageBox("Fill in default A/R, A/P, and Accrued Purchases accounts after adding a new currency");
-EndProcedure
-
-&AtClient
-Procedure DefaultAccruedPurchasesAccountOnChange(Item)
-		Items.AccruedPurchasesLabel.Title = GeneralFunctions.GetAttributeValue(Object.DefaultAccruedPurchasesAccount, "Description");
+	DoMessageBox("Fill in default A/R and A/P accounts after adding a new currency");
 EndProcedure

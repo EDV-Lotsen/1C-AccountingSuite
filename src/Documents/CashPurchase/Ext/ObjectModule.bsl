@@ -34,7 +34,7 @@ Procedure Posting(Cancel, Mode)
 		InvDataset.Sort("Date, Row");
 		InvDatasetProduct = InvDataset.FindRows(Filter);
 		
-		AdjustmentCosts = InventoryCosting.PurchaseDocumentsProcessing(CurRowLineItems, InvDatasetProduct, Location, DocDate, ExchangeRate, Ref, PriceIncludesVAT);
+		AdjustmentCosts = InventoryCosting.PurchaseDocumentsProcessing(CurRowLineItems, InvDatasetProduct, Location, DocDate, ExchangeRate, Ref);
 		
 		PostingCostBeforeAdj = PostingCostBeforeAdj + AdjustmentCosts[0][0];
 		PostingCostAfterAdj = PostingCostAfterAdj + AdjustmentCosts[0][1];

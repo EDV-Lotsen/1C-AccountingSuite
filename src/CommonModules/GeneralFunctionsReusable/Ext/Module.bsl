@@ -133,17 +133,6 @@ Function APAccountType() Export
 	
 EndFunction
 
-// Returns the PriceIncludesVAT constant value
-// 
-// Returned value:
-// Boolean
-//
-Function PriceIncludesVAT() Export
-	
-	Return Constants.PriceIncludesVAT.Get();
-
-EndFunction
-
 
 // Returns a Currency catalog empty value
 //

@@ -2,7 +2,7 @@
 &AtClient
 Procedure CommandProcessing(CommandParameter, CommandExecuteParameters)
 	
-	PrintManagementClient.ExecutePrintCommand("Document.SalesInvoice",
-     "SalesInvoice", CommandParameter, CommandExecuteParameters, Undefined);
+	УправлениеПечатьюКлиент.ВыполнитьКомандуПечати("Document.SalesInvoice",
+     "SalesInvoice", CommandParameter, CommandExecuteParameters, Неопределено);
 	
 EndProcedure

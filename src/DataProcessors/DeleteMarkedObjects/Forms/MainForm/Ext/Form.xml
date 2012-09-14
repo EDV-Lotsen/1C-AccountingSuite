@@ -1,5 +1,11 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<Title>
+		<v8:item>
+			<v8:lang>ru</v8:lang>
+			<v8:content>Удаление помеченных объектов</v8:content>
+		</v8:item>
+	</Title>
 	<WindowOpeningMode>LockOwnerWindow</WindowOpeningMode>
 	<AutoTitle>false</AutoTitle>
 	<AutoFillCheck>false</AutoFillCheck>
@@ -17,7 +23,7 @@
 		<ExcludedCommand>Ignore</ExcludedCommand>
 		<ExcludedCommand>OK</ExcludedCommand>
 	</CommandSet>
-	<AutoCommandBar name="FormCommandBar" id="-1">
+	<AutoCommandBar name="Форма_КоманднаяПанель" id="-1">
 		<Autofill>false</Autofill>
 	</AutoCommandBar>
 	<Events>
@@ -28,14 +34,30 @@
 			<EnableContentChange>true</EnableContentChange>
 			<Title>
 				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Страницы формы</v8:content>
+				</v8:item>
+				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Form pages</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>pt</v8:lang>
+					<v8:content>Formar páginas</v8:content>
 				</v8:item>
 			</Title>
 			<ToolTip>
 				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Страницы формы</v8:content>
+				</v8:item>
+				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Form pages</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>pt</v8:lang>
+					<v8:content>Formar páginas</v8:content>
 				</v8:item>
 			</ToolTip>
 			<PagesRepresentation>None</PagesRepresentation>
@@ -44,14 +66,30 @@
 				<Page name="DeleteModeChoice" id="6">
 					<Title>
 						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>Выбор режима удаления</v8:content>
+						</v8:item>
+						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Delete mode choice</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>pt</v8:lang>
+							<v8:content>Apagar modo escolhido</v8:content>
 						</v8:item>
 					</Title>
 					<ToolTip>
 						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>Выбор режима удаления</v8:content>
+						</v8:item>
+						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Delete mode choice</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>pt</v8:lang>
+							<v8:content>Apagar modo escolhido</v8:content>
 						</v8:item>
 					</ToolTip>
 					<ExtendedTooltip name="DeleteModeChoiceExtendedTooltip" id="54"/>
@@ -60,8 +98,16 @@
 							<DataPath>DeleteMode</DataPath>
 							<Title>
 								<v8:item>
+									<v8:lang>ru</v8:lang>
+									<v8:content>Выберите режим удаления</v8:content>
+								</v8:item>
+								<v8:item>
 									<v8:lang>en</v8:lang>
 									<v8:content>Delete mode</v8:content>
+								</v8:item>
+								<v8:item>
+									<v8:lang>pt</v8:lang>
+									<v8:content>Modo Apagar</v8:content>
 								</v8:item>
 							</Title>
 							<TitleLocation>Top</TitleLocation>
@@ -74,8 +120,16 @@
 									<xr:Value xsi:type="FormChoiceListDesTimeValue">
 										<Presentation>
 											<v8:item>
+												<v8:lang>ru</v8:lang>
+												<v8:content>Автоматическое удаление всех отмеченных объектов</v8:content>
+											</v8:item>
+											<v8:item>
 												<v8:lang>en</v8:lang>
 												<v8:content>Full</v8:content>
+											</v8:item>
+											<v8:item>
+												<v8:lang>pt</v8:lang>
+												<v8:content>Cheio</v8:content>
 											</v8:item>
 										</Presentation>
 										<Value xsi:type="xs:string">Full</Value>
@@ -87,8 +141,16 @@
 									<xr:Value xsi:type="FormChoiceListDesTimeValue">
 										<Presentation>
 											<v8:item>
+												<v8:lang>ru</v8:lang>
+												<v8:content>Выборочное удаление объектов</v8:content>
+											</v8:item>
+											<v8:item>
 												<v8:lang>en</v8:lang>
 												<v8:content>Selective</v8:content>
+											</v8:item>
+											<v8:item>
+												<v8:lang>pt</v8:lang>
+												<v8:content>Selecionar</v8:content>
 											</v8:item>
 										</Presentation>
 										<Value xsi:type="xs:string">Selective</Value>
@@ -106,14 +168,30 @@
 				<Page name="SelectedForDeletion" id="25">
 					<Title>
 						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>Помеченные на удаление</v8:content>
+						</v8:item>
+						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Selected for deletion</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>pt</v8:lang>
+							<v8:content>Selecionar para apagar</v8:content>
 						</v8:item>
 					</Title>
 					<ToolTip>
 						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>Помеченные на удаление</v8:content>
+						</v8:item>
+						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Selected for deletion</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>pt</v8:lang>
+							<v8:content>Selecionar para apagar</v8:content>
 						</v8:item>
 					</ToolTip>
 					<ExtendedTooltip name="SelectedForDeletionExtendedTooltip" id="56"/>
@@ -131,8 +209,16 @@
 							<BorderColor>style:BorderColor</BorderColor>
 							<Title>
 								<v8:item>
+									<v8:lang>ru</v8:lang>
+									<v8:content>Пометьте объекты для удаления</v8:content>
+								</v8:item>
+								<v8:item>
 									<v8:lang>en</v8:lang>
 									<v8:content>List of objects marked for deletion</v8:content>
+								</v8:item>
+								<v8:item>
+									<v8:lang>pt</v8:lang>
+									<v8:content>Lista de objetos selecionados para serem apagados</v8:content>
 								</v8:item>
 							</Title>
 							<SearchStringLocation>None</SearchStringLocation>
@@ -194,14 +280,30 @@
 								<ColumnGroup name="SelectedListLine" id="29">
 									<Title>
 										<v8:item>
+											<v8:lang>ru</v8:lang>
+											<v8:content>Строка списка помеченных</v8:content>
+										</v8:item>
+										<v8:item>
 											<v8:lang>en</v8:lang>
 											<v8:content>Selected list line</v8:content>
+										</v8:item>
+										<v8:item>
+											<v8:lang>pt</v8:lang>
+											<v8:content>Linha selecionada</v8:content>
 										</v8:item>
 									</Title>
 									<ToolTip>
 										<v8:item>
+											<v8:lang>ru</v8:lang>
+											<v8:content>Строка списка помеченных</v8:content>
+										</v8:item>
+										<v8:item>
 											<v8:lang>en</v8:lang>
 											<v8:content>Selected list line</v8:content>
+										</v8:item>
+										<v8:item>
+											<v8:lang>pt</v8:lang>
+											<v8:content>Linha selecionada</v8:content>
 										</v8:item>
 									</ToolTip>
 									<Group>InCell</Group>
@@ -238,14 +340,30 @@
 					<EnableContentChange>true</EnableContentChange>
 					<Title>
 						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>Причины неудаления</v8:content>
+						</v8:item>
+						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Non deletion reasons</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>pt</v8:lang>
+							<v8:content>Razões para não apagar </v8:content>
 						</v8:item>
 					</Title>
 					<ToolTip>
 						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>Причины неудаления</v8:content>
+						</v8:item>
+						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Non deletion reasons</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>pt</v8:lang>
+							<v8:content>Razões para não apagar </v8:content>
 						</v8:item>
 					</ToolTip>
 					<ExtendedTooltip name="NonDeletionReasonsExtendedTooltip" id="72"/>
@@ -265,8 +383,16 @@
 							<BorderColor>style:BorderColor</BorderColor>
 							<Title>
 								<v8:item>
+									<v8:lang>ru</v8:lang>
+									<v8:content>Неудаленные объекты</v8:content>
+								</v8:item>
+								<v8:item>
 									<v8:lang>en</v8:lang>
 									<v8:content>Tree of non-deleted objects</v8:content>
+								</v8:item>
+								<v8:item>
+									<v8:lang>pt</v8:lang>
+									<v8:content>Objetos não apagados</v8:content>
 								</v8:item>
 							</Title>
 							<CommandSet>
@@ -337,14 +463,30 @@
 			<EnableContentChange>true</EnableContentChange>
 			<Title>
 				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Команды формы</v8:content>
+				</v8:item>
+				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Form commands</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>pt</v8:lang>
+					<v8:content>Formar comandos </v8:content>
 				</v8:item>
 			</Title>
 			<ToolTip>
 				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Команды формы</v8:content>
+				</v8:item>
+				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Form commands</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>pt</v8:lang>
+					<v8:content>Formar comandos </v8:content>
 				</v8:item>
 			</ToolTip>
 			<HorizontalLocation>Right</HorizontalLocation>
@@ -357,8 +499,20 @@
 					<CommandName>Form.Command.CommandBack</CommandName>
 					<Title>
 						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>&lt;&lt; Назад</v8:content>
+						</v8:item>
+						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Back</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>pt</v8:lang>
+							<v8:content>Voltar</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Zurück</v8:content>
 						</v8:item>
 					</Title>
 					<ExtendedTooltip name="CommandBackExtendedTooltip" id="85"/>
@@ -373,8 +527,20 @@
 					<BorderColor>style:BorderColor</BorderColor>
 					<Title>
 						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>Далее &gt;&gt;</v8:content>
+						</v8:item>
+						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Next</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>pt</v8:lang>
+							<v8:content>Próximo</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Weiter</v8:content>
 						</v8:item>
 					</Title>
 					<ExtendedTooltip name="CommandNextExtendedTooltip" id="86"/>
@@ -393,6 +559,14 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Delete</v8:content>
 						</v8:item>
+						<v8:item>
+							<v8:lang>pt</v8:lang>
+							<v8:content>Apagar</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Löschen</v8:content>
+						</v8:item>
 					</Title>
 					<ExtendedTooltip name="CommandDeleteExtendedTooltip" id="87"/>
 				</Button>
@@ -406,8 +580,20 @@
 					<BorderColor>style:BorderColor</BorderColor>
 					<Title>
 						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>Закрыть</v8:content>
+						</v8:item>
+						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Close</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>pt</v8:lang>
+							<v8:content>Fechar</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Schließen</v8:content>
 						</v8:item>
 					</Title>
 					<ExtendedTooltip name="CloseExtendedTooltip" id="88"/>
@@ -424,6 +610,10 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Help</v8:content>
 						</v8:item>
+						<v8:item>
+							<v8:lang>pt</v8:lang>
+							<v8:content>Ajuda</v8:content>
+						</v8:item>
 					</Title>
 					<ExtendedTooltip name="HelpExtendedTooltip" id="89"/>
 				</Button>
@@ -437,6 +627,10 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>Object</v8:content>
 				</v8:item>
+				<v8:item>
+					<v8:lang>pt</v8:lang>
+					<v8:content>Objeto</v8:content>
+				</v8:item>
 			</Title>
 			<Type>
 				<v8:Type>cfg:DataProcessorObject.DeleteMarkedObjects</v8:Type>
@@ -446,8 +640,16 @@
 		<Attribute name="DeleteMode" id="2">
 			<Title>
 				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Режим удаления</v8:content>
+				</v8:item>
+				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Delete mode</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>pt</v8:lang>
+					<v8:content>Modo Apagar</v8:content>
 				</v8:item>
 			</Title>
 			<Type>
@@ -461,8 +663,16 @@
 		<Attribute name="EmptyLine" id="5">
 			<Title>
 				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Пустая строка</v8:content>
+				</v8:item>
+				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Empty line</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>pt</v8:lang>
+					<v8:content>Esvaziar linha</v8:content>
 				</v8:item>
 			</Title>
 			<Type>
@@ -476,8 +686,16 @@
 		<Attribute name="SelectedForDeletionList" id="6">
 			<Title>
 				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Список помеченных на удаление</v8:content>
+				</v8:item>
+				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Selected for deletion list</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>pt</v8:lang>
+					<v8:content>Selecionado para lista a ser apagada</v8:content>
 				</v8:item>
 			</Title>
 			<Type>
@@ -487,8 +705,16 @@
 				<Column name="Mark" id="1">
 					<Title>
 						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>Пометка</v8:content>
+						</v8:item>
+						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Mark</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>pt</v8:lang>
+							<v8:content>Selecionar</v8:content>
 						</v8:item>
 					</Title>
 					<Type>
@@ -498,8 +724,16 @@
 				<Column name="Value" id="2">
 					<Title>
 						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>Значение</v8:content>
+						</v8:item>
+						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Value</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>pt</v8:lang>
+							<v8:content>Valor</v8:content>
 						</v8:item>
 					</Title>
 					<Type>
@@ -514,8 +748,16 @@
 				<Column name="Presentation" id="3">
 					<Title>
 						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>Представление</v8:content>
+						</v8:item>
+						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Presentation</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>pt</v8:lang>
+							<v8:content>Apresentação</v8:content>
 						</v8:item>
 					</Title>
 					<Type>
@@ -531,8 +773,16 @@
 		<Attribute name="NonDeletedObjectsTree" id="8">
 			<Title>
 				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Дерево неудаленных объектов</v8:content>
+				</v8:item>
+				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Non deleted objects tree</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>pt</v8:lang>
+					<v8:content>Não apagar objetos</v8:content>
 				</v8:item>
 			</Title>
 			<Type>
@@ -542,8 +792,16 @@
 				<Column name="ImageNumber" id="1">
 					<Title>
 						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>Номер картинки</v8:content>
+						</v8:item>
+						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Image number</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>pt</v8:lang>
+							<v8:content>Número de imagem</v8:content>
 						</v8:item>
 					</Title>
 					<Type>
@@ -558,8 +816,16 @@
 				<Column name="Value" id="2">
 					<Title>
 						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>Значение</v8:content>
+						</v8:item>
+						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Value</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>pt</v8:lang>
+							<v8:content>Valor</v8:content>
 						</v8:item>
 					</Title>
 					<Type>
@@ -574,8 +840,16 @@
 				<Column name="Presentation" id="3">
 					<Title>
 						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>Представление</v8:content>
+						</v8:item>
+						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Presentation</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>pt</v8:lang>
+							<v8:content>Apresentação</v8:content>
 						</v8:item>
 					</Title>
 					<Type>
@@ -591,8 +865,16 @@
 		<Attribute name="Label" id="9">
 			<Title>
 				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Надпись</v8:content>
+				</v8:item>
+				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Label</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>pt</v8:lang>
+					<v8:content>Etiqueta</v8:content>
 				</v8:item>
 			</Title>
 			<Type>
@@ -606,8 +888,16 @@
 		<Attribute name="UndeletedObjectsCount" id="3">
 			<Title>
 				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Количество неудаленных объектов</v8:content>
+				</v8:item>
+				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Undeleted objects count</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>pt</v8:lang>
+					<v8:content>Conta de objetos não apagados</v8:content>
 				</v8:item>
 			</Title>
 			<Type>
@@ -622,8 +912,16 @@
 		<Attribute name="ResultsLine" id="4">
 			<Title>
 				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Строка результатов</v8:content>
+				</v8:item>
+				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Results line</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>pt</v8:lang>
+					<v8:content>Linha de resultados</v8:content>
 				</v8:item>
 			</Title>
 			<Type>
@@ -637,8 +935,16 @@
 		<Attribute name="DeletedObjectsCount" id="7">
 			<Title>
 				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Удаленных объектов</v8:content>
+				</v8:item>
+				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Deleted objects count</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>pt</v8:lang>
+					<v8:content>Apagar objetos de soma</v8:content>
 				</v8:item>
 			</Title>
 			<Type>
@@ -653,8 +959,16 @@
 		<Attribute name="LevelsSelectedForDeletionCount" id="10">
 			<Title>
 				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Количество уровней помеченных на удаление</v8:content>
+				</v8:item>
+				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Levels selected for deletion count</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>pt</v8:lang>
+					<v8:content>Selecionadas para apagar soma</v8:content>
 				</v8:item>
 			</Title>
 			<Type>
@@ -671,14 +985,26 @@
 		<Command name="CommandNext" id="1">
 			<Title>
 				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Далее</v8:content>
+				</v8:item>
+				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Command next</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>pt</v8:lang>
+					<v8:content>Comando prόximo</v8:content>
 				</v8:item>
 			</Title>
 			<ToolTip>
 				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Command next</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>pt</v8:lang>
+					<v8:content>Comando prόximo</v8:content>
 				</v8:item>
 			</ToolTip>
 			<Action>GoNext</Action>
@@ -686,14 +1012,30 @@
 		<Command name="CommandSelectAll" id="2">
 			<Title>
 				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Команда список помеченных установить все</v8:content>
+				</v8:item>
+				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Select all</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>pt</v8:lang>
+					<v8:content>Selecionar tudo</v8:content>
 				</v8:item>
 			</Title>
 			<ToolTip>
 				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Пометить все объекты на удаление</v8:content>
+				</v8:item>
+				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Select all</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>pt</v8:lang>
+					<v8:content>Selecionar tudo</v8:content>
 				</v8:item>
 			</ToolTip>
 			<Picture>
@@ -705,14 +1047,30 @@
 		<Command name="CommandUnselectAll" id="3">
 			<Title>
 				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Команда список помеченных снять все</v8:content>
+				</v8:item>
+				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Unselect all</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>pt</v8:lang>
+					<v8:content>Desmarcar tudo</v8:content>
 				</v8:item>
 			</Title>
 			<ToolTip>
 				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Снять все пометки удаления</v8:content>
+				</v8:item>
+				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Unselect all</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>pt</v8:lang>
+					<v8:content>Desmarcar tudo</v8:content>
 				</v8:item>
 			</ToolTip>
 			<Picture>
@@ -724,14 +1082,30 @@
 		<Command name="CommandDelete" id="4">
 			<Title>
 				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Удалить</v8:content>
+				</v8:item>
+				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Command delete</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>pt</v8:lang>
+					<v8:content>Comando apagar</v8:content>
 				</v8:item>
 			</Title>
 			<ToolTip>
 				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Удалить помеченные объекты</v8:content>
+				</v8:item>
+				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Command delete</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>pt</v8:lang>
+					<v8:content>Comando apagar</v8:content>
 				</v8:item>
 			</ToolTip>
 			<Action>CommandDelete</Action>
@@ -739,14 +1113,30 @@
 		<Command name="CommandBack" id="5">
 			<Title>
 				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Команда назад</v8:content>
+				</v8:item>
+				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Command back</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>pt</v8:lang>
+					<v8:content>Comando voltar</v8:content>
 				</v8:item>
 			</Title>
 			<ToolTip>
 				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Команда назад</v8:content>
+				</v8:item>
+				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Command back</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>pt</v8:lang>
+					<v8:content>Comando voltar</v8:content>
 				</v8:item>
 			</ToolTip>
 			<Action>GoBack</Action>

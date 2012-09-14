@@ -143,12 +143,12 @@ Procedure CommandDelete()
 	RefreshTree = True;
 	If UndeletedObjectsCount = 0 Then
 		If DeletedObjectsCount = 0 Then
-			Text = NStr("en='No selected objects. None deleted'");
+			Text = NStr("en = 'No selected objects. None deleted'");
 			RefreshTree = False;
 		Else
 			Text = StringFunctionsClientServer.SubstituteParametersIntoString(
-			             NStr("en='Objects have been successfully deleted!"
-"Objects deleted: %1.'"),
+			             NStr("en = 'Objects have been successfully deleted!
+			                        |Objects deleted: %1.'"),
 			             DeletedObjectsCount);
 		EndIf;
 		DoMessageBox(Text);
@@ -360,14 +360,14 @@ Function DeleteSelectedAtServer(ErrorMessage)
 		UndeletedObjectsCount = UndeletedObjectsCount + MetadataObjectRow.Rows.Count();
 	EndDo;
 	
-	DeletedObjectsCount   = ToBeDeleted.Count() - UndeletedObjectsCount;
+	DeletedObjectsCount   = ToBeDeleted.Количество() - UndeletedObjectsCount;
 	If DeletedObjectsCount = 0 Then
-		ResultsLine = NStr("en='None deleted, because there are references to the objects in the infobase'");
+		ResultsLine = NStr("en = 'None deleted, because there are references to the objects in the infobase'");
 	Else
 		ResultsLine =
 		    StringFunctionsClientServer.SubstituteParametersIntoString(
-		        NStr("en='Marked objects successfully deleted!"
-"Objects deleted: %1.'"),
+		        NStr("en = 'Marked objects successfully deleted!
+		                   |Objects deleted: %1.'"),
 		        String(DeletedObjectsCount));
 	EndIf;
 	If UndeletedObjectsCount > 0 Then

@@ -27,19 +27,17 @@ Procedure Posting(Cancel, PostingMode)
 	
 	RegisterRecords.GeneralJournal.Write = True;	
 	
-	DefaultCurrency = Constants.DefaultCurrency.Get();
-	
 	If Type = "1" Then
-				
+					
 		Record = RegisterRecords.GeneralJournal.AddDebit();
 		Record.Account = Constants.VATAccount.Get();
 		Record.Period = Date;
 		Record.AmountRC = AmountRC;
 
 		Record = RegisterRecords.GeneralJournal.AddCredit();
-		Record.Account = DefaultCurrency.DefaultAPAccount;
+		Record.Account = Constants.APAccount.Get();
 		Record.Period = Date;
-		Record.Currency = DefaultCurrency;
+		Record.Currency = Constants.DefaultCurrency.Get();
 		Record.AmountRC = AmountRC;
 		Record.Amount = AmountRC;
 		Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Company] = Agency;
@@ -55,9 +53,9 @@ Procedure Posting(Cancel, PostingMode)
 		Record.AmountRC = AmountRC;
 
 		Record = RegisterRecords.GeneralJournal.AddDebit();
-		Record.Account = DefaultCurrency.DefaultARAccount;
+		Record.Account = Constants.ARAccount.Get();
 		Record.Period = Date;
-		Record.Currency = DefaultCurrency;
+		Record.Currency = Constants.DefaultCurrency.Get();
 		Record.AmountRC = AmountRC;
 		Record.Amount = AmountRC;
 		Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Company] = Agency;

@@ -70,6 +70,10 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>DLF=D</v8:content>
 						</v8:item>
+						<v8:item>
+							<v8:lang>pt</v8:lang>
+							<v8:content>DLF=D</v8:content>
+						</v8:item>
 					</Format>
 					<ContextMenu name="DateContextMenu" id="5"/>
 					<ExtendedTooltip name="DateExtendedTooltip" id="24"/>
@@ -124,31 +128,4 @@
 			</Settings>
 		</Attribute>
 	</Attributes>
-	<Commands>
-		<Command name="CreateQuote" id="1">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>PQs -&gt; SQ</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Create quote</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Action>CreateQuote</Action>
-		</Command>
-	</Commands>
-	<CommandInterface>
-		<CommandBar>
-			<Item>
-				<Command>Form.Command.CreateQuote</Command>
-				<Type>Added</Type>
-				<CommandGroup>FormCommandBarImportant</CommandGroup>
-				<DefaultVisible>false</DefaultVisible>
-			</Item>
-		</CommandBar>
-	</CommandInterface>
 </Form>

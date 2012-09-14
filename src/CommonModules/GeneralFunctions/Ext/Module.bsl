@@ -383,16 +383,6 @@ Procedure FirstStart() Export
 		USDCurrency.DefaultAPAccount = Account.Ref;
 		USDCurrency.Write();
 		
-		Account = ChartsOfAccounts.ChartOfAccounts.AccruedPurchases.GetObject();
-		Account.AccountType = Enums.AccountTypes.AccountsPayable;
-		Account.Currency = Catalogs.Currencies.USD;
-		Account.CashFlowSection = Enums.CashFlowSections.Operating;
-		Account.Write();
-
-		USDCurrency = Catalogs.Currencies.USD.GetObject();
-		USDCurrency.DefaultAccruedPurchasesAccount = Account.Ref;
-		USDCurrency.Write();
-		
 		Account = ChartsOfAccounts.ChartOfAccounts.SalesTaxPayable.GetObject();
 		Account.AccountType = Enums.AccountTypes.OtherCurrentLiability;
 		Account.CashFlowSection = Enums.CashFlowSections.Operating;
@@ -543,12 +533,7 @@ Procedure FirstStart() Export
 		
 		Constants.CustomerName.Set("Customer");
 		Constants.VendorName.Set("Vendor");
-		
-		// Setting default item import settings
-		
-		Constants.ProductTypeImport.Set(Enums.InventoryTypes.NonInventory);
-		Constants.ProductCostingImport.Set(Enums.InventoryCosting.WeightedAverage);
-		
+				
 		// Setting the First Start Completed constant to prevent
 		// this procedure from running on subsequent system starts
 		
@@ -558,20 +543,19 @@ Procedure FirstStart() Export
 	
 EndProcedure
 
-// The procedure is launched when the VAT financial localization is turned on in Settings
+// The procedure is launched when the South Africa financial localization is turned on in Settings
 // and prefills the database with default values and settings for VAT.
 //
 Procedure VATSetup() Export
 	
-	If Constants.VATSetupCompleted.Get() = False AND Constants.VATFinLocalization.Get() = True Then
+	If Constants.VATSetupCompleted.Get() = False Then
 				
 		Constants.DefaultPurchaseVAT.Set(Catalogs.VATCodes.S);
 		Constants.DefaultSalesVAT.Set(Catalogs.VATCodes.S);
-		Constants.PriceIncludesVAT.Set(True);
 		
 		VATAccount = ChartsOfAccounts.ChartOfAccounts.CreateAccount();
 		VATAccount.Description = "VAT payable";
-		VATAccount.Code = 330;
+		VATAccount.Code = 320;
 		VATAccount.AccountType = Enums.AccountTypes.OtherCurrentLiability;
 		VATAccount.CashFlowSection = Enums.CashFlowSections.Operating;
 		VATAccount.Write();
@@ -587,23 +571,20 @@ Procedure VATSetup() Export
 		VATAgency.Write();
 		
 		VATCode = Catalogs.VATCodes.S.GetObject();
+		VATCode.Taxable = True;
 		VATCode.VATDescription = "Standard (14%)";
 		
 		VATSales = VATCode.SalesItems.Add();
 		VATSales.Name = "Sales";
-		VATSales.InclRate = 20;
-		VATSales.ExclRate = 25;
+		VATSales.Rate = 14;
 		VATSales.ReturnBox = Catalogs.VATReturnFormBoxes.Box1;
 		VATSales.Agency = VATAgency.Ref;
-		VATSales.Account = VATAccount.Ref;
 		
 		VATPurchase = VATCode.PurchaseItems.Add();
 		VATPurchase.Name = "Purchase";
-		VATPurchase.InclRate = 20;
-		VATPurchase.ExclRate = 25;
+		VATPurchase.Rate = 14;
 		VATPurchase.ReturnBox = Catalogs.VATReturnFormBoxes.Box14;
 		VATPurchase.Agency = VATAgency.Ref;
-		VATPurchase.Account = VATAccount.Ref;
 		
 		VATCode.Write();
 		
@@ -642,134 +623,5 @@ Function NextCheckNumber(BankAccount) Export
 		LastNumber = Dataset[0][0];
 		Return LastNumber + 1;
 	EndIf;			
-	
-EndFunction
-
-Procedure ImportFile(File) Export
-	
-	Try
-	      ExcelApp    = New  COMObject("Excel.Application") ;
-	Except
-	      Message(ErrorDescription()); 
-	      Message("Can not initialize Excel"); 
-	      Return; 
-	EndTry; 
-
-	
-	Try 
-	  ExcelFile = ExcelApp.Workbooks.Open(File);
-
-	NColumns =1;
-	NRows =2; // not taking the header
-	NPages = 1;
-	For CurrentNumber = 1 To NPages Do 
-	             // counting non-empty rows
-	       TotalNRows  = ExcelApp.Sheets(CurrentNumber).UsedRange.row +
-		   	ExcelApp.Sheets(CurrentNumber).UsedRange.Rows.Count - 1;
-	   For n= 1 To   TotalNRows -1 Do
-		  		   
-		   NewProduct = Catalogs.Products.CreateItem();
-		   NewProduct.Description = ExcelApp.Sheets(CurrentNumber).Cells(NRows,NColumns).Value;
-		   NewProduct.Descr = ExcelApp.Sheets(CurrentNumber).Cells(NRows,NColumns +1).Value; 		   
-		   NewProduct.Write();
-		   
-		   NRows = NRows +1;
-	      EndDo;
-	EndDo;
-	except
-	Message(ErrorDescription()); 
-	ExcelApp.Application.Quit();
-	endTry;
-
-
-EndProcedure
-
-Function GenerateQuote(Rows, Customer, Bank) Export
-	
-	// creating an item array
-	
-	AllProducts = New ValueTable();
-	AllProducts.Columns.Add("Product");
-	AllProducts.Columns.Add("UM");
-	AllProducts.Columns.Add("QuantityUM");
-	AllProducts.Columns.Add("Quantity");
-	
-	NoOfRows = Rows.Count();
-
-	For i = 0 to NoOfRows - 1 Do
-		
-		Document = Rows[i];
-		PurchaseQuote = Document.GetObject();
-		
-		ThisVT = PurchaseQuote.LineItems.Unload();
-		ThisNoOfRows = ThisVT.Count();
-		For y = 0 to ThisNoOfRows - 1 do
-			NewRow = AllProducts.Add();
-			NewRow.Product = ThisVT[y][1];
-			NewRow.UM = ThisVT[y][5];
-			NewRow.QuantityUM = ThisVT[y][6];
-			NewRow.Quantity = ThisVT[y][3];	
-		EndDo;
-						
-	EndDo;
-
-	
-	// generating a quote
-		
-	NoOfRows = AllProducts.Count();
-	
-	NewDocum = Documents.SalesQuote.CreateDocument();
-	
-	NewDocum.Company = Customer;		
-	Currency = Customer.DefaultCurrency;
-	NewDocum.Currency = Currency;
-	ExchangeRate = GeneralFunctions.GetExchangeRate(CurrentDate(), GeneralFunctionsReusable.DefaultCurrency(), Currency);
-	NewDocum.ExchangeRate = ExchangeRate;
-	NewDocum.Date = CurrentDate();
-	NewDocum.Bank = Bank;
-	
-	DocTotal = 0;
-	
-	For i = 0 to NoOfRows - 1 Do
-		
-		Product = AllProducts[i][0];
-		UM = AllProducts[i][1];
-		QuantityUM = AllProducts[i][2];
-		Quantity = AllProducts[i][3];
-		
-		NewRow = NewDocum.LineItems.Add();
-		NewRow.Product = Product;
-		NewRow.Descr = Product.Descr;
-		NewRow.Quantity = Quantity;
-		NewRow.QuantityUM = QuantityUM;
-		NewRow.UM = UM;
-		Price = GeneralFunctions.RetailPrice(CurrentDate(), Product, Customer, Currency);
-		NewRow.Price = Price;
-		If GeneralFunctionsReusable.FunctionalOptionValue("UnitsOfMeasure") Then
-			LTotal = QuantityUM * Price;
-		Else
-			LTotal = Quantity * Price;
-		EndIf;
-		//DocTotal = DocTotal + LTotal;
-		NewRow.LineTotal = LTotal;
-		NewRow.SalesTaxType = US_FL.GetSalesTaxType(Product);
-		//new
-		VATCode = GeneralFunctions.GetAttributeValue(Product, "SalesVATCode");
-		NewRow.VATCode = VATCode;
-		NewRow.VAT = VAT_FL.VATLine(LTotal, VATCode, "Sales");
-
-		
-	EndDo;
-	
-	//NewDocum.DocumentTotal = DocTotal;
-	//NewDocum.DocumentTotalRC = DocTotal * ExchangeRate;
-	
-	NewDocum.DocumentTotal = NewDocum.LineItems.Total("LineTotal") + NewDocum.LineItems.Total("VAT");
-	NewDocum.DocumentTotalRC = (NewDocum.LineItems.Total("LineTotal") + NewDocum.LineItems.Total("VAT")) * NewDocum.ExchangeRate;
-	NewDocum.VATTotal = NewDocum.LineItems.Total("VAT") * NewDocum.ExchangeRate;
-	
-	NewDocum.Write();
-	
-	Return NewDocum.Ref;
 	
 EndFunction

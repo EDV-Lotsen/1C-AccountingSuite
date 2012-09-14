@@ -34,6 +34,10 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>1C:Accounting Suite</v8:content>
 				</v8:item>
+				<v8:item>
+					<v8:lang>pt</v8:lang>
+					<v8:content>1C Contabilidade </v8:content>
+				</v8:item>
 			</Synonym>
 			<Comment/>
 			<NamePrefix/>
@@ -45,7 +49,7 @@
 			<ScriptVariant>English</ScriptVariant>
 			<DefaultRoles/>
 			<Vendor>1C Company</Vendor>
-			<Version>1.1.24.0</Version>
+			<Version>1.1.0.22</Version>
 			<UpdateCatalogAddress/>
 			<IncludeHelpInContents>false</IncludeHelpInContents>
 			<UseManagedFormInOrdinaryApplication>true</UseManagedFormInOrdinaryApplication>
@@ -108,11 +112,19 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>1C:Accounting Suite, v 1.1</v8:content>
 				</v8:item>
+				<v8:item>
+					<v8:lang>pt</v8:lang>
+					<v8:content>1C Contabilidade, v 1.1</v8:content>
+				</v8:item>
 			</BriefInformation>
 			<DetailedInformation>
 				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>1C:Accounting Suite, v 1.1</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>pt</v8:lang>
+					<v8:content>1C Contabilidade, v 1.1</v8:content>
 				</v8:item>
 			</DetailedInformation>
 			<Copyright>
@@ -120,16 +132,36 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>1C Company</v8:content>
 				</v8:item>
+				<v8:item>
+					<v8:lang>pt</v8:lang>
+					<v8:content>1C Empresa</v8:content>
+				</v8:item>
 			</Copyright>
 			<VendorInformationAddress>
 				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>1c-dn.com</v8:content>
 				</v8:item>
+				<v8:item>
+					<v8:lang>pt</v8:lang>
+					<v8:content>1c-dn.com</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>1c-dn.com</v8:content>
+				</v8:item>
 			</VendorInformationAddress>
 			<ConfigurationInformationAddress>
 				<v8:item>
 					<v8:lang>en</v8:lang>
+					<v8:content>1c-dn.com</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>pt</v8:lang>
+					<v8:content>1c-dn.com</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
 					<v8:content>1c-dn.com</v8:content>
 				</v8:item>
 			</ConfigurationInformationAddress>
@@ -143,6 +175,8 @@
 		</Properties>
 		<ChildObjects>
 			<Language>English</Language>
+			<Language>Portuguese</Language>
+			<Language>German</Language>
 			<Subsystem>Sales</Subsystem>
 			<Subsystem>Purchasing</Subsystem>
 			<Subsystem>Warehouse</Subsystem>
@@ -158,14 +192,14 @@
 			<CommonPicture>Navigation_pt</CommonPicture>
 			<CommonPicture>Navigation_de</CommonPicture>
 			<CommonPicture>Warehouse</CommonPicture>
-			<CommonPicture>FinishTemplateEditing</CommonPicture>
-			<CommonPicture>UseUserTemplate</CommonPicture>
-			<CommonPicture>UseSuppliedTemplate</CommonPicture>
-			<CommonPicture>OpenTemplate</CommonPicture>
-			<CommonPicture>CancelTemplateEditing</CommonPicture>
-			<CommonPicture>EditTemplate</CommonPicture>
-			<CommonPicture>DeleteUserTemplate</CommonPicture>
-			<CommonPicture>TemplateTypes</CommonPicture>
+			<CommonPicture>ЗавершитьРедактированиеМакета</CommonPicture>
+			<CommonPicture>ИспользоватьПользовательскийМакет</CommonPicture>
+			<CommonPicture>ИспользоватьПоставляемыйМакет</CommonPicture>
+			<CommonPicture>ОткрытьМакет</CommonPicture>
+			<CommonPicture>ОтменитьРедактированиеМакета</CommonPicture>
+			<CommonPicture>РедактироватьМакет</CommonPicture>
+			<CommonPicture>ТипыМакетов</CommonPicture>
+			<CommonPicture>УдалитьПользовательскийМакет</CommonPicture>
 			<Role>FullRights</Role>
 			<CommonTemplate>Navigation_en</CommonTemplate>
 			<CommonTemplate>Navigation_pt</CommonTemplate>
@@ -173,27 +207,27 @@
 			<CommonModule>Brazil_FL</CommonModule>
 			<CommonModule>InventoryCosting</CommonModule>
 			<CommonModule>GeneralFunctions</CommonModule>
-			<CommonModule>GeneralFunctionsSL</CommonModule>
-			<CommonModule>GeneralFunctionsClientSL</CommonModule>
-			<CommonModule>GeneralFunctionClientReusable</CommonModule>
 			<CommonModule>GeneralFunctionsReusable</CommonModule>
-			<CommonModule>GeneralFunctionsClientServerSL</CommonModule>
-			<CommonModule>PrintManagement</CommonModule>
-			<CommonModule>PrintManagementClient</CommonModule>
 			<CommonModule>PrintTemplates</CommonModule>
-			<CommonModule>VAT_FL</CommonModule>
+			<CommonModule>SouthAfrica_FL</CommonModule>
 			<CommonModule>StringFunctionsClientServer</CommonModule>
 			<CommonModule>US_FL</CommonModule>
+			<CommonModule>УправлениеПечатью</CommonModule>
+			<CommonModule>УправлениеПечатьюКлиент</CommonModule>
+			<CommonModule>СтроковыеФункцииКлиентСервер</CommonModule>
+			<CommonModule>ОбщегоНазначения</CommonModule>
+			<CommonModule>ОбщегоНазначенияКлиент</CommonModule>
+			<CommonModule>ОбщегоНазначенияКлиентСервер</CommonModule>
 			<FunctionalOption>AdvancedPricing</FunctionalOption>
 			<FunctionalOption>AllowVoiding</FunctionalOption>
 			<FunctionalOption>BrazilFinLocalization</FunctionalOption>
 			<FunctionalOption>MultiCurrency</FunctionalOption>
 			<FunctionalOption>MultiLocation</FunctionalOption>
-			<FunctionalOption>VATFinLocalization</FunctionalOption>
+			<FunctionalOption>SAFinLocalization</FunctionalOption>
 			<FunctionalOption>UnitsOfMeasure</FunctionalOption>
 			<FunctionalOption>UnbalancedGLEntryPosting</FunctionalOption>
 			<FunctionalOption>USFinLocalization</FunctionalOption>
-			<CommandGroup>Print</CommandGroup>
+			<CommandGroup>Печать</CommandGroup>
 			<Constant>AccumulatedOCIAccount</Constant>
 			<Constant>AdvancedPricing</Constant>
 			<Constant>AllowVoiding</Constant>
@@ -219,8 +253,7 @@
 			<Constant>MultiCurrency</Constant>
 			<Constant>MultiLocation</Constant>
 			<Constant>PaymentTermsDefault</Constant>
-			<Constant>PriceIncludesVAT</Constant>
-			<Constant>VATFinLocalization</Constant>
+			<Constant>SAFinLocalization</Constant>
 			<Constant>SalesTaxPayableAccount</Constant>
 			<Constant>UnbalancedGLEntryPosting</Constant>
 			<Constant>UndepositedFundsAccount</Constant>
@@ -229,15 +262,9 @@
 			<Constant>VATAccount</Constant>
 			<Constant>VATSetupCompleted</Constant>
 			<Constant>VendorName</Constant>
-			<Constant>AddProductsWhenImporting</Constant>
-			<Constant>ProductCostingImport</Constant>
-			<Constant>ProductTypeImport</Constant>
 			<CommonForm>DesktopNavigation</CommonForm>
 			<CommonForm>GeneralSettings</CommonForm>
-			<CommonForm>QuoteImport</CommonForm>
-			<CommonForm>UpdatePriceList</CommonForm>
-			<CommonForm>PrintDocuments</CommonForm>
-			<CommonForm>FileExtensionModuleInstallationDialogBox</CommonForm>
+			<CommonForm>ПечатьДокументов</CommonForm>
 			<Catalog>Banks</Catalog>
 			<Catalog>CFOP</Catalog>
 			<Catalog>Companies</Catalog>
@@ -292,7 +319,6 @@
 			<Report>BankBalances</Report>
 			<Report>CashFlowDirect</Report>
 			<Report>Form1099</Report>
-			<Report>GeneralLedger</Report>
 			<Report>IncomeStatement</Report>
 			<Report>IncomeStatementDetailed</Report>
 			<Report>InventoryBalances</Report>
@@ -304,9 +330,8 @@
 			<InformationRegister>ExchangeRates</InformationRegister>
 			<InformationRegister>InventoryJournal</InformationRegister>
 			<InformationRegister>PriceList</InformationRegister>
-			<InformationRegister>UserPrintTemplates</InformationRegister>
+			<InformationRegister>ПользовательскиеМакетыПечати</InformationRegister>
 			<AccumulationRegister>LocationBalances</AccumulationRegister>
-			<AccumulationRegister>ReceivedInvoiced</AccumulationRegister>
 			<ChartOfCharacteristicTypes>Dimensions</ChartOfCharacteristicTypes>
 			<ChartOfAccounts>ChartOfAccounts</ChartOfAccounts>
 			<AccountingRegister>GeneralJournal</AccountingRegister>

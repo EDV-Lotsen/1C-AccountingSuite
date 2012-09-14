@@ -3,25 +3,26 @@
 Procedure Posting(Cancel, Mode)
 		
 	PostingCost = 0;
-	
-	// update the issued and invoiced amount of the parent sales order
-	If NOT ParentSalesOrder.IsEmpty() Then
-		RegisterRecords.ReceivedInvoiced.Write = True;
-		For Each CurRowLineItems In LineItems Do
-			If CurRowLineItems.Product.Type = Enums.InventoryTypes.Inventory Then
-				Record = RegisterRecords.ReceivedInvoiced.Add();
-				Record.RecordType = AccumulationRecordType.Receipt;
-				Record.Period = Date;
-				Record.OrderDocument = ParentSalesOrder;
-				Record.Product = CurRowLineItems.Product;
-				If ParentGoodsIssue.IsEmpty() Then
-					Record.Whse = CurRowLineItems.Quantity;
-				EndIf;	
-				Record.Invoiced = CurRowLineItems.Quantity;
-			EndIf;	
-		EndDo;
-	EndIf;
 		
+	For Each CurRowLineItems In LineItems Do			
+		If CurRowLineItems.Product.Type = Enums.InventoryTypes.Inventory Then
+			
+			// update the issued and invoiced amount of the parent sales order
+			
+			If NOT ParentSalesOrder.IsEmpty() Then
+				Filter = New Structure("Product");
+				Filter.Insert("Product", CurRowLineItems.Product);	
+				Doc = ParentSalesOrder.GetObject();
+				Row = Doc.LineItems.FindRows(Filter)[0];
+				Row.Invoiced = Row.Invoiced + CurRowLineItems.Quantity;
+				If ParentGoodsIssue.IsEmpty() Then
+					Row.Issued = Row.Issued + CurRowLineItems.Quantity;
+				EndIf;	
+				Doc.Write();
+			EndIf;				
+		EndIf;
+	EndDo;	
+	
 	If ParentGoodsIssue.IsEmpty() Then
 		
 		// create a value table for posting amounts
@@ -36,11 +37,7 @@ Procedure Posting(Cancel, Mode)
 		
 		PostingDatasetInvOrExp = New ValueTable();
 		PostingDatasetInvOrExp.Columns.Add("InvOrExpAccount");
-        PostingDatasetInvOrExp.Columns.Add("AmountRC");
-		
-		PostingDatasetVAT = New ValueTable();
-		PostingDatasetVAT.Columns.Add("VATAccount");
-		PostingDatasetVAT.Columns.Add("AmountRC");
+        PostingDatasetInvOrExp.Columns.Add("AmountRC");		
 		
 		// create an Inventory Journal dataset
 		
@@ -95,13 +92,7 @@ Procedure Posting(Cancel, Mode)
 			Else	
 				PostingLineIncome.IncomeAccount = CurRowLineItems.Product.IncomeAccount;
 			EndIf;	
-			If PriceIncludesVAT Then
-				PostingLineIncome.AmountRC = (CurRowLineItems.LineTotal - CurRowLineItems.VAT) * ExchangeRate;
-			Else
-				PostingLineIncome.AmountRC = CurRowLineItems.LineTotal * ExchangeRate;
-			EndIf;
-
-			//PostingLineIncome.AmountRC = CurRowLineItems.Price * ExchangeRate * CurRowLineItems.Quantity;
+			PostingLineIncome.AmountRC = CurRowLineItems.Price * ExchangeRate * CurRowLineItems.Quantity;
 			
 			If CurRowLineItems.Product.Type = Enums.InventoryTypes.Inventory Then 
 				PostingLineCOGS = PostingDatasetCOGS.Add();
@@ -113,14 +104,6 @@ Procedure Posting(Cancel, Mode)
 				PostingLineInvOrExp.AmountRC = PostingCost;
 			EndIf;
 			
-			If CurRowLineItems.VAT > 0 Then
-				
-				PostingLineVAT = PostingDatasetVAT.Add();
-				PostingLineVAT.VATAccount = VAT_FL.VATAccount(CurRowLineItems.VATCode, "Sales");
-				PostingLineVAT.AmountRC = CurRowLineItems.VAT * ExchangeRate;
-								
-			EndIf;
-			
 			PostingCost = 0;
 			
 		EndDo;
@@ -130,78 +113,24 @@ Procedure Posting(Cancel, Mode)
 	
 	If NOT ParentGoodsIssue.IsEmpty() Then
 		
-		RegisterRecords.GeneralJournal.Write = True;
-
-		PostingDatasetVAT = New ValueTable();
-		PostingDatasetVAT.Columns.Add("VATAccount");
-		PostingDatasetVAT.Columns.Add("AmountRC");
-
-		PostingVATTotal = 0;
+		// updating the parent's goods issue GL posting
 		
-		For Each CurRowLineItems in ParentGoodsIssue.GetObject().LineItems Do		
-
-			If CurRowLineItems.VAT > 0 Then
+		Reg = AccountingRegisters.GeneralJournal.CreateRecordSet();
+		Reg.Filter.Recorder.Set(ParentGoodsIssue);
+		Reg.Read();
+		
+			For Each Transaction In Reg Do
 				
-				PostingLineVAT = PostingDatasetVAT.Add();
-				PostingLineVAT.VATAccount = VAT_FL.VATAccount(CurRowLineItems.VATCode, "Sales");
-				PostingLineVAT.AmountRC = CurRowLineItems.VAT * ParentGoodsIssue.GetObject().ExchangeRate;
+				Transaction.Period = Date;
+				Transaction.Recorder = Ref;
+				If NOT Transaction.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Document] = Undefined Then
+					Transaction.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Document] = Ref;
+				EndIf;
 				
-				PostingVATTotal = PostingVATTotal + CurRowLineItems.VAT;
-				
-			EndIf;
+			EndDo;
 			
-		EndDo;
-
-		PostingDatasetVAT.GroupBy("VATAccount", "AmountRC");
-		NoOfPostingRows = PostingDatasetVAT.Count();
-		For i = 0 To NoOfPostingRows - 1 Do
-			Record = RegisterRecords.GeneralJournal.AddCredit();
-			Record.Account = PostingDatasetVAT[i][0];
-			Record.Period = Date;
-			Record.AmountRC = PostingDatasetVAT[i][1];	
-		EndDo;	
+		Reg.Write();
 		
-		PostingDatasetIncome = New ValueTable();
-		PostingDatasetIncome.Columns.Add("IncomeAccount");
-		PostingDatasetIncome.Columns.Add("AmountRC");
-		
-		For Each CurRowLineItems In LineItems Do
-
-			PostingLineIncome = PostingDatasetIncome.Add();
-			If CurRowLineItems.Product.Code = "" Then
-				PostingLineIncome.IncomeAccount = Company.IncomeAccount;	
-			Else	
-				PostingLineIncome.IncomeAccount = CurRowLineItems.Product.IncomeAccount;
-			EndIf;	
-			
-			If PriceIncludesVAT Then
-				PostingLineIncome.AmountRC = (CurRowLineItems.LineTotal - CurRowLineItems.VAT) * ExchangeRate;
-			Else
-				PostingLineIncome.AmountRC = CurRowLineItems.LineTotal * ExchangeRate;
-			EndIf;
-			
-			//PostingLineIncome.AmountRC = CurRowLineItems.Price * ExchangeRate * CurRowLineItems.Quantity;
-			
-		EndDo;
-		
-		Record = RegisterRecords.GeneralJournal.AddDebit();
-		Record.Account = ARAccount;
-		Record.Period = Date;
-		Record.Currency = Currency;
-		Record.Amount = DocumentTotal;
-		Record.AmountRC = DocumentTotal * ExchangeRate;		
-		Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Company] = Company;
-		Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Document] = Ref;
-		
-		PostingDatasetIncome.GroupBy("IncomeAccount", "AmountRC");
-		NoOfPostingRows = PostingDatasetIncome.Count();
-		For i = 0 To NoOfPostingRows - 1 Do			
-			Record = RegisterRecords.GeneralJournal.AddCredit();
-			Record.Account = PostingDatasetIncome[i][0];
-			Record.Period = Date;
-			Record.AmountRC = PostingDatasetIncome[i][1];				
-		EndDo;
-			
 	EndIf;
 	
 	If ParentGoodsIssue.IsEmpty() Then
@@ -253,15 +182,13 @@ Procedure Posting(Cancel, Mode)
 			Record.AmountRC = SalesTax * ExchangeRate;
 		EndIf;		
 
-		PostingDatasetVAT.GroupBy("VATAccount", "AmountRC");
-		NoOfPostingRows = PostingDatasetVAT.Count();
-		For i = 0 To NoOfPostingRows - 1 Do
+		If VATTotal > 0 Then
 			Record = RegisterRecords.GeneralJournal.AddCredit();
-			Record.Account = PostingDatasetVAT[i][0];
+			Record.Account = Constants.VATAccount.Get();
 			Record.Period = Date;
-			Record.AmountRC = PostingDatasetVAT[i][1];	
-		EndDo;	
-					
+			Record.AmountRC = VATTotal;
+		EndIf;
+		
 	EndIf;
 	 	 	
 EndProcedure
@@ -283,7 +210,6 @@ Procedure Filling(FillingData, StandardProcessing)
 		VATTotal = FillingData.VATTotal;
 		Bank = FillingData.Bank;
 		ARAccount = FillingData.Company.DefaultCurrency.DefaultARAccount;
-		PriceIncludesVAT = FillingData.PriceIncludesVAT;
 		
 		For Each CurRowLineItems In FillingData.LineItems Do
 			NewRow = LineItems.Add();
@@ -332,7 +258,6 @@ Procedure Filling(FillingData, StandardProcessing)
 		Location = FillingData.Location;
 		VATTotal = FillingData.VATTotal;
 		ARAccount = FillingData.Company.DefaultCurrency.DefaultARAccount;
-		PriceIncludesVAT = FillingData.PriceIncludesVAT;
 		
 		For Each CurRowLineItems In FillingData.LineItems Do
 			NewRow = LineItems.Add();
@@ -362,8 +287,7 @@ Procedure Filling(FillingData, StandardProcessing)
 		Location = FillingData.Location;
 		ParentGoodsIssue = FillingData.Ref;
 		VATTotal = FillingData.VATTotal;
-		ARAccount = FillingData.Currency.DefaultARAccount;
-		PriceIncludesVAT = FillingData.PriceIncludesVAT;
+		ARAccount = FillingData.ARAccount;
 		
 		For Each CurRowLineItems In FillingData.LineItems Do
 			NewRow = LineItems.Add();
@@ -389,7 +313,7 @@ EndProcedure
 //
 Procedure UndoPosting(Cancel)
 	
-	If InventoryCosting.InventoryPresent(Ref) AND ParentGoodsIssue.IsEmpty() Then
+	If InventoryCosting.InventoryPresent(Ref) Then
 		
 		If NOT GetFunctionalOption("AllowVoiding") Then
 			
@@ -409,7 +333,7 @@ EndProcedure
 //
 Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 		
-	If InventoryCosting.InventoryPresent(Ref) AND ParentGoodsIssue.IsEmpty() Then
+	If InventoryCosting.InventoryPresent(Ref) Then
 			
 		If NOT GetFunctionalOption("AllowVoiding") Then
 			

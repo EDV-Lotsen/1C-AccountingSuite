@@ -1,27 +1,27 @@
 ﻿// The procedure performs document posting
 //
 Procedure Posting(Cancel, Mode)
-	
+		
 	DocDate = BegOfDay(Date) + 60*60*10;
 	
 	PostingCostBeforeAdj = 0;
 	PostingCostAfterAdj = 0;
-		
-	// update the received amount of the parent purchase order
-	If NOT ParentPurchaseOrder.IsEmpty() Then
-		RegisterRecords.ReceivedInvoiced.Write = True;
-		For Each CurRowLineItems In LineItems Do
-			If CurRowLineItems.Product.Type = Enums.InventoryTypes.Inventory Then
-				Record = RegisterRecords.ReceivedInvoiced.Add();
-				Record.RecordType = AccumulationRecordType.Receipt;
-				Record.Period = Date;
-				Record.OrderDocument = ParentPurchaseOrder;
-				Record.Product = CurRowLineItems.Product;
-				Record.Whse = CurRowLineItems.Quantity;
-			EndIf;	
-		EndDo;
-	EndIf;
-
+	
+	For Each CurRowLineItems In LineItems Do			
+		If CurRowLineItems.Product.Type = Enums.InventoryTypes.Inventory Then
+			
+			// update the received amount of the parent purchase order
+			
+			If NOT ParentPurchaseOrder.IsEmpty() Then
+					Filter = New Structure("Product");
+					Filter.Insert("Product", CurRowLineItems.Product);	
+					Doc = ParentPurchaseOrder.GetObject();
+					Row = Doc.LineItems.FindRows(Filter)[0];
+					Row.Received = Row.Received + CurRowLineItems.Quantity;
+					Doc.Write();
+				EndIf;				
+		EndIf;
+	EndDo;
 	
     // create an Inventory Journal dataset
 	
@@ -50,7 +50,7 @@ Procedure Posting(Cancel, Mode)
 		InvDataset.Sort("Date, Row");
 		InvDatasetProduct = InvDataset.FindRows(Filter);
 		
-		AdjustmentCosts = InventoryCosting.PurchaseDocumentsProcessing(CurRowLineItems, InvDatasetProduct, Location, DocDate, ExchangeRate, Ref, PriceIncludesVAT);
+		AdjustmentCosts = InventoryCosting.PurchaseDocumentsProcessing(CurRowLineItems, InvDatasetProduct, Location, DocDate, ExchangeRate, Ref);
 		
 		PostingCostBeforeAdj = PostingCostBeforeAdj + AdjustmentCosts[0][0];
 		PostingCostAfterAdj = PostingCostAfterAdj + AdjustmentCosts[0][1];
@@ -61,23 +61,16 @@ Procedure Posting(Cancel, Mode)
 	
 	PostingDataset = New ValueTable();
 	PostingDataset.Columns.Add("Account");
-	PostingDataset.Columns.Add("AmountRC");
-	
+	PostingDataset.Columns.Add("AmountRC");	
 	For Each CurRowLineItems in LineItems Do		
-				
 		PostingLine = PostingDataset.Add();       
 		If CurRowLineItems.Product.Code = "" Then
 			PostingLine.Account = Company.ExpenseAccount;
 		Else
 			PostingLine.Account = CurRowLineItems.Product.InventoryOrExpenseAccount;
 		EndIf;
-		If PriceIncludesVAT Then
-			PostingLine.AmountRC = (CurRowLineItems.LineTotal - CurRowLineItems.VAT) * ExchangeRate;
-		Else
-			PostingLine.AmountRC = CurRowLineItems.LineTotal * ExchangeRate;
-		EndIf;
-		
-	EndDo;
+		PostingLine.AmountRC = CurRowLineItems.Price * ExchangeRate * CurRowLineItems.Quantity;			
+    EndDo;
 	
 	PostingDataset.GroupBy("Account", "AmountRC");
 	
@@ -97,19 +90,22 @@ Procedure Posting(Cancel, Mode)
 	EndDo;
 
 	Record = RegisterRecords.GeneralJournal.AddCredit();
-	Record.Account = AccruedPurchasesAccount;
+	Record.Account = APAccount;
 	Record.Period = Date;
-	//If PriceIncludesVAT Then
-	//	Record.Amount = DocumentTotal - (VATTotal / ExchangeRate);
-	//Else
-	//	Record.Amount = DocumentTotal - (VATTotal / ExchangeRate);
-	//EndIf;
-	//Record.Currency = Currency;
-	If PriceIncludesVAT Then
-		Record.AmountRC = DocumentTotalRC - VATTotal;
-	Else
-		Record.AmountRC = DocumentTotalRC - VATTotal;
+	Record.Amount = DocumentTotal;
+	Record.Currency = Currency;
+	Record.AmountRC = DocumentTotal * ExchangeRate;
+	Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Company] = Company;
+	Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Document] = Ref;
+
+	
+	If VATTotal > 0 Then
+		Record = RegisterRecords.GeneralJournal.AddDebit();
+		Record.Account = Constants.VATAccount.Get();
+		Record.Period = Date;
+		Record.AmountRC = VATTotal;
 	EndIf;
+
 	
 	// Actual (adjusted) cost higher
 	If (PostingCostAfterAdj - PostingCostBeforeAdj) > 0 Then
@@ -158,9 +154,7 @@ Procedure Filling(FillingData, StandardProcessing)
 		ExchangeRate = FillingData.ExchangeRate;
 		Location = FillingData.Location;
 		VATTotal = FillingData.VATTotal;
-		//APAccount = FillingData.Company.DefaultCurrency.DefaultAPAccount;
-		AccruedPurchasesAccount = FillingData.Currency.DefaultAccruedPurchasesAccount;
-		PriceIncludesVAT = FillingData.PriceIncludesVAT;
+		APAccount = FillingData.Company.DefaultCurrency.DefaultAPAccount;
 		
 		For Each CurRowLineItems In FillingData.LineItems Do
 			NewRow = LineItems.Add();

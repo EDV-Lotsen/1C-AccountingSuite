@@ -7,23 +7,24 @@ Procedure Posting(Cancel, Mode)
 	PostingCostBeforeAdj = 0;
 	PostingCostAfterAdj = 0;
 		
-	If NOT ParentPurchaseOrder.IsEmpty() Then
-		RegisterRecords.ReceivedInvoiced.Write = True;
-		For Each CurRowLineItems In LineItems Do
-			If CurRowLineItems.Product.Type = Enums.InventoryTypes.Inventory Then
-				Record = RegisterRecords.ReceivedInvoiced.Add();
-				Record.RecordType = AccumulationRecordType.Receipt;
-				Record.Period = Date;
-				Record.OrderDocument = ParentPurchaseOrder;
-				Record.Product = CurRowLineItems.Product;
+	For Each CurRowLineItems In LineItems Do			
+		If CurRowLineItems.Product.Type = Enums.InventoryTypes.Inventory Then
+			
+			// update the received and invoiced amounts of the parent purchase order
+			
+			If NOT ParentPurchaseOrder.IsEmpty() Then
+				Filter = New Structure("Product");
+				Filter.Insert("Product", CurRowLineItems.Product);	
+				Doc = ParentPurchaseOrder.GetObject();
+				Row = Doc.LineItems.FindRows(Filter)[0];
 				If ParentGoodsReceipt.IsEmpty() Then
-					Record.Whse = CurRowLineItems.Quantity;
-				EndIf;	
-				Record.Invoiced = CurRowLineItems.Quantity;
-			EndIf;	
-		EndDo;
-	EndIf;
-
+					Row.Received = Row.Received + CurRowLineItems.Quantity;
+				EndIf;
+				Row.Invoiced = Row.Invoiced + CurRowLineItems.Quantity;
+				Doc.Write();
+			EndIf;				
+		EndIf;
+	EndDo;
 	
 	If ParentGoodsReceipt.IsEmpty() Then		
 		
@@ -54,7 +55,7 @@ Procedure Posting(Cancel, Mode)
 			InvDataset.Sort("Date, Row");
 			InvDatasetProduct = InvDataset.FindRows(Filter);
 			
-			AdjustmentCosts = InventoryCosting.PurchaseDocumentsProcessing(CurRowLineItems, InvDatasetProduct, Location, DocDate, ExchangeRate, Ref, PriceIncludesVAT);
+			AdjustmentCosts = InventoryCosting.PurchaseDocumentsProcessing(CurRowLineItems, InvDatasetProduct, Location, DocDate, ExchangeRate, Ref);
 			
 			PostingCostBeforeAdj = PostingCostBeforeAdj + AdjustmentCosts[0][0];
 			PostingCostAfterAdj = PostingCostAfterAdj + AdjustmentCosts[0][1];
@@ -62,55 +63,27 @@ Procedure Posting(Cancel, Mode)
 		EndDo;
 		
 	EndIf;
-		
+	
+	
 	If NOT ParentGoodsReceipt.IsEmpty() Then
-				
-		RegisterRecords.GeneralJournal.Write = True;
 		
-		PostingDatasetVAT = New ValueTable();
-		PostingDatasetVAT.Columns.Add("VATAccount");
-		PostingDatasetVAT.Columns.Add("AmountRC");
-
-		PostingVATTotal = 0;
+		// updating the parent's goods receipt GL posting
 		
-		For Each CurRowLineItems in ParentGoodsReceipt.GetObject().LineItems Do		
-
-			If CurRowLineItems.VAT > 0 Then
+		Reg = AccountingRegisters.GeneralJournal.CreateRecordSet();
+		Reg.Filter.Recorder.Set(ParentGoodsReceipt);
+		Reg.Read();
+		
+			For Each Transaction In Reg Do
 				
-				PostingLineVAT = PostingDatasetVAT.Add();
-				PostingLineVAT.VATAccount = VAT_FL.VATAccount(CurRowLineItems.VATCode, "Purchase");
-				PostingLineVAT.AmountRC = CurRowLineItems.VAT * ParentGoodsReceipt.GetObject().ExchangeRate;
+				Transaction.Period = Date;
+				Transaction.Recorder = Ref;
+				If NOT Transaction.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Document] = Undefined Then
+					Transaction.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Document] = Ref;
+				EndIf;
 				
-				PostingVATTotal = PostingVATTotal + CurRowLineItems.VAT;
-				
-			EndIf;
+			EndDo;
 			
-		EndDo;
-
-		PostingDatasetVAT.GroupBy("VATAccount", "AmountRC");
-		NoOfPostingRows = PostingDatasetVAT.Count();
-		For i = 0 To NoOfPostingRows - 1 Do
-			Record = RegisterRecords.GeneralJournal.AddDebit();
-			Record.Account = PostingDatasetVAT[i][0];
-			Record.Period = Date;
-			Record.AmountRC = PostingDatasetVAT[i][1];	
-		EndDo;	
-		
-		Record = RegisterRecords.GeneralJournal.AddDebit();
-		Record.Account = AccruedPurchasesAccount;
-		Record.Period = Date;
-		//Record.Amount = DocumentTotal - PostingVATTotal;
-		//Record.Currency = Currency;
-		Record.AmountRC = (DocumentTotal - PostingVATTotal) * ExchangeRate;
-		
-		Record = RegisterRecords.GeneralJournal.AddCredit();
-		Record.Account = APAccount;
-		Record.Period = Date;
-		Record.Amount = DocumentTotal;
-		Record.Currency = Currency;
-		Record.AmountRC = DocumentTotal * ExchangeRate;
-	    Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Company] = Company;
-		Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Document] = Ref;
+		Reg.Write();
 		
 	EndIf;
 	
@@ -118,39 +91,18 @@ Procedure Posting(Cancel, Mode)
 		
 		// fill in the account posting value table with amounts
 		
-		PostingDatasetVAT = New ValueTable();
-		PostingDatasetVAT.Columns.Add("VATAccount");
-		PostingDatasetVAT.Columns.Add("AmountRC");
-		
 		PostingDataset = New ValueTable();
 		PostingDataset.Columns.Add("Account");
 		PostingDataset.Columns.Add("AmountRC");	
-		
 		For Each CurRowLineItems in LineItems Do		
-			
 			PostingLine = PostingDataset.Add();       
 			If CurRowLineItems.Product.Code = "" Then
 				PostingLine.Account = Company.ExpenseAccount;
 			Else
 				PostingLine.Account = CurRowLineItems.Product.InventoryOrExpenseAccount;
 			EndIf;	
-			If PriceIncludesVAT Then
-				PostingLine.AmountRC = (CurRowLineItems.LineTotal - CurRowLineItems.VAT) * ExchangeRate;
-			Else
-				PostingLine.AmountRC = CurRowLineItems.LineTotal * ExchangeRate;
-			EndIf;
-
-			//PostingLine.AmountRC = CurRowLineItems.Price * ExchangeRate * CurRowLineItems.Quantity;			
-			
-			If CurRowLineItems.VAT > 0 Then
-				
-				PostingLineVAT = PostingDatasetVAT.Add();
-				PostingLineVAT.VATAccount = VAT_FL.VATAccount(CurRowLineItems.VATCode, "Purchase");
-				PostingLineVAT.AmountRC = CurRowLineItems.VAT * ExchangeRate;
-								
-			EndIf;
-			
-		EndDo;
+			PostingLine.AmountRC = CurRowLineItems.Price * ExchangeRate * CurRowLineItems.Quantity;			
+        EndDo;
 		
 		PostingDataset.GroupBy("Account", "AmountRC");
 		
@@ -178,14 +130,12 @@ Procedure Posting(Cancel, Mode)
 		Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Company] = Company;
 		Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Document] = Ref;
 		
-		PostingDatasetVAT.GroupBy("VATAccount", "AmountRC");
-		NoOfPostingRows = PostingDatasetVAT.Count();
-		For i = 0 To NoOfPostingRows - 1 Do
+		If VATTotal > 0 Then
 			Record = RegisterRecords.GeneralJournal.AddDebit();
-			Record.Account = PostingDatasetVAT[i][0];
+			Record.Account = Constants.VATAccount.Get();
 			Record.Period = Date;
-			Record.AmountRC = PostingDatasetVAT[i][1];	
-		EndDo;	
+			Record.AmountRC = VATTotal;
+		EndIf;
 		
 		// Actual (adjusted) cost higher
 		If (PostingCostAfterAdj - PostingCostBeforeAdj) > 0 Then
@@ -255,7 +205,6 @@ Procedure Filling(FillingData, StandardProcessing)
 		Location = FillingData.Location;
 		VATTotal = FillingData.VATTotal;
 		APAccount = FillingData.Company.DefaultCurrency.DefaultAPAccount;
-		PriceIncludesVAT = FillingData.PriceIncludesVAT;
 		
 		For Each CurRowLineItems In FillingData.LineItems Do
 			NewRow = LineItems.Add();
@@ -281,9 +230,7 @@ Procedure Filling(FillingData, StandardProcessing)
 		Location = FillingData.Location;
 		ParentGoodsReceipt = FillingData.Ref;
 		VATTotal = FillingData.VATTotal;
-		AccruedPurchasesAccount = FillingData.AccruedPurchasesAccount;
-		APAccount = FillingData.Currency.DefaultAPAccount;
-		PriceIncludesVAT = FillingData.PriceIncludesVAT;
+		APAccount = FillingData.APAccount;
 		
 		For Each CurRowLineItems In FillingData.LineItems Do
 			NewRow = LineItems.Add();
@@ -306,7 +253,7 @@ EndProcedure
 //
 Procedure UndoPosting(Cancel)
 	
-	If InventoryCosting.InventoryPresent(Ref) AND ParentGoodsReceipt.IsEmpty() Then
+	If InventoryCosting.InventoryPresent(Ref) Then
 	
 		If NOT GetFunctionalOption("AllowVoiding") Then
 			
@@ -318,7 +265,7 @@ Procedure UndoPosting(Cancel)
 			
 		EndIf;
 
-	EndIf;
+	EndIf;	
 			
 EndProcedure
 
@@ -328,7 +275,7 @@ Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 		
 	If InventoryCosting.InventoryPresent(Ref) Then
 		
-		If NOT GetFunctionalOption("AllowVoiding") AND ParentGoodsReceipt.IsEmpty() Then
+		If NOT GetFunctionalOption("AllowVoiding") Then
 			
 			If WriteMode = DocumentWriteMode.Posting Then
 				
@@ -346,8 +293,8 @@ Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 		
 		EndIf;
 		
-	EndIf;
-	
+	EndIf;	
+
 EndProcedure
 
 // Clears the DocPosted attribute on document copying

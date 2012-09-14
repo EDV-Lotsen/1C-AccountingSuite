@@ -12,7 +12,6 @@ Procedure Filling(FillingData, StandardProcessing)
 		ExchangeRate = FillingData.ExchangeRate;
 		ParentSalesQuote = FillingData.Ref;
 		VATTotal = FillingData.VATTotal;
-		PriceIncludesVAT = FillingData.PriceIncludesVAT;
 		
 		For Each CurRowLineItems In FillingData.LineItems Do
 			NewRow = LineItems.Add();

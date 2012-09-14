@@ -632,18 +632,8 @@ EndFunction
 // Returned value:
 // ValueTable.
 //
-Function PurchaseDocumentsProcessing(CurRowLineItems, InvDatasetProduct, Location, DocDate, ExchangeRate, Ref, PriceIncludesVAT) Export
+Function PurchaseDocumentsProcessing(CurRowLineItems, InvDatasetProduct, Location, DocDate, ExchangeRate, Ref) Export
 	
-	If PriceIncludesVAT Then
-		If GeneralFunctionsReusable.FunctionalOptionValue("UnitsOfMeasure") Then
-			CurRowLineItemsPrice = CurRowLineItems.Price - (CurRowLineItems.VAT / CurRowLineItems.QuantityUM);
-		Else
-			CurRowLineItemsPrice = CurRowLineItems.Price - (CurRowLineItems.VAT / CurRowLineItems.Quantity);
-		EndIf;
-	Else
-		CurRowLineItemsPrice = CurRowLineItems.Price;
-	EndIf;
-		
 	PostingCost = 0; // for SalesReturn
 	PostingCostBeforeAdj = 0;
 	PostingCostAfterAdj = 0;
@@ -679,7 +669,7 @@ Function PurchaseDocumentsProcessing(CurRowLineItems, InvDatasetProduct, Locatio
 			If TypeOf(Ref) = Type("DocumentRef.SalesReturn") Then
 				Reg.DocCost = LastCost;
 			Else
-				Reg.DocCost = CurRowLineItemsPrice * ExchangeRate;
+				Reg.DocCost = CurRowLineItems.Price * ExchangeRate;
 			EndIf;			
 			LastRowNumber = InventoryCosting.GetLastRowNumber(CurRowLineItems.Product, Location, DocDate);
 			Reg.Row = LastRowNumber + 1;			
@@ -689,7 +679,7 @@ Function PurchaseDocumentsProcessing(CurRowLineItems, InvDatasetProduct, Locatio
 					Location, DocDate, 0) + CurRowLineItems.Quantity);
 			Else
 				AdjCost = (InventoryCosting.PreviousLayersValue(CurRowLineItems.Product, Location, DocDate, 0) +
-					CurRowLineItems.Quantity * CurRowLineItemsPrice * ExchangeRate) /
+					CurRowLineItems.Quantity * CurRowLineItems.Price * ExchangeRate) /
 					(InventoryCosting.PreviousLayersQty(CurRowLineItems.Product, Location, DocDate, 0) +
 					CurRowLineItems.Quantity);
 			EndIf;			
@@ -727,7 +717,7 @@ Function PurchaseDocumentsProcessing(CurRowLineItems, InvDatasetProduct, Locatio
 					If TypeOf(Ref) = Type("DocumentRef.SalesReturn") Then
 						Reg.DocCost = LastCost;
 					Else
-						Reg.DocCost = CurRowLineItemsPrice * ExchangeRate;
+						Reg.DocCost = CurRowLineItems.Price * ExchangeRate;
 					EndIf;					
 					LastRowNumber = InventoryCosting.GetLastRowNumber(CurRowLineItems.Product, Location, DocDate);
 					Reg.Row = LastRowNumber + 1;					
@@ -737,7 +727,7 @@ Function PurchaseDocumentsProcessing(CurRowLineItems, InvDatasetProduct, Locatio
 							Location, DocDate, 0) + CurRowLineItems.Quantity);
 					Else
 						AdjCost = (InventoryCosting.PreviousLayersValue(CurRowLineItems.Product, Location, DocDate, 0) +
-							CurRowLineItems.Quantity * CurRowLineItemsPrice * ExchangeRate) /
+							CurRowLineItems.Quantity * CurRowLineItems.Price * ExchangeRate) /
 							(InventoryCosting.PreviousLayersQty(CurRowLineItems.Product, Location, DocDate, 0) +
 							CurRowLineItems.Quantity);
 					EndIf;					
@@ -803,14 +793,14 @@ Function PurchaseDocumentsProcessing(CurRowLineItems, InvDatasetProduct, Locatio
 		If TypeOf(Ref) = Type("DocumentRef.SalesReturn") Then
 			Reg.DocCost = LastCost;
 		Else
-			Reg.DocCost = CurRowLineItemsPrice * ExchangeRate;
+			Reg.DocCost = CurRowLineItems.Price * ExchangeRate;
 		EndIf;		
 		LastRowNumber = InventoryCosting.GetLastRowNumber(CurRowLineItems.Product, Location, DocDate);
 		Reg.Row = LastRowNumber + 1;		
 		If TypeOf(Ref) = Type("DocumentRef.SalesReturn") Then
 			Reg.AdjCost = LastCost;
 		Else
-			Reg.AdjCost = CurRowLineItemsPrice * ExchangeRate; 			
+			Reg.AdjCost = CurRowLineItems.Price * ExchangeRate; 			
 		EndIf;		
 		PostingCost = PostingCost + LastCost * CurRowLineItems.Quantity; // for SalesReturn		
 		Reg.Write(False);	
@@ -890,50 +880,6 @@ Function InventoryPresent(DocRef) Export
 		Return False;
 	Else
 		Return True;
-	EndIf;
-	
-EndFunction
-
-Function OrderWhse(OrderDocument, Product) Export
-	
-	 Query = New Query("SELECT
-                      |	ReceivedInvoiced.WhseBalance
-                      |FROM
-                      |	AccumulationRegister.ReceivedInvoiced.Balance AS ReceivedInvoiced
-                      |WHERE
-                      |	ReceivedInvoiced.OrderDocument = &OrderDocument
-                      |	AND ReceivedInvoiced.Product = &Product");
-	Query.SetParameter("OrderDocument", OrderDocument);				  
-	Query.SetParameter("Product", Product);
-	QueryResult = Query.Execute();
-
-	If QueryResult.IsEmpty() Then
-		Return 0;
-	Else
-		Dataset = QueryResult.Unload();
-		Return Dataset[0][0];
-	EndIf;
-	
-EndFunction
-
-Function OrderInvoiced(OrderDocument, Product) Export
-	
-	 Query = New Query("SELECT
-                      |	ReceivedInvoiced.InvoicedBalance
-                      |FROM
-                      |	AccumulationRegister.ReceivedInvoiced.Balance AS ReceivedInvoiced
-                      |WHERE
-                      |	ReceivedInvoiced.OrderDocument = &OrderDocument
-                      |	AND ReceivedInvoiced.Product = &Product");
-	Query.SetParameter("OrderDocument", OrderDocument);				  
-	Query.SetParameter("Product", Product);
-	QueryResult = Query.Execute();
-
-	If QueryResult.IsEmpty() Then
-		Return 0;
-	Else
-		Dataset = QueryResult.Unload();
-		Return Dataset[0][0];
 	EndIf;
 	
 EndFunction

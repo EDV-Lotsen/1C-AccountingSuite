@@ -1,38 +1,39 @@
-﻿Procedure Print(ObjectArray, PrintParameters, PrintFormsCollection,
-           PrintObjects, OutputParameters) Export
+﻿
 
-     // Setting the kit printing option.
-     OutputParameters.KitPrintingEnabled = True;
+Процедура Печать(МассивОбъектов, ПараметрыПечати, КоллекцияПечатныхФорм,
+           ОбъектыПечати, ПараметрыВывода) Экспорт
 
-     // Checking if a spreadsheet document generation needed for the Sales Order template.
-    If PrintManagement.SpreadsheetDocumentPrintRequested(PrintFormsCollection, "SalesOrder") Then
+     // Устанавливаем признак доступности печати покомплектно.
+     ПараметрыВывода.ДоступнаПечатьПоКомплектно = Истина;
 
-         // Generating a spreadsheet document and adding it into the print form collection.
-         PrintManagement.OutputSpreadsheetDocumentIntoCollection(PrintFormsCollection,
-             "SalesOrder", "Sales order", PrintTemplate(ObjectArray, PrintObjects, "UMOff"));
+     // Проверяем, нужно ли для макета СчетЗаказа формировать табличный документ.
+     Если УправлениеПечатью.НужноПечататьМакет(КоллекцияПечатныхФорм, "SalesOrder") Тогда
 
-	EndIf;
-		 
-	If PrintManagement.SpreadsheetDocumentPrintRequested(PrintFormsCollection, "SalesOrderUM") Then
+         // Формируем табличный документ и добавляем его в коллекцию печатных форм.
+         УправлениеПечатью.ВывестиТабличныйДокументВКоллекцию(КоллекцияПечатныхФорм,
+             "SalesOrder", "Sales order", ПечатьSalesInvoice(МассивОбъектов, ОбъектыПечати, "UMOff"));
 
-         // Checking if a spreadsheet document generation needed for the Sales Order U/M template.
-         PrintManagement.OutputSpreadsheetDocumentIntoCollection(PrintFormsCollection,
-             "SalesOrderUM", "Sales order", PrintTemplate(ObjectArray, PrintObjects, "UMOn"));
-
-	EndIf;
-
-		 
-EndProcedure
-	 
-Function PrintTemplate(ObjectArray, PrintObjects, UMMode)
+	КонецЕсли;
 	
-	// Create a spreadsheet document and set print parameters.
-   SpreadsheetDocument = New SpreadsheetDocument;
-   SpreadsheetDocument.PrintParametersName = "PrintParameters_SalesOrder";
+	Если УправлениеПечатью.НужноПечататьМакет(КоллекцияПечатныхФорм, "SalesOrderUM") Тогда
 
-   // Quering necessary data.
-   Query = New Query();
-   Query.Text =
+         // Формируем табличный документ и добавляем его в коллекцию печатных форм.
+         УправлениеПечатью.ВывестиТабличныйДокументВКоллекцию(КоллекцияПечатныхФорм,
+             "SalesOrderUM", "Sales order", ПечатьSalesInvoice(МассивОбъектов, ОбъектыПечати, "UMOn"));
+
+	КонецЕсли;
+
+	
+КонецПроцедуры
+	 
+Функция ПечатьSalesInvoice(МассивОбъектов, ОбъектыПечати, UMMode)
+   // Создаем табличный документ и устанавливаем имя параметров печати.
+   ТабличныйДокумент = Новый ТабличныйДокумент;
+   ТабличныйДокумент.ИмяПараметровПечати = "ПараметрыПечати_SalesOrder";
+
+   // Получаем запросом необходимые данные.
+   Запрос = Новый Запрос();
+   Запрос.Текст =
    "SELECT
    |	SalesOrder.Ref,
    |	SalesOrder.Company,
@@ -48,99 +49,106 @@ Function PrintTemplate(ObjectArray, PrintObjects, UMMode)
    |		Quantity,
    |		UM,
    |		QuantityUM,
-   |		VATCode,
-   |		VAT,
    |		Price,
    |		LineTotal
    |	)
    |FROM
    |	Document.SalesOrder AS SalesOrder
    |WHERE
-   |	SalesOrder.Ref IN(&ObjectArray)";
-   Query.SetParameter("ObjectArray", ObjectArray);
-   Selection = Query.Execute().Choose();
-  
-   	FirstDocument = True;
+   |	SalesOrder.Ref IN(&МассивОбъектов)";
+   Запрос.УстановитьПараметр("МассивОбъектов", МассивОбъектов);
+   Selection = Запрос.Выполнить().Выбрать();
 
-	OurCompany = Catalogs.Companies.OurCompany;
    
-   	While Selection.Next() Do
-		
-		If Not FirstDocument Then
-			// All documents need to be outputted on separate pages.
-			SpreadsheetDocument.PutHorizontalPageBreak();
-		EndIf;
-		FirstDocument = False;
-		// Remember current document output beginning line number.
-		BeginningLineNumber = SpreadsheetDocument.TableHeight + 1;
+   ПервыйДокумент = Истина;
 
+    //360
+	OurCompany = Catalogs.Companies.OurCompany;
+	//360
+   
+   Пока Selection.Следующий() Цикл
+     Если Не ПервыйДокумент Тогда
+       // Все документы нужно выводить на разных страницах.
+       ТабличныйДокумент.ВывестиГоризонтальныйРазделительСтраниц();
+     КонецЕсли;
+     ПервыйДокумент = Ложь;
+     // Запомним номер строки, с которой начали выводить текущий документ.
+     НомерСтрокиНачало = ТабличныйДокумент.ВысотаТаблицы + 1;
 	 
 	If UMMode = "UMOff" Then
-	 	Template = PrintManagement.GetTemplate("Document.SalesOrder.PF_MXL_SalesOrder");
+	 	Макет = УправлениеПечатью.ПолучитьМакет("Document.SalesOrder.ПФ_MXL_SalesOrder");
 	Else
-		Template = PrintManagement.GetTemplate("Document.SalesOrder.PF_MXL_SalesOrderUM");
+		Макет = УправлениеПечатью.ПолучитьМакет("Document.SalesOrder.ПФ_MXL_SalesOrderUM");
 	EndIf;
 	 
-	 TemplateArea = Template.GetArea("Header");
+	 ОбластьМакета = Макет.ПолучитьОбласть("Header");
 	 
-	OurCompanyInfo = PrintTemplates.ContactInfo(OurCompany, "OurCompany");
-	CounterpartyInfo = PrintTemplates.ContactInfo(Selection.Company, "Counterparty");
+	OurCompanyInfo = PrintTemplates.ContactInfo(OurCompany);
+	CounterpartyInfo = PrintTemplates.ContactInfo(Selection.Company);
 	
-	TemplateArea.Parameters.Fill(OurCompanyInfo);
-	TemplateArea.Parameters.Fill(CounterpartyInfo);
-
+	ОбластьМакета.Параметры.OurCompanyName = OurCompanyInfo.Name;
+	ОбластьМакета.Параметры.OurCompanyAddress = OurCompanyInfo.Address;
+	ОбластьМакета.Параметры.OurCompanyZIP = OurCompanyInfo.ZIP;
+	ОбластьМакета.Параметры.OurCompanyPhone = OurCompanyInfo.Phone;
+	ОбластьМакета.Параметры.OurCompanyEmail = OurCompanyInfo.Email;
+	ОбластьМакета.Параметры.OurCompanyCountry = OurCompanyInfo.Country;
+	
+	ОбластьМакета.Параметры.CounterpartyName = CounterpartyInfo.Name;
+	ОбластьМакета.Параметры.CounterpartyAddress = CounterpartyInfo.Address;
+	ОбластьМакета.Параметры.CounterpartyZIP = CounterpartyInfo.ZIP;
+	ОбластьМакета.Параметры.CounterpartyCountry = CounterpartyInfo.Country;
 	 
-	 TemplateArea.Parameters.Date = Selection.Date;
-	 TemplateArea.Parameters.Number = Selection.Number;
+	 ОбластьМакета.Параметры.Date = Selection.Date;
+	 ОбластьМакета.Параметры.Number = Selection.Number;
 	 
-	 SpreadsheetDocument.Put(TemplateArea);
+	 ТабличныйДокумент.Вывести(ОбластьМакета);
 
-	 TemplateArea = Template.GetArea("LineItemsHeader");
-	 SpreadsheetDocument.Put(TemplateArea);
+	 ОбластьМакета = Макет.ПолучитьОбласть("LineItemsHeader");
+	 ТабличныйДокумент.Вывести(ОбластьМакета);
 	 
 	 SelectionLineItems = Selection.LineItems.Choose();
-	 TemplateArea = Template.GetArea("LineItems");
+	 ОбластьМакета = Макет.ПолучитьОбласть("LineItems");
 	 LineTotalSum = 0;
 	 While SelectionLineItems.Next() Do
 		 
-		 TemplateArea.Parameters.Fill(SelectionLineItems);
+		 ОбластьМакета.Parameters.Fill(SelectionLineItems);
 		 LineTotal = SelectionLineItems.LineTotal;
 		 LineTotalSum = LineTotalSum + LineTotal;
-		 SpreadsheetDocument.Put(TemplateArea, SelectionLineItems.Level());
+		 ТабличныйДокумент.Вывести(ОбластьМакета, SelectionLineItems.Level());
 		 
 	 EndDo;
 	 
 	Try 
-		TemplateArea = Template.GetArea("ExtraLines");
-		SpreadsheetDocument.Put(TemplateArea);
+		ОбластьМакета = Макет.ПолучитьОбласть("ExtraLines");
+		ТабличныйДокумент.Вывести(ОбластьМакета);
 	Except
 	EndTry; 
 	 
 	If Selection.VATTotal <> 0 Then;
-		 TemplateArea = Template.GetArea("Subtotal");
-		 TemplateArea.Parameters.Subtotal = LineTotalSum;
-		 SpreadsheetDocument.Put(TemplateArea);
+		 ОбластьМакета = Макет.ПолучитьОбласть("Subtotal");
+		 ОбластьМакета.Параметры.Subtotal = LineTotalSum - Selection.VATTotal;
+		 ТабличныйДокумент.Вывести(ОбластьМакета);
 		 
-		 TemplateArea = Template.GetArea("VAT");
-		 TemplateArea.Parameters.VATTotal = Selection.VATTotal;
-		 SpreadsheetDocument.Put(TemplateArea);
+		 ОбластьМакета = Макет.ПолучитьОбласть("VAT");
+		 ОбластьМакета.Параметры.VATTotal = Selection.VATTotal;
+		 ТабличныйДокумент.Вывести(ОбластьМакета);
 	EndIf; 
 		 
-	 TemplateArea = Template.GetArea("Total");
-	 TemplateArea.Parameters.DocumentTotal = LineTotalSum + Selection.VATTotal;
-	 SpreadsheetDocument.Put(TemplateArea);
+	 ОбластьМакета = Макет.ПолучитьОбласть("Total");
+	 ОбластьМакета.Параметры.DocumentTotal = LineTotalSum;
+	 ТабличныйДокумент.Вывести(ОбластьМакета);
 
-	 TemplateArea = Template.GetArea("Currency");
-	 TemplateArea.Parameters.Currency = Selection.Currency;
-	 SpreadsheetDocument.Put(TemplateArea);
+	 ОбластьМакета = Макет.ПолучитьОбласть("Currency");
+	 ОбластьМакета.Параметры.Currency = Selection.Currency;
+	 ТабличныйДокумент.Вывести(ОбластьМакета);
 
 	 
-     // Setting a print area in the spreadsheet document where to output the object.
-     // Necessary for kit printing. 
-     PrintManagement.SetPrintArea(SpreadsheetDocument, BeginningLineNumber, PrintObjects, Selection.Ref);
+     // В табличном документе необходимо задать имя области, в которую был 
+     // выведен объект. Нужно для возможности печати покомплектно 
+     УправлениеПечатью.ЗадатьОбластьПечатиДокумента(ТабличныйДокумент, НомерСтрокиНачало, ОбъектыПечати, Selection.Ref);
 
-   EndDo;
+   КонецЦикла;
    
-   Return SpreadsheetDocument;
+   Возврат ТабличныйДокумент;
    
-EndFunction
+КонецФункции

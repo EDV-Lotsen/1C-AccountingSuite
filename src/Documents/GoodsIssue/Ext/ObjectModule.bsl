@@ -6,13 +6,17 @@ Procedure Posting(Cancel, Mode)
 	
 	// create a value table for posting amounts
 	
+	PostingDatasetIncome = New ValueTable();
+	PostingDatasetIncome.Columns.Add("IncomeAccount");
+	PostingDatasetIncome.Columns.Add("AmountRC");
+	
 	PostingDatasetCOGS = New ValueTable();
 	PostingDatasetCOGS.Columns.Add("COGSAccount");
 	PostingDatasetCOGS.Columns.Add("AmountRC");	
 	
 	PostingDatasetInvOrExp = New ValueTable();
 	PostingDatasetInvOrExp.Columns.Add("InvOrExpAccount");
-    PostingDatasetInvOrExp.Columns.Add("AmountRC");
+    PostingDatasetInvOrExp.Columns.Add("AmountRC");		
 	
 	// create an Inventory Journal dataset
 	
@@ -32,21 +36,6 @@ Procedure Posting(Cancel, Mode)
 		EndIf;	
 	EndDo;
 
-	// update the received amount of the parent sales order
-	If NOT ParentSalesOrder.IsEmpty() Then
-		RegisterRecords.ReceivedInvoiced.Write = True;
-		For Each CurRowLineItems In LineItems Do
-			If CurRowLineItems.Product.Type = Enums.InventoryTypes.Inventory Then
-				Record = RegisterRecords.ReceivedInvoiced.Add();
-				Record.RecordType = AccumulationRecordType.Receipt;
-				Record.Period = Date;
-				Record.OrderDocument = ParentSalesOrder;
-				Record.Product = CurRowLineItems.Product;
-				Record.Whse = CurRowLineItems.Quantity;
-			EndIf;	
-		EndDo;
-	EndIf;
-	
 	For Each CurRowLineItems In LineItems Do
 				
 		If CurRowLineItems.Product.Type = Enums.InventoryTypes.Inventory Then				
@@ -63,7 +52,21 @@ Procedure Posting(Cancel, Mode)
 			EndIf;
 
 		EndIf;
-					
+			
+		If CurRowLineItems.Product.Type = Enums.InventoryTypes.Inventory Then
+			
+			// update the issued amount of the parent sales order
+			
+			If NOT ParentSalesOrder.IsEmpty() Then
+				Filter = New Structure("Product");
+				Filter.Insert("Product", CurRowLineItems.Product);	
+				Doc = ParentSalesOrder.GetObject();
+				Row = Doc.LineItems.FindRows(Filter)[0];
+				Row.Issued = Row.Issued + CurRowLineItems.Quantity;
+				Doc.Write();
+			EndIf;				
+		EndIf;
+		
 		// select a subset of the Inventory Journal dataset and call the inventory costing procedure
 		
 		Filter = New Structure();
@@ -74,7 +77,15 @@ Procedure Posting(Cancel, Mode)
 		PostingCost = InventoryCosting.SalesDocumentProcessing(CurRowLineItems, InvDatasetProduct, Location);
 		
 		// fill in the account posting value table with amounts
-				
+		
+		PostingLineIncome = PostingDatasetIncome.Add();
+		If CurRowLineItems.Product.Code = "" Then
+			PostingLineIncome.IncomeAccount = Company.IncomeAccount;	
+		Else	
+			PostingLineIncome.IncomeAccount = CurRowLineItems.Product.IncomeAccount;
+		EndIf;	
+		PostingLineIncome.AmountRC = CurRowLineItems.Price * ExchangeRate * CurRowLineItems.Quantity;
+		
 		If CurRowLineItems.Product.Type = Enums.InventoryTypes.Inventory Then 
 			PostingLineCOGS = PostingDatasetCOGS.Add();
 			PostingLineCOGS.COGSAccount = CurRowLineItems.Product.COGSAccount;
@@ -84,7 +95,7 @@ Procedure Posting(Cancel, Mode)
 			PostingLineInvOrExp.InvOrExpAccount = CurRowLineItems.Product.InventoryOrExpenseAccount;
 			PostingLineInvOrExp.AmountRC = PostingCost;
 		EndIf;
-				
+		
 		PostingCost = 0;
 		
 	EndDo;
@@ -93,6 +104,24 @@ Procedure Posting(Cancel, Mode)
 	
     RegisterRecords.GeneralJournal.Write = True;	
     			
+	Record = RegisterRecords.GeneralJournal.AddDebit();
+	Record.Account = ARAccount;
+	Record.Period = Date;
+	Record.Currency = Currency;
+	Record.Amount = DocumentTotal;
+	Record.AmountRC = DocumentTotal * ExchangeRate;		
+	Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Company] = Company;
+	Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Document] = Ref;
+	
+	PostingDatasetIncome.GroupBy("IncomeAccount", "AmountRC");
+	NoOfPostingRows = PostingDatasetIncome.Count();
+	For i = 0 To NoOfPostingRows - 1 Do			
+		Record = RegisterRecords.GeneralJournal.AddCredit();
+		Record.Account = PostingDatasetIncome[i][0];
+		Record.Period = Date;
+		Record.AmountRC = PostingDatasetIncome[i][1];				
+	EndDo;
+
 	PostingDatasetCOGS.GroupBy("COGSAccount", "AmountRC");
 	NoOfPostingRows = PostingDatasetCOGS.Count();
 	For i = 0 To NoOfPostingRows - 1 Do			
@@ -110,7 +139,22 @@ Procedure Posting(Cancel, Mode)
 		Record.Period = Date;
 		Record.AmountRC = PostingDatasetInvOrExp[i][1];				
 	EndDo;
-				
+			
+	If SalesTax > 0 Then
+		Record = RegisterRecords.GeneralJournal.AddCredit();
+		Record.Account = Constants.SalesTaxPayableAccount.Get();
+		Record.Period = Date;
+		Record.AmountRC = SalesTax * ExchangeRate;
+	EndIf;		
+	
+	If VATTotal > 0 Then
+		Record = RegisterRecords.GeneralJournal.AddCredit();
+		Record.Account = Constants.VATAccount.Get();
+		Record.Period = Date;
+		Record.AmountRC = VATTotal;
+	EndIf;
+
+	
 EndProcedure
 
 
@@ -129,7 +173,6 @@ Procedure Filling(FillingData, StandardProcessing)
 		Location = FillingData.Location;
 		VATTotal = FillingData.VATTotal;
 		ARAccount = FillingData.Company.DefaultCurrency.DefaultARAccount;
-		PriceIncludesVAT = FillingData.PriceIncludesVAT;
 		
 		For Each CurRowLineItems In FillingData.LineItems Do
 			NewRow = LineItems.Add();

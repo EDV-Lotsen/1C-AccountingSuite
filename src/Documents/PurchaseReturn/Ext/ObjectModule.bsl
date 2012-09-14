@@ -53,12 +53,7 @@ Procedure Posting(Cancel, Mode)
 	
 	PostingDataset = New ValueTable();
 	PostingDataset.Columns.Add("Account");
-	PostingDataset.Columns.Add("AmountRC");
-	
-	PostingDatasetVAT = New ValueTable();
-	PostingDatasetVAT.Columns.Add("VATAccount");
-	PostingDatasetVAT.Columns.Add("AmountRC");
-	
+	PostingDataset.Columns.Add("AmountRC");	
 	For Each CurRowLineItems in LineItems Do		
 		PostingLine = PostingDataset.Add();       
 		If CurRowLineItems.Product.Code = "" Then
@@ -66,23 +61,7 @@ Procedure Posting(Cancel, Mode)
 		Else
 			PostingLine.Account = CurRowLineItems.Product.InventoryOrExpenseAccount;
 		EndIf;
-		If PriceIncludesVAT Then
-			PostingLine.AmountRC = (CurRowLineItems.LineTotal - CurRowLineItems.VAT) * ExchangeRate;
-		Else
-			PostingLine.AmountRC = CurRowLineItems.LineTotal * ExchangeRate;
-		EndIf;
-
-		
-			If CurRowLineItems.VAT > 0 Then
-				
-				PostingLineVAT = PostingDatasetVAT.Add();
-				PostingLineVAT.VATAccount = VAT_FL.VATAccount(CurRowLineItems.VATCode, "Purchase");
-				PostingLineVAT.AmountRC = CurRowLineItems.VAT * ExchangeRate;
-								
-			EndIf;
-
-		
-		
+		PostingLine.AmountRC = CurRowLineItems.Price * ExchangeRate * CurRowLineItems.Quantity;			
     EndDo;
 	
 	PostingDataset.GroupBy("Account", "AmountRC");
@@ -102,14 +81,13 @@ Procedure Posting(Cancel, Mode)
 			
 	EndDo;
 
-	PostingDatasetVAT.GroupBy("VATAccount", "AmountRC");
-	NoOfPostingRows = PostingDatasetVAT.Count();
-	For i = 0 To NoOfPostingRows - 1 Do
+	If VATTotal > 0 Then
 		Record = RegisterRecords.GeneralJournal.AddCredit();
-		Record.Account = PostingDatasetVAT[i][0];
+		Record.Account = Constants.VATAccount.Get();
 		Record.Period = Date;
-		Record.AmountRC = PostingDatasetVAT[i][1];	
-	EndDo;	
+		Record.AmountRC = VATTotal;
+	EndIf;
+
 	
 	Record = RegisterRecords.GeneralJournal.AddDebit();
 	Record.Account = APAccount;
@@ -132,13 +110,12 @@ Procedure Filling(FillingData, StandardProcessing)
 		Company = FillingData.Company;
 		DocumentTotal = FillingData.DocumentTotal;
 		DocumentTotalRC = FillingData.DocumentTotalRC;
-		ParentDocument = FillingData.Ref;
+		ParentPurchaseOrder = FillingData.Ref;
 		Currency = FillingData.Currency;
 		ExchangeRate = FillingData.ExchangeRate;
 		Location = FillingData.Location;
 		VATTotal = FillingData.VATTotal;
 		APAccount = FillingData.APAccount;
-		PriceIncludesVAT = FillingData.PriceIncludesVAT;
 		
 		For Each CurRowLineItems In FillingData.LineItems Do
 			NewRow = LineItems.Add();
@@ -159,13 +136,12 @@ Procedure Filling(FillingData, StandardProcessing)
 		Company = FillingData.Company;
 		DocumentTotal = FillingData.DocumentTotal;
 		DocumentTotalRC = FillingData.DocumentTotalRC;
-		ParentDocument = FillingData.Ref;
+		ParentPurchaseOrder = FillingData.Ref;
 		Currency = FillingData.Currency;
 		ExchangeRate = FillingData.ExchangeRate;
 		Location = FillingData.Location;
 		VATTotal = FillingData.VATTotal;
 		APAccount = FillingData.APAccount;
-		PriceIncludesVAT = FillingData.PriceIncludesVAT;
 		
 		For Each CurRowLineItems In FillingData.LineItems Do
 			NewRow = LineItems.Add();
@@ -186,13 +162,12 @@ Procedure Filling(FillingData, StandardProcessing)
 		Company = FillingData.Company;
 		DocumentTotal = FillingData.DocumentTotal;
 		DocumentTotalRC = FillingData.DocumentTotalRC;
-		ParentDocument = FillingData.Ref;
+		ParentPurchaseOrder = FillingData.Ref;
 		Currency = FillingData.Currency;
 		ExchangeRate = FillingData.ExchangeRate;
 		Location = FillingData.Location;
 		VATTotal = FillingData.VATTotal;
 		APAccount = FillingData.Company.DefaultCurrency.DefaultAPAccount;
-		PriceIncludesVAT = FillingData.PriceIncludesVAT;
 		
 		For Each CurRowLineItems In FillingData.LineItems Do
 			NewRow = LineItems.Add();

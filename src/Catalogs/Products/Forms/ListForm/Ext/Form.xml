@@ -1,21 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
 	<VerticalScroll>useIfNecessary</VerticalScroll>
-	<AutoCommandBar name="FormCommandBar" id="-1">
-		<ChildItems>
-			<Button name="FormImportProducts" id="16">
-				<Type>CommandBarButton</Type>
-				<CommandName>Form.Command.ImportProducts</CommandName>
-				<Title>
-					<v8:item>
-						<v8:lang>en</v8:lang>
-						<v8:content>Import Items</v8:content>
-					</v8:item>
-				</Title>
-				<ExtendedTooltip name="FormImportProductsExtendedTooltip" id="17"/>
-			</Button>
-		</ChildItems>
-	</AutoCommandBar>
+	<AutoCommandBar name="FormCommandBar" id="-1"/>
 	<ChildItems>
 		<Table name="List" id="1">
 			<Representation>List</Representation>
@@ -46,47 +32,47 @@
 			<AutoCommandBar name="ListCommandBar" id="3">
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
-			<ExtendedTooltip name="ListExtendedTooltip" id="18"/>
-			<SearchStringAddition name="ListSearchString" id="19">
+			<ExtendedTooltip name="ListExtendedTooltip" id="16"/>
+			<SearchStringAddition name="ListSearchString" id="17">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="20"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="21"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="18"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="19"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="22">
+			<ViewStatusAddition name="ListViewStatus" id="20">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="23"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="24"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="21"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="22"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="25">
+			<SearchControlAddition name="ListSearchControl" id="23">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="26"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="27"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="24"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="25"/>
 			</SearchControlAddition>
 			<ChildItems>
 				<LabelField name="Description" id="4">
 					<DataPath>List.Description</DataPath>
 					<DefaultItem>true</DefaultItem>
 					<ContextMenu name="DescriptionContextMenu" id="5"/>
-					<ExtendedTooltip name="DescriptionExtendedTooltip" id="28"/>
+					<ExtendedTooltip name="DescriptionExtendedTooltip" id="26"/>
 				</LabelField>
 				<LabelField name="Descr" id="14">
 					<DataPath>List.Descr</DataPath>
 					<ContextMenu name="DescrContextMenu" id="15"/>
-					<ExtendedTooltip name="DescrExtendedTooltip" id="29"/>
+					<ExtendedTooltip name="DescrExtendedTooltip" id="27"/>
 				</LabelField>
 				<LabelField name="Type" id="12">
 					<DataPath>List.Type</DataPath>
 					<ContextMenu name="TypeContextMenu" id="13"/>
-					<ExtendedTooltip name="TypeExtendedTooltip" id="30"/>
+					<ExtendedTooltip name="TypeExtendedTooltip" id="28"/>
 				</LabelField>
 			</ChildItems>
 		</Table>
@@ -118,21 +104,4 @@
 			</Settings>
 		</Attribute>
 	</Attributes>
-	<Commands>
-		<Command name="ImportProducts" id="1">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Import products</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Import products</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Action>ImportProducts</Action>
-		</Command>
-	</Commands>
 </Form>
