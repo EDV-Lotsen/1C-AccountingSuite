@@ -1,12 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <CommandInterface xmlns="http://v8.1c.ru/8.3/xcf/extrnprops" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
 	<CommandsVisibility>
-		<Command name="InformationRegister.InventoryJournal.StandardCommand.OpenList">
-			<Visibility>
-				<xr:Common>true</xr:Common>
-			</Visibility>
-		</Command>
-		<Command name="AccumulationRegister.LocationBalances.StandardCommand.OpenList">
+		<Command name="AccumulationRegister.InventoryJrnl.StandardCommand.OpenList">
 			<Visibility>
 				<xr:Common>true</xr:Common>
 			</Visibility>
@@ -16,68 +11,38 @@
 				<xr:Common>true</xr:Common>
 			</Visibility>
 		</Command>
-		<Command name="Document.GoodsReceipt.StandardCommand.Create">
+		<Command name="Report.InventoryBalances.StandardCommand.Open">
 			<Visibility>
-				<xr:Common>true</xr:Common>
-			</Visibility>
-		</Command>
-		<Command name="Document.GoodsIssue.StandardCommand.Create">
-			<Visibility>
-				<xr:Common>true</xr:Common>
-			</Visibility>
-		</Command>
-		<Command name="Document.TransferOrder.StandardCommand.Create">
-			<Visibility>
-				<xr:Common>true</xr:Common>
+				<xr:Common>false</xr:Common>
 			</Visibility>
 		</Command>
 	</CommandsVisibility>
 	<CommandsPlacement>
-		<Command name="InformationRegister.InventoryJournal.StandardCommand.OpenList">
-			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
-			<Placement>Auto</Placement>
-		</Command>
-		<Command name="AccumulationRegister.LocationBalances.StandardCommand.OpenList">
-			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
-			<Placement>Auto</Placement>
-		</Command>
 		<Command name="Catalog.Locations.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
 	</CommandsPlacement>
 	<CommandsOrder>
-		<Command name="Document.GoodsReceipt.StandardCommand.OpenList">
+		<Command name="Document.WarehouseTransfer.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
 		</Command>
-		<Command name="Document.GoodsIssue.StandardCommand.OpenList">
+		<Command name="AccumulationRegister.InventoryJrnl.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
 		</Command>
-		<Command name="Document.TransferOrder.StandardCommand.OpenList">
+		<Command name="InformationRegister.ItemLastCost.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
-		</Command>
-		<Command name="InformationRegister.InventoryJournal.StandardCommand.OpenList">
-			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
-		</Command>
-		<Command name="AccumulationRegister.LocationBalances.StandardCommand.OpenList">
-			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
 		</Command>
 		<Command name="Catalog.Locations.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
 		</Command>
-		<Command name="Document.GoodsReceipt.StandardCommand.Create">
-			<CommandGroup>ActionsPanelCreate</CommandGroup>
-		</Command>
-		<Command name="Document.GoodsIssue.StandardCommand.Create">
-			<CommandGroup>ActionsPanelCreate</CommandGroup>
-		</Command>
-		<Command name="Document.TransferOrder.StandardCommand.Create">
-			<CommandGroup>ActionsPanelCreate</CommandGroup>
-		</Command>
-		<Command name="InformationRegister.InventoryJournal.StandardCommand.Create">
+		<Command name="Document.WarehouseTransfer.StandardCommand.Create">
 			<CommandGroup>ActionsPanelCreate</CommandGroup>
 		</Command>
 		<Command name="Catalog.Locations.StandardCommand.Create">
+			<CommandGroup>ActionsPanelCreate</CommandGroup>
+		</Command>
+		<Command name="InformationRegister.ItemLastCost.StandardCommand.Create">
 			<CommandGroup>ActionsPanelCreate</CommandGroup>
 		</Command>
 	</CommandsOrder>

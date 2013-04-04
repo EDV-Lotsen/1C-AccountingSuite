@@ -3,6 +3,9 @@
 	<WindowOpeningMode>LockOwnerWindow</WindowOpeningMode>
 	<VerticalScroll>useIfNecessary</VerticalScroll>
 	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<Events>
+		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+	</Events>
 	<ChildItems>
 		<Table name="List" id="1">
 			<Representation>List</Representation>
@@ -34,43 +37,55 @@
 			<AutoCommandBar name="ListCommandBar" id="3">
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
-			<ExtendedTooltip name="ListExtendedTooltip" id="8"/>
-			<SearchStringAddition name="ListSearchString" id="9">
+			<ExtendedTooltip name="ListExtendedTooltip" id="14"/>
+			<SearchStringAddition name="ListSearchString" id="15">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="10"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="11"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="16"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="17"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="12">
+			<ViewStatusAddition name="ListViewStatus" id="18">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="13"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="14"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="19"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="20"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="15">
+			<SearchControlAddition name="ListSearchControl" id="21">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="16"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="17"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="22"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="23"/>
 			</SearchControlAddition>
 			<ChildItems>
+				<LabelField name="Code" id="8">
+					<DataPath>List.Code</DataPath>
+					<ContextMenu name="CodeContextMenu" id="9"/>
+					<ExtendedTooltip name="CodeExtendedTooltip" id="24"/>
+				</LabelField>
 				<LabelField name="Description" id="4">
 					<DataPath>List.Description</DataPath>
 					<DefaultItem>true</DefaultItem>
 					<ContextMenu name="DescriptionContextMenu" id="5"/>
-					<ExtendedTooltip name="DescriptionExtendedTooltip" id="18"/>
+					<ExtendedTooltip name="DescriptionExtendedTooltip" id="25"/>
 				</LabelField>
-				<LabelField name="Name" id="6">
-					<DataPath>List.Name</DataPath>
-					<ContextMenu name="NameContextMenu" id="7"/>
-					<ExtendedTooltip name="NameExtendedTooltip" id="19"/>
-				</LabelField>
+				<CheckBoxField name="Customer" id="10">
+					<DataPath>List.Customer</DataPath>
+					<CheckBoxType>Auto</CheckBoxType>
+					<ContextMenu name="CustomerContextMenu" id="11"/>
+					<ExtendedTooltip name="CustomerExtendedTooltip" id="26"/>
+				</CheckBoxField>
+				<CheckBoxField name="Vendor" id="12">
+					<DataPath>List.Vendor</DataPath>
+					<CheckBoxType>Auto</CheckBoxType>
+					<ContextMenu name="VendorContextMenu" id="13"/>
+					<ExtendedTooltip name="VendorExtendedTooltip" id="27"/>
+				</CheckBoxField>
 			</ChildItems>
 		</Table>
 	</ChildItems>

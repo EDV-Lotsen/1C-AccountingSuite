@@ -1,16 +1,13 @@
 ﻿Function Form1099(StartDate, EndDate) Export
 	
-	StartD = StartDate;
-	EndD = EndDate;
-	
 	If StartDate =  Date(1,1,1) Then
 		WhereCase = "AND GeneralJournal.Period <= &EndDate";
-		PeriodLabel = "- " + Format(EndD, "DLF=D");
+		PeriodLabel = "- " + Format(EndDate, "DLF=D");
 	EndIf;
 	
 	If EndDate =  Date(1,1,1) Then
 		WhereCase = "AND GeneralJournal.Period >= &StartDate";
-		PeriodLabel = Format(StartD, "DLF=D") + " -";
+		PeriodLabel = Format(StartDate, "DLF=D") + " -";
 	EndIf;
 	
 	If StartDate = Date(1,1,1) AND EndDate = Date(1,1,1) Then
@@ -20,7 +17,7 @@
 	
 	If NOT StartDate = Date(1,1,1) AND NOT EndDate = Date(1,1,1) Then
 		WhereCase = "AND GeneralJournal.Period >= &StartDate AND GeneralJournal.Period <= &EndDate";
-		PeriodLabel = Format(StartD, "DLF=D") + " - " + Format(EndD, "DLF=D");
+		PeriodLabel = Format(StartDate, "DLF=D") + " - " + Format(EndDate, "DLF=D");
 	EndIf;
 		
 	SpreadsheetDocument = New SpreadsheetDocument;
@@ -43,18 +40,18 @@
 	Box13Total = 0;
 	Box14Total = 0;
 
-	Box1Threshold = GeneralFunctions.GetAttributeValue(Catalogs.USTaxCategories1099.Box1, "Threshold");
-	Box2Threshold = GeneralFunctions.GetAttributeValue(Catalogs.USTaxCategories1099.Box2, "Threshold");
-	Box3Threshold = GeneralFunctions.GetAttributeValue(Catalogs.USTaxCategories1099.Box3, "Threshold");
-	Box4Threshold = GeneralFunctions.GetAttributeValue(Catalogs.USTaxCategories1099.Box4, "Threshold");
-	Box5Threshold = GeneralFunctions.GetAttributeValue(Catalogs.USTaxCategories1099.Box5, "Threshold");
-	Box6Threshold = GeneralFunctions.GetAttributeValue(Catalogs.USTaxCategories1099.Box6, "Threshold");
-	Box7Threshold = GeneralFunctions.GetAttributeValue(Catalogs.USTaxCategories1099.Box7, "Threshold");
-	Box8Threshold = GeneralFunctions.GetAttributeValue(Catalogs.USTaxCategories1099.Box8, "Threshold");
-	Box9Threshold = GeneralFunctions.GetAttributeValue(Catalogs.USTaxCategories1099.Box9, "Threshold");
-	Box10Threshold = GeneralFunctions.GetAttributeValue(Catalogs.USTaxCategories1099.Box10, "Threshold");
-	Box13Threshold = GeneralFunctions.GetAttributeValue(Catalogs.USTaxCategories1099.Box13, "Threshold");
-	Box14Threshold = GeneralFunctions.GetAttributeValue(Catalogs.USTaxCategories1099.Box14, "Threshold");
+	Box1Threshold = CommonUse.GetAttributeValue(Catalogs.USTaxCategories1099.Box1, "Threshold");
+	Box2Threshold = CommonUse.GetAttributeValue(Catalogs.USTaxCategories1099.Box2, "Threshold");
+	Box3Threshold = CommonUse.GetAttributeValue(Catalogs.USTaxCategories1099.Box3, "Threshold");
+	Box4Threshold = CommonUse.GetAttributeValue(Catalogs.USTaxCategories1099.Box4, "Threshold");
+	Box5Threshold = CommonUse.GetAttributeValue(Catalogs.USTaxCategories1099.Box5, "Threshold");
+	Box6Threshold = CommonUse.GetAttributeValue(Catalogs.USTaxCategories1099.Box6, "Threshold");
+	Box7Threshold = CommonUse.GetAttributeValue(Catalogs.USTaxCategories1099.Box7, "Threshold");
+	Box8Threshold = CommonUse.GetAttributeValue(Catalogs.USTaxCategories1099.Box8, "Threshold");
+	Box9Threshold = CommonUse.GetAttributeValue(Catalogs.USTaxCategories1099.Box9, "Threshold");
+	Box10Threshold = CommonUse.GetAttributeValue(Catalogs.USTaxCategories1099.Box10, "Threshold");
+	Box13Threshold = CommonUse.GetAttributeValue(Catalogs.USTaxCategories1099.Box13, "Threshold");
+	Box14Threshold = CommonUse.GetAttributeValue(Catalogs.USTaxCategories1099.Box14, "Threshold");
 		
 	VendorsList = Data1099.Copy();
 	VendorsList.GroupBy("Vendor");
@@ -84,19 +81,19 @@
 	
 	OurCompany = Catalogs.Companies.OurCompany;
 	
-	OurCompanyInfo = PrintTemplates.ContactInfo(OurCompany);
-	CounterpartyInfo = PrintTemplates.ContactInfo(Vendor);
+	OurCompanyInfo = New Structure();   // PrintTemplates.ContactInfo(OurCompany);
+	CounterpartyInfo = New Structure(); // PrintTemplates.ContactInfo(Vendor);
 	
 	FormContent.Parameters.OurCompanyName = OurCompanyInfo.Name;
 	FormContent.Parameters.OurCompanyAddress = OurCompanyInfo.Address;
 	FormContent.Parameters.OurCompanyZIP = OurCompanyInfo.ZIP;
 	FormContent.Parameters.OurCompanyPhone = OurCompanyInfo.Phone;
-	FormContent.Parameters.OurTaxID = GeneralFunctions.GetAttributeValue(OurCompany, "USTaxID");
+	FormContent.Parameters.OurTaxID = CommonUse.GetAttributeValue(OurCompany, "USTaxID");
 	
 	FormContent.Parameters.CounterpartyName = CounterpartyInfo.Name;
 	FormContent.Parameters.CounterpartyAddress = CounterpartyInfo.Address;
 	FormContent.Parameters.CounterpartyZIP = CounterpartyInfo.ZIP;
-	FormContent.Parameters.CounterPartyTaxID = GeneralFunctions.GetAttributeValue(Vendor, "USTaxID");
+	FormContent.Parameters.CounterPartyTaxID = CommonUse.GetAttributeValue(Vendor, "USTaxID");
 	
 	Box1Data = Subset1099VT.Find(Catalogs.USTaxCategories1099.Box1, "Category1099");
 	If Box1Data = Undefined Then

@@ -7,110 +7,43 @@
 	<dataSet xsi:type="DataSetQuery">
 		<name>DataSet1</name>
 		<field xsi:type="DataSetFieldField">
-			<dataPath>Location</dataPath>
-			<field>Location</field>
-		</field>
-		<field xsi:type="DataSetFieldField">
-			<dataPath>QtyOnHand</dataPath>
-			<field>QtyOnHand</field>
-			<appearance>
-				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-					<dcscor:parameter>Format</dcscor:parameter>
-					<dcscor:value xsi:type="xs:string">ND=10; NFD=4</dcscor:value>
-				</dcscor:item>
-			</appearance>
-		</field>
-		<field xsi:type="DataSetFieldField">
-			<dataPath>Value</dataPath>
-			<field>Value</field>
-			<appearance>
-				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-					<dcscor:parameter>Format</dcscor:parameter>
-					<dcscor:value xsi:type="xs:string">ND=15; NFD=2</dcscor:value>
-				</dcscor:item>
-			</appearance>
+			<dataPath>AmountBalance</dataPath>
+			<field>AmountBalance</field>
 		</field>
 		<field xsi:type="DataSetFieldField">
 			<dataPath>Product</dataPath>
 			<field>Product</field>
-			<title xsi:type="v8:LocalStringType">
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Item</v8:content>
-				</v8:item>
-				<v8:item>
-					<v8:lang>pt</v8:lang>
-					<v8:content>Item</v8:content>
-				</v8:item>
-			</title>
+			<role>
+				<dcscom:dimension>true</dcscom:dimension>
+			</role>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>QtyBalance</dataPath>
+			<field>QtyBalance</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Layer</dataPath>
+			<field>Layer</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Location</dataPath>
+			<field>Location</field>
+			<role>
+				<dcscom:dimension>true</dcscom:dimension>
+			</role>
 		</field>
 		<dataSource>DataSource1</dataSource>
 		<query>SELECT
-	InvLocation.QtyOnHand,
-	Journal.AdjCost * InvLocation.QtyOnHand AS Value,
-	InvDataset.Product,
-	InvLocation.Location
+	InventoryJrnlBalance.Product,
+	InventoryJrnlBalance.QtyBalance,
+	InventoryJrnlBalance.AmountBalance,
+	InventoryJrnlBalance.Location
 FROM
-	InformationRegister.InventoryJournal AS Journal
-		INNER JOIN (SELECT
-			Journal.Product AS Product,
-			MAX(Journal.Row) AS Max_Row,
-			Temp.Max_Date AS Max_Date
-		FROM
-			InformationRegister.InventoryJournal AS Journal
-				INNER JOIN (SELECT
-					InventoryJournal.Product AS Product,
-					MAX(InventoryJournal.Date) AS Max_Date
-				FROM
-					InformationRegister.InventoryJournal AS InventoryJournal
-				WHERE
-					InventoryJournal.Product.CostingMethod = VALUE(Enum.InventoryCosting.WeightedAverage)
-				
-				GROUP BY
-					InventoryJournal.Product) AS Temp
-				ON Journal.Product = Temp.Product
-					AND Journal.Date = Temp.Max_Date
-		
-		GROUP BY
-			Journal.Product,
-			Temp.Max_Date) AS InvDataset
-		ON Journal.Date = InvDataset.Max_Date
-			AND Journal.Product = InvDataset.Product
-			AND Journal.Row = InvDataset.Max_Row
-		INNER JOIN (SELECT
-			LocationBalances.Product AS Product,
-			LocationBalances.QtyOnHandBalance AS QtyOnHand,
-			LocationBalances.Location AS Location
-		FROM
-			AccumulationRegister.LocationBalances.Balance AS LocationBalances) AS InvLocation
-		ON Journal.Product = InvLocation.Product
-
-UNION ALL
-
-SELECT
-	SUM(InvDataset.Qty),
-	SUM(InvDataset.Value),
-	InvDataset.Product,
-	InvDataset.Location
-FROM
-	(SELECT
-		InventoryJournal.Product AS Product,
-		InventoryJournal.Location AS Location,
-		InventoryJournal.QtyIn - InventoryJournal.QtyOut AS Qty,
-		(InventoryJournal.QtyIn - InventoryJournal.QtyOut) * InventoryJournal.DocCost AS Value
-	FROM
-		InformationRegister.InventoryJournal AS InventoryJournal
-	WHERE
-		(InventoryJournal.Product.CostingMethod = VALUE(Enum.InventoryCosting.LIFO)
-				OR InventoryJournal.Product.CostingMethod = VALUE(Enum.InventoryCosting.FIFO))) AS InvDataset
-
-GROUP BY
-	InvDataset.Product,
-	InvDataset.Location</query>
+	AccumulationRegister.InventoryJrnl.Balance AS InventoryJrnlBalance</query>
 	</dataSet>
 	<totalField>
-		<dataPath>Value</dataPath>
-		<expression>Sum(Value)</expression>
+		<dataPath>AmountBalance</dataPath>
+		<expression>Sum(AmountBalance)</expression>
 	</totalField>
 	<parameter>
 		<name>Period</name>
@@ -119,23 +52,16 @@ GROUP BY
 				<v8:lang>en</v8:lang>
 				<v8:content>Period</v8:content>
 			</v8:item>
-			<v8:item>
-				<v8:lang>pt</v8:lang>
-				<v8:content>Período</v8:content>
-			</v8:item>
-			<v8:item>
-				<v8:lang>de</v8:lang>
-				<v8:content>Periode</v8:content>
-			</v8:item>
 		</title>
 		<valueType>
 			<v8:Type>xs:dateTime</v8:Type>
 			<v8:DateQualifiers>
-				<v8:DateFractions>DateTime</v8:DateFractions>
+				<v8:DateFractions>Date</v8:DateFractions>
 			</v8:DateQualifiers>
 		</valueType>
 		<value xsi:type="xs:dateTime">0001-01-01T00:00:00</value>
 		<useRestriction>false</useRestriction>
+		<expression>Endofperiod(&amp;Period,"Day")</expression>
 	</parameter>
 	<settingsVariant>
 		<dcsset:name>Default</dcsset:name>
@@ -146,15 +72,19 @@ GROUP BY
 					<dcsset:field>Product</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>Location</dcsset:field>
+					<dcsset:field>QtyBalance</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>QtyOnHand</dcsset:field>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>Value</dcsset:field>
+					<dcsset:field>AmountBalance</dcsset:field>
 				</dcsset:item>
 			</dcsset:selection>
+			<dcsset:dataParameters>
+				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+					<dcscor:parameter>Period</dcscor:parameter>
+					<dcscor:value xsi:type="xs:dateTime">0001-01-01T00:00:00</dcscor:value>
+					<dcsset:userSettingID>2a614e19-31de-4dc3-9bfc-5100fe504291</dcsset:userSettingID>
+				</dcscor:item>
+			</dcsset:dataParameters>
 			<dcsset:outputParameters>
 				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 					<dcscor:parameter>Title</dcscor:parameter>
@@ -163,20 +93,96 @@ GROUP BY
 							<v8:lang>en</v8:lang>
 							<v8:content>Inventory Balances</v8:content>
 						</v8:item>
-						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Saldos de inventários</v8:content>
-						</v8:item>
 					</dcscor:value>
 				</dcscor:item>
 			</dcsset:outputParameters>
 			<dcsset:item xsi:type="dcsset:StructureItemGroup">
+				<dcsset:groupItems>
+					<dcsset:item xsi:type="dcsset:GroupItemField">
+						<dcsset:field>Location</dcsset:field>
+						<dcsset:groupType>Items</dcsset:groupType>
+						<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+						<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+						<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+					</dcsset:item>
+				</dcsset:groupItems>
 				<dcsset:order>
 					<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
 				</dcsset:order>
 				<dcsset:selection>
 					<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
 				</dcsset:selection>
+				<dcsset:item xsi:type="dcsset:StructureItemGroup">
+					<dcsset:groupItems>
+						<dcsset:item xsi:type="dcsset:GroupItemField">
+							<dcsset:field>Product</dcsset:field>
+							<dcsset:groupType>Items</dcsset:groupType>
+							<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+							<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+							<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+						</dcsset:item>
+						<dcsset:item xsi:type="dcsset:GroupItemField">
+							<dcsset:field>QtyBalance</dcsset:field>
+							<dcsset:groupType>Items</dcsset:groupType>
+							<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+							<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+							<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+						</dcsset:item>
+					</dcsset:groupItems>
+					<dcsset:order>
+						<dcsset:item xsi:type="dcsset:OrderItemField">
+							<dcsset:field>Product.Code</dcsset:field>
+							<dcsset:orderType>Asc</dcsset:orderType>
+						</dcsset:item>
+					</dcsset:order>
+					<dcsset:selection>
+						<dcsset:item xsi:type="dcsset:SelectedItemFolder">
+							<dcsset:lwsTitle>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Item</v8:content>
+								</v8:item>
+							</dcsset:lwsTitle>
+							<dcsset:item xsi:type="dcsset:SelectedItemField">
+								<dcsset:field>Product</dcsset:field>
+								<dcsset:lwsTitle>
+									<v8:item>
+										<v8:lang>en</v8:lang>
+										<v8:content>Code</v8:content>
+									</v8:item>
+								</dcsset:lwsTitle>
+							</dcsset:item>
+							<dcsset:item xsi:type="dcsset:SelectedItemField">
+								<dcsset:field>Product.Description</dcsset:field>
+								<dcsset:lwsTitle>
+									<v8:item>
+										<v8:lang>en</v8:lang>
+										<v8:content>Description</v8:content>
+									</v8:item>
+								</dcsset:lwsTitle>
+							</dcsset:item>
+							<dcsset:placement>Horizontally</dcsset:placement>
+						</dcsset:item>
+						<dcsset:item xsi:type="dcsset:SelectedItemField">
+							<dcsset:field>QtyBalance</dcsset:field>
+							<dcsset:lwsTitle>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Quantity</v8:content>
+								</v8:item>
+							</dcsset:lwsTitle>
+						</dcsset:item>
+						<dcsset:item xsi:type="dcsset:SelectedItemField">
+							<dcsset:field>AmountBalance</dcsset:field>
+							<dcsset:lwsTitle>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Amount</v8:content>
+								</v8:item>
+							</dcsset:lwsTitle>
+						</dcsset:item>
+					</dcsset:selection>
+				</dcsset:item>
 			</dcsset:item>
 		</dcsset:settings>
 	</settingsVariant>

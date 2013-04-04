@@ -33,62 +33,47 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="12"/>
-			<SearchStringAddition name="ListSearchString" id="13">
+			<SearchStringAddition name="ListSearchString" id="20">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="14"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="15"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="21"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="22"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="16">
+			<ViewStatusAddition name="ListViewStatus" id="23">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="17"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="18"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="24"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="25"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="19">
+			<SearchControlAddition name="ListSearchControl" id="26">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="20"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="21"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="27"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="28"/>
 			</SearchControlAddition>
 			<ChildItems>
 				<LabelField name="Period" id="4">
 					<DataPath>List.Period</DataPath>
 					<DefaultItem>true</DefaultItem>
 					<HorizontalAlign>Right</HorizontalAlign>
-					<Format>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>DLF=D</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>DLF=D</v8:content>
-						</v8:item>
-					</Format>
 					<ContextMenu name="PeriodContextMenu" id="5"/>
-					<ExtendedTooltip name="PeriodExtendedTooltip" id="22"/>
+					<ExtendedTooltip name="PeriodExtendedTooltip" id="13"/>
 				</LabelField>
-				<LabelField name="ExchangeRate" id="8">
-					<DataPath>List.ExchangeRate</DataPath>
-					<ContextMenu name="ExchangeRateContextMenu" id="9"/>
-					<ExtendedTooltip name="ExchangeRateExtendedTooltip" id="23"/>
-				</LabelField>
-				<LabelField name="Currency" id="6">
+				<LabelField name="Currency" id="14">
 					<DataPath>List.Currency</DataPath>
-					<ContextMenu name="CurrencyContextMenu" id="7"/>
-					<ExtendedTooltip name="CurrencyExtendedTooltip" id="24"/>
+					<ContextMenu name="CurrencyContextMenu" id="15"/>
+					<ExtendedTooltip name="CurrencyExtendedTooltip" id="16"/>
 				</LabelField>
-				<LabelField name="CrossCurrency" id="10">
-					<DataPath>List.CrossCurrency</DataPath>
-					<ContextMenu name="CrossCurrencyContextMenu" id="11"/>
-					<ExtendedTooltip name="CrossCurrencyExtendedTooltip" id="25"/>
+				<LabelField name="Rate" id="17">
+					<DataPath>List.Rate</DataPath>
+					<ContextMenu name="RateContextMenu" id="18"/>
+					<ExtendedTooltip name="RateExtendedTooltip" id="19"/>
 				</LabelField>
 			</ChildItems>
 		</Table>

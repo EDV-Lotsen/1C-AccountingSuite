@@ -31,15 +31,15 @@
 					<v8:content>Inventory beginning balances</v8:content>
 				</v8:item>
 				<v8:item>
-					<v8:lang>pt</v8:lang>
-					<v8:content>Saldos iniciais de inventários</v8:content>
+					<v8:lang>de</v8:lang>
+					<v8:content>Anfangsbestände</v8:content>
 				</v8:item>
 			</Synonym>
 			<Comment/>
 			<UseStandardCommands>true</UseStandardCommands>
 			<Numerator/>
 			<NumberType>String</NumberType>
-			<NumberLength>9</NumberLength>
+			<NumberLength>6</NumberLength>
 			<NumberAllowedLength>Variable</NumberAllowedLength>
 			<NumberPeriodicity>Nonperiodical</NumberPeriodicity>
 			<CheckUnique>true</CheckUnique>
@@ -129,20 +129,25 @@
 					<xr:MaxValue xsi:nil="true"/>
 					<xr:ToolTip/>
 					<xr:ExtendedEdit>false</xr:ExtendedEdit>
-					<xr:Format/>
+					<xr:Format>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>DLF=D</v8:content>
+						</v8:item>
+					</xr:Format>
 					<xr:ChoiceForm/>
 					<xr:QuickChoice>Auto</xr:QuickChoice>
 					<xr:ChoiceHistoryOnInput>Auto</xr:ChoiceHistoryOnInput>
-					<xr:EditFormat/>
+					<xr:EditFormat>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>DLF=D</v8:content>
+						</v8:item>
+					</xr:EditFormat>
 					<xr:PasswordMode>false</xr:PasswordMode>
 					<xr:MarkNegatives>false</xr:MarkNegatives>
 					<xr:MinValue xsi:nil="true"/>
-					<xr:Synonym>
-						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Data</v8:content>
-						</v8:item>
-					</xr:Synonym>
+					<xr:Synonym/>
 					<xr:Comment/>
 					<xr:FullTextSearch>Use</xr:FullTextSearch>
 					<xr:ChoiceParameterLinks/>
@@ -167,12 +172,7 @@
 					<xr:PasswordMode>false</xr:PasswordMode>
 					<xr:MarkNegatives>false</xr:MarkNegatives>
 					<xr:MinValue xsi:nil="true"/>
-					<xr:Synonym>
-						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Número</v8:content>
-						</v8:item>
-					</xr:Synonym>
+					<xr:Synonym/>
 					<xr:Comment/>
 					<xr:FullTextSearch>Use</xr:FullTextSearch>
 					<xr:ChoiceParameterLinks/>
@@ -197,12 +197,12 @@
 			<AuxiliaryListForm/>
 			<AuxiliaryChoiceForm/>
 			<Posting>Allow</Posting>
-			<RealTimePosting>Allow</RealTimePosting>
+			<RealTimePosting>Deny</RealTimePosting>
 			<RegisterRecordsDeletion>AutoDeleteOnUnpost</RegisterRecordsDeletion>
 			<RegisterRecordsWritingOnPost>WriteSelected</RegisterRecordsWritingOnPost>
 			<SequenceFilling>AutoFill</SequenceFilling>
 			<RegisterRecords>
-				<xr:Item xsi:type="xr:MDObjectRef">AccumulationRegister.LocationBalances</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">AccumulationRegister.InventoryJrnl</xr:Item>
 			</RegisterRecords>
 			<PostInPrivilegedMode>true</PostInPrivilegedMode>
 			<UnpostInPrivilegedMode>true</UnpostInPrivilegedMode>
@@ -216,8 +216,8 @@
 					<v8:content>Inventory beginning balance</v8:content>
 				</v8:item>
 				<v8:item>
-					<v8:lang>pt</v8:lang>
-					<v8:content>Saldo inicial de inventário</v8:content>
+					<v8:lang>de</v8:lang>
+					<v8:content>Anfangsbestand</v8:content>
 				</v8:item>
 			</ObjectPresentation>
 			<ExtendedObjectPresentation/>
@@ -236,8 +236,8 @@
 							<v8:content>Item</v8:content>
 						</v8:item>
 						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Item</v8:content>
+							<v8:lang>de</v8:lang>
+							<v8:content>Artikel</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -278,8 +278,8 @@
 							<v8:content>Location</v8:content>
 						</v8:item>
 						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Localização </v8:content>
+							<v8:lang>de</v8:lang>
+							<v8:content>Standort</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -320,10 +320,6 @@
 							<v8:content>Quantity</v8:content>
 						</v8:item>
 						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Quantidade</v8:content>
-						</v8:item>
-						<v8:item>
 							<v8:lang>de</v8:lang>
 							<v8:content>Menge</v8:content>
 						</v8:item>
@@ -338,8 +334,18 @@
 						</v8:NumberQualifiers>
 					</Type>
 					<PasswordMode>false</PasswordMode>
-					<Format/>
-					<EditFormat/>
+					<Format>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>NFD=4; NZ=0</v8:content>
+						</v8:item>
+					</Format>
+					<EditFormat>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>NFD=4; NZ=0</v8:content>
+						</v8:item>
+					</EditFormat>
 					<ToolTip/>
 					<MarkNegatives>false</MarkNegatives>
 					<Mask/>
@@ -371,8 +377,8 @@
 							<v8:content>Value</v8:content>
 						</v8:item>
 						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Valor</v8:content>
+							<v8:lang>de</v8:lang>
+							<v8:content>Wert</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -385,50 +391,18 @@
 						</v8:NumberQualifiers>
 					</Type>
 					<PasswordMode>false</PasswordMode>
-					<Format/>
-					<EditFormat/>
-					<ToolTip/>
-					<MarkNegatives>false</MarkNegatives>
-					<Mask/>
-					<MultiLine>false</MultiLine>
-					<ExtendedEdit>false</ExtendedEdit>
-					<MinValue xsi:nil="true"/>
-					<MaxValue xsi:nil="true"/>
-					<FillFromFillingValue>false</FillFromFillingValue>
-					<FillValue xsi:nil="true"/>
-					<FillChecking>DontCheck</FillChecking>
-					<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
-					<ChoiceParameterLinks/>
-					<ChoiceParameters/>
-					<QuickChoice>Auto</QuickChoice>
-					<CreateOnInput>Auto</CreateOnInput>
-					<ChoiceForm/>
-					<LinkByType/>
-					<ChoiceHistoryOnInput>Auto</ChoiceHistoryOnInput>
-					<Indexing>DontIndex</Indexing>
-					<FullTextSearch>Use</FullTextSearch>
-				</Properties>
-			</Attribute>
-			<Attribute uuid="0e4caaf6-6a64-4984-ab07-4af410a3aed3">
-				<Properties>
-					<Name>DocPosted</Name>
-					<Synonym>
+					<Format>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Doc posted</v8:content>
+							<v8:content>NFD=2; NZ=0</v8:content>
 						</v8:item>
+					</Format>
+					<EditFormat>
 						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Documento postado</v8:content>
+							<v8:lang>en</v8:lang>
+							<v8:content>NFD=2; NZ=0</v8:content>
 						</v8:item>
-					</Synonym>
-					<Comment/>
-					<Type>
-						<v8:Type>xs:boolean</v8:Type>
-					</Type>
-					<PasswordMode>false</PasswordMode>
-					<Format/>
-					<EditFormat/>
+					</EditFormat>
 					<ToolTip/>
 					<MarkNegatives>false</MarkNegatives>
 					<Mask/>

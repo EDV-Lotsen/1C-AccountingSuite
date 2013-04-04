@@ -1,16 +1,13 @@
 ﻿Function IncomeStatement(StartDate, EndDate) Export
 	
-	StartD = StartDate;
-	EndD = EndDate;
-	
 	If StartDate =  Date(1,1,1) Then
 		WhereCase = "AND GeneralJournal.Period <= &EndDate";
-		PeriodLabel = "- " + Format(EndD, "DLF=D");
+		PeriodLabel = "- " + Format(EndDate, "DLF=D");
 	EndIf;
 	
 	If EndDate =  Date(1,1,1) Then
 		WhereCase = "AND GeneralJournal.Period >= &StartDate";
-		PeriodLabel = Format(StartD, "DLF=D") + " -";
+		PeriodLabel = Format(StartDate, "DLF=D") + " -";
 	EndIf;
 	
 	If StartDate = Date(1,1,1) AND EndDate = Date(1,1,1) Then
@@ -20,7 +17,7 @@
 	
 	If NOT StartDate = Date(1,1,1) AND NOT EndDate = Date(1,1,1) Then
 		WhereCase = "AND GeneralJournal.Period >= &StartDate AND GeneralJournal.Period <= &EndDate";
-		PeriodLabel = Format(StartD, "DLF=D") + " - " + Format(EndD, "DLF=D");
+		PeriodLabel = Format(StartDate, "DLF=D") + " - " + Format(EndDate, "DLF=D");
 	EndIf;
 	
 	OurCompany = Catalogs.Companies.OurCompany;
@@ -30,7 +27,7 @@
 	
 	Header = Template.GetArea("Header");
 	Header.Parameters.PeriodLabel = PeriodLabel;
-	Header.Parameters.Company = GeneralFunctions.GetAttributeValue(OurCompany, "Name");
+	Header.Parameters.Company = CommonUse.GetAttributeValue(OurCompany, "Description");
 	SpreadsheetDocument.Put(Header);
 	
 	// Income section
@@ -73,6 +70,7 @@
 		Income.Parameters.Account = Selection.Account;
 		Income.Parameters.Description = Selection.Account.Description;
 		Income.Parameters.Document = Selection.Recorder.Metadata().Synonym;
+		Income.Parameters.Link = Selection.Recorder;
 		Income.Parameters.Company = CompanyName(Selection.Recorder);
 		If Selection.RecordType = AccountingRecordType.Debit Then
 			Income.Parameters.Debit = Selection.AmountRC;
@@ -101,9 +99,9 @@ Function CompanyName(DocRef)
 	
 	DocType = DocRef.Metadata().Name;
 	
-	If DocType = "CashSale" OR DocType = "SalesReturn" OR DocType = "GoodsIssue" OR DocType = "SalesInvoice"
-		OR DocType = "CashPurchase" OR DocType = "CashPurchase" OR DocType = "GoodsReceipt" OR DocType = "PurchaseInvoice"
-		OR DocType = "Check" OR DocType = "Payment" Then
+	If DocType = "CashSale" OR DocType = "SalesReturn" OR DocType = "SalesInvoice"
+		OR DocType = "CashPurchase" OR DocType = "CashPurchase" OR DocType = "PurchaseInvoice"
+		OR DocType = "Check" OR DocType = "InvoicePayment" Then
 		Return DocRef.Company;	
 	Else
 		Return "";

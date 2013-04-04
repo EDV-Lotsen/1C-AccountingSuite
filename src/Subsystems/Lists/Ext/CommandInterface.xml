@@ -1,87 +1,130 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <CommandInterface xmlns="http://v8.1c.ru/8.3/xcf/extrnprops" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
 	<CommandsVisibility>
-		<Command name="Catalog.Currencies.StandardCommand.OpenList">
+		<Command name="Catalog.Companies.StandardCommand.OpenList">
 			<Visibility>
 				<xr:Common>true</xr:Common>
 			</Visibility>
 		</Command>
-		<Command name="InformationRegister.ExchangeRates.StandardCommand.OpenList">
+		<Command name="Catalog.Products.StandardCommand.OpenList">
 			<Visibility>
 				<xr:Common>true</xr:Common>
 			</Visibility>
 		</Command>
-		<Command name="Catalog.Countries.StandardCommand.OpenList">
+		<Command name="Catalog.Projects.StandardCommand.OpenList">
+			<Visibility>
+				<xr:Common>false</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="Catalog.UserList.StandardCommand.OpenList">
 			<Visibility>
 				<xr:Common>true</xr:Common>
 			</Visibility>
 		</Command>
-		<Command name="Catalog.States.StandardCommand.OpenList">
+		<Command name="CommonCommand.SystemEmailAccountSetup">
 			<Visibility>
-				<xr:Common>true</xr:Common>
+				<xr:Common>false</xr:Common>
 			</Visibility>
 		</Command>
-		<Command name="0:6b2340d7-687f-43a3-8eb8-8ddb86712466">
+		<Command name="Catalog.AdditionalReportsAndDataProcessors.Command.ManageAdditionalReportsAndDataProcessors">
 			<Visibility>
-				<xr:Common>true</xr:Common>
+				<xr:Common>false</xr:Common>
 			</Visibility>
 		</Command>
-		<Command name="Catalog.Companies.StandardCommand.Create">
+		<Command name="DataProcessor.FullTextSearchInData.Command.FullTextSearch">
 			<Visibility>
-				<xr:Common>true</xr:Common>
+				<xr:Common>false</xr:Common>
 			</Visibility>
 		</Command>
-		<Command name="Catalog.Products.StandardCommand.Create">
+		<Command name="DataProcessor.ScheduledAndBackgroundJobs.Command.ScheduledAndBackgroundJobs">
+			<Visibility>
+				<xr:Common>false</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="DataProcessor.EventLogMonitor.Command.EventLogMonitor">
+			<Visibility>
+				<xr:Common>false</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="DataProcessor.DeleteMarkedObjects.Command.DeleteMarkedObjects">
 			<Visibility>
 				<xr:Common>true</xr:Common>
 			</Visibility>
 		</Command>
 	</CommandsVisibility>
 	<CommandsPlacement>
-		<Command name="Catalog.Currencies.StandardCommand.OpenList">
+		<Command name="Catalog.Companies.StandardCommand.OpenList">
+			<CommandGroup>NavigationPanelImportant</CommandGroup>
+			<Placement>Auto</Placement>
+		</Command>
+		<Command name="Catalog.Products.StandardCommand.OpenList">
+			<CommandGroup>NavigationPanelImportant</CommandGroup>
+			<Placement>Auto</Placement>
+		</Command>
+		<Command name="Catalog.Projects.StandardCommand.OpenList">
+			<CommandGroup>NavigationPanelImportant</CommandGroup>
+			<Placement>Auto</Placement>
+		</Command>
+		<Command name="Catalog.UserList.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
-		<Command name="InformationRegister.ExchangeRates.StandardCommand.OpenList">
+		<Command name="DataProcessor.FullTextSearchInData.Command.FullTextSearch">
 			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
-		<Command name="Catalog.Countries.StandardCommand.OpenList">
-			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
-			<Placement>Auto</Placement>
-		</Command>
-		<Command name="Catalog.States.StandardCommand.OpenList">
-			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
-			<Placement>Auto</Placement>
-		</Command>
-		<Command name="0:6b2340d7-687f-43a3-8eb8-8ddb86712466">
+		<Command name="DataProcessor.DeleteMarkedObjects.Command.DeleteMarkedObjects">
 			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
 	</CommandsPlacement>
 	<CommandsOrder>
 		<Command name="Catalog.Companies.StandardCommand.OpenList">
-			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
+			<CommandGroup>NavigationPanelImportant</CommandGroup>
 		</Command>
 		<Command name="Catalog.Products.StandardCommand.OpenList">
+			<CommandGroup>NavigationPanelImportant</CommandGroup>
+		</Command>
+		<Command name="Catalog.Projects.StandardCommand.OpenList">
+			<CommandGroup>NavigationPanelImportant</CommandGroup>
+		</Command>
+		<Command name="Catalog.Countries.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
 		</Command>
-		<Command name="Catalog.UnitsOfMeasure.StandardCommand.OpenList">
+		<Command name="Catalog.States.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
 		</Command>
 		<Command name="Catalog.Currencies.StandardCommand.OpenList">
-			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
+			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
 		</Command>
 		<Command name="InformationRegister.ExchangeRates.StandardCommand.OpenList">
+			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
+		</Command>
+		<Command name="Catalog.PaymentTerms.StandardCommand.OpenList">
+			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
+		</Command>
+		<Command name="Catalog.UM.StandardCommand.OpenList">
+			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
+		</Command>
+		<Command name="Catalog.UserList.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
 		</Command>
-		<Command name="Catalog.Countries.StandardCommand.OpenList">
+		<Command name="CommonCommand.SystemEmailAccountSetup">
 			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
 		</Command>
-		<Command name="Catalog.States.StandardCommand.OpenList">
+		<Command name="Catalog.AdditionalReportsAndDataProcessors.Command.ManageAdditionalReportsAndDataProcessors">
 			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
 		</Command>
-		<Command name="0:6b2340d7-687f-43a3-8eb8-8ddb86712466">
+		<Command name="DataProcessor.FullTextSearchInData.Command.FullTextSearch">
+			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
+		</Command>
+		<Command name="DataProcessor.ScheduledAndBackgroundJobs.Command.ScheduledAndBackgroundJobs">
+			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
+		</Command>
+		<Command name="DataProcessor.EventLogMonitor.Command.EventLogMonitor">
+			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
+		</Command>
+		<Command name="DataProcessor.DeleteMarkedObjects.Command.DeleteMarkedObjects">
 			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
 		</Command>
 		<Command name="Catalog.Companies.StandardCommand.Create">
@@ -93,25 +136,33 @@
 		<Command name="Catalog.Countries.StandardCommand.Create">
 			<CommandGroup>ActionsPanelCreate</CommandGroup>
 		</Command>
+		<Command name="Catalog.States.StandardCommand.Create">
+			<CommandGroup>ActionsPanelCreate</CommandGroup>
+		</Command>
 		<Command name="Catalog.Currencies.StandardCommand.Create">
 			<CommandGroup>ActionsPanelCreate</CommandGroup>
 		</Command>
 		<Command name="InformationRegister.ExchangeRates.StandardCommand.Create">
 			<CommandGroup>ActionsPanelCreate</CommandGroup>
 		</Command>
-		<Command name="Catalog.States.StandardCommand.Create">
+		<Command name="Catalog.PaymentTerms.StandardCommand.Create">
 			<CommandGroup>ActionsPanelCreate</CommandGroup>
 		</Command>
-		<Command name="Catalog.UnitsOfMeasure.StandardCommand.Create">
+		<Command name="Catalog.UM.StandardCommand.Create">
 			<CommandGroup>ActionsPanelCreate</CommandGroup>
 		</Command>
-		<Command name="1:6b2340d7-687f-43a3-8eb8-8ddb86712466">
+		<Command name="Catalog.Projects.StandardCommand.Create">
+			<CommandGroup>ActionsPanelCreate</CommandGroup>
+		</Command>
+		<Command name="Catalog.UserList.StandardCommand.Create">
 			<CommandGroup>ActionsPanelCreate</CommandGroup>
 		</Command>
 	</CommandsOrder>
 	<GroupsOrder>
+		<Group>NavigationPanelImportant</Group>
 		<Group>NavigationPanelOrdinary</Group>
 		<Group>NavigationPanelSeeAlso</Group>
 		<Group>ActionsPanelCreate</Group>
+		<Group>ActionsPanelTools</Group>
 	</GroupsOrder>
 </CommandInterface>

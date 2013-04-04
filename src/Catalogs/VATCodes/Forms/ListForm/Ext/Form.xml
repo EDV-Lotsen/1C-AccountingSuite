@@ -32,43 +32,87 @@
 			<AutoCommandBar name="ListCommandBar" id="3">
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
-			<ExtendedTooltip name="ListExtendedTooltip" id="10"/>
-			<SearchStringAddition name="ListSearchString" id="11">
+			<ExtendedTooltip name="ListExtendedTooltip" id="16"/>
+			<SearchStringAddition name="ListSearchString" id="17">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="12"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="13"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="18"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="19"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="14">
+			<ViewStatusAddition name="ListViewStatus" id="20">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="15"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="16"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="21"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="22"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="17">
+			<SearchControlAddition name="ListSearchControl" id="23">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="18"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="19"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="24"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="25"/>
 			</SearchControlAddition>
 			<ChildItems>
+				<LabelField name="Code" id="6">
+					<DataPath>List.Code</DataPath>
+					<ContextMenu name="CodeContextMenu" id="7"/>
+					<ExtendedTooltip name="CodeExtendedTooltip" id="26"/>
+				</LabelField>
 				<LabelField name="Description" id="4">
 					<DataPath>List.Description</DataPath>
 					<DefaultItem>true</DefaultItem>
 					<Width>10</Width>
 					<ContextMenu name="DescriptionContextMenu" id="5"/>
-					<ExtendedTooltip name="DescriptionExtendedTooltip" id="20"/>
+					<ExtendedTooltip name="DescriptionExtendedTooltip" id="27"/>
 				</LabelField>
-				<LabelField name="VATDescription" id="8">
-					<DataPath>List.VATDescription</DataPath>
-					<ContextMenu name="VATDescriptionContextMenu" id="9"/>
-					<ExtendedTooltip name="VATDescriptionExtendedTooltip" id="21"/>
+				<LabelField name="SalesInclRate" id="10">
+					<DataPath>List.SalesInclRate</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Sales incl. rate, %</v8:content>
+						</v8:item>
+					</Title>
+					<ContextMenu name="SalesInclRateContextMenu" id="11"/>
+					<ExtendedTooltip name="SalesInclRateExtendedTooltip" id="28"/>
+				</LabelField>
+				<LabelField name="SalesExclRate" id="8">
+					<DataPath>List.SalesExclRate</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Sales excl. rate, %</v8:content>
+						</v8:item>
+					</Title>
+					<ContextMenu name="SalesExclRateContextMenu" id="9"/>
+					<ExtendedTooltip name="SalesExclRateExtendedTooltip" id="29"/>
+				</LabelField>
+				<LabelField name="PurchaseInclRate" id="14">
+					<DataPath>List.PurchaseInclRate</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Purchase incl. rate, %</v8:content>
+						</v8:item>
+					</Title>
+					<ContextMenu name="PurchaseInclRateContextMenu" id="15"/>
+					<ExtendedTooltip name="PurchaseInclRateExtendedTooltip" id="30"/>
+				</LabelField>
+				<LabelField name="PurchaseExclRate" id="12">
+					<DataPath>List.PurchaseExclRate</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Purchase excl. rate, %</v8:content>
+						</v8:item>
+					</Title>
+					<ContextMenu name="PurchaseExclRateContextMenu" id="13"/>
+					<ExtendedTooltip name="PurchaseExclRateExtendedTooltip" id="31"/>
 				</LabelField>
 			</ChildItems>
 		</Table>

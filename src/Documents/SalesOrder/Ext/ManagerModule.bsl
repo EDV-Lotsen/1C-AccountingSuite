@@ -1,154 +1,311 @@
 ﻿
+////////////////////////////////////////////////////////////////////////////////
+// Sales Order: Manager module
+//------------------------------------------------------------------------------
 
-Процедура Печать(МассивОбъектов, ПараметрыПечати, КоллекцияПечатныхФорм,
-           ОбъектыПечати, ПараметрыВывода) Экспорт
+////////////////////////////////////////////////////////////////////////////////
+// DOCUMENT POSTING
 
-     // Устанавливаем признак доступности печати покомплектно.
-     ПараметрыВывода.ДоступнаПечатьПоКомплектно = Истина;
-
-     // Проверяем, нужно ли для макета СчетЗаказа формировать табличный документ.
-     Если УправлениеПечатью.НужноПечататьМакет(КоллекцияПечатныхФорм, "SalesOrder") Тогда
-
-         // Формируем табличный документ и добавляем его в коллекцию печатных форм.
-         УправлениеПечатью.ВывестиТабличныйДокументВКоллекцию(КоллекцияПечатныхФорм,
-             "SalesOrder", "Sales order", ПечатьSalesInvoice(МассивОбъектов, ОбъектыПечати, "UMOff"));
-
-	КонецЕсли;
+// Collect document data for posting on the server (in terms of document)
+Function PrepareDataStructuresForPosting(DocumentRef, AdditionalProperties, RegisterRecords) Export
 	
-	Если УправлениеПечатью.НужноПечататьМакет(КоллекцияПечатныхФорм, "SalesOrderUM") Тогда
-
-         // Формируем табличный документ и добавляем его в коллекцию печатных форм.
-         УправлениеПечатью.ВывестиТабличныйДокументВКоллекцию(КоллекцияПечатныхФорм,
-             "SalesOrderUM", "Sales order", ПечатьSalesInvoice(МассивОбъектов, ОбъектыПечати, "UMOn"));
-
-	КонецЕсли;
-
+	// Create list of posting tables (according to the list of registers)
+	TablesList = New Structure;
 	
-КонецПроцедуры
+	// Create a query to request document data
+	Query = New Query;
+	Query.SetParameter("Ref", DocumentRef);
+	
+	// Query for document's tables
+	Query.Text  = Query_OrdersStatuses(TablesList) +
+	              Query_OrdersRegistered(TablesList);
+	QueryResult = Query.ExecuteBatch();
+	
+	// Save documents table in posting parameters
+	For Each DocumentTable In TablesList Do
+		AdditionalProperties.Posting.PostingTables.Insert(DocumentTable.Key, QueryResult[DocumentTable.Value].Unload());
+	EndDo;
+	
+	// Fill list of registers to check (non-negative) balances in posting parameters
+	FillRegistersCheckList(AdditionalProperties, RegisterRecords);
+	
+EndFunction
+
+// Collect document data for posting on the server (in terms of document)
+Function PrepareDataStructuresForPostingClearing(DocumentRef, AdditionalProperties, RegisterRecords) Export
+	
+	// Fill list of registers to check (non-negative) balances in posting parameters
+	FillRegistersCheckList(AdditionalProperties, RegisterRecords);
+	
+EndFunction
+
+// Query for document data
+Function Query_OrdersStatuses(TablesList)
+
+	// Add OrdersStatuses table to document structure
+	TablesList.Insert("Table_OrdersStatuses", TablesList.Count());
+	
+	// Collect orders statuses data
+	QueryText =
+	"SELECT
+	// ------------------------------------------------------
+	// Standard Attributes
+	|	Document.Ref                          AS Recorder,
+	|	Document.Date                         AS Period,
+	|	1                                     AS LineNumber,
+	|	True								  AS Active,
+	// ------------------------------------------------------
+	// Dimensions
+	|	Document.Ref                          AS Order,
+	// ------------------------------------------------------
+	// Resources
+	|	VALUE(Enum.OrderStatuses.Open)        AS Status
+	// ------------------------------------------------------
+	// Attributes
+	// ------------------------------------------------------
+	|FROM
+	|	Document.SalesOrder AS Document
+	|WHERE
+	|	Document.Ref = &Ref";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data
+Function Query_OrdersRegistered(TablesList)
+
+	// Add OrdersRegistered table to document structure
+	TablesList.Insert("Table_OrdersRegistered", TablesList.Count());
+	
+	// Collect orders registered data
+	QueryText =
+	"SELECT
+	// ------------------------------------------------------
+	// Standard Attributes
+	|	LineItems.Ref                         AS Recorder,
+	|	LineItems.Ref.Date                    AS Period,
+	|	LineItems.LineNumber                  AS LineNumber,
+	|	VALUE(AccumulationRecordType.Receipt) AS RecordType,
+	|	True								  AS Active,
+	// ------------------------------------------------------
+	// Dimensions
+	|	LineItems.Ref.Company                 AS Company,
+	|	LineItems.Ref                         AS Order,
+	|	LineItems.Product                     AS Product,
+	// ------------------------------------------------------
+	// Resources
+	|	LineItems.Quantity                    AS Quantity,
+	|	0                                     AS Shipped,
+	|	0                                     AS Invoiced,
+	// ------------------------------------------------------
+	// Attributes
+	|	LineItems.Ref.PromisedDate            AS DeliveryDate
+	// ------------------------------------------------------
+	|FROM
+	|	Document.SalesOrder.LineItems AS LineItems
+	|WHERE
+	|	LineItems.Ref = &Ref
+	|ORDER BY
+	|	LineNumber";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Put an array of registers, which balance should be checked during posting
+Procedure FillRegistersCheckList(AdditionalProperties, RegisterRecords)
+
+	// Create structure of registers and its resources to check balances
+	BalanceCheck = New Structure;
+		
+	// Fill structure depending on document write mode
+	If AdditionalProperties.Posting.WriteMode = DocumentWriteMode.Posting Then
+		
+		// Add resources for check changes in recordset
+		CheckPostings = New Array;
+		CheckPostings.Add("{Table}.Quantity{Posting}, <, 0"); // Check decreasing quantity
+		
+		// Add resources for check register balances
+		CheckBalances = New Array;
+		CheckBalances.Add("{Table}.Quantity{Balance}, <, {Table}.Shipped{Balance}");  // Check over-shipping balance
+		CheckBalances.Add("{Table}.Quantity{Balance}, <, {Table}.Invoiced{Balance}"); // Check over-invoiced balance
+		
+		// Add messages for different error situations
+		CheckMessages = New Array;
+		CheckMessages.Add(NStr("en = '{Product}:
+		                             |Order quantity {Quantity} is lower then shipped quantity {Shipped}'"));   // Over-shipping balance
+		CheckMessages.Add(NStr("en = '{Product}:
+		                             |Order quantity {Quantity} is lower then invoiced quantity {Invoiced}'")); // Over-invoiced balance
+									 
+		// Add register to check it's recordset changes and balances during posting
+		BalanceCheck.Insert("OrdersRegistered", New Structure("CheckPostings, CheckBalances, CheckMessages", CheckPostings, CheckBalances, CheckMessages));
+		
+	ElsIf AdditionalProperties.Posting.WriteMode = DocumentWriteMode.UndoPosting Then
+		
+		// Add resources for check the balances
+		CheckPostings = New Array;
+		CheckPostings.Add("{Table}.Quantity{Posting},  <, 0"); // Check decreasing quantity
+		
+		// Add resources for check register balances
+		CheckBalances = New Array;
+		CheckBalances.Add("{Table}.Quantity{Balance}, <, {Table}.Shipped{Balance}");  // Check over-shipping balance
+		CheckBalances.Add("{Table}.Quantity{Balance}, <, {Table}.Invoiced{Balance}"); // Check over-invoiced balance
+		
+		// Add messages for different error situations
+		CheckMessages = New Array;
+		CheckMessages.Add(NStr("en = '{Product}:
+		                             |{Shipped} items already shipped'"));    // Over-shipping balance
+		CheckMessages.Add(NStr("en = '{Product}:
+		                             |{Invoiced} items already invoiced'"));  // Over-invoiced balance
+		
+		// Add registers to check it's recordset changes and balances during undo posting
+		BalanceCheck.Insert("OrdersRegistered", New Structure("CheckPostings, CheckBalances, CheckMessages", CheckPostings, CheckBalances, CheckMessages));
+		
+	EndIf;
+
+	// Return structure of registers to check
+	If BalanceCheck.Count() > 0 Then
+		AdditionalProperties.Posting.Insert("BalanceCheck", BalanceCheck);
+	EndIf;
+	
+EndProcedure
+
+////////////////////////////////////////////////////////////////////////////////
+// DOCUMENT PRINTING (OLD)
+
+Procedure Print(ObjectArray, PrintParameters, PrintFormsCollection,
+           PrintObjects, OutputParameters) Export
+
+     // Setting the kit printing option.
+     OutputParameters.AvailablePrintingByKits = True;
+
+     // Checking if a spreadsheet document generation needed for the Sales Order template.
+    If PrintManagement.NeedToPrintTemplate(PrintFormsCollection, "SalesOrder") Then
+
+         // Generating a spreadsheet document and adding it into the print form collection.
+         PrintManagement.OutputSpreadsheetDocumentToCollection(PrintFormsCollection,
+             "SalesOrder", "Sales order", PrintTemplate(ObjectArray, PrintObjects));
+
+	EndIf;
+
+		 
+EndProcedure
 	 
-Функция ПечатьSalesInvoice(МассивОбъектов, ОбъектыПечати, UMMode)
-   // Создаем табличный документ и устанавливаем имя параметров печати.
-   ТабличныйДокумент = Новый ТабличныйДокумент;
-   ТабличныйДокумент.ИмяПараметровПечати = "ПараметрыПечати_SalesOrder";
+Function PrintTemplate(ObjectArray, PrintObjects)
+	
+	// Create a spreadsheet document and set print parameters.
+   SpreadsheetDocument = New SpreadsheetDocument;
+   SpreadsheetDocument.PrintParametersName = "PrintParameters_SalesOrder";
 
-   // Получаем запросом необходимые данные.
-   Запрос = Новый Запрос();
-   Запрос.Текст =
+   // Quering necessary data.
+   Query = New Query();
+   Query.Text =
    "SELECT
    |	SalesOrder.Ref,
    |	SalesOrder.Company,
    |	SalesOrder.Date,
    |	SalesOrder.DocumentTotal,
    |	SalesOrder.SalesTax,
+   |	SalesOrder.PriceIncludesVAT,
    |	SalesOrder.Number,
+   |	SalesOrder.ShipTo,
    |	SalesOrder.Currency,
    |	SalesOrder.VATTotal,
    |	SalesOrder.LineItems.(
    |		Product,
-   |		Descr,
+   |		ProductDescription,
+   |		Product.UM AS UM,
    |		Quantity,
-   |		UM,
-   |		QuantityUM,
+   |		VATCode,
+   |		VAT,
    |		Price,
    |		LineTotal
    |	)
    |FROM
    |	Document.SalesOrder AS SalesOrder
    |WHERE
-   |	SalesOrder.Ref IN(&МассивОбъектов)";
-   Запрос.УстановитьПараметр("МассивОбъектов", МассивОбъектов);
-   Selection = Запрос.Выполнить().Выбрать();
+   |	SalesOrder.Ref IN(&ObjectArray)";
+   Query.SetParameter("ObjectArray", ObjectArray);
+   Selection = Query.Execute().Choose();
+  
+   	FirstDocument = True;
 
+	Us = Catalogs.Companies.OurCompany;
    
-   ПервыйДокумент = Истина;
+   	While Selection.Next() Do
+		
+		If Not FirstDocument Then
+			// All documents need to be outputted on separate pages.
+			SpreadsheetDocument.PutHorizontalPageBreak();
+		EndIf;
+		FirstDocument = False;
+		// Remember current document output beginning line number.
+		BeginningLineNumber = SpreadsheetDocument.TableHeight + 1;
 
-    //360
-	OurCompany = Catalogs.Companies.OurCompany;
-	//360
-   
-   Пока Selection.Следующий() Цикл
-     Если Не ПервыйДокумент Тогда
-       // Все документы нужно выводить на разных страницах.
-       ТабличныйДокумент.ВывестиГоризонтальныйРазделительСтраниц();
-     КонецЕсли;
-     ПервыйДокумент = Ложь;
-     // Запомним номер строки, с которой начали выводить текущий документ.
-     НомерСтрокиНачало = ТабличныйДокумент.ВысотаТаблицы + 1;
 	 
-	If UMMode = "UMOff" Then
-	 	Макет = УправлениеПечатью.ПолучитьМакет("Document.SalesOrder.ПФ_MXL_SalesOrder");
-	Else
-		Макет = УправлениеПечатью.ПолучитьМакет("Document.SalesOrder.ПФ_MXL_SalesOrderUM");
-	EndIf;
+	Template = PrintManagement.GetTemplate("Document.SalesOrder.PF_MXL_SalesOrder");
 	 
-	 ОбластьМакета = Макет.ПолучитьОбласть("Header");
+	TemplateArea = Template.GetArea("Header");
 	 
-	OurCompanyInfo = PrintTemplates.ContactInfo(OurCompany);
-	CounterpartyInfo = PrintTemplates.ContactInfo(Selection.Company);
+	UsBill = PrintTemplates.ContactInfoDataset(Us, "UsBill", Catalogs.Addresses.EmptyRef());
+	ThemShip = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemShip", Selection.ShipTo);
+	ThemBill = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemBill", Catalogs.Addresses.EmptyRef());
 	
-	ОбластьМакета.Параметры.OurCompanyName = OurCompanyInfo.Name;
-	ОбластьМакета.Параметры.OurCompanyAddress = OurCompanyInfo.Address;
-	ОбластьМакета.Параметры.OurCompanyZIP = OurCompanyInfo.ZIP;
-	ОбластьМакета.Параметры.OurCompanyPhone = OurCompanyInfo.Phone;
-	ОбластьМакета.Параметры.OurCompanyEmail = OurCompanyInfo.Email;
-	ОбластьМакета.Параметры.OurCompanyCountry = OurCompanyInfo.Country;
-	
-	ОбластьМакета.Параметры.CounterpartyName = CounterpartyInfo.Name;
-	ОбластьМакета.Параметры.CounterpartyAddress = CounterpartyInfo.Address;
-	ОбластьМакета.Параметры.CounterpartyZIP = CounterpartyInfo.ZIP;
-	ОбластьМакета.Параметры.CounterpartyCountry = CounterpartyInfo.Country;
+	TemplateArea.Parameters.Fill(UsBill);
+	TemplateArea.Parameters.Fill(ThemShip);
+	TemplateArea.Parameters.Fill(ThemBill);
 	 
-	 ОбластьМакета.Параметры.Date = Selection.Date;
-	 ОбластьМакета.Параметры.Number = Selection.Number;
+	 TemplateArea.Parameters.Date = Selection.Date;
+	 TemplateArea.Parameters.Number = Selection.Number;
 	 
-	 ТабличныйДокумент.Вывести(ОбластьМакета);
+	 SpreadsheetDocument.Put(TemplateArea);
 
-	 ОбластьМакета = Макет.ПолучитьОбласть("LineItemsHeader");
-	 ТабличныйДокумент.Вывести(ОбластьМакета);
+	 TemplateArea = Template.GetArea("LineItemsHeader");
+	 SpreadsheetDocument.Put(TemplateArea);
 	 
 	 SelectionLineItems = Selection.LineItems.Choose();
-	 ОбластьМакета = Макет.ПолучитьОбласть("LineItems");
+	 TemplateArea = Template.GetArea("LineItems");
 	 LineTotalSum = 0;
 	 While SelectionLineItems.Next() Do
 		 
-		 ОбластьМакета.Parameters.Fill(SelectionLineItems);
+		 TemplateArea.Parameters.Fill(SelectionLineItems);
 		 LineTotal = SelectionLineItems.LineTotal;
 		 LineTotalSum = LineTotalSum + LineTotal;
-		 ТабличныйДокумент.Вывести(ОбластьМакета, SelectionLineItems.Level());
+		 SpreadsheetDocument.Put(TemplateArea, SelectionLineItems.Level());
 		 
 	 EndDo;
-	 
-	Try 
-		ОбластьМакета = Макет.ПолучитьОбласть("ExtraLines");
-		ТабличныйДокумент.Вывести(ОбластьМакета);
-	Except
-	EndTry; 
-	 
+	 	 
 	If Selection.VATTotal <> 0 Then;
-		 ОбластьМакета = Макет.ПолучитьОбласть("Subtotal");
-		 ОбластьМакета.Параметры.Subtotal = LineTotalSum - Selection.VATTotal;
-		 ТабличныйДокумент.Вывести(ОбластьМакета);
+		 TemplateArea = Template.GetArea("Subtotal");
+		 TemplateArea.Parameters.Subtotal = LineTotalSum;
+		 SpreadsheetDocument.Put(TemplateArea);
 		 
-		 ОбластьМакета = Макет.ПолучитьОбласть("VAT");
-		 ОбластьМакета.Параметры.VATTotal = Selection.VATTotal;
-		 ТабличныйДокумент.Вывести(ОбластьМакета);
+		 TemplateArea = Template.GetArea("VAT");
+		 TemplateArea.Parameters.VATTotal = Selection.VATTotal;
+		 SpreadsheetDocument.Put(TemplateArea);
 	EndIf; 
 		 
-	 ОбластьМакета = Макет.ПолучитьОбласть("Total");
-	 ОбластьМакета.Параметры.DocumentTotal = LineTotalSum;
-	 ТабличныйДокумент.Вывести(ОбластьМакета);
+	 TemplateArea = Template.GetArea("Total");
+	If Selection.PriceIncludesVAT Then
+	 	TemplateArea.Parameters.DocumentTotal = LineTotalSum;
+	Else
+		TemplateArea.Parameters.DocumentTotal = LineTotalSum + Selection.VATTotal;
+	EndIf;
 
-	 ОбластьМакета = Макет.ПолучитьОбласть("Currency");
-	 ОбластьМакета.Параметры.Currency = Selection.Currency;
-	 ТабличныйДокумент.Вывести(ОбластьМакета);
+	 SpreadsheetDocument.Put(TemplateArea);
+
+	 TemplateArea = Template.GetArea("Currency");
+	 TemplateArea.Parameters.Currency = Selection.Currency;
+	 SpreadsheetDocument.Put(TemplateArea);
 
 	 
-     // В табличном документе необходимо задать имя области, в которую был 
-     // выведен объект. Нужно для возможности печати покомплектно 
-     УправлениеПечатью.ЗадатьОбластьПечатиДокумента(ТабличныйДокумент, НомерСтрокиНачало, ОбъектыПечати, Selection.Ref);
+     // Setting a print area in the spreadsheet document where to output the object.
+     // Necessary for kit printing. 
+     PrintManagement.SetDocumentPrintArea(SpreadsheetDocument, BeginningLineNumber, PrintObjects, Selection.Ref);
 
-   КонецЦикла;
+   EndDo;
    
-   Возврат ТабличныйДокумент;
+   Return SpreadsheetDocument;
    
-КонецФункции
+EndFunction

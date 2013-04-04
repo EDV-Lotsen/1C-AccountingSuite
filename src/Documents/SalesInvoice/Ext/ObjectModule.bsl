@@ -1,29 +1,100 @@
-﻿// The procedure performs document posting
-//
-Procedure Posting(Cancel, Mode)
-		
-	PostingCost = 0;
-		
-	For Each CurRowLineItems In LineItems Do			
-		If CurRowLineItems.Product.Type = Enums.InventoryTypes.Inventory Then
-			
-			// update the issued and invoiced amount of the parent sales order
-			
-			If NOT ParentSalesOrder.IsEmpty() Then
-				Filter = New Structure("Product");
-				Filter.Insert("Product", CurRowLineItems.Product);	
-				Doc = ParentSalesOrder.GetObject();
-				Row = Doc.LineItems.FindRows(Filter)[0];
-				Row.Invoiced = Row.Invoiced + CurRowLineItems.Quantity;
-				If ParentGoodsIssue.IsEmpty() Then
-					Row.Issued = Row.Issued + CurRowLineItems.Quantity;
-				EndIf;	
-				Doc.Write();
-			EndIf;				
-		EndIf;
-	EndDo;	
+﻿
+////////////////////////////////////////////////////////////////////////////////
+// Sales Invoice: Object module
+//------------------------------------------------------------------------------
+
+////////////////////////////////////////////////////////////////////////////////
+// OBJECT EVENTS HANDLERS
+
+Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 	
-	If ParentGoodsIssue.IsEmpty() Then
+	// Save document parameters before posting the document
+	If WriteMode = DocumentWriteMode.Posting
+	Or WriteMode = DocumentWriteMode.UndoPosting Then
+	
+		// Save custom document parameters
+		Orders = LineItems.UnloadColumn("Order");
+		GeneralFunctions.NormalizeArray(Orders);
+	
+		// Common filling of parameters
+		DocumentParameters = New Structure("Ref, Date, IsNew,   Posted, ManualAdjustment, Metadata,   Orders",
+		                                    Ref, Date, IsNew(), Posted, ManualAdjustment, Metadata(), Orders);
+		DocumentPosting.PrepareDataStructuresBeforeWrite(AdditionalProperties, DocumentParameters, Cancel, WriteMode, PostingMode);
+	EndIf;
+		
+	// Prcheck of register balances to complete filling of document posting
+	If WriteMode = DocumentWriteMode.Posting Then
+		
+		// Precheck of document data, calculation of temporary data, required for document posting
+		If (Not ManualAdjustment) And (Orders.Count() > 0) Then
+			DocumentParameters = New Structure("Ref, PointInTime,   Company, LineItems",
+			                                    Ref, PointInTime(), Company, LineItems.Unload(, "Order, Product, Quantity"));
+			Documents.SalesInvoice.PrepareDataBeforeWrite(AdditionalProperties, DocumentParameters, Cancel);
+		EndIf;
+		
+	EndIf;
+	
+EndProcedure
+
+Procedure Posting(Cancel, PostingMode)
+	
+	// 1. Common postings clearing / reactivate manual ajusted postings
+	DocumentPosting.PrepareRecordSetsForPosting(AdditionalProperties, RegisterRecords);
+	
+	// 2. Skip manually adjusted documents
+	If ManualAdjustment Then
+		Return;
+	EndIf;
+
+	// 3. Create structures with document data to pass it on the server
+	DocumentPosting.PrepareDataStructuresBeforePosting(AdditionalProperties);
+	
+	// 4. Collect document data, available for posing, and fill created structure 
+	Documents.SalesInvoice.PrepareDataStructuresForPosting(Ref, AdditionalProperties, RegisterRecords);
+
+	// 5. Fill register records with document's postings
+	DocumentPosting.FillRecordSets(AdditionalProperties, RegisterRecords, Cancel);
+
+	// 6. Write document postings to register
+	DocumentPosting.WriteRecordSets(AdditionalProperties, RegisterRecords);
+
+	// 7. Check register blanaces according to document's changes
+	DocumentPosting.CheckPostingResults(AdditionalProperties, RegisterRecords, Cancel);
+
+	// 8. Clear used temporary document data
+	DocumentPosting.ClearDataStructuresAfterPosting(AdditionalProperties);
+	
+	
+	// OLD Posting
+	
+	IncomeBooking = True;
+	
+	If BegBal Then
+		
+		Reg = AccountingRegisters.GeneralJournal.CreateRecordSet();
+		Reg.Filter.Recorder.Set(Ref);
+		Reg.Clear();
+		RegLine = Reg.AddDebit();
+		RegLine.Account = ARAccount;
+		RegLine.Period = Date;
+		If GetFunctionalOption("MultiCurrency") Then
+			RegLine.Amount = DocumentTotal;
+		Else
+			RegLine.Amount = DocumentTotalRC;
+		EndIf;
+		RegLine.AmountRC = DocumentTotalRC;
+		RegLine.Currency = Currency;
+		RegLine.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Company] = Company;
+		RegLine.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Document] = Ref;
+		Reg.Write();
+		
+		Return;
+		
+	EndIf;
+	
+	RegisterRecords.InventoryJrnl.Write = True;
+	
+	If IncomeBooking Then
 		
 		// create a value table for posting amounts
 		
@@ -37,103 +108,164 @@ Procedure Posting(Cancel, Mode)
 		
 		PostingDatasetInvOrExp = New ValueTable();
 		PostingDatasetInvOrExp.Columns.Add("InvOrExpAccount");
-        PostingDatasetInvOrExp.Columns.Add("AmountRC");		
+        PostingDatasetInvOrExp.Columns.Add("AmountRC");
 		
-		// create an Inventory Journal dataset
+		PostingDatasetVAT = New ValueTable();
+		PostingDatasetVAT.Columns.Add("VATAccount");
+		PostingDatasetVAT.Columns.Add("AmountRC");
 		
-		InvDataset = InventoryCosting.SalesDocumentsDataset(Ref, Location);
-		
-		// update location balances
-		
-		RegisterRecords.LocationBalances.Write = True;
-		For Each CurRowLineItems In LineItems Do
-			If CurRowLineItems.Product.Type = Enums.InventoryTypes.Inventory Then
-				Record = RegisterRecords.LocationBalances.Add();
-				Record.RecordType = AccumulationRecordType.Expense;
-				Record.Period = Date;
-				Record.Product = CurRowLineItems.Product;
-				Record.Location = Location;
-				Record.QtyOnHand = CurRowLineItems.Quantity;
-			EndIf;	
-		EndDo;
-
 		For Each CurRowLineItems In LineItems Do
 						
 			If CurRowLineItems.Product.Type = Enums.InventoryTypes.Inventory Then
 												
 				// check inventory balances and cancel if not sufficient
 				
-				CurrentBalance = InventoryCosting.LocationBalance(CurRowLineItems.Product, Location);
+				CurrentBalance = 0;
+									
+				Query = New Query("SELECT
+				                  |	InventoryJrnlBalance.QtyBalance
+				                  |FROM
+				                  |	AccumulationRegister.InventoryJrnl.Balance AS InventoryJrnlBalance
+				                  |WHERE
+				                  |	InventoryJrnlBalance.Product = &Product
+				                  |	AND InventoryJrnlBalance.Location = &Location");
+				Query.SetParameter("Product", CurRowLineItems.Product);
+				Query.SetParameter("Location", Location);
+				QueryResult = Query.Execute();
+				
+				If QueryResult.IsEmpty() Then
+				Else
+					Dataset = QueryResult.Unload();
+					CurrentBalance = Dataset[0][0];
+				EndIf;
 								
 				If CurRowLineItems.Quantity > CurrentBalance Then
 					Cancel = True;
 					Message = New UserMessage();
-					Message.Text=NStr("en='Insufficient balance'");
+					Message.Text=NStr("en='Insufficient balance';de='Nicht ausreichende Bilanz'");
 					Message.Message();
 					Return;
 				EndIf;
-
-			EndIf;				
-			
-			// select a subset of the Inventory Journal dataset and call the inventory costing procedure
-			
-			Filter = New Structure();
-			Filter.Insert("Product", CurRowLineItems.Product); 
-			InvDataset.Sort("Date, Row");
-			InvDatasetProduct = InvDataset.FindRows(Filter);
-
-			PostingCost = InventoryCosting.SalesDocumentProcessing(CurRowLineItems, InvDatasetProduct, Location);
-			
-			// fill in the account posting value table with amounts
-			
-			PostingLineIncome = PostingDatasetIncome.Add();
-			If CurRowLineItems.Product.Code = "" Then
-				PostingLineIncome.IncomeAccount = Company.IncomeAccount;	
-			Else	
-				PostingLineIncome.IncomeAccount = CurRowLineItems.Product.IncomeAccount;
-			EndIf;	
-			PostingLineIncome.AmountRC = CurRowLineItems.Price * ExchangeRate * CurRowLineItems.Quantity;
-			
-			If CurRowLineItems.Product.Type = Enums.InventoryTypes.Inventory Then 
+				
+				// inventory journal update and costing procedure
+				
+				ItemCost = 0;
+				
+				If CurRowLineItems.Product.CostingMethod = Enums.InventoryCosting.WeightedAverage Then
+					
+					AverageCost = 0;
+					
+					Query = New Query("SELECT
+					                  |	SUM(InventoryJrnlBalance.QtyBalance) AS QtyBalance,
+					                  |	SUM(InventoryJrnlBalance.AmountBalance) AS AmountBalance
+					                  |FROM
+					                  |	AccumulationRegister.InventoryJrnl.Balance AS InventoryJrnlBalance
+					                  |WHERE
+					                  |	InventoryJrnlBalance.Product = &Product");
+					Query.SetParameter("Product", CurRowLineItems.Product);
+					QueryResult = Query.Execute().Unload();
+					AverageCost = QueryResult[0].AmountBalance / QueryResult[0].QtyBalance;
+									
+					Record = RegisterRecords.InventoryJrnl.Add();
+					Record.RecordType = AccumulationRecordType.Expense;
+					Record.Period = Date;
+					Record.Product = CurRowLineItems.Product;
+					Record.Location = Location;
+					Record.Qty = CurRowLineItems.Quantity;				
+					ItemCost = CurRowLineItems.Quantity * AverageCost;
+					Record.Amount = ItemCost;
+					
+				EndIf;
+				
+				If CurRowLineItems.Product.CostingMethod = Enums.InventoryCosting.LIFO OR
+					CurRowLineItems.Product.CostingMethod = Enums.InventoryCosting.FIFO Then
+					
+					ItemQty = CurRowLineItems.Quantity;
+					
+					If CurRowLineItems.Product.CostingMethod = Enums.InventoryCosting.LIFO Then
+						Sorting = "DESC";
+					Else
+						Sorting = "ASC";
+					EndIf;
+					
+					Query = New Query("SELECT
+					                  |	InventoryJrnlBalance.QtyBalance,
+					                  |	InventoryJrnlBalance.AmountBalance,
+					                  |	InventoryJrnlBalance.Layer,
+					                  |	InventoryJrnlBalance.Layer.Date AS LayerDate
+					                  |FROM
+					                  |	AccumulationRegister.InventoryJrnl.Balance AS InventoryJrnlBalance
+					                  |WHERE
+					                  |	InventoryJrnlBalance.Product = &Product
+					                  |	AND InventoryJrnlBalance.Location = &Location
+					                  |
+					                  |ORDER BY
+					                  |	LayerDate " + Sorting + "");
+					Query.SetParameter("Product", CurRowLineItems.Product);
+					Query.SetParameter("Location", Location);
+					Selection = Query.Execute().Choose();
+					
+					While Selection.Next() Do
+						If ItemQty > 0 Then
+							
+							Record = RegisterRecords.InventoryJrnl.Add();
+							Record.RecordType = AccumulationRecordType.Expense;
+							Record.Period = Date;
+							Record.Product = CurRowLineItems.Product;
+							Record.Location = Location;
+							Record.Layer = Selection.Layer;
+							If ItemQty >= Selection.QtyBalance Then
+								ItemCost = ItemCost + Selection.AmountBalance;
+								Record.Qty = Selection.QtyBalance;
+								Record.Amount = Selection.AmountBalance;
+								ItemQty = ItemQty - Record.Qty;
+							Else
+								ItemCost = ItemCost + ItemQty * (Selection.AmountBalance / Selection.QtyBalance);
+								Record.Qty = ItemQty;
+								Record.Amount = ItemQty * (Selection.AmountBalance / Selection.QtyBalance);
+								ItemQty = 0;
+							EndIf;
+						EndIf;
+					EndDo;
+										
+				EndIf;
+				
+				// adding to the posting dataset
+				
 				PostingLineCOGS = PostingDatasetCOGS.Add();
 				PostingLineCOGS.COGSAccount = CurRowLineItems.Product.COGSAccount;
-				PostingLineCOGS.AmountRC = PostingCost;
+				PostingLineCOGS.AmountRC = ItemCost;
 				
 				PostingLineInvOrExp = PostingDatasetInvOrExp.Add();
 				PostingLineInvOrExp.InvOrExpAccount = CurRowLineItems.Product.InventoryOrExpenseAccount;
-				PostingLineInvOrExp.AmountRC = PostingCost;
-			EndIf;
+				PostingLineInvOrExp.AmountRC = ItemCost;
+				
+			EndIf;				
+						
+			// fill in the account posting value table with amounts
 			
-			PostingCost = 0;
+			PostingLineIncome = PostingDatasetIncome.Add();
+			PostingLineIncome.IncomeAccount = CurRowLineItems.Product.IncomeAccount;	
+			If PriceIncludesVAT Then
+				PostingLineIncome.AmountRC = (CurRowLineItems.LineTotal - CurRowLineItems.VAT) * ExchangeRate;
+			Else
+				PostingLineIncome.AmountRC = CurRowLineItems.LineTotal * ExchangeRate;
+			EndIf;
+						
+			If CurRowLineItems.VAT > 0 Then
+				
+				PostingLineVAT = PostingDatasetVAT.Add();
+				PostingLineVAT.VATAccount = VAT_FL.VATAccount(CurRowLineItems.VATCode, "Sales");
+				PostingLineVAT.AmountRC = CurRowLineItems.VAT * ExchangeRate;
+								
+			EndIf;
 			
 		EndDo;
 		
 	EndIf;
 	
 	
-	If NOT ParentGoodsIssue.IsEmpty() Then
-		
-		// updating the parent's goods issue GL posting
-		
-		Reg = AccountingRegisters.GeneralJournal.CreateRecordSet();
-		Reg.Filter.Recorder.Set(ParentGoodsIssue);
-		Reg.Read();
-		
-			For Each Transaction In Reg Do
-				
-				Transaction.Period = Date;
-				Transaction.Recorder = Ref;
-				If NOT Transaction.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Document] = Undefined Then
-					Transaction.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Document] = Ref;
-				EndIf;
-				
-			EndDo;
-			
-		Reg.Write();
-		
-	EndIf;
-	
-	If ParentGoodsIssue.IsEmpty() Then
+	If IncomeBooking Then
 		
 		// GL posting
 		
@@ -177,192 +309,112 @@ Procedure Posting(Cancel, Mode)
 				
 		If SalesTax > 0 Then
 			Record = RegisterRecords.GeneralJournal.AddCredit();
-			Record.Account = Constants.SalesTaxPayableAccount.Get();
+			Record.Account = Constants.TaxPayableAccount.Get();
 			Record.Period = Date;
 			Record.AmountRC = SalesTax * ExchangeRate;
 		EndIf;		
 
-		If VATTotal > 0 Then
+		PostingDatasetVAT.GroupBy("VATAccount", "AmountRC");
+		NoOfPostingRows = PostingDatasetVAT.Count();
+		For i = 0 To NoOfPostingRows - 1 Do
 			Record = RegisterRecords.GeneralJournal.AddCredit();
-			Record.Account = Constants.VATAccount.Get();
+			Record.Account = PostingDatasetVAT[i][0];
 			Record.Period = Date;
-			Record.AmountRC = VATTotal;
-		EndIf;
-		
+			Record.AmountRC = PostingDatasetVAT[i][1];	
+		EndDo;	
+					
 	EndIf;
 	 	 	
 EndProcedure
 
+Procedure UndoPosting(Cancel)
 
-// The procedure prepopulates a sales invoice when created from a sales quote, sales order, or goods issue.
-//
-Procedure Filling(FillingData, StandardProcessing)
-
-	If TypeOf(FillingData) = Type("DocumentRef.SalesQuote") Then
-		Company = FillingData.Company;
-		DocumentTotal = FillingData.DocumentTotal;
-		DocumentTotalRC = FillingData.DocumentTotalRC;
-		ParentSalesOrder = FillingData.Ref;
-		SalesTax = FillingData.SalesTax;
-		Currency = FillingData.Currency;
-		ExchangeRate = FillingData.ExchangeRate;
-		Location = FillingData.Location;
-		VATTotal = FillingData.VATTotal;
-		Bank = FillingData.Bank;
-		ARAccount = FillingData.Company.DefaultCurrency.DefaultARAccount;
-		
-		For Each CurRowLineItems In FillingData.LineItems Do
-			NewRow = LineItems.Add();
-			NewRow.LineTotal = CurRowLineItems.LineTotal;
-			NewRow.Price = CurRowLineItems.Price;
-			NewRow.Product = CurRowLineItems.Product;
-			NewRow.Descr = CurRowLineItems.Descr; 
-			NewRow.Quantity = CurRowLineItems.Quantity;
-			NewRow.QuantityUM = CurRowLineItems.QuantityUM;
-			NewRow.UM = CurRowLineItems.UM;
-			NewRow.SalesTaxType = CurRowLineItems.SalesTaxType;
-			NewRow.TaxableAmount = CurRowLineItems.TaxableAmount;
-			NewRow.VAT = CurRowLineItems.VAT;
-			NewRow.VATCode = CurRowLineItems.VAT;
-		EndDo;
-		
-	EndIf;
-
+	// 1. Common posting clearing / deactivate manual ajusted postings
+	DocumentPosting.PrepareRecordSetsForPostingClearing(AdditionalProperties, RegisterRecords);
 	
-	If TypeOf(FillingData) = Type("DocumentRef.SalesOrder") Then
-		
-		// Check if Goods Issues exist. If found - cancel.
-		Query = New Query("SELECT
-		                  |	GoodsIssue.Ref
-		                  |FROM
-		                  |	Document.GoodsIssue AS GoodsIssue
-		                  |WHERE
-		                  |	GoodsIssue.ParentSalesOrder = &Ref");
-		Query.SetParameter("Ref", FillingData.Ref);
-		QueryResult = Query.Execute();
-		If NOT QueryResult.IsEmpty() Then
-			Message = New UserMessage();
-			Message.Text=NStr("en='Goods Issues are created based on this Sales Order. Create Sales Invoices based on Goods Issues.'");
-			Message.Message();
-			DontCreate = True;
-			Return;
-		EndIf;
-		
-		Company = FillingData.Company;
-		DocumentTotal = FillingData.DocumentTotal;
-		DocumentTotalRC = FillingData.DocumentTotalRC;
-		ParentSalesOrder = FillingData.Ref;
-		SalesTax = FillingData.SalesTax;
-		Currency = FillingData.Currency;
-		ExchangeRate = FillingData.ExchangeRate;
-		Location = FillingData.Location;
-		VATTotal = FillingData.VATTotal;
-		ARAccount = FillingData.Company.DefaultCurrency.DefaultARAccount;
-		
-		For Each CurRowLineItems In FillingData.LineItems Do
-			NewRow = LineItems.Add();
-			NewRow.LineTotal = CurRowLineItems.LineTotal;
-			NewRow.Price = CurRowLineItems.Price;
-			NewRow.Product = CurRowLineItems.Product;
-			NewRow.Descr = CurRowLineItems.Descr; 
-			NewRow.Quantity = CurRowLineItems.Quantity;
-			NewRow.QuantityUM = CurRowLineItems.QuantityUM;
-			NewRow.UM = CurRowLineItems.UM;
-			NewRow.SalesTaxType = CurRowLineItems.SalesTaxType;
-			NewRow.TaxableAmount = CurRowLineItems.TaxableAmount;
-			NewRow.VAT = CurRowLineItems.VAT;
-			NewRow.VATCode = CurRowLineItems.VATCode;
-		EndDo;
-		
+	// 2. Skip manually adjusted documents
+	If ManualAdjustment Then
+		Return;
 	EndIf;
 	
-	If TypeOf(FillingData) = Type("DocumentRef.GoodsIssue") Then
-		Company = FillingData.Company;
-		DocumentTotal = FillingData.DocumentTotal;
-		DocumentTotalRC = FillingData.DocumentTotalRC;
-		ParentSalesOrder = FillingData.ParentSalesOrder;
-		SalesTax = FillingData.SalesTax;
-		Currency = FillingData.Currency;
-		ExchangeRate = FillingData.ExchangeRate;
-		Location = FillingData.Location;
-		ParentGoodsIssue = FillingData.Ref;
-		VATTotal = FillingData.VATTotal;
-		ARAccount = FillingData.ARAccount;
-		
-		For Each CurRowLineItems In FillingData.LineItems Do
-			NewRow = LineItems.Add();
-			NewRow.LineTotal = CurRowLineItems.LineTotal;
-			NewRow.Price = CurRowLineItems.Price;
-			NewRow.Product = CurRowLineItems.Product;
-			NewRow.Descr = CurRowLineItems.Descr;
-			NewRow.Quantity = CurRowLineItems.Quantity;
-			NewRow.QuantityUM = CurRowLineItems.QuantityUM;
-			NewRow.UM = CurRowLineItems.UM;
-			NewRow.SalesTaxType = CurRowLineItems.SalesTaxType;
-			NewRow.TaxableAmount = CurRowLineItems.TaxableAmount;
-			NewRow.VAT = CurRowLineItems.VAT;
-			NewRow.VATCode = CurRowLineItems.VATCode;
-		EndDo;
-		
-	EndIf;
+	// 3. Create structures with document data to pass it on the server
+	DocumentPosting.PrepareDataStructuresBeforePosting(AdditionalProperties);
+	
+	// 4. Collect document data, required for posing clearing, and fill created structure 
+	Documents.SalesInvoice.PrepareDataStructuresForPostingClearing(Ref, AdditionalProperties, RegisterRecords);
+	
+	// 5. Write document postings to register
+	DocumentPosting.WriteRecordSets(AdditionalProperties, RegisterRecords);
 
+	// 6. Check register blanaces according to document's changes
+	DocumentPosting.CheckPostingResults(AdditionalProperties, RegisterRecords, Cancel);
+
+	// 7. Clear used temporary document data
+	DocumentPosting.ClearDataStructuresAfterPosting(AdditionalProperties);
+
+EndProcedure
+
+Procedure OnCopy(CopiedObject)
+	
+	// Clear manual ajustment attribute
+	ManualAdjustment = False;
 	
 EndProcedure
 
-// The procedure prevents voiding if the Allow Voiding functional option is disabled.
-//
-Procedure UndoPosting(Cancel)
+Procedure Filling(FillingData, StandardProcessing)
+	Var TabularSectionData; Cancel = False;
 	
-	If InventoryCosting.InventoryPresent(Ref) Then
+	// Filling on the base of other referenced object
+	If FillingData <> Undefined Then
 		
-		If NOT GetFunctionalOption("AllowVoiding") Then
-			
-			Message = New UserMessage();
-			Message.Text = NStr("en='You cannot void a posted document with inventory items'");
-			Message.Message();
+		// 0. Custom check of sales order for interactive generate of sales invoice on the base of sales order
+		If (TypeOf(FillingData) = Type("DocumentRef.SalesOrder"))
+		And Not Documents.SalesInvoice.CheckStatusOfSalesOrder(FillingData) Then
 			Cancel = True;
 			Return;
-			
+		EndIf;		
+		
+		// 1. Common filling of parameters
+		DocumentParameters = New Structure("Ref, Date, Metadata",
+		                                    Ref, ?(ValueIsFilled(Date), Date, CurrentSessionDate()), Metadata());
+		DocumentFilling.PrepareDataStructuresBeforeFilling(AdditionalProperties, DocumentParameters, FillingData, Cancel);
+		
+		// 2. Cancel filling on failed data
+		If Cancel Then
+			Return;
 		EndIf;
-
-	EndIf;	
+			
+		// 3. Collect document data, available for filling, and fill created structure 
+		Documents.SalesInvoice.PrepareDataStructuresForFilling(Ref, AdditionalProperties);
+			
+		// 4. Check collected data
+		DocumentFilling.CheckDataStructuresOnFilling(AdditionalProperties, Cancel);
+		
+		// 5. Fill document fields
+		If Not Cancel Then
+			// Fill "draft" values to attributes (all including non-critical fields will be filled)
+			FillPropertyValues(ThisObject, AdditionalProperties.Filling.FillingTables.Table_Attributes[0]);
+			
+			// Fill checked unique values to attributes (critical fields will be filled)
+			FillPropertyValues(ThisObject, AdditionalProperties.Filling.FillingTables.Table_Check[0]);
+			
+			// Fill line items
+			For Each TabularSection In AdditionalProperties.Metadata.TabularSections Do
+				If AdditionalProperties.Filling.FillingTables.Property("Table_" + TabularSection.Name, TabularSectionData) Then
+					ThisObject[TabularSection.Name].Load(TabularSectionData);
+				EndIf;
+			EndDo;
+		EndIf;
+		
+		// 6. Clear used temporary document data
+		DocumentFilling.ClearDataStructuresAfterFilling(AdditionalProperties);
+	EndIf;
 	
 EndProcedure
 
-// The procedure prevents re-posting if the Allow Voiding functional option is disabled.
-//
-Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
-		
-	If InventoryCosting.InventoryPresent(Ref) Then
-			
-		If NOT GetFunctionalOption("AllowVoiding") Then
-			
-			If WriteMode = DocumentWriteMode.Posting Then
-				
-				If DocPosted Then
-			       Message = New UserMessage();
-			       Message.Text = NStr("en='You cannot re-post a posted document with inventory items'");
-			       Message.Message();
-			       Cancel = True;
-			       Return;
-			    Else
-			       DocPosted = True;
-			   EndIf;
-			   
-		   EndIf;
-		
-		EndIf;
-		
-	EndIf;	
+Procedure FillCheckProcessing(Cancel, CheckedAttributes)
+	
+	// Check doubles in items (to be sure of proper orders placement)
+	GeneralFunctions.CheckDoubleItems(Ref, LineItems, "Order, Product, LineNumber", Cancel);
 	
 EndProcedure
-
-// Clears the DocPosted attribute on document copying
-//
-Procedure OnCopy(CopiedObject)
-	DocPosted = False;
-EndProcedure
-
-
-
-

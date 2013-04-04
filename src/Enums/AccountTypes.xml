@@ -22,12 +22,8 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>Account Types</v8:content>
 				</v8:item>
-				<v8:item>
-					<v8:lang>pt</v8:lang>
-					<v8:content>Tipos de contas</v8:content>
-				</v8:item>
 			</Synonym>
-			<Comment/>
+			<Comment>Oredered by balance sections</Comment>
 			<UseStandardCommands>true</UseStandardCommands>
 			<Characteristics/>
 			<QuickChoice>true</QuickChoice>
@@ -42,54 +38,6 @@
 			<ChoiceHistoryOnInput>Auto</ChoiceHistoryOnInput>
 		</Properties>
 		<ChildObjects>
-			<EnumValue uuid="dff10458-484a-4c75-8b4c-2035411258a3">
-				<Properties>
-					<Name>AccountsPayable</Name>
-					<Synonym>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Accounts payable</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Contas a pagar</v8:content>
-						</v8:item>
-					</Synonym>
-					<Comment/>
-				</Properties>
-			</EnumValue>
-			<EnumValue uuid="00fc6413-7619-4a15-afe6-04afcd3396c8">
-				<Properties>
-					<Name>AccountsReceivable</Name>
-					<Synonym>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Accounts receivable</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Contas a receber</v8:content>
-						</v8:item>
-					</Synonym>
-					<Comment/>
-				</Properties>
-			</EnumValue>
-			<EnumValue uuid="1b5d3322-aaaa-44dd-9496-0e14b28afe0f">
-				<Properties>
-					<Name>AccumulatedDepreciation</Name>
-					<Synonym>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Accumulated depreciation</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Depreciação acumulada</v8:content>
-						</v8:item>
-					</Synonym>
-					<Comment/>
-				</Properties>
-			</EnumValue>
 			<EnumValue uuid="80161630-2102-4a10-9ed7-3dd73c7814bb">
 				<Properties>
 					<Name>Bank</Name>
@@ -97,94 +45,6 @@
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Bank</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Banco</v8:content>
-						</v8:item>
-					</Synonym>
-					<Comment/>
-				</Properties>
-			</EnumValue>
-			<EnumValue uuid="bfd43219-80ea-4b12-9914-10ded374b553">
-				<Properties>
-					<Name>CostOfSales</Name>
-					<Synonym>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Cost of sales</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Custo de vendas</v8:content>
-						</v8:item>
-					</Synonym>
-					<Comment/>
-				</Properties>
-			</EnumValue>
-			<EnumValue uuid="3baf3090-f28e-4d13-b167-172fda7d2236">
-				<Properties>
-					<Name>Equity</Name>
-					<Synonym>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Equity</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Patrimônio líquido</v8:content>
-						</v8:item>
-					</Synonym>
-					<Comment/>
-				</Properties>
-			</EnumValue>
-			<EnumValue uuid="ab163a42-3318-4286-8d3a-7fa3c56ad362">
-				<Properties>
-					<Name>Expense</Name>
-					<Synonym>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Expense</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Despesa</v8:content>
-						</v8:item>
-					</Synonym>
-					<Comment/>
-				</Properties>
-			</EnumValue>
-			<EnumValue uuid="28a24a59-8e94-4c68-8814-e1f9884bf959">
-				<Properties>
-					<Name>FixedAsset</Name>
-					<Synonym>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Fixed asset</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Ativos fixos</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Anlagevermögen</v8:content>
-						</v8:item>
-					</Synonym>
-					<Comment/>
-				</Properties>
-			</EnumValue>
-			<EnumValue uuid="23f8f45d-9e9c-428f-af16-81eff4356354">
-				<Properties>
-					<Name>Income</Name>
-					<Synonym>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Income</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Receita</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -199,28 +59,24 @@
 							<v8:content>Inventory</v8:content>
 						</v8:item>
 						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Inventário</v8:content>
-						</v8:item>
-						<v8:item>
 							<v8:lang>de</v8:lang>
-							<v8:content>Lagerbestand</v8:content>
+							<v8:content>Warenvorrat</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
 				</Properties>
 			</EnumValue>
-			<EnumValue uuid="8aa92c3a-2a5d-4807-9b6a-8a08ebb1f775">
+			<EnumValue uuid="00fc6413-7619-4a15-afe6-04afcd3396c8">
 				<Properties>
-					<Name>LongTermLiability</Name>
+					<Name>AccountsReceivable</Name>
 					<Synonym>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Long term liability</v8:content>
+							<v8:content>Accounts receivable</v8:content>
 						</v8:item>
 						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Responsabilidades a longo prazo</v8:content>
+							<v8:lang>de</v8:lang>
+							<v8:content>Forderungen</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -235,8 +91,72 @@
 							<v8:content>Other current asset</v8:content>
 						</v8:item>
 						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Outros ativo circulantes </v8:content>
+							<v8:lang>de</v8:lang>
+							<v8:content>Sonstiges Umlaufvermögen</v8:content>
+						</v8:item>
+					</Synonym>
+					<Comment/>
+				</Properties>
+			</EnumValue>
+			<EnumValue uuid="28a24a59-8e94-4c68-8814-e1f9884bf959">
+				<Properties>
+					<Name>FixedAsset</Name>
+					<Synonym>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Fixed asset</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Anlagevermögen</v8:content>
+						</v8:item>
+					</Synonym>
+					<Comment/>
+				</Properties>
+			</EnumValue>
+			<EnumValue uuid="1b5d3322-aaaa-44dd-9496-0e14b28afe0f">
+				<Properties>
+					<Name>AccumulatedDepreciation</Name>
+					<Synonym>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Accumulated depreciation</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Abschreibungen</v8:content>
+						</v8:item>
+					</Synonym>
+					<Comment/>
+				</Properties>
+			</EnumValue>
+			<EnumValue uuid="def6befe-34c5-441b-bb13-97db487c1167">
+				<Properties>
+					<Name>OtherNonCurrentAsset</Name>
+					<Synonym>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Other noncurrent asset</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Sonstiges Nichtumlaufvermögen</v8:content>
+						</v8:item>
+					</Synonym>
+					<Comment/>
+				</Properties>
+			</EnumValue>
+			<EnumValue uuid="dff10458-484a-4c75-8b4c-2035411258a3">
+				<Properties>
+					<Name>AccountsPayable</Name>
+					<Synonym>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Accounts payable</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Verbindlichkeiten</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -251,8 +171,104 @@
 							<v8:content>Other current liability</v8:content>
 						</v8:item>
 						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Outros passivo circulante</v8:content>
+							<v8:lang>de</v8:lang>
+							<v8:content>Sonstige Forderungen</v8:content>
+						</v8:item>
+					</Synonym>
+					<Comment/>
+				</Properties>
+			</EnumValue>
+			<EnumValue uuid="8aa92c3a-2a5d-4807-9b6a-8a08ebb1f775">
+				<Properties>
+					<Name>LongTermLiability</Name>
+					<Synonym>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Long term liability</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Langfristige Ferbindlichkeiten</v8:content>
+						</v8:item>
+					</Synonym>
+					<Comment/>
+				</Properties>
+			</EnumValue>
+			<EnumValue uuid="3baf3090-f28e-4d13-b167-172fda7d2236">
+				<Properties>
+					<Name>Equity</Name>
+					<Synonym>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Equity</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Stammkapital</v8:content>
+						</v8:item>
+					</Synonym>
+					<Comment/>
+				</Properties>
+			</EnumValue>
+			<EnumValue uuid="23f8f45d-9e9c-428f-af16-81eff4356354">
+				<Properties>
+					<Name>Income</Name>
+					<Synonym>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Income</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Erlöse</v8:content>
+						</v8:item>
+					</Synonym>
+					<Comment/>
+				</Properties>
+			</EnumValue>
+			<EnumValue uuid="bfd43219-80ea-4b12-9914-10ded374b553">
+				<Properties>
+					<Name>CostOfSales</Name>
+					<Synonym>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Cost of sales</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Verkaufskosten</v8:content>
+						</v8:item>
+					</Synonym>
+					<Comment/>
+				</Properties>
+			</EnumValue>
+			<EnumValue uuid="ab163a42-3318-4286-8d3a-7fa3c56ad362">
+				<Properties>
+					<Name>Expense</Name>
+					<Synonym>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Expense</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Aufwand</v8:content>
+						</v8:item>
+					</Synonym>
+					<Comment/>
+				</Properties>
+			</EnumValue>
+			<EnumValue uuid="7f0d976d-3e8c-4af7-b2bd-9e269492f87c">
+				<Properties>
+					<Name>OtherIncome</Name>
+					<Synonym>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Other income</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Sonstige erträge</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -267,40 +283,8 @@
 							<v8:content>Other expense</v8:content>
 						</v8:item>
 						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Outra despesa</v8:content>
-						</v8:item>
-					</Synonym>
-					<Comment/>
-				</Properties>
-			</EnumValue>
-			<EnumValue uuid="7f0d976d-3e8c-4af7-b2bd-9e269492f87c">
-				<Properties>
-					<Name>OtherIncome</Name>
-					<Synonym>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Other Income</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Outras receitas</v8:content>
-						</v8:item>
-					</Synonym>
-					<Comment/>
-				</Properties>
-			</EnumValue>
-			<EnumValue uuid="def6befe-34c5-441b-bb13-97db487c1167">
-				<Properties>
-					<Name>OtherNonCurrentAsset</Name>
-					<Synonym>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Other non current asset</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Ouros ativos não circulantes</v8:content>
+							<v8:lang>de</v8:lang>
+							<v8:content>Sonstige Kosten</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>

@@ -13,19 +13,22 @@
 			<DataPath>Object.Code</DataPath>
 			<EditMode>EnterOnInput</EditMode>
 			<ContextMenu name="CodeContextMenu" id="2"/>
-			<ExtendedTooltip name="CodeExtendedTooltip" id="19"/>
+			<ExtendedTooltip name="CodeExtendedTooltip" id="23"/>
+			<Events>
+				<Event name="OnChange">CodeOnChange</Event>
+			</Events>
 		</InputField>
 		<InputField name="Description" id="3">
 			<DataPath>Object.Description</DataPath>
 			<EditMode>EnterOnInput</EditMode>
 			<ContextMenu name="DescriptionContextMenu" id="4"/>
-			<ExtendedTooltip name="DescriptionExtendedTooltip" id="20"/>
+			<ExtendedTooltip name="DescriptionExtendedTooltip" id="24"/>
 		</InputField>
 		<InputField name="AccountType" id="5">
 			<DataPath>Object.AccountType</DataPath>
 			<EditMode>EnterOnInput</EditMode>
 			<ContextMenu name="AccountTypeContextMenu" id="6"/>
-			<ExtendedTooltip name="AccountTypeExtendedTooltip" id="21"/>
+			<ExtendedTooltip name="AccountTypeExtendedTooltip" id="25"/>
 			<Events>
 				<Event name="OnChange">AccountTypeOnChange</Event>
 			</Events>
@@ -33,30 +36,42 @@
 		<InputField name="Currency" id="13">
 			<DataPath>Object.Currency</DataPath>
 			<ContextMenu name="CurrencyContextMenu" id="14"/>
-			<ExtendedTooltip name="CurrencyExtendedTooltip" id="22"/>
+			<ExtendedTooltip name="CurrencyExtendedTooltip" id="26"/>
 		</InputField>
 		<InputField name="Category1099" id="7">
 			<DataPath>Object.Category1099</DataPath>
 			<ContextMenu name="Category1099ContextMenu" id="8"/>
-			<ExtendedTooltip name="Category1099ExtendedTooltip" id="23"/>
+			<ExtendedTooltip name="Category1099ExtendedTooltip" id="27"/>
 		</InputField>
 		<InputField name="CashFlowSection" id="17">
 			<DataPath>Object.CashFlowSection</DataPath>
 			<ContextMenu name="CashFlowSectionContextMenu" id="18"/>
-			<ExtendedTooltip name="CashFlowSectionExtendedTooltip" id="24"/>
+			<ExtendedTooltip name="CashFlowSectionExtendedTooltip" id="28"/>
 		</InputField>
+		<CheckBoxField name="NonCash" id="19">
+			<DataPath>Object.Noncash</DataPath>
+			<CheckBoxType>Auto</CheckBoxType>
+			<ContextMenu name="NonCashContextMenu" id="20"/>
+			<ExtendedTooltip name="NonCashExtendedTooltip" id="29"/>
+		</CheckBoxField>
 		<CheckBoxField name="OtherComprehensiveIncome" id="9">
 			<DataPath>Object.OtherComprehensiveIncome</DataPath>
 			<CheckBoxType>Auto</CheckBoxType>
 			<ContextMenu name="OtherComprehensiveIncomeContextMenu" id="10"/>
-			<ExtendedTooltip name="OtherComprehensiveIncomeExtendedTooltip" id="25"/>
+			<ExtendedTooltip name="OtherComprehensiveIncomeExtendedTooltip" id="30"/>
 		</CheckBoxField>
 		<CheckBoxField name="IncomeTaxAccount" id="15">
 			<DataPath>Object.IncomeTaxAccount</DataPath>
 			<CheckBoxType>Auto</CheckBoxType>
 			<ContextMenu name="IncomeTaxAccountContextMenu" id="16"/>
-			<ExtendedTooltip name="IncomeTaxAccountExtendedTooltip" id="26"/>
+			<ExtendedTooltip name="IncomeTaxAccountExtendedTooltip" id="31"/>
 		</CheckBoxField>
+		<InputField name="Memo" id="21">
+			<DataPath>Object.Memo</DataPath>
+			<MultiLine>true</MultiLine>
+			<ContextMenu name="MemoContextMenu" id="22"/>
+			<ExtendedTooltip name="MemoExtendedTooltip" id="32"/>
+		</InputField>
 	</ChildItems>
 	<Attributes>
 		<Attribute name="Object" id="1">

@@ -31,15 +31,15 @@
 					<v8:content>Bank reconciliation</v8:content>
 				</v8:item>
 				<v8:item>
-					<v8:lang>pt</v8:lang>
-					<v8:content>Reconciliação bancária</v8:content>
+					<v8:lang>de</v8:lang>
+					<v8:content>Bankbuch</v8:content>
 				</v8:item>
 			</Synonym>
 			<Comment/>
 			<UseStandardCommands>true</UseStandardCommands>
 			<Numerator/>
 			<NumberType>String</NumberType>
-			<NumberLength>9</NumberLength>
+			<NumberLength>6</NumberLength>
 			<NumberAllowedLength>Variable</NumberAllowedLength>
 			<NumberPeriodicity>Nonperiodical</NumberPeriodicity>
 			<CheckUnique>true</CheckUnique>
@@ -134,10 +134,6 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>DLF=D</v8:content>
 						</v8:item>
-						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>DLF=D</v8:content>
-						</v8:item>
 					</xr:Format>
 					<xr:ChoiceForm/>
 					<xr:QuickChoice>Auto</xr:QuickChoice>
@@ -147,18 +143,14 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>DLF=D</v8:content>
 						</v8:item>
-						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>DLF=D</v8:content>
-						</v8:item>
 					</xr:EditFormat>
 					<xr:PasswordMode>false</xr:PasswordMode>
 					<xr:MarkNegatives>false</xr:MarkNegatives>
 					<xr:MinValue xsi:nil="true"/>
 					<xr:Synonym>
 						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Data</v8:content>
+							<v8:lang>en</v8:lang>
+							<v8:content>Rec. date</v8:content>
 						</v8:item>
 					</xr:Synonym>
 					<xr:Comment/>
@@ -185,12 +177,7 @@
 					<xr:PasswordMode>false</xr:PasswordMode>
 					<xr:MarkNegatives>false</xr:MarkNegatives>
 					<xr:MinValue xsi:nil="true"/>
-					<xr:Synonym>
-						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Número</v8:content>
-						</v8:item>
-					</xr:Synonym>
+					<xr:Synonym/>
 					<xr:Comment/>
 					<xr:FullTextSearch>Use</xr:FullTextSearch>
 					<xr:ChoiceParameterLinks/>
@@ -215,7 +202,7 @@
 			<AuxiliaryListForm/>
 			<AuxiliaryChoiceForm/>
 			<Posting>Allow</Posting>
-			<RealTimePosting>Allow</RealTimePosting>
+			<RealTimePosting>Deny</RealTimePosting>
 			<RegisterRecordsDeletion>AutoDeleteOnUnpost</RegisterRecordsDeletion>
 			<RegisterRecordsWritingOnPost>WriteSelected</RegisterRecordsWritingOnPost>
 			<SequenceFilling>AutoFill</SequenceFilling>
@@ -236,8 +223,8 @@
 					<v8:content>Bank reconciliations</v8:content>
 				</v8:item>
 				<v8:item>
-					<v8:lang>pt</v8:lang>
-					<v8:content>Reconciliações bancárias </v8:content>
+					<v8:lang>de</v8:lang>
+					<v8:content>Bankbücher</v8:content>
 				</v8:item>
 			</ListPresentation>
 			<ExtendedListPresentation/>
@@ -251,11 +238,7 @@
 					<Synonym>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Statement to date</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Extrato até</v8:content>
+							<v8:content>Statement date</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -299,8 +282,8 @@
 							<v8:content>Service charge</v8:content>
 						</v8:item>
 						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Taxa de serviço </v8:content>
+							<v8:lang>de</v8:lang>
+							<v8:content>Servicegebühr</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -315,16 +298,7 @@
 					<PasswordMode>false</PasswordMode>
 					<Format/>
 					<EditFormat/>
-					<ToolTip>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Bank service charge amount</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Valor de taxa de serviço bancário </v8:content>
-						</v8:item>
-					</ToolTip>
+					<ToolTip/>
 					<MarkNegatives>false</MarkNegatives>
 					<Mask/>
 					<MultiLine>false</MultiLine>
@@ -355,8 +329,8 @@
 							<v8:content>Service charge date</v8:content>
 						</v8:item>
 						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Data do serviço </v8:content>
+							<v8:lang>de</v8:lang>
+							<v8:content>Datum der Servicedebühr</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -369,16 +343,7 @@
 					<PasswordMode>false</PasswordMode>
 					<Format/>
 					<EditFormat/>
-					<ToolTip>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Bank service charge date</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Data de taxa de serviço bancário</v8:content>
-						</v8:item>
-					</ToolTip>
+					<ToolTip/>
 					<MarkNegatives>false</MarkNegatives>
 					<Mask/>
 					<MultiLine>false</MultiLine>
@@ -409,8 +374,8 @@
 							<v8:content>Interest earned</v8:content>
 						</v8:item>
 						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Juros ganhos</v8:content>
+							<v8:lang>de</v8:lang>
+							<v8:content>Zinsgewinn</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -425,16 +390,7 @@
 					<PasswordMode>false</PasswordMode>
 					<Format/>
 					<EditFormat/>
-					<ToolTip>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Interest earned amount</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Valor de juros ganhos</v8:content>
-						</v8:item>
-					</ToolTip>
+					<ToolTip/>
 					<MarkNegatives>false</MarkNegatives>
 					<Mask/>
 					<MultiLine>false</MultiLine>
@@ -465,8 +421,8 @@
 							<v8:content>Interest earned date</v8:content>
 						</v8:item>
 						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Data de juros ganhos</v8:content>
+							<v8:lang>de</v8:lang>
+							<v8:content>Datum des Zinsgewinns</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -509,10 +465,6 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Beginning balance</v8:content>
 						</v8:item>
-						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Saldo Inicial</v8:content>
-						</v8:item>
 					</Synonym>
 					<Comment/>
 					<Type>
@@ -526,16 +478,7 @@
 					<PasswordMode>false</PasswordMode>
 					<Format/>
 					<EditFormat/>
-					<ToolTip>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Beginning balance amount</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Quantia de Saldo Inicial</v8:content>
-						</v8:item>
-					</ToolTip>
+					<ToolTip/>
 					<MarkNegatives>false</MarkNegatives>
 					<Mask/>
 					<MultiLine>false</MultiLine>
@@ -565,10 +508,6 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Ending balance</v8:content>
 						</v8:item>
-						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Fechamento de balanço</v8:content>
-						</v8:item>
 					</Synonym>
 					<Comment/>
 					<Type>
@@ -582,16 +521,7 @@
 					<PasswordMode>false</PasswordMode>
 					<Format/>
 					<EditFormat/>
-					<ToolTip>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Ending balance amount</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Saldo final</v8:content>
-						</v8:item>
-					</ToolTip>
+					<ToolTip/>
 					<MarkNegatives>false</MarkNegatives>
 					<Mask/>
 					<MultiLine>false</MultiLine>
@@ -613,51 +543,6 @@
 					<FullTextSearch>Use</FullTextSearch>
 				</Properties>
 			</Attribute>
-			<Attribute uuid="32b6a699-776b-4ba5-9912-011d9c6d238d">
-				<Properties>
-					<Name>StatementFromDate</Name>
-					<Synonym>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Statement from date</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Extrato de</v8:content>
-						</v8:item>
-					</Synonym>
-					<Comment/>
-					<Type>
-						<v8:Type>xs:dateTime</v8:Type>
-						<v8:DateQualifiers>
-							<v8:DateFractions>Date</v8:DateFractions>
-						</v8:DateQualifiers>
-					</Type>
-					<PasswordMode>false</PasswordMode>
-					<Format/>
-					<EditFormat/>
-					<ToolTip/>
-					<MarkNegatives>false</MarkNegatives>
-					<Mask/>
-					<MultiLine>false</MultiLine>
-					<ExtendedEdit>false</ExtendedEdit>
-					<MinValue xsi:nil="true"/>
-					<MaxValue xsi:nil="true"/>
-					<FillFromFillingValue>false</FillFromFillingValue>
-					<FillValue xsi:nil="true"/>
-					<FillChecking>ShowError</FillChecking>
-					<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
-					<ChoiceParameterLinks/>
-					<ChoiceParameters/>
-					<QuickChoice>Auto</QuickChoice>
-					<CreateOnInput>Auto</CreateOnInput>
-					<ChoiceForm/>
-					<LinkByType/>
-					<ChoiceHistoryOnInput>Auto</ChoiceHistoryOnInput>
-					<Indexing>DontIndex</Indexing>
-					<FullTextSearch>Use</FullTextSearch>
-				</Properties>
-			</Attribute>
 			<Attribute uuid="26f78391-8c3c-4fb2-bfcf-7a455f03c062">
 				<Properties>
 					<Name>ClearedBalance</Name>
@@ -665,10 +550,6 @@
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Cleared balance</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Saldo limpo</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -714,8 +595,8 @@
 							<v8:content>Difference</v8:content>
 						</v8:item>
 						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Diferença</v8:content>
+							<v8:lang>de</v8:lang>
+							<v8:content>Differenz</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -730,16 +611,7 @@
 					<PasswordMode>false</PasswordMode>
 					<Format/>
 					<EditFormat/>
-					<ToolTip>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Difference, ending balance less cleared balance</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Diferença, saldo de fechamento menos saldo limpo</v8:content>
-						</v8:item>
-					</ToolTip>
+					<ToolTip/>
 					<MarkNegatives>false</MarkNegatives>
 					<Mask/>
 					<MultiLine>false</MultiLine>
@@ -768,10 +640,6 @@
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Cleared amount</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Valor limpo</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -817,8 +685,8 @@
 							<v8:content>Memo</v8:content>
 						</v8:item>
 						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Anotações</v8:content>
+							<v8:lang>de</v8:lang>
+							<v8:content>Kommentar</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -861,10 +729,6 @@
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Bank account</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Conta bancária</v8:content>
 						</v8:item>
 						<v8:item>
 							<v8:lang>de</v8:lang>
@@ -925,10 +789,6 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Line items</v8:content>
 						</v8:item>
-						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Especificação</v8:content>
-						</v8:item>
 					</Synonym>
 					<Comment/>
 					<ToolTip>
@@ -937,8 +797,8 @@
 							<v8:content>Reconciliation documents</v8:content>
 						</v8:item>
 						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Documentos de reconciliação</v8:content>
+							<v8:lang>de</v8:lang>
+							<v8:content>Belege für Abstimmung</v8:content>
 						</v8:item>
 					</ToolTip>
 					<FillChecking>DontCheck</FillChecking>
@@ -953,15 +813,19 @@
 									<v8:content>Transaction</v8:content>
 								</v8:item>
 								<v8:item>
-									<v8:lang>pt</v8:lang>
-									<v8:content>Transação</v8:content>
+									<v8:lang>de</v8:lang>
+									<v8:content>Transaktion</v8:content>
 								</v8:item>
 							</Synonym>
 							<Comment/>
 							<Type>
+								<v8:Type>cfg:DocumentRef.BankTransfer</v8:Type>
 								<v8:Type>cfg:DocumentRef.Deposit</v8:Type>
 								<v8:Type>cfg:DocumentRef.CashPurchase</v8:Type>
-								<v8:Type>cfg:DocumentRef.Payment</v8:Type>
+								<v8:Type>cfg:DocumentRef.CashSale</v8:Type>
+								<v8:Type>cfg:DocumentRef.Check</v8:Type>
+								<v8:Type>cfg:DocumentRef.CashReceipt</v8:Type>
+								<v8:Type>cfg:DocumentRef.InvoicePayment</v8:Type>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -993,10 +857,6 @@
 								<v8:item>
 									<v8:lang>en</v8:lang>
 									<v8:content>Cleared</v8:content>
-								</v8:item>
-								<v8:item>
-									<v8:lang>pt</v8:lang>
-									<v8:content>Limpo</v8:content>
 								</v8:item>
 							</Synonym>
 							<Comment/>
@@ -1033,10 +893,6 @@
 								<v8:item>
 									<v8:lang>en</v8:lang>
 									<v8:content>Transaction Amount</v8:content>
-								</v8:item>
-								<v8:item>
-									<v8:lang>pt</v8:lang>
-									<v8:content>Valor de transação</v8:content>
 								</v8:item>
 							</Synonym>
 							<Comment/>
@@ -1080,12 +936,8 @@
 									<v8:content>Company</v8:content>
 								</v8:item>
 								<v8:item>
-									<v8:lang>pt</v8:lang>
-									<v8:content>Empresas</v8:content>
-								</v8:item>
-								<v8:item>
 									<v8:lang>de</v8:lang>
-									<v8:content>Firma</v8:content>
+									<v8:content>Unternehmen</v8:content>
 								</v8:item>
 							</Synonym>
 							<Comment/>
@@ -1095,6 +947,55 @@
 							<PasswordMode>false</PasswordMode>
 							<Format/>
 							<EditFormat/>
+							<ToolTip/>
+							<MarkNegatives>false</MarkNegatives>
+							<Mask/>
+							<MultiLine>false</MultiLine>
+							<ExtendedEdit>false</ExtendedEdit>
+							<MinValue xsi:nil="true"/>
+							<MaxValue xsi:nil="true"/>
+							<FillChecking>DontCheck</FillChecking>
+							<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
+							<ChoiceParameterLinks/>
+							<ChoiceParameters/>
+							<QuickChoice>Auto</QuickChoice>
+							<CreateOnInput>Auto</CreateOnInput>
+							<ChoiceForm/>
+							<LinkByType/>
+							<ChoiceHistoryOnInput>Auto</ChoiceHistoryOnInput>
+							<Indexing>DontIndex</Indexing>
+							<FullTextSearch>Use</FullTextSearch>
+						</Properties>
+					</Attribute>
+					<Attribute uuid="3aaf7abe-9be8-478e-af48-dfeb41be9b4c">
+						<Properties>
+							<Name>Date</Name>
+							<Synonym>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Date</v8:content>
+								</v8:item>
+							</Synonym>
+							<Comment/>
+							<Type>
+								<v8:Type>xs:dateTime</v8:Type>
+								<v8:DateQualifiers>
+									<v8:DateFractions>Date</v8:DateFractions>
+								</v8:DateQualifiers>
+							</Type>
+							<PasswordMode>false</PasswordMode>
+							<Format>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>DLF=D</v8:content>
+								</v8:item>
+							</Format>
+							<EditFormat>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>DLF=D</v8:content>
+								</v8:item>
+							</EditFormat>
 							<ToolTip/>
 							<MarkNegatives>false</MarkNegatives>
 							<Mask/>

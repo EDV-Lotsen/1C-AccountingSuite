@@ -6,19 +6,29 @@
 				<xr:Common>true</xr:Common>
 			</Visibility>
 		</Command>
-		<Command name="Catalog.Banks.StandardCommand.OpenList">
+		<Command name="CommonCommand.USVendors1099">
+			<Visibility>
+				<xr:Common>false</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="CommonCommand.Form1099">
+			<Visibility>
+				<xr:Common>false</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="CommonCommand.USSummary1099">
+			<Visibility>
+				<xr:Common>false</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="CommonCommand.AdditionalReportsAccounting">
 			<Visibility>
 				<xr:Common>true</xr:Common>
 			</Visibility>
 		</Command>
-		<Command name="Document.APBeginningBalances.StandardCommand.OpenList">
+		<Command name="CommonCommand.AdditionalDataProcessorsAccounting">
 			<Visibility>
-				<xr:Common>true</xr:Common>
-			</Visibility>
-		</Command>
-		<Command name="Document.ARBeginningBalances.StandardCommand.OpenList">
-			<Visibility>
-				<xr:Common>true</xr:Common>
+				<xr:Common>false</xr:Common>
 			</Visibility>
 		</Command>
 		<Command name="Document.InventoryBeginningBalances.StandardCommand.OpenList">
@@ -32,16 +42,6 @@
 			</Visibility>
 		</Command>
 		<Command name="Catalog.VATCodes.StandardCommand.OpenList">
-			<Visibility>
-				<xr:Common>true</xr:Common>
-			</Visibility>
-		</Command>
-		<Command name="Document.VATInvoice.StandardCommand.OpenList">
-			<Visibility>
-				<xr:Common>true</xr:Common>
-			</Visibility>
-		</Command>
-		<Command name="Catalog.VATReturnFormBoxes.StandardCommand.OpenList">
 			<Visibility>
 				<xr:Common>true</xr:Common>
 			</Visibility>
@@ -51,23 +51,64 @@
 				<xr:Common>true</xr:Common>
 			</Visibility>
 		</Command>
-		<Command name="Document.GeneralJournalEntry.StandardCommand.Create">
+		<Command name="Report.IncomeStatement.StandardCommand.Open">
 			<Visibility>
-				<xr:Common>true</xr:Common>
+				<xr:Common>false</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="Report.IncomeStatementDetailed.StandardCommand.Open">
+			<Visibility>
+				<xr:Common>false</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="Report.BalanceSheet.StandardCommand.Open">
+			<Visibility>
+				<xr:Common>false</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="Report.CashFlowDirect.StandardCommand.Open">
+			<Visibility>
+				<xr:Common>false</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="Report.USVendors1099.StandardCommand.Open">
+			<Visibility>
+				<xr:Common>false</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="Report.USSummary1099.StandardCommand.Open">
+			<Visibility>
+				<xr:Common>false</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="Report.Form1099.StandardCommand.Open">
+			<Visibility>
+				<xr:Common>false</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="Report.OtherComprehensiveIncome.StandardCommand.Open">
+			<Visibility>
+				<xr:Common>false</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="Report.GeneralLedger.StandardCommand.Open">
+			<Visibility>
+				<xr:Common>false</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="CommonForm.GeneralSettings.StandardCommand.Open">
+			<Visibility>
+				<xr:Common>false</xr:Common>
 			</Visibility>
 		</Command>
 	</CommandsVisibility>
 	<CommandsPlacement>
-		<Command name="Catalog.Banks.StandardCommand.OpenList">
-			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
+		<Command name="CommonCommand.AdditionalReportsAccounting">
+			<CommandGroup>CommandGroup.Reports</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
-		<Command name="Document.APBeginningBalances.StandardCommand.OpenList">
-			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
-			<Placement>Auto</Placement>
-		</Command>
-		<Command name="Document.ARBeginningBalances.StandardCommand.OpenList">
-			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
+		<Command name="CommonCommand.AdditionalDataProcessorsAccounting">
+			<CommandGroup>CommandGroup.Reports</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
 		<Command name="Document.InventoryBeginningBalances.StandardCommand.OpenList">
@@ -79,14 +120,6 @@
 			<Placement>Auto</Placement>
 		</Command>
 		<Command name="Catalog.VATCodes.StandardCommand.OpenList">
-			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
-			<Placement>Auto</Placement>
-		</Command>
-		<Command name="Document.VATInvoice.StandardCommand.OpenList">
-			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
-			<Placement>Auto</Placement>
-		</Command>
-		<Command name="Catalog.VATReturnFormBoxes.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
@@ -105,23 +138,41 @@
 		<Command name="ChartOfAccounts.ChartOfAccounts.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
 		</Command>
-		<Command name="Catalog.CFOP.StandardCommand.OpenList">
-			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
+		<Command name="CommonCommand.GeneralLedger">
+			<CommandGroup>CommandGroup.Reports</CommandGroup>
 		</Command>
-		<Command name="Catalog.ICMSProductGroups.StandardCommand.OpenList">
-			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
+		<Command name="CommonCommand.TrialBalance">
+			<CommandGroup>CommandGroup.Reports</CommandGroup>
 		</Command>
-		<Command name="Catalog.ICMSTaxTable.StandardCommand.OpenList">
-			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
+		<Command name="CommonCommand.IncomeStatement">
+			<CommandGroup>CommandGroup.Reports</CommandGroup>
 		</Command>
-		<Command name="Catalog.Banks.StandardCommand.OpenList">
-			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
+		<Command name="CommonCommand.IncomeStatementDetailed">
+			<CommandGroup>CommandGroup.Reports</CommandGroup>
 		</Command>
-		<Command name="Document.APBeginningBalances.StandardCommand.OpenList">
-			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
+		<Command name="CommonCommand.BalanceSheet">
+			<CommandGroup>CommandGroup.Reports</CommandGroup>
 		</Command>
-		<Command name="Document.ARBeginningBalances.StandardCommand.OpenList">
-			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
+		<Command name="CommonCommand.CashFlowDirect">
+			<CommandGroup>CommandGroup.Reports</CommandGroup>
+		</Command>
+		<Command name="CommonCommand.USVendors1099">
+			<CommandGroup>CommandGroup.Reports</CommandGroup>
+		</Command>
+		<Command name="CommonCommand.Form1099">
+			<CommandGroup>CommandGroup.Reports</CommandGroup>
+		</Command>
+		<Command name="CommonCommand.USSummary1099">
+			<CommandGroup>CommandGroup.Reports</CommandGroup>
+		</Command>
+		<Command name="CommonCommand.OtherComprehensiveIncome">
+			<CommandGroup>CommandGroup.Reports</CommandGroup>
+		</Command>
+		<Command name="CommonCommand.AdditionalReportsAccounting">
+			<CommandGroup>CommandGroup.Reports</CommandGroup>
+		</Command>
+		<Command name="CommonCommand.AdditionalDataProcessorsAccounting">
+			<CommandGroup>CommandGroup.Reports</CommandGroup>
 		</Command>
 		<Command name="Document.InventoryBeginningBalances.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
@@ -130,12 +181,6 @@
 			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
 		</Command>
 		<Command name="Catalog.VATCodes.StandardCommand.OpenList">
-			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
-		</Command>
-		<Command name="Document.VATInvoice.StandardCommand.OpenList">
-			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
-		</Command>
-		<Command name="Catalog.VATReturnFormBoxes.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
 		</Command>
 		<Command name="Catalog.PaymentMethods.StandardCommand.OpenList">
@@ -147,37 +192,13 @@
 		<Command name="Catalog.USTaxCategories1099.StandardCommand.Create">
 			<CommandGroup>ActionsPanelCreate</CommandGroup>
 		</Command>
-		<Command name="Catalog.CFOP.StandardCommand.Create">
-			<CommandGroup>ActionsPanelCreate</CommandGroup>
-		</Command>
 		<Command name="ChartOfAccounts.ChartOfAccounts.StandardCommand.Create">
-			<CommandGroup>ActionsPanelCreate</CommandGroup>
-		</Command>
-		<Command name="Catalog.ICMSProductGroups.StandardCommand.Create">
-			<CommandGroup>ActionsPanelCreate</CommandGroup>
-		</Command>
-		<Command name="Catalog.ICMSTaxTable.StandardCommand.Create">
 			<CommandGroup>ActionsPanelCreate</CommandGroup>
 		</Command>
 		<Command name="Catalog.VATCodes.StandardCommand.Create">
 			<CommandGroup>ActionsPanelCreate</CommandGroup>
 		</Command>
-		<Command name="Catalog.VATReturnFormBoxes.StandardCommand.Create">
-			<CommandGroup>ActionsPanelCreate</CommandGroup>
-		</Command>
 		<Command name="Document.InventoryBeginningBalances.StandardCommand.Create">
-			<CommandGroup>ActionsPanelCreate</CommandGroup>
-		</Command>
-		<Command name="Document.ARBeginningBalances.StandardCommand.Create">
-			<CommandGroup>ActionsPanelCreate</CommandGroup>
-		</Command>
-		<Command name="Document.APBeginningBalances.StandardCommand.Create">
-			<CommandGroup>ActionsPanelCreate</CommandGroup>
-		</Command>
-		<Command name="Catalog.Banks.StandardCommand.Create">
-			<CommandGroup>ActionsPanelCreate</CommandGroup>
-		</Command>
-		<Command name="Document.VATInvoice.StandardCommand.Create">
 			<CommandGroup>ActionsPanelCreate</CommandGroup>
 		</Command>
 		<Command name="Catalog.PaymentMethods.StandardCommand.Create">
@@ -190,9 +211,6 @@
 			<CommandGroup>ActionsPanelReports</CommandGroup>
 		</Command>
 		<Command name="Report.BalanceSheet.StandardCommand.Open">
-			<CommandGroup>ActionsPanelReports</CommandGroup>
-		</Command>
-		<Command name="Report.TrialBalance.StandardCommand.Open">
 			<CommandGroup>ActionsPanelReports</CommandGroup>
 		</Command>
 		<Command name="Report.CashFlowDirect.StandardCommand.Open">
@@ -210,9 +228,13 @@
 		<Command name="Report.OtherComprehensiveIncome.StandardCommand.Open">
 			<CommandGroup>ActionsPanelReports</CommandGroup>
 		</Command>
+		<Command name="Report.GeneralLedger.StandardCommand.Open">
+			<CommandGroup>ActionsPanelReports</CommandGroup>
+		</Command>
 	</CommandsOrder>
 	<GroupsOrder>
 		<Group>NavigationPanelOrdinary</Group>
+		<Group>CommandGroup.Reports</Group>
 		<Group>NavigationPanelSeeAlso</Group>
 		<Group>ActionsPanelCreate</Group>
 		<Group>ActionsPanelReports</Group>

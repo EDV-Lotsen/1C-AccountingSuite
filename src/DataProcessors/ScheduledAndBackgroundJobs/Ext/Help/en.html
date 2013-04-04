@@ -1,0 +1,22 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"><html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:v="urn:schemas-microsoft-com:vml"><head><meta content="text/html; charset=utf-8" http-equiv="Content-Type"></meta><link rel="stylesheet" type="text/css" href="v8help://service_book/service_style"></link><meta name="GENERATOR" content="MSHTML 10.00.9200.16521"></meta></head><body>The<b> Scheduled and Background Jobs </b>form allows you to view scheduled jobs and their history, as well as start, stop, and schedule them.<br><br>It is recommended that you schedule jobs instead of running them manually, and that you do not edit scheduled jobs because their default settings are perfect for most cases.<br><br>The <b>Scheduled Jobs</b> tab contains the list of jobs. For each job, the following information is available: 
+<ul><li><b>Description.</b> The job name as it appears in the list. 
+</li><li><b>In use.</b> The job only runs at the scheduled time if this check box is selected. It is useful when you need to temporarily disable a scheduled job, without changing its schedule. 
+</li><li><b>On error repeat, times. </b>The number of job run attempts if the previous run resulted in an error. The interval between attempts is specified in the <b>On error repeat in, sec </b>box. 
+</li><li><b>On error repeat in, sec. </b>The interval between job run attempts if the previous run resulted in an error. The number of attempts is specified in the <b>On error repeat, times </b>box. 
+</li><li><b>ID.</b> A unique job identifier for internal use. It is assigned automatically.<b></b> 
+</li><li><b>Key.</b> A job identifier that is used when you need to run multiple jobs that call the same method. Normally, while a job is running, another job calling the same method cannot start until the current one is finished. But if they have different keys, they are allowed to run simultaneously. 
+</li><li><b>User name.</b> The account for running the job when it is scheduled. Note that when you start jobs manually, they run under your account. <b></b>
+</li><li><b>Name.</b> The name of the scheduled job in the configuration. This information is for application administrators.<b></b> 
+</li><li><b>Synonym.</b> The synonym of the scheduled job in the configuration. This information is for application administrators.<b></b> 
+</li><li><b>Metadata method name. </b>The name of the method that it is executed when you run the job.<b> </b>This information is for application administrators.<b></b> 
+</li><li><b>Messages and error descriptions.</b> This area contains messages and error descriptions generated during the last job execution. <b></b></li></ul>The <b>Background Jobs</b> tab contains the log of job executions. It contains the following filters: 
+<ul><li><b>By status. </b>Select the job status. The following statuses are available: 
+<ul><li><strong>Executed </strong>
+</li><li><strong>Completed with errors </strong>
+</li><li><strong>Canceled </strong>
+</li><li><strong>Running </strong></li></ul></li><li><b>By period.</b> Select the period during which the job was started. The following periods are available: 
+<ul><li><strong>Custom. </strong>A custom period 
+</li><li><strong>No filter.</strong> No filter 
+</li><li><strong>Last night.</strong> Last night,12 hours from 9:00 PM to 9:00 AM 
+</li><li><strong>Yesterday.</strong> 24 hours from 12:00 AM to 11:59 PM of the previous day 
+</li><li><strong>Today.</strong> 24 hours from 12:00 AM to 11:59 PM of the current day</li></ul></li><li><b>By job name.</b> Select a job name from the list.</li></ul>After you have specified the filter options, click <b>Refresh</b>.<br><br>To schedule a job, on the <b>Scheduled Jobs</b> tab, click <b>Schedule</b>, specify a schedule, and then click <b>OK</b>. If the application runs in the file mode, in addition to scheduling it, you have to start a separate session for running the scheduled jobs by clicking the <img src="_files/schedule.png"></img><v:shapetype id="_x0000_t75" coordsize="21600,21600" o:spt="75" o:preferrelative="t" path="m@4@5l@4@11@9@11@9@5xe" filled="f" stroked="f"> button.</v:shapetype></body></html>

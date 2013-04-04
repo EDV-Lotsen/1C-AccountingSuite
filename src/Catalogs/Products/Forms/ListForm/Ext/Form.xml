@@ -2,6 +2,9 @@
 <Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
 	<VerticalScroll>useIfNecessary</VerticalScroll>
 	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<Events>
+		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+	</Events>
 	<ChildItems>
 		<Table name="List" id="1">
 			<Representation>List</Representation>
@@ -32,47 +35,57 @@
 			<AutoCommandBar name="ListCommandBar" id="3">
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
-			<ExtendedTooltip name="ListExtendedTooltip" id="16"/>
-			<SearchStringAddition name="ListSearchString" id="17">
+			<ExtendedTooltip name="ListExtendedTooltip" id="23"/>
+			<SearchStringAddition name="ListSearchString" id="24">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="18"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="19"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="25"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="26"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="20">
+			<ViewStatusAddition name="ListViewStatus" id="27">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="21"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="22"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="28"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="29"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="23">
+			<SearchControlAddition name="ListSearchControl" id="30">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="24"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="25"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="31"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="32"/>
 			</SearchControlAddition>
 			<ChildItems>
+				<LabelField name="Code" id="17">
+					<DataPath>List.Code</DataPath>
+					<ContextMenu name="CodeContextMenu" id="18"/>
+					<ExtendedTooltip name="CodeExtendedTooltip" id="33"/>
+				</LabelField>
 				<LabelField name="Description" id="4">
 					<DataPath>List.Description</DataPath>
 					<DefaultItem>true</DefaultItem>
 					<ContextMenu name="DescriptionContextMenu" id="5"/>
-					<ExtendedTooltip name="DescriptionExtendedTooltip" id="26"/>
-				</LabelField>
-				<LabelField name="Descr" id="14">
-					<DataPath>List.Descr</DataPath>
-					<ContextMenu name="DescrContextMenu" id="15"/>
-					<ExtendedTooltip name="DescrExtendedTooltip" id="27"/>
+					<ExtendedTooltip name="DescriptionExtendedTooltip" id="34"/>
 				</LabelField>
 				<LabelField name="Type" id="12">
 					<DataPath>List.Type</DataPath>
 					<ContextMenu name="TypeContextMenu" id="13"/>
-					<ExtendedTooltip name="TypeExtendedTooltip" id="28"/>
+					<ExtendedTooltip name="TypeExtendedTooltip" id="35"/>
+				</LabelField>
+				<LabelField name="ProductCategory" id="19">
+					<DataPath>1/20</DataPath>
+					<ContextMenu name="ProductCategoryContextMenu" id="20"/>
+					<ExtendedTooltip name="ProductCategoryExtendedTooltip" id="36"/>
+				</LabelField>
+				<LabelField name="Price" id="21">
+					<DataPath>List.Price</DataPath>
+					<ContextMenu name="PriceContextMenu" id="22"/>
+					<ExtendedTooltip name="PriceExtendedTooltip" id="37"/>
 				</LabelField>
 			</ChildItems>
 		</Table>
@@ -84,8 +97,29 @@
 			</Type>
 			<MainAttribute>true</MainAttribute>
 			<Settings xsi:type="DynamicList">
-				<ManualQuery>false</ManualQuery>
+				<ManualQuery>true</ManualQuery>
 				<DynamicDataRead>true</DynamicDataRead>
+				<QueryText>SELECT
+	CatalogProducts.Ref,
+	CatalogProducts.DataVersion,
+	CatalogProducts.DeletionMark,
+	CatalogProducts.Predefined,
+	CatalogProducts.Code,
+	CatalogProducts.Description,
+	CatalogProducts.CostingMethod,
+	CatalogProducts.Type,
+	CatalogProducts.InventoryOrExpenseAccount,
+	CatalogProducts.IncomeAccount,
+	CatalogProducts.COGSAccount,
+	CatalogProducts.PurchaseVATCode,
+	CatalogProducts.SalesVATCode,
+	CatalogProducts.UM,
+	CatalogProducts.DefaultLocation,
+	PriceListSliceLast.Price
+FROM
+	Catalog.Products AS CatalogProducts
+		LEFT JOIN InformationRegister.PriceList.SliceLast AS PriceListSliceLast
+		ON (PriceListSliceLast.Product = CatalogProducts.Ref)</QueryText>
 				<MainTable>Catalog.Products</MainTable>
 				<ListSettings>
 					<dcsset:filter>

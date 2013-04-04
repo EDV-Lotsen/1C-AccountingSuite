@@ -1,0 +1,163 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<VerticalScroll>useIfNecessary</VerticalScroll>
+	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<Events>
+		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+	</Events>
+	<ChildItems>
+		<Table name="List" id="1">
+			<Representation>List</Representation>
+			<CommandBarLocation>None</CommandBarLocation>
+			<DefaultItem>true</DefaultItem>
+			<UseAlternationRowColor>true</UseAlternationRowColor>
+			<InitialTreeView>ExpandTopLevel</InitialTreeView>
+			<EnableStartDrag>true</EnableStartDrag>
+			<DataPath>List</DataPath>
+			<RowPictureDataPath>List.DefaultPicture</RowPictureDataPath>
+			<SearchStringLocation>None</SearchStringLocation>
+			<ViewStatusLocation>None</ViewStatusLocation>
+			<SearchControlLocation>None</SearchControlLocation>
+			<AutoRefresh>false</AutoRefresh>
+			<AutoRefreshPeriod>60</AutoRefreshPeriod>
+			<Period>
+				<v8:variant xsi:type="v8:StandardPeriodVariant">Custom</v8:variant>
+				<v8:startDate>0001-01-01T00:00:00</v8:startDate>
+				<v8:endDate>0001-01-01T00:00:00</v8:endDate>
+			</Period>
+			<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
+			<RestoreCurrentRow>false</RestoreCurrentRow>
+			<TopLevelParent xsi:nil="true"/>
+			<ShowRoot>true</ShowRoot>
+			<AllowRootChoice>false</AllowRootChoice>
+			<UpdateOnDataChange>Auto</UpdateOnDataChange>
+			<ContextMenu name="ListContextMenu" id="2"/>
+			<AutoCommandBar name="ListCommandBar" id="3">
+				<Autofill>false</Autofill>
+			</AutoCommandBar>
+			<ExtendedTooltip name="ListExtendedTooltip" id="20"/>
+			<SearchStringAddition name="ListSearchString" id="21">
+				<AdditionSource>
+					<Item>List</Item>
+					<Type>SearchStringRepresentation</Type>
+				</AdditionSource>
+				<ContextMenu name="ListSearchStringContextMenu" id="22"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="23"/>
+			</SearchStringAddition>
+			<ViewStatusAddition name="ListViewStatus" id="24">
+				<AdditionSource>
+					<Item>List</Item>
+					<Type>ViewStatusRepresentation</Type>
+				</AdditionSource>
+				<ContextMenu name="ListViewStatusContextMenu" id="25"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="26"/>
+			</ViewStatusAddition>
+			<SearchControlAddition name="ListSearchControl" id="27">
+				<AdditionSource>
+					<Item>List</Item>
+					<Type>SearchControl</Type>
+				</AdditionSource>
+				<ContextMenu name="ListSearchControlContextMenu" id="28"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="29"/>
+			</SearchControlAddition>
+			<ChildItems>
+				<LabelField name="Date" id="4">
+					<DataPath>List.Date</DataPath>
+					<DefaultItem>true</DefaultItem>
+					<ContextMenu name="DateContextMenu" id="5"/>
+					<ExtendedTooltip name="DateExtendedTooltip" id="30"/>
+				</LabelField>
+				<LabelField name="Number" id="6">
+					<DataPath>List.Number</DataPath>
+					<ContextMenu name="NumberContextMenu" id="7"/>
+					<ExtendedTooltip name="NumberExtendedTooltip" id="31"/>
+				</LabelField>
+				<LabelField name="AccountFrom" id="8">
+					<DataPath>List.AccountFrom</DataPath>
+					<ContextMenu name="AccountFromContextMenu" id="9"/>
+					<ExtendedTooltip name="AccountFromExtendedTooltip" id="32"/>
+				</LabelField>
+				<LabelField name="AccountFromDescription" id="16">
+					<DataPath>List.AccountFromDescription</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Account from</v8:content>
+						</v8:item>
+					</Title>
+					<ContextMenu name="AccountFromDescriptionContextMenu" id="17"/>
+					<ExtendedTooltip name="AccountFromDescriptionExtendedTooltip" id="33"/>
+				</LabelField>
+				<LabelField name="AccountTo" id="10">
+					<DataPath>List.AccountTo</DataPath>
+					<ContextMenu name="AccountToContextMenu" id="11"/>
+					<ExtendedTooltip name="AccountToExtendedTooltip" id="34"/>
+				</LabelField>
+				<LabelField name="AccountToDescription" id="18">
+					<DataPath>List.AccountToDescription</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Account to</v8:content>
+						</v8:item>
+					</Title>
+					<ContextMenu name="AccountToDescriptionContextMenu" id="19"/>
+					<ExtendedTooltip name="AccountToDescriptionExtendedTooltip" id="35"/>
+				</LabelField>
+				<LabelField name="Amount" id="12">
+					<DataPath>List.Amount</DataPath>
+					<ContextMenu name="AmountContextMenu" id="13"/>
+					<ExtendedTooltip name="AmountExtendedTooltip" id="36"/>
+				</LabelField>
+				<LabelField name="Memo" id="14">
+					<DataPath>List.Memo</DataPath>
+					<ContextMenu name="MemoContextMenu" id="15"/>
+					<ExtendedTooltip name="MemoExtendedTooltip" id="37"/>
+				</LabelField>
+			</ChildItems>
+		</Table>
+	</ChildItems>
+	<Attributes>
+		<Attribute name="List" id="1">
+			<Type>
+				<v8:Type>cfg:DynamicList</v8:Type>
+			</Type>
+			<MainAttribute>true</MainAttribute>
+			<Settings xsi:type="DynamicList">
+				<ManualQuery>true</ManualQuery>
+				<DynamicDataRead>true</DynamicDataRead>
+				<QueryText>SELECT
+	DocumentBankTransfer.Ref,
+	DocumentBankTransfer.DataVersion,
+	DocumentBankTransfer.DeletionMark,
+	DocumentBankTransfer.Number,
+	DocumentBankTransfer.Date,
+	DocumentBankTransfer.Posted,
+	DocumentBankTransfer.AccountFrom,
+	DocumentBankTransfer.AccountFrom.Description,
+	DocumentBankTransfer.AccountTo,
+	DocumentBankTransfer.AccountTo.Description,
+	DocumentBankTransfer.Amount,
+	DocumentBankTransfer.Memo,
+	DocumentBankTransfer.PointInTime
+FROM
+	Document.BankTransfer AS DocumentBankTransfer</QueryText>
+				<MainTable>Document.BankTransfer</MainTable>
+				<ListSettings>
+					<dcsset:filter>
+						<dcsset:viewMode>Normal</dcsset:viewMode>
+						<dcsset:userSettingID>dfcece9d-5077-440b-b6b3-45a5cb4538eb</dcsset:userSettingID>
+					</dcsset:filter>
+					<dcsset:order>
+						<dcsset:viewMode>Normal</dcsset:viewMode>
+						<dcsset:userSettingID>88619765-ccb3-46c6-ac52-38e9c992ebd4</dcsset:userSettingID>
+					</dcsset:order>
+					<dcsset:conditionalAppearance>
+						<dcsset:viewMode>Normal</dcsset:viewMode>
+						<dcsset:userSettingID>b75fecce-942b-4aed-abc9-e6a02e460fb3</dcsset:userSettingID>
+					</dcsset:conditionalAppearance>
+				</ListSettings>
+			</Settings>
+		</Attribute>
+	</Attributes>
+</Form>

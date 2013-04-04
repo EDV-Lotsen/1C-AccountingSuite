@@ -19,10 +19,6 @@
 					<v8:content>Balance sheet</v8:content>
 				</v8:item>
 				<v8:item>
-					<v8:lang>pt</v8:lang>
-					<v8:content>Balanço patrimonial</v8:content>
-				</v8:item>
-				<v8:item>
 					<v8:lang>de</v8:lang>
 					<v8:content>Bilanz</v8:content>
 				</v8:item>
@@ -31,19 +27,19 @@
 			<UseStandardCommands>true</UseStandardCommands>
 			<DefaultForm>Report.BalanceSheet.Form.ReportForm</DefaultForm>
 			<AuxiliaryForm/>
-			<MainDataCompositionSchema/>
+			<MainDataCompositionSchema>Report.BalanceSheet.Template.BalanceSheet</MainDataCompositionSchema>
 			<DefaultSettingsForm/>
 			<AuxiliarySettingsForm/>
 			<DefaultVariantForm/>
 			<VariantsStorage/>
 			<SettingsStorage/>
-			<IncludeHelpInContents>false</IncludeHelpInContents>
+			<IncludeHelpInContents>true</IncludeHelpInContents>
 			<ExtendedPresentation/>
 			<Explanation/>
 		</Properties>
 		<ChildObjects>
 			<Form>ReportForm</Form>
-			<Template>Template</Template>
+			<Template>BalanceSheet</Template>
 		</ChildObjects>
 	</Report>
 </MetaDataObject>

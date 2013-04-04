@@ -16,11 +16,7 @@
 			<Synonym>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>A/P aging</v8:content>
-				</v8:item>
-				<v8:item>
-					<v8:lang>pt</v8:lang>
-					<v8:content>Contas a pagar por idade de vencimento</v8:content>
+					<v8:content>A/P aging report</v8:content>
 				</v8:item>
 				<v8:item>
 					<v8:lang>de</v8:lang>
@@ -29,7 +25,7 @@
 			</Synonym>
 			<Comment/>
 			<UseStandardCommands>true</UseStandardCommands>
-			<DefaultForm/>
+			<DefaultForm>Report.APAging.Form.ReportForm</DefaultForm>
 			<AuxiliaryForm/>
 			<MainDataCompositionSchema>Report.APAging.Template.MainDataCompositionSchema</MainDataCompositionSchema>
 			<DefaultSettingsForm/>
@@ -37,11 +33,12 @@
 			<DefaultVariantForm/>
 			<VariantsStorage/>
 			<SettingsStorage/>
-			<IncludeHelpInContents>false</IncludeHelpInContents>
+			<IncludeHelpInContents>true</IncludeHelpInContents>
 			<ExtendedPresentation/>
 			<Explanation/>
 		</Properties>
 		<ChildObjects>
+			<Form>ReportForm</Form>
 			<Template>MainDataCompositionSchema</Template>
 		</ChildObjects>
 	</Report>

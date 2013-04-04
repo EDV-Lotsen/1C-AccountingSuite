@@ -19,12 +19,8 @@
 					<v8:content>Company</v8:content>
 				</v8:item>
 				<v8:item>
-					<v8:lang>pt</v8:lang>
-					<v8:content>Empresas</v8:content>
-				</v8:item>
-				<v8:item>
 					<v8:lang>de</v8:lang>
-					<v8:content>Firma</v8:content>
+					<v8:content>Unternehmen</v8:content>
 				</v8:item>
 			</title>
 			<role>
@@ -40,10 +36,6 @@
 					<v8:content>Document</v8:content>
 				</v8:item>
 				<v8:item>
-					<v8:lang>pt</v8:lang>
-					<v8:content>Documento</v8:content>
-				</v8:item>
-				<v8:item>
 					<v8:lang>de</v8:lang>
 					<v8:content>Dokument</v8:content>
 				</v8:item>
@@ -51,6 +43,16 @@
 			<role>
 				<dcscom:dimension>true</dcscom:dimension>
 			</role>
+			<appearance>
+				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+					<dcscor:parameter>TextColor</dcscor:parameter>
+					<dcscor:value xmlns:d6p1="http://v8.1c.ru/8.1/data/ui/style" xsi:type="v8ui:Color">d6p1:FieldSelectionBackColor</dcscor:value>
+				</dcscor:item>
+				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+					<dcscor:parameter>Font</dcscor:parameter>
+					<dcscor:value xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xsi:type="v8ui:Font" ref="sys:DefaultGUIFont" bold="false" italic="false" underline="true" strikeout="false" kind="WindowsFont"/>
+				</dcscor:item>
+			</appearance>
 		</field>
 		<field xsi:type="DataSetFieldField">
 			<dataPath>D1</dataPath>
@@ -76,10 +78,6 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>31-60</v8:content>
 				</v8:item>
-				<v8:item>
-					<v8:lang>pt</v8:lang>
-					<v8:content>31-60</v8:content>
-				</v8:item>
 			</title>
 			<appearance>
 				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
@@ -94,10 +92,6 @@
 			<title xsi:type="v8:LocalStringType">
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>61-90</v8:content>
-				</v8:item>
-				<v8:item>
-					<v8:lang>pt</v8:lang>
 					<v8:content>61-90</v8:content>
 				</v8:item>
 			</title>
@@ -117,10 +111,6 @@
 					<v8:content>91 and over</v8:content>
 				</v8:item>
 				<v8:item>
-					<v8:lang>pt</v8:lang>
-					<v8:content>91 e além</v8:content>
-				</v8:item>
-				<v8:item>
 					<v8:lang>de</v8:lang>
 					<v8:content>91 und länger</v8:content>
 				</v8:item>
@@ -138,10 +128,6 @@
 			<title xsi:type="v8:LocalStringType">
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Total</v8:content>
-				</v8:item>
-				<v8:item>
-					<v8:lang>pt</v8:lang>
 					<v8:content>Total</v8:content>
 				</v8:item>
 				<v8:item>
@@ -171,10 +157,6 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>Current</v8:content>
 				</v8:item>
-				<v8:item>
-					<v8:lang>pt</v8:lang>
-					<v8:content>Atual </v8:content>
-				</v8:item>
 			</title>
 			<appearance>
 				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
@@ -190,10 +172,6 @@
 				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Current</v8:content>
-				</v8:item>
-				<v8:item>
-					<v8:lang>pt</v8:lang>
-					<v8:content>Atual </v8:content>
 				</v8:item>
 			</title>
 			<appearance>
@@ -227,10 +205,6 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>31-60</v8:content>
 				</v8:item>
-				<v8:item>
-					<v8:lang>pt</v8:lang>
-					<v8:content>31-60</v8:content>
-				</v8:item>
 			</title>
 			<appearance>
 				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
@@ -245,10 +219,6 @@
 			<title xsi:type="v8:LocalStringType">
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>61-90</v8:content>
-				</v8:item>
-				<v8:item>
-					<v8:lang>pt</v8:lang>
 					<v8:content>61-90</v8:content>
 				</v8:item>
 			</title>
@@ -266,10 +236,6 @@
 				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>91 and over</v8:content>
-				</v8:item>
-				<v8:item>
-					<v8:lang>pt</v8:lang>
-					<v8:content>91 e além</v8:content>
 				</v8:item>
 				<v8:item>
 					<v8:lang>de</v8:lang>
@@ -292,10 +258,6 @@
 					<v8:content>Total</v8:content>
 				</v8:item>
 				<v8:item>
-					<v8:lang>pt</v8:lang>
-					<v8:content>Total</v8:content>
-				</v8:item>
-				<v8:item>
 					<v8:lang>de</v8:lang>
 					<v8:content>Gesamt</v8:content>
 				</v8:item>
@@ -315,11 +277,31 @@
 			<dataPath>ExtDimension2</dataPath>
 			<field>ExtDimension2</field>
 		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>CompanyID</dataPath>
+			<field>CompanyID</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Company ID</v8:content>
+				</v8:item>
+			</title>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>ReturnType</dataPath>
+			<field>ReturnType</field>
+		</field>
 		<dataSource>DataSource1</dataSource>
 		<query>SELECT
 	GeneralJournalBalance.ExtDimension1 AS Company,
+	GeneralJournalBalance.ExtDimension1.Description AS CompanyID,
 	GeneralJournalBalance.ExtDimension2 AS Document,
 	GeneralJournalBalance.Currency,
+	CASE
+		WHEN GeneralJournalBalance.ExtDimension2 REFS Document.SalesReturn
+			THEN PRESENTATION(GeneralJournalBalance.ExtDimension2.ReturnType)
+		ELSE ""
+	END AS ReturnType,
 	CASE
 		WHEN DATEDIFF(GeneralJournalBalance.ExtDimension2.DueDate, &amp;Period, DAY) &lt;= 0
 			THEN GeneralJournalBalance.AmountBalance
@@ -382,8 +364,11 @@ FROM
 	AccountingRegister.GeneralJournal.Balance AS GeneralJournalBalance
 WHERE
 	(GeneralJournalBalance.ExtDimension2 REFS Document.SalesInvoice
-			OR GeneralJournalBalance.ExtDimension2 REFS Document.GoodsIssue
-			OR GeneralJournalBalance.ExtDimension2 REFS Document.PurchaseReturn)</query>
+			OR GeneralJournalBalance.ExtDimension2 REFS Document.GeneralJournalEntry
+				AND GeneralJournalBalance.ExtDimension2.ARorAP = VALUE(Enum.GJEntryType.AR)
+			OR GeneralJournalBalance.ExtDimension2 REFS Document.SalesReturn)
+{WHERE
+	(GeneralJournalBalance.ExtDimension1 = &amp;Customer)}</query>
 	</dataSet>
 	<totalField>
 		<dataPath>D1</dataPath>
@@ -441,10 +426,6 @@ WHERE
 				<v8:content>Period</v8:content>
 			</v8:item>
 			<v8:item>
-				<v8:lang>pt</v8:lang>
-				<v8:content>Período</v8:content>
-			</v8:item>
-			<v8:item>
 				<v8:lang>de</v8:lang>
 				<v8:content>Periode</v8:content>
 			</v8:item>
@@ -452,11 +433,12 @@ WHERE
 		<valueType>
 			<v8:Type>xs:dateTime</v8:Type>
 			<v8:DateQualifiers>
-				<v8:DateFractions>DateTime</v8:DateFractions>
+				<v8:DateFractions>Date</v8:DateFractions>
 			</v8:DateQualifiers>
 		</valueType>
 		<value xsi:type="xs:dateTime">0001-01-01T00:00:00</value>
 		<useRestriction>false</useRestriction>
+		<use>Always</use>
 	</parameter>
 	<parameter>
 		<name>Interval1</name>
@@ -464,10 +446,6 @@ WHERE
 			<v8:item>
 				<v8:lang>en</v8:lang>
 				<v8:content>Interval1</v8:content>
-			</v8:item>
-			<v8:item>
-				<v8:lang>pt</v8:lang>
-				<v8:content>Intervalo 1</v8:content>
 			</v8:item>
 		</title>
 		<valueType>
@@ -488,10 +466,6 @@ WHERE
 				<v8:lang>en</v8:lang>
 				<v8:content>Interval2</v8:content>
 			</v8:item>
-			<v8:item>
-				<v8:lang>pt</v8:lang>
-				<v8:content>Intervalo 2</v8:content>
-			</v8:item>
 		</title>
 		<valueType>
 			<v8:Type>xs:decimal</v8:Type>
@@ -511,10 +485,6 @@ WHERE
 				<v8:lang>en</v8:lang>
 				<v8:content>Interval3</v8:content>
 			</v8:item>
-			<v8:item>
-				<v8:lang>pt</v8:lang>
-				<v8:content>Intervalo 3</v8:content>
-			</v8:item>
 		</title>
 		<valueType>
 			<v8:Type>xs:decimal</v8:Type>
@@ -526,6 +496,20 @@ WHERE
 		</valueType>
 		<value xsi:type="xs:decimal">90</value>
 		<useRestriction>true</useRestriction>
+	</parameter>
+	<parameter>
+		<name>Customer</name>
+		<title xsi:type="v8:LocalStringType">
+			<v8:item>
+				<v8:lang>en</v8:lang>
+				<v8:content>Customer</v8:content>
+			</v8:item>
+		</title>
+		<valueType>
+			<v8:Type xmlns:d4p1="http://v8.1c.ru/8.1/data/enterprise/current-config">d4p1:CatalogRef.Companies</v8:Type>
+		</valueType>
+		<value xsi:nil="true"/>
+		<useRestriction>false</useRestriction>
 	</parameter>
 	<settingsVariant>
 		<dcsset:name>Default</dcsset:name>
@@ -564,6 +548,12 @@ WHERE
 					<dcscor:value xsi:type="xs:dateTime">0001-01-01T00:00:00</dcscor:value>
 					<dcsset:userSettingID>04f6b78d-8f12-4d21-8b0c-8096308cf531</dcsset:userSettingID>
 				</dcscor:item>
+				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+					<dcscor:use>false</dcscor:use>
+					<dcscor:parameter>Customer</dcscor:parameter>
+					<dcscor:value xsi:nil="true"/>
+					<dcsset:userSettingID>0a7bedcb-c30c-48dc-a3ee-4205ed96e62a</dcsset:userSettingID>
+				</dcscor:item>
 			</dcsset:dataParameters>
 			<dcsset:order>
 				<dcsset:item xsi:type="dcsset:OrderItemField">
@@ -580,8 +570,8 @@ WHERE
 							<v8:content>A/R Aging Detail</v8:content>
 						</v8:item>
 						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Contas a receber por idade de vencimento</v8:content>
+							<v8:lang>de</v8:lang>
+							<v8:content>Forderungen in Details</v8:content>
 						</v8:item>
 					</dcscor:value>
 				</dcscor:item>
@@ -590,6 +580,13 @@ WHERE
 				<dcsset:groupItems>
 					<dcsset:item xsi:type="dcsset:GroupItemField">
 						<dcsset:field>Company</dcsset:field>
+						<dcsset:groupType>Items</dcsset:groupType>
+						<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+						<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+						<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+					</dcsset:item>
+					<dcsset:item xsi:type="dcsset:GroupItemField">
+						<dcsset:field>CompanyID</dcsset:field>
 						<dcsset:groupType>Items</dcsset:groupType>
 						<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 						<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
@@ -606,6 +603,13 @@ WHERE
 					<dcsset:groupItems>
 						<dcsset:item xsi:type="dcsset:GroupItemField">
 							<dcsset:field>Document</dcsset:field>
+							<dcsset:groupType>Items</dcsset:groupType>
+							<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+							<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+							<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+						</dcsset:item>
+						<dcsset:item xsi:type="dcsset:GroupItemField">
+							<dcsset:field>ReturnType</dcsset:field>
 							<dcsset:groupType>Items</dcsset:groupType>
 							<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 							<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
@@ -630,8 +634,8 @@ WHERE
 				<v8:content>FCY</v8:content>
 			</v8:item>
 			<v8:item>
-				<v8:lang>pt</v8:lang>
-				<v8:content>Moeda estrangeira</v8:content>
+				<v8:lang>de</v8:lang>
+				<v8:content>Fremdwährung</v8:content>
 			</v8:item>
 		</dcsset:presentation>
 		<dcsset:settings xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows">
@@ -693,8 +697,8 @@ WHERE
 							<v8:content>AR Aging Detail FCY</v8:content>
 						</v8:item>
 						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Contas a receber por idade de vencimento - moeda estrangeira</v8:content>
+							<v8:lang>de</v8:lang>
+							<v8:content>Forderungen in Fremdwährung detailliert</v8:content>
 						</v8:item>
 					</dcscor:value>
 				</dcscor:item>
@@ -703,6 +707,13 @@ WHERE
 				<dcsset:groupItems>
 					<dcsset:item xsi:type="dcsset:GroupItemField">
 						<dcsset:field>Company</dcsset:field>
+						<dcsset:groupType>Items</dcsset:groupType>
+						<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+						<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+						<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+					</dcsset:item>
+					<dcsset:item xsi:type="dcsset:GroupItemField">
+						<dcsset:field>CompanyID</dcsset:field>
 						<dcsset:groupType>Items</dcsset:groupType>
 						<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 						<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
@@ -719,6 +730,13 @@ WHERE
 					<dcsset:groupItems>
 						<dcsset:item xsi:type="dcsset:GroupItemField">
 							<dcsset:field>Document</dcsset:field>
+							<dcsset:groupType>Items</dcsset:groupType>
+							<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+							<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+							<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+						</dcsset:item>
+						<dcsset:item xsi:type="dcsset:GroupItemField">
+							<dcsset:field>ReturnType</dcsset:field>
 							<dcsset:groupType>Items</dcsset:groupType>
 							<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 							<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>

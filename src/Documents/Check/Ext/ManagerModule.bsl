@@ -25,15 +25,17 @@
 			Spreadsheet.PutHorizontalPageBreak();
 		EndIf;
 
-		CounterpartyInfo = PrintTemplates.ContactInfo(Selection.Company);
+		//CounterpartyInfo = PrintTemplates.ContactInfo(Selection.Company);
+		ThemBill = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemBill", Catalogs.Addresses.EmptyRef());
 		
 		Spreadsheet.Put(AreaCaption);
 
 		Header.Parameters.Fill(Selection);
+		Header.Parameters.Fill(ThemBill);
 		
-		Header.Parameters.CounterpartyName = CounterpartyInfo.Name;
-		Header.Parameters.CounterpartyAddress = CounterpartyInfo.Address;
-		Header.Parameters.CounterpartyZIP = CounterpartyInfo.ZIP;
+		//Header.Parameters.CounterpartyName = CounterpartyInfo.ThemFullName;
+		//Header.Parameters.CounterpartyAddress = CounterpartyInfo.ThemBillLine1;
+		//Header.Parameters.CounterpartyZIP = CounterpartyInfo.ThemBillZIP;
 		
 		//StringAmount = NumberInWords(Selection.DocumentTotalRC);
 		//NumChar = StrLen(StringAmount);

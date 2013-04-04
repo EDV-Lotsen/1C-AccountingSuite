@@ -46,14 +46,6 @@ Function DefaultCurrencySymbol() Export
 
 EndFunction
 
-// Determines a default payment term (e.g. "Net 30").
-// 
-Function GetDefaultPaymentTerm() Export
-	
-	Return Constants.PaymentTermsDefault.Get();
-	
-EndFunction
-
 // Determines a name of the Customer constant for dynamic substitution in the documents,
 // for example customers can be called Patients.
 // 
@@ -70,34 +62,6 @@ Function GetVendorName() Export
 	
 	Return Constants.VendorName.Get();
 	
-EndFunction
-
-
-// Selects default number of term days for a due date calculation. For example if the default
-// payment term is "Net 30" the function will return "30".
-//
-// Parameter:
-// Term - selected payment term.
-//
-// Returned value:
-// Number - days in the payment term.
-//
-Function GetDefaultTermDays() Export
-	
-	Query = New Query("SELECT
-	                  |	Constants.PaymentTermsDefault.Days AS Days
-	                  |FROM
-	                  |	Constants AS Constants");
-	
-	QueryResult = Query.Execute();
-	
-	If QueryResult.IsEmpty() Then
-		Return 0;
-	Else
-		Dataset = QueryResult.Unload();
-		Return Dataset[0][0];
-	EndIf;
-			
 EndFunction
 
 // Returns the Bank account type
@@ -131,6 +95,17 @@ Function APAccountType() Export
 	
 	Return Enums.AccountTypes.AccountsPayable;
 	
+EndFunction
+
+// Returns the PriceIncludesVAT constant value
+// 
+// Returned value:
+// Boolean
+//
+Function PriceIncludesVAT() Export
+	
+	Return Constants.PriceIncludesVAT.Get();
+
 EndFunction
 
 

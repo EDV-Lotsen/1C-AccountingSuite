@@ -39,12 +39,8 @@
 					<v8:content>General journal</v8:content>
 				</v8:item>
 				<v8:item>
-					<v8:lang>pt</v8:lang>
-					<v8:content>Livro-razão</v8:content>
-				</v8:item>
-				<v8:item>
 					<v8:lang>de</v8:lang>
-					<v8:content>Grundbuch</v8:content>
+					<v8:content>Buchungsjournal</v8:content>
 				</v8:item>
 			</Synonym>
 			<Comment/>
@@ -329,10 +325,6 @@
 							<v8:content>Currency</v8:content>
 						</v8:item>
 						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Moeda de circulação</v8:content>
-						</v8:item>
-						<v8:item>
 							<v8:lang>de</v8:lang>
 							<v8:content>Währung</v8:content>
 						</v8:item>
@@ -376,8 +368,8 @@
 							<v8:content>Amount FCY</v8:content>
 						</v8:item>
 						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Quantia em moeda estrangeira</v8:content>
+							<v8:lang>de</v8:lang>
+							<v8:content>Betrag in Fremdwährung</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -423,10 +415,6 @@
 							<v8:content>Amount</v8:content>
 						</v8:item>
 						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Quantia</v8:content>
-						</v8:item>
-						<v8:item>
 							<v8:lang>de</v8:lang>
 							<v8:content>Betrag</v8:content>
 						</v8:item>
@@ -465,6 +453,46 @@
 					<FullTextSearch>Use</FullTextSearch>
 				</Properties>
 			</Resource>
+			<Attribute uuid="9186c2ab-f4f1-4178-8d53-52798a8f7ec7">
+				<Properties>
+					<Name>Memo</Name>
+					<Synonym>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Memo</v8:content>
+						</v8:item>
+					</Synonym>
+					<Comment/>
+					<Type>
+						<v8:Type>xs:string</v8:Type>
+						<v8:StringQualifiers>
+							<v8:Length>0</v8:Length>
+							<v8:AllowedLength>Variable</v8:AllowedLength>
+						</v8:StringQualifiers>
+					</Type>
+					<PasswordMode>false</PasswordMode>
+					<Format/>
+					<EditFormat/>
+					<ToolTip/>
+					<MarkNegatives>false</MarkNegatives>
+					<Mask/>
+					<MultiLine>false</MultiLine>
+					<ExtendedEdit>false</ExtendedEdit>
+					<MinValue xsi:nil="true"/>
+					<MaxValue xsi:nil="true"/>
+					<FillChecking>DontCheck</FillChecking>
+					<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
+					<ChoiceParameterLinks/>
+					<ChoiceParameters/>
+					<QuickChoice>Auto</QuickChoice>
+					<CreateOnInput>Auto</CreateOnInput>
+					<ChoiceForm/>
+					<LinkByType/>
+					<ChoiceHistoryOnInput>Auto</ChoiceHistoryOnInput>
+					<Indexing>DontIndex</Indexing>
+					<FullTextSearch>Use</FullTextSearch>
+				</Properties>
+			</Attribute>
 			<Form>ListForm</Form>
 		</ChildObjects>
 	</AccountingRegister>

@@ -33,88 +33,248 @@
 			<AutoCommandBar name="ListCommandBar" id="3">
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
-			<ExtendedTooltip name="ListExtendedTooltip" id="36"/>
-			<SearchStringAddition name="ListSearchString" id="37">
+			<ExtendedTooltip name="ListExtendedTooltip" id="56"/>
+			<SearchStringAddition name="ListSearchString" id="57">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="38"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="39"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="58"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="59"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="40">
+			<ViewStatusAddition name="ListViewStatus" id="60">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="41"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="42"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="61"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="62"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="43">
+			<SearchControlAddition name="ListSearchControl" id="63">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="44"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="45"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="64"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="65"/>
 			</SearchControlAddition>
 			<ChildItems>
+				<LabelField name="RecordType" id="36">
+					<DataPath>List.RecordType</DataPath>
+					<Visible>false</Visible>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Entry Type</v8:content>
+						</v8:item>
+					</Title>
+					<ContextMenu name="RecordTypeContextMenu" id="37"/>
+					<ExtendedTooltip name="RecordTypeExtendedTooltip" id="66"/>
+				</LabelField>
 				<LabelField name="Recorder" id="30">
 					<DataPath>List.Recorder</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Document</v8:content>
+						</v8:item>
+					</Title>
 					<ContextMenu name="RecorderContextMenu" id="31"/>
-					<ExtendedTooltip name="RecorderExtendedTooltip" id="46"/>
+					<ExtendedTooltip name="RecorderExtendedTooltip" id="67"/>
+				</LabelField>
+				<LabelField name="RecorderNumber" id="52">
+					<DataPath>List.RecorderNumber</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Doc. number</v8:content>
+						</v8:item>
+					</Title>
+					<ContextMenu name="RecorderNumberContextMenu" id="53"/>
+					<ExtendedTooltip name="RecorderNumberExtendedTooltip" id="68"/>
+				</LabelField>
+				<LabelField name="DocumentType" id="54">
+					<DataPath>List.DocumentType</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Doc. type</v8:content>
+						</v8:item>
+					</Title>
+					<ContextMenu name="DocumentTypeContextMenu" id="55"/>
+					<ExtendedTooltip name="DocumentTypeExtendedTooltip" id="69"/>
 				</LabelField>
 				<LabelField name="Period" id="4">
 					<DataPath>List.Period</DataPath>
 					<DefaultItem>true</DefaultItem>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Doc. date</v8:content>
+						</v8:item>
+					</Title>
 					<HorizontalAlign>Right</HorizontalAlign>
 					<Format>
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>DLF=D</v8:content>
 						</v8:item>
-						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>DLF=D</v8:content>
-						</v8:item>
 					</Format>
 					<ContextMenu name="PeriodContextMenu" id="5"/>
-					<ExtendedTooltip name="PeriodExtendedTooltip" id="47"/>
+					<ExtendedTooltip name="PeriodExtendedTooltip" id="70"/>
+				</LabelField>
+				<LabelField name="RecorderCompany" id="42">
+					<DataPath>List.RecorderCompany</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Company</v8:content>
+						</v8:item>
+					</Title>
+					<ContextMenu name="RecorderCompanyContextMenu" id="43"/>
+					<ExtendedTooltip name="RecorderCompanyExtendedTooltip" id="71"/>
 				</LabelField>
 				<LabelField name="Currency" id="14">
 					<DataPath>List.Currency</DataPath>
 					<ContextMenu name="CurrencyContextMenu" id="15"/>
-					<ExtendedTooltip name="CurrencyExtendedTooltip" id="48"/>
+					<ExtendedTooltip name="CurrencyExtendedTooltip" id="72"/>
 				</LabelField>
 				<LabelField name="Company" id="32">
 					<DataPath>List.Company</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Unternehmen</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Company (A/R, A/P)</v8:content>
+						</v8:item>
+					</Title>
 					<ContextMenu name="CompanyContextMenu" id="33"/>
-					<ExtendedTooltip name="CompanyExtendedTooltip" id="49"/>
+					<ExtendedTooltip name="CompanyExtendedTooltip" id="73"/>
+				</LabelField>
+				<LabelField name="CompanyCode" id="38">
+					<DataPath>List.CompanyCode</DataPath>
+					<Visible>false</Visible>
+					<ContextMenu name="CompanyCodeContextMenu" id="39"/>
+					<ExtendedTooltip name="CompanyCodeExtendedTooltip" id="74"/>
 				</LabelField>
 				<LabelField name="Document" id="34">
 					<DataPath>List.Document</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Dokument</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Document (A/R, A/P)</v8:content>
+						</v8:item>
+					</Title>
 					<ContextMenu name="DocumentContextMenu" id="35"/>
-					<ExtendedTooltip name="DocumentExtendedTooltip" id="50"/>
+					<ExtendedTooltip name="DocumentExtendedTooltip" id="75"/>
+				</LabelField>
+				<LabelField name="Memo" id="40">
+					<DataPath>List.Memo</DataPath>
+					<ContextMenu name="MemoContextMenu" id="41"/>
+					<ExtendedTooltip name="MemoExtendedTooltip" id="76"/>
 				</LabelField>
 				<LabelField name="Account" id="20">
 					<DataPath>List.Account</DataPath>
 					<ContextMenu name="AccountContextMenu" id="21"/>
-					<ExtendedTooltip name="AccountExtendedTooltip" id="51"/>
+					<ExtendedTooltip name="AccountExtendedTooltip" id="77"/>
 				</LabelField>
 				<LabelField name="Description" id="28">
 					<DataPath>List.Description</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Acc. description</v8:content>
+						</v8:item>
+					</Title>
 					<ContextMenu name="DescriptionContextMenu" id="29"/>
-					<ExtendedTooltip name="DescriptionExtendedTooltip" id="52"/>
+					<ExtendedTooltip name="DescriptionExtendedTooltip" id="78"/>
+				</LabelField>
+				<LabelField name="AmountDr" id="44">
+					<DataPath>List.AmountDr</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Amount FCY Dr</v8:content>
+						</v8:item>
+					</Title>
+					<Format>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>NFD=2</v8:content>
+						</v8:item>
+					</Format>
+					<ContextMenu name="AmountDrContextMenu" id="45"/>
+					<ExtendedTooltip name="AmountDrExtendedTooltip" id="79"/>
+				</LabelField>
+				<LabelField name="AmountCr" id="46">
+					<DataPath>List.AmountCr</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Amount FCY Cr</v8:content>
+						</v8:item>
+					</Title>
+					<Format>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>NFD=2</v8:content>
+						</v8:item>
+					</Format>
+					<ContextMenu name="AmountCrContextMenu" id="47"/>
+					<ExtendedTooltip name="AmountCrExtendedTooltip" id="80"/>
 				</LabelField>
 				<LabelField name="Amount" id="22">
 					<DataPath>List.Amount</DataPath>
+					<Visible>false</Visible>
 					<ContextMenu name="AmountContextMenu" id="23"/>
-					<ExtendedTooltip name="AmountExtendedTooltip" id="53"/>
+					<ExtendedTooltip name="AmountExtendedTooltip" id="81"/>
+				</LabelField>
+				<LabelField name="AmountRCDr" id="50">
+					<DataPath>List.AmountRCDr</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Amount Dr</v8:content>
+						</v8:item>
+					</Title>
+					<Format>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>NFD=2</v8:content>
+						</v8:item>
+					</Format>
+					<ContextMenu name="AmountRCDrContextMenu" id="51"/>
+					<ExtendedTooltip name="AmountRCDrExtendedTooltip" id="82"/>
+				</LabelField>
+				<LabelField name="AmountRCCr" id="48">
+					<DataPath>List.AmountRCCr</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Amount Cr</v8:content>
+						</v8:item>
+					</Title>
+					<Format>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>NFD=2</v8:content>
+						</v8:item>
+					</Format>
+					<ContextMenu name="AmountRCCrContextMenu" id="49"/>
+					<ExtendedTooltip name="AmountRCCrExtendedTooltip" id="83"/>
 				</LabelField>
 				<LabelField name="AmountRC" id="24">
 					<DataPath>List.AmountRC</DataPath>
+					<Visible>false</Visible>
 					<ContextMenu name="AmountRCContextMenu" id="25"/>
-					<ExtendedTooltip name="AmountRCExtendedTooltip" id="54"/>
+					<ExtendedTooltip name="AmountRCExtendedTooltip" id="84"/>
 				</LabelField>
 			</ChildItems>
 		</Table>
@@ -131,19 +291,42 @@
 				<QueryText>SELECT
 	AccountingRegisterGeneralJournalRecordsWithExtDimensions.Period,
 	AccountingRegisterGeneralJournalRecordsWithExtDimensions.Recorder,
+    AccountingRegisterGeneralJournalRecordsWithExtDimensions.Recorder.Number,	
+	AccountingRegisterGeneralJournalRecordsWithExtDimensions.Recorder.Company,
+	VALUETYPE(AccountingRegisterGeneralJournalRecordsWithExtDimensions.Recorder) AS DocumentType,
 	AccountingRegisterGeneralJournalRecordsWithExtDimensions.LineNumber,
 	AccountingRegisterGeneralJournalRecordsWithExtDimensions.Account,
 	AccountingRegisterGeneralJournalRecordsWithExtDimensions.Currency,
+	CASE WHEN AccountingRegisterGeneralJournalRecordsWithExtDimensions.RecordType = VALUE(AccountingRecordType.Debit)
+	Then AccountingRegisterGeneralJournalRecordsWithExtDimensions.Amount
+	Else 0
+	END AS AmountDr,
+	CASE WHEN AccountingRegisterGeneralJournalRecordsWithExtDimensions.RecordType = VALUE(AccountingRecordType.Debit)
+	Then AccountingRegisterGeneralJournalRecordsWithExtDimensions.AmountRC
+	Else 0
+	END AS AmountRCDr,
+    CASE WHEN AccountingRegisterGeneralJournalRecordsWithExtDimensions.RecordType = VALUE(AccountingRecordType.Credit)
+	Then AccountingRegisterGeneralJournalRecordsWithExtDimensions.Amount
+	Else 0
+	END AS AmountCr,
+	CASE WHEN AccountingRegisterGeneralJournalRecordsWithExtDimensions.RecordType = VALUE(AccountingRecordType.Credit)
+	Then AccountingRegisterGeneralJournalRecordsWithExtDimensions.AmountRC
+	Else 0
+	END AS AmountRCCr,
 	AccountingRegisterGeneralJournalRecordsWithExtDimensions.Amount,
 	AccountingRegisterGeneralJournalRecordsWithExtDimensions.AmountRC,
 	AccountingRegisterGeneralJournalRecordsWithExtDimensions.RecordType,
 	AccountingRegisterGeneralJournalRecordsWithExtDimensions.ExtDimension1 AS Company,
 	AccountingRegisterGeneralJournalRecordsWithExtDimensions.ExtDimension2 AS Document,
-	ChartOfAccounts.Description
+	ChartOfAccounts.Description,
+	Companies.Code AS CompanyCode,
+	AccountingRegisterGeneralJournalRecordsWithExtDimensions.Memo
 FROM
 	AccountingRegister.GeneralJournal.RecordsWithExtDimensions AS AccountingRegisterGeneralJournalRecordsWithExtDimensions
 		LEFT JOIN ChartOfAccounts.ChartOfAccounts AS ChartOfAccounts
-		ON AccountingRegisterGeneralJournalRecordsWithExtDimensions.Account = ChartOfAccounts.Ref</QueryText>
+		ON AccountingRegisterGeneralJournalRecordsWithExtDimensions.Account = ChartOfAccounts.Ref
+		LEFT JOIN Catalog.Companies AS Companies
+		ON AccountingRegisterGeneralJournalRecordsWithExtDimensions.ExtDimension1 = Companies.Ref</QueryText>
 				<MainTable>AccountingRegister.GeneralJournal.RecordsWithExtDimensions</MainTable>
 				<ListSettings>
 					<dcsset:filter>

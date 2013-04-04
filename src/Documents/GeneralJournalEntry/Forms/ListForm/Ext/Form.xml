@@ -2,6 +2,9 @@
 <Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
 	<VerticalScroll>useIfNecessary</VerticalScroll>
 	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<Events>
+		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+	</Events>
 	<ChildItems>
 		<Table name="List" id="1">
 			<Representation>List</Representation>
@@ -62,16 +65,6 @@
 					<DataPath>List.Date</DataPath>
 					<DefaultItem>true</DefaultItem>
 					<HorizontalAlign>Right</HorizontalAlign>
-					<Format>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>DLF=D</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>DLF=D</v8:content>
-						</v8:item>
-					</Format>
 					<ContextMenu name="DateContextMenu" id="5"/>
 					<ExtendedTooltip name="DateExtendedTooltip" id="24"/>
 				</LabelField>
@@ -90,7 +83,7 @@
 					<Format>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>NZ=Dr&lt;&gt;Cr</v8:content>
+							<v8:content>NFD=2; NZ=Dr&lt;&gt;Cr</v8:content>
 						</v8:item>
 					</Format>
 					<ContextMenu name="DocumentTotalContextMenu" id="13"/>
@@ -101,7 +94,7 @@
 					<Format>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>NZ=Dr&lt;&gt;Cr</v8:content>
+							<v8:content>NFD=2; NZ=Dr&lt;&gt;Cr</v8:content>
 						</v8:item>
 					</Format>
 					<ContextMenu name="DocumentTotalRCContextMenu" id="11"/>
@@ -137,4 +130,21 @@
 			</Settings>
 		</Attribute>
 	</Attributes>
+	<Commands>
+		<Command name="Import" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Import</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Import</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>Import</Action>
+		</Command>
+	</Commands>
 </Form>

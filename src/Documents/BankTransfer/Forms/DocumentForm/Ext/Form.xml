@@ -1,0 +1,131 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<VerticalScroll>useIfNecessary</VerticalScroll>
+	<AutoTime>CurrentOrLast</AutoTime>
+	<UsePostingMode>Auto</UsePostingMode>
+	<RepostOnWrite>true</RepostOnWrite>
+	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<Events>
+		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+		<Event name="FillCheckProcessingAtServer">FillCheckProcessingAtServer</Event>
+	</Events>
+	<ChildItems>
+		<InputField name="Number" id="1">
+			<DataPath>Object.Number</DataPath>
+			<EditMode>EnterOnInput</EditMode>
+			<ContextMenu name="NumberContextMenu" id="2"/>
+			<ExtendedTooltip name="NumberExtendedTooltip" id="19"/>
+		</InputField>
+		<InputField name="Date" id="3">
+			<DataPath>Object.Date</DataPath>
+			<EditMode>EnterOnInput</EditMode>
+			<Width>25</Width>
+			<HorizontalStretch>false</HorizontalStretch>
+			<ContextMenu name="DateContextMenu" id="4"/>
+			<ExtendedTooltip name="DateExtendedTooltip" id="20"/>
+		</InputField>
+		<UsualGroup name="AccFrom" id="13">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Acc from</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Acc from</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Group>Horizontal</Group>
+			<Representation>None</Representation>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="AccFromExtendedTooltip" id="21"/>
+			<ChildItems>
+				<InputField name="AccountFrom" id="5">
+					<DataPath>Object.AccountFrom</DataPath>
+					<Width>25</Width>
+					<HorizontalStretch>false</HorizontalStretch>
+					<ContextMenu name="AccountFromContextMenu" id="6"/>
+					<ExtendedTooltip name="AccountFromExtendedTooltip" id="22"/>
+					<Events>
+						<Event name="OnChange">AccountFromOnChange</Event>
+					</Events>
+				</InputField>
+				<LabelDecoration name="AccFromLabel" id="14">
+					<ContextMenu name="AccFromLabelContextMenu" id="15"/>
+					<ExtendedTooltip name="AccFromLabelExtendedTooltip" id="23"/>
+				</LabelDecoration>
+			</ChildItems>
+		</UsualGroup>
+		<UsualGroup name="AccTo" id="16">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Acc to</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Acc to</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Group>Horizontal</Group>
+			<Representation>None</Representation>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="AccToExtendedTooltip" id="24"/>
+			<ChildItems>
+				<InputField name="AccountTo" id="7">
+					<DataPath>Object.AccountTo</DataPath>
+					<Width>25</Width>
+					<HorizontalStretch>false</HorizontalStretch>
+					<ContextMenu name="AccountToContextMenu" id="8"/>
+					<ExtendedTooltip name="AccountToExtendedTooltip" id="25"/>
+					<Events>
+						<Event name="OnChange">AccountToOnChange</Event>
+					</Events>
+				</InputField>
+				<LabelDecoration name="AccToLabel" id="17">
+					<ContextMenu name="AccToLabelContextMenu" id="18"/>
+					<ExtendedTooltip name="AccToLabelExtendedTooltip" id="26"/>
+				</LabelDecoration>
+			</ChildItems>
+		</UsualGroup>
+		<InputField name="Amount" id="9">
+			<DataPath>Object.Amount</DataPath>
+			<Width>25</Width>
+			<HorizontalStretch>false</HorizontalStretch>
+			<ContextMenu name="AmountContextMenu" id="10"/>
+			<ExtendedTooltip name="AmountExtendedTooltip" id="27"/>
+		</InputField>
+		<InputField name="Memo" id="11">
+			<DataPath>Object.Memo</DataPath>
+			<Width>25</Width>
+			<HorizontalStretch>false</HorizontalStretch>
+			<ContextMenu name="MemoContextMenu" id="12"/>
+			<ExtendedTooltip name="MemoExtendedTooltip" id="28"/>
+		</InputField>
+	</ChildItems>
+	<Attributes>
+		<Attribute name="Object" id="1">
+			<Type>
+				<v8:Type>cfg:DocumentObject.BankTransfer</v8:Type>
+			</Type>
+			<MainAttribute>true</MainAttribute>
+			<SavedData>true</SavedData>
+			<UseAlways>
+				<Field>Object.RegisterRecords</Field>
+			</UseAlways>
+		</Attribute>
+	</Attributes>
+	<CommandInterface>
+		<NavigationPanel>
+			<Item>
+				<Command>AccountingRegister.GeneralJournal.StandardCommand.OpenByRecorder</Command>
+				<Type>Auto</Type>
+				<DefaultVisible>false</DefaultVisible>
+			</Item>
+		</NavigationPanel>
+	</CommandInterface>
+</Form>

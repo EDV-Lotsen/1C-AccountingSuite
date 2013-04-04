@@ -12,86 +12,16 @@
 // Returned value:
 // Number - item's price.
 //
-Function RetailPrice(ActualDate, Product, Company, Currency) Export
+Function RetailPrice(ActualDate, Product) Export
 		
-	If GetFunctionalOption("AdvancedPricing") Then
-		SelectParameters = New Structure;
-		SelectParameters.Insert("Product", Product);
-		SelectParameters.Insert("Company", Company);
-		SelectParameters.Insert("Currency", Currency);
-		ResourceValue = InformationRegisters.PriceList.GetLast(ActualDate, SelectParameters);
-		Return ResourceValue.Price;
-	Else
-		SelectParameters = New Structure;
-		SelectParameters.Insert("Product", Product);
-		ResourceValue = InformationRegisters.PriceList.GetLast(ActualDate, SelectParameters);
-		Return ResourceValue.Price;
-	EndIf;	
+	SelectParameters = New Structure;
+	SelectParameters.Insert("Product", Product);
+	ResourceValue = InformationRegisters.PriceList.GetLast(ActualDate, SelectParameters);
+	Return ResourceValue.Price;
 		
 EndFunction
 
-// Determines an item's default sales unit of measure (U/M).
-//
-// Parameter:
-// Catalog.Item - item for which the function selects its default U/M.
-//
-// Returned value:
-// Catalog.UnitsOfMeasure - item's default U/M.
-//
-Function GetDefaultSalesUMForProduct(Product) Export
-	
-	Query = New Query("SELECT
-	                  |	ProductsUnitsOfMeasure.UM
-	                  |FROM
-	                  |	Catalog.Products.UnitsOfMeasure AS ProductsUnitsOfMeasure
-	                  |WHERE
-	                  |	ProductsUnitsOfMeasure.Ref = &Product
-	                  |	AND ProductsUnitsOfMeasure.DefaultSalesUM = TRUE");
-		
-	Query.SetParameter("Product", Product);
-	QueryResult = Query.Execute();
-	
-	If QueryResult.IsEmpty() Then
-		Return Catalogs.UnitsOfMeasure.EmptyRef();
-	Else
-		Dataset = QueryResult.Unload();
-		Return Dataset[0][0];
-	EndIf;
-				
-EndFunction
-
-// Determines an item's default purchase unit of measure (U/M).
-//
-// Parameter:
-// Catalog.Items - item for which the function selects its default U/M.
-//
-// Returned value:
-// Catalog.UnitsOfMeasure - item's default U/M.
-//
-Function GetDefaultPurchaseUMForProduct(Product) Export
-	
-	Query = New Query("SELECT
-	                  |	ProductsUnitsOfMeasure.UM
-	                  |FROM
-	                  |	Catalog.Products.UnitsOfMeasure AS ProductsUnitsOfMeasure
-	                  |WHERE
-	                  |	ProductsUnitsOfMeasure.Ref = &Product
-	                  |	AND ProductsUnitsOfMeasure.DefaultPurchaseUM = TRUE");
-		
-	Query.SetParameter("Product", Product);
-	QueryResult = Query.Execute();
-	
-	If QueryResult.IsEmpty() Then
-		Return Catalogs.UnitsOfMeasure.EmptyRef()
-	Else
-		Dataset = QueryResult.Unload();
-		Return Dataset[0][0];
-	EndIf;
-				
-EndFunction
-
-
-// Marks the document (receipt, sales receipt) as "deposited" (included) by a deposit document.
+// Marks the document (cash receipt, cash sale) as "deposited" (included) by a deposit document.
 //
 // Parameters:
 // DocumentLine - document Ref for which the procedure sets the "deposited" attribute.
@@ -104,8 +34,8 @@ Procedure WriteDepositData(DocumentLine) Export
 
 EndProcedure
 
-// Clears the "deposited" (included) by a deposit document value from the document (receipt,
-// sales receipt)
+// Clears the "deposited" (included) by a deposit document value from the document (cash receipt,
+// cash sale)
 //
 // Parameters:
 // DocumentLine - document Ref for which the procedure sets the "deposited" attribute.
@@ -119,7 +49,7 @@ Procedure ClearDepositData(DocumentLine) Export
 EndProcedure
 
 // Determines a currency of a line item document.
-// Used in payment and receipt documents to calculate exchange rate for each line item.
+// Used in invoice payment and cash receipt documents to calculate exchange rate for each line item.
 //
 // Parameter:
 // Document - a document Ref for which the function selects its currency.
@@ -148,81 +78,6 @@ Function FunctionalOptionValue(FOption) Export
 	
 EndFunction
 
-// Returns a conversion ratio between a U/M and its parent U/M.
-//
-// Parameter:
-// Catalog.UnitsOfMeasure - unit of measure.
-//
-// Returned value:
-// Number - conversion ration or 0 if no conversion ration found.
-//
-Function GetUMRatio(UM) Export
-	
-	If UM = Catalogs.UnitsOfMeasure.EmptyRef() Then
-		Return 1;
-	Else
-		Return UM.ConversionRatio;
-	EndIf;
-	
-EndFunction
-
-
-// A universal function extensively used to retrieve object attributes.
-//
-// Parameter:
-// Ref - Object reference (any configuration object).
-// AttributeNames - list of attribute names.
-//
-// Returned value:
-// Structure.
-// A one-dimensional array with attribute values.
-// For example the following function call GeneralFunctions.GetAttributeValues(Company,
-// "Country, Employees")
-// will select values of the Country and Employees attributes of the Company from the Companies
-// catalog.
-//
-Function GetAttributeValues(Ref, AttributeNames) Export
- 
-	Query = New Query;
-	Query.Text =
-	"SELECT
-	| " + AttributeNames + "
-	|FROM
-	| " + Ref.Metadata().FullName() + " AS Table
-	|WHERE
-	| Table.Ref = &Ref";
-	Query.SetParameter("Ref", Ref);
-	
-	QueryDataset = Query.Execute().Choose();
-	QueryDataset.Next();
-	Result = New Structure(AttributeNames);
-	FillPropertyValues(Result, QueryDataset);
-	
-	Return Result;
- 
-EndFunction
-
-// A universal function extensively used to retrieve an object attribute.
-// A subset of the GetAttributeValues
-// function, returning one attribute rather then several.
-//
-// Parameter:
-// Ref - Object reference (any configuration object).
-// AttributeName - an attribute names.
-//
-// Returned value:
-// Value of any requested type.
-// For example the following function call GeneralFunctions.GetAttributeValues(Company, "Country")
-// will select a value of the Country attribute of the Company from the Companies catalog.
-//
-Function GetAttributeValue(Ref, AttributeName) Export
- 
-	Result = GetAttributeValues(Ref, AttributeName);
-	Return Result[AttributeName];
- 
-EndFunction
-
-
 // Determines a currency exchange rate.
 // 
 // Parameters:
@@ -232,18 +87,17 @@ EndFunction
 // Returned value:
 // Number - an exchange rate.
 // 
-Function GetExchangeRate(Date, Currency, CrossCurrency) Export
+Function GetExchangeRate(Date, Currency) Export
 		
 	SelectParameters = New Structure;
 	SelectParameters.Insert("Currency", Currency);
-	SelectParameters.Insert("CrossCurrency", CrossCurrency);
 	
 	ResourceValue = InformationRegisters.ExchangeRates.GetLast(Date, SelectParameters);
 	
-	If ResourceValue.ExchangeRate = 0 Then
+	If ResourceValue.Rate = 0 Then
 		Return 1;	
 	Else
-		Return ResourceValue.ExchangeRate;
+		Return ResourceValue.Rate;
 	EndIf;
 	
 EndFunction
@@ -256,29 +110,6 @@ EndFunction
 Function GetOurCompany() Export
 	
 	Return Catalogs.Companies.OurCompany;
-	
-EndFunction
-
-// Retrieves a value of the End Customer field on the Vendor Quote
-//
-// Parameters:
-// Document.PurchaseQuote.
-//
-// Returned value:
-// Catalog.Companies.
-//
-Function GetCustomerFromPurchaseQuote(Document) Export
-	
-	PurchaseQuote = Document.GetObject();	
-	Return PurchaseQuote.EndCustomer;
-	
-EndFunction
-
-Function GetBankFromPurchaseQuote(Document) Export
-	
-	PurchaseQuote = Document.GetObject();	
-	Bank = GeneralFunctions.GetAttributeValue(PurchaseQuote.Company, "Bank");	
-	Return Bank;
 	
 EndFunction
 
@@ -334,266 +165,6 @@ Function AccountName(StringCode) Export
 	
 EndFunction
 
-// A procedure that is run on the first start of the system
-// pre-filling the database with default values.
-//
-Procedure FirstStart() Export
-	
-	If Constants.FirstStartCompleted.Get() = False Then
-		
-		// Adding account types to predefined accounts and
-		// assigning default posting accounts.
-		
-		// Also assigning currency to the default bank account
-		
-		Account = ChartsOfAccounts.ChartOfAccounts.BankAccount.GetObject();
-		Account.AccountType = Enums.AccountTypes.Bank;
-		Account.Currency = Catalogs.Currencies.USD;
-		Account.Write();
-		Constants.BankAccount.Set(Account.Ref);
-		
-		Account = ChartsOfAccounts.ChartOfAccounts.UndepositedFunds.GetObject();
-		Account.AccountType = Enums.AccountTypes.OtherCurrentAsset;
-		Account.Write();
-		Constants.UndepositedFundsAccount.Set(Account.Ref);
-		
-		Account = ChartsOfAccounts.ChartOfAccounts.AccountsReceivable.GetObject();
-		Account.AccountType = Enums.AccountTypes.AccountsReceivable;
-		Account.Currency = Catalogs.Currencies.USD;
-		Account.CashFlowSection = Enums.CashFlowSections.Operating;
-		Account.Write();
-		
-		USDCurrency = Catalogs.Currencies.USD.GetObject();
-		USDCurrency.DefaultARAccount = Account.Ref;
-		USDCurrency.Write();
-				
-		Account = ChartsOfAccounts.ChartOfAccounts.Inventory.GetObject();
-		Account.AccountType = Enums.AccountTypes.Inventory;
-		Account.CashFlowSection = Enums.CashFlowSections.Operating;
-		Account.Write();
-		Constants.InventoryAccount.Set(Account.Ref);
-		
-		Account = ChartsOfAccounts.ChartOfAccounts.AccountsPayable.GetObject();
-		Account.AccountType = Enums.AccountTypes.AccountsPayable;
-		Account.Currency = Catalogs.Currencies.USD;
-		Account.CashFlowSection = Enums.CashFlowSections.Operating;
-		Account.Write();
-		
-		USDCurrency = Catalogs.Currencies.USD.GetObject();
-		USDCurrency.DefaultAPAccount = Account.Ref;
-		USDCurrency.Write();
-		
-		Account = ChartsOfAccounts.ChartOfAccounts.SalesTaxPayable.GetObject();
-		Account.AccountType = Enums.AccountTypes.OtherCurrentLiability;
-		Account.CashFlowSection = Enums.CashFlowSections.Operating;
-		Account.Write();
-		Constants.SalesTaxPayableAccount.Set(Account.Ref);
-				
-		Account = ChartsOfAccounts.ChartOfAccounts.Income.GetObject();
-		Account.AccountType = Enums.AccountTypes.Income;
-		Account.CashFlowSection = Enums.CashFlowSections.Operating;
-		Account.Write();
-		Constants.IncomeAccount.Set(Account.Ref);
-		
-		Account = ChartsOfAccounts.ChartOfAccounts.COGS.GetObject();
-		Account.AccountType = Enums.AccountTypes.CostOfSales;
-		Account.CashFlowSection = Enums.CashFlowSections.Operating;
-		Account.Write();
-		Constants.COGSAccount.Set(Account.Ref);
-		
-		Account = ChartsOfAccounts.ChartOfAccounts.BankServiceCharge.GetObject();
-		Account.AccountType = Enums.AccountTypes.OtherExpense;
-		Account.CashFlowSection = Enums.CashFlowSections.Operating;
-		Account.Write();
-		Constants.BankServiceChargeAccount.Set(Account.Ref);
-		
-		Account = ChartsOfAccounts.ChartOfAccounts.BankInterestEarned.GetObject();
-		Account.AccountType = Enums.AccountTypes.OtherIncome;
-		Account.CashFlowSection = Enums.CashFlowSections.Operating;
-		Account.Write();
-		Constants.BankInterestEarnedAccount.Set(Account.Ref);
-		
-		Account = ChartsOfAccounts.ChartOfAccounts.ExchangeGain.GetObject();
-		Account.AccountType = Enums.AccountTypes.OtherIncome;
-		Account.CashFlowSection = Enums.CashFlowSections.Operating;
-		Account.Write();
-		Constants.ExchangeGain.Set(Account.Ref);
-		
-		Account = ChartsOfAccounts.ChartOfAccounts.ExchangeLoss.GetObject();
-		Account.AccountType = Enums.AccountTypes.OtherExpense;
-		Account.CashFlowSection = Enums.CashFlowSections.Operating;
-		Account.Write();
-		Constants.ExchangeLoss.Set(Account.Ref);
-		
-		Account = ChartsOfAccounts.ChartOfAccounts.Expense.GetObject();
-		Account.AccountType = Enums.AccountTypes.Expense;
-		Account.CashFlowSection = Enums.CashFlowSections.Operating;
-		Account.Write();
-		Constants.ExpenseAccount.Set(Account.Ref);
-		
-		Account = ChartsOfAccounts.ChartOfAccounts.AccumulatedOCI.GetObject();
-		Account.AccountType = Enums.AccountTypes.Equity;
-		Account.CashFlowSection = Enums.CashFlowSections.Operating;
-		Account.Write();
-		Constants.AccumulatedOCIAccount.Set(Account.Ref);
-			
-		// Adding OurCompany's full name
-		
-		OC = Catalogs.Companies.OurCompany.GetObject();
-		OC.Name = "Our company full name";
-		OC.Write();
-				
-		// Setting default location, currency, and beginning balances date
-		
-		Constants.DefaultLocation.Set(Catalogs.Locations.MainWarehouse);
-		
-		Constants.DefaultCurrency.Set(Catalogs.Currencies.USD);
-		
-		YearBeginning = BegOfYear(CurrentDate()); 
-		Constants.BeginningBalancesDate.Set(YearBeginning);
-		
-		// Adding days to predefined payment terms and setting
-		// a default payment term
-		
-		PT = Catalogs.PaymentTerms.DueOnReceipt.GetObject();
-		PT.Days = 0;
-		PT.Write();
-		
-		PT = Catalogs.PaymentTerms.Net5.GetObject();
-		PT.Days = 5;
-		PT.Write();
-		
-		PT = Catalogs.PaymentTerms.Net10.GetObject();
-		PT.Days = 10;
-		PT.Write();
-		
-		PT = Catalogs.PaymentTerms.Net15.GetObject();
-		PT.Days = 15;
-		PT.Write();
-		
-		PT = Catalogs.PaymentTerms.Net30.GetObject();
-		PT.Days = 30;
-		PT.Write();
-		
-		PT = Catalogs.PaymentTerms.Net60.GetObject();
-		PT.Days = 60;
-		PT.Write();
-		
-		Constants.PaymentTermsDefault.Set(Catalogs.PaymentTerms.Net30);
-		
-		// Turning on the US Financial Localization
-		
-		Constants.USFinLocalization.Set(True);
-		
-		// Setting 1099 thresholds
-		
-		Cat1099 = Catalogs.USTaxCategories1099.Box1.GetObject();
-		Cat1099.Threshold = 600;
-		Cat1099.Write();
-		
-		Cat1099 = Catalogs.USTaxCategories1099.Box2.GetObject();
-		Cat1099.Threshold = 10;
-		Cat1099.Write();
-		
-		Cat1099 = Catalogs.USTaxCategories1099.Box7.GetObject();
-		Cat1099.Threshold = 600;
-		Cat1099.Write();
-		
-		Cat1099 = Catalogs.USTaxCategories1099.Box8.GetObject();
-		Cat1099.Threshold = 10;
-		Cat1099.Write();
-		
-		Cat1099 = Catalogs.USTaxCategories1099.Box9.GetObject();
-		Cat1099.Threshold = 5000;
-		Cat1099.Write();
-		
-		// Creating a user with full rights
-		
-		NewUser = InfoBaseUsers.CreateUser();
-		NewUser.Name = "User";
-		Role = Metadata.Roles.Find("FullRights");
-		NewUser.Roles.Add(Role);
-		NewUser.Write();
-		
-		// Setting the Brazil ICMS default tax constant
-		
-		Constants.BrazilICMSTaxDefault.Set(18);
-		
-		// Assigning currency symbols
-				
-		Currency = Catalogs.Currencies.USD.GetObject();
-		Currency.Symbol = "$";
-		Currency.Write();
-						
-		// Setting the Disable LIFO constant
-		
-		Constants.DisableLIFO.Set(False);
-		
-		// Setting Customer Name and Vendor Name constants
-		
-		Constants.CustomerName.Set("Customer");
-		Constants.VendorName.Set("Vendor");
-				
-		// Setting the First Start Completed constant to prevent
-		// this procedure from running on subsequent system starts
-		
-		Constants.FirstStartCompleted.Set(True);
-		
-	EndIf;	
-	
-EndProcedure
-
-// The procedure is launched when the South Africa financial localization is turned on in Settings
-// and prefills the database with default values and settings for VAT.
-//
-Procedure VATSetup() Export
-	
-	If Constants.VATSetupCompleted.Get() = False Then
-				
-		Constants.DefaultPurchaseVAT.Set(Catalogs.VATCodes.S);
-		Constants.DefaultSalesVAT.Set(Catalogs.VATCodes.S);
-		
-		VATAccount = ChartsOfAccounts.ChartOfAccounts.CreateAccount();
-		VATAccount.Description = "VAT payable";
-		VATAccount.Code = 320;
-		VATAccount.AccountType = Enums.AccountTypes.OtherCurrentLiability;
-		VATAccount.CashFlowSection = Enums.CashFlowSections.Operating;
-		VATAccount.Write();
-		Constants.VATAccount.Set(VATAccount.Ref);		
-		
-		VATAgency = Catalogs.Companies.CreateItem();
-		VATAgency.ExpenseAccount = Constants.ExpenseAccount.Get();
-		VATAgency.IncomeAccount = Constants.IncomeAccount.Get();
-		VATAgency.Name = "VAT Agency";
-		VATAgency.Description = "VAT Agency";
-		VATAgency.Customer = True;
-		VATAgency.Vendor = True;
-		VATAgency.Write();
-		
-		VATCode = Catalogs.VATCodes.S.GetObject();
-		VATCode.Taxable = True;
-		VATCode.VATDescription = "Standard (14%)";
-		
-		VATSales = VATCode.SalesItems.Add();
-		VATSales.Name = "Sales";
-		VATSales.Rate = 14;
-		VATSales.ReturnBox = Catalogs.VATReturnFormBoxes.Box1;
-		VATSales.Agency = VATAgency.Ref;
-		
-		VATPurchase = VATCode.PurchaseItems.Add();
-		VATPurchase.Name = "Purchase";
-		VATPurchase.Rate = 14;
-		VATPurchase.ReturnBox = Catalogs.VATReturnFormBoxes.Box14;
-		VATPurchase.Agency = VATAgency.Ref;
-		
-		VATCode.Write();
-		
-		Constants.VATSetupCompleted.Set(True);
-		
-	EndIf;
-		
-EndProcedure
-
 // Calculates the next check number for a selected bank account.
 //
 // Parameters:
@@ -623,5 +194,288 @@ Function NextCheckNumber(BankAccount) Export
 		LastNumber = Dataset[0][0];
 		Return LastNumber + 1;
 	EndIf;			
+	
+EndFunction
+
+Function SearchCompanyByCode(CompanyCode) Export
+	
+	Query = New Query("SELECT
+	                  |	Companies.Ref
+	                  |FROM
+	                  |	Catalog.Companies AS Companies
+	                  |WHERE
+	                  |	Companies.Code = &CompanyCode");
+	
+	Query.SetParameter("CompanyCode", CompanyCode);	
+	QueryResult = Query.Execute();
+	
+	If QueryResult.IsEmpty() Then		
+		Return Catalogs.Companies.EmptyRef();
+	Else
+		Dataset = QueryResult.Unload();
+		Return Dataset[0][0];
+	EndIf;			
+
+EndFunction
+
+Function GetShipToAddress(Company) Export
+	
+	Query = New Query("SELECT
+	                  |	Addresses.Ref
+	                  |FROM
+	                  |	Catalog.Addresses AS Addresses
+	                  |WHERE
+	                  |	Addresses.Owner = &Company
+	                  |	AND Addresses.DefaultShipping = TRUE");
+	Query.SetParameter("Company", Company);				  
+	QueryResult = Query.Execute();
+	Dataset = QueryResult.Unload();
+	Return Dataset[0][0];
+	
+EndFunction
+
+Function ProductLastCost(Product) Export
+	
+	Query = New Query("SELECT
+	                  |	ItemLastCost.Cost
+	                  |FROM
+	                  |	InformationRegister.ItemLastCost AS ItemLastCost
+	                  |WHERE
+	                  |	ItemLastCost.Product = &Product");
+	Query.SetParameter("Product", Product);
+	QueryResult = Query.Execute();
+	
+	If QueryResult.IsEmpty() Then		
+		Return 0;
+	Else
+		Dataset = QueryResult.Unload();
+		Return Dataset[0][0];
+	EndIf;			
+		
+EndFunction
+
+// Check documents table parts to ensure, that products are unique
+Procedure CheckDoubleItems(Ref, LineItems, Columns, Cancel) Export
+	
+	// Dump table part
+	TableLineItems = LineItems.Unload(, Columns);
+	TableLineItems.Sort(Columns);
+	
+	// Define subsets of data to check
+	EmptyItems   = New Structure(Columns);
+	CurrentItems = New Structure(Columns);
+	DoubledItems = New Structure(Columns);
+	CompareItems = StrReplace(Columns, "LineNumber", "");
+	DisplayCodes = FunctionalOptionValue("DisplayCodes");
+	DoublesCount = 0;
+	Doubles      = ""; 
+	
+	// Check table part for doubles
+	For Each LineItem In TableLineItems Do
+		// Check for double
+		If ComparePropertyValues(CurrentItems, LineItem, CompareItems) Then
+			// Double found
+			If Not ComparePropertyValues(DoubledItems, CurrentItems, CompareItems) Then
+				// New double found
+				FillPropertyValues(DoubledItems, CurrentItems, Columns);
+				Doubles = Format(CurrentItems.LineNumber, "NFD=0; NG=0") + ", " + Format(LineItem.LineNumber, "NFD=0; NG=0"); 
+			Else
+				// Multiple double
+				Doubles = Doubles + ", " + Format(LineItem.LineNumber, "NFD=0; NG=0"); 
+			EndIf;
+		Else
+			// If Double found
+			If FilledPropertyValues(DoubledItems, CompareItems) Then
+				
+				// Increment doubles counter
+				DoublesCount = DoublesCount + 1;
+				If DoublesCount <= 10 Then // 10 messages enough to demonstrate that check failed
+					
+					// Publish previously found double
+					DoublesText = "";
+					For Each Double In DoubledItems Do
+						// Convert value to it's presentation
+						Value = Double.Value;
+						If Double.Key = "LineNumber" Then
+							Continue; // Skip line number
+							
+						ElsIf TypeOf(Value) = Type("CatalogRef.Companies") Then
+							Presentation = ?(DisplayCodes, TrimAll(Value.Code) + " ", "") + TrimAll(Value.Description);
+							
+						ElsIf TypeOf(Value) = Type("CatalogRef.Products") Then
+							Presentation = TrimAll(Value.Code) + " " + TrimAll(Value.Description);
+							
+						Else
+							Presentation = TrimAll(Value);
+						EndIf;
+						
+						// Generate doubled items text
+						DoublesText = DoublesText + ?(IsBlankString(DoublesText), "", ", ") + Double.Key + " """ + Presentation + """";
+					EndDo;
+					
+					// Generate message to user
+					MessageText = NStr("en = '%1
+					                         |doubled in lines: %2'");
+					MessageText = StringFunctionsClientServer.SubstitureParametersInString(MessageText, DoublesText, Doubles); 
+					CommonUseClientServer.MessageToUser(MessageText, Ref,,, Cancel);
+				EndIf;
+				
+				// Clear found double
+				FillPropertyValues(DoubledItems, EmptyItems, Columns);
+				Doubles = "";
+			EndIf;
+		EndIf;
+		
+		// Save current state for the next loop
+		FillPropertyValues(CurrentItems, LineItem, Columns);
+	EndDo;
+	
+	// Publish last found double
+	If FilledPropertyValues(DoubledItems, CompareItems)
+	And DoublesCount < 10 Then // Display 10-th message
+		
+		// Publish previously found double
+		DoublesText = "";
+		For Each Double In DoubledItems Do
+			
+			// Convert value to it's presentation
+			Value = Double.Value;
+			If Double.Key = "LineNumber" Then
+				Continue; // Skip line number
+				
+			ElsIf TypeOf(Value) = Type("CatalogRef.Companies") Then
+				Presentation = ?(DisplayCodes, TrimAll(Value.Code) + " ", "") + TrimAll(Value.Description);
+				
+			ElsIf TypeOf(Value) = Type("CatalogRef.Products") Then
+				Presentation = TrimAll(Value.Code) + " " + TrimAll(Value.Description);
+				
+			Else
+				Presentation = TrimAll(Value);
+			EndIf;
+			
+			DoublesText = DoublesText + ?(IsBlankString(DoublesText), "", ", ") + Double.Key + " """ + Presentation + """";
+		EndDo;
+		
+		// Generate message to user
+		MessageText = NStr("en = '%1
+		                         |doubled in lines: %2'");
+		MessageText = StringFunctionsClientServer.SubstitureParametersInString(MessageText, DoublesText, Doubles); 
+		CommonUseClientServer.MessageToUser(MessageText, Ref,,, Cancel);
+		
+	Else
+		RemainingDoubles = DoublesCount + Number(FilledPropertyValues(DoubledItems, CompareItems)) - 10; // Quantity of errors, which are not displayed to user
+		If RemainingDoubles > 0 Then
+			// Generate message to user
+			MessageText = NStr("en = 'There are also %1 error(s) found'");
+			MessageText = StringFunctionsClientServer.SubstitureParametersInString(MessageText, Format(RemainingDoubles, "NFD=0; NG=0")); 
+			CommonUseClientServer.MessageToUser(MessageText, Ref,,, Cancel);
+		EndIf;
+	EndIf;
+
+EndProcedure
+
+// Normalizes passed array removing empty values and duplicates
+// 
+// Parameters:
+// 	Array - Array of items to be normalized (Arbitrary items)
+//
+Procedure NormalizeArray(Array) Export
+	
+	i = 0;
+	While i < Array.Count() Do
+		
+		// Check current item
+		If (Array[i] = Undefined) Or (Not ValueIsFilled(Array[i])) Then
+			Array.Delete(i);	// Delete empty values
+			
+		ElsIf Array.Find(Array[i]) <> i Then
+			Array.Delete(i);	// Delete duplicate
+			
+		Else
+			i = i + 1;			// Next item
+			
+		EndIf;
+		
+	EndDo;
+	
+EndProcedure
+
+// Compares two passed objects by their properties (as analogue to FillPropertyValues)
+// Compares Source property values with values of properties of the Receiver. Matching is done by property names.
+// If some of the properties are absent in Source or Destination objects, they will be omitted.
+// If objects don't have same properties, they will be assumed as different, because they having nothing in common.
+//
+// Parameters:
+// 	Receiver - Reference (Arbitrary), properties of which will be compared with properties of Source. 
+//  Source   - Reference (Arbitrary), properties of which will be used to compare with Receiver.
+//  ListOfProperties - String of comma-separated property names that will be used in compare.
+//
+// Return value:
+// 	Boolean - Objects are equal by the set of their properties
+//
+Function ComparePropertyValues(Receiver, Source, ListOfProperties) Export
+	Var DstItemValue;
+	
+	// Create structures to compare
+	SrcStruct = New Structure(ListOfProperties);
+	DstStruct = New Structure(ListOfProperties);
+		
+	// Copy arbitrary values to comparable structures
+	FillPropertyValues(SrcStruct, Source);   // Only properties, existing in Source   and defined in ListOfProperties are copied
+	FillPropertyValues(DstStruct, Receiver); // Only properties, existing in Receiver and defined in ListOfProperties are copied
+	
+	// Flag of having similar properties
+	FoundSameProperty = False;
+	
+	// Compare properties of structures
+	For Each SrcItem In SrcStruct Do
+		
+		If DstStruct.Property(SrcItem.Key, DstItemValue) Then
+			// Set flag of found same properties in both structures
+			If Not FoundSameProperty Then FoundSameProperty = True; EndIf;
+			
+			// Compare values of properties
+			If SrcItem.Value <> DstItemValue Then
+				// Compare failed
+				Return False;
+			EndIf;
+		Else
+		    // Skip property absent in DstStruct
+		EndIf;
+		
+	EndDo;
+	
+	// The structures contain the same compareble properties, or nothing in common
+	Return FoundSameProperty;
+			
+EndFunction
+
+// Check filling of passed object by it's properties (as analogue to FillPropertyValues)
+// If some of the properties mentioned in ListOfProperties are absent in object, they will be omitted.
+// If objects hasn't selected properties, it will be assumed as empty, because it hsn't any.
+//
+// Parameters:
+//  Source   - Reference (Arbitrary), properties of which will be used to check their filling.
+//  ListOfProperties - String of comma-separated property names that will be used in check.
+//
+// Return value:
+// 	Boolean - Sre objects equal by the set of their properties
+//
+Function FilledPropertyValues(Source, ListOfProperties) Export
+	
+	// Create structures to check filling of properties
+	SrcStruct = New Structure(ListOfProperties);
+	FillPropertyValues(SrcStruct, Source); // Only properties, existing in Source and defined in ListOfProperties are copied
+	
+	// Compare properties of structures
+	For Each SrcItem In SrcStruct Do
+		If SrcItem.Value <> Undefined Then
+			// Object has filled properties
+			Return True;
+		EndIf;
+	EndDo;
+	
+	// None of properties are filled
+	Return False;
 	
 EndFunction

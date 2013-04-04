@@ -1,9 +1,34 @@
 ﻿
+Function SetType()
+	
+	CompaniesPresent = False;
+	For Each CurRowLineItems In Object.LineItems Do
+		If CurRowLineItems.Company <> Catalogs.Companies.EmptyRef() Then
+			CompaniesPresent = True;	
+		EndIf;
+	EndDo;
+
+	If CompaniesPresent = True Then
+		For Each CurRowLineItems In Object.LineItems Do
+			If CurRowLineItems.Account.AccountType = Enums.AccountTypes.AccountsPayable Then
+				  Object.ARorAP = Enums.GJEntryType.AP;
+			ElsIf CurRowLineItems.Account.AccountType = Enums.AccountTypes.AccountsReceivable Then
+				  Object.ARorAP = Enums.GJEntryType.AR;
+			EndIf;
+		EndDo;
+	EndIf;	
+	
+EndFunction
+
 &AtClient
 // The procedure calculates TotalDr and TotalCr for the transaction, and prevents
 // saving an unbalanced transaction.
 //
 Procedure BeforeWrite(Cancel, WriteParameters)
+	
+	SetType();
+
+	Object.DueDate = Object.Date;
 	
 	TotalDr = Object.LineItems.Total("AmountDr");
 	TotalCr = Object.LineItems.Total("AmountCr"); 
@@ -11,7 +36,7 @@ Procedure BeforeWrite(Cancel, WriteParameters)
 	Object.DocumentTotal = TotalDr;
 	Object.DocumentTotalRC = TotalDr * Object.ExchangeRate;
 	
-	If Not GeneralFunctions.FunctionalOptionValue("UnbalancedGLEntryPosting") Then
+	If Not GeneralFunctions.FunctionalOptionValue("UnbalancedGJEntryPosting") Then
 		
 		If TotalDr <> TotalCr Then
 			Message = New UserMessage();
@@ -54,7 +79,7 @@ EndProcedure
 //
 Procedure LineItemsAccountOnChange(Item)
 	TabularPartRow = Items.LineItems.CurrentData;
-	TabularPartRow.AccountDescription = GeneralFunctions.GetAttributeValue
+	TabularPartRow.AccountDescription = CommonUse.GetAttributeValue
 		(TabularPartRow.Account, "Description");
 	EndProcedure
 
@@ -68,19 +93,28 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Object.ExchangeRate = 1;
 	Else
 	EndIf;
-
+	
+	Items.ExchangeRate.Title = GeneralFunctionsReusable.DefaultCurrencySymbol() + "/1" + Object.Currency.Symbol;
+	
+	// AdditionalReportsAndDataProcessors
+	AdditionalReportsAndDataProcessors.OnCreateAtServer(ThisForm);
+	// End AdditionalReportsAndDataProcessors
+	
 EndProcedure
 
 &AtClient
 Procedure CurrencyOnChange(Item)
 	
-	Object.ExchangeRate = GeneralFunctions.GetExchangeRate(Object.Date, GeneralFunctionsReusable.DefaultCurrency(), Object.Currency);
+	Object.ExchangeRate = GeneralFunctions.GetExchangeRate(Object.Date, Object.Currency);
+    Items.ExchangeRate.Title = GeneralFunctionsReusable.DefaultCurrencySymbol() + "/1" + CommonUse.GetAttributeValue(Object.Currency, "Symbol");
 
 EndProcedure
 
 &AtClient
 Procedure DateOnChange(Item)
 	
-	Object.ExchangeRate = GeneralFunctions.GetExchangeRate(Object.Date, GeneralFunctionsReusable.DefaultCurrency(), Object.Currency);
+	Object.ExchangeRate = GeneralFunctions.GetExchangeRate(Object.Date, Object.Currency);
 	
 EndProcedure
+
+

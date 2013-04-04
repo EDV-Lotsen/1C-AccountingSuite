@@ -9,10 +9,6 @@
 					<v8:content>Warehouse</v8:content>
 				</v8:item>
 				<v8:item>
-					<v8:lang>pt</v8:lang>
-					<v8:content>Depόsito</v8:content>
-				</v8:item>
-				<v8:item>
 					<v8:lang>de</v8:lang>
 					<v8:content>Lager</v8:content>
 				</v8:item>
@@ -27,13 +23,12 @@
 			</Picture>
 			<Content>
 				<xr:Item xsi:type="xr:MDObjectRef">Catalog.Locations</xr:Item>
-				<xr:Item xsi:type="xr:MDObjectRef">Document.TransferOrder</xr:Item>
-				<xr:Item xsi:type="xr:MDObjectRef">Document.GoodsReceipt</xr:Item>
-				<xr:Item xsi:type="xr:MDObjectRef">Document.GoodsIssue</xr:Item>
-				<xr:Item xsi:type="xr:MDObjectRef">InformationRegister.InventoryJournal</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Document.WarehouseTransfer</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">AccumulationRegister.InventoryJrnl</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">InformationRegister.ItemLastCost</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">Report.InventoryBalances</xr:Item>
-				<xr:Item xsi:type="xr:MDObjectRef">32921061-27f2-4d2e-9510-b5e864f5eee9</xr:Item>
-				<xr:Item xsi:type="xr:MDObjectRef">AccumulationRegister.LocationBalances</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">CommonCommand.InventoryBalances</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">bfe8ce04-4339-40c1-b42e-1fe7cd629e59</xr:Item>
 			</Content>
 		</Properties>
 		<ChildObjects/>

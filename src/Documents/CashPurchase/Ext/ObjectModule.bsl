@@ -1,61 +1,75 @@
 ﻿// The procedure performs document posting
 //
 Procedure Posting(Cancel, Mode)
+	
+	// preventing posting if already included in a bank rec
+	
+	Query = New Query("SELECT
+					  |	TransactionReconciliation.Document
+					  |FROM
+					  |	InformationRegister.TransactionReconciliation AS TransactionReconciliation
+					  |WHERE
+					  |	TransactionReconciliation.Document = &Ref
+					  |	AND TransactionReconciliation.Reconciled = TRUE");
+	Query.SetParameter("Ref", Ref);
+	Selection = Query.Execute();
+	
+	If NOT Selection.IsEmpty() Then
 		
-	DocDate = BegOfDay(Date) + 60*60*10;
-	
-	PostingCostBeforeAdj = 0;
-	PostingCostAfterAdj = 0;
-	
-	// create an Inventory Journal dataset
-	
-	InvDataset = InventoryCosting.PurchaseDocumentsDataset(Ref, DocDate);
-	
-	// update location balances
+		Message = New UserMessage();
+		Message.Text=NStr("en='This document is already included in a bank reconciliation. Please remove it from the bank rec first.'");
+		Message.Message();
+		Cancel = True;
+		Return;
+		
+	EndIf;
 
-	RegisterRecords.LocationBalances.Write = True;
+	// end preventing posting if already included in a bank rec
+	
+	RegisterRecords.InventoryJrnl.Write = True;
 	For Each CurRowLineItems In LineItems Do
 		If CurRowLineItems.Product.Type = Enums.InventoryTypes.Inventory Then
-			Record = RegisterRecords.LocationBalances.Add();
+			Record = RegisterRecords.InventoryJrnl.Add();
 			Record.RecordType = AccumulationRecordType.Receipt;
 			Record.Period = Date;
 			Record.Product = CurRowLineItems.Product;
 			Record.Location = Location;
-			Record.QtyOnHand = CurRowLineItems.Quantity;
-		EndIf;	
-	EndDo;
-
-	For Each CurRowLineItems In LineItems Do	
-				
-		// select a subset of the Inventory Journal dataset and call the inventory costing procedure
-		
-		Filter = New Structure();
-		Filter.Insert("Product", CurRowLineItems.Product); 
-		InvDataset.Sort("Date, Row");
-		InvDatasetProduct = InvDataset.FindRows(Filter);
-		
-		AdjustmentCosts = InventoryCosting.PurchaseDocumentsProcessing(CurRowLineItems, InvDatasetProduct, Location, DocDate, ExchangeRate, Ref);
-		
-		PostingCostBeforeAdj = PostingCostBeforeAdj + AdjustmentCosts[0][0];
-		PostingCostAfterAdj = PostingCostAfterAdj + AdjustmentCosts[0][1];
-
-		
+			If CurRowLineItems.Product.CostingMethod = Enums.InventoryCosting.WeightedAverage Then
+			Else
+				Record.Layer = Ref;
+			EndIf;
+			Record.Qty = CurRowLineItems.Quantity;				
+			Record.Amount = CurRowLineItems.Quantity * CurRowLineItems.Price * ExchangeRate;
+		EndIf;
 	EndDo;
 	
 	// fill in the account posting value table with amounts
 	
+	PostingDatasetVAT = New ValueTable();
+	PostingDatasetVAT.Columns.Add("VATAccount");
+	PostingDatasetVAT.Columns.Add("AmountRC");
+	
 	PostingDataset = New ValueTable();
 	PostingDataset.Columns.Add("Account");
-	PostingDataset.Columns.Add("AmountRC");	
+	PostingDataset.Columns.Add("AmountRC");
+	
 	For Each CurRowLineItems in LineItems Do		
 		PostingLine = PostingDataset.Add();       
-		If CurRowLineItems.Product.Code = "" Then
-			PostingLine.Account = Company.ExpenseAccount;
+		PostingLine.Account = CurRowLineItems.Product.InventoryOrExpenseAccount;
+		If PriceIncludesVAT Then
+			PostingLine.AmountRC = (CurRowLineItems.LineTotal - CurRowLineItems.VAT) * ExchangeRate;
 		Else
-			PostingLine.Account = CurRowLineItems.Product.InventoryOrExpenseAccount;
+			PostingLine.AmountRC = CurRowLineItems.LineTotal * ExchangeRate;
 		EndIf;
-		PostingLine.AmountRC = CurRowLineItems.Price * ExchangeRate * CurRowLineItems.Quantity;			
+		
+		If CurRowLineItems.VAT > 0 Then
+			PostingLineVAT = PostingDatasetVAT.Add();
+			PostingLineVAT.VATAccount = VAT_FL.VATAccount(CurRowLineItems.VATCode, "Purchase");
+			PostingLineVAT.AmountRC = CurRowLineItems.VAT * ExchangeRate;
+		EndIf;
+		
     EndDo;
+	
 	
 	PostingDataset.GroupBy("Account", "AmountRC");
 	
@@ -85,98 +99,116 @@ Procedure Posting(Cancel, Mode)
 	EndIf;
 	Record.AmountRC = DocumentTotal * ExchangeRate;
 	
-	If VATTotal > 0 Then
+	PostingDatasetVAT.GroupBy("VATAccount", "AmountRC");
+	NoOfPostingRows = PostingDatasetVAT.Count();
+	For i = 0 To NoOfPostingRows - 1 Do
 		Record = RegisterRecords.GeneralJournal.AddDebit();
-		Record.Account = Constants.VATAccount.Get();
+		Record.Account = PostingDatasetVAT[i][0];
 		Record.Period = Date;
-		Record.AmountRC = VATTotal;
+		Record.AmountRC = PostingDatasetVAT[i][1];	
+	EndDo;
+	
+	// Writing bank reconciliation data
+	
+	Records = InformationRegisters.TransactionReconciliation.CreateRecordSet();
+	Records.Filter.Document.Set(Ref);
+	Records.Read();
+	If Records.Count() = 0 Then
+		Record = Records.Add();
+		Record.Document = Ref;
+		Record.Account = BankAccount;
+		Record.Reconciled = False;
+		Record.Amount = -1 * DocumentTotalRC;		
+	Else
+		Records[0].Account = BankAccount;
+		Records[0].Amount = -1 * DocumentTotalRC;
+	EndIf;
+	Records.Write();
+	
+	//Records = InformationRegisters.TransactionReconciliation.CreateRecordSet();
+	//Records.Filter.Document.Set(Ref);
+	//Records.Filter.Account.Set(BankAccount);
+	//Record = Records.Add();
+	//Record.Document = Ref;
+	//Record.Account = BankAccount;
+	//Record.Reconciled = False;
+	//Record.Amount = -1 * DocumentTotalRC;
+	//Records.Write();
+
+EndProcedure
+
+
+Procedure UndoPosting(Cancel)
+	
+	// preventing posting if already included in a bank rec
+	
+	Query = New Query("SELECT
+	                  |	TransactionReconciliation.Document
+	                  |FROM
+	                  |	InformationRegister.TransactionReconciliation AS TransactionReconciliation
+	                  |WHERE
+	                  |	TransactionReconciliation.Document = &Ref
+	                  |	AND TransactionReconciliation.Reconciled = TRUE");
+	Query.SetParameter("Ref", Ref);
+	Selection = Query.Execute();
+	
+	If NOT Selection.IsEmpty() Then
+		
+		Message = New UserMessage();
+		Message.Text=NStr("en='This document is already included in a bank reconciliation. Please remove it from the bank rec first.'");
+		Message.Message();
+		Cancel = True;
+		Return;
+		
 	EndIf;
 
-	
-	// Actual (adjusted) cost higher
-	If (PostingCostAfterAdj - PostingCostBeforeAdj) > 0 Then
-		
-		Record = RegisterRecords.GeneralJournal.AddDebit();
-		Record.Account = Constants.COGSAccount.Get();
-		Record.Period = Date;	
-		Record.AmountRC = PostingCostAfterAdj - PostingCostBeforeAdj;
-		
-		Record = RegisterRecords.GeneralJournal.AddCredit();
-		Record.Account = Constants.InventoryAccount.Get();
-		Record.Period = Date;	
-		Record.AmountRC = PostingCostAfterAdj - PostingCostBeforeAdj;
-		
-	Else
-	EndIf;		
-	
-	// Actual (adjusted) cost lower
-	If (PostingCostAfterAdj - PostingCostBeforeAdj) < 0 Then
-		
-		Record = RegisterRecords.GeneralJournal.AddCredit();
-		Record.Account = Constants.COGSAccount.Get(); 
-		Record.Period = Date;		
-		Record.AmountRC = SQRT(POW((PostingCostAfterAdj - PostingCostBeforeAdj),2));
-		
-		Record = RegisterRecords.GeneralJournal.AddDebit();
-		Record.Account = Constants.InventoryAccount.Get();
-		Record.Period = Date;	
-		Record.AmountRC = SQRT(POW((PostingCostAfterAdj - PostingCostBeforeAdj),2));
-		
-	Else
-	EndIf;	
-	
-EndProcedure
+	// end preventing posting if already included in a bank rec
 
-// The procedure prevents voiding if the Allow Voiding functional option is disabled.
-//
-Procedure UndoPosting(Cancel)
-
-	If InventoryCosting.InventoryPresent(Ref) Then
 	
-		If NOT GetFunctionalOption("AllowVoiding") Then
+	For Each CurRowLineItems In LineItems Do
+					
+		If CurRowLineItems.Product.Type = Enums.InventoryTypes.Inventory Then
+											
+			// check inventory balances and cancel if not sufficient
 			
-			Message = New UserMessage();
-			Message.Text = NStr("en='You cannot void a posted document with inventory items'");
-			Message.Message();
-			Cancel = True;
-			Return;
-			
-		EndIf;
-
-	EndIf;	
-	
-EndProcedure
-
-// The procedure prevents re-posting if the Allow Voiding functional option is disabled.
-//
-Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
-		
-	If InventoryCosting.InventoryPresent(Ref) Then
-		
-		If NOT GetFunctionalOption("AllowVoiding") Then
-			
-			If WriteMode = DocumentWriteMode.Posting Then
+			CurrentBalance = 0;
+								
+			Query = New Query("SELECT
+			                  |	InventoryJrnlBalance.QtyBalance
+			                  |FROM
+			                  |	AccumulationRegister.InventoryJrnl.Balance AS InventoryJrnlBalance
+			                  |WHERE
+			                  |	InventoryJrnlBalance.Product = &Product
+			                  |	AND InventoryJrnlBalance.Location = &Location");
+			Query.SetParameter("Product", CurRowLineItems.Product);
+			Query.SetParameter("Location", Location);
+			QueryResult = Query.Execute();
 				
-				If DocPosted Then
-			       Message = New UserMessage();
-			       Message.Text = NStr("en='You cannot re-post a posted document with inventory items'");
-			       Message.Message();
-			       Cancel = True;
-			       Return;
-			    Else
-			       DocPosted = True;
-			   EndIf;
-			   
-		   EndIf;
-		
+			If QueryResult.IsEmpty() Then
+			Else
+				Dataset = QueryResult.Unload();
+				CurrentBalance = Dataset[0][0];
+			EndIf;
+							
+			If CurRowLineItems.Quantity > CurrentBalance Then
+				Cancel = True;
+				Message = New UserMessage();
+				Message.Text=NStr("en='Insufficient balance';de='Nicht ausreichende Bilanz'");
+				Message.Message();
+				Return;
+			EndIf;
+			
 		EndIf;
 		
-	EndIf;	
-
+	EndDo;
+	
+	// Deleting bank reconciliation data
+	
+	Records = InformationRegisters.TransactionReconciliation.CreateRecordManager();
+	Records.Document = Ref;
+	Records.Account = BankAccount;
+	Records.Read();
+	Records.Delete();
+	
 EndProcedure
 
-// Clears the DocPosted attribute on document copying
-//
-Procedure OnCopy(CopiedObject)
-	DocPosted = False;
-EndProcedure

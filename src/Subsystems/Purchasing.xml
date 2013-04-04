@@ -9,10 +9,6 @@
 					<v8:content>Purchasing</v8:content>
 				</v8:item>
 				<v8:item>
-					<v8:lang>pt</v8:lang>
-					<v8:content>Compra</v8:content>
-				</v8:item>
-				<v8:item>
 					<v8:lang>de</v8:lang>
 					<v8:content>Einkauf</v8:content>
 				</v8:item>
@@ -29,10 +25,15 @@
 				<xr:Item xsi:type="xr:MDObjectRef">Document.PurchaseInvoice</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">Document.PurchaseOrder</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">Document.CashPurchase</xr:Item>
-				<xr:Item xsi:type="xr:MDObjectRef">DocumentJournal.PurchasingDocuments</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">Document.PurchaseReturn</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">Report.APAging</xr:Item>
-				<xr:Item xsi:type="xr:MDObjectRef">Document.PurchaseQuote</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Enum.ReturnTypes</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Enum.OrderStatuses</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">AccumulationRegister.OrdersDispatched</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">InformationRegister.OrdersStatuses</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">CommonCommand.APAging</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Report.PurchasingTransactionDetail</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">CommonCommand.PurchasingTransactionDetail</xr:Item>
 			</Content>
 		</Properties>
 		<ChildObjects/>

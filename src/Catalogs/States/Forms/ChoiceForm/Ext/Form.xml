@@ -60,6 +60,11 @@
 				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="17"/>
 			</SearchControlAddition>
 			<ChildItems>
+				<LabelField name="Code" id="6">
+					<DataPath>List.Code</DataPath>
+					<ContextMenu name="CodeContextMenu" id="7"/>
+					<ExtendedTooltip name="CodeExtendedTooltip" id="18"/>
+				</LabelField>
 				<LabelField name="Description" id="4">
 					<DataPath>List.Description</DataPath>
 					<DefaultItem>true</DefaultItem>
@@ -69,17 +74,12 @@
 							<v8:content>State</v8:content>
 						</v8:item>
 						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Estado</v8:content>
+							<v8:lang>de</v8:lang>
+							<v8:content>Bundesland</v8:content>
 						</v8:item>
 					</Title>
 					<ContextMenu name="DescriptionContextMenu" id="5"/>
-					<ExtendedTooltip name="DescriptionExtendedTooltip" id="18"/>
-				</LabelField>
-				<LabelField name="Country" id="6">
-					<DataPath>List.Country</DataPath>
-					<ContextMenu name="CountryContextMenu" id="7"/>
-					<ExtendedTooltip name="CountryExtendedTooltip" id="19"/>
+					<ExtendedTooltip name="DescriptionExtendedTooltip" id="19"/>
 				</LabelField>
 			</ChildItems>
 		</Table>

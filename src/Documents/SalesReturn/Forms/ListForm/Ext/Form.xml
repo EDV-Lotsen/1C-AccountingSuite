@@ -35,77 +35,95 @@
 			<AutoCommandBar name="ListCommandBar" id="3">
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
-			<ExtendedTooltip name="ListExtendedTooltip" id="24"/>
-			<SearchStringAddition name="ListSearchString" id="25">
+			<ExtendedTooltip name="ListExtendedTooltip" id="28"/>
+			<SearchStringAddition name="ListSearchString" id="29">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="26"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="27"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="30"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="31"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="28">
+			<ViewStatusAddition name="ListViewStatus" id="32">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="29"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="30"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="33"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="34"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="31">
+			<SearchControlAddition name="ListSearchControl" id="35">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="32"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="33"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="36"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="37"/>
 			</SearchControlAddition>
 			<ChildItems>
 				<LabelField name="Date" id="18">
 					<DataPath>List.Date</DataPath>
 					<HorizontalAlign>Right</HorizontalAlign>
-					<Format>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>DLF=D</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>DLF=D</v8:content>
-						</v8:item>
-					</Format>
 					<ContextMenu name="DateContextMenu" id="19"/>
-					<ExtendedTooltip name="DateExtendedTooltip" id="34"/>
+					<ExtendedTooltip name="DateExtendedTooltip" id="38"/>
 				</LabelField>
 				<LabelField name="Number" id="20">
 					<DataPath>List.Number</DataPath>
 					<ContextMenu name="NumberContextMenu" id="21"/>
-					<ExtendedTooltip name="NumberExtendedTooltip" id="35"/>
+					<ExtendedTooltip name="NumberExtendedTooltip" id="39"/>
+				</LabelField>
+				<LabelField name="ReturnType" id="26">
+					<DataPath>List.ReturnType</DataPath>
+					<ContextMenu name="ReturnTypeContextMenu" id="27"/>
+					<ExtendedTooltip name="ReturnTypeExtendedTooltip" id="40"/>
 				</LabelField>
 				<LabelField name="Company" id="10">
 					<DataPath>List.Company</DataPath>
 					<ContextMenu name="CompanyContextMenu" id="11"/>
-					<ExtendedTooltip name="CompanyExtendedTooltip" id="36"/>
+					<ExtendedTooltip name="CompanyExtendedTooltip" id="41"/>
+				</LabelField>
+				<LabelField name="CompanyCode" id="24">
+					<DataPath>List.CompanyCode</DataPath>
+					<ContextMenu name="CompanyCodeContextMenu" id="25"/>
+					<ExtendedTooltip name="CompanyCodeExtendedTooltip" id="42"/>
 				</LabelField>
 				<LabelField name="DocumentTotal" id="12">
 					<DataPath>List.DocumentTotal</DataPath>
 					<ContextMenu name="DocumentTotalContextMenu" id="13"/>
-					<ExtendedTooltip name="DocumentTotalExtendedTooltip" id="37"/>
+					<ExtendedTooltip name="DocumentTotalExtendedTooltip" id="43"/>
 				</LabelField>
 				<LabelField name="DocumentTotalRC" id="14">
 					<DataPath>List.DocumentTotalRC</DataPath>
 					<ContextMenu name="DocumentTotalRCContextMenu" id="15"/>
-					<ExtendedTooltip name="DocumentTotalRCExtendedTooltip" id="38"/>
+					<ExtendedTooltip name="DocumentTotalRCExtendedTooltip" id="44"/>
 				</LabelField>
-				<LabelField name="Due_FCY" id="22">
-					<DataPath>List.Due_FCY</DataPath>
-					<ContextMenu name="Due_FCYContextMenu" id="23"/>
-					<ExtendedTooltip name="Due_FCYExtendedTooltip" id="39"/>
+				<LabelField name="BalanceFCY" id="22">
+					<DataPath>List.BalanceFCY</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Balance FCY</v8:content>
+						</v8:item>
+					</Title>
+					<Format>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>NFD=2</v8:content>
+						</v8:item>
+					</Format>
+					<ContextMenu name="BalanceFCYContextMenu" id="23"/>
+					<ExtendedTooltip name="BalanceFCYExtendedTooltip" id="45"/>
 				</LabelField>
-				<LabelField name="Due" id="16">
-					<DataPath>List.Due</DataPath>
-					<ContextMenu name="DueContextMenu" id="17"/>
-					<ExtendedTooltip name="DueExtendedTooltip" id="40"/>
+				<LabelField name="Balance" id="16">
+					<DataPath>List.Balance</DataPath>
+					<Format>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>NFD=2</v8:content>
+						</v8:item>
+					</Format>
+					<ContextMenu name="BalanceContextMenu" id="17"/>
+					<ExtendedTooltip name="BalanceExtendedTooltip" id="46"/>
 				</LabelField>
 			</ChildItems>
 		</Table>
@@ -123,11 +141,13 @@
 	DocumentSalesReturn.Ref,
 	DocumentSalesReturn.Number,
 	DocumentSalesReturn.Date,
+	DocumentSalesReturn.ReturnType,
 	DocumentSalesReturn.Company,
+	DocumentSalesReturn.CompanyCode,
 	DocumentSalesReturn.DocumentTotal,
 	DocumentSalesReturn.DocumentTotalRC,
-	GeneralJournalBalance.AmountBalance * -1 AS Due_FCY,
-	GeneralJournalBalance.AmountRCBalance * -1 AS Due	
+	GeneralJournalBalance.AmountBalance * -1 AS BalanceFCY,
+	GeneralJournalBalance.AmountRCBalance * -1 AS Balance	
 FROM
 	Document.SalesReturn AS DocumentSalesReturn
 		LEFT JOIN AccountingRegister.GeneralJournal.Balance AS GeneralJournalBalance

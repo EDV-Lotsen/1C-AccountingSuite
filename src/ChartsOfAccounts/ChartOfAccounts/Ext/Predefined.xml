@@ -6,7 +6,7 @@
 		<Description>Bank account</Description>
 		<AccountType>ActivePassive</AccountType>
 		<OffBalance>false</OffBalance>
-		<Order/>
+		<Order>010</Order>
 		<AccountingFlags/>
 		<ExtDimensionTypes/>
 	</Item>
@@ -16,7 +16,7 @@
 		<Description>Undeposited funds</Description>
 		<AccountType>ActivePassive</AccountType>
 		<OffBalance>false</OffBalance>
-		<Order/>
+		<Order>015</Order>
 		<AccountingFlags/>
 		<ExtDimensionTypes/>
 	</Item>
@@ -26,7 +26,7 @@
 		<Description>Accounts receivable</Description>
 		<AccountType>ActivePassive</AccountType>
 		<OffBalance>false</OffBalance>
-		<Order/>
+		<Order>030</Order>
 		<AccountingFlags/>
 		<ExtDimensionTypes>
 			<ExtDimensionType name="ChartOfCharacteristicTypes.Dimensions.Company">
@@ -45,7 +45,7 @@
 		<Description>Inventory</Description>
 		<AccountType>ActivePassive</AccountType>
 		<OffBalance>false</OffBalance>
-		<Order/>
+		<Order>080</Order>
 		<AccountingFlags/>
 		<ExtDimensionTypes/>
 	</Item>
@@ -55,7 +55,7 @@
 		<Description>Accounts payable</Description>
 		<AccountType>ActivePassive</AccountType>
 		<OffBalance>false</OffBalance>
-		<Order/>
+		<Order>300</Order>
 		<AccountingFlags/>
 		<ExtDimensionTypes>
 			<ExtDimensionType name="ChartOfCharacteristicTypes.Dimensions.Company">
@@ -69,22 +69,12 @@
 		</ExtDimensionTypes>
 	</Item>
 	<Item id="649ab374-ae97-41dd-959e-f6bb6a308a03">
-		<Name>SalesTaxPayable</Name>
+		<Name>TaxPayable</Name>
 		<Code>310</Code>
-		<Description>Sales tax payable</Description>
+		<Description>Tax payable</Description>
 		<AccountType>ActivePassive</AccountType>
 		<OffBalance>false</OffBalance>
-		<Order/>
-		<AccountingFlags/>
-		<ExtDimensionTypes/>
-	</Item>
-	<Item id="f5996bcb-4f57-4179-aae3-c8c13af88d8e">
-		<Name>AccumulatedOCI</Name>
-		<Code>501</Code>
-		<Description>Accumulated OCI</Description>
-		<AccountType>ActivePassive</AccountType>
-		<OffBalance>false</OffBalance>
-		<Order/>
+		<Order>310</Order>
 		<AccountingFlags/>
 		<ExtDimensionTypes/>
 	</Item>
@@ -94,7 +84,7 @@
 		<Description>Income</Description>
 		<AccountType>ActivePassive</AccountType>
 		<OffBalance>false</OffBalance>
-		<Order/>
+		<Order>600</Order>
 		<AccountingFlags/>
 		<ExtDimensionTypes/>
 	</Item>
@@ -104,7 +94,7 @@
 		<Description>COGS</Description>
 		<AccountType>ActivePassive</AccountType>
 		<OffBalance>false</OffBalance>
-		<Order/>
+		<Order>700</Order>
 		<AccountingFlags/>
 		<ExtDimensionTypes/>
 	</Item>
@@ -114,7 +104,7 @@
 		<Description>Bank service charge</Description>
 		<AccountType>ActivePassive</AccountType>
 		<OffBalance>false</OffBalance>
-		<Order/>
+		<Order>800</Order>
 		<AccountingFlags/>
 		<ExtDimensionTypes/>
 	</Item>
@@ -124,7 +114,7 @@
 		<Description>Bank interest earned</Description>
 		<AccountType>ActivePassive</AccountType>
 		<OffBalance>false</OffBalance>
-		<Order/>
+		<Order>810</Order>
 		<AccountingFlags/>
 		<ExtDimensionTypes/>
 	</Item>
@@ -134,7 +124,7 @@
 		<Description>Exchange gain</Description>
 		<AccountType>ActivePassive</AccountType>
 		<OffBalance>false</OffBalance>
-		<Order/>
+		<Order>820</Order>
 		<AccountingFlags/>
 		<ExtDimensionTypes/>
 	</Item>
@@ -144,7 +134,7 @@
 		<Description>Exchange loss</Description>
 		<AccountType>ActivePassive</AccountType>
 		<OffBalance>false</OffBalance>
-		<Order/>
+		<Order>830</Order>
 		<AccountingFlags/>
 		<ExtDimensionTypes/>
 	</Item>
@@ -154,7 +144,7 @@
 		<Description>Expense</Description>
 		<AccountType>ActivePassive</AccountType>
 		<OffBalance>false</OffBalance>
-		<Order/>
+		<Order>840</Order>
 		<AccountingFlags/>
 		<ExtDimensionTypes/>
 	</Item>

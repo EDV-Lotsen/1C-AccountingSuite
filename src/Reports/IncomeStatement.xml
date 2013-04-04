@@ -18,32 +18,24 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>Income statement</v8:content>
 				</v8:item>
-				<v8:item>
-					<v8:lang>pt</v8:lang>
-					<v8:content>Declaração de receita</v8:content>
-				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>Gewinn- und Verlustrechnung</v8:content>
-				</v8:item>
 			</Synonym>
 			<Comment/>
 			<UseStandardCommands>true</UseStandardCommands>
 			<DefaultForm>Report.IncomeStatement.Form.ReportForm</DefaultForm>
 			<AuxiliaryForm/>
-			<MainDataCompositionSchema/>
+			<MainDataCompositionSchema>Report.IncomeStatement.Template.IncomeStatement</MainDataCompositionSchema>
 			<DefaultSettingsForm/>
 			<AuxiliarySettingsForm/>
 			<DefaultVariantForm/>
 			<VariantsStorage/>
 			<SettingsStorage/>
-			<IncludeHelpInContents>false</IncludeHelpInContents>
+			<IncludeHelpInContents>true</IncludeHelpInContents>
 			<ExtendedPresentation/>
 			<Explanation/>
 		</Properties>
 		<ChildObjects>
 			<Form>ReportForm</Form>
-			<Template>Template</Template>
+			<Template>IncomeStatement</Template>
 		</ChildObjects>
 	</Report>
 </MetaDataObject>

@@ -1,0 +1,597 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<CommandBarLocation>None</CommandBarLocation>
+	<VerticalScroll>useIfNecessary</VerticalScroll>
+	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<Events>
+		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+	</Events>
+	<ChildItems>
+		<UsualGroup name="Panel" id="67">
+			<Group>Horizontal</Group>
+			<Representation>None</Representation>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="PanelExtendedTooltip" id="83"/>
+			<ChildItems>
+				<Button name="PrintingByKits" id="38">
+					<Type>UsualButton</Type>
+					<SkipOnInput>false</SkipOnInput>
+					<CommandName>Form.Command.Print</CommandName>
+					<ExtendedTooltip name="PrintingByKitsExtendedTooltip" id="84"/>
+				</Button>
+				<InputField name="Cc" id="65">
+					<DataPath>Cc</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Copies</v8:content>
+						</v8:item>
+					</Title>
+					<Wrap>false</Wrap>
+					<SpinButton>true</SpinButton>
+					<MinValue xsi:type="xs:decimal">1</MinValue>
+					<ContextMenu name="CcContextMenu" id="66"/>
+					<ExtendedTooltip name="CcExtendedTooltip" id="85"/>
+					<Events>
+						<Event name="OnChange">CopiesOnChange</Event>
+					</Events>
+				</InputField>
+				<UsualGroup name="GroupCopies" id="37">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Group copies</v8:content>
+						</v8:item>
+					</Title>
+					<Group>Horizontal</Group>
+					<Representation>None</Representation>
+					<ShowTitle>false</ShowTitle>
+					<ExtendedTooltip name="GroupCopiesExtendedTooltip" id="86"/>
+					<ChildItems>
+						<InputField name="Cc1" id="70">
+							<DataPath>Cc1</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>K1</v8:content>
+								</v8:item>
+							</Title>
+							<Wrap>false</Wrap>
+							<SpinButton>true</SpinButton>
+							<MinValue xsi:type="xs:decimal">1</MinValue>
+							<ContextMenu name="Cc1ContextMenu" id="71"/>
+							<ExtendedTooltip name="Cc1ExtendedTooltip" id="87"/>
+							<Events>
+								<Event name="OnChange">CopiesOnChange</Event>
+							</Events>
+						</InputField>
+						<InputField name="Cc2" id="72">
+							<DataPath>Cc2</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>K2</v8:content>
+								</v8:item>
+							</Title>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>the number of copies</v8:content>
+								</v8:item>
+							</ToolTip>
+							<Wrap>false</Wrap>
+							<SpinButton>true</SpinButton>
+							<MinValue xsi:type="xs:decimal">1</MinValue>
+							<ContextMenu name="Cc2ContextMenu" id="73"/>
+							<ExtendedTooltip name="Cc2ExtendedTooltip" id="88"/>
+							<Events>
+								<Event name="OnChange">CopiesOnChange</Event>
+							</Events>
+						</InputField>
+						<InputField name="Cc3" id="74">
+							<DataPath>Cc3</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>K3</v8:content>
+								</v8:item>
+							</Title>
+							<Wrap>false</Wrap>
+							<SpinButton>true</SpinButton>
+							<MinValue xsi:type="xs:decimal">1</MinValue>
+							<ContextMenu name="Cc3ContextMenu" id="75"/>
+							<ExtendedTooltip name="Cc3ExtendedTooltip" id="89"/>
+							<Events>
+								<Event name="OnChange">CopiesOnChange</Event>
+							</Events>
+						</InputField>
+						<InputField name="Cc4" id="76">
+							<DataPath>Cc4</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>K4</v8:content>
+								</v8:item>
+							</Title>
+							<Wrap>false</Wrap>
+							<SpinButton>true</SpinButton>
+							<MinValue xsi:type="xs:decimal">1</MinValue>
+							<ContextMenu name="Cc4ContextMenu" id="77"/>
+							<ExtendedTooltip name="Cc4ExtendedTooltip" id="90"/>
+							<Events>
+								<Event name="OnChange">CopiesOnChange</Event>
+							</Events>
+						</InputField>
+						<InputField name="Cc5" id="78">
+							<DataPath>Cc5</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>K5</v8:content>
+								</v8:item>
+							</Title>
+							<Wrap>false</Wrap>
+							<SpinButton>true</SpinButton>
+							<MinValue xsi:type="xs:decimal">1</MinValue>
+							<ContextMenu name="Cc5ContextMenu" id="79"/>
+							<ExtendedTooltip name="Cc5ExtendedTooltip" id="91"/>
+							<Events>
+								<Event name="OnChange">CopiesOnChange</Event>
+							</Events>
+						</InputField>
+					</ChildItems>
+				</UsualGroup>
+				<UsualGroup name="Group" id="68">
+					<Group>Horizontal</Group>
+					<Representation>None</Representation>
+					<ShowTitle>false</ShowTitle>
+					<ExtendedTooltip name="GroupExtendedTooltip" id="92"/>
+					<ChildItems>
+						<Button name="SendViaEmail" id="82">
+							<Type>UsualButton</Type>
+							<CommandName>Form.Command.SendViaEmail</CommandName>
+							<ExtendedTooltip name="SendViaEmailExtendedTooltip" id="93"/>
+						</Button>
+						<Button name="GoTo" id="64">
+							<Type>UsualButton</Type>
+							<SkipOnInput>false</SkipOnInput>
+							<CommandName>Form.Command.GoTo</CommandName>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Go to</v8:content>
+								</v8:item>
+							</Title>
+							<ExtendedTooltip name="GoToExtendedTooltip" id="94"/>
+						</Button>
+						<Button name="GoToLayoutsManagement" id="81">
+							<Type>UsualButton</Type>
+							<SkipOnInput>false</SkipOnInput>
+							<CommandName>Form.Command.GoToLayoutsManagement</CommandName>
+							<ExtendedTooltip name="GoToLayoutsManagementExtendedTooltip" id="95"/>
+						</Button>
+					</ChildItems>
+				</UsualGroup>
+			</ChildItems>
+		</UsualGroup>
+		<Pages name="Pages" id="9">
+			<HorizontalStretch>true</HorizontalStretch>
+			<VerticalStretch>true</VerticalStretch>
+			<ExtendedTooltip name="PagesExtendedTooltip" id="96"/>
+			<ChildItems>
+				<Page name="Group1" id="10">
+					<Picture>
+						<xr:Ref>StdPicture.SpreadsheetInsertPageBreak</xr:Ref>
+						<xr:LoadTransparent>true</xr:LoadTransparent>
+					</Picture>
+					<ExtendedTooltip name="Group1ExtendedTooltip" id="97"/>
+					<ChildItems>
+						<SpreadSheetDocumentField name="Tab1" id="15">
+							<DataPath>Tab1</DataPath>
+							<TitleLocation>None</TitleLocation>
+							<SelectionShowMode>WhenActive</SelectionShowMode>
+							<ContextMenu name="Tab1ContextMenu" id="16"/>
+							<ExtendedTooltip name="Tab1ExtendedTooltip" id="98"/>
+						</SpreadSheetDocumentField>
+					</ChildItems>
+				</Page>
+				<Page name="Group2" id="11">
+					<Picture>
+						<xr:Ref>StdPicture.SpreadsheetInsertPageBreak</xr:Ref>
+						<xr:LoadTransparent>true</xr:LoadTransparent>
+					</Picture>
+					<ExtendedTooltip name="Group2ExtendedTooltip" id="99"/>
+					<ChildItems>
+						<SpreadSheetDocumentField name="Tab2" id="17">
+							<DataPath>Tab2</DataPath>
+							<TitleLocation>None</TitleLocation>
+							<SelectionShowMode>WhenActive</SelectionShowMode>
+							<ContextMenu name="Tab2ContextMenu" id="18"/>
+							<ExtendedTooltip name="Tab2ExtendedTooltip" id="100"/>
+						</SpreadSheetDocumentField>
+					</ChildItems>
+				</Page>
+				<Page name="Group3" id="12">
+					<Picture>
+						<xr:Ref>StdPicture.SpreadsheetInsertPageBreak</xr:Ref>
+						<xr:LoadTransparent>true</xr:LoadTransparent>
+					</Picture>
+					<ExtendedTooltip name="Group3ExtendedTooltip" id="101"/>
+					<ChildItems>
+						<SpreadSheetDocumentField name="Tab3" id="19">
+							<DataPath>Tab3</DataPath>
+							<TitleLocation>None</TitleLocation>
+							<SelectionShowMode>WhenActive</SelectionShowMode>
+							<ContextMenu name="Tab3ContextMenu" id="20"/>
+							<ExtendedTooltip name="Tab3ExtendedTooltip" id="102"/>
+						</SpreadSheetDocumentField>
+					</ChildItems>
+				</Page>
+				<Page name="Group4" id="13">
+					<Picture>
+						<xr:Ref>StdPicture.SpreadsheetInsertPageBreak</xr:Ref>
+						<xr:LoadTransparent>true</xr:LoadTransparent>
+					</Picture>
+					<ExtendedTooltip name="Group4ExtendedTooltip" id="103"/>
+					<ChildItems>
+						<SpreadSheetDocumentField name="Tab4" id="23">
+							<DataPath>Tab4</DataPath>
+							<TitleLocation>None</TitleLocation>
+							<SelectionShowMode>WhenActive</SelectionShowMode>
+							<ContextMenu name="Tab4ContextMenu" id="24"/>
+							<ExtendedTooltip name="Tab4ExtendedTooltip" id="104"/>
+						</SpreadSheetDocumentField>
+					</ChildItems>
+				</Page>
+				<Page name="Group5" id="14">
+					<Picture>
+						<xr:Ref>StdPicture.SpreadsheetInsertPageBreak</xr:Ref>
+						<xr:LoadTransparent>true</xr:LoadTransparent>
+					</Picture>
+					<ExtendedTooltip name="Group5ExtendedTooltip" id="105"/>
+					<ChildItems>
+						<SpreadSheetDocumentField name="Tab5" id="21">
+							<DataPath>Tab5</DataPath>
+							<TitleLocation>None</TitleLocation>
+							<SelectionShowMode>WhenActive</SelectionShowMode>
+							<ContextMenu name="Tab5ContextMenu" id="22"/>
+							<ExtendedTooltip name="Tab5ExtendedTooltip" id="106"/>
+						</SpreadSheetDocumentField>
+					</ChildItems>
+				</Page>
+			</ChildItems>
+		</Pages>
+	</ChildItems>
+	<Attributes>
+		<Attribute name="Tab1" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Tab1</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type xmlns:mxl="http://v8.1c.ru/8.2/data/spreadsheet">mxl:SpreadsheetDocument</v8:Type>
+			</Type>
+		</Attribute>
+		<Attribute name="Tab2" id="4">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Tab2</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type xmlns:mxl="http://v8.1c.ru/8.2/data/spreadsheet">mxl:SpreadsheetDocument</v8:Type>
+			</Type>
+		</Attribute>
+		<Attribute name="Tab3" id="5">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Tab3</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type xmlns:mxl="http://v8.1c.ru/8.2/data/spreadsheet">mxl:SpreadsheetDocument</v8:Type>
+			</Type>
+		</Attribute>
+		<Attribute name="Tab4" id="6">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Tab4</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type xmlns:mxl="http://v8.1c.ru/8.2/data/spreadsheet">mxl:SpreadsheetDocument</v8:Type>
+			</Type>
+		</Attribute>
+		<Attribute name="Tab5" id="7">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Tab5</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type xmlns:mxl="http://v8.1c.ru/8.2/data/spreadsheet">mxl:SpreadsheetDocument</v8:Type>
+			</Type>
+		</Attribute>
+		<Attribute name="Cc" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Cc</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:decimal</v8:Type>
+				<v8:NumberQualifiers>
+					<v8:Digits>2</v8:Digits>
+					<v8:FractionDigits>0</v8:FractionDigits>
+					<v8:AllowedSign>Nonnegative</v8:AllowedSign>
+				</v8:NumberQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="Cc1" id="8">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Cc1</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:decimal</v8:Type>
+				<v8:NumberQualifiers>
+					<v8:Digits>2</v8:Digits>
+					<v8:FractionDigits>0</v8:FractionDigits>
+					<v8:AllowedSign>Nonnegative</v8:AllowedSign>
+				</v8:NumberQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="Cc2" id="9">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Cc2</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:decimal</v8:Type>
+				<v8:NumberQualifiers>
+					<v8:Digits>2</v8:Digits>
+					<v8:FractionDigits>0</v8:FractionDigits>
+					<v8:AllowedSign>Nonnegative</v8:AllowedSign>
+				</v8:NumberQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="Cc3" id="10">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Cc3</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:decimal</v8:Type>
+				<v8:NumberQualifiers>
+					<v8:Digits>2</v8:Digits>
+					<v8:FractionDigits>0</v8:FractionDigits>
+					<v8:AllowedSign>Nonnegative</v8:AllowedSign>
+				</v8:NumberQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="Cc4" id="11">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Cc4</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:decimal</v8:Type>
+				<v8:NumberQualifiers>
+					<v8:Digits>2</v8:Digits>
+					<v8:FractionDigits>0</v8:FractionDigits>
+					<v8:AllowedSign>Nonnegative</v8:AllowedSign>
+				</v8:NumberQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="Cc5" id="12">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Cc5</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:decimal</v8:Type>
+				<v8:NumberQualifiers>
+					<v8:Digits>2</v8:Digits>
+					<v8:FractionDigits>0</v8:FractionDigits>
+					<v8:AllowedSign>Nonnegative</v8:AllowedSign>
+				</v8:NumberQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="AvailablePrintingByKits" id="13">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Available printing by kits</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
+			</Type>
+		</Attribute>
+		<Attribute name="PrintObjects" id="14">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Print objects</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>v8:ValueListType</v8:Type>
+			</Type>
+		</Attribute>
+		<Attribute name="TabDocumentNames" id="15">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Spreadsheet documents names</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>v8:ValueListType</v8:Type>
+			</Type>
+		</Attribute>
+		<Attribute name="PrintedFormTemplates" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Print forms templates</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>v8:ValueListType</v8:Type>
+			</Type>
+		</Attribute>
+		<Attribute name="SystemAccountOfEmail" id="16">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>System account of email</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>cfg:CatalogRef.EmailAccounts</v8:Type>
+			</Type>
+		</Attribute>
+	</Attributes>
+	<Commands>
+		<Command name="Print" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Print</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Print</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Use>
+				<xr:Common>false</xr:Common>
+				<xr:Value name="Role.PrintWriteFilesUseClipboard">true</xr:Value>
+				<xr:Value name="Role.FullAccess">true</xr:Value>
+			</Use>
+			<Picture>
+				<xr:Ref>StdPicture.Print</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
+			<Action>PrintExecute</Action>
+			<Representation>TextPicture</Representation>
+		</Command>
+		<Command name="GoTo" id="8">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Go to</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Go to print form ...</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Shortcut>F7</Shortcut>
+			<Picture>
+				<xr:Ref>StdPicture.Find</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
+			<Action>GoToExecute</Action>
+			<Representation>Picture</Representation>
+		</Command>
+		<Command name="GoToLayoutsManagement" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Go to layouts management</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Go to layouts management</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Use>
+				<xr:Common>false</xr:Common>
+				<xr:Value name="Role.ChangePrintFormTemplates">true</xr:Value>
+			</Use>
+			<Picture>
+				<xr:Ref>StdPicture.ReportSettings</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
+			<Action>GoToLayoutsManagement</Action>
+			<Representation>Picture</Representation>
+		</Command>
+		<Command name="SendViaEmail" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Send</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Send by e-mail</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Picture>
+				<xr:Ref>CommonPicture.SendEmail</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+				<xr:TransparentPixel x="1" y="1"/>
+			</Picture>
+			<Action>SendViaEmailExecute</Action>
+			<Representation>Picture</Representation>
+		</Command>
+	</Commands>
+	<Parameters>
+		<Parameter name="PrintManagerName">
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Parameter>
+		<Parameter name="TemplateNames">
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Parameter>
+		<Parameter name="CommandParameter">
+			<Type/>
+		</Parameter>
+		<Parameter name="ExternalSource">
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
+			</Type>
+		</Parameter>
+		<Parameter name="PrintParameters">
+			<Type/>
+		</Parameter>
+	</Parameters>
+</Form>

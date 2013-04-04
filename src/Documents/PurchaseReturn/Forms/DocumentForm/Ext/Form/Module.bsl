@@ -8,16 +8,13 @@ Procedure LineItemsProductOnChange(Item)
 	
 	TabularPartRow = Items.LineItems.CurrentData;
 	
-	TabularPartRow.Descr = GeneralFunctions.GetAttributeValue(TabularPartRow.Product, "Descr");
+	TabularPartRow.ProductDescription = CommonUse.GetAttributeValue(TabularPartRow.Product, "Description");
 	TabularPartRow.Quantity = 0;
-	TabularPartRow.QuantityUM = 0;
 	TabularPartRow.LineTotal = 0;
 	TabularPartRow.Price = 0;
 	TabularPartRow.VAT = 0;
 	
-	TabularPartRow.UM = GeneralFunctions.GetDefaultPurchaseUMForProduct(TabularPartRow.Product);
-	
-	TabularPartRow.VATCode = GeneralFunctions.GetAttributeValue(TabularPartRow.Product, "PurchaseVATCode");
+	TabularPartRow.VATCode = CommonUse.GetAttributeValue(TabularPartRow.Product, "PurchaseVATCode");
 	
 	RecalcTotal();
 	
@@ -30,8 +27,13 @@ EndProcedure
 //
 Procedure RecalcTotal()
 	
-	Object.DocumentTotal = Object.LineItems.Total("LineTotal") + Object.LineItems.Total("VAT");
-	Object.DocumentTotalRC = (Object.LineItems.Total("LineTotal") + Object.LineItems.Total("VAT")) * Object.ExchangeRate;
+	If Object.PriceIncludesVAT Then
+		Object.DocumentTotal = Object.LineItems.Total("LineTotal");
+		Object.DocumentTotalRC = Object.LineItems.Total("LineTotal") * Object.ExchangeRate;		
+	Else
+		Object.DocumentTotal = Object.LineItems.Total("LineTotal") + Object.LineItems.Total("VAT");
+		Object.DocumentTotalRC = (Object.LineItems.Total("LineTotal") + Object.LineItems.Total("VAT")) * Object.ExchangeRate;
+	EndIf;	
 	Object.VATTotal = Object.LineItems.Total("VAT") * Object.ExchangeRate;
 	
 EndProcedure
@@ -43,11 +45,12 @@ EndProcedure
 // 
 Procedure CompanyOnChange(Item)
 	
-	Object.Currency = GeneralFunctions.GetAttributeValue(Object.Company, "DefaultCurrency");
-	Object.APAccount = GeneralFunctions.GetAttributeValue(Object.Currency, "DefaultAPAccount");
-	Object.ExchangeRate = GeneralFunctions.GetExchangeRate(Object.Date, GeneralFunctionsReusable.DefaultCurrency(), Object.Currency);
-	Items.ExchangeRate.Title = GeneralFunctionsReusable.DefaultCurrencySymbol() + "/" + GeneralFunctions.GetAttributeValue(Object.Currency, "Symbol");
-	Items.FCYCurrency.Title = GeneralFunctions.GetAttributeValue(Object.Currency, "Symbol");
+	Object.CompanyCode = CommonUse.GetAttributeValue(Object.Company, "Code");
+	Object.Currency = CommonUse.GetAttributeValue(Object.Company, "DefaultCurrency");
+	Object.APAccount = CommonUse.GetAttributeValue(Object.Currency, "DefaultAPAccount");
+	Object.ExchangeRate = GeneralFunctions.GetExchangeRate(Object.Date, Object.Currency);
+	Items.ExchangeRate.Title = GeneralFunctionsReusable.DefaultCurrencySymbol() + "/1" + CommonUse.GetAttributeValue(Object.Currency, "Symbol");
+	Items.FCYCurrency.Title = CommonUse.GetAttributeValue(Object.Currency, "Symbol");
 	RecalcTotal();
 	
 EndProcedure
@@ -62,13 +65,9 @@ Procedure LineItemsPriceOnChange(Item)
 	
 	TabularPartRow = Items.LineItems.CurrentData;
 	
-	If GeneralFunctionsReusable.FunctionalOptionValue("UnitsOfMeasure") Then
-		TabularPartRow.LineTotal = TabularPartRow.QuantityUM * TabularPartRow.Price;
-	Else
-		TabularPartRow.LineTotal = TabularPartRow.Quantity * TabularPartRow.Price;
-	EndIf;
+	TabularPartRow.LineTotal = TabularPartRow.Quantity * TabularPartRow.Price;
 	
-	TabularPartRow.VAT = SouthAfrica_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Purchase");
+	TabularPartRow.VAT = VAT_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Purchase", Object.PriceIncludesVAT);
 	
 	RecalcTotal();
 
@@ -80,7 +79,7 @@ EndProcedure
 //
 Procedure DateOnChange(Item)
 	
-	Object.ExchangeRate = GeneralFunctions.GetExchangeRate(Object.Date, GeneralFunctionsReusable.DefaultCurrency(), Object.Currency);
+	Object.ExchangeRate = GeneralFunctions.GetExchangeRate(Object.Date, Object.Currency);
 	RecalcTotal();
 	
 EndProcedure
@@ -92,63 +91,12 @@ EndProcedure
 //
 Procedure CurrencyOnChange(Item)
 	
-	Object.ExchangeRate = GeneralFunctions.GetExchangeRate(Object.Date, GeneralFunctionsReusable.DefaultCurrency(), Object.Currency);
-	Object.APAccount = GeneralFunctions.GetAttributeValue(Object.Currency, "DefaultAPAccount");
-	Items.ExchangeRate.Title = GeneralFunctionsReusable.DefaultCurrencySymbol() + "/" + GeneralFunctions.GetAttributeValue(Object.Currency, "Symbol");
-	Items.FCYCurrency.Title = GeneralFunctions.GetAttributeValue(Object.Currency, "Symbol");
+	Object.ExchangeRate = GeneralFunctions.GetExchangeRate(Object.Date, Object.Currency);
+	Object.APAccount = CommonUse.GetAttributeValue(Object.Currency, "DefaultAPAccount");
+	Items.ExchangeRate.Title = GeneralFunctionsReusable.DefaultCurrencySymbol() + "/1" + CommonUse.GetAttributeValue(Object.Currency, "Symbol");
+	Items.FCYCurrency.Title = CommonUse.GetAttributeValue(Object.Currency, "Symbol");
 	RecalcTotal();
 	
-EndProcedure
-
-&AtClient
-// LineItemsQuantityUMOnChange UI event handler.
-// Determines conversion ratio between the selected and base units of measure,
-// calculates a new base quantity, recalculates line total,
-// and document total.
-//
-Procedure LineItemsQuantityUMOnChange(Item)
-	
-	TabularPartRow = Items.LineItems.CurrentData;
-	
-	Ratio = GeneralFunctions.GetUMRatio(TabularPartRow.UM);
-	
-	If Ratio = 0 Then
-		TabularPartRow.Quantity = TabularPartRow.QuantityUM * 1;
-	Else
-		TabularPartRow.Quantity = TabularPartRow.QuantityUM * Ratio;
-	EndIf;
-	
-	TabularPartRow.LineTotal = TabularPartRow.QuantityUM * TabularPartRow.Price;
-	TabularPartRow.VAT = SouthAfrica_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Purchase");
-	
-	RecalcTotal();
-
-EndProcedure
-
-&AtClient
-// LineItemsUMOnChange UI event handler.
-// The procedure determines a unit of measure (U/M) conversion ratio, clears the price of the product,
-// line total, calculates quantity in a base U/M, recalculates document total.
-//
-Procedure LineItemsUMOnChange(Item)
-	
-	TabularPartRow = Items.LineItems.CurrentData;
-	
-	Ratio = GeneralFunctions.GetUMRatio(TabularPartRow.UM);
-	
-	TabularPartRow.Price = 0;
-	TabularPartRow.LineTotal = 0;
-	TabularPartRow.TaxableAmount = 0;
-	TabularPartRow.VAT = 0;
-	
-	If Ratio = 0 Then
-		TabularPartRow.Quantity = TabularPartRow.QuantityUM * 1;
-	Else
-		TabularPartRow.Quantity = TabularPartRow.QuantityUM * Ratio;
-	EndIf;
-	
-	RecalcTotal();
-
 EndProcedure
 
 &AtClient
@@ -171,7 +119,7 @@ Procedure LineItemsQuantityOnChange(Item)
 	
 	TabularPartRow = Items.LineItems.CurrentData;
 	TabularPartRow.LineTotal = TabularPartRow.Quantity * TabularPartRow.Price;
-	TabularPartRow.VAT = SouthAfrica_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Purchase");
+	TabularPartRow.VAT = VAT_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Purchase", Object.PriceIncludesVAT);
 	
 	RecalcTotal();
 
@@ -188,7 +136,11 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
 	//Title = "Purchase Return " + Object.Number + " " + Format(Object.Date, "DLF=D");
 	
-	If NOT GeneralFunctionsReusable.FunctionalOptionValue("SAFinLocalization") Then
+	If Object.Ref.IsEmpty() Then
+    	Object.PriceIncludesVAT = GeneralFunctionsReusable.PriceIncludesVAT();
+	EndIf;
+	
+	If NOT GeneralFunctionsReusable.FunctionalOptionValue("VATFinLocalization") Then
 		Items.VATGroup.Visible = False;
 	EndIf;
 	
@@ -196,12 +148,12 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Items.FCYGroup.Visible = False;
 	EndIf;
 	
-	If GeneralFunctionsReusable.FunctionalOptionValue("MultiLocation") Then
-	Else
+	//If GeneralFunctionsReusable.FunctionalOptionValue("MultiLocation") Then
+	//Else
 		If Object.Location.IsEmpty() Then
-			Object.Location = Constants.DefaultLocation.Get();
+			Object.Location = Catalogs.Locations.MainWarehouse;
 		EndIf;
-	EndIf;
+	//EndIf;
 
 	If Object.Currency.IsEmpty() Then
 		Object.Currency = Constants.DefaultCurrency.Get();
@@ -210,56 +162,15 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	Else
 	EndIf; 
 	
-	Items.ExchangeRate.Title = GeneralFunctionsReusable.DefaultCurrencySymbol() + "/" + Object.Currency.Symbol;
+	Items.ExchangeRate.Title = GeneralFunctionsReusable.DefaultCurrencySymbol() + "/1" + Object.Currency.Symbol;
 	Items.VATCurrency.Title = GeneralFunctionsReusable.DefaultCurrencySymbol();
 	Items.RCCurrency.Title = GeneralFunctionsReusable.DefaultCurrencySymbol();
-	Items.FCYCurrency.Title = GeneralFunctions.GetAttributeValue(Object.Currency, "Symbol");
+	Items.FCYCurrency.Title = CommonUse.GetAttributeValue(Object.Currency, "Symbol");
 
-EndProcedure
-
-&AtClient
-// Makes the base Quantity field read only if the units of measure functional option is turned on
-//
-Procedure LineItemsBeforeAddRow(Item, Cancel, Clone, Parent, Folder)
+	// AdditionalReportsAndDataProcessors
+	AdditionalReportsAndDataProcessors.OnCreateAtServer(ThisForm);
+	// End AdditionalReportsAndDataProcessors
 	
-	If GeneralFunctionsReusable.FunctionalOptionValue("UnitsOfMeasure") Then
-		Items.LineItemsQuantity.ReadOnly = True;
-	EndIf;
-
-EndProcedure
-
-&AtClient
-// Makes the base Quantity field read only if the units of measure functional option is turned on
-//
-Procedure LineItemsBeforeRowChange(Item, Cancel)
-	
-	If GeneralFunctionsReusable.FunctionalOptionValue("UnitsOfMeasure") Then
-		Items.LineItemsQuantity.ReadOnly = True;
-	EndIf;
-
-EndProcedure
-
-&AtServer
-// Ensures uniqueness of line items
-//
-Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
-	
-	ProductData = Object.LineItems.Unload(,"Product");	
-	ProductData.Sort("Product");
-	NoOfRows = ProductData.Count();	
-	For i = 0 to NoOfRows - 2 Do		
-		Product = ProductData[i][0];
-		If ProductData[i][0] = ProductData[i+1][0] AND NOT Product.Code = "" Then									
-			ProductIDString = String(Product.Description);
-			ProductDescrString = String(Product.Descr);			
-			Message = New UserMessage();		    
-			Message.Text = "Duplicate item: " + ProductIDString + " " + ProductDescrString;
-			Message.Message();
-			Cancel = True;
-			Return;
-		EndIf;		
-	EndDo;
-
 EndProcedure
 
 &AtClient
@@ -268,7 +179,7 @@ EndProcedure
 Procedure LineItemsVATCodeOnChange(Item)
 	
 	TabularPartRow = Items.LineItems.CurrentData;
-	TabularPartRow.VAT = SouthAfrica_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Purchase");
+	TabularPartRow.VAT = VAT_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Purchase", Object.PriceIncludesVAT);
     RecalcTotal();
 
 EndProcedure

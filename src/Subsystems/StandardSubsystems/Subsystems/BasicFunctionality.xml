@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<MetaDataObject xmlns="http://v8.1c.ru/8.3/MDClasses" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:cmi="http://v8.1c.ru/8.2/managed-application/cmi" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xen="http://v8.1c.ru/8.3/xcf/enums" xmlns:xpr="http://v8.1c.ru/8.3/xcf/predef" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<Subsystem uuid="cdbd26b1-9583-46e8-adf7-8cc705639892">
+		<Properties>
+			<Name>BasicFunctionality</Name>
+			<Synonym>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Basic Functionality</v8:content>
+				</v8:item>
+			</Synonym>
+			<Comment/>
+			<IncludeHelpInContents>false</IncludeHelpInContents>
+			<IncludeInCommandInterface>false</IncludeInCommandInterface>
+			<Explanation/>
+			<Picture/>
+			<Content>
+				<xr:Item xsi:type="xr:MDObjectRef">CommonModule.CommonUse</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">CommonModule.CommonUseClient</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">CommonModule.CommonUseClientServer</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">CommonModule.StandardSubsystemsClientSecondUse</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">CommonModule.StandardSubsystemsOverrided</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">CommonModule.StringFunctionsClientServer</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">CommonForm.ChooseMetadataObjects</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">CommonPicture.Information32</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">CommonPicture.CollectionActiveUsersTypes</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">CommonPicture.CollectionEventLogEventTypes</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">CommonPicture.CollectionMarkedForDeletionObjects</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">CommonPicture.Error32</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">CommonPicture.SubsystemAdministration</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">CommonPicture.Warning32</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">CommonPicture.TerminateSession</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Constant.SystemTitle</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">DataProcessor.EventLog</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">DataProcessor.DeleteMarkedObjects</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">CommonModule.CommonUseOverrided</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Role.PrintWriteFilesUseClipboard</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Role.AddChangeBasicReferenceInformation</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Role.RunAutomation</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Role.RunWebClient</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Role.RunExternalConnection</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Role.RunThickClient</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Role.RunThinClient</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Role.RunAdditionalReportsAndDataProcessorsFromFiles</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Role.RunUpdates</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Role.ViewEventLog</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Role.ReadBasicReferenceInformation</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Role.Administration</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Role.FullAccess</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">CommonCommand.InstallFileSystemExtension</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Role.MinimalUserRights</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">CommonModule.CommonUseClientSecondUse</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">SessionParameter.SuggestWorkWithFilesExtensionInstallationByDefault</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">CommonForm.QuestionAboutWorkWithFilesExtensionInstallation</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">DataProcessor.FormSettingsManagement</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">CommonPicture.Information</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">CommonPicture.CollectionItemIcons</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">DataProcessor.BatchObjectsChanging</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">StyleItem.ErrorTextColor</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">CommonPicture.OperationKinds</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">c2879624-dcfa-40e0-b5ec-ff18fbf7fe5a</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">d97761e2-cc5a-4216-8605-899f94baa622</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">d4cf51d3-df5f-420c-b1e4-98cc81392eaa</xr:Item>
+			</Content>
+		</Properties>
+		<ChildObjects/>
+	</Subsystem>
+</MetaDataObject>

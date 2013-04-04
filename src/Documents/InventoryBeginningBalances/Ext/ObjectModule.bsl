@@ -2,80 +2,53 @@
 //
 Procedure Posting(Cancel, PostingMode)
 	
-	Reg = InformationRegisters.InventoryJournal.CreateRecordManager();
-	If NOT Product.CostingMethod = Enums.InventoryCosting.WeightedAverage Then
-		Reg.Location = Location;
-	EndIf;	
-	Reg.Date = Constants.BeginningBalancesDate.Get();
-	Reg.Product = Product;
-	Reg.QtyIn = Quantity;				
-	Reg.QtyOut = 0;
-	Reg.Document = Ref;
-	If Product.CostingMethod = Enums.InventoryCosting.WeightedAverage Then
-		Reg.QtyOnHand = Quantity;
-	EndIf;		
-	If NOT Quantity = 0 Then
-		Reg.DocCost = Value / Quantity;
-	EndIf;	
-	Reg.Row = 1;                                                                                                                                                                                                                                                       
-	If NOT Quantity = 0 Then
-		Reg.AdjCost = Value / Quantity; 			
-	EndIf;	
-	Reg.Write(False);
-
-	RegisterRecords.LocationBalances.Write = True;
-	Record = RegisterRecords.LocationBalances.Add();
+	RegisterRecords.InventoryJrnl.Write = True;
+	
+	Record = RegisterRecords.InventoryJrnl.Add();
 	Record.RecordType = AccumulationRecordType.Receipt;
-	Record.Period = Constants.BeginningBalancesDate.Get();
+	Record.Period = Date;
 	Record.Product = Product;
 	Record.Location = Location;
-	Record.QtyOnHand = Quantity;
+	If Product.CostingMethod = Enums.InventoryCosting.WeightedAverage Then
+	Else
+		Record.Layer = Ref;
+	EndIf;
+	Record.Qty = Quantity;				
+	Record.Amount = Value;
 	
 EndProcedure
 
-// The procedure prevents voiding if the Allow Voiding functional option is disabled.
-//
 Procedure UndoPosting(Cancel)
 	
-	If NOT GetFunctionalOption("AllowVoiding") Then
-		Message = New UserMessage();
-		Message.Text = NStr("en='You cannot void a posted document'");
-		Message.Message();
+	CurrentBalance = 0;
+						
+	Query = New Query("SELECT
+	                  |	InventoryJrnlBalance.QtyBalance
+	                  |FROM
+	                  |	AccumulationRegister.InventoryJrnl.Balance AS InventoryJrnlBalance
+	                  |WHERE
+	                  |	InventoryJrnlBalance.Product = &Product
+	                  |	AND InventoryJrnlBalance.Location = &Location");
+	Query.SetParameter("Product", Product);
+	Query.SetParameter("Location", Location);
+	QueryResult = Query.Execute();
+	
+	If QueryResult.IsEmpty() Then
+	Else
+		Dataset = QueryResult.Unload();
+		CurrentBalance = Dataset[0][0];
+	EndIf;
+					
+	If Quantity > CurrentBalance Then
 		Cancel = True;
+		Message = New UserMessage();
+		Message.Text=NStr("en='Insufficient balance';de='Nicht ausreichende Bilanz'");
+		Message.Message();
 		Return;
 	EndIf;
-
-EndProcedure
-
-// The procedure prevents re-posting if the Allow Voiding functional option is disabled.
-//
-Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
-	
-	If NOT GetFunctionalOption("AllowVoiding") Then
-		
-		If WriteMode = DocumentWriteMode.Posting Then
 			
-			If DocPosted Then
-		       Message = New UserMessage();
-		       Message.Text = NStr("en='You cannot re-post a posted document'");
-		       Message.Message();
-		       Cancel = True;
-		       Return;
-		    Else
-		       DocPosted = True;
-		   EndIf;
-		   
-	   EndIf;
-	
-	EndIf;
-
 EndProcedure
 
-// Clears the DocPosted attribute on document copying
-//
-Procedure OnCopy(CopiedObject)
-	DocPosted = False;
-EndProcedure
 
 
 

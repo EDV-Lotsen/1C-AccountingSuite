@@ -38,68 +38,68 @@
 			<AutoCommandBar name="ListCommandPanel" id="3">
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
-			<ExtendedTooltip name="ListExtendedTooltip" id="18"/>
-			<SearchStringAddition name="ListSearchString" id="19">
+			<ExtendedTooltip name="ListExtendedTooltip" id="22"/>
+			<SearchStringAddition name="ListSearchString" id="23">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="20"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="21"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="24"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="25"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="22">
+			<ViewStatusAddition name="ListViewStatus" id="26">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="23"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="24"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="27"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="28"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="25">
+			<SearchControlAddition name="ListSearchControl" id="29">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="26"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="27"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="30"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="31"/>
 			</SearchControlAddition>
 			<ChildItems>
 				<LabelField name="Date" id="4">
 					<DataPath>List.Date</DataPath>
 					<DefaultItem>true</DefaultItem>
 					<HorizontalAlign>Right</HorizontalAlign>
-					<Format>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>DLF=D</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>DLF=D</v8:content>
-						</v8:item>
-					</Format>
 					<ContextMenu name="DateContextMenu" id="5"/>
-					<ExtendedTooltip name="DateExtendedTooltip" id="28"/>
+					<ExtendedTooltip name="DateExtendedTooltip" id="32"/>
 				</LabelField>
 				<LabelField name="Number" id="6">
 					<DataPath>List.Number</DataPath>
 					<ContextMenu name="NumberContextMenu" id="7"/>
-					<ExtendedTooltip name="NumberExtendedTooltip" id="29"/>
+					<ExtendedTooltip name="NumberExtendedTooltip" id="33"/>
+				</LabelField>
+				<LabelField name="ReturnType" id="20">
+					<DataPath>List.ReturnType</DataPath>
+					<ContextMenu name="ReturnTypeContextMenu" id="21"/>
+					<ExtendedTooltip name="ReturnTypeExtendedTooltip" id="34"/>
 				</LabelField>
 				<LabelField name="Company" id="8">
 					<DataPath>List.Company</DataPath>
 					<ContextMenu name="CompanyContextMenu" id="9"/>
-					<ExtendedTooltip name="CompanyExtendedTooltip" id="30"/>
+					<ExtendedTooltip name="CompanyExtendedTooltip" id="35"/>
+				</LabelField>
+				<LabelField name="CompanyCode" id="18">
+					<DataPath>List.CompanyCode</DataPath>
+					<ContextMenu name="CompanyCodeContextMenu" id="19"/>
+					<ExtendedTooltip name="CompanyCodeExtendedTooltip" id="36"/>
 				</LabelField>
 				<LabelField name="DocumentTotal" id="12">
 					<DataPath>List.DocumentTotal</DataPath>
 					<ContextMenu name="DocumentTotalContextMenu" id="13"/>
-					<ExtendedTooltip name="DocumentTotalExtendedTooltip" id="31"/>
+					<ExtendedTooltip name="DocumentTotalExtendedTooltip" id="37"/>
 				</LabelField>
 				<LabelField name="DocumentTotalRC" id="16">
 					<DataPath>List.DocumentTotalRC</DataPath>
 					<ContextMenu name="DocumentTotalRCContextMenu" id="17"/>
-					<ExtendedTooltip name="DocumentTotalRCExtendedTooltip" id="32"/>
+					<ExtendedTooltip name="DocumentTotalRCExtendedTooltip" id="38"/>
 				</LabelField>
 			</ChildItems>
 		</Table>

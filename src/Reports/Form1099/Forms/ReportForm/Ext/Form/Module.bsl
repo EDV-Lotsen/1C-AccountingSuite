@@ -2,7 +2,7 @@
 &AtClient
 Procedure Run(Command)
 	
-	VendorAttribute = GeneralFunctions.GetAttributeValue(Report.Vendor, "Ref");
+	VendorAttribute = CommonUse.GetAttributeValue(Report.Vendor, "Ref");
 	
 	If VendorAttribute = Undefined Then
 		DoMessageBox("Select a vendor");

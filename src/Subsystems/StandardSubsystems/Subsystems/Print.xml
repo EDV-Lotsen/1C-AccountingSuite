@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<MetaDataObject xmlns="http://v8.1c.ru/8.3/MDClasses" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:cmi="http://v8.1c.ru/8.2/managed-application/cmi" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xen="http://v8.1c.ru/8.3/xcf/enums" xmlns:xpr="http://v8.1c.ru/8.3/xcf/predef" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<Subsystem uuid="a1f10624-22e9-4a04-b370-fd085bdd0f67">
+		<Properties>
+			<Name>Print</Name>
+			<Synonym>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Print</v8:content>
+				</v8:item>
+			</Synonym>
+			<Comment/>
+			<IncludeHelpInContents>false</IncludeHelpInContents>
+			<IncludeInCommandInterface>false</IncludeInCommandInterface>
+			<Explanation/>
+			<Picture/>
+			<Content>
+				<xr:Item xsi:type="xr:MDObjectRef">CommonPicture.SendEmail</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">CommonModule.PrintManagementClient</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">CommonModule.PrintManagement</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">CommonForm.PrintingFormsSettingsBeforeSending</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">CommonForm.DocumentsPrinting</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">CommandGroup.Print</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">CommonModule.PrintManagementMSWordClient</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">CommonModule.PrintManagementOOWriterClient</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">InformationRegister.PrintedFormTemplates</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">CommonPicture.TemplateTypes</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Role.ChangePrintFormTemplates</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">CommonPicture.OpenTemplate</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">CommonPicture.EditTemplate</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">CommonPicture.CancelTemplateEditing</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">CommonPicture.FinishTemplateEditing</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">CommonPicture.DeleteUserTemplate</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">CommonPicture.UseUserTemplate</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">CommonPicture.UseStandardTemplate</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">CommonModule.PrintManagementOverrided</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">CommonForm.QuestionAboutWorkWithFilesExtensionInstallation</xr:Item>
+			</Content>
+		</Properties>
+		<ChildObjects/>
+	</Subsystem>
+</MetaDataObject>

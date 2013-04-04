@@ -1,0 +1,853 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<Width>70</Width>
+	<WindowOpeningMode>LockOwnerWindow</WindowOpeningMode>
+	<AutoSaveDataInSettings>Use</AutoSaveDataInSettings>
+	<SaveDataInSettings>UseList</SaveDataInSettings>
+	<CommandBarLocation>Bottom</CommandBarLocation>
+	<VerticalScroll>useIfNecessary</VerticalScroll>
+	<AutoCommandBar name="FormCommandBar" id="-1">
+		<HorizontalAlign>Right</HorizontalAlign>
+		<Autofill>false</Autofill>
+		<ChildItems>
+			<Button name="FormBack" id="23">
+				<Type>CommandBarButton</Type>
+				<CommandName>Form.Command.Back</CommandName>
+				<ExtendedTooltip name="FormBackExtendedTooltip" id="63"/>
+			</Button>
+			<Button name="FormNext" id="21">
+				<Type>CommandBarButton</Type>
+				<CommandName>Form.Command.NextStep</CommandName>
+				<ExtendedTooltip name="FormNextExtendedTooltip" id="64"/>
+			</Button>
+			<Button name="FormChange" id="22">
+				<Type>CommandBarButton</Type>
+				<DefaultButton>true</DefaultButton>
+				<CommandName>Form.Command.Change</CommandName>
+				<Title>
+					<v8:item>
+						<v8:lang>en</v8:lang>
+						<v8:content>Apply</v8:content>
+					</v8:item>
+				</Title>
+				<ExtendedTooltip name="FormChangeExtendedTooltip" id="65"/>
+			</Button>
+			<Button name="FormCancel" id="20">
+				<Type>CommandBarButton</Type>
+				<CommandName>Form.StandardCommand.Cancel</CommandName>
+				<Title>
+					<v8:item>
+						<v8:lang>en</v8:lang>
+						<v8:content>Cancel</v8:content>
+					</v8:item>
+				</Title>
+				<ExtendedTooltip name="FormCancelExtendedTooltip" id="66"/>
+			</Button>
+		</ChildItems>
+	</AutoCommandBar>
+	<Events>
+		<Event name="OnOpen">OnOpen</Event>
+		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+		<Event name="OnClose">OnClose</Event>
+	</Events>
+	<ChildItems>
+		<Pages name="Pages" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Pages</v8:content>
+				</v8:item>
+			</Title>
+			<PagesRepresentation>None</PagesRepresentation>
+			<ExtendedTooltip name="PagesExtendedTooltip" id="67"/>
+			<ChildItems>
+				<Page name="SetupOfChanges" id="2">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Setup of changes</v8:content>
+						</v8:item>
+					</Title>
+					<ExtendedTooltip name="SetupOfChangesExtendedTooltip" id="68"/>
+					<ChildItems>
+						<UsualGroup name="ButtonGroup" id="62">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Buttons group</v8:content>
+								</v8:item>
+							</Title>
+							<Group>Horizontal</Group>
+							<Representation>None</Representation>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="ButtonGroupExtendedTooltip" id="69"/>
+							<ChildItems>
+								<Button name="HistoryOfOperations" id="57">
+									<Type>UsualButton</Type>
+									<Width>9</Width>
+									<CommandName>Form.Command.HistoryOfOperations</CommandName>
+									<ExtendedTooltip name="HistoryOfOperationsExtendedTooltip" id="70"/>
+								</Button>
+								<CommandBar name="ChangeParameters" id="58">
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Change parameters</v8:content>
+										</v8:item>
+									</Title>
+									<ExtendedTooltip name="ChangeParametersExtendedTooltip" id="71"/>
+									<ChildItems>
+										<Button name="ConfigureParametersOfChanges" id="44">
+											<Type>CommandBarButton</Type>
+											<CommandName>Form.Command.ConfigureChangeParameters</CommandName>
+											<ExtendedTooltip name="ConfigureParametersOfChangesExtendedTooltip" id="72"/>
+										</Button>
+										<Button name="AllowEditOfAttributes" id="24">
+											<Type>CommandBarButton</Type>
+											<CommandName>Form.Command.AllowEditOfAttributes</CommandName>
+											<ExtendedTooltip name="AllowEditOfAttributesExtendedTooltip" id="73"/>
+										</Button>
+									</ChildItems>
+								</CommandBar>
+							</ChildItems>
+						</UsualGroup>
+						<Table name="TableOfOperations" id="4">
+							<CommandBarLocation>None</CommandBarLocation>
+							<ChangeRowSet>false</ChangeRowSet>
+							<ChangeRowOrder>false</ChangeRowOrder>
+							<SelectionMode>SingleRow</SelectionMode>
+							<UseAlternationRowColor>true</UseAlternationRowColor>
+							<EnableStartDrag>true</EnableStartDrag>
+							<EnableDrag>true</EnableDrag>
+							<DataPath>Object.Operations</DataPath>
+							<RowPictureDataPath>Object.Operations.OperationKind</RowPictureDataPath>
+							<RowsPicture>
+								<xr:Ref>CommonPicture.OperationKinds</xr:Ref>
+								<xr:LoadTransparent>false</xr:LoadTransparent>
+							</RowsPicture>
+							<CommandSet>
+								<ExcludedCommand>Copy</ExcludedCommand>
+								<ExcludedCommand>SortListAsc</ExcludedCommand>
+								<ExcludedCommand>MoveUp</ExcludedCommand>
+								<ExcludedCommand>CancelSearch</ExcludedCommand>
+								<ExcludedCommand>OutputList</ExcludedCommand>
+								<ExcludedCommand>SortListDesc</ExcludedCommand>
+								<ExcludedCommand>CopyToClipboard</ExcludedCommand>
+								<ExcludedCommand>Delete</ExcludedCommand>
+								<ExcludedCommand>EndEdit</ExcludedCommand>
+								<ExcludedCommand>Add</ExcludedCommand>
+								<ExcludedCommand>Find</ExcludedCommand>
+								<ExcludedCommand>MoveDown</ExcludedCommand>
+							</CommandSet>
+							<SearchStringLocation>None</SearchStringLocation>
+							<ViewStatusLocation>None</ViewStatusLocation>
+							<SearchControlLocation>None</SearchControlLocation>
+							<RowFilter xsi:nil="true"/>
+							<ContextMenu name="TableOfOperationsContextMenu" id="5"/>
+							<AutoCommandBar name="TableOfOperationsCommandBar" id="6"/>
+							<ExtendedTooltip name="TableOfOperationsExtendedTooltip" id="74"/>
+							<SearchStringAddition name="TableOfOperationsSearchString" id="75">
+								<AdditionSource>
+									<Item>TableOfOperations</Item>
+									<Type>SearchStringRepresentation</Type>
+								</AdditionSource>
+								<ContextMenu name="TableOfOperationsSearchStringContextMenu" id="76"/>
+								<ExtendedTooltip name="TableOfOperationsSearchStringExtendedTooltip" id="77"/>
+							</SearchStringAddition>
+							<ViewStatusAddition name="TableOfOperationsViewStatus" id="78">
+								<AdditionSource>
+									<Item>TableOfOperations</Item>
+									<Type>ViewStatusRepresentation</Type>
+								</AdditionSource>
+								<ContextMenu name="TableOfOperationsViewStatusContextMenu" id="79"/>
+								<ExtendedTooltip name="TableOfOperationsViewStatusExtendedTooltip" id="80"/>
+							</ViewStatusAddition>
+							<SearchControlAddition name="TableOfOperationsSearchControl" id="81">
+								<AdditionSource>
+									<Item>TableOfOperations</Item>
+									<Type>SearchControl</Type>
+								</AdditionSource>
+								<ContextMenu name="TableOfOperationsSearchControlContextMenu" id="82"/>
+								<ExtendedTooltip name="TableOfOperationsSearchControlExtendedTooltip" id="83"/>
+							</SearchControlAddition>
+							<Events>
+								<Event name="OnEditEnd">TableOfOperationsOnEditEnd</Event>
+								<Event name="Selection">TableOfOperationsSelection</Event>
+								<Event name="BeforeRowChange">TableOfOperationsBeforeRowChange</Event>
+							</Events>
+							<ChildItems>
+								<InputField name="TableOperationsPresentation" id="27">
+									<DataPath>Object.Operations.Presentation</DataPath>
+									<ReadOnly>true</ReadOnly>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Attribute</v8:content>
+										</v8:item>
+									</Title>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="TableOperationsPresentationContextMenu" id="28"/>
+									<ExtendedTooltip name="TableOperationsPresentationExtendedTooltip" id="84"/>
+								</InputField>
+								<CheckBoxField name="TableOfOperationsChange" id="42">
+									<DataPath>Object.Operations.Change</DataPath>
+									<EditMode>Directly</EditMode>
+									<CheckBoxType>Auto</CheckBoxType>
+									<ContextMenu name="TableOfOperationsChangeContextMenu" id="43"/>
+									<ExtendedTooltip name="TableOfOperationsChangeExtendedTooltip" id="85"/>
+								</CheckBoxField>
+								<InputField name="TableOfOperationsValue" id="13">
+									<DataPath>Object.Operations.Value</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ChoiceParameterLinks>
+										<xr:Link>
+											<xr:Name>Filter._Owner</xr:Name>
+											<xr:DataPath xsi:type="xs:string">Items.TableOfOperations.CurrentData.Property</xr:DataPath>
+											<xr:ValueChange>Clear</xr:ValueChange>
+										</xr:Link>
+									</ChoiceParameterLinks>
+									<ContextMenu name="TableOfOperationsValueContextMenu" id="14"/>
+									<ExtendedTooltip name="TableOfOperationsValueExtendedTooltip" id="86"/>
+								</InputField>
+							</ChildItems>
+						</Table>
+						<LabelDecoration name="ToolTipOfActionsPage" id="25">
+							<Title formatted="false">
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Click "Next" to view editable objects (%1).</v8:content>
+								</v8:item>
+							</Title>
+							<ContextMenu name="ToolTipOfActionsPageContextMenu" id="26"/>
+							<ExtendedTooltip name="ToolTipOfActionsPageExtendedTooltip" id="87"/>
+						</LabelDecoration>
+					</ChildItems>
+				</Page>
+				<Page name="ChangeOfObjects" id="3">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Change of objects</v8:content>
+						</v8:item>
+					</Title>
+					<ExtendedTooltip name="ChangeOfObjectsExtendedTooltip" id="88"/>
+					<ChildItems>
+						<Table name="ObjectsForChange" id="29">
+							<Representation>Tree</Representation>
+							<CommandBarLocation>Top</CommandBarLocation>
+							<ChangeRowSet>false</ChangeRowSet>
+							<ChangeRowOrder>false</ChangeRowOrder>
+							<SelectionMode>SingleRow</SelectionMode>
+							<UseAlternationRowColor>true</UseAlternationRowColor>
+							<InitialListView>Beginning</InitialListView>
+							<InitialTreeView>ExpandTopLevel</InitialTreeView>
+							<DataPath>EditableObjects</DataPath>
+							<RowPictureDataPath>EditableObjects.PictureCode</RowPictureDataPath>
+							<RowsPicture>
+								<xr:Ref>CommonPicture.CollectionItemIcons</xr:Ref>
+								<xr:LoadTransparent>false</xr:LoadTransparent>
+							</RowsPicture>
+							<CommandSet>
+								<ExcludedCommand>HierarchicalList</ExcludedCommand>
+								<ExcludedCommand>Tree</ExcludedCommand>
+								<ExcludedCommand>Copy</ExcludedCommand>
+								<ExcludedCommand>List</ExcludedCommand>
+								<ExcludedCommand>SortListAsc</ExcludedCommand>
+								<ExcludedCommand>MoveUp</ExcludedCommand>
+								<ExcludedCommand>OutputList</ExcludedCommand>
+								<ExcludedCommand>SortListDesc</ExcludedCommand>
+								<ExcludedCommand>CopyToClipboard</ExcludedCommand>
+								<ExcludedCommand>Delete</ExcludedCommand>
+								<ExcludedCommand>EndEdit</ExcludedCommand>
+								<ExcludedCommand>Add</ExcludedCommand>
+								<ExcludedCommand>Change</ExcludedCommand>
+								<ExcludedCommand>MoveDown</ExcludedCommand>
+							</CommandSet>
+							<SearchStringLocation>None</SearchStringLocation>
+							<ViewStatusLocation>None</ViewStatusLocation>
+							<SearchControlLocation>None</SearchControlLocation>
+							<ContextMenu name="ObjectsForChangeContextMenu" id="30"/>
+							<AutoCommandBar name="ObjectsForChangeCommandBar" id="31">
+								<Autofill>false</Autofill>
+								<ChildItems>
+									<Button name="ObjectsForChangeChangeCheckMarkAll" id="60">
+										<Type>CommandBarButton</Type>
+										<CommandName>Form.Command.ChangesCheckCheckAll</CommandName>
+										<ExtendedTooltip name="ObjectsForChangeChangeCheckMarkAllExtendedTooltip" id="89"/>
+									</Button>
+									<Button name="ObjectsForChangeChangeCheckUnMarkAll" id="61">
+										<Type>CommandBarButton</Type>
+										<CommandName>Form.Command.ChangesCheckUncheckAll</CommandName>
+										<ExtendedTooltip name="ObjectsForChangeChangeCheckUnMarkAllExtendedTooltip" id="90"/>
+									</Button>
+									<Button name="ObjectsForChangeOpenObjectByRef" id="59">
+										<Type>CommandBarButton</Type>
+										<CommandName>Form.Command.OpenObjectByRef</CommandName>
+										<ExtendedTooltip name="ObjectsForChangeOpenObjectByRefExtendedTooltip" id="91"/>
+									</Button>
+								</ChildItems>
+							</AutoCommandBar>
+							<ExtendedTooltip name="ObjectsForChangeExtendedTooltip" id="92"/>
+							<SearchStringAddition name="ObjectsForChangeSearchString" id="93">
+								<AdditionSource>
+									<Item>ObjectsForChange</Item>
+									<Type>SearchStringRepresentation</Type>
+								</AdditionSource>
+								<ContextMenu name="ObjectsForChangeSearchStringContextMenu" id="94"/>
+								<ExtendedTooltip name="ObjectsForChangeSearchStringExtendedTooltip" id="95"/>
+							</SearchStringAddition>
+							<ViewStatusAddition name="ObjectsForChangeViewStatus" id="96">
+								<AdditionSource>
+									<Item>ObjectsForChange</Item>
+									<Type>ViewStatusRepresentation</Type>
+								</AdditionSource>
+								<ContextMenu name="ObjectsForChangeViewStatusContextMenu" id="97"/>
+								<ExtendedTooltip name="ObjectsForChangeViewStatusExtendedTooltip" id="98"/>
+							</ViewStatusAddition>
+							<SearchControlAddition name="ObjectsForChangeSearchControl" id="99">
+								<AdditionSource>
+									<Item>ObjectsForChange</Item>
+									<Type>SearchControl</Type>
+								</AdditionSource>
+								<ContextMenu name="ObjectsForChangeSearchControlContextMenu" id="100"/>
+								<ExtendedTooltip name="ObjectsForChangeSearchControlExtendedTooltip" id="101"/>
+							</SearchControlAddition>
+							<Events>
+								<Event name="Selection">ObjectsForChangeSelection</Event>
+							</Events>
+							<ChildItems>
+								<CheckBoxField name="ObjectsForChangeChange" id="53">
+									<DataPath>EditableObjects.Change</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<CheckBoxType>Auto</CheckBoxType>
+									<ContextMenu name="ObjectsForChangeChangeContextMenu" id="54"/>
+									<ExtendedTooltip name="ObjectsForChangeChangeExtendedTooltip" id="102"/>
+								</CheckBoxField>
+								<InputField name="ObjectsForChangeRef" id="32">
+									<DataPath>EditableObjects.Ref</DataPath>
+									<ReadOnly>true</ReadOnly>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Ref</v8:content>
+										</v8:item>
+									</Title>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="ObjectsForChangeRefContextMenu" id="33"/>
+									<ExtendedTooltip name="ObjectsForChangeRefExtendedTooltip" id="103"/>
+								</InputField>
+							</ChildItems>
+						</Table>
+						<Pages name="PagesOfTipsOfObjectsChange" id="34">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Pages of tips of objects change</v8:content>
+								</v8:item>
+							</Title>
+							<HorizontalStretch>true</HorizontalStretch>
+							<PagesRepresentation>None</PagesRepresentation>
+							<ExtendedTooltip name="PagesOfTipsOfObjectsChangeExtendedTooltip" id="104"/>
+							<ChildItems>
+								<Page name="PageToolTipOnButtonChange" id="36">
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Page hint by the change button</v8:content>
+										</v8:item>
+									</Title>
+									<ExtendedTooltip name="PageToolTipOnButtonChangeExtendedTooltip" id="105"/>
+									<ChildItems>
+										<LabelDecoration name="ToolTipByButtonChange" id="37">
+											<Title formatted="false">
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Click "Apply" to apply the changes.</v8:content>
+												</v8:item>
+											</Title>
+											<ContextMenu name="ToolTipByButtonChangeContextMenu" id="38"/>
+											<ExtendedTooltip name="ToolTipByButtonChangeExtendedTooltip" id="106"/>
+										</LabelDecoration>
+									</ChildItems>
+								</Page>
+								<Page name="PageToolTipAfterChangesAreErrors" id="35">
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Page tool tip after changes are errors</v8:content>
+										</v8:item>
+									</Title>
+									<ExtendedTooltip name="PageToolTipAfterChangesAreErrorsExtendedTooltip" id="107"/>
+									<ChildItems>
+										<LabelDecoration name="ToolTipAfterChangeAreErrors" id="39">
+											<TextColor>style:ErrorTextColor</TextColor>
+											<Title formatted="false">
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>An error occured while modifying objects. %1 out of %2 objects were modified.</v8:content>
+												</v8:item>
+											</Title>
+											<ContextMenu name="ToolTipAfterChangeAreErrorsContextMenu" id="40"/>
+											<ExtendedTooltip name="ToolTipAfterChangeAreErrorsExtendedTooltip" id="108"/>
+										</LabelDecoration>
+										<Button name="GoToEventLog" id="41">
+											<Type>Hyperlink</Type>
+											<CommandName>Form.Command.GoToEventLog</CommandName>
+											<ExtendedTooltip name="GoToEventLogExtendedTooltip" id="109"/>
+										</Button>
+									</ChildItems>
+								</Page>
+								<Page name="PageToolTipSuccessfulUpdate" id="47">
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Page tool tip successful update</v8:content>
+										</v8:item>
+									</Title>
+									<ExtendedTooltip name="PageToolTipSuccessfulUpdateExtendedTooltip" id="110"/>
+									<ChildItems>
+										<LabelDecoration name="ToolTipSuccessfulUpdate" id="48">
+											<TextColor>0:ad87bd29-0ad1-4da4-ac62-38e714e0cb9f</TextColor>
+											<Title formatted="false">
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>%n object(s) were modified.</v8:content>
+												</v8:item>
+											</Title>
+											<VerticalAlign>Bottom</VerticalAlign>
+											<ContextMenu name="ToolTipSuccessfulUpdateContextMenu" id="49"/>
+											<ExtendedTooltip name="ToolTipSuccessfulUpdateExtendedTooltip" id="111"/>
+										</LabelDecoration>
+									</ChildItems>
+								</Page>
+							</ChildItems>
+						</Pages>
+					</ChildItems>
+				</Page>
+			</ChildItems>
+		</Pages>
+	</ChildItems>
+	<Attributes>
+		<Attribute name="Object" id="1">
+			<Type>
+				<v8:Type>cfg:DataProcessorObject.BatchObjectsChanging</v8:Type>
+			</Type>
+			<MainAttribute>true</MainAttribute>
+			<Save>
+				<Field>Object.ChangeInTransaction</Field>
+				<Field>Object.AbortOnError</Field>
+			</Save>
+		</Attribute>
+		<Attribute name="EditableObjects" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Editable objects</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>v8:ValueTree</v8:Type>
+			</Type>
+			<Columns>
+				<Column name="Ref" id="1">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Item</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
+					</Type>
+				</Column>
+				<Column name="ErrorCode" id="2">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Error code</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:decimal</v8:Type>
+						<v8:NumberQualifiers>
+							<v8:Digits>2</v8:Digits>
+							<v8:FractionDigits>0</v8:FractionDigits>
+							<v8:AllowedSign>Nonnegative</v8:AllowedSign>
+						</v8:NumberQualifiers>
+					</Type>
+				</Column>
+				<Column name="Change" id="3">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Change</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:boolean</v8:Type>
+					</Type>
+				</Column>
+				<Column name="PictureCode" id="4">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Picture code</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:decimal</v8:Type>
+						<v8:NumberQualifiers>
+							<v8:Digits>1</v8:Digits>
+							<v8:FractionDigits>0</v8:FractionDigits>
+							<v8:AllowedSign>Nonnegative</v8:AllowedSign>
+						</v8:NumberQualifiers>
+					</Type>
+				</Column>
+			</Columns>
+		</Attribute>
+		<Attribute name="TPPortionSetting" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Portion setting</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:decimal</v8:Type>
+				<v8:NumberQualifiers>
+					<v8:Digits>1</v8:Digits>
+					<v8:FractionDigits>0</v8:FractionDigits>
+					<v8:AllowedSign>Nonnegative</v8:AllowedSign>
+				</v8:NumberQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="TPNumberOfObjectsInPortion" id="5">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>The number of objects in chunks</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:decimal</v8:Type>
+				<v8:NumberQualifiers>
+					<v8:Digits>5</v8:Digits>
+					<v8:FractionDigits>0</v8:FractionDigits>
+					<v8:AllowedSign>Nonnegative</v8:AllowedSign>
+				</v8:NumberQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="TPPercentageOfObjectsInPortion" id="4">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Object percentage in portion</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:decimal</v8:Type>
+				<v8:NumberQualifiers>
+					<v8:Digits>3</v8:Digits>
+					<v8:FractionDigits>0</v8:FractionDigits>
+					<v8:AllowedSign>Nonnegative</v8:AllowedSign>
+				</v8:NumberQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="IsFormOfUnlockingOfAttributes" id="6">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>There is a form of unblocking the attributes</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
+			</Type>
+		</Attribute>
+		<Attribute name="FullNameOfFormWorkWithBlockedAttributes" id="7">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Full name of form work with blocked attributes</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="CurrentUser" id="8">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Current user</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>cfg:CatalogRef.Users</v8:Type>
+			</Type>
+		</Attribute>
+		<Attribute name="CurrentStatusOfChange" id="9">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Current status of change</v8:content>
+				</v8:item>
+			</Title>
+			<Type/>
+		</Attribute>
+		<Attribute name="IncludeHierarchy" id="10">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Include hierarchy</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
+			</Type>
+		</Attribute>
+		<Attribute name="HistoryOfOperationsList" id="11">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>History of operations list</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>v8:ValueListType</v8:Type>
+			</Type>
+		</Attribute>
+		<Attribute name="IncorrectDataProcessorCall" id="12">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Incorrect data processor call</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
+			</Type>
+		</Attribute>
+		<Attribute name="ProcessRecursively" id="13">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Process recursively</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
+			</Type>
+		</Attribute>
+		<Attribute name="FullName" id="14">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Full name</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="ChangeTableOfObjects" id="15">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Change to objects table</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
+			</Type>
+		</Attribute>
+		<ConditionalAppearance>
+			<dcsset:item>
+				<dcsset:selection>
+					<dcsset:item>
+						<dcsset:field>TableOperationsPresentation</dcsset:field>
+					</dcsset:item>
+				</dcsset:selection>
+				<dcsset:filter>
+					<dcsset:item xsi:type="dcsset:FilterItemComparison">
+						<dcsset:left xsi:type="dcscor:Field">Object.Operations.BlockedAttribute</dcsset:left>
+						<dcsset:comparisonType>Equal</dcsset:comparisonType>
+						<dcsset:right xsi:type="xs:boolean">true</dcsset:right>
+					</dcsset:item>
+				</dcsset:filter>
+				<dcsset:appearance>
+					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+						<dcscor:parameter>TextColor</dcscor:parameter>
+						<dcscor:value xsi:type="v8ui:Color">#C0C0C0</dcscor:value>
+					</dcscor:item>
+				</dcsset:appearance>
+			</dcsset:item>
+		</ConditionalAppearance>
+	</Attributes>
+	<Commands>
+		<Command name="Back" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>&lt;&lt; Back</v8:content>
+				</v8:item>
+			</Title>
+			<Action>Back</Action>
+		</Command>
+		<Command name="NextStep" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Next &gt;&gt;</v8:content>
+				</v8:item>
+			</Title>
+			<Action>NextStep</Action>
+		</Command>
+		<Command name="Change" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Apply</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Apply changes to the selected objects</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>ChangeCommandHandler</Action>
+		</Command>
+		<Command name="AllowEditOfAttributes" id="4">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Allow Editing Attributes</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Allow editing all attributes</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Use>
+				<xr:Common>false</xr:Common>
+				<xr:Value name="Role.FullAccess">true</xr:Value>
+				<xr:Value name="">true</xr:Value>
+			</Use>
+			<Action>AllowEditOfAttributesCommandHandler</Action>
+		</Command>
+		<Command name="GoToEventLog" id="5">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>View event log</v8:content>
+				</v8:item>
+			</Title>
+			<Action>GoToEventLog</Action>
+		</Command>
+		<Command name="ConfigureChangeParameters" id="6">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Settings</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Settings</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>ConfigureChangeParameters</Action>
+		</Command>
+		<Command name="HistoryOfOperations" id="7">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>History</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Select operation from the list of recent operations</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Picture>
+				<xr:Ref>StdPicture.MoveDown</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
+			<Action>HistoryOfOperations</Action>
+			<Representation>TextPicture</Representation>
+		</Command>
+		<Command name="OpenObjectByRef" id="8">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>View Object</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>View object</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>OpenObjectByRefCommandHandler</Action>
+		</Command>
+		<Command name="ChangesCheckCheckAll" id="9">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Select All</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Select all objects</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Picture>
+				<xr:Ref>StdPicture.CheckAll</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
+			<Action>ChangesCheckCheckAll</Action>
+		</Command>
+		<Command name="ChangesCheckUncheckAll" id="10">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Clear All</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Remove selection form all objects</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Picture>
+				<xr:Ref>StdPicture.UncheckAll</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
+			<Action>ChangesCheckUncheckAll</Action>
+		</Command>
+	</Commands>
+	<Parameters>
+		<Parameter name="ObjectsArray">
+			<Type/>
+			<KeyParameter>true</KeyParameter>
+		</Parameter>
+	</Parameters>
+</Form>

@@ -6,11 +6,7 @@
 			<Synonym>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Banking</v8:content>
-				</v8:item>
-				<v8:item>
-					<v8:lang>pt</v8:lang>
-					<v8:content>Banco</v8:content>
+					<v8:content>Bank</v8:content>
 				</v8:item>
 			</Synonym>
 			<Comment/>
@@ -24,10 +20,13 @@
 			<Content>
 				<xr:Item xsi:type="xr:MDObjectRef">Document.Deposit</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">Document.BankReconciliation</xr:Item>
-				<xr:Item xsi:type="xr:MDObjectRef">Document.Receipt</xr:Item>
-				<xr:Item xsi:type="xr:MDObjectRef">Document.Payment</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Document.CashReceipt</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Document.InvoicePayment</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">Document.Check</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">Report.BankBalances</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">CommonCommand.BankBalances</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Document.BankTransfer</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">InformationRegister.TransactionReconciliation</xr:Item>
 			</Content>
 		</Properties>
 		<ChildObjects/>

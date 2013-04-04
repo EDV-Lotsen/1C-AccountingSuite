@@ -1,12 +1,46 @@
-﻿// Launches the function that checks if this is the first start of the system,
-// and if yes prefills the database with default values and settings.
-//
-Procedure OnStart()
+﻿
+Procedure BeforeStart(Cancel)
+		
+	// StandardSubsystems
 	
-	GeneralFunctions.FirstStart();
+	// Users
+	If ValueIsFilled(StandardSubsystemsClientSecondUse.ClientParameters().AuthorizationError) Then
+		
+		DoMessageBox(StandardSubsystemsClientSecondUse.ClientParameters().AuthorizationError);
+		Cancel = True;
+		Return;
+		
+	EndIf;
+	// End Users
+	
+	// InfobaseVersionUpdate
+	Cancel = Cancel OR NOT InfobaseUpdateClient.RunningInfobaseUpdatePermitted();
+	// End InfobaseVersionUpdate
+	
+	// End StandardSubsystems
 	
 EndProcedure
 
-
-
-
+Procedure OnStart()
+	
+	// StandardSubsystems
+	
+	// BasicFunctionality
+	CommonUseClient.SetArbitraryApplicationTitle();
+	// End BasicFunctionality
+	
+	// InfobaseVersionUpdate
+	InfobaseUpdateClient.RunInfobaseUpdate();
+	// End InfobaseVersionUpdate
+	
+	// ScheduledJobs
+	ScheduledJobsClient.OnStart();
+	// End ScheduledJobs
+	
+	// DynamicUpdateMonitoring
+	DynamicUpdateMonitoringClient.OnStart();
+	// End DynamicUpdateMonitoring
+	
+	// End StandardSubsystems
+	
+EndProcedure

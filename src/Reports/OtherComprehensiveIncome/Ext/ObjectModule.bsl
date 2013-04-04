@@ -1,16 +1,13 @@
 ﻿Function OtherComprehensiveIncome(StartDate, EndDate) Export
 	
-	StartD = StartDate;
-	EndD = EndDate;
-	
 	If StartDate =  Date(1,1,1) Then
 		WhereCase = "AND GeneralJournalTurnovers.Period <= &EndDate";
-		PeriodLabel = "- " + Format(EndD, "DLF=D");
+		PeriodLabel = "- " + Format(EndDate, "DLF=D");
 	EndIf;
 	
 	If EndDate =  Date(1,1,1) Then
 		WhereCase = "AND GeneralJournalTurnovers.Period >= &StartDate";
-		PeriodLabel = Format(StartD, "DLF=D") + " -";
+		PeriodLabel = Format(StartDate, "DLF=D") + " -";
 	EndIf;
 	
 	If StartDate = Date(1,1,1) AND EndDate = Date(1,1,1) Then
@@ -20,7 +17,7 @@
 	
 	If NOT StartDate = Date(1,1,1) AND NOT EndDate = Date(1,1,1) Then
 		WhereCase = "AND GeneralJournalTurnovers.Period >= &StartDate AND GeneralJournalTurnovers.Period <= &EndDate";
-		PeriodLabel = Format(StartD, "DLF=D") + " - " + Format(EndD, "DLF=D");
+		PeriodLabel = Format(StartDate, "DLF=D") + " - " + Format(EndDate, "DLF=D");
 	EndIf;
 	
 	OurCompany = Catalogs.Companies.OurCompany;
@@ -30,7 +27,7 @@
 	
 	Header = Template.GetArea("Header");
 	Header.Parameters.PeriodLabel = PeriodLabel;
-	Header.Parameters.Company = GeneralFunctions.GetAttributeValue(OurCompany, "Name");
+	Header.Parameters.Company = CommonUse.GetAttributeValue(OurCompany, "Description");
 	SpreadsheetDocument.Put(Header);
 	
 	// Main section

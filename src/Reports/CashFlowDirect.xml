@@ -19,27 +19,27 @@
 					<v8:content>Cash flow (direct)</v8:content>
 				</v8:item>
 				<v8:item>
-					<v8:lang>pt</v8:lang>
-					<v8:content>Fluxo de caixa (direto)</v8:content>
+					<v8:lang>de</v8:lang>
+					<v8:content>Kapitalflussrechnung</v8:content>
 				</v8:item>
 			</Synonym>
 			<Comment/>
 			<UseStandardCommands>true</UseStandardCommands>
 			<DefaultForm>Report.CashFlowDirect.Form.ReportForm</DefaultForm>
 			<AuxiliaryForm/>
-			<MainDataCompositionSchema/>
+			<MainDataCompositionSchema>Report.CashFlowDirect.Template.CashFlowStatement</MainDataCompositionSchema>
 			<DefaultSettingsForm/>
 			<AuxiliarySettingsForm/>
 			<DefaultVariantForm/>
 			<VariantsStorage/>
 			<SettingsStorage/>
-			<IncludeHelpInContents>false</IncludeHelpInContents>
+			<IncludeHelpInContents>true</IncludeHelpInContents>
 			<ExtendedPresentation/>
 			<Explanation/>
 		</Properties>
 		<ChildObjects>
 			<Form>ReportForm</Form>
-			<Template>Template</Template>
+			<Template>CashFlowStatement</Template>
 		</ChildObjects>
 	</Report>
 </MetaDataObject>

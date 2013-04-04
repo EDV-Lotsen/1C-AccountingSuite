@@ -1,11 +1,5 @@
 ﻿
 &AtClient
-Procedure UnitsOfMeasureOnChange(Item)
-	DoMessageBox("Restart the program for the setting to take effect");
-	RefreshInterface();
-EndProcedure
-
-&AtClient
 Procedure MultiLocationOnChange(Item)
 	DoMessageBox("Restart the program for the setting to take effect");
 	RefreshInterface();
@@ -23,154 +17,36 @@ Procedure USFinLocalizationOnChange(Item)
 	RefreshInterface();
 EndProcedure
 
-&AtClient
-Procedure BrazilFinLocalizationOnChange(Item)
-	DoMessageBox("Restart the program for the setting to take effect");
-	RefreshInterface();
-EndProcedure
-
-&AtClient
-Procedure ClearGeneralJournal(Command)
-	
-	ClearGJ();
-
-EndProcedure
-
-&AtServer
-Procedure ClearGJ()
-	
-	SetPrivilegedMode(True);
-	
-	Query = New Query("SELECT
-	                  |	GeneralJournal.Recorder AS Recorder
-	                  |FROM
-	                  |	AccountingRegister.GeneralJournal AS GeneralJournal
-	                  |
-	                  |GROUP BY
-	                  |	GeneralJournal.Recorder");
-				  
-	QueryResult = Query.Execute();
-
-	If QueryResult.IsEmpty() Then
-	Else
-		RecorderDataset = QueryResult.Choose();
-		
-		While RecorderDataset.Next() Do
-			
-			Reg = AccountingRegisters.GeneralJournal;
-			Dataset = Reg.CreateRecordSet();
-			Dataset.Filter.Recorder.Set(RecorderDataset.Recorder);
-			Dataset.Read();
-	        Test = Dataset.Unload();
-			For Each T in Test Do
-				Test.Delete(T);				
-			EndDo;
-			
-			Dataset.Load(Test);
-			Dataset.Write();	
-				
-		EndDo;
-	EndIf;
-	
-	SetPrivilegedMode(False);
-	
-EndProcedure
-
-&AtClient
-Procedure ClearInvInfRegister(Command)
-	
-	ClearIJ();
-	
-EndProcedure
-
-&AtServer
-Procedure ClearIJ()
-	
-	SetPrivilegedMode(True);
-	
-	Reg = InformationRegisters.InventoryJournal.CreateRecordSet();
-	Reg.Write(True);	
-	
-	SetPrivilegedMode(False);
-	
-EndProcedure
-
-&AtClient
-Procedure ClearLocationBalances(Command)
-	
-	ClearLB();
-	
-EndProcedure
-
-&AtServer
-Procedure ClearLB()
-	
-	SetPrivilegedMode(True);
-	
-	Query = New Query("SELECT
-	                  |	LocationBalances.Recorder AS Recorder
-	                  |FROM
-	                  |	AccumulationRegister.LocationBalances AS LocationBalances
-	                  |
-	                  |GROUP BY
-	                  |	LocationBalances.Recorder");
-				  
-	QueryResult = Query.Execute();
-
-	If QueryResult.IsEmpty() Then
-	Else
-		RecorderDataset = QueryResult.Choose();
-		
-		While RecorderDataset.Next() Do
-			
-			Reg = AccumulationRegisters.LocationBalances;
-			Dataset = Reg.CreateRecordSet();
-			Dataset.Filter.Recorder.Set(RecorderDataset.Recorder);
-			Dataset.Read();
-	        Test = Dataset.Unload();
-			For Each T in Test Do
-				Test.Delete(T);				
-			EndDo;
-			
-			Dataset.Load(Test);
-			Dataset.Write();	
-				
-		EndDo;
-	EndIf;
-
-	SetPrivilegedMode(False);
-	
-EndProcedure
-
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		
 	Items.BankAccountLabel.Title =
-		GeneralFunctions.GetAttributeValue(Constants.BankAccount.Get(), "Description");
+		CommonUse.GetAttributeValue(Constants.BankAccount.Get(), "Description");
 	Items.IncomeAccountLabel.Title =
-		GeneralFunctions.GetAttributeValue(Constants.IncomeAccount.Get(), "Description");
+		CommonUse.GetAttributeValue(Constants.IncomeAccount.Get(), "Description");
 	Items.COGSAccountLabel.Title =
-		GeneralFunctions.GetAttributeValue(Constants.COGSAccount.Get(), "Description");
+		CommonUse.GetAttributeValue(Constants.COGSAccount.Get(), "Description");
 	Items.ExpenseAccountLabel.Title =
-		GeneralFunctions.GetAttributeValue(Constants.ExpenseAccount.Get(), "Description");
+		CommonUse.GetAttributeValue(Constants.ExpenseAccount.Get(), "Description");
 	Items.InventoryAccountLabel.Title =
-		GeneralFunctions.GetAttributeValue(Constants.InventoryAccount.Get(), "Description");
+		CommonUse.GetAttributeValue(Constants.InventoryAccount.Get(), "Description");
 	Items.ExchangeGainLabel.Title =
-		GeneralFunctions.GetAttributeValue(Constants.ExchangeGain.Get(), "Description");
+		CommonUse.GetAttributeValue(Constants.ExchangeGain.Get(), "Description");
 	Items.ExchangeLossLabel.Title =
-		GeneralFunctions.GetAttributeValue(Constants.ExchangeLoss.Get(), "Description");
-	Items.SalesTaxAccountLabel.Title =
-		GeneralFunctions.GetAttributeValue(Constants.SalesTaxPayableAccount.Get(), "Description");
-	Items.VATAccountLabel.Title = 
-		GeneralFunctions.GetAttributeValue(Constants.VATAccount.Get(), "Description");
+		CommonUse.GetAttributeValue(Constants.ExchangeLoss.Get(), "Description");
+	Items.TaxPayableAccountLabel.Title =
+		CommonUse.GetAttributeValue(Constants.TaxPayableAccount.Get(), "Description");
 	Items.UndepositedFundsAccountLabel.Title =
-		GeneralFunctions.GetAttributeValue(Constants.UndepositedFundsAccount.Get(), "Description");
+		CommonUse.GetAttributeValue(Constants.UndepositedFundsAccount.Get(), "Description");
 	Items.BankInterestEarnedAccountLabel.Title =
-		GeneralFunctions.GetAttributeValue(Constants.BankInterestEarnedAccount.Get(), "Description");
+		CommonUse.GetAttributeValue(Constants.BankInterestEarnedAccount.Get(), "Description");
 	Items.BankServiceChargeAccountLabel.Title =
-		GeneralFunctions.GetAttributeValue(Constants.BankServiceChargeAccount.Get(), "Description");
-	Items.AccumulatedOCIAccountLabel.Title =
-		GeneralFunctions.GetAttributeValue(Constants.AccumulatedOCIAccount.Get(), "Description");
+		CommonUse.GetAttributeValue(Constants.BankServiceChargeAccount.Get(), "Description");
+				
+	If NOT Items.APIPublicKey.Title = "" AND NOT IsInRole("FullRights") Then
+		Items.APIPublicKey.ReadOnly = True;		
+	EndIf;
+
 		
 EndProcedure
 
@@ -211,9 +87,9 @@ Procedure ExchangeLossOnChange(Item)
 EndProcedure
 
 &AtClient
-Procedure SalesTaxPayableAccountOnChange(Item)
-	Items.SalesTaxAccountLabel.Title =
-		GeneralFunctions.AccountName(Items.SalesTaxPayableAccount.SelectedText);
+Procedure TaxPayableAccountOnChange(Item)
+	Items.TaxPayableAccountLabel.Title =
+		GeneralFunctions.AccountName(Items.TaxPayableAccount.SelectedText);
 EndProcedure
 
 &AtClient
@@ -235,36 +111,17 @@ Procedure BankServiceChargeAccountOnChange(Item)
 EndProcedure
 
 &AtClient
-Procedure AdvancedPricingOnChange(Item)
-	RefreshInterface();
-EndProcedure
-
-&AtClient
 Procedure DefaultCurrencyOnChange(Item)
 	DoMessageBox("Restart the program for the setting to take effect");
 EndProcedure
 
 &AtClient
-Procedure VATAccountOnChange(Item)
-	Items.VATAccountLabel.Title =
-		GeneralFunctions.AccountName(Items.VATAccount.SelectedText);
-EndProcedure
-
-&AtClient
-Procedure SAFinLocalizationOnChange(Item)
+Procedure VATFinLocalizationOnChange(Item)
 	
-	GeneralFunctions.VATSetup();
+	//GeneralFunctions.VATSetup();
 	DoMessageBox("Restart the program for the setting to take effect");
 	RefreshInterface();
 
-EndProcedure
-
-&AtClient
-Procedure PaymentTermsDefaultOnChange(Item)
-	
-	DoMessageBox("Restart the program for the setting to take effect");
-	RefreshInterface();
-	
 EndProcedure
 
 &AtClient
@@ -281,24 +138,6 @@ Procedure CustomerNameOnChange(Item)
 	
 EndProcedure
 
-&AtServer
-Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
-	If GeneralFunctionsReusable.FunctionalOptionValue("SAFinLocalization") Then
-		
-		If ConstantsSet.VATAccount.IsEmpty() Then
-			
-			Message = New UserMessage();
-			Message.Text=NStr("en='Please select a VAT Account'");
-			Message.Field = "ConstantsSet.VATAccount";
-			Message.Message();
-			Cancel = True;
-			Return;
-
-		EndIf;
-		
-	EndIf;
-EndProcedure
-
 &AtClient
 Procedure EmailClientOnChange(Item)
 	
@@ -308,7 +147,9 @@ Procedure EmailClientOnChange(Item)
 EndProcedure
 
 &AtClient
-Procedure AccumulatedOCIAccountOnChange(Item)
-	Items.AccumulatedOCIAccountLabel.Title =
-		GeneralFunctions.AccountName(Items.AccumulatedOCIAccount.SelectedText);
+Procedure PriceIncludesVATOnChange(Item)
+	
+	DoMessageBox("Restart the program for the setting to take effect");
+	RefreshInterface();
+
 EndProcedure

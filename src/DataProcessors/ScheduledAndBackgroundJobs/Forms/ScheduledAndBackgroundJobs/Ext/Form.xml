@@ -1,0 +1,1561 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<AutoSaveDataInSettings>Use</AutoSaveDataInSettings>
+	<CommandBarLocation>None</CommandBarLocation>
+	<VerticalScroll>useIfNecessary</VerticalScroll>
+	<CommandSet>
+		<ExcludedCommand>No</ExcludedCommand>
+		<ExcludedCommand>Abort</ExcludedCommand>
+		<ExcludedCommand>Retry</ExcludedCommand>
+		<ExcludedCommand>Yes</ExcludedCommand>
+		<ExcludedCommand>Cancel</ExcludedCommand>
+		<ExcludedCommand>Ignore</ExcludedCommand>
+		<ExcludedCommand>OK</ExcludedCommand>
+	</CommandSet>
+	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<Events>
+		<Event name="NotificationProcessing">NotificationProcessing</Event>
+		<Event name="OnOpen">OnOpen</Event>
+		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+		<Event name="BeforeLoadDataFromSettingsAtServer">OnLoadDataFromSettingsAtServer</Event>
+	</Events>
+	<ChildItems>
+		<Pages name="Tasks" id="10">
+			<ExtendedTooltip name="TasksExtendedTooltip" id="173"/>
+			<ChildItems>
+				<Page name="ScheduledJobs" id="27">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Scheduled Jobs</v8:content>
+						</v8:item>
+					</Title>
+					<Picture>
+						<xr:Ref>StdPicture.ScheduledJobs</xr:Ref>
+						<xr:LoadTransparent>true</xr:LoadTransparent>
+					</Picture>
+					<ExtendedTooltip name="ScheduledJobsExtendedTooltip" id="174"/>
+					<ChildItems>
+						<Table name="TableScheduledJobs" id="29">
+							<Representation>List</Representation>
+							<SkipOnInput>false</SkipOnInput>
+							<AutoInsertNewRow>true</AutoInsertNewRow>
+							<DataPath>TableScheduledJobs</DataPath>
+							<CommandSet>
+								<ExcludedCommand>SortListAsc</ExcludedCommand>
+								<ExcludedCommand>MoveUp</ExcludedCommand>
+								<ExcludedCommand>SortListDesc</ExcludedCommand>
+								<ExcludedCommand>EndEdit</ExcludedCommand>
+								<ExcludedCommand>Change</ExcludedCommand>
+								<ExcludedCommand>MoveDown</ExcludedCommand>
+							</CommandSet>
+							<SearchStringLocation>None</SearchStringLocation>
+							<ViewStatusLocation>None</ViewStatusLocation>
+							<SearchControlLocation>None</SearchControlLocation>
+							<RowFilter xsi:nil="true"/>
+							<ContextMenu name="TableScheduledJobsContextMenu" id="30">
+								<ChildItems>
+									<Button name="TableScheduledJobsContextMenuRefreshData" id="165">
+										<Type>CommandBarButton</Type>
+										<CommandName>Form.Command.RefreshData</CommandName>
+										<ExtendedTooltip name="TableScheduledJobsContextMenuRefreshDataExtendedTooltip" id="175"/>
+									</Button>
+									<Button name="TableScheduledJobsContextMenuOutputList" id="170">
+										<Type>CommandBarButton</Type>
+										<CommandName>Form.Item.TableScheduledJobs.StandardCommand.OutputList</CommandName>
+										<ExtendedTooltip name="TableScheduledJobsContextMenuOutputListExtendedTooltip" id="176"/>
+									</Button>
+									<Button name="TableScheduledJobsContextMenuCopyToClipboard" id="171">
+										<Type>CommandBarButton</Type>
+										<CommandName>Form.Item.TableScheduledJobs.StandardCommand.CopyToClipboard</CommandName>
+										<ExtendedTooltip name="TableScheduledJobsContextMenuCopyToClipboardExtendedTooltip" id="177"/>
+									</Button>
+									<Button name="TableScheduledJobsContextMenuAdd" id="166">
+										<Type>CommandBarButton</Type>
+										<Visible>false</Visible>
+										<CommandName>Form.Item.TableScheduledJobs.StandardCommand.Add</CommandName>
+										<ExtendedTooltip name="TableScheduledJobsContextMenuAddExtendedTooltip" id="178"/>
+									</Button>
+									<Button name="TableScheduledJobsContextMenuCopy" id="167">
+										<Type>CommandBarButton</Type>
+										<Visible>false</Visible>
+										<CommandName>Form.Item.TableScheduledJobs.StandardCommand.Copy</CommandName>
+										<ExtendedTooltip name="TableScheduledJobsContextMenuCopyExtendedTooltip" id="179"/>
+									</Button>
+									<Button name="TableScheduledJobsContextMenuChange" id="168">
+										<Type>CommandBarButton</Type>
+										<Visible>false</Visible>
+										<CommandName>29:b41f5bbc-ba5d-4888-8cd1-db246a371418</CommandName>
+										<ExtendedTooltip name="TableScheduledJobsContextMenuChangeExtendedTooltip" id="180"/>
+									</Button>
+									<Button name="TableScheduledJobsContextMenuDelete" id="169">
+										<Type>CommandBarButton</Type>
+										<Visible>false</Visible>
+										<CommandName>Form.Item.TableScheduledJobs.StandardCommand.Delete</CommandName>
+										<ExtendedTooltip name="TableScheduledJobsContextMenuDeleteExtendedTooltip" id="181"/>
+									</Button>
+								</ChildItems>
+							</ContextMenu>
+							<AutoCommandBar name="TableScheduledJobsCommandBar" id="31">
+								<ChildItems>
+									<Button name="TableScheduledJobsRefreshData" id="146">
+										<Type>CommandBarButton</Type>
+										<SkipOnInput>false</SkipOnInput>
+										<CommandName>Form.Command.RefreshData</CommandName>
+										<ExtendedTooltip name="TableScheduledJobsRefreshDataExtendedTooltip" id="182"/>
+									</Button>
+									<Button name="TableScheduledJobsAdd" id="157">
+										<Type>CommandBarButton</Type>
+										<Representation>Picture</Representation>
+										<CommandName>Form.Item.TableScheduledJobs.StandardCommand.Add</CommandName>
+										<ExtendedTooltip name="TableScheduledJobsAddExtendedTooltip" id="183"/>
+									</Button>
+									<Button name="TableScheduledJobsChangeScheduledJob" id="172">
+										<Type>CommandBarButton</Type>
+										<CommandName>Form.Command.ChangeScheduledJob</CommandName>
+										<ExtendedTooltip name="TableScheduledJobsChangeScheduledJobExtendedTooltip" id="184"/>
+									</Button>
+									<Button name="TableScheduledJobsCopy" id="158">
+										<Type>CommandBarButton</Type>
+										<CommandName>Form.Item.TableScheduledJobs.StandardCommand.Copy</CommandName>
+										<ExtendedTooltip name="TableScheduledJobsCopyExtendedTooltip" id="185"/>
+									</Button>
+									<Button name="TableScheduledJobsDelete" id="160">
+										<Type>CommandBarButton</Type>
+										<CommandName>Form.Item.TableScheduledJobs.StandardCommand.Delete</CommandName>
+										<ExtendedTooltip name="TableScheduledJobsDeleteExtendedTooltip" id="186"/>
+									</Button>
+									<Button name="TableScheduledJobsOpenSchedule" id="135">
+										<Type>CommandBarButton</Type>
+										<Representation>PictureAndText</Representation>
+										<SkipOnInput>false</SkipOnInput>
+										<CommandName>Form.Command.OpenScheduleOfScheduledJob</CommandName>
+										<Title>
+											<v8:item>
+												<v8:lang>en</v8:lang>
+												<v8:content>Schedule</v8:content>
+											</v8:item>
+										</Title>
+										<ExtendedTooltip name="TableScheduledJobsOpenScheduleExtendedTooltip" id="187"/>
+									</Button>
+									<Button name="TableScheduledJobsExecuteNow" id="152">
+										<Type>CommandBarButton</Type>
+										<SkipOnInput>false</SkipOnInput>
+										<CommandName>Form.Command.ProcessScheduledJobManually</CommandName>
+										<ExtendedTooltip name="TableScheduledJobsExecuteNowExtendedTooltip" id="188"/>
+									</Button>
+									<Button name="TableScheduledJobsProcessingSetup" id="136">
+										<Type>CommandBarButton</Type>
+										<Representation>Picture</Representation>
+										<SkipOnInput>false</SkipOnInput>
+										<CommandName>Form.Command.ScheduledJobsProcessingSettings</CommandName>
+										<ExtendedTooltip name="TableScheduledJobsProcessingSetupExtendedTooltip" id="189"/>
+									</Button>
+									<Button name="TableScheduledJobsOpenSeparateProcessingSession" id="155">
+										<Type>CommandBarButton</Type>
+										<Representation>Picture</Representation>
+										<SkipOnInput>false</SkipOnInput>
+										<CommandName>Form.Command.OpenSeparateSessionOfScheduledJobsProcessing</CommandName>
+										<ExtendedTooltip name="TableScheduledJobsOpenSeparateProcessingSessionExtendedTooltip" id="190"/>
+									</Button>
+									<Button name="TableScheduledJobsHelp" id="153">
+										<Type>CommandBarButton</Type>
+										<SkipOnInput>false</SkipOnInput>
+										<CommandName>Form.StandardCommand.Help</CommandName>
+										<ExtendedTooltip name="TableScheduledJobsHelpExtendedTooltip" id="191"/>
+									</Button>
+								</ChildItems>
+							</AutoCommandBar>
+							<ExtendedTooltip name="TableScheduledJobsExtendedTooltip" id="192"/>
+							<SearchStringAddition name="TableScheduledJobsSearchString" id="193">
+								<AdditionSource>
+									<Item>TableScheduledJobs</Item>
+									<Type>SearchStringRepresentation</Type>
+								</AdditionSource>
+								<ContextMenu name="TableScheduledJobsSearchStringContextMenu" id="194"/>
+								<ExtendedTooltip name="TableScheduledJobsSearchStringExtendedTooltip" id="195"/>
+							</SearchStringAddition>
+							<ViewStatusAddition name="TableScheduledJobsViewStatus" id="196">
+								<AdditionSource>
+									<Item>TableScheduledJobs</Item>
+									<Type>ViewStatusRepresentation</Type>
+								</AdditionSource>
+								<ContextMenu name="TableScheduledJobsViewStatusContextMenu" id="197"/>
+								<ExtendedTooltip name="TableScheduledJobsViewStatusExtendedTooltip" id="198"/>
+							</ViewStatusAddition>
+							<SearchControlAddition name="TableScheduledJobsSearchControl" id="199">
+								<AdditionSource>
+									<Item>TableScheduledJobs</Item>
+									<Type>SearchControl</Type>
+								</AdditionSource>
+								<ContextMenu name="TableScheduledJobsSearchControlContextMenu" id="200"/>
+								<ExtendedTooltip name="TableScheduledJobsSearchControlExtendedTooltip" id="201"/>
+							</SearchControlAddition>
+							<Events>
+								<Event name="Selection">TableScheduledJobsSelection</Event>
+								<Event name="BeforeAddRow">TableScheduledJobsBeforeAddRow</Event>
+								<Event name="BeforeDeleteRow">TableScheduledJobsBeforeDelete</Event>
+							</Events>
+							<ChildItems>
+								<CheckBoxField name="Predefined" id="34">
+									<DataPath>TableScheduledJobs.Predefined</DataPath>
+									<ReadOnly>true</ReadOnly>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Predefined</v8:content>
+										</v8:item>
+									</Title>
+									<CheckBoxType>Auto</CheckBoxType>
+									<ContextMenu name="PredefinedContextMenu" id="35"/>
+									<ExtendedTooltip name="PredefinedExtendedTooltip" id="202"/>
+								</CheckBoxField>
+								<CheckBoxField name="Use" id="42">
+									<DataPath>TableScheduledJobs.Use</DataPath>
+									<ReadOnly>true</ReadOnly>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>In use</v8:content>
+										</v8:item>
+									</Title>
+									<CheckBoxType>Auto</CheckBoxType>
+									<ContextMenu name="UseContextMenu" id="43"/>
+									<ExtendedTooltip name="UseExtendedTooltip" id="203"/>
+								</CheckBoxField>
+								<InputField name="Description" id="40">
+									<DataPath>TableScheduledJobs.Description</DataPath>
+									<ReadOnly>true</ReadOnly>
+									<Wrap>false</Wrap>
+									<ContextMenu name="DescriptionContextMenu" id="41"/>
+									<ExtendedTooltip name="DescriptionExtendedTooltip" id="204"/>
+								</InputField>
+								<InputField name="UserName" id="141">
+									<DataPath>TableScheduledJobs.UserName</DataPath>
+									<ReadOnly>true</ReadOnly>
+									<ToolTip>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Users name for launching background job</v8:content>
+										</v8:item>
+									</ToolTip>
+									<Wrap>false</Wrap>
+									<ContextMenu name="UserNameContextMenu" id="142"/>
+									<ExtendedTooltip name="UserNameExtendedTooltip" id="205"/>
+								</InputField>
+								<CheckBoxField name="RunStatus" id="61">
+									<DataPath>TableScheduledJobs.RunStatus</DataPath>
+									<ReadOnly>true</ReadOnly>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Status</v8:content>
+										</v8:item>
+									</Title>
+									<CheckBoxType>Auto</CheckBoxType>
+									<ContextMenu name="RunStatusContextMenu" id="62"/>
+									<ExtendedTooltip name="RunStatusExtendedTooltip" id="206"/>
+								</CheckBoxField>
+								<InputField name="EndDate" id="52">
+									<DataPath>TableScheduledJobs.EndDate</DataPath>
+									<ReadOnly>true</ReadOnly>
+									<Wrap>false</Wrap>
+									<ContextMenu name="EndDateContextMenu" id="53"/>
+									<ExtendedTooltip name="EndDateExtendedTooltip" id="207"/>
+								</InputField>
+							</ChildItems>
+						</Table>
+					</ChildItems>
+				</Page>
+				<Page name="BackgroundJobs" id="28">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Background Jobs</v8:content>
+						</v8:item>
+					</Title>
+					<ExtendedTooltip name="BackgroundJobsExtendedTooltip" id="208"/>
+					<ChildItems>
+						<UsualGroup name="FilterLabel" id="149">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Filter</v8:content>
+								</v8:item>
+							</Title>
+							<TitleTextColor>auto</TitleTextColor>
+							<TitleFont ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
+							<Group>Vertical</Group>
+							<Representation>None</Representation>
+							<ExtendedTooltip name="FilterLabelExtendedTooltip" id="209"/>
+							<ChildItems>
+								<UsualGroup name="FilterLine" id="93">
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Filter line</v8:content>
+										</v8:item>
+									</Title>
+									<TitleTextColor>auto</TitleTextColor>
+									<TitleFont ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
+									<Group>Vertical</Group>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="FilterLineExtendedTooltip" id="210"/>
+									<ChildItems>
+										<UsualGroup name="HorizontalGroup" id="151">
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Horizontal group</v8:content>
+												</v8:item>
+											</Title>
+											<ToolTip>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Horizontal group</v8:content>
+												</v8:item>
+											</ToolTip>
+											<Group>Horizontal</Group>
+											<Representation>None</Representation>
+											<ShowTitle>false</ShowTitle>
+											<ExtendedTooltip name="HorizontalGroupExtendedTooltip" id="211"/>
+											<ChildItems>
+												<UsualGroup name="ByStatus" id="97">
+													<Title>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>By status</v8:content>
+														</v8:item>
+													</Title>
+													<TitleFont ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
+													<Width>24</Width>
+													<Group>Vertical</Group>
+													<Representation>NormalSeparation</Representation>
+													<ExtendedTooltip name="ByStatusExtendedTooltip" id="212"/>
+													<ChildItems>
+														<CheckBoxField name="FilterByCompletedStatus" id="100">
+															<DataPath>FilterByCompletedStatus</DataPath>
+															<TitleLocation>Right</TitleLocation>
+															<CheckBoxType>Auto</CheckBoxType>
+															<ContextMenu name="FilterByCompletedStatusContextMenu" id="101"/>
+															<ExtendedTooltip name="FilterByCompletedStatusExtendedTooltip" id="213"/>
+														</CheckBoxField>
+														<CheckBoxField name="FilterByCompletedStatusAborted" id="102">
+															<DataPath>FilterByCompletedStatusAborted</DataPath>
+															<TitleLocation>Right</TitleLocation>
+															<CheckBoxType>Auto</CheckBoxType>
+															<ContextMenu name="FilterByCompletedStatusAbortedContextMenu" id="103"/>
+															<ExtendedTooltip name="FilterByCompletedStatusAbortedExtendedTooltip" id="214"/>
+														</CheckBoxField>
+														<CheckBoxField name="FilterByCancelledStatus" id="104">
+															<DataPath>FilterByCancelledStatus</DataPath>
+															<TitleLocation>Right</TitleLocation>
+															<CheckBoxType>Auto</CheckBoxType>
+															<ContextMenu name="FilterByCancelledStatusContextMenu" id="105"/>
+															<ExtendedTooltip name="FilterByCancelledStatusExtendedTooltip" id="215"/>
+														</CheckBoxField>
+														<CheckBoxField name="FilterByActivityStatus" id="98">
+															<DataPath>FilterByActivityStatus</DataPath>
+															<TitleLocation>Right</TitleLocation>
+															<CheckBoxType>Auto</CheckBoxType>
+															<ContextMenu name="FilterByActivityStatusContextMenu" id="99"/>
+															<ExtendedTooltip name="FilterByActivityStatusExtendedTooltip" id="216"/>
+														</CheckBoxField>
+													</ChildItems>
+												</UsualGroup>
+												<UsualGroup name="ByPeriod" id="150">
+													<Title>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>By period</v8:content>
+														</v8:item>
+													</Title>
+													<TitleFont ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
+													<Group>Horizontal</Group>
+													<Representation>None</Representation>
+													<ExtendedTooltip name="ByPeriodExtendedTooltip" id="217"/>
+													<ChildItems>
+														<UsualGroup name="PeriodKind" id="106">
+															<TitleFont kind="AutoFont"/>
+															<Group>Vertical</Group>
+															<Representation>None</Representation>
+															<ShowTitle>false</ShowTitle>
+															<ExtendedTooltip name="PeriodKindExtendedTooltip" id="218"/>
+															<ChildItems>
+																<RadioButtonField name="FilterKindByPeriod" id="110">
+																	<DataPath>FilterKindByPeriod</DataPath>
+																	<TitleFont kind="AutoFont"/>
+																	<TitleLocation>None</TitleLocation>
+																	<RadioButtonType>Auto</RadioButtonType>
+																	<ColumnsCount>1</ColumnsCount>
+																	<ChoiceList>
+																		<xr:Item>
+																			<xr:Presentation/>
+																			<xr:CheckState>0</xr:CheckState>
+																			<xr:Value xsi:type="FormChoiceListDesTimeValue">
+																				<Presentation>
+																					<v8:item>
+																						<v8:lang>en</v8:lang>
+																						<v8:content>Custom</v8:content>
+																					</v8:item>
+																				</Presentation>
+																				<Value xsi:type="xs:decimal">4</Value>
+																			</xr:Value>
+																		</xr:Item>
+																		<xr:Item>
+																			<xr:Presentation/>
+																			<xr:CheckState>0</xr:CheckState>
+																			<xr:Value xsi:type="FormChoiceListDesTimeValue">
+																				<Presentation>
+																					<v8:item>
+																						<v8:lang>en</v8:lang>
+																						<v8:content>No filter</v8:content>
+																					</v8:item>
+																				</Presentation>
+																				<Value xsi:type="xs:decimal">0</Value>
+																			</xr:Value>
+																		</xr:Item>
+																		<xr:Item>
+																			<xr:Presentation/>
+																			<xr:CheckState>0</xr:CheckState>
+																			<xr:Value xsi:type="FormChoiceListDesTimeValue">
+																				<Presentation>
+																					<v8:item>
+																						<v8:lang>en</v8:lang>
+																						<v8:content>Last night</v8:content>
+																					</v8:item>
+																				</Presentation>
+																				<Value xsi:type="xs:decimal">1</Value>
+																			</xr:Value>
+																		</xr:Item>
+																		<xr:Item>
+																			<xr:Presentation/>
+																			<xr:CheckState>0</xr:CheckState>
+																			<xr:Value xsi:type="FormChoiceListDesTimeValue">
+																				<Presentation>
+																					<v8:item>
+																						<v8:lang>en</v8:lang>
+																						<v8:content>Yesterday</v8:content>
+																					</v8:item>
+																				</Presentation>
+																				<Value xsi:type="xs:decimal">2</Value>
+																			</xr:Value>
+																		</xr:Item>
+																		<xr:Item>
+																			<xr:Presentation/>
+																			<xr:CheckState>0</xr:CheckState>
+																			<xr:Value xsi:type="FormChoiceListDesTimeValue">
+																				<Presentation>
+																					<v8:item>
+																						<v8:lang>en</v8:lang>
+																						<v8:content>Today</v8:content>
+																					</v8:item>
+																				</Presentation>
+																				<Value xsi:type="xs:decimal">3</Value>
+																			</xr:Value>
+																		</xr:Item>
+																	</ChoiceList>
+																	<ContextMenu name="FilterKindByPeriodContextMenu" id="111"/>
+																	<ExtendedTooltip name="FilterKindByPeriodExtendedTooltip" id="219"/>
+																	<Events>
+																		<Event name="OnChange">FilterKindByPeriodOnChange</Event>
+																	</Events>
+																</RadioButtonField>
+															</ChildItems>
+														</UsualGroup>
+														<UsualGroup name="Period" id="112">
+															<TitleFont kind="AutoFont"/>
+															<Width>35</Width>
+															<HorizontalStretch>false</HorizontalStretch>
+															<Group>Horizontal</Group>
+															<Representation>None</Representation>
+															<ShowTitle>false</ShowTitle>
+															<ExtendedTooltip name="PeriodExtendedTooltip" id="220"/>
+															<ChildItems>
+																<InputField name="FilterPeriodFrom" id="113">
+																	<DataPath>FilterPeriodFrom</DataPath>
+																	<Wrap>false</Wrap>
+																	<ContextMenu name="FilterPeriodFromContextMenu" id="114"/>
+																	<ExtendedTooltip name="FilterPeriodFromExtendedTooltip" id="221"/>
+																</InputField>
+																<InputField name="FilterPeriodTo" id="115">
+																	<DataPath>FilterPeriodTo</DataPath>
+																	<Wrap>false</Wrap>
+																	<ContextMenu name="FilterPeriodToContextMenu" id="116"/>
+																	<ExtendedTooltip name="FilterPeriodToExtendedTooltip" id="222"/>
+																</InputField>
+															</ChildItems>
+														</UsualGroup>
+													</ChildItems>
+												</UsualGroup>
+											</ChildItems>
+										</UsualGroup>
+										<UsualGroup name="ByScheduledJob" id="96">
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>By job name</v8:content>
+												</v8:item>
+											</Title>
+											<TitleFont ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
+											<Width>2</Width>
+											<Group>Horizontal</Group>
+											<Representation>None</Representation>
+											<ExtendedTooltip name="ByScheduledJobExtendedTooltip" id="223"/>
+											<ChildItems>
+												<CheckBoxField name="FilterByScheduledJob" id="94">
+													<DataPath>FilterByScheduledJob</DataPath>
+													<TitleLocation>None</TitleLocation>
+													<CheckBoxType>Auto</CheckBoxType>
+													<ContextMenu name="FilterByScheduledJobContextMenu" id="95"/>
+													<ExtendedTooltip name="FilterByScheduledJobExtendedTooltip" id="224"/>
+													<Events>
+														<Event name="OnChange">FilterByScheduledJobOnChange</Event>
+													</Events>
+												</CheckBoxField>
+												<InputField name="ScheduledJobToBeFiltered" id="56">
+													<DataPath>ScheduledJobToBeFilteredPresentation</DataPath>
+													<Enabled>false</Enabled>
+													<TitleLocation>None</TitleLocation>
+													<Wrap>false</Wrap>
+													<ChoiceButton>false</ChoiceButton>
+													<ClearButton>true</ClearButton>
+													<SpinButton>false</SpinButton>
+													<OpenButton>false</OpenButton>
+													<TextEdit>false</TextEdit>
+													<ChoiceListButton>true</ChoiceListButton>
+													<ContextMenu name="ScheduledJobToBeFilteredContextMenu" id="57"/>
+													<ExtendedTooltip name="ScheduledJobToBeFilteredExtendedTooltip" id="225"/>
+													<Events>
+														<Event name="Clearing">ScheduledJobToBeFilteredClear</Event>
+														<Event name="ChoiceProcessing">ScheduledJobToBeFilteredChoiceProcessing</Event>
+													</Events>
+												</InputField>
+											</ChildItems>
+										</UsualGroup>
+									</ChildItems>
+								</UsualGroup>
+							</ChildItems>
+						</UsualGroup>
+						<Table name="TableBackgroundJobs" id="65">
+							<Representation>List</Representation>
+							<ReadOnly>true</ReadOnly>
+							<SkipOnInput>false</SkipOnInput>
+							<SelectionMode>SingleRow</SelectionMode>
+							<AutoInsertNewRow>true</AutoInsertNewRow>
+							<DataPath>TableBackgroundJobs</DataPath>
+							<CommandSet>
+								<ExcludedCommand>Copy</ExcludedCommand>
+								<ExcludedCommand>SortListAsc</ExcludedCommand>
+								<ExcludedCommand>MoveUp</ExcludedCommand>
+								<ExcludedCommand>SortListDesc</ExcludedCommand>
+								<ExcludedCommand>Delete</ExcludedCommand>
+								<ExcludedCommand>EndEdit</ExcludedCommand>
+								<ExcludedCommand>Add</ExcludedCommand>
+								<ExcludedCommand>Change</ExcludedCommand>
+								<ExcludedCommand>MoveDown</ExcludedCommand>
+							</CommandSet>
+							<SearchStringLocation>None</SearchStringLocation>
+							<ViewStatusLocation>None</ViewStatusLocation>
+							<SearchControlLocation>None</SearchControlLocation>
+							<RowFilter xsi:nil="true"/>
+							<ContextMenu name="TableBackgroundJobsContextMenu" id="66"/>
+							<AutoCommandBar name="TableBackgroundJobsCommandBar" id="67">
+								<ChildItems>
+									<Button name="TableBackgroundJobsRefreshData" id="92">
+										<Type>CommandBarButton</Type>
+										<SkipOnInput>false</SkipOnInput>
+										<CommandName>Form.Command.RefreshData</CommandName>
+										<ExtendedTooltip name="TableBackgroundJobsRefreshDataExtendedTooltip" id="226"/>
+									</Button>
+									<Button name="TableBackgroundJobsOpen" id="121">
+										<Type>CommandBarButton</Type>
+										<Representation>PictureAndText</Representation>
+										<SkipOnInput>false</SkipOnInput>
+										<CommandName>Form.Command.OpenBackgroundJob</CommandName>
+										<Title>
+											<v8:item>
+												<v8:lang>en</v8:lang>
+												<v8:content>Open</v8:content>
+											</v8:item>
+										</Title>
+										<ExtendedTooltip name="TableBackgroundJobsOpenExtendedTooltip" id="227"/>
+									</Button>
+									<Button name="TableBackgroundJobsCancel" id="122">
+										<Type>CommandBarButton</Type>
+										<Representation>PictureAndText</Representation>
+										<SkipOnInput>false</SkipOnInput>
+										<CommandName>Form.Command.CancelBackgroundJob</CommandName>
+										<Title>
+											<v8:item>
+												<v8:lang>en</v8:lang>
+												<v8:content>Cancel</v8:content>
+											</v8:item>
+										</Title>
+										<ExtendedTooltip name="TableBackgroundJobsCancelExtendedTooltip" id="228"/>
+									</Button>
+									<Button name="TableBackgroundJobsClearHistory" id="156">
+										<Type>CommandBarButton</Type>
+										<SkipOnInput>false</SkipOnInput>
+										<OnlyInAllActions>false</OnlyInAllActions>
+										<CommandName>Form.Command.ClearBackgroundJobsHistory</CommandName>
+										<ExtendedTooltip name="TableBackgroundJobsClearHistoryExtendedTooltip" id="229"/>
+									</Button>
+									<Button name="TableBackgroundJobsHelp" id="154">
+										<Type>CommandBarButton</Type>
+										<SkipOnInput>false</SkipOnInput>
+										<CommandName>Form.StandardCommand.Help</CommandName>
+										<ExtendedTooltip name="TableBackgroundJobsHelpExtendedTooltip" id="230"/>
+									</Button>
+								</ChildItems>
+							</AutoCommandBar>
+							<ExtendedTooltip name="TableBackgroundJobsExtendedTooltip" id="231"/>
+							<SearchStringAddition name="TableBackgroundJobsSearchString" id="232">
+								<AdditionSource>
+									<Item>TableBackgroundJobs</Item>
+									<Type>SearchStringRepresentation</Type>
+								</AdditionSource>
+								<ContextMenu name="TableBackgroundJobsSearchStringContextMenu" id="233"/>
+								<ExtendedTooltip name="TableBackgroundJobsSearchStringExtendedTooltip" id="234"/>
+							</SearchStringAddition>
+							<ViewStatusAddition name="TableBackgroundJobsViewStatus" id="235">
+								<AdditionSource>
+									<Item>TableBackgroundJobs</Item>
+									<Type>ViewStatusRepresentation</Type>
+								</AdditionSource>
+								<ContextMenu name="TableBackgroundJobsViewStatusContextMenu" id="236"/>
+								<ExtendedTooltip name="TableBackgroundJobsViewStatusExtendedTooltip" id="237"/>
+							</ViewStatusAddition>
+							<SearchControlAddition name="TableBackgroundJobsSearchControl" id="238">
+								<AdditionSource>
+									<Item>TableBackgroundJobs</Item>
+									<Type>SearchControl</Type>
+								</AdditionSource>
+								<ContextMenu name="TableBackgroundJobsSearchControlContextMenu" id="239"/>
+								<ExtendedTooltip name="TableBackgroundJobsSearchControlExtendedTooltip" id="240"/>
+							</SearchControlAddition>
+							<Events>
+								<Event name="Selection">TableBackgroundJobsSelection</Event>
+							</Events>
+							<ChildItems>
+								<InputField name="BackgroundTaskDescription" id="139">
+									<DataPath>TableBackgroundJobs.Description</DataPath>
+									<Wrap>false</Wrap>
+									<ContextMenu name="BackgroundTaskDescriptionContextMenu" id="140"/>
+									<ExtendedTooltip name="BackgroundTaskDescriptionExtendedTooltip" id="241"/>
+								</InputField>
+								<InputField name="State" id="76">
+									<DataPath>TableBackgroundJobs.State</DataPath>
+									<Wrap>false</Wrap>
+									<ContextMenu name="StateContextMenu" id="77"/>
+									<ExtendedTooltip name="StateExtendedTooltip" id="242"/>
+								</InputField>
+								<InputField name="Begin" id="78">
+									<DataPath>TableBackgroundJobs.Begin</DataPath>
+									<Wrap>false</Wrap>
+									<ContextMenu name="BeginContextMenu" id="79"/>
+									<ExtendedTooltip name="BeginExtendedTooltip" id="243"/>
+								</InputField>
+								<InputField name="END" id="80">
+									<DataPath>TableBackgroundJobs.END</DataPath>
+									<Wrap>false</Wrap>
+									<ContextMenu name="ENDContextMenu" id="81"/>
+									<ExtendedTooltip name="ENDExtendedTooltip" id="244"/>
+								</InputField>
+								<InputField name="ScheduledJobDescription" id="90">
+									<DataPath>TableBackgroundJobs.ScheduledJobDescription</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Scheduled job</v8:content>
+										</v8:item>
+									</Title>
+									<Wrap>false</Wrap>
+									<ContextMenu name="ScheduledJobDescriptionContextMenu" id="91"/>
+									<ExtendedTooltip name="ScheduledJobDescriptionExtendedTooltip" id="245"/>
+								</InputField>
+							</ChildItems>
+						</Table>
+						<UsualGroup name="Quantity" id="120">
+							<Group>Horizontal</Group>
+							<Representation>None</Representation>
+							<ExtendedTooltip name="QuantityExtendedTooltip" id="246"/>
+							<ChildItems>
+								<InputField name="BackgroundJobsQuantityInTable" id="130">
+									<DataPath>BackgroundJobsQuantityInTable</DataPath>
+									<ReadOnly>true</ReadOnly>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Jobs shown</v8:content>
+										</v8:item>
+									</Title>
+									<TitleLocation>Top</TitleLocation>
+									<Wrap>false</Wrap>
+									<ContextMenu name="BackgroundJobsQuantityInTableContextMenu" id="131"/>
+									<ExtendedTooltip name="BackgroundJobsQuantityInTableExtendedTooltip" id="247"/>
+								</InputField>
+								<InputField name="BackgroundJobsQuantityTotal" id="132">
+									<DataPath>BackgroundJobsQuantityTotal</DataPath>
+									<ReadOnly>true</ReadOnly>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Jobs total</v8:content>
+										</v8:item>
+									</Title>
+									<TitleLocation>Top</TitleLocation>
+									<Wrap>false</Wrap>
+									<ContextMenu name="BackgroundJobsQuantityTotalContextMenu" id="133"/>
+									<ExtendedTooltip name="BackgroundJobsQuantityTotalExtendedTooltip" id="248"/>
+								</InputField>
+							</ChildItems>
+						</UsualGroup>
+					</ChildItems>
+				</Page>
+			</ChildItems>
+		</Pages>
+	</ChildItems>
+	<Attributes>
+		<Attribute name="TableScheduledJobs" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Table scheduled jobs</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>v8:ValueTable</v8:Type>
+			</Type>
+			<Columns>
+				<Column name="ID" id="1">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Identifier</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:string</v8:Type>
+						<v8:StringQualifiers>
+							<v8:Length>0</v8:Length>
+							<v8:AllowedLength>Variable</v8:AllowedLength>
+						</v8:StringQualifiers>
+					</Type>
+				</Column>
+				<Column name="Predefined" id="2">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Predefined</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:boolean</v8:Type>
+					</Type>
+				</Column>
+				<Column name="Key" id="4">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Key</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:string</v8:Type>
+						<v8:StringQualifiers>
+							<v8:Length>0</v8:Length>
+							<v8:AllowedLength>Variable</v8:AllowedLength>
+						</v8:StringQualifiers>
+					</Type>
+				</Column>
+				<Column name="Description" id="5">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Description</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:string</v8:Type>
+						<v8:StringQualifiers>
+							<v8:Length>0</v8:Length>
+							<v8:AllowedLength>Variable</v8:AllowedLength>
+						</v8:StringQualifiers>
+					</Type>
+				</Column>
+				<Column name="Use" id="6">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Use</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:boolean</v8:Type>
+					</Type>
+				</Column>
+				<Column name="Schedule" id="7">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Schedule</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:string</v8:Type>
+						<v8:StringQualifiers>
+							<v8:Length>0</v8:Length>
+							<v8:AllowedLength>Variable</v8:AllowedLength>
+						</v8:StringQualifiers>
+					</Type>
+				</Column>
+				<Column name="RestartIntervalOnFailure" id="8">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>On error repeat in, sec</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:decimal</v8:Type>
+						<v8:NumberQualifiers>
+							<v8:Digits>10</v8:Digits>
+							<v8:FractionDigits>0</v8:FractionDigits>
+							<v8:AllowedSign>Nonnegative</v8:AllowedSign>
+						</v8:NumberQualifiers>
+					</Type>
+				</Column>
+				<Column name="RestartCountOnFailure" id="9">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>On error repeat, times</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:decimal</v8:Type>
+						<v8:NumberQualifiers>
+							<v8:Digits>10</v8:Digits>
+							<v8:FractionDigits>0</v8:FractionDigits>
+							<v8:AllowedSign>Nonnegative</v8:AllowedSign>
+						</v8:NumberQualifiers>
+					</Type>
+				</Column>
+				<Column name="UUIDOfThelastFZ" id="10">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Unique FZ handle</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:string</v8:Type>
+						<v8:StringQualifiers>
+							<v8:Length>0</v8:Length>
+							<v8:AllowedLength>Variable</v8:AllowedLength>
+						</v8:StringQualifiers>
+					</Type>
+				</Column>
+				<Column name="RunStatus" id="12">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Run status</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:string</v8:Type>
+						<v8:StringQualifiers>
+							<v8:Length>0</v8:Length>
+							<v8:AllowedLength>Variable</v8:AllowedLength>
+						</v8:StringQualifiers>
+					</Type>
+				</Column>
+				<Column name="EndDate" id="13">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Last completed on</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:string</v8:Type>
+						<v8:StringQualifiers>
+							<v8:Length>0</v8:Length>
+							<v8:AllowedLength>Variable</v8:AllowedLength>
+						</v8:StringQualifiers>
+					</Type>
+				</Column>
+				<Column name="UserName" id="3">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>User</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:string</v8:Type>
+						<v8:StringQualifiers>
+							<v8:Length>0</v8:Length>
+							<v8:AllowedLength>Variable</v8:AllowedLength>
+						</v8:StringQualifiers>
+					</Type>
+				</Column>
+			</Columns>
+		</Attribute>
+		<Attribute name="TableBackgroundJobs" id="4">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Table background jobs</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>v8:ValueTable</v8:Type>
+			</Type>
+			<Columns>
+				<Column name="ID" id="1">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Identifier</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:string</v8:Type>
+						<v8:StringQualifiers>
+							<v8:Length>0</v8:Length>
+							<v8:AllowedLength>Variable</v8:AllowedLength>
+						</v8:StringQualifiers>
+					</Type>
+				</Column>
+				<Column name="Key" id="2">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Key</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:string</v8:Type>
+						<v8:StringQualifiers>
+							<v8:Length>0</v8:Length>
+							<v8:AllowedLength>Variable</v8:AllowedLength>
+						</v8:StringQualifiers>
+					</Type>
+				</Column>
+				<Column name="Description" id="3">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Description</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:string</v8:Type>
+						<v8:StringQualifiers>
+							<v8:Length>0</v8:Length>
+							<v8:AllowedLength>Variable</v8:AllowedLength>
+						</v8:StringQualifiers>
+					</Type>
+				</Column>
+				<Column name="MethodName" id="4">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Method name</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:string</v8:Type>
+						<v8:StringQualifiers>
+							<v8:Length>0</v8:Length>
+							<v8:AllowedLength>Variable</v8:AllowedLength>
+						</v8:StringQualifiers>
+					</Type>
+				</Column>
+				<Column name="State" id="5">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Status</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:string</v8:Type>
+						<v8:StringQualifiers>
+							<v8:Length>0</v8:Length>
+							<v8:AllowedLength>Variable</v8:AllowedLength>
+						</v8:StringQualifiers>
+					</Type>
+				</Column>
+				<Column name="Begin" id="6">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Start time</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:string</v8:Type>
+						<v8:StringQualifiers>
+							<v8:Length>0</v8:Length>
+							<v8:AllowedLength>Variable</v8:AllowedLength>
+						</v8:StringQualifiers>
+					</Type>
+				</Column>
+				<Column name="END" id="7">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>End time</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:string</v8:Type>
+						<v8:StringQualifiers>
+							<v8:Length>0</v8:Length>
+							<v8:AllowedLength>Variable</v8:AllowedLength>
+						</v8:StringQualifiers>
+					</Type>
+				</Column>
+				<Column name="Location" id="8">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Location</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:string</v8:Type>
+						<v8:StringQualifiers>
+							<v8:Length>0</v8:Length>
+							<v8:AllowedLength>Variable</v8:AllowedLength>
+						</v8:StringQualifiers>
+					</Type>
+				</Column>
+				<Column name="ErrorInfo" id="9">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Error info</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:string</v8:Type>
+						<v8:StringQualifiers>
+							<v8:Length>0</v8:Length>
+							<v8:AllowedLength>Variable</v8:AllowedLength>
+						</v8:StringQualifiers>
+					</Type>
+				</Column>
+				<Column name="ScheduledJobID" id="11">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Scheduled job iD</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:string</v8:Type>
+						<v8:StringQualifiers>
+							<v8:Length>0</v8:Length>
+							<v8:AllowedLength>Variable</v8:AllowedLength>
+						</v8:StringQualifiers>
+					</Type>
+				</Column>
+				<Column name="ScheduledJobDescription" id="12">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Scheduled job</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:string</v8:Type>
+						<v8:StringQualifiers>
+							<v8:Length>0</v8:Length>
+							<v8:AllowedLength>Variable</v8:AllowedLength>
+						</v8:StringQualifiers>
+					</Type>
+				</Column>
+			</Columns>
+		</Attribute>
+		<Attribute name="FilterByScheduledJob" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Filter by scheduled job</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
+			</Type>
+			<Save>
+				<Field>FilterByScheduledJob</Field>
+			</Save>
+		</Attribute>
+		<Attribute name="FilterByActivityStatus" id="7">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Running</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
+			</Type>
+			<Save>
+				<Field>FilterByActivityStatus</Field>
+			</Save>
+		</Attribute>
+		<Attribute name="FilterByCompletedStatus" id="8">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Executed</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
+			</Type>
+			<Save>
+				<Field>FilterByCompletedStatus</Field>
+			</Save>
+		</Attribute>
+		<Attribute name="FilterByCompletedStatusAborted" id="9">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Completed with errors</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
+			</Type>
+			<Save>
+				<Field>FilterByCompletedStatusAborted</Field>
+			</Save>
+		</Attribute>
+		<Attribute name="FilterByCancelledStatus" id="10">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Canceled</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
+			</Type>
+			<Save>
+				<Field>FilterByCancelledStatus</Field>
+			</Save>
+		</Attribute>
+		<Attribute name="FilterKindByPeriod" id="11">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Filter type by period</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:decimal</v8:Type>
+				<v8:NumberQualifiers>
+					<v8:Digits>10</v8:Digits>
+					<v8:FractionDigits>0</v8:FractionDigits>
+					<v8:AllowedSign>Any</v8:AllowedSign>
+				</v8:NumberQualifiers>
+			</Type>
+			<Save>
+				<Field>FilterKindByPeriod</Field>
+			</Save>
+		</Attribute>
+		<Attribute name="FilterPeriodFrom" id="12">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>From</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:dateTime</v8:Type>
+				<v8:DateQualifiers>
+					<v8:DateFractions>DateTime</v8:DateFractions>
+				</v8:DateQualifiers>
+			</Type>
+			<Save>
+				<Field>FilterPeriodFrom</Field>
+			</Save>
+		</Attribute>
+		<Attribute name="FilterPeriodTo" id="13">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>To</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:dateTime</v8:Type>
+				<v8:DateQualifiers>
+					<v8:DateFractions>DateTime</v8:DateFractions>
+				</v8:DateQualifiers>
+			</Type>
+			<Save>
+				<Field>FilterPeriodTo</Field>
+			</Save>
+		</Attribute>
+		<Attribute name="BackgroundJobsQuantityInTable" id="14">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Background jobs quantity in table</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:decimal</v8:Type>
+				<v8:NumberQualifiers>
+					<v8:Digits>10</v8:Digits>
+					<v8:FractionDigits>0</v8:FractionDigits>
+					<v8:AllowedSign>Any</v8:AllowedSign>
+				</v8:NumberQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="BackgroundJobsQuantityTotal" id="15">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Background jobs quantity total</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:decimal</v8:Type>
+				<v8:NumberQualifiers>
+					<v8:Digits>10</v8:Digits>
+					<v8:FractionDigits>0</v8:FractionDigits>
+					<v8:AllowedSign>Any</v8:AllowedSign>
+				</v8:NumberQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="Object" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Necessary for the mechanisms of setting savings</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>cfg:DataProcessorObject.ScheduledAndBackgroundJobs</v8:Type>
+			</Type>
+			<MainAttribute>true</MainAttribute>
+		</Attribute>
+		<Attribute name="SettingsLoaded" id="19">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Settings uploaded</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
+			</Type>
+		</Attribute>
+		<Attribute name="JobIDsOnManualProcessing" id="6">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Job IDs on manual processing</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>v8:ValueListType</v8:Type>
+			</Type>
+		</Attribute>
+		<Attribute name="TextUndefined" id="20">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Text undefined</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="ScheduledJobToBeFilteredID" id="22">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Scheduled job to be filteredID</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>50</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+			<Save>
+				<Field>ScheduledJobToBeFilteredID</Field>
+			</Save>
+		</Attribute>
+		<Attribute name="EmptyID" id="5">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Empty iD</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>50</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="ScheduledJobToBeFilteredPresentation" id="23">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Scheduled job to be filtered presentation</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+	</Attributes>
+	<Commands>
+		<Command name="ChangeScheduledJob" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Edit</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Edit the scheduled job</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Shortcut>F3</Shortcut>
+			<Picture>
+				<xr:Ref>StdPicture.ChangeListItem</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
+			<Action>ChangeScheduledJobExecute</Action>
+		</Command>
+		<Command name="RefreshData" id="4">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Refresh</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Refresh</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Shortcut>F5</Shortcut>
+			<Picture>
+				<xr:Ref>StdPicture.Refresh</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
+			<Action>RefreshDataExecute</Action>
+			<Representation>TextPicture</Representation>
+		</Command>
+		<Command name="OpenBackgroundJob" id="6">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Open</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Open background job</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Picture>
+				<xr:Ref>StdPicture.Magnifier</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
+			<Action>OpenBackgroundJobExecute</Action>
+		</Command>
+		<Command name="CancelBackgroundJob" id="7">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Cancel</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Cancel background job</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>CancelBackgroundJobExecute</Action>
+		</Command>
+		<Command name="OpenScheduleOfScheduledJob" id="13">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Open Schedule</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Open schedule for the selected job</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Picture>
+				<xr:Ref>StdPicture.SetTime</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
+			<Action>OpenScheduledJobSheduleExecute</Action>
+		</Command>
+		<Command name="ScheduledJobsProcessingSettings" id="14">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Job Processing Settings</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>View settings for processing scheduled jobs</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Picture>
+				<xr:Ref>CommonPicture.ScheduledJobsProcessingSettings</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+				<xr:TransparentPixel x="2" y="14"/>
+			</Picture>
+			<Action>ScheduledJobsProcessingSettingsExecute</Action>
+			<Representation>TextPicture</Representation>
+		</Command>
+		<Command name="OpenSeparateSessionOfScheduledJobsProcessing" id="8">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Process Jobs in Separate Session</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Open a separate session for processing scheduled jobs</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Picture>
+				<xr:Ref>CommonPicture.SeparateSessionForScheduledJobProcessing</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+				<xr:TransparentPixel x="14" y="5"/>
+			</Picture>
+			<Action>OpenSeparateSessionOfScheduledJobsProcessingExecute</Action>
+			<Representation>TextPicture</Representation>
+		</Command>
+		<Command name="ProcessScheduledJobManually" id="10">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Run Now</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Run the scheduled job</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Picture>
+				<xr:Ref>CommonPicture.RunScheduledJobManually</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+				<xr:TransparentPixel x="14" y="2"/>
+			</Picture>
+			<Action>ProcessScheduledJobManuallyExecute</Action>
+			<Representation>TextPicture</Representation>
+		</Command>
+		<Command name="ClearBackgroundJobsHistory" id="9">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Clear History</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Clear background job history</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>ClearBackgroundJobsHistory</Action>
+		</Command>
+	</Commands>
+	<CommandInterface>
+		<NavigationPanel>
+			<Item>
+				<Command>0:f7ccc574-d6c3-495a-86b4-7e24e75502d9</Command>
+				<Type>Auto</Type>
+				<CommandGroup>FormNavigationPanelImportant</CommandGroup>
+				<Index>2</Index>
+				<Visible>
+					<xr:Common>false</xr:Common>
+				</Visible>
+			</Item>
+			<Item>
+				<Command>0:49440928-bbd6-4c6a-bf40-af70a34d7372</Command>
+				<Type>Auto</Type>
+				<CommandGroup>FormNavigationPanelImportant</CommandGroup>
+				<Visible>
+					<xr:Common>false</xr:Common>
+				</Visible>
+			</Item>
+			<Item>
+				<Command>0:721481be-40e4-45b6-9530-ad7fb0c60429</Command>
+				<Type>Auto</Type>
+				<CommandGroup>FormNavigationPanelImportant</CommandGroup>
+				<Index>1</Index>
+				<Visible>
+					<xr:Common>false</xr:Common>
+				</Visible>
+			</Item>
+			<Item>
+				<Command>0:f7ccc574-d6c3-495a-86b4-7e24e75502d9</Command>
+				<Type>Added</Type>
+				<CommandGroup>FormNavigationPanelGoTo</CommandGroup>
+				<Index>1</Index>
+				<DefaultVisible>false</DefaultVisible>
+			</Item>
+			<Item>
+				<Command>0:49440928-bbd6-4c6a-bf40-af70a34d7372</Command>
+				<Type>Added</Type>
+				<CommandGroup>FormNavigationPanelImportant</CommandGroup>
+				<DefaultVisible>false</DefaultVisible>
+			</Item>
+			<Item>
+				<Command>0:721481be-40e4-45b6-9530-ad7fb0c60429</Command>
+				<Type>Added</Type>
+				<CommandGroup>FormNavigationPanelGoTo</CommandGroup>
+				<DefaultVisible>false</DefaultVisible>
+			</Item>
+		</NavigationPanel>
+	</CommandInterface>
+</Form>

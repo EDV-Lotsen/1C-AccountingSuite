@@ -5,6 +5,11 @@
 	<UseForFoldersAndItems>Items</UseForFoldersAndItems>
 	<AutoCommandBar name="FormCommandBar" id="-1"/>
 	<ChildItems>
+		<InputField name="Code" id="5">
+			<DataPath>Object.Code</DataPath>
+			<ContextMenu name="CodeContextMenu" id="6"/>
+			<ExtendedTooltip name="CodeExtendedTooltip" id="7"/>
+		</InputField>
 		<InputField name="Description" id="1">
 			<DataPath>Object.Description</DataPath>
 			<Title>
@@ -13,19 +18,19 @@
 					<v8:content>State</v8:content>
 				</v8:item>
 				<v8:item>
-					<v8:lang>pt</v8:lang>
-					<v8:content>Estado</v8:content>
+					<v8:lang>de</v8:lang>
+					<v8:content>Bundesland</v8:content>
 				</v8:item>
 			</Title>
 			<EditMode>EnterOnInput</EditMode>
 			<ContextMenu name="DescriptionContextMenu" id="2"/>
-			<ExtendedTooltip name="DescriptionExtendedTooltip" id="5"/>
+			<ExtendedTooltip name="DescriptionExtendedTooltip" id="8"/>
 		</InputField>
 		<InputField name="Country" id="3">
 			<DataPath>Object.Country</DataPath>
 			<EditMode>EnterOnInput</EditMode>
 			<ContextMenu name="CountryContextMenu" id="4"/>
-			<ExtendedTooltip name="CountryExtendedTooltip" id="6"/>
+			<ExtendedTooltip name="CountryExtendedTooltip" id="9"/>
 		</InputField>
 	</ChildItems>
 	<Attributes>

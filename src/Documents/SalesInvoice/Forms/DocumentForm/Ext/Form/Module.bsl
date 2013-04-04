@@ -1,4 +1,86 @@
-﻿
+﻿&AtServer
+// Check presence of non-closed orders for the passed company
+Function HasNonClosedOrders(Company)
+	
+	// Create new query
+	Query = New Query;
+	Query.SetParameter("Company", Company);
+	
+	QueryText = 
+		"SELECT
+		|	SalesOrder.Ref
+		|FROM
+		|	Document.SalesOrder AS SalesOrder
+		|	LEFT JOIN InformationRegister.OrdersStatuses.SliceLast AS OrdersStatuses
+		|		ON SalesOrder.Ref = OrdersStatuses.Order
+		|WHERE
+		|	SalesOrder.Company = &Company
+		|AND
+		|	CASE
+		|		WHEN SalesOrder.DeletionMark THEN
+		|			 VALUE(Enum.OrderStatuses.Deleted)
+		|		WHEN NOT SalesOrder.Posted THEN
+		|			 VALUE(Enum.OrderStatuses.Draft)
+		|		WHEN OrdersStatuses.Status IS NULL THEN
+		|			 VALUE(Enum.OrderStatuses.Open)
+		|		WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.EmptyRef) THEN
+		|			 VALUE(Enum.OrderStatuses.Open)
+		|		ELSE
+		|			 OrdersStatuses.Status
+		|	END IN (VALUE(Enum.OrderStatuses.Open), VALUE(Enum.OrderStatuses.Backordered))";
+	Query.Text  = QueryText;
+	
+	// Returns true if there are open or backordered orders
+	Return Not Query.Execute().IsEmpty();
+	
+EndFunction
+
+&AtServer
+// Returns array of Order Statuses indicating non-closed orders
+Function GetNonClosedOrderStatuses()
+	
+	// Define all non-closed statuses array
+	OrderStatuses  = New Array;
+	OrderStatuses.Add(Enums.OrderStatuses.Open);
+	OrderStatuses.Add(Enums.OrderStatuses.Backordered);
+	
+	// Return filled array
+	Return OrderStatuses;
+	
+EndFunction
+
+&AtServer
+// Fills document on the base of passed array of orders
+// Returns flag o successfull filing
+Function FillDocumentWithSelectedOrders(SelectedOrders)
+	
+	// Fill table on the base of selected orders
+	If SelectedOrders <> Undefined Then
+		
+		// Fill object by orders
+		DocObject = FormAttributeToValue("Object");
+		DocObject.Fill(SelectedOrders);
+		
+		// Return filled object to form
+		ValueToFormAttribute(DocObject, "Object");
+		
+		// Return filling success
+		Return True;
+	Else
+		// Order wasn't selected: Clear foreign orders
+		If  (Object.LineItems.Count() > 0)
+			// Will assume that all previosly selected orders are filled correctly, and belong to the same company
+		And (Not Object.LineItems[0].Order.Company = Object.Company) Then
+			// Clear existing dataset
+			Object.LineItems.Clear();
+		EndIf;
+		
+		// Return fail (selection cancelled)
+		Return False;
+	EndIf;
+	
+EndFunction
+
 &AtClient
 // ProductOnChange UI event handler.
 // The procedure clears quantities, line total, and taxable amount in the line item,
@@ -10,26 +92,19 @@ Procedure LineItemsProductOnChange(Item)
 	
 	TabularPartRow = Items.LineItems.CurrentData;
 	
-	TabularPartRow.Descr = GeneralFunctions.GetAttributeValue(TabularPartRow.Product, "Descr");
+	TabularPartRow.ProductDescription = CommonUse.GetAttributeValue(TabularPartRow.Product, "Description");
 	TabularPartRow.Quantity = 0;
-	TabularPartRow.QuantityUM = 0;
 	TabularPartRow.LineTotal = 0;
 	TabularPartRow.TaxableAmount = 0;
 	TabularPartRow.Price = 0;
 	TabularPartRow.VAT = 0;
 	
-	Price = GeneralFunctions.RetailPrice(CurrentDate(), TabularPartRow.Product, Object.Company, Object.Currency);
-	If GeneralFunctions.FunctionalOptionValue("AdvancedPricing") Then
-		TabularPartRow.Price = Price;
-	Else
-		TabularPartRow.Price = Price / Object.ExchangeRate;
-	EndIf;	
-		
-	TabularPartRow.UM = GeneralFunctions.GetDefaultSalesUMForProduct(TabularPartRow.Product);
-	
+	Price = GeneralFunctions.RetailPrice(CurrentDate(), TabularPartRow.Product);
+	TabularPartRow.Price = Price / Object.ExchangeRate;
+			
 	TabularPartRow.SalesTaxType = US_FL.GetSalesTaxType(TabularPartRow.Product);
 	
-	TabularPartRow.VATCode = GeneralFunctions.GetAttributeValue(TabularPartRow.Product, "SalesVATCode");
+	TabularPartRow.VATCode = CommonUse.GetAttributeValue(TabularPartRow.Product, "SalesVATCode");
 	
 	RecalcTotal();
 	
@@ -57,8 +132,13 @@ EndProcedure
 //
 Procedure RecalcTotal()
 	
-	Object.DocumentTotal = Object.LineItems.Total("LineTotal") + Object.LineItems.Total("VAT") + Object.SalesTax;
-	Object.DocumentTotalRC = (Object.LineItems.Total("LineTotal") + Object.LineItems.Total("VAT") + Object.SalesTax) * Object.ExchangeRate;
+	If Object.PriceIncludesVAT Then
+		Object.DocumentTotal = Object.LineItems.Total("LineTotal") + Object.SalesTax;
+		Object.DocumentTotalRC = (Object.LineItems.Total("LineTotal") + Object.SalesTax) * Object.ExchangeRate;		
+	Else
+		Object.DocumentTotal = Object.LineItems.Total("LineTotal") + Object.LineItems.Total("VAT") + Object.SalesTax;
+		Object.DocumentTotalRC = (Object.LineItems.Total("LineTotal") + Object.LineItems.Total("VAT") + Object.SalesTax) * Object.ExchangeRate;
+	EndIf;	
 	Object.VATTotal = Object.LineItems.Total("VAT") * Object.ExchangeRate;
 	
 EndProcedure
@@ -85,11 +165,41 @@ EndProcedure
 // 
 Procedure CompanyOnChange(Item)
 	
-	Object.Currency = GeneralFunctions.GetAttributeValue(Object.Company, "DefaultCurrency");
-	Object.ARAccount = GeneralFunctions.GetAttributeValue(Object.Currency, "DefaultARAccount");
-	Object.ExchangeRate = GeneralFunctions.GetExchangeRate(Object.Date, GeneralFunctionsReusable.DefaultCurrency(), Object.Currency);
-	Items.ExchangeRate.Title = GeneralFunctionsReusable.DefaultCurrencySymbol() + "/" + GeneralFunctions.GetAttributeValue(Object.Currency, "Symbol");
-	Items.FCYCurrency.Title = GeneralFunctions.GetAttributeValue(Object.Currency, "Symbol");
+	Object.CompanyCode = CommonUse.GetAttributeValue(Object.Company, "Code");
+	Object.Currency = CommonUse.GetAttributeValue(Object.Company, "DefaultCurrency");
+	Object.ShipTo = GeneralFunctions.GetShipToAddress(Object.Company);
+	Object.ARAccount = CommonUse.GetAttributeValue(Object.Currency, "DefaultARAccount");
+	Object.ExchangeRate = GeneralFunctions.GetExchangeRate(Object.Date, Object.Currency);
+	Object.Terms = CommonUse.GetAttributeValue(Object.Company, "Terms"); 
+	Items.ExchangeRate.Title = GeneralFunctionsReusable.DefaultCurrencySymbol() + "/1" + CommonUse.GetAttributeValue(Object.Currency, "Symbol");
+	Items.FCYCurrency.Title = CommonUse.GetAttributeValue(Object.Currency, "Symbol");
+	DuePeriod = CommonUse.GetAttributeValue(Object.Terms, "Days");
+	Object.DueDate = Object.Date + ?(DuePeriod <> Undefined, DuePeriod, 14) * 60*60*24;
+	
+	// Open list of non-closed sales orders
+	If (Not Object.Company.IsEmpty()) And (HasNonClosedOrders(Object.Company)) Then
+		
+		// Define form parameters
+		FormParameters = New Structure();
+		FormParameters.Insert("ChoiceMode", True);
+		FormParameters.Insert("MultipleChoice", True);
+		
+		// Define list filter
+		FltrParameters = New Structure();
+		FltrParameters.Insert("Company", Object.Company); 
+		FltrParameters.Insert("OrderStatus", GetNonClosedOrderStatuses());
+		FormParameters.Insert("Filter", FltrParameters);
+		
+		// Open choice form
+		SelectOrdersForm = GetForm("Document.SalesOrder.ChoiceForm", FormParameters, Item);
+		SelectedOrders   = SelectOrdersForm.DoModal();
+		
+		// Execute orders filling
+		FillDocumentWithSelectedOrders(SelectedOrders);
+		
+	EndIf;
+	
+	// Recalc totals
 	RecalcSalesTax();
 	RecalcTotal();
 	
@@ -104,13 +214,9 @@ Procedure LineItemsPriceOnChange(Item)
 	
 	TabularPartRow = Items.LineItems.CurrentData;
 	
-	If GeneralFunctionsReusable.FunctionalOptionValue("UnitsOfMeasure") Then
-		TabularPartRow.LineTotal = TabularPartRow.QuantityUM * TabularPartRow.Price;
-	Else
-		TabularPartRow.LineTotal = TabularPartRow.Quantity * TabularPartRow.Price;
-	EndIf;
+	TabularPartRow.LineTotal = TabularPartRow.Quantity * TabularPartRow.Price;
 	
-	TabularPartRow.VAT = SouthAfrica_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Sales");
+	TabularPartRow.VAT = VAT_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Sales", Object.PriceIncludesVAT);
 	
 	RecalcTaxableAmount();
 	RecalcSalesTax();
@@ -125,7 +231,12 @@ EndProcedure
 //
 Procedure DateOnChange(Item)
 	
-	Object.ExchangeRate = GeneralFunctions.GetExchangeRate(Object.Date, GeneralFunctionsReusable.DefaultCurrency(), Object.Currency);
+	Object.ExchangeRate = GeneralFunctions.GetExchangeRate(Object.Date, Object.Currency);
+	
+	If NOT Object.Terms.IsEmpty() Then
+		Object.DueDate = Object.Date + CommonUse.GetAttributeValue(Object.Terms, "Days") * 60*60*24;
+	EndIf;
+	
 	RecalcSalesTax();
 	RecalcTotal();
 	
@@ -138,91 +249,12 @@ EndProcedure
 //
 Procedure CurrencyOnChange(Item)
 	
-	Object.ExchangeRate = GeneralFunctions.GetExchangeRate(Object.Date, GeneralFunctionsReusable.DefaultCurrency(), Object.Currency);
-	Object.ARAccount = GeneralFunctions.GetAttributeValue(Object.Currency, "DefaultARAccount");
-	Items.ExchangeRate.Title = GeneralFunctionsReusable.DefaultCurrencySymbol() + "/" + GeneralFunctions.GetAttributeValue(Object.Currency, "Symbol");
-	Items.FCYCurrency.Title = GeneralFunctions.GetAttributeValue(Object.Currency, "Symbol");
+	Object.ExchangeRate = GeneralFunctions.GetExchangeRate(Object.Date, Object.Currency);
+	Object.ARAccount = CommonUse.GetAttributeValue(Object.Currency, "DefaultARAccount");
+	Items.ExchangeRate.Title = GeneralFunctionsReusable.DefaultCurrencySymbol() + "/1" + CommonUse.GetAttributeValue(Object.Currency, "Symbol");
+	Items.FCYCurrency.Title = CommonUse.GetAttributeValue(Object.Currency, "Symbol");
 	RecalcSalesTax();
 	RecalcTotal();
-	
-EndProcedure
-
-&AtClient
-// LineItemsQuantityUMOnChange UI event handler.
-// Determines conversion ratio between the selected and base units of measure,
-// calculates a new base quantity, recalculates line total, taxable amount, sales tax, and
-// document total.
-//
-Procedure LineItemsQuantityUMOnChange(Item)
-	
-	TabularPartRow = Items.LineItems.CurrentData;
-	
-	Ratio = GeneralFunctions.GetUMRatio(TabularPartRow.UM);
-	
-	If Ratio = 0 Then
-		TabularPartRow.Quantity = TabularPartRow.QuantityUM * 1;
-	Else
-		TabularPartRow.Quantity = TabularPartRow.QuantityUM * Ratio;
-	EndIf;
-	
-	TabularPartRow.LineTotal = TabularPartRow.QuantityUM * TabularPartRow.Price;
-	TabularPartRow.VAT = SouthAfrica_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Sales");
-	
-	RecalcTaxableAmount();
-	RecalcSalesTax();
-	RecalcTotal();
-
-EndProcedure
-
-&AtClient
-// LineItemsUMOnChange UI event handler.
-// The procedure determines a unit of measure (U/M) conversion ratio, clears the price of the product,
-// line total, taxable amount, calculates quantity in a base U/M, recalculates document sales tax
-// and total.
-//
-Procedure LineItemsUMOnChange(Item)
-	
-	TabularPartRow = Items.LineItems.CurrentData;
-	
-	Ratio = GeneralFunctions.GetUMRatio(TabularPartRow.UM);
-	
-	TabularPartRow.Price = 0;
-	TabularPartRow.LineTotal = 0;
-	TabularPartRow.TaxableAmount = 0;
-	TabularPartRow.VAT = 0;
-	
-	If Ratio = 0 Then
-		TabularPartRow.Quantity = TabularPartRow.QuantityUM * 1;
-	Else
-		TabularPartRow.Quantity = TabularPartRow.QuantityUM * Ratio;
-	EndIf;
-	
-	RecalcSalesTax();
-	RecalcTotal();
-
-EndProcedure
-
-&AtClient
-// LineItemsCFOPOnChange UI event handler.
-// CFOP (Código Fiscal de Operações e Prestações) is a transaction type code used in the
-// Brazil financial layer.
-// The procedure collects all parameters required for looking up an ICMS tax rate in the tax table -
-// CFOP code, product group, state of origin, state of destination, and call the GetICMSTaxRate
-// function passing the collected parameters. After determining the ICMS tax rate the procedure
-// multiples a line total (taxable amount) by the tax rate and saves the tax value in the ICMS column.
-// 
-Procedure LineItemsCFOPOnChange(Item)
-		
-	TabularPartRow = Items.LineItems.CurrentData;
-	
-	CFOP = TabularPartRow.CFOP;
-	ProductGroup = Brazil_FL.GetProductGroup(TabularPartRow.Product);
-	StateOrigin = Brazil_FL.GetState(GeneralFunctions.GetOurCompany());
-	StateDestination = Brazil_FL.GetState(Object.Company);
-	
-	TabularPartRow.ICMSTaxRate = Brazil_FL.GetICMSTaxRate(CFOP, ProductGroup,
-		StateOrigin, StateDestination);
-	TabularPartRow.ICMS = TabularPartRow.LineTotal * TabularPartRow.ICMSTaxRate / 100;
 	
 EndProcedure
 
@@ -256,8 +288,8 @@ EndProcedure
 // 
 Procedure TermsOnChange(Item)
 		
-	Object.DueDate = Object.Date +
-		GeneralFunctions.GetAttributeValues(Object.Terms, "Days")["Days"] * 60*60*24;
+	Object.DueDate = Object.Date + CommonUse.GetAttributeValue(Object.Terms, "Days") * 60*60*24;
+
 	
 EndProcedure
 
@@ -281,7 +313,7 @@ Procedure LineItemsQuantityOnChange(Item)
 	
 	TabularPartRow = Items.LineItems.CurrentData;
 	TabularPartRow.LineTotal = TabularPartRow.Quantity * TabularPartRow.Price;
-	TabularPartRow.VAT = SouthAfrica_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Sales");
+	TabularPartRow.VAT = VAT_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Sales", Object.PriceIncludesVAT);
 	
 	RecalcTaxableAmount();
 	RecalcSalesTax();
@@ -297,20 +329,30 @@ EndProcedure
 // 
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
-	Items.Company.Title = GeneralFunctionsReusable.GetCustomerName();
-	
-	//Title = NStr("en='Sales Invoice ';pt='Fatura de vendas ';de='Rechnung'") + Object.Number + " " + Format(Object.Date, "DLF=D");
-	
-	If Object.DontCreate Then
+	// Cancel opening form if filling on the base was failed
+	If Object.Ref.IsEmpty() And Parameters.Basis <> Undefined
+	And Object.Company <> Parameters.Basis.Company Then
+		// Object is not filled as expected
 		Cancel = True;
 		Return;
 	EndIf;
-
+	
+	// Initialization of LineItems_OnCloneRow variable
+	LineItems_OnCloneRow = False;
+	
+	Items.Company.Title = GeneralFunctionsReusable.GetCustomerName();
+	
+	//Title = NStr("de='Rechnung';en='Sales Invoice '") + Object.Number + " " + Format(Object.Date, "DLF=D");
+	
+	If Object.Ref.IsEmpty() Then
+    	Object.PriceIncludesVAT = GeneralFunctionsReusable.PriceIncludesVAT();
+	EndIf;
+	
 	If NOT GeneralFunctionsReusable.FunctionalOptionValue("USFinLocalization") Then
 		Items.SalesTaxGroup.Visible = False;
 	EndIf;
 	
-	If NOT GeneralFunctionsReusable.FunctionalOptionValue("SAFinLocalization") Then
+	If NOT GeneralFunctionsReusable.FunctionalOptionValue("VATFinLocalization") Then
 		Items.VATGroup.Visible = False;
 	EndIf;
 	
@@ -318,12 +360,12 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Items.FCYGroup.Visible = False;
 	EndIf;
 			
-	If GeneralFunctionsReusable.FunctionalOptionValue("MultiLocation") Then
-	Else
+	//If GeneralFunctionsReusable.FunctionalOptionValue("MultiLocation") Then
+	//Else
 		If Object.Location.IsEmpty() Then			
-			Object.Location = Constants.DefaultLocation.Get();
+			Object.Location = Catalogs.Locations.MainWarehouse;
 		EndIf;
-	EndIf;
+	//EndIf;
 
 	If Object.Currency.IsEmpty() Then
 		Object.Currency = Constants.DefaultCurrency.Get();
@@ -332,66 +374,24 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	Else
 	EndIf; 
 	
-	Items.ExchangeRate.Title = GeneralFunctionsReusable.DefaultCurrencySymbol() + "/" + Object.Currency.Symbol;
+	Items.ExchangeRate.Title = GeneralFunctionsReusable.DefaultCurrencySymbol() + "/1" + Object.Currency.Symbol;
 	Items.VATCurrency.Title = GeneralFunctionsReusable.DefaultCurrencySymbol();
 	Items.RCCurrency.Title = GeneralFunctionsReusable.DefaultCurrencySymbol();
 	Items.SalesTaxCurrency.Title = GeneralFunctionsReusable.DefaultCurrencySymbol();
-	Items.FCYCurrency.Title = GeneralFunctions.GetAttributeValue(Object.Currency, "Symbol");
+	Items.FCYCurrency.Title = CommonUse.GetAttributeValue(Object.Currency, "Symbol");
 	
 	If Object.DueDate = Date(1,1,1) Then
-		Object.DueDate = CurrentDate() + GeneralFunctionsReusable.GetDefaultTermDays() * 60*60*24;
+		//Object.DueDate = CurrentDate() + GeneralFunctionsReusable.GetDefaultTermDays() * 60*60*24;
 	EndIf;
 
 	If Object.Terms.IsEmpty() Then
-		Object.Terms = GeneralFunctionsReusable.GetDefaultPaymentTerm();
+		//Object.Terms = GeneralFunctionsReusable.GetDefaultPaymentTerm();
 	EndIf;
 	
-EndProcedure
-
-&AtClient
-// Makes the base Quantity field read only if the units of measure functional option is turned on
-//
-Procedure LineItemsBeforeAddRow(Item, Cancel, Clone, Parent, Folder)
-		
-	If GeneralFunctionsReusable.FunctionalOptionValue("UnitsOfMeasure") Then
-		Items.LineItemsQuantity.ReadOnly = True;
-	EndIf;
-
+	// AdditionalReportsAndDataProcessors
+	AdditionalReportsAndDataProcessors.OnCreateAtServer(ThisForm);
+	// End AdditionalReportsAndDataProcessors
 	
-EndProcedure
-
-&AtClient
-// Makes the base Quantity field read only if the units of measure functional option is turned on
-//
-Procedure LineItemsBeforeRowChange(Item, Cancel)
-	
-	If GeneralFunctionsReusable.FunctionalOptionValue("UnitsOfMeasure") Then
-		Items.LineItemsQuantity.ReadOnly = True;
-	EndIf;
-	
-EndProcedure
-
-&AtServer
-// Ensures uniqueness of line items
-//
-Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
-	
-	ProductData = Object.LineItems.Unload(,"Product");	
-	ProductData.Sort("Product");
-	NoOfRows = ProductData.Count();	
-	For i = 0 to NoOfRows - 2 Do		
-		Product = ProductData[i][0];
-		If ProductData[i][0] = ProductData[i+1][0] AND NOT Product.Code = "" Then									
-			ProductIDString = String(Product.Description);
-			ProductDescrString = String(Product.Descr);			
-			Message = New UserMessage();		    
-			Message.Text = "Duplicate item: " + ProductIDString + " " + ProductDescrString;
-			Message.Message();
-			Cancel = True;
-			Return;
-		EndIf;		
-	EndDo;
-
 EndProcedure
 
 &AtClient
@@ -400,7 +400,32 @@ EndProcedure
 Procedure LineItemsVATCodeOnChange(Item)
 	
 	TabularPartRow = Items.LineItems.CurrentData;
-	TabularPartRow.VAT = SouthAfrica_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Sales");
+	TabularPartRow.VAT = VAT_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Sales", Object.PriceIncludesVAT);
     RecalcTotal();
 
+EndProcedure
+
+&AtClient
+Procedure LineItemsBeforeAddRow(Item, Cancel, Clone, Parent, Folder)
+	
+	// Set Clone Row flag
+	If Clone And Not Cancel Then
+		LineItems_OnCloneRow = True;
+	EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure LineItemsOnChange(Item)
+	
+	// Row previously was cloned from another and became edited
+	If LineItems_OnCloneRow Then
+		// Clear used flag
+		LineItems_OnCloneRow = False;
+		
+		// Clear Order on duplicate row
+        CurrentData = Item.CurrentData;
+		CurrentData.Order = Undefined;
+	EndIf;
+		
 EndProcedure

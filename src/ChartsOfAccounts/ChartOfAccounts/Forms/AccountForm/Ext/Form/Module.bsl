@@ -1,15 +1,14 @@
 ﻿
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
-	
+
 	If Object.Ref.IsEmpty() Then
-		Items.Currency.ReadOnly = True;
+		Object.CashFlowSection = Enums.CashFlowSections.Operating;	
 	EndIf;
 	
-	If NOT Object.AccountType.IsEmpty() Then
-		Items.AccountType.ReadOnly = True;
-		Items.Currency.ReadOnly = True;
-	EndIf;
+	// AdditionalReportsAndDataProcessors
+	AdditionalReportsAndDataProcessors.OnCreateAtServer(ThisForm);
+	// End AdditionalReportsAndDataProcessors
 	
 EndProcedure
 
@@ -42,16 +41,18 @@ EndProcedure
 &AtClient
 Procedure AccountTypeOnChange(Item)
 	
-	BankType = GeneralFunctionsReusable.BankAccountType(); 
-	ARType = GeneralFunctionsReusable.ARAccountType(); 
-	APType = GeneralFunctionsReusable.APAccountType();  
+	If Object.Ref.IsEmpty() Then
+		BankType = GeneralFunctionsReusable.BankAccountType(); 
+		ARType = GeneralFunctionsReusable.ARAccountType(); 
+		APType = GeneralFunctionsReusable.APAccountType();  
 	
-	If NOT Object.AccountType = BankType AND NOT Object.AccountType = ARType AND NOT Object.AccountType = APType Then
-		Items.Currency.ReadOnly = True;                                                                        
-		Object.Currency = GeneralFunctionsReusable.CurrencyEmptyRef();
-	Else
-		Items.Currency.ReadOnly = False;
-		Object.Currency = GeneralFunctionsReusable.DefaultCurrency();
+		If NOT Object.AccountType = BankType AND NOT Object.AccountType = ARType AND NOT Object.AccountType = APType Then
+			Items.Currency.ReadOnly = True;                                                                        
+			Object.Currency = GeneralFunctionsReusable.CurrencyEmptyRef();
+		Else
+			Items.Currency.ReadOnly = False;
+			Object.Currency = GeneralFunctionsReusable.DefaultCurrency();
+		EndIf;
 	EndIf;
 	
 EndProcedure
@@ -71,10 +72,17 @@ Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 	If OneOfThreeTypes AND Object.Currency.IsEmpty() Then
 		Cancel = True;
 		Message = New UserMessage();
-		Message.Text=NStr("en='Select a currency'");
+		Message.Text=NStr("en='Select a currency';de='Währung auswählen'");
 		Message.Field = "Object.Currency";
 		Message.Message();
 		Return;
 	EndIf;
 
+EndProcedure
+
+&AtClient
+Procedure CodeOnChange(Item)
+	
+	Object.Order = Object.Code;
+	
 EndProcedure

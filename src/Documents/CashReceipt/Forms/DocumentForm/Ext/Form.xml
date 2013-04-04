@@ -1,0 +1,621 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<VerticalScroll>useIfNecessary</VerticalScroll>
+	<AutoTime>CurrentOrLast</AutoTime>
+	<UsePostingMode>Auto</UsePostingMode>
+	<RepostOnWrite>true</RepostOnWrite>
+	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<Events>
+		<Event name="AfterWrite">AfterWrite</Event>
+		<Event name="AfterWriteAtServer">AfterWriteAtServer</Event>
+		<Event name="BeforeWrite">BeforeWrite</Event>
+		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+	</Events>
+	<ChildItems>
+		<UsualGroup name="Header" id="47">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Header</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Kopfzeile</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Header</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Kopfzeile</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Group>Horizontal</Group>
+			<Representation>None</Representation>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="HeaderExtendedTooltip" id="95"/>
+			<ChildItems>
+				<UsualGroup name="LeftColumn" id="48">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Left column</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Left column</v8:content>
+						</v8:item>
+					</ToolTip>
+					<Group>Vertical</Group>
+					<Representation>None</Representation>
+					<ShowTitle>false</ShowTitle>
+					<ExtendedTooltip name="LeftColumnExtendedTooltip" id="96"/>
+					<ChildItems>
+						<InputField name="Number" id="1">
+							<DataPath>Object.Number</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="NumberContextMenu" id="2"/>
+							<ExtendedTooltip name="NumberExtendedTooltip" id="97"/>
+						</InputField>
+						<UsualGroup name="Group1" id="51">
+							<Group>Vertical</Group>
+							<Representation>None</Representation>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="Group1ExtendedTooltip" id="98"/>
+							<ChildItems>
+								<RadioButtonField name="DepositType" id="15">
+									<DataPath>Object.DepositType</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<RadioButtonType>Auto</RadioButtonType>
+									<ChoiceList>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>Undeposited funds</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">1</Value>
+											</xr:Value>
+										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>Account</v8:content>
+													</v8:item>
+													<v8:item>
+														<v8:lang>de</v8:lang>
+														<v8:content>Konto</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">2</Value>
+											</xr:Value>
+										</xr:Item>
+									</ChoiceList>
+									<ContextMenu name="DepositTypeContextMenu" id="16"/>
+									<ExtendedTooltip name="DepositTypeExtendedTooltip" id="99"/>
+									<Events>
+										<Event name="OnChange">DepositTypeOnChange</Event>
+									</Events>
+								</RadioButtonField>
+							</ChildItems>
+						</UsualGroup>
+						<UsualGroup name="Group2" id="58">
+							<Group>Horizontal</Group>
+							<Representation>None</Representation>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="Group2ExtendedTooltip" id="100"/>
+							<ChildItems>
+								<InputField name="BankAccount" id="59">
+									<DataPath>Object.BankAccount</DataPath>
+									<HorizontalStretch>false</HorizontalStretch>
+									<ContextMenu name="BankAccountContextMenu" id="60"/>
+									<ExtendedTooltip name="BankAccountExtendedTooltip" id="101"/>
+									<Events>
+										<Event name="OnChange">BankAccountOnChange</Event>
+									</Events>
+								</InputField>
+								<LabelDecoration name="BankAccountLabel" id="61">
+									<ContextMenu name="BankAccountLabelContextMenu" id="62"/>
+									<ExtendedTooltip name="BankAccountLabelExtendedTooltip" id="102"/>
+								</LabelDecoration>
+							</ChildItems>
+						</UsualGroup>
+					</ChildItems>
+				</UsualGroup>
+				<UsualGroup name="MiddleColumn" id="49">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Middle column</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Middle column</v8:content>
+						</v8:item>
+					</ToolTip>
+					<Group>Vertical</Group>
+					<Representation>None</Representation>
+					<ShowTitle>false</ShowTitle>
+					<ExtendedTooltip name="MiddleColumnExtendedTooltip" id="103"/>
+					<ChildItems>
+						<InputField name="Date" id="3">
+							<DataPath>Object.Date</DataPath>
+							<HorizontalAlign>Right</HorizontalAlign>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="DateContextMenu" id="4"/>
+							<ExtendedTooltip name="DateExtendedTooltip" id="104"/>
+						</InputField>
+						<InputField name="RefNum" id="11">
+							<DataPath>Object.RefNum</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="RefNumContextMenu" id="12"/>
+							<ExtendedTooltip name="RefNumExtendedTooltip" id="105"/>
+						</InputField>
+						<InputField name="PaidAmount" id="93">
+							<DataPath>Object.CashPayment</DataPath>
+							<ContextMenu name="PaidAmountContextMenu" id="94"/>
+							<ExtendedTooltip name="PaidAmountExtendedTooltip" id="106"/>
+							<Events>
+								<Event name="OnChange">CashPaymentOnChange</Event>
+							</Events>
+						</InputField>
+					</ChildItems>
+				</UsualGroup>
+				<UsualGroup name="RightColumn" id="50">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Right column</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Right column</v8:content>
+						</v8:item>
+					</ToolTip>
+					<Group>Vertical</Group>
+					<Representation>None</Representation>
+					<ShowTitle>false</ShowTitle>
+					<ExtendedTooltip name="RightColumnExtendedTooltip" id="107"/>
+					<ChildItems>
+						<InputField name="Company" id="5">
+							<DataPath>Object.Company</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<Width>15</Width>
+							<HorizontalStretch>false</HorizontalStretch>
+							<ContextMenu name="CompanyContextMenu" id="6"/>
+							<ExtendedTooltip name="CompanyExtendedTooltip" id="108"/>
+							<Events>
+								<Event name="OnChange">CompanyOnChange</Event>
+							</Events>
+						</InputField>
+						<InputField name="CompanyCode" id="65">
+							<DataPath>Object.CompanyCode</DataPath>
+							<ReadOnly>true</ReadOnly>
+							<ContextMenu name="CompanyCodeContextMenu" id="66"/>
+							<ExtendedTooltip name="CompanyCodeExtendedTooltip" id="109"/>
+						</InputField>
+						<InputField name="PaymentMethod" id="56">
+							<DataPath>Object.PaymentMethod</DataPath>
+							<QuickChoice>true</QuickChoice>
+							<ContextMenu name="PaymentMethodContextMenu" id="57"/>
+							<ExtendedTooltip name="PaymentMethodExtendedTooltip" id="110"/>
+						</InputField>
+					</ChildItems>
+				</UsualGroup>
+			</ChildItems>
+		</UsualGroup>
+		<UsualGroup name="CreditMemosGroup" id="74">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Credit memos</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Dokumente</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Credit memos</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Dokumente</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Group>Vertical</Group>
+			<ExtendedTooltip name="CreditMemosGroupExtendedTooltip" id="111"/>
+			<ChildItems>
+				<Table name="CreditMemos" id="75">
+					<Representation>List</Representation>
+					<CommandBarLocation>None</CommandBarLocation>
+					<ChangeRowSet>false</ChangeRowSet>
+					<ChangeRowOrder>false</ChangeRowOrder>
+					<UseAlternationRowColor>true</UseAlternationRowColor>
+					<AutoInsertNewRow>true</AutoInsertNewRow>
+					<EnableStartDrag>true</EnableStartDrag>
+					<EnableDrag>true</EnableDrag>
+					<DataPath>Object.CreditMemos</DataPath>
+					<SearchStringLocation>None</SearchStringLocation>
+					<ViewStatusLocation>None</ViewStatusLocation>
+					<SearchControlLocation>None</SearchControlLocation>
+					<RowFilter xsi:nil="true"/>
+					<ContextMenu name="CreditMemosContextMenu" id="76"/>
+					<AutoCommandBar name="CreditMemosCommandBar" id="77"/>
+					<ExtendedTooltip name="CreditMemosExtendedTooltip" id="112"/>
+					<SearchStringAddition name="CreditMemosSearchString" id="113">
+						<AdditionSource>
+							<Item>CreditMemos</Item>
+							<Type>SearchStringRepresentation</Type>
+						</AdditionSource>
+						<ContextMenu name="CreditMemosSearchStringContextMenu" id="114"/>
+						<ExtendedTooltip name="CreditMemosSearchStringExtendedTooltip" id="115"/>
+					</SearchStringAddition>
+					<ViewStatusAddition name="CreditMemosViewStatus" id="116">
+						<AdditionSource>
+							<Item>CreditMemos</Item>
+							<Type>ViewStatusRepresentation</Type>
+						</AdditionSource>
+						<ContextMenu name="CreditMemosViewStatusContextMenu" id="117"/>
+						<ExtendedTooltip name="CreditMemosViewStatusExtendedTooltip" id="118"/>
+					</ViewStatusAddition>
+					<SearchControlAddition name="CreditMemosSearchControl" id="119">
+						<AdditionSource>
+							<Item>CreditMemos</Item>
+							<Type>SearchControl</Type>
+						</AdditionSource>
+						<ContextMenu name="CreditMemosSearchControlContextMenu" id="120"/>
+						<ExtendedTooltip name="CreditMemosSearchControlExtendedTooltip" id="121"/>
+					</SearchControlAddition>
+					<ChildItems>
+						<LabelField name="CreditMemosLineNumber" id="78">
+							<DataPath>Object.CreditMemos.LineNumber</DataPath>
+							<ReadOnly>true</ReadOnly>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="CreditMemosLineNumberContextMenu" id="79"/>
+							<ExtendedTooltip name="CreditMemosLineNumberExtendedTooltip" id="122"/>
+						</LabelField>
+						<ColumnGroup name="CreditMemosDocumentGroup" id="92">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Credit memos document group</v8:content>
+								</v8:item>
+							</Title>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Credit memos document group</v8:content>
+								</v8:item>
+							</ToolTip>
+							<Group>InCell</Group>
+							<ExtendedTooltip name="CreditMemosDocumentGroupExtendedTooltip" id="123"/>
+							<ChildItems>
+								<InputField name="CreditMemosDocument" id="80">
+									<DataPath>Object.CreditMemos.Document</DataPath>
+									<ReadOnly>true</ReadOnly>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="CreditMemosDocumentContextMenu" id="81"/>
+									<ExtendedTooltip name="CreditMemosDocumentExtendedTooltip" id="124"/>
+								</InputField>
+								<CheckBoxField name="Check" id="90">
+									<DataPath>Object.CreditMemos.Check</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ShowInHeader>false</ShowInHeader>
+									<ShowInFooter>false</ShowInFooter>
+									<CheckBoxType>Auto</CheckBoxType>
+									<ContextMenu name="CheckContextMenu" id="91"/>
+									<ExtendedTooltip name="CheckExtendedTooltip" id="125"/>
+									<Events>
+										<Event name="OnChange">CheckOnChange</Event>
+									</Events>
+								</CheckBoxField>
+							</ChildItems>
+						</ColumnGroup>
+						<InputField name="CreditMemosCurrency" id="88">
+							<DataPath>Object.CreditMemos.Currency</DataPath>
+							<ReadOnly>true</ReadOnly>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="CreditMemosCurrencyContextMenu" id="89"/>
+							<ExtendedTooltip name="CreditMemosCurrencyExtendedTooltip" id="126"/>
+						</InputField>
+						<InputField name="CreditMemosBalanceFCY" id="86">
+							<DataPath>Object.CreditMemos.BalanceFCY</DataPath>
+							<ReadOnly>true</ReadOnly>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="CreditMemosBalanceFCYContextMenu" id="87"/>
+							<ExtendedTooltip name="CreditMemosBalanceFCYExtendedTooltip" id="127"/>
+						</InputField>
+						<InputField name="CreditMemosBalance" id="84">
+							<DataPath>Object.CreditMemos.Balance</DataPath>
+							<ReadOnly>true</ReadOnly>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="CreditMemosBalanceContextMenu" id="85"/>
+							<ExtendedTooltip name="CreditMemosBalanceExtendedTooltip" id="128"/>
+						</InputField>
+						<InputField name="CreditMemosPayment" id="82">
+							<DataPath>Object.CreditMemos.Payment</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="CreditMemosPaymentContextMenu" id="83"/>
+							<ExtendedTooltip name="CreditMemosPaymentExtendedTooltip" id="129"/>
+							<Events>
+								<Event name="OnChange">CreditMemosPaymentOnChange</Event>
+							</Events>
+						</InputField>
+					</ChildItems>
+				</Table>
+			</ChildItems>
+		</UsualGroup>
+		<UsualGroup name="Documents" id="44">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Documents</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Dokumente</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Documents</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Dokumente</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Group>Vertical</Group>
+			<ExtendedTooltip name="DocumentsExtendedTooltip" id="130"/>
+			<ChildItems>
+				<Table name="LineItems" id="35">
+					<Representation>List</Representation>
+					<CommandBarLocation>None</CommandBarLocation>
+					<AutoInsertNewRow>true</AutoInsertNewRow>
+					<EnableStartDrag>true</EnableStartDrag>
+					<EnableDrag>true</EnableDrag>
+					<DataPath>Object.LineItems</DataPath>
+					<SearchStringLocation>None</SearchStringLocation>
+					<ViewStatusLocation>None</ViewStatusLocation>
+					<SearchControlLocation>None</SearchControlLocation>
+					<RowFilter xsi:nil="true"/>
+					<ContextMenu name="LineItemsContextMenu" id="36"/>
+					<AutoCommandBar name="LineItemsCommandBar" id="37"/>
+					<ExtendedTooltip name="LineItemsExtendedTooltip" id="131"/>
+					<SearchStringAddition name="LineItemsSearchString" id="132">
+						<AdditionSource>
+							<Item>LineItems</Item>
+							<Type>SearchStringRepresentation</Type>
+						</AdditionSource>
+						<ContextMenu name="LineItemsSearchStringContextMenu" id="133"/>
+						<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="134"/>
+					</SearchStringAddition>
+					<ViewStatusAddition name="LineItemsViewStatus" id="135">
+						<AdditionSource>
+							<Item>LineItems</Item>
+							<Type>ViewStatusRepresentation</Type>
+						</AdditionSource>
+						<ContextMenu name="LineItemsViewStatusContextMenu" id="136"/>
+						<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="137"/>
+					</ViewStatusAddition>
+					<SearchControlAddition name="LineItemsSearchControl" id="138">
+						<AdditionSource>
+							<Item>LineItems</Item>
+							<Type>SearchControl</Type>
+						</AdditionSource>
+						<ContextMenu name="LineItemsSearchControlContextMenu" id="139"/>
+						<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="140"/>
+					</SearchControlAddition>
+					<ChildItems>
+						<LabelField name="LineItemsLineNumber" id="38">
+							<DataPath>Object.LineItems.LineNumber</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="LineItemsLineNumberContextMenu" id="39"/>
+							<ExtendedTooltip name="LineItemsLineNumberExtendedTooltip" id="141"/>
+						</LabelField>
+						<InputField name="LineItemsDocument" id="40">
+							<DataPath>Object.LineItems.Document</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="LineItemsDocumentContextMenu" id="41"/>
+							<ExtendedTooltip name="LineItemsDocumentExtendedTooltip" id="142"/>
+						</InputField>
+						<InputField name="LineItemsCurrency" id="63">
+							<DataPath>Object.LineItems.Currency</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="LineItemsCurrencyContextMenu" id="64"/>
+							<ExtendedTooltip name="LineItemsCurrencyExtendedTooltip" id="143"/>
+						</InputField>
+						<InputField name="LineItemsBalanceFCY" id="52">
+							<DataPath>Object.LineItems.BalanceFCY</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="LineItemsBalanceFCYContextMenu" id="53"/>
+							<ExtendedTooltip name="LineItemsBalanceFCYExtendedTooltip" id="144"/>
+						</InputField>
+						<InputField name="LineItemsBalance" id="45">
+							<DataPath>Object.LineItems.Balance</DataPath>
+							<ReadOnly>true</ReadOnly>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="LineItemsBalanceContextMenu" id="46"/>
+							<ExtendedTooltip name="LineItemsBalanceExtendedTooltip" id="145"/>
+						</InputField>
+						<InputField name="LineItemsPayment" id="42">
+							<DataPath>Object.LineItems.Payment</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="LineItemsPaymentContextMenu" id="43"/>
+							<ExtendedTooltip name="LineItemsPaymentExtendedTooltip" id="146"/>
+							<Events>
+								<Event name="OnChange">LineItemsPaymentOnChange</Event>
+							</Events>
+						</InputField>
+					</ChildItems>
+				</Table>
+			</ChildItems>
+		</UsualGroup>
+		<UsualGroup name="Footer" id="54">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Footer</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Fußzeile</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Footer</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Fußzeile</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Group>Horizontal</Group>
+			<Representation>None</Representation>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="FooterExtendedTooltip" id="147"/>
+			<ChildItems>
+				<InputField name="Memo" id="13">
+					<DataPath>Object.Memo</DataPath>
+					<EditMode>EnterOnInput</EditMode>
+					<ContextMenu name="MemoContextMenu" id="14"/>
+					<ExtendedTooltip name="MemoExtendedTooltip" id="148"/>
+				</InputField>
+				<UsualGroup name="FooterRightColumn" id="55">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Footer right column</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Rechte Spalte in der Fußzeile</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Footer right column</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Rechte Spalte in der Fußzeile</v8:content>
+						</v8:item>
+					</ToolTip>
+					<Group>Vertical</Group>
+					<Representation>None</Representation>
+					<ShowTitle>false</ShowTitle>
+					<ExtendedTooltip name="FooterRightColumnExtendedTooltip" id="149"/>
+					<ChildItems>
+						<InputField name="DocumentTotal" id="9">
+							<DataPath>Object.DocumentTotal</DataPath>
+							<ReadOnly>true</ReadOnly>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="DocumentTotalContextMenu" id="10"/>
+							<ExtendedTooltip name="DocumentTotalExtendedTooltip" id="150"/>
+						</InputField>
+						<InputField name="DocumentTotalRC" id="21">
+							<DataPath>Object.DocumentTotalRC</DataPath>
+							<ReadOnly>true</ReadOnly>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="DocumentTotalRCContextMenu" id="22"/>
+							<ExtendedTooltip name="DocumentTotalRCExtendedTooltip" id="151"/>
+						</InputField>
+					</ChildItems>
+				</UsualGroup>
+			</ChildItems>
+		</UsualGroup>
+	</ChildItems>
+	<Attributes>
+		<Attribute name="Object" id="1">
+			<Type>
+				<v8:Type>cfg:DocumentObject.CashReceipt</v8:Type>
+			</Type>
+			<MainAttribute>true</MainAttribute>
+			<SavedData>true</SavedData>
+			<UseAlways>
+				<Field>Object.RegisterRecords</Field>
+			</UseAlways>
+			<Columns>
+				<AdditionalColumns table="Object.CreditMemos">
+					<Column name="Check" id="1">
+						<Type>
+							<v8:Type>xs:boolean</v8:Type>
+						</Type>
+					</Column>
+					<Column name="ExchangeRate" id="2">
+						<Title>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>Exchange rate</v8:content>
+							</v8:item>
+						</Title>
+						<Type>
+							<v8:Type>xs:decimal</v8:Type>
+							<v8:NumberQualifiers>
+								<v8:Digits>15</v8:Digits>
+								<v8:FractionDigits>4</v8:FractionDigits>
+								<v8:AllowedSign>Nonnegative</v8:AllowedSign>
+							</v8:NumberQualifiers>
+						</Type>
+					</Column>
+				</AdditionalColumns>
+				<AdditionalColumns table="Object.LineItems">
+					<Column name="ExchangeRate" id="1">
+						<Title>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>Exchange rate</v8:content>
+							</v8:item>
+						</Title>
+						<Type>
+							<v8:Type>xs:decimal</v8:Type>
+							<v8:NumberQualifiers>
+								<v8:Digits>15</v8:Digits>
+								<v8:FractionDigits>4</v8:FractionDigits>
+								<v8:AllowedSign>Nonnegative</v8:AllowedSign>
+							</v8:NumberQualifiers>
+						</Type>
+					</Column>
+				</AdditionalColumns>
+			</Columns>
+		</Attribute>
+	</Attributes>
+	<CommandInterface>
+		<NavigationPanel>
+			<Item>
+				<Command>AccountingRegister.GeneralJournal.StandardCommand.OpenByRecorder</Command>
+				<Type>Auto</Type>
+				<DefaultVisible>false</DefaultVisible>
+			</Item>
+			<Item>
+				<Command>2:f6b8de2b-bc31-451e-8917-10c32ebab7a0</Command>
+				<Type>Auto</Type>
+				<DefaultVisible>false</DefaultVisible>
+			</Item>
+		</NavigationPanel>
+	</CommandInterface>
+</Form>

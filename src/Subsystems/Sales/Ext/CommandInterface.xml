@@ -1,11 +1,6 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <CommandInterface xmlns="http://v8.1c.ru/8.3/xcf/extrnprops" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
 	<CommandsVisibility>
-		<Command name="DocumentJournal.SalesDocuments.StandardCommand.OpenList">
-			<Visibility>
-				<xr:Common>true</xr:Common>
-			</Visibility>
-		</Command>
 		<Command name="Document.CashSale.StandardCommand.OpenList">
 			<Visibility>
 				<xr:Common>true</xr:Common>
@@ -21,42 +16,18 @@
 				<xr:Common>true</xr:Common>
 			</Visibility>
 		</Command>
-		<Command name="Catalog.PaymentTerms.StandardCommand.OpenList">
+		<Command name="Report.ARAging.StandardCommand.Open">
 			<Visibility>
-				<xr:Common>true</xr:Common>
+				<xr:Common>false</xr:Common>
 			</Visibility>
 		</Command>
-		<Command name="Document.SalesQuote.StandardCommand.Create">
+		<Command name="Report.SalesTransactionDetail.StandardCommand.Open">
 			<Visibility>
-				<xr:Common>true</xr:Common>
-			</Visibility>
-		</Command>
-		<Command name="Document.SalesOrder.StandardCommand.Create">
-			<Visibility>
-				<xr:Common>true</xr:Common>
-			</Visibility>
-		</Command>
-		<Command name="Document.SalesInvoice.StandardCommand.Create">
-			<Visibility>
-				<xr:Common>true</xr:Common>
-			</Visibility>
-		</Command>
-		<Command name="Document.SalesReturn.StandardCommand.Create">
-			<Visibility>
-				<xr:Common>true</xr:Common>
-			</Visibility>
-		</Command>
-		<Command name="Document.CashSale.StandardCommand.Create">
-			<Visibility>
-				<xr:Common>true</xr:Common>
+				<xr:Common>false</xr:Common>
 			</Visibility>
 		</Command>
 	</CommandsVisibility>
 	<CommandsPlacement>
-		<Command name="DocumentJournal.SalesDocuments.StandardCommand.OpenList">
-			<CommandGroup>NavigationPanelImportant</CommandGroup>
-			<Placement>Auto</Placement>
-		</Command>
 		<Command name="Document.CashSale.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
 			<Placement>Auto</Placement>
@@ -66,21 +37,11 @@
 			<Placement>Auto</Placement>
 		</Command>
 		<Command name="Catalog.SalesTaxCodes.StandardCommand.OpenList">
-			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
-			<Placement>Auto</Placement>
-		</Command>
-		<Command name="Catalog.PaymentTerms.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
 	</CommandsPlacement>
 	<CommandsOrder>
-		<Command name="DocumentJournal.SalesDocuments.StandardCommand.OpenList">
-			<CommandGroup>NavigationPanelImportant</CommandGroup>
-		</Command>
-		<Command name="Document.SalesQuote.StandardCommand.OpenList">
-			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
-		</Command>
 		<Command name="Document.SalesOrder.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
 		</Command>
@@ -93,6 +54,15 @@
 		<Command name="Enum.SalesTaxTypes.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
 		</Command>
+		<Command name="Enum.OrderStatuses.StandardCommand.OpenList">
+			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
+		</Command>
+		<Command name="CommonCommand.SalesTransactionDetail">
+			<CommandGroup>CommandGroup.Reports</CommandGroup>
+		</Command>
+		<Command name="CommonCommand.ARAging">
+			<CommandGroup>CommandGroup.Reports</CommandGroup>
+		</Command>
 		<Command name="Document.CashSale.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
 		</Command>
@@ -101,12 +71,6 @@
 		</Command>
 		<Command name="Catalog.SalesTaxCodes.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
-		</Command>
-		<Command name="Catalog.PaymentTerms.StandardCommand.OpenList">
-			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
-		</Command>
-		<Command name="Document.SalesQuote.StandardCommand.Create">
-			<CommandGroup>ActionsPanelCreate</CommandGroup>
 		</Command>
 		<Command name="Document.SalesOrder.StandardCommand.Create">
 			<CommandGroup>ActionsPanelCreate</CommandGroup>
@@ -120,9 +84,6 @@
 		<Command name="Document.CashSale.StandardCommand.Create">
 			<CommandGroup>ActionsPanelCreate</CommandGroup>
 		</Command>
-		<Command name="Catalog.PaymentTerms.StandardCommand.Create">
-			<CommandGroup>ActionsPanelCreate</CommandGroup>
-		</Command>
 		<Command name="InformationRegister.PriceList.StandardCommand.Create">
 			<CommandGroup>ActionsPanelCreate</CommandGroup>
 		</Command>
@@ -133,6 +94,7 @@
 	<GroupsOrder>
 		<Group>NavigationPanelImportant</Group>
 		<Group>NavigationPanelOrdinary</Group>
+		<Group>CommandGroup.Reports</Group>
 		<Group>NavigationPanelSeeAlso</Group>
 		<Group>ActionsPanelCreate</Group>
 	</GroupsOrder>

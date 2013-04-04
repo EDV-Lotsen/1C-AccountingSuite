@@ -9,8 +9,8 @@
 					<v8:content>Multi currency</v8:content>
 				</v8:item>
 				<v8:item>
-					<v8:lang>pt</v8:lang>
-					<v8:content>Múltiplas moedas</v8:content>
+					<v8:lang>de</v8:lang>
+					<v8:content>Mehrere Währungen</v8:content>
 				</v8:item>
 			</Synonym>
 			<Comment/>
@@ -23,56 +23,45 @@
 				<xr:Object>Document.PurchaseOrder.Attribute.Currency</xr:Object>
 				<xr:Object>Document.SalesOrder.Attribute.Currency</xr:Object>
 				<xr:Object>Document.CashSale.Attribute.Currency</xr:Object>
-				<xr:Object>Document.SalesQuote.Attribute.Currency</xr:Object>
 				<xr:Object>Document.CashPurchase.Attribute.Currency</xr:Object>
-				<xr:Object>Document.Receipt.Attribute.DocumentTotal</xr:Object>
+				<xr:Object>Document.CashReceipt.Attribute.DocumentTotal</xr:Object>
 				<xr:Object>Document.SalesInvoice.Attribute.ExchangeRate</xr:Object>
 				<xr:Object>Document.PurchaseInvoice.Attribute.ExchangeRate</xr:Object>
 				<xr:Object>Document.PurchaseOrder.Attribute.ExchangeRate</xr:Object>
 				<xr:Object>Document.SalesOrder.Attribute.ExchangeRate</xr:Object>
 				<xr:Object>Document.CashSale.Attribute.ExchangeRate</xr:Object>
-				<xr:Object>Document.SalesQuote.Attribute.ExchangeRate</xr:Object>
 				<xr:Object>Document.CashPurchase.Attribute.ExchangeRate</xr:Object>
 				<xr:Object>Document.PurchaseReturn.Attribute.Currency</xr:Object>
 				<xr:Object>Document.PurchaseReturn.Attribute.ExchangeRate</xr:Object>
 				<xr:Object>Document.SalesReturn.Attribute.Currency</xr:Object>
 				<xr:Object>Document.SalesReturn.Attribute.ExchangeRate</xr:Object>
-				<xr:Object>Document.GoodsReceipt.Attribute.Currency</xr:Object>
-				<xr:Object>Document.GoodsReceipt.Attribute.ExchangeRate</xr:Object>
-				<xr:Object>Document.GoodsIssue.Attribute.ExchangeRate</xr:Object>
-				<xr:Object>Document.GoodsIssue.Attribute.Currency</xr:Object>
 				<xr:Object>AccountingRegister.GeneralJournal.Dimension.Currency</xr:Object>
 				<xr:Object>AccountingRegister.GeneralJournal.Resource.Amount</xr:Object>
-				<xr:Object>Document.Payment.TabularSection.LineItems.Attribute.DueFCY</xr:Object>
-				<xr:Object>Document.Receipt.TabularSection.LineItems.Attribute.DueFCY</xr:Object>
-				<xr:Object>Document.PurchaseQuote.Attribute.Currency</xr:Object>
-				<xr:Object>Document.PurchaseQuote.Attribute.ExchangeRate</xr:Object>
+				<xr:Object>Document.InvoicePayment.TabularSection.LineItems.Attribute.BalanceFCY</xr:Object>
+				<xr:Object>Document.CashReceipt.TabularSection.LineItems.Attribute.BalanceFCY</xr:Object>
 				<xr:Object>Catalog.Currencies</xr:Object>
 				<xr:Object>InformationRegister.ExchangeRates</xr:Object>
-				<xr:Object>Document.Payment.Attribute.DocumentTotal</xr:Object>
-				<xr:Object>Document.ARBeginningBalances.Attribute.Amount</xr:Object>
-				<xr:Object>Document.APBeginningBalances.Attribute.Amount</xr:Object>
+				<xr:Object>Document.InvoicePayment.Attribute.DocumentTotal</xr:Object>
 				<xr:Object>Document.CashSale.Attribute.DocumentTotal</xr:Object>
 				<xr:Object>Document.SalesReturn.Attribute.DocumentTotal</xr:Object>
-				<xr:Object>Document.GoodsIssue.Attribute.DocumentTotal</xr:Object>
-				<xr:Object>Document.GoodsReceipt.Attribute.DocumentTotal</xr:Object>
 				<xr:Object>Document.PurchaseOrder.Attribute.DocumentTotal</xr:Object>
-				<xr:Object>Document.SalesQuote.Attribute.DocumentTotal</xr:Object>
 				<xr:Object>Document.SalesInvoice.Attribute.DocumentTotal</xr:Object>
 				<xr:Object>Document.SalesOrder.Attribute.DocumentTotal</xr:Object>
 				<xr:Object>Document.PurchaseInvoice.Attribute.DocumentTotal</xr:Object>
 				<xr:Object>Document.CashPurchase.Attribute.DocumentTotal</xr:Object>
-				<xr:Object>Document.PurchaseQuote.Attribute.DocumentTotal</xr:Object>
 				<xr:Object>Document.PurchaseReturn.Attribute.DocumentTotal</xr:Object>
-				<xr:Object>InformationRegister.PriceList.Dimension.Currency</xr:Object>
-				<xr:Object>Document.GeneralJournalEntry.Attribute.ExchangeRate</xr:Object>
 				<xr:Object>Document.GeneralJournalEntry.Attribute.Currency</xr:Object>
+				<xr:Object>Document.GeneralJournalEntry.Attribute.ExchangeRate</xr:Object>
 				<xr:Object>Document.GeneralJournalEntry.Attribute.DocumentTotal</xr:Object>
-				<xr:Object>Document.GeneralJournalEntry.Attribute.DontWriteFCY</xr:Object>
 				<xr:Object>ChartOfAccounts.ChartOfAccounts.Attribute.Currency</xr:Object>
-				<xr:Object>Document.Payment.TabularSection.LineItems.Attribute.Currency</xr:Object>
-				<xr:Object>Document.Check.Attribute.ExchangeRate</xr:Object>
 				<xr:Object>Document.Check.Attribute.DocumentTotal</xr:Object>
+				<xr:Object>Document.Check.Attribute.ExchangeRate</xr:Object>
+				<xr:Object>Document.CashReceipt.TabularSection.CreditMemos.Attribute.BalanceFCY</xr:Object>
+				<xr:Object>Document.CashReceipt.TabularSection.CreditMemos.Attribute.Currency</xr:Object>
+				<xr:Object>Document.CashReceipt.TabularSection.LineItems.Attribute.Currency</xr:Object>
+				<xr:Object>Document.Deposit.Attribute.DocumentTotal</xr:Object>
+				<xr:Object>Document.Deposit.TabularSection.LineItems.Attribute.DocumentTotal</xr:Object>
+				<xr:Object>Document.Deposit.TabularSection.LineItems.Attribute.Currency</xr:Object>
 			</Content>
 		</Properties>
 	</FunctionalOption>

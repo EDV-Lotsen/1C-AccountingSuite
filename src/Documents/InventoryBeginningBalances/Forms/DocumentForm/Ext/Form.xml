@@ -14,25 +14,34 @@
 			<DataPath>Object.Product</DataPath>
 			<EditMode>EnterOnInput</EditMode>
 			<ContextMenu name="ProductContextMenu" id="2"/>
-			<ExtendedTooltip name="ProductExtendedTooltip" id="9"/>
+			<ExtendedTooltip name="ProductExtendedTooltip" id="11"/>
 		</InputField>
 		<InputField name="Location" id="3">
 			<DataPath>Object.Location</DataPath>
 			<EditMode>EnterOnInput</EditMode>
 			<ContextMenu name="LocationContextMenu" id="4"/>
-			<ExtendedTooltip name="LocationExtendedTooltip" id="10"/>
+			<ExtendedTooltip name="LocationExtendedTooltip" id="12"/>
+		</InputField>
+		<InputField name="Date" id="9">
+			<DataPath>Object.Date</DataPath>
+			<HorizontalAlign>Right</HorizontalAlign>
+			<Width>15</Width>
+			<ContextMenu name="DateContextMenu" id="10"/>
+			<ExtendedTooltip name="DateExtendedTooltip" id="13"/>
 		</InputField>
 		<InputField name="Quantity" id="5">
 			<DataPath>Object.Quantity</DataPath>
 			<EditMode>EnterOnInput</EditMode>
+			<Width>15</Width>
 			<ContextMenu name="QuantityContextMenu" id="6"/>
-			<ExtendedTooltip name="QuantityExtendedTooltip" id="11"/>
+			<ExtendedTooltip name="QuantityExtendedTooltip" id="14"/>
 		</InputField>
 		<InputField name="Value" id="7">
 			<DataPath>Object.Value</DataPath>
 			<EditMode>EnterOnInput</EditMode>
+			<Width>15</Width>
 			<ContextMenu name="ValueContextMenu" id="8"/>
-			<ExtendedTooltip name="ValueExtendedTooltip" id="12"/>
+			<ExtendedTooltip name="ValueExtendedTooltip" id="15"/>
 		</InputField>
 	</ChildItems>
 	<Attributes>

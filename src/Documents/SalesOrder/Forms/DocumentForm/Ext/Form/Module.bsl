@@ -1,4 +1,174 @@
-﻿
+﻿&AtServer
+// Request order status from database
+Procedure FillOrderStatuses()
+	
+	// Request order status
+	If Not ValueIsFilled(Object.Ref) Then
+		// New order has open status
+		OrderStatus = Enums.OrderStatuses.Open;
+		
+	Else
+		// Create new query
+		Query = New Query;
+		Query.SetParameter("Ref", Object.Ref);
+		
+		Query.Text = 
+			"SELECT TOP 1
+			|	OrdersStatuses.Status
+			|FROM
+			|	InformationRegister.OrdersStatuses AS OrdersStatuses
+			|WHERE
+			|	Order = &Ref
+			|ORDER BY
+			|	OrdersStatuses.Status.Order Desc";
+		Selection = Query.Execute().Choose();
+		
+		// Fill order status
+		If Selection.Next() Then
+			OrderStatus = Selection.Status;
+		Else
+			OrderStatus = Enums.OrderStatuses.Open;
+		EndIf;
+	EndIf;
+	OrderStatusIndex = Enums.OrderStatuses.IndexOf(OrderStatus);
+	
+	// Build order status presentation (depending of document state)
+	If Not ValueIsFilled(Object.Ref) Then
+		OrderStatusPresentation = String(Enums.OrderStatuses.New);
+		Items.OrderStatusPresentation.TextColor = WebColors.DarkGreen;
+	ElsIf Object.DeletionMark Then
+		OrderStatusPresentation = String(Enums.OrderStatuses.Deleted);
+		Items.OrderStatusPresentation.TextColor = WebColors.DarkGray;
+	ElsIf Not Object.Posted Then 
+		OrderStatusPresentation = String(Enums.OrderStatuses.Draft);
+		Items.OrderStatusPresentation.TextColor = WebColors.DarkGray;
+	Else
+		OrderStatusPresentation = String(OrderStatus);
+		If OrderStatus = Enums.OrderStatuses.Open Then 
+			ThisForm.Items.OrderStatusPresentation.TextColor = WebColors.DarkGreen;
+		ElsIf OrderStatus = Enums.OrderStatuses.Backordered Then 
+			ThisForm.Items.OrderStatusPresentation.TextColor = WebColors.DarkGoldenRod;
+		ElsIf OrderStatus = Enums.OrderStatuses.Closed Then
+			ThisForm.Items.OrderStatusPresentation.TextColor = WebColors.DarkRed;
+		Else
+			ThisForm.Items.OrderStatusPresentation.TextColor = WebColors.DarkGray;
+		EndIf;
+	EndIf;
+	
+EndProcedure
+
+&AtServer
+// Request demanded order items from database
+Procedure FillOrdersRegistered()
+	
+	// Request ordered items quantities
+	If ValueIsFilled(Object.Ref) Then
+		
+		// Create new query
+		Query = New Query;
+		Query.SetParameter("Ref", Object.Ref);
+		Query.SetParameter("OrderStatus", OrderStatus);
+		
+		Query.Text = 
+			"SELECT
+			|	OrdersRegistered.LineNumber              AS LineNumber,
+			|	OrdersRegisteredBalance.Product          AS Product,                                                            // ---------------------------------------
+			|	OrdersRegisteredBalance.QuantityBalance  AS Quantity,                                                           // Backorder quantity calculation
+			|	CASE                                                                                                            // ---------------------------------------
+			|		WHEN &OrderStatus = VALUE(Enum.OrderStatuses.Open)        THEN 0                                            // Order status = Open:
+			|		WHEN &OrderStatus = VALUE(Enum.OrderStatuses.Backordered) THEN                                              //   Backorder = 0
+			|			CASE                                                                                                    // Order status = Backorder:
+			|				WHEN OrdersRegisteredBalance.Product.Type = VALUE(Enum.InventoryTypes.Inventory) THEN               //   Inventory:
+			|					CASE                                                                                            //     Backorder = Ordered - Shipped >= 0
+			|						WHEN OrdersRegisteredBalance.QuantityBalance > OrdersRegisteredBalance.ShippedBalance THEN  //     |
+			|							 OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.ShippedBalance       //     |
+			|						ELSE 0 END                                                                                  //     |
+			|				ELSE                                                                                                //   Non-inventory:
+			|					CASE                                                                                            //     Backorder = Ordered - Invoiced >= 0
+			|						WHEN OrdersRegisteredBalance.QuantityBalance > OrdersRegisteredBalance.InvoicedBalance THEN //     |
+			|							 OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.InvoicedBalance      //     |
+			|						ELSE 0 END                                                                                  //     |
+			|				END                                                                                                 //     |
+			|		WHEN &OrderStatus = VALUE(Enum.OrderStatuses.Closed)      THEN 0                                            // Order status = Closed:
+			|		END AS Backorder,                                                                                           //   Backorder = 0
+			|	OrdersRegisteredBalance.ShippedBalance   AS Shipped,
+			|	OrdersRegisteredBalance.InvoicedBalance  AS Invoiced
+			|FROM
+			|	AccumulationRegister.OrdersRegistered.Balance(,
+			|		(Company, Order, Product) IN
+			|			(SELECT
+			|				LineItems.Ref.Company,
+			|				LineItems.Ref,
+			|				LineItems.Product
+			|			FROM
+			|				Document.SalesOrder.LineItems AS LineItems
+			|			WHERE
+			|				LineItems.Ref = &Ref)) AS OrdersRegisteredBalance
+			|	LEFT JOIN AccumulationRegister.OrdersRegistered AS OrdersRegistered
+			|		ON    ( OrdersRegistered.Recorder = &Ref
+			|			AND OrdersRegistered.Company  = OrdersRegisteredBalance.Company
+			|			AND OrdersRegistered.Order    = OrdersRegisteredBalance.Order
+			|			AND OrdersRegistered.Product  = OrdersRegisteredBalance.Product
+			|			AND OrdersRegistered.Quantity = OrdersRegisteredBalance.QuantityBalance)
+			|ORDER BY
+			|	OrdersRegistered.LineNumber";
+		Selection = Query.Execute().Choose();
+		
+		// Fill ordered items quantities
+		SearchRec = New Structure("LineNumber, Product, Quantity");
+		While Selection.Next() Do
+			
+			// Search for appropriate line in tabular section of order
+			FillPropertyValues(SearchRec, Selection);
+			FoundLineItems = Object.LineItems.FindRows(SearchRec);
+			
+			// Fill quantities in tabular section
+			If FoundLineItems.Count() > 0 Then
+				FillPropertyValues(FoundLineItems[0], Selection, "Backorder, Shipped, Invoiced");
+			EndIf;
+			
+		EndDo;
+		
+	EndIf;
+	
+EndProcedure
+
+&AtServer
+// Request and fill indexes of product type (required to calculate bacorder property)
+Procedure FillProductTypes()
+	
+	// Fill line item's product types
+	If ValueIsFilled(Object.Ref) Then
+		
+		// Create new query
+		Query = New Query;
+		Query.SetParameter("Ref", Object.Ref);
+		
+		Query.Text =
+		"SELECT
+		|	SalesOrderLineItems.LineNumber         AS LineNumber,
+		|	SalesOrderLineItems.Product.Type.Order AS ProductTypeIndex
+		|FROM
+		|	Document.SalesOrder.LineItems AS SalesOrderLineItems
+		|WHERE
+		|	SalesOrderLineItems.Ref = &Ref
+		|ORDER BY
+		|	LineNumber";
+		Selection = Query.Execute().Choose();
+		
+		// Fill ordered items quantities
+		While Selection.Next() Do
+			
+			// Search for appropriate line in tabular section of order
+			LineItem = Object.LineItems.Get(Selection.LineNumber-1);
+			If LineItem <> Undefined Then
+				LineItem.ProductTypeIndex = Selection.ProductTypeIndex;
+			EndIf;
+		EndDo;
+		
+	EndIf;
+EndProcedure
+
 &AtClient
 // ProductOnChange UI event handler.
 // The procedure clears quantities, line total, and taxable amount in the line item,
@@ -10,26 +180,25 @@ Procedure LineItemsProductOnChange(Item)
 	
 	TabularPartRow = Items.LineItems.CurrentData;
 	
-	TabularPartRow.Descr = GeneralFunctions.GetAttributeValue(TabularPartRow.Product, "Descr");
+	ProductProperties = CommonUse.GetAttributeValues(TabularPartRow.Product, "Description, Type.Order, SalesVATCode");
+	TabularPartRow.ProductDescription = ProductProperties.Description;
+	TabularPartRow.ProductTypeIndex   = ProductProperties.TypeOrder;
+	
 	TabularPartRow.Quantity = 0;
-	TabularPartRow.QuantityUM = 0;
+	TabularPartRow.Backorder = 0;
+	TabularPartRow.Shipped = 0;
+	TabularPartRow.Invoiced = 0;
 	TabularPartRow.LineTotal = 0;
 	TabularPartRow.TaxableAmount = 0;
 	TabularPartRow.Price = 0;
     TabularPartRow.VAT = 0;
 	
-	Price = GeneralFunctions.RetailPrice(CurrentDate(), TabularPartRow.Product, Object.Company, Object.Currency);
-	If GeneralFunctions.FunctionalOptionValue("AdvancedPricing") Then
-		TabularPartRow.Price = Price;
-	Else
-		TabularPartRow.Price = Price / Object.ExchangeRate;
-	EndIf;
+	Price = GeneralFunctions.RetailPrice(CurrentDate(), TabularPartRow.Product);
+	TabularPartRow.Price = Price / Object.ExchangeRate;
 
-	TabularPartRow.UM = GeneralFunctions.GetDefaultSalesUMForProduct(TabularPartRow.Product);
-	
 	TabularPartRow.SalesTaxType = US_FL.GetSalesTaxType(TabularPartRow.Product);	
 	
-	TabularPartRow.VATCode = GeneralFunctions.GetAttributeValue(TabularPartRow.Product, "SalesVATCode");
+	TabularPartRow.VATCode = ProductProperties.SalesVATCode;
 	
 	RecalcTotal();
 	
@@ -57,12 +226,17 @@ EndProcedure
 //
 Procedure RecalcTotal()
 	
-	Object.DocumentTotal = Object.LineItems.Total("LineTotal") + Object.LineItems.Total("VAT") + Object.SalesTax;
-	Object.DocumentTotalRC = (Object.LineItems.Total("LineTotal") + Object.LineItems.Total("VAT") + Object.SalesTax) * Object.ExchangeRate;
+	
+	If Object.PriceIncludesVAT Then
+		Object.DocumentTotal = Object.LineItems.Total("LineTotal") + Object.SalesTax;
+		Object.DocumentTotalRC = (Object.LineItems.Total("LineTotal") + Object.SalesTax) * Object.ExchangeRate;		
+	Else
+		Object.DocumentTotal = Object.LineItems.Total("LineTotal") + Object.LineItems.Total("VAT") + Object.SalesTax;
+		Object.DocumentTotalRC = (Object.LineItems.Total("LineTotal") + Object.LineItems.Total("VAT") + Object.SalesTax) * Object.ExchangeRate;
+	EndIf;	
 	Object.VATTotal = Object.LineItems.Total("VAT") * Object.ExchangeRate;
 	
 EndProcedure
-
 
 &AtClient
 // The procedure recalculates a taxable amount for a line item.
@@ -79,7 +253,6 @@ Procedure RecalcTaxableAmount()
 	
 EndProcedure
 
-
 &AtClient
 // CustomerOnChange UI event handler.
 // Selects default currency for the customer, determines an exchange rate, and
@@ -87,10 +260,12 @@ EndProcedure
 // 
 Procedure CompanyOnChange(Item)
 	
-	Object.Currency = GeneralFunctions.GetAttributeValue(Object.Company, "DefaultCurrency");
-	Object.ExchangeRate = GeneralFunctions.GetExchangeRate(Object.Date, GeneralFunctionsReusable.DefaultCurrency(), Object.Currency);
-	Items.ExchangeRate.Title = GeneralFunctionsReusable.DefaultCurrencySymbol() + "/" + GeneralFunctions.GetAttributeValue(Object.Currency, "Symbol");
-	Items.FCYCurrency.Title = GeneralFunctions.GetAttributeValue(Object.Currency, "Symbol");
+	Object.CompanyCode = CommonUse.GetAttributeValue(Object.Company, "Code");
+	Object.ShipTo = GeneralFunctions.GetShipToAddress(Object.Company);
+	Object.Currency = CommonUse.GetAttributeValue(Object.Company, "DefaultCurrency");
+	Object.ExchangeRate = GeneralFunctions.GetExchangeRate(Object.Date, Object.Currency);
+	Items.ExchangeRate.Title = GeneralFunctionsReusable.DefaultCurrencySymbol() + "/1" + CommonUse.GetAttributeValue(Object.Currency, "Symbol");
+	Items.FCYCurrency.Title = CommonUse.GetAttributeValue(Object.Currency, "Symbol");
 	RecalcSalesTax();
 	RecalcTotal();
 	
@@ -105,13 +280,9 @@ Procedure LineItemsPriceOnChange(Item)
 	
 	TabularPartRow = Items.LineItems.CurrentData;
 	
-	If GeneralFunctionsReusable.FunctionalOptionValue("UnitsOfMeasure") Then
-		TabularPartRow.LineTotal = TabularPartRow.QuantityUM * TabularPartRow.Price;
-	Else
-		TabularPartRow.LineTotal = TabularPartRow.Quantity * TabularPartRow.Price;
-	EndIf;
+	TabularPartRow.LineTotal = TabularPartRow.Quantity * TabularPartRow.Price;
 
-	TabularPartRow.VAT = SouthAfrica_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Sales");
+	TabularPartRow.VAT = VAT_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Sales", Object.PriceIncludesVAT);
 	
 	RecalcTaxableAmount();
 	RecalcSalesTax();
@@ -126,12 +297,11 @@ EndProcedure
 //
 Procedure DateOnChange(Item)
 	
-	Object.ExchangeRate = GeneralFunctions.GetExchangeRate(Object.Date, GeneralFunctionsReusable.DefaultCurrency(), Object.Currency);
+	Object.ExchangeRate = GeneralFunctions.GetExchangeRate(Object.Date, Object.Currency);
 	RecalcSalesTax();
 	RecalcTotal();
 	
 EndProcedure
-
 
 &AtClient
 // CurrencyOnChange UI event handler.
@@ -140,64 +310,9 @@ EndProcedure
 //
 Procedure CurrencyOnChange(Item)
 	
-	Object.ExchangeRate = GeneralFunctions.GetExchangeRate(Object.Date, GeneralFunctionsReusable.DefaultCurrency(), Object.Currency);
-	Items.ExchangeRate.Title = GeneralFunctionsReusable.DefaultCurrencySymbol() + "/" + GeneralFunctions.GetAttributeValue(Object.Currency, "Symbol");
-	Items.FCYCurrency.Title = GeneralFunctions.GetAttributeValue(Object.Currency, "Symbol");
-	RecalcSalesTax();
-	RecalcTotal();
-	
-EndProcedure
-
-&AtClient
-// LineItemsQuantityUMOnChange UI event handler.
-// Determines conversion ratio between the selected and base units of measure,
-// calculates a new base quantity, recalculates line total, taxable amount, sales tax, and
-// document total.
-//
-Procedure LineItemsQuantityUMOnChange(Item)
-	
-	TabularPartRow = Items.LineItems.CurrentData;
-	
-	Ratio = GeneralFunctions.GetUMRatio(TabularPartRow.UM);
-	
-	If Ratio = 0 Then
-		TabularPartRow.Quantity = TabularPartRow.QuantityUM * 1;
-	Else
-		TabularPartRow.Quantity = TabularPartRow.QuantityUM * Ratio;
-	EndIf;
-	
-	TabularPartRow.LineTotal = TabularPartRow.QuantityUM * TabularPartRow.Price;
-	TabularPartRow.VAT = SouthAfrica_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Sales");
-	
-	RecalcTaxableAmount();
-	RecalcSalesTax();
-	RecalcTotal();
-
-EndProcedure
-
-&AtClient
-// LineItemsUMOnChange UI event handler.
-// The procedure determines a unit of measure (U/M) conversion ratio, clears the price of the product,
-// line total, taxable amount, calculates quantity in a base U/M, recalculates document sales tax
-// and total.
-//
-Procedure LineItemsUMOnChange(Item)
-	
-	TabularPartRow = Items.LineItems.CurrentData;
-	
-	Ratio = GeneralFunctions.GetUMRatio(TabularPartRow.UM);
-	
-	TabularPartRow.Price = 0;
-	TabularPartRow.LineTotal = 0;
-	TabularPartRow.TaxableAmount = 0;
-	TabularPartRow.VAT = 0;
-	
-	If Ratio = 0 Then
-		TabularPartRow.Quantity = TabularPartRow.QuantityUM * 1;
-	Else
-		TabularPartRow.Quantity = TabularPartRow.QuantityUM * Ratio;
-	EndIf;
-
+	Object.ExchangeRate = GeneralFunctions.GetExchangeRate(Object.Date, Object.Currency);
+	Items.ExchangeRate.Title = GeneralFunctionsReusable.DefaultCurrencySymbol() + "/1" + CommonUse.GetAttributeValue(Object.Currency, "Symbol");
+	Items.FCYCurrency.Title = CommonUse.GetAttributeValue(Object.Currency, "Symbol");
 	RecalcSalesTax();
 	RecalcTotal();
 	
@@ -231,11 +346,30 @@ EndProcedure
 // The procedure recalculates line total, line taxable amount, and a document's sales tax and total.
 // 
 Procedure LineItemsQuantityOnChange(Item)
-		
-	TabularPartRow = Items.LineItems.CurrentData;
-	TabularPartRow.LineTotal = TabularPartRow.Quantity * TabularPartRow.Price;
-	TabularPartRow.VAT = SouthAfrica_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Sales");
 	
+	// Request current string
+	TabularPartRow = Items.LineItems.CurrentData;
+	
+	// Calculate sum and taxes by line
+	TabularPartRow.LineTotal = TabularPartRow.Quantity * TabularPartRow.Price;
+	TabularPartRow.VAT = VAT_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Sales", Object.PriceIncludesVAT);
+	
+	// Update backorder quantity based on document status
+	If    OrderStatusIndex = 0 Then // OrderStatus = Enums.OrderStatuses.Open
+		TabularPartRow.Backorder = 0;
+	ElsIf OrderStatusIndex = 1 Then // OrderStatus = Enums.OrderStatuses.Backordered
+		If TabularPartRow.ProductTypeIndex = 0 Then // Product.Type = Enums.InventoryTypes.Inventory
+			TabularPartRow.Backorder = Max(TabularPartRow.Quantity - TabularPartRow.Shipped, 0);
+		Else 
+			TabularPartRow.Backorder = Max(TabularPartRow.Quantity - TabularPartRow.Invoiced, 0);
+		EndIf;
+	ElsIf OrderStatusIndex = 2 Then // OrderStatus = Enums.OrderStatuses.Closed
+		TabularPartRow.Backorder = 0;
+	Else
+		TabularPartRow.Backorder = 0;
+	EndIf;
+	
+	// Calculate totals
 	RecalcTaxableAmount();
 	RecalcSalesTax();
 	RecalcTotal();
@@ -253,11 +387,15 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
 	//Title = "Sales Order " + Object.Number + " " + Format(Object.Date, "DLF=D");
 	
+	If Object.Ref.IsEmpty() Then
+    	Object.PriceIncludesVAT = GeneralFunctionsReusable.PriceIncludesVAT();
+	EndIf;
+
 	If NOT GeneralFunctionsReusable.FunctionalOptionValue("USFinLocalization") Then
 		Items.SalesTaxGroup.Visible = False;
 	EndIf;
 	
-	If NOT GeneralFunctionsReusable.FunctionalOptionValue("SAFinLocalization") Then
+	If NOT GeneralFunctionsReusable.FunctionalOptionValue("VATFinLocalization") Then
 		Items.VATGroup.Visible = False;
 	EndIf;
 	
@@ -265,12 +403,12 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Items.FCYGroup.Visible = False;
 	EndIf;
 	
-	If GeneralFunctionsReusable.FunctionalOptionValue("MultiLocation") Then
-	Else
+	//If GeneralFunctionsReusable.FunctionalOptionValue("MultiLocation") Then
+	//Else
 		If Object.Location.IsEmpty() Then
-			Object.Location = Constants.DefaultLocation.Get();
+			Object.Location = Catalogs.Locations.MainWarehouse;
 		EndIf;
-	EndIf;
+	//EndIf;
 
 	If Object.Currency.IsEmpty() Then
 		Object.Currency = Constants.DefaultCurrency.Get();
@@ -278,57 +416,24 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	Else
 	EndIf; 
 	
-	Items.ExchangeRate.Title = GeneralFunctionsReusable.DefaultCurrencySymbol() + "/" + Object.Currency.Symbol;
+	Items.ExchangeRate.Title = GeneralFunctionsReusable.DefaultCurrencySymbol() + "/1" + Object.Currency.Symbol;
 	Items.VATCurrency.Title = GeneralFunctionsReusable.DefaultCurrencySymbol();
 	Items.RCCurrency.Title = GeneralFunctionsReusable.DefaultCurrencySymbol();
-	Items.FCYCurrency.Title = GeneralFunctions.GetAttributeValue(Object.Currency, "Symbol");
+	Items.FCYCurrency.Title = CommonUse.GetAttributeValue(Object.Currency, "Symbol");
 
+	// Request and fill order status
+	FillOrderStatuses();
+
+	// Request and fill ordered items from database
+	FillOrdersRegistered();
 	
-EndProcedure
-
-&AtClient
-// Makes the base Quantity field read only if the units of measure functional option is turned on
-//
-Procedure LineItemsBeforeAddRow(Item, Cancel, Clone, Parent, Folder)
+	// Request and fill indexes of product type (required to calculate bacorder property)
+	FillProductTypes();
 	
-	If GeneralFunctionsReusable.FunctionalOptionValue("UnitsOfMeasure") Then
-		Items.LineItemsQuantity.ReadOnly = True;
-	EndIf;
-
-EndProcedure
-
-&AtClient
-// Makes the base Quantity field read only if the units of measure functional option is turned on
-//
-Procedure LineItemsBeforeRowChange(Item, Cancel)
+	// AdditionalReportsAndDataProcessors
+	AdditionalReportsAndDataProcessors.OnCreateAtServer(ThisForm);
+	// End AdditionalReportsAndDataProcessors
 	
-	If GeneralFunctionsReusable.FunctionalOptionValue("UnitsOfMeasure") Then
-		Items.LineItemsQuantity.ReadOnly = True;
-	EndIf;
-
-EndProcedure
-
-&AtServer
-// Ensures uniqueness of line items
-//
-Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
-	
-	ProductData = Object.LineItems.Unload(,"Product");	
-	ProductData.Sort("Product");
-	NoOfRows = ProductData.Count();	
-	For i = 0 to NoOfRows - 2 Do		
-		Product = ProductData[i][0];
-		If ProductData[i][0] = ProductData[i+1][0] AND NOT Product.Code = "" Then									
-			ProductIDString = String(Product.Description);
-			ProductDescrString = String(Product.Descr);			
-			Message = New UserMessage();		    
-			Message.Text = "Duplicate item: " + ProductIDString + " " + ProductDescrString;
-			Message.Message();
-			Cancel = True;
-			Return;
-		EndIf;		
-	EndDo;
-
 EndProcedure
 
 &AtClient
@@ -337,7 +442,21 @@ EndProcedure
 Procedure LineItemsVATCodeOnChange(Item)
 	
 	TabularPartRow = Items.LineItems.CurrentData;
-	TabularPartRow.VAT = SouthAfrica_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Sales");
+	TabularPartRow.VAT = VAT_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Sales", Object.PriceIncludesVAT);
     RecalcTotal();
 
+EndProcedure
+
+&AtServer
+Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
+	
+	// Request and fill order status from database
+	FillOrderStatuses();
+	
+	// Request and fill ordered items from database
+	FillOrdersRegistered();
+	
+	// Request and fill indexes of product type (required to calculate bacorder property)
+	FillProductTypes();
+		
 EndProcedure

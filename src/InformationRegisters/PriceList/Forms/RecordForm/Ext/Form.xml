@@ -3,55 +3,18 @@
 	<WindowOpeningMode>LockOwnerWindow</WindowOpeningMode>
 	<VerticalScroll>useIfNecessary</VerticalScroll>
 	<AutoCommandBar name="FormCommandBar" id="-1"/>
-	<Events>
-		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
-	</Events>
 	<ChildItems>
 		<InputField name="Period" id="1">
 			<DataPath>Record.Period</DataPath>
 			<HorizontalAlign>Right</HorizontalAlign>
-			<EditFormat>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>DLF=D</v8:content>
-				</v8:item>
-				<v8:item>
-					<v8:lang>pt</v8:lang>
-					<v8:content>DLF=D</v8:content>
-				</v8:item>
-			</EditFormat>
 			<ContextMenu name="PeriodContextMenu" id="2"/>
-			<ExtendedTooltip name="PeriodExtendedTooltip" id="13"/>
+			<ExtendedTooltip name="PeriodExtendedTooltip" id="9"/>
 		</InputField>
 		<InputField name="Product" id="3">
 			<DataPath>Record.Product</DataPath>
 			<Width>30</Width>
 			<ContextMenu name="ProductContextMenu" id="4"/>
-			<ExtendedTooltip name="ProductExtendedTooltip" id="14"/>
-		</InputField>
-		<InputField name="Company" id="9">
-			<DataPath>Record.Company</DataPath>
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Customer</v8:content>
-				</v8:item>
-				<v8:item>
-					<v8:lang>pt</v8:lang>
-					<v8:content>Cliente</v8:content>
-				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>Kunde</v8:content>
-				</v8:item>
-			</Title>
-			<ContextMenu name="CompanyContextMenu" id="10"/>
-			<ExtendedTooltip name="CompanyExtendedTooltip" id="15"/>
-		</InputField>
-		<InputField name="Currency" id="11">
-			<DataPath>Record.Currency</DataPath>
-			<ContextMenu name="CurrencyContextMenu" id="12"/>
-			<ExtendedTooltip name="CurrencyExtendedTooltip" id="16"/>
+			<ExtendedTooltip name="ProductExtendedTooltip" id="10"/>
 		</InputField>
 		<InputField name="Price" id="7">
 			<DataPath>Record.Price</DataPath>
@@ -60,13 +23,9 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>NFD=2</v8:content>
 				</v8:item>
-				<v8:item>
-					<v8:lang>pt</v8:lang>
-					<v8:content>NFD=2</v8:content>
-				</v8:item>
 			</EditFormat>
 			<ContextMenu name="PriceContextMenu" id="8"/>
-			<ExtendedTooltip name="PriceExtendedTooltip" id="17"/>
+			<ExtendedTooltip name="PriceExtendedTooltip" id="11"/>
 		</InputField>
 	</ChildItems>
 	<Attributes>

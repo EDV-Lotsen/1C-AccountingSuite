@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<MetaDataObject xmlns="http://v8.1c.ru/8.3/MDClasses" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:cmi="http://v8.1c.ru/8.2/managed-application/cmi" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xen="http://v8.1c.ru/8.3/xcf/enums" xmlns:xpr="http://v8.1c.ru/8.3/xcf/predef" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<Enum uuid="def3b642-6071-41cd-a48a-4372482f1031">
+		<InternalInfo>
+			<xr:GeneratedType name="EnumRef.OrderStatuses" category="Ref">
+				<xr:TypeId>2d301ba8-da3a-4740-be10-558639dbd7ae</xr:TypeId>
+				<xr:ValueId>7a0b1209-fc6e-49c7-a2bc-3d839fa23411</xr:ValueId>
+			</xr:GeneratedType>
+			<xr:GeneratedType name="EnumManager.OrderStatuses" category="Manager">
+				<xr:TypeId>0fd52065-1d87-47a8-934f-3bf0fd744891</xr:TypeId>
+				<xr:ValueId>28385bca-6456-4af2-b085-99c8a892324c</xr:ValueId>
+			</xr:GeneratedType>
+			<xr:GeneratedType name="EnumList.OrderStatuses" category="List">
+				<xr:TypeId>6401345f-27ee-4202-a14d-263e1f5ee50a</xr:TypeId>
+				<xr:ValueId>c08c9f51-8a70-48ba-82c7-160de8d50b21</xr:ValueId>
+			</xr:GeneratedType>
+		</InternalInfo>
+		<Properties>
+			<Name>OrderStatuses</Name>
+			<Synonym>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Order Statuses</v8:content>
+				</v8:item>
+			</Synonym>
+			<Comment/>
+			<UseStandardCommands>true</UseStandardCommands>
+			<Characteristics/>
+			<QuickChoice>true</QuickChoice>
+			<ChoiceMode>BothWays</ChoiceMode>
+			<DefaultListForm/>
+			<DefaultChoiceForm/>
+			<AuxiliaryListForm/>
+			<AuxiliaryChoiceForm/>
+			<ListPresentation/>
+			<ExtendedListPresentation/>
+			<Explanation/>
+			<ChoiceHistoryOnInput>Auto</ChoiceHistoryOnInput>
+		</Properties>
+		<ChildObjects>
+			<EnumValue uuid="e9e188f8-18ba-46e9-a83d-fa09c9bcaa4a">
+				<Properties>
+					<Name>Open</Name>
+					<Synonym>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Open</v8:content>
+						</v8:item>
+					</Synonym>
+					<Comment/>
+				</Properties>
+			</EnumValue>
+			<EnumValue uuid="8bad3535-47cf-4bfe-9664-e8ff4b162dbb">
+				<Properties>
+					<Name>Backordered</Name>
+					<Synonym>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Backordered</v8:content>
+						</v8:item>
+					</Synonym>
+					<Comment/>
+				</Properties>
+			</EnumValue>
+			<EnumValue uuid="0f8c1559-dbc5-443b-8a46-fe6ad11bd4a6">
+				<Properties>
+					<Name>Closed</Name>
+					<Synonym>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Closed</v8:content>
+						</v8:item>
+					</Synonym>
+					<Comment/>
+				</Properties>
+			</EnumValue>
+			<EnumValue uuid="5cafdd7a-254e-4fc1-a721-8831089741fc">
+				<Properties>
+					<Name>New</Name>
+					<Synonym>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>New</v8:content>
+						</v8:item>
+					</Synonym>
+					<Comment>Document status presentation</Comment>
+				</Properties>
+			</EnumValue>
+			<EnumValue uuid="7ae748d6-235e-4893-a63b-e11c90bd17e3">
+				<Properties>
+					<Name>Draft</Name>
+					<Synonym>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Draft</v8:content>
+						</v8:item>
+					</Synonym>
+					<Comment>Document status presentation</Comment>
+				</Properties>
+			</EnumValue>
+			<EnumValue uuid="f6728e03-ba32-4dcf-b2ef-631e33e16942">
+				<Properties>
+					<Name>Deleted</Name>
+					<Synonym>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Deleted</v8:content>
+						</v8:item>
+					</Synonym>
+					<Comment>Document status presentation</Comment>
+				</Properties>
+			</EnumValue>
+		</ChildObjects>
+	</Enum>
+</MetaDataObject>

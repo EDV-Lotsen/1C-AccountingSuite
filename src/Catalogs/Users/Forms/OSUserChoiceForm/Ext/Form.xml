@@ -1,0 +1,289 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<Width>50</Width>
+	<Height>14</Height>
+	<CommandBarLocation>Bottom</CommandBarLocation>
+	<VerticalScroll>useIfNecessary</VerticalScroll>
+	<AutoCommandBar name="FormCommandBar" id="-1">
+		<HorizontalAlign>Right</HorizontalAlign>
+		<Autofill>false</Autofill>
+		<ChildItems>
+			<Button name="OK" id="16">
+				<Type>CommandBarButton</Type>
+				<DefaultButton>true</DefaultButton>
+				<SkipOnInput>false</SkipOnInput>
+				<CommandName>Form.Command.CommandOK</CommandName>
+				<TextColor>style:ButtonTextColor</TextColor>
+				<BackColor>style:ButtonBackColor</BackColor>
+				<BorderColor>style:BorderColor</BorderColor>
+				<ExtendedTooltip name="OKExtendedTooltip" id="19"/>
+			</Button>
+			<Button name="Cancel" id="15">
+				<Type>CommandBarButton</Type>
+				<SkipOnInput>false</SkipOnInput>
+				<CommandName>Form.StandardCommand.Cancel</CommandName>
+				<TextColor>style:ButtonTextColor</TextColor>
+				<BackColor>style:ButtonBackColor</BackColor>
+				<BorderColor>style:BorderColor</BorderColor>
+				<Title>
+					<v8:item>
+						<v8:lang>en</v8:lang>
+						<v8:content>Cancel</v8:content>
+					</v8:item>
+				</Title>
+				<ExtendedTooltip name="CancelExtendedTooltip" id="20"/>
+			</Button>
+			<Button name="Help" id="18">
+				<Type>CommandBarButton</Type>
+				<SkipOnInput>false</SkipOnInput>
+				<CommandName>Form.StandardCommand.Help</CommandName>
+				<ExtendedTooltip name="HelpExtendedTooltip" id="21"/>
+			</Button>
+		</ChildItems>
+	</AutoCommandBar>
+	<Events>
+		<Event name="OnOpen">OnOpen</Event>
+	</Events>
+	<ChildItems>
+		<UsualGroup name="DomainAndUserListGroup" id="2">
+			<Group>Horizontal</Group>
+			<Representation>None</Representation>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="DomainAndUserListGroupExtendedTooltip" id="22"/>
+			<ChildItems>
+				<Table name="DomainTable" id="5">
+					<Representation>List</Representation>
+					<TitleLocation>Top</TitleLocation>
+					<CommandBarLocation>None</CommandBarLocation>
+					<Autofill>true</Autofill>
+					<ReadOnly>true</ReadOnly>
+					<SkipOnInput>false</SkipOnInput>
+					<Width>40</Width>
+					<HeightInTableRows>4</HeightInTableRows>
+					<Header>false</Header>
+					<DataPath>ListOfDomains</DataPath>
+					<BorderColor>style:BorderColor</BorderColor>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Domain</v8:content>
+						</v8:item>
+					</Title>
+					<SearchStringLocation>None</SearchStringLocation>
+					<ViewStatusLocation>None</ViewStatusLocation>
+					<SearchControlLocation>None</SearchControlLocation>
+					<RowFilter xsi:nil="true"/>
+					<ContextMenu name="DomainTableContextMenu" id="6"/>
+					<AutoCommandBar name="DomainTableCommandBar" id="7"/>
+					<ExtendedTooltip name="DomainTableExtendedTooltip" id="23"/>
+					<SearchStringAddition name="DomainTableSearchString" id="24">
+						<AdditionSource>
+							<Item>DomainTable</Item>
+							<Type>SearchStringRepresentation</Type>
+						</AdditionSource>
+						<ContextMenu name="DomainTableSearchStringContextMenu" id="25"/>
+						<ExtendedTooltip name="DomainTableSearchStringExtendedTooltip" id="26"/>
+					</SearchStringAddition>
+					<ViewStatusAddition name="DomainTableViewStatus" id="27">
+						<AdditionSource>
+							<Item>DomainTable</Item>
+							<Type>ViewStatusRepresentation</Type>
+						</AdditionSource>
+						<ContextMenu name="DomainTableViewStatusContextMenu" id="28"/>
+						<ExtendedTooltip name="DomainTableViewStatusExtendedTooltip" id="29"/>
+					</ViewStatusAddition>
+					<SearchControlAddition name="DomainTableSearchControl" id="30">
+						<AdditionSource>
+							<Item>DomainTable</Item>
+							<Type>SearchControl</Type>
+						</AdditionSource>
+						<ContextMenu name="DomainTableSearchControlContextMenu" id="31"/>
+						<ExtendedTooltip name="DomainTableSearchControlExtendedTooltip" id="32"/>
+					</SearchControlAddition>
+					<Events>
+						<Event name="OnActivateRow">DomainTableOnActivateRow</Event>
+					</Events>
+					<ChildItems>
+						<InputField name="Domains" id="11">
+							<DataPath>ListOfDomains.DomainName</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Domains</v8:content>
+								</v8:item>
+							</Title>
+							<Wrap>false</Wrap>
+							<BorderColor>style:BorderColor</BorderColor>
+							<ContextMenu name="DomainsContextMenu" id="12"/>
+							<ExtendedTooltip name="DomainsExtendedTooltip" id="33"/>
+						</InputField>
+					</ChildItems>
+				</Table>
+				<Table name="DomainUsersTable" id="8">
+					<Representation>List</Representation>
+					<TitleLocation>Top</TitleLocation>
+					<CommandBarLocation>None</CommandBarLocation>
+					<Autofill>true</Autofill>
+					<ReadOnly>true</ReadOnly>
+					<SkipOnInput>false</SkipOnInput>
+					<Width>40</Width>
+					<HeightInTableRows>4</HeightInTableRows>
+					<Header>false</Header>
+					<DataPath>ListOfUsersOfCurrentDomain</DataPath>
+					<BorderColor>style:BorderColor</BorderColor>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>User name</v8:content>
+						</v8:item>
+					</Title>
+					<SearchStringLocation>None</SearchStringLocation>
+					<ViewStatusLocation>None</ViewStatusLocation>
+					<SearchControlLocation>None</SearchControlLocation>
+					<RowFilter xsi:nil="true"/>
+					<ContextMenu name="DomainUsersTableContextMenu" id="9"/>
+					<AutoCommandBar name="DomainUsersTableCommandBar" id="10"/>
+					<ExtendedTooltip name="DomainUsersTableExtendedTooltip" id="34"/>
+					<SearchStringAddition name="DomainUsersTableSearchString" id="35">
+						<AdditionSource>
+							<Item>DomainUsersTable</Item>
+							<Type>SearchStringRepresentation</Type>
+						</AdditionSource>
+						<ContextMenu name="DomainUsersTableSearchStringContextMenu" id="36"/>
+						<ExtendedTooltip name="DomainUsersTableSearchStringExtendedTooltip" id="37"/>
+					</SearchStringAddition>
+					<ViewStatusAddition name="DomainUsersTableViewStatus" id="38">
+						<AdditionSource>
+							<Item>DomainUsersTable</Item>
+							<Type>ViewStatusRepresentation</Type>
+						</AdditionSource>
+						<ContextMenu name="DomainUsersTableViewStatusContextMenu" id="39"/>
+						<ExtendedTooltip name="DomainUsersTableViewStatusExtendedTooltip" id="40"/>
+					</ViewStatusAddition>
+					<SearchControlAddition name="DomainUsersTableSearchControl" id="41">
+						<AdditionSource>
+							<Item>DomainUsersTable</Item>
+							<Type>SearchControl</Type>
+						</AdditionSource>
+						<ContextMenu name="DomainUsersTableSearchControlContextMenu" id="42"/>
+						<ExtendedTooltip name="DomainUsersTableSearchControlExtendedTooltip" id="43"/>
+					</SearchControlAddition>
+					<Events>
+						<Event name="Selection">DomainUsersTableSelection</Event>
+					</Events>
+					<ChildItems>
+						<InputField name="Users" id="13">
+							<DataPath>ListOfUsersOfCurrentDomain.UserName</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Users</v8:content>
+								</v8:item>
+							</Title>
+							<Wrap>false</Wrap>
+							<BorderColor>style:BorderColor</BorderColor>
+							<ContextMenu name="UsersContextMenu" id="14"/>
+							<ExtendedTooltip name="UsersExtendedTooltip" id="44"/>
+						</InputField>
+					</ChildItems>
+				</Table>
+			</ChildItems>
+		</UsualGroup>
+		<UsualGroup name="Buttons" id="17">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Buttons</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Buttons</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Group>Horizontal</Group>
+			<Representation>NormalSeparation</Representation>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="ButtonsExtendedTooltip" id="45"/>
+		</UsualGroup>
+	</ChildItems>
+	<Attributes>
+		<Attribute name="ListOfDomains" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>List of domains</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>v8:ValueTable</v8:Type>
+			</Type>
+			<Columns>
+				<Column name="DomainName" id="1">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Domain name</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:string</v8:Type>
+						<v8:StringQualifiers>
+							<v8:Length>0</v8:Length>
+							<v8:AllowedLength>Variable</v8:AllowedLength>
+						</v8:StringQualifiers>
+					</Type>
+				</Column>
+			</Columns>
+		</Attribute>
+		<Attribute name="ListOfUsersOfCurrentDomain" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>List of users of current domain</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>v8:ValueTable</v8:Type>
+			</Type>
+			<Columns>
+				<Column name="UserName" id="1">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>User name</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:string</v8:Type>
+						<v8:StringQualifiers>
+							<v8:Length>0</v8:Length>
+							<v8:AllowedLength>Variable</v8:AllowedLength>
+						</v8:StringQualifiers>
+					</Type>
+				</Column>
+			</Columns>
+		</Attribute>
+		<Attribute name="DomainAndUsersTable" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Domain and users table</v8:content>
+				</v8:item>
+			</Title>
+			<Type/>
+		</Attribute>
+	</Attributes>
+	<Commands>
+		<Command name="CommandOK" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>OK</v8:content>
+				</v8:item>
+			</Title>
+			<Action>CommandOKExecute</Action>
+		</Command>
+	</Commands>
+</Form>

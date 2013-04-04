@@ -2,9 +2,6 @@
 <Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
 	<VerticalScroll>useIfNecessary</VerticalScroll>
 	<AutoCommandBar name="FormCommandBar" id="-1"/>
-	<Events>
-		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
-	</Events>
 	<ChildItems>
 		<Table name="List" id="1">
 			<Representation>List</Representation>
@@ -67,16 +64,6 @@
 					<HorizontalAlign>Right</HorizontalAlign>
 					<Width>10</Width>
 					<HorizontalStretch>false</HorizontalStretch>
-					<Format>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>DLF=D</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>DLF=D</v8:content>
-						</v8:item>
-					</Format>
 					<ContextMenu name="PeriodContextMenu" id="5"/>
 					<ExtendedTooltip name="PeriodExtendedTooltip" id="34"/>
 				</LabelField>
@@ -87,47 +74,17 @@
 					<ContextMenu name="ProductContextMenu" id="21"/>
 					<ExtendedTooltip name="ProductExtendedTooltip" id="35"/>
 				</LabelField>
-				<LabelField name="Descr" id="12">
-					<DataPath>List.Descr</DataPath>
-					<Width>15</Width>
-					<HorizontalStretch>false</HorizontalStretch>
-					<ContextMenu name="DescrContextMenu" id="13"/>
-					<ExtendedTooltip name="DescrExtendedTooltip" id="36"/>
-				</LabelField>
-				<LabelField name="Company" id="16">
-					<DataPath>List.Company</DataPath>
-					<Title>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Customer</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>pt</v8:lang>
-							<v8:content>Cliente</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Kunde</v8:content>
-						</v8:item>
-					</Title>
-					<Width>15</Width>
-					<HorizontalStretch>false</HorizontalStretch>
-					<ContextMenu name="CompanyContextMenu" id="17"/>
-					<ExtendedTooltip name="CompanyExtendedTooltip" id="37"/>
-				</LabelField>
-				<LabelField name="Currency" id="22">
-					<DataPath>List.Currency</DataPath>
-					<Width>10</Width>
-					<HorizontalStretch>false</HorizontalStretch>
-					<ContextMenu name="CurrencyContextMenu" id="23"/>
-					<ExtendedTooltip name="CurrencyExtendedTooltip" id="38"/>
+				<LabelField name="Description" id="22">
+					<DataPath>List.Description</DataPath>
+					<ContextMenu name="DescriptionContextMenu" id="23"/>
+					<ExtendedTooltip name="DescriptionExtendedTooltip" id="36"/>
 				</LabelField>
 				<LabelField name="Price" id="10">
 					<DataPath>List.Price</DataPath>
 					<Width>10</Width>
 					<HorizontalStretch>false</HorizontalStretch>
 					<ContextMenu name="PriceContextMenu" id="11"/>
-					<ExtendedTooltip name="PriceExtendedTooltip" id="39"/>
+					<ExtendedTooltip name="PriceExtendedTooltip" id="37"/>
 				</LabelField>
 			</ChildItems>
 		</Table>
@@ -144,10 +101,8 @@
 				<QueryText>SELECT
 	InformationRegisterPriceList.Period,
 	InformationRegisterPriceList.Product,
-	InformationRegisterPriceList.Currency,
-	InformationRegisterPriceList.Company,
 	InformationRegisterPriceList.Price,
-	Products.Descr
+	Products.Description
 FROM
 	InformationRegister.PriceList AS InformationRegisterPriceList
 		LEFT JOIN Catalog.Products AS Products

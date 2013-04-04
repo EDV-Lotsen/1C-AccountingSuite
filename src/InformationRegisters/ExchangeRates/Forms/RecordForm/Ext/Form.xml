@@ -7,56 +7,31 @@
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
 	</Events>
 	<ChildItems>
-		<InputField name="Period" id="1">
-			<DataPath>Record.Period</DataPath>
-			<TitleLocation>None</TitleLocation>
-			<HorizontalAlign>Right</HorizontalAlign>
-			<EditFormat>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>DLF=D</v8:content>
-				</v8:item>
-				<v8:item>
-					<v8:lang>pt</v8:lang>
-					<v8:content>DLF=D</v8:content>
-				</v8:item>
-			</EditFormat>
-			<ContextMenu name="PeriodContextMenu" id="2"/>
-			<ExtendedTooltip name="PeriodExtendedTooltip" id="14"/>
-		</InputField>
-		<UsualGroup name="Group1" id="11">
+		<UsualGroup name="Group1" id="23">
 			<Group>Horizontal</Group>
 			<Representation>None</Representation>
 			<ShowTitle>false</ShowTitle>
-			<ExtendedTooltip name="Group1ExtendedTooltip" id="15"/>
+			<ExtendedTooltip name="Group1ExtendedTooltip" id="24"/>
 			<ChildItems>
-				<InputField name="ExchangeRate" id="5">
-					<DataPath>Record.ExchangeRate</DataPath>
+				<InputField name="Period" id="1">
+					<DataPath>Record.Period</DataPath>
 					<TitleLocation>None</TitleLocation>
-					<ContextMenu name="ExchangeRateContextMenu" id="6"/>
-					<ExtendedTooltip name="ExchangeRateExtendedTooltip" id="16"/>
+					<HorizontalAlign>Right</HorizontalAlign>
+					<ContextMenu name="PeriodContextMenu" id="2"/>
+					<ExtendedTooltip name="PeriodExtendedTooltip" id="14"/>
 				</InputField>
-				<InputField name="Currency" id="3">
+				<InputField name="Currency" id="7">
 					<DataPath>Record.Currency</DataPath>
 					<TitleLocation>None</TitleLocation>
-					<ContextMenu name="CurrencyContextMenu" id="4"/>
-					<ExtendedTooltip name="CurrencyExtendedTooltip" id="17"/>
+					<Width>16</Width>
+					<HorizontalStretch>false</HorizontalStretch>
+					<ContextMenu name="CurrencyContextMenu" id="8"/>
+					<ExtendedTooltip name="CurrencyExtendedTooltip" id="19"/>
 				</InputField>
-				<LabelDecoration name="Decoration1" id="12">
-					<Title formatted="false">
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>= 1</v8:content>
-						</v8:item>
-					</Title>
-					<ContextMenu name="Decoration1ContextMenu" id="13"/>
-					<ExtendedTooltip name="Decoration1ExtendedTooltip" id="18"/>
-				</LabelDecoration>
-				<InputField name="CrossCurrency" id="7">
-					<DataPath>Record.CrossCurrency</DataPath>
-					<TitleLocation>None</TitleLocation>
-					<ContextMenu name="CrossCurrencyContextMenu" id="8"/>
-					<ExtendedTooltip name="CrossCurrencyExtendedTooltip" id="19"/>
+				<InputField name="ExchangeRate" id="20">
+					<DataPath>Record.Rate</DataPath>
+					<ContextMenu name="ExchangeRateContextMenu" id="21"/>
+					<ExtendedTooltip name="ExchangeRateExtendedTooltip" id="22"/>
 				</InputField>
 			</ChildItems>
 		</UsualGroup>
