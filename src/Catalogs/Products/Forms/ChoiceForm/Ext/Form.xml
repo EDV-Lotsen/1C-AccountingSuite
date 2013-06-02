@@ -64,18 +64,18 @@
 			</SearchControlAddition>
 			<ChildItems>
 				<LabelField name="Code" id="8">
-					<DataPath>1/10</DataPath>
+					<DataPath>List.Code</DataPath>
 					<ContextMenu name="CodeContextMenu" id="9"/>
 					<ExtendedTooltip name="CodeExtendedTooltip" id="24"/>
 				</LabelField>
 				<LabelField name="Description" id="4">
-					<DataPath>1/5</DataPath>
+					<DataPath>List.Description</DataPath>
 					<DefaultItem>true</DefaultItem>
 					<ContextMenu name="DescriptionContextMenu" id="5"/>
 					<ExtendedTooltip name="DescriptionExtendedTooltip" id="25"/>
 				</LabelField>
 				<LabelField name="Type" id="6">
-					<DataPath>1/9</DataPath>
+					<DataPath>List.Type</DataPath>
 					<ContextMenu name="TypeContextMenu" id="7"/>
 					<ExtendedTooltip name="TypeExtendedTooltip" id="26"/>
 				</LabelField>
@@ -85,7 +85,7 @@
 					<ExtendedTooltip name="ProductCategoryExtendedTooltip" id="27"/>
 				</LabelField>
 				<LabelField name="Price" id="12">
-					<DataPath>1/29</DataPath>
+					<DataPath>List.Price</DataPath>
 					<ContextMenu name="PriceContextMenu" id="13"/>
 					<ExtendedTooltip name="PriceExtendedTooltip" id="28"/>
 				</LabelField>
@@ -100,7 +100,7 @@
 			<MainAttribute>true</MainAttribute>
 			<Settings xsi:type="DynamicList">
 				<ManualQuery>true</ManualQuery>
-				<DynamicDataRead>true</DynamicDataRead>
+				<DynamicDataRead>false</DynamicDataRead>
 				<QueryText>SELECT
 	CatalogProducts.Ref,
 	CatalogProducts.DataVersion,
@@ -117,7 +117,6 @@
 	CatalogProducts.SalesVATCode,
 	CatalogProducts.UM,
 	CatalogProducts.DefaultLocation,
-	CatalogProducts.Change15to5,
 	PriceListSliceLast.Price
 FROM
 	Catalog.Products AS CatalogProducts
