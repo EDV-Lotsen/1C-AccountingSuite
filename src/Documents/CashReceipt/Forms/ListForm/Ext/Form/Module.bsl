@@ -2,8 +2,6 @@
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
-	// AdditionalReportsAndDataProcessors
-	AdditionalReportsAndDataProcessors.OnCreateAtServer(ThisForm);
-	// End AdditionalReportsAndDataProcessors
+	Items.Company.Title = GeneralFunctionsReusable.GetCustomerName();
 	
 EndProcedure

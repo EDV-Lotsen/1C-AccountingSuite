@@ -96,10 +96,6 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
 	Items.ExchangeRate.Title = GeneralFunctionsReusable.DefaultCurrencySymbol() + "/1" + Object.Currency.Symbol;
 	
-	// AdditionalReportsAndDataProcessors
-	AdditionalReportsAndDataProcessors.OnCreateAtServer(ThisForm);
-	// End AdditionalReportsAndDataProcessors
-	
 EndProcedure
 
 &AtClient

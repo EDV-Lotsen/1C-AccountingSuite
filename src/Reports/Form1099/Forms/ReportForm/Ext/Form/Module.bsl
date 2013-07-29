@@ -5,7 +5,7 @@ Procedure Run(Command)
 	VendorAttribute = CommonUse.GetAttributeValue(Report.Vendor, "Ref");
 	
 	If VendorAttribute = Undefined Then
-		DoMessageBox("Select a vendor");
+		Message("Select a vendor");
 	Else
 		CreateReportOnServer();
 	EndIf;

@@ -148,16 +148,34 @@ Procedure CompanyOnChange(Item)
 		FormParameters.Insert("Filter", FltrParameters);
 		
 		// Open choice form
-		SelectOrdersForm = GetForm("Document.PurchaseOrder.ChoiceForm", FormParameters, Item);
-		SelectedOrders   = SelectOrdersForm.DoModal();
+		//GOLYA
+		//SelectOrdersForm = GetForm("Document.PurchaseOrder.ChoiceForm", FormParameters, Item);
+		//SelectedOrders   = SelectOrdersForm.DoModal();
+		
+		//KZUZIK
+		NotifyDescription = New NotifyDescription("OrderSelection", ThisForm);
+		OpenForm("Document.PurchaseOrder.ChoiceForm", FormParameters, Item,,,,NotifyDescription) 
 		
 		// Execute orders filling
-		FillDocumentWithSelectedOrders(SelectedOrders);
+		//GOLYA
+		//FillDocumentWithSelectedOrders(SelectedOrders);
 		
 	EndIf;
 	
 	// Recalc totals
 	RecalcTotal();
+	
+EndProcedure
+
+//KZUZIK
+&AtClient
+Procedure OrderSelection(Result, Parameters) Export
+	
+	If Not Result = Undefined Then
+		
+		FillDocumentWithSelectedOrders(Result);	
+		
+	EndIf;
 	
 EndProcedure
 
@@ -222,6 +240,11 @@ EndProcedure
 // 
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
+	If Object.BegBal = False Then
+		Items.DocumentTotalRC.ReadOnly = True;
+		Items.DocumentTotal.ReadOnly = True;
+	EndIf;
+	
 	// Initialization of LineItems_OnCloneRow variable
 	LineItems_OnCloneRow = False;
 	
@@ -259,10 +282,6 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	Items.VATCurrency.Title = GeneralFunctionsReusable.DefaultCurrencySymbol();
 	Items.RCCurrency.Title = GeneralFunctionsReusable.DefaultCurrencySymbol();
 	Items.FCYCurrency.Title = CommonUse.GetAttributeValue(Object.Currency, "Symbol");
-	
-	// AdditionalReportsAndDataProcessors
-	AdditionalReportsAndDataProcessors.OnCreateAtServer(ThisForm);
-	// End AdditionalReportsAndDataProcessors
 	
 EndProcedure
 
@@ -304,7 +323,23 @@ Procedure AccountsAfterDeleteRow(Item)
 EndProcedure
 
 &AtClient
+Procedure AccountBeforeAddRow()
+
+	NewRow = true;	
+	
+EndProcedure
+
+&AtClient
 Procedure AccountsOnChange(Item)
+	
+If NewRow = true Then
+		
+	CurrentData = Item.CurrentData;
+	CurrentData.Project = Object.Project;
+	NewRow = false;
+		
+Endif;
+
 	RecalcTotal();
 EndProcedure
 
@@ -325,6 +360,7 @@ EndProcedure
 &AtClient
 Procedure LineItemsBeforeAddRow(Item, Cancel, Clone, Parent, Folder)
 	
+	NewRow = true;
 	// Set Clone Row flag
 	If Clone And Not Cancel Then
 		LineItems_OnCloneRow = True;
@@ -334,6 +370,15 @@ EndProcedure
 
 &AtClient
 Procedure LineItemsOnChange(Item)
+	
+	If NewRow = true Then
+		
+		CurrentData = Item.CurrentData;
+		CurrentData.Project = Object.Project;
+		//CurrentData.This = what();
+		NewRow = false;
+		
+	Endif;
 	
 	// Row previously was cloned from another and became edited
 	If LineItems_OnCloneRow Then
@@ -348,7 +393,105 @@ Procedure LineItemsOnChange(Item)
 		
 EndProcedure
 
+//&AtServer
+//Function what()
+//	test = Object.Project.FullTitle;
+//	return test;
+//	
+//EndFunction
+
 &AtClient
 Procedure URLOpen(Command)
 	GotoURL(Object.URL);
+EndProcedure
+
+&AtServer
+Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
+	
+	//------------------------------------------------------------------------------
+	// 1. Correct the invoice date according to the orders dates.
+	
+	// Request orders dates.
+	QueryText = "
+		|SELECT TOP 1
+		|	PurchaseOrder.Date AS Date,
+		|	PurchaseOrder.Ref AS Ref
+		|FROM
+		|	Document.PurchaseOrder AS PurchaseOrder
+		|WHERE
+		|	PurchaseOrder.Ref IN (&Orders)
+		|ORDER BY
+		|	PurchaseOrder.Date DESC";
+	Query = New Query(QueryText);
+	Query.SetParameter("Orders", CurrentObject.LineItems.UnloadColumn("Order"));
+	QueryResult = Query.Execute();
+	
+	// Compare letest order date with current invoice date.
+	If Not QueryResult.IsEmpty() Then
+		
+		// Check latest order date.
+		LatestOrder  = QueryResult.Unload()[0];
+		If (Not LatestOrder.Date = Null) And (LatestOrder.Date >= CurrentObject.Date) Then
+			
+			// Invoice writing before the order.
+			If BegOfDay(LatestOrder.Date) = BegOfDay(CurrentObject.Date) Then
+				// The date is the same - simply correct the document time (it will not be shown to the user).
+				CurrentObject.Date = LatestOrder.Date + 1;
+				
+			Else
+				// The invoice writing too early.
+				CurrentObjectPresentation = StringFunctionsClientServer.SubstituteParametersInString(
+				        NStr("en = '%1 %2 from %3'"), CurrentObject.Metadata().Synonym, CurrentObject.Number, Format(CurrentObject.Date, "DLF=D"));
+				Message(StringFunctionsClientServer.SubstituteParametersInString(
+				        NStr("en = 'The %1 can not be written before the %2'"), CurrentObjectPresentation, LatestOrder.Ref));
+				Cancel = True;
+			EndIf;
+			
+		EndIf;
+	EndIf;
+	
+EndProcedure
+
+&AtServer
+Procedure QueryAll()
+	
+	//QueryText = "SELECT
+	//			 |	PurchaseInvoice.CompanyCode,
+	//			 |	PurchaseInvoice.Project
+	//			 |FROM
+	//			 |	Document.PurchaseInvoice AS PurchaseInvoice";
+	//Query = New Query(QueryText);
+	//QueryResult = Query.Execute().Unload();
+
+
+EndProcedure
+
+&AtClient
+Procedure OnOpen(Cancel)
+	
+//QueryAll();
+//CatalogRef.Pro
+//test = Object.Project;
+EndProcedure
+
+&AtClient
+Procedure AccountsAccountOnChange(Item)
+	
+	TabularPartRow = Items.Accounts.CurrentData;
+	TabularPartRow.AccountDescription = CommonUse.GetAttributeValue
+		(TabularPartRow.Account, "Description");
+
+EndProcedure
+
+&AtClient
+Procedure BegBalOnChange(Item)
+	
+	If Object.BegBal = True Then
+		Items.DocumentTotalRC.ReadOnly = False;
+		Items.DocumentTotal.ReadOnly = False;
+	ElsIf Object.BegBal = False Then
+		Items.DocumentTotalRC.ReadOnly = True;
+		Items.DocumentTotal.ReadOnly = True;
+	EndIf;
+
 EndProcedure

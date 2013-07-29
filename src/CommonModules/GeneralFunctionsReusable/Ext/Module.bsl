@@ -119,3 +119,9 @@ Function CurrencyEmptyRef() Export
 	Return Catalogs.Currencies.EmptyRef();
 	
 EndFunction
+
+Function WeightedAverage() Export
+	
+	Return Enums.InventoryCosting.WeightedAverage;
+	
+EndFunction

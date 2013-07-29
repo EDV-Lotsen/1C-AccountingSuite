@@ -136,19 +136,12 @@
 		<field xsi:type="DataSetFieldField">
 			<dataPath>OurCompany</dataPath>
 			<field>OurCompany</field>
-			<useRestriction>
-				<field>true</field>
-				<condition>true</condition>
-				<group>true</group>
-				<order>true</order>
-			</useRestriction>
 			<attributeUseRestriction>
 				<field>true</field>
 				<condition>true</condition>
 				<group>true</group>
 				<order>true</order>
 			</attributeUseRestriction>
-			<presentationExpression>OurCompany.Description</presentationExpression>
 		</field>
 		<field xsi:type="DataSetFieldField">
 			<dataPath>Section</dataPath>
@@ -233,7 +226,8 @@ UNION ALL SELECT "Liabilities and Stockholder Equity", "Stockholder Equity",    
 ///////////////////////////////////////////////////////////////////////////
 // Select balances by the balance sections for ends of selected periods
 SELECT ALLOWED
-	Companies.Ref AS OurCompany,
+	//Companies.Ref AS OurCompany,
+	SystemTitle.Value AS OurCompany,
 	BalanceSections.Division,
 	BalanceSections.Section,
 	BalanceSections.SectionOrder,
@@ -285,10 +279,11 @@ FROM
 			 VALUE(Enum.AccountTypes.Expense),
 			 VALUE(Enum.AccountTypes.OtherIncome),
 			 VALUE(Enum.AccountTypes.OtherExpense)) THEN "Stockholder Equity"
-			ELSE NULL END = BalanceSections.Section
+			ELSE NULL END = BalanceSections.Section,
 			// Our company for a possible multicompany accounting in a future
-			LEFT JOIN Catalog.Companies AS Companies
-				ON (Companies.Ref = VALUE(Catalog.Companies.OurCompany))
+			//LEFT JOIN Catalog.Companies AS Companies
+				//ON (Companies.Ref = VALUE(Catalog.Companies.OurCompany))
+		Constant.SystemTitle AS SystemTitle
 	{WHERE
 		GeneralJournalBalanceAndTurnovers.Account.AccountType AS AccountType,
 		GeneralJournalBalanceAndTurnovers.Account AS Account,
@@ -312,6 +307,10 @@ FROM
 			<v8:item>
 				<v8:lang>en</v8:lang>
 				<v8:content>Begin of period</v8:content>
+			</v8:item>
+			<v8:item>
+				<v8:lang>de</v8:lang>
+				<v8:content>Periodenanfang</v8:content>
 			</v8:item>
 		</title>
 		<valueType>
@@ -486,7 +485,7 @@ FROM
 		</template>
 		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
 			<dcsat:name>OurCompany</dcsat:name>
-			<dcsat:expression>Presentation(OurCompany)</dcsat:expression>
+			<dcsat:expression>OurCompany</dcsat:expression>
 		</parameter>
 		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
 			<dcsat:name>DataParameters.PeriodPresentation</dcsat:name>
@@ -6033,14 +6032,6 @@ FROM
 			</v8:item>
 		</dcsset:presentation>
 		<dcsset:settings xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows">
-			<dcsset:filter>
-				<dcsset:item xsi:type="dcsset:FilterItemComparison">
-					<dcsset:left xsi:type="dcscor:Field">OurCompany</dcsset:left>
-					<dcsset:comparisonType>Equal</dcsset:comparisonType>
-					<dcsset:right xsi:type="dcscor:DesignTimeValue">Catalog.Companies.OurCompany</dcsset:right>
-					<dcsset:viewMode>Inaccessible</dcsset:viewMode>
-				</dcsset:item>
-			</dcsset:filter>
 			<dcsset:dataParameters>
 				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 					<dcscor:parameter>Period</dcscor:parameter>
@@ -6664,14 +6655,6 @@ FROM
 			</v8:item>
 		</dcsset:presentation>
 		<dcsset:settings xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows">
-			<dcsset:filter>
-				<dcsset:item xsi:type="dcsset:FilterItemComparison">
-					<dcsset:left xsi:type="dcscor:Field">OurCompany</dcsset:left>
-					<dcsset:comparisonType>Equal</dcsset:comparisonType>
-					<dcsset:right xsi:type="dcscor:DesignTimeValue">Catalog.Companies.OurCompany</dcsset:right>
-					<dcsset:viewMode>Inaccessible</dcsset:viewMode>
-				</dcsset:item>
-			</dcsset:filter>
 			<dcsset:dataParameters>
 				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 					<dcscor:parameter>Period</dcscor:parameter>
@@ -7312,14 +7295,6 @@ FROM
 			</v8:item>
 		</dcsset:presentation>
 		<dcsset:settings xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows">
-			<dcsset:filter>
-				<dcsset:item xsi:type="dcsset:FilterItemComparison">
-					<dcsset:left xsi:type="dcscor:Field">OurCompany</dcsset:left>
-					<dcsset:comparisonType>Equal</dcsset:comparisonType>
-					<dcsset:right xsi:type="dcscor:DesignTimeValue">Catalog.Companies.OurCompany</dcsset:right>
-					<dcsset:viewMode>Inaccessible</dcsset:viewMode>
-				</dcsset:item>
-			</dcsset:filter>
 			<dcsset:dataParameters>
 				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 					<dcscor:parameter>Period</dcscor:parameter>
@@ -7960,14 +7935,6 @@ FROM
 			</v8:item>
 		</dcsset:presentation>
 		<dcsset:settings xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows">
-			<dcsset:filter>
-				<dcsset:item xsi:type="dcsset:FilterItemComparison">
-					<dcsset:left xsi:type="dcscor:Field">OurCompany</dcsset:left>
-					<dcsset:comparisonType>Equal</dcsset:comparisonType>
-					<dcsset:right xsi:type="dcscor:DesignTimeValue">Catalog.Companies.OurCompany</dcsset:right>
-					<dcsset:viewMode>Inaccessible</dcsset:viewMode>
-				</dcsset:item>
-			</dcsset:filter>
 			<dcsset:dataParameters>
 				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 					<dcscor:parameter>Period</dcscor:parameter>
@@ -8608,14 +8575,6 @@ FROM
 			</v8:item>
 		</dcsset:presentation>
 		<dcsset:settings xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows">
-			<dcsset:filter>
-				<dcsset:item xsi:type="dcsset:FilterItemComparison">
-					<dcsset:left xsi:type="dcscor:Field">OurCompany</dcsset:left>
-					<dcsset:comparisonType>Equal</dcsset:comparisonType>
-					<dcsset:right xsi:type="dcscor:DesignTimeValue">Catalog.Companies.OurCompany</dcsset:right>
-					<dcsset:viewMode>Inaccessible</dcsset:viewMode>
-				</dcsset:item>
-			</dcsset:filter>
 			<dcsset:dataParameters>
 				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 					<dcscor:parameter>Period</dcscor:parameter>
@@ -9256,14 +9215,6 @@ FROM
 			</v8:item>
 		</dcsset:presentation>
 		<dcsset:settings xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows">
-			<dcsset:filter>
-				<dcsset:item xsi:type="dcsset:FilterItemComparison">
-					<dcsset:left xsi:type="dcscor:Field">OurCompany</dcsset:left>
-					<dcsset:comparisonType>Equal</dcsset:comparisonType>
-					<dcsset:right xsi:type="dcscor:DesignTimeValue">Catalog.Companies.OurCompany</dcsset:right>
-					<dcsset:viewMode>Inaccessible</dcsset:viewMode>
-				</dcsset:item>
-			</dcsset:filter>
 			<dcsset:dataParameters>
 				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 					<dcscor:parameter>Period</dcscor:parameter>

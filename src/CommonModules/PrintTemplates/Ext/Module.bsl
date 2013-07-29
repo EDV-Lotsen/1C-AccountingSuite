@@ -3,17 +3,49 @@
 // GENERATING DOCUMENT PRINT FORMS
 //
 
+Function ContactInfoDatasetUs() Export
+	
+	Info = New Structure("UsName, UsWebsite, UsBillLine1, UsBillLine1Line2, UsBillLine2, UsBillCity, UsBillState, UsBillZIP, UsBillCityStateZIP, UsBillCountry, UsBillEmail, UsBillPhone,UsBillFirstName, UsBillMiddleName, UsBillLastName");	
+	
+	Line1Line2 = "";
+	If Constants.AddressLine2.Get() = "" Then
+		Line1Line2 = Constants.AddressLine1.Get();	
+	Else
+		Line1Line2 = Constants.AddressLine1.Get() + ", " + Constants.AddressLine2.Get();
+	EndIf;
+		
+	CityStateZIP = "";
+	CityStateZIP = Constants.City.Get() + " " + Constants.State.Get() + " " + Constants.ZIP.Get();
+	
+	Info.Insert("UsName", Constants.SystemTitle.Get());	
+	Info.Insert("UsBillLine1", Constants.AddressLine1.Get());
+	Info.Insert("UsBillLine2", Constants.AddressLine2.Get());	
+	Info.Insert("UsBillLine1Line2", Line1Line2);
+	Info.Insert("UsBillCity", Constants.City.Get());
+	Info.Insert("UsBillState", Constants.State.Get());
+	Info.Insert("UsBillZIP", Constants.ZIP.Get());
+	Info.Insert("UsBillCityStateZIP", CityStateZIP);
+	Info.Insert("UsBillCountry", Constants.Country.Get());
+	Info.Insert("UsBillEmail", Constants.Email.Get());
+	Info.Insert("UsBillPhone", Constants.Phone.Get());
+	Info.Insert("UsBillFirstName", Constants.FirstName.Get());
+	Info.Insert("UsBillMiddleName", Constants.MiddleName.Get());
+	Info.Insert("UsBillLastName", Constants.LastName.Get());
+	Info.Insert("UsWebsite", Constants.Website.Get());
+
+	Return Info;
+	
+EndFunction  
+
 Function ContactInfoDataset(Company, Type, ShipTo) Export
 	
-	If Type = "UsBill" Then
-		Info = New Structure("UsCode, UsName, UsBillLine1, UsBillLine2, UsBillLine1Line2, UsBillCity, UsBillState, UsBillZIP, UsBillCityStateZIP, UsBillCountry, UsBillEmail, UsBillPhone, UsBillFax, UsBillFirstName, UsBillMiddleName, UsBillLastName");
-	ElsIf Type = "ThemShip" Then
+	If Type = "ThemShip" Then
 		Info = New Structure("ThemCode, ThemName, ThemShipLine1, ThemShipLine1Line2, ThemShipLine2, ThemShipCity, ThemShipState, ThemShipZIP, ThemShipCityStateZIP, ThemShipCountry, ThemShipEmail, ThemShipPhone, ThemShipFax, ThemShipFirstName, ThemShipMiddleName, ThemShipLastName");
 	ElsIf Type = "ThemBill" Then
-		Info = New Structure("ThemCode, ThemName, ThemBillLine1, ThemBillLine2, ThemBillLine1Line2, ThemBillCity, ThemBillState, ThemBillZIP, ThemBillCityStateZIP, ThemBillCountry, ThemBillEmail, ThemBillPhone, ThemBillFax, ThemBillFirstName, ThemBillMiddleName, ThemBillLastName");
+		Info = New Structure("ThemCode, ThemName, ThemBillLine1, ThemBillLine2, ThemBillLine1Line2, ThemBillCity, ThemBillState, ThemBillZIP, ThemBillCityStateZIP, ThemBillCountry, ThemBillEmail, ThemBillPhone, ThemBillFax, ThemBillFirstName, ThemBillMiddleName, ThemBillLastName, RemitTo");
 	EndIf;
 	
-	If Type = "UsBill" OR Type = "ThemBill" Then
+	If Type = "ThemBill" Then
 		Query = New Query("SELECT
 		                  |	Addresses.FirstName,
 		                  |	Addresses.MiddleName,
@@ -26,7 +58,8 @@ Function ContactInfoDataset(Company, Type, ShipTo) Export
 		                  |	Addresses.City,
 		                  |	Addresses.State,
 		                  |	Addresses.Country,
-		                  |	Addresses.ZIP
+		                  |	Addresses.ZIP,
+		                  |	Addresses.RemitTo
 		                  |FROM
 		                  |	Catalog.Addresses AS Addresses
 		                  |WHERE
@@ -74,24 +107,7 @@ Function ContactInfoDataset(Company, Type, ShipTo) Export
 	CityStateZIP = "";
 	CityStateZIP = Dataset[0].City + " " + Dataset[0].State + " " + Dataset[0].ZIP;
 	
-	If Type = "UsBill" Then
-		Info.Insert("UsCode", Company.Code);
-		Info.Insert("UsName", Company.Description);	
-		Info.Insert("UsBillLine1", Dataset[0].AddressLine1);
-		Info.Insert("UsBillLine2", Dataset[0].AddressLine2);	
-		Info.Insert("UsBillLine1Line2", Line1Line2);
-		Info.Insert("UsBillCity", Dataset[0].City);
-		Info.Insert("UsBillState", Dataset[0].State);
-		Info.Insert("UsBillZIP", Dataset[0].ZIP);
-		Info.Insert("UsBillCityStateZIP", CityStateZIP);
-		Info.Insert("UsBillCountry", Dataset[0].Country);
-		Info.Insert("UsBillEmail", Dataset[0].Email);
-		Info.Insert("UsBillPhone", Dataset[0].Phone);
-		Info.Insert("UsBillFax", Dataset[0].Fax);
-		Info.Insert("UsBillFirstName", Dataset[0].FirstName);
-		Info.Insert("UsBillMiddleName", Dataset[0].MiddleName);
-		Info.Insert("UsBillLastName", Dataset[0].Lastname);
-	ElsIf Type = "ThemShip" Then
+	If Type = "ThemShip" Then
         Info.Insert("ThemCode", Company.Code);
 		Info.Insert("ThemName", Company.Description);	
 		Info.Insert("ThemShipLine1", Dataset[0].AddressLine1);
@@ -125,6 +141,7 @@ Function ContactInfoDataset(Company, Type, ShipTo) Export
 		Info.Insert("ThemBillFirstName", Dataset[0].FirstName);
 		Info.Insert("ThemBillMiddleName", Dataset[0].MiddleName);
 		Info.Insert("ThemBillLastName", Dataset[0].Lastname);
+		Info.Insert("RemitTo", Dataset[0].RemitTo);
 	EndIf;
 
 	Return Info;

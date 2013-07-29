@@ -6,6 +6,7 @@
 	<AutoCommandBar name="FormCommandBar" id="-1"/>
 	<Events>
 		<Event name="AfterWriteAtServer">AfterWriteAtServer</Event>
+		<Event name="BeforeWrite">BeforeWrite</Event>
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
 		<Event name="FillCheckProcessingAtServer">FillCheckProcessingAtServer</Event>
 	</Events>
@@ -15,19 +16,23 @@
 			<Width>20</Width>
 			<HorizontalStretch>false</HorizontalStretch>
 			<ContextMenu name="CodeContextMenu" id="57"/>
-			<ExtendedTooltip name="CodeExtendedTooltip" id="81"/>
+			<ExtendedTooltip name="CodeExtendedTooltip" id="97"/>
 		</InputField>
 		<InputField name="ItemID" id="3">
 			<DataPath>Object.Description</DataPath>
 			<EditMode>EnterOnInput</EditMode>
+			<Width>50</Width>
+			<HorizontalStretch>false</HorizontalStretch>
 			<ContextMenu name="ItemIDContextMenu" id="4"/>
-			<ExtendedTooltip name="ItemIDExtendedTooltip" id="82"/>
+			<ExtendedTooltip name="ItemIDExtendedTooltip" id="98"/>
 		</InputField>
 		<InputField name="Type" id="13">
 			<DataPath>Object.Type</DataPath>
 			<EditMode>EnterOnInput</EditMode>
+			<Width>50</Width>
+			<HorizontalStretch>false</HorizontalStretch>
 			<ContextMenu name="TypeContextMenu" id="14"/>
-			<ExtendedTooltip name="TypeExtendedTooltip" id="83"/>
+			<ExtendedTooltip name="TypeExtendedTooltip" id="99"/>
 			<Events>
 				<Event name="OnChange">TypeOnChange</Event>
 			</Events>
@@ -36,15 +41,16 @@
 			<DataPath>Object.UM</DataPath>
 			<QuickChoice>true</QuickChoice>
 			<ContextMenu name="UMContextMenu" id="76"/>
-			<ExtendedTooltip name="UMExtendedTooltip" id="84"/>
+			<ExtendedTooltip name="UMExtendedTooltip" id="100"/>
 		</InputField>
 		<InputField name="DefaultLocation" id="77">
 			<DataPath>Object.DefaultLocation</DataPath>
 			<ContextMenu name="DefaultLocationContextMenu" id="78"/>
-			<ExtendedTooltip name="DefaultLocationExtendedTooltip" id="85"/>
+			<ExtendedTooltip name="DefaultLocationExtendedTooltip" id="101"/>
 		</InputField>
 		<InputField name="Price" id="79">
 			<DataPath>Price</DataPath>
+			<Visible>false</Visible>
 			<ReadOnly>true</ReadOnly>
 			<EditFormat>
 				<v8:item>
@@ -53,10 +59,53 @@
 				</v8:item>
 			</EditFormat>
 			<ContextMenu name="PriceContextMenu" id="80"/>
-			<ExtendedTooltip name="PriceExtendedTooltip" id="86"/>
+			<ExtendedTooltip name="PriceExtendedTooltip" id="102"/>
+		</InputField>
+		<InputField name="ProductCategory" id="95">
+			<DataPath>Object.Category</DataPath>
+			<HorizontalStretch>false</HorizontalStretch>
+			<QuickChoice>true</QuickChoice>
+			<ContextMenu name="ProductCategoryContextMenu" id="96"/>
+			<ExtendedTooltip name="ProductCategoryExtendedTooltip" id="103"/>
+		</InputField>
+		<InputField name="PreferredVendor" id="81">
+			<DataPath>Object.PreferredVendor</DataPath>
+			<HorizontalStretch>false</HorizontalStretch>
+			<ContextMenu name="PreferredVendorContextMenu" id="82"/>
+			<ExtendedTooltip name="PreferredVendorExtendedTooltip" id="104"/>
+		</InputField>
+		<InputField name="CF1String" id="83">
+			<DataPath>Object.CF1String</DataPath>
+			<ContextMenu name="CF1StringContextMenu" id="84"/>
+			<ExtendedTooltip name="CF1StringExtendedTooltip" id="105"/>
+		</InputField>
+		<InputField name="CF2String" id="85">
+			<DataPath>Object.CF2String</DataPath>
+			<ContextMenu name="CF2StringContextMenu" id="86"/>
+			<ExtendedTooltip name="CF2StringExtendedTooltip" id="106"/>
+		</InputField>
+		<InputField name="CF3String" id="87">
+			<DataPath>Object.CF3String</DataPath>
+			<ContextMenu name="CF3StringContextMenu" id="88"/>
+			<ExtendedTooltip name="CF3StringExtendedTooltip" id="107"/>
+		</InputField>
+		<InputField name="CF1Num" id="89">
+			<DataPath>Object.CF1Num</DataPath>
+			<ContextMenu name="CF1NumContextMenu" id="90"/>
+			<ExtendedTooltip name="CF1NumExtendedTooltip" id="108"/>
+		</InputField>
+		<InputField name="CF2Num" id="91">
+			<DataPath>Object.CF2Num</DataPath>
+			<ContextMenu name="CF2NumContextMenu" id="92"/>
+			<ExtendedTooltip name="CF2NumExtendedTooltip" id="109"/>
+		</InputField>
+		<InputField name="CF3Num" id="93">
+			<DataPath>Object.CF3Num</DataPath>
+			<ContextMenu name="CF3NumContextMenu" id="94"/>
+			<ExtendedTooltip name="CF3NumExtendedTooltip" id="110"/>
 		</InputField>
 		<Pages name="Group1" id="17">
-			<ExtendedTooltip name="Group1ExtendedTooltip" id="87"/>
+			<ExtendedTooltip name="Group1ExtendedTooltip" id="111"/>
 			<ChildItems>
 				<Page name="Posting" id="30">
 					<Title>
@@ -75,13 +124,13 @@
 							<v8:content>Buchung</v8:content>
 						</v8:item>
 					</ToolTip>
-					<ExtendedTooltip name="PostingExtendedTooltip" id="88"/>
+					<ExtendedTooltip name="PostingExtendedTooltip" id="112"/>
 					<ChildItems>
 						<InputField name="CostingMethod" id="11">
 							<DataPath>Object.CostingMethod</DataPath>
 							<EditMode>EnterOnInput</EditMode>
 							<ContextMenu name="CostingMethodContextMenu" id="12"/>
-							<ExtendedTooltip name="CostingMethodExtendedTooltip" id="89"/>
+							<ExtendedTooltip name="CostingMethodExtendedTooltip" id="113"/>
 						</InputField>
 						<UsualGroup name="InventoryExpenseAcct" id="43">
 							<Title>
@@ -93,20 +142,20 @@
 							<Group>Horizontal</Group>
 							<Representation>None</Representation>
 							<ShowTitle>false</ShowTitle>
-							<ExtendedTooltip name="InventoryExpenseAcctExtendedTooltip" id="90"/>
+							<ExtendedTooltip name="InventoryExpenseAcctExtendedTooltip" id="114"/>
 							<ChildItems>
 								<InputField name="InventoryOrExpenseAccount" id="37">
 									<DataPath>Object.InventoryOrExpenseAccount</DataPath>
 									<HorizontalStretch>false</HorizontalStretch>
 									<ContextMenu name="InventoryOrExpenseAccountContextMenu" id="38"/>
-									<ExtendedTooltip name="InventoryOrExpenseAccountExtendedTooltip" id="91"/>
+									<ExtendedTooltip name="InventoryOrExpenseAccountExtendedTooltip" id="115"/>
 									<Events>
 										<Event name="OnChange">InventoryOrExpenseAccountOnChange</Event>
 									</Events>
 								</InputField>
 								<LabelDecoration name="InventoryAcctLabel" id="44">
 									<ContextMenu name="InventoryAcctLabelContextMenu" id="45"/>
-									<ExtendedTooltip name="InventoryAcctLabelExtendedTooltip" id="92"/>
+									<ExtendedTooltip name="InventoryAcctLabelExtendedTooltip" id="116"/>
 								</LabelDecoration>
 							</ChildItems>
 						</UsualGroup>
@@ -130,20 +179,20 @@
 							<Group>Horizontal</Group>
 							<Representation>None</Representation>
 							<ShowTitle>false</ShowTitle>
-							<ExtendedTooltip name="IncomeAcctExtendedTooltip" id="93"/>
+							<ExtendedTooltip name="IncomeAcctExtendedTooltip" id="117"/>
 							<ChildItems>
 								<InputField name="IncomeAccount" id="39">
 									<DataPath>Object.IncomeAccount</DataPath>
 									<HorizontalStretch>false</HorizontalStretch>
 									<ContextMenu name="IncomeAccountContextMenu" id="40"/>
-									<ExtendedTooltip name="IncomeAccountExtendedTooltip" id="94"/>
+									<ExtendedTooltip name="IncomeAccountExtendedTooltip" id="118"/>
 									<Events>
 										<Event name="OnChange">IncomeAccountOnChange</Event>
 									</Events>
 								</InputField>
 								<LabelDecoration name="IncomeAcctLabel" id="47">
 									<ContextMenu name="IncomeAcctLabelContextMenu" id="48"/>
-									<ExtendedTooltip name="IncomeAcctLabelExtendedTooltip" id="95"/>
+									<ExtendedTooltip name="IncomeAcctLabelExtendedTooltip" id="119"/>
 								</LabelDecoration>
 							</ChildItems>
 						</UsualGroup>
@@ -167,20 +216,20 @@
 							<Group>Horizontal</Group>
 							<Representation>None</Representation>
 							<ShowTitle>false</ShowTitle>
-							<ExtendedTooltip name="COGSAcctExtendedTooltip" id="96"/>
+							<ExtendedTooltip name="COGSAcctExtendedTooltip" id="120"/>
 							<ChildItems>
 								<InputField name="COGSAccount" id="41">
 									<DataPath>Object.COGSAccount</DataPath>
 									<HorizontalStretch>false</HorizontalStretch>
 									<ContextMenu name="COGSAccountContextMenu" id="42"/>
-									<ExtendedTooltip name="COGSAccountExtendedTooltip" id="97"/>
+									<ExtendedTooltip name="COGSAccountExtendedTooltip" id="121"/>
 									<Events>
 										<Event name="OnChange">COGSAccountOnChange</Event>
 									</Events>
 								</InputField>
 								<LabelDecoration name="COGSAcctLabel" id="50">
 									<ContextMenu name="COGSAcctLabelContextMenu" id="51"/>
-									<ExtendedTooltip name="COGSAcctLabelExtendedTooltip" id="98"/>
+									<ExtendedTooltip name="COGSAcctLabelExtendedTooltip" id="122"/>
 								</LabelDecoration>
 							</ChildItems>
 						</UsualGroup>
@@ -189,14 +238,14 @@
 							<Width>13</Width>
 							<HorizontalStretch>false</HorizontalStretch>
 							<ContextMenu name="PurchaseVATCodeContextMenu" id="53"/>
-							<ExtendedTooltip name="PurchaseVATCodeExtendedTooltip" id="99"/>
+							<ExtendedTooltip name="PurchaseVATCodeExtendedTooltip" id="123"/>
 						</InputField>
 						<InputField name="SalesVATCode" id="54">
 							<DataPath>Object.SalesVATCode</DataPath>
 							<Width>13</Width>
 							<HorizontalStretch>false</HorizontalStretch>
 							<ContextMenu name="SalesVATCodeContextMenu" id="55"/>
-							<ExtendedTooltip name="SalesVATCodeExtendedTooltip" id="100"/>
+							<ExtendedTooltip name="SalesVATCodeExtendedTooltip" id="124"/>
 						</InputField>
 					</ChildItems>
 				</Page>
@@ -204,7 +253,7 @@
 		</Pages>
 		<UsualGroup name="Indicators" id="64">
 			<Group>Horizontal</Group>
-			<ExtendedTooltip name="IndicatorsExtendedTooltip" id="101"/>
+			<ExtendedTooltip name="IndicatorsExtendedTooltip" id="125"/>
 			<ChildItems>
 				<UsualGroup name="Left" id="65">
 					<Title>
@@ -217,7 +266,7 @@
 					<VerticalStretch>true</VerticalStretch>
 					<Group>Vertical</Group>
 					<Representation>StrongSeparation</Representation>
-					<ExtendedTooltip name="LeftExtendedTooltip" id="102"/>
+					<ExtendedTooltip name="LeftExtendedTooltip" id="126"/>
 					<ChildItems>
 						<InputField name="LastCost" id="58">
 							<DataPath>LastCost</DataPath>
@@ -229,7 +278,7 @@
 								</v8:item>
 							</EditFormat>
 							<ContextMenu name="LastCostContextMenu" id="59"/>
-							<ExtendedTooltip name="LastCostExtendedTooltip" id="103"/>
+							<ExtendedTooltip name="LastCostExtendedTooltip" id="127"/>
 						</InputField>
 						<InputField name="AverageCost" id="60">
 							<DataPath>AverageCost</DataPath>
@@ -241,7 +290,7 @@
 								</v8:item>
 							</EditFormat>
 							<ContextMenu name="AverageCostContextMenu" id="61"/>
-							<ExtendedTooltip name="AverageCostExtendedTooltip" id="104"/>
+							<ExtendedTooltip name="AverageCostExtendedTooltip" id="128"/>
 						</InputField>
 						<InputField name="AccountingCost" id="62">
 							<DataPath>AccountingCost</DataPath>
@@ -253,7 +302,7 @@
 								</v8:item>
 							</EditFormat>
 							<ContextMenu name="AccountingCostContextMenu" id="63"/>
-							<ExtendedTooltip name="AccountingCostExtendedTooltip" id="105"/>
+							<ExtendedTooltip name="AccountingCostExtendedTooltip" id="129"/>
 						</InputField>
 					</ChildItems>
 				</UsualGroup>
@@ -267,7 +316,7 @@
 					<HorizontalStretch>true</HorizontalStretch>
 					<Group>Vertical</Group>
 					<Representation>StrongSeparation</Representation>
-					<ExtendedTooltip name="RightExtendedTooltip" id="106"/>
+					<ExtendedTooltip name="RightExtendedTooltip" id="130"/>
 					<ChildItems>
 						<InputField name="QtyOnPO" id="67">
 							<DataPath>QtyOnPO</DataPath>
@@ -279,7 +328,7 @@
 								</v8:item>
 							</EditFormat>
 							<ContextMenu name="QtyOnPOContextMenu" id="68"/>
-							<ExtendedTooltip name="QtyOnPOExtendedTooltip" id="107"/>
+							<ExtendedTooltip name="QtyOnPOExtendedTooltip" id="131"/>
 						</InputField>
 						<InputField name="QtyOnSO" id="71">
 							<DataPath>QtyOnSO</DataPath>
@@ -291,7 +340,7 @@
 								</v8:item>
 							</EditFormat>
 							<ContextMenu name="QtyOnSOContextMenu" id="72"/>
-							<ExtendedTooltip name="QtyOnSOExtendedTooltip" id="108"/>
+							<ExtendedTooltip name="QtyOnSOExtendedTooltip" id="132"/>
 						</InputField>
 						<InputField name="QtyOnHand" id="73">
 							<DataPath>QtyOnHand</DataPath>
@@ -303,7 +352,7 @@
 								</v8:item>
 							</EditFormat>
 							<ContextMenu name="QtyOnHandContextMenu" id="74"/>
-							<ExtendedTooltip name="QtyOnHandExtendedTooltip" id="109"/>
+							<ExtendedTooltip name="QtyOnHandExtendedTooltip" id="133"/>
 						</InputField>
 						<InputField name="QtyAvailableToPromise" id="69">
 							<DataPath>QtyAvailableToPromise</DataPath>
@@ -315,7 +364,7 @@
 								</v8:item>
 							</EditFormat>
 							<ContextMenu name="QtyAvailableToPromiseContextMenu" id="70"/>
-							<ExtendedTooltip name="QtyAvailableToPromiseExtendedTooltip" id="110"/>
+							<ExtendedTooltip name="QtyAvailableToPromiseExtendedTooltip" id="134"/>
 						</InputField>
 					</ChildItems>
 				</UsualGroup>

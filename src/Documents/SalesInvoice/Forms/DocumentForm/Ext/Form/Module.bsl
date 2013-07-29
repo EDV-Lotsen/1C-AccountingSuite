@@ -2,6 +2,8 @@
 // Check presence of non-closed orders for the passed company
 Function HasNonClosedOrders(Company)
 	
+	// test
+	
 	// Create new query
 	Query = New Query;
 	Query.SetParameter("Company", Company);
@@ -99,7 +101,8 @@ Procedure LineItemsProductOnChange(Item)
 	TabularPartRow.Price = 0;
 	TabularPartRow.VAT = 0;
 	
-	Price = GeneralFunctions.RetailPrice(CurrentDate(), TabularPartRow.Product);
+	Price = GeneralFunctions.RetailPrice(CurrentDate(), TabularPartRow.Product, Object.Company);
+	
 	TabularPartRow.Price = Price / Object.ExchangeRate;
 			
 	TabularPartRow.SalesTaxType = US_FL.GetSalesTaxType(TabularPartRow.Product);
@@ -191,17 +194,36 @@ Procedure CompanyOnChange(Item)
 		FormParameters.Insert("Filter", FltrParameters);
 		
 		// Open choice form
-		SelectOrdersForm = GetForm("Document.SalesOrder.ChoiceForm", FormParameters, Item);
-		SelectedOrders   = SelectOrdersForm.DoModal();
+		//GOLYA
+		//SelectOrdersForm = GetForm("Document.SalesOrder.ChoiceForm", FormParameters, Item);
+		//SelectedOrders   = SelectOrdersForm.DoModal();
+		
+		//KZUZIK
+		NotifyDescription = New NotifyDescription("OrderSelection", ThisForm);
+		OpenForm("Document.SalesOrder.ChoiceForm", FormParameters, Item,,,,NotifyDescription) 
+
 		
 		// Execute orders filling
-		FillDocumentWithSelectedOrders(SelectedOrders);
+		//GOLYA
+		//FillDocumentWithSelectedOrders(SelectedOrders);
 		
 	EndIf;
 	
 	// Recalc totals
 	RecalcSalesTax();
 	RecalcTotal();
+	
+EndProcedure
+
+//KZUZIK
+&AtClient
+Procedure OrderSelection(Result, Parameters) Export
+	
+	If Not Result = Undefined Then
+		
+		FillDocumentWithSelectedOrders(Result);	
+		
+	EndIf;
 	
 EndProcedure
 
@@ -329,6 +351,11 @@ EndProcedure
 // 
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
+	If Object.BegBal = False Then
+		Items.DocumentTotalRC.ReadOnly = True;
+		Items.DocumentTotal.ReadOnly = True;
+	EndIf;
+	
 	// Cancel opening form if filling on the base was failed
 	If Object.Ref.IsEmpty() And Parameters.Basis <> Undefined
 	And Object.Company <> Parameters.Basis.Company Then
@@ -388,10 +415,6 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		//Object.Terms = GeneralFunctionsReusable.GetDefaultPaymentTerm();
 	EndIf;
 	
-	// AdditionalReportsAndDataProcessors
-	AdditionalReportsAndDataProcessors.OnCreateAtServer(ThisForm);
-	// End AdditionalReportsAndDataProcessors
-	
 EndProcedure
 
 &AtClient
@@ -407,7 +430,8 @@ EndProcedure
 
 &AtClient
 Procedure LineItemsBeforeAddRow(Item, Cancel, Clone, Parent, Folder)
-	
+
+	NewRow = true;
 	// Set Clone Row flag
 	If Clone And Not Cancel Then
 		LineItems_OnCloneRow = True;
@@ -416,16 +440,87 @@ Procedure LineItemsBeforeAddRow(Item, Cancel, Clone, Parent, Folder)
 EndProcedure
 
 &AtClient
-Procedure LineItemsOnChange(Item)
-	
+Procedure LineItemsOnChange(Item)	
+	         // Message("RUNNING"); Bottom
+	If NewRow = true Then
+		CurrentData = Item.CurrentData;
+		CurrentData.Project = Object.Project;
+		NewRow = false;
+	Endif;
+
+
 	// Row previously was cloned from another and became edited
 	If LineItems_OnCloneRow Then
 		// Clear used flag
 		LineItems_OnCloneRow = False;
 		
 		// Clear Order on duplicate row
+
         CurrentData = Item.CurrentData;
 		CurrentData.Order = Undefined;
+
+
+
 	EndIf;
 		
+EndProcedure
+
+&AtServer
+Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
+	
+	//------------------------------------------------------------------------------
+	// 1. Correct the invoice date according to the orders dates.
+	
+	// Request orders dates.
+	QueryText = "
+		|SELECT TOP 1
+		|	SalesOrder.Date AS Date,
+		|	SalesOrder.Ref AS Ref
+		|FROM
+		|	Document.SalesOrder AS SalesOrder
+		|WHERE
+		|	SalesOrder.Ref IN (&Orders)
+		|ORDER BY
+		|	SalesOrder.Date Desc";
+	Query = New Query(QueryText);
+	Query.SetParameter("Orders", CurrentObject.LineItems.UnloadColumn("Order"));
+	QueryResult = Query.Execute();
+	
+	// Compare letest order date with current invoice date.
+	If Not QueryResult.IsEmpty() Then
+		
+		// Check latest order date.
+		LatestOrder  = QueryResult.Unload()[0];
+		If (Not LatestOrder.Date = Null) And (LatestOrder.Date >= CurrentObject.Date) Then
+			
+			// Invoice writing before the order.
+			If BegOfDay(LatestOrder.Date) = BegOfDay(CurrentObject.Date) Then
+				// The date is the same - simply correct the document time (it will not be shown to the user).
+				CurrentObject.Date = LatestOrder.Date + 1;
+				
+			Else
+				// The invoice writing too early.
+				CurrentObjectPresentation = StringFunctionsClientServer.SubstituteParametersInString(
+				        NStr("en = '%1 %2 from %3'"), CurrentObject.Metadata().Synonym, CurrentObject.Number, Format(CurrentObject.Date, "DLF=D"));
+				Message(StringFunctionsClientServer.SubstituteParametersInString(
+				        NStr("en = 'The %1 can not be written before the %2'"), CurrentObjectPresentation, LatestOrder.Ref));
+				Cancel = True;
+			EndIf;
+			
+		EndIf;
+	EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure BegBalOnChange(Item)
+	
+	If Object.BegBal = True Then
+		Items.DocumentTotalRC.ReadOnly = False;
+		Items.DocumentTotal.ReadOnly = False;
+	ElsIf Object.BegBal = False Then
+		Items.DocumentTotalRC.ReadOnly = True;
+		Items.DocumentTotal.ReadOnly = True;
+	EndIf;
+	
 EndProcedure

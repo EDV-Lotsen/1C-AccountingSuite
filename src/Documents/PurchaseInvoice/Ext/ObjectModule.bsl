@@ -115,7 +115,7 @@ Procedure Posting(Cancel, PostingMode)
 				// Updating the ItemLastCost register
 				Reg = InformationRegisters.ItemLastCost.CreateRecordManager();
 				Reg.Product = CurRowLineItems.Product;
-				Reg.Cost = ItemAmount / CurRowLineItems.Quantity;
+				Reg.Cost = CurRowLineItems.Price * ExchangeRate;
 				Reg.Write(True);
 				
 			EndIf;
@@ -223,6 +223,34 @@ Procedure Posting(Cancel, PostingMode)
 		Record.Period = Date;
 		Record.AmountRC = PostingDatasetVAT[i][1];	
 	EndDo;	
+	
+	
+	RegisterRecords.ProjectData.Write = True;
+	For Each CurRowLineItems In LineItems Do
+		If NOT CurRowLineItems.Project.IsEmpty() Then
+			Record = RegisterRecords.ProjectData.Add();
+			Record.RecordType = AccumulationRecordType.Expense;
+			Record.Period = Date;
+			Record.Project = CurRowLineItems.Project;
+			Record.Amount = CurRowLineItems.LineTotal;
+		Endif;
+		
+	EndDo;         
+	     	 	                    
+	For Each CurRowAccount In Accounts Do
+		If NOT CurRowAccount.Project.IsEmpty() Then
+			Record = RegisterRecords.ProjectData.Add();
+			Record.RecordType = AccumulationRecordType.Expense;
+			//FormattedDate = Format(Date, "DF=""dd/MM/yyyy"""); 
+			test = CurRowAccount.Amount;
+			//Record.Period = Format(Date, "DF=""dd/MM/yyyy""");
+			Record.Period = Date;
+			Record.Project = CurRowAccount.Project;
+			Record.Amount = CurRowAccount.Amount;
+		Endif;
+	EndDo;
+
+
 	 	 	
 EndProcedure
 
@@ -248,6 +276,8 @@ Procedure UndoPosting(Cancel)
 	Query.SetParameter("Ref", Ref);
 	Dataset = Query.Execute().Choose();
 	
+	AllowNegativeInventory = Constants.AllowNegativeInventory.Get();
+	
 	While Dataset.Next() Do
 	
 		CurrentBalance = 0;
@@ -272,11 +302,15 @@ Procedure UndoPosting(Cancel)
 		EndIf;
 						
 		If Dataset.Quantity > CurrentBalance Then
-			Cancel = True;
+			CurProd = Dataset.Product;
 			Message = New UserMessage();
-			Message.Text=NStr("en='Insufficient balance';de='Nicht ausreichende Bilanz'");
+			Message.Text= StringFunctionsClientServer.SubstituteParametersInString(
+			NStr("en='Insufficient balance on %1';de='Nicht ausreichende Bilanz'"),CurProd);
 			Message.Message();
-			Return;
+			If NOT AllowNegativeInventory Then
+				Cancel = True;
+				Return;
+			EndIf;
 		EndIf;
 		
 	EndDo;	

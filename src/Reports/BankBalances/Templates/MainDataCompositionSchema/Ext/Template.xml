@@ -14,20 +14,6 @@
 			</role>
 		</field>
 		<field xsi:type="DataSetFieldField">
-			<dataPath>AmountBalance</dataPath>
-			<field>AmountBalance</field>
-			<title xsi:type="v8:LocalStringType">
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Balance</v8:content>
-				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>Bilanz</v8:content>
-				</v8:item>
-			</title>
-		</field>
-		<field xsi:type="DataSetFieldField">
 			<dataPath>Currency</dataPath>
 			<field>Currency</field>
 			<role>
@@ -57,33 +43,37 @@
 			</title>
 		</field>
 		<field xsi:type="DataSetFieldField">
-			<dataPath>AmountRCBalance</dataPath>
-			<field>AmountRCBalance</field>
+			<dataPath>AmountClosingBalance</dataPath>
+			<field>AmountClosingBalance</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>AmountRCClosingBalance</dataPath>
+			<field>AmountRCClosingBalance</field>
 		</field>
 		<dataSource>DataSource1</dataSource>
 		<query>SELECT
-	GeneralJournalBalance.AmountBalance,
-	GeneralJournalBalance.Currency,
+	GeneralJournalBalance.AmountClosingBalance,
+	GeneralJournalBalance.Currency,     
 	GeneralJournalBalance.Account,
 	ChartOfAccounts.Description,
-	GeneralJournalBalance.AmountRCBalance
+	GeneralJournalBalance.AmountRCClosingBalance
 FROM
-	AccountingRegister.GeneralJournal.Balance AS GeneralJournalBalance
+	AccountingRegister.GeneralJournal.BalanceAndTurnovers AS GeneralJournalBalance
 		LEFT JOIN ChartOfAccounts.ChartOfAccounts AS ChartOfAccounts
 		ON GeneralJournalBalance.Account = ChartOfAccounts.Ref
 WHERE
 	GeneralJournalBalance.Account.AccountType = VALUE(Enum.AccountTypes.Bank)</query>
 	</dataSet>
 	<parameter>
-		<name>Period</name>
+		<name>BeginOfPeriod</name>
 		<title xsi:type="v8:LocalStringType">
 			<v8:item>
 				<v8:lang>en</v8:lang>
-				<v8:content>Period</v8:content>
+				<v8:content>Begin of period</v8:content>
 			</v8:item>
 			<v8:item>
 				<v8:lang>de</v8:lang>
-				<v8:content>Periode</v8:content>
+				<v8:content>Periodenanfang</v8:content>
 			</v8:item>
 		</title>
 		<valueType>
@@ -93,7 +83,45 @@ WHERE
 			</v8:DateQualifiers>
 		</valueType>
 		<value xsi:type="xs:dateTime">0001-01-01T00:00:00</value>
+		<useRestriction>true</useRestriction>
+		<expression>&amp;Period.StartDate</expression>
+	</parameter>
+	<parameter>
+		<name>EndOfPeriod</name>
+		<title xsi:type="v8:LocalStringType">
+			<v8:item>
+				<v8:lang>en</v8:lang>
+				<v8:content>End of period</v8:content>
+			</v8:item>
+		</title>
+		<valueType>
+			<v8:Type>xs:dateTime</v8:Type>
+			<v8:DateQualifiers>
+				<v8:DateFractions>DateTime</v8:DateFractions>
+			</v8:DateQualifiers>
+		</valueType>
+		<value xsi:type="xs:dateTime">0001-01-01T00:00:00</value>
+		<useRestriction>true</useRestriction>
+		<expression>&amp;Period.EndDate</expression>
+	</parameter>
+	<parameter>
+		<name>Period</name>
+		<title xsi:type="v8:LocalStringType">
+			<v8:item>
+				<v8:lang>en</v8:lang>
+				<v8:content>Date</v8:content>
+			</v8:item>
+		</title>
+		<valueType>
+			<v8:Type>v8:StandardPeriod</v8:Type>
+		</valueType>
+		<value xsi:type="v8:StandardPeriod">
+			<v8:variant xsi:type="v8:StandardPeriodVariant">Custom</v8:variant>
+			<v8:startDate>0001-01-01T00:00:00</v8:startDate>
+			<v8:endDate>0001-01-01T00:00:00</v8:endDate>
+		</value>
 		<useRestriction>false</useRestriction>
+		<use>Always</use>
 	</parameter>
 	<settingsVariant>
 		<dcsset:name>Default</dcsset:name>
@@ -112,10 +140,23 @@ WHERE
 					<dcsset:field>Description</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>AmountRCBalance</dcsset:field>
+					<dcsset:field>AmountRCClosingBalance</dcsset:field>
 				</dcsset:item>
 			</dcsset:selection>
+			<dcsset:dataParameters>
+				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+					<dcscor:parameter>Period</dcscor:parameter>
+					<dcscor:value xsi:type="v8:StandardPeriod">
+						<v8:variant xsi:type="v8:StandardPeriodVariant">ThisMonth</v8:variant>
+					</dcscor:value>
+					<dcsset:userSettingID>81bfc194-5dd4-491c-bbe7-fd85317c2143</dcsset:userSettingID>
+				</dcscor:item>
+			</dcsset:dataParameters>
 			<dcsset:outputParameters>
+				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+					<dcscor:parameter>TitleOutput</dcscor:parameter>
+					<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
+				</dcscor:item>
 				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 					<dcscor:parameter>Title</dcscor:parameter>
 					<dcscor:value xsi:type="v8:LocalStringType">
@@ -164,9 +205,17 @@ WHERE
 					<dcsset:field>Currency</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>AmountBalance</dcsset:field>
+					<dcsset:field>AmountClosingBalance</dcsset:field>
 				</dcsset:item>
 			</dcsset:selection>
+			<dcsset:dataParameters>
+				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+					<dcscor:parameter>Period</dcscor:parameter>
+					<dcscor:value xsi:type="v8:StandardPeriod">
+						<v8:variant xsi:type="v8:StandardPeriodVariant">ThisMonth</v8:variant>
+					</dcscor:value>
+				</dcscor:item>
+			</dcsset:dataParameters>
 			<dcsset:outputParameters>
 				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 					<dcscor:parameter>Title</dcscor:parameter>

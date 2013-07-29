@@ -164,6 +164,7 @@ Procedure UndoPosting(Cancel)
 
 	// end preventing posting if already included in a bank rec
 
+	AllowNegativeInventory = Constants.AllowNegativeInventory.Get();
 	
 	For Each CurRowLineItems In LineItems Do
 					
@@ -191,11 +192,15 @@ Procedure UndoPosting(Cancel)
 			EndIf;
 							
 			If CurRowLineItems.Quantity > CurrentBalance Then
-				Cancel = True;
+				CurProd = CurRowLineItems.Product;
 				Message = New UserMessage();
-				Message.Text=NStr("en='Insufficient balance';de='Nicht ausreichende Bilanz'");
+				Message.Text= StringFunctionsClientServer.SubstituteParametersInString(
+				NStr("en='Insufficient balance on %1';de='Nicht ausreichende Bilanz'"),CurProd);
 				Message.Message();
-				Return;
+				If NOT AllowNegativeInventory Then
+					Cancel = True;
+					Return;
+				EndIf;
 			EndIf;
 			
 		EndIf;

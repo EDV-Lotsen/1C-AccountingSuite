@@ -172,7 +172,12 @@
 					<xr:PasswordMode>false</xr:PasswordMode>
 					<xr:MarkNegatives>false</xr:MarkNegatives>
 					<xr:MinValue xsi:nil="true"/>
-					<xr:Synonym/>
+					<xr:Synonym>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Invoice #</v8:content>
+						</v8:item>
+					</xr:Synonym>
 					<xr:Comment/>
 					<xr:FullTextSearch>Use</xr:FullTextSearch>
 					<xr:ChoiceParameterLinks/>
@@ -205,6 +210,7 @@
 			<SequenceFilling>AutoFillOff</SequenceFilling>
 			<RegisterRecords>
 				<xr:Item xsi:type="xr:MDObjectRef">AccumulationRegister.InventoryJrnl</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">AccumulationRegister.ProjectData</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">AccountingRegister.GeneralJournal</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">AccumulationRegister.OrdersRegistered</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">InformationRegister.OrdersStatuses</xr:Item>
@@ -264,11 +270,7 @@
 					<FillChecking>ShowError</FillChecking>
 					<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
 					<ChoiceParameterLinks/>
-					<ChoiceParameters>
-						<app:item name="Filter.Customer">
-							<app:value xsi:type="xs:boolean">true</app:value>
-						</app:item>
-					</ChoiceParameters>
+					<ChoiceParameters/>
 					<QuickChoice>Auto</QuickChoice>
 					<CreateOnInput>Auto</CreateOnInput>
 					<ChoiceForm/>
@@ -328,6 +330,10 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Sales tax</v8:content>
 						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Verkaufssteuer</v8:content>
+						</v8:item>
 					</Synonym>
 					<Comment/>
 					<Type>
@@ -373,7 +379,7 @@
 						</v8:item>
 						<v8:item>
 							<v8:lang>de</v8:lang>
-							<v8:content>Gesamtsumme ind Fremdwährung</v8:content>
+							<v8:content>Gesamtbetrag ind Fremdwährung</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -509,7 +515,7 @@
 						</v8:item>
 						<v8:item>
 							<v8:lang>de</v8:lang>
-							<v8:content>Gesamtsumme</v8:content>
+							<v8:content>Gesamtbertrag</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -925,6 +931,10 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Ship to</v8:content>
 						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Liefern an</v8:content>
+						</v8:item>
 					</Synonym>
 					<Comment/>
 					<Type>
@@ -967,7 +977,7 @@
 					<Synonym>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Ref #</v8:content>
+							<v8:content>Cust. PO / Ref #</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -1010,6 +1020,10 @@
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Beginning balance</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Anfangsbestand</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -1086,6 +1100,10 @@
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Project</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Projekt</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -1537,7 +1555,7 @@
 							<Synonym>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Order</v8:content>
+									<v8:content>S.O. #</v8:content>
 								</v8:item>
 							</Synonym>
 							<Comment/>
@@ -1574,6 +1592,10 @@
 								<v8:item>
 									<v8:lang>en</v8:lang>
 									<v8:content>Project</v8:content>
+								</v8:item>
+								<v8:item>
+									<v8:lang>de</v8:lang>
+									<v8:content>Projekt</v8:content>
 								</v8:item>
 							</Synonym>
 							<Comment/>
@@ -1612,21 +1634,48 @@
 				</ChildObjects>
 			</TabularSection>
 			<Template>PF_MXL_SalesInvoice</Template>
-			<Command uuid="dbcf83ec-b39e-44ae-b386-7540adf3fb3c">
+			<Template>PF_MXL_PackingList</Template>
+			<Command uuid="36f2a777-8540-4674-ac45-e1ed3412b5f7">
 				<Properties>
-					<Name>SalesInvoice</Name>
+					<Name>Print</Name>
 					<Synonym>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Sales invoice</v8:content>
+							<v8:content>Print sales invoice</v8:content>
 						</v8:item>
 						<v8:item>
 							<v8:lang>de</v8:lang>
-							<v8:content>Rechnung</v8:content>
+							<v8:content>Rechnung drucken</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
-					<Group>CommandGroup.Print</Group>
+					<Group>FormCommandBarImportant</Group>
+					<CommandParameterType>
+						<v8:Type>cfg:DocumentRef.SalesInvoice</v8:Type>
+					</CommandParameterType>
+					<ParameterUseMode>Multiple</ParameterUseMode>
+					<ModifiesData>false</ModifiesData>
+					<Representation>Auto</Representation>
+					<ToolTip/>
+					<Picture/>
+					<Shortcut/>
+				</Properties>
+			</Command>
+			<Command uuid="99c6f6c8-5781-4273-a42c-132c70ccf36d">
+				<Properties>
+					<Name>PrintPackingList</Name>
+					<Synonym>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Print packing list</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Lieferschein drucken</v8:content>
+						</v8:item>
+					</Synonym>
+					<Comment/>
+					<Group>FormCommandBarImportant</Group>
 					<CommandParameterType>
 						<v8:Type>cfg:DocumentRef.SalesInvoice</v8:Type>
 					</CommandParameterType>

@@ -44,7 +44,8 @@ Procedure FillReconciliationSpec(StatementToDate, BankAccount)
 			OldLineItems.Insert("Transaction", DocumentLine.Transaction);
 			OldLineItems.Insert("Date", DocumentLine.Date);
 			OldLineItems.Insert("TransactionAmount", DocumentLine.TransactionAmount);
-			OldLineItems.Insert("Company", DocumentLine.Company);			
+			OldLineItems.Insert("Company", DocumentLine.Company);
+			OldLineItems.Insert("DocNumber", DocumentLine.DocNumber);
 			OldLI.Add(OldLineItems);
 			
 		EndIf;
@@ -62,6 +63,7 @@ Procedure FillReconciliationSpec(StatementToDate, BankAccount)
 		DataLine.Date = OldLI[i-1].Date;
 		DataLine.Cleared = True;
 		DataLine.TransactionAmount = OldLI[i-1].TransactionAmount;
+		DataLine.DocNumber = OldLI[i-1].DocNumber;
 		DataLine.Company = OldLI[i-1].Company;
 		
 	EndDo;
@@ -70,6 +72,7 @@ Procedure FillReconciliationSpec(StatementToDate, BankAccount)
 	                  |	TransactionReconciliation.Document AS Ref,
 					  |	TransactionReconciliation.Document.Date AS Date,
 	                  |	TransactionReconciliation.Document.Company AS Company,
+					  | TransactionReconciliation.Document.Number AS Number,
 	                  |	TransactionReconciliation.Amount AS DocumentTotal
 	                  |FROM
 	                  |	InformationRegister.TransactionReconciliation AS TransactionReconciliation
@@ -91,6 +94,7 @@ Procedure FillReconciliationSpec(StatementToDate, BankAccount)
 		DataLine = Object.LineItems.Add();
 		DataLine.Transaction = Result.Ref;
 		DataLine.Date = Result.Date;
+		DataLine.DocNumber = Result.Number;
 		DataLine.TransactionAmount = Result.DocumentTotal;
 		DataLine.Company = Result.Company;
 		
@@ -189,10 +193,6 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
 	Items.BankAccountLabel.Title =
 		CommonUse.GetAttributeValue(Object.BankAccount, "Description");
-
-	// AdditionalReportsAndDataProcessors
-	AdditionalReportsAndDataProcessors.OnCreateAtServer(ThisForm);
-	// End AdditionalReportsAndDataProcessors
 	
 EndProcedure
 
@@ -202,7 +202,7 @@ Procedure BankAccountOnChange(Item)
 	Items.BankAccountLabel.Title =
 		CommonUse.GetAttributeValue(Object.BankAccount, "Description");
 		
-	DoMessageBox("Update the Statement To date to recalculate the reconciliation");
+	Message("Update the Statement To date to recalculate the reconciliation");
 
 EndProcedure
 

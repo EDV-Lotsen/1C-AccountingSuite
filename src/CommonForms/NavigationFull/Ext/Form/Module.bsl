@@ -1,81 +1,90 @@
-﻿
-&AtServer
-Procedure OnCreateAtServer(Cancel, StandardProcessing)
-	
-	CreateSales = "Create...";
-	CreatePurchasing = "Create...";
-	CreateBank = "Create...";
-	CreateAccounting = "Create...";
-	CreateLists = "Create...";
-
+﻿&AtClient
+Procedure SalesOrder(Command)
+	OpenForm("Document.SalesOrder.Form.DocumentForm");
 EndProcedure
 
 &AtClient
-Procedure CreateSalesOnChange(Item)
-	
-	If CreateSales = "Sales order" Then
-		OpenForm("Document.SalesOrder.Form.DocumentForm");	
-	ElsIf CreateSales = "Sales invoice" Then
-		OpenForm("Document.SalesInvoice.Form.DocumentForm");	
-	ElsIf CreateSales = "Cash sale" Then
-		OpenForm("Document.CashSale.Form.DocumentForm");	
-	EndIf;
-
+Procedure SalesInvoice(Command)
+	OpenForm("Document.SalesInvoice.Form.DocumentForm");
 EndProcedure
 
 &AtClient
-Procedure CreatePurchasingOnChange(Item)
-	
-	If CreatePurchasing = "Purchase order" Then
-		OpenForm("Document.PurchaseOrder.Form.DocumentForm");	
-	ElsIf CreatePurchasing = "Purchase invoice" Then
-		OpenForm("Document.PurchaseInvoice.Form.DocumentForm");	
-	ElsIf CreatePurchasing = "Cash purchase" Then
-		OpenForm("Document.CashPurchase.Form.DocumentForm");
-	EndIf;
-
+Procedure CashSale(Command)
+	OpenForm("Document.CashSale.Form.DocumentForm");
 EndProcedure
 
 &AtClient
-Procedure CreateBankOnChange(Item)
-	
-	If CreateBank = "Cash receipt" Then
-		OpenForm("Document.CashReceipt.Form.DocumentForm");
-	ElsIf CreateBank = "Invoice payment" Then
-		OpenForm("Document.InvoicePayment.Form.DocumentForm");
-	ElsIf CreateBank = "Deposit" Then
-		OpenForm("Document.Deposit.Form.DocumentForm");
-	ElsIf CreateBank = "Check" Then
-		OpenForm("Document.Check.Form.DocumentForm");
-	EndIf;
-
+Procedure PurchaseOrder(Command)
+	OpenForm("Document.PurchaseOrder.Form.DocumentForm");
 EndProcedure
 
 &AtClient
-Procedure CreateAccountingOnChange(Item)
-	
-	If CreateAccounting = "General journal entry" Then
-		OpenForm("Document.GeneralJournalEntry.Form.DocumentForm");
-	Else
-	EndIf;
-
+Procedure PurchaseInvoice(Command)
+	OpenForm("Document.PurchaseInvoice.Form.DocumentForm");
 EndProcedure
 
 &AtClient
-Procedure CreateListsOnChange(Item)
-	
-	If CreateLists = "Create company" Then
-		OpenForm("Catalog.Companies.Form.ItemForm");
-	ElsIf CreateLists = "Create item" Then
-		OpenForm("Catalog.Products.Form.ItemForm");
-	EndIf;
-
+Procedure PurchaseReturn(Command)
+	OpenForm("Document.PurchaseReturn.Form.DocumentForm");
 EndProcedure
 
 &AtClient
-Procedure Settings(Command)
-	
-	OpenForm("CommonForm.GeneralSettings");
+Procedure CashReceipt(Command)
+	OpenForm("Document.CashReceipt.Form.DocumentForm");
+EndProcedure
+
+&AtClient
+Procedure InvoicePayment(Command)
+	OpenForm("Document.InvoicePayment.Form.DocumentForm");
+EndProcedure
+ 
+&AtClient
+Procedure Deposit(Command)
+	OpenForm("Document.Deposit.Form.DocumentForm");
+EndProcedure
+
+&AtClient
+Procedure Check(Command)
+	OpenForm("Document.Check.Form.DocumentForm");
+EndProcedure
+
+&AtClient
+Procedure BankRec(Command)
+	OpenForm("Document.BankReconciliation.Form.DocumentForm");
+EndProcedure
+
+&AtClient
+Procedure ChartOfAccounts(Command)
+	OpenForm("ChartOfAccounts.ChartOfAccounts.Form.ListForm");
+EndProcedure
+
+&AtClient
+Procedure GJEntry(Command)
+	OpenForm("Document.GeneralJournalEntry.Form.DocumentForm");
+EndProcedure
+
+&AtClient
+Procedure Company(Command)
+	OpenForm("Catalog.Companies.Form.ListForm");
+EndProcedure
+
+&AtClient
+Procedure Product(Command)
+	OpenForm("Catalog.Products.Form.ListForm");
+EndProcedure
+
+&AtClient
+Procedure UserList(Command)
+	OpenForm("Catalog.UserList.Form.ListForm");
+EndProcedure
+
+&AtClient
+Procedure ItemReceipt(Command)
+	OpenForm("Document.InventoryBeginningBalances.Form.DocumentForm");
+EndProcedure
+
+&AtClient
+Procedure OnOpen(Cancel)
 	
 EndProcedure
 

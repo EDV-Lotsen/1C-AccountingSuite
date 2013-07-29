@@ -36,7 +36,7 @@ Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 	
 EndProcedure
 
-Procedure Posting(Cancel, PostingMode)
+Procedure Posting(Cancel, PostingMode)	
 	
 	// 1. Common postings clearing / reactivate manual ajusted postings
 	DocumentPosting.PrepareRecordSetsForPosting(AdditionalProperties, RegisterRecords);
@@ -108,11 +108,13 @@ Procedure Posting(Cancel, PostingMode)
 		
 		PostingDatasetInvOrExp = New ValueTable();
 		PostingDatasetInvOrExp.Columns.Add("InvOrExpAccount");
-        PostingDatasetInvOrExp.Columns.Add("AmountRC");
+		PostingDatasetInvOrExp.Columns.Add("AmountRC");
 		
 		PostingDatasetVAT = New ValueTable();
 		PostingDatasetVAT.Columns.Add("VATAccount");
 		PostingDatasetVAT.Columns.Add("AmountRC");
+		
+		AllowNegativeInventory = Constants.AllowNegativeInventory.Get();
 		
 		For Each CurRowLineItems In LineItems Do
 						
@@ -138,13 +140,19 @@ Procedure Posting(Cancel, PostingMode)
 					Dataset = QueryResult.Unload();
 					CurrentBalance = Dataset[0][0];
 				EndIf;
-								
+				
 				If CurRowLineItems.Quantity > CurrentBalance Then
-					Cancel = True;
+					
+					CurProd = CurRowLineItems.Product;
 					Message = New UserMessage();
-					Message.Text=NStr("en='Insufficient balance';de='Nicht ausreichende Bilanz'");
+					Message.Text= StringFunctionsClientServer.SubstituteParametersInString(
+					NStr("en='Insufficient balance on %1';de='Nicht ausreichende Bilanz'"),CurProd);
+					
 					Message.Message();
-					Return;
+					If NOT AllowNegativeInventory Then
+						Cancel = True;
+						Return;
+					EndIf;
 				EndIf;
 				
 				// inventory journal update and costing procedure
@@ -164,14 +172,20 @@ Procedure Posting(Cancel, PostingMode)
 					                  |	InventoryJrnlBalance.Product = &Product");
 					Query.SetParameter("Product", CurRowLineItems.Product);
 					QueryResult = Query.Execute().Unload();
-					AverageCost = QueryResult[0].AmountBalance / QueryResult[0].QtyBalance;
-									
+					If  QueryResult.Count() > 0    // If  QueryResult.Rows.Count() > 0
+					And (Not QueryResult[0].QtyBalance = Null)
+					And (Not QueryResult[0].AmountBalance = Null)
+					And QueryResult[0].QtyBalance > 0
+					Then
+						AverageCost = QueryResult[0].AmountBalance / QueryResult[0].QtyBalance;
+					EndIf;
+					
 					Record = RegisterRecords.InventoryJrnl.Add();
 					Record.RecordType = AccumulationRecordType.Expense;
 					Record.Period = Date;
 					Record.Product = CurRowLineItems.Product;
 					Record.Location = Location;
-					Record.Qty = CurRowLineItems.Quantity;				
+					Record.Qty = CurRowLineItems.Quantity;
 					ItemCost = CurRowLineItems.Quantity * AverageCost;
 					Record.Amount = ItemCost;
 					
@@ -324,6 +338,20 @@ Procedure Posting(Cancel, PostingMode)
 		EndDo;	
 					
 	EndIf;
+	
+	// writing ProjectData
+	
+	RegisterRecords.ProjectData.Write = True;
+	For Each CurRowLineItems In LineItems Do
+		Record = RegisterRecords.ProjectData.Add();
+		Record.RecordType = AccumulationRecordType.Receipt;
+		Record.Period = Date;
+		Record.Project = CurRowLineItems.Project;
+		Record.Amount = CurRowLineItems.LineTotal;
+	EndDo;
+	
+	// end writing ProjectData
+
 	 	 	
 EndProcedure
 

@@ -35,7 +35,7 @@ Function GetTypedFillingStructure(Ref, FillingData, BasedOn, ExcludedTypesStr = 
 	
 	// Create description of excluded filling types
 	ArrayOfExcludedTypes = New Array;
-	ListOfExcludedTypes  = StringFunctionsClientServer.DecomposeStringIntoSubstringsArray(ExcludedTypesStr);
+	ListOfExcludedTypes  = StringFunctionsClientServer.SplitStringIntoSubstringArray(ExcludedTypesStr);
 	For Each ExcludedType In ListOfExcludedTypes Do
 		ArrayOfExcludedTypes.Add(Type(StrReplace(ExcludedType, ".", "Ref.")));
 	EndDo;
@@ -74,7 +74,7 @@ Function GetTypedFillingStructure(Ref, FillingData, BasedOn, ExcludedTypesStr = 
 				
 			ElsIf Not ExcludedTypes.ContainsType(TypeOf(Value)) Then // Failed passed parameters
 				MessageText = NStr("en = 'Failed to generate the %1 on the base of %2.'");
-				MessageText = StringFunctionsClientServer.SubstitureParametersInString(MessageText,
+				MessageText = StringFunctionsClientServer.SubstituteParametersInString(MessageText,
 				                                                                       Metadata.FindByType(TypeOf(Ref)).Presentation(),
 																					   String(Value)); 
 				CommonUseClientServer.MessageToUser(MessageText, Ref);
@@ -93,7 +93,7 @@ Function GetTypedFillingStructure(Ref, FillingData, BasedOn, ExcludedTypesStr = 
 			
 		ElsIf Not ExcludedTypes.ContainsType(TypeOf(Value)) Then // Failed passed parameters
 			MessageText = NStr("en = 'Failed to generate the %1 on the base of %2.'");
-			MessageText = StringFunctionsClientServer.SubstitureParametersInString(MessageText,
+			MessageText = StringFunctionsClientServer.SubstituteParametersInString(MessageText,
 			                                                                       Metadata.FindByType(TypeOf(Ref)).Presentation(),
 																				   String(Value)); 
 			CommonUseClientServer.MessageToUser(MessageText, Ref);
@@ -112,8 +112,8 @@ Function CheckSingleValue(Ref, Value)
 	RefCheckFailed = False;
 	If Value.DeletionMark Then
 		MessageText = NStr("en = '%1 %2 marked for deletion.'");
-		MessageText = StringFunctionsClientServer.SubstitureParametersInString(MessageText,
-		                                                                       CommonUse.ObjectClassByType(TypeOf(Ref)),
+		MessageText = StringFunctionsClientServer.SubstituteParametersInString(MessageText,
+		                                                                       CommonUse.ObjectKindByType(TypeOf(Ref)),
 																			   String(Value)); 
 		CommonUseClientServer.MessageToUser(MessageText, Ref,,, RefCheckFailed);
 		
@@ -123,7 +123,7 @@ Function CheckSingleValue(Ref, Value)
 	// Check documents posted
 	If Documents.AllRefsType().ContainsType(TypeOf(Value)) And Not Value.Posted Then
 		MessageText = NStr("en = 'Document %1 is not posted.'");
-		MessageText = StringFunctionsClientServer.SubstitureParametersInString(MessageText,
+		MessageText = StringFunctionsClientServer.SubstituteParametersInString(MessageText,
 																			   String(Value)); 
 		CommonUseClientServer.MessageToUser(MessageText, Ref,,, RefCheckFailed);
 	EndIf;
@@ -153,7 +153,7 @@ Procedure PrepareDataStructuresBeforeFilling(AdditionalProperties, DocumentParam
 	If TypedFillingData.Count() = 0 Then
 		If WarnOnNoData Then
 			MessageText = NStr("en = 'Failed to generate the %1, filling data is not provided.'");
-			MessageText = StringFunctionsClientServer.SubstitureParametersInString(MessageText,
+			MessageText = StringFunctionsClientServer.SubstituteParametersInString(MessageText,
 			                                                                       DocumentParameters.Metadata.Presentation()); 
 			CommonUseClientServer.MessageToUser(MessageText, DocumentParameters.Ref,,, Cancel);
 		Else // Forced setting of cancel
@@ -214,7 +214,7 @@ Procedure CheckDataStructuresOnFilling(AdditionalProperties, Cancel) Export
 	HeaderVersionsCount = TableCheck.Count();
 	If HeaderVersionsCount = 0 Then
 		MessageText = NStr("en = 'Failed to generate the %1, filling data is not suitable for filling.'");
-		MessageText = StringFunctionsClientServer.SubstitureParametersInString(MessageText,
+		MessageText = StringFunctionsClientServer.SubstituteParametersInString(MessageText,
 		                                                                       AdditionalProperties.Metadata.Presentation()); 
 		CommonUseClientServer.MessageToUser(MessageText, AdditionalProperties.Ref,,, Cancel);
 		
@@ -250,7 +250,7 @@ Procedure CheckDataStructuresOnFilling(AdditionalProperties, Cancel) Export
 				EndDo;
 				
 				MessageText  = NStr("en = 'Selected documents have different %1: %2'");
-				MessageText  = StringFunctionsClientServer.SubstitureParametersInString(MessageText,
+				MessageText  = StringFunctionsClientServer.SubstituteParametersInString(MessageText,
 				               ?(Attribute.Key = "Company", CompaniesName, Lower(AdditionalProperties.Metadata.Attributes[Attribute.Key].Synonym) + " values"),
 							   DoublesText); 
 				CommonUseClientServer.MessageToUser(MessageText, AdditionalProperties.Ref,,, Cancel);

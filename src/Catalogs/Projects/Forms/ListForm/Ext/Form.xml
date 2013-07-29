@@ -2,6 +2,9 @@
 <Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
 	<VerticalScroll>useIfNecessary</VerticalScroll>
 	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<Events>
+		<Event name="OnOpen">OnOpen</Event>
+	</Events>
 	<ChildItems>
 		<Table name="List" id="1">
 			<Representation>List</Representation>
@@ -33,36 +36,77 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="6"/>
-			<SearchStringAddition name="ListSearchString" id="7">
+			<SearchStringAddition name="ListSearchString" id="17">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="8"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="9"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="18"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="19"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="10">
+			<ViewStatusAddition name="ListViewStatus" id="20">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="11"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="12"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="21"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="22"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="13">
+			<SearchControlAddition name="ListSearchControl" id="23">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="14"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="15"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="24"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="25"/>
 			</SearchControlAddition>
 			<ChildItems>
 				<LabelField name="Description" id="4">
 					<DataPath>List.Description</DataPath>
 					<DefaultItem>true</DefaultItem>
+					<Width>28</Width>
+					<HorizontalStretch>false</HorizontalStretch>
 					<ContextMenu name="DescriptionContextMenu" id="5"/>
-					<ExtendedTooltip name="DescriptionExtendedTooltip" id="16"/>
+					<ExtendedTooltip name="DescriptionExtendedTooltip" id="7"/>
+				</LabelField>
+				<LabelField name="AmountReceipt" id="11">
+					<DataPath>List.AmountReceipt</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Income</v8:content>
+						</v8:item>
+					</Title>
+					<Width>14</Width>
+					<HorizontalStretch>false</HorizontalStretch>
+					<ContextMenu name="AmountReceiptContextMenu" id="12"/>
+					<ExtendedTooltip name="AmountReceiptExtendedTooltip" id="13"/>
+				</LabelField>
+				<LabelField name="AmountExpense" id="8">
+					<DataPath>List.AmountExpense</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Expense</v8:content>
+						</v8:item>
+					</Title>
+					<Width>14</Width>
+					<HorizontalStretch>false</HorizontalStretch>
+					<ContextMenu name="AmountExpenseContextMenu" id="9"/>
+					<ExtendedTooltip name="AmountExpenseExtendedTooltip" id="10"/>
+				</LabelField>
+				<LabelField name="AmountTurnover" id="14">
+					<DataPath>List.AmountTurnover</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Profit</v8:content>
+						</v8:item>
+					</Title>
+					<Width>14</Width>
+					<HorizontalStretch>false</HorizontalStretch>
+					<ContextMenu name="AmountTurnoverContextMenu" id="15"/>
+					<ExtendedTooltip name="AmountTurnoverExtendedTooltip" id="16"/>
 				</LabelField>
 			</ChildItems>
 		</Table>
@@ -74,8 +118,23 @@
 			</Type>
 			<MainAttribute>true</MainAttribute>
 			<Settings xsi:type="DynamicList">
-				<ManualQuery>false</ManualQuery>
+				<ManualQuery>true</ManualQuery>
 				<DynamicDataRead>true</DynamicDataRead>
+				<QueryText>SELECT
+	CatalogProjects.Ref,
+	CatalogProjects.DeletionMark,
+	CatalogProjects.Owner,
+	CatalogProjects.Description,
+	CatalogProjects.Predefined,
+	CatalogProjects.PredefinedDataName,
+	ProjectDataTurnovers.Project,
+	ProjectDataTurnovers.AmountTurnover,
+	ProjectDataTurnovers.AmountReceipt,
+	ProjectDataTurnovers.AmountExpense
+FROM
+	AccumulationRegister.ProjectData.Turnovers AS ProjectDataTurnovers
+		RIGHT JOIN Catalog.Projects AS CatalogProjects
+		ON ProjectDataTurnovers.Project = CatalogProjects.Ref</QueryText>
 				<MainTable>Catalog.Projects</MainTable>
 				<ListSettings>
 					<dcsset:filter>
@@ -90,6 +149,8 @@
 						<dcsset:viewMode>Normal</dcsset:viewMode>
 						<dcsset:userSettingID>b75fecce-942b-4aed-abc9-e6a02e460fb3</dcsset:userSettingID>
 					</dcsset:conditionalAppearance>
+					<dcsset:itemsViewMode>Normal</dcsset:itemsViewMode>
+					<dcsset:itemsUserSettingID>911b6018-f537-43e8-a417-da56b22f9aec</dcsset:itemsUserSettingID>
 				</ListSettings>
 			</Settings>
 		</Attribute>

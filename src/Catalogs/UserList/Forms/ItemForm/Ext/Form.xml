@@ -5,6 +5,11 @@
 	<UseForFoldersAndItems>Items</UseForFoldersAndItems>
 	<AutoCommandBar name="FormCommandBar" id="-1"/>
 	<Events>
+		<Event name="AfterWrite">AfterWrite</Event>
+		<Event name="ChoiceProcessing">ChoiceProcessing</Event>
+		<Event name="AfterWriteAtServer">AfterWriteAtServer</Event>
+		<Event name="NewWriteProcessing">NewWriteProcessing</Event>
+		<Event name="OnOpen">OnOpen</Event>
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
 		<Event name="OnWriteAtServer">OnWriteAtServer</Event>
 		<Event name="FillCheckProcessingAtServer">FillCheckProcessingAtServer</Event>
@@ -12,10 +17,361 @@
 	<ChildItems>
 		<InputField name="Description" id="1">
 			<DataPath>Object.Description</DataPath>
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Email</v8:content>
+				</v8:item>
+			</Title>
 			<EditMode>EnterOnInput</EditMode>
 			<ContextMenu name="DescriptionContextMenu" id="2"/>
 			<ExtendedTooltip name="DescriptionExtendedTooltip" id="3"/>
 		</InputField>
+		<InputField name="Pwd" id="64">
+			<DataPath>Pwd</DataPath>
+			<ContextMenu name="PwdContextMenu" id="65"/>
+			<ExtendedTooltip name="PwdExtendedTooltip" id="66"/>
+		</InputField>
+		<InputField name="Name" id="31">
+			<DataPath>Object.Name</DataPath>
+			<ContextMenu name="NameContextMenu" id="32"/>
+			<ExtendedTooltip name="NameExtendedTooltip" id="33"/>
+		</InputField>
+		<InputField name="Ttile" id="34">
+			<DataPath>Object.Title</DataPath>
+			<ContextMenu name="TtileContextMenu" id="35"/>
+			<ExtendedTooltip name="TtileExtendedTooltip" id="36"/>
+		</InputField>
+		<InputField name="Phone" id="37">
+			<DataPath>Object.Phone</DataPath>
+			<ContextMenu name="PhoneContextMenu" id="38"/>
+			<ExtendedTooltip name="PhoneExtendedTooltip" id="39"/>
+		</InputField>
+		<CheckBoxField name="AdminAccess" id="58">
+			<DataPath>Object.AdminAccess</DataPath>
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Administrator</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Gives all listed rights and user management</v8:content>
+				</v8:item>
+			</ToolTip>
+			<ToolTipRepresentation>Button</ToolTipRepresentation>
+			<CheckBoxType>Auto</CheckBoxType>
+			<ContextMenu name="AdminAccessContextMenu" id="59"/>
+			<ExtendedTooltip name="AdminAccessExtendedTooltip" id="60"/>
+			<Events>
+				<Event name="OnChange">ChoiceProcessing</Event>
+			</Events>
+		</CheckBoxField>
+		<CheckBoxField name="ReportsOnly" id="61">
+			<DataPath>Object.ReportsOnly</DataPath>
+			<CheckBoxType>Auto</CheckBoxType>
+			<ContextMenu name="ReportsOnlyContextMenu" id="62"/>
+			<ExtendedTooltip name="ReportsOnlyExtendedTooltip" id="63"/>
+			<Events>
+				<Event name="OnChange">ChoiceProcessing</Event>
+			</Events>
+		</CheckBoxField>
+		<RadioButtonField name="Sales" id="43">
+			<DataPath>Object.Sales</DataPath>
+			<RadioButtonType>Auto</RadioButtonType>
+			<ChoiceList>
+				<xr:Item>
+					<xr:Presentation/>
+					<xr:CheckState>0</xr:CheckState>
+					<xr:Value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>Full Access</v8:content>
+							</v8:item>
+						</Presentation>
+						<Value xsi:type="xs:string">Full</Value>
+					</xr:Value>
+				</xr:Item>
+				<xr:Item>
+					<xr:Presentation/>
+					<xr:CheckState>0</xr:CheckState>
+					<xr:Value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>View Only</v8:content>
+							</v8:item>
+						</Presentation>
+						<Value xsi:type="xs:string">View</Value>
+					</xr:Value>
+				</xr:Item>
+				<xr:Item>
+					<xr:Presentation/>
+					<xr:CheckState>0</xr:CheckState>
+					<xr:Value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>No Rights</v8:content>
+							</v8:item>
+						</Presentation>
+						<Value xsi:type="xs:string">None</Value>
+					</xr:Value>
+				</xr:Item>
+			</ChoiceList>
+			<ContextMenu name="SalesContextMenu" id="44"/>
+			<ExtendedTooltip name="SalesExtendedTooltip" id="45"/>
+		</RadioButtonField>
+		<RadioButtonField name="Purchasing" id="46">
+			<DataPath>Object.Purchasing</DataPath>
+			<RadioButtonType>Auto</RadioButtonType>
+			<ChoiceList>
+				<xr:Item>
+					<xr:Presentation/>
+					<xr:CheckState>0</xr:CheckState>
+					<xr:Value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>Full Access</v8:content>
+							</v8:item>
+						</Presentation>
+						<Value xsi:type="xs:string">Full</Value>
+					</xr:Value>
+				</xr:Item>
+				<xr:Item>
+					<xr:Presentation/>
+					<xr:CheckState>0</xr:CheckState>
+					<xr:Value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>View Only</v8:content>
+							</v8:item>
+						</Presentation>
+						<Value xsi:type="xs:string">View</Value>
+					</xr:Value>
+				</xr:Item>
+				<xr:Item>
+					<xr:Presentation/>
+					<xr:CheckState>0</xr:CheckState>
+					<xr:Value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>No Rights</v8:content>
+							</v8:item>
+						</Presentation>
+						<Value xsi:type="xs:string">None</Value>
+					</xr:Value>
+				</xr:Item>
+			</ChoiceList>
+			<ContextMenu name="PurchasingContextMenu" id="47"/>
+			<ExtendedTooltip name="PurchasingExtendedTooltip" id="48"/>
+		</RadioButtonField>
+		<RadioButtonField name="Warehouse" id="49">
+			<DataPath>Object.Warehouse</DataPath>
+			<RadioButtonType>Auto</RadioButtonType>
+			<ChoiceList>
+				<xr:Item>
+					<xr:Presentation/>
+					<xr:CheckState>0</xr:CheckState>
+					<xr:Value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>Full Access</v8:content>
+							</v8:item>
+						</Presentation>
+						<Value xsi:type="xs:string">Full</Value>
+					</xr:Value>
+				</xr:Item>
+				<xr:Item>
+					<xr:Presentation/>
+					<xr:CheckState>0</xr:CheckState>
+					<xr:Value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>View Only</v8:content>
+							</v8:item>
+						</Presentation>
+						<Value xsi:type="xs:string">View</Value>
+					</xr:Value>
+				</xr:Item>
+				<xr:Item>
+					<xr:Presentation/>
+					<xr:CheckState>0</xr:CheckState>
+					<xr:Value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>No Rights</v8:content>
+							</v8:item>
+						</Presentation>
+						<Value xsi:type="xs:string">None</Value>
+					</xr:Value>
+				</xr:Item>
+			</ChoiceList>
+			<ContextMenu name="WarehouseContextMenu" id="50"/>
+			<ExtendedTooltip name="WarehouseExtendedTooltip" id="51"/>
+		</RadioButtonField>
+		<RadioButtonField name="BankReceive" id="52">
+			<DataPath>Object.BankReceive</DataPath>
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Bank Receive</v8:content>
+				</v8:item>
+			</Title>
+			<RadioButtonType>Auto</RadioButtonType>
+			<ChoiceList>
+				<xr:Item>
+					<xr:Presentation/>
+					<xr:CheckState>0</xr:CheckState>
+					<xr:Value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>Full Access</v8:content>
+							</v8:item>
+						</Presentation>
+						<Value xsi:type="xs:string">Full</Value>
+					</xr:Value>
+				</xr:Item>
+				<xr:Item>
+					<xr:Presentation/>
+					<xr:CheckState>0</xr:CheckState>
+					<xr:Value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>View Only</v8:content>
+							</v8:item>
+						</Presentation>
+						<Value xsi:type="xs:string">View</Value>
+					</xr:Value>
+				</xr:Item>
+				<xr:Item>
+					<xr:Presentation/>
+					<xr:CheckState>0</xr:CheckState>
+					<xr:Value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>No Rights</v8:content>
+							</v8:item>
+						</Presentation>
+						<Value xsi:type="xs:string">None</Value>
+					</xr:Value>
+				</xr:Item>
+			</ChoiceList>
+			<ContextMenu name="BankReceiveContextMenu" id="53"/>
+			<ExtendedTooltip name="BankReceiveExtendedTooltip" id="54"/>
+		</RadioButtonField>
+		<RadioButtonField name="BankSend" id="55">
+			<DataPath>Object.BankSend</DataPath>
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Bank Send</v8:content>
+				</v8:item>
+			</Title>
+			<RadioButtonType>Auto</RadioButtonType>
+			<ChoiceList>
+				<xr:Item>
+					<xr:Presentation/>
+					<xr:CheckState>0</xr:CheckState>
+					<xr:Value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>Full Access</v8:content>
+							</v8:item>
+						</Presentation>
+						<Value xsi:type="xs:string">Full</Value>
+					</xr:Value>
+				</xr:Item>
+				<xr:Item>
+					<xr:Presentation/>
+					<xr:CheckState>0</xr:CheckState>
+					<xr:Value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>View Only</v8:content>
+							</v8:item>
+						</Presentation>
+						<Value xsi:type="xs:string">View</Value>
+					</xr:Value>
+				</xr:Item>
+				<xr:Item>
+					<xr:Presentation/>
+					<xr:CheckState>0</xr:CheckState>
+					<xr:Value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>No Rights</v8:content>
+							</v8:item>
+						</Presentation>
+						<Value xsi:type="xs:string">None</Value>
+					</xr:Value>
+				</xr:Item>
+			</ChoiceList>
+			<ContextMenu name="BankSendContextMenu" id="56"/>
+			<ExtendedTooltip name="BankSendExtendedTooltip" id="57"/>
+		</RadioButtonField>
+		<RadioButtonField name="Accounting" id="40">
+			<DataPath>Object.Accounting</DataPath>
+			<RadioButtonType>Auto</RadioButtonType>
+			<ChoiceList>
+				<xr:Item>
+					<xr:Presentation/>
+					<xr:CheckState>0</xr:CheckState>
+					<xr:Value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>Full Access</v8:content>
+							</v8:item>
+						</Presentation>
+						<Value xsi:type="xs:string">Full</Value>
+					</xr:Value>
+				</xr:Item>
+				<xr:Item>
+					<xr:Presentation/>
+					<xr:CheckState>0</xr:CheckState>
+					<xr:Value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>View Only</v8:content>
+							</v8:item>
+						</Presentation>
+						<Value xsi:type="xs:string">View</Value>
+					</xr:Value>
+				</xr:Item>
+				<xr:Item>
+					<xr:Presentation/>
+					<xr:CheckState>0</xr:CheckState>
+					<xr:Value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>No Rights</v8:content>
+							</v8:item>
+						</Presentation>
+						<Value xsi:type="xs:string">None</Value>
+					</xr:Value>
+				</xr:Item>
+			</ChoiceList>
+			<ContextMenu name="AccountingContextMenu" id="41"/>
+			<ExtendedTooltip name="AccountingExtendedTooltip" id="42"/>
+		</RadioButtonField>
 	</ChildItems>
 	<Attributes>
 		<Attribute name="Object" id="1">
@@ -24,6 +380,21 @@
 			</Type>
 			<MainAttribute>true</MainAttribute>
 			<SavedData>true</SavedData>
+		</Attribute>
+		<Attribute name="Pwd" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Password</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
 		</Attribute>
 	</Attributes>
 </Form>

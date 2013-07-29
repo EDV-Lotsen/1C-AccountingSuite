@@ -32,7 +32,7 @@
 				</v8:item>
 				<v8:item>
 					<v8:lang>de</v8:lang>
-					<v8:content>Lieferantenstorno</v8:content>
+					<v8:content>Warenrücksendung</v8:content>
 				</v8:item>
 			</Synonym>
 			<Comment/>
@@ -230,7 +230,7 @@
 				</v8:item>
 				<v8:item>
 					<v8:lang>de</v8:lang>
-					<v8:content>Lieferantenstorno</v8:content>
+					<v8:content>Warenrücksendungen</v8:content>
 				</v8:item>
 			</ListPresentation>
 			<ExtendedListPresentation/>
@@ -270,11 +270,7 @@
 					<FillChecking>ShowError</FillChecking>
 					<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
 					<ChoiceParameterLinks/>
-					<ChoiceParameters>
-						<app:item name="Filter.Vendor">
-							<app:value xsi:type="xs:boolean">true</app:value>
-						</app:item>
-					</ChoiceParameters>
+					<ChoiceParameters/>
 					<QuickChoice>Auto</QuickChoice>
 					<CreateOnInput>Auto</CreateOnInput>
 					<ChoiceForm/>
@@ -336,7 +332,7 @@
 						</v8:item>
 						<v8:item>
 							<v8:lang>de</v8:lang>
-							<v8:content>Gesamtsumme ind Fremdwährung</v8:content>
+							<v8:content>Gesamtbetrag ind Fremdwährung</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -383,7 +379,7 @@
 						</v8:item>
 						<v8:item>
 							<v8:lang>de</v8:lang>
-							<v8:content>Bestellung</v8:content>
+							<v8:content>Eingangsrechnung</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -515,7 +511,7 @@
 						</v8:item>
 						<v8:item>
 							<v8:lang>de</v8:lang>
-							<v8:content>Gesamtsumme</v8:content>
+							<v8:content>Gesamtbertrag</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -864,7 +860,11 @@
 					<Synonym>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Return type</v8:content>
+							<v8:content>Type</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Typ</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -903,6 +903,10 @@
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Beginning balance</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Anfangsbestand</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>

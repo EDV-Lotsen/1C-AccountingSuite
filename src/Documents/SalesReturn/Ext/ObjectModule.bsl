@@ -64,8 +64,13 @@ Procedure Posting(Cancel, Mode)
 				                  |	InventoryJrnlBalance.Product = &Product");
 				Query.SetParameter("Product", CurRowLineItems.Product);
 				QueryResult = Query.Execute().Unload();
-				LastCost = QueryResult[0].AmountBalance / QueryResult[0].QtyBalance;
-				
+				If  QueryResult.Count() > 0
+				And (Not QueryResult[0].QtyBalance = Null)
+				And (Not QueryResult[0].AmountBalance = Null)
+				And QueryResult[0].QtyBalance > 0
+				Then
+					LastCost = QueryResult[0].AmountBalance / QueryResult[0].QtyBalance;
+				EndIf;
 			EndIf;
 			
 			If CurRowLineItems.Product.CostingMethod = Enums.InventoryCosting.LIFO OR
@@ -247,6 +252,8 @@ Procedure UndoPosting(Cancel)
 		Return;
 	EndIf;
 	
+	AllowNegativeInventory = Constants.AllowNegativeInventory.Get();
+	
 	For Each CurRowLineItems In LineItems Do
 					
 		If CurRowLineItems.Product.Type = Enums.InventoryTypes.Inventory Then
@@ -273,11 +280,15 @@ Procedure UndoPosting(Cancel)
 			EndIf;
 							
 			If CurRowLineItems.Quantity > CurrentBalance Then
-				Cancel = True;
+				CurProd = CurRowLineItems.Product;			
 				Message = New UserMessage();
-				Message.Text=NStr("en='Insufficient balance';de='Nicht ausreichende Bilanz'");
+				Message.Text= StringFunctionsClientServer.SubstituteParametersInString(
+				NStr("en='Insufficient balance on %1';de='Nicht ausreichende Bilanz'"),CurProd);
 				Message.Message();
-				Return;
+				If NOT AllowNegativeInventory Then
+					Cancel = True;
+					Return;
+				EndIf;
 			EndIf;
 			
 		EndIf;

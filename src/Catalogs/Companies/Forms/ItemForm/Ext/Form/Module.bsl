@@ -24,37 +24,16 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		EndTry;
 	EndIf;
 	
-	If Object.ExpenseAccount.IsEmpty() Then
-		Try
-			ExpenseAccount = Constants.ExpenseAccount.Get(); 
-			Object.ExpenseAccount = ExpenseAccount;
-			Items.ExpenseAcctLabel.Title = ExpenseAccount.Description;
-		Except
-		EndTry;
-	Else
-		Try
-			Items.ExpenseAcctLabel.Title = Object.ExpenseAccount.Description;
-		Except
-		EndTry;
-	EndIf;
-	
-	If Object.IncomeAccount.IsEmpty() Then
-		Try
-			IncomeAccount = Constants.IncomeAccount.Get();
-			Object.IncomeAccount = IncomeAccount;
-			Items.IncomeAcctLabel.Title = IncomeAccount.Description;
-		Except
-		EndTry;
-	Else
-		Try
-			Items.IncomeAcctLabel.Title = Object.IncomeAccount.Description;
-		Except
-		EndTry;
-	EndIf;
+	Items.IncomeAcctLabel.Title = Object.IncomeAccount.Description;
+	Items.ExpenseAcctLabel.Title = Object.ExpenseAccount.Description;
+	Items.APAcctLabel.Title = Object.APAccount.Description;
+	Items.ARAcctLabel.Title = Object.ARAccount.Description;
 	
 	If Object.Customer = False Then
 		//Items.IncomeAccount.ReadOnly = True;
+		Items.CatalogProjectsOpenByValue.Visible = False;
 	Else
+		Items.CatalogProjectsOpenByValue.Visible = True;
 		Items.Customer.Enabled = False;
 	EndIf;
 	
@@ -64,55 +43,19 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Items.Vendor.Enabled = False;
 	EndIf;
 	
-	If Object.Ref = Catalogs.Companies.OurCompany Then
-		Items.Vendor1099.Visible = False;
-		Items.DefaultCurrency.Visible = False;
-		Items.SalesTaxCode.Visible = False;
-		Items.ExpenseAccount.Visible = False;
-		Items.ExpenseAcctLabel.Visible = False;
-		Items.IncomeAccount.Visible = False;
-		Items.IncomeAcctLabel.Visible = False;
-		Items.Group2.ReadOnly = True;
-		Items.Terms.Visible = False;
-	EndIf;
+	//If Object.Ref = Catalogs.Companies.OurCompany Then
+	//	Items.Vendor1099.Visible = False;
+	//	Items.DefaultCurrency.Visible = False;
+	//	Items.SalesTaxCode.Visible = False;
+	//	Items.ExpenseAccount.Visible = False;
+	//	Items.ExpenseAcctLabel.Visible = False;
+	//	Items.IncomeAccount.Visible = False;
+	//	Items.IncomeAcctLabel.Visible = False;
+	//	Items.Group2.ReadOnly = True;
+	//	Items.Terms.Visible = False;
+	//EndIf;
 	
-	// AdditionalReportsAndDataProcessors
-	AdditionalReportsAndDataProcessors.OnCreateAtServer(ThisForm);
-	// End AdditionalReportsAndDataProcessors
 	
-EndProcedure
-
-&AtClient
-Procedure OnOpen(Cancel)
-	// Update form presentation
-	VendorOnChange(Items.Vendor);
-	CustomerOnChange(Items.Customer);
-EndProcedure
-
-&AtClient
-// Sets accounts visibility
-//
-Procedure VendorOnChange(Item)
-	
-	If Object.Vendor AND Object.Ref.IsEmpty() Then
-		//Items.ExpenseAccount.ReadOnly = False;
-	Else
-		//Items.ExpenseAccount.ReadOnly = True;
-	EndIf;
-	
-EndProcedure
-
-&AtClient
-// Sets accounts visibility
-//
-Procedure CustomerOnChange(Item)
-	
-	If Object.Customer AND Object.Ref.IsEmpty() Then
-		//Items.IncomeAccount.ReadOnly = False;
-	Else
-		//Items.IncomeAccount.ReadOnly = True;
-	EndIf;
-
 EndProcedure
 
 &AtClient
@@ -140,8 +83,9 @@ Procedure IncomeAccountOnChange(Item)
 //
 Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 		
-	If Object.Vendor = False AND Object.Customer = False AND
-		NOT Object.Ref = GeneralFunctions.GetOurCompany() Then
+	If Object.Vendor = False AND Object.Customer = False Then
+		
+		// AND NOT Object.Ref = GeneralFunctions.GetOurCompany()
 		
 		Message = New UserMessage();
 		Message.Text=NStr("en='Select if the company is a customer, vendor, or both'");
@@ -228,3 +172,21 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 	Items.Vendor.Enabled = Not Object.Vendor;
 	
 EndProcedure
+
+&AtClient
+Procedure ARAccountOnChange(Item)
+	
+	Items.ARAcctLabel.Title =
+		CommonUse.GetAttributeValue(Object.ARAccount, "Description");
+		
+EndProcedure
+
+&AtClient
+Procedure APAccountOnChange(Item)
+	
+	Items.APAcctLabel.Title =
+		CommonUse.GetAttributeValue(Object.APAccount, "Description");
+		
+EndProcedure
+
+

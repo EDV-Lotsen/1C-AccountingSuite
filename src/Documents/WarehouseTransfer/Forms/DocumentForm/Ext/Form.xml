@@ -5,9 +5,6 @@
 	<UsePostingMode>Auto</UsePostingMode>
 	<RepostOnWrite>true</RepostOnWrite>
 	<AutoCommandBar name="FormCommandBar" id="-1"/>
-	<Events>
-		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
-	</Events>
 	<ChildItems>
 		<UsualGroup name="Header" id="25">
 			<Title>
@@ -56,8 +53,8 @@
 						<InputField name="Number" id="1">
 							<DataPath>Object.Number</DataPath>
 							<EditMode>EnterOnInput</EditMode>
-							<Width>14</Width>
-							<HorizontalStretch>true</HorizontalStretch>
+							<Width>15</Width>
+							<HorizontalStretch>false</HorizontalStretch>
 							<ContextMenu name="NumberContextMenu" id="2"/>
 							<ExtendedTooltip name="NumberExtendedTooltip" id="39"/>
 						</InputField>
@@ -69,11 +66,19 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Middle column</v8:content>
 						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Mittlere Spalte</v8:content>
+						</v8:item>
 					</Title>
 					<ToolTip>
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Middle column</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Mittlere Spalte</v8:content>
 						</v8:item>
 					</ToolTip>
 					<Group>Vertical</Group>
@@ -85,7 +90,8 @@
 							<DataPath>Object.Date</DataPath>
 							<HorizontalAlign>Right</HorizontalAlign>
 							<EditMode>EnterOnInput</EditMode>
-							<Width>14</Width>
+							<Width>15</Width>
+							<HorizontalStretch>false</HorizontalStretch>
 							<ContextMenu name="DateContextMenu" id="4"/>
 							<ExtendedTooltip name="DateExtendedTooltip" id="41"/>
 						</InputField>
@@ -113,6 +119,7 @@
 							<DataPath>Object.LocationFrom</DataPath>
 							<EditMode>EnterOnInput</EditMode>
 							<Width>15</Width>
+							<HorizontalStretch>false</HorizontalStretch>
 							<ContextMenu name="LocationFromContextMenu" id="6"/>
 							<ExtendedTooltip name="LocationFromExtendedTooltip" id="43"/>
 						</InputField>
@@ -120,6 +127,7 @@
 							<DataPath>Object.LocationTo</DataPath>
 							<EditMode>EnterOnInput</EditMode>
 							<Width>15</Width>
+							<HorizontalStretch>false</HorizontalStretch>
 							<ContextMenu name="LocationToContextMenu" id="8"/>
 							<ExtendedTooltip name="LocationToExtendedTooltip" id="44"/>
 						</InputField>
@@ -149,6 +157,7 @@
 				</v8:item>
 			</ToolTip>
 			<Group>Vertical</Group>
+			<ShowTitle>false</ShowTitle>
 			<ExtendedTooltip name="ProductsExtendedTooltip" id="45"/>
 			<ChildItems>
 				<Table name="LineItems" id="9">
@@ -164,29 +173,29 @@
 					<ContextMenu name="LineItemsContextMenu" id="10"/>
 					<AutoCommandBar name="LineItemsCommandBar" id="11"/>
 					<ExtendedTooltip name="LineItemsExtendedTooltip" id="46"/>
-					<SearchStringAddition name="LineItemsSearchString" id="47">
+					<SearchStringAddition name="LineItemsSearchString" id="57">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>SearchStringRepresentation</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsSearchStringContextMenu" id="48"/>
-						<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="49"/>
+						<ContextMenu name="LineItemsSearchStringContextMenu" id="58"/>
+						<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="59"/>
 					</SearchStringAddition>
-					<ViewStatusAddition name="LineItemsViewStatus" id="50">
+					<ViewStatusAddition name="LineItemsViewStatus" id="60">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>ViewStatusRepresentation</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsViewStatusContextMenu" id="51"/>
-						<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="52"/>
+						<ContextMenu name="LineItemsViewStatusContextMenu" id="61"/>
+						<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="62"/>
 					</ViewStatusAddition>
-					<SearchControlAddition name="LineItemsSearchControl" id="53">
+					<SearchControlAddition name="LineItemsSearchControl" id="63">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>SearchControl</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsSearchControlContextMenu" id="54"/>
-						<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="55"/>
+						<ContextMenu name="LineItemsSearchControlContextMenu" id="64"/>
+						<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="65"/>
 					</SearchControlAddition>
 					<ChildItems>
 						<LabelField name="LineItemsLineNumber" id="12">
@@ -194,14 +203,14 @@
 							<EditMode>EnterOnInput</EditMode>
 							<Width>2</Width>
 							<ContextMenu name="LineItemsLineNumberContextMenu" id="13"/>
-							<ExtendedTooltip name="LineItemsLineNumberExtendedTooltip" id="56"/>
+							<ExtendedTooltip name="LineItemsLineNumberExtendedTooltip" id="47"/>
 						</LabelField>
 						<InputField name="LineItemsProduct" id="14">
 							<DataPath>Object.LineItems.Product</DataPath>
 							<EditMode>EnterOnInput</EditMode>
 							<Width>15</Width>
 							<ContextMenu name="LineItemsProductContextMenu" id="15"/>
-							<ExtendedTooltip name="LineItemsProductExtendedTooltip" id="57"/>
+							<ExtendedTooltip name="LineItemsProductExtendedTooltip" id="48"/>
 							<Events>
 								<Event name="OnChange">LineItemsProductOnChange</Event>
 							</Events>
@@ -212,7 +221,7 @@
 							<EditMode>EnterOnInput</EditMode>
 							<Width>20</Width>
 							<ContextMenu name="LineItemsProductDescriptionContextMenu" id="33"/>
-							<ExtendedTooltip name="LineItemsProductDescriptionExtendedTooltip" id="58"/>
+							<ExtendedTooltip name="LineItemsProductDescriptionExtendedTooltip" id="49"/>
 						</InputField>
 						<InputField name="LineItemsQuantity" id="16">
 							<DataPath>Object.LineItems.Quantity</DataPath>
@@ -225,7 +234,7 @@
 								</v8:item>
 							</EditFormat>
 							<ContextMenu name="LineItemsQuantityContextMenu" id="17"/>
-							<ExtendedTooltip name="LineItemsQuantityExtendedTooltip" id="59"/>
+							<ExtendedTooltip name="LineItemsQuantityExtendedTooltip" id="50"/>
 							<Events>
 								<Event name="OnChange">LineItemsQuantityOnChange</Event>
 							</Events>
@@ -236,7 +245,7 @@
 							<EditMode>EnterOnInput</EditMode>
 							<Width>10</Width>
 							<ContextMenu name="LineItemsPriceContextMenu" id="21"/>
-							<ExtendedTooltip name="LineItemsPriceExtendedTooltip" id="60"/>
+							<ExtendedTooltip name="LineItemsPriceExtendedTooltip" id="51"/>
 						</InputField>
 						<InputField name="LineItemsLineTotal" id="22">
 							<DataPath>Object.LineItems.LineTotal</DataPath>
@@ -244,7 +253,7 @@
 							<EditMode>EnterOnInput</EditMode>
 							<Width>10</Width>
 							<ContextMenu name="LineItemsLineTotalContextMenu" id="23"/>
-							<ExtendedTooltip name="LineItemsLineTotalExtendedTooltip" id="61"/>
+							<ExtendedTooltip name="LineItemsLineTotalExtendedTooltip" id="52"/>
 						</InputField>
 					</ChildItems>
 				</Table>
@@ -274,12 +283,12 @@
 			<Group>Horizontal</Group>
 			<Representation>None</Representation>
 			<ShowTitle>false</ShowTitle>
-			<ExtendedTooltip name="FooterExtendedTooltip" id="62"/>
+			<ExtendedTooltip name="FooterExtendedTooltip" id="53"/>
 			<ChildItems>
 				<InputField name="Memo" id="35">
 					<DataPath>Object.Memo</DataPath>
 					<ContextMenu name="MemoContextMenu" id="36"/>
-					<ExtendedTooltip name="MemoExtendedTooltip" id="63"/>
+					<ExtendedTooltip name="MemoExtendedTooltip" id="54"/>
 				</InputField>
 				<UsualGroup name="FooterRightColumn" id="34">
 					<Title>
@@ -305,13 +314,13 @@
 					<Group>Vertical</Group>
 					<Representation>None</Representation>
 					<ShowTitle>false</ShowTitle>
-					<ExtendedTooltip name="FooterRightColumnExtendedTooltip" id="64"/>
+					<ExtendedTooltip name="FooterRightColumnExtendedTooltip" id="55"/>
 					<ChildItems>
 						<InputField name="DocumentTotalRC" id="30">
 							<DataPath>Object.DocumentTotalRC</DataPath>
 							<ReadOnly>true</ReadOnly>
 							<ContextMenu name="DocumentTotalRCContextMenu" id="31"/>
-							<ExtendedTooltip name="DocumentTotalRCExtendedTooltip" id="65"/>
+							<ExtendedTooltip name="DocumentTotalRCExtendedTooltip" id="56"/>
 						</InputField>
 					</ChildItems>
 				</UsualGroup>

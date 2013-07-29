@@ -1031,7 +1031,7 @@ Function CheckStatusOfPurchaseOrder(Ref) Export
 	StatusOK = (OrderStatus = Enums.OrderStatuses.Open) Or (OrderStatus = Enums.OrderStatuses.Backordered);
 	If Not StatusOK Then
 		MessageText = NStr("en = 'Failed to generate the invoice on the base of %1 %2.'");
-		MessageText = StringFunctionsClientServer.SubstitureParametersInString(MessageText,
+		MessageText = StringFunctionsClientServer.SubstituteParametersInString(MessageText,
 																			   Lower(OrderStatus),
 																			   Lower(Metadata.FindByType(TypeOf(Ref)).Presentation())); 
 		CommonUseClientServer.MessageToUser(MessageText, Ref);
@@ -1043,28 +1043,20 @@ EndFunction
 ////////////////////////////////////////////////////////////////////////////////
 // DOCUMENT PRINTING (OLD)
 
-Procedure Print(ObjectArray, PrintParameters, PrintFormsCollection,
-           PrintObjects, OutputParameters) Export
-
-     // Setting the kit printing option.
-     OutputParameters.AvailablePrintingByKits = True;
-
-     // Checking if a spreadsheet document generation needed for the Purchase Invoice template.
-    If PrintManagement.NeedToPrintTemplate(PrintFormsCollection, "PurchaseInvoice") Then
-
-         // Generating a spreadsheet document and adding it into the print form collection.
-         PrintManagement.OutputSpreadsheetDocumentToCollection(PrintFormsCollection,
-             "PurchaseInvoice", "Purchase invoice", PrintTemplate(ObjectArray, PrintObjects));
-
-	EndIf;
-		 
-EndProcedure
 	 
-Function PrintTemplate(ObjectArray, PrintObjects)
+Procedure Print(Spreadsheet, Ref) Export  // ObjectArray, PrintObjects
+	
+	CustomTemplate = GeneralFunctions.GetCustomTemplate("Document.PurchaseInvoice", "Purchase invoice");
+	
+	If CustomTemplate = Undefined Then
+		Template = Documents.PurchaseInvoice.GetTemplate("PF_MXL_PurchaseInvoice");
+	Else
+		Template = CustomTemplate;
+	EndIf;
 	
 	// Create a spreadsheet document and set print parameters.
-	SpreadsheetDocument = New SpreadsheetDocument;
-	SpreadsheetDocument.PrintParametersName = "PrintParameters_PurchaseInvoice";
+	//SpreadsheetDocument = New SpreadsheetDocument;
+	//SpreadsheetDocument.PrintParametersName = "PrintParameters_PurchaseInvoice";
 
 	// Quering necessary data.
 	Query = New Query();
@@ -1091,29 +1083,33 @@ Function PrintTemplate(ObjectArray, PrintObjects)
 	|FROM
 	|	Document.PurchaseInvoice AS PurchaseInvoice
 	|WHERE
-	|	PurchaseInvoice.Ref IN(&ObjectArray)";
-	Query.SetParameter("ObjectArray", ObjectArray);
+	|	PurchaseInvoice.Ref IN(&Ref)";
+	Query.SetParameter("Ref", Ref);
 	Selection = Query.Execute().Choose();
-   
-   	FirstDocument = True;
+	
+	//AreaCaption = Template.GetArea("Caption");
+	//Header = Template.GetArea("Header");
+	Spreadsheet.Clear();
 
-	Us = Catalogs.Companies.OurCompany;
-   
-   	While Selection.Next() Do
-		
-		If Not FirstDocument Then
-			// All documents need to be outputted on separate pages.
-			SpreadsheetDocument.PutHorizontalPageBreak();
-		EndIf;
-		FirstDocument = False;
-		// Remember current document output beginning line number.
-		BeginningLineNumber = SpreadsheetDocument.TableHeight + 1;
-	 
-	Template = PrintManagement.GetTemplate("Document.PurchaseInvoice.PF_MXL_PurchaseInvoice");
-	 
+	InsertPageBreak = False;
+	While Selection.Next() Do
+
+	
+   //	FirstDocument = True;
+   //
+   //	While Selection.Next() Do
+   // 	
+   // 	If Not FirstDocument Then
+   // 		// All documents need to be outputted on separate pages.
+   // 		Spreadsheet.PutHorizontalPageBreak();
+   // 	EndIf;
+   // 	FirstDocument = False;
+   // 	// Remember current document output beginning line number.
+   // 	BeginningLineNumber = Spreadsheet.TableHeight + 1;
+	 	 
 	TemplateArea = Template.GetArea("Header");
 	
-	UsBill = PrintTemplates.ContactInfoDataset(Us, "UsBill", Catalogs.Addresses.EmptyRef());
+	UsBill = PrintTemplates.ContactInfoDatasetUs();
 	ThemBill = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemBill", Catalogs.Addresses.EmptyRef());
 	
 	TemplateArea.Parameters.Fill(UsBill);
@@ -1122,10 +1118,10 @@ Function PrintTemplate(ObjectArray, PrintObjects)
 	 TemplateArea.Parameters.Date = Selection.Date;
 	 TemplateArea.Parameters.Number = Selection.Number;
 	 
-	 SpreadsheetDocument.Put(TemplateArea);
+	 Spreadsheet.Put(TemplateArea);
 
 	 TemplateArea = Template.GetArea("LineItemsHeader");
-	 SpreadsheetDocument.Put(TemplateArea);
+	 Spreadsheet.Put(TemplateArea);
 	 
 	 SelectionLineItems = Selection.LineItems.Choose();
 	 TemplateArea = Template.GetArea("LineItems");
@@ -1135,39 +1131,52 @@ Function PrintTemplate(ObjectArray, PrintObjects)
 		 TemplateArea.Parameters.Fill(SelectionLineItems);
 		 LineTotal = SelectionLineItems.LineTotal;
 		 LineTotalSum = LineTotalSum + LineTotal;
-		 SpreadsheetDocument.Put(TemplateArea, SelectionLineItems.Level());
+		 Spreadsheet.Put(TemplateArea, SelectionLineItems.Level());
 		 
 	 EndDo;
 	 
+	//If Selection.SalesTax <> 0 Then;
+	//	 TemplateArea = Template.GetArea("Subtotal");
+	//	 TemplateArea.Parameters.Subtotal = LineTotalSum;
+	//	 Spreadsheet.Put(TemplateArea);
+	//	 
+	//	 TemplateArea = Template.GetArea("SalesTax");
+	//	 TemplateArea.Parameters.SalesTaxTotal = Selection.SalesTax;
+	//	 Spreadsheet.Put(TemplateArea);
+	//EndIf; 
+
+	
 	If Selection.VATTotal <> 0 Then;
 		 TemplateArea = Template.GetArea("Subtotal");
 		 TemplateArea.Parameters.Subtotal = LineTotalSum;
-		 SpreadsheetDocument.Put(TemplateArea);
+		 Spreadsheet.Put(TemplateArea);
 		 
 		 TemplateArea = Template.GetArea("VAT");
 		 TemplateArea.Parameters.VATTotal = Selection.VATTotal;
-		 SpreadsheetDocument.Put(TemplateArea);
+		 Spreadsheet.Put(TemplateArea);
 	EndIf; 
 		 
 	 TemplateArea = Template.GetArea("Total");
 	If Selection.PriceIncludesVAT Then
-	 	TemplateArea.Parameters.DocumentTotal = LineTotalSum;
+	 	TemplateArea.Parameters.DocumentTotal = LineTotalSum; //+ Selection.SalesTax;
 	Else
 		TemplateArea.Parameters.DocumentTotal = LineTotalSum + Selection.VATTotal;
 	EndIf;
 
-	 SpreadsheetDocument.Put(TemplateArea);
+	 Spreadsheet.Put(TemplateArea);
 
-	 TemplateArea = Template.GetArea("Currency");
-	 TemplateArea.Parameters.Currency = Selection.Currency;
-	 SpreadsheetDocument.Put(TemplateArea);
+	 //TemplateArea = Template.GetArea("Currency");
+	 //TemplateArea.Parameters.Currency = Selection.Currency;
+	 //Spreadsheet.Put(TemplateArea);
 	 
      // Setting a print area in the spreadsheet document where to output the object.
      // Necessary for kit printing. 
-     PrintManagement.SetDocumentPrintArea(SpreadsheetDocument, BeginningLineNumber, PrintObjects, Selection.Ref);
+     //PrintManagement.SetDocumentPrintArea(SpreadsheetDocument, BeginningLineNumber, PrintObjects, Selection.Ref);
 
+	 InsertPageBreak = True;
+	 
    EndDo;
    
-   Return SpreadsheetDocument;
+   //Return SpreadsheetDocument;
    
-EndFunction
+EndProcedure

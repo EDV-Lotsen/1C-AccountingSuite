@@ -1,0 +1,344 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<DataCompositionSchema xmlns="http://v8.1c.ru/8.1/data-composition-system/schema" xmlns:dcscom="http://v8.1c.ru/8.1/data-composition-system/common" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<dataSource>
+		<name>DataSource1</name>
+		<dataSourceType>Local</dataSourceType>
+	</dataSource>
+	<dataSet xsi:type="DataSetQuery">
+		<name>DataSet1</name>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>CompanyPriceLevel</dataPath>
+			<field>CompanyPriceLevel</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Price level</v8:content>
+				</v8:item>
+			</title>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>LineTotal</dataPath>
+			<field>LineTotal</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Price</dataPath>
+			<field>Price</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>ProductCategory</dataPath>
+			<field>ProductCategory</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Product category</v8:content>
+				</v8:item>
+			</title>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Quantity</dataPath>
+			<field>Quantity</field>
+			<appearance>
+				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+					<dcscor:parameter>Format</dcscor:parameter>
+					<dcscor:value xsi:type="xs:string">NFD=0</dcscor:value>
+				</dcscor:item>
+			</appearance>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Ref</dataPath>
+			<field>Ref</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Document</v8:content>
+				</v8:item>
+			</title>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Terms</dataPath>
+			<field>Terms</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Terms</v8:content>
+				</v8:item>
+			</title>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Cost</dataPath>
+			<field>Cost</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Account</dataPath>
+			<field>Account</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Currency</dataPath>
+			<field>Currency</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>ExtDimension1</dataPath>
+			<field>ExtDimension1</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>ExtDimension2</dataPath>
+			<field>ExtDimension2</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Balance</dataPath>
+			<field>Balance</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Balance</v8:content>
+				</v8:item>
+			</title>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Posted</dataPath>
+			<field>Posted</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Posted</v8:content>
+				</v8:item>
+			</title>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Paid</dataPath>
+			<field>Paid</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Paid</v8:content>
+				</v8:item>
+			</title>
+			<appearance>
+				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+					<dcscor:parameter>Format</dcscor:parameter>
+					<dcscor:value xsi:type="xs:string">NZ=-</dcscor:value>
+				</dcscor:item>
+			</appearance>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Due</dataPath>
+			<field>Due</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Due</v8:content>
+				</v8:item>
+			</title>
+			<appearance>
+				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+					<dcscor:parameter>Format</dcscor:parameter>
+					<dcscor:value xsi:type="xs:string">NFD=2</dcscor:value>
+				</dcscor:item>
+			</appearance>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Company</dataPath>
+			<field>Company</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Customer</v8:content>
+				</v8:item>
+			</title>
+		</field>
+		<dataSource>DataSource1</dataSource>
+		<query>SELECT
+	SalesInvoiceLineItems.Ref.Company,
+	SalesInvoiceLineItems.Quantity,
+	SalesInvoiceLineItems.Price,
+	SalesInvoiceLineItems.LineTotal,
+	SalesInvoiceLineItems.Ref,
+	SalesInvoiceLineItems.Ref.Terms,
+	SalesInvoiceLineItems.Ref.Company.PriceLevel,
+	SalesInvoiceLineItems.Product.Category,
+	PriceListSliceLast.Cost,
+	GeneralJournalBalance.AmountRCBalance AS Balance,
+	SalesInvoiceLineItems.Ref.Posted,
+	CASE
+		WHEN GeneralJournalBalance.AmountRCBalance IS NULL 
+			THEN 1
+		ELSE 0
+	END AS Paid,
+	CASE
+		WHEN GeneralJournalBalance.AmountRCBalance IS NULL 
+				AND SalesInvoiceLineItems.Ref.Terms &lt;&gt; VALUE(Catalog.PaymentTerms.Consignment)
+				AND SalesInvoiceLineItems.Price &lt;&gt; 0
+			THEN SalesInvoiceLineItems.Quantity * PriceListSliceLast.Cost
+		ELSE 0
+	END AS Due
+FROM
+	Document.SalesInvoice.LineItems AS SalesInvoiceLineItems
+		INNER JOIN InformationRegister.PriceList.SliceLast AS PriceListSliceLast
+		ON SalesInvoiceLineItems.Ref.Company.PriceLevel = PriceListSliceLast.PriceLevel
+			AND SalesInvoiceLineItems.Product.Category = PriceListSliceLast.ProductCategory
+		LEFT JOIN AccountingRegister.GeneralJournal.Balance AS GeneralJournalBalance
+		ON (GeneralJournalBalance.ExtDimension2 = SalesInvoiceLineItems.Ref)
+			AND (GeneralJournalBalance.ExtDimension2 REFS Document.SalesInvoice)
+WHERE
+	SalesInvoiceLineItems.Ref.Posted = TRUE
+	AND SalesInvoiceLineItems.Product = &amp;Product
+
+UNION ALL
+
+SELECT
+	SalesReturnLineItems.Ref.Company,
+	SalesReturnLineItems.Quantity,
+	SalesReturnLineItems.Price,
+	SalesReturnLineItems.LineTotal,
+	SalesReturnLineItems.Ref,
+	NULL,
+	SalesReturnLineItems.Ref.Company.PriceLevel,
+	SalesReturnLineItems.Product.Category,
+	PriceListSliceLast.Cost,
+	GeneralJournalBalance.AmountRCBalance,
+	SalesReturnLineItems.Ref.Posted,
+	1,
+	SalesReturnLineItems.Quantity * PriceListSliceLast.Cost * -1
+FROM
+	Document.SalesReturn.LineItems AS SalesReturnLineItems
+		INNER JOIN InformationRegister.PriceList.SliceLast AS PriceListSliceLast
+		ON SalesReturnLineItems.Ref.Company.PriceLevel = PriceListSliceLast.PriceLevel
+			AND SalesReturnLineItems.Product.Category = PriceListSliceLast.ProductCategory
+		LEFT JOIN AccountingRegister.GeneralJournal.Balance AS GeneralJournalBalance
+		ON (GeneralJournalBalance.ExtDimension2 REFS Document.SalesReturn)
+			AND (GeneralJournalBalance.ExtDimension2 = SalesReturnLineItems.Ref)
+WHERE
+	SalesReturnLineItems.Product = &amp;Product
+
+UNION ALL
+
+SELECT
+	SalesInvoiceLineItems.Ref.Company,
+	SalesInvoiceLineItems.Quantity,
+	SalesInvoiceLineItems.Price,
+	SalesInvoiceLineItems.LineTotal,
+	SalesInvoiceLineItems.Ref,
+	SalesInvoiceLineItems.Ref.Terms,
+	SalesInvoiceLineItems.Ref.Company.PriceLevel,
+	SalesInvoiceLineItems.Product.Category,
+	PriceListSliceLast.Cost,
+	NULL,
+	SalesInvoiceLineItems.Ref.Posted,
+	1,
+	CASE
+		WHEN SalesInvoiceLineItems.Price &lt;&gt; 0
+			THEN SalesInvoiceLineItems.Quantity * PriceListSliceLast.Cost
+		ELSE 0
+	END AS Due
+	
+FROM
+	Document.SalesInvoice.LineItems AS SalesInvoiceLineItems
+		LEFT JOIN InformationRegister.PriceList.SliceLast AS PriceListSliceLast
+		ON SalesInvoiceLineItems.Ref.Company.PriceLevel = PriceListSliceLast.PriceLevel
+			AND SalesInvoiceLineItems.Product.Category = PriceListSliceLast.ProductCategory
+WHERE
+	SalesInvoiceLineItems.Ref.Posted = FALSE
+	AND SalesInvoiceLineItems.Product = &amp;Product</query>
+	</dataSet>
+	<totalField>
+		<dataPath>Due</dataPath>
+		<expression>Sum(Due)</expression>
+	</totalField>
+	<parameter>
+		<name>Period</name>
+		<title xsi:type="v8:LocalStringType">
+			<v8:item>
+				<v8:lang>en</v8:lang>
+				<v8:content>Period</v8:content>
+			</v8:item>
+		</title>
+		<valueType>
+			<v8:Type>xs:dateTime</v8:Type>
+			<v8:DateQualifiers>
+				<v8:DateFractions>DateTime</v8:DateFractions>
+			</v8:DateQualifiers>
+		</valueType>
+		<value xsi:type="xs:dateTime">0001-01-01T00:00:00</value>
+		<useRestriction>false</useRestriction>
+	</parameter>
+	<parameter>
+		<name>Product</name>
+		<title xsi:type="v8:LocalStringType">
+			<v8:item>
+				<v8:lang>en</v8:lang>
+				<v8:content>Product</v8:content>
+			</v8:item>
+		</title>
+		<valueType>
+			<v8:Type xmlns:d4p1="http://v8.1c.ru/8.1/data/enterprise/current-config">d4p1:CatalogRef.Products</v8:Type>
+		</valueType>
+		<value xsi:nil="true"/>
+		<useRestriction>false</useRestriction>
+		<use>Always</use>
+	</parameter>
+	<settingsVariant>
+		<dcsset:name>Default</dcsset:name>
+		<dcsset:presentation xsi:type="xs:string">Default</dcsset:presentation>
+		<dcsset:settings xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows">
+			<dcsset:selection>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Ref</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Company</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>CompanyPriceLevel</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>ProductCategory</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Quantity</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Price</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Terms</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Cost</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Balance</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Posted</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Paid</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Due</dcsset:field>
+				</dcsset:item>
+			</dcsset:selection>
+			<dcsset:dataParameters>
+				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+					<dcscor:parameter>Product</dcscor:parameter>
+					<dcscor:value xsi:nil="true"/>
+					<dcsset:userSettingID>3c4cf89c-853c-499e-b63b-f11d1c99c013</dcsset:userSettingID>
+				</dcscor:item>
+			</dcsset:dataParameters>
+			<dcsset:order>
+				<dcsset:item xsi:type="dcsset:OrderItemField">
+					<dcsset:field>Ref.Date</dcsset:field>
+					<dcsset:orderType>Asc</dcsset:orderType>
+				</dcsset:item>
+			</dcsset:order>
+			<dcsset:item xsi:type="dcsset:StructureItemGroup">
+				<dcsset:order>
+					<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
+				</dcsset:order>
+				<dcsset:selection>
+					<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+				</dcsset:selection>
+			</dcsset:item>
+		</dcsset:settings>
+	</settingsVariant>
+</DataCompositionSchema>

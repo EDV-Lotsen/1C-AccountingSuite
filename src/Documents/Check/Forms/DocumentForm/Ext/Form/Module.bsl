@@ -2,10 +2,12 @@
 &AtClient
 Procedure BankAccountOnChange(Item)
 	
+	// test
+	
 	Items.BankAccountLabel.Title =
 		CommonUse.GetAttributeValue(Object.BankAccount, "Description");
 
-	Object.Number = GeneralFunctions.NextCheckNumber(Object.BankAccount);	
+	//Object.Number = GeneralFunctions.NextCheckNumber(Object.BankAccount);	
 	
 	AccountCurrency = CommonUse.GetAttributeValue(Object.BankAccount, "Currency");
 	Object.ExchangeRate = GeneralFunctions.GetExchangeRate(Object.Date, AccountCurrency);
@@ -18,20 +20,20 @@ Procedure BankAccountOnChange(Item)
 	
 EndProcedure
 
+
+
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
 	//Title = "Check " + Object.Number + " " + Format(Object.Date, "DLF=D");
-		
+	
+	Items.Company.Title = GeneralFunctionsReusable.GetVendorName();
+	
 	If Object.DontCreate Then
 		Cancel = True;
 		Return;
 	EndIf;
-	
-	If NOT Object.ParentDocument = Undefined Then
-		Items.LineItems.ReadOnly = True;
-	EndIf;
-	
+		
 	If Object.BankAccount.IsEmpty() Then
 		Object.BankAccount = Constants.BankAccount.Get();
 		AccountCurrency = CommonUse.GetAttributeValue(Object.BankAccount, "Currency");
@@ -39,26 +41,22 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	Else
 	EndIf; 
 	
-	If Object.Ref.IsEmpty() Then
-		Object.Number = GeneralFunctions.NextCheckNumber(Object.BankAccount);
-	EndIf;
+	//If Object.Ref.IsEmpty() Then
+	//	Object.Number = GeneralFunctions.NextCheckNumber(Object.BankAccount);
+	//EndIf;
 	
 	Items.BankAccountLabel.Title =
 		CommonUse.GetAttributeValue(Object.BankAccount, "Description");
 		
-	AccountCurrency = CommonUse.GetAttributeValue(Object.BankAccount, "Currency");
-	Items.ExchangeRate.Title = GeneralFunctionsReusable.DefaultCurrencySymbol() + "/1" + CommonUse.GetAttributeValue(AccountCurrency, "Symbol");
+	//AccountCurrency = CommonUse.GetAttributeValue(Object.BankAccount, "Currency");
+	//Items.ExchangeRate.Title = GeneralFunctionsReusable.DefaultCurrencySymbol() + "/1" + CommonUse.GetAttributeValue(AccountCurrency, "Symbol");
 
-	Items.FCYCurrency.Title = CommonUse.GetAttributeValue(AccountCurrency, "Symbol");
-    Items.RCCurrency.Title = GeneralFunctionsReusable.DefaultCurrencySymbol();
+	//Items.FCYCurrency.Title = CommonUse.GetAttributeValue(AccountCurrency, "Symbol");
+    //Items.RCCurrency.Title = GeneralFunctionsReusable.DefaultCurrencySymbol();
 	
 	If NOT GeneralFunctionsReusable.FunctionalOptionValue("MultiCurrency") Then
-		Items.FCYGroup.Visible = False;
+		Items.FCYCurrency.Visible = False;
 	EndIf;
-
-	// AdditionalReportsAndDataProcessors
-	AdditionalReportsAndDataProcessors.OnCreateAtServer(ThisForm);
-	// End AdditionalReportsAndDataProcessors
 	
 EndProcedure
 
@@ -81,9 +79,29 @@ EndProcedure
 &AtServer
 Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 	
+	If NOT Object.Ref.IsEmpty() AND Object.PaymentMethod = CheckPaymentMethod() Then
+	
+	Try
+		If Number(Object.Number) <= 0 OR Number(Object.Number) >= 100000 Then
+			Cancel = True;
+			Message = New UserMessage();
+			Message.Text=NStr("en='Enter a check number from 0 to 9999 (99999)'");
+			Message.Field = "Object.Number";
+			Message.Message();
+		EndIf;
+	Except
+			Cancel = True;
+			Message = New UserMessage();
+			Message.Text=NStr("en='Enter a check number from 0 to 9999 (99999)'");
+			Message.Field = "Object.Number";
+			Message.Message();
+	EndTry;	
+		
+	Endif;
+	
 	NoOfRows = Object.LineItems.Count();
 	
-	If NoOfRows = 0 AND Object.ParentDocument = Undefined Then
+	If NoOfRows = 0 Then
 		
 		Cancel = True;
 		Message = New UserMessage();
@@ -100,24 +118,8 @@ Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 		Message.Message();
 		Return;
 	EndIf;
-
 	
-	// Checking for duplicate check numbers and disables saving of a check
-	// with a duplicate number for the same bank account
-	
-	//Query = New Query("SELECT
-	//				  |	Check.Number AS Number
-	//				  |FROM
-	//				  |	Document.Check AS Check
-	//				  |WHERE
-	//				  |	Check.BankAccount = &BankAccount
-	//				  |	AND Check.Number = &Number
-	//				  |
-	//				  |ORDER BY
-	//				  |	Number DESC");
-	//Query.SetParameter("BankAccount", Object.BankAccount);
-	//Query.SetParameter("Number", Object.Number);
-	//QueryResult = Query.Execute();
+	//test = Object.Number;
 	//
 	//If QueryResult.IsEmpty() Then				
 	//Else
@@ -155,3 +157,91 @@ Procedure CompanyOnChange(Item)
 	Object.CompanyCode = CommonUse.GetAttributeValue(Object.Company, "Code");
 	
 EndProcedure
+
+&AtClient
+Procedure LineItemsOnChange(Item)
+	
+	If NewRow = true Then
+		CurrentData = Item.CurrentData;
+		CurrentData.Project = Object.Project;
+		NewRow = false;
+	Endif;
+
+	
+	// Fill new row
+	 If LineItems_OnAddRow Then
+	  // Clear used flag
+	  LineItems_OnAddRow = False;
+	  
+	  // Fill row data with default values
+	  CurrentData = Item.CurrentData;
+	  ExpenseAccount = GetExpenseAccount(Object.Company);
+	  CurrentData.Account = ExpenseAccount;
+	  CurrentData.AccountDescription = CommonUse.GetAttributeValue(ExpenseAccount, "Description");
+	  
+	EndIf;
+
+EndProcedure
+
+&AtServer
+Function GetExpenseAccount(Vendor)
+	
+	Return Vendor.ExpenseAccount;
+	
+EndFunction
+
+&AtClient
+Procedure LineItemsBeforeAddRow(Item, Cancel, Clone, Parent, Folder)
+	
+	NewRow = true;
+	// Set Add Row flag
+	 If Not Cancel Then
+	  LineItems_OnAddRow = True;
+  	EndIf;
+  
+EndProcedure
+
+&AtServer
+Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
+	
+	
+	If Object.PaymentMethod = Catalogs.PaymentMethods.Check Then
+		
+		If CurrentObject.Ref.IsEmpty() Then
+		
+			LastNumber = GeneralFunctions.LastCheckNumber(Object.BankAccount);
+			
+			LastNumberString = "";
+			If LastNumber < 10000 Then
+				LastNumberString = Left(String(LastNumber+1),1) + Right(String(LastNumber+1),3)
+			Else
+				LastNumberString = Left(String(LastNumber+1),2) + Right(String(LastNumber+1),3)
+			EndIf;
+			
+			CurrentObject.Number = LastNumberString;
+			CurrentObject.PhysicalCheckNum = LastNumber + 1;
+			
+		Else
+			CurrentObject.PhysicalCheckNum = Number(CurrentObject.Number);		
+		EndIf;
+	Endif;
+
+EndProcedure
+
+&AtClient
+Procedure PaymentMethodOnChange(Item)
+	If Object.PaymentMethod = CheckPaymentMethod() Then
+		Object.Number = "auto";
+		Items.Number.ReadOnly = True;
+	Else
+		Object.Number = "";
+		Items.Number.ReadOnly = False;
+	EndIf;
+EndProcedure
+
+&AtServer
+Function CheckPaymentMethod()
+	
+	Return Catalogs.PaymentMethods.Check;
+	
+EndFunction

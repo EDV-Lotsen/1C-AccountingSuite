@@ -35,57 +35,82 @@
 			<AutoCommandBar name="ListCommandBar" id="3">
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
-			<ExtendedTooltip name="ListExtendedTooltip" id="23"/>
-			<SearchStringAddition name="ListSearchString" id="24">
+			<ExtendedTooltip name="ListExtendedTooltip" id="33"/>
+			<SearchStringAddition name="ListSearchString" id="44">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="25"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="26"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="45"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="46"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="27">
+			<ViewStatusAddition name="ListViewStatus" id="47">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="28"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="29"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="48"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="49"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="30">
+			<SearchControlAddition name="ListSearchControl" id="50">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="31"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="32"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="51"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="52"/>
 			</SearchControlAddition>
 			<ChildItems>
 				<LabelField name="Code" id="17">
 					<DataPath>List.Code</DataPath>
 					<ContextMenu name="CodeContextMenu" id="18"/>
-					<ExtendedTooltip name="CodeExtendedTooltip" id="33"/>
+					<ExtendedTooltip name="CodeExtendedTooltip" id="34"/>
 				</LabelField>
 				<LabelField name="Description" id="4">
 					<DataPath>List.Description</DataPath>
 					<DefaultItem>true</DefaultItem>
 					<ContextMenu name="DescriptionContextMenu" id="5"/>
-					<ExtendedTooltip name="DescriptionExtendedTooltip" id="34"/>
+					<ExtendedTooltip name="DescriptionExtendedTooltip" id="35"/>
 				</LabelField>
 				<LabelField name="Type" id="12">
 					<DataPath>List.Type</DataPath>
 					<ContextMenu name="TypeContextMenu" id="13"/>
-					<ExtendedTooltip name="TypeExtendedTooltip" id="35"/>
+					<ExtendedTooltip name="TypeExtendedTooltip" id="36"/>
 				</LabelField>
-				<LabelField name="ProductCategory" id="19">
-					<DataPath>1/20</DataPath>
-					<ContextMenu name="ProductCategoryContextMenu" id="20"/>
-					<ExtendedTooltip name="ProductCategoryExtendedTooltip" id="36"/>
+				<LabelField name="Category" id="19">
+					<DataPath>List.Category</DataPath>
+					<ContextMenu name="CategoryContextMenu" id="20"/>
+					<ExtendedTooltip name="CategoryExtendedTooltip" id="37"/>
 				</LabelField>
-				<LabelField name="Price" id="21">
-					<DataPath>List.Price</DataPath>
-					<ContextMenu name="PriceContextMenu" id="22"/>
-					<ExtendedTooltip name="PriceExtendedTooltip" id="37"/>
+				<LabelField name="CF1String" id="21">
+					<DataPath>List.CF1String</DataPath>
+					<ContextMenu name="CF1StringContextMenu" id="22"/>
+					<ExtendedTooltip name="CF1StringExtendedTooltip" id="38"/>
+				</LabelField>
+				<LabelField name="CF1Num" id="23">
+					<DataPath>List.CF1Num</DataPath>
+					<ContextMenu name="CF1NumContextMenu" id="24"/>
+					<ExtendedTooltip name="CF1NumExtendedTooltip" id="39"/>
+				</LabelField>
+				<LabelField name="CF2String" id="25">
+					<DataPath>List.CF2String</DataPath>
+					<ContextMenu name="CF2StringContextMenu" id="26"/>
+					<ExtendedTooltip name="CF2StringExtendedTooltip" id="40"/>
+				</LabelField>
+				<LabelField name="CF2Num" id="27">
+					<DataPath>List.CF2Num</DataPath>
+					<ContextMenu name="CF2NumContextMenu" id="28"/>
+					<ExtendedTooltip name="CF2NumExtendedTooltip" id="41"/>
+				</LabelField>
+				<LabelField name="CF3String" id="29">
+					<DataPath>List.CF3String</DataPath>
+					<ContextMenu name="CF3StringContextMenu" id="30"/>
+					<ExtendedTooltip name="CF3StringExtendedTooltip" id="42"/>
+				</LabelField>
+				<LabelField name="CF3Num" id="31">
+					<DataPath>List.CF3Num</DataPath>
+					<ContextMenu name="CF3NumContextMenu" id="32"/>
+					<ExtendedTooltip name="CF3NumExtendedTooltip" id="43"/>
 				</LabelField>
 			</ChildItems>
 		</Table>
@@ -97,29 +122,8 @@
 			</Type>
 			<MainAttribute>true</MainAttribute>
 			<Settings xsi:type="DynamicList">
-				<ManualQuery>true</ManualQuery>
+				<ManualQuery>false</ManualQuery>
 				<DynamicDataRead>true</DynamicDataRead>
-				<QueryText>SELECT
-	CatalogProducts.Ref,
-	CatalogProducts.DataVersion,
-	CatalogProducts.DeletionMark,
-	CatalogProducts.Predefined,
-	CatalogProducts.Code,
-	CatalogProducts.Description,
-	CatalogProducts.CostingMethod,
-	CatalogProducts.Type,
-	CatalogProducts.InventoryOrExpenseAccount,
-	CatalogProducts.IncomeAccount,
-	CatalogProducts.COGSAccount,
-	CatalogProducts.PurchaseVATCode,
-	CatalogProducts.SalesVATCode,
-	CatalogProducts.UM,
-	CatalogProducts.DefaultLocation,
-	PriceListSliceLast.Price
-FROM
-	Catalog.Products AS CatalogProducts
-		LEFT JOIN InformationRegister.PriceList.SliceLast AS PriceListSliceLast
-		ON (PriceListSliceLast.Product = CatalogProducts.Ref)</QueryText>
 				<MainTable>Catalog.Products</MainTable>
 				<ListSettings>
 					<dcsset:filter>
@@ -134,6 +138,8 @@ FROM
 						<dcsset:viewMode>Normal</dcsset:viewMode>
 						<dcsset:userSettingID>b75fecce-942b-4aed-abc9-e6a02e460fb3</dcsset:userSettingID>
 					</dcsset:conditionalAppearance>
+					<dcsset:itemsViewMode>Normal</dcsset:itemsViewMode>
+					<dcsset:itemsUserSettingID>911b6018-f537-43e8-a417-da56b22f9aec</dcsset:itemsUserSettingID>
 				</ListSettings>
 			</Settings>
 		</Attribute>

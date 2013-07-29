@@ -4,27 +4,101 @@
 //
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
-	If Object.Ref <> Catalogs.Products.EmptyRef() Then
-		Query = New Query("SELECT
-						  |	PriceListSliceLast.Price
-						  |FROM
-						  |	InformationRegister.PriceList.SliceLast AS PriceListSliceLast
-						  |WHERE
-						  |	PriceListSliceLast.Product = &Ref");
-		Query.SetParameter("Ref", Object.Ref);
-		Selection = Query.Execute();
-		
-		If Selection.IsEmpty() Then
-		Else
-			Dataset = Selection.Unload();
-			Price = Dataset[0][0];
-		EndIf;
-
-		
+	// custom fields
+	
+	CF1Type = Constants.CF1Type.Get();
+	CF2Type = Constants.CF2Type.Get();
+	CF3Type = Constants.CF3Type.Get();
+	
+	If CF1Type = "None" Then
+		Items.CF1Num.Visible = False;
+		Items.CF1String.Visible = False;
+	ElsIf CF1Type = "Number" Then
+		Items.CF1Num.Visible = True;
+		Items.CF1String.Visible = False;
+		Items.CF1Num.Title = Constants.CF1Name.Get();
+	ElsIf CF1Type = "String" Then
+	    Items.CF1Num.Visible = False;
+		Items.CF1String.Visible = True;
+		Items.CF1String.Title = Constants.CF1Name.Get();
+	ElsIf CF1Type = "" Then
+		Items.CF1Num.Visible = False;
+		Items.CF1String.Visible = False;
 	EndIf;
+	
+	If CF2Type = "None" Then
+		Items.CF2Num.Visible = False;
+		Items.CF2String.Visible = False;
+	ElsIf CF2Type = "Number" Then
+		Items.CF2Num.Visible = True;
+		Items.CF2String.Visible = False;
+		Items.CF2Num.Title = Constants.CF2Name.Get();
+	ElsIf CF2Type = "String" Then
+	    Items.CF2Num.Visible = False;
+		Items.CF2String.Visible = True;
+		Items.CF2String.Title = Constants.CF2Name.Get();
+	ElsIf CF2Type = "" Then
+		Items.CF2Num.Visible = False;
+		Items.CF2String.Visible = False;
+	EndIf;
+	
+	If CF3Type = "None" Then
+		Items.CF3Num.Visible = False;
+		Items.CF3String.Visible = False;
+	ElsIf CF3Type = "Number" Then
+		Items.CF3Num.Visible = True;
+		Items.CF3String.Visible = False;
+		Items.CF3Num.Title = Constants.CF3Name.Get();
+	ElsIf CF3Type = "String" Then
+	    Items.CF3Num.Visible = False;
+		Items.CF3String.Visible = True;
+		Items.CF3String.Title = Constants.CF3Name.Get();
+	ElsIf CF3Type = "" Then
+		Items.CF3Num.Visible = False;
+		Items.CF3String.Visible = False;
+	EndIf;
+	
+	// end custom fields
+	
+	
+	If Object.Ref = Catalogs.Products.EmptyRef() Then		
+		Items.InventoryOrExpenseAccount.Title = "Account";
+		Items.COGSAccount.ReadOnly = True;
+	Else
+		If Object.Type = Enums.InventoryTypes.Inventory Then
+			Items.InventoryOrExpenseAccount.Title = "Inventory account";
+		Else
+			Items.InventoryOrExpenseAccount.Title = "Expense account";
+			items.COGSAccount.ReadOnly = True;
+		EndIf;
+	EndIf;
+		
+	
+	//If Object.Ref <> Catalogs.Products.EmptyRef() Then
+	//	Query = New Query("SELECT
+	//					  |	PriceListSliceLast.Price
+	//					  |FROM
+	//					  |	InformationRegister.PriceList.SliceLast AS PriceListSliceLast
+	//					  |WHERE
+	//					  |	PriceListSliceLast.Product = &Ref");
+	//	Query.SetParameter("Ref", Object.Ref);
+	//	Selection = Query.Execute();
+	//	
+	//	If Selection.IsEmpty() Then
+	//	Else
+	//		Dataset = Selection.Unload();
+	//		Price = Dataset[0][0];
+	//	EndIf;
+
+	//	
+	//EndIf;
 		
 	If Object.Type <> Enums.InventoryTypes.Inventory Then
 		Items.CostingMethod.ReadOnly = True;
+	EndIf;
+	
+	If Object.Type <> Enums.InventoryTypes.Inventory AND (NOT Object.Ref.IsEmpty()) Then
+		Items.CostingMethod.Visible = False;	
 	EndIf;
 	
 	If Object.IncomeAccount.IsEmpty() AND Object.Ref.IsEmpty() Then
@@ -34,15 +108,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	ElsIf NOT Object.Ref.IsEmpty() Then
 		Items.IncomeAcctLabel.Title = Object.IncomeAccount.Description;
 	EndIf;
-	
-	If Object.COGSAccount.IsEmpty() AND Object.Ref.IsEmpty() Then
-		COGSAcct = Constants.COGSAccount.Get();
-		Object.COGSAccount = COGSAcct;
-		Items.COGSAcctLabel.Title = COGSAcct.Description;
-	ElsIf NOT Object.Ref.IsEmpty() Then
-		Items.COGSAcctLabel.Title = Object.COGSAccount.Description;
-	EndIf;
-	
+		
 	If NOT Object.InventoryOrExpenseAccount.IsEmpty() Then
 		Items.InventoryAcctLabel.Title = Object.InventoryOrExpenseAccount.Description;
 	EndIf;
@@ -82,42 +148,11 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		ChildItems.Indicators.Visible = False;
 	EndIf;
 	
-	// AdditionalReportsAndDataProcessors
-	AdditionalReportsAndDataProcessors.OnCreateAtServer(ThisForm);
-	// End AdditionalReportsAndDataProcessors
-	
 EndProcedure
 
 &AtServer
 Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
-	
-	// when the first item is created change the 15 character code to 5
-	// user can then go back and change it to anything they want
-	
-	//Query = New Query("SELECT
-	//				  |	COUNT(Products.Ref) AS Ref
-	//				  |FROM
-	//				  |	Catalog.Products AS Products");
-	//Selection = Query.Execute().Unload();
-	//NumOfProducts = Selection[0][0];
-	//
-	//If NumOfProducts = 1 Then
-	//	
-	//	Try
-	//		
-	//		Product1 = Catalogs.Products.FindByCode("000000000000001");
-	//		If Product1.Change15to5 = False Then
-	//			Product1Obj = Product1.GetObject();
-	//			Product1Obj.Code = "00001";
-	//			Product1Obj.Change15to5 = True;
-	//			Product1Obj.Write();
-	//		EndIf;
-	//	Except
-	//	EndTry;
-	//EndIf;
-
-	///
-	
+		
 	If  (Object.Type = Enums.InventoryTypes.Inventory) Then
 		// Fill item cost values
 		FillLastAverageAccountingCost();
@@ -188,7 +223,7 @@ Procedure FillLastAverageAccountingCost()
 			QTItemAverageCost + // INTO AverageCost.Cost
 			// Current accounting cost => First / Last lot item cost for FIFO/LIFO, NONE for Average
 			?(Object.CostingMethod = Enums.InventoryCosting.FIFO OR Object.CostingMethod = Enums.InventoryCosting.LIFO,
-				StringFunctionsClientServer.SubstitureParametersInString(QTItemAccountingFirstLastCost, ?(Object.CostingMethod = Enums.InventoryCosting.FIFO, "Asc", "Desc")), // FIFO = ORDER BY Layer Asc (TOP 1 Old); LIFO = ORDER BY Layer Desc (TOP 1 New);
+				StringFunctionsClientServer.SubstituteParametersInString(QTItemAccountingFirstLastCost, ?(Object.CostingMethod = Enums.InventoryCosting.FIFO, "Asc", "Desc")), // FIFO = ORDER BY Layer Asc (TOP 1 Old); LIFO = ORDER BY Layer Desc (TOP 1 New);
 				"") +			// INTO AccountingCost.Cost
 			"
 			|SELECT
@@ -366,17 +401,55 @@ Procedure TypeOnChange(Item)
 	NewItemType = Object.Type;
 	
 	If GeneralFunctions.InventoryType(NewItemType) AND Object.Ref.IsEmpty() Then
-		Items.CostingMethod.ReadOnly = False;
+		
+		Items.CostingMethod.Visible = True;
+		Object.CostingMethod = GeneralFunctionsReusable.WeightedAverage();
 		Items.DefaultLocation.ReadOnly = False;
-	Else
-		Items.CostingMethod.ReadOnly = True;
-		Items.DefaultLocation.ReadOnly = True;
+		Items.InventoryOrExpenseAccount.Title = "Inventory account";
+		Items.COGSAccount.ReadOnly = False;
+		
+		Object.COGSAccount = GeneralFunctions.GetDefaultCOGSAcct();
+		Items.COGSAcctLabel.Title = CommonUse.GetAttributeValue(Object.COGSAccount, "Description");
+		
+		Acct = GeneralFunctions.InventoryAcct(NewItemType);
+		AccountDescription = CommonUse.GetAttributeValue(Acct, "Description");
+		Object.InventoryOrExpenseAccount = Acct;
+		Items.InventoryAcctLabel.Title = AccountDescription;
+		Items.CostingMethod.ReadOnly = False;
+		
 	EndIf;
 	
-	Acct = GeneralFunctions.InventoryAcct(NewItemType);
-	AccountDescription = CommonUse.GetAttributeValue(Acct, "Description");
-	Object.InventoryOrExpenseAccount = Acct;
-	Items.InventoryAcctLabel.Title = AccountDescription;
+	If (NOT GeneralFunctions.InventoryType(NewItemType)) AND Object.Ref.IsEmpty() Then
+		Items.CostingMethod.Visible = False;
+		Items.DefaultLocation.ReadOnly = True;
+		Items.InventoryOrExpenseAccount.Title = "Expense account";
+		Items.COGSAccount.ReadOnly = True;
+		
+		Acct = GeneralFunctions.InventoryAcct(NewItemType);
+		AccountDescription = CommonUse.GetAttributeValue(Acct, "Description");
+		Object.InventoryOrExpenseAccount = Acct;
+		Items.InventoryAcctLabel.Title = AccountDescription;
+		Object.COGSAccount = GeneralFunctions.GetEmptyAcct();
+	EndIf;
+
+
+		
+	If NOT Object.Ref.IsEmpty() Then
+		
+		Items.CostingMethod.ReadOnly = True;
+		Items.DefaultLocation.ReadOnly = True;
+		Items.InventoryOrExpenseAccount.Title = "Expense account";
+		Items.COGSAccount.ReadOnly = True;
+		
+		Object.COGSAccount = GeneralFunctions.GetEmptyAcct();
+		Items.COGSAcctLabel.Title = "";
+		
+		Object.InventoryOrExpenseAccount = GeneralFunctions.GetEmptyAcct();
+		Items.InventoryAcctLabel.Title = "";
+
+
+	EndIf;
+	
 		
 EndProcedure
 
@@ -416,6 +489,7 @@ Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 	// Doesn't allow to save an inventory product type without a set costing type
 	
 	If Object.Type = Enums.InventoryTypes.Inventory Then
+		
 		If Object.CostingMethod.IsEmpty() Then
 			Message = New UserMessage();
 			Message.Text=NStr("en='Costing method field is empty'");
@@ -424,6 +498,30 @@ Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 			Cancel = True;
 			Return;
 		EndIf;
+		
+		If Object.COGSAccount.IsEmpty() Then
+			
+			Message = New UserMessage();
+			Message.Text=NStr("en='COGS account is empty'");
+			Message.Field = "Object.COGSAccount";
+			Message.Message();
+			Cancel = True;
+			Return;
+			
+		EndIf;
+		
+		If Object.InventoryOrExpenseAccount.IsEmpty() Then
+			
+			Message = New UserMessage();
+			Message.Text=NStr("en='Inventory account is empty'");
+			Message.Field = "Object.InventoryOrExpenseAccount";
+			Message.Message();
+			Cancel = True;
+			Return;
+			
+		EndIf;
+
+		
 	EndIf;
 
 	// Doesn't allow to save a LIFO costing item if the Disable LIFO setting is set
@@ -441,6 +539,11 @@ Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
         EndIf;
 	EndIf;
 		
+EndProcedure
+
+&AtClient
+Procedure BeforeWrite(Cancel, WriteParameters)
+	Object.api_code = GeneralFunctions.NextProductNumber();
 EndProcedure
 
 

@@ -51,7 +51,7 @@
 				<xr:Item xsi:type="xr:MDObjectRef">Role.FullAccess</xr:Item>
 			</DefaultRoles>
 			<Vendor>1C Company</Vendor>
-			<Version>1.1.28.1</Version>
+			<Version>1.1.31.70</Version>
 			<UpdateCatalogAddress/>
 			<IncludeHelpInContents>false</IncludeHelpInContents>
 			<UseManagedFormInOrdinaryApplication>true</UseManagedFormInOrdinaryApplication>
@@ -124,11 +124,11 @@
 			<Copyright>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>1C Company</v8:content>
+					<v8:content>AccountingSuite (TM) owned by 1C LLC. All rights reserved.</v8:content>
 				</v8:item>
 				<v8:item>
 					<v8:lang>de</v8:lang>
-					<v8:content>1C Company</v8:content>
+					<v8:content>AccountingSuite (TM) owned by 1C LLC. All rights reserved.</v8:content>
 				</v8:item>
 			</Copyright>
 			<VendorInformationAddress>
@@ -138,7 +138,7 @@
 				</v8:item>
 				<v8:item>
 					<v8:lang>de</v8:lang>
-					<v8:content>1c-dn.com</v8:content>
+					<v8:content>accountingsuite.com</v8:content>
 				</v8:item>
 			</VendorInformationAddress>
 			<ConfigurationInformationAddress>
@@ -148,242 +148,173 @@
 				</v8:item>
 				<v8:item>
 					<v8:lang>de</v8:lang>
-					<v8:content>1c-dn.com</v8:content>
+					<v8:content>accountingsuite.com</v8:content>
 				</v8:item>
 			</ConfigurationInformationAddress>
 			<DataLockControlMode>Managed</DataLockControlMode>
 			<ObjectAutonumerationMode>NotAutoFree</ObjectAutonumerationMode>
-			<ModalityUseMode>Use</ModalityUseMode>
+			<ModalityUseMode>DontUse</ModalityUseMode>
 			<SynchronousPlatformExtensionAndAddInCallUseMode>Use</SynchronousPlatformExtensionAndAddInCallUseMode>
-			<InterfaceCompatibilityMode>Version8_2</InterfaceCompatibilityMode>
-			<CompatibilityMode>Version8_2_16</CompatibilityMode>
+			<InterfaceCompatibilityMode>Taxi</InterfaceCompatibilityMode>
+			<CompatibilityMode>Version8_3_3</CompatibilityMode>
 			<DefaultConstantsForm/>
 		</Properties>
 		<ChildObjects>
 			<Language>English</Language>
 			<Language>German</Language>
-			<Subsystem>Sales</Subsystem>
-			<Subsystem>Purchasing</Subsystem>
-			<Subsystem>Warehouse</Subsystem>
+			<Language>Russian</Language>
 			<Subsystem>Banking</Subsystem>
 			<Subsystem>Accounting</Subsystem>
 			<Subsystem>Lists</Subsystem>
+			<Subsystem>Sales</Subsystem>
+			<Subsystem>Purchasing</Subsystem>
+			<Subsystem>Warehouse</Subsystem>
 			<Subsystem>StandardSubsystems</Subsystem>
-			<StyleItem>ErrorTextColor</StyleItem>
-			<StyleItem>SelectedUserColor</StyleItem>
+			<StyleItem>ColorDisabledLabel</StyleItem>
+			<StyleItem>ColorGroupLabel</StyleItem>
+			<StyleItem>ColorInformationLabel</StyleItem>
+			<StyleItem>ColorSecondaryLabel</StyleItem>
 			<CommonPicture>Accounting</CommonPicture>
-			<CommonPicture>AttachFile</CommonPicture>
 			<CommonPicture>Banking</CommonPicture>
-			<CommonPicture>CancelTemplateEditing</CommonPicture>
-			<CommonPicture>CollectionActiveUsersTypes</CommonPicture>
-			<CommonPicture>CollectionEventLogEventTypes</CommonPicture>
-			<CommonPicture>CollectionItemIcons</CommonPicture>
-			<CommonPicture>CollectionMarkedForDeletionObjects</CommonPicture>
-			<CommonPicture>DeleteUserTemplate</CommonPicture>
-			<CommonPicture>EditTemplate</CommonPicture>
-			<CommonPicture>Error32</CommonPicture>
-			<CommonPicture>ErrorScheduledJobProcessing</CommonPicture>
-			<CommonPicture>FinishTemplateEditing</CommonPicture>
-			<CommonPicture>FullTextSearchBack</CommonPicture>
-			<CommonPicture>FullTextSearchNext</CommonPicture>
-			<CommonPicture>Information</CommonPicture>
-			<CommonPicture>Information32</CommonPicture>
+			<CommonPicture>DefaultValue</CommonPicture>
 			<CommonPicture>Lists</CommonPicture>
-			<CommonPicture>Navigation</CommonPicture>
-			<CommonPicture>Navigation_de</CommonPicture>
-			<CommonPicture>OpenTemplate</CommonPicture>
-			<CommonPicture>OperationKinds</CommonPicture>
+			<CommonPicture>LongAction</CommonPicture>
 			<CommonPicture>Purchasing</CommonPicture>
-			<CommonPicture>RunScheduledJobManually</CommonPicture>
 			<CommonPicture>Sales</CommonPicture>
-			<CommonPicture>ScheduledJobsProcessingSettings</CommonPicture>
-			<CommonPicture>SendEmail</CommonPicture>
-			<CommonPicture>SeparateSessionForScheduledJobProcessing</CommonPicture>
 			<CommonPicture>Settings</CommonPicture>
-			<CommonPicture>ShowOnlySelectedRoles</CommonPicture>
-			<CommonPicture>SubsystemAdministration</CommonPicture>
-			<CommonPicture>TemplateTypes</CommonPicture>
-			<CommonPicture>TerminateSession</CommonPicture>
-			<CommonPicture>UserIcons</CommonPicture>
-			<CommonPicture>UserIcons01</CommonPicture>
-			<CommonPicture>UserIcons02</CommonPicture>
-			<CommonPicture>UserIcons03</CommonPicture>
-			<CommonPicture>UserIcons04</CommonPicture>
-			<CommonPicture>UserIcons05</CommonPicture>
-			<CommonPicture>UserIcons06</CommonPicture>
-			<CommonPicture>UserIcons07</CommonPicture>
-			<CommonPicture>UserIcons08</CommonPicture>
-			<CommonPicture>UserIcons09</CommonPicture>
-			<CommonPicture>UserIcons10</CommonPicture>
-			<CommonPicture>UserIcons11</CommonPicture>
-			<CommonPicture>UserIcons12</CommonPicture>
-			<CommonPicture>UsersSynchronize</CommonPicture>
-			<CommonPicture>UseStandardTemplate</CommonPicture>
-			<CommonPicture>UseUserTemplate</CommonPicture>
 			<CommonPicture>Warehouse</CommonPicture>
-			<CommonPicture>Warning32</CommonPicture>
-			<SessionParameter>CurrentUser</SessionParameter>
-			<SessionParameter>SuggestWorkWithFilesExtensionInstallationByDefault</SessionParameter>
-			<Role>AddChangeAdditionalReportsAndDataProcessors</Role>
-			<Role>AddChangeBasicReferenceInformation</Role>
-			<Role>Administration</Role>
+			<SessionParameter>TenantValue</SessionParameter>
+			<SessionParameter>TenantUse</SessionParameter>
+			<SessionParameter>ACSUser</SessionParameter>
 			<Role>API</Role>
-			<Role>ChangeCurrentUser</Role>
-			<Role>ChangePrintFormTemplates</Role>
 			<Role>FullAccess</Role>
 			<Role>FullAccess1</Role>
-			<Role>MinimalUserRights</Role>
-			<Role>PrintWriteFilesUseClipboard</Role>
-			<Role>ReadBasicReferenceInformation</Role>
-			<Role>RunAdditionalReportsAndDataProcessorsFromFiles</Role>
-			<Role>RunAutomation</Role>
-			<Role>RunExternalConnection</Role>
-			<Role>RunThickClient</Role>
-			<Role>RunThinClient</Role>
-			<Role>RunUpdates</Role>
-			<Role>RunWebClient</Role>
-			<Role>UseAdditionalReportsAndDataProcessors</Role>
-			<Role>UseEmailAccounts</Role>
-			<Role>User</Role>
-			<Role>ViewEventLog</Role>
-			<CommonModule>AdditionalReportsAndDataProcessors</CommonModule>
-			<CommonModule>AdditionalReportsAndDataProcessorsClient</CommonModule>
-			<CommonModule>AdditionalReportsAndDataProcessorsClientServer</CommonModule>
-			<CommonModule>AdditionalReportsAndDataProcessorsOverrided</CommonModule>
+			<Role>SalesFull</Role>
+			<Role>SalesView</Role>
+			<Role>PurchasingFull</Role>
+			<Role>PurchasingView</Role>
+			<Role>WarehouseFull</Role>
+			<Role>WarehouseView</Role>
+			<Role>BankReceiveFull</Role>
+			<Role>BankReceiveView</Role>
+			<Role>BankSendFull</Role>
+			<Role>BankSendView</Role>
+			<Role>AccountingFull</Role>
+			<Role>AccountingView</Role>
+			<Role>ListUser</Role>
+			<Role>ReportOnly</Role>
 			<CommonModule>CommonUse</CommonModule>
-			<CommonModule>CommonUseClient</CommonModule>
-			<CommonModule>CommonUseClientSecondUse</CommonModule>
 			<CommonModule>CommonUseClientServer</CommonModule>
-			<CommonModule>CommonUseOverrided</CommonModule>
 			<CommonModule>DataCompositionSchemeEvaluationExtention</CommonModule>
 			<CommonModule>DocumentFilling</CommonModule>
 			<CommonModule>DocumentPosting</CommonModule>
-			<CommonModule>DynamicUpdateMonitoring</CommonModule>
-			<CommonModule>DynamicUpdateMonitoringClient</CommonModule>
-			<CommonModule>DynamicUpdateMonitoringGlobal</CommonModule>
-			<CommonModule>EmailOperations</CommonModule>
-			<CommonModule>Emails</CommonModule>
-			<CommonModule>EmailsClient</CommonModule>
-			<CommonModule>EventLogManagement</CommonModule>
-			<CommonModule>FullTextSearchClientOverrided</CommonModule>
-			<CommonModule>FullTextSearchServer</CommonModule>
 			<CommonModule>GeneralFunctions</CommonModule>
 			<CommonModule>GeneralFunctionsReusable</CommonModule>
-			<CommonModule>InfobaseUpdate</CommonModule>
-			<CommonModule>InfobaseUpdateClient</CommonModule>
-			<CommonModule>InfobaseUpdateOverrided</CommonModule>
-			<CommonModule>PrintManagement</CommonModule>
-			<CommonModule>PrintManagementClient</CommonModule>
-			<CommonModule>PrintManagementMSWordClient</CommonModule>
-			<CommonModule>PrintManagementOOWriterClient</CommonModule>
-			<CommonModule>PrintManagementOverrided</CommonModule>
+			<CommonModule>CommonUseServerCall</CommonModule>
+			<CommonModule>InternetConnectionClientServer</CommonModule>
+			<CommonModule>InternetConnectionReusable</CommonModule>
+			<CommonModule>InternetConnectionServerCall</CommonModule>
+			<CommonModule>LongActions</CommonModule>
+			<CommonModule>LongActionsClient</CommonModule>
 			<CommonModule>PrintTemplates</CommonModule>
-			<CommonModule>ScheduledJobsClient</CommonModule>
-			<CommonModule>ScheduledJobsGlobal</CommonModule>
-			<CommonModule>ScheduledJobsServer</CommonModule>
-			<CommonModule>StandardSubsystemsClientSecondUse</CommonModule>
-			<CommonModule>StandardSubsystemsOverrided</CommonModule>
-			<CommonModule>StringFunctionsClientServer</CommonModule>
+			<CommonModule>LongActionsClientReusable</CommonModule>
 			<CommonModule>US_FL</CommonModule>
-			<CommonModule>Users</CommonModule>
-			<CommonModule>UsersClientOverrided</CommonModule>
-			<CommonModule>UsersOverrided</CommonModule>
-			<CommonModule>UsersServerSecondUse</CommonModule>
 			<CommonModule>VAT_FL</CommonModule>
-			<CommonModule>WorkWithEmailsClient</CommonModule>
-			<WebService>Credentials</WebService>
-			<ScheduledJob>EventLog</ScheduledJob>
-			<ScheduledJob>MergeFullTextSearchIndex</ScheduledJob>
-			<ScheduledJob>RunAdditionalDataProcessors</ScheduledJob>
-			<ScheduledJob>UpdateFullTextSearchIndex</ScheduledJob>
-			<FunctionalOption>DisplayCodes</FunctionalOption>
+			<CommonModule>FTSE</CommonModule>
+			<CommonModule>StringFunctionsClientServer</CommonModule>
+			<WebService>companiespost</WebService>
+			<WebService>companiesget</WebService>
+			<WebService>companiesputcode</WebService>
+			<WebService>companiesdeletecode</WebService>
+			<WebService>companiesgetcode</WebService>
+			<WebService>itemspost</WebService>
+			<WebService>itemsget</WebService>
+			<WebService>itemsputcode</WebService>
+			<WebService>itemsdeletecode</WebService>
+			<WebService>itemsgetcode</WebService>
+			<WebService>cashsalespost</WebService>
+			<WebService>cashsalesget</WebService>
+			<WebService>cashsalesputcode</WebService>
+			<WebService>cashsalesdeletecode</WebService>
+			<WebService>cashsalesgetcode</WebService>
+			<ScheduledJob>UpdateFTSE</ScheduledJob>
+			<ScheduledJob>MergeFTSE</ScheduledJob>
 			<FunctionalOption>MultiCurrency</FunctionalOption>
 			<FunctionalOption>MultiLocation</FunctionalOption>
 			<FunctionalOption>UnbalancedGJEntryPosting</FunctionalOption>
-			<FunctionalOption>UseFullTextSearch</FunctionalOption>
+			<FunctionalOption>DisplayCodes</FunctionalOption>
 			<FunctionalOption>USFinLocalization</FunctionalOption>
 			<FunctionalOption>VATFinLocalization</FunctionalOption>
 			<FunctionalOption>BeginningBalancesInDocuments</FunctionalOption>
 			<FunctionalOption>Projects</FunctionalOption>
-			<FunctionalOption>UseAdditionalReportsAndDataProcessorsCreatingLinkedObjects</FunctionalOption>
-			<FunctionalOption>UseAdditionalReportsAndDataProcessorsFillObject</FunctionalOption>
-			<FunctionalOption>UseAdditionalReportsAndDataProcessorsPrintForms</FunctionalOption>
-			<FunctionalOption>UseAdditionalReportsAndDataProcessorsReports</FunctionalOption>
-			<FunctionalOptionsParameter>FormWithAdditionalReportsAndDataProcessorsType</FunctionalOptionsParameter>
-			<CommonCommand>AdditionalDataProcessorsAccounting</CommonCommand>
-			<CommonCommand>AdditionalReportsAndDataProcessorsCreatingLinkedObjects</CommonCommand>
-			<CommonCommand>AdditionalReportsAndDataProcessorsFillObject</CommonCommand>
-			<CommonCommand>AdditionalReportsAndDataProcessorsPrintForms</CommonCommand>
-			<CommonCommand>AdditionalReportsAndDataProcessorsReports</CommonCommand>
-			<CommonCommand>AdditionalReportsAccounting</CommonCommand>
-			<CommonCommand>APAging</CommonCommand>
-			<CommonCommand>ARAging</CommonCommand>
-			<CommonCommand>BalanceSheet</CommonCommand>
-			<CommonCommand>BankBalances</CommonCommand>
-			<CommonCommand>CashFlowDirect</CommonCommand>
-			<CommonCommand>Form1099</CommonCommand>
-			<CommonCommand>GeneralLedger</CommonCommand>
-			<CommonCommand>IncomeStatement</CommonCommand>
-			<CommonCommand>IncomeStatementDetailed</CommonCommand>
-			<CommonCommand>InstallFileSystemExtension</CommonCommand>
-			<CommonCommand>InventoryBalances</CommonCommand>
-			<CommonCommand>OtherComprehensiveIncome</CommonCommand>
-			<CommonCommand>PurchasingTransactionDetail</CommonCommand>
-			<CommonCommand>SalesTransactionDetail</CommonCommand>
-			<CommonCommand>SystemEmailAccountSetup</CommonCommand>
-			<CommonCommand>TrialBalance</CommonCommand>
-			<CommonCommand>USSummary1099</CommonCommand>
-			<CommonCommand>USVendors1099</CommonCommand>
 			<CommandGroup>Reports</CommandGroup>
 			<CommandGroup>Print</CommandGroup>
-			<Constant>APIPublicKey</Constant>
+			<Constant>access_token</Constant>
+			<Constant>AddressLine1</Constant>
+			<Constant>AddressLine2</Constant>
+			<Constant>AllowNegativeInventory</Constant>
+			<Constant>APISecretKey</Constant>
 			<Constant>BankAccount</Constant>
 			<Constant>BankInterestEarnedAccount</Constant>
 			<Constant>BankServiceChargeAccount</Constant>
 			<Constant>BeginningBalancesInDocuments</Constant>
+			<Constant>CF1Name</Constant>
+			<Constant>CF1Type</Constant>
+			<Constant>CF2Name</Constant>
+			<Constant>CF2Type</Constant>
+			<Constant>CF3Name</Constant>
+			<Constant>CF3Type</Constant>
+			<Constant>City</Constant>
 			<Constant>COGSAccount</Constant>
+			<Constant>Country</Constant>
 			<Constant>CustomerName</Constant>
 			<Constant>DefaultCurrency</Constant>
 			<Constant>DefaultPurchaseVAT</Constant>
 			<Constant>DefaultSalesVAT</Constant>
 			<Constant>DisableLIFO</Constant>
 			<Constant>DisplayCodes</Constant>
-			<Constant>EventLogReportRecipients</Constant>
+			<Constant>Email</Constant>
 			<Constant>ExchangeGain</Constant>
 			<Constant>ExchangeLoss</Constant>
 			<Constant>ExpenseAccount</Constant>
+			<Constant>FirstLaunch</Constant>
+			<Constant>FirstName</Constant>
 			<Constant>IncomeAccount</Constant>
 			<Constant>InventoryAccount</Constant>
+			<Constant>LastName</Constant>
+			<Constant>MiddleName</Constant>
 			<Constant>MultiCurrency</Constant>
 			<Constant>MultiLocation</Constant>
+			<Constant>Phone</Constant>
 			<Constant>PriceIncludesVAT</Constant>
 			<Constant>Projects</Constant>
-			<Constant>ScheduledJobsProcessingStatus</Constant>
+			<Constant>spk</Constant>
+			<Constant>spk2</Constant>
+			<Constant>spk3</Constant>
+			<Constant>State</Constant>
 			<Constant>SystemTitle</Constant>
 			<Constant>TaxPayableAccount</Constant>
+			<Constant>UnappliedPaymentItem</Constant>
 			<Constant>UnbalancedGJEntryPosting</Constant>
 			<Constant>UndepositedFundsAccount</Constant>
-			<Constant>UseFullTextSearch</Constant>
 			<Constant>USFinLocalization</Constant>
 			<Constant>VATFinLocalization</Constant>
 			<Constant>VendorName</Constant>
-			<CommonForm>AdditionalReportsAndDataProcessors</CommonForm>
-			<CommonForm>CurrentUserReportsAndDataProcessorsSetup</CommonForm>
-			<CommonForm>ChooseMetadataObjects</CommonForm>
+			<Constant>Website</Constant>
+			<Constant>ZIP</Constant>
+			<Constant>CheckVerticalAdj</Constant>
+			<Constant>CheckHorizontalAdj</Constant>
 			<CommonForm>DesktopReports</CommonForm>
-			<CommonForm>DocumentsPrinting</CommonForm>
 			<CommonForm>GeneralSettings</CommonForm>
+			<CommonForm>LongAction</CommonForm>
 			<CommonForm>NavigationFull</CommonForm>
-			<CommonForm>NewEmailEditing</CommonForm>
-			<CommonForm>PrintingFormsSettingsBeforeSending</CommonForm>
-			<CommonForm>QuestionAboutWorkWithFilesExtensionInstallation</CommonForm>
-			<CommonForm>UserAccountPasswordConfirmation</CommonForm>
-			<Catalog>AdditionalReportsAndDataProcessors</Catalog>
+			<CommonForm>LinksForm</CommonForm>
+			<CommonForm>SettingsForm</CommonForm>
+			<CommonForm>SupportInfo</CommonForm>
 			<Catalog>Addresses</Catalog>
 			<Catalog>Companies</Catalog>
 			<Catalog>Countries</Catalog>
 			<Catalog>Currencies</Catalog>
-			<Catalog>EmailAccounts</Catalog>
 			<Catalog>Locations</Catalog>
 			<Catalog>PaymentMethods</Catalog>
 			<Catalog>PaymentTerms</Catalog>
@@ -393,9 +324,11 @@
 			<Catalog>States</Catalog>
 			<Catalog>UM</Catalog>
 			<Catalog>UserList</Catalog>
-			<Catalog>Users</Catalog>
 			<Catalog>USTaxCategories1099</Catalog>
 			<Catalog>VATCodes</Catalog>
+			<Catalog>PriceLevels</Catalog>
+			<Catalog>ProductCategories</Catalog>
+			<Catalog>ExpensifyCategories</Catalog>
 			<Document>BankReconciliation</Document>
 			<Document>BankTransfer</Document>
 			<Document>CashPurchase</Document>
@@ -414,26 +347,20 @@
 			<Document>SalesReturn</Document>
 			<Document>WarehouseTransfer</Document>
 			<Enum>AccountTypes</Enum>
-			<Enum>AdditionalDataProcessorsUsageVariants</Enum>
-			<Enum>AdditionalReportAndDataProcessorTypes</Enum>
-			<Enum>AdditionalReportsAndDataProcessorsPublicationVariants</Enum>
 			<Enum>BegBalTypes</Enum>
 			<Enum>CashFlowSections</Enum>
-			<Enum>EmailTypes</Enum>
 			<Enum>GJEntryType</Enum>
 			<Enum>InventoryCosting</Enum>
 			<Enum>InventoryTypes</Enum>
 			<Enum>OrderStatuses</Enum>
 			<Enum>ReturnTypes</Enum>
 			<Enum>SalesTaxTypes</Enum>
-			<Enum>POP3AuthenticationMethods</Enum>
-			<Enum>SMTPAuthenticationMethods</Enum>
-			<Enum>SMTPAuthenticationSettings</Enum>
 			<Report>APAging</Report>
 			<Report>ARAging</Report>
 			<Report>BalanceSheet</Report>
 			<Report>BankBalances</Report>
 			<Report>CashFlowDirect</Report>
+			<Report>CheckRegister</Report>
 			<Report>Form1099</Report>
 			<Report>GeneralLedger</Report>
 			<Report>IncomeStatement</Report>
@@ -445,26 +372,20 @@
 			<Report>TrialBalance</Report>
 			<Report>USSummary1099</Report>
 			<Report>USVendors1099</Report>
-			<DataProcessor>BatchObjectsChanging</DataProcessor>
+			<Report>Projects</Report>
+			<Report>ItemActivityReport</Report>
+			<DataProcessor>PeriodClosing</DataProcessor>
 			<DataProcessor>DeleteMarkedObjects</DataProcessor>
-			<DataProcessor>EventLog</DataProcessor>
-			<DataProcessor>EventLogMonitor</DataProcessor>
-			<DataProcessor>FormSettingsManagement</DataProcessor>
-			<DataProcessor>FullTextSearchInData</DataProcessor>
-			<DataProcessor>FullTextSearchManagement</DataProcessor>
-			<DataProcessor>ScheduledAndBackgroundJobs</DataProcessor>
-			<InformationRegister>AdditionalDataProcessorsAssociation</InformationRegister>
-			<InformationRegister>DataProcessorsAccessUserSettings</InformationRegister>
 			<InformationRegister>ExchangeRates</InformationRegister>
 			<InformationRegister>ItemLastCost</InformationRegister>
 			<InformationRegister>OrdersStatuses</InformationRegister>
 			<InformationRegister>PriceList</InformationRegister>
-			<InformationRegister>PrintedFormTemplates</InformationRegister>
-			<InformationRegister>SubsystemVersions</InformationRegister>
 			<InformationRegister>TransactionReconciliation</InformationRegister>
+			<InformationRegister>CustomPrintForms</InformationRegister>
 			<AccumulationRegister>InventoryJrnl</AccumulationRegister>
 			<AccumulationRegister>OrdersDispatched</AccumulationRegister>
 			<AccumulationRegister>OrdersRegistered</AccumulationRegister>
+			<AccumulationRegister>ProjectData</AccumulationRegister>
 			<ChartOfCharacteristicTypes>Dimensions</ChartOfCharacteristicTypes>
 			<ChartOfAccounts>ChartOfAccounts</ChartOfAccounts>
 			<AccountingRegister>GeneralJournal</AccountingRegister>

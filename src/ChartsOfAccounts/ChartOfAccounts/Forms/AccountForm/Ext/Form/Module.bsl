@@ -6,10 +6,6 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Object.CashFlowSection = Enums.CashFlowSections.Operating;	
 	EndIf;
 	
-	// AdditionalReportsAndDataProcessors
-	AdditionalReportsAndDataProcessors.OnCreateAtServer(ThisForm);
-	// End AdditionalReportsAndDataProcessors
-	
 EndProcedure
 
 &AtServer

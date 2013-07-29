@@ -16,7 +16,7 @@ Procedure LineItemsProductOnChange(Item)
 	TabularPartRow.TaxableAmount = 0;
 	TabularPartRow.VAT = 0;
 	
-	Price = GeneralFunctions.RetailPrice(CurrentDate(), TabularPartRow.Product);
+	Price = GeneralFunctions.RetailPrice(CurrentDate(), TabularPartRow.Product, Object.Company);
 	TabularPartRow.Price = Price / Object.ExchangeRate;
 		
 	TabularPartRow.SalesTaxType = US_FL.GetSalesTaxType(TabularPartRow.Product);
@@ -186,6 +186,11 @@ EndProcedure
 // 
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
+	If Object.BegBal = False Then
+		Items.DocumentTotalRC.ReadOnly = True;
+		Items.DocumentTotal.ReadOnly = True;
+	EndIf;
+	
 	Items.Company.Title = GeneralFunctionsReusable.GetCustomerName();
 	
 	//Title = "Sales Return " + Object.Number + " " + Format(Object.Date, "DLF=D");
@@ -226,10 +231,6 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	Items.SalesTaxCurrency.Title = GeneralFunctionsReusable.DefaultCurrencySymbol();
 	Items.FCYCurrency.Title = CommonUse.GetAttributeValue(Object.Currency, "Symbol");
 	
-	// AdditionalReportsAndDataProcessors
-	AdditionalReportsAndDataProcessors.OnCreateAtServer(ThisForm);
-	// End AdditionalReportsAndDataProcessors
-	
 EndProcedure
 
 &AtClient
@@ -240,5 +241,18 @@ Procedure LineItemsVATCodeOnChange(Item)
 	TabularPartRow = Items.LineItems.CurrentData;
 	TabularPartRow.VAT = VAT_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Sales", Object.PriceIncludesVAT);
     RecalcTotal();
+
+EndProcedure
+
+&AtClient
+Procedure BegBalOnChange(Item)
+	
+	If Object.BegBal = True Then
+		Items.DocumentTotalRC.ReadOnly = False;
+		Items.DocumentTotal.ReadOnly = False;
+	ElsIf Object.BegBal = False Then
+		Items.DocumentTotalRC.ReadOnly = True;
+		Items.DocumentTotal.ReadOnly = True;
+	EndIf;
 
 EndProcedure

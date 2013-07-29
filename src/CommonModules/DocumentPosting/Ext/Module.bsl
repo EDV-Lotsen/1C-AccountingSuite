@@ -608,7 +608,7 @@ Procedure CheckRecordsetChangesOnWrite(Recorder, AdditionalProperties, Cancel) E
 	// 5. Complete Having clause
 	SelectionText = "";
 	For Each CheckDiff In CheckPostings Do
-		ResourceCheck = StringFunctionsClientServer.DecomposeStringIntoSubstringsArray(CheckDiff);
+		ResourceCheck = StringFunctionsClientServer.SplitStringIntoSubstringArray(CheckDiff);
 		ResourceText  = StrReplace("SUM({Resource}) {Sign} {Value}", "{Resource}", ResourceCheck[0]);
 		ResourceText  = StrReplace(ResourceText, "{Sign}", ResourceCheck[1]);
 		ResourceText  = StrReplace(ResourceText, "{Value}", ResourceCheck[2]);
@@ -753,7 +753,7 @@ Procedure CheckPostingResults(AdditionalProperties, RegisterRecords, Cancel) Exp
 		// 1.7. Complete Where clause
 		SelectionText = "";
 		For Each CheckBalance In CheckBalances Do
-			ResourceCheck = StringFunctionsClientServer.DecomposeStringIntoSubstringsArray(CheckBalance);
+			ResourceCheck = StringFunctionsClientServer.SplitStringIntoSubstringArray(CheckBalance);
 			ResourceText  = StrReplace("{Resource} {Sign} {Value}", "{Resource}", ResourceCheck[0]);
 			ResourceText  = StrReplace(ResourceText, "{Sign}", ResourceCheck[1]);
 			ResourceText  = StrReplace(ResourceText, "{Value}", ResourceCheck[2]);
@@ -831,7 +831,7 @@ Procedure CheckPostingResults(AdditionalProperties, RegisterRecords, Cancel) Exp
 			J = J + 1;
 			
 			// 4.6.1. Select condition to check from list of conditions
-			ResourceCheck  = StringFunctionsClientServer.DecomposeStringIntoSubstringsArray(CheckBalance);
+			ResourceCheck  = StringFunctionsClientServer.SplitStringIntoSubstringArray(CheckBalance);
 			ResourceText   = StrReplace("{Resource} {Sign} {Value}", "{Resource}", ResourceCheck[0]);
 			ResourceText   = StrReplace(ResourceText, "{Sign}", ResourceCheck[1]);
 			ResourceText   = StrReplace(ResourceText, "{Value}", ResourceCheck[2]);
@@ -915,7 +915,7 @@ Procedure CheckPostingResults(AdditionalProperties, RegisterRecords, Cancel) Exp
 	// 4.6.7. Inform user about remaining errors	
 	If Errors > 10 Then
 		MessageText = NStr("en = 'There are also %1 error(s) found'");
-		MessageText = StringFunctionsClientServer.SubstitureParametersInString(MessageText, Format(Errors-10, "NFD=0; NG=0"));
+		MessageText = StringFunctionsClientServer.SubstituteParametersInString(MessageText, Format(Errors-10, "NFD=0; NG=0"));
 		CommonUseClientServer.MessageToUser(MessageText, AdditionalProperties.Ref,,, Cancel);
 	EndIf;
 

@@ -11,14 +11,17 @@ Procedure FillDocumentList(Company)
 	Query.Text = "SELECT
 	             |	GeneralJournalBalance.AmountBalance * -1 AS AmountBalance,
 	             |	GeneralJournalBalance.AmountRCBalance * -1 AS AmountRCBalance,
-	             |	GeneralJournalBalance.ExtDimension2.Ref AS Ref
+	             |	GeneralJournalBalance.ExtDimension2.Ref AS Ref,
+				 |  GeneralJournalBalance.ExtDimension2.Date
 	             |FROM
 	             |	AccountingRegister.GeneralJournal.Balance AS GeneralJournalBalance
 	             |WHERE
 	             |	GeneralJournalBalance.AmountBalance <> 0
 	             |	AND (GeneralJournalBalance.ExtDimension2 REFS Document.PurchaseInvoice OR
 	             |       GeneralJournalBalance.ExtDimension2 REFS Document.SalesReturn)
-	             |	AND GeneralJournalBalance.ExtDimension1 = &Company";
+	             |	AND GeneralJournalBalance.ExtDimension1 = &Company
+				 |ORDER BY
+				 |	GeneralJournalBalance.ExtDimension2.Date";
 				 
 	Query.SetParameter("Company", Company);
 	
@@ -147,6 +150,8 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
 	//Title = "Payment " + Object.Number + " " + Format(Object.Date, "DLF=D");
 	
+	Items.Company.Title = GeneralFunctionsReusable.GetVendorName();
+	
 	If Object.BankAccount.IsEmpty() Then
 		Object.BankAccount = Constants.BankAccount.Get();
 	Else
@@ -159,8 +164,76 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Items.LineItemsPayment.Title = "Payment FCY";	
 	EndIf;
 	
-	// AdditionalReportsAndDataProcessors
-	AdditionalReportsAndDataProcessors.OnCreateAtServer(ThisForm);
-	// End AdditionalReportsAndDataProcessors
-	
 EndProcedure
+
+&AtServer
+Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
+	
+	If Object.PaymentMethod = Catalogs.PaymentMethods.Check Then
+		
+		If CurrentObject.Ref.IsEmpty() Then
+		
+			LastNumber = GeneralFunctions.LastCheckNumber(Object.BankAccount);
+			
+			LastNumberString = "";
+			If LastNumber < 10000 Then
+				LastNumberString = Left(String(LastNumber+1),1) + Right(String(LastNumber+1),3)
+			Else
+				LastNumberString = Left(String(LastNumber+1),2) + Right(String(LastNumber+1),3)
+			EndIf;
+			
+			CurrentObject.Number = LastNumberString;
+			CurrentObject.PhysicalCheckNum = LastNumber + 1;
+			
+		Else
+			CurrentObject.PhysicalCheckNum = Number(CurrentObject.Number);		
+		EndIf;
+	Endif;
+	
+
+EndProcedure
+
+&AtClient
+Procedure PaymentMethodOnChange(Item)
+	If Object.PaymentMethod = CheckPaymentMethod() Then
+		Object.Number = "auto";
+		Items.Number.ReadOnly = True;
+	Else
+		Object.Number = "";
+		Items.Number.ReadOnly = False;
+	EndIf;
+EndProcedure
+
+&AtServer
+Function CheckPaymentMethod()
+	
+	Return Catalogs.PaymentMethods.Check;
+	
+EndFunction
+
+
+&AtServer
+Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
+	
+	If NOT Object.Ref.IsEmpty() And Object.PaymentMethod = CheckPaymentMethod() Then
+	
+	Try
+		If Number(Object.Number) <= 0 OR Number(Object.Number) >= 100000 Then
+			Cancel = True;
+			Message = New UserMessage();
+			Message.Text=NStr("en='Enter a check number from 0 to 9999 (99999)'");
+			Message.Field = "Object.Number";
+			Message.Message();
+		EndIf;
+	Except
+			Cancel = True;
+			Message = New UserMessage();
+			Message.Text=NStr("en='Enter a check number from 0 to 9999 (99999)'");
+			Message.Field = "Object.Number";
+			Message.Message();
+	EndTry;
+		
+	Endif;
+
+EndProcedure
+

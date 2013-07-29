@@ -132,6 +132,11 @@ EndProcedure
 // 
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
+	If Object.BegBal = False Then
+		Items.DocumentTotalRC.ReadOnly = True;
+		Items.DocumentTotal.ReadOnly = True;
+	EndIf;
+	
 	Items.Company.Title = GeneralFunctionsReusable.GetVendorName();
 	
 	//Title = "Purchase Return " + Object.Number + " " + Format(Object.Date, "DLF=D");
@@ -167,10 +172,6 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	Items.RCCurrency.Title = GeneralFunctionsReusable.DefaultCurrencySymbol();
 	Items.FCYCurrency.Title = CommonUse.GetAttributeValue(Object.Currency, "Symbol");
 
-	// AdditionalReportsAndDataProcessors
-	AdditionalReportsAndDataProcessors.OnCreateAtServer(ThisForm);
-	// End AdditionalReportsAndDataProcessors
-	
 EndProcedure
 
 &AtClient
@@ -181,5 +182,18 @@ Procedure LineItemsVATCodeOnChange(Item)
 	TabularPartRow = Items.LineItems.CurrentData;
 	TabularPartRow.VAT = VAT_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Purchase", Object.PriceIncludesVAT);
     RecalcTotal();
+
+EndProcedure
+
+&AtClient
+Procedure BegBalOnChange(Item)
+	
+	If Object.BegBal = True Then
+		Items.DocumentTotalRC.ReadOnly = False;
+		Items.DocumentTotal.ReadOnly = False;
+	ElsIf Object.BegBal = False Then
+		Items.DocumentTotalRC.ReadOnly = True;
+		Items.DocumentTotal.ReadOnly = True;
+	EndIf;
 
 EndProcedure

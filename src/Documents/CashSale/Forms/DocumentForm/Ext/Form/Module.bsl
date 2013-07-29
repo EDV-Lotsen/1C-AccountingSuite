@@ -17,7 +17,7 @@ Procedure LineItemsProductOnChange(Item)
 	TabularPartRow.TaxableAmount = 0;
     TabularPartRow.VAT = 0;
 	
-	Price = GeneralFunctions.RetailPrice(CurrentDate(), TabularPartRow.Product);
+	Price = GeneralFunctions.RetailPrice(CurrentDate(), TabularPartRow.Product, Object.Company);
 	TabularPartRow.Price = Price / Object.ExchangeRate;
 	
 	TabularPartRow.SalesTaxType = US_FL.GetSalesTaxType(TabularPartRow.Product);
@@ -205,10 +205,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Object.BankAccount = Constants.BankAccount.Get();
 	Else
 	EndIf; 
-	
-	Items.BankAccountLabel.Title =
-		CommonUse.GetAttributeValue(Object.BankAccount, "Description");
-	
+		
 	If NOT GeneralFunctionsReusable.FunctionalOptionValue("USFinLocalization") Then
 		Items.SalesTaxGroup.Visible = False;
 	EndIf;
@@ -241,9 +238,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	Items.SalesTaxCurrency.Title = GeneralFunctionsReusable.DefaultCurrencySymbol();
 	Items.FCYCurrency.Title = CommonUse.GetAttributeValue(Object.Currency, "Symbol");
 	
-	// AdditionalReportsAndDataProcessors
-	AdditionalReportsAndDataProcessors.OnCreateAtServer(ThisForm);
-	// End AdditionalReportsAndDataProcessors
+	// Update elements status.
 	
 EndProcedure
 
@@ -278,5 +273,27 @@ Procedure DepositTypeOnChange(Item)
 	Else
 		Items.BankAccount.ReadOnly = False;
 	EndIf;
+
+EndProcedure
+
+&AtClient
+Procedure LineItemsBeforeAddRow(Item, Cancel, Clone, Parent, Folder)
+	// Insert handler contents.
+	
+	NewRow = true;
+	
+EndProcedure
+
+&AtClient
+Procedure LineItemsOnChange(Item)
+	// Insert handler contents.
+	
+	If NewRow = true Then
+		
+		CurrentData = Item.CurrentData;
+		CurrentData.Project = Object.Project;
+		NewRow = false;
+		
+	Endif;
 
 EndProcedure

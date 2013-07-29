@@ -27,7 +27,7 @@ Procedure BeforeWrite(Cancel, WriteParameters)
 	If Object.DefaultAPAccount.IsEmpty() OR
 		Object.DefaultARAccount.IsEmpty() Then
 	
-			DoMessageBox("Fill in default A/R, and A/P accounts after adding a new currency");
+			Message("Fill in default A/R, and A/P accounts after adding a new currency");
 	
 	EndIf;
 		

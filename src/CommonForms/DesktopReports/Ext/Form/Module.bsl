@@ -1,34 +1,52 @@
 ﻿
-&AtServer
-Procedure OnCreateAtServer(Cancel, StandardProcessing)
-	
-	Reports = "Select...";
-	
+&AtClient
+Procedure ARAging(Command)
+	OpenForm("Report.ARAging.Form.ReportForm");
 EndProcedure
 
 &AtClient
-Procedure ReportsOnChange(Item)
-	
-	If Reports = "A/R Aging" Then
-		OpenForm("Report.ARAging.Form.ReportForm"); 
-	ElsIf Reports = "A/P Aging" Then
-		OpenForm("Report.APAging.Form.ReportForm");
-	ElsIf Reports = "General Ledger" Then
-		OpenForm("Report.GeneralLedger.Form.ReportForm");
-	ElsIf Reports = "Trial Balance" Then
-		OpenForm("Report.TrialBalance.Form.ReportForm");
-	ElsIf Reports = "Income Statement" Then
-		OpenForm("Report.IncomeStatement.Form.ReportForm");
-	ElsIf Reports = "Balance Sheet" Then
-		OpenForm("Report.BalanceSheet.Form.ReportForm");
-	ElsIf Reports = "Cash Flow (direct)" Then
-		OpenForm("Report.CashFlowDirect.Form.ReportForm");
-	ElsIf Reports = "Inventory Balances" Then
-		OpenForm("Report.InventoryBalances.Form.ReportForm");
-	ElsIf Reports = "Sales Transaction Detail" Then
-		OpenForm("Report.SalesTransactionDetail.Form.ReportForm");
-	ElsIf Reports = "Purchasing Transaction Detail" Then
-		OpenForm("Report.PurchasingTransactionDetail.Form.ReportForm");
-	EndIf;
-
+Procedure APAging(Command)
+	OpenForm("Report.APAging.Form.ReportForm");
 EndProcedure
+
+&AtClient
+Procedure GeneralLedger(Command)
+	OpenForm("Report.GeneralLedger.Form.ReportForm");
+EndProcedure
+
+&AtClient
+Procedure TrialBalance(Command)
+	OpenForm("Report.TrialBalance.Form.ReportForm");
+EndProcedure
+
+&AtClient
+Procedure IncomeStatement(Command)
+	OpenForm("Report.IncomeStatement.Form.ReportForm");
+EndProcedure
+
+&AtClient
+Procedure BalanceSheet(Command)
+	OpenForm("Report.BalanceSheet.Form.ReportForm");
+EndProcedure
+
+&AtClient
+Procedure CashFlow(Command)
+	OpenForm("Report.CashFlowDirect.Form.ReportForm");
+EndProcedure
+
+&AtClient
+Procedure InventoryBalances(Command)
+	OpenForm("Report.InventoryBalances.Form.ReportForm");
+EndProcedure
+
+&AtClient
+Procedure SalesDetail(Command)
+	OpenForm("Report.SalesTransactionDetail.Form.ReportForm");
+EndProcedure
+
+&AtClient
+Procedure PurchaseDetail(Command)
+	OpenForm("Report.PurchasingTransactionDetail.Form.ReportForm");
+EndProcedure
+
+

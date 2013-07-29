@@ -151,19 +151,13 @@
 		<field xsi:type="DataSetFieldField">
 			<dataPath>OurCompany</dataPath>
 			<field>OurCompany</field>
-			<useRestriction>
-				<field>true</field>
-				<condition>true</condition>
-				<group>true</group>
-				<order>true</order>
-			</useRestriction>
 			<attributeUseRestriction>
 				<field>true</field>
 				<condition>true</condition>
 				<group>true</group>
 				<order>true</order>
 			</attributeUseRestriction>
-			<presentationExpression>OurCompany.Description</presentationExpression>
+			<presentationExpression>Presentation(OurCompany)</presentationExpression>
 		</field>
 		<field xsi:type="DataSetFieldField">
 			<dataPath>AccountType</dataPath>
@@ -186,6 +180,10 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>Tax account</v8:content>
 				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Steuerkonto</v8:content>
+				</v8:item>
 			</title>
 			<useRestriction>
 				<group>true</group>
@@ -204,7 +202,8 @@
 		</field>
 		<dataSource>DataSource1</dataSource>
 		<query>SELECT ALLOWED
-	Companies.Ref AS OurCompany,								// Defined always
+	//Companies.Ref AS OurCompany,								// Defined always
+	SystemTitle.Value AS OurCompany,
 	CASE WHEN (GeneralJournalTurnovers.Account.IncomeTaxAccount)// Defined for Account sections
 		THEN NULL
 		ELSE AccountTypes.Ref END AS AccountType,
@@ -245,10 +244,11 @@ FROM
 		// Report sections of accounts (mandatory by the selected sections - see output settings sections)
 		FULL JOIN Enum.AccountTypes AS AccountTypes
 			ON (AccountTypes.Ref = GeneralJournalTurnovers.Account.AccountType)
-			OR (GeneralJournalTurnovers.Account.IncomeTaxAccount AND AccountTypes.Ref = VALUE(Enum.AccountTypes.Income)) // Assign taxes to first row of fixed sections
+			OR (GeneralJournalTurnovers.Account.IncomeTaxAccount AND AccountTypes.Ref = VALUE(Enum.AccountTypes.Income)), // Assign taxes to first row of fixed sections
 		// Our company for a possible multicompany accounting in a future
-		LEFT JOIN Catalog.Companies AS Companies
-			ON (Companies.Ref = VALUE(Catalog.Companies.OurCompany))
+		//LEFT JOIN Catalog.Companies AS Companies
+			//ON (Companies.Ref = VALUE(Catalog.Companies.OurCompany))
+	Constant.SystemTitle AS SystemTitle
 WHERE
 	// Mandatory sections of report
 	AccountTypes.Ref IN (VALUE(Enum.AccountTypes.Income), VALUE(Enum.AccountTypes.CostOfSales), VALUE(Enum.AccountTypes.Expense), VALUE(Enum.AccountTypes.OtherExpense), VALUE(Enum.AccountTypes.OtherIncome))
@@ -274,6 +274,10 @@ WHERE
 			<v8:item>
 				<v8:lang>en</v8:lang>
 				<v8:content>Begin of period</v8:content>
+			</v8:item>
+			<v8:item>
+				<v8:lang>de</v8:lang>
+				<v8:content>Periodenanfang</v8:content>
 			</v8:item>
 		</title>
 		<valueType>
@@ -1144,7 +1148,7 @@ WHERE
 		</template>
 		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
 			<dcsat:name>OurCompany</dcsat:name>
-			<dcsat:expression>Presentation(OurCompany)</dcsat:expression>
+			<dcsat:expression>OurCompany</dcsat:expression>
 		</parameter>
 		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
 			<dcsat:name>DataParameters.PeriodPresentation</dcsat:name>
@@ -4397,8 +4401,7 @@ WHERE
 			<dcsset:filter>
 				<dcsset:item xsi:type="dcsset:FilterItemComparison">
 					<dcsset:left xsi:type="dcscor:Field">OurCompany</dcsset:left>
-					<dcsset:comparisonType>Equal</dcsset:comparisonType>
-					<dcsset:right xsi:type="dcscor:DesignTimeValue">Catalog.Companies.OurCompany</dcsset:right>
+					<dcsset:comparisonType>Filled</dcsset:comparisonType>
 					<dcsset:viewMode>Inaccessible</dcsset:viewMode>
 				</dcsset:item>
 			</dcsset:filter>
@@ -5086,8 +5089,7 @@ WHERE
 			<dcsset:filter>
 				<dcsset:item xsi:type="dcsset:FilterItemComparison">
 					<dcsset:left xsi:type="dcscor:Field">OurCompany</dcsset:left>
-					<dcsset:comparisonType>Equal</dcsset:comparisonType>
-					<dcsset:right xsi:type="dcscor:DesignTimeValue">Catalog.Companies.OurCompany</dcsset:right>
+					<dcsset:comparisonType>Filled</dcsset:comparisonType>
 					<dcsset:viewMode>Inaccessible</dcsset:viewMode>
 				</dcsset:item>
 			</dcsset:filter>
@@ -5818,8 +5820,7 @@ WHERE
 			<dcsset:filter>
 				<dcsset:item xsi:type="dcsset:FilterItemComparison">
 					<dcsset:left xsi:type="dcscor:Field">OurCompany</dcsset:left>
-					<dcsset:comparisonType>Equal</dcsset:comparisonType>
-					<dcsset:right xsi:type="dcscor:DesignTimeValue">Catalog.Companies.OurCompany</dcsset:right>
+					<dcsset:comparisonType>Filled</dcsset:comparisonType>
 					<dcsset:viewMode>Inaccessible</dcsset:viewMode>
 				</dcsset:item>
 			</dcsset:filter>
@@ -6550,8 +6551,7 @@ WHERE
 			<dcsset:filter>
 				<dcsset:item xsi:type="dcsset:FilterItemComparison">
 					<dcsset:left xsi:type="dcscor:Field">OurCompany</dcsset:left>
-					<dcsset:comparisonType>Equal</dcsset:comparisonType>
-					<dcsset:right xsi:type="dcscor:DesignTimeValue">Catalog.Companies.OurCompany</dcsset:right>
+					<dcsset:comparisonType>Filled</dcsset:comparisonType>
 					<dcsset:viewMode>Inaccessible</dcsset:viewMode>
 				</dcsset:item>
 			</dcsset:filter>
@@ -7282,8 +7282,7 @@ WHERE
 			<dcsset:filter>
 				<dcsset:item xsi:type="dcsset:FilterItemComparison">
 					<dcsset:left xsi:type="dcscor:Field">OurCompany</dcsset:left>
-					<dcsset:comparisonType>Equal</dcsset:comparisonType>
-					<dcsset:right xsi:type="dcscor:DesignTimeValue">Catalog.Companies.OurCompany</dcsset:right>
+					<dcsset:comparisonType>Filled</dcsset:comparisonType>
 					<dcsset:viewMode>Inaccessible</dcsset:viewMode>
 				</dcsset:item>
 			</dcsset:filter>
@@ -8014,8 +8013,7 @@ WHERE
 			<dcsset:filter>
 				<dcsset:item xsi:type="dcsset:FilterItemComparison">
 					<dcsset:left xsi:type="dcscor:Field">OurCompany</dcsset:left>
-					<dcsset:comparisonType>Equal</dcsset:comparisonType>
-					<dcsset:right xsi:type="dcscor:DesignTimeValue">Catalog.Companies.OurCompany</dcsset:right>
+					<dcsset:comparisonType>Filled</dcsset:comparisonType>
 					<dcsset:viewMode>Inaccessible</dcsset:viewMode>
 				</dcsset:item>
 			</dcsset:filter>

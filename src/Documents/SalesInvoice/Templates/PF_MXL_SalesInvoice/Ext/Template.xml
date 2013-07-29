@@ -30,7 +30,7 @@
 		</languageInfo>
 	</languageSettings>
 	<columns>
-		<size>6</size>
+		<size>7</size>
 		<columnsItem>
 			<index>0</index>
 			<column>
@@ -52,19 +52,25 @@
 		<columnsItem>
 			<index>3</index>
 			<column>
-				<formatIndex>3</formatIndex>
+				<formatIndex>4</formatIndex>
 			</column>
 		</columnsItem>
 		<columnsItem>
 			<index>4</index>
 			<column>
-				<formatIndex>4</formatIndex>
+				<formatIndex>5</formatIndex>
 			</column>
 		</columnsItem>
 		<columnsItem>
 			<index>5</index>
 			<column>
-				<formatIndex>5</formatIndex>
+				<formatIndex>6</formatIndex>
+			</column>
+		</columnsItem>
+		<columnsItem>
+			<index>6</index>
+			<column>
+				<formatIndex>7</formatIndex>
 			</column>
 		</columnsItem>
 	</columns>
@@ -72,9 +78,15 @@
 		<index>0</index>
 		<row>
 			<c>
-				<i>5</i>
+				<i>6</i>
 				<c>
-					<f>6</f>
+					<f>8</f>
+				</c>
+			</c>
+			<c>
+				<i>8</i>
+				<c>
+					<f>9</f>
 				</c>
 			</c>
 		</row>
@@ -83,9 +95,15 @@
 		<index>1</index>
 		<row>
 			<c>
-				<i>5</i>
+				<i>6</i>
 				<c>
-					<f>6</f>
+					<f>8</f>
+				</c>
+			</c>
+			<c>
+				<i>8</i>
+				<c>
+					<f>9</f>
 				</c>
 			</c>
 		</row>
@@ -93,14 +111,37 @@
 	<rowsItem>
 		<index>2</index>
 		<row>
-			<formatIndex>7</formatIndex>
+			<formatIndex>10</formatIndex>
 			<c>
 				<c>
-					<f>8</f>
+					<f>11</f>
+					<tl>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Rechnung</v8:content>
+						</v8:item>
+					</tl>
+				</c>
+			</c>
+			<c>
+				<c>
+					<f>0</f>
+					<tl/>
+				</c>
+			</c>
+			<c>
+				<i>5</i>
+				<c>
+					<f>12</f>
+				</c>
+			</c>
+			<c>
+				<c>
+					<f>13</f>
 					<tl>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Sales Invoice</v8:content>
+							<v8:content>Invoice</v8:content>
 						</v8:item>
 						<v8:item>
 							<v8:lang>de</v8:lang>
@@ -110,9 +151,9 @@
 				</c>
 			</c>
 			<c>
-				<i>5</i>
+				<i>8</i>
 				<c>
-					<f>9</f>
+					<f>14</f>
 				</c>
 			</c>
 		</row>
@@ -123,7 +164,18 @@
 			<c>
 				<i>5</i>
 				<c>
-					<f>6</f>
+					<f>15</f>
+				</c>
+			</c>
+			<c>
+				<c>
+					<f>16</f>
+				</c>
+			</c>
+			<c>
+				<i>8</i>
+				<c>
+					<f>9</f>
 				</c>
 			</c>
 		</row>
@@ -133,19 +185,24 @@
 		<row>
 			<c>
 				<c>
-					<f>10</f>
-					<parameter>UsName</parameter>
+					<f>17</f>
 				</c>
 			</c>
 			<c>
 				<i>2</i>
 				<c>
-					<f>11</f>
+					<f>18</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>11</f>
+					<f>18</f>
+				</c>
+			</c>
+			<c>
+				<i>5</i>
+				<c>
+					<f>19</f>
 					<tl>
 						<v8:item>
 							<v8:lang>en</v8:lang>
@@ -160,43 +217,11 @@
 			</c>
 			<c>
 				<c>
-					<f>12</f>
-					<parameter>Date</parameter>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>13</f>
-				</c>
-			</c>
-		</row>
-	</rowsItem>
-	<rowsItem>
-		<index>5</index>
-		<row>
-			<c>
-				<c>
-					<f>14</f>
-					<parameter>UsBillLine1Line2</parameter>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>15</f>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>11</f>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>11</f>
+					<f>19</f>
 					<tl>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Number</v8:content>
+							<v8:content>Invoice #</v8:content>
 						</v8:item>
 						<v8:item>
 							<v8:lang>de</v8:lang>
@@ -206,14 +231,49 @@
 				</c>
 			</c>
 			<c>
+				<i>8</i>
 				<c>
-					<f>14</f>
-					<parameter>Number</parameter>
+					<f>9</f>
+				</c>
+			</c>
+		</row>
+	</rowsItem>
+	<rowsItem>
+		<index>5</index>
+		<row>
+			<c>
+				<c>
+					<f>20</f>
+				</c>
+			</c>
+			<c>
+				<i>2</i>
+				<c>
+					<f>18</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>13</f>
+					<f>18</f>
+				</c>
+			</c>
+			<c>
+				<i>5</i>
+				<c>
+					<f>21</f>
+					<parameter>Date</parameter>
+				</c>
+			</c>
+			<c>
+				<c>
+					<f>22</f>
+					<parameter>Number</parameter>
+				</c>
+			</c>
+			<c>
+				<i>8</i>
+				<c>
+					<f>9</f>
 				</c>
 			</c>
 		</row>
@@ -223,29 +283,35 @@
 		<row>
 			<c>
 				<c>
-					<f>14</f>
-					<parameter>UsBillCityStateZIP</parameter>
+					<f>17</f>
 				</c>
 			</c>
 			<c>
 				<i>2</i>
 				<c>
-					<f>15</f>
+					<f>23</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>15</f>
+					<f>23</f>
+				</c>
+			</c>
+			<c>
+				<i>5</i>
+				<c>
+					<f>24</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>15</f>
+					<f>25</f>
 				</c>
 			</c>
 			<c>
+				<i>8</i>
 				<c>
-					<f>13</f>
+					<f>9</f>
 				</c>
 			</c>
 		</row>
@@ -255,35 +321,71 @@
 		<row>
 			<c>
 				<c>
-					<f>14</f>
-					<parameter>UsBillCountry</parameter>
+					<f>26</f>
+					<tl>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Bill To</v8:content>
+						</v8:item>
+					</tl>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>15</f>
+					<f>27</f>
+					<tl>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Ship To</v8:content>
+						</v8:item>
+					</tl>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>15</f>
+					<f>23</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>15</f>
-					<tl/>
+					<f>23</f>
+				</c>
+			</c>
+			<c>
+				<i>5</i>
+				<c>
+					<f>19</f>
+					<tl>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Terms</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Datum</v8:content>
+						</v8:item>
+					</tl>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>15</f>
-					<tl/>
+					<f>19</f>
+					<tl>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Due Date</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Nummer</v8:content>
+						</v8:item>
+					</tl>
 				</c>
 			</c>
 			<c>
+				<i>8</i>
 				<c>
-					<f>13</f>
+					<f>9</f>
 				</c>
 			</c>
 		</row>
@@ -293,33 +395,43 @@
 		<row>
 			<c>
 				<c>
-					<f>14</f>
-					<parameter>UsBillPhone</parameter>
+					<f>28</f>
+					<parameter>ThemName</parameter>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>15</f>
+					<f>28</f>
+					<parameter>ThemName</parameter>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>15</f>
+					<f>23</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>15</f>
+					<f>23</f>
+				</c>
+			</c>
+			<c>
+				<i>5</i>
+				<c>
+					<f>21</f>
+					<parameter>Terms</parameter>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>15</f>
+					<f>29</f>
+					<parameter>DueDate</parameter>
 				</c>
 			</c>
 			<c>
+				<i>8</i>
 				<c>
-					<f>13</f>
+					<f>9</f>
 				</c>
 			</c>
 		</row>
@@ -329,33 +441,45 @@
 		<row>
 			<c>
 				<c>
-					<f>14</f>
-					<parameter>UsBillEmail</parameter>
+					<f>30</f>
+					<parameter>ThemBillLine1Line2</parameter>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>15</f>
+					<f>30</f>
+					<parameter>ThemShipLine1Line2</parameter>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>15</f>
+					<f>23</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>15</f>
+					<f>23</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>15</f>
+					<f>23</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>13</f>
+					<f>23</f>
+				</c>
+			</c>
+			<c>
+				<c>
+					<f>25</f>
+				</c>
+			</c>
+			<c>
+				<i>8</i>
+				<c>
+					<f>9</f>
 				</c>
 			</c>
 		</row>
@@ -365,32 +489,45 @@
 		<row>
 			<c>
 				<c>
-					<f>15</f>
+					<f>30</f>
+					<parameter>ThemBillCityStateZIP</parameter>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>15</f>
+					<f>30</f>
+					<parameter>ThemShipCityStateZIP</parameter>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>15</f>
+					<f>23</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>15</f>
+					<f>23</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>15</f>
+					<f>23</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>13</f>
+					<f>23</f>
+				</c>
+			</c>
+			<c>
+				<c>
+					<f>25</f>
+				</c>
+			</c>
+			<c>
+				<i>8</i>
+				<c>
+					<f>9</f>
 				</c>
 			</c>
 		</row>
@@ -400,42 +537,45 @@
 		<row>
 			<c>
 				<c>
-					<f>16</f>
-					<tl>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Invoiced To:</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Verrechnet an:</v8:content>
-						</v8:item>
-					</tl>
+					<f>31</f>
+					<parameter>ThemBillCountry</parameter>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>15</f>
+					<f>31</f>
+					<parameter>ThemShipCountry</parameter>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>15</f>
+					<f>23</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>15</f>
+					<f>23</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>15</f>
+					<f>23</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>13</f>
+					<f>23</f>
+				</c>
+			</c>
+			<c>
+				<c>
+					<f>25</f>
+				</c>
+			</c>
+			<c>
+				<i>8</i>
+				<c>
+					<f>9</f>
 				</c>
 			</c>
 		</row>
@@ -445,32 +585,39 @@
 		<row>
 			<c>
 				<c>
-					<f>15</f>
+					<f>20</f>
+				</c>
+			</c>
+			<c>
+				<i>2</i>
+				<c>
+					<f>23</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>15</f>
+					<f>23</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>15</f>
+					<f>23</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>15</f>
+					<f>23</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>15</f>
+					<f>25</f>
 				</c>
 			</c>
 			<c>
+				<i>8</i>
 				<c>
-					<f>13</f>
+					<f>9</f>
 				</c>
 			</c>
 		</row>
@@ -480,33 +627,43 @@
 		<row>
 			<c>
 				<c>
-					<f>17</f>
-					<parameter>ThemName</parameter>
+					<f>23</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>15</f>
+					<f>23</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>15</f>
+					<f>23</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>15</f>
+					<f>23</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>15</f>
+					<f>23</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>13</f>
+					<f>23</f>
+				</c>
+			</c>
+			<c>
+				<c>
+					<f>25</f>
+				</c>
+			</c>
+			<c>
+				<i>8</i>
+				<c>
+					<f>9</f>
 				</c>
 			</c>
 		</row>
@@ -516,33 +673,43 @@
 		<row>
 			<c>
 				<c>
-					<f>14</f>
-					<parameter>ThemBillLine1Line2</parameter>
+					<f>23</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>15</f>
+					<f>23</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>15</f>
+					<f>23</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>15</f>
+					<f>23</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>15</f>
+					<f>23</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>13</f>
+					<f>23</f>
+				</c>
+			</c>
+			<c>
+				<c>
+					<f>25</f>
+				</c>
+			</c>
+			<c>
+				<i>8</i>
+				<c>
+					<f>9</f>
 				</c>
 			</c>
 		</row>
@@ -552,184 +719,11 @@
 		<row>
 			<c>
 				<c>
-					<f>14</f>
-					<parameter>ThemBillCityStateZIP</parameter>
-				</c>
-			</c>
-			<c>
-				<i>2</i>
-				<c>
-					<f>15</f>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>15</f>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>15</f>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>13</f>
-				</c>
-			</c>
-		</row>
-	</rowsItem>
-	<rowsItem>
-		<index>16</index>
-		<row>
-			<c>
-				<c>
-					<f>14</f>
-					<parameter>ThemBillCountry</parameter>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>15</f>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>15</f>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>15</f>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>15</f>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>13</f>
-				</c>
-			</c>
-		</row>
-	</rowsItem>
-	<rowsItem>
-		<index>17</index>
-		<row>
-			<c>
-				<c>
-					<f>15</f>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>15</f>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>15</f>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>15</f>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>15</f>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>13</f>
-				</c>
-			</c>
-		</row>
-	</rowsItem>
-	<rowsItem>
-		<index>18</index>
-		<row>
-			<c>
-				<c>
-					<f>15</f>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>15</f>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>15</f>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>15</f>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>15</f>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>13</f>
-				</c>
-			</c>
-		</row>
-	</rowsItem>
-	<rowsItem>
-		<index>19</index>
-		<row>
-			<c>
-				<c>
-					<f>15</f>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>15</f>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>15</f>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>15</f>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>15</f>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>13</f>
-				</c>
-			</c>
-		</row>
-	</rowsItem>
-	<rowsItem>
-		<index>20</index>
-		<row>
-			<c>
-				<c>
-					<f>18</f>
+					<f>32</f>
 					<tl>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Item</v8:content>
+							<v8:content>Item Code</v8:content>
 						</v8:item>
 						<v8:item>
 							<v8:lang>de</v8:lang>
@@ -740,7 +734,7 @@
 			</c>
 			<c>
 				<c>
-					<f>18</f>
+					<f>33</f>
 					<tl>
 						<v8:item>
 							<v8:lang>en</v8:lang>
@@ -754,8 +748,20 @@
 				</c>
 			</c>
 			<c>
+				<i>3</i>
 				<c>
-					<f>18</f>
+					<f>34</f>
+					<tl>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>P.O. #</v8:content>
+						</v8:item>
+					</tl>
+				</c>
+			</c>
+			<c>
+				<c>
+					<f>34</f>
 					<tl>
 						<v8:item>
 							<v8:lang>en</v8:lang>
@@ -766,26 +772,11 @@
 			</c>
 			<c>
 				<c>
-					<f>18</f>
+					<f>35</f>
 					<tl>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>U/M</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Menge</v8:content>
-						</v8:item>
-					</tl>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>18</f>
-					<tl>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Price</v8:content>
+							<v8:content> Price</v8:content>
 						</v8:item>
 						<v8:item>
 							<v8:lang>de</v8:lang>
@@ -796,11 +787,11 @@
 			</c>
 			<c>
 				<c>
-					<f>19</f>
+					<f>36</f>
 					<tl>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Line total</v8:content>
+							<v8:content>Amount</v8:content>
 						</v8:item>
 						<v8:item>
 							<v8:lang>de</v8:lang>
@@ -809,110 +800,139 @@
 					</tl>
 				</c>
 			</c>
+			<c>
+				<i>8</i>
+				<c>
+					<f>9</f>
+				</c>
+			</c>
 		</row>
 	</rowsItem>
 	<rowsItem>
-		<index>21</index>
+		<index>16</index>
 		<row>
 			<c>
 				<c>
-					<f>20</f>
+					<f>37</f>
 					<parameter>Product</parameter>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>20</f>
+					<f>38</f>
 					<parameter>ProductDescription</parameter>
 				</c>
 			</c>
 			<c>
+				<i>3</i>
 				<c>
-					<f>21</f>
+					<f>39</f>
+					<parameter>PO</parameter>
+				</c>
+			</c>
+			<c>
+				<c>
+					<f>40</f>
 					<parameter>Quantity</parameter>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>22</f>
-					<parameter>UM</parameter>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>23</f>
+					<f>41</f>
 					<parameter>Price</parameter>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>24</f>
+					<f>42</f>
 					<parameter>LineTotal</parameter>
 				</c>
 			</c>
-		</row>
-	</rowsItem>
-	<rowsItem>
-		<index>22</index>
-		<row>
 			<c>
+				<i>8</i>
 				<c>
-					<f>15</f>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>15</f>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>15</f>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>15</f>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>15</f>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>13</f>
+					<f>9</f>
 				</c>
 			</c>
 		</row>
 	</rowsItem>
 	<rowsItem>
-		<index>23</index>
+		<index>17</index>
 		<row>
 			<c>
 				<c>
-					<f>15</f>
+					<f>23</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>15</f>
+					<f>23</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>15</f>
+					<f>23</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>15</f>
+					<f>23</f>
+				</c>
+			</c>
+			<c>
+				<c>
+					<f>23</f>
+				</c>
+			</c>
+			<c>
+				<c>
+					<f>23</f>
 				</c>
 			</c>
 			<c>
 				<c>
 					<f>25</f>
+				</c>
+			</c>
+			<c>
+				<i>8</i>
+				<c>
+					<f>9</f>
+				</c>
+			</c>
+		</row>
+	</rowsItem>
+	<rowsItem>
+		<index>18</index>
+		<row>
+			<c>
+				<c>
+					<f>23</f>
+				</c>
+			</c>
+			<c>
+				<c>
+					<f>23</f>
+				</c>
+			</c>
+			<c>
+				<c>
+					<f>23</f>
+				</c>
+			</c>
+			<c>
+				<c>
+					<f>23</f>
+				</c>
+			</c>
+			<c>
+				<c>
+					<f>23</f>
+				</c>
+			</c>
+			<c>
+				<c>
+					<f>43</f>
 					<tl>
 						<v8:item>
 							<v8:lang>en</v8:lang>
@@ -927,38 +947,49 @@
 			</c>
 			<c>
 				<c>
-					<f>26</f>
+					<f>44</f>
 					<parameter>Subtotal</parameter>
+				</c>
+			</c>
+			<c>
+				<i>8</i>
+				<c>
+					<f>9</f>
 				</c>
 			</c>
 		</row>
 	</rowsItem>
 	<rowsItem>
-		<index>24</index>
+		<index>19</index>
 		<row>
 			<c>
 				<c>
-					<f>15</f>
+					<f>23</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>15</f>
+					<f>23</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>15</f>
+					<f>23</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>15</f>
+					<f>23</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>27</f>
+					<f>23</f>
+				</c>
+			</c>
+			<c>
+				<c>
+					<f>45</f>
 					<tl>
 						<v8:item>
 							<v8:lang>en</v8:lang>
@@ -973,42 +1004,106 @@
 			</c>
 			<c>
 				<c>
-					<f>28</f>
+					<f>46</f>
 					<parameter>VATTotal</parameter>
+				</c>
+			</c>
+			<c>
+				<i>8</i>
+				<c>
+					<f>9</f>
 				</c>
 			</c>
 		</row>
 	</rowsItem>
 	<rowsItem>
-		<index>25</index>
+		<index>20</index>
 		<row>
 			<c>
 				<c>
-					<f>15</f>
+					<f>23</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>15</f>
+					<f>23</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>15</f>
+					<f>23</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>15</f>
+					<f>23</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>25</f>
+					<f>23</f>
+				</c>
+			</c>
+			<c>
+				<c>
+					<f>45</f>
 					<tl>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Total</v8:content>
+							<v8:content>SalesTax</v8:content>
+						</v8:item>
+					</tl>
+				</c>
+			</c>
+			<c>
+				<c>
+					<f>47</f>
+					<parameter>SalesTaxTotal</parameter>
+				</c>
+			</c>
+			<c>
+				<i>8</i>
+				<c>
+					<f>9</f>
+				</c>
+			</c>
+		</row>
+	</rowsItem>
+	<rowsItem>
+		<index>21</index>
+		<row>
+			<c>
+				<c>
+					<f>23</f>
+				</c>
+			</c>
+			<c>
+				<c>
+					<f>23</f>
+				</c>
+			</c>
+			<c>
+				<c>
+					<f>23</f>
+				</c>
+			</c>
+			<c>
+				<c>
+					<f>23</f>
+				</c>
+			</c>
+			<c>
+				<c>
+					<f>23</f>
+				</c>
+			</c>
+			<c>
+				<c>
+					<f>43</f>
+					<tl>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Total $</v8:content>
 						</v8:item>
 						<v8:item>
 							<v8:lang>de</v8:lang>
@@ -1019,68 +1114,54 @@
 			</c>
 			<c>
 				<c>
-					<f>29</f>
+					<f>48</f>
 					<parameter>DocumentTotal</parameter>
+				</c>
+			</c>
+			<c>
+				<i>8</i>
+				<c>
+					<f>9</f>
 				</c>
 			</c>
 		</row>
 	</rowsItem>
 	<rowsItem>
-		<index>26</index>
+		<index>24</index>
 		<row>
 			<c>
 				<c>
-					<f>15</f>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>15</f>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>15</f>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>15</f>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>30</f>
-					<tl>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Currency</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Währung</v8:content>
-						</v8:item>
-					</tl>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>31</f>
-					<parameter>Currency</parameter>
+					<f>49</f>
+					<parameter>OurContactInfo</parameter>
 				</c>
 			</c>
 		</row>
 	</rowsItem>
 	<templateMode>true</templateMode>
-	<defaultFormatIndex>32</defaultFormatIndex>
-	<height>27</height>
-	<vgRows>27</vgRows>
+	<defaultFormatIndex>9</defaultFormatIndex>
+	<height>25</height>
+	<vgRows>25</vgRows>
+	<merge>
+		<r>15</r>
+		<c>1</c>
+		<w>1</w>
+	</merge>
+	<merge>
+		<r>16</r>
+		<c>1</c>
+		<w>1</w>
+	</merge>
+	<merge>
+		<r>24</r>
+		<c>0</c>
+		<w>6</w>
+	</merge>
 	<namedItem xsi:type="NamedItemCells">
-		<name>Currency</name>
+		<name>Footer</name>
 		<area>
 			<type>Rows</type>
-			<beginRow>26</beginRow>
-			<endRow>26</endRow>
+			<beginRow>23</beginRow>
+			<endRow>24</endRow>
 			<beginColumn>-1</beginColumn>
 			<endColumn>-1</endColumn>
 		</area>
@@ -1090,7 +1171,7 @@
 		<area>
 			<type>Rows</type>
 			<beginRow>1</beginRow>
-			<endRow>17</endRow>
+			<endRow>12</endRow>
 			<beginColumn>-1</beginColumn>
 			<endColumn>-1</endColumn>
 		</area>
@@ -1099,14 +1180,24 @@
 		<name>LineItems</name>
 		<area>
 			<type>Rows</type>
-			<beginRow>21</beginRow>
-			<endRow>21</endRow>
+			<beginRow>16</beginRow>
+			<endRow>16</endRow>
 			<beginColumn>-1</beginColumn>
 			<endColumn>-1</endColumn>
 		</area>
 	</namedItem>
 	<namedItem xsi:type="NamedItemCells">
 		<name>LineItemsHeader</name>
+		<area>
+			<type>Rows</type>
+			<beginRow>15</beginRow>
+			<endRow>15</endRow>
+			<beginColumn>-1</beginColumn>
+			<endColumn>-1</endColumn>
+		</area>
+	</namedItem>
+	<namedItem xsi:type="NamedItemCells">
+		<name>SalesTax</name>
 		<area>
 			<type>Rows</type>
 			<beginRow>20</beginRow>
@@ -1119,8 +1210,8 @@
 		<name>Subtotal</name>
 		<area>
 			<type>Rows</type>
-			<beginRow>23</beginRow>
-			<endRow>23</endRow>
+			<beginRow>18</beginRow>
+			<endRow>18</endRow>
 			<beginColumn>-1</beginColumn>
 			<endColumn>-1</endColumn>
 		</area>
@@ -1129,8 +1220,8 @@
 		<name>Total</name>
 		<area>
 			<type>Rows</type>
-			<beginRow>25</beginRow>
-			<endRow>25</endRow>
+			<beginRow>21</beginRow>
+			<endRow>21</endRow>
 			<beginColumn>-1</beginColumn>
 			<endColumn>-1</endColumn>
 		</area>
@@ -1139,8 +1230,8 @@
 		<name>VAT</name>
 		<area>
 			<type>Rows</type>
-			<beginRow>24</beginRow>
-			<endRow>24</endRow>
+			<beginRow>19</beginRow>
+			<endRow>19</endRow>
 			<beginColumn>-1</beginColumn>
 			<endColumn>-1</endColumn>
 		</area>
@@ -1149,27 +1240,39 @@
 		<v8ui:style xsi:type="v8ui:SpreadsheetDocumentCellLineType">Solid</v8ui:style>
 	</line>
 	<font faceName="Arial" height="16" bold="true" italic="false" underline="false" strikeout="false" kind="Absolute"/>
+	<font faceName="Arial" height="18" bold="true" italic="false" underline="false" strikeout="false" kind="Absolute"/>
 	<font faceName="Arial" height="10" bold="true" italic="false" underline="false" strikeout="false" kind="Absolute"/>
 	<font faceName="Arial" height="10" bold="false" italic="false" underline="false" strikeout="false" kind="Absolute"/>
-	<font faceName="Arial" height="10" bold="false" italic="true" underline="false" strikeout="false" kind="Absolute"/>
+	<font faceName="Arial" height="9" bold="true" italic="false" underline="false" strikeout="false" kind="Absolute"/>
+	<font faceName="Arial" height="9" bold="false" italic="false" underline="false" strikeout="false" kind="Absolute"/>
+	<font faceName="Arial" height="10" bold="false" italic="false" underline="false" strikeout="false" kind="Absolute"/>
 	<format>
-		<width>141</width>
+		<width>158</width>
 		<textPlacement>Auto</textPlacement>
 	</format>
 	<format>
-		<width>195</width>
-	</format>
-	<format>
-		<width>102</width>
-	</format>
-	<format>
-		<width>114</width>
+		<width>175</width>
 	</format>
 	<format>
 		<width>110</width>
 	</format>
 	<format>
+		<width>99</width>
+	</format>
+	<format>
+		<width>93</width>
+	</format>
+	<format>
+		<width>101</width>
+	</format>
+	<format>
+		<width>102</width>
+	</format>
+	<format>
 		<width>143</width>
+	</format>
+	<format>
+		<width>72</width>
 	</format>
 	<format>
 		<textPlacement>Auto</textPlacement>
@@ -1183,19 +1286,49 @@
 		<hyperLink>false</hyperLink>
 	</format>
 	<format>
-		<width>143</width>
+		<width>115</width>
 		<textPlacement>Auto</textPlacement>
 	</format>
 	<format>
 		<font>1</font>
+		<width>171</width>
+		<horizontalAlignment>Left</horizontalAlignment>
+		<textColor>style:FormTextColor</textColor>
 		<textPlacement>Auto</textPlacement>
-		<fillType>Parameter</fillType>
+		<detailsUse>Cell</detailsUse>
+		<hyperLink>false</hyperLink>
 	</format>
 	<format>
-		<font>1</font>
+		<width>72</width>
+		<textPlacement>Auto</textPlacement>
+	</format>
+	<format>
+		<width>115</width>
+	</format>
+	<format>
+		<width>114</width>
+	</format>
+	<format>
+		<width>218</width>
 	</format>
 	<format>
 		<font>2</font>
+	</format>
+	<format>
+		<font>2</font>
+		<border>0</border>
+		<width>115</width>
+		<horizontalAlignment>Center</horizontalAlignment>
+	</format>
+	<format>
+		<font>3</font>
+		<width>218</width>
+	</format>
+	<format>
+		<font>3</font>
+		<border>0</border>
+		<width>114</width>
+		<horizontalAlignment>Center</horizontalAlignment>
 		<fillType>Parameter</fillType>
 		<format>
 			<v8:item>
@@ -1209,85 +1342,183 @@
 		</format>
 	</format>
 	<format>
-		<font>2</font>
-		<width>143</width>
-	</format>
-	<format>
-		<font>2</font>
+		<font>3</font>
+		<border>0</border>
+		<width>114</width>
+		<horizontalAlignment>Center</horizontalAlignment>
 		<fillType>Parameter</fillType>
-	</format>
-	<format>
-		<font>2</font>
 	</format>
 	<format>
 		<font>3</font>
 	</format>
 	<format>
-		<font>1</font>
-		<fillType>Parameter</fillType>
-	</format>
-	<format>
-		<font>1</font>
-		<border>0</border>
-		<horizontalAlignment>Center</horizontalAlignment>
-	</format>
-	<format>
-		<font>1</font>
-		<border>0</border>
-		<width>143</width>
-		<horizontalAlignment>Center</horizontalAlignment>
-	</format>
-	<format>
-		<font>2</font>
-		<border>0</border>
-		<fillType>Parameter</fillType>
-	</format>
-	<format>
-		<font>2</font>
-		<border>0</border>
-		<width>195</width>
-		<horizontalAlignment>Right</horizontalAlignment>
-		<fillType>Parameter</fillType>
-		<format/>
-	</format>
-	<format>
-		<font>2</font>
-		<border>0</border>
-		<horizontalAlignment>Left</horizontalAlignment>
-		<fillType>Parameter</fillType>
-	</format>
-	<format>
-		<font>2</font>
-		<border>0</border>
-		<horizontalAlignment>Right</horizontalAlignment>
-		<fillType>Parameter</fillType>
+		<font>3</font>
+		<width>112</width>
 		<format>
 			<v8:item>
 				<v8:lang>en</v8:lang>
-				<v8:content>NFD=2</v8:content>
+				<v8:content>DF=MM/dd/yy</v8:content>
+			</v8:item>
+			<v8:item>
+				<v8:lang>de</v8:lang>
+				<v8:content>Datumformat= tt/MM/jj</v8:content>
 			</v8:item>
 		</format>
 	</format>
 	<format>
-		<font>2</font>
-		<border>0</border>
+		<font>3</font>
 		<width>143</width>
-		<horizontalAlignment>Right</horizontalAlignment>
+	</format>
+	<format>
+		<font>3</font>
+		<border>0</border>
+		<width>171</width>
+		<textPlacement>Auto</textPlacement>
+	</format>
+	<format>
+		<font>3</font>
+		<border>0</border>
+		<width>115</width>
+	</format>
+	<format>
+		<font>4</font>
+		<leftBorder>0</leftBorder>
+		<topBorder>0</topBorder>
+		<rightBorder>0</rightBorder>
+		<width>171</width>
+		<textPlacement>Wrap</textPlacement>
+		<fillType>Parameter</fillType>
+	</format>
+	<format>
+		<font>3</font>
+		<border>0</border>
+		<width>114</width>
+		<horizontalAlignment>Center</horizontalAlignment>
 		<fillType>Parameter</fillType>
 		<format>
 			<v8:item>
 				<v8:lang>en</v8:lang>
-				<v8:content>NFD=2</v8:content>
+				<v8:content>DF=MM/dd/yy</v8:content>
 			</v8:item>
 		</format>
 	</format>
 	<format>
-		<font>1</font>
+		<font>5</font>
+		<leftBorder>0</leftBorder>
+		<rightBorder>0</rightBorder>
+		<width>171</width>
+		<textPlacement>Wrap</textPlacement>
+		<fillType>Parameter</fillType>
+	</format>
+	<format>
+		<font>5</font>
+		<leftBorder>0</leftBorder>
+		<rightBorder>0</rightBorder>
+		<bottomBorder>0</bottomBorder>
+		<width>171</width>
+		<textPlacement>Wrap</textPlacement>
+		<fillType>Parameter</fillType>
+	</format>
+	<format>
+		<font>2</font>
+		<border>0</border>
+		<width>157</width>
+		<horizontalAlignment>Center</horizontalAlignment>
+		<textPlacement>Auto</textPlacement>
+	</format>
+	<format>
+		<font>2</font>
+		<border>0</border>
+		<width>208</width>
+		<horizontalAlignment>Center</horizontalAlignment>
+	</format>
+	<format>
+		<font>2</font>
+		<border>0</border>
+		<width>131</width>
+		<horizontalAlignment>Center</horizontalAlignment>
+	</format>
+	<format>
+		<font>2</font>
+		<border>0</border>
 		<width>114</width>
 		<horizontalAlignment>Center</horizontalAlignment>
 	</format>
 	<format>
-		<font>1</font>
+		<font>2</font>
+		<border>0</border>
+		<width>143</width>
+		<horizontalAlignment>Center</horizontalAlignment>
+	</format>
+	<format>
+		<font>5</font>
+		<border>0</border>
+		<width>157</width>
+		<verticalAlignment>Top</verticalAlignment>
+		<textPlacement>Wrap</textPlacement>
+		<fillType>Parameter</fillType>
+	</format>
+	<format>
+		<font>5</font>
+		<border>0</border>
+		<width>208</width>
+		<verticalAlignment>Top</verticalAlignment>
+		<textPlacement>Wrap</textPlacement>
+		<fillType>Parameter</fillType>
+	</format>
+	<format>
+		<font>5</font>
+		<border>0</border>
+		<width>240</width>
+		<horizontalAlignment>Center</horizontalAlignment>
+		<verticalAlignment>Top</verticalAlignment>
+		<textPlacement>Wrap</textPlacement>
+		<fillType>Parameter</fillType>
+	</format>
+	<format>
+		<font>5</font>
+		<border>0</border>
+		<width>195</width>
+		<horizontalAlignment>Right</horizontalAlignment>
+		<verticalAlignment>Top</verticalAlignment>
+		<fillType>Parameter</fillType>
+		<format/>
+	</format>
+	<format>
+		<font>5</font>
+		<border>0</border>
+		<width>114</width>
+		<horizontalAlignment>Right</horizontalAlignment>
+		<verticalAlignment>Top</verticalAlignment>
+		<fillType>Parameter</fillType>
+		<format>
+			<v8:item>
+				<v8:lang>en</v8:lang>
+				<v8:content>NFD=2</v8:content>
+			</v8:item>
+		</format>
+	</format>
+	<format>
+		<font>5</font>
+		<border>0</border>
+		<width>143</width>
+		<horizontalAlignment>Right</horizontalAlignment>
+		<verticalAlignment>Top</verticalAlignment>
+		<fillType>Parameter</fillType>
+		<format>
+			<v8:item>
+				<v8:lang>en</v8:lang>
+				<v8:content>NFD=2</v8:content>
+			</v8:item>
+		</format>
+	</format>
+	<format>
+		<font>2</font>
+		<width>114</width>
+		<horizontalAlignment>Right</horizontalAlignment>
+	</format>
+	<format>
+		<font>2</font>
 		<width>110</width>
 		<horizontalAlignment>Right</horizontalAlignment>
 		<fillType>Parameter</fillType>
@@ -1299,9 +1530,33 @@
 		</format>
 	</format>
 	<format>
-		<font>2</font>
+		<font>3</font>
 		<width>114</width>
-		<horizontalAlignment>Center</horizontalAlignment>
+		<horizontalAlignment>Right</horizontalAlignment>
+	</format>
+	<format>
+		<font>3</font>
+		<width>143</width>
+		<horizontalAlignment>Right</horizontalAlignment>
+		<fillType>Parameter</fillType>
+		<format>
+			<v8:item>
+				<v8:lang>en</v8:lang>
+				<v8:content>NFD=2</v8:content>
+			</v8:item>
+		</format>
+	</format>
+	<format>
+		<font>6</font>
+		<width>143</width>
+		<horizontalAlignment>Right</horizontalAlignment>
+		<fillType>Parameter</fillType>
+		<format>
+			<v8:item>
+				<v8:lang>en</v8:lang>
+				<v8:content>NFD=2</v8:content>
+			</v8:item>
+		</format>
 	</format>
 	<format>
 		<font>2</font>
@@ -1316,29 +1571,8 @@
 		</format>
 	</format>
 	<format>
-		<font>1</font>
-		<width>143</width>
-		<horizontalAlignment>Right</horizontalAlignment>
-		<fillType>Parameter</fillType>
-		<format>
-			<v8:item>
-				<v8:lang>en</v8:lang>
-				<v8:content>NFD=2</v8:content>
-			</v8:item>
-		</format>
-	</format>
-	<format>
-		<font>3</font>
-		<width>114</width>
+		<font>4</font>
 		<horizontalAlignment>Center</horizontalAlignment>
-	</format>
-	<format>
-		<font>3</font>
-		<width>143</width>
-		<horizontalAlignment>Right</horizontalAlignment>
 		<fillType>Parameter</fillType>
-	</format>
-	<format>
-		<width>72</width>
 	</format>
 </document>

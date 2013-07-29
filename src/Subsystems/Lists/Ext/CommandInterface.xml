@@ -16,39 +16,24 @@
 				<xr:Common>false</xr:Common>
 			</Visibility>
 		</Command>
+		<Command name="0:bd20c7c2-1e66-45f5-8256-852dbd8b9c0c">
+			<Visibility>
+				<xr:Common>true</xr:Common>
+			</Visibility>
+		</Command>
 		<Command name="Catalog.UserList.StandardCommand.OpenList">
 			<Visibility>
 				<xr:Common>true</xr:Common>
 			</Visibility>
 		</Command>
-		<Command name="CommonCommand.SystemEmailAccountSetup">
-			<Visibility>
-				<xr:Common>false</xr:Common>
-			</Visibility>
-		</Command>
-		<Command name="Catalog.AdditionalReportsAndDataProcessors.Command.ManageAdditionalReportsAndDataProcessors">
-			<Visibility>
-				<xr:Common>false</xr:Common>
-			</Visibility>
-		</Command>
-		<Command name="DataProcessor.FullTextSearchInData.Command.FullTextSearch">
-			<Visibility>
-				<xr:Common>false</xr:Common>
-			</Visibility>
-		</Command>
-		<Command name="DataProcessor.ScheduledAndBackgroundJobs.Command.ScheduledAndBackgroundJobs">
-			<Visibility>
-				<xr:Common>false</xr:Common>
-			</Visibility>
-		</Command>
-		<Command name="DataProcessor.EventLogMonitor.Command.EventLogMonitor">
-			<Visibility>
-				<xr:Common>false</xr:Common>
-			</Visibility>
-		</Command>
-		<Command name="DataProcessor.DeleteMarkedObjects.Command.DeleteMarkedObjects">
+		<Command name="Catalog.ProductCategories.StandardCommand.OpenList">
 			<Visibility>
 				<xr:Common>true</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="0:262f110f-6b38-41dc-9669-1f79b50f462b">
+			<Visibility>
+				<xr:Common>false</xr:Common>
 			</Visibility>
 		</Command>
 	</CommandsVisibility>
@@ -65,16 +50,20 @@
 			<CommandGroup>NavigationPanelImportant</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
+		<Command name="0:bd20c7c2-1e66-45f5-8256-852dbd8b9c0c">
+			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
+			<Placement>Auto</Placement>
+		</Command>
 		<Command name="Catalog.UserList.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
-		<Command name="DataProcessor.FullTextSearchInData.Command.FullTextSearch">
+		<Command name="Catalog.ProductCategories.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
-		<Command name="DataProcessor.DeleteMarkedObjects.Command.DeleteMarkedObjects">
-			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
+		<Command name="0:262f110f-6b38-41dc-9669-1f79b50f462b">
+			<CommandGroup>ActionsPanelTools</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
 	</CommandsPlacement>
@@ -106,25 +95,13 @@
 		<Command name="Catalog.UM.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
 		</Command>
+		<Command name="0:bd20c7c2-1e66-45f5-8256-852dbd8b9c0c">
+			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
+		</Command>
 		<Command name="Catalog.UserList.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
 		</Command>
-		<Command name="CommonCommand.SystemEmailAccountSetup">
-			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
-		</Command>
-		<Command name="Catalog.AdditionalReportsAndDataProcessors.Command.ManageAdditionalReportsAndDataProcessors">
-			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
-		</Command>
-		<Command name="DataProcessor.FullTextSearchInData.Command.FullTextSearch">
-			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
-		</Command>
-		<Command name="DataProcessor.ScheduledAndBackgroundJobs.Command.ScheduledAndBackgroundJobs">
-			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
-		</Command>
-		<Command name="DataProcessor.EventLogMonitor.Command.EventLogMonitor">
-			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
-		</Command>
-		<Command name="DataProcessor.DeleteMarkedObjects.Command.DeleteMarkedObjects">
+		<Command name="Catalog.ProductCategories.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
 		</Command>
 		<Command name="Catalog.Companies.StandardCommand.Create">
@@ -156,6 +133,24 @@
 		</Command>
 		<Command name="Catalog.UserList.StandardCommand.Create">
 			<CommandGroup>ActionsPanelCreate</CommandGroup>
+		</Command>
+		<Command name="1:bd20c7c2-1e66-45f5-8256-852dbd8b9c0c">
+			<CommandGroup>ActionsPanelCreate</CommandGroup>
+		</Command>
+		<Command name="Catalog.ProductCategories.StandardCommand.Create">
+			<CommandGroup>ActionsPanelCreate</CommandGroup>
+		</Command>
+		<Command name="0:262f110f-6b38-41dc-9669-1f79b50f462b">
+			<CommandGroup>ActionsPanelTools</CommandGroup>
+		</Command>
+		<Command name="DataProcessor.DeleteMarkedObjects.StandardCommand.Open">
+			<CommandGroup>ActionsPanelTools</CommandGroup>
+		</Command>
+		<Command name="0:efc7244b-3251-4684-b8a4-1a0f32074ea8">
+			<CommandGroup>ActionsPanelTools</CommandGroup>
+		</Command>
+		<Command name="0:d5244d76-f596-43cd-88d2-d4e388881675">
+			<CommandGroup>ActionsPanelTools</CommandGroup>
 		</Command>
 	</CommandsOrder>
 	<GroupsOrder>

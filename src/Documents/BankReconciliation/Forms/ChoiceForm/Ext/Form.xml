@@ -3,9 +3,6 @@
 	<WindowOpeningMode>LockOwnerWindow</WindowOpeningMode>
 	<VerticalScroll>useIfNecessary</VerticalScroll>
 	<AutoCommandBar name="FormCommandBar" id="-1"/>
-	<Events>
-		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
-	</Events>
 	<ChildItems>
 		<Table name="List" id="1">
 			<Representation>List</Representation>
@@ -38,29 +35,29 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="16"/>
-			<SearchStringAddition name="ListSearchString" id="17">
+			<SearchStringAddition name="ListSearchString" id="21">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="18"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="19"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="22"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="23"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="20">
+			<ViewStatusAddition name="ListViewStatus" id="24">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="21"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="22"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="25"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="26"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="23">
+			<SearchControlAddition name="ListSearchControl" id="27">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="24"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="25"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="28"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="29"/>
 			</SearchControlAddition>
 			<ChildItems>
 				<LabelField name="Date" id="4">
@@ -68,17 +65,17 @@
 					<DefaultItem>true</DefaultItem>
 					<HorizontalAlign>Right</HorizontalAlign>
 					<ContextMenu name="DateContextMenu" id="5"/>
-					<ExtendedTooltip name="DateExtendedTooltip" id="26"/>
+					<ExtendedTooltip name="DateExtendedTooltip" id="17"/>
 				</LabelField>
 				<LabelField name="BankAccount" id="12">
 					<DataPath>List.BankAccount</DataPath>
 					<ContextMenu name="BankAccountContextMenu" id="13"/>
-					<ExtendedTooltip name="BankAccountExtendedTooltip" id="27"/>
+					<ExtendedTooltip name="BankAccountExtendedTooltip" id="18"/>
 				</LabelField>
 				<LabelField name="BankAccountDescription" id="14">
 					<DataPath>List.BankAccount.Description</DataPath>
 					<ContextMenu name="BankAccountDescriptionContextMenu" id="15"/>
-					<ExtendedTooltip name="BankAccountDescriptionExtendedTooltip" id="28"/>
+					<ExtendedTooltip name="BankAccountDescriptionExtendedTooltip" id="19"/>
 				</LabelField>
 				<LabelField name="StatementToDate" id="10">
 					<DataPath>List.StatementToDate</DataPath>
@@ -90,7 +87,7 @@
 						</v8:item>
 					</Format>
 					<ContextMenu name="StatementToDateContextMenu" id="11"/>
-					<ExtendedTooltip name="StatementToDateExtendedTooltip" id="29"/>
+					<ExtendedTooltip name="StatementToDateExtendedTooltip" id="20"/>
 				</LabelField>
 			</ChildItems>
 		</Table>
@@ -118,6 +115,8 @@
 						<dcsset:viewMode>Normal</dcsset:viewMode>
 						<dcsset:userSettingID>b75fecce-942b-4aed-abc9-e6a02e460fb3</dcsset:userSettingID>
 					</dcsset:conditionalAppearance>
+					<dcsset:itemsViewMode>Normal</dcsset:itemsViewMode>
+					<dcsset:itemsUserSettingID>911b6018-f537-43e8-a417-da56b22f9aec</dcsset:itemsUserSettingID>
 				</ListSettings>
 			</Settings>
 		</Attribute>

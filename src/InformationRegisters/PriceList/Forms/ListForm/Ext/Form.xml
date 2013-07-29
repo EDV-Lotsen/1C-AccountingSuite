@@ -32,30 +32,30 @@
 			<AutoCommandBar name="ListCommandBar" id="3">
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
-			<ExtendedTooltip name="ListExtendedTooltip" id="24"/>
-			<SearchStringAddition name="ListSearchString" id="25">
+			<ExtendedTooltip name="ListExtendedTooltip" id="30"/>
+			<SearchStringAddition name="ListSearchString" id="31">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="26"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="27"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="32"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="33"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="28">
+			<ViewStatusAddition name="ListViewStatus" id="34">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="29"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="30"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="35"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="36"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="31">
+			<SearchControlAddition name="ListSearchControl" id="37">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="32"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="33"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="38"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="39"/>
 			</SearchControlAddition>
 			<ChildItems>
 				<LabelField name="Period" id="4">
@@ -65,26 +65,41 @@
 					<Width>10</Width>
 					<HorizontalStretch>false</HorizontalStretch>
 					<ContextMenu name="PeriodContextMenu" id="5"/>
-					<ExtendedTooltip name="PeriodExtendedTooltip" id="34"/>
+					<ExtendedTooltip name="PeriodExtendedTooltip" id="40"/>
 				</LabelField>
 				<LabelField name="Product" id="20">
 					<DataPath>List.Product</DataPath>
 					<Width>10</Width>
 					<HorizontalStretch>false</HorizontalStretch>
 					<ContextMenu name="ProductContextMenu" id="21"/>
-					<ExtendedTooltip name="ProductExtendedTooltip" id="35"/>
+					<ExtendedTooltip name="ProductExtendedTooltip" id="41"/>
+				</LabelField>
+				<LabelField name="PriceLevel" id="24">
+					<DataPath>List.PriceLevel</DataPath>
+					<ContextMenu name="PriceLevelContextMenu" id="25"/>
+					<ExtendedTooltip name="PriceLevelExtendedTooltip" id="42"/>
+				</LabelField>
+				<LabelField name="ProductCategory" id="28">
+					<DataPath>List.ProductCategory</DataPath>
+					<ContextMenu name="ProductCategoryContextMenu" id="29"/>
+					<ExtendedTooltip name="ProductCategoryExtendedTooltip" id="43"/>
 				</LabelField>
 				<LabelField name="Description" id="22">
 					<DataPath>List.Description</DataPath>
 					<ContextMenu name="DescriptionContextMenu" id="23"/>
-					<ExtendedTooltip name="DescriptionExtendedTooltip" id="36"/>
+					<ExtendedTooltip name="DescriptionExtendedTooltip" id="44"/>
 				</LabelField>
 				<LabelField name="Price" id="10">
 					<DataPath>List.Price</DataPath>
 					<Width>10</Width>
 					<HorizontalStretch>false</HorizontalStretch>
 					<ContextMenu name="PriceContextMenu" id="11"/>
-					<ExtendedTooltip name="PriceExtendedTooltip" id="37"/>
+					<ExtendedTooltip name="PriceExtendedTooltip" id="45"/>
+				</LabelField>
+				<LabelField name="Cost" id="26">
+					<DataPath>List.Cost</DataPath>
+					<ContextMenu name="CostContextMenu" id="27"/>
+					<ExtendedTooltip name="CostExtendedTooltip" id="46"/>
 				</LabelField>
 			</ChildItems>
 		</Table>
@@ -102,7 +117,10 @@
 	InformationRegisterPriceList.Period,
 	InformationRegisterPriceList.Product,
 	InformationRegisterPriceList.Price,
-	Products.Description
+	Products.Description,
+	InformationRegisterPriceList.PriceLevel,
+	InformationRegisterPriceList.Cost,
+	InformationRegisterPriceList.ProductCategory
 FROM
 	InformationRegister.PriceList AS InformationRegisterPriceList
 		LEFT JOIN Catalog.Products AS Products
@@ -121,6 +139,8 @@ FROM
 						<dcsset:viewMode>Normal</dcsset:viewMode>
 						<dcsset:userSettingID>b75fecce-942b-4aed-abc9-e6a02e460fb3</dcsset:userSettingID>
 					</dcsset:conditionalAppearance>
+					<dcsset:itemsViewMode>Normal</dcsset:itemsViewMode>
+					<dcsset:itemsUserSettingID>911b6018-f537-43e8-a417-da56b22f9aec</dcsset:itemsUserSettingID>
 				</ListSettings>
 			</Settings>
 		</Attribute>

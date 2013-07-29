@@ -39,66 +39,66 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="28"/>
-			<SearchStringAddition name="ListSearchString" id="29">
+			<SearchStringAddition name="ListSearchString" id="36">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="30"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="31"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="37"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="38"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="32">
+			<ViewStatusAddition name="ListViewStatus" id="39">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="33"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="34"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="40"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="41"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="35">
+			<SearchControlAddition name="ListSearchControl" id="42">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="36"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="37"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="43"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="44"/>
 			</SearchControlAddition>
 			<ChildItems>
 				<LabelField name="Date" id="16">
 					<DataPath>List.Date</DataPath>
 					<HorizontalAlign>Right</HorizontalAlign>
 					<ContextMenu name="DateContextMenu" id="17"/>
-					<ExtendedTooltip name="DateExtendedTooltip" id="38"/>
+					<ExtendedTooltip name="DateExtendedTooltip" id="29"/>
 				</LabelField>
 				<LabelField name="Number" id="18">
 					<DataPath>List.Number</DataPath>
 					<ContextMenu name="NumberContextMenu" id="19"/>
-					<ExtendedTooltip name="NumberExtendedTooltip" id="39"/>
+					<ExtendedTooltip name="NumberExtendedTooltip" id="30"/>
 				</LabelField>
 				<LabelField name="RefNum" id="26">
 					<DataPath>List.RefNum</DataPath>
 					<ContextMenu name="RefNumContextMenu" id="27"/>
-					<ExtendedTooltip name="RefNumExtendedTooltip" id="40"/>
+					<ExtendedTooltip name="RefNumExtendedTooltip" id="31"/>
 				</LabelField>
 				<LabelField name="Company" id="22">
 					<DataPath>List.Company</DataPath>
 					<ContextMenu name="CompanyContextMenu" id="23"/>
-					<ExtendedTooltip name="CompanyExtendedTooltip" id="41"/>
+					<ExtendedTooltip name="CompanyExtendedTooltip" id="32"/>
 				</LabelField>
 				<LabelField name="CompanCode" id="24">
 					<DataPath>List.CompanyCode</DataPath>
 					<ContextMenu name="CompanCodeContextMenu" id="25"/>
-					<ExtendedTooltip name="CompanCodeExtendedTooltip" id="42"/>
+					<ExtendedTooltip name="CompanCodeExtendedTooltip" id="33"/>
 				</LabelField>
 				<LabelField name="DocumentTotal" id="12">
 					<DataPath>List.DocumentTotal</DataPath>
 					<ContextMenu name="DocumentTotalContextMenu" id="13"/>
-					<ExtendedTooltip name="DocumentTotalExtendedTooltip" id="43"/>
+					<ExtendedTooltip name="DocumentTotalExtendedTooltip" id="34"/>
 				</LabelField>
 				<LabelField name="DocumentTotalRC" id="20">
 					<DataPath>List.DocumentTotalRC</DataPath>
 					<ContextMenu name="DocumentTotalRCContextMenu" id="21"/>
-					<ExtendedTooltip name="DocumentTotalRCExtendedTooltip" id="44"/>
+					<ExtendedTooltip name="DocumentTotalRCExtendedTooltip" id="35"/>
 				</LabelField>
 			</ChildItems>
 		</Table>
@@ -126,6 +126,8 @@
 						<dcsset:viewMode>Normal</dcsset:viewMode>
 						<dcsset:userSettingID>b75fecce-942b-4aed-abc9-e6a02e460fb3</dcsset:userSettingID>
 					</dcsset:conditionalAppearance>
+					<dcsset:itemsViewMode>Normal</dcsset:itemsViewMode>
+					<dcsset:itemsUserSettingID>911b6018-f537-43e8-a417-da56b22f9aec</dcsset:itemsUserSettingID>
 				</ListSettings>
 			</Settings>
 		</Attribute>

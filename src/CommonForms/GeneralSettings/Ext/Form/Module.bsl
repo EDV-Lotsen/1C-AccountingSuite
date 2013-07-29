@@ -1,25 +1,29 @@
 ﻿
 &AtClient
 Procedure MultiLocationOnChange(Item)
-	DoMessageBox("Restart the program for the setting to take effect");
+	Message("Restart the program for the setting to take effect");
 	RefreshInterface();
 EndProcedure
 
 &AtClient
 Procedure MultiCurrencyOnChange(Item)
-	DoMessageBox("Restart the program for the setting to take effect");
+	Message("Restart the program for the setting to take effect");
 	RefreshInterface();
 EndProcedure
 
 &AtClient
 Procedure USFinLocalizationOnChange(Item)
-	DoMessageBox("Restart the program for the setting to take effect");
+	Message("Restart the program for the setting to take effect");
 	RefreshInterface();
 EndProcedure
 
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
-		
+	
+	BinaryLogo = GeneralFunctions.GetLogo();
+	TempStorageAddress = PutToTempStorage(BinaryLogo);
+	ImageAddress = TempStorageAddress;
+	
 	Items.BankAccountLabel.Title =
 		CommonUse.GetAttributeValue(Constants.BankAccount.Get(), "Description");
 	Items.IncomeAccountLabel.Title =
@@ -42,11 +46,10 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		CommonUse.GetAttributeValue(Constants.BankInterestEarnedAccount.Get(), "Description");
 	Items.BankServiceChargeAccountLabel.Title =
 		CommonUse.GetAttributeValue(Constants.BankServiceChargeAccount.Get(), "Description");
-				
-	If NOT Items.APIPublicKey.Title = "" AND NOT IsInRole("FullRights") Then
-		Items.APIPublicKey.ReadOnly = True;		
+		
+	If NOT Constants.APISecretKey.Get() = "" Then
+		Items.APISecretKey.ReadOnly = True;		
 	EndIf;
-
 		
 EndProcedure
 
@@ -112,14 +115,14 @@ EndProcedure
 
 &AtClient
 Procedure DefaultCurrencyOnChange(Item)
-	DoMessageBox("Restart the program for the setting to take effect");
+	Message("Restart the program for the setting to take effect");
 EndProcedure
 
 &AtClient
 Procedure VATFinLocalizationOnChange(Item)
 	
 	//GeneralFunctions.VATSetup();
-	DoMessageBox("Restart the program for the setting to take effect");
+	Message("Restart the program for the setting to take effect");
 	RefreshInterface();
 
 EndProcedure
@@ -127,29 +130,131 @@ EndProcedure
 &AtClient
 Procedure VendorNameOnChange(Item)
 	
-	DoMessageBox("Restart the program for the setting to take effect");
+	Message("Restart the program for the setting to take effect");
 	
 EndProcedure
 
 &AtClient
 Procedure CustomerNameOnChange(Item)
 	
-	DoMessageBox("Restart the program for the setting to take effect");
+	Message("Restart the program for the setting to take effect");
 	
-EndProcedure
-
-&AtClient
-Procedure EmailClientOnChange(Item)
-	
-	DoMessageBox("Restart the program for the setting to take effect");
-	RefreshInterface();
-
 EndProcedure
 
 &AtClient
 Procedure PriceIncludesVATOnChange(Item)
 	
-	DoMessageBox("Restart the program for the setting to take effect");
+	Message("Restart the program for the setting to take effect");
 	RefreshInterface();
 
 EndProcedure
+
+&AtClient
+Procedure ProjectsOnChange(Item)
+	
+	Message("Restart the program for the setting to take effect");
+	//RefreshInterface();
+
+EndProcedure
+
+&AtClient
+Procedure UploadLogo(Command)
+	
+	Var SelectedName;
+	ImageAddress = "";
+	
+	NotifyDescription = New NotifyDescription("FileUpload",ThisForm);
+	BeginPutFile(NotifyDescription,ImageAddress,"",True);
+	
+	BinaryLogo = GeneralFunctions.GetLogo();
+	TempStorageAddress = PutToTempStorage(BinaryLogo);
+	ImageAddress = TempStorageAddress;
+
+EndProcedure
+
+&AtClient
+Procedure FileUpload(a,b,c,d) Export
+	
+	PlaceImageFile(b);
+	
+EndProcedure
+
+&AtServer
+Procedure PlaceImageFile(TempStorageName)
+	
+	BinaryData = GetFromTempStorage(TempStorageName);	
+	NewRow = InformationRegisters.CustomPrintForms.CreateRecordManager();
+	NewRow.ObjectName = "logo";
+	NewRow.TemplateName = "logo";
+	NewRow.Template = New ValueStorage(BinaryData, New Deflation(9));
+	NewRow.Write();	
+	DeleteFromTempStorage(TempStorageName);
+  	
+EndProcedure
+
+ 
+&AtServer
+Function GetAPISecretKeyF()
+	
+	Return Constants.APISecretKey.Get();
+	
+EndFunction
+
+
+&AtClient
+Procedure OnOpen(Cancel)
+	
+	If NOT NoUser() Then
+		
+	 If SettingAccessCheck() = false Then
+
+		Items.Common.ChildItems.CompanyContact.ReadOnly = true;
+		Items.Common.ChildItems.GeneralSettings.ReadOnly = true;
+		Items.Common.ChildItems.CompanyContact.ReadOnly = true;
+		Items.Common.ChildItems.FinancialLocalization.ReadOnly = true;
+		Items.Common.ChildItems.VAT.ReadOnly = true;
+		Items.Common.ChildItems.ItemCustomFields.ReadOnly = true;
+		Items.Common.ChildItems.Logo.ReadOnly = true;
+		Items.Common.ChildItems.Preview.ReadOnly = true;
+	 Else
+	
+		Items.Common.ChildItems.CompanyContact.ReadOnly = false;
+		Items.Common.ChildItems.GeneralSettings.ReadOnly = false;
+		Items.Common.ChildItems.CompanyContact.ReadOnly = false;
+		Items.Common.ChildItems.FinancialLocalization.ReadOnly = false;
+		Items.Common.ChildItems.VAT.ReadOnly = false;
+		Items.Common.ChildItems.ItemCustomFields.ReadOnly = false;
+		Items.Common.ChildItems.Logo.ReadOnly = false;
+		Items.Common.ChildItems.Preview.ReadOnly = false;
+	
+		Endif;
+
+	EndIf;
+	
+EndProcedure
+
+&AtServer
+Function NoUser()
+	
+	CurUser = InfoBaseUsers.FindByName(SessionParameters.ACSUser);
+	If CurUser.Name = "" Then
+		Return True;
+	Else
+		Return False;
+	EndIf;
+	
+	
+EndFunction
+
+&AtServer
+Function SettingAccessCheck()
+	
+	CurUser = InfoBaseUsers.FindByName(SessionParameters.ACSUser);
+	If CurUser.Roles.Contains(Metadata.Roles.FullAccess1) = true Or CurUser.Roles.Contains(Metadata.Roles.FullAccess) = true Then
+		Return true;
+	Else
+		Return false;
+	Endif
+	
+EndFunction
+

@@ -132,7 +132,7 @@
 				</v8:item>
 				<v8:item>
 					<v8:lang>de</v8:lang>
-					<v8:content>Gesamt</v8:content>
+					<v8:content>Gesamtbetrag</v8:content>
 				</v8:item>
 			</title>
 			<appearance>
@@ -259,7 +259,7 @@
 				</v8:item>
 				<v8:item>
 					<v8:lang>de</v8:lang>
-					<v8:content>Gesamt</v8:content>
+					<v8:content>Gesamtbetrag</v8:content>
 				</v8:item>
 			</title>
 			<appearance>
@@ -285,6 +285,10 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>Company ID</v8:content>
 				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Unternehmen ID</v8:content>
+				</v8:item>
 			</title>
 		</field>
 		<field xsi:type="DataSetFieldField">
@@ -303,70 +307,71 @@
 		ELSE ""
 	END AS ReturnType,
 	CASE
-		WHEN DATEDIFF(GeneralJournalBalance.ExtDimension2.DueDate, &amp;Period, DAY) &lt;= 0
-			THEN GeneralJournalBalance.AmountBalance
+		WHEN DATEDIFF(GeneralJournalBalance.ExtDimension2.DueDate, &amp;EndOfPeriod, DAY) &lt;= 0
+			THEN GeneralJournalBalance.AmountClosingBalance
 		ELSE 0
 	END AS D0_FCY,
 	CASE
-		WHEN DATEDIFF(GeneralJournalBalance.ExtDimension2.DueDate, &amp;Period, DAY) &lt;= 0
-			THEN GeneralJournalBalance.AmountRCBalance
+		WHEN DATEDIFF(GeneralJournalBalance.ExtDimension2.DueDate, &amp;EndOfPeriod, DAY) &lt;= 0
+			THEN GeneralJournalBalance.AmountRCClosingBalance
 		ELSE 0
 	END AS D0,
 	CASE
-		WHEN DATEDIFF(GeneralJournalBalance.ExtDimension2.DueDate, &amp;Period, DAY) &lt;= &amp;Interval1
-				AND DATEDIFF(GeneralJournalBalance.ExtDimension2.DueDate, &amp;Period, DAY) &gt; 0
-			THEN GeneralJournalBalance.AmountBalance
+		WHEN DATEDIFF(GeneralJournalBalance.ExtDimension2.DueDate, &amp;EndOfPeriod, DAY) &lt;= &amp;Interval1
+				AND DATEDIFF(GeneralJournalBalance.ExtDimension2.DueDate, &amp;EndOfPeriod, DAY) &gt; 0
+			THEN GeneralJournalBalance.AmountClosingBalance
 		ELSE 0
 	END AS D1_FCY,
 	CASE
-		WHEN DATEDIFF(GeneralJournalBalance.ExtDimension2.DueDate, &amp;Period, DAY) &lt;= &amp;Interval1
-				AND DATEDIFF(GeneralJournalBalance.ExtDimension2.DueDate, &amp;Period, DAY) &gt; 0
-			THEN GeneralJournalBalance.AmountRCBalance
+		WHEN DATEDIFF(GeneralJournalBalance.ExtDimension2.DueDate, &amp;EndOfPeriod, DAY) &lt;= &amp;Interval1
+				AND DATEDIFF(GeneralJournalBalance.ExtDimension2.DueDate, &amp;EndOfPeriod, DAY) &gt; 0
+			THEN GeneralJournalBalance.AmountRCClosingBalance
 		ELSE 0
 	END AS D1,
 	CASE
-		WHEN DATEDIFF(GeneralJournalBalance.ExtDimension2.DueDate, &amp;Period, DAY) &lt;= &amp;Interval2
-				AND DATEDIFF(GeneralJournalBalance.ExtDimension2.DueDate, &amp;Period, DAY) &gt; &amp;Interval1
-			THEN GeneralJournalBalance.AmountBalance
+		WHEN DATEDIFF(GeneralJournalBalance.ExtDimension2.DueDate, &amp;EndOfPeriod, DAY) &lt;= &amp;Interval2
+				AND DATEDIFF(GeneralJournalBalance.ExtDimension2.DueDate, &amp;EndOfPeriod, DAY) &gt; &amp;Interval1
+			THEN GeneralJournalBalance.AmountClosingBalance
 		ELSE 0
 	END AS D2_FCY,
 	CASE
-		WHEN DATEDIFF(GeneralJournalBalance.ExtDimension2.DueDate, &amp;Period, DAY) &lt;= &amp;Interval2
-				AND DATEDIFF(GeneralJournalBalance.ExtDimension2.DueDate, &amp;Period, DAY) &gt; &amp;Interval1
-			THEN GeneralJournalBalance.AmountRCBalance
+		WHEN DATEDIFF(GeneralJournalBalance.ExtDimension2.DueDate, &amp;EndOfPeriod, DAY) &lt;= &amp;Interval2
+				AND DATEDIFF(GeneralJournalBalance.ExtDimension2.DueDate, &amp;EndOfPeriod, DAY) &gt; &amp;Interval1
+			THEN GeneralJournalBalance.AmountRCClosingBalance
 		ELSE 0
 	END AS D2,
 	CASE
-		WHEN DATEDIFF(GeneralJournalBalance.ExtDimension2.DueDate, &amp;Period, DAY) &lt;= &amp;Interval3
-				AND DATEDIFF(GeneralJournalBalance.ExtDimension2.DueDate, &amp;Period, DAY) &gt; &amp;Interval2
-			THEN GeneralJournalBalance.AmountBalance
+		WHEN DATEDIFF(GeneralJournalBalance.ExtDimension2.DueDate, &amp;EndOfPeriod, DAY) &lt;= &amp;Interval3
+				AND DATEDIFF(GeneralJournalBalance.ExtDimension2.DueDate, &amp;EndOfPeriod, DAY) &gt; &amp;Interval2
+			THEN GeneralJournalBalance.AmountClosingBalance
 		ELSE 0
 	END AS D3_FCY,
 	CASE
-		WHEN DATEDIFF(GeneralJournalBalance.ExtDimension2.DueDate, &amp;Period, DAY) &lt;= &amp;Interval3
-				AND DATEDIFF(GeneralJournalBalance.ExtDimension2.DueDate, &amp;Period, DAY) &gt; &amp;Interval2
-			THEN GeneralJournalBalance.AmountRCBalance
+		WHEN DATEDIFF(GeneralJournalBalance.ExtDimension2.DueDate, &amp;EndOfPeriod, DAY) &lt;= &amp;Interval3
+				AND DATEDIFF(GeneralJournalBalance.ExtDimension2.DueDate, &amp;EndOfPeriod, DAY) &gt; &amp;Interval2
+			THEN GeneralJournalBalance.AmountRCClosingBalance
 		ELSE 0
 	END AS D3,
 	CASE
-		WHEN DATEDIFF(GeneralJournalBalance.ExtDimension2.DueDate, &amp;Period, DAY) &gt; &amp;Interval3
-			THEN GeneralJournalBalance.AmountBalance
+		WHEN DATEDIFF(GeneralJournalBalance.ExtDimension2.DueDate, &amp;EndOfPeriod, DAY) &gt; &amp;Interval3
+			THEN GeneralJournalBalance.AmountClosingBalance
 		ELSE 0
 	END AS D4_FCY,
 	CASE
-		WHEN DATEDIFF(GeneralJournalBalance.ExtDimension2.DueDate, &amp;Period, DAY) &gt; &amp;Interval3
-			THEN GeneralJournalBalance.AmountRCBalance
+		WHEN DATEDIFF(GeneralJournalBalance.ExtDimension2.DueDate, &amp;EndOfPeriod, DAY) &gt; &amp;Interval3
+			THEN GeneralJournalBalance.AmountRCClosingBalance
 		ELSE 0
 	END AS D4,
-	GeneralJournalBalance.AmountBalance AS TotalD_FCY,
-	GeneralJournalBalance.AmountRCBalance AS TotalD
+	GeneralJournalBalance.AmountClosingBalance AS TotalD_FCY,
+	GeneralJournalBalance.AmountRCClosingBalance AS TotalD
 FROM
-	AccountingRegister.GeneralJournal.Balance AS GeneralJournalBalance
+	AccountingRegister.GeneralJournal.BalanceAndTurnovers(, , Auto, , , , ) AS GeneralJournalBalance
 WHERE
 	(GeneralJournalBalance.ExtDimension2 REFS Document.SalesInvoice
 			OR GeneralJournalBalance.ExtDimension2 REFS Document.GeneralJournalEntry
 				AND GeneralJournalBalance.ExtDimension2.ARorAP = VALUE(Enum.GJEntryType.AR)
-			OR GeneralJournalBalance.ExtDimension2 REFS Document.SalesReturn)
+			OR GeneralJournalBalance.ExtDimension2 REFS Document.SalesReturn
+			OR GeneralJournalBalance.ExtDimension2 REFS Document.CashReceipt)
 {WHERE
 	(GeneralJournalBalance.ExtDimension1 = &amp;Customer)}</query>
 	</dataSet>
@@ -423,7 +428,7 @@ WHERE
 		<title xsi:type="v8:LocalStringType">
 			<v8:item>
 				<v8:lang>en</v8:lang>
-				<v8:content>Period</v8:content>
+				<v8:content>Date</v8:content>
 			</v8:item>
 			<v8:item>
 				<v8:lang>de</v8:lang>
@@ -431,12 +436,13 @@ WHERE
 			</v8:item>
 		</title>
 		<valueType>
-			<v8:Type>xs:dateTime</v8:Type>
-			<v8:DateQualifiers>
-				<v8:DateFractions>Date</v8:DateFractions>
-			</v8:DateQualifiers>
+			<v8:Type>v8:StandardPeriod</v8:Type>
 		</valueType>
-		<value xsi:type="xs:dateTime">0001-01-01T00:00:00</value>
+		<value xsi:type="v8:StandardPeriod">
+			<v8:variant xsi:type="v8:StandardPeriodVariant">Custom</v8:variant>
+			<v8:startDate>0001-01-01T00:00:00</v8:startDate>
+			<v8:endDate>0001-01-01T00:00:00</v8:endDate>
+		</value>
 		<useRestriction>false</useRestriction>
 		<use>Always</use>
 	</parameter>
@@ -511,6 +517,46 @@ WHERE
 		<value xsi:nil="true"/>
 		<useRestriction>false</useRestriction>
 	</parameter>
+	<parameter>
+		<name>BeginOfPeriod</name>
+		<title xsi:type="v8:LocalStringType">
+			<v8:item>
+				<v8:lang>en</v8:lang>
+				<v8:content>Begin of period</v8:content>
+			</v8:item>
+			<v8:item>
+				<v8:lang>de</v8:lang>
+				<v8:content>Periodenanfang</v8:content>
+			</v8:item>
+		</title>
+		<valueType>
+			<v8:Type>xs:dateTime</v8:Type>
+			<v8:DateQualifiers>
+				<v8:DateFractions>DateTime</v8:DateFractions>
+			</v8:DateQualifiers>
+		</valueType>
+		<value xsi:type="xs:dateTime">0001-01-01T00:00:00</value>
+		<useRestriction>true</useRestriction>
+		<expression>&amp;Period.StartDate</expression>
+	</parameter>
+	<parameter>
+		<name>EndOfPeriod</name>
+		<title xsi:type="v8:LocalStringType">
+			<v8:item>
+				<v8:lang>en</v8:lang>
+				<v8:content>End of period</v8:content>
+			</v8:item>
+		</title>
+		<valueType>
+			<v8:Type>xs:dateTime</v8:Type>
+			<v8:DateQualifiers>
+				<v8:DateFractions>DateTime</v8:DateFractions>
+			</v8:DateQualifiers>
+		</valueType>
+		<value xsi:type="xs:dateTime">0001-01-01T00:00:00</value>
+		<useRestriction>true</useRestriction>
+		<expression>&amp;Period.EndDate</expression>
+	</parameter>
 	<settingsVariant>
 		<dcsset:name>Default</dcsset:name>
 		<dcsset:presentation xsi:type="xs:string">Default</dcsset:presentation>
@@ -543,13 +589,13 @@ WHERE
 			</dcsset:selection>
 			<dcsset:dataParameters>
 				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-					<dcscor:use>false</dcscor:use>
 					<dcscor:parameter>Period</dcscor:parameter>
-					<dcscor:value xsi:type="xs:dateTime">0001-01-01T00:00:00</dcscor:value>
+					<dcscor:value xsi:type="v8:StandardPeriod">
+						<v8:variant xsi:type="v8:StandardPeriodVariant">ThisWeek</v8:variant>
+					</dcscor:value>
 					<dcsset:userSettingID>04f6b78d-8f12-4d21-8b0c-8096308cf531</dcsset:userSettingID>
 				</dcscor:item>
 				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-					<dcscor:use>false</dcscor:use>
 					<dcscor:parameter>Customer</dcscor:parameter>
 					<dcscor:value xsi:nil="true"/>
 					<dcsset:userSettingID>0a7bedcb-c30c-48dc-a3ee-4205ed96e62a</dcsset:userSettingID>
@@ -562,6 +608,10 @@ WHERE
 				</dcsset:item>
 			</dcsset:order>
 			<dcsset:outputParameters>
+				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+					<dcscor:parameter>TitleOutput</dcscor:parameter>
+					<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
+				</dcscor:item>
 				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 					<dcscor:parameter>Title</dcscor:parameter>
 					<dcscor:value xsi:type="v8:LocalStringType">
@@ -670,10 +720,16 @@ WHERE
 			</dcsset:selection>
 			<dcsset:dataParameters>
 				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-					<dcscor:use>false</dcscor:use>
 					<dcscor:parameter>Period</dcscor:parameter>
-					<dcscor:value xsi:type="xs:dateTime">0001-01-01T00:00:00</dcscor:value>
+					<dcscor:value xsi:type="v8:StandardPeriod">
+						<v8:variant xsi:type="v8:StandardPeriodVariant">ThisWeek</v8:variant>
+					</dcscor:value>
 					<dcsset:userSettingID>53c53e7c-3dc3-47ef-b49f-62e49374092c</dcsset:userSettingID>
+				</dcscor:item>
+				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+					<dcscor:parameter>Customer</dcscor:parameter>
+					<dcscor:value xsi:nil="true"/>
+					<dcsset:userSettingID>f6b0e327-5a5c-489a-bdc4-12d3a5f56728</dcsset:userSettingID>
 				</dcscor:item>
 			</dcsset:dataParameters>
 			<dcsset:conditionalAppearance>

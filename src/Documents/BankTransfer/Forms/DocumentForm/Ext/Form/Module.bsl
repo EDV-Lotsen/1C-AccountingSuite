@@ -17,16 +17,12 @@ EndProcedure
 
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
-		
+	
 	Items.AccFromLabel.Title =
 		CommonUse.GetAttributeValue(Object.AccountFrom, "Description");
-		
+	
 	Items.AccToLabel.Title =
 		CommonUse.GetAttributeValue(Object.AccountTo, "Description");
-		
-	// AdditionalReportsAndDataProcessors
-	AdditionalReportsAndDataProcessors.OnCreateAtServer(ThisForm);
-	// End AdditionalReportsAndDataProcessors
 	
 EndProcedure
 

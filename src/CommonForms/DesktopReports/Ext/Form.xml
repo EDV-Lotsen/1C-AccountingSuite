@@ -1,122 +1,300 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<Customizable>false</Customizable>
 	<VerticalScroll>useIfNecessary</VerticalScroll>
-	<AutoCommandBar name="FormCommandBar" id="-1"/>
-	<Events>
-		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
-	</Events>
+	<AutoCommandBar name="FormCommandBar" id="-1">
+		<Autofill>false</Autofill>
+	</AutoCommandBar>
 	<ChildItems>
-		<InputField name="Reports" id="1">
-			<DataPath>Reports</DataPath>
-			<SkipOnInput>true</SkipOnInput>
-			<TitleLocation>None</TitleLocation>
-			<ChoiceButton>false</ChoiceButton>
-			<TextEdit>false</TextEdit>
-			<ChoiceList>
-				<xr:Item>
-					<xr:Presentation/>
-					<xr:CheckState>0</xr:CheckState>
-					<xr:Value xsi:type="FormChoiceListDesTimeValue">
-						<Presentation/>
-						<Value xsi:type="xs:string">Sales Transaction Detail</Value>
-					</xr:Value>
-				</xr:Item>
-				<xr:Item>
-					<xr:Presentation/>
-					<xr:CheckState>0</xr:CheckState>
-					<xr:Value xsi:type="FormChoiceListDesTimeValue">
-						<Presentation/>
-						<Value xsi:type="xs:string">A/R Aging</Value>
-					</xr:Value>
-				</xr:Item>
-				<xr:Item>
-					<xr:Presentation/>
-					<xr:CheckState>0</xr:CheckState>
-					<xr:Value xsi:type="FormChoiceListDesTimeValue">
-						<Presentation/>
-						<Value xsi:type="xs:string">Purchasing Transaction Detail</Value>
-					</xr:Value>
-				</xr:Item>
-				<xr:Item>
-					<xr:Presentation/>
-					<xr:CheckState>0</xr:CheckState>
-					<xr:Value xsi:type="FormChoiceListDesTimeValue">
-						<Presentation/>
-						<Value xsi:type="xs:string">A/P Aging</Value>
-					</xr:Value>
-				</xr:Item>
-				<xr:Item>
-					<xr:Presentation/>
-					<xr:CheckState>0</xr:CheckState>
-					<xr:Value xsi:type="FormChoiceListDesTimeValue">
-						<Presentation/>
-						<Value xsi:type="xs:string">General Ledger</Value>
-					</xr:Value>
-				</xr:Item>
-				<xr:Item>
-					<xr:Presentation/>
-					<xr:CheckState>0</xr:CheckState>
-					<xr:Value xsi:type="FormChoiceListDesTimeValue">
-						<Presentation/>
-						<Value xsi:type="xs:string">Trial Balance</Value>
-					</xr:Value>
-				</xr:Item>
-				<xr:Item>
-					<xr:Presentation/>
-					<xr:CheckState>0</xr:CheckState>
-					<xr:Value xsi:type="FormChoiceListDesTimeValue">
-						<Presentation/>
-						<Value xsi:type="xs:string">Income Statement</Value>
-					</xr:Value>
-				</xr:Item>
-				<xr:Item>
-					<xr:Presentation/>
-					<xr:CheckState>0</xr:CheckState>
-					<xr:Value xsi:type="FormChoiceListDesTimeValue">
-						<Presentation/>
-						<Value xsi:type="xs:string">Balance Sheet</Value>
-					</xr:Value>
-				</xr:Item>
-				<xr:Item>
-					<xr:Presentation/>
-					<xr:CheckState>0</xr:CheckState>
-					<xr:Value xsi:type="FormChoiceListDesTimeValue">
-						<Presentation/>
-						<Value xsi:type="xs:string">Cash Flow (direct)</Value>
-					</xr:Value>
-				</xr:Item>
-				<xr:Item>
-					<xr:Presentation/>
-					<xr:CheckState>0</xr:CheckState>
-					<xr:Value xsi:type="FormChoiceListDesTimeValue">
-						<Presentation/>
-						<Value xsi:type="xs:string">Inventory Balances</Value>
-					</xr:Value>
-				</xr:Item>
-			</ChoiceList>
-			<ChoiceListButton>true</ChoiceListButton>
-			<ContextMenu name="ReportsContextMenu" id="2"/>
-			<ExtendedTooltip name="ReportsExtendedTooltip" id="3"/>
-			<Events>
-				<Event name="OnChange">ReportsOnChange</Event>
-			</Events>
-		</InputField>
+		<UsualGroup name="Group1" id="6">
+			<Group>Horizontal</Group>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="Group1ExtendedTooltip" id="7"/>
+			<ChildItems>
+				<UsualGroup name="Left" id="8">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Left</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Left</v8:content>
+						</v8:item>
+					</ToolTip>
+					<Group>Vertical</Group>
+					<ShowTitle>false</ShowTitle>
+					<ExtendedTooltip name="LeftExtendedTooltip" id="9"/>
+					<ChildItems>
+						<Button name="ARAging" id="4">
+							<Type>Hyperlink</Type>
+							<CommandName>Form.Command.ARAging</CommandName>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>A/R aging</v8:content>
+								</v8:item>
+								<v8:item>
+									<v8:lang>de</v8:lang>
+									<v8:content>Forderungen</v8:content>
+								</v8:item>
+							</Title>
+							<ExtendedTooltip name="ARAgingExtendedTooltip" id="5"/>
+						</Button>
+						<Button name="APAging" id="12">
+							<Type>Hyperlink</Type>
+							<CommandName>Form.Command.APAging</CommandName>
+							<ExtendedTooltip name="APAgingExtendedTooltip" id="13"/>
+						</Button>
+						<Button name="GeneralLedger" id="14">
+							<Type>Hyperlink</Type>
+							<CommandName>Form.Command.GeneralLedger</CommandName>
+							<ExtendedTooltip name="GeneralLedgerExtendedTooltip" id="15"/>
+						</Button>
+						<Button name="TrialBalance" id="16">
+							<Type>Hyperlink</Type>
+							<CommandName>Form.Command.TrialBalance</CommandName>
+							<ExtendedTooltip name="TrialBalanceExtendedTooltip" id="17"/>
+						</Button>
+						<Button name="IncomeStatement" id="18">
+							<Type>Hyperlink</Type>
+							<CommandName>Form.Command.IncomeStatement</CommandName>
+							<ExtendedTooltip name="IncomeStatementExtendedTooltip" id="19"/>
+						</Button>
+					</ChildItems>
+				</UsualGroup>
+				<UsualGroup name="Right" id="10">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Right</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Right</v8:content>
+						</v8:item>
+					</ToolTip>
+					<Group>Vertical</Group>
+					<ShowTitle>false</ShowTitle>
+					<ExtendedTooltip name="RightExtendedTooltip" id="11"/>
+					<ChildItems>
+						<Button name="BalanceSheet" id="20">
+							<Type>Hyperlink</Type>
+							<CommandName>Form.Command.BalanceSheet</CommandName>
+							<ExtendedTooltip name="BalanceSheetExtendedTooltip" id="21"/>
+						</Button>
+						<Button name="CashFlow" id="22">
+							<Type>Hyperlink</Type>
+							<CommandName>Form.Command.CashFlow</CommandName>
+							<ExtendedTooltip name="CashFlowExtendedTooltip" id="23"/>
+						</Button>
+						<Button name="InventoryBalances" id="24">
+							<Type>Hyperlink</Type>
+							<CommandName>Form.Command.InventoryBalances</CommandName>
+							<ExtendedTooltip name="InventoryBalancesExtendedTooltip" id="25"/>
+						</Button>
+						<Button name="SalesDetail" id="26">
+							<Type>Hyperlink</Type>
+							<CommandName>Form.Command.SalesDetail</CommandName>
+							<ExtendedTooltip name="SalesDetailExtendedTooltip" id="27"/>
+						</Button>
+						<Button name="PurchaseDetail" id="28">
+							<Type>Hyperlink</Type>
+							<CommandName>Form.Command.PurchaseDetail</CommandName>
+							<ExtendedTooltip name="PurchaseDetailExtendedTooltip" id="29"/>
+						</Button>
+					</ChildItems>
+				</UsualGroup>
+			</ChildItems>
+		</UsualGroup>
 	</ChildItems>
-	<Attributes>
-		<Attribute name="Reports" id="1">
+	<Attributes/>
+	<Commands>
+		<Command name="ARAging" id="1">
 			<Title>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Reports</v8:content>
+					<v8:content>ARAging</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Kundenforderungen</v8:content>
 				</v8:item>
 			</Title>
-			<Type>
-				<v8:Type>xs:string</v8:Type>
-				<v8:StringQualifiers>
-					<v8:Length>0</v8:Length>
-					<v8:AllowedLength>Variable</v8:AllowedLength>
-				</v8:StringQualifiers>
-			</Type>
-		</Attribute>
-	</Attributes>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>ARAging</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Kundenforderungen</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>ARAging</Action>
+		</Command>
+		<Command name="APAging" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>A/P aging</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Verbindlichkeiten</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>APAging</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Verbindlichkeiten</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>APAging</Action>
+		</Command>
+		<Command name="GeneralLedger" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>General ledger</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Buchungsjournal</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>General ledger</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Buchungsjournal</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>GeneralLedger</Action>
+		</Command>
+		<Command name="TrialBalance" id="4">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Trial balance</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Rohbilanz</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Trial balance</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Rohbilanz</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>TrialBalance</Action>
+		</Command>
+		<Command name="IncomeStatement" id="5">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Income statement</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Income statement</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>IncomeStatement</Action>
+		</Command>
+		<Command name="BalanceSheet" id="6">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Balance sheet</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Balance sheet</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>BalanceSheet</Action>
+		</Command>
+		<Command name="CashFlow" id="7">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Cash flow</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Cash flow</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>CashFlow</Action>
+		</Command>
+		<Command name="InventoryBalances" id="8">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Inventory balances</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Inventory balances</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>InventoryBalances</Action>
+		</Command>
+		<Command name="SalesDetail" id="9">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Sales detail</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Sales detail</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>SalesDetail</Action>
+		</Command>
+		<Command name="PurchaseDetail" id="10">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Purchase detail</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Purchase detail</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>PurchaseDetail</Action>
+		</Command>
+	</Commands>
 </Form>

@@ -25,6 +25,16 @@
 		<field xsi:type="DataSetFieldField">
 			<dataPath>Company</dataPath>
 			<field>Company</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Company</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Unternehmen</v8:content>
+				</v8:item>
+			</title>
 			<role>
 				<dcscom:dimension>true</dcscom:dimension>
 				<dcscom:ignoreNullValues>true</dcscom:ignoreNullValues>
@@ -94,13 +104,13 @@ SELECT
 	1,
 	Companies.Ref,
 	NULL,
-	ISNULL(GJBegBalance.AmountRCBalance, 0),
+	ISNULL(GJBegBalTurn.AmountRCOpeningBalance, 0),
 	NULL,
 	NULL
 FROM
 	Catalog.Companies AS Companies
-		LEFT JOIN AccountingRegister.GeneralJournal.Balance(&amp;BeginOfPeriod, , , ) AS GJBegBalance
-		ON Companies.Ref = GJBegBalance.ExtDimension1
+		LEFT JOIN AccountingRegister.GeneralJournal.BalanceAndTurnovers(, , Auto, , , , ) AS GJBegBalTurn
+		ON Companies.Ref = GJBegBalTurn.ExtDimension1
 WHERE
 	Companies.Vendor = TRUE
 {WHERE
@@ -113,12 +123,12 @@ SELECT
 	Companies.Ref,
 	NULL,
 	NULL,
-	ISNULL(GJEndBalance.AmountRCBalance, 0),
+	ISNULL(GJEndBalTurn.AmountRCClosingBalance, 0),
 	NULL
 FROM
 	Catalog.Companies AS Companies
-		LEFT JOIN AccountingRegister.GeneralJournal.Balance(&amp;EndOfPeriod, , , ) AS GJEndBalance
-		ON Companies.Ref = GJEndBalance.ExtDimension1
+		LEFT JOIN AccountingRegister.GeneralJournal.BalanceAndTurnovers(, , Auto, , , , ) AS GJEndBalTurn
+		ON Companies.Ref = GJEndBalTurn.ExtDimension1
 WHERE
 	Companies.Vendor = TRUE
 {WHERE
@@ -137,11 +147,33 @@ WHERE
 		<expression>Sum(BeginningBalance)</expression>
 	</totalField>
 	<parameter>
+		<name>Period</name>
+		<title xsi:type="v8:LocalStringType">
+			<v8:item>
+				<v8:lang>en</v8:lang>
+				<v8:content>Period</v8:content>
+			</v8:item>
+		</title>
+		<valueType>
+			<v8:Type>v8:StandardPeriod</v8:Type>
+		</valueType>
+		<value xsi:type="v8:StandardPeriod">
+			<v8:variant xsi:type="v8:StandardPeriodVariant">Custom</v8:variant>
+			<v8:startDate>0001-01-01T00:00:00</v8:startDate>
+			<v8:endDate>0001-01-01T00:00:00</v8:endDate>
+		</value>
+		<useRestriction>false</useRestriction>
+	</parameter>
+	<parameter>
 		<name>BeginOfPeriod</name>
 		<title xsi:type="v8:LocalStringType">
 			<v8:item>
 				<v8:lang>en</v8:lang>
 				<v8:content>Begin of period</v8:content>
+			</v8:item>
+			<v8:item>
+				<v8:lang>de</v8:lang>
+				<v8:content>Periodenanfang</v8:content>
 			</v8:item>
 		</title>
 		<valueType>
@@ -151,7 +183,8 @@ WHERE
 			</v8:DateQualifiers>
 		</valueType>
 		<value xsi:type="xs:dateTime">0001-01-01T00:00:00</value>
-		<useRestriction>false</useRestriction>
+		<useRestriction>true</useRestriction>
+		<expression>&amp;Period.StartDate</expression>
 		<use>Always</use>
 	</parameter>
 	<parameter>
@@ -169,8 +202,8 @@ WHERE
 			</v8:DateQualifiers>
 		</valueType>
 		<value xsi:type="xs:dateTime">0001-01-01T00:00:00</value>
-		<useRestriction>false</useRestriction>
-		<expression>Endofperiod(&amp;Endofperiod, "Day")</expression>
+		<useRestriction>true</useRestriction>
+		<expression>&amp;Period.EndDate</expression>
 		<use>Always</use>
 	</parameter>
 	<parameter>
@@ -186,24 +219,6 @@ WHERE
 		</valueType>
 		<value xsi:nil="true"/>
 		<useRestriction>false</useRestriction>
-	</parameter>
-	<parameter>
-		<name>Period</name>
-		<title xsi:type="v8:LocalStringType">
-			<v8:item>
-				<v8:lang>en</v8:lang>
-				<v8:content>Period</v8:content>
-			</v8:item>
-		</title>
-		<valueType>
-			<v8:Type>xs:dateTime</v8:Type>
-			<v8:DateQualifiers>
-				<v8:DateFractions>DateTime</v8:DateFractions>
-			</v8:DateQualifiers>
-		</valueType>
-		<value xsi:type="xs:dateTime">0001-01-01T00:00:00</value>
-		<useRestriction>false</useRestriction>
-		<availableAsField>false</availableAsField>
 	</parameter>
 	<settingsVariant>
 		<dcsset:name>Default</dcsset:name>
@@ -228,6 +243,13 @@ WHERE
 			</dcsset:selection>
 			<dcsset:dataParameters>
 				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+					<dcscor:parameter>Period</dcscor:parameter>
+					<dcscor:value xsi:type="v8:StandardPeriod">
+						<v8:variant xsi:type="v8:StandardPeriodVariant">Today</v8:variant>
+					</dcscor:value>
+					<dcsset:userSettingID>098bf049-7ac9-4bb3-a3ad-5ceb827b559a</dcsset:userSettingID>
+				</dcscor:item>
+				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 					<dcscor:use>false</dcscor:use>
 					<dcscor:parameter>BeginOfPeriod</dcscor:parameter>
 					<dcscor:value xsi:type="xs:dateTime">0001-01-01T00:00:00</dcscor:value>
@@ -242,8 +264,12 @@ WHERE
 				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 					<dcscor:use>false</dcscor:use>
 					<dcscor:parameter>Company</dcscor:parameter>
-					<dcscor:value xsi:nil="true"/>
-					<dcsset:userSettingID>e04d4f79-7511-4746-a3f0-39c482c2e8df</dcsset:userSettingID>
+					<dcscor:value xsi:type="v8:StandardPeriod">
+						<v8:variant xsi:type="v8:StandardPeriodVariant">Custom</v8:variant>
+						<v8:startDate>0001-01-01T00:00:00</v8:startDate>
+						<v8:endDate>0001-01-01T00:00:00</v8:endDate>
+					</dcscor:value>
+					<dcsset:userSettingID>debaf1b4-174e-4297-8b1d-1048c7385cdd</dcsset:userSettingID>
 				</dcscor:item>
 			</dcsset:dataParameters>
 			<dcsset:order>
@@ -255,14 +281,22 @@ WHERE
 					<dcsset:field>SectionOrder</dcsset:field>
 					<dcsset:orderType>Asc</dcsset:orderType>
 				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:OrderItemField">
+					<dcsset:field>Recorder.Date</dcsset:field>
+					<dcsset:orderType>Asc</dcsset:orderType>
+				</dcsset:item>
 			</dcsset:order>
 			<dcsset:outputParameters>
+				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+					<dcscor:parameter>TitleOutput</dcscor:parameter>
+					<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
+				</dcscor:item>
 				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 					<dcscor:parameter>Title</dcscor:parameter>
 					<dcscor:value xsi:type="v8:LocalStringType">
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Purchasing Transaction Detail</v8:content>
+							<v8:content>Purchase Transaction Detail</v8:content>
 						</v8:item>
 					</dcscor:value>
 				</dcscor:item>

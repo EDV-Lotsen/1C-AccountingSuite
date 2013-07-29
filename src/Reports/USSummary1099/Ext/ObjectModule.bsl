@@ -20,14 +20,12 @@
 		PeriodLabel = Format(StartDate, "DLF=D") + " - " + Format(EndDate, "DLF=D");
 	EndIf;
 	
-	OurCompany = Catalogs.Companies.OurCompany;
-	
 	SpreadsheetDocument = New SpreadsheetDocument;
 	Template = GetTemplate("Template");
 	
 	Header = Template.GetArea("Header");
 	Header.Parameters.PeriodLabel = PeriodLabel;
-	Header.Parameters.Company = CommonUse.GetAttributeValue(OurCompany, "Name");
+	Header.Parameters.Company = Constants.SystemTitle.Get();
 	SpreadsheetDocument.Put(Header);
 	
 	Data1099 = US_FL.Data1099(WhereCase);

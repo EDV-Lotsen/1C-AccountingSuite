@@ -6,7 +6,7 @@
 	<VerticalScroll>useIfNecessary</VerticalScroll>
 	<AutoCommandBar name="FormCommandBar" id="-1"/>
 	<Events>
-		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+		<Event name="OnOpen">OnOpen</Event>
 	</Events>
 	<ChildItems>
 		<UsualGroup name="Navigation1" id="1">
@@ -22,797 +22,1103 @@
 					<v8:content>Navigation1</v8:content>
 				</v8:item>
 			</ToolTip>
-			<Group>Horizontal</Group>
+			<Group>Vertical</Group>
 			<Representation>None</Representation>
 			<ChildItemsWidth>Equal</ChildItemsWidth>
 			<ShowTitle>false</ShowTitle>
 			<ExtendedTooltip name="Navigation1ExtendedTooltip" id="101"/>
 			<ChildItems>
-				<UsualGroup name="Sales" id="3">
-					<Title>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Sales</v8:content>
-						</v8:item>
-					</Title>
-					<ToolTip>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Sales</v8:content>
-						</v8:item>
-					</ToolTip>
+				<UsualGroup name="Group6" id="210">
 					<Group>Horizontal</Group>
-					<Representation>StrongSeparation</Representation>
 					<ShowTitle>false</ShowTitle>
-					<ExtendedTooltip name="SalesExtendedTooltip" id="102"/>
+					<ExtendedTooltip name="Group6ExtendedTooltip" id="211"/>
 					<ChildItems>
-						<PictureDecoration name="SalesPicture" id="5">
-							<SkipOnInput>true</SkipOnInput>
-							<Title formatted="false">
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Sales picture</v8:content>
-								</v8:item>
-							</Title>
-							<Picture>
-								<xr:Ref>CommonPicture.Sales</xr:Ref>
-								<xr:LoadTransparent>false</xr:LoadTransparent>
-							</Picture>
-							<ContextMenu name="SalesPictureContextMenu" id="6"/>
-							<ExtendedTooltip name="SalesPictureExtendedTooltip" id="103"/>
-						</PictureDecoration>
-						<UsualGroup name="SalesItems" id="8">
+						<UsualGroup name="Sales" id="3">
+							<UserVisible>
+								<xr:Common>true</xr:Common>
+								<xr:Value name="Role.SalesView">false</xr:Value>
+								<xr:Value name="Role.PurchasingFull">false</xr:Value>
+								<xr:Value name="Role.PurchasingView">false</xr:Value>
+								<xr:Value name="Role.WarehouseFull">false</xr:Value>
+								<xr:Value name="Role.WarehouseView">false</xr:Value>
+								<xr:Value name="Role.BankReceiveFull">false</xr:Value>
+								<xr:Value name="Role.BankReceiveView">false</xr:Value>
+								<xr:Value name="Role.BankSendFull">false</xr:Value>
+								<xr:Value name="Role.BankSendView">false</xr:Value>
+								<xr:Value name="Role.AccountingFull">false</xr:Value>
+								<xr:Value name="Role.AccountingView">false</xr:Value>
+								<xr:Value name="Role.ListUser">false</xr:Value>
+								<xr:Value name="Role.ReportOnly">false</xr:Value>
+							</UserVisible>
 							<Title>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Sales items</v8:content>
+									<v8:content>Sales</v8:content>
 								</v8:item>
 							</Title>
 							<ToolTip>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Sales items</v8:content>
+									<v8:content>Sales</v8:content>
 								</v8:item>
 							</ToolTip>
-							<Group>Vertical</Group>
-							<Representation>None</Representation>
+							<Width>33</Width>
+							<HorizontalStretch>false</HorizontalStretch>
+							<Group>Horizontal</Group>
+							<Representation>NormalSeparation</Representation>
 							<ShowTitle>false</ShowTitle>
-							<ExtendedTooltip name="SalesItemsExtendedTooltip" id="104"/>
+							<ExtendedTooltip name="SalesExtendedTooltip" id="102"/>
 							<ChildItems>
-								<LabelDecoration name="SalesTitle" id="10">
-									<Font ref="sys:DefaultGUIFont" height="14" kind="WindowsFont"/>
-									<Title formatted="false">
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Sales</v8:content>
-										</v8:item>
-									</Title>
-									<ContextMenu name="SalesTitleContextMenu" id="11"/>
-									<ExtendedTooltip name="SalesTitleExtendedTooltip" id="105"/>
-								</LabelDecoration>
-								<LabelDecoration name="SalesDescription" id="13">
-									<Width>35</Width>
-									<Height>3</Height>
-									<Font ref="sys:DefaultGUIFont" height="10" kind="WindowsFont"/>
-									<Title formatted="false">
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Enter sales orders, create sales invoices. Enter cash sale transactions. Manage credit memos and refunds.</v8:content>
-										</v8:item>
-									</Title>
-									<ContextMenu name="SalesDescriptionContextMenu" id="14"/>
-									<ExtendedTooltip name="SalesDescriptionExtendedTooltip" id="106"/>
-								</LabelDecoration>
-								<InputField name="CreateSales" id="16">
-									<DataPath>CreateSales</DataPath>
+								<PictureDecoration name="SalesPicture" id="5">
 									<SkipOnInput>true</SkipOnInput>
-									<TitleLocation>None</TitleLocation>
-									<ChoiceButton>false</ChoiceButton>
-									<ChoiceList>
-										<xr:Item>
-											<xr:Presentation/>
-											<xr:CheckState>0</xr:CheckState>
-											<xr:Value xsi:type="FormChoiceListDesTimeValue">
-												<Presentation/>
-												<Value xsi:type="xs:string">Sales order</Value>
-											</xr:Value>
-										</xr:Item>
-										<xr:Item>
-											<xr:Presentation/>
-											<xr:CheckState>0</xr:CheckState>
-											<xr:Value xsi:type="FormChoiceListDesTimeValue">
-												<Presentation/>
-												<Value xsi:type="xs:string">Sales invoice</Value>
-											</xr:Value>
-										</xr:Item>
-										<xr:Item>
-											<xr:Presentation/>
-											<xr:CheckState>0</xr:CheckState>
-											<xr:Value xsi:type="FormChoiceListDesTimeValue">
-												<Presentation/>
-												<Value xsi:type="xs:string">Cash sale</Value>
-											</xr:Value>
-										</xr:Item>
-									</ChoiceList>
-									<ChoiceListButton>true</ChoiceListButton>
-									<ContextMenu name="CreateSalesContextMenu" id="17"/>
-									<ExtendedTooltip name="CreateSalesExtendedTooltip" id="107"/>
-									<Events>
-										<Event name="OnChange">CreateSalesOnChange</Event>
-									</Events>
-								</InputField>
+									<Title formatted="false">
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Sales picture</v8:content>
+										</v8:item>
+									</Title>
+									<Picture>
+										<xr:Ref>CommonPicture.Sales</xr:Ref>
+										<xr:LoadTransparent>false</xr:LoadTransparent>
+									</Picture>
+									<ContextMenu name="SalesPictureContextMenu" id="6"/>
+									<ExtendedTooltip name="SalesPictureExtendedTooltip" id="103"/>
+								</PictureDecoration>
+								<UsualGroup name="SalesItems" id="8">
+									<ToolTip>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Sales items</v8:content>
+										</v8:item>
+									</ToolTip>
+									<Group>Vertical</Group>
+									<Representation>None</Representation>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="SalesItemsExtendedTooltip" id="104"/>
+									<ChildItems>
+										<LabelDecoration name="SalesTitle" id="10">
+											<Font ref="sys:DefaultGUIFont" height="14" kind="WindowsFont"/>
+											<Title formatted="false">
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Sales</v8:content>
+												</v8:item>
+												<v8:item>
+													<v8:lang>de</v8:lang>
+													<v8:content>Verkauf</v8:content>
+												</v8:item>
+											</Title>
+											<ContextMenu name="SalesTitleContextMenu" id="11"/>
+											<ExtendedTooltip name="SalesTitleExtendedTooltip" id="105"/>
+										</LabelDecoration>
+										<UsualGroup name="Group1" id="146">
+											<Group>Horizontal</Group>
+											<ShowTitle>false</ShowTitle>
+											<ExtendedTooltip name="Group1ExtendedTooltip" id="147"/>
+											<ChildItems>
+												<UsualGroup name="SalesLeft" id="136">
+													<Title>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Sales left</v8:content>
+														</v8:item>
+													</Title>
+													<ToolTip>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Sales left</v8:content>
+														</v8:item>
+													</ToolTip>
+													<Group>Vertical</Group>
+													<ShowTitle>false</ShowTitle>
+													<ExtendedTooltip name="SalesLeftExtendedTooltip" id="137"/>
+													<ChildItems>
+														<Button name="SalesOrder" id="148">
+															<Type>Hyperlink</Type>
+															<CommandName>Form.Command.SalesOrder</CommandName>
+															<ExtendedTooltip name="SalesOrderExtendedTooltip" id="149"/>
+														</Button>
+														<Button name="SalesInvoice" id="150">
+															<Type>Hyperlink</Type>
+															<CommandName>Form.Command.SalesInvoice</CommandName>
+															<ExtendedTooltip name="SalesInvoiceExtendedTooltip" id="151"/>
+														</Button>
+													</ChildItems>
+												</UsualGroup>
+												<UsualGroup name="SalesRight" id="141">
+													<Title>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Sales right</v8:content>
+														</v8:item>
+													</Title>
+													<ToolTip>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Sales right</v8:content>
+														</v8:item>
+													</ToolTip>
+													<Group>Vertical</Group>
+													<ShowTitle>false</ShowTitle>
+													<ExtendedTooltip name="SalesRightExtendedTooltip" id="142"/>
+													<ChildItems>
+														<Button name="CashReceipt" id="176">
+															<Type>Hyperlink</Type>
+															<CommandName>Form.Command.CashReceipt</CommandName>
+															<ExtendedTooltip name="CashReceiptExtendedTooltip" id="177"/>
+														</Button>
+														<Button name="CashSale" id="152">
+															<Type>Hyperlink</Type>
+															<CommandName>Form.Command.CashSale</CommandName>
+															<ExtendedTooltip name="CashSaleExtendedTooltip" id="153"/>
+														</Button>
+													</ChildItems>
+												</UsualGroup>
+											</ChildItems>
+										</UsualGroup>
+									</ChildItems>
+								</UsualGroup>
 							</ChildItems>
 						</UsualGroup>
-					</ChildItems>
-				</UsualGroup>
-				<UsualGroup name="Purchasing" id="19">
-					<Title>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Purchasing</v8:content>
-						</v8:item>
-					</Title>
-					<ToolTip>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Purchasing</v8:content>
-						</v8:item>
-					</ToolTip>
-					<Group>Horizontal</Group>
-					<Representation>StrongSeparation</Representation>
-					<ShowTitle>false</ShowTitle>
-					<ExtendedTooltip name="PurchasingExtendedTooltip" id="108"/>
-					<ChildItems>
-						<PictureDecoration name="PurchasingPicture" id="21">
-							<SkipOnInput>true</SkipOnInput>
-							<Title formatted="false">
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Purchasing picture</v8:content>
-								</v8:item>
-							</Title>
-							<Picture>
-								<xr:Ref>CommonPicture.Purchasing</xr:Ref>
-								<xr:LoadTransparent>false</xr:LoadTransparent>
-							</Picture>
-							<ContextMenu name="PurchasingPictureContextMenu" id="22"/>
-							<ExtendedTooltip name="PurchasingPictureExtendedTooltip" id="109"/>
-						</PictureDecoration>
-						<UsualGroup name="PurchasingItems" id="24">
+						<UsualGroup name="Purchasing" id="19">
+							<UserVisible>
+								<xr:Common>true</xr:Common>
+								<xr:Value name="Role.SalesFull">false</xr:Value>
+								<xr:Value name="Role.SalesView">false</xr:Value>
+								<xr:Value name="Role.PurchasingView">false</xr:Value>
+								<xr:Value name="Role.WarehouseFull">false</xr:Value>
+								<xr:Value name="Role.WarehouseView">false</xr:Value>
+								<xr:Value name="Role.BankReceiveFull">false</xr:Value>
+								<xr:Value name="Role.BankReceiveView">false</xr:Value>
+								<xr:Value name="Role.BankSendFull">false</xr:Value>
+								<xr:Value name="Role.BankSendView">false</xr:Value>
+								<xr:Value name="Role.AccountingFull">false</xr:Value>
+								<xr:Value name="Role.AccountingView">false</xr:Value>
+								<xr:Value name="Role.ListUser">false</xr:Value>
+								<xr:Value name="Role.ReportOnly">false</xr:Value>
+							</UserVisible>
 							<Title>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Purchasing items</v8:content>
+									<v8:content>Purchasing</v8:content>
 								</v8:item>
 							</Title>
 							<ToolTip>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Purchasing items</v8:content>
+									<v8:content>Purchasing</v8:content>
 								</v8:item>
 							</ToolTip>
-							<Group>Vertical</Group>
-							<Representation>None</Representation>
+							<HorizontalStretch>false</HorizontalStretch>
+							<Group>Horizontal</Group>
+							<Representation>NormalSeparation</Representation>
 							<ShowTitle>false</ShowTitle>
-							<ExtendedTooltip name="PurchasingItemsExtendedTooltip" id="110"/>
+							<ExtendedTooltip name="PurchasingExtendedTooltip" id="108"/>
 							<ChildItems>
-								<LabelDecoration name="PurchasingTitle" id="26">
-									<Font ref="sys:DefaultGUIFont" height="14" kind="WindowsFont"/>
-									<Title formatted="false">
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Purchasing</v8:content>
-										</v8:item>
-									</Title>
-									<ContextMenu name="PurchasingTitleContextMenu" id="27"/>
-									<ExtendedTooltip name="PurchasingTitleExtendedTooltip" id="111"/>
-								</LabelDecoration>
-								<LabelDecoration name="PurchasingDescription" id="29">
-									<Width>35</Width>
-									<Height>3</Height>
-									<Font ref="sys:DefaultGUIFont" height="10" kind="WindowsFont"/>
-									<Title formatted="false">
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Create purchase orders, record purchase invoices. Enter cash purchase transactions. Manage credit memos and refunds.</v8:content>
-										</v8:item>
-									</Title>
-									<ContextMenu name="PurchasingDescriptionContextMenu" id="30"/>
-									<ExtendedTooltip name="PurchasingDescriptionExtendedTooltip" id="112"/>
-								</LabelDecoration>
-								<InputField name="CreatePurchasing" id="32">
-									<DataPath>CreatePurchasing</DataPath>
+								<PictureDecoration name="PurchasingPicture" id="21">
 									<SkipOnInput>true</SkipOnInput>
-									<TitleLocation>None</TitleLocation>
-									<ChoiceButton>false</ChoiceButton>
-									<ChoiceList>
-										<xr:Item>
-											<xr:Presentation/>
-											<xr:CheckState>0</xr:CheckState>
-											<xr:Value xsi:type="FormChoiceListDesTimeValue">
-												<Presentation/>
-												<Value xsi:type="xs:string">Purchase order</Value>
-											</xr:Value>
-										</xr:Item>
-										<xr:Item>
-											<xr:Presentation/>
-											<xr:CheckState>0</xr:CheckState>
-											<xr:Value xsi:type="FormChoiceListDesTimeValue">
-												<Presentation/>
-												<Value xsi:type="xs:string">Purchase invoice</Value>
-											</xr:Value>
-										</xr:Item>
-										<xr:Item>
-											<xr:Presentation/>
-											<xr:CheckState>0</xr:CheckState>
-											<xr:Value xsi:type="FormChoiceListDesTimeValue">
-												<Presentation/>
-												<Value xsi:type="xs:string">Cash purchase</Value>
-											</xr:Value>
-										</xr:Item>
-									</ChoiceList>
-									<ChoiceListButton>true</ChoiceListButton>
-									<ContextMenu name="CreatePurchasingContextMenu" id="33"/>
-									<ExtendedTooltip name="CreatePurchasingExtendedTooltip" id="113"/>
-									<Events>
-										<Event name="OnChange">CreatePurchasingOnChange</Event>
-									</Events>
-								</InputField>
+									<Title formatted="false">
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Purchasing picture</v8:content>
+										</v8:item>
+									</Title>
+									<Picture>
+										<xr:Ref>CommonPicture.Purchasing</xr:Ref>
+										<xr:LoadTransparent>false</xr:LoadTransparent>
+									</Picture>
+									<ContextMenu name="PurchasingPictureContextMenu" id="22"/>
+									<ExtendedTooltip name="PurchasingPictureExtendedTooltip" id="109"/>
+								</PictureDecoration>
+								<UsualGroup name="PurchasingItems" id="24">
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Purchasing items</v8:content>
+										</v8:item>
+									</Title>
+									<ToolTip>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Purchasing items</v8:content>
+										</v8:item>
+									</ToolTip>
+									<Group>Vertical</Group>
+									<Representation>None</Representation>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="PurchasingItemsExtendedTooltip" id="110"/>
+									<ChildItems>
+										<LabelDecoration name="PurchasingTitle" id="26">
+											<Font ref="sys:DefaultGUIFont" height="14" kind="WindowsFont"/>
+											<Title formatted="false">
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Purchasing</v8:content>
+												</v8:item>
+											</Title>
+											<ContextMenu name="PurchasingTitleContextMenu" id="27"/>
+											<ExtendedTooltip name="PurchasingTitleExtendedTooltip" id="111"/>
+										</LabelDecoration>
+										<UsualGroup name="Group2" id="156">
+											<Group>Horizontal</Group>
+											<ShowTitle>false</ShowTitle>
+											<ExtendedTooltip name="Group2ExtendedTooltip" id="157"/>
+											<ChildItems>
+												<UsualGroup name="PurchasingLeft" id="158">
+													<Title>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Purchasing left</v8:content>
+														</v8:item>
+													</Title>
+													<ToolTip>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Purchasing left</v8:content>
+														</v8:item>
+													</ToolTip>
+													<Group>Vertical</Group>
+													<ShowTitle>false</ShowTitle>
+													<ExtendedTooltip name="PurchasingLeftExtendedTooltip" id="159"/>
+													<ChildItems>
+														<Button name="PurchaseOrder" id="162">
+															<Type>Hyperlink</Type>
+															<CommandName>Form.Command.PurchaseOrder</CommandName>
+															<ExtendedTooltip name="PurchaseOrderExtendedTooltip" id="163"/>
+														</Button>
+														<Button name="PurchaseInvoice" id="164">
+															<Type>Hyperlink</Type>
+															<CommandName>Form.Command.PurchaseInvoice</CommandName>
+															<ExtendedTooltip name="PurchaseInvoiceExtendedTooltip" id="165"/>
+														</Button>
+													</ChildItems>
+												</UsualGroup>
+												<UsualGroup name="PurchasingRight" id="160">
+													<Title>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Purchasing right</v8:content>
+														</v8:item>
+													</Title>
+													<ToolTip>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Purchasing right</v8:content>
+														</v8:item>
+													</ToolTip>
+													<Group>Vertical</Group>
+													<ShowTitle>false</ShowTitle>
+													<ExtendedTooltip name="PurchasingRightExtendedTooltip" id="161"/>
+													<ChildItems>
+														<Button name="InvoicePayment" id="178">
+															<Type>Hyperlink</Type>
+															<CommandName>Form.Command.InvoicePayment</CommandName>
+															<ExtendedTooltip name="InvoicePaymentExtendedTooltip" id="179"/>
+														</Button>
+														<Button name="ItemReceipt" id="208">
+															<Type>Hyperlink</Type>
+															<CommandName>Form.Command.ItemReceipt</CommandName>
+															<ExtendedTooltip name="ItemReceiptExtendedTooltip" id="209"/>
+														</Button>
+													</ChildItems>
+												</UsualGroup>
+											</ChildItems>
+										</UsualGroup>
+									</ChildItems>
+								</UsualGroup>
 							</ChildItems>
 						</UsualGroup>
 					</ChildItems>
 				</UsualGroup>
-			</ChildItems>
-		</UsualGroup>
-		<UsualGroup name="Navigation2" id="35">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Navigation2</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Navigation2</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Group>Horizontal</Group>
-			<Representation>None</Representation>
-			<ChildItemsWidth>Equal</ChildItemsWidth>
-			<ShowTitle>false</ShowTitle>
-			<ExtendedTooltip name="Navigation2ExtendedTooltip" id="114"/>
-			<ChildItems>
-				<UsualGroup name="Bank" id="37">
-					<Title>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Bank</v8:content>
-						</v8:item>
-					</Title>
-					<ToolTip>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Bank</v8:content>
-						</v8:item>
-					</ToolTip>
+				<UsualGroup name="Group7" id="212">
 					<Group>Horizontal</Group>
-					<Representation>StrongSeparation</Representation>
 					<ShowTitle>false</ShowTitle>
-					<ExtendedTooltip name="BankExtendedTooltip" id="115"/>
+					<ExtendedTooltip name="Group7ExtendedTooltip" id="213"/>
 					<ChildItems>
-						<PictureDecoration name="BankPicture" id="39">
-							<SkipOnInput>true</SkipOnInput>
-							<Title formatted="false">
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Bank picture</v8:content>
-								</v8:item>
-							</Title>
-							<Picture>
-								<xr:Ref>CommonPicture.Banking</xr:Ref>
-								<xr:LoadTransparent>false</xr:LoadTransparent>
-							</Picture>
-							<ContextMenu name="BankPictureContextMenu" id="40"/>
-							<ExtendedTooltip name="BankPictureExtendedTooltip" id="116"/>
-						</PictureDecoration>
-						<UsualGroup name="BankItems" id="42">
+						<UsualGroup name="Bank" id="37">
+							<UserVisible>
+								<xr:Common>true</xr:Common>
+								<xr:Value name="Role.SalesFull">false</xr:Value>
+								<xr:Value name="Role.SalesView">false</xr:Value>
+								<xr:Value name="Role.PurchasingFull">false</xr:Value>
+								<xr:Value name="Role.PurchasingView">false</xr:Value>
+								<xr:Value name="Role.WarehouseFull">false</xr:Value>
+								<xr:Value name="Role.WarehouseView">false</xr:Value>
+								<xr:Value name="Role.BankReceiveView">false</xr:Value>
+								<xr:Value name="Role.BankSendView">false</xr:Value>
+								<xr:Value name="Role.AccountingFull">false</xr:Value>
+								<xr:Value name="Role.AccountingView">false</xr:Value>
+								<xr:Value name="Role.ListUser">false</xr:Value>
+								<xr:Value name="Role.ReportOnly">false</xr:Value>
+							</UserVisible>
 							<Title>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Bank items</v8:content>
+									<v8:content>Bank</v8:content>
 								</v8:item>
 							</Title>
 							<ToolTip>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Bank items</v8:content>
+									<v8:content>Bank</v8:content>
 								</v8:item>
 							</ToolTip>
-							<Group>Vertical</Group>
-							<Representation>None</Representation>
+							<Width>33</Width>
+							<HorizontalStretch>false</HorizontalStretch>
+							<Group>Horizontal</Group>
+							<Representation>NormalSeparation</Representation>
 							<ShowTitle>false</ShowTitle>
-							<ExtendedTooltip name="BankItemsExtendedTooltip" id="117"/>
+							<ExtendedTooltip name="BankExtendedTooltip" id="115"/>
 							<ChildItems>
-								<LabelDecoration name="BankTitle" id="44">
-									<Font ref="sys:DefaultGUIFont" height="14" kind="WindowsFont"/>
-									<Title formatted="false">
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Bank</v8:content>
-										</v8:item>
-									</Title>
-									<ContextMenu name="BankTitleContextMenu" id="45"/>
-									<ExtendedTooltip name="BankTitleExtendedTooltip" id="118"/>
-								</LabelDecoration>
-								<LabelDecoration name="BankDescription" id="47">
-									<Width>35</Width>
-									<Height>3</Height>
-									<Font ref="sys:DefaultGUIFont" height="10" kind="WindowsFont"/>
-									<Title formatted="false">
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Record cash receipts, invoice payments, and deposits. Write checks. Manage bank reconciliations.</v8:content>
-										</v8:item>
-									</Title>
-									<ContextMenu name="BankDescriptionContextMenu" id="48"/>
-									<ExtendedTooltip name="BankDescriptionExtendedTooltip" id="119"/>
-								</LabelDecoration>
-								<InputField name="CreateBank" id="50">
-									<DataPath>CreateBank</DataPath>
+								<PictureDecoration name="BankPicture" id="39">
 									<SkipOnInput>true</SkipOnInput>
-									<TitleLocation>None</TitleLocation>
-									<ChoiceButton>false</ChoiceButton>
-									<TextEdit>false</TextEdit>
-									<ChoiceList>
-										<xr:Item>
-											<xr:Presentation/>
-											<xr:CheckState>0</xr:CheckState>
-											<xr:Value xsi:type="FormChoiceListDesTimeValue">
-												<Presentation/>
-												<Value xsi:type="xs:string">Check</Value>
-											</xr:Value>
-										</xr:Item>
-										<xr:Item>
-											<xr:Presentation/>
-											<xr:CheckState>0</xr:CheckState>
-											<xr:Value xsi:type="FormChoiceListDesTimeValue">
-												<Presentation/>
-												<Value xsi:type="xs:string">Cash receipt</Value>
-											</xr:Value>
-										</xr:Item>
-										<xr:Item>
-											<xr:Presentation/>
-											<xr:CheckState>0</xr:CheckState>
-											<xr:Value xsi:type="FormChoiceListDesTimeValue">
-												<Presentation/>
-												<Value xsi:type="xs:string">Invoice payment</Value>
-											</xr:Value>
-										</xr:Item>
-										<xr:Item>
-											<xr:Presentation/>
-											<xr:CheckState>0</xr:CheckState>
-											<xr:Value xsi:type="FormChoiceListDesTimeValue">
-												<Presentation/>
-												<Value xsi:type="xs:string">Deposit</Value>
-											</xr:Value>
-										</xr:Item>
-									</ChoiceList>
-									<ChoiceListButton>true</ChoiceListButton>
-									<ContextMenu name="CreateBankContextMenu" id="51"/>
-									<ExtendedTooltip name="CreateBankExtendedTooltip" id="120"/>
-									<Events>
-										<Event name="OnChange">CreateBankOnChange</Event>
-									</Events>
-								</InputField>
+									<Title formatted="false">
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Bank picture</v8:content>
+										</v8:item>
+									</Title>
+									<Picture>
+										<xr:Ref>CommonPicture.Banking</xr:Ref>
+										<xr:LoadTransparent>false</xr:LoadTransparent>
+									</Picture>
+									<ContextMenu name="BankPictureContextMenu" id="40"/>
+									<ExtendedTooltip name="BankPictureExtendedTooltip" id="116"/>
+								</PictureDecoration>
+								<UsualGroup name="BankItems" id="42">
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Bank items</v8:content>
+										</v8:item>
+									</Title>
+									<ToolTip>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Bank items</v8:content>
+										</v8:item>
+									</ToolTip>
+									<Group>Vertical</Group>
+									<Representation>None</Representation>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="BankItemsExtendedTooltip" id="117"/>
+									<ChildItems>
+										<LabelDecoration name="BankTitle" id="44">
+											<Font ref="sys:DefaultGUIFont" height="14" kind="WindowsFont"/>
+											<Title formatted="false">
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Bank</v8:content>
+												</v8:item>
+											</Title>
+											<ContextMenu name="BankTitleContextMenu" id="45"/>
+											<ExtendedTooltip name="BankTitleExtendedTooltip" id="118"/>
+										</LabelDecoration>
+										<UsualGroup name="Group3" id="170">
+											<Group>Horizontal</Group>
+											<ShowTitle>false</ShowTitle>
+											<ExtendedTooltip name="Group3ExtendedTooltip" id="171"/>
+											<ChildItems>
+												<UsualGroup name="BankLeft" id="172">
+													<Title>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Bank left</v8:content>
+														</v8:item>
+													</Title>
+													<ToolTip>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Bank left</v8:content>
+														</v8:item>
+													</ToolTip>
+													<Group>Vertical</Group>
+													<ShowTitle>false</ShowTitle>
+													<ExtendedTooltip name="BankLeftExtendedTooltip" id="173"/>
+													<ChildItems>
+														<Button name="Check" id="182">
+															<Type>Hyperlink</Type>
+															<CommandName>Form.Command.Check</CommandName>
+															<ExtendedTooltip name="CheckExtendedTooltip" id="183"/>
+														</Button>
+														<Button name="Deposit" id="216">
+															<Type>Hyperlink</Type>
+															<CommandName>Form.Command.Deposit</CommandName>
+															<ExtendedTooltip name="DepositExtendedTooltip" id="217"/>
+														</Button>
+													</ChildItems>
+												</UsualGroup>
+											</ChildItems>
+										</UsualGroup>
+									</ChildItems>
+								</UsualGroup>
 							</ChildItems>
 						</UsualGroup>
-					</ChildItems>
-				</UsualGroup>
-				<UsualGroup name="Accounting" id="53">
-					<Title>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Accounting</v8:content>
-						</v8:item>
-					</Title>
-					<ToolTip>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Accounting</v8:content>
-						</v8:item>
-					</ToolTip>
-					<Group>Horizontal</Group>
-					<Representation>StrongSeparation</Representation>
-					<ShowTitle>false</ShowTitle>
-					<ExtendedTooltip name="AccountingExtendedTooltip" id="121"/>
-					<ChildItems>
-						<PictureDecoration name="AccountingPicture" id="55">
-							<SkipOnInput>true</SkipOnInput>
-							<Title formatted="false">
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Accounting picture</v8:content>
-								</v8:item>
-							</Title>
-							<Picture>
-								<xr:Ref>CommonPicture.Accounting</xr:Ref>
-								<xr:LoadTransparent>false</xr:LoadTransparent>
-							</Picture>
-							<ContextMenu name="AccountingPictureContextMenu" id="56"/>
-							<ExtendedTooltip name="AccountingPictureExtendedTooltip" id="122"/>
-						</PictureDecoration>
-						<UsualGroup name="AccountingItems" id="58">
+						<UsualGroup name="Accounting" id="53">
+							<UserVisible>
+								<xr:Common>true</xr:Common>
+								<xr:Value name="Role.SalesFull">false</xr:Value>
+								<xr:Value name="Role.SalesView">false</xr:Value>
+								<xr:Value name="Role.PurchasingFull">false</xr:Value>
+								<xr:Value name="Role.PurchasingView">false</xr:Value>
+								<xr:Value name="Role.WarehouseFull">false</xr:Value>
+								<xr:Value name="Role.WarehouseView">false</xr:Value>
+								<xr:Value name="Role.BankReceiveFull">false</xr:Value>
+								<xr:Value name="Role.BankReceiveView">false</xr:Value>
+								<xr:Value name="Role.BankSendFull">false</xr:Value>
+								<xr:Value name="Role.BankSendView">false</xr:Value>
+								<xr:Value name="Role.AccountingView">false</xr:Value>
+								<xr:Value name="Role.ListUser">false</xr:Value>
+								<xr:Value name="Role.ReportOnly">false</xr:Value>
+							</UserVisible>
 							<Title>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Accounting items</v8:content>
+									<v8:content>Accounting</v8:content>
 								</v8:item>
 							</Title>
 							<ToolTip>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Accounting items</v8:content>
+									<v8:content>Accounting</v8:content>
 								</v8:item>
 							</ToolTip>
-							<Group>Vertical</Group>
-							<Representation>None</Representation>
+							<HorizontalStretch>false</HorizontalStretch>
+							<Group>Horizontal</Group>
+							<Representation>NormalSeparation</Representation>
 							<ShowTitle>false</ShowTitle>
-							<ExtendedTooltip name="AccountingItemsExtendedTooltip" id="123"/>
+							<ExtendedTooltip name="AccountingExtendedTooltip" id="121"/>
 							<ChildItems>
-								<LabelDecoration name="AccountingTitle" id="60">
-									<Font ref="sys:DefaultGUIFont" height="14" kind="WindowsFont"/>
-									<Title formatted="false">
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Accounting</v8:content>
-										</v8:item>
-									</Title>
-									<ContextMenu name="AccountingTitleContextMenu" id="61"/>
-									<ExtendedTooltip name="AccountingTitleExtendedTooltip" id="124"/>
-								</LabelDecoration>
-								<LabelDecoration name="AccountingDescription" id="63">
-									<Width>35</Width>
-									<Height>3</Height>
-									<Font ref="sys:DefaultGUIFont" height="10" kind="WindowsFont"/>
-									<Title formatted="false">
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Setup chart of accounts, record general journal entries, view and create general journal entries.</v8:content>
-										</v8:item>
-									</Title>
-									<ContextMenu name="AccountingDescriptionContextMenu" id="64"/>
-									<ExtendedTooltip name="AccountingDescriptionExtendedTooltip" id="125"/>
-								</LabelDecoration>
-								<InputField name="CreateAccounting" id="66">
-									<DataPath>CreateAccounting</DataPath>
+								<PictureDecoration name="AccountingPicture" id="55">
 									<SkipOnInput>true</SkipOnInput>
-									<TitleLocation>None</TitleLocation>
-									<ChoiceButton>false</ChoiceButton>
-									<TextEdit>false</TextEdit>
-									<ChoiceList>
-										<xr:Item>
-											<xr:Presentation/>
-											<xr:CheckState>0</xr:CheckState>
-											<xr:Value xsi:type="FormChoiceListDesTimeValue">
-												<Presentation/>
-												<Value xsi:type="xs:string">General journal entry</Value>
-											</xr:Value>
-										</xr:Item>
-									</ChoiceList>
-									<ChoiceListButton>true</ChoiceListButton>
-									<ContextMenu name="CreateAccountingContextMenu" id="67"/>
-									<ExtendedTooltip name="CreateAccountingExtendedTooltip" id="126"/>
-									<Events>
-										<Event name="OnChange">CreateAccountingOnChange</Event>
-									</Events>
-								</InputField>
+									<Title formatted="false">
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Accounting picture</v8:content>
+										</v8:item>
+									</Title>
+									<Picture>
+										<xr:Ref>CommonPicture.Accounting</xr:Ref>
+										<xr:LoadTransparent>false</xr:LoadTransparent>
+									</Picture>
+									<ContextMenu name="AccountingPictureContextMenu" id="56"/>
+									<ExtendedTooltip name="AccountingPictureExtendedTooltip" id="122"/>
+								</PictureDecoration>
+								<UsualGroup name="AccountingItems" id="58">
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Accounting items</v8:content>
+										</v8:item>
+									</Title>
+									<ToolTip>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Accounting items</v8:content>
+										</v8:item>
+									</ToolTip>
+									<Group>Vertical</Group>
+									<Representation>None</Representation>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="AccountingItemsExtendedTooltip" id="123"/>
+									<ChildItems>
+										<LabelDecoration name="AccountingTitle" id="60">
+											<Font ref="sys:DefaultGUIFont" height="14" kind="WindowsFont"/>
+											<Title formatted="false">
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Accounting</v8:content>
+												</v8:item>
+											</Title>
+											<ContextMenu name="AccountingTitleContextMenu" id="61"/>
+											<ExtendedTooltip name="AccountingTitleExtendedTooltip" id="124"/>
+										</LabelDecoration>
+										<UsualGroup name="Group4" id="186">
+											<Group>Horizontal</Group>
+											<ShowTitle>false</ShowTitle>
+											<ExtendedTooltip name="Group4ExtendedTooltip" id="187"/>
+											<ChildItems>
+												<UsualGroup name="AccLeft" id="188">
+													<Title>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Acc left</v8:content>
+														</v8:item>
+													</Title>
+													<ToolTip>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Acc left</v8:content>
+														</v8:item>
+													</ToolTip>
+													<Group>Vertical</Group>
+													<ShowTitle>false</ShowTitle>
+													<ExtendedTooltip name="AccLeftExtendedTooltip" id="189"/>
+													<ChildItems>
+														<Button name="ChartOfAccounts" id="192">
+															<Type>Hyperlink</Type>
+															<CommandName>Form.Command.ChartOfAccounts</CommandName>
+															<ExtendedTooltip name="ChartOfAccountsExtendedTooltip" id="193"/>
+														</Button>
+														<Button name="GJEntry" id="194">
+															<Type>Hyperlink</Type>
+															<CommandName>Form.Command.GJEntry</CommandName>
+															<ExtendedTooltip name="GJEntryExtendedTooltip" id="195"/>
+														</Button>
+													</ChildItems>
+												</UsualGroup>
+											</ChildItems>
+										</UsualGroup>
+									</ChildItems>
+								</UsualGroup>
 							</ChildItems>
 						</UsualGroup>
 					</ChildItems>
 				</UsualGroup>
-			</ChildItems>
-		</UsualGroup>
-		<UsualGroup name="Navigation3" id="69">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Navigation3</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Navigation3</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Group>Horizontal</Group>
-			<Representation>None</Representation>
-			<ChildItemsWidth>Equal</ChildItemsWidth>
-			<ShowTitle>false</ShowTitle>
-			<ExtendedTooltip name="Navigation3ExtendedTooltip" id="127"/>
-			<ChildItems>
-				<UsualGroup name="Lists" id="71">
-					<Title>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Lists</v8:content>
-						</v8:item>
-					</Title>
-					<ToolTip>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Lists</v8:content>
-						</v8:item>
-					</ToolTip>
-					<Group>Horizontal</Group>
-					<Representation>StrongSeparation</Representation>
+				<UsualGroup name="Group8" id="214">
+					<Group>Vertical</Group>
 					<ShowTitle>false</ShowTitle>
-					<ExtendedTooltip name="ListsExtendedTooltip" id="128"/>
+					<ExtendedTooltip name="Group8ExtendedTooltip" id="215"/>
 					<ChildItems>
-						<PictureDecoration name="ListsPicture" id="73">
-							<SkipOnInput>true</SkipOnInput>
-							<Title formatted="false">
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Lists picture</v8:content>
-								</v8:item>
-							</Title>
-							<Picture>
-								<xr:Ref>CommonPicture.Lists</xr:Ref>
-								<xr:LoadTransparent>false</xr:LoadTransparent>
-							</Picture>
-							<ContextMenu name="ListsPictureContextMenu" id="74"/>
-							<ExtendedTooltip name="ListsPictureExtendedTooltip" id="129"/>
-						</PictureDecoration>
-						<UsualGroup name="ListsItems" id="76">
+						<UsualGroup name="Lists" id="71">
+							<UserVisible>
+								<xr:Common>true</xr:Common>
+								<xr:Value name="Role.SalesFull">false</xr:Value>
+								<xr:Value name="Role.SalesView">false</xr:Value>
+								<xr:Value name="Role.PurchasingFull">false</xr:Value>
+								<xr:Value name="Role.PurchasingView">false</xr:Value>
+								<xr:Value name="Role.WarehouseFull">false</xr:Value>
+								<xr:Value name="Role.WarehouseView">false</xr:Value>
+								<xr:Value name="Role.BankReceiveFull">false</xr:Value>
+								<xr:Value name="Role.BankReceiveView">false</xr:Value>
+								<xr:Value name="Role.BankSendFull">false</xr:Value>
+								<xr:Value name="Role.BankSendView">false</xr:Value>
+								<xr:Value name="Role.AccountingFull">false</xr:Value>
+								<xr:Value name="Role.AccountingView">false</xr:Value>
+								<xr:Value name="Role.ReportOnly">false</xr:Value>
+							</UserVisible>
 							<Title>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Lists items</v8:content>
+									<v8:content>Lists</v8:content>
 								</v8:item>
 							</Title>
 							<ToolTip>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Lists items</v8:content>
+									<v8:content>Lists</v8:content>
 								</v8:item>
 							</ToolTip>
-							<Group>Vertical</Group>
-							<Representation>None</Representation>
+							<Width>33</Width>
+							<Group>Horizontal</Group>
+							<Representation>NormalSeparation</Representation>
 							<ShowTitle>false</ShowTitle>
-							<ExtendedTooltip name="ListsItemsExtendedTooltip" id="130"/>
+							<ExtendedTooltip name="ListsExtendedTooltip" id="128"/>
 							<ChildItems>
-								<LabelDecoration name="ListsTitle" id="78">
-									<Font ref="sys:DefaultGUIFont" height="14" kind="WindowsFont"/>
-									<Title formatted="false">
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Lists</v8:content>
-										</v8:item>
-									</Title>
-									<ContextMenu name="ListsTitleContextMenu" id="79"/>
-									<ExtendedTooltip name="ListsTitleExtendedTooltip" id="131"/>
-								</LabelDecoration>
-								<LabelDecoration name="ListsDescription" id="81">
-									<Width>35</Width>
-									<Height>3</Height>
-									<Font ref="sys:DefaultGUIFont" height="10" kind="WindowsFont"/>
-									<Title formatted="false">
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Create and maintain company (customers and vendors), and item lists.</v8:content>
-										</v8:item>
-									</Title>
-									<ContextMenu name="ListsDescriptionContextMenu" id="82"/>
-									<ExtendedTooltip name="ListsDescriptionExtendedTooltip" id="132"/>
-								</LabelDecoration>
-								<InputField name="CreateLists" id="84">
-									<DataPath>CreateLists</DataPath>
+								<PictureDecoration name="ListsPicture" id="73">
 									<SkipOnInput>true</SkipOnInput>
-									<TitleLocation>None</TitleLocation>
-									<ChoiceButton>false</ChoiceButton>
-									<TextEdit>false</TextEdit>
-									<ChoiceList>
-										<xr:Item>
-											<xr:Presentation/>
-											<xr:CheckState>0</xr:CheckState>
-											<xr:Value xsi:type="FormChoiceListDesTimeValue">
-												<Presentation/>
-												<Value xsi:type="xs:string">Create company</Value>
-											</xr:Value>
-										</xr:Item>
-										<xr:Item>
-											<xr:Presentation/>
-											<xr:CheckState>0</xr:CheckState>
-											<xr:Value xsi:type="FormChoiceListDesTimeValue">
-												<Presentation/>
-												<Value xsi:type="xs:string">Create item</Value>
-											</xr:Value>
-										</xr:Item>
-									</ChoiceList>
-									<ChoiceListButton>true</ChoiceListButton>
-									<ContextMenu name="CreateListsContextMenu" id="85"/>
-									<ExtendedTooltip name="CreateListsExtendedTooltip" id="133"/>
-									<Events>
-										<Event name="OnChange">CreateListsOnChange</Event>
-									</Events>
-								</InputField>
+									<Title formatted="false">
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Lists picture</v8:content>
+										</v8:item>
+									</Title>
+									<Picture>
+										<xr:Ref>CommonPicture.Lists</xr:Ref>
+										<xr:LoadTransparent>false</xr:LoadTransparent>
+									</Picture>
+									<ContextMenu name="ListsPictureContextMenu" id="74"/>
+									<ExtendedTooltip name="ListsPictureExtendedTooltip" id="129"/>
+								</PictureDecoration>
+								<UsualGroup name="ListsItems" id="76">
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Lists items</v8:content>
+										</v8:item>
+									</Title>
+									<ToolTip>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Lists items</v8:content>
+										</v8:item>
+									</ToolTip>
+									<Group>Vertical</Group>
+									<Representation>None</Representation>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="ListsItemsExtendedTooltip" id="130"/>
+									<ChildItems>
+										<LabelDecoration name="ListsTitle" id="78">
+											<Font ref="sys:DefaultGUIFont" height="14" kind="WindowsFont"/>
+											<Title formatted="false">
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Lists</v8:content>
+												</v8:item>
+											</Title>
+											<ContextMenu name="ListsTitleContextMenu" id="79"/>
+											<ExtendedTooltip name="ListsTitleExtendedTooltip" id="131"/>
+										</LabelDecoration>
+										<UsualGroup name="Group5" id="196">
+											<Group>Horizontal</Group>
+											<ShowTitle>false</ShowTitle>
+											<ExtendedTooltip name="Group5ExtendedTooltip" id="197"/>
+											<ChildItems>
+												<UsualGroup name="ListsLeft" id="198">
+													<Title>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Lists left</v8:content>
+														</v8:item>
+													</Title>
+													<ToolTip>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Lists left</v8:content>
+														</v8:item>
+													</ToolTip>
+													<Group>Vertical</Group>
+													<ShowTitle>false</ShowTitle>
+													<ExtendedTooltip name="ListsLeftExtendedTooltip" id="199"/>
+													<ChildItems>
+														<Button name="Company" id="202">
+															<Type>Hyperlink</Type>
+															<CommandName>Form.Command.Company</CommandName>
+															<ExtendedTooltip name="CompanyExtendedTooltip" id="203"/>
+														</Button>
+														<Button name="UserList" id="206">
+															<Type>Hyperlink</Type>
+															<CommandName>Form.Command.UserList</CommandName>
+															<ExtendedTooltip name="UserListExtendedTooltip" id="207"/>
+														</Button>
+													</ChildItems>
+												</UsualGroup>
+												<UsualGroup name="ListsRight" id="200">
+													<Title>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Lists right</v8:content>
+														</v8:item>
+													</Title>
+													<ToolTip>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Lists right</v8:content>
+														</v8:item>
+													</ToolTip>
+													<Group>Vertical</Group>
+													<ShowTitle>false</ShowTitle>
+													<ExtendedTooltip name="ListsRightExtendedTooltip" id="201"/>
+													<ChildItems>
+														<Button name="Product" id="204">
+															<Type>Hyperlink</Type>
+															<CommandName>Form.Command.Product</CommandName>
+															<ExtendedTooltip name="ProductExtendedTooltip" id="205"/>
+														</Button>
+													</ChildItems>
+												</UsualGroup>
+											</ChildItems>
+										</UsualGroup>
+									</ChildItems>
+								</UsualGroup>
 							</ChildItems>
 						</UsualGroup>
 					</ChildItems>
 				</UsualGroup>
-				<UsualGroup name="New" id="87">
-					<Title>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>New</v8:content>
-						</v8:item>
-					</Title>
-					<ToolTip>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>New</v8:content>
-						</v8:item>
-					</ToolTip>
-					<Group>Horizontal</Group>
-					<Representation>None</Representation>
-					<ShowTitle>false</ShowTitle>
-					<ExtendedTooltip name="NewExtendedTooltip" id="134"/>
-					<ChildItems>
-						<LabelDecoration name="Decoration1" id="89">
-							<ContextMenu name="Decoration1ContextMenu" id="90"/>
-							<ExtendedTooltip name="Decoration1ExtendedTooltip" id="135"/>
-						</LabelDecoration>
-					</ChildItems>
-				</UsualGroup>
-			</ChildItems>
-		</UsualGroup>
-		<LabelDecoration name="Label1" id="92">
-			<HorizontalStretch>true</HorizontalStretch>
-			<VerticalStretch>true</VerticalStretch>
-			<ContextMenu name="Label1ContextMenu" id="93"/>
-			<ExtendedTooltip name="Label1ExtendedTooltip" id="136"/>
-		</LabelDecoration>
-		<UsualGroup name="SettingsGroup" id="95">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Settings group</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Settings group</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Group>Horizontal</Group>
-			<ShowTitle>false</ShowTitle>
-			<ExtendedTooltip name="SettingsGroupExtendedTooltip" id="137"/>
-			<ChildItems>
-				<LabelDecoration name="SettingsLabel" id="97">
-					<HorizontalStretch>true</HorizontalStretch>
-					<Title formatted="false">
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Multi-warehouse, multi-currency, financial localization, project/job, and GL posting settings</v8:content>
-						</v8:item>
-					</Title>
-					<ContextMenu name="SettingsLabelContextMenu" id="98"/>
-					<ExtendedTooltip name="SettingsLabelExtendedTooltip" id="138"/>
-				</LabelDecoration>
-				<Button name="Settings" id="100">
-					<Type>UsualButton</Type>
-					<Representation>PictureAndText</Representation>
-					<CommandName>Form.Command.Settings</CommandName>
-					<Picture>
-						<xr:Ref>StdPicture.CustomizeForm</xr:Ref>
-						<xr:LoadTransparent>true</xr:LoadTransparent>
-					</Picture>
-					<Title>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Accounting settings</v8:content>
-						</v8:item>
-					</Title>
-					<ExtendedTooltip name="SettingsExtendedTooltip" id="139"/>
-				</Button>
 			</ChildItems>
 		</UsualGroup>
 	</ChildItems>
-	<Attributes>
-		<Attribute name="CreateSales" id="1">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Create sales</v8:content>
-				</v8:item>
-			</Title>
-			<Type>
-				<v8:Type>xs:string</v8:Type>
-				<v8:StringQualifiers>
-					<v8:Length>0</v8:Length>
-					<v8:AllowedLength>Variable</v8:AllowedLength>
-				</v8:StringQualifiers>
-			</Type>
-		</Attribute>
-		<Attribute name="CreatePurchasing" id="2">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Create purchasing</v8:content>
-				</v8:item>
-			</Title>
-			<Type>
-				<v8:Type>xs:string</v8:Type>
-				<v8:StringQualifiers>
-					<v8:Length>0</v8:Length>
-					<v8:AllowedLength>Variable</v8:AllowedLength>
-				</v8:StringQualifiers>
-			</Type>
-		</Attribute>
-		<Attribute name="CreateBank" id="3">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Create bank</v8:content>
-				</v8:item>
-			</Title>
-			<Type>
-				<v8:Type>xs:string</v8:Type>
-				<v8:StringQualifiers>
-					<v8:Length>0</v8:Length>
-					<v8:AllowedLength>Variable</v8:AllowedLength>
-				</v8:StringQualifiers>
-			</Type>
-		</Attribute>
-		<Attribute name="CreateAccounting" id="4">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Create accounting</v8:content>
-				</v8:item>
-			</Title>
-			<Type>
-				<v8:Type>xs:string</v8:Type>
-				<v8:StringQualifiers>
-					<v8:Length>0</v8:Length>
-					<v8:AllowedLength>Variable</v8:AllowedLength>
-				</v8:StringQualifiers>
-			</Type>
-		</Attribute>
-		<Attribute name="CreateLists" id="5">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Create lists</v8:content>
-				</v8:item>
-			</Title>
-			<Type>
-				<v8:Type>xs:string</v8:Type>
-				<v8:StringQualifiers>
-					<v8:Length>0</v8:Length>
-					<v8:AllowedLength>Variable</v8:AllowedLength>
-				</v8:StringQualifiers>
-			</Type>
-		</Attribute>
-	</Attributes>
+	<Attributes/>
 	<Commands>
-		<Command name="Settings" id="1">
+		<Command name="SalesOrder" id="1">
 			<Title>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Settings</v8:content>
+					<v8:content>Sales order</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Kundenauftrag</v8:content>
 				</v8:item>
 			</Title>
 			<ToolTip>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Settings</v8:content>
+					<v8:content>Sales order</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Kundenauftrag</v8:content>
 				</v8:item>
 			</ToolTip>
-			<Action>Settings</Action>
+			<Action>SalesOrder</Action>
+		</Command>
+		<Command name="SalesInvoice" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Sales invoice</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Rechnung</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Sales invoice</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Rechnung</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>SalesInvoice</Action>
+		</Command>
+		<Command name="CashSale" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Cash sale</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Barverkauf</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Cash sale</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Barverkauf</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>CashSale</Action>
+		</Command>
+		<Command name="SalesReturn" id="4">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Credit memo</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Storno/Gutschrift</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Sales return</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Storno/Gutschrift</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>SalesReturn</Action>
+		</Command>
+		<Command name="PurchaseOrder" id="5">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Purchase order</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Bestellung</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Purchase order</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Bestellung</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>PurchaseOrder</Action>
+		</Command>
+		<Command name="PurchaseInvoice" id="6">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Purchase invoice</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Eingangsrechnung</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Purchase invoice</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Eingangsrechnung</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>PurchaseInvoice</Action>
+		</Command>
+		<Command name="PurchaseReturn" id="8">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Refund</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Warenrücksendung</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Purchase return</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Warenrücksendung</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>PurchaseReturn</Action>
+		</Command>
+		<Command name="CashReceipt" id="9">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Cash receipt</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Zahlungseingang</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Cash receipt</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Zahlungseingang</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>CashReceipt</Action>
+		</Command>
+		<Command name="InvoicePayment" id="10">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Invoice payment (Check)</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Zahlungsausgang (Barschek)</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Invoice payment</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Zahlungsausgang (Barschek)</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>InvoicePayment</Action>
+		</Command>
+		<Command name="Deposit" id="11">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Deposit</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Deposit</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>Deposit</Action>
+		</Command>
+		<Command name="Check" id="12">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Check</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Barscheck</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Check</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Barscheck</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>Check</Action>
+		</Command>
+		<Command name="BankRec" id="13">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Bank rec.</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Bank rec</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>BankRec</Action>
+		</Command>
+		<Command name="ChartOfAccounts" id="14">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Chart of accounts</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Kontenplan</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Chart of accounts</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Kontenplan</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>ChartOfAccounts</Action>
+		</Command>
+		<Command name="GJEntry" id="15">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Journal entry</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Obeflächentext übersetzen</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Journal entry</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Obeflächentext übersetzen</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>GJEntry</Action>
+		</Command>
+		<Command name="Company" id="16">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Customers / vendors</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Unternehmen</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Company</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Unternehmen</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>Company</Action>
+		</Command>
+		<Command name="Product" id="17">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Items</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Artikel</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Product</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Artikel</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>Product</Action>
+		</Command>
+		<Command name="UserList" id="18">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Users</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Benutzer</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Users</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Benutzer</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>UserList</Action>
+		</Command>
+		<Command name="ItemReceipt" id="7">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Item receipt</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Item receipt</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>ItemReceipt</Action>
 		</Command>
 	</Commands>
 </Form>

@@ -24,36 +24,42 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	If Object.Ref.IsEmpty() Then
 			
 		Query = New Query;
+		// KZUZIK - changed NULL to 0 in CashSale.CashPayment
 		Query.Text = "SELECT
-		             |	CashReceipt.Ref,
-					 |	CashReceipt.Currency,
-					 |  CashReceipt.CashPayment,
+		             |	CashReceipt.Ref AS Ref,
+		             |	CashReceipt.Currency,
+		             |	CashReceipt.CashPayment,
 		             |	CashReceipt.DocumentTotal,
-		             |	CashReceipt.DocumentTotalRC AS DocumentTotalRC
+		             |	CashReceipt.DocumentTotalRC AS DocumentTotalRC,
+		             |	CashReceipt.Date AS Date
 		             |FROM
 		             |	Document.CashReceipt AS CashReceipt
 		             |WHERE
 		             |	CashReceipt.DepositType = &Undeposited
 		             |	AND CashReceipt.Deposited = &InDeposits
-					 |
-					 |UNION ALL
-					 |
-					 |SELECT
-					 |	CashSale.Ref,
-					 |  CashSale.Currency,
-					 |  NULL,
+		             |
+		             |UNION ALL
+		             |
+		             |SELECT
+		             |	CashSale.Ref,
+		             |	CashSale.Currency,
+		             |	0,                                    
 		             |	CashSale.DocumentTotal,
-		             |	CashSale.DocumentTotalRC
+		             |	CashSale.DocumentTotalRC,
+		             |	CashSale.Date
 		             |FROM
 		             |	Document.CashSale AS CashSale
 		             |WHERE
 		             |	CashSale.DepositType = &Undeposited
-		             |	AND CashSale.Deposited = &InDeposits";
+		             |	AND CashSale.Deposited = &InDeposits
+		             |
+		             |ORDER BY
+		             |	Date";
 
 		Query.SetParameter("Undeposited", "1");
 		Query.SetParameter("InDeposits", False);
 
-					 
+		
 		Result = Query.Execute().Choose();
 		
 		While Result.Next() Do
@@ -79,12 +85,8 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 			EndIf;
 				
 		EndDo;
-
+		
 	EndIf;
-	
-	// AdditionalReportsAndDataProcessors
-	AdditionalReportsAndDataProcessors.OnCreateAtServer(ThisForm);
-	// End AdditionalReportsAndDataProcessors
 	
 EndProcedure
 

@@ -174,29 +174,22 @@ EndProcedure
 ////////////////////////////////////////////////////////////////////////////////
 // DOCUMENT PRINTING (OLD)
 
-Procedure Print(ObjectArray, PrintParameters, PrintFormsCollection,
-           PrintObjects, OutputParameters) Export
 
-     // Setting the kit printing option.
-     OutputParameters.AvailablePrintingByKits = True;
-
-     // Checking if a spreadsheet document generation needed for the Sales Order template.
-    If PrintManagement.NeedToPrintTemplate(PrintFormsCollection, "SalesOrder") Then
-
-         // Generating a spreadsheet document and adding it into the print form collection.
-         PrintManagement.OutputSpreadsheetDocumentToCollection(PrintFormsCollection,
-             "SalesOrder", "Sales order", PrintTemplate(ObjectArray, PrintObjects));
-
+Procedure Print(Spreadsheet, Ref)	Export
+	
+	CustomTemplate = GeneralFunctions.GetCustomTemplate("Document.SalesOrder", "Sales order");
+	
+	If CustomTemplate = Undefined Then
+		Template = Documents.SalesOrder.GetTemplate("PF_MXL_SalesOrder");
+	Else
+		Template = CustomTemplate;
 	EndIf;
-
-		 
-EndProcedure
-	 
-Function PrintTemplate(ObjectArray, PrintObjects)
+	
+	//Template = Documents.SalesOrder.GetTemplate("PF_MXL_SalesOrder");
 	
 	// Create a spreadsheet document and set print parameters.
-   SpreadsheetDocument = New SpreadsheetDocument;
-   SpreadsheetDocument.PrintParametersName = "PrintParameters_SalesOrder";
+  // SpreadsheetDocument = New SpreadsheetDocument;
+  // SpreadsheetDocument.PrintParametersName = "PrintParameters_SalesOrder";
 
    // Quering necessary data.
    Query = New Query();
@@ -225,30 +218,47 @@ Function PrintTemplate(ObjectArray, PrintObjects)
    |FROM
    |	Document.SalesOrder AS SalesOrder
    |WHERE
-   |	SalesOrder.Ref IN(&ObjectArray)";
-   Query.SetParameter("ObjectArray", ObjectArray);
+   |	SalesOrder.Ref IN(&Ref)";
+   Query.SetParameter("Ref", Ref);
    Selection = Query.Execute().Choose();
   
-   	FirstDocument = True;
-
-	Us = Catalogs.Companies.OurCompany;
+   Spreadsheet.Clear();
    
-   	While Selection.Next() Do
-		
-		If Not FirstDocument Then
-			// All documents need to be outputted on separate pages.
-			SpreadsheetDocument.PutHorizontalPageBreak();
-		EndIf;
-		FirstDocument = False;
-		// Remember current document output beginning line number.
-		BeginningLineNumber = SpreadsheetDocument.TableHeight + 1;
+   InsertPageBreak = False;
+   While Selection.Next() Do
+	   
+		BinaryLogo = GeneralFunctions.GetLogo();
+		MyPicture = New Picture(BinaryLogo);
+		Pict=Template.Drawings.Add(SpreadsheetDocumentDrawingType.Picture);
+		IndexOf=Template.Drawings.IndexOf(Pict);
+		Template.Drawings[IndexOf].Picture = MyPicture;
+		Template.Drawings[IndexOf].Line = New Line(SpreadsheetDocumentDrawingLineType.None);
+		Template.Drawings[IndexOf].Place(Spreadsheet.Area("R3C1:R6C2"));
+   
+	   
+   //	FirstDocument = True;
+   //
+   //	While Selection.Next() Do
+   // 	
+   // 	If Not FirstDocument Then
+   // 		// All documents need to be outputted on separate pages.
+   // 		SpreadsheetDocument.PutHorizontalPageBreak();
+   // 	EndIf;
+   // 	FirstDocument = False;
+   // 	// Remember current document output beginning line number.
+   // 	BeginningLineNumber = SpreadsheetDocument.TableHeight + 1;
 
 	 
-	Template = PrintManagement.GetTemplate("Document.SalesOrder.PF_MXL_SalesOrder");
-	 
+	//Template = PrintManagement.GetTemplate("Document.SalesOrder.PF_MXL_SalesOrder");
+		
 	TemplateArea = Template.GetArea("Header");
-	 
-	UsBill = PrintTemplates.ContactInfoDataset(Us, "UsBill", Catalogs.Addresses.EmptyRef());
+	
+	
+	//test = TemplateArea.Drawings.LogoPlaceholder;
+	//Template.Drawings.LogoPlaceholder.Picture = BinaryLogo;
+	
+	
+	UsBill = PrintTemplates.ContactInfoDatasetUs();
 	ThemShip = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemShip", Selection.ShipTo);
 	ThemBill = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemBill", Catalogs.Addresses.EmptyRef());
 	
@@ -259,10 +269,10 @@ Function PrintTemplate(ObjectArray, PrintObjects)
 	 TemplateArea.Parameters.Date = Selection.Date;
 	 TemplateArea.Parameters.Number = Selection.Number;
 	 
-	 SpreadsheetDocument.Put(TemplateArea);
+	 Spreadsheet.Put(TemplateArea);
 
 	 TemplateArea = Template.GetArea("LineItemsHeader");
-	 SpreadsheetDocument.Put(TemplateArea);
+	 Spreadsheet.Put(TemplateArea);
 	 
 	 SelectionLineItems = Selection.LineItems.Choose();
 	 TemplateArea = Template.GetArea("LineItems");
@@ -272,40 +282,225 @@ Function PrintTemplate(ObjectArray, PrintObjects)
 		 TemplateArea.Parameters.Fill(SelectionLineItems);
 		 LineTotal = SelectionLineItems.LineTotal;
 		 LineTotalSum = LineTotalSum + LineTotal;
-		 SpreadsheetDocument.Put(TemplateArea, SelectionLineItems.Level());
+		 Spreadsheet.Put(TemplateArea, SelectionLineItems.Level());
 		 
 	 EndDo;
-	 	 
+	 
+	If Selection.SalesTax <> 0 Then;
+		 TemplateArea = Template.GetArea("Subtotal");
+		 TemplateArea.Parameters.Subtotal = LineTotalSum;
+		 Spreadsheet.Put(TemplateArea);
+		 
+		 TemplateArea = Template.GetArea("SalesTax");
+		 TemplateArea.Parameters.SalesTaxTotal = Selection.SalesTax;
+		 Spreadsheet.Put(TemplateArea);
+	EndIf; 
+
+	 
 	If Selection.VATTotal <> 0 Then;
 		 TemplateArea = Template.GetArea("Subtotal");
 		 TemplateArea.Parameters.Subtotal = LineTotalSum;
-		 SpreadsheetDocument.Put(TemplateArea);
+		 Spreadsheet.Put(TemplateArea);
 		 
 		 TemplateArea = Template.GetArea("VAT");
 		 TemplateArea.Parameters.VATTotal = Selection.VATTotal;
-		 SpreadsheetDocument.Put(TemplateArea);
+		 Spreadsheet.Put(TemplateArea);
 	EndIf; 
 		 
 	 TemplateArea = Template.GetArea("Total");
 	If Selection.PriceIncludesVAT Then
-	 	TemplateArea.Parameters.DocumentTotal = LineTotalSum;
+	 	TemplateArea.Parameters.DocumentTotal = LineTotalSum + Selection.SalesTax;
 	Else
 		TemplateArea.Parameters.DocumentTotal = LineTotalSum + Selection.VATTotal;
 	EndIf;
+	
+	Spreadsheet.Put(TemplateArea);
+	
+	Try
+	 	TemplateArea = Template.GetArea("Footer");
+		OurContactInfo = UsBill.UsName + " - " + UsBill.UsBillLine1Line2 + " - " + UsBill.UsBillCityStateZIP + " - " + UsBill.UsBillPhone;
+		TemplateArea.Parameters.OurContactInfo = OurContactInfo;
+	 	Spreadsheet.Put(TemplateArea);
+ 	Except
+	EndTry;
 
-	 SpreadsheetDocument.Put(TemplateArea);
 
-	 TemplateArea = Template.GetArea("Currency");
-	 TemplateArea.Parameters.Currency = Selection.Currency;
-	 SpreadsheetDocument.Put(TemplateArea);
+	 //Spreadsheet.Put(TemplateArea);
+
+	 //TemplateArea = Template.GetArea("Currency");
+	 //TemplateArea.Parameters.Currency = Selection.Currency;
+	 //Spreadsheet.Put(TemplateArea);
 
 	 
      // Setting a print area in the spreadsheet document where to output the object.
      // Necessary for kit printing. 
-     PrintManagement.SetDocumentPrintArea(SpreadsheetDocument, BeginningLineNumber, PrintObjects, Selection.Ref);
+     //PrintManagement.SetDocumentPrintArea(SpreadsheetDocument, BeginningLineNumber, PrintObjects, Selection.Ref);
 
+	 InsertPageBreak = True;
+	 
    EndDo;
    
-   Return SpreadsheetDocument;
+   //Return SpreadsheetDocument;
    
-EndFunction
+EndProcedure
+
+Procedure PrintQuote(Spreadsheet, Ref)	Export
+	
+	CustomTemplate = GeneralFunctions.GetCustomTemplate("Document.SalesOrder", "Sales quote");
+	
+	If CustomTemplate = Undefined Then
+		Template = Documents.SalesOrder.GetTemplate("PF_MXL_SalesQuote");
+	Else
+		Template = CustomTemplate;
+	EndIf;
+
+	
+	//Template = Documents.SalesOrder.GetTemplate("PF_MXL_SalesQuote");
+	
+	// Create a spreadsheet document and set print parameters.
+  // SpreadsheetDocument = New SpreadsheetDocument;
+  // SpreadsheetDocument.PrintParametersName = "PrintParameters_SalesOrder";
+
+   // Quering necessary data.
+   Query = New Query();
+   Query.Text =
+   "SELECT
+   |	SalesOrder.Ref,
+   |	SalesOrder.Company,
+   |	SalesOrder.Date,
+   |	SalesOrder.DocumentTotal,
+   |	SalesOrder.SalesTax,
+   |	SalesOrder.PriceIncludesVAT,
+   |	SalesOrder.Number,
+   |	SalesOrder.ShipTo,
+   |	SalesOrder.Currency,
+   |	SalesOrder.VATTotal,
+   |	SalesOrder.LineItems.(
+   |		Product,
+   |		ProductDescription,
+   |		Product.UM AS UM,
+   |		Quantity,
+   |		VATCode,
+   |		VAT,
+   |		Price,
+   |		LineTotal
+   |	)
+   |FROM
+   |	Document.SalesOrder AS SalesOrder
+   |WHERE
+   |	SalesOrder.Ref IN(&Ref)";
+   Query.SetParameter("Ref", Ref);
+   Selection = Query.Execute().Choose();
+  
+   Spreadsheet.Clear();
+   
+   InsertPageBreak = False;
+   While Selection.Next() Do
+	   
+	   	BinaryLogo = GeneralFunctions.GetLogo();
+		MyPicture = New Picture(BinaryLogo);
+		Pict=Template.Drawings.Add(SpreadsheetDocumentDrawingType.Picture);
+		IndexOf=Template.Drawings.IndexOf(Pict);
+		Template.Drawings[IndexOf].Picture = MyPicture;
+		Template.Drawings[IndexOf].Line = New Line(SpreadsheetDocumentDrawingLineType.None);
+		Template.Drawings[IndexOf].Place(Spreadsheet.Area("R3C1:R6C2"));
+
+	   
+   //	FirstDocument = True;
+   //
+   //	While Selection.Next() Do
+   // 	
+   // 	If Not FirstDocument Then
+   // 		// All documents need to be outputted on separate pages.
+   // 		SpreadsheetDocument.PutHorizontalPageBreak();
+   // 	EndIf;
+   // 	FirstDocument = False;
+   // 	// Remember current document output beginning line number.
+   // 	BeginningLineNumber = SpreadsheetDocument.TableHeight + 1;
+
+	 
+	//Template = PrintManagement.GetTemplate("Document.SalesOrder.PF_MXL_SalesOrder");
+	 
+	TemplateArea = Template.GetArea("Header");
+	 
+	UsBill = PrintTemplates.ContactInfoDatasetUs();
+	ThemShip = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemShip", Selection.ShipTo);
+	ThemBill = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemBill", Catalogs.Addresses.EmptyRef());
+	
+	TemplateArea.Parameters.Fill(UsBill);
+	TemplateArea.Parameters.Fill(ThemShip);
+	TemplateArea.Parameters.Fill(ThemBill);
+	 
+	 TemplateArea.Parameters.Date = Selection.Date;
+	 TemplateArea.Parameters.Number = Selection.Number;
+	 
+	 Spreadsheet.Put(TemplateArea);
+
+	 TemplateArea = Template.GetArea("LineItemsHeader");
+	 Spreadsheet.Put(TemplateArea);
+	 
+	 SelectionLineItems = Selection.LineItems.Choose();
+	 TemplateArea = Template.GetArea("LineItems");
+	 LineTotalSum = 0;
+	 While SelectionLineItems.Next() Do
+		 
+		 TemplateArea.Parameters.Fill(SelectionLineItems);
+		 LineTotal = SelectionLineItems.LineTotal;
+		 LineTotalSum = LineTotalSum + LineTotal;
+		 Spreadsheet.Put(TemplateArea, SelectionLineItems.Level());
+		 
+	 EndDo;
+	 
+	If Selection.SalesTax <> 0 Then;
+		 TemplateArea = Template.GetArea("Subtotal");
+		 TemplateArea.Parameters.Subtotal = LineTotalSum;
+		 Spreadsheet.Put(TemplateArea);
+		 
+		 TemplateArea = Template.GetArea("SalesTax");
+		 TemplateArea.Parameters.SalesTaxTotal = Selection.SalesTax;
+		 Spreadsheet.Put(TemplateArea);
+	EndIf; 
+
+	 
+	If Selection.VATTotal <> 0 Then;
+		 TemplateArea = Template.GetArea("Subtotal");
+		 TemplateArea.Parameters.Subtotal = LineTotalSum;
+		 Spreadsheet.Put(TemplateArea);
+		 
+		 TemplateArea = Template.GetArea("VAT");
+		 TemplateArea.Parameters.VATTotal = Selection.VATTotal;
+		 Spreadsheet.Put(TemplateArea);
+	EndIf; 
+		 
+	 TemplateArea = Template.GetArea("Total");
+	If Selection.PriceIncludesVAT Then
+	 	TemplateArea.Parameters.DocumentTotal = LineTotalSum + Selection.SalesTax;
+	Else
+		TemplateArea.Parameters.DocumentTotal = LineTotalSum + Selection.VATTotal;
+	EndIf;
+	
+	Spreadsheet.Put(TemplateArea);
+	
+	Try
+	 	TemplateArea = Template.GetArea("Footer");
+		OurContactInfo = UsBill.UsName + " - " + UsBill.UsBillLine1Line2 + " - " + UsBill.UsBillCityStateZIP + " - " + UsBill.UsBillPhone;
+		TemplateArea.Parameters.OurContactInfo = OurContactInfo;
+	 	Spreadsheet.Put(TemplateArea);
+ 	Except
+	EndTry;
+
+
+	 //Spreadsheet.Put(TemplateArea);
+
+	 
+     // Setting a print area in the spreadsheet document where to output the object.
+     // Necessary for kit printing. 
+     //PrintManagement.SetDocumentPrintArea(SpreadsheetDocument, BeginningLineNumber, PrintObjects, Selection.Ref);
+
+	 InsertPageBreak = True;
+	 
+   EndDo;
+   
+   //Return SpreadsheetDocument;
+   
+EndProcedure

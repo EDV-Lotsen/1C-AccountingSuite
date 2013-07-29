@@ -5,6 +5,11 @@
 	<UseForFoldersAndItems>Items</UseForFoldersAndItems>
 	<AutoCommandBar name="FormCommandBar" id="-1"/>
 	<ChildItems>
+		<InputField name="Code" id="3">
+			<DataPath>Object.Code</DataPath>
+			<ContextMenu name="CodeContextMenu" id="4"/>
+			<ExtendedTooltip name="CodeExtendedTooltip" id="7"/>
+		</InputField>
 		<InputField name="Description" id="1">
 			<DataPath>Object.Description</DataPath>
 			<Title>
@@ -19,8 +24,19 @@
 			</Title>
 			<EditMode>EnterOnInput</EditMode>
 			<ContextMenu name="DescriptionContextMenu" id="2"/>
-			<ExtendedTooltip name="DescriptionExtendedTooltip" id="3"/>
+			<ExtendedTooltip name="DescriptionExtendedTooltip" id="8"/>
 		</InputField>
+		<LabelDecoration name="Decoration1" id="5">
+			<TextColor>style:ColorSecondaryLabel</TextColor>
+			<Title formatted="false">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>http://en.wikipedia.org/wiki/ISO_3166-1</v8:content>
+				</v8:item>
+			</Title>
+			<ContextMenu name="Decoration1ContextMenu" id="6"/>
+			<ExtendedTooltip name="Decoration1ExtendedTooltip" id="9"/>
+		</LabelDecoration>
 	</ChildItems>
 	<Attributes>
 		<Attribute name="Object" id="1">

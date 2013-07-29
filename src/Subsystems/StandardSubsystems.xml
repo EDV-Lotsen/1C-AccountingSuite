@@ -6,12 +6,12 @@
 			<Synonym>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Standard Subsystems</v8:content>
+					<v8:content>Standard subsystems</v8:content>
 				</v8:item>
 			</Synonym>
 			<Comment/>
-			<IncludeHelpInContents>false</IncludeHelpInContents>
-			<IncludeInCommandInterface>true</IncludeInCommandInterface>
+			<IncludeHelpInContents>true</IncludeHelpInContents>
+			<IncludeInCommandInterface>false</IncludeInCommandInterface>
 			<Explanation/>
 			<Picture/>
 			<Content>
@@ -19,16 +19,8 @@
 			</Content>
 		</Properties>
 		<ChildObjects>
-			<Subsystem>AdditionalReportsAndDataProcessors</Subsystem>
-			<Subsystem>BasicFunctionality</Subsystem>
-			<Subsystem>DynamicUpdateMonitoring</Subsystem>
-			<Subsystem>EventLog</Subsystem>
-			<Subsystem>FullTextSearch</Subsystem>
-			<Subsystem>InfobaseVersionUpdate</Subsystem>
-			<Subsystem>Print</Subsystem>
-			<Subsystem>ScheduledJobs</Subsystem>
-			<Subsystem>Users</Subsystem>
-			<Subsystem>EmailOperations</Subsystem>
+			<Subsystem>BaseFunctionality</Subsystem>
+			<Subsystem>InternetConnection</Subsystem>
 		</ChildObjects>
 	</Subsystem>
 </MetaDataObject>

@@ -79,11 +79,19 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Middle column</v8:content>
 						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Mittlere Spalte</v8:content>
+						</v8:item>
 					</Title>
 					<ToolTip>
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Middle column</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Mittlere Spalte</v8:content>
 						</v8:item>
 					</ToolTip>
 					<Group>Vertical</Group>
@@ -185,6 +193,7 @@
 				</v8:item>
 			</ToolTip>
 			<Group>Vertical</Group>
+			<ShowTitle>false</ShowTitle>
 			<ExtendedTooltip name="TransactionsExtendedTooltip" id="61"/>
 			<ChildItems>
 				<Table name="LineItems" id="9">
@@ -201,42 +210,42 @@
 					<ContextMenu name="LineItemsContextMenu" id="10"/>
 					<AutoCommandBar name="LineItemsCommandBar" id="11"/>
 					<ExtendedTooltip name="LineItemsExtendedTooltip" id="62"/>
-					<SearchStringAddition name="LineItemsSearchString" id="63">
+					<SearchStringAddition name="LineItemsSearchString" id="70">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>SearchStringRepresentation</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsSearchStringContextMenu" id="64"/>
-						<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="65"/>
+						<ContextMenu name="LineItemsSearchStringContextMenu" id="71"/>
+						<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="72"/>
 					</SearchStringAddition>
-					<ViewStatusAddition name="LineItemsViewStatus" id="66">
+					<ViewStatusAddition name="LineItemsViewStatus" id="73">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>ViewStatusRepresentation</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsViewStatusContextMenu" id="67"/>
-						<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="68"/>
+						<ContextMenu name="LineItemsViewStatusContextMenu" id="74"/>
+						<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="75"/>
 					</ViewStatusAddition>
-					<SearchControlAddition name="LineItemsSearchControl" id="69">
+					<SearchControlAddition name="LineItemsSearchControl" id="76">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>SearchControl</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsSearchControlContextMenu" id="70"/>
-						<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="71"/>
+						<ContextMenu name="LineItemsSearchControlContextMenu" id="77"/>
+						<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="78"/>
 					</SearchControlAddition>
 					<ChildItems>
 						<LabelField name="LineItemsLineNumber" id="12">
 							<DataPath>Object.LineItems.LineNumber</DataPath>
 							<EditMode>EnterOnInput</EditMode>
 							<ContextMenu name="LineItemsLineNumberContextMenu" id="13"/>
-							<ExtendedTooltip name="LineItemsLineNumberExtendedTooltip" id="72"/>
+							<ExtendedTooltip name="LineItemsLineNumberExtendedTooltip" id="63"/>
 						</LabelField>
 						<InputField name="LineItemsAccount" id="14">
 							<DataPath>Object.LineItems.Account</DataPath>
 							<EditMode>EnterOnInput</EditMode>
 							<ContextMenu name="LineItemsAccountContextMenu" id="15"/>
-							<ExtendedTooltip name="LineItemsAccountExtendedTooltip" id="73"/>
+							<ExtendedTooltip name="LineItemsAccountExtendedTooltip" id="64"/>
 							<Events>
 								<Event name="OnChange">LineItemsAccountOnChange</Event>
 							</Events>
@@ -246,14 +255,14 @@
 							<ReadOnly>true</ReadOnly>
 							<EditMode>EnterOnInput</EditMode>
 							<ContextMenu name="LineItemsAccountDescriptionContextMenu" id="37"/>
-							<ExtendedTooltip name="LineItemsAccountDescriptionExtendedTooltip" id="74"/>
+							<ExtendedTooltip name="LineItemsAccountDescriptionExtendedTooltip" id="65"/>
 						</InputField>
 						<InputField name="LineItemsAmountDr" id="16">
 							<DataPath>Object.LineItems.AmountDr</DataPath>
 							<EditMode>EnterOnInput</EditMode>
 							<FooterDataPath>Object.LineItems.TotalAmountDr</FooterDataPath>
 							<ContextMenu name="LineItemsAmountDrContextMenu" id="17"/>
-							<ExtendedTooltip name="LineItemsAmountDrExtendedTooltip" id="75"/>
+							<ExtendedTooltip name="LineItemsAmountDrExtendedTooltip" id="66"/>
 							<Events>
 								<Event name="OnChange">LineItemsAmountDrOnChange</Event>
 							</Events>
@@ -263,7 +272,7 @@
 							<EditMode>EnterOnInput</EditMode>
 							<FooterDataPath>Object.LineItems.TotalAmountCr</FooterDataPath>
 							<ContextMenu name="LineItemsAmountCrContextMenu" id="19"/>
-							<ExtendedTooltip name="LineItemsAmountCrExtendedTooltip" id="76"/>
+							<ExtendedTooltip name="LineItemsAmountCrExtendedTooltip" id="67"/>
 							<Events>
 								<Event name="OnChange">LineItemsAmountCrOnChange</Event>
 							</Events>
@@ -272,13 +281,13 @@
 							<DataPath>Object.LineItems.Company</DataPath>
 							<EditMode>EnterOnInput</EditMode>
 							<ContextMenu name="LineItemsCompanyContextMenu" id="50"/>
-							<ExtendedTooltip name="LineItemsCompanyExtendedTooltip" id="77"/>
+							<ExtendedTooltip name="LineItemsCompanyExtendedTooltip" id="68"/>
 						</InputField>
 						<InputField name="LineItemsMemo" id="47">
 							<DataPath>Object.LineItems.Memo</DataPath>
 							<EditMode>EnterOnInput</EditMode>
 							<ContextMenu name="LineItemsMemoContextMenu" id="48"/>
-							<ExtendedTooltip name="LineItemsMemoExtendedTooltip" id="78"/>
+							<ExtendedTooltip name="LineItemsMemoExtendedTooltip" id="69"/>
 						</InputField>
 					</ChildItems>
 				</Table>

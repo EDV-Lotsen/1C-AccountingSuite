@@ -7,19 +7,17 @@
 	<dataSet xsi:type="DataSetQuery">
 		<name>DataSet1</name>
 		<field xsi:type="DataSetFieldField">
-			<dataPath>AmountBalance</dataPath>
-			<field>AmountBalance</field>
-		</field>
-		<field xsi:type="DataSetFieldField">
 			<dataPath>Product</dataPath>
 			<field>Product</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Item</v8:content>
+				</v8:item>
+			</title>
 			<role>
 				<dcscom:dimension>true</dcscom:dimension>
 			</role>
-		</field>
-		<field xsi:type="DataSetFieldField">
-			<dataPath>QtyBalance</dataPath>
-			<field>QtyBalance</field>
 		</field>
 		<field xsi:type="DataSetFieldField">
 			<dataPath>Layer</dataPath>
@@ -32,36 +30,97 @@
 				<dcscom:dimension>true</dcscom:dimension>
 			</role>
 		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>AmountClosingBalance</dataPath>
+			<field>AmountClosingBalance</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Amount</v8:content>
+				</v8:item>
+			</title>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>QtyClosingBalance</dataPath>
+			<field>QtyClosingBalance</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Qty</v8:content>
+				</v8:item>
+			</title>
+		</field>
 		<dataSource>DataSource1</dataSource>
 		<query>SELECT
 	InventoryJrnlBalance.Product,
-	InventoryJrnlBalance.QtyBalance,
-	InventoryJrnlBalance.AmountBalance,
+	InventoryJrnlBalance.QtyClosingBalance,
+	InventoryJrnlBalance.AmountClosingBalance,
 	InventoryJrnlBalance.Location
 FROM
-	AccumulationRegister.InventoryJrnl.Balance AS InventoryJrnlBalance</query>
+	AccumulationRegister.InventoryJrnl.BalanceAndTurnovers AS InventoryJrnlBalance</query>
 	</dataSet>
 	<totalField>
-		<dataPath>AmountBalance</dataPath>
-		<expression>Sum(AmountBalance)</expression>
+		<dataPath>AmountClosingBalance</dataPath>
+		<expression>Sum(AmountClosingBalance)</expression>
 	</totalField>
 	<parameter>
 		<name>Period</name>
 		<title xsi:type="v8:LocalStringType">
 			<v8:item>
 				<v8:lang>en</v8:lang>
-				<v8:content>Period</v8:content>
+				<v8:content>Date</v8:content>
+			</v8:item>
+		</title>
+		<valueType>
+			<v8:Type>v8:StandardPeriod</v8:Type>
+		</valueType>
+		<value xsi:type="v8:StandardPeriod">
+			<v8:variant xsi:type="v8:StandardPeriodVariant">Custom</v8:variant>
+			<v8:startDate>0001-01-01T00:00:00</v8:startDate>
+			<v8:endDate>0001-01-01T00:00:00</v8:endDate>
+		</value>
+		<useRestriction>false</useRestriction>
+		<use>Always</use>
+	</parameter>
+	<parameter>
+		<name>BeginOfPeriod</name>
+		<title xsi:type="v8:LocalStringType">
+			<v8:item>
+				<v8:lang>en</v8:lang>
+				<v8:content>Begin of period</v8:content>
+			</v8:item>
+			<v8:item>
+				<v8:lang>de</v8:lang>
+				<v8:content>Periodenanfang</v8:content>
 			</v8:item>
 		</title>
 		<valueType>
 			<v8:Type>xs:dateTime</v8:Type>
 			<v8:DateQualifiers>
-				<v8:DateFractions>Date</v8:DateFractions>
+				<v8:DateFractions>DateTime</v8:DateFractions>
+			</v8:DateQualifiers>
+		</valueType>
+		<value xsi:type="xs:dateTime">0001-01-01T00:00:00</value>
+		<useRestriction>true</useRestriction>
+		<expression>&amp;Period.StartDate</expression>
+	</parameter>
+	<parameter>
+		<name>EndOfPeriod</name>
+		<title xsi:type="v8:LocalStringType">
+			<v8:item>
+				<v8:lang>en</v8:lang>
+				<v8:content>End of period</v8:content>
+			</v8:item>
+		</title>
+		<valueType>
+			<v8:Type>xs:dateTime</v8:Type>
+			<v8:DateQualifiers>
+				<v8:DateFractions>DateTime</v8:DateFractions>
 			</v8:DateQualifiers>
 		</valueType>
 		<value xsi:type="xs:dateTime">0001-01-01T00:00:00</value>
 		<useRestriction>false</useRestriction>
-		<expression>Endofperiod(&amp;Period,"Day")</expression>
+		<expression>&amp;Period.EndDate</expression>
 	</parameter>
 	<settingsVariant>
 		<dcsset:name>Default</dcsset:name>
@@ -70,19 +129,31 @@ FROM
 			<dcsset:selection>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Product</dcsset:field>
+					<dcsset:lwsTitle>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Item</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Artikel</v8:content>
+						</v8:item>
+					</dcsset:lwsTitle>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>QtyBalance</dcsset:field>
+					<dcsset:field>QtyClosingBalance</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>AmountBalance</dcsset:field>
+					<dcsset:field>AmountClosingBalance</dcsset:field>
 				</dcsset:item>
 			</dcsset:selection>
 			<dcsset:dataParameters>
 				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 					<dcscor:parameter>Period</dcscor:parameter>
-					<dcscor:value xsi:type="xs:dateTime">0001-01-01T00:00:00</dcscor:value>
-					<dcsset:userSettingID>2a614e19-31de-4dc3-9bfc-5100fe504291</dcsset:userSettingID>
+					<dcscor:value xsi:type="v8:StandardPeriod">
+						<v8:variant xsi:type="v8:StandardPeriodVariant">ThisMonth</v8:variant>
+					</dcscor:value>
+					<dcsset:userSettingID>9ddc60f4-0994-4b1b-a9fe-be12efc0a57e</dcsset:userSettingID>
 				</dcscor:item>
 			</dcsset:dataParameters>
 			<dcsset:outputParameters>
@@ -122,7 +193,7 @@ FROM
 							<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
 						</dcsset:item>
 						<dcsset:item xsi:type="dcsset:GroupItemField">
-							<dcsset:field>QtyBalance</dcsset:field>
+							<dcsset:field>QtyClosingBalance</dcsset:field>
 							<dcsset:groupType>Items</dcsset:groupType>
 							<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 							<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
@@ -130,10 +201,7 @@ FROM
 						</dcsset:item>
 					</dcsset:groupItems>
 					<dcsset:order>
-						<dcsset:item xsi:type="dcsset:OrderItemField">
-							<dcsset:field>Product.Code</dcsset:field>
-							<dcsset:orderType>Asc</dcsset:orderType>
-						</dcsset:item>
+						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
 					</dcsset:order>
 					<dcsset:selection>
 						<dcsset:item xsi:type="dcsset:SelectedItemFolder">
@@ -144,11 +212,15 @@ FROM
 								</v8:item>
 							</dcsset:lwsTitle>
 							<dcsset:item xsi:type="dcsset:SelectedItemField">
-								<dcsset:field>Product</dcsset:field>
+								<dcsset:field>Product.Code</dcsset:field>
 								<dcsset:lwsTitle>
 									<v8:item>
 										<v8:lang>en</v8:lang>
-										<v8:content>Code</v8:content>
+										<v8:content>Item</v8:content>
+									</v8:item>
+									<v8:item>
+										<v8:lang>de</v8:lang>
+										<v8:content>Artikel</v8:content>
 									</v8:item>
 								</dcsset:lwsTitle>
 							</dcsset:item>
@@ -164,22 +236,10 @@ FROM
 							<dcsset:placement>Horizontally</dcsset:placement>
 						</dcsset:item>
 						<dcsset:item xsi:type="dcsset:SelectedItemField">
-							<dcsset:field>QtyBalance</dcsset:field>
-							<dcsset:lwsTitle>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Quantity</v8:content>
-								</v8:item>
-							</dcsset:lwsTitle>
+							<dcsset:field>QtyClosingBalance</dcsset:field>
 						</dcsset:item>
 						<dcsset:item xsi:type="dcsset:SelectedItemField">
-							<dcsset:field>AmountBalance</dcsset:field>
-							<dcsset:lwsTitle>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Amount</v8:content>
-								</v8:item>
-							</dcsset:lwsTitle>
+							<dcsset:field>AmountClosingBalance</dcsset:field>
 						</dcsset:item>
 					</dcsset:selection>
 				</dcsset:item>

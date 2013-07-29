@@ -1,46 +1,23 @@
 ﻿
-Procedure BeforeStart(Cancel)
-		
-	// StandardSubsystems
-	
-	// Users
-	If ValueIsFilled(StandardSubsystemsClientSecondUse.ClientParameters().AuthorizationError) Then
-		
-		DoMessageBox(StandardSubsystemsClientSecondUse.ClientParameters().AuthorizationError);
-		Cancel = True;
-		Return;
-		
-	EndIf;
-	// End Users
-	
-	// InfobaseVersionUpdate
-	Cancel = Cancel OR NOT InfobaseUpdateClient.RunningInfobaseUpdatePermitted();
-	// End InfobaseVersionUpdate
-	
-	// End StandardSubsystems
-	
-EndProcedure
-
 Procedure OnStart()
 	
-	// StandardSubsystems
+		STitle = GeneralFunctions.GetSystemTitle();
+		CurrentUser = GeneralFunctions.GetUserName();
+		
+		AppTitle = "";
+		If STitle = "" Then
+			AppTitle = CurrentUser + " / AccountingSuite ";
+		Else
+			AppTitle = STitle + " / " + CurrentUser + " / AccountingSuite"
+		EndIf;
+		
+		If CurrentUser = "" Then
+			AppTitle = "AccountingSuite";
+		EndIf;
+		
+		SetApplicationCaption(AppTitle);
 	
-	// BasicFunctionality
-	CommonUseClient.SetArbitraryApplicationTitle();
-	// End BasicFunctionality
-	
-	// InfobaseVersionUpdate
-	InfobaseUpdateClient.RunInfobaseUpdate();
-	// End InfobaseVersionUpdate
-	
-	// ScheduledJobs
-	ScheduledJobsClient.OnStart();
-	// End ScheduledJobs
-	
-	// DynamicUpdateMonitoring
-	DynamicUpdateMonitoringClient.OnStart();
-	// End DynamicUpdateMonitoring
-	
-	// End StandardSubsystems
-	
+		GeneralFunctions.FirstLaunch();
+		
 EndProcedure
+

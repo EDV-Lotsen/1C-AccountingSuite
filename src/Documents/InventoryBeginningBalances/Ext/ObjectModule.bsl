@@ -2,6 +2,39 @@
 //
 Procedure Posting(Cancel, PostingMode)
 	
+	CurrentBalance = 0;
+						
+	Query = New Query("SELECT
+					  |	InventoryJrnlBalance.QtyBalance
+					  |FROM
+					  |	AccumulationRegister.InventoryJrnl.Balance AS InventoryJrnlBalance
+					  |WHERE
+					  |	InventoryJrnlBalance.Product = &Product
+					  |	AND InventoryJrnlBalance.Location = &Location");
+	Query.SetParameter("Product", Product);
+	Query.SetParameter("Location", Location);
+	QueryResult = Query.Execute();
+	
+	If QueryResult.IsEmpty() Then
+	Else
+		Dataset = QueryResult.Unload();
+		CurrentBalance = Dataset[0][0];
+	EndIf;
+					
+	If (CurrentBalance + Quantity) < 0 Then
+		
+		Message = New UserMessage();
+		Message.Text= StringFunctionsClientServer.SubstituteParametersInString(
+		NStr("en='Insufficient balance on %1';de='Nicht ausreichende Bilanz'"),Product);
+		Message.Message();
+		If NOT Constants.AllowNegativeInventory.Get() Then
+			Cancel = True;
+			Return;
+		EndIf;
+	EndIf;
+
+	//
+	
 	RegisterRecords.InventoryJrnl.Write = True;
 	
 	Record = RegisterRecords.InventoryJrnl.Add();
@@ -17,6 +50,8 @@ Procedure Posting(Cancel, PostingMode)
 	Record.Amount = Value;
 	
 EndProcedure
+
+
 
 Procedure UndoPosting(Cancel)
 	
@@ -40,11 +75,14 @@ Procedure UndoPosting(Cancel)
 	EndIf;
 					
 	If Quantity > CurrentBalance Then
-		Cancel = True;
 		Message = New UserMessage();
-		Message.Text=NStr("en='Insufficient balance';de='Nicht ausreichende Bilanz'");
+		Message.Text= StringFunctionsClientServer.SubstituteParametersInString(
+		NStr("en='Insufficient balance on %1';de='Nicht ausreichende Bilanz'"),Product);
 		Message.Message();
-		Return;
+		If NOT Constants.AllowNegativeInventory.Get() Then
+			Cancel = True;
+			Return;
+		EndIf;
 	EndIf;
 			
 EndProcedure

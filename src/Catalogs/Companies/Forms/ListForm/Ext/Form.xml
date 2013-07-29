@@ -35,55 +35,65 @@
 			<AutoCommandBar name="ListCommandBar" id="3">
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
-			<ExtendedTooltip name="ListExtendedTooltip" id="14"/>
-			<SearchStringAddition name="ListSearchString" id="15">
+			<ExtendedTooltip name="ListExtendedTooltip" id="16"/>
+			<SearchStringAddition name="ListSearchString" id="25">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="16"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="17"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="26"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="27"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="18">
+			<ViewStatusAddition name="ListViewStatus" id="28">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="19"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="20"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="29"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="30"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="21">
+			<SearchControlAddition name="ListSearchControl" id="31">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="22"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="23"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="32"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="33"/>
 			</SearchControlAddition>
 			<ChildItems>
 				<LabelField name="Code" id="12">
 					<DataPath>List.Code</DataPath>
 					<ContextMenu name="CodeContextMenu" id="13"/>
-					<ExtendedTooltip name="CodeExtendedTooltip" id="24"/>
+					<ExtendedTooltip name="CodeExtendedTooltip" id="17"/>
 				</LabelField>
 				<LabelField name="Description" id="4">
 					<DataPath>List.Description</DataPath>
 					<DefaultItem>true</DefaultItem>
 					<ContextMenu name="DescriptionContextMenu" id="5"/>
-					<ExtendedTooltip name="DescriptionExtendedTooltip" id="25"/>
+					<ExtendedTooltip name="DescriptionExtendedTooltip" id="18"/>
 				</LabelField>
 				<CheckBoxField name="Customer" id="10">
 					<DataPath>List.Customer</DataPath>
 					<CheckBoxType>Auto</CheckBoxType>
 					<ContextMenu name="CustomerContextMenu" id="11"/>
-					<ExtendedTooltip name="CustomerExtendedTooltip" id="26"/>
+					<ExtendedTooltip name="CustomerExtendedTooltip" id="19"/>
 				</CheckBoxField>
 				<CheckBoxField name="Vendor" id="8">
 					<DataPath>List.Vendor</DataPath>
 					<CheckBoxType>Auto</CheckBoxType>
 					<ContextMenu name="VendorContextMenu" id="9"/>
-					<ExtendedTooltip name="VendorExtendedTooltip" id="27"/>
+					<ExtendedTooltip name="VendorExtendedTooltip" id="20"/>
 				</CheckBoxField>
+				<LabelField name="Terms" id="22">
+					<DataPath>List.Terms</DataPath>
+					<ContextMenu name="TermsContextMenu" id="23"/>
+					<ExtendedTooltip name="TermsExtendedTooltip" id="24"/>
+				</LabelField>
+				<LabelField name="PriceLevel" id="14">
+					<DataPath>List.PriceLevel</DataPath>
+					<ContextMenu name="PriceLevelContextMenu" id="15"/>
+					<ExtendedTooltip name="PriceLevelExtendedTooltip" id="21"/>
+				</LabelField>
 			</ChildItems>
 		</Table>
 	</ChildItems>
@@ -94,8 +104,32 @@
 			</Type>
 			<MainAttribute>true</MainAttribute>
 			<Settings xsi:type="DynamicList">
-				<ManualQuery>false</ManualQuery>
+				<ManualQuery>true</ManualQuery>
 				<DynamicDataRead>true</DynamicDataRead>
+				<QueryText>SELECT
+	CatalogCompanies.Ref,
+	CatalogCompanies.DeletionMark,
+	CatalogCompanies.Code,
+	CatalogCompanies.Description,
+	CatalogCompanies.USTaxID,
+	CatalogCompanies.SalesTaxCode,
+	CatalogCompanies.DefaultCurrency,
+	CatalogCompanies.Vendor1099,
+	CatalogCompanies.Customer,
+	CatalogCompanies.Vendor,
+	CatalogCompanies.ExpenseAccount,
+	CatalogCompanies.IncomeAccount,
+	CatalogCompanies.VATNumber,
+	CatalogCompanies.Website,
+	CatalogCompanies.Notes,
+	CatalogCompanies.Terms,
+	CatalogCompanies.ARAccount,
+	CatalogCompanies.APAccount,
+	CatalogCompanies.PriceLevel,
+	CatalogCompanies.Predefined,
+	CatalogCompanies.PredefinedDataName
+FROM
+	Catalog.Companies AS CatalogCompanies</QueryText>
 				<MainTable>Catalog.Companies</MainTable>
 				<ListSettings>
 					<dcsset:filter>
@@ -110,25 +144,10 @@
 						<dcsset:viewMode>Normal</dcsset:viewMode>
 						<dcsset:userSettingID>b75fecce-942b-4aed-abc9-e6a02e460fb3</dcsset:userSettingID>
 					</dcsset:conditionalAppearance>
+					<dcsset:itemsViewMode>Normal</dcsset:itemsViewMode>
+					<dcsset:itemsUserSettingID>911b6018-f537-43e8-a417-da56b22f9aec</dcsset:itemsUserSettingID>
 				</ListSettings>
 			</Settings>
 		</Attribute>
 	</Attributes>
-	<Commands>
-		<Command name="Import" id="1">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Import</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Import</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Action>Import</Action>
-		</Command>
-	</Commands>
 </Form>

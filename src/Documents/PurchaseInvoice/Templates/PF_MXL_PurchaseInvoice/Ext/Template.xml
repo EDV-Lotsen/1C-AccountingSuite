@@ -1141,23 +1141,19 @@
 			</c>
 			<c>
 				<c>
-					<f>29</f>
+					<f>33</f>
 					<tl>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Total</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Gesamt</v8:content>
+							<v8:content>SalesTax</v8:content>
 						</v8:item>
 					</tl>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>30</f>
-					<parameter>DocumentTotal</parameter>
+					<f>34</f>
+					<parameter>SalesTaxTotal</parameter>
 				</c>
 			</c>
 			<c>
@@ -1187,28 +1183,28 @@
 			</c>
 			<c>
 				<c>
-					<f>31</f>
+					<f>29</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>31</f>
+					<f>29</f>
 					<tl>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Currency</v8:content>
+							<v8:content>Total</v8:content>
 						</v8:item>
 						<v8:item>
 							<v8:lang>de</v8:lang>
-							<v8:content>Währung</v8:content>
+							<v8:content>Gesamt</v8:content>
 						</v8:item>
 					</tl>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>33</f>
-					<parameter>Currency</parameter>
+					<f>30</f>
+					<parameter>DocumentTotal</parameter>
 				</c>
 			</c>
 			<c>
@@ -1222,16 +1218,6 @@
 	<defaultFormatIndex>8</defaultFormatIndex>
 	<height>27</height>
 	<vgRows>27</vgRows>
-	<namedItem xsi:type="NamedItemCells">
-		<name>Currency</name>
-		<area>
-			<type>Rows</type>
-			<beginRow>26</beginRow>
-			<endRow>26</endRow>
-			<beginColumn>-1</beginColumn>
-			<endColumn>-1</endColumn>
-		</area>
-	</namedItem>
 	<namedItem xsi:type="NamedItemCells">
 		<name>Header</name>
 		<area>
@@ -1263,6 +1249,16 @@
 		</area>
 	</namedItem>
 	<namedItem xsi:type="NamedItemCells">
+		<name>SalesTax</name>
+		<area>
+			<type>Rows</type>
+			<beginRow>25</beginRow>
+			<endRow>25</endRow>
+			<beginColumn>-1</beginColumn>
+			<endColumn>-1</endColumn>
+		</area>
+	</namedItem>
+	<namedItem xsi:type="NamedItemCells">
 		<name>Subtotal</name>
 		<area>
 			<type>Rows</type>
@@ -1276,8 +1272,8 @@
 		<name>Total</name>
 		<area>
 			<type>Rows</type>
-			<beginRow>25</beginRow>
-			<endRow>25</endRow>
+			<beginRow>26</beginRow>
+			<endRow>26</endRow>
 			<beginColumn>-1</beginColumn>
 			<endColumn>-1</endColumn>
 		</area>
@@ -1299,12 +1295,13 @@
 	<font faceName="Arial" height="10" bold="true" italic="false" underline="false" strikeout="false" kind="Absolute"/>
 	<font faceName="Arial" height="10" bold="false" italic="false" underline="false" strikeout="false" kind="Absolute"/>
 	<font faceName="Arial" height="10" bold="false" italic="true" underline="false" strikeout="false" kind="Absolute"/>
+	<font faceName="Arial" height="10" bold="false" italic="false" underline="false" strikeout="false" kind="Absolute"/>
 	<format>
-		<width>171</width>
+		<width>173</width>
 		<textPlacement>Auto</textPlacement>
 	</format>
 	<format>
-		<width>254</width>
+		<width>218</width>
 	</format>
 	<format>
 		<width>102</width>
@@ -1413,6 +1410,7 @@
 	<format>
 		<font>2</font>
 		<border>0</border>
+		<verticalAlignment>Top</verticalAlignment>
 		<fillType>Parameter</fillType>
 	</format>
 	<format>
@@ -1488,9 +1486,20 @@
 		</format>
 	</format>
 	<format>
-		<font>2</font>
+		<font>4</font>
+		<width>114</width>
+		<horizontalAlignment>Center</horizontalAlignment>
+	</format>
+	<format>
+		<font>4</font>
 		<width>143</width>
 		<horizontalAlignment>Right</horizontalAlignment>
 		<fillType>Parameter</fillType>
+		<format>
+			<v8:item>
+				<v8:lang>en</v8:lang>
+				<v8:content>NFD=2</v8:content>
+			</v8:item>
+		</format>
 	</format>
 </document>

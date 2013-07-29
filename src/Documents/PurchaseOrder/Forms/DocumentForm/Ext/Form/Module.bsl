@@ -338,10 +338,6 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	// Request and fill indexes of product type (required to calculate bacorder property)
 	FillProductTypes();
 	
-	// AdditionalReportsAndDataProcessors
-	AdditionalReportsAndDataProcessors.OnCreateAtServer(ThisForm);
-	// End AdditionalReportsAndDataProcessors
-	
 EndProcedure
 
 &AtClient
@@ -353,9 +349,9 @@ Procedure LineItemsProductOnChange(Item)
 	
 	TabularPartRow = Items.LineItems.CurrentData;
 	
-	ProductProperties = CommonUse.GetAttributeValues(TabularPartRow.Product, "Description, Type.Order, PurchaseVATCode");
+	ProductProperties = CommonUse.GetAttributeValues(TabularPartRow.Product, "Description, PurchaseVATCode"); // mt_change Type.Order,
 	TabularPartRow.ProductDescription = ProductProperties.Description;
-	TabularPartRow.ProductTypeIndex   = ProductProperties.TypeOrder;
+	TabularPartRow.ProductTypeIndex   = TypeOrder(TabularPartRow.Product); // mt_change ProductProperties.TypeOrder;
 	
 	TabularPartRow.Quantity = 0;
 	TabularPartRow.Backorder = 0;
@@ -372,6 +368,18 @@ Procedure LineItemsProductOnChange(Item)
 	RecalcTotal();
 	
 EndProcedure
+
+// mt_change
+Function TypeOrder(Product) Export
+	
+	If Product.Type = Enums.InventoryTypes.Inventory Then
+		Return 0;
+	Else
+		Return 1;
+	EndIf;
+	
+EndFunction
+
 
 &AtClient
 // Calculates a VAT amount for the document line

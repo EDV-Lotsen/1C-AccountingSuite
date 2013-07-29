@@ -8,13 +8,24 @@
 			<DataPath>Record.Period</DataPath>
 			<HorizontalAlign>Right</HorizontalAlign>
 			<ContextMenu name="PeriodContextMenu" id="2"/>
-			<ExtendedTooltip name="PeriodExtendedTooltip" id="9"/>
+			<ExtendedTooltip name="PeriodExtendedTooltip" id="15"/>
 		</InputField>
 		<InputField name="Product" id="3">
 			<DataPath>Record.Product</DataPath>
 			<Width>30</Width>
 			<ContextMenu name="ProductContextMenu" id="4"/>
-			<ExtendedTooltip name="ProductExtendedTooltip" id="10"/>
+			<ExtendedTooltip name="ProductExtendedTooltip" id="16"/>
+		</InputField>
+		<InputField name="ProductCategory" id="13">
+			<DataPath>Record.ProductCategory</DataPath>
+			<ContextMenu name="ProductCategoryContextMenu" id="14"/>
+			<ExtendedTooltip name="ProductCategoryExtendedTooltip" id="17"/>
+		</InputField>
+		<InputField name="PriceLevel" id="9">
+			<DataPath>Record.PriceLevel</DataPath>
+			<QuickChoice>true</QuickChoice>
+			<ContextMenu name="PriceLevelContextMenu" id="10"/>
+			<ExtendedTooltip name="PriceLevelExtendedTooltip" id="18"/>
 		</InputField>
 		<InputField name="Price" id="7">
 			<DataPath>Record.Price</DataPath>
@@ -25,7 +36,18 @@
 				</v8:item>
 			</EditFormat>
 			<ContextMenu name="PriceContextMenu" id="8"/>
-			<ExtendedTooltip name="PriceExtendedTooltip" id="11"/>
+			<ExtendedTooltip name="PriceExtendedTooltip" id="19"/>
+		</InputField>
+		<InputField name="Cost" id="11">
+			<DataPath>Record.Cost</DataPath>
+			<EditFormat>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>NFD=2</v8:content>
+				</v8:item>
+			</EditFormat>
+			<ContextMenu name="CostContextMenu" id="12"/>
+			<ExtendedTooltip name="CostExtendedTooltip" id="20"/>
 		</InputField>
 	</ChildItems>
 	<Attributes>

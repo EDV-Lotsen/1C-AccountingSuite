@@ -38,29 +38,29 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="20"/>
-			<SearchStringAddition name="ListSearchString" id="21">
+			<SearchStringAddition name="ListSearchString" id="32">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="22"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="23"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="33"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="34"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="24">
+			<ViewStatusAddition name="ListViewStatus" id="35">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="25"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="26"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="36"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="37"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="27">
+			<SearchControlAddition name="ListSearchControl" id="38">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="28"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="29"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="39"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="40"/>
 			</SearchControlAddition>
 			<ChildItems>
 				<LabelField name="Date" id="4">
@@ -68,32 +68,32 @@
 					<DefaultItem>true</DefaultItem>
 					<HorizontalAlign>Right</HorizontalAlign>
 					<ContextMenu name="DateContextMenu" id="5"/>
-					<ExtendedTooltip name="DateExtendedTooltip" id="30"/>
+					<ExtendedTooltip name="DateExtendedTooltip" id="21"/>
 				</LabelField>
 				<LabelField name="Number" id="6">
 					<DataPath>List.Number</DataPath>
 					<ContextMenu name="NumberContextMenu" id="7"/>
-					<ExtendedTooltip name="NumberExtendedTooltip" id="31"/>
+					<ExtendedTooltip name="NumberExtendedTooltip" id="22"/>
+				</LabelField>
+				<LabelField name="PaymentMethod" id="29">
+					<DataPath>List.PaymentMethod</DataPath>
+					<ContextMenu name="PaymentMethodContextMenu" id="30"/>
+					<ExtendedTooltip name="PaymentMethodExtendedTooltip" id="31"/>
 				</LabelField>
 				<LabelField name="BankAccount" id="8">
 					<DataPath>List.BankAccount</DataPath>
 					<ContextMenu name="BankAccountContextMenu" id="9"/>
-					<ExtendedTooltip name="BankAccountExtendedTooltip" id="32"/>
+					<ExtendedTooltip name="BankAccountExtendedTooltip" id="23"/>
 				</LabelField>
 				<LabelField name="Company" id="10">
 					<DataPath>List.Company</DataPath>
 					<ContextMenu name="CompanyContextMenu" id="11"/>
-					<ExtendedTooltip name="CompanyExtendedTooltip" id="33"/>
+					<ExtendedTooltip name="CompanyExtendedTooltip" id="24"/>
 				</LabelField>
-				<LabelField name="CompanCode" id="18">
+				<LabelField name="CompanyCode" id="18">
 					<DataPath>List.CompanyCode</DataPath>
-					<ContextMenu name="CompanCodeContextMenu" id="19"/>
-					<ExtendedTooltip name="CompanCodeExtendedTooltip" id="34"/>
-				</LabelField>
-				<LabelField name="ParentDocument" id="12">
-					<DataPath>List.ParentDocument</DataPath>
-					<ContextMenu name="ParentDocumentContextMenu" id="13"/>
-					<ExtendedTooltip name="ParentDocumentExtendedTooltip" id="35"/>
+					<ContextMenu name="CompanyCodeContextMenu" id="19"/>
+					<ExtendedTooltip name="CompanyCodeExtendedTooltip" id="25"/>
 				</LabelField>
 				<LabelField name="DocumentTotal" id="16">
 					<DataPath>List.DocumentTotal</DataPath>
@@ -104,7 +104,7 @@
 						</v8:item>
 					</Format>
 					<ContextMenu name="DocumentTotalContextMenu" id="17"/>
-					<ExtendedTooltip name="DocumentTotalExtendedTooltip" id="36"/>
+					<ExtendedTooltip name="DocumentTotalExtendedTooltip" id="27"/>
 				</LabelField>
 				<LabelField name="DocumentTotalRC" id="14">
 					<DataPath>List.DocumentTotalRC</DataPath>
@@ -115,7 +115,7 @@
 						</v8:item>
 					</Format>
 					<ContextMenu name="DocumentTotalRCContextMenu" id="15"/>
-					<ExtendedTooltip name="DocumentTotalRCExtendedTooltip" id="37"/>
+					<ExtendedTooltip name="DocumentTotalRCExtendedTooltip" id="28"/>
 				</LabelField>
 			</ChildItems>
 		</Table>
@@ -143,6 +143,8 @@
 						<dcsset:viewMode>Normal</dcsset:viewMode>
 						<dcsset:userSettingID>b75fecce-942b-4aed-abc9-e6a02e460fb3</dcsset:userSettingID>
 					</dcsset:conditionalAppearance>
+					<dcsset:itemsViewMode>Normal</dcsset:itemsViewMode>
+					<dcsset:itemsUserSettingID>911b6018-f537-43e8-a417-da56b22f9aec</dcsset:itemsUserSettingID>
 				</ListSettings>
 			</Settings>
 		</Attribute>

@@ -14,7 +14,7 @@
 		<InputField name="Code" id="93">
 			<DataPath>Object.Code</DataPath>
 			<ContextMenu name="CodeContextMenu" id="94"/>
-			<ExtendedTooltip name="CodeExtendedTooltip" id="132"/>
+			<ExtendedTooltip name="CodeExtendedTooltip" id="152"/>
 		</InputField>
 		<InputField name="Description" id="3">
 			<DataPath>Object.Description</DataPath>
@@ -22,36 +22,30 @@
 			<Width>20</Width>
 			<HorizontalStretch>false</HorizontalStretch>
 			<ContextMenu name="DescriptionContextMenu" id="4"/>
-			<ExtendedTooltip name="DescriptionExtendedTooltip" id="133"/>
+			<ExtendedTooltip name="DescriptionExtendedTooltip" id="153"/>
 		</InputField>
 		<UsualGroup name="Group2" id="42">
 			<Group>Horizontal</Group>
 			<Representation>StrongSeparation</Representation>
-			<ExtendedTooltip name="Group2ExtendedTooltip" id="134"/>
+			<ExtendedTooltip name="Group2ExtendedTooltip" id="156"/>
 			<ChildItems>
 				<CheckBoxField name="Customer" id="43">
 					<DataPath>Object.Customer</DataPath>
 					<CheckBoxType>Auto</CheckBoxType>
 					<ContextMenu name="CustomerContextMenu" id="44"/>
-					<ExtendedTooltip name="CustomerExtendedTooltip" id="135"/>
-					<Events>
-						<Event name="OnChange">CustomerOnChange</Event>
-					</Events>
+					<ExtendedTooltip name="CustomerExtendedTooltip" id="157"/>
 				</CheckBoxField>
 				<CheckBoxField name="Vendor" id="45">
 					<DataPath>Object.Vendor</DataPath>
 					<CheckBoxType>Auto</CheckBoxType>
 					<ContextMenu name="VendorContextMenu" id="46"/>
-					<ExtendedTooltip name="VendorExtendedTooltip" id="136"/>
-					<Events>
-						<Event name="OnChange">VendorOnChange</Event>
-					</Events>
+					<ExtendedTooltip name="VendorExtendedTooltip" id="158"/>
 				</CheckBoxField>
 			</ChildItems>
 		</UsualGroup>
 		<Pages name="Group1" id="15">
 			<Width>50</Width>
-			<ExtendedTooltip name="Group1ExtendedTooltip" id="137"/>
+			<ExtendedTooltip name="Group1ExtendedTooltip" id="159"/>
 			<ChildItems>
 				<Page name="Financial" id="16">
 					<Title>
@@ -74,81 +68,162 @@
 							<v8:content>Finanziell</v8:content>
 						</v8:item>
 					</ToolTip>
-					<ExtendedTooltip name="FinancialExtendedTooltip" id="138"/>
+					<ExtendedTooltip name="FinancialExtendedTooltip" id="160"/>
 					<ChildItems>
 						<CheckBoxField name="Vendor1099" id="17">
 							<DataPath>Object.Vendor1099</DataPath>
 							<CheckBoxType>Auto</CheckBoxType>
 							<ContextMenu name="Vendor1099ContextMenu" id="18"/>
-							<ExtendedTooltip name="Vendor1099ExtendedTooltip" id="139"/>
+							<ExtendedTooltip name="Vendor1099ExtendedTooltip" id="161"/>
 						</CheckBoxField>
 						<InputField name="USTaxID" id="25">
 							<DataPath>Object.USTaxID</DataPath>
 							<ContextMenu name="USTaxIDContextMenu" id="26"/>
-							<ExtendedTooltip name="USTaxIDExtendedTooltip" id="140"/>
+							<ExtendedTooltip name="USTaxIDExtendedTooltip" id="162"/>
 						</InputField>
 						<InputField name="DefaultCurrency" id="19">
 							<DataPath>Object.DefaultCurrency</DataPath>
 							<ContextMenu name="DefaultCurrencyContextMenu" id="20"/>
-							<ExtendedTooltip name="DefaultCurrencyExtendedTooltip" id="141"/>
+							<ExtendedTooltip name="DefaultCurrencyExtendedTooltip" id="163"/>
 						</InputField>
 						<InputField name="SalesTaxCode" id="21">
 							<DataPath>Object.SalesTaxCode</DataPath>
 							<ContextMenu name="SalesTaxCodeContextMenu" id="22"/>
-							<ExtendedTooltip name="SalesTaxCodeExtendedTooltip" id="142"/>
+							<ExtendedTooltip name="SalesTaxCodeExtendedTooltip" id="164"/>
 						</InputField>
 						<InputField name="VATNumber" id="81">
 							<DataPath>Object.VATNumber</DataPath>
 							<ContextMenu name="VATNumberContextMenu" id="82"/>
-							<ExtendedTooltip name="VATNumberExtendedTooltip" id="143"/>
+							<ExtendedTooltip name="VATNumberExtendedTooltip" id="165"/>
 						</InputField>
 						<InputField name="Terms" id="130">
 							<DataPath>Object.Terms</DataPath>
 							<ContextMenu name="TermsContextMenu" id="131"/>
-							<ExtendedTooltip name="TermsExtendedTooltip" id="144"/>
+							<ExtendedTooltip name="TermsExtendedTooltip" id="166"/>
 						</InputField>
-						<UsualGroup name="Group3" id="75">
-							<Group>Horizontal</Group>
-							<Representation>None</Representation>
-							<ShowTitle>false</ShowTitle>
-							<ExtendedTooltip name="Group3ExtendedTooltip" id="145"/>
-							<ChildItems>
-								<InputField name="ExpenseAccount" id="73">
-									<DataPath>Object.ExpenseAccount</DataPath>
-									<HorizontalStretch>false</HorizontalStretch>
-									<ContextMenu name="ExpenseAccountContextMenu" id="74"/>
-									<ExtendedTooltip name="ExpenseAccountExtendedTooltip" id="146"/>
-									<Events>
-										<Event name="OnChange">ExpenseAccountOnChange</Event>
-									</Events>
-								</InputField>
-								<LabelDecoration name="ExpenseAcctLabel" id="77">
-									<ContextMenu name="ExpenseAcctLabelContextMenu" id="78"/>
-									<ExtendedTooltip name="ExpenseAcctLabelExtendedTooltip" id="147"/>
-								</LabelDecoration>
-							</ChildItems>
-						</UsualGroup>
 						<UsualGroup name="Group4" id="76">
 							<Group>Horizontal</Group>
 							<Representation>None</Representation>
 							<ShowTitle>false</ShowTitle>
-							<ExtendedTooltip name="Group4ExtendedTooltip" id="148"/>
+							<ExtendedTooltip name="Group4ExtendedTooltip" id="167"/>
 							<ChildItems>
 								<InputField name="IncomeAccount" id="71">
 									<DataPath>Object.IncomeAccount</DataPath>
 									<HorizontalStretch>false</HorizontalStretch>
 									<ContextMenu name="IncomeAccountContextMenu" id="72"/>
-									<ExtendedTooltip name="IncomeAccountExtendedTooltip" id="149"/>
+									<ExtendedTooltip name="IncomeAccountExtendedTooltip" id="168"/>
 									<Events>
 										<Event name="OnChange">IncomeAccountOnChange</Event>
 									</Events>
 								</InputField>
 								<LabelDecoration name="IncomeAcctLabel" id="89">
 									<ContextMenu name="IncomeAcctLabelContextMenu" id="90"/>
-									<ExtendedTooltip name="IncomeAcctLabelExtendedTooltip" id="150"/>
+									<ExtendedTooltip name="IncomeAcctLabelExtendedTooltip" id="169"/>
 								</LabelDecoration>
 							</ChildItems>
 						</UsualGroup>
+						<UsualGroup name="Group3" id="75">
+							<Group>Horizontal</Group>
+							<Representation>None</Representation>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="Group3ExtendedTooltip" id="170"/>
+							<ChildItems>
+								<InputField name="ExpenseAccount" id="73">
+									<DataPath>Object.ExpenseAccount</DataPath>
+									<HorizontalStretch>false</HorizontalStretch>
+									<ContextMenu name="ExpenseAccountContextMenu" id="74"/>
+									<ExtendedTooltip name="ExpenseAccountExtendedTooltip" id="171"/>
+									<Events>
+										<Event name="OnChange">ExpenseAccountOnChange</Event>
+									</Events>
+								</InputField>
+								<LabelDecoration name="ExpenseAcctLabel" id="77">
+									<ContextMenu name="ExpenseAcctLabelContextMenu" id="78"/>
+									<ExtendedTooltip name="ExpenseAcctLabelExtendedTooltip" id="172"/>
+								</LabelDecoration>
+							</ChildItems>
+						</UsualGroup>
+						<UsualGroup name="Group5" id="138">
+							<Group>Horizontal</Group>
+							<Representation>None</Representation>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="Group5ExtendedTooltip" id="173"/>
+							<ChildItems>
+								<InputField name="ARAccount" id="139">
+									<DataPath>Object.ARAccount</DataPath>
+									<HorizontalStretch>false</HorizontalStretch>
+									<ContextMenu name="ARAccountContextMenu" id="140"/>
+									<ExtendedTooltip name="ARAccountExtendedTooltip" id="174"/>
+									<Events>
+										<Event name="OnChange">ARAccountOnChange</Event>
+									</Events>
+								</InputField>
+								<LabelDecoration name="ARAcctLabel" id="141">
+									<ContextMenu name="ARAcctLabelContextMenu" id="142"/>
+									<ExtendedTooltip name="ARAcctLabelExtendedTooltip" id="175"/>
+								</LabelDecoration>
+							</ChildItems>
+						</UsualGroup>
+						<UsualGroup name="Group6" id="143">
+							<Group>Horizontal</Group>
+							<Representation>None</Representation>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="Group6ExtendedTooltip" id="176"/>
+							<ChildItems>
+								<InputField name="APAccount" id="144">
+									<DataPath>Object.APAccount</DataPath>
+									<HorizontalStretch>false</HorizontalStretch>
+									<ContextMenu name="APAccountContextMenu" id="145"/>
+									<ExtendedTooltip name="APAccountExtendedTooltip" id="177"/>
+									<Events>
+										<Event name="OnChange">APAccountOnChange</Event>
+									</Events>
+								</InputField>
+								<LabelDecoration name="APAcctLabel" id="146">
+									<ContextMenu name="APAcctLabelContextMenu" id="147"/>
+									<ExtendedTooltip name="APAcctLabelExtendedTooltip" id="178"/>
+								</LabelDecoration>
+							</ChildItems>
+						</UsualGroup>
+						<InputField name="PriceLevel" id="148">
+							<DataPath>Object.PriceLevel</DataPath>
+							<HorizontalStretch>false</HorizontalStretch>
+							<QuickChoice>true</QuickChoice>
+							<ContextMenu name="PriceLevelContextMenu" id="149"/>
+							<ExtendedTooltip name="PriceLevelExtendedTooltip" id="179"/>
+						</InputField>
+					</ChildItems>
+				</Page>
+				<Page name="Projects" id="201">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Projects</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Projekte</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Projects</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Projekte</v8:content>
+						</v8:item>
+					</ToolTip>
+					<Group>Horizontal</Group>
+					<ExtendedTooltip name="ProjectsExtendedTooltip" id="202"/>
+					<ChildItems>
+						<Button name="CatalogProjectsOpenByValue" id="205">
+							<Type>UsualButton</Type>
+							<CommandName>Catalog.Projects.StandardCommand.OpenByValue</CommandName>
+							<DataPath>Object.Ref</DataPath>
+							<ExtendedTooltip name="CatalogProjectsOpenByValueExtendedTooltip" id="206"/>
+						</Button>
 					</ChildItems>
 				</Page>
 			</ChildItems>
@@ -156,13 +231,13 @@
 		<InputField name="Website" id="126">
 			<DataPath>Object.Website</DataPath>
 			<ContextMenu name="WebsiteContextMenu" id="127"/>
-			<ExtendedTooltip name="WebsiteExtendedTooltip" id="151"/>
+			<ExtendedTooltip name="WebsiteExtendedTooltip" id="180"/>
 		</InputField>
 		<InputField name="Notes" id="128">
 			<DataPath>Object.Notes</DataPath>
 			<MultiLine>true</MultiLine>
 			<ContextMenu name="NotesContextMenu" id="129"/>
-			<ExtendedTooltip name="NotesExtendedTooltip" id="152"/>
+			<ExtendedTooltip name="NotesExtendedTooltip" id="181"/>
 		</InputField>
 	</ChildItems>
 	<Attributes>
@@ -174,12 +249,45 @@
 			<SavedData>true</SavedData>
 		</Attribute>
 	</Attributes>
+	<Commands>
+		<Command name="Projects" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Projects / Jobs</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Projekte/Aufgaben</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Projects</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Projekte</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>Projects</Action>
+		</Command>
+	</Commands>
 	<CommandInterface>
 		<NavigationPanel>
 			<Item>
 				<Command>0:506d8c22-a600-4b9e-86c0-ccc86d222df2</Command>
 				<Type>Auto</Type>
 				<DefaultVisible>false</DefaultVisible>
+			</Item>
+			<Item>
+				<Command>Catalog.Projects.StandardCommand.OpenByValue</Command>
+				<Type>Auto</Type>
+				<DefaultVisible>false</DefaultVisible>
+				<Visible>
+					<xr:Common>false</xr:Common>
+				</Visible>
 			</Item>
 		</NavigationPanel>
 	</CommandInterface>

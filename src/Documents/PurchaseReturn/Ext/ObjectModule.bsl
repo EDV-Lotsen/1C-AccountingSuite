@@ -30,7 +30,9 @@ Procedure Posting(Cancel, Mode)
 	PostingDatasetInvOrExp = New ValueTable();
 	PostingDatasetInvOrExp.Columns.Add("InvOrExpAccount");
     PostingDatasetInvOrExp.Columns.Add("AmountRC");
-		
+	
+	AllowNegativeInventory = Constants.AllowNegativeInventory.Get();
+	
 	For Each CurRowLineItems In LineItems Do
 				
 		If CurRowLineItems.Product.Type = Enums.InventoryTypes.Inventory Then
@@ -56,12 +58,16 @@ Procedure Posting(Cancel, Mode)
 				CurrentBalance = Dataset[0][0];
 			EndIf;
 				
-			If CurRowLineItems.Quantity > CurrentBalance Then					
+			If CurRowLineItems.Quantity > CurrentBalance Then
+				CurProd = CurRowLineItems.Product;
 				Message = New UserMessage();
-				Message.Text=NStr("en='Insufficient balance';de='Nicht ausreichende Bilanz'");
+				Message.Text= StringFunctionsClientServer.SubstituteParametersInString(
+				NStr("en='Insufficient balance on %1';de='Nicht ausreichende Bilanz'"),CurProd);
 				Message.Message();
-				Cancel = True;
-				Return;
+				If NOT AllowNegativeInventory Then
+					Cancel = True;
+					Return;
+				EndIf;
 			EndIf;
 			
 			// inventory journal update and costing procedure
@@ -81,7 +87,13 @@ Procedure Posting(Cancel, Mode)
 				                  |	InventoryJrnlBalance.Product = &Product");
 				Query.SetParameter("Product", CurRowLineItems.Product);
 				QueryResult = Query.Execute().Unload();
-				AverageCost = QueryResult[0].AmountBalance / QueryResult[0].QtyBalance;
+				If  QueryResult.Count() > 0
+				And (Not QueryResult[0].QtyBalance = Null)
+				And (Not QueryResult[0].AmountBalance = Null)
+				And QueryResult[0].QtyBalance > 0
+				Then
+					AverageCost = QueryResult[0].AmountBalance / QueryResult[0].QtyBalance;
+				EndIf;
 								
 				Record = RegisterRecords.InventoryJrnl.Add();
 				Record.RecordType = AccumulationRecordType.Expense;
@@ -246,13 +258,13 @@ Procedure Posting(Cancel, Mode)
 	
 	If VarianceAmount > 0 Then
 		Record = RegisterRecords.GeneralJournal.AddCredit();
-		Record.Account = Company.ExpenseAccount;
+		Record.Account = Constants.ExpenseAccount.Get();
 		Record.Period = Date;
 		Record.AmountRC = VarianceAmount;
 		Record.Memo = "Purchase Return variance";
 	ElsIf VarianceAmount < 0 Then
 		Record = RegisterRecords.GeneralJournal.AddDebit();
-		Record.Account = Company.ExpenseAccount;
+		Record.Account = Constants.ExpenseAccount.Get();
 		Record.Period = Date;
 		Record.AmountRC = VarianceAmount;
 		Record.Memo = "Purchase Return variance";
