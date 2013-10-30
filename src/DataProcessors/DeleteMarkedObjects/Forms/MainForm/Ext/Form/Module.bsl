@@ -234,13 +234,13 @@ Procedure SetMarkInList(Data, Mark, CheckParent)
 	
 EndProcedure
 
-//&AtServer
-//Procedure OnCreateAtServer(Cancel, StandardProcessing)
-//	
-//	DeleteMode = "Full";
-//	Items.CommandNext.Visible = False;
+&AtServer
+Procedure OnCreateAtServer(Cancel, StandardProcessing)
+	
+	DeleteMode = "Full";
+	Items.CommandNext.Visible = False;
 
-//EndProcedure
+EndProcedure
 
 &AtClient
 Procedure DeleteModeOnChange(Item)
@@ -285,26 +285,9 @@ Procedure NonDeletedObjectTreeSelection(Item, SelectedRow, Field, StandardProces
 
 EndProcedure
 
-&AtClient
-Procedure SelectedForDeletionListSelection(Item, SelectedRow, Field, StandardProcessing)
-	
-	CurrentData = Items.SelectedForDeletionList.CurrentData;
-	If CurrentData = Undefined Then 
-		Return;
-	EndIf;
-	
-	If CurrentData.GetItems().Count() = 0 Then
-		// this row displays an object marked for deletion
-		StandardProcessing = False;
-		ShowValue( ,CurrentData.Value);
-	EndIf;
 
-EndProcedure
 
-&AtServer
-Procedure OnCreateAtServer(Cancel, StandardProcessing)
+
+
 	
-	DeleteMode = "Full";
-	Items.CommandNext.Visible = False;
 
-EndProcedure

@@ -4,18 +4,6 @@
 // 
 
 
-// Returns the taxable sales tax type.
-//
-// Returned value:
-// Enumerations.SalesTaxType - for the taxable type tax is calculated on the applicable amounts.
-//
-Function Taxable() Export
-				
-	Return Enums.SalesTaxTypes.Taxable;		
-		
-EndFunction
-
-
 // Returns an item's sales tax type. If an item is of inventory type, by default it's taxable,
 // if a product is non-inventory, then by default, it's non-taxable. The default taxable property can
 // be changed in individual document lines.
@@ -36,26 +24,18 @@ Function GetSalesTaxType(Product) Export
 	
 EndFunction
 
-// Returns a customer's sales tax rate.
-//
-// Parameter:
-// Catalog.Companies.
-//
-// Returned value:
-// Number - a customer's tax rate (for example, 10.5%), or 0 if not defined.
-//
-Function GetTaxRate(Company) Export
+Function GetTaxRate(Address) Export  //Company
 	
 	Query = New Query("SELECT
 	                  |	STC.TaxRate AS TR
 	                  |FROM
 	                  |	Catalog.SalesTaxCodes AS STC
-	                  |		INNER JOIN Catalog.Companies AS C
-	                  |		ON (C.SalesTaxCode = STC.Ref)
+	                  |		INNER JOIN Catalog.Addresses AS A
+	                  |		ON (A.SalesTaxCode = STC.Ref)
 	                  |WHERE
-	                  |	C.Ref = &Company");
+	                  |	A.Ref = &Address");
 	
-	Query.SetParameter("Company", Company);
+	Query.SetParameter("Address", Address);
 	QueryResult = Query.Execute();
 	
 	If QueryResult.IsEmpty() Then

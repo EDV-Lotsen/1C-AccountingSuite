@@ -4,7 +4,16 @@
 	<AutoTime>CurrentOrLast</AutoTime>
 	<UsePostingMode>Auto</UsePostingMode>
 	<RepostOnWrite>true</RepostOnWrite>
-	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<AutoCommandBar name="FormCommandBar" id="-1">
+		<ChildItems>
+			<Button name="FormPayWithDwolla" id="114">
+				<Type>CommandBarButton</Type>
+				<Visible>false</Visible>
+				<CommandName>Form.Command.PayWithDwolla</CommandName>
+				<ExtendedTooltip name="FormPayWithDwollaExtendedTooltip" id="115"/>
+			</Button>
+		</ChildItems>
+	</AutoCommandBar>
 	<Events>
 		<Event name="AfterWrite">AfterWrite</Event>
 		<Event name="BeforeWrite">BeforeWrite</Event>
@@ -39,141 +48,195 @@
 			<ShowTitle>false</ShowTitle>
 			<ExtendedTooltip name="HeaderExtendedTooltip" id="75"/>
 			<ChildItems>
-				<UsualGroup name="LeftColumn" id="47">
-					<Title>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Left column</v8:content>
-						</v8:item>
-					</Title>
-					<ToolTip>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Left column</v8:content>
-						</v8:item>
-					</ToolTip>
-					<Group>Vertical</Group>
-					<Representation>None</Representation>
-					<ShowTitle>false</ShowTitle>
-					<ExtendedTooltip name="LeftColumnExtendedTooltip" id="76"/>
+				<Pages name="Group2" id="102">
+					<ExtendedTooltip name="Group2ExtendedTooltip" id="103"/>
 					<ChildItems>
-						<InputField name="Company" id="5">
-							<DataPath>Object.Company</DataPath>
-							<EditMode>EnterOnInput</EditMode>
-							<Width>15</Width>
-							<HorizontalStretch>false</HorizontalStretch>
-							<ContextMenu name="CompanyContextMenu" id="6"/>
-							<ExtendedTooltip name="CompanyExtendedTooltip" id="84"/>
-							<Events>
-								<Event name="OnChange">CompanyOnChange</Event>
-							</Events>
-						</InputField>
-						<InputField name="CompanyCode" id="73">
-							<DataPath>Object.CompanyCode</DataPath>
-							<ReadOnly>true</ReadOnly>
-							<HorizontalStretch>false</HorizontalStretch>
-							<ContextMenu name="CompanyCodeContextMenu" id="74"/>
-							<ExtendedTooltip name="CompanyCodeExtendedTooltip" id="85"/>
-						</InputField>
-					</ChildItems>
-				</UsualGroup>
-				<UsualGroup name="MiddleColumn" id="48">
-					<Title>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Middle column</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Mittlere Spalte</v8:content>
-						</v8:item>
-					</Title>
-					<ToolTip>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Middle column</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Mittlere Spalte</v8:content>
-						</v8:item>
-					</ToolTip>
-					<Group>Vertical</Group>
-					<Representation>None</Representation>
-					<ShowTitle>false</ShowTitle>
-					<ExtendedTooltip name="MiddleColumnExtendedTooltip" id="81"/>
-					<ChildItems>
-						<InputField name="Date" id="3">
-							<DataPath>Object.Date</DataPath>
-							<HorizontalAlign>Right</HorizontalAlign>
-							<EditMode>EnterOnInput</EditMode>
-							<Width>15</Width>
-							<HorizontalStretch>false</HorizontalStretch>
-							<ContextMenu name="DateContextMenu" id="4"/>
-							<ExtendedTooltip name="DateExtendedTooltip" id="82"/>
-						</InputField>
-						<InputField name="PaymentMethod" id="99">
-							<DataPath>Object.PaymentMethod</DataPath>
-							<Width>15</Width>
-							<HorizontalStretch>false</HorizontalStretch>
-							<ContextMenu name="PaymentMethodContextMenu" id="100"/>
-							<ExtendedTooltip name="PaymentMethodExtendedTooltip" id="101"/>
-							<Events>
-								<Event name="OnChange">PaymentMethodOnChange</Event>
-							</Events>
-						</InputField>
-					</ChildItems>
-				</UsualGroup>
-				<UsualGroup name="RightColumn" id="49">
-					<Title>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Right column</v8:content>
-						</v8:item>
-					</Title>
-					<ToolTip>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Right column</v8:content>
-						</v8:item>
-					</ToolTip>
-					<Group>Vertical</Group>
-					<Representation>None</Representation>
-					<ShowTitle>false</ShowTitle>
-					<ExtendedTooltip name="RightColumnExtendedTooltip" id="83"/>
-					<ChildItems>
-						<UsualGroup name="Group1" id="68">
+						<Page name="Main" id="104">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Main</v8:content>
+								</v8:item>
+							</Title>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Main</v8:content>
+								</v8:item>
+							</ToolTip>
 							<Group>Horizontal</Group>
-							<Representation>None</Representation>
-							<ShowTitle>false</ShowTitle>
-							<ExtendedTooltip name="Group1ExtendedTooltip" id="78"/>
+							<ExtendedTooltip name="MainExtendedTooltip" id="105"/>
 							<ChildItems>
-								<InputField name="BankAccount" id="66">
-									<DataPath>Object.BankAccount</DataPath>
-									<Width>15</Width>
-									<HorizontalStretch>false</HorizontalStretch>
-									<ContextMenu name="BankAccountContextMenu" id="67"/>
-									<ExtendedTooltip name="BankAccountExtendedTooltip" id="79"/>
-									<Events>
-										<Event name="OnChange">BankAccountOnChange</Event>
-									</Events>
-								</InputField>
-								<LabelDecoration name="BankAccountLabel" id="69">
-									<ContextMenu name="BankAccountLabelContextMenu" id="70"/>
-									<ExtendedTooltip name="BankAccountLabelExtendedTooltip" id="80"/>
-								</LabelDecoration>
+								<UsualGroup name="LeftColumn" id="47">
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Left column</v8:content>
+										</v8:item>
+									</Title>
+									<ToolTip>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Left column</v8:content>
+										</v8:item>
+									</ToolTip>
+									<Group>Vertical</Group>
+									<Representation>None</Representation>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="LeftColumnExtendedTooltip" id="76"/>
+									<ChildItems>
+										<InputField name="Company" id="5">
+											<DataPath>Object.Company</DataPath>
+											<EditMode>EnterOnInput</EditMode>
+											<Width>15</Width>
+											<HorizontalStretch>false</HorizontalStretch>
+											<ContextMenu name="CompanyContextMenu" id="6"/>
+											<ExtendedTooltip name="CompanyExtendedTooltip" id="84"/>
+											<Events>
+												<Event name="OnChange">CompanyOnChange</Event>
+											</Events>
+										</InputField>
+										<InputField name="CompanyCode" id="73">
+											<DataPath>Object.CompanyCode</DataPath>
+											<ReadOnly>true</ReadOnly>
+											<HorizontalStretch>false</HorizontalStretch>
+											<ContextMenu name="CompanyCodeContextMenu" id="74"/>
+											<ExtendedTooltip name="CompanyCodeExtendedTooltip" id="85"/>
+										</InputField>
+									</ChildItems>
+								</UsualGroup>
+								<UsualGroup name="MiddleColumn" id="48">
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Middle column</v8:content>
+										</v8:item>
+										<v8:item>
+											<v8:lang>de</v8:lang>
+											<v8:content>Mittlere Spalte</v8:content>
+										</v8:item>
+									</Title>
+									<ToolTip>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Middle column</v8:content>
+										</v8:item>
+										<v8:item>
+											<v8:lang>de</v8:lang>
+											<v8:content>Mittlere Spalte</v8:content>
+										</v8:item>
+									</ToolTip>
+									<Group>Vertical</Group>
+									<Representation>None</Representation>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="MiddleColumnExtendedTooltip" id="81"/>
+									<ChildItems>
+										<InputField name="Date" id="3">
+											<DataPath>Object.Date</DataPath>
+											<HorizontalAlign>Right</HorizontalAlign>
+											<EditMode>EnterOnInput</EditMode>
+											<Width>15</Width>
+											<HorizontalStretch>false</HorizontalStretch>
+											<ContextMenu name="DateContextMenu" id="4"/>
+											<ExtendedTooltip name="DateExtendedTooltip" id="82"/>
+										</InputField>
+										<InputField name="PaymentMethod" id="99">
+											<DataPath>Object.PaymentMethod</DataPath>
+											<Width>15</Width>
+											<HorizontalStretch>false</HorizontalStretch>
+											<ContextMenu name="PaymentMethodContextMenu" id="100"/>
+											<ExtendedTooltip name="PaymentMethodExtendedTooltip" id="101"/>
+											<Events>
+												<Event name="OnChange">PaymentMethodOnChange</Event>
+											</Events>
+										</InputField>
+									</ChildItems>
+								</UsualGroup>
+								<UsualGroup name="RightColumn" id="49">
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Right column</v8:content>
+										</v8:item>
+									</Title>
+									<ToolTip>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Right column</v8:content>
+										</v8:item>
+									</ToolTip>
+									<Group>Vertical</Group>
+									<Representation>None</Representation>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="RightColumnExtendedTooltip" id="83"/>
+									<ChildItems>
+										<UsualGroup name="Group1" id="68">
+											<Group>Horizontal</Group>
+											<Representation>None</Representation>
+											<ShowTitle>false</ShowTitle>
+											<ExtendedTooltip name="Group1ExtendedTooltip" id="78"/>
+											<ChildItems>
+												<InputField name="BankAccount" id="66">
+													<DataPath>Object.BankAccount</DataPath>
+													<Width>15</Width>
+													<HorizontalStretch>false</HorizontalStretch>
+													<ContextMenu name="BankAccountContextMenu" id="67"/>
+													<ExtendedTooltip name="BankAccountExtendedTooltip" id="79"/>
+													<Events>
+														<Event name="OnChange">BankAccountOnChange</Event>
+													</Events>
+												</InputField>
+												<LabelDecoration name="BankAccountLabel" id="69">
+													<ContextMenu name="BankAccountLabelContextMenu" id="70"/>
+													<ExtendedTooltip name="BankAccountLabelExtendedTooltip" id="80"/>
+												</LabelDecoration>
+											</ChildItems>
+										</UsualGroup>
+										<InputField name="Number" id="1">
+											<DataPath>Object.Number</DataPath>
+											<EditMode>EnterOnInput</EditMode>
+											<Width>15</Width>
+											<HorizontalStretch>false</HorizontalStretch>
+											<ContextMenu name="NumberContextMenu" id="2"/>
+											<ExtendedTooltip name="NumberExtendedTooltip" id="77"/>
+										</InputField>
+									</ChildItems>
+								</UsualGroup>
 							</ChildItems>
-						</UsualGroup>
-						<InputField name="Number" id="1">
-							<DataPath>Object.Number</DataPath>
-							<EditMode>EnterOnInput</EditMode>
-							<Width>15</Width>
-							<HorizontalStretch>false</HorizontalStretch>
-							<ContextMenu name="NumberContextMenu" id="2"/>
-							<ExtendedTooltip name="NumberExtendedTooltip" id="77"/>
-						</InputField>
+						</Page>
+						<Page name="Additional" id="106">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Additional</v8:content>
+								</v8:item>
+							</Title>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Additional</v8:content>
+								</v8:item>
+							</ToolTip>
+							<ExtendedTooltip name="AdditionalExtendedTooltip" id="107"/>
+							<ChildItems>
+								<InputField name="DwollaPin" id="108">
+									<DataPath>DwollaPin</DataPath>
+									<PasswordMode>true</PasswordMode>
+									<ContextMenu name="DwollaPinContextMenu" id="109"/>
+									<ExtendedTooltip name="DwollaPinExtendedTooltip" id="110"/>
+								</InputField>
+								<InputField name="DwollaTrxID" id="111">
+									<DataPath>Object.DwollaTrxID</DataPath>
+									<ReadOnly>true</ReadOnly>
+									<Width>14</Width>
+									<HorizontalStretch>false</HorizontalStretch>
+									<ContextMenu name="DwollaTrxIDContextMenu" id="112"/>
+									<ExtendedTooltip name="DwollaTrxIDExtendedTooltip" id="113"/>
+								</InputField>
+							</ChildItems>
+						</Page>
 					</ChildItems>
-				</UsualGroup>
+				</Pages>
 			</ChildItems>
 		</UsualGroup>
 		<UsualGroup name="PaidInvoices" id="50">
@@ -213,29 +276,29 @@
 					<ContextMenu name="LineItemsContextMenu" id="52"/>
 					<AutoCommandBar name="LineItemsCommandBar" id="53"/>
 					<ExtendedTooltip name="LineItemsExtendedTooltip" id="87"/>
-					<SearchStringAddition name="LineItemsSearchString" id="102">
+					<SearchStringAddition name="LineItemsSearchString" id="116">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>SearchStringRepresentation</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsSearchStringContextMenu" id="103"/>
-						<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="104"/>
+						<ContextMenu name="LineItemsSearchStringContextMenu" id="117"/>
+						<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="118"/>
 					</SearchStringAddition>
-					<ViewStatusAddition name="LineItemsViewStatus" id="105">
+					<ViewStatusAddition name="LineItemsViewStatus" id="119">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>ViewStatusRepresentation</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsViewStatusContextMenu" id="106"/>
-						<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="107"/>
+						<ContextMenu name="LineItemsViewStatusContextMenu" id="120"/>
+						<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="121"/>
 					</ViewStatusAddition>
-					<SearchControlAddition name="LineItemsSearchControl" id="108">
+					<SearchControlAddition name="LineItemsSearchControl" id="122">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>SearchControl</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsSearchControlContextMenu" id="109"/>
-						<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="110"/>
+						<ContextMenu name="LineItemsSearchControlContextMenu" id="123"/>
+						<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="124"/>
 					</SearchControlAddition>
 					<ChildItems>
 						<LabelField name="LineItemsLineNumber" id="54">
@@ -384,7 +447,39 @@
 				<Field>Object.RegisterRecords</Field>
 			</UseAlways>
 		</Attribute>
+		<Attribute name="DwollaPin" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Dwolla PIN</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>4</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
 	</Attributes>
+	<Commands>
+		<Command name="PayWithDwolla" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Pay with Dwolla</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Pay with dwolla</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>PayWithDwolla</Action>
+		</Command>
+	</Commands>
 	<CommandInterface>
 		<NavigationPanel>
 			<Item>

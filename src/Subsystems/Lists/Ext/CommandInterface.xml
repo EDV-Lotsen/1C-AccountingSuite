@@ -16,11 +16,6 @@
 				<xr:Common>false</xr:Common>
 			</Visibility>
 		</Command>
-		<Command name="0:bd20c7c2-1e66-45f5-8256-852dbd8b9c0c">
-			<Visibility>
-				<xr:Common>true</xr:Common>
-			</Visibility>
-		</Command>
 		<Command name="Catalog.UserList.StandardCommand.OpenList">
 			<Visibility>
 				<xr:Common>true</xr:Common>
@@ -31,9 +26,9 @@
 				<xr:Common>true</xr:Common>
 			</Visibility>
 		</Command>
-		<Command name="0:262f110f-6b38-41dc-9669-1f79b50f462b">
+		<Command name="0:a348fe18-ecf8-4e61-80f4-8a603604a134">
 			<Visibility>
-				<xr:Common>false</xr:Common>
+				<xr:Common>true</xr:Common>
 			</Visibility>
 		</Command>
 	</CommandsVisibility>
@@ -50,10 +45,6 @@
 			<CommandGroup>NavigationPanelImportant</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
-		<Command name="0:bd20c7c2-1e66-45f5-8256-852dbd8b9c0c">
-			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
-			<Placement>Auto</Placement>
-		</Command>
 		<Command name="Catalog.UserList.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
 			<Placement>Auto</Placement>
@@ -62,8 +53,8 @@
 			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
-		<Command name="0:262f110f-6b38-41dc-9669-1f79b50f462b">
-			<CommandGroup>ActionsPanelTools</CommandGroup>
+		<Command name="0:a348fe18-ecf8-4e61-80f4-8a603604a134">
+			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
 	</CommandsPlacement>
@@ -95,13 +86,13 @@
 		<Command name="Catalog.UM.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
 		</Command>
-		<Command name="0:bd20c7c2-1e66-45f5-8256-852dbd8b9c0c">
-			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
-		</Command>
 		<Command name="Catalog.UserList.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
 		</Command>
 		<Command name="Catalog.ProductCategories.StandardCommand.OpenList">
+			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
+		</Command>
+		<Command name="0:a348fe18-ecf8-4e61-80f4-8a603604a134">
 			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
 		</Command>
 		<Command name="Catalog.Companies.StandardCommand.Create">
@@ -134,22 +125,16 @@
 		<Command name="Catalog.UserList.StandardCommand.Create">
 			<CommandGroup>ActionsPanelCreate</CommandGroup>
 		</Command>
-		<Command name="1:bd20c7c2-1e66-45f5-8256-852dbd8b9c0c">
-			<CommandGroup>ActionsPanelCreate</CommandGroup>
-		</Command>
 		<Command name="Catalog.ProductCategories.StandardCommand.Create">
 			<CommandGroup>ActionsPanelCreate</CommandGroup>
 		</Command>
-		<Command name="0:262f110f-6b38-41dc-9669-1f79b50f462b">
-			<CommandGroup>ActionsPanelTools</CommandGroup>
+		<Command name="1:a348fe18-ecf8-4e61-80f4-8a603604a134">
+			<CommandGroup>ActionsPanelCreate</CommandGroup>
 		</Command>
 		<Command name="DataProcessor.DeleteMarkedObjects.StandardCommand.Open">
 			<CommandGroup>ActionsPanelTools</CommandGroup>
 		</Command>
-		<Command name="0:efc7244b-3251-4684-b8a4-1a0f32074ea8">
-			<CommandGroup>ActionsPanelTools</CommandGroup>
-		</Command>
-		<Command name="0:d5244d76-f596-43cd-88d2-d4e388881675">
+		<Command name="DataProcessor.DataImport.StandardCommand.Open">
 			<CommandGroup>ActionsPanelTools</CommandGroup>
 		</Command>
 	</CommandsOrder>

@@ -32,10 +32,10 @@ EndProcedure
 // 
 Procedure RecalcSalesTax()
 	
-	If Object.Company.IsEmpty() Then
+	If Object.ShipTo.IsEmpty() Then
 		TaxRate = 0;
 	Else
-		TaxRate = US_FL.GetTaxRate(Object.Company);
+		TaxRate = US_FL.GetTaxRate(Object.ShipTo);
 	EndIf;
 	
 	Object.SalesTax = Object.LineItems.Total("TaxableAmount") * TaxRate/100;
@@ -69,7 +69,7 @@ Procedure RecalcTaxableAmount()
 	
 	TabularPartRow = Items.LineItems.CurrentData;
 	
-	If TabularPartRow.SalesTaxType = US_FL.Taxable() Then
+	If TabularPartRow.SalesTaxType = GeneralFunctionsReusable.US_FL_Taxable() Then
 		TabularPartRow.TaxableAmount = TabularPartRow.LineTotal;
 	Else
 		TabularPartRow.TaxableAmount = 0;
@@ -193,6 +193,9 @@ EndProcedure
 // 
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
+	Items.LineItemsQuantity.EditFormat = "NFD=" + Constants.QtyPrecision.Get();
+	Items.LineItemsQuantity.Format = "NFD=" + Constants.QtyPrecision.Get();
+	
 	Items.Company.Title = GeneralFunctionsReusable.GetCustomerName();
 	
 	//Title = "Cash Sale " + Object.Number + " " + Format(Object.Date, "DLF=D");
@@ -239,6 +242,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	Items.FCYCurrency.Title = CommonUse.GetAttributeValue(Object.Currency, "Symbol");
 	
 	// Update elements status.
+	//Items.FormChargeWithStripe.Enabled = IsBlankString(Object.StripeID);
 	
 EndProcedure
 
@@ -250,16 +254,6 @@ Procedure LineItemsVATCodeOnChange(Item)
 	TabularPartRow = Items.LineItems.CurrentData;
 	TabularPartRow.VAT = VAT_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Sales", Object.PriceIncludesVAT);
     RecalcTotal();
-
-EndProcedure
-
-&AtClient
-// Retrieves the account's description
-//
-Procedure BankAccountOnChange(Item)
-	
-	Items.BankAccountLabel.Title =
-		CommonUse.GetAttributeValue(Object.BankAccount, "Description");
 
 EndProcedure
 

@@ -33,29 +33,29 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="30"/>
-			<SearchStringAddition name="ListSearchString" id="31">
+			<SearchStringAddition name="ListSearchString" id="44">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="32"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="33"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="45"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="46"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="34">
+			<ViewStatusAddition name="ListViewStatus" id="47">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="35"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="36"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="48"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="49"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="37">
+			<SearchControlAddition name="ListSearchControl" id="50">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="38"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="39"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="51"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="52"/>
 			</SearchControlAddition>
 			<ChildItems>
 				<LabelField name="Period" id="4">
@@ -65,41 +65,52 @@
 					<Width>10</Width>
 					<HorizontalStretch>false</HorizontalStretch>
 					<ContextMenu name="PeriodContextMenu" id="5"/>
-					<ExtendedTooltip name="PeriodExtendedTooltip" id="40"/>
+					<ExtendedTooltip name="PeriodExtendedTooltip" id="31"/>
 				</LabelField>
 				<LabelField name="Product" id="20">
 					<DataPath>List.Product</DataPath>
 					<Width>10</Width>
 					<HorizontalStretch>false</HorizontalStretch>
 					<ContextMenu name="ProductContextMenu" id="21"/>
-					<ExtendedTooltip name="ProductExtendedTooltip" id="41"/>
-				</LabelField>
-				<LabelField name="PriceLevel" id="24">
-					<DataPath>List.PriceLevel</DataPath>
-					<ContextMenu name="PriceLevelContextMenu" id="25"/>
-					<ExtendedTooltip name="PriceLevelExtendedTooltip" id="42"/>
-				</LabelField>
-				<LabelField name="ProductCategory" id="28">
-					<DataPath>List.ProductCategory</DataPath>
-					<ContextMenu name="ProductCategoryContextMenu" id="29"/>
-					<ExtendedTooltip name="ProductCategoryExtendedTooltip" id="43"/>
+					<ExtendedTooltip name="ProductExtendedTooltip" id="32"/>
 				</LabelField>
 				<LabelField name="Description" id="22">
 					<DataPath>List.Description</DataPath>
 					<ContextMenu name="DescriptionContextMenu" id="23"/>
-					<ExtendedTooltip name="DescriptionExtendedTooltip" id="44"/>
+					<ExtendedTooltip name="DescriptionExtendedTooltip" id="35"/>
+				</LabelField>
+				<LabelField name="ItemCategory" id="41">
+					<DataPath>List.ItemCategory</DataPath>
+					<ContextMenu name="ItemCategoryContextMenu" id="42"/>
+					<ExtendedTooltip name="ItemCategoryExtendedTooltip" id="43"/>
+				</LabelField>
+				<LabelField name="ProductCategory" id="38">
+					<DataPath>List.ProductCategory</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Price item category</v8:content>
+						</v8:item>
+					</Title>
+					<ContextMenu name="ProductCategoryContextMenu" id="39"/>
+					<ExtendedTooltip name="ProductCategoryExtendedTooltip" id="40"/>
+				</LabelField>
+				<LabelField name="PriceLevel" id="24">
+					<DataPath>List.PriceLevel</DataPath>
+					<ContextMenu name="PriceLevelContextMenu" id="25"/>
+					<ExtendedTooltip name="PriceLevelExtendedTooltip" id="33"/>
 				</LabelField>
 				<LabelField name="Price" id="10">
 					<DataPath>List.Price</DataPath>
 					<Width>10</Width>
 					<HorizontalStretch>false</HorizontalStretch>
 					<ContextMenu name="PriceContextMenu" id="11"/>
-					<ExtendedTooltip name="PriceExtendedTooltip" id="45"/>
+					<ExtendedTooltip name="PriceExtendedTooltip" id="36"/>
 				</LabelField>
 				<LabelField name="Cost" id="26">
 					<DataPath>List.Cost</DataPath>
 					<ContextMenu name="CostContextMenu" id="27"/>
-					<ExtendedTooltip name="CostExtendedTooltip" id="46"/>
+					<ExtendedTooltip name="CostExtendedTooltip" id="37"/>
 				</LabelField>
 			</ChildItems>
 		</Table>
@@ -116,6 +127,7 @@
 				<QueryText>SELECT
 	InformationRegisterPriceList.Period,
 	InformationRegisterPriceList.Product,
+	InformationRegisterPriceList.Product.Category AS ItemCategory,
 	InformationRegisterPriceList.Price,
 	Products.Description,
 	InformationRegisterPriceList.PriceLevel,

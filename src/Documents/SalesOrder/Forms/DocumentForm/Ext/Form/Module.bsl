@@ -1,7 +1,7 @@
 ﻿&AtServer
 // Request order status from database
 Procedure FillOrderStatuses()
-	
+	 
 	// Request order status
 	If Not ValueIsFilled(Object.Ref) Then
 		// New order has open status
@@ -180,9 +180,12 @@ Procedure LineItemsProductOnChange(Item)
 	
 	TabularPartRow = Items.LineItems.CurrentData;
 	
-	ProductProperties = CommonUse.GetAttributeValues(TabularPartRow.Product, "Description, SalesVATCode");  // mt_change Type.Order,
-	TabularPartRow.ProductDescription = ProductProperties.Description;
-	TabularPartRow.ProductTypeIndex   = TypeOrder(TabularPartRow.Product);  // mt_change ProductProperties.TypeOrder;
+	DataArray = GetDataOnServer(TabularPartRow.Product, Object.Company);
+	
+	//ProductProperties = CommonUse.GetAttributeValues(TabularPartRow.Product, "Description, SalesVATCode");  // mt_change Type.Order,
+	//TabularPartRow.ProductDescription = ProductProperties.Description;
+	TabularPartRow.ProductDescription = DataArray[0];
+	TabularPartRow.ProductTypeIndex   = DataArray[4]; // TypeOrder(TabularPartRow.Product);
 	
 	TabularPartRow.Quantity = 0;
 	TabularPartRow.Backorder = 0;
@@ -193,48 +196,58 @@ Procedure LineItemsProductOnChange(Item)
 	TabularPartRow.Price = 0;
     TabularPartRow.VAT = 0;
 	
-	Price = GeneralFunctions.RetailPrice(CurrentDate(), TabularPartRow.Product, Object.Company);
+	Price = DataArray[1]; //GeneralFunctions.RetailPrice(CurrentDate(), TabularPartRow.Product, Object.Company);
 	TabularPartRow.Price = Price / Object.ExchangeRate;
 
-	TabularPartRow.SalesTaxType = US_FL.GetSalesTaxType(TabularPartRow.Product);	
+	TabularPartRow.SalesTaxType = DataArray[3]; // US_FL.GetSalesTaxType(TabularPartRow.Product);	
 	
-	TabularPartRow.VATCode = ProductProperties.SalesVATCode;
+	TabularPartRow.VATCode = DataArray[2];   // ProductProperties.SalesVATCode;
 	
 	RecalcTotal();
 	
 EndProcedure
 
-// mt_change
-Function TypeOrder(Product) Export
+&AtServer
+Function GetDataOnServer(Product, Company)
 	
-	If Product.Type = Enums.InventoryTypes.Inventory Then
-		Return 0;
-	Else
-		Return 1;
-	EndIf;
-	
+	 ReturnArray = New Array(5);
+	 ReturnArray[0] = CommonUse.GetAttributeValue(Product, "Description");
+	 ReturnArray[1] = GeneralFunctions.RetailPrice(Object.Date, Product, Company);
+	 ReturnArray[2] = CommonUse.GetAttributeValue(Product, "SalesVATCode");
+	 ReturnArray[3] = US_FL.GetSalesTaxType(Product);
+	 
+	 If Product.Type = Enums.InventoryTypes.Inventory Then
+		ReturnArray[4] = 0;
+	 Else
+		ReturnArray[4] = 1;
+	 EndIf;
+	 
+	 Return ReturnArray;
+	 
 EndFunction
 
-&AtClient
-// The procedure recalculates a document's sales tax amount
-// 
-Procedure RecalcSalesTax()
-	
-	If Object.Company.IsEmpty() Then
-		TaxRate = 0;
-	Else
-		TaxRate = US_FL.GetTaxRate(Object.Company);
-	EndIf;
-	
-	Object.SalesTax = Object.LineItems.Total("TaxableAmount") * TaxRate/100;
-	
-EndProcedure
 
-&AtClient
+// mt_change
+//Function TypeOrder(Product) Export
+//	
+//	If Product.Type = Enums.InventoryTypes.Inventory Then
+//		Return 0;
+//	Else
+//		Return 1;
+//	EndIf;
+//	
+//EndFunction
+
+//&AtClient
+// The procedure recalculates a document's sales tax amount
+//
+
+//&AtClient
 // The procedure recalculates the document's total.
 // DocumentTotal - document's currency in FCY (foreign currency).
 // DocumentTotalRC - company's reporting currency.
 //
+&AtServer
 Procedure RecalcTotal()
 	
 	
@@ -256,7 +269,7 @@ Procedure RecalcTaxableAmount()
 	
 	TabularPartRow = Items.LineItems.CurrentData;
 	
-	If TabularPartRow.SalesTaxType = US_FL.Taxable() Then
+	If TabularPartRow.SalesTaxType = GeneralFunctionsReusable.US_FL_Taxable() Then
 		TabularPartRow.TaxableAmount = TabularPartRow.LineTotal;
 	Else
 		TabularPartRow.TaxableAmount = 0;
@@ -271,15 +284,23 @@ EndProcedure
 // 
 Procedure CompanyOnChange(Item)
 	
+	CompanyOnChangeServer();
+	
+EndProcedure
+
+&AtServer
+Procedure CompanyOnChangeServer()
+	
 	Object.CompanyCode = CommonUse.GetAttributeValue(Object.Company, "Code");
 	Object.ShipTo = GeneralFunctions.GetShipToAddress(Object.Company);
 	Object.Currency = CommonUse.GetAttributeValue(Object.Company, "DefaultCurrency");
 	Object.ExchangeRate = GeneralFunctions.GetExchangeRate(Object.Date, Object.Currency);
 	Items.ExchangeRate.Title = GeneralFunctionsReusable.DefaultCurrencySymbol() + "/1" + CommonUse.GetAttributeValue(Object.Currency, "Symbol");
 	Items.FCYCurrency.Title = CommonUse.GetAttributeValue(Object.Currency, "Symbol");
-	RecalcSalesTax();
-	RecalcTotal();
-	
+	//RecalcSalesTax();
+	//RecalcTotal();
+	RecalcSalesTaxAndTotal();
+
 EndProcedure
 
 &AtClient
@@ -293,12 +314,44 @@ Procedure LineItemsPriceOnChange(Item)
 	
 	TabularPartRow.LineTotal = TabularPartRow.Quantity * TabularPartRow.Price;
 
-	TabularPartRow.VAT = VAT_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Sales", Object.PriceIncludesVAT);
+	If GeneralFunctionsReusable.FunctionalOptionValue("VATFinLocalization") Then
+		TabularPartRow.VAT = VAT_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Sales", Object.PriceIncludesVAT);
+	Else	
+		TabularPartRow.VAT = 0;
+	EndIf;
 	
 	RecalcTaxableAmount();
-	RecalcSalesTax();
-	RecalcTotal();
+	//RecalcSalesTax();
+	//RecalcTotal();
+	RecalcSalesTaxAndTotal();
 
+EndProcedure
+
+&AtServer
+Procedure RecalcSalesTaxAndTotal()
+	
+	// sales tax
+	
+	If Object.ShipTo.IsEmpty() Then
+		TaxRate = 0;
+	Else
+		TaxRate = US_FL.GetTaxRate(Object.ShipTo);
+	EndIf;
+	
+	Object.SalesTax = Object.LineItems.Total("TaxableAmount") * TaxRate/100;
+
+	// total
+	
+	If Object.PriceIncludesVAT Then
+		Object.DocumentTotal = Object.LineItems.Total("LineTotal") + Object.SalesTax;
+		Object.DocumentTotalRC = (Object.LineItems.Total("LineTotal") + Object.SalesTax) * Object.ExchangeRate;		
+	Else
+		Object.DocumentTotal = Object.LineItems.Total("LineTotal") + Object.LineItems.Total("VAT") + Object.SalesTax;
+		Object.DocumentTotalRC = (Object.LineItems.Total("LineTotal") + Object.LineItems.Total("VAT") + Object.SalesTax) * Object.ExchangeRate;
+	EndIf;	
+	Object.VATTotal = Object.LineItems.Total("VAT") * Object.ExchangeRate;
+
+	
 EndProcedure
 
 &AtClient
@@ -308,9 +361,14 @@ EndProcedure
 //
 Procedure DateOnChange(Item)
 	
-	Object.ExchangeRate = GeneralFunctions.GetExchangeRate(Object.Date, Object.Currency);
-	RecalcSalesTax();
-	RecalcTotal();
+	If GeneralFunctionsReusable.FunctionalOptionValue("MultiCurrency") Then
+		Object.ExchangeRate = GeneralFunctions.GetExchangeRate(Object.Date, Object.Currency);
+	Else
+		Object.ExchangeRate = 1;
+	EndIf;
+	//RecalcSalesTax();
+	//RecalcTotal();
+	RecalcSalesTaxAndTotal();
 	
 EndProcedure
 
@@ -324,8 +382,9 @@ Procedure CurrencyOnChange(Item)
 	Object.ExchangeRate = GeneralFunctions.GetExchangeRate(Object.Date, Object.Currency);
 	Items.ExchangeRate.Title = GeneralFunctionsReusable.DefaultCurrencySymbol() + "/1" + CommonUse.GetAttributeValue(Object.Currency, "Symbol");
 	Items.FCYCurrency.Title = CommonUse.GetAttributeValue(Object.Currency, "Symbol");
-	RecalcSalesTax();
-	RecalcTotal();
+	//RecalcSalesTax();
+	//RecalcTotal();
+	RecalcSalesTaxAndTotal();
 	
 EndProcedure
 
@@ -334,8 +393,9 @@ EndProcedure
 // 
 Procedure LineItemsAfterDeleteRow(Item)
 	
-	RecalcSalesTax();
-	RecalcTotal();
+	//RecalcSalesTax();
+	//RecalcTotal();
+	RecalcSalesTaxAndTotal();
 	
 EndProcedure
 
@@ -345,8 +405,9 @@ EndProcedure
 Procedure LineItemsSalesTaxTypeOnChange(Item)
 	
 	RecalcTaxableAmount();
-	RecalcSalesTax();
-	RecalcTotal();
+	//RecalcSalesTax();
+	//RecalcTotal();
+	RecalcSalesTaxAndTotal();
 	
 EndProcedure
 
@@ -363,7 +424,12 @@ Procedure LineItemsQuantityOnChange(Item)
 	
 	// Calculate sum and taxes by line
 	TabularPartRow.LineTotal = TabularPartRow.Quantity * TabularPartRow.Price;
-	TabularPartRow.VAT = VAT_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Sales", Object.PriceIncludesVAT);
+	
+	If GeneralFunctionsReusable.FunctionalOptionValue("VATFinLocalization") Then
+		TabularPartRow.VAT = VAT_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Sales", Object.PriceIncludesVAT);
+	Else	
+		TabularPartRow.VAT = 0;
+	EndIf;
 	
 	// Update backorder quantity based on document status
 	If    OrderStatusIndex = 0 Then // OrderStatus = Enums.OrderStatuses.Open
@@ -382,8 +448,9 @@ Procedure LineItemsQuantityOnChange(Item)
 	
 	// Calculate totals
 	RecalcTaxableAmount();
-	RecalcSalesTax();
-	RecalcTotal();
+	//RecalcSalesTax();
+	//RecalcTotal();
+	RecalcSalesTaxAndTotal();
 
 EndProcedure
 
@@ -394,6 +461,20 @@ EndProcedure
 // 
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
+	tempstor = PutToTempStorage(Object.Company,Object.Ref);
+	
+	Items.LineItemsQuantity.EditFormat = "NFD=" + Constants.QtyPrecision.Get();
+	Items.LineItemsQuantity.Format = "NFD=" + Constants.QtyPrecision.Get();
+	
+	Items.LineItemsBackorder.EditFormat = "NFD=" + Constants.QtyPrecision.Get();
+	Items.LineItemsBackorder.Format = "NFD=" + Constants.QtyPrecision.Get();
+
+	Items.LineItemsShipped.EditFormat = "NFD=" + Constants.QtyPrecision.Get();
+	Items.LineItemsShipped.Format = "NFD=" + Constants.QtyPrecision.Get();
+
+	Items.LineItemsInvoiced.EditFormat = "NFD=" + Constants.QtyPrecision.Get();
+	Items.LineItemsInvoiced.Format = "NFD=" + Constants.QtyPrecision.Get();
+
 	Items.Company.Title = GeneralFunctionsReusable.GetCustomerName();
 	
 	//Title = "Sales Order " + Object.Number + " " + Format(Object.Date, "DLF=D");
@@ -466,4 +547,20 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 	// Request and fill indexes of product type (required to calculate bacorder property)
 	FillProductTypes();
 		
+EndProcedure
+
+&AtClient
+Procedure LineItemsOnChange(Item)
+	
+	If NewRow = true Then
+		CurrentData = Item.CurrentData;
+		//CurrentData.Project = Object.Project;
+		NewRow = false;
+	Endif;
+
+EndProcedure
+
+&AtClient
+Procedure LineItemsBeforeAddRow(Item, Cancel, Clone, Parent, Folder)
+	NewRow = true;
 EndProcedure

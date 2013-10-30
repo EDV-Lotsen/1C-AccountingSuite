@@ -41,6 +41,10 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Company contact</v8:content>
 						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Kontakt</v8:content>
+						</v8:item>
 					</ToolTip>
 					<HorizontalStretch>false</HorizontalStretch>
 					<ExtendedTooltip name="CompanyContactExtendedTooltip" id="371"/>
@@ -82,6 +86,7 @@
 						</InputField>
 						<InputField name="Email" id="384">
 							<DataPath>ConstantsSet.Email</DataPath>
+							<ToolTipRepresentation>None</ToolTipRepresentation>
 							<Width>20</Width>
 							<HorizontalStretch>false</HorizontalStretch>
 							<ContextMenu name="EmailContextMenu" id="385"/>
@@ -169,6 +174,10 @@
 									<v8:lang>en</v8:lang>
 									<v8:content>Display company codes</v8:content>
 								</v8:item>
+								<v8:item>
+									<v8:lang>de</v8:lang>
+									<v8:content>Unternehmen-Codes anzeigen</v8:content>
+								</v8:item>
 							</Title>
 							<CheckBoxType>Auto</CheckBoxType>
 							<ContextMenu name="DisplayCodesContextMenu" id="213"/>
@@ -202,15 +211,6 @@
 							<ExtendedTooltip name="MultiCurrencyExtendedTooltip" id="308"/>
 							<Events>
 								<Event name="OnChange">MultiCurrencyOnChange</Event>
-							</Events>
-						</CheckBoxField>
-						<CheckBoxField name="Projects" id="279">
-							<DataPath>ConstantsSet.Projects</DataPath>
-							<CheckBoxType>Auto</CheckBoxType>
-							<ContextMenu name="ProjectsContextMenu" id="280"/>
-							<ExtendedTooltip name="ProjectsExtendedTooltip" id="309"/>
-							<Events>
-								<Event name="OnChange">ProjectsOnChange</Event>
 							</Events>
 						</CheckBoxField>
 						<CheckBoxField name="UnbalancedGJEntryPosting" id="42">
@@ -269,13 +269,6 @@
 							<ContextMenu name="UnappliedPaymentItemContextMenu" id="456"/>
 							<ExtendedTooltip name="UnappliedPaymentItemExtendedTooltip" id="457"/>
 						</InputField>
-						<InputField name="APISecretKey" id="281">
-							<DataPath>ConstantsSet.APISecretKey</DataPath>
-							<Width>20</Width>
-							<HorizontalStretch>false</HorizontalStretch>
-							<ContextMenu name="APISecretKeyContextMenu" id="282"/>
-							<ExtendedTooltip name="APISecretKeyExtendedTooltip" id="318"/>
-						</InputField>
 						<InputField name="CheckHorizontalAdj" id="418">
 							<DataPath>ConstantsSet.CheckHorizontalAdj</DataPath>
 							<Title>
@@ -318,6 +311,13 @@
 							<ContextMenu name="CheckVerticalAdjContextMenu" id="416"/>
 							<ExtendedTooltip name="CheckVerticalAdjExtendedTooltip" id="417"/>
 						</InputField>
+						<InputField name="QtyPrecision" id="480">
+							<DataPath>ConstantsSet.QtyPrecision</DataPath>
+							<Width>5</Width>
+							<SpinButton>true</SpinButton>
+							<ContextMenu name="QtyPrecisionContextMenu" id="481"/>
+							<ExtendedTooltip name="QtyPrecisionExtendedTooltip" id="482"/>
+						</InputField>
 					</ChildItems>
 				</Page>
 				<Page name="FinancialLocalization" id="59">
@@ -326,11 +326,19 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Financial localization</v8:content>
 						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Rechnungslegungsstandard</v8:content>
+						</v8:item>
 					</Title>
 					<ToolTip>
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Financial localization</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Rechnungslegungsstandard</v8:content>
 						</v8:item>
 					</ToolTip>
 					<HorizontalStretch>false</HorizontalStretch>
@@ -698,6 +706,9 @@
 								</v8:item>
 							</Title>
 							<Group>Vertical</Group>
+							<Behavior>Collapsible</Behavior>
+							<Collapsed>true</Collapsed>
+							<ControlRepresentation>Picture</ControlRepresentation>
 							<Representation>StrongSeparation</Representation>
 							<ExtendedTooltip name="Group4ExtendedTooltip" id="361"/>
 							<ChildItems>
@@ -765,10 +776,13 @@
 							<Title>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Custom field2</v8:content>
+									<v8:content>Custom field 2</v8:content>
 								</v8:item>
 							</Title>
 							<Group>Vertical</Group>
+							<Behavior>Collapsible</Behavior>
+							<Collapsed>true</Collapsed>
+							<ControlRepresentation>Picture</ControlRepresentation>
 							<Representation>StrongSeparation</Representation>
 							<ExtendedTooltip name="Group7ExtendedTooltip" id="364"/>
 							<ChildItems>
@@ -840,6 +854,9 @@
 								</v8:item>
 							</Title>
 							<Group>Vertical</Group>
+							<Behavior>Collapsible</Behavior>
+							<Collapsed>true</Collapsed>
+							<ControlRepresentation>Picture</ControlRepresentation>
 							<Representation>StrongSeparation</Representation>
 							<ExtendedTooltip name="Group8ExtendedTooltip" id="367"/>
 							<ChildItems>
@@ -903,6 +920,146 @@
 								</InputField>
 							</ChildItems>
 						</UsualGroup>
+						<UsualGroup name="Group15" id="505">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Custom field 4</v8:content>
+								</v8:item>
+							</Title>
+							<Group>Vertical</Group>
+							<Behavior>Collapsible</Behavior>
+							<Collapsed>true</Collapsed>
+							<ControlRepresentation>Picture</ControlRepresentation>
+							<Representation>StrongSeparation</Representation>
+							<ExtendedTooltip name="Group15ExtendedTooltip" id="506"/>
+							<ChildItems>
+								<RadioButtonField name="CF4Type" id="507">
+									<DataPath>ConstantsSet.CF4Type</DataPath>
+									<RadioButtonType>Tumbler</RadioButtonType>
+									<ChoiceList>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>None</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">None</Value>
+											</xr:Value>
+										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>Number</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">Number</Value>
+											</xr:Value>
+										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>String</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">String</Value>
+											</xr:Value>
+										</xr:Item>
+									</ChoiceList>
+									<ContextMenu name="CF4TypeContextMenu" id="508"/>
+									<ExtendedTooltip name="CF4TypeExtendedTooltip" id="509"/>
+								</RadioButtonField>
+								<InputField name="CF4Name" id="510">
+									<DataPath>ConstantsSet.CF4Name</DataPath>
+									<Width>25</Width>
+									<HorizontalStretch>false</HorizontalStretch>
+									<ContextMenu name="CF4NameContextMenu" id="511"/>
+									<ExtendedTooltip name="CF4NameExtendedTooltip" id="512"/>
+								</InputField>
+							</ChildItems>
+						</UsualGroup>
+						<UsualGroup name="Group16" id="513">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Custom field 5</v8:content>
+								</v8:item>
+							</Title>
+							<Group>Vertical</Group>
+							<Behavior>Collapsible</Behavior>
+							<Collapsed>true</Collapsed>
+							<ControlRepresentation>Picture</ControlRepresentation>
+							<Representation>StrongSeparation</Representation>
+							<ExtendedTooltip name="Group16ExtendedTooltip" id="514"/>
+							<ChildItems>
+								<RadioButtonField name="CF5Type" id="515">
+									<DataPath>ConstantsSet.CF5Type</DataPath>
+									<RadioButtonType>Tumbler</RadioButtonType>
+									<ChoiceList>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>None</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">None</Value>
+											</xr:Value>
+										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>Number</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">Number</Value>
+											</xr:Value>
+										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>String</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">String</Value>
+											</xr:Value>
+										</xr:Item>
+									</ChoiceList>
+									<ContextMenu name="CF5TypeContextMenu" id="516"/>
+									<ExtendedTooltip name="CF5TypeExtendedTooltip" id="517"/>
+								</RadioButtonField>
+								<InputField name="CF5Name" id="518">
+									<DataPath>ConstantsSet.CF5Name</DataPath>
+									<Width>25</Width>
+									<HorizontalStretch>false</HorizontalStretch>
+									<ContextMenu name="CF5NameContextMenu" id="519"/>
+									<ExtendedTooltip name="CF5NameExtendedTooltip" id="520"/>
+								</InputField>
+							</ChildItems>
+						</UsualGroup>
 					</ChildItems>
 				</Page>
 				<Page name="Logo" id="405">
@@ -926,6 +1083,17 @@
 							<CommandName>Form.Command.UploadLogo</CommandName>
 							<ExtendedTooltip name="UploadLogoExtendedTooltip" id="411"/>
 						</Button>
+						<LabelDecoration name="Decoration2" id="458">
+							<TextColor>style:ColorSecondaryLabel</TextColor>
+							<Title formatted="false">
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>The image proportion should be 167x100 pixels</v8:content>
+								</v8:item>
+							</Title>
+							<ContextMenu name="Decoration2ContextMenu" id="459"/>
+							<ExtendedTooltip name="Decoration2ExtendedTooltip" id="460"/>
+						</LabelDecoration>
 						<PictureField name="Image" id="412">
 							<DataPath>ImageAddress</DataPath>
 							<TitleLocation>None</TitleLocation>
@@ -936,19 +1104,197 @@
 							<ContextMenu name="ImageContextMenu" id="413"/>
 							<ExtendedTooltip name="ImageExtendedTooltip" id="414"/>
 						</PictureField>
+						<InputField name="logoURL" id="461">
+							<DataPath>ConstantsSet.logoURL</DataPath>
+							<Visible>false</Visible>
+							<ReadOnly>true</ReadOnly>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>If you would like your logo in our emailed invoices. Place the URL to your logo image.</v8:content>
+								</v8:item>
+							</ToolTip>
+							<Width>25</Width>
+							<HorizontalStretch>false</HorizontalStretch>
+							<ContextMenu name="logoURLContextMenu" id="462"/>
+							<ExtendedTooltip name="logoURLExtendedTooltip" id="463"/>
+						</InputField>
 					</ChildItems>
 				</Page>
-				<Page name="Preview" id="447">
+				<Page name="Integrations" id="423">
+					<Visible>false</Visible>
 					<Title>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Preview</v8:content>
+							<v8:content>Integrations</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Integrations</v8:content>
+						</v8:item>
+					</ToolTip>
+					<HorizontalStretch>false</HorizontalStretch>
+					<ExtendedTooltip name="IntegrationsExtendedTooltip" id="424"/>
+					<ChildItems>
+						<UsualGroup name="Stripe" id="440">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Stripe (credit card processing)</v8:content>
+								</v8:item>
+							</Title>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Stripe</v8:content>
+								</v8:item>
+							</ToolTip>
+							<Group>Vertical</Group>
+							<Collapsed>true</Collapsed>
+							<ControlRepresentation>Picture</ControlRepresentation>
+							<ExtendedTooltip name="StripeExtendedTooltip" id="441"/>
+							<ChildItems>
+								<Button name="StripeConnect" id="421">
+									<Type>Hyperlink</Type>
+									<Representation>Picture</Representation>
+									<Width>20</Width>
+									<Height>2</Height>
+									<CommandName>Form.Command.StripeConnect</CommandName>
+									<Picture>
+										<xr:Ref>CommonPicture.StripeConnect</xr:Ref>
+										<xr:LoadTransparent>true</xr:LoadTransparent>
+									</Picture>
+									<ExtendedTooltip name="StripeConnectExtendedTooltip" id="422"/>
+								</Button>
+							</ChildItems>
+						</UsualGroup>
+						<UsualGroup name="Dwolla" id="501">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Dwolla (bank payments)</v8:content>
+								</v8:item>
+							</Title>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Dwolla</v8:content>
+								</v8:item>
+							</ToolTip>
+							<Group>Vertical</Group>
+							<ExtendedTooltip name="DwollaExtendedTooltip" id="502"/>
+						</UsualGroup>
+						<UsualGroup name="BigCommerce" id="442">
+							<Visible>false</Visible>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>BigCommerce (e-commerce)</v8:content>
+								</v8:item>
+							</Title>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Big commerce</v8:content>
+								</v8:item>
+							</ToolTip>
+							<Group>Vertical</Group>
+							<ExtendedTooltip name="BigCommerceExtendedTooltip" id="443"/>
+							<ChildItems>
+								<InputField name="bigcom_apipath" id="425">
+									<DataPath>ConstantsSet.bigcom_apipath</DataPath>
+									<Width>20</Width>
+									<HorizontalStretch>false</HorizontalStretch>
+									<ContextMenu name="bigcom_apipathContextMenu" id="426"/>
+									<ExtendedTooltip name="bigcom_apipathExtendedTooltip" id="427"/>
+								</InputField>
+								<InputField name="bigcom_storeid" id="428">
+									<DataPath>ConstantsSet.bigcom_storeid</DataPath>
+									<Width>20</Width>
+									<HorizontalStretch>false</HorizontalStretch>
+									<ContextMenu name="bigcom_storeidContextMenu" id="429"/>
+									<ExtendedTooltip name="bigcom_storeidExtendedTooltip" id="430"/>
+								</InputField>
+								<InputField name="bigcom_user" id="431">
+									<DataPath>ConstantsSet.bigcom_user</DataPath>
+									<Width>20</Width>
+									<HorizontalStretch>false</HorizontalStretch>
+									<ContextMenu name="bigcom_userContextMenu" id="432"/>
+									<ExtendedTooltip name="bigcom_userExtendedTooltip" id="433"/>
+								</InputField>
+								<InputField name="bigcom_token" id="434">
+									<DataPath>ConstantsSet.bigcom_token</DataPath>
+									<Width>20</Width>
+									<HorizontalStretch>false</HorizontalStretch>
+									<ContextMenu name="bigcom_tokenContextMenu" id="435"/>
+									<ExtendedTooltip name="bigcom_tokenExtendedTooltip" id="436"/>
+								</InputField>
+								<InputField name="bigcom_base64" id="437">
+									<DataPath>ConstantsSet.bigcom_base64</DataPath>
+									<Visible>false</Visible>
+									<Width>20</Width>
+									<HorizontalStretch>false</HorizontalStretch>
+									<ContextMenu name="bigcom_base64ContextMenu" id="438"/>
+									<ExtendedTooltip name="bigcom_base64ExtendedTooltip" id="439"/>
+								</InputField>
+							</ChildItems>
+						</UsualGroup>
+						<UsualGroup name="Zoho" id="526">
+							<Visible>false</Visible>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Zoho (CRM)</v8:content>
+								</v8:item>
+							</Title>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Zoho</v8:content>
+								</v8:item>
+							</ToolTip>
+							<Group>Vertical</Group>
+							<ExtendedTooltip name="ZohoExtendedTooltip" id="527"/>
+							<ChildItems>
+								<InputField name="zoho_auth_token" id="528">
+									<DataPath>ConstantsSet.zoho_auth_token</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Auth token</v8:content>
+										</v8:item>
+									</Title>
+									<Width>20</Width>
+									<HorizontalStretch>false</HorizontalStretch>
+									<ContextMenu name="zoho_auth_tokenContextMenu" id="529"/>
+									<ExtendedTooltip name="zoho_auth_tokenExtendedTooltip" id="530"/>
+								</InputField>
+							</ChildItems>
+						</UsualGroup>
+					</ChildItems>
+				</Page>
+				<Page name="Preview" id="447">
+					<Visible>false</Visible>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Beta features</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Vorschau</v8:content>
 						</v8:item>
 					</Title>
 					<ToolTip>
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Preview</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Vorschau</v8:content>
 						</v8:item>
 					</ToolTip>
 					<HorizontalStretch>false</HorizontalStretch>
@@ -971,6 +1317,204 @@
 							<ContextMenu name="AllowNegativeInventoryContextMenu" id="450"/>
 							<ExtendedTooltip name="AllowNegativeInventoryExtendedTooltip" id="451"/>
 						</CheckBoxField>
+					</ChildItems>
+				</Page>
+				<Page name="Development" id="464">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Development</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Development</v8:content>
+						</v8:item>
+					</ToolTip>
+					<ExtendedTooltip name="DevelopmentExtendedTooltip" id="465"/>
+					<ChildItems>
+						<InputField name="APISecretKey" id="281">
+							<DataPath>ConstantsSet.APISecretKey</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>apisecretkey</v8:content>
+								</v8:item>
+							</Title>
+							<Width>20</Width>
+							<HorizontalStretch>false</HorizontalStretch>
+							<ContextMenu name="APISecretKeyContextMenu" id="282"/>
+							<ExtendedTooltip name="APISecretKeyExtendedTooltip" id="318"/>
+						</InputField>
+						<UsualGroup name="Webhooks" id="478">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Webhooks</v8:content>
+								</v8:item>
+							</Title>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Webhooks</v8:content>
+								</v8:item>
+							</ToolTip>
+							<Group>Vertical</Group>
+							<ExtendedTooltip name="WebhooksExtendedTooltip" id="479"/>
+							<ChildItems>
+								<InputField name="companies_webhook" id="466">
+									<DataPath>ConstantsSet.companies_webhook</DataPath>
+									<ContextMenu name="companies_webhookContextMenu" id="467"/>
+									<ExtendedTooltip name="companies_webhookExtendedTooltip" id="468"/>
+								</InputField>
+								<InputField name="items_webhook" id="469">
+									<DataPath>ConstantsSet.items_webhook</DataPath>
+									<ContextMenu name="items_webhookContextMenu" id="470"/>
+									<ExtendedTooltip name="items_webhookExtendedTooltip" id="471"/>
+								</InputField>
+								<InputField name="cash_sales_webhook" id="472">
+									<DataPath>ConstantsSet.cash_sales_webhook</DataPath>
+									<ContextMenu name="cash_sales_webhookContextMenu" id="473"/>
+									<ExtendedTooltip name="cash_sales_webhookExtendedTooltip" id="474"/>
+								</InputField>
+								<InputField name="sales_invoices_webhook" id="475">
+									<DataPath>ConstantsSet.sales_invoices_webhook</DataPath>
+									<ContextMenu name="sales_invoices_webhookContextMenu" id="476"/>
+									<ExtendedTooltip name="sales_invoices_webhookExtendedTooltip" id="477"/>
+								</InputField>
+							</ChildItems>
+						</UsualGroup>
+						<InputField name="SubStatus" id="523">
+							<DataPath>ConstantsSet.SubStatus</DataPath>
+							<ContextMenu name="SubStatusContextMenu" id="524"/>
+							<ExtendedTooltip name="SubStatusExtendedTooltip" id="525"/>
+						</InputField>
+					</ChildItems>
+				</Page>
+				<Page name="PrintFormSetup" id="483">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Print form setup</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Print form setup</v8:content>
+						</v8:item>
+					</ToolTip>
+					<ExtendedTooltip name="PrintFormSetupExtendedTooltip" id="484"/>
+					<ChildItems>
+						<UsualGroup name="SalesInvoices" id="494">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Sales invoices</v8:content>
+								</v8:item>
+							</Title>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Sales invoices</v8:content>
+								</v8:item>
+							</ToolTip>
+							<Group>Vertical</Group>
+							<Behavior>Collapsible</Behavior>
+							<Collapsed>true</Collapsed>
+							<ControlRepresentation>Picture</ControlRepresentation>
+							<ExtendedTooltip name="SalesInvoicesExtendedTooltip" id="495"/>
+							<ChildItems>
+								<CheckBoxField name="SalesInvoicePO" id="488">
+									<DataPath>ConstantsSet.SalesInvoicePO</DataPath>
+									<CheckBoxType>Auto</CheckBoxType>
+									<ContextMenu name="SalesInvoicePOContextMenu" id="489"/>
+									<ExtendedTooltip name="SalesInvoicePOExtendedTooltip" id="490"/>
+								</CheckBoxField>
+								<CheckBoxField name="SalesInvoiceProject" id="491">
+									<DataPath>ConstantsSet.SalesInvoiceProject</DataPath>
+									<CheckBoxType>Auto</CheckBoxType>
+									<ContextMenu name="SalesInvoiceProjectContextMenu" id="492"/>
+									<ExtendedTooltip name="SalesInvoiceProjectExtendedTooltip" id="493"/>
+								</CheckBoxField>
+								<InputField name="SalesInvoiceFooter" id="485">
+									<DataPath>ConstantsSet.SalesInvoiceFooter</DataPath>
+									<VerticalStretch>false</VerticalStretch>
+									<MultiLine>true</MultiLine>
+									<ContextMenu name="SalesInvoiceFooterContextMenu" id="486"/>
+									<ExtendedTooltip name="SalesInvoiceFooterExtendedTooltip" id="487"/>
+								</InputField>
+							</ChildItems>
+						</UsualGroup>
+					</ChildItems>
+				</Page>
+				<Page name="EmailSetup" id="531">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Email setup</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Email setup</v8:content>
+						</v8:item>
+					</ToolTip>
+					<ExtendedTooltip name="EmailSetupExtendedTooltip" id="532"/>
+					<ChildItems>
+						<InputField name="MailProfAddress" id="533">
+							<DataPath>ConstantsSet.MailProfAddress</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Server address</v8:content>
+								</v8:item>
+							</Title>
+							<InputHint>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>email-smtp.us-east-1.amazonaws.com</v8:content>
+								</v8:item>
+							</InputHint>
+							<ContextMenu name="MailProfAddressContextMenu" id="534"/>
+							<ExtendedTooltip name="MailProfAddressExtendedTooltip" id="535"/>
+						</InputField>
+						<CheckBoxField name="MailProfSSL" id="536">
+							<DataPath>ConstantsSet.MailProfSSL</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>SSL</v8:content>
+								</v8:item>
+							</Title>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="MailProfSSLContextMenu" id="537"/>
+							<ExtendedTooltip name="MailProfSSLExtendedTooltip" id="538"/>
+						</CheckBoxField>
+						<InputField name="MailProfUser" id="542">
+							<DataPath>ConstantsSet.MailProfUser</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>User name</v8:content>
+								</v8:item>
+							</Title>
+							<ContextMenu name="MailProfUserContextMenu" id="543"/>
+							<ExtendedTooltip name="MailProfUserExtendedTooltip" id="544"/>
+						</InputField>
+						<InputField name="MailProfPass" id="539">
+							<DataPath>ConstantsSet.MailProfPass</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Password</v8:content>
+								</v8:item>
+							</Title>
+							<ContextMenu name="MailProfPassContextMenu" id="540"/>
+							<ExtendedTooltip name="MailProfPassExtendedTooltip" id="541"/>
+						</InputField>
 					</ChildItems>
 				</Page>
 			</ChildItems>
@@ -1015,6 +1559,21 @@
 				</v8:item>
 			</ToolTip>
 			<Action>UploadLogo</Action>
+		</Command>
+		<Command name="StripeConnect" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Stripe connect</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Stripe connect</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>StripeConnect</Action>
 		</Command>
 	</Commands>
 </Form>

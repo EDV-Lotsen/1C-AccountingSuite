@@ -26,6 +26,8 @@
 // - if String parameter does not contain significant characters (or it is an empty string)
 // and any character except space is used as a separator, the function
 // returns an empty array.
+// QuoteChar - String - quoted string delimiter. If not specified, then quoted strings are ignored.
+// Typical quote char is double quote symbol ("). The quotes used in quoted string should be doubled ("").
 //
 // Returns:
 // Array - array of strings.
@@ -38,11 +40,12 @@
 // SplitStringIntoSubstringArray("",,False) - returns an array with an empty string ("");
 // SplitStringIntoSubstringArray("", " ") - returns an array with an empty string ("");
 //
-Function SplitStringIntoSubstringArray(Val String, Val Separator = ",", Val SkipEmptyStrings = Undefined) Export
+Function SplitStringIntoSubstringArray(Val String, Separator = ",", Val SkipEmptyStrings = Undefined, QuoteChar = "") Export
 	
+	// Define resulting strings array.
 	Result = New Array;
 	
-	// for backward compatibility
+	// Add an empty string to an array for backward compatibility.
 	If SkipEmptyStrings = Undefined Then
 		SkipEmptyStrings = ?(Separator = " ", True, False);
 		If IsBlankString(String) Then 
@@ -53,21 +56,92 @@ Function SplitStringIntoSubstringArray(Val String, Val Separator = ",", Val Skip
 		EndIf;
 	EndIf;
 	
+	// Use quoted strings if quote char specified.
+	UseQuotes    = Not IsBlankString(QuoteChar);
+	QuotedStr    = "";
+	QuoteCharLen = StrLen(QuoteChar);
+	SeparatorLen = StrLen(Separator);
 	
+	// Get next separator position.
 	Position = Find(String, Separator);
 	While Position > 0 Do
+		
+		// Check quotes for quoted strings.
+		If UseQuotes Then
+			QuotedPosition = Find(?(QuotedStr <> "", QuotedStr, String), QuoteChar);
+			If (QuotedPosition > 0) And (QuotedPosition < Position) Then
+				
+				// Get remaining part of the string
+				QuotedStr = Mid(?(QuotedStr <> "", QuotedStr, String), QuotedPosition + QuoteCharLen);
+				
+				// Find the closing quote
+				QuotedPosition = Find(QuotedStr, QuoteChar);
+				While QuotedPosition > 0 Do
+					
+					// Check double quote
+					If StrLen(QuotedStr) >= QuotedPosition + QuoteCharLen
+					And Mid(QuotedStr, QuotedPosition + QuoteCharLen, QuoteCharLen) = QuoteChar Then
+						// Double quote found, continue.
+						QuotedStr = Mid(QuotedStr, QuotedPosition + 2 * QuoteCharLen);
+					Else
+						// Single closing quote found
+						QuotedStr = Mid(QuotedStr, QuotedPosition + QuoteCharLen);
+						Break;
+					EndIf;
+					
+					// Find next quote position
+					QuotedPosition = Find(QuotedStr, QuoteChar);
+				EndDo;
+				
+				// Find next separator position.
+				Position = Find(QuotedStr, Separator);
+				If Position = 0 Then
+					// No separators found. Interrupt cycle.
+					Break;
+				Else
+					// New position of separator detected. Check of next possible quotes.
+					Continue;
+				EndIf;
+			EndIf;
+			
+			// Check quotation was previously found.
+			If QuotedStr <> "" Then
+				// Recalculate separator position to the original string.
+				Position = Position + (StrLen(String) - StrLen(QuotedStr));
+				// Clear used quoted string.
+				QuotedStr = "";
+			EndIf;
+		EndIf;
+		
+		// Get current element and add it to the array.
 		Substring = Left(String, Position - 1);
 		If Not SkipEmptyStrings Or Not IsBlankString(Substring) Then
-			Result.Add(Substring);
+			If UseQuotes And Left(Substring, 1) = QuoteChar And Right(Substring, 1) = QuoteChar Then
+				// Cut quoted string.
+				Result.Add(Mid(Substring, 2, StrLen(Substring) - 2));
+			Else
+				// Add string.
+				Result.Add(Substring);
+			EndIf;
 		EndIf;
-		String = Mid(String, Position + StrLen(Separator));
+		
+		// Cut rest of string and recalculate the next separator position.
+		String = Mid(String, Position + SeparatorLen);
 		Position = Find(String, Separator);
 	EndDo;
 	
+	// Add rest of the string to the array.
 	If Not SkipEmptyStrings Or Not IsBlankString(String) Then
-		Result.Add(String);
+		If UseQuotes And Left(String, 1) = QuoteChar And Right(String, 1) = QuoteChar Then
+			// Cut quoted string.
+			Result.Add(Mid(String, 2, StrLen(String) - 2));
+		Else
+			// Add string.
+			Result.Add(String);
+		EndIf;
 	EndIf;
 	
+	// Return resulting array.
 	Return Result;
 	
 EndFunction 

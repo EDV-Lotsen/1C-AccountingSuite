@@ -4,6 +4,9 @@
 	<VerticalScroll>useIfNecessary</VerticalScroll>
 	<UseForFoldersAndItems>Items</UseForFoldersAndItems>
 	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<Events>
+		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+	</Events>
 	<ChildItems>
 		<InputField name="Description" id="1">
 			<DataPath>Object.Description</DataPath>
@@ -87,6 +90,11 @@
 			<DataPath>Object.RemitTo</DataPath>
 			<ContextMenu name="RemitToContextMenu" id="32"/>
 			<ExtendedTooltip name="RemitToExtendedTooltip" id="46"/>
+		</InputField>
+		<InputField name="SalesTaxCode" id="49">
+			<DataPath>Object.SalesTaxCode</DataPath>
+			<ContextMenu name="SalesTaxCodeContextMenu" id="50"/>
+			<ExtendedTooltip name="SalesTaxCodeExtendedTooltip" id="51"/>
 		</InputField>
 		<CheckBoxField name="DefaultBilling" id="27">
 			<DataPath>Object.DefaultBilling</DataPath>

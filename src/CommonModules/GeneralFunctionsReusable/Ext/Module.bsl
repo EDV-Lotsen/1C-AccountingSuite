@@ -4,6 +4,17 @@
 // REUSABLE IN A SESSION TO MINIMIZE SERVER CALLS
 // 
 
+// Returns the taxable sales tax type.
+//
+// Returned value:
+// Enumerations.SalesTaxType - for the taxable type tax is calculated on the applicable amounts.
+//
+Function US_FL_Taxable() Export
+				
+	Return Enums.SalesTaxTypes.Taxable;		
+		
+EndFunction
+
 
 // Returns a value of a functional option. Used for the following functional options
 // that are desired to be reusable - units of measure, multi-location, multi-currency,

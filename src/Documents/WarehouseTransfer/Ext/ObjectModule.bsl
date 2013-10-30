@@ -58,7 +58,7 @@ Procedure Posting(Cancel, Mode)
 				                  |	InventoryJrnlBalance.Product = &Product");
 				Query.SetParameter("Product", CurRowLineItems.Product);
 				QueryResult = Query.Execute().Unload();
-				If  QueryResult.Rows.Count() > 0
+				If  QueryResult.Count() > 0
 				And (Not QueryResult[0].QtyBalance = Null)
 				And (Not QueryResult[0].AmountBalance = Null)
 				And QueryResult[0].QtyBalance > 0

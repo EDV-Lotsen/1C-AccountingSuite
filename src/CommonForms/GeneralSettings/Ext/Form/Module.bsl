@@ -1,19 +1,19 @@
 ﻿
 &AtClient
 Procedure MultiLocationOnChange(Item)
-	Message("Restart the program for the setting to take effect");
+	//Message("Restart the program for the setting to take effect");
 	RefreshInterface();
 EndProcedure
 
 &AtClient
 Procedure MultiCurrencyOnChange(Item)
-	Message("Restart the program for the setting to take effect");
+	//Message("Restart the program for the setting to take effect");
 	RefreshInterface();
 EndProcedure
 
 &AtClient
 Procedure USFinLocalizationOnChange(Item)
-	Message("Restart the program for the setting to take effect");
+	//Message("Restart the program for the setting to take effect");
 	RefreshInterface();
 EndProcedure
 
@@ -21,8 +21,9 @@ EndProcedure
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
 	BinaryLogo = GeneralFunctions.GetLogo();
-	TempStorageAddress = PutToTempStorage(BinaryLogo);
+	TempStorageAddress = PutToTempStorage(BinaryLogo,UUID);
 	ImageAddress = TempStorageAddress;
+	Items.image.PictureSize = PictureSize.AutoSize;
 	
 	Items.BankAccountLabel.Title =
 		CommonUse.GetAttributeValue(Constants.BankAccount.Get(), "Description");
@@ -122,7 +123,7 @@ EndProcedure
 Procedure VATFinLocalizationOnChange(Item)
 	
 	//GeneralFunctions.VATSetup();
-	Message("Restart the program for the setting to take effect");
+	//Message("Restart the program for the setting to take effect");
 	RefreshInterface();
 
 EndProcedure
@@ -144,16 +145,8 @@ EndProcedure
 &AtClient
 Procedure PriceIncludesVATOnChange(Item)
 	
-	Message("Restart the program for the setting to take effect");
+	//Message("Restart the program for the setting to take effect");
 	RefreshInterface();
-
-EndProcedure
-
-&AtClient
-Procedure ProjectsOnChange(Item)
-	
-	Message("Restart the program for the setting to take effect");
-	//RefreshInterface();
 
 EndProcedure
 
@@ -164,12 +157,12 @@ Procedure UploadLogo(Command)
 	ImageAddress = "";
 	
 	NotifyDescription = New NotifyDescription("FileUpload",ThisForm);
-	BeginPutFile(NotifyDescription,ImageAddress,"",True);
+	BeginPutFile(NotifyDescription,,"",True);
 	
-	BinaryLogo = GeneralFunctions.GetLogo();
-	TempStorageAddress = PutToTempStorage(BinaryLogo);
-	ImageAddress = TempStorageAddress;
-
+	//BinaryLogo = GeneralFunctions.GetLogo();
+	//TempStorageAddress = PutToTempStorage(BinaryLogo,UUID);
+	//ImageAddress = TempStorageAddress;
+	
 EndProcedure
 
 &AtClient
@@ -182,17 +175,56 @@ EndProcedure
 &AtServer
 Procedure PlaceImageFile(TempStorageName)
 	
-	BinaryData = GetFromTempStorage(TempStorageName);	
-	NewRow = InformationRegisters.CustomPrintForms.CreateRecordManager();
-	NewRow.ObjectName = "logo";
-	NewRow.TemplateName = "logo";
-	NewRow.Template = New ValueStorage(BinaryData, New Deflation(9));
-	NewRow.Write();	
-	DeleteFromTempStorage(TempStorageName);
+	If NOT TempStorageName = Undefined Then
+	
+		BinaryData = GetFromTempStorage(TempStorageName);
+		
+		///
+		
+		imgur_key = ""; // enter actual imgur client-ID
+		
+		HeadersMap = New Map();
+		HeadersMap.Insert("Authorization", "Client-ID " + imgur_key);
+		
+		HTTPRequest = New HTTPRequest("/3/image", HeadersMap);
+		HTTPRequest.SetBodyFromBinaryData(BinaryData);
+		
+		SSLConnection = New OpenSSLSecureConnection();
+		
+		HTTPConnection = New HTTPConnection("api.imgur.com",,,,,,SSLConnection); //imgur-apiv3.p.mashape.com
+		Result = HTTPConnection.Post(HTTPRequest);
+		ResponseBody = Result.GetBodyAsString(TextEncoding.UTF8);
+		ResponseJSON = InternetConnectionClientServer.DecodeJSON(ResponseBody);
+		image_url = ResponseJSON.data.link;
+		// Ctrl + _
+		ConstantsSet.logoURL = image_url;
+		
+	    ///
+		
+		NewRow = InformationRegisters.CustomPrintForms.CreateRecordManager();
+		NewRow.ObjectName = "logo";
+		NewRow.TemplateName = "logo";
+		NewRow.Template = New ValueStorage(BinaryData, New Deflation(9));
+		NewRow.Write();	
+		DeleteFromTempStorage(TempStorageName);
+		
+	EndIf;
+	
+	BinaryLogo = GeneralFunctions.GetLogo();
+	TempStorageAddress = PutToTempStorage(BinaryLogo,UUID);
+	ImageAddress = TempStorageAddress;
   	
 EndProcedure
 
  
+&AtClient
+Procedure StripeConnect(Command)
+	
+	statestring = GetAPISecretKeyF();
+	GotoURL("https://addcard.accountingsuite.com/connect?state=" + statestring);
+
+EndProcedure
+
 &AtServer
 Function GetAPISecretKeyF()
 	
@@ -203,58 +235,27 @@ EndFunction
 
 &AtClient
 Procedure OnOpen(Cancel)
-	
-	If NOT NoUser() Then
-		
+ 
 	 If SettingAccessCheck() = false Then
 
-		Items.Common.ChildItems.CompanyContact.ReadOnly = true;
-		Items.Common.ChildItems.GeneralSettings.ReadOnly = true;
-		Items.Common.ChildItems.CompanyContact.ReadOnly = true;
-		Items.Common.ChildItems.FinancialLocalization.ReadOnly = true;
-		Items.Common.ChildItems.VAT.ReadOnly = true;
-		Items.Common.ChildItems.ItemCustomFields.ReadOnly = true;
-		Items.Common.ChildItems.Logo.ReadOnly = true;
-		Items.Common.ChildItems.Preview.ReadOnly = true;
-	 Else
-	
-		Items.Common.ChildItems.CompanyContact.ReadOnly = false;
-		Items.Common.ChildItems.GeneralSettings.ReadOnly = false;
-		Items.Common.ChildItems.CompanyContact.ReadOnly = false;
-		Items.Common.ChildItems.FinancialLocalization.ReadOnly = false;
-		Items.Common.ChildItems.VAT.ReadOnly = false;
-		Items.Common.ChildItems.ItemCustomFields.ReadOnly = false;
-		Items.Common.ChildItems.Logo.ReadOnly = false;
-		Items.Common.ChildItems.Preview.ReadOnly = false;
-	
-		Endif;
+	    Items.Common.ChildItems.Logo.ChildItems.UploadLogo.Enabled = false;
+		Items.Common.ChildItems.Integrations.ChildItems.Stripe.ChildItems.StripeConnect.Enabled = false;
 
-	EndIf;
+	 Else
+		Items.Common.ChildItems.Logo.ChildItems.UploadLogo.Enabled = true;
+		Items.Common.ChildItems.Integrations.ChildItems.Stripe.ChildItems.StripeConnect.Enabled = true;
+
+	 Endif;
 	
 EndProcedure
 
 &AtServer
-Function NoUser()
-	
-	CurUser = InfoBaseUsers.FindByName(SessionParameters.ACSUser);
-	If CurUser.Name = "" Then
-		Return True;
-	Else
-		Return False;
-	EndIf;
-	
-	
-EndFunction
-
-&AtServer
 Function SettingAccessCheck()
-	
 	CurUser = InfoBaseUsers.FindByName(SessionParameters.ACSUser);
 	If CurUser.Roles.Contains(Metadata.Roles.FullAccess1) = true Or CurUser.Roles.Contains(Metadata.Roles.FullAccess) = true Then
 		Return true;
 	Else
 		Return false;
 	Endif
-	
 EndFunction
 

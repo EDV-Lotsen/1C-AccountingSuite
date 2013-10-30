@@ -2,6 +2,13 @@
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
+	Items.QtyAfter.EditFormat = "NFD=" + Constants.QtyPrecision.Get();
+	Items.QtyAfter.Format = "NFD=" + Constants.QtyPrecision.Get();
+	Items.QtyBefore.EditFormat = "NFD=" + Constants.QtyPrecision.Get();
+	Items.QtyBefore.Format = "NFD=" + Constants.QtyPrecision.Get();
+	Items.Quantity.EditFormat = "NFD=" + Constants.QtyPrecision.Get();
+	Items.Quantity.Format = "NFD=" + Constants.QtyPrecision.Get();
+	
 	//Title = "Inv. beg. bal. " + Object.Number;
 	
 	If GeneralFunctionsReusable.FunctionalOptionValue("MultiLocation") Then

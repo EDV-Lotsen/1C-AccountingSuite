@@ -91,12 +91,24 @@ Procedure FillReconciliationSpec(StatementToDate, BankAccount)
 	
 	While Result.Next() Do
 		
-		DataLine = Object.LineItems.Add();
-		DataLine.Transaction = Result.Ref;
-		DataLine.Date = Result.Date;
-		DataLine.DocNumber = Result.Number;
-		DataLine.TransactionAmount = Result.DocumentTotal;
-		DataLine.Company = Result.Company;
+		// replace with a more efficient search in array algorithm
+		OldTransaction = False;
+		For i = 1 To NumOfRows Do	
+			If OldLI[i-1].Transaction = Result.Ref Then
+				OldTransaction = True;
+			EndIf;			
+		EndDo;
+
+		If NOT OldTransaction Then
+		
+			DataLine = Object.LineItems.Add();
+			DataLine.Transaction = Result.Ref;
+			DataLine.Date = Result.Date;
+			DataLine.DocNumber = Result.Number;
+			DataLine.TransactionAmount = Result.DocumentTotal;
+			DataLine.Company = Result.Company;
+			
+		EndIf;
 		
 	EndDo;
 	

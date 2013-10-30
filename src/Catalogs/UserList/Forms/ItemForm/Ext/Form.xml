@@ -5,10 +5,7 @@
 	<UseForFoldersAndItems>Items</UseForFoldersAndItems>
 	<AutoCommandBar name="FormCommandBar" id="-1"/>
 	<Events>
-		<Event name="AfterWrite">AfterWrite</Event>
 		<Event name="ChoiceProcessing">ChoiceProcessing</Event>
-		<Event name="AfterWriteAtServer">AfterWriteAtServer</Event>
-		<Event name="NewWriteProcessing">NewWriteProcessing</Event>
 		<Event name="OnOpen">OnOpen</Event>
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
 		<Event name="OnWriteAtServer">OnWriteAtServer</Event>
@@ -22,6 +19,10 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>Email</v8:content>
 				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>E-Mail</v8:content>
+				</v8:item>
 			</Title>
 			<EditMode>EnterOnInput</EditMode>
 			<ContextMenu name="DescriptionContextMenu" id="2"/>
@@ -29,6 +30,7 @@
 		</InputField>
 		<InputField name="Pwd" id="64">
 			<DataPath>Pwd</DataPath>
+			<PasswordMode>true</PasswordMode>
 			<ContextMenu name="PwdContextMenu" id="65"/>
 			<ExtendedTooltip name="PwdExtendedTooltip" id="66"/>
 		</InputField>
@@ -117,6 +119,10 @@
 								<v8:lang>en</v8:lang>
 								<v8:content>No Rights</v8:content>
 							</v8:item>
+							<v8:item>
+								<v8:lang>de</v8:lang>
+								<v8:content>Keine Rechte</v8:content>
+							</v8:item>
 						</Presentation>
 						<Value xsi:type="xs:string">None</Value>
 					</xr:Value>
@@ -164,6 +170,10 @@
 								<v8:lang>en</v8:lang>
 								<v8:content>No Rights</v8:content>
 							</v8:item>
+							<v8:item>
+								<v8:lang>de</v8:lang>
+								<v8:content>Keine Rechte</v8:content>
+							</v8:item>
 						</Presentation>
 						<Value xsi:type="xs:string">None</Value>
 					</xr:Value>
@@ -210,6 +220,10 @@
 							<v8:item>
 								<v8:lang>en</v8:lang>
 								<v8:content>No Rights</v8:content>
+							</v8:item>
+							<v8:item>
+								<v8:lang>de</v8:lang>
+								<v8:content>Keine Rechte</v8:content>
 							</v8:item>
 						</Presentation>
 						<Value xsi:type="xs:string">None</Value>
@@ -264,6 +278,10 @@
 								<v8:lang>en</v8:lang>
 								<v8:content>No Rights</v8:content>
 							</v8:item>
+							<v8:item>
+								<v8:lang>de</v8:lang>
+								<v8:content>Keine Rechte</v8:content>
+							</v8:item>
 						</Presentation>
 						<Value xsi:type="xs:string">None</Value>
 					</xr:Value>
@@ -317,6 +335,10 @@
 								<v8:lang>en</v8:lang>
 								<v8:content>No Rights</v8:content>
 							</v8:item>
+							<v8:item>
+								<v8:lang>de</v8:lang>
+								<v8:content>Keine Rechte</v8:content>
+							</v8:item>
 						</Presentation>
 						<Value xsi:type="xs:string">None</Value>
 					</xr:Value>
@@ -364,6 +386,10 @@
 								<v8:lang>en</v8:lang>
 								<v8:content>No Rights</v8:content>
 							</v8:item>
+							<v8:item>
+								<v8:lang>de</v8:lang>
+								<v8:content>Keine Rechte</v8:content>
+							</v8:item>
 						</Presentation>
 						<Value xsi:type="xs:string">None</Value>
 					</xr:Value>
@@ -391,7 +417,7 @@
 			<Type>
 				<v8:Type>xs:string</v8:Type>
 				<v8:StringQualifiers>
-					<v8:Length>0</v8:Length>
+					<v8:Length>100</v8:Length>
 					<v8:AllowedLength>Variable</v8:AllowedLength>
 				</v8:StringQualifiers>
 			</Type>

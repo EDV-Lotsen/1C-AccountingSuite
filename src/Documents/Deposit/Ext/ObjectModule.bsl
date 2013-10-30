@@ -50,11 +50,17 @@ Procedure Posting(Cancel, Mode)
 	EndIf;
 	
 	For Each AccountLine in Accounts Do
-		
-		Record = RegisterRecords.GeneralJournal.AddCredit();
-		Record.Account = AccountLine.Account;
-		Record.Period = Date;
-		Record.AmountRC = AccountLine.Amount;		
+		If AccountLine.Amount > 0 Then
+			Record = RegisterRecords.GeneralJournal.AddCredit();
+			Record.Account = AccountLine.Account;
+			Record.Period = Date;
+			Record.AmountRC = AccountLine.Amount;
+		ElsIf AccountLine.Amount < 0 Then
+			Record = RegisterRecords.GeneralJournal.AddDebit();
+			Record.Account = AccountLine.Account;
+			Record.Period = Date;
+			Record.AmountRC = AccountLine.Amount * -1;
+		EndIf;
 	EndDo;
 	
 	// Writing bank reconciliation data

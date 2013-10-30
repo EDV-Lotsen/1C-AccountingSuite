@@ -14,6 +14,10 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>Price level</v8:content>
 				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Preisniveau</v8:content>
+				</v8:item>
 			</title>
 		</field>
 		<field xsi:type="DataSetFieldField">
@@ -31,6 +35,10 @@
 				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Product category</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Artikelkategorie</v8:content>
 				</v8:item>
 			</title>
 		</field>
@@ -51,6 +59,10 @@
 				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Document</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Dokument</v8:content>
 				</v8:item>
 			</title>
 		</field>
@@ -102,6 +114,10 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>Posted</v8:content>
 				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Gebucht</v8:content>
+				</v8:item>
 			</title>
 		</field>
 		<field xsi:type="DataSetFieldField">
@@ -128,6 +144,10 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>Due</v8:content>
 				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Fällig</v8:content>
+				</v8:item>
 			</title>
 			<appearance>
 				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
@@ -143,6 +163,10 @@
 				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Customer</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Kunde</v8:content>
 				</v8:item>
 			</title>
 		</field>
@@ -198,7 +222,11 @@ SELECT
 	GeneralJournalBalance.AmountRCBalance,
 	SalesReturnLineItems.Ref.Posted,
 	1,
-	SalesReturnLineItems.Quantity * PriceListSliceLast.Cost * -1
+	CASE
+		WHEN SalesReturnLineItems.Ref.Company.Terms &lt;&gt; VALUE(Catalog.PaymentTerms.Consignment) 			
+		THEN SalesReturnLineItems.Quantity * PriceListSliceLast.Cost * -1
+		ELSE 0
+	END
 FROM
 	Document.SalesReturn.LineItems AS SalesReturnLineItems
 		INNER JOIN InformationRegister.PriceList.SliceLast AS PriceListSliceLast
@@ -208,7 +236,7 @@ FROM
 		ON (GeneralJournalBalance.ExtDimension2 REFS Document.SalesReturn)
 			AND (GeneralJournalBalance.ExtDimension2 = SalesReturnLineItems.Ref)
 WHERE
-	SalesReturnLineItems.Product = &amp;Product
+	SalesReturnLineItems.Product = &amp;Product 
 
 UNION ALL
 
@@ -251,6 +279,10 @@ WHERE
 				<v8:lang>en</v8:lang>
 				<v8:content>Period</v8:content>
 			</v8:item>
+			<v8:item>
+				<v8:lang>de</v8:lang>
+				<v8:content>Periode</v8:content>
+			</v8:item>
 		</title>
 		<valueType>
 			<v8:Type>xs:dateTime</v8:Type>
@@ -267,6 +299,10 @@ WHERE
 			<v8:item>
 				<v8:lang>en</v8:lang>
 				<v8:content>Product</v8:content>
+			</v8:item>
+			<v8:item>
+				<v8:lang>de</v8:lang>
+				<v8:content>Artikel</v8:content>
 			</v8:item>
 		</title>
 		<valueType>
@@ -297,19 +333,10 @@ WHERE
 					<dcsset:field>Quantity</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>Price</dcsset:field>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Terms</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Cost</dcsset:field>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>Balance</dcsset:field>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>Posted</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Paid</dcsset:field>

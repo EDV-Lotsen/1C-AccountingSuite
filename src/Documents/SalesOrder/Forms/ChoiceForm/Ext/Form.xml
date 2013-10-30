@@ -38,29 +38,29 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="20"/>
-			<SearchStringAddition name="ListSearchString" id="29">
+			<SearchStringAddition name="ListSearchString" id="32">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="30"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="31"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="33"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="34"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="32">
+			<ViewStatusAddition name="ListViewStatus" id="35">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="33"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="34"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="36"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="37"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="35">
+			<SearchControlAddition name="ListSearchControl" id="38">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="36"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="37"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="39"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="40"/>
 			</SearchControlAddition>
 			<ChildItems>
 				<LabelField name="Date" id="4">
@@ -85,6 +85,11 @@
 					<DataPath>List.Number</DataPath>
 					<ContextMenu name="NumberContextMenu" id="7"/>
 					<ExtendedTooltip name="NumberExtendedTooltip" id="24"/>
+				</LabelField>
+				<LabelField name="RefNum" id="29">
+					<DataPath>List.RefNum</DataPath>
+					<ContextMenu name="RefNumContextMenu" id="30"/>
+					<ExtendedTooltip name="RefNumExtendedTooltip" id="31"/>
 				</LabelField>
 				<LabelField name="Company" id="8">
 					<DataPath>List.Company</DataPath>
@@ -123,6 +128,7 @@
 	DocumentSalesOrder.DataVersion,
 	DocumentSalesOrder.DeletionMark,
 	DocumentSalesOrder.Number,
+	DocumentSalesOrder.RefNum,
 	DocumentSalesOrder.Date,
 	DocumentSalesOrder.Posted,
 	DocumentSalesOrder.Company,

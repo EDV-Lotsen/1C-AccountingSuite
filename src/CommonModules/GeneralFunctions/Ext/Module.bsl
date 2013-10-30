@@ -2,11 +2,240 @@
 // THIS MODULE CONTAINS GENERAL PURPOSE FUNCTIONS AND PROCEDURES
 // 
 
+Function EncodeToPercentStr(Str, AdditionalCharacters = "", ExcludeCharacters = "") Export
+	
+	// Define empty result.
+	Result = "";
+	
+	// Define hex string.
+	HexStr = "0123456789ABCDEF";
+	MBytes = New Array;
+	
+	// Define RFC 3986 unreserved characters.
+	Unreserved = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.~"
+	           + AdditionalCharacters;
+	
+	// Exclude characters from RFC 3986 reference string.
+	For i = 1 To StrLen(ExcludeCharacters) Do
+		RFC3986UnreservedCharacters =
+		StrReplace(RFC3986UnreservedCharacters, Mid(ExcludeCharacters, i, 1), "");
+	EndDo;
+
+	// Recode string replacing chars out of unreserved.
+	StrBuf = "";
+	For i = 1 To StrLen(Str) Do
+		
+		// Get current char.
+		Char = Mid(Str, i, 1);
+		
+		// Check char according to RFC 3986.
+		If Find(Unreserved, Char) > 0 Then
+			
+			// Process buffer if previously used.
+			If StrLen(StrBuf) > 0 Then
+				
+				// Convert buffer to an array of UTF-8 chars (bytes).
+				MBCS = StrToUTF8(StrBuf, True);
+				For Each MBC In MBCS Do
+					// Convert byte to hex: // High half byte                   // Low half byte
+					Result = Result + "%" + Mid(HexStr, Int(MBC / 16) + 1, 1) + Mid(HexStr, (MBC % 16) + 1, 1);
+				EndDo;
+				
+				// Clear buffer.
+				StrBuf = "";
+			EndIf;
+			
+			// Unreserved char found.
+			Result = Result + Char;
+		Else
+			
+			// This is not an unreserved char.
+			StrBuf = StrBuf + Char
+		EndIf;
+	EndDo;
+	
+	// Process buffer if previously used.
+	If StrLen(StrBuf) > 0 Then
+		
+		// Convert buffer to an array of UTF-8 chars (bytes).
+		MBCS = StrToUTF8(StrBuf, True);
+		For Each MBC In MBCS Do
+			// Convert byte to hex: // High half byte                   // Low half byte
+			Result = Result + "%" + Mid(HexStr, Int(MBC / 16) + 1, 1) + Mid(HexStr, (MBC % 16) + 1, 1);
+		EndDo;
+		
+		// Clear buffer.
+		StrBuf = "";
+	EndIf;
+	
+	// Return decoded string.
+	Return Result;
+	
+EndFunction
+
+Function StrToUTF8(Str, AsArray = False, UseBOM = False)
+	
+	// Define UTF-8 bytes array.
+	MBCS = New Array;
+	
+	// Define source string parameters.
+	If TypeOf(Str) = Type("Array") Then
+		
+		// Use passed unicode characters array directly.
+		UCS = Str;
+		
+	ElsIf TypeOf(Str) = Type("String") Then
+		
+		// Create unicode characters array.
+		If StrLen(Str) > 0 Then
+			UCS = New Array(StrLen(Str));
+			For i = 1 To StrLen(Str) Do
+				UCS[i-1] = CharCode(Str, i);
+			EndDo;
+		Else
+			UCS = New Array;
+		EndIf;
+		
+	Else
+		// Unknown passed type.
+		UCS = New Array;
+	EndIf;
+	
+	// Add BOM signature (if required).
+	If UseBOM Then
+		
+		// Add BOM signature bytes to an array.
+		MBCS.Add(239); // $EF
+		MBCS.Add(187); // $BB;
+		MBCS.Add(191); // $BF;
+		
+	EndIf;
+	
+	// Go thru string and encode chars.
+	For i = 0 To UCS.Count()-1 Do
+		
+		// Get current char.
+		Code = UCS[i];
+		
+		// Define char size.
+		If Code < 0 Then
+			// Skip symbol.
+			
+		ElsIf Code = 0 Then          // 0000.0000
+			// Encode NUL char in overlong form (000) = 11 bits,
+			// preventing mixing it with end-string character (00).
+			// 000 -> 1100.0000 1000.0000 -> C080
+			
+			// Add high and low part.
+			MBCS.Add(192);           // $C0
+			MBCS.Add(128);           // $80
+			
+		ElsIf Code < 128     Then    // 0000.0001 .. 0000.007F
+			// Encode ASCII char = 7 bits.
+			// xx -> 0xxx.xxxx -> xx
+			
+			// Add byte.
+			MBCS.Add(Code);          // ASCII code.
+			
+		ElsIf Code < 2048    Then    // 0000.0080 .. 0000.07FF
+			// 2-bytes encoding = 11 bits.
+			// 0xxx -> 110x.xxxx 10xx.xxxx -> Cx8x
+			
+			// Define high and low parts.
+			HB = Int(Code / 64);     // High byte: SHR(Code, 6);
+			LB = Code % 64;          // Low byte:  Code AND $0000.003F;
+			
+			// Add bytes to an array.
+			MBCS.Add(192 + HB);      // $C0 OR HB
+			MBCS.Add(128 + LB);      // $80 OR LB;
+			
+		ElsIf Code < 65536   Then    // 0000.0800 .. 0000.FFFF
+			// 3-bytes encoding = 16 bits.
+			// xxxx -> 1110.xxxx 10xx.xxxx 10xx.xxxx -> Ex8x8x
+			
+			// Define high, mid and low parts.
+			HB = Int(Code / 4096);   // High byte: SHR(Code, 12);
+			LW = Code % 4096;        // Low word:  Code AND $0000.0FFF;
+			MB = Int(LW / 64);       // Mid byte:  SHR(Code, 6);
+			LB = LW % 64;            // Low byte:  LW   AND $0000.003F;
+			
+			// Add bytes to an array.
+			MBCS.Add(224 + HB);      // $E0 OR HB
+			MBCS.Add(128 + MB);      // $80 OR MB;
+			MBCS.Add(128 + LB);      // $80 OR LB;
+			
+		ElsIf Code < 1114112 Then    // 0001.0000 .. 0010.FFFF
+			// 4-bytes encoding = 20½ bits.
+			// 001x.xxxx -> 1111.0xxx 10xx.xxxx 10xx.xxxx 10xx.xxxx -> Fx8x8x8x
+			
+			// Define high, upper, mid and low parts.
+			HB = Int(Code / 262144); // High byte: SHR(Code, 18);
+			LP = Code % 262144;      // Low part:  Code AND $0003.FFFF;
+			UB = Int(LP / 4096);     // Uppr byte: SHR(Code, 12);
+			LW = LP % 4096;          // Low word:  LP   AND $0000.0FFF;
+			MB = Int(LW / 64);       // Mid byte:  SHR(Coce, 6);
+			LB = LW % 64;            // Low byte:  LW   AND $0000.003F;
+			
+			// Add bytes to an array.
+			MBCS.Add(240 + HB);      // $F0 OR HB
+			MBCS.Add(128 + UB);      // $80 OR UB;
+			MBCS.Add(128 + MB);      // $80 OR MB;
+			MBCS.Add(128 + LB);      // $80 OR LB;
+			
+		Else // Greater codes are restricted according to RFC 3629.
+			
+			// Skip symbol.
+		EndIf;
+	EndDo;
+	
+	// Format final result.
+	If AsArray Then
+		
+		// Return ref to original array.
+		Result = MBCS;
+		
+	Else
+		// Encode array to a character string.
+		Result = "";
+		For i = 0 To MBCS.Count()-1 Do
+			Result = Result + Char(MBCS[i]);
+		EndDo;
+	EndIf;
+	
+	// Return formatted value.
+	Return Result;
+	
+EndFunction
+
+
+
 Function GetUserName() Export
 	
 	Return SessionParameters.ACSUser;
 	
 EndFunction
+
+Procedure SendWebhook(webhook_address, WebhookMap) Export
+	
+	Headers = New Map();
+	Headers.Insert("Content-Type", "application/json");		
+	ConnectionSettings = New Structure;
+	Connection = InternetConnectionClientServer.CreateConnection(webhook_address, ConnectionSettings).Result;
+	ResultBody = InternetConnectionClientServer.SendRequest(Connection, "Post", ConnectionSettings, Headers, InternetConnectionClientServer.EncodeJSON(WebhookMap)).Result;
+
+	
+	//Headers = New Map();
+	//Headers.Insert("Content-Type", "application/json");   
+	//
+	//HTTPRequest = New HTTPRequest(webhook_resource,Headers);
+	//HTTPRequest.SetBodyFromString(InternetConnectionClientServer.EncodeJSON(WebhookMap));
+	//
+	//SSLConnection = New OpenSSLSecureConnection();
+	//
+	//HTTPConnection = New HTTPConnection(webhook_address,,,,,,SSLConnection);
+	//Result = HTTPConnection.Post(HTTPRequest);	
+	
+EndProcedure
 
 Function GetSystemTitle() Export
 	
@@ -87,6 +316,97 @@ Function GetLogo() Export
 EndFunction
 
 
+Procedure Update_1_2_29_19() Export
+	
+	If Constants.Update_1_2_29_19.Get() = False Then
+	
+		BeginTransaction();
+									
+		Query = New Query("SELECT
+		                  |	Products.Ref
+		                  |FROM
+		                  |	Catalog.Products AS Products");
+						  
+		QueryResult = Query.Execute();
+		
+		If QueryResult.IsEmpty() Then
+		Else
+			Dataset = QueryResult.Choose();
+			While Dataset.Next() Do
+				
+				If Dataset.Ref.Type = Enums.InventoryTypes.NonInventory Then
+					If Dataset.Ref.InventoryOrExpenseAccount.IsEmpty() Then
+						
+						ProductObj = Dataset.Ref.GetObject();
+						ProductObj.InventoryOrExpenseAccount = Constants.ExpenseAccount.Get();
+						ProductObj.Write();
+						
+					EndIf;
+					
+				EndIf;
+				
+			EndDo;
+		EndIf;
+		
+		Constants.Update_1_2_29_19.Set(True);
+		
+		CommitTransaction();
+				
+	EndIf
+		
+EndProcedure
+
+Procedure FullAccessUpdateProc() Export
+
+If Constants.FullAccessUpdate.Get() = False Then
+	
+		Query = New Query("SELECT
+		                  |	UserList.Ref
+		                  |FROM
+		                  |	Catalog.UserList AS UserList");
+						  
+		QueryResult = Query.Execute();
+
+		If QueryResult.IsEmpty() Then
+		Else
+			Dataset = QueryResult.Choose();
+			While Dataset.Next() Do
+				
+				UserObj = Dataset.Ref.GetObject();
+				TestUser = InfoBaseUsers.FindByName(UserObj.Description);
+				If TestUser.Roles.Contains(Metadata.Roles.FullAccess1) Then
+				UserObj.AdminAccess = True;
+				
+				UserObj.Sales = "Full";
+				UserObj.Purchasing = "Full";
+				UserObj.Warehouse = "Full";
+				UserObj.BankReceive = "Full";
+				UserObj.BankSend = "Full";
+				UserObj.Accounting = "Full";
+				UserObj.ReportsOnly = false;
+				
+				UserObj.Write();	
+				Endif;
+				       
+			EndDo;
+		EndIf;
+		
+		// delete the support@ user from Catalog.UserList
+		
+	try
+		supportusr = Catalogs.UserList.FindByDescription("support@accountingsuite.com");
+		supportobj = supportusr.GetObject();
+		supportobj.Delete();
+	except
+		endtry;
+		
+	
+	Constants.FullAccessUpdate.Set(True);	
+	
+	Endif;
+EndProcedure
+
+
 // Selects item's price from a price-list.
 //
 // Parameters:
@@ -98,19 +418,110 @@ EndFunction
 // Number - item's price.
 //
 Function RetailPrice(ActualDate, Product, Customer) Export
-		
+	
+	If Customer = Catalogs.Companies.EmptyRef() Then
+		PriceLevel = Catalogs.PriceLevels.EmptyRef()
+	EndIf;
+	
 	PriceLevel = Customer.PriceLevel;
 	ProductCategory = Product.Category;
 	
-	SelectParameters = New Structure;
+	// scenario 1 - item +
+	// scenario 2 - item category +, price level +
+	// ??? take both (item, item cat., price level) AND (item cat., price level), Item - if exists - takes priority
+	// scenario 3 - item +, price level +
+	// scenario 4 - item +, item category + (customer not selected in header)
+	// scenario 5 - return 0
+	
 	If PriceLevel = Catalogs.PriceLevels.EmptyRef() AND ProductCategory = Catalogs.ProductCategories.EmptyRef() Then
-		SelectParameters.Insert("Product", Product);
+		Scenario = "1";
+	ElsIf PriceLevel <> Catalogs.PriceLevels.EmptyRef() AND ProductCategory <> Catalogs.ProductCategories.EmptyRef() Then
+		Scenario = "2";
+	ElsIf PriceLevel <> Catalogs.PriceLevels.EmptyRef() AND ProductCategory = Catalogs.ProductCategories.EmptyRef() Then
+		Scenario = "3";
+	ElsIf PriceLevel = Catalogs.PriceLevels.EmptyRef() AND ProductCategory <> Catalogs.ProductCategories.EmptyRef() Then
+		Scenario = "4";
 	Else
-		SelectParameters.Insert("PriceLevel", PriceLevel);
-		SelectParameters.Insert("ProductCategory", ProductCategory);
+		Scenario = "5";
 	EndIf;
-	ResourceValue = InformationRegisters.PriceList.GetLast(ActualDate, SelectParameters);
-	Return ResourceValue.Price;
+	
+	Price = 0;
+	SelectParameters = New Structure;
+	If Scenario = "1" Then
+		SelectParameters.Insert("Product", Product);
+		SelectParameters.Insert("PriceLevel", Catalogs.PriceLevels.EmptyRef());
+		SelectParameters.Insert("ProductCategory", Catalogs.ProductCategories.EmptyRef());	
+		Price = InformationRegisters.PriceList.GetLast(ActualDate, SelectParameters).Price;
+	ElsIf Scenario = "2" Then
+		SelectParameters.Insert("Product", Catalogs.Products.EmptyRef());
+		SelectParameters.Insert("PriceLevel", PriceLevel);
+		SelectParameters.Insert("ProductCategory", ProductCategory);		
+		Price1 = InformationRegisters.PriceList.GetLast(ActualDate, SelectParameters).Price;
+		
+		SelectParameters.Insert("Product", Product);
+		SelectParameters.Insert("PriceLevel", Catalogs.PriceLevels.EmptyRef());
+		SelectParameters.Insert("ProductCategory", Catalogs.ProductCategories.EmptyRef());		
+		Price2 = InformationRegisters.PriceList.GetLast(ActualDate, SelectParameters).Price;
+		
+		SelectParameters.Insert("Product", Product);
+		SelectParameters.Insert("PriceLevel", Catalogs.PriceLevels.EmptyRef());
+		SelectParameters.Insert("ProductCategory", ProductCategory);		
+		Price3 = InformationRegisters.PriceList.GetLast(ActualDate, SelectParameters).Price;
+
+
+		If Price2 <> 0 Then
+			Price = Price2;
+		ElsIf Price3 <> 0 Then
+			Price = Price3;
+		Else
+			Price = Price1;
+		EndIf;
+				
+	ElsIf Scenario = "3" Then
+		SelectParameters.Insert("Product", Product);
+		SelectParameters.Insert("PriceLevel", PriceLevel);
+		SelectParameters.Insert("ProductCategory", Catalogs.ProductCategories.EmptyRef());
+		Price = InformationRegisters.PriceList.GetLast(ActualDate, SelectParameters).Price;
+	ElsIf Scenario = "4" Then
+		SelectParameters.Insert("Product", Product);
+		SelectParameters.Insert("PriceLevel", Catalogs.PriceLevels.EmptyRef());
+		SelectParameters.Insert("ProductCategory", Catalogs.ProductCategories.EmptyRef());		
+		Price1 = InformationRegisters.PriceList.GetLast(ActualDate, SelectParameters).Price;
+		
+		SelectParameters.Insert("Product", Product);
+		SelectParameters.Insert("PriceLevel", Catalogs.PriceLevels.EmptyRef());
+		SelectParameters.Insert("ProductCategory", ProductCategory);		
+		Price2 = InformationRegisters.PriceList.GetLast(ActualDate, SelectParameters).Price;
+		
+		If Price2 > Price1 Then
+			Price = Price2;
+		Else
+			Price = Price1;
+		EndIf;
+		
+	ElsIf Scenario = "5" Then
+		Price = 0;
+	EndIf;
+	
+	//If Scenario = "2" Then
+	//EndIf;
+	
+	//just added
+	//If Customer = Catalogs.Companies.EmptyRef() Then
+	//	PriceLevel = Catalogs.PriceLevels.EmptyRef()
+	//EndIf;
+	//
+	//SelectParameters = New Structure;
+	//If PriceLevel = Catalogs.PriceLevels.EmptyRef() AND ProductCategory = Catalogs.ProductCategories.EmptyRef() Then
+	//	SelectParameters.Insert("Product", Product);
+	//Else
+	//	SelectParameters.Insert("PriceLevel", PriceLevel);
+	//	SelectParameters.Insert("ProductCategory", ProductCategory);
+	//EndIf;
+	//ResourceValue = InformationRegisters.PriceList.GetLast(ActualDate, SelectParameters);
+	//Return ResourceValue.Price;
+	
+	Return Price;
 		
 EndFunction
 
@@ -407,7 +818,8 @@ Procedure CheckDoubleItems(Ref, LineItems, Columns, Cancel) Export
 	CompareItems = StrReplace(Columns, "LineNumber", "");
 	DisplayCodes = FunctionalOptionValue("DisplayCodes");
 	DoublesCount = 0;
-	Doubles      = ""; 
+	Doubles      = "";
+	RefMetadata  = Ref.Metadata();
 	
 	// Check table part for doubles
 	For Each LineItem In TableLineItems Do
@@ -438,6 +850,9 @@ Procedure CheckDoubleItems(Ref, LineItems, Columns, Cancel) Export
 						If Double.Key = "LineNumber" Then
 							Continue; // Skip line number
 							
+						ElsIf Not ValueIsFilled(Value) Then
+							Presentation = NStr("en = '<Empty>'");
+							
 						ElsIf TypeOf(Value) = Type("CatalogRef.Companies") Then
 							Presentation = ?(DisplayCodes, TrimAll(Value.Code) + " ", "") + TrimAll(Value.Description);
 							
@@ -448,8 +863,11 @@ Procedure CheckDoubleItems(Ref, LineItems, Columns, Cancel) Export
 							Presentation = TrimAll(Value);
 						EndIf;
 						
+						// Generate field name presentation
+						KeyPresentation = RefMetadata.TabularSections.LineItems.Attributes[Double.Key].Synonym;
+						
 						// Generate doubled items text
-						DoublesText = DoublesText + ?(IsBlankString(DoublesText), "", ", ") + Double.Key + " """ + Presentation + """";
+						DoublesText = DoublesText + ?(IsBlankString(DoublesText), "", ", ") + KeyPresentation + " '" + Presentation + "'";
 					EndDo;
 					
 					// Generate message to user
@@ -482,6 +900,9 @@ Procedure CheckDoubleItems(Ref, LineItems, Columns, Cancel) Export
 			If Double.Key = "LineNumber" Then
 				Continue; // Skip line number
 				
+			ElsIf Not ValueIsFilled(Value) Then
+				Presentation = NStr("en = '<Empty>'");
+				
 			ElsIf TypeOf(Value) = Type("CatalogRef.Companies") Then
 				Presentation = ?(DisplayCodes, TrimAll(Value.Code) + " ", "") + TrimAll(Value.Description);
 				
@@ -492,7 +913,11 @@ Procedure CheckDoubleItems(Ref, LineItems, Columns, Cancel) Export
 				Presentation = TrimAll(Value);
 			EndIf;
 			
-			DoublesText = DoublesText + ?(IsBlankString(DoublesText), "", ", ") + Double.Key + " """ + Presentation + """";
+			// Generate field name presentation
+			KeyPresentation = RefMetadata.TabularSections.LineItems.Attributes[Double.Key].Synonym;
+			
+			// Generate doubled items text
+			DoublesText = DoublesText + ?(IsBlankString(DoublesText), "", ", ") + KeyPresentation + " '" + Presentation + "'";
 		EndDo;
 		
 		// Generate message to user
@@ -770,6 +1195,22 @@ Procedure FirstLaunch() Export
 		Account.Order = Account.Code;
 		Account.Write();
 		Constants.ExpenseAccount.Set(Account.Ref);
+		
+		Account = ChartsOfAccounts.ChartOfAccounts.PurchaseLiability.GetObject();
+		Account.AccountType = Enums.AccountTypes.OtherCurrentLiability;
+		Account.Currency = Catalogs.Currencies.USD;
+		Account.CashFlowSection = Enums.CashFlowSections.Operating;
+		Account.Order = Account.Code;
+		Account.Write();
+		Constants.PurchaseLiabilityAccount.Set(Account.Ref);
+		
+		Account = ChartsOfAccounts.ChartOfAccounts.CostVariance.GetObject();
+		Account.AccountType = Enums.AccountTypes.Expense;
+		Account.Currency = Catalogs.Currencies.USD;
+		Account.CashFlowSection = Enums.CashFlowSections.Operating;
+		Account.Order = Account.Code;
+		Account.Write();
+		Constants.CostVarianceAccount.Set(Account.Ref);
 					
 		// Adding OurCompany's full name
 		
@@ -2404,10 +2845,14 @@ NewCountry.Write();
 		Constants.CF1Type.Set("None");
 		Constants.CF2Type.Set("None");
 		Constants.CF3Type.Set("None");
+		Constants.CF4Type.Set("None");
+		Constants.CF5Type.Set("None");
 		
-		// Turning on the Projects functionality
-		
-		//Constants.Projects.Set(True);
+		Constants.CF1CType.Set("None");
+		Constants.CF2CType.Set("None");
+		Constants.CF3CType.Set("None");
+		Constants.CF4CType.Set("None");
+		Constants.CF5CType.Set("None");	
 		
 		// mt_change	
 	

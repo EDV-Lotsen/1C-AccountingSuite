@@ -8,6 +8,16 @@
 
 Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 	
+	// for webhooks
+	If NewObject = True Then
+		NewObject = False;
+	Else
+		If Ref = Documents.SalesInvoice.EmptyRef() Then
+			NewObject = True;
+		EndIf;
+	EndIf;
+
+	
 	// Save document parameters before posting the document
 	If WriteMode = DocumentWriteMode.Posting
 	Or WriteMode = DocumentWriteMode.UndoPosting Then
@@ -36,7 +46,7 @@ Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 	
 EndProcedure
 
-Procedure Posting(Cancel, PostingMode)	
+Procedure Posting(Cancel, PostingMode)
 	
 	// 1. Common postings clearing / reactivate manual ajusted postings
 	DocumentPosting.PrepareRecordSetsForPosting(AdditionalProperties, RegisterRecords);
@@ -343,11 +353,13 @@ Procedure Posting(Cancel, PostingMode)
 	
 	RegisterRecords.ProjectData.Write = True;
 	For Each CurRowLineItems In LineItems Do
-		Record = RegisterRecords.ProjectData.Add();
-		Record.RecordType = AccumulationRecordType.Receipt;
-		Record.Period = Date;
-		Record.Project = CurRowLineItems.Project;
-		Record.Amount = CurRowLineItems.LineTotal;
+		If NOT CurRowLineItems.Project.IsEmpty() Then
+			Record = RegisterRecords.ProjectData.Add();
+			Record.RecordType = AccumulationRecordType.Receipt;
+			Record.Period = Date;
+			Record.Project = CurRowLineItems.Project;
+			Record.Amount = CurRowLineItems.LineTotal;
+		Endif;
 	EndDo;
 	
 	// end writing ProjectData
@@ -443,6 +455,72 @@ EndProcedure
 Procedure FillCheckProcessing(Cancel, CheckedAttributes)
 	
 	// Check doubles in items (to be sure of proper orders placement)
-	GeneralFunctions.CheckDoubleItems(Ref, LineItems, "Order, Product, LineNumber", Cancel);
+	GeneralFunctions.CheckDoubleItems(Ref, LineItems, "Project, Order, Product, LineNumber", Cancel);
 	
 EndProcedure
+
+Procedure OnWrite(Cancel)
+	
+	companies_webhook = Constants.sales_invoices_webhook.Get();
+	
+	If NOT companies_webhook = "" Then
+		
+		double_slash = Find(companies_webhook, "//");
+		
+		companies_webhook = Right(companies_webhook,StrLen(companies_webhook) - double_slash - 1);
+		
+		first_slash = Find(companies_webhook, "/");
+		webhook_address = Left(companies_webhook,first_slash - 1);
+		webhook_resource = Right(companies_webhook,StrLen(companies_webhook) - first_slash + 1); 		
+		
+		WebhookMap = New Map(); 
+		WebhookMap.Insert("apisecretkey",Constants.APISecretKey.Get());
+		WebhookMap.Insert("resource","salesinvoices");
+		If NewObject = True Then
+			WebhookMap.Insert("action","create");
+		Else
+			WebhookMap.Insert("action","update");
+		EndIf;
+		WebhookMap.Insert("sales_invoice_number",Ref.Number);
+		
+		WebhookParams = New Array();
+		WebhookParams.Add(webhook_address);
+		WebhookParams.Add(webhook_resource);
+		WebhookParams.Add(WebhookMap);
+		LongActions.ExecuteInBackground("GeneralFunctions.SendWebhook", WebhookParams);
+	
+	EndIf;
+
+EndProcedure
+
+Procedure BeforeDelete(Cancel)
+	
+	companies_webhook = Constants.sales_invoices_webhook.Get();
+	
+	If NOT companies_webhook = "" Then
+		
+		double_slash = Find(companies_webhook, "//");
+		
+		companies_webhook = Right(companies_webhook,StrLen(companies_webhook) - double_slash - 1);
+		
+		first_slash = Find(companies_webhook, "/");
+		webhook_address = Left(companies_webhook,first_slash - 1);
+		webhook_resource = Right(companies_webhook,StrLen(companies_webhook) - first_slash + 1); 		
+		
+		WebhookMap = New Map(); 
+		WebhookMap.Insert("apisecretkey",Constants.APISecretKey.Get());
+		WebhookMap.Insert("resource","salesinvoices");
+		WebhookMap.Insert("action","delete");
+		WebhookMap.Insert("sales_invoice_number",Ref.Number);
+		
+		WebhookParams = New Array();
+		WebhookParams.Add(webhook_address);
+		WebhookParams.Add(webhook_resource);
+		WebhookParams.Add(WebhookMap);
+		LongActions.ExecuteInBackground("GeneralFunctions.SendWebhook", WebhookParams);
+	
+	EndIf;
+
+EndProcedure
+
+

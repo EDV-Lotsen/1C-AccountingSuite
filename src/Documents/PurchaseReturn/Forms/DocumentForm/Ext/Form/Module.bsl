@@ -132,6 +132,9 @@ EndProcedure
 // 
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
+	Items.LineItemsQuantity.EditFormat = "NFD=" + Constants.QtyPrecision.Get();
+	Items.LineItemsQuantity.Format = "NFD=" + Constants.QtyPrecision.Get();
+	
 	If Object.BegBal = False Then
 		Items.DocumentTotalRC.ReadOnly = True;
 		Items.DocumentTotal.ReadOnly = True;

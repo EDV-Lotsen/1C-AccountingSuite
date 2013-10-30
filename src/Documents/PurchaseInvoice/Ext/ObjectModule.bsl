@@ -21,7 +21,7 @@ Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 		                                    Ref, Date, IsNew(), Posted, ManualAdjustment, Metadata(), Orders);
 		DocumentPosting.PrepareDataStructuresBeforeWrite(AdditionalProperties, DocumentParameters, Cancel, WriteMode, PostingMode);
 	EndIf;
-		
+	
 	// Prcheck of register balances to complete filling of document posting
 	If WriteMode = DocumentWriteMode.Posting Then
 		
@@ -45,22 +45,22 @@ Procedure Posting(Cancel, PostingMode)
 	If ManualAdjustment Then
 		Return;
 	EndIf;
-
+	
 	// 3. Create structures with document data to pass it on the server
 	DocumentPosting.PrepareDataStructuresBeforePosting(AdditionalProperties);
 	
 	// 4. Collect document data, available for posing, and fill created structure 
 	Documents.PurchaseInvoice.PrepareDataStructuresForPosting(Ref, AdditionalProperties, RegisterRecords);
-
+	
 	// 5. Fill register records with document's postings
 	DocumentPosting.FillRecordSets(AdditionalProperties, RegisterRecords, Cancel);
-
+	
 	// 6. Write document postings to register
 	DocumentPosting.WriteRecordSets(AdditionalProperties, RegisterRecords);
-
+	
 	// 7. Check register blanaces according to document's changes
 	DocumentPosting.CheckPostingResults(AdditionalProperties, RegisterRecords, Cancel);
-
+	
 	// 8. Clear used temporary document data
 	DocumentPosting.ClearDataStructuresAfterPosting(AdditionalProperties);
 	
@@ -222,7 +222,7 @@ Procedure Posting(Cancel, PostingMode)
 		Record.Account = PostingDatasetVAT[i][0];
 		Record.Period = Date;
 		Record.AmountRC = PostingDatasetVAT[i][1];	
-	EndDo;	
+	EndDo;
 	
 	
 	RegisterRecords.ProjectData.Write = True;
@@ -249,13 +249,11 @@ Procedure Posting(Cancel, PostingMode)
 			Record.Amount = CurRowAccount.Amount;
 		Endif;
 	EndDo;
-
-
-	 	 	
+	
 EndProcedure
 
 Procedure UndoPosting(Cancel)
-
+	
 	// OLD Undo Posting
 	
 	If BegBal Then
@@ -313,7 +311,10 @@ Procedure UndoPosting(Cancel)
 			EndIf;
 		EndIf;
 		
-	EndDo;	
+	EndDo;
+	
+	
+	
 	
 	// 1. Common posting clearing / deactivate manual ajusted postings
 	DocumentPosting.PrepareRecordSetsForPostingClearing(AdditionalProperties, RegisterRecords);
@@ -331,10 +332,10 @@ Procedure UndoPosting(Cancel)
 	
 	// 5. Write document postings to register
 	DocumentPosting.WriteRecordSets(AdditionalProperties, RegisterRecords);
-
+	
 	// 6. Check register blanaces according to document's changes
 	DocumentPosting.CheckPostingResults(AdditionalProperties, RegisterRecords, Cancel);
-
+	
 	// 7. Clear used temporary document data
 	DocumentPosting.ClearDataStructuresAfterPosting(AdditionalProperties);
 	
@@ -355,10 +356,10 @@ Procedure Filling(FillingData, StandardProcessing)
 		
 		// 0. Custom check of purchase order for interactive generate of purchase invoice on the base of purchase order
 		If (TypeOf(FillingData) = Type("DocumentRef.PurchaseOrder"))
-		And Not Documents.PurchaseInvoice.CheckStatusOfPurchaseOrder(FillingData) Then
+		And Not Documents.PurchaseInvoice.CheckStatusOfPurchaseOrder(Ref, FillingData) Then
 			Cancel = True;
 			Return;
-		EndIf;		
+		EndIf;
 		
 		// 1. Common filling of parameters
 		DocumentParameters = New Structure("Ref, Date, Metadata",
@@ -369,10 +370,10 @@ Procedure Filling(FillingData, StandardProcessing)
 		If Cancel Then
 			Return;
 		EndIf;
-			
+		
 		// 3. Collect document data, available for filling, and fill created structure 
 		Documents.PurchaseInvoice.PrepareDataStructuresForFilling(Ref, AdditionalProperties);
-			
+		
 		// 4. Check collected data
 		DocumentFilling.CheckDataStructuresOnFilling(AdditionalProperties, Cancel);
 		
@@ -401,7 +402,7 @@ EndProcedure
 Procedure FillCheckProcessing(Cancel, CheckedAttributes)
 	
 	// Check doubles in items (to be sure of proper orders placement)
-	GeneralFunctions.CheckDoubleItems(Ref, LineItems, "Order, Product, LineNumber", Cancel);
+	GeneralFunctions.CheckDoubleItems(Ref, LineItems, "Project, Order, Product, LineNumber", Cancel);
 	
 EndProcedure
 

@@ -1,0 +1,153 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<WindowOpeningMode>LockOwnerWindow</WindowOpeningMode>
+	<UseForFoldersAndItems>Items</UseForFoldersAndItems>
+	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<Events>
+		<Event name="OnOpen">OnOpen</Event>
+		<Event name="BeforeWriteAtServer">BeforeWriteAtServer</Event>
+	</Events>
+	<ChildItems>
+		<InputField name="Code" id="1">
+			<DataPath>Object.Code</DataPath>
+			<Visible>false</Visible>
+			<EditMode>EnterOnInput</EditMode>
+			<ContextMenu name="CodeContextMenu" id="2"/>
+			<ExtendedTooltip name="CodeExtendedTooltip" id="3"/>
+		</InputField>
+		<InputField name="Description" id="4">
+			<DataPath>Object.Description</DataPath>
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Title</v8:content>
+				</v8:item>
+			</Title>
+			<EditMode>EnterOnInput</EditMode>
+			<ContextMenu name="DescriptionContextMenu" id="5"/>
+			<ExtendedTooltip name="DescriptionExtendedTooltip" id="6"/>
+		</InputField>
+		<InputField name="BegDate" id="35">
+			<DataPath>Object.BegDate</DataPath>
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Start date</v8:content>
+				</v8:item>
+			</Title>
+			<ContextMenu name="BegDateContextMenu" id="36"/>
+			<ExtendedTooltip name="BegDateExtendedTooltip" id="37"/>
+		</InputField>
+		<InputField name="DueDate" id="13">
+			<DataPath>Object.DueDate</DataPath>
+			<EditMode>EnterOnInput</EditMode>
+			<ContextMenu name="DueDateContextMenu" id="14"/>
+			<ExtendedTooltip name="DueDateExtendedTooltip" id="15"/>
+		</InputField>
+		<InputField name="Note" id="7">
+			<DataPath>Object.Note</DataPath>
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Comments</v8:content>
+				</v8:item>
+			</Title>
+			<EditMode>EnterOnInput</EditMode>
+			<ContextMenu name="NoteContextMenu" id="8"/>
+			<ExtendedTooltip name="NoteExtendedTooltip" id="9"/>
+		</InputField>
+		<Table name="Tasks" id="16">
+			<Representation>List</Representation>
+			<AutoInsertNewRow>true</AutoInsertNewRow>
+			<EnableStartDrag>true</EnableStartDrag>
+			<EnableDrag>true</EnableDrag>
+			<DataPath>Object.Tasks</DataPath>
+			<SearchStringLocation>None</SearchStringLocation>
+			<ViewStatusLocation>None</ViewStatusLocation>
+			<SearchControlLocation>None</SearchControlLocation>
+			<RowFilter xsi:nil="true"/>
+			<ContextMenu name="TasksContextMenu" id="17"/>
+			<AutoCommandBar name="TasksCommandBar" id="18"/>
+			<ExtendedTooltip name="TasksExtendedTooltip" id="19"/>
+			<SearchStringAddition name="TasksSearchString" id="44">
+				<AdditionSource>
+					<Item>Tasks</Item>
+					<Type>SearchStringRepresentation</Type>
+				</AdditionSource>
+				<ContextMenu name="TasksSearchStringContextMenu" id="45"/>
+				<ExtendedTooltip name="TasksSearchStringExtendedTooltip" id="46"/>
+			</SearchStringAddition>
+			<ViewStatusAddition name="TasksViewStatus" id="47">
+				<AdditionSource>
+					<Item>Tasks</Item>
+					<Type>ViewStatusRepresentation</Type>
+				</AdditionSource>
+				<ContextMenu name="TasksViewStatusContextMenu" id="48"/>
+				<ExtendedTooltip name="TasksViewStatusExtendedTooltip" id="49"/>
+			</ViewStatusAddition>
+			<SearchControlAddition name="TasksSearchControl" id="50">
+				<AdditionSource>
+					<Item>Tasks</Item>
+					<Type>SearchControl</Type>
+				</AdditionSource>
+				<ContextMenu name="TasksSearchControlContextMenu" id="51"/>
+				<ExtendedTooltip name="TasksSearchControlExtendedTooltip" id="52"/>
+			</SearchControlAddition>
+			<ChildItems>
+				<CheckBoxField name="TasksCompleted" id="41">
+					<DataPath>Object.Tasks.Completed</DataPath>
+					<EditMode>EnterOnInput</EditMode>
+					<CheckBoxType>Auto</CheckBoxType>
+					<ContextMenu name="TasksCompletedContextMenu" id="42"/>
+					<ExtendedTooltip name="TasksCompletedExtendedTooltip" id="43"/>
+				</CheckBoxField>
+				<LabelField name="TasksLineNumber" id="20">
+					<DataPath>Object.Tasks.LineNumber</DataPath>
+					<Visible>false</Visible>
+					<EditMode>EnterOnInput</EditMode>
+					<ContextMenu name="TasksLineNumberContextMenu" id="21"/>
+					<ExtendedTooltip name="TasksLineNumberExtendedTooltip" id="22"/>
+				</LabelField>
+				<InputField name="TasksName" id="23">
+					<DataPath>Object.Tasks.Name</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Tasks</v8:content>
+						</v8:item>
+					</Title>
+					<EditMode>EnterOnInput</EditMode>
+					<ContextMenu name="TasksNameContextMenu" id="24"/>
+					<ExtendedTooltip name="TasksNameExtendedTooltip" id="25"/>
+				</InputField>
+				<InputField name="TasksBegDate" id="38">
+					<DataPath>Object.Tasks.BegDate</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Start date</v8:content>
+						</v8:item>
+					</Title>
+					<EditMode>EnterOnInput</EditMode>
+					<ContextMenu name="TasksBegDateContextMenu" id="39"/>
+					<ExtendedTooltip name="TasksBegDateExtendedTooltip" id="40"/>
+				</InputField>
+				<InputField name="TasksDueDate" id="26">
+					<DataPath>Object.Tasks.DueDate</DataPath>
+					<EditMode>EnterOnInput</EditMode>
+					<ContextMenu name="TasksDueDateContextMenu" id="27"/>
+					<ExtendedTooltip name="TasksDueDateExtendedTooltip" id="28"/>
+				</InputField>
+			</ChildItems>
+		</Table>
+	</ChildItems>
+	<Attributes>
+		<Attribute name="Object" id="1">
+			<Type>
+				<v8:Type>cfg:CatalogObject.Milestones</v8:Type>
+			</Type>
+			<MainAttribute>true</MainAttribute>
+			<SavedData>true</SavedData>
+		</Attribute>
+	</Attributes>
+</Form>

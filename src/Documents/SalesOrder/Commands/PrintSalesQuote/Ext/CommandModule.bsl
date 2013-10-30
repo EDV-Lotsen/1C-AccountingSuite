@@ -9,7 +9,7 @@ Procedure CommandProcessing(CommandParameter, CommandExecuteParameters)
 	Spreadsheet.FitToPage = True;
 	Spreadsheet.ReadOnly = False;
 	Spreadsheet.ShowHeaders = False;
-	Spreadsheet.Show();
+	Spreadsheet.Show("Sales quote");
 	//}}
 EndProcedure
 

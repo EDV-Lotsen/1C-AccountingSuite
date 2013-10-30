@@ -123,7 +123,7 @@
 															</v8:item>
 															<v8:item>
 																<v8:lang>de</v8:lang>
-																<v8:content>Storno/Gutschrift</v8:content>
+																<v8:content>Gutschrift</v8:content>
 															</v8:item>
 														</Presentation>
 														<Value xsi:type="xr:DesignTimeRef">Enum.ReturnTypes.EnumValue.CreditMemo</Value>
@@ -290,6 +290,10 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>Line items</v8:content>
 				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Artikel</v8:content>
+				</v8:item>
 			</Title>
 			<ToolTip>
 				<v8:item>
@@ -374,18 +378,6 @@
 							<DataPath>Object.LineItems.Quantity</DataPath>
 							<EditMode>EnterOnInput</EditMode>
 							<Width>10</Width>
-							<Format>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>NFD=0</v8:content>
-								</v8:item>
-							</Format>
-							<EditFormat>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>NFD=0</v8:content>
-								</v8:item>
-							</EditFormat>
 							<ContextMenu name="LineItemsQuantityContextMenu" id="15"/>
 							<ExtendedTooltip name="LineItemsQuantityExtendedTooltip" id="121"/>
 							<Events>
@@ -473,11 +465,19 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Footer left column</v8:content>
 						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Linke Spalte in der Fußzeile</v8:content>
+						</v8:item>
 					</Title>
 					<ToolTip>
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Footer left column</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Linke Spalte in der Fußzeile</v8:content>
 						</v8:item>
 					</ToolTip>
 					<Group>Vertical</Group>

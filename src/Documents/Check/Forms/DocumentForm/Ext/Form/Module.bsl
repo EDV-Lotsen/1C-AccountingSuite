@@ -25,6 +25,8 @@ EndProcedure
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
+	Items.FormPayWithDwolla.Enabled = IsBlankString(Object.DwollaTrxID);
+		
 	//Title = "Check " + Object.Number + " " + Format(Object.Date, "DLF=D");
 	
 	Items.Company.Title = GeneralFunctionsReusable.GetVendorName();
@@ -237,11 +239,129 @@ Procedure PaymentMethodOnChange(Item)
 		Object.Number = "";
 		Items.Number.ReadOnly = False;
 	EndIf;
+	
 EndProcedure
-
+	
 &AtServer
 Function CheckPaymentMethod()
 	
 	Return Catalogs.PaymentMethods.Check;
+	
+EndFunction
+
+&AtClient
+Procedure URLOpen(Command)
+	GotoURL(Object.URL);
+EndProcedure
+
+&AtClient
+Procedure PayWithDwolla(Command)
+	
+	DAT = DwollaAccessToken();
+	
+	If IsBlankString(DAT) Then
+		Message(NStr("en = 'Please connect to Dwolla in Settings > Integrations.'"));
+		Return;
+	EndIf;
+	
+	// Check document saved.
+	If Object.Ref.IsEmpty() Or Modified Then
+		Message(NStr("en = 'The document is not saved. Please save the document first.'"));
+		Return;
+	EndIf;
+	
+	// Check DwollaID
+	DwollaID = CommonUse.GetAttributeValue(Object.Company, "DwollaID");
+	If IsBlankString(DwollaID) Then
+		Message(NStr("en = 'Enter a Dwolla e-mail ID on the customer card.'"));
+		Return;
+	Else
+		AtSign = Find(DwollaID,"@");
+		If AtSign = 0 Then
+			IsEmail = False;
+		Else
+			IsEmail = True;
+		EndIf;
+	EndIf;
+	
+	If IsEmail Then
+					
+		DwollaData = New Map();
+		DwollaData.Insert("destinationId", DwollaID);
+		DwollaData.Insert("oauth_token", DAT);
+		DwollaData.Insert("amount", Object.DocumentTotalRC);
+		DwollaData.Insert("fundsSource", DwollaFundingSource());
+		DwollaData.Insert("destinationType", "Email");
+		DwollaData.Insert("pin", DwollaPin);
+		
+		DataJSON = InternetConnectionClientServer.EncodeJSON(DwollaData);
+			
+	Else
+		
+		DwollaData = New Map();
+		DwollaData.Insert("destinationId", DwollaID);
+		DwollaData.Insert("oauth_token", DAT);
+		DwollaData.Insert("amount", Object.DocumentTotalRC);
+		DwollaData.Insert("fundsSource", DwollaFundingSource());
+		DwollaData.Insert("pin", DwollaPin);
+		
+		DataJSON = InternetConnectionClientServer.EncodeJSON(DwollaData);
+	
+	EndIf;
+
+			
+	ResultBodyJSON = DwollaCharge(DataJSON);	
+	
+	If ResultBodyJSON.Success AND ResultBodyJSON.Message = "Success" Then
+		Object.DwollaTrxID = Format(ResultBodyJSON.Response, "NG="); //Format(num, "NG=")
+		Message(NStr("en = 'Payment was successfully made. Please save the document.'"));
+		Modified = True;
+	Else
+		Message(ResultBodyJSON.Message);
+	EndIf;
+	
+	Items.FormPayWithDwolla.Enabled = IsBlankString(Object.DwollaTrxID);
+
+EndProcedure
+
+&AtServer
+Function DwollaCharge(DataJSON)
+	
+	HeadersMap = New Map();
+	HeadersMap.Insert("Content-Type", "application/json");		
+	ConnectionSettings = New Structure;
+	Connection = InternetConnectionClientServer.CreateConnection( "https://www.dwolla.com/oauth/rest/transactions/send", ConnectionSettings).Result;
+	ResultBody = InternetConnectionClientServer.SendRequest(Connection, "Post", ConnectionSettings, HeadersMap, DataJSON).Result;
+	
+	//HeadersMap = New Map();
+	//HeadersMap.Insert("Content-Type", "application/json");
+	//
+	//HTTPRequest = New HTTPRequest("/oauth/rest/transactions/send",HeadersMap);
+	//	
+	//HTTPRequest.SetBodyFromString(DataJSON,TextEncoding.ANSI);
+	//
+	//SSLConnection = New OpenSSLSecureConnection();
+	//
+	//HTTPConnection = New HTTPConnection("www.dwolla.com",,,,,,SSLConnection);
+	//Result = HTTPConnection.Post(HTTPRequest);
+	//ResultBody = Result.GetBodyAsString(TextEncoding.UTF8);
+	ResultBodyJSON = InternetConnectionClientServer.DecodeJSON(ResultBody);
+	
+	Return ResultBodyJSON;
+	
+EndFunction
+
+
+&AtServer
+Function DwollaAccessToken()
+	
+	Return Constants.dwolla_access_token.Get();	
+	
+EndFunction
+
+&AtServer
+Function DwollaFundingSource()
+	
+	Return Constants.dwolla_funding_source.Get();
 	
 EndFunction

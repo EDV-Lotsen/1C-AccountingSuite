@@ -35,113 +35,113 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="36"/>
-			<SearchStringAddition name="ListSearchString" id="37">
+			<SearchStringAddition name="ListSearchString" id="53">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="38"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="39"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="54"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="55"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="40">
+			<ViewStatusAddition name="ListViewStatus" id="56">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="41"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="42"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="57"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="58"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="43">
+			<SearchControlAddition name="ListSearchControl" id="59">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="44"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="45"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="60"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="61"/>
 			</SearchControlAddition>
 			<ChildItems>
 				<LabelField name="Description" id="4">
 					<DataPath>List.Description</DataPath>
 					<DefaultItem>true</DefaultItem>
 					<ContextMenu name="DescriptionContextMenu" id="5"/>
-					<ExtendedTooltip name="DescriptionExtendedTooltip" id="46"/>
+					<ExtendedTooltip name="DescriptionExtendedTooltip" id="37"/>
 				</LabelField>
 				<LabelField name="FirstName" id="6">
 					<DataPath>List.FirstName</DataPath>
 					<ContextMenu name="FirstNameContextMenu" id="7"/>
-					<ExtendedTooltip name="FirstNameExtendedTooltip" id="47"/>
+					<ExtendedTooltip name="FirstNameExtendedTooltip" id="38"/>
 				</LabelField>
 				<LabelField name="MiddleName" id="8">
 					<DataPath>List.MiddleName</DataPath>
 					<ContextMenu name="MiddleNameContextMenu" id="9"/>
-					<ExtendedTooltip name="MiddleNameExtendedTooltip" id="48"/>
+					<ExtendedTooltip name="MiddleNameExtendedTooltip" id="39"/>
 				</LabelField>
 				<LabelField name="LastName" id="10">
 					<DataPath>List.LastName</DataPath>
 					<ContextMenu name="LastNameContextMenu" id="11"/>
-					<ExtendedTooltip name="LastNameExtendedTooltip" id="49"/>
+					<ExtendedTooltip name="LastNameExtendedTooltip" id="40"/>
 				</LabelField>
 				<LabelField name="Phone" id="12">
 					<DataPath>List.Phone</DataPath>
 					<ContextMenu name="PhoneContextMenu" id="13"/>
-					<ExtendedTooltip name="PhoneExtendedTooltip" id="50"/>
+					<ExtendedTooltip name="PhoneExtendedTooltip" id="41"/>
 				</LabelField>
 				<LabelField name="Fax" id="14">
 					<DataPath>List.Fax</DataPath>
 					<ContextMenu name="FaxContextMenu" id="15"/>
-					<ExtendedTooltip name="FaxExtendedTooltip" id="51"/>
+					<ExtendedTooltip name="FaxExtendedTooltip" id="42"/>
 				</LabelField>
 				<LabelField name="Email" id="16">
 					<DataPath>List.Email</DataPath>
 					<ContextMenu name="EmailContextMenu" id="17"/>
-					<ExtendedTooltip name="EmailExtendedTooltip" id="52"/>
+					<ExtendedTooltip name="EmailExtendedTooltip" id="43"/>
 				</LabelField>
 				<LabelField name="AddressLine1" id="18">
 					<DataPath>List.AddressLine1</DataPath>
 					<ContextMenu name="AddressLine1ContextMenu" id="19"/>
-					<ExtendedTooltip name="AddressLine1ExtendedTooltip" id="53"/>
+					<ExtendedTooltip name="AddressLine1ExtendedTooltip" id="44"/>
 				</LabelField>
 				<LabelField name="AddressLine2" id="20">
 					<DataPath>List.AddressLine2</DataPath>
 					<ContextMenu name="AddressLine2ContextMenu" id="21"/>
-					<ExtendedTooltip name="AddressLine2ExtendedTooltip" id="54"/>
+					<ExtendedTooltip name="AddressLine2ExtendedTooltip" id="45"/>
 				</LabelField>
 				<LabelField name="City" id="22">
 					<DataPath>List.City</DataPath>
 					<ContextMenu name="CityContextMenu" id="23"/>
-					<ExtendedTooltip name="CityExtendedTooltip" id="55"/>
+					<ExtendedTooltip name="CityExtendedTooltip" id="46"/>
 				</LabelField>
 				<LabelField name="State" id="24">
 					<DataPath>List.State</DataPath>
 					<ContextMenu name="StateContextMenu" id="25"/>
-					<ExtendedTooltip name="StateExtendedTooltip" id="56"/>
+					<ExtendedTooltip name="StateExtendedTooltip" id="47"/>
 				</LabelField>
 				<LabelField name="Country" id="26">
 					<DataPath>List.Country</DataPath>
 					<ContextMenu name="CountryContextMenu" id="27"/>
-					<ExtendedTooltip name="CountryExtendedTooltip" id="57"/>
+					<ExtendedTooltip name="CountryExtendedTooltip" id="48"/>
 				</LabelField>
 				<LabelField name="ZIP" id="28">
 					<DataPath>List.ZIP</DataPath>
 					<ContextMenu name="ZIPContextMenu" id="29"/>
-					<ExtendedTooltip name="ZIPExtendedTooltip" id="58"/>
+					<ExtendedTooltip name="ZIPExtendedTooltip" id="49"/>
 				</LabelField>
 				<LabelField name="RemitTo" id="34">
 					<DataPath>List.RemitTo</DataPath>
 					<ContextMenu name="RemitToContextMenu" id="35"/>
-					<ExtendedTooltip name="RemitToExtendedTooltip" id="59"/>
+					<ExtendedTooltip name="RemitToExtendedTooltip" id="50"/>
 				</LabelField>
 				<CheckBoxField name="DefaultBilling" id="30">
 					<DataPath>List.DefaultBilling</DataPath>
 					<CheckBoxType>Auto</CheckBoxType>
 					<ContextMenu name="DefaultBillingContextMenu" id="31"/>
-					<ExtendedTooltip name="DefaultBillingExtendedTooltip" id="60"/>
+					<ExtendedTooltip name="DefaultBillingExtendedTooltip" id="51"/>
 				</CheckBoxField>
 				<CheckBoxField name="DefaultShipping" id="32">
 					<DataPath>List.DefaultShipping</DataPath>
 					<CheckBoxType>Auto</CheckBoxType>
 					<ContextMenu name="DefaultShippingContextMenu" id="33"/>
-					<ExtendedTooltip name="DefaultShippingExtendedTooltip" id="61"/>
+					<ExtendedTooltip name="DefaultShippingExtendedTooltip" id="52"/>
 				</CheckBoxField>
 			</ChildItems>
 		</Table>

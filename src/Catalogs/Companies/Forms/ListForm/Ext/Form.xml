@@ -6,96 +6,292 @@
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
 	</Events>
 	<ChildItems>
-		<Table name="List" id="1">
-			<Representation>List</Representation>
-			<CommandBarLocation>None</CommandBarLocation>
-			<DefaultItem>true</DefaultItem>
-			<UseAlternationRowColor>true</UseAlternationRowColor>
-			<InitialTreeView>ExpandTopLevel</InitialTreeView>
-			<EnableStartDrag>true</EnableStartDrag>
-			<DataPath>List</DataPath>
-			<RowPictureDataPath>List.DefaultPicture</RowPictureDataPath>
-			<SearchStringLocation>None</SearchStringLocation>
-			<ViewStatusLocation>None</ViewStatusLocation>
-			<SearchControlLocation>None</SearchControlLocation>
-			<AutoRefresh>false</AutoRefresh>
-			<AutoRefreshPeriod>60</AutoRefreshPeriod>
-			<Period>
-				<v8:variant xsi:type="v8:StandardPeriodVariant">Custom</v8:variant>
-				<v8:startDate>0001-01-01T00:00:00</v8:startDate>
-				<v8:endDate>0001-01-01T00:00:00</v8:endDate>
-			</Period>
-			<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
-			<RestoreCurrentRow>false</RestoreCurrentRow>
-			<TopLevelParent xsi:nil="true"/>
-			<ShowRoot>true</ShowRoot>
-			<AllowRootChoice>false</AllowRootChoice>
-			<UpdateOnDataChange>Auto</UpdateOnDataChange>
-			<ContextMenu name="ListContextMenu" id="2"/>
-			<AutoCommandBar name="ListCommandBar" id="3">
-				<Autofill>false</Autofill>
-			</AutoCommandBar>
-			<ExtendedTooltip name="ListExtendedTooltip" id="16"/>
-			<SearchStringAddition name="ListSearchString" id="25">
-				<AdditionSource>
-					<Item>List</Item>
-					<Type>SearchStringRepresentation</Type>
-				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="26"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="27"/>
-			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="28">
-				<AdditionSource>
-					<Item>List</Item>
-					<Type>ViewStatusRepresentation</Type>
-				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="29"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="30"/>
-			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="31">
-				<AdditionSource>
-					<Item>List</Item>
-					<Type>SearchControl</Type>
-				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="32"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="33"/>
-			</SearchControlAddition>
+		<UsualGroup name="Group1" id="29">
+			<Group>Horizontal</Group>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="Group1ExtendedTooltip" id="30"/>
+		</UsualGroup>
+		<UsualGroup name="Group2" id="49">
+			<Group>Horizontal</Group>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="Group2ExtendedTooltip" id="50"/>
 			<ChildItems>
-				<LabelField name="Code" id="12">
-					<DataPath>List.Code</DataPath>
-					<ContextMenu name="CodeContextMenu" id="13"/>
-					<ExtendedTooltip name="CodeExtendedTooltip" id="17"/>
-				</LabelField>
-				<LabelField name="Description" id="4">
-					<DataPath>List.Description</DataPath>
-					<DefaultItem>true</DefaultItem>
-					<ContextMenu name="DescriptionContextMenu" id="5"/>
-					<ExtendedTooltip name="DescriptionExtendedTooltip" id="18"/>
-				</LabelField>
-				<CheckBoxField name="Customer" id="10">
-					<DataPath>List.Customer</DataPath>
-					<CheckBoxType>Auto</CheckBoxType>
-					<ContextMenu name="CustomerContextMenu" id="11"/>
-					<ExtendedTooltip name="CustomerExtendedTooltip" id="19"/>
-				</CheckBoxField>
-				<CheckBoxField name="Vendor" id="8">
-					<DataPath>List.Vendor</DataPath>
-					<CheckBoxType>Auto</CheckBoxType>
-					<ContextMenu name="VendorContextMenu" id="9"/>
-					<ExtendedTooltip name="VendorExtendedTooltip" id="20"/>
-				</CheckBoxField>
-				<LabelField name="Terms" id="22">
-					<DataPath>List.Terms</DataPath>
-					<ContextMenu name="TermsContextMenu" id="23"/>
-					<ExtendedTooltip name="TermsExtendedTooltip" id="24"/>
-				</LabelField>
-				<LabelField name="PriceLevel" id="14">
-					<DataPath>List.PriceLevel</DataPath>
-					<ContextMenu name="PriceLevelContextMenu" id="15"/>
-					<ExtendedTooltip name="PriceLevelExtendedTooltip" id="21"/>
-				</LabelField>
+				<UsualGroup name="Group3" id="51">
+					<Group>Vertical</Group>
+					<ShowTitle>false</ShowTitle>
+					<ExtendedTooltip name="Group3ExtendedTooltip" id="52"/>
+					<ChildItems>
+						<Table name="List" id="1">
+							<Representation>List</Representation>
+							<CommandBarLocation>None</CommandBarLocation>
+							<DefaultItem>true</DefaultItem>
+							<UseAlternationRowColor>true</UseAlternationRowColor>
+							<InitialTreeView>ExpandTopLevel</InitialTreeView>
+							<EnableStartDrag>true</EnableStartDrag>
+							<DataPath>List</DataPath>
+							<RowPictureDataPath>List.DefaultPicture</RowPictureDataPath>
+							<SearchStringLocation>None</SearchStringLocation>
+							<ViewStatusLocation>None</ViewStatusLocation>
+							<SearchControlLocation>None</SearchControlLocation>
+							<AutoRefresh>false</AutoRefresh>
+							<AutoRefreshPeriod>60</AutoRefreshPeriod>
+							<Period>
+								<v8:variant xsi:type="v8:StandardPeriodVariant">Custom</v8:variant>
+								<v8:startDate>0001-01-01T00:00:00</v8:startDate>
+								<v8:endDate>0001-01-01T00:00:00</v8:endDate>
+							</Period>
+							<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
+							<RestoreCurrentRow>false</RestoreCurrentRow>
+							<TopLevelParent xsi:nil="true"/>
+							<ShowRoot>true</ShowRoot>
+							<AllowRootChoice>false</AllowRootChoice>
+							<UpdateOnDataChange>Auto</UpdateOnDataChange>
+							<ContextMenu name="ListContextMenu" id="2"/>
+							<AutoCommandBar name="ListCommandBar" id="3">
+								<Autofill>false</Autofill>
+							</AutoCommandBar>
+							<ExtendedTooltip name="ListExtendedTooltip" id="16"/>
+							<SearchStringAddition name="ListSearchString" id="76">
+								<AdditionSource>
+									<Item>List</Item>
+									<Type>SearchStringRepresentation</Type>
+								</AdditionSource>
+								<ContextMenu name="ListSearchStringContextMenu" id="77"/>
+								<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="78"/>
+							</SearchStringAddition>
+							<ViewStatusAddition name="ListViewStatus" id="79">
+								<AdditionSource>
+									<Item>List</Item>
+									<Type>ViewStatusRepresentation</Type>
+								</AdditionSource>
+								<ContextMenu name="ListViewStatusContextMenu" id="80"/>
+								<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="81"/>
+							</ViewStatusAddition>
+							<SearchControlAddition name="ListSearchControl" id="82">
+								<AdditionSource>
+									<Item>List</Item>
+									<Type>SearchControl</Type>
+								</AdditionSource>
+								<ContextMenu name="ListSearchControlContextMenu" id="83"/>
+								<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="84"/>
+							</SearchControlAddition>
+							<Events>
+								<Event name="OnActivateRow">ContractorsOnActivateRow</Event>
+							</Events>
+							<ChildItems>
+								<LabelField name="Code" id="12">
+									<DataPath>List.Code</DataPath>
+									<Visible>false</Visible>
+									<ContextMenu name="CodeContextMenu" id="13"/>
+									<ExtendedTooltip name="CodeExtendedTooltip" id="17"/>
+								</LabelField>
+								<LabelField name="Description" id="4">
+									<DataPath>List.Description</DataPath>
+									<DefaultItem>true</DefaultItem>
+									<ContextMenu name="DescriptionContextMenu" id="5"/>
+									<ExtendedTooltip name="DescriptionExtendedTooltip" id="18"/>
+								</LabelField>
+								<CheckBoxField name="Customer" id="10">
+									<DataPath>List.Customer</DataPath>
+									<CheckBoxType>Auto</CheckBoxType>
+									<ContextMenu name="CustomerContextMenu" id="11"/>
+									<ExtendedTooltip name="CustomerExtendedTooltip" id="19"/>
+								</CheckBoxField>
+								<CheckBoxField name="Vendor" id="8">
+									<DataPath>List.Vendor</DataPath>
+									<CheckBoxType>Auto</CheckBoxType>
+									<ContextMenu name="VendorContextMenu" id="9"/>
+									<ExtendedTooltip name="VendorExtendedTooltip" id="20"/>
+								</CheckBoxField>
+								<LabelField name="Terms" id="22">
+									<DataPath>List.Terms</DataPath>
+									<ContextMenu name="TermsContextMenu" id="23"/>
+									<ExtendedTooltip name="TermsExtendedTooltip" id="24"/>
+								</LabelField>
+								<LabelField name="PriceLevel" id="14">
+									<DataPath>List.PriceLevel</DataPath>
+									<ContextMenu name="PriceLevelContextMenu" id="15"/>
+									<ExtendedTooltip name="PriceLevelExtendedTooltip" id="21"/>
+								</LabelField>
+							</ChildItems>
+						</Table>
+					</ChildItems>
+				</UsualGroup>
+				<UsualGroup name="Group4" id="53">
+					<Group>Vertical</Group>
+					<ShowTitle>false</ShowTitle>
+					<ExtendedTooltip name="Group4ExtendedTooltip" id="54"/>
+					<ChildItems>
+						<UsualGroup name="Group5" id="55">
+							<Group>Horizontal</Group>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="Group5ExtendedTooltip" id="56"/>
+							<ChildItems>
+								<UsualGroup name="Group6" id="57">
+									<Visible>false</Visible>
+									<Group>Vertical</Group>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="Group6ExtendedTooltip" id="58"/>
+									<ChildItems>
+										<LabelDecoration name="Decoration1" id="61">
+											<Visible>false</Visible>
+											<Title formatted="false">
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Balance / Overdue balance</v8:content>
+												</v8:item>
+											</Title>
+											<ContextMenu name="Decoration1ContextMenu" id="62"/>
+											<ExtendedTooltip name="Decoration1ExtendedTooltip" id="63"/>
+										</LabelDecoration>
+										<InputField name="Attribute2" id="73">
+											<DataPath>Attribute2</DataPath>
+											<ContextMenu name="Attribute2ContextMenu" id="74"/>
+											<ExtendedTooltip name="Attribute2ExtendedTooltip" id="75"/>
+										</InputField>
+										<LabelDecoration name="Decoration2" id="64">
+											<Title formatted="false">
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>data2</v8:content>
+												</v8:item>
+											</Title>
+											<ContextMenu name="Decoration2ContextMenu" id="65"/>
+											<ExtendedTooltip name="Decoration2ExtendedTooltip" id="66"/>
+										</LabelDecoration>
+									</ChildItems>
+								</UsualGroup>
+								<UsualGroup name="Group7" id="59">
+									<Group>Vertical</Group>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="Group7ExtendedTooltip" id="60"/>
+									<ChildItems>
+										<InputField name="CompanyNotes" id="70">
+											<DataPath>Notes</DataPath>
+											<Visible>false</Visible>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Notes</v8:content>
+												</v8:item>
+											</Title>
+											<Height>2</Height>
+											<MultiLine>true</MultiLine>
+											<ContextMenu name="CompanyNotesContextMenu" id="71"/>
+											<ExtendedTooltip name="CompanyNotesExtendedTooltip" id="72"/>
+										</InputField>
+									</ChildItems>
+								</UsualGroup>
+							</ChildItems>
+						</UsualGroup>
+						<Table name="Transactions" id="25">
+							<UseAlternationRowColor>true</UseAlternationRowColor>
+							<DataPath>Transactions</DataPath>
+							<RowPictureDataPath>Transactions.DefaultPicture</RowPictureDataPath>
+							<CommandSet>
+								<ExcludedCommand>UndoPosting</ExcludedCommand>
+								<ExcludedCommand>Copy</ExcludedCommand>
+								<ExcludedCommand>ListSettings</ExcludedCommand>
+								<ExcludedCommand>LoadDynamicListSettings</ExcludedCommand>
+								<ExcludedCommand>DynamicListStandardSettings</ExcludedCommand>
+								<ExcludedCommand>Refresh</ExcludedCommand>
+								<ExcludedCommand>OutputList</ExcludedCommand>
+								<ExcludedCommand>CopyToClipboard</ExcludedCommand>
+								<ExcludedCommand>Choose</ExcludedCommand>
+								<ExcludedCommand>SaveDynamicListSettings</ExcludedCommand>
+								<ExcludedCommand>SetDeletionMark</ExcludedCommand>
+								<ExcludedCommand>Change</ExcludedCommand>
+								<ExcludedCommand>SetDateInterval</ExcludedCommand>
+								<ExcludedCommand>Post</ExcludedCommand>
+								<ExcludedCommand>Delete</ExcludedCommand>
+							</CommandSet>
+							<SearchStringLocation>None</SearchStringLocation>
+							<ViewStatusLocation>None</ViewStatusLocation>
+							<SearchControlLocation>None</SearchControlLocation>
+							<AutoRefresh>false</AutoRefresh>
+							<AutoRefreshPeriod>60</AutoRefreshPeriod>
+							<Period>
+								<v8:variant xsi:type="v8:StandardPeriodVariant">Custom</v8:variant>
+								<v8:startDate>0001-01-01T00:00:00</v8:startDate>
+								<v8:endDate>0001-01-01T00:00:00</v8:endDate>
+							</Period>
+							<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
+							<RestoreCurrentRow>false</RestoreCurrentRow>
+							<TopLevelParent xsi:nil="true"/>
+							<ShowRoot>true</ShowRoot>
+							<AllowRootChoice>false</AllowRootChoice>
+							<UpdateOnDataChange>Auto</UpdateOnDataChange>
+							<ContextMenu name="TransactionsContextMenu" id="26"/>
+							<AutoCommandBar name="TransactionsCommandBar" id="27"/>
+							<ExtendedTooltip name="TransactionsExtendedTooltip" id="28"/>
+							<SearchStringAddition name="TransactionsSearchString" id="85">
+								<AdditionSource>
+									<Item>Transactions</Item>
+									<Type>SearchStringRepresentation</Type>
+								</AdditionSource>
+								<ContextMenu name="TransactionsSearchStringContextMenu" id="86"/>
+								<ExtendedTooltip name="TransactionsSearchStringExtendedTooltip" id="87"/>
+							</SearchStringAddition>
+							<ViewStatusAddition name="TransactionsViewStatus" id="88">
+								<AdditionSource>
+									<Item>Transactions</Item>
+									<Type>ViewStatusRepresentation</Type>
+								</AdditionSource>
+								<ContextMenu name="TransactionsViewStatusContextMenu" id="89"/>
+								<ExtendedTooltip name="TransactionsViewStatusExtendedTooltip" id="90"/>
+							</ViewStatusAddition>
+							<SearchControlAddition name="TransactionsSearchControl" id="91">
+								<AdditionSource>
+									<Item>Transactions</Item>
+									<Type>SearchControl</Type>
+								</AdditionSource>
+								<ContextMenu name="TransactionsSearchControlContextMenu" id="92"/>
+								<ExtendedTooltip name="TransactionsSearchControlExtendedTooltip" id="93"/>
+							</SearchControlAddition>
+							<ChildItems>
+								<LabelField name="TransactionsDate" id="31">
+									<DataPath>Transactions.Date</DataPath>
+									<Format>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>DLF=D</v8:content>
+										</v8:item>
+									</Format>
+									<ContextMenu name="TransactionsDateContextMenu" id="32"/>
+									<ExtendedTooltip name="TransactionsDateExtendedTooltip" id="33"/>
+								</LabelField>
+								<LabelField name="TransactionsRef" id="34">
+									<DataPath>Transactions.Ref</DataPath>
+									<ContextMenu name="TransactionsRefContextMenu" id="35"/>
+									<ExtendedTooltip name="TransactionsRefExtendedTooltip" id="36"/>
+								</LabelField>
+								<LabelField name="TransactionsTotal" id="37">
+									<DataPath>Transactions.Total</DataPath>
+									<ContextMenu name="TransactionsTotalContextMenu" id="38"/>
+									<ExtendedTooltip name="TransactionsTotalExtendedTooltip" id="39"/>
+								</LabelField>
+								<LabelField name="TransactionsDueDate" id="46">
+									<DataPath>Transactions.DueDate</DataPath>
+									<Format>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>DLF=D</v8:content>
+										</v8:item>
+									</Format>
+									<ContextMenu name="TransactionsDueDateContextMenu" id="47"/>
+									<ExtendedTooltip name="TransactionsDueDateExtendedTooltip" id="48"/>
+								</LabelField>
+								<LabelField name="TransactionsMemo" id="40">
+									<DataPath>Transactions.Memo</DataPath>
+									<ContextMenu name="TransactionsMemoContextMenu" id="41"/>
+									<ExtendedTooltip name="TransactionsMemoExtendedTooltip" id="42"/>
+								</LabelField>
+							</ChildItems>
+						</Table>
+					</ChildItems>
+				</UsualGroup>
 			</ChildItems>
-		</Table>
+		</UsualGroup>
 	</ChildItems>
 	<Attributes>
 		<Attribute name="List" id="1">
@@ -123,6 +319,8 @@
 	CatalogCompanies.Website,
 	CatalogCompanies.Notes,
 	CatalogCompanies.Terms,
+	CatalogCompanies.StripeToken,
+	CatalogCompanies.StripeID,
 	CatalogCompanies.ARAccount,
 	CatalogCompanies.APAccount,
 	CatalogCompanies.PriceLevel,
@@ -148,6 +346,74 @@ FROM
 					<dcsset:itemsUserSettingID>911b6018-f537-43e8-a417-da56b22f9aec</dcsset:itemsUserSettingID>
 				</ListSettings>
 			</Settings>
+		</Attribute>
+		<Attribute name="Transactions" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Transactions</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>cfg:DynamicList</v8:Type>
+			</Type>
+			<Settings xsi:type="DynamicList">
+				<ManualQuery>true</ManualQuery>
+				<DynamicDataRead>true</DynamicDataRead>
+				<QueryText>SELECT
+	DocumentJournal1.Date,
+	DocumentJournal1.Ref,
+	DocumentJournal1.Total,
+	DocumentJournal1.Memo,
+	DocumentJournal1.Posted,
+	DocumentJournal1.DueDate
+FROM
+	DocumentJournal.DocumentJournal1 AS DocumentJournal1
+WHERE
+	DocumentJournal1.Company = &amp;Company</QueryText>
+				<MainTable>DocumentJournal.DocumentJournal1</MainTable>
+				<ListSettings>
+					<dcsset:filter>
+						<dcsset:viewMode>Normal</dcsset:viewMode>
+						<dcsset:userSettingID>dfcece9d-5077-440b-b6b3-45a5cb4538eb</dcsset:userSettingID>
+					</dcsset:filter>
+					<dcsset:order>
+						<dcsset:viewMode>Normal</dcsset:viewMode>
+						<dcsset:userSettingID>88619765-ccb3-46c6-ac52-38e9c992ebd4</dcsset:userSettingID>
+					</dcsset:order>
+					<dcsset:conditionalAppearance>
+						<dcsset:viewMode>Normal</dcsset:viewMode>
+						<dcsset:userSettingID>b75fecce-942b-4aed-abc9-e6a02e460fb3</dcsset:userSettingID>
+					</dcsset:conditionalAppearance>
+					<dcsset:itemsViewMode>Normal</dcsset:itemsViewMode>
+					<dcsset:itemsUserSettingID>911b6018-f537-43e8-a417-da56b22f9aec</dcsset:itemsUserSettingID>
+				</ListSettings>
+			</Settings>
+		</Attribute>
+		<Attribute name="Notes" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Notes</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="Attribute2" id="4">
+			<Type>
+				<v8:Type>xs:decimal</v8:Type>
+				<v8:NumberQualifiers>
+					<v8:Digits>10</v8:Digits>
+					<v8:FractionDigits>0</v8:FractionDigits>
+					<v8:AllowedSign>Any</v8:AllowedSign>
+				</v8:NumberQualifiers>
+			</Type>
 		</Attribute>
 	</Attributes>
 </Form>

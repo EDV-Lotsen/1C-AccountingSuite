@@ -11,7 +11,7 @@ Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 	// Save document parameters before posting the document
 	If WriteMode = DocumentWriteMode.Posting
 	Or WriteMode = DocumentWriteMode.UndoPosting Then
-	
+		
 		// Common filling of parameters
 		DocumentParameters = New Structure("Ref, Date, IsNew,   Posted, ManualAdjustment, Metadata",
 		                                    Ref, Date, IsNew(), Posted, ManualAdjustment, Metadata());
@@ -22,7 +22,7 @@ Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 EndProcedure
 
 Procedure Posting(Cancel, PostingMode)
-    
+	
 	// 1. Common postings clearing / reactivate manual ajusted postings
 	DocumentPosting.PrepareRecordSetsForPosting(AdditionalProperties, RegisterRecords);
 	
@@ -30,22 +30,22 @@ Procedure Posting(Cancel, PostingMode)
 	If ManualAdjustment Then
 		Return;
 	EndIf;
-
+	
 	// 3. Create structures with document data to pass it on the server
 	DocumentPosting.PrepareDataStructuresBeforePosting(AdditionalProperties);
 	
 	// 4. Collect document data, available for posing, and fill created structure 
 	Documents.PurchaseOrder.PrepareDataStructuresForPosting(Ref, AdditionalProperties, RegisterRecords);
-
+	
 	// 5. Fill register records with document's postings
 	DocumentPosting.FillRecordSets(AdditionalProperties, RegisterRecords, Cancel);
-
+	
 	// 6. Write document postings to register
 	DocumentPosting.WriteRecordSets(AdditionalProperties, RegisterRecords);
-
+	
 	// 7. Check register blanaces according to document's changes
 	DocumentPosting.CheckPostingResults(AdditionalProperties, RegisterRecords, Cancel);
-
+	
 	// 8. Clear used temporary document data
 	DocumentPosting.ClearDataStructuresAfterPosting(AdditionalProperties);
 	

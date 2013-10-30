@@ -1,0 +1,316 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<AutoTime>CurrentOrLast</AutoTime>
+	<UsePostingMode>Auto</UsePostingMode>
+	<RepostOnWrite>true</RepostOnWrite>
+	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<Events>
+		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+	</Events>
+	<ChildItems>
+		<InputField name="User" id="22">
+			<DataPath>Object.User</DataPath>
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>User</v8:content>
+				</v8:item>
+			</Title>
+			<Width>24</Width>
+			<HorizontalStretch>false</HorizontalStretch>
+			<ContextMenu name="UserContextMenu" id="23"/>
+			<ExtendedTooltip name="UserExtendedTooltip" id="24"/>
+		</InputField>
+		<InputField name="Company" id="7">
+			<DataPath>Object.Company</DataPath>
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Customer</v8:content>
+				</v8:item>
+			</Title>
+			<EditMode>EnterOnInput</EditMode>
+			<HorizontalStretch>false</HorizontalStretch>
+			<ContextMenu name="CompanyContextMenu" id="8"/>
+			<ExtendedTooltip name="CompanyExtendedTooltip" id="9"/>
+		</InputField>
+		<InputField name="Project" id="10">
+			<DataPath>Object.Project</DataPath>
+			<EditMode>EnterOnInput</EditMode>
+			<HorizontalStretch>false</HorizontalStretch>
+			<ChoiceParameterLinks>
+				<xr:Link>
+					<xr:Name>Filter.Customer</xr:Name>
+					<xr:DataPath xsi:type="xs:string">Object.Company</xr:DataPath>
+					<xr:ValueChange>Clear</xr:ValueChange>
+				</xr:Link>
+			</ChoiceParameterLinks>
+			<ContextMenu name="ProjectContextMenu" id="11"/>
+			<ExtendedTooltip name="ProjectExtendedTooltip" id="12"/>
+		</InputField>
+		<InputField name="Task" id="13">
+			<DataPath>Object.Task</DataPath>
+			<EditMode>EnterOnInput</EditMode>
+			<HorizontalStretch>false</HorizontalStretch>
+			<ContextMenu name="TaskContextMenu" id="14"/>
+			<ExtendedTooltip name="TaskExtendedTooltip" id="15"/>
+			<Events>
+				<Event name="OnChange">TaskOnChange</Event>
+			</Events>
+		</InputField>
+		<InputField name="Price" id="16">
+			<DataPath>Object.Price</DataPath>
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Hourly Rate</v8:content>
+				</v8:item>
+			</Title>
+			<EditMode>EnterOnInput</EditMode>
+			<ContextMenu name="PriceContextMenu" id="17"/>
+			<ExtendedTooltip name="PriceExtendedTooltip" id="18"/>
+		</InputField>
+		<InputField name="TimeComplete" id="19">
+			<DataPath>Object.TimeComplete</DataPath>
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Hours</v8:content>
+				</v8:item>
+			</Title>
+			<EditMode>EnterOnInput</EditMode>
+			<ContextMenu name="TimeCompleteContextMenu" id="20"/>
+			<ExtendedTooltip name="TimeCompleteExtendedTooltip" id="21"/>
+			<Events>
+				<Event name="OnChange">ReviseHours</Event>
+			</Events>
+		</InputField>
+		<CheckBoxField name="Billable" id="62">
+			<DataPath>Object.Billable</DataPath>
+			<CheckBoxType>Auto</CheckBoxType>
+			<ContextMenu name="BillableContextMenu" id="63"/>
+			<ExtendedTooltip name="BillableExtendedTooltip" id="64"/>
+		</CheckBoxField>
+		<RadioButtonField name="LogType" id="59">
+			<DataPath>Object.LogType</DataPath>
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Date Range</v8:content>
+				</v8:item>
+			</Title>
+			<RadioButtonType>Tumbler</RadioButtonType>
+			<ColumnsCount>2</ColumnsCount>
+			<ChoiceList>
+				<xr:Item>
+					<xr:Presentation/>
+					<xr:CheckState>0</xr:CheckState>
+					<xr:Value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation/>
+						<Value xsi:type="xs:string">Single</Value>
+					</xr:Value>
+				</xr:Item>
+				<xr:Item>
+					<xr:Presentation/>
+					<xr:CheckState>0</xr:CheckState>
+					<xr:Value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation/>
+						<Value xsi:type="xs:string">Week</Value>
+					</xr:Value>
+				</xr:Item>
+			</ChoiceList>
+			<ContextMenu name="LogTypeContextMenu" id="60"/>
+			<ExtendedTooltip name="LogTypeExtendedTooltip" id="61"/>
+			<Events>
+				<Event name="OnChange">LogTypeOnChange</Event>
+			</Events>
+		</RadioButtonField>
+		<UsualGroup name="Group1" id="34">
+			<Group>Horizontal</Group>
+			<Representation>None</Representation>
+			<ExtendedTooltip name="Group1ExtendedTooltip" id="35"/>
+			<ChildItems>
+				<InputField name="DateFrom" id="28">
+					<DataPath>Object.DateFrom</DataPath>
+					<ContextMenu name="DateFromContextMenu" id="29"/>
+					<ExtendedTooltip name="DateFromExtendedTooltip" id="30"/>
+					<Events>
+						<Event name="OnChange">DateToOnChange</Event>
+					</Events>
+				</InputField>
+				<InputField name="DateTo" id="31">
+					<DataPath>Object.DateTo</DataPath>
+					<Visible>false</Visible>
+					<ContextMenu name="DateToContextMenu" id="32"/>
+					<ExtendedTooltip name="DateToExtendedTooltip" id="33"/>
+				</InputField>
+			</ChildItems>
+		</UsualGroup>
+		<UsualGroup name="Week" id="36">
+			<Visible>false</Visible>
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Days</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Week</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Group>Horizontal</Group>
+			<ControlRepresentation>Picture</ControlRepresentation>
+			<ExtendedTooltip name="WeekExtendedTooltip" id="37"/>
+			<ChildItems>
+				<InputField name="Day1" id="38">
+					<DataPath>Object.Mon</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Day 1</v8:content>
+						</v8:item>
+					</Title>
+					<TitleLocation>Top</TitleLocation>
+					<Width>3</Width>
+					<HorizontalStretch>false</HorizontalStretch>
+					<ChoiceButton>false</ChoiceButton>
+					<ContextMenu name="Day1ContextMenu" id="39"/>
+					<ExtendedTooltip name="Day1ExtendedTooltip" id="40"/>
+					<Events>
+						<Event name="OnChange">ReviseHours</Event>
+					</Events>
+				</InputField>
+				<InputField name="Day2" id="41">
+					<DataPath>Object.Tue</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Day 2</v8:content>
+						</v8:item>
+					</Title>
+					<TitleLocation>Top</TitleLocation>
+					<Width>3</Width>
+					<HorizontalStretch>false</HorizontalStretch>
+					<ChoiceButton>false</ChoiceButton>
+					<ContextMenu name="Day2ContextMenu" id="42"/>
+					<ExtendedTooltip name="Day2ExtendedTooltip" id="43"/>
+					<Events>
+						<Event name="OnChange">ReviseHours</Event>
+					</Events>
+				</InputField>
+				<InputField name="Day3" id="47">
+					<DataPath>Object.Wed</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Day 3</v8:content>
+						</v8:item>
+					</Title>
+					<TitleLocation>Top</TitleLocation>
+					<Width>3</Width>
+					<HorizontalStretch>false</HorizontalStretch>
+					<ChoiceButton>false</ChoiceButton>
+					<ContextMenu name="Day3ContextMenu" id="48"/>
+					<ExtendedTooltip name="Day3ExtendedTooltip" id="49"/>
+					<Events>
+						<Event name="OnChange">ReviseHours</Event>
+					</Events>
+				</InputField>
+				<InputField name="Day4" id="50">
+					<DataPath>Object.Thur</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Day 4</v8:content>
+						</v8:item>
+					</Title>
+					<TitleLocation>Top</TitleLocation>
+					<Width>1</Width>
+					<HorizontalStretch>false</HorizontalStretch>
+					<ChoiceButton>false</ChoiceButton>
+					<ContextMenu name="Day4ContextMenu" id="51"/>
+					<ExtendedTooltip name="Day4ExtendedTooltip" id="52"/>
+					<Events>
+						<Event name="OnChange">ReviseHours</Event>
+					</Events>
+				</InputField>
+				<InputField name="Day5" id="44">
+					<DataPath>Object.Fri</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Day 5</v8:content>
+						</v8:item>
+					</Title>
+					<TitleLocation>Top</TitleLocation>
+					<Width>3</Width>
+					<HorizontalStretch>false</HorizontalStretch>
+					<ChoiceButton>false</ChoiceButton>
+					<ContextMenu name="Day5ContextMenu" id="45"/>
+					<ExtendedTooltip name="Day5ExtendedTooltip" id="46"/>
+					<Events>
+						<Event name="OnChange">ReviseHours</Event>
+					</Events>
+				</InputField>
+				<InputField name="Day6" id="53">
+					<DataPath>Object.Sat</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Day 6</v8:content>
+						</v8:item>
+					</Title>
+					<TitleLocation>Top</TitleLocation>
+					<Width>3</Width>
+					<HorizontalStretch>false</HorizontalStretch>
+					<ChoiceButton>false</ChoiceButton>
+					<ContextMenu name="Day6ContextMenu" id="54"/>
+					<ExtendedTooltip name="Day6ExtendedTooltip" id="55"/>
+					<Events>
+						<Event name="OnChange">ReviseHours</Event>
+					</Events>
+				</InputField>
+				<InputField name="Day7" id="56">
+					<DataPath>Object.Sun</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Day 7</v8:content>
+						</v8:item>
+					</Title>
+					<TitleLocation>Top</TitleLocation>
+					<Width>3</Width>
+					<HorizontalStretch>false</HorizontalStretch>
+					<ChoiceButton>false</ChoiceButton>
+					<ContextMenu name="Day7ContextMenu" id="57"/>
+					<ExtendedTooltip name="Day7ExtendedTooltip" id="58"/>
+					<Events>
+						<Event name="OnChange">ReviseHours</Event>
+					</Events>
+				</InputField>
+			</ChildItems>
+		</UsualGroup>
+		<InputField name="Memo" id="25">
+			<DataPath>Object.Memo</DataPath>
+			<HorizontalStretch>false</HorizontalStretch>
+			<VerticalStretch>false</VerticalStretch>
+			<MultiLine>true</MultiLine>
+			<ContextMenu name="MemoContextMenu" id="26"/>
+			<ExtendedTooltip name="MemoExtendedTooltip" id="27"/>
+		</InputField>
+	</ChildItems>
+	<Attributes>
+		<Attribute name="Object" id="1">
+			<Type>
+				<v8:Type>cfg:DocumentObject.TimeTrack</v8:Type>
+			</Type>
+			<MainAttribute>true</MainAttribute>
+			<SavedData>true</SavedData>
+			<UseAlways>
+				<Field>Object.RegisterRecords</Field>
+			</UseAlways>
+		</Attribute>
+	</Attributes>
+</Form>

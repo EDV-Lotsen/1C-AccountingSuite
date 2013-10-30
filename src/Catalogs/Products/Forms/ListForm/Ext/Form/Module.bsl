@@ -7,6 +7,8 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	CF1Type = Constants.CF1Type.Get();
 	CF2Type = Constants.CF2Type.Get();
 	CF3Type = Constants.CF3Type.Get();
+	CF4Type = Constants.CF4Type.Get();
+	CF5Type = Constants.CF5Type.Get();
 	
 	If CF1Type = "None" Then
 		Items.CF1Num.Visible = False;
@@ -55,6 +57,39 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Items.CF3Num.Visible = False;
 		Items.CF3String.Visible = False;
 	EndIf;
+	
+	If CF4Type = "None" Then
+		Items.CF4Num.Visible = False;
+		Items.CF4String.Visible = False;
+	ElsIf CF4Type = "Number" Then
+		Items.CF4Num.Visible = True;
+		Items.CF4String.Visible = False;
+		Items.CF4Num.Title = Constants.CF4Name.Get();
+	ElsIf CF4Type = "String" Then
+	    Items.CF4Num.Visible = False;
+		Items.CF4String.Visible = True;
+		Items.CF4String.Title = Constants.CF4Name.Get();
+	ElsIf CF4Type = "" Then
+		Items.CF4Num.Visible = False;
+		Items.CF4String.Visible = False;
+	EndIf;
+
+	If CF5Type = "None" Then
+		Items.CF5Num.Visible = False;
+		Items.CF5String.Visible = False;
+	ElsIf CF5Type = "Number" Then
+		Items.CF5Num.Visible = True;
+		Items.CF5String.Visible = False;
+		Items.CF5Num.Title = Constants.CF5Name.Get();
+	ElsIf CF5Type = "String" Then
+	    Items.CF5Num.Visible = False;
+		Items.CF5String.Visible = True;
+		Items.CF5String.Title = Constants.CF5Name.Get();
+	ElsIf CF5Type = "" Then
+		Items.CF5Num.Visible = False;
+		Items.CF5String.Visible = False;
+	EndIf;
+
 	
 	// end custom fields
 

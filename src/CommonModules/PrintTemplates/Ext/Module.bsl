@@ -13,16 +13,21 @@ Function ContactInfoDatasetUs() Export
 	Else
 		Line1Line2 = Constants.AddressLine1.Get() + ", " + Constants.AddressLine2.Get();
 	EndIf;
-		
+	
+	State = Constants.State.Get();
+	
 	CityStateZIP = "";
-	CityStateZIP = Constants.City.Get() + " " + Constants.State.Get() + " " + Constants.ZIP.Get();
+	If NOT Constants.City.Get() = "" Then
+		CityStateZIP = Constants.City.Get() + ", " + State.Code + " " + Constants.ZIP.Get();
+	EndIf;
 	
 	Info.Insert("UsName", Constants.SystemTitle.Get());	
 	Info.Insert("UsBillLine1", Constants.AddressLine1.Get());
 	Info.Insert("UsBillLine2", Constants.AddressLine2.Get());	
 	Info.Insert("UsBillLine1Line2", Line1Line2);
 	Info.Insert("UsBillCity", Constants.City.Get());
-	Info.Insert("UsBillState", Constants.State.Get());
+	
+	Info.Insert("UsBillState", State.Code);
 	Info.Insert("UsBillZIP", Constants.ZIP.Get());
 	Info.Insert("UsBillCityStateZIP", CityStateZIP);
 	Info.Insert("UsBillCountry", Constants.Country.Get());
@@ -56,7 +61,7 @@ Function ContactInfoDataset(Company, Type, ShipTo) Export
 		                  |	Addresses.AddressLine1,
 		                  |	Addresses.AddressLine2,
 		                  |	Addresses.City,
-		                  |	Addresses.State,
+		                  |	Addresses.State.Code AS State,
 		                  |	Addresses.Country,
 		                  |	Addresses.ZIP,
 		                  |	Addresses.RemitTo
@@ -79,7 +84,7 @@ Function ContactInfoDataset(Company, Type, ShipTo) Export
 		                  |	Addresses.AddressLine1,
 		                  |	Addresses.AddressLine2,
 		                  |	Addresses.City,
-		                  |	Addresses.State,
+		                  |	Addresses.State.Code AS State,
 		                  |	Addresses.Country,
 		                  |	Addresses.ZIP
 		                  |FROM
@@ -105,7 +110,9 @@ Function ContactInfoDataset(Company, Type, ShipTo) Export
 	EndIf;
 		
 	CityStateZIP = "";
-	CityStateZIP = Dataset[0].City + " " + Dataset[0].State + " " + Dataset[0].ZIP;
+	If NOT Dataset[0].City = "" Then
+		CityStateZIP = Dataset[0].City + ", " + Dataset[0].State + " " + Dataset[0].ZIP;
+	EndIf;
 	
 	If Type = "ThemShip" Then
         Info.Insert("ThemCode", Company.Code);

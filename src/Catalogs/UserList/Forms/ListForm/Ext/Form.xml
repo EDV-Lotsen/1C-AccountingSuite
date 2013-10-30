@@ -57,11 +57,6 @@
 				<ContextMenu name="ListSearchControlContextMenu" id="15"/>
 				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="16"/>
 			</SearchControlAddition>
-			<Events>
-				<Event name="BeforeDeleteRow">ListBeforeDeleteRow</Event>
-				<Event name="OnActivateRow">ListOnActivateRow</Event>
-				<Event name="AfterDeleteRow">ListAfterDeleteRow</Event>
-			</Events>
 			<ChildItems>
 				<LabelField name="Description" id="4">
 					<DataPath>List.Description</DataPath>

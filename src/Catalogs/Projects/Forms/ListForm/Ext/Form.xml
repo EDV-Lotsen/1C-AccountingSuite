@@ -1,12 +1,20 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
-	<VerticalScroll>useIfNecessary</VerticalScroll>
 	<AutoCommandBar name="FormCommandBar" id="-1"/>
-	<Events>
-		<Event name="OnOpen">OnOpen</Event>
-	</Events>
 	<ChildItems>
-		<Table name="List" id="1">
+		<UsualGroup name="ListSettingsComposerUserSettings" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>User settings group</v8:content>
+				</v8:item>
+			</Title>
+			<VerticalStretch>false</VerticalStretch>
+			<Group>Vertical</Group>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="ListSettingsComposerUserSettingsExtendedTooltip" id="2"/>
+		</UsualGroup>
+		<Table name="List" id="3">
 			<Representation>List</Representation>
 			<CommandBarLocation>None</CommandBarLocation>
 			<DefaultItem>true</DefaultItem>
@@ -31,82 +39,89 @@
 			<ShowRoot>true</ShowRoot>
 			<AllowRootChoice>false</AllowRootChoice>
 			<UpdateOnDataChange>Auto</UpdateOnDataChange>
-			<ContextMenu name="ListContextMenu" id="2"/>
-			<AutoCommandBar name="ListCommandBar" id="3">
+			<UserSettingsGroup>ListSettingsComposerUserSettings</UserSettingsGroup>
+			<ContextMenu name="ListContextMenu" id="4"/>
+			<AutoCommandBar name="ListCommandBar" id="5">
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="6"/>
-			<SearchStringAddition name="ListSearchString" id="17">
+			<SearchStringAddition name="ListSearchString" id="25">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="18"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="19"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="26"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="27"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="20">
+			<ViewStatusAddition name="ListViewStatus" id="28">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="21"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="22"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="29"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="30"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="23">
+			<SearchControlAddition name="ListSearchControl" id="31">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="24"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="25"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="32"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="33"/>
 			</SearchControlAddition>
 			<ChildItems>
-				<LabelField name="Description" id="4">
+				<LabelField name="Description" id="7">
 					<DataPath>List.Description</DataPath>
 					<DefaultItem>true</DefaultItem>
-					<Width>28</Width>
+					<Width>25</Width>
 					<HorizontalStretch>false</HorizontalStretch>
-					<ContextMenu name="DescriptionContextMenu" id="5"/>
-					<ExtendedTooltip name="DescriptionExtendedTooltip" id="7"/>
+					<ContextMenu name="DescriptionContextMenu" id="8"/>
+					<ExtendedTooltip name="DescriptionExtendedTooltip" id="9"/>
 				</LabelField>
-				<LabelField name="AmountReceipt" id="11">
+				<LabelField name="Customer" id="10">
+					<DataPath>List.Customer</DataPath>
+					<Width>20</Width>
+					<HorizontalStretch>false</HorizontalStretch>
+					<ContextMenu name="CustomerContextMenu" id="11"/>
+					<ExtendedTooltip name="CustomerExtendedTooltip" id="12"/>
+				</LabelField>
+				<LabelField name="AmountReceipt" id="19">
 					<DataPath>List.AmountReceipt</DataPath>
-					<Title>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Income</v8:content>
-						</v8:item>
-					</Title>
-					<Width>14</Width>
+					<Width>20</Width>
 					<HorizontalStretch>false</HorizontalStretch>
-					<ContextMenu name="AmountReceiptContextMenu" id="12"/>
-					<ExtendedTooltip name="AmountReceiptExtendedTooltip" id="13"/>
+					<ContextMenu name="AmountReceiptContextMenu" id="20"/>
+					<ExtendedTooltip name="AmountReceiptExtendedTooltip" id="21"/>
 				</LabelField>
-				<LabelField name="AmountExpense" id="8">
+				<LabelField name="AmountExpense" id="13">
 					<DataPath>List.AmountExpense</DataPath>
-					<Title>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Expense</v8:content>
-						</v8:item>
-					</Title>
-					<Width>14</Width>
+					<Width>19</Width>
 					<HorizontalStretch>false</HorizontalStretch>
-					<ContextMenu name="AmountExpenseContextMenu" id="9"/>
-					<ExtendedTooltip name="AmountExpenseExtendedTooltip" id="10"/>
+					<ContextMenu name="AmountExpenseContextMenu" id="14"/>
+					<ExtendedTooltip name="AmountExpenseExtendedTooltip" id="15"/>
 				</LabelField>
-				<LabelField name="AmountTurnover" id="14">
+				<LabelField name="AmountTurnover" id="16">
 					<DataPath>List.AmountTurnover</DataPath>
 					<Title>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Profit</v8:content>
+							<v8:content>Amount Profit</v8:content>
 						</v8:item>
 					</Title>
-					<Width>14</Width>
+					<Width>20</Width>
 					<HorizontalStretch>false</HorizontalStretch>
-					<ContextMenu name="AmountTurnoverContextMenu" id="15"/>
-					<ExtendedTooltip name="AmountTurnoverExtendedTooltip" id="16"/>
+					<ContextMenu name="AmountTurnoverContextMenu" id="17"/>
+					<ExtendedTooltip name="AmountTurnoverExtendedTooltip" id="18"/>
+				</LabelField>
+				<LabelField name="Hours" id="22">
+					<DataPath>List.Hours</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Hours Logged</v8:content>
+						</v8:item>
+					</Title>
+					<ContextMenu name="HoursContextMenu" id="23"/>
+					<ExtendedTooltip name="HoursExtendedTooltip" id="24"/>
 				</LabelField>
 			</ChildItems>
 		</Table>
@@ -123,18 +138,33 @@
 				<QueryText>SELECT
 	CatalogProjects.Ref,
 	CatalogProjects.DeletionMark,
-	CatalogProjects.Owner,
 	CatalogProjects.Description,
+	CatalogProjects.Customer,
+	CatalogProjects.Internal,
 	CatalogProjects.Predefined,
 	CatalogProjects.PredefinedDataName,
-	ProjectDataTurnovers.Project,
 	ProjectDataTurnovers.AmountTurnover,
 	ProjectDataTurnovers.AmountReceipt,
-	ProjectDataTurnovers.AmountExpense
+	ProjectDataTurnovers.AmountExpense,
+	SUM(TimeTrack.TimeComplete) AS Hours
 FROM
-	AccumulationRegister.ProjectData.Turnovers AS ProjectDataTurnovers
-		RIGHT JOIN Catalog.Projects AS CatalogProjects
-		ON ProjectDataTurnovers.Project = CatalogProjects.Ref</QueryText>
+	Catalog.Projects AS CatalogProjects
+		LEFT JOIN Document.TimeTrack AS TimeTrack
+		ON TimeTrack.Project = CatalogProjects.Ref
+		LEFT JOIN AccumulationRegister.ProjectData.Turnovers AS ProjectDataTurnovers
+		ON (ProjectDataTurnovers.Project = CatalogProjects.Ref)
+
+GROUP BY
+	CatalogProjects.Ref,
+	CatalogProjects.DeletionMark,
+	CatalogProjects.Description,
+	CatalogProjects.Customer,
+	CatalogProjects.Internal,
+	CatalogProjects.Predefined,
+	CatalogProjects.PredefinedDataName,
+	ProjectDataTurnovers.AmountTurnover,
+	ProjectDataTurnovers.AmountReceipt,
+	ProjectDataTurnovers.AmountExpense</QueryText>
 				<MainTable>Catalog.Projects</MainTable>
 				<ListSettings>
 					<dcsset:filter>

@@ -11,13 +11,9 @@ Procedure OnStart()
 			AppTitle = STitle + " / " + CurrentUser + " / AccountingSuite"
 		EndIf;
 		
-		If CurrentUser = "" Then
-			AppTitle = "AccountingSuite";
-		EndIf;
-		
 		SetApplicationCaption(AppTitle);
 	
 		GeneralFunctions.FirstLaunch();
-		
+	
 EndProcedure
 

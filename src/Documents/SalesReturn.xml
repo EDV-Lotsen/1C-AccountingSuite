@@ -280,6 +280,10 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Company code</v8:content>
 						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Unternehmenscode</v8:content>
+						</v8:item>
 					</Synonym>
 					<Comment/>
 					<Type>
@@ -680,7 +684,7 @@
 						</v8:item>
 						<v8:item>
 							<v8:lang>de</v8:lang>
-							<v8:content>Stichtag</v8:content>
+							<v8:content>Fälligkeitstag</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -862,6 +866,10 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Price includes VAT</v8:content>
 						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Preis inkl. USt.</v8:content>
+						</v8:item>
 					</Synonym>
 					<Comment/>
 					<Type>
@@ -996,6 +1004,10 @@
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Line items</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Artikel</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -1294,6 +1306,10 @@
 									<v8:lang>en</v8:lang>
 									<v8:content>Description</v8:content>
 								</v8:item>
+								<v8:item>
+									<v8:lang>de</v8:lang>
+									<v8:content>Bezeichnung</v8:content>
+								</v8:item>
 							</Synonym>
 							<Comment/>
 							<Type>
@@ -1413,6 +1429,29 @@
 					</Attribute>
 				</ChildObjects>
 			</TabularSection>
+			<Template>PF_MXL_SalesReturn</Template>
+			<Command uuid="16d29ca9-d9ba-4ab3-aef4-5aa7a5bcc896">
+				<Properties>
+					<Name>Print</Name>
+					<Synonym>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Print</v8:content>
+						</v8:item>
+					</Synonym>
+					<Comment/>
+					<Group>FormCommandBarImportant</Group>
+					<CommandParameterType>
+						<v8:Type>cfg:DocumentRef.SalesReturn</v8:Type>
+					</CommandParameterType>
+					<ParameterUseMode>Multiple</ParameterUseMode>
+					<ModifiesData>false</ModifiesData>
+					<Representation>Auto</Representation>
+					<ToolTip/>
+					<Picture/>
+					<Shortcut/>
+				</Properties>
+			</Command>
 		</ChildObjects>
 	</Document>
 </MetaDataObject>

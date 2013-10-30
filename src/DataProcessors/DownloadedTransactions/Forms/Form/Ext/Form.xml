@@ -1,0 +1,979 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<VerticalScroll>useIfNecessary</VerticalScroll>
+	<AutoCommandBar name="FormCommandBar" id="-1">
+		<Autofill>false</Autofill>
+	</AutoCommandBar>
+	<Events>
+		<Event name="OnOpen">OnOpen</Event>
+		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+	</Events>
+	<ChildItems>
+		<UsualGroup name="TitleGroup" id="93">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Title group</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Title group</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Group>Horizontal</Group>
+			<ChildItemsWidth>Equal</ChildItemsWidth>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="TitleGroupExtendedTooltip" id="94"/>
+			<ChildItems>
+				<UsualGroup name="FilterGroup" id="156">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Filter group</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Filter group</v8:content>
+						</v8:item>
+					</ToolTip>
+					<Group>Horizontal</Group>
+					<ChildItemsWidth>LeftWidest</ChildItemsWidth>
+					<ShowTitle>false</ShowTitle>
+					<BackColor>style:ReportGroup2BackColor</BackColor>
+					<ExtendedTooltip name="FilterGroupExtendedTooltip" id="157"/>
+					<ChildItems>
+						<UsualGroup name="AccountGroup" id="151">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Account group</v8:content>
+								</v8:item>
+							</Title>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Account group</v8:content>
+								</v8:item>
+							</ToolTip>
+							<Group>Horizontal</Group>
+							<ChildItemsWidth>LeftNarrow</ChildItemsWidth>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="AccountGroupExtendedTooltip" id="152"/>
+							<ChildItems>
+								<InputField name="BankAccount" id="95">
+									<DataPath>AccountInBank</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Account</v8:content>
+										</v8:item>
+									</Title>
+									<DropListButton>true</DropListButton>
+									<ChoiceButton>true</ChoiceButton>
+									<ClearButton>true</ClearButton>
+									<TextColor>style:FieldSelectionBackColor</TextColor>
+									<Font ref="style:NormalTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
+									<ContextMenu name="BankAccountContextMenu" id="96"/>
+									<ExtendedTooltip name="BankAccountExtendedTooltip" id="97"/>
+									<Events>
+										<Event name="OnChange">BankAccountOnChange</Event>
+									</Events>
+								</InputField>
+								<LabelDecoration name="BankAccountRefreshedOn" id="153">
+									<TextColor>style:FieldSelectionBackColor</TextColor>
+									<Font ref="style:NormalTextFont" bold="true" italic="false" underline="true" strikeout="false" kind="StyleItem"/>
+									<ContextMenu name="BankAccountRefreshedOnContextMenu" id="154"/>
+									<ExtendedTooltip name="BankAccountRefreshedOnExtendedTooltip" id="155"/>
+								</LabelDecoration>
+							</ChildItems>
+						</UsualGroup>
+					</ChildItems>
+				</UsualGroup>
+				<UsualGroup name="CSV" id="107">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>CSV</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>CSV</v8:content>
+						</v8:item>
+					</ToolTip>
+					<Group>Horizontal</Group>
+					<Representation>NormalSeparation</Representation>
+					<ChildItemsWidth>Equal</ChildItemsWidth>
+					<ShowTitle>false</ShowTitle>
+					<BackColor>style:ReportGroup2BackColor</BackColor>
+					<ExtendedTooltip name="CSVExtendedTooltip" id="108"/>
+					<ChildItems>
+						<InputField name="CSV_Filename" id="104">
+							<DataPath>Object.CSV_Filename</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Upload from CSV</v8:content>
+								</v8:item>
+							</Title>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Choosing this option lets you upload new transactions from a text CSV file. Every line in the CSV file describes a transaction in the following format: Date (DD/MM/YYYY), Description (any string), Amount (digits with the dot)</v8:content>
+								</v8:item>
+							</ToolTip>
+							<ChoiceButton>true</ChoiceButton>
+							<ContextMenu name="CSV_FilenameContextMenu" id="105"/>
+							<ExtendedTooltip name="CSV_FilenameExtendedTooltip" id="106"/>
+							<Events>
+								<Event name="StartChoice">CSV_FilenameStartChoice</Event>
+							</Events>
+						</InputField>
+						<UsualGroup name="Group2" id="161">
+							<HorizontalStretch>true</HorizontalStretch>
+							<Group>Horizontal</Group>
+							<ChildItemsWidth>LeftNarrowest</ChildItemsWidth>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="Group2ExtendedTooltip" id="162"/>
+							<ChildItems>
+								<InputField name="ProcessingPeriod" id="98">
+									<DataPath>Object.ProcessingPeriod</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Upload period</v8:content>
+										</v8:item>
+									</Title>
+									<Width>30</Width>
+									<DropListWidth>20</DropListWidth>
+									<TextColor>style:FieldSelectionBackColor</TextColor>
+									<Font ref="style:NormalTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
+									<ContextMenu name="ProcessingPeriodContextMenu" id="99"/>
+									<ExtendedTooltip name="ProcessingPeriodExtendedTooltip" id="100"/>
+								</InputField>
+							</ChildItems>
+						</UsualGroup>
+						<CheckBoxField name="UploadFromCSV" id="101">
+							<DataPath>Object.UploadFromCSV</DataPath>
+							<Visible>false</Visible>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Choosing this option lets you upload new transactions from a text CSV file. </v8:content>
+								</v8:item>
+							</ToolTip>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="UploadFromCSVContextMenu" id="102"/>
+							<ExtendedTooltip name="UploadFromCSVExtendedTooltip" id="103"/>
+							<Events>
+								<Event name="OnChange">UploadFromCSVOnChange</Event>
+							</Events>
+						</CheckBoxField>
+						<Button name="RefreshTransactions" id="168">
+							<Type>UsualButton</Type>
+							<Visible>false</Visible>
+							<CommandName>Form.Command.RefreshTransactions</CommandName>
+							<ExtendedTooltip name="RefreshTransactionsExtendedTooltip" id="169"/>
+						</Button>
+					</ChildItems>
+				</UsualGroup>
+			</ChildItems>
+		</UsualGroup>
+		<Pages name="Group1" id="29">
+			<TitleFont ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
+			<VerticalStretch>true</VerticalStretch>
+			<ExtendedTooltip name="Group1ExtendedTooltip" id="30"/>
+			<ChildItems>
+				<Page name="UnacceptedTransactions" id="31">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Unaccepted transactions</v8:content>
+						</v8:item>
+					</Title>
+					<TitleFont ref="style:LargeTextFont" kind="StyleItem"/>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Unaccepted transactions</v8:content>
+						</v8:item>
+					</ToolTip>
+					<VerticalStretch>true</VerticalStretch>
+					<ExtendedTooltip name="UnacceptedTransactionsExtendedTooltip" id="32"/>
+					<ChildItems>
+						<Table name="BankTransactionsUnaccepted" id="1">
+							<UseAlternationRowColor>true</UseAlternationRowColor>
+							<AutoInsertNewRow>true</AutoInsertNewRow>
+							<EnableStartDrag>true</EnableStartDrag>
+							<EnableDrag>true</EnableDrag>
+							<DataPath>Object.BankTransactionsUnaccepted</DataPath>
+							<SearchStringLocation>None</SearchStringLocation>
+							<ViewStatusLocation>None</ViewStatusLocation>
+							<SearchControlLocation>None</SearchControlLocation>
+							<RowFilter xsi:nil="true"/>
+							<ContextMenu name="BankTransactionsUnacceptedContextMenu" id="2">
+								<Autofill>false</Autofill>
+							</ContextMenu>
+							<AutoCommandBar name="BankTransactionsUnacceptedCommandBar" id="3">
+								<Autofill>false</Autofill>
+								<ChildItems>
+									<ButtonGroup name="BankTransactionsUnacceptedGroup1" id="109">
+										<Title>
+											<v8:item>
+												<v8:lang>en</v8:lang>
+												<v8:content>Bank transactions unaccepted group1</v8:content>
+											</v8:item>
+										</Title>
+										<ToolTip>
+											<v8:item>
+												<v8:lang>en</v8:lang>
+												<v8:content>Bank transactions unaccepted group1</v8:content>
+											</v8:item>
+										</ToolTip>
+										<ExtendedTooltip name="BankTransactionsUnacceptedGroup1ExtendedTooltip" id="110"/>
+										<ChildItems>
+											<Button name="BankTransactionsUnacceptedButton1" id="111">
+												<Type>CommandBarButton</Type>
+												<Representation>Picture</Representation>
+												<CommandName>Form.Command.MarkAllUnaccepted</CommandName>
+												<ExtendedTooltip name="BankTransactionsUnacceptedButton1ExtendedTooltip" id="112"/>
+											</Button>
+											<Button name="BankTransactionsUnacceptedUnmarkAllUnaccepted" id="113">
+												<Type>CommandBarButton</Type>
+												<CommandName>Form.Command.UnmarkAllUnaccepted</CommandName>
+												<ExtendedTooltip name="BankTransactionsUnacceptedUnmarkAllUnacceptedExtendedTooltip" id="114"/>
+											</Button>
+											<Button name="BankTransactionsUnacceptedInvertUnaccepted" id="115">
+												<Type>CommandBarButton</Type>
+												<CommandName>Form.Command.InvertUnaccepted</CommandName>
+												<ExtendedTooltip name="BankTransactionsUnacceptedInvertUnacceptedExtendedTooltip" id="116"/>
+											</Button>
+										</ChildItems>
+									</ButtonGroup>
+									<ButtonGroup name="BankTransactionsUnacceptedGroup2" id="130">
+										<ExtendedTooltip name="BankTransactionsUnacceptedGroup2ExtendedTooltip" id="131"/>
+										<ChildItems>
+											<Button name="BankTransactionsUnacceptedButton2" id="126">
+												<Type>CommandBarButton</Type>
+												<Representation>Picture</Representation>
+												<OnlyInAllActions>true</OnlyInAllActions>
+												<CommandName>Form.Item.BankTransactionsUnaccepted.StandardCommand.Delete</CommandName>
+												<ExtendedTooltip name="BankTransactionsUnacceptedButton2ExtendedTooltip" id="127"/>
+											</Button>
+										</ChildItems>
+									</ButtonGroup>
+									<Button name="BankTransactionsUnacceptedAcceptTransactions" id="120">
+										<Type>CommandBarButton</Type>
+										<CommandName>Form.Command.AcceptTransactions</CommandName>
+										<ExtendedTooltip name="BankTransactionsUnacceptedAcceptTransactionsExtendedTooltip" id="121"/>
+									</Button>
+								</ChildItems>
+							</AutoCommandBar>
+							<ExtendedTooltip name="BankTransactionsUnacceptedExtendedTooltip" id="4"/>
+							<SearchStringAddition name="BankTransactionsUnacceptedSearchString" id="170">
+								<AdditionSource>
+									<Item>BankTransactionsUnaccepted</Item>
+									<Type>SearchStringRepresentation</Type>
+								</AdditionSource>
+								<ContextMenu name="BankTransactionsUnacceptedSearchStringContextMenu" id="171"/>
+								<ExtendedTooltip name="BankTransactionsUnacceptedSearchStringExtendedTooltip" id="172"/>
+							</SearchStringAddition>
+							<ViewStatusAddition name="BankTransactionsUnacceptedViewStatus" id="173">
+								<AdditionSource>
+									<Item>BankTransactionsUnaccepted</Item>
+									<Type>ViewStatusRepresentation</Type>
+								</AdditionSource>
+								<ContextMenu name="BankTransactionsUnacceptedViewStatusContextMenu" id="174"/>
+								<ExtendedTooltip name="BankTransactionsUnacceptedViewStatusExtendedTooltip" id="175"/>
+							</ViewStatusAddition>
+							<SearchControlAddition name="BankTransactionsUnacceptedSearchControl" id="176">
+								<AdditionSource>
+									<Item>BankTransactionsUnaccepted</Item>
+									<Type>SearchControl</Type>
+								</AdditionSource>
+								<ContextMenu name="BankTransactionsUnacceptedSearchControlContextMenu" id="177"/>
+								<ExtendedTooltip name="BankTransactionsUnacceptedSearchControlExtendedTooltip" id="178"/>
+							</SearchControlAddition>
+							<Events>
+								<Event name="Selection">BankTransactionsUnacceptedSelection</Event>
+								<Event name="BeforeAddRow">BankTransactionsUnacceptedBeforeAddRow</Event>
+								<Event name="BeforeDeleteRow">BankTransactionsUnacceptedBeforeDeleteRow</Event>
+							</Events>
+							<ChildItems>
+								<ColumnGroup name="BankTransactionsUnacceptedGroup5" id="149">
+									<Group>Horizontal</Group>
+									<ExtendedTooltip name="BankTransactionsUnacceptedGroup5ExtendedTooltip" id="150"/>
+									<ChildItems>
+										<InputField name="BankTransactionsUnacceptedHide" id="146">
+											<DataPath>Object.BankTransactionsUnaccepted.Hide</DataPath>
+											<ReadOnly>true</ReadOnly>
+											<EditMode>EnterOnInput</EditMode>
+											<CellHyperlink>true</CellHyperlink>
+											<ShowInHeader>false</ShowInHeader>
+											<Width>6</Width>
+											<TextColor>web:MediumSeaGreen</TextColor>
+											<ContextMenu name="BankTransactionsUnacceptedHideContextMenu" id="147"/>
+											<ExtendedTooltip name="BankTransactionsUnacceptedHideExtendedTooltip" id="148"/>
+										</InputField>
+										<LabelField name="BankTransactionsUnacceptedLineNumber" id="5">
+											<DataPath>Object.BankTransactionsUnaccepted.LineNumber</DataPath>
+											<EditMode>EnterOnInput</EditMode>
+											<Width>4</Width>
+											<ContextMenu name="BankTransactionsUnacceptedLineNumberContextMenu" id="6"/>
+											<ExtendedTooltip name="BankTransactionsUnacceptedLineNumberExtendedTooltip" id="7"/>
+										</LabelField>
+									</ChildItems>
+								</ColumnGroup>
+								<CheckBoxField name="BankTransactionsUnacceptedAccept" id="117">
+									<DataPath>Object.BankTransactionsUnaccepted.Accept</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<CheckBoxType>Auto</CheckBoxType>
+									<ContextMenu name="BankTransactionsUnacceptedAcceptContextMenu" id="118"/>
+									<ExtendedTooltip name="BankTransactionsUnacceptedAcceptExtendedTooltip" id="119"/>
+								</CheckBoxField>
+								<InputField name="BankTransactionsUnacceptedTransactionDate" id="8">
+									<DataPath>Object.BankTransactionsUnaccepted.TransactionDate</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Date</v8:content>
+										</v8:item>
+									</Title>
+									<EditMode>EnterOnInput</EditMode>
+									<Width>9</Width>
+									<ContextMenu name="BankTransactionsUnacceptedTransactionDateContextMenu" id="9"/>
+									<ExtendedTooltip name="BankTransactionsUnacceptedTransactionDateExtendedTooltip" id="10"/>
+									<Events>
+										<Event name="OnChange">BankTransactionsUnacceptedOnChange</Event>
+									</Events>
+								</InputField>
+								<InputField name="BankTransactionsUnacceptedDescription" id="17">
+									<DataPath>Object.BankTransactionsUnaccepted.Description</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="BankTransactionsUnacceptedDescriptionContextMenu" id="18"/>
+									<ExtendedTooltip name="BankTransactionsUnacceptedDescriptionExtendedTooltip" id="19"/>
+									<Events>
+										<Event name="OnChange">BankTransactionsUnacceptedOnChange</Event>
+									</Events>
+								</InputField>
+								<InputField name="BankTransactionsUnacceptedBankAccount" id="136">
+									<DataPath>Object.BankTransactionsUnaccepted.BankAccount</DataPath>
+									<Visible>false</Visible>
+									<ContextMenu name="BankTransactionsUnacceptedBankAccountContextMenu" id="137"/>
+									<ExtendedTooltip name="BankTransactionsUnacceptedBankAccountExtendedTooltip" id="138"/>
+									<Events>
+										<Event name="OnChange">BankTransactionsUnacceptedOnChange</Event>
+									</Events>
+								</InputField>
+								<InputField name="BankTransactionsUnacceptedAmount" id="20">
+									<DataPath>Object.BankTransactionsUnaccepted.Amount</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<Width>15</Width>
+									<ContextMenu name="BankTransactionsUnacceptedAmountContextMenu" id="21"/>
+									<ExtendedTooltip name="BankTransactionsUnacceptedAmountExtendedTooltip" id="22"/>
+									<Events>
+										<Event name="OnChange">BankTransactionsUnacceptedOnChange</Event>
+									</Events>
+								</InputField>
+								<ColumnGroup name="BankTransactionsUnacceptedGroup3" id="142">
+									<Group>Horizontal</Group>
+									<ExtendedTooltip name="BankTransactionsUnacceptedGroup3ExtendedTooltip" id="143"/>
+									<ChildItems>
+										<InputField name="BankTransactionsUnacceptedAssigning" id="139">
+											<DataPath>Object.BankTransactionsUnaccepted.AssigningOption</DataPath>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Assign</v8:content>
+												</v8:item>
+											</Title>
+											<ToolTip>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Choose whether to create a new document (Assign) or match with an existing one (Match)</v8:content>
+												</v8:item>
+											</ToolTip>
+											<ToolTipRepresentation>Button</ToolTipRepresentation>
+											<EditMode>EnterOnInput</EditMode>
+											<CellHyperlink>true</CellHyperlink>
+											<Width>40</Width>
+											<DropListButton>true</DropListButton>
+											<ChoiceButton>false</ChoiceButton>
+											<ClearButton>false</ClearButton>
+											<OpenButton>true</OpenButton>
+											<ListChoiceMode>true</ListChoiceMode>
+											<ChoiceList>
+												<xr:Item>
+													<xr:Presentation/>
+													<xr:CheckState>0</xr:CheckState>
+													<xr:Value xsi:type="FormChoiceListDesTimeValue">
+														<Presentation>
+															<v8:item>
+																<v8:lang>en</v8:lang>
+																<v8:content>Assign</v8:content>
+															</v8:item>
+														</Presentation>
+														<Value xsi:type="xs:string">Assign</Value>
+													</xr:Value>
+												</xr:Item>
+												<xr:Item>
+													<xr:Presentation/>
+													<xr:CheckState>0</xr:CheckState>
+													<xr:Value xsi:type="FormChoiceListDesTimeValue">
+														<Presentation>
+															<v8:item>
+																<v8:lang>en</v8:lang>
+																<v8:content>Match</v8:content>
+															</v8:item>
+														</Presentation>
+														<Value xsi:type="xs:string">Match</Value>
+													</xr:Value>
+												</xr:Item>
+											</ChoiceList>
+											<ContextMenu name="BankTransactionsUnacceptedAssigningContextMenu" id="140"/>
+											<ExtendedTooltip name="BankTransactionsUnacceptedAssigningExtendedTooltip" id="141"/>
+											<Events>
+												<Event name="Opening">BankTransactionsUnacceptedAssigningOpening</Event>
+												<Event name="ChoiceProcessing">BankTransactionsUnacceptedAssigningChoiceProcessing</Event>
+											</Events>
+										</InputField>
+										<ColumnGroup name="BankTransactionsUnacceptedGroup4" id="144">
+											<Group>Horizontal</Group>
+											<ExtendedTooltip name="BankTransactionsUnacceptedGroup4ExtendedTooltip" id="145"/>
+											<ChildItems>
+												<InputField name="BankTransactionsUnacceptedCompany" id="14">
+													<DataPath>Object.BankTransactionsUnaccepted.Company</DataPath>
+													<EditMode>EnterOnInput</EditMode>
+													<ContextMenu name="BankTransactionsUnacceptedCompanyContextMenu" id="15"/>
+													<ExtendedTooltip name="BankTransactionsUnacceptedCompanyExtendedTooltip" id="16"/>
+													<Events>
+														<Event name="OnChange">BankTransactionsUnacceptedOnChange</Event>
+													</Events>
+												</InputField>
+												<InputField name="BankTransactionsUnacceptedCategory" id="23">
+													<DataPath>Object.BankTransactionsUnaccepted.Category</DataPath>
+													<EditMode>EnterOnInput</EditMode>
+													<ContextMenu name="BankTransactionsUnacceptedCategoryContextMenu" id="24"/>
+													<ExtendedTooltip name="BankTransactionsUnacceptedCategoryExtendedTooltip" id="25"/>
+													<Events>
+														<Event name="OnChange">BankTransactionsUnacceptedOnChange</Event>
+													</Events>
+												</InputField>
+											</ChildItems>
+										</ColumnGroup>
+									</ChildItems>
+								</ColumnGroup>
+							</ChildItems>
+						</Table>
+						<UsualGroup name="Group3" id="166">
+							<Group>Horizontal</Group>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="Group3ExtendedTooltip" id="167"/>
+							<ChildItems>
+								<RadioButtonField name="ShowHidden" id="158">
+									<DataPath>ShowHidden</DataPath>
+									<VerticalAlign>Bottom</VerticalAlign>
+									<RadioButtonType>Tumbler</RadioButtonType>
+									<ChoiceList>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>Show</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">Show</Value>
+											</xr:Value>
+										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>Hide</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">Hide</Value>
+											</xr:Value>
+										</xr:Item>
+									</ChoiceList>
+									<ContextMenu name="ShowHiddenContextMenu" id="159"/>
+									<ExtendedTooltip name="ShowHiddenExtendedTooltip" id="160"/>
+									<Events>
+										<Event name="OnChange">ShowHiddenOnChange</Event>
+									</Events>
+								</RadioButtonField>
+								<InputField name="BankTransactionsUnacceptedTotalAmount" id="163">
+									<DataPath>Object.BankTransactionsUnaccepted.TotalAmount</DataPath>
+									<ReadOnly>true</ReadOnly>
+									<ContextMenu name="BankTransactionsUnacceptedTotalAmountContextMenu" id="164"/>
+									<ExtendedTooltip name="BankTransactionsUnacceptedTotalAmountExtendedTooltip" id="165"/>
+								</InputField>
+							</ChildItems>
+						</UsualGroup>
+					</ChildItems>
+				</Page>
+				<Page name="AcceptedTransactions" id="33">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Accepted transactions</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Accepted transactions</v8:content>
+						</v8:item>
+					</ToolTip>
+					<VerticalStretch>true</VerticalStretch>
+					<ExtendedTooltip name="AcceptedTransactionsExtendedTooltip" id="34"/>
+					<ChildItems>
+						<Table name="BankTransactionsAccepted" id="35">
+							<ChangeRowSet>false</ChangeRowSet>
+							<ChangeRowOrder>false</ChangeRowOrder>
+							<AutoInsertNewRow>true</AutoInsertNewRow>
+							<EnableStartDrag>true</EnableStartDrag>
+							<EnableDrag>true</EnableDrag>
+							<DataPath>Object.BankTransactionsAccepted</DataPath>
+							<SearchStringLocation>None</SearchStringLocation>
+							<ViewStatusLocation>None</ViewStatusLocation>
+							<SearchControlLocation>None</SearchControlLocation>
+							<RowFilter xsi:nil="true"/>
+							<ContextMenu name="BankTransactionsAcceptedContextMenu" id="36"/>
+							<AutoCommandBar name="BankTransactionsAcceptedCommandBar" id="37">
+								<Autofill>false</Autofill>
+								<ChildItems>
+									<Button name="BankTransactionsAcceptedUndoTransaction" id="132">
+										<Type>CommandBarButton</Type>
+										<CommandName>Form.Command.UndoTransaction</CommandName>
+										<ExtendedTooltip name="BankTransactionsAcceptedUndoTransactionExtendedTooltip" id="133"/>
+									</Button>
+								</ChildItems>
+							</AutoCommandBar>
+							<ExtendedTooltip name="BankTransactionsAcceptedExtendedTooltip" id="38"/>
+							<SearchStringAddition name="BankTransactionsAcceptedSearchString" id="179">
+								<AdditionSource>
+									<Item>BankTransactionsAccepted</Item>
+									<Type>SearchStringRepresentation</Type>
+								</AdditionSource>
+								<ContextMenu name="BankTransactionsAcceptedSearchStringContextMenu" id="180"/>
+								<ExtendedTooltip name="BankTransactionsAcceptedSearchStringExtendedTooltip" id="181"/>
+							</SearchStringAddition>
+							<ViewStatusAddition name="BankTransactionsAcceptedViewStatus" id="182">
+								<AdditionSource>
+									<Item>BankTransactionsAccepted</Item>
+									<Type>ViewStatusRepresentation</Type>
+								</AdditionSource>
+								<ContextMenu name="BankTransactionsAcceptedViewStatusContextMenu" id="183"/>
+								<ExtendedTooltip name="BankTransactionsAcceptedViewStatusExtendedTooltip" id="184"/>
+							</ViewStatusAddition>
+							<SearchControlAddition name="BankTransactionsAcceptedSearchControl" id="185">
+								<AdditionSource>
+									<Item>BankTransactionsAccepted</Item>
+									<Type>SearchControl</Type>
+								</AdditionSource>
+								<ContextMenu name="BankTransactionsAcceptedSearchControlContextMenu" id="186"/>
+								<ExtendedTooltip name="BankTransactionsAcceptedSearchControlExtendedTooltip" id="187"/>
+							</SearchControlAddition>
+							<ChildItems>
+								<LabelField name="BankTransactionsAcceptedLineNumber" id="39">
+									<DataPath>Object.BankTransactionsAccepted.LineNumber</DataPath>
+									<ReadOnly>true</ReadOnly>
+									<EditMode>EnterOnInput</EditMode>
+									<Width>4</Width>
+									<ContextMenu name="BankTransactionsAcceptedLineNumberContextMenu" id="40"/>
+									<ExtendedTooltip name="BankTransactionsAcceptedLineNumberExtendedTooltip" id="41"/>
+								</LabelField>
+								<CheckBoxField name="BankTransactionsAcceptedUnaccept" id="90">
+									<DataPath>Object.BankTransactionsAccepted.Unaccept</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<CheckBoxType>Auto</CheckBoxType>
+									<ContextMenu name="BankTransactionsAcceptedUnacceptContextMenu" id="91"/>
+									<ExtendedTooltip name="BankTransactionsAcceptedUnacceptExtendedTooltip" id="92"/>
+								</CheckBoxField>
+								<InputField name="BankTransactionsAcceptedTransactionDate" id="42">
+									<DataPath>Object.BankTransactionsAccepted.TransactionDate</DataPath>
+									<ReadOnly>true</ReadOnly>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Date</v8:content>
+										</v8:item>
+									</Title>
+									<EditMode>EnterOnInput</EditMode>
+									<Width>9</Width>
+									<AutoMarkIncomplete>true</AutoMarkIncomplete>
+									<ContextMenu name="BankTransactionsAcceptedTransactionDateContextMenu" id="43"/>
+									<ExtendedTooltip name="BankTransactionsAcceptedTransactionDateExtendedTooltip" id="44"/>
+								</InputField>
+								<InputField name="BankTransactionsAcceptedBankAccount" id="45">
+									<DataPath>Object.BankTransactionsAccepted.BankAccount</DataPath>
+									<Visible>false</Visible>
+									<ReadOnly>true</ReadOnly>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="BankTransactionsAcceptedBankAccountContextMenu" id="46"/>
+									<ExtendedTooltip name="BankTransactionsAcceptedBankAccountExtendedTooltip" id="47"/>
+								</InputField>
+								<InputField name="BankTransactionsAcceptedCompany" id="48">
+									<DataPath>Object.BankTransactionsAccepted.Company</DataPath>
+									<ReadOnly>true</ReadOnly>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="BankTransactionsAcceptedCompanyContextMenu" id="49"/>
+									<ExtendedTooltip name="BankTransactionsAcceptedCompanyExtendedTooltip" id="50"/>
+								</InputField>
+								<InputField name="BankTransactionsAcceptedDescription" id="51">
+									<DataPath>Object.BankTransactionsAccepted.Description</DataPath>
+									<ReadOnly>true</ReadOnly>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="BankTransactionsAcceptedDescriptionContextMenu" id="52"/>
+									<ExtendedTooltip name="BankTransactionsAcceptedDescriptionExtendedTooltip" id="53"/>
+								</InputField>
+								<InputField name="BankTransactionsAcceptedAmount" id="54">
+									<DataPath>Object.BankTransactionsAccepted.Amount</DataPath>
+									<ReadOnly>true</ReadOnly>
+									<EditMode>EnterOnInput</EditMode>
+									<Width>15</Width>
+									<ContextMenu name="BankTransactionsAcceptedAmountContextMenu" id="55"/>
+									<ExtendedTooltip name="BankTransactionsAcceptedAmountExtendedTooltip" id="56"/>
+								</InputField>
+								<InputField name="BankTransactionsAcceptedCategory" id="57">
+									<DataPath>Object.BankTransactionsAccepted.Category</DataPath>
+									<ReadOnly>true</ReadOnly>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="BankTransactionsAcceptedCategoryContextMenu" id="58"/>
+									<ExtendedTooltip name="BankTransactionsAcceptedCategoryExtendedTooltip" id="59"/>
+								</InputField>
+								<InputField name="BankTransactionsAcceptedDocument" id="60">
+									<DataPath>Object.BankTransactionsAccepted.Document</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<DropListButton>false</DropListButton>
+									<ChoiceButton>false</ChoiceButton>
+									<ClearButton>false</ClearButton>
+									<SpinButton>false</SpinButton>
+									<OpenButton>true</OpenButton>
+									<CreateButton>false</CreateButton>
+									<QuickChoice>false</QuickChoice>
+									<ChooseType>false</ChooseType>
+									<TextEdit>false</TextEdit>
+									<ContextMenu name="BankTransactionsAcceptedDocumentContextMenu" id="61"/>
+									<ExtendedTooltip name="BankTransactionsAcceptedDocumentExtendedTooltip" id="62"/>
+								</InputField>
+							</ChildItems>
+						</Table>
+					</ChildItems>
+				</Page>
+			</ChildItems>
+		</Pages>
+	</ChildItems>
+	<Attributes>
+		<Attribute name="Object" id="1">
+			<Type>
+				<v8:Type>cfg:DataProcessorObject.DownloadedTransactions</v8:Type>
+			</Type>
+			<MainAttribute>true</MainAttribute>
+			<Columns>
+				<AdditionalColumns table="Object.BankTransactionsUnaccepted">
+					<Column name="Accept" id="1">
+						<Type>
+							<v8:Type>xs:boolean</v8:Type>
+						</Type>
+					</Column>
+					<Column name="AssigningOption" id="2">
+						<Title>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>Assigning option</v8:content>
+							</v8:item>
+						</Title>
+						<Type>
+							<v8:Type>xs:string</v8:Type>
+							<v8:StringQualifiers>
+								<v8:Length>50</v8:Length>
+								<v8:AllowedLength>Variable</v8:AllowedLength>
+							</v8:StringQualifiers>
+						</Type>
+					</Column>
+					<Column name="Hide" id="3">
+						<Title>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>Hide</v8:content>
+							</v8:item>
+						</Title>
+						<Type>
+							<v8:Type>xs:string</v8:Type>
+							<v8:StringQualifiers>
+								<v8:Length>4</v8:Length>
+								<v8:AllowedLength>Variable</v8:AllowedLength>
+							</v8:StringQualifiers>
+						</Type>
+					</Column>
+					<Column name="DocumentPresentation" id="4">
+						<Title>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>Document presentation</v8:content>
+							</v8:item>
+						</Title>
+						<Type>
+							<v8:Type>xs:string</v8:Type>
+							<v8:StringQualifiers>
+								<v8:Length>50</v8:Length>
+								<v8:AllowedLength>Variable</v8:AllowedLength>
+							</v8:StringQualifiers>
+						</Type>
+					</Column>
+				</AdditionalColumns>
+				<AdditionalColumns table="Object.BankTransactionsAccepted">
+					<Column name="Unaccept" id="1">
+						<Type>
+							<v8:Type>xs:boolean</v8:Type>
+						</Type>
+					</Column>
+				</AdditionalColumns>
+			</Columns>
+		</Attribute>
+		<Attribute name="SourceText" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Source text</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type xmlns:d5p1="http://v8.1c.ru/8.1/data/txtedt">d5p1:TextDocument</v8:Type>
+			</Type>
+		</Attribute>
+		<Attribute name="ShowHidden" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Hidden rows </v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="AccountInBank" id="4">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Account in bank</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>cfg:CatalogRef.BankAccounts</v8:Type>
+			</Type>
+		</Attribute>
+		<Attribute name="YodleeAccount" id="5">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Yodlee account</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
+			</Type>
+		</Attribute>
+		<ConditionalAppearance>
+			<dcsset:item>
+				<dcsset:selection>
+					<dcsset:item>
+						<dcsset:field>BankTransactionsUnacceptedAmount</dcsset:field>
+					</dcsset:item>
+				</dcsset:selection>
+				<dcsset:filter>
+					<dcsset:item xsi:type="dcsset:FilterItemComparison">
+						<dcsset:left xsi:type="dcscor:Field">Object.BankTransactionsUnaccepted.Amount</dcsset:left>
+						<dcsset:comparisonType>Equal</dcsset:comparisonType>
+						<dcsset:right xsi:type="xs:decimal">10</dcsset:right>
+					</dcsset:item>
+				</dcsset:filter>
+				<dcsset:appearance>
+					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+						<dcscor:parameter>BackColor</dcscor:parameter>
+						<dcscor:value xsi:type="v8ui:Color">style:ColorGroupLabel</dcscor:value>
+					</dcscor:item>
+				</dcsset:appearance>
+			</dcsset:item>
+		</ConditionalAppearance>
+	</Attributes>
+	<Commands>
+		<Command name="MarkAllUnaccepted" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Mark all unaccepted</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Mark all unaccepted</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Picture>
+				<xr:Ref>StdPicture.CheckAll</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
+			<Action>MarkAllUnaccepted</Action>
+			<Representation>Picture</Representation>
+		</Command>
+		<Command name="UnmarkAllUnaccepted" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Unmark all unaccepted</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Unmark all unaccepted</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Picture>
+				<xr:Ref>StdPicture.UncheckAll</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
+			<Action>UnmarkAllUnaccepted</Action>
+			<Representation>Picture</Representation>
+		</Command>
+		<Command name="InvertUnaccepted" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Invert unaccepted</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Invert unaccepted</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Picture>
+				<xr:Ref>CommonPicture.InvertFlags</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
+			<Action>InvertUnaccepted</Action>
+			<Representation>Picture</Representation>
+		</Command>
+		<Command name="AcceptTransactions" id="4">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Accept Selected</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Accept transactions</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Picture>
+				<xr:Ref>CommonPicture.DefaultValue</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
+			<Action>AcceptTransactions</Action>
+			<Representation>TextPicture</Representation>
+		</Command>
+		<Command name="ToDeleteSaveUnaccepted" id="5">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Save</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>To delete save unaccepted</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Picture>
+				<xr:Ref>StdPicture.SaveFile</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
+			<Action>SaveUnaccepted</Action>
+			<Representation>TextPicture</Representation>
+		</Command>
+		<Command name="ToDeleteRefreshAll" id="6">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>To delete refresh all</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>To delete refresh all</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Picture>
+				<xr:Ref>StdPicture.Refresh</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
+			<Action>RefreshAll</Action>
+		</Command>
+		<Command name="UndoTransaction" id="7">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Undo Selected</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Undo transaction</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Picture>
+				<xr:Ref>StdPicture.UndoPosting</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
+			<Action>UndoTransaction</Action>
+			<Representation>TextPicture</Representation>
+		</Command>
+		<Command name="RefreshTransactions" id="8">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Refresh transactions</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Refresh transactions</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Picture>
+				<xr:Ref>StdPicture.Refresh</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
+			<Action>RefreshTransactions</Action>
+			<Representation>TextPicture</Representation>
+		</Command>
+	</Commands>
+</Form>

@@ -36,29 +36,29 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="33"/>
-			<SearchStringAddition name="ListSearchString" id="44">
+			<SearchStringAddition name="ListSearchString" id="56">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="45"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="46"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="57"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="58"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="47">
+			<ViewStatusAddition name="ListViewStatus" id="59">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="48"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="49"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="60"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="61"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="50">
+			<SearchControlAddition name="ListSearchControl" id="62">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="51"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="52"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="63"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="64"/>
 			</SearchControlAddition>
 			<ChildItems>
 				<LabelField name="Code" id="17">
@@ -112,6 +112,26 @@
 					<ContextMenu name="CF3NumContextMenu" id="32"/>
 					<ExtendedTooltip name="CF3NumExtendedTooltip" id="43"/>
 				</LabelField>
+				<LabelField name="CF4String" id="44">
+					<DataPath>List.CF4String</DataPath>
+					<ContextMenu name="CF4StringContextMenu" id="45"/>
+					<ExtendedTooltip name="CF4StringExtendedTooltip" id="46"/>
+				</LabelField>
+				<LabelField name="CF4Num" id="47">
+					<DataPath>List.CF4Num</DataPath>
+					<ContextMenu name="CF4NumContextMenu" id="48"/>
+					<ExtendedTooltip name="CF4NumExtendedTooltip" id="49"/>
+				</LabelField>
+				<LabelField name="CF5String" id="50">
+					<DataPath>List.CF5String</DataPath>
+					<ContextMenu name="CF5StringContextMenu" id="51"/>
+					<ExtendedTooltip name="CF5StringExtendedTooltip" id="52"/>
+				</LabelField>
+				<LabelField name="CF5Num" id="53">
+					<DataPath>List.CF5Num</DataPath>
+					<ContextMenu name="CF5NumContextMenu" id="54"/>
+					<ExtendedTooltip name="CF5NumExtendedTooltip" id="55"/>
+				</LabelField>
 			</ChildItems>
 		</Table>
 	</ChildItems>
@@ -122,8 +142,41 @@
 			</Type>
 			<MainAttribute>true</MainAttribute>
 			<Settings xsi:type="DynamicList">
-				<ManualQuery>false</ManualQuery>
+				<ManualQuery>true</ManualQuery>
 				<DynamicDataRead>true</DynamicDataRead>
+				<QueryText>SELECT
+	CatalogProducts.Ref,
+	CatalogProducts.DeletionMark,
+	CatalogProducts.Code,
+	CatalogProducts.Description,
+	CatalogProducts.CostingMethod,
+	CatalogProducts.Type,
+	CatalogProducts.InventoryOrExpenseAccount,
+	CatalogProducts.IncomeAccount,
+	CatalogProducts.COGSAccount,
+	CatalogProducts.PurchaseVATCode,
+	CatalogProducts.SalesVATCode,
+	CatalogProducts.UM,
+	CatalogProducts.DefaultLocation,
+	CatalogProducts.api_code,
+	CatalogProducts.PreferredVendor,
+	CatalogProducts.CF1String,
+	CatalogProducts.CF2String,
+	CatalogProducts.CF3String,
+	CatalogProducts.CF4String,
+	CatalogProducts.CF5String,
+	CatalogProducts.CF1Num,
+	CatalogProducts.CF2Num,
+	CatalogProducts.CF3Num,
+	CatalogProducts.CF4Num,
+	CatalogProducts.CF5Num,
+	CatalogProducts.Category,
+	CatalogProducts.NewObject,
+	CatalogProducts.Predefined,
+	CatalogProducts.PredefinedDataName
+FROM
+	Catalog.Products AS CatalogProducts
+</QueryText>
 				<MainTable>Catalog.Products</MainTable>
 				<ListSettings>
 					<dcsset:filter>

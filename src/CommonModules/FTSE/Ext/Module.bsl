@@ -13,5 +13,4 @@ Procedure MergeFTSE() Export
 	
 	FullTextSearch.UpdateIndex(True);
 	
-EndProcedure
-
+EndProcedure 

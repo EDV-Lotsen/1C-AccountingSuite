@@ -5,9 +5,6 @@
 	<CommandBarLocation>None</CommandBarLocation>
 	<VerticalScroll>useIfNecessary</VerticalScroll>
 	<AutoCommandBar name="FormCommandBar" id="-1"/>
-	<Events>
-		<Event name="OnOpen">OnOpen</Event>
-	</Events>
 	<ChildItems>
 		<UsualGroup name="Navigation1" id="1">
 			<Title>
@@ -202,11 +199,19 @@
 									<v8:lang>en</v8:lang>
 									<v8:content>Purchasing</v8:content>
 								</v8:item>
+								<v8:item>
+									<v8:lang>de</v8:lang>
+									<v8:content>Einkauf</v8:content>
+								</v8:item>
 							</Title>
 							<ToolTip>
 								<v8:item>
 									<v8:lang>en</v8:lang>
 									<v8:content>Purchasing</v8:content>
+								</v8:item>
+								<v8:item>
+									<v8:lang>de</v8:lang>
+									<v8:content>Einkauf</v8:content>
 								</v8:item>
 							</ToolTip>
 							<HorizontalStretch>false</HorizontalStretch>
@@ -254,6 +259,10 @@
 												<v8:item>
 													<v8:lang>en</v8:lang>
 													<v8:content>Purchasing</v8:content>
+												</v8:item>
+												<v8:item>
+													<v8:lang>de</v8:lang>
+													<v8:content>Einkauf</v8:content>
 												</v8:item>
 											</Title>
 											<ContextMenu name="PurchasingTitleContextMenu" id="27"/>
@@ -317,6 +326,7 @@
 														</Button>
 														<Button name="ItemReceipt" id="208">
 															<Type>Hyperlink</Type>
+															<Visible>false</Visible>
 															<CommandName>Form.Command.ItemReceipt</CommandName>
 															<ExtendedTooltip name="ItemReceiptExtendedTooltip" id="209"/>
 														</Button>
@@ -356,10 +366,18 @@
 									<v8:lang>en</v8:lang>
 									<v8:content>Bank</v8:content>
 								</v8:item>
+								<v8:item>
+									<v8:lang>de</v8:lang>
+									<v8:content>Bank</v8:content>
+								</v8:item>
 							</Title>
 							<ToolTip>
 								<v8:item>
 									<v8:lang>en</v8:lang>
+									<v8:content>Bank</v8:content>
+								</v8:item>
+								<v8:item>
+									<v8:lang>de</v8:lang>
 									<v8:content>Bank</v8:content>
 								</v8:item>
 							</ToolTip>
@@ -408,6 +426,10 @@
 											<Title formatted="false">
 												<v8:item>
 													<v8:lang>en</v8:lang>
+													<v8:content>Bank</v8:content>
+												</v8:item>
+												<v8:item>
+													<v8:lang>de</v8:lang>
 													<v8:content>Bank</v8:content>
 												</v8:item>
 											</Title>
@@ -476,11 +498,19 @@
 									<v8:lang>en</v8:lang>
 									<v8:content>Accounting</v8:content>
 								</v8:item>
+								<v8:item>
+									<v8:lang>de</v8:lang>
+									<v8:content>Buchhaltung</v8:content>
+								</v8:item>
 							</Title>
 							<ToolTip>
 								<v8:item>
 									<v8:lang>en</v8:lang>
 									<v8:content>Accounting</v8:content>
+								</v8:item>
+								<v8:item>
+									<v8:lang>de</v8:lang>
+									<v8:content>Buchhaltung</v8:content>
 								</v8:item>
 							</ToolTip>
 							<HorizontalStretch>false</HorizontalStretch>
@@ -528,6 +558,10 @@
 												<v8:item>
 													<v8:lang>en</v8:lang>
 													<v8:content>Accounting</v8:content>
+												</v8:item>
+												<v8:item>
+													<v8:lang>de</v8:lang>
+													<v8:content>Buchhaltung</v8:content>
 												</v8:item>
 											</Title>
 											<ContextMenu name="AccountingTitleContextMenu" id="61"/>
@@ -602,11 +636,19 @@
 									<v8:lang>en</v8:lang>
 									<v8:content>Lists</v8:content>
 								</v8:item>
+								<v8:item>
+									<v8:lang>de</v8:lang>
+									<v8:content>Stammdaten</v8:content>
+								</v8:item>
 							</Title>
 							<ToolTip>
 								<v8:item>
 									<v8:lang>en</v8:lang>
 									<v8:content>Lists</v8:content>
+								</v8:item>
+								<v8:item>
+									<v8:lang>de</v8:lang>
+									<v8:content>Stammdaten</v8:content>
 								</v8:item>
 							</ToolTip>
 							<Width>33</Width>
@@ -654,6 +696,10 @@
 												<v8:item>
 													<v8:lang>en</v8:lang>
 													<v8:content>Lists</v8:content>
+												</v8:item>
+												<v8:item>
+													<v8:lang>de</v8:lang>
+													<v8:content>Stammdaten</v8:content>
 												</v8:item>
 											</Title>
 											<ContextMenu name="ListsTitleContextMenu" id="79"/>
@@ -799,29 +845,6 @@
 			</ToolTip>
 			<Action>CashSale</Action>
 		</Command>
-		<Command name="SalesReturn" id="4">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Credit memo</v8:content>
-				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>Storno/Gutschrift</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Sales return</v8:content>
-				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>Storno/Gutschrift</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Action>SalesReturn</Action>
-		</Command>
 		<Command name="PurchaseOrder" id="5">
 			<Title>
 				<v8:item>
@@ -943,11 +966,19 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>Deposit</v8:content>
 				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Anzahlung</v8:content>
+				</v8:item>
 			</Title>
 			<ToolTip>
 				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Deposit</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Anzahlung</v8:content>
 				</v8:item>
 			</ToolTip>
 			<Action>Deposit</Action>
@@ -1021,7 +1052,7 @@
 				</v8:item>
 				<v8:item>
 					<v8:lang>de</v8:lang>
-					<v8:content>Obeflächentext übersetzen</v8:content>
+					<v8:content>Buchung</v8:content>
 				</v8:item>
 			</Title>
 			<ToolTip>
@@ -1031,7 +1062,7 @@
 				</v8:item>
 				<v8:item>
 					<v8:lang>de</v8:lang>
-					<v8:content>Obeflächentext übersetzen</v8:content>
+					<v8:content>Buchung</v8:content>
 				</v8:item>
 			</ToolTip>
 			<Action>GJEntry</Action>
@@ -1111,11 +1142,19 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>Item receipt</v8:content>
 				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Anfangsbestand</v8:content>
+				</v8:item>
 			</Title>
 			<ToolTip>
 				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Item receipt</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Anfangsbestand</v8:content>
 				</v8:item>
 			</ToolTip>
 			<Action>ItemReceipt</Action>

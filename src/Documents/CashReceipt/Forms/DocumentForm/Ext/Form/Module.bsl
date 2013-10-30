@@ -305,6 +305,7 @@ Procedure CompanyOnChange(Item)
 	
 	Object.CompanyCode = CommonUse.GetAttributeValue(Object.Company, "Code");
 	
+	EmailSet();
 	// Fill in current receivables
 	FillDocumentList(Object.Company);
 	// Fill in credit memos
@@ -366,7 +367,7 @@ Procedure UnappliedCalc()
 
 		Else
 			Rate = GeneralFunctions.GetExchangeRate(Object.Date, CompanyCurrency);
-			CashDistribute = Round(Object.CashPayment/Rate);
+			CashDistribute = Object.CashPayment/Rate;
 			Object.UnappliedPayment = (CashDistribute + CredTotal) - TotalPay; 
 	Endif;
 
@@ -683,8 +684,8 @@ Procedure BeforeWrite(Cancel, WriteParameters)
 
 	//
 	//If Object.DocumentTotalRC = 0 Then
-		  Object.DocumentTotalRC = Object.CashPayment;
-		  Object.DocumentTotal = Object.CashPayment/Rate;
+		  Object.DocumentTotalRC = PayTotal*Rate;
+		  Object.DocumentTotal = PayTotal;
 	//Endif;
 	
 	//Object.Currency = Object.LineItems[0].Currency;
@@ -750,7 +751,7 @@ EndProcedure
 
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
-
+	
 	//Title = "Receipt " + Object.Number + " " + Format(Object.Date, "DLF=D");
 	
 	Items.Company.Title = GeneralFunctionsReusable.GetCustomerName();
@@ -789,6 +790,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 
 	
 	// Update elements status.
+	//Items.FormChargeWithStripe.Enabled = IsBlankString(Object.StripeID);
 	
 	// Check credit memo applied.
 	//If Not Object.UnappliedPaymentCreditMemo.IsEmpty() Then
@@ -835,16 +837,6 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 	EndDo;
 
 	
-EndProcedure
-
-&AtClient
-// Retrieves the account's description
-//
-Procedure BankAccountOnChange(Item)
-	
-	Items.BankAccountLabel.Title =
-		CommonUse.GetAttributeValue(Object.BankAccount, "Description");
-
 EndProcedure
 
 &AtClient
@@ -1116,29 +1108,6 @@ Procedure AdditionalCreditPay()
 EndProcedure
 
 &AtClient
-Procedure CreditMemosAppliedOnChange(Item)
-	
-	CreditTotal = 0;
-	TabularPartRow = Items.LineItems.CurrentData;
-	
-	For Each LineItem In Object.LineItems Do
-			CreditTotal =  CreditTotal + LineItem.CreditApplied;
-	EndDo;
-	TempVal =  Object.AppliedCredit - CreditTotal;
-	
-	If CreditTotal > Object.AppliedCredit Then
-		Message("Paying with more credit than applied");
-		
-	Elsif TabularPartRow.CreditApplied > TabularPartRow.Balance Then
-		Message("Credit exceeds invoice balance");		
-	Else
-		 Object.AppliedCredit = Object.CreditTotal - CreditTotal;
-	Endif;
-	
-
-EndProcedure
-
-&AtClient
 Procedure ManualCheckOnChange(Item)
 	// Insert handler contents.
 	If ManualCheck = False Then
@@ -1147,4 +1116,222 @@ Procedure ManualCheckOnChange(Item)
 		items.UnappliedPayment.ReadOnly = False;
 	Endif;
 	
+EndProcedure
+
+&AtClient
+Procedure SendEmail(Command)
+	SendEmailAtServer();
+EndProcedure
+
+&AtServer
+Procedure SendEmailAtServer()
+	//test = Object.PayHTML;
+	//test2 = 3;
+	If Object.Ref.IsEmpty() Then
+		Message("An email cannot be sent until the invoice is posted or written");
+	Else
+		
+	If Object.EmailTo <> "" Then
+		
+	// 	//imagelogo = Base64String(GeneralFunctions.GetLogo());
+	 	If constants.logoURL.Get() = "" Then
+			 imagelogo = "http://www.accountingsuite.com/images/logo-a.png";
+	 	else
+			 imagelogo = Constants.logoURL.Get();  
+	 	Endif;
+	 	
+		
+		
+		datastring = "";
+		TotalAmount = 0;
+		TotalCredits = 0;
+		For Each DocumentLine in Object.LineItems Do
+			
+			DocObj = DocumentLine.Document.Ref.GetObject();
+			
+			TotalAmount = TotalAmount + DocumentLine.Payment;
+			datastring = datastring + "<TR height=""20""><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.Document.Ref +  "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocObj.DocumentTotalRC + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.Balance + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.Payment + "</TD></TR>";
+
+		EndDo;
+		
+		For Each CreditLine in Object.CreditMemos Do
+			
+			TotalCredits = TotalCredits + CreditLine.Payment;
+
+	 	EndDo;
+
+	    	 
+	    MailProfil = New InternetMailProfile; 
+	    
+		MailProfil.SMTPServerAddress = Constants.MailProfAddress.Get();
+		MailProfil.SMTPUseSSL = Constants.MailProfSSL.Get();
+	   // MailProfil.SMTPPort = 587; 
+	    
+	    MailProfil.Timeout = 180; 
+	    
+		MailProfil.SMTPPassword = Constants.MailProfPass.Get();
+	    
+		MailProfil.SMTPUser = Constants.MailProfUser.Get();
+	    
+	    
+	    send = New InternetMailMessage; 
+	    //send.To.Add(object.shipto.Email);
+	    send.To.Add(object.EmailTo);
+		
+		If Object.EmailCC <> "" Then
+			EAddresses = StringFunctionsClientServer.SplitStringIntoSubstringArray(Object.EmailCC, ",");
+			For Each EmailAddress in EAddresses Do
+				send.CC.Add(EmailAddress);
+			EndDo;
+		Endif;
+		
+		
+	    send.From.Address = Constants.Email.Get();
+	    send.From.DisplayName = "AccountingSuite";
+	    send.Subject = Constants.SystemTitle.Get() + " - Cash Receipt " + Object.Number + " from " + Format(Object.Date,"DLF=D") + " - $" + Format(Object.DocumentTotalRC,"NFD=2");
+	    
+	    FormatHTML = FormAttributeToValue("Object").GetTemplate("TemplateTest").GetText();
+	 	  
+	 	 
+		If Object.StripeID <> "" Then
+			FormatHTML2 = StrReplace(FormatHTML,"Receipt No.","Stripe ID");
+			FormatHTML2 = StrReplace(FormatHTML,"object.number",object.StripeID);
+			FormatHTML2 = StrReplace(FormatHTML,"<td align=""right""  id=""param1""></td>","<td align=""right"">Payment: </td>");
+			FormatHTML2 = StrReplace(FormatHTML,"<td align=""right""  id=""param2""></td>","<td align=""right"">Last 4 Digits: " + Object.StripeLast4 + "</td>");
+			FormatHTML2 = StrReplace(FormatHTML,"<td align=""right""  id=""param3""></td>","<td align=""right""> Method: " + Object.StripeCardType + "</td>");
+			
+		Else
+			FormatHTML2 = StrReplace(FormatHTML,"object.number",object.RefNum);
+		Endif;
+	 	 FormatHTML2 = StrReplace(FormatHTML2,"imagelogo",imagelogo);
+	 	  FormatHTML2 = StrReplace(FormatHTML2,"object.date",Format(object.Date,"DLF=D"));
+	 	  //BillTo
+	 	  FormatHTML2 = StrReplace(FormatHTML2,"object.company",object.Company);
+
+		  Query = New Query("SELECT
+		                  |	Addresses.FirstName,
+		                  |	Addresses.MiddleName,
+		                  |	Addresses.LastName,
+		                  |	Addresses.Phone,
+		                  |	Addresses.Fax,
+		                  |	Addresses.Email,
+		                  |	Addresses.AddressLine1,
+		                  |	Addresses.AddressLine2,
+		                  |	Addresses.City,
+		                  |	Addresses.State.Code AS State,
+		                  |	Addresses.Country,
+		                  |	Addresses.ZIP,
+		                  |	Addresses.RemitTo
+		                  |FROM
+		                  |	Catalog.Addresses AS Addresses
+		                  |WHERE
+		                  |	Addresses.Owner = &Company
+		                  |	AND Addresses.DefaultBilling = TRUE");
+		Query.SetParameter("Company", object.company);
+			QueryResult = Query.Execute();	
+		Dataset = QueryResult.Unload();
+
+		  
+		  
+		  FormatHTML2 = StrReplace(FormatHTML2,"object.shipto1",Dataset[0].AddressLine1);
+	 	  FormatHTML2 = StrReplace(FormatHTML2,"object.shipto2",Dataset[0].AddressLine2);
+	 	 CityStateZip = Dataset[0].City + Dataset[0].State + Dataset[0].ZIP;
+	 	 
+	 	 If CityStateZip = "" Then
+	 	 	FormatHTML2 = StrReplace(FormatHTML2,"object.city object.state object.zip","");
+	 	 Else
+	 	  	FormatHTML2 = StrReplace(FormatHTML2,"object.city object.state object.zip",Dataset[0].City + ", " + Dataset[0].State + " " + Dataset[0].ZIP);
+	 	 Endif;
+	 	  FormatHTML2 = StrReplace(FormatHTML2,"object.country",Dataset[0].Country);
+	 	  //lineitems
+	 	  FormatHTML2 = StrReplace(FormatHTML2,"lineitems",datastring);
+ 	   
+	 	  //User's company info
+	 	  FormatHTML2 = StrReplace(FormatHTML2,"mycompany",Constants.SystemTitle.Get()); 
+	 	  FormatHTML2 = StrReplace(FormatHTML2,"myaddress1",Constants.AddressLine1.Get());
+	 	  FormatHTML2 = StrReplace(FormatHTML2,"myaddress2",Constants.AddressLine2.Get());
+	 	  FormatHTML2 = StrReplace(FormatHTML2,"mycity mystate myzip",Constants.City.Get() + ", " + Constants.State.Get() + " " + Constants.ZIP.Get());
+	 	  FormatHTML2 = StrReplace(FormatHTML2,"myphone",Constants.Phone.Get());
+	 	  FormatHTML2 = StrReplace(FormatHTML2,"myemail",Constants.Email.Get());
+	 	  
+	 	  FormatHTML2 = StrReplace(FormatHTML2,"object.total",Format(TotalAmount,"NFD=2"));
+		  
+	   If TotalCredits = 0 Then
+	 	   FormatHTML2 = StrReplace(FormatHTML2,"object.credits","0.00");
+	   Else
+	  		 FormatHTML2 = StrReplace(FormatHTML2,"object.credits",Format(TotalCredits,"NFD=2"));
+	   Endif;
+
+	   //Note
+	   FormatHTML2 = StrReplace(FormatHTML2,"object.note",Object.EmailNote);
+	  
+		send.Texts.Add(FormatHTML2,InternetMailTextType.HTML);
+			
+		Posta = New InternetMail; 
+		Posta.Logon(MailProfil); 
+		Posta.Send(send); 
+		Posta.Logoff();
+		
+		Message("Cash receipt email has been sent");
+		
+		//DocObject = object.ref.GetObject();
+		//DocObject.EmailTo = Object.EmailTo;
+		//DocObject.LastEmail = "Last email on " + Format(CurrentDate(),"DLF=DT") + " to " + Object.EmailTo;
+		//DocObject.Write(DocumentWriteMode.Posting);
+		SentEmail = True;
+
+		Else
+	 		 Message("The recipient email has not been specified");
+	    Endif;
+	 	
+	 Endif;
+	
+	
+EndProcedure
+
+&AtServer
+Procedure EmailSet()
+	Query = New Query("SELECT
+		                  |	Addresses.FirstName,
+		                  |	Addresses.MiddleName,
+		                  |	Addresses.LastName,
+		                  |	Addresses.Phone,
+		                  |	Addresses.Fax,
+		                  |	Addresses.Email,
+		                  |	Addresses.AddressLine1,
+		                  |	Addresses.AddressLine2,
+		                  |	Addresses.City,
+		                  |	Addresses.State.Code AS State,
+		                  |	Addresses.Country,
+		                  |	Addresses.ZIP,
+		                  |	Addresses.RemitTo
+		                  |FROM
+		                  |	Catalog.Addresses AS Addresses
+		                  |WHERE
+		                  |	Addresses.Owner = &Company
+		                  |	AND Addresses.DefaultBilling = TRUE");
+		Query.SetParameter("Company", object.company);
+			QueryResult = Query.Execute();	
+		Dataset = QueryResult.Unload();
+		
+	Object.EmailTo = Dataset[0].Email;
+	
+EndProcedure
+
+&AtClient
+Procedure OnClose()
+	OnCloseAtServer();
+EndProcedure
+
+&AtServer
+Procedure OnCloseAtServer()
+
+	If SentEmail = True Then
+		
+		DocObject = object.ref.GetObject();
+		DocObject.EmailTo = Object.EmailTo;
+		DocObject.LastEmail = "Last email on " + Format(CurrentDate(),"DLF=DT") + " to " + Object.EmailTo;
+		DocObject.Write();
+	Endif;
+
 EndProcedure

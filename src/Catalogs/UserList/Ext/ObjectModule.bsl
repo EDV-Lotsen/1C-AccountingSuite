@@ -21,17 +21,6 @@ EndProcedure
 Procedure DeleteUser(userstring)
 	 //Insert handler contents.
 		
-	HeadersMap = New Map();
-	HeadersMap.Insert("apisecretkey", Constants.APISecretKey.Get());
-	
-	HTTPRequest = New HTTPRequest("/deleteuser", HeadersMap);
-	HTTPRequest.SetBodyFromString("user=" + userstring,TextEncoding.ANSI);
-	
-	SSLConnection = New OpenSSLSecureConnection();
-	
-	HTTPConnection = New HTTPConnection("api.accountingsuite.com",,,,,,SSLConnection);
-	Result = HTTPConnection.Post(HTTPRequest);
-
 	theuser = InfoBaseUsers.FindByName(userstring);
 	
 	theuser.Delete();

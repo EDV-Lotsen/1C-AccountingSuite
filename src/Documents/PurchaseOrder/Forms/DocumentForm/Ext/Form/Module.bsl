@@ -295,6 +295,18 @@ EndProcedure
 // 
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
+	Items.LineItemsQuantity.EditFormat = "NFD=" + Constants.QtyPrecision.Get();
+	Items.LineItemsQuantity.Format = "NFD=" + Constants.QtyPrecision.Get();
+	
+	Items.LineItemsReceived.EditFormat = "NFD=" + Constants.QtyPrecision.Get();
+	Items.LineItemsReceived.Format = "NFD=" + Constants.QtyPrecision.Get();
+	
+	Items.LineItemsInvoiced.EditFormat = "NFD=" + Constants.QtyPrecision.Get();
+	Items.LineItemsInvoiced.Format = "NFD=" + Constants.QtyPrecision.Get();
+
+	Items.LineItemsBackorder.EditFormat = "NFD=" + Constants.QtyPrecision.Get();
+	Items.LineItemsBackorder.Format = "NFD=" + Constants.QtyPrecision.Get();
+
 	Items.Company.Title = GeneralFunctionsReusable.GetVendorName();
 	
 	//Title = "Purchase Order " + Object.Number + " " + Format(Object.Date, "DLF=D");
@@ -404,4 +416,22 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 	// Request and fill indexes of product type (required to calculate bacorder property)
 	FillProductTypes();
 		
+EndProcedure
+
+&AtClient
+Procedure LineItemsOnChange(Item)
+	
+	If NewRow = true Then
+		CurrentData = Item.CurrentData;
+		//CurrentData.Project = Object.Project;
+		NewRow = false;
+	Endif;
+
+EndProcedure
+
+&AtClient
+Procedure LineItemsBeforeAddRow(Item, Cancel, Clone, Parent, Folder)
+	
+	NewRow = true;
+	
 EndProcedure

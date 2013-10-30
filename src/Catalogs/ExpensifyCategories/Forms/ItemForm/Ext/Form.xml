@@ -4,17 +4,25 @@
 	<UseForFoldersAndItems>Items</UseForFoldersAndItems>
 	<AutoCommandBar name="FormCommandBar" id="-1"/>
 	<ChildItems>
-		<InputField name="Code" id="1">
-			<DataPath>1/-2</DataPath>
-			<EditMode>EnterOnInput</EditMode>
-			<ContextMenu name="CodeContextMenu" id="2"/>
-			<ExtendedTooltip name="CodeExtendedTooltip" id="3"/>
-		</InputField>
 		<InputField name="Description" id="4">
 			<DataPath>Object.Description</DataPath>
 			<EditMode>EnterOnInput</EditMode>
 			<ContextMenu name="DescriptionContextMenu" id="5"/>
 			<ExtendedTooltip name="DescriptionExtendedTooltip" id="6"/>
+		</InputField>
+		<InputField name="Account" id="7">
+			<DataPath>Object.Account</DataPath>
+			<ContextMenu name="AccountContextMenu" id="8"/>
+			<ExtendedTooltip name="AccountExtendedTooltip" id="9"/>
+			<Events>
+				<Event name="OnChange">AccountOnChange</Event>
+			</Events>
+		</InputField>
+		<InputField name="AccountDescription" id="10">
+			<DataPath>Object.AccountDescription</DataPath>
+			<ReadOnly>true</ReadOnly>
+			<ContextMenu name="AccountDescriptionContextMenu" id="11"/>
+			<ExtendedTooltip name="AccountDescriptionExtendedTooltip" id="12"/>
 		</InputField>
 	</ChildItems>
 	<Attributes>

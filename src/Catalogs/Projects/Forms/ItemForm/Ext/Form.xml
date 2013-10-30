@@ -5,7 +5,9 @@
 	<UseForFoldersAndItems>Items</UseForFoldersAndItems>
 	<AutoCommandBar name="FormCommandBar" id="-1"/>
 	<Events>
+		<Event name="OnOpen">OnOpen</Event>
 		<Event name="BeforeWrite">BeforeWrite</Event>
+		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
 	</Events>
 	<ChildItems>
 		<InputField name="Description" id="1">
@@ -14,6 +16,242 @@
 			<ContextMenu name="DescriptionContextMenu" id="2"/>
 			<ExtendedTooltip name="DescriptionExtendedTooltip" id="3"/>
 		</InputField>
+		<InputField name="Customer" id="7">
+			<DataPath>Object.Customer</DataPath>
+			<OpenButton>false</OpenButton>
+			<ContextMenu name="CustomerContextMenu" id="8"/>
+			<ExtendedTooltip name="CustomerExtendedTooltip" id="9"/>
+		</InputField>
+		<CheckBoxField name="Internal" id="10">
+			<DataPath>Object.Internal</DataPath>
+			<CheckBoxType>Auto</CheckBoxType>
+			<ContextMenu name="InternalContextMenu" id="11"/>
+			<ExtendedTooltip name="InternalExtendedTooltip" id="12"/>
+			<Events>
+				<Event name="OnChange">InternalOnChange</Event>
+			</Events>
+		</CheckBoxField>
+		<Pages name="Group1" id="35">
+			<ExtendedTooltip name="Group1ExtendedTooltip" id="36"/>
+			<ChildItems>
+				<Page name="Page1" id="37">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Milestones</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Page1</v8:content>
+						</v8:item>
+					</ToolTip>
+					<ExtendedTooltip name="Page1ExtendedTooltip" id="38"/>
+					<ChildItems>
+						<Table name="Milestones" id="13">
+							<Visible>false</Visible>
+							<UseAlternationRowColor>true</UseAlternationRowColor>
+							<EnableStartDrag>true</EnableStartDrag>
+							<DataPath>Milestones</DataPath>
+							<RowPictureDataPath>Milestones.DefaultPicture</RowPictureDataPath>
+							<TitleFont ref="style:LargeTextFont" kind="StyleItem"/>
+							<SearchStringLocation>None</SearchStringLocation>
+							<ViewStatusLocation>None</ViewStatusLocation>
+							<SearchControlLocation>None</SearchControlLocation>
+							<AutoRefresh>false</AutoRefresh>
+							<AutoRefreshPeriod>60</AutoRefreshPeriod>
+							<Period>
+								<v8:variant xsi:type="v8:StandardPeriodVariant">Custom</v8:variant>
+								<v8:startDate>0001-01-01T00:00:00</v8:startDate>
+								<v8:endDate>0001-01-01T00:00:00</v8:endDate>
+							</Period>
+							<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
+							<RestoreCurrentRow>false</RestoreCurrentRow>
+							<TopLevelParent xsi:nil="true"/>
+							<ShowRoot>true</ShowRoot>
+							<AllowRootChoice>false</AllowRootChoice>
+							<UpdateOnDataChange>Auto</UpdateOnDataChange>
+							<ContextMenu name="MilestonesContextMenu" id="14"/>
+							<AutoCommandBar name="MilestonesCommandBar" id="15"/>
+							<ExtendedTooltip name="MilestonesExtendedTooltip" id="16"/>
+							<SearchStringAddition name="MilestonesSearchString" id="66">
+								<AdditionSource>
+									<Item>Milestones</Item>
+									<Type>SearchStringRepresentation</Type>
+								</AdditionSource>
+								<ContextMenu name="MilestonesSearchStringContextMenu" id="67"/>
+								<ExtendedTooltip name="MilestonesSearchStringExtendedTooltip" id="68"/>
+							</SearchStringAddition>
+							<ViewStatusAddition name="MilestonesViewStatus" id="69">
+								<AdditionSource>
+									<Item>Milestones</Item>
+									<Type>ViewStatusRepresentation</Type>
+								</AdditionSource>
+								<ContextMenu name="MilestonesViewStatusContextMenu" id="70"/>
+								<ExtendedTooltip name="MilestonesViewStatusExtendedTooltip" id="71"/>
+							</ViewStatusAddition>
+							<SearchControlAddition name="MilestonesSearchControl" id="72">
+								<AdditionSource>
+									<Item>Milestones</Item>
+									<Type>SearchControl</Type>
+								</AdditionSource>
+								<ContextMenu name="MilestonesSearchControlContextMenu" id="73"/>
+								<ExtendedTooltip name="MilestonesSearchControlExtendedTooltip" id="74"/>
+							</SearchControlAddition>
+							<ChildItems>
+								<LabelField name="MilestonesDescription" id="17">
+									<DataPath>Milestones.Description</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Title</v8:content>
+										</v8:item>
+									</Title>
+									<ContextMenu name="MilestonesDescriptionContextMenu" id="18"/>
+									<ExtendedTooltip name="MilestonesDescriptionExtendedTooltip" id="19"/>
+								</LabelField>
+								<LabelField name="MilestonesStartDate" id="29">
+									<DataPath>Milestones.BegDate</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Start Date</v8:content>
+										</v8:item>
+									</Title>
+									<ContextMenu name="MilestonesStartDateContextMenu" id="30"/>
+									<ExtendedTooltip name="MilestonesStartDateExtendedTooltip" id="31"/>
+								</LabelField>
+								<LabelField name="MilestonesDueDate" id="26">
+									<DataPath>Milestones.DueDate</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Due Date</v8:content>
+										</v8:item>
+									</Title>
+									<ContextMenu name="MilestonesDueDateContextMenu" id="27"/>
+									<ExtendedTooltip name="MilestonesDueDateExtendedTooltip" id="28"/>
+								</LabelField>
+								<LabelField name="MilestonesTasksComplete" id="32">
+									<DataPath>Milestones.TasksComplete</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Tasks Completed</v8:content>
+										</v8:item>
+									</Title>
+									<Width>13</Width>
+									<HorizontalStretch>false</HorizontalStretch>
+									<ContextMenu name="MilestonesTasksCompleteContextMenu" id="33"/>
+									<ExtendedTooltip name="MilestonesTasksCompleteExtendedTooltip" id="34"/>
+								</LabelField>
+								<LabelField name="MilestonesNote" id="23">
+									<DataPath>Milestones.Note</DataPath>
+									<ContextMenu name="MilestonesNoteContextMenu" id="24"/>
+									<ExtendedTooltip name="MilestonesNoteExtendedTooltip" id="25"/>
+								</LabelField>
+							</ChildItems>
+						</Table>
+					</ChildItems>
+				</Page>
+				<Page name="Page2" id="39">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Transactions</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Page2</v8:content>
+						</v8:item>
+					</ToolTip>
+					<ExtendedTooltip name="Page2ExtendedTooltip" id="40"/>
+					<ChildItems>
+						<Table name="Transactions" id="41">
+							<Visible>false</Visible>
+							<Enabled>false</Enabled>
+							<UseAlternationRowColor>true</UseAlternationRowColor>
+							<EnableStartDrag>true</EnableStartDrag>
+							<DataPath>Transactions</DataPath>
+							<RowPictureDataPath>Transactions.DefaultPicture</RowPictureDataPath>
+							<SearchStringLocation>None</SearchStringLocation>
+							<ViewStatusLocation>None</ViewStatusLocation>
+							<SearchControlLocation>None</SearchControlLocation>
+							<AutoRefresh>false</AutoRefresh>
+							<AutoRefreshPeriod>60</AutoRefreshPeriod>
+							<Period>
+								<v8:variant xsi:type="v8:StandardPeriodVariant">Custom</v8:variant>
+								<v8:startDate>0001-01-01T00:00:00</v8:startDate>
+								<v8:endDate>0001-01-01T00:00:00</v8:endDate>
+							</Period>
+							<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
+							<RestoreCurrentRow>false</RestoreCurrentRow>
+							<TopLevelParent xsi:nil="true"/>
+							<ShowRoot>true</ShowRoot>
+							<AllowRootChoice>false</AllowRootChoice>
+							<UpdateOnDataChange>Auto</UpdateOnDataChange>
+							<ContextMenu name="TransactionsContextMenu" id="42"/>
+							<AutoCommandBar name="TransactionsCommandBar" id="43"/>
+							<ExtendedTooltip name="TransactionsExtendedTooltip" id="44"/>
+							<SearchStringAddition name="TransactionsSearchString" id="75">
+								<AdditionSource>
+									<Item>Transactions</Item>
+									<Type>SearchStringRepresentation</Type>
+								</AdditionSource>
+								<ContextMenu name="TransactionsSearchStringContextMenu" id="76"/>
+								<ExtendedTooltip name="TransactionsSearchStringExtendedTooltip" id="77"/>
+							</SearchStringAddition>
+							<ViewStatusAddition name="TransactionsViewStatus" id="78">
+								<AdditionSource>
+									<Item>Transactions</Item>
+									<Type>ViewStatusRepresentation</Type>
+								</AdditionSource>
+								<ContextMenu name="TransactionsViewStatusContextMenu" id="79"/>
+								<ExtendedTooltip name="TransactionsViewStatusExtendedTooltip" id="80"/>
+							</ViewStatusAddition>
+							<SearchControlAddition name="TransactionsSearchControl" id="81">
+								<AdditionSource>
+									<Item>Transactions</Item>
+									<Type>SearchControl</Type>
+								</AdditionSource>
+								<ContextMenu name="TransactionsSearchControlContextMenu" id="82"/>
+								<ExtendedTooltip name="TransactionsSearchControlExtendedTooltip" id="83"/>
+							</SearchControlAddition>
+							<ChildItems>
+								<LabelField name="TransactionsDate" id="45">
+									<DataPath>Transactions.Date</DataPath>
+									<ContextMenu name="TransactionsDateContextMenu" id="46"/>
+									<ExtendedTooltip name="TransactionsDateExtendedTooltip" id="47"/>
+								</LabelField>
+								<LabelField name="TransactionsRef" id="60">
+									<DataPath>Transactions.Ref</DataPath>
+									<ContextMenu name="TransactionsRefContextMenu" id="61"/>
+									<ExtendedTooltip name="TransactionsRefExtendedTooltip" id="62"/>
+								</LabelField>
+								<LabelField name="TransactionsTotal" id="63">
+									<DataPath>Transactions.Total</DataPath>
+									<ContextMenu name="TransactionsTotalContextMenu" id="64"/>
+									<ExtendedTooltip name="TransactionsTotalExtendedTooltip" id="65"/>
+								</LabelField>
+								<LabelField name="TransactionsDueDate" id="48">
+									<DataPath>Transactions.DueDate</DataPath>
+									<ContextMenu name="TransactionsDueDateContextMenu" id="49"/>
+									<ExtendedTooltip name="TransactionsDueDateExtendedTooltip" id="50"/>
+								</LabelField>
+								<LabelField name="TransactionsMemo" id="51">
+									<DataPath>Transactions.Memo</DataPath>
+									<ContextMenu name="TransactionsMemoContextMenu" id="52"/>
+									<ExtendedTooltip name="TransactionsMemoExtendedTooltip" id="53"/>
+								</LabelField>
+							</ChildItems>
+						</Table>
+					</ChildItems>
+				</Page>
+			</ChildItems>
+		</Pages>
 	</ChildItems>
 	<Attributes>
 		<Attribute name="Object" id="1">
@@ -22,6 +260,103 @@
 			</Type>
 			<MainAttribute>true</MainAttribute>
 			<SavedData>true</SavedData>
+		</Attribute>
+		<Attribute name="Milestones" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Milestones</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>cfg:DynamicList</v8:Type>
+			</Type>
+			<Settings xsi:type="DynamicList">
+				<ManualQuery>true</ManualQuery>
+				<DynamicDataRead>true</DynamicDataRead>
+				<QueryText>SELECT
+	CatalogMilestones.Ref,
+	CatalogMilestones.DeletionMark,
+	CatalogMilestones.Code,
+	CatalogMilestones.Description,
+	CatalogMilestones.Note,
+	CatalogMilestones.DueDate,
+	CatalogMilestones.BegDate,
+	CatalogMilestones.TasksComplete,
+	CatalogMilestones.Tasks.(
+		Ref,
+		LineNumber,
+		Name,
+		DueDate,
+		BegDate,
+		Completed
+	),
+	CatalogMilestones.Predefined,
+	CatalogMilestones.PredefinedDataName
+FROM
+	Catalog.Milestones AS CatalogMilestones
+WHERE
+	CatalogMilestones.Project = &amp;Project</QueryText>
+				<MainTable>Catalog.Milestones</MainTable>
+				<ListSettings>
+					<dcsset:filter>
+						<dcsset:viewMode>Normal</dcsset:viewMode>
+						<dcsset:userSettingID>dfcece9d-5077-440b-b6b3-45a5cb4538eb</dcsset:userSettingID>
+					</dcsset:filter>
+					<dcsset:order>
+						<dcsset:viewMode>Normal</dcsset:viewMode>
+						<dcsset:userSettingID>88619765-ccb3-46c6-ac52-38e9c992ebd4</dcsset:userSettingID>
+					</dcsset:order>
+					<dcsset:conditionalAppearance>
+						<dcsset:viewMode>Normal</dcsset:viewMode>
+						<dcsset:userSettingID>b75fecce-942b-4aed-abc9-e6a02e460fb3</dcsset:userSettingID>
+					</dcsset:conditionalAppearance>
+					<dcsset:itemsViewMode>Normal</dcsset:itemsViewMode>
+					<dcsset:itemsUserSettingID>911b6018-f537-43e8-a417-da56b22f9aec</dcsset:itemsUserSettingID>
+				</ListSettings>
+			</Settings>
+		</Attribute>
+		<Attribute name="Transactions" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Transactions</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>cfg:DynamicList</v8:Type>
+			</Type>
+			<Settings xsi:type="DynamicList">
+				<ManualQuery>true</ManualQuery>
+				<DynamicDataRead>false</DynamicDataRead>
+				<QueryText>SELECT
+	DocumentJournal1.Date,
+	DocumentJournal1.Ref,
+	DocumentJournal1.Total,
+	DocumentJournal1.Memo,
+	DocumentJournal1.Posted,
+	DocumentJournal1.DueDate
+FROM
+	DocumentJournal.DocumentJournal1 AS DocumentJournal1
+WHERE
+	DocumentJournal1.Project = &amp;Project</QueryText>
+				<ListSettings>
+					<dcsset:filter>
+						<dcsset:viewMode>Normal</dcsset:viewMode>
+						<dcsset:userSettingID>dfcece9d-5077-440b-b6b3-45a5cb4538eb</dcsset:userSettingID>
+					</dcsset:filter>
+					<dcsset:order>
+						<dcsset:viewMode>Normal</dcsset:viewMode>
+						<dcsset:userSettingID>88619765-ccb3-46c6-ac52-38e9c992ebd4</dcsset:userSettingID>
+					</dcsset:order>
+					<dcsset:conditionalAppearance>
+						<dcsset:viewMode>Normal</dcsset:viewMode>
+						<dcsset:userSettingID>b75fecce-942b-4aed-abc9-e6a02e460fb3</dcsset:userSettingID>
+					</dcsset:conditionalAppearance>
+					<dcsset:itemsViewMode>Normal</dcsset:itemsViewMode>
+					<dcsset:itemsUserSettingID>911b6018-f537-43e8-a417-da56b22f9aec</dcsset:itemsUserSettingID>
+				</ListSettings>
+			</Settings>
 		</Attribute>
 	</Attributes>
 </Form>

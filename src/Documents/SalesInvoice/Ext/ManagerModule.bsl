@@ -597,9 +597,16 @@ Function Query_Filling_Document_SalesOrder_Attributes(TablesList)
 		|	Document.SalesOrder AS SalesOrder
 		|WHERE
 		|	SalesOrder.Ref IN (&FillingData_Document_SalesOrder)";
-
-	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
 	
+	// Add project field (if available)
+	//UseProjects = True; //GeneralFunctions.FunctionalOptionValue("Projects");
+	//QueryText   = StrReplace(QueryText, "
+	//	|	{Project}",  ?(UseProjects, "
+	//	|	SalesOrder.Project                      AS Project,", ""));
+	
+	// Return text of query
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+
 EndFunction
 
 // Query for document filling
@@ -674,7 +681,7 @@ Function Query_Filling_Document_SalesOrder_OrdersRegistered(TablesList)
 		|							 OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.InvoicedBalance      //     |
 		|						ELSE 0 END                                                                                  //     |
 		|				ELSE 0                                                                                              //   NULL or something else:
-		|               END                                                                                                 //     0
+		|				END                                                                                                 //     0
 		|		WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Closed)      THEN 0                                   // Order status = Closed:
 		|		ELSE 0                                                                                                      //   Backorder = 0
 		|		END                                  AS Backorder
@@ -694,7 +701,7 @@ Function Query_Filling_Document_SalesOrder_OrdersRegistered(TablesList)
 		|				SalesOrderLineItems.Ref IN (&FillingData_Document_SalesOrder))) AS OrdersRegisteredBalance
 		|	LEFT JOIN Table_Document_SalesOrder_OrdersStatuses AS OrdersStatuses
 		|		ON OrdersRegisteredBalance.Order = OrdersStatuses.Order";
-
+	
 	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
 	
 EndFunction
@@ -784,6 +791,13 @@ Function Query_Filling_Document_SalesOrder_LineItems(TablesList)
 		|WHERE
 		|	SalesOrderLineItems.Ref IN (&FillingData_Document_SalesOrder)";
 		
+	// Add project field (if available)
+	//UseProjects = True; // GeneralFunctions.FunctionalOptionValue("Projects");
+	//QueryText   = StrReplace(QueryText, "
+	//	|	{Project}",  ?(UseProjects, "
+	//	|	SalesOrderLineItems.Project         AS Project,", ""));
+		
+	// Return text of query
 	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
 	
 EndFunction
@@ -907,6 +921,13 @@ Function Query_Filling_Attributes(TablesList)
 		|	LEFT JOIN Table_Document_SalesOrder_Totals AS Document_SalesOrder_Totals
 		|		ON Document_SalesOrder_Totals.FillingData = Document_SalesOrder_Attributes.FillingData";
 		
+		// Add project field (if available)
+		//UseProjects   = True; // GeneralFunctions.FunctionalOptionValue("Projects");
+		//SelectionText = StrReplace(SelectionText, "
+		//|	{Project}", ?(UseProjects, ",
+		//|	Document_SalesOrder_Attributes.Project", ""));
+		
+		// Add selection to a query
 		QueryText = QueryText + StrReplace(SelectionText, "{Into}",
 		?(IsBlankString(QueryText), 
 		"INTO
@@ -957,6 +978,13 @@ Function Query_Filling_LineItems(TablesList)
 		|WHERE
 		|	Document_SalesOrder_LineItems.Quantity > 0";
 		
+		// Add project field (if available)
+		//UseProjects   = True; // GeneralFunctions.FunctionalOptionValue("Projects");
+		//SelectionText = StrReplace(SelectionText, "
+		//|	{Project}", ?(UseProjects, ",
+		//|	Document_SalesOrder_LineItems.Project", ""));
+		
+		// Add selection to a query
 		QueryText = QueryText + StrReplace(SelectionText, "{Into}",
 		?(IsBlankString(QueryText), 
 		"INTO
@@ -1101,7 +1129,15 @@ Procedure Print(Spreadsheet, Ref) Export
 	CustomTemplate = GeneralFunctions.GetCustomTemplate("Document.SalesInvoice", "Sales invoice");
 	
 	If CustomTemplate = Undefined Then
-		Template = Documents.SalesInvoice.GetTemplate("PF_MXL_SalesInvoice");
+		If Constants.SalesInvoicePO.Get() = False AND Constants.SalesInvoiceProject.Get() = False Then
+			Template = Documents.SalesInvoice.GetTemplate("PF_MXL_SalesInvoice");
+		ElsIf Constants.SalesInvoicePO.Get() = True AND Constants.SalesInvoiceProject.Get() = True Then
+			Template = Documents.SalesInvoice.GetTemplate("PF_MXL_SalesInvoice_Project_PO");
+		ElsIf Constants.SalesInvoicePO.Get() = True AND Constants.SalesInvoiceProject.Get() = False Then
+			Template = Documents.SalesInvoice.GetTemplate("PF_MXL_SalesInvoice_PO");
+		ElsIf Constants.SalesInvoicePO.Get() = False AND Constants.SalesInvoiceProject.Get() = True Then
+			Template = Documents.SalesInvoice.GetTemplate("PF_MXL_SalesInvoice_Project");
+		EndIf;
 	Else
 		Template = CustomTemplate;
 	EndIf;
@@ -1133,12 +1169,17 @@ Procedure Print(Spreadsheet, Ref) Export
    |		VATCode,
    |		VAT,
    |		Price,
-   |		LineTotal
+   |		LineTotal,
+   |		Project
    |	),
    |	SalesInvoice.Terms,
-   |	SalesInvoice.DueDate
+   |	SalesInvoice.DueDate,
+   |	GeneralJournalBalance.AmountRCBalance AS Balance
    |FROM
-   |	Document.SalesInvoice AS SalesInvoice
+   |	AccountingRegister.GeneralJournal.Balance AS GeneralJournalBalance
+   |		RIGHT JOIN Document.SalesInvoice AS SalesInvoice
+   |		ON (GeneralJournalBalance.ExtDimension1 = SalesInvoice.Company
+   |			AND GeneralJournalBalance.ExtDimension2 = SalesInvoice.Ref)
    |WHERE
    |	SalesInvoice.Ref IN(&Ref)";
    Query.SetParameter("Ref", Ref);
@@ -1182,6 +1223,13 @@ Procedure Print(Spreadsheet, Ref) Export
 	TemplateArea.Parameters.Fill(ThemShip);
 	TemplateArea.Parameters.Fill(ThemBill);
 	
+	  //  TemplateArea = Template.GetArea("Footer");
+	  //  OurContactInfo = UsBill.UsName + " - " + UsBill.UsBillLine1Line2 + " - " + UsBill.UsBillCityStateZIP + " - " + UsBill.UsBillPhone;
+	  //  TemplateArea.Parameters.OurContactInfo = OurContactInfo;
+	  //Spreadsheet.Put(TemplateArea);
+
+	
+	
 	 TemplateArea.Parameters.Date = Selection.Date;
 	 TemplateArea.Parameters.Number = Selection.Number;
 	 Try
@@ -1201,6 +1249,15 @@ Procedure Print(Spreadsheet, Ref) Export
 	 While SelectionLineItems.Next() Do
 		 
 		 TemplateArea.Parameters.Fill(SelectionLineItems);
+		 CompanyName = Selection.Company.Description;
+		 CompanyNameLen = StrLen(CompanyName);
+		 Try
+			 If NOT SelectionLineItems.Project = "" Then
+				ProjectLen = StrLen(SelectionLineItems.Project);
+			 	TemplateArea.Parameters.Project = Right(SelectionLineItems.Project, ProjectLen - CompanyNameLen - 2);
+			EndIf;
+		Except
+		EndTry;
 		 //TemplateArea.Parameters.PO = SelectionLineItems.PO;
 		 LineTotal = SelectionLineItems.LineTotal;
 		 LineTotalSum = LineTotalSum + LineTotal;
@@ -1208,7 +1265,7 @@ Procedure Print(Spreadsheet, Ref) Export
 		 
 	 EndDo;
 	 //////   sales tax check
-	If Selection.SalesTax <> 0 Then;
+	//If Selection.SalesTax <> 0 Then;
 		 TemplateArea = Template.GetArea("Subtotal");
 		 TemplateArea.Parameters.Subtotal = LineTotalSum;
 		 Spreadsheet.Put(TemplateArea);
@@ -1216,7 +1273,7 @@ Procedure Print(Spreadsheet, Ref) Export
 		 TemplateArea = Template.GetArea("SalesTax");
 		 TemplateArea.Parameters.SalesTaxTotal = Selection.SalesTax;
 		 Spreadsheet.Put(TemplateArea);
-	EndIf; 
+	//EndIf; 
 	  ////////
 	 
 	If Selection.VATTotal <> 0 Then;
@@ -1231,21 +1288,38 @@ Procedure Print(Spreadsheet, Ref) Export
 		 
 	 TemplateArea = Template.GetArea("Total");
 	 If Selection.PriceIncludesVAT Then
-		 //added sales tax here
-	 	TemplateArea.Parameters.DocumentTotal = LineTotalSum + Selection.SalesTax;
-		//
+	 	DTotal = LineTotalSum + Selection.SalesTax;
 	Else
-		TemplateArea.Parameters.DocumentTotal = LineTotalSum + Selection.VATTotal;
+		DTotal = LineTotalSum + Selection.VATTotal;
 	EndIf;
-	 Spreadsheet.Put(TemplateArea);
+	TemplateArea.Parameters.DocumentTotal = DTotal;
+	Spreadsheet.Put(TemplateArea);
+	
+	TemplateArea = Template.GetArea("Credits");
+	If NOT Selection.Balance = NULL Then
+		TemplateArea.Parameters.Credits = DTotal - Selection.Balance;
+	ElsIf Selection.Ref.Posted = FALSE Then
+		TemplateArea.Parameters.Credits = 0;
+	Else
+		TemplateArea.Parameters.Credits = DTotal;
+	EndIf;
+	Spreadsheet.Put(TemplateArea);
+	
+	TemplateArea = Template.GetArea("Balance");
+	If NOT Selection.Balance = NULL Then
+		TemplateArea.Parameters.Balance = Selection.Balance;
+	Else
+		TemplateArea.Parameters.Balance = 0;
+	EndIf;
+	Spreadsheet.Put(TemplateArea);
 	 
-	Try
-	 	TemplateArea = Template.GetArea("Footer");
-		OurContactInfo = UsBill.UsName + " - " + UsBill.UsBillLine1Line2 + " - " + UsBill.UsBillCityStateZIP + " - " + UsBill.UsBillPhone;
-		TemplateArea.Parameters.OurContactInfo = OurContactInfo;
-	 	Spreadsheet.Put(TemplateArea);
- 	Except
-	EndTry;
+	//Try
+	// 	TemplateArea = Template.GetArea("Footer");
+	//	OurContactInfo = UsBill.UsName + " - " + UsBill.UsBillLine1Line2 + " - " + UsBill.UsBillCityStateZIP + " - " + UsBill.UsBillPhone;
+	//	TemplateArea.Parameters.OurContactInfo = OurContactInfo;
+	// 	Spreadsheet.Put(TemplateArea);
+	// Except
+	//EndTry;
 
 
 	 //TemplateArea = Template.GetArea("Currency");
@@ -1257,6 +1331,17 @@ Procedure Print(Spreadsheet, Ref) Export
      //PrintManagement.SetDocumentPrintArea(SpreadsheetDocument, BeginningLineNumber, PrintObjects, Selection.Ref);
 
 	 //InsertPageBreak = True;
+	 
+	TemplateArea = Template.GetArea("EmptySpace");
+	Spreadsheet.Put(TemplateArea);
+
+	 
+	 TemplateArea = Template.GetArea("Footer");
+	 TemplateArea.Parameters.FooterContents = Constants.SalesInvoiceFooter.Get();
+	Spreadsheet.Put(TemplateArea);
+	 
+	Spreadsheet.ВывестиГоризонтальныйРазделительСтраниц();
+
 	 
    EndDo;
    
@@ -1407,13 +1492,13 @@ Procedure PrintPackingList(Spreadsheet, Ref) Export
 	//EndIf;
 	// Spreadsheet.Put(TemplateArea);
 	 
-	Try
-	 	TemplateArea = Template.GetArea("Footer");
-		OurContactInfo = UsBill.UsName + " - " + UsBill.UsBillLine1Line2 + " - " + UsBill.UsBillCityStateZIP + " - " + UsBill.UsBillPhone;
-		TemplateArea.Parameters.OurContactInfo = OurContactInfo;
-	 	Spreadsheet.Put(TemplateArea);
- 	Except
-	EndTry;
+	//Try
+	// 	TemplateArea = Template.GetArea("Footer");
+	//	OurContactInfo = UsBill.UsName + " - " + UsBill.UsBillLine1Line2 + " - " + UsBill.UsBillCityStateZIP + " - " + UsBill.UsBillPhone;
+	//	TemplateArea.Parameters.OurContactInfo = OurContactInfo;
+	// 	Spreadsheet.Put(TemplateArea);
+	// Except
+	//EndTry;
 
 
 	 //TemplateArea = Template.GetArea("Currency");

@@ -31,7 +31,8 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		             |	CashReceipt.CashPayment,
 		             |	CashReceipt.DocumentTotal,
 		             |	CashReceipt.DocumentTotalRC AS DocumentTotalRC,
-		             |	CashReceipt.Date AS Date
+		             |	CashReceipt.Date AS Date,
+					 |  CashReceipt.Company AS Customer
 		             |FROM
 		             |	Document.CashReceipt AS CashReceipt
 		             |WHERE
@@ -46,7 +47,8 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		             |	0,                                    
 		             |	CashSale.DocumentTotal,
 		             |	CashSale.DocumentTotalRC,
-		             |	CashSale.Date
+		             |	CashSale.Date,
+					 |  CashSale.Company
 		             |FROM
 		             |	Document.CashSale AS CashSale
 		             |WHERE
@@ -69,6 +71,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 			If Result.CashPayment > 0 Then // if there is a credit memo in a cash receipt
 				
 				DataLine.Document = Result.Ref;
+				DataLine.Customer = Result.Customer;
 				DataLine.Currency = Result.Currency;
 				DataLine.DocumentTotal = Result.CashPayment;
 				DataLine.DocumentTotalRC = Result.CashPayment;
@@ -77,6 +80,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 			Else
 				
 				DataLine.Document = Result.Ref;
+				DataLine.Customer = Result.Customer;
 				DataLine.Currency = Result.Currency;
 				DataLine.DocumentTotal = Result.DocumentTotal;
 				DataLine.DocumentTotalRC = Result.DocumentTotalRC;

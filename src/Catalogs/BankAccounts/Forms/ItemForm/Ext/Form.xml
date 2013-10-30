@@ -1,0 +1,197 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<WindowOpeningMode>LockOwnerWindow</WindowOpeningMode>
+	<UseForFoldersAndItems>Items</UseForFoldersAndItems>
+	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<ChildItems>
+		<UsualGroup name="Group1" id="41">
+			<Group>Horizontal</Group>
+			<ExtendedTooltip name="Group1ExtendedTooltip" id="42"/>
+			<ChildItems>
+				<InputField name="Owner" id="7">
+					<DataPath>Object.Owner</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Bank</v8:content>
+						</v8:item>
+					</Title>
+					<EditMode>EnterOnInput</EditMode>
+					<ContextMenu name="OwnerContextMenu" id="8"/>
+					<ExtendedTooltip name="OwnerExtendedTooltip" id="9"/>
+				</InputField>
+				<InputField name="Code" id="1">
+					<DataPath>Object.Code</DataPath>
+					<EditMode>EnterOnInput</EditMode>
+					<ContextMenu name="CodeContextMenu" id="2"/>
+					<ExtendedTooltip name="CodeExtendedTooltip" id="3"/>
+				</InputField>
+			</ChildItems>
+		</UsualGroup>
+		<InputField name="Description" id="4">
+			<DataPath>Object.Description</DataPath>
+			<EditMode>EnterOnInput</EditMode>
+			<ContextMenu name="DescriptionContextMenu" id="5"/>
+			<ExtendedTooltip name="DescriptionExtendedTooltip" id="6"/>
+		</InputField>
+		<Pages name="PagesGroup" id="37">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Pages group</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Pages group</v8:content>
+				</v8:item>
+			</ToolTip>
+			<ExtendedTooltip name="PagesGroupExtendedTooltip" id="38"/>
+			<ChildItems>
+				<Page name="Main" id="39">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Main</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Main</v8:content>
+						</v8:item>
+					</ToolTip>
+					<ExtendedTooltip name="MainExtendedTooltip" id="40"/>
+					<ChildItems>
+						<InputField name="AccountType" id="16">
+							<DataPath>Object.AccountType</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="AccountTypeContextMenu" id="17"/>
+							<ExtendedTooltip name="AccountTypeExtendedTooltip" id="18"/>
+						</InputField>
+						<LabelField name="CurrentBalance" id="19">
+							<DataPath>Object.CurrentBalance</DataPath>
+							<ReadOnly>true</ReadOnly>
+							<EditMode>EnterOnInput</EditMode>
+							<Format>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>NFD=2; NZ=</v8:content>
+								</v8:item>
+							</Format>
+							<Font ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
+							<ContextMenu name="CurrentBalanceContextMenu" id="20"/>
+							<ExtendedTooltip name="CurrentBalanceExtendedTooltip" id="21"/>
+						</LabelField>
+						<LabelField name="AvailableBalance" id="22">
+							<DataPath>Object.AvailableBalance</DataPath>
+							<ReadOnly>true</ReadOnly>
+							<EditMode>EnterOnInput</EditMode>
+							<Format>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>NFD=2; NZ=</v8:content>
+								</v8:item>
+							</Format>
+							<Font ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
+							<ContextMenu name="AvailableBalanceContextMenu" id="23"/>
+							<ExtendedTooltip name="AvailableBalanceExtendedTooltip" id="24"/>
+						</LabelField>
+					</ChildItems>
+				</Page>
+				<Page name="Online" id="43">
+					<ReadOnly>true</ReadOnly>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Online</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Online</v8:content>
+						</v8:item>
+					</ToolTip>
+					<ExtendedTooltip name="OnlineExtendedTooltip" id="44"/>
+					<ChildItems>
+						<InputField name="ItemID" id="10">
+							<DataPath>Object.ItemID</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="ItemIDContextMenu" id="11"/>
+							<ExtendedTooltip name="ItemIDExtendedTooltip" id="12"/>
+						</InputField>
+						<InputField name="ItemAccountID" id="13">
+							<DataPath>Object.ItemAccountID</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="ItemAccountIDContextMenu" id="14"/>
+							<ExtendedTooltip name="ItemAccountIDExtendedTooltip" id="15"/>
+						</InputField>
+						<InputField name="LastUpdatedTimeUTC" id="25">
+							<DataPath>Object.LastUpdatedTimeUTC</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="LastUpdatedTimeUTCContextMenu" id="26"/>
+							<ExtendedTooltip name="LastUpdatedTimeUTCExtendedTooltip" id="27"/>
+						</InputField>
+						<InputField name="LastUpdateAttemptTimeUTC" id="28">
+							<DataPath>Object.LastUpdateAttemptTimeUTC</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="LastUpdateAttemptTimeUTCContextMenu" id="29"/>
+							<ExtendedTooltip name="LastUpdateAttemptTimeUTCExtendedTooltip" id="30"/>
+						</InputField>
+						<InputField name="NextUpdateTimeUTC" id="31">
+							<DataPath>Object.NextUpdateTimeUTC</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="NextUpdateTimeUTCContextMenu" id="32"/>
+							<ExtendedTooltip name="NextUpdateTimeUTCExtendedTooltip" id="33"/>
+						</InputField>
+						<InputField name="RefreshStatusCode" id="34">
+							<DataPath>Object.RefreshStatusCode</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="RefreshStatusCodeContextMenu" id="35"/>
+							<ExtendedTooltip name="RefreshStatusCodeExtendedTooltip" id="36"/>
+						</InputField>
+					</ChildItems>
+				</Page>
+				<Page name="Accounting" id="45">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Accounting</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Accounting</v8:content>
+						</v8:item>
+					</ToolTip>
+					<ExtendedTooltip name="AccountingExtendedTooltip" id="46"/>
+					<ChildItems>
+						<InputField name="AccountingAccount" id="47">
+							<DataPath>Object.AccountingAccount</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Assigned to</v8:content>
+								</v8:item>
+							</Title>
+							<ContextMenu name="AccountingAccountContextMenu" id="48"/>
+							<ExtendedTooltip name="AccountingAccountExtendedTooltip" id="49"/>
+						</InputField>
+					</ChildItems>
+				</Page>
+			</ChildItems>
+		</Pages>
+	</ChildItems>
+	<Attributes>
+		<Attribute name="Object" id="1">
+			<Type>
+				<v8:Type>cfg:CatalogObject.BankAccounts</v8:Type>
+			</Type>
+			<MainAttribute>true</MainAttribute>
+			<SavedData>true</SavedData>
+		</Attribute>
+	</Attributes>
+</Form>

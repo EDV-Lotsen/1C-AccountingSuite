@@ -99,14 +99,13 @@ Procedure LineItemsQuantityOnChange(Item)
 
 EndProcedure
 
-
 &AtServer
 // Procedure fills in default values, used mostly when the corresponding functional
 // options are turned off.
 // The following defaults are filled in - warehouse location, and currency.
 // 
-Procedure OnCreateAtServer(Cancel, StandardProcessing)
-	
+Procedure OnCreateAtServer(Cancel, StandardProcessing)		
+		
 	Items.Company.Title = GeneralFunctionsReusable.GetVendorName();
 	
 	//Title = "Cash Purchase " + Object.Number + " " + Format(Object.Date, "DLF=D");

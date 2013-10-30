@@ -80,11 +80,19 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Documents</v8:content>
 						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Dokumente</v8:content>
+						</v8:item>
 					</Title>
 					<ToolTip>
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Documents</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Dokumente</v8:content>
 						</v8:item>
 					</ToolTip>
 					<ExtendedTooltip name="DocumentsExtendedTooltip" id="87"/>
@@ -103,29 +111,29 @@
 							<ContextMenu name="LineItemsContextMenu" id="10"/>
 							<AutoCommandBar name="LineItemsCommandBar" id="11"/>
 							<ExtendedTooltip name="LineItemsExtendedTooltip" id="66"/>
-							<SearchStringAddition name="LineItemsSearchString" id="90">
+							<SearchStringAddition name="LineItemsSearchString" id="96">
 								<AdditionSource>
 									<Item>LineItems</Item>
 									<Type>SearchStringRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="LineItemsSearchStringContextMenu" id="91"/>
-								<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="92"/>
+								<ContextMenu name="LineItemsSearchStringContextMenu" id="97"/>
+								<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="98"/>
 							</SearchStringAddition>
-							<ViewStatusAddition name="LineItemsViewStatus" id="93">
+							<ViewStatusAddition name="LineItemsViewStatus" id="99">
 								<AdditionSource>
 									<Item>LineItems</Item>
 									<Type>ViewStatusRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="LineItemsViewStatusContextMenu" id="94"/>
-								<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="95"/>
+								<ContextMenu name="LineItemsViewStatusContextMenu" id="100"/>
+								<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="101"/>
 							</ViewStatusAddition>
-							<SearchControlAddition name="LineItemsSearchControl" id="96">
+							<SearchControlAddition name="LineItemsSearchControl" id="102">
 								<AdditionSource>
 									<Item>LineItems</Item>
 									<Type>SearchControl</Type>
 								</AdditionSource>
-								<ContextMenu name="LineItemsSearchControlContextMenu" id="97"/>
-								<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="98"/>
+								<ContextMenu name="LineItemsSearchControlContextMenu" id="103"/>
+								<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="104"/>
 							</SearchControlAddition>
 							<Events>
 								<Event name="BeforeAddRow">LineItemsBeforeAddRow</Event>
@@ -140,10 +148,15 @@
 								</LabelField>
 								<InputField name="LineItemsDocument" id="14">
 									<DataPath>Object.LineItems.Document</DataPath>
-									<ReadOnly>true</ReadOnly>
 									<EditMode>EnterOnInput</EditMode>
 									<ContextMenu name="LineItemsDocumentContextMenu" id="15"/>
 									<ExtendedTooltip name="LineItemsDocumentExtendedTooltip" id="68"/>
+								</InputField>
+								<InputField name="LineItemsCustomer" id="90">
+									<DataPath>Object.LineItems.Customer</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="LineItemsCustomerContextMenu" id="91"/>
+									<ExtendedTooltip name="LineItemsCustomerExtendedTooltip" id="92"/>
 								</InputField>
 								<InputField name="LineItemsCurrency" id="40">
 									<DataPath>Object.LineItems.Currency</DataPath>
@@ -210,29 +223,29 @@
 							<ContextMenu name="AccountsContextMenu" id="45"/>
 							<AutoCommandBar name="AccountsCommandBar" id="46"/>
 							<ExtendedTooltip name="AccountsExtendedTooltip" id="74"/>
-							<SearchStringAddition name="AccountsSearchString" id="99">
+							<SearchStringAddition name="AccountsSearchString" id="105">
 								<AdditionSource>
 									<Item>Accounts</Item>
 									<Type>SearchStringRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="AccountsSearchStringContextMenu" id="100"/>
-								<ExtendedTooltip name="AccountsSearchStringExtendedTooltip" id="101"/>
+								<ContextMenu name="AccountsSearchStringContextMenu" id="106"/>
+								<ExtendedTooltip name="AccountsSearchStringExtendedTooltip" id="107"/>
 							</SearchStringAddition>
-							<ViewStatusAddition name="AccountsViewStatus" id="102">
+							<ViewStatusAddition name="AccountsViewStatus" id="108">
 								<AdditionSource>
 									<Item>Accounts</Item>
 									<Type>ViewStatusRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="AccountsViewStatusContextMenu" id="103"/>
-								<ExtendedTooltip name="AccountsViewStatusExtendedTooltip" id="104"/>
+								<ContextMenu name="AccountsViewStatusContextMenu" id="109"/>
+								<ExtendedTooltip name="AccountsViewStatusExtendedTooltip" id="110"/>
 							</ViewStatusAddition>
-							<SearchControlAddition name="AccountsSearchControl" id="105">
+							<SearchControlAddition name="AccountsSearchControl" id="111">
 								<AdditionSource>
 									<Item>Accounts</Item>
 									<Type>SearchControl</Type>
 								</AdditionSource>
-								<ContextMenu name="AccountsSearchControlContextMenu" id="106"/>
-								<ExtendedTooltip name="AccountsSearchControlExtendedTooltip" id="107"/>
+								<ContextMenu name="AccountsSearchControlContextMenu" id="112"/>
+								<ExtendedTooltip name="AccountsSearchControlExtendedTooltip" id="113"/>
 							</SearchControlAddition>
 							<Events>
 								<Event name="OnChange">AccountsOnChange</Event>
@@ -244,6 +257,12 @@
 									<ContextMenu name="AccountsLineNumberContextMenu" id="48"/>
 									<ExtendedTooltip name="AccountsLineNumberExtendedTooltip" id="75"/>
 								</LabelField>
+								<InputField name="AccountsCompany" id="93">
+									<DataPath>Object.Accounts.Company</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="AccountsCompanyContextMenu" id="94"/>
+									<ExtendedTooltip name="AccountsCompanyExtendedTooltip" id="95"/>
+								</InputField>
 								<InputField name="AccountsAccount" id="49">
 									<DataPath>Object.Accounts.Account</DataPath>
 									<EditMode>EnterOnInput</EditMode>

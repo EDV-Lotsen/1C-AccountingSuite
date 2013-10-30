@@ -8,7 +8,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 #Region PUBLIC_INTERFACE
 
-// Executes procedures in a background job.
+// Executes procedures interactively from a form in a background job.
+// The function returns a storage address, where an execution result will be placed.
+// The function must be defined using the special parameters structure, defining
+// the final storage address ID.
 //
 // Parameters:
 // FormID - UUID - form ID, the long action is executed from this form.
@@ -25,7 +28,7 @@
 // - JobID - executing background job UUID;
 // - JobCompleted - True if job completed successfully.
 //
-Function ExecuteInBackground(Val FormID, Val ExportProcedureName,
+Function ExecuteActionInBackground(Val FormID, Val ExportProcedureName,
 	Val Parameters, Val JobDescription = "", UseAdditionalTemporaryStorage = False) Export
 	
 	StorageAddress = PutToTempStorage(Undefined, FormID);
@@ -71,6 +74,36 @@ Function ExecuteInBackground(Val FormID, Val ExportProcedureName,
 	EndIf;
 	
 	Return Result;
+	
+EndFunction
+
+// Executes procedures in a background job without the result checking.
+// The function does not provide an ability to check execution result.
+// Any server function can be called, no special processing in the function required.
+//
+// Parameters:
+// ProcedureName - String - export procedure name for execute in background job.
+// ProcedureParameters - Structure - parameters of ExportProcedureName function.
+// JobDescription - String - background job description.
+//   If JobDescription is not specified it will be equal to ExportProcedureName.
+//
+// Returns:
+//  JobID - executing background job UUID;
+//
+Function ExecuteInBackground(Val ProcedureName, Val ProcedureParameters,
+	Val JobDescription = "") Export
+	
+	If Not ValueIsFilled(JobDescription) Then
+		JobDescription = ProcedureName;
+	EndIf;
+	
+	JobParameters = New Array;
+	JobParameters.Add(ProcedureName);
+	JobParameters.Add(ProcedureParameters);
+	JobParameters.Add(Undefined); // Data area, where job must be executed
+	Job = BackgroundJobs.Execute("CommonUse.ExecuteSafely", JobParameters,, JobDescription);
+	
+	Return Job.UUID;
 	
 EndFunction
 

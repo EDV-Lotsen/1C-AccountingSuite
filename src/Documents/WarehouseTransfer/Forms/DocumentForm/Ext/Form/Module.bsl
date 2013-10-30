@@ -23,4 +23,12 @@ Procedure LineItemsQuantityOnChange(Item)
 
 EndProcedure
 
+&AtServer
+Procedure OnCreateAtServer(Cancel, StandardProcessing)
+	
+	Items.LineItemsQuantity.EditFormat = "NFD=" + Constants.QtyPrecision.Get();
+	Items.LineItemsQuantity.Format = "NFD=" + Constants.QtyPrecision.Get();
+
+EndProcedure
+
 

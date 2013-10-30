@@ -158,6 +158,13 @@
 							<ContextMenu name="LocationContextMenu" id="37"/>
 							<ExtendedTooltip name="LocationExtendedTooltip" id="111"/>
 						</InputField>
+						<InputField name="Project" id="141">
+							<DataPath>Object.Project</DataPath>
+							<Width>15</Width>
+							<HorizontalStretch>false</HorizontalStretch>
+							<ContextMenu name="ProjectContextMenu" id="142"/>
+							<ExtendedTooltip name="ProjectExtendedTooltip" id="143"/>
+						</InputField>
 					</ChildItems>
 				</UsualGroup>
 			</ChildItems>
@@ -170,7 +177,7 @@
 				</v8:item>
 				<v8:item>
 					<v8:lang>de</v8:lang>
-					<v8:content>Produkte</v8:content>
+					<v8:content>Artikel</v8:content>
 				</v8:item>
 			</Title>
 			<ToolTip>
@@ -200,32 +207,34 @@
 					<ContextMenu name="LineItemsContextMenu" id="10"/>
 					<AutoCommandBar name="LineItemsCommandBar" id="11"/>
 					<ExtendedTooltip name="LineItemsExtendedTooltip" id="113"/>
-					<SearchStringAddition name="LineItemsSearchString" id="141">
+					<SearchStringAddition name="LineItemsSearchString" id="144">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>SearchStringRepresentation</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsSearchStringContextMenu" id="142"/>
-						<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="143"/>
+						<ContextMenu name="LineItemsSearchStringContextMenu" id="145"/>
+						<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="146"/>
 					</SearchStringAddition>
-					<ViewStatusAddition name="LineItemsViewStatus" id="144">
+					<ViewStatusAddition name="LineItemsViewStatus" id="147">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>ViewStatusRepresentation</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsViewStatusContextMenu" id="145"/>
-						<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="146"/>
+						<ContextMenu name="LineItemsViewStatusContextMenu" id="148"/>
+						<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="149"/>
 					</ViewStatusAddition>
-					<SearchControlAddition name="LineItemsSearchControl" id="147">
+					<SearchControlAddition name="LineItemsSearchControl" id="150">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>SearchControl</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsSearchControlContextMenu" id="148"/>
-						<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="149"/>
+						<ContextMenu name="LineItemsSearchControlContextMenu" id="151"/>
+						<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="152"/>
 					</SearchControlAddition>
 					<Events>
+						<Event name="BeforeAddRow">LineItemsBeforeAddRow</Event>
 						<Event name="AfterDeleteRow">LineItemsAfterDeleteRow</Event>
+						<Event name="OnChange">LineItemsOnChange</Event>
 					</Events>
 					<ChildItems>
 						<LabelField name="LineItemsLineNumber" id="12">
@@ -256,18 +265,6 @@
 							<DataPath>Object.LineItems.Quantity</DataPath>
 							<EditMode>EnterOnInput</EditMode>
 							<Width>10</Width>
-							<Format>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>NFD=0; NZ=0</v8:content>
-								</v8:item>
-							</Format>
-							<EditFormat>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>NFD=0; NZ=0</v8:content>
-								</v8:item>
-							</EditFormat>
 							<ContextMenu name="LineItemsQuantityContextMenu" id="19"/>
 							<ExtendedTooltip name="LineItemsQuantityExtendedTooltip" id="117"/>
 							<Events>
@@ -399,7 +396,7 @@
 						</v8:item>
 						<v8:item>
 							<v8:lang>de</v8:lang>
-							<v8:content>Rechte Spalte in der Fußzeile</v8:content>
+							<v8:content>Linke Spalte in der Fußzeile</v8:content>
 						</v8:item>
 					</Title>
 					<ToolTip>
@@ -689,6 +686,17 @@
 				</v8:StringQualifiers>
 			</Type>
 		</Attribute>
+		<Attribute name="NewRow" id="5">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>New row</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
+			</Type>
+		</Attribute>
 	</Attributes>
 	<CommandInterface>
 		<CommandBar>
@@ -701,6 +709,15 @@
 				<Command>0:349faa7b-a8e2-492c-b6d6-ed3c598ea1cd</Command>
 				<Type>Auto</Type>
 				<DefaultVisible>false</DefaultVisible>
+			</Item>
+			<Item>
+				<Command>2:d22546a6-4fd0-466a-9ed1-e3ebf434e7a7</Command>
+				<Type>Auto</Type>
+				<CommandGroup>FormCommandBarCreateBasedOn</CommandGroup>
+				<DefaultVisible>false</DefaultVisible>
+				<Visible>
+					<xr:Common>false</xr:Common>
+				</Visible>
 			</Item>
 		</CommandBar>
 	</CommandInterface>

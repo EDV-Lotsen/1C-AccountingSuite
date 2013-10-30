@@ -5,6 +5,9 @@
 	<UsePostingMode>Auto</UsePostingMode>
 	<RepostOnWrite>true</RepostOnWrite>
 	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<Events>
+		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+	</Events>
 	<ChildItems>
 		<UsualGroup name="Header" id="25">
 			<Title>
@@ -227,12 +230,6 @@
 							<DataPath>Object.LineItems.Quantity</DataPath>
 							<EditMode>EnterOnInput</EditMode>
 							<Width>10</Width>
-							<EditFormat>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>NFD=0</v8:content>
-								</v8:item>
-							</EditFormat>
 							<ContextMenu name="LineItemsQuantityContextMenu" id="17"/>
 							<ExtendedTooltip name="LineItemsQuantityExtendedTooltip" id="50"/>
 							<Events>
@@ -241,6 +238,7 @@
 						</InputField>
 						<InputField name="LineItemsPrice" id="20">
 							<DataPath>Object.LineItems.Price</DataPath>
+							<Visible>false</Visible>
 							<ReadOnly>true</ReadOnly>
 							<EditMode>EnterOnInput</EditMode>
 							<Width>10</Width>
@@ -249,6 +247,7 @@
 						</InputField>
 						<InputField name="LineItemsLineTotal" id="22">
 							<DataPath>Object.LineItems.LineTotal</DataPath>
+							<Visible>false</Visible>
 							<ReadOnly>true</ReadOnly>
 							<EditMode>EnterOnInput</EditMode>
 							<Width>10</Width>

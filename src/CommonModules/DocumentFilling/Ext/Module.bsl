@@ -235,7 +235,10 @@ Procedure CheckDataStructuresOnFilling(AdditionalProperties, Cancel) Export
 					
 					// Convert value to it's presentation
 					Value = Row[Attribute.Key];
-					If TypeOf(Value) = Type("CatalogRef.Companies") Then
+					If Not ValueIsFilled(Value) Then
+						Presentation = NStr("en = '<Empty>'");
+						
+					ElsIf TypeOf(Value) = Type("CatalogRef.Companies") Then
 						Presentation = ?(DisplayCodes, TrimAll(Value.Code) + " ", "") + TrimAll(Value.Description);
 						
 					ElsIf TypeOf(Value) = Type("CatalogRef.Products") Then
@@ -246,7 +249,7 @@ Procedure CheckDataStructuresOnFilling(AdditionalProperties, Cancel) Export
 					EndIf;
 					
 					// Generate doubled items text
-					DoublesText = DoublesText + ?(IsBlankString(DoublesText), "", ", ") + " """ + Presentation + """";
+					DoublesText = DoublesText + ?(IsBlankString(DoublesText), "", ", ") + " '" + Presentation + "'";
 				EndDo;
 				
 				MessageText  = NStr("en = 'Selected documents have different %1: %2'");

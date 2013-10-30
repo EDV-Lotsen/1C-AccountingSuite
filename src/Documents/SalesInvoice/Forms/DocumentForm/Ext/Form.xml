@@ -4,11 +4,19 @@
 	<AutoTime>CurrentOrLast</AutoTime>
 	<UsePostingMode>Auto</UsePostingMode>
 	<RepostOnWrite>true</RepostOnWrite>
-	<AutoCommandBar name="FormCommandPanel" id="-1"/>
+	<AutoCommandBar name="FormCommandPanel" id="-1">
+		<ChildItems>
+			<Button name="FormSendEmail" id="203">
+				<Type>CommandBarButton</Type>
+				<CommandName>Form.Command.SendEmail</CommandName>
+				<ExtendedTooltip name="FormSendEmailExtendedTooltip" id="204"/>
+			</Button>
+		</ChildItems>
+	</AutoCommandBar>
 	<Events>
-		<Event name="OnOpen">OnOpen</Event>
 		<Event name="BeforeWriteAtServer">BeforeWriteAtServer</Event>
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+		<Event name="OnClose">OnClose</Event>
 	</Events>
 	<ChildItems>
 		<UsualGroup name="Header" id="59">
@@ -69,6 +77,7 @@
 											<v8:content>Left column</v8:content>
 										</v8:item>
 									</ToolTip>
+									<HorizontalStretch>false</HorizontalStretch>
 									<Group>Vertical</Group>
 									<Representation>None</Representation>
 									<ShowTitle>false</ShowTitle>
@@ -194,39 +203,6 @@
 										</InputField>
 									</ChildItems>
 								</UsualGroup>
-								<UsualGroup name="RightColumn2" id="181">
-									<Title>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Right column2</v8:content>
-										</v8:item>
-									</Title>
-									<ToolTip>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Right column2</v8:content>
-										</v8:item>
-									</ToolTip>
-									<Group>Vertical</Group>
-									<ShowTitle>false</ShowTitle>
-									<ExtendedTooltip name="RightColumn2ExtendedTooltip" id="182"/>
-									<ChildItems>
-										<InputField name="DeliveryDate" id="109">
-											<DataPath>Object.DeliveryDate</DataPath>
-											<Width>15</Width>
-											<HorizontalStretch>false</HorizontalStretch>
-											<ContextMenu name="DeliveryDateContextMenu" id="110"/>
-											<ExtendedTooltip name="DeliveryDateExtendedTooltip" id="136"/>
-										</InputField>
-										<InputField name="RefNum" id="104">
-											<DataPath>Object.RefNum</DataPath>
-											<Width>15</Width>
-											<HorizontalStretch>false</HorizontalStretch>
-											<ContextMenu name="RefNumContextMenu" id="105"/>
-											<ExtendedTooltip name="RefNumExtendedTooltip" id="122"/>
-										</InputField>
-									</ChildItems>
-								</UsualGroup>
 							</ChildItems>
 						</Page>
 						<Page name="Additional" id="173">
@@ -245,73 +221,106 @@
 							<Group>Horizontal</Group>
 							<ExtendedTooltip name="AdditionalExtendedTooltip" id="174"/>
 							<ChildItems>
-								<UsualGroup name="Left2" id="175">
-									<Title>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Left2</v8:content>
-										</v8:item>
-									</Title>
-									<ToolTip>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Left2</v8:content>
-										</v8:item>
-									</ToolTip>
+								<UsualGroup name="Group2" id="219">
 									<Group>Vertical</Group>
 									<ShowTitle>false</ShowTitle>
-									<ExtendedTooltip name="Left2ExtendedTooltip" id="176"/>
+									<ExtendedTooltip name="Group2ExtendedTooltip" id="220"/>
 									<ChildItems>
-										<InputField name="Project" id="115">
-											<DataPath>Object.Project</DataPath>
-											<Width>15</Width>
-											<HorizontalStretch>false</HorizontalStretch>
-											<ContextMenu name="ProjectContextMenu" id="116"/>
-											<ExtendedTooltip name="ProjectExtendedTooltip" id="137"/>
-										</InputField>
-										<InputField name="Currency" id="34">
-											<DataPath>Object.Currency</DataPath>
-											<Width>15</Width>
-											<HorizontalStretch>false</HorizontalStretch>
-											<ContextMenu name="CurrencyContextMenu" id="35"/>
-											<ExtendedTooltip name="CurrencyExtendedTooltip" id="123"/>
-											<Events>
-												<Event name="OnChange">CurrencyOnChange</Event>
-											</Events>
-										</InputField>
-									</ChildItems>
-								</UsualGroup>
-								<UsualGroup name="Middle2" id="177">
-									<Title>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Middle2</v8:content>
-										</v8:item>
-									</Title>
-									<ToolTip>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Middle2</v8:content>
-										</v8:item>
-									</ToolTip>
-									<Group>Vertical</Group>
-									<ShowTitle>false</ShowTitle>
-									<ExtendedTooltip name="Middle2ExtendedTooltip" id="178"/>
-									<ChildItems>
-										<InputField name="ARAccount" id="92">
-											<DataPath>Object.ARAccount</DataPath>
-											<Width>15</Width>
-											<HorizontalStretch>false</HorizontalStretch>
-											<ContextMenu name="ARAccountContextMenu" id="93"/>
-											<ExtendedTooltip name="ARAccountExtendedTooltip" id="130"/>
-										</InputField>
-										<InputField name="ExchangeRate" id="36">
-											<DataPath>Object.ExchangeRate</DataPath>
-											<Width>15</Width>
-											<HorizontalStretch>false</HorizontalStretch>
-											<ContextMenu name="ExchangeRateContextMenu" id="37"/>
-											<ExtendedTooltip name="ExchangeRateExtendedTooltip" id="128"/>
-										</InputField>
+										<UsualGroup name="LeftToMid" id="217">
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Left to mid</v8:content>
+												</v8:item>
+											</Title>
+											<ToolTip>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Left to mid</v8:content>
+												</v8:item>
+											</ToolTip>
+											<Group>Horizontal</Group>
+											<ShowTitle>false</ShowTitle>
+											<ExtendedTooltip name="LeftToMidExtendedTooltip" id="218"/>
+											<ChildItems>
+												<UsualGroup name="Middle2" id="177">
+													<Title>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Middle2</v8:content>
+														</v8:item>
+													</Title>
+													<ToolTip>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Middle2</v8:content>
+														</v8:item>
+													</ToolTip>
+													<Group>Vertical</Group>
+													<ShowTitle>false</ShowTitle>
+													<ExtendedTooltip name="Middle2ExtendedTooltip" id="178"/>
+													<ChildItems>
+														<InputField name="ARAccount" id="92">
+															<DataPath>Object.ARAccount</DataPath>
+															<Width>15</Width>
+															<HorizontalStretch>false</HorizontalStretch>
+															<ContextMenu name="ARAccountContextMenu" id="93"/>
+															<ExtendedTooltip name="ARAccountExtendedTooltip" id="130"/>
+														</InputField>
+														<InputField name="ExchangeRate" id="36">
+															<DataPath>Object.ExchangeRate</DataPath>
+															<Width>15</Width>
+															<HorizontalStretch>false</HorizontalStretch>
+															<ContextMenu name="ExchangeRateContextMenu" id="37"/>
+															<ExtendedTooltip name="ExchangeRateExtendedTooltip" id="128"/>
+														</InputField>
+													</ChildItems>
+												</UsualGroup>
+												<UsualGroup name="Left2" id="175">
+													<Title>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Left2</v8:content>
+														</v8:item>
+													</Title>
+													<ToolTip>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Left2</v8:content>
+														</v8:item>
+													</ToolTip>
+													<Group>Vertical</Group>
+													<ShowTitle>false</ShowTitle>
+													<ExtendedTooltip name="Left2ExtendedTooltip" id="176"/>
+													<ChildItems>
+														<InputField name="Project" id="115">
+															<DataPath>Object.Project</DataPath>
+															<Width>15</Width>
+															<HorizontalStretch>false</HorizontalStretch>
+															<ChoiceParameterLinks>
+																<xr:Link>
+																	<xr:Name>Filter.Customer</xr:Name>
+																	<xr:DataPath xsi:type="xs:string">Object.Company</xr:DataPath>
+																	<xr:ValueChange>Clear</xr:ValueChange>
+																</xr:Link>
+															</ChoiceParameterLinks>
+															<ContextMenu name="ProjectContextMenu" id="116"/>
+															<ExtendedTooltip name="ProjectExtendedTooltip" id="137"/>
+														</InputField>
+														<InputField name="Currency" id="34">
+															<DataPath>Object.Currency</DataPath>
+															<Width>15</Width>
+															<HorizontalStretch>false</HorizontalStretch>
+															<ContextMenu name="CurrencyContextMenu" id="35"/>
+															<ExtendedTooltip name="CurrencyExtendedTooltip" id="123"/>
+															<Events>
+																<Event name="OnChange">CurrencyOnChange</Event>
+															</Events>
+														</InputField>
+													</ChildItems>
+												</UsualGroup>
+											</ChildItems>
+										</UsualGroup>
 									</ChildItems>
 								</UsualGroup>
 								<UsualGroup name="Right2" id="179">
@@ -338,8 +347,174 @@
 											<ContextMenu name="LocationContextMenu" id="49"/>
 											<ExtendedTooltip name="LocationExtendedTooltip" id="135"/>
 										</InputField>
+										<InputField name="DeliveryDate" id="109">
+											<DataPath>Object.DeliveryDate</DataPath>
+											<Width>15</Width>
+											<HorizontalStretch>false</HorizontalStretch>
+											<ContextMenu name="DeliveryDateContextMenu" id="110"/>
+											<ExtendedTooltip name="DeliveryDateExtendedTooltip" id="136"/>
+										</InputField>
+										<InputField name="RefNum" id="104">
+											<DataPath>Object.RefNum</DataPath>
+											<Width>15</Width>
+											<HorizontalStretch>false</HorizontalStretch>
+											<ContextMenu name="RefNumContextMenu" id="105"/>
+											<ExtendedTooltip name="RefNumExtendedTooltip" id="122"/>
+										</InputField>
 									</ChildItems>
 								</UsualGroup>
+							</ChildItems>
+						</Page>
+						<Page name="Emailing" id="201">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Emailing</v8:content>
+								</v8:item>
+							</Title>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Emailing</v8:content>
+								</v8:item>
+							</ToolTip>
+							<Group>Horizontal</Group>
+							<ExtendedTooltip name="EmailingExtendedTooltip" id="202"/>
+							<ChildItems>
+								<UsualGroup name="RightColumn2" id="181">
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Right column2</v8:content>
+										</v8:item>
+									</Title>
+									<ToolTip>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Right column2</v8:content>
+										</v8:item>
+									</ToolTip>
+									<Group>Vertical</Group>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="RightColumn2ExtendedTooltip" id="182"/>
+									<ChildItems>
+										<InputField name="EmailTo" id="205">
+											<DataPath>Object.EmailTo</DataPath>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>email to</v8:content>
+												</v8:item>
+											</Title>
+											<HorizontalStretch>false</HorizontalStretch>
+											<TextColor>#339966</TextColor>
+											<ContextMenu name="EmailToContextMenu" id="206"/>
+											<ExtendedTooltip name="EmailToExtendedTooltip" id="207"/>
+										</InputField>
+										<CheckBoxField name="EmailInvoice" id="183">
+											<DataPath>EmailInvoice</DataPath>
+											<Visible>false</Visible>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Email Invoice</v8:content>
+												</v8:item>
+											</Title>
+											<ToolTip>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Emailing an invoice requires a verified email. If your company email has not done so yet, verify your email in Settings under Company Info.</v8:content>
+												</v8:item>
+											</ToolTip>
+											<ToolTipRepresentation>Button</ToolTipRepresentation>
+											<CheckBoxType>Auto</CheckBoxType>
+											<ContextMenu name="EmailInvoiceContextMenu" id="184"/>
+											<ExtendedTooltip name="EmailInvoiceExtendedTooltip" id="185"/>
+											<Events>
+												<Event name="OnChange">EmailInvoiceOnChange</Event>
+											</Events>
+										</CheckBoxField>
+										<InputField name="EmailCC" id="211">
+											<DataPath>Object.EmailCC</DataPath>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>cc</v8:content>
+												</v8:item>
+											</Title>
+											<HorizontalStretch>false</HorizontalStretch>
+											<InputHint>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>person@gmail.com,person2@yahoo.com</v8:content>
+												</v8:item>
+											</InputHint>
+											<ContextMenu name="EmailCCContextMenu" id="212"/>
+											<ExtendedTooltip name="EmailCCExtendedTooltip" id="213"/>
+										</InputField>
+									</ChildItems>
+								</UsualGroup>
+								<UsualGroup name="RightColumn3" id="194">
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Add a note</v8:content>
+										</v8:item>
+									</Title>
+									<VerticalStretch>false</VerticalStretch>
+									<Group>Vertical</Group>
+									<CollapsedRepresentationTitle>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Add a note</v8:content>
+										</v8:item>
+									</CollapsedRepresentationTitle>
+									<Collapsed>true</Collapsed>
+									<Representation>None</Representation>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="RightColumn3ExtendedTooltip" id="195"/>
+									<ChildItems>
+										<InputField name="EmailNote" id="208">
+											<DataPath>Object.EmailNote</DataPath>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Note</v8:content>
+												</v8:item>
+											</Title>
+											<TitleLocation>None</TitleLocation>
+											<ToolTip>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Write additional information and notes here that you would like to show in the email.</v8:content>
+												</v8:item>
+											</ToolTip>
+											<Width>37</Width>
+											<HorizontalStretch>false</HorizontalStretch>
+											<VerticalStretch>false</VerticalStretch>
+											<MultiLine>true</MultiLine>
+											<InputHint>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Write additional notes to show in email here</v8:content>
+												</v8:item>
+											</InputHint>
+											<ContextMenu name="EmailNoteContextMenu" id="209"/>
+											<ExtendedTooltip name="EmailNoteExtendedTooltip" id="210"/>
+										</InputField>
+									</ChildItems>
+								</UsualGroup>
+								<LabelField name="LastEmail" id="221">
+									<DataPath>Object.LastEmail</DataPath>
+									<TitleLocation>None</TitleLocation>
+									<Height>2</Height>
+									<HorizontalStretch>false</HorizontalStretch>
+									<VerticalStretch>false</VerticalStretch>
+									<TextColor>#008000</TextColor>
+									<Font ref="style:SmallTextFont" kind="StyleItem"/>
+									<ContextMenu name="LastEmailContextMenu" id="222"/>
+									<ExtendedTooltip name="LastEmailExtendedTooltip" id="223"/>
+								</LabelField>
 							</ChildItems>
 						</Page>
 					</ChildItems>
@@ -351,6 +526,10 @@
 				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Line items</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Artikel</v8:content>
 				</v8:item>
 			</Title>
 			<ToolTip>
@@ -380,29 +559,29 @@
 					<ContextMenu name="LineItemsContextMenu" id="6"/>
 					<AutoCommandBar name="LineItemsCommandBar" id="7"/>
 					<ExtendedTooltip name="LineItemsExtendedTooltip" id="139"/>
-					<SearchStringAddition name="LineItemsSearchString" id="183">
+					<SearchStringAddition name="LineItemsSearchString" id="224">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>SearchStringRepresentation</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsSearchStringContextMenu" id="184"/>
-						<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="185"/>
+						<ContextMenu name="LineItemsSearchStringContextMenu" id="225"/>
+						<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="226"/>
 					</SearchStringAddition>
-					<ViewStatusAddition name="LineItemsViewStatus" id="186">
+					<ViewStatusAddition name="LineItemsViewStatus" id="227">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>ViewStatusRepresentation</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsViewStatusContextMenu" id="187"/>
-						<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="188"/>
+						<ContextMenu name="LineItemsViewStatusContextMenu" id="228"/>
+						<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="229"/>
 					</ViewStatusAddition>
-					<SearchControlAddition name="LineItemsSearchControl" id="189">
+					<SearchControlAddition name="LineItemsSearchControl" id="230">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>SearchControl</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsSearchControlContextMenu" id="190"/>
-						<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="191"/>
+						<ContextMenu name="LineItemsSearchControlContextMenu" id="231"/>
+						<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="232"/>
 					</SearchControlAddition>
 					<Events>
 						<Event name="BeforeAddRow">LineItemsBeforeAddRow</Event>
@@ -440,18 +619,6 @@
 							<DataPath>Object.LineItems.Quantity</DataPath>
 							<EditMode>EnterOnInput</EditMode>
 							<Width>10</Width>
-							<Format>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>NFD=0</v8:content>
-								</v8:item>
-							</Format>
-							<EditFormat>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>NFD=0</v8:content>
-								</v8:item>
-							</EditFormat>
 							<ContextMenu name="LineItemsQuantityContextMenu" id="15"/>
 							<ExtendedTooltip name="LineItemsQuantityExtendedTooltip" id="143"/>
 							<Events>
@@ -531,6 +698,13 @@
 							<DataPath>Object.LineItems.Project</DataPath>
 							<SkipOnInput>true</SkipOnInput>
 							<EditMode>EnterOnInput</EditMode>
+							<ChoiceParameterLinks>
+								<xr:Link>
+									<xr:Name>Filter.Customer</xr:Name>
+									<xr:DataPath xsi:type="xs:string">Object.Company</xr:DataPath>
+									<xr:ValueChange>Clear</xr:ValueChange>
+								</xr:Link>
+							</ChoiceParameterLinks>
 							<ContextMenu name="LineItemsProjectContextMenu" id="118"/>
 							<ExtendedTooltip name="LineItemsProjectExtendedTooltip" id="151"/>
 						</InputField>
@@ -792,7 +966,61 @@
 				<v8:Type>xs:boolean</v8:Type>
 			</Type>
 		</Attribute>
+		<Attribute name="EmailInvoice" id="4">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Email invoice</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
+			</Type>
+		</Attribute>
+		<Attribute name="Note" id="6">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Note</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="SentEmail" id="5">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Sent email</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
+			</Type>
+		</Attribute>
 	</Attributes>
+	<Commands>
+		<Command name="SendEmail" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Email Invoice</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Send email</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>SendEmail</Action>
+		</Command>
+	</Commands>
 	<CommandInterface>
 		<NavigationPanel>
 			<Item>

@@ -203,9 +203,6 @@
 											<HorizontalStretch>false</HorizontalStretch>
 											<ContextMenu name="BankAccountContextMenu" id="79"/>
 											<ExtendedTooltip name="BankAccountExtendedTooltip" id="106"/>
-											<Events>
-												<Event name="OnChange">BankAccountOnChange</Event>
-											</Events>
 										</InputField>
 									</ChildItems>
 								</UsualGroup>
@@ -316,6 +313,78 @@
 										</InputField>
 									</ChildItems>
 								</UsualGroup>
+								<UsualGroup name="Group2" id="160">
+									<Visible>false</Visible>
+									<Group>Vertical</Group>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="Group2ExtendedTooltip" id="161"/>
+									<ChildItems>
+										<InputField name="StripeID" id="97">
+											<DataPath>Object.StripeID</DataPath>
+											<ReadOnly>true</ReadOnly>
+											<Width>15</Width>
+											<HorizontalStretch>false</HorizontalStretch>
+											<ContextMenu name="StripeIDContextMenu" id="98"/>
+											<ExtendedTooltip name="StripeIDExtendedTooltip" id="109"/>
+										</InputField>
+										<InputField name="StripeCardName" id="162">
+											<DataPath>Object.StripeCardName</DataPath>
+											<ReadOnly>true</ReadOnly>
+											<Width>15</Width>
+											<HorizontalStretch>false</HorizontalStretch>
+											<ContextMenu name="StripeCardNameContextMenu" id="163"/>
+											<ExtendedTooltip name="StripeCardNameExtendedTooltip" id="164"/>
+										</InputField>
+									</ChildItems>
+								</UsualGroup>
+								<UsualGroup name="Group4" id="165">
+									<Visible>false</Visible>
+									<Group>Vertical</Group>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="Group4ExtendedTooltip" id="166"/>
+									<ChildItems>
+										<InputField name="StripeAmount" id="167">
+											<DataPath>Object.StripeAmount</DataPath>
+											<ReadOnly>true</ReadOnly>
+											<Width>15</Width>
+											<HorizontalStretch>false</HorizontalStretch>
+											<ContextMenu name="StripeAmountContextMenu" id="168"/>
+											<ExtendedTooltip name="StripeAmountExtendedTooltip" id="169"/>
+										</InputField>
+										<InputField name="StripeCreated" id="170">
+											<DataPath>Object.StripeCreated</DataPath>
+											<ReadOnly>true</ReadOnly>
+											<Width>15</Width>
+											<HorizontalStretch>false</HorizontalStretch>
+											<ContextMenu name="StripeCreatedContextMenu" id="171"/>
+											<ExtendedTooltip name="StripeCreatedExtendedTooltip" id="172"/>
+										</InputField>
+									</ChildItems>
+								</UsualGroup>
+								<UsualGroup name="Group5" id="173">
+									<Visible>false</Visible>
+									<Group>Vertical</Group>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="Group5ExtendedTooltip" id="174"/>
+									<ChildItems>
+										<InputField name="StripeCardType" id="175">
+											<DataPath>Object.StripeCardType</DataPath>
+											<ReadOnly>true</ReadOnly>
+											<Width>15</Width>
+											<HorizontalStretch>false</HorizontalStretch>
+											<ContextMenu name="StripeCardTypeContextMenu" id="176"/>
+											<ExtendedTooltip name="StripeCardTypeExtendedTooltip" id="177"/>
+										</InputField>
+										<InputField name="StripeLast4" id="178">
+											<DataPath>Object.StripeLast4</DataPath>
+											<ReadOnly>true</ReadOnly>
+											<Width>15</Width>
+											<HorizontalStretch>false</HorizontalStretch>
+											<ContextMenu name="StripeLast4ContextMenu" id="179"/>
+											<ExtendedTooltip name="StripeLast4ExtendedTooltip" id="180"/>
+										</InputField>
+									</ChildItems>
+								</UsualGroup>
 							</ChildItems>
 						</Page>
 					</ChildItems>
@@ -327,6 +396,10 @@
 				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Line items</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Artikel</v8:content>
 				</v8:item>
 			</Title>
 			<ToolTip>
@@ -356,29 +429,29 @@
 					<ContextMenu name="LineItemsContextMenu" id="6"/>
 					<AutoCommandBar name="LineItemsCommandBar" id="7"/>
 					<ExtendedTooltip name="LineItemsExtendedTooltip" id="124"/>
-					<SearchStringAddition name="LineItemsSearchString" id="160">
+					<SearchStringAddition name="LineItemsSearchString" id="181">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>SearchStringRepresentation</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsSearchStringContextMenu" id="161"/>
-						<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="162"/>
+						<ContextMenu name="LineItemsSearchStringContextMenu" id="182"/>
+						<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="183"/>
 					</SearchStringAddition>
-					<ViewStatusAddition name="LineItemsViewStatus" id="163">
+					<ViewStatusAddition name="LineItemsViewStatus" id="184">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>ViewStatusRepresentation</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsViewStatusContextMenu" id="164"/>
-						<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="165"/>
+						<ContextMenu name="LineItemsViewStatusContextMenu" id="185"/>
+						<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="186"/>
 					</ViewStatusAddition>
-					<SearchControlAddition name="LineItemsSearchControl" id="166">
+					<SearchControlAddition name="LineItemsSearchControl" id="187">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>SearchControl</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsSearchControlContextMenu" id="167"/>
-						<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="168"/>
+						<ContextMenu name="LineItemsSearchControlContextMenu" id="188"/>
+						<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="189"/>
 					</SearchControlAddition>
 					<Events>
 						<Event name="BeforeAddRow">LineItemsBeforeAddRow</Event>
@@ -414,12 +487,6 @@
 							<DataPath>Object.LineItems.Quantity</DataPath>
 							<EditMode>EnterOnInput</EditMode>
 							<Width>10</Width>
-							<EditFormat>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>NFD=0</v8:content>
-								</v8:item>
-							</EditFormat>
 							<ContextMenu name="LineItemsQuantityContextMenu" id="15"/>
 							<ExtendedTooltip name="LineItemsQuantityExtendedTooltip" id="128"/>
 							<Events>

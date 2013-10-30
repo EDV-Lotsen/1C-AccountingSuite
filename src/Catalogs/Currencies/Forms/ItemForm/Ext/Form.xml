@@ -5,8 +5,9 @@
 	<UseForFoldersAndItems>Items</UseForFoldersAndItems>
 	<AutoCommandBar name="FormCommandBar" id="-1"/>
 	<Events>
-		<Event name="BeforeWrite">BeforeWrite</Event>
+		<Event name="AfterWriteAtServer">AfterWriteAtServer</Event>
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+		<Event name="FillCheckProcessingAtServer">FillCheckProcessingAtServer</Event>
 	</Events>
 	<ChildItems>
 		<InputField name="Code" id="1">
@@ -35,6 +36,7 @@
 			<ChildItems>
 				<InputField name="DefaultARAccount" id="7">
 					<DataPath>Object.DefaultARAccount</DataPath>
+					<ReadOnly>true</ReadOnly>
 					<HorizontalStretch>false</HorizontalStretch>
 					<ContextMenu name="DefaultARAccountContextMenu" id="8"/>
 					<ExtendedTooltip name="DefaultARAccountExtendedTooltip" id="26"/>
@@ -56,6 +58,7 @@
 			<ChildItems>
 				<InputField name="DefaultAPAccount" id="9">
 					<DataPath>Object.DefaultAPAccount</DataPath>
+					<ReadOnly>true</ReadOnly>
 					<HorizontalStretch>false</HorizontalStretch>
 					<ContextMenu name="DefaultAPAccountContextMenu" id="10"/>
 					<ExtendedTooltip name="DefaultAPAccountExtendedTooltip" id="29"/>

@@ -66,7 +66,7 @@ Procedure RecalcTaxableAmount()
 	
 	TabularPartRow = Items.LineItems.CurrentData;
 	
-	If TabularPartRow.SalesTaxType = US_FL.Taxable() Then
+	If TabularPartRow.SalesTaxType = GeneralFunctionsReusable.US_FL_Taxable() Then
 		TabularPartRow.TaxableAmount = TabularPartRow.LineTotal;
 	Else
 		TabularPartRow.TaxableAmount = 0;
@@ -186,6 +186,9 @@ EndProcedure
 // 
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
+	Items.LineItemsQuantity.EditFormat = "NFD=" + Constants.QtyPrecision.Get();
+	Items.LineItemsQuantity.Format = "NFD=" + Constants.QtyPrecision.Get();
+
 	If Object.BegBal = False Then
 		Items.DocumentTotalRC.ReadOnly = True;
 		Items.DocumentTotal.ReadOnly = True;

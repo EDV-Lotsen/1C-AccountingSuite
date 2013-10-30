@@ -15,7 +15,7 @@
 // Establish and execute internet connection
 
 #If Not WebClient Then
-// HTTP connection & FTP connection objects are unavailble on the web-client
+// HTTP connection & FTP connection objects are unavailable on the web-client
 
 // Creates new internet (http, https, ftp, ftps) connection object.
 //
@@ -148,8 +148,8 @@
 //  ExternalHandler          - CommonModule - object for override connection creation.
 //                             If client connection creation will be supported,
 //                             then common module should set Client Call flag.
-//                             The module must implement ConnectionCreate method:
-//                             ConnectionCreate(InternetConnectionType,
+//                             The module must implement CreateConnection method:
+//                             CreateConnection(InternetConnectionType,
 //                                              ConnectionSettingsArray).
 //  ExternalParameters       - Structure - parameters for external handler.
 //
@@ -188,7 +188,7 @@
 //   Passive                 - Boolean - flag that shows whether the ftp connection
 //                             will disable dual data exchange.
 //
-Function ConnectionCreate(Val URL, ConnectionSettings = Undefined,
+Function CreateConnection(Val URL, ConnectionSettings = Undefined,
 	SecureConnection = Undefined, ProxySettings = Undefined,
 	ExternalHandler = Undefined, ExternalParameters = Undefined) Export
 	
@@ -725,7 +725,7 @@ Function ConnectionCreate(Val URL, ConnectionSettings = Undefined,
 	
 	Try
 		If ExternalHandler <> Undefined Then
-			Connection = ExternalHandler.ConnectionCreate(InternetConnectionType, ConnectionSettingsArray, ExternalParameters);
+			Connection = ExternalHandler.CreateConnection(InternetConnectionType, ConnectionSettingsArray, ExternalParameters);
 		Else
 			Connection = New(InternetConnectionType, ConnectionSettingsArray);
 		EndIf;
@@ -809,7 +809,7 @@ EndFunction
 //   Passive                 - Boolean - flag that shows whether the ftp connection
 //                             will disable dual data exchange.
 //
-//  Headings                 - Map - map with defined pairs of request headings.
+//  Headers                  - Map - map with defined pairs of request headers.
 //                             or - String of pairs of keys and their values
 //                             in following format: <Key>: <Value> delimited by CR + LF.
 //
@@ -845,14 +845,14 @@ EndFunction
 //   Path                    - String - path to a directory at client or at server,
 //                              or an address in the temporary storage,
 //                              or contents of requested data.
-//                             If it is not specified, it will be generated automatically.
+//                             If it is not specified, the String output will be generated.
 //
 //  ExternalHandler          - CommonModule - object for override connection creation.
 //                             If client connection creation will be supported,
 //                             then common module should set Client Call flag.
 //                             The module must implement connection execution method:
-//                             HTTPConnectionExecute(Connection, Method, Request)
-//                             and/or FTPConnectionExecute(Connection, Method,
+//                             HTTPSendRequest(Connection, Method, Request)
+//                             and/or FTPSendRequest(Connection, Method,
 //                             PathToResource, SourceFile = "", OutputFile = "").
 //  ExternalParameters       - Structure - parameters for external handler.
 //
@@ -870,8 +870,8 @@ EndFunction
 //                              "String" - data returned directly in Result parameter.
 //                             or contain an error message in case of failure.
 //
-Function ConnectionOpen(Connection, Method, ConnectionSettings = Undefined,
-	HeadingsData = Undefined, InputData = Undefined, OutputData = Undefined,
+Function SendRequest(Connection, Method, ConnectionSettings = Undefined,
+	HeadersData = Undefined, InputData = Undefined, OutputData = Undefined,
 	ExternalHandler = Undefined, ExternalParameters = Undefined) Export
 	
 	//--------------------------------------------------------------------------
@@ -924,33 +924,33 @@ Function ConnectionOpen(Connection, Method, ConnectionSettings = Undefined,
 	EndIf;
 	
 	//--------------------------------------------------------------------------
-	// 3. Check passed headings.
+	// 3. Check passed headers.
 	
-	// Define default headings;
-	Headings = Undefined;
+	// Define default headers;
+	Headers = Undefined;
 	
-	// Check proper headings format.
-	If HeadingsData = Undefined Then
-		// Headings are not defined.
+	// Check proper headers format.
+	If HeadersData = Undefined Then
+		// Headers are not defined.
 		
-	ElsIf TypeOf(HeadingsData) = Type("Map") Then
-		// Use headings directly.
-		If HeadingsData.Count() > 0 Then
-			Headings = HeadingsData;
+	ElsIf TypeOf(HeadersData) = Type("Map") Then
+		// Use headers directly.
+		If HeadersData.Count() > 0 Then
+			Headers = HeadersData;
 		EndIf;
 		
-	ElsIf TypeOf(HeadingsData) = Type("String") Then
-		// Read headings in string format.
-		If Not IsBlankString(HeadingsData) Then
+	ElsIf TypeOf(HeadersData) = Type("String") Then
+		// Read headers in string format.
+		If Not IsBlankString(HeadersData) Then
 			
-			// Assign text pairs to headings map.
-			Headings = New Map;
-			For i = 1 To StrLineCount(HeadingsData) Do
+			// Assign text pairs to headers map.
+			Headers = New Map;
+			For i = 1 To StrLineCount(HeadersData) Do
 				FailedRows = "";
-				Row = TrimAll(StrGetLine(HeadingsData, i));
+				Row = TrimAll(StrGetLine(HeadersData, i));
 				If StrOccurrenceCount(Row, ":") = 1 Then
 					Pos = Find(Row, ":");
-					Headings.Insert(Left(Row, Pos - 1), Mid(Row, Pos + 1));
+					Headers.Insert(Left(Row, Pos - 1), Mid(Row, Pos + 1));
 				Else
 					FailedRows = ?(IsBlankString(FailedRows), "", Chars.LF) + Row;
 				EndIf;
@@ -958,17 +958,17 @@ Function ConnectionOpen(Connection, Method, ConnectionSettings = Undefined,
 			
 			// Create error description (if any).
 			If Not IsBlankString(FailedRows) Then
-				// The headings having wrong format.
+				// The headers having wrong format.
 				Return ResultDescription(Undefined, StringFunctionsClientServer.SubstituteParametersInString(
-				                                    NStr("en = 'HTTP request contains headings in wrong format:
+				                                    NStr("en = 'HTTP request contains headers in wrong format:
 				                                         |%1'"),
 				                                    FailedRows));
 			EndIf;
 		EndIf;
 		
 	Else
-		// Unknown heading type.
-		Return ResultDescription(Undefined, NStr("en = 'Unknown headings type supplied.'"));
+		// Unknown header type.
+		Return ResultDescription(Undefined, NStr("en = 'Unknown headers type supplied.'"));
 	EndIf;
 	
 	//--------------------------------------------------------------------------
@@ -1050,7 +1050,7 @@ Function ConnectionOpen(Connection, Method, ConnectionSettings = Undefined,
 					Else // Treat passed data as string.
 						
 						// Load string data to the request.
-						Request.SetBodyFromString(StrToUTF8(BinaryData), "ISO-8859-1");
+						Request.SetBodyFromString(StrToUTF8(String(BinaryData)), "ISO-8859-1");
 					EndIf;
 					
 					// Free used resource from temporary storage.
@@ -1089,21 +1089,21 @@ Function ConnectionOpen(Connection, Method, ConnectionSettings = Undefined,
 				
 			ElsIf StorageType = "String" Then
 				// Load string data to the request.
-				Request.SetBodyFromString(StrToUTF8(StorageData), "ISO-8859-1");
+				Request.SetBodyFromString(StrToUTF8(String(StorageData)), "ISO-8859-1");
 			EndIf;
 		EndIf;
 		
 		//--------------------------------------------------------------------------
-		// 4.1.3. Assign requested resource path and headings.
+		// 4.1.3. Assign requested resource path and headers.
 		
 		// Override resource path if is defined.
 		If Not IsBlankString(PathToResource) Then
 			Request.ResourceAddress = PathToResource;
 		EndIf;
 		
-		// Override headings if are defined.
-		If Headings <> Undefined Then
-			Request.Headers = Headings;
+		// Override headers if are defined.
+		If Headers <> Undefined Then
+			Request.Headers = Headers;
 		EndIf;
 		
 	ElsIf TypeOf(Connection) = Type("FTPConnection") Then
@@ -1171,7 +1171,7 @@ Function ConnectionOpen(Connection, Method, ConnectionSettings = Undefined,
 						
 						// Write string data to the file.
 						FileContents = New TextDocument;
-						FileContents.SetText(StrToUTF8(String(BinaryData)));
+						FileContents.SetText(String(BinaryData));
 						FileContents.Write(SourceFile, "ISO-8859-1", Chars.LF);
 					EndIf;
 					
@@ -1227,7 +1227,7 @@ Function ConnectionOpen(Connection, Method, ConnectionSettings = Undefined,
 				
 				// Write source data to disk.
 				FileContents = New TextDocument;
-				FileContents.SetText(StrToUTF8(StorageData));
+				FileContents.SetText(String(StorageData));
 				FileContents.Write(SourceFile, "ISO-8859-1", Chars.LF);
 			EndIf;
 		EndIf;
@@ -1261,7 +1261,7 @@ Function ConnectionOpen(Connection, Method, ConnectionSettings = Undefined,
 	
 	// Check passed storage type for resulting data.
 	If IsBlankString(StorageType) Then
-		// By default return result as tex string
+		// By default return result as text string
 		StorageType = "String";
 		
 	ElsIf Find(?(TypeOf(Connection) = Type("HTTPConnection"),",Response","") + ",File,Storage,Binary,Base64,String,", "," + StorageType + ",") = 0 Then
@@ -1333,17 +1333,17 @@ Function ConnectionOpen(Connection, Method, ConnectionSettings = Undefined,
 		If TypeOf(Connection) = Type("HTTPConnection") Then
 			// Call HTTP method and become HTTPResponse as expected result.
 			If ExternalHandler <> Undefined Then
-				ResponseData = ExternalHandler.HTTPConnectionExecute(Connection, Method, Request, ExternalParameters);
+				ResponseData = ExternalHandler.HTTPSendRequest(Connection, Method, Request, ExternalParameters);
 			Else
-				ResponseData = HTTPConnectionExecute(Connection, Method, Request);
+				ResponseData = HTTPSendRequest(Connection, Method, Request);
 			EndIf;
 			
 		ElsIf TypeOf(Connection) = Type("FTPConnection") Then
 			// Call FTP method and save result to file.
 			If ExternalHandler <> Undefined Then
-				OutputDataSaved = ExternalHandler.FTPConnectionExecute(Connection, Method, PathToResource, SourceFile, OutputFile, ExternalParameters);
+				OutputDataSaved = ExternalHandler.FTPSendRequest(Connection, Method, PathToResource, SourceFile, OutputFile, ExternalParameters);
 			Else
-				OutputDataSaved = FTPConnectionExecute(Connection, Method, PathToResource, SourceFile, OutputFile);
+				OutputDataSaved = FTPSendRequest(Connection, Method, PathToResource, SourceFile, OutputFile);
 			EndIf;
 			
 		EndIf;
@@ -1507,7 +1507,7 @@ Function ConnectionOpen(Connection, Method, ConnectionSettings = Undefined,
 				// Read saved output file and return it directly in result.
 				FileContents = New TextDocument;
 				FileContents.Read(OutputFile, "ISO-8859-1", Chars.LF);
-				Result = UTF8ToStr(FileContents.GetText());
+				Result = FileContents.GetText();
 				
 				// Delete used output file.
 				SafeDeleteFile(OutputFile);
@@ -1533,7 +1533,102 @@ Function ConnectionOpen(Connection, Method, ConnectionSettings = Undefined,
 	
 EndFunction
 
+// Creates new internet connection and performs request by specified method.
+//
+// Parameters:
+//  URL                      - String - file URL in the canonical format:
+//   <schema>://<login>:<password>@<host>:<port>/<path>?<parameters>#<anchor>
+//   Secure connection can be defined using https or ftps schema.
+//
+//  Method                   - String - request method to the internet resource.
+//                             Available methods for http and https protocols:
+//                              Get, Post, Put, Delete
+//                             Available methods for ftp and ftps protocol:
+//                              Get, Put, Delete, Move,
+//                              GetCurrentDirectory, SetCurrentDirectory,
+//                              CreateDirectory, FindFiles.
+//
+//  HeadersData              - String of pairs of keys and their values
+//                             in following format: <Key>: <Value> delimited by CR + LF.
+//   For additional options of HeadersData see description of SendRequest method.
+//
+//  InputData                - String - pass request data directly as string.
+//   For additional options of InputData see description of SendRequest method.
+//
+//  OutputData               - String - contains output data returned by the server.
+//   For additional options of OutputData see description of SendRequest method.
+//   If request cannot be sent, the OutputData contains an error description.
+//
+// Returns:
+//  Boolean - True - the request was sent to the remote server,
+//                   and the OutputData contains the server response;
+//            False - otherwise.
+//
+Function CreateConnectionSendRequest(Val URL, Method,
+	HeadersData = Undefined, InputData = Undefined, OutputData = Undefined) Export
+	
+	// Define connection settings.
+	ConnectionSettings  = New Structure;
+	
+	// Create HTTP connection object.
+	ConnectionStructure = CreateConnection(URL, ConnectionSettings);
+	
+	// Check connection result.
+	If ConnectionStructure.Result = Undefined Then
+		// Return error description.
+		OutputData = ConnectionStructure.Description;
+		Return False;
+	EndIf;
+	
+	// Define connection object.
+	Connection = ConnectionStructure.Result;
+	
+	// Open connection and request the data.
+	RequestStructure  = SendRequest(Connection, Method, ConnectionSettings, HeadersData, InputData, OutputData);
+	
+	// Check request result.
+	If RequestStructure.Result = Undefined Then
+		// Return error description.
+		OutputData = RequestStructure.Description;
+		Return False;
+	EndIf;
+	
+	// Convert resulting data to string.
+	OutputData = String(RequestStructure.Result);
+	Return True;
+	
+EndFunction
+
 #EndIf
+
+//------------------------------------------------------------------------------
+// HTTP connection & FTP connection methods presentation.
+
+// Returns structure of HTTP connection methods and their presentation.
+// Used as alternative to enums for client calls.
+//
+// Returns:
+//  Structure - Collection of HTTPConnection methods and their representation.
+//
+Function GetHTTPConnectionMethods() Export
+	
+	Return New FixedStructure("Get,   Put,   Post,   Delete",
+	                          "Get", "Put", "Post", "Delete");
+	
+EndFunction
+
+// Returns structure of FTP connection methods and their presentation.
+// Used as alternative to enums for client calls.
+//
+// Returns:
+//  Structure - Collection of FTPConnection methods and their representation.
+//
+Function GetFTPConnectionMethods() Export
+	
+	Return New FixedStructure("Get,   Put,   Delete,   Move,   GetCurrentDirectory,     SetCurrentDirectory,     CreateDirectory,    FindFiles",
+	                          "Get", "Put", "Delete", "Move", "Get current directory", "Set current directory", "Create directory", "Find files");
+	
+EndFunction
 
 //------------------------------------------------------------------------------
 // Encode & decode parameters for internet request
@@ -1561,10 +1656,10 @@ Function EncodeQueryData(QueryData, EncodePercentStr = True) Export
 		For Each Parameter In QueryData Do
 			QueryList.Add(Parameter.Value, Parameter.Key);
 		EndDo;
+		QueryData = QueryList;
 		
 	ElsIf TypeOf(QueryData) = Type("ValueList") Then
 		// Use value list directly.
-		QueryList = QueryData;
 		
 	Else
 		// Unknown type of parameters.
@@ -1572,7 +1667,7 @@ Function EncodeQueryData(QueryData, EncodePercentStr = True) Export
 	EndIf;
 	
 	// Encode URL parameters from object-style to list style.
-	EncodeURLParameters(QueryList, QueryParameters);
+	EncodeURLParameters(QueryData, QueryParameters);
 	
 	// Get pairs and assign them to string
 	StrParameters = "";
@@ -1597,8 +1692,8 @@ EndFunction
 //                             placed in value list otherwise structure returned.
 //
 // Returns:
-//  QueryData                - Structure - standard structure,
-//                           - ValueList - pairs of value and key (presentation).
+//  QueryData                - Structure - standard structure
+//                           - ValueList - pairs of value and key (presentation)
 //
 Function DecodeQueryData(Val QueryString, DecodePercentStr = True,
 	                                      DecodeAsValueList = True) Export
@@ -1681,35 +1776,35 @@ EndFunction
 //  Value         - Structure, Map, ValueList, Array - Regular data collection to be encoded.
 //  UseWideRecord - Boolean  - Use human-readable representation,
 //                             otherwise compact internet format will be used.
-//  UseISODate    - Boolean  - Use ISO 8601 string for encoding the datetime values,
+//  DateEncodingFormat       - Structure - describing encoding format of passed dates:
+//   UseISODate              - Boolean - Use ISO 8601 string for encoding the datetime values,
 //                             otherwise UNIX-time numeric will be used.
-//  UseShortISODateFormat    - Boolean - If date converted to ISO 8601
+//   UseShortISODate         - Boolean - If date converted to ISO 8601
 //                             has only data part without time used,
 //                             then it will be saved only as data in short format,
-//                             otherwise classic notation for date&time
-//                             including UTC time zone will be used.
+//                             otherwise classic notation for date&time will be used.
+//   UseLocalDate            - Boolean - If true then local date will be used without changes,
+//                             otherwise date will be adjusted to UTC time zone.
+//                             Numeric - -12 .. 0 .. 12 - Destination time zone in hours,
+//                             the date should be encoded to - the difference between the time
+//                             zone of local date and time zone of remote host will be adjusted.
+//                             This setting does not affect fully encoded ISO 8601 dates.
 //
 // Returns:
 //  String - standard JSON-encoded string.
 //
-Function EncodeJSON(Value, UseWideRecord = True,
-	                UseISODate = True, UseShortISODateFormat = True) Export
-	
-	// Check object type.
-	If  TypeOf(Value) <> Type("Array")
-	And TypeOf(Value) <> Type("Map")
-	And TypeOf(Value) <> Type("Structure")
-	And TypeOf(Value) <> Type("ValueList")
-	Then
-		// Unknown data collection - empty JSON string.
-		Return "";
-	EndIf;
+Function EncodeJSON(Value, UseWideRecord = True, DateEncodingFormat = Undefined) Export
+	// Define date encoding variables.
+	Var UseISODate, UseShortISODate, TimeShift;
 	
 	// Define resulting string.
 	Result = "";
 	
-	// Encode structure to JSON string format.
-	EncodeJSONStructure(Value, Result,, UseWideRecord, UseISODate, UseShortISODateFormat);
+	// Define date format parameters.
+	DecodeDateParameters(DateEncodingFormat, UseISODate, UseShortISODate, TimeShift);
+	
+	// Encode 1C structure to JSON string format.
+	EncodeJSONStructure(Value, Result,, UseWideRecord, UseISODate, UseShortISODate, TimeShift);
 	
 	// Return compiled JSON string.
 	Return Result;
@@ -1720,31 +1815,30 @@ EndFunction
 //
 // Parameters:
 //  JSON                     - String - standard JSON-encoded structure.
+//  DateDecodingFormat       - Structure - describing encoding format of passed dates:
+//   UseLocalDate            - Boolean - If true then all dates treated as local dates,
+//                             otherwise date treated as UTC date will be adjusted to local time.
+//                             Numeric - -12 .. 0 .. 12 - Source time zone in hours,
+//                             the date should be decoded from - the difference between the
+//                             specified time zone of remote host will be adjusted to local time.
+//                             This setting does not affect fully encoded ISO 8601 dates.
 //
 // Returns:
 //  - Structure - decoded JSON data structure.
 //  - Undefined - if format does not match JSON.
-Function DecodeJSON(JSON) Export
+//
+Function DecodeJSON(JSON, DateDecodingFormat = Undefined) Export
+	// Define date decoding variables.
+	Var TimeShift;
 	
-	// Check object structure.
-	If IsBlankString(JSON) Then
-		// Empty JSON string - nothing to be returned.
-		Return Undefined;
-	EndIf;
+	// Define resulting object.
+	Result = Undefined;
 	
-	// Get the JSON object removing leading and trailing spaces.
-	PosOpen  = Find(JSON, "{");
-	PosClose = StringFunctionsClientServer.FindCharFromEnd(JSON, "}");
-	If PosOpen > 0 And PosClose > 0 Then
-		StrJSON  = Mid(JSON, PosOpen + 1, PosClose - PosOpen - 1);
-	Else
-		// No JSON object found or JSON has broken structure.
-		Return Undefined;
-	EndIf;
+	// Define date format parameters.
+	DecodeDateParameters(DateDecodingFormat,,, TimeShift);
 	
-	// Define resulting structure.
-	Result = New Structure;
-	DecodeJSONStructure(StrJSON, Result);
+	// Decode JSON string format to 1C structure.
+	DecodeJSONStructure(String(JSON), Result, TimeShift);
 	
 	// Return compiled structure.
 	Return Result;
@@ -1767,12 +1861,12 @@ EndFunction
 //  Method                   - String - request method to the internet resource.
 //                             Possible HTTP(S) methods: Get, Put, Post, Delete.
 //  Request                  - HTTPRequest - request obect containing relative path
-//                             to the resource, headings, and data to be sent.
+//                             to the resource, headers, and data to be sent.
 //
 // Returns:
 //  HTTPResponse             - Server response on sent HTTP request.
 //
-Function HTTPConnectionExecute(Connection, Method, Request)
+Function HTTPSendRequest(Connection, Method, Request)
 	
 	// Define default result.
 	Result = Undefined;
@@ -1827,7 +1921,7 @@ EndFunction
 // Returns:
 //  Boolean                  - Is output data placed in specified output file.
 //
-Function FTPConnectionExecute(Connection, Method, PathToResource, SourceFile = "", OutputFile = "")
+Function FTPSendRequest(Connection, Method, PathToResource, SourceFile = "", OutputFile = "")
 	
 	// Define default result.
 	Result = False;
@@ -1880,7 +1974,7 @@ Function FTPConnectionExecute(Connection, Method, PathToResource, SourceFile = "
 			
 			// Write output data to resulting file.
 			FileContents = New TextDocument;
-			FileContents.SetText(StrToUTF8(Result));
+			FileContents.SetText(String(Result));
 			FileContents.Write(OutputFile, "ISO-8859-1", Chars.LF);
 			
 			// Result data is placed to output file.
@@ -1916,7 +2010,7 @@ Function FTPConnectionExecute(Connection, Method, PathToResource, SourceFile = "
 			
 			// Write output data to resulting file.
 			FileContents = New TextDocument;
-			FileContents.SetText(StrToUTF8(Str));
+			FileContents.SetText(Str);
 			FileContents.Write(OutputFile, "ISO-8859-1", Chars.LF);
 			
 			// Result data is placed to output file.
@@ -2111,7 +2205,7 @@ Function URLToStructure(Val URLString, DecodePercentStr = True,
 	
 EndFunction
 
-// Decodes percent string to native unicode string.
+// Decodes percent string to native 1C string.
 //
 // Parameters:
 //  PercentStr         - String  - containing percent-encoded characters.
@@ -2120,7 +2214,7 @@ EndFunction
 //                       False for parameters values in FF and IE<10 by default.
 //
 // Returns:
-//  String - Decoded unicode string.
+//  String - Decoded 1C string.
 //
 Function DecodeFromPercentStr(Val PercentStr, PreferUTF8Decoding = True)
 	
@@ -2170,7 +2264,7 @@ Function DecodeFromPercentStr(Val PercentStr, PreferUTF8Decoding = True)
 			Result = Result + DecodedUTF8;
 		Else
 			// Treat passed bytes as ANSI string (IE compatible).
-			Result = Result + ANSIToStr(MBytes);
+			Result = Result + ANSIToUnicode(MBytes); // UTF-16 compatible.
 		EndIf;
 		
 		// Find next possible percent part.
@@ -2343,437 +2437,6 @@ Procedure DecodeURLParameters(URLParameters)
 	EndTry;
 	
 EndProcedure
-
-// Decodes standard JSON string to native structure.
-//
-// Parameters:
-//  StrJSON       - String - contains standard JSON object to convert.
-//  Parent        - Structure, Array - destination collection
-//                  where new created keys are placed.
-//
-// Returns:
-//  Parent        - Destination collection where new created keys are placed.
-//
-Procedure DecodeJSONStructure(Val StrJSON, Parent)
-	
-	// Define valid id symbols.
-	CharsID = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789";
-	CharsDg = "0123456789";
-	
-	// Process passed strings.
-	While StrLen(StrJSON) > 0 Do
-		
-		// For structure use ID in value pair.
-		If TypeOf(Parent) = Type("Structure") Then
-			
-			// 1. Get value ID.
-			Pos = Find(StrJSON, """");
-			If Pos = 0 Then
-				// ID not found
-				Return;
-			ElsIf Not IsBlankString(Left(StrJSON, Pos-1)) Then
-				// Some garbage found?
-				Return;
-			Else
-				// Cut string to value ID.
-				StrJSON = Mid(StrJSON, Pos+1);
-			EndIf;
-			
-			// Cut value ID.
-			StrID = ""; i = 1;
-			While i <= StrLen(StrJSON) Do
-				
-				// Get current char.
-				Ch = Mid(StrJSON, i , 1);
-				If Ch <> """" Then
-					// Simple char found.
-					StrID = StrID + Ch;
-					
-				ElsIf StrLen(StrJSON) > i
-				  And Mid(StrJSON, i + 1 , 1) = """" Then
-					// Double quote found.
-					StrID = StrID + Ch + Ch;
-					i = i + 1;
-					
-				Else
-					// Closing quote found.
-					StrJSON = Mid(StrJSON, i + 1);
-					Break;
-				EndIf;
-				
-				// Next iteration.
-				i = i + 1;
-			EndDo;
-			
-			// Check value ID.
-			If IsBlankString(StrID) Then
-				// Value ID cannot be empty.
-				Return;
-				
-			ElsIf Find(CharsDg, Left(StrID, 1)) > 0 Then
-				// ID cannot begin from a digit.
-				Return;
-				
-			Else // Check symbols passend to the ID rules.
-				For i = 1 To StrLen(StrID) Do
-					If Find(CharsID, Mid(StrID, i, 1)) = 0 Then
-						Return;
-					EndIf;
-				EndDo;
-			EndIf;
-			
-			// 2. Get value delimiter.
-			Pos = Find(StrJSON, ":");
-			If Pos = 0 Then
-				// Delimiter not found
-				Return;
-			ElsIf Not IsBlankString(Left(StrJSON, Pos-1)) Then
-				// Some garbage found?
-				Return;
-			Else
-				// Cut string to Value.
-				StrJSON = TrimL(Mid(StrJSON, Pos+1));
-			EndIf;
-		EndIf;
-		
-		// 3. Define possible value.
-		// Get first char.
-		Ch = Left(StrJSON, 1);
-		
-		// Check char according to possible values.
-		If Ch = "{" Or Ch = "[" Then // Structure or array found.
-			ChOp = Ch; ChCl = ?(Ch = "{", "}", "]");
-			
-			// One-char protection: char already processed.
-			If StrLen(StrJSON) = 1 Then StrJSON = ""; EndIf;
-			
-			// Cut Structure.
-			StrVal = ""; i = 2;
-			InString = False; ItLevel = 1;
-			While i <= StrLen(StrJSON) Do
-				
-				// Get current char.
-				Ch = Mid(StrJSON, i , 1);
-				
-				// Skip all string literals
-				If InString Then
-					
-					// Process current string.
-					If Ch <> """" Then
-						// Simple char found.
-						
-					ElsIf StrLen(StrJSON) > i
-					  And Mid(StrJSON, i + 1, 1) = """" Then
-						// Double quote found.
-						StrVal = StrVal + Ch;
-						i = i + 1;
-						
-					Else
-						// Closing quote found.
-						InString = False;
-					EndIf;
-					
-				Else
-					// Check string.
-					If Ch = """" Then
-						// Quote found - string begins.
-						InString = True;
-						
-					ElsIf Ch = ChOp Then
-						// Go one level down.
-						ItLevel = ItLevel + 1;
-						
-					ElsIf Ch = ChCl Then
-						// Go one level up.
-						If ItLevel > 1 Then
-							ItLevel = ItLevel - 1;
-						Else
-							// Closing bracket found.
-							StrJSON = Mid(StrJSON, i + 1);
-							Break;
-						EndIf;
-					EndIf;
-				EndIf;
-				
-				// Next iteration.
-				StrVal = StrVal + Ch;
-				i = i + 1;
-			EndDo;
-			
-			// Set proper value collection.
-			If ChOp = "{" Then
-				Value = New Structure;
-			Else
-				Value = New Array;
-			EndIf;
-			
-			// Add value pair to parent structure.
-			If TypeOf(Parent) = Type("Structure") Then
-				Parent.Insert(StrID, Value);
-			Else
-				Parent.Add(Value);
-			EndIf;
-			
-			// Decode descedant structure.
-			DecodeJSONStructure(TrimAll(StrVal), Value);
-			
-		ElsIf Ch = """" Then   // String value found.
-			
-			// Only one-char left: char already processed.
-			If StrLen(StrJSON) = 1 Then StrJSON = ""; EndIf;
-			
-			// Cut string value.
-			StrVal = ""; i = 2;
-			While i <= StrLen(StrJSON) Do
-				
-				// Get current char.
-				Ch = Mid(StrJSON, i , 1);
-				If Ch <> """" Then
-					// Simple char found.
-					StrVal = StrVal + Ch;
-					
-				ElsIf StrLen(StrJSON) > i
-				  And Mid(StrJSON, i + 1, 1) = """" Then
-					// Double quote found.
-					StrVal = StrVal + Ch + Ch;
-					i = i + 1;
-					
-				Else
-					// Closing quote found.
-					StrJSON = Mid(StrJSON, i + 1);
-					Break;
-				EndIf;
-				
-				// Next iteration.
-				i = i + 1;
-			EndDo;
-			
-			// Additional processing of string contents.
-			If ConvertValueToPrimitiveType(StrVal, Type("Date")) Then
-				// Succesfully converted.
-			ElsIf ConvertValueToPrimitiveType(StrVal, Type("UUID")) Then
-				// Succesfully converted.
-			Else
-				// Convert JSON string to native unicode string.
-				StrVal = JSONStrToStr(StrVal);
-			EndIf;
-			
-			// Add value pair to parent structure.
-			If TypeOf(Parent) = Type("Structure") Then
-				Parent.Insert(StrID, StrVal);
-			Else
-				Parent.Add(StrVal);
-			EndIf;
-			
-		Else                   // Other type found.
-			
-			// Cut value.
-			StrVal = Ch; i = 2;
-			Value = Undefined;
-			While i <= StrLen(StrJSON) Do
-				
-				// Get current char.
-				Ch = Mid(StrJSON, i , 1);
-				If Find(CharsID+"+-.", Ch) > 0 Then
-					// Simple char found.
-					StrVal = StrVal + Ch;
-					
-				Else
-					// Other char found. Stop further processing.
-					Break;
-				EndIf;
-				
-				// Next iteration.
-				i = i + 1;
-			EndDo;
-			
-			// Decode cutted value.
-			Value = StrVal;
-			If Not ConvertValueToPrimitiveType(Value) Then
-				// Failed to convert value to any primitive type.
-				Return;
-			EndIf;
-			
-			// Ajust value type.
-			If Value = Undefined Or Value = Null Then  // Is Empty.
-				// Use undefined as empty value.
-				Value = Undefined;
-				
-			ElsIf TypeOf(Value) = Type("Boolean") Then // Is Boolean.
-				// OK, skip check.
-				
-			ElsIf TypeOf(Value) = Type("Number") Then  // Is Number.
-				// OK, skip check.
-				
-			ElsIf TypeOf(Value) = Type("Date") Then    // Is Date/Time.
-				// OK, skip check.
-				
-			ElsIf TypeOf(Value) = Type("UUID") Then    // Is UUID.
-				// OK, skip check.
-				
-			// String type is not allowed without quotes.
-			Else                                       // Unknown.
-				// Wrong defined type or some unknown value.
-				Return;
-			EndIf;
-			
-			// Cut rest of StrJSON.
-			StrJSON = Mid(StrJSON, i);
-			
-			// Add value pair to parent structure.
-			If TypeOf(Parent) = Type("Structure") Then
-				Parent.Insert(StrID, Value);
-			Else
-				Parent.Add(Value);
-			EndIf;
-		EndIf;
-		
-		// 4. Get value pair delimiter.
-		Pos = Find(StrJSON, ",");
-		If Pos = 0 Then
-			// Delimiter not found
-			Return;
-		ElsIf Not IsBlankString(Left(StrJSON, Pos-1)) Then
-			// Some garbage found?
-			Return;
-		Else
-			// Cut string to next value pair.
-			StrJSON = TrimL(Mid(StrJSON, Pos+1));
-		EndIf;
-	EndDo;
-	
-	// Full StrJSON parsed.
-	
-EndProcedure
-
-// Decodes JSON-compatible string to native unicode string according to RFC 4627.
-//
-// JSON string definition:
-// string = quotation-mark *char quotation-mark
-// char = unescaped /
-//		  escape (
-//			%x62 /          ; b    backspace       U+0008
-//			%x74 /          ; t    tab             U+0009
-//			%x6E /          ; n    line feed       U+000A
-//			%x66 /          ; f    form feed       U+000C
-//			%x72 /          ; r    carriage return U+000D
-//			%x22 /          ; "    quotation mark  U+0022
-//			%x2F /          ; /    solidus         U+002F
-//			%x5C /          ; \    reverse solidus U+005C
-//			%x75 4HEXDIG )  ; uXXXX                U+XXXX
-// escape = %x5C            ; \
-// quotation-mark = %x22    ; "
-// unescaped = %x20-21 / %x23-5B / %x5D-10FFFF
-//
-// Parameters:
-//  Str    - String - JSON-compatible string.
-//
-// Returns:
-//  String - Unicode string.
-//
-Function JSONStrToStr(Str)
-	
-	// Define default result.
-	Result = String(Str);
-	
-	// Define escaped characters and their replaces.
-	EscChars    = Char(8) + Chars.Tab + Chars.LF + Chars.FF + Chars.CR + """" + "/" + "\";
-	EscReplaces = "btnfr""/\";
-	HexChar     = "0123456789ABCDEF";
-	
-	//--------------------------------------------------------------------------
-	// 1. Replace control characters.
-	
-	// Replace control characters.
-	i = 0;  MWCS = New Array();
-	While i < StrLen(Result) Do
-		// Get current char.
-		Char = Mid(Result, i + 1, 1);
-		
-		// Check backslash character.
-		If Char = "\" And Upper(Mid(Result, i + 2, 1)) = "U" Then // \u char sequence found.
-			
-			// Agregate unicode string.
-			j = 0; MWCS.Clear();
-			While i + j < StrLen(Result) Do
-				
-				// Analize character mask "\uHHHH[\uHHHH[...]]"
-				ResChar = Mid(Result, i + j + 1, 1);
-				HexCode = Find(HexChar, Upper(ResChar));   // Uppercase of hex digit is allowed by RFC 4627.
-				MJ      = j % 6;
-				
-				// Check out char according to mask index.
-				If    MJ = 0 And ResChar = "\" Then                 // "\" char expected.
-					// Is control character.
-					
-				ElsIf MJ = 1 And ResChar = "u" Then                 // "u" char expected
-					// Is UTF-16 code.                              // Uppercase is not allowed by RFC 4627.
-					
-				ElsIf MJ = 2 And ResChar <> "" And HexCode > 0 Then // "H" hex digit expected.
-					// Convert high half-byte in high byte.
-					CharCode =            4096 * (HexCode - 1);
-					
-				ElsIf MJ = 3 And ResChar <> "" And HexCode > 0 Then // "H" hex digit expected.
-					// Convert low half-byte in high byte.
-					CharCode = CharCode +  256 * (HexCode - 1);
-					
-				ElsIf MJ = 4 And ResChar <> "" And HexCode > 0 Then // "H" hex digit expected.
-					// Convert low half-byte in high byte.
-					CharCode = CharCode +   16 * (HexCode - 1);
-					
-				ElsIf MJ = 5 And ResChar <> "" And HexCode > 0 Then // "H" hex digit expected.
-					// Convert low half-byte in high byte.
-					CharCode = CharCode +    1 * (HexCode - 1);
-					
-					// Add word to MWCS.
-					MWCS.Add(CharCode);
-					
-				Else // Got some char that we didn't expected.
-					Break;
-				EndIf;
-				
-				// Next iteration.
-				j = j + 1;
-			EndDo;
-			
-			// Replace found encoded symbols with chars.
-			If MWCS.Count() > 0 Then // The UTF-16 sequence found.
-				
-				// Convert UTF-16 to native unicode string.
-				MWCSStr = UTF16ToStr(MWCS);
-				MWCSLen = MWCS.Count() * 6; // 6 char per MWC.
-				Result  = Left(Result, i) + MWCSStr + Mid(Result, i + MWCSLen + 1);
-				
-				// Incremet pointer to converted chars length.
-				i = i + StrLen(MWCSStr);
-				
-				// Skip the standard iterator.
-				Continue;
-				
-			EndIf;
-		EndIf;
-		
-		// Next iteration.
-		i = i + 1;
-	EndDo;
-	
-	//--------------------------------------------------------------------------
-	// 2. Replace JSON defined symbols.
-	
-	// Encode escaped characters.
-	For i = 1 To StrLen(EscChars) Do
-		// Get cuurent escaped char.
-		EscChar = Mid(EscChars,    i, 1);
-		EscRepl = Mid(EscReplaces, i, 1);
-		
-		// Replace escaped char in current string.
-		Result = StrReplace(Result, "\" + EscRepl, EscChar); // Uppercase is not allowed by RFC 4627.
-	EndDo;
-	
-	// Return JSON-compatible string.
-	Return Result;
-	
-EndFunction
 
 // Create structure of parameters (data tree) basing on declaration
 // of elements passed in keys list array.
@@ -2998,574 +2661,6 @@ Function GetMultipleValueKeyPresentation(Key)
 	
 EndFunction
 
-// Converts passed value to desired primitive type.
-// Supports automatic value conversion (if Type is not specified).
-// If conversion fails, then value remains unchanged.
-//
-// Parameters:
-//  Value    - Arbitrary - Value to be converted to primitive type.
-//  Type     - Type - Primitive type for value to be converted to.
-//
-// Returns:
-//  Boolean  - Conversation succession flag.
-//  Value    - Arbitrary - Converted (succeded) or unchanged (failed) value.
-//
-Function ConvertValueToPrimitiveType(Value, Type = Undefined)
-	
-	// Try to convert passed value to desired type.
-	Try
-		// Auto conversion.
-		If Type = Undefined Then
-			
-			// Check existing type
-			If Value = Null
-			Or Value = Undefined
-			Or TypeOf(Value) = Type("Boolean")
-			Or TypeOf(Value) = Type("Number")
-			Or TypeOf(Value) = Type("UUID")
-			Or TypeOf(Value) = Type("Date")
-			// Except of String.
-			Then
-				// Value already has a primitive type.
-				// No additional conversation needed.
-				Return True;
-			EndIf;
-			
-			// Try step-by-step convert string to primitive types.
-			If Upper(TrimAll(Value)) = "NULL" Then
-				// Passed null value.
-				Value = Null;
-				Return True;
-				
-			ElsIf Upper(TrimAll(Value)) = "UNDEFINED" Then
-				// Passed undefined value.
-				Value = Undefined;
-				Return True;
-				
-			ElsIf ConvertValueToPrimitiveType(Value, Type("Boolean")) Then
-				// Succesfully converted.
-			ElsIf ConvertValueToPrimitiveType(Value, Type("UUID")) Then
-				// Succesfully converted.
-			ElsIf ConvertValueToPrimitiveType(Value, Type("Date")) Then
-				// Succesfully converted.
-			ElsIf ConvertValueToPrimitiveType(Value, Type("Number")) Then
-				// Succesfully converted.
-			ElsIf ConvertValueToPrimitiveType(Value, Type("String")) Then
-				// Succesfully converted.
-			Else
-				// Failed to convert to any primitive type.
-				Return False;
-			EndIf;
-			
-		ElsIf Type = Type("Boolean") Then
-			Value = Boolean(Value);
-			
-		ElsIf Type = Type("Number") Then
-			
-			// Define native numeric format.
-			If TypeOf(Value) = Type("Number") Then
-				// No additional conversion required.
-				
-			// Define conversion from string format.
-			ElsIf TypeOf(Value) = Type("String") Then
-				// Define numeric characters.
-				Numeric = "0123456789eE+-.";
-				SNumber = ""; // Numeric part.
-				SExpont = ""; // Exponent part.
-				SOption = 1;  // Numeric or Exponent option: 1 or 2.
-				
-				// Check string contains only digits.
-				For i = 1 To StrLen(Value) Do
-					// Define current char.
-					Ch = Mid(Value, i, 1);
-					
-					// Check char passes numeric chars.
-					If Find(Numeric, Ch) = 0 Then
-						Raise(NStr("en = 'Invalid char found in numeric string.'"));
-						
-					ElsIf (SOption = 1) And (Ch = "e" Or Ch = "E") Then
-						// Switch to exponent part.
-						SOption = 2;
-					
-					ElsIf (SOption = 2) And (Ch = "e" Or Ch = "E") Then
-						Raise(NStr("en = 'Exponent part doubled in the number.'"));
-						
-					ElsIf (SOption = 1) And (Ch = "+" Or Ch = "-") And (i > 1) Then
-						Raise(NStr("en = 'Sign can not be defined in the middle of numeric part.'"));
-						
-					ElsIf (SOption = 2) And (Ch = "+" Or Ch = "-") And (Not IsBlankString(SExpont)) Then
-						Raise(NStr("en = 'Sign can not be defined in the middle of exponent part.'"));
-						
-					ElsIf (SOption = 1) Then
-						// Assign char to numeric part.
-						SNumber = SNumber + Ch;
-						
-					ElsIf (SOption = 2) Then
-						// Assign char to exponent part.
-						SExpont = SExpont + Ch;
-					EndIf;
-				EndDo;
-				
-				// Convert number string to number.
-				Value = Number(SNumber);
-				
-				// Convert exponent string to number.
-				If Not IsBlankString(SExpont) Then // Exponent defined.
-					Exponent = Number(SExpont);
-					
-					// Update number value.
-					Value = Value * Pow(10, Exponent);
-				EndIf;
-				
-				// Custom conversion for UNIX date.
-				If  Value > 31500000       // > 31.12.1970 14:00:00
-				And Find(SNumber, ".") = 0 // Is integer.
-				And IsBlankString(SExpont) // No exponent part defined.
-				Then
-					// Suggest it is a UNIX time format.
-					Value = Date("19700101") + Value;
-				EndIf;
-				
-			// Define conversion from any other (boolean) format.
-			Else
-				Value = Number(Value);
-			EndIf;
-			
-		ElsIf Type = Type("UUID") Then
-			Value = New UUID(Value);
-			
-		// Convert value to passed type.
-		ElsIf Type = Type("Date") Then
-			
-			// Define native date format.
-			If TypeOf(Value) = Type("Date") Then
-				// No additional conversion required.
-				
-			// Define Number to Date conversion.
-			ElsIf TypeOf(Value) = Type("Number") Then
-				// Convert from UNIX date to 1C date.
-				Value = Date("19700101") + Value;
-				
-			// Define String to Date conversion.
-			ElsIf TypeOf(Value) = Type("String") Then
-				// Try to convert value from internet format ISO 8601 (converting time zone difference).
-				// 1) YYYYMMDD[[T]hhmmss[ss[s]][Z|±HH[mm]]]
-				// 2) YYYY[-|/]MM[-|/]DD[Thh:mm:ss[.ss[s]][Z|±HH[:mm]]]
-				
-				// Skip overlong strings.
-				If StrLen(Value) > 29 Then
-					Raise(NStr("en = 'Size of date value exeeds maximum available length.'"));
-				EndIf;
-				
-				// Define digits characters.
-				Digits = "0123456789";
-				
-				// Check/process passed value.
-				SDate = "";  // Date in string native format.
-				SZone = "";  // Time zone in string format.
-				SOption = 0; // Datetime format option 1 or 2.
-				
-				// Define first steps.
-				Step1 = 4;         // 4
-				Step2 = Step1 + 1; // 5
-				For i = 1 To StrLen(Value) Do
-					// Define current char.
-					Ch = Mid(Value, i, 1);
-					
-					// Step 1.
-					If i <= Step1 Then
-						// YYYY in [0123456789]
-						If Find(Digits, Ch) > 0 Then
-							SDate = SDate + Ch;
-						Else
-							Raise(NStr("en = 'Wrong date format.'"));
-						EndIf;
-						
-					// Step 2.
-					ElsIf i = Step2 Then
-						// Check date option.
-						If Ch = "-" Or Ch = "/" Then
-							// YYYY[-|/], skip char.
-							SOption = 2;
-							// Define next step constants.
-							Step3 = Step2 + 2; // 7
-							Step4 = Step3 + 1; // 8
-							
-						ElsIf Find(Digits, Ch) > 0 Then
-							// M in [0123456789]
-							SDate = SDate + Ch;
-							// YYYYM
-							SOption = 1;
-							// Define next step constants.
-							Step3 = Step2 + 1; // 6
-							Step4 = Step3 + 1; // 7
-							
-						Else
-							Raise(NStr("en = 'Wrong date format.'"));
-						EndIf;
-						
-					// Step 3.
-					ElsIf i <= Step3 Then
-						// MM in [0123456789]
-						If Find(Digits, Ch) > 0 Then
-							SDate = SDate + Ch;
-						Else
-							Raise(NStr("en = 'Wrong date format.'"));
-						EndIf;
-						
-					// Step 4.
-					ElsIf i = Step4 Then
-						If SOption = 2 Then
-							If Ch = "-" Or Ch = "/" Then
-								// YYYY[-|/]MM[-|/], skip char.
-								// Define next step constants.
-								Step5 = Step4 + 2; // 10
-								Step6 = Step5 + 1; // 11
-							Else
-								Raise(NStr("en = 'Wrong date format.'"));
-							EndIf;
-							
-						Else // SOption = 1.
-							If Find(Digits, Ch) > 0 Then
-								// D in [0123456789]
-								SDate = SDate + Ch;
-								// YYYYMMD
-								// Define next step constants.
-								Step5 = Step4 + 1; // 8
-								Step6 = Step5 + 1; // 9
-							Else
-								Raise(NStr("en = 'Wrong date format.'"));
-							EndIf;
-						EndIf;
-						
-					// Step 5.
-					ElsIf i <= Step5 Then
-						// MM in [0123456789]
-						If Find(Digits, Ch) > 0 Then
-							SDate = SDate + Ch;
-						Else
-							Raise(NStr("en = 'Wrong date format.'"));
-						EndIf;
-						
-					// Step 6.
-					ElsIf i = Step6 Then
-						If Ch = "T" Then
-							If SOption = 2 Then
-								// 2) YYYY[-|/]MM[-|/]DDT
-								// Define next step constants.
-								Step7 = Step6 + 2; // 13
-								Step8 = Step7 + 1; // 14
-								
-							ElsIf SOption = 1 Then
-								// 1) YYYYMMDD[T]
-								// Define next step constants.
-								Step7 = Step6 + 2; // 11
-								Step8 = Step7 + 1; // 12
-							EndIf;
-							
-						ElsIf Find(Digits, Ch) > 0 Then
-							If SOption = 1 Then
-								// 1) YYYYMMDDh
-								SDate = SDate + Ch;
-								// Define next step constants.
-								Step7 = Step6 + 1; // 10
-								Step8 = Step7 + 1; // 11
-							Else
-								Raise(NStr("en = 'Wrong date format.'"));
-							EndIf;
-						EndIf;
-					
-					// Step 7.
-					ElsIf i <= Step7 Then
-						// hh in [0123456789]
-						If Find(Digits, Ch) > 0 Then
-							SDate = SDate + Ch;
-						Else
-							Raise(NStr("en = 'Wrong time format.'"));
-						EndIf;
-						
-					// Step 8.
-					ElsIf i = Step8 Then
-						If SOption = 2 Then
-							If Ch = ":" Then
-								// YYYY[-|/]MM[-|/]DDThh:, skip char.
-								// Define next step constants.
-								Step9 = Step8 + 2; // 16
-								StepA = Step9 + 1; // 17
-							Else
-								Raise(NStr("en = 'Wrong time format.'"));
-							EndIf;
-							
-						Else // SOption = 1.
-							If Find(Digits, Ch) > 0 Then
-								// m in [0123456789]
-								SDate = SDate + Ch;
-								// YYYYMMDD[T]hhm
-								// Define next step constants.
-								Step9 = Step8 + 1; // 12/13
-								StepA = Step9 + 1; // 13/14
-							Else
-								Raise(NStr("en = 'Wrong time format.'"));
-							EndIf;
-						EndIf;
-						
-					// Step 9.
-					ElsIf i <= Step9 Then
-						// mm in [0123456789]
-						If Find(Digits, Ch) > 0 Then
-							SDate = SDate + Ch;
-						Else
-							Raise(NStr("en = 'Wrong time format.'"));
-						EndIf;
-						
-					// Step 10.
-					ElsIf i = StepA Then
-						If SOption = 2 Then
-							If Ch = ":" Then
-								// YYYY[-|/]MM[-|/]DDThh:mm:, skip char.
-								// Define next step constants.
-								StepB = StepA + 2; // 19
-								StepC = StepB + 1; // 20
-							Else
-								Raise(NStr("en = 'Wrong time format.'"));
-							EndIf;
-							
-						Else // SOption = 1.
-							If Find(Digits, Ch) > 0 Then
-								// s in [0123456789]
-								SDate = SDate + Ch;
-								// YYYYMMDD[T]hhmms
-								// Define next step constants.
-								StepB = StepA + 1; // 14/15
-								StepC = StepB + 1; // 15/16
-							Else
-								Raise(NStr("en = 'Wrong time format.'"));
-							EndIf;
-						EndIf;
-						
-					// Step 11.
-					ElsIf i <= StepB Then
-						// ss in [0123456789]
-						If Find(Digits, Ch) > 0 Then
-							SDate = SDate + Ch;
-						Else
-							Raise(NStr("en = 'Wrong time format.'"));
-						EndIf;
-						
-					// Step 12.
-					ElsIf i = StepC Then
-						If SOption = 2 Then
-							If Ch = "." Then
-								// YYYY[-|/]MM[-|/]DDThh:mm:ss., skip char.
-								// Define next step constants.
-								StepD = StepC + 2; // 22
-								StepE = StepD + 1; // 23
-								// Next steps not yet defined.
-							ElsIf Ch = "+" Or Ch = "-" Then
-								// YYYY[-|/]MM[-|/]DDThh:mm:ss[+|-]
-								StepD = StepC;     // Skip step
-								StepE = StepD;     // Skip step
-								StepF = StepE;     // Skip step
-								StepG = StepF + 2; // 22
-								StepH = StepG + 1; // 23
-								// Next steps not yet defined.
-								// [+|-]
-								SZone = SZone + Ch;
-							ElsIf Ch = "Z" Then
-								// YYYY[-|/]MM[-|/]DDThh:mm:ssZ, skip char.
-								StepD = StepC;     // Skip step
-								StepE = StepD;     // Skip step
-								StepF = StepE;     // Skip step
-								StepG = StepF;     // Skip step
-								StepH = StepG;     // Skip step
-								StepI = StepH;     // Skip step
-								StepJ = StepI + 1; // 21
-							Else
-								Raise(NStr("en = 'Wrong time format.'"));
-							EndIf;
-							
-						Else // SOption = 1.
-							If Find(Digits, Ch) > 0 Then
-								// s in [0123456789], skip char.
-								// YYYYMMDD[T]hhmmsss
-								// Define next step constants.
-								StepD = StepC + 1; // 16/17
-								StepE = StepD + 1; // 17/18
-								// Next steps not yet defined.
-							ElsIf Ch = "+" Or Ch = "-" Then
-								// YYYYMMDD[T]hhmmss[+|-]
-								StepD = StepC;     // Skip step
-								StepE = StepD;     // Skip step
-								StepF = StepE;     // Skip step
-								StepG = StepF + 2; // 17/18
-								StepH = StepG + 1; // 18/19
-								// Next steps not yet defined.
-								// [+|-]
-								SZone = SZone + Ch;
-							ElsIf Ch = "Z" Then
-								// YYYYMMDD[T]hhmmssZ, skip char.
-								StepD = StepC;     // Skip step
-								StepE = StepD;     // Skip step
-								StepF = StepE;     // Skip step
-								StepG = StepF;     // Skip step
-								StepH = StepG;     // Skip step
-								StepI = StepH;     // Skip step
-								StepJ = StepI + 1; // 16/17
-							Else
-								Raise(NStr("en = 'Wrong time format.'"));
-							EndIf;
-						EndIf;
-						
-					// Step 13.
-					ElsIf i <= StepD Then
-						If SOption = 2 Then
-							// YYYY[-|/]MM[-|/]DDThh:mm:ss.ss, skip char.
-						Else // SOption = 1.
-							// YYYYMMDD[T]hhmmssss, skip char.
-						EndIf;
-					
-					// Step 14.
-					ElsIf i = StepE Then
-						If Find(Digits, Ch) > 0 Then
-							// YYYY[-|/]MM[-|/]DDThh:mm:ss.sss, skip char.
-							// YYYYMMDD[T]hhmmsssss, skip char.
-							// Define next step constants.
-							StepF = StepE + 1; // 1) 24 2) 18/19
-							// Next steps not yet defined.
-						ElsIf Ch = "+" Or Ch = "-" Then
-							// YYYY[-|/]MM[-|/]DDThh:mm:ss.ss[+|-]
-							// YYYYMMDD[T]hhmmssss[+|-]
-							StepF = StepE;     // Skip step
-							StepG = StepF + 2; // 1) 25 2) 19/20
-							StepH = StepG + 1; // 1) 26 3) 20/21
-							// Next steps not yet defined.
-							// [+|-]
-							SZone = SZone + Ch;
-						ElsIf Ch = "Z" Then
-							// YYYY[-|/]MM[-|/]DDThh:mm:ss.ssZ, skip char.
-							// YYYYMMDD[T]hhmmssssZ, skip char.
-							StepF = StepE;     // Skip step
-							StepG = StepF;     // Skip step
-							StepH = StepG;     // Skip step
-							StepI = StepH;     // Skip step
-							StepJ = StepI + 1; // 1) 24 2) 18/19
-						Else
-							Raise(NStr("en = 'Wrong time format.'"));
-						EndIf;
-					
-					// Step 15.
-					ElsIf i = StepF Then
-						If Ch = "+" Or Ch = "-" Then
-							// YYYY[-|/]MM[-|/]DDThh:mm:ss.sss[+|-]
-							// YYYYMMDD[T]hhmmsssss[+|-]
-							StepG = StepF + 2; // 1) 26 2) 20/21
-							StepH = StepG + 1; // 1) 27 2) 21/22
-							// [+|-]
-							SZone = SZone + Ch;
-						ElsIf Ch = "Z" Then
-							// YYYY[-|/]MM[-|/]DDThh:mm:ss.sssZ, skip char.
-							// YYYYMMDD[T]hhmmsssssZ, skip char.
-							StepG = StepF;     // Skip step
-							StepH = StepG;     // Skip step
-							StepI = StepH;     // Skip step
-							StepJ = StepI + 1; // 1) 25 2) 19/20
-						Else
-							Raise(NStr("en = 'Wrong time zone format.'"));
-						EndIf;
-						
-					// Step 16.
-					ElsIf i <= StepG Then
-						// hh in [0123456789]
-						If Find(Digits, Ch) > 0 Then
-							SZone = SZone + Ch;
-						Else
-							Raise(NStr("en = 'Wrong time zone format.'"));
-						EndIf;
-						
-					// Step 17.
-					ElsIf i = StepH Then
-						If SOption = 2 Then
-							If Ch = ":" Then
-								// YYYY[-|/]MM[-|/]DDThh:mm:ss[.ss[s]][+|-]hh:, skip char.
-								// Define next step constants.
-								StepI = StepH + 2; // 29
-								StepJ = StepI + 1; // 30
-							Else
-								Raise(NStr("en = 'Wrong time zone format.'"));
-							EndIf;
-							
-						Else // SOption = 1.
-							If Find(Digits, Ch) > 0 Then
-								// m in [0123456789]
-								SZone = SZone + Ch;
-								// YYYYMMDD[T]hhmmss[ss[s]][+|-]hhm
-								// Define next step constants.
-								StepI = StepH + 1; // 22/23
-								StepJ = StepI + 1; // 23/24
-							Else
-								Raise(NStr("en = 'Wrong time zone format.'"));
-							EndIf;
-						EndIf;
-						
-					// Step 18.
-					ElsIf i <= StepI Then
-						// mm in [0123456789]
-						If Find(Digits, Ch) > 0 Then
-							SZone = SZone + Ch;
-						Else
-							Raise(NStr("en = 'Wrong time zone format.'"));
-						EndIf;
-						
-					// Step 19.
-					ElsIf i = StepJ Then
-						// YYYY[-|/]MM[-|/]DDThh:mm:ss[.ss[s]][Z|[+|-]hh:[mm]]?
-						// YYYYMMDD[T]hhmmss[ss[s]][Z|[+|-]hh[mm]]?
-						Raise(NStr("en = 'Wrong date format.'"));
-						
-					// Step unknown.
-					Else
-						Raise(NStr("en = 'Wrong date format.'"));
-					EndIf;
-				EndDo;
-				
-				// Convert simplified datetime string to primitive date.
-				SourceDate = Date(SDate); // "YYYYMMDDhhmmss"
-				
-				// Adjust date from source to universal UTC time [+|-]hh[:mm] (if specified)
-				If (Not IsBlankString(SZone)) Or (Find(Value, "Z") > 0) Then // UTC date specified
-					TimeZoneCorrection = Number(Left(SZone, 1)+"1") * (Number("0"+Mid(SZone, 2, 2))*60*60 + Number("0"+Mid(SZone, 4, 2))*60);
-					
-					// Convert local date & UTC offset to universal date (UTC = 0).
-					UTCDate = SourceDate - TimeZoneCorrection;
-					
-					// Convert UTC date to local date with current server/client UTC correction.
-					Value = ToLocalTime(UTCDate);
-				Else
-					// We do not actually know the time offset of passed date.
-					Value = SourceDate;
-				EndIf;
-				
-			// Define conversion from any other format.
-			Else
-				Value = Date(Value);
-			EndIf;
-			
-		ElsIf Type = Type("String") Then
-			Value = String(Value);
-			
-		Else // Uknown type.
-			Return False;
-		EndIf;
-		
-		// Conversion succeeded.
-		Return True;
-	Except
-		// Conversion failed.
-		Return False;
-	EndTry;
-	
-EndFunction
-
 // Checks whether passed string is compilant to RFC 3986,
 // that is, does it contain unreserved characters only,
 // and thus do not require percent encoding.
@@ -3612,652 +2707,6 @@ Function IsURLStringRFC3986Compilant(Val URLString,
 		
 	EndDo;
 	
-	Return Result;
-	
-EndFunction
-
-// Decodes UTF-16 string to native unicode string.
-//
-// Parameters:
-//  UTF16     - String    - String of UTF-16 characters codes.
-//            - Array     - Array of UTF-16 characters words.
-//  AsArray   - Boolean   - Function must return UTF-16 MWCS as an array
-//                          (otherwise returns string of char-words).
-//  ByteOrder - Boolean   - True  = Big endian UTF-16BE (High byte, Low byte).
-//                        - False = Low endian UTF-16LE (Low byte, high byte).
-//            - Undefined - UTF-16: Use byte order autodetection
-//                          (prefferably UTF-16BE).
-// Returns:
-//  String - Decoded unicode string.
-//  Array  - Decoded unicode characters.
-//
-Function UTF16ToStr(UTF16, AsArray = False, ByteOrder = Undefined)
-	
-	// Define empty result.
-	If AsArray Then
-		Result = New Array;
-	Else
-		Result = "";
-	EndIf;
-	
-	// Define default exception description.
-	ErrorDescription = NStr("en = 'UTF-16 string format error occured'");
-	
-	// Define source string parameters.
-	If TypeOf(UTF16) = Type("Array") Then
-		
-		// Use passed multy-words characters array directly.
-		MWCS = UTF16;
-		
-	ElsIf TypeOf(UTF16) = Type("String") Then
-		
-		// Create multy-words characters array.
-		If StrLen(UTF16) > 0 Then
-			MWCS = New Array(StrLen(UTF16));
-			For i = 1 To StrLen(UTF16) Do
-				MWCS[i-1] = CharCode(UTF16, i);
-			EndDo;
-		Else
-			// Return empty result.
-			Return Result;
-		EndIf;
-		
-	Else
-		// Unknown passed type.
-		Return Result;
-	EndIf;
-	
-	// Step by step convertion of UTF-16 MWCS.
-	Try
-		i = 0; MWC = New Array;
-		While i < MWCS.Count() Do
-			
-			// Get first word according to the byte order.
-			If (ByteOrder = Undefined) Or (ByteOrder) Then
-				// High-endian (plain) byte order.
-				Word = MWCS[i];
-				
-			Else // ByteOrder = False
-				// Low-endian (reverse) byte order.
-				LB = Int(MWCS[i] / 256);
-				HB = MWCS[i] % 256;
-				Word = HB * 256 + LB;
-			EndIf;
-			
-			// Define char size.
-			If Word < 0 Then
-				// Error: Character code can't be signed int.
-				If AsArray Then
-					Return New Array;
-				Else
-					Return "";
-				EndIf;
-				
-			ElsIf Word < 55296   Then    // 0000 .. D7FF
-				// Decode basic multilingual plane char = 16 bits.
-				// xxxx -> xxxx.xxxx xxxx.xxxx -> xxxx
-				
-				// Add word.
-				If AsArray Then
-					Result.Add(Word);    // Basic code.
-				Else
-					Result = Result + Char(Word); // Basic char.
-				EndIf;
-				i = i + 1;
-				
-			ElsIf Word < 56320   Then    // D800 .. DBFF
-				// High surrogate pair.
-				
-				// Check MWC length.
-				If i + 1 > MWCS.Count() Then
-					// This is not valid MCW length,
-					// read beyond the end of MCBS array.
-					If AsArray Then
-						Return New Array;
-					Else
-						Return "";
-					EndIf;
-				EndIf;
-				
-				// Get second word according to the byte order.
-				If (ByteOrder = Undefined) Or (ByteOrder) Then
-					// High-endian (plain) byte order.
-					Wrd2 = MWCS[i + 1];
-					
-				Else // ByteOrder = False
-					// Low-endian (reverse) byte order.
-					LB = Int(MWCS[i + 1] / 256);
-					HB = MWCS[i + 1] % 256;
-					Wrd2 = HB * 256 + LB;
-				EndIf;
-				
-				// Check low surrogate pair.
-				If Wrd2 < 56320    Then  // 0000 .. DBFF
-					// Error: LSP expected, but signed int, BMP char or HSP found.
-					Raise ErrorDescription;
-					
-				ElsIf Wrd2 < 57344 Then  // DC00 .. DFFF
-					// OK: Low surrogate pair found.
-					
-				Else                     // E000 .. FFFF (+)
-					// Error: LSP expected, but BMP char found or code exeeds word limit.
-					Raise ErrorDescription;
-				EndIf;
-				
-				// Calculate char code.
-				HW = Word % 1024;        // AND $3FF
-				LW = Wrd2 % 1024;        // AND $3FF
-				Word = HW * 1024 + LW;   // SHL(High word, 10) OR (Low word)
-				
-				// Shift chars range to 10000 (add 0001.0000)
-				// 0000.0000 .. 000F.FFFF > 0001.0000 .. 0010.FFFF
-				Word = Word + 65536;     // ADD(Word, $0001.0000)
-				
-				// Add word.
-				If AsArray Then
-					Result.Add(Word);    // SMP, SIP, TIP, SSP or private area code.
-				Else
-					Result = Result + Char(Word); // SMP, SIP, TIP, SSP or private area char.
-				EndIf;
-				i = i + 2;
-				
-			ElsIf Word < 57344   Then    // DC00 .. DFFF
-				// Low surrogate pair.
-				// Error: LSP can't be used without HSP.
-				Raise ErrorDescription;
-				
-			ElsIf Word = 65279           // FEFF
-			  And    i = 0       Then
-				// 1st word - BOM detected: UTF-16BE
-				ByteOrder = True;
-				i = i + 1;
-				
-			ElsIf Word = 65534           // FFFE
-			  And    i = 0       Then
-				// 1st word - BOM detected: UTF-16LE
-				ByteOrder = False;
-				i = i + 1;
-				
-			ElsIf Word < 65536   Then    // E000 .. FFFF; excl. FEFF, FFFE
-				// Decode basic multilingual plane char = 16 bits.
-				// xxxx -> xxxx.xxxx xxxx.xxxx -> xxxx
-				
-				// Add word.
-				If AsArray Then
-					Result.Add(Word);    // Basic code.
-				Else
-					Result = Result + Char(Word); // Basic char.
-				EndIf;
-				i = i + 1;
-				
-			Else // Char code exeeds word limit:    FFFF (+)
-				Raise ErrorDescription;
-			EndIf;
-		EndDo;
-		
-	Except
-		// Check exception cause.
-		Info = ErrorInfo();
-		If Info.Description = ErrorDescription Then // Self-produced error.
-			
-			// Check bytes order (wrong order?)
-			If ByteOrder = Undefined Then // Autoswitch bytes order.
-				// Repeat call with low endian byte order.
-				Return UTF16ToStr(UTF16, AsArray, False);
-			Else
-				// The byte order is defined. Wrong data input.
-				If AsArray Then
-					Return New Array;
-				Else
-					Return "";
-				EndIf;
-			EndIf;
-		Else
-			// Other errors should be handled by default.
-			Raise;
-		EndIf;
-	EndTry;
-	
-	// Return resulting string or array.
-	Return Result;
-	
-EndFunction
-
-// Decodes UTF-8 string to native unicode string.
-//
-// Parameters:
-//  UTF8     - String  - String of UTF-8 characters codes.
-//           - Array   - Array of UTF-8 characters bytes.
-//  AsArray  - Boolean - Function must return UTF-8 MBCS as an array
-//                       (otherwise returns string of char-bytes).
-//
-// Returns:
-//  String - Decoded unicode string.
-//  Array  - Decoded unicode characters.
-//
-Function UTF8ToStr(UTF8, AsArray = False)
-	
-	// Define unicode BOM signature.
-	BOM = 65279; // FEFF
-	
-	// Define empty result.
-	If AsArray Then
-		Result = New Array;
-	Else
-		Result = "";
-	EndIf;
-	
-	// Define source string parameters.
-	If TypeOf(UTF8) = Type("Array") Then
-		
-		// Use passed multy-byte characters array directly.
-		MBCS = UTF8;
-		
-	ElsIf TypeOf(UTF8) = Type("String") Then
-		
-		// Create multy-byte characters array.
-		If StrLen(UTF8) > 0 Then
-			MBCS = New Array(StrLen(UTF8));
-			For i = 1 To StrLen(UTF8) Do
-				MBCS[i-1] = CharCode(UTF8, i);
-			EndDo;
-		Else
-			// Return empty result.
-			Return Result;
-		EndIf;
-		
-	Else
-		// Unknown passed type.
-		Return Result;
-	EndIf;
-	
-	// Step by step convertion of UTF-8 MBCS.
-	i = 0; MBC = New Array;
-	While i < MBCS.Count() Do
-		
-		// Get first byte.
-		Byte = MBCS[i];
-		
-		// Get bytes count per MBC.
-		Base = 128; Count = 0;
-		While Byte > 0 Do
-			
-			// Check 0-subset.
-			If Int(Byte/Base) = 0 Then
-				Break;
-			EndIf;
-			
-			// Add 1 to count of bytes in set.
-			Count = Count + 1;
-			
-			// Get next iteration.
-			Byte = Byte % Base;
-			Base = Int(Base / 2);
-		EndDo;
-		
-		// Convert char using specified quantity of symbols.
-		If Count = 0 Then
-			
-			// ASCII Char (0..7F)
-			If AsArray Then
-				Result.Add(Byte);
-			Else
-				Result = Result + Char(Byte);
-			EndIf;
-			i = i + 1;
-			
-		ElsIf Count = 1 Then
-			
-			// This is not valid UTF-8 character,
-			// control bits are reserved.
-			If AsArray Then
-				Return New Array;
-			Else
-				Return "";
-			EndIf;
-			
-		ElsIf Count > 4 Then
-		
-			// This is not valid UTF-8 character,
-			// 5 and 6 byte symbols are restricted according to RFC 3629.
-			If AsArray Then
-				Return New Array;
-			Else
-				Return "";
-			EndIf;
-			
-		Else // This is 2-4 bytes set.
-			
-			// Check MBC length.
-			If i + Count > MBCS.Count() Then
-				// This is not valid MCB length,
-				// read beyond the end of MCBS array.
-				If AsArray Then
-					Return New Array;
-				Else
-					Return "";
-				EndIf;
-			EndIf;
-			
-			// Add rest bits from first character.
-			MBC.Add(Byte);
-			
-			// Check other characters.
-			For j = 1 To Count-1 Do
-				B  = MBCS[i+j];    // Current byte.
-				B1 = Int(B / 128); // Highest bit
-				B  = B % 128;      // AND $7F
-				B2 = Int(B / 64);  // 2-nd bit
-				B  = B % 64;       // AND $3F
-				
-				// Check control bits
-				If B1 = 1 And B2 = 0 Then
-					MBC.Add(B);
-				Else
-					// This is not valid UTF-8 character,
-					// control bits are not found.
-					If AsArray Then
-						Return New Array;
-					Else
-						Return "";
-					EndIf;
-				EndIf;
-			EndDo;
-			
-			// Last value of MBC can be used without rebuilding.
-			Code = MBC[Count-1]; Base = 64;
-			
-			// Get bits from MBC and calculate the unicode code points.
-			For j = 2 To Count Do
-				Code = Code + Base * MBC[Count-j];
-				Base = Base * 64;
-			EndDo;
-			
-			// Check BOM signature.
-			If i = 0 And Code = BOM Then // BOM signature found in first MBC.
-				// Skip BOM.
-			Else
-				// Add unicode char to result.
-				If AsArray Then
-					Result.Add(Code);
-				Else
-					Result = Result + Char(Code);
-				EndIf;
-			EndIf;
-			
-			// Prepare for next iteration.
-			i = i + Count;
-			MBC.Clear();
-		EndIf;
-	EndDo;
-	
-	// Return resulting string or array.
-	Return Result;
-	
-EndFunction
-
-// Decodes ANSI string (provided by some browsers) to native unicode string.
-// Warning: Only Windows SBCS are supported, Windows DBCS are not supported:
-// There is no support for eastern languages: Thai, Japanese, Korean, Chinese.
-//
-// Parameters:
-//  ANSI     - String - String of ANSI characters codes,
-//           - Array  - Array of ANSI characters bytes.
-//
-//  CodePage - String - Windows-ANSI character table:
-//             "windows-1250" – Central and East European Latin
-//             "windows-1251" – Cyrillic
-//             "windows-1252" – West European Latin
-//             "windows-1253" – Greek
-//             "windows-1254" – Turkish
-//             "windows-1255" – Hebrew
-//             "windows-1256" – Arabic
-//             "windows-1257" – Baltic
-//             "windows-1258" – Vietnamese
-//           - Undefined - Autodetection of ANSI code page
-//             basing on current session localization code.
-// Returns:
-//  String   - Decoded unicode string.
-//
-Function ANSIToStr(ANSI, CodePage = Undefined)
-	
-	// Define empty result.
-	Result = "";
-	
-	// Define source string parameters.
-	If TypeOf(ANSI) = Type("Array") Then
-		
-		// Use passed single-byte characters array directly.
-		SBCS = ANSI;
-		
-	ElsIf TypeOf(ANSI) = Type("String") Then
-		
-		// Create single-byte characters array.
-		If StrLen(ANSI) > 0 Then
-			SBCS = New Array(StrLen(ANSI));
-			For i = 1 To StrLen(ANSI) Do
-				SBCS[i-1] = CharCode(Mid(ANSI, i, 1));
-			EndDo;
-		Else
-			// Return empty result.
-			Return Result;
-		EndIf;
-		
-	Else
-		// Unknown passed type.
-		Return Result;
-	EndIf;
-	
-	// Define actual codepage to be used in conversion.
-	If  (StrLen(CodePage) = 12)
-	And (Left(CodePage, 11) = "windows-125")
-	And (Find("012345678", Mid(CodePage, 12, 1)) > 0) Then
-	
-		// Assign passed code page.
-		CP = "CP125"+Mid(CodePage, 12, 1);
-		
-	Else // Process automatic search of codepage using session data.
-	
-		// Define code page constants.
-		CP1250 = "az, az_AZ, az_Latn, az_Latn_AZ, " +  // Azerbaijani (latin)
-		         "hy, hy_AM, hy_AM_REVISED, " +        // Armenian
-		         "ka, ka_GE, " +                       // Georgian
-	             "uz, uz_Latn, uz_Latn_UZ, uz_UZ, " +  // Uzbek (latin)
-		         "cs, cs_CZ, " +                       // Czech
-		         "hr, hr_HR, " +                       // Croatian
-		         "hu, hu_HU, " +                       // Hungarian
-		         "pl, pl_PL, " +                       // Polish
-		         "ro, ro_RO, " +                       // Romanian
-		         "sk, sk_SK, " +                       // Slovak
-		         "sl, sl_SI, " +                       // Slovenian
-		         "sr_Latn, " +                         // Serbian (Latin)
-		         "sr_BA, sr_Latn_BA, " +               // Serbian (Bosnia and Herzegovina)
-		         "sr_Latn_RS, sr_Latn_ME, sr_Latn_CS"; // Serbian (Latin, Serbia and Montenegro)
-		CP1251 = "ru, ru_RU, ru_UA, " +                // Russian
-		         "be, be_BY, " +                       // Belarusian
-		         "uk, uk_UA, " +                       // Ukrainian
-		         "kk, kk_KZ, " +                       // Kazakh
-		         "az_Cyrl, az_Cyrl_AZ, " +             // Azerbaijani (Cyrillic)
-		         "uz_Cyrl, uz_Cyrl_UZ, " +             // Uzbek (Cyrillic)
-		         "bg, bg_BG, " +                       // Bulgarian
-		         "mk, mk_MK, " +                       // Macedonian
-		         "sr, sr_CS, sr_RS, sr_ME, " +         // Serbian (Serbia and Montenegro)
-		         "sr_Cyrl, " +                         // Serbian (Cyrillic)
-		         "sr_Cyrl_BA, " +                      // Serbian (Cyrillic, Bosnia and Herzegovina)
-		         "sr_Cyrl_CS, sr_Cyrl_RS, sr_Cyrl_ME"; // Serbian (Cyrillic, Serbia and Montenegro)
-		CP1252 = "";                                   // Default codepage
-		CP1253 = "el, el_CY, el_GR";                   // Greek
-		CP1254 = "tr, tr_TR";                          // Turkish
-		CP1255 = "he, he_IL";                          // Hebrew
-		CP1256 = "ar, ar_AE, ar_BH, ar_DZ, ar_EG, " +  // Arabic
-		         "ar_IQ, ar_JO, ar_KW, ar_LB, ar_LY, " +
-		         "ar_MA, ar_OM, ar_QA, ar_SA, ar_SD, " +
-		         "ar_SY, ar_TN, ar_YE";
-		CP1257 = "et, et_EE, " +                       // Estonian
-		         "lt, lt_LT, " +                       // Lithuanian
-		         "lv, lv_LV";                          // Latvian
-		CP1258 = "vi, vi_VN";                          // Vietnamese
-	
-		// Actually we don't know exactly, which ANSI page was used,
-		// because it defined by regional & language settings.
-		// We'll use the current session language code as much close value to regional settings.
-		#If ThinClient Or WebClient Then
-			LocaleCode = InternetConnectionServerCall.CurrentLocaleCodeAtServer();
-		#Else
-			LocaleCode = CurrentLocaleCode();
-		#EndIf
-		CP = "";
-		For i = 0 To 8 Do
-			If Find(", " + Eval("CP125"+i) + "," , ", " + LocaleCode + ",") > 0 Then
-				CP = "CP125"+i;
-				Break;
-			EndIf;
-		EndDo;
-		If IsBlankString(CP) Then
-			CP = "CP1252"; // Use default code page.
-		EndIf;
-	EndIf;
-	
-	// Define charset character table.
-	If CP = "CP1250" Then
-		// CP1250 (Latin, Central European languages)
-		// 00 .. 7F -> 0000 ..007F (ASCII)
-		Bt80 = "20AC,    ,201A,    ,201E,2026,2020,2021,    ,2030,0160,2039,015A,0164,017D,0179,"+ // 80 .. 8F
-		       "    ,2018,2019,201C,201D,2022,2013,2014,    ,2122,0161,203A,015B,0165,017E,017A,"+ // 90 .. 9F
-		       "00A0,02C7,02D8,0141,00A4,0104,00A6,00A7,00A8,00A9,015E,00AB,00AC,00AD,00AE,017B,"+ // A0 .. AF
-		       "00B0,00B1,02DB,0142,00B4,00B5,00B6,00B7,00B8,0105,015F,00BB,013D,02DD,013E,017C,"+ // B0 .. BF
-		       "0154,00C1,00C2,0102,00C4,0139,0106,00C7,010C,00C9,0118,00CB,011A,00CD,00CE,010E,"+ // C0 .. CF
-		       "0110,0143,0147,00D3,00D4,0150,00D6,00D7,0158,016E,00DA,0170,00DC,00DD,0162,00DF,"+ // D0 .. DF
-		       "0155,00E1,00E2,0103,00E4,013A,0107,00E7,010D,00E9,0119,00EB,011B,00ED,00EE,010F,"+ // E0 .. EF
-		       "0111,0144,0148,00F3,00F4,0151,00F6,00F7,0159,016F,00FA,0171,00FC,00FD,0163,02D9";  // F0 .. FF
-		
-	ElsIf CP = "CP1251" Then
-		// CP1251 (Cyrillic)
-		// 00 .. 7F -> 0000 ..007F (ASCII)
-		Bt80 = "0402,0403,201A,0453,201E,2026,2020,2021,20AC,2030,0409,2039,040A,040C,040B,040F,"+ // 80 .. 8F
-		       "0452,2018,2019,201C,201D,2022,2013,2014,    ,2122,0459,203A,045A,045C,045B,045F,"+ // 90 .. 9F
-		       "00A0,040E,045E,0408,00A4,0490,00A6,00A7,0401,00A9,0404,00AB,00AC,00AD,00AE,0407,"+ // A0 .. AF
-		       "00B0,00B1,0406,0456,0491,00B5,00B6,00B7,0451,2116,0454,00BB,0458,0405,0455,0457,"+ // B0 .. BF
-		       "0410,0411,0412,0413,0414,0415,0416,0417,0418,0419,041A,041B,041C,041D,041E,041F,"+ // C0 .. CF
-		       "0420,0421,0422,0423,0424,0425,0426,0427,0428,0429,042A,042B,042C,042D,042E,042F,"+ // D0 .. DF
-		       "0430,0431,0432,0433,0434,0435,0436,0437,0438,0439,043A,043B,043C,043D,043E,043F,"+ // E0 .. EF
-		       "0440,0441,0442,0443,0444,0445,0446,0447,0448,0449,044A,044B,044C,044D,044E,044F";  // F0 .. FF
-		
-	ElsIf CP = "CP1252" Then
-		// CP1252 (Latin, Western European languages, Default)
-		// 00 .. 7F -> 0000 ..007F (ASCII)
-		Bt80 = "20AC,    ,201A,0192,201E,2026,2020,2021,02C6,2030,0160,2039,0152,    ,017D,    ,"+ // 80 .. 8F
-		       "    ,2018,2019,201C,201D,2022,2013,2014,02DC,2122,0161,203A,0153,    ,017E,0178,"+ // 90 .. 9F
-		       "00A0,00A1,00A2,00A3,00A4,00A5,00A6,00A7,00A8,00A9,00AA,00AB,00AC,00AD,00AE,00AF,"+ // A0 .. AF
-		       "00B0,00B1,00B2,00B3,00B4,00B5,00B6,00B7,00B8,00B9,00BA,00BB,00BC,00BD,00BE,00BF,"+ // B0 .. BF
-		       "00C0,00C1,00C2,00C3,00C4,00C5,00C6,00C7,00C8,00C9,00CA,00CB,00CC,00CD,00CE,00CF,"+ // C0 .. CF
-		       "00D0,00D1,00D2,00D3,00D4,00D5,00D6,00D7,00D8,00D9,00DA,00DB,00DC,00DD,00DE,00DF,"+ // D0 .. DF
-		       "00E0,00E1,00E2,00E3,00E4,00E5,00E6,00E7,00E8,00E9,00EA,00EB,00EC,00ED,00EE,00EF,"+ // E0 .. EF
-		       "00F0,00F1,00F2,00F3,00F4,00F5,00F6,00F7,00F8,00F9,00FA,00FB,00FC,00FD,00FE,00FF";  // F0 .. FF
-		
-	ElsIf CP = "CP1253" Then
-		// CP1253 (Greek)
-		// 00 .. 7F -> 0000 ..007F (ASCII)
-		Bt80 = "20AC,    ,201A,0192,201E,2026,2020,2021,    ,2030,    ,2039,    ,    ,    ,    ,"+ // 80 .. 8F
-		       "    ,2018,2019,201C,201D,2022,2013,2014,    ,2122,    ,203A,    ,    ,    ,    ,"+ // 90 .. 9F
-		       "00A0,0385,0386,00A3,00A4,00A5,00A6,00A7,00A8,00A9,    ,00AB,00AC,00AD,00AE,2015,"+ // A0 .. AF
-		       "00B0,00B1,00B2,00B3,0384,00B5,00B6,00B7,0388,0389,038A,00BB,038C,00BD,038E,038F,"+ // B0 .. BF
-		       "0390,0391,0392,0393,0394,0395,0396,0397,0398,0399,039A,039B,039C,039D,039E,039F,"+ // C0 .. CF
-		       "03A0,03A1,    ,03A3,03A4,03A5,03A6,03A7,03A8,03A9,03AA,03AB,03AC,03AD,03AE,03AF,"+ // D0 .. DF
-		       "03B0,03B1,03B2,03B3,03B4,03B5,03B6,03B7,03B8,03B9,03BA,03BB,03BC,03BD,03BE,03BF,"+ // E0 .. EF
-		       "03C0,03C1,03C2,03C3,03C4,03C5,03C6,03C7,03C8,03C9,03CA,03CB,03CC,03CD,03CE,    ";  // F0 .. FF
-		
-	ElsIf CP = "CP1254" Then
-		// CP1254 (Turkish)
-		Bt80 = "20AC,    ,201A,0192,201E,2026,2020,2021,02C6,2030,0160,2039,0152,    ,    ,    ,"+ // 80 .. 8F
-		       "    ,2018,2019,201C,201D,2022,2013,2014,02DC,2122,0161,203A,0153,    ,    ,0178,"+ // 90 .. 9F
-		       "00A0,00A1,00A2,00A3,00A4,00A5,00A6,00A7,00A8,00A9,00AA,00AB,00AC,00AD,00AE,00AF,"+ // A0 .. AF
-		       "00B0,00B1,00B2,00B3,00B4,00B5,00B6,00B7,00B8,00B9,00BA,00BB,00BC,00BD,00BE,00BF,"+ // B0 .. BF
-		       "00C0,00C1,00C2,00C3,00C4,00C5,00C6,00C7,00C8,00C9,00CA,00CB,00CC,00CD,00CE,00CF,"+ // C0 .. CF
-		       "011E,00D1,00D2,00D3,00D4,00D5,00D6,00D7,00D8,00D9,00DA,00DB,00DC,0130,015E,00DF,"+ // D0 .. DF
-		       "00E0,00E1,00E2,00E3,00E4,00E5,00E6,00E7,00E8,00E9,00EA,00EB,00EC,00ED,00EE,00EF,"+ // E0 .. EF
-		       "011F,00F1,00F2,00F3,00F4,00F5,00F6,00F7,00F8,00F9,00FA,00FB,00FC,0131,015F,00FF";  // F0 .. FF
-		
-	ElsIf CP = "CP1255" Then
-		// CP1255 (Hebrew)
-		Bt80 = "20AC,    ,201A,0192,201E,2026,2020,2021,02C6,2030,    ,2039,    ,    ,    ,    ,"+ // 80 .. 8F
-		       "    ,2018,2019,201C,201D,2022,2013,2014,02DC,2122,    ,203A,    ,    ,    ,    ,"+ // 90 .. 9F
-		       "00A0,00A1,00A2,00A3,20AA,00A5,00A6,00A7,00A8,00A9,00D7,00AB,00AC,00AD,00AE,00AF,"+ // A0 .. AF
-		       "00B0,00B1,00B2,00B3,00B4,00B5,00B6,00B7,00B8,00B9,00F7,00BB,00BC,00BD,00BE,00BF,"+ // B0 .. BF
-		       "05B0,05B1,05B2,05B3,05B4,05B5,05B6,05B7,05B8,05B9,    ,05BB,05BC,05BD,05BE,05BF,"+ // C0 .. CF
-		       "05C0,05C1,05C2,05C3,05F0,05F1,05F2,05F3,05F4,    ,    ,    ,    ,    ,    ,    ,"+ // D0 .. DF
-		       "05D0,05D1,05D2,05D3,05D4,05D5,05D6,05D7,05D8,05D9,05DA,05DB,05DC,05DD,05DE,05DF,"+ // E0 .. EF
-		       "05E0,05E1,05E2,05E3,05E4,05E5,05E6,05E7,05E8,05E9,05EA,    ,    ,200E,200F,    ";  // F0 .. FF
-		
-	ElsIf CP = "CP1256" Then
-		// CP1256 (Arabic)
-		Bt80 = "20AC,067E,201A,0192,201E,2026,2020,2021,02C6,2030,0679,2039,0152,0686,0698,0688,"+ // 80 .. 8F
-		       "06AF,2018,2019,201C,201D,2022,2013,2014,06A9,2122,0691,203A,0153,200C,200D,06BA,"+ // 90 .. 9F
-		       "00A0,060C,00A2,00A3,00A4,00A5,00A6,00A7,00A8,00A9,06BE,00AB,00AC,00AD,00AE,00AF,"+ // A0 .. AF
-		       "00B0,00B1,00B2,00B3,00B4,00B5,00B6,00B7,00B8,00B9,061B,00BB,00BC,00BD,00BE,061F,"+ // B0 .. BF
-		       "06C1,0621,0622,0623,0624,0625,0626,0627,0628,0629,062A,062B,062C,062D,062E,062F,"+ // C0 .. CF
-		       "0630,0631,0632,0633,0634,0635,0636,00D7,0637,0638,0639,063A,0640,0641,0642,0643,"+ // D0 .. DF
-		       "00E0,0644,00E2,0645,0646,0647,0648,00E7,00E8,00E9,00EA,00EB,0649,064A,00EE,00EF,"+ // E0 .. EF
-		       "064B,064C,064D,064E,00F4,064F,0650,00F7,0651,00F9,0652,00FB,00FC,200E,200F,06D2";  // F0 .. FF
-		
-	ElsIf CP = "CP1257" Then
-		// CP1257 (Latin, Baltic languages)
-		Bt80 = "20AC,    ,201A,    ,201E,2026,2020,2021,    ,2030,    ,2039,    ,00A8,02C7,00B8,"+ // 80 .. 8F
-		       "    ,2018,2019,201C,201D,2022,2013,2014,    ,2122,    ,203A,    ,00AF,02DB,    ,"+ // 90 .. 9F
-		       "00A0,    ,00A2,00A3,00A4,    ,00A6,00A7,00D8,00A9,0156,00AB,00AC,00AD,00AE,00C6,"+ // A0 .. AF
-		       "00B0,00B1,00B2,00B3,00B4,00B5,00B6,00B7,00F8,00B9,0157,00BB,00BC,00BD,00BE,00E6,"+ // B0 .. BF
-		       "0104,012E,0100,0106,00C4,00C5,0118,0112,010C,00C9,0179,0116,0122,0136,012A,013B,"+ // C0 .. CF
-		       "0160,0143,0145,00D3,014C,00D5,00D6,00D7,0172,0141,015A,016A,00DC,017B,017D,00DF,"+ // D0 .. DF
-		       "0105,012F,0101,0107,00E4,00E5,0119,0113,010D,00E9,017A,0117,0123,0137,012B,013C,"+ // E0 .. EF
-		       "0161,0144,0146,00F3,014D,00F5,00F6,00F7,0173,0142,015B,016B,00FC,017C,017E,02D9";  // F0 .. FF
-		
-	ElsIf CP = "CP1258" Then
-		// CP1258 (Vietnamese)
-		Bt80 = "20AC,    ,201A,0192,201E,2026,2020,2021,02C6,2030,    ,2039,0152,    ,    ,    ,"+ // 80 .. 8F
-		       "    ,2018,2019,201C,201D,2022,2013,2014,02DC,2122,    ,203A,0153,    ,    ,0178,"+ // 90 .. 9F
-		       "00A0,00A1,00A2,00A3,00A4,00A5,00A6,00A7,00A8,00A9,00AA,00AB,00AC,00AD,00AE,00AF,"+ // A0 .. AF
-		       "00B0,00B1,00B2,00B3,00B4,00B5,00B6,00B7,00B8,00B9,00BA,00BB,00BC,00BD,00BE,00BF,"+ // B0 .. BF
-		       "00C0,00C1,00C2,0102,00C4,00C5,00C6,00C7,00C8,00C9,00CA,00CB,0300,00CD,00CE,00CF,"+ // C0 .. CF
-		       "0110,00D1,0309,00D3,00D4,01A0,00D6,00D7,00D8,00D9,00DA,00DB,00DC,01AF,0303,00DF,"+ // D0 .. DF
-		       "00E0,00E1,00E2,0103,00E4,00E5,00E6,00E7,00E8,00E9,00EA,00EB,0301,00ED,00EE,00EF,"+ // E0 .. EF
-		       "0111,00F1,0323,00F3,00F4,01A1,00F6,00F7,00F8,00F9,00FA,00FB,00FC,01B0,20AB,00FF";  // F0 .. FF
-	Else
-		Bt80 = "";
-	EndIf;
-	
-	// Define hex codes string.
-	HexStr = "0123456789ABCDEF";
-	
-	// Step by step convertion of ANSI Characters to Unicode.
-	For i = 0 To SBCS.Count() - 1 Do
-		
-		// Get current byte.
-		Byte = SBCS[i];
-		If Byte < 128 Then
-			// ASCII Char (00 .. 7F)
-			Result = Result + Char(Byte);
-			
-		ElsIf Byte < 256 Then
-			// National Code Page Char (80 .. FF)
-			UnicodeCharHex  = Mid(Bt80, (Byte-128) * 5 + 1, 4);
-			If Not IsBlankString(UnicodeCharHex) Then
-				UnicodeCharCode = 0; Base = 1;
-				For j = 0 To 3 Do
-					UnicodeCharCode = UnicodeCharCode + Base * (Find(HexStr, Mid(UnicodeCharHex, 4 - j, 1)) - 1);
-					Base = Base * 16;
-				EndDo;
-				Result = Result + Char(UnicodeCharCode);
-			Else
-				// Undefined symbol or wrong character table.
-				Result = Result + "?";
-			EndIf;
-		Else
-			// Undefined symbol or wrong character table.
-			Result = Result + "?";
-		EndIf;
-	EndDo;
-	
-	// Return resulting string.
 	Return Result;
 	
 EndFunction
@@ -4585,7 +3034,7 @@ Function EncodeToPercentStr(Str, AdditionalCharacters = "", ExcludeCharacters = 
 		Else
 			
 			// This is not an unreserved char.
-			StrBuf = StrBuf + Char
+			StrBuf = StrBuf + Char;
 		EndIf;
 	EndDo;
 	
@@ -4613,30 +3062,22 @@ EndFunction
 // - Structures, maps and arrays are recoded to arrays (named or integer).
 // - Numeric values are encoded using international standard without thousands
 //    separators, decimal separator represented by ".", unar minus as prefix.
-// - Date types are encoded according to UseISODate and UseShortISODateFormat.
+// - Date types are encoded in UNIX-like numeric standard.
 // - Boolean values as "true" and "false".
 // - All other values are encoded as stirngs using their presentation.
 //
 // Parameters:
 //  Parameters    - ValueList, Map, Structure, Array - Collection of parameters
-//                              and typed values or sub-structures.
+//                  and typed values or sub-structures.
 //  URLParameters - ValueList - Returned collecion of parameters and their values
-//                              converted to string.
-//  Key           - String    - Current filling structure key (used in recursion).
-//  UseISODate    - Boolean   - Use ISO 8601 string for encoding the datetime values,
-//                              otherwise UNIX-time numeric will be used.
-//  UseShortISODateFormat - Boolean - If date converted to ISO 8601
-//                              has only data part without time used,
-//                              then it will be saved only as data in short format
-//                              otherwise classic notation for date & time
-//                              including UTC time zone will be used.
+//                  converted to string.
+//  Key           - String - Current filling structure key (used in recursion).
 //
 // Returns:
 //  URLParameters - ValueList - pairs of parameters and their values
 //                  converted to string.
 //
-Procedure EncodeURLParameters(Parameters, URLParameters, Key = "",
-	                          UseISODate = False, UseShortISODateFormat = True)
+Procedure EncodeURLParameters(Parameters, URLParameters, Key = "")
 	
 	// Define resulting value list.
 	If  URLParameters = Undefined Then
@@ -4688,43 +3129,13 @@ Procedure EncodeURLParameters(Parameters, URLParameters, Key = "",
 		   Or TypeOf(Value) = Type("Map")
 		   Or TypeOf(Value) = Type("Structure") Then
 			// Run the procedure recursively for all child elements.
-			EncodeURLParameters(Value, URLParameters, Path, UseISODate, UseShortISODateFormat);
+			EncodeURLParameters(Value, URLParameters, Path);
 			
 		ElsIf TypeOf(Value) = Type("Number") Then
 			URLParameters.Add(Format(Value, "NDS=.; NZ=0; NG="), Path);
 			
 		ElsIf TypeOf(Value) = Type("Date") Then
-			If UseISODate Then
-				// Use ISO 8601 string for encoding the date.
-				If UseShortISODateFormat And (BegOfDay(Value) = Value) Then
-					// Use short date format.
-					URLParameters.Add(Format(Value, "DF=yyyy-MM-dd"), Path);
-					
-				Else // Use full date & time format.
-					
-					// Get time shifting in current client session or at server.
-					UTCTime = ToUniversalTime(Value);
-					
-					// Define current UTC time zone.
-					TimeZone  = Value - UTCTime;
-					TimeZoneH = Int( ?(TimeZone < 0, -1, 1) * TimeZone / (60 * 60)); // Time zone hours.
-					TimeZoneM = Int((?(TimeZone < 0, -1, 1) * TimeZone - TimeZoneH * 60 * 60) / 60) ; // Time zone minutes.
-					TimeZoneS = ?(TimeZone = 0, "Z",
-					            ?(TimeZone > 0, "+", "-") + Format(TimeZoneH, "ND=2; NFD=0; NLZ=") +
-					            ?(TimeZoneM > 0,     ":"  + Format(TimeZoneM, "ND=2; NFD=0; NLZ="), ""));
-					
-					// Use ISO 8601 string for encoding the date.
-					URLParameters.Add(Format(Value, "DF=yyyy-MM-ddTHH:mm:ss") + TimeZoneS, Path);
-				EndIf;
-				
-			Else // Use UNIX-time numeric for encoding the date.
-				
-				// Get time shifting in current client session or at server.
-				UTCTime = ToUniversalTime(Value);
-				
-				// Use integer number of seconds passed from UNIX-epoch 1970.01.01.
-				URLParameters.Add(Format(UTCTime - Date("19700101"), "NFD=0; NZ=0; NG="), Path);
-			EndIf;
+			URLParameters.Add(Format(Value, "DF=yyyy-MM-ddTHH:mm:ssZ"), Path);
 			
 		ElsIf TypeOf(Value) = Type("Boolean") Then
 			URLParameters.Add(Format(Value, "BF=false; BT=true"), Path);
@@ -4735,6 +3146,450 @@ Procedure EncodeURLParameters(Parameters, URLParameters, Key = "",
 	EndDo;
 
 EndProcedure
+
+//------------------------------------------------------------------------------
+// Decoding JSON functions
+
+// Decodes standard JSON string to native structure.
+//
+// Parameters:
+//  StrJSON   - String - contains standard JSON object to convert.
+//  Parent    - Structure, Array - destination collection
+//                       where new created keys are placed.
+//  TimeShift - Number - Local time zone correction in seconds for use with UNIX dates
+//                       and ISO 8601 dates without time zone specified.
+//
+// Returns:
+//  Parent    - Destination collection where new created keys are placed.
+//
+Procedure DecodeJSONStructure(Val StrJSON, Parent, TimeShift = 0);
+	
+	// Define valid id symbols.
+	CharsID = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789";
+	CharsDg = "0123456789";
+	
+	// Process passed strings.
+	While StrLen(StrJSON) > 0 Do
+		
+		// For structure use ID in value pair.
+		If TypeOf(Parent) = Type("Structure") Then
+			
+			// 1. Get value ID.
+			Pos = Find(StrJSON, """");
+			If Pos = 0 Then
+				// ID not found
+				Return;
+			ElsIf Not IsBlankString(Left(StrJSON, Pos-1)) Then
+				// Some garbage found?
+				Return;
+			Else
+				// Cut string to value ID.
+				StrJSON = Mid(StrJSON, Pos+1);
+			EndIf;
+			
+			// Cut value ID.
+			StrID = ""; i = 1;
+			While i <= StrLen(StrJSON) Do
+				
+				// Get current char.
+				Ch = Mid(StrJSON, i , 1);
+				If Ch <> """" Then
+					// Simple char found.
+					StrID = StrID + Ch;
+					
+				Else
+					// Closing quote found.
+					StrJSON = Mid(StrJSON, i + 1);
+					Break;
+				EndIf;
+				
+				// Next iteration.
+				i = i + 1;
+			EndDo;
+			
+			// Check value ID.
+			If IsBlankString(StrID) Then
+				// Value ID cannot be empty.
+				Return;
+				
+			ElsIf Find(CharsDg, Left(StrID, 1)) > 0 Then
+				// ID cannot begin from a digit.
+				Return;
+				
+			Else // Check symbols passend to the ID rules.
+				For i = 1 To StrLen(StrID) Do
+					If Find(CharsID, Mid(StrID, i, 1)) = 0 Then
+						Return;
+					EndIf;
+				EndDo;
+			EndIf;
+			
+			// 2. Get value delimiter.
+			Pos = Find(StrJSON, ":");
+			If Pos = 0 Then
+				// Delimiter not found
+				Return;
+			ElsIf Not IsBlankString(Left(StrJSON, Pos-1)) Then
+				// Some garbage found?
+				Return;
+			Else
+				// Cut string to Value.
+				StrJSON = TrimL(Mid(StrJSON, Pos+1));
+			EndIf;
+		EndIf;
+		
+		// 3. Define possible value.
+		// Get first char.
+		Ch = Left(StrJSON, 1);
+		
+		// Check char according to possible values.
+		If Ch = "{" Or Ch = "[" Then // Structure or array found.
+			ChOp = Ch; ChCl = ?(Ch = "{", "}", "]");
+			
+			// One-char protection: char already processed.
+			If StrLen(StrJSON) = 1 Then StrJSON = ""; EndIf;
+			
+			// Cut Structure.
+			StrVal = ""; i = 2;
+			InString = False; ItLevel = 1;
+			While i <= StrLen(StrJSON) Do
+				
+				// Get current char.
+				Ch = Mid(StrJSON, i , 1);
+				
+				// Skip all string literals.
+				If InString Then
+					
+					// Process current string.
+					If Ch <> """" Then
+						// Simple char found.
+						
+					ElsIf Mid(StrJSON, i - 1 , 1) = "\" Then
+						// Escaped quote found.
+						
+					Else
+						// Closing quote found.
+						InString = False;
+					EndIf;
+					
+				Else
+					// Check string.
+					If Ch = """" Then
+						// Quote found - string begins.
+						InString = True;
+						
+					ElsIf Ch = ChOp Then
+						// Go one level down.
+						ItLevel = ItLevel + 1;
+						
+					ElsIf Ch = ChCl Then
+						// Go one level up.
+						If ItLevel > 1 Then
+							ItLevel = ItLevel - 1;
+						Else
+							// Closing bracket found.
+							StrJSON = Mid(StrJSON, i + 1);
+							Break;
+						EndIf;
+					EndIf;
+				EndIf;
+				
+				// Next iteration.
+				StrVal = StrVal + Ch;
+				i = i + 1;
+			EndDo;
+			
+			// Set proper value collection.
+			If ChOp = "{" Then
+				Value = New Structure;
+			Else
+				Value = New Array;
+			EndIf;
+			
+			// Add value to parent structure.
+			If TypeOf(Parent) = Type("Structure") Then
+				Parent.Insert(StrID, Value);
+			ElsIf TypeOf(Parent) = Type("Array") Then
+				Parent.Add(Value);
+			ElsIf Parent = Undefined Then
+				Parent = Value;
+			Else // Unknown parent found.
+				Return;
+			EndIf;
+			
+			// Decode descedant structure.
+			DecodeJSONStructure(TrimAll(StrVal), Value, TimeShift);
+			
+		ElsIf Ch = """" Then   // String value found.
+			
+			// Only one-char left: char already processed.
+			If StrLen(StrJSON) = 1 Then StrJSON = ""; EndIf;
+			
+			// Cut string value.
+			StrVal = ""; i = 2;
+			While i <= StrLen(StrJSON) Do
+				
+				// Get current char.
+				Ch = Mid(StrJSON, i , 1);
+				If Ch <> """" Then
+					// Simple char found.
+					StrVal = StrVal + Ch;
+					
+				ElsIf Mid(StrJSON, i - 1 , 1) = "\" Then
+					// Escaped quote found.
+					StrVal = StrVal + Ch;
+					
+				Else
+					// Closing quote found.
+					StrJSON = Mid(StrJSON, i + 1);
+					Break;
+				EndIf;
+				
+				// Next iteration.
+				i = i + 1;
+			EndDo;
+			
+			// Additional processing of string contents.
+			If ConvertValueToPrimitiveType(StrVal, Type("Date"), -TimeShift) Then
+				// Succesfully converted.
+			ElsIf ConvertValueToPrimitiveType(StrVal, Type("UUID")) Then
+				// Succesfully converted.
+			Else
+				// Convert JSON string to native 1C string.
+				StrVal = JSONStrToStr(StrVal);
+			EndIf;
+			
+			// Add value to parent structure.
+			If TypeOf(Parent) = Type("Structure") Then
+				Parent.Insert(StrID, StrVal);
+			ElsIf TypeOf(Parent) = Type("Array") Then
+				Parent.Add(StrVal);
+			ElsIf Parent = Undefined Then
+				Parent = StrVal;
+			Else // Unknown parent found.
+				Return;
+			EndIf;
+			
+		Else                   // Other type found.
+			
+			// Cut value.
+			StrVal = Ch; i = 2;
+			Value = Undefined;
+			While i <= StrLen(StrJSON) Do
+				
+				// Get current char.
+				Ch = Mid(StrJSON, i , 1);
+				If Find(CharsID+"+-.", Ch) > 0 Then
+					// Simple char found.
+					StrVal = StrVal + Ch;
+					
+				Else
+					// Other char found. Stop further processing.
+					Break;
+				EndIf;
+				
+				// Next iteration.
+				i = i + 1;
+			EndDo;
+			
+			// Decode cutted value.
+			Value = StrVal;
+			If Not ConvertValueToPrimitiveType(Value,, -TimeShift) Then
+				// Failed to convert value to any primitive type.
+				Return;
+			EndIf;
+			
+			// Adjust value type.
+			If Value = Undefined Or Value = Null Then  // Is Empty.
+				// Use undefined as empty value.
+				Value = Undefined;
+				
+			ElsIf TypeOf(Value) = Type("Boolean") Then // Is Boolean.
+				// OK, skip check.
+				
+			ElsIf TypeOf(Value) = Type("Number") Then  // Is Number.
+				// OK, skip check.
+				
+			ElsIf TypeOf(Value) = Type("Date") Then    // Is Date/Time.
+				// OK, skip check.
+				
+			ElsIf TypeOf(Value) = Type("UUID") Then    // Is UUID.
+				// OK, skip check.
+				
+			// String type is not allowed without quotes.
+			Else                                       // Unknown.
+				// Wrong defined type or some unknown value.
+				Return;
+			EndIf;
+			
+			// Cut rest of StrJSON.
+			StrJSON = Mid(StrJSON, i);
+			
+			// Add value to parent structure.
+			If TypeOf(Parent) = Type("Structure") Then
+				Parent.Insert(StrID, Value);
+			ElsIf TypeOf(Parent) = Type("Array") Then
+				Parent.Add(Value);
+			ElsIf Parent = Undefined Then
+				Parent = Value;
+			Else // Unknown parent found.
+				Return;
+			EndIf;
+		EndIf;
+		
+		// 4. Get value pair delimiter.
+		Pos = Find(StrJSON, ",");
+		If Pos = 0 Then
+			// Delimiter not found
+			Return;
+		ElsIf Not IsBlankString(Left(StrJSON, Pos-1)) Then
+			// Some garbage found?
+			Return;
+		Else
+			// Cut string to next value pair.
+			StrJSON = TrimL(Mid(StrJSON, Pos+1));
+		EndIf;
+	EndDo;
+	
+	// Full StrJSON parsed.
+	
+EndProcedure
+
+// Decodes JSON-compatible string to UTF-16 string according to RFC 4627.
+//
+// JSON string definition:
+// string = quotation-mark *char quotation-mark
+// char = unescaped /
+//		  escape (
+//			%x62 /          ; b    backspace       U+0008
+//			%x74 /          ; t    tab             U+0009
+//			%x6E /          ; n    line feed       U+000A
+//			%x66 /          ; f    form feed       U+000C
+//			%x72 /          ; r    carriage return U+000D
+//			%x22 /          ; "    quotation mark  U+0022
+//			%x2F /          ; /    solidus         U+002F
+//			%x5C /          ; \    reverse solidus U+005C
+//			%x75 4HEXDIG )  ; uXXXX                U+XXXX
+// escape = %x5C            ; \
+// quotation-mark = %x22    ; "
+// unescaped = %x20-21 / %x23-5B / %x5D-10FFFF
+//
+// Parameters:
+//  Str    - String - JSON-compatible string.
+//
+// Returns:
+//  String - Unicode string.
+//
+Function JSONStrToStr(Str)
+	
+	// Define default result.
+	Result = String(Str);
+	
+	// Define escaped characters and their replaces.
+	EscChars    = Char(8) + Chars.Tab + Chars.LF + Chars.FF + Chars.CR + """" + "/" + "\";
+	EscReplaces = "btnfr""/\";
+	HexChar     = "0123456789ABCDEF";
+	
+	//--------------------------------------------------------------------------
+	// 1. Replace JSON defined symbols.
+	
+	// Encode escaped characters.
+	For i = 1 To StrLen(EscChars) Do
+		// Get cuurent escaped char.
+		EscChar = Mid(EscChars,    i, 1);
+		EscRepl = Mid(EscReplaces, i, 1);
+		
+		// Replace escaped char in current string (the JSON string does not contain the surrogate pairs).
+		Result = StrReplace(Result, "\" + EscRepl, EscChar); // Uppercase is not allowed by RFC 4627.
+	EndDo;
+	
+	//--------------------------------------------------------------------------
+	// 2. Replace control characters.
+	
+	// Replace control characters.
+	i = 0;  MWCS = New Array();
+	While i < StrLen(Result) Do
+		// Get current char.
+		Char = Mid(Result, i + 1, 1);
+		
+		// Check backslash character.
+		If Char = "\" And Mid(Result, i + 2, 1) = "u" Then // \u char sequence found.
+			
+			// Agregate unicode string.
+			j = 0; MWCS.Clear();
+			While i + j < StrLen(Result) Do
+				
+				// Analize character mask "\uHHHH[\uHHHH[...]]"
+				ResChar = Mid(Result, i + j + 1, 1);
+				HexCode = Find(HexChar, Upper(ResChar));   // Uppercase of hex digit is allowed by RFC 4627.
+				MJ      = j % 6;
+				
+				// Check out char according to mask index.
+				If    MJ = 0 And ResChar = "\" Then                 // "\" char expected.
+					// Is control character.
+					
+				ElsIf MJ = 1 And ResChar = "u" Then                 // "u" char expected
+					// Is UTF-16 code.                              // Uppercase is not allowed by RFC 4627.
+					
+				ElsIf MJ = 2 And ResChar <> "" And HexCode > 0 Then // "H" hex digit expected.
+					// Convert high half-byte in high byte.
+					CharCode =            4096 * (HexCode - 1);
+					
+				ElsIf MJ = 3 And ResChar <> "" And HexCode > 0 Then // "H" hex digit expected.
+					// Convert low half-byte in high byte.
+					CharCode = CharCode +  256 * (HexCode - 1);
+					
+				ElsIf MJ = 4 And ResChar <> "" And HexCode > 0 Then // "H" hex digit expected.
+					// Convert low half-byte in high byte.
+					CharCode = CharCode +   16 * (HexCode - 1);
+					
+				ElsIf MJ = 5 And ResChar <> "" And HexCode > 0 Then // "H" hex digit expected.
+					// Convert low half-byte in high byte.
+					CharCode = CharCode +    1 * (HexCode - 1);
+					
+					// Add word to MWCS.
+					MWCS.Add(CharCode);
+					
+				Else // Got some char that we didn't expected.
+					Break;
+				EndIf;
+				
+				// Next iteration.
+				j = j + 1;
+			EndDo;
+			
+			// Replace found encoded symbols with chars.
+			If MWCS.Count() > 0 Then // The UTF-16 sequence found.
+				
+				// Add UTF-16 character directly to the string,
+				// because 1C string is UTF-16BE native string.
+				MWCSStr = "";
+				For j = 0 To MWCS.UBound() Do
+					MWCSStr = MWCSStr + Char(MWCS[j]);
+				EndDo;
+				MWCSLen = MWCS.Count() * 6; // 6 char per MWC.
+				Result  = Left(Result, i) + MWCSStr + Mid(Result, i + MWCSLen + 1);
+				
+				// Incremet pointer to converted chars length.
+				i = i + StrLen(MWCSStr);
+				
+				// Skip the standard iterator.
+				Continue;
+				
+			EndIf;
+		EndIf;
+		
+		// Next iteration.
+		i = i + 1;
+	EndDo;
+	
+	// Return JSON-compatible string.
+	Return Result;
+	
+EndFunction
+
+//------------------------------------------------------------------------------
+// Encoding JSON functions
 
 // Encode parameters of primitives and structures into standard JSON string.
 // Types encoding:
@@ -4748,28 +3603,33 @@ EndProcedure
 // - All other values are encoded as stirngs using their presentation.
 //
 // Parameters:
-//  StructJSON    - ValueList, Structure, Map, Array - Collection of parameters
-//                            and typed values or structures.
-//  StrJSON       - String  - Resulting filling JSON (also used in recursion).
-//  Level         - Number  - Current ident level.
-//  UseWideRecord - Boolean - Use human-readable representation,
-//                            otherwise compact internet format will be used.
-//  UseISODate    - Boolean - Use ISO 8601 string for encoding the datetime values,
-//                            otherwise UNIX-time numeric will be used.
-//  UseShortISODateFormat - Boolean - If date converted to ISO 8601
-//                            has only data part without time used,
-//                            then it will be saved only as data in short format
-//                            otherwise classic notation for date & time
-//                            including UTC time zone will be used.
+//  StructJSON       - ValueList, Structure, Map, Array - Collection of parameters
+//                               and typed values or structures.
+//  StrJSON          - String  - Resulting filling JSON (also used in recursion).
+//  Level            - Number  - Current ident level.
+//  UseWideRecord    - Boolean - Use human-readable representation,
+//                               otherwise compact internet format will be used.
+//  UseISODate       - Boolean - Use ISO 8601 string for encoding the datetime values,
+//                               otherwise UNIX-time numeric will be used.
+//  UseShortISODate  - Boolean - If date converted to ISO 8601
+//                               has only data part without time used,
+//                               then it will be saved only as data in short format,
+//                               otherwise classic notation for date&time will be used.
+//  TimeShift        - Number  - Local time zone correction in seconds for use with UNIX dates
+//                               and ISO 8601 dates without time zone specified.
 //
 // Returns:
-//  StrJSON -       String  - Encoded JSON.
+//  StrJSON - String - Encoded JSON.
 //
-Procedure EncodeJSONStructure(StructJSON, StrJSON, Level = 0, UseWideRecord = True,
-	                          UseISODate = True, UseShortISODateFormat = True)
+Procedure EncodeJSONStructure(StructJSON, StrJSON, Level = 0,
+	// Define default encoding parameters.
+	UseWideRecord = True, UseISODate = True, UseShortISODate = True, TimeShift = 0);
+	
+	//--------------------------------------------------------------------------
+	// 0. Define parameters.
 	
 	// Define valid id symbols.
-	CharsID = "abcdefghijklmnopqrstuvwxyz_0123456789";
+	CharsID = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789";
 	CharsDg = "0123456789";
 	
 	// Define spaces and idents.
@@ -4863,7 +3723,7 @@ Procedure EncodeJSONStructure(StructJSON, StrJSON, Level = 0, UseWideRecord = Tr
 		If KeyStr <> "" Then
 			
 			// Convert key to JSON name.
-			KeyStr = Lower(StrReplace(TrimAll(KeyStr), " ", "_"));
+			KeyStr = StrReplace(TrimAll(KeyStr), " ", "_");
 			Name   = "";
 			For i = 1 To StrLen(KeyStr) Do
 				Ch = Mid(KeyStr, i, 1);
@@ -4922,9 +3782,11 @@ Procedure EncodeJSONStructure(StructJSON, StrJSON, Level = 0, UseWideRecord = Tr
 		ElsIf TypeOf(Value) = Type("Array")
 		   Or TypeOf(Value) = Type("Map")
 		   Or TypeOf(Value) = Type("Structure")
-		   Or TypeOf(Value) = Type("ValueList") Then
+		   Or TypeOf(Value) = Type("ValueList")
+		   Then
 			// Run the procedure recursively for all child elements.
-			EncodeJSONStructure(Value, StrJSON, Level, UseWideRecord, UseISODate);
+			EncodeJSONStructure(Value, StrJSON, Level,
+				UseWideRecord, UseISODate, UseShortISODate, TimeShift);
 			
 		ElsIf TypeOf(Value) = Type("Boolean") Then
 			StrJSON = StrJSON + Format(Value, "BF=false; BT=true");
@@ -4935,34 +3797,30 @@ Procedure EncodeJSONStructure(StructJSON, StrJSON, Level = 0, UseWideRecord = Tr
 		ElsIf TypeOf(Value) = Type("Date") Then
 			If UseISODate Then
 				// Use ISO 8601 string for encoding the date.
-				If UseShortISODateFormat And (BegOfDay(Value) = Value) Then
+				If UseShortISODate And (BegOfDay(Value) = Value) Then
 					// Use short date format.
 					StrJSON = StrJSON + """" + Format(Value, "DF=yyyy-MM-dd") + """";
 					
 				Else // Use full date & time format.
 					
-					// Get time shifting in current client session or at server.
-					UTCTime = ToUniversalTime(Value);
+					// Calculate time zone difference in seconds.
+					CurrentDate   = CurrentDate();
+					LocalTimeZone = CurrentDate - ToUniversalTime(CurrentDate);
 					
-					// Define current UTC time zone.
-					TimeZone  = Value - UTCTime;
-					TimeZoneH = Int( ?(TimeZone < 0, -1, 1) * TimeZone / (60 * 60)); // Time zone hours.
-					TimeZoneM = Int((?(TimeZone < 0, -1, 1) * TimeZone - TimeZoneH * 60 * 60) / 60) ; // Time zone minutes.
-					TimeZoneS = ?(TimeZone = 0, "Z",
-					            ?(TimeZone > 0, "+", "-") + Format(TimeZoneH, "ND=2; NFD=0; NLZ=") +
-					            ?(TimeZoneM > 0,     ":"  + Format(TimeZoneM, "ND=2; NFD=0; NLZ="), ""));
+					// Define time zone presentation.
+					TimeZoneHrs = Int( ?(LocalTimeZone < 0, -1, 1) * LocalTimeZone / 3600);                     // Time zone hours.
+					TimeZoneMin = Int((?(LocalTimeZone < 0, -1, 1) * LocalTimeZone - TimeZoneHrs * 3600) / 60); // Time zone minutes.
+					TimeZoneStr = ?(LocalTimeZone = 0, "Z",
+					              ?(LocalTimeZone > 0, "+", "-") + Format(TimeZoneHrs, "ND=2; NFD=0; NLZ=") +
+					                      ?(TimeZoneMin > 0, ":" + Format(TimeZoneMin, "ND=2; NFD=0; NLZ="), ""));
 					
 					// Use ISO 8601 string for encoding the date.
-					StrJSON = StrJSON + """" + Format(Value, "DF=yyyy-MM-ddTHH:mm:ss") + TimeZoneS + """";
+					StrJSON = StrJSON + """" + Format(Value, "DF=yyyy-MM-ddTHH:mm:ss") + TimeZoneStr + """";
 				EndIf;
 				
-			Else // Use UNIX-time numeric for encoding the date.
-				
-				// Get time shifting in current client session or at server.
-				UTCTime = ToUniversalTime(Value);
-				
-				// Use integer number of seconds passed from UNIX-epoch 1970.01.01.
-				StrJSON = StrJSON + Format(UTCTime - Date("19700101"), "NFD=0; NZ=0; NG=");
+			Else
+				// Use UNIX-time numeric for encoding the date.
+				StrJSON = StrJSON + Format(Value - Date("19700101") + TimeShift, "NFD=0; NZ=0; NG=");
 			EndIf;
 			
 		Else // As string.
@@ -5015,7 +3873,7 @@ Procedure EncodeJSONStructure(StructJSON, StrJSON, Level = 0, UseWideRecord = Tr
 	
 EndProcedure
 
-// Encodes native unicode string to JSON-compatible string according to RFC 4627.
+// Encodes UTF-16 string to JSON-compatible string according to RFC 4627.
 //
 // JSON string definition:
 // string = quotation-mark *char quotation-mark
@@ -5035,7 +3893,7 @@ EndProcedure
 // unescaped = %x20-21 / %x23-5B / %x5D-10FFFF
 //
 // Parameters:
-//  Str    - String - Unicode string.
+//  Str    - String - Native 1C string.
 //
 // Returns:
 //  String - JSON-compatible string.
@@ -5043,7 +3901,7 @@ EndProcedure
 Function StrToJSONStr(Str)
 	
 	// Define default result.
-	Result = String(Str);
+	UnicodeStr = UTF16ToUnicode(Str, True);
 	
 	// Define escaped characters and their replaces.
 	EscChars    = Char(8) + Chars.Tab + Chars.LF + Chars.FF + Chars.CR + """" + "/" + "\";
@@ -5052,7 +3910,7 @@ Function StrToJSONStr(Str)
 	HexChar     = "0123456789ABCDEF";
 	
 	//--------------------------------------------------------------------------
-	// 1. Replace JSON defined symbols.
+	// 1. Replace escaped symbols.
 	
 	// Encode escaped characters.
 	For i = 0 To EscCharsLen - 1 Do
@@ -5061,23 +3919,40 @@ Function StrToJSONStr(Str)
 		EscRepl = Mid(EscReplaces, EscCharsLen - i, 1);
 		
 		// Replace escaped char in current string.
-		Result = StrReplace(Result, EscChar, "\" + EscRepl);
+		j = UnicodeStr.UBound();
+		While j >= 0 Do
+			
+			// Check char escaped.
+			If UnicodeStr[j] = CharCode(EscChar) Then
+				// Replace escaped character.
+				UnicodeStr[j] =        CharCode("\");      //  ESC character
+				UnicodeStr.Insert(j+1, CharCode(EscRepl)); // Replace character
+			EndIf;
+			
+			// Next iteration.
+			j = j - 1;
+		EndDo;
 	EndDo;
 	
 	//--------------------------------------------------------------------------
-	// 2. Replace control characters.
+	// 2. Replace control and high-unicode characters.
 	
-	// Replace control characters.
-	i = StrLen(Result); MWC = New Array(1);
-	While i > 0 Do
+	// Replace control and high unicode characters.
+	i = UnicodeStr.UBound(); MWC = New Array(1);
+	While i >= 0 Do
 		// Get current character code.
-		Code = CharCode(Result, i);
+		Code = UnicodeStr[i];
 		
 		// Check control character.
 		If Code < 32 Then         // 0000.0000 .. 0000.001F
-			// Replace current char with it's unicode char code representation.
-			UChar  = "\u00" + Mid(HexChar, Int(Code / 16) + 1, 1) + Mid(HexChar, (Code % 16) + 1, 1);
-			Result = Left(Result, i - 1) + UChar + Mid(Result, i + 1);
+			// Define escaped character presentation.
+			UChar = "\u00" + Mid(HexChar, Int(Code / 16) + 1, 1) + Mid(HexChar, (Code % 16) + 1, 1);
+			
+			// Replace escaped character.
+			UnicodeStr[i] =            CharCode("\");                 // ESC character
+			For j = 2 To StrLen(UChar) Do
+				UnicodeStr.Insert(i+j-1, CharCode(Mid(UChar, j, 1))); // Replace character
+			EndDo;
 			
 		ElsIf Code < 65536 Then   // 0000.0020 .. 0000.FFFF
 			// The code is in the basic multilingual plane (BMP).
@@ -5087,7 +3962,7 @@ Function StrToJSONStr(Str)
 			MWC[0] = Code;
 			
 			// Encode symbol to UTF-16.
-			UTF16  = StrToUTF16(MWC, True, True);
+			UTF16  = UnicodeToUTF16(MWC, True, True);
 			
 			// Encode UTF-16 string to control string representation.
 			UChar = "";
@@ -5098,12 +3973,15 @@ Function StrToJSONStr(Str)
 				                     + Mid(HexChar, Int(LByte / 16) + 1, 1) + Mid(HexChar, (LByte % 16) + 1, 1);
 			EndDo;
 			
-			// Replace current char with it's unicode char code representation.
-			Result = Left(Result, i - 1) + UChar + Mid(Result, i + 1);
-		Else
+			// Replace escaped character.
+			UnicodeStr[i] =            CharCode("\");                 // ESC character
+			For j = 2 To StrLen(UChar) Do
+				UnicodeStr.Insert(i+j-1, CharCode(Mid(UChar, j, 1))); // Replace character
+			EndDo;
 			
+		Else
 			// Not a valid unicode char - cut symbol.
-			Result = Left(Result, i - 1) + Mid(Result, i + 1);
+			UnicodeStr.Delete(i);
 		EndIf;
 		
 		// Next iteration.
@@ -5111,6 +3989,1301 @@ Function StrToJSONStr(Str)
 	EndDo;
 	
 	// Return JSON-compatible string.
+	Return UnicodeToUTF16(UnicodeStr);
+	
+EndFunction
+
+//------------------------------------------------------------------------------
+// Universal conversation functions
+
+// Fills the date format variables and calculates local time adjustment in seconds.
+//
+// Parameters:
+//  DateEncodingFormat       - Structure - describing encoding format of passed dates.
+//                             URL settings - structure with the following fields:
+//   UseISODate              - Boolean - Use ISO 8601 string for encoding the datetime values,
+//                             otherwise UNIX-time numeric will be used.
+//   UseShortISODate         - Boolean - If date converted to ISO 8601
+//                             has only data part without time used,
+//                             then it will be saved only as data in short format,
+//                             otherwise classic notation for date&time will be used.
+//   UseLocalDate            - Boolean - If true then local date will be used without changes,
+//                             otherwise date will be adjusted to UTC time zone.
+//                             Number - -12 .. 0 .. 12 - Destination time zone in hours,
+//                             the date should be encoded to - the difference between the time
+//                             zone of local date and time zone of remote host will be adjusted.
+//                             This setting does not affect fully encoded ISO 8601 dates.
+//
+// Returns:
+//  UseISODate               - Boolean - Use ISO 8601 string for encoding the datetime values,
+//                             otherwise UNIX-time numeric will be used.
+//  UseShortISODate          - Boolean - If date converted to ISO 8601
+//                             has only data part without time used,
+//                             then it will be saved only as data in short format,
+//                             otherwise classic notation for date&time will be used.
+//  TimeShift       - Number - Local time zone correction in seconds for use with UNIX dates
+//                             and ISO 8601 dates without time zone specified.
+//
+Procedure DecodeDateParameters(DateEncodingFormat,
+	UseISODate = Undefined, UseShortISODate = Undefined, TimeShift = Undefined)
+	
+	// Define local date format variables.
+	Var ISODate, ShortISODate, LocalDate;
+	
+	// Define date format constants values.
+	UseISODate      = True; // The following default date format will be used:
+	UseShortISODate = True; // YYYY-MM-DD
+	UseLocalDate    = True; // The local date will be used (no time zone adjustment applied).
+	
+	// Update date format with passed parameters
+	If TypeOf(DateEncodingFormat) = Type("Structure") Then
+		If DateEncodingFormat.Property("UseISODate",      ISODate)      And (ISODate      <> Undefined) Then UseISODate      = ISODate;      EndIf;
+		If DateEncodingFormat.Property("UseShortISODate", ShortISODate) And (ShortISODate <> Undefined) Then UseShortISODate = ShortISODate; EndIf;
+		If DateEncodingFormat.Property("UseLocalDate",    LocalDate)    And (LocalDate    <> Undefined) Then UseLocalDate    = LocalDate;    EndIf;
+	EndIf;
+	
+	// Calculate time zone difference.
+	CurrentDate   = CurrentDate();
+	LocalTimeZone = CurrentDate - ToUniversalTime(CurrentDate);
+	
+	// UNIX date adjustment & ISO date without time zone specification.
+	If    UseLocalDate = True Then                   // Local time zone: no time zone adjustment required.
+		TimeShift = 0; 
+	ElsIf UseLocalDate = False Then                  // UTC time zone: use local time zone as adjustment value.
+		TimeShift = 0 - LocalTimeZone;
+	ElsIf TypeOf(UseLocalDate) = Type("Number") Then // Convert local time to the specified time zone.
+		TimeShift = UseLocalDate * 3600 - LocalTimeZone;
+	EndIf;
+	
+EndProcedure
+
+// Converts passed value to desired primitive type.
+// Supports automatic value conversion (if Type is not specified).
+// If conversion fails, then value remains unchanged.
+//
+// Parameters:
+//  Value     - Arbitrary - Value to be converted to primitive type.
+//  Type      - Type      - Primitive type for value to be converted to.
+//  TimeShift - Number    - Time shift for adjusting the dates,
+//                          used if time zone was not specified.
+//
+// Returns:
+//  Boolean   - Conversation succession flag.
+//  Value     - Arbitrary - Converted (succeded) or unchanged (failed) value.
+//
+Function ConvertValueToPrimitiveType(Value, Type = Undefined, TimeShift = 0)
+	
+	// Try to convert passed value to desired type.
+	Try
+		// Auto conversion.
+		If Type = Undefined Then
+			
+			// Check existing type
+			If Value = Null
+			Or Value = Undefined
+			Or TypeOf(Value) = Type("Boolean")
+			Or TypeOf(Value) = Type("UUID")
+			Or TypeOf(Value) = Type("Date")
+			Or TypeOf(Value) = Type("Number")
+			// Except of String.
+			Then
+				// Value already has a primitive type.
+				// No additional conversation needed.
+				Return True;
+			EndIf;
+			
+			// Try step-by-step convert string to primitive types.
+			If Upper(TrimAll(Value)) = "NULL" Then
+				// Passed null value.
+				Value = Null;
+				Return True;
+				
+			ElsIf Upper(TrimAll(Value)) = "UNDEFINED" Then
+				// Passed undefined value.
+				Value = Undefined;
+				Return True;
+				
+			ElsIf ConvertValueToPrimitiveType(Value, Type("Boolean")) Then
+				// Succesfully converted.
+			ElsIf ConvertValueToPrimitiveType(Value, Type("UUID")) Then
+				// Succesfully converted.
+			ElsIf ConvertValueToPrimitiveType(Value, Type("Date"), TimeShift) Then
+				// Succesfully converted.
+			ElsIf ConvertValueToPrimitiveType(Value, Type("Number"), TimeShift) Then
+				// Succesfully converted.
+			ElsIf ConvertValueToPrimitiveType(Value, Type("String")) Then
+				// Succesfully converted.
+			Else
+				// Failed to convert to any primitive type.
+				Return False;
+			EndIf;
+			
+		ElsIf Type = Type("Boolean") Then
+			Value = Boolean(Value);
+			
+		ElsIf Type = Type("Number") Then
+			
+			// Define native numeric format.
+			If TypeOf(Value) = Type("Number") Then
+				// No additional conversion required.
+				
+			// Define conversion from string format.
+			ElsIf TypeOf(Value) = Type("String") Then
+				// Define numeric characters.
+				Numeric = "0123456789eE+-.";
+				SNumber = ""; // Numeric part.
+				SExpont = ""; // Exponent part.
+				SOption = 1;  // Numeric or Exponent option: 1 or 2.
+				
+				// Check string contains only digits.
+				For i = 1 To StrLen(Value) Do
+					// Define current char.
+					Ch = Mid(Value, i, 1);
+					
+					// Check char passes numeric chars.
+					If Find(Numeric, Ch) = 0 Then
+						Raise(NStr("en = 'Invalid char found in numeric string.'"));
+						
+					ElsIf (SOption = 1) And (Ch = "e" Or Ch = "E") Then
+						// Switch to exponent part.
+						SOption = 2;
+					
+					ElsIf (SOption = 2) And (Ch = "e" Or Ch = "E") Then
+						Raise(NStr("en = 'Exponent part doubled in the number.'"));
+						
+					ElsIf (SOption = 1) And (Ch = "+" Or Ch = "-") And (i > 1) Then
+						Raise(NStr("en = 'Sign can not be defined in the middle of numeric part.'"));
+						
+					ElsIf (SOption = 2) And (Ch = "+" Or Ch = "-") And (Not IsBlankString(SExpont)) Then
+						Raise(NStr("en = 'Sign can not be defined in the middle of exponent part.'"));
+						
+					ElsIf (SOption = 1) Then
+						// Assign char to numeric part.
+						SNumber = SNumber + Ch;
+						
+					ElsIf (SOption = 2) Then
+						// Assign char to exponent part.
+						SExpont = SExpont + Ch;
+					EndIf;
+				EndDo;
+				
+				// Convert number string to number.
+				Value = Number(SNumber);
+				
+				// Convert exponent string to number.
+				If Not IsBlankString(SExpont) Then // Exponent defined.
+					Exponent = Number(SExpont);
+					
+					// Update number value.
+					Value = Value * Pow(10, Exponent);
+				EndIf;
+				
+				// Custom conversion for UNIX date.
+				If  Value > 31500000       // > 31.12.1970 14:00:00
+				And Find(SNumber, ".") = 0 // Is integer.
+				And IsBlankString(SExpont) // No exponent part defined.
+				Then
+					// Suggest it is a UNIX time format.
+					Value = Date("19700101") + Value + TimeShift;
+				EndIf;
+				
+			// Define conversion from any other (boolean) format.
+			Else
+				Value = Number(Value);
+			EndIf;
+			
+		ElsIf Type = Type("UUID") Then
+			Value = New UUID(Value);
+			
+		ElsIf Type = Type("Date") Then
+			
+			// Define native date format.
+			If TypeOf(Value) = Type("Date") Then
+				// No additional conversion required.
+				
+			// Define Number to Date conversion.
+			ElsIf TypeOf(Value) = Type("Number") Then
+				// Convert from UNIX date to 1C date.
+				Value = Date("19700101") + Value + TimeShift;
+				
+			// Define String to Date conversion.
+			ElsIf TypeOf(Value) = Type("String") Then
+				// Try to convert value from internet format ISO 8601 (converting time zone difference).
+				// 1) YYYYMMDD[[T]hhmmss[ss[s]][Z|±HH[mm]]]
+				// 2) YYYY[-|/]MM[-|/]DD[Thh:mm:ss[.ss[s]][Z|±HH[:mm]]]
+				
+				// Skip overlong strings.
+				If StrLen(Value) > 29 Then
+					Raise(NStr("en = 'Size of date value exeeds maximum available length.'"));
+				EndIf;
+				
+				// Define digits characters.
+				Digits = "0123456789";
+				
+				// Check/process passed value.
+				SDate = "";  // Date in string native format.
+				SZone = "";  // Time zone in string format.
+				SOption = 0; // Datetime format option 1 or 2.
+				
+				// Define first steps.
+				Step1 = 4;         // 4
+				Step2 = Step1 + 1; // 5
+				For i = 1 To StrLen(Value) Do
+					// Define current char.
+					Ch = Mid(Value, i, 1);
+					
+					// Step 1.
+					If i <= Step1 Then
+						// YYYY in [0123456789]
+						If Find(Digits, Ch) > 0 Then
+							SDate = SDate + Ch;
+						Else
+							Raise(NStr("en = 'Wrong date format.'"));
+						EndIf;
+						
+					// Step 2.
+					ElsIf i = Step2 Then
+						// Check date option.
+						If Ch = "-" Or Ch = "/" Then
+							// YYYY[-|/], skip char.
+							SOption = 2;
+							// Define next step constants.
+							Step3 = Step2 + 2; // 7
+							Step4 = Step3 + 1; // 8
+							
+						ElsIf Find(Digits, Ch) > 0 Then
+							// M in [0123456789]
+							SDate = SDate + Ch;
+							// YYYYM
+							SOption = 1;
+							// Define next step constants.
+							Step3 = Step2 + 1; // 6
+							Step4 = Step3 + 1; // 7
+							
+						Else
+							Raise(NStr("en = 'Wrong date format.'"));
+						EndIf;
+						
+					// Step 3.
+					ElsIf i <= Step3 Then
+						// MM in [0123456789]
+						If Find(Digits, Ch) > 0 Then
+							SDate = SDate + Ch;
+						Else
+							Raise(NStr("en = 'Wrong date format.'"));
+						EndIf;
+						
+					// Step 4.
+					ElsIf i = Step4 Then
+						If SOption = 2 Then
+							If Ch = "-" Or Ch = "/" Then
+								// YYYY[-|/]MM[-|/], skip char.
+								// Define next step constants.
+								Step5 = Step4 + 2; // 10
+								Step6 = Step5 + 1; // 11
+							Else
+								Raise(NStr("en = 'Wrong date format.'"));
+							EndIf;
+							
+						Else // SOption = 1.
+							If Find(Digits, Ch) > 0 Then
+								// D in [0123456789]
+								SDate = SDate + Ch;
+								// YYYYMMD
+								// Define next step constants.
+								Step5 = Step4 + 1; // 8
+								Step6 = Step5 + 1; // 9
+							Else
+								Raise(NStr("en = 'Wrong date format.'"));
+							EndIf;
+						EndIf;
+						
+					// Step 5.
+					ElsIf i <= Step5 Then
+						// MM in [0123456789]
+						If Find(Digits, Ch) > 0 Then
+							SDate = SDate + Ch;
+						Else
+							Raise(NStr("en = 'Wrong date format.'"));
+						EndIf;
+						
+					// Step 6.
+					ElsIf i = Step6 Then
+						If Ch = "T" Or Ch = " " Then
+							If SOption = 2 Then
+								// 2) YYYY[-|/]MM[-|/]DDT
+								// Define next step constants.
+								Step7 = Step6 + 2; // 13
+								Step8 = Step7 + 1; // 14
+								
+							ElsIf SOption = 1 Then
+								// 1) YYYYMMDD[T]
+								// Define next step constants.
+								Step7 = Step6 + 2; // 11
+								Step8 = Step7 + 1; // 12
+							EndIf;
+							
+						ElsIf Find(Digits, Ch) > 0 Then
+							If SOption = 1 Then
+								// 1) YYYYMMDDh
+								SDate = SDate + Ch;
+								// Define next step constants.
+								Step7 = Step6 + 1; // 10
+								Step8 = Step7 + 1; // 11
+							Else
+								Raise(NStr("en = 'Wrong date format.'"));
+							EndIf;
+						EndIf;
+					
+					// Step 7.
+					ElsIf i <= Step7 Then
+						// hh in [0123456789]
+						If Find(Digits, Ch) > 0 Then
+							SDate = SDate + Ch;
+						Else
+							Raise(NStr("en = 'Wrong time format.'"));
+						EndIf;
+						
+					// Step 8.
+					ElsIf i = Step8 Then
+						If SOption = 2 Then
+							If Ch = ":" Then
+								// YYYY[-|/]MM[-|/]DDThh:, skip char.
+								// Define next step constants.
+								Step9 = Step8 + 2; // 16
+								StepA = Step9 + 1; // 17
+							Else
+								Raise(NStr("en = 'Wrong time format.'"));
+							EndIf;
+							
+						Else // SOption = 1.
+							If Find(Digits, Ch) > 0 Then
+								// m in [0123456789]
+								SDate = SDate + Ch;
+								// YYYYMMDD[T]hhm
+								// Define next step constants.
+								Step9 = Step8 + 1; // 12/13
+								StepA = Step9 + 1; // 13/14
+							Else
+								Raise(NStr("en = 'Wrong time format.'"));
+							EndIf;
+						EndIf;
+						
+					// Step 9.
+					ElsIf i <= Step9 Then
+						// mm in [0123456789]
+						If Find(Digits, Ch) > 0 Then
+							SDate = SDate + Ch;
+						Else
+							Raise(NStr("en = 'Wrong time format.'"));
+						EndIf;
+						
+					// Step 10.
+					ElsIf i = StepA Then
+						If SOption = 2 Then
+							If Ch = ":" Then
+								// YYYY[-|/]MM[-|/]DDThh:mm:, skip char.
+								// Define next step constants.
+								StepB = StepA + 2; // 19
+								StepC = StepB + 1; // 20
+							Else
+								Raise(NStr("en = 'Wrong time format.'"));
+							EndIf;
+							
+						Else // SOption = 1.
+							If Find(Digits, Ch) > 0 Then
+								// s in [0123456789]
+								SDate = SDate + Ch;
+								// YYYYMMDD[T]hhmms
+								// Define next step constants.
+								StepB = StepA + 1; // 14/15
+								StepC = StepB + 1; // 15/16
+							Else
+								Raise(NStr("en = 'Wrong time format.'"));
+							EndIf;
+						EndIf;
+						
+					// Step 11.
+					ElsIf i <= StepB Then
+						// ss in [0123456789]
+						If Find(Digits, Ch) > 0 Then
+							SDate = SDate + Ch;
+						Else
+							Raise(NStr("en = 'Wrong time format.'"));
+						EndIf;
+						
+					// Step 12.
+					ElsIf i = StepC Then
+						If SOption = 2 Then
+							If Ch = "." Then
+								// YYYY[-|/]MM[-|/]DDThh:mm:ss., skip char.
+								// Define next step constants.
+								StepD = StepC + 2; // 22
+								StepE = StepD + 1; // 23
+								// Next steps not yet defined.
+							ElsIf Ch = "+" Or Ch = "-" Then
+								// YYYY[-|/]MM[-|/]DDThh:mm:ss[+|-]
+								StepD = StepC;     // Skip step
+								StepE = StepD;     // Skip step
+								StepF = StepE;     // Skip step
+								StepG = StepF + 2; // 22
+								StepH = StepG + 1; // 23
+								// Next steps not yet defined.
+								// [+|-]
+								SZone = SZone + Ch;
+							ElsIf Ch = "Z" Then
+								// YYYY[-|/]MM[-|/]DDThh:mm:ssZ, skip char.
+								StepD = StepC;     // Skip step
+								StepE = StepD;     // Skip step
+								StepF = StepE;     // Skip step
+								StepG = StepF;     // Skip step
+								StepH = StepG;     // Skip step
+								StepI = StepH;     // Skip step
+								StepJ = StepI + 1; // 21
+							Else
+								Raise(NStr("en = 'Wrong time format.'"));
+							EndIf;
+							
+						Else // SOption = 1.
+							If Find(Digits, Ch) > 0 Then
+								// s in [0123456789], skip char.
+								// YYYYMMDD[T]hhmmsss
+								// Define next step constants.
+								StepD = StepC + 1; // 16/17
+								StepE = StepD + 1; // 17/18
+								// Next steps not yet defined.
+							ElsIf Ch = "+" Or Ch = "-" Then
+								// YYYYMMDD[T]hhmmss[+|-]
+								StepD = StepC;     // Skip step
+								StepE = StepD;     // Skip step
+								StepF = StepE;     // Skip step
+								StepG = StepF + 2; // 17/18
+								StepH = StepG + 1; // 18/19
+								// Next steps not yet defined.
+								// [+|-]
+								SZone = SZone + Ch;
+							ElsIf Ch = "Z" Then
+								// YYYYMMDD[T]hhmmssZ, skip char.
+								StepD = StepC;     // Skip step
+								StepE = StepD;     // Skip step
+								StepF = StepE;     // Skip step
+								StepG = StepF;     // Skip step
+								StepH = StepG;     // Skip step
+								StepI = StepH;     // Skip step
+								StepJ = StepI + 1; // 16/17
+							Else
+								Raise(NStr("en = 'Wrong time format.'"));
+							EndIf;
+						EndIf;
+						
+					// Step 13.
+					ElsIf i <= StepD Then
+						If SOption = 2 Then
+							// YYYY[-|/]MM[-|/]DDThh:mm:ss.ss, skip char.
+						Else // SOption = 1.
+							// YYYYMMDD[T]hhmmssss, skip char.
+						EndIf;
+					
+					// Step 14.
+					ElsIf i = StepE Then
+						If Find(Digits, Ch) > 0 Then
+							// YYYY[-|/]MM[-|/]DDThh:mm:ss.sss, skip char.
+							// YYYYMMDD[T]hhmmsssss, skip char.
+							// Define next step constants.
+							StepF = StepE + 1; // 1) 24 2) 18/19
+							// Next steps not yet defined.
+						ElsIf Ch = "+" Or Ch = "-" Then
+							// YYYY[-|/]MM[-|/]DDThh:mm:ss.ss[+|-]
+							// YYYYMMDD[T]hhmmssss[+|-]
+							StepF = StepE;     // Skip step
+							StepG = StepF + 2; // 1) 25 2) 19/20
+							StepH = StepG + 1; // 1) 26 3) 20/21
+							// Next steps not yet defined.
+							// [+|-]
+							SZone = SZone + Ch;
+						ElsIf Ch = "Z" Then
+							// YYYY[-|/]MM[-|/]DDThh:mm:ss.ssZ, skip char.
+							// YYYYMMDD[T]hhmmssssZ, skip char.
+							StepF = StepE;     // Skip step
+							StepG = StepF;     // Skip step
+							StepH = StepG;     // Skip step
+							StepI = StepH;     // Skip step
+							StepJ = StepI + 1; // 1) 24 2) 18/19
+						Else
+							Raise(NStr("en = 'Wrong time format.'"));
+						EndIf;
+					
+					// Step 15.
+					ElsIf i = StepF Then
+						If Ch = "+" Or Ch = "-" Then
+							// YYYY[-|/]MM[-|/]DDThh:mm:ss.sss[+|-]
+							// YYYYMMDD[T]hhmmsssss[+|-]
+							StepG = StepF + 2; // 1) 26 2) 20/21
+							StepH = StepG + 1; // 1) 27 2) 21/22
+							// [+|-]
+							SZone = SZone + Ch;
+						ElsIf Ch = "Z" Then
+							// YYYY[-|/]MM[-|/]DDThh:mm:ss.sssZ, skip char.
+							// YYYYMMDD[T]hhmmsssssZ, skip char.
+							StepG = StepF;     // Skip step
+							StepH = StepG;     // Skip step
+							StepI = StepH;     // Skip step
+							StepJ = StepI + 1; // 1) 25 2) 19/20
+						Else
+							Raise(NStr("en = 'Wrong time zone format.'"));
+						EndIf;
+						
+					// Step 16.
+					ElsIf i <= StepG Then
+						// hh in [0123456789]
+						If Find(Digits, Ch) > 0 Then
+							SZone = SZone + Ch;
+						Else
+							Raise(NStr("en = 'Wrong time zone format.'"));
+						EndIf;
+						
+					// Step 17.
+					ElsIf i = StepH Then
+						If SOption = 2 Then
+							If Ch = ":" Then
+								// YYYY[-|/]MM[-|/]DDThh:mm:ss[.ss[s]][+|-]hh:, skip char.
+								// Define next step constants.
+								StepI = StepH + 2; // 29
+								StepJ = StepI + 1; // 30
+							Else
+								Raise(NStr("en = 'Wrong time zone format.'"));
+							EndIf;
+							
+						Else // SOption = 1.
+							If Find(Digits, Ch) > 0 Then
+								// m in [0123456789]
+								SZone = SZone + Ch;
+								// YYYYMMDD[T]hhmmss[ss[s]][+|-]hhm
+								// Define next step constants.
+								StepI = StepH + 1; // 22/23
+								StepJ = StepI + 1; // 23/24
+							Else
+								Raise(NStr("en = 'Wrong time zone format.'"));
+							EndIf;
+						EndIf;
+						
+					// Step 18.
+					ElsIf i <= StepI Then
+						// mm in [0123456789]
+						If Find(Digits, Ch) > 0 Then
+							SZone = SZone + Ch;
+						Else
+							Raise(NStr("en = 'Wrong time zone format.'"));
+						EndIf;
+						
+					// Step 19.
+					ElsIf i = StepJ Then
+						// YYYY[-|/]MM[-|/]DDThh:mm:ss[.ss[s]][Z|[+|-]hh:[mm]]?
+						// YYYYMMDD[T]hhmmss[ss[s]][Z|[+|-]hh[mm]]?
+						Raise(NStr("en = 'Wrong date format.'"));
+						
+					// Step unknown.
+					Else
+						Raise(NStr("en = 'Wrong date format.'"));
+					EndIf;
+				EndDo;
+				
+				// Convert simplified datetime string to primitive date.
+				SourceDate = Date(SDate); // "YYYYMMDDhhmmss"
+				
+				// Adjust date from source to universal UTC time [+|-]hh[:mm] (if specified)
+				If (Not IsBlankString(SZone)) Or (Find(Value, "Z") > 0) Then // UTC date specified
+					TimeZoneCorrection = Number(Left(SZone, 1)+"1") * (Number("0"+Mid(SZone, 2, 2))*3600 + Number("0"+Mid(SZone, 4, 2))*60);
+					
+					// Convert local date & UTC offset to universal date (UTC = 0).
+					UTCDate = SourceDate - TimeZoneCorrection;
+					
+					// Convert UTC date to local date with current server/client UTC correction.
+					Value = ToLocalTime(UTCDate);
+				Else
+					// Check whether it is a date-only or date-time.
+					If StrLen(SDate) = 8 Then // "YYYYMMDD"
+						// Use short date format.
+						Value = SourceDate;
+					Else
+						// Use full datetime format and apply the time shift.
+						Value = SourceDate + TimeShift;
+					EndIf;
+				EndIf;
+				
+			// Define conversion from any other format.
+			Else
+				Value = Date(Value);
+			EndIf;
+			
+		ElsIf Type = Type("String") Then
+			Value = String(Value);
+			
+		Else // Uknown type.
+			Return False;
+		EndIf;
+		
+		// Conversion succeeded.
+		Return True;
+	Except
+		// Conversion failed.
+		Return False;
+	EndTry;
+	
+EndFunction
+
+// Decodes UTF-16 string to native unicode string.
+//
+// Parameters:
+//  UTF16     - String    - String of UTF-16 characters codes.
+//            - Array     - Array of UTF-16 characters words.
+//  AsArray   - Boolean   - Function must return unicode characters as an array
+//                          (otherwise returns string of char-dwords).
+//  ByteOrder - Boolean   - True  = Big endian UTF-16BE (High byte, Low byte).
+//                        - False = Low endian UTF-16LE (Low byte, high byte).
+//            - Undefined - UTF-16: Use byte order autodetection
+//                          (prefferably UTF-16BE).
+// Returns:
+//  String - Decoded unicode string.
+//  Array  - Decoded unicode characters.
+//
+Function UTF16ToUnicode(UTF16, AsArray = False, ByteOrder = Undefined)
+	
+	// Define empty result.
+	If AsArray Then
+		Result = New Array;
+	Else
+		Result = "";
+	EndIf;
+	
+	// Define default exception description.
+	ErrorDescription = NStr("en = 'UTF-16 string format error occured'");
+	
+	// Define source string parameters.
+	If TypeOf(UTF16) = Type("Array") Then
+		
+		// Use passed multy-words characters array directly.
+		MWCS = UTF16;
+		
+	ElsIf TypeOf(UTF16) = Type("String") Then
+		
+		// Create multy-words characters array.
+		If StrLen(UTF16) > 0 Then
+			MWCS = New Array(StrLen(UTF16));
+			For i = 1 To StrLen(UTF16) Do
+				MWCS[i-1] = CharCode(UTF16, i);
+			EndDo;
+		Else
+			// Return empty result.
+			Return Result;
+		EndIf;
+		
+	Else
+		// Unknown passed type.
+		Return Result;
+	EndIf;
+	
+	// Step by step convertion of UTF-16 MWCS.
+	Try
+		i = 0; MWC = New Array;
+		While i < MWCS.Count() Do
+			
+			// Get first word according to the byte order.
+			If (ByteOrder = Undefined) Or (ByteOrder) Then
+				// High-endian (plain) byte order.
+				Word = MWCS[i];
+				
+			Else // ByteOrder = False
+				// Low-endian (reverse) byte order.
+				LB = Int(MWCS[i] / 256);
+				HB = MWCS[i] % 256;
+				Word = HB * 256 + LB;
+			EndIf;
+			
+			// Define char size.
+			If Word < 0 Then
+				// Error: Character code can't be signed int.
+				If AsArray Then
+					Return New Array;
+				Else
+					Return "";
+				EndIf;
+				
+			ElsIf Word < 55296   Then    // 0000 .. D7FF
+				// Decode basic multilingual plane char = 16 bits.
+				// xxxx -> xxxx.xxxx xxxx.xxxx -> xxxx
+				
+				// Add word.
+				If AsArray Then
+					Result.Add(Word);    // Basic code.
+				Else
+					Result = Result + Char(Word); // Basic char.
+				EndIf;
+				i = i + 1;
+				
+			ElsIf Word < 56320   Then    // D800 .. DBFF
+				// High surrogate pair.
+				
+				// Check MWC length.
+				If i + 1 > MWCS.Count() Then
+					// This is not valid MCW length,
+					// read beyond the end of MCBS array.
+					If AsArray Then
+						Return New Array;
+					Else
+						Return "";
+					EndIf;
+				EndIf;
+				
+				// Get second word according to the byte order.
+				If (ByteOrder = Undefined) Or (ByteOrder) Then
+					// High-endian (plain) byte order.
+					Wrd2 = MWCS[i + 1];
+					
+				Else // ByteOrder = False
+					// Low-endian (reverse) byte order.
+					LB = Int(MWCS[i + 1] / 256);
+					HB = MWCS[i + 1] % 256;
+					Wrd2 = HB * 256 + LB;
+				EndIf;
+				
+				// Check low surrogate pair.
+				If Wrd2 < 56320    Then  // 0000 .. DBFF
+					// Error: LSP expected, but signed int, BMP char or HSP found.
+					Raise ErrorDescription;
+					
+				ElsIf Wrd2 < 57344 Then  // DC00 .. DFFF
+					// OK: Low surrogate pair found.
+					
+				Else                     // E000 .. FFFF (+)
+					// Error: LSP expected, but BMP char found or code exeeds word limit.
+					Raise ErrorDescription;
+				EndIf;
+				
+				// Calculate char code.
+				HW = Word % 1024;        // AND $3FF
+				LW = Wrd2 % 1024;        // AND $3FF
+				Word = HW * 1024 + LW;   // SHL(High word, 10) OR (Low word)
+				
+				// Shift chars range to 10000 (add 0001.0000)
+				// 0000.0000 .. 000F.FFFF > 0001.0000 .. 0010.FFFF
+				Word = Word + 65536;     // ADD(Word, $0001.0000)
+				
+				// Add word.
+				If AsArray Then
+					Result.Add(Word);    // SMP, SIP, TIP, SSP or private area code.
+				Else
+					Result = Result + Char(Word); // SMP, SIP, TIP, SSP or private area char.
+				EndIf;
+				i = i + 2;
+				
+			ElsIf Word < 57344   Then    // DC00 .. DFFF
+				// Low surrogate pair.
+				// Error: LSP can't be used without HSP.
+				Raise ErrorDescription;
+				
+			ElsIf Word = 65279           // FEFF
+			  And    i = 0       Then
+				// 1st word - BOM detected: UTF-16BE
+				ByteOrder = True;
+				i = i + 1;
+				
+			ElsIf Word = 65534           // FFFE
+			  And    i = 0       Then
+				// 1st word - BOM detected: UTF-16LE
+				ByteOrder = False;
+				i = i + 1;
+				
+			ElsIf Word < 65536   Then    // E000 .. FFFF; excl. FEFF, FFFE
+				// Decode basic multilingual plane char = 16 bits.
+				// xxxx -> xxxx.xxxx xxxx.xxxx -> xxxx
+				
+				// Add word.
+				If AsArray Then
+					Result.Add(Word);    // Basic code.
+				Else
+					Result = Result + Char(Word); // Basic char.
+				EndIf;
+				i = i + 1;
+				
+			Else // Char code exeeds word limit:    FFFF (+)
+				Raise ErrorDescription;
+			EndIf;
+		EndDo;
+		
+	Except
+		// Check exception cause.
+		Info = ErrorInfo();
+		If Info.Description = ErrorDescription Then // Self-produced error.
+			
+			// Check bytes order (wrong order?)
+			If ByteOrder = Undefined Then // Autoswitch bytes order.
+				// Repeat call with low endian byte order.
+				Return UTF16ToUnicode(UTF16, AsArray, False);
+			Else
+				// The byte order is defined. Wrong data input.
+				If AsArray Then
+					Return New Array;
+				Else
+					Return "";
+				EndIf;
+			EndIf;
+		Else
+			// Other errors should be handled by default.
+			Raise;
+		EndIf;
+	EndTry;
+	
+	// Return resulting string or array.
+	Return Result;
+	
+EndFunction
+
+// Decodes UTF-8 string to native unicode string.
+//
+// Parameters:
+//  UTF8     - String  - String of UTF-8 characters codes.
+//           - Array   - Array of UTF-8 characters bytes.
+//  AsArray  - Boolean - Function must return unicode characters as an array
+//                       (otherwise returns string of char-dwords).
+//
+// Returns:
+//  String - Decoded unicode string.
+//  Array  - Decoded unicode characters.
+//
+Function UTF8ToUnicode(UTF8, AsArray = False)
+	
+	// Define unicode BOM signature.
+	BOM = 65279; // FEFF
+	
+	// Define empty result.
+	If AsArray Then
+		Result = New Array;
+	Else
+		Result = "";
+	EndIf;
+	
+	// Define source string parameters.
+	If TypeOf(UTF8) = Type("Array") Then
+		
+		// Use passed multy-byte characters array directly.
+		MBCS = UTF8;
+		
+	ElsIf TypeOf(UTF8) = Type("String") Then
+		
+		// Create multy-byte characters array.
+		If StrLen(UTF8) > 0 Then
+			MBCS = New Array(StrLen(UTF8));
+			For i = 1 To StrLen(UTF8) Do
+				MBCS[i-1] = CharCode(UTF8, i);
+			EndDo;
+		Else
+			// Return empty result.
+			Return Result;
+		EndIf;
+		
+	Else
+		// Unknown passed type.
+		Return Result;
+	EndIf;
+	
+	// Step by step convertion of UTF-8 MBCS.
+	i = 0; MBC = New Array;
+	While i < MBCS.Count() Do
+		
+		// Get first byte.
+		Byte = MBCS[i];
+		
+		// Get bytes count per MBC.
+		Base = 128; Count = 0;
+		While Byte > 0 Do
+			
+			// Check 0-subset.
+			If Int(Byte/Base) = 0 Then
+				Break;
+			EndIf;
+			
+			// Add 1 to count of bytes in set.
+			Count = Count + 1;
+			
+			// Get next iteration.
+			Byte = Byte % Base;
+			Base = Int(Base / 2);
+		EndDo;
+		
+		// Convert char using specified quantity of symbols.
+		If Count = 0 Then
+			
+			// ASCII Char (0..7F)
+			If AsArray Then
+				Result.Add(Byte);
+			Else
+				Result = Result + Char(Byte);
+			EndIf;
+			i = i + 1;
+			
+		ElsIf Count = 1 Then
+			
+			// This is not valid UTF-8 character,
+			// control bits are reserved.
+			If AsArray Then
+				Return New Array;
+			Else
+				Return "";
+			EndIf;
+			
+		ElsIf Count > 4 Then
+		
+			// This is not valid UTF-8 character,
+			// 5 and 6 byte symbols are restricted according to RFC 3629.
+			If AsArray Then
+				Return New Array;
+			Else
+				Return "";
+			EndIf;
+			
+		Else // This is 2-4 bytes set.
+			
+			// Check MBC length.
+			If i + Count > MBCS.Count() Then
+				// This is not valid MCB length,
+				// read beyond the end of MCBS array.
+				If AsArray Then
+					Return New Array;
+				Else
+					Return "";
+				EndIf;
+			EndIf;
+			
+			// Add rest bits from first character.
+			MBC.Add(Byte);
+			
+			// Check other characters.
+			For j = 1 To Count-1 Do
+				B  = MBCS[i+j];    // Current byte.
+				B1 = Int(B / 128); // Highest bit
+				B  = B % 128;      // AND $7F
+				B2 = Int(B / 64);  // 2-nd bit
+				B  = B % 64;       // AND $3F
+				
+				// Check control bits
+				If B1 = 1 And B2 = 0 Then
+					MBC.Add(B);
+				Else
+					// This is not valid UTF-8 character,
+					// control bits are not found.
+					If AsArray Then
+						Return New Array;
+					Else
+						Return "";
+					EndIf;
+				EndIf;
+			EndDo;
+			
+			// Last value of MBC can be used without rebuilding.
+			Code = MBC[Count-1]; Base = 64;
+			
+			// Get bits from MBC and calculate the unicode code points.
+			For j = 2 To Count Do
+				Code = Code + Base * MBC[Count-j];
+				Base = Base * 64;
+			EndDo;
+			
+			// Check BOM signature.
+			If i = 0 And Code = BOM Then // BOM signature found in first MBC.
+				// Skip BOM.
+			Else
+				// Add unicode char to result.
+				If AsArray Then
+					Result.Add(Code);
+				Else
+					Result = Result + Char(Code);
+				EndIf;
+			EndIf;
+			
+			// Prepare for next iteration.
+			i = i + Count;
+			MBC.Clear();
+		EndIf;
+	EndDo;
+	
+	// Return resulting string or array.
+	Return Result;
+	
+EndFunction
+
+// Decodes ANSI string (provided by some browsers) to native unicode string.
+// Warning: Only Windows SBCS are supported, Windows DBCS are not supported:
+// There is no support for eastern languages: Thai, Japanese, Korean, Chinese.
+//
+// Parameters:
+//  ANSI     - String - String of ANSI characters codes,
+//           - Array  - Array of ANSI characters bytes.
+//
+//  CodePage - String - Windows-ANSI character table:
+//             "windows-1250" – Central and East European Latin
+//             "windows-1251" – Cyrillic
+//             "windows-1252" – West European Latin
+//             "windows-1253" – Greek
+//             "windows-1254" – Turkish
+//             "windows-1255" – Hebrew
+//             "windows-1256" – Arabic
+//             "windows-1257" – Baltic
+//             "windows-1258" – Vietnamese
+//           - Undefined - Autodetection of ANSI code page
+//             basing on current session localization code.
+// Returns:
+//  String   - Decoded unicode string (UTF-16 compilant).
+//
+Function ANSIToUnicode(ANSI, CodePage = Undefined)
+	
+	// Define empty result.
+	Result = "";
+	
+	// Define source string parameters.
+	If TypeOf(ANSI) = Type("Array") Then
+		
+		// Use passed single-byte characters array directly.
+		SBCS = ANSI;
+		
+	ElsIf TypeOf(ANSI) = Type("String") Then
+		
+		// Create single-byte characters array.
+		If StrLen(ANSI) > 0 Then
+			SBCS = New Array(StrLen(ANSI));
+			For i = 1 To StrLen(ANSI) Do
+				SBCS[i-1] = CharCode(Mid(ANSI, i, 1));
+			EndDo;
+		Else
+			// Return empty result.
+			Return Result;
+		EndIf;
+		
+	Else
+		// Unknown passed type.
+		Return Result;
+	EndIf;
+	
+	// Define actual codepage to be used in conversion.
+	If  (StrLen(CodePage) = 12)
+	And (Left(CodePage, 11) = "windows-125")
+	And (Find("012345678", Mid(CodePage, 12, 1)) > 0) Then
+	
+		// Assign passed code page.
+		CP = "CP125"+Mid(CodePage, 12, 1);
+		
+	Else // Process automatic search of codepage using session data.
+	
+		// Define code page constants.
+		CP125X = New Array(9);
+		// CP1250 (Latin, Central European languages)
+		CP125X[0] = "az, az_AZ, az_Latn, az_Latn_AZ, " +  // Azerbaijani (latin)
+		            "hy, hy_AM, hy_AM_REVISED, " +        // Armenian
+		            "ka, ka_GE, " +                       // Georgian
+		            "uz, uz_Latn, uz_Latn_UZ, uz_UZ, " +  // Uzbek (latin)
+		            "cs, cs_CZ, " +                       // Czech
+		            "hr, hr_HR, " +                       // Croatian
+		            "hu, hu_HU, " +                       // Hungarian
+		            "pl, pl_PL, " +                       // Polish
+		            "ro, ro_RO, " +                       // Romanian
+		            "sk, sk_SK, " +                       // Slovak
+		            "sl, sl_SI, " +                       // Slovenian
+		            "sr_Latn, " +                         // Serbian (Latin)
+		            "sr_BA, sr_Latn_BA, " +               // Serbian (Bosnia and Herzegovina)
+		            "sr_Latn_RS, sr_Latn_ME, sr_Latn_CS"; // Serbian (Latin, Serbia and Montenegro)
+		// CP1251 (Cyrillic)
+		CP125X[1] = "ru, ru_RU, ru_UA, " +                // Russian
+		            "be, be_BY, " +                       // Belarusian
+		            "uk, uk_UA, " +                       // Ukrainian
+		            "kk, kk_KZ, " +                       // Kazakh
+		            "az_Cyrl, az_Cyrl_AZ, " +             // Azerbaijani (Cyrillic)
+		            "uz_Cyrl, uz_Cyrl_UZ, " +             // Uzbek (Cyrillic)
+		            "bg, bg_BG, " +                       // Bulgarian
+		            "mk, mk_MK, " +                       // Macedonian
+		            "sr, sr_CS, sr_RS, sr_ME, " +         // Serbian (Serbia and Montenegro)
+		            "sr_Cyrl, " +                         // Serbian (Cyrillic)
+		            "sr_Cyrl_BA, " +                      // Serbian (Cyrillic, Bosnia and Herzegovina)
+		            "sr_Cyrl_CS, sr_Cyrl_RS, sr_Cyrl_ME"; // Serbian (Cyrillic, Serbia and Montenegro)
+		// CP1252 (Latin, Western European languages, Default)
+		CP125X[2] = "";                                   // Default codepage
+		// CP1253 (Greek)
+		CP125X[3] = "el, el_CY, el_GR";                   // Greek
+		// CP1254 (Turkish)
+		CP125X[4] = "tr, tr_TR";                          // Turkish
+		// CP1255 (Hebrew)
+		CP125X[5] = "he, he_IL";                          // Hebrew
+		// CP1256 (Arabic)
+		CP125X[6] = "ar, ar_AE, ar_BH, ar_DZ, ar_EG, " +  // Arabic
+		            "ar_IQ, ar_JO, ar_KW, ar_LB, ar_LY, " +
+		            "ar_MA, ar_OM, ar_QA, ar_SA, ar_SD, " +
+		            "ar_SY, ar_TN, ar_YE";
+		// CP1257 (Latin, Baltic languages)
+		CP125X[7] = "et, et_EE, " +                       // Estonian
+		            "lt, lt_LT, " +                       // Lithuanian
+		            "lv, lv_LV";                          // Latvian
+		// CP1258 (Vietnamese)
+		CP125X[8] = "vi, vi_VN";                          // Vietnamese
+		
+		// Actually we don't know exactly, which ANSI page was used,
+		// because it defined by regional & language settings.
+		// We'll use the current session language code as much close possible value to regional settings.
+		#If ThinClient Or WebClient Then
+			LocaleCode = CurrentLanguage();
+		#Else
+			LocaleCode = CurrentLocaleCode();
+		#EndIf
+		CP = "";
+		For i = 0 To 8 Do
+			If Find(", " + CP125X[i] + "," , ", " + LocaleCode + ",") > 0 Then
+				CP = "CP125"+i;
+				Break;
+			EndIf;
+		EndDo;
+		If IsBlankString(CP) Then
+			CP = "CP1252"; // Use default code page.
+		EndIf;
+	EndIf;
+	
+	// Define charset character table.
+	If CP = "CP1250" Then
+		// CP1250 (Latin, Central European languages)
+		// 00 .. 7F -> 0000 ..007F (ASCII)
+		Bt80 = "20AC,    ,201A,    ,201E,2026,2020,2021,    ,2030,0160,2039,015A,0164,017D,0179,"+ // 80 .. 8F
+		       "    ,2018,2019,201C,201D,2022,2013,2014,    ,2122,0161,203A,015B,0165,017E,017A,"+ // 90 .. 9F
+		       "00A0,02C7,02D8,0141,00A4,0104,00A6,00A7,00A8,00A9,015E,00AB,00AC,00AD,00AE,017B,"+ // A0 .. AF
+		       "00B0,00B1,02DB,0142,00B4,00B5,00B6,00B7,00B8,0105,015F,00BB,013D,02DD,013E,017C,"+ // B0 .. BF
+		       "0154,00C1,00C2,0102,00C4,0139,0106,00C7,010C,00C9,0118,00CB,011A,00CD,00CE,010E,"+ // C0 .. CF
+		       "0110,0143,0147,00D3,00D4,0150,00D6,00D7,0158,016E,00DA,0170,00DC,00DD,0162,00DF,"+ // D0 .. DF
+		       "0155,00E1,00E2,0103,00E4,013A,0107,00E7,010D,00E9,0119,00EB,011B,00ED,00EE,010F,"+ // E0 .. EF
+		       "0111,0144,0148,00F3,00F4,0151,00F6,00F7,0159,016F,00FA,0171,00FC,00FD,0163,02D9";  // F0 .. FF
+		
+	ElsIf CP = "CP1251" Then
+		// CP1251 (Cyrillic)
+		// 00 .. 7F -> 0000 ..007F (ASCII)
+		Bt80 = "0402,0403,201A,0453,201E,2026,2020,2021,20AC,2030,0409,2039,040A,040C,040B,040F,"+ // 80 .. 8F
+		       "0452,2018,2019,201C,201D,2022,2013,2014,    ,2122,0459,203A,045A,045C,045B,045F,"+ // 90 .. 9F
+		       "00A0,040E,045E,0408,00A4,0490,00A6,00A7,0401,00A9,0404,00AB,00AC,00AD,00AE,0407,"+ // A0 .. AF
+		       "00B0,00B1,0406,0456,0491,00B5,00B6,00B7,0451,2116,0454,00BB,0458,0405,0455,0457,"+ // B0 .. BF
+		       "0410,0411,0412,0413,0414,0415,0416,0417,0418,0419,041A,041B,041C,041D,041E,041F,"+ // C0 .. CF
+		       "0420,0421,0422,0423,0424,0425,0426,0427,0428,0429,042A,042B,042C,042D,042E,042F,"+ // D0 .. DF
+		       "0430,0431,0432,0433,0434,0435,0436,0437,0438,0439,043A,043B,043C,043D,043E,043F,"+ // E0 .. EF
+		       "0440,0441,0442,0443,0444,0445,0446,0447,0448,0449,044A,044B,044C,044D,044E,044F";  // F0 .. FF
+		
+	ElsIf CP = "CP1252" Then
+		// CP1252 (Latin, Western European languages, Default)
+		// 00 .. 7F -> 0000 ..007F (ASCII)
+		Bt80 = "20AC,    ,201A,0192,201E,2026,2020,2021,02C6,2030,0160,2039,0152,    ,017D,    ,"+ // 80 .. 8F
+		       "    ,2018,2019,201C,201D,2022,2013,2014,02DC,2122,0161,203A,0153,    ,017E,0178,"+ // 90 .. 9F
+		       "00A0,00A1,00A2,00A3,00A4,00A5,00A6,00A7,00A8,00A9,00AA,00AB,00AC,00AD,00AE,00AF,"+ // A0 .. AF
+		       "00B0,00B1,00B2,00B3,00B4,00B5,00B6,00B7,00B8,00B9,00BA,00BB,00BC,00BD,00BE,00BF,"+ // B0 .. BF
+		       "00C0,00C1,00C2,00C3,00C4,00C5,00C6,00C7,00C8,00C9,00CA,00CB,00CC,00CD,00CE,00CF,"+ // C0 .. CF
+		       "00D0,00D1,00D2,00D3,00D4,00D5,00D6,00D7,00D8,00D9,00DA,00DB,00DC,00DD,00DE,00DF,"+ // D0 .. DF
+		       "00E0,00E1,00E2,00E3,00E4,00E5,00E6,00E7,00E8,00E9,00EA,00EB,00EC,00ED,00EE,00EF,"+ // E0 .. EF
+		       "00F0,00F1,00F2,00F3,00F4,00F5,00F6,00F7,00F8,00F9,00FA,00FB,00FC,00FD,00FE,00FF";  // F0 .. FF
+		
+	ElsIf CP = "CP1253" Then
+		// CP1253 (Greek)
+		// 00 .. 7F -> 0000 ..007F (ASCII)
+		Bt80 = "20AC,    ,201A,0192,201E,2026,2020,2021,    ,2030,    ,2039,    ,    ,    ,    ,"+ // 80 .. 8F
+		       "    ,2018,2019,201C,201D,2022,2013,2014,    ,2122,    ,203A,    ,    ,    ,    ,"+ // 90 .. 9F
+		       "00A0,0385,0386,00A3,00A4,00A5,00A6,00A7,00A8,00A9,    ,00AB,00AC,00AD,00AE,2015,"+ // A0 .. AF
+		       "00B0,00B1,00B2,00B3,0384,00B5,00B6,00B7,0388,0389,038A,00BB,038C,00BD,038E,038F,"+ // B0 .. BF
+		       "0390,0391,0392,0393,0394,0395,0396,0397,0398,0399,039A,039B,039C,039D,039E,039F,"+ // C0 .. CF
+		       "03A0,03A1,    ,03A3,03A4,03A5,03A6,03A7,03A8,03A9,03AA,03AB,03AC,03AD,03AE,03AF,"+ // D0 .. DF
+		       "03B0,03B1,03B2,03B3,03B4,03B5,03B6,03B7,03B8,03B9,03BA,03BB,03BC,03BD,03BE,03BF,"+ // E0 .. EF
+		       "03C0,03C1,03C2,03C3,03C4,03C5,03C6,03C7,03C8,03C9,03CA,03CB,03CC,03CD,03CE,    ";  // F0 .. FF
+		
+	ElsIf CP = "CP1254" Then
+		// CP1254 (Turkish)
+		Bt80 = "20AC,    ,201A,0192,201E,2026,2020,2021,02C6,2030,0160,2039,0152,    ,    ,    ,"+ // 80 .. 8F
+		       "    ,2018,2019,201C,201D,2022,2013,2014,02DC,2122,0161,203A,0153,    ,    ,0178,"+ // 90 .. 9F
+		       "00A0,00A1,00A2,00A3,00A4,00A5,00A6,00A7,00A8,00A9,00AA,00AB,00AC,00AD,00AE,00AF,"+ // A0 .. AF
+		       "00B0,00B1,00B2,00B3,00B4,00B5,00B6,00B7,00B8,00B9,00BA,00BB,00BC,00BD,00BE,00BF,"+ // B0 .. BF
+		       "00C0,00C1,00C2,00C3,00C4,00C5,00C6,00C7,00C8,00C9,00CA,00CB,00CC,00CD,00CE,00CF,"+ // C0 .. CF
+		       "011E,00D1,00D2,00D3,00D4,00D5,00D6,00D7,00D8,00D9,00DA,00DB,00DC,0130,015E,00DF,"+ // D0 .. DF
+		       "00E0,00E1,00E2,00E3,00E4,00E5,00E6,00E7,00E8,00E9,00EA,00EB,00EC,00ED,00EE,00EF,"+ // E0 .. EF
+		       "011F,00F1,00F2,00F3,00F4,00F5,00F6,00F7,00F8,00F9,00FA,00FB,00FC,0131,015F,00FF";  // F0 .. FF
+		
+	ElsIf CP = "CP1255" Then
+		// CP1255 (Hebrew)
+		Bt80 = "20AC,    ,201A,0192,201E,2026,2020,2021,02C6,2030,    ,2039,    ,    ,    ,    ,"+ // 80 .. 8F
+		       "    ,2018,2019,201C,201D,2022,2013,2014,02DC,2122,    ,203A,    ,    ,    ,    ,"+ // 90 .. 9F
+		       "00A0,00A1,00A2,00A3,20AA,00A5,00A6,00A7,00A8,00A9,00D7,00AB,00AC,00AD,00AE,00AF,"+ // A0 .. AF
+		       "00B0,00B1,00B2,00B3,00B4,00B5,00B6,00B7,00B8,00B9,00F7,00BB,00BC,00BD,00BE,00BF,"+ // B0 .. BF
+		       "05B0,05B1,05B2,05B3,05B4,05B5,05B6,05B7,05B8,05B9,    ,05BB,05BC,05BD,05BE,05BF,"+ // C0 .. CF
+		       "05C0,05C1,05C2,05C3,05F0,05F1,05F2,05F3,05F4,    ,    ,    ,    ,    ,    ,    ,"+ // D0 .. DF
+		       "05D0,05D1,05D2,05D3,05D4,05D5,05D6,05D7,05D8,05D9,05DA,05DB,05DC,05DD,05DE,05DF,"+ // E0 .. EF
+		       "05E0,05E1,05E2,05E3,05E4,05E5,05E6,05E7,05E8,05E9,05EA,    ,    ,200E,200F,    ";  // F0 .. FF
+		
+	ElsIf CP = "CP1256" Then
+		// CP1256 (Arabic)
+		Bt80 = "20AC,067E,201A,0192,201E,2026,2020,2021,02C6,2030,0679,2039,0152,0686,0698,0688,"+ // 80 .. 8F
+		       "06AF,2018,2019,201C,201D,2022,2013,2014,06A9,2122,0691,203A,0153,200C,200D,06BA,"+ // 90 .. 9F
+		       "00A0,060C,00A2,00A3,00A4,00A5,00A6,00A7,00A8,00A9,06BE,00AB,00AC,00AD,00AE,00AF,"+ // A0 .. AF
+		       "00B0,00B1,00B2,00B3,00B4,00B5,00B6,00B7,00B8,00B9,061B,00BB,00BC,00BD,00BE,061F,"+ // B0 .. BF
+		       "06C1,0621,0622,0623,0624,0625,0626,0627,0628,0629,062A,062B,062C,062D,062E,062F,"+ // C0 .. CF
+		       "0630,0631,0632,0633,0634,0635,0636,00D7,0637,0638,0639,063A,0640,0641,0642,0643,"+ // D0 .. DF
+		       "00E0,0644,00E2,0645,0646,0647,0648,00E7,00E8,00E9,00EA,00EB,0649,064A,00EE,00EF,"+ // E0 .. EF
+		       "064B,064C,064D,064E,00F4,064F,0650,00F7,0651,00F9,0652,00FB,00FC,200E,200F,06D2";  // F0 .. FF
+		
+	ElsIf CP = "CP1257" Then
+		// CP1257 (Latin, Baltic languages)
+		Bt80 = "20AC,    ,201A,    ,201E,2026,2020,2021,    ,2030,    ,2039,    ,00A8,02C7,00B8,"+ // 80 .. 8F
+		       "    ,2018,2019,201C,201D,2022,2013,2014,    ,2122,    ,203A,    ,00AF,02DB,    ,"+ // 90 .. 9F
+		       "00A0,    ,00A2,00A3,00A4,    ,00A6,00A7,00D8,00A9,0156,00AB,00AC,00AD,00AE,00C6,"+ // A0 .. AF
+		       "00B0,00B1,00B2,00B3,00B4,00B5,00B6,00B7,00F8,00B9,0157,00BB,00BC,00BD,00BE,00E6,"+ // B0 .. BF
+		       "0104,012E,0100,0106,00C4,00C5,0118,0112,010C,00C9,0179,0116,0122,0136,012A,013B,"+ // C0 .. CF
+		       "0160,0143,0145,00D3,014C,00D5,00D6,00D7,0172,0141,015A,016A,00DC,017B,017D,00DF,"+ // D0 .. DF
+		       "0105,012F,0101,0107,00E4,00E5,0119,0113,010D,00E9,017A,0117,0123,0137,012B,013C,"+ // E0 .. EF
+		       "0161,0144,0146,00F3,014D,00F5,00F6,00F7,0173,0142,015B,016B,00FC,017C,017E,02D9";  // F0 .. FF
+		
+	ElsIf CP = "CP1258" Then
+		// CP1258 (Vietnamese)
+		Bt80 = "20AC,    ,201A,0192,201E,2026,2020,2021,02C6,2030,    ,2039,0152,    ,    ,    ,"+ // 80 .. 8F
+		       "    ,2018,2019,201C,201D,2022,2013,2014,02DC,2122,    ,203A,0153,    ,    ,0178,"+ // 90 .. 9F
+		       "00A0,00A1,00A2,00A3,00A4,00A5,00A6,00A7,00A8,00A9,00AA,00AB,00AC,00AD,00AE,00AF,"+ // A0 .. AF
+		       "00B0,00B1,00B2,00B3,00B4,00B5,00B6,00B7,00B8,00B9,00BA,00BB,00BC,00BD,00BE,00BF,"+ // B0 .. BF
+		       "00C0,00C1,00C2,0102,00C4,00C5,00C6,00C7,00C8,00C9,00CA,00CB,0300,00CD,00CE,00CF,"+ // C0 .. CF
+		       "0110,00D1,0309,00D3,00D4,01A0,00D6,00D7,00D8,00D9,00DA,00DB,00DC,01AF,0303,00DF,"+ // D0 .. DF
+		       "00E0,00E1,00E2,0103,00E4,00E5,00E6,00E7,00E8,00E9,00EA,00EB,0301,00ED,00EE,00EF,"+ // E0 .. EF
+		       "0111,00F1,0323,00F3,00F4,01A1,00F6,00F7,00F8,00F9,00FA,00FB,00FC,01B0,20AB,00FF";  // F0 .. FF
+	Else
+		Bt80 = "";
+	EndIf;
+	
+	// Define hex codes string.
+	HexStr = "0123456789ABCDEF";
+	
+	// Step by step convertion of ANSI Characters to Unicode.
+	For i = 0 To SBCS.Count() - 1 Do
+		
+		// Get current byte.
+		Byte = SBCS[i];
+		If Byte < 128 Then
+			// ASCII Char (00 .. 7F)
+			Result = Result + Char(Byte);
+			
+		ElsIf Byte < 256 Then
+			// National Code Page Char (80 .. FF)
+			UnicodeCharHex  = Mid(Bt80, (Byte-128) * 5 + 1, 4);
+			If Not IsBlankString(UnicodeCharHex) Then
+				UnicodeCharCode = 0; Base = 1;
+				For j = 0 To 3 Do
+					UnicodeCharCode = UnicodeCharCode + Base * (Find(HexStr, Mid(UnicodeCharHex, 4 - j, 1)) - 1);
+					Base = Base * 16;
+				EndDo;
+				Result = Result + Char(UnicodeCharCode);
+			Else
+				// Undefined symbol or wrong character table.
+				Result = Result + "?";
+			EndIf;
+		Else
+			// Undefined symbol or wrong character table.
+			Result = Result + "?";
+		EndIf;
+	EndDo;
+	
+	// Return resulting string.
 	Return Result;
 	
 EndFunction
@@ -5131,7 +5304,7 @@ EndFunction
 //  String - encoded UTF-16 characters codes,
 //  Array  - encoded UTF-16 characters words.
 //
-Function StrToUTF16(Str, AsArray = False, ByteOrder = Undefined, UseBOM = False)
+Function UnicodeToUTF16(Str, AsArray = False, ByteOrder = Undefined, UseBOM = False)
 	
 	// Define UTF-16 words array.
 	MWCS = New Array;
@@ -5293,7 +5466,7 @@ EndFunction
 //  String - encoded UTF-8 characters codes,
 //  Array  - encoded UTF-8 characters bytes.
 //
-Function StrToUTF8(Str, AsArray = False, UseBOM = False)
+Function UnicodeToUTF8(Str, AsArray = False, UseBOM = False)
 	
 	// Define UTF-8 bytes array.
 	MBCS = New Array;
@@ -5424,6 +5597,47 @@ Function StrToUTF8(Str, AsArray = False, UseBOM = False)
 	
 	// Return formatted value.
 	Return Result;
+	
+EndFunction
+
+// Encodes native 1C string to UTF-8 string.
+//
+// Parameters:
+//  Str      - String  - Native 1C string.
+//  AsArray  - Boolean - Return UTF-8 MBCS as an array
+//                       (otherwise returns string of char-bytes).
+//  UseBOM   - Boolean - Flag of include byte order mark (BOM) in the resulting string.
+//
+// Returns:
+//  String - encoded UTF-8 characters codes,
+//  Array  - encoded UTF-8 characters bytes.
+//
+Function StrToUTF8(Str, AsArray = False, UseBOM = False)
+	
+	// Convert native 1C UTF-16BE string to unicode characters array first.
+	UnicodeStr = UTF16ToUnicode(Str, True);
+	
+	// Convert unicode string to UTF-8 string / chars array.
+	Return UnicodeToUTF8(UnicodeStr, AsArray, UseBOM);
+	
+EndFunction
+
+// Decodes UTF-8 string to native 1C string.
+//
+// Parameters:
+//  UTF8     - String  - String of UTF-8 characters codes.
+//           - Array   - Array of UTF-8 characters bytes.
+//
+// Returns:
+//  String - Decoded 1C string.
+//
+Function UTF8ToStr(UTF8)
+	
+	// Convert UTF-8 to unicode characters array first.
+	UnicodeStr = UTF8ToUnicode(UTF8, True);
+	
+	// Convert unicode string to native 1C UTF-16BE string.
+	Return UnicodeToUTF16(UnicodeStr);
 	
 EndFunction
 

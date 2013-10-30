@@ -16,56 +16,6 @@
 				<xr:Common>true</xr:Common>
 			</Visibility>
 		</Command>
-		<Command name="0:4583e5c5-fe52-4e25-81e6-c704d89ce484">
-			<Visibility>
-				<xr:Common>false</xr:Common>
-			</Visibility>
-		</Command>
-		<Command name="0:41920bb3-98d7-4e47-9a51-863389dcba6a">
-			<Visibility>
-				<xr:Common>false</xr:Common>
-			</Visibility>
-		</Command>
-		<Command name="0:b66d2ac6-ce97-46b7-909a-d0b0d0e20b96">
-			<Visibility>
-				<xr:Common>false</xr:Common>
-			</Visibility>
-		</Command>
-		<Command name="0:80cdfa63-44d2-416a-af95-767f6a6269ee">
-			<Visibility>
-				<xr:Common>false</xr:Common>
-			</Visibility>
-		</Command>
-		<Command name="0:fdbc6dd9-1531-4758-9afe-99b432d70aa2">
-			<Visibility>
-				<xr:Common>false</xr:Common>
-			</Visibility>
-		</Command>
-		<Command name="0:beccdc04-de37-4500-9fbe-b4276a6690b0">
-			<Visibility>
-				<xr:Common>false</xr:Common>
-			</Visibility>
-		</Command>
-		<Command name="0:a63964b7-1c51-468a-9516-936ed7fc1ab8">
-			<Visibility>
-				<xr:Common>false</xr:Common>
-			</Visibility>
-		</Command>
-		<Command name="0:c43360f8-8d8f-4690-a49a-22906366edbc">
-			<Visibility>
-				<xr:Common>false</xr:Common>
-			</Visibility>
-		</Command>
-		<Command name="0:7811fecc-4a58-4546-beb9-3f18ecebead6">
-			<Visibility>
-				<xr:Common>false</xr:Common>
-			</Visibility>
-		</Command>
-		<Command name="0:67753a54-5089-49d0-a464-99163d7140f4">
-			<Visibility>
-				<xr:Common>false</xr:Common>
-			</Visibility>
-		</Command>
 		<Command name="Document.InventoryBeginningBalances.StandardCommand.OpenList">
 			<Visibility>
 				<xr:Common>false</xr:Common>
@@ -151,35 +101,11 @@
 		<Command name="DataProcessor.PeriodClosing.Command.PeriodClosing">
 			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
 		</Command>
-		<Command name="0:4583e5c5-fe52-4e25-81e6-c704d89ce484">
-			<CommandGroup>CommandGroup.Reports</CommandGroup>
+		<Command name="Document.Budget.StandardCommand.OpenList">
+			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
 		</Command>
-		<Command name="0:41920bb3-98d7-4e47-9a51-863389dcba6a">
-			<CommandGroup>CommandGroup.Reports</CommandGroup>
-		</Command>
-		<Command name="0:b66d2ac6-ce97-46b7-909a-d0b0d0e20b96">
-			<CommandGroup>CommandGroup.Reports</CommandGroup>
-		</Command>
-		<Command name="0:80cdfa63-44d2-416a-af95-767f6a6269ee">
-			<CommandGroup>CommandGroup.Reports</CommandGroup>
-		</Command>
-		<Command name="0:fdbc6dd9-1531-4758-9afe-99b432d70aa2">
-			<CommandGroup>CommandGroup.Reports</CommandGroup>
-		</Command>
-		<Command name="0:beccdc04-de37-4500-9fbe-b4276a6690b0">
-			<CommandGroup>CommandGroup.Reports</CommandGroup>
-		</Command>
-		<Command name="0:a63964b7-1c51-468a-9516-936ed7fc1ab8">
-			<CommandGroup>CommandGroup.Reports</CommandGroup>
-		</Command>
-		<Command name="0:c43360f8-8d8f-4690-a49a-22906366edbc">
-			<CommandGroup>CommandGroup.Reports</CommandGroup>
-		</Command>
-		<Command name="0:7811fecc-4a58-4546-beb9-3f18ecebead6">
-			<CommandGroup>CommandGroup.Reports</CommandGroup>
-		</Command>
-		<Command name="0:67753a54-5089-49d0-a464-99163d7140f4">
-			<CommandGroup>CommandGroup.Reports</CommandGroup>
+		<Command name="Catalog.ExpensifyCategories.StandardCommand.OpenList">
+			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
 		</Command>
 		<Command name="Document.InventoryBeginningBalances.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
@@ -211,6 +137,12 @@
 		<Command name="Catalog.PaymentMethods.StandardCommand.Create">
 			<CommandGroup>ActionsPanelCreate</CommandGroup>
 		</Command>
+		<Command name="Document.Budget.StandardCommand.Create">
+			<CommandGroup>ActionsPanelCreate</CommandGroup>
+		</Command>
+		<Command name="Catalog.ExpensifyCategories.StandardCommand.Create">
+			<CommandGroup>ActionsPanelCreate</CommandGroup>
+		</Command>
 		<Command name="Report.GeneralLedger.StandardCommand.Open">
 			<CommandGroup>ActionsPanelReports</CommandGroup>
 		</Command>
@@ -220,13 +152,10 @@
 		<Command name="Report.IncomeStatement.StandardCommand.Open">
 			<CommandGroup>ActionsPanelReports</CommandGroup>
 		</Command>
-		<Command name="0:0750152d-7c06-439b-8a89-b16aadfba313">
-			<CommandGroup>ActionsPanelReports</CommandGroup>
-		</Command>
 		<Command name="Report.BalanceSheet.StandardCommand.Open">
 			<CommandGroup>ActionsPanelReports</CommandGroup>
 		</Command>
-		<Command name="Report.CashFlowDirect.StandardCommand.Open">
+		<Command name="0:ff84ab11-b1d1-4018-a723-a27f65ff966f">
 			<CommandGroup>ActionsPanelReports</CommandGroup>
 		</Command>
 		<Command name="Report.USVendors1099.StandardCommand.Open">
@@ -236,9 +165,6 @@
 			<CommandGroup>ActionsPanelReports</CommandGroup>
 		</Command>
 		<Command name="Report.Form1099.StandardCommand.Open">
-			<CommandGroup>ActionsPanelReports</CommandGroup>
-		</Command>
-		<Command name="0:09752592-67d6-489f-9411-3543700a7844">
 			<CommandGroup>ActionsPanelReports</CommandGroup>
 		</Command>
 	</CommandsOrder>

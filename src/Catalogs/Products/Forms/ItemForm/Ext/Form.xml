@@ -50,8 +50,6 @@
 		</InputField>
 		<InputField name="Price" id="79">
 			<DataPath>Price</DataPath>
-			<Visible>false</Visible>
-			<ReadOnly>true</ReadOnly>
 			<EditFormat>
 				<v8:item>
 					<v8:lang>en</v8:lang>
@@ -89,6 +87,16 @@
 			<ContextMenu name="CF3StringContextMenu" id="88"/>
 			<ExtendedTooltip name="CF3StringExtendedTooltip" id="107"/>
 		</InputField>
+		<InputField name="CF4String" id="135">
+			<DataPath>Object.CF4String</DataPath>
+			<ContextMenu name="CF4StringContextMenu" id="136"/>
+			<ExtendedTooltip name="CF4StringExtendedTooltip" id="137"/>
+		</InputField>
+		<InputField name="CF5String" id="138">
+			<DataPath>Object.CF5String</DataPath>
+			<ContextMenu name="CF5StringContextMenu" id="139"/>
+			<ExtendedTooltip name="CF5StringExtendedTooltip" id="140"/>
+		</InputField>
 		<InputField name="CF1Num" id="89">
 			<DataPath>Object.CF1Num</DataPath>
 			<ContextMenu name="CF1NumContextMenu" id="90"/>
@@ -103,6 +111,16 @@
 			<DataPath>Object.CF3Num</DataPath>
 			<ContextMenu name="CF3NumContextMenu" id="94"/>
 			<ExtendedTooltip name="CF3NumExtendedTooltip" id="110"/>
+		</InputField>
+		<InputField name="CF4Num" id="141">
+			<DataPath>Object.CF4Num</DataPath>
+			<ContextMenu name="CF4NumContextMenu" id="142"/>
+			<ExtendedTooltip name="CF4NumExtendedTooltip" id="143"/>
+		</InputField>
+		<InputField name="CF5Num" id="144">
+			<DataPath>Object.CF5Num</DataPath>
+			<ContextMenu name="CF5NumContextMenu" id="145"/>
+			<ExtendedTooltip name="CF5NumExtendedTooltip" id="146"/>
 		</InputField>
 		<Pages name="Group1" id="17">
 			<ExtendedTooltip name="Group1ExtendedTooltip" id="111"/>
@@ -260,6 +278,10 @@
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Item cost</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Artikelkosten</v8:content>
 						</v8:item>
 					</Title>
 					<HorizontalStretch>true</HorizontalStretch>
@@ -496,6 +518,10 @@
 				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Price</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Preis</v8:content>
 				</v8:item>
 			</Title>
 			<Type>

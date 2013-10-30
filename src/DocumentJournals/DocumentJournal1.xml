@@ -1,0 +1,167 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<MetaDataObject xmlns="http://v8.1c.ru/8.3/MDClasses" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:cmi="http://v8.1c.ru/8.2/managed-application/cmi" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xen="http://v8.1c.ru/8.3/xcf/enums" xmlns:xpr="http://v8.1c.ru/8.3/xcf/predef" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<DocumentJournal uuid="a08e83eb-4c14-405e-acc5-20708b0ca3f7">
+		<InternalInfo>
+			<xr:GeneratedType name="DocumentJournalSelection.DocumentJournal1" category="Selection">
+				<xr:TypeId>418cec09-770d-45b4-936c-7b7bc0a7ed36</xr:TypeId>
+				<xr:ValueId>5d801e1b-ea2f-4b29-af26-be387f336d23</xr:ValueId>
+			</xr:GeneratedType>
+			<xr:GeneratedType name="DocumentJournalList.DocumentJournal1" category="List">
+				<xr:TypeId>110c71d9-5a79-4d89-9daa-37fb4cbed861</xr:TypeId>
+				<xr:ValueId>6984f844-bbcb-4a77-b851-05a1dece14ba</xr:ValueId>
+			</xr:GeneratedType>
+			<xr:GeneratedType name="DocumentJournalManager.DocumentJournal1" category="Manager">
+				<xr:TypeId>3324b6ec-1556-4e91-97e4-2119de3b6052</xr:TypeId>
+				<xr:ValueId>524f371f-2ffe-45dc-a83a-1af4b7a42735</xr:ValueId>
+			</xr:GeneratedType>
+		</InternalInfo>
+		<Properties>
+			<Name>DocumentJournal1</Name>
+			<Synonym/>
+			<Comment/>
+			<DefaultForm/>
+			<AuxiliaryForm/>
+			<UseStandardCommands>true</UseStandardCommands>
+			<RegisteredDocuments>
+				<xr:Item xsi:type="xr:MDObjectRef">Document.SalesInvoice</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Document.SalesOrder</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Document.SalesReturn</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Document.PurchaseReturn</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Document.PurchaseOrder</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Document.PurchaseInvoice</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Document.InvoicePayment</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Document.Check</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Document.CashSale</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Document.CashReceipt</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Document.CashPurchase</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Document.Deposit</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Document.ItemReceipt</xr:Item>
+			</RegisteredDocuments>
+			<IncludeHelpInContents>false</IncludeHelpInContents>
+			<ListPresentation/>
+			<ExtendedListPresentation/>
+			<Explanation/>
+		</Properties>
+		<ChildObjects>
+			<Column uuid="eac3ba37-a7e8-46ca-a14d-2f329b6c6c98">
+				<Properties>
+					<Name>Total</Name>
+					<Synonym>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Total</v8:content>
+						</v8:item>
+					</Synonym>
+					<Comment/>
+					<Indexing>DontIndex</Indexing>
+					<References>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.CashPurchase.Attribute.DocumentTotalRC</xr:Item>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.CashReceipt.Attribute.DocumentTotalRC</xr:Item>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.CashSale.Attribute.DocumentTotalRC</xr:Item>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.Check.Attribute.DocumentTotalRC</xr:Item>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.InvoicePayment.Attribute.DocumentTotalRC</xr:Item>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.PurchaseInvoice.Attribute.DocumentTotalRC</xr:Item>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.PurchaseOrder.Attribute.DocumentTotalRC</xr:Item>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.PurchaseReturn.Attribute.DocumentTotalRC</xr:Item>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.SalesInvoice.Attribute.DocumentTotalRC</xr:Item>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.SalesOrder.Attribute.DocumentTotalRC</xr:Item>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.SalesReturn.Attribute.DocumentTotalRC</xr:Item>
+					</References>
+				</Properties>
+			</Column>
+			<Column uuid="6e382ce1-d468-4db7-a408-be9292af14e3">
+				<Properties>
+					<Name>Memo</Name>
+					<Synonym>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Memo</v8:content>
+						</v8:item>
+					</Synonym>
+					<Comment/>
+					<Indexing>DontIndex</Indexing>
+					<References>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.CashPurchase.Attribute.Memo</xr:Item>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.CashReceipt.Attribute.Memo</xr:Item>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.CashSale.Attribute.Memo</xr:Item>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.Check.Attribute.Memo</xr:Item>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.InvoicePayment.Attribute.Memo</xr:Item>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.PurchaseInvoice.Attribute.Memo</xr:Item>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.PurchaseOrder.Attribute.Memo</xr:Item>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.PurchaseReturn.Attribute.Memo</xr:Item>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.SalesInvoice.Attribute.Memo</xr:Item>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.SalesOrder.Attribute.Memo</xr:Item>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.SalesReturn.Attribute.Memo</xr:Item>
+					</References>
+				</Properties>
+			</Column>
+			<Column uuid="d72ee8ed-5276-4b8c-86fd-7540ecef101e">
+				<Properties>
+					<Name>Company</Name>
+					<Synonym>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Company</v8:content>
+						</v8:item>
+					</Synonym>
+					<Comment/>
+					<Indexing>DontIndex</Indexing>
+					<References>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.CashPurchase.Attribute.Company</xr:Item>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.CashReceipt.Attribute.Company</xr:Item>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.CashSale.Attribute.Company</xr:Item>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.Check.Attribute.Company</xr:Item>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.InvoicePayment.Attribute.Company</xr:Item>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.PurchaseInvoice.Attribute.Company</xr:Item>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.PurchaseOrder.Attribute.Company</xr:Item>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.PurchaseReturn.Attribute.Company</xr:Item>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.SalesInvoice.Attribute.Company</xr:Item>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.SalesOrder.Attribute.Company</xr:Item>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.SalesReturn.Attribute.Company</xr:Item>
+					</References>
+				</Properties>
+			</Column>
+			<Column uuid="108ea967-883c-434d-a46e-f71cc3632431">
+				<Properties>
+					<Name>DueDate</Name>
+					<Synonym>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Due date</v8:content>
+						</v8:item>
+					</Synonym>
+					<Comment/>
+					<Indexing>DontIndex</Indexing>
+					<References>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.PurchaseInvoice.Attribute.DueDate</xr:Item>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.PurchaseReturn.Attribute.DueDate</xr:Item>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.SalesInvoice.Attribute.DueDate</xr:Item>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.SalesReturn.Attribute.DueDate</xr:Item>
+					</References>
+				</Properties>
+			</Column>
+			<Column uuid="d15c4a02-d82d-4359-9314-5cfdda18371a">
+				<Properties>
+					<Name>Project</Name>
+					<Synonym>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Project</v8:content>
+						</v8:item>
+					</Synonym>
+					<Comment/>
+					<Indexing>DontIndex</Indexing>
+					<References>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.CashPurchase.Attribute.Project</xr:Item>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.CashSale.Attribute.Project</xr:Item>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.Check.Attribute.Project</xr:Item>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.PurchaseInvoice.Attribute.Project</xr:Item>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.PurchaseOrder.Attribute.Project</xr:Item>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.SalesInvoice.Attribute.Project</xr:Item>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.SalesOrder.Attribute.Project</xr:Item>
+					</References>
+				</Properties>
+			</Column>
+		</ChildObjects>
+	</DocumentJournal>
+</MetaDataObject>

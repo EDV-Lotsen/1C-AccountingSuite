@@ -1,11 +1,6 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <CommandInterface xmlns="http://v8.1c.ru/8.3/xcf/extrnprops" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
 	<CommandsVisibility>
-		<Command name="Document.CashReceipt.StandardCommand.OpenList">
-			<Visibility>
-				<xr:Common>false</xr:Common>
-			</Visibility>
-		</Command>
 		<Command name="Document.InvoicePayment.StandardCommand.OpenList">
 			<Visibility>
 				<xr:Common>false</xr:Common>
@@ -36,12 +31,23 @@
 				<xr:Common>false</xr:Common>
 			</Visibility>
 		</Command>
+		<Command name="DataProcessor.DownloadedTransactions.StandardCommand.Open">
+			<Visibility>
+				<xr:Common>false</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="DataProcessor.YodleeBankAccountsManagement.Command.ManageYodleeBankAccounts">
+			<Visibility>
+				<xr:Common>false</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="DataProcessor.YodleeBankAccountsManagement.StandardCommand.Open">
+			<Visibility>
+				<xr:Common>false</xr:Common>
+			</Visibility>
+		</Command>
 	</CommandsVisibility>
 	<CommandsPlacement>
-		<Command name="Document.CashReceipt.StandardCommand.OpenList">
-			<CommandGroup>NavigationPanelImportant</CommandGroup>
-			<Placement>Auto</Placement>
-		</Command>
 		<Command name="Document.InvoicePayment.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelImportant</CommandGroup>
 			<Placement>Auto</Placement>
@@ -68,9 +74,6 @@
 		</Command>
 	</CommandsPlacement>
 	<CommandsOrder>
-		<Command name="Document.CashReceipt.StandardCommand.OpenList">
-			<CommandGroup>NavigationPanelImportant</CommandGroup>
-		</Command>
 		<Command name="Document.InvoicePayment.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelImportant</CommandGroup>
 		</Command>
@@ -79,6 +82,12 @@
 		</Command>
 		<Command name="Document.Deposit.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelImportant</CommandGroup>
+		</Command>
+		<Command name="DataProcessor.DownloadedTransactions.Command.DownloadedTransactions">
+			<CommandGroup>NavigationPanelImportant</CommandGroup>
+		</Command>
+		<Command name="Catalog.BankAccounts.StandardCommand.OpenList">
+			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
 		</Command>
 		<Command name="Document.BankTransfer.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
@@ -95,9 +104,6 @@
 		<Command name="Document.Check.StandardCommand.Create">
 			<CommandGroup>ActionsPanelCreate</CommandGroup>
 		</Command>
-		<Command name="Document.CashReceipt.StandardCommand.Create">
-			<CommandGroup>ActionsPanelCreate</CommandGroup>
-		</Command>
 		<Command name="Document.Deposit.StandardCommand.Create">
 			<CommandGroup>ActionsPanelCreate</CommandGroup>
 		</Command>
@@ -110,11 +116,24 @@
 		<Command name="InformationRegister.TransactionReconciliation.StandardCommand.Create">
 			<CommandGroup>ActionsPanelCreate</CommandGroup>
 		</Command>
+		<Command name="Catalog.BankAccounts.StandardCommand.Create">
+			<CommandGroup>ActionsPanelCreate</CommandGroup>
+		</Command>
+		<Command name="DataProcessor.DownloadedTransactions.StandardCommand.Open">
+			<CommandGroup>ActionsPanelTools</CommandGroup>
+		</Command>
+		<Command name="DataProcessor.YodleeBankAccountsManagement.Command.ManageYodleeBankAccounts">
+			<CommandGroup>ActionsPanelTools</CommandGroup>
+		</Command>
+		<Command name="DataProcessor.YodleeBankAccountsManagement.StandardCommand.Open">
+			<CommandGroup>ActionsPanelTools</CommandGroup>
+		</Command>
 	</CommandsOrder>
 	<GroupsOrder>
 		<Group>NavigationPanelImportant</Group>
 		<Group>NavigationPanelOrdinary</Group>
 		<Group>NavigationPanelSeeAlso</Group>
 		<Group>ActionsPanelCreate</Group>
+		<Group>ActionsPanelTools</Group>
 	</GroupsOrder>
 </CommandInterface>

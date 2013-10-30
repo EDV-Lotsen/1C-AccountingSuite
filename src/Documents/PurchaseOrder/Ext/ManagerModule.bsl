@@ -41,7 +41,7 @@ EndFunction
 
 // Query for document data
 Function Query_OrdersStatuses(TablesList)
-
+	
 	// Add OrdersStatuses table to document structure
 	TablesList.Insert("Table_OrdersStatuses", TablesList.Count());
 	
@@ -53,7 +53,7 @@ Function Query_OrdersStatuses(TablesList)
 	|	Document.Ref                          AS Recorder,
 	|	Document.Date                         AS Period,
 	|	1                                     AS LineNumber,
-	|	True								  AS Active,
+	|	True                                  AS Active,
 	// ------------------------------------------------------
 	// Dimensions
 	|	Document.Ref                          AS Order,
@@ -78,7 +78,7 @@ Function Query_OrdersDispatched(TablesList)
 	// Add OrdersDispatched table to document structure
 	TablesList.Insert("Table_OrdersDispatched", TablesList.Count());
 	
-	// Collect orders registered data
+	// Collect orders dispatched data
 	QueryText =
 	"SELECT
 	// ------------------------------------------------------
@@ -87,7 +87,7 @@ Function Query_OrdersDispatched(TablesList)
 	|	LineItems.Ref.Date                    AS Period,
 	|	LineItems.LineNumber                  AS LineNumber,
 	|	VALUE(AccumulationRecordType.Receipt) AS RecordType,
-	|	True								  AS Active,
+	|	True                                  AS Active,
 	// ------------------------------------------------------
 	// Dimensions
 	|	LineItems.Ref.Company                 AS Company,
@@ -112,12 +112,12 @@ Function Query_OrdersDispatched(TablesList)
 	
 EndFunction
 
-// Put an array of registers, which balance should be checked during posting
+// Put structure of registers, which balance should be checked during posting
 Procedure FillRegistersCheckList(AdditionalProperties, RegisterRecords)
 
 	// Create structure of registers and its resources to check balances
 	BalanceCheck = New Structure;
-		
+	
 	// Fill structure depending on document write mode
 	If AdditionalProperties.Posting.WriteMode = DocumentWriteMode.Posting Then
 		
@@ -136,7 +136,7 @@ Procedure FillRegistersCheckList(AdditionalProperties, RegisterRecords)
 		                             |Order quantity {Quantity} is lower then received quantity {Received}'")); // Over-shipping balance
 		CheckMessages.Add(NStr("en = '{Product}:
 		                             |Order quantity {Quantity} is lower then invoiced quantity {Invoiced}'")); // Over-invoiced balance
-									 
+		
 		// Add register to check it's recordset changes and balances during posting
 		BalanceCheck.Insert("OrdersDispatched", New Structure("CheckPostings, CheckBalances, CheckMessages", CheckPostings, CheckBalances, CheckMessages));
 		

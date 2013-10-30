@@ -6,7 +6,6 @@
 	<AutoCommandBar name="FormCommandBar" id="-1"/>
 	<Events>
 		<Event name="AfterWriteAtServer">AfterWriteAtServer</Event>
-		<Event name="OnOpen">OnOpen</Event>
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
 		<Event name="FillCheckProcessingAtServer">FillCheckProcessingAtServer</Event>
 	</Events>
@@ -24,9 +23,23 @@
 			<ContextMenu name="DescriptionContextMenu" id="4"/>
 			<ExtendedTooltip name="DescriptionExtendedTooltip" id="153"/>
 		</InputField>
+		<InputField name="StripeToken" id="135">
+			<DataPath>Object.StripeToken</DataPath>
+			<Visible>false</Visible>
+			<ReadOnly>true</ReadOnly>
+			<ContextMenu name="StripeTokenContextMenu" id="136"/>
+			<ExtendedTooltip name="StripeTokenExtendedTooltip" id="154"/>
+		</InputField>
+		<Button name="SalesTransactions" id="209">
+			<Type>UsualButton</Type>
+			<Visible>false</Visible>
+			<CommandName>Form.Command.SalesTransactions</CommandName>
+			<ExtendedTooltip name="SalesTransactionsExtendedTooltip" id="210"/>
+		</Button>
 		<UsualGroup name="Group2" id="42">
 			<Group>Horizontal</Group>
 			<Representation>StrongSeparation</Representation>
+			<ShowTitle>false</ShowTitle>
 			<ExtendedTooltip name="Group2ExtendedTooltip" id="156"/>
 			<ChildItems>
 				<CheckBoxField name="Customer" id="43">
@@ -47,6 +60,63 @@
 			<Width>50</Width>
 			<ExtendedTooltip name="Group1ExtendedTooltip" id="159"/>
 			<ChildItems>
+				<Page name="Address" id="237">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Address</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Address</v8:content>
+						</v8:item>
+					</ToolTip>
+					<ExtendedTooltip name="AddressExtendedTooltip" id="238"/>
+					<ChildItems>
+						<InputField name="PrimaryAddrEmail" id="266">
+							<DataPath>PrimaryAddr.Email</DataPath>
+							<ContextMenu name="PrimaryAddrEmailContextMenu" id="267"/>
+							<ExtendedTooltip name="PrimaryAddrEmailExtendedTooltip" id="268"/>
+						</InputField>
+						<InputField name="PrimaryAddrPhone" id="269">
+							<DataPath>PrimaryAddr.Phone</DataPath>
+							<ContextMenu name="PrimaryAddrPhoneContextMenu" id="270"/>
+							<ExtendedTooltip name="PrimaryAddrPhoneExtendedTooltip" id="271"/>
+						</InputField>
+						<InputField name="PrimaryAddrAddressLine1" id="272">
+							<DataPath>PrimaryAddr.AddressLine1</DataPath>
+							<ContextMenu name="PrimaryAddrAddressLine1ContextMenu" id="273"/>
+							<ExtendedTooltip name="PrimaryAddrAddressLine1ExtendedTooltip" id="274"/>
+						</InputField>
+						<InputField name="PrimaryAddrAddressLine2" id="275">
+							<DataPath>PrimaryAddr.AddressLine2</DataPath>
+							<ContextMenu name="PrimaryAddrAddressLine2ContextMenu" id="276"/>
+							<ExtendedTooltip name="PrimaryAddrAddressLine2ExtendedTooltip" id="277"/>
+						</InputField>
+						<InputField name="PrimaryAddrCity" id="278">
+							<DataPath>PrimaryAddr.City</DataPath>
+							<ContextMenu name="PrimaryAddrCityContextMenu" id="279"/>
+							<ExtendedTooltip name="PrimaryAddrCityExtendedTooltip" id="280"/>
+						</InputField>
+						<InputField name="PrimaryAddrState" id="281">
+							<DataPath>PrimaryAddr.State</DataPath>
+							<ContextMenu name="PrimaryAddrStateContextMenu" id="282"/>
+							<ExtendedTooltip name="PrimaryAddrStateExtendedTooltip" id="283"/>
+						</InputField>
+						<InputField name="PrimaryAddrCountry" id="284">
+							<DataPath>PrimaryAddr.Country</DataPath>
+							<ContextMenu name="PrimaryAddrCountryContextMenu" id="285"/>
+							<ExtendedTooltip name="PrimaryAddrCountryExtendedTooltip" id="286"/>
+						</InputField>
+						<InputField name="PrimaryAddrZIP" id="287">
+							<DataPath>PrimaryAddr.ZIP</DataPath>
+							<ContextMenu name="PrimaryAddrZIPContextMenu" id="288"/>
+							<ExtendedTooltip name="PrimaryAddrZIPExtendedTooltip" id="289"/>
+						</InputField>
+					</ChildItems>
+				</Page>
 				<Page name="Financial" id="16">
 					<Title>
 						<v8:item>
@@ -85,11 +155,6 @@
 							<DataPath>Object.DefaultCurrency</DataPath>
 							<ContextMenu name="DefaultCurrencyContextMenu" id="20"/>
 							<ExtendedTooltip name="DefaultCurrencyExtendedTooltip" id="163"/>
-						</InputField>
-						<InputField name="SalesTaxCode" id="21">
-							<DataPath>Object.SalesTaxCode</DataPath>
-							<ContextMenu name="SalesTaxCodeContextMenu" id="22"/>
-							<ExtendedTooltip name="SalesTaxCodeExtendedTooltip" id="164"/>
 						</InputField>
 						<InputField name="VATNumber" id="81">
 							<DataPath>Object.VATNumber</DataPath>
@@ -192,6 +257,61 @@
 							<ContextMenu name="PriceLevelContextMenu" id="149"/>
 							<ExtendedTooltip name="PriceLevelExtendedTooltip" id="179"/>
 						</InputField>
+						<InputField name="DwollaID" id="290">
+							<DataPath>Object.DwollaID</DataPath>
+							<ContextMenu name="DwollaIDContextMenu" id="291"/>
+							<ExtendedTooltip name="DwollaIDExtendedTooltip" id="292"/>
+						</InputField>
+					</ChildItems>
+				</Page>
+				<Page name="CreditCard" id="182">
+					<Visible>false</Visible>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Credit card</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Kreditkarte</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Credit card</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Kreditkarte</v8:content>
+						</v8:item>
+					</ToolTip>
+					<ExtendedTooltip name="CreditCardExtendedTooltip" id="183"/>
+					<ChildItems>
+						<InputField name="type" id="196">
+							<DataPath>Object.type</DataPath>
+							<ReadOnly>true</ReadOnly>
+							<ContextMenu name="typeContextMenu" id="197"/>
+							<ExtendedTooltip name="typeExtendedTooltip" id="198"/>
+						</InputField>
+						<InputField name="last4" id="187">
+							<DataPath>Object.last4</DataPath>
+							<ReadOnly>true</ReadOnly>
+							<ContextMenu name="last4ContextMenu" id="188"/>
+							<ExtendedTooltip name="last4ExtendedTooltip" id="189"/>
+						</InputField>
+						<InputField name="exp_month" id="190">
+							<DataPath>Object.exp_month</DataPath>
+							<ReadOnly>true</ReadOnly>
+							<ContextMenu name="exp_monthContextMenu" id="191"/>
+							<ExtendedTooltip name="exp_monthExtendedTooltip" id="192"/>
+						</InputField>
+						<InputField name="exp_year" id="193">
+							<DataPath>Object.exp_year</DataPath>
+							<ReadOnly>true</ReadOnly>
+							<ContextMenu name="exp_yearContextMenu" id="194"/>
+							<ExtendedTooltip name="exp_yearExtendedTooltip" id="195"/>
+						</InputField>
 					</ChildItems>
 				</Page>
 				<Page name="Projects" id="201">
@@ -215,15 +335,74 @@
 							<v8:content>Projekte</v8:content>
 						</v8:item>
 					</ToolTip>
-					<Group>Horizontal</Group>
 					<ExtendedTooltip name="ProjectsExtendedTooltip" id="202"/>
 					<ChildItems>
 						<Button name="CatalogProjectsOpenByValue" id="205">
 							<Type>UsualButton</Type>
-							<CommandName>Catalog.Projects.StandardCommand.OpenByValue</CommandName>
-							<DataPath>Object.Ref</DataPath>
+							<Visible>false</Visible>
+							<CommandName>Form.Command.Projects</CommandName>
 							<ExtendedTooltip name="CatalogProjectsOpenByValueExtendedTooltip" id="206"/>
 						</Button>
+						<Table name="ProjectTable" id="230">
+							<Representation>List</Representation>
+							<CommandBarLocation>None</CommandBarLocation>
+							<Header>false</Header>
+							<UseAlternationRowColor>true</UseAlternationRowColor>
+							<AutoInsertNewRow>true</AutoInsertNewRow>
+							<EnableStartDrag>true</EnableStartDrag>
+							<EnableDrag>true</EnableDrag>
+							<DataPath>ProjectTable</DataPath>
+							<SearchStringLocation>None</SearchStringLocation>
+							<ViewStatusLocation>None</ViewStatusLocation>
+							<SearchControlLocation>None</SearchControlLocation>
+							<AutoRefresh>false</AutoRefresh>
+							<AutoRefreshPeriod>60</AutoRefreshPeriod>
+							<Period>
+								<v8:variant xsi:type="v8:StandardPeriodVariant">Custom</v8:variant>
+								<v8:startDate>0001-01-01T00:00:00</v8:startDate>
+								<v8:endDate>0001-01-01T00:00:00</v8:endDate>
+							</Period>
+							<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
+							<RestoreCurrentRow>false</RestoreCurrentRow>
+							<TopLevelParent xsi:nil="true"/>
+							<ShowRoot>true</ShowRoot>
+							<AllowRootChoice>false</AllowRootChoice>
+							<UpdateOnDataChange>Auto</UpdateOnDataChange>
+							<ContextMenu name="ProjectTableContextMenu" id="231"/>
+							<AutoCommandBar name="ProjectTableCommandBar" id="232"/>
+							<ExtendedTooltip name="ProjectTableExtendedTooltip" id="233"/>
+							<SearchStringAddition name="ProjectTableSearchString" id="293">
+								<AdditionSource>
+									<Item>ProjectTable</Item>
+									<Type>SearchStringRepresentation</Type>
+								</AdditionSource>
+								<ContextMenu name="ProjectTableSearchStringContextMenu" id="294"/>
+								<ExtendedTooltip name="ProjectTableSearchStringExtendedTooltip" id="295"/>
+							</SearchStringAddition>
+							<ViewStatusAddition name="ProjectTableViewStatus" id="296">
+								<AdditionSource>
+									<Item>ProjectTable</Item>
+									<Type>ViewStatusRepresentation</Type>
+								</AdditionSource>
+								<ContextMenu name="ProjectTableViewStatusContextMenu" id="297"/>
+								<ExtendedTooltip name="ProjectTableViewStatusExtendedTooltip" id="298"/>
+							</ViewStatusAddition>
+							<SearchControlAddition name="ProjectTableSearchControl" id="299">
+								<AdditionSource>
+									<Item>ProjectTable</Item>
+									<Type>SearchControl</Type>
+								</AdditionSource>
+								<ContextMenu name="ProjectTableSearchControlContextMenu" id="300"/>
+								<ExtendedTooltip name="ProjectTableSearchControlExtendedTooltip" id="301"/>
+							</SearchControlAddition>
+							<ChildItems>
+								<LabelField name="ProjectTableRef" id="263">
+									<DataPath>ProjectTable.Ref</DataPath>
+									<ContextMenu name="ProjectTableRefContextMenu" id="264"/>
+									<ExtendedTooltip name="ProjectTableRefExtendedTooltip" id="265"/>
+								</LabelField>
+							</ChildItems>
+						</Table>
 					</ChildItems>
 				</Page>
 			</ChildItems>
@@ -247,6 +426,56 @@
 			</Type>
 			<MainAttribute>true</MainAttribute>
 			<SavedData>true</SavedData>
+		</Attribute>
+		<Attribute name="ProjectTable" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Project table</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>cfg:DynamicList</v8:Type>
+			</Type>
+			<Settings xsi:type="DynamicList">
+				<ManualQuery>true</ManualQuery>
+				<DynamicDataRead>false</DynamicDataRead>
+				<QueryText>SELECT
+	Projects.Ref,
+	Projects.Description
+FROM
+	Catalog.Projects AS Projects
+WHERE
+	Projects.Customer = &amp;Ref</QueryText>
+				<MainTable>Catalog.Projects</MainTable>
+				<ListSettings>
+					<dcsset:filter>
+						<dcsset:viewMode>Normal</dcsset:viewMode>
+						<dcsset:userSettingID>dfcece9d-5077-440b-b6b3-45a5cb4538eb</dcsset:userSettingID>
+					</dcsset:filter>
+					<dcsset:order>
+						<dcsset:viewMode>Normal</dcsset:viewMode>
+						<dcsset:userSettingID>88619765-ccb3-46c6-ac52-38e9c992ebd4</dcsset:userSettingID>
+					</dcsset:order>
+					<dcsset:conditionalAppearance>
+						<dcsset:viewMode>Normal</dcsset:viewMode>
+						<dcsset:userSettingID>b75fecce-942b-4aed-abc9-e6a02e460fb3</dcsset:userSettingID>
+					</dcsset:conditionalAppearance>
+					<dcsset:itemsViewMode>Normal</dcsset:itemsViewMode>
+					<dcsset:itemsUserSettingID>911b6018-f537-43e8-a417-da56b22f9aec</dcsset:itemsUserSettingID>
+				</ListSettings>
+			</Settings>
+		</Attribute>
+		<Attribute name="PrimaryAddr" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Primary addr</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>cfg:CatalogObject.Addresses</v8:Type>
+			</Type>
 		</Attribute>
 	</Attributes>
 	<Commands>
@@ -273,6 +502,21 @@
 			</ToolTip>
 			<Action>Projects</Action>
 		</Command>
+		<Command name="SalesTransactions" id="4">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Sales transactions</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Sales transactions</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>SalesTransactions</Action>
+		</Command>
 	</Commands>
 	<CommandInterface>
 		<NavigationPanel>
@@ -282,7 +526,7 @@
 				<DefaultVisible>false</DefaultVisible>
 			</Item>
 			<Item>
-				<Command>Catalog.Projects.StandardCommand.OpenByValue</Command>
+				<Command>4:a4a3dc76-48df-4a24-afd9-00a434279493</Command>
 				<Type>Auto</Type>
 				<DefaultVisible>false</DefaultVisible>
 				<Visible>

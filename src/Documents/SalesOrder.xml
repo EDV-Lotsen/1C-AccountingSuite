@@ -287,6 +287,10 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Company code</v8:content>
 						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Unternehmenscode</v8:content>
+						</v8:item>
 					</Synonym>
 					<Comment/>
 					<Type>
@@ -694,6 +698,10 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Price includes VAT</v8:content>
 						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Preis inkl. USt.</v8:content>
+						</v8:item>
 					</Synonym>
 					<Comment/>
 					<Type>
@@ -825,6 +833,10 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Confirm to</v8:content>
 						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Bestätigen an</v8:content>
+						</v8:item>
 					</Synonym>
 					<Comment/>
 					<Type>
@@ -941,17 +953,13 @@
 					<FullTextSearch>Use</FullTextSearch>
 				</Properties>
 			</Attribute>
-			<Attribute uuid="1432e42f-c998-4eba-915c-12eeaf7f345a">
+			<Attribute uuid="e99cbf1e-48f6-44eb-99ff-19fc2e784643">
 				<Properties>
 					<Name>Project</Name>
 					<Synonym>
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Project</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Projekt</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -972,13 +980,7 @@
 					<FillValue xsi:nil="true"/>
 					<FillChecking>DontCheck</FillChecking>
 					<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
-					<ChoiceParameterLinks>
-						<xr:Link>
-							<xr:Name>Filter.Owner</xr:Name>
-							<xr:DataPath xsi:type="xs:string">Document.SalesOrder.Attribute.Company</xr:DataPath>
-							<xr:ValueChange>Clear</xr:ValueChange>
-						</xr:Link>
-					</ChoiceParameterLinks>
+					<ChoiceParameterLinks/>
 					<ChoiceParameters/>
 					<QuickChoice>Auto</QuickChoice>
 					<CreateOnInput>Auto</CreateOnInput>
@@ -1009,6 +1011,10 @@
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Line items</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>de</v8:lang>
+							<v8:content>Artikel</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>

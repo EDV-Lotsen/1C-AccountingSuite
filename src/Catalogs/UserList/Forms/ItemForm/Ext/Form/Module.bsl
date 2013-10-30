@@ -8,8 +8,10 @@ Procedure OnWriteAtServer(Cancel, CurrentObject, WriteParameters)
 		//NewUser.Name = Object.Description + Right(SessionParameters.TenantValue,7);
 		NewUser.Name = Object.Description;
 		NewUser.FullName = Object.Description;
-		NewUser.StandardAuthentication = True;	
 		NewUser.Password = Pwd;
+		NewUser.StandardAuthentication = True;
+		//RNG = New RandomNumberGenerator(255);	
+		//NewUser.Password = RNG.RandomNumber(0, 10000);
 		//NewUser.Roles.Add(Metadata.Roles.FullAccess1);
 		           
 		If Object.AdminAccess = True Then
@@ -324,7 +326,7 @@ Procedure AdminBox(Object)
 
 EndProcedure
 &AtClient
-Procedure ChoiceProcessing(SelectedValue, ChoiceSource)
+Procedure ChoiceProcessing(SelectedValue)
 	
 AdminBox(Object);
 ReportBox(Object);

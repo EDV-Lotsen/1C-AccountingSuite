@@ -1,0 +1,250 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<ChildItems>
+		<UsualGroup name="ListSettingsComposerUserSettings" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>User settings group</v8:content>
+				</v8:item>
+			</Title>
+			<VerticalStretch>false</VerticalStretch>
+			<Group>Vertical</Group>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="ListSettingsComposerUserSettingsExtendedTooltip" id="2"/>
+		</UsualGroup>
+		<UsualGroup name="Group1" id="65">
+			<Group>Horizontal</Group>
+			<ExtendedTooltip name="Group1ExtendedTooltip" id="66"/>
+			<ChildItems>
+				<Table name="List" id="3">
+					<Representation>List</Representation>
+					<CommandBarLocation>None</CommandBarLocation>
+					<DefaultItem>true</DefaultItem>
+					<Width>22</Width>
+					<UseAlternationRowColor>true</UseAlternationRowColor>
+					<InitialTreeView>ExpandTopLevel</InitialTreeView>
+					<HorizontalStretch>false</HorizontalStretch>
+					<EnableStartDrag>true</EnableStartDrag>
+					<DataPath>List</DataPath>
+					<RowPictureDataPath>List.DefaultPicture</RowPictureDataPath>
+					<SearchStringLocation>None</SearchStringLocation>
+					<ViewStatusLocation>None</ViewStatusLocation>
+					<SearchControlLocation>None</SearchControlLocation>
+					<AutoRefresh>false</AutoRefresh>
+					<AutoRefreshPeriod>60</AutoRefreshPeriod>
+					<Period>
+						<v8:variant xsi:type="v8:StandardPeriodVariant">Custom</v8:variant>
+						<v8:startDate>0001-01-01T00:00:00</v8:startDate>
+						<v8:endDate>0001-01-01T00:00:00</v8:endDate>
+					</Period>
+					<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
+					<RestoreCurrentRow>false</RestoreCurrentRow>
+					<TopLevelParent xsi:nil="true"/>
+					<ShowRoot>true</ShowRoot>
+					<AllowRootChoice>false</AllowRootChoice>
+					<UpdateOnDataChange>Auto</UpdateOnDataChange>
+					<UserSettingsGroup>ListSettingsComposerUserSettings</UserSettingsGroup>
+					<ContextMenu name="ListContextMenu" id="4"/>
+					<AutoCommandBar name="ListCommandBar" id="5">
+						<Autofill>false</Autofill>
+					</AutoCommandBar>
+					<ExtendedTooltip name="ListExtendedTooltip" id="6"/>
+					<SearchStringAddition name="ListSearchString" id="73">
+						<AdditionSource>
+							<Item>List</Item>
+							<Type>SearchStringRepresentation</Type>
+						</AdditionSource>
+						<ContextMenu name="ListSearchStringContextMenu" id="74"/>
+						<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="75"/>
+					</SearchStringAddition>
+					<ViewStatusAddition name="ListViewStatus" id="76">
+						<AdditionSource>
+							<Item>List</Item>
+							<Type>ViewStatusRepresentation</Type>
+						</AdditionSource>
+						<ContextMenu name="ListViewStatusContextMenu" id="77"/>
+						<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="78"/>
+					</ViewStatusAddition>
+					<SearchControlAddition name="ListSearchControl" id="79">
+						<AdditionSource>
+							<Item>List</Item>
+							<Type>SearchControl</Type>
+						</AdditionSource>
+						<ContextMenu name="ListSearchControlContextMenu" id="80"/>
+						<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="81"/>
+					</SearchControlAddition>
+					<ChildItems>
+						<LabelField name="Year" id="62">
+							<DataPath>List.Year</DataPath>
+							<ContextMenu name="YearContextMenu" id="63"/>
+							<ExtendedTooltip name="YearExtendedTooltip" id="64"/>
+						</LabelField>
+					</ChildItems>
+				</Table>
+				<Table name="LineItem" id="13">
+					<Representation>List</Representation>
+					<AutoInsertNewRow>true</AutoInsertNewRow>
+					<EnableStartDrag>true</EnableStartDrag>
+					<EnableDrag>true</EnableDrag>
+					<DataPath>Items.List.CurrentData.LineItem</DataPath>
+					<SearchStringLocation>None</SearchStringLocation>
+					<ViewStatusLocation>None</ViewStatusLocation>
+					<SearchControlLocation>None</SearchControlLocation>
+					<RowFilter xsi:nil="true"/>
+					<ContextMenu name="LineItemContextMenu" id="14"/>
+					<AutoCommandBar name="LineItemCommandBar" id="15">
+						<Autofill>false</Autofill>
+					</AutoCommandBar>
+					<ExtendedTooltip name="LineItemExtendedTooltip" id="16"/>
+					<SearchStringAddition name="LineItemSearchString" id="82">
+						<AdditionSource>
+							<Item>LineItem</Item>
+							<Type>SearchStringRepresentation</Type>
+						</AdditionSource>
+						<ContextMenu name="LineItemSearchStringContextMenu" id="83"/>
+						<ExtendedTooltip name="LineItemSearchStringExtendedTooltip" id="84"/>
+					</SearchStringAddition>
+					<ViewStatusAddition name="LineItemViewStatus" id="85">
+						<AdditionSource>
+							<Item>LineItem</Item>
+							<Type>ViewStatusRepresentation</Type>
+						</AdditionSource>
+						<ContextMenu name="LineItemViewStatusContextMenu" id="86"/>
+						<ExtendedTooltip name="LineItemViewStatusExtendedTooltip" id="87"/>
+					</ViewStatusAddition>
+					<SearchControlAddition name="LineItemSearchControl" id="88">
+						<AdditionSource>
+							<Item>LineItem</Item>
+							<Type>SearchControl</Type>
+						</AdditionSource>
+						<ContextMenu name="LineItemSearchControlContextMenu" id="89"/>
+						<ExtendedTooltip name="LineItemSearchControlExtendedTooltip" id="90"/>
+					</SearchControlAddition>
+					<ChildItems>
+						<InputField name="LineItemAccount" id="17">
+							<DataPath>Items.List.CurrentData.LineItem.Account</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="LineItemAccountContextMenu" id="18"/>
+							<ExtendedTooltip name="LineItemAccountExtendedTooltip" id="19"/>
+						</InputField>
+						<InputField name="LineItemDescription" id="70">
+							<DataPath>Items.List.CurrentData.LineItem.Description</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="LineItemDescriptionContextMenu" id="71"/>
+							<ExtendedTooltip name="LineItemDescriptionExtendedTooltip" id="72"/>
+						</InputField>
+						<InputField name="LineItemTotal" id="67">
+							<DataPath>Items.List.CurrentData.LineItem.Total</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="LineItemTotalContextMenu" id="68"/>
+							<ExtendedTooltip name="LineItemTotalExtendedTooltip" id="69"/>
+						</InputField>
+						<InputField name="LineItemJan" id="32">
+							<DataPath>Items.List.CurrentData.LineItem.Jan</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="LineItemJanContextMenu" id="33"/>
+							<ExtendedTooltip name="LineItemJanExtendedTooltip" id="34"/>
+						</InputField>
+						<InputField name="LineItemFeb" id="29">
+							<DataPath>Items.List.CurrentData.LineItem.Feb</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="LineItemFebContextMenu" id="30"/>
+							<ExtendedTooltip name="LineItemFebExtendedTooltip" id="31"/>
+						</InputField>
+						<InputField name="LineItemMar" id="44">
+							<DataPath>Items.List.CurrentData.LineItem.Mar</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="LineItemMarContextMenu" id="45"/>
+							<ExtendedTooltip name="LineItemMarExtendedTooltip" id="46"/>
+						</InputField>
+						<InputField name="LineItemApr" id="20">
+							<DataPath>Items.List.CurrentData.LineItem.Apr</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="LineItemAprContextMenu" id="21"/>
+							<ExtendedTooltip name="LineItemAprExtendedTooltip" id="22"/>
+						</InputField>
+						<InputField name="LineItemMay" id="47">
+							<DataPath>Items.List.CurrentData.LineItem.May</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="LineItemMayContextMenu" id="48"/>
+							<ExtendedTooltip name="LineItemMayExtendedTooltip" id="49"/>
+						</InputField>
+						<InputField name="LineItemJun" id="38">
+							<DataPath>Items.List.CurrentData.LineItem.Jun</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="LineItemJunContextMenu" id="39"/>
+							<ExtendedTooltip name="LineItemJunExtendedTooltip" id="40"/>
+						</InputField>
+						<InputField name="LineItemJul" id="35">
+							<DataPath>Items.List.CurrentData.LineItem.Jul</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="LineItemJulContextMenu" id="36"/>
+							<ExtendedTooltip name="LineItemJulExtendedTooltip" id="37"/>
+						</InputField>
+						<InputField name="LineItemAug" id="23">
+							<DataPath>Items.List.CurrentData.LineItem.Aug</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="LineItemAugContextMenu" id="24"/>
+							<ExtendedTooltip name="LineItemAugExtendedTooltip" id="25"/>
+						</InputField>
+						<InputField name="LineItemSep" id="59">
+							<DataPath>Items.List.CurrentData.LineItem.Sep</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="LineItemSepContextMenu" id="60"/>
+							<ExtendedTooltip name="LineItemSepExtendedTooltip" id="61"/>
+						</InputField>
+						<InputField name="LineItemOct" id="53">
+							<DataPath>Items.List.CurrentData.LineItem.Oct</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="LineItemOctContextMenu" id="54"/>
+							<ExtendedTooltip name="LineItemOctExtendedTooltip" id="55"/>
+						</InputField>
+						<InputField name="LineItemNov" id="50">
+							<DataPath>Items.List.CurrentData.LineItem.Nov</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="LineItemNovContextMenu" id="51"/>
+							<ExtendedTooltip name="LineItemNovExtendedTooltip" id="52"/>
+						</InputField>
+						<InputField name="LineItemDec" id="26">
+							<DataPath>Items.List.CurrentData.LineItem.Dec</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="LineItemDecContextMenu" id="27"/>
+							<ExtendedTooltip name="LineItemDecExtendedTooltip" id="28"/>
+						</InputField>
+					</ChildItems>
+				</Table>
+			</ChildItems>
+		</UsualGroup>
+	</ChildItems>
+	<Attributes>
+		<Attribute name="List" id="1">
+			<Type>
+				<v8:Type>cfg:DynamicList</v8:Type>
+			</Type>
+			<MainAttribute>true</MainAttribute>
+			<Settings xsi:type="DynamicList">
+				<ManualQuery>false</ManualQuery>
+				<DynamicDataRead>true</DynamicDataRead>
+				<MainTable>Document.Budget</MainTable>
+				<ListSettings>
+					<dcsset:filter>
+						<dcsset:viewMode>Normal</dcsset:viewMode>
+						<dcsset:userSettingID>dfcece9d-5077-440b-b6b3-45a5cb4538eb</dcsset:userSettingID>
+					</dcsset:filter>
+					<dcsset:order>
+						<dcsset:viewMode>Normal</dcsset:viewMode>
+						<dcsset:userSettingID>88619765-ccb3-46c6-ac52-38e9c992ebd4</dcsset:userSettingID>
+					</dcsset:order>
+					<dcsset:conditionalAppearance>
+						<dcsset:viewMode>Normal</dcsset:viewMode>
+						<dcsset:userSettingID>b75fecce-942b-4aed-abc9-e6a02e460fb3</dcsset:userSettingID>
+					</dcsset:conditionalAppearance>
+					<dcsset:itemsViewMode>Normal</dcsset:itemsViewMode>
+					<dcsset:itemsUserSettingID>911b6018-f537-43e8-a417-da56b22f9aec</dcsset:itemsUserSettingID>
+				</ListSettings>
+			</Settings>
+		</Attribute>
+	</Attributes>
+</Form>

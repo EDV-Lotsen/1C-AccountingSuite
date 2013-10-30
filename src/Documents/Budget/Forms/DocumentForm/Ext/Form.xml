@@ -1,0 +1,250 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<AutoTime>CurrentOrLast</AutoTime>
+	<UsePostingMode>Auto</UsePostingMode>
+	<RepostOnWrite>true</RepostOnWrite>
+	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<ChildItems>
+		<InputField name="Year" id="7">
+			<DataPath>Object.Year</DataPath>
+			<EditMode>EnterOnInput</EditMode>
+			<DropListButton>true</DropListButton>
+			<ChoiceList>
+				<xr:Item>
+					<xr:Presentation/>
+					<xr:CheckState>0</xr:CheckState>
+					<xr:Value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation/>
+						<Value xsi:type="xs:string">2010</Value>
+					</xr:Value>
+				</xr:Item>
+				<xr:Item>
+					<xr:Presentation/>
+					<xr:CheckState>0</xr:CheckState>
+					<xr:Value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation/>
+						<Value xsi:type="xs:string">2011</Value>
+					</xr:Value>
+				</xr:Item>
+				<xr:Item>
+					<xr:Presentation/>
+					<xr:CheckState>0</xr:CheckState>
+					<xr:Value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation/>
+						<Value xsi:type="xs:string">2012</Value>
+					</xr:Value>
+				</xr:Item>
+				<xr:Item>
+					<xr:Presentation/>
+					<xr:CheckState>0</xr:CheckState>
+					<xr:Value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation/>
+						<Value xsi:type="xs:string">2013</Value>
+					</xr:Value>
+				</xr:Item>
+				<xr:Item>
+					<xr:Presentation/>
+					<xr:CheckState>0</xr:CheckState>
+					<xr:Value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation/>
+						<Value xsi:type="xs:string">2014</Value>
+					</xr:Value>
+				</xr:Item>
+				<xr:Item>
+					<xr:Presentation/>
+					<xr:CheckState>0</xr:CheckState>
+					<xr:Value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation/>
+						<Value xsi:type="xs:string">2015</Value>
+					</xr:Value>
+				</xr:Item>
+				<xr:Item>
+					<xr:Presentation/>
+					<xr:CheckState>0</xr:CheckState>
+					<xr:Value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation/>
+						<Value xsi:type="xs:string">2016</Value>
+					</xr:Value>
+				</xr:Item>
+				<xr:Item>
+					<xr:Presentation/>
+					<xr:CheckState>0</xr:CheckState>
+					<xr:Value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation/>
+						<Value xsi:type="xs:string">2017</Value>
+					</xr:Value>
+				</xr:Item>
+				<xr:Item>
+					<xr:Presentation/>
+					<xr:CheckState>0</xr:CheckState>
+					<xr:Value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation/>
+						<Value xsi:type="xs:string">2018</Value>
+					</xr:Value>
+				</xr:Item>
+			</ChoiceList>
+			<ContextMenu name="YearContextMenu" id="8"/>
+			<ExtendedTooltip name="YearExtendedTooltip" id="9"/>
+		</InputField>
+		<InputField name="Descrip" id="59">
+			<DataPath>Object.Descrip</DataPath>
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Description</v8:content>
+				</v8:item>
+			</Title>
+			<Width>25</Width>
+			<HorizontalStretch>false</HorizontalStretch>
+			<ContextMenu name="DescripContextMenu" id="60"/>
+			<ExtendedTooltip name="DescripExtendedTooltip" id="61"/>
+		</InputField>
+		<Table name="LineItem" id="10">
+			<AutoInsertNewRow>true</AutoInsertNewRow>
+			<EnableStartDrag>true</EnableStartDrag>
+			<EnableDrag>true</EnableDrag>
+			<DataPath>Object.LineItem</DataPath>
+			<SearchStringLocation>None</SearchStringLocation>
+			<ViewStatusLocation>None</ViewStatusLocation>
+			<SearchControlLocation>None</SearchControlLocation>
+			<RowFilter xsi:nil="true"/>
+			<ContextMenu name="LineItemContextMenu" id="11"/>
+			<AutoCommandBar name="LineItemCommandBar" id="12"/>
+			<ExtendedTooltip name="LineItemExtendedTooltip" id="13"/>
+			<SearchStringAddition name="LineItemSearchString" id="65">
+				<AdditionSource>
+					<Item>LineItem</Item>
+					<Type>SearchStringRepresentation</Type>
+				</AdditionSource>
+				<ContextMenu name="LineItemSearchStringContextMenu" id="66"/>
+				<ExtendedTooltip name="LineItemSearchStringExtendedTooltip" id="67"/>
+			</SearchStringAddition>
+			<ViewStatusAddition name="LineItemViewStatus" id="68">
+				<AdditionSource>
+					<Item>LineItem</Item>
+					<Type>ViewStatusRepresentation</Type>
+				</AdditionSource>
+				<ContextMenu name="LineItemViewStatusContextMenu" id="69"/>
+				<ExtendedTooltip name="LineItemViewStatusExtendedTooltip" id="70"/>
+			</ViewStatusAddition>
+			<SearchControlAddition name="LineItemSearchControl" id="71">
+				<AdditionSource>
+					<Item>LineItem</Item>
+					<Type>SearchControl</Type>
+				</AdditionSource>
+				<ContextMenu name="LineItemSearchControlContextMenu" id="72"/>
+				<ExtendedTooltip name="LineItemSearchControlExtendedTooltip" id="73"/>
+			</SearchControlAddition>
+			<Events>
+				<Event name="OnChange">LineItemOnChange</Event>
+			</Events>
+			<ChildItems>
+				<InputField name="LineItemAccount" id="17">
+					<DataPath>Object.LineItem.Account</DataPath>
+					<EditMode>EnterOnInput</EditMode>
+					<ContextMenu name="LineItemAccountContextMenu" id="18"/>
+					<ExtendedTooltip name="LineItemAccountExtendedTooltip" id="19"/>
+				</InputField>
+				<InputField name="LineItemDescription" id="62">
+					<DataPath>Object.LineItem.Description</DataPath>
+					<EditMode>EnterOnInput</EditMode>
+					<ContextMenu name="LineItemDescriptionContextMenu" id="63"/>
+					<ExtendedTooltip name="LineItemDescriptionExtendedTooltip" id="64"/>
+				</InputField>
+				<InputField name="LineItemTotal" id="56">
+					<DataPath>Object.LineItem.Total</DataPath>
+					<EditMode>EnterOnInput</EditMode>
+					<ContextMenu name="LineItemTotalContextMenu" id="57"/>
+					<ExtendedTooltip name="LineItemTotalExtendedTooltip" id="58"/>
+					<Events>
+						<Event name="OnChange">LineItemTotalOnChange</Event>
+					</Events>
+				</InputField>
+				<InputField name="LineItemJan" id="20">
+					<DataPath>Object.LineItem.Jan</DataPath>
+					<EditMode>EnterOnInput</EditMode>
+					<ContextMenu name="LineItemJanContextMenu" id="21"/>
+					<ExtendedTooltip name="LineItemJanExtendedTooltip" id="22"/>
+				</InputField>
+				<InputField name="LineItemFeb" id="23">
+					<DataPath>Object.LineItem.Feb</DataPath>
+					<EditMode>EnterOnInput</EditMode>
+					<ContextMenu name="LineItemFebContextMenu" id="24"/>
+					<ExtendedTooltip name="LineItemFebExtendedTooltip" id="25"/>
+				</InputField>
+				<InputField name="LineItemMar" id="26">
+					<DataPath>Object.LineItem.Mar</DataPath>
+					<EditMode>EnterOnInput</EditMode>
+					<ContextMenu name="LineItemMarContextMenu" id="27"/>
+					<ExtendedTooltip name="LineItemMarExtendedTooltip" id="28"/>
+				</InputField>
+				<InputField name="LineItemApr" id="29">
+					<DataPath>Object.LineItem.Apr</DataPath>
+					<EditMode>EnterOnInput</EditMode>
+					<ContextMenu name="LineItemAprContextMenu" id="30"/>
+					<ExtendedTooltip name="LineItemAprExtendedTooltip" id="31"/>
+				</InputField>
+				<InputField name="LineItemMay" id="32">
+					<DataPath>Object.LineItem.May</DataPath>
+					<EditMode>EnterOnInput</EditMode>
+					<ContextMenu name="LineItemMayContextMenu" id="33"/>
+					<ExtendedTooltip name="LineItemMayExtendedTooltip" id="34"/>
+				</InputField>
+				<InputField name="LineItemJun" id="35">
+					<DataPath>Object.LineItem.Jun</DataPath>
+					<EditMode>EnterOnInput</EditMode>
+					<ContextMenu name="LineItemJunContextMenu" id="36"/>
+					<ExtendedTooltip name="LineItemJunExtendedTooltip" id="37"/>
+				</InputField>
+				<InputField name="LineItemJul" id="38">
+					<DataPath>Object.LineItem.Jul</DataPath>
+					<EditMode>EnterOnInput</EditMode>
+					<ContextMenu name="LineItemJulContextMenu" id="39"/>
+					<ExtendedTooltip name="LineItemJulExtendedTooltip" id="40"/>
+				</InputField>
+				<InputField name="LineItemAug" id="41">
+					<DataPath>Object.LineItem.Aug</DataPath>
+					<EditMode>EnterOnInput</EditMode>
+					<ContextMenu name="LineItemAugContextMenu" id="42"/>
+					<ExtendedTooltip name="LineItemAugExtendedTooltip" id="43"/>
+				</InputField>
+				<InputField name="LineItemSep" id="44">
+					<DataPath>Object.LineItem.Sep</DataPath>
+					<EditMode>EnterOnInput</EditMode>
+					<ContextMenu name="LineItemSepContextMenu" id="45"/>
+					<ExtendedTooltip name="LineItemSepExtendedTooltip" id="46"/>
+				</InputField>
+				<InputField name="LineItemOct" id="47">
+					<DataPath>Object.LineItem.Oct</DataPath>
+					<EditMode>EnterOnInput</EditMode>
+					<ContextMenu name="LineItemOctContextMenu" id="48"/>
+					<ExtendedTooltip name="LineItemOctExtendedTooltip" id="49"/>
+				</InputField>
+				<InputField name="LineItemNov" id="50">
+					<DataPath>Object.LineItem.Nov</DataPath>
+					<EditMode>EnterOnInput</EditMode>
+					<ContextMenu name="LineItemNovContextMenu" id="51"/>
+					<ExtendedTooltip name="LineItemNovExtendedTooltip" id="52"/>
+				</InputField>
+				<InputField name="LineItemDec" id="53">
+					<DataPath>Object.LineItem.Dec</DataPath>
+					<EditMode>EnterOnInput</EditMode>
+					<ContextMenu name="LineItemDecContextMenu" id="54"/>
+					<ExtendedTooltip name="LineItemDecExtendedTooltip" id="55"/>
+				</InputField>
+			</ChildItems>
+		</Table>
+	</ChildItems>
+	<Attributes>
+		<Attribute name="Object" id="1">
+			<Type>
+				<v8:Type>cfg:DocumentObject.Budget</v8:Type>
+			</Type>
+			<MainAttribute>true</MainAttribute>
+			<SavedData>true</SavedData>
+			<UseAlways>
+				<Field>Object.RegisterRecords</Field>
+			</UseAlways>
+		</Attribute>
+	</Attributes>
+</Form>
