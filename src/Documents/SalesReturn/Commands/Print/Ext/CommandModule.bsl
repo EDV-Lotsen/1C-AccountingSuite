@@ -20,4 +20,3 @@ Procedure Print(Spreadsheet, CommandParameter)
 	Documents.SalesReturn.Print(Spreadsheet, CommandParameter);
 EndProcedure
 
-

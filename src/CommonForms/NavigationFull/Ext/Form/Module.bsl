@@ -83,4 +83,9 @@ Procedure ItemReceipt(Command)
 	OpenForm("Document.InventoryBeginningBalances.Form.DocumentForm");
 EndProcedure
 
+&AtClient
+Procedure OnOpen(Cancel)
+	
+EndProcedure
+
 

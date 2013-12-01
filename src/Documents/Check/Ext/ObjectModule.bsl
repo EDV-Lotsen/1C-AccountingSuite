@@ -232,4 +232,39 @@ Procedure UndoPosting(Cancel)
 
 EndProcedure
 
+Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
+	
+	Test = PostingMode;
+	If WriteMode = DocumentWriteMode.Posting Then
+		
+		If PaymentMethod = Catalogs.PaymentMethods.Check Then
+			
+			test = Ref.IsEmpty();
+			If PhysicalCheckNum = 0 Then
+			
+				LastNumber = GeneralFunctions.LastCheckNumber(BankAccount);
+				
+				LastNumberString = "";
+				If LastNumber < 10000 Then
+					LastNumberString = Left(String(LastNumber+1),1) + Right(String(LastNumber+1),3)
+				Else
+					LastNumberString = Left(String(LastNumber+1),2) + Right(String(LastNumber+1),3)
+				EndIf;
+				
+				Number = LastNumberString;
+				PhysicalCheckNum = LastNumber + 1;
+							
+			Else
+				//PhysicalCheckNum = Number(Number);		
+			EndIf;
+		Endif;
+		
+	EndIf;
+	
+	If WriteMode = DocumentWriteMode.Write Then
+		Number = "DRAFT";
+	EndIf;
+
+EndProcedure
+
 

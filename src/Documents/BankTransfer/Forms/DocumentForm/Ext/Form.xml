@@ -6,6 +6,7 @@
 	<RepostOnWrite>true</RepostOnWrite>
 	<AutoCommandBar name="FormCommandBar" id="-1"/>
 	<Events>
+		<Event name="BeforeWriteAtServer">BeforeWriteAtServer</Event>
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
 		<Event name="FillCheckProcessingAtServer">FillCheckProcessingAtServer</Event>
 	</Events>
@@ -13,6 +14,8 @@
 		<InputField name="Number" id="1">
 			<DataPath>Object.Number</DataPath>
 			<EditMode>EnterOnInput</EditMode>
+			<Width>25</Width>
+			<HorizontalStretch>false</HorizontalStretch>
 			<ContextMenu name="NumberContextMenu" id="2"/>
 			<ExtendedTooltip name="NumberExtendedTooltip" id="19"/>
 		</InputField>

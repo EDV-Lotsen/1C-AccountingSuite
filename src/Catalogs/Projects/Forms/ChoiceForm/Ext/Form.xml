@@ -39,30 +39,33 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="6"/>
-			<SearchStringAddition name="ListSearchString" id="14">
+			<SearchStringAddition name="ListSearchString" id="11">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="15"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="16"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="12"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="13"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="17">
+			<ViewStatusAddition name="ListViewStatus" id="14">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="18"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="19"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="15"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="16"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="20">
+			<SearchControlAddition name="ListSearchControl" id="17">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="21"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="22"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="18"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="19"/>
 			</SearchControlAddition>
+			<Events>
+				<Event name="ChoiceProcessing">ListChoiceProcessing</Event>
+			</Events>
 			<ChildItems>
 				<LabelField name="Description" id="4">
 					<DataPath>List.Description</DataPath>
@@ -87,12 +90,6 @@
 					<ContextMenu name="CompanyContextMenu" id="9"/>
 					<ExtendedTooltip name="CompanyExtendedTooltip" id="10"/>
 				</InputField>
-				<CheckBoxField name="Internal" id="11">
-					<DataPath>List.Internal</DataPath>
-					<CheckBoxType>Auto</CheckBoxType>
-					<ContextMenu name="InternalContextMenu" id="12"/>
-					<ExtendedTooltip name="InternalExtendedTooltip" id="13"/>
-				</CheckBoxField>
 			</ChildItems>
 		</Table>
 	</ChildItems>

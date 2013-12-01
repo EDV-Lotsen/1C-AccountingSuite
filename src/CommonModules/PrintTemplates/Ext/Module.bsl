@@ -1,7 +1,17 @@
-﻿//////////////////////////////////////////////////////////////////////////////// 
-// THIS MODULE CONTAINS FUNCTIONS AND PROCEDURES USED FOR
-// GENERATING DOCUMENT PRINT FORMS
+﻿
+////////////////////////////////////////////////////////////////////////////////
+// Print templates: Generating document print forms
+//------------------------------------------------------------------------------
+// Available on:
+// - Server
+// - External Connection
 //
+
+////////////////////////////////////////////////////////////////////////////////
+#Region PUBLIC_INTERFACE
+
+//------------------------------------------------------------------------------
+// Compatibility functions
 
 Function ContactInfoDatasetUs() Export
 	
@@ -154,3 +164,5 @@ Function ContactInfoDataset(Company, Type, ShipTo) Export
 	Return Info;
 	
 EndFunction
+
+#EndRegion

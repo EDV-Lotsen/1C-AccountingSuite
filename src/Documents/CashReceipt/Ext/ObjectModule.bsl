@@ -3,7 +3,7 @@
 // 1 for an undeposited funds account, and 2 for a bank account, also an FX gain or loss is calculated and posted.
 //
 Procedure Posting(Cancel, PostingMode)
-	
+
 	// preventing posting if already included in a bank rec
 	    
 	Query = New Query("SELECT
@@ -214,3 +214,82 @@ Procedure UndoPosting(Cancel)
 	Records.Delete();
 
 EndProcedure
+
+Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
+	
+	// for webhooks
+	If NewObject = True Then
+		NewObject = False;
+	Else
+		If Ref = Documents.CashReceipt.EmptyRef() Then
+			NewObject = True;
+		EndIf;
+	EndIf;
+
+EndProcedure
+
+
+Procedure OnWrite(Cancel)
+	
+	companies_webhook = Constants.cash_receipts_webhook.Get();
+	
+	If NOT companies_webhook = "" Then
+		
+		//double_slash = Find(companies_webhook, "//");
+		//
+		//companies_webhook = Right(companies_webhook,StrLen(companies_webhook) - double_slash - 1);
+		//
+		//first_slash = Find(companies_webhook, "/");
+		//webhook_address = Left(companies_webhook,first_slash - 1);
+		//webhook_resource = Right(companies_webhook,StrLen(companies_webhook) - first_slash + 1); 		
+		
+		WebhookMap = New Map(); 
+		WebhookMap.Insert("apisecretkey",Constants.APISecretKey.Get());
+		WebhookMap.Insert("resource","cashreceipts");
+		If NewObject = True Then
+			WebhookMap.Insert("action","create");
+		Else
+			WebhookMap.Insert("action","update");
+		EndIf;
+		WebhookMap.Insert("api_code",String(Ref.UUID()));
+		
+		WebhookParams = New Array();
+		WebhookParams.Add(Constants.cash_receipts_webhook.Get());
+		WebhookParams.Add(WebhookMap);
+		LongActions.ExecuteInBackground("GeneralFunctions.SendWebhook", WebhookParams);
+	
+	EndIf;
+
+EndProcedure
+
+Procedure BeforeDelete(Cancel)
+	
+	companies_webhook = Constants.cash_receipts_webhook.Get();
+	
+	If NOT companies_webhook = "" Then
+		
+		//double_slash = Find(companies_webhook, "//");
+		//
+		//companies_webhook = Right(companies_webhook,StrLen(companies_webhook) - double_slash - 1);
+		//
+		//first_slash = Find(companies_webhook, "/");
+		//webhook_address = Left(companies_webhook,first_slash - 1);
+		//webhook_resource = Right(companies_webhook,StrLen(companies_webhook) - first_slash + 1); 		
+		
+		WebhookMap = New Map(); 
+		WebhookMap.Insert("apisecretkey",Constants.APISecretKey.Get());
+		WebhookMap.Insert("resource","cashreceipts");
+		WebhookMap.Insert("action","delete");
+		WebhookMap.Insert("api_code",String(Ref.UUID()));
+		
+		WebhookParams = New Array();
+		WebhookParams.Add(Constants.cash_receipts_webhook.Get());
+		WebhookParams.Add(WebhookMap);
+		LongActions.ExecuteInBackground("GeneralFunctions.SendWebhook", WebhookParams);
+	
+	EndIf;
+
+EndProcedure
+
+
+

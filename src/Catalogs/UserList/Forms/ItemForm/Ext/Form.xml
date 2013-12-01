@@ -5,7 +5,10 @@
 	<UseForFoldersAndItems>Items</UseForFoldersAndItems>
 	<AutoCommandBar name="FormCommandBar" id="-1"/>
 	<Events>
+		<Event name="AfterWrite">AfterWrite</Event>
 		<Event name="ChoiceProcessing">ChoiceProcessing</Event>
+		<Event name="AfterWriteAtServer">AfterWriteAtServer</Event>
+		<Event name="NewWriteProcessing">NewWriteProcessing</Event>
 		<Event name="OnOpen">OnOpen</Event>
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
 		<Event name="OnWriteAtServer">OnWriteAtServer</Event>
@@ -28,11 +31,11 @@
 			<ContextMenu name="DescriptionContextMenu" id="2"/>
 			<ExtendedTooltip name="DescriptionExtendedTooltip" id="3"/>
 		</InputField>
-		<InputField name="Pwd" id="64">
-			<DataPath>Pwd</DataPath>
+		<InputField name="Password" id="73">
+			<DataPath>Password</DataPath>
 			<PasswordMode>true</PasswordMode>
-			<ContextMenu name="PwdContextMenu" id="65"/>
-			<ExtendedTooltip name="PwdExtendedTooltip" id="66"/>
+			<ContextMenu name="PasswordContextMenu" id="74"/>
+			<ExtendedTooltip name="PasswordExtendedTooltip" id="75"/>
 		</InputField>
 		<InputField name="Name" id="31">
 			<DataPath>Object.Name</DataPath>
@@ -238,7 +241,7 @@
 			<Title>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Bank Receive</v8:content>
+					<v8:content>Receipts</v8:content>
 				</v8:item>
 			</Title>
 			<RadioButtonType>Auto</RadioButtonType>
@@ -295,7 +298,7 @@
 			<Title>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Bank Send</v8:content>
+					<v8:content>Payments</v8:content>
 				</v8:item>
 			</Title>
 			<RadioButtonType>Auto</RadioButtonType>
@@ -398,6 +401,121 @@
 			<ContextMenu name="AccountingContextMenu" id="41"/>
 			<ExtendedTooltip name="AccountingExtendedTooltip" id="42"/>
 		</RadioButtonField>
+		<RadioButtonField name="Projects" id="64">
+			<DataPath>Object.Projects</DataPath>
+			<RadioButtonType>Auto</RadioButtonType>
+			<ChoiceList>
+				<xr:Item>
+					<xr:Presentation/>
+					<xr:CheckState>0</xr:CheckState>
+					<xr:Value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>Full Access</v8:content>
+							</v8:item>
+						</Presentation>
+						<Value xsi:type="xs:string">Full</Value>
+					</xr:Value>
+				</xr:Item>
+				<xr:Item>
+					<xr:Presentation/>
+					<xr:CheckState>0</xr:CheckState>
+					<xr:Value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>View Only</v8:content>
+							</v8:item>
+						</Presentation>
+						<Value xsi:type="xs:string">View</Value>
+					</xr:Value>
+				</xr:Item>
+				<xr:Item>
+					<xr:Presentation/>
+					<xr:CheckState>0</xr:CheckState>
+					<xr:Value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>No Rights</v8:content>
+							</v8:item>
+						</Presentation>
+						<Value xsi:type="xs:string">None</Value>
+					</xr:Value>
+				</xr:Item>
+			</ChoiceList>
+			<ContextMenu name="ProjectsContextMenu" id="65"/>
+			<ExtendedTooltip name="ProjectsExtendedTooltip" id="66"/>
+		</RadioButtonField>
+		<RadioButtonField name="TimeTrack" id="67">
+			<DataPath>Object.TimeTrack</DataPath>
+			<RadioButtonType>Auto</RadioButtonType>
+			<ChoiceList>
+				<xr:Item>
+					<xr:Presentation/>
+					<xr:CheckState>0</xr:CheckState>
+					<xr:Value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>Full Access</v8:content>
+							</v8:item>
+						</Presentation>
+						<Value xsi:type="xs:string">Full</Value>
+					</xr:Value>
+				</xr:Item>
+				<xr:Item>
+					<xr:Presentation/>
+					<xr:CheckState>0</xr:CheckState>
+					<xr:Value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>View Only</v8:content>
+							</v8:item>
+						</Presentation>
+						<Value xsi:type="xs:string">View</Value>
+					</xr:Value>
+				</xr:Item>
+				<xr:Item>
+					<xr:Presentation/>
+					<xr:CheckState>0</xr:CheckState>
+					<xr:Value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>No Rights</v8:content>
+							</v8:item>
+						</Presentation>
+						<Value xsi:type="xs:string">None</Value>
+					</xr:Value>
+				</xr:Item>
+			</ChoiceList>
+			<ContextMenu name="TimeTrackContextMenu" id="68"/>
+			<ExtendedTooltip name="TimeTrackExtendedTooltip" id="69"/>
+		</RadioButtonField>
+		<CheckBoxField name="Verified" id="70">
+			<DataPath>Object.Verified</DataPath>
+			<Visible>false</Visible>
+			<ReadOnly>true</ReadOnly>
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Verified email</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>A user becomes verified when they have set a password for their account.</v8:content>
+				</v8:item>
+			</ToolTip>
+			<ToolTipRepresentation>Button</ToolTipRepresentation>
+			<CheckBoxType>Auto</CheckBoxType>
+			<ContextMenu name="VerifiedContextMenu" id="71"/>
+			<ExtendedTooltip name="VerifiedExtendedTooltip" id="72"/>
+		</CheckBoxField>
 	</ChildItems>
 	<Attributes>
 		<Attribute name="Object" id="1">
@@ -407,7 +525,7 @@
 			<MainAttribute>true</MainAttribute>
 			<SavedData>true</SavedData>
 		</Attribute>
-		<Attribute name="Pwd" id="2">
+		<Attribute name="Password" id="2">
 			<Title>
 				<v8:item>
 					<v8:lang>en</v8:lang>
@@ -417,10 +535,11 @@
 			<Type>
 				<v8:Type>xs:string</v8:Type>
 				<v8:StringQualifiers>
-					<v8:Length>100</v8:Length>
+					<v8:Length>0</v8:Length>
 					<v8:AllowedLength>Variable</v8:AllowedLength>
 				</v8:StringQualifiers>
 			</Type>
+			<FillCheck>ShowError</FillCheck>
 		</Attribute>
 	</Attributes>
 </Form>

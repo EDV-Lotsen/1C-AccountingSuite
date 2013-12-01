@@ -212,7 +212,7 @@ Function GetDataOnServer(Product, Company)
 	
 	 ReturnArray = New Array(5);
 	 ReturnArray[0] = CommonUse.GetAttributeValue(Product, "Description");
-	 ReturnArray[1] = GeneralFunctions.RetailPrice(Object.Date, Product, Company);
+	 ReturnArray[1] = GeneralFunctions.RetailPrice(CurrentDate(), Product, Company);
 	 ReturnArray[2] = CommonUse.GetAttributeValue(Product, "SalesVATCode");
 	 ReturnArray[3] = US_FL.GetSalesTaxType(Product);
 	 
@@ -241,6 +241,18 @@ EndFunction
 //&AtClient
 // The procedure recalculates a document's sales tax amount
 //
+&AtServer
+Procedure RecalcSalesTax()
+	
+	If Object.ShipTo.IsEmpty() Then
+		TaxRate = 0;
+	Else
+		TaxRate = US_FL.GetTaxRate(Object.ShipTo);
+	EndIf;
+	
+	Object.SalesTax = Object.LineItems.Total("TaxableAmount") * TaxRate/100;
+	
+EndProcedure
 
 //&AtClient
 // The procedure recalculates the document's total.
@@ -461,6 +473,13 @@ EndProcedure
 // 
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
+	//ConstantSaleOrder = Constants.SalesOrderLastNumber.Get();
+	//If Object.Ref.IsEmpty() Then		
+	//	
+	//	Object.Number = Constants.SalesOrderLastNumber.Get();
+	//Endif;
+
+	
 	tempstor = PutToTempStorage(Object.Company,Object.Ref);
 	
 	Items.LineItemsQuantity.EditFormat = "NFD=" + Constants.QtyPrecision.Get();
@@ -564,3 +583,102 @@ EndProcedure
 Procedure LineItemsBeforeAddRow(Item, Cancel, Clone, Parent, Folder)
 	NewRow = true;
 EndProcedure
+
+&AtServer
+Function Increment(NumberToInc)
+	
+	//Last = Constants.SalesInvoiceLastNumber.Get();
+	Last = NumberToInc;
+	//Last = "AAAAA";
+	LastCount = StrLen(Last);
+	Digits = new Array();
+	For i = 1 to LastCount Do	
+		Digits.Add(Mid(Last,i,1));
+
+	EndDo;
+	
+	NumPos = 9999;
+	lengthcount = 0;
+	firstnum = false;
+	j = 0;
+	While j < LastCount Do
+		If NumCheck(Digits[LastCount - 1 - j]) Then
+			if firstnum = false then //first number encountered, remember position
+				firstnum = true;
+				NumPos = LastCount - 1 - j;
+				lengthcount = lengthcount + 1;
+			Else
+				If firstnum = true Then
+					If NumCheck(Digits[LastCount - j]) Then //if the previous char is a number
+						lengthcount = lengthcount + 1;  //next numbers, add to length.
+					Else
+						break;
+					Endif;
+				Endif;
+			Endif;
+						
+		Endif;
+		j = j + 1;
+	EndDo;
+	
+	NewString = "";
+	
+	If lengthcount > 0 Then //if there are numbers in the string
+		changenumber = Mid(Last,(NumPos - lengthcount + 2),lengthcount);
+		NumVal = Number(changenumber);
+		NumVal = NumVal + 1;
+		StringVal = String(NumVal);
+		StringVal = StrReplace(StringVal,",","");
+		
+		StringValLen = StrLen(StringVal);
+		changenumberlen = StrLen(changenumber);
+		LeadingZeros = Left(changenumber,(changenumberlen - StringValLen));
+
+		LeftSide = Left(Last,(NumPos - lengthcount + 1));
+		RightSide = Right(Last,(LastCount - NumPos - 1));
+		NewString = LeftSide + LeadingZeros + StringVal + RightSide; //left side + incremented number + right side
+		
+	Endif;
+	
+	Next = NewString;
+
+	return NewString;
+	
+EndFunction
+
+&AtServer
+Function NumCheck(CheckValue)
+	 
+	For i = 0 to  9 Do
+		If CheckValue = String(i) Then
+			Return True;
+		Endif;
+	EndDo;
+		
+	Return False;
+		
+EndFunction
+
+
+&AtServer
+Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
+	
+	//If Object.Ref.IsEmpty() Then
+	//
+	//	MatchVal = Increment(Constants.SalesOrderLastNumber.Get());
+	//	If Object.Number = MatchVal Then
+	//		Constants.SalesOrderLastNumber.Set(MatchVal);
+	//	Else
+	//		If Increment(Object.Number) = "" Then
+	//		Else
+	//			If StrLen(Increment(Object.Number)) > 20 Then
+	//				 Constants.SalesOrderLastNumber.Set("");
+	//			Else
+	//				Constants.SalesOrderLastNumber.Set(Increment(Object.Number));
+	//			Endif;
+
+	//		Endif;
+	//	Endif;
+	//Endif;
+EndProcedure
+

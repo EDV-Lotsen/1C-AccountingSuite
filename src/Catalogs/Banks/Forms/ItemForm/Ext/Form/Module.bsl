@@ -1,7 +1,21 @@
 ﻿
 &AtServer
+Procedure OnCreateAtServer(Cancel, StandardProcessing)
+	CatalogObj = FormAttributeToValue("Object");
+	If CatalogObj.IsNew() Then
+		If ValueIsFilled(CatalogObj.Description) Then
+			ThisForm.Title = CatalogObj.Description;
+		EndIf;
+	EndIf;
+	If ValueIsFilled(Object.ServiceID) Then
+		Items.Description.Visible = False;		
+	Else
+		Items.Description.Visible = True;		
+	EndIf;
+EndProcedure
+
+&AtServer
 Procedure OnReadAtServer(CurrentObject)
-	
 	DateUpdatedLocalTime = ToLOcalTime(Object.DateUpdatedUTC);
 	CatalogObject = FormAttributeToValue("Object");
 	If ValueIsFilled(CatalogObject.Logotype.Get()) Then
@@ -20,7 +34,6 @@ Procedure OnReadAtServer(CurrentObject)
 	If Not ValueIsFilled(LogotypeAddress) Then
 		Items.Logotype.Visible = False;
 	EndIf;
-
 EndProcedure
 
 &AtClient
@@ -29,6 +42,11 @@ Procedure ServiceURLClick(Item, StandardProcessing)
 	If ValueIsFilled(Object.ServiceURL) Then
 		GotoUrl(Object.ServiceURL);
 	EndIf;
+EndProcedure
+
+&AtClient
+Procedure DescriptionTextEditEnd(Item, Text, ChoiceData, Parameters, StandardProcessing)
+	ThisForm.Title = Text;
 EndProcedure
 
 

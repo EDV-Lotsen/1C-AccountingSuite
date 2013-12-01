@@ -97,10 +97,11 @@ Procedure Posting(Cancel, Mode)
 				                  |	SUM(InventoryJrnlBalance.QtyBalance) AS QtyBalance,
 				                  |	SUM(InventoryJrnlBalance.AmountBalance) AS AmountBalance
 				                  |FROM
-				                  |	AccumulationRegister.InventoryJrnl.Balance AS InventoryJrnlBalance
+				                  |	AccumulationRegister.InventoryJrnl.Balance(,Location = &Location) AS InventoryJrnlBalance
 				                  |WHERE
 				                  |	InventoryJrnlBalance.Product = &Product");
 				Query.SetParameter("Product", CurRowLineItems.Product);
+				Query.SetParameter("Location", Location);
 				QueryResult = Query.Execute().Unload();
 				If  QueryResult.Count() > 0
 				And (Not QueryResult[0].QtyBalance = Null)
@@ -121,16 +122,16 @@ Procedure Posting(Cancel, Mode)
 				
 			EndIf;
 			
-			If CurRowLineItems.Product.CostingMethod = Enums.InventoryCosting.LIFO OR
-				CurRowLineItems.Product.CostingMethod = Enums.InventoryCosting.FIFO Then
+			//If CurRowLineItems.Product.CostingMethod = Enums.InventoryCosting.LIFO OR
+				If CurRowLineItems.Product.CostingMethod = Enums.InventoryCosting.FIFO Then
 				
 				ItemQty = CurRowLineItems.Quantity;
 				
-				If CurRowLineItems.Product.CostingMethod = Enums.InventoryCosting.LIFO Then
-					Sorting = "DESC";
-				Else
+				//If CurRowLineItems.Product.CostingMethod = Enums.InventoryCosting.LIFO Then
+				//	Sorting = "DESC";
+				//Else
 					Sorting = "ASC";
-				EndIf;
+				//EndIf;
 				
 				Query = New Query("SELECT
 				                  |	InventoryJrnlBalance.QtyBalance,
@@ -375,13 +376,13 @@ Procedure OnWrite(Cancel)
 	
 	If NOT companies_webhook = "" Then
 		
-		double_slash = Find(companies_webhook, "//");
-		
-		companies_webhook = Right(companies_webhook,StrLen(companies_webhook) - double_slash - 1);
-		
-		first_slash = Find(companies_webhook, "/");
-		webhook_address = Left(companies_webhook,first_slash - 1);
-		webhook_resource = Right(companies_webhook,StrLen(companies_webhook) - first_slash + 1); 		
+		//double_slash = Find(companies_webhook, "//");
+		//
+		//companies_webhook = Right(companies_webhook,StrLen(companies_webhook) - double_slash - 1);
+		//
+		//first_slash = Find(companies_webhook, "/");
+		//webhook_address = Left(companies_webhook,first_slash - 1);
+		//webhook_resource = Right(companies_webhook,StrLen(companies_webhook) - first_slash + 1); 		
 		
 		WebhookMap = New Map(); 
 		WebhookMap.Insert("apisecretkey",Constants.APISecretKey.Get());
@@ -391,11 +392,10 @@ Procedure OnWrite(Cancel)
 		Else
 			WebhookMap.Insert("action","update");
 		EndIf;
-		WebhookMap.Insert("cash_sale_number",Ref.Number);
+		WebhookMap.Insert("api_code", String(Ref.UUID()));
 		
 		WebhookParams = New Array();
-		WebhookParams.Add(webhook_address);
-		WebhookParams.Add(webhook_resource);
+		WebhookParams.Add(Constants.cash_sales_webhook.Get());
 		WebhookParams.Add(WebhookMap);
 		LongActions.ExecuteInBackground("GeneralFunctions.SendWebhook", WebhookParams);
 	
@@ -409,24 +409,23 @@ Procedure BeforeDelete(Cancel)
 	
 	If NOT companies_webhook = "" Then
 		
-		double_slash = Find(companies_webhook, "//");
-		
-		companies_webhook = Right(companies_webhook,StrLen(companies_webhook) - double_slash - 1);
-		
-		first_slash = Find(companies_webhook, "/");
-		webhook_address = Left(companies_webhook,first_slash - 1);
-		webhook_resource = Right(companies_webhook,StrLen(companies_webhook) - first_slash + 1); 		
+		//double_slash = Find(companies_webhook, "//");
+		//
+		//companies_webhook = Right(companies_webhook,StrLen(companies_webhook) - double_slash - 1);
+		//
+		//first_slash = Find(companies_webhook, "/");
+		//webhook_address = Left(companies_webhook,first_slash - 1);
+		//webhook_resource = Right(companies_webhook,StrLen(companies_webhook) - first_slash + 1); 		
 		
 		WebhookMap = New Map(); 
 		WebhookMap.Insert("apisecretkey",Constants.APISecretKey.Get());
 		WebhookMap.Insert("resource","cashsales");
 		WebhookMap.Insert("action","delete");
-		WebhookMap.Insert("cash_sale_number",Ref.Number);
+		WebhookMap.Insert("api_code",String(Ref.UUID()));
 		
 		WebhookParams = New Array();
-		WebhookParams.Add(webhook_address);
-		WebhookParams.Add(webhook_resource);
-		WebhookParams.Add(WebhookMap);
+		WebhookParams.Add(Constants.cash_sales_webhook.Get());
+		WebhookParams.Add(WebhookMap);	
 		LongActions.ExecuteInBackground("GeneralFunctions.SendWebhook", WebhookParams);	
 	
 	EndIf;

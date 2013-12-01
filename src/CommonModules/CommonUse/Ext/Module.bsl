@@ -60,8 +60,8 @@ Function GetAttributeValues(Ref, AttributeNames) Export
 	For Each KeyAndValue In AttributeStructure Do
 		FieldName = ?(ValueIsFilled(KeyAndValue.Value), TrimAll(KeyAndValue.Value), TrimAll(KeyAndValue.Key));
 		Alias = TrimAll(KeyAndValue.Key);
-		FieldTexts = FieldTexts + ?(IsBlankString(FieldTexts), "", ",") + "
-			|	" + FieldName + " AS " + Alias;
+		FieldTexts = FieldTexts + ?(IsBlankString(FieldTexts), "	", ",
+			|	") + FieldName + " AS " + Alias;
 	EndDo;
 
 	Query = New Query(

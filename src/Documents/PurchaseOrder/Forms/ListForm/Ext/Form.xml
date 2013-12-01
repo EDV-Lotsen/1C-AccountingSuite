@@ -65,42 +65,68 @@
 					<DataPath>List.Date</DataPath>
 					<DefaultItem>true</DefaultItem>
 					<HorizontalAlign>Right</HorizontalAlign>
+					<Width>10</Width>
 					<ContextMenu name="DateContextMenu" id="5"/>
 					<ExtendedTooltip name="DateExtendedTooltip" id="19"/>
 				</LabelField>
 				<LabelField name="DeliveryDate" id="26">
 					<DataPath>List.DeliveryDate</DataPath>
+					<HorizontalAlign>Right</HorizontalAlign>
+					<Width>10</Width>
 					<ContextMenu name="DeliveryDateContextMenu" id="27"/>
 					<ExtendedTooltip name="DeliveryDateExtendedTooltip" id="28"/>
 				</LabelField>
 				<LabelField name="OrderStatus" id="16">
 					<DataPath>List.OrderStatus</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Status</v8:content>
+						</v8:item>
+					</Title>
 					<Width>10</Width>
 					<ContextMenu name="OrderStatusContextMenu" id="17"/>
 					<ExtendedTooltip name="OrderStatusExtendedTooltip" id="20"/>
 				</LabelField>
 				<LabelField name="Number" id="6">
 					<DataPath>List.Number</DataPath>
+					<Width>10</Width>
 					<ContextMenu name="NumberContextMenu" id="7"/>
 					<ExtendedTooltip name="NumberExtendedTooltip" id="21"/>
 				</LabelField>
 				<LabelField name="Company" id="8">
 					<DataPath>List.Company</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Vendor</v8:content>
+						</v8:item>
+					</Title>
+					<Width>15</Width>
 					<ContextMenu name="CompanyContextMenu" id="9"/>
 					<ExtendedTooltip name="CompanyExtendedTooltip" id="22"/>
 				</LabelField>
 				<LabelField name="CompanyCode" id="14">
 					<DataPath>List.CompanyCode</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Ven. #</v8:content>
+						</v8:item>
+					</Title>
+					<Width>6</Width>
 					<ContextMenu name="CompanyCodeContextMenu" id="15"/>
 					<ExtendedTooltip name="CompanyCodeExtendedTooltip" id="23"/>
 				</LabelField>
 				<LabelField name="DocumentTotal" id="10">
 					<DataPath>List.DocumentTotal</DataPath>
+					<Width>10</Width>
 					<ContextMenu name="DocumentTotalContextMenu" id="11"/>
 					<ExtendedTooltip name="DocumentTotalExtendedTooltip" id="24"/>
 				</LabelField>
 				<LabelField name="DocumentTotalRC" id="12">
 					<DataPath>List.DocumentTotalRC</DataPath>
+					<Width>10</Width>
 					<ContextMenu name="DocumentTotalRCContextMenu" id="13"/>
 					<ExtendedTooltip name="DocumentTotalRCExtendedTooltip" id="25"/>
 				</LabelField>
@@ -117,25 +143,31 @@
 				<ManualQuery>true</ManualQuery>
 				<DynamicDataRead>true</DynamicDataRead>
 				<QueryText>SELECT
+	// Standard attributes
 	DocumentPurchaseOrder.Ref,
 	DocumentPurchaseOrder.DataVersion,
 	DocumentPurchaseOrder.DeletionMark,
 	DocumentPurchaseOrder.Number,
 	DocumentPurchaseOrder.Date,
+	DocumentPurchaseOrder.PointInTime,
 	DocumentPurchaseOrder.Posted,
+	// Document attributes
 	DocumentPurchaseOrder.Company,
 	DocumentPurchaseOrder.CompanyCode,
-	DocumentPurchaseOrder.DocumentTotal,
 	DocumentPurchaseOrder.Currency,
 	DocumentPurchaseOrder.ExchangeRate,
-	DocumentPurchaseOrder.DocumentTotalRC,
-	DocumentPurchaseOrder.Location,
-	DocumentPurchaseOrder.Memo,
-	DocumentPurchaseOrder.VATTotal,
 	DocumentPurchaseOrder.PriceIncludesVAT,
-	DocumentPurchaseOrder.ManualAdjustment,
-	DocumentPurchaseOrder.PointInTime,
+	DocumentPurchaseOrder.Location,
 	DocumentPurchaseOrder.DeliveryDate,
+	DocumentPurchaseOrder.Project,
+	DocumentPurchaseOrder.Class,
+	DocumentPurchaseOrder.ManualAdjustment,
+	// Document totals
+	DocumentPurchaseOrder.DocumentTotal,
+	DocumentPurchaseOrder.DocumentTotalRC,
+	DocumentPurchaseOrder.VATTotal,
+	DocumentPurchaseOrder.VATTotalRC,
+	// Order status
 	CASE
 		WHEN DocumentPurchaseOrder.DeletionMark THEN
 			 VALUE(Enum.OrderStatuses.Deleted)
@@ -163,8 +195,90 @@ FROM
 						<dcsset:userSettingID>88619765-ccb3-46c6-ac52-38e9c992ebd4</dcsset:userSettingID>
 					</dcsset:order>
 					<dcsset:conditionalAppearance>
+						<dcsset:item>
+							<dcsset:selection>
+								<dcsset:item>
+									<dcsset:field>OrderStatus</dcsset:field>
+								</dcsset:item>
+							</dcsset:selection>
+							<dcsset:filter>
+								<dcsset:item xsi:type="dcsset:FilterItemComparison">
+									<dcsset:left xsi:type="dcscor:Field">OrderStatus</dcsset:left>
+									<dcsset:comparisonType>InList</dcsset:comparisonType>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.OrderStatuses.Deleted</dcsset:right>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.OrderStatuses.Draft</dcsset:right>
+								</dcsset:item>
+							</dcsset:filter>
+							<dcsset:appearance>
+								<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+									<dcscor:parameter>TextColor</dcscor:parameter>
+									<dcscor:value xsi:type="v8ui:Color">web:DarkGray</dcscor:value>
+								</dcscor:item>
+							</dcsset:appearance>
+						</dcsset:item>
+						<dcsset:item>
+							<dcsset:selection>
+								<dcsset:item>
+									<dcsset:field>OrderStatus</dcsset:field>
+								</dcsset:item>
+							</dcsset:selection>
+							<dcsset:filter>
+								<dcsset:item xsi:type="dcsset:FilterItemComparison">
+									<dcsset:left xsi:type="dcscor:Field">OrderStatus</dcsset:left>
+									<dcsset:comparisonType>InList</dcsset:comparisonType>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.OrderStatuses.New</dcsset:right>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.OrderStatuses.Open</dcsset:right>
+								</dcsset:item>
+							</dcsset:filter>
+							<dcsset:appearance>
+								<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+									<dcscor:parameter>TextColor</dcscor:parameter>
+									<dcscor:value xsi:type="v8ui:Color">web:DarkGreen</dcscor:value>
+								</dcscor:item>
+							</dcsset:appearance>
+						</dcsset:item>
+						<dcsset:item>
+							<dcsset:selection>
+								<dcsset:item>
+									<dcsset:field>OrderStatus</dcsset:field>
+								</dcsset:item>
+							</dcsset:selection>
+							<dcsset:filter>
+								<dcsset:item xsi:type="dcsset:FilterItemComparison">
+									<dcsset:left xsi:type="dcscor:Field">OrderStatus</dcsset:left>
+									<dcsset:comparisonType>Equal</dcsset:comparisonType>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.OrderStatuses.Backordered</dcsset:right>
+								</dcsset:item>
+							</dcsset:filter>
+							<dcsset:appearance>
+								<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+									<dcscor:parameter>TextColor</dcscor:parameter>
+									<dcscor:value xsi:type="v8ui:Color">web:DarkGoldenRod</dcscor:value>
+								</dcscor:item>
+							</dcsset:appearance>
+						</dcsset:item>
+						<dcsset:item>
+							<dcsset:selection>
+								<dcsset:item>
+									<dcsset:field>OrderStatus</dcsset:field>
+								</dcsset:item>
+							</dcsset:selection>
+							<dcsset:filter>
+								<dcsset:item xsi:type="dcsset:FilterItemComparison">
+									<dcsset:left xsi:type="dcscor:Field">OrderStatus</dcsset:left>
+									<dcsset:comparisonType>Equal</dcsset:comparisonType>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.OrderStatuses.Closed</dcsset:right>
+								</dcsset:item>
+							</dcsset:filter>
+							<dcsset:appearance>
+								<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+									<dcscor:parameter>TextColor</dcscor:parameter>
+									<dcscor:value xsi:type="v8ui:Color">web:DarkRed</dcscor:value>
+								</dcscor:item>
+							</dcsset:appearance>
+						</dcsset:item>
 						<dcsset:viewMode>Normal</dcsset:viewMode>
-						<dcsset:userSettingID>b75fecce-942b-4aed-abc9-e6a02e460fb3</dcsset:userSettingID>
+						<dcsset:userSettingID>835479be-c574-4106-bbae-849b00a467cf</dcsset:userSettingID>
 					</dcsset:conditionalAppearance>
 					<dcsset:itemsViewMode>Normal</dcsset:itemsViewMode>
 					<dcsset:itemsUserSettingID>911b6018-f537-43e8-a417-da56b22f9aec</dcsset:itemsUserSettingID>

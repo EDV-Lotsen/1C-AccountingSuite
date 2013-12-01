@@ -225,7 +225,6 @@ Procedure CompanyOnChange(Item)
 	//Items.FCYCurrency.Title = CommonUse.GetAttributeValue(Object.Currency, "Symbol");
 	//DuePeriod = CommonUse.GetAttributeValue(Object.Terms, "Days");
 	//Object.DueDate = Object.Date + ?(DuePeriod <> Undefined, DuePeriod, 14) * 60*60*24;
-	
 	CompanyOnChangeServer();
 	
 	// Open list of non-closed sales orders
@@ -433,6 +432,13 @@ EndProcedure
 // 
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
+	//ConstantSaleInvoice = Constants.SalesInvoiceLastNumber.Get();
+	//If Object.Ref.IsEmpty() Then		
+	//	
+	//	Object.Number = Constants.SalesInvoiceLastNumber.Get();
+	//Endif;
+
+	
 	Items.LineItemsQuantity.EditFormat = "NFD=" + Constants.QtyPrecision.Get();
 	Items.LineItemsQuantity.Format = "NFD=" + Constants.QtyPrecision.Get();
 
@@ -553,7 +559,30 @@ EndProcedure
 
 &AtServer
 Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
+		
+	If Object.LineItems.Count() = 0 Then
+		Message("Cannot post with no line items.");
+		Cancel = True;
+	EndIf;
 	
+	//If Object.Ref.IsEmpty() Then
+	//
+	//	MatchVal = Increment(Constants.SalesInvoiceLastNumber.Get());
+	//	If Object.Number = MatchVal Then
+	//		Constants.SalesInvoiceLastNumber.Set(MatchVal);
+	//	Else
+	//		If Increment(Object.Number) = "" Then
+	//		Else
+	//			If StrLen(Increment(Object.Number)) > 20 Then
+	//				 Constants.SalesInvoiceLastNumber.Set("");
+	//			Else
+	//				Constants.SalesInvoiceLastNumber.Set(Increment(Object.Number));
+	//			Endif;
+
+	//		Endif;
+	//	Endif;
+	//Endif;
+
 	
 	//------------------------------------------------------------------------------
 	// 1. Correct the invoice date according to the orders dates.
@@ -596,6 +625,11 @@ Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
 			
 		EndIf;
 	EndIf;
+	
+	//If Object.Number = "" Then
+	//	Message("Invoice # is empty");
+	//	Cancel = True;
+	//Endif;
 		
 EndProcedure
 
@@ -611,6 +645,12 @@ Procedure BegBalOnChange(Item)
 	EndIf;
 	
 EndProcedure
+
+&AtServer
+Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
+			
+EndProcedure
+
 
 &AtClient
 Procedure EmailInvoiceOnChange(Item)
@@ -638,7 +678,6 @@ EndProcedure
 Procedure SendInvoiceEmail()
 	
 	//test = Object.PayHTML;
-	//test2 = 3;
 	If Object.Ref.IsEmpty() Then
 		Message("An email cannot be sent until the invoice is posted or written");
 	Else
@@ -647,32 +686,6 @@ Procedure SendInvoiceEmail()
 	////
 	if CurObject.PayHTML = "" Then
 		
-    	SymbolString = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"; //62
-    	RandomString20 = "";
-    	RNG = New RandomNumberGenerator;	
-    	For i = 0 to 19 Do
-    		RN = RNG.RandomNumber(1, 62);
-    		RandomString20 = RandomString20 + Mid(SymbolString,RN,1);
-    	EndDo;
-    							 
-    	
-    	Query = New Query("SELECT
-    						 |	Addresses.Email
-    						 |FROM
-    						 |	Catalog.Addresses AS Addresses
-    						 |WHERE
-    						 |	Addresses.Owner = &Company
-    						 |	AND Addresses.DefaultBilling = True");
-    		Query.SetParameter("Company", Object.Company);
-    		QueryResult = Query.Execute().Unload();
-    	   Recipient = QueryResult[0][0];
- 
-    	FormatHTML = "<a href=""https://pay.accountingsuite.com/invoice?token=" + RandomString20 + """>Pay invoice</a>";
-    	CurObject.PayHTML = "https://pay.accountingsuite.com/invoice?token=" + RandomString20;
-    	
-    	HeadersMap = New Map();
-    	HeadersMap.Insert("Content-Type", "application/json");
-
     EndIf;
 	////	
 
@@ -700,16 +713,17 @@ Procedure SendInvoiceEmail()
 	 	 EndDo;
 	    	 
 	 	  MailProfil = New InternetMailProfile; 
+	 	  	   
+	   	 MailProfil.SMTPServerAddress = Constants.MailProfAddress.Get(); 
+	 	  MailProfil.SMTPUseSSL = True;
+	 	  MailProfil.SMTPPort = 465; 
 	 	  
-		MailProfil.SMTPServerAddress = Constants.MailProfAddress.Get();
-		MailProfil.SMTPUseSSL = Constants.MailProfSSL.Get();
-	   // MailProfil.SMTPPort = 587; 
-	    
-	    MailProfil.Timeout = 180; 
-	    
-		MailProfil.SMTPPassword = Constants.MailProfPass.Get();
-	    
-		MailProfil.SMTPUser = Constants.MailProfUser.Get();
+	 	  MailProfil.Timeout = 180; 
+	 	  
+		  MailProfil.SMTPPassword = Constants.MailProfPass.Get();
+	 	  
+		  MailProfil.SMTPUser = Constants.MailProfUser.Get();
+
 
 	 	  
 	 	  
@@ -731,7 +745,18 @@ Procedure SendInvoiceEmail()
 	 	  FormatHTML = StrReplace(FormAttributeToValue("Object").GetTemplate("HTMLTest").GetText(),"object.terms",object.Terms);
 	 	  
 		  
-		  FormatHTML2 = StrReplace(FormatHTML,"object.number",object.Number);
+		  temptest = false;
+		  If Constants.secret_temp.Get() = "" Then
+		  	FormatHTML2 = StrReplace(FormatHTML,"<td width=""25%""><a class=""button"" href=""payHTML"" style=""width: 75%;display: block;padding: 17px 18px 16px 18px;-webkit-border-radius: 8px;-moz-border-radius: 8px;border-radius: 8px;background: #edbe1c;border-color: #FFF;text-align: center;color: #FFF;text-decoration: none;"">PAY NOW</a></td>", " ");
+			temptest = true;
+		Else
+			temptest = false;
+		  Endif;
+		  If temptest = true Then
+		  	FormatHTML2 = StrReplace(FormatHTML2,"object.number",object.Number);
+		  Else
+			FormatHTML2 = StrReplace(FormatHTML,"object.number",object.Number);
+		  Endif;
 		  If Curobject.PayHTML = "" Then
 		  FormatHTML2 = StrReplace(FormatHTML2,"href=""payHTML"""," ");
 		  FormatHTML2 = StrReplace(FormatHTML2,"<a class=""button"" href=""payHTML"" style=""width: 75%;display: block;padding: 17px 18px 16px 18px;-webkit-border-radius: 8px;-moz-border-radius: 8px;border-radius: 8px;background: #edbe1c;border-color: #FFF;text-align: center;color: #FFF;text-decoration: none;"">PAY NOW</a>", " ");
@@ -908,6 +933,7 @@ Procedure SendInvoiceEmail()
 	
 EndProcedure
 
+
 &AtClient
 Procedure SendEmail(Command)
 	// Insert handler contents.
@@ -929,5 +955,148 @@ Procedure OnCloseAtServer()
 		DocObject.LastEmail = "Last email on " + Format(CurrentDate(),"DLF=DT") + " to " + Object.EmailTo;
 		DocObject.Write();
 	Endif;
+	
+	If PaidInvoiceCheck = True Then
+		
+		DocObject = object.ref.GetObject();
+		DocObject.PaidInvoice = True;
+		DocObject.Write();
+
+	Endif;
 
 EndProcedure
+
+&AtClient
+Procedure PayInvoice(Command)
+	PayInvoiceAtServer();
+EndProcedure
+
+&AtServer
+Procedure PayInvoiceAtServer()
+	If Object.Posted = False Then
+		Message("A cash receipt cannot be created for the invoice because it has not yet been created(posted)");
+	Else
+	
+		NewCashReceipt = Documents.CashReceipt.CreateDocument();
+		NewCashReceipt.Company = Object.Company;
+		NewCashReceipt.Date = CurrentDate();
+		NewCashReceipt.CompanyCode = Object.CompanyCode;
+		NewCashReceipt.Currency = Object.Currency;
+		NewCashReceipt.DepositType = "1";
+		NewCashReceipt.DocumentTotalRC = Object.DocumentTotalRC;
+		NewCashReceipt.CashPayment = Object.DocumentTotalRC;
+		NewCashReceipt.ARAccount = Object.ARAccount;
+		//NewCashReceipt.Number = Constants.CashReceiptLastNumber.Get();
+		//Constants.CashReceiptLastNumber.Set(Increment(Constants.CashReceiptLastNumber.Get()));
+		NewLine = NewCashReceipt.LineItems.Add();
+		NewLine.Document = Object.Ref;
+		NewLine.Balance = Object.DocumentTotalRC;
+		NewLine.Payment = Object.DocumentTotalRC;
+		Newline.Currency = Object.Currency;
+		        
+		NewCashReceipt.Write(DocumentWriteMode.Posting);
+		CommandBar.ChildItems.FormPayInvoice.Enabled = False;
+		PaidInvoiceCheck = True;
+		
+		Message("A Cash Receipt has been created for " + Object.Ref);
+		
+	Endif;
+
+EndProcedure
+
+
+&AtClient
+Procedure OnOpen(Cancel)
+	OnOpenAtServer();
+EndProcedure
+
+&AtClient
+Procedure DoNothing(this,that)
+	
+EndProcedure
+
+
+&AtServer
+Procedure OnOpenAtServer()
+	If Object.PaidInvoice = True Then
+		CommandBar.ChildItems.FormPayInvoice.Enabled = False;
+	Endif;
+EndProcedure
+
+&AtServer
+Function Increment(NumberToInc)
+	
+	//Last = Constants.SalesInvoiceLastNumber.Get();
+	Last = NumberToInc;
+	//Last = "AAAAA";
+	LastCount = StrLen(Last);
+	Digits = new Array();
+	For i = 1 to LastCount Do	
+		Digits.Add(Mid(Last,i,1));
+
+	EndDo;
+	
+	NumPos = 9999;
+	lengthcount = 0;
+	firstnum = false;
+	j = 0;
+	While j < LastCount Do
+		If NumCheck(Digits[LastCount - 1 - j]) Then
+			if firstnum = false then //first number encountered, remember position
+				firstnum = true;
+				NumPos = LastCount - 1 - j;
+				lengthcount = lengthcount + 1;
+			Else
+				If firstnum = true Then
+					If NumCheck(Digits[LastCount - j]) Then //if the previous char is a number
+						lengthcount = lengthcount + 1;  //next numbers, add to length.
+					Else
+						break;
+					Endif;
+				Endif;
+			Endif;
+						
+		Endif;
+		j = j + 1;
+	EndDo;
+	
+	NewString = "";
+	
+	If lengthcount > 0 Then //if there are numbers in the string
+		changenumber = Mid(Last,(NumPos - lengthcount + 2),lengthcount);
+		NumVal = Number(changenumber);
+		NumVal = NumVal + 1;
+		StringVal = String(NumVal);
+		StringVal = StrReplace(StringVal,",","");
+		
+		StringValLen = StrLen(StringVal);
+		changenumberlen = StrLen(changenumber);
+		LeadingZeros = Left(changenumber,(changenumberlen - StringValLen));
+
+		LeftSide = Left(Last,(NumPos - lengthcount + 1));
+		RightSide = Right(Last,(LastCount - NumPos - 1));
+		NewString = LeftSide + LeadingZeros + StringVal + RightSide; //left side + incremented number + right side
+		
+	Endif;
+	
+	Next = NewString;
+
+	return NewString;
+	
+EndFunction
+
+&AtServer
+Function NumCheck(CheckValue)
+	 
+	For i = 0 to  9 Do
+		If CheckValue = String(i) Then
+			Return True;
+		Endif;
+	EndDo;
+		
+	Return False;
+		
+EndFunction
+
+
+

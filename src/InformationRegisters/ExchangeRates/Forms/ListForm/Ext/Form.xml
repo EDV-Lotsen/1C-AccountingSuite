@@ -1,15 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
 	<VerticalScroll>useIfNecessary</VerticalScroll>
-	<AutoCommandBar name="FormCommandBar" id="-1">
-		<ChildItems>
-			<Button name="FormUpdateRates" id="20">
-				<Type>CommandBarButton</Type>
-				<CommandName>Form.Command.UpdateRates</CommandName>
-				<ExtendedTooltip name="FormUpdateRatesExtendedTooltip" id="21"/>
-			</Button>
-		</ChildItems>
-	</AutoCommandBar>
+	<AutoCommandBar name="FormCommandBar" id="-1"/>
 	<ChildItems>
 		<Table name="List" id="1">
 			<Representation>List</Representation>
@@ -41,29 +33,29 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="12"/>
-			<SearchStringAddition name="ListSearchString" id="22">
+			<SearchStringAddition name="ListSearchString" id="20">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="23"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="24"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="21"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="22"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="25">
+			<ViewStatusAddition name="ListViewStatus" id="23">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="26"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="27"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="24"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="25"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="28">
+			<SearchControlAddition name="ListSearchControl" id="26">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="29"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="30"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="27"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="28"/>
 			</SearchControlAddition>
 			<ChildItems>
 				<LabelField name="Period" id="4">
@@ -115,21 +107,4 @@
 			</Settings>
 		</Attribute>
 	</Attributes>
-	<Commands>
-		<Command name="UpdateRates" id="1">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Update rates</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Update rates using the OpenExchangeRates.org service</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Action>UpdateRates</Action>
-		</Command>
-	</Commands>
 </Form>

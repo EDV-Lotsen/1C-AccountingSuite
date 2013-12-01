@@ -1,10 +1,13 @@
 ﻿
 ////////////////////////////////////////////////////////////////////////////////
-// Purchase Invoice: Object module
+// Purchase invoice: Object module
 //------------------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////////////
-// OBJECT EVENTS HANDLERS
+#Region EVENT_HANDLERS
+
+//------------------------------------------------------------------------------
+#If Server Or ThickClientOrdinaryApplication Or ExternalConnection Then
 
 Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 	
@@ -22,17 +25,90 @@ Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 		DocumentPosting.PrepareDataStructuresBeforeWrite(AdditionalProperties, DocumentParameters, Cancel, WriteMode, PostingMode);
 	EndIf;
 	
-	// Prcheck of register balances to complete filling of document posting
+	// Precheck of register balances to complete filling of document posting
 	If WriteMode = DocumentWriteMode.Posting Then
 		
 		// Precheck of document data, calculation of temporary data, required for document posting
 		If (Not ManualAdjustment) And (Orders.Count() > 0) Then
 			DocumentParameters = New Structure("Ref, PointInTime,   Company, LineItems",
-			                                    Ref, PointInTime(), Company, LineItems.Unload(, "Order, Product, Quantity"));
+			                                    Ref, PointInTime(), Company, LineItems.Unload(, "Order, Product, Location, DeliveryDate, Project, Class, Quantity"));
 			Documents.PurchaseInvoice.PrepareDataBeforeWrite(AdditionalProperties, DocumentParameters, Cancel);
 		EndIf;
 		
 	EndIf;
+	
+EndProcedure
+
+Procedure FillCheckProcessing(Cancel, CheckedAttributes)
+	
+	// Check doubles in items (to be sure of proper orders placement)
+	GeneralFunctions.CheckDoubleItems(Ref, LineItems, "Product, Location, DeliveryDate, Order, Project, Class, LineNumber", Cancel);
+	
+EndProcedure
+
+Procedure Filling(FillingData, StandardProcessing)
+	
+	If FillingData = Undefined Then
+		// Filling of the new created document.
+		Currency         = Constants.DefaultCurrency.Get();
+		APAccount        = Currency.DefaultAPAccount;
+		ExchangeRate     = 1;
+		PriceIncludesVAT = GeneralFunctionsReusable.PriceIncludesVAT();
+		Location         = Catalogs.Locations.MainWarehouse;
+		
+	Else
+		// Generate on th base of Purchase order & Item receipt.
+		Cancel = False; TabularSectionData = Undefined;
+		
+		// 0. Custom check of purchase order for interactive generate of purchase invoice on the base of purchase order
+		If (TypeOf(FillingData) = Type("DocumentRef.PurchaseOrder"))
+		And Not Documents.PurchaseInvoice.CheckStatusOfPurchaseOrder(Ref, FillingData) Then
+			Cancel = True;
+			Return;
+		EndIf;
+		
+		// 1. Common filling of parameters
+		DocumentParameters = New Structure("Ref, Date, Metadata",
+		                                    Ref, ?(ValueIsFilled(Date), Date, CurrentSessionDate()), Metadata());
+		DocumentFilling.PrepareDataStructuresBeforeFilling(AdditionalProperties, DocumentParameters, FillingData, Cancel);
+		
+		// 2. Cancel filling on failed data
+		If Cancel Then
+			Return;
+		EndIf;
+		
+		// 3. Collect document data, available for filling, and fill created structure 
+		Documents.PurchaseInvoice.PrepareDataStructuresForFilling(Ref, AdditionalProperties);
+		
+		// 4. Check collected data
+		DocumentFilling.CheckDataStructuresOnFilling(AdditionalProperties, Cancel);
+		
+		// 5. Fill document fields
+		If Not Cancel Then
+			// Fill "draft" values to attributes (all including non-critical fields will be filled)
+			FillPropertyValues(ThisObject, AdditionalProperties.Filling.FillingTables.Table_Attributes[0]);
+			
+			// Fill checked unique values to attributes (critical fields will be filled)
+			FillPropertyValues(ThisObject, AdditionalProperties.Filling.FillingTables.Table_Check[0]);
+			
+			// Fill line items
+			For Each TabularSection In AdditionalProperties.Metadata.TabularSections Do
+				If AdditionalProperties.Filling.FillingTables.Property("Table_" + TabularSection.Name, TabularSectionData) Then
+					ThisObject[TabularSection.Name].Load(TabularSectionData);
+				EndIf;
+			EndDo;
+		EndIf;
+		
+		// 6. Clear used temporary document data
+		DocumentFilling.ClearDataStructuresAfterFilling(AdditionalProperties);
+	EndIf;
+	
+EndProcedure
+
+Procedure OnCopy(CopiedObject)
+	
+	// Clear manual ajustment attribute
+	ManualAdjustment = False;
 	
 EndProcedure
 
@@ -63,7 +139,6 @@ Procedure Posting(Cancel, PostingMode)
 	
 	// 8. Clear used temporary document data
 	DocumentPosting.ClearDataStructuresAfterPosting(AdditionalProperties);
-	
 	
 	// OLD Posting
 	
@@ -236,7 +311,7 @@ Procedure Posting(Cancel, PostingMode)
 		Endif;
 		
 	EndDo;         
-	     	 	                    
+		 	 						
 	For Each CurRowAccount In Accounts Do
 		If NOT CurRowAccount.Project.IsEmpty() Then
 			Record = RegisterRecords.ProjectData.Add();
@@ -250,6 +325,7 @@ Procedure Posting(Cancel, PostingMode)
 		Endif;
 	EndDo;
 	
+	
 EndProcedure
 
 Procedure UndoPosting(Cancel)
@@ -261,16 +337,16 @@ Procedure UndoPosting(Cancel)
 	EndIf;
 	
 	Query = New Query("SELECT
-	                  |	PurchaseInvoiceLineItems.Product,
-	                  |	SUM(PurchaseInvoiceLineItems.Quantity) AS Quantity
-	                  |FROM
-	                  |	Document.PurchaseInvoice.LineItems AS PurchaseInvoiceLineItems
-	                  |WHERE
-	                  |	PurchaseInvoiceLineItems.Ref = &Ref
-	                  |	AND PurchaseInvoiceLineItems.Product.Type = VALUE(Enum.InventoryTypes.Inventory)
-	                  |
-	                  |GROUP BY
-	                  |	PurchaseInvoiceLineItems.Product");
+					  |	PurchaseInvoiceLineItems.Product,
+					  |	SUM(PurchaseInvoiceLineItems.Quantity) AS Quantity
+					  |FROM
+					  |	Document.PurchaseInvoice.LineItems AS PurchaseInvoiceLineItems
+					  |WHERE
+					  |	PurchaseInvoiceLineItems.Ref = &Ref
+					  |	AND PurchaseInvoiceLineItems.Product.Type = VALUE(Enum.InventoryTypes.Inventory)
+					  |
+					  |GROUP BY
+					  |	PurchaseInvoiceLineItems.Product");
 	Query.SetParameter("Ref", Ref);
 	Dataset = Query.Execute().Choose();
 	
@@ -314,8 +390,6 @@ Procedure UndoPosting(Cancel)
 	EndDo;
 	
 	
-	
-	
 	// 1. Common posting clearing / deactivate manual ajusted postings
 	DocumentPosting.PrepareRecordSetsForPostingClearing(AdditionalProperties, RegisterRecords);
 	
@@ -341,69 +415,7 @@ Procedure UndoPosting(Cancel)
 	
 EndProcedure
 
-Procedure OnCopy(CopiedObject)
-	
-	// Clear manual ajustment attribute
-	ManualAdjustment = False;
-	
-EndProcedure
+#EndIf
+//------------------------------------------------------------------------------
 
-Procedure Filling(FillingData, StandardProcessing)
-	Var TabularSectionData; Cancel = False;
-	
-	// Filling on the base of other referenced object
-	If FillingData <> Undefined Then
-		
-		// 0. Custom check of purchase order for interactive generate of purchase invoice on the base of purchase order
-		If (TypeOf(FillingData) = Type("DocumentRef.PurchaseOrder"))
-		And Not Documents.PurchaseInvoice.CheckStatusOfPurchaseOrder(Ref, FillingData) Then
-			Cancel = True;
-			Return;
-		EndIf;
-		
-		// 1. Common filling of parameters
-		DocumentParameters = New Structure("Ref, Date, Metadata",
-		                                    Ref, ?(ValueIsFilled(Date), Date, CurrentSessionDate()), Metadata());
-		DocumentFilling.PrepareDataStructuresBeforeFilling(AdditionalProperties, DocumentParameters, FillingData, Cancel);
-		
-		// 2. Cancel filling on failed data
-		If Cancel Then
-			Return;
-		EndIf;
-		
-		// 3. Collect document data, available for filling, and fill created structure 
-		Documents.PurchaseInvoice.PrepareDataStructuresForFilling(Ref, AdditionalProperties);
-		
-		// 4. Check collected data
-		DocumentFilling.CheckDataStructuresOnFilling(AdditionalProperties, Cancel);
-		
-		// 5. Fill document fields
-		If Not Cancel Then
-			// Fill "draft" values to attributes (all including non-critical fields will be filled)
-			FillPropertyValues(ThisObject, AdditionalProperties.Filling.FillingTables.Table_Attributes[0]);
-			
-			// Fill checked unique values to attributes (critical fields will be filled)
-			FillPropertyValues(ThisObject, AdditionalProperties.Filling.FillingTables.Table_Check[0]);
-			
-			// Fill line items
-			For Each TabularSection In AdditionalProperties.Metadata.TabularSections Do
-				If AdditionalProperties.Filling.FillingTables.Property("Table_" + TabularSection.Name, TabularSectionData) Then
-					ThisObject[TabularSection.Name].Load(TabularSectionData);
-				EndIf;
-			EndDo;
-		EndIf;
-		
-		// 6. Clear used temporary document data
-		DocumentFilling.ClearDataStructuresAfterFilling(AdditionalProperties);
-	EndIf;
-	
-EndProcedure
-
-Procedure FillCheckProcessing(Cancel, CheckedAttributes)
-	
-	// Check doubles in items (to be sure of proper orders placement)
-	GeneralFunctions.CheckDoubleItems(Ref, LineItems, "Project, Order, Product, LineNumber", Cancel);
-	
-EndProcedure
-
-
+#EndRegion

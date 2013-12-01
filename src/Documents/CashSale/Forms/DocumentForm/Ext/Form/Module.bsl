@@ -93,6 +93,7 @@ Procedure CompanyOnChange(Item)
 	Items.FCYCurrency.Title = CommonUse.GetAttributeValue(Object.Currency, "Symbol");
 	RecalcSalesTax();
 	RecalcTotal();
+	EmailSet();
 	
 EndProcedure
 
@@ -193,6 +194,13 @@ EndProcedure
 // 
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
+	//ConstantCashSale = Constants.CashSaleLastNumber.Get();
+	//If Object.Ref.IsEmpty() Then		
+	//	
+	//	Object.Number = Constants.CashSaleLastNumber.Get();
+	//Endif;
+
+	
 	Items.LineItemsQuantity.EditFormat = "NFD=" + Constants.QtyPrecision.Get();
 	Items.LineItemsQuantity.Format = "NFD=" + Constants.QtyPrecision.Get();
 	
@@ -270,6 +278,13 @@ Procedure DepositTypeOnChange(Item)
 
 EndProcedure
 
+&AtServer
+Function SessionTenant()
+	
+	Return SessionParameters.TenantValue;
+	
+EndFunction
+
 &AtClient
 Procedure LineItemsBeforeAddRow(Item, Cancel, Clone, Parent, Folder)
 	// Insert handler contents.
@@ -290,4 +305,328 @@ Procedure LineItemsOnChange(Item)
 		
 	Endif;
 
+EndProcedure
+
+&AtClient
+Procedure SendEmail(Command)
+	SendEmailAtServer();
+EndProcedure
+
+&AtServer
+Procedure SendEmailAtServer()
+	
+	If Object.Ref.IsEmpty() Then
+		Message("An email cannot be sent until the invoice is posted or written");
+	Else
+		
+	If Object.EmailTo <> "" Then
+		
+	// 	//imagelogo = Base64String(GeneralFunctions.GetLogo());
+	 	If constants.logoURL.Get() = "" Then
+			 imagelogo = "http://www.accountingsuite.com/images/logo-a.png";
+	 	else
+			 imagelogo = Constants.logoURL.Get();  
+	 	Endif;
+	 	
+		
+		
+		datastring = "";
+		TotalAmount = 0;
+		TotalCredits = 0;
+		For Each DocumentLine in Object.LineItems Do
+			
+			TotalAmount = TotalAmount + DocumentLine.LineTotal;
+			datastring = datastring + "<TR height=""20""><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.Product +  "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.ProductDescription + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.Project + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.Quantity + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.Price + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.LineTotal + "</TD></TR>";
+
+		EndDo;
+		
+	  //  For Each CreditLine in Object.CreditMemos Do
+	  //  	
+	  //  	TotalCredits = TotalCredits + CreditLine.Payment;
+
+	  //EndDo;
+
+	    	 
+	    MailProfil = New InternetMailProfile; 
+	    
+		MailProfil.SMTPServerAddress = Constants.MailProfAddress.Get();
+		MailProfil.SMTPUseSSL = Constants.MailProfSSL.Get();
+	   MailProfil.SMTPPort = 587; 
+	    
+	    MailProfil.Timeout = 180; 		
+
+		MailProfil.SMTPPassword = Constants.MailProfPass.Get();
+	    
+		MailProfil.SMTPUser = Constants.MailProfUser.Get();
+	    
+	    
+	    send = New InternetMailMessage; 
+	    //send.To.Add(object.shipto.Email);
+	    send.To.Add(object.EmailTo);
+		
+		If Object.EmailCC <> "" Then
+			EAddresses = StringFunctionsClientServer.SplitStringIntoSubstringArray(Object.EmailCC, ",");
+			For Each EmailAddress in EAddresses Do
+				send.CC.Add(EmailAddress);
+			EndDo;
+		Endif;
+		
+		
+	    send.From.Address = Constants.Email.Get();
+	    send.From.DisplayName = "AccountingSuite";
+	    send.Subject = Constants.SystemTitle.Get() + " - Cash Sale " + Object.Number + " from " + Format(Object.Date,"DLF=D") + " - $" + Format(Object.DocumentTotalRC,"NFD=2");
+	    
+	    FormatHTML = FormAttributeToValue("Object").GetTemplate("Template").GetText();
+	 	  
+	 	 
+		If Object.StripeID <> "" Then
+			FormatHTML2 = StrReplace(FormatHTML,"Sale No.","Stripe ID");
+			FormatHTML2 = StrReplace(FormatHTML2,"object.number",object.StripeID);
+			FormatHTML2 = StrReplace(FormatHTML2,"<td colspan=""2"" align=""right""  id=""param1""></td>","<td colspan=""2"" align=""right"" style=""font-size: 12px;"">Payment Information: </td>");
+			FormatHTML2 = StrReplace(FormatHTML2,"<td colspan=""2"" align=""right""  id=""param3""></td>","<td colspan=""2"" align=""right"">Last 4 Digits: " + Object.StripeLast4 + "</td>");
+			FormatHTML2 = StrReplace(FormatHTML2,"<td colspan=""2"" align=""right""  id=""param2""></td>","<td colspan=""2"" align=""right""> Method: " + Object.StripeCardType + "</td>");
+			
+		Else
+			FormatHTML2 = StrReplace(FormatHTML,"object.number",object.RefNum);
+		Endif;
+	 	 FormatHTML2 = StrReplace(FormatHTML2,"imagelogo",imagelogo);
+	 	  FormatHTML2 = StrReplace(FormatHTML2,"object.date",Format(object.Date,"DLF=D"));
+	 	  //BillTo
+	 	  FormatHTML2 = StrReplace(FormatHTML2,"object.company",object.Company);
+
+		  Query = New Query("SELECT
+		                  |	Addresses.FirstName,
+		                  |	Addresses.MiddleName,
+		                  |	Addresses.LastName,
+		                  |	Addresses.Phone,
+		                  |	Addresses.Fax,
+		                  |	Addresses.Email,
+		                  |	Addresses.AddressLine1,
+		                  |	Addresses.AddressLine2,
+		                  |	Addresses.City,
+		                  |	Addresses.State.Code AS State,
+		                  |	Addresses.Country,
+		                  |	Addresses.ZIP,
+		                  |	Addresses.RemitTo
+		                  |FROM
+		                  |	Catalog.Addresses AS Addresses
+		                  |WHERE
+		                  |	Addresses.Owner = &Company
+		                  |	AND Addresses.DefaultBilling = TRUE");
+		Query.SetParameter("Company", object.company);
+			QueryResult = Query.Execute();	
+		Dataset = QueryResult.Unload();
+
+		  
+		  
+		  FormatHTML2 = StrReplace(FormatHTML2,"object.shipto1",Dataset[0].AddressLine1);
+	 	  FormatHTML2 = StrReplace(FormatHTML2,"object.shipto2",Dataset[0].AddressLine2);
+	 	 CityStateZip = Dataset[0].City + Dataset[0].State + Dataset[0].ZIP;
+	 	 
+	 	 If CityStateZip = "" Then
+	 	 	FormatHTML2 = StrReplace(FormatHTML2,"object.city object.state object.zip","");
+	 	 Else
+	 	  	FormatHTML2 = StrReplace(FormatHTML2,"object.city object.state object.zip",Dataset[0].City + ", " + Dataset[0].State + " " + Dataset[0].ZIP);
+	 	 Endif;
+	 	  FormatHTML2 = StrReplace(FormatHTML2,"object.country",Dataset[0].Country);
+	 	  //lineitems
+	 	  FormatHTML2 = StrReplace(FormatHTML2,"lineitems",datastring);
+ 	   
+	 	  //User's company info
+	 	  FormatHTML2 = StrReplace(FormatHTML2,"mycompany",Constants.SystemTitle.Get()); 
+	 	  FormatHTML2 = StrReplace(FormatHTML2,"myaddress1",Constants.AddressLine1.Get());
+	 	  FormatHTML2 = StrReplace(FormatHTML2,"myaddress2",Constants.AddressLine2.Get());
+	 	  FormatHTML2 = StrReplace(FormatHTML2,"mycity mystate myzip",Constants.City.Get() + ", " + Constants.State.Get() + " " + Constants.ZIP.Get());
+	 	  FormatHTML2 = StrReplace(FormatHTML2,"myphone",Constants.Phone.Get());
+	 	  FormatHTML2 = StrReplace(FormatHTML2,"myemail",Constants.Email.Get());
+	 	  
+	 	  FormatHTML2 = StrReplace(FormatHTML2,"object.subtotal",Format(Object.DocumentTotalRC,"NFD=2"));
+		  
+	   If object.SalesTax = 0 Then
+	    	FormatHTML2 = StrReplace(FormatHTML2,"object.salestax","0.00");
+	   Else
+	 	 	 FormatHTML2 = StrReplace(FormatHTML2,"object.salestax",Format(object.SalesTax,"NFD=2"));
+	   Endif;
+  
+		  
+	   If TotalAmount = 0 Then
+	 	   FormatHTML2 = StrReplace(FormatHTML2,"object.total","0.00");
+	   Else
+	  		 FormatHTML2 = StrReplace(FormatHTML2,"object.total",Format(TotalAmount,"NFD=2"));
+	   Endif;
+
+	   //Note
+	   FormatHTML2 = StrReplace(FormatHTML2,"object.note",Object.EmailNote);
+	  
+		send.Texts.Add(FormatHTML2,InternetMailTextType.HTML);
+			
+		Posta = New InternetMail; 
+		Posta.Logon(MailProfil); 
+		Posta.Send(send); 
+		Posta.Logoff();
+		
+		Message("Cash Sale email has been sent");
+		
+		//DocObject = object.ref.GetObject();
+		//DocObject.EmailTo = Object.EmailTo;
+		//DocObject.LastEmail = "Last email on " + Format(CurrentDate(),"DLF=DT") + " to " + Object.EmailTo;
+		//DocObject.Write(DocumentWriteMode.Posting);
+		SentEmail = True;
+
+		Else
+	 		 Message("The recipient email has not been specified");
+	    Endif;
+	 	
+	 Endif;
+
+ EndProcedure
+ 
+ &AtServer
+Procedure EmailSet()
+	Query = New Query("SELECT
+		                  |	Addresses.FirstName,
+		                  |	Addresses.MiddleName,
+		                  |	Addresses.LastName,
+		                  |	Addresses.Phone,
+		                  |	Addresses.Fax,
+		                  |	Addresses.Email,
+		                  |	Addresses.AddressLine1,
+		                  |	Addresses.AddressLine2,
+		                  |	Addresses.City,
+		                  |	Addresses.State.Code AS State,
+		                  |	Addresses.Country,
+		                  |	Addresses.ZIP,
+		                  |	Addresses.RemitTo
+		                  |FROM
+		                  |	Catalog.Addresses AS Addresses
+		                  |WHERE
+		                  |	Addresses.Owner = &Company
+		                  |	AND Addresses.DefaultBilling = TRUE");
+		Query.SetParameter("Company", object.company);
+			QueryResult = Query.Execute();	
+		Dataset = QueryResult.Unload();
+		
+	Object.EmailTo = Dataset[0].Email;
+	
+EndProcedure
+
+&AtClient
+Procedure OnClose()
+	OnCloseAtServer();
+EndProcedure
+
+&AtServer
+Procedure OnCloseAtServer()
+
+	If SentEmail = True Then
+		
+		DocObject = object.ref.GetObject();
+		DocObject.EmailTo = Object.EmailTo;
+		DocObject.LastEmail = "Last email on " + Format(CurrentDate(),"DLF=DT") + " to " + Object.EmailTo;
+		DocObject.Write();
+	Endif;
+
+EndProcedure
+
+&AtServer
+Function Increment(NumberToInc)
+	
+	//Last = Constants.SalesInvoiceLastNumber.Get();
+	Last = NumberToInc;
+	//Last = "AAAAA";
+	LastCount = StrLen(Last);
+	Digits = new Array();
+	For i = 1 to LastCount Do	
+		Digits.Add(Mid(Last,i,1));
+
+	EndDo;
+	
+	NumPos = 9999;
+	lengthcount = 0;
+	firstnum = false;
+	j = 0;
+	While j < LastCount Do
+		If NumCheck(Digits[LastCount - 1 - j]) Then
+			if firstnum = false then //first number encountered, remember position
+				firstnum = true;
+				NumPos = LastCount - 1 - j;
+				lengthcount = lengthcount + 1;
+			Else
+				If firstnum = true Then
+					If NumCheck(Digits[LastCount - j]) Then //if the previous char is a number
+						lengthcount = lengthcount + 1;  //next numbers, add to length.
+					Else
+						break;
+					Endif;
+				Endif;
+			Endif;
+						
+		Endif;
+		j = j + 1;
+	EndDo;
+	
+	NewString = "";
+	
+	If lengthcount > 0 Then //if there are numbers in the string
+		changenumber = Mid(Last,(NumPos - lengthcount + 2),lengthcount);
+		NumVal = Number(changenumber);
+		NumVal = NumVal + 1;
+		StringVal = String(NumVal);
+		StringVal = StrReplace(StringVal,",","");
+		
+		StringValLen = StrLen(StringVal);
+		changenumberlen = StrLen(changenumber);
+		LeadingZeros = Left(changenumber,(changenumberlen - StringValLen));
+
+		LeftSide = Left(Last,(NumPos - lengthcount + 1));
+		RightSide = Right(Last,(LastCount - NumPos - 1));
+		NewString = LeftSide + LeadingZeros + StringVal + RightSide; //left side + incremented number + right side
+		
+	Endif;
+	
+	Next = NewString;
+
+	return NewString;
+	
+EndFunction
+
+&AtServer
+Function NumCheck(CheckValue)
+	 
+	For i = 0 to  9 Do
+		If CheckValue = String(i) Then
+			Return True;
+		Endif;
+	EndDo;
+		
+	Return False;
+		
+EndFunction
+
+&AtServer
+Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
+	
+	
+	//If Object.Ref.IsEmpty() Then
+	//
+	//	MatchVal = Increment(Constants.CashSaleLastNumber.Get());
+	//	If Object.Number = MatchVal Then
+	//		Constants.CashSaleLastNumber.Set(MatchVal);
+	//	Else
+	//		If Increment(Object.Number) = "" Then
+	//		Else
+	//			If StrLen(Increment(Object.Number)) > 20 Then
+	//				 Constants.CashSaleLastNumber.Set("");
+	//			Else
+	//				Constants.CashSaleLastNumber.Set(Increment(Object.Number));
+	//			Endif;
+
+	//		Endif;
+	//	Endif;
+	//Endif;
+	//
+	//If Object.Number = "" Then
+	//	Message("Cash Sale Number is empty");
+	//	Cancel = True;
+	//Endif;
 EndProcedure

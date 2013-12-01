@@ -79,7 +79,7 @@
 	
 	// Outputting data
 	
-	//OurCompany = Catalogs.Companies.OurCompany;
+	OurCompany = Catalogs.Companies.OurCompany;
 	
 	OurCompanyInfo = New Structure();   // PrintTemplates.ContactInfo(OurCompany);
 	CounterpartyInfo = New Structure(); // PrintTemplates.ContactInfo(Vendor);
@@ -88,7 +88,7 @@
 	FormContent.Parameters.OurCompanyAddress = OurCompanyInfo.Address;
 	FormContent.Parameters.OurCompanyZIP = OurCompanyInfo.ZIP;
 	FormContent.Parameters.OurCompanyPhone = OurCompanyInfo.Phone;
-	FormContent.Parameters.OurTaxID = "Tax ID";// CommonUse.GetAttributeValue(OurCompany, "USTaxID");
+	FormContent.Parameters.OurTaxID = CommonUse.GetAttributeValue(OurCompany, "USTaxID");
 	
 	FormContent.Parameters.CounterpartyName = CounterpartyInfo.Name;
 	FormContent.Parameters.CounterpartyAddress = CounterpartyInfo.Address;

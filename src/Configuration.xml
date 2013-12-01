@@ -51,7 +51,7 @@
 				<xr:Item xsi:type="xr:MDObjectRef">Role.FullAccess</xr:Item>
 			</DefaultRoles>
 			<Vendor>1C Company</Vendor>
-			<Version>1.1.32.76</Version>
+			<Version>1.1.33.01</Version>
 			<UpdateCatalogAddress/>
 			<IncludeHelpInContents>false</IncludeHelpInContents>
 			<UseManagedFormInOrdinaryApplication>true</UseManagedFormInOrdinaryApplication>
@@ -195,6 +195,11 @@
 			<CommonPicture>Question32</CommonPicture>
 			<CommonPicture>Warning32</CommonPicture>
 			<CommonPicture>Globe</CommonPicture>
+			<CommonPicture>TaskComplete</CommonPicture>
+			<CommonPicture>Questionnaire</CommonPicture>
+			<CommonPicture>GreenPlus</CommonPicture>
+			<CommonPicture>Minus</CommonPicture>
+			<CommonPicture>CheckFlag</CommonPicture>
 			<SessionParameter>ACSUser</SessionParameter>
 			<Role>API</Role>
 			<Role>FullAccess</Role>
@@ -213,11 +218,17 @@
 			<Role>AccountingView</Role>
 			<Role>ListUser</Role>
 			<Role>ReportOnly</Role>
+			<Role>ProjectsFull</Role>
+			<Role>ProjectsView</Role>
+			<Role>TimeTrackFull</Role>
+			<Role>TimeTrackView</Role>
 			<CommonModule>CommonUse</CommonModule>
 			<CommonModule>CommonUseClientServer</CommonModule>
 			<CommonModule>DataCompositionSchemeEvaluationExtention</CommonModule>
-			<CommonModule>DocumentFilling</CommonModule>
 			<CommonModule>DocumentPosting</CommonModule>
+			<CommonModule>DocumentFilling</CommonModule>
+			<CommonModule>DocumentPrinting</CommonModule>
+			<CommonModule>DocumentNumbering</CommonModule>
 			<CommonModule>GeneralFunctions</CommonModule>
 			<CommonModule>GeneralFunctionsReusable</CommonModule>
 			<CommonModule>CommonUseServerCall</CommonModule>
@@ -231,11 +242,11 @@
 			<CommonModule>VAT_FL</CommonModule>
 			<CommonModule>FTSE</CommonModule>
 			<CommonModule>StringFunctionsClientServer</CommonModule>
-			<CommonModule>Yodlee</CommonModule>
+			<CommonModule>_UnitTestsPriceMatrix</CommonModule>
+			<EventSubscription>DocumentSetNewNumber</EventSubscription>
 			<ScheduledJob>UpdateFTSE</ScheduledJob>
 			<ScheduledJob>MergeFTSE</ScheduledJob>
 			<ScheduledJob>RecurringDocuments</ScheduledJob>
-			<ScheduledJob>YodleeUpdateBanks</ScheduledJob>
 			<FunctionalOption>BeginningBalancesInDocuments</FunctionalOption>
 			<FunctionalOption>DisplayCodes</FunctionalOption>
 			<FunctionalOption>MultiCurrency</FunctionalOption>
@@ -255,11 +266,6 @@
 			<Constant>BankInterestEarnedAccount</Constant>
 			<Constant>BankServiceChargeAccount</Constant>
 			<Constant>BeginningBalancesInDocuments</Constant>
-			<Constant>bigcom_apipath</Constant>
-			<Constant>bigcom_base64</Constant>
-			<Constant>bigcom_storeid</Constant>
-			<Constant>bigcom_token</Constant>
-			<Constant>bigcom_user</Constant>
 			<Constant>CF1Name</Constant>
 			<Constant>CF1Type</Constant>
 			<Constant>CF1Required</Constant>
@@ -302,9 +308,6 @@
 			<Constant>MultiLocation</Constant>
 			<Constant>Phone</Constant>
 			<Constant>PriceIncludesVAT</Constant>
-			<Constant>spk</Constant>
-			<Constant>spk2</Constant>
-			<Constant>spk3</Constant>
 			<Constant>State</Constant>
 			<Constant>SystemTitle</Constant>
 			<Constant>TaxPayableAccount</Constant>
@@ -321,6 +324,8 @@
 			<Constant>items_webhook</Constant>
 			<Constant>cash_sales_webhook</Constant>
 			<Constant>sales_invoices_webhook</Constant>
+			<Constant>cash_receipts_webhook</Constant>
+			<Constant>sales_orders_webhook</Constant>
 			<Constant>QtyPrecision</Constant>
 			<Constant>SalesInvoiceFooter</Constant>
 			<Constant>SalesInvoicePO</Constant>
@@ -329,45 +334,66 @@
 			<Constant>publishable_temp</Constant>
 			<Constant>stripe_email</Constant>
 			<Constant>CF1CName</Constant>
-			<Constant>CF2CName</Constant>
-			<Constant>CF3CName</Constant>
-			<Constant>CF4CName</Constant>
-			<Constant>CF5CName</Constant>
 			<Constant>CF1CType</Constant>
+			<Constant>CF1CRequired</Constant>
+			<Constant>CF2CName</Constant>
 			<Constant>CF2CType</Constant>
+			<Constant>CF2CRequired</Constant>
+			<Constant>CF3CName</Constant>
 			<Constant>CF3CType</Constant>
+			<Constant>CF3CRequired</Constant>
+			<Constant>CF4CName</Constant>
 			<Constant>CF4CType</Constant>
+			<Constant>CF4CRequired</Constant>
+			<Constant>CF5CName</Constant>
+			<Constant>CF5CRequired</Constant>
 			<Constant>CF5CType</Constant>
-			<Constant>dwolla_access_token</Constant>
-			<Constant>stripeinvoicenum</Constant>
-			<Constant>stripeinvoicedate</Constant>
-			<Constant>stripeinvoiceamount</Constant>
-			<Constant>YodleeUserName</Constant>
-			<Constant>YodleeUserPassword</Constant>
-			<Constant>dwolla_funding_source</Constant>
-			<Constant>SubStatus</Constant>
 			<Constant>PurchaseLiabilityAccount</Constant>
 			<Constant>CostVarianceAccount</Constant>
 			<Constant>MailProfAddress</Constant>
 			<Constant>MailProfSSL</Constant>
 			<Constant>MailProfPass</Constant>
 			<Constant>MailProfUser</Constant>
-			<Constant>ServiceDB</Constant>
-			<Constant>zoho_auth_token</Constant>
+			<Constant>SalesInvoiceLastNumber</Constant>
+			<Constant>CashReceiptLastNumber</Constant>
+			<Constant>CashSaleLastNumber</Constant>
+			<Constant>DepositLastNumber</Constant>
+			<Constant>BankTransferLastNumber</Constant>
+			<Constant>WarehouseTransferLastNumber</Constant>
+			<Constant>CreditMemoLastNumber</Constant>
+			<Constant>SalesOrderLastNumber</Constant>
+			<Constant>PurchaseOrderLastNumber</Constant>
+			<Constant>GJEntryLastNumber</Constant>
+			<Constant>CurrentUserEmail</Constant>
+			<Constant>UserCredName</Constant>
+			<Constant>UserCredPass</Constant>
+			<Constant>custom_fields_update</Constant>
+			<Constant>account_type_update</Constant>
+			<Constant>verify_email</Constant>
 			<CommonForm>DesktopReports</CommonForm>
 			<CommonForm>GeneralSettings</CommonForm>
 			<CommonForm>LongAction</CommonForm>
 			<CommonForm>NavigationFull</CommonForm>
+			<CommonForm>LinksForm</CommonForm>
 			<CommonForm>SettingsForm</CommonForm>
 			<CommonForm>SupportInfo</CommonForm>
+			<CommonForm>Subscribe</CommonForm>
 			<CommonForm>MessageBox</CommonForm>
 			<Catalog>Addresses</Catalog>
+			<Catalog>APITesting</Catalog>
+			<Catalog>BankAccounts</Catalog>
+			<Catalog>Banks</Catalog>
+			<Catalog>Classes</Catalog>
 			<Catalog>Companies</Catalog>
 			<Catalog>Countries</Catalog>
 			<Catalog>Currencies</Catalog>
+			<Catalog>ExpensifyCategories</Catalog>
 			<Catalog>Locations</Catalog>
+			<Catalog>Milestones</Catalog>
 			<Catalog>PaymentMethods</Catalog>
 			<Catalog>PaymentTerms</Catalog>
+			<Catalog>PriceLevels</Catalog>
+			<Catalog>ProductCategories</Catalog>
 			<Catalog>Products</Catalog>
 			<Catalog>Projects</Catalog>
 			<Catalog>SalesTaxCodes</Catalog>
@@ -376,12 +402,6 @@
 			<Catalog>UserList</Catalog>
 			<Catalog>USTaxCategories1099</Catalog>
 			<Catalog>VATCodes</Catalog>
-			<Catalog>PriceLevels</Catalog>
-			<Catalog>ProductCategories</Catalog>
-			<Catalog>ExpensifyCategories</Catalog>
-			<Catalog>Milestones</Catalog>
-			<Catalog>Banks</Catalog>
-			<Catalog>BankAccounts</Catalog>
 			<Document>BankReconciliation</Document>
 			<Document>BankTransfer</Document>
 			<Document>CashPurchase</Document>
@@ -439,6 +459,7 @@
 			<DataProcessor>DataImport</DataProcessor>
 			<DataProcessor>DownloadedTransactions</DataProcessor>
 			<DataProcessor>YodleeBankAccountsManagement</DataProcessor>
+			<DataProcessor>_UnitTestRunner</DataProcessor>
 			<InformationRegister>BankTransactions</InformationRegister>
 			<InformationRegister>CustomPrintForms</InformationRegister>
 			<InformationRegister>ExchangeRates</InformationRegister>
@@ -448,6 +469,8 @@
 			<InformationRegister>PriceList</InformationRegister>
 			<InformationRegister>RecurringDocuments</InformationRegister>
 			<InformationRegister>TransactionReconciliation</InformationRegister>
+			<InformationRegister>TestRegister</InformationRegister>
+			<InformationRegister>_UnitTestLog</InformationRegister>
 			<AccumulationRegister>InventoryJrnl</AccumulationRegister>
 			<AccumulationRegister>OrdersDispatched</AccumulationRegister>
 			<AccumulationRegister>OrdersRegistered</AccumulationRegister>

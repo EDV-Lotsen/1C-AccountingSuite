@@ -11,12 +11,27 @@
 				<CommandName>Form.Command.SendEmail</CommandName>
 				<ExtendedTooltip name="FormSendEmailExtendedTooltip" id="204"/>
 			</Button>
+			<Button name="FormPayInvoice" id="224">
+				<Type>CommandBarButton</Type>
+				<CommandName>Form.Command.PayInvoice</CommandName>
+				<Title>
+					<v8:item>
+						<v8:lang>en</v8:lang>
+						<v8:content>Pay Invoice</v8:content>
+					</v8:item>
+				</Title>
+				<ExtendedTooltip name="FormPayInvoiceExtendedTooltip" id="225"/>
+			</Button>
 		</ChildItems>
 	</AutoCommandBar>
 	<Events>
+		<Event name="AfterWriteAtServer">AfterWriteAtServer</Event>
+		<Event name="OnOpen">OnOpen</Event>
 		<Event name="BeforeWriteAtServer">BeforeWriteAtServer</Event>
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+		<Event name="OnWriteAtServer">OnWriteAtServer</Event>
 		<Event name="OnClose">OnClose</Event>
+		<Event name="FillCheckProcessingAtServer">FillCheckProcessingAtServer</Event>
 	</Events>
 	<ChildItems>
 		<UsualGroup name="Header" id="59">
@@ -559,29 +574,29 @@
 					<ContextMenu name="LineItemsContextMenu" id="6"/>
 					<AutoCommandBar name="LineItemsCommandBar" id="7"/>
 					<ExtendedTooltip name="LineItemsExtendedTooltip" id="139"/>
-					<SearchStringAddition name="LineItemsSearchString" id="224">
+					<SearchStringAddition name="LineItemsSearchString" id="226">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>SearchStringRepresentation</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsSearchStringContextMenu" id="225"/>
-						<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="226"/>
+						<ContextMenu name="LineItemsSearchStringContextMenu" id="227"/>
+						<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="228"/>
 					</SearchStringAddition>
-					<ViewStatusAddition name="LineItemsViewStatus" id="227">
+					<ViewStatusAddition name="LineItemsViewStatus" id="229">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>ViewStatusRepresentation</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsViewStatusContextMenu" id="228"/>
-						<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="229"/>
+						<ContextMenu name="LineItemsViewStatusContextMenu" id="230"/>
+						<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="231"/>
 					</ViewStatusAddition>
-					<SearchControlAddition name="LineItemsSearchControl" id="230">
+					<SearchControlAddition name="LineItemsSearchControl" id="232">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>SearchControl</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsSearchControlContextMenu" id="231"/>
-						<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="232"/>
+						<ContextMenu name="LineItemsSearchControlContextMenu" id="233"/>
+						<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="234"/>
 					</SearchControlAddition>
 					<Events>
 						<Event name="BeforeAddRow">LineItemsBeforeAddRow</Event>
@@ -1003,6 +1018,17 @@
 				<v8:Type>xs:boolean</v8:Type>
 			</Type>
 		</Attribute>
+		<Attribute name="PaidInvoiceCheck" id="7">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Paid invoice check</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
+			</Type>
+		</Attribute>
 	</Attributes>
 	<Commands>
 		<Command name="SendEmail" id="1">
@@ -1019,6 +1045,21 @@
 				</v8:item>
 			</ToolTip>
 			<Action>SendEmail</Action>
+		</Command>
+		<Command name="PayInvoice" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Pay invoice</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Pay invoice</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>PayInvoice</Action>
 		</Command>
 	</Commands>
 	<CommandInterface>

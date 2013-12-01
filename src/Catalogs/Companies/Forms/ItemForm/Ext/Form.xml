@@ -6,7 +6,10 @@
 	<AutoCommandBar name="FormCommandBar" id="-1"/>
 	<Events>
 		<Event name="AfterWriteAtServer">AfterWriteAtServer</Event>
+		<Event name="OnOpen">OnOpen</Event>
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+		<Event name="BeforeWriteAtServer">BeforeWriteAtServer</Event>
+		<Event name="OnWriteAtServer">OnWriteAtServer</Event>
 		<Event name="FillCheckProcessingAtServer">FillCheckProcessingAtServer</Event>
 	</Events>
 	<ChildItems>
@@ -17,6 +20,12 @@
 		</InputField>
 		<InputField name="Description" id="3">
 			<DataPath>Object.Description</DataPath>
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Company Name</v8:content>
+				</v8:item>
+			</Title>
 			<EditMode>EnterOnInput</EditMode>
 			<Width>20</Width>
 			<HorizontalStretch>false</HorizontalStretch>
@@ -75,6 +84,21 @@
 					</ToolTip>
 					<ExtendedTooltip name="AddressExtendedTooltip" id="238"/>
 					<ChildItems>
+						<InputField name="PrimaryAddrFirstName" id="293">
+							<DataPath>PrimaryAddr.FirstName</DataPath>
+							<ContextMenu name="PrimaryAddrFirstNameContextMenu" id="294"/>
+							<ExtendedTooltip name="PrimaryAddrFirstNameExtendedTooltip" id="295"/>
+						</InputField>
+						<InputField name="PrimaryAddrMiddleName" id="296">
+							<DataPath>PrimaryAddr.MiddleName</DataPath>
+							<ContextMenu name="PrimaryAddrMiddleNameContextMenu" id="297"/>
+							<ExtendedTooltip name="PrimaryAddrMiddleNameExtendedTooltip" id="298"/>
+						</InputField>
+						<InputField name="PrimaryAddrLastName" id="299">
+							<DataPath>PrimaryAddr.LastName</DataPath>
+							<ContextMenu name="PrimaryAddrLastNameContextMenu" id="300"/>
+							<ExtendedTooltip name="PrimaryAddrLastNameExtendedTooltip" id="301"/>
+						</InputField>
 						<InputField name="PrimaryAddrEmail" id="266">
 							<DataPath>PrimaryAddr.Email</DataPath>
 							<ContextMenu name="PrimaryAddrEmailContextMenu" id="267"/>
@@ -97,6 +121,13 @@
 						</InputField>
 						<InputField name="PrimaryAddrCity" id="278">
 							<DataPath>PrimaryAddr.City</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>City</v8:content>
+								</v8:item>
+							</Title>
+							<Width>34</Width>
 							<ContextMenu name="PrimaryAddrCityContextMenu" id="279"/>
 							<ExtendedTooltip name="PrimaryAddrCityExtendedTooltip" id="280"/>
 						</InputField>
@@ -262,10 +293,15 @@
 							<ContextMenu name="DwollaIDContextMenu" id="291"/>
 							<ExtendedTooltip name="DwollaIDExtendedTooltip" id="292"/>
 						</InputField>
+						<InputField name="RippleAddress" id="302">
+							<DataPath>Object.RippleAddress</DataPath>
+							<Visible>false</Visible>
+							<ContextMenu name="RippleAddressContextMenu" id="303"/>
+							<ExtendedTooltip name="RippleAddressExtendedTooltip" id="304"/>
+						</InputField>
 					</ChildItems>
 				</Page>
 				<Page name="CreditCard" id="182">
-					<Visible>false</Visible>
 					<Title>
 						<v8:item>
 							<v8:lang>en</v8:lang>
@@ -371,29 +407,29 @@
 							<ContextMenu name="ProjectTableContextMenu" id="231"/>
 							<AutoCommandBar name="ProjectTableCommandBar" id="232"/>
 							<ExtendedTooltip name="ProjectTableExtendedTooltip" id="233"/>
-							<SearchStringAddition name="ProjectTableSearchString" id="293">
+							<SearchStringAddition name="ProjectTableSearchString" id="337">
 								<AdditionSource>
 									<Item>ProjectTable</Item>
 									<Type>SearchStringRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="ProjectTableSearchStringContextMenu" id="294"/>
-								<ExtendedTooltip name="ProjectTableSearchStringExtendedTooltip" id="295"/>
+								<ContextMenu name="ProjectTableSearchStringContextMenu" id="338"/>
+								<ExtendedTooltip name="ProjectTableSearchStringExtendedTooltip" id="339"/>
 							</SearchStringAddition>
-							<ViewStatusAddition name="ProjectTableViewStatus" id="296">
+							<ViewStatusAddition name="ProjectTableViewStatus" id="340">
 								<AdditionSource>
 									<Item>ProjectTable</Item>
 									<Type>ViewStatusRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="ProjectTableViewStatusContextMenu" id="297"/>
-								<ExtendedTooltip name="ProjectTableViewStatusExtendedTooltip" id="298"/>
+								<ContextMenu name="ProjectTableViewStatusContextMenu" id="341"/>
+								<ExtendedTooltip name="ProjectTableViewStatusExtendedTooltip" id="342"/>
 							</ViewStatusAddition>
-							<SearchControlAddition name="ProjectTableSearchControl" id="299">
+							<SearchControlAddition name="ProjectTableSearchControl" id="343">
 								<AdditionSource>
 									<Item>ProjectTable</Item>
 									<Type>SearchControl</Type>
 								</AdditionSource>
-								<ContextMenu name="ProjectTableSearchControlContextMenu" id="300"/>
-								<ExtendedTooltip name="ProjectTableSearchControlExtendedTooltip" id="301"/>
+								<ContextMenu name="ProjectTableSearchControlContextMenu" id="344"/>
+								<ExtendedTooltip name="ProjectTableSearchControlExtendedTooltip" id="345"/>
 							</SearchControlAddition>
 							<ChildItems>
 								<LabelField name="ProjectTableRef" id="263">
@@ -403,6 +439,73 @@
 								</LabelField>
 							</ChildItems>
 						</Table>
+					</ChildItems>
+				</Page>
+				<Page name="CustomFields" id="305">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Custom fields</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Custom fields</v8:content>
+						</v8:item>
+					</ToolTip>
+					<ExtendedTooltip name="CustomFieldsExtendedTooltip" id="306"/>
+					<ChildItems>
+						<InputField name="CF1String" id="307">
+							<DataPath>Object.CF1String</DataPath>
+							<ContextMenu name="CF1StringContextMenu" id="308"/>
+							<ExtendedTooltip name="CF1StringExtendedTooltip" id="309"/>
+						</InputField>
+						<InputField name="CF1Num" id="322">
+							<DataPath>Object.CF1Num</DataPath>
+							<ContextMenu name="CF1NumContextMenu" id="323"/>
+							<ExtendedTooltip name="CF1NumExtendedTooltip" id="324"/>
+						</InputField>
+						<InputField name="CF2String" id="310">
+							<DataPath>Object.CF2String</DataPath>
+							<ContextMenu name="CF2StringContextMenu" id="311"/>
+							<ExtendedTooltip name="CF2StringExtendedTooltip" id="312"/>
+						</InputField>
+						<InputField name="CF2Num" id="325">
+							<DataPath>Object.CF2Num</DataPath>
+							<ContextMenu name="CF2NumContextMenu" id="326"/>
+							<ExtendedTooltip name="CF2NumExtendedTooltip" id="327"/>
+						</InputField>
+						<InputField name="CF3String" id="313">
+							<DataPath>Object.CF3String</DataPath>
+							<ContextMenu name="CF3StringContextMenu" id="314"/>
+							<ExtendedTooltip name="CF3StringExtendedTooltip" id="315"/>
+						</InputField>
+						<InputField name="CF3Num" id="328">
+							<DataPath>Object.CF3Num</DataPath>
+							<ContextMenu name="CF3NumContextMenu" id="329"/>
+							<ExtendedTooltip name="CF3NumExtendedTooltip" id="330"/>
+						</InputField>
+						<InputField name="CF4String" id="316">
+							<DataPath>Object.CF4String</DataPath>
+							<ContextMenu name="CF4StringContextMenu" id="317"/>
+							<ExtendedTooltip name="CF4StringExtendedTooltip" id="318"/>
+						</InputField>
+						<InputField name="CF4Num" id="331">
+							<DataPath>Object.CF4Num</DataPath>
+							<ContextMenu name="CF4NumContextMenu" id="332"/>
+							<ExtendedTooltip name="CF4NumExtendedTooltip" id="333"/>
+						</InputField>
+						<InputField name="CF5String" id="319">
+							<DataPath>Object.CF5String</DataPath>
+							<ContextMenu name="CF5StringContextMenu" id="320"/>
+							<ExtendedTooltip name="CF5StringExtendedTooltip" id="321"/>
+						</InputField>
+						<InputField name="CF5Num" id="334">
+							<DataPath>Object.CF5Num</DataPath>
+							<ContextMenu name="CF5NumContextMenu" id="335"/>
+							<ExtendedTooltip name="CF5NumExtendedTooltip" id="336"/>
+						</InputField>
 					</ChildItems>
 				</Page>
 			</ChildItems>

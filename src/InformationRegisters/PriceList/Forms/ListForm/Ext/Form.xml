@@ -33,29 +33,29 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="30"/>
-			<SearchStringAddition name="ListSearchString" id="44">
+			<SearchStringAddition name="ListSearchString" id="41">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="45"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="46"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="42"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="43"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="47">
+			<ViewStatusAddition name="ListViewStatus" id="44">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="48"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="49"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="45"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="46"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="50">
+			<SearchControlAddition name="ListSearchControl" id="47">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="51"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="52"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="48"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="49"/>
 			</SearchControlAddition>
 			<ChildItems>
 				<LabelField name="Period" id="4">
@@ -79,17 +79,12 @@
 					<ContextMenu name="DescriptionContextMenu" id="23"/>
 					<ExtendedTooltip name="DescriptionExtendedTooltip" id="35"/>
 				</LabelField>
-				<LabelField name="ItemCategory" id="41">
-					<DataPath>List.ItemCategory</DataPath>
-					<ContextMenu name="ItemCategoryContextMenu" id="42"/>
-					<ExtendedTooltip name="ItemCategoryExtendedTooltip" id="43"/>
-				</LabelField>
 				<LabelField name="ProductCategory" id="38">
 					<DataPath>List.ProductCategory</DataPath>
 					<Title>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Price item category</v8:content>
+							<v8:content>Category</v8:content>
 						</v8:item>
 					</Title>
 					<ContextMenu name="ProductCategoryContextMenu" id="39"/>
@@ -127,7 +122,6 @@
 				<QueryText>SELECT
 	InformationRegisterPriceList.Period,
 	InformationRegisterPriceList.Product,
-	InformationRegisterPriceList.Product.Category AS ItemCategory,
 	InformationRegisterPriceList.Price,
 	Products.Description,
 	InformationRegisterPriceList.PriceLevel,

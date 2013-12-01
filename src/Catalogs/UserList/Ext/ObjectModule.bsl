@@ -9,23 +9,11 @@ Procedure BeforeDelete(Cancel)
 	If ReturnCurrentUser() <> userstrvalue Then
 
 		//DeleteObj(userobj);	
-		DeleteUser(userstrvalue);
+		//DeleteUser(userstrvalue);
 	Else
 		Message("Cannot delete oneself");
 		Cancel = True;
 	Endif;
-	
-EndProcedure
-
-&AtServer
-Procedure DeleteUser(userstring)
-	 //Insert handler contents.
-		
-	theuser = InfoBaseUsers.FindByName(userstring);
-	
-	theuser.Delete();
-	
-
 	
 EndProcedure
 

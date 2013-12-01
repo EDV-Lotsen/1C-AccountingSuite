@@ -1,10 +1,13 @@
 ﻿
 ////////////////////////////////////////////////////////////////////////////////
-// Purchase Order: Object module
+// Purchase order: Object module
 //------------------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////////////
-// OBJECT EVENTS HANDLERS
+#Region EVENT_HANDLERS
+
+//------------------------------------------------------------------------------
+#If Server Or ThickClientOrdinaryApplication Or ExternalConnection Then
 
 Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 	
@@ -18,6 +21,32 @@ Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 		DocumentPosting.PrepareDataStructuresBeforeWrite(AdditionalProperties, DocumentParameters, Cancel, WriteMode, PostingMode);
 		
 	EndIf;
+	
+EndProcedure
+
+Procedure FillCheckProcessing(Cancel, CheckedAttributes)
+	
+	// Check doubles in items (to be sure of proper orders placement)
+	GeneralFunctions.CheckDoubleItems(Ref, LineItems, "Product, Location, DeliveryDate, Project, Class, LineNumber", Cancel);
+	
+EndProcedure
+
+Procedure Filling(FillingData, StandardProcessing)
+	
+	// Filling of the new created document.
+	If FillingData = Undefined Then
+		Currency         = Constants.DefaultCurrency.Get();
+		ExchangeRate     = 1;
+		PriceIncludesVAT = GeneralFunctionsReusable.PriceIncludesVAT();
+		Location         = Catalogs.Locations.MainWarehouse;
+	EndIf;
+	
+EndProcedure
+
+Procedure OnCopy(CopiedObject)
+	
+	// Clear manual ajustment attribute
+	ManualAdjustment = False;
 	
 EndProcedure
 
@@ -52,7 +81,7 @@ Procedure Posting(Cancel, PostingMode)
 EndProcedure
 
 Procedure UndoPosting(Cancel)
-
+	
 	// 1. Common posting clearing / deactivate manual ajusted postings
 	DocumentPosting.PrepareRecordSetsForPostingClearing(AdditionalProperties, RegisterRecords);
 	
@@ -69,28 +98,16 @@ Procedure UndoPosting(Cancel)
 	
 	// 5. Write document postings to register
 	DocumentPosting.WriteRecordSets(AdditionalProperties, RegisterRecords);
-
+	
 	// 6. Check register blanaces according to document's changes
 	DocumentPosting.CheckPostingResults(AdditionalProperties, RegisterRecords, Cancel);
-
+	
 	// 7. Clear used temporary document data
 	DocumentPosting.ClearDataStructuresAfterPosting(AdditionalProperties);
-
-EndProcedure
-
-Procedure OnCopy(CopiedObject)
-	
-	// Clear manual ajustment attribute
-	ManualAdjustment = False;
 	
 EndProcedure
 
-Procedure FillCheckProcessing(Cancel, CheckedAttributes)
-	
-	// Check doubles in items (to be sure of proper orders placement)
-	GeneralFunctions.CheckDoubleItems(Ref, LineItems, "Product, LineNumber", Cancel);
-	
-EndProcedure
+#EndIf
+//------------------------------------------------------------------------------
 
-
-
+#EndRegion

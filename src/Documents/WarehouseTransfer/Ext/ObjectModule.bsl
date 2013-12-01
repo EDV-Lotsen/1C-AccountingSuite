@@ -53,10 +53,11 @@ Procedure Posting(Cancel, Mode)
 				                  |	SUM(InventoryJrnlBalance.QtyBalance) AS QtyBalance,
 				                  |	SUM(InventoryJrnlBalance.AmountBalance) AS AmountBalance
 				                  |FROM
-				                  |	AccumulationRegister.InventoryJrnl.Balance AS InventoryJrnlBalance
+				                  |	AccumulationRegister.InventoryJrnl.Balance(,Location = &Location) AS InventoryJrnlBalance
 				                  |WHERE
 				                  |	InventoryJrnlBalance.Product = &Product");
 				Query.SetParameter("Product", CurRowLineItems.Product);
+				Query.SetParameter("Location", LocationFrom);
 				QueryResult = Query.Execute().Unload();
 				If  QueryResult.Count() > 0
 				And (Not QueryResult[0].QtyBalance = Null)
@@ -86,16 +87,16 @@ Procedure Posting(Cancel, Mode)
 
 			EndIf;
 			
-			If CurRowLineItems.Product.CostingMethod = Enums.InventoryCosting.LIFO OR
-				CurRowLineItems.Product.CostingMethod = Enums.InventoryCosting.FIFO Then
+			//If CurRowLineItems.Product.CostingMethod = Enums.InventoryCosting.LIFO OR
+				If CurRowLineItems.Product.CostingMethod = Enums.InventoryCosting.FIFO Then
 				
 				ItemQty = CurRowLineItems.Quantity;
 				
-				If CurRowLineItems.Product.CostingMethod = Enums.InventoryCosting.LIFO Then
-					Sorting = "DESC";
-				Else
+				//If CurRowLineItems.Product.CostingMethod = Enums.InventoryCosting.LIFO Then
+					//Sorting = "DESC";
+				//Else
 					Sorting = "ASC";
-				EndIf;
+				//EndIf;
 				
 				Query = New Query("SELECT
 				                  |	InventoryJrnlBalance.QtyBalance,

@@ -38,6 +38,11 @@
 			<ContextMenu name="PhoneContextMenu" id="10"/>
 			<ExtendedTooltip name="PhoneExtendedTooltip" id="37"/>
 		</InputField>
+		<InputField name="Cell" id="52">
+			<DataPath>Object.Cell</DataPath>
+			<ContextMenu name="CellContextMenu" id="53"/>
+			<ExtendedTooltip name="CellExtendedTooltip" id="54"/>
+		</InputField>
 		<InputField name="Fax" id="11">
 			<DataPath>Object.Fax</DataPath>
 			<EditMode>EnterOnInput</EditMode>
@@ -96,20 +101,40 @@
 			<ContextMenu name="SalesTaxCodeContextMenu" id="50"/>
 			<ExtendedTooltip name="SalesTaxCodeExtendedTooltip" id="51"/>
 		</InputField>
-		<CheckBoxField name="DefaultBilling" id="27">
-			<DataPath>Object.DefaultBilling</DataPath>
-			<EditMode>EnterOnInput</EditMode>
-			<CheckBoxType>Auto</CheckBoxType>
-			<ContextMenu name="DefaultBillingContextMenu" id="28"/>
-			<ExtendedTooltip name="DefaultBillingExtendedTooltip" id="47"/>
-		</CheckBoxField>
-		<CheckBoxField name="DefaultShipping" id="29">
-			<DataPath>Object.DefaultShipping</DataPath>
-			<EditMode>EnterOnInput</EditMode>
-			<CheckBoxType>Auto</CheckBoxType>
-			<ContextMenu name="DefaultShippingContextMenu" id="30"/>
-			<ExtendedTooltip name="DefaultShippingExtendedTooltip" id="48"/>
-		</CheckBoxField>
+		<UsualGroup name="Group1" id="58">
+			<Group>Horizontal</Group>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="Group1ExtendedTooltip" id="59"/>
+			<ChildItems>
+				<CheckBoxField name="DefaultBilling" id="27">
+					<DataPath>Object.DefaultBilling</DataPath>
+					<EditMode>EnterOnInput</EditMode>
+					<CheckBoxType>Auto</CheckBoxType>
+					<ContextMenu name="DefaultBillingContextMenu" id="28"/>
+					<ExtendedTooltip name="DefaultBillingExtendedTooltip" id="47"/>
+				</CheckBoxField>
+				<CheckBoxField name="DefaultShipping" id="29">
+					<DataPath>Object.DefaultShipping</DataPath>
+					<EditMode>EnterOnInput</EditMode>
+					<CheckBoxType>Auto</CheckBoxType>
+					<ContextMenu name="DefaultShippingContextMenu" id="30"/>
+					<ExtendedTooltip name="DefaultShippingExtendedTooltip" id="48"/>
+				</CheckBoxField>
+			</ChildItems>
+		</UsualGroup>
+		<InputField name="Notes" id="55">
+			<DataPath>Object.Notes</DataPath>
+			<TitleLocation>None</TitleLocation>
+			<MultiLine>true</MultiLine>
+			<InputHint>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Notes</v8:content>
+				</v8:item>
+			</InputHint>
+			<ContextMenu name="NotesContextMenu" id="56"/>
+			<ExtendedTooltip name="NotesExtendedTooltip" id="57"/>
+		</InputField>
 	</ChildItems>
 	<Attributes>
 		<Attribute name="Object" id="1">

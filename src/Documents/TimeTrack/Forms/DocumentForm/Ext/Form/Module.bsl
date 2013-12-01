@@ -16,17 +16,19 @@ EndProcedure
 
 &AtClient
 Procedure TaskOnChange(Item)
+	ObjChanged();
 	TaskOnChangeAtServer();
 EndProcedure
 
 &AtServer
 Procedure TaskOnChangeAtServer()
 	// Insert handler contents.
-	Object.Price = GeneralFunctions.RetailPrice(CurrentDate(),Object.Task,Catalogs.Companies.EmptyRef());
+	Object.Price = GeneralFunctions.RetailPrice(CurrentDate(),Object.Task,Object.Company);
 EndProcedure
 
 &AtClient
 Procedure DateToOnChange(Item)
+	ObjChanged();
 	
 	If Object.Ref.IsEmpty() Then		
 		Object.DateTo = Object.DateFrom + 6*60*60*24;
@@ -55,6 +57,7 @@ Procedure LogTypeOnChangeAtServer()
 		Items.DateTo.Visible = False;
 		Items.DateFrom.Title = "Date";
 		Items.Week.Visible = False;
+		Items.TimeComplete.ReadOnly = False;
 	Else
 		Object.TimeComplete = 0;
 		Items.TimeComplete.ReadOnly = True;
@@ -72,10 +75,50 @@ EndProcedure
 
 &AtClient
 Procedure ReviseHours()
-	
+	ObjChanged();
 	If Object.LogType = "Week" Then
 		Object.TimeComplete = Object.Mon + Object.Tue + Object.Wed + Object.Thur + Object.Fri + Object.Sat + Object.Sun;
 	Endif;
+	
+EndProcedure
+
+
+&AtServer
+Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
+	
+	If Changed = True Then
+	
+	If CurrentObject.Billable = False Then
+			CurrentObject.InvoiceSent = "Unbillable";
+		Else
+			CurrentObject.InvoiceSent = "Unsent";
+		Endif;
+		
+	Endif;
+
+	
+EndProcedure
+
+&AtClient
+Procedure ObjChanged()
+	Changed = True;
+EndProcedure
+
+
+&AtClient
+Procedure OnOpen(Cancel)
+	OnOpenAtServer();
+EndProcedure
+
+
+&AtServer
+Procedure OnOpenAtServer()
+	
+	If Object.SalesInvoice.IsEmpty() Then
+		Items.SalesInvoice.Visible = False;
+	Else
+		Items.SalesInvoice.Visible = True;
+	EndIf;
 	
 EndProcedure
 

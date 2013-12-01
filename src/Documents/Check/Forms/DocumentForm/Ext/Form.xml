@@ -8,13 +8,19 @@
 		<ChildItems>
 			<Button name="FormPayWithDwolla" id="119">
 				<Type>CommandBarButton</Type>
-				<Visible>false</Visible>
 				<CommandName>Form.Command.PayWithDwolla</CommandName>
 				<ExtendedTooltip name="FormPayWithDwollaExtendedTooltip" id="120"/>
+			</Button>
+			<Button name="FormPayWithRipple" id="128">
+				<Type>CommandBarButton</Type>
+				<Visible>false</Visible>
+				<CommandName>Form.Command.PayWithRipple</CommandName>
+				<ExtendedTooltip name="FormPayWithRippleExtendedTooltip" id="129"/>
 			</Button>
 		</ChildItems>
 	</AutoCommandBar>
 	<Events>
+		<Event name="AfterWriteAtServer">AfterWriteAtServer</Event>
 		<Event name="BeforeWriteAtServer">BeforeWriteAtServer</Event>
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
 		<Event name="FillCheckProcessingAtServer">FillCheckProcessingAtServer</Event>
@@ -97,6 +103,9 @@
 											<MinValue xsi:type="xs:decimal">0</MinValue>
 											<ContextMenu name="NumberContextMenu" id="2"/>
 											<ExtendedTooltip name="NumberExtendedTooltip" id="49"/>
+											<Events>
+												<Event name="OnChange">NumberOnChange</Event>
+											</Events>
 										</InputField>
 										<InputField name="Company" id="9">
 											<DataPath>Object.Company</DataPath>
@@ -382,29 +391,29 @@
 							<ContextMenu name="LineItemsContextMenu" id="14"/>
 							<AutoCommandBar name="LineItemsCommandBar" id="15"/>
 							<ExtendedTooltip name="LineItemsExtendedTooltip" id="66"/>
-							<SearchStringAddition name="LineItemsSearchString" id="128">
+							<SearchStringAddition name="LineItemsSearchString" id="130">
 								<AdditionSource>
 									<Item>LineItems</Item>
 									<Type>SearchStringRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="LineItemsSearchStringContextMenu" id="129"/>
-								<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="130"/>
+								<ContextMenu name="LineItemsSearchStringContextMenu" id="131"/>
+								<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="132"/>
 							</SearchStringAddition>
-							<ViewStatusAddition name="LineItemsViewStatus" id="131">
+							<ViewStatusAddition name="LineItemsViewStatus" id="133">
 								<AdditionSource>
 									<Item>LineItems</Item>
 									<Type>ViewStatusRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="LineItemsViewStatusContextMenu" id="132"/>
-								<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="133"/>
+								<ContextMenu name="LineItemsViewStatusContextMenu" id="134"/>
+								<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="135"/>
 							</ViewStatusAddition>
-							<SearchControlAddition name="LineItemsSearchControl" id="134">
+							<SearchControlAddition name="LineItemsSearchControl" id="136">
 								<AdditionSource>
 									<Item>LineItems</Item>
 									<Type>SearchControl</Type>
 								</AdditionSource>
-								<ContextMenu name="LineItemsSearchControlContextMenu" id="135"/>
-								<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="136"/>
+								<ContextMenu name="LineItemsSearchControlContextMenu" id="137"/>
+								<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="138"/>
 							</SearchControlAddition>
 							<Events>
 								<Event name="BeforeAddRow">LineItemsBeforeAddRow</Event>
@@ -609,6 +618,21 @@
 				</v8:item>
 			</ToolTip>
 			<Action>PayWithDwolla</Action>
+		</Command>
+		<Command name="PayWithRipple" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Pay with Ripple</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Pay with ripple</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>PayWithRipple</Action>
 		</Command>
 	</Commands>
 	<CommandInterface>

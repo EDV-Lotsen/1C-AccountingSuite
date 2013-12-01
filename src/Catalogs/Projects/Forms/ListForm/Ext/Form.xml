@@ -70,6 +70,13 @@
 				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="33"/>
 			</SearchControlAddition>
 			<ChildItems>
+				<LabelField name="Customer" id="10">
+					<DataPath>List.Customer</DataPath>
+					<Width>20</Width>
+					<HorizontalStretch>false</HorizontalStretch>
+					<ContextMenu name="CustomerContextMenu" id="11"/>
+					<ExtendedTooltip name="CustomerExtendedTooltip" id="12"/>
+				</LabelField>
 				<LabelField name="Description" id="7">
 					<DataPath>List.Description</DataPath>
 					<DefaultItem>true</DefaultItem>
@@ -77,13 +84,6 @@
 					<HorizontalStretch>false</HorizontalStretch>
 					<ContextMenu name="DescriptionContextMenu" id="8"/>
 					<ExtendedTooltip name="DescriptionExtendedTooltip" id="9"/>
-				</LabelField>
-				<LabelField name="Customer" id="10">
-					<DataPath>List.Customer</DataPath>
-					<Width>20</Width>
-					<HorizontalStretch>false</HorizontalStretch>
-					<ContextMenu name="CustomerContextMenu" id="11"/>
-					<ExtendedTooltip name="CustomerExtendedTooltip" id="12"/>
 				</LabelField>
 				<LabelField name="AmountReceipt" id="19">
 					<DataPath>List.AmountReceipt</DataPath>
@@ -172,6 +172,14 @@ GROUP BY
 						<dcsset:userSettingID>dfcece9d-5077-440b-b6b3-45a5cb4538eb</dcsset:userSettingID>
 					</dcsset:filter>
 					<dcsset:order>
+						<dcsset:item xsi:type="dcsset:OrderItemField">
+							<dcsset:field>Customer</dcsset:field>
+							<dcsset:orderType>Asc</dcsset:orderType>
+						</dcsset:item>
+						<dcsset:item xsi:type="dcsset:OrderItemField">
+							<dcsset:field>Description</dcsset:field>
+							<dcsset:orderType>Asc</dcsset:orderType>
+						</dcsset:item>
 						<dcsset:viewMode>Normal</dcsset:viewMode>
 						<dcsset:userSettingID>88619765-ccb3-46c6-ac52-38e9c992ebd4</dcsset:userSettingID>
 					</dcsset:order>

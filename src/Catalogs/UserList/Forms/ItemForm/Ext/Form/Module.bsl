@@ -2,16 +2,16 @@
 &AtServer
 Procedure OnWriteAtServer(Cancel, CurrentObject, WriteParameters)
 	
+	SetPrivilegedMode(True);
+	
 	If Object.Ref.IsEmpty() Then
 		                  
 		NewUser = InfoBaseUsers.CreateUser();
 		//NewUser.Name = Object.Description + Right(SessionParameters.TenantValue,7);
 		NewUser.Name = Object.Description;
 		NewUser.FullName = Object.Description;
-		NewUser.Password = Pwd;
-		NewUser.StandardAuthentication = True;
-		//RNG = New RandomNumberGenerator(255);	
-		//NewUser.Password = RNG.RandomNumber(0, 10000);
+		NewUser.StandardAuthentication = True;	
+		NewUser.Password = Password;
 		//NewUser.Roles.Add(Metadata.Roles.FullAccess1);
 		           
 		If Object.AdminAccess = True Then
@@ -67,6 +67,24 @@ Procedure OnWriteAtServer(Cancel, CurrentObject, WriteParameters)
 			If Object.Accounting = "View" Then
 				NewUser.Roles.Add(Metadata.Roles.AccountingView);
 			Endif;
+								
+			If Object.Projects = "Full" Then
+				NewUser.Roles.Add(Metadata.Roles.ProjectsFull);
+			Endif;
+		
+			If Object.Projects = "View" Then
+				NewUser.Roles.Add(Metadata.Roles.ProjectsView);
+			Endif;
+			
+			If Object.TimeTrack = "Full" Then
+				NewUser.Roles.Add(Metadata.Roles.TimeTrackFull);
+			Endif;
+		
+			If Object.TimeTrack = "View" Then
+				NewUser.Roles.Add(Metadata.Roles.TimeTrackView);
+			Endif;
+
+
 		
 			If Object.ReportsOnly = True Then
 				NewUser.Roles.Add(Metadata.Roles.ReportOnly);
@@ -77,22 +95,10 @@ Procedure OnWriteAtServer(Cancel, CurrentObject, WriteParameters)
 		NewUser.ShowInList = False;
 
 		NewUser.Write();
-				
+		
 	Else
 		
 		
-		
-	//   test = Object.Description;
-	 //   
-	 //   //Item2 = Catalogs.Products.FindByCode("0001");
-	 //   //Item2.GetObject();
-	 //   //Item2.Price = 25;
-	 //   //Item2.Write();
-	 //   //UserUser = InfobaseUsers.GetUsers();
-	 //   
-	 //
-	 //   
-	 //   //UserCount = UserUser.Count();
 	 ExistingUser = InfobaseUsers.FindByName(Object.Description);
 	 ExistingUser.Roles.Clear();
 	 
@@ -150,6 +156,23 @@ Procedure OnWriteAtServer(Cancel, CurrentObject, WriteParameters)
 	    		ExistingUser.Roles.Add(Metadata.Roles.AccountingView);
 			Endif;
 			
+			If Object.Projects = "Full" Then
+				ExistingUser.Roles.Add(Metadata.Roles.ProjectsFull);
+			Endif;
+		
+			If Object.Projects = "View" Then
+				ExistingUser.Roles.Add(Metadata.Roles.ProjectsView);
+			Endif;
+			
+			If Object.TimeTrack = "Full" Then
+				ExistingUser.Roles.Add(Metadata.Roles.TimeTrackFull);
+			Endif;
+		
+			If Object.TimeTrack = "View" Then
+				ExistingUser.Roles.Add(Metadata.Roles.TimeTrackView);
+			Endif;
+
+			
 			If Object.ReportsOnly = True Then
 				ExistingUser.Roles.Add(Metadata.Roles.ReportOnly);
 			Endif;
@@ -157,10 +180,12 @@ Procedure OnWriteAtServer(Cancel, CurrentObject, WriteParameters)
 	    	
 	    Endif;
 		
-		ExistingUser.Password = Pwd;
+		ExistingUser.Password = Password;
 		ExistingUser.Write();
 			
 	EndIf;
+	
+	SetPrivilegedMode(False);
 			
 EndProcedure
 
@@ -257,8 +282,11 @@ Procedure OnOpen(Cancel)
 		Object.BankReceive = "Full";
 		Object.BankSend = "Full";
 		Object.Accounting = "Full";
+		Object.Projects = "Full";
+		Object.TimeTrack = "Full";
 		Object.ReportsOnly = False;
 	Else
+		Items.Verified.Visible = True;
 		AdminBox(Object);
 		ReportBox(Object);
 		If FullAccessCheck() = False Then
@@ -274,6 +302,8 @@ Procedure OnOpen(Cancel)
 			Items.BankReceive.ReadOnly = True;
 			Items.BankSend.ReadOnly = True;
 			Items.Accounting.ReadOnly = True;
+			Items.Projects.ReadOnly = True;
+			Items.TimeTrack.ReadOnly = True;
 			Items.ReportsOnly.ReadOnly = True;
 
 		Endif;
@@ -307,6 +337,10 @@ Procedure AdminBox(Object)
 		Items.BankSend.ReadOnly = True;
 		Object.Accounting = "Full";
 		Items.Accounting.ReadOnly = True;
+		Object.Projects = "Full";
+		Items.Projects.ReadOnly = True;
+		Object.TimeTrack = "Full";
+		Items.TimeTrack.ReadOnly = True;
 		Object.ReportsOnly = false;
 		Items.ReportsOnly.ReadOnly = True;
 		
@@ -321,12 +355,14 @@ Procedure AdminBox(Object)
 		Items.BankReceive.ReadOnly = false;
 		Items.BankSend.ReadOnly = false;
 		Items.Accounting.ReadOnly = false;
+		Items.Projects.ReadOnly = false;
+		Items.TimeTrack.ReadOnly = false;
 		Items.ReportsOnly.ReadOnly = false;
 	Endif;
 
 EndProcedure
 &AtClient
-Procedure ChoiceProcessing(SelectedValue)
+Procedure ChoiceProcessing(SelectedValue, ChoiceSource)
 	
 AdminBox(Object);
 ReportBox(Object);
@@ -351,7 +387,12 @@ Procedure ReportBox(Object)
 		Object.BankSend = "None";
 		Items.BankSend.ReadOnly = True;
 		Object.Accounting = "None";
-		Items.Accounting.ReadOnly = True;		
+		Items.Accounting.ReadOnly = True;
+		Object.Projects = "None";
+		Items.Projects.ReadOnly = True;
+		Object.TimeTrack = "None";
+		Items.TimeTrack.ReadOnly = True;
+
 		
 	Endif;
 	
@@ -365,6 +406,8 @@ Procedure ReportBox(Object)
 		Items.BankReceive.ReadOnly = false;
 		Items.BankSend.ReadOnly = false;
 		Items.Accounting.ReadOnly = false;
+		Items.Projects.ReadOnly = false;
+		Items.TimeTrack.ReadOnly = false;
 		Endif;
 	Endif;
 

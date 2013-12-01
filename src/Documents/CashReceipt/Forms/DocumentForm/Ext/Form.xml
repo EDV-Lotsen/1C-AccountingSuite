@@ -18,6 +18,7 @@
 		<Event name="AfterWriteAtServer">AfterWriteAtServer</Event>
 		<Event name="OnOpen">OnOpen</Event>
 		<Event name="BeforeWrite">BeforeWrite</Event>
+		<Event name="BeforeWriteAtServer">BeforeWriteAtServer</Event>
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
 		<Event name="OnClose">OnClose</Event>
 	</Events>
@@ -325,7 +326,6 @@
 									</ChildItems>
 								</UsualGroup>
 								<UsualGroup name="Group1" id="169">
-									<Visible>false</Visible>
 									<Group>Vertical</Group>
 									<ShowTitle>false</ShowTitle>
 									<ExtendedTooltip name="Group1ExtendedTooltip" id="170"/>
@@ -349,7 +349,6 @@
 									</ChildItems>
 								</UsualGroup>
 								<UsualGroup name="Group5" id="171">
-									<Visible>false</Visible>
 									<Group>Vertical</Group>
 									<ShowTitle>false</ShowTitle>
 									<ExtendedTooltip name="Group5ExtendedTooltip" id="172"/>
@@ -373,7 +372,6 @@
 									</ChildItems>
 								</UsualGroup>
 								<UsualGroup name="Group6" id="179">
-									<Visible>false</Visible>
 									<Group>Vertical</Group>
 									<ShowTitle>false</ShowTitle>
 									<ExtendedTooltip name="Group6ExtendedTooltip" id="180"/>
@@ -593,6 +591,18 @@
 							</ToolTip>
 							<ExtendedTooltip name="DocumentsExtendedTooltip" id="126"/>
 							<ChildItems>
+								<Button name="PayAllDoc" id="225">
+									<Type>UsualButton</Type>
+									<Visible>false</Visible>
+									<CommandName>Form.Command.PayAllDoc</CommandName>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Fill all payments</v8:content>
+										</v8:item>
+									</Title>
+									<ExtendedTooltip name="PayAllDocExtendedTooltip" id="226"/>
+								</Button>
 								<Table name="LineItems" id="35">
 									<Representation>List</Representation>
 									<CommandBarLocation>None</CommandBarLocation>
@@ -600,6 +610,11 @@
 									<EnableStartDrag>true</EnableStartDrag>
 									<EnableDrag>true</EnableDrag>
 									<DataPath>Object.LineItems</DataPath>
+									<CommandSet>
+										<ExcludedCommand>Copy</ExcludedCommand>
+										<ExcludedCommand>Delete</ExcludedCommand>
+										<ExcludedCommand>Add</ExcludedCommand>
+									</CommandSet>
 									<SearchStringLocation>None</SearchStringLocation>
 									<ViewStatusLocation>None</ViewStatusLocation>
 									<SearchControlLocation>None</SearchControlLocation>
@@ -607,29 +622,29 @@
 									<ContextMenu name="LineItemsContextMenu" id="36"/>
 									<AutoCommandBar name="LineItemsCommandBar" id="37"/>
 									<ExtendedTooltip name="LineItemsExtendedTooltip" id="127"/>
-									<SearchStringAddition name="LineItemsSearchString" id="225">
+									<SearchStringAddition name="LineItemsSearchString" id="227">
 										<AdditionSource>
 											<Item>LineItems</Item>
 											<Type>SearchStringRepresentation</Type>
 										</AdditionSource>
-										<ContextMenu name="LineItemsSearchStringContextMenu" id="226"/>
-										<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="227"/>
+										<ContextMenu name="LineItemsSearchStringContextMenu" id="228"/>
+										<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="229"/>
 									</SearchStringAddition>
-									<ViewStatusAddition name="LineItemsViewStatus" id="228">
+									<ViewStatusAddition name="LineItemsViewStatus" id="230">
 										<AdditionSource>
 											<Item>LineItems</Item>
 											<Type>ViewStatusRepresentation</Type>
 										</AdditionSource>
-										<ContextMenu name="LineItemsViewStatusContextMenu" id="229"/>
-										<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="230"/>
+										<ContextMenu name="LineItemsViewStatusContextMenu" id="231"/>
+										<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="232"/>
 									</ViewStatusAddition>
-									<SearchControlAddition name="LineItemsSearchControl" id="231">
+									<SearchControlAddition name="LineItemsSearchControl" id="233">
 										<AdditionSource>
 											<Item>LineItems</Item>
 											<Type>SearchControl</Type>
 										</AdditionSource>
-										<ContextMenu name="LineItemsSearchControlContextMenu" id="232"/>
-										<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="233"/>
+										<ContextMenu name="LineItemsSearchControlContextMenu" id="234"/>
+										<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="235"/>
 									</SearchControlAddition>
 									<ChildItems>
 										<LabelField name="LineItemsLineNumber" id="38">
@@ -638,6 +653,18 @@
 											<ContextMenu name="LineItemsLineNumberContextMenu" id="39"/>
 											<ExtendedTooltip name="LineItemsLineNumberExtendedTooltip" id="128"/>
 										</LabelField>
+										<CheckBoxField name="Check2" id="189">
+											<DataPath>Object.LineItems.Check</DataPath>
+											<EditMode>EnterOnInput</EditMode>
+											<ShowInHeader>false</ShowInHeader>
+											<ShowInFooter>false</ShowInFooter>
+											<CheckBoxType>Auto</CheckBoxType>
+											<ContextMenu name="Check2ContextMenu" id="190"/>
+											<ExtendedTooltip name="Check2ExtendedTooltip" id="191"/>
+											<Events>
+												<Event name="OnChange">Check2OnChange</Event>
+											</Events>
+										</CheckBoxField>
 										<ColumnGroup name="LineItemsGroup1" id="187">
 											<Group>InCell</Group>
 											<ExtendedTooltip name="LineItemsGroup1ExtendedTooltip" id="188"/>
@@ -654,18 +681,6 @@
 													<ContextMenu name="LineItemsDocumentContextMenu" id="41"/>
 													<ExtendedTooltip name="LineItemsDocumentExtendedTooltip" id="129"/>
 												</InputField>
-												<CheckBoxField name="Check2" id="189">
-													<DataPath>Object.LineItems.Check</DataPath>
-													<EditMode>EnterOnInput</EditMode>
-													<ShowInHeader>false</ShowInHeader>
-													<ShowInFooter>false</ShowInFooter>
-													<CheckBoxType>Auto</CheckBoxType>
-													<ContextMenu name="Check2ContextMenu" id="190"/>
-													<ExtendedTooltip name="Check2ExtendedTooltip" id="191"/>
-													<Events>
-														<Event name="OnChange">Check2OnChange</Event>
-													</Events>
-												</CheckBoxField>
 											</ChildItems>
 										</ColumnGroup>
 										<InputField name="LineItemsCurrency" id="63">
@@ -731,6 +746,11 @@
 									<EnableStartDrag>true</EnableStartDrag>
 									<EnableDrag>true</EnableDrag>
 									<DataPath>Object.CreditMemos</DataPath>
+									<CommandSet>
+										<ExcludedCommand>Copy</ExcludedCommand>
+										<ExcludedCommand>Delete</ExcludedCommand>
+										<ExcludedCommand>Add</ExcludedCommand>
+									</CommandSet>
 									<SearchStringLocation>None</SearchStringLocation>
 									<ViewStatusLocation>None</ViewStatusLocation>
 									<SearchControlLocation>None</SearchControlLocation>
@@ -738,29 +758,29 @@
 									<ContextMenu name="CreditMemosContextMenu" id="76"/>
 									<AutoCommandBar name="CreditMemosCommandBar" id="77"/>
 									<ExtendedTooltip name="CreditMemosExtendedTooltip" id="117"/>
-									<SearchStringAddition name="CreditMemosSearchString" id="234">
+									<SearchStringAddition name="CreditMemosSearchString" id="236">
 										<AdditionSource>
 											<Item>CreditMemos</Item>
 											<Type>SearchStringRepresentation</Type>
 										</AdditionSource>
-										<ContextMenu name="CreditMemosSearchStringContextMenu" id="235"/>
-										<ExtendedTooltip name="CreditMemosSearchStringExtendedTooltip" id="236"/>
+										<ContextMenu name="CreditMemosSearchStringContextMenu" id="237"/>
+										<ExtendedTooltip name="CreditMemosSearchStringExtendedTooltip" id="238"/>
 									</SearchStringAddition>
-									<ViewStatusAddition name="CreditMemosViewStatus" id="237">
+									<ViewStatusAddition name="CreditMemosViewStatus" id="239">
 										<AdditionSource>
 											<Item>CreditMemos</Item>
 											<Type>ViewStatusRepresentation</Type>
 										</AdditionSource>
-										<ContextMenu name="CreditMemosViewStatusContextMenu" id="238"/>
-										<ExtendedTooltip name="CreditMemosViewStatusExtendedTooltip" id="239"/>
+										<ContextMenu name="CreditMemosViewStatusContextMenu" id="240"/>
+										<ExtendedTooltip name="CreditMemosViewStatusExtendedTooltip" id="241"/>
 									</ViewStatusAddition>
-									<SearchControlAddition name="CreditMemosSearchControl" id="240">
+									<SearchControlAddition name="CreditMemosSearchControl" id="242">
 										<AdditionSource>
 											<Item>CreditMemos</Item>
 											<Type>SearchControl</Type>
 										</AdditionSource>
-										<ContextMenu name="CreditMemosSearchControlContextMenu" id="241"/>
-										<ExtendedTooltip name="CreditMemosSearchControlExtendedTooltip" id="242"/>
+										<ContextMenu name="CreditMemosSearchControlContextMenu" id="243"/>
+										<ExtendedTooltip name="CreditMemosSearchControlExtendedTooltip" id="244"/>
 									</SearchControlAddition>
 									<ChildItems>
 										<LabelField name="CreditMemosLineNumber" id="78">
@@ -1048,6 +1068,40 @@
 				</v8:item>
 			</ToolTip>
 			<Action>SendEmail</Action>
+		</Command>
+		<Command name="CheckAll" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Check all</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Check all</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Picture>
+				<xr:Ref>CommonPicture.DefaultValue</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
+			<Action>CheckAll</Action>
+		</Command>
+		<Command name="PayAllDoc" id="4">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Pay all doc</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Pay all doc</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>PayAllDoc</Action>
 		</Command>
 	</Commands>
 	<CommandInterface>

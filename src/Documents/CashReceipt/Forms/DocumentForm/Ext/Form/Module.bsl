@@ -327,6 +327,13 @@ Procedure CompanyOnChange(Item)
 	
 	Object.BalanceTotal = Object.BalChange;
 	
+	If Object.LineItems.Count() > 0 Then
+		Items.PayAllDoc.Visible = true;
+	Else
+		Items.PayAllDoc.Visible = false;
+	Endif;
+
+	
 EndProcedure
 
 &AtClient
@@ -610,14 +617,8 @@ EndProcedure
 &AtClient
 // The procedure deletes all line items which are not paid by this cash receipt
 //
-Procedure BeforeWrite(Cancel, WriteParameters)
+Procedure BeforeWrite(Cancel, WriteParameters)	
 	
-	//If Object.LineItems.Count() = 0 Then
-	//	Message("Cash Receipt can not have empty lines. The system automatically shows unpaid documents of the selected company in the line items");
-	//	Cancel = True;
-	//	Return;
-	//EndIf;
-
 	DefaultCurrency = GeneralFunctionsReusable.DefaultCurrency();
 	CompanyCurrency = CompanyCurrency();
 	Rate = GeneralFunctions.GetExchangeRate(Object.Date, CompanyCurrency);
@@ -628,6 +629,13 @@ Procedure BeforeWrite(Cancel, WriteParameters)
 				PayTotal =  PayTotal + LineItem.Payment;
 				BalanceFCY = BalanceFCY + LineItem.BalanceFCY;
 	EndDo;
+			
+	If PayTotal = 0 Then
+		Message("No payment is being made.");
+		Cancel = True;
+		Return;
+	EndIf;
+		
 
 	If CompanyCurrency = DefaultCurrency Then
 		If PayTotal > (Object.CashPayment + Object.CreditTotal)  Then
@@ -721,6 +729,34 @@ Procedure BeforeWrite(Cancel, WriteParameters)
 	
 EndProcedure
 
+&AtServer
+Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
+		
+	//If Object.Ref.IsEmpty() Then
+	//
+	//	MatchVal = Increment(Constants.CashReceiptLastNumber.Get());
+	//	If Object.Number = MatchVal Then
+	//		Constants.CashReceiptLastNumber.Set(MatchVal);
+	//	Else
+	//		If Increment(Object.Number) = "" Then
+	//		Else
+	//			If StrLen(Increment(Object.Number)) > 20 Then
+	//				 Constants.CashReceiptLastNumber.Set("");
+	//			Else
+	//				Constants.CashReceiptLastNumber.Set(Increment(Object.Number));
+	//			Endif;
+
+	//		Endif;
+	//	Endif;
+	//Endif;
+	//
+	//If Object.Number = "" Then
+	//	Message("Cash Receipt Number is empty");
+	//	Cancel = True;
+	//Endif;
+
+EndProcedure
+
 &AtClient
 // The procedure deletes all line items which are not paid by this cash receipt
 //
@@ -752,6 +788,12 @@ EndProcedure
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
+	//ConstantCashReceipt = Constants.CashReceiptLastNumber.Get();
+	//If Object.Ref.IsEmpty() Then		
+	//	
+	//	Object.Number = Constants.CashReceiptLastNumber.Get();
+	//Endif;
+
 	//Title = "Receipt " + Object.Number + " " + Format(Object.Date, "DLF=D");
 	
 	Items.Company.Title = GeneralFunctionsReusable.GetCustomerName();
@@ -914,7 +956,7 @@ EndProcedure
 
 &AtClient
 Procedure Check2OnChange(Item)
-	
+
 	DefaultCurrency = GeneralFunctionsReusable.DefaultCurrency();
 	
 	PayTotal = 0;
@@ -1108,6 +1150,36 @@ Procedure AdditionalCreditPay()
 EndProcedure
 
 &AtClient
+Procedure CreditMemosAppliedOnChange(Item)
+	
+	CreditTotal = 0;
+	TabularPartRow = Items.LineItems.CurrentData;
+	
+	For Each LineItem In Object.LineItems Do
+			CreditTotal =  CreditTotal + LineItem.CreditApplied;
+	EndDo;
+	TempVal =  Object.AppliedCredit - CreditTotal;
+	
+	If CreditTotal > Object.AppliedCredit Then
+		Message("Paying with more credit than applied");
+		
+	Elsif TabularPartRow.CreditApplied > TabularPartRow.Balance Then
+		Message("Credit exceeds invoice balance");		
+	Else
+		 Object.AppliedCredit = Object.CreditTotal - CreditTotal;
+	Endif;
+	
+
+EndProcedure
+
+&AtServer
+Function SessionTenant()
+	
+	Return SessionParameters.TenantValue;
+	
+EndFunction
+
+&AtClient
 Procedure ManualCheckOnChange(Item)
 	// Insert handler contents.
 	If ManualCheck = False Then
@@ -1125,8 +1197,8 @@ EndProcedure
 
 &AtServer
 Procedure SendEmailAtServer()
-	//test = Object.PayHTML;
-	//test2 = 3;
+
+	
 	If Object.Ref.IsEmpty() Then
 		Message("An email cannot be sent until the invoice is posted or written");
 	Else
@@ -1165,13 +1237,14 @@ Procedure SendEmailAtServer()
 	    
 		MailProfil.SMTPServerAddress = Constants.MailProfAddress.Get();
 		MailProfil.SMTPUseSSL = Constants.MailProfSSL.Get();
-	   // MailProfil.SMTPPort = 587; 
+	   MailProfil.SMTPPort = 587; 
 	    
 	    MailProfil.Timeout = 180; 
 	    
+		
 		MailProfil.SMTPPassword = Constants.MailProfPass.Get();
-	    
-		MailProfil.SMTPUser = Constants.MailProfUser.Get();
+	 	  
+		MailProfil.SMTPUser = Constants.MailProfUser.Get();		
 	    
 	    
 	    send = New InternetMailMessage; 
@@ -1195,10 +1268,10 @@ Procedure SendEmailAtServer()
 	 	 
 		If Object.StripeID <> "" Then
 			FormatHTML2 = StrReplace(FormatHTML,"Receipt No.","Stripe ID");
-			FormatHTML2 = StrReplace(FormatHTML,"object.number",object.StripeID);
-			FormatHTML2 = StrReplace(FormatHTML,"<td align=""right""  id=""param1""></td>","<td align=""right"">Payment: </td>");
-			FormatHTML2 = StrReplace(FormatHTML,"<td align=""right""  id=""param2""></td>","<td align=""right"">Last 4 Digits: " + Object.StripeLast4 + "</td>");
-			FormatHTML2 = StrReplace(FormatHTML,"<td align=""right""  id=""param3""></td>","<td align=""right""> Method: " + Object.StripeCardType + "</td>");
+			FormatHTML2 = StrReplace(FormatHTML2,"object.number",object.StripeID);
+			FormatHTML2 = StrReplace(FormatHTML2,"<td align=""right""  id=""param1""></td>","<td align=""right"" style=""font-size: 12px;"">Payment Information: </td>");
+			FormatHTML2 = StrReplace(FormatHTML2,"<td align=""right""  id=""param3""></td>","<td align=""right"">Last 4 Digits: " + Object.StripeLast4 + "</td>");
+			FormatHTML2 = StrReplace(FormatHTML2,"<td align=""right""  id=""param2""></td>","<td align=""right""> Method: " + Object.StripeCardType + "</td>");
 			
 		Else
 			FormatHTML2 = StrReplace(FormatHTML,"object.number",object.RefNum);
@@ -1334,4 +1407,114 @@ Procedure OnCloseAtServer()
 		DocObject.Write();
 	Endif;
 
+EndProcedure
+
+&AtClient
+Procedure CheckAll(Command)
+	
+	
+	//test4 = items.LineItems;
+	////items.check2 = true;
+	//
+	//For Each LineItem In Object.LineItems Do
+	//	  LineItem.Check = True;
+	//	 test =  items.LineItems.CurrentData;
+	//	 test6 = 6;
+	//EndDo;
+
+EndProcedure
+
+
+&AtServer
+Function Increment(NumberToInc)
+	
+	//Last = Constants.SalesInvoiceLastNumber.Get();
+	Last = NumberToInc;
+	//Last = "AAAAA";
+	LastCount = StrLen(Last);
+	Digits = new Array();
+	For i = 1 to LastCount Do	
+		Digits.Add(Mid(Last,i,1));
+
+	EndDo;
+	
+	NumPos = 9999;
+	lengthcount = 0;
+	firstnum = false;
+	j = 0;
+	While j < LastCount Do
+		If NumCheck(Digits[LastCount - 1 - j]) Then
+			if firstnum = false then //first number encountered, remember position
+				firstnum = true;
+				NumPos = LastCount - 1 - j;
+				lengthcount = lengthcount + 1;
+			Else
+				If firstnum = true Then
+					If NumCheck(Digits[LastCount - j]) Then //if the previous char is a number
+						lengthcount = lengthcount + 1;  //next numbers, add to length.
+					Else
+						break;
+					Endif;
+				Endif;
+			Endif;
+						
+		Endif;
+		j = j + 1;
+	EndDo;
+	
+	NewString = "";
+	
+	If lengthcount > 0 Then //if there are numbers in the string
+		changenumber = Mid(Last,(NumPos - lengthcount + 2),lengthcount);
+		NumVal = Number(changenumber);
+		NumVal = NumVal + 1;
+		StringVal = String(NumVal);
+		StringVal = StrReplace(StringVal,",","");
+		
+		StringValLen = StrLen(StringVal);
+		changenumberlen = StrLen(changenumber);
+		LeadingZeros = Left(changenumber,(changenumberlen - StringValLen));
+
+		LeftSide = Left(Last,(NumPos - lengthcount + 1));
+		RightSide = Right(Last,(LastCount - NumPos - 1));
+		NewString = LeftSide + LeadingZeros + StringVal + RightSide; //left side + incremented number + right side
+		
+	Endif;
+	
+	Next = NewString;
+
+	return NewString;
+	
+EndFunction
+
+&AtServer
+Function NumCheck(CheckValue)
+	 
+	For i = 0 to  9 Do
+		If CheckValue = String(i) Then
+			Return True;
+		Endif;
+	EndDo;
+		
+	Return False;
+		
+EndFunction
+
+&AtClient
+Procedure PayAllDoc(Command)
+	
+	Total = 0;
+	For Each LineItem In Object.LineItems Do
+		test = LineItem;
+		//Items.LineItems.CurrentData.Check = True;
+		LineItem.Check = True;
+		LineItem.Payment = LineItem.Balance;
+		//LineItemsCheckOnChange(Items.LineItems.CurrentData.Check);
+		Total = Total + LineItem.Payment;
+
+	EndDo;
+	
+	Object.CashPayment = Total;
+
+	
 EndProcedure

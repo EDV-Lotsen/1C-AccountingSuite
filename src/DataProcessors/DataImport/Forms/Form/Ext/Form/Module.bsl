@@ -21,8 +21,7 @@
 Процедура ЗаполнитьРеквизиты()
 
 	ThisCofA = ActionType = "Chart of accounts";
-	ThisCustomers = ActionType = "Customers";
-	ThisVendors = ActionType = "Vendors";
+	ThisCustomers = ActionType = "CustomersVendors";
 	ThisBalances = ActionType = "Account balances";	
 	ThisProducts = ActionType = "Items";
 	ThisChecks = ActionType = "Checks";
@@ -123,25 +122,60 @@
 	
 	Items.IncomeAccount.Visible = ThisCustomers;
 	Items.ARAccount.Visible = ThisCustomers;
-	Items.ExpenseAccount.Visible = ThisVendors;
-	Items.APAccount.Visible = ThisVendors;
-	Items.DataListCustomerAddressID.Visible = ThisCustomers OR ThisVendors;
-	Items.DataListCustomerAddressLine1.Visible = ThisCustomers OR ThisVendors;
-	Items.DataListCustomerAddressLine2.Visible = ThisCustomers OR ThisVendors;
-	Items.DataListCustomerCity.Visible = ThisCustomers OR ThisVendors;
-	Items.DataListCustomerCode.Visible = ThisCustomers OR ThisVendors;
-	Items.DataListCustomerCountry.Visible = ThisCustomers OR ThisVendors;
-	Items.DataListCustomerDescription.Visible = ThisCustomers OR ThisVendors;
-	Items.DataListCustomerEmail.Visible = ThisCustomers OR ThisVendors;
-	Items.DatalistCustomerFax.Visible = ThisCustomers OR ThisVendors;
-	Items.DataListCustomerFirstName.Visible = ThisCustomers OR ThisVendors;
-	Items.DataListCustomerLastName.Visible = ThisCustomers OR ThisVendors;
-	Items.DataListCustomerMiddleName.Visible = ThisCustomers OR ThisVendors;
-	Items.DataListCustomerNotes.Visible = ThisCustomers OR ThisVendors;
-	Items.DataListCustomerPhone.Visible = ThisCustomers OR ThisVendors;
-	Items.DataListCustomerState.Visible = ThisCustomers OR ThisVendors;
-	Items.DataListCustomerTerms.Visible = ThisCustomers OR ThisVendors;
-	Items.DataListCustomerZIP.Visible = ThisCustomers OR ThisVendors;
+	Items.ExpenseAccount.Visible = ThisCustomers;
+	Items.APAccount.Visible = ThisCustomers;
+	
+	Items.DataListCustomerVendorTaxID.Visible = ThisCustomers;
+	
+	Items.DataListCustomerType.Visible = ThisCustomers;
+	Items.DataListCustomerCode.Visible = ThisCustomers;
+	Items.DataListCustomerDescription.Visible = ThisCustomers;
+	Items.DataListCustomerNotes.Visible = ThisCustomers;
+	Items.DataListCustomerTerms.Visible = ThisCustomers;
+	Items.DataListCustomerCF1String.Visible = ThisCustomers;
+	Items.DataListCustomerCF2String.Visible = ThisCustomers;
+	Items.DataListCustomerCF3String.Visible = ThisCustomers;
+	Items.DataListCustomerCF4String.Visible = ThisCustomers;
+	Items.DataListCustomerCF5String.Visible = ThisCustomers;
+	Items.DataListCustomerCF1Num.Visible = ThisCustomers;
+	Items.DataListCustomerCF2Num.Visible = ThisCustomers;
+	Items.DataListCustomerCF3Num.Visible = ThisCustomers;
+	Items.DataListCustomerCF4Num.Visible = ThisCustomers;
+	Items.DataListCustomerCF5Num.Visible = ThisCustomers;
+	// billing
+	Items.DataListCustomerAddressID.Visible = ThisCustomers;
+	Items.DataListCustomerAddressLine1.Visible = ThisCustomers;
+	Items.DataListCustomerAddressLine2.Visible = ThisCustomers;
+	Items.DataListCustomerCity.Visible = ThisCustomers;
+	Items.DataListCustomerCountry.Visible = ThisCustomers;	
+	Items.DataListCustomerEmail.Visible = ThisCustomers;
+	Items.DatalistCustomerFax.Visible = ThisCustomers;
+	Items.DataListCustomerFirstName.Visible = ThisCustomers;
+	Items.DataListCustomerLastName.Visible = ThisCustomers;
+	Items.DataListCustomerMiddleName.Visible = ThisCustomers;
+	Items.DataListCustomerPhone.Visible = ThisCustomers;
+	Items.DataListCustomerCell.Visible = ThisCustomers;
+	Items.DataListCustomerState.Visible = ThisCustomers;
+	Items.DataListCustomerZIP.Visible = ThisCustomers;
+	Items.DataListCustomerAddressNotes.Visible = ThisCustomers;
+	// billing
+	// shipping
+	Items.DataListCustomerShippingAddressID.Visible = ThisCustomers;
+	Items.DataListCustomerShippingAddressLine1.Visible = ThisCustomers;
+	Items.DataListCustomerShippingAddressLine2.Visible = ThisCustomers;
+	Items.DataListCustomerShippingCity.Visible = ThisCustomers;
+	Items.DataListCustomerShippingCountry.Visible = ThisCustomers;	
+	Items.DataListCustomerShippingEmail.Visible = ThisCustomers;
+	Items.DatalistCustomerShippingFax.Visible = ThisCustomers;
+	Items.DataListCustomerShippingFirstName.Visible = ThisCustomers;
+	Items.DataListCustomerShippingLastName.Visible = ThisCustomers;
+	Items.DataListCustomerShippingMiddleName.Visible = ThisCustomers;
+	Items.DataListCustomerShippingPhone.Visible = ThisCustomers;
+	Items.DataListCustomerShippingCell.Visible = ThisCustomers;
+	Items.DataListCustomerShippingState.Visible = ThisCustomers;
+	Items.DataListCustomerShippingZIP.Visible = ThisCustomers;
+	Items.DataListCustomerShippingAddressNotes.Visible = ThisCustomers;
+	// shipping
 
 	Items.DataListProductCode.Visible = ThisProducts;
 	Items.DataListProductDescription.Visible = ThisProducts;
@@ -152,12 +186,19 @@
 	Items.DataListProductPrice.Visible = ThisProducts;
 	Items.DataListProductQty.Visible = ThisProducts;
 	Items.DataListProductValue.Visible = ThisProducts;
+	Items.DataListProductCategory.Visible = ThisProducts;
+	Items.DataListProductUoM.Visible = ThisProducts;
 	Items.DataListProductCF1String.Visible = ThisProducts;
 	Items.DataListProductCF1Num.Visible = ThisProducts;
 	Items.DataListProductCF2String.Visible = ThisProducts;
 	Items.DataListProductCF2Num.Visible = ThisProducts;
     Items.DataListProductCF3String.Visible = ThisProducts;
 	Items.DataListProductCF3Num.Visible = ThisProducts;
+	Items.DataListProductCF4String.Visible = ThisProducts;
+	Items.DataListProductCF4Num.Visible = ThisProducts;
+    Items.DataListProductCF5String.Visible = ThisProducts;
+	Items.DataListProductCF5Num.Visible = ThisProducts;
+
 	Items.DataListProductPreferredVendor.Visible = ThisProducts;
 	
 	Реквизиты.Очистить();	
@@ -381,10 +422,15 @@
 		НоваяСтрока.ИмяРеквизита = "Line amount [num]";
 		НоваяСтрока.Обязательный = Истина;
 		
-	ИначеЕсли ThisCustomers OR ThisVendors Тогда
+	ИначеЕсли ThisCustomers Тогда
 			
 		НоваяСтрока = Реквизиты.Добавить();
+		НоваяСтрока.ИмяРеквизита = "Type (0 - Customer, 1 - Vendor, 2 - Both)";
+		НоваяСтрока.Обязательный = Истина;		
+		
+		НоваяСтрока = Реквизиты.Добавить();
 		НоваяСтрока.ИмяРеквизита = "Description [char(150)]";
+		//НоваяСтрока.НомерКолонки = 1;
 		НоваяСтрока.Обязательный = Истина;
 
 		НоваяСтрока = Реквизиты.Добавить();
@@ -397,10 +443,41 @@
 		НоваяСтрока.ИмяРеквизита = "Terms [ref]";
 		
 		НоваяСтрока = Реквизиты.Добавить();
+		НоваяСтрока.ИмяРеквизита = "CF1String [char(100)]";
+		
+		НоваяСтрока = Реквизиты.Добавить();
+		НоваяСтрока.ИмяРеквизита = "CF1Num [num]";
+		
+		НоваяСтрока = Реквизиты.Добавить();
+		НоваяСтрока.ИмяРеквизита = "CF2String [char(100)]";
+		
+		НоваяСтрока = Реквизиты.Добавить();
+		НоваяСтрока.ИмяРеквизита = "CF2Num [num]";
+
+		НоваяСтрока = Реквизиты.Добавить();
+		НоваяСтрока.ИмяРеквизита = "CF3String [char(100)]";
+		
+		НоваяСтрока = Реквизиты.Добавить();
+		НоваяСтрока.ИмяРеквизита = "CF3Num [num]";
+		
+		НоваяСтрока = Реквизиты.Добавить();
+		НоваяСтрока.ИмяРеквизита = "CF4String [char(100)]";
+		
+		НоваяСтрока = Реквизиты.Добавить();
+		НоваяСтрока.ИмяРеквизита = "CF4Num [num]";
+
+		НоваяСтрока = Реквизиты.Добавить();
+		НоваяСтрока.ИмяРеквизита = "CF5String [char(100)]";
+		
+		НоваяСтрока = Реквизиты.Добавить();
+		НоваяСтрока.ИмяРеквизита = "CF5Num [num]";
+
+		НоваяСтрока = Реквизиты.Добавить();
 		НоваяСтрока.ИмяРеквизита = "Address ID [char(25)]";
 		
 		НоваяСтрока = Реквизиты.Добавить();
 		НоваяСтрока.ИмяРеквизита = "First name [char]";
+		//НоваяСтрока.НомерКолонки = 2;
 		
 		НоваяСтрока = Реквизиты.Добавить();
 		НоваяСтрока.ИмяРеквизита = "Middle name [char]";
@@ -412,6 +489,9 @@
 		НоваяСтрока.ИмяРеквизита = "Phone [char]";
 		
 		НоваяСтрока = Реквизиты.Добавить();
+		НоваяСтрока.ИмяРеквизита = "Cell [char]";		
+		
+		НоваяСтрока = Реквизиты.Добавить();
 		НоваяСтрока.ИмяРеквизита = "Fax [char]";
 		
 		НоваяСтрока = Реквизиты.Добавить();
@@ -419,6 +499,7 @@
 		
 		НоваяСтрока = Реквизиты.Добавить();
 		НоваяСтрока.ИмяРеквизита = "Address line 1 [char]";
+		//НоваяСтрока.НомерКолонки = 3;
 		
 		НоваяСтрока = Реквизиты.Добавить();
 		НоваяСтрока.ИмяРеквизита = "Address line 2 [char]";
@@ -435,10 +516,56 @@
 		НоваяСтрока = Реквизиты.Добавить();
 		НоваяСтрока.ИмяРеквизита = "ZIP [char]";
 		
-		If ThisVendors Then
-			НоваяСтрока = Реквизиты.Добавить();
-			НоваяСтрока.ИмяРеквизита = "Tax ID [char(15)]";
-		EndIf;
+		НоваяСтрока = Реквизиты.Добавить();
+		НоваяСтрока.ИмяРеквизита = "Address notes [char]";
+
+		НоваяСтрока = Реквизиты.Добавить();
+		НоваяСтрока.ИмяРеквизита = "Shipping address ID [char(25)]";
+		
+		НоваяСтрока = Реквизиты.Добавить();
+		НоваяСтрока.ИмяРеквизита = "Shipping first name [char]";
+		
+		НоваяСтрока = Реквизиты.Добавить();
+		НоваяСтрока.ИмяРеквизита = "Shipping middle name [char]";
+		
+		НоваяСтрока = Реквизиты.Добавить();
+		НоваяСтрока.ИмяРеквизита = "Shipping last name [char]";
+		
+		НоваяСтрока = Реквизиты.Добавить();
+		НоваяСтрока.ИмяРеквизита = "Shipping phone [char]";
+		
+		НоваяСтрока = Реквизиты.Добавить();
+		НоваяСтрока.ИмяРеквизита = "Shipping cell [char]";		
+		
+		НоваяСтрока = Реквизиты.Добавить();
+		НоваяСтрока.ИмяРеквизита = "Shipping fax [char]";
+		
+		НоваяСтрока = Реквизиты.Добавить();
+		НоваяСтрока.ИмяРеквизита = "Shipping e-mail [char]";
+		
+		НоваяСтрока = Реквизиты.Добавить();
+		НоваяСтрока.ИмяРеквизита = "Shipping address line 1 [char]";
+		
+		НоваяСтрока = Реквизиты.Добавить();
+		НоваяСтрока.ИмяРеквизита = "Shipping address line 2 [char]";
+		
+		НоваяСтрока = Реквизиты.Добавить();
+		НоваяСтрока.ИмяРеквизита = "Shipping city [char]";
+		
+		НоваяСтрока = Реквизиты.Добавить();
+		НоваяСтрока.ИмяРеквизита = "Shipping state [ref]";
+
+		НоваяСтрока = Реквизиты.Добавить();
+		НоваяСтрока.ИмяРеквизита = "Shipping country [ref]";
+
+		НоваяСтрока = Реквизиты.Добавить();
+		НоваяСтрока.ИмяРеквизита = "Shipping ZIP [char]";
+		
+		НоваяСтрока = Реквизиты.Добавить();
+		НоваяСтрока.ИмяРеквизита = "Shipping address notes [char]";
+
+		НоваяСтрока = Реквизиты.Добавить();
+		НоваяСтрока.ИмяРеквизита = "Vendor tax ID [char(15)]";
 		
 	ИначеЕсли ThisBalances Тогда	
 		
@@ -488,24 +615,42 @@
 		
 		НоваяСтрока = Реквизиты.Добавить();
 		НоваяСтрока.ИмяРеквизита = "Preferred vendor [ref]";
+		
+		НоваяСтрока = Реквизиты.Добавить();
+		НоваяСтрока.ИмяРеквизита = "Category [ref]";
+		
+		НоваяСтрока = Реквизиты.Добавить();
+		НоваяСтрока.ИмяРеквизита = "UoM [ref]";	
 
-        НоваяСтрока = Реквизиты.Добавить();
-		НоваяСтрока.ИмяРеквизита = "Custom field 1 string [char(50)]";
+		НоваяСтрока = Реквизиты.Добавить();
+		НоваяСтрока.ИмяРеквизита = "CF1String [char(100)]";
 		
 		НоваяСтрока = Реквизиты.Добавить();
-		НоваяСтрока.ИмяРеквизита = "Custom field 1 number [num]";
+		НоваяСтрока.ИмяРеквизита = "CF1Num [num]";
+		
+		НоваяСтрока = Реквизиты.Добавить();
+		НоваяСтрока.ИмяРеквизита = "CF2String [char(100)]";
+		
+		НоваяСтрока = Реквизиты.Добавить();
+		НоваяСтрока.ИмяРеквизита = "CF2Num [num]";
 
-        НоваяСтрока = Реквизиты.Добавить();
-		НоваяСтрока.ИмяРеквизита = "Custom field 2 string [char(50)]";
+		НоваяСтрока = Реквизиты.Добавить();
+		НоваяСтрока.ИмяРеквизита = "CF3String [char(100)]";
 		
 		НоваяСтрока = Реквизиты.Добавить();
-		НоваяСтрока.ИмяРеквизита = "Custom field 2 number [num]";
+		НоваяСтрока.ИмяРеквизита = "CF3Num [num]";
 		
 		НоваяСтрока = Реквизиты.Добавить();
-		НоваяСтрока.ИмяРеквизита = "Custom field 3 string [char(50)]";
+		НоваяСтрока.ИмяРеквизита = "CF4String [char(100)]";
 		
 		НоваяСтрока = Реквизиты.Добавить();
-		НоваяСтрока.ИмяРеквизита = "Custom field 3 number [num]";
+		НоваяСтрока.ИмяРеквизита = "CF4Num [num]";
+
+		НоваяСтрока = Реквизиты.Добавить();
+		НоваяСтрока.ИмяРеквизита = "CF5String [char(100)]";
+		
+		НоваяСтрока = Реквизиты.Добавить();
+		НоваяСтрока.ИмяРеквизита = "CF5Num [num]";
 		
 	КонецЕсли;
 	
@@ -1098,11 +1243,30 @@
 				НоваяСтрока.CheckLineAmount = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
 			КонецЕсли;
 			
-		ElsIf ActionType = "Customers" OR ActionType = "Vendors" Then
+		ElsIf ActionType = "CustomersVendors" Then
 			
 			НоваяСтрока = ТаблицаЗагрузки.Добавить();
 			НоваяСтрока.ФлагЗагрузки = Истина;
+			
+			НомерКолонки = НайтиНомерКолонкиРеквизита("Type (0 - Customer, 1 - Vendor, 2 - Both)");
+			Если НомерКолонки <> Неопределено Тогда
+				CustomerTypeValue = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
+				Try
+					CustomerTypeValue = Number(CustomerTypeValue);
+				
+					If CustomerTypeValue = 0 OR
+						CustomerTypeValue = 1 OR
+						CustomerTypeValue = 2 Then
+							НоваяСтрока.CustomerType = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
+					Else
+						НоваяСтрока.CustomerType = 0;
+					EndIf;
 	
+				Except
+					НоваяСтрока.CustomerType = 0;
+				EndTry;
+			КонецЕсли;
+
 			НомерКолонки = НайтиНомерКолонкиРеквизита("Description [char(150)]");
 			Если НомерКолонки <> Неопределено Тогда
 				НоваяСтрока.CustomerDescription = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
@@ -1126,7 +1290,61 @@
 				Else
 					НоваяСтрока.CustomerTerms = Catalogs.PaymentTerms.FindByDescription(TermsString);
 				EndIf;
+			Иначе
+				НоваяСтрока.CustomerTerms = Catalogs.PaymentTerms.Net30;
 			КонецЕсли;
+			
+			НомерКолонки = НайтиНомерКолонкиРеквизита("CF1String [char(100)]");
+			Если НомерКолонки <> Неопределено Тогда
+				НоваяСтрока.CustomerCF1String = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
+			КонецЕсли;
+			
+			НомерКолонки = НайтиНомерКолонкиРеквизита("CF1Num [num]");
+			Если НомерКолонки <> Неопределено Тогда
+				НоваяСтрока.CustomerCF1Num = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
+			КонецЕсли;
+			
+			НомерКолонки = НайтиНомерКолонкиРеквизита("CF2String [char(100)]");
+			Если НомерКолонки <> Неопределено Тогда
+				НоваяСтрока.CustomerCF2String = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
+			КонецЕсли;
+			
+			НомерКолонки = НайтиНомерКолонкиРеквизита("CF2Num [num]");
+			Если НомерКолонки <> Неопределено Тогда
+				НоваяСтрока.CustomerCF2Num = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
+			КонецЕсли;
+
+			НомерКолонки = НайтиНомерКолонкиРеквизита("CF3String [char(100)]");
+			Если НомерКолонки <> Неопределено Тогда
+				НоваяСтрока.CustomerCF3String = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
+			КонецЕсли;
+			
+			НомерКолонки = НайтиНомерКолонкиРеквизита("CF3Num [num]");
+			Если НомерКолонки <> Неопределено Тогда
+				НоваяСтрока.CustomerCF3Num = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
+			КонецЕсли;
+
+			НомерКолонки = НайтиНомерКолонкиРеквизита("CF4String [char(100)]");
+			Если НомерКолонки <> Неопределено Тогда
+				НоваяСтрока.CustomerCF4String = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
+			КонецЕсли;
+			
+			НомерКолонки = НайтиНомерКолонкиРеквизита("CF4Num [num]");
+			Если НомерКолонки <> Неопределено Тогда
+				НоваяСтрока.CustomerCF4Num = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
+			КонецЕсли;
+			
+			НомерКолонки = НайтиНомерКолонкиРеквизита("CF5String [char(100)]");
+			Если НомерКолонки <> Неопределено Тогда
+				НоваяСтрока.CustomerCF5String = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
+			КонецЕсли;
+			
+			НомерКолонки = НайтиНомерКолонкиРеквизита("CF5Num [num]");
+			Если НомерКолонки <> Неопределено Тогда
+				НоваяСтрока.CustomerCF5Num = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
+			КонецЕсли;
+			
+			// billing address
 			
 			НомерКолонки = НайтиНомерКолонкиРеквизита("Address ID [char(25)]");
 			Если НомерКолонки <> Неопределено Тогда
@@ -1151,6 +1369,11 @@
 			НомерКолонки = НайтиНомерКолонкиРеквизита("Phone [char]");
 			Если НомерКолонки <> Неопределено Тогда
 				НоваяСтрока.CustomerPhone = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
+			КонецЕсли;
+			
+			НомерКолонки = НайтиНомерКолонкиРеквизита("Cell [char]");
+			Если НомерКолонки <> Неопределено Тогда
+				НоваяСтрока.CustomerCell = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
 			КонецЕсли;
 
 			НомерКолонки = НайтиНомерКолонкиРеквизита("Fax [char]");
@@ -1201,9 +1424,101 @@
 				НоваяСтрока.CustomerZIP = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
 			КонецЕсли;
 			
-			НомерКолонки = НайтиНомерКолонкиРеквизита("Tax ID [char(15)]");
+			НомерКолонки = НайтиНомерКолонкиРеквизита("Address notes [char]");
 			Если НомерКолонки <> Неопределено Тогда
-				НоваяСтрока.VendorTaxID = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
+				НоваяСтрока.CustomerAddressNotes = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
+			КонецЕсли;
+			
+			// shipping address
+			
+			НомерКолонки = НайтиНомерКолонкиРеквизита("Shipping address ID [char(25)]");
+			Если НомерКолонки <> Неопределено Тогда
+				НоваяСтрока.CustomerShippingAddressID = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
+			КонецЕсли;
+
+			НомерКолонки = НайтиНомерКолонкиРеквизита("Shipping first name [char]");
+			Если НомерКолонки <> Неопределено Тогда
+				НоваяСтрока.CustomerShippingFirstName = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
+			КонецЕсли;
+
+			НомерКолонки = НайтиНомерКолонкиРеквизита("Shipping middle name [char]");
+			Если НомерКолонки <> Неопределено Тогда
+				НоваяСтрока.CustomerShippingMiddleName = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
+			КонецЕсли;
+
+			НомерКолонки = НайтиНомерКолонкиРеквизита("Shipping last name [char]");
+			Если НомерКолонки <> Неопределено Тогда
+				НоваяСтрока.CustomerShippingLastName = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
+			КонецЕсли;
+
+			НомерКолонки = НайтиНомерКолонкиРеквизита("Shipping phone [char]");
+			Если НомерКолонки <> Неопределено Тогда
+				НоваяСтрока.CustomerShippingPhone = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
+			КонецЕсли;
+			
+			НомерКолонки = НайтиНомерКолонкиРеквизита("Shipping cell [char]");
+			Если НомерКолонки <> Неопределено Тогда
+				НоваяСтрока.CustomerShippingCell = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
+			КонецЕсли;
+
+			НомерКолонки = НайтиНомерКолонкиРеквизита("Shipping fax [char]");
+			Если НомерКолонки <> Неопределено Тогда
+				НоваяСтрока.CustomerShippingFax = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
+			КонецЕсли;
+
+			НомерКолонки = НайтиНомерКолонкиРеквизита("Shipping e-mail [char]");
+			Если НомерКолонки <> Неопределено Тогда
+				НоваяСтрока.CustomerShippingEmail = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
+			КонецЕсли;
+
+			НомерКолонки = НайтиНомерКолонкиРеквизита("Shipping address line 1 [char]");
+			Если НомерКолонки <> Неопределено Тогда
+				НоваяСтрока.CustomerShippingAddressLine1 = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
+			КонецЕсли;
+
+			НомерКолонки = НайтиНомерКолонкиРеквизита("Shipping address line 2 [char]");
+			Если НомерКолонки <> Неопределено Тогда
+				НоваяСтрока.CustomerShippingAddressLine2 = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
+			КонецЕсли;
+
+			НомерКолонки = НайтиНомерКолонкиРеквизита("Shipping city [char]");
+			Если НомерКолонки <> Неопределено Тогда
+				НоваяСтрока.CustomerShippingCity = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
+			КонецЕсли;
+
+			НомерКолонки = НайтиНомерКолонкиРеквизита("Shipping state [ref]");
+			Если НомерКолонки <> Неопределено Тогда
+				StateString = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
+				If StateString = "" Then
+				Else
+					НоваяСтрока.CustomerShippingState = Catalogs.States.FindByCode(StateString);
+				EndIf;
+			КонецЕсли;
+
+			НомерКолонки = НайтиНомерКолонкиРеквизита("Shipping country [ref]");
+			Если НомерКолонки <> Неопределено Тогда
+				CountryString = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
+				If CountryString = "" Then
+				Else
+					НоваяСтрока.CustomerShippingCountry = Catalogs.Countries.FindByCode(CountryString);
+				EndIf;	
+			КонецЕсли;
+
+			НомерКолонки = НайтиНомерКолонкиРеквизита("Shipping ZIP [char]");
+			Если НомерКолонки <> Неопределено Тогда
+				НоваяСтрока.CustomerShippingZIP = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
+			КонецЕсли;
+			
+			НомерКолонки = НайтиНомерКолонкиРеквизита("Shipping address notes [char]");
+			Если НомерКолонки <> Неопределено Тогда
+				НоваяСтрока.CustomerShippingAddressNotes = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
+			КонецЕсли;
+			
+			// end shipping address
+
+			НомерКолонки = НайтиНомерКолонкиРеквизита("Vendor tax ID [char(15)]");
+			Если НомерКолонки <> Неопределено Тогда
+				НоваяСтрока.CustomerVendorTaxID = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
 			КонецЕсли;
 			
 		ElsIf ActionType = "Account balances" Then
@@ -1282,13 +1597,13 @@
 				ElsIf TypeString = "Product" Then
 					НоваяСтрока.ProductInvOrExpenseAcct = GeneralFunctions.InventoryAcct(Enums.InventoryTypes.Inventory);	
 				ElsIf TypeString = "Service" Then
-					НоваяСтрока.ProductInvOrExpenseAcct = GeneralFunctions.InventoryAcct(Enums.InventoryTypes.Inventory);
+					НоваяСтрока.ProductInvOrExpenseAcct = GeneralFunctions.InventoryAcct(Enums.InventoryTypes.NonInventory);
 				EndIf;
 			Иначе
 				If TypeString = "Product" Then
 					НоваяСтрока.ProductInvOrExpenseAcct = GeneralFunctions.InventoryAcct(Enums.InventoryTypes.Inventory);	
 				ElsIf TypeString = "Service" Then
-					НоваяСтрока.ProductInvOrExpenseAcct = GeneralFunctions.InventoryAcct(Enums.InventoryTypes.Inventory);
+					НоваяСтрока.ProductInvOrExpenseAcct = GeneralFunctions.InventoryAcct(Enums.InventoryTypes.NonInventory);
 				EndIf;
 			КонецЕсли;
 
@@ -1308,6 +1623,7 @@
 				ElsIf TypeString = "Service" Then
 					НоваяСтрока.ProductCOGSAcct = GeneralFunctions.GetEmptyAcct();	
 				EndIf;
+
 			КонецЕсли;
 
 			НомерКолонки = НайтиНомерКолонкиРеквизита("Price [num]");
@@ -1336,34 +1652,70 @@
 				EndIf;
 			КонецЕсли;
 
-			НомерКолонки = НайтиНомерКолонкиРеквизита("Custom field 1 string [char(50)]");
+			НомерКолонки = НайтиНомерКолонкиРеквизита("Category [ref]");
+			Если НомерКолонки <> Неопределено Тогда
+				ProductCat = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
+				If ProductCat <> "" Then
+					НоваяСтрока.ProductCategory = Catalogs.ProductCategories.FindByDescription(ProductCat);
+				EndIf;
+			КонецЕсли;
+
+			НомерКолонки = НайтиНомерКолонкиРеквизита("UoM [ref]");
+			Если НомерКолонки <> Неопределено Тогда
+				ProductUM = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
+				If ProductUM <> "" Then
+					НоваяСтрока.ProductUoM = Catalogs.UM.FindByDescription(ProductUM);
+				EndIf;
+			КонецЕсли;
+
+			НомерКолонки = НайтиНомерКолонкиРеквизита("CF1String [char(100)]");
 			Если НомерКолонки <> Неопределено Тогда
 				НоваяСтрока.ProductCF1String = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
 			КонецЕсли;
 			
-			НомерКолонки = НайтиНомерКолонкиРеквизита("Custom field 1 number [num]");
+			НомерКолонки = НайтиНомерКолонкиРеквизита("CF1Num [num]");
 			Если НомерКолонки <> Неопределено Тогда
 				НоваяСтрока.ProductCF1Num = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
 			КонецЕсли;
 
-            НомерКолонки = НайтиНомерКолонкиРеквизита("Custom field 2 string [char(50)]");
+            НомерКолонки = НайтиНомерКолонкиРеквизита("CF2String [char(100)]");
 			Если НомерКолонки <> Неопределено Тогда
 				НоваяСтрока.ProductCF2String = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
 			КонецЕсли;
 			
-			НомерКолонки = НайтиНомерКолонкиРеквизита("Custom field 2 number [num]");
+			НомерКолонки = НайтиНомерКолонкиРеквизита("CF2Num [num]");
 			Если НомерКолонки <> Неопределено Тогда
 				НоваяСтрока.ProductCF2Num = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
 			КонецЕсли;
 
-			НомерКолонки = НайтиНомерКолонкиРеквизита("Custom field 3 string [char(50)]");
+			НомерКолонки = НайтиНомерКолонкиРеквизита("CF3String [char(100)]");
 			Если НомерКолонки <> Неопределено Тогда
 				НоваяСтрока.ProductCF3String = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
 			КонецЕсли;
 			
-			НомерКолонки = НайтиНомерКолонкиРеквизита("Custom field 3 number [num]");
+			НомерКолонки = НайтиНомерКолонкиРеквизита("CF3Num [num]");
 			Если НомерКолонки <> Неопределено Тогда
 				НоваяСтрока.ProductCF3Num = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
+			КонецЕсли;
+			
+			НомерКолонки = НайтиНомерКолонкиРеквизита("CF4String [char(100)]");
+			Если НомерКолонки <> Неопределено Тогда
+				НоваяСтрока.ProductCF4String = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
+			КонецЕсли;
+			
+			НомерКолонки = НайтиНомерКолонкиРеквизита("CF4Num [num]");
+			Если НомерКолонки <> Неопределено Тогда
+				НоваяСтрока.ProductCF4Num = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
+			КонецЕсли;
+			
+			НомерКолонки = НайтиНомерКолонкиРеквизита("CF5String [char(100)]");
+			Если НомерКолонки <> Неопределено Тогда
+				НоваяСтрока.ProductCF5String = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
+			КонецЕсли;
+			
+			НомерКолонки = НайтиНомерКолонкиРеквизита("CF5Num [num]");
+			Если НомерКолонки <> Неопределено Тогда
+				НоваяСтрока.ProductCF5Num = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
 			КонецЕсли;
 			
 		EndIf;
@@ -1702,7 +2054,7 @@
 			NewLine.Memo = DataLine.CheckLineMemo;
 			NewCheck.Write();
 			
-		ElsIf ActionType = "Customers" OR ActionType = "Vendors" Then
+		ElsIf ActionType = "CustomersVendors" Then
 			
 			NewCompany = Catalogs.Companies.CreateItem();
 			If DataLine.CustomerCode <> "" Then
@@ -1710,41 +2062,69 @@
 			EndIf;
 			NewCompany.Description = DataLine.CustomerDescription;
 			
-			If ActionType = "Customers" Then
+			If DataLine.CustomerType = 0 Then
 				NewCompany.Customer = True;
-			ElsIf ActionType = "Vendors" Then
+			ElsIf DataLine.CustomerType = 1 Then
 				NewCompany.Vendor = True;
+			ElsIf DataLine.CustomerType = 2 Then
+				NewCompany.Customer = True;
+				NewCompany.Vendor = True;
+			Else
+				NewCompany.Customer = True;
 			EndIf;
 			
 			NewCompany.DefaultCurrency = Constants.DefaultCurrency.Get();
 			NewCompany.Terms = DataLine.CustomerTerms;
 			NewCompany.Notes = DataLine.CustomerNotes;
-			NewCompany.USTaxID = DataLine.VendorTaxID;
+			NewCompany.USTaxID = DataLine.CustomerVendorTaxID;
+			
+			If DataLine.CustomerCF1String <> "" Then 
+				NewCompany.CF1String = DataLine.CustomerCF1String;
+			EndIf;
+			NewCompany.CF1Num = DataLine.ProductCF1Num;
+
+			If DataLine.CustomerCF2String <> "" Then 
+				NewCompany.CF2String = DataLine.CustomerCF2String;
+			EndIf;
+			NewCompany.CF2Num = DataLine.CustomerCF2Num;
+
+			If DataLine.CustomerCF3String <> "" Then 
+				NewCompany.CF3String = DataLine.CustomerCF3String;
+			EndIf;
+			NewCompany.CF3Num = DataLine.CustomerCF3Num;
+
+			If DataLine.CustomerCF4String <> "" Then 
+				NewCompany.CF4String = DataLine.CustomerCF4String;
+			EndIf;
+			NewCompany.CF4Num = DataLine.CustomerCF4Num;
+
+			If DataLine.CustomerCF5String <> "" Then 
+				NewCompany.CF5String = DataLine.CustomerCF5String;
+			EndIf;
+			NewCompany.CF5Num = DataLine.CustomerCF5Num;
+
+			If IncomeAccount <> ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
+				NewCompany.IncomeAccount = IncomeAccount;
+			Else
+			EndIf;
+			
+			If ARAccount <> ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
+				NewCompany.ARAccount = ARAccount;
+			Else
+			EndIf;
+			
+			If ExpenseAccount <> ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
+				NewCompany.ExpenseAccount = ExpenseAccount;
+			Else
+			EndIf;
+			
+			If APAccount <> ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
+				NewCompany.APAccount = APAccount;
+			Else
+			EndIf;
+			
 			NewCompany.Write();
-			If ActionType = "Customers" Then
-				If IncomeAccount <> ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
-					NewCompany.IncomeAccount = IncomeAccount;
-				Else
-				EndIf;
-			EndIf;
-			If ActionType = "Customers" Then
-				If ARAccount <> ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
-					NewCompany.ARAccount = ARAccount;
-				Else
-				EndIf;
-			EndIf;
-			If ActionType = "Vendors" Then
-				If ExpenseAccount <> ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
-					NewCompany.ExpenseAccount = ExpenseAccount;
-				Else
-				EndIf;
-			EndIf;
-			If ActionType = "Vendors" Then
-				If APAccount <> ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
-					NewCompany.APAccount = APAccount;
-				Else
-				EndIf;
-			EndIf;
+			
 			AddressLine = Catalogs.Addresses.CreateItem();
 			AddressLine.Owner = NewCompany.Ref;
 			If DataLine.CustomerAddressID = "" Then
@@ -1756,6 +2136,7 @@
 			AddressLine.MiddleName = DataLine.CustomerMiddleName;
 			AddressLine.LastName = DataLine.CustomerLastName;
 			AddressLine.Phone = DataLine.CustomerPhone;
+			AddressLine.Cell = DataLine.CustomerCell;
 			AddressLine.Fax = DataLine.CustomerFax;
 			AddressLine.Email = DataLine.CustomerEmail;
 			AddressLine.AddressLine1 = DataLine.CustomerAddressLine1;
@@ -1764,9 +2145,34 @@
 			AddressLine.State = DataLine.CustomerState;
 			AddressLine.Country = DataLine.CustomerCountry;
 			AddressLine.ZIP = DataLine.CustomerZIP;
-			AddressLine.DefaultShipping = True;
+			AddressLine.Notes = DataLine.CustomerAddressNotes;
+			If DataLine.CustomerShippingAddressID = "" Then
+				AddressLine.DefaultShipping = True;
+			EndIf;
 			AddressLine.DefaultBilling = True;
 			AddressLine.Write();
+			
+			If DataLine.CustomerShippingAddressID <> "" Then
+				AddressLine = Catalogs.Addresses.CreateItem();
+				AddressLine.Owner = NewCompany.Ref;
+				AddressLine.Description = DataLine.CustomerShippingAddressID;
+				AddressLine.FirstName = DataLine.CustomerShippingFirstName;
+				AddressLine.MiddleName = DataLine.CustomerShippingMiddleName;
+				AddressLine.LastName = DataLine.CustomerShippingLastName;
+				AddressLine.Phone = DataLine.CustomerShippingPhone;
+				AddressLine.Cell = DataLine.CustomerShippingCell;
+				AddressLine.Fax = DataLine.CustomerShippingFax;
+				AddressLine.Email = DataLine.CustomerShippingEmail;
+				AddressLine.AddressLine1 = DataLine.CustomerShippingAddressLine1;
+				AddressLine.AddressLine2 = DataLine.CustomerShippingAddressLine2;
+				AddressLine.City = DataLine.CustomerShippingCity;
+				AddressLine.State = DataLine.CustomerShippingState;
+				AddressLine.Country = DataLine.CustomerShippingCountry;
+				AddressLine.ZIP = DataLine.CustomerShippingZIP;
+				AddressLine.Notes = DataLine.CustomerShippingAddressNotes;
+				AddressLine.DefaultShipping = True;
+				AddressLine.Write();	
+			EndIf
 			
 		ElsIf ActionType = "Items" Then
 			
@@ -1779,7 +2185,9 @@
 			NewProduct.COGSAccount = DataLine.ProductCOGSAcct;
 			NewProduct.PurchaseVATCode = Constants.DefaultPurchaseVAT.Get();
 			NewProduct.SalesVATCode = Constants.DefaultSalesVAT.Get();
-			NewProduct.api_code = GeneralFunctions.NextProductNumber();
+			//NewProduct.api_code = GeneralFunctions.NextProductNumber();
+			NewProduct.Category = DataLine.ProductCategory;
+			NewProduct.UM = DataLine.ProductUoM;
 			If DataLine.ProductPreferredVendor <> Catalogs.Companies.EmptyRef() Then
 				NewProduct.PreferredVendor = DataLine.ProductPreferredVendor;
 			EndIf;
@@ -1788,14 +2196,26 @@
 				NewProduct.CF1String = DataLine.ProductCF1String;
 			EndIf;
 			NewProduct.CF1Num = DataLine.ProductCF1Num;
+			
 			If DataLine.ProductCF2String <> "" Then 
 				NewProduct.CF2String = DataLine.ProductCF2String;
 			EndIf;
 			NewProduct.CF2Num = DataLine.ProductCF2Num;
-           	If DataLine.ProductCF3String <> "" Then 
+			
+			If DataLine.ProductCF3String <> "" Then 
 				NewProduct.CF3String = DataLine.ProductCF3String;
 			EndIf;
 			NewProduct.CF3Num = DataLine.ProductCF3Num;
+			
+			If DataLine.ProductCF4String <> "" Then 
+				NewProduct.CF4String = DataLine.ProductCF4String;
+			EndIf;
+			NewProduct.CF4Num = DataLine.ProductCF4Num;
+			
+			If DataLine.ProductCF5String <> "" Then 
+				NewProduct.CF5String = DataLine.ProductCF5String;
+			EndIf;
+			NewProduct.CF5Num = DataLine.ProductCF5Num;
 
 			If NewProduct.Type = Enums.InventoryTypes.Inventory Then
 				NewProduct.CostingMethod = Enums.InventoryCosting.WeightedAverage;
@@ -1954,14 +2374,11 @@ EndProcedure
 &НаКлиенте
 Процедура СсылкаНаСписокНажатие(Элемент)
 	
-	If ActionType = "Customers" Then
+	If ActionType = "CustomersVendors" Then
 		OpenForm("Catalog.Companies.ListForm");
 		
 	ElsIf ActionType = "Chart of accounts" Then		
 		OpenForm("ChartOfAccounts.ChartOfAccounts.ListForm");
-		
-	ElsIf ActionType = "Vendors" Then
-		OpenForm("Catalog.Companies.ListForm");
 		
 	ElsIf ActionType = "Account balances" Then
 		OpenForm("Document.GeneralJournalEntry.ListForm");

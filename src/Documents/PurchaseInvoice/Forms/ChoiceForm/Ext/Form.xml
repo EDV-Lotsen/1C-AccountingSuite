@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
-	<WindowOpeningMode>LockOwnerWindow</WindowOpeningMode>
+	<WindowOpeningMode>LockWholeInterface</WindowOpeningMode>
 	<VerticalScroll>useIfNecessary</VerticalScroll>
 	<AutoCommandBar name="FormCommandBar" id="-1"/>
 	<Events>
@@ -38,62 +38,99 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="18"/>
-			<SearchStringAddition name="ListSearchString" id="26">
+			<SearchStringAddition name="ListSearchString" id="43">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="27"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="28"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="44"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="45"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="29">
+			<ViewStatusAddition name="ListViewStatus" id="46">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="30"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="31"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="47"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="48"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="32">
+			<SearchControlAddition name="ListSearchControl" id="49">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="33"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="34"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="50"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="51"/>
 			</SearchControlAddition>
 			<ChildItems>
-				<LabelField name="Date" id="4">
+				<LabelField name="Date" id="19">
 					<DataPath>List.Date</DataPath>
-					<DefaultItem>true</DefaultItem>
 					<HorizontalAlign>Right</HorizontalAlign>
-					<ContextMenu name="DateContextMenu" id="5"/>
-					<ExtendedTooltip name="DateExtendedTooltip" id="19"/>
+					<Width>10</Width>
+					<ContextMenu name="DateContextMenu" id="20"/>
+					<ExtendedTooltip name="DateExtendedTooltip" id="21"/>
 				</LabelField>
-				<LabelField name="Number" id="6">
+				<LabelField name="DeliveryDate" id="22">
+					<DataPath>List.DeliveryDate</DataPath>
+					<HorizontalAlign>Right</HorizontalAlign>
+					<Width>10</Width>
+					<ContextMenu name="DeliveryDateContextMenu" id="23"/>
+					<ExtendedTooltip name="DeliveryDateExtendedTooltip" id="24"/>
+				</LabelField>
+				<LabelField name="OrderStatus" id="25">
+					<DataPath>List.OrderStatus</DataPath>
+					<Visible>false</Visible>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Status</v8:content>
+						</v8:item>
+					</Title>
+					<Width>10</Width>
+					<ContextMenu name="OrderStatusContextMenu" id="26"/>
+					<ExtendedTooltip name="OrderStatusExtendedTooltip" id="27"/>
+				</LabelField>
+				<LabelField name="Number" id="28">
 					<DataPath>List.Number</DataPath>
-					<ContextMenu name="NumberContextMenu" id="7"/>
-					<ExtendedTooltip name="NumberExtendedTooltip" id="20"/>
+					<Width>10</Width>
+					<ContextMenu name="NumberContextMenu" id="29"/>
+					<ExtendedTooltip name="NumberExtendedTooltip" id="30"/>
 				</LabelField>
-				<LabelField name="Company" id="8">
+				<LabelField name="Company" id="31">
 					<DataPath>List.Company</DataPath>
-					<ContextMenu name="CompanyContextMenu" id="9"/>
-					<ExtendedTooltip name="CompanyExtendedTooltip" id="22"/>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Vendor</v8:content>
+						</v8:item>
+					</Title>
+					<Width>15</Width>
+					<ContextMenu name="CompanyContextMenu" id="32"/>
+					<ExtendedTooltip name="CompanyExtendedTooltip" id="33"/>
 				</LabelField>
-				<LabelField name="CompanyCode" id="14">
+				<LabelField name="CompanyCode" id="34">
 					<DataPath>List.CompanyCode</DataPath>
-					<ContextMenu name="CompanyCodeContextMenu" id="15"/>
-					<ExtendedTooltip name="CompanyCodeExtendedTooltip" id="23"/>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Ven. #</v8:content>
+						</v8:item>
+					</Title>
+					<Width>6</Width>
+					<ContextMenu name="CompanyCodeContextMenu" id="35"/>
+					<ExtendedTooltip name="CompanyCodeExtendedTooltip" id="36"/>
 				</LabelField>
-				<LabelField name="DocumentTotal" id="10">
+				<LabelField name="DocumentTotal" id="37">
 					<DataPath>List.DocumentTotal</DataPath>
-					<ContextMenu name="DocumentTotalContextMenu" id="11"/>
-					<ExtendedTooltip name="DocumentTotalExtendedTooltip" id="24"/>
+					<Width>10</Width>
+					<ContextMenu name="DocumentTotalContextMenu" id="38"/>
+					<ExtendedTooltip name="DocumentTotalExtendedTooltip" id="39"/>
 				</LabelField>
-				<LabelField name="DocumentTotalRC" id="12">
+				<LabelField name="DocumentTotalRC" id="40">
 					<DataPath>List.DocumentTotalRC</DataPath>
-					<ContextMenu name="DocumentTotalRCContextMenu" id="13"/>
-					<ExtendedTooltip name="DocumentTotalRCExtendedTooltip" id="25"/>
+					<Width>10</Width>
+					<ContextMenu name="DocumentTotalRCContextMenu" id="41"/>
+					<ExtendedTooltip name="DocumentTotalRCExtendedTooltip" id="42"/>
 				</LabelField>
 			</ChildItems>
 		</Table>
@@ -105,8 +142,50 @@
 			</Type>
 			<MainAttribute>true</MainAttribute>
 			<Settings xsi:type="DynamicList">
-				<ManualQuery>false</ManualQuery>
+				<ManualQuery>true</ManualQuery>
 				<DynamicDataRead>true</DynamicDataRead>
+				<QueryText>SELECT
+	// Standard attributes
+	DocumentPurchaseInvoice.Ref,
+	DocumentPurchaseInvoice.DataVersion,
+	DocumentPurchaseInvoice.DeletionMark,
+	DocumentPurchaseInvoice.Number,
+	DocumentPurchaseInvoice.Date,
+	DocumentPurchaseInvoice.PointInTime,
+	DocumentPurchaseInvoice.Posted,
+	// Document attributes
+	DocumentPurchaseInvoice.Company,
+	DocumentPurchaseInvoice.CompanyCode,
+	DocumentPurchaseInvoice.Currency,
+	DocumentPurchaseInvoice.ExchangeRate,
+	DocumentPurchaseInvoice.PriceIncludesVAT,
+	DocumentPurchaseInvoice.Location,
+	DocumentPurchaseInvoice.DeliveryDate,
+	DocumentPurchaseInvoice.Project,
+	DocumentPurchaseInvoice.Class,
+	DocumentPurchaseInvoice.ManualAdjustment,
+	// Document totals
+	DocumentPurchaseInvoice.DocumentTotal,
+	DocumentPurchaseInvoice.DocumentTotalRC,
+	DocumentPurchaseInvoice.VATTotal,
+	DocumentPurchaseInvoice.VATTotalRC,
+	// Order status
+	CASE
+		WHEN DocumentPurchaseInvoice.DeletionMark THEN
+			 VALUE(Enum.OrderStatuses.Deleted)
+		WHEN NOT DocumentPurchaseInvoice.Posted THEN
+			 VALUE(Enum.OrderStatuses.Draft)
+		WHEN OrdersStatuses.Status IS NULL THEN
+			 VALUE(Enum.OrderStatuses.Open)
+		WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.EmptyRef) THEN
+			 VALUE(Enum.OrderStatuses.Open)
+		ELSE
+			 OrdersStatuses.Status
+	END AS OrderStatus
+FROM
+	Document.PurchaseInvoice AS DocumentPurchaseInvoice
+		LEFT JOIN InformationRegister.OrdersStatuses.SliceLast AS OrdersStatuses
+		ON DocumentPurchaseInvoice.Ref = OrdersStatuses.Order</QueryText>
 				<MainTable>Document.PurchaseInvoice</MainTable>
 				<ListSettings>
 					<dcsset:filter>
@@ -118,8 +197,90 @@
 						<dcsset:userSettingID>88619765-ccb3-46c6-ac52-38e9c992ebd4</dcsset:userSettingID>
 					</dcsset:order>
 					<dcsset:conditionalAppearance>
+						<dcsset:item>
+							<dcsset:selection>
+								<dcsset:item>
+									<dcsset:field>OrderStatus</dcsset:field>
+								</dcsset:item>
+							</dcsset:selection>
+							<dcsset:filter>
+								<dcsset:item xsi:type="dcsset:FilterItemComparison">
+									<dcsset:left xsi:type="dcscor:Field">OrderStatus</dcsset:left>
+									<dcsset:comparisonType>InList</dcsset:comparisonType>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.OrderStatuses.Deleted</dcsset:right>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.OrderStatuses.Draft</dcsset:right>
+								</dcsset:item>
+							</dcsset:filter>
+							<dcsset:appearance>
+								<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+									<dcscor:parameter>TextColor</dcscor:parameter>
+									<dcscor:value xsi:type="v8ui:Color">web:DarkGray</dcscor:value>
+								</dcscor:item>
+							</dcsset:appearance>
+						</dcsset:item>
+						<dcsset:item>
+							<dcsset:selection>
+								<dcsset:item>
+									<dcsset:field>OrderStatus</dcsset:field>
+								</dcsset:item>
+							</dcsset:selection>
+							<dcsset:filter>
+								<dcsset:item xsi:type="dcsset:FilterItemComparison">
+									<dcsset:left xsi:type="dcscor:Field">OrderStatus</dcsset:left>
+									<dcsset:comparisonType>InList</dcsset:comparisonType>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.OrderStatuses.New</dcsset:right>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.OrderStatuses.Open</dcsset:right>
+								</dcsset:item>
+							</dcsset:filter>
+							<dcsset:appearance>
+								<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+									<dcscor:parameter>TextColor</dcscor:parameter>
+									<dcscor:value xsi:type="v8ui:Color">web:DarkGreen</dcscor:value>
+								</dcscor:item>
+							</dcsset:appearance>
+						</dcsset:item>
+						<dcsset:item>
+							<dcsset:selection>
+								<dcsset:item>
+									<dcsset:field>OrderStatus</dcsset:field>
+								</dcsset:item>
+							</dcsset:selection>
+							<dcsset:filter>
+								<dcsset:item xsi:type="dcsset:FilterItemComparison">
+									<dcsset:left xsi:type="dcscor:Field">OrderStatus</dcsset:left>
+									<dcsset:comparisonType>Equal</dcsset:comparisonType>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.OrderStatuses.Backordered</dcsset:right>
+								</dcsset:item>
+							</dcsset:filter>
+							<dcsset:appearance>
+								<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+									<dcscor:parameter>TextColor</dcscor:parameter>
+									<dcscor:value xsi:type="v8ui:Color">web:DarkGoldenRod</dcscor:value>
+								</dcscor:item>
+							</dcsset:appearance>
+						</dcsset:item>
+						<dcsset:item>
+							<dcsset:selection>
+								<dcsset:item>
+									<dcsset:field>OrderStatus</dcsset:field>
+								</dcsset:item>
+							</dcsset:selection>
+							<dcsset:filter>
+								<dcsset:item xsi:type="dcsset:FilterItemComparison">
+									<dcsset:left xsi:type="dcscor:Field">OrderStatus</dcsset:left>
+									<dcsset:comparisonType>Equal</dcsset:comparisonType>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.OrderStatuses.Closed</dcsset:right>
+								</dcsset:item>
+							</dcsset:filter>
+							<dcsset:appearance>
+								<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+									<dcscor:parameter>TextColor</dcscor:parameter>
+									<dcscor:value xsi:type="v8ui:Color">web:DarkRed</dcscor:value>
+								</dcscor:item>
+							</dcsset:appearance>
+						</dcsset:item>
 						<dcsset:viewMode>Normal</dcsset:viewMode>
-						<dcsset:userSettingID>b75fecce-942b-4aed-abc9-e6a02e460fb3</dcsset:userSettingID>
+						<dcsset:userSettingID>0ca41097-6e97-4e24-8297-c6a96adb77f4</dcsset:userSettingID>
 					</dcsset:conditionalAppearance>
 					<dcsset:itemsViewMode>Normal</dcsset:itemsViewMode>
 					<dcsset:itemsUserSettingID>911b6018-f537-43e8-a417-da56b22f9aec</dcsset:itemsUserSettingID>

@@ -4,8 +4,12 @@
 	<VerticalScroll>useIfNecessary</VerticalScroll>
 	<AutoCommandBar name="FormCommandBar" id="-1"/>
 	<Events>
+		<Event name="AfterWrite">AfterWrite</Event>
+		<Event name="AfterWriteAtServer">AfterWriteAtServer</Event>
 		<Event name="OnOpen">OnOpen</Event>
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+		<Event name="BeforeWriteAtServer">BeforeWriteAtServer</Event>
+		<Event name="OnWriteAtServer">OnWriteAtServer</Event>
 	</Events>
 	<ChildItems>
 		<Pages name="Common" id="71">
@@ -84,13 +88,32 @@
 							<ContextMenu name="PhoneContextMenu" id="382"/>
 							<ExtendedTooltip name="PhoneExtendedTooltip" id="383"/>
 						</InputField>
-						<InputField name="Email" id="384">
-							<DataPath>ConstantsSet.Email</DataPath>
-							<ToolTipRepresentation>None</ToolTipRepresentation>
+						<InputField name="CurrentUserEmail" id="641">
+							<DataPath>ConstantsSet.CurrentUserEmail</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Email</v8:content>
+								</v8:item>
+							</Title>
 							<Width>20</Width>
 							<HorizontalStretch>false</HorizontalStretch>
-							<ContextMenu name="EmailContextMenu" id="385"/>
-							<ExtendedTooltip name="EmailExtendedTooltip" id="386"/>
+							<OpenButton>false</OpenButton>
+							<CreateButton>false</CreateButton>
+							<QuickChoice>true</QuickChoice>
+							<ChoiceParameters>
+								<app:item name="Filter.Verified">
+									<app:value xsi:type="FormChoiceListDesTimeValue">
+										<Presentation/>
+										<Value xsi:type="xs:boolean">true</Value>
+									</app:value>
+								</app:item>
+							</ChoiceParameters>
+							<ContextMenu name="CurrentUserEmailContextMenu" id="642"/>
+							<ExtendedTooltip name="CurrentUserEmailExtendedTooltip" id="643"/>
+							<Events>
+								<Event name="OnChange">CurrentUserEmailOnChange</Event>
+							</Events>
 						</InputField>
 						<InputField name="AddressLine1" id="387">
 							<DataPath>ConstantsSet.AddressLine1</DataPath>
@@ -229,12 +252,6 @@
 								<Event name="OnChange">DefaultCurrencyOnChange</Event>
 							</Events>
 						</InputField>
-						<CheckBoxField name="DisableLIFO" id="177">
-							<DataPath>ConstantsSet.DisableLIFO</DataPath>
-							<CheckBoxType>Auto</CheckBoxType>
-							<ContextMenu name="DisableLIFOContextMenu" id="178"/>
-							<ExtendedTooltip name="DisableLIFOExtendedTooltip" id="313"/>
-						</CheckBoxField>
 						<CheckBoxField name="FirstStartCompleted" id="153">
 							<Visible>false</Visible>
 							<CheckBoxType>Auto</CheckBoxType>
@@ -682,6 +699,638 @@
 						</UsualGroup>
 					</ChildItems>
 				</Page>
+				<Page name="CompanyCustomFields" id="546">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Customer custom fields</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Company custom fields</v8:content>
+						</v8:item>
+					</ToolTip>
+					<ExtendedTooltip name="CompanyCustomFieldsExtendedTooltip" id="547"/>
+					<ChildItems>
+						<UsualGroup name="Group17" id="548">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Custom field 1</v8:content>
+								</v8:item>
+							</Title>
+							<Group>Vertical</Group>
+							<Collapsed>true</Collapsed>
+							<ControlRepresentation>Picture</ControlRepresentation>
+							<Representation>StrongSeparation</Representation>
+							<ExtendedTooltip name="Group17ExtendedTooltip" id="549"/>
+							<ChildItems>
+								<RadioButtonField name="CF1CType" id="561">
+									<DataPath>ConstantsSet.CF1CType</DataPath>
+									<RadioButtonType>Tumbler</RadioButtonType>
+									<ChoiceList>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>None</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">None</Value>
+											</xr:Value>
+										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>Number</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">Number</Value>
+											</xr:Value>
+										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>String</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">String</Value>
+											</xr:Value>
+										</xr:Item>
+									</ChoiceList>
+									<ContextMenu name="CF1CTypeContextMenu" id="562"/>
+									<ExtendedTooltip name="CF1CTypeExtendedTooltip" id="563"/>
+								</RadioButtonField>
+								<InputField name="CF1CName" id="558">
+									<DataPath>ConstantsSet.CF1CName</DataPath>
+									<Width>25</Width>
+									<HorizontalStretch>false</HorizontalStretch>
+									<ChoiceList>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>None</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">None</Value>
+											</xr:Value>
+										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>Number</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">Number</Value>
+											</xr:Value>
+										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>String</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">String</Value>
+											</xr:Value>
+										</xr:Item>
+									</ChoiceList>
+									<ContextMenu name="CF1CNameContextMenu" id="559"/>
+									<ExtendedTooltip name="CF1CNameExtendedTooltip" id="560"/>
+								</InputField>
+								<CheckBoxField name="CF1CRequired" id="564">
+									<DataPath>ConstantsSet.CF1CRequired</DataPath>
+									<Visible>false</Visible>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Required</v8:content>
+										</v8:item>
+									</Title>
+									<CheckBoxType>Auto</CheckBoxType>
+									<ContextMenu name="CF1CRequiredContextMenu" id="565"/>
+									<ExtendedTooltip name="CF1CRequiredExtendedTooltip" id="566"/>
+								</CheckBoxField>
+							</ChildItems>
+						</UsualGroup>
+						<UsualGroup name="Group18" id="550">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Custom field 2</v8:content>
+								</v8:item>
+							</Title>
+							<Group>Vertical</Group>
+							<Collapsed>true</Collapsed>
+							<ControlRepresentation>Picture</ControlRepresentation>
+							<Representation>StrongSeparation</Representation>
+							<ExtendedTooltip name="Group18ExtendedTooltip" id="551"/>
+							<ChildItems>
+								<RadioButtonField name="CF2CType" id="570">
+									<DataPath>ConstantsSet.CF2CType</DataPath>
+									<RadioButtonType>Tumbler</RadioButtonType>
+									<ChoiceList>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>None</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">None</Value>
+											</xr:Value>
+										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>Number</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">Number</Value>
+											</xr:Value>
+										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>String</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">String</Value>
+											</xr:Value>
+										</xr:Item>
+									</ChoiceList>
+									<ContextMenu name="CF2CTypeContextMenu" id="571"/>
+									<ExtendedTooltip name="CF2CTypeExtendedTooltip" id="572"/>
+								</RadioButtonField>
+								<InputField name="CF2CName" id="567">
+									<DataPath>ConstantsSet.CF2CName</DataPath>
+									<Width>25</Width>
+									<HorizontalStretch>false</HorizontalStretch>
+									<ChoiceList>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>None</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">None</Value>
+											</xr:Value>
+										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>Number</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">Number</Value>
+											</xr:Value>
+										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>String</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">String</Value>
+											</xr:Value>
+										</xr:Item>
+									</ChoiceList>
+									<ContextMenu name="CF2CNameContextMenu" id="568"/>
+									<ExtendedTooltip name="CF2CNameExtendedTooltip" id="569"/>
+								</InputField>
+								<CheckBoxField name="CF2CRequired" id="573">
+									<DataPath>ConstantsSet.CF2CRequired</DataPath>
+									<Visible>false</Visible>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Required</v8:content>
+										</v8:item>
+									</Title>
+									<CheckBoxType>Auto</CheckBoxType>
+									<ContextMenu name="CF2CRequiredContextMenu" id="574"/>
+									<ExtendedTooltip name="CF2CRequiredExtendedTooltip" id="575"/>
+								</CheckBoxField>
+							</ChildItems>
+						</UsualGroup>
+						<UsualGroup name="Group19" id="552">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Custom field 3</v8:content>
+								</v8:item>
+							</Title>
+							<Group>Vertical</Group>
+							<Collapsed>true</Collapsed>
+							<ControlRepresentation>Picture</ControlRepresentation>
+							<Representation>StrongSeparation</Representation>
+							<ExtendedTooltip name="Group19ExtendedTooltip" id="553"/>
+							<ChildItems>
+								<RadioButtonField name="CF3CType" id="579">
+									<DataPath>ConstantsSet.CF3CType</DataPath>
+									<RadioButtonType>Tumbler</RadioButtonType>
+									<ChoiceList>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>None</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">None</Value>
+											</xr:Value>
+										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>Number</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">Number</Value>
+											</xr:Value>
+										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>String</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">String</Value>
+											</xr:Value>
+										</xr:Item>
+									</ChoiceList>
+									<ContextMenu name="CF3CTypeContextMenu" id="580"/>
+									<ExtendedTooltip name="CF3CTypeExtendedTooltip" id="581"/>
+								</RadioButtonField>
+								<InputField name="CF3CName" id="576">
+									<DataPath>ConstantsSet.CF3CName</DataPath>
+									<Width>25</Width>
+									<HorizontalStretch>false</HorizontalStretch>
+									<ChoiceList>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>None</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">None</Value>
+											</xr:Value>
+										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>Number</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">Number</Value>
+											</xr:Value>
+										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>String</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">String</Value>
+											</xr:Value>
+										</xr:Item>
+									</ChoiceList>
+									<ContextMenu name="CF3CNameContextMenu" id="577"/>
+									<ExtendedTooltip name="CF3CNameExtendedTooltip" id="578"/>
+								</InputField>
+								<CheckBoxField name="CF3CRequired" id="582">
+									<DataPath>ConstantsSet.CF3CRequired</DataPath>
+									<Visible>false</Visible>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Required</v8:content>
+										</v8:item>
+									</Title>
+									<CheckBoxType>Auto</CheckBoxType>
+									<ContextMenu name="CF3CRequiredContextMenu" id="583"/>
+									<ExtendedTooltip name="CF3CRequiredExtendedTooltip" id="584"/>
+								</CheckBoxField>
+							</ChildItems>
+						</UsualGroup>
+						<UsualGroup name="Group20" id="554">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Custom field 4</v8:content>
+								</v8:item>
+							</Title>
+							<Group>Vertical</Group>
+							<Collapsed>true</Collapsed>
+							<ControlRepresentation>Picture</ControlRepresentation>
+							<Representation>StrongSeparation</Representation>
+							<ExtendedTooltip name="Group20ExtendedTooltip" id="555"/>
+							<ChildItems>
+								<RadioButtonField name="CF4CType" id="588">
+									<DataPath>ConstantsSet.CF4CType</DataPath>
+									<RadioButtonType>Tumbler</RadioButtonType>
+									<ChoiceList>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>None</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">None</Value>
+											</xr:Value>
+										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>Number</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">Number</Value>
+											</xr:Value>
+										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>String</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">String</Value>
+											</xr:Value>
+										</xr:Item>
+									</ChoiceList>
+									<ContextMenu name="CF4CTypeContextMenu" id="589"/>
+									<ExtendedTooltip name="CF4CTypeExtendedTooltip" id="590"/>
+								</RadioButtonField>
+								<InputField name="CF4CName" id="585">
+									<DataPath>ConstantsSet.CF4CName</DataPath>
+									<Width>25</Width>
+									<HorizontalStretch>false</HorizontalStretch>
+									<ChoiceList>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>None</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">None</Value>
+											</xr:Value>
+										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>Number</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">Number</Value>
+											</xr:Value>
+										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>String</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">String</Value>
+											</xr:Value>
+										</xr:Item>
+									</ChoiceList>
+									<ContextMenu name="CF4CNameContextMenu" id="586"/>
+									<ExtendedTooltip name="CF4CNameExtendedTooltip" id="587"/>
+								</InputField>
+								<CheckBoxField name="CF4CRequired" id="591">
+									<DataPath>ConstantsSet.CF4CRequired</DataPath>
+									<Visible>false</Visible>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Required</v8:content>
+										</v8:item>
+									</Title>
+									<CheckBoxType>Auto</CheckBoxType>
+									<ContextMenu name="CF4CRequiredContextMenu" id="592"/>
+									<ExtendedTooltip name="CF4CRequiredExtendedTooltip" id="593"/>
+								</CheckBoxField>
+							</ChildItems>
+						</UsualGroup>
+						<UsualGroup name="Group21" id="556">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Custom field 5</v8:content>
+								</v8:item>
+							</Title>
+							<Group>Vertical</Group>
+							<Collapsed>true</Collapsed>
+							<ControlRepresentation>Picture</ControlRepresentation>
+							<Representation>StrongSeparation</Representation>
+							<ExtendedTooltip name="Group21ExtendedTooltip" id="557"/>
+							<ChildItems>
+								<RadioButtonField name="CF5CType" id="597">
+									<DataPath>ConstantsSet.CF5CType</DataPath>
+									<RadioButtonType>Tumbler</RadioButtonType>
+									<ChoiceList>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>None</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">None</Value>
+											</xr:Value>
+										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>Number</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">Number</Value>
+											</xr:Value>
+										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>String</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">String</Value>
+											</xr:Value>
+										</xr:Item>
+									</ChoiceList>
+									<ContextMenu name="CF5CTypeContextMenu" id="598"/>
+									<ExtendedTooltip name="CF5CTypeExtendedTooltip" id="599"/>
+								</RadioButtonField>
+								<InputField name="CF5CName" id="594">
+									<DataPath>ConstantsSet.CF5CName</DataPath>
+									<Width>25</Width>
+									<HorizontalStretch>false</HorizontalStretch>
+									<ChoiceList>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>None</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">None</Value>
+											</xr:Value>
+										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>Number</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">Number</Value>
+											</xr:Value>
+										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>String</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">String</Value>
+											</xr:Value>
+										</xr:Item>
+									</ChoiceList>
+									<ContextMenu name="CF5CNameContextMenu" id="595"/>
+									<ExtendedTooltip name="CF5CNameExtendedTooltip" id="596"/>
+								</InputField>
+								<CheckBoxField name="CF5CRequired" id="600">
+									<DataPath>ConstantsSet.CF5CRequired</DataPath>
+									<Visible>false</Visible>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Required</v8:content>
+										</v8:item>
+									</Title>
+									<CheckBoxType>Auto</CheckBoxType>
+									<ContextMenu name="CF5CRequiredContextMenu" id="601"/>
+									<ExtendedTooltip name="CF5CRequiredExtendedTooltip" id="602"/>
+								</CheckBoxField>
+							</ChildItems>
+						</UsualGroup>
+					</ChildItems>
+				</Page>
 				<Page name="ItemCustomFields" id="285">
 					<Title>
 						<v8:item>
@@ -706,7 +1355,6 @@
 								</v8:item>
 							</Title>
 							<Group>Vertical</Group>
-							<Behavior>Collapsible</Behavior>
 							<Collapsed>true</Collapsed>
 							<ControlRepresentation>Picture</ControlRepresentation>
 							<Representation>StrongSeparation</Representation>
@@ -770,6 +1418,19 @@
 									<ContextMenu name="CF1NameContextMenu" id="289"/>
 									<ExtendedTooltip name="CF1NameExtendedTooltip" id="363"/>
 								</InputField>
+								<CheckBoxField name="CF1Required" id="531">
+									<DataPath>ConstantsSet.CF1Required</DataPath>
+									<Visible>false</Visible>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Required</v8:content>
+										</v8:item>
+									</Title>
+									<CheckBoxType>Auto</CheckBoxType>
+									<ContextMenu name="CF1RequiredContextMenu" id="532"/>
+									<ExtendedTooltip name="CF1RequiredExtendedTooltip" id="533"/>
+								</CheckBoxField>
 							</ChildItems>
 						</UsualGroup>
 						<UsualGroup name="Group7" id="291">
@@ -780,7 +1441,6 @@
 								</v8:item>
 							</Title>
 							<Group>Vertical</Group>
-							<Behavior>Collapsible</Behavior>
 							<Collapsed>true</Collapsed>
 							<ControlRepresentation>Picture</ControlRepresentation>
 							<Representation>StrongSeparation</Representation>
@@ -844,6 +1504,19 @@
 									<ContextMenu name="CF2NameContextMenu" id="295"/>
 									<ExtendedTooltip name="CF2NameExtendedTooltip" id="366"/>
 								</InputField>
+								<CheckBoxField name="CF2Required" id="534">
+									<DataPath>ConstantsSet.CF2Required</DataPath>
+									<Visible>false</Visible>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Required</v8:content>
+										</v8:item>
+									</Title>
+									<CheckBoxType>Auto</CheckBoxType>
+									<ContextMenu name="CF2RequiredContextMenu" id="535"/>
+									<ExtendedTooltip name="CF2RequiredExtendedTooltip" id="536"/>
+								</CheckBoxField>
 							</ChildItems>
 						</UsualGroup>
 						<UsualGroup name="Group8" id="296">
@@ -854,7 +1527,6 @@
 								</v8:item>
 							</Title>
 							<Group>Vertical</Group>
-							<Behavior>Collapsible</Behavior>
 							<Collapsed>true</Collapsed>
 							<ControlRepresentation>Picture</ControlRepresentation>
 							<Representation>StrongSeparation</Representation>
@@ -918,6 +1590,19 @@
 									<ContextMenu name="CF3NameContextMenu" id="300"/>
 									<ExtendedTooltip name="CF3NameExtendedTooltip" id="369"/>
 								</InputField>
+								<CheckBoxField name="CF3Required" id="537">
+									<DataPath>ConstantsSet.CF3Required</DataPath>
+									<Visible>false</Visible>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Required</v8:content>
+										</v8:item>
+									</Title>
+									<CheckBoxType>Auto</CheckBoxType>
+									<ContextMenu name="CF3RequiredContextMenu" id="538"/>
+									<ExtendedTooltip name="CF3RequiredExtendedTooltip" id="539"/>
+								</CheckBoxField>
 							</ChildItems>
 						</UsualGroup>
 						<UsualGroup name="Group15" id="505">
@@ -928,7 +1613,6 @@
 								</v8:item>
 							</Title>
 							<Group>Vertical</Group>
-							<Behavior>Collapsible</Behavior>
 							<Collapsed>true</Collapsed>
 							<ControlRepresentation>Picture</ControlRepresentation>
 							<Representation>StrongSeparation</Representation>
@@ -988,6 +1672,19 @@
 									<ContextMenu name="CF4NameContextMenu" id="511"/>
 									<ExtendedTooltip name="CF4NameExtendedTooltip" id="512"/>
 								</InputField>
+								<CheckBoxField name="CF4Required" id="540">
+									<DataPath>ConstantsSet.CF4Required</DataPath>
+									<Visible>false</Visible>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Required</v8:content>
+										</v8:item>
+									</Title>
+									<CheckBoxType>Auto</CheckBoxType>
+									<ContextMenu name="CF4RequiredContextMenu" id="541"/>
+									<ExtendedTooltip name="CF4RequiredExtendedTooltip" id="542"/>
+								</CheckBoxField>
 							</ChildItems>
 						</UsualGroup>
 						<UsualGroup name="Group16" id="513">
@@ -998,7 +1695,6 @@
 								</v8:item>
 							</Title>
 							<Group>Vertical</Group>
-							<Behavior>Collapsible</Behavior>
 							<Collapsed>true</Collapsed>
 							<ControlRepresentation>Picture</ControlRepresentation>
 							<Representation>StrongSeparation</Representation>
@@ -1058,6 +1754,19 @@
 									<ContextMenu name="CF5NameContextMenu" id="519"/>
 									<ExtendedTooltip name="CF5NameExtendedTooltip" id="520"/>
 								</InputField>
+								<CheckBoxField name="CF5Required" id="543">
+									<DataPath>ConstantsSet.CF5Required</DataPath>
+									<Visible>false</Visible>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Required</v8:content>
+										</v8:item>
+									</Title>
+									<CheckBoxType>Auto</CheckBoxType>
+									<ContextMenu name="CF5RequiredContextMenu" id="544"/>
+									<ExtendedTooltip name="CF5RequiredExtendedTooltip" id="545"/>
+								</CheckBoxField>
 							</ChildItems>
 						</UsualGroup>
 					</ChildItems>
@@ -1119,204 +1828,6 @@
 							<ContextMenu name="logoURLContextMenu" id="462"/>
 							<ExtendedTooltip name="logoURLExtendedTooltip" id="463"/>
 						</InputField>
-					</ChildItems>
-				</Page>
-				<Page name="Integrations" id="423">
-					<Visible>false</Visible>
-					<Title>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Integrations</v8:content>
-						</v8:item>
-					</Title>
-					<ToolTip>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Integrations</v8:content>
-						</v8:item>
-					</ToolTip>
-					<HorizontalStretch>false</HorizontalStretch>
-					<ExtendedTooltip name="IntegrationsExtendedTooltip" id="424"/>
-					<ChildItems>
-						<UsualGroup name="Stripe" id="440">
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Stripe (credit card processing)</v8:content>
-								</v8:item>
-							</Title>
-							<ToolTip>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Stripe</v8:content>
-								</v8:item>
-							</ToolTip>
-							<Group>Vertical</Group>
-							<Collapsed>true</Collapsed>
-							<ControlRepresentation>Picture</ControlRepresentation>
-							<ExtendedTooltip name="StripeExtendedTooltip" id="441"/>
-							<ChildItems>
-								<Button name="StripeConnect" id="421">
-									<Type>Hyperlink</Type>
-									<Representation>Picture</Representation>
-									<Width>20</Width>
-									<Height>2</Height>
-									<CommandName>Form.Command.StripeConnect</CommandName>
-									<Picture>
-										<xr:Ref>CommonPicture.StripeConnect</xr:Ref>
-										<xr:LoadTransparent>true</xr:LoadTransparent>
-									</Picture>
-									<ExtendedTooltip name="StripeConnectExtendedTooltip" id="422"/>
-								</Button>
-							</ChildItems>
-						</UsualGroup>
-						<UsualGroup name="Dwolla" id="501">
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Dwolla (bank payments)</v8:content>
-								</v8:item>
-							</Title>
-							<ToolTip>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Dwolla</v8:content>
-								</v8:item>
-							</ToolTip>
-							<Group>Vertical</Group>
-							<ExtendedTooltip name="DwollaExtendedTooltip" id="502"/>
-						</UsualGroup>
-						<UsualGroup name="BigCommerce" id="442">
-							<Visible>false</Visible>
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>BigCommerce (e-commerce)</v8:content>
-								</v8:item>
-							</Title>
-							<ToolTip>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Big commerce</v8:content>
-								</v8:item>
-							</ToolTip>
-							<Group>Vertical</Group>
-							<ExtendedTooltip name="BigCommerceExtendedTooltip" id="443"/>
-							<ChildItems>
-								<InputField name="bigcom_apipath" id="425">
-									<DataPath>ConstantsSet.bigcom_apipath</DataPath>
-									<Width>20</Width>
-									<HorizontalStretch>false</HorizontalStretch>
-									<ContextMenu name="bigcom_apipathContextMenu" id="426"/>
-									<ExtendedTooltip name="bigcom_apipathExtendedTooltip" id="427"/>
-								</InputField>
-								<InputField name="bigcom_storeid" id="428">
-									<DataPath>ConstantsSet.bigcom_storeid</DataPath>
-									<Width>20</Width>
-									<HorizontalStretch>false</HorizontalStretch>
-									<ContextMenu name="bigcom_storeidContextMenu" id="429"/>
-									<ExtendedTooltip name="bigcom_storeidExtendedTooltip" id="430"/>
-								</InputField>
-								<InputField name="bigcom_user" id="431">
-									<DataPath>ConstantsSet.bigcom_user</DataPath>
-									<Width>20</Width>
-									<HorizontalStretch>false</HorizontalStretch>
-									<ContextMenu name="bigcom_userContextMenu" id="432"/>
-									<ExtendedTooltip name="bigcom_userExtendedTooltip" id="433"/>
-								</InputField>
-								<InputField name="bigcom_token" id="434">
-									<DataPath>ConstantsSet.bigcom_token</DataPath>
-									<Width>20</Width>
-									<HorizontalStretch>false</HorizontalStretch>
-									<ContextMenu name="bigcom_tokenContextMenu" id="435"/>
-									<ExtendedTooltip name="bigcom_tokenExtendedTooltip" id="436"/>
-								</InputField>
-								<InputField name="bigcom_base64" id="437">
-									<DataPath>ConstantsSet.bigcom_base64</DataPath>
-									<Visible>false</Visible>
-									<Width>20</Width>
-									<HorizontalStretch>false</HorizontalStretch>
-									<ContextMenu name="bigcom_base64ContextMenu" id="438"/>
-									<ExtendedTooltip name="bigcom_base64ExtendedTooltip" id="439"/>
-								</InputField>
-							</ChildItems>
-						</UsualGroup>
-						<UsualGroup name="Zoho" id="526">
-							<Visible>false</Visible>
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Zoho (CRM)</v8:content>
-								</v8:item>
-							</Title>
-							<ToolTip>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Zoho</v8:content>
-								</v8:item>
-							</ToolTip>
-							<Group>Vertical</Group>
-							<ExtendedTooltip name="ZohoExtendedTooltip" id="527"/>
-							<ChildItems>
-								<InputField name="zoho_auth_token" id="528">
-									<DataPath>ConstantsSet.zoho_auth_token</DataPath>
-									<Title>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Auth token</v8:content>
-										</v8:item>
-									</Title>
-									<Width>20</Width>
-									<HorizontalStretch>false</HorizontalStretch>
-									<ContextMenu name="zoho_auth_tokenContextMenu" id="529"/>
-									<ExtendedTooltip name="zoho_auth_tokenExtendedTooltip" id="530"/>
-								</InputField>
-							</ChildItems>
-						</UsualGroup>
-					</ChildItems>
-				</Page>
-				<Page name="Preview" id="447">
-					<Visible>false</Visible>
-					<Title>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Beta features</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Vorschau</v8:content>
-						</v8:item>
-					</Title>
-					<ToolTip>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Preview</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Vorschau</v8:content>
-						</v8:item>
-					</ToolTip>
-					<HorizontalStretch>false</HorizontalStretch>
-					<ExtendedTooltip name="PreviewExtendedTooltip" id="448"/>
-					<ChildItems>
-						<LabelDecoration name="Decoration1" id="452">
-							<TextColor>style:ColorSecondaryLabel</TextColor>
-							<Title formatted="false">
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Use preview features at your own risk!</v8:content>
-								</v8:item>
-							</Title>
-							<ContextMenu name="Decoration1ContextMenu" id="453"/>
-							<ExtendedTooltip name="Decoration1ExtendedTooltip" id="454"/>
-						</LabelDecoration>
-						<CheckBoxField name="AllowNegativeInventory" id="449">
-							<DataPath>ConstantsSet.AllowNegativeInventory</DataPath>
-							<CheckBoxType>Auto</CheckBoxType>
-							<ContextMenu name="AllowNegativeInventoryContextMenu" id="450"/>
-							<ExtendedTooltip name="AllowNegativeInventoryExtendedTooltip" id="451"/>
-						</CheckBoxField>
 					</ChildItems>
 				</Page>
 				<Page name="Development" id="464">
@@ -1383,10 +1894,21 @@
 									<ContextMenu name="sales_invoices_webhookContextMenu" id="476"/>
 									<ExtendedTooltip name="sales_invoices_webhookExtendedTooltip" id="477"/>
 								</InputField>
+								<InputField name="cash_receipts_webhook" id="644">
+									<DataPath>ConstantsSet.cash_receipts_webhook</DataPath>
+									<ContextMenu name="cash_receipts_webhookContextMenu" id="645"/>
+									<ExtendedTooltip name="cash_receipts_webhookExtendedTooltip" id="646"/>
+								</InputField>
+								<InputField name="sales_orders_webhook" id="647">
+									<DataPath>ConstantsSet.sales_orders_webhook</DataPath>
+									<ContextMenu name="sales_orders_webhookContextMenu" id="648"/>
+									<ExtendedTooltip name="sales_orders_webhookExtendedTooltip" id="649"/>
+								</InputField>
 							</ChildItems>
 						</UsualGroup>
 						<InputField name="SubStatus" id="523">
-							<DataPath>ConstantsSet.SubStatus</DataPath>
+							<DataPath>1/0:dd5f35fc-0d74-48ba-b923-4423d19542e3</DataPath>
+							<Visible>false</Visible>
 							<ContextMenu name="SubStatusContextMenu" id="524"/>
 							<ExtendedTooltip name="SubStatusExtendedTooltip" id="525"/>
 						</InputField>
@@ -1421,7 +1943,6 @@
 								</v8:item>
 							</ToolTip>
 							<Group>Vertical</Group>
-							<Behavior>Collapsible</Behavior>
 							<Collapsed>true</Collapsed>
 							<ControlRepresentation>Picture</ControlRepresentation>
 							<ExtendedTooltip name="SalesInvoicesExtendedTooltip" id="495"/>
@@ -1449,7 +1970,7 @@
 						</UsualGroup>
 					</ChildItems>
 				</Page>
-				<Page name="EmailSetup" id="531">
+				<Page name="EmailSetup" id="650">
 					<Title>
 						<v8:item>
 							<v8:lang>en</v8:lang>
@@ -1462,59 +1983,29 @@
 							<v8:content>Email setup</v8:content>
 						</v8:item>
 					</ToolTip>
-					<ExtendedTooltip name="EmailSetupExtendedTooltip" id="532"/>
+					<ExtendedTooltip name="EmailSetupExtendedTooltip" id="651"/>
 					<ChildItems>
-						<InputField name="MailProfAddress" id="533">
+						<InputField name="MailProfAddress" id="652">
 							<DataPath>ConstantsSet.MailProfAddress</DataPath>
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Server address</v8:content>
-								</v8:item>
-							</Title>
-							<InputHint>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>email-smtp.us-east-1.amazonaws.com</v8:content>
-								</v8:item>
-							</InputHint>
-							<ContextMenu name="MailProfAddressContextMenu" id="534"/>
-							<ExtendedTooltip name="MailProfAddressExtendedTooltip" id="535"/>
+							<ContextMenu name="MailProfAddressContextMenu" id="653"/>
+							<ExtendedTooltip name="MailProfAddressExtendedTooltip" id="654"/>
 						</InputField>
-						<CheckBoxField name="MailProfSSL" id="536">
-							<DataPath>ConstantsSet.MailProfSSL</DataPath>
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>SSL</v8:content>
-								</v8:item>
-							</Title>
-							<CheckBoxType>Auto</CheckBoxType>
-							<ContextMenu name="MailProfSSLContextMenu" id="537"/>
-							<ExtendedTooltip name="MailProfSSLExtendedTooltip" id="538"/>
-						</CheckBoxField>
-						<InputField name="MailProfUser" id="542">
+						<InputField name="MailProfUser" id="661">
 							<DataPath>ConstantsSet.MailProfUser</DataPath>
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>User name</v8:content>
-								</v8:item>
-							</Title>
-							<ContextMenu name="MailProfUserContextMenu" id="543"/>
-							<ExtendedTooltip name="MailProfUserExtendedTooltip" id="544"/>
+							<ContextMenu name="MailProfUserContextMenu" id="662"/>
+							<ExtendedTooltip name="MailProfUserExtendedTooltip" id="663"/>
 						</InputField>
-						<InputField name="MailProfPass" id="539">
+						<InputField name="MailProfPass" id="658">
 							<DataPath>ConstantsSet.MailProfPass</DataPath>
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Password</v8:content>
-								</v8:item>
-							</Title>
-							<ContextMenu name="MailProfPassContextMenu" id="540"/>
-							<ExtendedTooltip name="MailProfPassExtendedTooltip" id="541"/>
+							<ContextMenu name="MailProfPassContextMenu" id="659"/>
+							<ExtendedTooltip name="MailProfPassExtendedTooltip" id="660"/>
 						</InputField>
+						<CheckBoxField name="MailProfSSL" id="655">
+							<DataPath>ConstantsSet.MailProfSSL</DataPath>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="MailProfSSLContextMenu" id="656"/>
+							<ExtendedTooltip name="MailProfSSLExtendedTooltip" id="657"/>
+						</CheckBoxField>
 					</ChildItems>
 				</Page>
 			</ChildItems>
@@ -1543,6 +2034,17 @@
 				</v8:StringQualifiers>
 			</Type>
 		</Attribute>
+		<Attribute name="EmailChange" id="4">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Email change</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
+			</Type>
+		</Attribute>
 	</Attributes>
 	<Commands>
 		<Command name="UploadLogo" id="1">
@@ -1559,21 +2061,6 @@
 				</v8:item>
 			</ToolTip>
 			<Action>UploadLogo</Action>
-		</Command>
-		<Command name="StripeConnect" id="2">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Stripe connect</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Stripe connect</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Action>StripeConnect</Action>
 		</Command>
 	</Commands>
 </Form>

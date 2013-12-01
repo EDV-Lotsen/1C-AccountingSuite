@@ -54,6 +54,12 @@ Procedure CompanyOnChange(Item)
 	FillDocumentList(Object.Company);
 	LineItemsPaymentOnChange(Items.LineItemsPayment);
 	
+	If Object.LineItems.Count() > 0 Then
+		Items.PayAll.Visible = true;
+	Else
+		Items.PayAll.Visible = false;
+	Endif;
+	
 EndProcedure
 
 
@@ -75,9 +81,11 @@ EndProcedure
 // not paid by this invoice payment
 //
 Procedure BeforeWrite(Cancel, WriteParameters)
-	
-	If Object.LineItems.Count() = 0 Then
-		Message("Invoice Payment can not have empty lines. The system automatically shows unpaid documents to the selected company in the line items");
+			
+	TotalPay = Object.LineItems.Total("Payment");
+
+	If Object.LineItems.Count() = 0 Or TotalPay = 0 Then
+		Message("Invoice Payment can not have empty or no paid lines.");
 		Cancel = True;
 		Return;
 	EndIf;
@@ -95,7 +103,12 @@ Procedure BeforeWrite(Cancel, WriteParameters)
 		
 	EndDo;
 	
-	Object.Currency = Object.LineItems[0].Currency;
+	If Object.LineItems.Count() > 0 Then
+		Object.Currency = Object.LineItems[0].Currency;
+	Else
+		GeneralFunctionsReusable.DefaultCurrency();
+	Endif;
+	
 	NumberOfRows = Object.LineItems.Count() - 1;
 		
 	While NumberOfRows >= 0 Do
@@ -108,7 +121,7 @@ Procedure BeforeWrite(Cancel, WriteParameters)
 		
 		NumberOfRows = NumberOfRows - 1;
 		
-	EndDo
+	EndDo;
 	
 EndProcedure
 
@@ -120,7 +133,7 @@ EndProcedure
 Procedure LineItemsPaymentOnChange(Item)
 	
 	DefaultCurrency = GeneralFunctionsReusable.DefaultCurrency();
-	
+		
 	DocumentTotalRC = 0;
 	For Each Row In Object.LineItems Do
 		If Row.Currency = DefaultCurrency Then
@@ -132,6 +145,15 @@ Procedure LineItemsPaymentOnChange(Item)
 	EndDo;
 	Object.DocumentTotal = Object.LineItems.Total("Payment");
 	Object.DocumentTotalRC = DocumentTotalRC;
+	
+	If Items.LineItems.CurrentData <> Undefined Then
+		If Items.LineItems.CurrentData.Payment > 0 Then
+			Items.LineItems.CurrentData.Check = True;
+		Else
+			Items.LineItems.CurrentData.Check = False;
+		Endif;
+	Endif;
+
 	
 EndProcedure
 
@@ -217,6 +239,14 @@ EndFunction
 &AtServer
 Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 	
+	If Object.PaymentMethod.IsEmpty() Then
+		Cancel = True;
+		Message = New UserMessage();
+		Message.Text=NStr("en='Select a payment method'");
+		Message.Field = "Object.PaymentMethod";
+		Message.Message();
+	EndIf;	
+	
 	If NOT Object.Ref.IsEmpty() And Object.PaymentMethod = CheckPaymentMethod() Then
 	
 	Try
@@ -275,7 +305,7 @@ Procedure PayWithDwolla(Command)
 		DwollaData = New Map();
 		DwollaData.Insert("destinationId", DwollaID);
 		DwollaData.Insert("oauth_token", DAT);
-		DwollaData.Insert("amount", Object.DocumentTotalRC);
+		DwollaData.Insert("amount", Format(Object.DocumentTotalRC,"NG=0"));
 		DwollaData.Insert("fundsSource", DwollaFundingSource());
 		DwollaData.Insert("destinationType", "Email");
 		DwollaData.Insert("pin", DwollaPin);
@@ -287,19 +317,18 @@ Procedure PayWithDwolla(Command)
 		DwollaData = New Map();
 		DwollaData.Insert("destinationId", DwollaID);
 		DwollaData.Insert("oauth_token", DAT);
-		DwollaData.Insert("amount", Object.DocumentTotalRC);
+		DwollaData.Insert("amount", Format(Object.DocumentTotalRC,"NG=0"));
 		DwollaData.Insert("fundsSource", DwollaFundingSource());
 		DwollaData.Insert("pin", DwollaPin);
 		
 		DataJSON = InternetConnectionClientServer.EncodeJSON(DwollaData);
 	
 	EndIf;
-	
 
 	ResultBodyJSON = DwollaCharge(DataJSON);
 	 	
 	If ResultBodyJSON.Success AND ResultBodyJSON.Message = "Success" Then
-		Object.DwollaTrxID = Format(ResultBodyJSON.Response, "NG=");
+		Object.DwollaTrxID = Format(ResultBodyJSON.Response, "NG=0");
 		Message(NStr("en = 'Payment was successfully made. Please save the document.'"));
 		Modified = True;
 	Else
@@ -352,4 +381,72 @@ Function DwollaFundingSource()
 	Return Constants.dwolla_funding_source.Get();
 	
 EndFunction
+
+
+&AtClient
+Procedure PayAll(Command)
+	
+	Total = 0;
+	For Each LineItem In Object.LineItems Do
+		test = LineItem;
+		//Items.LineItems.CurrentData.Check = True;
+		LineItem.Check = True;
+		LineItem.Payment = LineItem.Balance;
+		//LineItemsCheckOnChange(Items.LineItems.CurrentData.Check);
+		Total = Total + LineItem.Payment;
+
+	EndDo;
+	
+	Object.DocumentTotalRC = Total;
+	
+EndProcedure
+
+
+&AtClient
+Procedure LineItemsCheckOnChange(Item)
+	
+	If Items.LineItems.CurrentData.Check Then
+		Items.LineItems.CurrentData.Payment = Items.LineItems.CurrentData.Balance;
+	Else
+		Items.LineItems.CurrentData.Payment = 0;
+	
+	Endif;
+	
+	TotalRevision();
+	
+EndProcedure
+
+&AtServer
+Procedure TotalRevision()
+	
+	Total = 0;
+	For Each LineItem In Object.LineItems Do
+		
+	Total = Total + LineItem.Payment;	
+		
+	EndDo;
+	
+	Object.DocumentTotalRC = Total;
+	
+EndProcedure
+
+
+&AtClient
+Procedure PayWithRipple(Command)
+	
+	Address = GetRippleAddress(Object.Company);
+	
+	If Address <> "" Then
+		GotoURL("https://ripple.com/client/#/send?to=" + Address + "&amount=" + Format(Object.DocumentTotalRC,"NG=0"));
+	EndIf;
+
+EndProcedure
+
+&AtServer
+Function GetRippleAddress(Company)
+	
+	Return Company.RippleAddress;	
+	
+EndFunction
+
 

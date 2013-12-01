@@ -1,20 +1,20 @@
 ﻿
 &AtClient
 Procedure MultiLocationOnChange(Item)
-	//Message("Restart the program for the setting to take effect");
-	RefreshInterface();
+	Message("After enabling the multi-location feature can not be disabled.");
+	//RefreshInterface();
 EndProcedure
 
 &AtClient
 Procedure MultiCurrencyOnChange(Item)
-	//Message("Restart the program for the setting to take effect");
-	RefreshInterface();
+	Message("After enabling the multi-currency feature can not be disabled.");
+	//RefreshInterface();
 EndProcedure
 
 &AtClient
 Procedure USFinLocalizationOnChange(Item)
 	//Message("Restart the program for the setting to take effect");
-	RefreshInterface();
+	//RefreshInterface();
 EndProcedure
 
 &AtServer
@@ -51,7 +51,22 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	If NOT Constants.APISecretKey.Get() = "" Then
 		Items.APISecretKey.ReadOnly = True;		
 	EndIf;
-		
+	
+	If Constants.USFinLocalization.Get() = True Then
+		Items.USFinLocalization.ReadOnly = True;
+		Items.VATFinLocalization.ReadOnly = True;
+	EndIf;
+	
+	If Constants.MultiCurrency.Get() = True Then
+		Items.MultiCurrency.ReadOnly = True;
+	EndIf;
+	
+	If Constants.MultiLocation.Get() = True Then
+		Items.MultiLocation.ReadOnly = True;
+	EndIf;
+	
+	Items.DefaultCurrency.ReadOnly = True;
+			
 EndProcedure
 
 &AtClient
@@ -124,21 +139,23 @@ Procedure VATFinLocalizationOnChange(Item)
 	
 	//GeneralFunctions.VATSetup();
 	//Message("Restart the program for the setting to take effect");
-	RefreshInterface();
+	//RefreshInterface();
 
 EndProcedure
 
 &AtClient
 Procedure VendorNameOnChange(Item)
 	
-	Message("Restart the program for the setting to take effect");
+	//Message("Restart the program for the setting to take effect");
+	//RefreshInterface();
 	
 EndProcedure
 
 &AtClient
 Procedure CustomerNameOnChange(Item)
 	
-	Message("Restart the program for the setting to take effect");
+	//Message("Restart the program for the setting to take effect");
+	//RefreshInterface();
 	
 EndProcedure
 
@@ -146,7 +163,7 @@ EndProcedure
 Procedure PriceIncludesVATOnChange(Item)
 	
 	//Message("Restart the program for the setting to take effect");
-	RefreshInterface();
+	//RefreshInterface();
 
 EndProcedure
 
@@ -178,27 +195,7 @@ Procedure PlaceImageFile(TempStorageName)
 	If NOT TempStorageName = Undefined Then
 	
 		BinaryData = GetFromTempStorage(TempStorageName);
-		
-		///
-		
-		imgur_key = ""; // enter actual imgur client-ID
-		
-		HeadersMap = New Map();
-		HeadersMap.Insert("Authorization", "Client-ID " + imgur_key);
-		
-		HTTPRequest = New HTTPRequest("/3/image", HeadersMap);
-		HTTPRequest.SetBodyFromBinaryData(BinaryData);
-		
-		SSLConnection = New OpenSSLSecureConnection();
-		
-		HTTPConnection = New HTTPConnection("api.imgur.com",,,,,,SSLConnection); //imgur-apiv3.p.mashape.com
-		Result = HTTPConnection.Post(HTTPRequest);
-		ResponseBody = Result.GetBodyAsString(TextEncoding.UTF8);
-		ResponseJSON = InternetConnectionClientServer.DecodeJSON(ResponseBody);
-		image_url = ResponseJSON.data.link;
-		// Ctrl + _
-		ConstantsSet.logoURL = image_url;
-		
+				
 	    ///
 		
 		NewRow = InformationRegisters.CustomPrintForms.CreateRecordManager();
@@ -239,11 +236,9 @@ Procedure OnOpen(Cancel)
 	 If SettingAccessCheck() = false Then
 
 	    Items.Common.ChildItems.Logo.ChildItems.UploadLogo.Enabled = false;
-		Items.Common.ChildItems.Integrations.ChildItems.Stripe.ChildItems.StripeConnect.Enabled = false;
 
 	 Else
 		Items.Common.ChildItems.Logo.ChildItems.UploadLogo.Enabled = true;
-		Items.Common.ChildItems.Integrations.ChildItems.Stripe.ChildItems.StripeConnect.Enabled = true;
 
 	 Endif;
 	
@@ -258,4 +253,82 @@ Function SettingAccessCheck()
 		Return false;
 	Endif
 EndFunction
+
+
+//&AtClient
+//Procedure VerifyEmail(Command)
+//	VerifyEmailAtServer();
+//EndProcedure
+
+
+//&AtServer
+//Procedure VerifyEmailAtServer()
+//		HeadersMap = New Map();
+//	
+//		HTTPRequest = New HTTPRequest("/ses_email_verify",HeadersMap);
+//		HTTPRequest.SetBodyFromString(Constants.Email.Get(),TextEncoding.ANSI);
+
+//	
+//		SSLConnection = New OpenSSLSecureConnection();
+//	
+//		HTTPConnection = New HTTPConnection("intacs.accountingsuite.com",,,,,,SSLConnection);
+//		Result = HTTPConnection.Post(HTTPRequest);
+//		
+//		Message("You will receive a verification email to " + Constants.Email.Get());
+
+//EndProcedure
+
+
+&AtClient
+Procedure DwollaConnect(Command)
+	
+	statestring = GetAPISecretKeyF();	
+	GoToURL("https://www.dwolla.com/oauth/v2/authenticate?client_id=CCUdqUc4nB2AtraAvbsrzLWPS1pKUmfFS0NnFqmRE4OhlYJhVF&response_type=code&redirect_uri=https://pay.accountingsuite.com/dwolla_oauth?state=" + GetTenantValue() + "&scope=send%7Ctransactions%7Cfunding%7Cbalance");
+	
+EndProcedure
+
+&AtServer
+Function GetTenantValue()
+	
+	Return SessionParameters.TenantValue;
+	
+EndFunction
+
+
+&AtServer
+Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
+	
+	If Constants.MultiCurrency.Get() = True Then
+		Items.MultiCurrency.ReadOnly = True;
+	EndIf;
+	
+	If Constants.MultiLocation.Get() = True Then
+		Items.MultiLocation.ReadOnly = True;
+	EndIf;
+	
+	Constants.Email.Set(Constants.CurrentUserEmail.Get().Description);
+	
+EndProcedure
+
+&AtClient
+Procedure AfterWrite(WriteParameters)
+	RefreshInterface();
+EndProcedure                 
+
+//&AtServer
+//Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
+//	If EmailChange = True Then
+//		Constants.Email.Set(Constants.CurrentUserEmail.Get().Description);
+//	EndIf;
+
+//EndProcedure
+
+//&AtClient
+//Procedure CurrentUserEmailOnChange(Item)
+//	EmailChange = True;
+//EndProcedure
+
+
+
+
 

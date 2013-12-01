@@ -3,7 +3,74 @@
 	<WindowOpeningMode>LockOwnerWindow</WindowOpeningMode>
 	<VerticalScroll>useIfNecessary</VerticalScroll>
 	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<Events>
+		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+		<Event name="FillCheckProcessingAtServer">FillCheckProcessingAtServer</Event>
+	</Events>
 	<ChildItems>
+		<RadioButtonField name="PriceType" id="21">
+			<DataPath>Record.PriceType</DataPath>
+			<RadioButtonType>Tumbler</RadioButtonType>
+			<ChoiceList>
+				<xr:Item>
+					<xr:Presentation/>
+					<xr:CheckState>0</xr:CheckState>
+					<xr:Value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>Item cat. &gt;</v8:content>
+							</v8:item>
+						</Presentation>
+						<Value xsi:type="xs:string">Category</Value>
+					</xr:Value>
+				</xr:Item>
+				<xr:Item>
+					<xr:Presentation/>
+					<xr:CheckState>0</xr:CheckState>
+					<xr:Value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>Item cat. + Price level &gt;</v8:content>
+							</v8:item>
+						</Presentation>
+						<Value xsi:type="xs:string">CategoryPriceLevel</Value>
+					</xr:Value>
+				</xr:Item>
+				<xr:Item>
+					<xr:Presentation/>
+					<xr:CheckState>0</xr:CheckState>
+					<xr:Value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>Item &gt;</v8:content>
+							</v8:item>
+						</Presentation>
+						<Value xsi:type="xs:string">Item</Value>
+					</xr:Value>
+				</xr:Item>
+				<xr:Item>
+					<xr:Presentation/>
+					<xr:CheckState>0</xr:CheckState>
+					<xr:Value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>Item + Price level</v8:content>
+							</v8:item>
+						</Presentation>
+						<Value xsi:type="xs:string">ItemPriceLevel</Value>
+					</xr:Value>
+				</xr:Item>
+			</ChoiceList>
+			<ContextMenu name="PriceTypeContextMenu" id="22"/>
+			<ExtendedTooltip name="PriceTypeExtendedTooltip" id="23"/>
+			<Events>
+				<Event name="OnChange">PriceTypeOnChange</Event>
+			</Events>
+		</RadioButtonField>
 		<InputField name="Period" id="1">
 			<DataPath>Record.Period</DataPath>
 			<HorizontalAlign>Right</HorizontalAlign>
@@ -15,23 +82,32 @@
 			<Width>30</Width>
 			<ContextMenu name="ProductContextMenu" id="4"/>
 			<ExtendedTooltip name="ProductExtendedTooltip" id="16"/>
+			<Events>
+				<Event name="OnChange">ProductOnChange</Event>
+			</Events>
 		</InputField>
 		<InputField name="ProductCategory" id="13">
 			<DataPath>Record.ProductCategory</DataPath>
 			<Title>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Price item category</v8:content>
+					<v8:content>Category</v8:content>
 				</v8:item>
 			</Title>
 			<ContextMenu name="ProductCategoryContextMenu" id="14"/>
 			<ExtendedTooltip name="ProductCategoryExtendedTooltip" id="17"/>
+			<Events>
+				<Event name="OnChange">ProductCategoryOnChange</Event>
+			</Events>
 		</InputField>
 		<InputField name="PriceLevel" id="9">
 			<DataPath>Record.PriceLevel</DataPath>
 			<QuickChoice>true</QuickChoice>
 			<ContextMenu name="PriceLevelContextMenu" id="10"/>
 			<ExtendedTooltip name="PriceLevelExtendedTooltip" id="18"/>
+			<Events>
+				<Event name="OnChange">PriceLevelOnChange</Event>
+			</Events>
 		</InputField>
 		<InputField name="Price" id="7">
 			<DataPath>Record.Price</DataPath>
@@ -46,6 +122,12 @@
 		</InputField>
 		<InputField name="Cost" id="11">
 			<DataPath>Record.Cost</DataPath>
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Commission cost</v8:content>
+				</v8:item>
+			</Title>
 			<EditFormat>
 				<v8:item>
 					<v8:lang>en</v8:lang>

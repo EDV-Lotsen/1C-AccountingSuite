@@ -192,7 +192,7 @@ EndProcedure
 // 
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
-	// Initialization of NewRow variable.
+	// Initialization of new row flag.
 	IsNewRow = False;
 	
 	Items.Company.Title = GeneralFunctionsReusable.GetVendorName();

@@ -4,6 +4,9 @@
 //
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
+	//test = Object.Ref.UUID();
+	//test = Catalogs.Products.GetRef(New UUID("3b942486-4317-11e3-bebf-001c42734aa6"));
+	
 	// custom fields
 	
 	CF1Type = Constants.CF1Type.Get();
@@ -262,8 +265,11 @@ Procedure FillLastAverageAccountingCost()
 			// Average cost, based on all availble stock
 			QTItemAverageCost + // INTO AverageCost.Cost
 			// Current accounting cost => First / Last lot item cost for FIFO/LIFO, NONE for Average
-			?(Object.CostingMethod = Enums.InventoryCosting.FIFO OR Object.CostingMethod = Enums.InventoryCosting.LIFO,
-				StringFunctionsClientServer.SubstituteParametersInString(QTItemAccountingFirstLastCost, ?(Object.CostingMethod = Enums.InventoryCosting.FIFO, "Asc", "Desc")), // FIFO = ORDER BY Layer Asc (TOP 1 Old); LIFO = ORDER BY Layer Desc (TOP 1 New);
+			//?(Object.CostingMethod = Enums.InventoryCosting.FIFO OR Object.CostingMethod = Enums.InventoryCosting.LIFO,
+				//StringFunctionsClientServer.SubstituteParametersInString(QTItemAccountingFirstLastCost, ?(Object.CostingMethod = Enums.InventoryCosting.FIFO, "Asc", "Desc")), // FIFO = ORDER BY Layer Asc (TOP 1 Old); LIFO = ORDER BY Layer Desc (TOP 1 New);
+			?(Object.CostingMethod = Enums.InventoryCosting.FIFO,
+				StringFunctionsClientServer.SubstituteParametersInString(QTItemAccountingFirstLastCost, "Asc"), // FIFO = ORDER BY Layer Asc (TOP 1 Old); LIFO = ORDER BY Layer Desc (TOP 1 New);
+	
 				"") +			// INTO AccountingCost.Cost
 			"
 			|SELECT
@@ -272,7 +278,8 @@ Procedure FillLastAverageAccountingCost()
 			|UNION ALL
 			|SELECT
 			|	ISNULL(AverageCost.Cost, 0)" +
-			?(Object.CostingMethod = Enums.InventoryCosting.FIFO OR Object.CostingMethod = Enums.InventoryCosting.LIFO, "
+			//?(Object.CostingMethod = Enums.InventoryCosting.FIFO OR Object.CostingMethod = Enums.InventoryCosting.LIFO, "
+			?(Object.CostingMethod = Enums.InventoryCosting.FIFO, "
 			|
 			|UNION ALL
 			|SELECT
@@ -288,7 +295,8 @@ Procedure FillLastAverageAccountingCost()
 		// Average cost
 		If Selection.Next() Then AverageCost = Selection.Cost;	Else AverageCost = 0; EndIf;
 		// Accounting cost
-		If (Object.CostingMethod = Enums.InventoryCosting.FIFO OR Object.CostingMethod = Enums.InventoryCosting.LIFO) And Selection.Next() Then
+		//If (Object.CostingMethod = Enums.InventoryCosting.FIFO OR Object.CostingMethod = Enums.InventoryCosting.LIFO) And Selection.Next() Then
+		If Object.CostingMethod = Enums.InventoryCosting.FIFO And Selection.Next() Then
 			AccountingCost = Selection.Cost;
 		Else
 			AccountingCost = AverageCost;
@@ -563,58 +571,47 @@ Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 
 		
 	EndIf;
-
-	// Doesn't allow to save a LIFO costing item if the Disable LIFO setting is set
-	
-	If Object.Type = Enums.InventoryTypes.Inventory Then
-		If Object.CostingMethod = Enums.InventoryCosting.LIFO Then
-			If Constants.DisableLIFO.Get() = True Then
-				Message = New UserMessage();
-				Message.Text=NStr("en='The Disable LIFO (IFRS) setting is on'");
-				Message.Field = "Object.CostingMethod";
-				Message.Message();
-				Cancel = True;
-				Return;
-            EndIf;
-        EndIf;
-	EndIf;
 		
 EndProcedure
 
-&AtClient
-Procedure BeforeWrite(Cancel, WriteParameters)
-	
-	WriteAPICode();				
-EndProcedure
+//&AtClient
+//Procedure BeforeWrite(Cancel, WriteParameters)
+//	
+//	WriteAPICode();				
+//EndProcedure
 
 &AtServer
 Procedure AddPriceList()
 	
 	LastPrice = GeneralFunctions.RetailPrice(CurrentDate(), Object.Ref, Catalogs.Companies.EmptyRef());
 	If LastPrice <> Price Then
-			
-		RecordSet = InformationRegisters.PriceList.CreateRecordSet();
-		RecordSet.Filter.Product.Set(Object.Ref);
-		RecordSet.Filter.Period.Set(CurrentDate());
-		NewRecord = RecordSet.Add();
-		NewRecord.Period = CurrentDate();
-		NewRecord.Product = Object.Ref;
-		NewRecord.Price = Price;
-		RecordSet.Write();
+		
+			RecordSet = InformationRegisters.PriceList.CreateRecordSet();
+			RecordSet.Filter.Product.Set(Object.Ref);
+			RecordSet.Filter.Period.Set(CurrentDate());
+			RecordSet.Read();
+			NewRecord = RecordSet.Add();
+			NewRecord.Period = CurrentDate();
+			NewRecord.Product = Object.Ref;
+			NewRecord.PriceType = "Item";
+			NewRecord.Price = Price;
+			RecordSet.Write();
+
+			   		
 	Endif;
 
 	
 EndProcedure
 
-&AtServer
-Procedure WriteAPICode()
-	
-	If Object.Ref = Catalogs.Products.EmptyRef() Then
-		Object.api_code = GeneralFunctions.NextProductNumber();
-	EndIf;
+//&AtServer
+//Procedure WriteAPICode()
+//	
+//	If Object.Ref = Catalogs.Products.EmptyRef() Then
+//		Object.api_code = GeneralFunctions.NextProductNumber();
+//	EndIf;
 
-	
-EndProcedure
+//	
+//EndProcedure
 
 
 

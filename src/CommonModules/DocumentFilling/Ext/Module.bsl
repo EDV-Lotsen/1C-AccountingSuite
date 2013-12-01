@@ -13,16 +13,16 @@
 // Creates structure containing types of filling (as keys) and filling data (as values).
 // 
 // Parameters:
-// 	FillingData      - Passed filling data, usually Ref to base document or an array of Refs to fill from
-// 	BasedOn          - Metadata of document, containing list of data sources, to fill document from
+//  FillingData      - Passed filling data, usually Ref to base document or an array of Refs to fill from
+//  BasedOn          - Metadata of document, containing list of data sources, to fill document from
 //  ExcludedTypesStr - Comma-separated string containing base reference types to skip during filling
 //
 // Value returned:
-// 	Structure of filling data - types and data to fill
+//  Structure of filling data - types and data to fill
 //
 Function GetTypedFillingStructure(Ref, FillingData, BasedOn, ExcludedTypesStr = Undefined)
 	Var Values;
-
+	
 	// Create returning structure
 	FillingStructure = New Structure;
 	
@@ -46,7 +46,7 @@ Function GetTypedFillingStructure(Ref, FillingData, BasedOn, ExcludedTypesStr = 
 	Or TypeOf(FillingData) = Type("Structure")
 	Or TypeOf(FillingData) = Type("Map")
 	Then
-	
+		
 		// Determine type of values
 		For Each Data In FillingData Do
 			
@@ -82,7 +82,7 @@ Function GetTypedFillingStructure(Ref, FillingData, BasedOn, ExcludedTypesStr = 
 		EndDo;
 		
 	Else // Assume passed single value
-			
+		
 		// Add data source to filling structure
 		Value = FillingData;
 		If  BasedOnTypes.ContainsType(TypeOf(Value))
@@ -114,7 +114,7 @@ Function CheckSingleValue(Ref, Value)
 		MessageText = NStr("en = '%1 %2 marked for deletion.'");
 		MessageText = StringFunctionsClientServer.SubstituteParametersInString(MessageText,
 		                                                                       CommonUse.ObjectKindByType(TypeOf(Ref)),
-																			   String(Value)); 
+		                                                                       String(Value)); 
 		CommonUseClientServer.MessageToUser(MessageText, Ref,,, RefCheckFailed);
 		
 		Return True;
@@ -124,11 +124,12 @@ Function CheckSingleValue(Ref, Value)
 	If Documents.AllRefsType().ContainsType(TypeOf(Value)) And Not Value.Posted Then
 		MessageText = NStr("en = 'Document %1 is not posted.'");
 		MessageText = StringFunctionsClientServer.SubstituteParametersInString(MessageText,
-																			   String(Value)); 
+		                                                                       String(Value)); 
 		CommonUseClientServer.MessageToUser(MessageText, Ref,,, RefCheckFailed);
 	EndIf;
 	
 	Return RefCheckFailed;
+	
 EndFunction
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -140,8 +141,8 @@ EndFunction
 // Save additional document parameters required for data query before filling an object
 //
 // Parameters:
-// 	AdditionalProperties - Structure of additional object parameters containing required attributes and tables
-// 	DocumentParameters	 - Structure of object attributes, inaccessible on the server call to be packed into AdditionalProperties
+//  AdditionalProperties - Structure of additional object parameters containing required attributes and tables
+//  DocumentParameters	 - Structure of object attributes, inaccessible on the server call to be packed into AdditionalProperties
 //  FillingData          - Arbitrary, source data for filling the document, usually Ref to a base document
 //  Cancel               - Boolean, flag of cancel document filling
 //
@@ -168,7 +169,7 @@ Procedure PrepareDataStructuresBeforeFilling(AdditionalProperties, DocumentParam
 		AdditionalProperties.Insert(DocumentParameter.Key, DocumentParameter.Value);
 	EndDo;
 	
-	// Posting - Structure containing data to be transferred on the server and post the document
+	// Filling - Structure containing data to be transferred on the server and fill the document
 	AdditionalProperties.Insert("Filling", New Structure);
 	
 	// Specify source data for filling the document
@@ -176,8 +177,8 @@ Procedure PrepareDataStructuresBeforeFilling(AdditionalProperties, DocumentParam
 	
 	// FillingTables - Structure containing document tables data for filling the document
 	AdditionalProperties.Filling.Insert("FillingTables", New Structure);
-
-	// TempTablesManager - Temporary tables manager, containing document data requested for creating document postings.
+	
+	// TempTablesManager - Temporary tables manager, containing document data requested for filling document data.
 	AdditionalProperties.Filling.Insert("StructTempTablesManager", New Structure("TempTablesManager", New TempTablesManager));
 	
 EndProcedure
@@ -185,13 +186,13 @@ EndProcedure
 // Clear used additional document data passed as additional properties.
 //
 // Parameters:
-// 	AdditionalProperties - Structure of additional object parameters (to be cleared)
+//  AdditionalProperties - Structure of additional object parameters (to be cleared)
 //
 Procedure ClearDataStructuresAfterFilling(AdditionalProperties) Export
-
+	
 	// Dispose used temporary tables managers
 	AdditionalProperties.Filling.StructTempTablesManager.TempTablesManager.Close();
-
+	
 EndProcedure
 
 //------------------------------------------------------------------------------
@@ -200,7 +201,7 @@ EndProcedure
 // Check documents attributes uniqueness on filling an object
 //
 // Parameters:
-// 	AdditionalProperties - Structure of additional object parameters containing required attributes and tables
+//  AdditionalProperties - Structure of additional object parameters containing required attributes and tables
 //  Cancel               - Boolean, flag of cancel document filling
 //
 Procedure CheckDataStructuresOnFilling(AdditionalProperties, Cancel) Export
@@ -255,10 +256,10 @@ Procedure CheckDataStructuresOnFilling(AdditionalProperties, Cancel) Export
 				MessageText  = NStr("en = 'Selected documents have different %1: %2'");
 				MessageText  = StringFunctionsClientServer.SubstituteParametersInString(MessageText,
 				               ?(Attribute.Key = "Company", CompaniesName, Lower(AdditionalProperties.Metadata.Attributes[Attribute.Key].Synonym) + " values"),
-							   DoublesText); 
+				               DoublesText); 
 				CommonUseClientServer.MessageToUser(MessageText, AdditionalProperties.Ref,,, Cancel);
 			EndIf;
 		EndDo;
 	EndIf;
-		
+	
 EndProcedure

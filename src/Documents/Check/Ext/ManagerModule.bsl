@@ -88,3 +88,11 @@
 	
 
 EndProcedure
+
+
+&AtServer
+Procedure Test()
+	
+Spread = New SpreadsheetDocument;
+test = Spread.PageWidth;
+EndProcedure

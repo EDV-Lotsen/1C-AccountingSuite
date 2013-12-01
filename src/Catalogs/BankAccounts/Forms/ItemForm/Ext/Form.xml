@@ -3,6 +3,10 @@
 	<WindowOpeningMode>LockOwnerWindow</WindowOpeningMode>
 	<UseForFoldersAndItems>Items</UseForFoldersAndItems>
 	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<Events>
+		<Event name="OnOpen">OnOpen</Event>
+		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+	</Events>
 	<ChildItems>
 		<UsualGroup name="Group1" id="41">
 			<Group>Horizontal</Group>
@@ -70,34 +74,80 @@
 							<ContextMenu name="AccountTypeContextMenu" id="17"/>
 							<ExtendedTooltip name="AccountTypeExtendedTooltip" id="18"/>
 						</InputField>
-						<LabelField name="CurrentBalance" id="19">
-							<DataPath>Object.CurrentBalance</DataPath>
-							<ReadOnly>true</ReadOnly>
-							<EditMode>EnterOnInput</EditMode>
-							<Format>
+						<UsualGroup name="BalanceGroup" id="72">
+							<Title>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>NFD=2; NZ=</v8:content>
+									<v8:content>Balance</v8:content>
 								</v8:item>
-							</Format>
-							<Font ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
-							<ContextMenu name="CurrentBalanceContextMenu" id="20"/>
-							<ExtendedTooltip name="CurrentBalanceExtendedTooltip" id="21"/>
-						</LabelField>
-						<LabelField name="AvailableBalance" id="22">
-							<DataPath>Object.AvailableBalance</DataPath>
-							<ReadOnly>true</ReadOnly>
-							<EditMode>EnterOnInput</EditMode>
-							<Format>
+							</Title>
+							<ToolTip>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>NFD=2; NZ=</v8:content>
+									<v8:content>Balance group</v8:content>
 								</v8:item>
-							</Format>
-							<Font ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
-							<ContextMenu name="AvailableBalanceContextMenu" id="23"/>
-							<ExtendedTooltip name="AvailableBalanceExtendedTooltip" id="24"/>
-						</LabelField>
+							</ToolTip>
+							<Group>Horizontal</Group>
+							<ExtendedTooltip name="BalanceGroupExtendedTooltip" id="73"/>
+							<ChildItems>
+								<UsualGroup name="Group2" id="62">
+									<Group>Horizontal</Group>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="Group2ExtendedTooltip" id="63"/>
+									<ChildItems>
+										<LabelField name="CurrentBalance" id="19">
+											<DataPath>Object.CurrentBalance</DataPath>
+											<ReadOnly>true</ReadOnly>
+											<EditMode>EnterOnInput</EditMode>
+											<Format>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>NFD=2; NZ=</v8:content>
+												</v8:item>
+											</Format>
+											<Border width="1">
+												<v8ui:style xsi:type="v8ui:ControlBorderType">Underline</v8ui:style>
+											</Border>
+											<Font ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
+											<ContextMenu name="CurrentBalanceContextMenu" id="20"/>
+											<ExtendedTooltip name="CurrentBalanceExtendedTooltip" id="21"/>
+										</LabelField>
+										<LabelDecoration name="CurrentBalanceCurrency" id="64">
+											<ContextMenu name="CurrentBalanceCurrencyContextMenu" id="65"/>
+											<ExtendedTooltip name="CurrentBalanceCurrencyExtendedTooltip" id="66"/>
+										</LabelDecoration>
+									</ChildItems>
+								</UsualGroup>
+								<UsualGroup name="Group3" id="67">
+									<Group>Horizontal</Group>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="Group3ExtendedTooltip" id="68"/>
+									<ChildItems>
+										<LabelField name="AvailableBalance" id="22">
+											<DataPath>Object.AvailableBalance</DataPath>
+											<ReadOnly>true</ReadOnly>
+											<EditMode>EnterOnInput</EditMode>
+											<Format>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>NFD=2; NZ=</v8:content>
+												</v8:item>
+											</Format>
+											<Border width="1">
+												<v8ui:style xsi:type="v8ui:ControlBorderType">Underline</v8ui:style>
+											</Border>
+											<Font ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
+											<ContextMenu name="AvailableBalanceContextMenu" id="23"/>
+											<ExtendedTooltip name="AvailableBalanceExtendedTooltip" id="24"/>
+										</LabelField>
+										<LabelDecoration name="AvailableBalanceCurrency" id="69">
+											<ContextMenu name="AvailableBalanceCurrencyContextMenu" id="70"/>
+											<ExtendedTooltip name="AvailableBalanceCurrencyExtendedTooltip" id="71"/>
+										</LabelDecoration>
+									</ChildItems>
+								</UsualGroup>
+							</ChildItems>
+						</UsualGroup>
 					</ChildItems>
 				</Page>
 				<Page name="Online" id="43">
@@ -116,42 +166,118 @@
 					</ToolTip>
 					<ExtendedTooltip name="OnlineExtendedTooltip" id="44"/>
 					<ChildItems>
-						<InputField name="ItemID" id="10">
-							<DataPath>Object.ItemID</DataPath>
-							<EditMode>EnterOnInput</EditMode>
-							<ContextMenu name="ItemIDContextMenu" id="11"/>
-							<ExtendedTooltip name="ItemIDExtendedTooltip" id="12"/>
-						</InputField>
-						<InputField name="ItemAccountID" id="13">
-							<DataPath>Object.ItemAccountID</DataPath>
-							<EditMode>EnterOnInput</EditMode>
-							<ContextMenu name="ItemAccountIDContextMenu" id="14"/>
-							<ExtendedTooltip name="ItemAccountIDExtendedTooltip" id="15"/>
-						</InputField>
-						<InputField name="LastUpdatedTimeUTC" id="25">
-							<DataPath>Object.LastUpdatedTimeUTC</DataPath>
-							<EditMode>EnterOnInput</EditMode>
-							<ContextMenu name="LastUpdatedTimeUTCContextMenu" id="26"/>
-							<ExtendedTooltip name="LastUpdatedTimeUTCExtendedTooltip" id="27"/>
-						</InputField>
-						<InputField name="LastUpdateAttemptTimeUTC" id="28">
-							<DataPath>Object.LastUpdateAttemptTimeUTC</DataPath>
-							<EditMode>EnterOnInput</EditMode>
-							<ContextMenu name="LastUpdateAttemptTimeUTCContextMenu" id="29"/>
-							<ExtendedTooltip name="LastUpdateAttemptTimeUTCExtendedTooltip" id="30"/>
-						</InputField>
-						<InputField name="NextUpdateTimeUTC" id="31">
-							<DataPath>Object.NextUpdateTimeUTC</DataPath>
-							<EditMode>EnterOnInput</EditMode>
-							<ContextMenu name="NextUpdateTimeUTCContextMenu" id="32"/>
-							<ExtendedTooltip name="NextUpdateTimeUTCExtendedTooltip" id="33"/>
-						</InputField>
-						<InputField name="RefreshStatusCode" id="34">
-							<DataPath>Object.RefreshStatusCode</DataPath>
-							<EditMode>EnterOnInput</EditMode>
-							<ContextMenu name="RefreshStatusCodeContextMenu" id="35"/>
-							<ExtendedTooltip name="RefreshStatusCodeExtendedTooltip" id="36"/>
-						</InputField>
+						<UsualGroup name="IDGroup" id="80">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>ID</v8:content>
+								</v8:item>
+							</Title>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>IDGroup</v8:content>
+								</v8:item>
+							</ToolTip>
+							<Group>Horizontal</Group>
+							<ExtendedTooltip name="IDGroupExtendedTooltip" id="81"/>
+							<ChildItems>
+								<InputField name="ItemID" id="10">
+									<DataPath>Object.ItemID</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="ItemIDContextMenu" id="11"/>
+									<ExtendedTooltip name="ItemIDExtendedTooltip" id="12"/>
+								</InputField>
+								<InputField name="ItemAccountID" id="13">
+									<DataPath>Object.ItemAccountID</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="ItemAccountIDContextMenu" id="14"/>
+									<ExtendedTooltip name="ItemAccountIDExtendedTooltip" id="15"/>
+								</InputField>
+							</ChildItems>
+						</UsualGroup>
+						<UsualGroup name="StatusGroup" id="74">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Update Status</v8:content>
+								</v8:item>
+							</Title>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Status group</v8:content>
+								</v8:item>
+							</ToolTip>
+							<Group>Horizontal</Group>
+							<ExtendedTooltip name="StatusGroupExtendedTooltip" id="75"/>
+							<ChildItems>
+								<UsualGroup name="UpdatedGroup" id="76">
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Updated</v8:content>
+										</v8:item>
+									</Title>
+									<ToolTip>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Updated group</v8:content>
+										</v8:item>
+									</ToolTip>
+									<Group>Vertical</Group>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="UpdatedGroupExtendedTooltip" id="77"/>
+									<ChildItems>
+										<InputField name="LastUpdatedTime" id="50">
+											<DataPath>LastUpdatedTime</DataPath>
+											<ContextMenu name="LastUpdatedTimeContextMenu" id="51"/>
+											<ExtendedTooltip name="LastUpdatedTimeExtendedTooltip" id="52"/>
+										</InputField>
+										<InputField name="TransactionsRefreshTime" id="53">
+											<DataPath>TransactionsRefreshedTime</DataPath>
+											<ContextMenu name="TransactionsRefreshTimeContextMenu" id="54"/>
+											<ExtendedTooltip name="TransactionsRefreshTimeExtendedTooltip" id="55"/>
+										</InputField>
+										<InputField name="RefreshStatusCode" id="34">
+											<DataPath>Object.RefreshStatusCode</DataPath>
+											<EditMode>EnterOnInput</EditMode>
+											<ContextMenu name="RefreshStatusCodeContextMenu" id="35"/>
+											<ExtendedTooltip name="RefreshStatusCodeExtendedTooltip" id="36"/>
+										</InputField>
+									</ChildItems>
+								</UsualGroup>
+								<UsualGroup name="UpdateAttempts" id="78">
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Update attempts</v8:content>
+										</v8:item>
+									</Title>
+									<ToolTip>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Update attempts</v8:content>
+										</v8:item>
+									</ToolTip>
+									<Group>Vertical</Group>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="UpdateAttemptsExtendedTooltip" id="79"/>
+									<ChildItems>
+										<InputField name="LastUpdateAttemptTime" id="56">
+											<DataPath>LastUpdateAttemptTime</DataPath>
+											<ContextMenu name="LastUpdateAttemptTimeContextMenu" id="57"/>
+											<ExtendedTooltip name="LastUpdateAttemptTimeExtendedTooltip" id="58"/>
+										</InputField>
+										<InputField name="NextUpdateTime" id="59">
+											<DataPath>NextUpdateTime</DataPath>
+											<ContextMenu name="NextUpdateTimeContextMenu" id="60"/>
+											<ExtendedTooltip name="NextUpdateTimeExtendedTooltip" id="61"/>
+										</InputField>
+									</ChildItems>
+								</UsualGroup>
+							</ChildItems>
+						</UsualGroup>
 					</ChildItems>
 				</Page>
 				<Page name="Accounting" id="45">
@@ -192,6 +318,62 @@
 			</Type>
 			<MainAttribute>true</MainAttribute>
 			<SavedData>true</SavedData>
+		</Attribute>
+		<Attribute name="TransactionsRefreshedTime" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Transactions refreshed at</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:dateTime</v8:Type>
+				<v8:DateQualifiers>
+					<v8:DateFractions>DateTime</v8:DateFractions>
+				</v8:DateQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="LastUpdatedTime" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Last updated at</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:dateTime</v8:Type>
+				<v8:DateQualifiers>
+					<v8:DateFractions>DateTime</v8:DateFractions>
+				</v8:DateQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="LastUpdateAttemptTime" id="4">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Last update attempt at</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:dateTime</v8:Type>
+				<v8:DateQualifiers>
+					<v8:DateFractions>DateTime</v8:DateFractions>
+				</v8:DateQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="NextUpdateTime" id="5">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Next update at</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:dateTime</v8:Type>
+				<v8:DateQualifiers>
+					<v8:DateFractions>DateTime</v8:DateFractions>
+				</v8:DateQualifiers>
+			</Type>
 		</Attribute>
 	</Attributes>
 </Form>

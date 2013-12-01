@@ -1,10 +1,15 @@
 ﻿
 ////////////////////////////////////////////////////////////////////////////////
-// Purchase Invoice: Manager module
+// Purchase invoice: Manager module
 //------------------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////////////
-// DOCUMENT POSTING
+#Region PUBLIC_INTERFACE
+
+#If Server Or ThickClientOrdinaryApplication Or ExternalConnection Then
+
+//------------------------------------------------------------------------------
+// Document posting
 
 // Pre-check, lock, calculate data before write document
 Function PrepareDataBeforeWrite(AdditionalProperties, DocumentParameters, Cancel) Export
@@ -124,6 +129,310 @@ Function PrepareDataStructuresForPostingClearing(DocumentRef, AdditionalProperti
 	
 EndFunction
 
+//------------------------------------------------------------------------------
+// Document filling
+
+// Collect source data for filling document on the server (in terms of document)
+Function PrepareDataStructuresForFilling(DocumentRef, AdditionalProperties) Export
+	
+	// Create list of posting tables (according to the list of registers)
+	TablesList = New Structure;
+	
+	// Create a query to request document data
+	Query = New Query;
+	Query.TempTablesManager = New TempTablesManager;
+	Query.SetParameter("Ref",  DocumentRef);
+	Query.SetParameter("Date", AdditionalProperties.Date);
+	
+	// Query for document's tables
+	Query.Text   = "";
+	For Each FillingData In AdditionalProperties.Filling.FillingData Do
+		
+		// Construct query by passed sources
+		If FillingData.Key = "Document_PurchaseOrder" Then
+			Query.Text = Query.Text +
+			             Query_Filling_Document_PurchaseOrder_Attributes(TablesList) +
+			             Query_Filling_Document_PurchaseOrder_OrdersStatuses(TablesList) +
+			             Query_Filling_Document_PurchaseOrder_OrdersDispatched(TablesList) +
+			             Query_Filling_Document_PurchaseOrder_LineItems(TablesList) +
+			             Query_Filling_Document_PurchaseOrder_Totals(TablesList);
+			
+		ElsIf FillingData.Key = "Document_ItemReceipt" Then
+			Query.Text = Query.Text +
+			             Query_Filling_Document_ItemReceipt_Attributes(TablesList) +
+			             Query_Filling_Document_ItemReceipt_OrdersStatuses(TablesList) +
+			             Query_Filling_Document_ItemReceipt_OrdersDispatched(TablesList) +
+			             Query_Filling_Document_ItemReceipt_LineItems(TablesList) +
+			             Query_Filling_Document_ItemReceipt_Totals(TablesList);
+			
+		Else // Next filling source
+		EndIf;
+		
+		Query.SetParameter("FillingData_" + FillingData.Key, FillingData.Value);
+	EndDo;
+	
+	// Add combining query
+	Query.Text = Query.Text +
+	             Query_Filling_Attributes(TablesList) +
+	             Query_Filling_LineItems(TablesList);
+	
+	// Add check query
+	Query.Text = Query.Text +
+	             Query_Filling_Check(TablesList, FillingCheckList(AdditionalProperties));
+	
+	// Execute query, fill temporary tables with filling data
+	If TablesList.Count() > 3 Then
+		
+		// Execute query
+		QueryResult = Query.ExecuteBatch();
+		
+		AdditionalProperties.Filling.FillingTables.Insert("Table_Attributes", DocumentPosting.GetTemporaryTable(Query.TempTablesManager, "Table_Attributes"));
+		For Each TabularSection In AdditionalProperties.Metadata.TabularSections Do
+			If TablesList.Property("Table_"+TabularSection.Name) Then
+				AdditionalProperties.Filling.FillingTables.Insert("Table_"+TabularSection.Name, DocumentPosting.GetTemporaryTable(Query.TempTablesManager, "Table_"+TabularSection.Name));
+			EndIf;
+		EndDo;
+		AdditionalProperties.Filling.FillingTables.Insert("Table_Check", DocumentPosting.GetTemporaryTable(Query.TempTablesManager, "Table_Check"));
+	EndIf;
+	
+EndFunction
+
+// Check status of passed purchase order by ref
+// Returns True if status passed for invoice filling
+Function CheckStatusOfPurchaseOrder(DocumentRef, FillingRef) Export
+	
+	// Create new query
+	Query = New Query;
+	Query.SetParameter("Ref", FillingRef);
+	
+	QueryText = 
+		"SELECT
+		|	CASE
+		|		WHEN PurchaseOrder.DeletionMark THEN
+		|			 VALUE(Enum.OrderStatuses.Deleted)
+		|		WHEN NOT PurchaseOrder.Posted THEN
+		|			 VALUE(Enum.OrderStatuses.Draft)
+		|		WHEN OrdersStatuses.Status IS NULL THEN
+		|			 VALUE(Enum.OrderStatuses.Open)
+		|		WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.EmptyRef) THEN
+		|			 VALUE(Enum.OrderStatuses.Open)
+		|		ELSE
+		|			 OrdersStatuses.Status
+		|	END AS Status
+		|FROM
+		|	Document.PurchaseOrder AS PurchaseOrder
+		|	LEFT JOIN InformationRegister.OrdersStatuses.SliceLast AS OrdersStatuses
+		|		ON PurchaseOrder.Ref = OrdersStatuses.Order
+		|WHERE
+		|	PurchaseOrder.Ref = &Ref";
+	Query.Text  = QueryText;
+	OrderStatus = Query.Execute().Unload()[0].Status;
+	
+	StatusOK = (OrderStatus = Enums.OrderStatuses.Open) Or (OrderStatus = Enums.OrderStatuses.Backordered);
+	If Not StatusOK Then
+		MessageText = NStr("en = 'Failed to generate the %1 on the base of %2 %3.'");
+		MessageText = StringFunctionsClientServer.SubstituteParametersInString(MessageText,
+		                                                                       Lower(Metadata.FindByType(TypeOf(DocumentRef)).Presentation()),
+		                                                                       Lower(OrderStatus),
+		                                                                       Lower(Metadata.FindByType(TypeOf(FillingRef)).Presentation())); 
+		CommonUseClientServer.MessageToUser(MessageText, FillingRef);
+	EndIf;
+	Return StatusOK;
+	
+EndFunction
+
+//------------------------------------------------------------------------------
+// Document printing
+
+// Collect document data for printing on the server.
+Function PrepareDataStructuresForPrinting(DocumentRef, AdditionalProperties, PrintingTables) Export
+	
+	// Create list of printing tables.
+	TablesList   = New Structure;
+	
+	// Define printing template.
+	TemplateName = ?(ValueIsFilled(AdditionalProperties.TemplateName),
+	                               AdditionalProperties.TemplateName,
+	                               AdditionalProperties.Metadata.Synonym);
+	
+	// Convert multiple templates to strings array.
+	If TypeOf(TemplateName) = Type("String") And Find(TemplateName, ",") > 0 Then
+		TemplateName = StringFunctionsClientServer.SplitStringIntoSubstringArray(TemplateName);
+		AdditionalProperties.TemplateName = TemplateName;
+	EndIf;
+	
+	// Create a query to request document data.
+	Query = New Query;
+	Query.TempTablesManager = New TempTablesManager;
+	Query.SetParameter("Ref",          DocumentRef);
+	Query.SetParameter("ObjectName",   AdditionalProperties.Metadata.FullName());
+	Query.SetParameter("TemplateName", TemplateName);
+	
+	// Query for document's tables.
+	Query.Text  = Query_Printing_Document_Data(TablesList) +
+	              Query_Printing_Document_Attributes(TablesList) +
+	              Query_Printing_Document_LineItems(TablesList) +
+	              DocumentPrinting.Query_OurCompany_Addresses_BillingAddress(TablesList) +
+	              DocumentPrinting.Query_Company_Addresses_BillingAddress(TablesList) +
+	              DocumentPrinting.Query_CustomPrintForms_Logo(TablesList) +
+	              DocumentPrinting.Query_CustomPrintForms_Template(TablesList);
+	
+	// Execute query
+	QueryResult = Query.ExecuteBatch();
+	
+	// Save document tables in printing parameters.
+	For Each DocumentTable In TablesList Do
+		PrintingTables.Insert(DocumentTable.Key, QueryResult[DocumentTable.Value].Unload());
+	EndDo;
+	
+	// Dispose query objects.
+	Query.TempTablesManager.Close();
+	Query = Undefined;
+	
+EndFunction
+
+#EndIf
+
+#EndRegion
+
+////////////////////////////////////////////////////////////////////////////////
+#Region COMMANDS_HANDLERS
+
+#If Server Or ThickClientOrdinaryApplication Or ExternalConnection Then
+
+// Handler of standard print command
+//
+// Parameters:
+//  Spreadsheet  - SpreadsheetDocument - Output spreadsheet.
+//  SheetTitle   - String      - Spreadsheet title.
+//  DocumentRef  - DocumentRef - Reference to document to be printed.
+//               - Array       - Array of the document references to be printed in the same media.
+//  TemplateName - String      - Name of replacing template for using within custom or predefined templates.
+//               - Array       - Array of individual template names for each document reference.
+//               - Undefined   - If not specified, then standard template will be used.
+//
+// Returns:
+//  Spreadsheet  - Filled print form.
+//  Title        - Filled spreadsheet title.
+//
+Procedure Print(Spreadsheet, SheetTitle, DocumentRef, TemplateName = Undefined) Export
+	
+	//------------------------------------------------------------------------------
+	// 1. Filling of parameters
+	
+	// Common filling of parameters.
+	PrintingTables                  = New Structure;
+	DocumentParameters              = New Structure("Ref, Metadata, TemplateName");
+	DocumentParameters.Ref          = DocumentRef;
+	DocumentParameters.Metadata     = Metadata.Documents.PurchaseInvoice;
+	DocumentParameters.TemplateName = TemplateName;
+	
+	//------------------------------------------------------------------------------
+	// 2. Collect document data, available for printing, and fill printing structure.
+	PrepareDataStructuresForPrinting(DocumentRef, DocumentParameters, PrintingTables);
+	
+	//------------------------------------------------------------------------------
+	// 3. Fill output spreadsheet using the template and requested document data.
+	
+	// Define common template for the document.
+	CommonTemplate       = DocumentPrinting.GetDocumentTemplate(DocumentParameters, PrintingTables);
+	LogoPicture          = DocumentPrinting.GetDocumentLogo(DocumentParameters, PrintingTables);
+	SheetTitle           = DocumentPrinting.GetDocumentTitle(DocumentParameters);
+	LastUsedTemplateName = Undefined;
+	
+	// Prepare the output.
+	Spreadsheet.Clear();
+	
+	// Go thru references and fill out the spreadsheet by each document.
+	For Each DocumentAttributes In PrintingTables.Table_Printing_Document_Attributes Do
+		
+		//------------------------------------------------------------------------------
+		// 3.1. Define template for the document.
+		
+		// Set the document template.
+		If (DocumentParameters.TemplateName = Undefined)
+		Or TypeOf(DocumentParameters.TemplateName) = Type("String") Then
+			// Assign the common template for all documents.
+			Template = CommonTemplate;
+			
+		ElsIf TypeOf(DocumentParameters.TemplateName) = Type("Array") Then
+			// Use an individual template for each document.
+			IndividualTemplateName = DocumentPrinting.GetIndividualTemplateName(DocumentRef, DocumentAttributes.Ref, DocumentParameters);
+			If IndividualTemplateName = Undefined Then
+				Template = CommonTemplate;
+				LastUsedTemplateName = Undefined;
+			ElsIf IndividualTemplateName <> LastUsedTemplateName Then
+				Template = DocumentPrinting.GetDocumentTemplate(DocumentParameters, PrintingTables, IndividualTemplateName);
+				LastUsedTemplateName = IndividualTemplateName;
+			EndIf;
+		EndIf;
+		
+		//------------------------------------------------------------------------------
+		// 3.2. Output document data to spreadsheet using selected template.
+		
+		// Document output.
+		If Template <> Undefined Then
+			
+			// Put logo into the template.
+			DocumentPrinting.FillLogoInDocumentTemplate(Template, LogoPicture);
+			
+			// Fill document header.
+			TemplateArea = Template.GetArea("Header");
+			TemplateArea.Parameters.Fill(DocumentAttributes);
+			TemplateArea.Parameters.Fill(PrintingTables.Table_OurCompany_Addresses_BillingAddress[0]);
+			TemplateArea.Parameters.Fill(PrintingTables.Table_Company_Addresses_BillingAddress.Find(DocumentAttributes.Ref, "Ref"));
+			
+			// Output the header to the sheet.
+			Spreadsheet.Put(TemplateArea);
+			
+			// Output the line items header to the sheet.
+			TemplateArea = Template.GetArea("LineItemsHeader");
+			Spreadsheet.Put(TemplateArea);
+			
+			// Output line items of current document.
+			TemplateArea = Template.GetArea("LineItems");
+			LineItems = PrintingTables.Table_Printing_Document_LineItems.FindRows(New Structure("Ref", DocumentAttributes.Ref));
+			For Each Row In LineItems Do
+				TemplateArea.Parameters.Fill(Row);
+				Spreadsheet.Put(TemplateArea, 1);
+			EndDo;
+			
+			// Output VAT (for VAT financial localization).
+			If DocumentAttributes.VATTotal <> 0 Then;
+				// Put subtotal.
+				TemplateArea = Template.GetArea("Subtotal");
+				TemplateArea.Parameters.Subtotal = ?(DocumentAttributes.PriceIncludesVAT,
+				                                     DocumentAttributes.DocumentTotal,
+				                                     DocumentAttributes.DocumentTotal - DocumentAttributes.VATTotal);
+				Spreadsheet.Put(TemplateArea);
+				
+				// Put VAT.
+				TemplateArea = Template.GetArea("VAT");
+				TemplateArea.Parameters.VATTotal = DocumentAttributes.VATTotal;
+				Spreadsheet.Put(TemplateArea);
+			EndIf;
+			
+			// Output document total.
+			TemplateArea = Template.GetArea("Total");
+			TemplateArea.Parameters.DocumentTotal = DocumentAttributes.DocumentTotal;
+			Spreadsheet.Put(TemplateArea);
+		EndIf;
+	EndDo;
+	
+EndProcedure
+
+#EndIf
+
+#EndRegion
+
+////////////////////////////////////////////////////////////////////////////////
+#Region PRIVATE_IMPLEMENTATION
+
+#If Server Or ThickClientOrdinaryApplication Or ExternalConnection Then
+
+//------------------------------------------------------------------------------
+// Document posting
+
 // Query for document data
 Function Query_OrdersStatuses(TablesList)
 	
@@ -181,6 +490,10 @@ Function Query_OrdersDispatched(TablesList)
 	|	LineItems.Ref.Company                 AS Company,
 	|	LineItems.Order                       AS Order,
 	|	LineItems.Product                     AS Product,
+	|	LineItems.Location                    AS Location,
+	|	LineItems.DeliveryDate                AS DeliveryDate,
+	|	LineItems.Project                     AS Project,
+	|	LineItems.Class                       AS Class,
 	// ------------------------------------------------------
 	// Resources
 	|	0                                     AS Quantity,
@@ -202,9 +515,13 @@ Function Query_OrdersDispatched(TablesList)
 	|FROM
 	|	Document.PurchaseInvoice.LineItems AS LineItems
 	|	LEFT JOIN Table_OrdersDispatched_Balance AS OrdersDispatchedBalance
-	|		ON  OrdersDispatchedBalance.Company = LineItems.Ref.Company
-	|		AND OrdersDispatchedBalance.Order   = LineItems.Order
-	|		AND OrdersDispatchedBalance.Product = LineItems.Product
+	|		ON  OrdersDispatchedBalance.Company      = LineItems.Ref.Company
+	|		AND OrdersDispatchedBalance.Order        = LineItems.Order
+	|		AND OrdersDispatchedBalance.Product      = LineItems.Product
+	|		AND OrdersDispatchedBalance.Location     = LineItems.Location
+	|		AND OrdersDispatchedBalance.DeliveryDate = LineItems.DeliveryDate
+	|		AND OrdersDispatchedBalance.Project      = LineItems.Project
+	|		AND OrdersDispatchedBalance.Class        = LineItems.Class
 	|WHERE
 	|	LineItems.Ref = &Ref
 	|	AND LineItems.Order <> VALUE(Document.PurchaseOrder.EmptyRef)
@@ -253,6 +570,10 @@ Function Query_OrdersDispatched_Balance(TablesList)
 	|	OrdersDispatchedBalance.Company          AS Company,
 	|	OrdersDispatchedBalance.Order            AS Order,
 	|	OrdersDispatchedBalance.Product          AS Product,
+	|	OrdersDispatchedBalance.Location         AS Location,
+	|	OrdersDispatchedBalance.DeliveryDate     AS DeliveryDate,
+	|	OrdersDispatchedBalance.Project          AS Project,
+	|	OrdersDispatchedBalance.Class            AS Class,
 	// ------------------------------------------------------
 	// Resources
 	|	OrdersDispatchedBalance.QuantityBalance  AS Quantity,
@@ -261,10 +582,11 @@ Function Query_OrdersDispatched_Balance(TablesList)
 	// ------------------------------------------------------
 	|FROM
 	|	AccumulationRegister.OrdersDispatched.Balance(&PointInTime,
-	|		(Company, Order) IN
+	|		(Company, Order, Product) IN
 	|			(SELECT
 	|				&Company,
-	|				LineItems.Order
+	|				LineItems.Order,
+	|				LineItems.Product
 	|			FROM
 	|				Table_LineItems AS LineItems)) AS OrdersDispatchedBalance";
 	
@@ -503,73 +825,8 @@ Procedure CheckCloseParentOrders(DocumentRef, AdditionalProperties, TempTablesMa
 	
 EndProcedure
 
-////////////////////////////////////////////////////////////////////////////////
-// DOCUMENT FILLING
-
-// Collect source data for filling document on the server (in terms of document)
-Function PrepareDataStructuresForFilling(DocumentRef, AdditionalProperties) Export
-	
-	// Create list of posting tables (according to the list of registers)
-	TablesList = New Structure;
-	
-	// Create a query to request document data
-	Query = New Query;
-	Query.TempTablesManager = New TempTablesManager;
-	Query.SetParameter("Ref",  DocumentRef);
-	Query.SetParameter("Date", AdditionalProperties.Date);
-	
-	// Query for document's tables
-	Query.Text   = "";
-	For Each FillingData In AdditionalProperties.Filling.FillingData Do
-		
-		// Construct query by passed sources
-		If FillingData.Key = "Document_PurchaseOrder" Then
-			Query.Text = Query.Text +
-						 Query_Filling_Document_PurchaseOrder_Attributes(TablesList) +
-						 Query_Filling_Document_PurchaseOrder_OrdersStatuses(TablesList) +
-						 Query_Filling_Document_PurchaseOrder_OrdersDispatched(TablesList) +
-						 Query_Filling_Document_PurchaseOrder_LineItems(TablesList) +
-						 Query_Filling_Document_PurchaseOrder_Totals(TablesList);
-			
-		ElsIf FillingData.Key = "Document_ItemReceipt" Then
-			Query.Text = Query.Text +
-						 Query_Filling_Document_ItemReceipt_Attributes(TablesList) +
-						 Query_Filling_Document_ItemReceipt_OrdersStatuses(TablesList) +
-						 Query_Filling_Document_ItemReceipt_OrdersDispatched(TablesList) +
-						 Query_Filling_Document_ItemReceipt_LineItems(TablesList) +
-						 Query_Filling_Document_ItemReceipt_Totals(TablesList);
-			
-		Else // Next filling source
-		EndIf;
-		
-		Query.SetParameter("FillingData_" + FillingData.Key, FillingData.Value);
-	EndDo;
-	
-	// Add combining query
-	Query.Text = Query.Text +
-				 Query_Filling_Attributes(TablesList) +
-				 Query_Filling_LineItems(TablesList);
-	
-	// Add check query
-	Query.Text = Query.Text +
-				 Query_Filling_Check(TablesList, FillingCheckList(AdditionalProperties));
-	
-	// Execute query, fill temporary tables with filling data
-	If TablesList.Count() > 3 Then
-		
-		// Execute query
-		QueryResult = Query.ExecuteBatch();
-		
-		AdditionalProperties.Filling.FillingTables.Insert("Table_Attributes", DocumentPosting.GetTemporaryTable(Query.TempTablesManager, "Table_Attributes"));
-		For Each TabularSection In AdditionalProperties.Metadata.TabularSections Do
-			If TablesList.Property("Table_"+TabularSection.Name) Then
-				AdditionalProperties.Filling.FillingTables.Insert("Table_"+TabularSection.Name, DocumentPosting.GetTemporaryTable(Query.TempTablesManager, "Table_"+TabularSection.Name));
-			EndIf;
-		EndDo;
-		AdditionalProperties.Filling.FillingTables.Insert("Table_Check", DocumentPosting.GetTemporaryTable(Query.TempTablesManager, "Table_Check"));
-	EndIf;
-	
-EndFunction
+//------------------------------------------------------------------------------
+// Document filling
 
 // Query for document filling
 Function Query_Filling_Document_PurchaseOrder_Attributes(TablesList)
@@ -586,6 +843,9 @@ Function Query_Filling_Document_PurchaseOrder_Attributes(TablesList)
 		|	PurchaseOrder.Currency                  AS Currency,
 		|	PurchaseOrder.ExchangeRate              AS ExchangeRate,
 		|	PurchaseOrder.Location                  AS Location,
+		|	PurchaseOrder.DeliveryDate              AS DeliveryDate,
+		|	PurchaseOrder.Project                   AS Project,
+		|	PurchaseOrder.Class                     AS Class,
 		|	CASE
 		|		WHEN PurchaseOrder.Company.Terms.Days IS NULL THEN DATEADD(&Date, DAY, 14)
 		|		WHEN PurchaseOrder.Company.Terms.Days = 0     THEN DATEADD(&Date, DAY, 14)
@@ -661,6 +921,10 @@ Function Query_Filling_Document_PurchaseOrder_OrdersDispatched(TablesList)
 		|	OrdersDispatchedBalance.Company          AS Company,
 		|	OrdersDispatchedBalance.Order            AS Order,
 		|	OrdersDispatchedBalance.Product          AS Product,
+		|	OrdersDispatchedBalance.Location         AS Location,
+		|	OrdersDispatchedBalance.DeliveryDate     AS DeliveryDate,
+		|	OrdersDispatchedBalance.Project          AS Project,
+		|	OrdersDispatchedBalance.Class            AS Class,
 		// ------------------------------------------------------
 		// Resources                                                                                                        // ---------------------------------------
 		|	OrdersDispatchedBalance.QuantityBalance  AS Quantity,                                                           // Backorder quantity calculation
@@ -688,11 +952,15 @@ Function Query_Filling_Document_PurchaseOrder_OrdersDispatched(TablesList)
 		|	Table_Document_PurchaseOrder_OrdersDispatched
 		|FROM
 		|	AccumulationRegister.OrdersDispatched.Balance(,
-		|		(Company, Order, Product) IN
+		|		(Company, Order, Product, Location, DeliveryDate, Project, Class) IN
 		|			(SELECT
 		|				PurchaseOrderLineItems.Ref.Company,
 		|				PurchaseOrderLineItems.Ref,
-		|				PurchaseOrderLineItems.Product
+		|				PurchaseOrderLineItems.Product,
+		|				PurchaseOrderLineItems.Location,
+		|				PurchaseOrderLineItems.DeliveryDate,
+		|				PurchaseOrderLineItems.Project,
+		|				PurchaseOrderLineItems.Class
 		|			FROM
 		|				Document.PurchaseOrder.LineItems AS PurchaseOrderLineItems
 		|			WHERE
@@ -716,6 +984,7 @@ Function Query_Filling_Document_PurchaseOrder_LineItems(TablesList)
 		|	PurchaseOrderLineItems.Ref                 AS FillingData,
 		|	PurchaseOrderLineItems.Product             AS Product,
 		|	PurchaseOrderLineItems.ProductDescription  AS ProductDescription,
+		|	PurchaseOrderLineItems.UM                  AS UM,
 		|	PurchaseOrderLineItems.Price               AS Price,
 		|	PurchaseOrderLineItems.Price               AS OrderPrice,
 		|	CASE
@@ -758,28 +1027,30 @@ Function Query_Filling_Document_PurchaseOrder_LineItems(TablesList)
 		|		END /
 		|		100
 		|	AS NUMBER (15, 2))                         AS VAT,
+		|	PurchaseOrderLineItems.Location            AS Location,
+		|	PurchaseOrderLineItems.DeliveryDate        AS DeliveryDate,
 		|	PurchaseOrderLineItems.Ref                 AS Order,
+		|	PurchaseOrderLineItems.Project             AS Project,
+		|	PurchaseOrderLineItems.Class               AS Class,
 		|	PurchaseOrderLineItems.Ref.Company         AS Company
 		|INTO
 		|	Table_Document_PurchaseOrder_LineItems
 		|FROM
 		|	Document.PurchaseOrder.LineItems AS PurchaseOrderLineItems
 		|	LEFT JOIN Table_Document_PurchaseOrder_OrdersDispatched AS OrdersDispatched
-		|		ON  OrdersDispatched.Company = PurchaseOrderLineItems.Ref.Company
-		|		AND OrdersDispatched.Order   = PurchaseOrderLineItems.Ref
-		|		AND OrdersDispatched.Product = PurchaseOrderLineItems.Product
+		|		ON  OrdersDispatched.Company      = PurchaseOrderLineItems.Ref.Company
+		|		AND OrdersDispatched.Order        = PurchaseOrderLineItems.Ref
+		|		AND OrdersDispatched.Product      = PurchaseOrderLineItems.Product
+		|		AND OrdersDispatched.Location     = PurchaseOrderLineItems.Location
+		|		AND OrdersDispatched.DeliveryDate = PurchaseOrderLineItems.DeliveryDate
+		|		AND OrdersDispatched.Project      = PurchaseOrderLineItems.Project
+		|		AND OrdersDispatched.Class        = PurchaseOrderLineItems.Class
 		|	LEFT JOIN Table_Document_PurchaseOrder_OrdersStatuses AS OrdersStatuses
 		|		ON OrdersStatuses.Order = PurchaseOrderLineItems.Ref
 		|WHERE
 		|	PurchaseOrderLineItems.Ref IN (&FillingData_Document_PurchaseOrder)";
-		
-		// Add project field (if available)
-		//UseProjects = True; // GeneralFunctions.FunctionalOptionValue("Projects");
-		//QueryText   = StrReplace(QueryText, "
-		//|	{Project}",  ?(UseProjects, "
-		//|	PurchaseOrderLineItems.Project         AS Project,", ""));
-		
-		Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
 	
 EndFunction
 
@@ -843,12 +1114,15 @@ Function Query_Filling_Document_ItemReceipt_Attributes(TablesList)
 	// Collect attributes data
 	QueryText =
 		"SELECT
-		|	ItemReceipt.Ref                       AS FillingData,
-		|	ItemReceipt.Company                   AS Company,
-		|	ItemReceipt.CompanyCode               AS CompanyCode,
-		|	ItemReceipt.Currency                  AS Currency,
-		|	ItemReceipt.ExchangeRate              AS ExchangeRate,
-		|	ItemReceipt.Location                  AS Location,
+		|	ItemReceipt.Ref                         AS FillingData,
+		|	ItemReceipt.Company                     AS Company,
+		|	ItemReceipt.CompanyCode                 AS CompanyCode,
+		|	ItemReceipt.Currency                    AS Currency,
+		|	ItemReceipt.ExchangeRate                AS ExchangeRate,
+		|	ItemReceipt.Location                    AS Location,
+		|	ItemReceipt.DeliveryDate                AS DeliveryDate,
+		|	ItemReceipt.Project                     AS Project,
+		|	ItemReceipt.Class                       AS Class,
 		|	CASE
 		|		WHEN ItemReceipt.Company.Terms.Days IS NULL THEN DATEADD(&Date, DAY, 14)
 		|		WHEN ItemReceipt.Company.Terms.Days = 0     THEN DATEADD(&Date, DAY, 14)
@@ -858,7 +1132,7 @@ Function Query_Filling_Document_ItemReceipt_Attributes(TablesList)
 		|	                                        AS Terms,
 		|	ISNULL(ItemReceipt.Currency.DefaultAPAccount, VALUE(ChartOfAccounts.ChartOfAccounts.EmptyRef))
 		|	                                        AS APAccount,
-		|	ItemReceipt.PriceIncludesVAT          AS PriceIncludesVAT
+		|	ItemReceipt.PriceIncludesVAT            AS PriceIncludesVAT
 		|INTO
 		|	Table_Document_ItemReceipt_Attributes
 		|FROM
@@ -881,7 +1155,7 @@ Function Query_Filling_Document_ItemReceipt_OrdersStatuses(TablesList)
 		"SELECT
 		// ------------------------------------------------------
 		// Dimensions
-		|	ItemReceipt.Ref                        AS Order,
+		|	ItemReceipt.Ref                         AS Order,
 		// ------------------------------------------------------
 		// Resources
 		|	CASE
@@ -924,6 +1198,10 @@ Function Query_Filling_Document_ItemReceipt_OrdersDispatched(TablesList)
 		|	OrdersDispatchedBalance.Company          AS Company,
 		|	OrdersDispatchedBalance.Order            AS Order,
 		|	OrdersDispatchedBalance.Product          AS Product,
+		|	OrdersDispatchedBalance.Location         AS Location,
+		|	OrdersDispatchedBalance.DeliveryDate     AS DeliveryDate,
+		|	OrdersDispatchedBalance.Project          AS Project,
+		|	OrdersDispatchedBalance.Class            AS Class,
 		// ------------------------------------------------------
 		// Resources                                                                                                        // ---------------------------------------
 		|	OrdersDispatchedBalance.QuantityBalance  AS Quantity,                                                           // Backorder quantity calculation
@@ -955,7 +1233,11 @@ Function Query_Filling_Document_ItemReceipt_OrdersDispatched(TablesList)
 		|			(SELECT
 		|				ItemReceiptLineItems.Ref.Company,
 		|				ItemReceiptLineItems.Ref,
-		|				ItemReceiptLineItems.Product
+		|				ItemReceiptLineItems.Product,
+		|				ItemReceiptLineItems.Location,
+		|				ItemReceiptLineItems.DeliveryDate,
+		|				ItemReceiptLineItems.Project,
+		|				ItemReceiptLineItems.Class
 		|			FROM
 		|				Document.ItemReceipt.LineItems AS ItemReceiptLineItems
 		|			WHERE
@@ -976,11 +1258,12 @@ Function Query_Filling_Document_ItemReceipt_LineItems(TablesList)
 	// Collect line items data
 	QueryText =
 		"SELECT
-		|	ItemReceiptLineItems.Ref                 AS FillingData,
-		|	ItemReceiptLineItems.Product             AS Product,
-		|	ItemReceiptLineItems.ProductDescription  AS ProductDescription,
-		|	ItemReceiptLineItems.Price               AS Price,
-		|	ItemReceiptLineItems.Price               AS OrderPrice,
+		|	ItemReceiptLineItems.Ref                   AS FillingData,
+		|	ItemReceiptLineItems.Product               AS Product,
+		|	ItemReceiptLineItems.ProductDescription    AS ProductDescription,
+		|	ItemReceiptLineItems.UM                    AS UM,
+		|	ItemReceiptLineItems.Price                 AS Price,
+		|	ItemReceiptLineItems.Price                 AS OrderPrice,
 		|	CASE
 		|		WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Open)
 		|			THEN ISNULL(OrdersDispatched.Quantity, ItemReceiptLineItems.Quantity)
@@ -1021,28 +1304,30 @@ Function Query_Filling_Document_ItemReceipt_LineItems(TablesList)
 		|		END /
 		|		100
 		|	AS NUMBER (15, 2))                         AS VAT,
-		|	ItemReceiptLineItems.Ref                 AS Order,
-		|	ItemReceiptLineItems.Ref.Company         AS Company
+		|	ItemReceiptLineItems.Location              AS Location,
+		|	ItemReceiptLineItems.DeliveryDate          AS DeliveryDate,
+		|	ItemReceiptLineItems.Order                 AS Order,
+		|	ItemReceiptLineItems.Project               AS Project,
+		|	ItemReceiptLineItems.Class                 AS Class,
+		|	ItemReceiptLineItems.Ref.Company           AS Company
 		|INTO
 		|	Table_Document_ItemReceipt_LineItems
 		|FROM
 		|	Document.ItemReceipt.LineItems AS ItemReceiptLineItems
 		|	LEFT JOIN Table_Document_ItemReceipt_OrdersDispatched AS OrdersDispatched
-		|		ON  OrdersDispatched.Company = ItemReceiptLineItems.Ref.Company
-		|		AND OrdersDispatched.Order   = ItemReceiptLineItems.Ref
-		|		AND OrdersDispatched.Product = ItemReceiptLineItems.Product
+		|		ON  OrdersDispatched.Company      = ItemReceiptLineItems.Ref.Company
+		|		AND OrdersDispatched.Order        = ItemReceiptLineItems.Ref
+		|		AND OrdersDispatched.Product      = ItemReceiptLineItems.Product
+		|		AND OrdersDispatched.Location     = ItemReceiptLineItems.Location
+		|		AND OrdersDispatched.DeliveryDate = ItemReceiptLineItems.DeliveryDate
+		|		AND OrdersDispatched.Project      = ItemReceiptLineItems.Project
+		|		AND OrdersDispatched.Class        = ItemReceiptLineItems.Class
 		|	LEFT JOIN Table_Document_ItemReceipt_OrdersStatuses AS OrdersStatuses
 		|		ON OrdersStatuses.Order = ItemReceiptLineItems.Ref
 		|WHERE
 		|	ItemReceiptLineItems.Ref IN (&FillingData_Document_ItemReceipt)";
-		
-		// Add project field (if available)
-		//UseProjects = True; // GeneralFunctions.FunctionalOptionValue("Projects");
-		//QueryText   = StrReplace(QueryText, "
-		//|	{Project}",  ?(UseProjects, "
-		//|	ItemReceiptLineItems.Project         AS Project,", ""));
-		
-		Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
 	
 EndFunction
 
@@ -1056,7 +1341,7 @@ Function Query_Filling_Document_ItemReceipt_Totals(TablesList)
 	QueryText =
 		"SELECT
 		// Totals of document
-		|	ItemReceiptLineItems.FillingData      AS FillingData,
+		|	ItemReceiptLineItems.FillingData        AS FillingData,
 		|
 		|	CAST( // Format(Total(VAT) * ExchangeRate, ""ND=15; NFD=2"")
 		|		SUM(ItemReceiptLineItems.VAT) *
@@ -1126,6 +1411,9 @@ Function Query_Filling_Attributes(TablesList)
 		|	Document_PurchaseOrder_Attributes.ExchangeRate,
 		|	Document_PurchaseOrder_Totals.DocumentTotalRC,
 		|	Document_PurchaseOrder_Attributes.Location,
+		|	Document_PurchaseOrder_Attributes.DeliveryDate,
+		|	Document_PurchaseOrder_Attributes.Project,
+		|	Document_PurchaseOrder_Attributes.Class,
 		|	Document_PurchaseOrder_Attributes.DueDate,
 		|	Document_PurchaseOrder_Attributes.Terms,
 		|	Document_PurchaseOrder_Totals.VATTotal,
@@ -1164,6 +1452,9 @@ Function Query_Filling_Attributes(TablesList)
 		|	Document_ItemReceipt_Attributes.ExchangeRate,
 		|	Document_ItemReceipt_Totals.DocumentTotalRC,
 		|	Document_ItemReceipt_Attributes.Location,
+		|	Document_ItemReceipt_Attributes.DeliveryDate,
+		|	Document_ItemReceipt_Attributes.Project,
+		|	Document_ItemReceipt_Attributes.Class,
 		|	Document_ItemReceipt_Attributes.DueDate,
 		|	Document_ItemReceipt_Attributes.Terms,
 		|	Document_ItemReceipt_Totals.VATTotal,
@@ -1213,13 +1504,18 @@ Function Query_Filling_LineItems(TablesList)
 		|	Document_PurchaseOrder_LineItems.FillingData,
 		|	Document_PurchaseOrder_LineItems.Product,
 		|	Document_PurchaseOrder_LineItems.ProductDescription,
+		|	Document_PurchaseOrder_LineItems.UM,
 		|	Document_PurchaseOrder_LineItems.Price,
 		|	Document_PurchaseOrder_LineItems.OrderPrice,
 		|	Document_PurchaseOrder_LineItems.Quantity,
 		|	Document_PurchaseOrder_LineItems.LineTotal,
 		|	Document_PurchaseOrder_LineItems.VATCode,
 		|	Document_PurchaseOrder_LineItems.VAT,
-		|	Document_PurchaseOrder_LineItems.Order
+		|	Document_PurchaseOrder_LineItems.Location,
+		|	Document_PurchaseOrder_LineItems.DeliveryDate,
+		|	Document_PurchaseOrder_LineItems.Order,
+		|	Document_PurchaseOrder_LineItems.Project,
+		|	Document_PurchaseOrder_LineItems.Class
 		|{Into}
 		|FROM
 		|	Table_Document_PurchaseOrder_LineItems AS Document_PurchaseOrder_LineItems
@@ -1248,13 +1544,18 @@ Function Query_Filling_LineItems(TablesList)
 		|	Document_ItemReceipt_LineItems.FillingData,
 		|	Document_ItemReceipt_LineItems.Product,
 		|	Document_ItemReceipt_LineItems.ProductDescription,
+		|	Document_ItemReceipt_LineItems.UM,
 		|	Document_ItemReceipt_LineItems.Price,
 		|	Document_ItemReceipt_LineItems.OrderPrice,
 		|	Document_ItemReceipt_LineItems.Quantity,
 		|	Document_ItemReceipt_LineItems.LineTotal,
 		|	Document_ItemReceipt_LineItems.VATCode,
 		|	Document_ItemReceipt_LineItems.VAT,
-		|	Document_ItemReceipt_LineItems.Order
+		|	Document_ItemReceipt_LineItems.Location,
+		|	Document_ItemReceipt_LineItems.DeliveryDate,
+		|	Document_ItemReceipt_LineItems.Order,
+		|	Document_ItemReceipt_LineItems.Project,
+		|	Document_ItemReceipt_LineItems.Class
 		|{Into}
 		|FROM
 		|	Table_Document_ItemReceipt_LineItems AS Document_ItemReceipt_LineItems
@@ -1284,7 +1585,6 @@ Function FillingCheckList(AdditionalProperties)
 	CheckAttributes.Insert("Company",          "Check");
 	CheckAttributes.Insert("Currency",         "Check");
 	CheckAttributes.Insert("ExchangeRate",     "Check");
-	CheckAttributes.Insert("Location",         "Check");
 	CheckAttributes.Insert("APAccount",        "Check");
 	CheckAttributes.Insert("PriceIncludesVAT", "Check");
 	// Maximal possible values
@@ -1351,47 +1651,100 @@ Function Query_Filling_Check(TablesList, CheckAttributes)
 	
 EndFunction
 
-// Check status of passed purchase order by ref
-// Returns True if status passed for invoice filling
-Function CheckStatusOfPurchaseOrder(DocumentRef, FillingRef) Export
+//------------------------------------------------------------------------------
+// Document printing
+
+// Query for document data
+Function Query_Printing_Document_Data(TablesList)
 	
-	// Create new query
-	Query = New Query;
-	Query.SetParameter("Ref", FillingRef);
+	// Add document table to query structure.
+	TablesList.Insert("Table_Printing_Document_Data", TablesList.Count());
 	
-	QueryText = 
-		"SELECT
-		|	CASE
-		|		WHEN PurchaseOrder.DeletionMark THEN
-		|			 VALUE(Enum.OrderStatuses.Deleted)
-		|		WHEN NOT PurchaseOrder.Posted THEN
-		|			 VALUE(Enum.OrderStatuses.Draft)
-		|		WHEN OrdersStatuses.Status IS NULL THEN
-		|			 VALUE(Enum.OrderStatuses.Open)
-		|		WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.EmptyRef) THEN
-		|			 VALUE(Enum.OrderStatuses.Open)
-		|		ELSE
-		|			 OrdersStatuses.Status
-		|	END AS Status
-		|FROM
-		|	Document.PurchaseOrder AS PurchaseOrder
-		|	LEFT JOIN InformationRegister.OrdersStatuses.SliceLast AS OrdersStatuses
-		|		ON PurchaseOrder.Ref = OrdersStatuses.Order
-		|WHERE
-		|	PurchaseOrder.Ref = &Ref";
-	Query.Text  = QueryText;
-	OrderStatus = Query.Execute().Unload()[0].Status;
+	// Collect document data.
+	QueryText =
+	"SELECT
+	// ------------------------------------------------------
+	// Document data
+	|	Document.Ref                          AS Ref,
+	|	Document.PointInTime                  AS PointInTime,
+	|	Document.Company                      AS Company
+	// ------------------------------------------------------
+	|INTO
+	|	Table_Printing_Document_Data
+	|FROM
+	|	Document.PurchaseInvoice AS Document
+	|WHERE
+	|	Document.Ref IN(&Ref)";
 	
-	StatusOK = (OrderStatus = Enums.OrderStatuses.Open) Or (OrderStatus = Enums.OrderStatuses.Backordered);
-	If Not StatusOK Then
-		MessageText = NStr("en = 'Failed to generate the %1 on the base of %2 %3.'");
-		MessageText = StringFunctionsClientServer.SubstituteParametersInString(MessageText,
-		                                                                       Lower(Metadata.FindByType(TypeOf(DocumentRef)).Presentation()),
-		                                                                       Lower(OrderStatus),
-		                                                                       Lower(Metadata.FindByType(TypeOf(FillingRef)).Presentation())); 
-		CommonUseClientServer.MessageToUser(MessageText, FillingRef);
-	EndIf;
-	Return StatusOK;
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
 	
 EndFunction
 
+// Query for document data
+Function Query_Printing_Document_Attributes(TablesList)
+	
+	// Add document table to query structure.
+	TablesList.Insert("Table_Printing_Document_Attributes", TablesList.Count());
+	
+	// Collect attributes and totals.
+	QueryText =
+	"SELECT
+	// ------------------------------------------------------
+	// Attributes
+	|	Document.Ref                          AS Ref,
+	|	Document.Number                       AS Number,
+	|	Document.Date                         AS Date,
+	|	Document.Company                      AS Company,
+	|	Document.Currency                     AS Currency,
+	|	Document.PriceIncludesVAT             AS PriceIncludesVAT,
+	// ------------------------------------------------------
+	// Totals
+	|	Document.DocumentTotal                AS DocumentTotal,
+	|	Document.VATTotal                     AS VATTotal
+	// ------------------------------------------------------
+	|FROM
+	|	Table_Printing_Document_Data AS Document_Data
+	|	LEFT JOIN Document.PurchaseInvoice AS Document
+	|		ON Document.Ref = Document_Data.Ref
+	|ORDER BY
+	|	Document_Data.PointInTime ASC";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data
+Function Query_Printing_Document_LineItems(TablesList)
+	
+	// Add document table to query structure.
+	TablesList.Insert("Table_Printing_Document_LineItems", TablesList.Count());
+	
+	// Collect line items data.
+	QueryText =
+	"SELECT
+	// ------------------------------------------------------
+	// Line items table
+	|	DocumentLineItems.Ref                 AS Ref,
+	|	DocumentLineItems.LineNumber          AS LineNumber,
+	|	DocumentLineItems.Product             AS Product,
+	|	DocumentLineItems.ProductDescription  AS ProductDescription,
+	|	DocumentLineItems.Quantity            AS Quantity,
+	|	DocumentLineItems.UM                  AS UM,
+	|	DocumentLineItems.Price               AS Price,
+	|	DocumentLineItems.LineTotal           AS LineTotal
+	// ------------------------------------------------------
+	|FROM
+	|	Table_Printing_Document_Data AS Document_Data
+	|	LEFT JOIN Document.PurchaseInvoice.LineItems AS DocumentLineItems
+	|		ON DocumentLineItems.Ref = Document_Data.Ref
+	|ORDER BY
+	|	Document_Data.PointInTime ASC,
+	|	DocumentLineItems.LineNumber ASC";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+#EndIf
+
+#EndRegion

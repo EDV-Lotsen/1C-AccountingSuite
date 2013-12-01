@@ -22,15 +22,6 @@
 			<ContextMenu name="CustomerContextMenu" id="8"/>
 			<ExtendedTooltip name="CustomerExtendedTooltip" id="9"/>
 		</InputField>
-		<CheckBoxField name="Internal" id="10">
-			<DataPath>Object.Internal</DataPath>
-			<CheckBoxType>Auto</CheckBoxType>
-			<ContextMenu name="InternalContextMenu" id="11"/>
-			<ExtendedTooltip name="InternalExtendedTooltip" id="12"/>
-			<Events>
-				<Event name="OnChange">InternalOnChange</Event>
-			</Events>
-		</CheckBoxField>
 		<Pages name="Group1" id="35">
 			<ExtendedTooltip name="Group1ExtendedTooltip" id="36"/>
 			<ChildItems>
@@ -99,6 +90,9 @@
 								<ContextMenu name="MilestonesSearchControlContextMenu" id="73"/>
 								<ExtendedTooltip name="MilestonesSearchControlExtendedTooltip" id="74"/>
 							</SearchControlAddition>
+							<Events>
+								<Event name="NewWriteProcessing">MilestonesNewWriteProcessing</Event>
+							</Events>
 							<ChildItems>
 								<LabelField name="MilestonesDescription" id="17">
 									<DataPath>Milestones.Description</DataPath>

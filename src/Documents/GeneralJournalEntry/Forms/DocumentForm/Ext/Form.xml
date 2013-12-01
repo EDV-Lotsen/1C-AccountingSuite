@@ -135,6 +135,14 @@
 					<Representation>None</Representation>
 					<ShowTitle>false</ShowTitle>
 					<ExtendedTooltip name="RightColumnExtendedTooltip" id="58"/>
+					<ChildItems>
+						<CheckBoxField name="Adjusting" id="70">
+							<DataPath>Object.Adjusting</DataPath>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="AdjustingContextMenu" id="71"/>
+							<ExtendedTooltip name="AdjustingExtendedTooltip" id="72"/>
+						</CheckBoxField>
+					</ChildItems>
 				</UsualGroup>
 			</ChildItems>
 		</UsualGroup>
@@ -210,29 +218,29 @@
 					<ContextMenu name="LineItemsContextMenu" id="10"/>
 					<AutoCommandBar name="LineItemsCommandBar" id="11"/>
 					<ExtendedTooltip name="LineItemsExtendedTooltip" id="62"/>
-					<SearchStringAddition name="LineItemsSearchString" id="70">
+					<SearchStringAddition name="LineItemsSearchString" id="73">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>SearchStringRepresentation</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsSearchStringContextMenu" id="71"/>
-						<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="72"/>
+						<ContextMenu name="LineItemsSearchStringContextMenu" id="74"/>
+						<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="75"/>
 					</SearchStringAddition>
-					<ViewStatusAddition name="LineItemsViewStatus" id="73">
+					<ViewStatusAddition name="LineItemsViewStatus" id="76">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>ViewStatusRepresentation</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsViewStatusContextMenu" id="74"/>
-						<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="75"/>
+						<ContextMenu name="LineItemsViewStatusContextMenu" id="77"/>
+						<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="78"/>
 					</ViewStatusAddition>
-					<SearchControlAddition name="LineItemsSearchControl" id="76">
+					<SearchControlAddition name="LineItemsSearchControl" id="79">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>SearchControl</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsSearchControlContextMenu" id="77"/>
-						<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="78"/>
+						<ContextMenu name="LineItemsSearchControlContextMenu" id="80"/>
+						<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="81"/>
 					</SearchControlAddition>
 					<ChildItems>
 						<LabelField name="LineItemsLineNumber" id="12">

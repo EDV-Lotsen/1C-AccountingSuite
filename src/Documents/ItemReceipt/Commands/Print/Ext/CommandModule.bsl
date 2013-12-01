@@ -9,12 +9,12 @@ Procedure CommandProcessing(CommandParameter, CommandExecuteParameters)
 	Spreadsheet.ReadOnly = False;
 	Spreadsheet.ShowHeaders = False;
 	Spreadsheet.FitToPage = True;
-	Spreadsheet.Show("Item receipt");
+	Spreadsheet.Show();
 	//}}
 EndProcedure
 
 &AtServer
 Procedure Print(Spreadsheet, CommandParameter)
-	//Documents.PurchaseInvoice.Print(Spreadsheet, CommandParameter);
+	Documents.PurchaseInvoice.Print(Spreadsheet, CommandParameter);
 EndProcedure
 

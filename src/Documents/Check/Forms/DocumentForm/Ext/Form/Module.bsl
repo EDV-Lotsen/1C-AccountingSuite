@@ -81,6 +81,14 @@ EndProcedure
 &AtServer
 Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 	
+	If Object.PaymentMethod.IsEmpty() Then
+		Cancel = True;
+		Message = New UserMessage();
+		Message.Text=NStr("en='Select a payment method'");
+		Message.Field = "Object.PaymentMethod";
+		Message.Message();
+	EndIf;		
+	
 	If NOT Object.Ref.IsEmpty() AND Object.PaymentMethod = CheckPaymentMethod() Then
 	
 	Try
@@ -92,11 +100,13 @@ Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 			Message.Message();
 		EndIf;
 	Except
-			Cancel = True;
-			Message = New UserMessage();
-			Message.Text=NStr("en='Enter a check number from 0 to 9999 (99999)'");
-			Message.Field = "Object.Number";
-			Message.Message();
+		    If Object.Number <> "DRAFT" Then
+				Cancel = True;
+				Message = New UserMessage();
+				Message.Text=NStr("en='Enter a check number from 0 to 9999 (99999)'");
+				Message.Field = "Object.Number";
+				Message.Message();
+			EndIf
 	EndTry;	
 		
 	Endif;
@@ -157,6 +167,43 @@ EndProcedure
 Procedure CompanyOnChange(Item)
 	
 	Object.CompanyCode = CommonUse.GetAttributeValue(Object.Company, "Code");
+						  
+	ExistPurchaseInvoice(Object.Company);
+	
+EndProcedure
+
+&AtServer
+Procedure ExistPurchaseInvoice(Company)
+	
+	Query = New Query("SELECT
+	                  |	DocumentPurchaseInvoice.Ref,
+	                  |	DocumentPurchaseInvoice.Number,
+	                  |	DocumentPurchaseInvoice.Date,
+	                  |	DocumentPurchaseInvoice.Company,
+	                  |	DocumentPurchaseInvoice.CompanyCode,
+	                  |	DocumentPurchaseInvoice.DocumentTotal,
+	                  |	DocumentPurchaseInvoice.DocumentTotalRC,
+	                  |	GeneralJournalBalance.AmountBalance * -1 AS BalanceFCY,
+	                  |	GeneralJournalBalance.AmountRCBalance * -1 AS Balance,
+	                  |	DocumentPurchaseInvoice.Memo
+	                  |FROM
+	                  |	Document.PurchaseInvoice AS DocumentPurchaseInvoice
+	                  |		LEFT JOIN AccountingRegister.GeneralJournal.Balance AS GeneralJournalBalance
+	                  |		ON (GeneralJournalBalance.ExtDimension2 = DocumentPurchaseInvoice.Ref)
+	                  |			AND (GeneralJournalBalance.ExtDimension2 REFS Document.PurchaseInvoice)
+	                  |WHERE
+	                  |	DocumentPurchaseInvoice.Company = &Company
+	                  |	AND GeneralJournalBalance.AmountRCBalance * -1 <> 0");
+					  
+					  Query.SetParameter("Company", Company);
+					  Result = Query.Execute().Unload();
+					  
+					  If Result.Count() > 0 Then
+						  
+						Message(StringFunctionsClientServer.SubstituteParametersInString(
+				        NStr("en = 'There are unpaid invoices for %1, if you would like to pay them, use the Invoice Payment (Check) document under Purchases'"), Object.Company));
+						  
+					  Endif;
 	
 EndProcedure
 
@@ -207,26 +254,26 @@ EndProcedure
 Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
 	
 	
-	If Object.PaymentMethod = Catalogs.PaymentMethods.Check Then
-		
-		If CurrentObject.Ref.IsEmpty() Then
-		
-			LastNumber = GeneralFunctions.LastCheckNumber(Object.BankAccount);
-			
-			LastNumberString = "";
-			If LastNumber < 10000 Then
-				LastNumberString = Left(String(LastNumber+1),1) + Right(String(LastNumber+1),3)
-			Else
-				LastNumberString = Left(String(LastNumber+1),2) + Right(String(LastNumber+1),3)
-			EndIf;
-			
-			CurrentObject.Number = LastNumberString;
-			CurrentObject.PhysicalCheckNum = LastNumber + 1;
-			
-		Else
-			CurrentObject.PhysicalCheckNum = Number(CurrentObject.Number);		
-		EndIf;
-	Endif;
+	//If Object.PaymentMethod = Catalogs.PaymentMethods.Check Then
+	//	
+	//	If CurrentObject.Ref.IsEmpty() Then
+	//	
+	//		LastNumber = GeneralFunctions.LastCheckNumber(Object.BankAccount);
+	//		
+	//		LastNumberString = "";
+	//		If LastNumber < 10000 Then
+	//			LastNumberString = Left(String(LastNumber+1),1) + Right(String(LastNumber+1),3)
+	//		Else
+	//			LastNumberString = Left(String(LastNumber+1),2) + Right(String(LastNumber+1),3)
+	//		EndIf;
+	//		
+	//		CurrentObject.Number = LastNumberString;
+	//		CurrentObject.PhysicalCheckNum = LastNumber + 1;
+	//		
+	//	Else
+	//		CurrentObject.PhysicalCheckNum = Number(CurrentObject.Number);		
+	//	EndIf;
+	//Endif;	
 
 EndProcedure
 
@@ -242,6 +289,14 @@ Procedure PaymentMethodOnChange(Item)
 	
 EndProcedure
 	
+&AtServer
+Function DwollaPaymentMethod()
+	
+	Return Catalogs.PaymentMethods.FindByDescription("Dwolla");
+	
+EndFunction
+	
+
 &AtServer
 Function CheckPaymentMethod()
 	
@@ -289,7 +344,7 @@ Procedure PayWithDwolla(Command)
 		DwollaData = New Map();
 		DwollaData.Insert("destinationId", DwollaID);
 		DwollaData.Insert("oauth_token", DAT);
-		DwollaData.Insert("amount", Object.DocumentTotalRC);
+		DwollaData.Insert("amount", Format(Object.DocumentTotalRC,"NG=0"));
 		DwollaData.Insert("fundsSource", DwollaFundingSource());
 		DwollaData.Insert("destinationType", "Email");
 		DwollaData.Insert("pin", DwollaPin);
@@ -301,7 +356,7 @@ Procedure PayWithDwolla(Command)
 		DwollaData = New Map();
 		DwollaData.Insert("destinationId", DwollaID);
 		DwollaData.Insert("oauth_token", DAT);
-		DwollaData.Insert("amount", Object.DocumentTotalRC);
+		DwollaData.Insert("amount", Format(Object.DocumentTotalRC,"NG=0"));
 		DwollaData.Insert("fundsSource", DwollaFundingSource());
 		DwollaData.Insert("pin", DwollaPin);
 		
@@ -313,7 +368,7 @@ Procedure PayWithDwolla(Command)
 	ResultBodyJSON = DwollaCharge(DataJSON);	
 	
 	If ResultBodyJSON.Success AND ResultBodyJSON.Message = "Success" Then
-		Object.DwollaTrxID = Format(ResultBodyJSON.Response, "NG="); //Format(num, "NG=")
+		Object.DwollaTrxID = Format(ResultBodyJSON.Response, "NG=0"); //Format(num, "NG=")
 		Message(NStr("en = 'Payment was successfully made. Please save the document.'"));
 		Modified = True;
 	Else
@@ -363,5 +418,39 @@ EndFunction
 Function DwollaFundingSource()
 	
 	Return Constants.dwolla_funding_source.Get();
+	
+EndFunction
+
+&AtClient
+Procedure NumberOnChange(Item)
+	NumberOnChangeAtServer();
+EndProcedure
+
+&AtServer
+Procedure NumberOnChangeAtServer()
+	
+	CheckExist = Documents.Check.FindByNumber(Object.Number);
+	If CheckExist <> Documents.Check.EmptyRef() Then
+		Message("Check number already exists");
+		Object.Number = "";
+	Endif;
+	
+EndProcedure
+
+&AtClient
+Procedure PayWithRipple(Command)
+	
+	Address = GetRippleAddress(Object.Company);
+	
+	If Address <> "" Then
+		GotoURL("https://ripple.com/client/#/send?to=" + Address + "&amount=" + Format(Object.DocumentTotalRC,"NG=0"));
+	EndIf;
+	
+EndProcedure
+
+&AtServer
+Function GetRippleAddress(Company)
+	
+	Return Company.RippleAddress;	
 	
 EndFunction

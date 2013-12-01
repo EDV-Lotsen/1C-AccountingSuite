@@ -148,6 +148,11 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
     	Object.PriceIncludesVAT = GeneralFunctionsReusable.PriceIncludesVAT();
 	EndIf;
 	
+	If Object.Ref.IsEmpty() Then
+		Object.ReturnType = Enums.ReturnTypes.Refund;
+	EndIf;
+	
+	
 	If NOT GeneralFunctionsReusable.FunctionalOptionValue("VATFinLocalization") Then
 		Items.VATGroup.Visible = False;
 	EndIf;
@@ -197,6 +202,16 @@ Procedure BegBalOnChange(Item)
 	ElsIf Object.BegBal = False Then
 		Items.DocumentTotalRC.ReadOnly = True;
 		Items.DocumentTotal.ReadOnly = True;
+	EndIf;
+
+EndProcedure
+
+&AtServer
+Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
+	
+	If Object.LineItems.Count() = 0  Then
+		Message("Cannot post with no line items.");
+		Cancel = True;
 	EndIf;
 
 EndProcedure

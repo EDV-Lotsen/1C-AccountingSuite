@@ -9,7 +9,7 @@ Procedure CommandProcessing(CommandParameter, CommandExecuteParameters)
 	Spreadsheet.Protection = False;
 	Spreadsheet.ReadOnly = False;
 	Spreadsheet.ShowHeaders = False;
-	Spreadsheet.Show("Packing list");
+	Spreadsheet.Show();
 	//}}
 EndProcedure
 

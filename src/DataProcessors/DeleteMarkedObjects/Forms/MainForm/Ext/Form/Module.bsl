@@ -285,6 +285,22 @@ Procedure NonDeletedObjectTreeSelection(Item, SelectedRow, Field, StandardProces
 
 EndProcedure
 
+&AtClient
+Procedure SelectedForDeletionListSelection(Item, SelectedRow, Field, StandardProcessing)
+	
+	CurrentData = Items.SelectedForDeletionList.CurrentData;
+	If CurrentData = Undefined Then 
+		Return;
+	EndIf;
+	
+	If CurrentData.GetItems().Count() = 0 Then
+		// this row displays an object marked for deletion
+		StandardProcessing = False;
+		ShowValue( ,CurrentData.Value);
+	EndIf;
+
+EndProcedure
+
 
 
 

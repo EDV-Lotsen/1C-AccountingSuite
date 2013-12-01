@@ -8,9 +8,14 @@
 		<ChildItems>
 			<Button name="FormPayWithDwolla" id="114">
 				<Type>CommandBarButton</Type>
-				<Visible>false</Visible>
 				<CommandName>Form.Command.PayWithDwolla</CommandName>
 				<ExtendedTooltip name="FormPayWithDwollaExtendedTooltip" id="115"/>
+			</Button>
+			<Button name="FormPayWithRipple" id="121">
+				<Type>CommandBarButton</Type>
+				<Visible>false</Visible>
+				<CommandName>Form.Command.PayWithRipple</CommandName>
+				<ExtendedTooltip name="FormPayWithRippleExtendedTooltip" id="122"/>
 			</Button>
 		</ChildItems>
 	</AutoCommandBar>
@@ -263,6 +268,18 @@
 			<Group>Vertical</Group>
 			<ExtendedTooltip name="PaidInvoicesExtendedTooltip" id="86"/>
 			<ChildItems>
+				<Button name="PayAll" id="116">
+					<Type>UsualButton</Type>
+					<Visible>false</Visible>
+					<CommandName>Form.Command.PayAll</CommandName>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Fill all payments</v8:content>
+						</v8:item>
+					</Title>
+					<ExtendedTooltip name="PayAllExtendedTooltip" id="117"/>
+				</Button>
 				<Table name="LineItems" id="51">
 					<CommandBarLocation>None</CommandBarLocation>
 					<AutoInsertNewRow>true</AutoInsertNewRow>
@@ -276,29 +293,29 @@
 					<ContextMenu name="LineItemsContextMenu" id="52"/>
 					<AutoCommandBar name="LineItemsCommandBar" id="53"/>
 					<ExtendedTooltip name="LineItemsExtendedTooltip" id="87"/>
-					<SearchStringAddition name="LineItemsSearchString" id="116">
+					<SearchStringAddition name="LineItemsSearchString" id="123">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>SearchStringRepresentation</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsSearchStringContextMenu" id="117"/>
-						<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="118"/>
+						<ContextMenu name="LineItemsSearchStringContextMenu" id="124"/>
+						<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="125"/>
 					</SearchStringAddition>
-					<ViewStatusAddition name="LineItemsViewStatus" id="119">
+					<ViewStatusAddition name="LineItemsViewStatus" id="126">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>ViewStatusRepresentation</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsViewStatusContextMenu" id="120"/>
-						<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="121"/>
+						<ContextMenu name="LineItemsViewStatusContextMenu" id="127"/>
+						<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="128"/>
 					</ViewStatusAddition>
-					<SearchControlAddition name="LineItemsSearchControl" id="122">
+					<SearchControlAddition name="LineItemsSearchControl" id="129">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>SearchControl</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsSearchControlContextMenu" id="123"/>
-						<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="124"/>
+						<ContextMenu name="LineItemsSearchControlContextMenu" id="130"/>
+						<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="131"/>
 					</SearchControlAddition>
 					<ChildItems>
 						<LabelField name="LineItemsLineNumber" id="54">
@@ -307,6 +324,19 @@
 							<ContextMenu name="LineItemsLineNumberContextMenu" id="55"/>
 							<ExtendedTooltip name="LineItemsLineNumberExtendedTooltip" id="88"/>
 						</LabelField>
+						<CheckBoxField name="LineItemsCheck" id="118">
+							<DataPath>Object.LineItems.Check</DataPath>
+							<TitleLocation>None</TitleLocation>
+							<EditMode>EnterOnInput</EditMode>
+							<ShowInHeader>false</ShowInHeader>
+							<ShowInFooter>false</ShowInFooter>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="LineItemsCheckContextMenu" id="119"/>
+							<ExtendedTooltip name="LineItemsCheckExtendedTooltip" id="120"/>
+							<Events>
+								<Event name="OnChange">LineItemsCheckOnChange</Event>
+							</Events>
+						</CheckBoxField>
 						<InputField name="LineItemsDocument" id="56">
 							<DataPath>Object.LineItems.Document</DataPath>
 							<EditMode>EnterOnInput</EditMode>
@@ -446,6 +476,9 @@
 			<UseAlways>
 				<Field>Object.RegisterRecords</Field>
 			</UseAlways>
+			<Columns>
+				<AdditionalColumns table="Object.LineItems"/>
+			</Columns>
 		</Attribute>
 		<Attribute name="DwollaPin" id="2">
 			<Title>
@@ -478,6 +511,36 @@
 				</v8:item>
 			</ToolTip>
 			<Action>PayWithDwolla</Action>
+		</Command>
+		<Command name="PayAll" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Fill all payments</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Pay all</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>PayAll</Action>
+		</Command>
+		<Command name="PayWithRipple" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Pay with Ripple</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Pay with ripple</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>PayWithRipple</Action>
 		</Command>
 	</Commands>
 	<CommandInterface>

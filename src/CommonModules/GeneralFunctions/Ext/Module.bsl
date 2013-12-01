@@ -356,6 +356,115 @@ Procedure Update_1_2_29_19() Export
 		
 EndProcedure
 
+Procedure custom_fields_update() Export
+	
+	If Constants.custom_fields_update.Get() = False Then
+	
+		BeginTransaction();
+		
+		If Constants.CF4Type.Get() = "" Then
+			Constants.CF4Type.Set("None");
+		EndIf;
+		
+		If Constants.CF5Type.Get() = "" Then
+			Constants.CF5Type.Set("None");
+		EndIf;
+		
+		If Constants.CF1CType.Get() = "" Then
+			Constants.CF1CType.Set("None");
+		EndIf;
+
+		If Constants.CF2CType.Get() = "" Then
+			Constants.CF2CType.Set("None");
+		EndIf;
+
+		If Constants.CF3CType.Get() = "" Then
+			Constants.CF3CType.Set("None");
+		EndIf;
+		
+		If Constants.CF4CType.Get() = "" Then
+			Constants.CF4CType.Set("None");
+		EndIf;
+
+		If Constants.CF5CType.Get() = "" Then
+			Constants.CF5CType.Set("None");
+		EndIf;
+
+
+		
+		Constants.custom_fields_update.Set(True);
+		
+		CommitTransaction();
+				
+	EndIf
+		
+EndProcedure
+
+Procedure account_type_update() Export
+	
+	If Constants.account_type_update.Get() = False Then
+	
+		BeginTransaction();
+		
+		Account = ChartsOfAccounts.ChartOfAccounts.Equity.GetObject();
+		Account.AccountType = Enums.AccountTypes.Equity;
+		Account.Write();
+		
+		Account = ChartsOfAccounts.ChartOfAccounts.PurchaseLiability.GetObject();
+		Account.AccountType = Enums.AccountTypes.OtherCurrentLiability;
+		Account.Write();
+
+		Account = ChartsOfAccounts.ChartOfAccounts.CostVariance.GetObject();
+		Account.AccountType = Enums.AccountTypes.Expense;
+		Account.Write();
+		
+		Account = ChartsOfAccounts.ChartOfAccounts.RetainedEarnings.GetObject();
+		Account.AccountType = Enums.AccountTypes.Equity;
+		Account.Write();
+
+		Constants.account_type_update.Set(True);
+		
+		CommitTransaction();
+				
+	EndIf
+		
+EndProcedure
+
+Procedure verify_email() Export
+	
+	If Constants.verify_email.Get() = False Then
+	
+		BeginTransaction();
+		
+		Query = New Query("SELECT
+		                  |	UserList.Ref
+		                  |FROM
+		                  |	Catalog.UserList AS UserList");
+		
+		QueryResult = Query.Execute();
+		
+		If QueryResult.IsEmpty() Then
+		Else
+			Dataset = QueryResult.Choose();
+			While Dataset.Next() Do
+	
+				EditedUser = Dataset.Ref.GetObject();
+				EditedUser.Verified = True;
+				EditedUser.Write();
+			
+			EndDo
+			
+		EndIf;
+	
+		
+		Constants.verify_email.Set(True);
+		
+		CommitTransaction();
+				
+	EndIf
+		
+EndProcedure
+
 Procedure FullAccessUpdateProc() Export
 
 If Constants.FullAccessUpdate.Get() = False Then
@@ -419,110 +528,63 @@ EndProcedure
 //
 Function RetailPrice(ActualDate, Product, Customer) Export
 	
+	// item cat -> item cat + price level -> item -> item + price level 
+	
 	If Customer = Catalogs.Companies.EmptyRef() Then
 		PriceLevel = Catalogs.PriceLevels.EmptyRef()
-	EndIf;
-	
-	PriceLevel = Customer.PriceLevel;
-	ProductCategory = Product.Category;
-	
-	// scenario 1 - item +
-	// scenario 2 - item category +, price level +
-	// ??? take both (item, item cat., price level) AND (item cat., price level), Item - if exists - takes priority
-	// scenario 3 - item +, price level +
-	// scenario 4 - item +, item category + (customer not selected in header)
-	// scenario 5 - return 0
-	
-	If PriceLevel = Catalogs.PriceLevels.EmptyRef() AND ProductCategory = Catalogs.ProductCategories.EmptyRef() Then
-		Scenario = "1";
-	ElsIf PriceLevel <> Catalogs.PriceLevels.EmptyRef() AND ProductCategory <> Catalogs.ProductCategories.EmptyRef() Then
-		Scenario = "2";
-	ElsIf PriceLevel <> Catalogs.PriceLevels.EmptyRef() AND ProductCategory = Catalogs.ProductCategories.EmptyRef() Then
-		Scenario = "3";
-	ElsIf PriceLevel = Catalogs.PriceLevels.EmptyRef() AND ProductCategory <> Catalogs.ProductCategories.EmptyRef() Then
-		Scenario = "4";
 	Else
-		Scenario = "5";
+		PriceLevel = Customer.PriceLevel
 	EndIf;
 	
-	Price = 0;
-	SelectParameters = New Structure;
-	If Scenario = "1" Then
-		SelectParameters.Insert("Product", Product);
-		SelectParameters.Insert("PriceLevel", Catalogs.PriceLevels.EmptyRef());
-		SelectParameters.Insert("ProductCategory", Catalogs.ProductCategories.EmptyRef());	
-		Price = InformationRegisters.PriceList.GetLast(ActualDate, SelectParameters).Price;
-	ElsIf Scenario = "2" Then
+	item_cat_price = 0;
+	If Product.Category = Catalogs.ProductCategories.EmptyRef() Then
+	Else
+		SelectParameters = New Structure;
 		SelectParameters.Insert("Product", Catalogs.Products.EmptyRef());
-		SelectParameters.Insert("PriceLevel", PriceLevel);
-		SelectParameters.Insert("ProductCategory", ProductCategory);		
-		Price1 = InformationRegisters.PriceList.GetLast(ActualDate, SelectParameters).Price;
-		
-		SelectParameters.Insert("Product", Product);
+		SelectParameters.Insert("ProductCategory", Product.Category);
 		SelectParameters.Insert("PriceLevel", Catalogs.PriceLevels.EmptyRef());
-		SelectParameters.Insert("ProductCategory", Catalogs.ProductCategories.EmptyRef());		
-		Price2 = InformationRegisters.PriceList.GetLast(ActualDate, SelectParameters).Price;
-		
-		SelectParameters.Insert("Product", Product);
-		SelectParameters.Insert("PriceLevel", Catalogs.PriceLevels.EmptyRef());
-		SelectParameters.Insert("ProductCategory", ProductCategory);		
-		Price3 = InformationRegisters.PriceList.GetLast(ActualDate, SelectParameters).Price;
-
-
-		If Price2 <> 0 Then
-			Price = Price2;
-		ElsIf Price3 <> 0 Then
-			Price = Price3;
-		Else
-			Price = Price1;
-		EndIf;
-				
-	ElsIf Scenario = "3" Then
-		SelectParameters.Insert("Product", Product);
-		SelectParameters.Insert("PriceLevel", PriceLevel);
-		SelectParameters.Insert("ProductCategory", Catalogs.ProductCategories.EmptyRef());
-		Price = InformationRegisters.PriceList.GetLast(ActualDate, SelectParameters).Price;
-	ElsIf Scenario = "4" Then
-		SelectParameters.Insert("Product", Product);
-		SelectParameters.Insert("PriceLevel", Catalogs.PriceLevels.EmptyRef());
-		SelectParameters.Insert("ProductCategory", Catalogs.ProductCategories.EmptyRef());		
-		Price1 = InformationRegisters.PriceList.GetLast(ActualDate, SelectParameters).Price;
-		
-		SelectParameters.Insert("Product", Product);
-		SelectParameters.Insert("PriceLevel", Catalogs.PriceLevels.EmptyRef());
-		SelectParameters.Insert("ProductCategory", ProductCategory);		
-		Price2 = InformationRegisters.PriceList.GetLast(ActualDate, SelectParameters).Price;
-		
-		If Price2 > Price1 Then
-			Price = Price2;
-		Else
-			Price = Price1;
-		EndIf;
-		
-	ElsIf Scenario = "5" Then
-		Price = 0;
+		item_cat_price = InformationRegisters.PriceList.GetLast(ActualDate, SelectParameters).Price;
 	EndIf;
+
+	item_cat_price_level_price = 0;
+	If Product.Category = Catalogs.ProductCategories.EmptyRef() OR PriceLevel = Catalogs.PriceLevels.EmptyRef() Then
+	Else
+		SelectParameters = New Structure;
+		SelectParameters.Insert("Product", Catalogs.Products.EmptyRef());
+		SelectParameters.Insert("ProductCategory", Product.Category);
+		SelectParameters.Insert("PriceLevel", PriceLevel);
+		item_cat_price_level_price = InformationRegisters.PriceList.GetLast(ActualDate, SelectParameters).Price;
+	EndIf;
+
+	item_price = 0;
+	SelectParameters = New Structure;
+	SelectParameters.Insert("Product", Product);
+	SelectParameters.Insert("ProductCategory", Catalogs.ProductCategories.EmptyRef());
+	SelectParameters.Insert("PriceLevel", Catalogs.PriceLevels.EmptyRef());
+	item_price = InformationRegisters.PriceList.GetLast(ActualDate, SelectParameters).Price;
 	
-	//If Scenario = "2" Then
-	//EndIf;
+	item_price_level_price = 0;
+	If PriceLevel = Catalogs.PriceLevels.EmptyRef() Then
+	Else
+		SelectParameters = New Structure;
+		SelectParameters.Insert("Product", Product);
+		SelectParameters.Insert("ProductCategory", Catalogs.ProductCategories.EmptyRef());
+		SelectParameters.Insert("PriceLevel", PriceLevel);
+		item_price_level_price = InformationRegisters.PriceList.GetLast(ActualDate, SelectParameters).Price;
+	EndIf;
+
+	If item_price_level_price <> 0 Then
+		Return item_price_level_price
+	ElsIf item_price <> 0 Then
+		Return item_price
+	ElsIf item_cat_price_level_price <> 0 Then
+		Return item_cat_price_level_price
+	ElsIf item_cat_price <> 0 Then
+		Return item_cat_price
+	Else
+		Return 0;
+	EndIf;	
 	
-	//just added
-	//If Customer = Catalogs.Companies.EmptyRef() Then
-	//	PriceLevel = Catalogs.PriceLevels.EmptyRef()
-	//EndIf;
-	//
-	//SelectParameters = New Structure;
-	//If PriceLevel = Catalogs.PriceLevels.EmptyRef() AND ProductCategory = Catalogs.ProductCategories.EmptyRef() Then
-	//	SelectParameters.Insert("Product", Product);
-	//Else
-	//	SelectParameters.Insert("PriceLevel", PriceLevel);
-	//	SelectParameters.Insert("ProductCategory", ProductCategory);
-	//EndIf;
-	//ResourceValue = InformationRegisters.PriceList.GetLast(ActualDate, SelectParameters);
-	//Return ResourceValue.Price;
-	
-	Return Price;
-		
 EndFunction
 
 // Marks the document (cash receipt, cash sale) as "deposited" (included) by a deposit document.
@@ -720,26 +782,26 @@ Function LastCheckNumber(BankAccount) Export
 	
 EndFunction
 
-Function NextProductNumber() Export
-	
-	Query = New Query("SELECT
-	                  |	Products.api_code AS api_code
-	                  |FROM
-	                  |	Catalog.Products AS Products
-	                  |
-	                  |ORDER BY
-	                  |	api_code DESC");
-	QueryResult = Query.Execute();
-	
-	If QueryResult.IsEmpty() Then
-		Return 1;
-	Else
-		Dataset = QueryResult.Unload();
-		LastNumber = Dataset[0][0];
-		Return LastNumber + 1;
-	EndIf;
-	
-EndFunction
+//Function NextProductNumber() Export
+//	
+//	Query = New Query("SELECT
+//					  |	Products.api_code AS api_code
+//					  |FROM
+//					  |	Catalog.Products AS Products
+//					  |
+//					  |ORDER BY
+//					  |	api_code DESC");
+//	QueryResult = Query.Execute();
+//	
+//	If QueryResult.IsEmpty() Then
+//		Return 1;
+//	Else
+//		Dataset = QueryResult.Unload();
+//		LastNumber = Dataset[0][0];
+//		Return LastNumber + 1;
+//	EndIf;
+//	
+//EndFunction
 
 
 Function SearchCompanyByCode(CompanyCode) Export
@@ -1044,23 +1106,24 @@ Function FilledPropertyValues(Source, ListOfProperties) Export
 	
 EndFunction
 
-// converts a number into a 5 character string by adding leading zeros.
-// for example 15 -> "00015"
-// 
-Function LeadingZeros(Number) Export
+//// converts a number into a 5 character string by adding leading zeros.
+//// for example 15 -> "00015"
+//// 
+//Function LeadingZeros(Number) Export
 
-	StringNumber = String(Number);
-	ZerosNeeded = 5 - StrLen(StringNumber);
-	NumberWithZeros = "";
-	For i = 1 to ZerosNeeded Do
-		NumberWithZeros = NumberWithZeros + "0";
-	EndDo;
-	
-	Return NumberWithZeros + StringNumber;
-	
-EndFunction
+//	StringNumber = String(Number);
+//	ZerosNeeded = 5 - StrLen(StringNumber);
+//	NumberWithZeros = "";
+//	For i = 1 to ZerosNeeded Do
+//		NumberWithZeros = NumberWithZeros + "0";
+//	EndDo;
+//	
+//	Return NumberWithZeros + StringNumber;
+//	
+//EndFunction
 
 // Moved from InfobaseUpdateOverridable
+
 
 // Procedure fills empty IB.
 //
@@ -1071,6 +1134,16 @@ Procedure FirstLaunch() Export
 	
 	BeginTransaction();
 	
+	    Constants.SalesInvoiceLastNumber.Set("1000");
+		Constants.CashReceiptLastNumber.Set("1000");
+		Constants.CashSaleLastNumber.Set("1000");
+		Constants.DepositLastNumber.Set("1000");
+		Constants.BankTransferLastNumber.Set("1000");
+		Constants.WarehouseTransferLastNumber.Set("1000");
+		Constants.CreditMemoLastNumber.Set("1000");
+		Constants.SalesOrderLastNumber.Set("1000");
+		Constants.PurchaseOrderLastNumber.Set("1000");
+		Constants.GJEntryLastNumber.Set("1000");
 		// Adding account types to predefined accounts and
 		// assigning default posting accounts.
 		
@@ -1291,11 +1364,7 @@ Procedure FirstLaunch() Export
 		Currency = Catalogs.Currencies.USD.GetObject();
 		Currency.Symbol = "$";
 		Currency.Write();
-						
-		// Setting the Disable LIFO constant
-		
-		Constants.DisableLIFO.Set(False);
-		
+								
 		// Setting Customer Name and Vendor Name constants
 		
 		Constants.CustomerName.Set("Customer");
@@ -2855,8 +2924,7 @@ NewCountry.Write();
 		Constants.CF5CType.Set("None");	
 		
 		// mt_change	
-	
-		
+				
 	CommitTransaction();
 	
 	Constants.FirstLaunch.Set(True);

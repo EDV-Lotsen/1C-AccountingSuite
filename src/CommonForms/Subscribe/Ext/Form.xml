@@ -1,0 +1,118 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<Title>
+		<v8:item>
+			<v8:lang>en</v8:lang>
+			<v8:content>Subscribe</v8:content>
+		</v8:item>
+	</Title>
+	<AutoTitle>false</AutoTitle>
+	<Customizable>false</Customizable>
+	<CommandBarLocation>None</CommandBarLocation>
+	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<Events>
+		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+	</Events>
+	<ChildItems>
+		<Button name="Entrepreneur" id="1">
+			<Type>Hyperlink</Type>
+			<CommandName>Form.Command.Entrepreneur</CommandName>
+			<ExtendedTooltip name="EntrepreneurExtendedTooltip" id="2"/>
+		</Button>
+		<Button name="SmallBusiness" id="3">
+			<Type>Hyperlink</Type>
+			<CommandName>Form.Command.SmallBusiness</CommandName>
+			<ExtendedTooltip name="SmallBusinessExtendedTooltip" id="4"/>
+		</Button>
+		<Button name="Premium" id="5">
+			<Type>Hyperlink</Type>
+			<CommandName>Form.Command.Premium</CommandName>
+			<ExtendedTooltip name="PremiumExtendedTooltip" id="6"/>
+		</Button>
+		<UsualGroup name="Group1" id="7">
+			<Group>Horizontal</Group>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="Group1ExtendedTooltip" id="8"/>
+			<ChildItems>
+				<LabelDecoration name="SubStatus" id="9">
+					<TextColor>#008000</TextColor>
+					<Font ref="style:NormalTextFont" height="12" kind="StyleItem"/>
+					<Title formatted="false">
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Sub status</v8:content>
+						</v8:item>
+					</Title>
+					<ContextMenu name="SubStatusContextMenu" id="10"/>
+					<ExtendedTooltip name="SubStatusExtendedTooltip" id="11"/>
+				</LabelDecoration>
+			</ChildItems>
+		</UsualGroup>
+		<LabelDecoration name="Decoration1" id="12">
+			<Visible>false</Visible>
+			<Font ref="style:SmallTextFont" kind="StyleItem"/>
+			<Title formatted="false">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>If you would like to change your plan, contact support@accountingsuite.com.</v8:content>
+				</v8:item>
+			</Title>
+			<ContextMenu name="Decoration1ContextMenu" id="13"/>
+			<ExtendedTooltip name="Decoration1ExtendedTooltip" id="14"/>
+		</LabelDecoration>
+	</ChildItems>
+	<Attributes>
+		<Attribute name="Attribute1" id="1">
+			<Type>
+				<v8:Type>cfg:ConstantsSet</v8:Type>
+			</Type>
+		</Attribute>
+	</Attributes>
+	<Commands>
+		<Command name="Entrepreneur" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Entrepreneur ($15 /month)</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Entrepreneur</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>Entrepreneur</Action>
+		</Command>
+		<Command name="SmallBusiness" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Small business ($29 /month)</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Small business</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>SmallBusiness</Action>
+		</Command>
+		<Command name="Premium" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Premium ($49 /month)</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Premium</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>Premium</Action>
+		</Command>
+	</Commands>
+</Form>

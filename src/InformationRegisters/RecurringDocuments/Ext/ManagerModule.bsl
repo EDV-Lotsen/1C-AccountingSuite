@@ -677,6 +677,7 @@ Function ProcessCurrentScheduledActions(CurrentEventDate, SelectedDocument = Und
 				
 				// Execute the action for the document.
 				If ExecuteScheduledAction(Selection.RecurringDocument, ScheduleStructure, Selection.ScheduledDate, Selection.SchedulePresentation) Then
+					
 					// Update schedule data.
 					RecordManager.RecurringDocument    = Selection.RecurringDocument;
 					RecordManager.Schedule             = Selection.Schedule;

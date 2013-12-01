@@ -3,6 +3,9 @@
 	<WindowOpeningMode>LockOwnerWindow</WindowOpeningMode>
 	<VerticalScroll>useIfNecessary</VerticalScroll>
 	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<Events>
+		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+	</Events>
 	<ChildItems>
 		<Table name="List" id="1">
 			<Representation>List</Representation>
@@ -35,29 +38,29 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="14"/>
-			<SearchStringAddition name="ListSearchString" id="18">
+			<SearchStringAddition name="ListSearchString" id="48">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="19"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="20"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="49"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="50"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="21">
+			<ViewStatusAddition name="ListViewStatus" id="51">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="22"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="23"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="52"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="53"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="24">
+			<SearchControlAddition name="ListSearchControl" id="54">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="25"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="26"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="55"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="56"/>
 			</SearchControlAddition>
 			<ChildItems>
 				<LabelField name="Code" id="8">
@@ -75,6 +78,56 @@
 					<DataPath>List.Type</DataPath>
 					<ContextMenu name="TypeContextMenu" id="7"/>
 					<ExtendedTooltip name="TypeExtendedTooltip" id="17"/>
+				</LabelField>
+				<LabelField name="CF1String" id="18">
+					<DataPath>List.CF1String</DataPath>
+					<ContextMenu name="CF1StringContextMenu" id="19"/>
+					<ExtendedTooltip name="CF1StringExtendedTooltip" id="20"/>
+				</LabelField>
+				<LabelField name="CF1Num" id="21">
+					<DataPath>List.CF1Num</DataPath>
+					<ContextMenu name="CF1NumContextMenu" id="22"/>
+					<ExtendedTooltip name="CF1NumExtendedTooltip" id="23"/>
+				</LabelField>
+				<LabelField name="CF2String" id="24">
+					<DataPath>List.CF2String</DataPath>
+					<ContextMenu name="CF2StringContextMenu" id="25"/>
+					<ExtendedTooltip name="CF2StringExtendedTooltip" id="26"/>
+				</LabelField>
+				<LabelField name="CF2Num" id="27">
+					<DataPath>List.CF2Num</DataPath>
+					<ContextMenu name="CF2NumContextMenu" id="28"/>
+					<ExtendedTooltip name="CF2NumExtendedTooltip" id="29"/>
+				</LabelField>
+				<LabelField name="CF3String" id="30">
+					<DataPath>List.CF3String</DataPath>
+					<ContextMenu name="CF3StringContextMenu" id="31"/>
+					<ExtendedTooltip name="CF3StringExtendedTooltip" id="32"/>
+				</LabelField>
+				<LabelField name="CF3Num" id="33">
+					<DataPath>List.CF3Num</DataPath>
+					<ContextMenu name="CF3NumContextMenu" id="34"/>
+					<ExtendedTooltip name="CF3NumExtendedTooltip" id="35"/>
+				</LabelField>
+				<LabelField name="CF4String" id="36">
+					<DataPath>List.CF4String</DataPath>
+					<ContextMenu name="CF4StringContextMenu" id="37"/>
+					<ExtendedTooltip name="CF4StringExtendedTooltip" id="38"/>
+				</LabelField>
+				<LabelField name="CF4Num" id="39">
+					<DataPath>List.CF4Num</DataPath>
+					<ContextMenu name="CF4NumContextMenu" id="40"/>
+					<ExtendedTooltip name="CF4NumExtendedTooltip" id="41"/>
+				</LabelField>
+				<LabelField name="CF5String" id="42">
+					<DataPath>List.CF5String</DataPath>
+					<ContextMenu name="CF5StringContextMenu" id="43"/>
+					<ExtendedTooltip name="CF5StringExtendedTooltip" id="44"/>
+				</LabelField>
+				<LabelField name="CF5Num" id="45">
+					<DataPath>List.CF5Num</DataPath>
+					<ContextMenu name="CF5NumContextMenu" id="46"/>
+					<ExtendedTooltip name="CF5NumExtendedTooltip" id="47"/>
 				</LabelField>
 			</ChildItems>
 		</Table>
@@ -103,7 +156,17 @@
 	CatalogProducts.PurchaseVATCode,
 	CatalogProducts.SalesVATCode,
 	CatalogProducts.UM,
-	CatalogProducts.DefaultLocation
+	CatalogProducts.DefaultLocation,
+	CatalogProducts.CF1String,
+	CatalogProducts.CF2String,
+	CatalogProducts.CF3String,
+	CatalogProducts.CF4String,
+	CatalogProducts.CF5String,
+	CatalogProducts.CF1Num,
+	CatalogProducts.CF2Num,
+	CatalogProducts.CF3Num,
+	CatalogProducts.CF4Num,
+	CatalogProducts.CF5Num
 FROM
 	Catalog.Products AS CatalogProducts</QueryText>
 				<MainTable>Catalog.Products</MainTable>

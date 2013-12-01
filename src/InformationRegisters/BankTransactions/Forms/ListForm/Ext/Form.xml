@@ -69,6 +69,9 @@
 				<ContextMenu name="ListSearchControlContextMenu" id="71"/>
 				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="72"/>
 			</SearchControlAddition>
+			<Events>
+				<Event name="Selection">ListSelection</Event>
+			</Events>
 			<ChildItems>
 				<LabelField name="TransactionDate" id="7">
 					<DataPath>List.TransactionDate</DataPath>
@@ -124,10 +127,10 @@
 					<ContextMenu name="IDContextMenu" id="32"/>
 					<ExtendedTooltip name="IDExtendedTooltip" id="33"/>
 				</LabelField>
-				<LabelField name="CategoryName" id="34">
-					<DataPath>List.CategoryName</DataPath>
-					<ContextMenu name="CategoryNameContextMenu" id="35"/>
-					<ExtendedTooltip name="CategoryNameExtendedTooltip" id="36"/>
+				<LabelField name="CategoryID" id="34">
+					<DataPath>List.CategoryID</DataPath>
+					<ContextMenu name="CategoryIDContextMenu" id="35"/>
+					<ExtendedTooltip name="CategoryIDExtendedTooltip" id="36"/>
 				</LabelField>
 				<LabelField name="CurrencyCode" id="37">
 					<DataPath>List.CurrencyCode</DataPath>

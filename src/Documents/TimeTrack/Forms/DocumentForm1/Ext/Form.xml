@@ -1,0 +1,298 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<AutoTime>CurrentOrLast</AutoTime>
+	<UsePostingMode>Auto</UsePostingMode>
+	<RepostOnWrite>true</RepostOnWrite>
+	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<Events>
+		<Event name="OnReadAtServer">OnReadAtServer</Event>
+		<Event name="OnOpen">OnOpen</Event>
+		<Event name="BeforeWrite">BeforeWrite</Event>
+		<Event name="BeforeWriteAtServer">BeforeWriteAtServer</Event>
+		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+		<Event name="ActivationProcessing">ActivationProcessing</Event>
+		<Event name="FillCheckProcessingAtServer">FillCheckProcessingAtServer</Event>
+	</Events>
+	<ChildItems>
+		<InputField name="SalesInvoice" id="65">
+			<DataPath>Object.SalesInvoice</DataPath>
+			<ReadOnly>true</ReadOnly>
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Sales Invoice</v8:content>
+				</v8:item>
+			</Title>
+			<Width>24</Width>
+			<HorizontalStretch>false</HorizontalStretch>
+			<DropListButton>false</DropListButton>
+			<ContextMenu name="SalesInvoiceContextMenu" id="66"/>
+			<ExtendedTooltip name="SalesInvoiceExtendedTooltip" id="67"/>
+		</InputField>
+		<LabelDecoration name="Decoration1" id="68">
+			<ContextMenu name="Decoration1ContextMenu" id="69"/>
+			<ExtendedTooltip name="Decoration1ExtendedTooltip" id="70"/>
+		</LabelDecoration>
+		<InputField name="User" id="22">
+			<DataPath>Object.User</DataPath>
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>User</v8:content>
+				</v8:item>
+			</Title>
+			<Width>24</Width>
+			<HorizontalStretch>false</HorizontalStretch>
+			<OpenButton>false</OpenButton>
+			<ContextMenu name="UserContextMenu" id="23"/>
+			<ExtendedTooltip name="UserExtendedTooltip" id="24"/>
+			<Events>
+				<Event name="OnChange">ObjChanged</Event>
+			</Events>
+		</InputField>
+		<InputField name="Company" id="7">
+			<DataPath>Object.Company</DataPath>
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Customer</v8:content>
+				</v8:item>
+			</Title>
+			<EditMode>EnterOnInput</EditMode>
+			<HorizontalStretch>false</HorizontalStretch>
+			<OpenButton>false</OpenButton>
+			<ContextMenu name="CompanyContextMenu" id="8"/>
+			<ExtendedTooltip name="CompanyExtendedTooltip" id="9"/>
+			<Events>
+				<Event name="OnChange">ObjChanged</Event>
+			</Events>
+		</InputField>
+		<InputField name="Project" id="10">
+			<DataPath>Object.Project</DataPath>
+			<EditMode>EnterOnInput</EditMode>
+			<HorizontalStretch>false</HorizontalStretch>
+			<OpenButton>false</OpenButton>
+			<ChoiceParameterLinks>
+				<xr:Link>
+					<xr:Name>Filter.Customer</xr:Name>
+					<xr:DataPath xsi:type="xs:string">Object.Company</xr:DataPath>
+					<xr:ValueChange>Clear</xr:ValueChange>
+				</xr:Link>
+			</ChoiceParameterLinks>
+			<ContextMenu name="ProjectContextMenu" id="11"/>
+			<ExtendedTooltip name="ProjectExtendedTooltip" id="12"/>
+			<Events>
+				<Event name="OnChange">ObjChanged</Event>
+			</Events>
+		</InputField>
+		<InputField name="Task" id="13">
+			<DataPath>Object.Task</DataPath>
+			<EditMode>EnterOnInput</EditMode>
+			<HorizontalStretch>false</HorizontalStretch>
+			<OpenButton>false</OpenButton>
+			<ChoiceParameters>
+				<app:item name="Filter.Type">
+					<app:value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation/>
+						<Value xsi:type="xr:DesignTimeRef">Enum.InventoryTypes.EnumValue.NonInventory</Value>
+					</app:value>
+				</app:item>
+			</ChoiceParameters>
+			<ContextMenu name="TaskContextMenu" id="14"/>
+			<ExtendedTooltip name="TaskExtendedTooltip" id="15"/>
+			<Events>
+				<Event name="OnChange">TaskOnChange</Event>
+			</Events>
+		</InputField>
+		<InputField name="Price" id="16">
+			<DataPath>Object.Price</DataPath>
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Hourly Rate</v8:content>
+				</v8:item>
+			</Title>
+			<EditMode>EnterOnInput</EditMode>
+			<ContextMenu name="PriceContextMenu" id="17"/>
+			<ExtendedTooltip name="PriceExtendedTooltip" id="18"/>
+			<Events>
+				<Event name="OnChange">ObjChanged</Event>
+			</Events>
+		</InputField>
+		<InputField name="TimeComplete" id="19">
+			<DataPath>Object.TimeComplete</DataPath>
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Hours</v8:content>
+				</v8:item>
+			</Title>
+			<EditMode>EnterOnInput</EditMode>
+			<ContextMenu name="TimeCompleteContextMenu" id="20"/>
+			<ExtendedTooltip name="TimeCompleteExtendedTooltip" id="21"/>
+			<Events>
+				<Event name="OnChange">ObjChanged</Event>
+			</Events>
+		</InputField>
+		<CheckBoxField name="Billable" id="62">
+			<DataPath>Object.Billable</DataPath>
+			<CheckBoxType>Auto</CheckBoxType>
+			<ContextMenu name="BillableContextMenu" id="63"/>
+			<ExtendedTooltip name="BillableExtendedTooltip" id="64"/>
+			<Events>
+				<Event name="OnChange">ObjChanged</Event>
+			</Events>
+		</CheckBoxField>
+		<UsualGroup name="Group1" id="34">
+			<Group>Horizontal</Group>
+			<Representation>None</Representation>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="Group1ExtendedTooltip" id="35"/>
+			<ChildItems>
+				<InputField name="DateFrom" id="28">
+					<DataPath>Object.DateFrom</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Date</v8:content>
+						</v8:item>
+					</Title>
+					<ContextMenu name="DateFromContextMenu" id="29"/>
+					<ExtendedTooltip name="DateFromExtendedTooltip" id="30"/>
+					<Events>
+						<Event name="OnChange">ObjChanged</Event>
+					</Events>
+				</InputField>
+			</ChildItems>
+		</UsualGroup>
+		<InputField name="Memo" id="25">
+			<DataPath>Object.Memo</DataPath>
+			<HorizontalStretch>false</HorizontalStretch>
+			<VerticalStretch>false</VerticalStretch>
+			<MultiLine>true</MultiLine>
+			<ContextMenu name="MemoContextMenu" id="26"/>
+			<ExtendedTooltip name="MemoExtendedTooltip" id="27"/>
+			<Events>
+				<Event name="OnChange">ObjChanged</Event>
+			</Events>
+		</InputField>
+		<LabelDecoration name="Decoration2" id="71">
+			<TextColor>#339966</TextColor>
+			<Title formatted="false">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Optional:</v8:content>
+				</v8:item>
+			</Title>
+			<ContextMenu name="Decoration2ContextMenu" id="72"/>
+			<ExtendedTooltip name="Decoration2ExtendedTooltip" id="73"/>
+		</LabelDecoration>
+		<Button name="LinkSalesOrder" id="74">
+			<Type>UsualButton</Type>
+			<UserVisible>
+				<xr:Common>true</xr:Common>
+				<xr:Value name="Role.TimeTrackView">false</xr:Value>
+			</UserVisible>
+			<CommandName>Form.Command.LinkSalesOrder</CommandName>
+			<TextColor>#FFFFFF</TextColor>
+			<BackColor>#008000</BackColor>
+			<BorderColor>#FFFFFF</BorderColor>
+			<ExtendedTooltip name="LinkSalesOrderExtendedTooltip" id="75"/>
+		</Button>
+		<InputField name="SalesOrder" id="76">
+			<DataPath>Object.SalesOrder</DataPath>
+			<Visible>false</Visible>
+			<ReadOnly>true</ReadOnly>
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Linked to</v8:content>
+				</v8:item>
+			</Title>
+			<Width>24</Width>
+			<HorizontalStretch>false</HorizontalStretch>
+			<DropListButton>false</DropListButton>
+			<ContextMenu name="SalesOrderContextMenu" id="77"/>
+			<ExtendedTooltip name="SalesOrderExtendedTooltip" id="78"/>
+		</InputField>
+	</ChildItems>
+	<Attributes>
+		<Attribute name="Object" id="1">
+			<Type>
+				<v8:Type>cfg:DocumentObject.TimeTrack</v8:Type>
+			</Type>
+			<MainAttribute>true</MainAttribute>
+			<SavedData>true</SavedData>
+			<UseAlways>
+				<Field>Object.RegisterRecords</Field>
+			</UseAlways>
+		</Attribute>
+		<Attribute name="Changed" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Changed</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
+			</Type>
+		</Attribute>
+		<Attribute name="UnlinkChoice" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Unlink choice</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
+			</Type>
+		</Attribute>
+	</Attributes>
+	<Commands>
+		<Command name="LinkSalesOrder" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Link sales order</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Link sales order</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>LinkSalesOrder</Action>
+		</Command>
+		<Command name="UnlinkSalesOrder" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Unlink sales order</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Unlink sales order</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>UnlinkSalesOrder</Action>
+		</Command>
+	</Commands>
+	<CommandInterface>
+		<CommandBar>
+			<Item>
+				<Command>Document.TimeTrack.Command.MultiDate</Command>
+				<Type>Auto</Type>
+				<CommandGroup>FormCommandBarImportant</CommandGroup>
+				<DefaultVisible>false</DefaultVisible>
+				<Visible>
+					<xr:Common>false</xr:Common>
+				</Visible>
+			</Item>
+		</CommandBar>
+	</CommandInterface>
+</Form>

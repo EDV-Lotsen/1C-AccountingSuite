@@ -4,8 +4,18 @@
 	<AutoTime>CurrentOrLast</AutoTime>
 	<UsePostingMode>Auto</UsePostingMode>
 	<RepostOnWrite>true</RepostOnWrite>
-	<AutoCommandBar name="FormCommandPanel" id="-1"/>
+	<AutoCommandBar name="FormCommandPanel" id="-1">
+		<ChildItems>
+			<Button name="FormSendEmail" id="172">
+				<Type>CommandBarButton</Type>
+				<CommandName>Form.Command.SendEmail</CommandName>
+				<ExtendedTooltip name="FormSendEmailExtendedTooltip" id="173"/>
+			</Button>
+		</ChildItems>
+	</AutoCommandBar>
 	<Events>
+		<Event name="OnOpen">OnOpen</Event>
+		<Event name="BeforeWriteAtServer">BeforeWriteAtServer</Event>
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
 	</Events>
 	<ChildItems>
@@ -280,6 +290,136 @@
 								</InputField>
 							</ChildItems>
 						</Page>
+						<Page name="Emailing" id="150">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Emailing</v8:content>
+								</v8:item>
+							</Title>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Emailing</v8:content>
+								</v8:item>
+							</ToolTip>
+							<Group>Horizontal</Group>
+							<ExtendedTooltip name="EmailingExtendedTooltip" id="151"/>
+							<ChildItems>
+								<UsualGroup name="All" id="152">
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>All</v8:content>
+										</v8:item>
+									</Title>
+									<ToolTip>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>All</v8:content>
+										</v8:item>
+									</ToolTip>
+									<Group>Horizontal</Group>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="AllExtendedTooltip" id="153"/>
+									<ChildItems>
+										<UsualGroup name="Top" id="154">
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Top</v8:content>
+												</v8:item>
+											</Title>
+											<ToolTip>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Top</v8:content>
+												</v8:item>
+											</ToolTip>
+											<Group>Horizontal</Group>
+											<ShowTitle>false</ShowTitle>
+											<ExtendedTooltip name="TopExtendedTooltip" id="155"/>
+											<ChildItems>
+												<UsualGroup name="Group2" id="156">
+													<Group>Vertical</Group>
+													<ShowTitle>false</ShowTitle>
+													<ExtendedTooltip name="Group2ExtendedTooltip" id="157"/>
+													<ChildItems>
+														<InputField name="EmailTo" id="160">
+															<DataPath>Object.EmailTo</DataPath>
+															<Title>
+																<v8:item>
+																	<v8:lang>en</v8:lang>
+																	<v8:content>email to</v8:content>
+																</v8:item>
+															</Title>
+															<HorizontalStretch>false</HorizontalStretch>
+															<ContextMenu name="EmailToContextMenu" id="161"/>
+															<ExtendedTooltip name="EmailToExtendedTooltip" id="162"/>
+														</InputField>
+														<InputField name="EmailCC" id="163">
+															<DataPath>Object.EmailCC</DataPath>
+															<Title>
+																<v8:item>
+																	<v8:lang>en</v8:lang>
+																	<v8:content>cc</v8:content>
+																</v8:item>
+															</Title>
+															<Width>22</Width>
+															<HorizontalStretch>false</HorizontalStretch>
+															<InputHint>
+																<v8:item>
+																	<v8:lang>en</v8:lang>
+																	<v8:content>person@gmail.com,person2@yahoo.com</v8:content>
+																</v8:item>
+															</InputHint>
+															<ContextMenu name="EmailCCContextMenu" id="164"/>
+															<ExtendedTooltip name="EmailCCExtendedTooltip" id="165"/>
+														</InputField>
+													</ChildItems>
+												</UsualGroup>
+												<UsualGroup name="Group3" id="158">
+													<Group>Vertical</Group>
+													<ShowTitle>false</ShowTitle>
+													<ExtendedTooltip name="Group3ExtendedTooltip" id="159"/>
+													<ChildItems>
+														<InputField name="EmailNote" id="166">
+															<DataPath>Object.EmailNote</DataPath>
+															<TitleLocation>None</TitleLocation>
+															<ToolTip>
+																<v8:item>
+																	<v8:lang>en</v8:lang>
+																	<v8:content>Write additional information and notes here that you would like to show in the email.</v8:content>
+																</v8:item>
+															</ToolTip>
+															<Width>28</Width>
+															<HorizontalStretch>false</HorizontalStretch>
+															<MultiLine>true</MultiLine>
+															<InputHint>
+																<v8:item>
+																	<v8:lang>en</v8:lang>
+																	<v8:content>Write additional notes to show in email here</v8:content>
+																</v8:item>
+															</InputHint>
+															<ContextMenu name="EmailNoteContextMenu" id="167"/>
+															<ExtendedTooltip name="EmailNoteExtendedTooltip" id="168"/>
+														</InputField>
+													</ChildItems>
+												</UsualGroup>
+											</ChildItems>
+										</UsualGroup>
+										<LabelField name="LastEmail" id="169">
+											<DataPath>Object.LastEmail</DataPath>
+											<TitleLocation>None</TitleLocation>
+											<TextColor>#008000</TextColor>
+											<Font ref="style:SmallTextFont" kind="StyleItem"/>
+											<ContextMenu name="LastEmailContextMenu" id="170"/>
+											<ExtendedTooltip name="LastEmailExtendedTooltip" id="171"/>
+										</LabelField>
+									</ChildItems>
+								</UsualGroup>
+							</ChildItems>
+						</Page>
 					</ChildItems>
 				</Pages>
 			</ChildItems>
@@ -322,29 +462,29 @@
 					<ContextMenu name="LineItemsContextMenu" id="6"/>
 					<AutoCommandBar name="LineItemsCommandBar" id="7"/>
 					<ExtendedTooltip name="LineItemsExtendedTooltip" id="117"/>
-					<SearchStringAddition name="LineItemsSearchString" id="150">
+					<SearchStringAddition name="LineItemsSearchString" id="174">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>SearchStringRepresentation</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsSearchStringContextMenu" id="151"/>
-						<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="152"/>
+						<ContextMenu name="LineItemsSearchStringContextMenu" id="175"/>
+						<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="176"/>
 					</SearchStringAddition>
-					<ViewStatusAddition name="LineItemsViewStatus" id="153">
+					<ViewStatusAddition name="LineItemsViewStatus" id="177">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>ViewStatusRepresentation</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsViewStatusContextMenu" id="154"/>
-						<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="155"/>
+						<ContextMenu name="LineItemsViewStatusContextMenu" id="178"/>
+						<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="179"/>
 					</ViewStatusAddition>
-					<SearchControlAddition name="LineItemsSearchControl" id="156">
+					<SearchControlAddition name="LineItemsSearchControl" id="180">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>SearchControl</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsSearchControlContextMenu" id="157"/>
-						<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="158"/>
+						<ContextMenu name="LineItemsSearchControlContextMenu" id="181"/>
+						<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="182"/>
 					</SearchControlAddition>
 					<Events>
 						<Event name="AfterDeleteRow">LineItemsAfterDeleteRow</Event>
@@ -677,7 +817,35 @@
 				<Field>Object.RegisterRecords</Field>
 			</UseAlways>
 		</Attribute>
+		<Attribute name="SentEmail" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Sent email</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
+			</Type>
+		</Attribute>
 	</Attributes>
+	<Commands>
+		<Command name="SendEmail" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Send email</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Send email</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>SendEmail</Action>
+		</Command>
+	</Commands>
 	<CommandInterface>
 		<NavigationPanel>
 			<Item>

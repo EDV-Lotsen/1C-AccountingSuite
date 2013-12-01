@@ -3,10 +3,8 @@
 Procedure BeforeWrite(Cancel, WriteParameters)
 	
 	If object.Customer.IsEmpty() Then
-		If object.Internal = False then
-			Message("Please choose a company for your project or set it as internal");
-			Cancel = true;
-		Endif;
+		Message("Please choose a customer for your project");
+		Cancel = true;
 	Endif;
 	
 	DetailedDesc();
@@ -36,7 +34,6 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	Else
 		
 		items.Customer.ReadOnly = True;
-		items.Internal.ReadOnly = True;
 	Endif;
 
 	If Object.Ref.IsEmpty() Then
@@ -49,26 +46,25 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 
 EndProcedure
 
-&AtClient
-Procedure InternalOnChange(Item)
-	InternalOnChangeAtServer();
-EndProcedure
-
-&AtServer
-Procedure InternalOnChangeAtServer()
-	
-	If object.Internal = true then
-		Object.Customer = Catalogs.Companies.EmptyRef();
-		items.customer.readonly = true;
-	else
-		items.customer.ReadOnly = false;
-	Endif;
-
-EndProcedure
 
 &AtClient
 Procedure OnOpen(Cancel)
 	Milestones.Parameters.SetParameterValue("Project", Object.Ref);
 	Transactions.Parameters.SetParameterValue("Project", Object.Ref);
 		
+EndProcedure
+
+&AtClient
+Procedure MilestonesNewWriteProcessing(NewObject, Source, StandardProcessing)
+		MilestonesNewWriteProcessingAtServer(NewObject);
+EndProcedure
+
+&AtServer
+Procedure MilestonesNewWriteProcessingAtServer(NewObject)
+	
+	Milestone = NewObject.GetObject();
+	
+	Milestone.Project = Object.Ref;
+	Milestone.Write();	
+	// Insert handler contents.
 EndProcedure

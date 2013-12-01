@@ -9,7 +9,7 @@ Procedure CommandProcessing(CommandParameter, CommandExecuteParameters)
 	Spreadsheet.ReadOnly = False;
 	Spreadsheet.FitToPage = True;
 	Spreadsheet.ShowHeaders = False;
-	Spreadsheet.Show("Invoice payment (Check)");
+	Spreadsheet.Show();
 	
 EndProcedure
 

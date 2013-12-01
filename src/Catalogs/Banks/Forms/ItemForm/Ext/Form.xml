@@ -24,6 +24,7 @@
 	</AutoCommandBar>
 	<Events>
 		<Event name="OnReadAtServer">OnReadAtServer</Event>
+		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
 	</Events>
 	<ChildItems>
 		<UsualGroup name="CaptionGroup" id="19">
@@ -52,15 +53,21 @@
 							<ContextMenu name="Decoration1ContextMenu" id="24"/>
 							<ExtendedTooltip name="Decoration1ExtendedTooltip" id="25"/>
 						</LabelDecoration>
-						<LabelField name="Description" id="4">
+						<InputField name="Description" id="4">
 							<DataPath>Object.Description</DataPath>
-							<Visible>false</Visible>
-							<TitleLocation>None</TitleLocation>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Description</v8:content>
+								</v8:item>
+							</Title>
 							<EditMode>EnterOnInput</EditMode>
-							<Font ref="style:LargeTextFont" kind="StyleItem"/>
 							<ContextMenu name="DescriptionContextMenu" id="5"/>
 							<ExtendedTooltip name="DescriptionExtendedTooltip" id="6"/>
-						</LabelField>
+							<Events>
+								<Event name="TextEditEnd">DescriptionTextEditEnd</Event>
+							</Events>
+						</InputField>
 						<InputField name="Code" id="1">
 							<DataPath>Object.Code</DataPath>
 							<ReadOnly>true</ReadOnly>
@@ -90,6 +97,7 @@
 							<ContextMenu name="ServiceURLContextMenu" id="11"/>
 							<ExtendedTooltip name="ServiceURLExtendedTooltip" id="12"/>
 							<Events>
+								<Event name="URLProcessing">ServiceURLURLProcessing</Event>
 								<Event name="Click">ServiceURLClick</Event>
 							</Events>
 						</LabelField>

@@ -29,11 +29,15 @@
 		<Command name="Catalog.PriceLevels.StandardCommand.OpenList">
 			<Visibility>
 				<xr:Common>true</xr:Common>
+				<xr:Value name="Role.ReportOnly">false</xr:Value>
+				<xr:Value name="Role.ListUser">false</xr:Value>
 			</Visibility>
 		</Command>
 		<Command name="Catalog.SalesTaxCodes.StandardCommand.OpenList">
 			<Visibility>
 				<xr:Common>true</xr:Common>
+				<xr:Value name="Role.ReportOnly">false</xr:Value>
+				<xr:Value name="Role.ListUser">false</xr:Value>
 			</Visibility>
 		</Command>
 	</CommandsVisibility>
@@ -129,6 +133,9 @@
 			<CommandGroup>ActionsPanelReports</CommandGroup>
 		</Command>
 		<Command name="Report.ItemActivityReport.StandardCommand.Open">
+			<CommandGroup>ActionsPanelReports</CommandGroup>
+		</Command>
+		<Command name="Report.SalesInvoiceDetail.StandardCommand.Open">
 			<CommandGroup>ActionsPanelReports</CommandGroup>
 		</Command>
 	</CommandsOrder>

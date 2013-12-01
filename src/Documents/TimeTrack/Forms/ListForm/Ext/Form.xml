@@ -68,51 +68,69 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="6"/>
-			<SearchStringAddition name="ListSearchString" id="38">
+			<SearchStringAddition name="ListSearchString" id="47">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="39"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="40"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="48"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="49"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="41">
+			<ViewStatusAddition name="ListViewStatus" id="50">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="42"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="43"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="51"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="52"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="44">
+			<SearchControlAddition name="ListSearchControl" id="53">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="45"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="46"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="54"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="55"/>
 			</SearchControlAddition>
 			<ChildItems>
+				<LabelField name="InvoiceSent" id="38">
+					<DataPath>List.InvoiceSent</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Invoiced</v8:content>
+						</v8:item>
+					</Title>
+					<Width>1</Width>
+					<HorizontalStretch>false</HorizontalStretch>
+					<ContextMenu name="InvoiceSentContextMenu" id="39"/>
+					<ExtendedTooltip name="InvoiceSentExtendedTooltip" id="40"/>
+				</LabelField>
 				<LabelField name="Ref" id="35">
 					<DataPath>List.Ref</DataPath>
 					<Visible>false</Visible>
 					<ContextMenu name="RefContextMenu" id="36"/>
 					<ExtendedTooltip name="RefExtendedTooltip" id="37"/>
 				</LabelField>
-				<LabelField name="Date" id="7">
-					<DataPath>List.Date</DataPath>
-					<DefaultItem>true</DefaultItem>
-					<Format>
+				<LabelField name="DateFrom" id="44">
+					<DataPath>List.DateFrom</DataPath>
+					<Title>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>DLF=D</v8:content>
+							<v8:content>Date</v8:content>
 						</v8:item>
-					</Format>
-					<ContextMenu name="DateContextMenu" id="8"/>
-					<ExtendedTooltip name="DateExtendedTooltip" id="9"/>
+					</Title>
+					<ContextMenu name="DateFromContextMenu" id="45"/>
+					<ExtendedTooltip name="DateFromExtendedTooltip" id="46"/>
 				</LabelField>
 				<LabelField name="User" id="27">
 					<DataPath>List.User</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>User</v8:content>
+						</v8:item>
+					</Title>
 					<ContextMenu name="UserContextMenu" id="28"/>
 					<ExtendedTooltip name="UserExtendedTooltip" id="29"/>
 				</LabelField>
@@ -146,22 +164,6 @@
 					</Title>
 					<ContextMenu name="TimeCompleteContextMenu" id="20"/>
 					<ExtendedTooltip name="TimeCompleteExtendedTooltip" id="21"/>
-				</LabelField>
-				<LabelField name="Price" id="22">
-					<DataPath>List.Price</DataPath>
-					<Title>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Rate</v8:content>
-						</v8:item>
-					</Title>
-					<ContextMenu name="PriceContextMenu" id="23"/>
-					<ExtendedTooltip name="PriceExtendedTooltip" id="24"/>
-				</LabelField>
-				<LabelField name="Memo" id="30">
-					<DataPath>List.Memo</DataPath>
-					<ContextMenu name="MemoContextMenu" id="31"/>
-					<ExtendedTooltip name="MemoExtendedTooltip" id="32"/>
 				</LabelField>
 			</ChildItems>
 		</Table>
@@ -212,6 +214,11 @@
 					<v8:content>Gen invoice</v8:content>
 				</v8:item>
 			</ToolTip>
+			<Use>
+				<xr:Common>true</xr:Common>
+				<xr:Value name="Role.ListUser">false</xr:Value>
+				<xr:Value name="Role.TimeTrackView">false</xr:Value>
+			</Use>
 			<Action>GenInvoice</Action>
 		</Command>
 		<Command name="RefreshItems" id="2">

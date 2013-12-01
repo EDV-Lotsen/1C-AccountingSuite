@@ -51,29 +51,29 @@
 								<Autofill>false</Autofill>
 							</AutoCommandBar>
 							<ExtendedTooltip name="ListExtendedTooltip" id="16"/>
-							<SearchStringAddition name="ListSearchString" id="76">
+							<SearchStringAddition name="ListSearchString" id="106">
 								<AdditionSource>
 									<Item>List</Item>
 									<Type>SearchStringRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="ListSearchStringContextMenu" id="77"/>
-								<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="78"/>
+								<ContextMenu name="ListSearchStringContextMenu" id="107"/>
+								<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="108"/>
 							</SearchStringAddition>
-							<ViewStatusAddition name="ListViewStatus" id="79">
+							<ViewStatusAddition name="ListViewStatus" id="109">
 								<AdditionSource>
 									<Item>List</Item>
 									<Type>ViewStatusRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="ListViewStatusContextMenu" id="80"/>
-								<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="81"/>
+								<ContextMenu name="ListViewStatusContextMenu" id="110"/>
+								<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="111"/>
 							</ViewStatusAddition>
-							<SearchControlAddition name="ListSearchControl" id="82">
+							<SearchControlAddition name="ListSearchControl" id="112">
 								<AdditionSource>
 									<Item>List</Item>
 									<Type>SearchControl</Type>
 								</AdditionSource>
-								<ContextMenu name="ListSearchControlContextMenu" id="83"/>
-								<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="84"/>
+								<ContextMenu name="ListSearchControlContextMenu" id="113"/>
+								<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="114"/>
 							</SearchControlAddition>
 							<Events>
 								<Event name="OnActivateRow">ContractorsOnActivateRow</Event>
@@ -112,6 +112,56 @@
 									<DataPath>List.PriceLevel</DataPath>
 									<ContextMenu name="PriceLevelContextMenu" id="15"/>
 									<ExtendedTooltip name="PriceLevelExtendedTooltip" id="21"/>
+								</LabelField>
+								<LabelField name="CF1String" id="76">
+									<DataPath>List.CF1String</DataPath>
+									<ContextMenu name="CF1StringContextMenu" id="77"/>
+									<ExtendedTooltip name="CF1StringExtendedTooltip" id="78"/>
+								</LabelField>
+								<LabelField name="CF1Num" id="79">
+									<DataPath>List.CF1Num</DataPath>
+									<ContextMenu name="CF1NumContextMenu" id="80"/>
+									<ExtendedTooltip name="CF1NumExtendedTooltip" id="81"/>
+								</LabelField>
+								<LabelField name="CF2String" id="82">
+									<DataPath>List.CF2String</DataPath>
+									<ContextMenu name="CF2StringContextMenu" id="83"/>
+									<ExtendedTooltip name="CF2StringExtendedTooltip" id="84"/>
+								</LabelField>
+								<LabelField name="CF2Num" id="85">
+									<DataPath>List.CF2Num</DataPath>
+									<ContextMenu name="CF2NumContextMenu" id="86"/>
+									<ExtendedTooltip name="CF2NumExtendedTooltip" id="87"/>
+								</LabelField>
+								<LabelField name="CF3String" id="88">
+									<DataPath>List.CF3String</DataPath>
+									<ContextMenu name="CF3StringContextMenu" id="89"/>
+									<ExtendedTooltip name="CF3StringExtendedTooltip" id="90"/>
+								</LabelField>
+								<LabelField name="CF3Num" id="91">
+									<DataPath>List.CF3Num</DataPath>
+									<ContextMenu name="CF3NumContextMenu" id="92"/>
+									<ExtendedTooltip name="CF3NumExtendedTooltip" id="93"/>
+								</LabelField>
+								<LabelField name="CF4String" id="94">
+									<DataPath>List.CF4String</DataPath>
+									<ContextMenu name="CF4StringContextMenu" id="95"/>
+									<ExtendedTooltip name="CF4StringExtendedTooltip" id="96"/>
+								</LabelField>
+								<LabelField name="CF4Num" id="103">
+									<DataPath>List.CF4Num</DataPath>
+									<ContextMenu name="CF4NumContextMenu" id="104"/>
+									<ExtendedTooltip name="CF4NumExtendedTooltip" id="105"/>
+								</LabelField>
+								<LabelField name="CF5String" id="97">
+									<DataPath>List.CF5String</DataPath>
+									<ContextMenu name="CF5StringContextMenu" id="98"/>
+									<ExtendedTooltip name="CF5StringExtendedTooltip" id="99"/>
+								</LabelField>
+								<LabelField name="CF5Num" id="100">
+									<DataPath>List.CF5Num</DataPath>
+									<ContextMenu name="CF5NumContextMenu" id="101"/>
+									<ExtendedTooltip name="CF5NumExtendedTooltip" id="102"/>
 								</LabelField>
 							</ChildItems>
 						</Table>
@@ -224,29 +274,29 @@
 							<ContextMenu name="TransactionsContextMenu" id="26"/>
 							<AutoCommandBar name="TransactionsCommandBar" id="27"/>
 							<ExtendedTooltip name="TransactionsExtendedTooltip" id="28"/>
-							<SearchStringAddition name="TransactionsSearchString" id="85">
+							<SearchStringAddition name="TransactionsSearchString" id="115">
 								<AdditionSource>
 									<Item>Transactions</Item>
 									<Type>SearchStringRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="TransactionsSearchStringContextMenu" id="86"/>
-								<ExtendedTooltip name="TransactionsSearchStringExtendedTooltip" id="87"/>
+								<ContextMenu name="TransactionsSearchStringContextMenu" id="116"/>
+								<ExtendedTooltip name="TransactionsSearchStringExtendedTooltip" id="117"/>
 							</SearchStringAddition>
-							<ViewStatusAddition name="TransactionsViewStatus" id="88">
+							<ViewStatusAddition name="TransactionsViewStatus" id="118">
 								<AdditionSource>
 									<Item>Transactions</Item>
 									<Type>ViewStatusRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="TransactionsViewStatusContextMenu" id="89"/>
-								<ExtendedTooltip name="TransactionsViewStatusExtendedTooltip" id="90"/>
+								<ContextMenu name="TransactionsViewStatusContextMenu" id="119"/>
+								<ExtendedTooltip name="TransactionsViewStatusExtendedTooltip" id="120"/>
 							</ViewStatusAddition>
-							<SearchControlAddition name="TransactionsSearchControl" id="91">
+							<SearchControlAddition name="TransactionsSearchControl" id="121">
 								<AdditionSource>
 									<Item>Transactions</Item>
 									<Type>SearchControl</Type>
 								</AdditionSource>
-								<ContextMenu name="TransactionsSearchControlContextMenu" id="92"/>
-								<ExtendedTooltip name="TransactionsSearchControlExtendedTooltip" id="93"/>
+								<ContextMenu name="TransactionsSearchControlContextMenu" id="122"/>
+								<ExtendedTooltip name="TransactionsSearchControlExtendedTooltip" id="123"/>
 							</SearchControlAddition>
 							<ChildItems>
 								<LabelField name="TransactionsDate" id="31">
@@ -325,7 +375,17 @@
 	CatalogCompanies.APAccount,
 	CatalogCompanies.PriceLevel,
 	CatalogCompanies.Predefined,
-	CatalogCompanies.PredefinedDataName
+	CatalogCompanies.PredefinedDataName,
+	CatalogCompanies.CF1String,
+	CatalogCompanies.CF2String,
+	CatalogCompanies.CF3String,
+	CatalogCompanies.CF4String,
+	CatalogCompanies.CF5String,
+	CatalogCompanies.CF1Num,
+	CatalogCompanies.CF2Num,
+	CatalogCompanies.CF3Num,
+	CatalogCompanies.CF4Num,
+	CatalogCompanies.CF5Num
 FROM
 	Catalog.Companies AS CatalogCompanies</QueryText>
 				<MainTable>Catalog.Companies</MainTable>

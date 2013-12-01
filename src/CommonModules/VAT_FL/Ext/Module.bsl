@@ -14,9 +14,14 @@
 // Returned value:
 // Number.
 //
-Function VATLine(LineTotal, VATCode, Direction, PriceIncludesVAT) Export
+Function VATLine(LineTotal, VATRef, Direction, PriceIncludesVAT) Export
 	
 	VATRate = 0;
+	If VATRef <> Undefined Then
+		VATCode = VATRef;
+	Else
+		VATCode = Catalogs.VATCodes.EmptyRef();
+	EndIf;
 	If Direction = "Sales" AND PriceIncludesVAT = True Then
 		VATRate = VATCode.SalesInclRate;
 	ElsIf Direction = "Sales" AND PriceIncludesVAT = False Then
@@ -27,8 +32,8 @@ Function VATLine(LineTotal, VATCode, Direction, PriceIncludesVAT) Export
 		VATRate = VATCode.PurchaseExclRate;
 	EndIf;
 	
-	VATAmount = LineTotal * VATRate / 100;		
-    Return VATAmount;	
+	VATAmount = Round(LineTotal * VATRate / 100, 2);
+	Return VATAmount;
 	
 EndFunction
 

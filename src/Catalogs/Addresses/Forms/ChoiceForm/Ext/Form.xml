@@ -35,29 +35,29 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="36"/>
-			<SearchStringAddition name="ListSearchString" id="53">
+			<SearchStringAddition name="ListSearchString" id="56">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="54"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="55"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="57"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="58"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="56">
+			<ViewStatusAddition name="ListViewStatus" id="59">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="57"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="58"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="60"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="61"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="59">
+			<SearchControlAddition name="ListSearchControl" id="62">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="60"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="61"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="63"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="64"/>
 			</SearchControlAddition>
 			<ChildItems>
 				<LabelField name="Description" id="4">
@@ -85,6 +85,11 @@
 					<DataPath>List.Phone</DataPath>
 					<ContextMenu name="PhoneContextMenu" id="13"/>
 					<ExtendedTooltip name="PhoneExtendedTooltip" id="41"/>
+				</LabelField>
+				<LabelField name="Cell" id="53">
+					<DataPath>List.Cell</DataPath>
+					<ContextMenu name="CellContextMenu" id="54"/>
+					<ExtendedTooltip name="CellExtendedTooltip" id="55"/>
 				</LabelField>
 				<LabelField name="Fax" id="14">
 					<DataPath>List.Fax</DataPath>

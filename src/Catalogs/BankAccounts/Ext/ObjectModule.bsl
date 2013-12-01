@@ -19,7 +19,7 @@ Procedure BeforeWrite(Cancel)
 		If Not Res.IsEmpty() Then
 			Cancel = True;
 			Message = New UserMessage();
-			Message.Text = "Accounting account is already assigned to a different bank account.";
+			Message.Text = "Account " + String(ThisObject.AccountingAccount.Code) + " (" + ThisObject.AccountingAccount.Description + ")" + " is already assigned to a different bank account.";
 			Message.Message();
 		EndIf;
 	EndIf;

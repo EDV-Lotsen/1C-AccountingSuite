@@ -72,56 +72,6 @@
 			<ContextMenu name="PreferredVendorContextMenu" id="82"/>
 			<ExtendedTooltip name="PreferredVendorExtendedTooltip" id="104"/>
 		</InputField>
-		<InputField name="CF1String" id="83">
-			<DataPath>Object.CF1String</DataPath>
-			<ContextMenu name="CF1StringContextMenu" id="84"/>
-			<ExtendedTooltip name="CF1StringExtendedTooltip" id="105"/>
-		</InputField>
-		<InputField name="CF2String" id="85">
-			<DataPath>Object.CF2String</DataPath>
-			<ContextMenu name="CF2StringContextMenu" id="86"/>
-			<ExtendedTooltip name="CF2StringExtendedTooltip" id="106"/>
-		</InputField>
-		<InputField name="CF3String" id="87">
-			<DataPath>Object.CF3String</DataPath>
-			<ContextMenu name="CF3StringContextMenu" id="88"/>
-			<ExtendedTooltip name="CF3StringExtendedTooltip" id="107"/>
-		</InputField>
-		<InputField name="CF4String" id="135">
-			<DataPath>Object.CF4String</DataPath>
-			<ContextMenu name="CF4StringContextMenu" id="136"/>
-			<ExtendedTooltip name="CF4StringExtendedTooltip" id="137"/>
-		</InputField>
-		<InputField name="CF5String" id="138">
-			<DataPath>Object.CF5String</DataPath>
-			<ContextMenu name="CF5StringContextMenu" id="139"/>
-			<ExtendedTooltip name="CF5StringExtendedTooltip" id="140"/>
-		</InputField>
-		<InputField name="CF1Num" id="89">
-			<DataPath>Object.CF1Num</DataPath>
-			<ContextMenu name="CF1NumContextMenu" id="90"/>
-			<ExtendedTooltip name="CF1NumExtendedTooltip" id="108"/>
-		</InputField>
-		<InputField name="CF2Num" id="91">
-			<DataPath>Object.CF2Num</DataPath>
-			<ContextMenu name="CF2NumContextMenu" id="92"/>
-			<ExtendedTooltip name="CF2NumExtendedTooltip" id="109"/>
-		</InputField>
-		<InputField name="CF3Num" id="93">
-			<DataPath>Object.CF3Num</DataPath>
-			<ContextMenu name="CF3NumContextMenu" id="94"/>
-			<ExtendedTooltip name="CF3NumExtendedTooltip" id="110"/>
-		</InputField>
-		<InputField name="CF4Num" id="141">
-			<DataPath>Object.CF4Num</DataPath>
-			<ContextMenu name="CF4NumContextMenu" id="142"/>
-			<ExtendedTooltip name="CF4NumExtendedTooltip" id="143"/>
-		</InputField>
-		<InputField name="CF5Num" id="144">
-			<DataPath>Object.CF5Num</DataPath>
-			<ContextMenu name="CF5NumContextMenu" id="145"/>
-			<ExtendedTooltip name="CF5NumExtendedTooltip" id="146"/>
-		</InputField>
 		<Pages name="Group1" id="17">
 			<ExtendedTooltip name="Group1ExtendedTooltip" id="111"/>
 			<ChildItems>
@@ -264,6 +214,73 @@
 							<HorizontalStretch>false</HorizontalStretch>
 							<ContextMenu name="SalesVATCodeContextMenu" id="55"/>
 							<ExtendedTooltip name="SalesVATCodeExtendedTooltip" id="124"/>
+						</InputField>
+					</ChildItems>
+				</Page>
+				<Page name="CustomFields" id="147">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Custom fields</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Custom fields</v8:content>
+						</v8:item>
+					</ToolTip>
+					<ExtendedTooltip name="CustomFieldsExtendedTooltip" id="148"/>
+					<ChildItems>
+						<InputField name="CF1String" id="83">
+							<DataPath>Object.CF1String</DataPath>
+							<ContextMenu name="CF1StringContextMenu" id="84"/>
+							<ExtendedTooltip name="CF1StringExtendedTooltip" id="105"/>
+						</InputField>
+						<InputField name="CF1Num" id="89">
+							<DataPath>Object.CF1Num</DataPath>
+							<ContextMenu name="CF1NumContextMenu" id="90"/>
+							<ExtendedTooltip name="CF1NumExtendedTooltip" id="108"/>
+						</InputField>
+						<InputField name="CF2String" id="85">
+							<DataPath>Object.CF2String</DataPath>
+							<ContextMenu name="CF2StringContextMenu" id="86"/>
+							<ExtendedTooltip name="CF2StringExtendedTooltip" id="106"/>
+						</InputField>
+						<InputField name="CF2Num" id="91">
+							<DataPath>Object.CF2Num</DataPath>
+							<ContextMenu name="CF2NumContextMenu" id="92"/>
+							<ExtendedTooltip name="CF2NumExtendedTooltip" id="109"/>
+						</InputField>
+						<InputField name="CF3String" id="87">
+							<DataPath>Object.CF3String</DataPath>
+							<ContextMenu name="CF3StringContextMenu" id="88"/>
+							<ExtendedTooltip name="CF3StringExtendedTooltip" id="107"/>
+						</InputField>
+						<InputField name="CF3Num" id="93">
+							<DataPath>Object.CF3Num</DataPath>
+							<ContextMenu name="CF3NumContextMenu" id="94"/>
+							<ExtendedTooltip name="CF3NumExtendedTooltip" id="110"/>
+						</InputField>
+						<InputField name="CF4String" id="135">
+							<DataPath>Object.CF4String</DataPath>
+							<ContextMenu name="CF4StringContextMenu" id="136"/>
+							<ExtendedTooltip name="CF4StringExtendedTooltip" id="137"/>
+						</InputField>
+						<InputField name="CF4Num" id="141">
+							<DataPath>Object.CF4Num</DataPath>
+							<ContextMenu name="CF4NumContextMenu" id="142"/>
+							<ExtendedTooltip name="CF4NumExtendedTooltip" id="143"/>
+						</InputField>
+						<InputField name="CF5String" id="138">
+							<DataPath>Object.CF5String</DataPath>
+							<ContextMenu name="CF5StringContextMenu" id="139"/>
+							<ExtendedTooltip name="CF5StringExtendedTooltip" id="140"/>
+						</InputField>
+						<InputField name="CF5Num" id="144">
+							<DataPath>Object.CF5Num</DataPath>
+							<ContextMenu name="CF5NumContextMenu" id="145"/>
+							<ExtendedTooltip name="CF5NumExtendedTooltip" id="146"/>
 						</InputField>
 					</ChildItems>
 				</Page>

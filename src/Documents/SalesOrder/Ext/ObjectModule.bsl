@@ -8,6 +8,16 @@
 
 Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 	
+	// for webhooks
+	If NewObject = True Then
+		NewObject = False;
+	Else
+		If Ref = Documents.SalesOrder.EmptyRef() Then
+			NewObject = True;
+		EndIf;
+	EndIf;
+
+	
 	// Save document parameters before posting the document
 	If WriteMode = DocumentWriteMode.Posting
 	Or WriteMode = DocumentWriteMode.UndoPosting Then
@@ -91,3 +101,53 @@ Procedure FillCheckProcessing(Cancel, CheckedAttributes)
 	GeneralFunctions.CheckDoubleItems(Ref, LineItems, "Product, LineNumber", Cancel);
 	
 EndProcedure
+
+Procedure OnWrite(Cancel)
+	
+	companies_webhook = Constants.sales_orders_webhook.Get();
+	
+	If NOT companies_webhook = "" Then	
+		
+		WebhookMap = New Map(); 
+		WebhookMap.Insert("apisecretkey",Constants.APISecretKey.Get());
+		WebhookMap.Insert("resource","salesorders");
+		If NewObject = True Then
+			WebhookMap.Insert("action","create");
+		Else
+			WebhookMap.Insert("action","update");
+		EndIf;
+		WebhookMap.Insert("api_code",String(Ref.UUID()));
+		
+		WebhookParams = New Array();
+		WebhookParams.Add(Constants.sales_orders_webhook.Get());
+		WebhookParams.Add(WebhookMap);
+		LongActions.ExecuteInBackground("GeneralFunctions.SendWebhook", WebhookParams);
+	
+	EndIf;
+
+EndProcedure
+
+Procedure BeforeDelete(Cancel)
+	
+	companies_webhook = Constants.sales_orders_webhook.Get();
+	
+	If NOT companies_webhook = "" Then	
+		
+		WebhookMap = New Map(); 
+		WebhookMap.Insert("apisecretkey",Constants.APISecretKey.Get());
+		WebhookMap.Insert("resource","salesorders");
+		WebhookMap.Insert("action","delete");
+		WebhookMap.Insert("api_code",String(Ref.UUID()));
+		
+		WebhookParams = New Array();
+		WebhookParams.Add(Constants.sales_orders_webhook.Get());
+		WebhookParams.Add(WebhookMap);
+		LongActions.ExecuteInBackground("GeneralFunctions.SendWebhook", WebhookParams);
+	
+	EndIf;
+
+EndProcedure
+
+
+
+

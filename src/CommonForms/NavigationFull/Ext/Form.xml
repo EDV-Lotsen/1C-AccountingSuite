@@ -5,6 +5,9 @@
 	<CommandBarLocation>None</CommandBarLocation>
 	<VerticalScroll>useIfNecessary</VerticalScroll>
 	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<Events>
+		<Event name="OnOpen">OnOpen</Event>
+	</Events>
 	<ChildItems>
 		<UsualGroup name="Navigation1" id="1">
 			<Title>
@@ -845,6 +848,29 @@
 			</ToolTip>
 			<Action>CashSale</Action>
 		</Command>
+		<Command name="SalesReturn" id="4">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Credit memo</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Storno/Gutschrift</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Sales return</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Storno/Gutschrift</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>SalesReturn</Action>
+		</Command>
 		<Command name="PurchaseOrder" id="5">
 			<Title>
 				<v8:item>
@@ -872,7 +898,7 @@
 			<Title>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Purchase invoice</v8:content>
+					<v8:content>Bill</v8:content>
 				</v8:item>
 				<v8:item>
 					<v8:lang>de</v8:lang>
@@ -941,7 +967,7 @@
 			<Title>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Invoice payment (Check)</v8:content>
+					<v8:content>Bill payment (Check)</v8:content>
 				</v8:item>
 				<v8:item>
 					<v8:lang>de</v8:lang>

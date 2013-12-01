@@ -6,6 +6,7 @@
 	<RepostOnWrite>true</RepostOnWrite>
 	<AutoCommandBar name="FormCommandPanel" id="-1"/>
 	<Events>
+		<Event name="BeforeWriteAtServer">BeforeWriteAtServer</Event>
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
 	</Events>
 	<ChildItems>
@@ -215,6 +216,7 @@
 										</InputField>
 										<RadioButtonField name="ReturnType" id="95">
 											<DataPath>Object.ReturnType</DataPath>
+											<Visible>false</Visible>
 											<RadioButtonType>Tumbler</RadioButtonType>
 											<ChoiceList>
 												<xr:Item>

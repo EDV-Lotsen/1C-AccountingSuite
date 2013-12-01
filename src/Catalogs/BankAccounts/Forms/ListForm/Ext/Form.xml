@@ -1,30 +1,64 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
 	<AutoCommandBar name="FormCommandBar" id="-1">
+		<Autofill>false</Autofill>
 		<ChildItems>
-			<ButtonGroup name="YodleeManagement" id="36">
+			<Button name="FormAddAccount" id="38">
+				<Type>CommandBarButton</Type>
+				<CommandName>Form.Command.AddAccount</CommandName>
+				<ExtendedTooltip name="FormAddAccountExtendedTooltip" id="39"/>
+			</Button>
+			<Button name="ButtonChange" id="46">
+				<Type>CommandBarButton</Type>
+				<Representation>PictureAndText</Representation>
+				<OnlyInAllActions>true</OnlyInAllActions>
+				<CommandName>Form.StandardCommand.Change</CommandName>
+				<ExtendedTooltip name="ButtonChangeExtendedTooltip" id="47"/>
+			</Button>
+			<Button name="FormEditAccount" id="50">
+				<Type>CommandBarButton</Type>
+				<CommandName>Form.Command.EditAccount</CommandName>
+				<ExtendedTooltip name="FormEditAccountExtendedTooltip" id="51"/>
+			</Button>
+			<Button name="FormRefreshAccount" id="42">
+				<Type>CommandBarButton</Type>
+				<CommandName>Form.Command.RefreshAccount</CommandName>
+				<ExtendedTooltip name="FormRefreshAccountExtendedTooltip" id="43"/>
+			</Button>
+			<ButtonGroup name="DeleteGroup" id="48">
 				<Title>
 					<v8:item>
 						<v8:lang>en</v8:lang>
-						<v8:content>Yodlee management</v8:content>
+						<v8:content>Delete group</v8:content>
 					</v8:item>
 				</Title>
 				<ToolTip>
 					<v8:item>
 						<v8:lang>en</v8:lang>
-						<v8:content>Yodlee management</v8:content>
+						<v8:content>Delete group</v8:content>
 					</v8:item>
 				</ToolTip>
-				<ExtendedTooltip name="YodleeManagementExtendedTooltip" id="37"/>
+				<ExtendedTooltip name="DeleteGroupExtendedTooltip" id="49"/>
 				<ChildItems>
-					<Button name="DataProcessorYodleeBankAccountsManagementManageYodleeBankAccounts" id="34">
+					<Button name="FormDeleteAccount" id="40">
 						<Type>CommandBarButton</Type>
-						<Representation>PictureAndText</Representation>
-						<CommandName>DataProcessor.YodleeBankAccountsManagement.Command.ManageYodleeBankAccounts</CommandName>
-						<ExtendedTooltip name="DataProcessorYodleeBankAccountsManagementManageYodleeBankAccountsExtendedTooltip" id="35"/>
+						<CommandName>Form.Command.DeleteAccount</CommandName>
+						<ExtendedTooltip name="FormDeleteAccountExtendedTooltip" id="41"/>
 					</Button>
 				</ChildItems>
 			</ButtonGroup>
+			<Button name="DataProcessorYodleeBankAccountsManagementManageYodleeBankAccounts" id="34">
+				<Type>CommandBarButton</Type>
+				<Representation>PictureAndText</Representation>
+				<OnlyInAllActions>false</OnlyInAllActions>
+				<CommandName>DataProcessor.YodleeBankAccountsManagement.Command.ManageYodleeBankAccounts</CommandName>
+				<ExtendedTooltip name="DataProcessorYodleeBankAccountsManagementManageYodleeBankAccountsExtendedTooltip" id="35"/>
+			</Button>
+			<Button name="ChangeForm" id="44">
+				<Type>CommandBarButton</Type>
+				<CommandName>Form.StandardCommand.CustomizeForm</CommandName>
+				<ExtendedTooltip name="ChangeFormExtendedTooltip" id="45"/>
+			</Button>
 		</ChildItems>
 	</AutoCommandBar>
 	<ChildItems>
@@ -59,31 +93,43 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="6"/>
-			<SearchStringAddition name="ListSearchString" id="38">
+			<SearchStringAddition name="ListSearchString" id="52">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="39"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="40"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="53"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="54"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="41">
+			<ViewStatusAddition name="ListViewStatus" id="55">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="42"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="43"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="56"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="57"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="44">
+			<SearchControlAddition name="ListSearchControl" id="58">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="45"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="46"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="59"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="60"/>
 			</SearchControlAddition>
 			<ChildItems>
+				<CheckBoxField name="YodleeAccount" id="28">
+					<DataPath>List.YodleeAccount</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Online</v8:content>
+						</v8:item>
+					</Title>
+					<CheckBoxType>Auto</CheckBoxType>
+					<ContextMenu name="YodleeAccountContextMenu" id="29"/>
+					<ExtendedTooltip name="YodleeAccountExtendedTooltip" id="30"/>
+				</CheckBoxField>
 				<LabelField name="Code" id="10">
 					<DataPath>List.Code</DataPath>
 					<ContextMenu name="CodeContextMenu" id="11"/>
@@ -131,18 +177,6 @@
 					<ContextMenu name="AccountingAccountContextMenu" id="32"/>
 					<ExtendedTooltip name="AccountingAccountExtendedTooltip" id="33"/>
 				</LabelField>
-				<CheckBoxField name="YodleeAccount" id="28">
-					<DataPath>List.YodleeAccount</DataPath>
-					<Title>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Online account</v8:content>
-						</v8:item>
-					</Title>
-					<CheckBoxType>Auto</CheckBoxType>
-					<ContextMenu name="YodleeAccountContextMenu" id="29"/>
-					<ExtendedTooltip name="YodleeAccountExtendedTooltip" id="30"/>
-				</CheckBoxField>
 			</ChildItems>
 		</Table>
 	</ChildItems>
@@ -175,4 +209,86 @@
 			</Settings>
 		</Attribute>
 	</Attributes>
+	<Commands>
+		<Command name="AddAccount" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Add</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Add account</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Picture>
+				<xr:Ref>StdPicture.CreateListItem</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
+			<Action>AddAccount</Action>
+			<Representation>TextPicture</Representation>
+		</Command>
+		<Command name="DeleteAccount" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Delete</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Delete account</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Picture>
+				<xr:Ref>StdPicture.DeleteDirectly</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
+			<Action>DeleteAccount</Action>
+			<Representation>TextPicture</Representation>
+		</Command>
+		<Command name="RefreshAccount" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Refresh account</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Refresh online account</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Picture>
+				<xr:Ref>StdPicture.Refresh</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
+			<Action>RefreshAccount</Action>
+			<Representation>TextPicture</Representation>
+		</Command>
+		<Command name="EditAccount" id="4">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Edit credentials</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Edit account credentials</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Picture>
+				<xr:Ref>StdPicture.Properties</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
+			<Action>EditAccount</Action>
+			<Representation>TextPicture</Representation>
+		</Command>
+	</Commands>
 </Form>

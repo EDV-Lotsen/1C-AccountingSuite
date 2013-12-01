@@ -103,11 +103,11 @@ EndFunction
 // If flag don't exist, False is returned
 //
 // Parameters:
-// 	Properties - Structure of document parameters containing required attributes and tables
+//  Properties - Structure of document parameters containing required attributes and tables
 //  Property   - String, name of requested property in Properties structure
 //
 // Value returned:
-// 	Boolean    - Value of property
+//  Boolean    - Value of property
 //
 Function FlagValue(Properties, Flag) Export
 	Var FlagValue;
@@ -119,10 +119,10 @@ EndFunction
 // Check flag of new document
 //
 // Parameters:
-// 	AdditionalProperties - Structure of additional document parameters containing required attributes and tables
+//  AdditionalProperties - Structure of additional document parameters containing required attributes and tables
 //
 // Value returned:
-// 	Boolean - Value of IsNew flag
+//  Boolean - Value of IsNew flag
 //
 Function IsNew(AdditionalProperties) Export
 
@@ -133,10 +133,10 @@ EndFunction
 // Check flag of presence of manual ajustment in the document postings
 //
 // Parameters:
-// 	AdditionalProperties - Structure of additional document parameters containing required attributes and tables
+//  AdditionalProperties - Structure of additional document parameters containing required attributes and tables
 //
 // Value returned:
-// 	Boolean - Value of manual ajustment
+//  Boolean - Value of manual ajustment
 //
 Function ManualAdjustment(AdditionalProperties) Export
 
@@ -147,10 +147,10 @@ EndFunction
 // Check flag of registration of changes in postings only
 //
 // Parameters:
-// 	AdditionalProperties - Structure of additional record set parameters containing required attributes and tables
+//  AdditionalProperties - Structure of additional record set parameters containing required attributes and tables
 //
 // Value returned:
-// 	Boolean - Value of registration of changes only
+//  Boolean - Value of registration of changes only
 //
 Function WriteChangesOnly(AdditionalProperties) Export
 	
@@ -164,9 +164,9 @@ EndFunction
 // Save additional document parameters required for posting before writing an object
 //
 // Parameters:
-// 	AdditionalProperties - Structure of additional object parameters containing required attributes and tables
-// 	DocumentParameters	 - Structure of object attributes, inaccessible on the server call to be packed into AdditionalProperties
-//	Cancel               - Flag of transaction cancel
+//  AdditionalProperties - Structure of additional object parameters containing required attributes and tables
+//  DocumentParameters	 - Structure of object attributes, inaccessible on the server call to be packed into AdditionalProperties
+//  Cancel               - Flag of transaction cancel
 //  WriteMode            - Invoked document writing mode (write, posting)
 //  PostingMode          - Invoked document posting mode (operational, non-operational)
 //
@@ -190,9 +190,9 @@ EndProcedure
 // preventing other clients reding data which will be changed during posting transaction
 //
 // Parameters:
-// 	ObjectName	 - Name of object where datalock will be applied
-// 	DataSource	 - Query result, containing flat table having all requred dimensions in columns
-//	DataSource	 - Lock mode: Shared or Exclusive
+//  ObjectName	 - Name of object where datalock will be applied
+//  DataSource	 - Query result, containing flat table having all requred dimensions in columns
+//  DataSource	 - Lock mode: Shared or Exclusive
 //  WriteMode            - Invoked document writing mode (write, posting)
 //  PostingMode          - Invoked document posting mode (operational, non-operational)
 //  
@@ -220,7 +220,7 @@ EndProcedure
 // Save data and structures which will be used in posting procedure as additional parameters of object.
 //
 // Parameters:
-// 	AdditionalProperties - Structure of additional object parameters (to be filled)
+//  AdditionalProperties - Structure of additional object parameters (to be filled)
 //
 Procedure PrepareDataStructuresBeforePosting(AdditionalProperties) Export
 
@@ -235,7 +235,7 @@ EndProcedure
 // Clear used additional document data passed as additional properties.
 //
 // Parameters:
-// 	AdditionalProperties - Structure of additional object parameters (to be cleared)
+//  AdditionalProperties - Structure of additional object parameters (to be cleared)
 //
 Procedure ClearDataStructuresAfterPosting(AdditionalProperties) Export
 
@@ -255,9 +255,9 @@ EndProcedure
 // Called from document module on posting
 //
 // Parameters:
-// 	AdditionalProperties - Structure of additional object parameters containing required attributes and tables
+//  AdditionalProperties - Structure of additional object parameters containing required attributes and tables
 //  RegisterRecords      - Document postings list, which will be filled during document posting
-// 	ForcedWriteClearedRegistersHavingDocumentPostings - Boolean, defines forced writing recordsets before posting the document:
+//  ForcedWriteClearedRegistersHavingDocumentPostings - Boolean, defines forced writing recordsets before posting the document:
 //    False: Registers, having postings, will be cleared, but not written in the database (required for analyse of current state);
 //    True:  All registers having document postings will be foced written before posting the document (analyse is not required).
 //
@@ -316,7 +316,7 @@ EndProcedure
 // Called from document module on undo posting
 //
 // Parameters:
-// 	AdditionalProperties - Structure of additional object parameters containing required attributes and tables
+//  AdditionalProperties - Structure of additional object parameters containing required attributes and tables
 //  RegisterRecords - Document postings list, which will be cleared during document posting clearing
 //
 Procedure PrepareRecordSetsForPostingClearing(AdditionalProperties, RegisterRecords) Export
@@ -351,9 +351,9 @@ EndProcedure
 // Write prepared recordsets into document's register records
 //
 // Parameters:
-// 	AdditionalProperties - Structure of additional object parameters containing required attributes and tables
+//  AdditionalProperties - Structure of additional object parameters containing required attributes and tables
 //  RegisterRecords      - Document postings list, which is filled during document posting
-//	Cancel               - Flag of transaction cancel
+//  Cancel               - Flag of transaction cancel
 //
 Procedure FillRecordSets(AdditionalProperties, RegisterRecords, Cancel) Export
 	Var TableRecordSet;
@@ -389,7 +389,7 @@ EndProcedure
 // of recordsets changes (to avoid full reposting of document).
 //
 // Parameters:
-// 	AdditionalProperties - Structure of additional object parameters containing required attributes and tables
+//  AdditionalProperties - Structure of additional object parameters containing required attributes and tables
 //  RegisterRecords - Document postings list, which is filled during document posting
 //
 Procedure WriteRecordSets(AdditionalProperties, RegisterRecords) Export
@@ -433,9 +433,9 @@ EndProcedure
 // Result is placed in temporary tables manager defined in additional properties
 //
 // Parameters:
-// 	Recorder             - Recorder placing register records into recordset
+//  Recorder             - Recorder placing register records into recordset
 //  AdditionalProperties - Structure of additional recordset parameters containing required attributes and tables
-//	Cancel               - Flag of transaction cancel
+//  Cancel               - Flag of transaction cancel
 //
 Procedure CheckRecordsetChangesBeforeWrite(Recorder, AdditionalProperties, Cancel) Export
 	Var CheckPostings;
@@ -493,9 +493,9 @@ EndProcedure
 // Result is placed in structure of temporary tables manager in additional properties
 //
 // Parameters:
-// 	Recorder             - Recorder placing register records into recordset
+//  Recorder             - Recorder placing register records into recordset
 //  AdditionalProperties - Structure of additional recordset parameters containing required attributes and tables
-//	Cancel               - Flag of transaction cancel
+//  Cancel               - Flag of transaction cancel
 //
 Procedure CheckRecordsetChangesOnWrite(Recorder, AdditionalProperties, Cancel) Export
 	Var CheckPostings;
@@ -639,9 +639,9 @@ EndProcedure
 // Check posting result (non-negative balances and s.o.).
 //
 // Parameters:
-// 	AdditionalProperties - Structure of additional object parameters containing required attributes and tables
-// 	PostingParameters	 - Structure of object and transaction parameters, inaccessible on the server call to be packed into AdditionalProperties
-//	Cancel               - Flag of transaction cancel
+//  AdditionalProperties - Structure of additional object parameters containing required attributes and tables
+//  PostingParameters	 - Structure of object and transaction parameters, inaccessible on the server call to be packed into AdditionalProperties
+//  Cancel               - Flag of transaction cancel
 //
 Procedure CheckPostingResults(AdditionalProperties, RegisterRecords, Cancel) Export
 	Var BalanceCheck, CheckBalances, CheckMessages;
@@ -939,7 +939,7 @@ EndProcedure
 // Returns text delimiter (comment string) for visual splitting of batch query
 // 
 // Return value:
-// 	String, containing batch query delimiter
+//  String, containing batch query delimiter
 //
 Function GetDelimeterOfBatchQuery() Export
 
@@ -958,10 +958,10 @@ EndFunction
 // Structure contains keys from column names, and values from first line of query result
 // 
 // Parameters:
-// 	QueryResult - linear query result to be converted to structure
+//  QueryResult - linear query result to be converted to structure
 //
 // Return value:
-// 	Structure, converted from query result
+//  Structure, converted from query result
 //
 Function GetStructureFromQueryResult(QueryResult) Export
 
@@ -984,11 +984,11 @@ EndFunction
 // Used for debugging of posting procedures
 //
 // Parameters:
-//	TempTablesManager - Temporary tables manager (storage of queried data)
-//	TempTableName     - String: Name of temporary table in a manager
+//  TempTablesManager - Temporary tables manager (storage of queried data)
+//  TempTableName     - String: Name of temporary table in a manager
 //
 // Return value:
-// 	Value table, containing requested temporary table from manager
+//  Value table, containing requested temporary table from manager
 //
 Function GetTemporaryTable(TempTablesManager, TempTableName) Export
 
@@ -1013,12 +1013,12 @@ EndFunction
 // If TempTablesManager is omitted then new TempTablesManager will be created
 //
 // Parameters:
-//	TempTableData     - Unloaded value table data
-//	TempTableName     - String: Name of temporary table in a manager
-//	TempTablesManager - Temporary tables manager (to put value table into)
+//  TempTableData     - Unloaded value table data
+//  TempTableName     - String: Name of temporary table in a manager
+//  TempTablesManager - Temporary tables manager (to put value table into)
 //
 // Return value:
-// 	TempTablesManager, containing requested temporary table from value table
+//  TempTablesManager, containing requested temporary table from value table
 //
 Function PutTemporaryTable(TempTableData, TempTableName, TempTablesManager = Undefined) Export
 	

@@ -11,6 +11,13 @@ EndProcedure
 //
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
+	//ConstantDeposit = Constants.DepositLastNumber.Get();
+	//If Object.Ref.IsEmpty() Then		
+	//	
+	//	Object.Number = Constants.DepositLastNumber.Get();
+	//Endif;
+
+	
 	//Title = "Deposit " + Object.Number + " " + Format(Object.Date, "DLF=D");
 	
 	If Object.BankAccount.IsEmpty() Then
@@ -115,6 +122,21 @@ Procedure BeforeWrite(Cancel, WriteParameters)
 							
 	// deletes from this document lines that were not marked as deposited
 	
+	Checked = False;
+	For Each DocLine In Object.LineItems Do
+		
+		If DocLine.Payment = True Then
+			Checked = True;
+		EndIf;
+	EndDo;
+	
+	If Checked = False  Then
+		Message("Cannot post with no line items.");
+		Cancel = True;
+		Return;
+	EndIf;
+
+	
 	NumberOfLines = Object.LineItems.Count() - 1;
 	
 	While NumberOfLines >=0 Do
@@ -212,4 +234,105 @@ Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 	
 EndProcedure
 
+&AtServer
+Function Increment(NumberToInc)
+	
+	//Last = Constants.SalesInvoiceLastNumber.Get();
+	Last = NumberToInc;
+	//Last = "AAAAA";
+	LastCount = StrLen(Last);
+	Digits = new Array();
+	For i = 1 to LastCount Do	
+		Digits.Add(Mid(Last,i,1));
 
+	EndDo;
+	
+	NumPos = 9999;
+	lengthcount = 0;
+	firstnum = false;
+	j = 0;
+	While j < LastCount Do
+		If NumCheck(Digits[LastCount - 1 - j]) Then
+			if firstnum = false then //first number encountered, remember position
+				firstnum = true;
+				NumPos = LastCount - 1 - j;
+				lengthcount = lengthcount + 1;
+			Else
+				If firstnum = true Then
+					If NumCheck(Digits[LastCount - j]) Then //if the previous char is a number
+						lengthcount = lengthcount + 1;  //next numbers, add to length.
+					Else
+						break;
+					Endif;
+				Endif;
+			Endif;
+						
+		Endif;
+		j = j + 1;
+	EndDo;
+	
+	NewString = "";
+	
+	If lengthcount > 0 Then //if there are numbers in the string
+		changenumber = Mid(Last,(NumPos - lengthcount + 2),lengthcount);
+		NumVal = Number(changenumber);
+		NumVal = NumVal + 1;
+		StringVal = String(NumVal);
+		StringVal = StrReplace(StringVal,",","");
+		
+		StringValLen = StrLen(StringVal);
+		changenumberlen = StrLen(changenumber);
+		LeadingZeros = Left(changenumber,(changenumberlen - StringValLen));
+
+		LeftSide = Left(Last,(NumPos - lengthcount + 1));
+		RightSide = Right(Last,(LastCount - NumPos - 1));
+		NewString = LeftSide + LeadingZeros + StringVal + RightSide; //left side + incremented number + right side
+		
+	Endif;
+	
+	Next = NewString;
+
+	return NewString;
+	
+EndFunction
+
+&AtServer
+Function NumCheck(CheckValue)
+	 
+	For i = 0 to  9 Do
+		If CheckValue = String(i) Then
+			Return True;
+		Endif;
+	EndDo;
+		
+	Return False;
+		
+EndFunction
+
+&AtServer
+Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)		
+	
+	//If Object.Ref.IsEmpty() Then
+	//
+	//	MatchVal = Increment(Constants.DepositLastNumber.Get());
+	//	If Object.Number = MatchVal Then
+	//		Constants.DepositLastNumber.Set(MatchVal);
+	//	Else
+	//		If Increment(Object.Number) = "" Then
+	//		Else
+	//			If StrLen(Increment(Object.Number)) > 20 Then
+	//				 Constants.DepositLastNumber.Set("");
+	//			Else
+	//				Constants.DepositLastNumber.Set(Increment(Object.Number));
+	//			Endif;
+
+	//		Endif;
+	//	Endif;
+	//Endif;
+	//
+	//If Object.Number = "" Then
+	//	Message("Deposit Number is empty");
+	//	Cancel = True;
+	//Endif;
+
+EndProcedure
