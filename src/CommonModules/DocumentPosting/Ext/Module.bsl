@@ -1,97 +1,58 @@
-﻿
-////////////////////////////////////////////////////////////////////////////////
-// Document posting: Server call
-//------------------------------------------------------------------------------
-// Available on:
-// - Server
-// - Server call from client
-//
-
-////////////////////////////////////////////////////////////////////////////////
-// INTERNAL PRIVATE FUNCTIONS
-
-// Creates array of register names, where the document has recorded it's bookings.
-// 
+﻿// Preventing posting if already included in a bank reconciliation document
 // Parameters:
-// 	DocumentRef 	- DocumentObject for listing of register names
-// 	RegisterRecords - Metadata of document, containing list of registers, where bookings of document can be recorded
-//  ArrayOfExcludedRegisters - Array of registers to skip checking of register records
+//  Source - DocumentObject - Document being posted
+//  Cancel - boolean - cancel write 
+//  WriteMode - DocumentWriteMode enumeration - current write mode
+//  PostingMode - DocumentPostingMode enumeration - current posting mode
 //
-// Value returned:
-// 	Array of strings - names of registers
-//
-Function GetArrayOfRegistersHavingDocumentPostings(DocumentRef, RegisterRecords, ArrayOfExcludedRegisters = Undefined)
+Procedure ReconciledDocumentBeforeWrite(Source, Cancel, WriteMode, PostingMode) Export
+	// allow posting if key fields has not been changed
+	If Source.DataExchange.Load Then
+		return;
+	EndIf;
+	DocumentName = Source.Metadata().Name;
+	If DocumentName = "BankTransfer" Then
+		Amount = Source.Amount;
+		Date = Source.Date;
+		BankAccount = Source.AccountTo;
+	ElsIf DocumentName = "CashPurchase" Then	
+		Amount = -1*Source.DocumentTotalRC;
+		Date = Source.Date;
+		BankAccount = Source.BankAccount;
+	ElsIf DocumentName = "CashReceipt" Then
+		Amount = Source.CashPayment;
+		Date = Source.Date;
+		BankAccount = Source.BankAccount;
+	ElsIf DocumentName = "CashSale" Then
+		Amount = Source.DocumentTotalRC;
+		Date = Source.Date;
+		BankAccount = Source.BankAccount;
+	ElsIf DocumentName = "Check" Then
+		Amount = -1*Source.DocumentTotalRC;
+		Date = Source.Date;
+		BankAccount = Source.BankAccount;
+	ElsIf DocumentName = "Deposit" Then
+		Amount = Source.DocumentTotalRC;
+		Date = Source.Date;
+		BankAccount = Source.BankAccount;
+	ElsIf DocumentName = "InvoicePayment" Then
+		Amount = -1*Source.DocumentTotalRC;
+		Date = Source.Date;
+		BankAccount = Source.BankAccount;
+	Else
+		return;
+	EndIf;
+	If DocumentPosting.RequiresExcludingFromBankReconciliation(Source.Ref, Amount, Date, BankAccount, WriteMode) Then
+		MessageText = String(Source.Ref) + ": " + NStr("en='This document is already included in a bank reconciliation. Please remove it from the bank rec first.'");
+		CommonUseClientServer.MessageToUser(MessageText,,,,Cancel);
+	EndIf;
+EndProcedure
 
-	// Create a query and set predefined filter by document
-	Query = New Query;
-	Query.SetParameter("Recorder", DocumentRef);
-
-	// Result: Array of registers names
-	Result = New Array;
-	MaxTablesInQuery = 256;
-
-	// Initialize counters
-	CounterTables = 0;
-	CounterRecordings = 0;
-	TotalRecordings = RegisterRecords.Count();
-	QueryText = "";
+Procedure DocumentObject_OnSetNewNumber_GenerateNumber(Source, StandardProcessing, Prefix) Export
 	
-	// Cycle thru registers available for document
-	For Each RegisterRecord In RegisterRecords Do
-		// Update iterator
-		CounterRecordings = CounterRecordings + 1;
-
-		// Check skipping of register
-		SkipRegister = ArrayOfExcludedRegisters <> Undefined
-				   And ArrayOfExcludedRegisters.Find(RegisterRecord.Name) <> Undefined;
-				   
-		// Add register records to query text		   
-		If Not SkipRegister Then
-
-			// Add UNION to query
-			If CounterTables > 0 Then
-				QueryText = QueryText + "
-				|UNION ALL
-				|";
-			EndIf;
-
-			// Add register name to query
-			CounterTables = CounterTables + 1;
-			QueryText = QueryText + 
-			"
-			|SELECT TOP 1
-			|""" + RegisterRecord.Name + """ AS RegisterName
-			|
-			|FROM " + RegisterRecord.FullName() + "
-			|
-			|WHERE Recorder = &Recorder
-			|";
-		EndIf;
-
-		// Execute query by using nopt more then MaxTablesInQuery tables in the same query
-		If CounterTables = MaxTablesInQuery Or CounterRecordings = TotalRecordings Then
-            // Apply assembled query text
-			Query.Text = QueryText;
-			QueryText = "";
-			CounterTables = 0;
-
-			// Add query result to an array
-			If Result.Count() = 0 Then
-				// First query - unload query result to an array
-				Result = Query.Execute().Unload().UnloadColumn("RegisterName");
-			Else
-				// Add query result to an array
-				Selection = Query.Execute().Choose();
-				While Selection.Next() Do
-					Result.Add(Selection.RegisterName);
-				EndDo;
-			EndIf;
-		EndIf;
-	EndDo;
-
-	// Return formed result
-	Return Result;
-EndFunction
+	// Generating of new document sequential number.
+	
+EndProcedure
 
 ////////////////////////////////////////////////////////////////////////////////
 // EXPORTED PUBLIC FUNCTIONS
@@ -933,6 +894,124 @@ Procedure CheckPostingResults(AdditionalProperties, RegisterRecords, Cancel) Exp
 
 EndProcedure
 
+// Permits writing of the document 
+// if WriteParameters are correct
+Function DocumentWritePermitted(WriteParameters) Export
+	If Not WriteParameters.Property("PeriodClosingPassword") Then
+		return False;
+	EndIf;
+	If (TypeOf(WriteParameters.PeriodClosingPassword) <> Type("String")) Then
+		return False;
+	EndIf;
+	SetPrivilegedMode(True);
+	CurrentPassword = Constants.PeriodClosingPassword.Get();
+	CurrentOption	= Constants.PeriodClosingOption.Get();
+	SetPrivilegedMode(False);
+	If (CurrentOption = Enums.PeriodClosingOptions.WarnAndRequirePassword) Then
+		If TrimAll(CurrentPassword) = TrimAll(WriteParameters.PeriodClosingPassword) Then
+			return True;
+		Else
+			return False;
+		EndIf;
+	Else
+		If WriteParameters.PeriodClosingPassword = "Yes" Then
+			return True;
+		Else
+			return False;
+		EndIf;
+	EndIf;
+EndFunction
+
+
+// Defines whether the document is required to be excluded from bank rec. document
+// Should be excluded in the following cases:
+//  1. amount differs from what is in the database
+//  2. bank account differs from what is in the database
+//  3. date exceeds the period of bank reconciliation document
+// Parameters:
+//  Ref - DocumentRef - Document being checked
+//  NewAmount - Number - new amount of the document. 
+//  NewDate - Date - new date of the document
+//  NewAccount - CatalogRef.BankAccounts - new bank account of the document
+//  WriteMode - DocumentWriteMode - current write mode
+//
+Function RequiresExcludingFromBankReconciliation(Val Ref, Val NewAmount, Val NewDate, Val NewAccount, Val WriteMode) Export
+	If WriteMode = DocumentWriteMode.Posting Then
+		SetPrivilegedMode(True);
+		Query = New Query("SELECT
+		                  |	TransactionReconciliation.Document,
+		                  |	TransactionReconciliation.Amount,
+		                  |	TransactionReconciliation.Account
+		                  |INTO ReconciledValues
+		                  |FROM
+		                  |	InformationRegister.TransactionReconciliation AS TransactionReconciliation
+		                  |WHERE
+		                  |	TransactionReconciliation.Document = &Ref
+		                  |	AND TransactionReconciliation.Reconciled = TRUE
+		                  |;
+		                  |
+		                  |////////////////////////////////////////////////////////////////////////////////
+		                  |SELECT
+		                  |	ReconciledValues.Document,
+		                  |	ReconciledValues.Amount,
+		                  |	BankReconciliationLineItems.Ref.StatementToDate,
+		                  |	ReconciledValues.Account,
+		                  |	CASE
+		                  |		WHEN ReconciledValues.Amount <> &NewAmount
+		                  |				OR ENDOFPERIOD(BankReconciliationLineItems.Ref.StatementToDate, DAY) < &NewDate
+		                  |				OR ReconciledValues.Account <> &NewAccount
+		                  |			THEN TRUE
+		                  |		ELSE FALSE
+		                  |	END AS RequiresExcluding
+		                  |FROM
+		                  |	ReconciledValues AS ReconciledValues
+		                  |		INNER JOIN Document.BankReconciliation.LineItems AS BankReconciliationLineItems
+		                  |		ON ReconciledValues.Document = BankReconciliationLineItems.Transaction
+		                  |			AND (BankReconciliationLineItems.Cleared = TRUE)
+		                  |			AND (BankReconciliationLineItems.Ref.Posted = TRUE)
+		                  |			AND (BankReconciliationLineItems.Ref.DeletionMark = FALSE)");
+		Query.SetParameter("Ref", Ref);
+		Query.SetParameter("NewAmount", NewAmount);
+		Query.SetParameter("NewDate", NewDate);
+		Query.SetParameter("NewAccount", NewAccount);
+		
+	    Selection = Query.Execute();
+	
+		SetPrivilegedMode(False);
+	
+		If NOT Selection.IsEmpty() Then
+			Sel = Selection.Select();
+			Sel.Next();
+			return Sel.RequiresExcluding;
+		Else
+			return False;
+		EndIf;	
+	ElsIf WriteMode = DocumentWriteMode.UndoPosting Then
+		SetPrivilegedMode(True);
+		
+		Query = New Query("SELECT
+					  |	TransactionReconciliation.Document
+					  |FROM
+					  |	InformationRegister.TransactionReconciliation AS TransactionReconciliation
+					  |WHERE
+					  |	TransactionReconciliation.Document = &Ref
+					  |	AND TransactionReconciliation.Reconciled = TRUE");
+		Query.SetParameter("Ref", Ref);
+		
+		Selection = Query.Execute();
+		
+		SetPrivilegedMode(False);
+		
+		If NOT Selection.IsEmpty() Then
+			return True;
+		Else
+			return False;
+		EndIf;
+	Else
+		return False;		
+	EndIf;
+EndFunction
+
 //------------------------------------------------------------------------------
 // Service query functions
 
@@ -1053,3 +1132,169 @@ Function PutTemporaryTable(TempTableData, TempTableName, TempTablesManager = Und
 	EndIf;
 	
 EndFunction
+
+////////////////////////////////////////////////////////////////////////////////
+// Document posting: Server call
+//------------------------------------------------------------------------------
+// Available on:
+// - Server
+// - Server call from client
+//
+
+////////////////////////////////////////////////////////////////////////////////
+// INTERNAL PRIVATE FUNCTIONS
+
+// Creates array of register names, where the document has recorded it's bookings.
+// 
+// Parameters:
+// 	DocumentRef 	- DocumentObject for listing of register names
+// 	RegisterRecords - Metadata of document, containing list of registers, where bookings of document can be recorded
+//  ArrayOfExcludedRegisters - Array of registers to skip checking of register records
+//
+// Value returned:
+// 	Array of strings - names of registers
+//
+Function GetArrayOfRegistersHavingDocumentPostings(DocumentRef, RegisterRecords, ArrayOfExcludedRegisters = Undefined)
+
+	// Create a query and set predefined filter by document
+	Query = New Query;
+	Query.SetParameter("Recorder", DocumentRef);
+
+	// Result: Array of registers names
+	Result = New Array;
+	MaxTablesInQuery = 256;
+
+	// Initialize counters
+	CounterTables = 0;
+	CounterRecordings = 0;
+	TotalRecordings = RegisterRecords.Count();
+	QueryText = "";
+	
+	// Cycle thru registers available for document
+	For Each RegisterRecord In RegisterRecords Do
+		// Update iterator
+		CounterRecordings = CounterRecordings + 1;
+
+		// Check skipping of register
+		SkipRegister = ArrayOfExcludedRegisters <> Undefined
+				   And ArrayOfExcludedRegisters.Find(RegisterRecord.Name) <> Undefined;
+				   
+		// Add register records to query text		   
+		If Not SkipRegister Then
+
+			// Add UNION to query
+			If CounterTables > 0 Then
+				QueryText = QueryText + "
+				|UNION ALL
+				|";
+			EndIf;
+
+			// Add register name to query
+			CounterTables = CounterTables + 1;
+			QueryText = QueryText + 
+			"
+			|SELECT TOP 1
+			|""" + RegisterRecord.Name + """ AS RegisterName
+			|
+			|FROM " + RegisterRecord.FullName() + "
+			|
+			|WHERE Recorder = &Recorder
+			|";
+		EndIf;
+
+		// Execute query by using nopt more then MaxTablesInQuery tables in the same query
+		If CounterTables = MaxTablesInQuery Or CounterRecordings = TotalRecordings Then
+            // Apply assembled query text
+			Query.Text = QueryText;
+			QueryText = "";
+			CounterTables = 0;
+
+			// Add query result to an array
+			If Result.Count() = 0 Then
+				// First query - unload query result to an array
+				Result = Query.Execute().Unload().UnloadColumn("RegisterName");
+			Else
+				// Add query result to an array
+				Selection = Query.Execute().Choose();
+				While Selection.Next() Do
+					Result.Add(Selection.RegisterName);
+				EndDo;
+			EndIf;
+		EndIf;
+	EndDo;
+
+	// Return formed result
+	Return Result;
+EndFunction
+
+//------------------------------------------------------------------------------
+// Closing the books 
+// Defines whether the document falls in the closed period
+Function DocumentPeriodIsClosed(DocumentReference, Date) Export
+	SetPrivilegedMode(True);
+	If DocumentReference.IsEmpty() Then
+		CurrentClosingDate = Constants.PeriodClosingDate.Get();
+		SetPrivilegedMode(False);
+		If Date > EndOfDay(CurrentClosingDate) Then
+			return False;
+		Else
+			return True;
+		EndIf;
+	Else
+		Request = New Query("SELECT
+		                    |	Document.Date AS DocumentDate,
+		                    |	PeriodClosingDate.Value AS PeriodClosingDate
+		                    |FROM
+		                    |	Document." + TrimAll(DocumentReference.Metadata().Name) + " AS Document,
+		                    |	Constant.PeriodClosingDate AS PeriodClosingDate
+		                    |WHERE
+		                    |	Document.Ref = &Ref");
+		Request.SetParameter("Ref", DocumentReference);
+		Res = Request.Execute().Choose();
+		If Res.Next() Then
+			If (Date > EndOfDay(Res.PeriodClosingDate)) And (Res.DocumentDate > EndOfDay(Res.PeriodClosingDate)) Then
+				return False;
+			Else
+				return True;
+			EndIf;
+		Else
+			return True;
+		EndIf;
+		SetPrivilegedMode(False);
+	EndIf;
+EndFunction
+
+//Event subscribtion handler. Prevents document deletion in closed period
+Procedure ClosedPeriodDeletionProtectionBeforeDelete(Source, Cancel) Export
+	//Period closing
+	If Source.DataExchange.Load Then
+		return;
+	EndIf;
+	If DocumentPosting.DocumentPeriodIsClosed(Source.Ref, Source.Date) Then
+		MessageText = String(Source) + NStr("en = ': This document''s date is prior to your company''s closing date. Delete failed!'");
+		CommonUseClientServer.MessageToUser(MessageText,,,,Cancel);
+		return;
+	EndIf; 
+EndProcedure
+
+//Event subscribtion handler. Prevents changes to the document in closed period
+Procedure ClosedPeriodBeforeWriteBeforeWrite(Source, Cancel, WriteMode, PostingMode) Export
+	//Period closing
+	If Source.DataExchange.Load Then
+		return;
+	EndIf;
+	If DocumentPosting.DocumentPeriodIsClosed(Source.Ref, Source.Date) Then
+		If Source.AdditionalProperties.Property("PermitWrite") Then
+			PermitWrite = Source.AdditionalProperties.PermitWrite;
+		Else
+			PermitWrite = False;
+		EndIf;
+		If Not PermitWrite Then
+			MessageText = String(Source) + NStr("en = ': This document''s date is prior to your company''s closing date. The document could not be written!'");
+			CommonUseClientServer.MessageToUser(MessageText,,,,Cancel);
+			return;
+		EndIf;
+	EndIf;
+EndProcedure
+
+

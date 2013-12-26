@@ -54,14 +54,7 @@
 					<QuickChoice>true</QuickChoice>
 					<ContextMenu name="BankAccountContextMenu" id="36"/>
 					<ExtendedTooltip name="BankAccountExtendedTooltip" id="60"/>
-					<Events>
-						<Event name="OnChange">BankAccountOnChange</Event>
-					</Events>
 				</InputField>
-				<LabelDecoration name="BankAccountLabel" id="38">
-					<ContextMenu name="BankAccountLabelContextMenu" id="39"/>
-					<ExtendedTooltip name="BankAccountLabelExtendedTooltip" id="61"/>
-				</LabelDecoration>
 				<InputField name="Number" id="1">
 					<DataPath>Object.Number</DataPath>
 					<EditMode>EnterOnInput</EditMode>
@@ -105,6 +98,11 @@
 							<EnableStartDrag>true</EnableStartDrag>
 							<EnableDrag>true</EnableDrag>
 							<DataPath>Object.LineItems</DataPath>
+							<CommandSet>
+								<ExcludedCommand>Copy</ExcludedCommand>
+								<ExcludedCommand>Delete</ExcludedCommand>
+								<ExcludedCommand>Add</ExcludedCommand>
+							</CommandSet>
 							<SearchStringLocation>None</SearchStringLocation>
 							<ViewStatusLocation>None</ViewStatusLocation>
 							<SearchControlLocation>None</SearchControlLocation>

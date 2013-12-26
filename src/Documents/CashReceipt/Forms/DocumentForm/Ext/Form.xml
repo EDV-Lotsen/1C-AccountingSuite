@@ -6,6 +6,12 @@
 	<RepostOnWrite>true</RepostOnWrite>
 	<AutoCommandBar name="FormCommandBar" id="-1">
 		<ChildItems>
+			<Button name="FormChargeWithStripe" id="95">
+				<Type>CommandBarButton</Type>
+				<Visible>false</Visible>
+				<CommandName>Form.Command.ChargeWithStripe</CommandName>
+				<ExtendedTooltip name="FormChargeWithStripeExtendedTooltip" id="98"/>
+			</Button>
 			<Button name="FormSendEmail" id="198">
 				<Type>CommandBarButton</Type>
 				<CommandName>Form.Command.SendEmail</CommandName>
@@ -326,6 +332,7 @@
 									</ChildItems>
 								</UsualGroup>
 								<UsualGroup name="Group1" id="169">
+									<Visible>false</Visible>
 									<Group>Vertical</Group>
 									<ShowTitle>false</ShowTitle>
 									<ExtendedTooltip name="Group1ExtendedTooltip" id="170"/>
@@ -349,6 +356,7 @@
 									</ChildItems>
 								</UsualGroup>
 								<UsualGroup name="Group5" id="171">
+									<Visible>false</Visible>
 									<Group>Vertical</Group>
 									<ShowTitle>false</ShowTitle>
 									<ExtendedTooltip name="Group5ExtendedTooltip" id="172"/>
@@ -372,6 +380,7 @@
 									</ChildItems>
 								</UsualGroup>
 								<UsualGroup name="Group6" id="179">
+									<Visible>false</Visible>
 									<Group>Vertical</Group>
 									<ShowTitle>false</ShowTitle>
 									<ExtendedTooltip name="Group6ExtendedTooltip" id="180"/>
@@ -1054,6 +1063,21 @@
 		</Attribute>
 	</Attributes>
 	<Commands>
+		<Command name="ChargeWithStripe" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Charge with stripe</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Charge with stripe</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>ChargeWithStripe</Action>
+		</Command>
 		<Command name="SendEmail" id="2">
 			<Title>
 				<v8:item>

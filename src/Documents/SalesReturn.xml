@@ -209,7 +209,7 @@
 			</RegisterRecords>
 			<PostInPrivilegedMode>true</PostInPrivilegedMode>
 			<UnpostInPrivilegedMode>true</UnpostInPrivilegedMode>
-			<IncludeHelpInContents>true</IncludeHelpInContents>
+			<IncludeHelpInContents>false</IncludeHelpInContents>
 			<DataLockFields/>
 			<DataLockControlMode>Managed</DataLockControlMode>
 			<FullTextSearch>Use</FullTextSearch>
@@ -262,7 +262,11 @@
 					<FillChecking>ShowError</FillChecking>
 					<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
 					<ChoiceParameterLinks/>
-					<ChoiceParameters/>
+					<ChoiceParameters>
+						<app:item name="Filter.Customer">
+							<app:value xsi:type="xs:boolean">true</app:value>
+						</app:item>
+					</ChoiceParameters>
 					<QuickChoice>Auto</QuickChoice>
 					<CreateOnInput>Auto</CreateOnInput>
 					<ChoiceForm/>
@@ -1599,7 +1603,7 @@
 			</TabularSection>
 			<Template>Template</Template>
 			<Template>PF_MXL_SalesReturn</Template>
-			<Command uuid="16d29ca9-d9ba-4ab3-aef4-5aa7a5bcc896">
+			<Command uuid="9c9918a4-1507-4ff4-86bf-19389fa43a1a">
 				<Properties>
 					<Name>Print</Name>
 					<Synonym>

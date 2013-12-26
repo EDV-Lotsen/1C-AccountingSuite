@@ -561,9 +561,16 @@ EndProcedure
 Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
 		
 	If Object.LineItems.Count() = 0 Then
-		Message("Cannot post with no line items.");
+		Message("Cannot post/save with no line items.");
 		Cancel = True;
 	EndIf;
+	
+	//Period closing
+	If DocumentPosting.DocumentPeriodIsClosed(CurrentObject.Ref, CurrentObject.Date) Then
+		PermitWrite = DocumentPosting.DocumentWritePermitted(WriteParameters);
+		CurrentObject.AdditionalProperties.Insert("PermitWrite", PermitWrite);	
+	EndIf;
+
 	
 	//If Object.Ref.IsEmpty() Then
 	//
@@ -625,12 +632,7 @@ Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
 			
 		EndIf;
 	EndIf;
-	
-	//If Object.Number = "" Then
-	//	Message("Invoice # is empty");
-	//	Cancel = True;
-	//Endif;
-		
+			
 EndProcedure
 
 &AtClient
@@ -677,15 +679,79 @@ EndProcedure
 &AtServer
 Procedure SendInvoiceEmail()
 	
-	//test = Object.PayHTML;
+	
 	If Object.Ref.IsEmpty() Then
 		Message("An email cannot be sent until the invoice is posted or written");
+	Elsif Object.Paid = True Then
+		Message("This invoice has already been paid through Stripe by the receipient.");
 	Else
 		
+		
+		
 	CurObject = object.ref.GetObject();
-	////
+	
 	if CurObject.PayHTML = "" Then
 		
+    	HeadersMap = New Map();
+    	HeadersMap.Insert("Content-Type", "application/json");
+    	
+    	HTTPRequest = New HTTPRequest("/api/1/databases/dataset1c/collections/pay?apiKey=" + ServiceParameters.MongoAPIKey(), HeadersMap);
+    	
+    	RequestBodyMap = New Map();
+    	
+    	SymbolString = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"; //62
+    	RandomString20 = "";
+    	RNG = New RandomNumberGenerator;	
+    	For i = 0 to 19 Do
+    		RN = RNG.RandomNumber(1, 62);
+    		RandomString20 = RandomString20 + Mid(SymbolString,RN,1);
+    	EndDo;
+    							 
+    	RequestBodyMap.Insert("token",RandomString20);
+    	RequestBodyMap.Insert("type","invoice");
+    	RequestBodyMap.Insert("data_key",Constants.publishable_temp.get());
+    	//RequestBodyMap.Insert("data_key","pk_sgcJByLLRiEbS4Unttkz9MEEZlaAh");
+
+    	RequestBodyMap.Insert("data_amount",Object.DocumentTotalRC * 100);
+    	RequestBodyMap.Insert("data_name",Constants.SystemTitle.Get());
+		//ReplaceObjectNum = StrReplace(Object.Number," ","changeme--");
+		//RequestBodyMap.Insert("data_description",SessionParameters.TenantValue + " Invoice " + ReplaceObjectNum + " from " + Format(Object.Date,"DLF=D"));
+    	RequestBodyMap.Insert("data_description",SessionParameters.TenantValue + " Invoice " + Object.Number + " from " + Format(Object.Date,"DLF=D"));
+		//RequestBodyMap.Insert("data_invoice_num",Object.Number);
+    	//RequestBodyMap.Insert("data_description","1100609" + " Invoice " + Object.Number + " from " + Format(Object.Date,"DLF=D"));
+    	RequestBodyMap.Insert("live_secret",Constants.secret_temp.Get());
+    	//RequestBodyMap.Insert("live_secret","sk_b9hTZPel2GaYNn2fYHUVoIQrcXO9O");
+    	RequestBodyMap.Insert("paid","false");
+
+    	
+    	RequestBodyString = InternetConnectionClientServer.EncodeJSON(RequestBodyMap);
+    	
+    	HTTPRequest.SetBodyFromString(RequestBodyString,TextEncoding.ANSI); // ,TextEncoding.ANSI
+    	
+    	SSLConnection = New OpenSSLSecureConnection();
+    	
+    	HTTPConnection = New HTTPConnection("api.mongolab.com",,,,,,SSLConnection);
+    	Result = HTTPConnection.Post(HTTPRequest);
+    	//ResponseBody = Result.GetBodyAsString(TextEncoding.UTF8);
+    	// send e-mail
+    	
+    	Query = New Query("SELECT
+    						 |	Addresses.Email
+    						 |FROM
+    						 |	Catalog.Addresses AS Addresses
+    						 |WHERE
+    						 |	Addresses.Owner = &Company
+    						 |	AND Addresses.DefaultBilling = True");
+    		Query.SetParameter("Company", Object.Company);
+    		QueryResult = Query.Execute().Unload();
+    	   Recipient = QueryResult[0][0];
+ 
+    	FormatHTML = "<a href=""https://pay.accountingsuite.com/invoice?token=" + RandomString20 + """>Pay invoice</a>";
+    	CurObject.PayHTML = "https://pay.accountingsuite.com/invoice?token=" + RandomString20;
+    	
+    	HeadersMap = New Map();
+    	HeadersMap.Insert("Content-Type", "application/json");
+
     EndIf;
 	////	
 
@@ -714,15 +780,15 @@ Procedure SendInvoiceEmail()
 	    	 
 	 	  MailProfil = New InternetMailProfile; 
 	 	  	   
-	   	 MailProfil.SMTPServerAddress = Constants.MailProfAddress.Get(); 
+	   	  MailProfil.SMTPServerAddress = "smtp.sendgrid.net"; 
 	 	  MailProfil.SMTPUseSSL = True;
 	 	  MailProfil.SMTPPort = 465; 
 	 	  
 	 	  MailProfil.Timeout = 180; 
+		  
+		  MailProfil.SMTPPassword = "1cusa2012";
 	 	  
-		  MailProfil.SMTPPassword = Constants.MailProfPass.Get();
-	 	  
-		  MailProfil.SMTPUser = Constants.MailProfUser.Get();
+		  MailProfil.SMTPUser = "bnghiem";
 
 
 	 	  
@@ -745,18 +811,20 @@ Procedure SendInvoiceEmail()
 	 	  FormatHTML = StrReplace(FormAttributeToValue("Object").GetTemplate("HTMLTest").GetText(),"object.terms",object.Terms);
 	 	  
 		  
-		  temptest = false;
+		   temptest = false;
 		  If Constants.secret_temp.Get() = "" Then
 		  	FormatHTML2 = StrReplace(FormatHTML,"<td width=""25%""><a class=""button"" href=""payHTML"" style=""width: 75%;display: block;padding: 17px 18px 16px 18px;-webkit-border-radius: 8px;-moz-border-radius: 8px;border-radius: 8px;background: #edbe1c;border-color: #FFF;text-align: center;color: #FFF;text-decoration: none;"">PAY NOW</a></td>", " ");
 			temptest = true;
-		Else
+		  Else
 			temptest = false;
 		  Endif;
+		
 		  If temptest = true Then
 		  	FormatHTML2 = StrReplace(FormatHTML2,"object.number",object.Number);
 		  Else
 			FormatHTML2 = StrReplace(FormatHTML,"object.number",object.Number);
 		  Endif;
+
 		  If Curobject.PayHTML = "" Then
 		  FormatHTML2 = StrReplace(FormatHTML2,"href=""payHTML"""," ");
 		  FormatHTML2 = StrReplace(FormatHTML2,"<a class=""button"" href=""payHTML"" style=""width: 75%;display: block;padding: 17px 18px 16px 18px;-webkit-border-radius: 8px;-moz-border-radius: 8px;border-radius: 8px;background: #edbe1c;border-color: #FFF;text-align: center;color: #FFF;text-decoration: none;"">PAY NOW</a>", " ");
@@ -847,9 +915,6 @@ Procedure SendInvoiceEmail()
 
 	   Query.SetParameter("Ref", Object.Ref);
 	   Selection = Query.Execute().Choose();
-	   //Selection2 = Query.Execute().Unload();
-	 //  Selection2.LineItems.Choose();
-	  // Selection3 = Selection2.LineItems;
 
 	  While Selection.Next() Do 
 	  
@@ -936,7 +1001,7 @@ EndProcedure
 
 &AtClient
 Procedure SendEmail(Command)
-	// Insert handler contents.
+	
 	SendInvoiceEmail();
 EndProcedure
 
@@ -1021,6 +1086,9 @@ Procedure OnOpenAtServer()
 	If Object.PaidInvoice = True Then
 		CommandBar.ChildItems.FormPayInvoice.Enabled = False;
 	Endif;
+	If Object.Paid = True Then
+		CommandBar.ChildItems.FormSendEmail.Enabled = False;
+	EndIf;
 EndProcedure
 
 &AtServer
@@ -1097,6 +1165,45 @@ Function NumCheck(CheckValue)
 	Return False;
 		
 EndFunction
+
+//Closing period
+&AtClient
+Procedure ProcessUserResponseOnDocumentPeriodClosed(Result, Parameters) Export
+	If (TypeOf(Result) = Type("String")) Then //Inserted password
+		Parameters.Insert("PeriodClosingPassword", Result);
+		Parameters.Insert("Password", TRUE);
+		Write(Parameters);
+	ElsIf (TypeOf(Result) = Type("DialogReturnCode")) Then //Yes, No or Cancel
+		If Result = DialogReturnCode.Yes Then
+			Parameters.Insert("PeriodClosingPassword", "Yes");
+			Parameters.Insert("Password", FALSE);
+			Write(Parameters);
+		EndIf;
+	EndIf;	
+EndProcedure
+
+&AtClient
+Procedure BeforeWrite(Cancel, WriteParameters)
+	//Closing period
+		
+	If DocumentPosting.DocumentPeriodIsClosed(Object.Ref, Object.Date) Then
+		Cancel = Not DocumentPosting.DocumentWritePermitted(WriteParameters);
+		If Cancel Then
+			If WriteParameters.Property("PeriodClosingPassword") And WriteParameters.Property("Password") Then
+				If WriteParameters.Password = TRUE Then //Writing the document requires a password
+					ShowMessageBox(, "Invalid password!",, "Closed period notification");
+				EndIf;
+			Else
+				Notify = New NotifyDescription("ProcessUserResponseOnDocumentPeriodClosed", ThisObject, WriteParameters);
+				Password = "";
+				OpenForm("CommonForm.ClosedPeriodNotification", New Structure, ThisForm,,,, Notify, FormWindowOpeningMode.LockOwnerWindow);
+			EndIf;
+			return;
+		EndIf;
+	EndIf;
+
+EndProcedure
+
 
 
 

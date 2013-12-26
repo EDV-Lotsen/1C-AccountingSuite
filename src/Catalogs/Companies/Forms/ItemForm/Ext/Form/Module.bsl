@@ -93,7 +93,6 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	EndIf;
 
 	// end custom fields
-
 	
 	LoadAddrPage();
 	If Object.Ref.IsEmpty() Then
@@ -122,12 +121,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Except
 		EndTry;
 	EndIf;
-	
-	Items.IncomeAcctLabel.Title = Object.IncomeAccount.Description;
-	Items.ExpenseAcctLabel.Title = Object.ExpenseAccount.Description;
-	Items.APAcctLabel.Title = Object.APAccount.Description;
-	Items.ARAcctLabel.Title = Object.ARAccount.Description;
-	
+		
 	If Object.Customer = False Then
 		//Items.IncomeAccount.ReadOnly = True;
 		//Items.CatalogProjectsOpenByValue.Visible = False;
@@ -153,27 +147,12 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	//	Items.Group2.ReadOnly = True;
 	//	Items.Terms.Visible = False;
 	//EndIf;
-		
-EndProcedure
-
-&AtClient
-// Determines the account's description
-//
-Procedure ExpenseAccountOnChange(Item)
 	
-	Items.ExpenseAcctLabel.Title = CommonUse.GetAttributeValue(Object.ExpenseAccount, "Description");
-		
-EndProcedure
-
-&AtClient
-// Determines the account's description
-//
-Procedure IncomeAccountOnChange(Item)
+	//Items.FormRegisterCard.Enabled = IsBlankString(Object.StripeToken);
+	//Items.FormDeleteCard.Enabled   = Not IsBlankString(Object.StripeID);
+	//Items.FormRegisterCustomer.Enabled = IsBlankString(Object.StripeID) And Not IsBlankString(Object.StripeToken);
 	
-	Items.IncomeAcctLabel.Title =
-		CommonUse.GetAttributeValue(Object.IncomeAccount, "Description");
-		
-	EndProcedure
+EndProcedure
 
 &AtServer
 // Checks if the user indicated if the company is a customer, vendor, or both.
@@ -268,21 +247,21 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 	Items.Customer.Enabled = Not Object.Customer;
 	Items.Vendor.Enabled = Not Object.Vendor;
 	
-	MainAddr = Catalogs.Addresses.FindByDescription("Primary",,,Object.Ref);
-	//MainAddr = Catalogs.Addresses.FindByCode("00001",,,Object.Ref);
-	MainObj = MainAddr.GetObject();
-	MainObj.FirstName = PrimaryAddr.FirstName;
-	MainObj.MiddleName = PrimaryAddr.MiddleName;
-	MainObj.LastName = PrimaryAddr.LastName;
-	MainObj.Email = PrimaryAddr.Email;
-	MainObj.AddressLine1 = PrimaryAddr.AddressLine1;
-	MainObj.AddressLine2 = PrimaryAddr.AddressLine2;
-	MainObj.Phone = PrimaryAddr.Phone;
-	MainObj.City = PrimaryAddr.City;
-	MainObj.State = PrimaryAddr.State;
-	MainObj.Country = PrimaryAddr.Country;
-	MainObj.ZIP = PrimaryAddr.ZIP;
-	MainObj.Write();
+	//MainAddr = Catalogs.Addresses.FindByDescription("Primary",,,Object.Ref);
+	////MainAddr = Catalogs.Addresses.FindByCode("00001",,,Object.Ref);
+	//MainObj = MainAddr.GetObject();
+	//MainObj.FirstName = PrimaryAddr.FirstName;
+	//MainObj.MiddleName = PrimaryAddr.MiddleName;
+	//MainObj.LastName = PrimaryAddr.LastName;
+	//MainObj.Email = PrimaryAddr.Email;
+	//MainObj.AddressLine1 = PrimaryAddr.AddressLine1;
+	//MainObj.AddressLine2 = PrimaryAddr.AddressLine2;
+	//MainObj.Phone = PrimaryAddr.Phone;
+	//MainObj.City = PrimaryAddr.City;
+	//MainObj.State = PrimaryAddr.State;
+	//MainObj.Country = PrimaryAddr.Country;
+	//MainObj.ZIP = PrimaryAddr.ZIP;
+	//MainObj.Write();
 
 	
 EndProcedure
@@ -294,22 +273,6 @@ Function GetAPISecretKey()
 	Return Constants.APISecretKey.Get();
 	
 EndFunction
-
-&AtClient
-Procedure ARAccountOnChange(Item)
-	
-	Items.ARAcctLabel.Title =
-		CommonUse.GetAttributeValue(Object.ARAccount, "Description");
-		
-EndProcedure
-
-&AtClient
-Procedure APAccountOnChange(Item)
-	
-	Items.APAcctLabel.Title =
-		CommonUse.GetAttributeValue(Object.APAccount, "Description");
-		
-EndProcedure
 
 &AtClient
 Procedure SalesTransactions(Command)

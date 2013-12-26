@@ -41,8 +41,16 @@ EndProcedure
 
 Procedure FillCheckProcessing(Cancel, CheckedAttributes)
 	
-	// Check doubles in items (to be sure of proper orders placement)
-	GeneralFunctions.CheckDoubleItems(Ref, LineItems, "Product, Location, DeliveryDate, Order, Project, Class, LineNumber", Cancel);
+	// Create items filter by non-empty orders.
+	FilledOrders = GeneralFunctions.InvertCollectionFilter(LineItems, LineItems.FindRows(New Structure("Order", Documents.PurchaseOrder.EmptyRef())));
+	
+	// Check doubles in items (to be sure of proper orders placement).
+	GeneralFunctions.CheckDoubleItems(Ref, LineItems, "Product, Order, Location, DeliveryDate, Project, Class, LineNumber", FilledOrders, Cancel);
+	
+	// Check proper closing of order items by the invoice items.
+	If Not Cancel Then
+		Documents.PurchaseInvoice.CheckOrderQuantity(Ref, Date, Company, LineItems, FilledOrders, Cancel);
+	EndIf;
 	
 EndProcedure
 
@@ -54,7 +62,7 @@ Procedure Filling(FillingData, StandardProcessing)
 		APAccount        = Currency.DefaultAPAccount;
 		ExchangeRate     = 1;
 		PriceIncludesVAT = GeneralFunctionsReusable.PriceIncludesVAT();
-		Location         = Catalogs.Locations.MainWarehouse;
+		LocationActual   = Catalogs.Locations.MainWarehouse;
 		
 	Else
 		// Generate on th base of Purchase order & Item receipt.
@@ -177,7 +185,7 @@ Procedure Posting(Cancel, PostingMode)
 				Record.RecordType = AccumulationRecordType.Receipt;
 				Record.Period = Date;
 				Record.Product = CurRowLineItems.Product;
-				Record.Location = Location;
+				Record.Location = CurRowLineItems.LocationActual;
 				If CurRowLineItems.Product.CostingMethod = Enums.InventoryCosting.WeightedAverage Then
 				Else
 					Record.Layer = Ref;
@@ -338,6 +346,7 @@ Procedure UndoPosting(Cancel)
 	
 	Query = New Query("SELECT
 					  |	PurchaseInvoiceLineItems.Product,
+					  |	PurchaseInvoiceLineItems.LocationActual,
 					  |	SUM(PurchaseInvoiceLineItems.Quantity) AS Quantity
 					  |FROM
 					  |	Document.PurchaseInvoice.LineItems AS PurchaseInvoiceLineItems
@@ -346,9 +355,10 @@ Procedure UndoPosting(Cancel)
 					  |	AND PurchaseInvoiceLineItems.Product.Type = VALUE(Enum.InventoryTypes.Inventory)
 					  |
 					  |GROUP BY
-					  |	PurchaseInvoiceLineItems.Product");
+					  |	PurchaseInvoiceLineItems.Product,
+					  |	PurchaseInvoiceLineItems.LocationActual");
 	Query.SetParameter("Ref", Ref);
-	Dataset = Query.Execute().Choose();
+	Dataset = Query.Execute().Select();
 	
 	AllowNegativeInventory = Constants.AllowNegativeInventory.Get();
 	
@@ -365,7 +375,7 @@ Procedure UndoPosting(Cancel)
 						  |	AND InventoryJrnlBalance.Location = &Location");			
 		
 		Query2.SetParameter("Product", Dataset.Product);
-		Query2.SetParameter("Location", Location);
+		Query2.SetParameter("Location", Dataset.LocationActual);
 		
 		QueryResult = Query2.Execute();
 			

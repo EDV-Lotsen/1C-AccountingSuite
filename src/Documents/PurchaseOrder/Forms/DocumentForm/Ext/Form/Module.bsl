@@ -20,22 +20,19 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	IsNewRow     = False;
 	
 	// Fill object attributes cache.
+	DeliveryDate = Object.DeliveryDate;
 	Location     = Object.Location;
 	Project      = Object.Project;
 	Class        = Object.Class;
-	DeliveryDate = Object.DeliveryDate;
 	
 	//------------------------------------------------------------------------------
 	// 2. Calculate values of form object attributes.
 	
 	// Request and fill order status.
-	FillOrderStatus();
+	FillOrderStatusAtServer();
 	
 	// Request and fill ordered items from database.
-	FillBackorderQuantity();
-	
-	// Request and fill indexes of product type (required to calculate backorder property).
-	FillProductTypes();
+	FillBackorderQuantityAtServer();
 	
 	//------------------------------------------------------------------------------
 	// 3. Set custom controls presentation.
@@ -68,8 +65,8 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	ForeignCurrencySymbol    = Object.Currency.Symbol;
 	Items.ExchangeRate.Title = DefaultCurrencySymbol + "/1" + ForeignCurrencySymbol;
 	Items.VATCurrency.Title  = ForeignCurrencySymbol;
-	Items.RCCurrency.Title   = DefaultCurrencySymbol;
 	Items.FCYCurrency.Title  = ForeignCurrencySymbol;
+	Items.RCCurrency.Title   = DefaultCurrencySymbol;
 	
 EndProcedure
 
@@ -77,16 +74,13 @@ EndProcedure
 Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 	
 	//------------------------------------------------------------------------------
-	// Realculate values of form object attributes.
+	// Recalculate values of form object attributes.
 	
 	// Request and fill order status from database.
-	FillOrderStatus();
+	FillOrderStatusAtServer();
 	
 	// Request and fill ordered items from database.
-	FillBackorderQuantity();
-	
-	// Request and fill indexes of product type (required to calculate backorder property).
-	FillProductTypes();
+	FillBackorderQuantityAtServer();
 	
 EndProcedure
 
@@ -108,6 +102,8 @@ Procedure DateOnChangeAtServer()
 	
 	// Request exchange rate on the new date.
 	Object.ExchangeRate = GeneralFunctions.GetExchangeRate(Object.Date, Object.Currency);
+	
+	// Process settings changes.
 	ExchangeRateOnChangeAtServer();
 	
 EndProcedure
@@ -163,6 +159,8 @@ Procedure CompanyOnChangeAtServer()
 	
 	// Request company default settings.
 	Object.Currency    = Object.Company.DefaultCurrency;
+	
+	// Process settings changes.
 	CurrencyOnChangeAtServer();
 	
 EndProcedure
@@ -188,6 +186,8 @@ Procedure CurrencyOnChangeAtServer()
 	
 	// Request currency default settings.
 	Object.ExchangeRate = GeneralFunctions.GetExchangeRate(Object.Date, Object.Currency);
+	
+	// Process settings changes.
 	ExchangeRateOnChangeAtServer();
 	
 EndProcedure
@@ -204,7 +204,7 @@ EndProcedure
 Procedure ExchangeRateOnChangeAtServer()
 	
 	// Recalculate totals with new exchange rate.
-	RecalculateTotals();
+	RecalculateTotalsAtServer();
 	
 EndProcedure
 
@@ -225,7 +225,7 @@ Procedure PriceIncludesVATOnChangeAtServer()
 	EndDo;
 	
 	// Update overall totals.
-	RecalculateTotals();
+	RecalculateTotalsAtServer();
 	
 EndProcedure
 
@@ -241,7 +241,7 @@ EndProcedure
 Procedure DeliveryDateOnChange(Item)
 	
 	// Ask user about updating the setting and update the line items accordingly.
-	CommonDefaultSettingOnChange(Item, "delivery date");
+	CommonDefaultSettingOnChange(Item, Lower(Item.ToolTip));
 	
 EndProcedure
 
@@ -260,6 +260,9 @@ Procedure ClassOnChange(Item)
 	CommonDefaultSettingOnChange(Item, Lower(Item.Name));
 	
 EndProcedure
+
+//------------------------------------------------------------------------------
+// Utils for request user confirmation and propagate header settings to line items.
 
 &AtClient
 Procedure CommonDefaultSettingOnChange(Item, ItemPresentation)
@@ -337,6 +340,9 @@ Procedure LineItemsOnChange(Item)
 				Item.CurrentData[ObjectField.Key] = ObjectField.Value;
 			EndIf;
 		EndDo;
+		
+		// Refresh totals cache.
+		RecalculateTotals();
 	EndIf;
 	
 EndProcedure
@@ -355,7 +361,7 @@ EndProcedure
 Procedure LineItemsOnEditEnd(Item, NewRow, CancelEdit)
 	
 	// Recalculation common document totals.
-	RecalculateTotals();
+	RecalculateTotalsAtServer();
 	
 EndProcedure
 
@@ -363,7 +369,7 @@ EndProcedure
 Procedure LineItemsAfterDeleteRow(Item)
 	
 	// Recalculation common document totals.
-	RecalculateTotals();
+	RecalculateTotalsAtServer();
 	
 EndProcedure
 
@@ -383,15 +389,17 @@ Procedure LineItemsProductOnChange(Item)
 	// Load processed data back.
 	FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
 	
+	// Refresh totals cache.
+	RecalculateTotals();
+	
 EndProcedure
 
 &AtServer
 Procedure LineItemsProductOnChangeAtServer(TableSectionRow)
 	
 	// Request product properties.
-	ProductProperties = CommonUse.GetAttributeValues(TableSectionRow.Product, New Structure("Description, PurchaseVATCode, UM, TypeIndex",,,,"Type.Order"));
+	ProductProperties = CommonUse.GetAttributeValues(TableSectionRow.Product, New Structure("Description, PurchaseVATCode, UM"));
 	TableSectionRow.ProductDescription = ProductProperties.Description;
-	TableSectionRow.ProductTypeIndex   = ProductProperties.TypeIndex;
 	TableSectionRow.VATCode            = ProductProperties.PurchaseVATCode;
 	TableSectionRow.UM                 = ProductProperties.UM;
 	TableSectionRow.Price              = GeneralFunctions.ProductLastCost(TableSectionRow.Product);
@@ -427,25 +435,26 @@ Procedure LineItemsQuantityOnChange(Item)
 	// Load processed data back.
 	FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
 	
+	// Refresh totals cache.
+	RecalculateTotals();
+	
 EndProcedure
 
 &AtServer
 Procedure LineItemsQuantityOnChangeAtServer(TableSectionRow)
 	
 	// Update backorder quantity basing on document status.
-	If OrderStatusIndex = 0 Then    // OrderStatus = Enums.OrderStatuses.Open
+	If OrderStatus = Enums.OrderStatuses.Open Then
 		TableSectionRow.Backorder = 0;
 		
-	ElsIf OrderStatusIndex = 1 Then // OrderStatus = Enums.OrderStatuses.Backordered
-		If TableSectionRow.ProductTypeIndex = 0 Then
-			// Product.Type = Enums.InventoryTypes.Inventory
+	ElsIf OrderStatus = Enums.OrderStatuses.Backordered Then
+		If TableSectionRow.Product.Type = Enums.InventoryTypes.Inventory Then
 			TableSectionRow.Backorder = Max(TableSectionRow.Quantity - TableSectionRow.Received, 0);
-		Else 
-			// Product.Type = Enums.InventoryTypes.NonInventory;
+		Else // TableSectionRow.Product.Type = Enums.InventoryTypes.NonInventory;
 			TableSectionRow.Backorder = Max(TableSectionRow.Quantity - TableSectionRow.Invoiced, 0);
 		EndIf;
 		
-	ElsIf OrderStatusIndex = 2 Then // OrderStatus = Enums.OrderStatuses.Closed
+	ElsIf OrderStatus = Enums.OrderStatuses.Closed Then
 		TableSectionRow.Backorder = 0;
 		
 	Else
@@ -454,6 +463,8 @@ Procedure LineItemsQuantityOnChangeAtServer(TableSectionRow)
 	
 	// Calculate total by line.
 	TableSectionRow.LineTotal = Round(Round(TableSectionRow.Quantity, QuantityPrecision) * TableSectionRow.Price, 2);
+	
+	// Process settings changes.
 	LineItemsLineTotalOnChangeAtServer(TableSectionRow);
 	
 EndProcedure
@@ -471,6 +482,9 @@ Procedure LineItemsPriceOnChange(Item)
 	// Load processed data back.
 	FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
 	
+	// Refresh totals cache.
+	RecalculateTotals();
+	
 EndProcedure
 
 &AtServer
@@ -478,6 +492,8 @@ Procedure LineItemsPriceOnChangeAtServer(TableSectionRow)
 	
 	// Calculate total by line.
 	TableSectionRow.LineTotal = Round(Round(TableSectionRow.Quantity, QuantityPrecision) * TableSectionRow.Price, 2);
+	
+	// Process settings changes.
 	LineItemsLineTotalOnChangeAtServer(TableSectionRow);
 	
 EndProcedure
@@ -495,6 +511,9 @@ Procedure LineItemsLineTotalOnChange(Item)
 	// Load processed data back.
 	FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
 	
+	// Refresh totals cache.
+	RecalculateTotals();
+	
 EndProcedure
 
 &AtServer
@@ -505,7 +524,7 @@ Procedure LineItemsLineTotalOnChangeAtServer(TableSectionRow)
 	                          Round(TableSectionRow.LineTotal / Round(TableSectionRow.Quantity, QuantityPrecision), 2), 0);
 	
 	// Calculate taxes by line total.
-	TableSectionRow.VAT = VAT_FL.VATLine(TableSectionRow.LineTotal, TableSectionRow.VATCode, "Purchase", Object.PriceIncludesVAT);
+	LineItemsVATCodeOnChangeAtServer(TableSectionRow);
 	
 EndProcedure
 
@@ -522,6 +541,9 @@ Procedure LineItemsVATCodeOnChange(Item)
 	// Load processed data back.
 	FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
 	
+	// Refresh totals cache.
+	RecalculateTotals();
+	
 EndProcedure
 
 &AtServer
@@ -529,6 +551,14 @@ Procedure LineItemsVATCodeOnChangeAtServer(TableSectionRow)
 	
 	// Calculate taxes by line total.
 	TableSectionRow.VAT = VAT_FL.VATLine(TableSectionRow.LineTotal, TableSectionRow.VATCode, "Purchase", Object.PriceIncludesVAT);
+	
+EndProcedure
+
+&AtClient
+Procedure LineItemsVATOnChange(Item)
+	
+	// Refresh totals cache.
+	RecalculateTotals();
 	
 EndProcedure
 
@@ -546,16 +576,16 @@ EndProcedure
 // Calculate values of form object attributes.
 
 &AtServer
-// Request order status from database
-Procedure FillOrderStatus()
+// Request order status from database.
+Procedure FillOrderStatusAtServer()
 	
-	// Request order status
-	If Not ValueIsFilled(Object.Ref) Then
-		// New order has open status
+	// Request order status.
+	If (Not ValueIsFilled(Object.Ref)) Or (Object.DeletionMark) Or (Not Object.Posted) Then
+		// The order has open status.
 		OrderStatus = Enums.OrderStatuses.Open;
 		
 	Else
-		// Create new query
+		// Create new query.
 		Query = New Query;
 		Query.SetParameter("Ref", Object.Ref);
 		
@@ -568,27 +598,29 @@ Procedure FillOrderStatus()
 			|	Order = &Ref
 			|ORDER BY
 			|	OrdersStatuses.Status.Order Desc";
-		Selection = Query.Execute().Choose();
+		Selection = Query.Execute().Select();
 		
-		// Fill order status
+		// Fill order status.
 		If Selection.Next() Then
 			OrderStatus = Selection.Status;
 		Else
 			OrderStatus = Enums.OrderStatuses.Open;
 		EndIf;
 	EndIf;
-	OrderStatusIndex = Enums.OrderStatuses.IndexOf(OrderStatus);
 	
-	// Build order status presentation (depending of document state)
+	// Fill extended order status presentation (depending of document state).
 	If Not ValueIsFilled(Object.Ref) Then
 		OrderStatusPresentation = String(Enums.OrderStatuses.New);
 		Items.OrderStatusPresentation.TextColor = WebColors.DarkGreen;
+		
 	ElsIf Object.DeletionMark Then
 		OrderStatusPresentation = String(Enums.OrderStatuses.Deleted);
 		Items.OrderStatusPresentation.TextColor = WebColors.DarkGray;
-	ElsIf Not Object.Posted Then 
+		
+	ElsIf Not Object.Posted Then
 		OrderStatusPresentation = String(Enums.OrderStatuses.Draft);
 		Items.OrderStatusPresentation.TextColor = WebColors.DarkGray;
+		
 	Else
 		OrderStatusPresentation = String(OrderStatus);
 		If OrderStatus = Enums.OrderStatuses.Open Then 
@@ -605,8 +637,8 @@ Procedure FillOrderStatus()
 EndProcedure
 
 &AtServer
-// Request demanded order items from database
-Procedure FillBackorderQuantity()
+// Request demanded order items from database.
+Procedure FillBackorderQuantityAtServer()
 	
 	// Request ordered items quantities
 	If ValueIsFilled(Object.Ref) Then
@@ -618,7 +650,7 @@ Procedure FillBackorderQuantity()
 		
 		Query.Text = 
 			"SELECT
-			|	OrdersDispatched.LineNumber              AS LineNumber,
+			|	LineItems.LineNumber                     AS LineNumber,
 			//  Request dimensions
 			|	OrdersDispatchedBalance.Product          AS Product,
 			|	OrdersDispatchedBalance.Location         AS Location,
@@ -643,39 +675,29 @@ Procedure FillBackorderQuantity()
 			|						ELSE 0 END                                                                                  //     |
 			|				END                                                                                                 //     |
 			|		WHEN &OrderStatus = VALUE(Enum.OrderStatuses.Closed)      THEN 0                                            // Order status = Closed:
-			|		END                                 AS Backorder,                                                                                           //   Backorder = 0
-			|	OrdersDispatchedBalance.ReceivedBalance AS Received,
-			|	OrdersDispatchedBalance.InvoicedBalance AS Invoiced
+			|		END                                  AS Backorder,                                                          //   Backorder = 0
+			|	OrdersDispatchedBalance.ReceivedBalance  AS Received,
+			|	OrdersDispatchedBalance.InvoicedBalance  AS Invoiced
 			//  Request sources
 			|FROM
-			|	AccumulationRegister.OrdersDispatched.Balance(,
-			|		(Company, Order, Product, Location, DeliveryDate, Project, Class) IN
-			|			(SELECT
-			|				LineItems.Ref.Company,
-			|				LineItems.Ref,
-			|				LineItems.Product,
-			|				LineItems.Location,
-			|				LineItems.DeliveryDate,
-			|				LineItems.Project,
-			|				LineItems.Class
-			|			FROM
-			|				Document.PurchaseOrder.LineItems AS LineItems
-			|			WHERE
-			|				LineItems.Ref = &Ref)) AS OrdersDispatchedBalance
-			|	LEFT JOIN AccumulationRegister.OrdersDispatched AS OrdersDispatched
-			|		ON    ( OrdersDispatched.Recorder      = &Ref
-			|			AND OrdersDispatched.Company       = OrdersDispatchedBalance.Company
-			|			AND OrdersDispatched.Order         = OrdersDispatchedBalance.Order
-			|			AND OrdersDispatched.Product       = OrdersDispatchedBalance.Product
-			|			AND OrdersDispatched.Location      = OrdersDispatchedBalance.Location
-			|			AND OrdersDispatched.DeliveryDate  = OrdersDispatchedBalance.DeliveryDate
-			|			AND OrdersDispatched.Project       = OrdersDispatchedBalance.Project
-			|			AND OrdersDispatched.Class         = OrdersDispatchedBalance.Class
-			|			AND OrdersDispatched.Quantity      = OrdersDispatchedBalance.QuantityBalance)
+			|	Document.PurchaseOrder.LineItems         AS LineItems
+			|	LEFT JOIN AccumulationRegister.OrdersDispatched.Balance(,Order = &Ref)
+			|		                                     AS OrdersDispatchedBalance
+			|		ON    ( LineItems.Ref.Company         = OrdersDispatchedBalance.Company
+			|			AND LineItems.Ref                 = OrdersDispatchedBalance.Order
+			|			AND LineItems.Product             = OrdersDispatchedBalance.Product
+			|			AND LineItems.Location            = OrdersDispatchedBalance.Location
+			|			AND LineItems.DeliveryDate        = OrdersDispatchedBalance.DeliveryDate
+			|			AND LineItems.Project             = OrdersDispatchedBalance.Project
+			|			AND LineItems.Class               = OrdersDispatchedBalance.Class
+			|			AND LineItems.Quantity            = OrdersDispatchedBalance.QuantityBalance)
+			//  Request filtering
+			|WHERE
+			|	LineItems.Ref = &Ref
 			//  Request ordering
 			|ORDER BY
-			|	OrdersDispatched.LineNumber";
-		Selection = Query.Execute().Choose();
+			|	LineItems.LineNumber";
+		Selection = Query.Execute().Select();
 		
 		// Fill ordered items quantities
 		SearchRec = New Structure("LineNumber, Product, Location, DeliveryDate, Project, Class, Quantity");
@@ -696,44 +718,32 @@ Procedure FillBackorderQuantity()
 	
 EndProcedure
 
-&AtServer
-// Request and fill indexes of product type (required to calculate backorder property)
-Procedure FillProductTypes()
-	
-	// Fill line item's product types
-	If ValueIsFilled(Object.Ref) Then
-		
-		// Create new query
-		Query = New Query;
-		Query.SetParameter("Ref", Object.Ref);
-		
-		Query.Text =
-		"SELECT
-		|	PurchaseOrderLineItems.LineNumber         AS LineNumber,
-		|	PurchaseOrderLineItems.Product.Type.Order AS ProductTypeIndex
-		|FROM
-		|	Document.PurchaseOrder.LineItems AS PurchaseOrderLineItems
-		|WHERE
-		|	PurchaseOrderLineItems.Ref = &Ref
-		|ORDER BY
-		|	LineNumber";
-		Selection = Query.Execute().Choose();
-		
-		// Fill ordered items quantities
-		While Selection.Next() Do
-			
-			// Search for appropriate line in tabular section of order
-			LineItem = Object.LineItems.Get(Selection.LineNumber-1);
-			If LineItem <> Undefined Then
-				LineItem.ProductTypeIndex = Selection.ProductTypeIndex;
-			EndIf;
-		EndDo;
-		
-	EndIf;
-EndProcedure
-
 //------------------------------------------------------------------------------
 // Calculate totals and fill object attributes.
+
+&AtClient
+// The procedure recalculates the document's totals.
+// VATTotal        - VAT total in foreign currency.
+// VATTotalRC      - VAT total in reporting currency.
+// DocumentTotal   - document total in foreign currency.
+// DocumentTotalRC - document total in reporting currency.
+//
+Procedure RecalculateTotals()
+	
+	// Calculate document totals.
+	VATTotal = 0; DocumentTotal = 0;
+	For Each Row In Object.LineItems Do
+		VATTotal      = VATTotal      + Row.VAT;
+		DocumentTotal = DocumentTotal + Row.LineTotal;
+	EndDo;
+	
+	// Assign totals to the object fields.
+	Object.VATTotal        = VATTotal;
+	Object.VATTotalRC      = Round(Object.VATTotal * Object.ExchangeRate, 2);
+	Object.DocumentTotal   = DocumentTotal + ?(Object.PriceIncludesVAT, 0, VATTotal);
+	Object.DocumentTotalRC = Round(Object.DocumentTotal * Object.ExchangeRate, 2);
+	
+EndProcedure
 
 &AtServer
 // The procedure recalculates the document's totals.
@@ -742,7 +752,7 @@ EndProcedure
 // DocumentTotal   - document total in foreign currency.
 // DocumentTotalRC - document total in reporting currency.
 //
-Procedure RecalculateTotals()
+Procedure RecalculateTotalsAtServer()
 	
 	// Calculate document totals.
 	Object.VATTotal        = Object.LineItems.Total("VAT");
@@ -760,8 +770,64 @@ EndProcedure
 Function GetLineItemsRowStructure()
 	
 	// Define control row fields.
-	Return New Structure("Product, ProductDescription, ProductTypeIndex, Quantity, UM, Backorder, Price, LineTotal, VATCode, VAT, Location, DeliveryDate, Project, Class, Received, Invoiced");
+	Return New Structure("Product, ProductDescription, Quantity, UM, Backorder, Price, LineTotal, VATCode, VAT, Location, DeliveryDate, Project, Class, Received, Invoiced");
 	
 EndFunction
+
+#EndRegion
+
+////////////////////////////////////////////////////////////////////////////////
+#Region CODE_REVIEW
+
+//------------------------------------------------------------------------------
+// Closing the period
+
+&AtClient
+Procedure BeforeWrite(Cancel, WriteParameters)
+	
+	// Closing period
+	If DocumentPosting.DocumentPeriodIsClosed(Object.Ref, Object.Date) Then
+		Cancel = Not DocumentPosting.DocumentWritePermitted(WriteParameters);
+		If Cancel Then
+			If WriteParameters.Property("PeriodClosingPassword") And WriteParameters.Property("Password") Then
+				If WriteParameters.Password = TRUE Then //Writing the document requires a password
+					ShowMessageBox(, "Invalid password!",, "Closed period notification");
+				EndIf;
+			Else
+				Notify = New NotifyDescription("ProcessUserResponseOnDocumentPeriodClosed", ThisObject, WriteParameters);
+				Password = "";
+				OpenForm("CommonForm.ClosedPeriodNotification", New Structure, ThisForm,,,, Notify, FormWindowOpeningMode.LockOwnerWindow);
+			EndIf;
+			return;
+		EndIf;
+	EndIf;
+	
+EndProcedure
+
+&AtServer
+Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
+	
+	//Period closing
+	If DocumentPosting.DocumentPeriodIsClosed(CurrentObject.Ref, CurrentObject.Date) Then
+		PermitWrite = DocumentPosting.DocumentWritePermitted(WriteParameters);
+		CurrentObject.AdditionalProperties.Insert("PermitWrite", PermitWrite);
+	EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure ProcessUserResponseOnDocumentPeriodClosed(Result, Parameters) Export
+	If (TypeOf(Result) = Type("String")) Then //Inserted password
+		Parameters.Insert("PeriodClosingPassword", Result);
+		Parameters.Insert("Password", TRUE);
+		Write(Parameters);
+	ElsIf (TypeOf(Result) = Type("DialogReturnCode")) Then //Yes, No or Cancel
+		If Result = DialogReturnCode.Yes Then
+			Parameters.Insert("PeriodClosingPassword", "Yes");
+			Parameters.Insert("Password", FALSE);
+			Write(Parameters);
+		EndIf;
+	EndIf;	
+EndProcedure
 
 #EndRegion

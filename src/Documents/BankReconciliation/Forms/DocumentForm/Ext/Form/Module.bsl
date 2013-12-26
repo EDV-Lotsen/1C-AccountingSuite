@@ -38,7 +38,7 @@ Procedure FillReconciliationSpec(StatementToDate, BankAccount)
 	
 	For Each DocumentLine in Object.LineItems Do
 		
-		If DocumentLine.Cleared = True Then
+		If (DocumentLine.Cleared = True) And (DocumentLine.Date <= EndOfDay(StatementToDate)) Then
 			
 			OldLineItems = New Structure;
 			OldLineItems.Insert("Transaction", DocumentLine.Transaction);
@@ -46,6 +46,11 @@ Procedure FillReconciliationSpec(StatementToDate, BankAccount)
 			OldLineItems.Insert("TransactionAmount", DocumentLine.TransactionAmount);
 			OldLineItems.Insert("Company", DocumentLine.Company);
 			OldLineItems.Insert("DocNumber", DocumentLine.DocNumber);
+			OldLineItems.Insert("BankTransactionDescription", DocumentLine.BankTransactionDescription);
+			OldLineItems.Insert("BankTransactionDate", DocumentLine.BankTransactionDate);
+			OldLineItems.Insert("BankTransactionAmount", DocumentLine.BankTransactionAmount);
+			OldLineItems.Insert("BankTransactionCategory", DocumentLine.BankTransactionCategory);
+			OldLineItems.Insert("Cleared", True);
 			OldLI.Add(OldLineItems);
 			
 		EndIf;
@@ -59,30 +64,55 @@ Procedure FillReconciliationSpec(StatementToDate, BankAccount)
 	For i = 1 To NumOfRows Do
 		
 		DataLine = Object.LineItems.Add();
-		DataLine.Transaction = OldLI[i-1].Transaction;
-		DataLine.Date = OldLI[i-1].Date;
-		DataLine.Cleared = True;
-		DataLine.TransactionAmount = OldLI[i-1].TransactionAmount;
-		DataLine.DocNumber = OldLI[i-1].DocNumber;
-		DataLine.Company = OldLI[i-1].Company;
+		FillPropertyValues(DataLine, OldLI[i-1]);
+		If DataLine.TransactionAmount > 0 Then
+			DataLine.Deposit = DataLine.TransactionAmount;
+		Else
+			DataLine.Payment = DataLine.TransactionAmount;
+		EndIf;
+		//DataLine.Transaction = OldLI[i-1].Transaction;
+		//DataLine.Date = OldLI[i-1].Date;
+		//DataLine.Cleared = True;
+		//DataLine.TransactionAmount = OldLI[i-1].TransactionAmount;
+		//DataLine.DocNumber = OldLI[i-1].DocNumber;
+		//DataLine.Company = OldLI[i-1].Company;
 		
 	EndDo;
 	
 	Query = New Query("SELECT
 	                  |	TransactionReconciliation.Document AS Ref,
-					  |	TransactionReconciliation.Document.Date AS Date,
+	                  |	TransactionReconciliation.Document.Date AS Date,
 	                  |	TransactionReconciliation.Document.Company AS Company,
-					  | TransactionReconciliation.Document.Number AS Number,
+	                  |	TransactionReconciliation.Document.Number AS Number,
 	                  |	TransactionReconciliation.Amount AS DocumentTotal
+	                  |INTO UnreconciledTransactions
 	                  |FROM
 	                  |	InformationRegister.TransactionReconciliation AS TransactionReconciliation
 	                  |WHERE
 	                  |	TransactionReconciliation.Document.Date <= &StatementToDate
 	                  |	AND TransactionReconciliation.Account = &BankAccount
 	                  |	AND TransactionReconciliation.Reconciled = FALSE
+	                  |;
+	                  |
+	                  |////////////////////////////////////////////////////////////////////////////////
+	                  |SELECT
+	                  |	UnreconciledTransactions.Ref AS Transaction,
+	                  |	UnreconciledTransactions.Date,
+	                  |	UnreconciledTransactions.Company,
+	                  |	UnreconciledTransactions.Number AS DocNumber,
+	                  |	UnreconciledTransactions.DocumentTotal AS TransactionAmount,
+	                  |	ISNULL(BankTransactions.TransactionDate, DATETIME(1, 1, 1)) AS BankTransactionDate,
+	                  |	ISNULL(BankTransactions.Description, """") AS BankTransactionDescription,
+	                  |	ISNULL(BankTransactions.Amount, 0) AS BankTransactionAmount,
+	                  |	ISNULL(BankTransactions.Category, VALUE(Catalog.BankTransactionCategories.EmptyRef)) AS BankTransactionCategory
+	                  |FROM
+	                  |	UnreconciledTransactions AS UnreconciledTransactions
+	                  |		LEFT JOIN InformationRegister.BankTransactions AS BankTransactions
+	                  |		ON UnreconciledTransactions.Ref = BankTransactions.Document
+	                  |			AND (BankTransactions.BankAccount.AccountingAccount = &BankAccount)
 	                  |
 	                  |ORDER BY
-	                  |	TransactionReconciliation.Document.Date");
+	                  |	UnreconciledTransactions.Date");
 						  
 	Query.SetParameter("StatementToDate", EndOfDay(StatementToDate));
 	Query.SetParameter("BankAccount", BankAccount);
@@ -94,7 +124,7 @@ Procedure FillReconciliationSpec(StatementToDate, BankAccount)
 		// replace with a more efficient search in array algorithm
 		OldTransaction = False;
 		For i = 1 To NumOfRows Do	
-			If OldLI[i-1].Transaction = Result.Ref Then
+			If OldLI[i-1].Transaction = Result.Transaction Then
 				OldTransaction = True;
 			EndIf;			
 		EndDo;
@@ -102,16 +132,37 @@ Procedure FillReconciliationSpec(StatementToDate, BankAccount)
 		If NOT OldTransaction Then
 		
 			DataLine = Object.LineItems.Add();
-			DataLine.Transaction = Result.Ref;
-			DataLine.Date = Result.Date;
-			DataLine.DocNumber = Result.Number;
-			DataLine.TransactionAmount = Result.DocumentTotal;
-			DataLine.Company = Result.Company;
+			FillPropertyValues(DataLine, Result);
+			//DataLine.Transaction = Result.Ref;
+			//DataLine.Date = Result.Date;
+			//DataLine.DocNumber = Result.Number;
+			//DataLine.TransactionAmount = Result.DocumentTotal;
+			//DataLine.Company = Result.Company;
+			If DataLine.TransactionAmount > 0 Then
+				DataLine.Deposit = DataLine.TransactionAmount;
+			Else
+				DataLine.Payment = DataLine.TransactionAmount;
+			EndIf;
 			
 		EndIf;
 		
 	EndDo;
 	
+	//Calculate cleared amount
+	Object.ClearedAmount = 0;
+	ClearedRows = Object.LineItems.FindRows(New Structure("Cleared", True));
+	For Each ClearedRow In ClearedRows Do
+		Object.ClearedAmount = Object.ClearedAmount + ClearedRow.TransactionAmount;
+	EndDo;
+	Object.ClearedBalance = Object.BeginningBalance + Object.InterestEarned -
+		Object.ServiceCharge + Object.ClearedAmount;	
+	Object.Difference = Object.EndingBalance - Object.ClearedBalance;
+	
+	Items.LineItemsCleared.FooterText = Format(Object.ClearedAmount, "NFD=2; NZ=");
+	
+	Items.LineItemsDeposit.FooterText = Format(Object.LineItems.Total("Deposit"), "NFD=2; NZ=");
+	Items.LineItemsPayment.FooterText = Format(Object.LineItems.Total("Payment"), "NFD=2; NZ=");
+
 	Object.LineItems.Sort("Date Asc, TransactionAmount Desc");
 	
 EndProcedure
@@ -121,10 +172,21 @@ EndProcedure
 //
 Procedure AfterWrite(WriteParameters)
 	
-		For Each DocumentLine in Object.LineItems Do
+		//Works very slowly
+		//For Each DocumentLine in Object.LineItems Do
+		//
+		//	RepresentDataChange(DocumentLine.Transaction, DataChangeType.Update);
+		//
+		//EndDo;
 		
-			RepresentDataChange(DocumentLine.Transaction, DataChangeType.Update);
+		//Refill LineItems with Transaction description
 		
+		i = 0;
+		While i < BankTransactionsCache.Count() Do
+			If Object.LineItems[i].Transaction = BankTransactionsCache[i].Transaction Then
+				FillPropertyValues(Object.LineItems[i], BankTransactionsCache[i]);
+			EndIf;
+			i = i + 1;
 		EndDo;
 
 EndProcedure
@@ -154,6 +216,8 @@ Procedure RecalcClearedBalance(Amount)
 	Object.ClearedBalance = Object.BeginningBalance + Object.InterestEarned -
 		Object.ServiceCharge + Object.ClearedAmount;	
 	Object.Difference = Object.EndingBalance - Object.ClearedBalance;
+	
+	Items.LineItemsCleared.FooterText = Format(Object.ClearedAmount, "NFD=2; NZ=");	
 	
 EndProcedure
 
@@ -203,19 +267,190 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	Else
 	EndIf; 
 	
-	Items.BankAccountLabel.Title =
-		CommonUse.GetAttributeValue(Object.BankAccount, "Description");
+	//Items.BankAccountLabel.Title =
+	//	CommonUse.GetAttributeValue(Object.BankAccount, "Description");
 	
 EndProcedure
 
 &AtClient
 Procedure BankAccountOnChange(Item)
 	
-	Items.BankAccountLabel.Title =
-		CommonUse.GetAttributeValue(Object.BankAccount, "Description");
-		
+	//Items.BankAccountLabel.Title =
+	//	CommonUse.GetAttributeValue(Object.BankAccount, "Description");
+	If ValueIsFilled(Object.BankAccount) Then
+		Object.BeginningBalance = GetBeginningBalance(Object.BankAccount);
+	EndIf;
 	Message("Update the Statement To date to recalculate the reconciliation");
 
 EndProcedure
+
+&AtServerNoContext
+Function GetBeginningBalance(Val BankAccount)
+	//Fill in Beginning balance
+	Request = New Query("SELECT TOP 1
+	                    |	BankReconciliation.StatementToDate AS StatementToDate,
+	                    |	BankReconciliation.EndingBalance
+	                    |FROM
+	                    |	Document.BankReconciliation AS BankReconciliation
+	                    |WHERE
+	                    |	BankReconciliation.DeletionMark = FALSE
+	                    |	AND BankReconciliation.Posted = TRUE
+	                    |	AND BankReconciliation.BankAccount = &CurrentBankAccount
+	                    |
+	                    |ORDER BY
+	                    |	StatementToDate DESC");
+	Request.SetParameter("CurrentBankAccount", BankAccount);
+	Res = Request.Execute().Unload();
+	If Res.Count() > 0 Then 
+		return Res[0].EndingBalance;
+	Else
+		return 0;
+	EndIf;
+EndFunction
+
+&AtClient
+Procedure BeforeWrite(Cancel, WriteParameters)
+	//Closing period
+	If DocumentPosting.DocumentPeriodIsClosed(Object.Ref, Object.Date) Then
+		Cancel = Not DocumentPosting.DocumentWritePermitted(WriteParameters);
+		If Cancel Then
+			If WriteParameters.Property("PeriodClosingPassword") And WriteParameters.Property("Password") Then
+				If WriteParameters.Password = TRUE Then //Writing the document requires a password
+					ShowMessageBox(, "Invalid password!",, "Closed period notification");
+				EndIf;
+			Else
+				Notify = New NotifyDescription("ProcessUserResponseOnDocumentPeriodClosed", ThisObject, WriteParameters);
+				Password = "";
+				OpenForm("CommonForm.ClosedPeriodNotification", New Structure, ThisForm,,,, Notify, FormWindowOpeningMode.LockOwnerWindow);
+			EndIf;
+			return;
+		EndIf;
+	EndIf;
+	
+	//Cache transaction data
+	BankTransactionsCache.Clear();
+	For Each Line In Object.LineItems Do
+		NewLine = BankTransactionsCache.Add();
+		FillPropertyValues(NewLine, Line);
+	EndDo;
+EndProcedure
+
+//Closing period
+&AtClient
+Procedure ProcessUserResponseOnDocumentPeriodClosed(Result, Parameters) Export
+	If (TypeOf(Result) = Type("String")) Then //Inserted password
+		Parameters.Insert("PeriodClosingPassword", Result);
+		Parameters.Insert("Password", TRUE);
+		Write(Parameters);
+	ElsIf (TypeOf(Result) = Type("DialogReturnCode")) Then //Yes, No or Cancel
+		If Result = DialogReturnCode.Yes Then
+			Parameters.Insert("PeriodClosingPassword", "Yes");
+			Parameters.Insert("Password", FALSE);
+			Write(Parameters);
+		EndIf;
+	EndIf;	
+EndProcedure
+
+&AtServer
+Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
+	//Period closing
+	If DocumentPosting.DocumentPeriodIsClosed(CurrentObject.Ref, CurrentObject.Date) Then
+		PermitWrite = DocumentPosting.DocumentWritePermitted(WriteParameters);
+		CurrentObject.AdditionalProperties.Insert("PermitWrite", PermitWrite);	
+	EndIf;
+EndProcedure
+
+&AtClient
+Procedure ClearAll(Command)
+	For Each LineItem In Object.LineItems Do
+		LineItem.Cleared = True;
+	EndDo;
+	Object.ClearedAmount = Object.LineItems.Total("TransactionAmount");
+	RecalcClearedBalance(0);
+EndProcedure
+
+&AtClient
+Procedure UnclearAll(Command)
+	For Each LineItem In Object.LineItems Do
+		LineItem.Cleared = False;
+	EndDo;
+	Object.ClearedAmount = 0;
+	RecalcClearedBalance(0);
+EndProcedure
+
+&AtServer
+Procedure OnReadAtServer(CurrentObject)
+	
+	//Obtain bank transactions description
+	Request = New Query("SELECT
+	                    |	BankReconciliationLineItems.Transaction
+	                    |INTO Documents
+	                    |FROM
+	                    |	Document.BankReconciliation.LineItems AS BankReconciliationLineItems
+	                    |WHERE
+	                    |	BankReconciliationLineItems.Ref = &Ref
+	                    |;
+	                    |
+	                    |////////////////////////////////////////////////////////////////////////////////
+	                    |SELECT
+	                    |	Documents.Transaction,
+	                    |	BankTransactions.TransactionDate,
+	                    |	BankTransactions.Description,
+	                    |	BankTransactions.Category,
+	                    |	BankTransactions.Amount
+	                    |FROM
+	                    |	Documents AS Documents
+	                    |		INNER JOIN InformationRegister.BankTransactions AS BankTransactions
+	                    |		ON Documents.Transaction = BankTransactions.Document
+	                    |			AND (BankTransactions.BankAccount.AccountingAccount = &BankAccount)");
+	Request.SetParameter("Ref", CurrentObject.Ref);
+	Request.SetParameter("BankAccount", CurrentObject.BankAccount);
+	BankTransactions = Request.Execute().Unload();
+	//Fill Deposits and Payments columns
+	DepositsTotal = 0;
+	PaymentsTotal = 0;
+	//Calculate cleared amount
+	ClearedAmount = 0;
+	For Each LineItem In Object.LineItems Do
+		If LineItem.TransactionAmount > 0 Then
+			LineItem.Deposit = LineItem.TransactionAmount;
+			DepositsTotal = DepositsTotal + LineItem.Deposit;
+		Else
+			LineItem.Payment = LineItem.TransactionAmount;
+			PaymentsTotal = PaymentsTotal + LineItem.Payment; 
+		EndIf;
+		FoundRows = BankTransactions.FindRows(New Structure("Transaction", LineItem.Transaction));
+		If FoundRows.Count() > 0 Then
+			LineItem.BankTransactionDescription = FoundRows[0].Description;
+			LineItem.BankTransactionDate = FoundRows[0].TransactionDate;
+			LineItem.BankTransactionAmount = FoundRows[0].Amount;
+			LineItem.BankTransactionCategory = FoundRows[0].Category; 
+		EndIf;
+		If LineItem.Cleared Then
+			ClearedAmount = ClearedAmount + LineItem.TransactionAmount;
+		EndIf;
+	EndDo;
+	If ClearedAmount <> Object.ClearedAmount Then
+		Object.ClearedAmount = ClearedAmount;
+		Object.ClearedBalance = Object.BeginningBalance + Object.InterestEarned -
+			Object.ServiceCharge + Object.ClearedAmount;	
+		Object.Difference = Object.EndingBalance - Object.ClearedBalance;
+	EndIf;
+	
+	Items.LineItemsCleared.FooterText = Format(Object.ClearedAmount, "NFD=2; NZ=");
+	Items.LineItemsDeposit.FooterText = Format(DepositsTotal, "NFD=2; NZ=");
+	Items.LineItemsPayment.FooterText = Format(PaymentsTotal, "NFD=2; NZ=");
+EndProcedure
+
+&AtClient
+Procedure LineItemsOnActivateRow(Item)
+	If Item.CurrentData = Undefined Then
+		return;
+	EndIf;
+	CurrentBankTransactionDescription 	= Item.CurrentData.BankTransactionDescription;
+	CurrentBankTransactionDate			= Item.CurrentData.BankTransactionDate;
+	CurrentBankTransactionAmount		= Item.CurrentData.BankTransactionAmount;
+EndProcedure
+
 
 

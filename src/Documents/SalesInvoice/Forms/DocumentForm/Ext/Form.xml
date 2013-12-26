@@ -27,6 +27,7 @@
 	<Events>
 		<Event name="AfterWriteAtServer">AfterWriteAtServer</Event>
 		<Event name="OnOpen">OnOpen</Event>
+		<Event name="BeforeWrite">BeforeWrite</Event>
 		<Event name="BeforeWriteAtServer">BeforeWriteAtServer</Event>
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
 		<Event name="OnWriteAtServer">OnWriteAtServer</Event>
@@ -289,6 +290,13 @@
 															<ContextMenu name="ExchangeRateContextMenu" id="37"/>
 															<ExtendedTooltip name="ExchangeRateExtendedTooltip" id="128"/>
 														</InputField>
+														<InputField name="SalesPerson" id="229">
+															<DataPath>Object.SalesPerson</DataPath>
+															<Width>15</Width>
+															<HorizontalStretch>false</HorizontalStretch>
+															<ContextMenu name="SalesPersonContextMenu" id="230"/>
+															<ExtendedTooltip name="SalesPersonExtendedTooltip" id="231"/>
+														</InputField>
 													</ChildItems>
 												</UsualGroup>
 												<UsualGroup name="Left2" id="175">
@@ -331,6 +339,13 @@
 															<Events>
 																<Event name="OnChange">CurrencyOnChange</Event>
 															</Events>
+														</InputField>
+														<InputField name="BillTo" id="226">
+															<DataPath>Object.BillTo</DataPath>
+															<Width>15</Width>
+															<HorizontalStretch>false</HorizontalStretch>
+															<ContextMenu name="BillToContextMenu" id="227"/>
+															<ExtendedTooltip name="BillToExtendedTooltip" id="228"/>
 														</InputField>
 													</ChildItems>
 												</UsualGroup>
@@ -574,29 +589,29 @@
 					<ContextMenu name="LineItemsContextMenu" id="6"/>
 					<AutoCommandBar name="LineItemsCommandBar" id="7"/>
 					<ExtendedTooltip name="LineItemsExtendedTooltip" id="139"/>
-					<SearchStringAddition name="LineItemsSearchString" id="226">
+					<SearchStringAddition name="LineItemsSearchString" id="232">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>SearchStringRepresentation</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsSearchStringContextMenu" id="227"/>
-						<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="228"/>
+						<ContextMenu name="LineItemsSearchStringContextMenu" id="233"/>
+						<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="234"/>
 					</SearchStringAddition>
-					<ViewStatusAddition name="LineItemsViewStatus" id="229">
+					<ViewStatusAddition name="LineItemsViewStatus" id="235">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>ViewStatusRepresentation</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsViewStatusContextMenu" id="230"/>
-						<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="231"/>
+						<ContextMenu name="LineItemsViewStatusContextMenu" id="236"/>
+						<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="237"/>
 					</ViewStatusAddition>
-					<SearchControlAddition name="LineItemsSearchControl" id="232">
+					<SearchControlAddition name="LineItemsSearchControl" id="238">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>SearchControl</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsSearchControlContextMenu" id="233"/>
-						<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="234"/>
+						<ContextMenu name="LineItemsSearchControlContextMenu" id="239"/>
+						<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="240"/>
 					</SearchControlAddition>
 					<Events>
 						<Event name="BeforeAddRow">LineItemsBeforeAddRow</Event>
@@ -722,6 +737,9 @@
 							</ChoiceParameterLinks>
 							<ContextMenu name="LineItemsProjectContextMenu" id="118"/>
 							<ExtendedTooltip name="LineItemsProjectExtendedTooltip" id="151"/>
+							<Events>
+								<Event name="Creating">LineItemsProjectCreating</Event>
+							</Events>
 						</InputField>
 					</ChildItems>
 				</Table>

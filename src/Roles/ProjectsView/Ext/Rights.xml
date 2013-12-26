@@ -62,6 +62,13 @@
 		</right>
 	</object>
 	<object>
+		<name>Constant.bigcom_token</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
 		<name>Constant.CF1Name</name>
 		<right>
 			<name>Edit</name>
@@ -1265,17 +1272,6 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.Check.TabularSection.LineItems.Attribute.AccountDescription</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
 		<name>Document.GeneralJournalEntry.Attribute.Currency</name>
 		<right>
 			<name>View</name>
@@ -1762,6 +1758,13 @@
 		</right>
 	</object>
 	<object>
+		<name>Constant.bigcom_base64</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
 		<name>Constant.CheckHorizontalAdj</name>
 		<right>
 			<name>Edit</name>
@@ -2067,7 +2070,7 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.SalesOrder.Attribute.PromisedDate</name>
+		<name>Document.SalesOrder.Attribute.DeliveryDate</name>
 		<right>
 			<name>View</name>
 			<value>false</value>
@@ -3863,6 +3866,73 @@
 		</right>
 	</object>
 	<object>
+		<name>Catalog.ZapierWebhooks</name>
+		<right>
+			<name>Read</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Insert</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Update</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Delete</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveInsert</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDelete</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InputByString</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeletePredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveSetDeletionMarkPredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMarkPredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarkedPredefinedData</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
 		<name>Document.CashSale.Attribute.PriceIncludesVAT</name>
 		<right>
 			<name>View</name>
@@ -4501,17 +4571,6 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.GeneralJournalEntry.TabularSection.LineItems.Attribute.AccountDescription</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
 		<name>Document.SalesOrder.TabularSection.LineItems.Attribute.Product</name>
 		<right>
 			<name>View</name>
@@ -5084,6 +5143,13 @@
 		</right>
 	</object>
 	<object>
+		<name>Constant.bigcom_storeid</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
 		<name>Document.SalesOrder.Attribute.Company</name>
 		<right>
 			<name>View</name>
@@ -5425,6 +5491,73 @@
 		</right>
 		<right>
 			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.PaymentButtons</name>
+		<right>
+			<name>Read</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Insert</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Update</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Delete</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveInsert</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDelete</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InputByString</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeletePredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveSetDeletionMarkPredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMarkPredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarkedPredefinedData</name>
 			<value>false</value>
 		</right>
 	</object>
@@ -6464,13 +6597,6 @@
 		</right>
 	</object>
 	<object>
-		<name>Constant.DisableLIFO</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
 		<name>Document.CashReceipt.Attribute.PaymentMethod</name>
 		<right>
 			<name>View</name>
@@ -6775,17 +6901,6 @@
 		</right>
 	</object>
 	<object>
-		<name>Catalog.Products.Attribute.api_code</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
 		<name>Document.CashSale.TabularSection.LineItems.Attribute.ProductDescription</name>
 		<right>
 			<name>View</name>
@@ -7021,6 +7136,73 @@
 		</right>
 	</object>
 	<object>
+		<name>Catalog.UserLog</name>
+		<right>
+			<name>Read</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Insert</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Update</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Delete</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveInsert</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDelete</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InputByString</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeletePredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveSetDeletionMarkPredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMarkPredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarkedPredefinedData</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
 		<name>Document.Deposit</name>
 		<right>
 			<name>Read</name>
@@ -7218,6 +7400,13 @@
 			<name>View</name>
 			<value>false</value>
 		</right>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Constant.bigcom_apipath</name>
 		<right>
 			<name>Edit</name>
 			<value>false</value>
@@ -8944,6 +9133,13 @@
 			<name>View</name>
 			<value>false</value>
 		</right>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Constant.bigcom_user</name>
 		<right>
 			<name>Edit</name>
 			<value>false</value>

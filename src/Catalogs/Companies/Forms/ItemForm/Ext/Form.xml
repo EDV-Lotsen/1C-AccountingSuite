@@ -70,6 +70,7 @@
 			<ExtendedTooltip name="Group1ExtendedTooltip" id="159"/>
 			<ChildItems>
 				<Page name="Address" id="237">
+					<Visible>false</Visible>
 					<Title>
 						<v8:item>
 							<v8:lang>en</v8:lang>
@@ -197,90 +198,30 @@
 							<ContextMenu name="TermsContextMenu" id="131"/>
 							<ExtendedTooltip name="TermsExtendedTooltip" id="166"/>
 						</InputField>
-						<UsualGroup name="Group4" id="76">
-							<Group>Horizontal</Group>
-							<Representation>None</Representation>
-							<ShowTitle>false</ShowTitle>
-							<ExtendedTooltip name="Group4ExtendedTooltip" id="167"/>
-							<ChildItems>
-								<InputField name="IncomeAccount" id="71">
-									<DataPath>Object.IncomeAccount</DataPath>
-									<HorizontalStretch>false</HorizontalStretch>
-									<ContextMenu name="IncomeAccountContextMenu" id="72"/>
-									<ExtendedTooltip name="IncomeAccountExtendedTooltip" id="168"/>
-									<Events>
-										<Event name="OnChange">IncomeAccountOnChange</Event>
-									</Events>
-								</InputField>
-								<LabelDecoration name="IncomeAcctLabel" id="89">
-									<ContextMenu name="IncomeAcctLabelContextMenu" id="90"/>
-									<ExtendedTooltip name="IncomeAcctLabelExtendedTooltip" id="169"/>
-								</LabelDecoration>
-							</ChildItems>
-						</UsualGroup>
-						<UsualGroup name="Group3" id="75">
-							<Group>Horizontal</Group>
-							<Representation>None</Representation>
-							<ShowTitle>false</ShowTitle>
-							<ExtendedTooltip name="Group3ExtendedTooltip" id="170"/>
-							<ChildItems>
-								<InputField name="ExpenseAccount" id="73">
-									<DataPath>Object.ExpenseAccount</DataPath>
-									<HorizontalStretch>false</HorizontalStretch>
-									<ContextMenu name="ExpenseAccountContextMenu" id="74"/>
-									<ExtendedTooltip name="ExpenseAccountExtendedTooltip" id="171"/>
-									<Events>
-										<Event name="OnChange">ExpenseAccountOnChange</Event>
-									</Events>
-								</InputField>
-								<LabelDecoration name="ExpenseAcctLabel" id="77">
-									<ContextMenu name="ExpenseAcctLabelContextMenu" id="78"/>
-									<ExtendedTooltip name="ExpenseAcctLabelExtendedTooltip" id="172"/>
-								</LabelDecoration>
-							</ChildItems>
-						</UsualGroup>
-						<UsualGroup name="Group5" id="138">
-							<Group>Horizontal</Group>
-							<Representation>None</Representation>
-							<ShowTitle>false</ShowTitle>
-							<ExtendedTooltip name="Group5ExtendedTooltip" id="173"/>
-							<ChildItems>
-								<InputField name="ARAccount" id="139">
-									<DataPath>Object.ARAccount</DataPath>
-									<HorizontalStretch>false</HorizontalStretch>
-									<ContextMenu name="ARAccountContextMenu" id="140"/>
-									<ExtendedTooltip name="ARAccountExtendedTooltip" id="174"/>
-									<Events>
-										<Event name="OnChange">ARAccountOnChange</Event>
-									</Events>
-								</InputField>
-								<LabelDecoration name="ARAcctLabel" id="141">
-									<ContextMenu name="ARAcctLabelContextMenu" id="142"/>
-									<ExtendedTooltip name="ARAcctLabelExtendedTooltip" id="175"/>
-								</LabelDecoration>
-							</ChildItems>
-						</UsualGroup>
-						<UsualGroup name="Group6" id="143">
-							<Group>Horizontal</Group>
-							<Representation>None</Representation>
-							<ShowTitle>false</ShowTitle>
-							<ExtendedTooltip name="Group6ExtendedTooltip" id="176"/>
-							<ChildItems>
-								<InputField name="APAccount" id="144">
-									<DataPath>Object.APAccount</DataPath>
-									<HorizontalStretch>false</HorizontalStretch>
-									<ContextMenu name="APAccountContextMenu" id="145"/>
-									<ExtendedTooltip name="APAccountExtendedTooltip" id="177"/>
-									<Events>
-										<Event name="OnChange">APAccountOnChange</Event>
-									</Events>
-								</InputField>
-								<LabelDecoration name="APAcctLabel" id="146">
-									<ContextMenu name="APAcctLabelContextMenu" id="147"/>
-									<ExtendedTooltip name="APAcctLabelExtendedTooltip" id="178"/>
-								</LabelDecoration>
-							</ChildItems>
-						</UsualGroup>
+						<InputField name="IncomeAccount" id="71">
+							<DataPath>Object.IncomeAccount</DataPath>
+							<HorizontalStretch>false</HorizontalStretch>
+							<ContextMenu name="IncomeAccountContextMenu" id="72"/>
+							<ExtendedTooltip name="IncomeAccountExtendedTooltip" id="168"/>
+						</InputField>
+						<InputField name="ExpenseAccount" id="73">
+							<DataPath>Object.ExpenseAccount</DataPath>
+							<HorizontalStretch>false</HorizontalStretch>
+							<ContextMenu name="ExpenseAccountContextMenu" id="74"/>
+							<ExtendedTooltip name="ExpenseAccountExtendedTooltip" id="171"/>
+						</InputField>
+						<InputField name="ARAccount" id="139">
+							<DataPath>Object.ARAccount</DataPath>
+							<HorizontalStretch>false</HorizontalStretch>
+							<ContextMenu name="ARAccountContextMenu" id="140"/>
+							<ExtendedTooltip name="ARAccountExtendedTooltip" id="174"/>
+						</InputField>
+						<InputField name="APAccount" id="144">
+							<DataPath>Object.APAccount</DataPath>
+							<HorizontalStretch>false</HorizontalStretch>
+							<ContextMenu name="APAccountContextMenu" id="145"/>
+							<ExtendedTooltip name="APAccountExtendedTooltip" id="177"/>
+						</InputField>
 						<InputField name="PriceLevel" id="148">
 							<DataPath>Object.PriceLevel</DataPath>
 							<HorizontalStretch>false</HorizontalStretch>
@@ -288,20 +229,26 @@
 							<ContextMenu name="PriceLevelContextMenu" id="149"/>
 							<ExtendedTooltip name="PriceLevelExtendedTooltip" id="179"/>
 						</InputField>
+						<InputField name="SalesPerson" id="340">
+							<DataPath>Object.SalesPerson</DataPath>
+							<ContextMenu name="SalesPersonContextMenu" id="341"/>
+							<ExtendedTooltip name="SalesPersonExtendedTooltip" id="342"/>
+						</InputField>
 						<InputField name="DwollaID" id="290">
 							<DataPath>Object.DwollaID</DataPath>
+							<Visible>false</Visible>
 							<ContextMenu name="DwollaIDContextMenu" id="291"/>
 							<ExtendedTooltip name="DwollaIDExtendedTooltip" id="292"/>
 						</InputField>
-						<InputField name="RippleAddress" id="302">
-							<DataPath>Object.RippleAddress</DataPath>
-							<Visible>false</Visible>
-							<ContextMenu name="RippleAddressContextMenu" id="303"/>
-							<ExtendedTooltip name="RippleAddressExtendedTooltip" id="304"/>
+						<InputField name="bitcoin_address" id="337">
+							<DataPath>Object.bitcoin_address</DataPath>
+							<ContextMenu name="bitcoin_addressContextMenu" id="338"/>
+							<ExtendedTooltip name="bitcoin_addressExtendedTooltip" id="339"/>
 						</InputField>
 					</ChildItems>
 				</Page>
 				<Page name="CreditCard" id="182">
+					<Visible>false</Visible>
 					<Title>
 						<v8:item>
 							<v8:lang>en</v8:lang>
@@ -407,29 +354,29 @@
 							<ContextMenu name="ProjectTableContextMenu" id="231"/>
 							<AutoCommandBar name="ProjectTableCommandBar" id="232"/>
 							<ExtendedTooltip name="ProjectTableExtendedTooltip" id="233"/>
-							<SearchStringAddition name="ProjectTableSearchString" id="337">
+							<SearchStringAddition name="ProjectTableSearchString" id="343">
 								<AdditionSource>
 									<Item>ProjectTable</Item>
 									<Type>SearchStringRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="ProjectTableSearchStringContextMenu" id="338"/>
-								<ExtendedTooltip name="ProjectTableSearchStringExtendedTooltip" id="339"/>
+								<ContextMenu name="ProjectTableSearchStringContextMenu" id="344"/>
+								<ExtendedTooltip name="ProjectTableSearchStringExtendedTooltip" id="345"/>
 							</SearchStringAddition>
-							<ViewStatusAddition name="ProjectTableViewStatus" id="340">
+							<ViewStatusAddition name="ProjectTableViewStatus" id="346">
 								<AdditionSource>
 									<Item>ProjectTable</Item>
 									<Type>ViewStatusRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="ProjectTableViewStatusContextMenu" id="341"/>
-								<ExtendedTooltip name="ProjectTableViewStatusExtendedTooltip" id="342"/>
+								<ContextMenu name="ProjectTableViewStatusContextMenu" id="347"/>
+								<ExtendedTooltip name="ProjectTableViewStatusExtendedTooltip" id="348"/>
 							</ViewStatusAddition>
-							<SearchControlAddition name="ProjectTableSearchControl" id="343">
+							<SearchControlAddition name="ProjectTableSearchControl" id="349">
 								<AdditionSource>
 									<Item>ProjectTable</Item>
 									<Type>SearchControl</Type>
 								</AdditionSource>
-								<ContextMenu name="ProjectTableSearchControlContextMenu" id="344"/>
-								<ExtendedTooltip name="ProjectTableSearchControlExtendedTooltip" id="345"/>
+								<ContextMenu name="ProjectTableSearchControlContextMenu" id="350"/>
+								<ExtendedTooltip name="ProjectTableSearchControlExtendedTooltip" id="351"/>
 							</SearchControlAddition>
 							<ChildItems>
 								<LabelField name="ProjectTableRef" id="263">

@@ -24,10 +24,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Object.BankAccount = Constants.BankAccount.Get();
 	Else
 	EndIf; 
-	
-	Items.BankAccountLabel.Title =
-		CommonUse.GetAttributeValue(Object.BankAccount, "Description");
-	
+		
 	If Object.Ref.IsEmpty() Then
 			
 		Query = New Query;
@@ -72,11 +69,12 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Result = Query.Execute().Choose();
 		
 		While Result.Next() Do
-			
-			DataLine = Object.LineItems.Add();
+
+			//Changed
+			//DataLine = Object.LineItems.Add();
 			
 			If Result.CashPayment > 0 Then // if there is a credit memo in a cash receipt
-				
+				DataLine = Object.LineItems.Add();
 				DataLine.Document = Result.Ref;
 				DataLine.Customer = Result.Customer;
 				DataLine.Currency = Result.Currency;
@@ -85,26 +83,70 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 				DataLine.Payment = False;
 				
 			Else
-				
-				DataLine.Document = Result.Ref;
-				DataLine.Customer = Result.Customer;
-				DataLine.Currency = Result.Currency;
-				DataLine.DocumentTotal = Result.DocumentTotal;
-				DataLine.DocumentTotalRC = Result.DocumentTotalRC;
-				DataLine.Payment = False;
+				//Modification by Bernard
+				If TypeOf(Result.Ref) <> Type("DocumentRef.CashReceipt") Then
+				    DataLine = Object.LineItems.Add();
+					DataLine.Document = Result.Ref;
+					DataLine.Customer = Result.Customer;
+					DataLine.Currency = Result.Currency;
+					DataLine.DocumentTotal = Result.DocumentTotal;
+					DataLine.DocumentTotalRC = Result.DocumentTotalRC;
+					DataLine.Payment = False;
+					
+				Endif;
 				
 			EndIf;
 				
 		EndDo;
 		
 	EndIf;
-	
+		
+EndProcedure
+
+&AtClient
+Procedure ProcessUserResponseOnDocumentPeriodClosed(Result, Parameters) Export
+	If (TypeOf(Result) = Type("String")) Then //Inserted password
+		Parameters.Insert("PeriodClosingPassword", Result);
+		Parameters.Insert("Password", TRUE);
+		Write(Parameters);
+	ElsIf (TypeOf(Result) = Type("DialogReturnCode")) Then //Yes, No or Cancel
+		If Result = DialogReturnCode.Yes Then
+			Parameters.Insert("PeriodClosingPassword", "Yes");
+			Parameters.Insert("Password", FALSE);
+			Write(Parameters);
+		EndIf;
+	EndIf;	
 EndProcedure
 
 &AtClient
 // Writes deposit data to the originating documents
 //
 Procedure BeforeWrite(Cancel, WriteParameters)
+	
+	//Closing period
+	If DocumentPosting.DocumentPeriodIsClosed(Object.Ref, Object.Date) Then
+		Cancel = Not DocumentPosting.DocumentWritePermitted(WriteParameters);
+		If Cancel Then
+			If WriteParameters.Property("PeriodClosingPassword") And WriteParameters.Property("Password") Then
+				If WriteParameters.Password = TRUE Then //Writing the document requires a password
+					ShowMessageBox(, "Invalid password!",, "Closed period notification");
+				EndIf;
+			Else
+				Notify = New NotifyDescription("ProcessUserResponseOnDocumentPeriodClosed", ThisObject, WriteParameters);
+				Password = "";
+				OpenForm("CommonForm.ClosedPeriodNotification", New Structure, ThisForm,,,, Notify, FormWindowOpeningMode.LockOwnerWindow);
+			EndIf;
+			return;
+		EndIf;
+	EndIf;
+	
+	// preventing posting if already included in a bank rec
+	If DocumentPosting.RequiresExcludingFromBankReconciliation(Object.Ref, Object.DocumentTotalRC, Object.Date, Object.BankAccount, WriteParameters.WriteMode) Then
+		Cancel = True;
+		CommonUseClient.ShowCustomMessageBox(ThisForm, "Bank reconciliation", "The transaction you are editing has been reconciled. Saving 
+		|your changes could put you out of balance the next time you try to reconcile. 
+		|To modify it you should exclude it from the Bank rec. document.", PredefinedValue("Enum.MessageStatus.Warning"));
+	EndIf;    
 	
 	//If Object.LineItems.Count() = 0 Then
 	//	Message("Deposit can not have empty lines. The system automatically shows undeposited documents in the line items");
@@ -122,19 +164,21 @@ Procedure BeforeWrite(Cancel, WriteParameters)
 							
 	// deletes from this document lines that were not marked as deposited
 	
-	Checked = False;
-	For Each DocLine In Object.LineItems Do
-		
-		If DocLine.Payment = True Then
-			Checked = True;
-		EndIf;
-	EndDo;
+	//switch off filling check
 	
-	If Checked = False  Then
-		Message("Cannot post with no line items.");
-		Cancel = True;
-		Return;
-	EndIf;
+	//Checked = False;
+	//For Each DocLine In Object.LineItems Do
+	//	
+	//	If DocLine.Payment = True Then
+	//		Checked = True;
+	//	EndIf;
+	//EndDo;
+	//
+	//If Checked = False  Then
+	//	Message("Cannot post with no line items.");
+	//	Cancel = True;
+	//	Return;
+	//EndIf;
 
 	
 	NumberOfLines = Object.LineItems.Count() - 1;
@@ -175,16 +219,6 @@ Procedure LineItemsPaymentOnChange(Item)
 		Object.TotalDepositsRC = Object.TotalDepositsRC - TabularPartRow.DocumentTotalRC;
 	EndIf;
 
-EndProcedure
-
-&AtClient
-// Retrieve the account's description
-//
-Procedure BankAccountOnChange(Item)
-	
-	Items.BankAccountLabel.Title =
-		CommonUse.GetAttributeValue(Object.BankAccount, "Description");
-		
 EndProcedure
 
 &AtClient
@@ -311,6 +345,11 @@ EndFunction
 
 &AtServer
 Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)		
+	//Period closing
+	If DocumentPosting.DocumentPeriodIsClosed(CurrentObject.Ref, CurrentObject.Date) Then
+		PermitWrite = DocumentPosting.DocumentWritePermitted(WriteParameters);
+		CurrentObject.AdditionalProperties.Insert("PermitWrite", PermitWrite);	
+	EndIf;
 	
 	//If Object.Ref.IsEmpty() Then
 	//

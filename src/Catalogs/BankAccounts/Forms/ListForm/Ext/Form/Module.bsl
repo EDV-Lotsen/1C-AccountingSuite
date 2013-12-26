@@ -2,7 +2,7 @@
 &AtClient
 Procedure AddAccount(Command)
 	Params = New Structure("PerformAddAccount", True);
-	OpenForm("DataProcessor.YodleeBankAccountsManagement.Form.Form", Params, ThisForm,,,,, FormWindowOpeningMode.LockWholeInterface);
+	OpenForm("DataProcessor.YodleeBankAccountsManagement.Form.Form", Params, ThisForm,,,,, FormWindowOpeningMode.LockOwnerWindow);
 EndProcedure
 
 &AtClient
@@ -50,76 +50,45 @@ EndProcedure
 
 &AtServerNoContext
 Function RemoveAccountAtServer(Item)
-	ItemID = Item.ItemID;
-	ItemDescription = Item.Description;
-	BeginTransaction(DataLockControlMode.Managed);
-	ReturnStruct = New Structure("ReturnValue, Status, CountDeleted, DeletedAccounts", false, "", 0, New Array());
-	Try
-		// Create new managed data lock
-		DataLock = New DataLock;
-
-		// Set data lock parameters
-		BA_LockItem = DataLock.Add("Catalog.BankAccounts");
-		BA_LockItem.Mode = DataLockMode.Exclusive;
-		BA_LockItem.SetValue("Ref", Item);
-		// Set lock on the object
-		DataLock.Lock();
-		
-		DeletedAccounts = New Array();
-		If ItemID = 0 Then
-			DeletedAccounts.Add(Item);
-			
-			AccObject = Item.GetObject();
-			AccObject.Delete();
-			ReturnStruct.Insert("CountDeleted", 1);
-			ReturnStruct.Insert("DeletedAccounts", DeletedAccounts);
-			ReturnStruct.Insert("Status", "Account " + ItemDescription + " was successfully deleted");
-		Else
-			ReturnStruct = Yodlee.RemoveItem(ItemID);
-			If (ReturnStruct.ReturnValue) OR (Find(ReturnStruct.Status, "InvalidItemExceptionFaultMessage")) Then
-				//Mark bank account as non-Yodlee
-				AccRequest = New Query("SELECT
-				                       |	BankAccounts.Ref
-				                       |FROM
-				                       |	Catalog.BankAccounts AS BankAccounts
-				                       |WHERE
-				                       |	BankAccounts.ItemID = &ItemID");
-				AccRequest.SetParameter("ItemID", ItemID);
-				AccSelection = AccRequest.Execute().Choose(); 
-				cnt = 0;
-				While AccSelection.Next() Do
-					Try
-					
-						DeletedAccounts.Add(AccSelection.Ref);
-					
-						AccObject = AccSelection.Ref.GetObject();
-						//AccObject.YodleeAccount = False;
-						//AccObject.DeletionMark = True;
-						//AccObject.Write();
-						AccObject.Delete();
-						cnt = cnt + 1;
-					Except
-					EndTry;				
-				EndDo;
-				ReturnStruct.Insert("CountDeleted", cnt);
-				ReturnStruct.Insert("DeletedAccounts", DeletedAccounts);
-				If cnt > 1 Then
-					ReturnStruct.Insert("Status", "Accounts with Item ID:" + String(ItemID) + " were successfully deleted");
-				Else
-					ReturnStruct.Insert("Status", "Account with Item ID:" + String(ItemID) + " was successfully deleted");
-				EndIf;
-			EndIf;
-		EndIf;
-		CommitTransaction();
-	Except
-		Description = ErrorDescription();
-		ReturnStruct.ReturnValue 	= False;
-		ReturnStruct.Status 		= Description;
-		If TransactionActive() Then
-			RollbackTransaction();
-		EndIf;
-	EndTry;
-	return ReturnStruct;
+	return Yodlee.RemoveBankAccountAtServer(Item);
+	////If we delete the last unmarked bank account then
+	////we should remove these accounts from Yodlee
+	////If not - just mark for deletion
+	//If Item.ItemID = 0 Then
+	//	return Yodlee.RemoveBankAccountAtServer(Item);
+	//Else
+	//	If Item.DeletionMark Then
+	//		return New Structure("ReturnValue, Status, CountDeleted, DeletedAccounts", true, "Item is already marked for deletion", 0, New Array());
+	//	EndIf;
+	//	SetPrivilegedMode(True);
+	//	ItemID = Item.ItemID;
+	//	Request = New Query("SELECT
+	//						|	COUNT(DISTINCT BankAccounts.Ref) AS UsedAccountsCount
+	//						|FROM
+	//						|	Catalog.BankAccounts AS BankAccounts
+	//						|WHERE
+	//						|	BankAccounts.ItemID = &ItemID
+	//						|	AND BankAccounts.DeletionMark = FALSE");
+	//	Request.SetParameter("ItemID",ItemID);
+	//	Res = Request.Execute();
+	//	Sel = Res.Choose();
+	//	Sel.Next();
+	//	SetPrivilegedMode(False);
+	//	If (Sel.UsedAccountsCount = 1) Then
+	//		return Yodlee.RemoveBankAccountAtServer(Item);
+	//	Else
+	//		ReturnStruct = New Structure("ReturnValue, Status, CountDeleted, DeletedAccounts", true, "", 0, New Array());
+	//		DeletedAccounts = New Array();
+	//		ItemDescription = Item.Description;
+	//		DeletedAccounts.Add(Item);
+	//		AccObject = Item.GetObject();
+	//		AccObject.SetDeletionMark(True);
+	//		ReturnStruct.Insert("CountDeleted", 1);
+	//		ReturnStruct.Insert("DeletedAccounts", DeletedAccounts);
+	//		ReturnStruct.Insert("Status", "Account " + ItemDescription + " was successfully deleted");
+	//		return ReturnStruct;
+	//	EndIf;
+	//EndIf;
 EndFunction
 
 
@@ -133,7 +102,7 @@ Procedure RefreshAccount(Command)
 	EndIf;
 	
 	Params = New Structure("PerformRefreshingAccount, RefreshAccount", True, CurrentRow);
-	OpenForm("DataProcessor.YodleeBankAccountsManagement.Form.Form", Params, ThisForm,,,,, FormWindowOpeningMode.LockWholeInterface);
+	OpenForm("DataProcessor.YodleeBankAccountsManagement.Form.Form", Params, ThisForm,,,,, FormWindowOpeningMode.LockOwnerWindow);
 EndProcedure
 
 
@@ -147,6 +116,6 @@ Procedure EditAccount(Command)
 	EndIf;
 	
 	Params = New Structure("PerformEditAccount, RefreshAccount", True, CurrentRow);
-	OpenForm("DataProcessor.YodleeBankAccountsManagement.Form.Form", Params, ThisForm,,,,, FormWindowOpeningMode.LockWholeInterface);
+	OpenForm("DataProcessor.YodleeBankAccountsManagement.Form.Form", Params, ThisForm,,,,, FormWindowOpeningMode.LockOwnerWindow);
 EndProcedure
 

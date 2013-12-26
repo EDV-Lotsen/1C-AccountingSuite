@@ -14,7 +14,10 @@
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
 	// Set proper Company field presentation.
-	Items.Company.Title = GeneralFunctionsReusable.GetVendorName();
+	CompanyTitle = GeneralFunctionsReusable.GetVendorName();
+	Items.Company.Title     = CompanyTitle;
+	Items.CompanyCode.Title = StringFunctionsClientServer.SubstituteParametersInString(
+	                          NStr("en = '%1 #'"), CompanyTitle);
 	
 EndProcedure
 

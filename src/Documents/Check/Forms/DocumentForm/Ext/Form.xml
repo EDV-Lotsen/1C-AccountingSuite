@@ -8,19 +8,20 @@
 		<ChildItems>
 			<Button name="FormPayWithDwolla" id="119">
 				<Type>CommandBarButton</Type>
+				<Visible>false</Visible>
 				<CommandName>Form.Command.PayWithDwolla</CommandName>
 				<ExtendedTooltip name="FormPayWithDwollaExtendedTooltip" id="120"/>
 			</Button>
-			<Button name="FormPayWithRipple" id="128">
+			<Button name="FormPayWithBitcoin" id="128">
 				<Type>CommandBarButton</Type>
-				<Visible>false</Visible>
-				<CommandName>Form.Command.PayWithRipple</CommandName>
-				<ExtendedTooltip name="FormPayWithRippleExtendedTooltip" id="129"/>
+				<CommandName>Form.Command.PayWithBitcoin</CommandName>
+				<ExtendedTooltip name="FormPayWithBitcoinExtendedTooltip" id="129"/>
 			</Button>
 		</ChildItems>
 	</AutoCommandBar>
 	<Events>
 		<Event name="AfterWriteAtServer">AfterWriteAtServer</Event>
+		<Event name="BeforeWrite">BeforeWrite</Event>
 		<Event name="BeforeWriteAtServer">BeforeWriteAtServer</Event>
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
 		<Event name="FillCheckProcessingAtServer">FillCheckProcessingAtServer</Event>
@@ -263,30 +264,6 @@
 										</InputField>
 									</ChildItems>
 								</UsualGroup>
-								<UsualGroup name="Right2" id="78">
-									<Title>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Right2</v8:content>
-										</v8:item>
-									</Title>
-									<ToolTip>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Right2</v8:content>
-										</v8:item>
-									</ToolTip>
-									<Group>Vertical</Group>
-									<ShowTitle>false</ShowTitle>
-									<ExtendedTooltip name="Right2ExtendedTooltip" id="79"/>
-									<ChildItems>
-										<LabelDecoration name="BankAccountLabel" id="23">
-											<Width>10</Width>
-											<ContextMenu name="BankAccountLabelContextMenu" id="24"/>
-											<ExtendedTooltip name="BankAccountLabelExtendedTooltip" id="64"/>
-										</LabelDecoration>
-									</ChildItems>
-								</UsualGroup>
 							</ChildItems>
 						</Page>
 						<Page name="Additional" id="114">
@@ -306,6 +283,7 @@
 							<ExtendedTooltip name="AdditionalExtendedTooltip" id="115"/>
 							<ChildItems>
 								<UsualGroup name="Group3" id="121">
+									<Visible>false</Visible>
 									<Group>Vertical</Group>
 									<ShowTitle>false</ShowTitle>
 									<ExtendedTooltip name="Group3ExtendedTooltip" id="122"/>
@@ -337,6 +315,14 @@
 											<HorizontalStretch>false</HorizontalStretch>
 											<ContextMenu name="ProjectContextMenu" id="86"/>
 											<ExtendedTooltip name="ProjectExtendedTooltip" id="87"/>
+										</InputField>
+										<InputField name="CoinbaseTrxID" id="130">
+											<DataPath>Object.CoinbaseTrxID</DataPath>
+											<ReadOnly>true</ReadOnly>
+											<Width>14</Width>
+											<HorizontalStretch>false</HorizontalStretch>
+											<ContextMenu name="CoinbaseTrxIDContextMenu" id="131"/>
+											<ExtendedTooltip name="CoinbaseTrxIDExtendedTooltip" id="132"/>
 										</InputField>
 									</ChildItems>
 								</UsualGroup>
@@ -391,29 +377,29 @@
 							<ContextMenu name="LineItemsContextMenu" id="14"/>
 							<AutoCommandBar name="LineItemsCommandBar" id="15"/>
 							<ExtendedTooltip name="LineItemsExtendedTooltip" id="66"/>
-							<SearchStringAddition name="LineItemsSearchString" id="130">
+							<SearchStringAddition name="LineItemsSearchString" id="133">
 								<AdditionSource>
 									<Item>LineItems</Item>
 									<Type>SearchStringRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="LineItemsSearchStringContextMenu" id="131"/>
-								<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="132"/>
+								<ContextMenu name="LineItemsSearchStringContextMenu" id="134"/>
+								<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="135"/>
 							</SearchStringAddition>
-							<ViewStatusAddition name="LineItemsViewStatus" id="133">
+							<ViewStatusAddition name="LineItemsViewStatus" id="136">
 								<AdditionSource>
 									<Item>LineItems</Item>
 									<Type>ViewStatusRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="LineItemsViewStatusContextMenu" id="134"/>
-								<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="135"/>
+								<ContextMenu name="LineItemsViewStatusContextMenu" id="137"/>
+								<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="138"/>
 							</ViewStatusAddition>
-							<SearchControlAddition name="LineItemsSearchControl" id="136">
+							<SearchControlAddition name="LineItemsSearchControl" id="139">
 								<AdditionSource>
 									<Item>LineItems</Item>
 									<Type>SearchControl</Type>
 								</AdditionSource>
-								<ContextMenu name="LineItemsSearchControlContextMenu" id="137"/>
-								<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="138"/>
+								<ContextMenu name="LineItemsSearchControlContextMenu" id="140"/>
+								<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="141"/>
 							</SearchControlAddition>
 							<Events>
 								<Event name="BeforeAddRow">LineItemsBeforeAddRow</Event>
@@ -434,16 +420,6 @@
 									<Width>10</Width>
 									<ContextMenu name="LineItemsAccountContextMenu" id="19"/>
 									<ExtendedTooltip name="LineItemsAccountExtendedTooltip" id="68"/>
-									<Events>
-										<Event name="OnChange">LineItemsAccountOnChange</Event>
-									</Events>
-								</InputField>
-								<InputField name="LineItemsAccountDescription" id="27">
-									<DataPath>Object.LineItems.AccountDescription</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<Width>15</Width>
-									<ContextMenu name="LineItemsAccountDescriptionContextMenu" id="28"/>
-									<ExtendedTooltip name="LineItemsAccountDescriptionExtendedTooltip" id="69"/>
 								</InputField>
 								<InputField name="LineItemsAmount" id="20">
 									<DataPath>Object.LineItems.Amount</DataPath>
@@ -619,20 +595,20 @@
 			</ToolTip>
 			<Action>PayWithDwolla</Action>
 		</Command>
-		<Command name="PayWithRipple" id="3">
+		<Command name="PayWithBitcoin" id="3">
 			<Title>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Pay with Ripple</v8:content>
+					<v8:content>Pay with bitcoin</v8:content>
 				</v8:item>
 			</Title>
 			<ToolTip>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Pay with ripple</v8:content>
+					<v8:content>Pay with bitcoin</v8:content>
 				</v8:item>
 			</ToolTip>
-			<Action>PayWithRipple</Action>
+			<Action>PayWithBitcoin</Action>
 		</Command>
 	</Commands>
 	<CommandInterface>

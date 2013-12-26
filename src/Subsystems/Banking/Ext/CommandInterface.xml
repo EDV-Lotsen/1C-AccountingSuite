@@ -18,7 +18,7 @@
 		</Command>
 		<Command name="DataProcessor.DownloadedTransactions.Command.DownloadedTransactions">
 			<Visibility>
-				<xr:Common>false</xr:Common>
+				<xr:Common>true</xr:Common>
 				<xr:Value name="Role.ReportOnly">false</xr:Value>
 				<xr:Value name="Role.ListUser">false</xr:Value>
 			</Visibility>
@@ -50,6 +50,11 @@
 				<xr:Common>false</xr:Common>
 				<xr:Value name="Role.ListUser">false</xr:Value>
 				<xr:Value name="Role.ReportOnly">false</xr:Value>
+			</Visibility>
+		</Command>
+		<Command name="DataProcessor.YodleeBankAccountsManagement.StandardCommand.Open">
+			<Visibility>
+				<xr:Common>false</xr:Common>
 			</Visibility>
 		</Command>
 	</CommandsVisibility>
@@ -123,6 +128,9 @@
 			<CommandGroup>ActionsPanelTools</CommandGroup>
 		</Command>
 		<Command name="DataProcessor.YodleeBankAccountsManagement.Command.ManageYodleeBankAccounts">
+			<CommandGroup>ActionsPanelTools</CommandGroup>
+		</Command>
+		<Command name="DataProcessor.YodleeBankAccountsManagement.StandardCommand.Open">
 			<CommandGroup>ActionsPanelTools</CommandGroup>
 		</Command>
 	</CommandsOrder>

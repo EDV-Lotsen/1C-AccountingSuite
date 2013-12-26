@@ -100,7 +100,7 @@ Function Query_OrdersRegistered(TablesList)
 	|	0                                     AS Invoiced,
 	// ------------------------------------------------------
 	// Attributes
-	|	LineItems.Ref.PromisedDate            AS DeliveryDate
+	|	LineItems.Ref.DeliveryDate            AS DeliveryDate
 	// ------------------------------------------------------
 	|FROM
 	|	Document.SalesOrder.LineItems AS LineItems

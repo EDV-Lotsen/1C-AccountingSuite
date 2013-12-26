@@ -31,6 +31,12 @@ EndProcedure
 &AtServer
 Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
 	
+	//Period closing
+	If DocumentPosting.DocumentPeriodIsClosed(CurrentObject.Ref, CurrentObject.Date) Then
+		PermitWrite = DocumentPosting.DocumentWritePermitted(WriteParameters);
+		CurrentObject.AdditionalProperties.Insert("PermitWrite", PermitWrite);	
+	EndIf;
+	
 	If Changed = True Then	
 		
 		If CurrentObject.Billable = False Then
@@ -78,6 +84,23 @@ EndProcedure
 &AtClient
 Procedure BeforeWrite(Cancel, WriteParameters)
 	
+	//Closing period
+	If DocumentPosting.DocumentPeriodIsClosed(Object.Ref, Object.DateFrom) Then
+		Cancel = Not DocumentPosting.DocumentWritePermitted(WriteParameters);
+		If Cancel Then
+			If WriteParameters.Property("PeriodClosingPassword") And WriteParameters.Property("Password") Then
+				If WriteParameters.Password = TRUE Then //Writing the document requires a password
+					ShowMessageBox(, "Invalid password!",, "Closed period notification");
+				EndIf;
+			Else
+				Notify = New NotifyDescription("ProcessUserResponseOnDocumentPeriodClosed", ThisObject, WriteParameters);
+				Password = "";
+				OpenForm("CommonForm.ClosedPeriodNotification", New Structure, ThisForm,,,, Notify, FormWindowOpeningMode.LockOwnerWindow);
+			EndIf;
+			return;
+		EndIf;
+	EndIf;
+
 	If Changed = True And Object.SalesInvoice.IsEmpty() = False Then
 		ShowMessageBox(,"New changes will not change " + Object.SalesInvoice + ". Generating a new invoice for this time entry will link the entry to a new invoice.",,"ChangedEntry"); 
 	EndIf;
@@ -94,20 +117,24 @@ Procedure LinkSalesOrder(Command)
 		If (Not Object.Company.IsEmpty()) And (HasNonClosedOrders(Object.Company)) Then
 		
 
-		FormParameters = New Structure();
-		FormParameters.Insert("ChoiceMode", True);
-		FormParameters.Insert("MultipleChoice", True);
-		
+			FormParameters = New Structure();
+			FormParameters.Insert("ChoiceMode", True);
+			FormParameters.Insert("MultipleChoice", True);
+			
 
-		FltrParameters = New Structure();
-		FltrParameters.Insert("Company", Object.Company); 
-		FltrParameters.Insert("OrderStatus", GetNonClosedOrderStatuses());
-		FormParameters.Insert("Filter", FltrParameters);
+			FltrParameters = New Structure();
+			FltrParameters.Insert("Company", Object.Company); 
+			FltrParameters.Insert("OrderStatus", GetNonClosedOrderStatuses());
+			FormParameters.Insert("Filter", FltrParameters);
+			
+			NotifyDescription = New NotifyDescription("OrderSelection", ThisForm);
+			OpenForm("Document.SalesOrder.ChoiceForm", FormParameters,,,,,NotifyDescription)
 		
-		NotifyDescription = New NotifyDescription("OrderSelection", ThisForm);
-		OpenForm("Document.SalesOrder.ChoiceForm", FormParameters,,,,,NotifyDescription)
-		
-	EndIf;	
+		Else
+			
+			Message("This company has no open sales orders.");
+			
+		EndIf;	
 
 EndProcedure
 	
@@ -181,5 +208,18 @@ Function GetNonClosedOrderStatuses()
 	
 EndFunction
 
-
-
+//Closing period
+&AtClient
+Procedure ProcessUserResponseOnDocumentPeriodClosed(Result, Parameters) Export
+	If (TypeOf(Result) = Type("String")) Then //Inserted password
+		Parameters.Insert("PeriodClosingPassword", Result);
+		Parameters.Insert("Password", TRUE);
+		Write(Parameters);
+	ElsIf (TypeOf(Result) = Type("DialogReturnCode")) Then //Yes, No or Cancel
+		If Result = DialogReturnCode.Yes Then
+			Parameters.Insert("PeriodClosingPassword", "Yes");
+			Parameters.Insert("Password", FALSE);
+			Write(Parameters);
+		EndIf;
+	EndIf;	
+EndProcedure

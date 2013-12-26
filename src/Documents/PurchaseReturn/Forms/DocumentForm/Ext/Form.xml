@@ -6,6 +6,7 @@
 	<RepostOnWrite>true</RepostOnWrite>
 	<AutoCommandBar name="FormCommandPanel" id="-1"/>
 	<Events>
+		<Event name="BeforeWrite">BeforeWrite</Event>
 		<Event name="BeforeWriteAtServer">BeforeWriteAtServer</Event>
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
 	</Events>

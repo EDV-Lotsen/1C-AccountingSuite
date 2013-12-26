@@ -56,6 +56,11 @@ Procedure AddFormFields(ProgrammaticElements, ValidValues)
 			//For password fields 
 			If PElt.FieldType = 1 Then
 				NewEl.PasswordMode = True;
+				//Remember password fields for checking
+				NewCF = CheckFields.Add();
+				NewCF.OriginalName = PElt.ElementOriginalName;
+				NewCF.DisplayName = PElt.DisplayName;
+				NewCF.ElementName = PElt.ElementName;
 			EndIf;
 			If ValueIsFilled(AnswerTimeout) Then
 				NewEl.PasswordMode = False; //In password mode and EditTextUpdate.DontUse an error occurs
@@ -87,6 +92,43 @@ EndFunction
 
 &AtClient
 Procedure CloseForm(Command)
+	//Compare the equality of password and verify password values
+	CheckFieldGroups = New Array();
+	For Each CheckField In CheckFields Do
+		If CheckFieldGroups.Find(CheckField.OriginalName) = Undefined Then
+			CheckFieldGroups.Add(CheckField.OriginalName);
+		EndIf;
+	EndDo;
+	CheckError = False;
+	For Each CheckGroup In CheckFieldGroups Do
+		FoundElements = New Array;
+		For Each CheckField In CheckFields Do 
+			If CheckField.OriginalName = CheckGroup Then
+				FoundElements.Add(CheckField);
+			EndIf;
+		EndDo;
+		If FoundElements.Count() <> 2 Then
+			Continue;
+		EndIf;
+		ElName1 = FoundElements[0].ElementName;
+		ElName2 = FoundElements[1].ElementName;
+		If ThisForm[ElName1] <> ThisForm[ElName2] Then
+			CheckError = True;
+			
+			MessOnError = New UserMessage();
+			MessOnError.Field = FoundElements[0].ElementName;
+			MessOnError.Text  = "Different values in """ + FoundElements[0].DisplayName + """ and """ + FoundElements[1].DisplayName + """. Re-enter """ + FoundElements[0].DisplayName + """";
+			MessOnError.Message();
+			
+			MessOnError = New UserMessage();
+			MessOnError.Field = FoundElements[1].ElementName;
+			MessOnError.Text  = "Different values in """ + FoundElements[0].DisplayName + """ and """ + FoundElements[1].DisplayName + """. Re-enter """ + FoundElements[1].DisplayName + """";
+			MessOnError.Message();
+		EndIf;
+	EndDo;
+	If CheckError Then
+		return;
+	EndIf;
 	ProgrammaticElements = New Array;
 	For Each PE In Items Do
 		If TypeOf(PE) = Type("FormField") And PE.Type = FormFieldType.InputField Then

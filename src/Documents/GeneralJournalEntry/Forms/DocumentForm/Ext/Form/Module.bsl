@@ -25,6 +25,22 @@ EndFunction
 // saving an unbalanced transaction.
 //
 Procedure BeforeWrite(Cancel, WriteParameters)
+	//Closing period
+	If DocumentPosting.DocumentPeriodIsClosed(Object.Ref, Object.Date) Then
+		Cancel = Not DocumentPosting.DocumentWritePermitted(WriteParameters);
+		If Cancel Then
+			If WriteParameters.Property("PeriodClosingPassword") And WriteParameters.Property("Password") Then
+				If WriteParameters.Password = TRUE Then //Writing the document requires a password
+					ShowMessageBox(, "Invalid password!",, "Closed period notification");
+				EndIf;
+			Else
+				Notify = New NotifyDescription("ProcessUserResponseOnDocumentPeriodClosed", ThisObject, WriteParameters);
+				Password = "";
+				OpenForm("CommonForm.ClosedPeriodNotification", New Structure, ThisForm,,,, Notify, FormWindowOpeningMode.LockOwnerWindow);
+			EndIf;
+			return;
+		EndIf;
+	EndIf;
 	
 	SetType();
 
@@ -74,17 +90,19 @@ Procedure LineItemsAmountCrOnChange(Item)
 	
 EndProcedure
 
-&AtClient
-// Fills in the account description
-//
-Procedure LineItemsAccountOnChange(Item)
-	TabularPartRow = Items.LineItems.CurrentData;
-	TabularPartRow.AccountDescription = CommonUse.GetAttributeValue
-		(TabularPartRow.Account, "Description");
-	EndProcedure
-
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
+	
+	If Object.Ref.IsEmpty() Then
+		Items.ReverseButton.Visible = False;
+	Endif;
+	
+	// checking if Reverse journal entry button was clicked
+	If Parameters.Property("ReverseStuff") Then
+		PreviousRef = Parameters.ReverseStuff;
+		ReverseJournalEntry(PreviousRef);
+		Items.ReverseButton.Visible = False;
+	EndIf;
 	
 	//Title = "GL entry " + Object.Number + " " + Format(Object.Date, "DLF=D");
 	
@@ -113,4 +131,83 @@ Procedure DateOnChange(Item)
 	
 EndProcedure
 
+//Closing period
+&AtClient
+Procedure ProcessUserResponseOnDocumentPeriodClosed(Result, Parameters) Export
+	If (TypeOf(Result) = Type("String")) Then //Inserted password
+		Parameters.Insert("PeriodClosingPassword", Result);
+		Parameters.Insert("Password", TRUE);
+		Write(Parameters);
+	ElsIf (TypeOf(Result) = Type("DialogReturnCode")) Then //Yes, No or Cancel
+		If Result = DialogReturnCode.Yes Then
+			Parameters.Insert("PeriodClosingPassword", "Yes");
+			Parameters.Insert("Password", FALSE);
+			Write(Parameters);
+		EndIf;
+	EndIf;	
+EndProcedure
 
+&AtServer
+Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
+	//Period closing
+	If DocumentPosting.DocumentPeriodIsClosed(CurrentObject.Ref, CurrentObject.Date) Then
+		PermitWrite = DocumentPosting.DocumentWritePermitted(WriteParameters);
+		CurrentObject.AdditionalProperties.Insert("PermitWrite", PermitWrite);	
+	EndIf;
+
+EndProcedure
+
+
+&AtClient
+Procedure ReverseCommand(Command)	
+	
+	Str = New Structure;
+	Str.Insert("ReverseStuff", Object.Ref);
+	OpenForm("Document.GeneralJournalEntry.Form.DocumentForm",Str);
+	
+EndProcedure
+
+&AtServer
+Procedure ReverseJournalEntry(Old)
+	
+	Object.Adjusting = Old.Adjusting;
+	
+//Date Manipulation to get first day of the next month
+	DateString = StringFunctionsClientServer.SplitStringIntoSubstringArray(String(Old.Date)," ");
+	Object.Memo = "REVERSE of GJ entry " + Old.Number + " from " + DateString[0];
+	SplitDate = StringFunctionsClientServer.SplitStringIntoSubstringArray(DateString[0],"/");
+	Month = Number(SplitDate[0]) + 1;
+	Year = Number(SplitDate[2]);
+					// Check to wrap over the month
+	If Month > 12 Then
+		Month = 1;
+		Year = Year + 1;
+	EndIf;
+					// make sure month string is of length 2
+	If Month < 10 Then
+		SMonth = "0" + String(Month);
+	Else
+		SMonth = String(Month);
+	EndIf;
+					//Combine strings to get actual date string
+	SDay = "01";
+	SYear = StringFunctionsClientServer.SplitStringIntoSubstringArray(String(Year),",");
+	SDate = SYear[0]+SYear[1] + SMonth + SDay;
+	
+	Object.Date = Date(SDate);
+	
+	For Each CurRowLineItems In Old.LineItems Do
+		newLineItem = Object.LineItems.Add();
+		newLineItem.Account = CurRowLineItems.Account;
+		newLineItem.AccountDescription = CurRowLineItems.AccountDescription;
+		newLineItem.AmountDr = CurRowLineItems.AmountCr;
+		newLineItem.AmountCr = CurRowLineItems.AmountDr;
+		newLineItem.Company = CurRowLineItems.Company;
+	EndDo;
+	
+	Object.Currency = Old.Currency;
+	Object.ExchangeRate = Old.ExchangeRate;
+	Object.DocumentTotal = Object.LineItems.Total("AmountDR");
+	Object.DocumentTotalRC = Object.LineItems.Total("AmountDR") * Object.ExchangeRate;
+	
+EndProcedure

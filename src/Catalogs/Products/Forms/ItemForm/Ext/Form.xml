@@ -6,8 +6,10 @@
 	<AutoCommandBar name="FormCommandBar" id="-1"/>
 	<Events>
 		<Event name="AfterWriteAtServer">AfterWriteAtServer</Event>
+		<Event name="OnOpen">OnOpen</Event>
 		<Event name="BeforeWrite">BeforeWrite</Event>
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+		<Event name="OnWriteAtServer">OnWriteAtServer</Event>
 		<Event name="FillCheckProcessingAtServer">FillCheckProcessingAtServer</Event>
 	</Events>
 	<ChildItems>
@@ -50,6 +52,7 @@
 		</InputField>
 		<InputField name="Price" id="79">
 			<DataPath>Price</DataPath>
+			<Visible>false</Visible>
 			<EditFormat>
 				<v8:item>
 					<v8:lang>en</v8:lang>
@@ -71,6 +74,11 @@
 			<HorizontalStretch>false</HorizontalStretch>
 			<ContextMenu name="PreferredVendorContextMenu" id="82"/>
 			<ExtendedTooltip name="PreferredVendorExtendedTooltip" id="104"/>
+		</InputField>
+		<InputField name="UPC" id="149">
+			<DataPath>Object.UPC</DataPath>
+			<ContextMenu name="UPCContextMenu" id="150"/>
+			<ExtendedTooltip name="UPCExtendedTooltip" id="151"/>
 		</InputField>
 		<Pages name="Group1" id="17">
 			<ExtendedTooltip name="Group1ExtendedTooltip" id="111"/>
@@ -100,107 +108,24 @@
 							<ContextMenu name="CostingMethodContextMenu" id="12"/>
 							<ExtendedTooltip name="CostingMethodExtendedTooltip" id="113"/>
 						</InputField>
-						<UsualGroup name="InventoryExpenseAcct" id="43">
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Inventory expense acct</v8:content>
-								</v8:item>
-							</Title>
-							<Group>Horizontal</Group>
-							<Representation>None</Representation>
-							<ShowTitle>false</ShowTitle>
-							<ExtendedTooltip name="InventoryExpenseAcctExtendedTooltip" id="114"/>
-							<ChildItems>
-								<InputField name="InventoryOrExpenseAccount" id="37">
-									<DataPath>Object.InventoryOrExpenseAccount</DataPath>
-									<HorizontalStretch>false</HorizontalStretch>
-									<ContextMenu name="InventoryOrExpenseAccountContextMenu" id="38"/>
-									<ExtendedTooltip name="InventoryOrExpenseAccountExtendedTooltip" id="115"/>
-									<Events>
-										<Event name="OnChange">InventoryOrExpenseAccountOnChange</Event>
-									</Events>
-								</InputField>
-								<LabelDecoration name="InventoryAcctLabel" id="44">
-									<ContextMenu name="InventoryAcctLabelContextMenu" id="45"/>
-									<ExtendedTooltip name="InventoryAcctLabelExtendedTooltip" id="116"/>
-								</LabelDecoration>
-							</ChildItems>
-						</UsualGroup>
-						<UsualGroup name="IncomeAcct" id="46">
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Income acct</v8:content>
-								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Ertragskonto</v8:content>
-								</v8:item>
-							</Title>
-							<ToolTip>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Ertragskonto</v8:content>
-								</v8:item>
-							</ToolTip>
-							<Group>Horizontal</Group>
-							<Representation>None</Representation>
-							<ShowTitle>false</ShowTitle>
-							<ExtendedTooltip name="IncomeAcctExtendedTooltip" id="117"/>
-							<ChildItems>
-								<InputField name="IncomeAccount" id="39">
-									<DataPath>Object.IncomeAccount</DataPath>
-									<HorizontalStretch>false</HorizontalStretch>
-									<ContextMenu name="IncomeAccountContextMenu" id="40"/>
-									<ExtendedTooltip name="IncomeAccountExtendedTooltip" id="118"/>
-									<Events>
-										<Event name="OnChange">IncomeAccountOnChange</Event>
-									</Events>
-								</InputField>
-								<LabelDecoration name="IncomeAcctLabel" id="47">
-									<ContextMenu name="IncomeAcctLabelContextMenu" id="48"/>
-									<ExtendedTooltip name="IncomeAcctLabelExtendedTooltip" id="119"/>
-								</LabelDecoration>
-							</ChildItems>
-						</UsualGroup>
-						<UsualGroup name="COGSAcct" id="49">
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>COGSAcct</v8:content>
-								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Wareneinsatzkonto</v8:content>
-								</v8:item>
-							</Title>
-							<ToolTip>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Wareneinsatzkonto</v8:content>
-								</v8:item>
-							</ToolTip>
-							<Group>Horizontal</Group>
-							<Representation>None</Representation>
-							<ShowTitle>false</ShowTitle>
-							<ExtendedTooltip name="COGSAcctExtendedTooltip" id="120"/>
-							<ChildItems>
-								<InputField name="COGSAccount" id="41">
-									<DataPath>Object.COGSAccount</DataPath>
-									<HorizontalStretch>false</HorizontalStretch>
-									<ContextMenu name="COGSAccountContextMenu" id="42"/>
-									<ExtendedTooltip name="COGSAccountExtendedTooltip" id="121"/>
-									<Events>
-										<Event name="OnChange">COGSAccountOnChange</Event>
-									</Events>
-								</InputField>
-								<LabelDecoration name="COGSAcctLabel" id="50">
-									<ContextMenu name="COGSAcctLabelContextMenu" id="51"/>
-									<ExtendedTooltip name="COGSAcctLabelExtendedTooltip" id="122"/>
-								</LabelDecoration>
-							</ChildItems>
-						</UsualGroup>
+						<InputField name="InventoryOrExpenseAccount" id="37">
+							<DataPath>Object.InventoryOrExpenseAccount</DataPath>
+							<HorizontalStretch>false</HorizontalStretch>
+							<ContextMenu name="InventoryOrExpenseAccountContextMenu" id="38"/>
+							<ExtendedTooltip name="InventoryOrExpenseAccountExtendedTooltip" id="115"/>
+						</InputField>
+						<InputField name="IncomeAccount" id="39">
+							<DataPath>Object.IncomeAccount</DataPath>
+							<HorizontalStretch>false</HorizontalStretch>
+							<ContextMenu name="IncomeAccountContextMenu" id="40"/>
+							<ExtendedTooltip name="IncomeAccountExtendedTooltip" id="118"/>
+						</InputField>
+						<InputField name="COGSAccount" id="41">
+							<DataPath>Object.COGSAccount</DataPath>
+							<HorizontalStretch>false</HorizontalStretch>
+							<ContextMenu name="COGSAccountContextMenu" id="42"/>
+							<ExtendedTooltip name="COGSAccountExtendedTooltip" id="121"/>
+						</InputField>
 						<InputField name="PurchaseVATCode" id="52">
 							<DataPath>Object.PurchaseVATCode</DataPath>
 							<Width>13</Width>
@@ -548,6 +473,17 @@
 					<v8:FractionDigits>2</v8:FractionDigits>
 					<v8:AllowedSign>Any</v8:AllowedSign>
 				</v8:NumberQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="NewObj" id="10">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>New obj</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
 			</Type>
 		</Attribute>
 	</Attributes>

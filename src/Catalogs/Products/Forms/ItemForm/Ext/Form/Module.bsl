@@ -98,6 +98,10 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	// end custom fields
 	
 	If Object.Ref <> Catalogs.Products.EmptyRef() Then
+		  Items.Type.ReadOnly = True;
+	EndIf;
+	
+	If Object.Ref <> Catalogs.Products.EmptyRef() Then
 		Price = GeneralFunctions.RetailPrice(CurrentDate(), Object.Ref, Catalogs.Companies.EmptyRef());
 	Endif;
 	
@@ -144,13 +148,13 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	If Object.IncomeAccount.IsEmpty() AND Object.Ref.IsEmpty() Then
 		IncomeAcct = Constants.IncomeAccount.Get();
 		Object.IncomeAccount = IncomeAcct;
-		Items.IncomeAcctLabel.Title = IncomeAcct.Description;
+		//Items.IncomeAcctLabel.Title = IncomeAcct.Description;
 	ElsIf NOT Object.Ref.IsEmpty() Then
-		Items.IncomeAcctLabel.Title = Object.IncomeAccount.Description;
+		//Items.IncomeAcctLabel.Title = Object.IncomeAccount.Description;
 	EndIf;
 		
 	If NOT Object.InventoryOrExpenseAccount.IsEmpty() Then
-		Items.InventoryAcctLabel.Title = Object.InventoryOrExpenseAccount.Description;
+		//Items.InventoryAcctLabel.Title = Object.InventoryOrExpenseAccount.Description;
 	EndIf;
 	
 	If Object.Type <> Enums.InventoryTypes.Inventory Then
@@ -192,7 +196,9 @@ EndProcedure
 
 &AtServer
 Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
-		
+	
+	
+	
 	If  (Object.Type = Enums.InventoryTypes.Inventory) Then
 		// Fill item cost values
 		FillLastAverageAccountingCost();
@@ -209,9 +215,137 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 	ChildItems.Indicators.ChildItems.Right.ChildItems.QtyAvailableToPromise.Visible = IsInventoryType;
 	
 	AddPriceList();
+	
+	// audit log test
+	
+	WebhookMap = GeneralFunctions.ReturnProductObjectMap(Object.Ref);
+
+	Reg = InformationRegisters.AuditLog.CreateRecordManager();
+	Reg.Period = CurrentDate();
+	Reg.User = GeneralFunctions.GetUserName();
+	Reg.ObjectName = "items";
+	Reg.ObjUUID = String(Object.Ref.UUID());
+	If object.NewObject = True Then
+		Reg.Action = "create";
+	Else
+		Reg.Action = "update";
+	EndIf;
+	Reg.DataJSON = InternetConnectionClientServer.EncodeJSON(WebhookMap);
+	Reg.Write(FALSE);
+
+	
+	// audit log tets
+
+	
+	companies_webhook = Constants.items_webhook.Get();
+	
+	If NOT companies_webhook = "" Then
+		
+		//double_slash = Find(companies_webhook, "//");
+		
+		//companies_webhook = Right(companies_webhook,StrLen(companies_webhook) - double_slash - 1);
+		
+		//first_slash = Find(companies_webhook, "/");
+		//webhook_address = Left(companies_webhook,first_slash - 1);
+		//webhook_resource = Right(companies_webhook,StrLen(companies_webhook) - first_slash + 1); 		
+		
+		WebhookMap = GeneralFunctions.ReturnProductObjectMap(Object.Ref);
+		WebhookMap.Insert("resource","items");
+		If object.NewObject = True Then
+			WebhookMap.Insert("action","create");
+		Else
+			WebhookMap.Insert("action","update");
+		EndIf;
+		WebhookMap.Insert("apisecretkey",Constants.APISecretKey.Get());
+		WebhookParams = New Array();
+		WebhookParams.Add(Constants.items_webhook.Get());
+		WebhookParams.Add(WebhookMap);
+		LongActions.ExecuteInBackground("GeneralFunctions.SendWebhook", WebhookParams);
+
+	
+	EndIf;
+	
+	// Insert handler code.
+	
+	//HeadersMap = New Map();
+	//HeadersMap.Insert("Authorization", "Basic " + ServiceParameters.BigCommerceAuth());
+	//
+	//HTTPRequest = New HTTPRequest("products/78.json", HeadersMap);
+	////HTTPRequest.SetBodyFromString("product=" + ThisObject.Description,TextEncoding.ANSI);
+	//
+	//SSLConnection = New OpenSSLSecureConnection();
+	//
+	//HTTPConnection = New HTTPConnection("store-dshn8.mybigcommerce.com/api/v2/",,,,,,SSLConnection);
+	//Result = HTTPConnection.Get(HTTPRequest);
+	//ResponseBody = Result.GetBodyAsString(TextEncoding.UTF8);
+	//			
+	//Message("Sent /bigcomproduct request");
+	
+	// zapier webhooks
+	
+	Query = New Query("SELECT
+	                  |	ZapierWebhooks.Description
+	                  |FROM
+	                  |	Catalog.ZapierWebhooks AS ZapierWebhooks
+	                  |WHERE
+	                  |	ZapierWebhooks.Code = ""new_item_webhook""");
+					  
+	QueryResult = Query.Execute();
+	If QueryResult.IsEmpty() Then		
+	Else
+		
+		WebhookMap = New Map(); 
+		WebhookMap.Insert("apisecretkey",Constants.APISecretKey.Get());
+		WebhookMap.Insert("resource","items");
+		If Object.NewObject = True Then
+			WebhookMap.Insert("action","create");
+		Else
+			WebhookMap.Insert("action","update");
+		EndIf;
+		WebhookMap.Insert("api_code",Object.Ref.api_code);
+		WebhookMap.Insert("item_code",Object.Ref.Code);
+		WebhookMap.Insert("item_description",Object.Ref.Description);
+		
+		Selection = QueryResult.Choose();
+		While Selection.Next() Do
+			
+			WebhookParams = New Array();
+			WebhookParams.Add(Selection.Description);
+			WebhookParams.Add(WebhookMap);
+			LongActions.ExecuteInBackground("GeneralFunctions.SendWebhook", WebhookParams);
+			
+		EndDo;						
+	EndIf;
+	
+		//WebhookMap = GeneralFunctions.ReturnProductObjectMap(Object.Ref);
+		//WebhookMap.Insert("resource","items");
+		//If object.NewObject = True Then
+		//	WebhookMap.Insert("action","create");
+		//Else
+		//	WebhookMap.Insert("action","update");
+		//EndIf;
+		//WebhookMap.Insert("apisecretkey",Constants.APISecretKey.Get());
+		//WebhookParams = New Array();
+		//WebhookParams.Add(Constants.items_webhook.Get());
+		//WebhookParams.Add(WebhookMap);
+		//LongActions.ExecuteInBackground("GeneralFunctions.SendWebhook", WebhookParams);
+		//
+		//Headers = New Map();
+		//Headers.Insert("Content-Type", "application/json");   
+		//
+		//HTTPRequest = New HTTPRequest("/webhook_test",Headers);
+		//HTTPRequest.SetBodyFromString(InternetConnectionClientServer.EncodeJSON(WebhookParams));
+		//
+		//SSLConnection = New OpenSSLSecureConnection();
+		//
+		//HTTPConnection = New HTTPConnection("pay.accountingsuite.com",,,,,,SSLConnection);
+		//Result = HTTPConnection.Post(HTTPRequest);
+
 
 	
 EndProcedure
+
+
 
 &AtServer
 Procedure FillLastAverageAccountingCost()
@@ -457,12 +591,12 @@ Procedure TypeOnChange(Item)
 		Items.COGSAccount.ReadOnly = False;
 		
 		Object.COGSAccount = GeneralFunctions.GetDefaultCOGSAcct();
-		Items.COGSAcctLabel.Title = CommonUse.GetAttributeValue(Object.COGSAccount, "Description");
+		//Items.COGSAcctLabel.Title = CommonUse.GetAttributeValue(Object.COGSAccount, "Description");
 		
 		Acct = GeneralFunctions.InventoryAcct(NewItemType);
-		AccountDescription = CommonUse.GetAttributeValue(Acct, "Description");
+		//AccountDescription = CommonUse.GetAttributeValue(Acct, "Description");
 		Object.InventoryOrExpenseAccount = Acct;
-		Items.InventoryAcctLabel.Title = AccountDescription;
+		//Items.InventoryAcctLabel.Title = AccountDescription;
 		Items.CostingMethod.ReadOnly = False;
 		
 	EndIf;
@@ -474,9 +608,9 @@ Procedure TypeOnChange(Item)
 		Items.COGSAccount.ReadOnly = True;
 		
 		Acct = GeneralFunctions.InventoryAcct(NewItemType);
-		AccountDescription = CommonUse.GetAttributeValue(Acct, "Description");
+		//AccountDescription = CommonUse.GetAttributeValue(Acct, "Description");
 		Object.InventoryOrExpenseAccount = Acct;
-		Items.InventoryAcctLabel.Title = AccountDescription;
+		//Items.InventoryAcctLabel.Title = AccountDescription;
 		Object.COGSAccount = GeneralFunctions.GetEmptyAcct();
 	EndIf;
 
@@ -490,44 +624,14 @@ Procedure TypeOnChange(Item)
 		Items.COGSAccount.ReadOnly = True;
 		
 		Object.COGSAccount = GeneralFunctions.GetEmptyAcct();
-		Items.COGSAcctLabel.Title = "";
+		//Items.COGSAcctLabel.Title = "";
 		
 		Object.InventoryOrExpenseAccount = GeneralFunctions.GetEmptyAcct();
-		Items.InventoryAcctLabel.Title = "";
+		//Items.InventoryAcctLabel.Title = "";
 
 
 	EndIf;
 	
-		
-EndProcedure
-
-&AtClient
-// Determines an account description
-//
-Procedure InventoryOrExpenseAccountOnChange(Item)
-	
-	Items.InventoryAcctLabel.Title =
-		CommonUse.GetAttributeValue(Object.InventoryOrExpenseAccount, "Description");
-		
-EndProcedure
-
-&AtClient
-// Determines an account description
-//
-Procedure IncomeAccountOnChange(Item)
-	
-	Items.IncomeAcctLabel.Title =
-		CommonUse.GetAttributeValue(Object.IncomeAccount, "Description");
-		
-EndProcedure
-
-&AtClient
-// Determines an account description
-//
-Procedure COGSAccountOnChange(Item)
-	
-	Items.COGSAcctLabel.Title =
-		CommonUse.GetAttributeValue(Object.COGSAccount, "Description");	
 		
 EndProcedure
 
@@ -584,34 +688,81 @@ EndProcedure
 Procedure AddPriceList()
 	
 	LastPrice = GeneralFunctions.RetailPrice(CurrentDate(), Object.Ref, Catalogs.Companies.EmptyRef());
+
+	
 	If LastPrice <> Price Then
+
+		QueryText = "SELECT TOP 1
+		            |	PriceListSliceLast.Product.Ref,
+		            |	PriceListSliceLast.PriceLevel.Description,
+		            |	PriceListSliceLast.ProductCategory.Description,
+		            |	PriceListSliceLast.Price,
+		            |	PriceListSliceLast.Cost,
+		            |	PriceListSliceLast.PriceType,
+		            |	PriceListSliceLast.Period
+		            |FROM
+		            |	InformationRegister.PriceList.SliceLast AS PriceListSliceLast
+		            |WHERE
+		            |	PriceListSliceLast.Product = &Product
+		            |	AND PriceListSliceLast.PriceLevel = &PriceLevel
+		            |	AND PriceListSliceLast.ProductCategory = &ProductCategory";
+		Query = New Query(QueryText);
+		Query.SetParameter("Product", Object.Ref);
+		Query.SetParameter("PriceLevel", Catalogs.PriceLevels.EmptyRef());
+		Query.SetParameter("ProductCategory", Catalogs.ProductCategories.EmptyRef());
+		QueryResult = Query.Execute().Unload();
 		
+		If QueryResult.Count() > 0 Then
+			
+			If Format(QueryResult[0].Period,"DLF = D") = Format(CurrentDate(),"DLF = D") Then
+					RecordSet = InformationRegisters.PriceList.CreateRecordSet();
+					RecordSet.Filter.Product.Set(Object.Ref);
+					RecordSet.Filter.Period.Set(CurrentDate());
+					RecordSet.Filter.PriceLevel.Set(Catalogs.PriceLevels.EmptyRef());
+					RecordSet.Filter.ProductCategory.Set(Catalogs.ProductCategories.EmptyRef());
+					RecordSet.Read();
+					RecordSet[0].Price = Price;
+					RecordSet.Write();
+
+			Else
+
+			    
+				RecordSet = InformationRegisters.PriceList.CreateRecordSet();
+				RecordSet.Filter.Product.Set(Object.Ref);
+				RecordSet.Filter.Period.Set(CurrentDate());
+				RecordSet.Read();
+				NewRecord = RecordSet.Add();
+				NewRecord.Period = CurrentDate();
+				NewRecord.PriceType = "Item";
+				NewRecord.Product = Object.Ref;
+				NewRecord.Price = Price;
+				RecordSet.Write()
+				
+			Endif;
+			
+		Else
+
+			    
 			RecordSet = InformationRegisters.PriceList.CreateRecordSet();
 			RecordSet.Filter.Product.Set(Object.Ref);
 			RecordSet.Filter.Period.Set(CurrentDate());
 			RecordSet.Read();
 			NewRecord = RecordSet.Add();
 			NewRecord.Period = CurrentDate();
-			NewRecord.Product = Object.Ref;
 			NewRecord.PriceType = "Item";
+			NewRecord.Product = Object.Ref;
 			NewRecord.Price = Price;
-			RecordSet.Write();
+			RecordSet.Write()
+			
+		Endif;
+
+			
 
 			   		
 	Endif;
 
 	
 EndProcedure
-
-//&AtServer
-//Procedure WriteAPICode()
-//	
-//	If Object.Ref = Catalogs.Products.EmptyRef() Then
-//		Object.api_code = GeneralFunctions.NextProductNumber();
-//	EndIf;
-
-//	
-//EndProcedure
 
 
 

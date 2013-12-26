@@ -5,6 +5,7 @@
 // - Client (managed application)
 //
 
+#REGION FORM_SERVER_FUNCTIONS
 ////////////////////////////////////////////////////////////////////////////////
 // FORM SERVER FUNCTIONS
 
@@ -19,6 +20,9 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	UploadTransactionsTo = Parameters.UploadTransactionsTo;
 	PerformAddAccount = Parameters.PerformAddAccount;
 	PerformEditAccount = Parameters.PerformEditAccount;
+	If Parameters.PerformAddAccount OR Parameters.PerformEditAccount OR Parameters.PerformRefreshingAccount Then
+		CalledForSingleOperation = True;
+	EndIf;
 	If PerformRefreshingAccount Then		
 		Items.AccountsRefreshPage.Visible = False;
 		Items.AccountAssignTypePage.Visible = False;
@@ -296,7 +300,12 @@ Function GetAccountsForAssigning(CurrentBankAccount)
 	                    |	BankAccounts.Description AS BankAccountDescription,
 	                    |	BankAccounts.AccountType AS Type,
 	                    |	BankAccounts.CurrentBalance,
-	                    |	BankAccounts.AccountingAccount AS AccountType
+	                    |	BankAccounts.AccountingAccount AS AccountType,
+	                    |	CASE
+	                    |		WHEN BankAccounts.DeletionMark = TRUE
+	                    |			THEN FALSE
+	                    |		ELSE TRUE
+	                    |	END AS Connect
 	                    |FROM
 	                    |	Catalog.BankAccounts AS BankAccounts
 	                    |WHERE
@@ -308,7 +317,7 @@ Function GetAccountsForAssigning(CurrentBankAccount)
 	Sel = Request.Execute().Choose();
 	AvailableList = New Array();
 	While Sel.Next() Do
-		AvailableList.Add(New Structure("BankAccount, BankAccountDescription, Type, CurrentBalance, AccountType"));
+		AvailableList.Add(New Structure("BankAccount, BankAccountDescription, Type, CurrentBalance, AccountType, Connect"));
 		FillPropertyValues(AvailableList[AvailableList.Count()-1], Sel);
 	EndDo;
 	return AvailableList;
@@ -356,23 +365,54 @@ Function GetAvailableListOfAccounts(CurrentAccountType = Undefined, CurrentBankA
 EndFunction
 
 &AtServerNoContext
-Function AssignAccountTypeAtServer(CurrentBankAccount, BankAccountType)
+Function AssignAccountTypeAtServer(CurrentBankAccount, BankAccountType, Connect = True)
 	ReturnStructure = New Structure("ReturnValue, ErrorMessage", True, "");
-	If CurrentBankAccount.AccountingAccount = BankAccountType Then
+	If (CurrentBankAccount.AccountingAccount = BankAccountType) And (ValueIsFilled(CurrentBankAccount.AccountingAccount)) Then
 		ReturnStructure.ReturnValue = True;
 		return ReturnStructure;
 	EndIf;
-	BAObject = CurrentBankAccount.GetObject();
-	BAObject.AccountingAccount = BankAccountType;
-	GetUserMessages(True);
+	If Connect Then
+		BAObject = CurrentBankAccount.GetObject();
+		BAObject.AccountingAccount = BankAccountType;
+		GetUserMessages(True);
+	Else
+		BAObject = CurrentBankAccount.GetObject();
+		//BAObject.DeletionMark = True;
+		GetUserMessages(True);
+	EndIf;
+	BeginTransaction(DataLockControlMode.Managed);
 	Try
-		BAObject.Write();
+		If Connect Then
+			BAObject.Write();
+		Else
+			//Reflect this in Register
+			RecordSet = InformationRegisters.DisconnectedBankAccounts.CreateRecordSet();
+			ItemIdFilter = RecordSet.Filter.ItemID;
+			ItemAccountIDFilter = RecordSet.Filter.ItemAccountID;
+			ItemIDFilter.Use = True;
+			ItemIDFilter.ComparisonType = ComparisonType.Equal;
+			ItemIDFilter.Value = CurrentBankAccount.ItemID;
+			ItemAccountIDFilter.Use = True;
+			ItemAccountIDFilter.ComparisonType = ComparisonType.Equal;
+			ItemAccountIDFilter.Value = CurrentBankAccount.ItemAccountID;
+			NewRecord = RecordSet.Add();
+			NewRecord.Active =  True;
+			NewRecord.ItemID = CurrentBankAccount.ItemID;
+			NewRecord.ItemAccountID = CurrentBankAccount.ItemAccountID;
+			RecordSet.Write(True);
+			BAObject.Delete();
+		EndIf;
+		CommitTransaction();
 	Except
+		ErrorDesc = ErrorDescription();
+		If TransactionActive() Then
+			RollbackTransaction();
+		EndIf;
 		UM = GetUserMessages(True);
 		If UM.Count()>0 Then
 			ReturnStructure.ErrorMessage = UM[0].Text;
 		Else
-			ReturnStructure.ErrorMessage = ErrorDescription();
+			ReturnStructure.ErrorMessage = ErrorDesc;
 		EndIf;
 		ReturnStructure.ReturnValue = False;	
 	EndTry;
@@ -390,6 +430,15 @@ Function CreateNewOfflineBankAccount(Bank, Description, AccountType)
 	return NewAccount.Ref;
 	
 EndFunction
+
+&AtServerNoContext
+Function RemoveBankAccountAtServer(AccountForDeletionIfCancelled)
+	return Yodlee.RemoveBankAccountAtServer(AccountForDeletionIfCancelled);
+EndFunction
+
+#ENDREGION
+
+#REGION FORM_COMMAND_HANDLERS 
 ////////////////////////////////////////////////////////////////////////////////
 // FORM COMMAND HANDLERS
 
@@ -409,8 +458,27 @@ Procedure OnOpen(Cancel)
 EndProcedure
 
 &AtClient
+Procedure OnClose()
+	// Remove newly added bank account(s) if operation cancelled
+	If ValueIsFilled(AccountForDeletionIfCancelled) Then
+		RemoveBankAccountAtServer(AccountForDeletionIfCancelled);
+	EndIf;
+EndProcedure
+
+&AtClient
+Procedure OnlineAccountOnChange(Item)
+	If OnlineAccount = "Online" Then
+		Items.AccountDescription.Visible = False;
+		Items.AccountType.Visible = False;
+	ElsIf OnlineAccount = "Offline" Then
+		Items.AccountDescription.Visible = True;
+		Items.AccountType.Visible = True;
+	EndIf;
+EndProcedure
+
+&AtClient
 Procedure Decoration10Click(Item)
-	OpenForm("DataProcessor.YodleeBankAccountsManagement.Form.Video", New Structure, ThisForm,,,,,FormWindowOpeningMode.LockWholeInterface);
+	OpenForm("DataProcessor.YodleeBankAccountsManagement.Form.Video", New Structure, ThisForm,,,,,FormWindowOpeningMode.LockOwnerWindow);
 EndProcedure
 
 &AtClient
@@ -420,6 +488,11 @@ Procedure GotoAssigningPage(Command)
 	Items.AssigningSuccessGroup.BackColor = Items.Group13.BackColor;
 	Items.AssigningSuccessPicture.Picture = New Picture();
 	Items.AssigningSuccessReason.Title = "";
+	If PerformAssignAccount Then
+		Items.AssigningAccountTypeConnect.Visible = False;
+	Else
+		Items.AssigningAccountTypeConnect.Visible = True;
+	EndIf;
 	FillAssigningTable();
 	FillAvailableAccounts();
 EndProcedure
@@ -443,6 +516,8 @@ Procedure AddAccounts(Command)
 		
 		CurrentBankAccount = CreateNewOfflineBankAccount(Bank, AccountDescription, AccountType);
 		
+		AccountForDeletionIfCancelled = CurrentBankAccount;
+		
 		GotoAssigningPage(Undefined);
 		
 	EndIf;
@@ -451,11 +526,13 @@ EndProcedure
 
 &AtClient
 Procedure GotoRefreshPage(Command)
-	If PerformRefreshingAccount Or PerformAddAccount Or PerformEditAccount Then
-		If AssigningAccountType.Count() > 0 Then
-			ReturnArray = New Array();
+	If CalledForSingleOperation Then //Called from other forms for specific operations
+		ReturnArray = New Array();
+		If (AssigningAccountType.Count() > 0) And (Not ValueIsFilled(AccountForDeletionIfCancelled)) Then
 			For Each AAT In AssigningAccountType Do
-				ReturnArray.Add(AAT.BankAccount);
+				If AAT.Connect Then
+					ReturnArray.Add(AAT.BankAccount);
+				EndIf;
 			EndDo;
 		EndIf;
 		Close(ReturnArray);
@@ -467,6 +544,7 @@ EndProcedure
 
 &AtClient
 Procedure RefreshAccount(Command)
+	PerformRefreshingAccount = True;
 	CurrentBankAccount = Items.BankAccounts.CurrentRow;
 	CurData = Items.BankAccounts.CurrentData;
 	If CurData = Undefined Then 
@@ -523,10 +601,13 @@ EndProcedure
 
 &AtClient
 Procedure AssignAccountType(Command)
+	If Not CheckDataFill() Then
+		return;
+	EndIf;
 	FailReason = "";
 	i = 1;
 	For Each Str In AssigningAccountType Do
-		ReturnStructure = AssignAccountTypeAtServer(Str.BankAccount, Str.AccountType);
+		ReturnStructure = AssignAccountTypeAtServer(Str.BankAccount, Str.AccountType, Str.Connect);
 		If Not ReturnStructure.ReturnValue Then
 			CurrentFailReason = "Row #" + String(i) + ". Assigning failed. Reason: " + ReturnStructure.ErrorMessage + " Please, choose an account type once again.";
 			FailReason = FailReason + ?(StrLen(FailReason)>0, Chars.CR + Chars.LF, "") + CurrentFailReason;
@@ -540,7 +621,7 @@ Procedure AssignAccountType(Command)
 		EndIf;
 		i = i + 1;
 	EndDo;
-	If ValueIsFilled(FailReason) Then // If an erroe occured
+	If ValueIsFilled(FailReason) Then // If an error occured
 		Items.AssigningSuccessReason.Title = FailReason;
 		Items.AssigningSuccessPicture.Picture = PictureLib.Warning32;
 		Items.AssigningSuccessGroup.BackColor = Items.TooltipBackground.BackColor;
@@ -549,8 +630,12 @@ Procedure AssignAccountType(Command)
 		Items.AssigningSuccessReason.Title = "Account " + ?(AssigningAccountType.Count()>1, "types were", "type was") + " successfully assigned";
 		Items.AssigningSuccessPicture.Picture = PictureLib.Information32;
 		Items.AssigningSuccessGroup.BackColor = Items.TooltipBackground.BackColor;
+		AccountForDeletionIfCancelled = PredefinedValue("Catalog.BankAccounts.EmptyRef");
 	EndIf;
 	NotifyChanged(Type("CatalogRef.BankAccounts"));
+	If Not ValueIsFilled(FailReason) Then
+		GotoRefreshPage(Undefined);//Finish
+	EndIf;
 EndProcedure
 
 &AtClient
@@ -573,7 +658,9 @@ EndProcedure
 &AtClient
 Procedure GotoAssigningPageFromList(Command)
 	CurrentBankAccount = Items.BankAccounts.CurrentRow;
+	PerformAssignAccount = True;
 	GotoAssigningPage(Command);
+	PerformAssignAccount = False;
 EndProcedure
 
 &AtClient
@@ -581,8 +668,34 @@ Procedure AssigningAccountTypeOnActivateRow(Item)
 	FillAvailableAccounts();
 EndProcedure
 
+#ENDREGION
+
+#REGION OTHER_FUNCTIONS
 ////////////////////////////////////////////////////////////////////////////////
 // OTHER FUNCTIONS
+
+&AtClient
+Function CheckDataFill()
+	Result = True;
+	i = 0;
+	While i < AssigningAccountType.Count() Do
+		CurAccount = AssigningAccountType[i];
+		If Not CurAccount.Connect Then
+			i = i + 1;
+			Continue;
+		EndIf;
+		If Not ValueIsFilled(CurAccount.AccountType) Then
+			Result = False;
+			MessOnError = New UserMessage();
+			//MessOnError.SetData(Object);
+			MessOnError.Field = "AssigningAccountType[" + String(i) + "]." + "AccountType";
+			MessOnError.Text  = "Field """ + "G/L account" + """ in row №" + String(i+1) + " is not filled";
+			MessOnError.Message();
+		EndIf;
+		i = i + 1;
+	EndDo;
+	Return Result;
+EndFunction
 
 &AtClient
 Procedure GetMFAFields(ProgrammaticElems, Params) Export
@@ -646,6 +759,7 @@ Procedure DispatchAddAccount() Export
 		EndIf;	
 	ElsIf Progress.Step = 3 Then
 		CurrentBankAccount = GetBankAccountByItemID(Params.NewItemID);
+		AccountForDeletionIfCancelled = CurrentBankAccount;
 		RefreshBankAccount(Params.NewItemID);
 		Items.ProgressGroup.Visible = False;
 	EndIf;
@@ -855,7 +969,7 @@ EndProcedure
 
 &AtClient
 Procedure DispatchRefreshAccount() Export
-		
+	
 	//Get current status from temp storage
 	Progress = GetFromTempStorage(TempStorageAddress);
 	If TypeOf(Progress) <> Type("Structure") Then
@@ -870,7 +984,6 @@ Procedure DispatchRefreshAccount() Export
 	EndIf;
 	
 	Params = Progress.Params;
-	
 	
 	If Not Params.ReturnValue Then //An error occured during the refresh
 		HideProgress(false);
@@ -963,9 +1076,14 @@ Procedure DispatchRefreshAccount() Export
 					HideProgress(False);
 				EndIf;
 				HideMessageToTheUser("success");
+				CurrentBankAccount = PredefinedValue("Catalog.BankAccounts.EmptyRef");
 			EndIf;
 		Else
 			HideProgress(true);
+			If Not CalledForSingleOperation Then //Called from inside of this data processor
+				PerformRefreshingAccount = False;
+				PerformEditAccount = False;
+			EndIf;
 		EndIf;
 		NotifyChanged(Type("CatalogRef.BankAccounts"));
 	EndIf;
@@ -974,16 +1092,11 @@ Procedure DispatchRefreshAccount() Export
 	If FinishedRefresh Then
 		
 		//If refreshing from Downloaded Transactions - need to refresh transactions
-		//If PerformRefreshingAccount Then
-			ShowProgress();
-			YodleeStorage = ?(Progress.Property("YodleeStorage"), Progress.YodleeStorage, Undefined);
-			PutToTempStorage(New Structure("Params, CurrentStatus, Step", Undefined, "Started selecting transactions...", 6), TempStorageAddress);
-			RefreshTransactionsAtServer(CurrentBankAccount, TempStorageAddress, UploadTransactionsFrom, UploadTransactionsTo, YodleeStorage);
-			AttachIdleHandler("DispatchRefreshAccount", 0.1, True);
-		//Else
-		//	UpdateBankAccounts(True, TempStorageAddress);//Delete uninitialized accounts
-		//	AttachIdleHandler("DispatchRefreshAccount", 0.1, True);
-		//EndIf;
+		ShowProgress();
+		YodleeStorage = ?(Progress.Property("YodleeStorage"), Progress.YodleeStorage, Undefined);
+		PutToTempStorage(New Structure("Params, CurrentStatus, Step", Undefined, "Started selecting transactions...", 6), TempStorageAddress);
+		RefreshTransactionsAtServer(CurrentBankAccount, TempStorageAddress, UploadTransactionsFrom, UploadTransactionsTo, YodleeStorage);
+		AttachIdleHandler("DispatchRefreshAccount", 0.1, True);
 	EndIf;
 	
 EndProcedure
@@ -991,8 +1104,8 @@ EndProcedure
 &AtClient
 Procedure UpdateBankAccounts(DeleteUninitializedAccounts = False, TempStorageAddress = Undefined)
 	UpdateBankAccountsAtServer(DeleteUninitializedAccounts, CurrentBankAccount, TempStorageAddress);
-	AttachIdleHandler("RefreshAccountsList", 0.2, True);
-	AttachIdleHandler("RefreshAccountsList", 3, True);
+	//AttachIdleHandler("RefreshAccountsList", 0.2, True);
+	//AttachIdleHandler("RefreshAccountsList", 3, True);
 EndProcedure
 
 &AtClient
@@ -1051,6 +1164,10 @@ Procedure FillAssigningTable()
 	AvailableList = GetAccountsForAssigning(CurrentBankAccount);
 	AssigningAccountType.Clear();
 	For Each AL IN AvailableList Do
+		//After connecting bank accounts, show only undeleted items
+		If (PerformAssignAccount = True) And (Not AL.Connect) Then
+			Continue;
+		EndIf;
 		NewRow = AssigningAccountType.Add();
 		FillPropertyValues(NewRow, AL);
 	EndDo;
@@ -1086,13 +1203,4 @@ Procedure FillAvailableAccounts()
 	EndDo;
 EndProcedure
 
-&AtClient
-Procedure OnlineAccountOnChange(Item)
-	If OnlineAccount = "Online" Then
-		Items.AccountDescription.Visible = False;
-		Items.AccountType.Visible = False;
-	ElsIf OnlineAccount = "Offline" Then
-		Items.AccountDescription.Visible = True;
-		Items.AccountType.Visible = True;
-	EndIf;
-EndProcedure
+#ENDREGION

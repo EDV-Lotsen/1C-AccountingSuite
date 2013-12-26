@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<Title>
+		<v8:item>
+			<v8:lang>en</v8:lang>
+			<v8:content>Choose upload period</v8:content>
+		</v8:item>
+	</Title>
+	<WindowOpeningMode>LockOwnerWindow</WindowOpeningMode>
+	<AutoTitle>false</AutoTitle>
+	<AutoCommandBar name="FormCommandBar" id="-1">
+		<Autofill>false</Autofill>
+	</AutoCommandBar>
+	<Events>
+		<Event name="BeforeClose">BeforeClose</Event>
+		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+	</Events>
+	<ChildItems>
+		<InputField name="ProcessingPeriod" id="1">
+			<DataPath>ProcessingPeriod</DataPath>
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Upload period</v8:content>
+				</v8:item>
+			</Title>
+			<Width>20</Width>
+			<ChoiceButton>true</ChoiceButton>
+			<DropListWidth>20</DropListWidth>
+			<TextColor>style:FieldSelectionBackColor</TextColor>
+			<Font ref="style:NormalTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
+			<ContextMenu name="ProcessingPeriodContextMenu" id="2"/>
+			<ExtendedTooltip name="ProcessingPeriodExtendedTooltip" id="3"/>
+			<Events>
+				<Event name="OnChange">ProcessingPeriodOnChange</Event>
+			</Events>
+		</InputField>
+		<UsualGroup name="Group1" id="6">
+			<Group>Horizontal</Group>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="Group1ExtendedTooltip" id="7"/>
+			<ChildItems>
+				<LabelDecoration name="Decoration1" id="8">
+					<HorizontalStretch>true</HorizontalStretch>
+					<ContextMenu name="Decoration1ContextMenu" id="9"/>
+					<ExtendedTooltip name="Decoration1ExtendedTooltip" id="10"/>
+				</LabelDecoration>
+				<Button name="OK" id="4">
+					<Type>UsualButton</Type>
+					<CommandName>Form.Command.OK</CommandName>
+					<ExtendedTooltip name="OKExtendedTooltip" id="5"/>
+				</Button>
+				<Button name="Cancel" id="11">
+					<Type>UsualButton</Type>
+					<CommandName>Form.StandardCommand.Cancel</CommandName>
+					<ExtendedTooltip name="CancelExtendedTooltip" id="12"/>
+				</Button>
+			</ChildItems>
+		</UsualGroup>
+	</ChildItems>
+	<Attributes>
+		<Attribute name="ProcessingPeriod" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Processing period</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>v8:StandardPeriod</v8:Type>
+			</Type>
+		</Attribute>
+	</Attributes>
+	<Commands>
+		<Command name="OK" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>OK</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>OK</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>OK</Action>
+		</Command>
+	</Commands>
+	<Parameters>
+		<Parameter name="ProcessingPeriod">
+			<Type>
+				<v8:Type>v8:StandardPeriod</v8:Type>
+			</Type>
+		</Parameter>
+	</Parameters>
+</Form>

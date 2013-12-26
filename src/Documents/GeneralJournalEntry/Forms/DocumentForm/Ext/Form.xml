@@ -4,9 +4,24 @@
 	<AutoTime>CurrentOrLast</AutoTime>
 	<UsePostingMode>Auto</UsePostingMode>
 	<RepostOnWrite>true</RepostOnWrite>
-	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<AutoCommandBar name="FormCommandBar" id="-1">
+		<ChildItems>
+			<Button name="ReverseButton" id="73">
+				<Type>CommandBarButton</Type>
+				<CommandName>Form.Command.ReverseCommand</CommandName>
+				<Title>
+					<v8:item>
+						<v8:lang>en</v8:lang>
+						<v8:content>Reverse</v8:content>
+					</v8:item>
+				</Title>
+				<ExtendedTooltip name="ReverseButtonExtendedTooltip" id="74"/>
+			</Button>
+		</ChildItems>
+	</AutoCommandBar>
 	<Events>
 		<Event name="BeforeWrite">BeforeWrite</Event>
+		<Event name="BeforeWriteAtServer">BeforeWriteAtServer</Event>
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
 	</Events>
 	<ChildItems>
@@ -218,29 +233,29 @@
 					<ContextMenu name="LineItemsContextMenu" id="10"/>
 					<AutoCommandBar name="LineItemsCommandBar" id="11"/>
 					<ExtendedTooltip name="LineItemsExtendedTooltip" id="62"/>
-					<SearchStringAddition name="LineItemsSearchString" id="73">
+					<SearchStringAddition name="LineItemsSearchString" id="75">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>SearchStringRepresentation</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsSearchStringContextMenu" id="74"/>
-						<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="75"/>
+						<ContextMenu name="LineItemsSearchStringContextMenu" id="76"/>
+						<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="77"/>
 					</SearchStringAddition>
-					<ViewStatusAddition name="LineItemsViewStatus" id="76">
+					<ViewStatusAddition name="LineItemsViewStatus" id="78">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>ViewStatusRepresentation</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsViewStatusContextMenu" id="77"/>
-						<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="78"/>
+						<ContextMenu name="LineItemsViewStatusContextMenu" id="79"/>
+						<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="80"/>
 					</ViewStatusAddition>
-					<SearchControlAddition name="LineItemsSearchControl" id="79">
+					<SearchControlAddition name="LineItemsSearchControl" id="81">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>SearchControl</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsSearchControlContextMenu" id="80"/>
-						<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="81"/>
+						<ContextMenu name="LineItemsSearchControlContextMenu" id="82"/>
+						<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="83"/>
 					</SearchControlAddition>
 					<ChildItems>
 						<LabelField name="LineItemsLineNumber" id="12">
@@ -254,16 +269,6 @@
 							<EditMode>EnterOnInput</EditMode>
 							<ContextMenu name="LineItemsAccountContextMenu" id="15"/>
 							<ExtendedTooltip name="LineItemsAccountExtendedTooltip" id="64"/>
-							<Events>
-								<Event name="OnChange">LineItemsAccountOnChange</Event>
-							</Events>
-						</InputField>
-						<InputField name="LineItemsAccountDescription" id="36">
-							<DataPath>Object.LineItems.AccountDescription</DataPath>
-							<ReadOnly>true</ReadOnly>
-							<EditMode>EnterOnInput</EditMode>
-							<ContextMenu name="LineItemsAccountDescriptionContextMenu" id="37"/>
-							<ExtendedTooltip name="LineItemsAccountDescriptionExtendedTooltip" id="65"/>
 						</InputField>
 						<InputField name="LineItemsAmountDr" id="16">
 							<DataPath>Object.LineItems.AmountDr</DataPath>
@@ -317,6 +322,23 @@
 			</Columns>
 		</Attribute>
 	</Attributes>
+	<Commands>
+		<Command name="ReverseCommand" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Reverse command</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Reverse command</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>ReverseCommand</Action>
+		</Command>
+	</Commands>
 	<CommandInterface>
 		<NavigationPanel>
 			<Item>

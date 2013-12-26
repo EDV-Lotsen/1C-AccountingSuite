@@ -68,10 +68,16 @@
 					<ContextMenu name="DateContextMenu" id="5"/>
 					<ExtendedTooltip name="DateExtendedTooltip" id="21"/>
 				</LabelField>
-				<LabelField name="PromisedDate" id="16">
-					<DataPath>List.PromisedDate</DataPath>
-					<ContextMenu name="PromisedDateContextMenu" id="17"/>
-					<ExtendedTooltip name="PromisedDateExtendedTooltip" id="22"/>
+				<LabelField name="DeliveryDate" id="16">
+					<DataPath>List.DeliveryDate</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Exp. deliv.</v8:content>
+						</v8:item>
+					</Title>
+					<ContextMenu name="DeliveryDateContextMenu" id="17"/>
+					<ExtendedTooltip name="DeliveryDateExtendedTooltip" id="22"/>
 				</LabelField>
 				<LabelField name="OrderStatus" id="18">
 					<DataPath>List.OrderStatus</DataPath>
@@ -141,7 +147,7 @@
 	DocumentSalesOrder.VATTotal,
 	DocumentSalesOrder.PriceIncludesVAT,
 	DocumentSalesOrder.ShipTo,
-	DocumentSalesOrder.PromisedDate,
+	DocumentSalesOrder.DeliveryDate,
 	DocumentSalesOrder.ConfirmTo,
 	DocumentSalesOrder.ManualAdjustment,
 	DocumentSalesOrder.PointInTime,

@@ -201,8 +201,3 @@ Procedure UndoPosting(Cancel)
 	EndDo;
 
 EndProcedure
-
-
-
-
-

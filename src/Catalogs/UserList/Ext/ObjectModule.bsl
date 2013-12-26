@@ -1,19 +1,30 @@
 ﻿
 Procedure BeforeDelete(Cancel)
-	// Insert handler code.
-			 
-	userstring = ThisObject.Description;
-	userstrvalue = userstring;
-
 	
-	If ReturnCurrentUser() <> userstrvalue Then
+	If Constants.ServiceDB.Get() = True Then
+	
+		// Insert handler code.
+				 
+		userstring = ThisObject.Description;
+		userstrvalue = userstring;
 
-		//DeleteObj(userobj);	
-		//DeleteUser(userstrvalue);
-	Else
-		Message("Cannot delete oneself");
-		Cancel = True;
-	Endif;
+		
+		If ReturnCurrentUser() <> userstrvalue Then
+
+			//DeleteObj(userobj);	
+			DeleteUser(userstrvalue);
+		Else
+			Message("Cannot delete oneself");
+			Cancel = True;
+		Endif;
+		
+	EndIf;
+	
+EndProcedure
+
+&AtServer
+Procedure DeleteUser(userstring)	
+
 	
 EndProcedure
 

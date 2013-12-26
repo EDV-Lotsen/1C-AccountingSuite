@@ -1,6 +1,278 @@
 ﻿//////////////////////////////////////////////////////////////////////////////// 
 // THIS MODULE CONTAINS GENERAL PURPOSE FUNCTIONS AND PROCEDURES
-// 
+//
+
+
+Function ReturnCompanyMap(NewCompany) Export
+	
+	CompanyData = New Map();
+	CompanyData.Insert("api_code", String(NewCompany.Ref.UUID()));
+	CompanyData.Insert("company_name", String(NewCompany.Description));
+	CompanyData.Insert("company_code", String(NewCompany.Code));
+	
+	If NewCompany.Customer = True And NewCompany.Vendor = True Then
+		
+		CompanyData.Insert("company_type", "customer+vendor");
+	ElsIf NewCompany.Customer = True Then
+		CompanyData.Insert("company_type", "customer");
+	ElsIf NewCompany.Vendor = True Then
+		CompanyData.Insert("company_type", "vendor");
+	Else
+		CompanyData.Insert("company_type", "");
+	EndIF;
+	
+	CompanyData.Insert("website", NewCompany.Website);
+	CompanyData.Insert("price_level", string(NewCompany.PriceLevel));
+	CompanyData.Insert("notes", NewCompany.Notes);
+	CompanyData.Insert("cf1_string", NewCompany.CF1String);
+	CompanyData.Insert("cf1_num", NewCompany.CF1Num);
+	CompanyData.Insert("cf2_string", NewCompany.CF2String);
+	CompanyData.Insert("cf2_num", NewCompany.CF3Num);
+	CompanyData.Insert("cf3_string", NewCompany.CF1String);
+	CompanyData.Insert("cf3_num", NewCompany.CF3Num);
+	CompanyData.Insert("cf4_string", NewCompany.CF4String);
+	CompanyData.Insert("cf4_num", NewCompany.CF4Num);
+	CompanyData.Insert("cf5_string", NewCompany.CF5String);
+	CompanyData.Insert("cf5_num", NewCompany.CF5Num);
+	
+	QueryText = "SELECT
+	            |	Addresses.Ref
+	            |FROM
+	            |	Catalog.Addresses AS Addresses
+	            |WHERE
+	            |	Addresses.Owner.Ref = &Ref";
+	Query = New Query(QueryText);
+	Query.SetParameter("Ref", NewCompany.Ref); 
+	Result = Query.Execute().Unload();
+	
+	CompanyData2 = New Array();
+	
+	Count = 0;
+	If Result.Count() > 0 Then
+		For Each AddressItem in Result Do
+			
+			CompanyData3 = New Map();
+			CompanyData3.Insert("api_code",string(AddressItem.Ref.UUID()));
+			CompanyData3.Insert("address_id",AddressItem.Ref.Description);	
+			CompanyData3.Insert("first_name",AddressItem.Ref.FirstName);
+			CompanyData3.Insert("middle_name",AddressItem.Ref.MiddleName);
+			CompanyData3.Insert("last_name",AddressItem.Ref.LastName);
+			CompanyData3.Insert("address_line1",AddressItem.Ref.AddressLine1);
+			CompanyData3.Insert("address_line2",AddressItem.Ref.AddressLine2);
+			CompanyData3.Insert("city",AddressItem.Ref.City);
+			CompanyData3.Insert("state",string(AddressItem.Ref.state));
+			CompanyData3.Insert("zip",AddressItem.Ref.ZIP);
+			CompanyData3.Insert("country",string(AddressItem.Ref.Country));
+			CompanyData3.Insert("phone",AddressItem.Ref.Phone);
+			CompanyData3.Insert("cell",AddressItem.Ref.Cell);
+			CompanyData3.Insert("email",AddressItem.Ref.Email);
+			CompanyData3.Insert("sales_tax_code",AddressItem.Ref.SalesTaxCode);
+			CompanyData3.Insert("notes",AddressItem.Ref.Notes);
+			If AddressItem.Ref.DefaultShipping = True Then
+				CompanyData3.Insert("default_shipping","true");
+			Else
+				CompanyData3.Insert("default_shipping","false");
+			EndIf;
+			If AddressItem.Ref.DefaultBilling = True Then
+				CompanyData3.Insert("default_shipping","true");
+			Else
+				CompanyData3.Insert("default_shipping","false");
+			EndIf;
+			
+			
+			CompanyData2.Add(CompanyData3);
+			Count = Count + 1;
+		EndDo;
+	EndIf;
+	
+	CompanyData.Insert("addresses",CompanyData2);
+	
+	Return CompanyData;
+
+EndFunction
+
+Function ReturnSaleOrderMap(NewOrder) Export
+	
+	OrderData = New Map();
+	//OrderData.Insert("sales_order_code", NewOrder.Code);
+	OrderData.Insert("api_code", String(NewOrder.Ref.UUID()));
+	OrderData.Insert("customer_api_code", String(NewOrder.Company.Ref.UUID()));
+	//OrderData.Insert("description", NewOrder.Ref.Description);
+	OrderData.Insert("ship_to_api_code",String(NewOrder.ShipTo.Ref.UUID()));
+	OrderData.Insert("bill_to_api_code",String(NewOrder.BillTo.Ref.UUID()));
+	OrderData.Insert("ship_to_address_id",String(NewOrder.ShipTo.Description));
+	OrderData.Insert("ship_to_first_name",String(NewOrder.ShipTo.FirstName));
+	OrderData.Insert("ship_to_middle_name",String(NewOrder.ShipTo.MiddleName));
+	OrderData.Insert("ship_to_address_line1",String(NewOrder.ShipTo.AddressLine1));
+	OrderData.Insert("ship_to_address_line2",String(NewOrder.ShipTo.AddressLine2));
+	OrderData.Insert("ship_to_city",String(NewOrder.ShipTo.City));
+	OrderData.Insert("ship_to_state",String(NewOrder.ShipTo.State));
+	OrderData.Insert("ship_to_zip",String(NewOrder.ShipTo.ZIP));
+	OrderData.Insert("ship_to_country",String(NewOrder.ShipTo.Country));
+	OrderData.Insert("ship_to_phone",String(NewOrder.ShipTo.Phone));
+	OrderData.Insert("ship_to_cell",String(NewOrder.ShipTo.Cell));
+	OrderData.Insert("ship_to_email",String(NewOrder.ShipTo.Email));
+	OrderData.Insert("ship_to_sales_tax_code",String(NewOrder.ShipTo.SalesTaxCode));
+	OrderData.Insert("ship_to_notes",String(NewOrder.ShipTo.Notes));
+	
+	OrderData.Insert("bill_to_address_id",String(NewOrder.BillTo.Description));
+	OrderData.Insert("bill_to_first_name",String(NewOrder.BillTo.FirstName));
+	OrderData.Insert("bill_to_middle_name",String(NewOrder.BillTo.MiddleName));
+	OrderData.Insert("bill_to_address_line1",String(NewOrder.BillTo.AddressLine1));
+	OrderData.Insert("bill_to_address_line2",String(NewOrder.BillTo.AddressLine2));
+	OrderData.Insert("bill_to_city",String(NewOrder.BillTo.City));
+	OrderData.Insert("bill_to_state",String(NewOrder.BillTo.State));
+	OrderData.Insert("bill_to_zip",String(NewOrder.BillTo.ZIP));
+	OrderData.Insert("bill_to_country",String(NewOrder.BillTo.Country));
+	OrderData.Insert("bill_to_phone",String(NewOrder.BillTo.Phone));
+	OrderData.Insert("bill_to_cell",String(NewOrder.BillTo.Cell));
+	OrderData.Insert("bill_to_email",String(NewOrder.BillTo.Email));
+	OrderData.Insert("bill_to_sales_tax_code",String(NewOrder.BillTo.SalesTaxCode));
+	OrderData.Insert("bill_to_notes",String(NewOrder.BillTo.Notes));
+
+
+
+	
+	OrderData.Insert("company", string(NewOrder.Company));
+	OrderData.Insert("company_code", NewOrder.CompanyCode);
+	//OrderData.Insert("billTo", NewOrder.BillTo);
+	//OrderData.Insert("confirmTo", NewOrder.ConfirmTo);
+	OrderData.Insert("so_number",NewOrder.Number);
+	OrderData.Insert("date",NewOrder.Date);
+	OrderData.Insert("ref_num", NewOrder.RefNum);
+	//OrderData.Insert("currency", string(NewOrder.Currency));
+	//OrderData.Insert("exchangeRate", NewOrder.ExchangeRate);
+	//OrderData.Insert("priceIncludesVAT", NewOrder.PriceIncludesVAT);
+	//OrderData.Insert("location", string(NewOrder.Location));
+	//OrderData.Insert("deliveryDate", NewOrder.deliverydate);
+	//OrderData.Insert("project", string(NewOrder.project));
+	//OrderData.Insert("class", string(NewOrder.Class));
+	OrderData.Insert("memo", NewOrder.Memo);
+	OrderData.Insert("sales_tax_total", NewOrder.SalesTax);
+	//OrderData.Insert("DocumentTotal", NewOrder.DocumentTotal);
+	OrderData.Insert("doc_total", NewOrder.DocumentTotalRC);
+	OrderData.Insert("cf1_string", NewOrder.CF1String);
+	//OrderData.Insert("VATTotal", NewOrder.VATTotal);
+	//OrderData.Insert("VATTotalRC", NewOrder.VATTotalRC);
+	//OrderData.Insert("SalesPerson", string(NewOrder.SalesPerson));
+	
+	//include custom field
+	
+	OrderData2 = New Array();
+	
+	For Each LineItem in NewOrder.LineItems Do
+			
+			OrderData3 = New Map();
+			OrderData3.Insert("api_code",String(LineItem.Product.Ref.UUID()));
+			OrderData3.Insert("Product",LineItem.Product.Code);
+			//OrderData3.Insert("ProductDescription",LineItem.ProductDescription);
+			OrderData3.Insert("quantity",LineItem.Quantity);
+			//OrderData3.Insert("UM",LineItem.UM);
+			OrderData3.Insert("price",LineItem.Price);
+			OrderData3.Insert("taxable_type",string(LineItem.SalesTaxType));
+			OrderData3.Insert("taxable_amount",LineItem.TaxableAmount);
+			OrderData3.Insert("line_total",LineItem.LineTotal);
+			//OrderData3.Insert("VATCode",LineItem.VATCode);
+			//OrderData3.Insert("VAT",LineItem.VAT);
+			//OrderData3.Insert("Location",string(LineItem.Location));
+			//OrderData3.Insert("DeliveryDate",LineItem.DeliveryDate);
+			//OrderData3.Insert("Project",string(LineItem.Project));
+			//OrderData3.Insert("Class",string(LineItem.Class));
+			OrderData2.Add(OrderData3);
+
+		
+	EndDo;
+		
+	OrderData.Insert("line_items",OrderData2);	
+
+
+	
+	Return OrderData;
+
+EndFunction
+
+Function ReturnProductObjectMap(NewProduct) Export
+	
+	ProductData = New Map();
+	//ProductData.Insert("item_code", NewProduct.Code);
+	ProductData.Insert("api_code", String(NewProduct.Ref.UUID()));
+	ProductData.Insert("item_description", NewProduct.Description);
+	If NewProduct.Type = Enums.InventoryTypes.Inventory Then
+		ProductData.Insert("item_type", "product");
+	ElsIf NewProduct.Type = Enums.InventoryTypes.NonInventory Then
+		ProductData.Insert("item_type", "service");	
+	EndIf;
+	If NewProduct.CostingMethod = Enums.InventoryCosting.FIFO Then
+		ProductData.Insert("costing_method", "fifo");
+	ElsIf NewProduct.CostingMethod = Enums.InventoryCosting.WeightedAverage Then
+		ProductData.Insert("costing_method", "weighted_average");	
+	EndIf;
+	ProductData.Insert("inventory_or_expense_account", NewProduct.InventoryOrExpenseAccount.Code);
+	ProductData.Insert("income_account", NewProduct.IncomeAccount.Code);
+	ProductData.Insert("cogs_account", NewProduct.COGSAccount.Code);
+	ProductData.Insert("unit_of_measure", NewProduct.UM.Description);
+	ProductData.Insert("category", NewProduct.Category.Description);
+	Try
+		ProductData.Insert("item_price", GeneralFunctions.RetailPrice(CurrentDate(), NewProduct, Catalogs.Companies.EmptyRef()));
+	Except
+		ProductData.Insert("item_price",0);
+	EndTry;
+	                                            
+	QueryText = "SELECT
+	            |	PriceListSliceLast.Product.Ref,
+	            |	PriceListSliceLast.PriceLevel.Description,
+	            |	PriceListSliceLast.ProductCategory.Description,
+	            |	PriceListSliceLast.Price,
+	            |	PriceListSliceLast.Cost,
+	            |	PriceListSliceLast.PriceType,
+	            |	PriceListSliceLast.Period
+	            |FROM
+	            |	InformationRegister.PriceList.SliceLast AS PriceListSliceLast
+	            |WHERE
+	            |	PriceListSliceLast.Product = &Product
+	            |	AND PriceListSliceLast.PriceLevel <> &PriceLevel";
+	Query = New Query(QueryText);
+	Query.SetParameter("Product", NewProduct.Ref);
+	
+	
+	Query.SetParameter("PriceLevel", Catalogs.PriceLevels.EmptyRef());
+	//Query.SetParameter("ProductCategory", Catalogs.ProductCategories.EmptyRef());
+	QueryResult = Query.Execute().Unload();
+	
+	ProductData2 = New Array();
+	
+	Count = 0;
+	If QueryResult.Count() > 0 Then
+		For Each PriceLevelItem in QueryResult Do
+			
+			ProductData3 = New Map();
+			ProductData3.Insert("description",PriceLevelItem.PriceLevelDescription);
+			ProductData3.Insert("price",PriceLevelItem.Price);	
+			//ProductData3.Insert("period", Format(PriceLevelItem.Period,"DF=dd.MM.yyyy"));
+			//ProductData2.Insert("pricelevel_" + Count,ProductData3);
+			ProductData2.Add(ProductData3);
+			Count = Count + 1;
+		EndDo;
+	EndIf;
+	
+	ProductData.Insert("price_levels",ProductData2);
+		
+	ProductData.Insert("cf1_string", NewProduct.CF1String);
+	ProductData.Insert("cf1_num", NewProduct.CF1Num);	
+	ProductData.Insert("cf2_string", NewProduct.CF2String);
+	ProductData.Insert("cf2_num", NewProduct.CF2Num);
+	ProductData.Insert("cf3_string", NewProduct.CF3String);
+	ProductData.Insert("cf3_num", NewProduct.CF3Num);
+	ProductData.Insert("cf4_string", NewProduct.CF4String);
+	ProductData.Insert("cf4_num", NewProduct.CF4Num);
+	ProductData.Insert("cf5_string", NewProduct.CF5String);
+	ProductData.Insert("cf5_num", NewProduct.CF5Num);
+			
+	Return ProductData;	
+
+	
+EndFunction
+
 
 Function EncodeToPercentStr(Str, AdditionalCharacters = "", ExcludeCharacters = "") Export
 	
@@ -215,6 +487,418 @@ Function GetUserName() Export
 	
 EndFunction
 
+&НаСервере
+Функция НайтиНомерКолонкиРеквизита(ИмяРеквизита, ColumnMapping)
+	
+	Реквизиты = ColumnMapping;
+	
+	НайденныйРеквизит = Неопределено;
+	НайденныеСтроки = Реквизиты.НайтиСтроки(Новый Структура("ИмяРеквизита", ИмяРеквизита));
+	Если НайденныеСтроки.Количество() > 0 Тогда
+		НайденныйРеквизит = НайденныеСтроки[0].НомерКолонки;
+	КонецЕсли;
+	
+	Возврат ?(НайденныйРеквизит = 0, Неопределено, НайденныйРеквизит);
+	
+КонецФункции
+
+
+Procedure CreateItemCSV(Date, Date2, ColumnMapping, SourceAddress) Export
+		
+	Источник = ПолучитьИзВременногоХранилища(SourceAddress);
+	
+	For СчетчикСтрок = 0 To Источник.Количество() - 1 Do
+	
+		//НоваяСтрока = ТаблицаЗагрузки.Добавить();
+		//НоваяСтрока.ФлагЗагрузки = Истина;
+		
+		НомерКолонки = НайтиНомерКолонкиРеквизита("Product OR Service", ColumnMapping);
+		Если НомерКолонки <> Неопределено Тогда
+			TypeString = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
+			If TypeString = "Product" Then
+				ProductType = Enums.InventoryTypes.Inventory;  // НоваяСтрока.ProductType
+			ElsIf TypeString = "Service" Then
+				ProductType = Enums.InventoryTypes.NonInventory;  // НоваяСтрока.ProductType
+			EndIf;
+		КонецЕсли;
+		
+		НомерКолонки = НайтиНомерКолонкиРеквизита("Item code [char(50)]", ColumnMapping);
+		Если НомерКолонки <> Неопределено Тогда
+			ProductCode = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]); //НоваяСтрока.ProductCode
+		КонецЕсли;
+
+        НомерКолонки = НайтиНомерКолонкиРеквизита("Item description [char(150)]", ColumnMapping);
+		Если НомерКолонки <> Неопределено Тогда
+			ProductDescription = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]); // НоваяСтрока.ProductDescription
+		КонецЕсли;
+
+		//НомерКолонки = НайтиНомерКолонкиРеквизита("Income account [ref]");
+		//Если НомерКолонки <> Неопределено Тогда
+		//	IncomeAcctString = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
+		//	If IncomeAcctString <> "" Then
+		//		НоваяСтрока.ProductIncomeAcct = ChartsOfAccounts.ChartOfAccounts.FindByCode(IncomeAcctString);
+		//	Else
+		//		НоваяСтрока.ProductIncomeAcct = Constants.IncomeAccount.Get();
+		//	EndIf;
+		//Иначе
+		//	НоваяСтрока.ProductIncomeAcct = Constants.IncomeAccount.Get();
+		//КонецЕсли;	
+		//
+		//НомерКолонки = НайтиНомерКолонкиРеквизита("Inventory or expense account [ref]");
+		//Если НомерКолонки <> Неопределено Тогда
+		//	InvAcctString = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
+		//	If InvAcctString <> "" Then
+		//		НоваяСтрока.ProductInvOrExpenseAcct = ChartsOfAccounts.ChartOfAccounts.FindByCode(InvAcctString);
+		//	ElsIf TypeString = "Product" Then
+		//		НоваяСтрока.ProductInvOrExpenseAcct = GeneralFunctions.InventoryAcct(Enums.InventoryTypes.Inventory);	
+		//	ElsIf TypeString = "Service" Then
+		//		НоваяСтрока.ProductInvOrExpenseAcct = GeneralFunctions.InventoryAcct(Enums.InventoryTypes.NonInventory);
+		//	EndIf;
+		//Иначе
+		//	If TypeString = "Product" Then
+		//		НоваяСтрока.ProductInvOrExpenseAcct = GeneralFunctions.InventoryAcct(Enums.InventoryTypes.Inventory);	
+		//	ElsIf TypeString = "Service" Then
+		//		НоваяСтрока.ProductInvOrExpenseAcct = GeneralFunctions.InventoryAcct(Enums.InventoryTypes.NonInventory);
+		//	EndIf;
+		//КонецЕсли;
+
+		//НомерКолонки = НайтиНомерКолонкиРеквизита("COGS account [ref]");
+		//Если НомерКолонки <> Неопределено Тогда
+		//	COGSAcctString = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
+		//	If COGSAcctString <> "" Then
+		//		НоваяСтрока.ProductCOGSAcct = ChartsOfAccounts.ChartOfAccounts.FindByCode(COGSAcctString);
+		//	ElsIf TypeString = "Product" Then
+		//		НоваяСтрока.ProductCOGSAcct = GeneralFunctions.GetDefaultCOGSAcct();
+		//	ElsIf TypeString = "Service" Then
+		//		НоваяСтрока.ProductCOGSAcct = GeneralFunctions.GetEmptyAcct();	
+		//	EndIf;
+		//Иначе
+		//	If TypeString = "Product" Then
+		//		НоваяСтрока.ProductCOGSAcct = GeneralFunctions.GetDefaultCOGSAcct();
+		//	ElsIf TypeString = "Service" Then
+		//		НоваяСтрока.ProductCOGSAcct = GeneralFunctions.GetEmptyAcct();	
+		//	EndIf;
+
+		//КонецЕсли;
+
+		//НомерКолонки = НайтиНомерКолонкиРеквизита("Price [num]");
+		//Если НомерКолонки <> Неопределено Тогда
+		//	PriceString = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
+		//	If PriceString <> "" Then
+		//		НоваяСтрока.ProductPrice = PriceString;
+		//	EndIf;
+		//КонецЕсли;
+		//
+		//НомерКолонки = НайтиНомерКолонкиРеквизита("Qty [num]");
+		//Если НомерКолонки <> Неопределено Тогда
+		//	НоваяСтрока.ProductQty = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
+		//КонецЕсли;
+		//
+		//НомерКолонки = НайтиНомерКолонкиРеквизита("Value [num]");
+		//Если НомерКолонки <> Неопределено Тогда
+		//	НоваяСтрока.ProductValue = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
+		//КонецЕсли;
+
+		//НомерКолонки = НайтиНомерКолонкиРеквизита("Preferred vendor [ref]");
+		//Если НомерКолонки <> Неопределено Тогда
+		//	VendorString = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
+		//	If VendorString <> "" Then
+		//		НоваяСтрока.ProductPreferredVendor = Catalogs.Companies.FindByDescription(VendorString);
+		//	EndIf;
+		//КонецЕсли;
+
+		//НомерКолонки = НайтиНомерКолонкиРеквизита("Category [ref]");
+		//Если НомерКолонки <> Неопределено Тогда
+		//	ProductCat = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
+		//	If ProductCat <> "" Then
+		//		НоваяСтрока.ProductCategory = Catalogs.ProductCategories.FindByDescription(ProductCat);
+		//	EndIf;
+		//КонецЕсли;
+
+		//НомерКолонки = НайтиНомерКолонкиРеквизита("UoM [ref]");
+		//Если НомерКолонки <> Неопределено Тогда
+		//	ProductUM = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
+		//	If ProductUM <> "" Then
+		//		НоваяСтрока.ProductUoM = Catalogs.UM.FindByDescription(ProductUM);
+		//	EndIf;
+		//КонецЕсли;
+
+		//НомерКолонки = НайтиНомерКолонкиРеквизита("CF1String [char(100)]");
+		//Если НомерКолонки <> Неопределено Тогда
+		//	НоваяСтрока.ProductCF1String = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
+		//КонецЕсли;
+		//
+		//НомерКолонки = НайтиНомерКолонкиРеквизита("CF1Num [num]");
+		//Если НомерКолонки <> Неопределено Тогда
+		//	НоваяСтрока.ProductCF1Num = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
+		//КонецЕсли;
+
+		//НомерКолонки = НайтиНомерКолонкиРеквизита("CF2String [char(100)]");
+		//Если НомерКолонки <> Неопределено Тогда
+		//	НоваяСтрока.ProductCF2String = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
+		//КонецЕсли;
+		//
+		//НомерКолонки = НайтиНомерКолонкиРеквизита("CF2Num [num]");
+		//Если НомерКолонки <> Неопределено Тогда
+		//	НоваяСтрока.ProductCF2Num = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
+		//КонецЕсли;
+
+		//НомерКолонки = НайтиНомерКолонкиРеквизита("CF3String [char(100)]");
+		//Если НомерКолонки <> Неопределено Тогда
+		//	НоваяСтрока.ProductCF3String = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
+		//КонецЕсли;
+		//
+		//НомерКолонки = НайтиНомерКолонкиРеквизита("CF3Num [num]");
+		//Если НомерКолонки <> Неопределено Тогда
+		//	НоваяСтрока.ProductCF3Num = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
+		//КонецЕсли;
+		//
+		//НомерКолонки = НайтиНомерКолонкиРеквизита("CF4String [char(100)]");
+		//Если НомерКолонки <> Неопределено Тогда
+		//	НоваяСтрока.ProductCF4String = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
+		//КонецЕсли;
+		//
+		//НомерКолонки = НайтиНомерКолонкиРеквизита("CF4Num [num]");
+		//Если НомерКолонки <> Неопределено Тогда
+		//	НоваяСтрока.ProductCF4Num = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
+		//КонецЕсли;
+		//
+		//НомерКолонки = НайтиНомерКолонкиРеквизита("CF5String [char(100)]");
+		//Если НомерКолонки <> Неопределено Тогда
+		//	НоваяСтрока.ProductCF5String = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
+		//КонецЕсли;
+		//
+		//НомерКолонки = НайтиНомерКолонкиРеквизита("CF5Num [num]");
+		//Если НомерКолонки <> Неопределено Тогда
+		//	НоваяСтрока.ProductCF5Num = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
+		//КонецЕсли;
+			
+	EndDo;
+
+	
+	// add transactions 1-500
+	
+	//For Each DataLine In ItemDataSet Do
+	//			
+	//		NewProduct = Catalogs.Products.CreateItem();
+	//		NewProduct.Type = DataLine.ProductType;
+	//		NewProduct.Code = DataLine.ProductCode;
+	//		NewProduct.Description = DataLine.ProductDescription;
+	//		NewProduct.IncomeAccount = DataLine.ProductIncomeAcct;
+	//		NewProduct.InventoryOrExpenseAccount = DataLine.ProductInvOrExpenseAcct;
+	//		NewProduct.COGSAccount = DataLine.ProductCOGSAcct;
+	//		NewProduct.PurchaseVATCode = Constants.DefaultPurchaseVAT.Get();
+	//		NewProduct.SalesVATCode = Constants.DefaultSalesVAT.Get();
+	//		//NewProduct.api_code = GeneralFunctions.NextProductNumber();
+	//		NewProduct.Category = DataLine.ProductCategory;
+	//		NewProduct.UM = DataLine.ProductUoM;
+	//		If DataLine.ProductPreferredVendor <> Catalogs.Companies.EmptyRef() Then
+	//			NewProduct.PreferredVendor = DataLine.ProductPreferredVendor;
+	//		EndIf;
+	//		
+	//		If DataLine.ProductCF1String <> "" Then 
+	//			NewProduct.CF1String = DataLine.ProductCF1String;
+	//		EndIf;
+	//		NewProduct.CF1Num = DataLine.ProductCF1Num;
+	//		
+	//		If DataLine.ProductCF2String <> "" Then 
+	//			NewProduct.CF2String = DataLine.ProductCF2String;
+	//		EndIf;
+	//		NewProduct.CF2Num = DataLine.ProductCF2Num;
+	//		
+	//		If DataLine.ProductCF3String <> "" Then 
+	//			NewProduct.CF3String = DataLine.ProductCF3String;
+	//		EndIf;
+	//		NewProduct.CF3Num = DataLine.ProductCF3Num;
+	//		
+	//		If DataLine.ProductCF4String <> "" Then 
+	//			NewProduct.CF4String = DataLine.ProductCF4String;
+	//		EndIf;
+	//		NewProduct.CF4Num = DataLine.ProductCF4Num;
+	//		
+	//		If DataLine.ProductCF5String <> "" Then 
+	//			NewProduct.CF5String = DataLine.ProductCF5String;
+	//		EndIf;
+	//		NewProduct.CF5Num = DataLine.ProductCF5Num;
+
+	//		If NewProduct.Type = Enums.InventoryTypes.Inventory Then
+	//			NewProduct.CostingMethod = Enums.InventoryCosting.WeightedAverage;
+	//		EndIf;
+	//		NewProduct.Write();
+	//		
+	//		If DataLine.ProductPrice <> 0 Then
+	//			RecordSet = InformationRegisters.PriceList.CreateRecordSet();
+	//			RecordSet.Filter.Product.Set(NewProduct.Ref);
+	//			RecordSet.Filter.Period.Set(Date);
+	//			NewRecord = RecordSet.Add();
+	//			NewRecord.Period = Date;
+	//			NewRecord.Product = NewProduct.Ref;
+	//			NewRecord.Price = DataLine.ProductPrice;
+	//			RecordSet.Write();
+	//		EndIf;
+	//		
+	//		If DataLine.ProductQty <> 0 Then
+	//			IBB = Documents.InventoryBeginningBalances.CreateDocument();
+	//			IBB.Product = NewProduct.Ref;
+	//			IBB.Location = Catalogs.Locations.MainWarehouse;
+	//			IBB.Quantity = DataLine.ProductQty;
+	//			IBB.Value = Dataline.ProductValue;
+	//			IBB.Date = Date2;
+	//			IBB.Write(DocumentWriteMode.Posting);
+	//		EndIf;
+	//		
+	//	EndDo;
+
+EndProcedure
+
+Procedure CreateCustomerVendorCSV(IncomeAccount, ExpenseAccount, ARAccount, APAccount, ItemDataSet) Export
+	
+	// add transactions 1-500
+	
+	For Each DataLine In ItemDataSet Do
+		
+		CreatingNewCompany = False;
+		CompanyFound = Catalogs.Companies.FindByDescription(DataLine.CustomerDescription);
+		If CompanyFound = Catalogs.Companies.EmptyRef() Then
+			CreatingNewCompany = True;
+			
+			NewCompany = Catalogs.Companies.CreateItem();
+			If DataLine.CustomerCode <> "" Then
+				NewCompany.Code = DataLine.CustomerCode;
+			EndIf;
+	
+			NewCompany.Description = DataLine.CustomerDescription;
+			
+			If DataLine.CustomerType = 0 Then
+				NewCompany.Customer = True;
+			ElsIf DataLine.CustomerType = 1 Then
+				NewCompany.Vendor = True;
+			ElsIf DataLine.CustomerType = 2 Then
+				NewCompany.Customer = True;
+				NewCompany.Vendor = True;
+			Else
+				NewCompany.Customer = True;
+			EndIf;
+			
+			NewCompany.DefaultCurrency = Constants.DefaultCurrency.Get();
+			If DataLine.CustomerTerms <> Catalogs.PaymentTerms.EmptyRef() Then
+				NewCompany.Terms = DataLine.CustomerTerms;
+			Else
+				NewCompany.Terms = Catalogs.PaymentTerms.Net30;
+			EndIf;
+			NewCompany.Notes = DataLine.CustomerNotes;
+			NewCompany.USTaxID = DataLine.CustomerVendorTaxID;
+			
+			If DataLine.CustomerCF1String <> "" Then 
+				NewCompany.CF1String = DataLine.CustomerCF1String;
+			EndIf;
+			NewCompany.CF1Num = DataLine.CustomerCF1Num;
+
+			If DataLine.CustomerCF2String <> "" Then 
+				NewCompany.CF2String = DataLine.CustomerCF2String;
+			EndIf;
+			NewCompany.CF2Num = DataLine.CustomerCF2Num;
+
+			If DataLine.CustomerCF3String <> "" Then 
+				NewCompany.CF3String = DataLine.CustomerCF3String;
+			EndIf;
+			NewCompany.CF3Num = DataLine.CustomerCF3Num;
+
+			If DataLine.CustomerCF4String <> "" Then 
+				NewCompany.CF4String = DataLine.CustomerCF4String;
+			EndIf;
+			NewCompany.CF4Num = DataLine.CustomerCF4Num;
+
+			If DataLine.CustomerCF5String <> "" Then 
+				NewCompany.CF5String = DataLine.CustomerCF5String;
+			EndIf;
+			NewCompany.CF5Num = DataLine.CustomerCF5Num;
+
+			If IncomeAccount <> ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
+				NewCompany.IncomeAccount = IncomeAccount;
+			Else
+			EndIf;
+			
+			If ARAccount <> ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
+				NewCompany.ARAccount = ARAccount;
+			Else
+			EndIf;
+			
+			If ExpenseAccount <> ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
+				NewCompany.ExpenseAccount = ExpenseAccount;
+			Else
+			EndIf;
+			
+			If APAccount <> ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
+				NewCompany.APAccount = APAccount;
+			Else
+			EndIf;
+			
+			If DataLine.CustomerSalesPerson <> Catalogs.SalesPeople.EmptyRef() Then
+				NewCompany.SalesPerson = DataLine.CustomerSalesPerson;
+			Else
+			EndIf;
+			
+			If DataLine.CustomerWebsite <> "" Then 
+				NewCompany.Website = DataLine.CustomerWebsite;
+			EndIf;
+			NewCompany.CF4Num = DataLine.CustomerCF4Num;
+			
+			If DataLine.CustomerPriceLevel <> Catalogs.PriceLevels.EmptyRef() Then
+				NewCompany.PriceLevel = DataLine.CustomerPriceLevel;
+			Else
+			EndIf;
+			
+			NewCompany.Write();
+			
+		Else
+			NewCompany = CompanyFound;
+		EndIf;
+		
+		AddressLine = Catalogs.Addresses.CreateItem();
+		AddressLine.Owner = NewCompany.Ref;
+		If DataLine.CustomerAddressID = "" Then
+			AddressLine.Description = "Primary";
+		Else
+			AddressLine.Description = DataLine.CustomerAddressID;
+		EndIf;
+		AddressLine.Salutation = DataLine.AddressSalutation;
+		AddressLine.FirstName = DataLine.CustomerFirstName;
+		AddressLine.MiddleName = DataLine.CustomerMiddleName;
+		AddressLine.LastName = DataLine.CustomerLastName;
+		AddressLine.Suffix = DataLine.AddressSuffix;
+		AddressLine.JobTitle = DataLine.AddressJobTitle;
+		AddressLine.Phone = DataLine.CustomerPhone;
+		AddressLine.Cell = DataLine.CustomerCell;
+		AddressLine.Fax = DataLine.CustomerFax;
+		AddressLine.Email = DataLine.CustomerEmail;
+		AddressLine.AddressLine1 = DataLine.CustomerAddressLine1;
+		AddressLine.AddressLine2 = DataLine.CustomerAddressLine2;
+		AddressLine.AddressLine3 = DataLine.CustomerAddressLine3;
+		AddressLine.City = DataLine.CustomerCity;
+		AddressLine.State = DataLine.CustomerState;
+		AddressLine.Country = DataLine.CustomerCountry;
+		AddressLine.ZIP = DataLine.CustomerZIP;
+		AddressLine.Notes = DataLine.CustomerAddressNotes;
+		AddressLine.DefaultShipping = DataLine.DefaultShippingAddress;
+		AddressLine.DefaultBilling = DataLine.DefaultBillingAddress;
+		If DataLine.AddressSalesPerson <> Catalogs.SalesPeople.EmptyRef() Then
+			AddressLine.SalesPerson = DataLine.AddressSalesPerson;
+		Else
+		EndIf;
+		AddressLine.CF1String = DataLine.AddressCF1String;
+		AddressLine.CF2String = DataLine.AddressCF2String;
+		AddressLine.CF3String = DataLine.AddressCF3String;
+		AddressLine.CF4String = DataLine.AddressCF4String;
+		AddressLine.CF5String = DataLine.AddressCF5String;
+
+		AddressLine.Write();
+				
+	EndDo;
+
+EndProcedure
+
+
 Procedure SendWebhook(webhook_address, WebhookMap) Export
 	
 	Headers = New Map();
@@ -356,115 +1040,6 @@ Procedure Update_1_2_29_19() Export
 		
 EndProcedure
 
-Procedure custom_fields_update() Export
-	
-	If Constants.custom_fields_update.Get() = False Then
-	
-		BeginTransaction();
-		
-		If Constants.CF4Type.Get() = "" Then
-			Constants.CF4Type.Set("None");
-		EndIf;
-		
-		If Constants.CF5Type.Get() = "" Then
-			Constants.CF5Type.Set("None");
-		EndIf;
-		
-		If Constants.CF1CType.Get() = "" Then
-			Constants.CF1CType.Set("None");
-		EndIf;
-
-		If Constants.CF2CType.Get() = "" Then
-			Constants.CF2CType.Set("None");
-		EndIf;
-
-		If Constants.CF3CType.Get() = "" Then
-			Constants.CF3CType.Set("None");
-		EndIf;
-		
-		If Constants.CF4CType.Get() = "" Then
-			Constants.CF4CType.Set("None");
-		EndIf;
-
-		If Constants.CF5CType.Get() = "" Then
-			Constants.CF5CType.Set("None");
-		EndIf;
-
-
-		
-		Constants.custom_fields_update.Set(True);
-		
-		CommitTransaction();
-				
-	EndIf
-		
-EndProcedure
-
-Procedure account_type_update() Export
-	
-	If Constants.account_type_update.Get() = False Then
-	
-		BeginTransaction();
-		
-		Account = ChartsOfAccounts.ChartOfAccounts.Equity.GetObject();
-		Account.AccountType = Enums.AccountTypes.Equity;
-		Account.Write();
-		
-		Account = ChartsOfAccounts.ChartOfAccounts.PurchaseLiability.GetObject();
-		Account.AccountType = Enums.AccountTypes.OtherCurrentLiability;
-		Account.Write();
-
-		Account = ChartsOfAccounts.ChartOfAccounts.CostVariance.GetObject();
-		Account.AccountType = Enums.AccountTypes.Expense;
-		Account.Write();
-		
-		Account = ChartsOfAccounts.ChartOfAccounts.RetainedEarnings.GetObject();
-		Account.AccountType = Enums.AccountTypes.Equity;
-		Account.Write();
-
-		Constants.account_type_update.Set(True);
-		
-		CommitTransaction();
-				
-	EndIf
-		
-EndProcedure
-
-Procedure verify_email() Export
-	
-	If Constants.verify_email.Get() = False Then
-	
-		BeginTransaction();
-		
-		Query = New Query("SELECT
-		                  |	UserList.Ref
-		                  |FROM
-		                  |	Catalog.UserList AS UserList");
-		
-		QueryResult = Query.Execute();
-		
-		If QueryResult.IsEmpty() Then
-		Else
-			Dataset = QueryResult.Choose();
-			While Dataset.Next() Do
-	
-				EditedUser = Dataset.Ref.GetObject();
-				EditedUser.Verified = True;
-				EditedUser.Write();
-			
-			EndDo
-			
-		EndIf;
-	
-		
-		Constants.verify_email.Set(True);
-		
-		CommitTransaction();
-				
-	EndIf
-		
-EndProcedure
-
 Procedure FullAccessUpdateProc() Export
 
 If Constants.FullAccessUpdate.Get() = False Then
@@ -583,8 +1158,8 @@ Function RetailPrice(ActualDate, Product, Customer) Export
 		Return item_cat_price
 	Else
 		Return 0;
-	EndIf;	
-	
+	EndIf;
+				
 EndFunction
 
 // Marks the document (cash receipt, cash sale) as "deposited" (included) by a deposit document.
@@ -867,10 +1442,10 @@ Function ProductLastCost(Product) Export
 EndFunction
 
 // Check documents table parts to ensure, that products are unique
-Procedure CheckDoubleItems(Ref, LineItems, Columns, Cancel) Export
+Procedure CheckDoubleItems(Ref, LineItems, Columns, Filter = Undefined, Cancel) Export
 	
 	// Dump table part
-	TableLineItems = LineItems.Unload(, Columns);
+	TableLineItems = LineItems.Unload(Filter, Columns);
 	TableLineItems.Sort(Columns);
 	
 	// Define subsets of data to check
@@ -1026,6 +1601,31 @@ Procedure NormalizeArray(Array) Export
 	
 EndProcedure
 
+// Inverts the passed filter of collection items,
+// allows selection items by filter on non-equal conition
+//
+// Parameters:
+//  Collection     - Collection, for which filter is used.
+//  PositiveFilter - Array of items selected by equal condition.
+//
+// Return value:
+//  NegativeFilter - Array of items selected by non-equal condition.
+//
+Function InvertCollectionFilter(Collection, PositiveFilter) Export
+	NegativeFilter = New Array;
+	
+	// Add to negative filter all of the items, which are not found in positive.
+	For Each Item In Collection Do
+		If PositiveFilter.Find(Item) = Undefined Then
+			NegativeFilter.Add(Item);
+		EndIf;
+	EndDo;
+	
+	// Return negative filter.
+	Return NegativeFilter;
+	
+EndFunction
+
 // Compares two passed objects by their properties (as analogue to FillPropertyValues)
 // Compares Source property values with values of properties of the Receiver. Matching is done by property names.
 // If some of the properties are absent in Source or Destination objects, they will be omitted.
@@ -1124,6 +1724,156 @@ EndFunction
 
 // Moved from InfobaseUpdateOverridable
 
+//Procedure creates:
+// 1. Bank transaction category;
+// 2. Business account for the category
+//
+// Parameters:
+// CategoryCode - integer, Yodlee category code
+// CategoryDescription - string, Yodlee category description
+// CategoryType - string, Values: expense, income, transfer, uncategorized
+// AccountType - EnumRef.AccountTypes. Attribute of a business account for the category
+// CashFlowSection - EnumRef.CashFlowSections. Attribute of a business account for the category
+// PrefefinedAccount - ChartOfAccountsRef.ChartOfAccounts. If it is filled - then there is no need to create a new business account. Should use an existing one.
+//
+Procedure AddBankTransactionCategoryAndAccount(CategoryCode, CategoryDescription, CategoryType, AccountType = Undefined, CashFlowSection = Undefined, AccountCode = Undefined, PredefinedAccount = Undefined)
+	Request = New Query("SELECT
+	                    |	BankTransactionCategories.Ref
+	                    |FROM
+	                    |	Catalog.BankTransactionCategories AS BankTransactionCategories
+	                    |WHERE
+	                    |	BankTransactionCategories.Code = &Code");
+	Request.SetParameter("Code", CategoryCode);
+	Res = Request.Execute();
+	If Res.IsEmpty() Then
+		CategoryObject = Catalogs.BankTransactionCategories.CreateItem();
+	Else
+		Sel = Res.Choose();
+		Sel.Next();
+		CategoryObject = Sel.Ref.GetObject();
+	EndIf;
+	CategoryObject.Code = CategoryCode;
+	CategoryObject.Description = CategoryDescription;
+	CategoryObject.CategoryType = CategoryType;
+	
+	If PredefinedAccount <> Undefined Then
+		CategoryObject.Account = PredefinedAccount;
+		CategoryObject.Write();
+		return;
+	EndIf;
+	Request = New Query("SELECT
+	                    |	ChartOfAccounts.Ref
+	                    |FROM
+	                    |	ChartOfAccounts.ChartOfAccounts AS ChartOfAccounts
+	                    |WHERE
+	                    |	ChartOfAccounts.Description = &CategoryDescription
+	                    |	AND ChartOfAccounts.AccountType = &AccountType
+	                    |	AND ChartOfAccounts.CashFlowSection = &CashFlowSection");
+	Request.SetParameter("CategoryDescription", CategoryDescription);
+	Request.SetParameter("AccountType", AccountType);
+	Request.SetParameter("CashFlowSection", CashFlowSection);
+	Res = Request.Execute();
+	If Not Res.IsEmpty() Then
+		Sel = Res.Choose();
+		Sel.Next();
+		CategoryObject.Account = Sel.Ref;
+		CategoryObject.Write();
+		return;
+	EndIf;
+	
+	AccountObject = ChartsOfAccounts.ChartOfAccounts.CreateAccount();
+	AccountObject.Description 		= CategoryDescription;
+	AccountObject.AccountType 		= AccountType;
+	AccountObject.CashFlowSection 	= CashFlowSection;
+	AccountObject.Code 				= AccountCode;
+	AccountObject.Order 			= AccountObject.Code;
+	AccountObject.Write();
+	CategoryObject.Account = AccountObject.Ref;
+	CategoryObject.Write();
+EndProcedure
+
+//Procedure creates:
+// 1. Bank transaction categories;
+// 2. Business accounts for bank transaction categories
+Procedure AddBankTransactionCategoriesAndAccounts() Export
+	
+	AddBankTransactionCategoryAndAccount(1, "Uncategorized", "Uncategorized", , , ,ChartsOfAccounts.ChartOfAccounts.Expense);
+	AddBankTransactionCategoryAndAccount(2, "Automotive Expenses", "expense", Enums.AccountTypes.Expense, Enums.CashFlowSections.Operating, "6020");
+	AddBankTransactionCategoryAndAccount(3, "Charitable Giving", "expense", Enums.AccountTypes.Expense, Enums.CashFlowSections.Operating, "6030");
+	AddBankTransactionCategoryAndAccount(4, "Child/Dependent Expenses", "expense", Enums.AccountTypes.Expense, Enums.CashFlowSections.Operating, "6040");
+	AddBankTransactionCategoryAndAccount(5, "Clothing/Shoes", "expense", Enums.AccountTypes.Expense, Enums.CashFlowSections.Operating, "6050");
+	AddBankTransactionCategoryAndAccount(6, "Education", "expense", Enums.AccountTypes.Expense, Enums.CashFlowSections.Operating, "6060");
+	AddBankTransactionCategoryAndAccount(7, "Entertainment", "expense", Enums.AccountTypes.Expense, Enums.CashFlowSections.Operating, "6070");
+	AddBankTransactionCategoryAndAccount(8, "Gasoline/Fuel", "expense", Enums.AccountTypes.Expense, Enums.CashFlowSections.Operating, "6080");
+	AddBankTransactionCategoryAndAccount(9, "Gifts", "expense", Enums.AccountTypes.Expense, Enums.CashFlowSections.Operating, "6090");
+	AddBankTransactionCategoryAndAccount(10, "Groceries", "expense", Enums.AccountTypes.Expense, Enums.CashFlowSections.Operating, "6650");
+	AddBankTransactionCategoryAndAccount(11, "Healthcare/Medical", "expense", Enums.AccountTypes.Expense, Enums.CashFlowSections.Operating, "6110");
+	AddBankTransactionCategoryAndAccount(12, "Home Maintenance", "expense", Enums.AccountTypes.Expense, Enums.CashFlowSections.Operating, "6120");
+	AddBankTransactionCategoryAndAccount(13, "Home Improvement", "expense", Enums.AccountTypes.Expense, Enums.CashFlowSections.Operating, "6130");
+	AddBankTransactionCategoryAndAccount(14, "Insurance", "expense", Enums.AccountTypes.Expense, Enums.CashFlowSections.Operating, "6140");
+	AddBankTransactionCategoryAndAccount(15, "Cable/Satellite Services", "expense", Enums.AccountTypes.Expense, Enums.CashFlowSections.Operating, "6150");
+	AddBankTransactionCategoryAndAccount(16, "Online Services", "expense", Enums.AccountTypes.Expense, Enums.CashFlowSections.Operating, "6160");
+	AddBankTransactionCategoryAndAccount(17, "Loans", "expense", Enums.AccountTypes.Expense, Enums.CashFlowSections.Operating, "6170");
+	AddBankTransactionCategoryAndAccount(18, "Mortgages", "expense", Enums.AccountTypes.Expense, Enums.CashFlowSections.Operating, "6180");
+	
+	AddBankTransactionCategoryAndAccount(19, "Other Expenses", "expense", Enums.AccountTypes.OtherExpense, Enums.CashFlowSections.Operating, "6680");
+	
+	AddBankTransactionCategoryAndAccount(20, "Personal Care", "expense", Enums.AccountTypes.Expense, Enums.CashFlowSections.Operating, "6220");
+	AddBankTransactionCategoryAndAccount(21, "Rent", "expense", Enums.AccountTypes.Expense, Enums.CashFlowSections.Operating, "6240");
+	AddBankTransactionCategoryAndAccount(22, "Restaurants/Dining", "expense", Enums.AccountTypes.Expense, Enums.CashFlowSections.Operating, "6260");
+	AddBankTransactionCategoryAndAccount(23, "Travel", "expense", Enums.AccountTypes.Expense, Enums.CashFlowSections.Operating, "6280");
+	
+	AddBankTransactionCategoryAndAccount(24, "Service Charges/Fees", "expense", , , ,ChartsOfAccounts.ChartOfAccounts.BankServiceCharge);
+	
+	AddBankTransactionCategoryAndAccount(25, "ATM/Cash Withdrawals", "expense", Enums.AccountTypes.Expense, Enums.CashFlowSections.Operating, "6300");
+	
+	AddBankTransactionCategoryAndAccount(26, "Credit Card Payments", "transfer", Enums.AccountTypes.OtherCurrentLiability, Enums.CashFlowSections.Operating, "2600");
+	
+	AddBankTransactionCategoryAndAccount(27, "Deposits", "income", Enums.AccountTypes.Income, Enums.CashFlowSections.Operating, "4100");
+	
+	AddBankTransactionCategoryAndAccount(28, "Transfers", "transfer", Enums.AccountTypes.Bank, Enums.CashFlowSections.Operating, "1010");
+	
+	AddBankTransactionCategoryAndAccount(29, "Paychecks/Salary", "income", Enums.AccountTypes.Income, Enums.CashFlowSections.Operating, "4200");
+	
+	AddBankTransactionCategoryAndAccount(30, "Investment Income", "income", Enums.AccountTypes.Income, Enums.CashFlowSections.Operating, "4300");
+	AddBankTransactionCategoryAndAccount(31, "Retirement Income", "income", Enums.AccountTypes.Income, Enums.CashFlowSections.Operating, "4400");
+	
+	AddBankTransactionCategoryAndAccount(32, "Other Income", "income", Enums.AccountTypes.OtherIncome, Enums.CashFlowSections.Operating, "8100");
+	
+	AddBankTransactionCategoryAndAccount(33, "Checks", "expense", Enums.AccountTypes.Expense, Enums.CashFlowSections.Operating, "6320");
+	AddBankTransactionCategoryAndAccount(34, "Hobbies", "expense", Enums.AccountTypes.Expense, Enums.CashFlowSections.Operating, "6340");
+	AddBankTransactionCategoryAndAccount(35, "Other Bills", "expense", Enums.AccountTypes.Expense, Enums.CashFlowSections.Operating, "6360");
+	
+	AddBankTransactionCategoryAndAccount(36, "Securities Trades", "transfer", Enums.AccountTypes.Bank, Enums.CashFlowSections.Operating, "1020");
+	
+	AddBankTransactionCategoryAndAccount(37, "Taxes", "expense", Enums.AccountTypes.Expense, Enums.CashFlowSections.Operating, "6380");
+	AddBankTransactionCategoryAndAccount(38, "Telephone Services", "expense", Enums.AccountTypes.Expense, Enums.CashFlowSections.Operating, "6400");
+	AddBankTransactionCategoryAndAccount(39, "Utilities", "expense", Enums.AccountTypes.Expense, Enums.CashFlowSections.Operating, "6420");
+	
+	AddBankTransactionCategoryAndAccount(40, "Savings", "transfer", Enums.AccountTypes.Bank, Enums.CashFlowSections.Operating, "1030");
+	AddBankTransactionCategoryAndAccount(41, "Retirement Contributions", "DeferredCompensation", Enums.AccountTypes.Bank, Enums.CashFlowSections.Operating, "1040");
+	
+	AddBankTransactionCategoryAndAccount(42, "Pets/Pet Care", "expense", Enums.AccountTypes.Expense, Enums.CashFlowSections.Operating, "6440");
+	AddBankTransactionCategoryAndAccount(43, "Electronics", "expense", Enums.AccountTypes.Expense, Enums.CashFlowSections.Operating, "6460");
+	AddBankTransactionCategoryAndAccount(44, "General Merchandise", "expense", Enums.AccountTypes.Expense, Enums.CashFlowSections.Operating, "6480");
+	AddBankTransactionCategoryAndAccount(45, "Office Supplies", "expense", Enums.AccountTypes.Expense, Enums.CashFlowSections.Operating, "6500");
+	
+	AddBankTransactionCategoryAndAccount(92, "Consulting", "income", Enums.AccountTypes.Income, Enums.CashFlowSections.Operating, "4500");
+	AddBankTransactionCategoryAndAccount(94, "Sales", "income", , , , ChartsOfAccounts.ChartOfAccounts.Income);
+	AddBankTransactionCategoryAndAccount(96, "Interest", "income", , , ,ChartsOfAccounts.ChartOfAccounts.BankInterestEarned);
+	AddBankTransactionCategoryAndAccount(98, "Services", "income", Enums.AccountTypes.Income, Enums.CashFlowSections.Operating, "4600");
+	
+	AddBankTransactionCategoryAndAccount(100, "Advertising", "expense", Enums.AccountTypes.Expense, Enums.CashFlowSections.Operating, "6520");
+	AddBankTransactionCategoryAndAccount(102, "Business Miscellaneous", "expense", Enums.AccountTypes.Expense, Enums.CashFlowSections.Operating, "6540");
+	AddBankTransactionCategoryAndAccount(104, "Postage and Shipping", "expense", Enums.AccountTypes.Expense, Enums.CashFlowSections.Operating, "6560");
+	AddBankTransactionCategoryAndAccount(106, "Printing", "expense", Enums.AccountTypes.Expense, Enums.CashFlowSections.Operating, "6580");
+	AddBankTransactionCategoryAndAccount(108, "Dues and Subscriptions", "expense", Enums.AccountTypes.Expense, Enums.CashFlowSections.Operating, "6600");
+	AddBankTransactionCategoryAndAccount(110, "Office Maintenance", "expense", Enums.AccountTypes.Expense, Enums.CashFlowSections.Operating, "6620");
+	AddBankTransactionCategoryAndAccount(112, "Wages Paid", "expense", Enums.AccountTypes.Expense, Enums.CashFlowSections.Operating, "6640");
+	
+	AddBankTransactionCategoryAndAccount(114, "Expense Reimbursement", "income", Enums.AccountTypes.Income, Enums.CashFlowSections.Operating, "4700");
+	
+EndProcedure
 
 // Procedure fills empty IB.
 //
@@ -2924,7 +3674,10 @@ NewCountry.Write();
 		Constants.CF5CType.Set("None");	
 		
 		// mt_change	
-				
+		
+	//Adding Yodlee transaction categories and respective business accounts 
+	AddBankTransactionCategoriesAndAccounts();
+		
 	CommitTransaction();
 	
 	Constants.FirstLaunch.Set(True);

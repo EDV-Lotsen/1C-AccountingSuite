@@ -2,190 +2,191 @@
 &AtServer
 Procedure OnWriteAtServer(Cancel, CurrentObject, WriteParameters)
 	
-	SetPrivilegedMode(True);
-	
-	If Object.Ref.IsEmpty() Then
-		                  
-		NewUser = InfoBaseUsers.CreateUser();
-		//NewUser.Name = Object.Description + Right(SessionParameters.TenantValue,7);
-		NewUser.Name = Object.Description;
-		NewUser.FullName = Object.Description;
-		NewUser.StandardAuthentication = True;	
-		NewUser.Password = Password;
-		//NewUser.Roles.Add(Metadata.Roles.FullAccess1);
-		           
-		If Object.AdminAccess = True Then
-			NewUser.Roles.Add(MetaData.Roles.FullAccess1);
+		SetPrivilegedMode(True);
+		
+		If Object.Ref.IsEmpty() Then
+			                  
+			NewUser = InfoBaseUsers.CreateUser();
+			//NewUser.Name = Object.Description + Right(SessionParameters.TenantValue,7);
+			NewUser.Name = Object.Description;
+			NewUser.Password = Password;
+			NewUser.FullName = Object.Description;
+			NewUser.StandardAuthentication = True;
+			NewUser.ShowInList = True;
+			//NewUser.Roles.Add(Metadata.Roles.FullAccess1);
+			           
+			If Object.AdminAccess = True Then
+				NewUser.Roles.Add(MetaData.Roles.FullAccess1);
+			Else
+				
+				NewUser.Roles.Add(MetaData.Roles.ListUser);
+
+				If Object.Sales = "Full" Then
+					NewUser.Roles.Add(Metadata.Roles.SalesFull);
+				Endif;
+			
+				If Object.Sales = "View" Then
+					NewUser.Roles.Add(Metadata.Roles.SalesView);
+				Endif;
+			
+				If Object.Purchasing = "Full" Then
+					NewUser.Roles.Add(Metadata.Roles.PurchasingFull);
+				Endif;
+			
+				If Object.Purchasing = "View" Then
+					NewUser.Roles.Add(Metadata.Roles.PurchasingView);
+				Endif;
+			
+				If Object.Warehouse = "Full" Then
+					NewUser.Roles.Add(Metadata.Roles.WarehouseFull);
+				Endif;
+			
+				If Object.Warehouse = "View" Then
+					NewUser.Roles.Add(Metadata.Roles.WarehouseView);
+				Endif;
+			
+				If Object.BankReceive = "Full" Then
+					NewUser.Roles.Add(Metadata.Roles.BankReceiveFull);
+				Endif;
+			
+				If Object.BankReceive = "View" Then
+					NewUser.Roles.Add(Metadata.Roles.BankReceiveView);
+				Endif;
+			
+				If Object.BankSend = "Full" Then
+					NewUser.Roles.Add(Metadata.Roles.BankSendFull);
+				Endif;
+			
+				If Object.BankSend = "View" Then
+					NewUser.Roles.Add(Metadata.Roles.BankSendView);
+				Endif;
+			
+				If Object.Accounting = "Full" Then
+					NewUser.Roles.Add(Metadata.Roles.AccountingFull);
+				Endif;
+			
+				If Object.Accounting = "View" Then
+					NewUser.Roles.Add(Metadata.Roles.AccountingView);
+				Endif;
+									
+				If Object.Projects = "Full" Then
+					NewUser.Roles.Add(Metadata.Roles.ProjectsFull);
+				Endif;
+			
+				If Object.Projects = "View" Then
+					NewUser.Roles.Add(Metadata.Roles.ProjectsView);
+				Endif;
+				
+				If Object.TimeTrack = "Full" Then
+					NewUser.Roles.Add(Metadata.Roles.TimeTrackFull);
+				Endif;
+			
+				If Object.TimeTrack = "View" Then
+					NewUser.Roles.Add(Metadata.Roles.TimeTrackView);
+				Endif;
+
+
+			
+				If Object.ReportsOnly = True Then
+					NewUser.Roles.Add(Metadata.Roles.ReportOnly);
+				Endif;
+			
+			Endif;
+
+			NewUser.ShowInList = False;
+
+			NewUser.Write();
+						
 		Else
 			
-			NewUser.Roles.Add(MetaData.Roles.ListUser);
-
-			If Object.Sales = "Full" Then
-				NewUser.Roles.Add(Metadata.Roles.SalesFull);
-			Endif;
-		
-			If Object.Sales = "View" Then
-				NewUser.Roles.Add(Metadata.Roles.SalesView);
-			Endif;
-		
-			If Object.Purchasing = "Full" Then
-				NewUser.Roles.Add(Metadata.Roles.PurchasingFull);
-			Endif;
-		
-			If Object.Purchasing = "View" Then
-				NewUser.Roles.Add(Metadata.Roles.PurchasingView);
-			Endif;
-		
-			If Object.Warehouse = "Full" Then
-				NewUser.Roles.Add(Metadata.Roles.WarehouseFull);
-			Endif;
-		
-			If Object.Warehouse = "View" Then
-				NewUser.Roles.Add(Metadata.Roles.WarehouseView);
-			Endif;
-		
-			If Object.BankReceive = "Full" Then
-				NewUser.Roles.Add(Metadata.Roles.BankReceiveFull);
-			Endif;
-		
-			If Object.BankReceive = "View" Then
-				NewUser.Roles.Add(Metadata.Roles.BankReceiveView);
-			Endif;
-		
-			If Object.BankSend = "Full" Then
-				NewUser.Roles.Add(Metadata.Roles.BankSendFull);
-			Endif;
-		
-			If Object.BankSend = "View" Then
-				NewUser.Roles.Add(Metadata.Roles.BankSendView);
-			Endif;
-		
-			If Object.Accounting = "Full" Then
-				NewUser.Roles.Add(Metadata.Roles.AccountingFull);
-			Endif;
-		
-			If Object.Accounting = "View" Then
-				NewUser.Roles.Add(Metadata.Roles.AccountingView);
-			Endif;
-								
-			If Object.Projects = "Full" Then
-				NewUser.Roles.Add(Metadata.Roles.ProjectsFull);
-			Endif;
-		
-			If Object.Projects = "View" Then
-				NewUser.Roles.Add(Metadata.Roles.ProjectsView);
-			Endif;
 			
-			If Object.TimeTrack = "Full" Then
-				NewUser.Roles.Add(Metadata.Roles.TimeTrackFull);
-			Endif;
-		
-			If Object.TimeTrack = "View" Then
-				NewUser.Roles.Add(Metadata.Roles.TimeTrackView);
-			Endif;
+		 ExistingUser = InfobaseUsers.FindByName(Object.Description);
+		 ExistingUser.Roles.Clear();
+		 
+		    If Object.AdminAccess = True Then
+		    	ExistingUser.Roles.Add(MetaData.Roles.FullAccess1);
+		    Else
+		    	              
+		    	ExistingUser.Roles.Add(MetaData.Roles.ListUser);
 
-
-		
-			If Object.ReportsOnly = True Then
-				NewUser.Roles.Add(Metadata.Roles.ReportOnly);
-			Endif;
-		
-		Endif;
-
-		NewUser.ShowInList = False;
-
-		NewUser.Write();
-		
-	Else
-		
-		
-	 ExistingUser = InfobaseUsers.FindByName(Object.Description);
-	 ExistingUser.Roles.Clear();
-	 
-	    If Object.AdminAccess = True Then
-	    	ExistingUser.Roles.Add(MetaData.Roles.FullAccess1);
-	    Else
-	    	              
-	    	ExistingUser.Roles.Add(MetaData.Roles.ListUser);
-
-	    	If Object.Sales = "Full" Then
-	    		ExistingUser.Roles.Add(Metadata.Roles.SalesFull);
-	    	Endif;
-	    
-	    	If Object.Sales = "View" Then
-	    		ExistingUser.Roles.Add(Metadata.Roles.SalesView);
-	    	Endif;
-	    
-	    	If Object.Purchasing = "Full" Then
-	    		ExistingUser.Roles.Add(Metadata.Roles.PurchasingFull);
-	    	Endif;
-	    
-	    	If Object.Purchasing = "View" Then
-	    		ExistingUser.Roles.Add(Metadata.Roles.PurchasingView);
-	    	Endif;
-	    
-	    	If Object.Warehouse = "Full" Then
-	    		ExistingUser.Roles.Add(Metadata.Roles.WarehouseFull);
-	    	Endif;
-	    
-	    	If Object.Warehouse = "View" Then
-	    		ExistingUser.Roles.Add(Metadata.Roles.WarehouseView);
-	    	Endif;
-	    
-	    	If Object.BankReceive = "Full" Then
-	    		ExistingUser.Roles.Add(Metadata.Roles.BankReceiveFull);
-	    	Endif;
-	    
-	    	If Object.BankReceive = "View" Then
-	    		ExistingUser.Roles.Add(Metadata.Roles.BankReceiveView);
-	    	Endif;
-	    
-	    	If Object.BankSend = "Full" Then
-	    		ExistingUser.Roles.Add(Metadata.Roles.BankSendFull);
-	    	Endif;
-	    
-	    	If Object.BankSend = "View" Then
-	    		ExistingUser.Roles.Add(Metadata.Roles.BankSendView);
-	    	Endif;
-	    
-	    	If Object.Accounting = "Full" Then
-	    		ExistingUser.Roles.Add(Metadata.Roles.AccountingFull);
-	    	Endif;
-	    
-	    	If Object.Accounting = "View" Then
-	    		ExistingUser.Roles.Add(Metadata.Roles.AccountingView);
-			Endif;
+		    	If Object.Sales = "Full" Then
+		    		ExistingUser.Roles.Add(Metadata.Roles.SalesFull);
+		    	Endif;
+		    
+		    	If Object.Sales = "View" Then
+		    		ExistingUser.Roles.Add(Metadata.Roles.SalesView);
+		    	Endif;
+		    
+		    	If Object.Purchasing = "Full" Then
+		    		ExistingUser.Roles.Add(Metadata.Roles.PurchasingFull);
+		    	Endif;
+		    
+		    	If Object.Purchasing = "View" Then
+		    		ExistingUser.Roles.Add(Metadata.Roles.PurchasingView);
+		    	Endif;
+		    
+		    	If Object.Warehouse = "Full" Then
+		    		ExistingUser.Roles.Add(Metadata.Roles.WarehouseFull);
+		    	Endif;
+		    
+		    	If Object.Warehouse = "View" Then
+		    		ExistingUser.Roles.Add(Metadata.Roles.WarehouseView);
+		    	Endif;
+		    
+		    	If Object.BankReceive = "Full" Then
+		    		ExistingUser.Roles.Add(Metadata.Roles.BankReceiveFull);
+		    	Endif;
+		    
+		    	If Object.BankReceive = "View" Then
+		    		ExistingUser.Roles.Add(Metadata.Roles.BankReceiveView);
+		    	Endif;
+		    
+		    	If Object.BankSend = "Full" Then
+		    		ExistingUser.Roles.Add(Metadata.Roles.BankSendFull);
+		    	Endif;
+		    
+		    	If Object.BankSend = "View" Then
+		    		ExistingUser.Roles.Add(Metadata.Roles.BankSendView);
+		    	Endif;
+		    
+		    	If Object.Accounting = "Full" Then
+		    		ExistingUser.Roles.Add(Metadata.Roles.AccountingFull);
+		    	Endif;
+		    
+		    	If Object.Accounting = "View" Then
+		    		ExistingUser.Roles.Add(Metadata.Roles.AccountingView);
+				Endif;
+				
+				If Object.Projects = "Full" Then
+					ExistingUser.Roles.Add(Metadata.Roles.ProjectsFull);
+				Endif;
 			
-			If Object.Projects = "Full" Then
-				ExistingUser.Roles.Add(Metadata.Roles.ProjectsFull);
-			Endif;
-		
-			If Object.Projects = "View" Then
-				ExistingUser.Roles.Add(Metadata.Roles.ProjectsView);
-			Endif;
+				If Object.Projects = "View" Then
+					ExistingUser.Roles.Add(Metadata.Roles.ProjectsView);
+				Endif;
+				
+				If Object.TimeTrack = "Full" Then
+					ExistingUser.Roles.Add(Metadata.Roles.TimeTrackFull);
+				Endif;
 			
-			If Object.TimeTrack = "Full" Then
-				ExistingUser.Roles.Add(Metadata.Roles.TimeTrackFull);
-			Endif;
-		
-			If Object.TimeTrack = "View" Then
-				ExistingUser.Roles.Add(Metadata.Roles.TimeTrackView);
-			Endif;
+				If Object.TimeTrack = "View" Then
+					ExistingUser.Roles.Add(Metadata.Roles.TimeTrackView);
+				Endif;
 
-			
-			If Object.ReportsOnly = True Then
-				ExistingUser.Roles.Add(Metadata.Roles.ReportOnly);
-			Endif;
+				
+				If Object.ReportsOnly = True Then
+					ExistingUser.Roles.Add(Metadata.Roles.ReportOnly);
+				Endif;
 
-	    	
-	    Endif;
-		
-		ExistingUser.Password = Password;
-		ExistingUser.Write();
+		    	
+		    Endif;
 			
-	EndIf;
-	
-	SetPrivilegedMode(False);
+			ExistingUser.Password = Password;
+			ExistingUser.Write();
+				
+		EndIf;
+		
+		SetPrivilegedMode(False);
 			
 EndProcedure
 
@@ -362,7 +363,7 @@ Procedure AdminBox(Object)
 
 EndProcedure
 &AtClient
-Procedure ChoiceProcessing(SelectedValue, ChoiceSource)
+Procedure ChoiceProcessing()
 	
 AdminBox(Object);
 ReportBox(Object);

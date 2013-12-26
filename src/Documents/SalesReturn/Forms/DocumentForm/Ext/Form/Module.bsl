@@ -297,22 +297,31 @@ If Object.Ref.IsEmpty() Then
 		For Each DocumentLine in Object.LineItems Do
 			
 			TotalAmount = TotalAmount + DocumentLine.LineTotal;
-			datastring = datastring + "<TR height=""20""><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.Product +  "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.ProductDescription + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.Quantity + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.Price + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.LineTotal + "</TD></TR>";
+			datastring = datastring + "<TR height=""20""><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.Product +  "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.ProductDescription + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.Quantity + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;""> $" + DocumentLine.Price + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;""> $" + DocumentLine.LineTotal + "</TD></TR>";
 
 		EndDo;
 		
 	    	 
 	    MailProfil = New InternetMailProfile; 
 	    
-		MailProfil.SMTPServerAddress = Constants.MailProfAddress.Get();
-		MailProfil.SMTPUseSSL = Constants.MailProfSSL.Get();
-	   MailProfil.SMTPPort = 587; 
+	    MailProfil.SMTPServerAddress = "smtp.sendgrid.net";
+		//MailProfil.SMTPServerAddress = Constants.MailProfAddress.Get();
+	    MailProfil.SMTPUseSSL = True;
+		//MailProfil.SMTPUseSSL = Constants.MailProfSSL.Get();
+	    MailProfil.SMTPPort = 465; 
 	    
 	    MailProfil.Timeout = 180; 
 	    
-		MailProfil.SMTPPassword = Constants.MailProfPass.Get();
+		MailProfil.SMTPPassword = "1cusa2012";
+	 	  
+		MailProfil.SMTPUser = "bnghiem";
+
+		
+		//MailProfil.SMTPPassword = "At/XCgOEv2nAyR+Nu7CC0WnhUVvbqndhaz1UkUkmQQTU"; 
+		//MailProfil.SMTPPassword = Constants.MailProfPass.Get();
 	    
-		MailProfil.SMTPUser = Constants.MailProfUser.Get();
+	    //MailProfil.SMTPUser = "AKIAJIZ4ECYUL7N3P3BA"; 
+		//MailProfil.SMTPUser = Constants.MailProfUser.Get();
 	    
 	    
 	    send = New InternetMailMessage; 
@@ -550,6 +559,12 @@ EndFunction
 &AtServer
 Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
 	
+	//Period closing
+	If DocumentPosting.DocumentPeriodIsClosed(CurrentObject.Ref, CurrentObject.Date) Then
+		PermitWrite = DocumentPosting.DocumentWritePermitted(WriteParameters);
+		CurrentObject.AdditionalProperties.Insert("PermitWrite", PermitWrite);	
+	EndIf;
+	
 	If Object.LineItems.Count() = 0  Then
 		Message("Cannot post with no line items.");
 		Cancel = True;
@@ -576,4 +591,40 @@ Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
 
 EndProcedure
 
+&AtClient
+Procedure BeforeWrite(Cancel, WriteParameters)
+	
+	//Closing period
+	If DocumentPosting.DocumentPeriodIsClosed(Object.Ref, Object.Date) Then
+		Cancel = Not DocumentPosting.DocumentWritePermitted(WriteParameters);
+		If Cancel Then
+			If WriteParameters.Property("PeriodClosingPassword") And WriteParameters.Property("Password") Then
+				If WriteParameters.Password = TRUE Then //Writing the document requires a password
+					ShowMessageBox(, "Invalid password!",, "Closed period notification");
+				EndIf;
+			Else
+				Notify = New NotifyDescription("ProcessUserResponseOnDocumentPeriodClosed", ThisObject, WriteParameters);
+				Password = "";
+				OpenForm("CommonForm.ClosedPeriodNotification", New Structure, ThisForm,,,, Notify, FormWindowOpeningMode.LockOwnerWindow);
+			EndIf;
+			return;
+		EndIf;
+	EndIf;
 
+EndProcedure
+
+//Closing period
+&AtClient
+Procedure ProcessUserResponseOnDocumentPeriodClosed(Result, Parameters) Export
+	If (TypeOf(Result) = Type("String")) Then //Inserted password
+		Parameters.Insert("PeriodClosingPassword", Result);
+		Parameters.Insert("Password", TRUE);
+		Write(Parameters);
+	ElsIf (TypeOf(Result) = Type("DialogReturnCode")) Then //Yes, No or Cancel
+		If Result = DialogReturnCode.Yes Then
+			Parameters.Insert("PeriodClosingPassword", "Yes");
+			Parameters.Insert("Password", FALSE);
+			Write(Parameters);
+		EndIf;
+	EndIf;	
+EndProcedure

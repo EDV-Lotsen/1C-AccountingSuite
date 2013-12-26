@@ -619,6 +619,31 @@ EndProcedure
 //
 Procedure BeforeWrite(Cancel, WriteParameters)	
 	
+	//Closing period
+	If DocumentPosting.DocumentPeriodIsClosed(Object.Ref, Object.Date) Then
+		Cancel = Not DocumentPosting.DocumentWritePermitted(WriteParameters);
+		If Cancel Then
+			If WriteParameters.Property("PeriodClosingPassword") And WriteParameters.Property("Password") Then
+				If WriteParameters.Password = TRUE Then //Writing the document requires a password
+					ShowMessageBox(, "Invalid password!",, "Closed period notification");
+				EndIf;
+			Else
+				Notify = New NotifyDescription("ProcessUserResponseOnDocumentPeriodClosed", ThisObject, WriteParameters);
+				Password = "";
+				OpenForm("CommonForm.ClosedPeriodNotification", New Structure, ThisForm,,,, Notify, FormWindowOpeningMode.LockOwnerWindow);
+			EndIf;
+			return;
+		EndIf;
+	EndIf;
+	
+	// preventing posting if already included in a bank rec
+	If DocumentPosting.RequiresExcludingFromBankReconciliation(Object.Ref, Object.CashPayment, Object.Date, Object.BankAccount, WriteParameters.WriteMode) Then
+		Cancel = True;
+		CommonUseClient.ShowCustomMessageBox(ThisForm, "Bank reconciliation", "The transaction you are editing has been reconciled. Saving 
+		|your changes could put you out of balance the next time you try to reconcile. 
+		|To modify it you should exclude it from the Bank rec. document.", PredefinedValue("Enum.MessageStatus.Warning"));
+	EndIf;    
+
 	DefaultCurrency = GeneralFunctionsReusable.DefaultCurrency();
 	CompanyCurrency = CompanyCurrency();
 	Rate = GeneralFunctions.GetExchangeRate(Object.Date, CompanyCurrency);
@@ -630,7 +655,7 @@ Procedure BeforeWrite(Cancel, WriteParameters)
 				BalanceFCY = BalanceFCY + LineItem.BalanceFCY;
 	EndDo;
 			
-	If PayTotal = 0 Then
+	If PayTotal = 0 And Object.CashPayment = 0 Then
 		Message("No payment is being made.");
 		Cancel = True;
 		Return;
@@ -693,7 +718,8 @@ Procedure BeforeWrite(Cancel, WriteParameters)
 	//
 	//If Object.DocumentTotalRC = 0 Then
 		  Object.DocumentTotalRC = PayTotal*Rate;
-		  Object.DocumentTotal = PayTotal;
+		  //Object.DocumentTotal = PayTotal;
+		  Object.DocumentTotal = Object.CashPayment;
 	//Endif;
 	
 	//Object.Currency = Object.LineItems[0].Currency;
@@ -731,7 +757,13 @@ EndProcedure
 
 &AtServer
 Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
-		
+	
+	//Period closing
+	If DocumentPosting.DocumentPeriodIsClosed(CurrentObject.Ref, CurrentObject.Date) Then
+		PermitWrite = DocumentPosting.DocumentWritePermitted(WriteParameters);
+		CurrentObject.AdditionalProperties.Insert("PermitWrite", PermitWrite);	
+	EndIf;
+
 	//If Object.Ref.IsEmpty() Then
 	//
 	//	MatchVal = Increment(Constants.CashReceiptLastNumber.Get());
@@ -832,7 +864,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 
 	
 	// Update elements status.
-	//Items.FormChargeWithStripe.Enabled = IsBlankString(Object.StripeID);
+	Items.FormChargeWithStripe.Enabled = IsBlankString(Object.StripeID);
 	
 	// Check credit memo applied.
 	//If Not Object.UnappliedPaymentCreditMemo.IsEmpty() Then
@@ -1180,6 +1212,13 @@ Function SessionTenant()
 EndFunction
 
 &AtClient
+Procedure ChargeWithStripe(Command)
+	
+	
+
+EndProcedure
+
+&AtClient
 Procedure ManualCheckOnChange(Item)
 	// Insert handler contents.
 	If ManualCheck = False Then
@@ -1222,7 +1261,7 @@ Procedure SendEmailAtServer()
 			DocObj = DocumentLine.Document.Ref.GetObject();
 			
 			TotalAmount = TotalAmount + DocumentLine.Payment;
-			datastring = datastring + "<TR height=""20""><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.Document.Ref +  "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocObj.DocumentTotalRC + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.Balance + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.Payment + "</TD></TR>";
+			datastring = datastring + "<TR height=""20""><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.Document.Ref +  "</TD><TD style=""border-spacing: 0px 0px;height: 20px;""> $" + DocObj.DocumentTotalRC + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;""> $" + DocumentLine.Balance + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;""> $" + DocumentLine.Payment + "</TD></TR>";
 
 		EndDo;
 		
@@ -1235,16 +1274,24 @@ Procedure SendEmailAtServer()
 	    	 
 	    MailProfil = New InternetMailProfile; 
 	    
-		MailProfil.SMTPServerAddress = Constants.MailProfAddress.Get();
-		MailProfil.SMTPUseSSL = Constants.MailProfSSL.Get();
-	   MailProfil.SMTPPort = 587; 
+	    MailProfil.SMTPServerAddress = "smtp.sendgrid.net";
+		//MailProfil.SMTPServerAddress = Constants.MailProfAddress.Get();
+	    MailProfil.SMTPUseSSL = True;
+		//MailProfil.SMTPUseSSL = Constants.MailProfSSL.Get();
+	    MailProfil.SMTPPort = 465; 
 	    
 	    MailProfil.Timeout = 180; 
 	    
 		
-		MailProfil.SMTPPassword = Constants.MailProfPass.Get();
+		MailProfil.SMTPPassword = "1cusa2012";
 	 	  
-		MailProfil.SMTPUser = Constants.MailProfUser.Get();		
+		MailProfil.SMTPUser = "bnghiem";
+		
+		//MailProfil.SMTPPassword = "At/XCgOEv2nAyR+Nu7CC0WnhUVvbqndhaz1UkUkmQQTU"; 
+		//MailProfil.SMTPPassword = Constants.MailProfPass.Get();
+	    
+	    //MailProfil.SMTPUser = "AKIAJIZ4ECYUL7N3P3BA"; 
+		//MailProfil.SMTPUser = Constants.MailProfUser.Get();
 	    
 	    
 	    send = New InternetMailMessage; 
@@ -1506,15 +1553,30 @@ Procedure PayAllDoc(Command)
 	Total = 0;
 	For Each LineItem In Object.LineItems Do
 		test = LineItem;
-		//Items.LineItems.CurrentData.Check = True;
 		LineItem.Check = True;
 		LineItem.Payment = LineItem.Balance;
-		//LineItemsCheckOnChange(Items.LineItems.CurrentData.Check);
 		Total = Total + LineItem.Payment;
 
 	EndDo;
 	
-	Object.CashPayment = Total;
+	Object.CashPayment = Total - object.AppliedCredit;
+	Object.UnappliedPayment = 0;
 
 	
+EndProcedure
+
+//Closing period
+&AtClient
+Procedure ProcessUserResponseOnDocumentPeriodClosed(Result, Parameters) Export
+	If (TypeOf(Result) = Type("String")) Then //Inserted password
+		Parameters.Insert("PeriodClosingPassword", Result);
+		Parameters.Insert("Password", TRUE);
+		Write(Parameters);
+	ElsIf (TypeOf(Result) = Type("DialogReturnCode")) Then //Yes, No or Cancel
+		If Result = DialogReturnCode.Yes Then
+			Parameters.Insert("PeriodClosingPassword", "Yes");
+			Parameters.Insert("Password", FALSE);
+			Write(Parameters);
+		EndIf;
+	EndIf;	
 EndProcedure

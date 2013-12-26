@@ -36,29 +36,29 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="24"/>
-			<SearchStringAddition name="ListSearchString" id="43">
+			<SearchStringAddition name="ListSearchString" id="46">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="44"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="45"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="47"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="48"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="46">
+			<ViewStatusAddition name="ListViewStatus" id="49">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="47"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="48"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="50"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="51"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="49">
+			<SearchControlAddition name="ListSearchControl" id="52">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="50"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="51"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="53"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="54"/>
 			</SearchControlAddition>
 			<ChildItems>
 				<LabelField name="Date" id="4">
@@ -102,11 +102,24 @@
 				</LabelField>
 				<LabelField name="DocumentTotal" id="18">
 					<DataPath>List.DocumentTotal</DataPath>
+					<Visible>false</Visible>
 					<ContextMenu name="DocumentTotalContextMenu" id="19"/>
 					<ExtendedTooltip name="DocumentTotalExtendedTooltip" id="29"/>
 				</LabelField>
+				<LabelField name="CashPayment" id="43">
+					<DataPath>List.CashPayment</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Total</v8:content>
+						</v8:item>
+					</Title>
+					<ContextMenu name="CashPaymentContextMenu" id="44"/>
+					<ExtendedTooltip name="CashPaymentExtendedTooltip" id="45"/>
+				</LabelField>
 				<LabelField name="DocumentTotalRC" id="16">
 					<DataPath>List.DocumentTotalRC</DataPath>
+					<Visible>false</Visible>
 					<ContextMenu name="DocumentTotalRCContextMenu" id="17"/>
 					<ExtendedTooltip name="DocumentTotalRCExtendedTooltip" id="30"/>
 				</LabelField>

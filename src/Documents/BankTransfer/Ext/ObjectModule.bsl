@@ -1,30 +1,6 @@
 ﻿
 Procedure Posting(Cancel, PostingMode)
 	
-	// preventing posting if already included in a bank rec
-	
-	Query = New Query("SELECT
-					  |	TransactionReconciliation.Document
-					  |FROM
-					  |	InformationRegister.TransactionReconciliation AS TransactionReconciliation
-					  |WHERE
-					  |	TransactionReconciliation.Document = &Ref
-					  |	AND TransactionReconciliation.Reconciled = TRUE");
-	Query.SetParameter("Ref", Ref);
-	Selection = Query.Execute();
-	
-	If NOT Selection.IsEmpty() Then
-		
-		Message = New UserMessage();
-		Message.Text=NStr("en='This document is already included in a bank reconciliation. Please remove it from the bank rec first.'");
-		Message.Message();
-		Cancel = True;
-		Return;
-		
-	EndIf;
-
-	// end preventing posting if already included in a bank rec
-	
 	RegisterRecords.GeneralJournal.Write = True;
 	    
 	Record = RegisterRecords.GeneralJournal.AddDebit();
@@ -90,30 +66,6 @@ EndProcedure
 
 Procedure UndoPosting(Cancel)
 	
-	// preventing posting if already included in a bank rec
-	
-	Query = New Query("SELECT
-	                  |	TransactionReconciliation.Document
-	                  |FROM
-	                  |	InformationRegister.TransactionReconciliation AS TransactionReconciliation
-	                  |WHERE
-	                  |	TransactionReconciliation.Document = &Ref
-	                  |	AND TransactionReconciliation.Reconciled = TRUE");
-	Query.SetParameter("Ref", Ref);
-	Selection = Query.Execute();
-	
-	If NOT Selection.IsEmpty() Then
-		
-		Message = New UserMessage();
-		Message.Text=NStr("en='This document is already included in a bank reconciliation. Please remove it from the bank rec first.'");
-		Message.Message();
-		Cancel = True;
-		Return;
-		
-	EndIf;
-
-	// end preventing posting if already included in a bank rec
-	
 	// Deleting bank reconciliation data
 	
 	Records = InformationRegisters.TransactionReconciliation.CreateRecordManager();
@@ -129,4 +81,5 @@ Procedure UndoPosting(Cancel)
 	Records.Delete();
 
 EndProcedure
+
 

@@ -12,9 +12,9 @@ Procedure RunAtServer()
 	//_UnitTestsPriceMatrix.InitializeProducts();
 	//_UnitTestsPriceMatrix.InitializeCustomers();
 	//_UnitTestsPriceMatrix.InitializePriceMatrix();
-	for i = 1000 to 1004 do	
+	for i = 1002 to 1010 do	 // 1000
 		ProcedureName = "_UnitTestsPriceMatrix.PriceMatrix" + Format(i,"NG=0") + "()";
-		Выполнить(ProcedureName);	
+		Execute(ProcedureName);	
 	enddo
 	
 EndProcedure

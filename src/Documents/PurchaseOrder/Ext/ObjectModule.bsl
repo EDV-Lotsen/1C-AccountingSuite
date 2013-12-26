@@ -27,7 +27,7 @@ EndProcedure
 Procedure FillCheckProcessing(Cancel, CheckedAttributes)
 	
 	// Check doubles in items (to be sure of proper orders placement)
-	GeneralFunctions.CheckDoubleItems(Ref, LineItems, "Product, Location, DeliveryDate, Project, Class, LineNumber", Cancel);
+	GeneralFunctions.CheckDoubleItems(Ref, LineItems, "Product, Location, DeliveryDate, Project, Class, LineNumber",, Cancel);
 	
 EndProcedure
 

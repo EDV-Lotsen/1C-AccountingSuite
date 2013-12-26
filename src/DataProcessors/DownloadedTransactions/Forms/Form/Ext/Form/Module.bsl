@@ -42,11 +42,10 @@ Procedure UploadTransactionsFromDB(SelectUnaccepted = True, SelectAccepted = Tru
 	                               |	BankTransactions.CategoryID,
 	                               |	BankTransactions.Type,
 	                               |	ISNULL(BankTransactionCategories.Description, ""Uncategorized"") AS CategoryDescription,
-	                               |	PRESENTATION(BankTransactions.ID) AS IDPresentation,
 	                               |	ISNULL(BankTransactionCategories.Account, VALUE(ChartOfAccounts.ChartOfAccounts.EmptyRef)) AS CategoryAccount,
 	                               |	ISNULL(BankTransactionCategories.Ref, VALUE(Catalog.BankTransactionCategories.EmptyRef)) AS CategoryRef,
-	                               |	ISNULL(BankTransactionCategories.Account.Description, """") AS CategoryAccountDescription,
-	                               |	ISNULL(BankTransactions.Category.Description, """") AS UserCategoryAccountDescription
+	                               |	BankTransactions.CategorizedCompanyNotAccepted,
+	                               |	BankTransactions.CategorizedCategoryNotAccepted
 	                               |FROM
 	                               |	InformationRegister.BankTransactions AS BankTransactions
 	                               |		LEFT JOIN Catalog.BankTransactionCategories AS BankTransactionCategories
@@ -70,10 +69,19 @@ Procedure UploadTransactionsFromDB(SelectUnaccepted = True, SelectAccepted = Tru
 		VT_Unaccepted 	= UploadedTransactions.Copy(Unaccepted);
 		Object.BankTransactionsUnaccepted.Load(VT_Unaccepted);
 		For Each Tran In Object.BankTransactionsUnaccepted Do
-			Tran.AssigningOption 	= GetAssigningOption(Tran.Document, Tran.DocumentPresentation);
-			//If ValueIsFilled(Tran.Document) Then
-			//	Tran.AssigningOption = "Assigned to " + Tran.DocumentPresentation; 
-			//EndIf;
+			
+			//Match the existing documents
+			If Not ValueIsFilled(Tran.Document) Then
+				//Try to match an uploaded transaction with an existing document
+				DocumentFound = FindAnExistingDocument(Tran.Description, Tran.Amount);
+				If DocumentFound <> Undefined Then
+					Tran.Document 		= DocumentFound;
+					RecordTransactionToTheDatabaseAtServer(Tran);
+				EndIf;
+				Tran.AssigningOption 	= GetAssigningOption(Tran.Document, String(DocumentFound));
+			Else
+				Tran.AssigningOption 	= GetAssigningOption(Tran.Document, Tran.DocumentPresentation);
+			EndIf;
 		EndDo;
 		ThisForm.Modified = False;
 		ApplyConditionalAppearance();
@@ -142,6 +150,7 @@ Procedure AcceptTransactionsAtServer()
 	CommitTransaction();
 	
 	UploadTransactionsFromDB(False, True);
+	AccountingBalance = GetAccountingSuiteAccountBalance(AccountInBank.AccountingAccount);
 EndProcedure
 
 &AtServer
@@ -180,35 +189,35 @@ EndFunction
 
 &AtServer
 Function Create_DocumentDeposit(Tran)
-	 If ValueIsFilled(Tran.Document) then
-	  NewDeposit  = Tran.Document.GetObject();
-	  If TypeOf(Tran.Document) = Type("DocumentRef.CashReceipt") Then
-	   Return Tran.Document;
-	  EndIf;
-	 Else
-	  NewDeposit   = Documents.Deposit.CreateDocument();
-	 EndIf;
-	 NewDeposit.Date    = Tran.TransactionDate;
-	 NewDeposit.BankAccount   = Tran.BankAccount.AccountingAccount;
-	 NewDeposit.Memo    = Tran.Description;
-	 NewDeposit.DocumentTotal  = Tran.Amount;
-	 NewDeposit.DocumentTotalRC  = Tran.Amount;
-	 NewDeposit.TotalDeposits = 0;
-	 NewDeposit.TotalDepositsRC = 0;
-	  
-	 NewDeposit.Accounts.Clear();
-	 NewLine = NewDeposit.Accounts.Add();
-	 NewLine.Account    = Tran.Category;
-	 NewLine.Memo     = Tran.Description;
-	 NewLine.Company    = Tran.Company;
-	 NewLine.Amount     = Tran.Amount;
-	 //Deletion mark
-	 If NewDeposit.DeletionMark Then
-	  NewDeposit.DeletionMark = False; 
-	 EndIf;
-	 NewDeposit.Write(DocumentWriteMode.Posting);
-	 
-	 Return NewDeposit.Ref;
+	If ValueIsFilled(Tran.Document) then
+		NewDeposit		= Tran.Document.GetObject();
+		If TypeOf(Tran.Document) = Type("DocumentRef.CashReceipt") Then
+			Return Tran.Document;
+		EndIf;
+	Else
+		NewDeposit 		= Documents.Deposit.CreateDocument();
+	EndIf;
+	NewDeposit.Date 			= Tran.TransactionDate;
+	NewDeposit.BankAccount 		= Tran.BankAccount.AccountingAccount;
+	NewDeposit.Memo 			= Tran.Description;
+	NewDeposit.DocumentTotal 	= Tran.Amount;
+	NewDeposit.DocumentTotalRC 	= Tran.Amount;
+	NewDeposit.TotalDeposits	= 0;
+	NewDeposit.TotalDepositsRC	= 0;
+		
+	NewDeposit.Accounts.Clear();
+	NewLine = NewDeposit.Accounts.Add();
+	NewLine.Account 			= Tran.Category;
+	NewLine.Memo 				= Tran.Description;
+	NewLine.Company				= Tran.Company;
+	NewLine.Amount 				= Tran.Amount;
+	//Deletion mark
+	If NewDeposit.DeletionMark Then
+		NewDeposit.DeletionMark	= False;	
+	EndIf;
+	NewDeposit.Write(DocumentWriteMode.Posting);
+	
+	Return NewDeposit.Ref;
 EndFunction
 
 //Saves all unaccepted transactions being edited in database
@@ -289,22 +298,20 @@ EndFunction
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	//Variables initiation
-	ShowHidden	= "Show";
+	ShowHidden	= "Hide";
 	Object.ProcessingPeriod.Variant	=StandardPeriodVariant.ThisMonth;
+	Items.DecorationProcessingPeriod.Title = Format(Object.ProcessingPeriod.StartDate, "DLF=DD") + " - " + Format(Object.ProcessingPeriod.EndDate, "DLF=DD");
 	
 	//Uploading transactions 
-	UploadTransactionsFromDB();
+	//UploadTransactionsFromDB();
 	//ApplyConditionalAppearance();
 	
-	//For Each ChType In ChartType Do
-	//	Items.DiagramType.ChoiceList.Add(String(ChType));
-	//EndDo;
 	Items.DiagramType.ChoiceList.Add(String(ChartType.Column));
 	Items.DiagramType.ChoiceList.Add(String(ChartType.Column3D));
 	Items.DiagramType.ChoiceList.Add(String(ChartType.PyramidGraph));
 	DiagramType =  String(ChartType.Column3D);
 	Diagram.ChartType = ChartType.Column;
-	
+		
 	FillAvailableAccounts();		
 EndProcedure
 
@@ -365,11 +372,11 @@ Procedure FillAvailableAccounts()
 			ElsIf Logotype <> Undefined Then
 				Pict = Logotype;
 			EndIf;
-			If Pict <> Undefined Then
-				AvailableBankAccounts.Add(Sel.Ref, Sel.Description,, Pict);
-			Else
+			//If Pict <> Undefined Then
+			//	AvailableBankAccounts.Add(Sel.Ref, Sel.Description,, Pict);
+			//Else
 				AvailableBankAccounts.Add(Sel.Ref, Sel.Description);
-			EndIf;
+			//EndIf;
 		EndDo;
 	EndIf;
 EndProcedure
@@ -467,41 +474,76 @@ Procedure ApplyConditionalAppearance()
 		i = i + 1;
 	EndDo;
 	
-	//Get catagory account, category account description
-	UsedAccountsTable = Object.BankTransactionsUnaccepted.Unload(,"CategoryAccount, CategoryAccountDescription");
-	UsedUserAccountsTable = Object.BankTransactionsUnaccepted.Unload(,"Category, UserCategoryAccountDescription");
-	UsedUserAccountsTable.GroupBy("Category, UserCategoryAccountDescription");
-	For Each UserAccount In UsedUserAccountsTable Do
-		NewRow = UsedAccountsTable.Add();
-		NewRow.CategoryAccount = UserAccount.Category;
-		NewRow.CategoryAccountDescription = UserAccount.UserCategoryAccountDescription;
-	EndDo;
-	UsedAccountsTable.GroupBy("CategoryAccount, CategoryAccountDescription");
-	FoundRows = UsedAccountsTable.FindRows(New Structure("CategoryAccount", ChartsOfAccounts.ChartOfAccounts.EmptyRef()));
-	If FoundRows.Count() > 0 Then
-		UsedAccountsTable.Delete(FoundRows[0]);
-	EndIf;
-	i = 0;
-	While i < UsedAccountsTable.Count() Do
-		//Use the following representation for accounts: Account_number (account_description)
-		CR = UsedAccountsTable[i];
-		ElementCA = CA.Items.Add(); 
+	//Auto-categorized customers highlight with Italic font
+	ElementCA = CA.Items.Add(); 
 	
-		FieldAppearance = ElementCA.Fields.Items.Add(); 
-		FieldAppearance.Field = New DataCompositionField("BankTransactionsUnacceptedCategory"); 
- 		FieldAppearance.Use = True; 
+	FieldAppearance = ElementCA.Fields.Items.Add(); 
+	FieldAppearance.Field = New DataCompositionField("BankTransactionsUnacceptedCompany"); 
+ 	FieldAppearance.Use = True; 
+	
+ 	FilterElement = ElementCA.Filter.Items.Add(Type("DataCompositionFilterItem")); // current row filter 
+ 	FilterElement.LeftValue 		= New DataCompositionField("Object.BankTransactionsUnaccepted.CategorizedCompanyNotAccepted"); 
+ 	FilterElement.ComparisonType 	= DataCompositionComparisonType.Equal; 
+	FilterElement.RightValue 		= True; 
+	FilterElement.Use				= True;
+	
+	DefaultFont = ElementCA.Appearance.FindParameterValue(New DataCompositionParameter("Font")).Value;
+	ItalicFont	=New Font(DefaultFont,,,,True,,); //Italic font
+	ElementCA.Appearance.SetParameterValue("Font", ItalicFont); 
+	
+	//Auto-categorized categories highlight with Italic font
+	ElementCA = CA.Items.Add(); 
+	
+	FieldAppearance = ElementCA.Fields.Items.Add(); 
+	FieldAppearance.Field = New DataCompositionField("BankTransactionsUnacceptedCategory"); 
+ 	FieldAppearance.Use = True; 
+	
+ 	FilterElement = ElementCA.Filter.Items.Add(Type("DataCompositionFilterItem")); // current row filter 
+ 	FilterElement.LeftValue 		= New DataCompositionField("Object.BankTransactionsUnaccepted.CategorizedCategoryNotAccepted"); 
+ 	FilterElement.ComparisonType 	= DataCompositionComparisonType.Equal; 
+	FilterElement.RightValue 		= True; 
+	FilterElement.Use				= True;
+	
+	DefaultFont = ElementCA.Appearance.FindParameterValue(New DataCompositionParameter("Font")).Value;
+	ItalicFont	=New Font(DefaultFont,,,,True,,); //Italic font
+	ElementCA.Appearance.SetParameterValue("Font", ItalicFont); 
 
-		FilterElement = ElementCA.Filter.Items.Add(Type("DataCompositionFilterItem")); // current row filter 
-		FilterElement.LeftValue 		= New DataCompositionField("Object.BankTransactionsUnaccepted.Category"); 
-		FilterElement.ComparisonType 	= DataCompositionComparisonType.Equal; 
-		FilterElement.RightValue 		= CR.CategoryAccount; 
-		FilterElement.Use				= True;
-		
-		ElementCA.Appearance.SetParameterValue("Text", String(CR.CategoryAccount) + " (" + CR.CategoryAccountDescription + ")");
-		
-		ConditionalAppearanceAccounts.Add(CR.CategoryAccount);
-		i = i + 1;
-	EndDo;
+	
+	//Get catagory account, category account description
+	//UsedAccountsTable = Object.BankTransactionsUnaccepted.Unload(,"CategoryAccount, CategoryAccountDescription");
+	//UsedUserAccountsTable = Object.BankTransactionsUnaccepted.Unload(,"Category, UserCategoryAccountDescription");
+	//UsedUserAccountsTable.GroupBy("Category, UserCategoryAccountDescription");
+	//For Each UserAccount In UsedUserAccountsTable Do
+	//	NewRow = UsedAccountsTable.Add();
+	//	NewRow.CategoryAccount = UserAccount.Category;
+	//	NewRow.CategoryAccountDescription = UserAccount.UserCategoryAccountDescription;
+	//EndDo;
+	//UsedAccountsTable.GroupBy("CategoryAccount, CategoryAccountDescription");
+	//FoundRows = UsedAccountsTable.FindRows(New Structure("CategoryAccount", ChartsOfAccounts.ChartOfAccounts.EmptyRef()));
+	//If FoundRows.Count() > 0 Then
+	//	UsedAccountsTable.Delete(FoundRows[0]);
+	//EndIf;
+	//i = 0;
+	//While i < UsedAccountsTable.Count() Do
+	//	//Use the following representation for accounts: Account_number (account_description)
+	//	CR = UsedAccountsTable[i];
+	//	ElementCA = CA.Items.Add(); 
+	//
+	//	FieldAppearance = ElementCA.Fields.Items.Add(); 
+	//	FieldAppearance.Field = New DataCompositionField("BankTransactionsUnacceptedCategory"); 
+	// 	FieldAppearance.Use = True; 
+
+	//	FilterElement = ElementCA.Filter.Items.Add(Type("DataCompositionFilterItem")); // current row filter 
+	//	FilterElement.LeftValue 		= New DataCompositionField("Object.BankTransactionsUnaccepted.Category"); 
+	//	FilterElement.ComparisonType 	= DataCompositionComparisonType.Equal; 
+	//	FilterElement.RightValue 		= CR.CategoryAccount; 
+	//	FilterElement.Use				= True;
+	//	
+	//	ElementCA.Appearance.SetParameterValue("Text", String(CR.CategoryAccount) + " (" + CR.CategoryAccountDescription + ")");
+	//	
+	//	ConditionalAppearanceAccounts.Add(CR.CategoryAccount);
+	//	i = i + 1;
+	//EndDo;
 
 EndProcedure
 
@@ -590,9 +632,9 @@ Procedure UndoTransactionAtServer()
 		NewUnaccepted.AssigningOption 	= GetAssigningOption(NewUnaccepted.Document, String(NewUnaccepted.Document));
 		
 		//Check if an account is the first occurance
-		If (ConditionalAppearanceAccounts.FindByValue(NewUnaccepted.Category) = Undefined) Then		
-			AddAccountToConditionalAppearance(NewUnaccepted.Category);
-		EndIf;
+		//If (ConditionalAppearanceAccounts.FindByValue(NewUnaccepted.Category) = Undefined) Then		
+		//	AddAccountToConditionalAppearance(NewUnaccepted.Category);
+		//EndIf;
 
 		i = i + 1;
 	EndDo;
@@ -611,6 +653,7 @@ Procedure UndoTransactionAtServer()
 	
 	//UploadTransactionsFromDB(True, False);
 	Object.BankTransactionsUnaccepted.Sort("TransactionDate DESC, Description, Company, Category, TransactionID");
+	AccountingBalance = GetAccountingSuiteAccountBalance(AccountInBank.AccountingAccount);
 EndProcedure
 
 &AtServerNoContext
@@ -832,86 +875,6 @@ Function FindAnExistingDocument(Val Description, Val Amount)
 				
 EndFunction
 
-&AtServerNoContext
-Function RemoveAccountAtServer(Item)
-	ItemID = Item.ItemID;
-	ItemDescription = Item.Description;
-	BeginTransaction(DataLockControlMode.Managed);
-	ReturnStruct = New Structure("ReturnValue, Status, CountDeleted, DeletedAccounts", false, "", 0, New Array());
-	Try
-		// Create new managed data lock
-		DataLock = New DataLock;
-
-		// Set data lock parameters
-		BA_LockItem = DataLock.Add("Catalog.BankAccounts");
-		BA_LockItem.Mode = DataLockMode.Exclusive;
-		BA_LockItem.SetValue("Ref", Item);
-		// Set lock on the object
-		DataLock.Lock();
-		
-		DeletedAccounts = New Array();
-		If ItemID = 0 Then
-			DeletedAccounts.Add(Item);
-			
-			AccObject = Item.GetObject();
-			AccObject.Delete();
-			ReturnStruct.Insert("CountDeleted", 1);
-			ReturnStruct.Insert("DeletedAccounts", DeletedAccounts);
-			ReturnStruct.Insert("Status", "Account " + ItemDescription + " was successfully deleted");
-		Else
-			ReturnStruct = Yodlee.RemoveItem(ItemID);
-			If (ReturnStruct.ReturnValue) OR (Find(ReturnStruct.Status, "InvalidItemExceptionFaultMessage")) Then
-				//Mark bank account as non-Yodlee
-				AccRequest = New Query("SELECT
-				                       |	BankAccounts.Ref
-				                       |FROM
-				                       |	Catalog.BankAccounts AS BankAccounts
-				                       |WHERE
-				                       |	BankAccounts.ItemID = &ItemID");
-				AccRequest.SetParameter("ItemID", ItemID);
-				AccSelection = AccRequest.Execute().Choose(); 
-				cnt = 0;
-				While AccSelection.Next() Do
-					Try
-					
-						DeletedAccounts.Add(AccSelection.Ref);
-					
-						AccObject = AccSelection.Ref.GetObject();
-						//AccObject.YodleeAccount = False;
-						//AccObject.DeletionMark = True;
-						//AccObject.Write();
-						AccObject.Delete();
-						cnt = cnt + 1;
-					Except
-					EndTry;				
-				EndDo;
-				ReturnStruct.Insert("CountDeleted", cnt);
-				ReturnStruct.Insert("DeletedAccounts", DeletedAccounts);
-				If cnt > 1 Then
-					ReturnStruct.Insert("Status", "Accounts with Item ID:" + String(ItemID) + " were successfully deleted");
-				Else
-					ReturnStruct.Insert("Status", "Account with Item ID:" + String(ItemID) + " was successfully deleted");
-				EndIf;
-			EndIf;
-		EndIf;
-		CommitTransaction();
-	Except
-		Description = ErrorDescription();
-		ReturnStruct.ReturnValue 	= False;
-		ReturnStruct.Status 		= Description;
-		If TransactionActive() Then
-			RollbackTransaction();
-		EndIf;
-	EndTry;
-	return ReturnStruct;
-EndFunction
-
-&AtServer
-Procedure UpdateFormAtServer()
-	//ShowBankAccountDetails(AccountInBank);
-	UpdateDiagram();	
-EndPRocedure
-
 &AtServer
 Procedure ShowBankAccountDetails(AccountInBank)
 	//Fill in bank accounts list
@@ -975,8 +938,8 @@ Procedure UpdateDiagram()
 	For Each Row In MonthData Do
 		MonthRepresentation = Format(Row.Month, "DF=MMMM");
 		MonthPoint = Diagram.SetPoint(MonthRepresentation);
-		Diagram.SetValue(MonthPoint, DepositsSeries, Row.Deposits,, "Deposits in " + MonthRepresentation + ": " + Format(Row.Deposits, "NFD=2; NZ="));
-		Diagram.SetValue(MonthPoint, PaymentsSeries, -1 * Row.Payments,, "Payments in " + MonthRepresentation + ": " + Format(Row.Payments, "NFD=2; NZ="));
+		Diagram.SetValue(MonthPoint, DepositsSeries, Row.Deposits/1000,, "Deposits in " + MonthRepresentation + ": " + Format(Row.Deposits, "NFD=2; NZ="));
+		Diagram.SetValue(MonthPoint, PaymentsSeries, -1 * Row.Payments/1000,, "Payments in " + MonthRepresentation + ": " + Format(Row.Payments, "NFD=2; NZ="));
 	EndDo;
 	Diagram.ShowLegend = False;
 	Diagram.RefreshEnabled = True;
@@ -1028,6 +991,98 @@ Function GetDataForDiagram(BankAccount)
 	
 EndFunction
 
+&AtServerNoContext
+Function GetAccountingSuiteAccountBalance(AccountingAccount)
+	Request = New Query("SELECT
+	                    |	GeneralJournalBalance.AmountBalance
+	                    |FROM
+	                    |	AccountingRegister.GeneralJournal.Balance(, Account = &Account, , ) AS GeneralJournalBalance");
+	Request.SetParameter("Account", AccountingAccount);
+	Res = Request.Execute().Choose();
+	If Res.Next() Then
+		return Res.AmountBalance;
+	Else
+		return 0;
+	EndIf;
+EndFunction
+
+&AtServerNoContext
+Function RemoveAccountAtServer(Item)
+	return Yodlee.RemoveYodleeBankAccountAtServer(Item);
+	//If Item.ItemID = 0 Then
+	//	return Yodlee.RemoveBankAccountAtServer(Item);
+	//Else
+	//	//If we delete the last unmarked bank account then
+	//	//we should remove these accounts from Yodlee
+	//	//If not - just mark for deletion
+	//	SetPrivilegedMode(True);
+	//	ItemID = Item.ItemID;
+	//	Request = New Query("SELECT
+	//						|	COUNT(DISTINCT BankAccounts.Ref) AS UsedAccountsCount
+	//						|FROM
+	//						|	Catalog.BankAccounts AS BankAccounts
+	//						|WHERE
+	//						|	BankAccounts.ItemID = &ItemID
+	//						|	AND BankAccounts.DeletionMark = FALSE");
+	//	Request.SetParameter("ItemID",ItemID);
+	//	Res = Request.Execute();
+	//	Sel = Res.Choose();
+	//	Sel.Next();
+	//	SetPrivilegedMode(False);
+	//	If (Sel.UsedAccountsCount = 1) Then
+	//		return Yodlee.RemoveBankAccountAtServer(Item);
+	//	Else
+	//		ReturnStruct = New Structure("ReturnValue, Status, CountDeleted, DeletedAccounts", true, "", 0, New Array());
+	//		DeletedAccounts = New Array();
+	//		ItemDescription = Item.Description;
+	//		DeletedAccounts.Add(Item);
+	//		AccObject = Item.GetObject();
+	//		AccObject.SetDeletionMark(True);
+	//		ReturnStruct.Insert("CountDeleted", 1);
+	//		ReturnStruct.Insert("DeletedAccounts", DeletedAccounts);
+	//		ReturnStruct.Insert("Status", "Account " + ItemDescription + " was successfully deleted");
+	//		return ReturnStruct;
+	//	EndIf;
+	//EndIf;
+EndFunction
+
+&AtServerNoContext
+Procedure RecordTransactionToTheDatabaseAtServer(Transaction)
+	Tran = New Structure;
+	Tran.Insert("ID", Transaction.TransactionID);
+	Tran.Insert("TransactionDate", Transaction.TransactionDate);
+	Tran.Insert("BankAccount", Transaction.BankAccount);
+	Tran.Insert("Company", Transaction.Company);
+	Tran.Insert("Description", Transaction.Description);
+	Tran.Insert("Amount", Transaction.Amount);
+	Tran.Insert("Category", Transaction.Category);
+	Tran.Insert("Document", Transaction.Document);
+	Tran.Insert("Hidden", Transaction.Hidden);
+	Tran.Insert("Accepted", False);
+	Tran.Insert("OriginalID", Transaction.OriginalID);
+	Tran.Insert("YodleeTransactionID", Transaction.YodleeTransactionID);
+	Tran.Insert("PostDate", Transaction.PostDate);
+	Tran.Insert("Price", Transaction.Price);
+	Tran.Insert("Quantity", Transaction.Quantity);
+	Tran.Insert("RunningBalance", Transaction.RunningBalance);
+	Tran.Insert("CurrencyCode", Transaction.CurrencyCode);
+	Tran.Insert("CategoryID", Transaction.CategoryID);
+	Tran.Insert("Type", Transaction.Type);
+	Tran.Insert("CategorizedCompanyNotAccepted", Transaction.CategorizedCompanyNotAccepted);
+	Tran.Insert("CategorizedCategoryNotAccepted", Transaction.CategorizedCategoryNotAccepted);
+	TransactionID = SaveTransactionAtServer(Tran);
+	Transaction.TransactionID = TransactionID;
+EndProcedure
+
+&AtServerNoContext
+Function LockYodleeConnection(FormID)
+	return Yodlee.LockYodleeConnection(FormID);
+EndFunction
+
+&AtServerNoContext
+Function UnlockYodleeConnection(FormID)
+	return Yodlee.UnlockYodleeConnection(FormID);
+EndFunction
 #ENDREGION
 
 #REGION FORM_COMMAND_HANDLERS
@@ -1156,32 +1211,41 @@ Procedure BankAccountOnChange(Item)
 	If Not ValueIsFilled(Object.BankAccount) Then
 		//AccountInBank = PredefinedValue("Catalog.BankAccounts.EmptyRef");
 		AccountLastUpdated = "";
-		ShowMessageBox(, "Selected account doesn't have corresponding accounting account. Please, fill it in on the accounting tab in bank account form",,"Downloaded transactions");
+		ShowMessageBox(, "The selected bank account is not associated with a General Ledger Account." + Chars.LF + "Please enter the appropriate G/L Account on the bank account details form at Bank/Tools/Manage Bank Accounts",,"Downloaded transactions");
 		return;
 	EndIf;
 	//LastUpdated 		= ToLocalTime(CommonUse.GetAttributeValue(AccountInBank, "LastUpdatedTimeUTC")); 
 	LastUpdated 		= ToLocalTime(AttributeValues.LastUpdatedTimeUTC); 
-	AccountLastUpdated 	= ?(ValueIsFilled(LastUpdated), Format(LastUpdated, "DLF=DT"), "");
+	AccountLastUpdated 	= FormLastUpdatedString(LastUpdated); //?(ValueIsFilled(LastUpdated), Format(LastUpdated, "DLF=DT"), "");
 	
 	AccountAvailableBalance = ?(ValueIsFilled(AttributeValues.CurrentBalance), AttributeValues.CurrentBalance, AttributeValues.AvailableBalance);
+	AccountingBalance = GetAccountingSuiteAccountBalance(AttributeValues.AccountingAccount);
 		
 	RestoreModificationState();
 	AskSave();
 	
 	YodleeAccount = AttributeValues.YodleeAccount;
-	//YodleeAccount	= CommonUse.GetAttributeValue(AccountInBank, "YodleeAccount");
-	
-	//If YodleeAccount Then
-		//Items.CSV_Filename.Visible = False;
-		//Items.RefreshTransactions.Visible = True;
-	//Else
-		//Items.CSV_Filename.Visible = True;
-		//Items.RefreshTransactions.Visible = False;
-	//EndIf;
-	
+		
 	UpdateDiagram();
-	//UpdateFormAtServer();	
 EndProcedure
+
+&AtClient
+Function FormLastUpdatedString(LastUpdated)
+	If (Not ValueIsFilled(LastUpdated)) Or (LastUpdated < '19800101') Then
+		return "Not updated";
+	EndIf;
+	LocalTime = CurrentDate();
+	If ((LocalTime - LastUpdated) < 3600) Then //Recently within 1 hour
+		return Format(Int((LocalTime - LastUpdated)/60), "NFD=0; NZ=") + " minutes ago"; ;
+	ElsIf ((LocalTime - LastUpdated) < 24*3600) Then //Within 24 hours ago
+		HourDiff = Int((LocalTime - LastUpdated)/3600);
+		return Format(HourDiff, "NFD=0; NZ=") + ?(HourDiff = 1, " hour", " hours") +" ago";
+	ElsIf BegOfDay(LocalTime - 24*3600) = BegOfDay(LastUpdated) Then //Yesterday
+		return "Yesterday";
+	Else
+		return Format(LastUpdated, "DLF=DD");
+	EndIf;		 
+EndFunction
 
 &AtClient
 Procedure BankTransactionsUnacceptedOnChange(Item)
@@ -1211,6 +1275,8 @@ Procedure RecordTransactionToTheDatabase(Transaction)
 	Tran.Insert("CurrencyCode", Transaction.CurrencyCode);
 	Tran.Insert("CategoryID", Transaction.CategoryID);
 	Tran.Insert("Type", Transaction.Type);
+	Tran.Insert("CategorizedCompanyNotAccepted", Transaction.CategorizedCompanyNotAccepted);
+	Tran.Insert("CategorizedCategoryNotAccepted", Transaction.CategorizedCategoryNotAccepted);
 	TransactionID = SaveTransactionAtServer(Tran);
 	Transaction.TransactionID = TransactionID;
 EndProcedure
@@ -1268,6 +1334,12 @@ Procedure DeleteOrNotResult(Result, Parameters) Export
 			DeleteTransactionAtServer(Parameters.TranID);
 			CurRow = Object.BankTransactionsUnaccepted.FindByID(Parameters.RowID);
 			Object.BankTransactionsUnaccepted.Delete(Object.BankTransactionsUnaccepted.IndexOf(CurRow));
+		ElsIf TypeOf(Parameters) = Type("Array") Then
+			For Each CurParam In Parameters Do
+				DeleteTransactionAtServer(CurParam.TranID);
+				CurRow = Object.BankTransactionsUnaccepted.FindByID(CurParam.RowID);
+				Object.BankTransactionsUnaccepted.Delete(Object.BankTransactionsUnaccepted.IndexOf(CurRow));				
+			EndDo;
 		EndIf;
     EndIf;
 	SetModificationState(False);
@@ -1287,7 +1359,7 @@ Procedure EditAccount(Command)
 	
 	Notify = New NotifyDescription("OnComplete_RefreshTransactions", ThisObject);
 	Params = New Structure("PerformEditAccount, RefreshAccount", True, AccountInBank);
-	OpenForm("DataProcessor.YodleeBankAccountsManagement.Form.Form", Params, ThisForm,,,, Notify, FormWindowOpeningMode.LockWholeInterface);
+	OpenForm("DataProcessor.YodleeBankAccountsManagement.Form.Form", Params, ThisForm,,,, Notify, FormWindowOpeningMode.LockOwnerWindow);
 EndProcedure
 
 &AtClient
@@ -1295,10 +1367,11 @@ Procedure RefreshTransactions(Command)
 	If Not YodleeAccount Then
 		return;		
 	EndIf;
-	
+	//Lock Yodlee connection
+	LockYodleeConnection(ThisForm.UUID);
 	Notify = New NotifyDescription("OnComplete_RefreshTransactions", ThisObject);
 	Params = New Structure("PerformRefreshingAccount, RefreshAccount, UploadTransactionsFrom, UploadTransactionsTo", True, AccountInBank, Object.ProcessingPeriod.StartDate, Object.ProcessingPeriod.EndDate);
-	OpenForm("DataProcessor.YodleeBankAccountsManagement.Form.Form", Params, ThisForm,,,, Notify, FormWindowOpeningMode.LockWholeInterface);
+	OpenForm("DataProcessor.YodleeBankAccountsManagement.Form.Form", Params, ThisForm,,,, Notify, FormWindowOpeningMode.LockOwnerWindow);
 EndProcedure
 
 &AtClient
@@ -1306,7 +1379,7 @@ Procedure AddAccount(Command)
 	
 	Notify = New NotifyDescription("OnComplete_AddAccount", ThisObject);
 	Params = New Structure("PerformAddAccount", True);
-	OpenForm("DataProcessor.YodleeBankAccountsManagement.Form.Form", Params, ThisForm,,,, Notify, FormWindowOpeningMode.LockWholeInterface);
+	OpenForm("DataProcessor.YodleeBankAccountsManagement.Form.Form", Params, ThisForm,,,, Notify, FormWindowOpeningMode.LockOwnerWindow);
 
 EndProcedure
 
@@ -1387,7 +1460,7 @@ Procedure CSV_FilenameStartChoice(Item, ChoiceData, StandardProcessing)
 		CommonUseClientServer.MessageToUser("Please, fill in bank account",, "AccountInBank");
 		Return;
 	ElsIf Not ValueIsFilled(Object.BankAccount) Then
-		CommonUseClientServer.MessageToUser("Please, fill accounting account in on the accounting tab in bank account form",, "AccountInBank");
+		CommonUseClientServer.MessageToUser("Please, fill G/L account in on the accounting tab in bank account form",, "AccountInBank");
 		Return;
 	EndIf;
 	
@@ -1537,16 +1610,44 @@ EndProcedure
 Procedure BankTransactionsUnacceptedAssigningChoiceProcessing(Item, SelectedValue, StandardProcessing)
 	If SelectedValue = "Assign" Then
 		Items.BankTransactionsUnaccepted.CurrentData.Document = Undefined;
+		RecordTransactionToTheDatabase(Items.BankTransactionsUnaccepted.CurrentData);
 		Return;
 	ElsIf SelectedValue = "Match" Then
 		SelectedValue = "Assign";
+		//Open DocumentJournal
+		DM = GetForm("DataProcessor.DownloadedTransactions.Form.DocumentMatching",,Item);
+		FilterType = DM.DocumentList.Filter.Items.Add(Type("DataCompositionFilterItem"));
+		FilterType.LeftValue = New DataCompositionField("Type");
+		FilterType.ComparisonType = DataCompositionComparisonType.InList;
+		DocList = New ValueList();
 		If Items.BankTransactionsUnaccepted.CurrentData.Amount < 0 Then
-			OpenForm("Document.Check.ChoiceForm", , Item);	
+			DocList.Add(Type("DocumentRef.Check"));
+			AmountFilterValue = -1*Items.BankTransactionsUnaccepted.CurrentData.Amount;
 		Else
-			CashReceiptFilter 	= New Structure("DepositType", "1");//Undeposited
-			CashReceiptParams	= New Structure("Filter", CashReceiptFilter);
-			OpenForm("Document.CashReceipt.ChoiceForm", CashReceiptParams, Item);	
+			DocList.Add(Type("DocumentRef.CashReceipt"));
+			DocList.Add(Type("DocumentRef.Deposit"));
+			AmountFilterValue = Items.BankTransactionsUnaccepted.CurrentData.Amount;
 		EndIf;
+		FilterType.RightValue = DocList;
+		FilterType.Use = True;
+		
+		FilterTotal = DM.DocumentList.Filter.Items.Add(Type("DataCompositionFilterItem"));
+		FilterTotal.LeftValue = New DataCompositionField("Total");
+		FilterTotal.ComparisonType = DataCompositionComparisonType.Equal;
+		FilterTotal.RightValue = AmountFilterValue;
+		FilterTotal.Use = True;
+		
+		DM.CloseOnChoice = True;
+		DM.WindowOpeningMode = FormWindowOpeningMode.LockOwnerWindow;
+		DM.Open();
+		return;
+		//If Items.BankTransactionsUnaccepted.CurrentData.Amount < 0 Then
+		//	OpenForm("Document.Check.ChoiceForm", , Item);	
+		//Else
+		//	CashReceiptFilter 	= New Structure("DepositType", "1");//Undeposited
+		//	CashReceiptParams	= New Structure("Filter", CashReceiptFilter);
+		//	OpenForm("Document.CashReceipt.ChoiceForm", CashReceiptParams, Item);	
+		//EndIf;
 	ElsIf ValueIsFilled(SelectedValue) Then 
 		StandardProcessing = True;
 		Items.BankTransactionsUnaccepted.CurrentData.Document = SelectedValue;
@@ -1624,7 +1725,8 @@ EndFunction
 &AtClient
 Procedure OnComplete_RefreshTransactions(ClosureResult, AdditionalParameters) Export
 	LastUpdated = ToLocalTime(CommonUse.GetAttributeValue(AccountInBank, "LastUpdatedTimeUTC"));
-	AccountLastUpdated 	= ?(ValueIsFilled(LastUpdated), Format(LastUpdated, "DLF=DT"), "");
+	AccountLastUpdated 	= FormLastUpdatedString(LastUpdated); //?(ValueIsFilled(LastUpdated), Format(LastUpdated, "DLF=DT"), "");
+	UnlockYodleeConnection(ThisForm.UUID);
 	//Items.BankAccountRefreshedOn.Title = "Refreshed on: " + Format(AccountLastUpdated, "DLF=DT");	
 	UploadTransactionsFromDB();
 EndProcedure
@@ -1725,7 +1827,6 @@ Procedure AvailableBankAccountsSelection(Item, SelectedRow, Field, StandardProce
 	ShowValue(,Item.CurrentData.Value);
 EndProcedure
 
-
 &AtClient
 Procedure BankTransactionsUnacceptedOnActivateRow(Item)
 	If Item.CurrentData = Undefined Then
@@ -1739,10 +1840,18 @@ Procedure BankTransactionsUnacceptedOnActivateRow(Item)
 	CategoryDescription = Item.CurrentData.CategoryDescription;
 	CategoryID = Item.CurrentData.CategoryID;
 	If ValueIsFilled(CategoryAccount) Then
-		ChoiceList.Add(CategoryAccount, "Accept: " + CategoryDescription + " (" + String(CategoryAccount) + "-" + AccountDescription + ")");
+		//ChoiceList.Add(CategoryAccount, "Accept: " + CategoryDescription + " (" + String(CategoryAccount) + "-" + AccountDescription + ")");
+		ChoiceList.Add(CategoryAccount, "Accept: "  + CategoryDescription + " (" + String(CategoryAccount) + ")");
 	ElsIf ValueIsFilled(CategoryID) Then
 		ChoiceList.Add(PredefinedValue("ChartOfAccounts.ChartOfAccounts.EmptyRef"), "Assign account to: " + CategoryDescription);
 	Else
+	EndIf;
+	//Fill company choice list
+	If Item.CurrentData.CategorizedCompanyNotAccepted Then
+		ChoiceList = Items.BankTransactionsUnacceptedCompany.ChoiceList;
+		ChoiceList.Clear();
+		Company = Item.CurrentData.Company;
+		ChoiceList.Add(Company, "Accept: " + String(Company));
 	EndIf;
 EndProcedure
 
@@ -1753,12 +1862,13 @@ Procedure BankTransactionsUnacceptedCategoryChoiceProcessing(Item, SelectedValue
 		StandardProcessing = False;
 		Notify = New NotifyDescription("AssignCategoryAccount", ThisObject, New Structure("CurrentRow", Items.BankTransactionsUnaccepted.CurrentRow));
 		OpenForm("Catalog.BankTransactionCategories.ObjectForm", New Structure("Key", Items.BankTransactionsUnaccepted.CurrentData.CategoryRef), ThisForm,,,,Notify,FormWindowOpeningMode.LockOwnerWindow);
-		
+				
 	Else //If a user changed the suggested category account - then add it to conditional appearance
 		//Check if an account is the first occurance
-		If (ConditionalAppearanceAccounts.FindByValue(SelectedValue) = Undefined) Then
-			AddAccountToConditionalAppearance(SelectedValue);
-		EndIf;
+		//If (ConditionalAppearanceAccounts.FindByValue(SelectedValue) = Undefined) Then
+		//	AddAccountToConditionalAppearance(SelectedValue);
+		//EndIf;
+		Items.BankTransactionsUnaccepted.CurrentData.CategorizedCategoryNotAccepted = False;
 	EndIf;
 EndProcedure
 
@@ -1768,8 +1878,101 @@ Procedure AssignCategoryAccount(NewAccount, Parameters) Export
 		Items.BankTransactionsUnaccepted.CurrentRow = Parameters.CurrentRow;
 		CategoryRef = Items.BankTransactionsUnaccepted.CurrentData.CategoryRef;
 		Items.BankTransactionsUnaccepted.CurrentData.Category = CommonUse.GetAttributeValue(CategoryRef, "Account"); 
+		Items.BankTransactionsUnaccepted.CurrentData.CategorizedCategoryNotAccepted = False;
 		//RecordTransactionToTheDatabase(Items.BankTransactionsUnaccepted.CurrentData);
 	EndIf;
+EndProcedure
+
+&AtClient
+Procedure DeleteSelectedTransactions(Command)
+	SelRows = Items.BankTransactionsUnaccepted.SelectedRows;
+	If SelRows.Count() = 0 Then
+		return;
+	EndIf;
+	Params = New Array;
+	For Each RowID In SelRows Do
+		CurRow = Object.BankTransactionsUnaccepted.FindByID(RowID);		
+		If Not ValueIsFilled(CurRow.TransactionID) Then
+			Object.BankTransactionsUnaccepted.Delete(RowID);
+		//Should ask the user whether to delete or not
+		Else
+			Params.Add(New Structure("TranID, RowID", CurRow.TransactionID, RowID));
+		EndIf;
+	EndDo;
+	Mode = QuestionDialogMode.YesNoCancel;
+	Notify = New NotifyDescription("DeleteOrNotResult", ThisObject, Params);
+	If QuestionAsked = Undefined then
+		QuestionAsked = False;
+	EndIf;
+	If Not QuestionAsked then
+		If SelRows.Count() = 1 Then
+			ShowQueryBox(Notify, "The current transaction will be removed from the database permanently. Continue?", Mode, 0, DialogReturnCode.Cancel, "Downloaded transactions");
+		Else
+			ShowQueryBox(Notify, "The selected transactions will be removed from the database permanently. Continue?", Mode, 0, DialogReturnCode.Cancel, "Downloaded transactions");
+		EndIf;
+		QuestionAsked = True;
+	EndIf;
+EndProcedure
+
+&AtClient
+Procedure DecorationProcessingPeriodClick(Item)
+	Notify = New NotifyDescription("OnProcessingPeriodChange", ThisObject, New Structure());
+	Params = New Structure("ProcessingPeriod", Object.ProcessingPeriod);
+	OpenForm("DataProcessor.DownloadedTransactions.Form.ProcessingPeriod", Params, ThisForm,,,, Notify, FormWindowOpeningMode.LockOwnerWindow);
+	//ShowInputValue(Notify,Object.ProcessingPeriod,, Type("StandardPeriod"));
+EndProcedure
+
+&AtClient
+Procedure OnProcessingPeriodChange(Result, Parameters) Export
+	If TypeOf(Result) = Type("Structure") Then
+		Object.ProcessingPeriod = Result.ProcessingPeriod;
+		Items.DecorationProcessingPeriod.Title = Format(Object.ProcessingPeriod.StartDate, "DLF=DD") + " - " + Format(Object.ProcessingPeriod.EndDate, "DLF=DD");
+	EndIf;
+
+EndProcedure
+
+&AtClient
+Procedure CategorizeTransactions(Command)
+	NewTransactions = New Array;
+	i = 0;
+	While i < Object.BankTransactionsUnaccepted.Count() Do
+		CurTran = Object.BankTransactionsUnaccepted[i];
+		NewTransactions.Add(New Structure("BankAccount, Description, ID, RowID", CurTran.BankAccount, CurTran.Description, CurTran.TransactionID, i));
+		i = i + 1;
+	EndDo;
+	ReturnArray = CategorizeTransactionsAtServer(NewTransactions);
+	For Each CategorizedTran IN ReturnArray Do
+		BTUnaccepted = Object.BankTransactionsUnaccepted[CategorizedTran.RowID];
+		//Apply categorized company if it is not filled
+		If (Not ValueIsFilled(BTUnaccepted.Company)) Or (BTUnaccepted.CategorizedCompanyNotAccepted) Then 
+			If ValueIsFilled(CategorizedTran.Customer) Then
+				BTUnaccepted.Company = CategorizedTran.Customer;
+				BTUnaccepted.CategorizedCompanyNotAccepted = True;
+			EndIf;
+		EndIf;
+		If (Not ValueIsFilled(BTUnaccepted.Category)) Or (BTUnaccepted.CategorizedCategoryNotAccepted) Then 
+			If ValueIsFilled(CategorizedTran.Category) Then
+				If (BTUnaccepted.CategoryAccount <> CategorizedTran.Category) Then
+					BTUnaccepted.Category = CategorizedTran.Category;
+					BTUnaccepted.CategorizedCategoryNotAccepted = True;
+				EndIf;
+			EndIf;
+		EndIf;
+		If BTUnaccepted.CategorizedCompanyNotAccepted OR BTUnaccepted.CategorizedCategoryNotAccepted Then
+			RecordTransactionToTheDatabase(BTUnaccepted);
+		EndIf;
+	EndDo;
+EndProcedure
+
+&AtServerNoContext
+Function CategorizeTransactionsAtServer(NewTransactions)
+	ReturnArray = Categorization.CategorizeTransactions(NewTransactions);
+	return ReturnArray;
+EndFunction
+
+&AtClient
+Procedure BankTransactionsUnacceptedCompanyChoiceProcessing(Item, SelectedValue, StandardProcessing)
+	Items.BankTransactionsUnaccepted.CurrentData.CategorizedCompanyNotAccepted = False;
 EndProcedure
 
 #ENDREGION

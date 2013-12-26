@@ -662,29 +662,29 @@ in Google Drive:
 									<ContextMenu name="РеквизитыКонтекстноеМеню" id="8"/>
 									<AutoCommandBar name="РеквизитыКоманднаяПанель" id="9"/>
 									<ExtendedTooltip name="РеквизитыExtendedTooltip" id="276"/>
-									<SearchStringAddition name="РеквизитыSearchString" id="643">
+									<SearchStringAddition name="РеквизитыSearchString" id="688">
 										<AdditionSource>
 											<Item>Реквизиты</Item>
 											<Type>SearchStringRepresentation</Type>
 										</AdditionSource>
-										<ContextMenu name="РеквизитыSearchStringContextMenu" id="644"/>
-										<ExtendedTooltip name="РеквизитыSearchStringExtendedTooltip" id="645"/>
+										<ContextMenu name="РеквизитыSearchStringContextMenu" id="689"/>
+										<ExtendedTooltip name="РеквизитыSearchStringExtendedTooltip" id="690"/>
 									</SearchStringAddition>
-									<ViewStatusAddition name="РеквизитыViewStatus" id="646">
+									<ViewStatusAddition name="РеквизитыViewStatus" id="691">
 										<AdditionSource>
 											<Item>Реквизиты</Item>
 											<Type>ViewStatusRepresentation</Type>
 										</AdditionSource>
-										<ContextMenu name="РеквизитыViewStatusContextMenu" id="647"/>
-										<ExtendedTooltip name="РеквизитыViewStatusExtendedTooltip" id="648"/>
+										<ContextMenu name="РеквизитыViewStatusContextMenu" id="692"/>
+										<ExtendedTooltip name="РеквизитыViewStatusExtendedTooltip" id="693"/>
 									</ViewStatusAddition>
-									<SearchControlAddition name="РеквизитыSearchControl" id="649">
+									<SearchControlAddition name="РеквизитыSearchControl" id="694">
 										<AdditionSource>
 											<Item>Реквизиты</Item>
 											<Type>SearchControl</Type>
 										</AdditionSource>
-										<ContextMenu name="РеквизитыSearchControlContextMenu" id="650"/>
-										<ExtendedTooltip name="РеквизитыSearchControlExtendedTooltip" id="651"/>
+										<ContextMenu name="РеквизитыSearchControlContextMenu" id="695"/>
+										<ExtendedTooltip name="РеквизитыSearchControlExtendedTooltip" id="696"/>
 									</SearchControlAddition>
 									<ChildItems>
 										<InputField name="РеквизитыИмяРеквизита" id="10">
@@ -855,29 +855,29 @@ in Google Drive:
 								</ChildItems>
 							</AutoCommandBar>
 							<ExtendedTooltip name="DataListExtendedTooltip" id="289"/>
-							<SearchStringAddition name="DataListSearchString" id="652">
+							<SearchStringAddition name="DataListSearchString" id="697">
 								<AdditionSource>
 									<Item>DataList</Item>
 									<Type>SearchStringRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="DataListSearchStringContextMenu" id="653"/>
-								<ExtendedTooltip name="DataListSearchStringExtendedTooltip" id="654"/>
+								<ContextMenu name="DataListSearchStringContextMenu" id="698"/>
+								<ExtendedTooltip name="DataListSearchStringExtendedTooltip" id="699"/>
 							</SearchStringAddition>
-							<ViewStatusAddition name="DataListViewStatus" id="655">
+							<ViewStatusAddition name="DataListViewStatus" id="700">
 								<AdditionSource>
 									<Item>DataList</Item>
 									<Type>ViewStatusRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="DataListViewStatusContextMenu" id="656"/>
-								<ExtendedTooltip name="DataListViewStatusExtendedTooltip" id="657"/>
+								<ContextMenu name="DataListViewStatusContextMenu" id="701"/>
+								<ExtendedTooltip name="DataListViewStatusExtendedTooltip" id="702"/>
 							</ViewStatusAddition>
-							<SearchControlAddition name="DataListSearchControl" id="658">
+							<SearchControlAddition name="DataListSearchControl" id="703">
 								<AdditionSource>
 									<Item>DataList</Item>
 									<Type>SearchControl</Type>
 								</AdditionSource>
-								<ContextMenu name="DataListSearchControlContextMenu" id="659"/>
-								<ExtendedTooltip name="DataListSearchControlExtendedTooltip" id="660"/>
+								<ContextMenu name="DataListSearchControlContextMenu" id="704"/>
+								<ExtendedTooltip name="DataListSearchControlExtendedTooltip" id="705"/>
 							</SearchControlAddition>
 							<ChildItems>
 								<LabelField name="DataListНомерСтроки" id="116">
@@ -962,11 +962,35 @@ in Google Drive:
 									<ContextMenu name="DataListCustomerTermsContextMenu" id="168"/>
 									<ExtendedTooltip name="DataListCustomerTermsExtendedTooltip" id="299"/>
 								</InputField>
+								<InputField name="DataListCustomerSalesPerson" id="658">
+									<DataPath>Object.DataList.CustomerSalesPerson</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="DataListCustomerSalesPersonContextMenu" id="659"/>
+									<ExtendedTooltip name="DataListCustomerSalesPersonExtendedTooltip" id="660"/>
+								</InputField>
+								<InputField name="DataListCustomerWebsite" id="661">
+									<DataPath>Object.DataList.CustomerWebsite</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="DataListCustomerWebsiteContextMenu" id="662"/>
+									<ExtendedTooltip name="DataListCustomerWebsiteExtendedTooltip" id="663"/>
+								</InputField>
+								<InputField name="DataListCustomerPriceLevel" id="664">
+									<DataPath>Object.DataList.CustomerPriceLevel</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="DataListCustomerPriceLevelContextMenu" id="665"/>
+									<ExtendedTooltip name="DataListCustomerPriceLevelExtendedTooltip" id="666"/>
+								</InputField>
 								<InputField name="DataListCustomerAddressID" id="193">
 									<DataPath>Object.DataList.CustomerAddressID</DataPath>
 									<EditMode>EnterOnInput</EditMode>
 									<ContextMenu name="DataListCustomerAddressIDContextMenu" id="194"/>
 									<ExtendedTooltip name="DataListCustomerAddressIDExtendedTooltip" id="300"/>
+								</InputField>
+								<InputField name="DataListAddressSalutation" id="646">
+									<DataPath>Object.DataList.AddressSalutation</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="DataListAddressSalutationContextMenu" id="647"/>
+									<ExtendedTooltip name="DataListAddressSalutationExtendedTooltip" id="648"/>
 								</InputField>
 								<InputField name="DataListCustomerFirstName" id="169">
 									<DataPath>Object.DataList.CustomerFirstName</DataPath>
@@ -985,6 +1009,18 @@ in Google Drive:
 									<EditMode>EnterOnInput</EditMode>
 									<ContextMenu name="DataListCustomerLastNameContextMenu" id="174"/>
 									<ExtendedTooltip name="DataListCustomerLastNameExtendedTooltip" id="303"/>
+								</InputField>
+								<InputField name="DataListAddressSuffix" id="649">
+									<DataPath>Object.DataList.AddressSuffix</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="DataListAddressSuffixContextMenu" id="650"/>
+									<ExtendedTooltip name="DataListAddressSuffixExtendedTooltip" id="651"/>
+								</InputField>
+								<InputField name="DataListAddressJobTitle" id="652">
+									<DataPath>Object.DataList.AddressJobTitle</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="DataListAddressJobTitleContextMenu" id="653"/>
+									<ExtendedTooltip name="DataListAddressJobTitleExtendedTooltip" id="654"/>
 								</InputField>
 								<InputField name="DataListCustomerPhone" id="175">
 									<DataPath>Object.DataList.CustomerPhone</DataPath>
@@ -1022,6 +1058,12 @@ in Google Drive:
 									<ContextMenu name="DataListCustomerAddressLine2ContextMenu" id="184"/>
 									<ExtendedTooltip name="DataListCustomerAddressLine2ExtendedTooltip" id="308"/>
 								</InputField>
+								<InputField name="DataListCustomerAddressLine3" id="643">
+									<DataPath>Object.DataList.CustomerAddressLine3</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="DataListCustomerAddressLine3ContextMenu" id="644"/>
+									<ExtendedTooltip name="DataListCustomerAddressLine3ExtendedTooltip" id="645"/>
+								</InputField>
 								<InputField name="DataListCustomerCity" id="185">
 									<DataPath>Object.DataList.CustomerCity</DataPath>
 									<EditMode>EnterOnInput</EditMode>
@@ -1052,95 +1094,17 @@ in Google Drive:
 									<ContextMenu name="DataListCustomerAddressNotesContextMenu" id="629"/>
 									<ExtendedTooltip name="DataListCustomerAddressNotesExtendedTooltip" id="630"/>
 								</InputField>
-								<InputField name="DataListCustomerShippingAddressID" id="541">
-									<DataPath>Object.DataList.CustomerShippingAddressID</DataPath>
+								<InputField name="DataListAddressSalesPerson" id="655">
+									<DataPath>Object.DataList.AddressSalesPerson</DataPath>
 									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListCustomerShippingAddressIDContextMenu" id="542"/>
-									<ExtendedTooltip name="DataListCustomerShippingAddressIDExtendedTooltip" id="543"/>
+									<ContextMenu name="DataListAddressSalesPersonContextMenu" id="656"/>
+									<ExtendedTooltip name="DataListAddressSalesPersonExtendedTooltip" id="657"/>
 								</InputField>
-								<InputField name="DataListCustomerShippingFirstName" id="544">
-									<DataPath>Object.DataList.CustomerShippingFirstName</DataPath>
+								<InputField name="DataListCustomerVendorTaxID" id="637">
+									<DataPath>Object.DataList.CustomerVendorTaxID</DataPath>
 									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListCustomerShippingFirstNameContextMenu" id="545"/>
-									<ExtendedTooltip name="DataListCustomerShippingFirstNameExtendedTooltip" id="546"/>
-								</InputField>
-								<InputField name="DataListCustomerShippingMiddleName" id="547">
-									<DataPath>Object.DataList.CustomerShippingMiddleName</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListCustomerShippingMiddleNameContextMenu" id="548"/>
-									<ExtendedTooltip name="DataListCustomerShippingMiddleNameExtendedTooltip" id="549"/>
-								</InputField>
-								<InputField name="DataListCustomerShippingLastName" id="550">
-									<DataPath>Object.DataList.CustomerShippingLastName</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListCustomerShippingLastNameContextMenu" id="551"/>
-									<ExtendedTooltip name="DataListCustomerShippingLastNameExtendedTooltip" id="552"/>
-								</InputField>
-								<InputField name="DataListCustomerShippingPhone" id="553">
-									<DataPath>Object.DataList.CustomerShippingPhone</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListCustomerShippingPhoneContextMenu" id="554"/>
-									<ExtendedTooltip name="DataListCustomerShippingPhoneExtendedTooltip" id="555"/>
-								</InputField>
-								<InputField name="DataListCustomerShippingCell" id="556">
-									<DataPath>Object.DataList.CustomerShippingCell</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListCustomerShippingCellContextMenu" id="557"/>
-									<ExtendedTooltip name="DataListCustomerShippingCellExtendedTooltip" id="558"/>
-								</InputField>
-								<InputField name="DataListCustomerShippingFax" id="559">
-									<DataPath>Object.DataList.CustomerShippingFax</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListCustomerShippingFaxContextMenu" id="560"/>
-									<ExtendedTooltip name="DataListCustomerShippingFaxExtendedTooltip" id="561"/>
-								</InputField>
-								<InputField name="DataListCustomerShippingEmail" id="562">
-									<DataPath>Object.DataList.CustomerShippingEmail</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListCustomerShippingEmailContextMenu" id="563"/>
-									<ExtendedTooltip name="DataListCustomerShippingEmailExtendedTooltip" id="564"/>
-								</InputField>
-								<InputField name="DataListCustomerShippingAddressLine1" id="565">
-									<DataPath>Object.DataList.CustomerShippingAddressLine1</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListCustomerShippingAddressLine1ContextMenu" id="566"/>
-									<ExtendedTooltip name="DataListCustomerShippingAddressLine1ExtendedTooltip" id="567"/>
-								</InputField>
-								<InputField name="DataListCustomerShippingAddressLine2" id="568">
-									<DataPath>Object.DataList.CustomerShippingAddressLine2</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListCustomerShippingAddressLine2ContextMenu" id="569"/>
-									<ExtendedTooltip name="DataListCustomerShippingAddressLine2ExtendedTooltip" id="570"/>
-								</InputField>
-								<InputField name="DataListCustomerShippingCity" id="571">
-									<DataPath>Object.DataList.CustomerShippingCity</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListCustomerShippingCityContextMenu" id="572"/>
-									<ExtendedTooltip name="DataListCustomerShippingCityExtendedTooltip" id="573"/>
-								</InputField>
-								<InputField name="DataListCustomerShippingState" id="574">
-									<DataPath>Object.DataList.CustomerShippingState</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListCustomerShippingStateContextMenu" id="575"/>
-									<ExtendedTooltip name="DataListCustomerShippingStateExtendedTooltip" id="576"/>
-								</InputField>
-								<InputField name="DataListCustomerShippingCountry" id="577">
-									<DataPath>Object.DataList.CustomerShippingCountry</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListCustomerShippingCountryContextMenu" id="578"/>
-									<ExtendedTooltip name="DataListCustomerShippingCountryExtendedTooltip" id="579"/>
-								</InputField>
-								<InputField name="DataListCustomerShippingZIP" id="580">
-									<DataPath>Object.DataList.CustomerShippingZIP</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListCustomerShippingZIPContextMenu" id="581"/>
-									<ExtendedTooltip name="DataListCustomerShippingZIPExtendedTooltip" id="582"/>
-								</InputField>
-								<InputField name="DataListCustomerShippingAddressNotes" id="583">
-									<DataPath>Object.DataList.CustomerShippingAddressNotes</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListCustomerShippingAddressNotesContextMenu" id="584"/>
-									<ExtendedTooltip name="DataListCustomerShippingAddressNotesExtendedTooltip" id="585"/>
+									<ContextMenu name="DataListCustomerVendorTaxIDContextMenu" id="638"/>
+									<ExtendedTooltip name="DataListCustomerVendorTaxIDExtendedTooltip" id="639"/>
 								</InputField>
 								<InputField name="DataListCustomerCF1String" id="586">
 									<DataPath>Object.DataList.CustomerCF1String</DataPath>
@@ -1240,12 +1204,6 @@ in Google Drive:
 								</InputField>
 								<InputField name="DataListCustomerCF5String" id="598">
 									<DataPath>Object.DataList.CustomerCF5String</DataPath>
-									<Title>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>CF5 string</v8:content>
-										</v8:item>
-									</Title>
 									<EditMode>EnterOnInput</EditMode>
 									<ContextMenu name="DataListCustomerCF5StringContextMenu" id="599"/>
 									<ExtendedTooltip name="DataListCustomerCF5StringExtendedTooltip" id="600"/>
@@ -1262,11 +1220,35 @@ in Google Drive:
 									<ContextMenu name="DataListCustomerCF5NumContextMenu" id="614"/>
 									<ExtendedTooltip name="DataListCustomerCF5NumExtendedTooltip" id="615"/>
 								</InputField>
-								<InputField name="DataListCustomerVendorTaxID" id="637">
-									<DataPath>Object.DataList.CustomerVendorTaxID</DataPath>
+								<InputField name="DataListAddressCF1String" id="667">
+									<DataPath>Object.DataList.AddressCF1String</DataPath>
 									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListCustomerVendorTaxIDContextMenu" id="638"/>
-									<ExtendedTooltip name="DataListCustomerVendorTaxIDExtendedTooltip" id="639"/>
+									<ContextMenu name="DataListAddressCF1StringContextMenu" id="668"/>
+									<ExtendedTooltip name="DataListAddressCF1StringExtendedTooltip" id="669"/>
+								</InputField>
+								<InputField name="DataListAddressCF2String" id="670">
+									<DataPath>Object.DataList.AddressCF2String</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="DataListAddressCF2StringContextMenu" id="671"/>
+									<ExtendedTooltip name="DataListAddressCF2StringExtendedTooltip" id="672"/>
+								</InputField>
+								<InputField name="DataListAddressCF3String" id="673">
+									<DataPath>Object.DataList.AddressCF3String</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="DataListAddressCF3StringContextMenu" id="674"/>
+									<ExtendedTooltip name="DataListAddressCF3StringExtendedTooltip" id="675"/>
+								</InputField>
+								<InputField name="DataListAddressCF4String" id="676">
+									<DataPath>Object.DataList.AddressCF4String</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="DataListAddressCF4StringContextMenu" id="677"/>
+									<ExtendedTooltip name="DataListAddressCF4StringExtendedTooltip" id="678"/>
+								</InputField>
+								<InputField name="DataListAddressCF5String" id="679">
+									<DataPath>Object.DataList.AddressCF5String</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="DataListAddressCF5StringContextMenu" id="680"/>
+									<ExtendedTooltip name="DataListAddressCF5StringExtendedTooltip" id="681"/>
 								</InputField>
 								<InputField name="DataListBalancesAccount" id="211">
 									<DataPath>Object.DataList.BalancesAccount</DataPath>
@@ -1581,31 +1563,37 @@ in Google Drive:
 									<ExtendedTooltip name="DataListSIHeaderAmountExtendedTooltip" id="390"/>
 								</InputField>
 								<InputField name="DataListAPDate" id="391">
+									<DataPath>1/0:9d1d7c81-4d15-420c-b73f-b4a45ff0af74/0:a20b8658-0dde-42eb-ab48-78a9afdc394f</DataPath>
 									<EditMode>EnterOnInput</EditMode>
 									<ContextMenu name="DataListAPDateContextMenu" id="392"/>
 									<ExtendedTooltip name="DataListAPDateExtendedTooltip" id="393"/>
 								</InputField>
 								<InputField name="DataListAPNumber" id="394">
+									<DataPath>1/0:9d1d7c81-4d15-420c-b73f-b4a45ff0af74/0:c60492e6-3080-4ff4-98d5-e03a968841fa</DataPath>
 									<EditMode>EnterOnInput</EditMode>
 									<ContextMenu name="DataListAPNumberContextMenu" id="395"/>
 									<ExtendedTooltip name="DataListAPNumberExtendedTooltip" id="396"/>
 								</InputField>
 								<InputField name="DataListAPVendor" id="397">
+									<DataPath>1/0:9d1d7c81-4d15-420c-b73f-b4a45ff0af74/0:212db5d9-b99f-4ac2-ba20-ca42febe1a1e</DataPath>
 									<EditMode>EnterOnInput</EditMode>
 									<ContextMenu name="DataListAPVendorContextMenu" id="398"/>
 									<ExtendedTooltip name="DataListAPVendorExtendedTooltip" id="399"/>
 								</InputField>
 								<InputField name="DataListAPTerms" id="400">
+									<DataPath>1/0:9d1d7c81-4d15-420c-b73f-b4a45ff0af74/0:c0801474-34bd-42a4-b81e-b6a0941e4c9c</DataPath>
 									<EditMode>EnterOnInput</EditMode>
 									<ContextMenu name="DataListAPTermsContextMenu" id="401"/>
 									<ExtendedTooltip name="DataListAPTermsExtendedTooltip" id="402"/>
 								</InputField>
 								<InputField name="DataListAPDueDate" id="403">
+									<DataPath>1/0:9d1d7c81-4d15-420c-b73f-b4a45ff0af74/0:06081432-099a-4aad-9be1-c7857f3e54d0</DataPath>
 									<EditMode>EnterOnInput</EditMode>
 									<ContextMenu name="DataListAPDueDateContextMenu" id="404"/>
 									<ExtendedTooltip name="DataListAPDueDateExtendedTooltip" id="405"/>
 								</InputField>
 								<InputField name="DataListAPOpenBalance" id="406">
+									<DataPath>1/0:9d1d7c81-4d15-420c-b73f-b4a45ff0af74/0:3c673770-f427-4a33-ae77-29d1476147d3</DataPath>
 									<EditMode>EnterOnInput</EditMode>
 									<ContextMenu name="DataListAPOpenBalanceContextMenu" id="407"/>
 									<ExtendedTooltip name="DataListAPOpenBalanceExtendedTooltip" id="408"/>
@@ -1814,6 +1802,20 @@ in Google Drive:
 									<ContextMenu name="DataListExpensifyMemoContextMenu" id="536"/>
 									<ExtendedTooltip name="DataListExpensifyMemoExtendedTooltip" id="537"/>
 								</InputField>
+								<CheckBoxField name="DataListDefaultBillingAddress" id="682">
+									<DataPath>Object.DataList.DefaultBillingAddress</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<CheckBoxType>Auto</CheckBoxType>
+									<ContextMenu name="DataListDefaultBillingAddressContextMenu" id="683"/>
+									<ExtendedTooltip name="DataListDefaultBillingAddressExtendedTooltip" id="684"/>
+								</CheckBoxField>
+								<CheckBoxField name="DataListDefaultShippingAddress" id="685">
+									<DataPath>Object.DataList.DefaultShippingAddress</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<CheckBoxType>Auto</CheckBoxType>
+									<ContextMenu name="DataListDefaultShippingAddressContextMenu" id="686"/>
+									<ExtendedTooltip name="DataListDefaultShippingAddressExtendedTooltip" id="687"/>
+								</CheckBoxField>
 							</ChildItems>
 						</Table>
 						<UsualGroup name="СозданиеПодвал" id="64">
@@ -2109,7 +2111,7 @@ in Google Drive:
 				<v8:Type xmlns:mxl="http://v8.1c.ru/8.2/data/spreadsheet">mxl:SpreadsheetDocument</v8:Type>
 			</Type>
 		</Attribute>
-		<Attribute name="ИсточникАдрес" id="5">
+		<Attribute name="SourceAddress" id="5">
 			<Title>
 				<v8:item>
 					<v8:lang>en</v8:lang>

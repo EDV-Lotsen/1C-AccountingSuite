@@ -25,28 +25,23 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	ImageAddress = TempStorageAddress;
 	Items.image.PictureSize = PictureSize.AutoSize;
 	
-	Items.BankAccountLabel.Title =
-		CommonUse.GetAttributeValue(Constants.BankAccount.Get(), "Description");
-	Items.IncomeAccountLabel.Title =
-		CommonUse.GetAttributeValue(Constants.IncomeAccount.Get(), "Description");
-	Items.COGSAccountLabel.Title =
-		CommonUse.GetAttributeValue(Constants.COGSAccount.Get(), "Description");
-	Items.ExpenseAccountLabel.Title =
-		CommonUse.GetAttributeValue(Constants.ExpenseAccount.Get(), "Description");
-	Items.InventoryAccountLabel.Title =
-		CommonUse.GetAttributeValue(Constants.InventoryAccount.Get(), "Description");
-	Items.ExchangeGainLabel.Title =
-		CommonUse.GetAttributeValue(Constants.ExchangeGain.Get(), "Description");
-	Items.ExchangeLossLabel.Title =
-		CommonUse.GetAttributeValue(Constants.ExchangeLoss.Get(), "Description");
-	Items.TaxPayableAccountLabel.Title =
-		CommonUse.GetAttributeValue(Constants.TaxPayableAccount.Get(), "Description");
-	Items.UndepositedFundsAccountLabel.Title =
-		CommonUse.GetAttributeValue(Constants.UndepositedFundsAccount.Get(), "Description");
-	Items.BankInterestEarnedAccountLabel.Title =
-		CommonUse.GetAttributeValue(Constants.BankInterestEarnedAccount.Get(), "Description");
-	Items.BankServiceChargeAccountLabel.Title =
-		CommonUse.GetAttributeValue(Constants.BankServiceChargeAccount.Get(), "Description");
+	//Closing the books
+	ChoiceList = Items.PeriodClosingOption.ChoiceList;
+	ChoiceList.Add(Enums.PeriodClosingOptions.OnlyWarn);
+	ChoiceList.Add(Enums.PeriodClosingOptions.WarnAndRequirePassword);
+	PeriodClosingPasswordConfirm = ConstantsSet.PeriodClosingPassword;
+	
+	If Not ValueIsFilled(ConstantsSet.PeriodClosingOption) Then
+		ConstantsSet.PeriodClosingOption = Enums.PeriodClosingOptions.WarnAndRequirePassword
+	EndIf;
+	
+	If ConstantsSet.PeriodClosingOption = Enums.PeriodClosingOptions.WarnAndRequirePassword Then
+		Items.PeriodClosingPassword.Visible = True;
+		Items.PeriodClosingPasswordConfirm.Visible = True;
+	Else
+		Items.PeriodClosingPassword.Visible = False;
+		Items.PeriodClosingPasswordConfirm.Visible = False;
+	EndIf;
 		
 	If NOT Constants.APISecretKey.Get() = "" Then
 		Items.APISecretKey.ReadOnly = True;		
@@ -67,66 +62,6 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
 	Items.DefaultCurrency.ReadOnly = True;
 			
-EndProcedure
-
-&AtClient
-Procedure BankAccountOnChange(Item)
-	Items.BankAccountLabel.Title = GeneralFunctions.AccountName(Items.BankAccount.SelectedText);
-EndProcedure
-
-&AtClient
-Procedure IncomeAccountOnChange(Item)
-	Items.IncomeAccountLabel.Title = GeneralFunctions.AccountName(Items.IncomeAccount.SelectedText);
-EndProcedure
-
-&AtClient
-Procedure COGSAccountOnChange(Item)
-	Items.COGSAccountLabel.Title = GeneralFunctions.AccountName(Items.COGSAccount.SelectedText);
-EndProcedure
-
-&AtClient
-Procedure ExpenseAccountOnChange(Item)
-	Items.ExpenseAccountLabel.Title = GeneralFunctions.AccountName(Items.ExpenseAccount.SelectedText);
-EndProcedure
-
-&AtClient
-Procedure InventoryAccountOnChange(Item)
-	Items.InventoryAccountLabel.Title =
-		GeneralFunctions.AccountName(Items.InventoryAccount.SelectedText);
-EndProcedure
-
-&AtClient
-Procedure ExchangeGainOnChange(Item)
-	Items.ExchangeGainLabel.Title = GeneralFunctions.AccountName(Items.ExchangeGain.SelectedText);
-EndProcedure
-
-&AtClient
-Procedure ExchangeLossOnChange(Item)
-	Items.ExchangeLossLabel.Title = GeneralFunctions.AccountName(Items.ExchangeLoss.SelectedText);
-EndProcedure
-
-&AtClient
-Procedure TaxPayableAccountOnChange(Item)
-	Items.TaxPayableAccountLabel.Title =
-		GeneralFunctions.AccountName(Items.TaxPayableAccount.SelectedText);
-EndProcedure
-
-&AtClient
-Procedure UndepositedFundsAccountOnChange(Item)
-	Items.UndepositedFundsAccountLabel.Title =
-		GeneralFunctions.AccountName(Items.UndepositedFundsAccount.SelectedText);
-EndProcedure
-
-&AtClient
-Procedure BankInterestEarnedAccountOnChange(Item)
-	Items.BankInterestEarnedAccountLabel.Title =
-		GeneralFunctions.AccountName(Items.BankInterestEarnedAccount.SelectedText);
-EndProcedure
-
-&AtClient
-Procedure BankServiceChargeAccountOnChange(Item)
-	Items.BankServiceChargeAccountLabel.Title =
-		GeneralFunctions.AccountName(Items.BankServiceChargeAccount.SelectedText);
 EndProcedure
 
 &AtClient
@@ -195,7 +130,25 @@ Procedure PlaceImageFile(TempStorageName)
 	If NOT TempStorageName = Undefined Then
 	
 		BinaryData = GetFromTempStorage(TempStorageName);
-				
+		
+		///
+		
+		HeadersMap = New Map();
+		HeadersMap.Insert("Authorization", "Client-ID " + ServiceParameters.ImgurClientID());
+		
+		HTTPRequest = New HTTPRequest("/3/image", HeadersMap);
+		HTTPRequest.SetBodyFromBinaryData(BinaryData);
+		
+		SSLConnection = New OpenSSLSecureConnection();
+		
+		HTTPConnection = New HTTPConnection("api.imgur.com",,,,,,SSLConnection); //imgur-apiv3.p.mashape.com
+		Result = HTTPConnection.Post(HTTPRequest);
+		ResponseBody = Result.GetBodyAsString(TextEncoding.UTF8);
+		ResponseJSON = InternetConnectionClientServer.DecodeJSON(ResponseBody);
+		image_url = ResponseJSON.data.link;
+		// Ctrl + _
+		ConstantsSet.logoURL = image_url;
+		
 	    ///
 		
 		NewRow = InformationRegisters.CustomPrintForms.CreateRecordManager();
@@ -236,9 +189,11 @@ Procedure OnOpen(Cancel)
 	 If SettingAccessCheck() = false Then
 
 	    Items.Common.ChildItems.Logo.ChildItems.UploadLogo.Enabled = false;
+		Items.Common.ChildItems.Integrations.ChildItems.Stripe.ChildItems.StripeConnect.Enabled = false;
 
 	 Else
 		Items.Common.ChildItems.Logo.ChildItems.UploadLogo.Enabled = true;
+		Items.Common.ChildItems.Integrations.ChildItems.Stripe.ChildItems.StripeConnect.Enabled = true;
 
 	 Endif;
 	
@@ -283,7 +238,7 @@ EndFunction
 Procedure DwollaConnect(Command)
 	
 	statestring = GetAPISecretKeyF();	
-	GoToURL("https://www.dwolla.com/oauth/v2/authenticate?client_id=CCUdqUc4nB2AtraAvbsrzLWPS1pKUmfFS0NnFqmRE4OhlYJhVF&response_type=code&redirect_uri=https://pay.accountingsuite.com/dwolla_oauth?state=" + GetTenantValue() + "&scope=send%7Ctransactions%7Cfunding%7Cbalance");
+	GoToURL("https://www.dwolla.com/oauth/v2/authenticate?client_id=" + ServiceParameters.DwollaClientID() + "&response_type=code&redirect_uri=https://pay.accountingsuite.com/dwolla_oauth?state=" + GetTenantValue() + "&scope=send%7Ctransactions%7Cfunding%7Cbalance");
 	
 EndProcedure
 
@@ -306,7 +261,7 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 		Items.MultiLocation.ReadOnly = True;
 	EndIf;
 	
-	Constants.Email.Set(Constants.CurrentUserEmail.Get().Description);
+	Constants.Email.Set(Constants.CurrentUserEmail.Get().Description);	
 	
 EndProcedure
 
@@ -314,6 +269,34 @@ EndProcedure
 Procedure AfterWrite(WriteParameters)
 	RefreshInterface();
 EndProcedure                 
+
+&AtClient
+Procedure PeriodClosingOptionOnChange(Item)
+	
+	If ConstantsSet.PeriodClosingOption = PredefinedValue("Enum.PeriodClosingOptions.WarnAndRequirePassword") Then
+		Items.PeriodClosingPassword.Visible = True;
+		Items.PeriodClosingPasswordConfirm.Visible = True;
+	Else
+		Items.PeriodClosingPassword.Visible = False;
+		Items.PeriodClosingPasswordConfirm.Visible = False;
+	EndIf;
+
+EndProcedure
+
+&AtServer
+Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
+	If ConstantsSet.PeriodClosingOption = PredefinedValue("Enum.PeriodClosingOptions.WarnAndRequirePassword") Then
+		If (ConstantsSet.PeriodClosingPassword <> PeriodClosingPasswordConfirm) Then
+			
+			MessOnError = New UserMessage();
+			MessOnError.Field = "ConstantsSet.PeriodClosingPassword";
+			MessOnError.Text  = "Different values in ""Password"" and ""Confirm password"". Re-enter ""Password""";
+			MessOnError.Message();
+			
+			Cancel = True;
+		EndIf;
+	EndIf;
+EndProcedure
 
 //&AtServer
 //Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
@@ -327,8 +310,6 @@ EndProcedure
 //Procedure CurrentUserEmailOnChange(Item)
 //	EmailChange = True;
 //EndProcedure
-
-
 
 
 

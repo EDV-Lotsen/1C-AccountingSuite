@@ -8,14 +8,14 @@
 		<ChildItems>
 			<Button name="FormPayWithDwolla" id="114">
 				<Type>CommandBarButton</Type>
+				<Visible>false</Visible>
 				<CommandName>Form.Command.PayWithDwolla</CommandName>
 				<ExtendedTooltip name="FormPayWithDwollaExtendedTooltip" id="115"/>
 			</Button>
-			<Button name="FormPayWithRipple" id="121">
+			<Button name="FormPayWithBitcoin" id="128">
 				<Type>CommandBarButton</Type>
-				<Visible>false</Visible>
-				<CommandName>Form.Command.PayWithRipple</CommandName>
-				<ExtendedTooltip name="FormPayWithRippleExtendedTooltip" id="122"/>
+				<CommandName>Form.Command.PayWithBitcoin</CommandName>
+				<ExtendedTooltip name="FormPayWithBitcoinExtendedTooltip" id="129"/>
 			</Button>
 		</ChildItems>
 	</AutoCommandBar>
@@ -175,28 +175,13 @@
 									<ShowTitle>false</ShowTitle>
 									<ExtendedTooltip name="RightColumnExtendedTooltip" id="83"/>
 									<ChildItems>
-										<UsualGroup name="Group1" id="68">
-											<Group>Horizontal</Group>
-											<Representation>None</Representation>
-											<ShowTitle>false</ShowTitle>
-											<ExtendedTooltip name="Group1ExtendedTooltip" id="78"/>
-											<ChildItems>
-												<InputField name="BankAccount" id="66">
-													<DataPath>Object.BankAccount</DataPath>
-													<Width>15</Width>
-													<HorizontalStretch>false</HorizontalStretch>
-													<ContextMenu name="BankAccountContextMenu" id="67"/>
-													<ExtendedTooltip name="BankAccountExtendedTooltip" id="79"/>
-													<Events>
-														<Event name="OnChange">BankAccountOnChange</Event>
-													</Events>
-												</InputField>
-												<LabelDecoration name="BankAccountLabel" id="69">
-													<ContextMenu name="BankAccountLabelContextMenu" id="70"/>
-													<ExtendedTooltip name="BankAccountLabelExtendedTooltip" id="80"/>
-												</LabelDecoration>
-											</ChildItems>
-										</UsualGroup>
+										<InputField name="BankAccount" id="66">
+											<DataPath>Object.BankAccount</DataPath>
+											<Width>15</Width>
+											<HorizontalStretch>false</HorizontalStretch>
+											<ContextMenu name="BankAccountContextMenu" id="67"/>
+											<ExtendedTooltip name="BankAccountExtendedTooltip" id="79"/>
+										</InputField>
 										<InputField name="Number" id="1">
 											<DataPath>Object.Number</DataPath>
 											<EditMode>EnterOnInput</EditMode>
@@ -222,22 +207,45 @@
 									<v8:content>Additional</v8:content>
 								</v8:item>
 							</ToolTip>
+							<Group>Horizontal</Group>
 							<ExtendedTooltip name="AdditionalExtendedTooltip" id="107"/>
 							<ChildItems>
-								<InputField name="DwollaPin" id="108">
-									<DataPath>DwollaPin</DataPath>
-									<PasswordMode>true</PasswordMode>
-									<ContextMenu name="DwollaPinContextMenu" id="109"/>
-									<ExtendedTooltip name="DwollaPinExtendedTooltip" id="110"/>
-								</InputField>
-								<InputField name="DwollaTrxID" id="111">
-									<DataPath>Object.DwollaTrxID</DataPath>
-									<ReadOnly>true</ReadOnly>
-									<Width>14</Width>
-									<HorizontalStretch>false</HorizontalStretch>
-									<ContextMenu name="DwollaTrxIDContextMenu" id="112"/>
-									<ExtendedTooltip name="DwollaTrxIDExtendedTooltip" id="113"/>
-								</InputField>
+								<UsualGroup name="Group3" id="121">
+									<Visible>false</Visible>
+									<Group>Vertical</Group>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="Group3ExtendedTooltip" id="122"/>
+									<ChildItems>
+										<InputField name="DwollaPin" id="108">
+											<DataPath>DwollaPin</DataPath>
+											<PasswordMode>true</PasswordMode>
+											<ContextMenu name="DwollaPinContextMenu" id="109"/>
+											<ExtendedTooltip name="DwollaPinExtendedTooltip" id="110"/>
+										</InputField>
+										<InputField name="DwollaTrxID" id="111">
+											<DataPath>Object.DwollaTrxID</DataPath>
+											<ReadOnly>true</ReadOnly>
+											<Width>14</Width>
+											<HorizontalStretch>false</HorizontalStretch>
+											<ContextMenu name="DwollaTrxIDContextMenu" id="112"/>
+											<ExtendedTooltip name="DwollaTrxIDExtendedTooltip" id="113"/>
+										</InputField>
+									</ChildItems>
+								</UsualGroup>
+								<UsualGroup name="Group4" id="123">
+									<Group>Vertical</Group>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="Group4ExtendedTooltip" id="124"/>
+									<ChildItems>
+										<InputField name="CoinbaseTrxID" id="125">
+											<DataPath>Object.CoinbaseTrxID</DataPath>
+											<Width>14</Width>
+											<HorizontalStretch>false</HorizontalStretch>
+											<ContextMenu name="CoinbaseTrxIDContextMenu" id="126"/>
+											<ExtendedTooltip name="CoinbaseTrxIDExtendedTooltip" id="127"/>
+										</InputField>
+									</ChildItems>
+								</UsualGroup>
 							</ChildItems>
 						</Page>
 					</ChildItems>
@@ -286,6 +294,11 @@
 					<EnableStartDrag>true</EnableStartDrag>
 					<EnableDrag>true</EnableDrag>
 					<DataPath>Object.LineItems</DataPath>
+					<CommandSet>
+						<ExcludedCommand>Copy</ExcludedCommand>
+						<ExcludedCommand>Delete</ExcludedCommand>
+						<ExcludedCommand>Add</ExcludedCommand>
+					</CommandSet>
 					<SearchStringLocation>None</SearchStringLocation>
 					<ViewStatusLocation>None</ViewStatusLocation>
 					<SearchControlLocation>None</SearchControlLocation>
@@ -293,29 +306,29 @@
 					<ContextMenu name="LineItemsContextMenu" id="52"/>
 					<AutoCommandBar name="LineItemsCommandBar" id="53"/>
 					<ExtendedTooltip name="LineItemsExtendedTooltip" id="87"/>
-					<SearchStringAddition name="LineItemsSearchString" id="123">
+					<SearchStringAddition name="LineItemsSearchString" id="130">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>SearchStringRepresentation</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsSearchStringContextMenu" id="124"/>
-						<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="125"/>
+						<ContextMenu name="LineItemsSearchStringContextMenu" id="131"/>
+						<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="132"/>
 					</SearchStringAddition>
-					<ViewStatusAddition name="LineItemsViewStatus" id="126">
+					<ViewStatusAddition name="LineItemsViewStatus" id="133">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>ViewStatusRepresentation</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsViewStatusContextMenu" id="127"/>
-						<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="128"/>
+						<ContextMenu name="LineItemsViewStatusContextMenu" id="134"/>
+						<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="135"/>
 					</ViewStatusAddition>
-					<SearchControlAddition name="LineItemsSearchControl" id="129">
+					<SearchControlAddition name="LineItemsSearchControl" id="136">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>SearchControl</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsSearchControlContextMenu" id="130"/>
-						<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="131"/>
+						<ContextMenu name="LineItemsSearchControlContextMenu" id="137"/>
+						<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="138"/>
 					</SearchControlAddition>
 					<ChildItems>
 						<LabelField name="LineItemsLineNumber" id="54">
@@ -527,20 +540,20 @@
 			</ToolTip>
 			<Action>PayAll</Action>
 		</Command>
-		<Command name="PayWithRipple" id="3">
+		<Command name="PayWithBitcoin" id="3">
 			<Title>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Pay with Ripple</v8:content>
+					<v8:content>Pay with bitcoin</v8:content>
 				</v8:item>
 			</Title>
 			<ToolTip>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Pay with ripple</v8:content>
+					<v8:content>Pay with bitcoin</v8:content>
 				</v8:item>
 			</ToolTip>
-			<Action>PayWithRipple</Action>
+			<Action>PayWithBitcoin</Action>
 		</Command>
 	</Commands>
 	<CommandInterface>

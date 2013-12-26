@@ -6,6 +6,7 @@
 	<RepostOnWrite>true</RepostOnWrite>
 	<AutoCommandBar name="FormCommandBar" id="-1"/>
 	<Events>
+		<Event name="BeforeWrite">BeforeWrite</Event>
 		<Event name="BeforeWriteAtServer">BeforeWriteAtServer</Event>
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
 		<Event name="FillCheckProcessingAtServer">FillCheckProcessingAtServer</Event>
@@ -27,74 +28,20 @@
 			<ContextMenu name="DateContextMenu" id="4"/>
 			<ExtendedTooltip name="DateExtendedTooltip" id="20"/>
 		</InputField>
-		<UsualGroup name="AccFrom" id="13">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Acc from</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Acc from</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Group>Horizontal</Group>
-			<Representation>None</Representation>
-			<ShowTitle>false</ShowTitle>
-			<ExtendedTooltip name="AccFromExtendedTooltip" id="21"/>
-			<ChildItems>
-				<InputField name="AccountFrom" id="5">
-					<DataPath>Object.AccountFrom</DataPath>
-					<Width>25</Width>
-					<HorizontalStretch>false</HorizontalStretch>
-					<ContextMenu name="AccountFromContextMenu" id="6"/>
-					<ExtendedTooltip name="AccountFromExtendedTooltip" id="22"/>
-					<Events>
-						<Event name="OnChange">AccountFromOnChange</Event>
-					</Events>
-				</InputField>
-				<LabelDecoration name="AccFromLabel" id="14">
-					<ContextMenu name="AccFromLabelContextMenu" id="15"/>
-					<ExtendedTooltip name="AccFromLabelExtendedTooltip" id="23"/>
-				</LabelDecoration>
-			</ChildItems>
-		</UsualGroup>
-		<UsualGroup name="AccTo" id="16">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Acc to</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Acc to</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Group>Horizontal</Group>
-			<Representation>None</Representation>
-			<ShowTitle>false</ShowTitle>
-			<ExtendedTooltip name="AccToExtendedTooltip" id="24"/>
-			<ChildItems>
-				<InputField name="AccountTo" id="7">
-					<DataPath>Object.AccountTo</DataPath>
-					<Width>25</Width>
-					<HorizontalStretch>false</HorizontalStretch>
-					<ContextMenu name="AccountToContextMenu" id="8"/>
-					<ExtendedTooltip name="AccountToExtendedTooltip" id="25"/>
-					<Events>
-						<Event name="OnChange">AccountToOnChange</Event>
-					</Events>
-				</InputField>
-				<LabelDecoration name="AccToLabel" id="17">
-					<ContextMenu name="AccToLabelContextMenu" id="18"/>
-					<ExtendedTooltip name="AccToLabelExtendedTooltip" id="26"/>
-				</LabelDecoration>
-			</ChildItems>
-		</UsualGroup>
+		<InputField name="AccountFrom" id="5">
+			<DataPath>Object.AccountFrom</DataPath>
+			<Width>25</Width>
+			<HorizontalStretch>false</HorizontalStretch>
+			<ContextMenu name="AccountFromContextMenu" id="6"/>
+			<ExtendedTooltip name="AccountFromExtendedTooltip" id="22"/>
+		</InputField>
+		<InputField name="AccountTo" id="7">
+			<DataPath>Object.AccountTo</DataPath>
+			<Width>25</Width>
+			<HorizontalStretch>false</HorizontalStretch>
+			<ContextMenu name="AccountToContextMenu" id="8"/>
+			<ExtendedTooltip name="AccountToExtendedTooltip" id="25"/>
+		</InputField>
 		<InputField name="Amount" id="9">
 			<DataPath>Object.Amount</DataPath>
 			<Width>25</Width>

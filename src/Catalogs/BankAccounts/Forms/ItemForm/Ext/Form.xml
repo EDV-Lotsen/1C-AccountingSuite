@@ -148,6 +148,35 @@
 								</UsualGroup>
 							</ChildItems>
 						</UsualGroup>
+						<UsualGroup name="AccountingGroup" id="82">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Accounting</v8:content>
+								</v8:item>
+							</Title>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Accounting group</v8:content>
+								</v8:item>
+							</ToolTip>
+							<Group>Vertical</Group>
+							<ExtendedTooltip name="AccountingGroupExtendedTooltip" id="83"/>
+							<ChildItems>
+								<InputField name="AccountingAccount" id="47">
+									<DataPath>Object.AccountingAccount</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Assigned to</v8:content>
+										</v8:item>
+									</Title>
+									<ContextMenu name="AccountingAccountContextMenu" id="48"/>
+									<ExtendedTooltip name="AccountingAccountExtendedTooltip" id="49"/>
+								</InputField>
+							</ChildItems>
+						</UsualGroup>
 					</ChildItems>
 				</Page>
 				<Page name="Online" id="43">
@@ -278,34 +307,6 @@
 								</UsualGroup>
 							</ChildItems>
 						</UsualGroup>
-					</ChildItems>
-				</Page>
-				<Page name="Accounting" id="45">
-					<Title>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Accounting</v8:content>
-						</v8:item>
-					</Title>
-					<ToolTip>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Accounting</v8:content>
-						</v8:item>
-					</ToolTip>
-					<ExtendedTooltip name="AccountingExtendedTooltip" id="46"/>
-					<ChildItems>
-						<InputField name="AccountingAccount" id="47">
-							<DataPath>Object.AccountingAccount</DataPath>
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Assigned to</v8:content>
-								</v8:item>
-							</Title>
-							<ContextMenu name="AccountingAccountContextMenu" id="48"/>
-							<ExtendedTooltip name="AccountingAccountExtendedTooltip" id="49"/>
-						</InputField>
 					</ChildItems>
 				</Page>
 			</ChildItems>

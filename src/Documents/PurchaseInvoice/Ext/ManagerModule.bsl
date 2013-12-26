@@ -130,6 +130,79 @@ Function PrepareDataStructuresForPostingClearing(DocumentRef, AdditionalProperti
 EndFunction
 
 //------------------------------------------------------------------------------
+// Document fill check processing
+
+// Check proper closing of order items by the invoice items
+Procedure CheckOrderQuantity(DocumentRef, DocumentDate, Company, LineItems, Filter, Cancel) Export
+	ErrorsCount = 0;
+	MessageText = "";
+	
+	// 1. Create a query to request data
+	Query = New Query;
+	Query.TempTablesManager = New TempTablesManager;
+	Query.SetParameter("Date", DocumentDate);
+	
+	// 2. Fill out the line items table.
+	InvoiceLineItems = LineItems.Unload(Filter, "LineNumber, Order, Product, Location, DeliveryDate, Project, Class, Quantity");
+	InvoiceLineItems.Columns.Insert(1, "Company", New TypeDescription("CatalogRef.Companies"), "", 20);
+	InvoiceLineItems.FillValues(Company, "Company");
+	DocumentPosting.PutTemporaryTable(InvoiceLineItems, "InvoiceLineItems", Query.TempTablesManager);
+	
+	// 3. Request uninvoiced items for each line item.
+	Query.Text = "
+		|SELECT
+		|	LineItems.LineNumber          AS LineNumber,
+		|	LineItems.Order               AS Order,
+		|	LineItems.Product.Code        AS ProductCode,
+		|	LineItems.Product.Description AS ProductDescription,
+		|	OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.InvoicedBalance - LineItems.Quantity AS UninvoicedQuantity
+		|FROM
+		|	InvoiceLineItems AS LineItems
+		|	LEFT JOIN AccumulationRegister.OrdersDispatched.Balance(&Date, (Company, Order, Product, Location, DeliveryDate, Project, Class)
+		|		      IN (SELECT Company, Order, Product, Location, DeliveryDate, Project, Class FROM InvoiceLineItems)) AS OrdersDispatchedBalance
+		|		ON  LineItems.Company      = OrdersDispatchedBalance.Company
+		|		AND LineItems.Order        = OrdersDispatchedBalance.Order
+		|		AND LineItems.Product      = OrdersDispatchedBalance.Product
+		|		AND LineItems.Location     = OrdersDispatchedBalance.Location
+		|		AND LineItems.DeliveryDate = OrdersDispatchedBalance.DeliveryDate
+		|		AND LineItems.Project      = OrdersDispatchedBalance.Project
+		|		AND LineItems.Class        = OrdersDispatchedBalance.Class
+		|ORDER BY
+		|	LineItems.LineNumber";
+	UninvoicedItems = Query.Execute().Unload();
+	
+	// 4. Process status of line items and create diagnostic message.
+	For Each Row In UninvoicedItems Do
+		If Row.UninvoicedQuantity = Null Then
+			ErrorsCount = ErrorsCount + 1;
+			If ErrorsCount <= 10 Then
+				MessageText = MessageText + ?(Not IsBlankString(MessageText), Chars.LF, "") +
+				                            StringFunctionsClientServer.SubstituteParametersInString(
+				                            NStr("en = 'The product %1 in line %2 was not declared in %3.'"), TrimAll(Row.ProductCode) + " " + TrimAll(Row.ProductDescription), Row.LineNumber, Row.Order);
+			EndIf;
+			
+		ElsIf Row.UninvoicedQuantity < 0 Then
+			ErrorsCount = ErrorsCount + 1;
+			If ErrorsCount <= 10 Then
+				MessageText = MessageText + ?(Not IsBlankString(MessageText), Chars.LF, "") +
+				                            StringFunctionsClientServer.SubstituteParametersInString(
+				                            NStr("en = 'The invoiced quantity of product %1 in line %2 exceeds ordered quantity in %3.'"), TrimAll(Row.ProductCode) + " " + TrimAll(Row.ProductDescription), Row.LineNumber, Row.Order);
+			EndIf;
+		EndIf;
+	EndDo;
+	If ErrorsCount > 10 Then
+		MessageText = MessageText + Chars.LF + StringFunctionsClientServer.SubstituteParametersInString(
+		                                       NStr("en = 'There are also %1 error(s) found'"), Format(ErrorsCount - 10, "NFD=0; NG=0"));
+	EndIf;
+	
+	// 5. Notify user if failed items found.
+	If ErrorsCount > 0 Then
+		CommonUseClientServer.MessageToUser(MessageText, DocumentRef,,, Cancel);
+	EndIf;
+	
+EndProcedure
+
+//------------------------------------------------------------------------------
 // Document filling
 
 // Collect source data for filling document on the server (in terms of document)
@@ -582,13 +655,9 @@ Function Query_OrdersDispatched_Balance(TablesList)
 	// ------------------------------------------------------
 	|FROM
 	|	AccumulationRegister.OrdersDispatched.Balance(&PointInTime,
-	|		(Company, Order, Product) IN
-	|			(SELECT
-	|				&Company,
-	|				LineItems.Order,
-	|				LineItems.Product
-	|			FROM
-	|				Table_LineItems AS LineItems)) AS OrdersDispatchedBalance";
+	|		(Company, Order) IN
+	|		(SELECT DISTINCT &Company, LineItems.Order // Requred for proper order closing
+	|		 FROM Table_LineItems AS LineItems)) AS OrdersDispatchedBalance";
 	
 	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
 	
@@ -649,6 +718,10 @@ Procedure CheckCloseParentOrders(DocumentRef, AdditionalProperties, TempTablesMa
 	|	OrdersDispatchedBalance.Company          AS Company,
 	|	OrdersDispatchedBalance.Order            AS Order,
 	|	OrdersDispatchedBalance.Product          AS Product,
+	|	OrdersDispatchedBalance.Location         AS Location,
+	|	OrdersDispatchedBalance.DeliveryDate     AS DeliveryDate,
+	|	OrdersDispatchedBalance.Project          AS Project,
+	|	OrdersDispatchedBalance.Class            AS Class,
 	// ------------------------------------------------------
 	// Resources
 	|	OrdersDispatchedBalance.Quantity         AS Quantity,
@@ -669,6 +742,10 @@ Procedure CheckCloseParentOrders(DocumentRef, AdditionalProperties, TempTablesMa
 	|	OrdersDispatched.Company,
 	|	OrdersDispatched.Order,
 	|	OrdersDispatched.Product,
+	|	OrdersDispatched.Location,
+	|	OrdersDispatched.DeliveryDate,
+	|	OrdersDispatched.Project,
+	|	OrdersDispatched.Class,
 	// ------------------------------------------------------
 	// Resources
 	|	OrdersDispatched.Quantity,
@@ -677,7 +754,6 @@ Procedure CheckCloseParentOrders(DocumentRef, AdditionalProperties, TempTablesMa
 	// ------------------------------------------------------
 	|FROM
 	|	Table_OrdersDispatched AS OrdersDispatched
-	|   // Table_LineItems WHERE LineItems.Ref = &Ref AND Order <> EmptyRef()
 	|";
 	QueryText   = QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
 	QueryTables = QueryTables + 1;
@@ -691,6 +767,10 @@ Procedure CheckCloseParentOrders(DocumentRef, AdditionalProperties, TempTablesMa
 	|	OrdersDispatchedBalance.Order            AS Order,
 	|	OrdersDispatchedBalance.Product          AS Product,
 	|	OrdersDispatchedBalance.Product.Type     AS Type,
+	|	OrdersDispatchedBalance.Location         AS Location,
+	|	OrdersDispatchedBalance.DeliveryDate     AS DeliveryDate,
+	|	OrdersDispatchedBalance.Project          AS Project,
+	|	OrdersDispatchedBalance.Class            AS Class,
 	// ------------------------------------------------------
 	// Resources
 	|	SUM(OrdersDispatchedBalance.Quantity)    AS Quantity,
@@ -705,7 +785,11 @@ Procedure CheckCloseParentOrders(DocumentRef, AdditionalProperties, TempTablesMa
 	|	OrdersDispatchedBalance.Company,
 	|	OrdersDispatchedBalance.Order,
 	|	OrdersDispatchedBalance.Product,
-	|	OrdersDispatchedBalance.Product.Type";
+	|	OrdersDispatchedBalance.Product.Type,
+	|	OrdersDispatchedBalance.Location,
+	|	OrdersDispatchedBalance.DeliveryDate,
+	|	OrdersDispatchedBalance.Project,
+	|	OrdersDispatchedBalance.Class";
 	QueryText   = QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
 	QueryTables = QueryTables + 1;
 	
@@ -717,6 +801,10 @@ Procedure CheckCloseParentOrders(DocumentRef, AdditionalProperties, TempTablesMa
 	|	OrdersDispatchedBalance.Company          AS Company,
 	|	OrdersDispatchedBalance.Order            AS Order,
 	|	OrdersDispatchedBalance.Product          AS Product,
+	|	OrdersDispatchedBalance.Location         AS Location,
+	|	OrdersDispatchedBalance.DeliveryDate     AS DeliveryDate,
+	|	OrdersDispatchedBalance.Project          AS Project,
+	|	OrdersDispatchedBalance.Class            AS Class,
 	// ------------------------------------------------------
 	// Resources
 	|	CASE WHEN OrdersDispatchedBalance.Type = VALUE(Enum.InventoryTypes.Inventory)
@@ -777,7 +865,7 @@ Procedure CheckCloseParentOrders(DocumentRef, AdditionalProperties, TempTablesMa
 	QueryText   = QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
 	QueryTables = QueryTables + 1;
 	
-	// Clear orders registered postings table
+	// Clear orders dispatch postings table
 	QueryText   = QueryText + 
 	"DROP Table_OrdersDispatched";
 	QueryText   = QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
@@ -842,8 +930,8 @@ Function Query_Filling_Document_PurchaseOrder_Attributes(TablesList)
 		|	PurchaseOrder.CompanyCode               AS CompanyCode,
 		|	PurchaseOrder.Currency                  AS Currency,
 		|	PurchaseOrder.ExchangeRate              AS ExchangeRate,
-		|	PurchaseOrder.Location                  AS Location,
-		|	PurchaseOrder.DeliveryDate              AS DeliveryDate,
+		|	PurchaseOrder.Location                  AS LocationActual,
+		|	PurchaseOrder.DeliveryDate              AS DeliveryDateActual,
 		|	PurchaseOrder.Project                   AS Project,
 		|	PurchaseOrder.Class                     AS Class,
 		|	CASE
@@ -1027,9 +1115,12 @@ Function Query_Filling_Document_PurchaseOrder_LineItems(TablesList)
 		|		END /
 		|		100
 		|	AS NUMBER (15, 2))                         AS VAT,
-		|	PurchaseOrderLineItems.Location            AS Location,
-		|	PurchaseOrderLineItems.DeliveryDate        AS DeliveryDate,
 		|	PurchaseOrderLineItems.Ref                 AS Order,
+		|	VALUE(Document.ItemReceipt.EmptyRef)       AS ItemReceipt,
+		|	PurchaseOrderLineItems.Location            AS Location,
+		|	PurchaseOrderLineItems.Location            AS LocationActual,
+		|	PurchaseOrderLineItems.DeliveryDate        AS DeliveryDate,
+		|	PurchaseOrderLineItems.DeliveryDate        AS DeliveryDateActual,
 		|	PurchaseOrderLineItems.Project             AS Project,
 		|	PurchaseOrderLineItems.Class               AS Class,
 		|	PurchaseOrderLineItems.Ref.Company         AS Company
@@ -1066,10 +1157,12 @@ Function Query_Filling_Document_PurchaseOrder_Totals(TablesList)
 		// Totals of document
 		|	PurchaseOrderLineItems.FillingData      AS FillingData,
 		|
+		|	SUM(PurchaseOrderLineItems.VAT)         AS VATTotal,
+		|
 		|	CAST( // Format(Total(VAT) * ExchangeRate, ""ND=15; NFD=2"")
 		|		SUM(PurchaseOrderLineItems.VAT) *
 		|		PurchaseOrder.ExchangeRate
-		|		AS NUMBER (15, 2))                  AS VATTotal,
+		|		AS NUMBER (15, 2))                  AS VATTotalRC,
 		|
 		|	CASE
 		|		WHEN PurchaseOrder.PriceIncludesVAT THEN // Total(LineTotal)
@@ -1119,8 +1212,8 @@ Function Query_Filling_Document_ItemReceipt_Attributes(TablesList)
 		|	ItemReceipt.CompanyCode                 AS CompanyCode,
 		|	ItemReceipt.Currency                    AS Currency,
 		|	ItemReceipt.ExchangeRate                AS ExchangeRate,
-		|	ItemReceipt.Location                    AS Location,
-		|	ItemReceipt.DeliveryDate                AS DeliveryDate,
+		|	ItemReceipt.Location                    AS LocationActual,
+		|	ItemReceipt.DeliveryDate                AS DeliveryDateActual,
 		|	ItemReceipt.Project                     AS Project,
 		|	ItemReceipt.Class                       AS Class,
 		|	CASE
@@ -1304,9 +1397,12 @@ Function Query_Filling_Document_ItemReceipt_LineItems(TablesList)
 		|		END /
 		|		100
 		|	AS NUMBER (15, 2))                         AS VAT,
-		|	ItemReceiptLineItems.Location              AS Location,
-		|	ItemReceiptLineItems.DeliveryDate          AS DeliveryDate,
 		|	ItemReceiptLineItems.Order                 AS Order,
+		|	ItemReceiptLineItems.Ref                   AS ItemReceipt,
+		|	ItemReceiptLineItems.Location              AS Location,
+		|	ItemReceiptLineItems.Location              AS LocationActual,
+		|	ItemReceiptLineItems.DeliveryDate          AS DeliveryDate,
+		|	ItemReceiptLineItems.DeliveryDate          AS DeliveryDateActual,
 		|	ItemReceiptLineItems.Project               AS Project,
 		|	ItemReceiptLineItems.Class                 AS Class,
 		|	ItemReceiptLineItems.Ref.Company           AS Company
@@ -1343,10 +1439,12 @@ Function Query_Filling_Document_ItemReceipt_Totals(TablesList)
 		// Totals of document
 		|	ItemReceiptLineItems.FillingData        AS FillingData,
 		|
+		|	SUM(ItemReceiptLineItems.VAT)           AS VATTotal,
+		|
 		|	CAST( // Format(Total(VAT) * ExchangeRate, ""ND=15; NFD=2"")
 		|		SUM(ItemReceiptLineItems.VAT) *
 		|		ItemReceipt.ExchangeRate
-		|		AS NUMBER (15, 2))                  AS VATTotal,
+		|		AS NUMBER (15, 2))                  AS VATTotalRC,
 		|
 		|	CASE
 		|		WHEN ItemReceipt.PriceIncludesVAT THEN // Total(LineTotal)
@@ -1406,19 +1504,20 @@ Function Query_Filling_Attributes(TablesList)
 		|	Document_PurchaseOrder_Attributes.FillingData,
 		|	Document_PurchaseOrder_Attributes.Company,
 		|	Document_PurchaseOrder_Attributes.CompanyCode,
-		|	Document_PurchaseOrder_Totals.DocumentTotal,
 		|	Document_PurchaseOrder_Attributes.Currency,
 		|	Document_PurchaseOrder_Attributes.ExchangeRate,
-		|	Document_PurchaseOrder_Totals.DocumentTotalRC,
-		|	Document_PurchaseOrder_Attributes.Location,
-		|	Document_PurchaseOrder_Attributes.DeliveryDate,
+		|	Document_PurchaseOrder_Attributes.PriceIncludesVAT,
+		|	Document_PurchaseOrder_Attributes.APAccount,
+		|	Document_PurchaseOrder_Attributes.DueDate,
+		|	Document_PurchaseOrder_Attributes.LocationActual,
+		|	Document_PurchaseOrder_Attributes.DeliveryDateActual,
 		|	Document_PurchaseOrder_Attributes.Project,
 		|	Document_PurchaseOrder_Attributes.Class,
-		|	Document_PurchaseOrder_Attributes.DueDate,
 		|	Document_PurchaseOrder_Attributes.Terms,
+		|	Document_PurchaseOrder_Totals.DocumentTotal,
+		|	Document_PurchaseOrder_Totals.DocumentTotalRC,
 		|	Document_PurchaseOrder_Totals.VATTotal,
-		|	Document_PurchaseOrder_Attributes.APAccount,
-		|	Document_PurchaseOrder_Attributes.PriceIncludesVAT
+		|	Document_PurchaseOrder_Totals.VATTotalRC
 		|{Into}
 		|FROM
 		|	Table_Document_PurchaseOrder_Attributes AS Document_PurchaseOrder_Attributes
@@ -1447,19 +1546,20 @@ Function Query_Filling_Attributes(TablesList)
 		|	Document_ItemReceipt_Attributes.FillingData,
 		|	Document_ItemReceipt_Attributes.Company,
 		|	Document_ItemReceipt_Attributes.CompanyCode,
-		|	Document_ItemReceipt_Totals.DocumentTotal,
 		|	Document_ItemReceipt_Attributes.Currency,
 		|	Document_ItemReceipt_Attributes.ExchangeRate,
-		|	Document_ItemReceipt_Totals.DocumentTotalRC,
-		|	Document_ItemReceipt_Attributes.Location,
-		|	Document_ItemReceipt_Attributes.DeliveryDate,
+		|	Document_ItemReceipt_Attributes.PriceIncludesVAT,
+		|	Document_ItemReceipt_Attributes.APAccount,
+		|	Document_ItemReceipt_Attributes.DueDate,
+		|	Document_ItemReceipt_Attributes.LocationActual,
+		|	Document_ItemReceipt_Attributes.DeliveryDateActual,
 		|	Document_ItemReceipt_Attributes.Project,
 		|	Document_ItemReceipt_Attributes.Class,
-		|	Document_ItemReceipt_Attributes.DueDate,
 		|	Document_ItemReceipt_Attributes.Terms,
+		|	Document_ItemReceipt_Totals.DocumentTotal,
+		|	Document_ItemReceipt_Totals.DocumentTotalRC,
 		|	Document_ItemReceipt_Totals.VATTotal,
-		|	Document_ItemReceipt_Attributes.APAccount,
-		|	Document_ItemReceipt_Attributes.PriceIncludesVAT
+		|	Document_ItemReceipt_Totals.VATTotalRC
 		|{Into}
 		|FROM
 		|	Table_Document_ItemReceipt_Attributes AS Document_ItemReceipt_Attributes
@@ -1511,9 +1611,12 @@ Function Query_Filling_LineItems(TablesList)
 		|	Document_PurchaseOrder_LineItems.LineTotal,
 		|	Document_PurchaseOrder_LineItems.VATCode,
 		|	Document_PurchaseOrder_LineItems.VAT,
-		|	Document_PurchaseOrder_LineItems.Location,
-		|	Document_PurchaseOrder_LineItems.DeliveryDate,
 		|	Document_PurchaseOrder_LineItems.Order,
+		|	Document_PurchaseOrder_LineItems.ItemReceipt,
+		|	Document_PurchaseOrder_LineItems.Location,
+		|	Document_PurchaseOrder_LineItems.LocationActual,
+		|	Document_PurchaseOrder_LineItems.DeliveryDate,
+		|	Document_PurchaseOrder_LineItems.DeliveryDateActual,
 		|	Document_PurchaseOrder_LineItems.Project,
 		|	Document_PurchaseOrder_LineItems.Class
 		|{Into}
@@ -1551,9 +1654,12 @@ Function Query_Filling_LineItems(TablesList)
 		|	Document_ItemReceipt_LineItems.LineTotal,
 		|	Document_ItemReceipt_LineItems.VATCode,
 		|	Document_ItemReceipt_LineItems.VAT,
-		|	Document_ItemReceipt_LineItems.Location,
-		|	Document_ItemReceipt_LineItems.DeliveryDate,
 		|	Document_ItemReceipt_LineItems.Order,
+		|	Document_ItemReceipt_LineItems.ItemReceipt,
+		|	Document_ItemReceipt_LineItems.Location,
+		|	Document_ItemReceipt_LineItems.LocationActual,
+		|	Document_ItemReceipt_LineItems.DeliveryDate,
+		|	Document_ItemReceipt_LineItems.DeliveryDateActual,
 		|	Document_ItemReceipt_LineItems.Project,
 		|	Document_ItemReceipt_LineItems.Class
 		|{Into}
@@ -1582,17 +1688,19 @@ Function FillingCheckList(AdditionalProperties)
 	// Create structure of registers and its resources to check balances
 	CheckAttributes = New Structure;
 	// Group by attributes to check uniqueness
-	CheckAttributes.Insert("Company",          "Check");
-	CheckAttributes.Insert("Currency",         "Check");
-	CheckAttributes.Insert("ExchangeRate",     "Check");
-	CheckAttributes.Insert("APAccount",        "Check");
-	CheckAttributes.Insert("PriceIncludesVAT", "Check");
+	CheckAttributes.Insert("Company",            "Check");
+	CheckAttributes.Insert("Currency",           "Check");
+	CheckAttributes.Insert("ExchangeRate",       "Check");
+	CheckAttributes.Insert("PriceIncludesVAT",   "Check");
+	CheckAttributes.Insert("APAccount",          "Check");
 	// Maximal possible values
-	CheckAttributes.Insert("DueDate",          "Max");
+	CheckAttributes.Insert("DueDate",            "Max");
+	CheckAttributes.Insert("DeliveryDateActual", "Max");
 	// Summarize totals
-	CheckAttributes.Insert("VATTotal",         "Sum");
-	CheckAttributes.Insert("DocumentTotal",    "Sum");
-	CheckAttributes.Insert("DocumentTotalRC",  "Sum");
+	CheckAttributes.Insert("DocumentTotal",      "Sum");
+	CheckAttributes.Insert("DocumentTotalRC",    "Sum");
+	CheckAttributes.Insert("VATTotal",           "Sum");
+	CheckAttributes.Insert("VATTotalRC",         "Sum");
 	
 	// Save structure of attributes to check
 	If CheckAttributes.Count() > 0 Then

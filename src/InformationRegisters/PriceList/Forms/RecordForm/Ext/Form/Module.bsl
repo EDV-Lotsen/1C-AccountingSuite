@@ -3,6 +3,10 @@
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
+	If Record.Product = Catalogs.Products.EmptyRef() Then
+		NewRecord = True;
+	EndIf;
+	
 	If Record.PriceType = "" Then
 		Record.PriceType = "Item";
 		Items.Product.MarkIncomplete = True;
@@ -183,5 +187,43 @@ Procedure PriceLevelOnChange(Item)
 	Else
 		Items.PriceLevel.MarkIncomplete = False;
 	EndIf;
+
+EndProcedure
+
+&AtServer
+Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
+	
+	companies_webhook = Constants.items_webhook.Get();
+	
+	If NOT companies_webhook = "" Then
+		
+		//double_slash = Find(companies_webhook, "//");
+		
+		//companies_webhook = Right(companies_webhook,StrLen(companies_webhook) - double_slash - 1);
+		
+		//first_slash = Find(companies_webhook, "/");
+		//webhook_address = Left(companies_webhook,first_slash - 1);
+		//webhook_resource = Right(companies_webhook,StrLen(companies_webhook) - first_slash + 1); 		
+		
+		WebhookMap = GeneralFunctions.ReturnProductObjectMap(Record.Product);
+		WebhookMap.Insert("resource","price level");
+		If (Record.PriceLevel <> Catalogs.PriceLevels.EmptyRef()) Then
+			WebhookMap.Insert("modified_price_level",Record.PriceLevel.Description);
+		EndIf;
+
+		If NewRecord = True Then
+			WebhookMap.Insert("action","create");
+		Else
+			WebhookMap.Insert("action","update");
+		EndIf;
+		WebhookMap.Insert("apisecretkey",Constants.APISecretKey.Get());
+		WebhookParams = New Array();
+		WebhookParams.Add(Constants.items_webhook.Get());
+		WebhookParams.Add(WebhookMap);
+		LongActions.ExecuteInBackground("GeneralFunctions.SendWebhook", WebhookParams);
+		
+	
+	EndIf;
+	
 
 EndProcedure

@@ -70,7 +70,7 @@
 					<ExtendedTooltip name="DateExtendedTooltip" id="19"/>
 				</LabelField>
 				<LabelField name="DeliveryDate" id="26">
-					<DataPath>List.DeliveryDate</DataPath>
+					<DataPath>1/39</DataPath>
 					<HorizontalAlign>Right</HorizontalAlign>
 					<Width>10</Width>
 					<ContextMenu name="DeliveryDateContextMenu" id="27"/>
@@ -112,10 +112,10 @@
 					<Title>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Ven. #</v8:content>
+							<v8:content>Vendor #</v8:content>
 						</v8:item>
 					</Title>
-					<Width>6</Width>
+					<Width>8</Width>
 					<ContextMenu name="CompanyCodeContextMenu" id="15"/>
 					<ExtendedTooltip name="CompanyCodeExtendedTooltip" id="23"/>
 				</LabelField>
@@ -158,8 +158,8 @@
 	DocumentPurchaseInvoice.Currency,
 	DocumentPurchaseInvoice.ExchangeRate,
 	DocumentPurchaseInvoice.PriceIncludesVAT,
-	DocumentPurchaseInvoice.Location,
-	DocumentPurchaseInvoice.DeliveryDate,
+	DocumentPurchaseInvoice.LocationActual,
+	DocumentPurchaseInvoice.DeliveryDateActual,
 	DocumentPurchaseInvoice.Project,
 	DocumentPurchaseInvoice.Class,
 	DocumentPurchaseInvoice.ManualAdjustment,

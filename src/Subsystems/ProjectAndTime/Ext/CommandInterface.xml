@@ -19,7 +19,12 @@
 				<xr:Value name="Role.ReportOnly">false</xr:Value>
 			</Visibility>
 		</Command>
-		<Command name="Report.Projects.StandardCommand.Open">
+		<Command name="AccumulationRegister.ProjectData.StandardCommand.OpenList">
+			<Visibility>
+				<xr:Common>true</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="0:095ea988-dc80-4590-9f2f-b1027b2f7678">
 			<Visibility>
 				<xr:Common>true</xr:Common>
 				<xr:Value name="Role.TimeTrackView">false</xr:Value>
@@ -28,4 +33,26 @@
 			</Visibility>
 		</Command>
 	</CommandsVisibility>
+	<CommandsPlacement>
+		<Command name="AccumulationRegister.ProjectData.StandardCommand.OpenList">
+			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
+			<Placement>Auto</Placement>
+		</Command>
+	</CommandsPlacement>
+	<CommandsOrder>
+		<Command name="Catalog.Projects.StandardCommand.OpenList">
+			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
+		</Command>
+		<Command name="Document.TimeTrack.StandardCommand.OpenList">
+			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
+		</Command>
+		<Command name="AccumulationRegister.ProjectData.StandardCommand.OpenList">
+			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
+		</Command>
+	</CommandsOrder>
+	<GroupsOrder>
+		<Group>NavigationPanelOrdinary</Group>
+		<Group>CommandGroup.Reports</Group>
+		<Group>NavigationPanelSeeAlso</Group>
+	</GroupsOrder>
 </CommandInterface>

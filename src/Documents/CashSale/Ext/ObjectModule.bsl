@@ -2,30 +2,6 @@
 //
 Procedure Posting(Cancel, Mode)
 	
-	// preventing posting if already included in a bank rec
-	
-	Query = New Query("SELECT
-					  |	TransactionReconciliation.Document
-					  |FROM
-					  |	InformationRegister.TransactionReconciliation AS TransactionReconciliation
-					  |WHERE
-					  |	TransactionReconciliation.Document = &Ref
-					  |	AND TransactionReconciliation.Reconciled = TRUE");
-	Query.SetParameter("Ref", Ref);
-	Selection = Query.Execute();
-	
-	If NOT Selection.IsEmpty() Then
-		
-		Message = New UserMessage();
-		Message.Text=NStr("en='This document is already included in a bank reconciliation. Please remove it from the bank rec first.'");
-		Message.Message();
-		Cancel = True;
-		Return;
-		
-	EndIf;
-
-	// end preventing posting if already included in a bank rec
-	
 	// create a value table for posting amounts
 	
 	PostingDatasetIncome = New ValueTable();
@@ -323,30 +299,6 @@ EndProcedure
 
 Procedure UndoPosting(Cancel)
 	
-	// preventing posting if already included in a bank rec
-	
-	Query = New Query("SELECT
-					  |	TransactionReconciliation.Document
-					  |FROM
-					  |	InformationRegister.TransactionReconciliation AS TransactionReconciliation
-					  |WHERE
-					  |	TransactionReconciliation.Document = &Ref
-					  |	AND TransactionReconciliation.Reconciled = TRUE");
-	Query.SetParameter("Ref", Ref);
-	Selection = Query.Execute();
-	
-	If NOT Selection.IsEmpty() Then
-		
-		Message = New UserMessage();
-		Message.Text=NStr("en='This document is already included in a bank reconciliation. Please remove it from the bank rec first.'");
-		Message.Message();
-		Cancel = True;
-		Return;
-		
-	EndIf;
-
-	// end preventing posting if already included in a bank rec
-	
 	// Deleting bank reconciliation data
 	
 	Records = InformationRegisters.TransactionReconciliation.CreateRecordManager();
@@ -376,13 +328,13 @@ Procedure OnWrite(Cancel)
 	
 	If NOT companies_webhook = "" Then
 		
-		//double_slash = Find(companies_webhook, "//");
-		//
-		//companies_webhook = Right(companies_webhook,StrLen(companies_webhook) - double_slash - 1);
-		//
-		//first_slash = Find(companies_webhook, "/");
-		//webhook_address = Left(companies_webhook,first_slash - 1);
-		//webhook_resource = Right(companies_webhook,StrLen(companies_webhook) - first_slash + 1); 		
+		double_slash = Find(companies_webhook, "//");
+		
+		companies_webhook = Right(companies_webhook,StrLen(companies_webhook) - double_slash - 1);
+		
+		first_slash = Find(companies_webhook, "/");
+		webhook_address = Left(companies_webhook,first_slash - 1);
+		webhook_resource = Right(companies_webhook,StrLen(companies_webhook) - first_slash + 1); 		
 		
 		WebhookMap = New Map(); 
 		WebhookMap.Insert("apisecretkey",Constants.APISecretKey.Get());
@@ -392,10 +344,11 @@ Procedure OnWrite(Cancel)
 		Else
 			WebhookMap.Insert("action","update");
 		EndIf;
-		WebhookMap.Insert("api_code", String(Ref.UUID()));
+		WebhookMap.Insert("cash_sale_number",Ref.Number);
 		
 		WebhookParams = New Array();
-		WebhookParams.Add(Constants.cash_sales_webhook.Get());
+		WebhookParams.Add(webhook_address);
+		WebhookParams.Add(webhook_resource);
 		WebhookParams.Add(WebhookMap);
 		LongActions.ExecuteInBackground("GeneralFunctions.SendWebhook", WebhookParams);
 	
@@ -409,23 +362,24 @@ Procedure BeforeDelete(Cancel)
 	
 	If NOT companies_webhook = "" Then
 		
-		//double_slash = Find(companies_webhook, "//");
-		//
-		//companies_webhook = Right(companies_webhook,StrLen(companies_webhook) - double_slash - 1);
-		//
-		//first_slash = Find(companies_webhook, "/");
-		//webhook_address = Left(companies_webhook,first_slash - 1);
-		//webhook_resource = Right(companies_webhook,StrLen(companies_webhook) - first_slash + 1); 		
+		double_slash = Find(companies_webhook, "//");
+		
+		companies_webhook = Right(companies_webhook,StrLen(companies_webhook) - double_slash - 1);
+		
+		first_slash = Find(companies_webhook, "/");
+		webhook_address = Left(companies_webhook,first_slash - 1);
+		webhook_resource = Right(companies_webhook,StrLen(companies_webhook) - first_slash + 1); 		
 		
 		WebhookMap = New Map(); 
 		WebhookMap.Insert("apisecretkey",Constants.APISecretKey.Get());
 		WebhookMap.Insert("resource","cashsales");
 		WebhookMap.Insert("action","delete");
-		WebhookMap.Insert("api_code",String(Ref.UUID()));
+		WebhookMap.Insert("cash_sale_number",Ref.Number);
 		
 		WebhookParams = New Array();
-		WebhookParams.Add(Constants.cash_sales_webhook.Get());
-		WebhookParams.Add(WebhookMap);	
+		WebhookParams.Add(webhook_address);
+		WebhookParams.Add(webhook_resource);
+		WebhookParams.Add(WebhookMap);
 		LongActions.ExecuteInBackground("GeneralFunctions.SendWebhook", WebhookParams);	
 	
 	EndIf;

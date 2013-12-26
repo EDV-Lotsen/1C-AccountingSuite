@@ -55,6 +55,13 @@
 		</right>
 	</object>
 	<object>
+		<name>Constant.bigcom_token</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
 		<name>Constant.CF1Name</name>
 		<right>
 			<name>Edit</name>
@@ -473,17 +480,6 @@
 		</right>
 	</object>
 	<object>
-		<name>Catalog.Companies.Attribute.CF2String</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
 		<name>Catalog.Companies.Attribute.StripeID</name>
 		<right>
 			<name>View</name>
@@ -506,7 +502,7 @@
 		</right>
 	</object>
 	<object>
-		<name>Catalog.Companies.Attribute.CF3Num</name>
+		<name>Catalog.Companies.Attribute.CF2Num</name>
 		<right>
 			<name>View</name>
 			<value>false</value>
@@ -565,6 +561,17 @@
 	</object>
 	<object>
 		<name>Document.SalesInvoice.Attribute.Terms</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.Companies.Attribute.CF2String</name>
 		<right>
 			<name>View</name>
 			<value>false</value>
@@ -1234,7 +1241,7 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.Deposit.Attribute.Memo</name>
+		<name>Catalog.Companies.Attribute.CF3String</name>
 		<right>
 			<name>View</name>
 			<value>false</value>
@@ -1245,7 +1252,7 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.Check.TabularSection.LineItems.Attribute.AccountDescription</name>
+		<name>Document.Deposit.Attribute.Memo</name>
 		<right>
 			<name>View</name>
 			<value>false</value>
@@ -1414,17 +1421,6 @@
 	</object>
 	<object>
 		<name>Document.CashSale.TabularSection.LineItems.Attribute.VAT</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Catalog.Companies.Attribute.CF4Num</name>
 		<right>
 			<name>View</name>
 			<value>false</value>
@@ -1725,6 +1721,13 @@
 		</right>
 	</object>
 	<object>
+		<name>Constant.bigcom_base64</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
 		<name>Constant.CheckHorizontalAdj</name>
 		<right>
 			<name>Edit</name>
@@ -1979,17 +1982,6 @@
 		</right>
 	</object>
 	<object>
-		<name>Catalog.Companies.Attribute.CF5String</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
 		<name>Document.BankTransfer.Attribute.Memo</name>
 		<right>
 			<name>View</name>
@@ -2034,7 +2026,7 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.SalesOrder.Attribute.PromisedDate</name>
+		<name>Document.SalesOrder.Attribute.DeliveryDate</name>
 		<right>
 			<name>Edit</name>
 			<value>false</value>
@@ -2104,6 +2096,17 @@
 	</object>
 	<object>
 		<name>Document.SalesReturn.Attribute.DueDate</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.Companies.Attribute.CF4Num</name>
 		<right>
 			<name>View</name>
 			<value>false</value>
@@ -2670,17 +2673,6 @@
 		</right>
 	</object>
 	<object>
-		<name>Catalog.Companies.Attribute.CF2Num</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
 		<name>Document.SalesOrder.Attribute.VATTotal</name>
 		<right>
 			<name>Edit</name>
@@ -2744,6 +2736,17 @@
 	</object>
 	<object>
 		<name>Document.InvoicePayment.TabularSection.LineItems.Attribute.Payment</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.Companies.Attribute.CF4String</name>
 		<right>
 			<name>View</name>
 			<value>false</value>
@@ -3719,6 +3722,73 @@
 		</right>
 	</object>
 	<object>
+		<name>Catalog.ZapierWebhooks</name>
+		<right>
+			<name>Read</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Insert</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Update</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Delete</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveInsert</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDelete</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InputByString</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeletePredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveSetDeletionMarkPredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMarkPredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarkedPredefinedData</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
 		<name>Document.CashSale.Attribute.PriceIncludesVAT</name>
 		<right>
 			<name>View</name>
@@ -4114,17 +4184,6 @@
 		</right>
 	</object>
 	<object>
-		<name>Catalog.Companies.Attribute.CF4String</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
 		<name>Constant.Email</name>
 		<right>
 			<name>Edit</name>
@@ -4162,17 +4221,6 @@
 	</object>
 	<object>
 		<name>Document.CashReceipt.Attribute.Memo</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Catalog.Companies.Attribute.CF3String</name>
 		<right>
 			<name>View</name>
 			<value>false</value>
@@ -4228,17 +4276,6 @@
 	</object>
 	<object>
 		<name>Document.SalesInvoice.Attribute.ARAccount</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Catalog.Companies.Attribute.CF5Num</name>
 		<right>
 			<name>View</name>
 			<value>false</value>
@@ -4334,17 +4371,6 @@
 	</object>
 	<object>
 		<name>Constant.BankInterestEarnedAccount</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.GeneralJournalEntry.TabularSection.LineItems.Attribute.AccountDescription</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
 		<right>
 			<name>Edit</name>
 			<value>false</value>
@@ -4923,6 +4949,13 @@
 		</right>
 	</object>
 	<object>
+		<name>Constant.bigcom_storeid</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
 		<name>Document.SalesOrder.Attribute.Company</name>
 		<right>
 			<name>Edit</name>
@@ -4931,6 +4964,17 @@
 	</object>
 	<object>
 		<name>Document.SalesOrder.Attribute.ConfirmTo</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.Companies.Attribute.CF5String</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
 		<right>
 			<name>Edit</name>
 			<value>false</value>
@@ -5245,6 +5289,73 @@
 		</right>
 		<right>
 			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.PaymentButtons</name>
+		<right>
+			<name>Read</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Insert</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Update</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Delete</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveInsert</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDelete</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InputByString</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeletePredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveSetDeletionMarkPredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMarkPredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarkedPredefinedData</name>
 			<value>false</value>
 		</right>
 	</object>
@@ -6241,6 +6352,17 @@
 		</right>
 	</object>
 	<object>
+		<name>Catalog.Companies.Attribute.CF3Num</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
 		<name>Document.CashSale.Attribute.Project</name>
 		<right>
 			<name>View</name>
@@ -6289,13 +6411,6 @@
 			<name>View</name>
 			<value>false</value>
 		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Constant.DisableLIFO</name>
 		<right>
 			<name>Edit</name>
 			<value>false</value>
@@ -6606,17 +6721,6 @@
 		</right>
 	</object>
 	<object>
-		<name>Catalog.Products.Attribute.api_code</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
 		<name>Document.CashSale.TabularSection.LineItems.Attribute.ProductDescription</name>
 		<right>
 			<name>View</name>
@@ -6852,6 +6956,73 @@
 		</right>
 	</object>
 	<object>
+		<name>Catalog.UserLog</name>
+		<right>
+			<name>Read</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Insert</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Update</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Delete</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveInsert</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDelete</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InputByString</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeletePredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveSetDeletionMarkPredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMarkPredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarkedPredefinedData</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
 		<name>Document.Deposit</name>
 		<right>
 			<name>Read</name>
@@ -7045,6 +7216,13 @@
 	</object>
 	<object>
 		<name>Document.SalesOrder.Attribute.DocumentTotalRC</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Constant.bigcom_apipath</name>
 		<right>
 			<name>Edit</name>
 			<value>false</value>
@@ -8788,6 +8966,13 @@
 		</right>
 	</object>
 	<object>
+		<name>Constant.bigcom_user</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
 		<name>Constant.CF1Type</name>
 		<right>
 			<name>Edit</name>
@@ -8861,6 +9046,17 @@
 	</object>
 	<object>
 		<name>Constant.USFinLocalization</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.Companies.Attribute.CF5Num</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
 		<right>
 			<name>Edit</name>
 			<value>false</value>

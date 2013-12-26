@@ -6,6 +6,12 @@
 	<RepostOnWrite>true</RepostOnWrite>
 	<AutoCommandBar name="FormCommandPanel" id="-1">
 		<ChildItems>
+			<Button name="FormChargeWithStripe" id="99">
+				<Type>CommandBarButton</Type>
+				<Visible>false</Visible>
+				<CommandName>Form.Command.ChargeWithStripe</CommandName>
+				<ExtendedTooltip name="FormChargeWithStripeExtendedTooltip" id="100"/>
+			</Button>
 			<Button name="FormSendEmail" id="225">
 				<Type>CommandBarButton</Type>
 				<CommandName>Form.Command.SendEmail</CommandName>
@@ -21,6 +27,7 @@
 	</AutoCommandBar>
 	<Events>
 		<Event name="OnOpen">OnOpen</Event>
+		<Event name="BeforeWrite">BeforeWrite</Event>
 		<Event name="BeforeWriteAtServer">BeforeWriteAtServer</Event>
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
 	</Events>
@@ -295,6 +302,13 @@
 											<ContextMenu name="RefNumContextMenu" id="92"/>
 											<ExtendedTooltip name="RefNumExtendedTooltip" id="122"/>
 										</InputField>
+										<InputField name="BillTo" id="230">
+											<DataPath>Object.BillTo</DataPath>
+											<Width>15</Width>
+											<HorizontalStretch>false</HorizontalStretch>
+											<ContextMenu name="BillToContextMenu" id="231"/>
+											<ExtendedTooltip name="BillToExtendedTooltip" id="232"/>
+										</InputField>
 									</ChildItems>
 								</UsualGroup>
 							</ChildItems>
@@ -327,9 +341,17 @@
 											<ContextMenu name="ProjectContextMenu" id="94"/>
 											<ExtendedTooltip name="ProjectExtendedTooltip" id="116"/>
 										</InputField>
+										<InputField name="SalesPerson" id="227">
+											<DataPath>Object.SalesPerson</DataPath>
+											<Width>15</Width>
+											<HorizontalStretch>false</HorizontalStretch>
+											<ContextMenu name="SalesPersonContextMenu" id="228"/>
+											<ExtendedTooltip name="SalesPersonExtendedTooltip" id="229"/>
+										</InputField>
 									</ChildItems>
 								</UsualGroup>
 								<UsualGroup name="Group2" id="160">
+									<Visible>false</Visible>
 									<Group>Vertical</Group>
 									<ShowTitle>false</ShowTitle>
 									<ExtendedTooltip name="Group2ExtendedTooltip" id="161"/>
@@ -353,6 +375,7 @@
 									</ChildItems>
 								</UsualGroup>
 								<UsualGroup name="Group4" id="165">
+									<Visible>false</Visible>
 									<Group>Vertical</Group>
 									<ShowTitle>false</ShowTitle>
 									<ExtendedTooltip name="Group4ExtendedTooltip" id="166"/>
@@ -376,6 +399,7 @@
 									</ChildItems>
 								</UsualGroup>
 								<UsualGroup name="Group5" id="173">
+									<Visible>false</Visible>
 									<Group>Vertical</Group>
 									<ShowTitle>false</ShowTitle>
 									<ExtendedTooltip name="Group5ExtendedTooltip" id="174"/>
@@ -571,29 +595,29 @@
 					<ContextMenu name="LineItemsContextMenu" id="6"/>
 					<AutoCommandBar name="LineItemsCommandBar" id="7"/>
 					<ExtendedTooltip name="LineItemsExtendedTooltip" id="124"/>
-					<SearchStringAddition name="LineItemsSearchString" id="227">
+					<SearchStringAddition name="LineItemsSearchString" id="233">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>SearchStringRepresentation</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsSearchStringContextMenu" id="228"/>
-						<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="229"/>
+						<ContextMenu name="LineItemsSearchStringContextMenu" id="234"/>
+						<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="235"/>
 					</SearchStringAddition>
-					<ViewStatusAddition name="LineItemsViewStatus" id="230">
+					<ViewStatusAddition name="LineItemsViewStatus" id="236">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>ViewStatusRepresentation</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsViewStatusContextMenu" id="231"/>
-						<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="232"/>
+						<ContextMenu name="LineItemsViewStatusContextMenu" id="237"/>
+						<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="238"/>
 					</ViewStatusAddition>
-					<SearchControlAddition name="LineItemsSearchControl" id="233">
+					<SearchControlAddition name="LineItemsSearchControl" id="239">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>SearchControl</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsSearchControlContextMenu" id="234"/>
-						<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="235"/>
+						<ContextMenu name="LineItemsSearchControlContextMenu" id="240"/>
+						<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="241"/>
 					</SearchControlAddition>
 					<Events>
 						<Event name="BeforeAddRow">LineItemsBeforeAddRow</Event>
@@ -928,6 +952,21 @@
 		</Attribute>
 	</Attributes>
 	<Commands>
+		<Command name="ChargeWithStripe" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Charge with Stripe</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Charge with stripe</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>ChargeWithStripe</Action>
+		</Command>
 		<Command name="SendEmail" id="2">
 			<Title>
 				<v8:item>

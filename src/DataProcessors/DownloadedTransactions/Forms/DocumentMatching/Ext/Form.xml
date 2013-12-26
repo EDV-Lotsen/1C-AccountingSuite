@@ -1,0 +1,214 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<Title>
+		<v8:item>
+			<v8:lang>en</v8:lang>
+			<v8:content>Matching transactions</v8:content>
+		</v8:item>
+	</Title>
+	<AutoTitle>false</AutoTitle>
+	<AutoCommandBar name="FormCommandBar" id="-1">
+		<Autofill>false</Autofill>
+	</AutoCommandBar>
+	<ChildItems>
+		<Table name="DocumentList" id="1">
+			<UseAlternationRowColor>true</UseAlternationRowColor>
+			<EnableStartDrag>true</EnableStartDrag>
+			<DataPath>DocumentList</DataPath>
+			<RowPictureDataPath>DocumentList.DefaultPicture</RowPictureDataPath>
+			<SearchStringLocation>None</SearchStringLocation>
+			<ViewStatusLocation>None</ViewStatusLocation>
+			<SearchControlLocation>None</SearchControlLocation>
+			<AutoRefresh>false</AutoRefresh>
+			<AutoRefreshPeriod>60</AutoRefreshPeriod>
+			<Period>
+				<v8:variant xsi:type="v8:StandardPeriodVariant">Custom</v8:variant>
+				<v8:startDate>0001-01-01T00:00:00</v8:startDate>
+				<v8:endDate>0001-01-01T00:00:00</v8:endDate>
+			</Period>
+			<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
+			<RestoreCurrentRow>false</RestoreCurrentRow>
+			<TopLevelParent xsi:nil="true"/>
+			<ShowRoot>true</ShowRoot>
+			<AllowRootChoice>false</AllowRootChoice>
+			<UpdateOnDataChange>Auto</UpdateOnDataChange>
+			<ContextMenu name="DocumentListContextMenu" id="2"/>
+			<AutoCommandBar name="DocumentListCommandBar" id="3">
+				<Autofill>false</Autofill>
+				<ChildItems>
+					<Button name="DocumentListButton1" id="29">
+						<Type>CommandBarButton</Type>
+						<CommandName>Form.Command.SelectCommand</CommandName>
+						<Title>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>Choose...</v8:content>
+							</v8:item>
+						</Title>
+						<ExtendedTooltip name="DocumentListButton1ExtendedTooltip" id="30"/>
+					</Button>
+					<ButtonGroup name="DocumentListGroup1" id="33">
+						<ExtendedTooltip name="DocumentListGroup1ExtendedTooltip" id="34"/>
+						<ChildItems>
+							<Button name="DocumentListButton2" id="31">
+								<Type>CommandBarButton</Type>
+								<CommandName>Form.Item.DocumentList.StandardCommand.Find</CommandName>
+								<ExtendedTooltip name="DocumentListButton2ExtendedTooltip" id="32"/>
+							</Button>
+							<Button name="DocumentListButton3" id="35">
+								<Type>CommandBarButton</Type>
+								<CommandName>Form.Item.DocumentList.StandardCommand.CancelSearch</CommandName>
+								<ExtendedTooltip name="DocumentListButton3ExtendedTooltip" id="36"/>
+							</Button>
+						</ChildItems>
+					</ButtonGroup>
+				</ChildItems>
+			</AutoCommandBar>
+			<ExtendedTooltip name="DocumentListExtendedTooltip" id="4"/>
+			<SearchStringAddition name="DocumentListSearchString" id="37">
+				<AdditionSource>
+					<Item>DocumentList</Item>
+					<Type>SearchStringRepresentation</Type>
+				</AdditionSource>
+				<ContextMenu name="DocumentListSearchStringContextMenu" id="38"/>
+				<ExtendedTooltip name="DocumentListSearchStringExtendedTooltip" id="39"/>
+			</SearchStringAddition>
+			<ViewStatusAddition name="DocumentListViewStatus" id="40">
+				<AdditionSource>
+					<Item>DocumentList</Item>
+					<Type>ViewStatusRepresentation</Type>
+				</AdditionSource>
+				<ContextMenu name="DocumentListViewStatusContextMenu" id="41"/>
+				<ExtendedTooltip name="DocumentListViewStatusExtendedTooltip" id="42"/>
+			</ViewStatusAddition>
+			<SearchControlAddition name="DocumentListSearchControl" id="43">
+				<AdditionSource>
+					<Item>DocumentList</Item>
+					<Type>SearchControl</Type>
+				</AdditionSource>
+				<ContextMenu name="DocumentListSearchControlContextMenu" id="44"/>
+				<ExtendedTooltip name="DocumentListSearchControlExtendedTooltip" id="45"/>
+			</SearchControlAddition>
+			<Events>
+				<Event name="Selection">DocumentListSelection</Event>
+			</Events>
+			<ChildItems>
+				<LabelField name="DocumentListDate" id="5">
+					<DataPath>DocumentList.Date</DataPath>
+					<ContextMenu name="DocumentListDateContextMenu" id="6"/>
+					<ExtendedTooltip name="DocumentListDateExtendedTooltip" id="7"/>
+				</LabelField>
+				<LabelField name="DocumentListNumber" id="8">
+					<DataPath>DocumentList.Number</DataPath>
+					<ContextMenu name="DocumentListNumberContextMenu" id="9"/>
+					<ExtendedTooltip name="DocumentListNumberExtendedTooltip" id="10"/>
+				</LabelField>
+				<LabelField name="DocumentListType" id="11">
+					<DataPath>DocumentList.Type</DataPath>
+					<ContextMenu name="DocumentListTypeContextMenu" id="12"/>
+					<ExtendedTooltip name="DocumentListTypeExtendedTooltip" id="13"/>
+				</LabelField>
+				<LabelField name="DocumentListTotal" id="14">
+					<DataPath>DocumentList.Total</DataPath>
+					<ContextMenu name="DocumentListTotalContextMenu" id="15"/>
+					<ExtendedTooltip name="DocumentListTotalExtendedTooltip" id="16"/>
+				</LabelField>
+				<LabelField name="DocumentListMemo" id="17">
+					<DataPath>DocumentList.Memo</DataPath>
+					<ContextMenu name="DocumentListMemoContextMenu" id="18"/>
+					<ExtendedTooltip name="DocumentListMemoExtendedTooltip" id="19"/>
+				</LabelField>
+				<LabelField name="DocumentListCompany" id="20">
+					<DataPath>DocumentList.Company</DataPath>
+					<ContextMenu name="DocumentListCompanyContextMenu" id="21"/>
+					<ExtendedTooltip name="DocumentListCompanyExtendedTooltip" id="22"/>
+				</LabelField>
+				<LabelField name="DocumentListDueDate" id="23">
+					<DataPath>DocumentList.DueDate</DataPath>
+					<ContextMenu name="DocumentListDueDateContextMenu" id="24"/>
+					<ExtendedTooltip name="DocumentListDueDateExtendedTooltip" id="25"/>
+				</LabelField>
+				<LabelField name="DocumentListProject" id="26">
+					<DataPath>DocumentList.Project</DataPath>
+					<ContextMenu name="DocumentListProjectContextMenu" id="27"/>
+					<ExtendedTooltip name="DocumentListProjectExtendedTooltip" id="28"/>
+				</LabelField>
+			</ChildItems>
+		</Table>
+	</ChildItems>
+	<Attributes>
+		<Attribute name="Object" id="1">
+			<Type>
+				<v8:Type>cfg:DataProcessorObject.DownloadedTransactions</v8:Type>
+			</Type>
+			<MainAttribute>true</MainAttribute>
+		</Attribute>
+		<Attribute name="DocumentList" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Document list</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>cfg:DynamicList</v8:Type>
+			</Type>
+			<Settings xsi:type="DynamicList">
+				<ManualQuery>true</ManualQuery>
+				<DynamicDataRead>true</DynamicDataRead>
+				<QueryText>SELECT
+	DocumentJournalDocumentJournal1.Ref,
+	DocumentJournalDocumentJournal1.Date,
+	DocumentJournalDocumentJournal1.DeletionMark,
+	DocumentJournalDocumentJournal1.Number,
+	DocumentJournalDocumentJournal1.Posted,
+	DocumentJournalDocumentJournal1.Total,
+	DocumentJournalDocumentJournal1.Memo,
+	DocumentJournalDocumentJournal1.Company,
+	DocumentJournalDocumentJournal1.DueDate,
+	DocumentJournalDocumentJournal1.Project,
+	DocumentJournalDocumentJournal1.Type
+FROM
+	DocumentJournal.DocumentJournal1 AS DocumentJournalDocumentJournal1
+		LEFT JOIN InformationRegister.BankTransactions AS BankTransactions
+		ON DocumentJournalDocumentJournal1.Ref = BankTransactions.Document
+WHERE
+	BankTransactions.Document IS NULL </QueryText>
+				<MainTable>DocumentJournal.DocumentJournal1</MainTable>
+				<ListSettings>
+					<dcsset:filter>
+						<dcsset:viewMode>Normal</dcsset:viewMode>
+						<dcsset:userSettingID>dfcece9d-5077-440b-b6b3-45a5cb4538eb</dcsset:userSettingID>
+					</dcsset:filter>
+					<dcsset:order>
+						<dcsset:viewMode>Normal</dcsset:viewMode>
+						<dcsset:userSettingID>88619765-ccb3-46c6-ac52-38e9c992ebd4</dcsset:userSettingID>
+					</dcsset:order>
+					<dcsset:conditionalAppearance>
+						<dcsset:viewMode>Normal</dcsset:viewMode>
+						<dcsset:userSettingID>b75fecce-942b-4aed-abc9-e6a02e460fb3</dcsset:userSettingID>
+					</dcsset:conditionalAppearance>
+					<dcsset:itemsViewMode>Normal</dcsset:itemsViewMode>
+					<dcsset:itemsUserSettingID>911b6018-f537-43e8-a417-da56b22f9aec</dcsset:itemsUserSettingID>
+				</ListSettings>
+			</Settings>
+		</Attribute>
+	</Attributes>
+	<Commands>
+		<Command name="SelectCommand" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Select command</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Select command</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>SelectCommand</Action>
+		</Command>
+	</Commands>
+</Form>
