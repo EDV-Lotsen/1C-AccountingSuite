@@ -4,6 +4,14 @@
 // 
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
+	If GeneralFunctionsReusable.DisplayAPICodesSetting() = False Then
+		Items.api_code.Visible = False;
+	EndIf;
+	
+	If NOT Object.Ref.IsEmpty() Then
+		api_code = String(Object.Ref.UUID());
+	EndIf;
+	
 	// custom fields
 	
 	CF1Type = Constants.CF1CType.Get();
@@ -93,6 +101,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	EndIf;
 
 	// end custom fields
+
 	
 	LoadAddrPage();
 	If Object.Ref.IsEmpty() Then
@@ -136,6 +145,12 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Items.Vendor.Enabled = False;
 	EndIf;
 	
+	If Object.Vendor = True Then
+		Items.Group1099.Visible = True;
+	Else
+		Items.Group1099.Visible = False;
+	EndIf;
+	
 	//If Object.Ref = Catalogs.Companies.OurCompany Then
 	//	Items.Vendor1099.Visible = False;
 	//	Items.DefaultCurrency.Visible = False;
@@ -148,8 +163,8 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	//	Items.Terms.Visible = False;
 	//EndIf;
 	
-	//Items.FormRegisterCard.Enabled = IsBlankString(Object.StripeToken);
-	//Items.FormDeleteCard.Enabled   = Not IsBlankString(Object.StripeID);
+	Items.FormRegisterCard.Enabled = IsBlankString(Object.StripeToken);
+	Items.FormDeleteCard.Enabled   = Not IsBlankString(Object.StripeID);
 	//Items.FormRegisterCustomer.Enabled = IsBlankString(Object.StripeID) And Not IsBlankString(Object.StripeToken);
 	
 EndProcedure
@@ -158,7 +173,29 @@ EndProcedure
 // Checks if the user indicated if the company is a customer, vendor, or both.
 //
 Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
-		
+	
+	Query = New Query("SELECT
+	                  |	Companies.Ref
+	                  |FROM
+	                  |	Catalog.Companies AS Companies
+	                  |WHERE
+	                  |	Companies.Description = &Description");
+	Query.SetParameter("Description", Object.Description);
+	QueryResult = Query.Execute();
+	If QueryResult.IsEmpty() Then		
+	Else
+		Dataset = QueryResult.Unload();
+		If NOT Dataset[0][0] = Object.Ref Then
+			Message = New UserMessage();
+			Message.Text=NStr("en='Another company is already using this name. Please use a different name.'");
+			//Message.Field = "Object.Description";
+			Message.Message();
+			Cancel = True;
+			Return;
+		EndIf;
+	EndIf;
+
+	
 	If Object.Vendor = False AND Object.Customer = False Then
 		
 		// AND NOT Object.Ref = GeneralFunctions.GetOurCompany()
@@ -240,28 +277,48 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 		AddressLine.Description = "Primary";
 		AddressLine.DefaultShipping = True;
 		AddressLine.DefaultBilling = True;
-		AddressLine.Write();		
+		AddressLine.Write();
 	EndIf;
 	
 	// Update visibility of flags
 	Items.Customer.Enabled = Not Object.Customer;
 	Items.Vendor.Enabled = Not Object.Vendor;
 	
-	//MainAddr = Catalogs.Addresses.FindByDescription("Primary",,,Object.Ref);
-	////MainAddr = Catalogs.Addresses.FindByCode("00001",,,Object.Ref);
-	//MainObj = MainAddr.GetObject();
-	//MainObj.FirstName = PrimaryAddr.FirstName;
-	//MainObj.MiddleName = PrimaryAddr.MiddleName;
-	//MainObj.LastName = PrimaryAddr.LastName;
-	//MainObj.Email = PrimaryAddr.Email;
-	//MainObj.AddressLine1 = PrimaryAddr.AddressLine1;
-	//MainObj.AddressLine2 = PrimaryAddr.AddressLine2;
-	//MainObj.Phone = PrimaryAddr.Phone;
-	//MainObj.City = PrimaryAddr.City;
-	//MainObj.State = PrimaryAddr.State;
-	//MainObj.Country = PrimaryAddr.Country;
-	//MainObj.ZIP = PrimaryAddr.ZIP;
-	//MainObj.Write();
+	
+	//Query = New Query("SELECT
+	//				  |	Addresses.Ref
+	//				  |FROM
+	//				  |	Catalog.Addresses AS Addresses
+	//				  |WHERE
+	//				  |	Addresses.Owner = &Ref");
+	//
+	//Query.SetParameter("Ref", Object.Ref);
+	//QueryResult = Query.Execute();
+	//If QueryResult.IsEmpty() Then
+	//Else
+	//	DataSet = QueryResult.Unload();
+	//	
+	//	//MainAddr = Catalogs.Addresses.FindByDescription("Primary",,,Object.Ref);
+	//	MainAddr = DataSet[0][0];
+	//	//MainAddr = Catalogs.Addresses.FindByCode("00001",,,Object.Ref);
+	//	MainObj = MainAddr.GetObject();
+	//	MainObj.FirstName = PrimaryAddr.FirstName;
+	//	MainObj.MiddleName = PrimaryAddr.MiddleName;
+	//	MainObj.LastName = PrimaryAddr.LastName;
+	//	MainObj.Email = PrimaryAddr.Email;
+	//	MainObj.AddressLine1 = PrimaryAddr.AddressLine1;
+	//	MainObj.AddressLine2 = PrimaryAddr.AddressLine2;
+	//	MainObj.Phone = PrimaryAddr.Phone;
+	//	MainObj.City = PrimaryAddr.City;
+	//	MainObj.State = PrimaryAddr.State;
+	//	MainObj.Country = PrimaryAddr.Country;
+	//	MainObj.ZIP = PrimaryAddr.ZIP;
+	//	MainObj.Write();
+
+	//EndIf;
+	
+
+	
 
 	
 EndProcedure
@@ -271,6 +328,90 @@ Function GetAPISecretKey()
 	
 	//K.Zuzik
 	Return Constants.APISecretKey.Get();
+	
+EndFunction
+
+&AtClient
+Procedure RegisterCard(Command)
+	
+	// Check element saved.
+	If Object.Ref.IsEmpty() Or Modified Then
+		ShowMessageBox(Undefined, NStr("en = 'Current item is not saved.
+                                       |Save customer first.'"));
+		Return;
+	EndIf;
+	
+	//K.Zuzik
+	statestring = GetAPISecretKey() + Object.Code;
+	GotoURL("https://addcard.accountingsuite.com/check?state=" + statestring);
+	Close();
+	
+EndProcedure
+
+&AtClient
+Procedure DeleteCard(Command)
+	
+	// Check element saved.
+	If Object.Ref.IsEmpty() Or Modified Then
+		// Save the customer first.
+		ShowMessageBox(Undefined, NStr("en = 'Current item is not saved.
+		                                     |Save customer first.'"));
+	Else
+		// Request Stripe to delete card.
+		ResultDescription = DeleteCardAtServer();
+		ShowMessageBox(Undefined, ResultDescription);
+	EndIf;
+	
+EndProcedure
+
+&AtServer
+Function DeleteCardAtServer()
+	var deleted, id, code;
+	
+	// Request Stripe to delete cuctomer (and it's card) from Stripe API.
+	RequestResult = ApiStripeRequestorInterface.DeleteCustomer(Object.StripeID);
+	RequestResultObj = RequestResult.Result;
+	If  (RequestResultObj <> Undefined)
+	And (TypeOf(RequestResultObj) = Type("Structure"))
+	And (RequestResultObj.Property("id", id) And id = Object.StripeID)
+	And (RequestResultObj.Property("deleted", deleted) And deleted = True)
+	Then
+		// Requested object deleted as expected.
+		Object.StripeToken = "";
+		Object.StripeID    = "";
+		Object.last4       = "";
+		Object.exp_month   = 0;
+		Object.exp_year    = 0;
+		Object.type        = "";
+		
+		// Create user message.
+		ResultDescription  = NStr("en = 'Customer card successfully deleted.'");
+		
+	ElsIf (RequestResultObj = Undefined)
+	  And (RequestResult.AdditionalData.Property("Code", code) And code = 404) // Not found
+	Then
+		// Requested object already deleted.
+		Object.StripeToken = "";
+		Object.StripeID    = "";
+		Object.last4       = "";
+		Object.exp_month   = 0;
+		Object.exp_year    = 0;
+		Object.type        = "";
+		
+		// Create user message.
+		ResultDescription  = NStr("en = 'Customer card already deleted in Stripe.'");
+	Else
+		
+		// Create user message.
+		ResultDescription  = RequestResult.Description;
+	EndIf;
+	
+	// Update elements presentation.
+	Items.FormRegisterCard.Enabled = IsBlankString(Object.StripeToken);
+	Items.FormDeleteCard.Enabled   = Not IsBlankString(Object.StripeID);
+	
+	// Return user message.
+	Return ResultDescription;
 	
 EndFunction
 
@@ -311,5 +452,17 @@ Procedure LoadAddrPage()
 	PrimaryAddr.State = MainAddr.State;
 	PrimaryAddr.Country = MainAddr.Country;
 	PrimaryAddr.Zip = MainAddr.ZIP;
+EndProcedure
+
+
+&AtClient
+Procedure VendorOnChange(Item)
+	
+	If Object.Vendor = True Then
+		Items.Group1099.Visible = True;
+	Else
+		Items.Group1099.Visible = False;
+	EndIf;
+	
 EndProcedure
 

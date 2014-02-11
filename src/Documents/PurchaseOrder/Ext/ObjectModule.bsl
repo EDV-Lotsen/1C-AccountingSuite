@@ -37,7 +37,7 @@ Procedure Filling(FillingData, StandardProcessing)
 	If FillingData = Undefined Then
 		Currency         = Constants.DefaultCurrency.Get();
 		ExchangeRate     = 1;
-		PriceIncludesVAT = GeneralFunctionsReusable.PriceIncludesVAT();
+		//PriceIncludesVAT = GeneralFunctionsReusable.PriceIncludesVAT();
 		Location         = Catalogs.Locations.MainWarehouse;
 	EndIf;
 	

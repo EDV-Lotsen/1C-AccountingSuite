@@ -82,4 +82,3 @@ Procedure UndoPosting(Cancel)
 
 EndProcedure
 
-

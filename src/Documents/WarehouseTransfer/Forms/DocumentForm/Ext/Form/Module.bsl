@@ -123,6 +123,7 @@ Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
 		CurrentObject.AdditionalProperties.Insert("PermitWrite", PermitWrite);	
 	EndIf;
 
+	
 	If Object.Ref.IsEmpty() Then
 	
 		MatchVal = Increment(Constants.WarehouseTransferLastNumber.Get());

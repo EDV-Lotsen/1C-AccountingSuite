@@ -40,13 +40,14 @@
 					<ExtendedTooltip name="MessageIconExtendedTooltip" id="3"/>
 				</PictureDecoration>
 				<LabelDecoration name="Message" id="4">
+					<Height>2</Height>
+					<Font ref="sys:DefaultGUIFont" height="10" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
 					<Title formatted="false">
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Message</v8:content>
 						</v8:item>
 					</Title>
-					<HorizontalAlign>Center</HorizontalAlign>
 					<ContextMenu name="MessageContextMenu" id="5"/>
 					<ExtendedTooltip name="MessageExtendedTooltip" id="6"/>
 				</LabelDecoration>

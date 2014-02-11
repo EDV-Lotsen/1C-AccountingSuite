@@ -3,13 +3,51 @@
 	<WindowOpeningMode>LockOwnerWindow</WindowOpeningMode>
 	<AutoCommandBar name="FormCommandBar" id="-1"/>
 	<ChildItems>
-		<InputField name="ObjectName" id="4">
-			<DataPath>Record.ObjectName</DataPath>
-			<ContextMenu name="ObjectNameContextMenu" id="5"/>
-			<ExtendedTooltip name="ObjectNameExtendedTooltip" id="6"/>
-		</InputField>
 		<InputField name="TemplateName" id="1">
 			<DataPath>Record.TemplateName</DataPath>
+			<ListChoiceMode>true</ListChoiceMode>
+			<ChoiceList>
+				<xr:Item>
+					<xr:Presentation/>
+					<xr:CheckState>0</xr:CheckState>
+					<xr:Value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation/>
+						<Value xsi:type="xs:string">Sales invoice</Value>
+					</xr:Value>
+				</xr:Item>
+				<xr:Item>
+					<xr:Presentation/>
+					<xr:CheckState>0</xr:CheckState>
+					<xr:Value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation/>
+						<Value xsi:type="xs:string">Packing list</Value>
+					</xr:Value>
+				</xr:Item>
+				<xr:Item>
+					<xr:Presentation/>
+					<xr:CheckState>0</xr:CheckState>
+					<xr:Value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation/>
+						<Value xsi:type="xs:string">Sales order</Value>
+					</xr:Value>
+				</xr:Item>
+				<xr:Item>
+					<xr:Presentation/>
+					<xr:CheckState>0</xr:CheckState>
+					<xr:Value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation/>
+						<Value xsi:type="xs:string">Sales quote</Value>
+					</xr:Value>
+				</xr:Item>
+				<xr:Item>
+					<xr:Presentation/>
+					<xr:CheckState>0</xr:CheckState>
+					<xr:Value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation/>
+						<Value xsi:type="xs:string">Credit memo</Value>
+					</xr:Value>
+				</xr:Item>
+			</ChoiceList>
 			<ContextMenu name="TemplateNameContextMenu" id="2"/>
 			<ExtendedTooltip name="TemplateNameExtendedTooltip" id="3"/>
 		</InputField>

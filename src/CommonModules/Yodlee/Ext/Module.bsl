@@ -13,10 +13,15 @@
 //Used in background scheduled job
 //
 Procedure YodleeUpdateBanks() Export
+	UpdateFinancialInstitutions("bank");
+	UpdateFinancialInstitutions("credits");
+EndProcedure
+
+Procedure UpdateFinancialInstitutions(ContainerType) Export
 Try
 	YodleeMain	= New ComObject("YodleeCom.YodleeMain"); 
 	
-	ContainerServices = YodleeMain.viewContainerServices("bank");
+	ContainerServices = YodleeMain.viewContainerServices(ContainerType);
 	
 	longArray = New ComObject("YodleeCom.LongArray");
 	i = 0;
@@ -65,9 +70,11 @@ Try
 				Picture = new Picture(bd);
 				CurBank.Logotype = New ValueStorage(Picture);
 			EndIf;
-			CurBank.DateUpdatedUTC = CurrentUniversalDate();
+			CurBank.DateUpdatedUTC 	= CurrentUniversalDate();
+			CurBank.ContainerType	= GetYodleeContainerType(ContainerType);
 			CurBank.Write();
 		Except
+			WriteLogEvent("Yodlee.UpdateBanks", EventLogLevel.Error,,, ErrorDescription());
 		EndTry;
 	
 		i = i + 1;
@@ -187,8 +194,16 @@ Procedure YodleeUpdateBankAccounts(YodleeMain = Undefined, DeleteUninitializedAc
 					bankData				= Result.GetBankDataByID(j);
 					If bankData <> Undefined Then
 						CurAccount.ItemAccountID 		= bankData.itemAccountID;
-						CurAccount.AvailableBalance 	= bankData.availableBalance.amount;
-						CurAccount.CurrentBalance 		= bankData.currentBalance.amount;
+						If Result.ContainerName = "banks" Then
+							CurAccount.AvailableBalance 	= bankData.availableBalance.amount;
+							CurAccount.CurrentBalance 		= bankData.currentBalance.amount;
+						ElsIf Result.ContainerName = "credits" Then
+							CurAccount.AvailableBalance		= bankData.availableCredit.amount;
+							CurAccount.CurrentBalance		= bankData.runningBalance.amount;
+							CurAccount.CreditCard_AmountDue	= bankData.amountDue.amount;
+							CurAccount.CreditCard_TotalCreditline	= bankData.totalCreditLine.amount;
+							CurAccount.CreditCard_Type	= bankData.cardType;
+						EndIf;
 						CurAccount.AccountType			= bankData.acctType;
 						CurAccount.Description 			= ItemSummary.itemDisplayName + ":" + bankData.accountNumber;
 					Else
@@ -362,6 +377,17 @@ Function RemoveBankAccountAtServer(Item) Export
 					Try
 					
 						DeletedAccounts.Add(AccSelection.Ref);
+						
+						//Delete records in registers
+						//BankTransactions
+						BTRecordset = InformationRegisters.BankTransactions.CreateRecordSet();
+						BTRecordset.Filter.BankAccount.Set(AccSelection.Ref);
+						BTRecordset.Write(True);
+						//BankTransactionCategorization
+						BTCRecordset = InformationRegisters.BankTransactionCategorization.CreateRecordSet();
+						BTCRecordset.Filter.BankAccount.Set(AccSelection.Ref);
+						BTCRecordset.Write(True);
+
 					
 						AccObject = AccSelection.Ref.GetObject();
 						AccObject.Delete();
@@ -433,6 +459,16 @@ Function RemoveYodleeBankAccountAtServer(Item) Export
 				NewRecord.ItemID = Item.ItemID;
 				NewRecord.ItemAccountID = Item.ItemAccountID;
 				RecordSet.Write(True);
+				
+				//Delete records in registers
+				//BankTransactions
+				BTRecordset = InformationRegisters.BankTransactions.CreateRecordSet();
+				BTRecordset.Filter.BankAccount.Set(Item);
+				BTRecordset.Write(True);
+				//BankTransactionCategorization
+				BTCRecordset = InformationRegisters.BankTransactionCategorization.CreateRecordSet();
+				BTCRecordset.Filter.BankAccount.Set(Item);
+				BTCRecordset.Write(True);
 				
 				AccObject = Item.GetObject();
 				AccObject.Delete();
@@ -737,10 +773,11 @@ Function ViewTransactions(BankAccount, TransactionsFromDate = Undefined, Transac
 			EndIf;
 		EndIf;
 		
+		Container = GetContainerFromYodleeContainerType(BankAccount.Owner.ContainerType);
 		If ValueIsFilled(TransactionsFromDate) or ValueIsFilled(TransactionsToDate) Then
-			TransactionSearchResults = YodleeMain.viewTransactionsForItemAccount(BankAccount.ItemID, BankAccount.ItemAccountID, "bank", BankAccount.CurrentBalance, TransactionsFromDate, TransactionsToDate);
+			TransactionSearchResults = YodleeMain.viewTransactionsForItemAccount(BankAccount.ItemID, BankAccount.ItemAccountID, Container, BankAccount.CurrentBalance, TransactionsFromDate, TransactionsToDate);
 		else
-			TransactionSearchResults = YodleeMain.viewTransactionsForItemAccount(BankAccount.ItemID, BankAccount.ItemAccountID, "bank", BankAccount.CurrentBalance, Undefined, Undefined);
+			TransactionSearchResults = YodleeMain.viewTransactionsForItemAccount(BankAccount.ItemID, BankAccount.ItemAccountID, Container, BankAccount.CurrentBalance, Undefined, Undefined);
 		EndIf;
 		If Not TransactionSearchResults.searchResult.returnValue Then
 			WriteLogEvent("Yodlee.UpdateTransactions", EventLogLevel.Error,, BankAccount, "Error updating transactions for bank account with ItemAccountID:" + BankAccount.ItemAccountID + ". Description:" + TransactionSearchResults.searchResult.errorMessage);
@@ -1822,4 +1859,23 @@ Function FindElementByName(ProgrammaticElems, ElementName)
 	return Elem;
 EndFunction
 
+Function GetYodleeContainerType(ContainerType)
+	If Upper(ContainerType) = "BANK" Then
+		return Enums.YodleeContainerTypes.Bank;
+	ElsIf Upper(ContainerType) = "CREDITS" Then
+		return Enums.YodleeContainerTypes.Credit_Card;
+	Else
+		Raise "Illegal FI container type";
+	EndIf;
+EndFunction
+
+Function GetContainerFromYodleeContainerType(ContainerType)
+	If ContainerType = Enums.YodleeContainerTypes.Bank Then
+		return "bank";
+	ElsIf ContainerType = Enums.YodleeContainerTypes.Credit_Card Then
+		return "credits";
+	Else
+		Raise "Illegal FI container type";
+	EndIf;
+EndFunction
 #EndRegion

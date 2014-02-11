@@ -1,26 +1,26 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <MetaDataObject xmlns="http://v8.1c.ru/8.3/MDClasses" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:cmi="http://v8.1c.ru/8.2/managed-application/cmi" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xen="http://v8.1c.ru/8.3/xcf/enums" xmlns:xpr="http://v8.1c.ru/8.3/xcf/predef" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
-	<Catalog uuid="db8e7f88-4c96-4ad7-bce7-b5982588ae60">
+	<Catalog uuid="4eca1d2f-de66-4434-bee6-3d681a9925e6">
 		<InternalInfo>
 			<xr:GeneratedType name="CatalogObject.SalesPeople" category="Object">
-				<xr:TypeId>9c83a9eb-db24-4719-9f76-60b89508807a</xr:TypeId>
-				<xr:ValueId>4520c1f1-11af-477d-903f-bc95f5a80b4c</xr:ValueId>
+				<xr:TypeId>a8792c0e-a4aa-4cd0-92db-6de2e4faa3c1</xr:TypeId>
+				<xr:ValueId>ef552847-60e9-4d81-9806-dc128f2455e3</xr:ValueId>
 			</xr:GeneratedType>
 			<xr:GeneratedType name="CatalogRef.SalesPeople" category="Ref">
-				<xr:TypeId>f53d45cb-47f1-41d6-afd1-9216df3929dd</xr:TypeId>
-				<xr:ValueId>fcf2eca8-432c-4aa5-8ad9-4611e50d1ef6</xr:ValueId>
+				<xr:TypeId>46fb6cd7-610a-4893-aaf1-aefa3f6df6d8</xr:TypeId>
+				<xr:ValueId>037d6568-4b1f-4614-a192-109428327c97</xr:ValueId>
 			</xr:GeneratedType>
 			<xr:GeneratedType name="CatalogSelection.SalesPeople" category="Selection">
-				<xr:TypeId>7982bd04-95c1-461b-8814-83c24e9dc840</xr:TypeId>
-				<xr:ValueId>d7b77781-a772-4cef-8ecf-98ca476d55db</xr:ValueId>
+				<xr:TypeId>9c3de0e6-1364-48fe-8793-7e6c97048563</xr:TypeId>
+				<xr:ValueId>751674ba-66df-4279-8af1-ebb5dcf4a126</xr:ValueId>
 			</xr:GeneratedType>
 			<xr:GeneratedType name="CatalogList.SalesPeople" category="List">
-				<xr:TypeId>22c7a874-edab-4c0d-866f-077ff116b034</xr:TypeId>
-				<xr:ValueId>0e5bd3e7-306b-4eaa-8dff-cb9d54fcd50a</xr:ValueId>
+				<xr:TypeId>2e7b7299-1a42-40cd-b9b5-8761ff1ed287</xr:TypeId>
+				<xr:ValueId>e99d946c-879a-4856-96b1-e2a358797875</xr:ValueId>
 			</xr:GeneratedType>
 			<xr:GeneratedType name="CatalogManager.SalesPeople" category="Manager">
-				<xr:TypeId>bdf079aa-d80f-4bd9-94a5-dea776419669</xr:TypeId>
-				<xr:ValueId>5f8511d8-3632-4ecb-9c74-6eea9331285e</xr:ValueId>
+				<xr:TypeId>731a38a6-873e-4453-868b-acc7a55346f4</xr:TypeId>
+				<xr:ValueId>2a4b5369-61de-416d-a7f7-8b685aef6471</xr:ValueId>
 			</xr:GeneratedType>
 		</InternalInfo>
 		<Properties>
@@ -291,10 +291,10 @@
 			<SearchStringModeOnInputByString>Begin</SearchStringModeOnInputByString>
 			<FullTextSearchOnInputByString>DontUse</FullTextSearchOnInputByString>
 			<ChoiceDataGetModeOnInputByString>Directly</ChoiceDataGetModeOnInputByString>
-			<DefaultObjectForm>Catalog.SalesPeople.Form.ItemForm</DefaultObjectForm>
+			<DefaultObjectForm/>
 			<DefaultFolderForm/>
-			<DefaultListForm>Catalog.SalesPeople.Form.ListForm</DefaultListForm>
-			<DefaultChoiceForm>Catalog.SalesPeople.Form.ChoiceForm</DefaultChoiceForm>
+			<DefaultListForm/>
+			<DefaultChoiceForm/>
 			<DefaultFolderChoiceForm/>
 			<AuxiliaryObjectForm/>
 			<AuxiliaryFolderForm/>
@@ -309,7 +309,7 @@
 			<ObjectPresentation>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Sales person</v8:content>
+					<v8:content>SalesPerson</v8:content>
 				</v8:item>
 			</ObjectPresentation>
 			<ExtendedObjectPresentation/>
@@ -317,12 +317,8 @@
 			<ExtendedListPresentation/>
 			<Explanation/>
 			<CreateOnInput>Use</CreateOnInput>
-			<ChoiceHistoryOnInput>Auto</ChoiceHistoryOnInput>
+			<ChoiceHistoryOnInput>DontUse</ChoiceHistoryOnInput>
 		</Properties>
-		<ChildObjects>
-			<Form>ItemForm</Form>
-			<Form>ListForm</Form>
-			<Form>ChoiceForm</Form>
-		</ChildObjects>
+		<ChildObjects/>
 	</Catalog>
 </MetaDataObject>

@@ -61,7 +61,7 @@ Procedure Filling(FillingData, StandardProcessing)
 		Currency         = Constants.DefaultCurrency.Get();
 		APAccount        = Currency.DefaultAPAccount;
 		ExchangeRate     = 1;
-		PriceIncludesVAT = GeneralFunctionsReusable.PriceIncludesVAT();
+		//PriceIncludesVAT = GeneralFunctionsReusable.PriceIncludesVAT();
 		LocationActual   = Catalogs.Locations.MainWarehouse;
 		
 	Else
@@ -119,6 +119,17 @@ Procedure OnCopy(CopiedObject)
 	ManualAdjustment = False;
 	
 EndProcedure
+
+#EndIf
+//------------------------------------------------------------------------------
+
+#EndRegion
+
+////////////////////////////////////////////////////////////////////////////////
+#Region CODE_REVIEW
+
+//------------------------------------------------------------------------------
+#If Server Or ThickClientOrdinaryApplication Or ExternalConnection Then
 
 Procedure Posting(Cancel, PostingMode)
 	
@@ -208,9 +219,9 @@ Procedure Posting(Cancel, PostingMode)
 		
 	// fill in the account posting value table with amounts
 	
-	PostingDatasetVAT = New ValueTable();
-	PostingDatasetVAT.Columns.Add("VATAccount");
-	PostingDatasetVAT.Columns.Add("AmountRC");
+	//PostingDatasetVAT = New ValueTable();
+	//PostingDatasetVAT.Columns.Add("VATAccount");
+	//PostingDatasetVAT.Columns.Add("AmountRC");
 	
 	PostingDataset = New ValueTable();
 	PostingDataset.Columns.Add("Account");
@@ -219,7 +230,20 @@ Procedure Posting(Cancel, PostingMode)
 	CalculateByPlannedCosting = False;
 	//PurchaseVarianceAccount = Constants.PurchaseVarianceAccount.Get();
 	
+	RegisterRecords.CashFlowData.Write = True;
+	
 	For Each CurRowLineItems in LineItems Do
+		
+		Record = RegisterRecords.CashFlowData.Add();
+		Record.RecordType = AccumulationRecordType.Receipt;
+		Record.Period = Date;
+		Record.Company = Company;
+		Record.Document = Ref;
+		Record.Account = CurRowLineItems.Product.InventoryOrExpenseAccount;
+		//Record.CashFlowSection = CurRowLineItems.Product.InventoryOrExpenseAccount.CashFlowSection;
+		Record.AmountRC = CurRowLineItems.LineTotal * ExchangeRate;
+		//Record.PaymentMethod = PaymentMethod;
+
 		// Detect inventory item in table part
 		IsInventoryPosting = (Not CurRowLineItems.Product.IsEmpty()) And (CurRowLineItems.Product.Type = Enums.InventoryTypes.Inventory);
 		
@@ -229,11 +253,11 @@ Procedure Posting(Cancel, PostingMode)
 		Else
 			PostingLine.Account = CurRowLineItems.Product.InventoryOrExpenseAccount;
 		EndIf;	
-		If PriceIncludesVAT Then
-			PostingLine.AmountRC = (CurRowLineItems.LineTotal - CurRowLineItems.VAT) * ExchangeRate;
-		Else
+		//If PriceIncludesVAT Then
+		//	PostingLine.AmountRC = (CurRowLineItems.LineTotal - CurRowLineItems.VAT) * ExchangeRate;
+		//Else
 			PostingLine.AmountRC = CurRowLineItems.LineTotal * ExchangeRate;
-		EndIf;
+		//EndIf;
 		
 		// Calculating diference between ordered cost and invoiced cost of inventory items
 		//If CalculateByPlannedCosting And IsInventoryPosting Then
@@ -250,15 +274,26 @@ Procedure Posting(Cancel, PostingMode)
 		//	EndIf;
 		//EndIf;
 		
-		If CurRowLineItems.VAT > 0 Then
-			PostingLineVAT = PostingDatasetVAT.Add();
-			PostingLineVAT.VATAccount = VAT_FL.VATAccount(CurRowLineItems.VATCode, "Purchase");
-			PostingLineVAT.AmountRC = CurRowLineItems.VAT * ExchangeRate;
-		EndIf;
+		//If CurRowLineItems.VAT > 0 Then
+		//	PostingLineVAT = PostingDatasetVAT.Add();
+		//	PostingLineVAT.VATAccount = VAT_FL.VATAccount(CurRowLineItems.VATCode, "Purchase");
+		//	PostingLineVAT.AmountRC = CurRowLineItems.VAT * ExchangeRate;
+		//EndIf;
 		
 	EndDo;
 	
 	For Each CurRowAccount in Accounts Do
+		
+		Record = RegisterRecords.CashFlowData.Add();
+		Record.RecordType = AccumulationRecordType.Receipt;
+		Record.Period = Date;
+		Record.Company = Company;
+		Record.Document = Ref;
+		Record.Account = CurRowAccount.Account;
+		//Record.CashFlowSection = CurRowAccount.Account.CashFlowSection;
+		Record.AmountRC = CurRowAccount.Amount * ExchangeRate;
+		//Record.PaymentMethod = PaymentMethod;
+
 		PostingLine = PostingDataset.Add();
 		PostingLine.Account = CurRowAccount.Account;
 		PostingLine.AmountRC = CurRowAccount.Amount * ExchangeRate;
@@ -298,14 +333,14 @@ Procedure Posting(Cancel, PostingMode)
 	Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Company] = Company;
 	Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Document] = Ref;
 	
-	PostingDatasetVAT.GroupBy("VATAccount", "AmountRC");
-	NoOfPostingRows = PostingDatasetVAT.Count();
-	For i = 0 To NoOfPostingRows - 1 Do
-		Record = RegisterRecords.GeneralJournal.AddDebit();
-		Record.Account = PostingDatasetVAT[i][0];
-		Record.Period = Date;
-		Record.AmountRC = PostingDatasetVAT[i][1];	
-	EndDo;
+	//PostingDatasetVAT.GroupBy("VATAccount", "AmountRC");
+	//NoOfPostingRows = PostingDatasetVAT.Count();
+	//For i = 0 To NoOfPostingRows - 1 Do
+	//	Record = RegisterRecords.GeneralJournal.AddDebit();
+	//	Record.Account = PostingDatasetVAT[i][0];
+	//	Record.Period = Date;
+	//	Record.AmountRC = PostingDatasetVAT[i][1];	
+	//EndDo;
 	
 	
 	RegisterRecords.ProjectData.Write = True;
@@ -360,7 +395,7 @@ Procedure UndoPosting(Cancel)
 	Query.SetParameter("Ref", Ref);
 	Dataset = Query.Execute().Select();
 	
-	AllowNegativeInventory = Constants.AllowNegativeInventory.Get();
+	//AllowNegativeInventory = Constants.AllowNegativeInventory.Get();
 	
 	While Dataset.Next() Do
 	
@@ -391,10 +426,10 @@ Procedure UndoPosting(Cancel)
 			Message.Text= StringFunctionsClientServer.SubstituteParametersInString(
 			NStr("en='Insufficient balance on %1';de='Nicht ausreichende Bilanz'"),CurProd);
 			Message.Message();
-			If NOT AllowNegativeInventory Then
+			//If NOT AllowNegativeInventory Then
 				Cancel = True;
 				Return;
-			EndIf;
+			//EndIf;
 		EndIf;
 		
 	EndDo;

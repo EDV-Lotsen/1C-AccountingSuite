@@ -12,9 +12,9 @@ Procedure LineItemsProductOnChange(Item)
 	TabularPartRow.Quantity = 0;
 	TabularPartRow.LineTotal = 0;
 	TabularPartRow.Price = 0;
-	TabularPartRow.VAT = 0;
+	//TabularPartRow.VAT = 0;
 	
-	TabularPartRow.VATCode = CommonUse.GetAttributeValue(TabularPartRow.Product, "PurchaseVATCode");
+	//TabularPartRow.VATCode = CommonUse.GetAttributeValue(TabularPartRow.Product, "PurchaseVATCode");
 	
 	RecalcTotal();
 	
@@ -27,14 +27,14 @@ EndProcedure
 //
 Procedure RecalcTotal()
 	
-	If Object.PriceIncludesVAT Then
+	//If Object.PriceIncludesVAT Then
+	//	Object.DocumentTotal = Object.LineItems.Total("LineTotal");
+	//	Object.DocumentTotalRC = Object.LineItems.Total("LineTotal") * Object.ExchangeRate;		
+	//Else
 		Object.DocumentTotal = Object.LineItems.Total("LineTotal");
-		Object.DocumentTotalRC = Object.LineItems.Total("LineTotal") * Object.ExchangeRate;		
-	Else
-		Object.DocumentTotal = Object.LineItems.Total("LineTotal") + Object.LineItems.Total("VAT");
-		Object.DocumentTotalRC = (Object.LineItems.Total("LineTotal") + Object.LineItems.Total("VAT")) * Object.ExchangeRate;
-	EndIf;	
-	Object.VATTotal = Object.LineItems.Total("VAT") * Object.ExchangeRate;
+		Object.DocumentTotalRC = (Object.LineItems.Total("LineTotal")) * Object.ExchangeRate;
+	//EndIf;	
+	//Object.VATTotal = Object.LineItems.Total("VAT") * Object.ExchangeRate;
 	
 EndProcedure
 
@@ -45,7 +45,7 @@ EndProcedure
 // 
 Procedure CompanyOnChange(Item)
 	
-	Object.CompanyCode = CommonUse.GetAttributeValue(Object.Company, "Code");
+	//Object.CompanyCode = CommonUse.GetAttributeValue(Object.Company, "Code");
 	Object.Currency = CommonUse.GetAttributeValue(Object.Company, "DefaultCurrency");
 	Object.APAccount = CommonUse.GetAttributeValue(Object.Currency, "DefaultAPAccount");
 	Object.ExchangeRate = GeneralFunctions.GetExchangeRate(Object.Date, Object.Currency);
@@ -67,7 +67,7 @@ Procedure LineItemsPriceOnChange(Item)
 	
 	TabularPartRow.LineTotal = TabularPartRow.Quantity * TabularPartRow.Price;
 	
-	TabularPartRow.VAT = VAT_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Purchase", Object.PriceIncludesVAT);
+	//TabularPartRow.VAT = VAT_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Purchase", Object.PriceIncludesVAT);
 	
 	RecalcTotal();
 
@@ -119,7 +119,7 @@ Procedure LineItemsQuantityOnChange(Item)
 	
 	TabularPartRow = Items.LineItems.CurrentData;
 	TabularPartRow.LineTotal = TabularPartRow.Quantity * TabularPartRow.Price;
-	TabularPartRow.VAT = VAT_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Purchase", Object.PriceIncludesVAT);
+	//TabularPartRow.VAT = VAT_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Purchase", Object.PriceIncludesVAT);
 	
 	RecalcTotal();
 
@@ -144,19 +144,14 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
 	//Title = "Purchase Return " + Object.Number + " " + Format(Object.Date, "DLF=D");
 	
-	If Object.Ref.IsEmpty() Then
-    	Object.PriceIncludesVAT = GeneralFunctionsReusable.PriceIncludesVAT();
-	EndIf;
+	//If Object.Ref.IsEmpty() Then
+	//	Object.PriceIncludesVAT = GeneralFunctionsReusable.PriceIncludesVAT();
+	//EndIf;
 	
 	If Object.Ref.IsEmpty() Then
 		Object.ReturnType = Enums.ReturnTypes.Refund;
 	EndIf;
-	
-	
-	If NOT GeneralFunctionsReusable.FunctionalOptionValue("VATFinLocalization") Then
-		Items.VATGroup.Visible = False;
-	EndIf;
-	
+		
 	If NOT GeneralFunctionsReusable.FunctionalOptionValue("MultiCurrency") Then
 		Items.FCYGroup.Visible = False;
 	EndIf;
@@ -176,22 +171,22 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	EndIf; 
 	
 	Items.ExchangeRate.Title = GeneralFunctionsReusable.DefaultCurrencySymbol() + "/1" + Object.Currency.Symbol;
-	Items.VATCurrency.Title = GeneralFunctionsReusable.DefaultCurrencySymbol();
+	//Items.VATCurrency.Title = GeneralFunctionsReusable.DefaultCurrencySymbol();
 	Items.RCCurrency.Title = GeneralFunctionsReusable.DefaultCurrencySymbol();
 	Items.FCYCurrency.Title = CommonUse.GetAttributeValue(Object.Currency, "Symbol");
 
 EndProcedure
 
-&AtClient
-// Calculates a VAT amount for the document line
-//
-Procedure LineItemsVATCodeOnChange(Item)
-	
-	TabularPartRow = Items.LineItems.CurrentData;
-	TabularPartRow.VAT = VAT_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Purchase", Object.PriceIncludesVAT);
-    RecalcTotal();
+//&AtClient
+//// Calculates a VAT amount for the document line
+////
+//Procedure LineItemsVATCodeOnChange(Item)
+//	
+//	TabularPartRow = Items.LineItems.CurrentData;
+//	TabularPartRow.VAT = VAT_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Purchase", Object.PriceIncludesVAT);
+//	RecalcTotal();
 
-EndProcedure
+//EndProcedure
 
 &AtClient
 Procedure BegBalOnChange(Item)
@@ -213,8 +208,8 @@ Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
 	If DocumentPosting.DocumentPeriodIsClosed(CurrentObject.Ref, CurrentObject.Date) Then
 		PermitWrite = DocumentPosting.DocumentWritePermitted(WriteParameters);
 		CurrentObject.AdditionalProperties.Insert("PermitWrite", PermitWrite);	
-	EndIf;
-
+	EndIf;	
+	
 	If Object.LineItems.Count() = 0  Then
 		Message("Cannot post with no line items.");
 		Cancel = True;

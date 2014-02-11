@@ -220,7 +220,7 @@ Procedure CheckDataStructuresOnFilling(AdditionalProperties, Cancel) Export
 		CommonUseClientServer.MessageToUser(MessageText, AdditionalProperties.Ref,,, Cancel);
 		
 	ElsIf (HeaderVersionsCount > 0) And (CheckAttributes.Count() > 0) Then
-		DisplayCodes  = GeneralFunctionsReusable.FunctionalOptionValue("DisplayCodes");
+		//DisplayCodes  = GeneralFunctionsReusable.FunctionalOptionValue("DisplayCodes");
 		CompaniesName = Lower(GeneralFunctionsReusable.GetCustomerName())+"s";
 		For Each Attribute In CheckAttributes Do
 			If Attribute.Value <> "Check" Then Continue; EndIf;
@@ -240,7 +240,7 @@ Procedure CheckDataStructuresOnFilling(AdditionalProperties, Cancel) Export
 						Presentation = NStr("en = '<Empty>'");
 						
 					ElsIf TypeOf(Value) = Type("CatalogRef.Companies") Then
-						Presentation = ?(DisplayCodes, TrimAll(Value.Code) + " ", "") + TrimAll(Value.Description);
+						Presentation = TrimAll(Value.Code) + " " + TrimAll(Value.Description);
 						
 					ElsIf TypeOf(Value) = Type("CatalogRef.Products") Then
 						Presentation = TrimAll(Value.Code) + " " + TrimAll(Value.Description);

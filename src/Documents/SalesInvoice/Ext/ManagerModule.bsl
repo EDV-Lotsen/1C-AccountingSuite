@@ -575,7 +575,7 @@ Function Query_Filling_Document_SalesOrder_Attributes(TablesList)
 		"SELECT
 		|	SalesOrder.Ref                          AS FillingData,
 		|	SalesOrder.Company                      AS Company,
-		|	SalesOrder.CompanyCode                  AS CompanyCode,
+		//|	SalesOrder.CompanyCode                  AS CompanyCode,
 		|	SalesOrder.Currency                     AS Currency,
 		|	SalesOrder.ExchangeRate                 AS ExchangeRate,
 		|	SalesOrder.Location                     AS Location,
@@ -589,7 +589,7 @@ Function Query_Filling_Document_SalesOrder_Attributes(TablesList)
 		|	                                        AS Terms,
 		|	ISNULL(SalesOrder.Currency.DefaultARAccount, VALUE(ChartOfAccounts.ChartOfAccounts.EmptyRef))
 		|	                                        AS ARAccount,
-		|	SalesOrder.PriceIncludesVAT             AS PriceIncludesVAT,
+		//|	SalesOrder.PriceIncludesVAT             AS PriceIncludesVAT,
 		|	SalesOrder.ShipTo                       AS ShipTo
 		|INTO
 		|	Table_Document_SalesOrder_Attributes
@@ -739,43 +739,43 @@ Function Query_Filling_Document_SalesOrder_LineItems(TablesList)
 		|			ELSE 0
 		|		END * SalesOrderLineItems.Price 
 		|		AS NUMBER (15, 2))                  AS LineTotal,
-		|	SalesOrderLineItems.SalesTaxType        AS SalesTaxType,
-		|	CASE
-		|		WHEN SalesOrderLineItems.SalesTaxType = VALUE(Enum.SalesTaxTypes.Taxable)
-		|			THEN // TaxableAmount = LineTotal
-		|				CAST( // Format(Quantity * Price, ""ND=15; NFD=2"")
-		|					CASE
-		|						WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Open)
-		|							THEN ISNULL(OrdersRegistered.Quantity, SalesOrderLineItems.Quantity)
-		|						WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Backordered)
-		|							THEN ISNULL(OrdersRegistered.Backorder, SalesOrderLineItems.Quantity)
-		|						WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Closed)
-		|							THEN ISNULL(OrdersRegistered.Backorder, 0)
-		|						ELSE 0
-		|					END * SalesOrderLineItems.Price 
-		|				AS NUMBER (15, 2))
-		|		ELSE 0
-		|	END                                     AS TaxableAmount,
-		|	SalesOrderLineItems.VATCode             AS VATCode,
-		|	CAST( // Format(LineTotal * VATRate / 100, ""ND=15; NFD=2"")
-		|		CAST( // Format(Quantity * Price, ""ND=15; NFD=2"")
-		|			CASE
-		|				WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Open)
-		|					THEN ISNULL(OrdersRegistered.Quantity, SalesOrderLineItems.Quantity)
-		|				WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Backordered)
-		|					THEN ISNULL(OrdersRegistered.Backorder, SalesOrderLineItems.Quantity)
-		|				WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Closed)
-		|					THEN ISNULL(OrdersRegistered.Backorder, 0)
-		|				ELSE 0
-		|			END * SalesOrderLineItems.Price
-		|		AS NUMBER (15, 2)) *
-		|		CASE // VATRate = ?(Ref.PriceIncludesVAT, VATCode.SalesInclRate, VATCode.SalesExclRate)
-		|			WHEN SalesOrderLineItems.Ref.PriceIncludesVAT IS NULL THEN 0
-		|			WHEN SalesOrderLineItems.Ref.PriceIncludesVAT         THEN ISNULL(SalesOrderLineItems.VATCode.SalesInclRate, 0)
-		|			ELSE                                                       ISNULL(SalesOrderLineItems.VATCode.SalesExclRate, 0)
-		|		END /
-		|		100
-		|	AS NUMBER (15, 2))                      AS VAT,
+		//|	SalesOrderLineItems.SalesTaxType        AS SalesTaxType,
+		//|	CASE
+		//|		WHEN SalesOrderLineItems.SalesTaxType = VALUE(Enum.SalesTaxTypes.Taxable)
+		//|			THEN // TaxableAmount = LineTotal
+		//|				CAST( // Format(Quantity * Price, ""ND=15; NFD=2"")
+		//|					CASE
+		//|						WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Open)
+		//|							THEN ISNULL(OrdersRegistered.Quantity, SalesOrderLineItems.Quantity)
+		//|						WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Backordered)
+		//|							THEN ISNULL(OrdersRegistered.Backorder, SalesOrderLineItems.Quantity)
+		//|						WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Closed)
+		//|							THEN ISNULL(OrdersRegistered.Backorder, 0)
+		//|						ELSE 0
+		//|					END * SalesOrderLineItems.Price 
+		//|				AS NUMBER (15, 2))
+		//|		ELSE 0
+		//|	END                                     AS TaxableAmount,
+		//|	SalesOrderLineItems.VATCode             AS VATCode,
+		//|	CAST( // Format(LineTotal * VATRate / 100, ""ND=15; NFD=2"")
+		//|		CAST( // Format(Quantity * Price, ""ND=15; NFD=2"")
+		//|			CASE
+		//|				WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Open)
+		//|					THEN ISNULL(OrdersRegistered.Quantity, SalesOrderLineItems.Quantity)
+		//|				WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Backordered)
+		//|					THEN ISNULL(OrdersRegistered.Backorder, SalesOrderLineItems.Quantity)
+		//|				WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Closed)
+		//|					THEN ISNULL(OrdersRegistered.Backorder, 0)
+		//|				ELSE 0
+		//|			END * SalesOrderLineItems.Price
+		//|		AS NUMBER (15, 2)) *
+		//|		CASE // VATRate = ?(Ref.PriceIncludesVAT, VATCode.SalesInclRate, VATCode.SalesExclRate)
+		//|			WHEN SalesOrderLineItems.Ref.PriceIncludesVAT IS NULL THEN 0
+		//|			WHEN SalesOrderLineItems.Ref.PriceIncludesVAT         THEN ISNULL(SalesOrderLineItems.VATCode.SalesInclRate, 0)
+		//|			ELSE                                                       ISNULL(SalesOrderLineItems.VATCode.SalesExclRate, 0)
+		//|		END /
+		//|		100
+		//|	AS NUMBER (15, 2))                      AS VAT,
 		|	SalesOrderLineItems.Ref                 AS Order,
 		|	SalesOrderLineItems.Ref.Company         AS Company
 		|INTO
@@ -813,54 +813,55 @@ Function Query_Filling_Document_SalesOrder_Totals(TablesList)
 		"SELECT
 		// Totals of document
 		|	SalesOrderLineItems.FillingData         AS FillingData,
+		//|
+		//|	CAST( // Format(Total(TaxableAmount) * Company.SalesTaxCode.TaxRate / 100, ""ND=15; NFD=2"")
+		//|		SUM(SalesOrderLineItems.TaxableAmount) *
+		//|		ISNULL(SalesOrderLineItems.Company.SalesTaxCode.TaxRate, 0) /
+		//|		100
+		//|		AS NUMBER (15, 2))                  AS SalesTax,
+		| 0 AS SalesTax,
+		//|
+		//|	CAST( // Format(Total(VAT) * ExchangeRate, ""ND=15; NFD=2"")
+		//|		SUM(SalesOrderLineItems.VAT) *
+		//|		SalesOrder.ExchangeRate
+		//|		AS NUMBER (15, 2))                  AS VATTotal,
 		|
-		|	CAST( // Format(Total(TaxableAmount) * Company.SalesTaxCode.TaxRate / 100, ""ND=15; NFD=2"")
-		|		SUM(SalesOrderLineItems.TaxableAmount) *
-		|		ISNULL(SalesOrderLineItems.Company.SalesTaxCode.TaxRate, 0) /
-		|		100
-		|		AS NUMBER (15, 2))                  AS SalesTax,
-		|
-		|	CAST( // Format(Total(VAT) * ExchangeRate, ""ND=15; NFD=2"")
-		|		SUM(SalesOrderLineItems.VAT) *
-		|		SalesOrder.ExchangeRate
-		|		AS NUMBER (15, 2))                  AS VATTotal,
-		|
-		|	CASE
-		|		WHEN SalesOrder.PriceIncludesVAT THEN // Total(LineTotal) + SalesTax
-		|			SUM(SalesOrderLineItems.LineTotal) +
-		|			CAST( // Format(Total(TaxableAmount) * TaxRate / 100, ""ND=15; NFD=2"")
-		|				SUM(SalesOrderLineItems.TaxableAmount) *
-		|				ISNULL(SalesOrderLineItems.Company.SalesTaxCode.TaxRate, 0) /
-		|				100
-		|				AS NUMBER (15, 2))
-		|		ELSE                                  // Total(LineTotal) + SalesTax + Total(VAT)
-		|			SUM(SalesOrderLineItems.LineTotal) +
-		|			CAST( // Format(Total(TaxableAmount) * Company.SalesTaxCode.TaxRate / 100, ""ND=15; NFD=2"")
-		|				SUM(SalesOrderLineItems.TaxableAmount) *
-		|				ISNULL(SalesOrderLineItems.Company.SalesTaxCode.TaxRate, 0) /
-		|				100
-		|				AS NUMBER (15, 2)) +
-		|			SUM(SalesOrderLineItems.VAT)
-		|	END                                     AS DocumentTotal,
+		//|	CASE
+		//|		WHEN SalesOrder.PriceIncludesVAT THEN // Total(LineTotal) + SalesTax
+		//|			SUM(SalesOrderLineItems.LineTotal) +
+		//|			CAST( // Format(Total(TaxableAmount) * TaxRate / 100, ""ND=15; NFD=2"")
+		//|				SUM(SalesOrderLineItems.TaxableAmount) *
+		//|				ISNULL(SalesOrderLineItems.Company.SalesTaxCode.TaxRate, 0) /
+		//|				100
+		//|				AS NUMBER (15, 2))
+		//|		ELSE                                  // Total(LineTotal) + SalesTax + Total(VAT)
+		|			SUM(SalesOrderLineItems.LineTotal) //+
+		//|			CAST( // Format(Total(TaxableAmount) * Company.SalesTaxCode.TaxRate / 100, ""ND=15; NFD=2"")
+		//|				SUM(SalesOrderLineItems.TaxableAmount) *
+		//|				ISNULL(SalesOrderLineItems.Company.SalesTaxCode.TaxRate, 0) /
+		//|				100
+		//|				AS NUMBER (15, 2)) //+
+		//|			SUM(SalesOrderLineItems.VAT)
+		|	                                     AS DocumentTotal,
 		|
 		|	CAST( // Format(DocumentTotal * ExchangeRate, ""ND=15; NFD=2"")
-		|		CASE // DocumentTotal
-		|			WHEN SalesOrder.PriceIncludesVAT THEN // Total(LineTotal) + SalesTax
-		|				SUM(SalesOrderLineItems.LineTotal) +
-		|				CAST( // Format(Total(TaxableAmount) * Company.SalesTaxCode.TaxRate / 100, ""ND=15; NFD=2"")
-		|					SUM(SalesOrderLineItems.TaxableAmount) *
-		|					ISNULL(SalesOrderLineItems.Company.SalesTaxCode.TaxRate, 0) /
-		|					100
-		|					AS NUMBER (15, 2))
-		|			ELSE                                  // Total(LineTotal) + SalesTax + Total(VAT)
-		|				SUM(SalesOrderLineItems.LineTotal) +
-		|				CAST( // Format(Total(TaxableAmount) * Company.SalesTaxCode.TaxRate / 100, ""ND=15; NFD=2"")
-		|					SUM(SalesOrderLineItems.TaxableAmount) *
-		|					ISNULL(SalesOrderLineItems.Company.SalesTaxCode.TaxRate, 0) /
-		|					100
-		|					AS NUMBER (15, 2)) +
-		|				SUM(SalesOrderLineItems.VAT)
-		|		END *
+		//|		CASE // DocumentTotal
+		//|			WHEN SalesOrder.PriceIncludesVAT THEN // Total(LineTotal) + SalesTax
+		//|				SUM(SalesOrderLineItems.LineTotal) +
+		//|				CAST( // Format(Total(TaxableAmount) * Company.SalesTaxCode.TaxRate / 100, ""ND=15; NFD=2"")
+		//|					SUM(SalesOrderLineItems.TaxableAmount) *
+		//|					ISNULL(SalesOrderLineItems.Company.SalesTaxCode.TaxRate, 0) /
+		//|					100
+		//|					AS NUMBER (15, 2))
+		//|			ELSE                                  // Total(LineTotal) + SalesTax + Total(VAT)
+		|				SUM(SalesOrderLineItems.LineTotal) * //+
+		//|				CAST( // Format(Total(TaxableAmount) * Company.SalesTaxCode.TaxRate / 100, ""ND=15; NFD=2"")
+		//|					SUM(SalesOrderLineItems.TaxableAmount) *
+		//|					ISNULL(SalesOrderLineItems.Company.SalesTaxCode.TaxRate, 0) /
+		//|					100
+		//|					AS NUMBER (15, 2)) * //+
+		//|				//SUM(SalesOrderLineItems.VAT)
+		//|		END *
 		|		SalesOrder.ExchangeRate
 		|		AS NUMBER (15, 2))                  AS DocumentTotalRC
 		|
@@ -872,9 +873,9 @@ Function Query_Filling_Document_SalesOrder_Totals(TablesList)
 		|		ON SalesOrder.FillingData = SalesOrderLineItems.FillingData
 		|GROUP BY
 		|	SalesOrderLineItems.FillingData,
-		|	SalesOrderLineItems.Company.SalesTaxCode.TaxRate,
-		|	SalesOrder.ExchangeRate,
-		|	SalesOrder.PriceIncludesVAT";
+		//|	SalesOrderLineItems.Company.SalesTaxCode.TaxRate,
+		|	SalesOrder.ExchangeRate";
+		//|	SalesOrder.PriceIncludesVAT";
 
 	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
 	
@@ -901,7 +902,7 @@ Function Query_Filling_Attributes(TablesList)
 		"SELECT
 		|	Document_SalesOrder_Attributes.FillingData,
 		|	Document_SalesOrder_Attributes.Company,
-		|	Document_SalesOrder_Attributes.CompanyCode,
+		//|	Document_SalesOrder_Attributes.CompanyCode,
 		|	Document_SalesOrder_Totals.SalesTax,
 		|	Document_SalesOrder_Totals.DocumentTotal,
 		|	Document_SalesOrder_Attributes.Currency,
@@ -911,9 +912,9 @@ Function Query_Filling_Attributes(TablesList)
 		|	Document_SalesOrder_Attributes.DeliveryDate,
 		|	Document_SalesOrder_Attributes.DueDate,
 		|	Document_SalesOrder_Attributes.Terms,
-		|	Document_SalesOrder_Totals.VATTotal,
+		//|	Document_SalesOrder_Totals.VATTotal,
 		|	Document_SalesOrder_Attributes.ARAccount,
-		|	Document_SalesOrder_Attributes.PriceIncludesVAT,
+		//|	Document_SalesOrder_Attributes.PriceIncludesVAT,
 		|	Document_SalesOrder_Attributes.ShipTo
 		|{Into}
 		|FROM
@@ -967,10 +968,10 @@ Function Query_Filling_LineItems(TablesList)
 		|	Document_SalesOrder_LineItems.Price,
 		|	Document_SalesOrder_LineItems.Quantity,
 		|	Document_SalesOrder_LineItems.LineTotal,
-		|	Document_SalesOrder_LineItems.SalesTaxType,
-		|	Document_SalesOrder_LineItems.TaxableAmount,
-		|	Document_SalesOrder_LineItems.VATCode,
-		|	Document_SalesOrder_LineItems.VAT,
+		//|	Document_SalesOrder_LineItems.SalesTaxType,
+		//|	Document_SalesOrder_LineItems.TaxableAmount,
+		//|	Document_SalesOrder_LineItems.VATCode,
+		//|	Document_SalesOrder_LineItems.VAT,
 		|	Document_SalesOrder_LineItems.Order
 		|{Into}
 		|FROM
@@ -1011,13 +1012,13 @@ Function FillingCheckList(AdditionalProperties)
 	CheckAttributes.Insert("Location",         "Check");
 	CheckAttributes.Insert("ARAccount",        "Check");
 	CheckAttributes.Insert("ShipTo",           "Check");
-	CheckAttributes.Insert("PriceIncludesVAT", "Check");
+	//CheckAttributes.Insert("PriceIncludesVAT", "Check");
 	// Maximal possible values
 	CheckAttributes.Insert("DeliveryDate",     "Max");
 	CheckAttributes.Insert("DueDate",          "Max");
 	// Summarize totals
 	CheckAttributes.Insert("SalesTax",         "Sum");
-	CheckAttributes.Insert("VATTotal",         "Sum");
+	//CheckAttributes.Insert("VATTotal",         "Sum");
 	CheckAttributes.Insert("DocumentTotal",    "Sum");
 	CheckAttributes.Insert("DocumentTotalRC",  "Sum");
 	
@@ -1126,17 +1127,13 @@ EndFunction
 
 Procedure Print(Spreadsheet, Ref) Export
 		
-	CustomTemplate = GeneralFunctions.GetCustomTemplate("Document.SalesInvoice", "Sales invoice");
+	CustomTemplate = GeneralFunctions.GetCustomTemplate("Sales invoice");
 	
 	If CustomTemplate = Undefined Then
-		If Constants.SalesInvoicePO.Get() = False AND Constants.SalesInvoiceProject.Get() = False Then
+		If Constants.SalesInvoicePO.Get() = False Then
 			Template = Documents.SalesInvoice.GetTemplate("PF_MXL_SalesInvoice");
-		ElsIf Constants.SalesInvoicePO.Get() = True AND Constants.SalesInvoiceProject.Get() = True Then
-			Template = Documents.SalesInvoice.GetTemplate("PF_MXL_SalesInvoice_Project_PO");
-		ElsIf Constants.SalesInvoicePO.Get() = True AND Constants.SalesInvoiceProject.Get() = False Then
+		ElsIf Constants.SalesInvoicePO.Get() = True Then
 			Template = Documents.SalesInvoice.GetTemplate("PF_MXL_SalesInvoice_PO");
-		ElsIf Constants.SalesInvoicePO.Get() = False AND Constants.SalesInvoiceProject.Get() = True Then
-			Template = Documents.SalesInvoice.GetTemplate("PF_MXL_SalesInvoice_Project");
 		EndIf;
 	Else
 		Template = CustomTemplate;
@@ -1154,32 +1151,42 @@ Procedure Print(Spreadsheet, Ref) Export
    |	SalesInvoice.Company,
    |	SalesInvoice.Date,
    |	SalesInvoice.DocumentTotal,
-   |	SalesInvoice.SalesTax,
+   |	SalesInvoice.SalesTaxRC,
    |	SalesInvoice.Number,
    |	SalesInvoice.ShipTo,
    |	SalesInvoice.Currency,
-   |	SalesInvoice.PriceIncludesVAT,
-   |	SalesInvoice.VATTotal,
    |	SalesInvoice.LineItems.(
    |		Product,
    |		Product.UM AS UM,
    |		ProductDescription,
    |		LineItems.Order.RefNum AS PO,
    |		Quantity,
-   |		VATCode,
-   |		VAT,
    |		Price,
    |		LineTotal,
    |		Project
    |	),
    |	SalesInvoice.Terms,
    |	SalesInvoice.DueDate,
-   |	GeneralJournalBalance.AmountRCBalance AS Balance
+   |	GeneralJournalBalance.AmountRCBalance AS Balance,
+   |	SalesInvoice.BillTo,
+   |	SalesInvoice.Posted,
+   |	SalesInvoice.LineSubtotalRC,
+   |	SalesInvoice.DiscountRC,
+   |	SalesInvoice.SubTotalRC,
+   |	SalesInvoice.ShippingRC,
+   |	SalesInvoice.DocumentTotalRC,
+   |	SalesInvoice.RefNum,
+   |	SalesInvoice.TrackingNumber,
+   |	SalesInvoice.Carrier,
+   |	SalesInvoice.SalesPerson,
+   |	SalesInvoice.FOB,
+   |	SalesInvoice.DropshipCustomer,
+   |	SalesInvoice.DropshipAddress
    |FROM
-   |	AccountingRegister.GeneralJournal.Balance AS GeneralJournalBalance
-   |		RIGHT JOIN Document.SalesInvoice AS SalesInvoice
-   |		ON (GeneralJournalBalance.ExtDimension1 = SalesInvoice.Company
-   |			AND GeneralJournalBalance.ExtDimension2 = SalesInvoice.Ref)
+   |	Document.SalesInvoice AS SalesInvoice
+   |		LEFT JOIN AccountingRegister.GeneralJournal.Balance AS GeneralJournalBalance
+   |		ON (GeneralJournalBalance.ExtDimension1 = SalesInvoice.Company)
+   |			AND (GeneralJournalBalance.ExtDimension2 = SalesInvoice.Ref)
    |WHERE
    |	SalesInvoice.Ref IN(&Ref)";
    Query.SetParameter("Ref", Ref);
@@ -1190,13 +1197,24 @@ Procedure Print(Spreadsheet, Ref) Export
    While Selection.Next() Do
 	   
 	BinaryLogo = GeneralFunctions.GetLogo();
-	MyPicture = New Picture(BinaryLogo);
-	Pict=Template.Drawings.Add(SpreadsheetDocumentDrawingType.Picture);
-	IndexOf=Template.Drawings.IndexOf(Pict);
-	Template.Drawings[IndexOf].Picture = MyPicture;
-	Template.Drawings[IndexOf].Line = New Line(SpreadsheetDocumentDrawingLineType.None);
-	Template.Drawings[IndexOf].Place(Spreadsheet.Area("R3C1:R6C2"));
-	   
+	LogoPicture = New Picture(BinaryLogo);
+	//Pict=Template.Drawings.Add(SpreadsheetDocumentDrawingType.Picture);
+	//IndexOf=Template.Drawings.IndexOf(Pict);
+	//Template.Drawings[IndexOf].Picture = MyPicture;
+	//Template.Drawings[IndexOf].Line = New Line(SpreadsheetDocumentDrawingLineType.None);
+	//Template.Drawings[IndexOf].Place(Spreadsheet.Area("R3C1:R6C2"));
+	DocumentPrinting.FillLogoInDocumentTemplate(Template, LogoPicture); 
+	
+	Try
+		FooterLogo = GeneralFunctions.GetFooter1();
+		Footer1Pic = New Picture(FooterLogo);
+		FooterLogo2 = GeneralFunctions.GetFooter2();
+		Footer2Pic = New Picture(FooterLogo2);
+		FooterLogo3 = GeneralFunctions.GetFooter3();
+		Footer3Pic = New Picture(FooterLogo3);
+	Except
+	EndTry;
+
 	   
    //	FirstDocument = True;
    //
@@ -1216,8 +1234,13 @@ Procedure Print(Spreadsheet, Ref) Export
 	TemplateArea = Template.GetArea("Header");
 	  		
 	UsBill = PrintTemplates.ContactInfoDatasetUs();
-	ThemShip = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemShip", Selection.ShipTo);
-	ThemBill = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemBill", Catalogs.Addresses.EmptyRef());
+	If Selection.DropshipAddress <> Catalogs.Addresses.EmptyRef() Then
+		ThemShip = PrintTemplates.ContactInfoDataset(Selection.DropshipCustomer, "ThemShip", Selection.DropshipAddress);
+	Else
+		ThemShip = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemShip", Selection.ShipTo);
+	EndIf;
+	
+	ThemBill = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemBill", Selection.BillTo);
 	
 	TemplateArea.Parameters.Fill(UsBill);
 	TemplateArea.Parameters.Fill(ThemShip);
@@ -1227,11 +1250,52 @@ Procedure Print(Spreadsheet, Ref) Export
 	  //  OurContactInfo = UsBill.UsName + " - " + UsBill.UsBillLine1Line2 + " - " + UsBill.UsBillCityStateZIP + " - " + UsBill.UsBillPhone;
 	  //  TemplateArea.Parameters.OurContactInfo = OurContactInfo;
 	  //Spreadsheet.Put(TemplateArea);
+	  
+	If Constants.SIShowEmail.Get() = False Then
+		  TemplateArea.Parameters.UsBillEmail = "";
 
+	EndIf;
+	  
+	If Constants.SIShowFedTax.Get() = False Then
+		  TemplateArea.Parameters.UsBillFedTaxID = "";
+	EndIf;
+
+	If Constants.SIShowFax.Get() = False Then
+		  TemplateArea.Parameters.UsBillFax = "";
+	EndIf;
+
+	Try
+		If Constants.SIShowWebsite.Get() = False Then
+			  TemplateArea.Parameters.Website = "";
+		Else
+			  TemplateArea.Parameters.Website = Constants.Website.Get(); 
+		  EndIf;
+	Except
+	EndTry;
+	  
+	If Constants.SIShowPhone2.Get() = False Then
+		  TemplateArea.Parameters.UsBillCell = "";
+	EndIf;
+	  
 	
+	Try
+		If TemplateArea.Parameters.UsBillFax <> "" And TemplateArea.Parameters.UsBillFax <> Undefined Then
+			TemplateArea.Parameters.Fax = "Fax";
+		EndIf;
+
+		If TemplateArea.Parameters.USBillFedTaxID <> "" And TemplateArea.Parameters.USBillFedTaxID <> Undefined Then
+			TemplateArea.Parameters.FederalTaxID = "Fed Tax ID";
+		EndIf;
+	Except
+	EndTry;	
 	
 	 TemplateArea.Parameters.Date = Selection.Date;
 	 TemplateArea.Parameters.Number = Selection.Number;
+	 TemplateArea.Parameters.RefNum = Selection.RefNum;
+	 TemplateArea.Parameters.Carrier = Selection.Carrier;
+	 TemplateArea.Parameters.TrackingNumber = Selection.TrackingNumber;
+	TemplateArea.Parameters.SalesPerson = Selection.SalesPerson;
+	TemplateArea.Parameters.FOB = Selection.FOB;
 	 Try
 	 	TemplateArea.Parameters.Terms = Selection.Terms;
 		TemplateArea.Parameters.DueDate = Selection.DueDate;
@@ -1242,7 +1306,7 @@ Procedure Print(Spreadsheet, Ref) Export
 
 	 TemplateArea = Template.GetArea("LineItemsHeader");
 	 Spreadsheet.Put(TemplateArea);
-	 
+	
 	 SelectionLineItems = Selection.LineItems.Choose();
 	 TemplateArea = Template.GetArea("LineItems");
 	 LineTotalSum = 0;
@@ -1260,58 +1324,64 @@ Procedure Print(Spreadsheet, Ref) Export
 		EndTry;
 		 //TemplateArea.Parameters.PO = SelectionLineItems.PO;
 		 LineTotal = SelectionLineItems.LineTotal;
-		 LineTotalSum = LineTotalSum + LineTotal;
+		 //LineTotalSum = LineTotalSum + LineTotal;
 		 Spreadsheet.Put(TemplateArea, SelectionLineItems.Level());
 		 
 	 EndDo;
 	 //////   sales tax check
 	//If Selection.SalesTax <> 0 Then;
-		 TemplateArea = Template.GetArea("Subtotal");
-		 TemplateArea.Parameters.Subtotal = LineTotalSum;
-		 Spreadsheet.Put(TemplateArea);
-		 
-		 TemplateArea = Template.GetArea("SalesTax");
-		 TemplateArea.Parameters.SalesTaxTotal = Selection.SalesTax;
-		 Spreadsheet.Put(TemplateArea);
-	//EndIf; 
-	  ////////
-	 
-	If Selection.VATTotal <> 0 Then;
-		 TemplateArea = Template.GetArea("Subtotal");
-		 TemplateArea.Parameters.Subtotal = LineTotalSum;
-		 Spreadsheet.Put(TemplateArea);
-		 
-		 TemplateArea = Template.GetArea("VAT");
-		 TemplateArea.Parameters.VATTotal = Selection.VATTotal;
-		 Spreadsheet.Put(TemplateArea);
-	EndIf; 
-		 
-	 TemplateArea = Template.GetArea("Total");
-	 If Selection.PriceIncludesVAT Then
-	 	DTotal = LineTotalSum + Selection.SalesTax;
-	Else
-		DTotal = LineTotalSum + Selection.VATTotal;
-	EndIf;
-	TemplateArea.Parameters.DocumentTotal = DTotal;
-	Spreadsheet.Put(TemplateArea);
 	
-	TemplateArea = Template.GetArea("Credits");
-	If NOT Selection.Balance = NULL Then
-		TemplateArea.Parameters.Credits = DTotal - Selection.Balance;
-	ElsIf Selection.Ref.Posted = FALSE Then
-		TemplateArea.Parameters.Credits = 0;
-	Else
-		TemplateArea.Parameters.Credits = DTotal;
-	EndIf;
-	Spreadsheet.Put(TemplateArea);
+		TemplateArea = Template.GetArea("LineSubtotalRC");
+		TemplateArea.Parameters.LineSubtotal = Selection.LineSubtotalRC;
+		 //TemplateArea.Parameters.Subtotal = LineTotalSum;
+		 Spreadsheet.Put(TemplateArea);
+		 
+		TemplateArea = Template.GetArea("DiscountRC");
+		TemplateArea.Parameters.Discount = Selection.DiscountRC;
+		 //TemplateArea.Parameters.Subtotal = LineTotalSum;
+		 Spreadsheet.Put(TemplateArea);
 	
-	TemplateArea = Template.GetArea("Balance");
-	If NOT Selection.Balance = NULL Then
-		TemplateArea.Parameters.Balance = Selection.Balance;
-	Else
-		TemplateArea.Parameters.Balance = 0;
+		TemplateArea = Template.GetArea("SubTotalRC");
+		 TemplateArea.Parameters.Subtotal = Selection.SubTotalRC;
+		 Spreadsheet.Put(TemplateArea);
+		 
+		 TemplateArea = Template.GetArea("ShippingRC");
+		 TemplateArea.Parameters.Shipping = Selection.ShippingRC;
+		 Spreadsheet.Put(TemplateArea);
+		 
+		 TemplateArea = Template.GetArea("SalesTaxRC");
+		 TemplateArea.Parameters.SalesTax = Selection.SalesTaxRC;
+		 Spreadsheet.Put(TemplateArea);
+		 
+		 TemplateArea = Template.GetArea("TotalRC");
+		 TemplateArea.Parameters.Total = Selection.DocumentTotalRC;
+		 Spreadsheet.Put(TemplateArea);
+
+		 
+		 
+	If Selection.Posted = True Then
+		TemplateArea = Template.GetArea("Credits");
+		If NOT Selection.Balance = NULL Then
+			TemplateArea.Parameters.Credits = Selection.DocumentTotalRC - Selection.Balance;
+		ElsIf Selection.Ref.Posted = FALSE Then
+			TemplateArea.Parameters.Credits = 0;
+		Else
+			TemplateArea.Parameters.Credits = Selection.DocumentTotalRC;
+		EndIf;
+		Spreadsheet.Put(TemplateArea);
+		
+		TemplateArea = Template.GetArea("Balance");
+		If NOT Selection.Balance = NULL Then
+			TemplateArea.Parameters.Balance = Selection.Balance;
+		Else
+			TemplateArea.Parameters.Balance = 0;
+		EndIf;
+		Spreadsheet.Put(TemplateArea);
 	EndIf;
-	Spreadsheet.Put(TemplateArea);
+
+	 TemplateArea = Template.GetArea("TermandCondition");					
+	 TemplateArea.Parameters.TermAndCond = Constants.SalesInvoiceFooter.Get();
+	 Spreadsheet.Put(TemplateArea);
 	 
 	//Try
 	// 	TemplateArea = Template.GetArea("Footer");
@@ -1332,15 +1402,59 @@ Procedure Print(Spreadsheet, Ref) Export
 
 	 //InsertPageBreak = True;
 	 
-	TemplateArea = Template.GetArea("EmptySpace");
+		TemplateArea = Template.GetArea("EmptySpace");
 	Spreadsheet.Put(TemplateArea);
 
-	 
-	 TemplateArea = Template.GetArea("Footer");
-	 TemplateArea.Parameters.FooterContents = Constants.SalesInvoiceFooter.Get();
-	Spreadsheet.Put(TemplateArea);
-	 
-	Spreadsheet.ВывестиГоризонтальныйРазделительСтраниц();
+			//footer			
+			
+			Try
+				If Constants.SIFoot1Type.Get()= Enums.TextOrImage.Image Then
+					DocumentPrinting.FillFooterInDocumentTemplate(Template, Footer1Pic, "footer1");
+				EndIf;
+				If Constants.SIFoot2Type.Get()= Enums.TextOrImage.Image Then
+					DocumentPrinting.FillFooterInDocumentTemplate(Template, Footer2Pic, "footer2");
+				EndIf;
+				If Constants.SIFoot3Type.Get()= Enums.TextOrImage.Image Then
+					DocumentPrinting.FillFooterInDocumentTemplate(Template, Footer3Pic, "footer3");
+				EndIf;	
+			Except
+			EndTry;
+			
+			
+			Row = Template.GetArea("SpaceRow");
+			Footer = Template.GetArea("Footer");
+			RowsToCheck = New Array();
+   			RowsToCheck.Add(Row);
+   			RowsToCheck.Add(Footer);
+			
+			If Constants.SIFoot1Type.Get() = Enums.TextOrImage.Text Then
+				Footer.Parameters.FooterLeft = Constants.InvoiceFooterTextLeft.Get();
+			EndIf;
+			If Constants.SIFoot2Type.Get() = Enums.TextOrImage.Text Then
+				Footer.Parameters.FooterCenter = Constants.InvoiceFooterTextCenter.Get();//"Thank you, Safety -- First";//Constants.FooterCenter;
+			EndIf;
+			If Constants.SIFoot3Type.Get() = Enums.TextOrImage.Text Then
+				Footer.Parameters.FooterRight = Constants.InvoiceFooterTextRight.Get();
+			EndIf;
+
+			
+			While Spreadsheet.CheckPut(RowsToCheck) Do
+				 SpreadSheet.Put(Row);
+      
+     			 RowsToCheck.Clear();
+     			 RowsToCheck.Add(Row);
+      			 RowsToCheck.Add(Footer);
+				 RowsToCheck.Add(Row);
+			EndDo;
+
+			Spreadsheet.Put(Footer);
+
+			
+			//end footer
+
+	
+		 
+	Spreadsheet.PutHorizontalPageBreak(); //.ВывестиГоризонтальныйРазделительСтраниц();
 
 	 
    EndDo;
@@ -1349,9 +1463,10 @@ Procedure Print(Spreadsheet, Ref) Export
    
 EndProcedure
 
+
 Procedure PrintPackingList(Spreadsheet, Ref) Export  
 		
-	CustomTemplate = GeneralFunctions.GetCustomTemplate("Document.SalesInvoice", "Sales invoice");
+	CustomTemplate = GeneralFunctions.GetCustomTemplate("Packing list");
 	
 	If CustomTemplate = Undefined Then
 		Template = Documents.SalesInvoice.GetTemplate("PF_MXL_PackingList");
@@ -1371,43 +1486,58 @@ Procedure PrintPackingList(Spreadsheet, Ref) Export
    |	SalesInvoice.Company,
    |	SalesInvoice.Date,
    |	SalesInvoice.DocumentTotal,
-   |	SalesInvoice.SalesTax,
+   |	SalesInvoice.SalesTaxRC,
    |	SalesInvoice.Number,
    |	SalesInvoice.ShipTo,
    |	SalesInvoice.Currency,
-   |	SalesInvoice.PriceIncludesVAT,
-   |	SalesInvoice.VATTotal,
    |	SalesInvoice.LineItems.(
    |		Product,
    |		Product.UM AS UM,
    |		ProductDescription,
    |		LineItems.Order.RefNum AS PO,
    |		Quantity,
-   |		VATCode,
-   |		VAT,
    |		Price,
-   |		LineTotal
+   |		LineTotal,
+   |		Project
    |	),
    |	SalesInvoice.Terms,
-   |	SalesInvoice.DueDate
+   |	SalesInvoice.DueDate,
+   |	GeneralJournalBalance.AmountRCBalance AS Balance,
+   |	SalesInvoice.BillTo,
+   |	SalesInvoice.Posted,
+   |	SalesInvoice.LineSubtotalRC,
+   |	SalesInvoice.DiscountRC,
+   |	SalesInvoice.SubTotalRC,
+   |	SalesInvoice.ShippingRC,
+   |	SalesInvoice.DocumentTotalRC,
+   |	SalesInvoice.RefNum,
+   |	SalesInvoice.TrackingNumber,
+   |	SalesInvoice.Carrier,
+   |	SalesInvoice.DropshipCustomer,
+   |	SalesInvoice.DropshipAddress
    |FROM
    |	Document.SalesInvoice AS SalesInvoice
+   |		LEFT JOIN AccountingRegister.GeneralJournal.Balance AS GeneralJournalBalance
+   |		ON (GeneralJournalBalance.ExtDimension1 = SalesInvoice.Company)
+   |			AND (GeneralJournalBalance.ExtDimension2 = SalesInvoice.Ref)
    |WHERE
    |	SalesInvoice.Ref IN(&Ref)";
    Query.SetParameter("Ref", Ref);
    Selection = Query.Execute().Choose();
+
    
    Spreadsheet.Clear();
    //InsertPageBreak = False;
    While Selection.Next() Do
 	   
 	BinaryLogo = GeneralFunctions.GetLogo();
-	MyPicture = New Picture(BinaryLogo);
-	Pict=Template.Drawings.Add(SpreadsheetDocumentDrawingType.Picture);
-	IndexOf=Template.Drawings.IndexOf(Pict);
-	Template.Drawings[IndexOf].Picture = MyPicture;
-	Template.Drawings[IndexOf].Line = New Line(SpreadsheetDocumentDrawingLineType.None);
-	Template.Drawings[IndexOf].Place(Spreadsheet.Area("R3C1:R6C2"));
+	LogoPicture = New Picture(BinaryLogo);
+	//Pict=Template.Drawings.Add(SpreadsheetDocumentDrawingType.Picture);
+	//IndexOf=Template.Drawings.IndexOf(Pict);
+	//Template.Drawings[IndexOf].Picture = MyPicture;
+	//Template.Drawings[IndexOf].Line = New Line(SpreadsheetDocumentDrawingLineType.None);
+	//Template.Drawings[IndexOf].Place(Spreadsheet.Area("R3C1:R6C2"));
+	DocumentPrinting.FillLogoInDocumentTemplate(Template, LogoPicture);  
 	   
 	   
    //	FirstDocument = True;
@@ -1428,8 +1558,8 @@ Procedure PrintPackingList(Spreadsheet, Ref) Export
 	TemplateArea = Template.GetArea("Header");
 	  		
 	UsBill = PrintTemplates.ContactInfoDatasetUs();
-	ThemShip = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemShip", Selection.ShipTo);
-	ThemBill = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemBill", Catalogs.Addresses.EmptyRef());
+	ThemShip = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemShip", Selection.ShipTo);	
+	ThemBill = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemBill", Selection.BillTo);
 	
 	TemplateArea.Parameters.Fill(UsBill);
 	TemplateArea.Parameters.Fill(ThemShip);
@@ -1437,6 +1567,9 @@ Procedure PrintPackingList(Spreadsheet, Ref) Export
 	
 	 TemplateArea.Parameters.Date = Selection.Date;
 	 TemplateArea.Parameters.Number = Selection.Number;
+	 TemplateArea.Parameters.RefNum = Selection.RefNum;
+	 TemplateArea.Parameters.Carrier = Selection.Carrier;
+	 TemplateArea.Parameters.TrackingNumber = Selection.TrackingNumber;
 	 Try
 	 	TemplateArea.Parameters.Terms = Selection.Terms;
 		TemplateArea.Parameters.DueDate = Selection.DueDate;
@@ -1455,8 +1588,8 @@ Procedure PrintPackingList(Spreadsheet, Ref) Export
 		 
 		 TemplateArea.Parameters.Fill(SelectionLineItems);
 		 //TemplateArea.Parameters.PO = SelectionLineItems.PO;
-		 LineTotal = SelectionLineItems.LineTotal;
-		 LineTotalSum = LineTotalSum + LineTotal;
+		 //LineTotal = SelectionLineItems.LineTotal;
+		 //LineTotalSum = LineTotalSum + LineTotal;
 		 Spreadsheet.Put(TemplateArea, SelectionLineItems.Level());
 		 
 	 EndDo;
@@ -1516,3 +1649,122 @@ Procedure PrintPackingList(Spreadsheet, Ref) Export
    //Return SpreadsheetDocument;
    
 EndProcedure
+
+Procedure PrintPackingListDropship(Spreadsheet, Ref) Export  
+		
+	CustomTemplate = GeneralFunctions.GetCustomTemplate("Packing list (dropship)");
+	
+	If CustomTemplate = Undefined Then
+		Template = Documents.SalesInvoice.GetTemplate("PF_MXL_PackingListDropship");
+	Else
+		Template = CustomTemplate;
+	EndIf;
+	
+	// Create a spreadsheet document and set print parameters.
+  // SpreadsheetDocument = New SpreadsheetDocument;
+   //SpreadsheetDocument.PrintParametersName = "PrintParameters_SalesInvoice";
+
+   // Quering necessary data.
+   Query = New Query();
+   Query.Text =
+   "SELECT
+   |	SalesInvoice.Ref,
+   |	SalesInvoice.Company,
+   |	SalesInvoice.Date,
+   |	SalesInvoice.DocumentTotal,
+   |	SalesInvoice.SalesTaxRC,
+   |	SalesInvoice.Number,
+   |	SalesInvoice.ShipTo,
+   |	SalesInvoice.Currency,
+   |	SalesInvoice.LineItems.(
+   |		Product,
+   |		Product.UM AS UM,
+   |		ProductDescription,
+   |		LineItems.Order.RefNum AS PO,
+   |		Quantity,
+   |		Price,
+   |		LineTotal,
+   |		Project
+   |	),
+   |	SalesInvoice.Terms,
+   |	SalesInvoice.DueDate,
+   |	GeneralJournalBalance.AmountRCBalance AS Balance,
+   |	SalesInvoice.BillTo,
+   |	SalesInvoice.Posted,
+   |	SalesInvoice.LineSubtotalRC,
+   |	SalesInvoice.DiscountRC,
+   |	SalesInvoice.SubTotalRC,
+   |	SalesInvoice.ShippingRC,
+   |	SalesInvoice.DocumentTotalRC,
+   |	SalesInvoice.RefNum,
+   |	SalesInvoice.TrackingNumber,
+   |	SalesInvoice.Carrier,
+   |	SalesInvoice.DropshipCustomer,
+   |	SalesInvoice.DropshipAddress
+   |FROM
+   |	Document.SalesInvoice AS SalesInvoice
+   |		LEFT JOIN AccountingRegister.GeneralJournal.Balance AS GeneralJournalBalance
+   |		ON (GeneralJournalBalance.ExtDimension1 = SalesInvoice.Company)
+   |			AND (GeneralJournalBalance.ExtDimension2 = SalesInvoice.Ref)
+   |WHERE
+   |	SalesInvoice.Ref IN(&Ref)";
+   Query.SetParameter("Ref", Ref);
+   Selection = Query.Execute().Choose();
+
+   
+   Spreadsheet.Clear();
+   //InsertPageBreak = False;
+   While Selection.Next() Do
+	   
+	//BinaryLogo = GeneralFunctions.GetLogo();
+	//MyPicture = New Picture(BinaryLogo);
+	//Pict=Template.Drawings.Add(SpreadsheetDocumentDrawingType.Picture);
+	//IndexOf=Template.Drawings.IndexOf(Pict);
+	//Template.Drawings[IndexOf].Picture = MyPicture;
+	//Template.Drawings[IndexOf].Line = New Line(SpreadsheetDocumentDrawingLineType.None);
+	//Template.Drawings[IndexOf].Place(Spreadsheet.Area("R3C1:R6C2"));
+	 
+	//Template = PrintManagement.GetTemplate("Document.SalesInvoice.PF_MXL_SalesInvoice");
+	 
+	TemplateArea = Template.GetArea("Header");
+	  		
+	UsBill = PrintTemplates.ContactInfoDatasetUs();
+	ThemShip = PrintTemplates.ContactInfoDataset(Selection.DropshipCustomer, "ThemShip", Selection.DropshipAddress);
+
+	ThemBill = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemBill", Selection.BillTo);
+	
+	TemplateArea.Parameters.Fill(UsBill);
+	TemplateArea.Parameters.Fill(ThemShip);
+	TemplateArea.Parameters.Fill(ThemBill);
+	
+	 TemplateArea.Parameters.Date = Selection.Date;
+	 TemplateArea.Parameters.Number = Selection.Number;
+	 TemplateArea.Parameters.RefNum = Selection.RefNum;
+	 TemplateArea.Parameters.Carrier = Selection.Carrier;
+	 TemplateArea.Parameters.TrackingNumber = Selection.TrackingNumber;
+	 Try
+	 	TemplateArea.Parameters.Terms = Selection.Terms;
+		TemplateArea.Parameters.DueDate = Selection.DueDate;
+	Except
+	EndTry;
+	 
+	 Spreadsheet.Put(TemplateArea);
+
+	 TemplateArea = Template.GetArea("LineItemsHeader");
+	 Spreadsheet.Put(TemplateArea);
+	 
+	 SelectionLineItems = Selection.LineItems.Choose();
+	 TemplateArea = Template.GetArea("LineItems");
+	 LineTotalSum = 0;
+	 While SelectionLineItems.Next() Do
+		 
+		 TemplateArea.Parameters.Fill(SelectionLineItems);
+		 Spreadsheet.Put(TemplateArea, SelectionLineItems.Level());
+		 
+	 EndDo;
+	 
+   EndDo;
+   
+   
+EndProcedure
+

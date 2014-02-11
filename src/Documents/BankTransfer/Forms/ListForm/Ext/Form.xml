@@ -74,32 +74,10 @@
 					<ContextMenu name="AccountFromContextMenu" id="9"/>
 					<ExtendedTooltip name="AccountFromExtendedTooltip" id="23"/>
 				</LabelField>
-				<LabelField name="AccountFromDescription" id="16">
-					<DataPath>List.AccountFromDescription</DataPath>
-					<Title>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Account from</v8:content>
-						</v8:item>
-					</Title>
-					<ContextMenu name="AccountFromDescriptionContextMenu" id="17"/>
-					<ExtendedTooltip name="AccountFromDescriptionExtendedTooltip" id="24"/>
-				</LabelField>
 				<LabelField name="AccountTo" id="10">
 					<DataPath>List.AccountTo</DataPath>
 					<ContextMenu name="AccountToContextMenu" id="11"/>
 					<ExtendedTooltip name="AccountToExtendedTooltip" id="25"/>
-				</LabelField>
-				<LabelField name="AccountToDescription" id="18">
-					<DataPath>List.AccountToDescription</DataPath>
-					<Title>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Account to</v8:content>
-						</v8:item>
-					</Title>
-					<ContextMenu name="AccountToDescriptionContextMenu" id="19"/>
-					<ExtendedTooltip name="AccountToDescriptionExtendedTooltip" id="26"/>
 				</LabelField>
 				<LabelField name="Amount" id="12">
 					<DataPath>List.Amount</DataPath>
@@ -131,9 +109,7 @@
 	DocumentBankTransfer.Date,
 	DocumentBankTransfer.Posted,
 	DocumentBankTransfer.AccountFrom,
-	DocumentBankTransfer.AccountFrom.Description,
 	DocumentBankTransfer.AccountTo,
-	DocumentBankTransfer.AccountTo.Description,
 	DocumentBankTransfer.Amount,
 	DocumentBankTransfer.Memo,
 	DocumentBankTransfer.PointInTime

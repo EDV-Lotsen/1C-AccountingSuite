@@ -44,9 +44,9 @@
 			<UseStandardCommands>true</UseStandardCommands>
 			<Owners/>
 			<SubordinationUse>ToItems</SubordinationUse>
-			<CodeLength>0</CodeLength>
+			<CodeLength>2</CodeLength>
 			<DescriptionLength>40</DescriptionLength>
-			<CodeType>String</CodeType>
+			<CodeType>Number</CodeType>
 			<CodeAllowedLength>Variable</CodeAllowedLength>
 			<CodeSeries>WholeCatalog</CodeSeries>
 			<CheckUnique>false</CheckUnique>
@@ -279,7 +279,12 @@
 					<xr:PasswordMode>false</xr:PasswordMode>
 					<xr:MarkNegatives>false</xr:MarkNegatives>
 					<xr:MinValue xsi:nil="true"/>
-					<xr:Synonym/>
+					<xr:Synonym>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Box #</v8:content>
+						</v8:item>
+					</xr:Synonym>
 					<xr:Comment/>
 					<xr:FullTextSearch>Use</xr:FullTextSearch>
 					<xr:ChoiceParameterLinks/>
@@ -365,6 +370,55 @@
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>NFD=2; NZ=0.00</v8:content>
+						</v8:item>
+					</EditFormat>
+					<ToolTip/>
+					<MarkNegatives>false</MarkNegatives>
+					<Mask/>
+					<MultiLine>false</MultiLine>
+					<ExtendedEdit>false</ExtendedEdit>
+					<MinValue xsi:nil="true"/>
+					<MaxValue xsi:nil="true"/>
+					<FillFromFillingValue>false</FillFromFillingValue>
+					<FillValue xsi:nil="true"/>
+					<FillChecking>DontCheck</FillChecking>
+					<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
+					<ChoiceParameterLinks/>
+					<ChoiceParameters/>
+					<QuickChoice>Auto</QuickChoice>
+					<CreateOnInput>Auto</CreateOnInput>
+					<ChoiceForm/>
+					<LinkByType/>
+					<ChoiceHistoryOnInput>Auto</ChoiceHistoryOnInput>
+					<Use>ForItem</Use>
+					<Indexing>DontIndex</Indexing>
+					<FullTextSearch>Use</FullTextSearch>
+				</Properties>
+			</Attribute>
+			<Attribute uuid="14041728-8873-44b1-82f9-39737dd9c4dd">
+				<Properties>
+					<Name>AmountSign</Name>
+					<Synonym>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Amount sign</v8:content>
+						</v8:item>
+					</Synonym>
+					<Comment/>
+					<Type>
+						<v8:Type>xs:boolean</v8:Type>
+					</Type>
+					<PasswordMode>false</PasswordMode>
+					<Format>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>BF=Positive; BT=Negative</v8:content>
+						</v8:item>
+					</Format>
+					<EditFormat>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>BF=Positive; BT=Negative</v8:content>
 						</v8:item>
 					</EditFormat>
 					<ToolTip/>

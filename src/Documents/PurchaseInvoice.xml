@@ -203,7 +203,7 @@
 			<FullTextSearchOnInputByString>DontUse</FullTextSearchOnInputByString>
 			<ChoiceDataGetModeOnInputByString>Directly</ChoiceDataGetModeOnInputByString>
 			<DefaultObjectForm>Document.PurchaseInvoice.Form.DocumentForm</DefaultObjectForm>
-			<DefaultListForm>Document.PurchaseInvoice.Form.ListForm</DefaultListForm>
+			<DefaultListForm>Document.PurchaseInvoice.Form.ListForm1</DefaultListForm>
 			<DefaultChoiceForm>Document.PurchaseInvoice.Form.ChoiceForm</DefaultChoiceForm>
 			<AuxiliaryObjectForm/>
 			<AuxiliaryListForm/>
@@ -214,9 +214,11 @@
 			<RegisterRecordsWritingOnPost>WriteSelected</RegisterRecordsWritingOnPost>
 			<SequenceFilling>AutoFillOff</SequenceFilling>
 			<RegisterRecords>
+				<xr:Item xsi:type="xr:MDObjectRef">AccumulationRegister.CashFlowData</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">AccumulationRegister.InventoryJrnl</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">AccumulationRegister.ProjectData</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">AccountingRegister.GeneralJournal</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">AccumulationRegister.OrderTransactions</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">InformationRegister.OrdersStatuses</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">AccumulationRegister.OrdersDispatched</xr:Item>
 			</RegisterRecords>
@@ -240,7 +242,7 @@
 			</ListPresentation>
 			<ExtendedListPresentation/>
 			<Explanation/>
-			<ChoiceHistoryOnInput>Auto</ChoiceHistoryOnInput>
+			<ChoiceHistoryOnInput>DontUse</ChoiceHistoryOnInput>
 		</Properties>
 		<ChildObjects>
 			<Attribute uuid="15ecb663-8b8b-4ce9-9803-98f37425d234">
@@ -280,52 +282,6 @@
 							<app:value xsi:type="xs:boolean">true</app:value>
 						</app:item>
 					</ChoiceParameters>
-					<QuickChoice>Auto</QuickChoice>
-					<CreateOnInput>Auto</CreateOnInput>
-					<ChoiceForm/>
-					<LinkByType/>
-					<ChoiceHistoryOnInput>Auto</ChoiceHistoryOnInput>
-					<Indexing>DontIndex</Indexing>
-					<FullTextSearch>Use</FullTextSearch>
-				</Properties>
-			</Attribute>
-			<Attribute uuid="4082343d-c45a-48b9-b8b3-aca8f03a6540">
-				<Properties>
-					<Name>CompanyCode</Name>
-					<Synonym>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Company code</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Unternehmenscode</v8:content>
-						</v8:item>
-					</Synonym>
-					<Comment/>
-					<Type>
-						<v8:Type>xs:string</v8:Type>
-						<v8:StringQualifiers>
-							<v8:Length>5</v8:Length>
-							<v8:AllowedLength>Variable</v8:AllowedLength>
-						</v8:StringQualifiers>
-					</Type>
-					<PasswordMode>false</PasswordMode>
-					<Format/>
-					<EditFormat/>
-					<ToolTip/>
-					<MarkNegatives>false</MarkNegatives>
-					<Mask/>
-					<MultiLine>false</MultiLine>
-					<ExtendedEdit>false</ExtendedEdit>
-					<MinValue xsi:nil="true"/>
-					<MaxValue xsi:nil="true"/>
-					<FillFromFillingValue>false</FillFromFillingValue>
-					<FillValue xsi:type="xs:string"/>
-					<FillChecking>DontCheck</FillChecking>
-					<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
-					<ChoiceParameterLinks/>
-					<ChoiceParameters/>
 					<QuickChoice>Auto</QuickChoice>
 					<CreateOnInput>Auto</CreateOnInput>
 					<ChoiceForm/>
@@ -411,48 +367,6 @@
 					<MaxValue xsi:nil="true"/>
 					<FillFromFillingValue>false</FillFromFillingValue>
 					<FillValue xsi:nil="true"/>
-					<FillChecking>DontCheck</FillChecking>
-					<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
-					<ChoiceParameterLinks/>
-					<ChoiceParameters/>
-					<QuickChoice>Auto</QuickChoice>
-					<CreateOnInput>Auto</CreateOnInput>
-					<ChoiceForm/>
-					<LinkByType/>
-					<ChoiceHistoryOnInput>Auto</ChoiceHistoryOnInput>
-					<Indexing>DontIndex</Indexing>
-					<FullTextSearch>Use</FullTextSearch>
-				</Properties>
-			</Attribute>
-			<Attribute uuid="acfc2726-c345-4b7a-a740-d7951966add3">
-				<Properties>
-					<Name>PriceIncludesVAT</Name>
-					<Synonym>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Price includes VAT</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Preis inkl. USt.</v8:content>
-						</v8:item>
-					</Synonym>
-					<Comment/>
-					<Type>
-						<v8:Type>xs:boolean</v8:Type>
-					</Type>
-					<PasswordMode>false</PasswordMode>
-					<Format/>
-					<EditFormat/>
-					<ToolTip/>
-					<MarkNegatives>false</MarkNegatives>
-					<Mask/>
-					<MultiLine>false</MultiLine>
-					<ExtendedEdit>false</ExtendedEdit>
-					<MinValue xsi:nil="true"/>
-					<MaxValue xsi:nil="true"/>
-					<FillFromFillingValue>true</FillFromFillingValue>
-					<FillValue xsi:type="xs:boolean">false</FillValue>
 					<FillChecking>DontCheck</FillChecking>
 					<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
 					<ChoiceParameterLinks/>
@@ -1091,101 +1005,8 @@
 					<FullTextSearch>Use</FullTextSearch>
 				</Properties>
 			</Attribute>
-			<Attribute uuid="af7d4cd0-cacb-40e7-a487-e285bbba6919">
-				<Properties>
-					<Name>VATTotal</Name>
-					<Synonym>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>VAT FCY</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>USt.</v8:content>
-						</v8:item>
-					</Synonym>
-					<Comment/>
-					<Type>
-						<v8:Type>xs:decimal</v8:Type>
-						<v8:NumberQualifiers>
-							<v8:Digits>15</v8:Digits>
-							<v8:FractionDigits>2</v8:FractionDigits>
-							<v8:AllowedSign>Nonnegative</v8:AllowedSign>
-						</v8:NumberQualifiers>
-					</Type>
-					<PasswordMode>false</PasswordMode>
-					<Format/>
-					<EditFormat/>
-					<ToolTip/>
-					<MarkNegatives>false</MarkNegatives>
-					<Mask/>
-					<MultiLine>false</MultiLine>
-					<ExtendedEdit>false</ExtendedEdit>
-					<MinValue xsi:nil="true"/>
-					<MaxValue xsi:nil="true"/>
-					<FillFromFillingValue>false</FillFromFillingValue>
-					<FillValue xsi:nil="true"/>
-					<FillChecking>DontCheck</FillChecking>
-					<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
-					<ChoiceParameterLinks/>
-					<ChoiceParameters/>
-					<QuickChoice>Auto</QuickChoice>
-					<CreateOnInput>Auto</CreateOnInput>
-					<ChoiceForm/>
-					<LinkByType/>
-					<ChoiceHistoryOnInput>Auto</ChoiceHistoryOnInput>
-					<Indexing>DontIndex</Indexing>
-					<FullTextSearch>Use</FullTextSearch>
-				</Properties>
-			</Attribute>
-			<Attribute uuid="8d1dc20c-8e7c-41a9-8cdc-27a9aa97f7a7">
-				<Properties>
-					<Name>VATTotalRC</Name>
-					<Synonym>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>VAT</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>USt.</v8:content>
-						</v8:item>
-					</Synonym>
-					<Comment/>
-					<Type>
-						<v8:Type>xs:decimal</v8:Type>
-						<v8:NumberQualifiers>
-							<v8:Digits>15</v8:Digits>
-							<v8:FractionDigits>2</v8:FractionDigits>
-							<v8:AllowedSign>Nonnegative</v8:AllowedSign>
-						</v8:NumberQualifiers>
-					</Type>
-					<PasswordMode>false</PasswordMode>
-					<Format/>
-					<EditFormat/>
-					<ToolTip/>
-					<MarkNegatives>false</MarkNegatives>
-					<Mask/>
-					<MultiLine>false</MultiLine>
-					<ExtendedEdit>false</ExtendedEdit>
-					<MinValue xsi:nil="true"/>
-					<MaxValue xsi:nil="true"/>
-					<FillFromFillingValue>false</FillFromFillingValue>
-					<FillValue xsi:nil="true"/>
-					<FillChecking>DontCheck</FillChecking>
-					<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
-					<ChoiceParameterLinks/>
-					<ChoiceParameters/>
-					<QuickChoice>Auto</QuickChoice>
-					<CreateOnInput>Auto</CreateOnInput>
-					<ChoiceForm/>
-					<LinkByType/>
-					<ChoiceHistoryOnInput>Auto</ChoiceHistoryOnInput>
-					<Indexing>DontIndex</Indexing>
-					<FullTextSearch>Use</FullTextSearch>
-				</Properties>
-			</Attribute>
 			<Form>DocumentForm</Form>
+			<Form>DocumentForm1</Form>
 			<Form>ListForm</Form>
 			<Form>ListForm1</Form>
 			<Form>ChoiceForm</Form>
@@ -1488,91 +1309,6 @@
 								<v8:item>
 									<v8:lang>de</v8:lang>
 									<v8:content>Summe:</v8:content>
-								</v8:item>
-							</Synonym>
-							<Comment/>
-							<Type>
-								<v8:Type>xs:decimal</v8:Type>
-								<v8:NumberQualifiers>
-									<v8:Digits>15</v8:Digits>
-									<v8:FractionDigits>2</v8:FractionDigits>
-									<v8:AllowedSign>Nonnegative</v8:AllowedSign>
-								</v8:NumberQualifiers>
-							</Type>
-							<PasswordMode>false</PasswordMode>
-							<Format/>
-							<EditFormat/>
-							<ToolTip/>
-							<MarkNegatives>false</MarkNegatives>
-							<Mask/>
-							<MultiLine>false</MultiLine>
-							<ExtendedEdit>false</ExtendedEdit>
-							<MinValue xsi:nil="true"/>
-							<MaxValue xsi:nil="true"/>
-							<FillChecking>DontCheck</FillChecking>
-							<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
-							<ChoiceParameterLinks/>
-							<ChoiceParameters/>
-							<QuickChoice>Auto</QuickChoice>
-							<CreateOnInput>Auto</CreateOnInput>
-							<ChoiceForm/>
-							<LinkByType/>
-							<ChoiceHistoryOnInput>Auto</ChoiceHistoryOnInput>
-							<Indexing>DontIndex</Indexing>
-							<FullTextSearch>Use</FullTextSearch>
-						</Properties>
-					</Attribute>
-					<Attribute uuid="5adaf36d-36df-496b-b0ef-dadf868eba5d">
-						<Properties>
-							<Name>VATCode</Name>
-							<Synonym>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>VAT code</v8:content>
-								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>USt. Satz</v8:content>
-								</v8:item>
-							</Synonym>
-							<Comment/>
-							<Type>
-								<v8:Type>cfg:CatalogRef.VATCodes</v8:Type>
-							</Type>
-							<PasswordMode>false</PasswordMode>
-							<Format/>
-							<EditFormat/>
-							<ToolTip/>
-							<MarkNegatives>false</MarkNegatives>
-							<Mask/>
-							<MultiLine>false</MultiLine>
-							<ExtendedEdit>false</ExtendedEdit>
-							<MinValue xsi:nil="true"/>
-							<MaxValue xsi:nil="true"/>
-							<FillChecking>DontCheck</FillChecking>
-							<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
-							<ChoiceParameterLinks/>
-							<ChoiceParameters/>
-							<QuickChoice>Auto</QuickChoice>
-							<CreateOnInput>Auto</CreateOnInput>
-							<ChoiceForm/>
-							<LinkByType/>
-							<ChoiceHistoryOnInput>Auto</ChoiceHistoryOnInput>
-							<Indexing>DontIndex</Indexing>
-							<FullTextSearch>Use</FullTextSearch>
-						</Properties>
-					</Attribute>
-					<Attribute uuid="f8b7bad3-03e8-4950-811a-40dc13190b21">
-						<Properties>
-							<Name>VAT</Name>
-							<Synonym>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>VAT</v8:content>
-								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>USt.</v8:content>
 								</v8:item>
 							</Synonym>
 							<Comment/>
@@ -1983,6 +1719,50 @@
 							<MinValue xsi:nil="true"/>
 							<MaxValue xsi:nil="true"/>
 							<FillChecking>ShowError</FillChecking>
+							<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
+							<ChoiceParameterLinks/>
+							<ChoiceParameters/>
+							<QuickChoice>Auto</QuickChoice>
+							<CreateOnInput>Auto</CreateOnInput>
+							<ChoiceForm/>
+							<LinkByType/>
+							<ChoiceHistoryOnInput>Auto</ChoiceHistoryOnInput>
+							<Indexing>DontIndex</Indexing>
+							<FullTextSearch>Use</FullTextSearch>
+						</Properties>
+					</Attribute>
+					<Attribute uuid="948413e5-287b-4463-a8de-89d781a0a53e">
+						<Properties>
+							<Name>AccountDescription</Name>
+							<Synonym>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Description</v8:content>
+								</v8:item>
+								<v8:item>
+									<v8:lang>de</v8:lang>
+									<v8:content>Bezeichnung</v8:content>
+								</v8:item>
+							</Synonym>
+							<Comment/>
+							<Type>
+								<v8:Type>xs:string</v8:Type>
+								<v8:StringQualifiers>
+									<v8:Length>100</v8:Length>
+									<v8:AllowedLength>Variable</v8:AllowedLength>
+								</v8:StringQualifiers>
+							</Type>
+							<PasswordMode>false</PasswordMode>
+							<Format/>
+							<EditFormat/>
+							<ToolTip/>
+							<MarkNegatives>false</MarkNegatives>
+							<Mask/>
+							<MultiLine>false</MultiLine>
+							<ExtendedEdit>false</ExtendedEdit>
+							<MinValue xsi:nil="true"/>
+							<MaxValue xsi:nil="true"/>
+							<FillChecking>DontCheck</FillChecking>
 							<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
 							<ChoiceParameterLinks/>
 							<ChoiceParameters/>

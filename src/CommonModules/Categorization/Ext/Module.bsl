@@ -51,7 +51,7 @@ Procedure UpdateTransactionCategorizationLibrary() Export
 	                                |FROM
 	                                |	NewlyAcceptedTransactions AS NewlyAcceptedTransactions
 	                                |		LEFT JOIN Catalog.BankTransactionCategories AS BankTransactionCategories
-	                                |		ON NewlyAcceptedTransactions.CategoryID = BankTransactionCategories.Ref
+	                                |		ON NewlyAcceptedTransactions.CategoryID = BankTransactionCategories.Code
 	                                |
 	                                |ORDER BY
 	                                |	TransactionDate");
@@ -197,28 +197,6 @@ Function CategorizeTransactions(Transactions) Export
 	                    |
 	                    |////////////////////////////////////////////////////////////////////////////////
 	                    |SELECT DISTINCT
-	                    |	FoundCoincidents.TranID,
-	                    |	FoundCoincidents.lexem,
-	                    |	FoundCoincidents.Customer,
-	                    |	10000 AS Priority
-	                    |INTO LexemsCustomers
-	                    |FROM
-	                    |	FoundCoincidents AS FoundCoincidents
-	                    |;
-	                    |
-	                    |////////////////////////////////////////////////////////////////////////////////
-	                    |SELECT DISTINCT
-	                    |	FoundCoincidents.TranID,
-	                    |	FoundCoincidents.lexem,
-	                    |	FoundCoincidents.Category,
-	                    |	10000 AS Priority
-	                    |INTO LexemsCategories
-	                    |FROM
-	                    |	FoundCoincidents AS FoundCoincidents
-	                    |;
-	                    |
-	                    |////////////////////////////////////////////////////////////////////////////////
-	                    |SELECT DISTINCT
 	                    |	FoundCoincidents.BankAccount,
 	                    |	FoundCoincidents.lexem
 	                    |INTO UsedLexems
@@ -266,6 +244,34 @@ Function CategorizeTransactions(Transactions) Export
 	                    |GROUP BY
 	                    |	CustomersAndCategoriesForLexem.BankAccount,
 	                    |	CustomersAndCategoriesForLexem.lexem
+	                    |;
+	                    |
+	                    |////////////////////////////////////////////////////////////////////////////////
+	                    |SELECT DISTINCT
+	                    |	FoundCoincidents.TranID,
+	                    |	FoundCoincidents.lexem,
+	                    |	FoundCoincidents.Customer,
+	                    |	10000 / LexemPriorityForCustomer.Priority / LexemPriorityForCustomer.Priority AS Priority
+	                    |INTO LexemsCustomers
+	                    |FROM
+	                    |	FoundCoincidents AS FoundCoincidents
+	                    |		INNER JOIN LexemPriorityForCustomer AS LexemPriorityForCustomer
+	                    |		ON FoundCoincidents.BankAccount = LexemPriorityForCustomer.BankAccount
+	                    |			AND FoundCoincidents.lexem = LexemPriorityForCustomer.lexem
+	                    |;
+	                    |
+	                    |////////////////////////////////////////////////////////////////////////////////
+	                    |SELECT DISTINCT
+	                    |	FoundCoincidents.TranID,
+	                    |	FoundCoincidents.lexem,
+	                    |	FoundCoincidents.Category,
+	                    |	10000 / LexemPriorityForCategory.Priority / LexemPriorityForCategory.Priority AS Priority
+	                    |INTO LexemsCategories
+	                    |FROM
+	                    |	FoundCoincidents AS FoundCoincidents
+	                    |		INNER JOIN LexemPriorityForCategory AS LexemPriorityForCategory
+	                    |		ON FoundCoincidents.BankAccount = LexemPriorityForCategory.BankAccount
+	                    |			AND FoundCoincidents.lexem = LexemPriorityForCategory.lexem
 	                    |;
 	                    |
 	                    |////////////////////////////////////////////////////////////////////////////////
@@ -462,28 +468,39 @@ Function CategorizeTransactions(Transactions) Export
 		//Ignore results with several options
 		CompanyForFilling = Catalogs.Companies.EmptyRef();
 		CategoryForFilling = ChartsOfAccounts.ChartOfAccounts.EmptyRef();
+		//If Priorities < 10000, then ignore the result
+		PriorityForCompany = 0;
+		PriorityForCategory = 0;
 		
 		FoundRows = CategorizedTrans.FindRows(New Structure("TranID", TranID.TranID));
 		If FoundRows.Count() > 1 Then
 			TableForIDCustomer = CategorizedTrans.Copy(FoundRows);
 			TableForIDCategory = TableForIDCustomer.Copy();
-			TableForIDCustomer.GroupBy("Customer");
+			TableForIDCustomer.GroupBy("Customer, CustomerPriority");
 			If TableForIDCustomer.Count() = 1 Then
 				CompanyForFilling = TableForIDCustomer[0]["Customer"];
+				PriorityForCompany = TableForIDCustomer[0]["CustomerPriority"];
 			EndIf;
-			TableForIDCategory.GroupBy("Category");
+			TableForIDCategory.GroupBy("Category, CategoryPriority");
 			If TableForIDCategory.Count() = 1 Then
 				CategoryForFilling = TableForIDCategory[0]["Category"];
+				PriorityForCategory = TableForIDCategory[0]["CategoryPriority"];
 			EndIf;
 		Else
 			CompanyForFilling = FoundRows[0].Customer;
+			PriorityForCompany = FoundRows[0].CustomerPriority;
 			CategoryForFilling = FoundRows[0].Category;
+			PriorityForCategory = FoundRows[0].CategoryPriority;
 		EndIf;
 		
+		If (PriorityForCompany < 10100) And (PriorityForCategory < 10100) Then
+			Continue;
+		EndIf;
+				
 		NewResultRow = ResultTable.Add();
 		FillPropertyValues(NewResultRow, FoundRows[0]);
-		NewResultRow.Customer = CompanyForFilling;
-		NewResultRow.Category = CategoryForFilling;
+		NewResultRow.Customer = ?(PriorityForCompany >= 10100, CompanyForFilling, Catalogs.Companies.EmptyRef());
+		NewResultRow.Category = ?(PriorityForCategory >= 10100, CategoryForFilling, ChartsOfAccounts.ChartOfAccounts.EmptyRef());
 	EndDo;		
 
 	ReturnArray = New Array();
@@ -494,6 +511,135 @@ Function CategorizeTransactions(Transactions) Export
 	EndDo;
 	return ReturnArray;
 EndFunction
+
+Procedure CategorizeTransactionsAtServer(BankAccount, TempStorageAddress = Undefined) Export
+	Try
+		SetPrivilegedMode(True);
+		BeginTransaction(DataLockControlMode.Managed);
+		//Select all required transactions
+		Request = New Query("SELECT
+		                    |	BankTransactions.TransactionDate,
+		                    |	BankTransactions.BankAccount,
+		                    |	BankTransactions.Company,
+		                    |	BankTransactions.ID,
+		                    |	BankTransactions.Description,
+		                    |	BankTransactions.Amount,
+		                    |	BankTransactions.Category,
+		                    |	BankTransactions.Document,
+		                    |	BankTransactions.Accepted,
+		                    |	BankTransactions.Hidden,
+		                    |	BankTransactions.OriginalID,
+		                    |	BankTransactions.YodleeTransactionID,
+		                    |	BankTransactions.PostDate,
+		                    |	BankTransactions.Price,
+		                    |	BankTransactions.Quantity,
+		                    |	BankTransactions.RunningBalance,
+		                    |	BankTransactions.CurrencyCode,
+		                    |	BankTransactions.CategoryID,
+		                    |	BankTransactions.Type,
+		                    |	BankTransactions.CategorizedCompanyNotAccepted,
+		                    |	BankTransactions.CategorizedCategoryNotAccepted,
+		                    |	ISNULL(BankTransactionCategories.Account, VALUE(ChartOfAccounts.ChartOfAccounts.EmptyRef)) AS CategoryAccount
+		                    |FROM
+		                    |	InformationRegister.BankTransactions AS BankTransactions
+		                    |		LEFT JOIN Catalog.BankTransactionCategories AS BankTransactionCategories
+		                    |		ON BankTransactions.CategoryID = BankTransactionCategories.Code
+		                    |WHERE
+		                    |	BankTransactions.BankAccount = &BankAccount
+		                    |	AND BankTransactions.Accepted = FALSE
+		                    |	AND BankTransactions.Hidden = FALSE");
+		Request.SetParameter("BankAccount", BankAccount);
+		UnacceptedTransactions = Request.Execute().Unload();
+		//Lock records being processed
+		DataLock = New DataLock();
+		BT_DataLock = DataLock.Add("InformationRegister.BankTransactions");
+		BT_DataLock.Mode = DataLockMode.Exclusive;
+		BT_DataLock.DataSource = UnacceptedTransactions;
+		BT_DataLock.UseFromDataSource("ID", "ID");
+		DataLock.Lock();
+		
+		Transactions = UnacceptedTransactions.Copy(, "BankAccount, ID, Description");
+		Transactions.Columns.Add("RowID", New TypeDescription("Number"));
+		i = 0;
+		ArrayOfTransactions = New Array();
+		While i < Transactions.Count() Do
+			Transactions[i].RowID = i;
+			ArrayOfTransactions.Add(New Structure("BankAccount, ID, Description, RowID", Transactions[i].BankAccount, Transactions[i].ID, Transactions[i].Description, Transactions[i].RowID));
+			i = i + 1;
+		EndDo;
+		ReturnArray = CategorizeTransactions(ArrayOfTransactions);
+		AffectedRows = New Array();
+		
+		ProcessedArray = New Array();
+		For Each CategorizedTran IN ReturnArray Do
+			CompanyFilled = False;
+			CategoryFilled = False;
+			ProcessedArray.Add(CategorizedTran.RowID);
+			BTUnaccepted = UnacceptedTransactions[CategorizedTran.RowID];
+			//Apply categorized company if it is not filled
+			If (Not ValueIsFilled(BTUnaccepted.Company)) Or (BTUnaccepted.CategorizedCompanyNotAccepted) Then 
+				BTUnaccepted.Company = CategorizedTran.Customer;
+				BTUnaccepted.CategorizedCompanyNotAccepted = True;
+				CompanyFilled = True;
+			EndIf;
+			If (Not ValueIsFilled(BTUnaccepted.Category)) Or (BTUnaccepted.CategorizedCategoryNotAccepted) Then 
+				If (BTUnaccepted.CategoryAccount <> CategorizedTran.Category) Then
+					BTUnaccepted.Category = CategorizedTran.Category;
+					BTUnaccepted.CategorizedCategoryNotAccepted = True;
+					CategoryFilled = True;
+				EndIf;
+			EndIf;
+			If CompanyFilled OR CategoryFilled Then
+				RecordTransactionToTheDatabase(BTUnaccepted);
+				NewAffectedRow = New Structure("ID, Company, CategorizedCompanyNotAccepted, Category, CategorizedCategoryNotAccepted");
+				FillPropertyValues(NewAffectedRow, BTUnaccepted);
+				AffectedRows.Add(NewAffectedRow);
+			EndIf;
+		EndDo;
+		//Clear previously categorized transactions, which are absent this time
+		i = 0;
+		EmptyCompany = Catalogs.Companies.EmptyRef();
+		EmptyCategory = ChartsOfAccounts.ChartOfAccounts.EmptyRef();
+		While i < UnacceptedTransactions.Count() Do
+			If ProcessedArray.Find(i) <> Undefined Then
+				i = i + 1;
+				Continue;
+			EndIf;
+			CompanyWasCleared = False;
+			CategoryWasCleared = False;
+			BTUnaccepted = UnacceptedTransactions[i];
+			If (ValueIsFilled(BTUnaccepted.Company)) And (BTUnaccepted.CategorizedCompanyNotAccepted) Then
+				BTUnaccepted.Company = EmptyCompany;
+				BTUnaccepted.CategorizedCompanyNotAccepted = False;
+				CompanyWasCleared =True;
+			EndIf;
+			If (ValueIsFilled(BTUnaccepted.Category)) And (BTUnaccepted.CategorizedCategoryNotAccepted) Then
+				BTUnaccepted.Category = EmptyCategory;
+				BTUnaccepted.CategorizedCategoryNotAccepted = False;
+				CategoryWasCleared = True;
+			EndIf;
+			i = i + 1;
+			If CompanyWasCleared OR CategoryWasCleared Then
+				RecordTransactionToTheDatabase(BTUnaccepted);
+				NewAffectedRow = New Structure("ID, Company, CategorizedCompanyNotAccepted, Category, CategorizedCategoryNotAccepted");
+				FillPropertyValues(NewAffectedRow, BTUnaccepted);
+				AffectedRows.Add(NewAffectedRow);
+			EndIf;
+		EndDo;
+		CommitTransaction();
+		If TempStorageAddress <> Undefined Then
+			PutToTempStorage(New Structure("CurrentStatus, ErrorDescription, AffectedRows", True, "", AffectedRows), TempStorageAddress);
+		EndIf;
+	Except
+		ErrorDescription = ErrorDescription();
+		If TempStorageAddress <> Undefined Then
+			PutToTempStorage(New Structure("CurrentStatus, ErrorDescription", False, ErrorDescription), TempStorageAddress);
+		EndIf;
+		WriteLogEvent("DownloadedTransactions.TransactionCategorization", EventLogLevel.Error,,, ErrorDescription());	
+		RollbackTransaction();
+	EndTry;			
+	
+EndProcedure
 
 #EndRegion
 
@@ -536,7 +682,7 @@ Procedure ProcessTransactionForCategorization(TabRow)
 		NewRecord.Lexem = lexem;
 		NewRecord.TransactionID = TabRow.ID;
 		NewRecord.Customer = TabRow.Company;
-		NewRecord.Category = TabRow.Category;
+		NewRecord.Category = ?(TabRow.Category = TabRow.YodleeCategory, ChartsOfAccounts.ChartOfAccounts.EmptyRef(), TabRow.Category);
 	EndDo;	
 	//Add the record with the full description
 	NewRecord = RecordSet.Add();
@@ -548,5 +694,34 @@ Procedure ProcessTransactionForCategorization(TabRow)
 	NewRecord.FullDescription = True;
 	RecordSet.Write(True);	
 EndProcedure
+
+Function RecordTransactionToTheDatabase(Tran)
+	Try
+		BeginTransaction();
+		BTRecordset = InformationRegisters.BankTransactions.CreateRecordSet();
+		//Add (save) current row to a information register
+		If NOT ValueIsFilled(Tran.ID) then
+			Tran.ID = New UUID();
+		EndIf;
+		BTRecordset.Filter.ID.Set(Tran.ID);
+		BTRecordset.Write(True);
+
+		BTRecordset.Clear();
+		BTRecordset.Filter.TransactionDate.Set(Tran.TransactionDate);
+		BTRecordset.Filter.BankAccount.Set(Tran.BankAccount);
+		BTRecordset.Filter.Company.Set(Tran.Company);
+		BTRecordset.Filter.ID.Set(Tran.ID);
+		NewRecord = BTRecordset.Add();
+		FillPropertyValues(NewRecord, Tran);
+		BTRecordset.Write(True);
+		CommitTransaction();
+	Except
+		ErrDesc = ErrorDescription();
+		If TransactionActive() Then
+			RollbackTransaction();
+		EndIf;
+		Raise ErrDesc;
+	EndTry;
+EndFunction
 
 #EndRegion

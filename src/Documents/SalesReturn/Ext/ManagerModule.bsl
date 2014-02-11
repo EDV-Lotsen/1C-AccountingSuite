@@ -1,6 +1,6 @@
 ﻿Procedure Print(Spreadsheet, Ref) Export
 		
-	CustomTemplate = GeneralFunctions.GetCustomTemplate("Document.SalesReturn", "Credit memo");
+	CustomTemplate = GeneralFunctions.GetCustomTemplate("Credit memo");
 	
 	If CustomTemplate = Undefined Then
 		Template = Documents.SalesReturn.GetTemplate("PF_MXL_SalesReturn");
@@ -20,21 +20,21 @@
    |	SalesReturn.Company,
    |	SalesReturn.Date,
    |	SalesReturn.DocumentTotal,
-   |	SalesReturn.SalesTax,
+   |	SalesReturn.SalesTaxRC,
    |	SalesReturn.ReturnType,
    |	SalesReturn.ParentDocument,
    |	SalesReturn.RefNum,
    |	SalesReturn.Number,
    |	SalesReturn.Currency,
-   |	SalesReturn.PriceIncludesVAT,
-   |	SalesReturn.VATTotal,
+   //|	SalesReturn.PriceIncludesVAT,
+   //|	SalesReturn.VATTotal,
    |	SalesReturn.LineItems.(
    |		Product,
    |		Product.UM AS UM,
    |		ProductDescription,
    |		Quantity,
-   |		VATCode,
-   |		VAT,
+   //|		VATCode,
+   //|		VAT,
    |		Price,
    |		LineTotal
    |	),
@@ -137,27 +137,27 @@
 		 Spreadsheet.Put(TemplateArea);
 		 
 		 TemplateArea = Template.GetArea("SalesTax");
-		 TemplateArea.Parameters.SalesTaxTotal = Selection.SalesTax;
+		 TemplateArea.Parameters.SalesTaxTotal = Selection.SalesTaxRC;
 		 Spreadsheet.Put(TemplateArea);
 	//EndIf; 
 	  ////////
 	 
-	If Selection.VATTotal <> 0 Then;
-		 TemplateArea = Template.GetArea("Subtotal");
-		 TemplateArea.Parameters.Subtotal = LineTotalSum;
-		 Spreadsheet.Put(TemplateArea);
-		 
-		 TemplateArea = Template.GetArea("VAT");
-		 TemplateArea.Parameters.VATTotal = Selection.VATTotal;
-		 Spreadsheet.Put(TemplateArea);
-	EndIf; 
+	//If Selection.VATTotal <> 0 Then;
+	//	 TemplateArea = Template.GetArea("Subtotal");
+	//	 TemplateArea.Parameters.Subtotal = LineTotalSum;
+	//	 Spreadsheet.Put(TemplateArea);
+	//	 
+	//	 TemplateArea = Template.GetArea("VAT");
+	//	 TemplateArea.Parameters.VATTotal = Selection.VATTotal;
+	//	 Spreadsheet.Put(TemplateArea);
+	//EndIf; 
 		 
 	 TemplateArea = Template.GetArea("Total");
-	 If Selection.PriceIncludesVAT Then
-	 	DTotal = LineTotalSum + Selection.SalesTax;
-	Else
-		DTotal = LineTotalSum + Selection.VATTotal;
-	EndIf;
+	 //If Selection.PriceIncludesVAT Then
+	 	DTotal = LineTotalSum + Selection.SalesTaxRC;
+	//Else
+	//	DTotal = LineTotalSum + Selection.VATTotal;
+	//EndIf;
 	TemplateArea.Parameters.DocumentTotal = DTotal;
 	Spreadsheet.Put(TemplateArea);
 	

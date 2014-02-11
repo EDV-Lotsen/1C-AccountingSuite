@@ -89,14 +89,14 @@ EndFunction
 //
 Procedure RecalcTotal()
 	
-	If Object.PriceIncludesVAT Then
+	//If Object.PriceIncludesVAT Then
 		Object.DocumentTotal = Object.LineItems.Total("LineTotal");
 		Object.DocumentTotalRC = (Object.LineItems.Total("LineTotal")) * Object.ExchangeRate;
-	Else
-		Object.DocumentTotal = Object.LineItems.Total("LineTotal") + Object.LineItems.Total("VAT");
-		Object.DocumentTotalRC = (Object.LineItems.Total("LineTotal") + Object.LineItems.Total("VAT")) * Object.ExchangeRate;
-	EndIf;
-	Object.VATTotal = Object.LineItems.Total("VAT") * Object.ExchangeRate;
+	//Else
+	//	Object.DocumentTotal = Object.LineItems.Total("LineTotal") + Object.LineItems.Total("VAT");
+	//	Object.DocumentTotalRC = (Object.LineItems.Total("LineTotal") + Object.LineItems.Total("VAT")) * Object.ExchangeRate;
+	//EndIf;
+	//Object.VATTotal = Object.LineItems.Total("VAT") * Object.ExchangeRate;
 	
 EndProcedure
 
@@ -107,7 +107,7 @@ EndProcedure
 //
 Procedure CompanyOnChange(Item)
 	
-	Object.CompanyCode = CommonUse.GetAttributeValue(Object.Company, "Code");
+	//Object.CompanyCode = CommonUse.GetAttributeValue(Object.Company, "Code");
 	Object.Currency = CommonUse.GetAttributeValue(Object.Company, "DefaultCurrency");
 	Object.ExchangeRate = GeneralFunctions.GetExchangeRate(Object.Date, Object.Currency);
 	
@@ -179,7 +179,7 @@ Procedure LineItemsQuantityOnChange(Item)
 	
 	TabularPartRow = Items.LineItems.CurrentData;
 	TabularPartRow.LineTotal = TabularPartRow.Quantity * TabularPartRow.Price;
-	TabularPartRow.VAT = VAT_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Purchase", Object.PriceIncludesVAT);
+	//TabularPartRow.VAT = VAT_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Purchase", Object.PriceIncludesVAT);
 	
 	RecalcTotal();
 	
@@ -202,9 +202,9 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	Items.LineItemsQuantity.EditFormat = "NFD=" + Constants.QtyPrecision.Get();
 	Items.LineItemsQuantity.Format = "NFD=" + Constants.QtyPrecision.Get();
 	
-	If Object.Ref.IsEmpty() Then
-		Object.PriceIncludesVAT = GeneralFunctionsReusable.PriceIncludesVAT();
-	EndIf;
+	//If Object.Ref.IsEmpty() Then
+	//	Object.PriceIncludesVAT = GeneralFunctionsReusable.PriceIncludesVAT();
+	//EndIf;
 	
 	If Object.Location.IsEmpty() Then
 		Object.Location = Catalogs.Locations.MainWarehouse;
@@ -230,9 +230,9 @@ Procedure LineItemsProductOnChange(Item)
 	TabularPartRow.Quantity = 0;
 	TabularPartRow.LineTotal = 0;
 	TabularPartRow.Price = 0;
-	TabularPartRow.VAT = 0;
+	//TabularPartRow.VAT = 0;
 	
-	TabularPartRow.VATCode = CommonUse.GetAttributeValue(TabularPartRow.Product, "PurchaseVATCode");
+	//TabularPartRow.VATCode = CommonUse.GetAttributeValue(TabularPartRow.Product, "PurchaseVATCode");
 	
 	RecalcTotal();
 	
@@ -282,6 +282,7 @@ Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
 		PermitWrite = DocumentPosting.DocumentWritePermitted(WriteParameters);
 		CurrentObject.AdditionalProperties.Insert("PermitWrite", PermitWrite);	
 	EndIf;
+
 	
 	//------------------------------------------------------------------------------
 	// 1. Correct the receipt date according to the orders dates.
@@ -346,7 +347,6 @@ Procedure BeforeWrite(Cancel, WriteParameters)
 			return;
 		EndIf;
 	EndIf;
-
 EndProcedure
 
 //Closing period

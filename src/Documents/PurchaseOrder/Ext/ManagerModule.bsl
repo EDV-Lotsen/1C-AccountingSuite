@@ -201,19 +201,19 @@ Procedure Print(Spreadsheet, SheetTitle, DocumentRef, TemplateName = Undefined) 
 			EndDo;
 			
 			// Output VAT (for VAT financial localization).
-			If DocumentAttributes.VATTotal <> 0 Then;
-				// Put subtotal.
-				TemplateArea = Template.GetArea("Subtotal");
-				TemplateArea.Parameters.Subtotal = ?(DocumentAttributes.PriceIncludesVAT,
-				                                     DocumentAttributes.DocumentTotal,
-				                                     DocumentAttributes.DocumentTotal - DocumentAttributes.VATTotal);
-				Spreadsheet.Put(TemplateArea);
-				
-				// Put VAT.
-				TemplateArea = Template.GetArea("VAT");
-				TemplateArea.Parameters.VATTotal = DocumentAttributes.VATTotal;
-				Spreadsheet.Put(TemplateArea);
-			EndIf;
+			//If DocumentAttributes.VATTotal <> 0 Then;
+			//	// Put subtotal.
+			//	TemplateArea = Template.GetArea("Subtotal");
+			//	TemplateArea.Parameters.Subtotal = ?(DocumentAttributes.PriceIncludesVAT,
+			//										 DocumentAttributes.DocumentTotal,
+			//										 DocumentAttributes.DocumentTotal - DocumentAttributes.VATTotal);
+			//	Spreadsheet.Put(TemplateArea);
+			//	
+			//	// Put VAT.
+			//	TemplateArea = Template.GetArea("VAT");
+			//	TemplateArea.Parameters.VATTotal = DocumentAttributes.VATTotal;
+			//	Spreadsheet.Put(TemplateArea);
+			//EndIf;
 			
 			// Output document total.
 			TemplateArea = Template.GetArea("Total");
@@ -416,11 +416,11 @@ Function Query_Printing_Document_Attributes(TablesList)
 	|	Document.Date                         AS Date,
 	|	Document.Company                      AS Company,
 	|	Document.Currency                     AS Currency,
-	|	Document.PriceIncludesVAT             AS PriceIncludesVAT,
+	//|	Document.PriceIncludesVAT             AS PriceIncludesVAT,
 	// ------------------------------------------------------
 	// Totals
-	|	Document.DocumentTotal                AS DocumentTotal,
-	|	Document.VATTotal                     AS VATTotal
+	|	Document.DocumentTotal                AS DocumentTotal
+	//|	Document.VATTotal                     AS VATTotal
 	// ------------------------------------------------------
 	|FROM
 	|	Table_Printing_Document_Data AS Document_Data

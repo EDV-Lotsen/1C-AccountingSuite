@@ -100,22 +100,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		EndDo;
 		
 	EndIf;
-		
-EndProcedure
-
-&AtClient
-Procedure ProcessUserResponseOnDocumentPeriodClosed(Result, Parameters) Export
-	If (TypeOf(Result) = Type("String")) Then //Inserted password
-		Parameters.Insert("PeriodClosingPassword", Result);
-		Parameters.Insert("Password", TRUE);
-		Write(Parameters);
-	ElsIf (TypeOf(Result) = Type("DialogReturnCode")) Then //Yes, No or Cancel
-		If Result = DialogReturnCode.Yes Then
-			Parameters.Insert("PeriodClosingPassword", "Yes");
-			Parameters.Insert("Password", FALSE);
-			Write(Parameters);
-		EndIf;
-	EndIf;	
+	
 EndProcedure
 
 &AtClient
@@ -163,8 +148,6 @@ Procedure BeforeWrite(Cancel, WriteParameters)
 	//EndDo;
 							
 	// deletes from this document lines that were not marked as deposited
-	
-	//switch off filling check
 	
 	//Checked = False;
 	//For Each DocLine In Object.LineItems Do
@@ -345,12 +328,13 @@ EndFunction
 
 &AtServer
 Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)		
+	
 	//Period closing
 	If DocumentPosting.DocumentPeriodIsClosed(CurrentObject.Ref, CurrentObject.Date) Then
 		PermitWrite = DocumentPosting.DocumentWritePermitted(WriteParameters);
 		CurrentObject.AdditionalProperties.Insert("PermitWrite", PermitWrite);	
 	EndIf;
-	
+
 	//If Object.Ref.IsEmpty() Then
 	//
 	//	MatchVal = Increment(Constants.DepositLastNumber.Get());
@@ -375,3 +359,19 @@ Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
 	//Endif;
 
 EndProcedure
+
+&AtClient
+Procedure ProcessUserResponseOnDocumentPeriodClosed(Result, Parameters) Export
+	If (TypeOf(Result) = Type("String")) Then //Inserted password
+		Parameters.Insert("PeriodClosingPassword", Result);
+		Parameters.Insert("Password", TRUE);
+		Write(Parameters);
+	ElsIf (TypeOf(Result) = Type("DialogReturnCode")) Then //Yes, No or Cancel
+		If Result = DialogReturnCode.Yes Then
+			Parameters.Insert("PeriodClosingPassword", "Yes");
+			Parameters.Insert("Password", FALSE);
+			Write(Parameters);
+		EndIf;
+	EndIf;	
+EndProcedure
+

@@ -5,6 +5,10 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	DefaultCurrencySymbol    				= GeneralFunctionsReusable.DefaultCurrencySymbol();
 	Items.CurrentBalanceCurrency.Title 		= DefaultCurrencySymbol;
 	Items.AvailableBalanceCurrency.Title 	= DefaultCurrencySymbol;
+	Items.RunningBalanceCurrency.Title		= DefaultCurrencySymbol;
+	Items.AvailableCreditCurrency.Title		= DefaultCurrencySymbol;
+	Items.TotalCreditLineCurrency.Title		= DefaultCurrencySymbol;
+	Items.AmountDueCurrency.Title			= DefaultCurrencySymbol;
 	
 	If ValueIsFilled(Object.ItemID) Then //If online account
 		
@@ -14,6 +18,18 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		
 		Items.Online.Visible = False;
 		
+	EndIf;
+	
+	If Object.Owner.ContainerType = Enums.YodleeContainerTypes.Credit_Card Then
+		Items.BankAccountGroup.Visible = False;
+		Items.CreditCardAccountGroup.Visible = True;
+		Items.BalanceGroup.Visible = False;
+		Items.CreditCardBalanceGroup.Visible = True;
+	Else
+		Items.BankAccountGroup.Visible = True;
+		Items.CreditCardAccountGroup.Visible = False;
+		Items.BalanceGroup.Visible = True;
+		Items.CreditCardBalanceGroup.Visible = False;
 	EndIf;
 	
 EndProcedure

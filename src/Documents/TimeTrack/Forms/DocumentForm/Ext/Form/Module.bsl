@@ -91,7 +91,7 @@ Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
 		PermitWrite = DocumentPosting.DocumentWritePermitted(WriteParameters);
 		CurrentObject.AdditionalProperties.Insert("PermitWrite", PermitWrite);	
 	EndIf;
-
+	
 	If Changed = True Then
 	
 	If CurrentObject.Billable = False Then
@@ -166,4 +166,5 @@ Procedure ProcessUserResponseOnDocumentPeriodClosed(Result, Parameters) Export
 		EndIf;
 	EndIf;	
 EndProcedure
+
 

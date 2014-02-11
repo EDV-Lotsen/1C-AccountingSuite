@@ -12,10 +12,10 @@
 				<CommandName>Form.Command.PayWithDwolla</CommandName>
 				<ExtendedTooltip name="FormPayWithDwollaExtendedTooltip" id="115"/>
 			</Button>
-			<Button name="FormPayWithBitcoin" id="128">
+			<Button name="FormPayWithBitcoin" id="130">
 				<Type>CommandBarButton</Type>
 				<CommandName>Form.Command.PayWithBitcoin</CommandName>
-				<ExtendedTooltip name="FormPayWithBitcoinExtendedTooltip" id="129"/>
+				<ExtendedTooltip name="FormPayWithBitcoinExtendedTooltip" id="131"/>
 			</Button>
 		</ChildItems>
 	</AutoCommandBar>
@@ -100,13 +100,6 @@
 											<Events>
 												<Event name="OnChange">CompanyOnChange</Event>
 											</Events>
-										</InputField>
-										<InputField name="CompanyCode" id="73">
-											<DataPath>Object.CompanyCode</DataPath>
-											<ReadOnly>true</ReadOnly>
-											<HorizontalStretch>false</HorizontalStretch>
-											<ContextMenu name="CompanyCodeContextMenu" id="74"/>
-											<ExtendedTooltip name="CompanyCodeExtendedTooltip" id="85"/>
 										</InputField>
 									</ChildItems>
 								</UsualGroup>
@@ -198,7 +191,7 @@
 							<Title>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Additional</v8:content>
+									<v8:content>More</v8:content>
 								</v8:item>
 							</Title>
 							<ToolTip>
@@ -210,11 +203,11 @@
 							<Group>Horizontal</Group>
 							<ExtendedTooltip name="AdditionalExtendedTooltip" id="107"/>
 							<ChildItems>
-								<UsualGroup name="Group3" id="121">
+								<UsualGroup name="Group3" id="123">
 									<Visible>false</Visible>
 									<Group>Vertical</Group>
 									<ShowTitle>false</ShowTitle>
-									<ExtendedTooltip name="Group3ExtendedTooltip" id="122"/>
+									<ExtendedTooltip name="Group3ExtendedTooltip" id="124"/>
 									<ChildItems>
 										<InputField name="DwollaPin" id="108">
 											<DataPath>DwollaPin</DataPath>
@@ -232,17 +225,18 @@
 										</InputField>
 									</ChildItems>
 								</UsualGroup>
-								<UsualGroup name="Group4" id="123">
+								<UsualGroup name="Group4" id="125">
 									<Group>Vertical</Group>
 									<ShowTitle>false</ShowTitle>
-									<ExtendedTooltip name="Group4ExtendedTooltip" id="124"/>
+									<ExtendedTooltip name="Group4ExtendedTooltip" id="126"/>
 									<ChildItems>
-										<InputField name="CoinbaseTrxID" id="125">
+										<InputField name="CoinbaseTrxID" id="127">
 											<DataPath>Object.CoinbaseTrxID</DataPath>
+											<ReadOnly>true</ReadOnly>
 											<Width>14</Width>
 											<HorizontalStretch>false</HorizontalStretch>
-											<ContextMenu name="CoinbaseTrxIDContextMenu" id="126"/>
-											<ExtendedTooltip name="CoinbaseTrxIDExtendedTooltip" id="127"/>
+											<ContextMenu name="CoinbaseTrxIDContextMenu" id="128"/>
+											<ExtendedTooltip name="CoinbaseTrxIDExtendedTooltip" id="129"/>
 										</InputField>
 									</ChildItems>
 								</UsualGroup>
@@ -294,11 +288,6 @@
 					<EnableStartDrag>true</EnableStartDrag>
 					<EnableDrag>true</EnableDrag>
 					<DataPath>Object.LineItems</DataPath>
-					<CommandSet>
-						<ExcludedCommand>Copy</ExcludedCommand>
-						<ExcludedCommand>Delete</ExcludedCommand>
-						<ExcludedCommand>Add</ExcludedCommand>
-					</CommandSet>
 					<SearchStringLocation>None</SearchStringLocation>
 					<ViewStatusLocation>None</ViewStatusLocation>
 					<SearchControlLocation>None</SearchControlLocation>
@@ -306,29 +295,29 @@
 					<ContextMenu name="LineItemsContextMenu" id="52"/>
 					<AutoCommandBar name="LineItemsCommandBar" id="53"/>
 					<ExtendedTooltip name="LineItemsExtendedTooltip" id="87"/>
-					<SearchStringAddition name="LineItemsSearchString" id="130">
+					<SearchStringAddition name="LineItemsSearchString" id="132">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>SearchStringRepresentation</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsSearchStringContextMenu" id="131"/>
-						<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="132"/>
+						<ContextMenu name="LineItemsSearchStringContextMenu" id="133"/>
+						<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="134"/>
 					</SearchStringAddition>
-					<ViewStatusAddition name="LineItemsViewStatus" id="133">
+					<ViewStatusAddition name="LineItemsViewStatus" id="135">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>ViewStatusRepresentation</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsViewStatusContextMenu" id="134"/>
-						<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="135"/>
+						<ContextMenu name="LineItemsViewStatusContextMenu" id="136"/>
+						<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="137"/>
 					</ViewStatusAddition>
-					<SearchControlAddition name="LineItemsSearchControl" id="136">
+					<SearchControlAddition name="LineItemsSearchControl" id="138">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>SearchControl</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsSearchControlContextMenu" id="137"/>
-						<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="138"/>
+						<ContextMenu name="LineItemsSearchControlContextMenu" id="139"/>
+						<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="140"/>
 					</SearchControlAddition>
 					<ChildItems>
 						<LabelField name="LineItemsLineNumber" id="54">

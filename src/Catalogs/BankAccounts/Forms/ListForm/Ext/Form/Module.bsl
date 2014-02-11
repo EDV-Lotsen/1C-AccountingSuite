@@ -2,7 +2,7 @@
 &AtClient
 Procedure AddAccount(Command)
 	Params = New Structure("PerformAddAccount", True);
-	OpenForm("DataProcessor.YodleeBankAccountsManagement.Form.Form", Params, ThisForm,,,,, FormWindowOpeningMode.LockOwnerWindow);
+	OpenForm("DataProcessor.YodleeBankAccountsManagement.Form.Form", Params, ThisForm,,,,, FormWindowOpeningMode.LockWholeInterface);
 EndProcedure
 
 &AtClient
@@ -102,7 +102,7 @@ Procedure RefreshAccount(Command)
 	EndIf;
 	
 	Params = New Structure("PerformRefreshingAccount, RefreshAccount", True, CurrentRow);
-	OpenForm("DataProcessor.YodleeBankAccountsManagement.Form.Form", Params, ThisForm,,,,, FormWindowOpeningMode.LockOwnerWindow);
+	OpenForm("DataProcessor.YodleeBankAccountsManagement.Form.Form", Params, ThisForm,,,,, FormWindowOpeningMode.LockWholeInterface);
 EndProcedure
 
 
@@ -116,6 +116,6 @@ Procedure EditAccount(Command)
 	EndIf;
 	
 	Params = New Structure("PerformEditAccount, RefreshAccount", True, CurrentRow);
-	OpenForm("DataProcessor.YodleeBankAccountsManagement.Form.Form", Params, ThisForm,,,,, FormWindowOpeningMode.LockOwnerWindow);
+	OpenForm("DataProcessor.YodleeBankAccountsManagement.Form.Form", Params, ThisForm,,,,, FormWindowOpeningMode.LockWholeInterface);
 EndProcedure
 

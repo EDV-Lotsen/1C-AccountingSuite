@@ -15,17 +15,6 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.TimeTrack.Attribute.Billed</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
 		<name>Subsystem.StandardSubsystems</name>
 		<right>
 			<name>View</name>
@@ -61,6 +50,18 @@
 			<value>false</value>
 		</right>
 		<right>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
+			<value>false</value>
+		</right>
+		<right>
 			<name>InputByString</name>
 			<value>false</value>
 		</right>
@@ -89,57 +90,6 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.BankTransfer.Attribute.AccountFrom</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.TimeTrack.Attribute.Fri</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.Check.Attribute.CompanyCode</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseInvoice.TabularSection.LineItems.Attribute.LineTotal</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.Deposit.Attribute.TotalDepositsRC</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
 		<name>Constant.TaxPayableAccount</name>
 		<right>
 			<name>Edit</name>
@@ -161,131 +111,42 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.TimeTrack.Attribute.Billable</name>
+		<name>Catalog.ExpensifyCategories</name>
 		<right>
-			<name>View</name>
+			<name>InteractiveDelete</name>
 			<value>false</value>
 		</right>
 		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.TimeTrack.Attribute.Mon</name>
-		<right>
-			<name>View</name>
+			<name>InteractiveSetDeletionMark</name>
 			<value>false</value>
 		</right>
 		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseReturn.Attribute.Memo</name>
-		<right>
-			<name>View</name>
+			<name>InteractiveClearDeletionMark</name>
 			<value>false</value>
 		</right>
 		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesOrder.Attribute.Memo</name>
-		<right>
-			<name>View</name>
+			<name>InteractiveDeleteMarked</name>
 			<value>false</value>
 		</right>
 		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.Deposit.Attribute.BankAccount</name>
-		<right>
-			<name>View</name>
+			<name>InteractiveDeletePredefinedData</name>
 			<value>false</value>
 		</right>
 		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashPurchase.Attribute.Currency</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashSale.Attribute.Memo</name>
-		<right>
-			<name>View</name>
+			<name>InteractiveSetDeletionMarkPredefinedData</name>
 			<value>false</value>
 		</right>
 		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseOrder.TabularSection.LineItems.Attribute.LineTotal</name>
-		<right>
-			<name>View</name>
+			<name>InteractiveClearDeletionMarkPredefinedData</name>
 			<value>false</value>
 		</right>
 		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseOrder.TabularSection.LineItems</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseOrder.TabularSection.LineItems.Attribute.Price</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.GeneralJournalEntry.TabularSection.LineItems.Attribute.Company</name>
-		<right>
-			<name>Edit</name>
+			<name>InteractiveDeleteMarkedPredefinedData</name>
 			<value>false</value>
 		</right>
 	</object>
 	<object>
 		<name>Constant.City</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesInvoice.Attribute.CompanyCode</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
 		<right>
 			<name>Edit</name>
 			<value>false</value>
@@ -299,51 +160,7 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.SalesOrder.TabularSection.LineItems.Attribute.SalesTaxType</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
 		<name>ChartOfAccounts.ChartOfAccounts.Attribute.Memo</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashSale.Attribute.VATTotal</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashReceipt.Attribute.RefNum</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseInvoice.Attribute.Company</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
 		<right>
 			<name>Edit</name>
 			<value>false</value>
@@ -357,109 +174,7 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.SalesOrder.Attribute.DocumentTotal</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashPurchase.Attribute.CompanyCode</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesInvoice.Attribute.Terms</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.Deposit.TabularSection.LineItems.Attribute.Document</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesReturn.Attribute.Company</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashPurchase.TabularSection.LineItems.Attribute.VATCode</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.InvoicePayment.TabularSection.LineItems.Attribute.Document</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseReturn.TabularSection.LineItems.Attribute.ProductDescription</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
 		<name>AccountingRegister.GeneralJournal.Resource.Amount</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashSale.TabularSection.LineItems.Attribute.TaxableAmount</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesOrder.Attribute.ShipTo</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
 		<right>
 			<name>Edit</name>
 			<value>false</value>
@@ -480,6 +195,18 @@
 			<value>false</value>
 		</right>
 		<right>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
+			<value>false</value>
+		</right>
+		<right>
 			<name>InputByString</name>
 			<value>false</value>
 		</right>
@@ -497,28 +224,6 @@
 		</right>
 		<right>
 			<name>InteractiveDeleteMarkedPredefinedData</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashSale.Attribute.CompanyCode</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashSale.Attribute.Location</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
 			<value>false</value>
 		</right>
 	</object>
@@ -537,6 +242,18 @@
 			<value>false</value>
 		</right>
 		<right>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
+			<value>false</value>
+		</right>
+		<right>
 			<name>InputByString</name>
 			<value>false</value>
 		</right>
@@ -554,28 +271,6 @@
 		</right>
 		<right>
 			<name>InteractiveDeleteMarkedPredefinedData</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseInvoice.TabularSection.Accounts.Attribute.Memo</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.Check.TabularSection.LineItems.Attribute.Account</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
 			<value>false</value>
 		</right>
 	</object>
@@ -594,6 +289,18 @@
 			<value>false</value>
 		</right>
 		<right>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
+			<value>false</value>
+		</right>
+		<right>
 			<name>InputByString</name>
 			<value>false</value>
 		</right>
@@ -615,187 +322,6 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.TimeTrack.Attribute.Tue</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashSale.Attribute.DocumentTotal</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.BankReconciliation.Attribute.BeginningBalance</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.TimeTrack.Attribute.Project</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.Deposit.Attribute.Memo</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.GeneralJournalEntry.Attribute.Currency</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseInvoice.Attribute.DueDate</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.TimeTrack.Attribute.DateFrom</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseInvoice.TabularSection.LineItems.Attribute.Project</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.BankReconciliation.Attribute.ClearedBalance</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashPurchase.Attribute.Location</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.GeneralJournalEntry.Attribute.ARorAP</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesReturn.Attribute.ARAccount</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashSale.Attribute.ShipTo</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Catalog.UserList.Attribute.Title</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.BankReconciliation.Attribute.InterestEarned</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashReceipt.Attribute.DocumentTotalRC</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesOrder.Attribute.RefNum</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.Deposit.TabularSection.LineItems.Attribute.Payment</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
 		<name>Constant.BeginningBalancesInDocuments</name>
 		<right>
 			<name>Edit</name>
@@ -803,109 +329,7 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.TimeTrack.Attribute.User</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.Check.Attribute.DocumentTotal</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesInvoice.TabularSection.LineItems.Attribute.LineTotal</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseReturn.Attribute.ReturnType</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.GeneralJournalEntry.TabularSection.LineItems.Attribute.Memo</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashSale.TabularSection.LineItems.Attribute.VAT</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashReceipt.TabularSection.CreditMemos.Attribute.Currency</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
 		<name>Constant.CF2Name</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashPurchase.Attribute.Project</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.WarehouseTransfer.TabularSection.LineItems.Attribute.Price</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.TimeTrack.Attribute.Task</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
 		<right>
 			<name>Edit</name>
 			<value>false</value>
@@ -922,42 +346,6 @@
 		<name>Subsystem.StripeAPI</name>
 		<right>
 			<name>View</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.BankReconciliation.Attribute.EndingBalance</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashReceipt.TabularSection.LineItems.Attribute.Balance</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.GeneralJournalEntry.TabularSection.LineItems</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.TimeTrack.Attribute.LogType</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
 			<value>false</value>
 		</right>
 	</object>
@@ -983,85 +371,9 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.WarehouseTransfer.Attribute.LocationTo</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseOrder.Attribute.Memo</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.TimeTrack.Attribute.Thur</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesOrder.TabularSection.LineItems.Attribute.VATCode</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
 		<name>Document.SalesInvoice.Command.Print</name>
 		<right>
 			<name>View</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesReturn.Attribute.DocumentTotal</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.BankReconciliation.Attribute.ClearedAmount</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.BankReconciliation.TabularSection.LineItems.Attribute.TransactionAmount</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.BankReconciliation.TabularSection.LineItems.Attribute.Date</name>
-		<right>
-			<name>Edit</name>
 			<value>false</value>
 		</right>
 	</object>
@@ -1073,28 +385,6 @@
 		</right>
 		<right>
 			<name>View</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.InvoicePayment.TabularSection.LineItems.Attribute.BalanceFCY</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.Check.TabularSection.LineItems.Attribute.Memo</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
 			<value>false</value>
 		</right>
 	</object>
@@ -1113,28 +403,6 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.PurchaseInvoice.TabularSection.LineItems.Attribute.ProductDescription</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.Deposit.TabularSection.LineItems.Attribute.DocumentTotalRC</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
 		<name>Constant.bigcom_base64</name>
 		<right>
 			<name>Edit</name>
@@ -1149,57 +417,9 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.PurchaseOrder.Attribute.PriceIncludesVAT</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Constant.PriceIncludesVAT</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashSale.Attribute.Deposited</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseInvoice.Attribute.CompanyCode</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
 		<name>Document.InvoicePayment</name>
 		<right>
 			<name>Insert</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Update</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Delete</name>
 			<value>false</value>
 		</right>
 		<right>
@@ -1211,15 +431,7 @@
 			<value>false</value>
 		</right>
 		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
 			<name>InteractiveInsert</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
 			<value>false</value>
 		</right>
 		<right>
@@ -1260,221 +472,6 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.InvoicePayment.StandardAttribute.Posted</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.InvoicePayment.StandardAttribute.Ref</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.InvoicePayment.StandardAttribute.DeletionMark</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.InvoicePayment.StandardAttribute.Date</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.InvoicePayment.StandardAttribute.Number</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.WarehouseTransfer.TabularSection.LineItems</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesInvoice.Attribute.Memo</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.Check.TabularSection.LineItems</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesInvoice.Attribute.DocumentTotalRC</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Catalog.UserList.Attribute.Accounting</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.GeneralJournalEntry.TabularSection.LineItems.Attribute.AmountDr</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseOrder.TabularSection.LineItems.Attribute.VAT</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesReturn.Attribute.ParentDocument</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.GeneralJournalEntry.TabularSection.LineItems.Attribute.AmountCr</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.TimeTrack.Attribute.Company</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.BankTransfer.Attribute.Memo</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashReceipt.Attribute.Company</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.InvoicePayment.Attribute.Memo</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesOrder.Attribute.DeliveryDate</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashSale.TabularSection.LineItems.Attribute.Project</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseInvoice.TabularSection.LineItems.Attribute.Order</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
 		<name>Report.BankBalances</name>
 		<right>
 			<name>Use</name>
@@ -1486,46 +483,6 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.Deposit.TabularSection.LineItems.Attribute.Currency</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.InvoicePayment.Attribute.BankAccount</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.TimeTrack.Attribute.Sun</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashPurchase.Attribute.PriceIncludesVAT</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
 		<name>Constant.BankAccount</name>
 		<right>
 			<name>Edit</name>
@@ -1533,24 +490,37 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.SalesReturn.Attribute.DueDate</name>
+		<name>Catalog.SalesPeople</name>
 		<right>
-			<name>View</name>
+			<name>InteractiveDelete</name>
 			<value>false</value>
 		</right>
 		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesReturn.Attribute.PriceIncludesVAT</name>
-		<right>
-			<name>View</name>
+			<name>InteractiveSetDeletionMark</name>
 			<value>false</value>
 		</right>
 		<right>
-			<name>Edit</name>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeletePredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveSetDeletionMarkPredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMarkPredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarkedPredefinedData</name>
 			<value>false</value>
 		</right>
 	</object>
@@ -1571,19 +541,7 @@
 	<object>
 		<name>Document.WarehouseTransfer</name>
 		<right>
-			<name>Read</name>
-			<value>false</value>
-		</right>
-		<right>
 			<name>Insert</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Update</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Delete</name>
 			<value>false</value>
 		</right>
 		<right>
@@ -1595,15 +553,7 @@
 			<value>false</value>
 		</right>
 		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
 			<name>InteractiveInsert</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
 			<value>false</value>
 		</right>
 		<right>
@@ -1640,112 +590,6 @@
 		</right>
 		<right>
 			<name>InputByString</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.WarehouseTransfer.StandardAttribute.Posted</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.WarehouseTransfer.StandardAttribute.Ref</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.WarehouseTransfer.StandardAttribute.DeletionMark</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.WarehouseTransfer.StandardAttribute.Date</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.WarehouseTransfer.StandardAttribute.Number</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.Check.TabularSection.LineItems.Attribute.Amount</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesOrder.Attribute.Location</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseReturn.Attribute.ExchangeRate</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.BankTransfer.Attribute.Amount</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesReturn.TabularSection.LineItems.Attribute.TaxableAmount</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
 			<value>false</value>
 		</right>
 	</object>
@@ -1764,6 +608,18 @@
 			<value>false</value>
 		</right>
 		<right>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
+			<value>false</value>
+		</right>
+		<right>
 			<name>InputByString</name>
 			<value>false</value>
 		</right>
@@ -1785,181 +641,9 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.CashReceipt.TabularSection.CreditMemos.Attribute.BalanceFCY</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.BankReconciliation.Attribute.BankAccount</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashPurchase</name>
-		<right>
-			<name>Insert</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Update</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Delete</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Posting</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>UndoPosting</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractiveInsert</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractiveDelete</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractiveSetDeletionMark</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractiveClearDeletionMark</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractiveDeleteMarked</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractivePosting</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractivePostingRegular</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractiveUndoPosting</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractiveChangeOfPosted</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InputByString</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashPurchase.StandardAttribute.Posted</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashPurchase.StandardAttribute.Ref</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashPurchase.StandardAttribute.DeletionMark</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashPurchase.StandardAttribute.Date</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashPurchase.StandardAttribute.Number</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesInvoice.TabularSection.LineItems.Attribute.Order</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Catalog.Projects.Attribute.Internal</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.TimeTrack.Attribute.Memo</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashPurchase.TabularSection.LineItems.Attribute.LineTotal</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
 		<name>Document.TimeTrack</name>
 		<right>
-			<name>Read</name>
-			<value>false</value>
-		</right>
-		<right>
 			<name>Insert</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Update</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Delete</name>
 			<value>false</value>
 		</right>
 		<right>
@@ -1971,15 +655,7 @@
 			<value>false</value>
 		</right>
 		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
 			<name>InteractiveInsert</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
 			<value>false</value>
 		</right>
 		<right>
@@ -2016,160 +692,6 @@
 		</right>
 		<right>
 			<name>InputByString</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.TimeTrack.StandardAttribute.Posted</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.TimeTrack.StandardAttribute.Ref</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.TimeTrack.StandardAttribute.DeletionMark</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.TimeTrack.StandardAttribute.Date</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.TimeTrack.StandardAttribute.Number</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseOrder.Attribute.DocumentTotalRC</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashReceipt.TabularSection.CreditMemos.Attribute.Payment</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesOrder.Attribute.CompanyCode</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesOrder.Attribute.ManualAdjustment</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesOrder.Attribute.VATTotal</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseInvoice.TabularSection.LineItems.Attribute.VATCode</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashReceipt.Attribute.Currency</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesReturn.TabularSection.LineItems.Attribute.Price</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.TimeTrack.Attribute.Wed</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
 			<value>false</value>
 		</right>
 	</object>
@@ -2181,135 +703,7 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.WarehouseTransfer.Attribute.DocumentTotalRC</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseReturn.TabularSection.LineItems.Attribute.Product</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.InvoicePayment.TabularSection.LineItems.Attribute.Payment</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesInvoice.Attribute.PriceIncludesVAT</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesReturn.Attribute.BegBal</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.BankReconciliation.TabularSection.LineItems</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesReturn.TabularSection.LineItems.Attribute.VATCode</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.WarehouseTransfer.Attribute.LocationFrom</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseInvoice.TabularSection.LineItems</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseReturn.Attribute.Company</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseReturn.TabularSection.LineItems</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
 		<name>Constant.ExchangeGain</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.Check.Attribute.Company</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
 		<right>
 			<name>Edit</name>
 			<value>false</value>
@@ -2323,17 +717,6 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.SalesReturn.Attribute.SalesTax</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
 		<name>Report.InventoryBalances</name>
 		<right>
 			<name>Use</name>
@@ -2341,17 +724,6 @@
 		</right>
 		<right>
 			<name>View</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashSale.TabularSection.LineItems.Attribute.Quantity</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
 			<value>false</value>
 		</right>
 	</object>
@@ -2370,6 +742,18 @@
 			<value>false</value>
 		</right>
 		<right>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
+			<value>false</value>
+		</right>
+		<right>
 			<name>InputByString</name>
 			<value>false</value>
 		</right>
@@ -2391,17 +775,6 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.SalesInvoice.TabularSection.LineItems</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
 		<name>Constant.AddressLine2</name>
 		<right>
 			<name>Edit</name>
@@ -2409,29 +782,7 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.PurchaseInvoice.Attribute.Project</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
 		<name>Constant.DefaultCurrency</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.InvoicePayment.TabularSection.LineItems</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
 		<right>
 			<name>Edit</name>
 			<value>false</value>
@@ -2452,6 +803,18 @@
 			<value>false</value>
 		</right>
 		<right>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
+			<value>false</value>
+		</right>
+		<right>
 			<name>InputByString</name>
 			<value>false</value>
 		</right>
@@ -2473,56 +836,21 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.SalesOrder.TabularSection.LineItems.Attribute.VAT</name>
+		<name>Document.Budget</name>
 		<right>
-			<name>View</name>
+			<name>InteractiveDelete</name>
 			<value>false</value>
 		</right>
 		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.GeneralJournalEntry.Attribute.ExchangeRate</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Constant.AllowNegativeInventory</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashPurchase.TabularSection.LineItems.Attribute.Project</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashReceipt.Attribute.StripeID</name>
-		<right>
-			<name>View</name>
+			<name>InteractiveSetDeletionMark</name>
 			<value>false</value>
 		</right>
 		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseOrder.Attribute.Location</name>
-		<right>
-			<name>View</name>
+			<name>InteractiveClearDeletionMark</name>
 			<value>false</value>
 		</right>
 		<right>
-			<name>Edit</name>
+			<name>InteractiveDeleteMarked</name>
 			<value>false</value>
 		</right>
 	</object>
@@ -2534,32 +862,9 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.PurchaseInvoice.Attribute.DocumentTotal</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
 		<name>Document.PurchaseOrder</name>
 		<right>
-			<name>Read</name>
-			<value>false</value>
-		</right>
-		<right>
 			<name>Insert</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Update</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Delete</name>
 			<value>false</value>
 		</right>
 		<right>
@@ -2571,15 +876,7 @@
 			<value>false</value>
 		</right>
 		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
 			<name>InteractiveInsert</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
 			<value>false</value>
 		</right>
 		<right>
@@ -2616,61 +913,6 @@
 		</right>
 		<right>
 			<name>InputByString</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseOrder.StandardAttribute.Posted</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseOrder.StandardAttribute.Ref</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseOrder.StandardAttribute.DeletionMark</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseOrder.StandardAttribute.Date</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseOrder.StandardAttribute.Number</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
 			<value>false</value>
 		</right>
 	</object>
@@ -2681,14 +923,6 @@
 			<value>false</value>
 		</right>
 		<right>
-			<name>Update</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Delete</name>
-			<value>false</value>
-		</right>
-		<right>
 			<name>Posting</name>
 			<value>false</value>
 		</right>
@@ -2697,15 +931,7 @@
 			<value>false</value>
 		</right>
 		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
 			<name>InteractiveInsert</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
 			<value>false</value>
 		</right>
 		<right>
@@ -2742,141 +968,6 @@
 		</right>
 		<right>
 			<name>InputByString</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseReturn.StandardAttribute.Posted</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseReturn.StandardAttribute.Ref</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseReturn.StandardAttribute.DeletionMark</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseReturn.StandardAttribute.Date</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseReturn.StandardAttribute.Number</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.GeneralJournalEntry.Attribute.DueDate</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.Deposit.TabularSection.Accounts.Attribute.Account</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesOrder.TabularSection.LineItems.Attribute.LineTotal</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashPurchase.TabularSection.LineItems</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseOrder.Attribute.ManualAdjustment</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashSale.Attribute.RefNum</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashSale.TabularSection.LineItems.Attribute.LineTotal</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.Deposit.TabularSection.Accounts.Attribute.Memo</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
 			<value>false</value>
 		</right>
 	</object>
@@ -2888,68 +979,37 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.PurchaseInvoice.Attribute.Terms</name>
+		<name>Catalog.ZapierWebhooks</name>
 		<right>
-			<name>View</name>
+			<name>InteractiveDelete</name>
 			<value>false</value>
 		</right>
 		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashReceipt.Attribute.DepositType</name>
-		<right>
-			<name>View</name>
+			<name>InteractiveSetDeletionMark</name>
 			<value>false</value>
 		</right>
 		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashSale.Attribute.PriceIncludesVAT</name>
-		<right>
-			<name>View</name>
+			<name>InteractiveClearDeletionMark</name>
 			<value>false</value>
 		</right>
 		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseInvoice.Attribute.ManualAdjustment</name>
-		<right>
-			<name>View</name>
+			<name>InteractiveDeleteMarked</name>
 			<value>false</value>
 		</right>
 		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashReceipt.TabularSection.CreditMemos.Attribute.Balance</name>
-		<right>
-			<name>View</name>
+			<name>InteractiveDeletePredefinedData</name>
 			<value>false</value>
 		</right>
 		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseOrder.TabularSection.LineItems.Attribute.Product</name>
-		<right>
-			<name>View</name>
+			<name>InteractiveSetDeletionMarkPredefinedData</name>
 			<value>false</value>
 		</right>
 		<right>
-			<name>Edit</name>
+			<name>InteractiveClearDeletionMarkPredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarkedPredefinedData</name>
 			<value>false</value>
 		</right>
 	</object>
@@ -2968,6 +1028,18 @@
 			<value>false</value>
 		</right>
 		<right>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
+			<value>false</value>
+		</right>
+		<right>
 			<name>InputByString</name>
 			<value>false</value>
 		</right>
@@ -2989,116 +1061,7 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.CashPurchase.Attribute.DocumentTotalRC</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.WarehouseTransfer.TabularSection.LineItems.Attribute.Quantity</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashPurchase.Attribute.ExchangeRate</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseInvoice.TabularSection.LineItems.Attribute.Price</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Catalog.UserList.Attribute.Phone</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesOrder.Attribute.SalesTax</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseOrder.Attribute.Currency</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashReceipt.TabularSection.CreditMemos</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
 		<name>Constant.ZIP</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseInvoice.Attribute.ExchangeRate</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesOrder.Attribute.Currency</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseOrder.Attribute.ExchangeRate</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
 		<right>
 			<name>Edit</name>
 			<value>false</value>
@@ -3107,19 +1070,7 @@
 	<object>
 		<name>Document.SalesOrder</name>
 		<right>
-			<name>Read</name>
-			<value>false</value>
-		</right>
-		<right>
 			<name>Insert</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Update</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Delete</name>
 			<value>false</value>
 		</right>
 		<right>
@@ -3131,15 +1082,7 @@
 			<value>false</value>
 		</right>
 		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
 			<name>InteractiveInsert</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
 			<value>false</value>
 		</right>
 		<right>
@@ -3180,61 +1123,6 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.SalesOrder.StandardAttribute.Posted</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesOrder.StandardAttribute.Ref</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesOrder.StandardAttribute.DeletionMark</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesOrder.StandardAttribute.Date</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesOrder.StandardAttribute.Number</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
 		<name>Subsystem.StandardSubsystems.Subsystem.InternetConnection</name>
 		<right>
 			<name>View</name>
@@ -3242,266 +1130,7 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.PurchaseReturn.Attribute.BegBal</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.InventoryBeginningBalances.Attribute.Quantity</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashSale.TabularSection.LineItems</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseInvoice.Attribute.Memo</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.TimeTrack.Attribute.DateTo</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
 		<name>Constant.Email</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesInvoice.TabularSection.LineItems.Attribute.Quantity</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.TimeTrack.Attribute.Sat</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashPurchase.Attribute.Company</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashReceipt.Attribute.Deposited</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashReceipt.Attribute.Memo</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseInvoice.Attribute.URL</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesReturn.Attribute.RefNum</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.Check.Attribute.Memo</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.WarehouseTransfer.Attribute.Memo</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashReceipt.TabularSection.LineItems.Attribute.Payment</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesInvoice.Attribute.ARAccount</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Catalog.UserList.Attribute.AdminAccess</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesInvoice.TabularSection.LineItems.Attribute.VATCode</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashSale.Attribute.SalesTax</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.WarehouseTransfer.TabularSection.LineItems.Attribute.ProductDescription</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Constant.DefaultPurchaseVAT</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseInvoice.TabularSection.LineItems.Attribute.Product</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesInvoice.Attribute.ManualAdjustment</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashSale.Attribute.BankAccount</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseReturn.Attribute.ParentDocument</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
 		<right>
 			<name>Edit</name>
 			<value>false</value>
@@ -3515,54 +1144,7 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.SalesOrder.TabularSection.LineItems.Attribute.Product</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseReturn.Attribute.DueDate</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.BankReconciliation.Attribute.ServiceChargeDate</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
 		<name>Constant.UndepositedFundsAccount</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashReceipt.TabularSection.LineItems.Attribute.Currency</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.BankReconciliation.TabularSection.LineItems.Attribute.Cleared</name>
 		<right>
 			<name>Edit</name>
 			<value>false</value>
@@ -3592,17 +1174,6 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.InvoicePayment.Attribute.DocumentTotalRC</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
 		<name>Document.PurchaseOrder.Command.Print</name>
 		<right>
 			<name>View</name>
@@ -3623,14 +1194,6 @@
 			<value>false</value>
 		</right>
 		<right>
-			<name>Update</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Delete</name>
-			<value>false</value>
-		</right>
-		<right>
 			<name>Posting</name>
 			<value>false</value>
 		</right>
@@ -3639,15 +1202,7 @@
 			<value>false</value>
 		</right>
 		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
 			<name>InteractiveInsert</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
 			<value>false</value>
 		</right>
 		<right>
@@ -3688,84 +1243,7 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.SalesReturn.StandardAttribute.Posted</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesReturn.StandardAttribute.Ref</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesReturn.StandardAttribute.DeletionMark</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesReturn.StandardAttribute.Date</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesReturn.StandardAttribute.Number</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
 		<name>AccountingRegister.GeneralJournal.Attribute.Memo</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashReceipt.Attribute.CashPayment</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesReturn.TabularSection.LineItems</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
 		<right>
 			<name>Edit</name>
 			<value>false</value>
@@ -3783,130 +1261,42 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.InventoryBeginningBalances.Attribute.Product</name>
+		<name>Catalog.BankAccounts</name>
 		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesReturn.TabularSection.LineItems.Attribute.ProductDescription</name>
-		<right>
-			<name>View</name>
+			<name>InteractiveDelete</name>
 			<value>false</value>
 		</right>
 		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.GeneralJournalEntry.TabularSection.LineItems.Attribute.Account</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseInvoice.TabularSection.Accounts.Attribute.Amount</name>
-		<right>
-			<name>View</name>
+			<name>InteractiveSetDeletionMark</name>
 			<value>false</value>
 		</right>
 		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashReceipt.TabularSection.LineItems</name>
-		<right>
-			<name>View</name>
+			<name>InteractiveClearDeletionMark</name>
 			<value>false</value>
 		</right>
 		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Report.Form1099.Attribute.Vendor</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseReturn.TabularSection.LineItems.Attribute.Quantity</name>
-		<right>
-			<name>View</name>
+			<name>InteractiveDeleteMarked</name>
 			<value>false</value>
 		</right>
 		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Catalog.UserList.Attribute.Name</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.Deposit.Attribute.DocumentTotalRC</name>
-		<right>
-			<name>View</name>
+			<name>InteractiveDeletePredefinedData</name>
 			<value>false</value>
 		</right>
 		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseOrder.TabularSection.LineItems.Attribute.Quantity</name>
-		<right>
-			<name>View</name>
+			<name>InteractiveSetDeletionMarkPredefinedData</name>
 			<value>false</value>
 		</right>
 		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesInvoice.TabularSection.LineItems.Attribute.VAT</name>
-		<right>
-			<name>View</name>
+			<name>InteractiveClearDeletionMarkPredefinedData</name>
 			<value>false</value>
 		</right>
 		<right>
-			<name>Edit</name>
+			<name>InteractiveDeleteMarkedPredefinedData</name>
 			<value>false</value>
 		</right>
 	</object>
 	<object>
 		<name>Constant.CF3Type</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesInvoice.Attribute.ShipTo</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Catalog.UserList.Attribute.Purchasing</name>
 		<right>
 			<name>Edit</name>
 			<value>false</value>
@@ -4091,17 +1481,6 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.CashSale.Attribute.DepositType</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
 		<name>Constant.bigcom_storeid</name>
 		<right>
 			<name>Edit</name>
@@ -4116,89 +1495,21 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.SalesOrder.Attribute.Company</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesOrder.Attribute.ConfirmTo</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.TimeTrack.Attribute.Class</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Catalog.UserList.Attribute.ReportsOnly</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.BankReconciliation.Attribute.InterestEarnedDate</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.Check.Attribute.DocumentTotalRC</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesInvoice.TabularSection.LineItems.Attribute.Project</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesInvoice.Attribute.Project</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
 		<name>Catalog.Companies</name>
 		<right>
 			<name>InteractiveDelete</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
 			<value>false</value>
 		</right>
 		<right>
@@ -4219,68 +1530,6 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.CashReceipt.Attribute.BankAccount</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseReturn.Attribute.VATTotal</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesInvoice.Attribute.RefNum</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashPurchase.TabularSection.LineItems.Attribute.Product</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesOrder.Attribute.ExchangeRate</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesInvoice.TabularSection.LineItems.Attribute.Price</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
 		<name>Constant.SystemTitle</name>
 		<right>
 			<name>Edit</name>
@@ -4288,62 +1537,48 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.CashSale.Attribute.PaymentMethod</name>
+		<name>Catalog.PaymentButtons</name>
 		<right>
-			<name>View</name>
+			<name>InteractiveDelete</name>
 			<value>false</value>
 		</right>
 		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.GeneralJournalEntry.Attribute.Memo</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseInvoice.TabularSection.Accounts.Attribute.Account</name>
-		<right>
-			<name>View</name>
+			<name>InteractiveSetDeletionMark</name>
 			<value>false</value>
 		</right>
 		<right>
-			<name>Edit</name>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeletePredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveSetDeletionMarkPredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMarkPredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarkedPredefinedData</name>
 			<value>false</value>
 		</right>
 	</object>
 	<object>
 		<name>Catalog.Projects</name>
 		<right>
-			<name>Read</name>
-			<value>false</value>
-		</right>
-		<right>
 			<name>Insert</name>
 			<value>false</value>
 		</right>
 		<right>
-			<name>Update</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Delete</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
 			<name>InteractiveInsert</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
 			<value>false</value>
 		</right>
 		<right>
@@ -4380,184 +1615,6 @@
 		</right>
 		<right>
 			<name>InteractiveDeleteMarkedPredefinedData</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Catalog.Projects.StandardAttribute.PredefinedDataName</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Catalog.Projects.StandardAttribute.Predefined</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Catalog.Projects.StandardAttribute.Ref</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Catalog.Projects.StandardAttribute.DeletionMark</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Catalog.Projects.StandardAttribute.IsFolder</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Catalog.Projects.StandardAttribute.Owner</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Catalog.Projects.StandardAttribute.Parent</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Catalog.Projects.StandardAttribute.Description</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Catalog.Projects.StandardAttribute.Code</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesReturn.Attribute.Location</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Constant.DisplayCodes</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashSale.Attribute.Currency</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Catalog.UserList.Attribute.BankSend</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.BankTransfer.Attribute.AccountTo</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseOrder.Attribute.CompanyCode</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashPurchase.Attribute.CompanyCustomer</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.GeneralJournalEntry.Attribute.DocumentTotal</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesOrder.TabularSection.LineItems.Attribute.Price</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
 			<value>false</value>
 		</right>
 	</object>
@@ -4647,21 +1704,21 @@
 		</right>
 	</object>
 	<object>
-		<name>Catalog.VATCodes</name>
-		<right>
-			<name>Insert</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractiveInsert</name>
-			<value>false</value>
-		</right>
+		<name>Catalog.Banks</name>
 		<right>
 			<name>InteractiveDelete</name>
 			<value>false</value>
 		</right>
 		<right>
-			<name>InputByString</name>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
 			<value>false</value>
 		</right>
 		<right>
@@ -4682,72 +1739,6 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.SalesInvoice.TabularSection.LineItems.Attribute.ProductDescription</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesReturn.Attribute.DocumentTotalRC</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashReceipt.Attribute.DocumentTotal</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesInvoice.Attribute.DueDate</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.WarehouseTransfer.TabularSection.LineItems.Attribute.LineTotal</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseInvoice.Attribute.BegBal</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
 		<name>Constant.MultiLocation</name>
 		<right>
 			<name>Edit</name>
@@ -4762,160 +1753,7 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.PurchaseInvoice.Attribute.PriceIncludesVAT</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.TimeTrack.Attribute.InvoiceSent</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.InvoicePayment.TabularSection.LineItems.Attribute.Balance</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.Deposit.TabularSection.Accounts.Attribute.Amount</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseInvoice.Attribute.APAccount</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.Check.Attribute.BankAccount</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseInvoice.Attribute.VATTotal</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesInvoice.Attribute.ExchangeRate</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesReturn.Attribute.ReturnType</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
 		<name>ChartOfAccounts.ChartOfAccounts.Attribute.IncomeTaxAccount</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashPurchase.TabularSection.LineItems.Attribute.Quantity</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseOrder.Attribute.VATTotal</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesReturn.Attribute.Currency</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesReturn.TabularSection.LineItems.Attribute.Quantity</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashPurchase.Attribute.DocumentTotal</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.BankReconciliation.TabularSection.LineItems.Attribute.Company</name>
 		<right>
 			<name>Edit</name>
 			<value>false</value>
@@ -4928,14 +1766,6 @@
 			<value>false</value>
 		</right>
 		<right>
-			<name>Update</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Delete</name>
-			<value>false</value>
-		</right>
-		<right>
 			<name>Posting</name>
 			<value>false</value>
 		</right>
@@ -4945,10 +1775,6 @@
 		</right>
 		<right>
 			<name>InteractiveInsert</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
 			<value>false</value>
 		</right>
 		<right>
@@ -4989,82 +1815,7 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.GeneralJournalEntry.StandardAttribute.Posted</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.GeneralJournalEntry.StandardAttribute.Ref</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.GeneralJournalEntry.StandardAttribute.DeletionMark</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.GeneralJournalEntry.StandardAttribute.Date</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.GeneralJournalEntry.StandardAttribute.Number</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.WarehouseTransfer.TabularSection.LineItems.Attribute.Product</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.BankReconciliation.Attribute.Memo</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
 		<name>Constant.COGSAccount</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesReturn.Attribute.VATTotal</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.InvoicePayment.Attribute.Currency</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
 		<right>
 			<name>Edit</name>
 			<value>false</value>
@@ -5078,68 +1829,6 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.CashReceipt.Attribute.CompanyCode</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesInvoice.Attribute.DeliveryDate</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseInvoice.Attribute.Currency</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.BankReconciliation.TabularSection.LineItems.Attribute.Transaction</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseOrder.Attribute.DocumentTotal</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesReturn.Attribute.ExchangeRate</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
 		<name>Constant.CF2Type</name>
 		<right>
 			<name>Edit</name>
@@ -5147,215 +1836,7 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.InvoicePayment.Attribute.CompanyCode</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesInvoice.Attribute.BegBal</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.GeneralJournalEntry.Attribute.DocumentTotalRC</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.Deposit.TabularSection.Accounts</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashSale.Attribute.Project</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesOrder.TabularSection.LineItems.Attribute.ProductDescription</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.Deposit.TabularSection.LineItems.Attribute.DocumentTotal</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesOrder.TabularSection.LineItems</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.TimeTrack.Attribute.SalesInvoice</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseReturn.TabularSection.LineItems.Attribute.VAT</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Catalog.Projects.Attribute.Customer</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseReturn.TabularSection.LineItems.Attribute.Price</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseReturn.TabularSection.LineItems.Attribute.VATCode</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashReceipt.Attribute.PaymentMethod</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashSale.Attribute.StripeID</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashSale.Attribute.Company</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
 		<name>Constant.ExchangeLoss</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.BankReconciliation.Attribute.ServiceCharge</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.BankReconciliation.Attribute.Difference</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesInvoice.TabularSection.LineItems.Attribute.Product</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesReturn.TabularSection.LineItems.Attribute.SalesTaxType</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
 		<right>
 			<name>Edit</name>
 			<value>false</value>
@@ -5380,6 +1861,18 @@
 		</right>
 		<right>
 			<name>InteractiveDelete</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
 			<value>false</value>
 		</right>
 		<right>
@@ -5458,28 +1951,6 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.CashSale.TabularSection.LineItems.Attribute.ProductDescription</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseReturn.Attribute.CompanyCode</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
 		<name>Constant.MultiCurrency</name>
 		<right>
 			<name>Edit</name>
@@ -5488,39 +1959,6 @@
 	</object>
 	<object>
 		<name>Constant.InventoryAccount</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashReceipt.TabularSection.LineItems.Attribute.BalanceFCY</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.Check.Attribute.DontCreate</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseReturn.Attribute.APAccount</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
 		<right>
 			<name>Edit</name>
 			<value>false</value>
@@ -5538,6 +1976,18 @@
 		</right>
 		<right>
 			<name>InteractiveDelete</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
 			<value>false</value>
 		</right>
 		<right>
@@ -5562,20 +2012,37 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.CashPurchase.Attribute.Memo</name>
+		<name>Catalog.UserLog</name>
 		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashReceipt.TabularSection.CreditMemos.Attribute.Document</name>
-		<right>
-			<name>View</name>
+			<name>InteractiveDelete</name>
 			<value>false</value>
 		</right>
 		<right>
-			<name>Edit</name>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeletePredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveSetDeletionMarkPredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMarkPredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarkedPredefinedData</name>
 			<value>false</value>
 		</right>
 	</object>
@@ -5583,14 +2050,6 @@
 		<name>Document.Deposit</name>
 		<right>
 			<name>Insert</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Update</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Delete</name>
 			<value>false</value>
 		</right>
 		<right>
@@ -5602,15 +2061,7 @@
 			<value>false</value>
 		</right>
 		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
 			<name>InteractiveInsert</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
 			<value>false</value>
 		</right>
 		<right>
@@ -5651,137 +2102,9 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.Deposit.StandardAttribute.Posted</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.Deposit.StandardAttribute.Ref</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.Deposit.StandardAttribute.DeletionMark</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.Deposit.StandardAttribute.Date</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.Deposit.StandardAttribute.Number</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
 		<name>Subsystem.Sales</name>
 		<right>
 			<name>View</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseReturn.Attribute.PriceIncludesVAT</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseInvoice.TabularSection.Accounts</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashPurchase.TabularSection.LineItems.Attribute.Price</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesInvoice.Attribute.Currency</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashSale.TabularSection.LineItems.Attribute.VATCode</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesInvoice.TabularSection.LineItems.Attribute.SalesTaxType</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesOrder.Attribute.DocumentTotalRC</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
 			<value>false</value>
 		</right>
 	</object>
@@ -5804,6 +2127,25 @@
 		</right>
 	</object>
 	<object>
+		<name>Document.ItemReceipt</name>
+		<right>
+			<name>InteractiveDelete</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
 		<name>Catalog.ProductCategories</name>
 		<right>
 			<name>Insert</name>
@@ -5815,6 +2157,18 @@
 		</right>
 		<right>
 			<name>InteractiveDelete</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
 			<value>false</value>
 		</right>
 		<right>
@@ -5839,24 +2193,9 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.CashPurchase.Attribute.BankAccount</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
 		<name>Document.CashSale</name>
 		<right>
 			<name>Insert</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Update</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Delete</name>
 			<value>false</value>
 		</right>
 		<right>
@@ -5868,15 +2207,7 @@
 			<value>false</value>
 		</right>
 		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
 			<name>InteractiveInsert</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
 			<value>false</value>
 		</right>
 		<right>
@@ -5913,61 +2244,6 @@
 		</right>
 		<right>
 			<name>InputByString</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashSale.StandardAttribute.Posted</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashSale.StandardAttribute.Ref</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashSale.StandardAttribute.DeletionMark</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashSale.StandardAttribute.Date</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashSale.StandardAttribute.Number</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
 			<value>false</value>
 		</right>
 	</object>
@@ -5978,14 +2254,6 @@
 			<value>false</value>
 		</right>
 		<right>
-			<name>Update</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Delete</name>
-			<value>false</value>
-		</right>
-		<right>
 			<name>Posting</name>
 			<value>false</value>
 		</right>
@@ -5995,10 +2263,6 @@
 		</right>
 		<right>
 			<name>InteractiveInsert</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
 			<value>false</value>
 		</right>
 		<right>
@@ -6039,60 +2303,7 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.BankTransfer.StandardAttribute.Posted</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.BankTransfer.StandardAttribute.Ref</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.BankTransfer.StandardAttribute.DeletionMark</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.BankTransfer.StandardAttribute.Date</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.BankTransfer.StandardAttribute.Number</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
 		<name>ChartOfAccounts.ChartOfAccounts.Attribute.CashFlowSection</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesReturn.TabularSection.LineItems.Attribute.VAT</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Constant.VATFinLocalization</name>
 		<right>
 			<name>Edit</name>
 			<value>false</value>
@@ -6105,14 +2316,6 @@
 			<value>false</value>
 		</right>
 		<right>
-			<name>Update</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Delete</name>
-			<value>false</value>
-		</right>
-		<right>
 			<name>Posting</name>
 			<value>false</value>
 		</right>
@@ -6121,15 +2324,7 @@
 			<value>false</value>
 		</right>
 		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
 			<name>InteractiveInsert</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
 			<value>false</value>
 		</right>
 		<right>
@@ -6166,156 +2361,6 @@
 		</right>
 		<right>
 			<name>InputByString</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.Check.StandardAttribute.Posted</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.Check.StandardAttribute.Ref</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.Check.StandardAttribute.DeletionMark</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.Check.StandardAttribute.Date</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.Check.StandardAttribute.Number</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesOrder.TabularSection.LineItems.Attribute.Quantity</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Catalog.UserList.Attribute.BankReceive</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesReturn.Attribute.Memo</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashSale.TabularSection.LineItems.Attribute.SalesTaxType</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesReturn.Attribute.CompanyCode</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesInvoice.Attribute.Location</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseInvoice.Attribute.LocationActual</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashSale.TabularSection.LineItems.Attribute.Price</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseReturn.TabularSection.LineItems.Attribute.LineTotal</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
 			<value>false</value>
 		</right>
 	</object>
@@ -6326,14 +2371,6 @@
 			<value>false</value>
 		</right>
 		<right>
-			<name>Update</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Delete</name>
-			<value>false</value>
-		</right>
-		<right>
 			<name>Posting</name>
 			<value>false</value>
 		</right>
@@ -6343,10 +2380,6 @@
 		</right>
 		<right>
 			<name>InteractiveInsert</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
 			<value>false</value>
 		</right>
 		<right>
@@ -6383,59 +2416,6 @@
 		</right>
 		<right>
 			<name>InputByString</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.InventoryBeginningBalances.StandardAttribute.Posted</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.InventoryBeginningBalances.StandardAttribute.Ref</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.InventoryBeginningBalances.StandardAttribute.DeletionMark</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.InventoryBeginningBalances.StandardAttribute.Date</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.InventoryBeginningBalances.StandardAttribute.Number</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.Deposit.TabularSection.LineItems</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.InventoryBeginningBalances.Attribute.Location</name>
-		<right>
-			<name>Edit</name>
 			<value>false</value>
 		</right>
 	</object>
@@ -6446,14 +2426,6 @@
 			<value>false</value>
 		</right>
 		<right>
-			<name>Update</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Delete</name>
-			<value>false</value>
-		</right>
-		<right>
 			<name>Posting</name>
 			<value>false</value>
 		</right>
@@ -6462,15 +2434,7 @@
 			<value>false</value>
 		</right>
 		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
 			<name>InteractiveInsert</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
 			<value>false</value>
 		</right>
 		<right>
@@ -6511,79 +2475,37 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.PurchaseInvoice.StandardAttribute.Posted</name>
+		<name>Catalog.BankTransactionCategories</name>
 		<right>
-			<name>View</name>
+			<name>InteractiveDelete</name>
 			<value>false</value>
 		</right>
 		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseInvoice.StandardAttribute.Ref</name>
-		<right>
-			<name>View</name>
+			<name>InteractiveSetDeletionMark</name>
 			<value>false</value>
 		</right>
 		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseInvoice.StandardAttribute.DeletionMark</name>
-		<right>
-			<name>View</name>
+			<name>InteractiveClearDeletionMark</name>
 			<value>false</value>
 		</right>
 		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseInvoice.StandardAttribute.Date</name>
-		<right>
-			<name>View</name>
+			<name>InteractiveDeleteMarked</name>
 			<value>false</value>
 		</right>
 		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseInvoice.StandardAttribute.Number</name>
-		<right>
-			<name>View</name>
+			<name>InteractiveDeletePredefinedData</name>
 			<value>false</value>
 		</right>
 		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.InvoicePayment.Attribute.DocumentTotal</name>
-		<right>
-			<name>View</name>
+			<name>InteractiveSetDeletionMarkPredefinedData</name>
 			<value>false</value>
 		</right>
 		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseReturn.Attribute.Location</name>
-		<right>
-			<name>View</name>
+			<name>InteractiveClearDeletionMarkPredefinedData</name>
 			<value>false</value>
 		</right>
 		<right>
-			<name>Edit</name>
+			<name>InteractiveDeleteMarkedPredefinedData</name>
 			<value>false</value>
 		</right>
 	</object>
@@ -6599,6 +2521,18 @@
 		</right>
 		<right>
 			<name>InteractiveDelete</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
 			<value>false</value>
 		</right>
 		<right>
@@ -6630,17 +2564,6 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.SalesInvoice.Attribute.Company</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
 		<name>Catalog.UserList</name>
 		<right>
 			<name>Insert</name>
@@ -6648,10 +2571,6 @@
 		</right>
 		<right>
 			<name>InteractiveInsert</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
 			<value>false</value>
 		</right>
 		<right>
@@ -6692,192 +2611,37 @@
 		</right>
 	</object>
 	<object>
-		<name>Catalog.UserList.StandardAttribute.PredefinedDataName</name>
+		<name>Catalog.Classes</name>
 		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Catalog.UserList.StandardAttribute.Predefined</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Catalog.UserList.StandardAttribute.Ref</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Catalog.UserList.StandardAttribute.DeletionMark</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Catalog.UserList.StandardAttribute.IsFolder</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Catalog.UserList.StandardAttribute.Owner</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Catalog.UserList.StandardAttribute.Parent</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Catalog.UserList.StandardAttribute.Description</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Catalog.UserList.StandardAttribute.Code</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashSale.Attribute.ExchangeRate</name>
-		<right>
-			<name>View</name>
+			<name>InteractiveDelete</name>
 			<value>false</value>
 		</right>
 		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashPurchase.TabularSection.LineItems.Attribute.VAT</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseInvoice.TabularSection.LineItems.Attribute.OrderPrice</name>
-		<right>
-			<name>View</name>
+			<name>InteractiveSetDeletionMark</name>
 			<value>false</value>
 		</right>
 		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesReturn.TabularSection.LineItems.Attribute.Product</name>
-		<right>
-			<name>View</name>
+			<name>InteractiveClearDeletionMark</name>
 			<value>false</value>
 		</right>
 		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashSale.Attribute.DocumentTotalRC</name>
-		<right>
-			<name>View</name>
+			<name>InteractiveDeleteMarked</name>
 			<value>false</value>
 		</right>
 		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.Check.Attribute.ExchangeRate</name>
-		<right>
-			<name>View</name>
+			<name>InteractiveDeletePredefinedData</name>
 			<value>false</value>
 		</right>
 		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.BankReconciliation.Attribute.StatementToDate</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.InventoryBeginningBalances.Attribute.Value</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseOrder.TabularSection.LineItems.Attribute.VATCode</name>
-		<right>
-			<name>View</name>
+			<name>InteractiveSetDeletionMarkPredefinedData</name>
 			<value>false</value>
 		</right>
 		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesOrder.Attribute.PriceIncludesVAT</name>
-		<right>
-			<name>View</name>
+			<name>InteractiveClearDeletionMarkPredefinedData</name>
 			<value>false</value>
 		</right>
 		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesInvoice.Attribute.VATTotal</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Constant.DefaultSalesVAT</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesInvoice.Attribute.SalesTax</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
+			<name>InteractiveDeleteMarkedPredefinedData</name>
 			<value>false</value>
 		</right>
 	</object>
@@ -6893,53 +2657,9 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.PurchaseOrder.Attribute.Company</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Catalog.UserList.Attribute.Warehouse</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashSale.TabularSection.LineItems.Attribute.Product</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashPurchase.Attribute.VATTotal</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
 		<name>Document.BankReconciliation</name>
 		<right>
 			<name>Insert</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Update</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Delete</name>
 			<value>false</value>
 		</right>
 		<right>
@@ -6952,10 +2672,6 @@
 		</right>
 		<right>
 			<name>InteractiveInsert</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
 			<value>false</value>
 		</right>
 		<right>
@@ -6992,52 +2708,6 @@
 		</right>
 		<right>
 			<name>InputByString</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.BankReconciliation.StandardAttribute.Posted</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.BankReconciliation.StandardAttribute.Ref</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.BankReconciliation.StandardAttribute.DeletionMark</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.BankReconciliation.StandardAttribute.Date</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.BankReconciliation.StandardAttribute.Number</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseReturn.Attribute.Currency</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
 			<value>false</value>
 		</right>
 	</object>
@@ -7070,50 +2740,6 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.TimeTrack.Attribute.TimeComplete</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.InvoicePayment.TabularSection.LineItems.Attribute.Currency</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesInvoice.Attribute.DocumentTotal</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseOrder.TabularSection.LineItems.Attribute.ProductDescription</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
 		<name>Subsystem.Purchasing</name>
 		<right>
 			<name>View</name>
@@ -7121,53 +2747,9 @@
 		</right>
 	</object>
 	<object>
-		<name>Constant.USFinLocalization</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Catalog.UserList.Attribute.Sales</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesOrder.TabularSection.LineItems.Attribute.TaxableAmount</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.Deposit.Attribute.TotalDeposits</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
 		<name>Document.SalesInvoice</name>
 		<right>
 			<name>Insert</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Update</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Delete</name>
 			<value>false</value>
 		</right>
 		<right>
@@ -7179,15 +2761,7 @@
 			<value>false</value>
 		</right>
 		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
 			<name>InteractiveInsert</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
 			<value>false</value>
 		</right>
 		<right>
@@ -7228,75 +2802,9 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.SalesInvoice.StandardAttribute.Posted</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesInvoice.StandardAttribute.Ref</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesInvoice.StandardAttribute.DeletionMark</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesInvoice.StandardAttribute.Date</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesInvoice.StandardAttribute.Number</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
 		<name>Subsystem.Warehouse</name>
 		<right>
 			<name>View</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashReceipt.TabularSection.LineItems.Attribute.Document</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
 			<value>false</value>
 		</right>
 	</object>
@@ -7308,51 +2816,7 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.PurchaseReturn.Attribute.DocumentTotalRC</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.InvoicePayment.Attribute.Company</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
 		<name>Constant.BankServiceChargeAccount</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseInvoice.TabularSection.LineItems.Attribute.VAT</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseReturn.Attribute.DocumentTotal</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
 		<right>
 			<name>Edit</name>
 			<value>false</value>
@@ -7366,79 +2830,7 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.PurchaseInvoice.Attribute.DocumentTotalRC</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.TimeTrack.Attribute.Price</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseInvoice.TabularSection.LineItems.Attribute.Quantity</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashPurchase.TabularSection.LineItems.Attribute.ProductDescription</name>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashReceipt</name>
-		<right>
-			<name>Insert</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Update</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Delete</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Posting</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>UndoPosting</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractiveInsert</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
+		<name>Catalog.Milestones</name>
 		<right>
 			<name>InteractiveDelete</name>
 			<value>false</value>
@@ -7453,100 +2845,6 @@
 		</right>
 		<right>
 			<name>InteractiveDeleteMarked</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractivePosting</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractivePostingRegular</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractiveUndoPosting</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractiveChangeOfPosted</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InputByString</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashReceipt.StandardAttribute.Posted</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashReceipt.StandardAttribute.Ref</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashReceipt.StandardAttribute.DeletionMark</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashReceipt.StandardAttribute.Date</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashReceipt.StandardAttribute.Number</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Catalog.Addresses</name>
-		<right>
-			<name>Insert</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractiveInsert</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractiveDelete</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InputByString</name>
 			<value>false</value>
 		</right>
 		<right>
@@ -7567,46 +2865,104 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.SalesReturn.TabularSection.LineItems.Attribute.LineTotal</name>
+		<name>Document.CashReceipt</name>
 		<right>
-			<name>View</name>
+			<name>Insert</name>
 			<value>false</value>
 		</right>
 		<right>
-			<name>Edit</name>
+			<name>Posting</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>UndoPosting</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveInsert</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDelete</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractivePosting</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractivePostingRegular</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveUndoPosting</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveChangeOfPosted</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InputByString</name>
 			<value>false</value>
 		</right>
 	</object>
 	<object>
-		<name>Document.Deposit.Attribute.DocumentTotal</name>
+		<name>Catalog.Addresses</name>
 		<right>
-			<name>View</name>
+			<name>Insert</name>
 			<value>false</value>
 		</right>
 		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.SalesInvoice.TabularSection.LineItems.Attribute.TaxableAmount</name>
-		<right>
-			<name>View</name>
+			<name>InteractiveInsert</name>
 			<value>false</value>
 		</right>
 		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.PurchaseReturn.Attribute.RefNum</name>
-		<right>
-			<name>View</name>
+			<name>InteractiveDelete</name>
 			<value>false</value>
 		</right>
 		<right>
-			<name>Edit</name>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InputByString</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeletePredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveSetDeletionMarkPredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMarkPredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarkedPredefinedData</name>
 			<value>false</value>
 		</right>
 	</object>

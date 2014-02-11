@@ -1,5 +1,11 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<CommandSet>
+		<ExcludedCommand>Copy</ExcludedCommand>
+		<ExcludedCommand>Create</ExcludedCommand>
+		<ExcludedCommand>CancelSearch</ExcludedCommand>
+		<ExcludedCommand>Find</ExcludedCommand>
+	</CommandSet>
 	<AutoCommandBar name="FormCommandBar" id="-1">
 		<ChildItems>
 			<Button name="Upload" id="13">
@@ -53,29 +59,29 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="6"/>
-			<SearchStringAddition name="ListSearchString" id="18">
+			<SearchStringAddition name="ListSearchString" id="15">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="19"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="20"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="16"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="17"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="21">
+			<ViewStatusAddition name="ListViewStatus" id="18">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="22"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="23"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="19"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="20"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="24">
+			<SearchControlAddition name="ListSearchControl" id="21">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="25"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="26"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="22"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="23"/>
 			</SearchControlAddition>
 			<Events>
 				<Event name="BeforeDeleteRow">ListBeforeDeleteRow</Event>
@@ -87,11 +93,6 @@
 					<DefaultItem>true</DefaultItem>
 					<ContextMenu name="TemplateNameContextMenu" id="8"/>
 					<ExtendedTooltip name="TemplateNameExtendedTooltip" id="9"/>
-				</LabelField>
-				<LabelField name="ObjectName" id="15">
-					<DataPath>List.ObjectName</DataPath>
-					<ContextMenu name="ObjectNameContextMenu" id="16"/>
-					<ExtendedTooltip name="ObjectNameExtendedTooltip" id="17"/>
 				</LabelField>
 			</ChildItems>
 		</Table>

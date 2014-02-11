@@ -1,17 +1,5 @@
 ﻿
 &AtServer
-Procedure OnCreateAtServer(Cancel, StandardProcessing)
-	
-	//ConstantBankTransfer = Constants.BankTransferLastNumber.Get();
-	//If Object.Ref.IsEmpty() Then		
-	//	
-	//	Object.Number = Constants.BankTransferLastNumber.Get();
-	//Endif;
-
-		
-EndProcedure
-
-&AtServer
 Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 
 	If Object.AccountFrom = Object.AccountTo Then
@@ -112,6 +100,7 @@ Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
 		CurrentObject.AdditionalProperties.Insert("PermitWrite", PermitWrite);	
 	EndIf;
 
+	
 	//
 	//If Object.Ref.IsEmpty() Then
 	//
@@ -141,6 +130,7 @@ EndProcedure
 
 &AtClient
 Procedure BeforeWrite(Cancel, WriteParameters)
+	
 	//Closing period
 	If DocumentPosting.DocumentPeriodIsClosed(Object.Ref, Object.Date) Then
 		Cancel = Not DocumentPosting.DocumentWritePermitted(WriteParameters);
@@ -165,6 +155,7 @@ Procedure BeforeWrite(Cancel, WriteParameters)
 		|your changes could put you out of balance the next time you try to reconcile. 
 		|To modify it you should exclude it from the Bank rec. document.", PredefinedValue("Enum.MessageStatus.Warning"));
 	EndIf;    
+
 EndProcedure
 
 //Closing period

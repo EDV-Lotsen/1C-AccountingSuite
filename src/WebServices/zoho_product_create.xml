@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<MetaDataObject xmlns="http://v8.1c.ru/8.3/MDClasses" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:cmi="http://v8.1c.ru/8.2/managed-application/cmi" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xen="http://v8.1c.ru/8.3/xcf/enums" xmlns:xpr="http://v8.1c.ru/8.3/xcf/predef" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<WebService uuid="6fde5e06-04b7-4d89-b28f-ecc7eaf20d36">
+		<Properties>
+			<Name>zoho_product_create</Name>
+			<Synonym>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Zoho product create</v8:content>
+				</v8:item>
+			</Synonym>
+			<Comment/>
+			<Namespace>acswsapi</Namespace>
+			<XDTOPackages/>
+			<DescriptorFileName>zoho_product_create.1cws</DescriptorFileName>
+			<ReuseSessions>DontUse</ReuseSessions>
+			<SessionMaxAge>20</SessionMaxAge>
+		</Properties>
+		<ChildObjects>
+			<Operation uuid="5a416678-5f11-497b-a1c9-0dc1ec661fc4">
+				<Properties>
+					<Name>inout</Name>
+					<Synonym>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Inout</v8:content>
+						</v8:item>
+					</Synonym>
+					<Comment/>
+					<XDTOReturningValueType>xs:string</XDTOReturningValueType>
+					<Nillable>false</Nillable>
+					<Transactioned>false</Transactioned>
+					<ProcedureName>inout</ProcedureName>
+					<DataLockControlMode>Managed</DataLockControlMode>
+				</Properties>
+				<ChildObjects>
+					<Parameter uuid="ac51b762-1c82-45df-bc3e-a8a385b7b8b3">
+						<Properties>
+							<Name>jsonin</Name>
+							<Synonym>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Jsonin</v8:content>
+								</v8:item>
+							</Synonym>
+							<Comment/>
+							<XDTOValueType>xs:string</XDTOValueType>
+							<Nillable>false</Nillable>
+							<TransferDirection>In</TransferDirection>
+						</Properties>
+					</Parameter>
+					<Parameter uuid="fc5b1c2a-7488-4b46-950c-8d20cff5059d">
+						<Properties>
+							<Name>product_id</Name>
+							<Synonym>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Product id</v8:content>
+								</v8:item>
+							</Synonym>
+							<Comment/>
+							<XDTOValueType>xs:string</XDTOValueType>
+							<Nillable>false</Nillable>
+							<TransferDirection>In</TransferDirection>
+						</Properties>
+					</Parameter>
+				</ChildObjects>
+			</Operation>
+		</ChildObjects>
+	</WebService>
+</MetaDataObject>

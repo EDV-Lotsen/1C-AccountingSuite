@@ -53,9 +53,6 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	Items.LineItemsBackorder.Format     = QuantityFormat;
 	
 	// Update visibility of controls depending on functional options.
-	If Not GeneralFunctionsReusable.FunctionalOptionValue("VATFinLocalization") Then
-		Items.VATGroup.Visible = False;
-	EndIf;
 	If Not GeneralFunctionsReusable.FunctionalOptionValue("MultiCurrency") Then
 		Items.FCYGroup.Visible = False;
 	EndIf;
@@ -64,7 +61,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	DefaultCurrencySymbol    = GeneralFunctionsReusable.DefaultCurrencySymbol();
 	ForeignCurrencySymbol    = Object.Currency.Symbol;
 	Items.ExchangeRate.Title = DefaultCurrencySymbol + "/1" + ForeignCurrencySymbol;
-	Items.VATCurrency.Title  = ForeignCurrencySymbol;
+	//Items.VATCurrency.Title  = ForeignCurrencySymbol;
 	Items.FCYCurrency.Title  = ForeignCurrencySymbol;
 	Items.RCCurrency.Title   = DefaultCurrencySymbol;
 	
@@ -108,40 +105,40 @@ Procedure DateOnChangeAtServer()
 	
 EndProcedure
 
-&AtClient
-Procedure CompanyCodeTextEditEnd(Item, Text, ChoiceData, Parameters, StandardProcessing)
-	
-	// Search for a company ref and assign it to a company.
-	CompanyCodeTextEditEndAtServer(Text, Object.Company, StandardProcessing);
-	If StandardProcessing Then
-		// Company successfully found and assigned.
-		CompanyOnChange(Items.Company);
-	EndIf;
-	
-EndProcedure
+//&AtClient
+//Procedure CompanyCodeTextEditEnd(Item, Text, ChoiceData, Parameters, StandardProcessing)
+//	
+//	// Search for a company ref and assign it to a company.
+//	CompanyCodeTextEditEndAtServer(Text, Object.Company, StandardProcessing);
+//	If StandardProcessing Then
+//		// Company successfully found and assigned.
+//		CompanyOnChange(Items.Company);
+//	EndIf;
+//	
+//EndProcedure
 
-&AtServerNoContext
-Procedure CompanyCodeTextEditEndAtServer(Text, CompanyRef, StandardProcessing)
-	
-	// Search for a company with entered code.
-	CompanyRef = Catalogs.Companies.FindByCode(Text);
-	If CompanyRef.IsEmpty() Then
-		
-		// Try to find company using full code.
-		CodeLength = Metadata.Catalogs.Companies.CodeLength;
-		FullCode   = Right("0000000000" + Text, CodeLength);
-		CompanyRef = Catalogs.Companies.FindByCode(FullCode);
-		
-		// If company found by the full code then update the text.
-		If Not CompanyRef.IsEmpty() Then
-			Text = FullCode;
-		EndIf;
-	EndIf;
-	
-	// If company is not found - let the system show, that something going wrong.
-	StandardProcessing = Not CompanyRef.IsEmpty();
-	
-EndProcedure
+//&AtServerNoContext
+//Procedure CompanyCodeTextEditEndAtServer(Text, CompanyRef, StandardProcessing)
+//	
+//	// Search for a company with entered code.
+//	CompanyRef = Catalogs.Companies.FindByCode(Text);
+//	If CompanyRef.IsEmpty() Then
+//		
+//		// Try to find company using full code.
+//		CodeLength = Metadata.Catalogs.Companies.CodeLength;
+//		FullCode   = Right("0000000000" + Text, CodeLength);
+//		CompanyRef = Catalogs.Companies.FindByCode(FullCode);
+//		
+//		// If company found by the full code then update the text.
+//		If Not CompanyRef.IsEmpty() Then
+//			Text = FullCode;
+//		EndIf;
+//	EndIf;
+//	
+//	// If company is not found - let the system show, that something going wrong.
+//	StandardProcessing = Not CompanyRef.IsEmpty();
+//	
+//EndProcedure
 
 &AtClient
 Procedure CompanyOnChange(Item)
@@ -155,7 +152,7 @@ EndProcedure
 Procedure CompanyOnChangeAtServer()
 	
 	// Update company presentation.
-	Object.CompanyCode = Object.Company.Code;
+	//Object.CompanyCode = Object.Company.Code;
 	
 	// Request company default settings.
 	Object.Currency    = Object.Company.DefaultCurrency;
@@ -180,7 +177,7 @@ Procedure CurrencyOnChangeAtServer()
 	DefaultCurrencySymbol    = GeneralFunctionsReusable.DefaultCurrencySymbol();
 	ForeignCurrencySymbol    = Object.Currency.Symbol;
 	Items.ExchangeRate.Title = DefaultCurrencySymbol + "/1" + ForeignCurrencySymbol;
-	Items.VATCurrency.Title  = ForeignCurrencySymbol;
+	//Items.VATCurrency.Title  = ForeignCurrencySymbol;
 	Items.RCCurrency.Title   = DefaultCurrencySymbol;
 	Items.FCYCurrency.Title  = ForeignCurrencySymbol;
 	
@@ -208,26 +205,26 @@ Procedure ExchangeRateOnChangeAtServer()
 	
 EndProcedure
 
-&AtClient
-Procedure PriceIncludesVATOnChange(Item)
-	
-	// Request server operation.
-	PriceIncludesVATOnChangeAtServer();
-	
-EndProcedure
+//&AtClient
+//Procedure PriceIncludesVATOnChange(Item)
+//	
+//	// Request server operation.
+//	PriceIncludesVATOnChangeAtServer();
+//	
+//EndProcedure
 
-&AtServer
-Procedure PriceIncludesVATOnChangeAtServer()
-	
-	// Calculate taxes by line total.
-	For Each TableSectionRow In Object.LineItems Do
-		TableSectionRow.VAT = VAT_FL.VATLine(TableSectionRow.LineTotal, TableSectionRow.VATCode, "Purchase", Object.PriceIncludesVAT);
-	EndDo;
-	
-	// Update overall totals.
-	RecalculateTotalsAtServer();
-	
-EndProcedure
+//&AtServer
+//Procedure PriceIncludesVATOnChangeAtServer()
+//	
+//	// Calculate taxes by line total.
+//	For Each TableSectionRow In Object.LineItems Do
+//		TableSectionRow.VAT = VAT_FL.VATLine(TableSectionRow.LineTotal, TableSectionRow.VATCode, "Purchase", Object.PriceIncludesVAT);
+//	EndDo;
+//	
+//	// Update overall totals.
+//	RecalculateTotalsAtServer();
+//	
+//EndProcedure
 
 &AtClient
 Procedure LocationOnChange(Item)
@@ -398,9 +395,9 @@ EndProcedure
 Procedure LineItemsProductOnChangeAtServer(TableSectionRow)
 	
 	// Request product properties.
-	ProductProperties = CommonUse.GetAttributeValues(TableSectionRow.Product, New Structure("Description, PurchaseVATCode, UM"));
+	ProductProperties = CommonUse.GetAttributeValues(TableSectionRow.Product, New Structure("Description, UM"));
 	TableSectionRow.ProductDescription = ProductProperties.Description;
-	TableSectionRow.VATCode            = ProductProperties.PurchaseVATCode;
+	//TableSectionRow.VATCode            = ProductProperties.PurchaseVATCode;
 	TableSectionRow.UM                 = ProductProperties.UM;
 	TableSectionRow.Price              = GeneralFunctions.ProductLastCost(TableSectionRow.Product);
 	
@@ -418,7 +415,7 @@ Procedure LineItemsProductOnChangeAtServer(TableSectionRow)
 	
 	// Calculate totals by line.
 	TableSectionRow.LineTotal = 0;
-	TableSectionRow.VAT       = 0;
+	//TableSectionRow.VAT       = 0;
 	
 EndProcedure
 
@@ -524,43 +521,43 @@ Procedure LineItemsLineTotalOnChangeAtServer(TableSectionRow)
 	                          Round(TableSectionRow.LineTotal / Round(TableSectionRow.Quantity, QuantityPrecision), 2), 0);
 	
 	// Calculate taxes by line total.
-	LineItemsVATCodeOnChangeAtServer(TableSectionRow);
+	//LineItemsVATCodeOnChangeAtServer(TableSectionRow);
 	
 EndProcedure
 
-&AtClient
-Procedure LineItemsVATCodeOnChange(Item)
-	
-	// Fill line data for editing.
-	TableSectionRow = GetLineItemsRowStructure();
-	FillPropertyValues(TableSectionRow, Items.LineItems.CurrentData);
-	
-	// Request server operation.
-	LineItemsVATCodeOnChangeAtServer(TableSectionRow);
-	
-	// Load processed data back.
-	FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
-	
-	// Refresh totals cache.
-	RecalculateTotals();
-	
-EndProcedure
+//&AtClient
+//Procedure LineItemsVATCodeOnChange(Item)
+//	
+//	// Fill line data for editing.
+//	TableSectionRow = GetLineItemsRowStructure();
+//	FillPropertyValues(TableSectionRow, Items.LineItems.CurrentData);
+//	
+//	// Request server operation.
+//	LineItemsVATCodeOnChangeAtServer(TableSectionRow);
+//	
+//	// Load processed data back.
+//	FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
+//	
+//	// Refresh totals cache.
+//	RecalculateTotals();
+//	
+//EndProcedure
 
-&AtServer
-Procedure LineItemsVATCodeOnChangeAtServer(TableSectionRow)
-	
-	// Calculate taxes by line total.
-	TableSectionRow.VAT = VAT_FL.VATLine(TableSectionRow.LineTotal, TableSectionRow.VATCode, "Purchase", Object.PriceIncludesVAT);
-	
-EndProcedure
+//&AtServer
+//Procedure LineItemsVATCodeOnChangeAtServer(TableSectionRow)
+//	
+//	// Calculate taxes by line total.
+//	TableSectionRow.VAT = VAT_FL.VATLine(TableSectionRow.LineTotal, TableSectionRow.VATCode, "Purchase", Object.PriceIncludesVAT);
+//	
+//EndProcedure
 
-&AtClient
-Procedure LineItemsVATOnChange(Item)
-	
-	// Refresh totals cache.
-	RecalculateTotals();
-	
-EndProcedure
+//&AtClient
+//Procedure LineItemsVATOnChange(Item)
+//	
+//	// Refresh totals cache.
+//	RecalculateTotals();
+//	
+//EndProcedure
 
 #EndRegion
 
@@ -731,16 +728,16 @@ EndProcedure
 Procedure RecalculateTotals()
 	
 	// Calculate document totals.
-	VATTotal = 0; DocumentTotal = 0;
+	DocumentTotal = 0;
 	For Each Row In Object.LineItems Do
-		VATTotal      = VATTotal      + Row.VAT;
+		//VATTotal      = VATTotal      + Row.VAT;
 		DocumentTotal = DocumentTotal + Row.LineTotal;
 	EndDo;
 	
 	// Assign totals to the object fields.
-	Object.VATTotal        = VATTotal;
-	Object.VATTotalRC      = Round(Object.VATTotal * Object.ExchangeRate, 2);
-	Object.DocumentTotal   = DocumentTotal + ?(Object.PriceIncludesVAT, 0, VATTotal);
+	//Object.VATTotal        = VATTotal;
+	//Object.VATTotalRC      = Round(Object.VATTotal * Object.ExchangeRate, 2);
+	Object.DocumentTotal   = DocumentTotal;
 	Object.DocumentTotalRC = Round(Object.DocumentTotal * Object.ExchangeRate, 2);
 	
 EndProcedure
@@ -755,9 +752,9 @@ EndProcedure
 Procedure RecalculateTotalsAtServer()
 	
 	// Calculate document totals.
-	Object.VATTotal        = Object.LineItems.Total("VAT");
-	Object.VATTotalRC      = Round(Object.VATTotal * Object.ExchangeRate, 2);
-	Object.DocumentTotal   = Object.LineItems.Total("LineTotal") + ?(Object.PriceIncludesVAT, 0, Object.VATTotal);
+	//Object.VATTotal        = Object.LineItems.Total("VAT");
+	//Object.VATTotalRC      = Round(Object.VATTotal * Object.ExchangeRate, 2);
+	Object.DocumentTotal   = Object.LineItems.Total("LineTotal");
 	Object.DocumentTotalRC = Round(Object.DocumentTotal * Object.ExchangeRate, 2);
 	
 EndProcedure
@@ -770,7 +767,7 @@ EndProcedure
 Function GetLineItemsRowStructure()
 	
 	// Define control row fields.
-	Return New Structure("Product, ProductDescription, Quantity, UM, Backorder, Price, LineTotal, VATCode, VAT, Location, DeliveryDate, Project, Class, Received, Invoiced");
+	Return New Structure("Product, ProductDescription, Quantity, UM, Backorder, Price, LineTotal, Location, DeliveryDate, Project, Class, Received, Invoiced");
 	
 EndFunction
 

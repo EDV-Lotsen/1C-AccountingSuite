@@ -384,6 +384,43 @@ Function FillLogoInDocumentTemplate(Template, LogoPicture) Export
 	
 EndFunction
 
+// Fills template drawing with footer picture.
+//
+// Parameters:
+//  Template    - SpreadsheetDocument - A template for output the logo.
+//  FooterPicture - Picture             - A picture to place in footer drawing.
+//  FooterType - String 				- Name of the footer drawing in template
+//
+// Returns:
+//  Boolean     - Flag shows whether template is filled with the footer.
+//
+Function FillFooterInDocumentTemplate(Template, FooterPicture, FooterType) Export
+	
+	// Define succession flag.
+	FooterFilled = False;
+	
+	// Search drawing with name of "Logo".
+	If FooterPicture <> Undefined Then
+		For Each Drawing In Template.Drawings Do
+			If Drawing.Name = FooterType Then
+				// Logo drawing found.
+				If Drawing.Picture.Type = PictureType.Empty Then
+					// Output logo.
+					Drawing.Picture = FooterPicture;
+				EndIf;
+				FooterFilled = True;
+				
+				// Stop searching.
+				Break;
+			EndIf;
+		EndDo;
+	EndIf;
+	
+	Return FooterFilled;
+	
+EndFunction
+
+
 // Fills template title.
 //
 // Parameters:

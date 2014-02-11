@@ -95,14 +95,8 @@
 					<ContextMenu name="CompanyContextMenu" id="21"/>
 					<ExtendedTooltip name="CompanyExtendedTooltip" id="27"/>
 				</LabelField>
-				<LabelField name="CompanyCode" id="22">
-					<DataPath>List.CompanyCode</DataPath>
-					<ContextMenu name="CompanyCodeContextMenu" id="23"/>
-					<ExtendedTooltip name="CompanyCodeExtendedTooltip" id="28"/>
-				</LabelField>
 				<LabelField name="DocumentTotal" id="18">
 					<DataPath>List.DocumentTotal</DataPath>
-					<Visible>false</Visible>
 					<ContextMenu name="DocumentTotalContextMenu" id="19"/>
 					<ExtendedTooltip name="DocumentTotalExtendedTooltip" id="29"/>
 				</LabelField>
@@ -142,7 +136,6 @@
 	DocumentCashReceipt.Date,
 	DocumentCashReceipt.Posted,
 	DocumentCashReceipt.Company,
-	DocumentCashReceipt.CompanyCode,
 	DocumentCashReceipt.DocumentTotal,
 	DocumentCashReceipt.CashPayment,
 	DocumentCashReceipt.UnappliedPayment,

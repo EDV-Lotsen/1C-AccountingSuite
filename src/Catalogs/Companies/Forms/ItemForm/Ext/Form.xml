@@ -15,6 +15,7 @@
 	<ChildItems>
 		<InputField name="Code" id="93">
 			<DataPath>Object.Code</DataPath>
+			<Visible>false</Visible>
 			<ContextMenu name="CodeContextMenu" id="94"/>
 			<ExtendedTooltip name="CodeExtendedTooltip" id="152"/>
 		</InputField>
@@ -23,7 +24,7 @@
 			<Title>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Company Name</v8:content>
+					<v8:content>Company name</v8:content>
 				</v8:item>
 			</Title>
 			<EditMode>EnterOnInput</EditMode>
@@ -62,6 +63,9 @@
 					<CheckBoxType>Auto</CheckBoxType>
 					<ContextMenu name="VendorContextMenu" id="46"/>
 					<ExtendedTooltip name="VendorExtendedTooltip" id="158"/>
+					<Events>
+						<Event name="OnChange">VendorOnChange</Event>
+					</Events>
 				</CheckBoxField>
 			</ChildItems>
 		</UsualGroup>
@@ -172,26 +176,10 @@
 					</ToolTip>
 					<ExtendedTooltip name="FinancialExtendedTooltip" id="160"/>
 					<ChildItems>
-						<CheckBoxField name="Vendor1099" id="17">
-							<DataPath>Object.Vendor1099</DataPath>
-							<CheckBoxType>Auto</CheckBoxType>
-							<ContextMenu name="Vendor1099ContextMenu" id="18"/>
-							<ExtendedTooltip name="Vendor1099ExtendedTooltip" id="161"/>
-						</CheckBoxField>
-						<InputField name="USTaxID" id="25">
-							<DataPath>Object.USTaxID</DataPath>
-							<ContextMenu name="USTaxIDContextMenu" id="26"/>
-							<ExtendedTooltip name="USTaxIDExtendedTooltip" id="162"/>
-						</InputField>
 						<InputField name="DefaultCurrency" id="19">
 							<DataPath>Object.DefaultCurrency</DataPath>
 							<ContextMenu name="DefaultCurrencyContextMenu" id="20"/>
 							<ExtendedTooltip name="DefaultCurrencyExtendedTooltip" id="163"/>
-						</InputField>
-						<InputField name="VATNumber" id="81">
-							<DataPath>Object.VATNumber</DataPath>
-							<ContextMenu name="VATNumberContextMenu" id="82"/>
-							<ExtendedTooltip name="VATNumberExtendedTooltip" id="165"/>
 						</InputField>
 						<InputField name="Terms" id="130">
 							<DataPath>Object.Terms</DataPath>
@@ -247,6 +235,62 @@
 						</InputField>
 					</ChildItems>
 				</Page>
+				<Page name="Group1099" id="354">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>1099</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Group1099</v8:content>
+						</v8:item>
+					</ToolTip>
+					<ExtendedTooltip name="Group1099ExtendedTooltip" id="355"/>
+					<ChildItems>
+						<CheckBoxField name="Vendor1099" id="17">
+							<DataPath>Object.Vendor1099</DataPath>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="Vendor1099ContextMenu" id="18"/>
+							<ExtendedTooltip name="Vendor1099ExtendedTooltip" id="161"/>
+						</CheckBoxField>
+						<InputField name="FullName" id="351">
+							<DataPath>Object.FullName</DataPath>
+							<Width>20</Width>
+							<HorizontalStretch>false</HorizontalStretch>
+							<ContextMenu name="FullNameContextMenu" id="352"/>
+							<ExtendedTooltip name="FullNameExtendedTooltip" id="353"/>
+						</InputField>
+						<InputField name="FederalIDType" id="348">
+							<DataPath>Object.FederalIDType</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Federal ID type</v8:content>
+								</v8:item>
+							</Title>
+							<Width>10</Width>
+							<HorizontalStretch>false</HorizontalStretch>
+							<ContextMenu name="FederalIDTypeContextMenu" id="349"/>
+							<ExtendedTooltip name="FederalIDTypeExtendedTooltip" id="350"/>
+						</InputField>
+						<InputField name="USTaxID" id="25">
+							<DataPath>Object.USTaxID</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Federal tax ID</v8:content>
+								</v8:item>
+							</Title>
+							<Width>20</Width>
+							<HorizontalStretch>false</HorizontalStretch>
+							<ContextMenu name="USTaxIDContextMenu" id="26"/>
+							<ExtendedTooltip name="USTaxIDExtendedTooltip" id="162"/>
+						</InputField>
+					</ChildItems>
+				</Page>
 				<Page name="CreditCard" id="182">
 					<Visible>false</Visible>
 					<Title>
@@ -271,6 +315,11 @@
 					</ToolTip>
 					<ExtendedTooltip name="CreditCardExtendedTooltip" id="183"/>
 					<ChildItems>
+						<Button name="FormRegisterCard" id="199">
+							<Type>UsualButton</Type>
+							<CommandName>Form.Command.RegisterCard</CommandName>
+							<ExtendedTooltip name="FormRegisterCardExtendedTooltip" id="200"/>
+						</Button>
 						<InputField name="type" id="196">
 							<DataPath>Object.type</DataPath>
 							<ReadOnly>true</ReadOnly>
@@ -295,6 +344,11 @@
 							<ContextMenu name="exp_yearContextMenu" id="194"/>
 							<ExtendedTooltip name="exp_yearExtendedTooltip" id="195"/>
 						</InputField>
+						<Button name="FormDeleteCard" id="207">
+							<Type>UsualButton</Type>
+							<CommandName>Form.Command.DeleteCard</CommandName>
+							<ExtendedTooltip name="FormDeleteCardExtendedTooltip" id="208"/>
+						</Button>
 					</ChildItems>
 				</Page>
 				<Page name="Projects" id="201">
@@ -354,29 +408,29 @@
 							<ContextMenu name="ProjectTableContextMenu" id="231"/>
 							<AutoCommandBar name="ProjectTableCommandBar" id="232"/>
 							<ExtendedTooltip name="ProjectTableExtendedTooltip" id="233"/>
-							<SearchStringAddition name="ProjectTableSearchString" id="343">
+							<SearchStringAddition name="ProjectTableSearchString" id="356">
 								<AdditionSource>
 									<Item>ProjectTable</Item>
 									<Type>SearchStringRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="ProjectTableSearchStringContextMenu" id="344"/>
-								<ExtendedTooltip name="ProjectTableSearchStringExtendedTooltip" id="345"/>
+								<ContextMenu name="ProjectTableSearchStringContextMenu" id="357"/>
+								<ExtendedTooltip name="ProjectTableSearchStringExtendedTooltip" id="358"/>
 							</SearchStringAddition>
-							<ViewStatusAddition name="ProjectTableViewStatus" id="346">
+							<ViewStatusAddition name="ProjectTableViewStatus" id="359">
 								<AdditionSource>
 									<Item>ProjectTable</Item>
 									<Type>ViewStatusRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="ProjectTableViewStatusContextMenu" id="347"/>
-								<ExtendedTooltip name="ProjectTableViewStatusExtendedTooltip" id="348"/>
+								<ContextMenu name="ProjectTableViewStatusContextMenu" id="360"/>
+								<ExtendedTooltip name="ProjectTableViewStatusExtendedTooltip" id="361"/>
 							</ViewStatusAddition>
-							<SearchControlAddition name="ProjectTableSearchControl" id="349">
+							<SearchControlAddition name="ProjectTableSearchControl" id="362">
 								<AdditionSource>
 									<Item>ProjectTable</Item>
 									<Type>SearchControl</Type>
 								</AdditionSource>
-								<ContextMenu name="ProjectTableSearchControlContextMenu" id="350"/>
-								<ExtendedTooltip name="ProjectTableSearchControlExtendedTooltip" id="351"/>
+								<ContextMenu name="ProjectTableSearchControlContextMenu" id="363"/>
+								<ExtendedTooltip name="ProjectTableSearchControlExtendedTooltip" id="364"/>
 							</SearchControlAddition>
 							<ChildItems>
 								<LabelField name="ProjectTableRef" id="263">
@@ -455,19 +509,50 @@
 						</InputField>
 					</ChildItems>
 				</Page>
+				<Page name="NotesTab" id="346">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Notes</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Notes tab</v8:content>
+						</v8:item>
+					</ToolTip>
+					<ExtendedTooltip name="NotesTabExtendedTooltip" id="347"/>
+					<ChildItems>
+						<InputField name="Website" id="126">
+							<DataPath>Object.Website</DataPath>
+							<ContextMenu name="WebsiteContextMenu" id="127"/>
+							<ExtendedTooltip name="WebsiteExtendedTooltip" id="180"/>
+						</InputField>
+						<InputField name="Notes" id="128">
+							<DataPath>Object.Notes</DataPath>
+							<Height>2</Height>
+							<VerticalStretch>false</VerticalStretch>
+							<MultiLine>true</MultiLine>
+							<ContextMenu name="NotesContextMenu" id="129"/>
+							<ExtendedTooltip name="NotesExtendedTooltip" id="181"/>
+						</InputField>
+						<InputField name="api_code" id="343">
+							<DataPath>api_code</DataPath>
+							<ReadOnly>true</ReadOnly>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>api_code</v8:content>
+								</v8:item>
+							</Title>
+							<ContextMenu name="api_codeContextMenu" id="344"/>
+							<ExtendedTooltip name="api_codeExtendedTooltip" id="345"/>
+						</InputField>
+					</ChildItems>
+				</Page>
 			</ChildItems>
 		</Pages>
-		<InputField name="Website" id="126">
-			<DataPath>Object.Website</DataPath>
-			<ContextMenu name="WebsiteContextMenu" id="127"/>
-			<ExtendedTooltip name="WebsiteExtendedTooltip" id="180"/>
-		</InputField>
-		<InputField name="Notes" id="128">
-			<DataPath>Object.Notes</DataPath>
-			<MultiLine>true</MultiLine>
-			<ContextMenu name="NotesContextMenu" id="129"/>
-			<ExtendedTooltip name="NotesExtendedTooltip" id="181"/>
-		</InputField>
 	</ChildItems>
 	<Attributes>
 		<Attribute name="Object" id="1">
@@ -527,8 +612,38 @@ WHERE
 				<v8:Type>cfg:CatalogObject.Addresses</v8:Type>
 			</Type>
 		</Attribute>
+		<Attribute name="api_code" id="4">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Api code</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>100</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
 	</Attributes>
 	<Commands>
+		<Command name="RegisterCard" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Register card in Stripe</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Register card</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>RegisterCard</Action>
+		</Command>
 		<Command name="Projects" id="3">
 			<Title>
 				<v8:item>
@@ -551,6 +666,25 @@ WHERE
 				</v8:item>
 			</ToolTip>
 			<Action>Projects</Action>
+		</Command>
+		<Command name="DeleteCard" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Delete card from Stripe</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Delete card</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Karte löschen</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>DeleteCard</Action>
 		</Command>
 		<Command name="SalesTransactions" id="4">
 			<Title>

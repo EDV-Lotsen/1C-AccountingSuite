@@ -3,10 +3,6 @@
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
-	If Record.Product = Catalogs.Products.EmptyRef() Then
-		NewRecord = True;
-	EndIf;
-	
 	If Record.PriceType = "" Then
 		Record.PriceType = "Item";
 		Items.Product.MarkIncomplete = True;
@@ -190,6 +186,7 @@ Procedure PriceLevelOnChange(Item)
 
 EndProcedure
 
+
 &AtServer
 Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 	
@@ -224,6 +221,6 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 		
 	
 	EndIf;
-	
 
 EndProcedure
+

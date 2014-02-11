@@ -8,14 +8,14 @@
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
 	</Events>
 	<ChildItems>
-		<Pages name="Group2" id="60">
-			<ExtendedTooltip name="Group2ExtendedTooltip" id="61"/>
+		<Pages name="Group2" id="84">
+			<ExtendedTooltip name="Group2ExtendedTooltip" id="85"/>
 			<ChildItems>
-				<Page name="Main" id="62">
+				<Page name="Main" id="86">
 					<Title>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Main</v8:content>
+							<v8:content>Contact</v8:content>
 						</v8:item>
 					</Title>
 					<ToolTip>
@@ -24,7 +24,7 @@
 							<v8:content>Main</v8:content>
 						</v8:item>
 					</ToolTip>
-					<ExtendedTooltip name="MainExtendedTooltip" id="63"/>
+					<ExtendedTooltip name="MainExtendedTooltip" id="87"/>
 					<ChildItems>
 						<InputField name="Description" id="1">
 							<DataPath>Object.Description</DataPath>
@@ -32,12 +32,18 @@
 							<ContextMenu name="DescriptionContextMenu" id="2"/>
 							<ExtendedTooltip name="DescriptionExtendedTooltip" id="33"/>
 						</InputField>
-						<InputField name="Salutation" id="66">
+						<InputField name="Email" id="13">
+							<DataPath>Object.Email</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="EmailContextMenu" id="14"/>
+							<ExtendedTooltip name="EmailExtendedTooltip" id="39"/>
+						</InputField>
+						<InputField name="Salutation" id="60">
 							<DataPath>Object.Salutation</DataPath>
 							<Width>10</Width>
 							<HorizontalStretch>false</HorizontalStretch>
-							<ContextMenu name="SalutationContextMenu" id="67"/>
-							<ExtendedTooltip name="SalutationExtendedTooltip" id="68"/>
+							<ContextMenu name="SalutationContextMenu" id="61"/>
+							<ExtendedTooltip name="SalutationExtendedTooltip" id="62"/>
 						</InputField>
 						<InputField name="FirstName" id="3">
 							<DataPath>Object.FirstName</DataPath>
@@ -57,15 +63,12 @@
 							<ContextMenu name="LastNameContextMenu" id="8"/>
 							<ExtendedTooltip name="LastNameExtendedTooltip" id="36"/>
 						</InputField>
-						<InputField name="Suffix" id="69">
+						<InputField name="Suffix" id="63">
 							<DataPath>Object.Suffix</DataPath>
-							<ContextMenu name="SuffixContextMenu" id="70"/>
-							<ExtendedTooltip name="SuffixExtendedTooltip" id="71"/>
-						</InputField>
-						<InputField name="JobTitle" id="72">
-							<DataPath>Object.JobTitle</DataPath>
-							<ContextMenu name="JobTitleContextMenu" id="73"/>
-							<ExtendedTooltip name="JobTitleExtendedTooltip" id="74"/>
+							<Width>10</Width>
+							<HorizontalStretch>false</HorizontalStretch>
+							<ContextMenu name="SuffixContextMenu" id="64"/>
+							<ExtendedTooltip name="SuffixExtendedTooltip" id="65"/>
 						</InputField>
 						<InputField name="Phone" id="9">
 							<DataPath>Object.Phone</DataPath>
@@ -84,12 +87,44 @@
 							<ContextMenu name="FaxContextMenu" id="12"/>
 							<ExtendedTooltip name="FaxExtendedTooltip" id="38"/>
 						</InputField>
-						<InputField name="Email" id="13">
-							<DataPath>Object.Email</DataPath>
-							<EditMode>EnterOnInput</EditMode>
-							<ContextMenu name="EmailContextMenu" id="14"/>
-							<ExtendedTooltip name="EmailExtendedTooltip" id="39"/>
-						</InputField>
+						<UsualGroup name="Group1" id="58">
+							<Group>Horizontal</Group>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="Group1ExtendedTooltip" id="59"/>
+							<ChildItems>
+								<CheckBoxField name="DefaultBilling" id="27">
+									<DataPath>Object.DefaultBilling</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<CheckBoxType>Auto</CheckBoxType>
+									<ContextMenu name="DefaultBillingContextMenu" id="28"/>
+									<ExtendedTooltip name="DefaultBillingExtendedTooltip" id="47"/>
+									<Events>
+										<Event name="OnChange">DefaultBillingOnChange</Event>
+									</Events>
+								</CheckBoxField>
+								<CheckBoxField name="DefaultShipping" id="29">
+									<DataPath>Object.DefaultShipping</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<CheckBoxType>Auto</CheckBoxType>
+									<ContextMenu name="DefaultShippingContextMenu" id="30"/>
+									<ExtendedTooltip name="DefaultShippingExtendedTooltip" id="48"/>
+									<Events>
+										<Event name="OnChange">DefaultShippingOnChange</Event>
+									</Events>
+								</CheckBoxField>
+							</ChildItems>
+						</UsualGroup>
+					</ChildItems>
+				</Page>
+				<Page name="Group4" id="98">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Address</v8:content>
+						</v8:item>
+					</Title>
+					<ExtendedTooltip name="Group4ExtendedTooltip" id="99"/>
+					<ChildItems>
 						<InputField name="AddressLine1" id="15">
 							<DataPath>Object.AddressLine1</DataPath>
 							<EditMode>EnterOnInput</EditMode>
@@ -102,10 +137,10 @@
 							<ContextMenu name="AddressLine2ContextMenu" id="18"/>
 							<ExtendedTooltip name="AddressLine2ExtendedTooltip" id="41"/>
 						</InputField>
-						<InputField name="AddressLine3" id="75">
+						<InputField name="AddressLine3" id="66">
 							<DataPath>Object.AddressLine3</DataPath>
-							<ContextMenu name="AddressLine3ContextMenu" id="76"/>
-							<ExtendedTooltip name="AddressLine3ExtendedTooltip" id="77"/>
+							<ContextMenu name="AddressLine3ContextMenu" id="67"/>
+							<ExtendedTooltip name="AddressLine3ExtendedTooltip" id="68"/>
 						</InputField>
 						<InputField name="City" id="19">
 							<DataPath>Object.City</DataPath>
@@ -131,10 +166,26 @@
 							<ContextMenu name="ZIPContextMenu" id="26"/>
 							<ExtendedTooltip name="ZIPExtendedTooltip" id="45"/>
 						</InputField>
-						<InputField name="SalesPerson" id="78">
+					</ChildItems>
+				</Page>
+				<Page name="Group3" id="96">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>More</v8:content>
+						</v8:item>
+					</Title>
+					<ExtendedTooltip name="Group3ExtendedTooltip" id="97"/>
+					<ChildItems>
+						<InputField name="JobTitle" id="90">
+							<DataPath>Object.JobTitle</DataPath>
+							<ContextMenu name="JobTitleContextMenu" id="91"/>
+							<ExtendedTooltip name="JobTitleExtendedTooltip" id="92"/>
+						</InputField>
+						<InputField name="SalesPerson" id="93">
 							<DataPath>Object.SalesPerson</DataPath>
-							<ContextMenu name="SalesPersonContextMenu" id="79"/>
-							<ExtendedTooltip name="SalesPersonExtendedTooltip" id="80"/>
+							<ContextMenu name="SalesPersonContextMenu" id="94"/>
+							<ExtendedTooltip name="SalesPersonExtendedTooltip" id="95"/>
 						</InputField>
 						<InputField name="RemitTo" id="31">
 							<DataPath>Object.RemitTo</DataPath>
@@ -146,30 +197,11 @@
 							<ContextMenu name="SalesTaxCodeContextMenu" id="50"/>
 							<ExtendedTooltip name="SalesTaxCodeExtendedTooltip" id="51"/>
 						</InputField>
-						<UsualGroup name="Group1" id="58">
-							<Group>Horizontal</Group>
-							<ShowTitle>false</ShowTitle>
-							<ExtendedTooltip name="Group1ExtendedTooltip" id="59"/>
-							<ChildItems>
-								<CheckBoxField name="DefaultBilling" id="27">
-									<DataPath>Object.DefaultBilling</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<CheckBoxType>Auto</CheckBoxType>
-									<ContextMenu name="DefaultBillingContextMenu" id="28"/>
-									<ExtendedTooltip name="DefaultBillingExtendedTooltip" id="47"/>
-								</CheckBoxField>
-								<CheckBoxField name="DefaultShipping" id="29">
-									<DataPath>Object.DefaultShipping</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<CheckBoxType>Auto</CheckBoxType>
-									<ContextMenu name="DefaultShippingContextMenu" id="30"/>
-									<ExtendedTooltip name="DefaultShippingExtendedTooltip" id="48"/>
-								</CheckBoxField>
-							</ChildItems>
-						</UsualGroup>
 						<InputField name="Notes" id="55">
 							<DataPath>Object.Notes</DataPath>
 							<TitleLocation>None</TitleLocation>
+							<Height>2</Height>
+							<VerticalStretch>false</VerticalStretch>
 							<MultiLine>true</MultiLine>
 							<InputHint>
 								<v8:item>
@@ -182,7 +214,7 @@
 						</InputField>
 					</ChildItems>
 				</Page>
-				<Page name="CustomFields" id="64">
+				<Page name="CustomFields" id="88">
 					<Title>
 						<v8:item>
 							<v8:lang>en</v8:lang>
@@ -195,46 +227,42 @@
 							<v8:content>Custom fields</v8:content>
 						</v8:item>
 					</ToolTip>
-					<ExtendedTooltip name="CustomFieldsExtendedTooltip" id="65"/>
+					<ExtendedTooltip name="CustomFieldsExtendedTooltip" id="89"/>
 					<ChildItems>
-						<InputField name="CF1String" id="81">
+						<InputField name="CF1String" id="69">
 							<DataPath>Object.CF1String</DataPath>
-							<Height>2</Height>
 							<VerticalStretch>false</VerticalStretch>
-							<MultiLine>true</MultiLine>
-							<ContextMenu name="CF1StringContextMenu" id="82"/>
-							<ExtendedTooltip name="CF1StringExtendedTooltip" id="83"/>
+							<MultiLine>false</MultiLine>
+							<ContextMenu name="CF1StringContextMenu" id="70"/>
+							<ExtendedTooltip name="CF1StringExtendedTooltip" id="71"/>
 						</InputField>
-						<InputField name="CF2String" id="84">
+						<InputField name="CF2String" id="72">
 							<DataPath>Object.CF2String</DataPath>
-							<Height>2</Height>
 							<VerticalStretch>false</VerticalStretch>
-							<MultiLine>true</MultiLine>
-							<ContextMenu name="CF2StringContextMenu" id="85"/>
-							<ExtendedTooltip name="CF2StringExtendedTooltip" id="86"/>
+							<MultiLine>false</MultiLine>
+							<ContextMenu name="CF2StringContextMenu" id="73"/>
+							<ExtendedTooltip name="CF2StringExtendedTooltip" id="74"/>
 						</InputField>
-						<InputField name="CF3String" id="87">
+						<InputField name="CF3String" id="75">
 							<DataPath>Object.CF3String</DataPath>
-							<Height>2</Height>
 							<VerticalStretch>false</VerticalStretch>
-							<ContextMenu name="CF3StringContextMenu" id="88"/>
-							<ExtendedTooltip name="CF3StringExtendedTooltip" id="89"/>
+							<MultiLine>false</MultiLine>
+							<ContextMenu name="CF3StringContextMenu" id="76"/>
+							<ExtendedTooltip name="CF3StringExtendedTooltip" id="77"/>
 						</InputField>
-						<InputField name="CF4String" id="90">
+						<InputField name="CF4String" id="78">
 							<DataPath>Object.CF4String</DataPath>
-							<Height>2</Height>
 							<VerticalStretch>false</VerticalStretch>
-							<MultiLine>true</MultiLine>
-							<ContextMenu name="CF4StringContextMenu" id="91"/>
-							<ExtendedTooltip name="CF4StringExtendedTooltip" id="92"/>
+							<MultiLine>false</MultiLine>
+							<ContextMenu name="CF4StringContextMenu" id="79"/>
+							<ExtendedTooltip name="CF4StringExtendedTooltip" id="80"/>
 						</InputField>
-						<InputField name="CF5String" id="93">
+						<InputField name="CF5String" id="81">
 							<DataPath>Object.CF5String</DataPath>
-							<Height>2</Height>
 							<VerticalStretch>false</VerticalStretch>
-							<MultiLine>true</MultiLine>
-							<ContextMenu name="CF5StringContextMenu" id="94"/>
-							<ExtendedTooltip name="CF5StringExtendedTooltip" id="95"/>
+							<MultiLine>false</MultiLine>
+							<ContextMenu name="CF5StringContextMenu" id="82"/>
+							<ExtendedTooltip name="CF5StringExtendedTooltip" id="83"/>
 						</InputField>
 					</ChildItems>
 				</Page>

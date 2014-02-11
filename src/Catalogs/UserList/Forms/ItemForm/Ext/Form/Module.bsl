@@ -9,12 +9,13 @@ Procedure OnWriteAtServer(Cancel, CurrentObject, WriteParameters)
 			NewUser = InfoBaseUsers.CreateUser();
 			//NewUser.Name = Object.Description + Right(SessionParameters.TenantValue,7);
 			NewUser.Name = Object.Description;
-			NewUser.Password = Password;
 			NewUser.FullName = Object.Description;
 			NewUser.StandardAuthentication = True;
-			NewUser.ShowInList = True;
+			//RNG = New RandomNumberGenerator(255);	
+			//NewUser.Password = RNG.RandomNumber(0, 10000);
 			//NewUser.Roles.Add(Metadata.Roles.FullAccess1);
-			           
+			NewUser.Password = Password;
+			
 			If Object.AdminAccess = True Then
 				NewUser.Roles.Add(MetaData.Roles.FullAccess1);
 			Else
@@ -96,7 +97,7 @@ Procedure OnWriteAtServer(Cancel, CurrentObject, WriteParameters)
 			NewUser.ShowInList = False;
 
 			NewUser.Write();
-						
+			
 		Else
 			
 			
@@ -198,16 +199,16 @@ Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 If Object.Ref.IsEmpty() Then
 
 	
-	If NOT EmailCheck(Object.Description) Then
-		
-		Message = New UserMessage();
-		Message.Text=NStr("en='Please enter a correct e-mail address'");
-		Message.Field = "Object.Description";
-		Message.Message();
-		Cancel = True;
-		Return;
-		
-	EndIf;
+	//If NOT EmailCheck(Object.Description) Then
+	//	
+	//	Message = New UserMessage();
+	//	Message.Text=NStr("en='Please enter a correct e-mail address'");
+	//	Message.Field = "Object.Description";
+	//	Message.Message();
+	//	Cancel = True;
+	//	Return;
+	//	
+	//EndIf;
 	
 	// check uniqueness of the name
 		
@@ -367,7 +368,6 @@ Procedure ChoiceProcessing()
 	
 AdminBox(Object);
 ReportBox(Object);
-
 
 EndProcedure
 

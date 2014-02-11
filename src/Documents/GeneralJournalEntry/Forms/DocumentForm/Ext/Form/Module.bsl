@@ -25,6 +25,7 @@ EndFunction
 // saving an unbalanced transaction.
 //
 Procedure BeforeWrite(Cancel, WriteParameters)
+	
 	//Closing period
 	If DocumentPosting.DocumentPeriodIsClosed(Object.Ref, Object.Date) Then
 		Cancel = Not DocumentPosting.DocumentWritePermitted(WriteParameters);
@@ -41,7 +42,7 @@ Procedure BeforeWrite(Cancel, WriteParameters)
 			return;
 		EndIf;
 	EndIf;
-	
+
 	SetType();
 
 	Object.DueDate = Object.Date;
@@ -103,6 +104,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		ReverseJournalEntry(PreviousRef);
 		Items.ReverseButton.Visible = False;
 	EndIf;
+
 	
 	//Title = "GL entry " + Object.Number + " " + Format(Object.Date, "DLF=D");
 	
@@ -131,6 +133,17 @@ Procedure DateOnChange(Item)
 	
 EndProcedure
 
+&AtServer
+Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
+	
+	//Period closing
+	If DocumentPosting.DocumentPeriodIsClosed(CurrentObject.Ref, CurrentObject.Date) Then
+		PermitWrite = DocumentPosting.DocumentWritePermitted(WriteParameters);
+		CurrentObject.AdditionalProperties.Insert("PermitWrite", PermitWrite);	
+	EndIf;
+
+EndProcedure
+
 //Closing period
 &AtClient
 Procedure ProcessUserResponseOnDocumentPeriodClosed(Result, Parameters) Export
@@ -147,24 +160,13 @@ Procedure ProcessUserResponseOnDocumentPeriodClosed(Result, Parameters) Export
 	EndIf;	
 EndProcedure
 
-&AtServer
-Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
-	//Period closing
-	If DocumentPosting.DocumentPeriodIsClosed(CurrentObject.Ref, CurrentObject.Date) Then
-		PermitWrite = DocumentPosting.DocumentWritePermitted(WriteParameters);
-		CurrentObject.AdditionalProperties.Insert("PermitWrite", PermitWrite);	
-	EndIf;
-
-EndProcedure
-
-
 &AtClient
-Procedure ReverseCommand(Command)	
+Procedure ReverseCommand(Command)
 	
 	Str = New Structure;
 	Str.Insert("ReverseStuff", Object.Ref);
 	OpenForm("Document.GeneralJournalEntry.Form.DocumentForm",Str);
-	
+
 EndProcedure
 
 &AtServer
@@ -199,7 +201,7 @@ Procedure ReverseJournalEntry(Old)
 	For Each CurRowLineItems In Old.LineItems Do
 		newLineItem = Object.LineItems.Add();
 		newLineItem.Account = CurRowLineItems.Account;
-		newLineItem.AccountDescription = CurRowLineItems.AccountDescription;
+		//newLineItem.AccountDescription = CurRowLineItems.AccountDescription;
 		newLineItem.AmountDr = CurRowLineItems.AmountCr;
 		newLineItem.AmountCr = CurRowLineItems.AmountDr;
 		newLineItem.Company = CurRowLineItems.Company;
@@ -211,3 +213,7 @@ Procedure ReverseJournalEntry(Old)
 	Object.DocumentTotalRC = Object.LineItems.Total("AmountDR") * Object.ExchangeRate;
 	
 EndProcedure
+
+
+
+

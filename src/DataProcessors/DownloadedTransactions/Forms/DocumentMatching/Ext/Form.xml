@@ -52,11 +52,13 @@
 						<ChildItems>
 							<Button name="DocumentListButton2" id="31">
 								<Type>CommandBarButton</Type>
+								<Representation>PictureAndText</Representation>
 								<CommandName>Form.Item.DocumentList.StandardCommand.Find</CommandName>
 								<ExtendedTooltip name="DocumentListButton2ExtendedTooltip" id="32"/>
 							</Button>
 							<Button name="DocumentListButton3" id="35">
 								<Type>CommandBarButton</Type>
+								<Representation>PictureAndText</Representation>
 								<CommandName>Form.Item.DocumentList.StandardCommand.CancelSearch</CommandName>
 								<ExtendedTooltip name="DocumentListButton3ExtendedTooltip" id="36"/>
 							</Button>
@@ -95,36 +97,41 @@
 			<ChildItems>
 				<LabelField name="DocumentListDate" id="5">
 					<DataPath>DocumentList.Date</DataPath>
+					<Width>4</Width>
 					<ContextMenu name="DocumentListDateContextMenu" id="6"/>
 					<ExtendedTooltip name="DocumentListDateExtendedTooltip" id="7"/>
 				</LabelField>
 				<LabelField name="DocumentListNumber" id="8">
 					<DataPath>DocumentList.Number</DataPath>
+					<Width>10</Width>
 					<ContextMenu name="DocumentListNumberContextMenu" id="9"/>
 					<ExtendedTooltip name="DocumentListNumberExtendedTooltip" id="10"/>
 				</LabelField>
 				<LabelField name="DocumentListType" id="11">
 					<DataPath>DocumentList.Type</DataPath>
+					<Width>15</Width>
 					<ContextMenu name="DocumentListTypeContextMenu" id="12"/>
 					<ExtendedTooltip name="DocumentListTypeExtendedTooltip" id="13"/>
 				</LabelField>
 				<LabelField name="DocumentListTotal" id="14">
 					<DataPath>DocumentList.Total</DataPath>
+					<Width>10</Width>
 					<ContextMenu name="DocumentListTotalContextMenu" id="15"/>
 					<ExtendedTooltip name="DocumentListTotalExtendedTooltip" id="16"/>
-				</LabelField>
-				<LabelField name="DocumentListMemo" id="17">
-					<DataPath>DocumentList.Memo</DataPath>
-					<ContextMenu name="DocumentListMemoContextMenu" id="18"/>
-					<ExtendedTooltip name="DocumentListMemoExtendedTooltip" id="19"/>
 				</LabelField>
 				<LabelField name="DocumentListCompany" id="20">
 					<DataPath>DocumentList.Company</DataPath>
 					<ContextMenu name="DocumentListCompanyContextMenu" id="21"/>
 					<ExtendedTooltip name="DocumentListCompanyExtendedTooltip" id="22"/>
 				</LabelField>
+				<LabelField name="DocumentListMemo" id="17">
+					<DataPath>DocumentList.Memo</DataPath>
+					<ContextMenu name="DocumentListMemoContextMenu" id="18"/>
+					<ExtendedTooltip name="DocumentListMemoExtendedTooltip" id="19"/>
+				</LabelField>
 				<LabelField name="DocumentListDueDate" id="23">
 					<DataPath>DocumentList.DueDate</DataPath>
+					<Width>6</Width>
 					<ContextMenu name="DocumentListDueDateContextMenu" id="24"/>
 					<ExtendedTooltip name="DocumentListDueDateExtendedTooltip" id="25"/>
 				</LabelField>
@@ -208,7 +215,12 @@ WHERE
 					<v8:content>Select command</v8:content>
 				</v8:item>
 			</ToolTip>
+			<Picture>
+				<xr:Ref>StdPicture.ChooseValue</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
 			<Action>SelectCommand</Action>
+			<Representation>TextPicture</Representation>
 		</Command>
 	</Commands>
 </Form>

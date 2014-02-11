@@ -300,19 +300,6 @@ in Google Drive:
 												<Presentation>
 													<v8:item>
 														<v8:lang>en</v8:lang>
-														<v8:content>Account balances</v8:content>
-													</v8:item>
-												</Presentation>
-												<Value xsi:type="xs:string">Account balances</Value>
-											</xr:Value>
-										</xr:Item>
-										<xr:Item>
-											<xr:Presentation/>
-											<xr:CheckState>0</xr:CheckState>
-											<xr:Value xsi:type="FormChoiceListDesTimeValue">
-												<Presentation>
-													<v8:item>
-														<v8:lang>en</v8:lang>
 														<v8:content>Customers/Vendors</v8:content>
 													</v8:item>
 													<v8:item>
@@ -338,114 +325,6 @@ in Google Drive:
 													</v8:item>
 												</Presentation>
 												<Value xsi:type="xs:string">Items</Value>
-											</xr:Value>
-										</xr:Item>
-										<xr:Item>
-											<xr:Presentation/>
-											<xr:CheckState>0</xr:CheckState>
-											<xr:Value xsi:type="FormChoiceListDesTimeValue">
-												<Presentation>
-													<v8:item>
-														<v8:lang>en</v8:lang>
-														<v8:content>Checks</v8:content>
-													</v8:item>
-													<v8:item>
-														<v8:lang>de</v8:lang>
-														<v8:content>Barschecks</v8:content>
-													</v8:item>
-												</Presentation>
-												<Value xsi:type="xs:string">Checks</Value>
-											</xr:Value>
-										</xr:Item>
-										<xr:Item>
-											<xr:Presentation/>
-											<xr:CheckState>0</xr:CheckState>
-											<xr:Value xsi:type="FormChoiceListDesTimeValue">
-												<Presentation>
-													<v8:item>
-														<v8:lang>en</v8:lang>
-														<v8:content>GJ entries (header)</v8:content>
-													</v8:item>
-												</Presentation>
-												<Value xsi:type="xs:string">GJ entries (header)</Value>
-											</xr:Value>
-										</xr:Item>
-										<xr:Item>
-											<xr:Presentation/>
-											<xr:CheckState>0</xr:CheckState>
-											<xr:Value xsi:type="FormChoiceListDesTimeValue">
-												<Presentation>
-													<v8:item>
-														<v8:lang>en</v8:lang>
-														<v8:content>GJ entries (detail)</v8:content>
-													</v8:item>
-												</Presentation>
-												<Value xsi:type="xs:string">GJ entries (detail)</Value>
-											</xr:Value>
-										</xr:Item>
-										<xr:Item>
-											<xr:Presentation/>
-											<xr:CheckState>0</xr:CheckState>
-											<xr:Value xsi:type="FormChoiceListDesTimeValue">
-												<Presentation>
-													<v8:item>
-														<v8:lang>en</v8:lang>
-														<v8:content>Sales invoices (header)</v8:content>
-													</v8:item>
-												</Presentation>
-												<Value xsi:type="xs:string">Sales invoices (header)</Value>
-											</xr:Value>
-										</xr:Item>
-										<xr:Item>
-											<xr:Presentation/>
-											<xr:CheckState>0</xr:CheckState>
-											<xr:Value xsi:type="FormChoiceListDesTimeValue">
-												<Presentation>
-													<v8:item>
-														<v8:lang>en</v8:lang>
-														<v8:content>Sales invoices (detail)</v8:content>
-													</v8:item>
-												</Presentation>
-												<Value xsi:type="xs:string">Sales invoices (detail)</Value>
-											</xr:Value>
-										</xr:Item>
-										<xr:Item>
-											<xr:Presentation/>
-											<xr:CheckState>0</xr:CheckState>
-											<xr:Value xsi:type="FormChoiceListDesTimeValue">
-												<Presentation>
-													<v8:item>
-														<v8:lang>en</v8:lang>
-														<v8:content>Purchase invoices (header)</v8:content>
-													</v8:item>
-												</Presentation>
-												<Value xsi:type="xs:string">Purchase invoices (header)</Value>
-											</xr:Value>
-										</xr:Item>
-										<xr:Item>
-											<xr:Presentation/>
-											<xr:CheckState>0</xr:CheckState>
-											<xr:Value xsi:type="FormChoiceListDesTimeValue">
-												<Presentation>
-													<v8:item>
-														<v8:lang>en</v8:lang>
-														<v8:content>Purchase invoices (detail)</v8:content>
-													</v8:item>
-												</Presentation>
-												<Value xsi:type="xs:string">Purchase invoices (detail)</Value>
-											</xr:Value>
-										</xr:Item>
-										<xr:Item>
-											<xr:Presentation/>
-											<xr:CheckState>0</xr:CheckState>
-											<xr:Value xsi:type="FormChoiceListDesTimeValue">
-												<Presentation>
-													<v8:item>
-														<v8:lang>en</v8:lang>
-														<v8:content>Invoice payments / Checks (header)</v8:content>
-													</v8:item>
-												</Presentation>
-												<Value xsi:type="xs:string">Invoice payments / Checks (header)</Value>
 											</xr:Value>
 										</xr:Item>
 									</ChoiceList>
@@ -572,6 +451,16 @@ in Google Drive:
 							<ShowTitle>false</ShowTitle>
 							<ExtendedTooltip name="Группа7ExtendedTooltip" id="268"/>
 							<ChildItems>
+								<Button name="MapToTemplateCV" id="688">
+									<Type>UsualButton</Type>
+									<CommandName>Form.Command.MapToTemplateCV</CommandName>
+									<ExtendedTooltip name="MapToTemplateCVExtendedTooltip" id="689"/>
+								</Button>
+								<Button name="UnmapCV" id="690">
+									<Type>UsualButton</Type>
+									<CommandName>Form.Command.UnmapCV</CommandName>
+									<ExtendedTooltip name="UnmapCVExtendedTooltip" id="691"/>
+								</Button>
 								<InputField name="IncomeAccount" id="195">
 									<DataPath>IncomeAccount</DataPath>
 									<HorizontalStretch>false</HorizontalStretch>
@@ -662,29 +551,29 @@ in Google Drive:
 									<ContextMenu name="РеквизитыКонтекстноеМеню" id="8"/>
 									<AutoCommandBar name="РеквизитыКоманднаяПанель" id="9"/>
 									<ExtendedTooltip name="РеквизитыExtendedTooltip" id="276"/>
-									<SearchStringAddition name="РеквизитыSearchString" id="688">
+									<SearchStringAddition name="РеквизитыSearchString" id="692">
 										<AdditionSource>
 											<Item>Реквизиты</Item>
 											<Type>SearchStringRepresentation</Type>
 										</AdditionSource>
-										<ContextMenu name="РеквизитыSearchStringContextMenu" id="689"/>
-										<ExtendedTooltip name="РеквизитыSearchStringExtendedTooltip" id="690"/>
+										<ContextMenu name="РеквизитыSearchStringContextMenu" id="693"/>
+										<ExtendedTooltip name="РеквизитыSearchStringExtendedTooltip" id="694"/>
 									</SearchStringAddition>
-									<ViewStatusAddition name="РеквизитыViewStatus" id="691">
+									<ViewStatusAddition name="РеквизитыViewStatus" id="695">
 										<AdditionSource>
 											<Item>Реквизиты</Item>
 											<Type>ViewStatusRepresentation</Type>
 										</AdditionSource>
-										<ContextMenu name="РеквизитыViewStatusContextMenu" id="692"/>
-										<ExtendedTooltip name="РеквизитыViewStatusExtendedTooltip" id="693"/>
+										<ContextMenu name="РеквизитыViewStatusContextMenu" id="696"/>
+										<ExtendedTooltip name="РеквизитыViewStatusExtendedTooltip" id="697"/>
 									</ViewStatusAddition>
-									<SearchControlAddition name="РеквизитыSearchControl" id="694">
+									<SearchControlAddition name="РеквизитыSearchControl" id="698">
 										<AdditionSource>
 											<Item>Реквизиты</Item>
 											<Type>SearchControl</Type>
 										</AdditionSource>
-										<ContextMenu name="РеквизитыSearchControlContextMenu" id="695"/>
-										<ExtendedTooltip name="РеквизитыSearchControlExtendedTooltip" id="696"/>
+										<ContextMenu name="РеквизитыSearchControlContextMenu" id="699"/>
+										<ExtendedTooltip name="РеквизитыSearchControlExtendedTooltip" id="700"/>
 									</SearchControlAddition>
 									<ChildItems>
 										<InputField name="РеквизитыИмяРеквизита" id="10">
@@ -855,29 +744,29 @@ in Google Drive:
 								</ChildItems>
 							</AutoCommandBar>
 							<ExtendedTooltip name="DataListExtendedTooltip" id="289"/>
-							<SearchStringAddition name="DataListSearchString" id="697">
+							<SearchStringAddition name="DataListSearchString" id="701">
 								<AdditionSource>
 									<Item>DataList</Item>
 									<Type>SearchStringRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="DataListSearchStringContextMenu" id="698"/>
-								<ExtendedTooltip name="DataListSearchStringExtendedTooltip" id="699"/>
+								<ContextMenu name="DataListSearchStringContextMenu" id="702"/>
+								<ExtendedTooltip name="DataListSearchStringExtendedTooltip" id="703"/>
 							</SearchStringAddition>
-							<ViewStatusAddition name="DataListViewStatus" id="700">
+							<ViewStatusAddition name="DataListViewStatus" id="704">
 								<AdditionSource>
 									<Item>DataList</Item>
 									<Type>ViewStatusRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="DataListViewStatusContextMenu" id="701"/>
-								<ExtendedTooltip name="DataListViewStatusExtendedTooltip" id="702"/>
+								<ContextMenu name="DataListViewStatusContextMenu" id="705"/>
+								<ExtendedTooltip name="DataListViewStatusExtendedTooltip" id="706"/>
 							</ViewStatusAddition>
-							<SearchControlAddition name="DataListSearchControl" id="703">
+							<SearchControlAddition name="DataListSearchControl" id="707">
 								<AdditionSource>
 									<Item>DataList</Item>
 									<Type>SearchControl</Type>
 								</AdditionSource>
-								<ContextMenu name="DataListSearchControlContextMenu" id="704"/>
-								<ExtendedTooltip name="DataListSearchControlExtendedTooltip" id="705"/>
+								<ContextMenu name="DataListSearchControlContextMenu" id="708"/>
+								<ExtendedTooltip name="DataListSearchControlExtendedTooltip" id="709"/>
 							</SearchControlAddition>
 							<ChildItems>
 								<LabelField name="DataListНомерСтроки" id="116">
@@ -937,12 +826,6 @@ in Google Drive:
 									<EditMode>EnterOnInput</EditMode>
 									<ContextMenu name="DataListCofAUpdateContextMenu" id="160"/>
 									<ExtendedTooltip name="DataListCofAUpdateExtendedTooltip" id="295"/>
-								</InputField>
-								<InputField name="DataListCustomerCode" id="163">
-									<DataPath>Object.DataList.CustomerCode</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListCustomerCodeContextMenu" id="164"/>
-									<ExtendedTooltip name="DataListCustomerCodeExtendedTooltip" id="296"/>
 								</InputField>
 								<InputField name="DataListCustomerDescription" id="161">
 									<DataPath>Object.DataList.CustomerDescription</DataPath>
@@ -1311,7 +1194,7 @@ in Google Drive:
 									<ExtendedTooltip name="DataListProductPriceExtendedTooltip" id="322"/>
 								</InputField>
 								<InputField name="DataListProductPreferredVendor" id="229">
-									<DataPath>Object.DataList.ProductPreferredVendor</DataPath>
+									<DataPath>1/0:ff2e2367-e180-439d-9846-0b36776cc491/0:3a18d207-8e70-44d4-bca0-142b1637dec5</DataPath>
 									<EditMode>EnterOnInput</EditMode>
 									<ContextMenu name="DataListProductPreferredVendorContextMenu" id="230"/>
 									<ExtendedTooltip name="DataListProductPreferredVendorExtendedTooltip" id="323"/>
@@ -1563,37 +1446,31 @@ in Google Drive:
 									<ExtendedTooltip name="DataListSIHeaderAmountExtendedTooltip" id="390"/>
 								</InputField>
 								<InputField name="DataListAPDate" id="391">
-									<DataPath>1/0:9d1d7c81-4d15-420c-b73f-b4a45ff0af74/0:a20b8658-0dde-42eb-ab48-78a9afdc394f</DataPath>
 									<EditMode>EnterOnInput</EditMode>
 									<ContextMenu name="DataListAPDateContextMenu" id="392"/>
 									<ExtendedTooltip name="DataListAPDateExtendedTooltip" id="393"/>
 								</InputField>
 								<InputField name="DataListAPNumber" id="394">
-									<DataPath>1/0:9d1d7c81-4d15-420c-b73f-b4a45ff0af74/0:c60492e6-3080-4ff4-98d5-e03a968841fa</DataPath>
 									<EditMode>EnterOnInput</EditMode>
 									<ContextMenu name="DataListAPNumberContextMenu" id="395"/>
 									<ExtendedTooltip name="DataListAPNumberExtendedTooltip" id="396"/>
 								</InputField>
 								<InputField name="DataListAPVendor" id="397">
-									<DataPath>1/0:9d1d7c81-4d15-420c-b73f-b4a45ff0af74/0:212db5d9-b99f-4ac2-ba20-ca42febe1a1e</DataPath>
 									<EditMode>EnterOnInput</EditMode>
 									<ContextMenu name="DataListAPVendorContextMenu" id="398"/>
 									<ExtendedTooltip name="DataListAPVendorExtendedTooltip" id="399"/>
 								</InputField>
 								<InputField name="DataListAPTerms" id="400">
-									<DataPath>1/0:9d1d7c81-4d15-420c-b73f-b4a45ff0af74/0:c0801474-34bd-42a4-b81e-b6a0941e4c9c</DataPath>
 									<EditMode>EnterOnInput</EditMode>
 									<ContextMenu name="DataListAPTermsContextMenu" id="401"/>
 									<ExtendedTooltip name="DataListAPTermsExtendedTooltip" id="402"/>
 								</InputField>
 								<InputField name="DataListAPDueDate" id="403">
-									<DataPath>1/0:9d1d7c81-4d15-420c-b73f-b4a45ff0af74/0:06081432-099a-4aad-9be1-c7857f3e54d0</DataPath>
 									<EditMode>EnterOnInput</EditMode>
 									<ContextMenu name="DataListAPDueDateContextMenu" id="404"/>
 									<ExtendedTooltip name="DataListAPDueDateExtendedTooltip" id="405"/>
 								</InputField>
 								<InputField name="DataListAPOpenBalance" id="406">
-									<DataPath>1/0:9d1d7c81-4d15-420c-b73f-b4a45ff0af74/0:3c673770-f427-4a33-ae77-29d1476147d3</DataPath>
 									<EditMode>EnterOnInput</EditMode>
 									<ContextMenu name="DataListAPOpenBalanceContextMenu" id="407"/>
 									<ExtendedTooltip name="DataListAPOpenBalanceExtendedTooltip" id="408"/>
@@ -2476,6 +2353,36 @@ in Google Drive:
 			</ToolTip>
 			<Action>ЗавершитьРаботу</Action>
 			<Representation>TextPicture</Representation>
+		</Command>
+		<Command name="MapToTemplateCV" id="6">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Map to template</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Map to template CV</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>MapToTemplateCV</Action>
+		</Command>
+		<Command name="UnmapCV" id="10">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Unmap</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Unmap CV</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>UnmapCV</Action>
 		</Command>
 	</Commands>
 	<Parameters>

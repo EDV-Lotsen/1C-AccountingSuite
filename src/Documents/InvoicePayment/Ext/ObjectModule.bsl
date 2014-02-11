@@ -9,8 +9,34 @@ Procedure Posting(Cancel, Mode)
 		ExchangeRate = GeneralFunctions.GetExchangeRate(Date, DocumentObject.Currency);
 		 
 		RegisterRecords.GeneralJournal.Write = True;
+		RegisterRecords.CashFlowData.Write = True;
 		
 		If TypeOf(DocumentObject.Ref) = Type("DocumentRef.PurchaseInvoice") Then
+			
+			For Each Acc In DocumentObject.Accounts Do
+				Record = RegisterRecords.CashFlowData.Add();
+				Record.RecordType = AccumulationRecordType.Expense;
+				Record.Period = Date;
+				Record.Company = Company;
+				Record.Document = DocumentObject.Ref;
+				Record.Account = Acc.Account;
+				//Record.CashFlowSection = Acc.Account.CashFlowSection;
+				Record.PaymentMethod = PaymentMethod;
+				Record.AmountRC = ((Acc.Amount * ExchangeRate) * DocumentLine.Payment)/DocumentObject.DocumentTotalRC;
+			EndDo;
+			
+			For Each Item In DocumentObject.LineItems Do
+				Record = RegisterRecords.CashFlowData.Add();
+				Record.RecordType = AccumulationRecordType.Expense;
+				Record.Period = Date;
+				Record.Company = Company;
+				Record.Document = DocumentObject.Ref;
+				Record.Account = Item.Product.InventoryOrExpenseAccount;
+				//Record.CashFlowSection = Item.Product.InventoryOrExpenseAccount.CashFlowSection;
+				Record.PaymentMethod = PaymentMethod;
+				Record.AmountRC = ((Item.LineTotal * ExchangeRate) * DocumentLine.Payment)/DocumentObject.DocumentTotalRC;
+			EndDo;
+
 		
 			Record = RegisterRecords.GeneralJournal.AddDebit();
 			Record.Account = DocumentObject.APAccount;
@@ -114,30 +140,6 @@ EndProcedure
 
 Procedure UndoPosting(Cancel)
 	
-	// preventing posting if already included in a bank rec
-	
-	Query = New Query("SELECT
-					  |	TransactionReconciliation.Document
-					  |FROM
-					  |	InformationRegister.TransactionReconciliation AS TransactionReconciliation
-					  |WHERE
-					  |	TransactionReconciliation.Document = &Ref
-					  |	AND TransactionReconciliation.Reconciled = TRUE");
-	Query.SetParameter("Ref", Ref);
-	Selection = Query.Execute();
-	
-	If NOT Selection.IsEmpty() Then
-		
-		Message = New UserMessage();
-		Message.Text=NStr("en='This document is already included in a bank reconciliation. Please remove it from the bank rec first.'");
-		Message.Message();
-		Cancel = True;
-		Return;
-		
-	EndIf;
-
-	// end preventing posting if already included in a bank rec
-	
 	// Deleting bank reconciliation data
 	
 	Records = InformationRegisters.TransactionReconciliation.CreateRecordManager();
@@ -145,6 +147,15 @@ Procedure UndoPosting(Cancel)
 	Records.Account = BankAccount;
 	Records.Read();
 	Records.Delete();
+
+EndProcedure
+
+
+Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
+		
+	If WriteMode = DocumentWriteMode.Write Then
+		Number = "DRAFT";
+	EndIf;
 
 EndProcedure
 

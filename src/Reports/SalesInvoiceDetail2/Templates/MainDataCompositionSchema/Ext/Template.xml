@@ -1,0 +1,483 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<DataCompositionSchema xmlns="http://v8.1c.ru/8.1/data-composition-system/schema" xmlns:dcscom="http://v8.1c.ru/8.1/data-composition-system/common" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<dataSource>
+		<name>DataSource1</name>
+		<dataSourceType>Local</dataSourceType>
+	</dataSource>
+	<dataSet xsi:type="DataSetQuery">
+		<name>DataSet1</name>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>ARAccount</dataPath>
+			<field>ARAccount</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>BegBal</dataPath>
+			<field>BegBal</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>BillTo</dataPath>
+			<field>BillTo</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Carrier</dataPath>
+			<field>Carrier</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>CF1String</dataPath>
+			<field>CF1String</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Company</dataPath>
+			<field>Company</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Currency</dataPath>
+			<field>Currency</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>DataVersion</dataPath>
+			<field>DataVersion</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Date</dataPath>
+			<field>Date</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>DeletionMark</dataPath>
+			<field>DeletionMark</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>DeliveryDate</dataPath>
+			<field>DeliveryDate</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>DiscountPercent</dataPath>
+			<field>DiscountPercent</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>DiscountRC</dataPath>
+			<field>DiscountRC</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>DocumentTotal</dataPath>
+			<field>DocumentTotal</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>DocumentTotalRC</dataPath>
+			<field>DocumentTotalRC</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>DropshipAddress</dataPath>
+			<field>DropshipAddress</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>DropshipCustomer</dataPath>
+			<field>DropshipCustomer</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>DueDate</dataPath>
+			<field>DueDate</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>EmailCC</dataPath>
+			<field>EmailCC</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>EmailNote</dataPath>
+			<field>EmailNote</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>EmailTo</dataPath>
+			<field>EmailTo</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>ExchangeRate</dataPath>
+			<field>ExchangeRate</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>FOB</dataPath>
+			<field>FOB</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>LastEmail</dataPath>
+			<field>LastEmail</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>LineNumber</dataPath>
+			<field>LineNumber</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>LineSubtotalRC</dataPath>
+			<field>LineSubtotalRC</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>LineTotal</dataPath>
+			<field>LineTotal</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Location</dataPath>
+			<field>Location</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>ManualAdjustment</dataPath>
+			<field>ManualAdjustment</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Memo</dataPath>
+			<field>Memo</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>NewObject</dataPath>
+			<field>NewObject</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Number</dataPath>
+			<field>Number</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Order</dataPath>
+			<field>Order</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Paid</dataPath>
+			<field>Paid</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>PaidInvoice</dataPath>
+			<field>PaidInvoice</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>PayHTML</dataPath>
+			<field>PayHTML</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>PointInTime</dataPath>
+			<field>PointInTime</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Posted</dataPath>
+			<field>Posted</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Price</dataPath>
+			<field>Price</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Product</dataPath>
+			<field>Product</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>ProductDescription</dataPath>
+			<field>ProductDescription</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Project</dataPath>
+			<field>Project</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Project1</dataPath>
+			<field>Project1</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Project1</v8:content>
+				</v8:item>
+			</title>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Quantity</dataPath>
+			<field>Quantity</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Ref</dataPath>
+			<field>Ref</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Ref1</dataPath>
+			<field>Ref1</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Ref1</v8:content>
+				</v8:item>
+			</title>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>RefNum</dataPath>
+			<field>RefNum</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>SalesPerson</dataPath>
+			<field>SalesPerson</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>SalesTaxRC</dataPath>
+			<field>SalesTaxRC</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>ShippingRC</dataPath>
+			<field>ShippingRC</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>ShipTo</dataPath>
+			<field>ShipTo</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>SubTotalRC</dataPath>
+			<field>SubTotalRC</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Taxable</dataPath>
+			<field>Taxable</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Terms</dataPath>
+			<field>Terms</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>TrackingNumber</dataPath>
+			<field>TrackingNumber</field>
+		</field>
+		<dataSource>DataSource1</dataSource>
+		<query>SELECT
+	SalesInvoiceLineItems.Ref,
+	SalesInvoiceLineItems.LineNumber,
+	SalesInvoiceLineItems.Product,
+	SalesInvoiceLineItems.ProductDescription,
+	SalesInvoiceLineItems.Price,
+	SalesInvoiceLineItems.Quantity,
+	SalesInvoiceLineItems.LineTotal,
+	SalesInvoiceLineItems.Order,
+	SalesInvoiceLineItems.Project,
+	SalesInvoiceLineItems.Taxable,
+	SalesInvoiceLineItems.Ref.Ref AS Ref1,
+	SalesInvoiceLineItems.Ref.DataVersion,
+	SalesInvoiceLineItems.Ref.DeletionMark,
+	SalesInvoiceLineItems.Ref.Number,
+	SalesInvoiceLineItems.Ref.Date,
+	SalesInvoiceLineItems.Ref.Posted,
+	SalesInvoiceLineItems.Ref.Company,
+	SalesInvoiceLineItems.Ref.Currency,
+	SalesInvoiceLineItems.Ref.ExchangeRate,
+	SalesInvoiceLineItems.Ref.Location,
+	SalesInvoiceLineItems.Ref.DeliveryDate,
+	SalesInvoiceLineItems.Ref.DueDate,
+	SalesInvoiceLineItems.Ref.Terms,
+	SalesInvoiceLineItems.Ref.Memo,
+	SalesInvoiceLineItems.Ref.ARAccount,
+	SalesInvoiceLineItems.Ref.ShipTo,
+	SalesInvoiceLineItems.Ref.RefNum,
+	SalesInvoiceLineItems.Ref.BegBal,
+	SalesInvoiceLineItems.Ref.ManualAdjustment,
+	SalesInvoiceLineItems.Ref.Project AS Project1,
+	SalesInvoiceLineItems.Ref.NewObject,
+	SalesInvoiceLineItems.Ref.LastEmail,
+	SalesInvoiceLineItems.Ref.Paid,
+	SalesInvoiceLineItems.Ref.EmailTo,
+	SalesInvoiceLineItems.Ref.EmailNote,
+	SalesInvoiceLineItems.Ref.PayHTML,
+	SalesInvoiceLineItems.Ref.EmailCC,
+	SalesInvoiceLineItems.Ref.PaidInvoice,
+	SalesInvoiceLineItems.Ref.BillTo,
+	SalesInvoiceLineItems.Ref.SalesPerson,
+	SalesInvoiceLineItems.Ref.CF1String,
+	SalesInvoiceLineItems.Ref.LineSubtotalRC,
+	SalesInvoiceLineItems.Ref.DiscountRC,
+	SalesInvoiceLineItems.Ref.SubTotalRC,
+	SalesInvoiceLineItems.Ref.ShippingRC,
+	SalesInvoiceLineItems.Ref.SalesTaxRC,
+	SalesInvoiceLineItems.Ref.DocumentTotal,
+	SalesInvoiceLineItems.Ref.DocumentTotalRC,
+	SalesInvoiceLineItems.Ref.DiscountPercent,
+	SalesInvoiceLineItems.Ref.FOB,
+	SalesInvoiceLineItems.Ref.Carrier,
+	SalesInvoiceLineItems.Ref.TrackingNumber,
+	SalesInvoiceLineItems.Ref.DropshipCustomer,
+	SalesInvoiceLineItems.Ref.DropshipAddress,
+	SalesInvoiceLineItems.Ref.Presentation,
+	SalesInvoiceLineItems.Ref.PointInTime
+FROM
+	Document.SalesInvoice.LineItems AS SalesInvoiceLineItems</query>
+	</dataSet>
+	<settingsVariant>
+		<dcsset:name>Default</dcsset:name>
+		<dcsset:presentation xsi:type="xs:string">Default</dcsset:presentation>
+		<dcsset:settings xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows">
+			<dcsset:selection>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>ProductDescription</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Product</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>LineNumber</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>LineTotal</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Price</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Project</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Project1</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Quantity</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Ref1</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Ref</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>ARAccount</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>DropshipAddress</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>BegBal</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>BillTo</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Carrier</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Company</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Currency</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>RefNum</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>CF1String</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>DropshipCustomer</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>DataVersion</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Date</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>DeletionMark</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>DeliveryDate</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>DiscountRC</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>DiscountPercent</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>DueDate</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>EmailCC</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>EmailNote</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>EmailTo</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>ExchangeRate</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>FOB</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Number</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>LastEmail</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>LineSubtotalRC</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Location</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>ManualAdjustment</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Memo</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>NewObject</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Paid</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>PaidInvoice</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>PayHTML</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>PointInTime</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Posted</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>SalesPerson</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>SalesTaxRC</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>ShipTo</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>SubTotalRC</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>ShippingRC</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Terms</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>DocumentTotalRC</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>DocumentTotal</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>TrackingNumber</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Order</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Taxable</dcsset:field>
+				</dcsset:item>
+			</dcsset:selection>
+			<dcsset:item xsi:type="dcsset:StructureItemGroup">
+				<dcsset:order>
+					<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
+				</dcsset:order>
+				<dcsset:selection>
+					<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+				</dcsset:selection>
+			</dcsset:item>
+		</dcsset:settings>
+	</settingsVariant>
+</DataCompositionSchema>

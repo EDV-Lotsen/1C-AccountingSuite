@@ -47,13 +47,12 @@
 					<ContextMenu name="DateContextMenu" id="4"/>
 					<ExtendedTooltip name="DateExtendedTooltip" id="63"/>
 				</InputField>
-				<InputField name="BankAccount" id="35">
+				<InputField name="BankAccount" id="96">
 					<DataPath>Object.BankAccount</DataPath>
 					<Width>15</Width>
 					<HorizontalStretch>false</HorizontalStretch>
-					<QuickChoice>true</QuickChoice>
-					<ContextMenu name="BankAccountContextMenu" id="36"/>
-					<ExtendedTooltip name="BankAccountExtendedTooltip" id="60"/>
+					<ContextMenu name="BankAccountContextMenu" id="97"/>
+					<ExtendedTooltip name="BankAccountExtendedTooltip" id="98"/>
 				</InputField>
 				<InputField name="Number" id="1">
 					<DataPath>Object.Number</DataPath>
@@ -98,11 +97,6 @@
 							<EnableStartDrag>true</EnableStartDrag>
 							<EnableDrag>true</EnableDrag>
 							<DataPath>Object.LineItems</DataPath>
-							<CommandSet>
-								<ExcludedCommand>Copy</ExcludedCommand>
-								<ExcludedCommand>Delete</ExcludedCommand>
-								<ExcludedCommand>Add</ExcludedCommand>
-							</CommandSet>
 							<SearchStringLocation>None</SearchStringLocation>
 							<ViewStatusLocation>None</ViewStatusLocation>
 							<SearchControlLocation>None</SearchControlLocation>
@@ -110,29 +104,29 @@
 							<ContextMenu name="LineItemsContextMenu" id="10"/>
 							<AutoCommandBar name="LineItemsCommandBar" id="11"/>
 							<ExtendedTooltip name="LineItemsExtendedTooltip" id="66"/>
-							<SearchStringAddition name="LineItemsSearchString" id="96">
+							<SearchStringAddition name="LineItemsSearchString" id="99">
 								<AdditionSource>
 									<Item>LineItems</Item>
 									<Type>SearchStringRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="LineItemsSearchStringContextMenu" id="97"/>
-								<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="98"/>
+								<ContextMenu name="LineItemsSearchStringContextMenu" id="100"/>
+								<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="101"/>
 							</SearchStringAddition>
-							<ViewStatusAddition name="LineItemsViewStatus" id="99">
+							<ViewStatusAddition name="LineItemsViewStatus" id="102">
 								<AdditionSource>
 									<Item>LineItems</Item>
 									<Type>ViewStatusRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="LineItemsViewStatusContextMenu" id="100"/>
-								<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="101"/>
+								<ContextMenu name="LineItemsViewStatusContextMenu" id="103"/>
+								<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="104"/>
 							</ViewStatusAddition>
-							<SearchControlAddition name="LineItemsSearchControl" id="102">
+							<SearchControlAddition name="LineItemsSearchControl" id="105">
 								<AdditionSource>
 									<Item>LineItems</Item>
 									<Type>SearchControl</Type>
 								</AdditionSource>
-								<ContextMenu name="LineItemsSearchControlContextMenu" id="103"/>
-								<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="104"/>
+								<ContextMenu name="LineItemsSearchControlContextMenu" id="106"/>
+								<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="107"/>
 							</SearchControlAddition>
 							<Events>
 								<Event name="BeforeAddRow">LineItemsBeforeAddRow</Event>
@@ -222,29 +216,29 @@
 							<ContextMenu name="AccountsContextMenu" id="45"/>
 							<AutoCommandBar name="AccountsCommandBar" id="46"/>
 							<ExtendedTooltip name="AccountsExtendedTooltip" id="74"/>
-							<SearchStringAddition name="AccountsSearchString" id="105">
+							<SearchStringAddition name="AccountsSearchString" id="108">
 								<AdditionSource>
 									<Item>Accounts</Item>
 									<Type>SearchStringRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="AccountsSearchStringContextMenu" id="106"/>
-								<ExtendedTooltip name="AccountsSearchStringExtendedTooltip" id="107"/>
+								<ContextMenu name="AccountsSearchStringContextMenu" id="109"/>
+								<ExtendedTooltip name="AccountsSearchStringExtendedTooltip" id="110"/>
 							</SearchStringAddition>
-							<ViewStatusAddition name="AccountsViewStatus" id="108">
+							<ViewStatusAddition name="AccountsViewStatus" id="111">
 								<AdditionSource>
 									<Item>Accounts</Item>
 									<Type>ViewStatusRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="AccountsViewStatusContextMenu" id="109"/>
-								<ExtendedTooltip name="AccountsViewStatusExtendedTooltip" id="110"/>
+								<ContextMenu name="AccountsViewStatusContextMenu" id="112"/>
+								<ExtendedTooltip name="AccountsViewStatusExtendedTooltip" id="113"/>
 							</ViewStatusAddition>
-							<SearchControlAddition name="AccountsSearchControl" id="111">
+							<SearchControlAddition name="AccountsSearchControl" id="114">
 								<AdditionSource>
 									<Item>Accounts</Item>
 									<Type>SearchControl</Type>
 								</AdditionSource>
-								<ContextMenu name="AccountsSearchControlContextMenu" id="112"/>
-								<ExtendedTooltip name="AccountsSearchControlExtendedTooltip" id="113"/>
+								<ContextMenu name="AccountsSearchControlContextMenu" id="115"/>
+								<ExtendedTooltip name="AccountsSearchControlExtendedTooltip" id="116"/>
 							</SearchControlAddition>
 							<Events>
 								<Event name="OnChange">AccountsOnChange</Event>

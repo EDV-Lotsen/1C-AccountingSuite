@@ -103,12 +103,6 @@
 												<Event name="OnChange">CompanyOnChange</Event>
 											</Events>
 										</InputField>
-										<InputField name="CompanyCode" id="65">
-											<DataPath>Object.CompanyCode</DataPath>
-											<ReadOnly>true</ReadOnly>
-											<ContextMenu name="CompanyCodeContextMenu" id="66"/>
-											<ExtendedTooltip name="CompanyCodeExtendedTooltip" id="114"/>
-										</InputField>
 										<RadioButtonField name="DepositType" id="15">
 											<DataPath>Object.DepositType</DataPath>
 											<Title>
@@ -274,13 +268,12 @@
 											<ContextMenu name="PaymentMethodContextMenu" id="57"/>
 											<ExtendedTooltip name="PaymentMethodExtendedTooltip" id="115"/>
 										</InputField>
-										<InputField name="Number" id="1">
-											<DataPath>Object.Number</DataPath>
-											<EditMode>EnterOnInput</EditMode>
+										<InputField name="SalesOrder" id="227">
+											<DataPath>Object.SalesOrder</DataPath>
 											<Width>15</Width>
 											<HorizontalStretch>false</HorizontalStretch>
-											<ContextMenu name="NumberContextMenu" id="2"/>
-											<ExtendedTooltip name="NumberExtendedTooltip" id="101"/>
+											<ContextMenu name="SalesOrderContextMenu" id="228"/>
+											<ExtendedTooltip name="SalesOrderExtendedTooltip" id="229"/>
 										</InputField>
 									</ChildItems>
 								</UsualGroup>
@@ -290,7 +283,7 @@
 							<Title>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Additional</v8:content>
+									<v8:content>More</v8:content>
 								</v8:item>
 							</Title>
 							<ToolTip>
@@ -316,6 +309,7 @@
 										</InputField>
 										<CheckBoxField name="ManualCheck" id="195">
 											<DataPath>ManualCheck</DataPath>
+											<Visible>false</Visible>
 											<Title>
 												<v8:item>
 													<v8:lang>en</v8:lang>
@@ -329,6 +323,14 @@
 												<Event name="OnChange">ManualCheckOnChange</Event>
 											</Events>
 										</CheckBoxField>
+										<InputField name="Number" id="1">
+											<DataPath>Object.Number</DataPath>
+											<EditMode>EnterOnInput</EditMode>
+											<Width>15</Width>
+											<HorizontalStretch>false</HorizontalStretch>
+											<ContextMenu name="NumberContextMenu" id="2"/>
+											<ExtendedTooltip name="NumberExtendedTooltip" id="101"/>
+										</InputField>
 									</ChildItems>
 								</UsualGroup>
 								<UsualGroup name="Group1" id="169">
@@ -409,7 +411,7 @@
 							<Title>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Emailing</v8:content>
+									<v8:content>E-mail</v8:content>
 								</v8:item>
 							</Title>
 							<ToolTip>
@@ -581,7 +583,7 @@
 							<Title>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Documents</v8:content>
+									<v8:content>Invoices</v8:content>
 								</v8:item>
 								<v8:item>
 									<v8:lang>de</v8:lang>
@@ -631,29 +633,29 @@
 									<ContextMenu name="LineItemsContextMenu" id="36"/>
 									<AutoCommandBar name="LineItemsCommandBar" id="37"/>
 									<ExtendedTooltip name="LineItemsExtendedTooltip" id="127"/>
-									<SearchStringAddition name="LineItemsSearchString" id="227">
+									<SearchStringAddition name="LineItemsSearchString" id="230">
 										<AdditionSource>
 											<Item>LineItems</Item>
 											<Type>SearchStringRepresentation</Type>
 										</AdditionSource>
-										<ContextMenu name="LineItemsSearchStringContextMenu" id="228"/>
-										<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="229"/>
+										<ContextMenu name="LineItemsSearchStringContextMenu" id="231"/>
+										<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="232"/>
 									</SearchStringAddition>
-									<ViewStatusAddition name="LineItemsViewStatus" id="230">
+									<ViewStatusAddition name="LineItemsViewStatus" id="233">
 										<AdditionSource>
 											<Item>LineItems</Item>
 											<Type>ViewStatusRepresentation</Type>
 										</AdditionSource>
-										<ContextMenu name="LineItemsViewStatusContextMenu" id="231"/>
-										<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="232"/>
+										<ContextMenu name="LineItemsViewStatusContextMenu" id="234"/>
+										<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="235"/>
 									</ViewStatusAddition>
-									<SearchControlAddition name="LineItemsSearchControl" id="233">
+									<SearchControlAddition name="LineItemsSearchControl" id="236">
 										<AdditionSource>
 											<Item>LineItems</Item>
 											<Type>SearchControl</Type>
 										</AdditionSource>
-										<ContextMenu name="LineItemsSearchControlContextMenu" id="234"/>
-										<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="235"/>
+										<ContextMenu name="LineItemsSearchControlContextMenu" id="237"/>
+										<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="238"/>
 									</SearchControlAddition>
 									<ChildItems>
 										<LabelField name="LineItemsLineNumber" id="38">
@@ -767,29 +769,29 @@
 									<ContextMenu name="CreditMemosContextMenu" id="76"/>
 									<AutoCommandBar name="CreditMemosCommandBar" id="77"/>
 									<ExtendedTooltip name="CreditMemosExtendedTooltip" id="117"/>
-									<SearchStringAddition name="CreditMemosSearchString" id="236">
+									<SearchStringAddition name="CreditMemosSearchString" id="239">
 										<AdditionSource>
 											<Item>CreditMemos</Item>
 											<Type>SearchStringRepresentation</Type>
 										</AdditionSource>
-										<ContextMenu name="CreditMemosSearchStringContextMenu" id="237"/>
-										<ExtendedTooltip name="CreditMemosSearchStringExtendedTooltip" id="238"/>
+										<ContextMenu name="CreditMemosSearchStringContextMenu" id="240"/>
+										<ExtendedTooltip name="CreditMemosSearchStringExtendedTooltip" id="241"/>
 									</SearchStringAddition>
-									<ViewStatusAddition name="CreditMemosViewStatus" id="239">
+									<ViewStatusAddition name="CreditMemosViewStatus" id="242">
 										<AdditionSource>
 											<Item>CreditMemos</Item>
 											<Type>ViewStatusRepresentation</Type>
 										</AdditionSource>
-										<ContextMenu name="CreditMemosViewStatusContextMenu" id="240"/>
-										<ExtendedTooltip name="CreditMemosViewStatusExtendedTooltip" id="241"/>
+										<ContextMenu name="CreditMemosViewStatusContextMenu" id="243"/>
+										<ExtendedTooltip name="CreditMemosViewStatusExtendedTooltip" id="244"/>
 									</ViewStatusAddition>
-									<SearchControlAddition name="CreditMemosSearchControl" id="242">
+									<SearchControlAddition name="CreditMemosSearchControl" id="245">
 										<AdditionSource>
 											<Item>CreditMemos</Item>
 											<Type>SearchControl</Type>
 										</AdditionSource>
-										<ContextMenu name="CreditMemosSearchControlContextMenu" id="243"/>
-										<ExtendedTooltip name="CreditMemosSearchControlExtendedTooltip" id="244"/>
+										<ContextMenu name="CreditMemosSearchControlContextMenu" id="246"/>
+										<ExtendedTooltip name="CreditMemosSearchControlExtendedTooltip" id="247"/>
 									</SearchControlAddition>
 									<ChildItems>
 										<LabelField name="CreditMemosLineNumber" id="78">

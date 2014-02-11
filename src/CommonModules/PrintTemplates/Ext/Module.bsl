@@ -15,7 +15,7 @@
 
 Function ContactInfoDatasetUs() Export
 	
-	Info = New Structure("UsName, UsWebsite, UsBillLine1, UsBillLine1Line2, UsBillLine2, UsBillCity, UsBillState, UsBillZIP, UsBillCityStateZIP, UsBillCountry, UsBillEmail, UsBillPhone,UsBillFirstName, UsBillMiddleName, UsBillLastName");	
+	Info = New Structure("UsName, UsWebsite, UsBillLine1, UsBillLine1Line2, UsBillLine2, UsBillCity, UsBillState, UsBillZIP, UsBillCityStateZIP, UsBillCountry, UsBillEmail, UsBillPhone, UsBillCell, UsBillFax, UsBillFirstName, UsBillMiddleName, UsBillLastName, USBillFedTaxID");	
 	
 	Line1Line2 = "";
 	If Constants.AddressLine2.Get() = "" Then
@@ -43,16 +43,19 @@ Function ContactInfoDatasetUs() Export
 	Info.Insert("UsBillCountry", Constants.Country.Get());
 	Info.Insert("UsBillEmail", Constants.Email.Get());
 	Info.Insert("UsBillPhone", Constants.Phone.Get());
+	Info.Insert("UsBillCell", Constants.Cell.Get());
+	Info.Insert("UsBillFax", Constants.Fax.Get());
 	Info.Insert("UsBillFirstName", Constants.FirstName.Get());
 	Info.Insert("UsBillMiddleName", Constants.MiddleName.Get());
 	Info.Insert("UsBillLastName", Constants.LastName.Get());
 	Info.Insert("UsWebsite", Constants.Website.Get());
+	Info.Insert("USBillFedTaxID", Constants.FederalTaxID.Get());
 
 	Return Info;
 	
 EndFunction  
 
-Function ContactInfoDataset(Company, Type, ShipTo) Export
+Function ContactInfoDataset(Company, Type, AddressID) Export
 	
 	If Type = "ThemShip" Then
 		Info = New Structure("ThemCode, ThemName, ThemShipLine1, ThemShipLine1Line2, ThemShipLine2, ThemShipCity, ThemShipState, ThemShipZIP, ThemShipCityStateZIP, ThemShipCountry, ThemShipEmail, ThemShipPhone, ThemShipFax, ThemShipFirstName, ThemShipMiddleName, ThemShipLastName");
@@ -78,9 +81,8 @@ Function ContactInfoDataset(Company, Type, ShipTo) Export
 		                  |FROM
 		                  |	Catalog.Addresses AS Addresses
 		                  |WHERE
-		                  |	Addresses.Owner = &Company
-		                  |	AND Addresses.DefaultBilling = TRUE");
-		Query.SetParameter("Company", Company);
+		                  |	Addresses.Ref = &BillTo");
+		Query.SetParameter("BillTo", AddressID);
 	EndIf;
 	
 	If Type = "ThemShip" Then
@@ -101,13 +103,13 @@ Function ContactInfoDataset(Company, Type, ShipTo) Export
 		                  |	Catalog.Addresses AS Addresses
 		                  |WHERE
 		                  |	Addresses.Ref = &ShipTo");
-		Query.SetParameter("ShipTo", ShipTo);
+		Query.SetParameter("ShipTo", AddressID);
 	EndIf;
 	
 	QueryResult = Query.Execute();	
 	Dataset = QueryResult.Unload();
 	
-	// If no data found - rturn empty structure
+	// If no data found - return empty structure
 	If Dataset.Count() = 0 Then
 		Return Info;
 	EndIf;
@@ -126,7 +128,8 @@ Function ContactInfoDataset(Company, Type, ShipTo) Export
 	
 	If Type = "ThemShip" Then
         Info.Insert("ThemCode", Company.Code);
-		Info.Insert("ThemName", Company.Description);	
+		Info.Insert("ThemName", Company.Description);
+		Info.Insert("ThemShipName", Company.Description);
 		Info.Insert("ThemShipLine1", Dataset[0].AddressLine1);
 		Info.Insert("ThemShipLine2", Dataset[0].AddressLine2);	
 		Info.Insert("ThemShipLine1Line2", Line1Line2);
@@ -143,7 +146,8 @@ Function ContactInfoDataset(Company, Type, ShipTo) Export
 		Info.Insert("ThemShipLastName", Dataset[0].Lastname);
 	ElsIf Type = "ThemBill" Then
 		Info.Insert("ThemCode", Company.Code);
-		Info.Insert("ThemName", Company.Description);	
+		Info.Insert("ThemName", Company.Description);
+		Info.Insert("ThemBillName", Company.Description);
 		Info.Insert("ThemBillLine1", Dataset[0].AddressLine1);
 		Info.Insert("ThemBillLine2", Dataset[0].AddressLine2);	
 		Info.Insert("ThemBillLine1Line2", Line1Line2);

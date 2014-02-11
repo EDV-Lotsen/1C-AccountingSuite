@@ -50,7 +50,7 @@ EndProcedure
 //
 Procedure CompanyOnChange(Item)
 	
-	Object.CompanyCode = CommonUse.GetAttributeValue(Object.Company, "Code");
+	//Object.CompanyCode = CommonUse.GetAttributeValue(Object.Company, "Code");
 	FillDocumentList(Object.Company);
 	LineItemsPaymentOnChange(Items.LineItemsPayment);
 	
@@ -105,8 +105,8 @@ Procedure BeforeWrite(Cancel, WriteParameters)
 		CommonUseClient.ShowCustomMessageBox(ThisForm, "Bank reconciliation", "The transaction you are editing has been reconciled. Saving 
 		|your changes could put you out of balance the next time you try to reconcile. 
 		|To modify it you should exclude it from the Bank rec. document.", PredefinedValue("Enum.MessageStatus.Warning"));
-	EndIf;    
-
+	EndIf;	
+	
 	TotalPay = Object.LineItems.Total("Payment");
 
 	If Object.LineItems.Count() = 0 Or TotalPay = 0 Then
@@ -195,6 +195,9 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Object.BankAccount = Constants.BankAccount.Get();
 	Else
 	EndIf; 
+
+	//Items.BankAccountLabel.Title =
+	//	CommonUse.GetAttributeValue(Object.BankAccount, "Description");
 	
 	If GeneralFunctionsReusable.FunctionalOptionValue("MultiCurrency") Then	
 		Items.LineItemsPayment.Title = "Payment FCY";	
@@ -210,7 +213,7 @@ Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
 		PermitWrite = DocumentPosting.DocumentWritePermitted(WriteParameters);
 		CurrentObject.AdditionalProperties.Insert("PermitWrite", PermitWrite);	
 	EndIf;
-
+	
 	If Object.PaymentMethod = Catalogs.PaymentMethods.Check Then
 		
 		If CurrentObject.Ref.IsEmpty() Then
@@ -237,13 +240,20 @@ EndProcedure
 
 &AtClient
 Procedure PaymentMethodOnChange(Item)
+	
 	If Object.PaymentMethod = CheckPaymentMethod() Then
-		Object.Number = "auto";
-		//Items.Number.ReadOnly = True;
+		
+		If Object.Number = ""  AND Object.Ref.IsEmpty() = False Then
+			Object.Number = StrReplace(Generalfunctions.LastCheckNumber(object.BankAccount),",","");
+		Else
+			Object.Number = StrReplace(Generalfunctions.LastCheckNumber(object.BankAccount) + 1,",","");
+		EndIf;
+
 	Else
 		Object.Number = "";
 		Items.Number.ReadOnly = False;
 	EndIf;
+
 EndProcedure
 
 &AtServer
@@ -276,11 +286,14 @@ Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 			Message.Message();
 		EndIf;
 	Except
-			Cancel = True;
-			Message = New UserMessage();
-			Message.Text=NStr("en='Enter a check number from 0 to 9999 (99999)'");
-			Message.Field = "Object.Number";
-			Message.Message();
+		
+		 	If Object.Number <> "DRAFT" Then
+				Cancel = True;
+				Message = New UserMessage();
+				Message.Text=NStr("en='Enter a check number from 0 to 9999 (99999)'");
+				Message.Field = "Object.Number";
+				Message.Message();
+			EndIF;
 	EndTry;
 		
 	Endif;
@@ -291,6 +304,69 @@ EndProcedure
 &AtClient
 Procedure PayWithDwolla(Command)
 	
+	DAT = DwollaAccessToken();
+	
+	If IsBlankString(DAT) Then
+		Message(NStr("en = 'Please connect to Dwolla in Settings > Integrations.'"));
+		Return;
+	EndIf;
+	
+	// Check document saved.
+	If Object.Ref.IsEmpty() Or Modified Then
+		Message(NStr("en = 'The document is not saved. Please save the document first.'"));
+		Return;
+	EndIf;
+	
+	// Check DwollaID
+	DwollaID = CommonUse.GetAttributeValue(Object.Company, "DwollaID");
+	If IsBlankString(DwollaID) Then
+		Message(NStr("en = 'Enter a Dwolla e-mail ID on the customer card.'"));
+		Return;
+	Else
+		AtSign = Find(DwollaID,"@");
+		If AtSign = 0 Then
+			IsEmail = False;
+		Else
+			IsEmail = True;
+		EndIf;
+	EndIf;
+		
+	If IsEmail Then
+					
+		DwollaData = New Map();
+		DwollaData.Insert("destinationId", DwollaID);
+		DwollaData.Insert("oauth_token", DAT);
+		DwollaData.Insert("amount", Format(Object.DocumentTotalRC,"NG=0"));
+		DwollaData.Insert("fundsSource", DwollaFundingSource());
+		DwollaData.Insert("destinationType", "Email");
+		DwollaData.Insert("pin", DwollaPin);
+		
+		DataJSON = InternetConnectionClientServer.EncodeJSON(DwollaData);
+			
+	Else
+		
+		DwollaData = New Map();
+		DwollaData.Insert("destinationId", DwollaID);
+		DwollaData.Insert("oauth_token", DAT);
+		DwollaData.Insert("amount", Format(Object.DocumentTotalRC,"NG=0"));
+		DwollaData.Insert("fundsSource", DwollaFundingSource());
+		DwollaData.Insert("pin", DwollaPin);
+		
+		DataJSON = InternetConnectionClientServer.EncodeJSON(DwollaData);
+	
+	EndIf;
+
+	ResultBodyJSON = DwollaCharge(DataJSON);
+	 	
+	If ResultBodyJSON.Success AND ResultBodyJSON.Message = "Success" Then
+		Object.DwollaTrxID = Format(ResultBodyJSON.Response, "NG=0");
+		Message(NStr("en = 'Payment was successfully made. Please save the document.'"));
+		Modified = True;
+	Else
+		Message(ResultBodyJSON.Message);
+	EndIf;
+	
+	Items.FormPayWithDwolla.Enabled = IsBlankString(Object.DwollaTrxID);
 
 EndProcedure
 
@@ -385,11 +461,32 @@ Procedure TotalRevision()
 	
 EndProcedure
 
+&AtServer
+Function GetRippleAddress(Company)
+	
+	Return Company.RippleAddress;	
+	
+EndFunction
+
+//Closing period
+&AtClient
+Procedure ProcessUserResponseOnDocumentPeriodClosed(Result, Parameters) Export
+	If (TypeOf(Result) = Type("String")) Then //Inserted password
+		Parameters.Insert("PeriodClosingPassword", Result);
+		Parameters.Insert("Password", TRUE);
+		Write(Parameters);
+	ElsIf (TypeOf(Result) = Type("DialogReturnCode")) Then //Yes, No or Cancel
+		If Result = DialogReturnCode.Yes Then
+			Parameters.Insert("PeriodClosingPassword", "Yes");
+			Parameters.Insert("Password", FALSE);
+			Write(Parameters);
+		EndIf;
+	EndIf;	
+EndProcedure
 
 &AtClient
 Procedure PayWithBitcoin(Command)
-	
-	coinbase_api_key = coinbase_api_key();
+		coinbase_api_key = coinbase_api_key();
 	
 	If IsBlankString(coinbase_api_key) Then
 		Message(NStr("en = 'Please connect to Coinbase in Settings > Integrations.'"));
@@ -459,19 +556,4 @@ Function coinbase_api_key()
 	
 EndFunction
 
-//Closing period
-&AtClient
-Procedure ProcessUserResponseOnDocumentPeriodClosed(Result, Parameters) Export
-	If (TypeOf(Result) = Type("String")) Then //Inserted password
-		Parameters.Insert("PeriodClosingPassword", Result);
-		Parameters.Insert("Password", TRUE);
-		Write(Parameters);
-	ElsIf (TypeOf(Result) = Type("DialogReturnCode")) Then //Yes, No or Cancel
-		If Result = DialogReturnCode.Yes Then
-			Parameters.Insert("PeriodClosingPassword", "Yes");
-			Parameters.Insert("Password", FALSE);
-			Write(Parameters);
-		EndIf;
-	EndIf;	
-EndProcedure
 

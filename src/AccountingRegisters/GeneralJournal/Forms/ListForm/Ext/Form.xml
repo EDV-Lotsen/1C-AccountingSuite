@@ -161,12 +161,6 @@
 					<ContextMenu name="CompanyContextMenu" id="33"/>
 					<ExtendedTooltip name="CompanyExtendedTooltip" id="64"/>
 				</LabelField>
-				<LabelField name="CompanyCode" id="38">
-					<DataPath>List.CompanyCode</DataPath>
-					<Visible>false</Visible>
-					<ContextMenu name="CompanyCodeContextMenu" id="39"/>
-					<ExtendedTooltip name="CompanyCodeExtendedTooltip" id="65"/>
-				</LabelField>
 				<LabelField name="Document" id="34">
 					<DataPath>List.Document</DataPath>
 					<Title>
@@ -194,6 +188,7 @@
 				</LabelField>
 				<LabelField name="Description" id="28">
 					<DataPath>List.Description</DataPath>
+					<Visible>false</Visible>
 					<Title>
 						<v8:item>
 							<v8:lang>en</v8:lang>
@@ -342,7 +337,6 @@
 	AccountingRegisterGeneralJournalRecordsWithExtDimensions.ExtDimension1 AS Company,
 	AccountingRegisterGeneralJournalRecordsWithExtDimensions.ExtDimension2 AS Document,
 	ChartOfAccounts.Description,
-	Companies.Code AS CompanyCode,
 	AccountingRegisterGeneralJournalRecordsWithExtDimensions.Memo
 FROM
 	AccountingRegister.GeneralJournal.RecordsWithExtDimensions AS AccountingRegisterGeneralJournalRecordsWithExtDimensions

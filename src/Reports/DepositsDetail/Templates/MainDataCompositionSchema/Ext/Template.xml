@@ -1,0 +1,287 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<DataCompositionSchema xmlns="http://v8.1c.ru/8.1/data-composition-system/schema" xmlns:dcscom="http://v8.1c.ru/8.1/data-composition-system/common" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<dataSource>
+		<name>DataSource1</name>
+		<dataSourceType>Local</dataSourceType>
+	</dataSource>
+	<dataSet xsi:type="DataSetQuery">
+		<name>DataSet1</name>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Account</dataPath>
+			<field>Account</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Amount</dataPath>
+			<field>Amount</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>BankAccount</dataPath>
+			<field>BankAccount</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Company</dataPath>
+			<field>Company</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>DataVersion</dataPath>
+			<field>DataVersion</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Date</dataPath>
+			<field>Date</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>DeletionMark</dataPath>
+			<field>DeletionMark</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>DocumentTotal</dataPath>
+			<field>DocumentTotal</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>DocumentTotalRC</dataPath>
+			<field>DocumentTotalRC</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>LineNumber</dataPath>
+			<field>LineNumber</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Memo</dataPath>
+			<field>Memo</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Memo1</dataPath>
+			<field>Memo1</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Memo1</v8:content>
+				</v8:item>
+			</title>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Number</dataPath>
+			<field>Number</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>PointInTime</dataPath>
+			<field>PointInTime</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Posted</dataPath>
+			<field>Posted</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Ref</dataPath>
+			<field>Ref</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Ref1</dataPath>
+			<field>Ref1</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Ref1</v8:content>
+				</v8:item>
+			</title>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>TotalDeposits</dataPath>
+			<field>TotalDeposits</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>TotalDepositsRC</dataPath>
+			<field>TotalDepositsRC</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Currency</dataPath>
+			<field>Currency</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Customer</dataPath>
+			<field>Customer</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Document</dataPath>
+			<field>Document</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>DocumentTotal1</dataPath>
+			<field>DocumentTotal1</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Document total1</v8:content>
+				</v8:item>
+			</title>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>DocumentTotalRC1</dataPath>
+			<field>DocumentTotalRC1</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Document total r c1</v8:content>
+				</v8:item>
+			</title>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Payment</dataPath>
+			<field>Payment</field>
+		</field>
+		<dataSource>DataSource1</dataSource>
+		<query>SELECT
+	DepositAccounts.Ref,
+	DepositAccounts.LineNumber,
+	DepositAccounts.Account,
+	DepositAccounts.Amount,
+	DepositAccounts.Memo,
+	DepositAccounts.Company,
+	DepositAccounts.Ref.Ref AS Ref1,
+	DepositAccounts.Ref.DataVersion,
+	DepositAccounts.Ref.DeletionMark,
+	DepositAccounts.Ref.Number,
+	DepositAccounts.Ref.Date,
+	DepositAccounts.Ref.Posted,
+	DepositAccounts.Ref.DocumentTotal,
+	DepositAccounts.Ref.Memo AS Memo1,
+	DepositAccounts.Ref.BankAccount,
+	DepositAccounts.Ref.DocumentTotalRC,
+	DepositAccounts.Ref.TotalDeposits,
+	DepositAccounts.Ref.TotalDepositsRC,
+	DepositAccounts.Ref.Presentation,
+	DepositAccounts.Ref.PointInTime,
+	NULL AS Document,
+	NULL AS DocumentTotal1,
+	NULL AS Payment,
+	NULL AS DocumentTotalRC1,
+	NULL AS Currency,
+	NULL AS Customer
+FROM
+	Document.Deposit.Accounts AS DepositAccounts
+
+UNION ALL
+
+SELECT
+	DepositLineItems.Ref,
+	DepositLineItems.LineNumber,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	DepositLineItems.Ref.Ref,
+	DepositLineItems.Ref.DataVersion,
+	DepositLineItems.Ref.DeletionMark,
+	DepositLineItems.Ref.Number,
+	DepositLineItems.Ref.Date,
+	DepositLineItems.Ref.Posted,
+	DepositLineItems.Ref.DocumentTotal,
+	DepositLineItems.Ref.Memo,
+	DepositLineItems.Ref.BankAccount,
+	DepositLineItems.Ref.DocumentTotalRC,
+	DepositLineItems.Ref.TotalDeposits,
+	DepositLineItems.Ref.TotalDepositsRC,
+	DepositLineItems.Ref.Presentation,
+	DepositLineItems.Ref.PointInTime,
+	DepositLineItems.Document,
+	DepositLineItems.DocumentTotal,
+	DepositLineItems.Payment,
+	DepositLineItems.DocumentTotalRC,
+	DepositLineItems.Currency,
+	DepositLineItems.Customer
+FROM
+	Document.Deposit.LineItems AS DepositLineItems</query>
+	</dataSet>
+	<settingsVariant>
+		<dcsset:name>Default</dcsset:name>
+		<dcsset:presentation xsi:type="xs:string">Default</dcsset:presentation>
+		<dcsset:settings xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows">
+			<dcsset:selection>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Account</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Amount</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Currency</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Company</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Customer</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Payment</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Document</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>DocumentTotalRC1</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>DocumentTotal1</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>LineNumber</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Memo</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Memo1</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Ref1</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Ref</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>BankAccount</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>DataVersion</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Date</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>DeletionMark</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Number</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>PointInTime</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Posted</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>DocumentTotalRC</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>TotalDeposits</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>TotalDepositsRC</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>DocumentTotal</dcsset:field>
+				</dcsset:item>
+			</dcsset:selection>
+			<dcsset:item xsi:type="dcsset:StructureItemGroup">
+				<dcsset:order>
+					<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
+				</dcsset:order>
+				<dcsset:selection>
+					<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+				</dcsset:selection>
+			</dcsset:item>
+		</dcsset:settings>
+	</settingsVariant>
+</DataCompositionSchema>

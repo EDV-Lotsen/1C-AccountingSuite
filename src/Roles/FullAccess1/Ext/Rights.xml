@@ -6,7 +6,46 @@
 	<object>
 		<name>Catalog.PaymentMethods</name>
 		<right>
-			<name>InteractiveDelete</name>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeletePredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveSetDeletionMarkPredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMarkPredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarkedPredefinedData</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.ExpensifyCategories</name>
+		<right>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
 			<value>false</value>
 		</right>
 		<right>
@@ -29,7 +68,15 @@
 	<object>
 		<name>Catalog.USTaxCategories1099</name>
 		<right>
-			<name>InteractiveDelete</name>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
 			<value>false</value>
 		</right>
 		<right>
@@ -52,7 +99,15 @@
 	<object>
 		<name>Catalog.States</name>
 		<right>
-			<name>InteractiveDelete</name>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
 			<value>false</value>
 		</right>
 		<right>
@@ -75,7 +130,15 @@
 	<object>
 		<name>Catalog.UM</name>
 		<right>
-			<name>InteractiveDelete</name>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
 			<value>false</value>
 		</right>
 		<right>
@@ -98,21 +161,30 @@
 	<object>
 		<name>Document.InvoicePayment</name>
 		<right>
-			<name>InteractiveDelete</name>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
 			<value>false</value>
 		</right>
 	</object>
 	<object>
-		<name>Document.WarehouseTransfer</name>
+		<name>Catalog.SalesPeople</name>
 		<right>
-			<name>InteractiveDelete</name>
+			<name>InteractiveSetDeletionMark</name>
 			<value>false</value>
 		</right>
-	</object>
-	<object>
-		<name>Catalog.PriceLevels</name>
 		<right>
-			<name>InteractiveDelete</name>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
 			<value>false</value>
 		</right>
 		<right>
@@ -133,16 +205,78 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.CashPurchase</name>
+		<name>Document.WarehouseTransfer</name>
 		<right>
-			<name>InteractiveDelete</name>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.PriceLevels</name>
+		<right>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeletePredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveSetDeletionMarkPredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMarkPredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarkedPredefinedData</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Document.TimeTrack</name>
+		<right>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
 			<value>false</value>
 		</right>
 	</object>
 	<object>
 		<name>Catalog.Products</name>
 		<right>
-			<name>InteractiveDelete</name>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
 			<value>false</value>
 		</right>
 		<right>
@@ -165,7 +299,15 @@
 	<object>
 		<name>Catalog.SalesTaxCodes</name>
 		<right>
-			<name>InteractiveDelete</name>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
 			<value>false</value>
 		</right>
 		<right>
@@ -186,23 +328,93 @@
 		</right>
 	</object>
 	<object>
+		<name>Document.Budget</name>
+		<right>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
 		<name>Document.PurchaseOrder</name>
 		<right>
-			<name>InteractiveDelete</name>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
 			<value>false</value>
 		</right>
 	</object>
 	<object>
 		<name>Document.PurchaseReturn</name>
 		<right>
-			<name>InteractiveDelete</name>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.ZapierWebhooks</name>
+		<right>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeletePredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveSetDeletionMarkPredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMarkPredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarkedPredefinedData</name>
 			<value>false</value>
 		</right>
 	</object>
 	<object>
 		<name>Catalog.PaymentTerms</name>
 		<right>
-			<name>InteractiveDelete</name>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
 			<value>false</value>
 		</right>
 		<right>
@@ -225,7 +437,15 @@
 	<object>
 		<name>Document.SalesOrder</name>
 		<right>
-			<name>InteractiveDelete</name>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
 			<value>false</value>
 		</right>
 	</object>
@@ -255,14 +475,61 @@
 	<object>
 		<name>Document.SalesReturn</name>
 		<right>
-			<name>InteractiveDelete</name>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.BankAccounts</name>
+		<right>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeletePredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveSetDeletionMarkPredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMarkPredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarkedPredefinedData</name>
 			<value>false</value>
 		</right>
 	</object>
 	<object>
 		<name>ChartOfAccounts.ChartOfAccounts</name>
 		<right>
-			<name>InteractiveDelete</name>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
 			<value>false</value>
 		</right>
 		<right>
@@ -285,7 +552,46 @@
 	<object>
 		<name>Catalog.Companies</name>
 		<right>
-			<name>InteractiveDelete</name>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeletePredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveSetDeletionMarkPredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMarkPredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarkedPredefinedData</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.PaymentButtons</name>
+		<right>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
 			<value>false</value>
 		</right>
 		<right>
@@ -308,7 +614,15 @@
 	<object>
 		<name>Catalog.Projects</name>
 		<right>
-			<name>InteractiveDelete</name>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
 			<value>false</value>
 		</right>
 		<right>
@@ -329,9 +643,17 @@
 		</right>
 	</object>
 	<object>
-		<name>Catalog.VATCodes</name>
+		<name>Catalog.Banks</name>
 		<right>
-			<name>InteractiveDelete</name>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
 			<value>false</value>
 		</right>
 		<right>
@@ -354,14 +676,30 @@
 	<object>
 		<name>Document.GeneralJournalEntry</name>
 		<right>
-			<name>InteractiveDelete</name>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
 			<value>false</value>
 		</right>
 	</object>
 	<object>
 		<name>Catalog.Countries</name>
 		<right>
-			<name>InteractiveDelete</name>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
 			<value>false</value>
 		</right>
 		<right>
@@ -431,7 +769,46 @@
 	<object>
 		<name>Catalog.Currencies</name>
 		<right>
-			<name>InteractiveDelete</name>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeletePredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveSetDeletionMarkPredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMarkPredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarkedPredefinedData</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.UserLog</name>
+		<right>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
 			<value>false</value>
 		</right>
 		<right>
@@ -454,14 +831,45 @@
 	<object>
 		<name>Document.Deposit</name>
 		<right>
-			<name>InteractiveDelete</name>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Document.ItemReceipt</name>
+		<right>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
 			<value>false</value>
 		</right>
 	</object>
 	<object>
 		<name>Catalog.ProductCategories</name>
 		<right>
-			<name>InteractiveDelete</name>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
 			<value>false</value>
 		</right>
 		<right>
@@ -484,42 +892,121 @@
 	<object>
 		<name>Document.CashSale</name>
 		<right>
-			<name>InteractiveDelete</name>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
 			<value>false</value>
 		</right>
 	</object>
 	<object>
 		<name>Document.BankTransfer</name>
 		<right>
-			<name>InteractiveDelete</name>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
 			<value>false</value>
 		</right>
 	</object>
 	<object>
 		<name>Document.Check</name>
 		<right>
-			<name>InteractiveDelete</name>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
 			<value>false</value>
 		</right>
 	</object>
 	<object>
 		<name>Document.InventoryBeginningBalances</name>
 		<right>
-			<name>InteractiveDelete</name>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
 			<value>false</value>
 		</right>
 	</object>
 	<object>
 		<name>Document.PurchaseInvoice</name>
 		<right>
-			<name>InteractiveDelete</name>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.BankTransactionCategories</name>
+		<right>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeletePredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveSetDeletionMarkPredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMarkPredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarkedPredefinedData</name>
 			<value>false</value>
 		</right>
 	</object>
 	<object>
 		<name>Catalog.Locations</name>
 		<right>
-			<name>InteractiveDelete</name>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
 			<value>false</value>
 		</right>
 		<right>
@@ -571,30 +1058,124 @@
 		</right>
 	</object>
 	<object>
+		<name>Catalog.Classes</name>
+		<right>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeletePredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveSetDeletionMarkPredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMarkPredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarkedPredefinedData</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
 		<name>Document.BankReconciliation</name>
 		<right>
-			<name>InteractiveDelete</name>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
 			<value>false</value>
 		</right>
 	</object>
 	<object>
 		<name>Document.SalesInvoice</name>
 		<right>
-			<name>InteractiveDelete</name>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.Milestones</name>
+		<right>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeletePredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveSetDeletionMarkPredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMarkPredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarkedPredefinedData</name>
 			<value>false</value>
 		</right>
 	</object>
 	<object>
 		<name>Document.CashReceipt</name>
 		<right>
-			<name>InteractiveDelete</name>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
 			<value>false</value>
 		</right>
 	</object>
 	<object>
 		<name>Catalog.Addresses</name>
 		<right>
-			<name>InteractiveDelete</name>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
 			<value>false</value>
 		</right>
 		<right>

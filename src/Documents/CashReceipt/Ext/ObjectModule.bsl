@@ -4,6 +4,16 @@
 //
 Procedure Posting(Cancel, PostingMode)
 
+	RegisterRecords.OrderTransactions.Write = True;
+	If SalesOrder <> Documents.SalesOrder.EmptyRef() Then			
+		Record = RegisterRecords.OrderTransactions.Add();
+		Record.RecordType = AccumulationRecordType.Expense;
+		Record.Period = Date;
+		Record.Order = SalesOrder;
+		Record.Amount = UnappliedPayment;
+	EndIf;
+
+	
 	// Write records to General Journal
 	RegisterRecords.GeneralJournal.Write = True;
 	Payments = 0;
@@ -69,6 +79,18 @@ Procedure Posting(Cancel, PostingMode)
 		
 		Rate2 = GeneralFunctions.GetExchangeRate(DocumentLine.Document.Date, Company.DefaultCurrency);
 		FXGainLoss = (CreditLine.Payment * Rate2) - (CreditLine.Payment * Rate);
+		
+		RegisterRecords.OrderTransactions.Write = True;
+		If TypeOf(DocumentObject) = Type("DocumentRef.CashReceipt") Then
+			If DocumentObject.Ref.SalesOrder <> Documents.SalesOrder.EmptyRef() Then			
+				Record = RegisterRecords.OrderTransactions.Add();
+				Record.RecordType = AccumulationRecordType.Receipt;
+				Record.Period = Date;
+				Record.Order = DocumentObject.Ref.SalesOrder;
+				Record.Amount = CreditLine.Payment;
+			EndIf
+		EndIf;
+
 
 			
 	EndDo;
@@ -155,7 +177,7 @@ Procedure Posting(Cancel, PostingMode)
 EndProcedure
 
 Procedure UndoPosting(Cancel)
-	
+			
 	// Deleting bank reconciliation data
 	
 	Records = InformationRegisters.TransactionReconciliation.CreateRecordManager();
@@ -167,7 +189,7 @@ Procedure UndoPosting(Cancel)
 EndProcedure
 
 Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
-		
+	
 	// for webhooks
 	If NewObject = True Then
 		NewObject = False;
@@ -178,6 +200,7 @@ Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 	EndIf;
 
 EndProcedure
+
 
 Procedure OnWrite(Cancel)
 	
@@ -213,7 +236,7 @@ Procedure OnWrite(Cancel)
 EndProcedure
 
 Procedure BeforeDelete(Cancel)
-
+	
 	companies_webhook = Constants.cash_receipts_webhook.Get();
 	
 	If NOT companies_webhook = "" Then
@@ -240,5 +263,13 @@ Procedure BeforeDelete(Cancel)
 	EndIf;
 
 EndProcedure
+
+Procedure Filling(FillingData, StandardProcessing)
+	
+	// Set the doc's number if it's new (Rupasov)
+	If ThisObject.IsNew() Then ThisObject.SetNewNumber() EndIf;
+
+EndProcedure
+
 
 

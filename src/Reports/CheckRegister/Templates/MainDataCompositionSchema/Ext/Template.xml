@@ -42,10 +42,6 @@
 			<presentationExpression>valuetype(Ref)</presentationExpression>
 		</field>
 		<field xsi:type="DataSetFieldField">
-			<dataPath>CompanyCode</dataPath>
-			<field>CompanyCode</field>
-		</field>
-		<field xsi:type="DataSetFieldField">
 			<dataPath>BankAccount</dataPath>
 			<field>BankAccount</field>
 			<title xsi:type="v8:LocalStringType">
@@ -64,7 +60,6 @@
 	InvoicePayment.DocumentTotal,
 	InvoicePayment.Memo,
 	InvoicePayment.Company,
-	InvoicePayment.CompanyCode,
 	InvoicePayment.BankAccount
 FROM
 	Document.InvoicePayment AS InvoicePayment
@@ -81,29 +76,11 @@ SELECT
 	Check.DocumentTotal,
 	Check.Memo,
 	Check.Company,
-	Check.CompanyCode,
 	Check.BankAccount
 FROM
 	Document.Check AS Check
 WHERE
-	Check.PaymentMethod = VALUE(Catalog.PaymentMethods.Check)
-	
-	UNION ALL
-
-SELECT
-	CashPurchase.Ref,
-	CashPurchase.Number,
-	CashPurchase.Date,
-	CashPurchase.DocumentTotalRC,
-	CashPurchase.DocumentTotal,
-	CashPurchase.Memo,
-	CashPurchase.Company,
-	CashPurchase.CompanyCode,
-	CashPurchase.BankAccount
-FROM
-	Document.CashPurchase AS CashPurchase
-WHERE
-	CashPurchase.PaymentMethod = VALUE(Catalog.PaymentMethods.Check)</query>
+	Check.PaymentMethod = VALUE(Catalog.PaymentMethods.Check)</query>
 	</dataSet>
 	<settingsVariant>
 		<dcsset:name>Default</dcsset:name>
@@ -121,9 +98,6 @@ WHERE
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Date</dcsset:field>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>Document</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Memo</dcsset:field>

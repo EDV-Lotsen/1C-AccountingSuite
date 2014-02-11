@@ -1,0 +1,846 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<DataCompositionSchema xmlns="http://v8.1c.ru/8.1/data-composition-system/schema" xmlns:dcscom="http://v8.1c.ru/8.1/data-composition-system/common" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<dataSource>
+		<name>DataSource1</name>
+		<dataSourceType>Local</dataSourceType>
+	</dataSource>
+	<dataSet xsi:type="DataSetQuery">
+		<name>VendorsCashFlow</name>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Document</dataPath>
+			<field>Document</field>
+			<attributeUseRestriction>
+				<group>true</group>
+				<order>true</order>
+			</attributeUseRestriction>
+			<role>
+				<dcscom:parentDimension>Vendor</dcscom:parentDimension>
+				<dcscom:ignoreNullValues>true</dcscom:ignoreNullValues>
+			</role>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Amount</dataPath>
+			<field>Amount</field>
+			<useRestriction>
+				<group>true</group>
+			</useRestriction>
+			<appearance>
+				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+					<dcscor:parameter>Format</dcscor:parameter>
+					<dcscor:value xsi:type="xs:string">NFD=2; NZ=0.00; NG=3,0</dcscor:value>
+				</dcscor:item>
+			</appearance>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Category</dataPath>
+			<field>Category</field>
+			<useRestriction>
+				<group>true</group>
+			</useRestriction>
+			<attributeUseRestriction>
+				<group>true</group>
+				<order>true</order>
+			</attributeUseRestriction>
+			<role>
+				<dcscom:required>true</dcscom:required>
+			</role>
+			<presentationExpression>"Box " + Format(BoxNum, "NG=") + "
+(" + Format(Threshold, "NFD=2; NZ=0.00; NG=3,0") + ")"</presentationExpression>
+			<orderExpression>
+				<dcscom:expression>BoxNum</dcscom:expression>
+				<dcscom:orderType>Asc</dcscom:orderType>
+				<dcscom:autoOrder>false</dcscom:autoOrder>
+			</orderExpression>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Vendor</dataPath>
+			<field>Vendor</field>
+			<useRestriction>
+				<group>true</group>
+			</useRestriction>
+			<attributeUseRestriction>
+				<group>true</group>
+				<order>true</order>
+			</attributeUseRestriction>
+			<role>
+				<dcscom:parentDimension>Category</dcscom:parentDimension>
+				<dcscom:ignoreNullValues>true</dcscom:ignoreNullValues>
+			</role>
+			<presentationExpression>VendorName</presentationExpression>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Threshold</dataPath>
+			<field>Threshold</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Threshold</v8:content>
+				</v8:item>
+			</title>
+			<useRestriction>
+				<field>true</field>
+				<condition>true</condition>
+				<group>true</group>
+				<order>true</order>
+			</useRestriction>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>BoxNum</dataPath>
+			<field>BoxNum</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Box number</v8:content>
+				</v8:item>
+			</title>
+			<useRestriction>
+				<field>true</field>
+				<condition>true</condition>
+				<group>true</group>
+				<order>true</order>
+			</useRestriction>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>ExceedsThreshold</dataPath>
+			<field>ExceedsThreshold</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Amount exceeds threshold</v8:content>
+				</v8:item>
+			</title>
+			<useRestriction>
+				<group>true</group>
+				<order>true</order>
+			</useRestriction>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>PaymentExcluded</dataPath>
+			<field>PaymentExcluded</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Exclude payment from box amount</v8:content>
+				</v8:item>
+			</title>
+			<useRestriction>
+				<group>true</group>
+				<order>true</order>
+			</useRestriction>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>VendorAddress</dataPath>
+			<field>VendorAddress</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Address</v8:content>
+				</v8:item>
+			</title>
+			<useRestriction>
+				<condition>true</condition>
+				<group>true</group>
+				<order>true</order>
+			</useRestriction>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>VendorCity</dataPath>
+			<field>VendorCity</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>City</v8:content>
+				</v8:item>
+			</title>
+			<useRestriction>
+				<condition>true</condition>
+				<group>true</group>
+				<order>true</order>
+			</useRestriction>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>VendorEmail</dataPath>
+			<field>VendorEmail</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Email</v8:content>
+				</v8:item>
+			</title>
+			<useRestriction>
+				<condition>true</condition>
+				<group>true</group>
+				<order>true</order>
+			</useRestriction>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>VendorFederalIdNo</dataPath>
+			<field>VendorFederalIdNo</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Federal ID No.</v8:content>
+				</v8:item>
+			</title>
+			<useRestriction>
+				<condition>true</condition>
+				<group>true</group>
+				<order>true</order>
+			</useRestriction>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>VendorFederalIdType</dataPath>
+			<field>VendorFederalIdType</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Federal ID type</v8:content>
+				</v8:item>
+			</title>
+			<useRestriction>
+				<condition>true</condition>
+				<group>true</group>
+				<order>true</order>
+			</useRestriction>
+			<attributeUseRestriction>
+				<field>true</field>
+				<condition>true</condition>
+				<group>true</group>
+				<order>true</order>
+			</attributeUseRestriction>
+			<presentationExpression>VendorFederalIdTypeNo</presentationExpression>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>VendorFullName</dataPath>
+			<field>VendorFullName</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Secondary name</v8:content>
+				</v8:item>
+			</title>
+			<useRestriction>
+				<condition>true</condition>
+				<group>true</group>
+				<order>true</order>
+			</useRestriction>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>VendorName</dataPath>
+			<field>VendorName</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Name</v8:content>
+				</v8:item>
+			</title>
+			<useRestriction>
+				<field>true</field>
+				<condition>true</condition>
+				<group>true</group>
+				<order>true</order>
+			</useRestriction>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>VendorState</dataPath>
+			<field>VendorState</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>State</v8:content>
+				</v8:item>
+			</title>
+			<useRestriction>
+				<condition>true</condition>
+				<group>true</group>
+				<order>true</order>
+			</useRestriction>
+			<attributeUseRestriction>
+				<field>true</field>
+				<condition>true</condition>
+				<group>true</group>
+				<order>true</order>
+			</attributeUseRestriction>
+			<presentationExpression>VendorStateCode</presentationExpression>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>VendorZip</dataPath>
+			<field>VendorZip</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>ZIP</v8:content>
+				</v8:item>
+			</title>
+			<useRestriction>
+				<condition>true</condition>
+				<group>true</group>
+				<order>true</order>
+			</useRestriction>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>VendorStateCode</dataPath>
+			<field>VendorStateCode</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>State code</v8:content>
+				</v8:item>
+			</title>
+			<useRestriction>
+				<field>true</field>
+				<condition>true</condition>
+				<group>true</group>
+				<order>true</order>
+			</useRestriction>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>VendorFederalIdTypeNo</dataPath>
+			<field>VendorFederalIdTypeNo</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Federal ID type No.</v8:content>
+				</v8:item>
+			</title>
+			<useRestriction>
+				<field>true</field>
+				<condition>true</condition>
+				<group>true</group>
+				<order>true</order>
+			</useRestriction>
+		</field>
+		<dataSource>DataSource1</dataSource>
+		<query>////////////////////////////////////////////////////////////////////////////////
+// 1. Define categories properties. Calculate proper amount sign.
+//
+SELECT
+	Categories.Ref                                     AS Ref,
+	Categories.Threshold                               AS Threshold,
+	CASE WHEN Categories.AmountSign THEN -1 ELSE 1 END AS AmountSign
+INTO
+	Categories
+FROM
+	Catalog.USTaxCategories1099                        AS Categories;
+
+////////////////////////////////////////////////////////////////////////////////
+// 2. Calculate vendors' turnovers in a requested period.
+//
+SELECT
+	CashFlowData.Account.Category1099                  AS Category,
+	CashFlowData.Company                               AS Vendor,
+	Categories.Threshold                               AS Threshold,
+	SUM(Categories.AmountSign * CashFlowData.AmountRC) AS Turnover
+INTO
+	Turnovers
+FROM
+	AccumulationRegister.CashFlowData                  AS CashFlowData
+	LEFT JOIN Categories                               AS Categories
+		ON CashFlowData.Account.Category1099 = Categories.Ref
+WHERE
+	// Select operations by period.
+	(CashFlowData.Period &gt;= &amp;BeginOfPeriod) AND (CashFlowData.Period &lt;= &amp;EndOfPeriod)
+	// Category 1099 must be filled for Account.
+AND (NOT CashFlowData.Account.Category1099 = VALUE(Catalog.USTaxCategories1099.EmptyRef))
+	// Select only operations of closing debt with payment.
+AND (CashFlowData.RecordType = VALUE(AccumulationRecordType.Expense))
+	// Calculate turnover by non-excluded operations only.
+AND (CashFlowData.PaymentMethod.ExcludeFrom1099 = False)
+	
+GROUP BY
+	CashFlowData.Account.Category1099,
+	CashFlowData.Company,
+	Categories.Threshold;
+
+////////////////////////////////////////////////////////////////////////////////
+// 3. Calculate statuses for vendors.
+//    Required for definition whether the vendor overcame at least one threshold.
+//
+SELECT
+	Turnovers.Vendor                                   AS Vendor,
+	MAX(Turnovers.Turnover - Turnovers.Threshold)      AS ThresholdOvercome
+INTO
+	VendorStatuses
+FROM
+	Turnovers                                          AS Turnovers
+GROUP BY
+	Turnovers.Vendor;
+
+////////////////////////////////////////////////////////////////////////////////
+// 4. Calculate cash flow details by vendors selected by desired report mode.
+//
+SELECT
+	CashFlowData.Account.Category1099                  AS Category,
+	CashFlowData.Company                               AS Vendor,
+	CashFlowData.Document                              AS Document,
+	CashFlowData.PaymentMethod.ExcludeFrom1099         AS PaymentExcluded,
+	CASE WHEN (Turnovers.Turnover - Turnovers.Threshold) IS NULL THEN False // Payment included from report (gray)
+	     WHEN (Turnovers.Turnover - Turnovers.Threshold) &gt;= 0    THEN True  // Payment included in report  (black)
+	     ELSE                                                         False // Payment included from report (gray)
+	END                                                AS ExceedsThreshold,
+	Categories.AmountSign * CashFlowData.AmountRC      AS Amount
+INTO
+	Amounts
+FROM
+	AccumulationRegister.CashFlowData                  AS CashFlowData
+	LEFT JOIN VendorStatuses                           AS VendorStatuses
+		ON VendorStatuses.Vendor = CashFlowData.Company
+	LEFT JOIN Turnovers                                AS Turnovers
+		ON  Turnovers.Category   = CashFlowData.Account.Category1099
+		AND Turnovers.Vendor     = CashFlowData.Company
+	LEFT JOIN Categories                               AS Categories
+		ON Categories.Ref        = CashFlowData.Account.Category1099
+WHERE
+	// Select operations by period.
+	(CashFlowData.Period &gt;= &amp;BeginOfPeriod) AND (CashFlowData.Period &lt;= &amp;EndOfPeriod)
+	// Category 1099 must be filled for Account.
+AND (NOT CashFlowData.Account.Category1099 = VALUE(Catalog.USTaxCategories1099.EmptyRef))
+	// Select only operations of closing debt with payment.
+AND (CashFlowData.RecordType = VALUE(AccumulationRecordType.Expense))
+	// Filter by report output mode
+AND (CASE WHEN NOT CashFlowData.Company.Vendor1099   THEN 3 // Non-1099 vendors
+		  WHEN VendorStatuses.ThresholdOvercome &gt;= 0 THEN 1 // 1099 vendors that meet threshold
+		  ELSE                                            2 // 1099 below threshold
+	 END = &amp;Mode);
+
+////////////////////////////////////////////////////////////////////////////////
+// 5. Calculate available payment statuses: included or excluded.
+//
+SELECT
+	True                                               AS PaymentExcluded
+INTO
+	PaymentStatuses
+	
+UNION ALL
+	
+SELECT
+	False;
+	
+
+////////////////////////////////////////////////////////////////////////////////
+// 8. Request vendor details for info presentation in the report.
+//
+SELECT DISTINCT
+	Vendors.Ref                                        AS Ref,
+	Vendors.Description                                AS Name,
+	Vendors.FederalIDType                              AS FederalIdType,
+	Vendors.FederalIDType.Order + 1                    AS FederalIdTypeNo,
+	Vendors.USTaxID                                    AS FederalIdNo,
+	Vendors.FullName                                   AS FullName,
+	Addresses.AddressLine1 +
+		CASE WHEN Addresses.AddressLine2 = "" THEN "" ELSE ", " + Addresses.AddressLine2 END +
+		CASE WHEN Addresses.AddressLine3 = "" THEN "" ELSE ", " + Addresses.AddressLine3 END
+	                                                   AS Address,
+	Addresses.City                                     AS City,
+	Addresses.State                                    AS State,
+	Addresses.State.Code                               AS StateCode,
+	Addresses.ZIP                                      AS Zip,
+	Addresses.Email                                    AS Email
+INTO
+	Vendors
+FROM
+	Amounts                                            AS Amounts
+	LEFT JOIN Catalog.Companies                        AS Vendors
+		ON Vendors.Ref = Amounts.Vendor
+	LEFT JOIN Catalog.Addresses                        AS Addresses
+		ON  Addresses.Owner = Vendors.Ref
+		AND Addresses.DefaultBilling;
+
+////////////////////////////////////////////////////////////////////////////////
+// 7. Output vendor amounts to the form 1099 boxes.
+//
+SELECT
+	Boxes.Ref                                          AS Category,
+	Boxes.Code                                         AS BoxNum,
+	Boxes.Threshold                                    AS Threshold,
+	PaymentStatuses.PaymentExcluded                    AS PaymentExcluded,
+	Vendors.Ref                                        AS Vendor,
+	Vendors.Name                                       AS VendorName,
+	Vendors.FederalIdType                              AS VendorFederalIdType,
+	Vendors.FederalIdTypeNo                            AS VendorFederalIdTypeNo,
+	Vendors.FederalIdNo                                AS VendorFederalIdNo,
+	Vendors.FullName                                   AS VendorFullName,
+	Vendors.Address                                    AS VendorAddress,
+	Vendors.City                                       AS VendorCity,
+	Vendors.State                                      AS VendorState,
+	Vendors.StateCode                                  AS VendorStateCode,
+	Vendors.Zip                                        AS VendorZip,
+	Vendors.Email                                      AS VendorEmail,
+	Amounts.Document                                   AS Document,
+	Amounts.ExceedsThreshold                           AS ExceedsThreshold,
+	Amounts.Amount                                     AS Amount
+{SELECT
+	Category.*,
+	Vendor.*,
+	Document.*,
+	Amount}
+FROM
+	Catalog.USTaxCategories1099                        AS Boxes
+	LEFT JOIN PaymentStatuses                          AS PaymentStatuses
+		ON  True
+	LEFT JOIN Amounts                                  AS Amounts
+		ON  Amounts.Category        = Boxes.Ref
+		AND Amounts.PaymentExcluded = PaymentStatuses.PaymentExcluded
+	LEFT JOIN Vendors                                  AS Vendors
+		ON  Vendors.Ref = Amounts.Vendor
+{WHERE
+	Boxes.Ref.*                                        AS Category,
+	Amounts.Vendor.*                                   AS Vendor,
+	Amounts.Document.*                                 AS Document,
+	Amounts.Amount                                     AS Amount}
+</query>
+	</dataSet>
+	<totalField>
+		<dataPath>Amount</dataPath>
+		<expression>Sum(Amount)</expression>
+	</totalField>
+	<totalField>
+		<dataPath>ExceedsThreshold</dataPath>
+		<expression>Max(ExceedsThreshold)</expression>
+	</totalField>
+	<parameter>
+		<name>BeginOfPeriod</name>
+		<title xsi:type="v8:LocalStringType">
+			<v8:item>
+				<v8:lang>en</v8:lang>
+				<v8:content>Begin of period</v8:content>
+			</v8:item>
+		</title>
+		<valueType>
+			<v8:Type>xs:dateTime</v8:Type>
+			<v8:DateQualifiers>
+				<v8:DateFractions>Date</v8:DateFractions>
+			</v8:DateQualifiers>
+		</valueType>
+		<value xsi:type="xs:dateTime">0001-01-01T00:00:00</value>
+		<useRestriction>true</useRestriction>
+		<expression>BeginOfPeriod(DateAdd(DateTime(1, 1, 1), "Year", &amp;TaxYear - 1), "Year")</expression>
+		<availableAsField>false</availableAsField>
+	</parameter>
+	<parameter>
+		<name>EndOfPeriod</name>
+		<title xsi:type="v8:LocalStringType">
+			<v8:item>
+				<v8:lang>en</v8:lang>
+				<v8:content>End of period</v8:content>
+			</v8:item>
+		</title>
+		<valueType>
+			<v8:Type>xs:dateTime</v8:Type>
+			<v8:DateQualifiers>
+				<v8:DateFractions>Date</v8:DateFractions>
+			</v8:DateQualifiers>
+		</valueType>
+		<value xsi:type="xs:dateTime">0001-01-01T00:00:00</value>
+		<useRestriction>true</useRestriction>
+		<expression>EndOfPeriod(DateAdd(DateTime(1, 1, 1), "Year", &amp;TaxYear - 1), "Year")</expression>
+		<availableAsField>false</availableAsField>
+	</parameter>
+	<parameter>
+		<name>TaxYear</name>
+		<title xsi:type="v8:LocalStringType">
+			<v8:item>
+				<v8:lang>en</v8:lang>
+				<v8:content>Tax year</v8:content>
+			</v8:item>
+		</title>
+		<valueType>
+			<v8:Type>xs:decimal</v8:Type>
+			<v8:NumberQualifiers>
+				<v8:Digits>4</v8:Digits>
+				<v8:FractionDigits>0</v8:FractionDigits>
+				<v8:AllowedSign>Nonnegative</v8:AllowedSign>
+			</v8:NumberQualifiers>
+		</valueType>
+		<value xsi:type="xs:decimal">0</value>
+		<useRestriction>false</useRestriction>
+		<availableValue>
+			<value xsi:type="xs:decimal">2013</value>
+			<presentation xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>2013</v8:content>
+				</v8:item>
+			</presentation>
+		</availableValue>
+		<availableValue>
+			<value xsi:type="xs:decimal">2014</value>
+			<presentation xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>2014</v8:content>
+				</v8:item>
+			</presentation>
+		</availableValue>
+		<inputParameters>
+			<dcscor:item>
+				<dcscor:parameter>Mask</dcscor:parameter>
+				<dcscor:value xsi:type="xs:string">2099</dcscor:value>
+			</dcscor:item>
+			<dcscor:item>
+				<dcscor:parameter>EditFormat</dcscor:parameter>
+				<dcscor:value xsi:type="xs:string">ND=4; NFD=; NG=</dcscor:value>
+			</dcscor:item>
+			<dcscor:item>
+				<dcscor:use>false</dcscor:use>
+				<dcscor:parameter>QuickChoice</dcscor:parameter>
+				<dcscor:value xsi:type="xs:boolean">true</dcscor:value>
+			</dcscor:item>
+		</inputParameters>
+		<denyIncompleteValues>true</denyIncompleteValues>
+		<use>Always</use>
+	</parameter>
+	<parameter>
+		<name>Mode</name>
+		<title xsi:type="v8:LocalStringType">
+			<v8:item>
+				<v8:lang>en</v8:lang>
+				<v8:content>Show</v8:content>
+			</v8:item>
+		</title>
+		<valueType>
+			<v8:Type>xs:decimal</v8:Type>
+			<v8:NumberQualifiers>
+				<v8:Digits>0</v8:Digits>
+				<v8:FractionDigits>0</v8:FractionDigits>
+				<v8:AllowedSign>Any</v8:AllowedSign>
+			</v8:NumberQualifiers>
+		</valueType>
+		<value xsi:nil="true"/>
+		<useRestriction>false</useRestriction>
+		<availableValue>
+			<value xsi:type="xs:decimal">1</value>
+			<presentation xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>1099 vendors that meet threshold</v8:content>
+				</v8:item>
+			</presentation>
+		</availableValue>
+		<availableValue>
+			<value xsi:type="xs:decimal">2</value>
+			<presentation xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>1099 below threshold</v8:content>
+				</v8:item>
+			</presentation>
+		</availableValue>
+		<availableValue>
+			<value xsi:type="xs:decimal">3</value>
+			<presentation xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Non-1099 vendors</v8:content>
+				</v8:item>
+			</presentation>
+		</availableValue>
+		<inputParameters>
+			<dcscor:item>
+				<dcscor:parameter>QuickChoice</dcscor:parameter>
+				<dcscor:value xsi:type="xs:boolean">false</dcscor:value>
+			</dcscor:item>
+		</inputParameters>
+		<denyIncompleteValues>true</denyIncompleteValues>
+		<use>Always</use>
+	</parameter>
+	<settingsVariant>
+		<dcsset:name>Default</dcsset:name>
+		<dcsset:presentation xsi:type="xs:string">Default</dcsset:presentation>
+		<dcsset:settings xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows">
+			<dcsset:dataParameters>
+				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+					<dcscor:parameter>TaxYear</dcscor:parameter>
+					<dcscor:value xsi:type="xs:decimal">2014</dcscor:value>
+					<dcsset:userSettingID>887be16f-e8e2-4a02-bccd-3e0f08b33ec0</dcsset:userSettingID>
+				</dcscor:item>
+				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+					<dcscor:parameter>Mode</dcscor:parameter>
+					<dcscor:value xsi:type="xs:decimal">1</dcscor:value>
+					<dcsset:userSettingID>55f2fb1d-6a4f-4e7f-9a28-4cc6590dc9c4</dcsset:userSettingID>
+				</dcscor:item>
+			</dcsset:dataParameters>
+			<dcsset:item xsi:type="dcsset:StructureItemTable">
+				<dcsset:column>
+					<dcsset:name>Payments included</dcsset:name>
+					<dcsset:groupItems>
+						<dcsset:item xsi:type="dcsset:GroupItemField">
+							<dcsset:field>Category</dcsset:field>
+							<dcsset:groupType>Items</dcsset:groupType>
+							<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+							<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+							<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+						</dcsset:item>
+					</dcsset:groupItems>
+					<dcsset:filter>
+						<dcsset:item xsi:type="dcsset:FilterItemGroup">
+							<dcsset:groupType>OrGroup</dcsset:groupType>
+							<dcsset:item xsi:type="dcsset:FilterItemComparison">
+								<dcsset:left xsi:type="dcscor:Field">PaymentExcluded</dcsset:left>
+								<dcsset:comparisonType>NotFilled</dcsset:comparisonType>
+							</dcsset:item>
+							<dcsset:item xsi:type="dcsset:FilterItemComparison">
+								<dcsset:left xsi:type="dcscor:Field">PaymentExcluded</dcsset:left>
+								<dcsset:comparisonType>Equal</dcsset:comparisonType>
+								<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
+							</dcsset:item>
+						</dcsset:item>
+					</dcsset:filter>
+					<dcsset:order>
+						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
+					</dcsset:order>
+					<dcsset:selection>
+						<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+					</dcsset:selection>
+				</dcsset:column>
+				<dcsset:column>
+					<dcsset:name>Payments excluded</dcsset:name>
+					<dcsset:filter>
+						<dcsset:item xsi:type="dcsset:FilterItemGroup">
+							<dcsset:groupType>OrGroup</dcsset:groupType>
+							<dcsset:item xsi:type="dcsset:FilterItemComparison">
+								<dcsset:left xsi:type="dcscor:Field">PaymentExcluded</dcsset:left>
+								<dcsset:comparisonType>NotFilled</dcsset:comparisonType>
+							</dcsset:item>
+							<dcsset:item xsi:type="dcsset:FilterItemComparison">
+								<dcsset:left xsi:type="dcscor:Field">PaymentExcluded</dcsset:left>
+								<dcsset:comparisonType>Equal</dcsset:comparisonType>
+								<dcsset:right xsi:type="xs:boolean">true</dcsset:right>
+							</dcsset:item>
+						</dcsset:item>
+					</dcsset:filter>
+					<dcsset:order>
+						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
+					</dcsset:order>
+					<dcsset:selection>
+						<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+					</dcsset:selection>
+					<dcsset:outputParameters>
+						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+							<dcscor:use>false</dcscor:use>
+							<dcscor:parameter>Title</dcscor:parameter>
+							<dcscor:value xsi:type="v8:LocalStringType"/>
+						</dcscor:item>
+					</dcsset:outputParameters>
+				</dcsset:column>
+				<dcsset:row>
+					<dcsset:groupItems>
+						<dcsset:item xsi:type="dcsset:GroupItemField">
+							<dcsset:field>Vendor</dcsset:field>
+							<dcsset:groupType>Items</dcsset:groupType>
+							<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+							<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+							<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+						</dcsset:item>
+						<dcsset:item xsi:type="dcsset:GroupItemField">
+							<dcsset:field>VendorFederalIdType</dcsset:field>
+							<dcsset:groupType>Items</dcsset:groupType>
+							<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+							<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+							<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+						</dcsset:item>
+						<dcsset:item xsi:type="dcsset:GroupItemField">
+							<dcsset:field>VendorFederalIdNo</dcsset:field>
+							<dcsset:groupType>Items</dcsset:groupType>
+							<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+							<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+							<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+						</dcsset:item>
+						<dcsset:item xsi:type="dcsset:GroupItemField">
+							<dcsset:field>VendorFullName</dcsset:field>
+							<dcsset:groupType>Items</dcsset:groupType>
+							<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+							<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+							<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+						</dcsset:item>
+						<dcsset:item xsi:type="dcsset:GroupItemField">
+							<dcsset:field>VendorAddress</dcsset:field>
+							<dcsset:groupType>Items</dcsset:groupType>
+							<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+							<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+							<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+						</dcsset:item>
+						<dcsset:item xsi:type="dcsset:GroupItemField">
+							<dcsset:field>VendorCity</dcsset:field>
+							<dcsset:groupType>Items</dcsset:groupType>
+							<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+							<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+							<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+						</dcsset:item>
+						<dcsset:item xsi:type="dcsset:GroupItemField">
+							<dcsset:field>VendorState</dcsset:field>
+							<dcsset:groupType>Items</dcsset:groupType>
+							<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+							<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+							<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+						</dcsset:item>
+						<dcsset:item xsi:type="dcsset:GroupItemField">
+							<dcsset:field>VendorZip</dcsset:field>
+							<dcsset:groupType>Items</dcsset:groupType>
+							<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+							<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+							<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+						</dcsset:item>
+						<dcsset:item xsi:type="dcsset:GroupItemField">
+							<dcsset:field>VendorEmail</dcsset:field>
+							<dcsset:groupType>Items</dcsset:groupType>
+							<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+							<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+							<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+						</dcsset:item>
+					</dcsset:groupItems>
+					<dcsset:order>
+						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
+					</dcsset:order>
+					<dcsset:selection>
+						<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+					</dcsset:selection>
+					<dcsset:conditionalAppearance>
+						<dcsset:item>
+							<dcsset:selection>
+								<dcsset:item>
+									<dcsset:field>Amount</dcsset:field>
+								</dcsset:item>
+							</dcsset:selection>
+							<dcsset:filter>
+								<dcsset:item xsi:type="dcsset:FilterItemComparison">
+									<dcsset:left xsi:type="dcscor:Field">ExceedsThreshold</dcsset:left>
+									<dcsset:comparisonType>Equal</dcsset:comparisonType>
+									<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
+									<dcsset:presentation xsi:type="v8:LocalStringType">
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Below the threshold</v8:content>
+										</v8:item>
+									</dcsset:presentation>
+								</dcsset:item>
+							</dcsset:filter>
+							<dcsset:appearance>
+								<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+									<dcscor:parameter>TextColor</dcscor:parameter>
+									<dcscor:value xsi:type="v8ui:Color">style:ColorDisabledLabel</dcscor:value>
+								</dcscor:item>
+							</dcsset:appearance>
+							<dcsset:useInFieldsHeader>DontUse</dcsset:useInFieldsHeader>
+							<dcsset:useInHeader>DontUse</dcsset:useInHeader>
+							<dcsset:useInParameters>DontUse</dcsset:useInParameters>
+							<dcsset:useInFilter>DontUse</dcsset:useInFilter>
+						</dcsset:item>
+					</dcsset:conditionalAppearance>
+					<dcsset:outputParameters>
+						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+							<dcscor:use>false</dcscor:use>
+							<dcscor:parameter>Title</dcscor:parameter>
+							<dcscor:value xsi:type="v8:LocalStringType"/>
+						</dcscor:item>
+					</dcsset:outputParameters>
+				</dcsset:row>
+				<dcsset:selection>
+					<dcsset:item xsi:type="dcsset:SelectedItemField">
+						<dcsset:field>Amount</dcsset:field>
+					</dcsset:item>
+				</dcsset:selection>
+			</dcsset:item>
+		</dcsset:settings>
+	</settingsVariant>
+</DataCompositionSchema>

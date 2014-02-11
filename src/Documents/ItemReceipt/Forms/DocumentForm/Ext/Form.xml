@@ -67,14 +67,6 @@
 										<Event name="OnChange">CompanyOnChange</Event>
 									</Events>
 								</InputField>
-								<InputField name="CompanyCode" id="78">
-									<DataPath>Object.CompanyCode</DataPath>
-									<ReadOnly>true</ReadOnly>
-									<Width>15</Width>
-									<HorizontalStretch>false</HorizontalStretch>
-									<ContextMenu name="CompanyCodeContextMenu" id="79"/>
-									<ExtendedTooltip name="CompanyCodeExtendedTooltip" id="178"/>
-								</InputField>
 							</ChildItems>
 						</UsualGroup>
 						<UsualGroup name="Mid" id="227">
@@ -517,9 +509,6 @@
 			<UseAlways>
 				<Field>Object.RegisterRecords</Field>
 			</UseAlways>
-			<Columns>
-				<AdditionalColumns table="1/0:5629f92e-f66f-4c53-bb47-360a4fca2d0f"/>
-			</Columns>
 		</Attribute>
 		<Attribute name="IsNewRow" id="3">
 			<Title>

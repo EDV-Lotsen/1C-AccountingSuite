@@ -86,9 +86,9 @@ Procedure Posting(Cancel, PostingMode)
 	
 	// fill in the account posting value table with amounts
 	
-	PostingDatasetVAT = New ValueTable();
-	PostingDatasetVAT.Columns.Add("VATAccount");
-	PostingDatasetVAT.Columns.Add("AmountRC");
+	//PostingDatasetVAT = New ValueTable();
+	//PostingDatasetVAT.Columns.Add("VATAccount");
+	//PostingDatasetVAT.Columns.Add("AmountRC");
 	
 	PostingDataset = New ValueTable();
 	PostingDataset.Columns.Add("Account");
@@ -108,11 +108,11 @@ Procedure Posting(Cancel, PostingMode)
 		Else
 			PostingLine.Account = CurRowLineItems.Product.InventoryOrExpenseAccount;
 		EndIf;	
-		If PriceIncludesVAT Then
-			PostingLine.AmountRC = (CurRowLineItems.LineTotal - CurRowLineItems.VAT) * ExchangeRate;
-		Else
+		//If PriceIncludesVAT Then
+		//	PostingLine.AmountRC = (CurRowLineItems.LineTotal - CurRowLineItems.VAT) * ExchangeRate;
+		//Else
 			PostingLine.AmountRC = CurRowLineItems.LineTotal * ExchangeRate;
-		EndIf;
+		//EndIf;
 		
 		// Calculating diference between ordered cost and invoiced cost of inventory items
 		//If CalculateByPlannedCosting And IsInventoryPosting Then
@@ -129,11 +129,11 @@ Procedure Posting(Cancel, PostingMode)
 		//	EndIf;
 		//EndIf;
 		
-		If CurRowLineItems.VAT > 0 Then
-			PostingLineVAT = PostingDatasetVAT.Add();
-			PostingLineVAT.VATAccount = VAT_FL.VATAccount(CurRowLineItems.VATCode, "Purchase");
-			PostingLineVAT.AmountRC = CurRowLineItems.VAT * ExchangeRate;
-		EndIf;
+		//If CurRowLineItems.VAT > 0 Then
+		//	PostingLineVAT = PostingDatasetVAT.Add();
+		//	PostingLineVAT.VATAccount = VAT_FL.VATAccount(CurRowLineItems.VATCode, "Purchase");
+		//	PostingLineVAT.AmountRC = CurRowLineItems.VAT * ExchangeRate;
+		//EndIf;
 		
 	EndDo;
 	
@@ -169,14 +169,14 @@ Procedure Posting(Cancel, PostingMode)
 	Record.Currency = Currency;
 	Record.AmountRC = DocumentTotal * ExchangeRate;
 	
-	PostingDatasetVAT.GroupBy("VATAccount", "AmountRC");
-	NoOfPostingRows = PostingDatasetVAT.Count();
-	For i = 0 To NoOfPostingRows - 1 Do
-		Record = RegisterRecords.GeneralJournal.AddDebit();
-		Record.Account = PostingDatasetVAT[i][0];
-		Record.Period = Date;
-		Record.AmountRC = PostingDatasetVAT[i][1];	
-	EndDo;	
+	//PostingDatasetVAT.GroupBy("VATAccount", "AmountRC");
+	//NoOfPostingRows = PostingDatasetVAT.Count();
+	//For i = 0 To NoOfPostingRows - 1 Do
+	//	Record = RegisterRecords.GeneralJournal.AddDebit();
+	//	Record.Account = PostingDatasetVAT[i][0];
+	//	Record.Period = Date;
+	//	Record.AmountRC = PostingDatasetVAT[i][1];	
+	//EndDo;	
 	
 	
 	RegisterRecords.ProjectData.Write = True;
@@ -211,7 +211,7 @@ Procedure UndoPosting(Cancel)
 	Query.SetParameter("Ref", Ref);
 	Dataset = Query.Execute().Choose();
 	
-	AllowNegativeInventory = Constants.AllowNegativeInventory.Get();
+	//AllowNegativeInventory = Constants.AllowNegativeInventory.Get();
 	
 	While Dataset.Next() Do
 	
@@ -242,10 +242,10 @@ Procedure UndoPosting(Cancel)
 			Message.Text= StringFunctionsClientServer.SubstituteParametersInString(
 			NStr("en='Insufficient balance on %1';de='Nicht ausreichende Bilanz'"),CurProd);
 			Message.Message();
-			If NOT AllowNegativeInventory Then
+			//If NOT AllowNegativeInventory Then
 				Cancel = True;
 				Return;
-			EndIf;
+			//EndIf;
 		EndIf;
 		
 	EndDo;	
@@ -336,7 +336,7 @@ EndProcedure
 Procedure FillCheckProcessing(Cancel, CheckedAttributes)
 	
 	// Check doubles in items (to be sure of proper orders placement)
-	GeneralFunctions.CheckDoubleItems(Ref, LineItems, "Product, Order, Project, LineNumber",, Cancel);
+	GeneralFunctions.CheckDoubleItems(Ref, LineItems, "Project, Order, Product, LineNumber",, Cancel);
 	
 EndProcedure
 

@@ -15,10 +15,6 @@ Procedure ReconciledDocumentBeforeWrite(Source, Cancel, WriteMode, PostingMode) 
 		Amount = Source.Amount;
 		Date = Source.Date;
 		BankAccount = Source.AccountTo;
-	ElsIf DocumentName = "CashPurchase" Then	
-		Amount = -1*Source.DocumentTotalRC;
-		Date = Source.Date;
-		BankAccount = Source.BankAccount;
 	ElsIf DocumentName = "CashReceipt" Then
 		Amount = Source.CashPayment;
 		Date = Source.Date;
@@ -618,7 +614,7 @@ Procedure CheckPostingResults(AdditionalProperties, RegisterRecords, Cancel) Exp
 	QueryText    = "";
 	QueryTables  = AdditionalProperties.Posting.StructTempTablesManager;
 	CheckList    = New Array;
-	DisplayCodes = GeneralFunctionsReusable.FunctionalOptionValue("DisplayCodes");
+	//DisplayCodes = GeneralFunctionsReusable.FunctionalOptionValue("DisplayCodes");
 	
 	// 1. Create a query for register balances, which document can affect changing it's postings
 	For Each QueryTable In QueryTables Do
@@ -842,7 +838,7 @@ Procedure CheckPostingResults(AdditionalProperties, RegisterRecords, Cancel) Exp
 					// Convert value to it's presentation
 					Value = Selection[Dimension.Name];
 					If TypeOf(Value) = Type("CatalogRef.Companies") Then
-						Presentation = ?(DisplayCodes, TrimAll(Value.Code) + " ", "") + TrimAll(Value.Description);
+						Presentation = TrimAll(Value.Code) + " " + TrimAll(Value.Description);
 						
 					ElsIf TypeOf(Value) = Type("CatalogRef.Products") Then
 						Presentation = TrimAll(Value.Code) + " " + TrimAll(Value.Description);
@@ -1296,5 +1292,3 @@ Procedure ClosedPeriodBeforeWriteBeforeWrite(Source, Cancel, WriteMode, PostingM
 		EndIf;
 	EndIf;
 EndProcedure
-
-

@@ -26,6 +26,11 @@
 				<xr:Common>true</xr:Common>
 			</Visibility>
 		</Command>
+		<Command name="Catalog.SalesPeople.StandardCommand.OpenList">
+			<Visibility>
+				<xr:Common>true</xr:Common>
+			</Visibility>
+		</Command>
 		<Command name="Catalog.PriceLevels.StandardCommand.OpenList">
 			<Visibility>
 				<xr:Common>true</xr:Common>
@@ -33,14 +38,9 @@
 				<xr:Value name="Role.ListUser">false</xr:Value>
 			</Visibility>
 		</Command>
-		<Command name="Catalog.SalesPeople.StandardCommand.OpenList">
-			<Visibility>
-				<xr:Common>true</xr:Common>
-			</Visibility>
-		</Command>
 		<Command name="Catalog.SalesTaxCodes.StandardCommand.OpenList">
 			<Visibility>
-				<xr:Common>true</xr:Common>
+				<xr:Common>false</xr:Common>
 				<xr:Value name="Role.ReportOnly">false</xr:Value>
 				<xr:Value name="Role.ListUser">false</xr:Value>
 			</Visibility>
@@ -67,11 +67,11 @@
 			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
-		<Command name="Catalog.PriceLevels.StandardCommand.OpenList">
+		<Command name="Catalog.SalesPeople.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
-		<Command name="Catalog.SalesPeople.StandardCommand.OpenList">
+		<Command name="Catalog.PriceLevels.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
@@ -93,9 +93,6 @@
 		<Command name="Document.SalesReturn.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
 		</Command>
-		<Command name="Enum.SalesTaxTypes.StandardCommand.OpenList">
-			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
-		</Command>
 		<Command name="Enum.OrderStatuses.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
 		</Command>
@@ -105,10 +102,10 @@
 		<Command name="InformationRegister.PriceList.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
 		</Command>
-		<Command name="Catalog.PriceLevels.StandardCommand.OpenList">
+		<Command name="Catalog.SalesPeople.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
 		</Command>
-		<Command name="Catalog.SalesPeople.StandardCommand.OpenList">
+		<Command name="Catalog.PriceLevels.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
 		</Command>
 		<Command name="Catalog.SalesTaxCodes.StandardCommand.OpenList">
@@ -144,13 +141,16 @@
 		<Command name="Report.ARAging.StandardCommand.Open">
 			<CommandGroup>ActionsPanelReports</CommandGroup>
 		</Command>
+		<Command name="Report.ARAgingDocument.StandardCommand.Open">
+			<CommandGroup>ActionsPanelReports</CommandGroup>
+		</Command>
 		<Command name="Report.SalesTransactionDetail.StandardCommand.Open">
 			<CommandGroup>ActionsPanelReports</CommandGroup>
 		</Command>
 		<Command name="Report.ItemActivityReport.StandardCommand.Open">
 			<CommandGroup>ActionsPanelReports</CommandGroup>
 		</Command>
-		<Command name="Report.SalesInvoiceDetail.StandardCommand.Open">
+		<Command name="0:0034fe87-ffac-4846-860f-0b175608c3fd">
 			<CommandGroup>ActionsPanelReports</CommandGroup>
 		</Command>
 	</CommandsOrder>

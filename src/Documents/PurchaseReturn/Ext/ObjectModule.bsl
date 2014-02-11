@@ -31,7 +31,7 @@ Procedure Posting(Cancel, Mode)
 	PostingDatasetInvOrExp.Columns.Add("InvOrExpAccount");
     PostingDatasetInvOrExp.Columns.Add("AmountRC");
 	
-	AllowNegativeInventory = Constants.AllowNegativeInventory.Get();
+	//AllowNegativeInventory = Constants.AllowNegativeInventory.Get();
 	
 	For Each CurRowLineItems In LineItems Do
 				
@@ -64,10 +64,10 @@ Procedure Posting(Cancel, Mode)
 				Message.Text= StringFunctionsClientServer.SubstituteParametersInString(
 				NStr("en='Insufficient balance on %1';de='Nicht ausreichende Bilanz'"),CurProd);
 				Message.Message();
-				If NOT AllowNegativeInventory Then
+				//If NOT AllowNegativeInventory Then
 					Cancel = True;
 					Return;
-				EndIf;
+				//EndIf;
 			EndIf;
 			
 			// inventory journal update and costing procedure
@@ -177,9 +177,9 @@ Procedure Posting(Cancel, Mode)
 	PostingDataset.Columns.Add("Account");
 	PostingDataset.Columns.Add("AmountRC");
 	
-	PostingDatasetVAT = New ValueTable();
-	PostingDatasetVAT.Columns.Add("VATAccount");
-	PostingDatasetVAT.Columns.Add("AmountRC");
+	//PostingDatasetVAT = New ValueTable();
+	//PostingDatasetVAT.Columns.Add("VATAccount");
+	//PostingDatasetVAT.Columns.Add("AmountRC");
 		
 	For Each CurRowLineItems in LineItems Do		
 		
@@ -189,22 +189,22 @@ Procedure Posting(Cancel, Mode)
 			
 			PostingLine.Account = CurRowLineItems.Product.InventoryOrExpenseAccount;
 			LineAmount = 0;
-			If PriceIncludesVAT Then
-				LineAmount = (CurRowLineItems.LineTotal - CurRowLineItems.VAT) * ExchangeRate;
-				PostingLine.AmountRC = LineAmount;
-			Else
+			//If PriceIncludesVAT Then
+			//	LineAmount = (CurRowLineItems.LineTotal - CurRowLineItems.VAT) * ExchangeRate;
+			//	PostingLine.AmountRC = LineAmount;
+			//Else
 				LineAmount = CurRowLineItems.LineTotal * ExchangeRate; 
 				PostingLine.AmountRC = LineAmount;
-			EndIf;
+			//EndIf;
 		EndIf;	
 			
-		If CurRowLineItems.VAT > 0 Then
-			
-			PostingLineVAT = PostingDatasetVAT.Add();
-			PostingLineVAT.VATAccount = VAT_FL.VATAccount(CurRowLineItems.VATCode, "Purchase");
-			PostingLineVAT.AmountRC = CurRowLineItems.VAT * ExchangeRate;
-							
-		EndIf;
+		//If CurRowLineItems.VAT > 0 Then
+		//	
+		//	PostingLineVAT = PostingDatasetVAT.Add();
+		//	PostingLineVAT.VATAccount = VAT_FL.VATAccount(CurRowLineItems.VATCode, "Purchase");
+		//	PostingLineVAT.AmountRC = CurRowLineItems.VAT * ExchangeRate;
+		//					
+		//EndIf;
 		
     EndDo;
 	
@@ -235,15 +235,15 @@ Procedure Posting(Cancel, Mode)
 		TotalCredit = TotalCredit + PostingDataset[i][1];
 	EndDo;
 
-	PostingDatasetVAT.GroupBy("VATAccount", "AmountRC");
-	NoOfPostingRows = PostingDatasetVAT.Count();
-	For i = 0 To NoOfPostingRows - 1 Do
-		Record = RegisterRecords.GeneralJournal.AddCredit();
-		Record.Account = PostingDatasetVAT[i][0];
-		Record.Period = Date;
-		Record.AmountRC = PostingDatasetVAT[i][1];
-		TotalCredit = TotalCredit + PostingDatasetVAT[i][1];
-	EndDo;
+	//PostingDatasetVAT.GroupBy("VATAccount", "AmountRC");
+	//NoOfPostingRows = PostingDatasetVAT.Count();
+	//For i = 0 To NoOfPostingRows - 1 Do
+	//	Record = RegisterRecords.GeneralJournal.AddCredit();
+	//	Record.Account = PostingDatasetVAT[i][0];
+	//	Record.Period = Date;
+	//	Record.AmountRC = PostingDatasetVAT[i][1];
+	//	TotalCredit = TotalCredit + PostingDatasetVAT[i][1];
+	//EndDo;
 	
 	Record = RegisterRecords.GeneralJournal.AddDebit();
 	Record.Account = APAccount;
@@ -281,16 +281,16 @@ Procedure Filling(FillingData, StandardProcessing)
 
 	If TypeOf(FillingData) = Type("DocumentRef.PurchaseInvoice") Then
 		Company = FillingData.Company;
-		CompanyCode = FillingData.CompanyCode;
+		//CompanyCode = FillingData.CompanyCode;
 		DocumentTotal = FillingData.DocumentTotal;
 		DocumentTotalRC = FillingData.DocumentTotalRC;
 		ParentDocument = FillingData.Ref;
 		Currency = FillingData.Currency;
 		ExchangeRate = FillingData.ExchangeRate;
 		Location = FillingData.Location;
-		VATTotal = FillingData.VATTotal;
+		//VATTotal = FillingData.VATTotal;
 		APAccount = FillingData.APAccount;
-		PriceIncludesVAT = FillingData.PriceIncludesVAT;
+		//PriceIncludesVAT = FillingData.PriceIncludesVAT;
 		
 		For Each CurRowLineItems In FillingData.LineItems Do
 			NewRow = LineItems.Add();
@@ -299,11 +299,10 @@ Procedure Filling(FillingData, StandardProcessing)
 			NewRow.Product = CurRowLineItems.Product;
 			NewRow.ProductDescription = CurRowLineItems.ProductDescription;
 			NewRow.Quantity = CurRowLineItems.Quantity;
-			NewRow.VAT = CurRowLineItems.VAT;
-			NewRow.VATCode = CurRowLineItems.VATCode;	
+			//NewRow.VAT = CurRowLineItems.VAT;
+			//NewRow.VATCode = CurRowLineItems.VATCode;	
 		EndDo;
 		
 	EndIf;
 	
 EndProcedure
-

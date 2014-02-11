@@ -1,95 +1,81 @@
 ﻿//////////////////////////////////////////////////////////////////////////////// 
 // THIS MODULE CONTAINS GENERAL PURPOSE FUNCTIONS AND PROCEDURES
-//
+// 
+
+// Rupasov
+Procedure CheckConnectionAtServer() Export
+	
+	SetPrivilegedMode(True);
+	CurrentSessionNumber = InfoBaseSessionNumber();
+	CurrentUserName = UserName();
+	InfobaseSessions = GetInfobaseSessions();
+	For Each InfobaseSession In InfobaseSessions Do
+		If InfobaseSession.User.Name = CurrentUserName and InfobaseSession.SessionNumber <> CurrentSessionNumber then
+		WriteLogEvent("There is another session working under the same user name", EventLogLevel.Warning,,, 
+			"Application Name: " + InfobaseSession.ApplicationName + Chars.CR +
+			"Computer Name: " + InfobaseSession.ComputerName + Chars.CR +
+			"User Name: " + InfobaseSession.User.Name + " (" + InfobaseSession.User.FullName + ")" + Chars.CR +
+			"SessionStarted: " + InfobaseSession.SessionStarted);
+			Return;
+		endif;
+	EndDo;
+	SetPrivilegedMode(False);
+	
+EndProcedure
 
 
-Function ReturnCompanyMap(NewCompany) Export
+Procedure ObjectBeforeDelete(Source, Cancel) Export
+
+	ReferenceList = New Array();
+	ReferenceList.Add(Source.Ref);
+	SourceObj = Source.Ref.GetObject();	
+	test = cancel;
 	
-	CompanyData = New Map();
-	CompanyData.Insert("api_code", String(NewCompany.Ref.UUID()));
-	CompanyData.Insert("company_name", String(NewCompany.Description));
-	CompanyData.Insert("company_code", String(NewCompany.Code));
+	ReferencedObjects = FindByRef(ReferenceList);
 	
-	If NewCompany.Customer = True And NewCompany.Vendor = True Then
-		
-		CompanyData.Insert("company_type", "customer+vendor");
-	ElsIf NewCompany.Customer = True Then
-		CompanyData.Insert("company_type", "customer");
-	ElsIf NewCompany.Vendor = True Then
-		CompanyData.Insert("company_type", "vendor");
+	If ReferencedObjects.Count() = 0 Then
+
+		AuditLog.AuditLogDeleteBeforeDelete(SourceObj,False);
+
 	Else
-		CompanyData.Insert("company_type", "");
-	EndIF;
-	
-	CompanyData.Insert("website", NewCompany.Website);
-	CompanyData.Insert("price_level", string(NewCompany.PriceLevel));
-	CompanyData.Insert("notes", NewCompany.Notes);
-	CompanyData.Insert("cf1_string", NewCompany.CF1String);
-	CompanyData.Insert("cf1_num", NewCompany.CF1Num);
-	CompanyData.Insert("cf2_string", NewCompany.CF2String);
-	CompanyData.Insert("cf2_num", NewCompany.CF3Num);
-	CompanyData.Insert("cf3_string", NewCompany.CF1String);
-	CompanyData.Insert("cf3_num", NewCompany.CF3Num);
-	CompanyData.Insert("cf4_string", NewCompany.CF4String);
-	CompanyData.Insert("cf4_num", NewCompany.CF4Num);
-	CompanyData.Insert("cf5_string", NewCompany.CF5String);
-	CompanyData.Insert("cf5_num", NewCompany.CF5Num);
-	
-	QueryText = "SELECT
-	            |	Addresses.Ref
-	            |FROM
-	            |	Catalog.Addresses AS Addresses
-	            |WHERE
-	            |	Addresses.Owner.Ref = &Ref";
-	Query = New Query(QueryText);
-	Query.SetParameter("Ref", NewCompany.Ref); 
-	Result = Query.Execute().Unload();
-	
-	CompanyData2 = New Array();
-	
-	Count = 0;
-	If Result.Count() > 0 Then
-		For Each AddressItem in Result Do
-			
-			CompanyData3 = New Map();
-			CompanyData3.Insert("api_code",string(AddressItem.Ref.UUID()));
-			CompanyData3.Insert("address_id",AddressItem.Ref.Description);	
-			CompanyData3.Insert("first_name",AddressItem.Ref.FirstName);
-			CompanyData3.Insert("middle_name",AddressItem.Ref.MiddleName);
-			CompanyData3.Insert("last_name",AddressItem.Ref.LastName);
-			CompanyData3.Insert("address_line1",AddressItem.Ref.AddressLine1);
-			CompanyData3.Insert("address_line2",AddressItem.Ref.AddressLine2);
-			CompanyData3.Insert("city",AddressItem.Ref.City);
-			CompanyData3.Insert("state",string(AddressItem.Ref.state));
-			CompanyData3.Insert("zip",AddressItem.Ref.ZIP);
-			CompanyData3.Insert("country",string(AddressItem.Ref.Country));
-			CompanyData3.Insert("phone",AddressItem.Ref.Phone);
-			CompanyData3.Insert("cell",AddressItem.Ref.Cell);
-			CompanyData3.Insert("email",AddressItem.Ref.Email);
-			CompanyData3.Insert("sales_tax_code",AddressItem.Ref.SalesTaxCode);
-			CompanyData3.Insert("notes",AddressItem.Ref.Notes);
-			If AddressItem.Ref.DefaultShipping = True Then
-				CompanyData3.Insert("default_shipping","true");
-			Else
-				CompanyData3.Insert("default_shipping","false");
-			EndIf;
-			If AddressItem.Ref.DefaultBilling = True Then
-				CompanyData3.Insert("default_shipping","true");
-			Else
-				CompanyData3.Insert("default_shipping","false");
-			EndIf;
-			
-			
-			CompanyData2.Add(CompanyData3);
-			Count = Count + 1;
+		MessageText = "Linked objects found: ";
+		For Each Ref In ReferencedObjects Do
+			MessageText = MessageText + Ref[2] + ":" + TrimAll(Ref[1]) + ", ";
 		EndDo;
+		StringLength = StrLen(MessageText);
+		MessageText = Left(MessageText, StringLength - 2);
+		Message(MessageText);
+		Cancel = True;
 	EndIf;
-	
-	CompanyData.Insert("addresses",CompanyData2);
-	
-	Return CompanyData;
 
+EndProcedure
+
+
+// Inverts the passed filter of collection items,
+// allows selection items by filter on non-equal conition
+//
+// Parameters:
+//  Collection     - Collection, for which filter is used.
+//  PositiveFilter - Array of items selected by equal condition.
+//
+// Return value:
+//  NegativeFilter - Array of items selected by non-equal condition.
+//
+Function InvertCollectionFilter(Collection, PositiveFilter) Export
+	NegativeFilter = New Array;
+	
+	// Add to negative filter all of the items, which are not found in positive.
+	For Each Item In Collection Do
+		If PositiveFilter.Find(Item) = Undefined Then
+			NegativeFilter.Add(Item);
+		EndIf;
+	EndDo;
+	
+	// Return negative filter.
+	Return NegativeFilter;
+	
 EndFunction
+
 
 Function ReturnSaleOrderMap(NewOrder) Export
 	
@@ -134,7 +120,7 @@ Function ReturnSaleOrderMap(NewOrder) Export
 
 	
 	OrderData.Insert("company", string(NewOrder.Company));
-	OrderData.Insert("company_code", NewOrder.CompanyCode);
+	//OrderData.Insert("company_code", NewOrder.CompanyCode);
 	//OrderData.Insert("billTo", NewOrder.BillTo);
 	//OrderData.Insert("confirmTo", NewOrder.ConfirmTo);
 	OrderData.Insert("so_number",NewOrder.Number);
@@ -148,10 +134,10 @@ Function ReturnSaleOrderMap(NewOrder) Export
 	//OrderData.Insert("project", string(NewOrder.project));
 	//OrderData.Insert("class", string(NewOrder.Class));
 	OrderData.Insert("memo", NewOrder.Memo);
-	OrderData.Insert("sales_tax_total", NewOrder.SalesTax);
+	OrderData.Insert("sales_tax_total", NewOrder.SalesTaxRC);
 	//OrderData.Insert("DocumentTotal", NewOrder.DocumentTotal);
 	OrderData.Insert("doc_total", NewOrder.DocumentTotalRC);
-	OrderData.Insert("cf1_string", NewOrder.CF1String);
+	OrderData.Insert("cf1_string",NewOrder.CF1String);
 	//OrderData.Insert("VATTotal", NewOrder.VATTotal);
 	//OrderData.Insert("VATTotalRC", NewOrder.VATTotalRC);
 	//OrderData.Insert("SalesPerson", string(NewOrder.SalesPerson));
@@ -169,8 +155,8 @@ Function ReturnSaleOrderMap(NewOrder) Export
 			OrderData3.Insert("quantity",LineItem.Quantity);
 			//OrderData3.Insert("UM",LineItem.UM);
 			OrderData3.Insert("price",LineItem.Price);
-			OrderData3.Insert("taxable_type",string(LineItem.SalesTaxType));
-			OrderData3.Insert("taxable_amount",LineItem.TaxableAmount);
+			//OrderData3.Insert("taxable_type",string(LineItem.SalesTaxType));
+			//OrderData3.Insert("taxable_amount",LineItem.TaxableAmount);
 			OrderData3.Insert("line_total",LineItem.LineTotal);
 			//OrderData3.Insert("VATCode",LineItem.VATCode);
 			//OrderData3.Insert("VAT",LineItem.VAT);
@@ -191,10 +177,550 @@ Function ReturnSaleOrderMap(NewOrder) Export
 
 EndFunction
 
+
+Function RetrieveTransaction(TransactionData) Export
+	Method = "Get"; Object = "Transaction";
+	
+	// Define API connection settings.
+	ConnectionMethod    = Method;
+	ConnectionAddress   = StrReplace(GetStripeApiEndpoint() + GetStripeApiResourcePath(Object), "{TRANSACTION_ID}", TrimAll(TransactionData));
+	ConnectionSettings  = New Structure;
+	ExternalHandler     = CommonUseClientServer.CommonModule("ApiStripeProtectedRequestor");
+	
+	// Create HTTP connection object within custom protected requestor.
+	ConnectionStructure = InternetConnectionClientServer.CreateConnection(ConnectionAddress, ConnectionSettings,,, ExternalHandler);
+	
+	// Check connection result.
+	If ConnectionStructure.Result = Undefined Then
+		// Return error description.
+		Return ConnectionStructure;
+	EndIf;
+	
+	// Define connection object.
+	Connection        = ConnectionStructure.Result;
+	
+	// Open connection and request Stripe API.
+	RequestStructure  = InternetConnectionClientServer.SendRequest(Connection, ConnectionMethod, ConnectionSettings,,,, ExternalHandler);
+	
+	// Check request result.
+	If RequestStructure.Result = Undefined Then
+		// Return error description.
+		Return RequestStructure;
+	EndIf;
+	
+	// Handle the execution result and return the object structure.
+	Return GetRequestResult(RequestStructure);
+	
+EndFunction
+
+// Returns Stripe API endpoint.
+//
+// Returns:
+//  String - Web address of Stripe API server end point.
+//
+
+Function GetStripeApiEndpoint()
+
+	// Primary Stripe API endpoint for serving client calls.
+	Return "https://api.stripe.com";
+
+EndFunction
+
+
+// Returns pathes to Stripe API resources.
+//
+// Parameters:
+//  ResourceName - String - Type of resource, which path is requested.
+//
+// Returns:
+//  String - Path to requested type of resource of Stripe API.
+//
+
+Function GetStripeApiResourcePath(ResourceName)
+	
+
+	// Case by resource names and their pathes.
+	If    ResourceName = "Account" Then
+		Return "/v1/account";
+		
+	ElsIf ResourceName = "Charges" Then
+		Return "/v1/charges";
+
+	ElsIf ResourceName = "Charge" Then
+		Return "/v1/charges/{CHARGE_ID}";
+
+	ElsIf ResourceName = "ChargeRefund" Then
+		Return "/v1/charges/{CHARGE_ID}/refund";
+
+	ElsIf ResourceName = "Coupons" Then
+		Return "/v1/coupons";
+
+	ElsIf ResourceName = "Coupon" Then
+		Return "/v1/coupons/{COUPON_ID}";
+
+		
+	ElsIf ResourceName = "Customers" Then
+		Return "/v1/customers";
+		
+	ElsIf ResourceName = "Customer" Then
+		Return "/v1/customers/{CUSTOMER_ID}";
+
+	ElsIf ResourceName = "Subscriptions" Then
+		Return "/v1/customers/{CUSTOMER_ID}/subscription";
+		
+	ElsIf ResourceName = "Invoices" Then
+		Return "/v1/invoices";
+		
+	ElsIf ResourceName = "Invoice" Then
+		Return "/v1/invoices/{INVOICE_ID}";
+		
+	ElsIf ResourceName = "InvoiceLines" Then
+		Return "/v1/invoices/{INVOICE_ID}/lines";
+		
+	ElsIf ResourceName = "InvoiceItems" Then
+		Return "/v1/invoiceitems";
+		
+	ElsIf ResourceName = "InvoiceItem" Then
+		Return "/v1/invoiceitems/{INVOICEITEM_ID}";
+
+	ElsIf ResourceName = "Plans" Then
+		Return "/v1/plans";
+		
+	ElsIf ResourceName = "Plan" Then
+		Return "/v1/plans/{PLAN_ID}";
+		
+	ElsIf ResourceName = "Tokens" Then
+		Return "/v1/tokens";
+		
+	ElsIf ResourceName = "Token" Then
+		Return "/v1/tokens/{TOKEN_ID}";
+		
+	ElsIf ResourceName = "Events" Then
+		Return "/v1/events";
+		
+	ElsIf ResourceName = "Event" Then
+		Return "/v1/events/{EVENT_ID}";
+
+	ElsIf ResourceName = "Transaction" Then
+		Return "/v1/transfers/{TRANSACTION_ID}/transactions?count=20?offset=1000";
+
+	Else
+		Return "";
+	EndIf;
+
+EndFunction
+
+#Region Stripe_Result_Description
+
+
+
+// Implementation of Stripe error object, returns error description.
+
+//
+
+// Parameters:
+
+//  ErrorCode - Number - HTTP server status (response) code:
+
+//                       http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html.
+
+//  ErrorJSON - String - JSON object, containing error description.
+
+//   type     - String - The type of error returned:
+
+//                       "invalid_request_error", "api_error", or "card_error".
+
+//   message  - String - A human-readable message giving more details about the error.
+
+//   code     - String - (optional) For card errors, a short string describing
+
+//                                  the kind of card error that occurred.
+
+//   param    - String - (optional) The parameter the error relates to
+
+//                                  if the error is parameter-specific.
+
+//
+
+// Returns:
+
+//  ErrorDescription - A human-readable error description displaying to the user.
+
+//
+
+Function GetErrorDescription(ErrorCode, ErrorJSON = "")
+
+	Var error, type, message, code, param, id, deleted;
+
+	
+
+	// Define error description basing on error code.
+
+	If ErrorCode = 200 Then
+
+		// Everything worked as expected.
+
+		ErrorDescription = NStr("en = 'OK'");
+
+		
+
+	ElsIf ErrorCode = 400 Then
+
+		// Missing a required parameter.
+
+		ErrorDescription = NStr("en = 'Bad request'");
+
+		
+
+	ElsIf ErrorCode = 401 Then
+
+		// No valid API key provided.
+
+		ErrorDescription = NStr("en = 'Unauthorized'");
+
+		
+
+	ElsIf ErrorCode = 402 Then
+
+		// Parameters were valid but request failed.
+
+		ErrorDescription = NStr("en = 'Request failed'");
+
+		
+
+	ElsIf ErrorCode = 404 Then
+
+		// The requested item doesn't exist.
+
+		ErrorDescription = NStr("en = 'Not Found'");
+
+		
+
+	ElsIf ErrorCode = 500
+
+	   Or ErrorCode = 502
+
+	   Or ErrorCode = 503
+
+	   Or ErrorCode = 504
+
+	Then
+
+		// Something went wrong on Stripe's end.
+
+		ErrorDescription = NStr("en = 'Server error'");
+
+	Else
+
+		// Unexpected error ocured.
+
+		ErrorDescription = NStr("en = 'Unknown error'");
+
+	EndIf;
+
+		
+
+	// Decode the error structure.
+
+	ErrorStruct = InternetConnectionClientServer.DecodeJSON(ErrorJSON, New Structure("UseLocalDate", False));
+
+	If TypeOf(ErrorStruct) = Type("Structure") Then
+
+		
+
+		// Check error.
+
+		If ErrorStruct.Property("error", error) Then
+
+			
+
+			// Check error type.
+
+			If error.Property("type", type) Then
+
+				
+
+				// Define error type description.
+
+				If type = "invalid_request_error" Then
+
+					// Invalid request errors arise when your request has invalid parameters.
+
+					ErrorDescription = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = 'Invalid request error: %1'"), ErrorDescription);
+
+					
+
+				ElsIf type = "api_error" Then
+
+					// API errors cover any other type of problem (e.g. a temporary problem with Stripe's servers) and should turn up only very infrequently.
+
+					ErrorDescription = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = 'Stripe API error: %1'"), ErrorDescription);
+
+				
+
+				ElsIf type = "card_error" Then
+
+					// Card errors are the most common type of error you should expect to handle.
+
+					// They result when the user enters a card that can't be charged for some reason.
+
+					If error.Property("code", code) Then
+
+						If    code = "incorrect_number"     Then CodeDescription = "The card number is incorrect.";
+
+						ElsIf code = "invalid_number"       Then CodeDescription = "The card number is not a valid credit card number.";
+
+						ElsIf code = "invalid_expiry_month" Then CodeDescription = "The card's expiration month is invalid.";
+
+						ElsIf code = "invalid_expiry_year"  Then CodeDescription = "The card's expiration year is invalid.";
+
+						ElsIf code = "invalid_cvc"          Then CodeDescription = "The card's security code is invalid.";
+
+						ElsIf code = "expired_card"         Then CodeDescription = "The card has expired.";
+
+						ElsIf code = "incorrect_cvc"        Then CodeDescription = "The card's security code is incorrect.";
+
+						ElsIf code = "incorrect_zip"        Then CodeDescription = "The card's zip code failed validation.";
+
+						ElsIf code = "card_declined"        Then CodeDescription = "The card was declined.";
+
+						ElsIf code = "missing"              Then CodeDescription = "There is no card on a customer that is being charged.";
+
+						ElsIf code = "processing_error"     Then CodeDescription = "An error occurred while processing the card.";
+
+						Else                                     CodeDescription = ErrorDescription; // Default error code description.
+
+						EndIf;
+
+					EndIf;
+
+					
+
+					// Add extended card error description.
+
+					ErrorDescription = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = 'Card error: %1'"), CodeDescription);
+
+				EndIf;
+
+			EndIf;
+
+			
+
+			// Add a human-readable description.
+
+			If error.Property("message", message) Then
+
+				ErrorDescription = ErrorDescription + Chars.LF + message;
+
+			EndIf;
+
+			
+
+		ElsIf ErrorStruct.Property("deleted", deleted) and (deleted = True) Then
+
+			// The requested object is already deleted and operation can not be completed.
+
+			ErrorDescription = NStr("en = 'Invalid request error: Not Found.
+
+			                              |Requested record deleted%1.'");
+
+			ErrorDescription = StringFunctionsClientServer.SubstituteParametersInString(
+
+			                   ErrorDescription, ?(ErrorStruct.Property("id", id), ": " + id, ""));
+
+			
+
+			// Reset the source code 200 OK.
+
+			ErrorCode = 206; // Partial content.
+
+		EndIf;
+
+	EndIf;
+
+	
+
+	// Return error description.
+
+	Return ErrorDescription;
+
+	
+
+EndFunction
+
+
+
+// The function implements handling of request result including error decoding
+
+// and messgae processing.
+
+//
+
+// Parameters:
+
+//  RequestStructure - Structure - Structure with the following key and value:
+
+//   Result                      - String - contents of requested data.
+
+//                               - Undefined - if request failed.
+
+//   Description                 - String - if succeded can take on the following values:
+
+//                                "String" - data returned directly in Result parameter.
+
+//                                 or contain an error message in case of failure.
+
+//  RequestedObjectType - String - Description of Stripe object expected.
+
+//
+
+// Returns:
+
+//  ResultDescription - Structure with following parameters:
+
+//   Result           - Structure - expected object,
+
+//                    - Undefined - if request was failed.
+
+//   Description      - String    - user message, containing error description.
+
+//
+
+Function GetRequestResult(RequestStructure, RequestedObjectType = Undefined)
+
+	var objectType, RequestedObject;
+
+	
+
+	// Check additional properties.
+
+	AdditionalData      = Undefined;
+
+	If RequestStructure.Property("AdditionalData", AdditionalData) Then
+
+		// There is the result code of operation.
+
+		StatusCode = AdditionalData.StatusCode;
+
+		
+
+		// Check response code.
+
+		If (StatusCode = 200) And (TypeOf(RequestStructure.Result) = Type("String")) And Left(TrimAll(RequestStructure.Result), 1) = "{" Then
+
+			// Everything worked as expected.
+
+			RequestedObject = InternetConnectionClientServer.DecodeJSON(RequestStructure.Result, New Structure("UseLocalDate", False));
+
+			// Check returned object type.
+
+			If (RequestedObjectType = Undefined) // Do not check object type.
+
+			Or (RequestedObject.Property("object", objectType) And objectType = RequestedObjectType) Then // Object type match.
+
+				Return ResultDescription(RequestedObject);
+
+			EndIf;
+
+		EndIf;
+
+		
+
+		// An error is occured.
+
+		Return ResultDescription(Undefined, GetErrorDescription(StatusCode, RequestStructure.Result), New Structure("Code, Result", StatusCode, RequestedObject));
+
+		
+
+	Else
+
+		// No additional error description/code available.
+
+		
+
+		// Check returning data is JSON object.
+
+		If (TypeOf(RequestStructure.Result) = Type("String")) And Left(TrimAll(RequestStructure.Result), 1) = "{" Then
+
+			// Everything worked as expected.
+
+			RequestedObject = InternetConnectionClientServer.DecodeJSON(RequestStructure.Result, New Structure("UseLocalDate", False));
+
+			// Check returned object type.
+
+			If (RequestedObjectType = Undefined) // Do not check object type.
+
+			Or (RequestedObject.Property("object", objectType) And objectType = RequestedObjectType) Then // Object type match.
+
+				Return ResultDescription(RequestedObject);
+
+			EndIf;
+
+		EndIf;
+
+		
+
+		// An error is occured.
+
+		Return ResultDescription(Undefined, RequestStructure.Description, New Structure("Code, Result", Undefined, RequestedObject));
+
+	EndIf;
+
+	
+
+EndFunction
+
+
+
+// Returns the structure with passed parameters.
+
+//
+
+// Parameters:
+
+//  Result             - Arbitrary - Returned function value.
+
+//  Description        - String    - Success string or error description.
+
+//  AdditionalData     - Arbitrary - Additional returning parameters.
+
+//
+
+// Returns:
+
+//  Structure with the passed parameters:
+
+//   Result            - Arbitrary.
+
+//   Description       - String.
+
+//   AdditionalData    - Arbitrary.
+
+//
+
+Function ResultDescription(Result, Description = "", AdditionalData = Undefined)
+
+	
+
+	// Return parameters converted to the structure
+
+	Return New Structure("Result, Description, AdditionalData",
+
+	                      Result, Description, AdditionalData);
+
+	
+
+EndFunction
+
+
+
+#EndRegion
+
+
 Function ReturnProductObjectMap(NewProduct) Export
 	
 	ProductData = New Map();
-	//ProductData.Insert("item_code", NewProduct.Code);
+	ProductData.Insert("item_code", NewProduct.Code);
 	ProductData.Insert("api_code", String(NewProduct.Ref.UUID()));
 	ProductData.Insert("item_description", NewProduct.Description);
 	If NewProduct.Type = Enums.InventoryTypes.Inventory Then
@@ -213,32 +739,28 @@ Function ReturnProductObjectMap(NewProduct) Export
 	ProductData.Insert("unit_of_measure", NewProduct.UM.Description);
 	ProductData.Insert("category", NewProduct.Category.Description);
 	Try
-		ProductData.Insert("item_price", GeneralFunctions.RetailPrice(CurrentDate(), NewProduct, Catalogs.Companies.EmptyRef()));
+		ProductData.Insert("item_price",GeneralFunctions.RetailPrice(CurrentDate(),NewProduct,Catalogs.Companies.EmptyRef()));
 	Except
 		ProductData.Insert("item_price",0);
 	EndTry;
-	                                            
-	QueryText = "SELECT
-	            |	PriceListSliceLast.Product.Ref,
-	            |	PriceListSliceLast.PriceLevel.Description,
-	            |	PriceListSliceLast.ProductCategory.Description,
-	            |	PriceListSliceLast.Price,
-	            |	PriceListSliceLast.Cost,
-	            |	PriceListSliceLast.PriceType,
-	            |	PriceListSliceLast.Period
-	            |FROM
-	            |	InformationRegister.PriceList.SliceLast AS PriceListSliceLast
-	            |WHERE
-	            |	PriceListSliceLast.Product = &Product
-	            |	AND PriceListSliceLast.PriceLevel <> &PriceLevel";
-	Query = New Query(QueryText);
+	
+	Query = New Query;
+	Query.Text = "SELECT
+				|	PriceListSliceLast.Product.Ref,
+				|	PriceListSliceLast.PriceLevel.Description,
+				|	PriceListSliceLast.ProductCategory.Description,
+				|	PriceListSliceLast.Price,
+				|	PriceListSliceLast.Cost,
+				|	PriceListSliceLast.PriceType,
+				|	PriceListSliceLast.Period
+				|FROM
+				|	InformationRegister.PriceList.SliceLast AS PriceListSliceLast
+				|WHERE
+				|	PriceListSliceLast.Product = &Product
+				|	AND PriceListSliceLast.PriceLevel <> &PriceLevel";
 	Query.SetParameter("Product", NewProduct.Ref);
-	
-	
 	Query.SetParameter("PriceLevel", Catalogs.PriceLevels.EmptyRef());
-	//Query.SetParameter("ProductCategory", Catalogs.ProductCategories.EmptyRef());
-	QueryResult = Query.Execute().Unload();
-	
+	QueryResult = Query.Execute().Unload();	
 	ProductData2 = New Array();
 	
 	Count = 0;
@@ -256,7 +778,8 @@ Function ReturnProductObjectMap(NewProduct) Export
 	EndIf;
 	
 	ProductData.Insert("price_levels",ProductData2);
-		
+
+
 	ProductData.Insert("cf1_string", NewProduct.CF1String);
 	ProductData.Insert("cf1_num", NewProduct.CF1Num);	
 	ProductData.Insert("cf2_string", NewProduct.CF2String);
@@ -269,9 +792,321 @@ Function ReturnProductObjectMap(NewProduct) Export
 	ProductData.Insert("cf5_num", NewProduct.CF5Num);
 			
 	Return ProductData;	
-
 	
 EndFunction
+
+Function ReturnCompanyObjectMap(NewCompany) Export
+	
+	CompanyData = New Map();
+	CompanyData.Insert("api_code", String(NewCompany.Ref.UUID()));
+	CompanyData.Insert("company_name", String(NewCompany.Description));
+	CompanyData.Insert("company_code", String(NewCompany.Code));
+	
+	If NewCompany.Customer = True And NewCompany.Vendor = True Then
+		
+		CompanyData.Insert("company_type", "customer+vendor");
+	ElsIf NewCompany.Customer = True Then
+		CompanyData.Insert("company_type", "customer");
+	ElsIf NewCompany.Vendor = True Then
+		CompanyData.Insert("company_type", "vendor");
+	Else
+		CompanyData.Insert("company_type", "");
+	EndIF;
+	
+	CompanyData.Insert("website", NewCompany.Website);
+	CompanyData.Insert("price_level", string(NewCompany.PriceLevel));
+	CompanyData.Insert("notes", NewCompany.Notes);
+	CompanyData.Insert("cf1_string", NewCompany.CF1String);
+	CompanyData.Insert("cf1_num", NewCompany.CF1Num);
+	CompanyData.Insert("cf2_string", NewCompany.CF2String);
+	CompanyData.Insert("cf2_num", NewCompany.CF3Num);
+	CompanyData.Insert("cf3_string", NewCompany.CF1String);
+	CompanyData.Insert("cf3_num", NewCompany.CF3Num);
+	CompanyData.Insert("cf4_string", NewCompany.CF4String);
+	CompanyData.Insert("cf4_num", NewCompany.CF4Num);
+	CompanyData.Insert("cf5_string", NewCompany.CF5String);
+	CompanyData.Insert("cf5_num", NewCompany.CF5Num);
+	
+	QueryText = "SELECT
+				|	Addresses.Ref
+				|FROM
+				|	Catalog.Addresses AS Addresses
+				|WHERE
+				|	Addresses.Owner.Ref = &Ref";
+	Query = New Query(QueryText);
+	Query.SetParameter("Ref", NewCompany.Ref); 
+	Result = Query.Execute().Unload();
+	
+	CompanyData2 = New Array();
+	
+	Count = 0;
+	If Result.Count() > 0 Then
+		For Each AddressItem in Result Do
+			
+			CompanyData3 = New Map();
+			CompanyData3.Insert("address_code",string(AddressItem.Ref.Code));
+			CompanyData3.Insert("api_code",string(AddressItem.Ref.UUID()));
+			CompanyData3.Insert("address_id",AddressItem.Ref.Description);	
+			CompanyData3.Insert("first_name",AddressItem.Ref.FirstName);
+			CompanyData3.Insert("middle_name",AddressItem.Ref.MiddleName);
+			CompanyData3.Insert("last_name",AddressItem.Ref.LastName);
+			CompanyData3.Insert("address_line1",AddressItem.Ref.AddressLine1);
+			CompanyData3.Insert("address_line2",AddressItem.Ref.AddressLine2);
+			CompanyData3.Insert("city",AddressItem.Ref.City);
+			CompanyData3.Insert("state",string(AddressItem.Ref.state));
+			CompanyData3.Insert("zip",AddressItem.Ref.ZIP);
+			CompanyData3.Insert("country",string(AddressItem.Ref.Country));
+			CompanyData3.Insert("phone",AddressItem.Ref.Phone);
+			CompanyData3.Insert("cell",AddressItem.Ref.Cell);
+			CompanyData3.Insert("email",AddressItem.Ref.Email);
+			CompanyData3.Insert("sales_tax_code",AddressItem.Ref.SalesTaxCode);
+			CompanyData3.Insert("notes",AddressItem.Ref.Notes);
+			If AddressItem.Ref.DefaultShipping = True Then
+				CompanyData3.Insert("default_shipping","true");
+			Else
+				CompanyData3.Insert("default_shipping","false");
+			EndIf;
+			If AddressItem.Ref.DefaultBilling = True Then
+				CompanyData3.Insert("default_billing","true");
+			Else
+				CompanyData3.Insert("default_billing","false");
+			EndIf;
+			
+			
+			CompanyData2.Add(CompanyData3);
+			Count = Count + 1;
+		EndDo;
+		
+		DataAddresses = New Map();
+		DataAddresses.Insert("addresses", CompanyData2);
+
+	EndIf;
+	
+	CompanyData.Insert("lines",DataAddresses);
+	
+	Return CompanyData;
+	
+EndFunction
+
+Procedure CreateItemCSV(Date, Date2, ItemDataSet) Export
+	
+	
+	// add transactions 1-500
+	
+	For Each DataLine In ItemDataSet Do
+				
+		NewProduct = Catalogs.Products.CreateItem();
+		NewProduct.Type = DataLine.ProductType;
+		NewProduct.Code = DataLine.ProductCode;
+		NewProduct.Description = DataLine.ProductDescription;
+		NewProduct.IncomeAccount = DataLine.ProductIncomeAcct;
+		NewProduct.InventoryOrExpenseAccount = DataLine.ProductInvOrExpenseAcct;
+		NewProduct.COGSAccount = DataLine.ProductCOGSAcct;
+		//NewProduct.PurchaseVATCode = Constants.DefaultPurchaseVAT.Get();
+		//NewProduct.SalesVATCode = Constants.DefaultSalesVAT.Get();
+		//NewProduct.api_code = GeneralFunctions.NextProductNumber();
+		NewProduct.Category = DataLine.ProductCategory;
+		NewProduct.UM = DataLine.ProductUoM;
+		
+		If DataLine.ProductCF1String <> "" Then 
+			NewProduct.CF1String = DataLine.ProductCF1String;
+		EndIf;
+		NewProduct.CF1Num = DataLine.ProductCF1Num;
+		
+		If DataLine.ProductCF2String <> "" Then 
+			NewProduct.CF2String = DataLine.ProductCF2String;
+		EndIf;
+		NewProduct.CF2Num = DataLine.ProductCF2Num;
+		
+		If DataLine.ProductCF3String <> "" Then 
+			NewProduct.CF3String = DataLine.ProductCF3String;
+		EndIf;
+		NewProduct.CF3Num = DataLine.ProductCF3Num;
+		
+		If DataLine.ProductCF4String <> "" Then 
+			NewProduct.CF4String = DataLine.ProductCF4String;
+		EndIf;
+		NewProduct.CF4Num = DataLine.ProductCF4Num;
+		
+		If DataLine.ProductCF5String <> "" Then 
+			NewProduct.CF5String = DataLine.ProductCF5String;
+		EndIf;
+		NewProduct.CF5Num = DataLine.ProductCF5Num;
+
+		If NewProduct.Type = Enums.InventoryTypes.Inventory Then
+			NewProduct.CostingMethod = Enums.InventoryCosting.WeightedAverage;
+		EndIf;
+		NewProduct.Write();
+		
+		If DataLine.ProductPrice <> 0 Then
+			RecordSet = InformationRegisters.PriceList.CreateRecordSet();
+			RecordSet.Filter.Product.Set(NewProduct.Ref);
+			RecordSet.Filter.Period.Set(Date);
+			NewRecord = RecordSet.Add();
+			NewRecord.Period = Date;
+			NewRecord.Product = NewProduct.Ref;
+			NewRecord.Price = DataLine.ProductPrice;
+			RecordSet.Write();
+		EndIf;
+		
+		If DataLine.ProductQty <> 0 Then
+			IBB = Documents.InventoryBeginningBalances.CreateDocument();
+			IBB.Product = NewProduct.Ref;
+			IBB.Location = Catalogs.Locations.MainWarehouse;
+			IBB.Quantity = DataLine.ProductQty;
+			IBB.Value = Dataline.ProductValue;
+			IBB.Date = Date2;
+			IBB.Write(DocumentWriteMode.Posting);
+		EndIf;
+		
+	EndDo;
+
+	
+EndProcedure
+
+Procedure CreateCustomerVendorCSV(IncomeAccount, ExpenseAccount, ARAccount, APAccount, ItemDataSet) Export
+	
+	// add transactions 1-500
+	
+	For Each DataLine In ItemDataSet Do
+		
+		CreatingNewCompany = False;
+		CompanyFound = Catalogs.Companies.FindByDescription(DataLine.CustomerDescription);
+		If CompanyFound = Catalogs.Companies.EmptyRef() Then
+			CreatingNewCompany = True;
+			
+			NewCompany = Catalogs.Companies.CreateItem();
+	
+			NewCompany.Description = DataLine.CustomerDescription;
+			
+			If DataLine.CustomerType = 0 Then
+				NewCompany.Customer = True;
+			ElsIf DataLine.CustomerType = 1 Then
+				NewCompany.Vendor = True;
+			ElsIf DataLine.CustomerType = 2 Then
+				NewCompany.Customer = True;
+				NewCompany.Vendor = True;
+			Else
+				NewCompany.Customer = True;
+			EndIf;
+			
+			NewCompany.DefaultCurrency = Constants.DefaultCurrency.Get();
+			If DataLine.CustomerTerms <> Catalogs.PaymentTerms.EmptyRef() Then
+				NewCompany.Terms = DataLine.CustomerTerms;
+			Else
+				NewCompany.Terms = Catalogs.PaymentTerms.Net30;
+			EndIf;
+			NewCompany.Notes = DataLine.CustomerNotes;
+			NewCompany.USTaxID = DataLine.CustomerVendorTaxID;
+			
+			If DataLine.CustomerCF1String <> "" Then 
+				NewCompany.CF1String = DataLine.CustomerCF1String;
+			EndIf;
+			NewCompany.CF1Num = DataLine.CustomerCF1Num;
+
+			If DataLine.CustomerCF2String <> "" Then 
+				NewCompany.CF2String = DataLine.CustomerCF2String;
+			EndIf;
+			NewCompany.CF2Num = DataLine.CustomerCF2Num;
+
+			If DataLine.CustomerCF3String <> "" Then 
+				NewCompany.CF3String = DataLine.CustomerCF3String;
+			EndIf;
+			NewCompany.CF3Num = DataLine.CustomerCF3Num;
+
+			If DataLine.CustomerCF4String <> "" Then 
+				NewCompany.CF4String = DataLine.CustomerCF4String;
+			EndIf;
+			NewCompany.CF4Num = DataLine.CustomerCF4Num;
+
+			If DataLine.CustomerCF5String <> "" Then 
+				NewCompany.CF5String = DataLine.CustomerCF5String;
+			EndIf;
+			NewCompany.CF5Num = DataLine.CustomerCF5Num;
+
+			If IncomeAccount <> ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
+				NewCompany.IncomeAccount = IncomeAccount;
+			Else
+			EndIf;
+			
+			If ARAccount <> ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
+				NewCompany.ARAccount = ARAccount;
+			Else
+			EndIf;
+			
+			If ExpenseAccount <> ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
+				NewCompany.ExpenseAccount = ExpenseAccount;
+			Else
+			EndIf;
+			
+			If APAccount <> ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
+				NewCompany.APAccount = APAccount;
+			Else
+			EndIf;
+			
+			If DataLine.CustomerSalesPerson <> Catalogs.SalesPeople.EmptyRef() Then
+				NewCompany.SalesPerson = DataLine.CustomerSalesPerson;
+			Else
+			EndIf;
+			
+			If DataLine.CustomerWebsite <> "" Then 
+				NewCompany.Website = DataLine.CustomerWebsite;
+			EndIf;
+			NewCompany.CF4Num = DataLine.CustomerCF4Num;
+			
+			If DataLine.CustomerPriceLevel <> Catalogs.PriceLevels.EmptyRef() Then
+				NewCompany.PriceLevel = DataLine.CustomerPriceLevel;
+			Else
+			EndIf;
+			
+			NewCompany.Write();
+			
+		Else
+			NewCompany = CompanyFound;
+		EndIf;
+		
+		AddressLine = Catalogs.Addresses.CreateItem();
+		AddressLine.Owner = NewCompany.Ref;
+		If DataLine.CustomerAddressID = "" Then
+			AddressLine.Description = "Primary";
+		Else
+			AddressLine.Description = DataLine.CustomerAddressID;
+		EndIf;
+		AddressLine.Salutation = DataLine.AddressSalutation;
+		AddressLine.FirstName = DataLine.CustomerFirstName;
+		AddressLine.MiddleName = DataLine.CustomerMiddleName;
+		AddressLine.LastName = DataLine.CustomerLastName;
+		AddressLine.Suffix = DataLine.AddressSuffix;
+		AddressLine.JobTitle = DataLine.AddressJobTitle;
+		AddressLine.Phone = DataLine.CustomerPhone;
+		AddressLine.Cell = DataLine.CustomerCell;
+		AddressLine.Fax = DataLine.CustomerFax;
+		AddressLine.Email = DataLine.CustomerEmail;
+		AddressLine.AddressLine1 = DataLine.CustomerAddressLine1;
+		AddressLine.AddressLine2 = DataLine.CustomerAddressLine2;
+		AddressLine.AddressLine3 = DataLine.CustomerAddressLine3;
+		AddressLine.City = DataLine.CustomerCity;
+		AddressLine.State = DataLine.CustomerState;
+		AddressLine.Country = DataLine.CustomerCountry;
+		AddressLine.ZIP = DataLine.CustomerZIP;
+		AddressLine.Notes = DataLine.CustomerAddressNotes;
+		AddressLine.DefaultShipping = DataLine.DefaultShippingAddress;
+		AddressLine.DefaultBilling = DataLine.DefaultBillingAddress;
+		If DataLine.AddressSalesPerson <> Catalogs.SalesPeople.EmptyRef() Then
+			AddressLine.SalesPerson = DataLine.AddressSalesPerson;
+		Else
+		EndIf;
+		AddressLine.CF1String = DataLine.AddressCF1String;
+		AddressLine.CF2String = DataLine.AddressCF2String;
+		AddressLine.CF3String = DataLine.AddressCF3String;
+		AddressLine.CF4String = DataLine.AddressCF4String;
+		AddressLine.CF5String = DataLine.AddressCF5String;
+
+		AddressLine.Write();
+				
+	EndDo;
+
+EndProcedure
 
 
 Function EncodeToPercentStr(Str, AdditionalCharacters = "", ExcludeCharacters = "") Export
@@ -487,418 +1322,6 @@ Function GetUserName() Export
 	
 EndFunction
 
-&НаСервере
-Функция НайтиНомерКолонкиРеквизита(ИмяРеквизита, ColumnMapping)
-	
-	Реквизиты = ColumnMapping;
-	
-	НайденныйРеквизит = Неопределено;
-	НайденныеСтроки = Реквизиты.НайтиСтроки(Новый Структура("ИмяРеквизита", ИмяРеквизита));
-	Если НайденныеСтроки.Количество() > 0 Тогда
-		НайденныйРеквизит = НайденныеСтроки[0].НомерКолонки;
-	КонецЕсли;
-	
-	Возврат ?(НайденныйРеквизит = 0, Неопределено, НайденныйРеквизит);
-	
-КонецФункции
-
-
-Procedure CreateItemCSV(Date, Date2, ColumnMapping, SourceAddress) Export
-		
-	Источник = ПолучитьИзВременногоХранилища(SourceAddress);
-	
-	For СчетчикСтрок = 0 To Источник.Количество() - 1 Do
-	
-		//НоваяСтрока = ТаблицаЗагрузки.Добавить();
-		//НоваяСтрока.ФлагЗагрузки = Истина;
-		
-		НомерКолонки = НайтиНомерКолонкиРеквизита("Product OR Service", ColumnMapping);
-		Если НомерКолонки <> Неопределено Тогда
-			TypeString = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
-			If TypeString = "Product" Then
-				ProductType = Enums.InventoryTypes.Inventory;  // НоваяСтрока.ProductType
-			ElsIf TypeString = "Service" Then
-				ProductType = Enums.InventoryTypes.NonInventory;  // НоваяСтрока.ProductType
-			EndIf;
-		КонецЕсли;
-		
-		НомерКолонки = НайтиНомерКолонкиРеквизита("Item code [char(50)]", ColumnMapping);
-		Если НомерКолонки <> Неопределено Тогда
-			ProductCode = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]); //НоваяСтрока.ProductCode
-		КонецЕсли;
-
-        НомерКолонки = НайтиНомерКолонкиРеквизита("Item description [char(150)]", ColumnMapping);
-		Если НомерКолонки <> Неопределено Тогда
-			ProductDescription = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]); // НоваяСтрока.ProductDescription
-		КонецЕсли;
-
-		//НомерКолонки = НайтиНомерКолонкиРеквизита("Income account [ref]");
-		//Если НомерКолонки <> Неопределено Тогда
-		//	IncomeAcctString = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
-		//	If IncomeAcctString <> "" Then
-		//		НоваяСтрока.ProductIncomeAcct = ChartsOfAccounts.ChartOfAccounts.FindByCode(IncomeAcctString);
-		//	Else
-		//		НоваяСтрока.ProductIncomeAcct = Constants.IncomeAccount.Get();
-		//	EndIf;
-		//Иначе
-		//	НоваяСтрока.ProductIncomeAcct = Constants.IncomeAccount.Get();
-		//КонецЕсли;	
-		//
-		//НомерКолонки = НайтиНомерКолонкиРеквизита("Inventory or expense account [ref]");
-		//Если НомерКолонки <> Неопределено Тогда
-		//	InvAcctString = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
-		//	If InvAcctString <> "" Then
-		//		НоваяСтрока.ProductInvOrExpenseAcct = ChartsOfAccounts.ChartOfAccounts.FindByCode(InvAcctString);
-		//	ElsIf TypeString = "Product" Then
-		//		НоваяСтрока.ProductInvOrExpenseAcct = GeneralFunctions.InventoryAcct(Enums.InventoryTypes.Inventory);	
-		//	ElsIf TypeString = "Service" Then
-		//		НоваяСтрока.ProductInvOrExpenseAcct = GeneralFunctions.InventoryAcct(Enums.InventoryTypes.NonInventory);
-		//	EndIf;
-		//Иначе
-		//	If TypeString = "Product" Then
-		//		НоваяСтрока.ProductInvOrExpenseAcct = GeneralFunctions.InventoryAcct(Enums.InventoryTypes.Inventory);	
-		//	ElsIf TypeString = "Service" Then
-		//		НоваяСтрока.ProductInvOrExpenseAcct = GeneralFunctions.InventoryAcct(Enums.InventoryTypes.NonInventory);
-		//	EndIf;
-		//КонецЕсли;
-
-		//НомерКолонки = НайтиНомерКолонкиРеквизита("COGS account [ref]");
-		//Если НомерКолонки <> Неопределено Тогда
-		//	COGSAcctString = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
-		//	If COGSAcctString <> "" Then
-		//		НоваяСтрока.ProductCOGSAcct = ChartsOfAccounts.ChartOfAccounts.FindByCode(COGSAcctString);
-		//	ElsIf TypeString = "Product" Then
-		//		НоваяСтрока.ProductCOGSAcct = GeneralFunctions.GetDefaultCOGSAcct();
-		//	ElsIf TypeString = "Service" Then
-		//		НоваяСтрока.ProductCOGSAcct = GeneralFunctions.GetEmptyAcct();	
-		//	EndIf;
-		//Иначе
-		//	If TypeString = "Product" Then
-		//		НоваяСтрока.ProductCOGSAcct = GeneralFunctions.GetDefaultCOGSAcct();
-		//	ElsIf TypeString = "Service" Then
-		//		НоваяСтрока.ProductCOGSAcct = GeneralFunctions.GetEmptyAcct();	
-		//	EndIf;
-
-		//КонецЕсли;
-
-		//НомерКолонки = НайтиНомерКолонкиРеквизита("Price [num]");
-		//Если НомерКолонки <> Неопределено Тогда
-		//	PriceString = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
-		//	If PriceString <> "" Then
-		//		НоваяСтрока.ProductPrice = PriceString;
-		//	EndIf;
-		//КонецЕсли;
-		//
-		//НомерКолонки = НайтиНомерКолонкиРеквизита("Qty [num]");
-		//Если НомерКолонки <> Неопределено Тогда
-		//	НоваяСтрока.ProductQty = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
-		//КонецЕсли;
-		//
-		//НомерКолонки = НайтиНомерКолонкиРеквизита("Value [num]");
-		//Если НомерКолонки <> Неопределено Тогда
-		//	НоваяСтрока.ProductValue = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
-		//КонецЕсли;
-
-		//НомерКолонки = НайтиНомерКолонкиРеквизита("Preferred vendor [ref]");
-		//Если НомерКолонки <> Неопределено Тогда
-		//	VendorString = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
-		//	If VendorString <> "" Then
-		//		НоваяСтрока.ProductPreferredVendor = Catalogs.Companies.FindByDescription(VendorString);
-		//	EndIf;
-		//КонецЕсли;
-
-		//НомерКолонки = НайтиНомерКолонкиРеквизита("Category [ref]");
-		//Если НомерКолонки <> Неопределено Тогда
-		//	ProductCat = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
-		//	If ProductCat <> "" Then
-		//		НоваяСтрока.ProductCategory = Catalogs.ProductCategories.FindByDescription(ProductCat);
-		//	EndIf;
-		//КонецЕсли;
-
-		//НомерКолонки = НайтиНомерКолонкиРеквизита("UoM [ref]");
-		//Если НомерКолонки <> Неопределено Тогда
-		//	ProductUM = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
-		//	If ProductUM <> "" Then
-		//		НоваяСтрока.ProductUoM = Catalogs.UM.FindByDescription(ProductUM);
-		//	EndIf;
-		//КонецЕсли;
-
-		//НомерКолонки = НайтиНомерКолонкиРеквизита("CF1String [char(100)]");
-		//Если НомерКолонки <> Неопределено Тогда
-		//	НоваяСтрока.ProductCF1String = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
-		//КонецЕсли;
-		//
-		//НомерКолонки = НайтиНомерКолонкиРеквизита("CF1Num [num]");
-		//Если НомерКолонки <> Неопределено Тогда
-		//	НоваяСтрока.ProductCF1Num = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
-		//КонецЕсли;
-
-		//НомерКолонки = НайтиНомерКолонкиРеквизита("CF2String [char(100)]");
-		//Если НомерКолонки <> Неопределено Тогда
-		//	НоваяСтрока.ProductCF2String = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
-		//КонецЕсли;
-		//
-		//НомерКолонки = НайтиНомерКолонкиРеквизита("CF2Num [num]");
-		//Если НомерКолонки <> Неопределено Тогда
-		//	НоваяСтрока.ProductCF2Num = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
-		//КонецЕсли;
-
-		//НомерКолонки = НайтиНомерКолонкиРеквизита("CF3String [char(100)]");
-		//Если НомерКолонки <> Неопределено Тогда
-		//	НоваяСтрока.ProductCF3String = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
-		//КонецЕсли;
-		//
-		//НомерКолонки = НайтиНомерКолонкиРеквизита("CF3Num [num]");
-		//Если НомерКолонки <> Неопределено Тогда
-		//	НоваяСтрока.ProductCF3Num = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
-		//КонецЕсли;
-		//
-		//НомерКолонки = НайтиНомерКолонкиРеквизита("CF4String [char(100)]");
-		//Если НомерКолонки <> Неопределено Тогда
-		//	НоваяСтрока.ProductCF4String = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
-		//КонецЕсли;
-		//
-		//НомерКолонки = НайтиНомерКолонкиРеквизита("CF4Num [num]");
-		//Если НомерКолонки <> Неопределено Тогда
-		//	НоваяСтрока.ProductCF4Num = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
-		//КонецЕсли;
-		//
-		//НомерКолонки = НайтиНомерКолонкиРеквизита("CF5String [char(100)]");
-		//Если НомерКолонки <> Неопределено Тогда
-		//	НоваяСтрока.ProductCF5String = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
-		//КонецЕсли;
-		//
-		//НомерКолонки = НайтиНомерКолонкиРеквизита("CF5Num [num]");
-		//Если НомерКолонки <> Неопределено Тогда
-		//	НоваяСтрока.ProductCF5Num = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
-		//КонецЕсли;
-			
-	EndDo;
-
-	
-	// add transactions 1-500
-	
-	//For Each DataLine In ItemDataSet Do
-	//			
-	//		NewProduct = Catalogs.Products.CreateItem();
-	//		NewProduct.Type = DataLine.ProductType;
-	//		NewProduct.Code = DataLine.ProductCode;
-	//		NewProduct.Description = DataLine.ProductDescription;
-	//		NewProduct.IncomeAccount = DataLine.ProductIncomeAcct;
-	//		NewProduct.InventoryOrExpenseAccount = DataLine.ProductInvOrExpenseAcct;
-	//		NewProduct.COGSAccount = DataLine.ProductCOGSAcct;
-	//		NewProduct.PurchaseVATCode = Constants.DefaultPurchaseVAT.Get();
-	//		NewProduct.SalesVATCode = Constants.DefaultSalesVAT.Get();
-	//		//NewProduct.api_code = GeneralFunctions.NextProductNumber();
-	//		NewProduct.Category = DataLine.ProductCategory;
-	//		NewProduct.UM = DataLine.ProductUoM;
-	//		If DataLine.ProductPreferredVendor <> Catalogs.Companies.EmptyRef() Then
-	//			NewProduct.PreferredVendor = DataLine.ProductPreferredVendor;
-	//		EndIf;
-	//		
-	//		If DataLine.ProductCF1String <> "" Then 
-	//			NewProduct.CF1String = DataLine.ProductCF1String;
-	//		EndIf;
-	//		NewProduct.CF1Num = DataLine.ProductCF1Num;
-	//		
-	//		If DataLine.ProductCF2String <> "" Then 
-	//			NewProduct.CF2String = DataLine.ProductCF2String;
-	//		EndIf;
-	//		NewProduct.CF2Num = DataLine.ProductCF2Num;
-	//		
-	//		If DataLine.ProductCF3String <> "" Then 
-	//			NewProduct.CF3String = DataLine.ProductCF3String;
-	//		EndIf;
-	//		NewProduct.CF3Num = DataLine.ProductCF3Num;
-	//		
-	//		If DataLine.ProductCF4String <> "" Then 
-	//			NewProduct.CF4String = DataLine.ProductCF4String;
-	//		EndIf;
-	//		NewProduct.CF4Num = DataLine.ProductCF4Num;
-	//		
-	//		If DataLine.ProductCF5String <> "" Then 
-	//			NewProduct.CF5String = DataLine.ProductCF5String;
-	//		EndIf;
-	//		NewProduct.CF5Num = DataLine.ProductCF5Num;
-
-	//		If NewProduct.Type = Enums.InventoryTypes.Inventory Then
-	//			NewProduct.CostingMethod = Enums.InventoryCosting.WeightedAverage;
-	//		EndIf;
-	//		NewProduct.Write();
-	//		
-	//		If DataLine.ProductPrice <> 0 Then
-	//			RecordSet = InformationRegisters.PriceList.CreateRecordSet();
-	//			RecordSet.Filter.Product.Set(NewProduct.Ref);
-	//			RecordSet.Filter.Period.Set(Date);
-	//			NewRecord = RecordSet.Add();
-	//			NewRecord.Period = Date;
-	//			NewRecord.Product = NewProduct.Ref;
-	//			NewRecord.Price = DataLine.ProductPrice;
-	//			RecordSet.Write();
-	//		EndIf;
-	//		
-	//		If DataLine.ProductQty <> 0 Then
-	//			IBB = Documents.InventoryBeginningBalances.CreateDocument();
-	//			IBB.Product = NewProduct.Ref;
-	//			IBB.Location = Catalogs.Locations.MainWarehouse;
-	//			IBB.Quantity = DataLine.ProductQty;
-	//			IBB.Value = Dataline.ProductValue;
-	//			IBB.Date = Date2;
-	//			IBB.Write(DocumentWriteMode.Posting);
-	//		EndIf;
-	//		
-	//	EndDo;
-
-EndProcedure
-
-Procedure CreateCustomerVendorCSV(IncomeAccount, ExpenseAccount, ARAccount, APAccount, ItemDataSet) Export
-	
-	// add transactions 1-500
-	
-	For Each DataLine In ItemDataSet Do
-		
-		CreatingNewCompany = False;
-		CompanyFound = Catalogs.Companies.FindByDescription(DataLine.CustomerDescription);
-		If CompanyFound = Catalogs.Companies.EmptyRef() Then
-			CreatingNewCompany = True;
-			
-			NewCompany = Catalogs.Companies.CreateItem();
-			If DataLine.CustomerCode <> "" Then
-				NewCompany.Code = DataLine.CustomerCode;
-			EndIf;
-	
-			NewCompany.Description = DataLine.CustomerDescription;
-			
-			If DataLine.CustomerType = 0 Then
-				NewCompany.Customer = True;
-			ElsIf DataLine.CustomerType = 1 Then
-				NewCompany.Vendor = True;
-			ElsIf DataLine.CustomerType = 2 Then
-				NewCompany.Customer = True;
-				NewCompany.Vendor = True;
-			Else
-				NewCompany.Customer = True;
-			EndIf;
-			
-			NewCompany.DefaultCurrency = Constants.DefaultCurrency.Get();
-			If DataLine.CustomerTerms <> Catalogs.PaymentTerms.EmptyRef() Then
-				NewCompany.Terms = DataLine.CustomerTerms;
-			Else
-				NewCompany.Terms = Catalogs.PaymentTerms.Net30;
-			EndIf;
-			NewCompany.Notes = DataLine.CustomerNotes;
-			NewCompany.USTaxID = DataLine.CustomerVendorTaxID;
-			
-			If DataLine.CustomerCF1String <> "" Then 
-				NewCompany.CF1String = DataLine.CustomerCF1String;
-			EndIf;
-			NewCompany.CF1Num = DataLine.CustomerCF1Num;
-
-			If DataLine.CustomerCF2String <> "" Then 
-				NewCompany.CF2String = DataLine.CustomerCF2String;
-			EndIf;
-			NewCompany.CF2Num = DataLine.CustomerCF2Num;
-
-			If DataLine.CustomerCF3String <> "" Then 
-				NewCompany.CF3String = DataLine.CustomerCF3String;
-			EndIf;
-			NewCompany.CF3Num = DataLine.CustomerCF3Num;
-
-			If DataLine.CustomerCF4String <> "" Then 
-				NewCompany.CF4String = DataLine.CustomerCF4String;
-			EndIf;
-			NewCompany.CF4Num = DataLine.CustomerCF4Num;
-
-			If DataLine.CustomerCF5String <> "" Then 
-				NewCompany.CF5String = DataLine.CustomerCF5String;
-			EndIf;
-			NewCompany.CF5Num = DataLine.CustomerCF5Num;
-
-			If IncomeAccount <> ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
-				NewCompany.IncomeAccount = IncomeAccount;
-			Else
-			EndIf;
-			
-			If ARAccount <> ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
-				NewCompany.ARAccount = ARAccount;
-			Else
-			EndIf;
-			
-			If ExpenseAccount <> ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
-				NewCompany.ExpenseAccount = ExpenseAccount;
-			Else
-			EndIf;
-			
-			If APAccount <> ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
-				NewCompany.APAccount = APAccount;
-			Else
-			EndIf;
-			
-			If DataLine.CustomerSalesPerson <> Catalogs.SalesPeople.EmptyRef() Then
-				NewCompany.SalesPerson = DataLine.CustomerSalesPerson;
-			Else
-			EndIf;
-			
-			If DataLine.CustomerWebsite <> "" Then 
-				NewCompany.Website = DataLine.CustomerWebsite;
-			EndIf;
-			NewCompany.CF4Num = DataLine.CustomerCF4Num;
-			
-			If DataLine.CustomerPriceLevel <> Catalogs.PriceLevels.EmptyRef() Then
-				NewCompany.PriceLevel = DataLine.CustomerPriceLevel;
-			Else
-			EndIf;
-			
-			NewCompany.Write();
-			
-		Else
-			NewCompany = CompanyFound;
-		EndIf;
-		
-		AddressLine = Catalogs.Addresses.CreateItem();
-		AddressLine.Owner = NewCompany.Ref;
-		If DataLine.CustomerAddressID = "" Then
-			AddressLine.Description = "Primary";
-		Else
-			AddressLine.Description = DataLine.CustomerAddressID;
-		EndIf;
-		AddressLine.Salutation = DataLine.AddressSalutation;
-		AddressLine.FirstName = DataLine.CustomerFirstName;
-		AddressLine.MiddleName = DataLine.CustomerMiddleName;
-		AddressLine.LastName = DataLine.CustomerLastName;
-		AddressLine.Suffix = DataLine.AddressSuffix;
-		AddressLine.JobTitle = DataLine.AddressJobTitle;
-		AddressLine.Phone = DataLine.CustomerPhone;
-		AddressLine.Cell = DataLine.CustomerCell;
-		AddressLine.Fax = DataLine.CustomerFax;
-		AddressLine.Email = DataLine.CustomerEmail;
-		AddressLine.AddressLine1 = DataLine.CustomerAddressLine1;
-		AddressLine.AddressLine2 = DataLine.CustomerAddressLine2;
-		AddressLine.AddressLine3 = DataLine.CustomerAddressLine3;
-		AddressLine.City = DataLine.CustomerCity;
-		AddressLine.State = DataLine.CustomerState;
-		AddressLine.Country = DataLine.CustomerCountry;
-		AddressLine.ZIP = DataLine.CustomerZIP;
-		AddressLine.Notes = DataLine.CustomerAddressNotes;
-		AddressLine.DefaultShipping = DataLine.DefaultShippingAddress;
-		AddressLine.DefaultBilling = DataLine.DefaultBillingAddress;
-		If DataLine.AddressSalesPerson <> Catalogs.SalesPeople.EmptyRef() Then
-			AddressLine.SalesPerson = DataLine.AddressSalesPerson;
-		Else
-		EndIf;
-		AddressLine.CF1String = DataLine.AddressCF1String;
-		AddressLine.CF2String = DataLine.AddressCF2String;
-		AddressLine.CF3String = DataLine.AddressCF3String;
-		AddressLine.CF4String = DataLine.AddressCF4String;
-		AddressLine.CF5String = DataLine.AddressCF5String;
-
-		AddressLine.Write();
-				
-	EndDo;
-
-EndProcedure
-
-
 Procedure SendWebhook(webhook_address, WebhookMap) Export
 	
 	Headers = New Map();
@@ -927,7 +1350,7 @@ Function GetSystemTitle() Export
 	
 EndFunction
 
-Function GetCustomTemplate(ObjectName, TemplateName) Export
+Function GetCustomTemplate(TemplateName) Export
 	
 	Query = New Query;
 	
@@ -935,10 +1358,8 @@ Function GetCustomTemplate(ObjectName, TemplateName) Export
 					|FROM
 					|	InformationRegister.CustomPrintForms
 					|WHERE
-					|	ObjectName=&ObjectName
-					|	AND	TemplateName=&TemplateName";
+					|	TemplateName=&TemplateName";
 	
-	Query.Parameters.Insert("ObjectName", ObjectName);
 	Query.Parameters.Insert("TemplateName", TemplateName);
 		
 	Cursor = Query.Execute().Choose();
@@ -946,7 +1367,7 @@ Function GetCustomTemplate(ObjectName, TemplateName) Export
 	Result = Undefined;
 	
 	If Cursor.Next() Then
-		Result = Cursor.Template.Get(); //.Получить();
+		Result = Cursor.Template.Get();
 	Else
 	EndIf;
 	
@@ -999,96 +1420,87 @@ Function GetLogo() Export
 	
 EndFunction
 
+Function GetFooter1() Export
+	
+	Query = New Query;
+	
+	Query.Text = "Select Template AS Template
+					|FROM
+					|	InformationRegister.CustomPrintForms
+					|WHERE
+					|	ObjectName=&ObjectName
+					|	AND	TemplateName=&TemplateName";
+	
+	Query.Parameters.Insert("ObjectName", "footer1");
+	Query.Parameters.Insert("TemplateName", "footer1");
+		
+	Cursor = Query.Execute().Choose();
+	
+	Result = Undefined;
+	
+	If Cursor.Next() Then
+		Result = Cursor.Template.Get();
+	Else
+	EndIf;
+	
+	Return Result;
+	
+EndFunction
 
-Procedure Update_1_2_29_19() Export
+Function GetFooter2() Export
 	
-	If Constants.Update_1_2_29_19.Get() = False Then
+	Query = New Query;
 	
-		BeginTransaction();
-									
-		Query = New Query("SELECT
-		                  |	Products.Ref
-		                  |FROM
-		                  |	Catalog.Products AS Products");
-						  
-		QueryResult = Query.Execute();
+	Query.Text = "Select Template AS Template
+					|FROM
+					|	InformationRegister.CustomPrintForms
+					|WHERE
+					|	ObjectName=&ObjectName
+					|	AND	TemplateName=&TemplateName";
+	
+	Query.Parameters.Insert("ObjectName", "footer2");
+	Query.Parameters.Insert("TemplateName", "footer2");
 		
-		If QueryResult.IsEmpty() Then
-		Else
-			Dataset = QueryResult.Choose();
-			While Dataset.Next() Do
-				
-				If Dataset.Ref.Type = Enums.InventoryTypes.NonInventory Then
-					If Dataset.Ref.InventoryOrExpenseAccount.IsEmpty() Then
-						
-						ProductObj = Dataset.Ref.GetObject();
-						ProductObj.InventoryOrExpenseAccount = Constants.ExpenseAccount.Get();
-						ProductObj.Write();
-						
-					EndIf;
-					
-				EndIf;
-				
-			EndDo;
-		EndIf;
-		
-		Constants.Update_1_2_29_19.Set(True);
-		
-		CommitTransaction();
-				
-	EndIf
-		
-EndProcedure
+	Cursor = Query.Execute().Choose();
+	
+	Result = Undefined;
+	
+	If Cursor.Next() Then
+		Result = Cursor.Template.Get();
+	Else
+	EndIf;
+	
+	Return Result;
+	
+EndFunction
 
-Procedure FullAccessUpdateProc() Export
+Function GetFooter3() Export
+	
+	Query = New Query;
+	
+	Query.Text = "Select Template AS Template
+					|FROM
+					|	InformationRegister.CustomPrintForms
+					|WHERE
+					|	ObjectName=&ObjectName
+					|	AND	TemplateName=&TemplateName";
+	
+	Query.Parameters.Insert("ObjectName", "footer3");
+	Query.Parameters.Insert("TemplateName", "footer3");
+		
+	Cursor = Query.Execute().Choose();
+	
+	Result = Undefined;
+	
+	If Cursor.Next() Then
+		Result = Cursor.Template.Get();
+	Else
+	EndIf;
+	
+	Return Result;
+	
+EndFunction
 
-If Constants.FullAccessUpdate.Get() = False Then
-	
-		Query = New Query("SELECT
-		                  |	UserList.Ref
-		                  |FROM
-		                  |	Catalog.UserList AS UserList");
-						  
-		QueryResult = Query.Execute();
-
-		If QueryResult.IsEmpty() Then
-		Else
-			Dataset = QueryResult.Choose();
-			While Dataset.Next() Do
-				
-				UserObj = Dataset.Ref.GetObject();
-				TestUser = InfoBaseUsers.FindByName(UserObj.Description);
-				If TestUser.Roles.Contains(Metadata.Roles.FullAccess1) Then
-				UserObj.AdminAccess = True;
-				
-				UserObj.Sales = "Full";
-				UserObj.Purchasing = "Full";
-				UserObj.Warehouse = "Full";
-				UserObj.BankReceive = "Full";
-				UserObj.BankSend = "Full";
-				UserObj.Accounting = "Full";
-				UserObj.ReportsOnly = false;
-				
-				UserObj.Write();	
-				Endif;
-				       
-			EndDo;
-		EndIf;
-		
-		// delete the support@ user from Catalog.UserList
-		
-	try
-		supportusr = Catalogs.UserList.FindByDescription("support@accountingsuite.com");
-		supportobj = supportusr.GetObject();
-		supportobj.Delete();
-	except
-		endtry;
-		
-	
-	Constants.FullAccessUpdate.Set(True);	
-	
-	Endif;
-EndProcedure
 
 
 // Selects item's price from a price-list.
@@ -1158,8 +1570,8 @@ Function RetailPrice(ActualDate, Product, Customer) Export
 		Return item_cat_price
 	Else
 		Return 0;
-	EndIf;
-				
+	EndIf;	
+	
 EndFunction
 
 // Marks the document (cash receipt, cash sale) as "deposited" (included) by a deposit document.
@@ -1421,6 +1833,27 @@ Function GetShipToAddress(Company) Export
 	
 EndFunction
 
+Function GetBillToAddress(Company) Export
+	
+	Query = New Query("SELECT
+	                  |	Addresses.Ref
+	                  |FROM
+	                  |	Catalog.Addresses AS Addresses
+	                  |WHERE
+	                  |	Addresses.Owner = &Company
+	                  |	AND Addresses.DefaultBilling = TRUE");
+	Query.SetParameter("Company", Company);				  
+	QueryResult = Query.Execute();
+	
+	If QueryResult.IsEmpty() Then
+		Return Catalogs.Addresses.EmptyRef();
+	Else
+		Dataset = QueryResult.Unload();
+		Return Dataset[0][0];
+	EndIf;
+	
+EndFunction
+
 Function ProductLastCost(Product) Export
 	
 	Query = New Query("SELECT
@@ -1453,7 +1886,7 @@ Procedure CheckDoubleItems(Ref, LineItems, Columns, Filter = Undefined, Cancel) 
 	CurrentItems = New Structure(Columns);
 	DoubledItems = New Structure(Columns);
 	CompareItems = StrReplace(Columns, "LineNumber", "");
-	DisplayCodes = FunctionalOptionValue("DisplayCodes");
+	//DisplayCodes = FunctionalOptionValue("DisplayCodes");
 	DoublesCount = 0;
 	Doubles      = "";
 	RefMetadata  = Ref.Metadata();
@@ -1491,7 +1924,7 @@ Procedure CheckDoubleItems(Ref, LineItems, Columns, Filter = Undefined, Cancel) 
 							Presentation = NStr("en = '<Empty>'");
 							
 						ElsIf TypeOf(Value) = Type("CatalogRef.Companies") Then
-							Presentation = ?(DisplayCodes, TrimAll(Value.Code) + " ", "") + TrimAll(Value.Description);
+							Presentation = TrimAll(Value.Code) + " " + TrimAll(Value.Description);;
 							
 						ElsIf TypeOf(Value) = Type("CatalogRef.Products") Then
 							Presentation = TrimAll(Value.Code) + " " + TrimAll(Value.Description);
@@ -1541,7 +1974,7 @@ Procedure CheckDoubleItems(Ref, LineItems, Columns, Filter = Undefined, Cancel) 
 				Presentation = NStr("en = '<Empty>'");
 				
 			ElsIf TypeOf(Value) = Type("CatalogRef.Companies") Then
-				Presentation = ?(DisplayCodes, TrimAll(Value.Code) + " ", "") + TrimAll(Value.Description);
+				Presentation = TrimAll(Value.Code) + " " + TrimAll(Value.Description);
 				
 			ElsIf TypeOf(Value) = Type("CatalogRef.Products") Then
 				Presentation = TrimAll(Value.Code) + " " + TrimAll(Value.Description);
@@ -1600,31 +2033,6 @@ Procedure NormalizeArray(Array) Export
 	EndDo;
 	
 EndProcedure
-
-// Inverts the passed filter of collection items,
-// allows selection items by filter on non-equal conition
-//
-// Parameters:
-//  Collection     - Collection, for which filter is used.
-//  PositiveFilter - Array of items selected by equal condition.
-//
-// Return value:
-//  NegativeFilter - Array of items selected by non-equal condition.
-//
-Function InvertCollectionFilter(Collection, PositiveFilter) Export
-	NegativeFilter = New Array;
-	
-	// Add to negative filter all of the items, which are not found in positive.
-	For Each Item In Collection Do
-		If PositiveFilter.Find(Item) = Undefined Then
-			NegativeFilter.Add(Item);
-		EndIf;
-	EndDo;
-	
-	// Return negative filter.
-	Return NegativeFilter;
-	
-EndFunction
 
 // Compares two passed objects by their properties (as analogue to FillPropertyValues)
 // Compares Source property values with values of properties of the Receiver. Matching is done by property names.
@@ -2028,7 +2436,7 @@ Procedure FirstLaunch() Export
 		Constants.PurchaseLiabilityAccount.Set(Account.Ref);
 		
 		Account = ChartsOfAccounts.ChartOfAccounts.CostVariance.GetObject();
-		Account.AccountType = Enums.AccountTypes.Expense;
+		Account.AccountType = Enums.AccountTypes.CostOfSales;
 		Account.Currency = Catalogs.Currencies.USD;
 		Account.CashFlowSection = Enums.CashFlowSections.Operating;
 		Account.Order = Account.Code;
@@ -2072,11 +2480,7 @@ Procedure FirstLaunch() Export
 		PT = Catalogs.PaymentTerms.Net15.GetObject();
 		PT.Days = 15;
 		PT.Write();
-				
-		// Turning on the US Financial Localization
-		
-		Constants.USFinLocalization.Set(True);
-		
+						
 		// Setting 1099 thresholds
 		
 		Cat1099 = Catalogs.USTaxCategories1099.Box1.GetObject();
@@ -3642,25 +4046,7 @@ NewCountry = Catalogs.Countries.CreateItem();
 NewCountry.Description = "Zimbabwe";
 NewCountry.Code = "ZW";
 NewCountry.Write();
-		
-		// VAT Setup
-		
-		Constants.DefaultPurchaseVAT.Set(Catalogs.VATCodes.S);
-		Constants.DefaultSalesVAT.Set(Catalogs.VATCodes.S);
-		Constants.PriceIncludesVAT.Set(True);
-		
-		VATCode = Catalogs.VATCodes.S.GetObject();
-		VATCode.Description = "Zero-rated (0%)";
-		VATCode.SalesInclRate = 0;
-		VATCode.SalesExclRate = 0;
-		VATCode.SalesAccount = ChartsOfAccounts.ChartOfAccounts.TaxPayable;
-		VATCode.PurchaseInclRate = 0;
-		VATCode.PurchaseExclRate = 0;
-		VATCode.PurchaseAccount = ChartsOfAccounts.ChartOfAccounts.TaxPayable;		
-		VATCode.Write();
-		
-		//
-		
+				
 		Constants.CF1Type.Set("None");
 		Constants.CF2Type.Set("None");
 		Constants.CF3Type.Set("None");
@@ -3676,7 +4062,7 @@ NewCountry.Write();
 		// mt_change	
 		
 	//Adding Yodlee transaction categories and respective business accounts 
-	AddBankTransactionCategoriesAndAccounts();
+	//AddBankTransactionCategoriesAndAccounts();
 		
 	CommitTransaction();
 	

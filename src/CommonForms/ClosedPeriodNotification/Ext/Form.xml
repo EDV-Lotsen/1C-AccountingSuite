@@ -5,7 +5,7 @@
 		<HorizontalAlign>Right</HorizontalAlign>
 		<Autofill>false</Autofill>
 		<ChildItems>
-			<Button name="FormCommandOK" id="12">
+			<Button name="CommandOK" id="1">
 				<Type>CommandBarButton</Type>
 				<CommandName>Form.Command.CommandOK</CommandName>
 				<Title>
@@ -14,14 +14,14 @@
 						<v8:content>Yes</v8:content>
 					</v8:item>
 				</Title>
-				<ExtendedTooltip name="FormCommandOKExtendedTooltip" id="13"/>
+				<ExtendedTooltip name="CommandOKExtendedTooltip" id="2"/>
 			</Button>
-			<Button name="FormButtonNo" id="16">
+			<Button name="FormButtonNo" id="6">
 				<Type>CommandBarButton</Type>
 				<CommandName>Form.StandardCommand.No</CommandName>
-				<ExtendedTooltip name="FormButtonNoExtendedTooltip" id="17"/>
+				<ExtendedTooltip name="FormButtonNoExtendedTooltip" id="7"/>
 			</Button>
-			<Button name="FormCommandCancel" id="14">
+			<Button name="FormButtonCancel" id="8">
 				<Type>CommandBarButton</Type>
 				<Representation>PictureAndText</Representation>
 				<CommandName>Form.StandardCommand.Cancel</CommandName>
@@ -29,7 +29,7 @@
 					<xr:Ref>StdPicture.Delete</xr:Ref>
 					<xr:LoadTransparent>true</xr:LoadTransparent>
 				</Picture>
-				<ExtendedTooltip name="FormCommandCancelExtendedTooltip" id="15"/>
+				<ExtendedTooltip name="FormButtonCancelExtendedTooltip" id="9"/>
 			</Button>
 		</ChildItems>
 	</AutoCommandBar>
@@ -37,28 +37,22 @@
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
 	</Events>
 	<ChildItems>
-		<UsualGroup name="Group1" id="7">
+		<UsualGroup name="Group1" id="10">
 			<Group>Horizontal</Group>
 			<ShowTitle>false</ShowTitle>
-			<ExtendedTooltip name="Group1ExtendedTooltip" id="8"/>
+			<ExtendedTooltip name="Group1ExtendedTooltip" id="11"/>
 			<ChildItems>
-				<PictureDecoration name="QuestionMark" id="4">
+				<PictureDecoration name="Decoration1" id="12">
 					<Width>4</Width>
 					<Height>2</Height>
-					<Title formatted="false">
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Question mark</v8:content>
-						</v8:item>
-					</Title>
 					<Picture>
 						<xr:Ref>CommonPicture.Question32</xr:Ref>
-						<xr:LoadTransparent>false</xr:LoadTransparent>
+						<xr:LoadTransparent>true</xr:LoadTransparent>
 					</Picture>
-					<ContextMenu name="QuestionMarkContextMenu" id="5"/>
-					<ExtendedTooltip name="QuestionMarkExtendedTooltip" id="6"/>
+					<ContextMenu name="Decoration1ContextMenu" id="13"/>
+					<ExtendedTooltip name="Decoration1ExtendedTooltip" id="14"/>
 				</PictureDecoration>
-				<LabelDecoration name="Notification" id="1">
+				<LabelDecoration name="Notification" id="15">
 					<Font ref="style:NormalTextFont" kind="StyleItem"/>
 					<Title formatted="false">
 						<v8:item>
@@ -69,17 +63,17 @@ Are you sure you want to make this change?</v8:content>
 						</v8:item>
 					</Title>
 					<HorizontalAlign>Center</HorizontalAlign>
-					<ContextMenu name="NotificationContextMenu" id="2"/>
-					<ExtendedTooltip name="NotificationExtendedTooltip" id="3"/>
+					<ContextMenu name="NotificationContextMenu" id="16"/>
+					<ExtendedTooltip name="NotificationExtendedTooltip" id="17"/>
 				</LabelDecoration>
 			</ChildItems>
 		</UsualGroup>
-		<InputField name="Password" id="9">
+		<InputField name="Password" id="3">
 			<DataPath>Password</DataPath>
 			<TitleFont ref="style:NormalTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
 			<PasswordMode>true</PasswordMode>
-			<ContextMenu name="PasswordContextMenu" id="10"/>
-			<ExtendedTooltip name="PasswordExtendedTooltip" id="11"/>
+			<ContextMenu name="PasswordContextMenu" id="4"/>
+			<ExtendedTooltip name="PasswordExtendedTooltip" id="5"/>
 		</InputField>
 	</ChildItems>
 	<Attributes>

@@ -120,11 +120,11 @@ Procedure Posting(Cancel, PostingMode)
 		PostingDatasetInvOrExp.Columns.Add("InvOrExpAccount");
 		PostingDatasetInvOrExp.Columns.Add("AmountRC");
 		
-		PostingDatasetVAT = New ValueTable();
-		PostingDatasetVAT.Columns.Add("VATAccount");
-		PostingDatasetVAT.Columns.Add("AmountRC");
+		//PostingDatasetVAT = New ValueTable();
+		//PostingDatasetVAT.Columns.Add("VATAccount");
+		//PostingDatasetVAT.Columns.Add("AmountRC");
 		
-		AllowNegativeInventory = Constants.AllowNegativeInventory.Get();
+		//AllowNegativeInventory = Constants.AllowNegativeInventory.Get();
 		
 		For Each CurRowLineItems In LineItems Do
 						
@@ -159,10 +159,10 @@ Procedure Posting(Cancel, PostingMode)
 					NStr("en='Insufficient balance on %1';de='Nicht ausreichende Bilanz'"),CurProd);
 					
 					Message.Message();
-					If NOT AllowNegativeInventory Then
+					//If NOT AllowNegativeInventory Then
 						Cancel = True;
 						Return;
-					EndIf;
+					//EndIf;
 				EndIf;
 				
 				// inventory journal update and costing procedure
@@ -271,19 +271,19 @@ Procedure Posting(Cancel, PostingMode)
 			
 			PostingLineIncome = PostingDatasetIncome.Add();
 			PostingLineIncome.IncomeAccount = CurRowLineItems.Product.IncomeAccount;	
-			If PriceIncludesVAT Then
-				PostingLineIncome.AmountRC = (CurRowLineItems.LineTotal - CurRowLineItems.VAT) * ExchangeRate;
-			Else
+			//If PriceIncludesVAT Then
+			//	PostingLineIncome.AmountRC = (CurRowLineItems.LineTotal - CurRowLineItems.VAT) * ExchangeRate;
+			//Else
 				PostingLineIncome.AmountRC = CurRowLineItems.LineTotal * ExchangeRate;
-			EndIf;
+			//EndIf;
 						
-			If CurRowLineItems.VAT > 0 Then
-				
-				PostingLineVAT = PostingDatasetVAT.Add();
-				PostingLineVAT.VATAccount = VAT_FL.VATAccount(CurRowLineItems.VATCode, "Sales");
-				PostingLineVAT.AmountRC = CurRowLineItems.VAT * ExchangeRate;
-								
-			EndIf;
+			//If CurRowLineItems.VAT > 0 Then
+			//	
+			//	PostingLineVAT = PostingDatasetVAT.Add();
+			//	PostingLineVAT.VATAccount = VAT_FL.VATAccount(CurRowLineItems.VATCode, "Sales");
+			//	PostingLineVAT.AmountRC = CurRowLineItems.VAT * ExchangeRate;
+			//					
+			//EndIf;
 			
 		EndDo;
 		
@@ -304,6 +304,31 @@ Procedure Posting(Cancel, PostingMode)
 		Record.AmountRC = DocumentTotal * ExchangeRate;
 		Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Company] = Company;
 		Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Document] = Ref;
+		
+		If DiscountRC <> 0 Then			
+			Record = RegisterRecords.GeneralJournal.AddDebit();
+			DiscountsAccount = Constants.DiscountsAccount.Get();
+			If DiscountsAccount = ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
+				Record.Account = Constants.ExpenseAccount.Get();
+			Else
+				Record.Account = DiscountsAccount;
+			EndIf;
+			Record.Period = Date;
+			Record.AmountRC = DiscountRC * -1 * ExchangeRate;				
+		EndIf;
+		
+		If ShippingRC <> 0 Then			
+			Record = RegisterRecords.GeneralJournal.AddCredit();
+			ShippingExpenseAccount = Constants.ShippingExpenseAccount.Get();
+			If ShippingExpenseAccount = ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
+				Record.Account = Constants.IncomeAccount.Get();
+			Else
+				Record.Account = ShippingExpenseAccount;
+			EndIf;
+			Record.Period = Date;
+			Record.AmountRC = ShippingRC * ExchangeRate;				
+		EndIf;
+
 		
 		PostingDatasetIncome.GroupBy("IncomeAccount", "AmountRC");
 		NoOfPostingRows = PostingDatasetIncome.Count();
@@ -332,21 +357,21 @@ Procedure Posting(Cancel, PostingMode)
 			Record.AmountRC = PostingDatasetInvOrExp[i][1];				
 		EndDo;
 				
-		If SalesTax > 0 Then
+		If SalesTaxRC > 0 Then
 			Record = RegisterRecords.GeneralJournal.AddCredit();
 			Record.Account = Constants.TaxPayableAccount.Get();
 			Record.Period = Date;
-			Record.AmountRC = SalesTax * ExchangeRate;
+			Record.AmountRC = SalesTaxRC * ExchangeRate;
 		EndIf;		
 
-		PostingDatasetVAT.GroupBy("VATAccount", "AmountRC");
-		NoOfPostingRows = PostingDatasetVAT.Count();
-		For i = 0 To NoOfPostingRows - 1 Do
-			Record = RegisterRecords.GeneralJournal.AddCredit();
-			Record.Account = PostingDatasetVAT[i][0];
-			Record.Period = Date;
-			Record.AmountRC = PostingDatasetVAT[i][1];	
-		EndDo;	
+		//PostingDatasetVAT.GroupBy("VATAccount", "AmountRC");
+		//NoOfPostingRows = PostingDatasetVAT.Count();
+		//For i = 0 To NoOfPostingRows - 1 Do
+		//	Record = RegisterRecords.GeneralJournal.AddCredit();
+		//	Record.Account = PostingDatasetVAT[i][0];
+		//	Record.Period = Date;
+		//	Record.AmountRC = PostingDatasetVAT[i][1];	
+		//EndDo;	
 					
 	EndIf;
 	
@@ -364,6 +389,20 @@ Procedure Posting(Cancel, PostingMode)
 	EndDo;
 	
 	// end writing ProjectData
+	
+	For Each CurRowLineItems In LineItems Do
+		If NOT CurRowLineItems.Order.IsEmpty() Then
+
+			RegisterRecords.OrderTransactions.Write = True;	
+			Record = RegisterRecords.OrderTransactions.Add();
+			Record.RecordType = AccumulationRecordType.Expense;
+			Record.Period = Date;
+			Record.Order = CurRowLineItems.Order;
+			Record.Amount = CurRowLineItems.LineTotal;
+			
+		EndIf;
+	EndDo;
+
 
 	 	 	
 EndProcedure
@@ -403,7 +442,12 @@ Procedure OnCopy(CopiedObject)
 EndProcedure
 
 Procedure Filling(FillingData, StandardProcessing)
+	                                            
 	Var TabularSectionData; Cancel = False;
+	
+	// Set the doc's number if it's new (Rupasov)
+	If ThisObject.IsNew() Then ThisObject.SetNewNumber() EndIf;
+
 	
 	// Filling on the base of other referenced object
 	If FillingData <> Undefined Then
@@ -450,28 +494,136 @@ Procedure Filling(FillingData, StandardProcessing)
 		// 6. Clear used temporary document data
 		DocumentFilling.ClearDataStructuresAfterFilling(AdditionalProperties);
 		
-		If (TypeOf(FillingData) = Type("DocumentRef.SalesOrder")) Then
-			For Each SaleOrderItem In LineItems Do
-				CurTaxRate = (FillingData.ShipTo.SalesTaxCode.TaxRate)/100;
-				SalesTax = SalesTax + (SaleOrderItem.TaxableAmount*CurTaxRate);
-			EndDo;
-
-		Else
-			
-			For Each SaleOrderItem In LineItems Do
-				CurTaxRate = (SaleOrderItem.Order.ShipTo.SalesTaxCode.TaxRate)/100;
-				SalesTax = SalesTax + (SaleOrderItem.TaxableAmount*CurTaxRate);
-			EndDo;
-		Endif;
-		DocumentTotal = DocumentTotal + SalesTax;
-		DocumentTotalRC = DocumentTotalRC + SalesTax;
-
+		//If (TypeOf(FillingData) = Type("DocumentRef.SalesOrder")) Then
+		//	For Each SaleOrderItem In LineItems Do
+		//		CurTaxRate = (FillingData.ShipTo.SalesTaxCode.TaxRate)/100;
+		//		SalesTax = SalesTax + (SaleOrderItem.TaxableAmount*CurTaxRate);
+		//	EndDo;
+		//Else
+		//	
+		//	For Each SaleOrderItem In LineItems Do
+		//		CurTaxRate = (SaleOrderItem.Order.ShipTo.SalesTaxCode.TaxRate)/100;
+		//		SalesTax = SalesTax + (SaleOrderItem.TaxableAmount*CurTaxRate);
+		//	EndDo;
+		//Endif;
+		//DocumentTotal = DocumentTotal + SalesTax;
+		//DocumentTotalRC = DocumentTotalRC + SalesTax;
 		
+		ThisObject.LineSubtotalRC = LineItems.Total("LineTotal");
+		ThisObject.SubTotalRC = ThisObject.LineSubtotalRC;
+		
+		If (TypeOf(FillingData) = Type("DocumentRef.SalesOrder")) Then
+
+				//prepay beg
+				SOString = "";
+				ExistBalance = False;
+				
+				Query = New Query;
+				Query.Text = "SELECT
+				             |	CashReceipt.Ref,
+				             |	CashReceipt.Company,
+				             |	CashReceipt.Date
+				             |FROM
+				             |	Document.CashReceipt AS CashReceipt
+				             |WHERE
+				             |	CashReceipt.SalesOrder = &SaleOrder";
+				Query.SetParameter("SaleOrder", FillingData.Ref);
+				QueryResult = Query.Execute().Unload();
+				
+				Total = 0;
+				For Each CashRec In QueryResult Do
+					
+					Query.Text = "SELECT
+					             |	-GeneralJournalBalance.AmountBalance AS Bal,
+					             |	GeneralJournalBalance.Account.Ref
+					             |FROM
+					             |	AccountingRegister.GeneralJournal.Balance AS GeneralJournalBalance
+					             |WHERE
+					             |	GeneralJournalBalance.ExtDimension2 = &CashReceipt
+					             |	AND GeneralJournalBalance.ExtDimension1 = &Company";
+					Query.SetParameter("CashReceipt", CashRec.Ref);
+					Query.SetParameter("Company",CashRec.Company);
+
+					QueryResult2 = Query.Execute().Unload();
+										
+					Total = Total + QueryResult2[0].Bal;
+					
+				EndDo;
+				
+				Query.Text = "SELECT
+				             |	-GeneralJournalBalance.AmountBalance AS Bal,
+				             |	GeneralJournalBalance.Account.Ref
+				             |FROM
+				             |	AccountingRegister.GeneralJournal.Balance AS GeneralJournalBalance
+				             |WHERE
+ 							 |			ExtDimension1 = &Company AND
+			                 |          (ExtDimension2 REFS Document.SalesReturn AND
+			                 |			ExtDimension2.ReturnType = VALUE(Enum.ReturnTypes.CreditMemo))";
+				Query.SetParameter("Company",FillingData.Company);
+
+				QueryResult3 = Query.Execute().Unload();
+				
+				Total = Total + QueryResult3.Total("Bal");
+
+				
+				If Total > 0 Then
+						SOString = SOString + FillingData.Ref;
+				EndIf;
+				PrePaySO = SOString;
+				
+				//
+
+			Try	
+				RefNum = FillingData.RefNum;
+			Except;
+			EndTry;
+			
+			Try	
+				BillTo = FillingData.BillTo;
+			Except;
+			EndTry;
+
+			Try	
+				DropshipCustomer = FillingData.DropshipCustomer;
+			Except;
+			EndTry;
+
+			Try	
+				DropshipAddress = FillingData.DropshipAddress;
+			Except;
+			EndTry;
+			
+			DiscountRC = FillingData.DiscountRC;
+			DiscountPercent = FillingData.DiscountPercent;
+
+			If DiscountPercent <> 0 Or DiscountRC <> 0 Then
+				LineSubtotalRC = LineItems.Total("LineTotal");
+				SubTotalRC = LineItems.Total("LineTotal") + DiscountRC;
+
+				DocTotal = LineSubtotalRC + DiscountRC + ShippingRC + SalesTaxRC;
+				DocumentTotal = DocTotal;
+				DocumentTotalRC = DocTotal * ExchangeRate;
+			EndIf;
+
+
+			
+		EndIf;	
+
+
 	EndIf;
 	
 EndProcedure
 
 Procedure FillCheckProcessing(Cancel, CheckedAttributes)
+	
+	If DiscountRC > 0 Then
+		Message = New UserMessage();
+		Message.Text=NStr("en='A discount should be a negative number'");
+		//Message.Field = "Object.Description";
+		Message.Message();
+		Cancel = True;
+		Return;
+	EndIf;
 	
 	// Check doubles in items (to be sure of proper orders placement)
 	GeneralFunctions.CheckDoubleItems(Ref, LineItems, "Project, Order, Product, LineNumber",, Cancel);
@@ -484,13 +636,13 @@ Procedure OnWrite(Cancel)
 	
 	If NOT companies_webhook = "" Then
 		
-		double_slash = Find(companies_webhook, "//");
-		
-		companies_webhook = Right(companies_webhook,StrLen(companies_webhook) - double_slash - 1);
-		
-		first_slash = Find(companies_webhook, "/");
-		webhook_address = Left(companies_webhook,first_slash - 1);
-		webhook_resource = Right(companies_webhook,StrLen(companies_webhook) - first_slash + 1); 		
+		//double_slash = Find(companies_webhook, "//");
+		//
+		//companies_webhook = Right(companies_webhook,StrLen(companies_webhook) - double_slash - 1);
+		//
+		//first_slash = Find(companies_webhook, "/");
+		//webhook_address = Left(companies_webhook,first_slash - 1);
+		//webhook_resource = Right(companies_webhook,StrLen(companies_webhook) - first_slash + 1); 		
 		
 		WebhookMap = New Map(); 
 		WebhookMap.Insert("apisecretkey",Constants.APISecretKey.Get());
@@ -500,11 +652,10 @@ Procedure OnWrite(Cancel)
 		Else
 			WebhookMap.Insert("action","update");
 		EndIf;
-		WebhookMap.Insert("sales_invoice_number",Ref.Number);
+		WebhookMap.Insert("api_code",String(Ref.UUID()));
 		
 		WebhookParams = New Array();
-		WebhookParams.Add(webhook_address);
-		WebhookParams.Add(webhook_resource);
+		WebhookParams.Add(Constants.sales_invoices_webhook.Get());
 		WebhookParams.Add(WebhookMap);
 		LongActions.ExecuteInBackground("GeneralFunctions.SendWebhook", WebhookParams);
 	
@@ -518,23 +669,22 @@ Procedure BeforeDelete(Cancel)
 	
 	If NOT companies_webhook = "" Then
 		
-		double_slash = Find(companies_webhook, "//");
-		
-		companies_webhook = Right(companies_webhook,StrLen(companies_webhook) - double_slash - 1);
-		
-		first_slash = Find(companies_webhook, "/");
-		webhook_address = Left(companies_webhook,first_slash - 1);
-		webhook_resource = Right(companies_webhook,StrLen(companies_webhook) - first_slash + 1); 		
+		//double_slash = Find(companies_webhook, "//");
+		//
+		//companies_webhook = Right(companies_webhook,StrLen(companies_webhook) - double_slash - 1);
+		//
+		//first_slash = Find(companies_webhook, "/");
+		//webhook_address = Left(companies_webhook,first_slash - 1);
+		//webhook_resource = Right(companies_webhook,StrLen(companies_webhook) - first_slash + 1); 		
 		
 		WebhookMap = New Map(); 
 		WebhookMap.Insert("apisecretkey",Constants.APISecretKey.Get());
 		WebhookMap.Insert("resource","salesinvoices");
 		WebhookMap.Insert("action","delete");
-		WebhookMap.Insert("sales_invoice_number",Ref.Number);
+		WebhookMap.Insert("api_code",String(Ref.UUID()));
 		
 		WebhookParams = New Array();
-		WebhookParams.Add(webhook_address);
-		WebhookParams.Add(webhook_resource);
+		WebhookParams.Add(Constants.sales_invoices_webhook.Get());
 		WebhookParams.Add(WebhookMap);
 		LongActions.ExecuteInBackground("GeneralFunctions.SendWebhook", WebhookParams);
 	

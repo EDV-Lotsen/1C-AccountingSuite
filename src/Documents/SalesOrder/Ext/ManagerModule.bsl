@@ -100,7 +100,7 @@ Function Query_OrdersRegistered(TablesList)
 	|	0                                     AS Invoiced,
 	// ------------------------------------------------------
 	// Attributes
-	|	LineItems.Ref.DeliveryDate            AS DeliveryDate
+	|	LineItems.Ref.PromisedDate            AS DeliveryDate
 	// ------------------------------------------------------
 	|FROM
 	|	Document.SalesOrder.LineItems AS LineItems
@@ -177,7 +177,7 @@ EndProcedure
 
 Procedure Print(Spreadsheet, Ref)	Export
 	
-	CustomTemplate = GeneralFunctions.GetCustomTemplate("Document.SalesOrder", "Sales order");
+	CustomTemplate = GeneralFunctions.GetCustomTemplate("Sales order");
 	
 	If CustomTemplate = Undefined Then
 		Template = Documents.SalesOrder.GetTemplate("PF_MXL_SalesOrder");
@@ -199,22 +199,26 @@ Procedure Print(Spreadsheet, Ref)	Export
    |	SalesOrder.Company,
    |	SalesOrder.Date,
    |	SalesOrder.DocumentTotal,
-   |	SalesOrder.SalesTax,
-   |	SalesOrder.PriceIncludesVAT,
+   |	SalesOrder.SalesTaxRC,
    |	SalesOrder.Number,
    |	SalesOrder.ShipTo,
    |	SalesOrder.Currency,
-   |	SalesOrder.VATTotal,
    |	SalesOrder.LineItems.(
    |		Product,
    |		ProductDescription,
    |		Product.UM AS UM,
    |		Quantity,
-   |		VATCode,
-   |		VAT,
    |		Price,
    |		LineTotal
-   |	)
+   |	),
+   |	SalesOrder.BillTo,
+   |	SalesOrder.LineSubtotalRC,
+   |	SalesOrder.DiscountRC,
+   |	SalesOrder.SubTotalRC,
+   |	SalesOrder.ShippingRC,
+   |	SalesOrder.DocumentTotalRC,
+   |	SalesOrder.DropshipCustomer,
+   |	SalesOrder.DropshipAddress
    |FROM
    |	Document.SalesOrder AS SalesOrder
    |WHERE
@@ -228,12 +232,13 @@ Procedure Print(Spreadsheet, Ref)	Export
    While Selection.Next() Do
 	   
 		BinaryLogo = GeneralFunctions.GetLogo();
-		MyPicture = New Picture(BinaryLogo);
-		Pict=Template.Drawings.Add(SpreadsheetDocumentDrawingType.Picture);
-		IndexOf=Template.Drawings.IndexOf(Pict);
-		Template.Drawings[IndexOf].Picture = MyPicture;
-		Template.Drawings[IndexOf].Line = New Line(SpreadsheetDocumentDrawingLineType.None);
-		Template.Drawings[IndexOf].Place(Spreadsheet.Area("R3C1:R6C2"));
+		LogoPicture = New Picture(BinaryLogo);
+		//Pict=Template.Drawings.Add(SpreadsheetDocumentDrawingType.Picture);
+		//IndexOf=Template.Drawings.IndexOf(Pict);
+		//Template.Drawings[IndexOf].Picture = MyPicture;
+		//Template.Drawings[IndexOf].Line = New Line(SpreadsheetDocumentDrawingLineType.None);
+		//Template.Drawings[IndexOf].Place(Spreadsheet.Area("R3C1:R6C2"));
+		DocumentPrinting.FillLogoInDocumentTemplate(Template, LogoPicture);
    
 	   
    //	FirstDocument = True;
@@ -259,8 +264,12 @@ Procedure Print(Spreadsheet, Ref)	Export
 	
 	
 	UsBill = PrintTemplates.ContactInfoDatasetUs();
-	ThemShip = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemShip", Selection.ShipTo);
-	ThemBill = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemBill", Catalogs.Addresses.EmptyRef());
+	If Selection.DropshipAddress <> Catalogs.Addresses.EmptyRef() Then
+		ThemShip = PrintTemplates.ContactInfoDataset(Selection.DropshipCustomer, "ThemShip", Selection.DropshipAddress);
+	Else
+		ThemShip = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemShip", Selection.ShipTo);
+	EndIf;
+	ThemBill = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemBill", Selection.BillTo);
 	
 	TemplateArea.Parameters.Fill(UsBill);
 	TemplateArea.Parameters.Fill(ThemShip);
@@ -276,53 +285,47 @@ Procedure Print(Spreadsheet, Ref)	Export
 	 
 	 SelectionLineItems = Selection.LineItems.Choose();
 	 TemplateArea = Template.GetArea("LineItems");
-	 LineTotalSum = 0;
+	 //LineTotalSum = 0;
 	 While SelectionLineItems.Next() Do
 		 
 		 TemplateArea.Parameters.Fill(SelectionLineItems);
 		 LineTotal = SelectionLineItems.LineTotal;
-		 LineTotalSum = LineTotalSum + LineTotal;
+		 //LineTotalSum = LineTotalSum + LineTotal;
 		 Spreadsheet.Put(TemplateArea, SelectionLineItems.Level());
 		 
 	 EndDo;
 	 
-	If Selection.SalesTax <> 0 Then;
-		 TemplateArea = Template.GetArea("Subtotal");
-		 TemplateArea.Parameters.Subtotal = LineTotalSum;
+		TemplateArea = Template.GetArea("LineSubtotalRC");
+		TemplateArea.Parameters.LineSubtotal = Selection.LineSubtotalRC;
 		 Spreadsheet.Put(TemplateArea);
 		 
-		 TemplateArea = Template.GetArea("SalesTax");
-		 TemplateArea.Parameters.SalesTaxTotal = Selection.SalesTax;
+		TemplateArea = Template.GetArea("DiscountRC");
+		TemplateArea.Parameters.Discount = Selection.DiscountRC;
 		 Spreadsheet.Put(TemplateArea);
-	EndIf; 
-
-	 
-	If Selection.VATTotal <> 0 Then;
-		 TemplateArea = Template.GetArea("Subtotal");
-		 TemplateArea.Parameters.Subtotal = LineTotalSum;
-		 Spreadsheet.Put(TemplateArea);
-		 
-		 TemplateArea = Template.GetArea("VAT");
-		 TemplateArea.Parameters.VATTotal = Selection.VATTotal;
-		 Spreadsheet.Put(TemplateArea);
-	EndIf; 
-		 
-	 TemplateArea = Template.GetArea("Total");
-	If Selection.PriceIncludesVAT Then
-	 	TemplateArea.Parameters.DocumentTotal = LineTotalSum + Selection.SalesTax;
-	Else
-		TemplateArea.Parameters.DocumentTotal = LineTotalSum + Selection.VATTotal;
-	EndIf;
 	
-	Spreadsheet.Put(TemplateArea);
-	
-	Try
-	 	TemplateArea = Template.GetArea("Footer");
-		OurContactInfo = UsBill.UsName + " - " + UsBill.UsBillLine1Line2 + " - " + UsBill.UsBillCityStateZIP + " - " + UsBill.UsBillPhone;
-		TemplateArea.Parameters.OurContactInfo = OurContactInfo;
-	 	Spreadsheet.Put(TemplateArea);
- 	Except
-	EndTry;
+		TemplateArea = Template.GetArea("SubTotalRC");
+		 TemplateArea.Parameters.Subtotal = Selection.SubTotalRC;
+		 Spreadsheet.Put(TemplateArea);
+		 
+		 TemplateArea = Template.GetArea("ShippingRC");
+		 TemplateArea.Parameters.Shipping = Selection.ShippingRC;
+		 Spreadsheet.Put(TemplateArea);
+		 
+		 TemplateArea = Template.GetArea("SalesTaxRC");
+		 TemplateArea.Parameters.SalesTax = Selection.SalesTaxRC;
+		 Spreadsheet.Put(TemplateArea);
+		 
+		 TemplateArea = Template.GetArea("TotalRC");
+		 TemplateArea.Parameters.Total = Selection.DocumentTotalRC;
+		 Spreadsheet.Put(TemplateArea);
+		 
+	//Try
+	// 	TemplateArea = Template.GetArea("Footer");
+	//	OurContactInfo = UsBill.UsName + " - " + UsBill.UsBillLine1Line2 + " - " + UsBill.UsBillCityStateZIP + " - " + UsBill.UsBillPhone;
+	//	TemplateArea.Parameters.OurContactInfo = OurContactInfo;
+	// 	Spreadsheet.Put(TemplateArea);
+	// Except
+	//EndTry;
 
 
 	 //Spreadsheet.Put(TemplateArea);
@@ -346,7 +349,7 @@ EndProcedure
 
 Procedure PrintQuote(Spreadsheet, Ref)	Export
 	
-	CustomTemplate = GeneralFunctions.GetCustomTemplate("Document.SalesOrder", "Sales quote");
+	CustomTemplate = GeneralFunctions.GetCustomTemplate("Sales quote");
 	
 	If CustomTemplate = Undefined Then
 		Template = Documents.SalesOrder.GetTemplate("PF_MXL_SalesQuote");
@@ -369,22 +372,26 @@ Procedure PrintQuote(Spreadsheet, Ref)	Export
    |	SalesOrder.Company,
    |	SalesOrder.Date,
    |	SalesOrder.DocumentTotal,
-   |	SalesOrder.SalesTax,
-   |	SalesOrder.PriceIncludesVAT,
+   |	SalesOrder.SalesTaxRC,
    |	SalesOrder.Number,
    |	SalesOrder.ShipTo,
    |	SalesOrder.Currency,
-   |	SalesOrder.VATTotal,
    |	SalesOrder.LineItems.(
    |		Product,
    |		ProductDescription,
    |		Product.UM AS UM,
    |		Quantity,
-   |		VATCode,
-   |		VAT,
    |		Price,
    |		LineTotal
-   |	)
+   |	),
+   |	SalesOrder.BillTo,
+   |	SalesOrder.LineSubtotalRC,
+   |	SalesOrder.DiscountRC,
+   |	SalesOrder.SubTotalRC,
+   |	SalesOrder.ShippingRC,
+   |	SalesOrder.DocumentTotalRC,
+   |	SalesOrder.DropshipCustomer,
+   |	SalesOrder.DropshipAddress
    |FROM
    |	Document.SalesOrder AS SalesOrder
    |WHERE
@@ -398,12 +405,13 @@ Procedure PrintQuote(Spreadsheet, Ref)	Export
    While Selection.Next() Do
 	   
 	   	BinaryLogo = GeneralFunctions.GetLogo();
-		MyPicture = New Picture(BinaryLogo);
-		Pict=Template.Drawings.Add(SpreadsheetDocumentDrawingType.Picture);
-		IndexOf=Template.Drawings.IndexOf(Pict);
-		Template.Drawings[IndexOf].Picture = MyPicture;
-		Template.Drawings[IndexOf].Line = New Line(SpreadsheetDocumentDrawingLineType.None);
-		Template.Drawings[IndexOf].Place(Spreadsheet.Area("R3C1:R6C2"));
+		LogoPicture = New Picture(BinaryLogo);
+		//Pict=Template.Drawings.Add(SpreadsheetDocumentDrawingType.Picture);
+		//IndexOf=Template.Drawings.IndexOf(Pict);
+		//Template.Drawings[IndexOf].Picture = MyPicture;
+		//Template.Drawings[IndexOf].Line = New Line(SpreadsheetDocumentDrawingLineType.None);
+		//Template.Drawings[IndexOf].Place(Spreadsheet.Area("R3C1:R6C2"));
+		DocumentPrinting.FillLogoInDocumentTemplate(Template, LogoPicture);
 
 	   
    //	FirstDocument = True;
@@ -424,8 +432,13 @@ Procedure PrintQuote(Spreadsheet, Ref)	Export
 	TemplateArea = Template.GetArea("Header");
 	 
 	UsBill = PrintTemplates.ContactInfoDatasetUs();
-	ThemShip = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemShip", Selection.ShipTo);
-	ThemBill = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemBill", Catalogs.Addresses.EmptyRef());
+	If Selection.DropshipAddress <> Catalogs.Addresses.EmptyRef() Then
+		ThemShip = PrintTemplates.ContactInfoDataset(Selection.DropshipCustomer, "ThemShip", Selection.DropshipAddress);
+	Else
+		ThemShip = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemShip", Selection.ShipTo);
+	EndIf;
+	ThemBill = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemBill", Selection.BillTo);
+
 	
 	TemplateArea.Parameters.Fill(UsBill);
 	TemplateArea.Parameters.Fill(ThemShip);
@@ -441,53 +454,47 @@ Procedure PrintQuote(Spreadsheet, Ref)	Export
 	 
 	 SelectionLineItems = Selection.LineItems.Choose();
 	 TemplateArea = Template.GetArea("LineItems");
-	 LineTotalSum = 0;
+	 //LineTotalSum = 0;
 	 While SelectionLineItems.Next() Do
 		 
 		 TemplateArea.Parameters.Fill(SelectionLineItems);
 		 LineTotal = SelectionLineItems.LineTotal;
-		 LineTotalSum = LineTotalSum + LineTotal;
+		 //LineTotalSum = LineTotalSum + LineTotal;
 		 Spreadsheet.Put(TemplateArea, SelectionLineItems.Level());
 		 
 	 EndDo;
 	 
-	If Selection.SalesTax <> 0 Then;
-		 TemplateArea = Template.GetArea("Subtotal");
-		 TemplateArea.Parameters.Subtotal = LineTotalSum;
+		TemplateArea = Template.GetArea("LineSubtotalRC");
+		TemplateArea.Parameters.LineSubtotal = Selection.LineSubtotalRC;
 		 Spreadsheet.Put(TemplateArea);
 		 
-		 TemplateArea = Template.GetArea("SalesTax");
-		 TemplateArea.Parameters.SalesTaxTotal = Selection.SalesTax;
+		TemplateArea = Template.GetArea("DiscountRC");
+		TemplateArea.Parameters.Discount = Selection.DiscountRC;
 		 Spreadsheet.Put(TemplateArea);
-	EndIf; 
-
-	 
-	If Selection.VATTotal <> 0 Then;
-		 TemplateArea = Template.GetArea("Subtotal");
-		 TemplateArea.Parameters.Subtotal = LineTotalSum;
-		 Spreadsheet.Put(TemplateArea);
-		 
-		 TemplateArea = Template.GetArea("VAT");
-		 TemplateArea.Parameters.VATTotal = Selection.VATTotal;
-		 Spreadsheet.Put(TemplateArea);
-	EndIf; 
-		 
-	 TemplateArea = Template.GetArea("Total");
-	If Selection.PriceIncludesVAT Then
-	 	TemplateArea.Parameters.DocumentTotal = LineTotalSum + Selection.SalesTax;
-	Else
-		TemplateArea.Parameters.DocumentTotal = LineTotalSum + Selection.VATTotal;
-	EndIf;
 	
-	Spreadsheet.Put(TemplateArea);
+		TemplateArea = Template.GetArea("SubTotalRC");
+		 TemplateArea.Parameters.Subtotal = Selection.SubTotalRC;
+		 Spreadsheet.Put(TemplateArea);
+		 
+		 TemplateArea = Template.GetArea("ShippingRC");
+		 TemplateArea.Parameters.Shipping = Selection.ShippingRC;
+		 Spreadsheet.Put(TemplateArea);
+		 
+		 TemplateArea = Template.GetArea("SalesTaxRC");
+		 TemplateArea.Parameters.SalesTax = Selection.SalesTaxRC;
+		 Spreadsheet.Put(TemplateArea);
+		 
+		 TemplateArea = Template.GetArea("TotalRC");
+		 TemplateArea.Parameters.Total = Selection.DocumentTotalRC;
+		 Spreadsheet.Put(TemplateArea);
 	
-	Try
-	 	TemplateArea = Template.GetArea("Footer");
-		OurContactInfo = UsBill.UsName + " - " + UsBill.UsBillLine1Line2 + " - " + UsBill.UsBillCityStateZIP + " - " + UsBill.UsBillPhone;
-		TemplateArea.Parameters.OurContactInfo = OurContactInfo;
-	 	Spreadsheet.Put(TemplateArea);
- 	Except
-	EndTry;
+	//Try
+	// 	TemplateArea = Template.GetArea("Footer");
+	//	OurContactInfo = UsBill.UsName + " - " + UsBill.UsBillLine1Line2 + " - " + UsBill.UsBillCityStateZIP + " - " + UsBill.UsBillPhone;
+	//	TemplateArea.Parameters.OurContactInfo = OurContactInfo;
+	// 	Spreadsheet.Put(TemplateArea);
+	// Except
+	//EndTry;
 
 
 	 //Spreadsheet.Put(TemplateArea);

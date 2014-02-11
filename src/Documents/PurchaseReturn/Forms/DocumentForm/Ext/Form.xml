@@ -104,13 +104,6 @@
 												<Event name="OnChange">CompanyOnChange</Event>
 											</Events>
 										</InputField>
-										<InputField name="CompanyCode" id="93">
-											<DataPath>Object.CompanyCode</DataPath>
-											<ReadOnly>true</ReadOnly>
-											<HorizontalStretch>false</HorizontalStretch>
-											<ContextMenu name="CompanyCodeContextMenu" id="94"/>
-											<ExtendedTooltip name="CompanyCodeExtendedTooltip" id="113"/>
-										</InputField>
 										<InputField name="Currency" id="34">
 											<DataPath>Object.Currency</DataPath>
 											<Width>15</Width>
@@ -128,12 +121,6 @@
 											<ContextMenu name="APAccountContextMenu" id="90"/>
 											<ExtendedTooltip name="APAccountExtendedTooltip" id="104"/>
 										</InputField>
-										<CheckBoxField name="PriceIncludesVAT" id="91">
-											<DataPath>Object.PriceIncludesVAT</DataPath>
-											<CheckBoxType>Auto</CheckBoxType>
-											<ContextMenu name="PriceIncludesVATContextMenu" id="92"/>
-											<ExtendedTooltip name="PriceIncludesVATExtendedTooltip" id="105"/>
-										</CheckBoxField>
 									</ChildItems>
 								</UsualGroup>
 								<UsualGroup name="MiddleColumn" id="61">
@@ -274,7 +261,7 @@
 							<Title>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Additional</v8:content>
+									<v8:content>More</v8:content>
 								</v8:item>
 							</Title>
 							<ToolTip>
@@ -423,16 +410,6 @@
 							<ContextMenu name="LineItemsLineTotalContextMenu" id="17"/>
 							<ExtendedTooltip name="LineItemsLineTotalExtendedTooltip" id="123"/>
 						</InputField>
-						<InputField name="LineItemsVATCode" id="87">
-							<DataPath>Object.LineItems.VATCode</DataPath>
-							<EditMode>EnterOnInput</EditMode>
-							<QuickChoice>true</QuickChoice>
-							<ContextMenu name="LineItemsVATCodeContextMenu" id="88"/>
-							<ExtendedTooltip name="LineItemsVATCodeExtendedTooltip" id="124"/>
-							<Events>
-								<Event name="OnChange">LineItemsVATCodeOnChange</Event>
-							</Events>
-						</InputField>
 					</ChildItems>
 				</Table>
 			</ChildItems>
@@ -531,44 +508,6 @@
 					<ShowTitle>false</ShowTitle>
 					<ExtendedTooltip name="FooterRightColumnExtendedTooltip" id="129"/>
 					<ChildItems>
-						<UsualGroup name="VATGroup" id="76">
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>VATGroup</v8:content>
-								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>USt. Gruppe</v8:content>
-								</v8:item>
-							</Title>
-							<ToolTip>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>VATGroup</v8:content>
-								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>USt. Gruppe</v8:content>
-								</v8:item>
-							</ToolTip>
-							<Group>Horizontal</Group>
-							<Representation>None</Representation>
-							<ShowTitle>false</ShowTitle>
-							<ExtendedTooltip name="VATGroupExtendedTooltip" id="130"/>
-							<ChildItems>
-								<InputField name="VATTotal" id="73">
-									<DataPath>Object.VATTotal</DataPath>
-									<ReadOnly>true</ReadOnly>
-									<ContextMenu name="VATTotalContextMenu" id="74"/>
-									<ExtendedTooltip name="VATTotalExtendedTooltip" id="131"/>
-								</InputField>
-								<LabelDecoration name="VATCurrency" id="81">
-									<ContextMenu name="VATCurrencyContextMenu" id="82"/>
-									<ExtendedTooltip name="VATCurrencyExtendedTooltip" id="132"/>
-								</LabelDecoration>
-							</ChildItems>
-						</UsualGroup>
 						<UsualGroup name="FCYGroup" id="77">
 							<Title>
 								<v8:item>

@@ -2,6 +2,10 @@
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 
+	If NOT Object.Ref.IsEmpty() Then
+		Items.AccountType.ReadOnly = True;	
+	EndIf;
+	
 	If Object.Ref.IsEmpty() Then
 		Object.CashFlowSection = Enums.CashFlowSections.Operating;	
 	EndIf;
@@ -10,6 +14,11 @@ EndProcedure
 
 &AtServer
 Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
+	
+	If NOT Object.Ref.IsEmpty() Then
+		Items.AccountType.ReadOnly = True;	
+	EndIf;
+
 		
 	If Object.AccountType = Enums.AccountTypes.AccountsPayable OR Object.AccountType = Enums.AccountTypes.AccountsReceivable Then
 			

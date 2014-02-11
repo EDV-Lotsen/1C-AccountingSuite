@@ -193,4 +193,3 @@ Procedure Posting(Cancel, Mode)
 	EndIf;
 
 EndProcedure
-

@@ -1,0 +1,279 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<DataCompositionSchema xmlns="http://v8.1c.ru/8.1/data-composition-system/schema" xmlns:dcscom="http://v8.1c.ru/8.1/data-composition-system/common" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<dataSource>
+		<name>DataSource1</name>
+		<dataSourceType>Local</dataSourceType>
+	</dataSource>
+	<dataSet xsi:type="DataSetQuery">
+		<name>DataSet1</name>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Category</dataPath>
+			<field>Category</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>CF1Num</dataPath>
+			<field>CF1Num</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>CF1String</dataPath>
+			<field>CF1String</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>CF2Num</dataPath>
+			<field>CF2Num</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>CF2String</dataPath>
+			<field>CF2String</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>CF3Num</dataPath>
+			<field>CF3Num</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>CF3String</dataPath>
+			<field>CF3String</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>CF4Num</dataPath>
+			<field>CF4Num</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>CF4String</dataPath>
+			<field>CF4String</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>CF5Num</dataPath>
+			<field>CF5Num</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>CF5String</dataPath>
+			<field>CF5String</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Code</dataPath>
+			<field>Code</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>COGSAccount</dataPath>
+			<field>COGSAccount</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>CostingMethod</dataPath>
+			<field>CostingMethod</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>DataVersion</dataPath>
+			<field>DataVersion</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>DefaultLocation</dataPath>
+			<field>DefaultLocation</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>DeletionMark</dataPath>
+			<field>DeletionMark</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Description</dataPath>
+			<field>Description</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>IncomeAccount</dataPath>
+			<field>IncomeAccount</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>InventoryOrExpenseAccount</dataPath>
+			<field>InventoryOrExpenseAccount</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>NewObject</dataPath>
+			<field>NewObject</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Predefined</dataPath>
+			<field>Predefined</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>PredefinedDataName</dataPath>
+			<field>PredefinedDataName</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>PreferredVendor</dataPath>
+			<field>PreferredVendor</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Ref</dataPath>
+			<field>Ref</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Taxable</dataPath>
+			<field>Taxable</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Type</dataPath>
+			<field>Type</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>UM</dataPath>
+			<field>UM</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>UPC</dataPath>
+			<field>UPC</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>vendor_code</dataPath>
+			<field>vendor_code</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>vendor_description</dataPath>
+			<field>vendor_description</field>
+		</field>
+		<dataSource>DataSource1</dataSource>
+		<query>SELECT
+	Products.Ref,
+	Products.DataVersion,
+	Products.DeletionMark,
+	Products.Code,
+	Products.Description,
+	Products.CostingMethod,
+	Products.Type,
+	Products.InventoryOrExpenseAccount,
+	Products.IncomeAccount,
+	Products.COGSAccount,
+	Products.UM,
+	Products.DefaultLocation,
+	Products.PreferredVendor,
+	Products.CF1String,
+	Products.CF2String,
+	Products.CF3String,
+	Products.CF4String,
+	Products.CF5String,
+	Products.CF1Num,
+	Products.CF2Num,
+	Products.CF3Num,
+	Products.CF4Num,
+	Products.CF5Num,
+	Products.Category,
+	Products.NewObject,
+	Products.UPC,
+	Products.vendor_code,
+	Products.vendor_description,
+	Products.Taxable,
+	Products.Predefined,
+	Products.PredefinedDataName,
+	Products.Presentation
+FROM
+	Catalog.Products AS Products</query>
+	</dataSet>
+	<settingsVariant>
+		<dcsset:name>Default</dcsset:name>
+		<dcsset:presentation xsi:type="xs:string">Default</dcsset:presentation>
+		<dcsset:settings xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows">
+			<dcsset:selection>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>InventoryOrExpenseAccount</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Category</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>CF1Num</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>CF1String</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>CF2Num</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>CF2String</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>CF3Num</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>CF3String</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>CF4Num</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>CF4String</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>CF5Num</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>CF5String</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Code</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>vendor_code</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>COGSAccount</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>CostingMethod</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>DataVersion</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>DefaultLocation</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>DeletionMark</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Description</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>vendor_description</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>IncomeAccount</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>NewObject</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Predefined</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>PredefinedDataName</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>PreferredVendor</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Ref</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Taxable</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Type</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>UM</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>UPC</dcsset:field>
+				</dcsset:item>
+			</dcsset:selection>
+			<dcsset:item xsi:type="dcsset:StructureItemGroup">
+				<dcsset:order>
+					<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
+				</dcsset:order>
+				<dcsset:selection>
+					<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+				</dcsset:selection>
+			</dcsset:item>
+		</dcsset:settings>
+	</settingsVariant>
+</DataCompositionSchema>

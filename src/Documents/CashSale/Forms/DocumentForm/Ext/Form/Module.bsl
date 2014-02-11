@@ -14,33 +14,19 @@ Procedure LineItemsProductOnChange(Item)
 	TabularPartRow.Quantity = 0;
 	TabularPartRow.Price = 0;
 	TabularPartRow.LineTotal = 0;
-	TabularPartRow.TaxableAmount = 0;
-    TabularPartRow.VAT = 0;
+	//TabularPartRow.TaxableAmount = 0;
+   // TabularPartRow.VAT = 0;
 	
 	Price = GeneralFunctions.RetailPrice(CurrentDate(), TabularPartRow.Product, Object.Company);
 	TabularPartRow.Price = Price / Object.ExchangeRate;
-	
-	TabularPartRow.SalesTaxType = US_FL.GetSalesTaxType(TabularPartRow.Product);
-	TabularPartRow.VATCode = CommonUse.GetAttributeValue(TabularPartRow.Product, "SalesVATCode");
+	TabularPartRow.Taxable = CommonUse.GetAttributeValue(TabularPartRow.Product, "Taxable");
+	//TabularPartRow.SalesTaxType = US_FL.GetSalesTaxType(TabularPartRow.Product);
+	//TabularPartRow.VATCode = CommonUse.GetAttributeValue(TabularPartRow.Product, "SalesVATCode");
 	
 	RecalcTotal();
 	
 EndProcedure
 
-&AtServer
-// The procedure recalculates a document's sales tax amount
-// 
-Procedure RecalcSalesTax()
-	
-	If Object.ShipTo.IsEmpty() Then
-		TaxRate = 0;
-	Else
-		TaxRate = US_FL.GetTaxRate(Object.ShipTo);
-	EndIf;
-	
-	Object.SalesTax = Object.LineItems.Total("TaxableAmount") * TaxRate/100;
-	
-EndProcedure
 
 
 &AtClient
@@ -50,32 +36,15 @@ EndProcedure
 //
 Procedure RecalcTotal()
 	
-	If Object.PriceIncludesVAT Then
-		Object.DocumentTotal = Object.LineItems.Total("LineTotal") + Object.SalesTax;
-		Object.DocumentTotalRC = (Object.LineItems.Total("LineTotal") + Object.SalesTax) * Object.ExchangeRate;		
-	Else
-		Object.DocumentTotal = Object.LineItems.Total("LineTotal") + Object.LineItems.Total("VAT") + Object.SalesTax;
-		Object.DocumentTotalRC = (Object.LineItems.Total("LineTotal") + Object.LineItems.Total("VAT") + Object.SalesTax) * Object.ExchangeRate;
-	EndIf;	
-	Object.VATTotal = Object.LineItems.Total("VAT") * Object.ExchangeRate;
+	Object.LineSubtotalRC = Object.LineItems.Total("LineTotal");
+	Object.SubTotalRC = Object.LineItems.Total("LineTotal") + Object.DiscountRC;
+	
+	DocTotal = Object.LineSubtotalRC + Object.DiscountRC + Object.ShippingRC + Object.SalesTaxRC;
+	Object.DocumentTotal = DocTotal;
+	Object.DocumentTotalRC = DocTotal * Object.ExchangeRate;
 	
 EndProcedure
 
-
-&AtClient
-// The procedure recalculates a taxable amount for a line item.
-// 
-Procedure RecalcTaxableAmount()
-	
-	TabularPartRow = Items.LineItems.CurrentData;
-	
-	If TabularPartRow.SalesTaxType = GeneralFunctionsReusable.US_FL_Taxable() Then
-		TabularPartRow.TaxableAmount = TabularPartRow.LineTotal;
-	Else
-		TabularPartRow.TaxableAmount = 0;
-	EndIf;
-	
-EndProcedure
 
 
 &AtClient
@@ -85,13 +54,14 @@ EndProcedure
 // 
 Procedure CompanyOnChange(Item)
 	
-	Object.CompanyCode = CommonUse.GetAttributeValue(Object.Company, "Code");
+	//Object.CompanyCode = CommonUse.GetAttributeValue(Object.Company, "Code");
 	Object.ShipTo = GeneralFunctions.GetShipToAddress(Object.Company);
+	Object.BillTo = GeneralFunctions.GetBillToAddress(Object.Company);
 	Object.Currency = CommonUse.GetAttributeValue(Object.Company, "DefaultCurrency");
 	Object.ExchangeRate = GeneralFunctions.GetExchangeRate(Object.Date, Object.Currency);
 	Items.ExchangeRate.Title = GeneralFunctionsReusable.DefaultCurrencySymbol() + "/1" + CommonUse.GetAttributeValue(Object.Currency, "Symbol");
 	Items.FCYCurrency.Title = CommonUse.GetAttributeValue(Object.Currency, "Symbol");
-	RecalcSalesTax();
+	//RecalcSalesTax();
 	RecalcTotal();
 	EmailSet();
 	
@@ -108,10 +78,10 @@ Procedure LineItemsPriceOnChange(Item)
 	
 	TabularPartRow.LineTotal = TabularPartRow.Quantity * TabularPartRow.Price;
 	
-	TabularPartRow.VAT = VAT_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Sales", Object.PriceIncludesVAT);
+	//TabularPartRow.VAT = VAT_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Sales", Object.PriceIncludesVAT);
 	
-	RecalcTaxableAmount();
-	RecalcSalesTax();
+	//RecalcTaxableAmount();
+	//RecalcSalesTax();
 	RecalcTotal();
 
 EndProcedure
@@ -124,7 +94,7 @@ EndProcedure
 Procedure DateOnChange(Item)
 	
 	Object.ExchangeRate = GeneralFunctions.GetExchangeRate(Object.Date, Object.Currency);
-	RecalcSalesTax();
+	//RecalcSalesTax();
 	RecalcTotal();
 	
 EndProcedure
@@ -139,19 +109,7 @@ Procedure CurrencyOnChange(Item)
 	Object.ExchangeRate = GeneralFunctions.GetExchangeRate(Object.Date, Object.Currency);
 	Items.ExchangeRate.Title = GeneralFunctionsReusable.DefaultCurrencySymbol() + "/1" + CommonUse.GetAttributeValue(Object.Currency, "Symbol");
 	Items.FCYCurrency.Title = CommonUse.GetAttributeValue(Object.Currency, "Symbol");
-	RecalcSalesTax();
-	RecalcTotal();
-	
-EndProcedure
-
-
-&AtClient
-// LineItemsSalesTaxTypeOnChange UI event handler.
-//
-Procedure LineItemsSalesTaxTypeOnChange(Item)
-	
-	RecalcTaxableAmount();
-	RecalcSalesTax();
+	//RecalcSalesTax();
 	RecalcTotal();
 	
 EndProcedure
@@ -162,7 +120,7 @@ EndProcedure
 // 
 Procedure LineItemsAfterDeleteRow(Item)
 	
-	RecalcSalesTax();
+	//RecalcSalesTax();
 	RecalcTotal();
 	
 EndProcedure
@@ -178,10 +136,10 @@ Procedure LineItemsQuantityOnChange(Item)
 	
 	TabularPartRow = Items.LineItems.CurrentData;
 	TabularPartRow.LineTotal = TabularPartRow.Quantity * TabularPartRow.Price;
-	TabularPartRow.VAT = VAT_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Sales", Object.PriceIncludesVAT);
+	//TabularPartRow.VAT = VAT_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Sales", Object.PriceIncludesVAT);
 	
-	RecalcTaxableAmount();
-	RecalcSalesTax();
+	//RecalcTaxableAmount();
+	//RecalcSalesTax();
 	RecalcTotal();
 
 EndProcedure
@@ -208,25 +166,18 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
 	//Title = "Cash Sale " + Object.Number + " " + Format(Object.Date, "DLF=D");
 	
-	If Object.Ref.IsEmpty() Then
-    	Object.PriceIncludesVAT = GeneralFunctionsReusable.PriceIncludesVAT();
-	EndIf;
+	//If Object.Ref.IsEmpty() Then
+	//	Object.PriceIncludesVAT = GeneralFunctionsReusable.PriceIncludesVAT();
+	//EndIf;
 	
 	If Object.BankAccount.IsEmpty() Then
 		Object.BankAccount = Constants.BankAccount.Get();
 	Else
 	EndIf; 
-		
-	If NOT GeneralFunctionsReusable.FunctionalOptionValue("USFinLocalization") Then
-		Items.SalesTaxGroup.Visible = False;
-	EndIf;
-	
-	If NOT GeneralFunctionsReusable.FunctionalOptionValue("VATFinLocalization") Then
-		Items.VATGroup.Visible = False;
-	EndIf;
-	
+				
 	If NOT GeneralFunctionsReusable.FunctionalOptionValue("MultiCurrency") Then
-		Items.FCYGroup.Visible = False;
+		Items.FCYCurrency.Visible = False;
+		Items.RCCurrency.Visible = False;
 	EndIf;
 		
 	//If GeneralFunctionsReusable.FunctionalOptionValue("MultiLocation") Then
@@ -244,25 +195,14 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	EndIf;
 
 	Items.ExchangeRate.Title = GeneralFunctionsReusable.DefaultCurrencySymbol() + "/1" + Object.Currency.Symbol;
-	Items.VATCurrency.Title = GeneralFunctionsReusable.DefaultCurrencySymbol();
+	//Items.VATCurrency.Title = GeneralFunctionsReusable.DefaultCurrencySymbol();
 	Items.RCCurrency.Title = GeneralFunctionsReusable.DefaultCurrencySymbol();
-	Items.SalesTaxCurrency.Title = GeneralFunctionsReusable.DefaultCurrencySymbol();
+	//Items.SalesTaxCurrency.Title = GeneralFunctionsReusable.DefaultCurrencySymbol();
 	Items.FCYCurrency.Title = CommonUse.GetAttributeValue(Object.Currency, "Symbol");
 	
 	// Update elements status.
 	Items.FormChargeWithStripe.Enabled = IsBlankString(Object.StripeID);
 	
-EndProcedure
-
-&AtClient
-// Calculates a VAT amount for the document line
-//
-Procedure LineItemsVATCodeOnChange(Item)
-	
-	TabularPartRow = Items.LineItems.CurrentData;
-	TabularPartRow.VAT = VAT_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Sales", Object.PriceIncludesVAT);
-    RecalcTotal();
-
 EndProcedure
 
 &AtClient
@@ -289,6 +229,59 @@ EndFunction
 &AtClient
 Procedure ChargeWithStripe(Command)
 	
+	// Check document saved.
+	If Object.Ref.IsEmpty() Or Modified Then
+		Message(NStr("en = 'The document is not saved.
+                                |Save document first.'de='Das Dokument ist nicht gespeichert'"));
+		Return;
+	EndIf;
+	
+	// Check customer registered.
+	StripeCustomerID = CommonUse.GetAttributeValue(Object.Company, "StripeID");
+	If IsBlankString(StripeCustomerID) Then
+		Message(NStr("en = 'The customer is not registered in Stripe
+		                        |Register the customer and their payment card first.'"));
+		Return;
+	EndIf;
+	
+	// Define charge parameters.
+	InputParameters    = New Structure("amount, currency, customer, description",
+	                                   Object.DocumentTotalRC * 100,
+	                                   "usd",
+	                                   StripeCustomerID,
+	                                   SessionTenant() + " Cash Sale " + Object.Number + " from " + Format(Object.Date,"DLF=D"));
+	
+	// Call Stripe for a charge.
+	PostResult = ApiStripeRequestorInterface.PostCharges(InputParameters);
+	
+	// Check created charge.
+	If PostResult.Result = Undefined Then
+		// Failed creating charge.
+		Message(NStr("en = 'Failed creating Stripe charge.'" + Chars.LF + PostResult.Description));
+		Return;
+		
+	ElsIf Not PostResult.Result.Property("id", Object.StripeID) Then
+		// Server returned the wrong object.
+		Message(NStr("en = 'Failed creating Stripe charge.'" + Chars.LF + NStr("en = 'Stripe server request failed.'")));
+		Return;
+		
+	Else
+		
+		Object.StripeCardName    = PostResult.Result.card.name;
+		Object.StripeAmount  = PostResult.Result.amount / 100;
+		Object.StripeCreated = PostResult.Result.created;
+		Object.StripeCardType    = PostResult.Result.card.type;
+		Object.StripeLast4   = PostResult.Result.card.last4;
+
+		// Charge successfully created.
+		Message(NStr("en = 'Stripe charge successfully created.'"));
+		
+		// Mark form as modified.
+		Modified = True;
+	EndIf;
+
+	// Update elements status.
+	Items.FormChargeWithStripe.Enabled = IsBlankString(Object.StripeID);
 	
 EndProcedure
 
@@ -343,7 +336,7 @@ Procedure SendEmailAtServer()
 		For Each DocumentLine in Object.LineItems Do
 			
 			TotalAmount = TotalAmount + DocumentLine.LineTotal;
-			datastring = datastring + "<TR height=""20""><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.Product +  "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.ProductDescription + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.Project + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.Quantity + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;""> $" + DocumentLine.Price + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;""> $" + DocumentLine.LineTotal + "</TD></TR>";
+			datastring = datastring + "<TR height=""20""><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.Product +  "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.ProductDescription + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.Project + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.Quantity + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.Price + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.LineTotal + "</TD></TR>";
 
 		EndDo;
 		
@@ -354,20 +347,19 @@ Procedure SendEmailAtServer()
 	  //EndDo;
 
 	    	 
-	    MailProfil = New InternetMailProfile; 
+	   	    MailProfil = New InternetMailProfile; 
 	    
-	    MailProfil.SMTPServerAddress = "smtp.sendgrid.net";
+	    MailProfil.SMTPServerAddress = ServiceParameters.SMTPServer(); 
 		//MailProfil.SMTPServerAddress = Constants.MailProfAddress.Get();
-	    MailProfil.SMTPUseSSL = True;
+	    MailProfil.SMTPUseSSL = ServiceParameters.SMTPUseSSL();
 		//MailProfil.SMTPUseSSL = Constants.MailProfSSL.Get();
-	    MailProfil.SMTPPort = 465; 
+	    MailProfil.SMTPPort = 465;  
 	    
 	    MailProfil.Timeout = 180; 
 	    
-		MailProfil.SMTPPassword = "1cusa2012";
+		MailProfil.SMTPPassword = ServiceParameters.SendGridPassword();
 	 	  
-		MailProfil.SMTPUser = "bnghiem";
-	    
+		MailProfil.SMTPUser = ServiceParameters.SendGridUserName();
 	    
 	    send = New InternetMailMessage; 
 	    //send.To.Add(object.shipto.Email);
@@ -451,10 +443,10 @@ Procedure SendEmailAtServer()
 	 	  
 	 	  FormatHTML2 = StrReplace(FormatHTML2,"object.subtotal",Format(Object.DocumentTotalRC,"NFD=2"));
 		  
-	   If object.SalesTax = 0 Then
+	   If object.SalesTaxRC = 0 Then
 	    	FormatHTML2 = StrReplace(FormatHTML2,"object.salestax","0.00");
 	   Else
-	 	 	 FormatHTML2 = StrReplace(FormatHTML2,"object.salestax",Format(object.SalesTax,"NFD=2"));
+	 	 	 FormatHTML2 = StrReplace(FormatHTML2,"object.salestax",Format(object.SalesTaxRC,"NFD=2"));
 	   Endif;
   
 		  
@@ -515,7 +507,10 @@ Procedure EmailSet()
 			QueryResult = Query.Execute();	
 		Dataset = QueryResult.Unload();
 		
-	Object.EmailTo = Dataset[0].Email;
+	Try	
+		Object.EmailTo = Dataset[0].Email;
+	Except
+	EndTry;
 	
 EndProcedure
 
@@ -647,6 +642,7 @@ EndProcedure
 
 &AtClient
 Procedure BeforeWrite(Cancel, WriteParameters)
+	
 	//Closing period
 	If DocumentPosting.DocumentPeriodIsClosed(Object.Ref, Object.Date) Then
 		Cancel = Not DocumentPosting.DocumentWritePermitted(WriteParameters);
@@ -688,5 +684,30 @@ Procedure ProcessUserResponseOnDocumentPeriodClosed(Result, Parameters) Export
 			Write(Parameters);
 		EndIf;
 	EndIf;	
+EndProcedure
+
+
+&AtClient
+Procedure DiscountRCOnChange(Item)
+	RecalcTotal();
+EndProcedure
+
+
+&AtClient
+Procedure ShippingRCOnChange(Item)
+	RecalcTotal();
+EndProcedure
+
+
+&AtClient
+Procedure SalesTaxOnChange(Item)
+	RecalcTotal();
+EndProcedure
+
+
+&AtClient
+Procedure DiscountPercentOnChange(Item)
+	Object.DiscountRC = (-1 * Object.LineSubtotalRC * Object.DiscountPercent ) / 100;
+	RecalcTotal();
 EndProcedure
 

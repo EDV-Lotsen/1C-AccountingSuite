@@ -16,11 +16,11 @@ Procedure Posting(Cancel, Mode)
 	PostingDatasetInvOrExp.Columns.Add("InvOrExpAccount");
     PostingDatasetInvOrExp.Columns.Add("AmountRC");
 	
-	PostingDatasetVAT = New ValueTable();
-	PostingDatasetVAT.Columns.Add("VATAccount");
-	PostingDatasetVAT.Columns.Add("AmountRC");
+	//PostingDatasetVAT = New ValueTable();
+	//PostingDatasetVAT.Columns.Add("VATAccount");
+	//PostingDatasetVAT.Columns.Add("AmountRC");
 	
-	AllowNegativeInventory = Constants.AllowNegativeInventory.Get();
+	//AllowNegativeInventory = Constants.AllowNegativeInventory.Get();
 	
 	For Each CurRowLineItems In LineItems Do
 				
@@ -53,10 +53,10 @@ Procedure Posting(Cancel, Mode)
 				Message.Text= StringFunctionsClientServer.SubstituteParametersInString(
 				NStr("en='Insufficient balance on %1';de='Nicht ausreichende Bilanz'"),CurProd);
 				Message.Message();
-				If NOT AllowNegativeInventory Then
+				//If NOT AllowNegativeInventory Then
 					Cancel = True;
 	                Return;
-				EndIf;
+				//EndIf;
 			EndIf;
 			
 			// inventory journal update and costing procedure
@@ -169,19 +169,19 @@ Procedure Posting(Cancel, Mode)
 		
 		PostingLineIncome = PostingDatasetIncome.Add();
 		PostingLineIncome.IncomeAccount = CurRowLineItems.Product.IncomeAccount;
-		If PriceIncludesVAT Then
-			PostingLineIncome.AmountRC = (CurRowLineItems.LineTotal - CurRowLineItems.VAT) * ExchangeRate;
-		Else
+		//If PriceIncludesVAT Then
+		//	PostingLineIncome.AmountRC = (CurRowLineItems.LineTotal - CurRowLineItems.VAT) * ExchangeRate;
+		//Else
 			PostingLineIncome.AmountRC = CurRowLineItems.LineTotal * ExchangeRate;
-		EndIf;	
+		//EndIf;	
 		
-		If CurRowLineItems.VAT > 0 Then
-			
-			PostingLineVAT = PostingDatasetVAT.Add();
-			PostingLineVAT.VATAccount = VAT_FL.VATAccount(CurRowLineItems.VATCode, "Sales");
-			PostingLineVAT.AmountRC = CurRowLineItems.VAT * ExchangeRate;
-							
-		EndIf;
+		//If CurRowLineItems.VAT > 0 Then
+		//	
+		//	PostingLineVAT = PostingDatasetVAT.Add();
+		//	PostingLineVAT.VATAccount = VAT_FL.VATAccount(CurRowLineItems.VATCode, "Sales");
+		//	PostingLineVAT.AmountRC = CurRowLineItems.VAT * ExchangeRate;
+		//					
+		//EndIf;
 		
 	EndDo;
 	
@@ -213,6 +213,30 @@ Procedure Posting(Cancel, Mode)
 	
 	EndIf;
 	
+	If DiscountRC <> 0 Then			
+		Record = RegisterRecords.GeneralJournal.AddDebit();
+		DiscountsAccount = Constants.DiscountsAccount.Get();
+		If DiscountsAccount = ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
+			Record.Account = Constants.ExpenseAccount.Get();
+		Else
+			Record.Account = DiscountsAccount;
+		EndIf;
+		Record.Period = Date;
+		Record.AmountRC = DiscountRC * -1 * ExchangeRate;				
+	EndIf;
+	
+	If ShippingRC <> 0 Then			
+		Record = RegisterRecords.GeneralJournal.AddCredit();
+		ShippingExpenseAccount = Constants.ShippingExpenseAccount.Get();
+		If ShippingExpenseAccount = ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
+			Record.Account = Constants.IncomeAccount.Get();
+		Else
+			Record.Account = ShippingExpenseAccount;
+		EndIf;
+		Record.Period = Date;
+		Record.AmountRC = ShippingRC * ExchangeRate;				
+	EndIf;
+	
 	PostingDatasetIncome.GroupBy("IncomeAccount", "AmountRC");
 	NoOfPostingRows = PostingDatasetIncome.Count();
 	For i = 0 To NoOfPostingRows - 1 Do			
@@ -240,21 +264,21 @@ Procedure Posting(Cancel, Mode)
 		Record.AmountRC = PostingDatasetInvOrExp[i][1];				
 	EndDo;
 			
-	If SalesTax > 0 Then
+	If SalesTaxRC > 0 Then
 		Record = RegisterRecords.GeneralJournal.AddCredit();
 		Record.Account = Constants.TaxPayableAccount.Get();
 		Record.Period = Date;
-		Record.AmountRC = SalesTax * ExchangeRate;
-	EndIf;
+		Record.AmountRC = SalesTaxRC * ExchangeRate;
+	EndIf;		
 	
-	PostingDatasetVAT.GroupBy("VATAccount", "AmountRC");
-	NoOfPostingRows = PostingDatasetVAT.Count();
-	For i = 0 To NoOfPostingRows - 1 Do
-		Record = RegisterRecords.GeneralJournal.AddCredit();
-		Record.Account = PostingDatasetVAT[i][0];
-		Record.Period = Date;
-		Record.AmountRC = PostingDatasetVAT[i][1];	
-	EndDo;
+	//PostingDatasetVAT.GroupBy("VATAccount", "AmountRC");
+	//NoOfPostingRows = PostingDatasetVAT.Count();
+	//For i = 0 To NoOfPostingRows - 1 Do
+	//	Record = RegisterRecords.GeneralJournal.AddCredit();
+	//	Record.Account = PostingDatasetVAT[i][0];
+	//	Record.Period = Date;
+	//	Record.AmountRC = PostingDatasetVAT[i][1];	
+	//EndDo;
 	
 	// Writing bank reconciliation data
 	
@@ -328,13 +352,13 @@ Procedure OnWrite(Cancel)
 	
 	If NOT companies_webhook = "" Then
 		
-		double_slash = Find(companies_webhook, "//");
-		
-		companies_webhook = Right(companies_webhook,StrLen(companies_webhook) - double_slash - 1);
-		
-		first_slash = Find(companies_webhook, "/");
-		webhook_address = Left(companies_webhook,first_slash - 1);
-		webhook_resource = Right(companies_webhook,StrLen(companies_webhook) - first_slash + 1); 		
+		//double_slash = Find(companies_webhook, "//");
+		//
+		//companies_webhook = Right(companies_webhook,StrLen(companies_webhook) - double_slash - 1);
+		//
+		//first_slash = Find(companies_webhook, "/");
+		//webhook_address = Left(companies_webhook,first_slash - 1);
+		//webhook_resource = Right(companies_webhook,StrLen(companies_webhook) - first_slash + 1); 		
 		
 		WebhookMap = New Map(); 
 		WebhookMap.Insert("apisecretkey",Constants.APISecretKey.Get());
@@ -344,11 +368,10 @@ Procedure OnWrite(Cancel)
 		Else
 			WebhookMap.Insert("action","update");
 		EndIf;
-		WebhookMap.Insert("cash_sale_number",Ref.Number);
+		WebhookMap.Insert("api_code", String(Ref.UUID()));
 		
 		WebhookParams = New Array();
-		WebhookParams.Add(webhook_address);
-		WebhookParams.Add(webhook_resource);
+		WebhookParams.Add(Constants.cash_sales_webhook.Get());
 		WebhookParams.Add(WebhookMap);
 		LongActions.ExecuteInBackground("GeneralFunctions.SendWebhook", WebhookParams);
 	
@@ -362,27 +385,33 @@ Procedure BeforeDelete(Cancel)
 	
 	If NOT companies_webhook = "" Then
 		
-		double_slash = Find(companies_webhook, "//");
-		
-		companies_webhook = Right(companies_webhook,StrLen(companies_webhook) - double_slash - 1);
-		
-		first_slash = Find(companies_webhook, "/");
-		webhook_address = Left(companies_webhook,first_slash - 1);
-		webhook_resource = Right(companies_webhook,StrLen(companies_webhook) - first_slash + 1); 		
+		//double_slash = Find(companies_webhook, "//");
+		//
+		//companies_webhook = Right(companies_webhook,StrLen(companies_webhook) - double_slash - 1);
+		//
+		//first_slash = Find(companies_webhook, "/");
+		//webhook_address = Left(companies_webhook,first_slash - 1);
+		//webhook_resource = Right(companies_webhook,StrLen(companies_webhook) - first_slash + 1); 		
 		
 		WebhookMap = New Map(); 
 		WebhookMap.Insert("apisecretkey",Constants.APISecretKey.Get());
 		WebhookMap.Insert("resource","cashsales");
 		WebhookMap.Insert("action","delete");
-		WebhookMap.Insert("cash_sale_number",Ref.Number);
+		WebhookMap.Insert("api_code",String(Ref.UUID()));
 		
 		WebhookParams = New Array();
-		WebhookParams.Add(webhook_address);
-		WebhookParams.Add(webhook_resource);
-		WebhookParams.Add(WebhookMap);
+		WebhookParams.Add(Constants.cash_sales_webhook.Get());
+		WebhookParams.Add(WebhookMap);	
 		LongActions.ExecuteInBackground("GeneralFunctions.SendWebhook", WebhookParams);	
 	
 	EndIf;
+
+EndProcedure
+
+Procedure Filling(FillingData, StandardProcessing)
+	
+	// Set the doc's number if it's new (Rupasov)
+	If ThisObject.IsNew() Then ThisObject.SetNewNumber() EndIf;
 
 EndProcedure
 

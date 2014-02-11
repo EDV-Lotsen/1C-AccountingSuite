@@ -42,6 +42,13 @@ TabularPartRow.Dec = DivisionVal - diff;
 EndProcedure
 
 &AtClient
+Procedure LineItemAccountOnChange(Item)
+		TabularPartRow = Items.LineItem.CurrentData;
+	TabularPartRow.Description = CommonUse.GetAttributeValue
+    (TabularPartRow.Account, "Description");
+EndProcedure
+
+&AtClient
 Procedure BeforeWrite(Cancel, WriteParameters)
 	
 	//Closing period
@@ -71,7 +78,7 @@ Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
 		PermitWrite = DocumentPosting.DocumentWritePermitted(WriteParameters);
 		CurrentObject.AdditionalProperties.Insert("PermitWrite", PermitWrite);	
 	EndIf;
-	
+
 EndProcedure
 
 //Closing period
@@ -89,4 +96,6 @@ Procedure ProcessUserResponseOnDocumentPeriodClosed(Result, Parameters) Export
 		EndIf;
 	EndIf;	
 EndProcedure
+
+
 

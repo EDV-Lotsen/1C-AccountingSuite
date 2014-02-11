@@ -12,10 +12,10 @@
 				<CommandName>Form.Command.PayWithDwolla</CommandName>
 				<ExtendedTooltip name="FormPayWithDwollaExtendedTooltip" id="120"/>
 			</Button>
-			<Button name="FormPayWithBitcoin" id="128">
+			<Button name="FormPayWithBitcoin" id="131">
 				<Type>CommandBarButton</Type>
 				<CommandName>Form.Command.PayWithBitcoin</CommandName>
-				<ExtendedTooltip name="FormPayWithBitcoinExtendedTooltip" id="129"/>
+				<ExtendedTooltip name="FormPayWithBitcoinExtendedTooltip" id="132"/>
 			</Button>
 		</ChildItems>
 	</AutoCommandBar>
@@ -118,14 +118,6 @@
 											<Events>
 												<Event name="OnChange">CompanyOnChange</Event>
 											</Events>
-										</InputField>
-										<InputField name="CompanyCode" id="43">
-											<DataPath>Object.CompanyCode</DataPath>
-											<ReadOnly>true</ReadOnly>
-											<Width>14</Width>
-											<HorizontalStretch>false</HorizontalStretch>
-											<ContextMenu name="CompanyCodeContextMenu" id="44"/>
-											<ExtendedTooltip name="CompanyCodeExtendedTooltip" id="51"/>
 										</InputField>
 										<InputField name="ExchangeRate" id="33">
 											<DataPath>Object.ExchangeRate</DataPath>
@@ -264,13 +256,37 @@
 										</InputField>
 									</ChildItems>
 								</UsualGroup>
+								<UsualGroup name="Right2" id="78">
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Right2</v8:content>
+										</v8:item>
+									</Title>
+									<ToolTip>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Right2</v8:content>
+										</v8:item>
+									</ToolTip>
+									<Group>Vertical</Group>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="Right2ExtendedTooltip" id="79"/>
+									<ChildItems>
+										<LabelDecoration name="BankAccountLabel" id="23">
+											<Width>10</Width>
+											<ContextMenu name="BankAccountLabelContextMenu" id="24"/>
+											<ExtendedTooltip name="BankAccountLabelExtendedTooltip" id="64"/>
+										</LabelDecoration>
+									</ChildItems>
+								</UsualGroup>
 							</ChildItems>
 						</Page>
 						<Page name="Additional" id="114">
 							<Title>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Additional</v8:content>
+									<v8:content>More</v8:content>
 								</v8:item>
 							</Title>
 							<ToolTip>
@@ -316,13 +332,13 @@
 											<ContextMenu name="ProjectContextMenu" id="86"/>
 											<ExtendedTooltip name="ProjectExtendedTooltip" id="87"/>
 										</InputField>
-										<InputField name="CoinbaseTrxID" id="130">
+										<InputField name="CoinbaseTrxID" id="128">
 											<DataPath>Object.CoinbaseTrxID</DataPath>
 											<ReadOnly>true</ReadOnly>
 											<Width>14</Width>
 											<HorizontalStretch>false</HorizontalStretch>
-											<ContextMenu name="CoinbaseTrxIDContextMenu" id="131"/>
-											<ExtendedTooltip name="CoinbaseTrxIDExtendedTooltip" id="132"/>
+											<ContextMenu name="CoinbaseTrxIDContextMenu" id="129"/>
+											<ExtendedTooltip name="CoinbaseTrxIDExtendedTooltip" id="130"/>
 										</InputField>
 									</ChildItems>
 								</UsualGroup>

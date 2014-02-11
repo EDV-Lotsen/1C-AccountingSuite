@@ -4,6 +4,20 @@
 //
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
+	If Object.Ref <> Catalogs.Products.EmptyRef() Then
+		  Items.Type.ReadOnly = True;
+	EndIf;
+	
+	If GeneralFunctionsReusable.DisplayAPICodesSetting() = False Then
+		Items.api_code.Visible = False;
+	EndIf;
+
+	
+	If NOT Object.Ref.IsEmpty() Then
+		api_code = String(Object.Ref.UUID());
+	EndIf;
+
+	
 	//test = Object.Ref.UUID();
 	//test = Catalogs.Products.GetRef(New UUID("3b942486-4317-11e3-bebf-001c42734aa6"));
 	
@@ -98,10 +112,6 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	// end custom fields
 	
 	If Object.Ref <> Catalogs.Products.EmptyRef() Then
-		  Items.Type.ReadOnly = True;
-	EndIf;
-	
-	If Object.Ref <> Catalogs.Products.EmptyRef() Then
 		Price = GeneralFunctions.RetailPrice(CurrentDate(), Object.Ref, Catalogs.Companies.EmptyRef());
 	Endif;
 	
@@ -160,15 +170,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	If Object.Type <> Enums.InventoryTypes.Inventory Then
 		//Items.COGSAccount.ReadOnly = True;
 	EndIf;
-	
-	If Object.PurchaseVATCode.IsEmpty() AND Object.Ref.IsEmpty() Then
-		Object.PurchaseVATCode = Constants.DefaultPurchaseVAT.Get();
-	EndIf;
-	
-	If Object.SalesVATCode.IsEmpty() AND Object.Ref.IsEmpty() Then
-		Object.SalesVATCode = Constants.DefaultSalesVAT.Get();
-	EndIf;
-	
+		
 	// Display indicators
 	If ValueIsFilled(Object.Ref) Then
 		
@@ -196,9 +198,7 @@ EndProcedure
 
 &AtServer
 Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
-	
-	
-	
+		
 	If  (Object.Type = Enums.InventoryTypes.Inventory) Then
 		// Fill item cost values
 		FillLastAverageAccountingCost();
@@ -215,27 +215,6 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 	ChildItems.Indicators.ChildItems.Right.ChildItems.QtyAvailableToPromise.Visible = IsInventoryType;
 	
 	AddPriceList();
-	
-	// audit log test
-	
-	WebhookMap = GeneralFunctions.ReturnProductObjectMap(Object.Ref);
-
-	Reg = InformationRegisters.AuditLog.CreateRecordManager();
-	Reg.Period = CurrentDate();
-	Reg.User = GeneralFunctions.GetUserName();
-	Reg.ObjectName = "items";
-	Reg.ObjUUID = String(Object.Ref.UUID());
-	If object.NewObject = True Then
-		Reg.Action = "create";
-	Else
-		Reg.Action = "update";
-	EndIf;
-	Reg.DataJSON = InternetConnectionClientServer.EncodeJSON(WebhookMap);
-	Reg.Write(FALSE);
-
-	
-	// audit log tets
-
 	
 	companies_webhook = Constants.items_webhook.Get();
 	
@@ -302,7 +281,7 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 		Else
 			WebhookMap.Insert("action","update");
 		EndIf;
-		WebhookMap.Insert("api_code",Object.Ref.api_code);
+		//WebhookMap.Insert("api_code",Object.Ref.api_code);
 		WebhookMap.Insert("item_code",Object.Ref.Code);
 		WebhookMap.Insert("item_description",Object.Ref.Description);
 		
@@ -341,11 +320,8 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 		//HTTPConnection = New HTTPConnection("pay.accountingsuite.com",,,,,,SSLConnection);
 		//Result = HTTPConnection.Post(HTTPRequest);
 
-
 	
 EndProcedure
-
-
 
 &AtServer
 Procedure FillLastAverageAccountingCost()
@@ -594,7 +570,7 @@ Procedure TypeOnChange(Item)
 		//Items.COGSAcctLabel.Title = CommonUse.GetAttributeValue(Object.COGSAccount, "Description");
 		
 		Acct = GeneralFunctions.InventoryAcct(NewItemType);
-		//AccountDescription = CommonUse.GetAttributeValue(Acct, "Description");
+		AccountDescription = CommonUse.GetAttributeValue(Acct, "Description");
 		Object.InventoryOrExpenseAccount = Acct;
 		//Items.InventoryAcctLabel.Title = AccountDescription;
 		Items.CostingMethod.ReadOnly = False;
@@ -602,13 +578,14 @@ Procedure TypeOnChange(Item)
 	EndIf;
 	
 	If (NOT GeneralFunctions.InventoryType(NewItemType)) AND Object.Ref.IsEmpty() Then
+		
 		Items.CostingMethod.Visible = False;
 		Items.DefaultLocation.ReadOnly = True;
 		Items.InventoryOrExpenseAccount.Title = "Expense account";
 		Items.COGSAccount.ReadOnly = True;
 		
 		Acct = GeneralFunctions.InventoryAcct(NewItemType);
-		//AccountDescription = CommonUse.GetAttributeValue(Acct, "Description");
+		AccountDescription = CommonUse.GetAttributeValue(Acct, "Description");
 		Object.InventoryOrExpenseAccount = Acct;
 		//Items.InventoryAcctLabel.Title = AccountDescription;
 		Object.COGSAccount = GeneralFunctions.GetEmptyAcct();
@@ -624,10 +601,10 @@ Procedure TypeOnChange(Item)
 		Items.COGSAccount.ReadOnly = True;
 		
 		Object.COGSAccount = GeneralFunctions.GetEmptyAcct();
-		//Items.COGSAcctLabel.Title = "";
+		Items.COGSAcctLabel.Title = "";
 		
 		Object.InventoryOrExpenseAccount = GeneralFunctions.GetEmptyAcct();
-		//Items.InventoryAcctLabel.Title = "";
+		Items.InventoryAcctLabel.Title = "";
 
 
 	EndIf;
@@ -763,6 +740,16 @@ Procedure AddPriceList()
 
 	
 EndProcedure
+
+//&AtServer
+//Procedure WriteAPICode()
+//	
+//	If Object.Ref = Catalogs.Products.EmptyRef() Then
+//		Object.api_code = GeneralFunctions.NextProductNumber();
+//	EndIf;
+
+//	
+//EndProcedure
 
 
 

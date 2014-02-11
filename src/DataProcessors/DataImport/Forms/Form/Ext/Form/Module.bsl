@@ -120,6 +120,8 @@
 	Items.DataListBalancesDebit.Visible = ThisBalances; 
 	Items.DataListBalancesCredit.Visible = ThisBalances;
 	
+	Items.MapToTemplateCV.Visible = ThisCustomers;
+	Items.UnmapCV.Visible = ThisCustomers;
 	Items.IncomeAccount.Visible = ThisCustomers;
 	Items.ARAccount.Visible = ThisCustomers;
 	Items.ExpenseAccount.Visible = ThisCustomers;
@@ -129,7 +131,6 @@
 	Items.DataListDefaultBillingAddress.Visible = ThisCustomers;
 	Items.DataListDefaultShippingAddress.Visible = ThisCustomers;
 	Items.DataListCustomerType.Visible = ThisCustomers;
-	Items.DataListCustomerCode.Visible = ThisCustomers;
 	Items.DataListCustomerDescription.Visible = ThisCustomers;
 	Items.DataListCustomerNotes.Visible = ThisCustomers;
 	Items.DataListCustomerTerms.Visible = ThisCustomers;
@@ -196,7 +197,7 @@
     Items.DataListProductCF5String.Visible = ThisProducts;
 	Items.DataListProductCF5Num.Visible = ThisProducts;
 
-	Items.DataListProductPreferredVendor.Visible = ThisProducts;
+	//Items.DataListProductPreferredVendor.Visible = ThisProducts;
 	
 	Реквизиты.Очистить();	
 	
@@ -439,9 +440,6 @@
 		НоваяСтрока = Реквизиты.Добавить();
 		НоваяСтрока.ИмяРеквизита = "Default shipping address [T - true, F - false]";
 		НоваяСтрока.Обязательный = Истина;
-
-		НоваяСтрока = Реквизиты.Добавить();
-		НоваяСтрока.ИмяРеквизита = "Code [char(5)]";
 		
 	    НоваяСтрока = Реквизиты.Добавить();
 		НоваяСтрока.ИмяРеквизита = "Notes [char]";
@@ -620,8 +618,8 @@
 		НоваяСтрока = Реквизиты.Добавить();
 		НоваяСтрока.ИмяРеквизита = "Value [num]";
 		
-		НоваяСтрока = Реквизиты.Добавить();
-		НоваяСтрока.ИмяРеквизита = "Preferred vendor [ref]";
+		//НоваяСтрока = Реквизиты.Добавить();
+		//НоваяСтрока.ИмяРеквизита = "Preferred vendor [ref]";
 		
 		НоваяСтрока = Реквизиты.Добавить();
 		НоваяСтрока.ИмяРеквизита = "Category [ref]";
@@ -779,24 +777,24 @@
 &НаСервере
 Процедура ЗаполнитьСписокЗагрузки()
 	
-	If ActionType = "Items" Then
-		
-		//ItemDataSet = New Array();
-		//For Each DataLine In Object.DataList Do
-		//	ItemLine = New Structure("ProductType, ProductCode, ProductDescription, ProductIncomeAcct, ProductInvOrExpenseAcct, ProductCOGSAcct, ProductPreferredVendor, ProductCategory, ProductUoM, ProductPrice, ProductQty, ProductValue, ProductCF1String, ProductCF1Num, ProductCF2String, ProductCF2Num, ProductCF3String, ProductCF3Num, ProductCF4String, ProductCF4Num, ProductCF5String, ProductCF5Num");
-		//	FillPropertyValues(ItemLine, DataLine);
-		//	ItemDataSet.Add(ItemLine);
-		//EndDo;	
-		
-		Params = New Array();
-		Params.Add(Date);
-		Params.Add(Date2);
-		Params.Add(Реквизиты);
-		Params.Add(SourceAddress);
-		LongActions.ExecuteInBackground("GeneralFunctions.CreateItemCSV", Params);		
-		
-		Return;	
-	EndIf;
+	//If ActionType = "Items" Then
+	//	
+	//	//ItemDataSet = New Array();
+	//	//For Each DataLine In Object.DataList Do
+	//	//	ItemLine = New Structure("ProductType, ProductCode, ProductDescription, ProductIncomeAcct, ProductInvOrExpenseAcct, ProductCOGSAcct, ProductPreferredVendor, ProductCategory, ProductUoM, ProductPrice, ProductQty, ProductValue, ProductCF1String, ProductCF1Num, ProductCF2String, ProductCF2Num, ProductCF3String, ProductCF3Num, ProductCF4String, ProductCF4Num, ProductCF5String, ProductCF5Num");
+	//	//	FillPropertyValues(ItemLine, DataLine);
+	//	//	ItemDataSet.Add(ItemLine);
+	//	//EndDo;	
+	//	
+	//	Params = New Array();
+	//	Params.Add(Date);
+	//	Params.Add(Date2);
+	//	Params.Add(Реквизиты);
+	//	Params.Add(SourceAddress);
+	//	LongActions.ExecuteInBackground("GeneralFunctions.CreateItemCSV", Params);		
+	//	
+	//	Return;	
+	//EndIf;
 	
 	Object.DataList.Очистить();
 	ТаблицаЗагрузки = Object.DataList.Выгрузить();
@@ -1316,11 +1314,6 @@
 				EndIf
 			КонецЕсли;
 			
-			НомерКолонки = НайтиНомерКолонкиРеквизита("Code [char(5)]");
-			Если НомерКолонки <> Неопределено Тогда
-				НоваяСтрока.CustomerCode = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
-			КонецЕсли;
-
 			НомерКолонки = НайтиНомерКолонкиРеквизита("Notes [char]");
 			Если НомерКолонки <> Неопределено Тогда
 				НоваяСтрока.CustomerNotes = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
@@ -1406,7 +1399,7 @@
 					НоваяСтрока.CustomerSalesPerson = Catalogs.SalesPeople.FindByDescription(RepString);
 				EndIf;
 			КонецЕсли;
-			
+						
 			НомерКолонки = НайтиНомерКолонкиРеквизита("Customer price level [ref]");
 			Если НомерКолонки <> Неопределено Тогда
 				PriceL = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
@@ -1590,95 +1583,95 @@
 			
 		ElsIf ActionType = "Items" Then
 			
-			//НоваяСтрока = ТаблицаЗагрузки.Добавить();
-			//НоваяСтрока.ФлагЗагрузки = Истина;
-			//
-			//НомерКолонки = НайтиНомерКолонкиРеквизита("Product OR Service");
-			//Если НомерКолонки <> Неопределено Тогда
-			//	TypeString = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
-			//	If TypeString = "Product" Then
-			//		НоваяСтрока.ProductType = Enums.InventoryTypes.Inventory;
-			//	ElsIf TypeString = "Service" Then
-			//		НоваяСтрока.ProductType = Enums.InventoryTypes.NonInventory;
-			//	EndIf;
-			//КонецЕсли;
-			//
-			//НомерКолонки = НайтиНомерКолонкиРеквизита("Item code [char(50)]");
-			//Если НомерКолонки <> Неопределено Тогда
-			//	НоваяСтрока.ProductCode = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
-			//КонецЕсли;
+			НоваяСтрока = ТаблицаЗагрузки.Добавить();
+			НоваяСтрока.ФлагЗагрузки = Истина;
+			
+			НомерКолонки = НайтиНомерКолонкиРеквизита("Product OR Service");
+			Если НомерКолонки <> Неопределено Тогда
+				TypeString = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
+				If TypeString = "Product" Then
+					НоваяСтрока.ProductType = Enums.InventoryTypes.Inventory;
+				ElsIf TypeString = "Service" Then
+					НоваяСтрока.ProductType = Enums.InventoryTypes.NonInventory;
+				EndIf;
+			КонецЕсли;
+			
+			НомерКолонки = НайтиНомерКолонкиРеквизита("Item code [char(50)]");
+			Если НомерКолонки <> Неопределено Тогда
+				НоваяСтрока.ProductCode = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
+			КонецЕсли;
 
-			//НомерКолонки = НайтиНомерКолонкиРеквизита("Item description [char(150)]");
-			//Если НомерКолонки <> Неопределено Тогда
-			//	НоваяСтрока.ProductDescription = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
-			//КонецЕсли;
+			НомерКолонки = НайтиНомерКолонкиРеквизита("Item description [char(150)]");
+			Если НомерКолонки <> Неопределено Тогда
+				НоваяСтрока.ProductDescription = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
+			КонецЕсли;
 
-			//НомерКолонки = НайтиНомерКолонкиРеквизита("Income account [ref]");
-			//Если НомерКолонки <> Неопределено Тогда
-			//	IncomeAcctString = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
-			//	If IncomeAcctString <> "" Then
-			//		НоваяСтрока.ProductIncomeAcct = ChartsOfAccounts.ChartOfAccounts.FindByCode(IncomeAcctString);
-			//	Else
-			//		НоваяСтрока.ProductIncomeAcct = Constants.IncomeAccount.Get();
-			//	EndIf;
-			//Иначе
-			//	НоваяСтрока.ProductIncomeAcct = Constants.IncomeAccount.Get();
-			//КонецЕсли;	
-			//
-			//НомерКолонки = НайтиНомерКолонкиРеквизита("Inventory or expense account [ref]");
-			//Если НомерКолонки <> Неопределено Тогда
-			//	InvAcctString = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
-			//	If InvAcctString <> "" Then
-			//		НоваяСтрока.ProductInvOrExpenseAcct = ChartsOfAccounts.ChartOfAccounts.FindByCode(InvAcctString);
-			//	ElsIf TypeString = "Product" Then
-			//		НоваяСтрока.ProductInvOrExpenseAcct = GeneralFunctions.InventoryAcct(Enums.InventoryTypes.Inventory);	
-			//	ElsIf TypeString = "Service" Then
-			//		НоваяСтрока.ProductInvOrExpenseAcct = GeneralFunctions.InventoryAcct(Enums.InventoryTypes.NonInventory);
-			//	EndIf;
-			//Иначе
-			//	If TypeString = "Product" Then
-			//		НоваяСтрока.ProductInvOrExpenseAcct = GeneralFunctions.InventoryAcct(Enums.InventoryTypes.Inventory);	
-			//	ElsIf TypeString = "Service" Then
-			//		НоваяСтрока.ProductInvOrExpenseAcct = GeneralFunctions.InventoryAcct(Enums.InventoryTypes.NonInventory);
-			//	EndIf;
-			//КонецЕсли;
+			НомерКолонки = НайтиНомерКолонкиРеквизита("Income account [ref]");
+			Если НомерКолонки <> Неопределено Тогда
+				IncomeAcctString = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
+				If IncomeAcctString <> "" Then
+					НоваяСтрока.ProductIncomeAcct = ChartsOfAccounts.ChartOfAccounts.FindByCode(IncomeAcctString);
+				Else
+					НоваяСтрока.ProductIncomeAcct = Constants.IncomeAccount.Get();
+				EndIf;
+			Иначе
+				НоваяСтрока.ProductIncomeAcct = Constants.IncomeAccount.Get();
+			КонецЕсли;	
+			
+			НомерКолонки = НайтиНомерКолонкиРеквизита("Inventory or expense account [ref]");
+			Если НомерКолонки <> Неопределено Тогда
+				InvAcctString = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
+				If InvAcctString <> "" Then
+					НоваяСтрока.ProductInvOrExpenseAcct = ChartsOfAccounts.ChartOfAccounts.FindByCode(InvAcctString);
+				ElsIf TypeString = "Product" Then
+					НоваяСтрока.ProductInvOrExpenseAcct = GeneralFunctions.InventoryAcct(Enums.InventoryTypes.Inventory);	
+				ElsIf TypeString = "Service" Then
+					НоваяСтрока.ProductInvOrExpenseAcct = GeneralFunctions.InventoryAcct(Enums.InventoryTypes.NonInventory);
+				EndIf;
+			Иначе
+				If TypeString = "Product" Then
+					НоваяСтрока.ProductInvOrExpenseAcct = GeneralFunctions.InventoryAcct(Enums.InventoryTypes.Inventory);	
+				ElsIf TypeString = "Service" Then
+					НоваяСтрока.ProductInvOrExpenseAcct = GeneralFunctions.InventoryAcct(Enums.InventoryTypes.NonInventory);
+				EndIf;
+			КонецЕсли;
 
-			//НомерКолонки = НайтиНомерКолонкиРеквизита("COGS account [ref]");
-			//Если НомерКолонки <> Неопределено Тогда
-			//	COGSAcctString = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
-			//	If COGSAcctString <> "" Then
-			//		НоваяСтрока.ProductCOGSAcct = ChartsOfAccounts.ChartOfAccounts.FindByCode(COGSAcctString);
-			//	ElsIf TypeString = "Product" Then
-			//		НоваяСтрока.ProductCOGSAcct = GeneralFunctions.GetDefaultCOGSAcct();
-			//	ElsIf TypeString = "Service" Then
-			//		НоваяСтрока.ProductCOGSAcct = GeneralFunctions.GetEmptyAcct();	
-			//	EndIf;
-			//Иначе
-			//	If TypeString = "Product" Then
-			//		НоваяСтрока.ProductCOGSAcct = GeneralFunctions.GetDefaultCOGSAcct();
-			//	ElsIf TypeString = "Service" Then
-			//		НоваяСтрока.ProductCOGSAcct = GeneralFunctions.GetEmptyAcct();	
-			//	EndIf;
+			НомерКолонки = НайтиНомерКолонкиРеквизита("COGS account [ref]");
+			Если НомерКолонки <> Неопределено Тогда
+				COGSAcctString = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
+				If COGSAcctString <> "" Then
+					НоваяСтрока.ProductCOGSAcct = ChartsOfAccounts.ChartOfAccounts.FindByCode(COGSAcctString);
+				ElsIf TypeString = "Product" Then
+					НоваяСтрока.ProductCOGSAcct = GeneralFunctions.GetDefaultCOGSAcct();
+				ElsIf TypeString = "Service" Then
+					НоваяСтрока.ProductCOGSAcct = GeneralFunctions.GetEmptyAcct();	
+				EndIf;
+			Иначе
+				If TypeString = "Product" Then
+					НоваяСтрока.ProductCOGSAcct = GeneralFunctions.GetDefaultCOGSAcct();
+				ElsIf TypeString = "Service" Then
+					НоваяСтрока.ProductCOGSAcct = GeneralFunctions.GetEmptyAcct();	
+				EndIf;
 
-			//КонецЕсли;
+			КонецЕсли;
 
-			//НомерКолонки = НайтиНомерКолонкиРеквизита("Price [num]");
-			//Если НомерКолонки <> Неопределено Тогда
-			//	PriceString = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
-			//	If PriceString <> "" Then
-			//		НоваяСтрока.ProductPrice = PriceString;
-			//	EndIf;
-			//КонецЕсли;
-			//
-			//НомерКолонки = НайтиНомерКолонкиРеквизита("Qty [num]");
-			//Если НомерКолонки <> Неопределено Тогда
-			//	НоваяСтрока.ProductQty = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
-			//КонецЕсли;
-			//
-			//НомерКолонки = НайтиНомерКолонкиРеквизита("Value [num]");
-			//Если НомерКолонки <> Неопределено Тогда
-			//	НоваяСтрока.ProductValue = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
-			//КонецЕсли;
+			НомерКолонки = НайтиНомерКолонкиРеквизита("Price [num]");
+			Если НомерКолонки <> Неопределено Тогда
+				PriceString = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
+				If PriceString <> "" Then
+					НоваяСтрока.ProductPrice = PriceString;
+				EndIf;
+			КонецЕсли;
+			
+			НомерКолонки = НайтиНомерКолонкиРеквизита("Qty [num]");
+			Если НомерКолонки <> Неопределено Тогда
+				НоваяСтрока.ProductQty = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
+			КонецЕсли;
+			
+			НомерКолонки = НайтиНомерКолонкиРеквизита("Value [num]");
+			Если НомерКолонки <> Неопределено Тогда
+				НоваяСтрока.ProductValue = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
+			КонецЕсли;
 
 			//НомерКолонки = НайтиНомерКолонкиРеквизита("Preferred vendor [ref]");
 			//Если НомерКолонки <> Неопределено Тогда
@@ -1688,71 +1681,71 @@
 			//	EndIf;
 			//КонецЕсли;
 
-			//НомерКолонки = НайтиНомерКолонкиРеквизита("Category [ref]");
-			//Если НомерКолонки <> Неопределено Тогда
-			//	ProductCat = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
-			//	If ProductCat <> "" Then
-			//		НоваяСтрока.ProductCategory = Catalogs.ProductCategories.FindByDescription(ProductCat);
-			//	EndIf;
-			//КонецЕсли;
+			НомерКолонки = НайтиНомерКолонкиРеквизита("Category [ref]");
+			Если НомерКолонки <> Неопределено Тогда
+				ProductCat = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
+				If ProductCat <> "" Then
+					НоваяСтрока.ProductCategory = Catalogs.ProductCategories.FindByDescription(ProductCat);
+				EndIf;
+			КонецЕсли;
 
-			//НомерКолонки = НайтиНомерКолонкиРеквизита("UoM [ref]");
-			//Если НомерКолонки <> Неопределено Тогда
-			//	ProductUM = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
-			//	If ProductUM <> "" Then
-			//		НоваяСтрока.ProductUoM = Catalogs.UM.FindByDescription(ProductUM);
-			//	EndIf;
-			//КонецЕсли;
+			НомерКолонки = НайтиНомерКолонкиРеквизита("UoM [ref]");
+			Если НомерКолонки <> Неопределено Тогда
+				ProductUM = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);
+				If ProductUM <> "" Then
+					НоваяСтрока.ProductUoM = Catalogs.UM.FindByDescription(ProductUM);
+				EndIf;
+			КонецЕсли;
 
-			//НомерКолонки = НайтиНомерКолонкиРеквизита("CF1String [char(100)]");
-			//Если НомерКолонки <> Неопределено Тогда
-			//	НоваяСтрока.ProductCF1String = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
-			//КонецЕсли;
-			//
-			//НомерКолонки = НайтиНомерКолонкиРеквизита("CF1Num [num]");
-			//Если НомерКолонки <> Неопределено Тогда
-			//	НоваяСтрока.ProductCF1Num = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
-			//КонецЕсли;
+			НомерКолонки = НайтиНомерКолонкиРеквизита("CF1String [char(100)]");
+			Если НомерКолонки <> Неопределено Тогда
+				НоваяСтрока.ProductCF1String = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
+			КонецЕсли;
+			
+			НомерКолонки = НайтиНомерКолонкиРеквизита("CF1Num [num]");
+			Если НомерКолонки <> Неопределено Тогда
+				НоваяСтрока.ProductCF1Num = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
+			КонецЕсли;
 
-			//НомерКолонки = НайтиНомерКолонкиРеквизита("CF2String [char(100)]");
-			//Если НомерКолонки <> Неопределено Тогда
-			//	НоваяСтрока.ProductCF2String = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
-			//КонецЕсли;
-			//
-			//НомерКолонки = НайтиНомерКолонкиРеквизита("CF2Num [num]");
-			//Если НомерКолонки <> Неопределено Тогда
-			//	НоваяСтрока.ProductCF2Num = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
-			//КонецЕсли;
+			НомерКолонки = НайтиНомерКолонкиРеквизита("CF2String [char(100)]");
+			Если НомерКолонки <> Неопределено Тогда
+				НоваяСтрока.ProductCF2String = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
+			КонецЕсли;
+			
+			НомерКолонки = НайтиНомерКолонкиРеквизита("CF2Num [num]");
+			Если НомерКолонки <> Неопределено Тогда
+				НоваяСтрока.ProductCF2Num = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
+			КонецЕсли;
 
-			//НомерКолонки = НайтиНомерКолонкиРеквизита("CF3String [char(100)]");
-			//Если НомерКолонки <> Неопределено Тогда
-			//	НоваяСтрока.ProductCF3String = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
-			//КонецЕсли;
-			//
-			//НомерКолонки = НайтиНомерКолонкиРеквизита("CF3Num [num]");
-			//Если НомерКолонки <> Неопределено Тогда
-			//	НоваяСтрока.ProductCF3Num = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
-			//КонецЕсли;
-			//
-			//НомерКолонки = НайтиНомерКолонкиРеквизита("CF4String [char(100)]");
-			//Если НомерКолонки <> Неопределено Тогда
-			//	НоваяСтрока.ProductCF4String = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
-			//КонецЕсли;
-			//
-			//НомерКолонки = НайтиНомерКолонкиРеквизита("CF4Num [num]");
-			//Если НомерКолонки <> Неопределено Тогда
-			//	НоваяСтрока.ProductCF4Num = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
-			//КонецЕсли;
-			//
-			//НомерКолонки = НайтиНомерКолонкиРеквизита("CF5String [char(100)]");
-			//Если НомерКолонки <> Неопределено Тогда
-			//	НоваяСтрока.ProductCF5String = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
-			//КонецЕсли;
-			//
-			//НомерКолонки = НайтиНомерКолонкиРеквизита("CF5Num [num]");
-			//Если НомерКолонки <> Неопределено Тогда
-			//	НоваяСтрока.ProductCF5Num = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
-			//КонецЕсли;
+			НомерКолонки = НайтиНомерКолонкиРеквизита("CF3String [char(100)]");
+			Если НомерКолонки <> Неопределено Тогда
+				НоваяСтрока.ProductCF3String = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
+			КонецЕсли;
+			
+			НомерКолонки = НайтиНомерКолонкиРеквизита("CF3Num [num]");
+			Если НомерКолонки <> Неопределено Тогда
+				НоваяСтрока.ProductCF3Num = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
+			КонецЕсли;
+			
+			НомерКолонки = НайтиНомерКолонкиРеквизита("CF4String [char(100)]");
+			Если НомерКолонки <> Неопределено Тогда
+				НоваяСтрока.ProductCF4String = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
+			КонецЕсли;
+			
+			НомерКолонки = НайтиНомерКолонкиРеквизита("CF4Num [num]");
+			Если НомерКолонки <> Неопределено Тогда
+				НоваяСтрока.ProductCF4Num = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
+			КонецЕсли;
+			
+			НомерКолонки = НайтиНомерКолонкиРеквизита("CF5String [char(100)]");
+			Если НомерКолонки <> Неопределено Тогда
+				НоваяСтрока.ProductCF5String = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
+			КонецЕсли;
+			
+			НомерКолонки = НайтиНомерКолонкиРеквизита("CF5Num [num]");
+			Если НомерКолонки <> Неопределено Тогда
+				НоваяСтрока.ProductCF5Num = СокрЛП(Источник[СчетчикСтрок][НомерКолонки - 1]);	
+			КонецЕсли;
 			
 		EndIf;
 				
@@ -1824,7 +1817,7 @@
 		NewPI = Documents.PurchaseInvoice.CreateDocument();
 		
 		NewPI.Company = ExpensifyVendor;
-		NewPI.CompanyCode = ExpensifyVendor.Code;
+		//NewPI.CompanyCode = ExpensifyVendor.Code;
 		NewPI.Currency = GeneralFunctionsReusable.DefaultCurrency();
 		NewPI.ExchangeRate = 1;
 		NewPI.Location = Catalogs.Locations.MainWarehouse;
@@ -1860,29 +1853,29 @@
 			
 	EndIf;
 	
-	//If ActionType = "Items" Then
-	//	
-	//	ItemDataSet = New Array();
-	//	For Each DataLine In Object.DataList Do
-	//		ItemLine = New Structure("ProductType, ProductCode, ProductDescription, ProductIncomeAcct, ProductInvOrExpenseAcct, ProductCOGSAcct, ProductPreferredVendor, ProductCategory, ProductUoM, ProductPrice, ProductQty, ProductValue, ProductCF1String, ProductCF1Num, ProductCF2String, ProductCF2Num, ProductCF3String, ProductCF3Num, ProductCF4String, ProductCF4Num, ProductCF5String, ProductCF5Num");
-	//		FillPropertyValues(ItemLine, DataLine);
-	//		ItemDataSet.Add(ItemLine);
-	//	EndDo;	
-	//	
-	//	Params = New Array();
-	//	Params.Add(Date);
-	//	Params.Add(Date2);
-	//	Params.Add(ItemDataSet);
-	//	LongActions.ExecuteInBackground("GeneralFunctions.CreateItemCSV", Params);
-	//	
-	//EndIf;
+	If ActionType = "Items" Then
+		
+		ItemDataSet = New Array();
+		For Each DataLine In Object.DataList Do
+			ItemLine = New Structure("ProductType, ProductCode, ProductDescription, ProductIncomeAcct, ProductInvOrExpenseAcct, ProductCOGSAcct, ProductCategory, ProductUoM, ProductPrice, ProductQty, ProductValue, ProductCF1String, ProductCF1Num, ProductCF2String, ProductCF2Num, ProductCF3String, ProductCF3Num, ProductCF4String, ProductCF4Num, ProductCF5String, ProductCF5Num");
+			FillPropertyValues(ItemLine, DataLine);
+			ItemDataSet.Add(ItemLine);
+		EndDo;	
+		
+		Params = New Array();
+		Params.Add(Date);
+		Params.Add(Date2);
+		Params.Add(ItemDataSet);
+		LongActions.ExecuteInBackground("GeneralFunctions.CreateItemCSV", Params);
+		
+	EndIf;
 	
 	If ActionType = "CustomersVendors" Then
 		
 		ItemDataSet = New Array();
 		For Each DataLine In Object.DataList Do
 			If DataLine.ФлагЗагрузки = True Then
-				ItemLine = New Structure("CustomerType, CustomerCode, CustomerDescription, CustomerNotes, " +
+				ItemLine = New Structure("CustomerType, CustomerDescription, CustomerNotes, " +
 				"CustomerTerms, CustomerAddressID, CustomerFirstName, CustomerMiddleName, CustomerLastName, " +
 				"CustomerPhone, CustomerCell, CustomerFax, CustomerEmail, CustomerAddressLine1, CustomerAddressLine2, " +
 				"CustomerAddressLine3, CustomerCity, CustomerState, CustomerCountry, CustomerZIP, CustomerAddressNotes, " +
@@ -1968,7 +1961,7 @@
 			NewIP = Documents.InvoicePayment.CreateDocument();
 			
 			NewIP.Company = DataLine.IPHeaderVendor;
-			NewIP.CompanyCode = DataLine.IPHeaderVendor.Code;
+			//NewIP.CompanyCode = DataLine.IPHeaderVendor.Code;
 			NewIP.DocumentTotal = DataLine.IPHeaderAmount;
 			NewIP.DocumentTotalRC = DataLine.IPHeaderAmount;
 			NewIP.BankAccount = Constants.BankAccount.Get();
@@ -1997,7 +1990,7 @@
 			NewPI = Documents.PurchaseInvoice.CreateDocument();
 			
 			NewPI.Company = Dataline.PIHeaderVendor;
-			NewPI.CompanyCode = Dataline.PIHeaderVendor.Code;
+			//NewPI.CompanyCode = Dataline.PIHeaderVendor.Code;
 			NewPI.DocumentTotal = Dataline.PIHeaderAmount;
 			NewPI.DocumentTotalRC = Dataline.PIHeaderAmount;
 			NewPI.Currency = GeneralFunctionsReusable.DefaultCurrency();
@@ -2052,7 +2045,7 @@
 				NewInvoice.Number = DataLine.SIHeaderNumber;
 				NewInvoice.Date = DataLine.SIHeaderDate;
 				NewInvoice.Company = DataLine.SIHeaderCustomer;
-				NewInvoice.CompanyCode = DataLine.SIHeaderCustomer.Code;
+				//NewInvoice.CompanyCode = DataLine.SIHeaderCustomer.Code;
 				NewInvoice.DocumentTotal = DataLine.SIHeaderAmount;
 				NewInvoice.Currency = Constants.DefaultCurrency.Get();
 				NewInvoice.ExchangeRate = 1;
@@ -2073,7 +2066,7 @@
 					NewInvoice.Number = DataLine.SIHeaderNumber;
 					NewInvoice.Date = DataLine.SIHeaderDate;
 					NewInvoice.Company = DataLine.SIHeaderCustomer;
-					NewInvoice.CompanyCode = DataLine.SIHeaderCustomer.Code;
+					//NewInvoice.CompanyCode = DataLine.SIHeaderCustomer.Code;
 					NewInvoice.DocumentTotal = DataLine.SIHeaderAmount;
 					NewInvoice.Currency = Constants.DefaultCurrency.Get();
 					NewInvoice.ExchangeRate = 1;
@@ -2093,7 +2086,7 @@
 					NewInvoice.Number = DataLine.SIHeaderNumber;
 					NewInvoice.Date = DataLine.SIHeaderDate;
 					NewInvoice.Company = DataLine.SIHeaderCustomer;
-					NewInvoice.CompanyCode = DataLine.SIHeaderCustomer.Code;
+					//NewInvoice.CompanyCode = DataLine.SIHeaderCustomer.Code;
 					NewInvoice.DocumentTotal = DataLine.SIHeaderAmount;
 					NewInvoice.Currency = Constants.DefaultCurrency.Get();
 					NewInvoice.ExchangeRate = 1;
@@ -2119,8 +2112,8 @@
 			NewLine.Price = DataLine.SIDetailPrice;
 			NewLine.Quantity = DataLine.SIDetailQty;
 			NewLine.LineTotal = DataLine.SIDetailPrice * DataLine.SIDetailQty; 
-			NewLine.SalesTaxType = US_FL.GetSalesTaxType(DataLine.SIDetailProduct);
-			NewLine.TaxableAmount = 0;
+			//NewLine.SalesTaxType = US_FL.GetSalesTaxType(DataLine.SIDetailProduct);
+			//NewLine.TaxableAmount = 0;
 			NewLine.VATCode = CommonUse.GetAttributeValue(DataLine.SIDetailProduct, "SalesVATCode");
 			NewLine.VAT = 0;
 			
@@ -2529,149 +2522,28 @@ EndProcedure
 	
 КонецПроцедуры
 
-Procedure CreateCustomerVendorCSV(IncomeAccount, ExpenseAccount, ARAccount, APAccount, ItemDataSet) Export
-	
-	// add transactions 1-500
-	
-	For Each DataLine In ItemDataSet Do
+&AtClient
+Procedure MapToTemplateCV(Command)
+	FormData = ThisForm.Реквизиты;
+	NumOfColumns = FormData.Count();
+	For i = 0 to NumOfColumns - 1 Do
 		
-		CreatingNewCompany = False;
-		CompanyFound = Catalogs.Companies.FindByDescription(DataLine.CustomerDescription);
-		If CompanyFound = Catalogs.Companies.EmptyRef() Then
-			CreatingNewCompany = True;
-			
-			NewCompany = Catalogs.Companies.CreateItem();
-			If DataLine.CustomerCode <> "" Then
-				NewCompany.Code = DataLine.CustomerCode;
-			EndIf;
-	
-			NewCompany.Description = DataLine.CustomerDescription;
-			
-			If DataLine.CustomerType = 0 Then
-				NewCompany.Customer = True;
-			ElsIf DataLine.CustomerType = 1 Then
-				NewCompany.Vendor = True;
-			ElsIf DataLine.CustomerType = 2 Then
-				NewCompany.Customer = True;
-				NewCompany.Vendor = True;
-			Else
-				NewCompany.Customer = True;
-			EndIf;
-			
-			NewCompany.DefaultCurrency = Constants.DefaultCurrency.Get();
-			If DataLine.CustomerTerms <> Catalogs.PaymentTerms.EmptyRef() Then
-				NewCompany.Terms = DataLine.CustomerTerms;
-			Else
-				NewCompany.Terms = Catalogs.PaymentTerms.Net30;
-			EndIf;
-			NewCompany.Notes = DataLine.CustomerNotes;
-			NewCompany.USTaxID = DataLine.CustomerVendorTaxID;
-			
-			If DataLine.CustomerCF1String <> "" Then 
-				NewCompany.CF1String = DataLine.CustomerCF1String;
-			EndIf;
-			NewCompany.CF1Num = DataLine.CustomerCF1Num;
-
-			If DataLine.CustomerCF2String <> "" Then 
-				NewCompany.CF2String = DataLine.CustomerCF2String;
-			EndIf;
-			NewCompany.CF2Num = DataLine.CustomerCF2Num;
-
-			If DataLine.CustomerCF3String <> "" Then 
-				NewCompany.CF3String = DataLine.CustomerCF3String;
-			EndIf;
-			NewCompany.CF3Num = DataLine.CustomerCF3Num;
-
-			If DataLine.CustomerCF4String <> "" Then 
-				NewCompany.CF4String = DataLine.CustomerCF4String;
-			EndIf;
-			NewCompany.CF4Num = DataLine.CustomerCF4Num;
-
-			If DataLine.CustomerCF5String <> "" Then 
-				NewCompany.CF5String = DataLine.CustomerCF5String;
-			EndIf;
-			NewCompany.CF5Num = DataLine.CustomerCF5Num;
-
-			If IncomeAccount <> ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
-				NewCompany.IncomeAccount = IncomeAccount;
-			Else
-			EndIf;
-			
-			If ARAccount <> ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
-				NewCompany.ARAccount = ARAccount;
-			Else
-			EndIf;
-			
-			If ExpenseAccount <> ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
-				NewCompany.ExpenseAccount = ExpenseAccount;
-			Else
-			EndIf;
-			
-			If APAccount <> ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
-				NewCompany.APAccount = APAccount;
-			Else
-			EndIf;
-			
-			If DataLine.CustomerSalesPerson <> Catalogs.SalesPeople.EmptyRef() Then
-				NewCompany.SalesPerson = DataLine.CustomerSalesPerson;
-			Else
-			EndIf;
-			
-			If DataLine.CustomerWebsite <> "" Then 
-				NewCompany.Website = DataLine.CustomerWebsite;
-			EndIf;
-			NewCompany.CF4Num = DataLine.CustomerCF4Num;
-			
-			If DataLine.CustomerPriceLevel <> Catalogs.PriceLevels.EmptyRef() Then
-				NewCompany.PriceLevel = DataLine.CustomerPriceLevel;
-			Else
-			EndIf;
-			
-			NewCompany.Write();
-			
-		Else
-			NewCompany = CompanyFound;
-		EndIf;
+		FormData[i].НомерКолонки = i + 1; 
 		
-		AddressLine = Catalogs.Addresses.CreateItem();
-		AddressLine.Owner = NewCompany.Ref;
-		If DataLine.CustomerAddressID = "" Then
-			AddressLine.Description = "Primary";
-		Else
-			AddressLine.Description = DataLine.CustomerAddressID;
-		EndIf;
-		AddressLine.Salutation = DataLine.AddressSalutation;
-		AddressLine.FirstName = DataLine.CustomerFirstName;
-		AddressLine.MiddleName = DataLine.CustomerMiddleName;
-		AddressLine.LastName = DataLine.CustomerLastName;
-		AddressLine.Suffix = DataLine.AddressSuffix;
-		AddressLine.JobTitle = DataLine.AddressJobTitle;
-		AddressLine.Phone = DataLine.CustomerPhone;
-		AddressLine.Cell = DataLine.CustomerCell;
-		AddressLine.Fax = DataLine.CustomerFax;
-		AddressLine.Email = DataLine.CustomerEmail;
-		AddressLine.AddressLine1 = DataLine.CustomerAddressLine1;
-		AddressLine.AddressLine2 = DataLine.CustomerAddressLine2;
-		AddressLine.AddressLine3 = DataLine.CustomerAddressLine3;
-		AddressLine.City = DataLine.CustomerCity;
-		AddressLine.State = DataLine.CustomerState;
-		AddressLine.Country = DataLine.CustomerCountry;
-		AddressLine.ZIP = DataLine.CustomerZIP;
-		AddressLine.Notes = DataLine.CustomerAddressNotes;
-		AddressLine.DefaultShipping = DataLine.DefaultShippingAddress;
-		AddressLine.DefaultBilling = DataLine.DefaultBillingAddress;
-		If DataLine.AddressSalesPerson <> Catalogs.SalesPeople.EmptyRef() Then
-			AddressLine.SalesPerson = DataLine.AddressSalesPerson;
-		Else
-		EndIf;
-		AddressLine.CF1String = DataLine.AddressCF1String;
-		AddressLine.CF2String = DataLine.AddressCF2String;
-		AddressLine.CF3String = DataLine.AddressCF3String;
-		AddressLine.CF4String = DataLine.AddressCF4String;
-		AddressLine.CF5String = DataLine.AddressCF5String;
+	EndDo
+EndProcedure
 
-		AddressLine.Write();
-				
-	EndDo;
+
+&AtClient
+Procedure UnmapCV(Command)
+	
+	FormData = ThisForm.Реквизиты;
+	NumOfColumns = FormData.Count();
+	For i = 0 to NumOfColumns - 1 Do
+		
+		FormData[i].НомерКолонки = 0; 
+		
+	EndDo
 
 EndProcedure
+

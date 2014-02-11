@@ -35,8 +35,8 @@ Procedure InitializeProducts() Export
 	NewProduct.IncomeAccount = Constants.IncomeAccount.Get();
 	NewProduct.InventoryOrExpenseAccount = GeneralFunctions.InventoryAcct(Enums.InventoryTypes.NonInventory);
 	NewProduct.COGSAccount = GeneralFunctions.GetEmptyAcct();
-	NewProduct.PurchaseVATCode = Constants.DefaultPurchaseVAT.Get();
-	NewProduct.SalesVATCode = Constants.DefaultSalesVAT.Get();
+	//NewProduct.PurchaseVATCode = Constants.DefaultPurchaseVAT.Get();
+	//NewProduct.SalesVATCode = Constants.DefaultSalesVAT.Get();
 	//NewProduct.api_code = GeneralFunctions.NextProductNumber();
 	NewProduct.Category = Catalogs.ProductCategories.FindByDescription("CD");
 	NewProduct.Write();
@@ -48,25 +48,11 @@ Procedure InitializeProducts() Export
 	NewProduct.IncomeAccount = Constants.IncomeAccount.Get();
 	NewProduct.InventoryOrExpenseAccount = GeneralFunctions.InventoryAcct(Enums.InventoryTypes.NonInventory);
 	NewProduct.COGSAccount = GeneralFunctions.GetEmptyAcct();
-	NewProduct.PurchaseVATCode = Constants.DefaultPurchaseVAT.Get();
-	NewProduct.SalesVATCode = Constants.DefaultSalesVAT.Get();
+	//NewProduct.PurchaseVATCode = Constants.DefaultPurchaseVAT.Get();
+	//NewProduct.SalesVATCode = Constants.DefaultSalesVAT.Get();
 	//NewProduct.api_code = GeneralFunctions.NextProductNumber();
 	NewProduct.Category = Catalogs.ProductCategories.FindByDescription("DVD");
 	NewProduct.Write();
-	
-	NewProduct = Catalogs.Products.CreateItem();
-	NewProduct.Type = Enums.InventoryTypes.NonInventory;
-	NewProduct.Code = "ARTPOP";
-	NewProduct.Description = "Lady Gaga ARTPOP";
-	NewProduct.IncomeAccount = Constants.IncomeAccount.Get();
-	NewProduct.InventoryOrExpenseAccount = GeneralFunctions.InventoryAcct(Enums.InventoryTypes.NonInventory);
-	NewProduct.COGSAccount = GeneralFunctions.GetEmptyAcct();
-	NewProduct.PurchaseVATCode = Constants.DefaultPurchaseVAT.Get();
-	NewProduct.SalesVATCode = Constants.DefaultSalesVAT.Get();
-	//NewProduct.api_code = GeneralFunctions.NextProductNumber();
-	NewProduct.Category = Catalogs.ProductCategories.FindByDescription("CD");
-	NewProduct.Write();
-
 	
 	NewProduct = Catalogs.Products.CreateItem();
 	NewProduct.Type = Enums.InventoryTypes.NonInventory;
@@ -75,8 +61,8 @@ Procedure InitializeProducts() Export
 	NewProduct.IncomeAccount = Constants.IncomeAccount.Get();
 	NewProduct.InventoryOrExpenseAccount = GeneralFunctions.InventoryAcct(Enums.InventoryTypes.NonInventory);
 	NewProduct.COGSAccount = GeneralFunctions.GetEmptyAcct();
-	NewProduct.PurchaseVATCode = Constants.DefaultPurchaseVAT.Get();
-	NewProduct.SalesVATCode = Constants.DefaultSalesVAT.Get();
+	//NewProduct.PurchaseVATCode = Constants.DefaultPurchaseVAT.Get();
+	//NewProduct.SalesVATCode = Constants.DefaultSalesVAT.Get();
 	//NewProduct.api_code = GeneralFunctions.NextProductNumber();
 	//NewProduct.Category = Catalogs.ProductCategories.FindByDescription("DVD");
 	NewProduct.Write();	
@@ -291,76 +277,59 @@ EndProcedure
 
 // Parameter checks
 
-//&AtServer
-//Procedure PriceMatrix1000() Export
-//	
-//	TestID = "PriceMatrix1000";
-//	
-//	// wrong types of function parameters
-//	
-//	Status = "Fail";
-//	Product = Catalogs.Products.FindByCode("Britney");
-//	
-//	Try
-//		Price = GeneralFunctions.RetailPrice("hello","world",Product,Catalogs.Companies.EmptyRef());
-//		If Price = 0 Then
-//			Status = "Pass"
-//		EndIf;
-//	Except
-//	EndTry;
-//	
-//	Reg = InformationRegisters._UnitTestLog.CreateRecordManager();
-//	Reg.Period = CurrentDate();
-//	Reg.TestID = TestID;
-//	Reg.Result = Status;
-//	Reg.Write();
-//	
-//EndProcedure
+&AtServer
+Procedure PriceMatrix1000() Export
+	
+	TestID = "PriceMatrix1000";
+	
+	// wrong types of function parameters
+	
+	Status = "Fail";
+	Product = Catalogs.Products.FindByCode("Britney");
+	
+	Try
+		Price = GeneralFunctions.RetailPrice("hello","world",Product,Catalogs.Companies.EmptyRef());
+		If Price = 0 Then
+			Status = "Pass"
+		EndIf;
+	Except
+	EndTry;
+	
+	Reg = InformationRegisters._UnitTestLog.CreateRecordManager();
+	Reg.Period = CurrentDate();
+	Reg.TestID = TestID;
+	Reg.Result = Status;
+	Reg.Write();
+	
+EndProcedure
 
-//&AtServer
-//Procedure PriceMatrix1001() Export
-//	
-//	TestID = "PriceMatrix1001";
-//	
-//	// wrong number of function parameters
-//	
-//	Status = "Fail";
-//	Product = Catalogs.Products.FindByCode("Britney");
-//	
-//	Try
-//		Price = GeneralFunctions.RetailPrice(CurrentDate(),Product);
-//		If Price = 1.5 Then
-//			Status = "Pass"
-//		EndIf;
-//	Except
-//	EndTry;
-//	
-//	Reg = InformationRegisters._UnitTestLog.CreateRecordManager();
-//	Reg.Period = CurrentDate();
-//	Reg.TestID = TestID;
-//	Reg.Result = Status;
-//	Reg.Write();
-//	
-//EndProcedure
+&AtServer
+Procedure PriceMatrix1001() Export
+	
+	TestID = "PriceMatrix1001";
+	
+	// wrong number of function parameters
+	
+	Status = "Fail";
+	Product = Catalogs.Products.FindByCode("Britney");
+	
+	Try
+		Price = GeneralFunctions.RetailPrice(CurrentDate(),Product);
+		If Price = 1.5 Then
+			Status = "Pass"
+		EndIf;
+	Except
+	EndTry;
+	
+	Reg = InformationRegisters._UnitTestLog.CreateRecordManager();
+	Reg.Period = CurrentDate();
+	Reg.TestID = TestID;
+	Reg.Result = Status;
+	Reg.Write();
+	
+EndProcedure
 
 // end Parameter checks
-
-
-// item with category
-	// customer with price level
-		// category - n/a (0)
-		// category + price level - n/a (0)
-		// item - Y
-		// item + price level - Y
-		
-	// customer w/o price level
-	// no customer
-
-// item w/o category
-	// customer with price level
-	// customer w/o price level
-	// no customer
-
 
 &AtServer
 Procedure PriceMatrix1002() Export
@@ -413,70 +382,13 @@ Procedure PriceMatrix1003() Export
 	
 EndProcedure
 
-// checking priority "Item" -> "Item + Price level"
-
 &AtServer
 Procedure PriceMatrix1004() Export
 	
 	TestID = "PriceMatrix1004";
 	Product = Catalogs.Products.FindByCode("t-shirt");
-	//Customer = Catalogs.Companies.FindByDescription("Wholesale");
-	Customer = Catalogs.Companies.EmptyRef();
-	ActualPrice = 7.5;
-
-	Status = "Fail";
-	
-	Try
-		Price = GeneralFunctions.RetailPrice(CurrentDate(),Product,Customer);
-		If Price = ActualPrice Then
-			Status = "Pass"
-		EndIf;
-	Except
-	EndTry;
-	
-	Reg = InformationRegisters._UnitTestLog.CreateRecordManager();
-	Reg.Period = CurrentDate();
-	Reg.TestID = TestID;
-	Reg.Result = Status;
-	Reg.Write();
-	
-EndProcedure
-
-&AtServer
-Procedure PriceMatrix1005() Export
-	
-	TestID = "PriceMatrix1005";
-	Product = Catalogs.Products.FindByCode("t-shirt");
-	Customer = Catalogs.Companies.FindByDescription("Retail");
-	ActualPrice = 9.5;
-
-	Status = "Fail";
-	
-	Try
-		Price = GeneralFunctions.RetailPrice(CurrentDate(),Product,Customer);
-		If Price = ActualPrice Then
-			Status = "Pass"
-		EndIf;
-	Except
-	EndTry;
-	
-	Reg = InformationRegisters._UnitTestLog.CreateRecordManager();
-	Reg.Period = CurrentDate();
-	Reg.TestID = TestID;
-	Reg.Result = Status;
-	Reg.Write();
-	
-EndProcedure
-
-// end checking priority "Item" -> "Item + Price level"
-
-&AtServer
-Procedure PriceMatrix1006() Export
-	
-	TestID = "PriceMatrix1006";
-	Product = Catalogs.Products.FindByCode("t-shirt");
 	Customer = Catalogs.Companies.FindByDescription("Wholesale");
-	ActualPrice = 7.5;
+	ActualPrice = 0;
 
 	Status = "Fail";
 	
@@ -497,110 +409,5 @@ Procedure PriceMatrix1006() Export
 EndProcedure
 
 
-&AtServer
-Procedure PriceMatrix1007() Export
-	
-	TestID = "PriceMatrix1007";
-	Product = Catalogs.Products.FindByCode("Britney");
-	Customer = Catalogs.Companies.FindByDescription("Rasputin");
-	ActualPrice = 1.5;
 
-	Status = "Fail";
-	
-	Try
-		Price = GeneralFunctions.RetailPrice(CurrentDate(),Product,Customer);
-		If Price = ActualPrice Then
-			Status = "Pass"
-		EndIf;
-	Except
-	EndTry;
-	
-	Reg = InformationRegisters._UnitTestLog.CreateRecordManager();
-	Reg.Period = CurrentDate();
-	Reg.TestID = TestID;
-	Reg.Result = Status;
-	Reg.Write();
-	
-EndProcedure
-
-// checking priority "Category" -> "Item cat. + Price level"
-
-&AtServer
-Procedure PriceMatrix1008() Export
-	
-	TestID = "PriceMatrix1008";
-	Product = Catalogs.Products.FindByCode("ARTPOP");
-	Customer = Catalogs.Companies.EmptyRef();
-	ActualPrice = 15.5;
-
-	Status = "Fail";
-	
-	Try
-		Price = GeneralFunctions.RetailPrice(CurrentDate(),Product,Customer);
-		If Price = ActualPrice Then
-			Status = "Pass"
-		EndIf;
-	Except
-	EndTry;
-	
-	Reg = InformationRegisters._UnitTestLog.CreateRecordManager();
-	Reg.Period = CurrentDate();
-	Reg.TestID = TestID;
-	Reg.Result = Status;
-	Reg.Write();
-	
-EndProcedure
-
-&AtServer
-Procedure PriceMatrix1009() Export
-	
-	TestID = "PriceMatrix1009";
-	Product = Catalogs.Products.FindByCode("ARTPOP");
-	Customer = Catalogs.Companies.FindByDescription("Wholesale");
-	ActualPrice = 12.5;
-
-	Status = "Fail";
-	
-	Try
-		Price = GeneralFunctions.RetailPrice(CurrentDate(),Product,Customer);
-		If Price = ActualPrice Then
-			Status = "Pass"
-		EndIf;
-	Except
-	EndTry;
-	
-	Reg = InformationRegisters._UnitTestLog.CreateRecordManager();
-	Reg.Period = CurrentDate();
-	Reg.TestID = TestID;
-	Reg.Result = Status;
-	Reg.Write();
-	
-EndProcedure
-
-// end checking priority "Category" -> "Item cat. + Price level"
-
-&AtServer
-Procedure PriceMatrix1010() Export
-	
-	TestID = "PriceMatrix1008";
-	Product = Catalogs.Products.FindByCode("ARTPOP");
-	Customer = Catalogs.Companies.FindByDescription("Rasputin");
-	ActualPrice = 15.5;
-
-	Status = "Fail";
-	
-	Try
-		Price = GeneralFunctions.RetailPrice(CurrentDate(),Product,Customer);
-		If Price = ActualPrice Then
-			Status = "Pass"
-		EndIf;
-	Except
-	EndTry;
-	
-	Reg = InformationRegisters._UnitTestLog.CreateRecordManager();
-	Reg.Period = CurrentDate();
-	Reg.TestID = TestID;
-	Reg.Result = Status;
-	Reg.Write();
-	
-EndProcedure
+// also check priorities

@@ -70,6 +70,15 @@
 		<Command name="Document.ItemReceipt.StandardCommand.Create">
 			<CommandGroup>ActionsPanelCreate</CommandGroup>
 		</Command>
+		<Command name="Report.APAging.StandardCommand.Open">
+			<CommandGroup>ActionsPanelReports</CommandGroup>
+		</Command>
+		<Command name="Report.APAgingDocument.StandardCommand.Open">
+			<CommandGroup>ActionsPanelReports</CommandGroup>
+		</Command>
+		<Command name="Report.PurchasingTransactionDetail.StandardCommand.Open">
+			<CommandGroup>ActionsPanelReports</CommandGroup>
+		</Command>
 	</CommandsOrder>
 	<GroupsOrder>
 		<Group>NavigationPanelImportant</Group>
@@ -77,5 +86,6 @@
 		<Group>CommandGroup.Reports</Group>
 		<Group>NavigationPanelSeeAlso</Group>
 		<Group>ActionsPanelCreate</Group>
+		<Group>ActionsPanelReports</Group>
 	</GroupsOrder>
 </CommandInterface>

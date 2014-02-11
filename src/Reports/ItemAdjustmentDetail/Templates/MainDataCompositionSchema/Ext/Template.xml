@@ -1,0 +1,127 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<DataCompositionSchema xmlns="http://v8.1c.ru/8.1/data-composition-system/schema" xmlns:dcscom="http://v8.1c.ru/8.1/data-composition-system/common" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<dataSource>
+		<name>DataSource1</name>
+		<dataSourceType>Local</dataSourceType>
+	</dataSource>
+	<dataSet xsi:type="DataSetQuery">
+		<name>DataSet1</name>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>DataVersion</dataPath>
+			<field>DataVersion</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Date</dataPath>
+			<field>Date</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>DeletionMark</dataPath>
+			<field>DeletionMark</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Location</dataPath>
+			<field>Location</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Number</dataPath>
+			<field>Number</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>PointInTime</dataPath>
+			<field>PointInTime</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Posted</dataPath>
+			<field>Posted</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Product</dataPath>
+			<field>Product</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>PurchaseOrder</dataPath>
+			<field>PurchaseOrder</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Quantity</dataPath>
+			<field>Quantity</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Ref</dataPath>
+			<field>Ref</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Value</dataPath>
+			<field>Value</field>
+		</field>
+		<dataSource>DataSource1</dataSource>
+		<query>SELECT
+	InventoryBeginningBalances.Ref,
+	InventoryBeginningBalances.DataVersion,
+	InventoryBeginningBalances.DeletionMark,
+	InventoryBeginningBalances.Number,
+	InventoryBeginningBalances.Date,
+	InventoryBeginningBalances.Posted,
+	InventoryBeginningBalances.Product,
+	InventoryBeginningBalances.Location,
+	InventoryBeginningBalances.Quantity,
+	InventoryBeginningBalances.Value,
+	InventoryBeginningBalances.PurchaseOrder,
+	InventoryBeginningBalances.Presentation,
+	InventoryBeginningBalances.PointInTime
+FROM
+	Document.InventoryBeginningBalances AS InventoryBeginningBalances</query>
+	</dataSet>
+	<settingsVariant>
+		<dcsset:name>Default</dcsset:name>
+		<dcsset:presentation xsi:type="xs:string">Default</dcsset:presentation>
+		<dcsset:settings xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows">
+			<dcsset:selection>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>DataVersion</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Date</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>DeletionMark</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Product</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Location</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Number</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>PointInTime</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Posted</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>PurchaseOrder</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Quantity</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Ref</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Value</dcsset:field>
+				</dcsset:item>
+			</dcsset:selection>
+			<dcsset:item xsi:type="dcsset:StructureItemGroup">
+				<dcsset:order>
+					<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
+				</dcsset:order>
+				<dcsset:selection>
+					<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+				</dcsset:selection>
+			</dcsset:item>
+		</dcsset:settings>
+	</settingsVariant>
+</DataCompositionSchema>

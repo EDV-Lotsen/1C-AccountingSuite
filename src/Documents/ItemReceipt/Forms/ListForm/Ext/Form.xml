@@ -77,11 +77,6 @@
 					<ContextMenu name="CompanyContextMenu" id="11"/>
 					<ExtendedTooltip name="CompanyExtendedTooltip" id="32"/>
 				</LabelField>
-				<LabelField name="CompanyCode" id="24">
-					<DataPath>List.CompanyCode</DataPath>
-					<ContextMenu name="CompanyCodeContextMenu" id="25"/>
-					<ExtendedTooltip name="CompanyCodeExtendedTooltip" id="33"/>
-				</LabelField>
 				<InputField name="Location" id="34">
 					<DataPath>List.Location</DataPath>
 					<ContextMenu name="LocationContextMenu" id="35"/>
@@ -104,7 +99,6 @@
 	DocumentItemReceipt.Number,
 	DocumentItemReceipt.Date,
 	DocumentItemReceipt.Company,
-	DocumentItemReceipt.CompanyCode,
 	DocumentItemReceipt.Location
 FROM
 	Document.ItemReceipt AS DocumentItemReceipt

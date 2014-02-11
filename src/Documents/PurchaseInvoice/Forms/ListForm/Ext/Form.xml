@@ -36,29 +36,29 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="18"/>
-			<SearchStringAddition name="ListSearchString" id="29">
+			<SearchStringAddition name="ListSearchString" id="35">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="30"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="31"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="36"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="37"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="32">
+			<ViewStatusAddition name="ListViewStatus" id="38">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="33"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="34"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="39"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="40"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="35">
+			<SearchControlAddition name="ListSearchControl" id="41">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="36"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="37"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="42"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="43"/>
 			</SearchControlAddition>
 			<ChildItems>
 				<LabelField name="Date" id="4">
@@ -69,16 +69,15 @@
 					<ContextMenu name="DateContextMenu" id="5"/>
 					<ExtendedTooltip name="DateExtendedTooltip" id="19"/>
 				</LabelField>
-				<LabelField name="DeliveryDate" id="26">
-					<DataPath>1/39</DataPath>
+				<LabelField name="DueDate" id="26">
+					<DataPath>List.DueDate</DataPath>
 					<HorizontalAlign>Right</HorizontalAlign>
 					<Width>10</Width>
-					<ContextMenu name="DeliveryDateContextMenu" id="27"/>
-					<ExtendedTooltip name="DeliveryDateExtendedTooltip" id="28"/>
+					<ContextMenu name="DueDateContextMenu" id="27"/>
+					<ExtendedTooltip name="DueDateExtendedTooltip" id="28"/>
 				</LabelField>
-				<LabelField name="OrderStatus" id="16">
-					<DataPath>List.OrderStatus</DataPath>
-					<Visible>false</Visible>
+				<LabelField name="InvoiceStatus" id="16">
+					<DataPath>List.InvoiceStatus</DataPath>
 					<Title>
 						<v8:item>
 							<v8:lang>en</v8:lang>
@@ -86,8 +85,8 @@
 						</v8:item>
 					</Title>
 					<Width>10</Width>
-					<ContextMenu name="OrderStatusContextMenu" id="17"/>
-					<ExtendedTooltip name="OrderStatusExtendedTooltip" id="20"/>
+					<ContextMenu name="InvoiceStatusContextMenu" id="17"/>
+					<ExtendedTooltip name="InvoiceStatusExtendedTooltip" id="20"/>
 				</LabelField>
 				<LabelField name="Number" id="6">
 					<DataPath>List.Number</DataPath>
@@ -107,18 +106,6 @@
 					<ContextMenu name="CompanyContextMenu" id="9"/>
 					<ExtendedTooltip name="CompanyExtendedTooltip" id="22"/>
 				</LabelField>
-				<LabelField name="CompanyCode" id="14">
-					<DataPath>List.CompanyCode</DataPath>
-					<Title>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Vendor #</v8:content>
-						</v8:item>
-					</Title>
-					<Width>8</Width>
-					<ContextMenu name="CompanyCodeContextMenu" id="15"/>
-					<ExtendedTooltip name="CompanyCodeExtendedTooltip" id="23"/>
-				</LabelField>
 				<LabelField name="DocumentTotal" id="10">
 					<DataPath>List.DocumentTotal</DataPath>
 					<Width>10</Width>
@@ -130,6 +117,48 @@
 					<Width>10</Width>
 					<ContextMenu name="DocumentTotalRCContextMenu" id="13"/>
 					<ExtendedTooltip name="DocumentTotalRCExtendedTooltip" id="25"/>
+				</LabelField>
+				<LabelField name="Balance" id="29">
+					<DataPath>List.Balance</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Bal. FCY</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Balance FCY</v8:content>
+						</v8:item>
+					</ToolTip>
+					<Width>12</Width>
+					<Format>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>NFD=2; NZ=-</v8:content>
+						</v8:item>
+					</Format>
+					<ContextMenu name="BalanceContextMenu" id="30"/>
+					<ExtendedTooltip name="BalanceExtendedTooltip" id="31"/>
+				</LabelField>
+				<LabelField name="BalanceRC" id="32">
+					<DataPath>List.BalanceRC</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Balance</v8:content>
+						</v8:item>
+					</Title>
+					<Width>12</Width>
+					<Format>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>NFD=2; NZ=-</v8:content>
+						</v8:item>
+					</Format>
+					<ContextMenu name="BalanceRCContextMenu" id="33"/>
+					<ExtendedTooltip name="BalanceRCExtendedTooltip" id="34"/>
 				</LabelField>
 			</ChildItems>
 		</Table>
@@ -148,43 +177,55 @@
 	DocumentPurchaseInvoice.Ref,
 	DocumentPurchaseInvoice.DataVersion,
 	DocumentPurchaseInvoice.DeletionMark,
+	DocumentPurchaseInvoice.Posted,
 	DocumentPurchaseInvoice.Number,
 	DocumentPurchaseInvoice.Date,
+	DocumentPurchaseInvoice.Presentation,
 	DocumentPurchaseInvoice.PointInTime,
-	DocumentPurchaseInvoice.Posted,
 	// Document attributes
 	DocumentPurchaseInvoice.Company,
-	DocumentPurchaseInvoice.CompanyCode,
 	DocumentPurchaseInvoice.Currency,
 	DocumentPurchaseInvoice.ExchangeRate,
-	DocumentPurchaseInvoice.PriceIncludesVAT,
+	DocumentPurchaseInvoice.APAccount,
+	DocumentPurchaseInvoice.DueDate,
 	DocumentPurchaseInvoice.LocationActual,
 	DocumentPurchaseInvoice.DeliveryDateActual,
 	DocumentPurchaseInvoice.Project,
 	DocumentPurchaseInvoice.Class,
+	DocumentPurchaseInvoice.Terms,
+	DocumentPurchaseInvoice.URL,
+	DocumentPurchaseInvoice.Paid,
+	DocumentPurchaseInvoice.BegBal,
 	DocumentPurchaseInvoice.ManualAdjustment,
 	// Document totals
 	DocumentPurchaseInvoice.DocumentTotal,
 	DocumentPurchaseInvoice.DocumentTotalRC,
-	DocumentPurchaseInvoice.VATTotal,
-	DocumentPurchaseInvoice.VATTotalRC,
-	// Order status
+	// Account balance
+	ISNULL(-GeneralJournalBalance.AmountBalance, 0)   AS Balance,
+	ISNULL(-GeneralJournalBalance.AmountRCBalance, 0) AS BalanceRC,
+	// Invoice status
 	CASE
-		WHEN DocumentPurchaseInvoice.DeletionMark THEN
-			 VALUE(Enum.OrderStatuses.Deleted)
-		WHEN NOT DocumentPurchaseInvoice.Posted THEN
-			 VALUE(Enum.OrderStatuses.Draft)
-		WHEN OrdersStatuses.Status IS NULL THEN
-			 VALUE(Enum.OrderStatuses.Open)
-		WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.EmptyRef) THEN
-			 VALUE(Enum.OrderStatuses.Open)
+		WHEN DocumentPurchaseInvoice.DeletionMark
+			THEN VALUE(Enum.InvoiceStatuses.Deleted)
+		WHEN NOT DocumentPurchaseInvoice.Posted
+			THEN VALUE(Enum.InvoiceStatuses.Draft)
+		WHEN GeneralJournalBalance.AmountBalance IS NULL
+			THEN VALUE(Enum.InvoiceStatuses.Paid)
+		WHEN -GeneralJournalBalance.AmountBalance &gt; 0
+			THEN VALUE(Enum.InvoiceStatuses.Open)
+		WHEN -GeneralJournalBalance.AmountBalance = 0
+			THEN VALUE(Enum.InvoiceStatuses.Paid)
+		WHEN -GeneralJournalBalance.AmountBalance &lt; 0
+			THEN VALUE(Enum.InvoiceStatuses.Overpaid)
 		ELSE
-			 OrdersStatuses.Status
-	END AS OrderStatus
+			VALUE(Enum.InvoiceStatuses.NoCharge)
+	END AS InvoiceStatus
 FROM
 	Document.PurchaseInvoice AS DocumentPurchaseInvoice
-		LEFT JOIN InformationRegister.OrdersStatuses.SliceLast AS OrdersStatuses
-		ON DocumentPurchaseInvoice.Ref = OrdersStatuses.Order</QueryText>
+	LEFT JOIN AccountingRegister.GeneralJournal.Balance (,,, ExtDimension2 REFS Document.PurchaseInvoice) AS GeneralJournalBalance
+		ON  (GeneralJournalBalance.Account = DocumentPurchaseInvoice.APAccount)
+		AND (GeneralJournalBalance.ExtDimension1 = DocumentPurchaseInvoice.Company)
+		AND (GeneralJournalBalance.ExtDimension2 = DocumentPurchaseInvoice.Ref)</QueryText>
 				<MainTable>Document.PurchaseInvoice</MainTable>
 				<ListSettings>
 					<dcsset:filter>
@@ -199,15 +240,15 @@ FROM
 						<dcsset:item>
 							<dcsset:selection>
 								<dcsset:item>
-									<dcsset:field>OrderStatus</dcsset:field>
+									<dcsset:field>InvoiceStatus</dcsset:field>
 								</dcsset:item>
 							</dcsset:selection>
 							<dcsset:filter>
 								<dcsset:item xsi:type="dcsset:FilterItemComparison">
-									<dcsset:left xsi:type="dcscor:Field">OrderStatus</dcsset:left>
+									<dcsset:left xsi:type="dcscor:Field">InvoiceStatus</dcsset:left>
 									<dcsset:comparisonType>InList</dcsset:comparisonType>
-									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.OrderStatuses.Deleted</dcsset:right>
-									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.OrderStatuses.Draft</dcsset:right>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.InvoiceStatuses.Deleted</dcsset:right>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.InvoiceStatuses.Draft</dcsset:right>
 								</dcsset:item>
 							</dcsset:filter>
 							<dcsset:appearance>
@@ -220,15 +261,16 @@ FROM
 						<dcsset:item>
 							<dcsset:selection>
 								<dcsset:item>
-									<dcsset:field>OrderStatus</dcsset:field>
+									<dcsset:field>InvoiceStatus</dcsset:field>
 								</dcsset:item>
 							</dcsset:selection>
 							<dcsset:filter>
 								<dcsset:item xsi:type="dcsset:FilterItemComparison">
-									<dcsset:left xsi:type="dcscor:Field">OrderStatus</dcsset:left>
+									<dcsset:left xsi:type="dcscor:Field">InvoiceStatus</dcsset:left>
 									<dcsset:comparisonType>InList</dcsset:comparisonType>
-									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.OrderStatuses.New</dcsset:right>
-									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.OrderStatuses.Open</dcsset:right>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.InvoiceStatuses.New</dcsset:right>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.InvoiceStatuses.NoCharge</dcsset:right>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.InvoiceStatuses.Paid</dcsset:right>
 								</dcsset:item>
 							</dcsset:filter>
 							<dcsset:appearance>
@@ -241,14 +283,14 @@ FROM
 						<dcsset:item>
 							<dcsset:selection>
 								<dcsset:item>
-									<dcsset:field>OrderStatus</dcsset:field>
+									<dcsset:field>InvoiceStatus</dcsset:field>
 								</dcsset:item>
 							</dcsset:selection>
 							<dcsset:filter>
 								<dcsset:item xsi:type="dcsset:FilterItemComparison">
-									<dcsset:left xsi:type="dcscor:Field">OrderStatus</dcsset:left>
+									<dcsset:left xsi:type="dcscor:Field">InvoiceStatus</dcsset:left>
 									<dcsset:comparisonType>Equal</dcsset:comparisonType>
-									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.OrderStatuses.Backordered</dcsset:right>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.InvoiceStatuses.Overpaid</dcsset:right>
 								</dcsset:item>
 							</dcsset:filter>
 							<dcsset:appearance>
@@ -261,14 +303,14 @@ FROM
 						<dcsset:item>
 							<dcsset:selection>
 								<dcsset:item>
-									<dcsset:field>OrderStatus</dcsset:field>
+									<dcsset:field>InvoiceStatus</dcsset:field>
 								</dcsset:item>
 							</dcsset:selection>
 							<dcsset:filter>
 								<dcsset:item xsi:type="dcsset:FilterItemComparison">
-									<dcsset:left xsi:type="dcscor:Field">OrderStatus</dcsset:left>
+									<dcsset:left xsi:type="dcscor:Field">InvoiceStatus</dcsset:left>
 									<dcsset:comparisonType>Equal</dcsset:comparisonType>
-									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.OrderStatuses.Closed</dcsset:right>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.InvoiceStatuses.Open</dcsset:right>
 								</dcsset:item>
 							</dcsset:filter>
 							<dcsset:appearance>

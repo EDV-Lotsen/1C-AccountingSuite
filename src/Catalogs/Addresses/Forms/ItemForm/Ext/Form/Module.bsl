@@ -31,9 +31,60 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	If Object.Owner.Customer = False Then
 		Items.SalesTaxCode.Visible = False;	
 	EndIf;
-
-	
-	If Object.Owner.Customer = False Then
-		Items.SalesTaxCode.Visible = False;	
-	EndIf;
 EndProcedure
+
+&AtClient
+Procedure DefaultBillingOnChange(Item)
+	DefaultBillingOnChangeAtServer();
+EndProcedure
+
+&AtServer
+Procedure DefaultBillingOnChangeAtServer()
+	
+	billQuery = New Query("SELECT
+	         | Addresses.Ref
+	         |FROM
+	         | Catalog.Addresses AS Addresses
+	         |WHERE
+	         | Addresses.DefaultBilling = TRUE
+	         | AND Addresses.Owner.Ref = &Ref");
+	 billQuery.SetParameter("Ref", object.Owner.Ref);     
+	 billResult = billQuery.Execute();
+	 addr = billResult.Unload();
+	 
+	 If (NOT billResult.IsEmpty()) AND object.DefaultBilling = True AND addr[0].Ref <> object.Ref Then
+	  Message("Another address is already set as the default billing address.");
+	  object.DefaultBilling = False;
+  EndIf;
+  
+EndProcedure
+
+&AtClient
+Procedure DefaultShippingOnChange(Item)
+	DefaultShippingOnChangeAtServer();
+EndProcedure
+
+&AtServer
+Procedure DefaultShippingOnChangeAtServer()
+	
+	shipQuery = New Query("SELECT
+	         | Addresses.Ref
+	         |FROM
+	         | Catalog.Addresses AS Addresses
+	         |WHERE
+	         | Addresses.DefaultShipping = TRUE
+	         | AND Addresses.Owner.Ref = &Ref");
+	       
+	 shipQuery.SetParameter("Ref", object.Owner.Ref);
+	 shipResult = shipQuery.Execute();
+	 addr = shipResult.Unload();
+	 
+	 If (NOT shipResult.IsEmpty()) AND object.DefaultShipping = True AND addr[0].Ref <> object.Ref Then
+	  Message("Another address is already set as the default shipping address.");
+	  object.DefaultShipping = False;
+  EndIf;
+  
+EndProcedure
+
+
+

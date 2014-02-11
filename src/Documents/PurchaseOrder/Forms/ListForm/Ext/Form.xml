@@ -106,18 +106,6 @@
 					<ContextMenu name="CompanyContextMenu" id="9"/>
 					<ExtendedTooltip name="CompanyExtendedTooltip" id="22"/>
 				</LabelField>
-				<LabelField name="CompanyCode" id="14">
-					<DataPath>List.CompanyCode</DataPath>
-					<Title>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Vendor #</v8:content>
-						</v8:item>
-					</Title>
-					<Width>8</Width>
-					<ContextMenu name="CompanyCodeContextMenu" id="15"/>
-					<ExtendedTooltip name="CompanyCodeExtendedTooltip" id="23"/>
-				</LabelField>
 				<LabelField name="DocumentTotal" id="10">
 					<DataPath>List.DocumentTotal</DataPath>
 					<Width>10</Width>
@@ -147,16 +135,15 @@
 	DocumentPurchaseOrder.Ref,
 	DocumentPurchaseOrder.DataVersion,
 	DocumentPurchaseOrder.DeletionMark,
+	DocumentPurchaseOrder.Posted,
 	DocumentPurchaseOrder.Number,
 	DocumentPurchaseOrder.Date,
+	DocumentPurchaseOrder.Presentation,
 	DocumentPurchaseOrder.PointInTime,
-	DocumentPurchaseOrder.Posted,
 	// Document attributes
 	DocumentPurchaseOrder.Company,
-	DocumentPurchaseOrder.CompanyCode,
 	DocumentPurchaseOrder.Currency,
 	DocumentPurchaseOrder.ExchangeRate,
-	DocumentPurchaseOrder.PriceIncludesVAT,
 	DocumentPurchaseOrder.Location,
 	DocumentPurchaseOrder.DeliveryDate,
 	DocumentPurchaseOrder.Project,
@@ -165,8 +152,6 @@
 	// Document totals
 	DocumentPurchaseOrder.DocumentTotal,
 	DocumentPurchaseOrder.DocumentTotalRC,
-	DocumentPurchaseOrder.VATTotal,
-	DocumentPurchaseOrder.VATTotalRC,
 	// Order status
 	CASE
 		WHEN DocumentPurchaseOrder.DeletionMark THEN

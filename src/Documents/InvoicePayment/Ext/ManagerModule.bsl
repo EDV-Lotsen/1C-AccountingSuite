@@ -49,7 +49,26 @@
 		Spreadsheet.LeftMargin = 17 + Constants.CheckHorizontalAdj.Get();
 		Spreadsheet.TopMargin = 15 + Constants.CheckVerticalAdj.Get();
 		
-		ThemBill = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemBill", Catalogs.Addresses.EmptyRef());
+		Query = New Query;
+		Query.Text =
+		"SELECT
+		|	Addresses.Ref
+		|FROM
+		|	Catalog.Addresses AS Addresses
+		|WHERE
+		|	Addresses.Owner = &Owner
+		|	AND Addresses.DefaultBilling = &True";
+		Query.Parameters.Insert("Owner", Ref.Company);
+		Query.Parameters.Insert("True", True);
+		BillAddr = Query.Execute().Unload();
+		If BillAddr.Count() > 0 Then
+			ThemBill = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemBill", BillAddr[0].Ref);
+		Else
+			ThemBill = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemBill",Catalogs.Addresses.EmptyRef());
+		EndIf;
+
+		
+		//ThemBill = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemBill", Catalogs.Addresses.EmptyRef());
 		
 		Spreadsheet.Put(AreaCaption);
 
@@ -104,7 +123,7 @@
 	TemplateBills = Template.GetArea("Bills");
 	InvoiceCount = 0;
 	 While SelectionLineItems.Next() Do
-	 	FormattedDate = Format(SelectionLineItems.Document.Date, "DF=""dd/MM/yyyy""");		                    
+	 	FormattedDate = Format(SelectionLineItems.Document.Date, "DF=""MM/dd/yyyy""");		                    
 	 	//TemplateBills.Parameters.InvoiceDate = SelectionLineItems.Document.Date;
 	 	TemplateBills.Parameters.InvoiceDate = FormattedDate;
 

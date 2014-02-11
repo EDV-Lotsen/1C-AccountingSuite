@@ -448,6 +448,16 @@ Procedure Print(Spreadsheet, SheetTitle, DocumentRef, TemplateName = Undefined) 
 			
 			// Put logo into the template.
 			DocumentPrinting.FillLogoInDocumentTemplate(Template, LogoPicture);
+
+			Try
+				FooterLogo = GeneralFunctions.GetFooter1();
+				Footer1Pic = New Picture(FooterLogo);
+				FooterLogo2 = GeneralFunctions.GetFooter2();
+				Footer2Pic = New Picture(FooterLogo2);
+				FooterLogo3 = GeneralFunctions.GetFooter3();
+				Footer3Pic = New Picture(FooterLogo3);
+			Except
+			EndTry;
 			
 			// Fill document header.
 			TemplateArea = Template.GetArea("Header");
@@ -471,24 +481,67 @@ Procedure Print(Spreadsheet, SheetTitle, DocumentRef, TemplateName = Undefined) 
 			EndDo;
 			
 			// Output VAT (for VAT financial localization).
-			If DocumentAttributes.VATTotal <> 0 Then;
-				// Put subtotal.
-				TemplateArea = Template.GetArea("Subtotal");
-				TemplateArea.Parameters.Subtotal = ?(DocumentAttributes.PriceIncludesVAT,
-				                                     DocumentAttributes.DocumentTotal,
-				                                     DocumentAttributes.DocumentTotal - DocumentAttributes.VATTotal);
-				Spreadsheet.Put(TemplateArea);
-				
-				// Put VAT.
-				TemplateArea = Template.GetArea("VAT");
-				TemplateArea.Parameters.VATTotal = DocumentAttributes.VATTotal;
-				Spreadsheet.Put(TemplateArea);
-			EndIf;
+			//If DocumentAttributes.VATTotal <> 0 Then;
+			//	// Put subtotal.
+			//	TemplateArea = Template.GetArea("Subtotal");
+			//	TemplateArea.Parameters.Subtotal = ?(DocumentAttributes.PriceIncludesVAT,
+			//										 DocumentAttributes.DocumentTotal,
+			//										 DocumentAttributes.DocumentTotal - DocumentAttributes.VATTotal);
+			//	Spreadsheet.Put(TemplateArea);
+			//	
+			//	// Put VAT.
+			//	TemplateArea = Template.GetArea("VAT");
+			//	TemplateArea.Parameters.VATTotal = DocumentAttributes.VATTotal;
+			//	Spreadsheet.Put(TemplateArea);
+			//EndIf;
 			
 			// Output document total.
 			TemplateArea = Template.GetArea("Total");
 			TemplateArea.Parameters.DocumentTotal = DocumentAttributes.DocumentTotal;
 			Spreadsheet.Put(TemplateArea);
+			
+			//footer
+			
+			
+			Try
+			//If FooterLeft = "Picture" Then
+				DocumentPrinting.FillFooterInDocumentTemplate(Template, Footer1Pic, "footer1");
+			//ElsIf FooterCenter = "Picture" Then
+				DocumentPrinting.FillFooterInDocumentTemplate(Template, Footer2Pic, "footer2");
+			//ElsIf FooterRight = "Picture" Then
+				DocumentPrinting.FillFooterInDocumentTemplate(Template, Footer3Pic, "footer3");
+			//EndIf;
+			Except
+			EndTry;
+			
+			Row = Template.GetArea("SpaceRow");
+			Footer = Template.GetArea("Footer");
+			RowsToCheck = New Array();
+   			RowsToCheck.Add(Row);
+   			RowsToCheck.Add(Footer);
+			
+			//If FooterLeft = "Text" Then
+				//Footer.Parameters.FooterLeft = "test3test3test3";//Constants.FooterLeft;
+			//ElsIf FooterCenter = "Text" Then
+				//Footer.Parameters.FooterCenter = "testesttest";//Constants.FooterCenter;
+			//ElsIf FooterRight = "Text" Then
+				//Footer.Parameters.FooterRight = "test2test2test2";//Constants.FooterRight;
+			//EndIf;
+
+			
+			While Spreadsheet.CheckPut(RowsToCheck) Do
+				 SpreadSheet.Put(Row);
+      
+     			 RowsToCheck.Clear();
+     			 RowsToCheck.Add(Row);
+      			 RowsToCheck.Add(Footer);
+			EndDo;
+
+			Spreadsheet.Put(Footer);
+			
+			//end footer
+
+
 		EndIf;
 	EndDo;
 	
@@ -927,7 +980,7 @@ Function Query_Filling_Document_PurchaseOrder_Attributes(TablesList)
 		"SELECT
 		|	PurchaseOrder.Ref                       AS FillingData,
 		|	PurchaseOrder.Company                   AS Company,
-		|	PurchaseOrder.CompanyCode               AS CompanyCode,
+		//|	PurchaseOrder.CompanyCode               AS CompanyCode,
 		|	PurchaseOrder.Currency                  AS Currency,
 		|	PurchaseOrder.ExchangeRate              AS ExchangeRate,
 		|	PurchaseOrder.Location                  AS LocationActual,
@@ -942,8 +995,8 @@ Function Query_Filling_Document_PurchaseOrder_Attributes(TablesList)
 		|	ISNULL(PurchaseOrder.Company.Terms, VALUE(Catalog.PaymentTerms.EmptyRef))
 		|	                                        AS Terms,
 		|	ISNULL(PurchaseOrder.Currency.DefaultAPAccount, VALUE(ChartOfAccounts.ChartOfAccounts.EmptyRef))
-		|	                                        AS APAccount,
-		|	PurchaseOrder.PriceIncludesVAT          AS PriceIncludesVAT
+		|	                                        AS APAccount
+		//|	PurchaseOrder.PriceIncludesVAT          AS PriceIncludesVAT
 		|INTO
 		|	Table_Document_PurchaseOrder_Attributes
 		|FROM
@@ -1095,26 +1148,26 @@ Function Query_Filling_Document_PurchaseOrder_LineItems(TablesList)
 		|			ELSE 0
 		|		END * PurchaseOrderLineItems.Price 
 		|		AS NUMBER (15, 2))                     AS LineTotal,
-		|	PurchaseOrderLineItems.VATCode             AS VATCode,
-		|	CAST( // Format(LineTotal * VATRate / 100, ""ND=15; NFD=2"")
-		|		CAST( // Format(Quantity * Price, ""ND=15; NFD=2"")
-		|			CASE
-		|				WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Open)
-		|					THEN ISNULL(OrdersDispatched.Quantity, PurchaseOrderLineItems.Quantity)
-		|				WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Backordered)
-		|					THEN ISNULL(OrdersDispatched.Backorder, PurchaseOrderLineItems.Quantity)
-		|				WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Closed)
-		|					THEN ISNULL(OrdersDispatched.Backorder, 0)
-		|				ELSE 0
-		|			END * PurchaseOrderLineItems.Price
-		|		AS NUMBER (15, 2)) *
-		|		CASE // VATRate = ?(Ref.PriceIncludesVAT, VATCode.PurchaseInclRate, VATCode.PurchaseExclRate)
-		|			WHEN PurchaseOrderLineItems.Ref.PriceIncludesVAT IS NULL THEN 0
-		|			WHEN PurchaseOrderLineItems.Ref.PriceIncludesVAT         THEN ISNULL(PurchaseOrderLineItems.VATCode.PurchaseInclRate, 0)
-		|			ELSE                                                          ISNULL(PurchaseOrderLineItems.VATCode.PurchaseExclRate, 0)
-		|		END /
-		|		100
-		|	AS NUMBER (15, 2))                         AS VAT,
+		//|	PurchaseOrderLineItems.VATCode             AS VATCode,
+		//|	CAST( // Format(LineTotal * VATRate / 100, ""ND=15; NFD=2"")
+		//|		CAST( // Format(Quantity * Price, ""ND=15; NFD=2"")
+		//|			CASE
+		//|				WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Open)
+		//|					THEN ISNULL(OrdersDispatched.Quantity, PurchaseOrderLineItems.Quantity)
+		//|				WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Backordered)
+		//|					THEN ISNULL(OrdersDispatched.Backorder, PurchaseOrderLineItems.Quantity)
+		//|				WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Closed)
+		//|					THEN ISNULL(OrdersDispatched.Backorder, 0)
+		//|				ELSE 0
+		//|			END * PurchaseOrderLineItems.Price
+		//|		AS NUMBER (15, 2)) *
+		//|		CASE // VATRate = ?(Ref.PriceIncludesVAT, VATCode.PurchaseInclRate, VATCode.PurchaseExclRate)
+		//|			WHEN PurchaseOrderLineItems.Ref.PriceIncludesVAT IS NULL THEN 0
+		//|			WHEN PurchaseOrderLineItems.Ref.PriceIncludesVAT         THEN ISNULL(PurchaseOrderLineItems.VATCode.PurchaseInclRate, 0)
+		//|			ELSE                                                          ISNULL(PurchaseOrderLineItems.VATCode.PurchaseExclRate, 0)
+		//|		END /
+		//|		100
+		//|	AS NUMBER (15, 2))                         AS VAT,
 		|	PurchaseOrderLineItems.Ref                 AS Order,
 		|	VALUE(Document.ItemReceipt.EmptyRef)       AS ItemReceipt,
 		|	PurchaseOrderLineItems.Location            AS Location,
@@ -1157,29 +1210,29 @@ Function Query_Filling_Document_PurchaseOrder_Totals(TablesList)
 		// Totals of document
 		|	PurchaseOrderLineItems.FillingData      AS FillingData,
 		|
-		|	SUM(PurchaseOrderLineItems.VAT)         AS VATTotal,
-		|
-		|	CAST( // Format(Total(VAT) * ExchangeRate, ""ND=15; NFD=2"")
-		|		SUM(PurchaseOrderLineItems.VAT) *
-		|		PurchaseOrder.ExchangeRate
-		|		AS NUMBER (15, 2))                  AS VATTotalRC,
-		|
-		|	CASE
-		|		WHEN PurchaseOrder.PriceIncludesVAT THEN // Total(LineTotal)
-		|			SUM(PurchaseOrderLineItems.LineTotal)
-		|		ELSE                                     // Total(LineTotal) + Total(VAT)
-		|			SUM(PurchaseOrderLineItems.LineTotal) +
-		|			SUM(PurchaseOrderLineItems.VAT)
-		|	END                                     AS DocumentTotal,
+		//|	SUM(PurchaseOrderLineItems.VAT)         AS VATTotal,
+		//|
+		//|	CAST( // Format(Total(VAT) * ExchangeRate, ""ND=15; NFD=2"")
+		//|		SUM(PurchaseOrderLineItems.VAT) *
+		//|		PurchaseOrder.ExchangeRate
+		//|		AS NUMBER (15, 2))                  AS VATTotalRC,
+		//|
+		//|	CASE
+		//|		WHEN PurchaseOrder.PriceIncludesVAT THEN // Total(LineTotal)
+		|			SUM(PurchaseOrderLineItems.LineTotal)  AS DocumentTotal,
+		//|		ELSE                                     // Total(LineTotal) + Total(VAT)
+		//|			SUM(PurchaseOrderLineItems.LineTotal) +
+		//|			SUM(PurchaseOrderLineItems.VAT)
+		//|	END                                     AS DocumentTotal,
 		|
 		|	CAST( // Format(DocumentTotal * ExchangeRate, ""ND=15; NFD=2"")
-		|		CASE // DocumentTotal
-		|			WHEN PurchaseOrder.PriceIncludesVAT THEN // Total(LineTotal)
-		|				SUM(PurchaseOrderLineItems.LineTotal)
-		|			ELSE                                     // Total(LineTotal) + Total(VAT)
-		|				SUM(PurchaseOrderLineItems.LineTotal) +
-		|				SUM(PurchaseOrderLineItems.VAT)
-		|		END *
+		//|		CASE // DocumentTotal
+		//|			WHEN PurchaseOrder.PriceIncludesVAT THEN // Total(LineTotal)
+		|				SUM(PurchaseOrderLineItems.LineTotal) *
+		//|			ELSE                                     // Total(LineTotal) + Total(VAT)
+		//|				SUM(PurchaseOrderLineItems.LineTotal) +
+		//|				SUM(PurchaseOrderLineItems.VAT)
+		//|		END *
 		|		PurchaseOrder.ExchangeRate
 		|		AS NUMBER (15, 2))                  AS DocumentTotalRC
 		|
@@ -1191,8 +1244,8 @@ Function Query_Filling_Document_PurchaseOrder_Totals(TablesList)
 		|		ON PurchaseOrder.FillingData = PurchaseOrderLineItems.FillingData
 		|GROUP BY
 		|	PurchaseOrderLineItems.FillingData,
-		|	PurchaseOrder.ExchangeRate,
-		|	PurchaseOrder.PriceIncludesVAT";
+		|	PurchaseOrder.ExchangeRate";
+		//|	PurchaseOrder.PriceIncludesVAT";
 	
 	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
 	
@@ -1209,7 +1262,7 @@ Function Query_Filling_Document_ItemReceipt_Attributes(TablesList)
 		"SELECT
 		|	ItemReceipt.Ref                         AS FillingData,
 		|	ItemReceipt.Company                     AS Company,
-		|	ItemReceipt.CompanyCode                 AS CompanyCode,
+		//|	ItemReceipt.CompanyCode                 AS CompanyCode,
 		|	ItemReceipt.Currency                    AS Currency,
 		|	ItemReceipt.ExchangeRate                AS ExchangeRate,
 		|	ItemReceipt.Location                    AS LocationActual,
@@ -1224,8 +1277,8 @@ Function Query_Filling_Document_ItemReceipt_Attributes(TablesList)
 		|	ISNULL(ItemReceipt.Company.Terms, VALUE(Catalog.PaymentTerms.EmptyRef))
 		|	                                        AS Terms,
 		|	ISNULL(ItemReceipt.Currency.DefaultAPAccount, VALUE(ChartOfAccounts.ChartOfAccounts.EmptyRef))
-		|	                                        AS APAccount,
-		|	ItemReceipt.PriceIncludesVAT            AS PriceIncludesVAT
+		|	                                        AS APAccount
+		//|	ItemReceipt.PriceIncludesVAT            AS PriceIncludesVAT
 		|INTO
 		|	Table_Document_ItemReceipt_Attributes
 		|FROM
@@ -1377,26 +1430,26 @@ Function Query_Filling_Document_ItemReceipt_LineItems(TablesList)
 		|			ELSE 0
 		|		END * ItemReceiptLineItems.Price 
 		|		AS NUMBER (15, 2))                     AS LineTotal,
-		|	ItemReceiptLineItems.VATCode             AS VATCode,
-		|	CAST( // Format(LineTotal * VATRate / 100, ""ND=15; NFD=2"")
-		|		CAST( // Format(Quantity * Price, ""ND=15; NFD=2"")
-		|			CASE
-		|				WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Open)
-		|					THEN ISNULL(OrdersDispatched.Quantity, ItemReceiptLineItems.Quantity)
-		|				WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Backordered)
-		|					THEN ISNULL(OrdersDispatched.Backorder, ItemReceiptLineItems.Quantity)
-		|				WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Closed)
-		|					THEN ISNULL(OrdersDispatched.Backorder, 0)
-		|				ELSE 0
-		|			END * ItemReceiptLineItems.Price
-		|		AS NUMBER (15, 2)) *
-		|		CASE // VATRate = ?(Ref.PriceIncludesVAT, VATCode.PurchaseInclRate, VATCode.PurchaseExclRate)
-		|			WHEN ItemReceiptLineItems.Ref.PriceIncludesVAT IS NULL THEN 0
-		|			WHEN ItemReceiptLineItems.Ref.PriceIncludesVAT         THEN ISNULL(ItemReceiptLineItems.VATCode.PurchaseInclRate, 0)
-		|			ELSE                                                          ISNULL(ItemReceiptLineItems.VATCode.PurchaseExclRate, 0)
-		|		END /
-		|		100
-		|	AS NUMBER (15, 2))                         AS VAT,
+		//|	ItemReceiptLineItems.VATCode             AS VATCode,
+		//|	CAST( // Format(LineTotal * VATRate / 100, ""ND=15; NFD=2"")
+		//|		CAST( // Format(Quantity * Price, ""ND=15; NFD=2"")
+		//|			CASE
+		//|				WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Open)
+		//|					THEN ISNULL(OrdersDispatched.Quantity, ItemReceiptLineItems.Quantity)
+		//|				WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Backordered)
+		//|					THEN ISNULL(OrdersDispatched.Backorder, ItemReceiptLineItems.Quantity)
+		//|				WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Closed)
+		//|					THEN ISNULL(OrdersDispatched.Backorder, 0)
+		//|				ELSE 0
+		//|			END * ItemReceiptLineItems.Price
+		//|		AS NUMBER (15, 2)) *
+		//|		CASE // VATRate = ?(Ref.PriceIncludesVAT, VATCode.PurchaseInclRate, VATCode.PurchaseExclRate)
+		//|			WHEN ItemReceiptLineItems.Ref.PriceIncludesVAT IS NULL THEN 0
+		//|			WHEN ItemReceiptLineItems.Ref.PriceIncludesVAT         THEN ISNULL(ItemReceiptLineItems.VATCode.PurchaseInclRate, 0)
+		//|			ELSE                                                          ISNULL(ItemReceiptLineItems.VATCode.PurchaseExclRate, 0)
+		//|		END /
+		//|		100
+		//|	AS NUMBER (15, 2))                         AS VAT,
 		|	ItemReceiptLineItems.Order                 AS Order,
 		|	ItemReceiptLineItems.Ref                   AS ItemReceipt,
 		|	ItemReceiptLineItems.Location              AS Location,
@@ -1438,30 +1491,30 @@ Function Query_Filling_Document_ItemReceipt_Totals(TablesList)
 		"SELECT
 		// Totals of document
 		|	ItemReceiptLineItems.FillingData        AS FillingData,
-		|
-		|	SUM(ItemReceiptLineItems.VAT)           AS VATTotal,
-		|
-		|	CAST( // Format(Total(VAT) * ExchangeRate, ""ND=15; NFD=2"")
-		|		SUM(ItemReceiptLineItems.VAT) *
-		|		ItemReceipt.ExchangeRate
-		|		AS NUMBER (15, 2))                  AS VATTotalRC,
-		|
-		|	CASE
-		|		WHEN ItemReceipt.PriceIncludesVAT THEN // Total(LineTotal)
-		|			SUM(ItemReceiptLineItems.LineTotal)
-		|		ELSE                                     // Total(LineTotal) + Total(VAT)
-		|			SUM(ItemReceiptLineItems.LineTotal) +
-		|			SUM(ItemReceiptLineItems.VAT)
-		|	END                                     AS DocumentTotal,
+		//|
+		//|	SUM(ItemReceiptLineItems.VAT)           AS VATTotal,
+		//|
+		//|	CAST( // Format(Total(VAT) * ExchangeRate, ""ND=15; NFD=2"")
+		//|		SUM(ItemReceiptLineItems.VAT) *
+		//|		ItemReceipt.ExchangeRate
+		//|		AS NUMBER (15, 2))                  AS VATTotalRC,
+		//|
+		//|	CASE
+		//|		WHEN ItemReceipt.PriceIncludesVAT THEN // Total(LineTotal)
+		|			SUM(ItemReceiptLineItems.LineTotal) AS DocumentTotal,
+		//|		ELSE                                     // Total(LineTotal) + Total(VAT)
+		//|			SUM(ItemReceiptLineItems.LineTotal) +
+		//|			SUM(ItemReceiptLineItems.VAT)
+		//|	END                                     AS DocumentTotal,
 		|
 		|	CAST( // Format(DocumentTotal * ExchangeRate, ""ND=15; NFD=2"")
-		|		CASE // DocumentTotal
-		|			WHEN ItemReceipt.PriceIncludesVAT THEN // Total(LineTotal)
-		|				SUM(ItemReceiptLineItems.LineTotal)
-		|			ELSE                                     // Total(LineTotal) + Total(VAT)
-		|				SUM(ItemReceiptLineItems.LineTotal) +
-		|				SUM(ItemReceiptLineItems.VAT)
-		|		END *
+		//|		CASE // DocumentTotal
+		//|			WHEN ItemReceipt.PriceIncludesVAT THEN // Total(LineTotal)
+		|				SUM(ItemReceiptLineItems.LineTotal) *
+		//|			ELSE                                     // Total(LineTotal) + Total(VAT)
+		//|				SUM(ItemReceiptLineItems.LineTotal) +
+		//|				SUM(ItemReceiptLineItems.VAT)
+		//|		END *
 		|		ItemReceipt.ExchangeRate
 		|		AS NUMBER (15, 2))                  AS DocumentTotalRC
 		|
@@ -1473,8 +1526,8 @@ Function Query_Filling_Document_ItemReceipt_Totals(TablesList)
 		|		ON ItemReceipt.FillingData = ItemReceiptLineItems.FillingData
 		|GROUP BY
 		|	ItemReceiptLineItems.FillingData,
-		|	ItemReceipt.ExchangeRate,
-		|	ItemReceipt.PriceIncludesVAT";
+		|	ItemReceipt.ExchangeRate";
+		//|	ItemReceipt.PriceIncludesVAT";
 	
 	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
 	
@@ -1503,10 +1556,10 @@ Function Query_Filling_Attributes(TablesList)
 		"SELECT
 		|	Document_PurchaseOrder_Attributes.FillingData,
 		|	Document_PurchaseOrder_Attributes.Company,
-		|	Document_PurchaseOrder_Attributes.CompanyCode,
+		//|	Document_PurchaseOrder_Attributes.CompanyCode,
 		|	Document_PurchaseOrder_Attributes.Currency,
 		|	Document_PurchaseOrder_Attributes.ExchangeRate,
-		|	Document_PurchaseOrder_Attributes.PriceIncludesVAT,
+		//|	Document_PurchaseOrder_Attributes.PriceIncludesVAT,
 		|	Document_PurchaseOrder_Attributes.APAccount,
 		|	Document_PurchaseOrder_Attributes.DueDate,
 		|	Document_PurchaseOrder_Attributes.LocationActual,
@@ -1515,9 +1568,9 @@ Function Query_Filling_Attributes(TablesList)
 		|	Document_PurchaseOrder_Attributes.Class,
 		|	Document_PurchaseOrder_Attributes.Terms,
 		|	Document_PurchaseOrder_Totals.DocumentTotal,
-		|	Document_PurchaseOrder_Totals.DocumentTotalRC,
-		|	Document_PurchaseOrder_Totals.VATTotal,
-		|	Document_PurchaseOrder_Totals.VATTotalRC
+		|	Document_PurchaseOrder_Totals.DocumentTotalRC
+		//|	Document_PurchaseOrder_Totals.VATTotal,
+		//|	Document_PurchaseOrder_Totals.VATTotalRC
 		|{Into}
 		|FROM
 		|	Table_Document_PurchaseOrder_Attributes AS Document_PurchaseOrder_Attributes
@@ -1545,10 +1598,10 @@ Function Query_Filling_Attributes(TablesList)
 		"SELECT
 		|	Document_ItemReceipt_Attributes.FillingData,
 		|	Document_ItemReceipt_Attributes.Company,
-		|	Document_ItemReceipt_Attributes.CompanyCode,
+		//|	Document_ItemReceipt_Attributes.CompanyCode,
 		|	Document_ItemReceipt_Attributes.Currency,
 		|	Document_ItemReceipt_Attributes.ExchangeRate,
-		|	Document_ItemReceipt_Attributes.PriceIncludesVAT,
+		//|	Document_ItemReceipt_Attributes.PriceIncludesVAT,
 		|	Document_ItemReceipt_Attributes.APAccount,
 		|	Document_ItemReceipt_Attributes.DueDate,
 		|	Document_ItemReceipt_Attributes.LocationActual,
@@ -1557,9 +1610,9 @@ Function Query_Filling_Attributes(TablesList)
 		|	Document_ItemReceipt_Attributes.Class,
 		|	Document_ItemReceipt_Attributes.Terms,
 		|	Document_ItemReceipt_Totals.DocumentTotal,
-		|	Document_ItemReceipt_Totals.DocumentTotalRC,
-		|	Document_ItemReceipt_Totals.VATTotal,
-		|	Document_ItemReceipt_Totals.VATTotalRC
+		|	Document_ItemReceipt_Totals.DocumentTotalRC
+		//|	Document_ItemReceipt_Totals.VATTotal,
+		//|	Document_ItemReceipt_Totals.VATTotalRC
 		|{Into}
 		|FROM
 		|	Table_Document_ItemReceipt_Attributes AS Document_ItemReceipt_Attributes
@@ -1609,8 +1662,8 @@ Function Query_Filling_LineItems(TablesList)
 		|	Document_PurchaseOrder_LineItems.OrderPrice,
 		|	Document_PurchaseOrder_LineItems.Quantity,
 		|	Document_PurchaseOrder_LineItems.LineTotal,
-		|	Document_PurchaseOrder_LineItems.VATCode,
-		|	Document_PurchaseOrder_LineItems.VAT,
+		//|	Document_PurchaseOrder_LineItems.VATCode,
+		//|	Document_PurchaseOrder_LineItems.VAT,
 		|	Document_PurchaseOrder_LineItems.Order,
 		|	Document_PurchaseOrder_LineItems.ItemReceipt,
 		|	Document_PurchaseOrder_LineItems.Location,
@@ -1652,8 +1705,8 @@ Function Query_Filling_LineItems(TablesList)
 		|	Document_ItemReceipt_LineItems.OrderPrice,
 		|	Document_ItemReceipt_LineItems.Quantity,
 		|	Document_ItemReceipt_LineItems.LineTotal,
-		|	Document_ItemReceipt_LineItems.VATCode,
-		|	Document_ItemReceipt_LineItems.VAT,
+		//|	Document_ItemReceipt_LineItems.VATCode,
+		//|	Document_ItemReceipt_LineItems.VAT,
 		|	Document_ItemReceipt_LineItems.Order,
 		|	Document_ItemReceipt_LineItems.ItemReceipt,
 		|	Document_ItemReceipt_LineItems.Location,
@@ -1691,7 +1744,7 @@ Function FillingCheckList(AdditionalProperties)
 	CheckAttributes.Insert("Company",            "Check");
 	CheckAttributes.Insert("Currency",           "Check");
 	CheckAttributes.Insert("ExchangeRate",       "Check");
-	CheckAttributes.Insert("PriceIncludesVAT",   "Check");
+	//CheckAttributes.Insert("PriceIncludesVAT",   "Check");
 	CheckAttributes.Insert("APAccount",          "Check");
 	// Maximal possible values
 	CheckAttributes.Insert("DueDate",            "Max");
@@ -1699,8 +1752,8 @@ Function FillingCheckList(AdditionalProperties)
 	// Summarize totals
 	CheckAttributes.Insert("DocumentTotal",      "Sum");
 	CheckAttributes.Insert("DocumentTotalRC",    "Sum");
-	CheckAttributes.Insert("VATTotal",           "Sum");
-	CheckAttributes.Insert("VATTotalRC",         "Sum");
+	//CheckAttributes.Insert("VATTotal",           "Sum");
+	//CheckAttributes.Insert("VATTotalRC",         "Sum");
 	
 	// Save structure of attributes to check
 	If CheckAttributes.Count() > 0 Then
@@ -1804,11 +1857,11 @@ Function Query_Printing_Document_Attributes(TablesList)
 	|	Document.Date                         AS Date,
 	|	Document.Company                      AS Company,
 	|	Document.Currency                     AS Currency,
-	|	Document.PriceIncludesVAT             AS PriceIncludesVAT,
+	//|	Document.PriceIncludesVAT             AS PriceIncludesVAT,
 	// ------------------------------------------------------
 	// Totals
-	|	Document.DocumentTotal                AS DocumentTotal,
-	|	Document.VATTotal                     AS VATTotal
+	|	Document.DocumentTotal                AS DocumentTotal
+	//|	Document.VATTotal                     AS VATTotal
 	// ------------------------------------------------------
 	|FROM
 	|	Table_Printing_Document_Data AS Document_Data

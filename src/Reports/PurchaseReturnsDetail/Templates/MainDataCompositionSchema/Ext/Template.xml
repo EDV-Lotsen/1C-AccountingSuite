@@ -1,0 +1,253 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<DataCompositionSchema xmlns="http://v8.1c.ru/8.1/data-composition-system/schema" xmlns:dcscom="http://v8.1c.ru/8.1/data-composition-system/common" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<dataSource>
+		<name>DataSource1</name>
+		<dataSourceType>Local</dataSourceType>
+	</dataSource>
+	<dataSet xsi:type="DataSetQuery">
+		<name>DataSet1</name>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>APAccount</dataPath>
+			<field>APAccount</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>BegBal</dataPath>
+			<field>BegBal</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Company</dataPath>
+			<field>Company</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Currency</dataPath>
+			<field>Currency</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>DataVersion</dataPath>
+			<field>DataVersion</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Date</dataPath>
+			<field>Date</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>DeletionMark</dataPath>
+			<field>DeletionMark</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>DocumentTotal</dataPath>
+			<field>DocumentTotal</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>DocumentTotalRC</dataPath>
+			<field>DocumentTotalRC</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>DueDate</dataPath>
+			<field>DueDate</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>ExchangeRate</dataPath>
+			<field>ExchangeRate</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>LineNumber</dataPath>
+			<field>LineNumber</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>LineTotal</dataPath>
+			<field>LineTotal</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Location</dataPath>
+			<field>Location</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Memo</dataPath>
+			<field>Memo</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Number</dataPath>
+			<field>Number</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>ParentDocument</dataPath>
+			<field>ParentDocument</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>PointInTime</dataPath>
+			<field>PointInTime</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Posted</dataPath>
+			<field>Posted</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Price</dataPath>
+			<field>Price</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Product</dataPath>
+			<field>Product</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>ProductDescription</dataPath>
+			<field>ProductDescription</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Quantity</dataPath>
+			<field>Quantity</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Ref</dataPath>
+			<field>Ref</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Ref1</dataPath>
+			<field>Ref1</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Ref1</v8:content>
+				</v8:item>
+			</title>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>RefNum</dataPath>
+			<field>RefNum</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>ReturnType</dataPath>
+			<field>ReturnType</field>
+		</field>
+		<dataSource>DataSource1</dataSource>
+		<query>SELECT
+	PurchaseReturnLineItems.Ref,
+	PurchaseReturnLineItems.LineNumber,
+	PurchaseReturnLineItems.Product,
+	PurchaseReturnLineItems.Price,
+	PurchaseReturnLineItems.Quantity,
+	PurchaseReturnLineItems.LineTotal,
+	PurchaseReturnLineItems.ProductDescription,
+	PurchaseReturnLineItems.Ref.Ref AS Ref1,
+	PurchaseReturnLineItems.Ref.DataVersion,
+	PurchaseReturnLineItems.Ref.DeletionMark,
+	PurchaseReturnLineItems.Ref.Number,
+	PurchaseReturnLineItems.Ref.Date,
+	PurchaseReturnLineItems.Ref.Posted,
+	PurchaseReturnLineItems.Ref.Company,
+	PurchaseReturnLineItems.Ref.DocumentTotal,
+	PurchaseReturnLineItems.Ref.ParentDocument,
+	PurchaseReturnLineItems.Ref.Currency,
+	PurchaseReturnLineItems.Ref.ExchangeRate,
+	PurchaseReturnLineItems.Ref.DocumentTotalRC,
+	PurchaseReturnLineItems.Ref.Location,
+	PurchaseReturnLineItems.Ref.RefNum,
+	PurchaseReturnLineItems.Ref.DueDate,
+	PurchaseReturnLineItems.Ref.Memo,
+	PurchaseReturnLineItems.Ref.APAccount,
+	PurchaseReturnLineItems.Ref.ReturnType,
+	PurchaseReturnLineItems.Ref.BegBal,
+	PurchaseReturnLineItems.Ref.Presentation,
+	PurchaseReturnLineItems.Ref.PointInTime
+FROM
+	Document.PurchaseReturn.LineItems AS PurchaseReturnLineItems</query>
+	</dataSet>
+	<settingsVariant>
+		<dcsset:name>Default</dcsset:name>
+		<dcsset:presentation xsi:type="xs:string">Default</dcsset:presentation>
+		<dcsset:settings xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows">
+			<dcsset:selection>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>ProductDescription</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Product</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>LineNumber</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>LineTotal</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Price</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Quantity</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Ref1</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Ref</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>APAccount</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>BegBal</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Company</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Currency</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>DataVersion</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Date</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>DeletionMark</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>DueDate</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>ExchangeRate</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Location</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Memo</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Number</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>PointInTime</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Posted</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>ParentDocument</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>RefNum</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>DocumentTotalRC</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>DocumentTotal</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>ReturnType</dcsset:field>
+				</dcsset:item>
+			</dcsset:selection>
+			<dcsset:item xsi:type="dcsset:StructureItemGroup">
+				<dcsset:order>
+					<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
+				</dcsset:order>
+				<dcsset:selection>
+					<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+				</dcsset:selection>
+			</dcsset:item>
+		</dcsset:settings>
+	</settingsVariant>
+</DataCompositionSchema>

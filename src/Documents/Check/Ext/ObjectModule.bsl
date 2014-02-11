@@ -167,7 +167,32 @@ Procedure Posting(Cancel, PostingMode)
 			Record.Amount = CurRowLineItems.Amount;
 		Endif;
 	EndDo;
+	
+	RegisterRecords.CashFlowData.Write = True;
+	For Each CurRowLineItems In LineItems Do			
 		
+		Record = RegisterRecords.CashFlowData.Add();
+		Record.RecordType = AccumulationRecordType.Receipt;
+		Record.Period = Date;
+		Record.Company = Company;
+		Record.Document = Ref;
+		Record.Account = CurRowLineItems.Account;
+		//Record.CashFlowSection = CurRowLineItems.Account.CashFlowSection;
+		Record.AmountRC = CurRowLineItems.Amount * ExchangeRate;
+		//Record.PaymentMethod = PaymentMethod;
+
+		
+		Record = RegisterRecords.CashFlowData.Add();
+		Record.RecordType = AccumulationRecordType.Expense;
+		Record.Period = Date;
+		Record.Company = Company;
+		Record.Document = Ref;
+		Record.Account = CurRowLineItems.Account;
+		//Record.CashFlowSection = CurRowLineItems.Account.CashFlowSection;
+		Record.AmountRC = CurRowLineItems.Amount * ExchangeRate;
+		Record.PaymentMethod = PaymentMethod;
+	EndDo;
+	
 EndProcedure
 
 Procedure UndoPosting(Cancel)
@@ -184,13 +209,13 @@ EndProcedure
 
 Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 	
-	Test = PostingMode;
 	If WriteMode = DocumentWriteMode.Posting Then
 		
 		If PaymentMethod = Catalogs.PaymentMethods.Check Then
 			
+			StrNextNum = StrReplace(String(GeneralFunctions.LastCheckNumber(BankAccount)+ 1),",","");
 			test = Ref.IsEmpty();
-			If PhysicalCheckNum = 0 Then
+			If PhysicalCheckNum = 0 And Number = StrNextNum Or Number = "DRAFT" Then
 			
 				LastNumber = GeneralFunctions.LastCheckNumber(BankAccount);
 				
@@ -211,9 +236,10 @@ Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 		
 	EndIf;
 	
-	If WriteMode = DocumentWriteMode.Write Then
+	If WriteMode = DocumentWriteMode.Write AND PaymentMethod = Catalogs.PaymentMethods.Check Then
 		Number = "DRAFT";
 	EndIf;
+
 
 EndProcedure
 

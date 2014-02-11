@@ -4,7 +4,7 @@ Procedure Posting(Cancel, Mode)
 			
 	RegisterRecords.InventoryJrnl.Write = True;
 	
-	AllowNegativeInventory = Constants.AllowNegativeInventory.Get();
+	//AllowNegativeInventory = Constants.AllowNegativeInventory.Get();
 	
 	For Each CurRowLineItems In LineItems Do		
 		If CurRowLineItems.Product.Type = Enums.InventoryTypes.Inventory Then
@@ -37,10 +37,10 @@ Procedure Posting(Cancel, Mode)
 				Message.Text= StringFunctionsClientServer.SubstituteParametersInString(
 				NStr("en='Insufficient balance on %1';de='Nicht ausreichende Bilanz'"),CurProd);
 				Message.Message();
-				If NOT AllowNegativeInventory Then
+				//If NOT AllowNegativeInventory Then
 					Cancel = True;
 					Return;
-				EndIf;
+				//EndIf;
 			EndIf;
 
 			// layer outflow and inflow operations
@@ -157,7 +157,7 @@ EndProcedure
 
 Procedure UndoPosting(Cancel)
 	
-	AllowNegativeInventory = Constants.AllowNegativeInventory.Get();
+	//AllowNegativeInventory = Constants.AllowNegativeInventory.Get();
 	
 	For Each CurRowLineItems In LineItems Do
 					
@@ -190,10 +190,10 @@ Procedure UndoPosting(Cancel)
 				Message.Text= StringFunctionsClientServer.SubstituteParametersInString(
 				NStr("en='Insufficient balance on %1';de='Nicht ausreichende Bilanz'"),CurProd);
 				Message.Message();
-				If NOT AllowNegativeInventory Then
+				//If NOT AllowNegativeInventory Then
 					Cancel = True;
 					Return;
-				EndIf;
+				//EndIf;
 			EndIf;
 			
 		EndIf;
@@ -201,3 +201,7 @@ Procedure UndoPosting(Cancel)
 	EndDo;
 
 EndProcedure
+
+
+
+

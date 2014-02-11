@@ -4,49 +4,6 @@
 // 
 
 
-// Returns an item's sales tax type. If an item is of inventory type, by default it's taxable,
-// if a product is non-inventory, then by default, it's non-taxable. The default taxable property can
-// be changed in individual document lines.
-//
-// Parameter:
-// Catalog.Items.
-//
-// Returned value:
-// Enumerations.SalesTaxType - taxable - for inventory items, non-taxable for non-inventory items.
-//
-Function GetSalesTaxType(Product) Export
-		
-	If Product.Type = Enums.InventoryTypes.Inventory Then
-		Return Enums.SalesTaxTypes.Taxable;
-	Else
-		Return Enums.SalesTaxTypes.NonTaxable;
-	EndIf;
-	
-EndFunction
-
-Function GetTaxRate(Address) Export  //Company
-	
-	Query = New Query("SELECT
-	                  |	STC.TaxRate AS TR
-	                  |FROM
-	                  |	Catalog.SalesTaxCodes AS STC
-	                  |		INNER JOIN Catalog.Addresses AS A
-	                  |		ON (A.SalesTaxCode = STC.Ref)
-	                  |WHERE
-	                  |	A.Ref = &Address");
-	
-	Query.SetParameter("Address", Address);
-	QueryResult = Query.Execute();
-	
-	If QueryResult.IsEmpty() Then
-		Return 0;
-	Else
-		Dataset = QueryResult.Unload();
-		Return Dataset[0][0];
-	EndIf;
-	
-EndFunction
-
 // Returns a dataset used in 1099 reporting.
 //
 // Parameter:

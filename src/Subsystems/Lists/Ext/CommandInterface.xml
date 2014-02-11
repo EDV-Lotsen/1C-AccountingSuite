@@ -21,11 +21,6 @@
 				<xr:Common>true</xr:Common>
 			</Visibility>
 		</Command>
-		<Command name="Catalog.ProductCategories.StandardCommand.OpenList">
-			<Visibility>
-				<xr:Common>true</xr:Common>
-			</Visibility>
-		</Command>
 		<Command name="Catalog.Companies.StandardCommand.Create">
 			<Visibility>
 				<xr:Common>false</xr:Common>
@@ -158,15 +153,14 @@
 				<xr:Value name="Role.ListUser">false</xr:Value>
 			</Visibility>
 		</Command>
+		<Command name="DataProcessor.DeleteMarkedObjects.StandardCommand.Open">
+			<Visibility>
+				<xr:Common>false</xr:Common>
+			</Visibility>
+		</Command>
 		<Command name="DataProcessor.DataImport.StandardCommand.Open">
 			<Visibility>
-				<xr:Common>true</xr:Common>
-				<xr:Value name="Role.ProjectsView">false</xr:Value>
-				<xr:Value name="Role.ProjectsFull">false</xr:Value>
-				<xr:Value name="Role.TimeTrackView">false</xr:Value>
-				<xr:Value name="Role.TimeTrackFull">false</xr:Value>
-				<xr:Value name="Role.ReportOnly">false</xr:Value>
-				<xr:Value name="Role.ListUser">false</xr:Value>
+				<xr:Common>false</xr:Common>
 			</Visibility>
 		</Command>
 	</CommandsVisibility>
@@ -184,10 +178,6 @@
 			<Placement>Auto</Placement>
 		</Command>
 		<Command name="Catalog.UserList.StandardCommand.OpenList">
-			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
-			<Placement>Auto</Placement>
-		</Command>
-		<Command name="Catalog.ProductCategories.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
@@ -223,10 +213,16 @@
 		<Command name="Catalog.Classes.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
 		</Command>
-		<Command name="Catalog.UserList.StandardCommand.OpenList">
-			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
+		<Command name="Catalog.ShippingCarriers.StandardCommand.OpenList">
+			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
 		</Command>
 		<Command name="Catalog.ProductCategories.StandardCommand.OpenList">
+			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
+		</Command>
+		<Command name="InformationRegister.AuditLog.StandardCommand.OpenList">
+			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
+		</Command>
+		<Command name="Catalog.UserList.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
 		</Command>
 		<Command name="Catalog.Companies.StandardCommand.Create">
@@ -265,7 +261,16 @@
 		<Command name="Catalog.Classes.StandardCommand.Create">
 			<CommandGroup>ActionsPanelCreate</CommandGroup>
 		</Command>
+		<Command name="Catalog.ShippingCarriers.StandardCommand.Create">
+			<CommandGroup>ActionsPanelCreate</CommandGroup>
+		</Command>
+		<Command name="InformationRegister.AuditLog.StandardCommand.Create">
+			<CommandGroup>ActionsPanelCreate</CommandGroup>
+		</Command>
 		<Command name="DataProcessor.DeleteMarkedObjects.StandardCommand.Open">
+			<CommandGroup>ActionsPanelTools</CommandGroup>
+		</Command>
+		<Command name="DataProcessor.ActiveUserList.StandardCommand.Open">
 			<CommandGroup>ActionsPanelTools</CommandGroup>
 		</Command>
 		<Command name="DataProcessor.DataImport.StandardCommand.Open">

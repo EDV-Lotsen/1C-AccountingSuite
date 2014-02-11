@@ -303,7 +303,7 @@ EndProcedure
 //
 Procedure CompanyOnChange(Item)
 	
-	Object.CompanyCode = CommonUse.GetAttributeValue(Object.Company, "Code");
+	//Object.CompanyCode = CommonUse.GetAttributeValue(Object.Company, "Code");
 	
 	EmailSet();
 	// Fill in current receivables
@@ -642,8 +642,8 @@ Procedure BeforeWrite(Cancel, WriteParameters)
 		CommonUseClient.ShowCustomMessageBox(ThisForm, "Bank reconciliation", "The transaction you are editing has been reconciled. Saving 
 		|your changes could put you out of balance the next time you try to reconcile. 
 		|To modify it you should exclude it from the Bank rec. document.", PredefinedValue("Enum.MessageStatus.Warning"));
-	EndIf;    
-
+	EndIf;
+	
 	DefaultCurrency = GeneralFunctionsReusable.DefaultCurrency();
 	CompanyCurrency = CompanyCurrency();
 	Rate = GeneralFunctions.GetExchangeRate(Object.Date, CompanyCurrency);
@@ -655,7 +655,7 @@ Procedure BeforeWrite(Cancel, WriteParameters)
 				BalanceFCY = BalanceFCY + LineItem.BalanceFCY;
 	EndDo;
 			
-	If PayTotal = 0 And Object.CashPayment = 0 Then
+	If PayTotal = 0 And Object.UnappliedPayment = 0 Then
 		Message("No payment is being made.");
 		Cancel = True;
 		Return;
@@ -718,8 +718,7 @@ Procedure BeforeWrite(Cancel, WriteParameters)
 	//
 	//If Object.DocumentTotalRC = 0 Then
 		  Object.DocumentTotalRC = PayTotal*Rate;
-		  //Object.DocumentTotal = PayTotal;
-		  Object.DocumentTotal = Object.CashPayment;
+		  Object.DocumentTotal = PayTotal;
 	//Endif;
 	
 	//Object.Currency = Object.LineItems[0].Currency;
@@ -763,7 +762,7 @@ Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
 		PermitWrite = DocumentPosting.DocumentWritePermitted(WriteParameters);
 		CurrentObject.AdditionalProperties.Insert("PermitWrite", PermitWrite);	
 	EndIf;
-
+	
 	//If Object.Ref.IsEmpty() Then
 	//
 	//	MatchVal = Increment(Constants.CashReceiptLastNumber.Get());
@@ -819,6 +818,10 @@ EndProcedure
 
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
+	
+	If Parameters.Property("SalesInvoice") Then
+		ProcessNewCashReceipt(Parameters.SalesInvoice);
+	EndIf;
 	
 	//ConstantCashReceipt = Constants.CashReceiptLastNumber.Get();
 	//If Object.Ref.IsEmpty() Then		
@@ -1215,6 +1218,59 @@ EndFunction
 Procedure ChargeWithStripe(Command)
 	
 	
+	// Check document saved.
+	If Object.Ref.IsEmpty() Or Modified Then
+		Message(NStr("en = 'The document is not saved.
+                                |Save document first.';de='Das Dokument ist nicht gespeicher'"));
+		Return;
+	EndIf;
+	
+	// Check customer registered.
+	StripeCustomerID = CommonUse.GetAttributeValue(Object.Company, "StripeID");
+	If IsBlankString(StripeCustomerID) Then
+		Message(NStr("en = 'The customer is not registered in Stripe
+		                        |Register the customer and their payment card first.'"));
+		Return;
+	EndIf;
+	
+	// Define charge parameters.
+	InputParameters    = New Structure("amount, currency, customer, description",
+	                                   Object.CashPayment * 100,
+	                                   "usd",
+	                                   StripeCustomerID,
+	                                   SessionTenant() + " Invoice " + Object.Number + " from " + Format(Object.Date,"DLF=D"));
+	
+	// Call Stripe for a charge.
+	PostResult = ApiStripeRequestorInterface.PostCharges(InputParameters);
+	
+	// Check created charge.
+	If PostResult.Result = Undefined Then
+		// Failed creating charge.
+		Message(NStr("en = 'Failed creating Stripe charge.'" + Chars.LF + PostResult.Description));
+		Return;
+		
+	ElsIf Not PostResult.Result.Property("id", Object.StripeID) Then
+		// Server returned the wrong object.
+		Message(NStr("en = 'Failed creating Stripe charge.'" + Chars.LF + NStr("en = 'Stripe server request failed.'")));
+		Return;
+		
+	Else
+		
+		Object.StripeCardName    = PostResult.Result.card.name;
+		Object.StripeAmount  = PostResult.Result.amount/100;
+		Object.StripeCreated = PostResult.Result.created;
+		Object.StripeCardType    = PostResult.Result.card.type;
+		Object.StripeLast4   = PostResult.Result.card.last4;
+	
+		// Charge successfully created.
+		Message(NStr("en = 'Stripe charge successfully created.'"));
+		
+		// Mark form as modified.
+		Modified = True;
+	EndIf;
+
+	// Update elements status.
+	Items.FormChargeWithStripe.Enabled = IsBlankString(Object.StripeID);
 
 EndProcedure
 
@@ -1261,7 +1317,7 @@ Procedure SendEmailAtServer()
 			DocObj = DocumentLine.Document.Ref.GetObject();
 			
 			TotalAmount = TotalAmount + DocumentLine.Payment;
-			datastring = datastring + "<TR height=""20""><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.Document.Ref +  "</TD><TD style=""border-spacing: 0px 0px;height: 20px;""> $" + DocObj.DocumentTotalRC + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;""> $" + DocumentLine.Balance + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;""> $" + DocumentLine.Payment + "</TD></TR>";
+			datastring = datastring + "<TR height=""20""><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.Document.Ref +  "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocObj.DocumentTotalRC + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.Balance + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.Payment + "</TD></TR>";
 
 		EndDo;
 		
@@ -1272,27 +1328,19 @@ Procedure SendEmailAtServer()
 	 	EndDo;
 
 	    	 
-	    MailProfil = New InternetMailProfile; 
+	   	    MailProfil = New InternetMailProfile; 
 	    
-	    MailProfil.SMTPServerAddress = "smtp.sendgrid.net";
+	    MailProfil.SMTPServerAddress = ServiceParameters.SMTPServer(); 
 		//MailProfil.SMTPServerAddress = Constants.MailProfAddress.Get();
-	    MailProfil.SMTPUseSSL = True;
+	    MailProfil.SMTPUseSSL = ServiceParameters.SMTPUseSSL();
 		//MailProfil.SMTPUseSSL = Constants.MailProfSSL.Get();
-	    MailProfil.SMTPPort = 465; 
+	    MailProfil.SMTPPort = 465;  
 	    
 	    MailProfil.Timeout = 180; 
 	    
-		
-		MailProfil.SMTPPassword = "1cusa2012";
+		MailProfil.SMTPPassword = ServiceParameters.SendGridPassword();
 	 	  
-		MailProfil.SMTPUser = "bnghiem";
-		
-		//MailProfil.SMTPPassword = "At/XCgOEv2nAyR+Nu7CC0WnhUVvbqndhaz1UkUkmQQTU"; 
-		//MailProfil.SMTPPassword = Constants.MailProfPass.Get();
-	    
-	    //MailProfil.SMTPUser = "AKIAJIZ4ECYUL7N3P3BA"; 
-		//MailProfil.SMTPUser = Constants.MailProfUser.Get();
-	    
+		MailProfil.SMTPUser = ServiceParameters.SendGridUserName();	    
 	    
 	    send = New InternetMailMessage; 
 	    //send.To.Add(object.shipto.Email);
@@ -1434,7 +1482,10 @@ Procedure EmailSet()
 			QueryResult = Query.Execute();	
 		Dataset = QueryResult.Unload();
 		
-	Object.EmailTo = Dataset[0].Email;
+	Try
+		Object.EmailTo = Dataset[0].Email;
+	Except
+	EndTry;
 	
 EndProcedure
 
@@ -1553,14 +1604,15 @@ Procedure PayAllDoc(Command)
 	Total = 0;
 	For Each LineItem In Object.LineItems Do
 		test = LineItem;
+		//Items.LineItems.CurrentData.Check = True;
 		LineItem.Check = True;
 		LineItem.Payment = LineItem.Balance;
+		//LineItemsCheckOnChange(Items.LineItems.CurrentData.Check);
 		Total = Total + LineItem.Payment;
 
 	EndDo;
 	
-	Object.CashPayment = Total - object.AppliedCredit;
-	Object.UnappliedPayment = 0;
+	Object.CashPayment = Total;
 
 	
 EndProcedure
@@ -1580,3 +1632,25 @@ Procedure ProcessUserResponseOnDocumentPeriodClosed(Result, Parameters) Export
 		EndIf;
 	EndIf;	
 EndProcedure
+
+&AtServer
+Procedure ProcessNewCashReceipt(SalesInvoice)
+	
+	Object.Company = SalesInvoice.Company;
+	Object.Date = CurrentDate();
+	EmailSet();
+	FillDocumentList(Object.Company);
+	For Each Doc In Object.LineItems Do
+		If Doc.Document = SalesInvoice Then
+			Doc.Payment = Doc.Balance;
+			Object.CashPayment = Doc.Balance;
+			Object.DocumentTotal = Doc.Balance;
+			Object.DocumentTotalRC = Doc.BalanceFCY;
+		EndIf;
+	EndDo;
+	FillCreditMemos(Object.Company);
+
+	
+	
+EndProcedure
+

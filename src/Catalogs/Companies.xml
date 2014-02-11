@@ -333,6 +333,88 @@
 			<ChoiceHistoryOnInput>DontUse</ChoiceHistoryOnInput>
 		</Properties>
 		<ChildObjects>
+			<Attribute uuid="7ce233bf-a5d6-4813-a982-40d2c873d009">
+				<Properties>
+					<Name>FullName</Name>
+					<Synonym>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Full name</v8:content>
+						</v8:item>
+					</Synonym>
+					<Comment/>
+					<Type>
+						<v8:Type>xs:string</v8:Type>
+						<v8:StringQualifiers>
+							<v8:Length>150</v8:Length>
+							<v8:AllowedLength>Variable</v8:AllowedLength>
+						</v8:StringQualifiers>
+					</Type>
+					<PasswordMode>false</PasswordMode>
+					<Format/>
+					<EditFormat/>
+					<ToolTip/>
+					<MarkNegatives>false</MarkNegatives>
+					<Mask/>
+					<MultiLine>false</MultiLine>
+					<ExtendedEdit>false</ExtendedEdit>
+					<MinValue xsi:nil="true"/>
+					<MaxValue xsi:nil="true"/>
+					<FillFromFillingValue>false</FillFromFillingValue>
+					<FillValue xsi:type="xs:string"/>
+					<FillChecking>DontCheck</FillChecking>
+					<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
+					<ChoiceParameterLinks/>
+					<ChoiceParameters/>
+					<QuickChoice>Auto</QuickChoice>
+					<CreateOnInput>Auto</CreateOnInput>
+					<ChoiceForm/>
+					<LinkByType/>
+					<ChoiceHistoryOnInput>Auto</ChoiceHistoryOnInput>
+					<Use>ForItem</Use>
+					<Indexing>DontIndex</Indexing>
+					<FullTextSearch>Use</FullTextSearch>
+				</Properties>
+			</Attribute>
+			<Attribute uuid="3efca81b-5df5-44a7-800b-58a6474ba31f">
+				<Properties>
+					<Name>FederalIDType</Name>
+					<Synonym>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Federal IDType</v8:content>
+						</v8:item>
+					</Synonym>
+					<Comment/>
+					<Type>
+						<v8:Type>cfg:EnumRef.FederalIDType</v8:Type>
+					</Type>
+					<PasswordMode>false</PasswordMode>
+					<Format/>
+					<EditFormat/>
+					<ToolTip/>
+					<MarkNegatives>false</MarkNegatives>
+					<Mask/>
+					<MultiLine>false</MultiLine>
+					<ExtendedEdit>false</ExtendedEdit>
+					<MinValue xsi:nil="true"/>
+					<MaxValue xsi:nil="true"/>
+					<FillFromFillingValue>false</FillFromFillingValue>
+					<FillValue xsi:nil="true"/>
+					<FillChecking>DontCheck</FillChecking>
+					<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
+					<ChoiceParameterLinks/>
+					<ChoiceParameters/>
+					<QuickChoice>Auto</QuickChoice>
+					<CreateOnInput>Auto</CreateOnInput>
+					<ChoiceForm/>
+					<LinkByType/>
+					<ChoiceHistoryOnInput>Auto</ChoiceHistoryOnInput>
+					<Use>ForItem</Use>
+					<Indexing>DontIndex</Indexing>
+					<FullTextSearch>Use</FullTextSearch>
+				</Properties>
+			</Attribute>
 			<Attribute uuid="0b1befbb-d32c-4605-b553-e5d30f8baf9c">
 				<Properties>
 					<Name>USTaxID</Name>
@@ -681,53 +763,6 @@
 					<FullTextSearch>Use</FullTextSearch>
 				</Properties>
 			</Attribute>
-			<Attribute uuid="1cb76b5d-789f-4b0e-b8ad-6197dc7f8704">
-				<Properties>
-					<Name>VATNumber</Name>
-					<Synonym>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>VAT reg. number</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>USt.</v8:content>
-						</v8:item>
-					</Synonym>
-					<Comment/>
-					<Type>
-						<v8:Type>xs:string</v8:Type>
-						<v8:StringQualifiers>
-							<v8:Length>15</v8:Length>
-							<v8:AllowedLength>Variable</v8:AllowedLength>
-						</v8:StringQualifiers>
-					</Type>
-					<PasswordMode>false</PasswordMode>
-					<Format/>
-					<EditFormat/>
-					<ToolTip/>
-					<MarkNegatives>false</MarkNegatives>
-					<Mask/>
-					<MultiLine>false</MultiLine>
-					<ExtendedEdit>false</ExtendedEdit>
-					<MinValue xsi:nil="true"/>
-					<MaxValue xsi:nil="true"/>
-					<FillFromFillingValue>false</FillFromFillingValue>
-					<FillValue xsi:type="xs:string"/>
-					<FillChecking>DontCheck</FillChecking>
-					<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
-					<ChoiceParameterLinks/>
-					<ChoiceParameters/>
-					<QuickChoice>Auto</QuickChoice>
-					<CreateOnInput>Auto</CreateOnInput>
-					<ChoiceForm/>
-					<LinkByType/>
-					<ChoiceHistoryOnInput>Auto</ChoiceHistoryOnInput>
-					<Use>ForItem</Use>
-					<Indexing>DontIndex</Indexing>
-					<FullTextSearch>Use</FullTextSearch>
-				</Properties>
-			</Attribute>
 			<Attribute uuid="dcff9292-1052-404c-accb-bbcb76ee07c3">
 				<Properties>
 					<Name>Website</Name>
@@ -865,13 +900,13 @@
 					<FullTextSearch>Use</FullTextSearch>
 				</Properties>
 			</Attribute>
-			<Attribute uuid="61333984-4ceb-4a2f-b995-37bdf495e8fb">
+			<Attribute uuid="15355717-43d7-48b8-b2f1-94a0022a1676">
 				<Properties>
-					<Name>StripeToken</Name>
+					<Name>StripeID</Name>
 					<Synonym>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Stripe token</v8:content>
+							<v8:content>Stripe ID</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -908,13 +943,13 @@
 					<FullTextSearch>Use</FullTextSearch>
 				</Properties>
 			</Attribute>
-			<Attribute uuid="15355717-43d7-48b8-b2f1-94a0022a1676">
+			<Attribute uuid="61333984-4ceb-4a2f-b995-37bdf495e8fb">
 				<Properties>
-					<Name>StripeID</Name>
+					<Name>StripeToken</Name>
 					<Synonym>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Stripe ID</v8:content>
+							<v8:content>Stripe token</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -1383,7 +1418,7 @@
 					<FullTextSearch>Use</FullTextSearch>
 				</Properties>
 			</Attribute>
-			<Attribute uuid="17e5d600-fc57-48c0-b8bc-2d00209177a3">
+			<Attribute uuid="13e7af3c-edce-4bd2-95ae-80f943914bee">
 				<Properties>
 					<Name>CF2String</Name>
 					<Synonym>
@@ -1426,7 +1461,7 @@
 					<FullTextSearch>Use</FullTextSearch>
 				</Properties>
 			</Attribute>
-			<Attribute uuid="219c002b-3797-4310-883a-021344c735ac">
+			<Attribute uuid="841dbadd-b8a4-4967-bc3c-a5f301c0ffaf">
 				<Properties>
 					<Name>CF3String</Name>
 					<Synonym>
@@ -1469,7 +1504,7 @@
 					<FullTextSearch>Use</FullTextSearch>
 				</Properties>
 			</Attribute>
-			<Attribute uuid="60746c08-67b3-4fe1-96aa-6b5e804e5679">
+			<Attribute uuid="80a2afa1-acb6-4345-8def-c27358d66e09">
 				<Properties>
 					<Name>CF4String</Name>
 					<Synonym>
@@ -1512,7 +1547,7 @@
 					<FullTextSearch>Use</FullTextSearch>
 				</Properties>
 			</Attribute>
-			<Attribute uuid="9baea2ce-42d8-471f-b83d-111a769632b6">
+			<Attribute uuid="46e2746f-be19-4eba-b53d-4289d9751373">
 				<Properties>
 					<Name>CF5String</Name>
 					<Synonym>
@@ -1599,7 +1634,7 @@
 					<FullTextSearch>Use</FullTextSearch>
 				</Properties>
 			</Attribute>
-			<Attribute uuid="15bf47cc-cecd-4466-a7a4-15f0f0853adb">
+			<Attribute uuid="5a23302b-6422-4009-ac18-2560acbc4351">
 				<Properties>
 					<Name>CF2Num</Name>
 					<Synonym>
@@ -1643,7 +1678,7 @@
 					<FullTextSearch>Use</FullTextSearch>
 				</Properties>
 			</Attribute>
-			<Attribute uuid="ba2b53e1-5b82-4fe3-93cd-e0d1201c3df5">
+			<Attribute uuid="1574daf1-8331-49f3-a4be-b41bc529acc1">
 				<Properties>
 					<Name>CF3Num</Name>
 					<Synonym>
@@ -1687,7 +1722,7 @@
 					<FullTextSearch>Use</FullTextSearch>
 				</Properties>
 			</Attribute>
-			<Attribute uuid="4df7c689-ca41-4b08-93c2-dcb1d0075e84">
+			<Attribute uuid="2d51f0bb-26fa-424e-baae-1c54db7d5b64">
 				<Properties>
 					<Name>CF4Num</Name>
 					<Synonym>
@@ -1731,7 +1766,7 @@
 					<FullTextSearch>Use</FullTextSearch>
 				</Properties>
 			</Attribute>
-			<Attribute uuid="f322987e-33f8-4a81-bc6c-6d3e215f510e">
+			<Attribute uuid="8612f7ce-b327-41ee-a99b-4982c45e2254">
 				<Properties>
 					<Name>CF5Num</Name>
 					<Synonym>
@@ -1775,7 +1810,7 @@
 					<FullTextSearch>Use</FullTextSearch>
 				</Properties>
 			</Attribute>
-			<Attribute uuid="57687152-dceb-4061-b80b-2bc64f801275">
+			<Attribute uuid="b8d98754-e7ce-4a9c-b4ba-a7ff3a3b4acf">
 				<Properties>
 					<Name>bitcoin_address</Name>
 					<Synonym>
@@ -1818,7 +1853,7 @@
 					<FullTextSearch>Use</FullTextSearch>
 				</Properties>
 			</Attribute>
-			<Attribute uuid="fc460689-5ffc-4126-8d63-94752c6cf910">
+			<Attribute uuid="d5f81279-9106-4769-a430-437719d12c8b">
 				<Properties>
 					<Name>SalesPerson</Name>
 					<Synonym>

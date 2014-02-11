@@ -43,7 +43,7 @@ Procedure GenInvoiceAtServer(SelectedItem)
 		//NewInvoice.Date = TabularPartRow.Date;
 		NewInvoice.Date = CurrentDate();
 		NewInvoice.Company = TabularPartRow.Company;
-		NewInvoice.CompanyCode = TabularPartRow.Company.Code;
+		//NewInvoice.CompanyCode = TabularPartRow.Company.Code;
 		//NewInvoice.DocumentTotal = TabularPartRow.Price * TabularPartRow.TimeComplete;
 		NewInvoice.Currency = Constants.DefaultCurrency.Get();
 		NewInvoice.ExchangeRate = 1;
@@ -151,11 +151,12 @@ Procedure GenInvoiceAtServer(SelectedItem)
 					NewLine.LineTotal = TabularPartRow.Price * DayHours; 
 					NewLine.Project = TabularPartRow.Project;
 					//NewLine.SalesTaxType = US_FL.GetSalesTaxType(TabularPartRow.Task);
-					NewLine.SalesTaxType = US_FL.GetSalesTaxType(TabularPartRow.Task);
+					//NewLine.SalesTaxType = US_FL.GetSalesTaxType(TabularPartRow.Task);
 
-					NewLine.TaxableAmount = 0;
-					NewLine.VATCode = CommonUse.GetAttributeValue(TabularPartRow.Task, "SalesVATCode");
-					NewLine.VAT = 0;
+					//NewLine.TaxableAmount = 0;
+					//NewLine.VATCode = CommonUse.GetAttributeValue(TabularPartRow.Task, "SalesVATCode");
+					//NewLine.VAT = 0;
+					NewLine.Taxable = TabularPartRow.Task.Taxable;
 									
 					NewInvoice.Write();
 
@@ -178,11 +179,11 @@ Procedure GenInvoiceAtServer(SelectedItem)
 				NewLine.LineTotal = TabularPartRow.Price * TabularPartRow.TimeComplete; 
 				NewLine.Project = TabularPartRow.Project;
 				//NewLine.SalesTaxType = US_FL.GetSalesTaxType(TabularPartRow.Task);
-				NewLine.SalesTaxType = US_FL.GetSalesTaxType(TabularPartRow.Task);
+				//NewLine.SalesTaxType = US_FL.GetSalesTaxType(TabularPartRow.Task);
 
-				NewLine.TaxableAmount = 0;
-				NewLine.VATCode = CommonUse.GetAttributeValue(TabularPartRow.Task, "SalesVATCode");
-				NewLine.VAT = 0;
+				//NewLine.TaxableAmount = 0;
+				//NewLine.VATCode = CommonUse.GetAttributeValue(TabularPartRow.Task, "SalesVATCode");
+				//NewLine.VAT = 0;
 						
 				NewInvoice.Write();
 				Endif;
@@ -232,11 +233,11 @@ Procedure WeekLineItems(NewInvoice,DayHours,TabularPartRow,DayVal)
 			NewLine.LineTotal = TabularPartRow.Price * DayHours; 
 			NewLine.Project = TabularPartRow.Project;
 			//NewLine.SalesTaxType = US_FL.GetSalesTaxType(TabularPartRow.Task);
-			NewLine.SalesTaxType = US_FL.GetSalesTaxType(TabularPartRow.Task);
+			//NewLine.SalesTaxType = US_FL.GetSalesTaxType(TabularPartRow.Task);
 
-			NewLine.TaxableAmount = 0;
-			NewLine.VATCode = CommonUse.GetAttributeValue(TabularPartRow.Task, "SalesVATCode");
-			NewLine.VAT = 0;
+			//NewLine.TaxableAmount = 0;
+			//NewLine.VATCode = CommonUse.GetAttributeValue(TabularPartRow.Task, "SalesVATCode");
+			//NewLine.VAT = 0;
 							
 			NewInvoice.Write();
 EndProcedure

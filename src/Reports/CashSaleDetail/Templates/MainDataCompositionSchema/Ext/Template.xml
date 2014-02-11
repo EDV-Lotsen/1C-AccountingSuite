@@ -1,0 +1,427 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<DataCompositionSchema xmlns="http://v8.1c.ru/8.1/data-composition-system/schema" xmlns:dcscom="http://v8.1c.ru/8.1/data-composition-system/common" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<dataSource>
+		<name>DataSource1</name>
+		<dataSourceType>Local</dataSourceType>
+	</dataSource>
+	<dataSet xsi:type="DataSetQuery">
+		<name>DataSet1</name>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>BankAccount</dataPath>
+			<field>BankAccount</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>BillTo</dataPath>
+			<field>BillTo</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Company</dataPath>
+			<field>Company</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Currency</dataPath>
+			<field>Currency</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>DataVersion</dataPath>
+			<field>DataVersion</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Date</dataPath>
+			<field>Date</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>DeletionMark</dataPath>
+			<field>DeletionMark</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Deposited</dataPath>
+			<field>Deposited</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>DepositType</dataPath>
+			<field>DepositType</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>DiscountPercent</dataPath>
+			<field>DiscountPercent</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>DiscountRC</dataPath>
+			<field>DiscountRC</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>DocumentTotal</dataPath>
+			<field>DocumentTotal</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>DocumentTotalRC</dataPath>
+			<field>DocumentTotalRC</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>EmailCC</dataPath>
+			<field>EmailCC</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>EmailNote</dataPath>
+			<field>EmailNote</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>EmailTo</dataPath>
+			<field>EmailTo</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>ExchangeRate</dataPath>
+			<field>ExchangeRate</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>LastEmail</dataPath>
+			<field>LastEmail</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>LineNumber</dataPath>
+			<field>LineNumber</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>LineSubtotalRC</dataPath>
+			<field>LineSubtotalRC</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>LineTotal</dataPath>
+			<field>LineTotal</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Location</dataPath>
+			<field>Location</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Memo</dataPath>
+			<field>Memo</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>NewObject</dataPath>
+			<field>NewObject</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Number</dataPath>
+			<field>Number</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>PaymentMethod</dataPath>
+			<field>PaymentMethod</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>PointInTime</dataPath>
+			<field>PointInTime</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Posted</dataPath>
+			<field>Posted</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Price</dataPath>
+			<field>Price</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Product</dataPath>
+			<field>Product</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>ProductDescription</dataPath>
+			<field>ProductDescription</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Project</dataPath>
+			<field>Project</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Project1</dataPath>
+			<field>Project1</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Project1</v8:content>
+				</v8:item>
+			</title>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Quantity</dataPath>
+			<field>Quantity</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Ref</dataPath>
+			<field>Ref</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Ref1</dataPath>
+			<field>Ref1</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Ref1</v8:content>
+				</v8:item>
+			</title>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>RefNum</dataPath>
+			<field>RefNum</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>SalesTaxRC</dataPath>
+			<field>SalesTaxRC</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>ShippingRC</dataPath>
+			<field>ShippingRC</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>ShipTo</dataPath>
+			<field>ShipTo</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>StripeAmount</dataPath>
+			<field>StripeAmount</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>StripeCardName</dataPath>
+			<field>StripeCardName</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>StripeCardType</dataPath>
+			<field>StripeCardType</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>StripeCreated</dataPath>
+			<field>StripeCreated</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>StripeID</dataPath>
+			<field>StripeID</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>StripeLast4</dataPath>
+			<field>StripeLast4</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>SubtotalRC</dataPath>
+			<field>SubtotalRC</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Taxable</dataPath>
+			<field>Taxable</field>
+		</field>
+		<dataSource>DataSource1</dataSource>
+		<query>SELECT
+	CashSaleLineItems.Ref,
+	CashSaleLineItems.LineNumber,
+	CashSaleLineItems.Product,
+	CashSaleLineItems.Price,
+	CashSaleLineItems.Quantity,
+	CashSaleLineItems.LineTotal,
+	CashSaleLineItems.ProductDescription,
+	CashSaleLineItems.Project,
+	CashSaleLineItems.Taxable,
+	CashSaleLineItems.Ref.Ref AS Ref1,
+	CashSaleLineItems.Ref.DataVersion,
+	CashSaleLineItems.Ref.DeletionMark,
+	CashSaleLineItems.Ref.Number,
+	CashSaleLineItems.Ref.Date,
+	CashSaleLineItems.Ref.Posted,
+	CashSaleLineItems.Ref.Company,
+	CashSaleLineItems.Ref.RefNum,
+	CashSaleLineItems.Ref.Memo,
+	CashSaleLineItems.Ref.DepositType,
+	CashSaleLineItems.Ref.Deposited,
+	CashSaleLineItems.Ref.Currency,
+	CashSaleLineItems.Ref.ExchangeRate,
+	CashSaleLineItems.Ref.Location,
+	CashSaleLineItems.Ref.BankAccount,
+	CashSaleLineItems.Ref.PaymentMethod,
+	CashSaleLineItems.Ref.ShipTo,
+	CashSaleLineItems.Ref.Project AS Project1,
+	CashSaleLineItems.Ref.StripeID,
+	CashSaleLineItems.Ref.StripeCardName,
+	CashSaleLineItems.Ref.StripeAmount,
+	CashSaleLineItems.Ref.StripeCreated,
+	CashSaleLineItems.Ref.StripeCardType,
+	CashSaleLineItems.Ref.StripeLast4,
+	CashSaleLineItems.Ref.NewObject,
+	CashSaleLineItems.Ref.EmailTo,
+	CashSaleLineItems.Ref.EmailNote,
+	CashSaleLineItems.Ref.EmailCC,
+	CashSaleLineItems.Ref.LastEmail,
+	CashSaleLineItems.Ref.LineSubtotalRC,
+	CashSaleLineItems.Ref.DiscountRC,
+	CashSaleLineItems.Ref.SubtotalRC,
+	CashSaleLineItems.Ref.ShippingRC,
+	CashSaleLineItems.Ref.SalesTaxRC,
+	CashSaleLineItems.Ref.DocumentTotal,
+	CashSaleLineItems.Ref.DocumentTotalRC,
+	CashSaleLineItems.Ref.BillTo,
+	CashSaleLineItems.Ref.DiscountPercent,
+	CashSaleLineItems.Ref.Presentation,
+	CashSaleLineItems.Ref.PointInTime
+FROM
+	Document.CashSale.LineItems AS CashSaleLineItems</query>
+	</dataSet>
+	<settingsVariant>
+		<dcsset:name>Default</dcsset:name>
+		<dcsset:presentation xsi:type="xs:string">Default</dcsset:presentation>
+		<dcsset:settings xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows">
+			<dcsset:selection>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>ProductDescription</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Product</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>LineNumber</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>LineTotal</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Price</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Project</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Project1</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Quantity</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Ref1</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Ref</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>StripeAmount</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>BankAccount</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>BillTo</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>RefNum</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Company</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Currency</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>DataVersion</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Date</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>StripeCreated</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>DeletionMark</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Deposited</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>DiscountRC</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>DiscountPercent</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>EmailCC</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>EmailNote</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>EmailTo</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>ExchangeRate</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>StripeLast4</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>LastEmail</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>LineSubtotalRC</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Location</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Memo</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>PaymentMethod</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>StripeCardName</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>NewObject</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>PointInTime</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Posted</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Number</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>SalesTaxRC</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>ShipTo</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>ShippingRC</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>StripeID</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>SubtotalRC</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>DocumentTotalRC</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>DocumentTotal</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>StripeCardType</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>DepositType</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Taxable</dcsset:field>
+				</dcsset:item>
+			</dcsset:selection>
+			<dcsset:item xsi:type="dcsset:StructureItemGroup">
+				<dcsset:order>
+					<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
+				</dcsset:order>
+				<dcsset:selection>
+					<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+				</dcsset:selection>
+			</dcsset:item>
+		</dcsset:settings>
+	</settingsVariant>
+</DataCompositionSchema>

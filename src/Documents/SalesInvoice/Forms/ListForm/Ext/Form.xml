@@ -82,11 +82,6 @@
 					<ContextMenu name="CompanyContextMenu" id="11"/>
 					<ExtendedTooltip name="CompanyExtendedTooltip" id="34"/>
 				</LabelField>
-				<LabelField name="CompanyCode" id="26">
-					<DataPath>List.CompanyCode</DataPath>
-					<ContextMenu name="CompanyCodeContextMenu" id="27"/>
-					<ExtendedTooltip name="CompanyCodeExtendedTooltip" id="35"/>
-				</LabelField>
 				<LabelField name="Terms" id="40">
 					<DataPath>List.Terms</DataPath>
 					<ContextMenu name="TermsContextMenu" id="41"/>
@@ -152,7 +147,6 @@
 	DocumentSalesInvoice.RefNum,
 	DocumentSalesInvoice.Date,
 	DocumentSalesInvoice.Company,
-	DocumentSalesInvoice.CompanyCode,
 	DocumentSalesInvoice.DocumentTotal,
 	DocumentSalesInvoice.DocumentTotalRC,
 	GeneralJournalBalance.AmountBalance AS BalanceFCY,

@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<WindowOpeningMode>LockOwnerWindow</WindowOpeningMode>
+	<AutoCommandBar name="FormCommandBar" id="-1">
+		<Autofill>false</Autofill>
+	</AutoCommandBar>
+	<ChildItems>
+		<InputField name="Period" id="1">
+			<DataPath>Record.Period</DataPath>
+			<ReadOnly>true</ReadOnly>
+			<ContextMenu name="PeriodContextMenu" id="2"/>
+			<ExtendedTooltip name="PeriodExtendedTooltip" id="3"/>
+		</InputField>
+		<InputField name="User" id="4">
+			<DataPath>Record.User</DataPath>
+			<ReadOnly>true</ReadOnly>
+			<ContextMenu name="UserContextMenu" id="5"/>
+			<ExtendedTooltip name="UserExtendedTooltip" id="6"/>
+		</InputField>
+		<InputField name="Action" id="7">
+			<DataPath>Record.Action</DataPath>
+			<ReadOnly>true</ReadOnly>
+			<ContextMenu name="ActionContextMenu" id="8"/>
+			<ExtendedTooltip name="ActionExtendedTooltip" id="9"/>
+		</InputField>
+		<InputField name="ObjectName" id="10">
+			<DataPath>Record.ObjectName</DataPath>
+			<ReadOnly>true</ReadOnly>
+			<ContextMenu name="ObjectNameContextMenu" id="11"/>
+			<ExtendedTooltip name="ObjectNameExtendedTooltip" id="12"/>
+		</InputField>
+		<InputField name="Reference" id="13">
+			<DataPath>Record.Reference</DataPath>
+			<ReadOnly>true</ReadOnly>
+			<ContextMenu name="ReferenceContextMenu" id="14"/>
+			<ExtendedTooltip name="ReferenceExtendedTooltip" id="15"/>
+		</InputField>
+		<InputField name="DateCreated" id="19">
+			<DataPath>Record.DateCreated</DataPath>
+			<ReadOnly>true</ReadOnly>
+			<ContextMenu name="DateCreatedContextMenu" id="20"/>
+			<ExtendedTooltip name="DateCreatedExtendedTooltip" id="21"/>
+		</InputField>
+		<InputField name="Amount" id="28">
+			<DataPath>Record.Amount</DataPath>
+			<ReadOnly>true</ReadOnly>
+			<ContextMenu name="AmountContextMenu" id="29"/>
+			<ExtendedTooltip name="AmountExtendedTooltip" id="30"/>
+		</InputField>
+		<InputField name="ObjUUID" id="22">
+			<DataPath>Record.ObjUUID</DataPath>
+			<ReadOnly>true</ReadOnly>
+			<ContextMenu name="ObjUUIDContextMenu" id="23"/>
+			<ExtendedTooltip name="ObjUUIDExtendedTooltip" id="24"/>
+		</InputField>
+		<InputField name="DataJSON" id="25">
+			<DataPath>Record.DataJSON</DataPath>
+			<ReadOnly>true</ReadOnly>
+			<MultiLine>true</MultiLine>
+			<ContextMenu name="DataJSONContextMenu" id="26"/>
+			<ExtendedTooltip name="DataJSONExtendedTooltip" id="27"/>
+		</InputField>
+	</ChildItems>
+	<Attributes>
+		<Attribute name="Record" id="1">
+			<Type>
+				<v8:Type>cfg:InformationRegisterRecordManager.AuditLog</v8:Type>
+			</Type>
+			<MainAttribute>true</MainAttribute>
+			<SavedData>true</SavedData>
+		</Attribute>
+	</Attributes>
+</Form>

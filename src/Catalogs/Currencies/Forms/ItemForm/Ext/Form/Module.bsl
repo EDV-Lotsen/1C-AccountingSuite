@@ -110,10 +110,7 @@ Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 	Query = New Query("SELECT
 	                  |	Currencies.Description
 	                  |FROM
-	                  |	Catalog.Currencies AS Currencies
-	                  |WHERE
-	                  |	Currencies.Ref <> &Ref");
-	Query.SetParameter("Ref", Object.Ref);
+	                  |	Catalog.Currencies AS Currencies");
 	QueryResult = Query.Execute();
 	If QueryResult.IsEmpty() Then		
 	Else

@@ -77,11 +77,6 @@
 					<ContextMenu name="CompanyContextMenu" id="11"/>
 					<ExtendedTooltip name="CompanyExtendedTooltip" id="32"/>
 				</LabelField>
-				<LabelField name="CompanyCode" id="24">
-					<DataPath>List.CompanyCode</DataPath>
-					<ContextMenu name="CompanyCodeContextMenu" id="25"/>
-					<ExtendedTooltip name="CompanyCodeExtendedTooltip" id="33"/>
-				</LabelField>
 				<LabelField name="DocumentTotal" id="12">
 					<DataPath>List.DocumentTotal</DataPath>
 					<ContextMenu name="DocumentTotalContextMenu" id="13"/>
@@ -146,7 +141,6 @@
 	DocumentPurchaseInvoice.Number,
 	DocumentPurchaseInvoice.Date,
 	DocumentPurchaseInvoice.Company,
-	DocumentPurchaseInvoice.CompanyCode,
 	DocumentPurchaseInvoice.DocumentTotal,
 	DocumentPurchaseInvoice.DocumentTotalRC,
 	GeneralJournalBalance.AmountBalance * -1 AS BalanceFCY,

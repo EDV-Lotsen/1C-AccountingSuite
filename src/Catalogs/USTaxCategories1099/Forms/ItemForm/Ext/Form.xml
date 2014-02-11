@@ -5,6 +5,11 @@
 	<UseForFoldersAndItems>Items</UseForFoldersAndItems>
 	<AutoCommandBar name="FormCommandBar" id="-1"/>
 	<ChildItems>
+		<InputField name="Code" id="15">
+			<DataPath>Object.Code</DataPath>
+			<ContextMenu name="CodeContextMenu" id="16"/>
+			<ExtendedTooltip name="CodeExtendedTooltip" id="17"/>
+		</InputField>
 		<InputField name="Description" id="11">
 			<DataPath>Object.Description</DataPath>
 			<ContextMenu name="DescriptionContextMenu" id="12"/>
@@ -15,6 +20,12 @@
 			<EditMode>EnterOnInput</EditMode>
 			<ContextMenu name="ThresholdContextMenu" id="8"/>
 			<ExtendedTooltip name="ThresholdExtendedTooltip" id="14"/>
+		</InputField>
+		<InputField name="AmountSign" id="18">
+			<DataPath>Object.AmountSign</DataPath>
+			<Visible>false</Visible>
+			<ContextMenu name="AmountSignContextMenu" id="19"/>
+			<ExtendedTooltip name="AmountSignExtendedTooltip" id="20"/>
 		</InputField>
 	</ChildItems>
 	<Attributes>

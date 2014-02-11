@@ -27,10 +27,10 @@ Procedure Posting(Cancel, PostingMode)
 		Message.Text= StringFunctionsClientServer.SubstituteParametersInString(
 		NStr("en='Insufficient balance on %1';de='Nicht ausreichende Bilanz'"),Product);
 		Message.Message();
-		If NOT Constants.AllowNegativeInventory.Get() Then
+		//If NOT Constants.AllowNegativeInventory.Get() Then
 			Cancel = True;
 			Return;
-		EndIf;
+		//EndIf;
 	EndIf;
 
 	//
@@ -50,8 +50,6 @@ Procedure Posting(Cancel, PostingMode)
 	Record.Amount = Value;
 	
 EndProcedure
-
-
 
 Procedure UndoPosting(Cancel)
 	
@@ -79,13 +77,10 @@ Procedure UndoPosting(Cancel)
 		Message.Text= StringFunctionsClientServer.SubstituteParametersInString(
 		NStr("en='Insufficient balance on %1';de='Nicht ausreichende Bilanz'"),Product);
 		Message.Message();
-		If NOT Constants.AllowNegativeInventory.Get() Then
+		//If NOT Constants.AllowNegativeInventory.Get() Then
 			Cancel = True;
 			Return;
-		EndIf;
+		//EndIf;
 	EndIf;
 			
 EndProcedure
-
-
-

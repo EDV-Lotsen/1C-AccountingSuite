@@ -35,7 +35,7 @@ Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
 	If DocumentPosting.DocumentPeriodIsClosed(CurrentObject.Ref, CurrentObject.Date) Then
 		PermitWrite = DocumentPosting.DocumentWritePermitted(WriteParameters);
 		CurrentObject.AdditionalProperties.Insert("PermitWrite", PermitWrite);	
-	EndIf;
+	EndIf;	
 	
 	If Changed = True Then	
 		
@@ -85,7 +85,7 @@ EndProcedure
 Procedure BeforeWrite(Cancel, WriteParameters)
 	
 	//Closing period
-	If DocumentPosting.DocumentPeriodIsClosed(Object.Ref, Object.DateFrom) Then
+	If DocumentPosting.DocumentPeriodIsClosed(Object.Ref, Object.Date) Then
 		Cancel = Not DocumentPosting.DocumentWritePermitted(WriteParameters);
 		If Cancel Then
 			If WriteParameters.Property("PeriodClosingPassword") And WriteParameters.Property("Password") Then
@@ -101,6 +101,7 @@ Procedure BeforeWrite(Cancel, WriteParameters)
 		EndIf;
 	EndIf;
 
+	
 	If Changed = True And Object.SalesInvoice.IsEmpty() = False Then
 		ShowMessageBox(,"New changes will not change " + Object.SalesInvoice + ". Generating a new invoice for this time entry will link the entry to a new invoice.",,"ChangedEntry"); 
 	EndIf;
@@ -117,24 +118,20 @@ Procedure LinkSalesOrder(Command)
 		If (Not Object.Company.IsEmpty()) And (HasNonClosedOrders(Object.Company)) Then
 		
 
-			FormParameters = New Structure();
-			FormParameters.Insert("ChoiceMode", True);
-			FormParameters.Insert("MultipleChoice", True);
-			
-
-			FltrParameters = New Structure();
-			FltrParameters.Insert("Company", Object.Company); 
-			FltrParameters.Insert("OrderStatus", GetNonClosedOrderStatuses());
-			FormParameters.Insert("Filter", FltrParameters);
-			
-			NotifyDescription = New NotifyDescription("OrderSelection", ThisForm);
-			OpenForm("Document.SalesOrder.ChoiceForm", FormParameters,,,,,NotifyDescription)
+		FormParameters = New Structure();
+		FormParameters.Insert("ChoiceMode", True);
+		FormParameters.Insert("MultipleChoice", True);
 		
-		Else
-			
-			Message("This company has no open sales orders.");
-			
-		EndIf;	
+
+		FltrParameters = New Structure();
+		FltrParameters.Insert("Company", Object.Company); 
+		FltrParameters.Insert("OrderStatus", GetNonClosedOrderStatuses());
+		FormParameters.Insert("Filter", FltrParameters);
+		
+		NotifyDescription = New NotifyDescription("OrderSelection", ThisForm);
+		OpenForm("Document.SalesOrder.ChoiceForm", FormParameters,,,,,NotifyDescription)
+		
+	EndIf;	
 
 EndProcedure
 	
@@ -223,3 +220,7 @@ Procedure ProcessUserResponseOnDocumentPeriodClosed(Result, Parameters) Export
 		EndIf;
 	EndIf;	
 EndProcedure
+
+
+
+

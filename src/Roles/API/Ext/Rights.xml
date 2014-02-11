@@ -4,17 +4,6 @@
 	<setForAttributesByDefault>true</setForAttributesByDefault>
 	<independentRightsOfChildObjects>false</independentRightsOfChildObjects>
 	<object>
-		<name>Report.SalesInvoiceDetail</name>
-		<right>
-			<name>Use</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
 		<name>Report.SalesTransactionDetail</name>
 		<right>
 			<name>Use</name>
@@ -154,6 +143,17 @@
 		</right>
 	</object>
 	<object>
+		<name>SessionParameter.TenantValue</name>
+		<right>
+			<name>Get</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Set</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
 		<name>CommonForm.LinksForm</name>
 		<right>
 			<name>View</name>
@@ -162,73 +162,6 @@
 	</object>
 	<object>
 		<name>Catalog.USTaxCategories1099</name>
-		<right>
-			<name>Read</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Insert</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Update</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Delete</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractiveInsert</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractiveDelete</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractiveSetDeletionMark</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractiveClearDeletionMark</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractiveDeleteMarked</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InputByString</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractiveDeletePredefinedData</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractiveSetDeletionMarkPredefinedData</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractiveClearDeletionMarkPredefinedData</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractiveDeleteMarkedPredefinedData</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Catalog.UM</name>
 		<right>
 			<name>Read</name>
 			<value>false</value>
@@ -364,24 +297,6 @@
 		</right>
 	</object>
 	<object>
-		<name>Report.USSummary1099</name>
-		<right>
-			<name>Use</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>CommonForm.DesktopReports</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
 		<name>InformationRegister.BankTransactions</name>
 		<right>
 			<name>Read</name>
@@ -406,13 +321,6 @@
 	</object>
 	<object>
 		<name>Subsystem.StripeAPI</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>CommonForm.SupportInfo</name>
 		<right>
 			<name>View</name>
 			<value>false</value>
@@ -522,17 +430,6 @@
 		</right>
 		<right>
 			<name>InputByString</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Report.Form1099</name>
-		<right>
-			<name>Use</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>View</name>
 			<value>false</value>
 		</right>
 	</object>
@@ -671,13 +568,6 @@
 		</right>
 		<right>
 			<name>View</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Document.CashPurchase</name>
-		<right>
-			<name>InteractiveDelete</name>
 			<value>false</value>
 		</right>
 	</object>
@@ -862,75 +752,7 @@
 	<object>
 		<name>Document.PurchaseOrder</name>
 		<right>
-			<name>Read</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Insert</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Update</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Delete</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Posting</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>UndoPosting</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractiveInsert</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-		<right>
 			<name>InteractiveDelete</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractiveSetDeletionMark</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractiveClearDeletionMark</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractiveDeleteMarked</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractivePosting</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractivePostingRegular</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractiveUndoPosting</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractiveChangeOfPosted</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InputByString</name>
 			<value>false</value>
 		</right>
 	</object>
@@ -1036,13 +858,6 @@
 	</object>
 	<object>
 		<name>CommonForm.NavigationFull</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>CommonForm.SettingsForm</name>
 		<right>
 			<name>View</name>
 			<value>false</value>
@@ -1248,17 +1063,6 @@
 		<name>DocumentJournal.DocumentJournal1</name>
 		<right>
 			<name>Read</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>DataProcessor.DataImport</name>
-		<right>
-			<name>Use</name>
 			<value>false</value>
 		</right>
 		<right>
@@ -2097,6 +1901,17 @@
 		</right>
 	</object>
 	<object>
+		<name>SessionParameter.TenantUse</name>
+		<right>
+			<name>Get</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Set</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
 		<name>Catalog.UserList</name>
 		<right>
 			<name>Update</name>
@@ -2338,17 +2153,6 @@
 	</object>
 	<object>
 		<name>Subsystem.Purchasing</name>
-		<right>
-			<name>View</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Report.USVendors1099</name>
-		<right>
-			<name>Use</name>
-			<value>false</value>
-		</right>
 		<right>
 			<name>View</name>
 			<value>false</value>

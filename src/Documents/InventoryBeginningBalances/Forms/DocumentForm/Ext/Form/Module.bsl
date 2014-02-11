@@ -83,22 +83,6 @@ Procedure RecalcForm()
 	
 EndProcedure
 
-//Closing period
-&AtClient
-Procedure ProcessUserResponseOnDocumentPeriodClosed(Result, Parameters) Export
-	If (TypeOf(Result) = Type("String")) Then //Inserted password
-		Parameters.Insert("PeriodClosingPassword", Result);
-		Parameters.Insert("Password", TRUE);
-		Write(Parameters);
-	ElsIf (TypeOf(Result) = Type("DialogReturnCode")) Then //Yes, No or Cancel
-		If Result = DialogReturnCode.Yes Then
-			Parameters.Insert("PeriodClosingPassword", "Yes");
-			Parameters.Insert("Password", FALSE);
-			Write(Parameters);
-		EndIf;
-	EndIf;	
-EndProcedure
-
 &AtClient
 Procedure BeforeWrite(Cancel, WriteParameters)
 	
@@ -130,4 +114,21 @@ Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
 		CurrentObject.AdditionalProperties.Insert("PermitWrite", PermitWrite);	
 	EndIf;
 
+EndProcedure
+
+
+//Closing period
+&AtClient
+Procedure ProcessUserResponseOnDocumentPeriodClosed(Result, Parameters) Export
+	If (TypeOf(Result) = Type("String")) Then //Inserted password
+		Parameters.Insert("PeriodClosingPassword", Result);
+		Parameters.Insert("Password", TRUE);
+		Write(Parameters);
+	ElsIf (TypeOf(Result) = Type("DialogReturnCode")) Then //Yes, No or Cancel
+		If Result = DialogReturnCode.Yes Then
+			Parameters.Insert("PeriodClosingPassword", "Yes");
+			Parameters.Insert("Password", FALSE);
+			Write(Parameters);
+		EndIf;
+	EndIf;	
 EndProcedure

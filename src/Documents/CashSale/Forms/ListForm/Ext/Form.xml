@@ -101,11 +101,6 @@
 					<ContextMenu name="CompanyContextMenu" id="21"/>
 					<ExtendedTooltip name="CompanyExtendedTooltip" id="30"/>
 				</LabelField>
-				<LabelField name="CompanyCode" id="22">
-					<DataPath>List.CompanyCode</DataPath>
-					<ContextMenu name="CompanyCodeContextMenu" id="23"/>
-					<ExtendedTooltip name="CompanyCodeExtendedTooltip" id="31"/>
-				</LabelField>
 				<LabelField name="DocumentTotal" id="12">
 					<DataPath>List.DocumentTotal</DataPath>
 					<ContextMenu name="DocumentTotalContextMenu" id="13"/>
@@ -135,8 +130,7 @@
 	DocumentCashSale.Date,
 	DocumentCashSale.Posted,
 	DocumentCashSale.Company,
-	DocumentCashSale.CompanyCode,
-	DocumentCashSale.SalesTax,
+	DocumentCashSale.SalesTaxRC,
 	DocumentCashSale.DocumentTotal,
 	DocumentCashSale.RefNum,
 	DocumentCashSale.Memo,
@@ -150,10 +144,8 @@
 	DocumentCashSale.ExchangeRate,
 	DocumentCashSale.DocumentTotalRC,
 	DocumentCashSale.Location,
-	DocumentCashSale.VATTotal,
 	DocumentCashSale.BankAccount,
 	DocumentCashSale.PaymentMethod,
-	DocumentCashSale.PriceIncludesVAT,
 	DocumentCashSale.ShipTo,
 	DocumentCashSale.Project,
 	DocumentCashSale.StripeID,

@@ -14,7 +14,7 @@ Var FormIsModified, QuestionAsked;
 // FORM SERVER FUNCTIONS
 
 &AtServer
-Procedure UploadTransactionsFromDB(SelectUnaccepted = True, SelectAccepted = True)
+Procedure UploadTransactionsFromDB(SelectUnaccepted = True, SelectAccepted = True, MatchDepositDocuments = False, MatchCheckDocuments = False)
 	TransactionRequest = New Query("SELECT ALLOWED
 	                               |	BankTransactions.TransactionDate AS TransactionDate,
 	                               |	BankTransactions.BankAccount,
@@ -68,21 +68,53 @@ Procedure UploadTransactionsFromDB(SelectUnaccepted = True, SelectAccepted = Tru
 		Unaccepted 		= UploadedTransactions.FindRows(New Structure("Accepted", False));
 		VT_Unaccepted 	= UploadedTransactions.Copy(Unaccepted);
 		Object.BankTransactionsUnaccepted.Load(VT_Unaccepted);
+		Object.HiddenTransactionsUnaccepted.Clear();
+		//Fill array of IDs to use it later in matching with Deposit documents
+		ArrayOfDepositIDs = New Array();
+		ArrayOfCheckIDs = New Array();
 		For Each Tran In Object.BankTransactionsUnaccepted Do
 			
 			//Match the existing documents
 			If Not ValueIsFilled(Tran.Document) Then
-				//Try to match an uploaded transaction with an existing document
+				//Try to match an uploaded transaction with an existing check document (with payment method="Check") 
 				DocumentFound = FindAnExistingDocument(Tran.Description, Tran.Amount);
 				If DocumentFound <> Undefined Then
 					Tran.Document 		= DocumentFound;
 					RecordTransactionToTheDatabaseAtServer(Tran);
+				Else
+					If Tran.Amount > 0 Then
+						ArrayOfDepositIDs.Add(Tran.TransactionID);
+					ElsIf Tran.Amount < 0 Then
+						ArrayOfCheckIDs.Add(Tran.TransactionID);
+					EndIf;						
 				EndIf;
 				Tran.AssigningOption 	= GetAssigningOption(Tran.Document, String(DocumentFound));
-			Else
+			Else           
 				Tran.AssigningOption 	= GetAssigningOption(Tran.Document, Tran.DocumentPresentation);
 			EndIf;
 		EndDo;
+		//Matching with the Deposit documents
+		If MatchDepositDocuments Then
+			FoundDeposits = MatchDepositDocuments(AccountInBank, Object.BankAccount, ArrayOfDepositIDs);
+			For Each FoundDeposit In FoundDeposits Do
+				FoundRows = Object.BankTransactionsUnaccepted.FindRows(New Structure("TransactionID", FoundDeposit.TransactionID));
+				For Each FoundRow In FoundRows Do
+					FoundRow.Document = FoundDeposit.FoundDocument;
+					FoundRow.AssigningOption 	= GetAssigningOption(FoundRow.Document, String(FoundRow.Document));
+				EndDo;
+			EndDo;
+		EndIf;
+		//Matching with the Invoice payment (Check) and Payment (Check) (with payment method other than "Check")
+		If MatchCheckDocuments Then
+			FoundChecks = MatchCheckDocuments(AccountInBank, Object.BankAccount, ArrayOfCheckIDs);
+			For Each FoundCheck In FoundChecks Do
+				FoundRows = Object.BankTransactionsUnaccepted.FindRows(New Structure("TransactionID", FoundCheck.TransactionID));
+				For Each FoundRow In FoundRows Do
+					FoundRow.Document = FoundCheck.FoundDocument;
+					FoundRow.AssigningOption 	= GetAssigningOption(FoundRow.Document, String(FoundRow.Document));
+				EndDo;
+			EndDo;
+		EndIf;
 		ThisForm.Modified = False;
 		ApplyConditionalAppearance();
 	EndIf;
@@ -507,6 +539,34 @@ Procedure ApplyConditionalAppearance()
 	DefaultFont = ElementCA.Appearance.FindParameterValue(New DataCompositionParameter("Font")).Value;
 	ItalicFont	=New Font(DefaultFont,,,,True,,); //Italic font
 	ElementCA.Appearance.SetParameterValue("Font", ItalicFont); 
+	
+	//If there are 2 suggested categories highlight category with red color
+	//If Yodlee category differs from auto-categorized category highlight with red color
+	ElementCA = CA.Items.Add(); 
+	
+	FieldAppearance = ElementCA.Fields.Items.Add(); 
+	FieldAppearance.Field = New DataCompositionField("BankTransactionsUnacceptedCategory"); 
+ 	FieldAppearance.Use = True; 
+	
+ 	FilterElement = ElementCA.Filter.Items.Add(Type("DataCompositionFilterItem")); // current row filter 
+ 	FilterElement.LeftValue 		= New DataCompositionField("Object.BankTransactionsUnaccepted.Category"); 
+ 	FilterElement.ComparisonType 	= DataCompositionComparisonType.NotEqual; 
+	FilterElement.RightValue 		= New DataCompositionField("Object.BankTransactionsUnaccepted.CategoryAccount"); 
+	FilterElement.Use				= True;
+	
+	FilterElement = ElementCA.Filter.Items.Add(Type("DataCompositionFilterItem")); // current row filter 
+ 	FilterElement.LeftValue 		= New DataCompositionField("Object.BankTransactionsUnaccepted.CategorizedCategoryNotAccepted"); 
+ 	FilterElement.ComparisonType 	= DataCompositionComparisonType.Equal; 
+	FilterElement.RightValue 		= True; 
+	FilterElement.Use				= True;
+	
+	FilterElement = ElementCA.Filter.Items.Add(Type("DataCompositionFilterItem")); // current row filter 
+ 	FilterElement.LeftValue 		= New DataCompositionField("Object.BankTransactionsUnaccepted.Category"); 
+ 	FilterElement.ComparisonType 	= DataCompositionComparisonType.NotEqual; 
+	FilterElement.RightValue 		= ChartsOfAccounts.ChartOfAccounts.EmptyRef(); 
+	FilterElement.Use				= True;
+	
+	ElementCA.Appearance.SetParameterValue("TextColor", WebColors.Crimson); 
 
 	
 	//Get catagory account, category account description
@@ -873,6 +933,301 @@ Function FindAnExistingDocument(Val Description, Val Amount)
 		Return Undefined;
 	EndIf;
 				
+EndFunction
+
+&AtServerNoContext
+Function MatchDepositDocuments(Val AccountInBank, Val AccountingAccount, Val ArrayOfIDs)
+	
+	VT = New ValueTable();
+	VT.Columns.Add("ID", New TypeDescription("UUID"));
+	
+	For Each ItemID In ArrayOfIDs Do
+		NewRow = VT.Add();
+		NewRow.ID = ItemID;
+	EndDo;
+	
+	BeginTransaction(DataLockControlMode.Managed);
+	
+	// Create new managed data lock
+	DataLock = New DataLock;
+
+	// Set data lock parameters
+	// Set shared lock to get consisitent data
+	BA_LockItem = DataLock.Add("InformationRegister.BankTransactions");
+	BA_LockItem.Mode = DataLockMode.Shared;
+	BA_LockItem.SetValue("BankAccount", AccountInBank);
+	
+	// Set exclusive lock on potentially modifiable records 
+	BA_LockItem = DataLock.Add("InformationRegister.BankTransactions");
+	BA_LockItem.Mode = DataLockMode.Exclusive;
+	BA_LockItem.SetValue("BankAccount", AccountInBank);	
+	BA_LockItem.DataSource = VT;
+	BA_LockItem.UseFromDataSource("ID", "ID");
+	// Set lock on the object
+	DataLock.Lock();
+
+	Request = New Query("SELECT ALLOWED
+	                    |	BankTransactions.TransactionDate,
+	                    |	BankTransactions.ID,
+	                    |	BankTransactions.Amount
+	                    |INTO UnacceptedTransactionsWithoutDocuments
+	                    |FROM
+	                    |	InformationRegister.BankTransactions AS BankTransactions
+	                    |WHERE
+	                    |	BankTransactions.BankAccount = &BankAccount
+	                    |	AND BankTransactions.Document = UNDEFINED
+	                    |	AND BankTransactions.Accepted = FALSE
+	                    |	AND BankTransactions.Amount > 0
+	                    |;
+	                    |
+	                    |////////////////////////////////////////////////////////////////////////////////
+	                    |SELECT ALLOWED
+	                    |	Deposit.Ref,
+	                    |	Deposit.Date,
+	                    |	Deposit.DocumentTotalRC,
+	                    |	Deposit.PointInTime
+	                    |INTO AvailableDepositDocuments
+	                    |FROM
+	                    |	Document.Deposit AS Deposit
+	                    |		LEFT JOIN InformationRegister.BankTransactions AS BankTransactions
+	                    |		ON Deposit.Ref = BankTransactions.Document
+	                    |			AND (Deposit.BankAccount = &AccountingAccount)
+	                    |WHERE
+	                    |	BankTransactions.Document IS NULL 
+	                    |;
+	                    |
+	                    |////////////////////////////////////////////////////////////////////////////////
+	                    |SELECT ALLOWED
+	                    |	UnacceptedTransactionsWithoutDocuments.TransactionDate,
+	                    |	UnacceptedTransactionsWithoutDocuments.ID,
+	                    |	UnacceptedTransactionsWithoutDocuments.Amount,
+	                    |	AvailableDepositDocuments.Ref AS FoundDocument,
+	                    |	AvailableDepositDocuments.Date AS DocumentDate,
+	                    |	AvailableDepositDocuments.PointInTime AS DocumentPointInTime
+	                    |INTO FoundDocuments
+	                    |FROM
+	                    |	UnacceptedTransactionsWithoutDocuments AS UnacceptedTransactionsWithoutDocuments
+	                    |		INNER JOIN AvailableDepositDocuments AS AvailableDepositDocuments
+	                    |		ON UnacceptedTransactionsWithoutDocuments.Amount = AvailableDepositDocuments.DocumentTotalRC
+	                    |			AND (AvailableDepositDocuments.Date < DATEADD(UnacceptedTransactionsWithoutDocuments.TransactionDate, DAY, 7))
+	                    |			AND (AvailableDepositDocuments.Date > DATEADD(UnacceptedTransactionsWithoutDocuments.TransactionDate, DAY, -7))
+	                    |;
+	                    |
+	                    |////////////////////////////////////////////////////////////////////////////////
+	                    |SELECT ALLOWED
+	                    |	FoundDocuments.TransactionDate AS TransactionDate,
+	                    |	FoundDocuments.ID AS TransactionID,
+	                    |	FoundDocuments.FoundDocument,
+	                    |	FoundDocuments.DocumentPointInTime AS DocumentPointInTime
+	                    |FROM
+	                    |	FoundDocuments AS FoundDocuments
+	                    |
+	                    |ORDER BY
+	                    |	TransactionDate,
+	                    |	FoundDocuments.ID,
+	                    |	DocumentPointInTime
+	                    |TOTALS BY
+	                    |	TransactionID");
+	Request.SetParameter("BankAccount", AccountInBank);
+	Request.SetParameter("AccountingAccount", AccountingAccount);
+	Res = Request.Execute();
+	
+	If Res.IsEmpty() Then
+		return New Array();
+	EndIf;
+	TransactionSelect = Res.Select(QueryResultIteration.ByGroups);
+	UsedDocuments = New Array();
+	ReturnArray = New Array();
+	While TransactionSelect.Next() Do
+		DocumentsSelect = TransactionSelect.Select();
+		DocumentFound = False;
+		DepositDocument = Documents.Deposit.EmptyRef();
+		While (Not DocumentFound) And (DocumentsSelect.Next()) Do
+			DepositDocument = DocumentsSelect.FoundDocument;
+			If UsedDocuments.Find(DepositDocument) = Undefined Then
+				DocumentFound = True;
+				UsedDocuments.Add(DepositDocument);
+				Break;
+			Else
+				Continue;	
+			EndIf;
+		EndDo;
+		If DocumentFound Then
+			ReturnStructure = New Structure("TransactionID, TransactionDate, FoundDocument");
+			ReturnStructure.TransactionID = TransactionSelect.TransactionID;
+			ReturnStructure.TransactionDate = TransactionSelect.TransactionDate;
+			ReturnStructure.FoundDocument = DepositDocument;
+			ReturnArray.Add(ReturnStructure);	
+			//Record result into database
+			RS = InformationRegisters.BankTransactions.CreateRecordSet();
+			IDFilter = RS.Filter.ID;
+			IDFilter.Use = True;
+			IDFilter.ComparisonType = ComparisonType.Equal;
+			IDFilter.Value = TransactionSelect.TransactionID;
+			RS.Read();
+			For Each Rec In RS Do
+				Rec.Document = DepositDocument;
+			EndDo;
+			RS.Write(True);
+		EndIf;
+	EndDo;
+	CommitTransaction();
+	return ReturnArray;
+EndFunction
+
+&AtServerNoContext
+Function MatchCheckDocuments(Val AccountInBank, Val AccountingAccount, Val ArrayOfIDs)
+	
+	VT = New ValueTable();
+	VT.Columns.Add("ID", New TypeDescription("UUID"));
+	
+	For Each ItemID In ArrayOfIDs Do
+		NewRow = VT.Add();
+		NewRow.ID = ItemID;
+	EndDo;
+	
+	BeginTransaction(DataLockControlMode.Managed);
+	
+	// Create new managed data lock
+	DataLock = New DataLock;
+
+	// Set data lock parameters
+	// Set shared lock to get consisitent data
+	BA_LockItem = DataLock.Add("InformationRegister.BankTransactions");
+	BA_LockItem.Mode = DataLockMode.Shared;
+	BA_LockItem.SetValue("BankAccount", AccountInBank);
+	
+	// Set exclusive lock on potentially modifiable records 
+	BA_LockItem = DataLock.Add("InformationRegister.BankTransactions");
+	BA_LockItem.Mode = DataLockMode.Exclusive;
+	BA_LockItem.SetValue("BankAccount", AccountInBank);	
+	BA_LockItem.DataSource = VT;
+	BA_LockItem.UseFromDataSource("ID", "ID");
+	// Set lock on the object
+	DataLock.Lock();
+
+	Request = New Query("SELECT ALLOWED
+	                    |	BankTransactions.TransactionDate,
+	                    |	BankTransactions.ID,
+	                    |	BankTransactions.Amount
+	                    |INTO UnacceptedTransactionsWithoutDocuments
+	                    |FROM
+	                    |	InformationRegister.BankTransactions AS BankTransactions
+	                    |WHERE
+	                    |	BankTransactions.BankAccount = &BankAccount
+	                    |	AND BankTransactions.Document = UNDEFINED
+	                    |	AND BankTransactions.Accepted = FALSE
+	                    |	AND BankTransactions.Amount < 0
+	                    |;
+	                    |
+	                    |////////////////////////////////////////////////////////////////////////////////
+	                    |SELECT ALLOWED
+	                    |	Check.Ref,
+	                    |	Check.Date,
+	                    |	Check.DocumentTotalRC,
+	                    |	Check.PointInTime
+	                    |INTO AvailableCheckDocuments
+	                    |FROM
+	                    |	Document.Check AS Check
+	                    |		LEFT JOIN InformationRegister.BankTransactions AS BankTransactions
+	                    |		ON Check.Ref = BankTransactions.Document
+	                    |			AND (Check.BankAccount = &AccountingAccount)
+	                    |WHERE
+	                    |	BankTransactions.Document IS NULL 
+	                    |
+	                    |UNION ALL
+	                    |
+	                    |SELECT
+	                    |	InvoicePayment.Ref,
+	                    |	InvoicePayment.Date,
+	                    |	InvoicePayment.DocumentTotalRC,
+	                    |	InvoicePayment.PointInTime
+	                    |FROM
+	                    |	Document.InvoicePayment AS InvoicePayment
+	                    |		LEFT JOIN InformationRegister.BankTransactions AS BankTransactions
+	                    |		ON InvoicePayment.Ref = BankTransactions.Document
+	                    |			AND (InvoicePayment.BankAccount = &AccountingAccount)
+	                    |WHERE
+	                    |	BankTransactions.Document IS NULL 
+	                    |;
+	                    |
+	                    |////////////////////////////////////////////////////////////////////////////////
+	                    |SELECT ALLOWED
+	                    |	UnacceptedTransactionsWithoutDocuments.TransactionDate,
+	                    |	UnacceptedTransactionsWithoutDocuments.ID,
+	                    |	UnacceptedTransactionsWithoutDocuments.Amount,
+	                    |	AvailableCheckDocuments.Ref AS FoundDocument,
+	                    |	AvailableCheckDocuments.Date AS DocumentDate,
+	                    |	AvailableCheckDocuments.PointInTime AS DocumentPointInTime
+	                    |INTO FoundDocuments
+	                    |FROM
+	                    |	UnacceptedTransactionsWithoutDocuments AS UnacceptedTransactionsWithoutDocuments
+	                    |		INNER JOIN AvailableCheckDocuments AS AvailableCheckDocuments
+	                    |		ON (-1 * UnacceptedTransactionsWithoutDocuments.Amount = AvailableCheckDocuments.DocumentTotalRC)
+	                    |			AND (AvailableCheckDocuments.Date < DATEADD(UnacceptedTransactionsWithoutDocuments.TransactionDate, DAY, 7))
+	                    |			AND (AvailableCheckDocuments.Date > DATEADD(UnacceptedTransactionsWithoutDocuments.TransactionDate, DAY, -7))
+	                    |;
+	                    |
+	                    |////////////////////////////////////////////////////////////////////////////////
+	                    |SELECT ALLOWED
+	                    |	FoundDocuments.TransactionDate AS TransactionDate,
+	                    |	FoundDocuments.ID AS TransactionID,
+	                    |	FoundDocuments.FoundDocument,
+	                    |	FoundDocuments.DocumentPointInTime AS DocumentPointInTime
+	                    |FROM
+	                    |	FoundDocuments AS FoundDocuments
+	                    |
+	                    |ORDER BY
+	                    |	TransactionDate,
+	                    |	FoundDocuments.ID,
+	                    |	DocumentPointInTime
+	                    |TOTALS BY
+	                    |	TransactionID");
+	Request.SetParameter("BankAccount", AccountInBank);
+	Request.SetParameter("AccountingAccount", AccountingAccount);
+	Res = Request.Execute();
+	
+	If Res.IsEmpty() Then
+		return New Array();
+	EndIf;
+	TransactionSelect = Res.Select(QueryResultIteration.ByGroups);
+	UsedDocuments = New Array();
+	ReturnArray = New Array();
+	While TransactionSelect.Next() Do
+		DocumentsSelect = TransactionSelect.Select();
+		DocumentFound = False;
+		CheckDocument = Documents.Check.EmptyRef();
+		While (Not DocumentFound) And (DocumentsSelect.Next()) Do
+			CheckDocument = DocumentsSelect.FoundDocument;
+			If UsedDocuments.Find(CheckDocument) = Undefined Then
+				DocumentFound = True;
+				UsedDocuments.Add(CheckDocument);
+				Break;
+			Else
+				Continue;	
+			EndIf;
+		EndDo;
+		If DocumentFound Then
+			ReturnStructure = New Structure("TransactionID, TransactionDate, FoundDocument");
+			ReturnStructure.TransactionID = TransactionSelect.TransactionID;
+			ReturnStructure.TransactionDate = TransactionSelect.TransactionDate;
+			ReturnStructure.FoundDocument = CheckDocument;
+			ReturnArray.Add(ReturnStructure);	
+			//Record result into database
+			RS = InformationRegisters.BankTransactions.CreateRecordSet();
+			IDFilter = RS.Filter.ID;
+			IDFilter.Use = True;
+			IDFilter.ComparisonType = ComparisonType.Equal;
+			IDFilter.Value = TransactionSelect.TransactionID;
+			RS.Read();
+			For Each Rec In RS Do
+				Rec.Document = CheckDocument;
+			EndDo;
+			RS.Write(True);
+		EndIf;
+	EndDo;
+	CommitTransaction();
+	return ReturnArray;
 EndFunction
 
 &AtServer
@@ -1588,7 +1943,7 @@ Function CheckDataFill()
 			Result = False;
 			MessageToTheUser("Amount", "Amount", CurTran.LineNumber);	
 		EndIf;
-		If Not ValueIsFilled(CurTran.Category) Then
+		If (Not ValueIsFilled(CurTran.Category)) And (Not ValueIsFilled(CurTran.Document)) Then
 			Result = False;
 			MessageToTheUser("Category", "Category", CurTran.LineNumber);	
 		EndIf;
@@ -1622,6 +1977,7 @@ Procedure BankTransactionsUnacceptedAssigningChoiceProcessing(Item, SelectedValu
 		DocList = New ValueList();
 		If Items.BankTransactionsUnaccepted.CurrentData.Amount < 0 Then
 			DocList.Add(Type("DocumentRef.Check"));
+			DocList.Add(Type("DocumentRef.InvoicePayment"));
 			AmountFilterValue = -1*Items.BankTransactionsUnaccepted.CurrentData.Amount;
 		Else
 			DocList.Add(Type("DocumentRef.CashReceipt"));
@@ -1724,11 +2080,14 @@ EndFunction
 
 &AtClient
 Procedure OnComplete_RefreshTransactions(ClosureResult, AdditionalParameters) Export
-	LastUpdated = ToLocalTime(CommonUse.GetAttributeValue(AccountInBank, "LastUpdatedTimeUTC"));
+	AttributeValues = CommonUse.GetAttributeValues(AccountInBank, "LastUpdatedTimeUTC, CurrentBalance, AvailableBalance");
+	LastUpdated = ToLocalTime(AttributeValues.LastUpdatedTimeUTC);
 	AccountLastUpdated 	= FormLastUpdatedString(LastUpdated); //?(ValueIsFilled(LastUpdated), Format(LastUpdated, "DLF=DT"), "");
+	AccountAvailableBalance = ?(ValueIsFilled(AttributeValues.CurrentBalance), AttributeValues.CurrentBalance, AttributeValues.AvailableBalance);
 	UnlockYodleeConnection(ThisForm.UUID);
 	//Items.BankAccountRefreshedOn.Title = "Refreshed on: " + Format(AccountLastUpdated, "DLF=DT");	
-	UploadTransactionsFromDB();
+	UploadTransactionsFromDB(,,True);
+	ApplyHiddenTransactionsAppearance();
 EndProcedure
 
 &AtClient
@@ -1846,7 +2205,12 @@ Procedure BankTransactionsUnacceptedOnActivateRow(Item)
 		ChoiceList.Add(PredefinedValue("ChartOfAccounts.ChartOfAccounts.EmptyRef"), "Assign account to: " + CategoryDescription);
 	Else
 	EndIf;
+	If (ValueIsFilled(Item.CurrentData.Category)) And (Item.CurrentData.CategorizedCategoryNotAccepted) Then
+		ChoiceList.Add(Item.CurrentData.Category, "Accept: " + String(Item.CurrentData.Category));
+	EndIf;
 	//Fill company choice list
+	ChoiceList = Items.BankTransactionsUnacceptedCompany.ChoiceList;
+	ChoiceList.Clear();
 	If Item.CurrentData.CategorizedCompanyNotAccepted Then
 		ChoiceList = Items.BankTransactionsUnacceptedCompany.ChoiceList;
 		ChoiceList.Clear();
@@ -1932,7 +2296,35 @@ Procedure OnProcessingPeriodChange(Result, Parameters) Export
 EndProcedure
 
 &AtClient
+Procedure OnComplete_CategorizeTransactions(ClosureResult, AdditionalParameters) Export
+	
+	If TypeOf(ClosureResult) = Type("Array") Then
+		//Refill affected rows
+		For Each AffectedRow In ClosureResult Do
+			FoundRows = Object.BankTransactionsUnaccepted.FindRows(New Structure("TransactionID", AffectedRow.ID));
+			If FoundRows.Count() > 0 Then
+				FillPropertyValues(FoundRows[0], AffectedRow, "Company, CategorizedCompanyNotAccepted, Category, CategorizedCategoryNotAccepted");
+			EndIf;
+		EndDo;
+	EndIf;
+	
+	//UploadTransactionsFromDB(,,True);
+	//ApplyHiddenTransactionsAppearance();
+	
+EndProcedure
+
+&AtClient
 Procedure CategorizeTransactions(Command)
+	//Categorizing transactions asynchronously
+	Notify = New NotifyDescription("OnComplete_CategorizeTransactions", ThisObject);
+	Params = New Structure("BankAccount, PerformCategorization", AccountInBank, True);
+	OpenForm("DataProcessor.DownloadedTransactions.Form.ProgressForm", Params, ThisForm,,,, Notify, FormWindowOpeningMode.LockOwnerWindow);
+	
+		
+	//Show the ProgressGroup, Attach idle handler
+		
+	return;
+		
 	NewTransactions = New Array;
 	i = 0;
 	While i < Object.BankTransactionsUnaccepted.Count() Do
@@ -1941,24 +2333,57 @@ Procedure CategorizeTransactions(Command)
 		i = i + 1;
 	EndDo;
 	ReturnArray = CategorizeTransactionsAtServer(NewTransactions);
+	ProcessedArray = New Array();
 	For Each CategorizedTran IN ReturnArray Do
+		CompanyFilled = False;
+		CategoryFilled = False;
+		ProcessedArray.Add(CategorizedTran.RowID);
 		BTUnaccepted = Object.BankTransactionsUnaccepted[CategorizedTran.RowID];
 		//Apply categorized company if it is not filled
 		If (Not ValueIsFilled(BTUnaccepted.Company)) Or (BTUnaccepted.CategorizedCompanyNotAccepted) Then 
-			If ValueIsFilled(CategorizedTran.Customer) Then
+			//If ValueIsFilled(CategorizedTran.Customer) Then
 				BTUnaccepted.Company = CategorizedTran.Customer;
 				BTUnaccepted.CategorizedCompanyNotAccepted = True;
-			EndIf;
+				CompanyFilled = True;
+			//EndIf;
 		EndIf;
 		If (Not ValueIsFilled(BTUnaccepted.Category)) Or (BTUnaccepted.CategorizedCategoryNotAccepted) Then 
-			If ValueIsFilled(CategorizedTran.Category) Then
+			//If ValueIsFilled(CategorizedTran.Category) Then
 				If (BTUnaccepted.CategoryAccount <> CategorizedTran.Category) Then
 					BTUnaccepted.Category = CategorizedTran.Category;
 					BTUnaccepted.CategorizedCategoryNotAccepted = True;
+					CategoryFilled = True;
 				EndIf;
-			EndIf;
+			//EndIf;
 		EndIf;
-		If BTUnaccepted.CategorizedCompanyNotAccepted OR BTUnaccepted.CategorizedCategoryNotAccepted Then
+		If CompanyFilled OR CategoryFilled Then
+			RecordTransactionToTheDatabase(BTUnaccepted);
+		EndIf;
+	EndDo;
+	//Clear previously categorized transactions, which are absent this time
+	i = 0;
+	EmptyCompany = PredefinedValue("Catalog.Companies.EmptyRef");
+	EmptyCategory = PredefinedValue("ChartOfAccounts.ChartOfAccounts.EmptyRef");
+	While i < Object.BankTransactionsUnaccepted.Count() Do
+		If ProcessedArray.Find(i) <> Undefined Then
+			i = i + 1;
+			Continue;
+		EndIf;
+		CompanyWasCleared = False;
+		CategoryWasCleared = False;
+		BTUnaccepted = Object.BankTransactionsUnaccepted[i];
+		If (ValueIsFilled(BTUnaccepted.Company)) And (BTUnaccepted.CategorizedCompanyNotAccepted) Then
+			BTUnaccepted.Company = EmptyCompany;
+			BTUnaccepted.CategorizedCompanyNotAccepted = False;
+			CompanyWasCleared =True;
+		EndIf;
+		If (ValueIsFilled(BTUnaccepted.Category)) And (BTUnaccepted.CategorizedCategoryNotAccepted) Then
+			BTUnaccepted.Category = EmptyCategory;
+			BTUnaccepted.CategorizedCategoryNotAccepted = False;
+			CategoryWasCleared = True;
+		EndIf;
+		i = i + 1;
+		If CompanyWasCleared OR CategoryWasCleared Then
 			RecordTransactionToTheDatabase(BTUnaccepted);
 		EndIf;
 	EndDo;

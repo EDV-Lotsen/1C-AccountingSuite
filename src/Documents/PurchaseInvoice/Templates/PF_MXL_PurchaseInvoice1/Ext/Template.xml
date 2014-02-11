@@ -1085,63 +1085,12 @@
 			</c>
 			<c>
 				<c>
-					<f>31</f>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>31</f>
-					<tl>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>VAT</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>USt.</v8:content>
-						</v8:item>
-					</tl>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>32</f>
-					<parameter>VATTotal</parameter>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>8</f>
-				</c>
-			</c>
-		</row>
-	</rowsItem>
-	<rowsItem>
-		<index>25</index>
-		<row>
-			<c>
-				<c>
-					<f>19</f>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>19</f>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>19</f>
-				</c>
-			</c>
-			<c>
-				<c>
 					<f>29</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>33</f>
+					<f>31</f>
 					<tl>
 						<v8:item>
 							<v8:lang>en</v8:lang>
@@ -1152,7 +1101,7 @@
 			</c>
 			<c>
 				<c>
-					<f>34</f>
+					<f>32</f>
 					<parameter>SalesTaxTotal</parameter>
 				</c>
 			</c>
@@ -1164,7 +1113,7 @@
 		</row>
 	</rowsItem>
 	<rowsItem>
-		<index>26</index>
+		<index>25</index>
 		<row>
 			<c>
 				<c>
@@ -1216,8 +1165,8 @@
 	</rowsItem>
 	<templateMode>true</templateMode>
 	<defaultFormatIndex>8</defaultFormatIndex>
-	<height>27</height>
-	<vgRows>27</vgRows>
+	<height>26</height>
+	<vgRows>26</vgRows>
 	<namedItem xsi:type="NamedItemCells">
 		<name>Header</name>
 		<area>
@@ -1252,8 +1201,8 @@
 		<name>SalesTax</name>
 		<area>
 			<type>Rows</type>
-			<beginRow>25</beginRow>
-			<endRow>25</endRow>
+			<beginRow>24</beginRow>
+			<endRow>24</endRow>
 			<beginColumn>-1</beginColumn>
 			<endColumn>-1</endColumn>
 		</area>
@@ -1272,18 +1221,8 @@
 		<name>Total</name>
 		<area>
 			<type>Rows</type>
-			<beginRow>26</beginRow>
-			<endRow>26</endRow>
-			<beginColumn>-1</beginColumn>
-			<endColumn>-1</endColumn>
-		</area>
-	</namedItem>
-	<namedItem xsi:type="NamedItemCells">
-		<name>VAT</name>
-		<area>
-			<type>Rows</type>
-			<beginRow>24</beginRow>
-			<endRow>24</endRow>
+			<beginRow>25</beginRow>
+			<endRow>25</endRow>
 			<beginColumn>-1</beginColumn>
 			<endColumn>-1</endColumn>
 		</area>
@@ -1465,23 +1404,6 @@
 			<v8:item>
 				<v8:lang>en</v8:lang>
 				<v8:content>NFD=2</v8:content>
-			</v8:item>
-		</format>
-	</format>
-	<format>
-		<font>2</font>
-		<width>114</width>
-		<horizontalAlignment>Center</horizontalAlignment>
-	</format>
-	<format>
-		<font>2</font>
-		<width>143</width>
-		<horizontalAlignment>Right</horizontalAlignment>
-		<fillType>Parameter</fillType>
-		<format>
-			<v8:item>
-				<v8:lang>en</v8:lang>
-				<v8:content>NFD=2; NZ=0.00</v8:content>
 			</v8:item>
 		</format>
 	</format>

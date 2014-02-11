@@ -35,29 +35,29 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="10"/>
-			<SearchStringAddition name="ListSearchString" id="14">
+			<SearchStringAddition name="ListSearchString" id="17">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="15"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="16"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="18"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="19"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="17">
+			<ViewStatusAddition name="ListViewStatus" id="20">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="18"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="19"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="21"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="22"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="20">
+			<SearchControlAddition name="ListSearchControl" id="23">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="21"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="22"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="24"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="25"/>
 			</SearchControlAddition>
 			<ChildItems>
 				<LabelField name="Code" id="4">
@@ -75,6 +75,11 @@
 					<DataPath>List.AccountType</DataPath>
 					<ContextMenu name="AccountTypeContextMenu" id="9"/>
 					<ExtendedTooltip name="AccountTypeExtendedTooltip" id="13"/>
+				</LabelField>
+				<LabelField name="Category1099" id="14">
+					<DataPath>List.Category1099</DataPath>
+					<ContextMenu name="Category1099ContextMenu" id="15"/>
+					<ExtendedTooltip name="Category1099ExtendedTooltip" id="16"/>
 				</LabelField>
 			</ChildItems>
 		</Table>

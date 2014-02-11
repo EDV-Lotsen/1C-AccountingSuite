@@ -563,6 +563,7 @@
 										</CheckBoxField>
 										<InputField name="BankTransactionsUnacceptedTransactionDate" id="8">
 											<DataPath>Object.BankTransactionsUnaccepted.TransactionDate</DataPath>
+											<ReadOnly>true</ReadOnly>
 											<Title>
 												<v8:item>
 													<v8:lang>en</v8:lang>
@@ -579,6 +580,7 @@
 										</InputField>
 										<InputField name="BankTransactionsUnacceptedDescription" id="17">
 											<DataPath>Object.BankTransactionsUnaccepted.Description</DataPath>
+											<ReadOnly>true</ReadOnly>
 											<EditMode>EnterOnInput</EditMode>
 											<ContextMenu name="BankTransactionsUnacceptedDescriptionContextMenu" id="18"/>
 											<ExtendedTooltip name="BankTransactionsUnacceptedDescriptionExtendedTooltip" id="19"/>
@@ -589,6 +591,7 @@
 										<InputField name="BankTransactionsUnacceptedBankAccount" id="136">
 											<DataPath>Object.BankTransactionsUnaccepted.BankAccount</DataPath>
 											<Visible>false</Visible>
+											<ReadOnly>true</ReadOnly>
 											<ContextMenu name="BankTransactionsUnacceptedBankAccountContextMenu" id="137"/>
 											<ExtendedTooltip name="BankTransactionsUnacceptedBankAccountExtendedTooltip" id="138"/>
 											<Events>
@@ -597,6 +600,7 @@
 										</InputField>
 										<InputField name="BankTransactionsUnacceptedAmount" id="20">
 											<DataPath>Object.BankTransactionsUnaccepted.Amount</DataPath>
+											<ReadOnly>true</ReadOnly>
 											<EditMode>EnterOnInput</EditMode>
 											<Width>15</Width>
 											<ContextMenu name="BankTransactionsUnacceptedAmountContextMenu" id="21"/>
@@ -1400,6 +1404,60 @@
 							<v8:item>
 								<v8:lang>en</v8:lang>
 								<v8:content>Category reference</v8:content>
+							</v8:item>
+						</Title>
+						<Type>
+							<v8:Type>cfg:CatalogRef.BankTransactionCategories</v8:Type>
+						</Type>
+					</Column>
+				</AdditionalColumns>
+				<AdditionalColumns table="Object.HiddenTransactionsUnaccepted">
+					<Column name="CategoryDescription" id="1">
+						<Title>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>Category description</v8:content>
+							</v8:item>
+						</Title>
+						<Type>
+							<v8:Type>xs:string</v8:Type>
+							<v8:StringQualifiers>
+								<v8:Length>30</v8:Length>
+								<v8:AllowedLength>Variable</v8:AllowedLength>
+							</v8:StringQualifiers>
+						</Type>
+					</Column>
+					<Column name="IDPresentation" id="2">
+						<Title>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>IDPresentation</v8:content>
+							</v8:item>
+						</Title>
+						<Type>
+							<v8:Type>xs:string</v8:Type>
+							<v8:StringQualifiers>
+								<v8:Length>36</v8:Length>
+								<v8:AllowedLength>Variable</v8:AllowedLength>
+							</v8:StringQualifiers>
+						</Type>
+					</Column>
+					<Column name="CategoryAccount" id="3">
+						<Title>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>Category account</v8:content>
+							</v8:item>
+						</Title>
+						<Type>
+							<v8:Type>cfg:ChartOfAccountsRef.ChartOfAccounts</v8:Type>
+						</Type>
+					</Column>
+					<Column name="CategoryRef" id="4">
+						<Title>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>Category ref</v8:content>
 							</v8:item>
 						</Title>
 						<Type>

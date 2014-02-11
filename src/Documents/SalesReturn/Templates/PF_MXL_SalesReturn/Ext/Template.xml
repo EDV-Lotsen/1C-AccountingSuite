@@ -1084,52 +1084,6 @@
 					<tl>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>VAT</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>USt.</v8:content>
-						</v8:item>
-					</tl>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>63</f>
-					<parameter>VATTotal</parameter>
-				</c>
-			</c>
-		</row>
-	</rowsItem>
-	<rowsItem>
-		<index>26</index>
-		<row>
-			<c>
-				<c>
-					<f>48</f>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>49</f>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>27</f>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>45</f>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>62</f>
-					<tl>
-						<v8:item>
-							<v8:lang>en</v8:lang>
 							<v8:content>SalesTax</v8:content>
 						</v8:item>
 					</tl>
@@ -1137,14 +1091,14 @@
 			</c>
 			<c>
 				<c>
-					<f>64</f>
+					<f>63</f>
 					<parameter>SalesTaxTotal</parameter>
 				</c>
 			</c>
 		</row>
 	</rowsItem>
 	<rowsItem>
-		<index>27</index>
+		<index>26</index>
 		<row>
 			<c>
 				<c>
@@ -1183,14 +1137,14 @@
 			</c>
 			<c>
 				<c>
-					<f>65</f>
+					<f>64</f>
 					<parameter>DocumentTotal</parameter>
 				</c>
 			</c>
 		</row>
 	</rowsItem>
 	<rowsItem>
-		<index>28</index>
+		<index>27</index>
 		<row>
 			<c>
 				<c>
@@ -1225,14 +1179,14 @@
 			</c>
 			<c>
 				<c>
-					<f>64</f>
+					<f>63</f>
 					<parameter>Credits</parameter>
 				</c>
 			</c>
 		</row>
 	</rowsItem>
 	<rowsItem>
-		<index>29</index>
+		<index>28</index>
 		<row>
 			<c>
 				<c>
@@ -1271,8 +1225,43 @@
 			</c>
 			<c>
 				<c>
-					<f>66</f>
+					<f>65</f>
 					<parameter>Balance</parameter>
+				</c>
+			</c>
+		</row>
+	</rowsItem>
+	<rowsItem>
+		<index>29</index>
+		<row>
+			<c>
+				<c>
+					<f>7</f>
+				</c>
+			</c>
+			<c>
+				<c>
+					<f>2</f>
+				</c>
+			</c>
+			<c>
+				<c>
+					<f>8</f>
+				</c>
+			</c>
+			<c>
+				<c>
+					<f>9</f>
+				</c>
+			</c>
+			<c>
+				<c>
+					<f>10</f>
+				</c>
+			</c>
+			<c>
+				<c>
+					<f>38</f>
 				</c>
 			</c>
 		</row>
@@ -1387,42 +1376,7 @@
 		<row>
 			<c>
 				<c>
-					<f>7</f>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>2</f>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>8</f>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>9</f>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>10</f>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>38</f>
-				</c>
-			</c>
-		</row>
-	</rowsItem>
-	<rowsItem>
-		<index>34</index>
-		<row>
-			<c>
-				<c>
-					<f>67</f>
+					<f>66</f>
 					<parameter>FooterContents</parameter>
 				</c>
 			</c>
@@ -1454,9 +1408,9 @@
 		</row>
 	</rowsItem>
 	<templateMode>true</templateMode>
-	<defaultFormatIndex>68</defaultFormatIndex>
-	<height>35</height>
-	<vgRows>35</vgRows>
+	<defaultFormatIndex>67</defaultFormatIndex>
+	<height>34</height>
+	<vgRows>34</vgRows>
 	<merge>
 		<r>7</r>
 		<c>4</c>
@@ -1478,22 +1432,12 @@
 		<w>1</w>
 	</merge>
 	<merge>
-		<r>34</r>
+		<r>33</r>
 		<c>0</c>
 		<w>5</w>
 	</merge>
 	<namedItem xsi:type="NamedItemCells">
 		<name>Balance</name>
-		<area>
-			<type>Rows</type>
-			<beginRow>29</beginRow>
-			<endRow>29</endRow>
-			<beginColumn>-1</beginColumn>
-			<endColumn>-1</endColumn>
-		</area>
-	</namedItem>
-	<namedItem xsi:type="NamedItemCells">
-		<name>Credits</name>
 		<area>
 			<type>Rows</type>
 			<beginRow>28</beginRow>
@@ -1503,11 +1447,21 @@
 		</area>
 	</namedItem>
 	<namedItem xsi:type="NamedItemCells">
+		<name>Credits</name>
+		<area>
+			<type>Rows</type>
+			<beginRow>27</beginRow>
+			<endRow>27</endRow>
+			<beginColumn>-1</beginColumn>
+			<endColumn>-1</endColumn>
+		</area>
+	</namedItem>
+	<namedItem xsi:type="NamedItemCells">
 		<name>EmptySpace</name>
 		<area>
 			<type>Rows</type>
-			<beginRow>31</beginRow>
-			<endRow>32</endRow>
+			<beginRow>30</beginRow>
+			<endRow>31</endRow>
 			<beginColumn>-1</beginColumn>
 			<endColumn>-1</endColumn>
 		</area>
@@ -1516,8 +1470,8 @@
 		<name>Footer</name>
 		<area>
 			<type>Rows</type>
-			<beginRow>34</beginRow>
-			<endRow>34</endRow>
+			<beginRow>33</beginRow>
+			<endRow>33</endRow>
 			<beginColumn>-1</beginColumn>
 			<endColumn>-1</endColumn>
 		</area>
@@ -1526,8 +1480,8 @@
 		<name>FooterContents</name>
 		<area>
 			<type>Rectangle</type>
-			<beginRow>34</beginRow>
-			<endRow>34</endRow>
+			<beginRow>33</beginRow>
+			<endRow>33</endRow>
 			<beginColumn>0</beginColumn>
 			<endColumn>5</endColumn>
 		</area>
@@ -1566,8 +1520,8 @@
 		<name>SalesTax</name>
 		<area>
 			<type>Rows</type>
-			<beginRow>26</beginRow>
-			<endRow>26</endRow>
+			<beginRow>25</beginRow>
+			<endRow>25</endRow>
 			<beginColumn>-1</beginColumn>
 			<endColumn>-1</endColumn>
 		</area>
@@ -1586,18 +1540,8 @@
 		<name>Total</name>
 		<area>
 			<type>Rows</type>
-			<beginRow>27</beginRow>
-			<endRow>27</endRow>
-			<beginColumn>-1</beginColumn>
-			<endColumn>-1</endColumn>
-		</area>
-	</namedItem>
-	<namedItem xsi:type="NamedItemCells">
-		<name>VAT</name>
-		<area>
-			<type>Rows</type>
-			<beginRow>25</beginRow>
-			<endRow>25</endRow>
+			<beginRow>26</beginRow>
+			<endRow>26</endRow>
 			<beginColumn>-1</beginColumn>
 			<endColumn>-1</endColumn>
 		</area>
@@ -2003,18 +1947,6 @@
 		<font>3</font>
 		<width>114</width>
 		<horizontalAlignment>Right</horizontalAlignment>
-	</format>
-	<format>
-		<font>3</font>
-		<width>143</width>
-		<horizontalAlignment>Right</horizontalAlignment>
-		<fillType>Parameter</fillType>
-		<format>
-			<v8:item>
-				<v8:lang>en</v8:lang>
-				<v8:content>NFD=2</v8:content>
-			</v8:item>
-		</format>
 	</format>
 	<format>
 		<font>3</font>

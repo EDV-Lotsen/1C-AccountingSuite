@@ -70,16 +70,10 @@
 					<ContextMenu name="DateContextMenu" id="5"/>
 					<ExtendedTooltip name="DateExtendedTooltip" id="21"/>
 				</LabelField>
-				<LabelField name="DeliveryDate" id="16">
-					<DataPath>List.DeliveryDate</DataPath>
-					<Title>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Exp. deliv.</v8:content>
-						</v8:item>
-					</Title>
-					<ContextMenu name="DeliveryDateContextMenu" id="17"/>
-					<ExtendedTooltip name="DeliveryDateExtendedTooltip" id="22"/>
+				<LabelField name="PromisedDate" id="16">
+					<DataPath>List.PromisedDate</DataPath>
+					<ContextMenu name="PromisedDateContextMenu" id="17"/>
+					<ExtendedTooltip name="PromisedDateExtendedTooltip" id="22"/>
 				</LabelField>
 				<LabelField name="OrderStatus" id="18">
 					<DataPath>List.OrderStatus</DataPath>
@@ -101,11 +95,6 @@
 					<DataPath>List.Company</DataPath>
 					<ContextMenu name="CompanyContextMenu" id="9"/>
 					<ExtendedTooltip name="CompanyExtendedTooltip" id="25"/>
-				</LabelField>
-				<LabelField name="CompanyCode" id="14">
-					<DataPath>List.CompanyCode</DataPath>
-					<ContextMenu name="CompanyCodeContextMenu" id="15"/>
-					<ExtendedTooltip name="CompanyCodeExtendedTooltip" id="26"/>
 				</LabelField>
 				<LabelField name="DocumentTotal" id="10">
 					<DataPath>List.DocumentTotal</DataPath>
@@ -138,18 +127,15 @@
 	DocumentSalesOrder.Date,
 	DocumentSalesOrder.Posted,
 	DocumentSalesOrder.Company,
-	DocumentSalesOrder.CompanyCode,
-	DocumentSalesOrder.SalesTax,
+	DocumentSalesOrder.SalesTaxRC,
 	DocumentSalesOrder.DocumentTotal,
 	DocumentSalesOrder.Currency,
 	DocumentSalesOrder.ExchangeRate,
 	DocumentSalesOrder.DocumentTotalRC,
 	DocumentSalesOrder.Location,
 	DocumentSalesOrder.Memo,
-	DocumentSalesOrder.VATTotal,
-	DocumentSalesOrder.PriceIncludesVAT,
 	DocumentSalesOrder.ShipTo,
-	DocumentSalesOrder.DeliveryDate,
+	DocumentSalesOrder.PromisedDate,
 	DocumentSalesOrder.ConfirmTo,
 	DocumentSalesOrder.ManualAdjustment,
 	DocumentSalesOrder.PointInTime,

@@ -11,12 +11,6 @@ Procedure MultiCurrencyOnChange(Item)
 	//RefreshInterface();
 EndProcedure
 
-&AtClient
-Procedure USFinLocalizationOnChange(Item)
-	//Message("Restart the program for the setting to take effect");
-	//RefreshInterface();
-EndProcedure
-
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
@@ -24,6 +18,22 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	TempStorageAddress = PutToTempStorage(BinaryLogo,UUID);
 	ImageAddress = TempStorageAddress;
 	Items.image.PictureSize = PictureSize.AutoSize;
+
+	BinaryLogo = GeneralFunctions.GetFooter1();
+	TempStorageAddress = PutToTempStorage(BinaryLogo,UUID);
+	FooterImageAddr1 = TempStorageAddress;
+	Items.FooterImageAddr1.PictureSize = PictureSize.AutoSize;
+	
+	BinaryLogo = GeneralFunctions.GetFooter2();
+	TempStorageAddress = PutToTempStorage(BinaryLogo,UUID);
+	FooterImageAddr2 = TempStorageAddress;
+	Items.FooterImageAddr2.PictureSize = PictureSize.AutoSize;
+
+	BinaryLogo = GeneralFunctions.GetFooter3();
+	TempStorageAddress = PutToTempStorage(BinaryLogo,UUID);
+	FooterImageAddr3 = TempStorageAddress;
+	Items.FooterImageAddr3.PictureSize = PictureSize.AutoSize;
+
 	
 	//Closing the books
 	ChoiceList = Items.PeriodClosingOption.ChoiceList;
@@ -46,12 +56,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	If NOT Constants.APISecretKey.Get() = "" Then
 		Items.APISecretKey.ReadOnly = True;		
 	EndIf;
-	
-	If Constants.USFinLocalization.Get() = True Then
-		Items.USFinLocalization.ReadOnly = True;
-		Items.VATFinLocalization.ReadOnly = True;
-	EndIf;
-	
+		
 	If Constants.MultiCurrency.Get() = True Then
 		Items.MultiCurrency.ReadOnly = True;
 	EndIf;
@@ -70,15 +75,6 @@ Procedure DefaultCurrencyOnChange(Item)
 EndProcedure
 
 &AtClient
-Procedure VATFinLocalizationOnChange(Item)
-	
-	//GeneralFunctions.VATSetup();
-	//Message("Restart the program for the setting to take effect");
-	//RefreshInterface();
-
-EndProcedure
-
-&AtClient
 Procedure VendorNameOnChange(Item)
 	
 	//Message("Restart the program for the setting to take effect");
@@ -92,14 +88,6 @@ Procedure CustomerNameOnChange(Item)
 	//Message("Restart the program for the setting to take effect");
 	//RefreshInterface();
 	
-EndProcedure
-
-&AtClient
-Procedure PriceIncludesVATOnChange(Item)
-	
-	//Message("Restart the program for the setting to take effect");
-	//RefreshInterface();
-
 EndProcedure
 
 &AtClient
@@ -190,6 +178,7 @@ Procedure OnOpen(Cancel)
 
 	    Items.Common.ChildItems.Logo.ChildItems.UploadLogo.Enabled = false;
 		Items.Common.ChildItems.Integrations.ChildItems.Stripe.ChildItems.StripeConnect.Enabled = false;
+		Message("You are viewing settings with limited rights(Non-Admin).");
 
 	 Else
 		Items.Common.ChildItems.Logo.ChildItems.UploadLogo.Enabled = true;
@@ -261,7 +250,7 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 		Items.MultiLocation.ReadOnly = True;
 	EndIf;
 	
-	Constants.Email.Set(Constants.CurrentUserEmail.Get().Description);	
+	Constants.Email.Set(Constants.CurrentUserEmail.Get().Description);
 	
 EndProcedure
 
@@ -285,18 +274,150 @@ EndProcedure
 
 &AtServer
 Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
+	
 	If ConstantsSet.PeriodClosingOption = PredefinedValue("Enum.PeriodClosingOptions.WarnAndRequirePassword") Then
-		If (ConstantsSet.PeriodClosingPassword <> PeriodClosingPasswordConfirm) Then
-			
-			MessOnError = New UserMessage();
-			MessOnError.Field = "ConstantsSet.PeriodClosingPassword";
-			MessOnError.Text  = "Different values in ""Password"" and ""Confirm password"". Re-enter ""Password""";
-			MessOnError.Message();
-			
-			Cancel = True;
-		EndIf;
+		Items.PeriodClosingPassword.Visible = True;
+		Items.PeriodClosingPasswordConfirm.Visible = True;
+	Else
+		Items.PeriodClosingPassword.Visible = False;
+		Items.PeriodClosingPasswordConfirm.Visible = False;
 	EndIf;
+
 EndProcedure
+
+&AtClient
+Procedure UploadFooter1(Command) Export
+
+	Var SelectedName;
+	FooterImageAddr1 = "";
+	
+	NotifyDescription = New NotifyDescription("FileUpload1",ThisForm);
+	BeginPutFile(NotifyDescription,,"",True);
+	
+	BinaryLogo = GeneralFunctions.GetFooter1();
+	TempStorageAddress = PutToTempStorage(BinaryLogo,UUID);
+	FooterImageAddr1 = TempStorageAddress;
+
+EndProcedure
+
+&AtClient
+Procedure FileUpload1(a,b,c,d) Export
+	
+	PlaceImageFile1(b);
+	
+EndProcedure
+
+&AtServer
+Procedure PlaceImageFile1(TempStorageName)
+	
+	If NOT TempStorageName = Undefined Then
+	
+		BinaryData = GetFromTempStorage(TempStorageName);
+				
+		NewRow = InformationRegisters.CustomPrintForms.CreateRecordManager();
+		NewRow.ObjectName = "footer1";
+		NewRow.TemplateName = "footer1";
+		NewRow.Template = New ValueStorage(BinaryData, New Deflation(9));
+		NewRow.Write();	
+		DeleteFromTempStorage(TempStorageName);
+		
+	EndIf;
+	
+	//BinaryLogo = GeneralFunctions.GetLogo();
+	//TempStorageAddress = PutToTempStorage(BinaryLogo,UUID);
+	//ImageAddress = TempStorageAddress;
+  	
+EndProcedure
+
+&AtClient
+Procedure UploadFooter2(Command) Export
+	
+	Var SelectedName;
+	ImageAddress = "";
+	
+	NotifyDescription = New NotifyDescription("FileUpload2",ThisForm);
+	BeginPutFile(NotifyDescription,,"",True);
+	
+	//BinaryLogo = GeneralFunctions.GetLogo();
+	//TempStorageAddress = PutToTempStorage(BinaryLogo,UUID);
+	//ImageAddress = TempStorageAddress;
+	
+EndProcedure
+
+&AtClient
+Procedure FileUpload2(a,b,c,d) Export
+	
+	PlaceImageFile2(b);
+	
+EndProcedure
+
+&AtServer
+Procedure PlaceImageFile2(TempStorageName)
+	
+	If NOT TempStorageName = Undefined Then
+	
+		BinaryData = GetFromTempStorage(TempStorageName);
+				
+		NewRow = InformationRegisters.CustomPrintForms.CreateRecordManager();
+		NewRow.ObjectName = "footer2";
+		NewRow.TemplateName = "footer2";
+		NewRow.Template = New ValueStorage(BinaryData, New Deflation(9));
+		NewRow.Write();	
+		DeleteFromTempStorage(TempStorageName);
+		
+	EndIf;
+	
+	//BinaryLogo = GeneralFunctions.GetLogo();
+	//TempStorageAddress = PutToTempStorage(BinaryLogo,UUID);
+	//ImageAddress = TempStorageAddress;
+  	
+EndProcedure
+
+
+&AtClient
+Procedure UploadFooter3(Command) Export
+
+	Var SelectedName;
+	ImageAddress = "";
+	
+	NotifyDescription = New NotifyDescription("FileUpload3",ThisForm);
+	BeginPutFile(NotifyDescription,,"",True);
+	
+	//BinaryLogo = GeneralFunctions.GetLogo();
+	//TempStorageAddress = PutToTempStorage(BinaryLogo,UUID);
+	//ImageAddress = TempStorageAddress;
+
+EndProcedure
+
+&AtClient
+Procedure FileUpload3(a,b,c,d) Export
+	
+	PlaceImageFile3(b);
+	
+EndProcedure
+
+&AtServer
+Procedure PlaceImageFile3(TempStorageName)
+	
+	If NOT TempStorageName = Undefined Then
+	
+		BinaryData = GetFromTempStorage(TempStorageName);
+				
+		NewRow = InformationRegisters.CustomPrintForms.CreateRecordManager();
+		NewRow.ObjectName = "footer3";
+		NewRow.TemplateName = "footer3";
+		NewRow.Template = New ValueStorage(BinaryData, New Deflation(9));
+		NewRow.Write();	
+		DeleteFromTempStorage(TempStorageName);
+		
+	EndIf;
+	
+	//BinaryLogo = GeneralFunctions.GetLogo();
+	//TempStorageAddress = PutToTempStorage(BinaryLogo,UUID);
+	//ImageAddress = TempStorageAddress;
+  	
+EndProcedure
+
 
 //&AtServer
 //Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
@@ -310,6 +431,8 @@ EndProcedure
 //Procedure CurrentUserEmailOnChange(Item)
 //	EmailChange = True;
 //EndProcedure
+
+
 
 
 

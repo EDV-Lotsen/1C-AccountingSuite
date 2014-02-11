@@ -1,0 +1,446 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<DataCompositionSchema xmlns="http://v8.1c.ru/8.1/data-composition-system/schema" xmlns:dcscom="http://v8.1c.ru/8.1/data-composition-system/common" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<dataSource>
+		<name>DataSource1</name>
+		<dataSourceType>Local</dataSourceType>
+	</dataSource>
+	<dataSet xsi:type="DataSetQuery">
+		<name>DataSet1</name>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>AppliedCredit</dataPath>
+			<field>AppliedCredit</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>ARAccount</dataPath>
+			<field>ARAccount</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Balance</dataPath>
+			<field>Balance</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>BalanceFCY</dataPath>
+			<field>BalanceFCY</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>BalanceTotal</dataPath>
+			<field>BalanceTotal</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>BalChange</dataPath>
+			<field>BalChange</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>BankAccount</dataPath>
+			<field>BankAccount</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>CashPayment</dataPath>
+			<field>CashPayment</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Company</dataPath>
+			<field>Company</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>CreditTotal</dataPath>
+			<field>CreditTotal</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Currency</dataPath>
+			<field>Currency</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Currency1</dataPath>
+			<field>Currency1</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Currency1</v8:content>
+				</v8:item>
+			</title>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>DataVersion</dataPath>
+			<field>DataVersion</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Date</dataPath>
+			<field>Date</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>DeletionMark</dataPath>
+			<field>DeletionMark</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Deposited</dataPath>
+			<field>Deposited</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>DepositType</dataPath>
+			<field>DepositType</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Document</dataPath>
+			<field>Document</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>DocumentTotal</dataPath>
+			<field>DocumentTotal</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>DocumentTotalRC</dataPath>
+			<field>DocumentTotalRC</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>EmailCC</dataPath>
+			<field>EmailCC</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>EmailNote</dataPath>
+			<field>EmailNote</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>EmailTo</dataPath>
+			<field>EmailTo</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>LastEmail</dataPath>
+			<field>LastEmail</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>LineNumber</dataPath>
+			<field>LineNumber</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Memo</dataPath>
+			<field>Memo</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>NewObject</dataPath>
+			<field>NewObject</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Number</dataPath>
+			<field>Number</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Payment</dataPath>
+			<field>Payment</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>PaymentMethod</dataPath>
+			<field>PaymentMethod</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>PointInTime</dataPath>
+			<field>PointInTime</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Posted</dataPath>
+			<field>Posted</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Ref</dataPath>
+			<field>Ref</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Ref1</dataPath>
+			<field>Ref1</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Ref1</v8:content>
+				</v8:item>
+			</title>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>RefNum</dataPath>
+			<field>RefNum</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>SalesOrder</dataPath>
+			<field>SalesOrder</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>StripeAmount</dataPath>
+			<field>StripeAmount</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>StripeCardName</dataPath>
+			<field>StripeCardName</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>StripeCardType</dataPath>
+			<field>StripeCardType</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>StripeCreated</dataPath>
+			<field>StripeCreated</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>StripeID</dataPath>
+			<field>StripeID</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>StripeLast4</dataPath>
+			<field>StripeLast4</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>UnappliedPayment</dataPath>
+			<field>UnappliedPayment</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>UnappliedPaymentCreditMemo</dataPath>
+			<field>UnappliedPaymentCreditMemo</field>
+		</field>
+		<dataSource>DataSource1</dataSource>
+		<query>SELECT
+	CashReceiptLineItems.Ref,
+	CashReceiptLineItems.LineNumber,
+	CashReceiptLineItems.Document,
+	CashReceiptLineItems.Payment,
+	CashReceiptLineItems.Balance,
+	CashReceiptLineItems.BalanceFCY,
+	CashReceiptLineItems.Currency,
+	CashReceiptLineItems.Ref.Ref AS Ref1,
+	CashReceiptLineItems.Ref.DataVersion,
+	CashReceiptLineItems.Ref.DeletionMark,
+	CashReceiptLineItems.Ref.Number,
+	CashReceiptLineItems.Ref.Date,
+	CashReceiptLineItems.Ref.Posted,
+	CashReceiptLineItems.Ref.Company,
+	CashReceiptLineItems.Ref.DocumentTotal,
+	CashReceiptLineItems.Ref.CashPayment,
+	CashReceiptLineItems.Ref.UnappliedPayment,
+	CashReceiptLineItems.Ref.UnappliedPaymentCreditMemo,
+	CashReceiptLineItems.Ref.RefNum,
+	CashReceiptLineItems.Ref.Memo,
+	CashReceiptLineItems.Ref.DepositType,
+	CashReceiptLineItems.Ref.Deposited,
+	CashReceiptLineItems.Ref.DocumentTotalRC,
+	CashReceiptLineItems.Ref.PaymentMethod,
+	CashReceiptLineItems.Ref.BankAccount,
+	CashReceiptLineItems.Ref.Currency AS Currency1,
+	CashReceiptLineItems.Ref.StripeID,
+	CashReceiptLineItems.Ref.ARAccount,
+	CashReceiptLineItems.Ref.StripeCardName,
+	CashReceiptLineItems.Ref.StripeAmount,
+	CashReceiptLineItems.Ref.StripeCreated,
+	CashReceiptLineItems.Ref.StripeCardType,
+	CashReceiptLineItems.Ref.StripeLast4,
+	CashReceiptLineItems.Ref.AppliedCredit,
+	CashReceiptLineItems.Ref.CreditTotal,
+	CashReceiptLineItems.Ref.BalanceTotal,
+	CashReceiptLineItems.Ref.BalChange,
+	CashReceiptLineItems.Ref.EmailTo,
+	CashReceiptLineItems.Ref.EmailNote,
+	CashReceiptLineItems.Ref.EmailCC,
+	CashReceiptLineItems.Ref.LastEmail,
+	CashReceiptLineItems.Ref.NewObject,
+	CashReceiptLineItems.Ref.SalesOrder,
+	CashReceiptLineItems.Ref.Presentation,
+	CashReceiptLineItems.Ref.PointInTime
+FROM
+	Document.CashReceipt.LineItems AS CashReceiptLineItems
+
+UNION ALL
+
+SELECT
+	CashReceiptCreditMemos.Ref,
+	CashReceiptCreditMemos.LineNumber,
+	CashReceiptCreditMemos.Document,
+	CashReceiptCreditMemos.Payment,
+	CashReceiptCreditMemos.Balance,
+	CashReceiptCreditMemos.BalanceFCY,
+	CashReceiptCreditMemos.Currency,
+	CashReceiptCreditMemos.Ref.Ref,
+	CashReceiptCreditMemos.Ref.DataVersion,
+	CashReceiptCreditMemos.Ref.DeletionMark,
+	CashReceiptCreditMemos.Ref.Number,
+	CashReceiptCreditMemos.Ref.Date,
+	CashReceiptCreditMemos.Ref.Posted,
+	CashReceiptCreditMemos.Ref.Company,
+	CashReceiptCreditMemos.Ref.DocumentTotal,
+	CashReceiptCreditMemos.Ref.CashPayment,
+	CashReceiptCreditMemos.Ref.UnappliedPayment,
+	CashReceiptCreditMemos.Ref.UnappliedPaymentCreditMemo,
+	CashReceiptCreditMemos.Ref.RefNum,
+	CashReceiptCreditMemos.Ref.Memo,
+	CashReceiptCreditMemos.Ref.DepositType,
+	CashReceiptCreditMemos.Ref.Deposited,
+	CashReceiptCreditMemos.Ref.DocumentTotalRC,
+	CashReceiptCreditMemos.Ref.PaymentMethod,
+	CashReceiptCreditMemos.Ref.BankAccount,
+	CashReceiptCreditMemos.Ref.Currency,
+	CashReceiptCreditMemos.Ref.StripeID,
+	CashReceiptCreditMemos.Ref.ARAccount,
+	CashReceiptCreditMemos.Ref.StripeCardName,
+	CashReceiptCreditMemos.Ref.StripeAmount,
+	CashReceiptCreditMemos.Ref.StripeCreated,
+	CashReceiptCreditMemos.Ref.StripeCardType,
+	CashReceiptCreditMemos.Ref.StripeLast4,
+	CashReceiptCreditMemos.Ref.AppliedCredit,
+	CashReceiptCreditMemos.Ref.CreditTotal,
+	CashReceiptCreditMemos.Ref.BalanceTotal,
+	CashReceiptCreditMemos.Ref.BalChange,
+	CashReceiptCreditMemos.Ref.EmailTo,
+	CashReceiptCreditMemos.Ref.EmailNote,
+	CashReceiptCreditMemos.Ref.EmailCC,
+	CashReceiptCreditMemos.Ref.LastEmail,
+	CashReceiptCreditMemos.Ref.NewObject,
+	CashReceiptCreditMemos.Ref.SalesOrder,
+	CashReceiptCreditMemos.Ref.Presentation,
+	CashReceiptCreditMemos.Ref.PointInTime
+FROM
+	Document.CashReceipt.CreditMemos AS CashReceiptCreditMemos</query>
+	</dataSet>
+	<settingsVariant>
+		<dcsset:name>Default</dcsset:name>
+		<dcsset:presentation xsi:type="xs:string">Default</dcsset:presentation>
+		<dcsset:settings xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows">
+			<dcsset:selection>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Balance</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>BalanceFCY</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Currency</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Currency1</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Document</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>LineNumber</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Payment</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Ref1</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Ref</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>ARAccount</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>StripeAmount</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>AppliedCredit</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>BalChange</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>BalanceTotal</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>BankAccount</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Company</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>CreditTotal</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>DataVersion</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Date</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>StripeCreated</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>DeletionMark</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>DepositType</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Deposited</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>EmailCC</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>EmailNote</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>EmailTo</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>StripeLast4</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>LastEmail</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Memo</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>PaymentMethod</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>StripeCardName</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>NewObject</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Number</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>CashPayment</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>PointInTime</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Posted</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>RefNum</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>SalesOrder</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>StripeID</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>DocumentTotalRC</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>DocumentTotal</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>StripeCardType</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>UnappliedPayment</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>UnappliedPaymentCreditMemo</dcsset:field>
+				</dcsset:item>
+			</dcsset:selection>
+			<dcsset:item xsi:type="dcsset:StructureItemGroup">
+				<dcsset:order>
+					<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
+				</dcsset:order>
+				<dcsset:selection>
+					<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+				</dcsset:selection>
+			</dcsset:item>
+		</dcsset:settings>
+	</settingsVariant>
+</DataCompositionSchema>

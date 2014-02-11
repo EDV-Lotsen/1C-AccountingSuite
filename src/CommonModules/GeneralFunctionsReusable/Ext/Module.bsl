@@ -15,6 +15,12 @@ Function US_FL_Taxable() Export
 		
 EndFunction
 
+Function DisplayAPICodesSetting() Export
+	
+	Return Constants.display_api_codes.Get();
+	
+EndFunction
+
 
 // Returns a value of a functional option. Used for the following functional options
 // that are desired to be reusable - units of measure, multi-location, multi-currency,
@@ -107,18 +113,6 @@ Function APAccountType() Export
 	Return Enums.AccountTypes.AccountsPayable;
 	
 EndFunction
-
-// Returns the PriceIncludesVAT constant value
-// 
-// Returned value:
-// Boolean
-//
-Function PriceIncludesVAT() Export
-	
-	Return Constants.PriceIncludesVAT.Get();
-
-EndFunction
-
 
 // Returns a Currency catalog empty value
 //
