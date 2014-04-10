@@ -1,164 +1,122 @@
-﻿// Preventing posting if already included in a bank reconciliation document
-// Parameters:
-//  Source - DocumentObject - Document being posted
-//  Cancel - boolean - cancel write 
-//  WriteMode - DocumentWriteMode enumeration - current write mode
-//  PostingMode - DocumentPostingMode enumeration - current posting mode
+﻿
+////////////////////////////////////////////////////////////////////////////////
+// Document posting: Server module
+//------------------------------------------------------------------------------
+// Available on:
+// - Server
+// - External Connection
 //
-Procedure ReconciledDocumentBeforeWrite(Source, Cancel, WriteMode, PostingMode) Export
-	// allow posting if key fields has not been changed
-	If Source.DataExchange.Load Then
-		return;
-	EndIf;
-	DocumentName = Source.Metadata().Name;
-	If DocumentName = "BankTransfer" Then
-		Amount = Source.Amount;
-		Date = Source.Date;
-		BankAccount = Source.AccountTo;
-	ElsIf DocumentName = "CashReceipt" Then
-		Amount = Source.CashPayment;
-		Date = Source.Date;
-		BankAccount = Source.BankAccount;
-	ElsIf DocumentName = "CashSale" Then
-		Amount = Source.DocumentTotalRC;
-		Date = Source.Date;
-		BankAccount = Source.BankAccount;
-	ElsIf DocumentName = "Check" Then
-		Amount = -1*Source.DocumentTotalRC;
-		Date = Source.Date;
-		BankAccount = Source.BankAccount;
-	ElsIf DocumentName = "Deposit" Then
-		Amount = Source.DocumentTotalRC;
-		Date = Source.Date;
-		BankAccount = Source.BankAccount;
-	ElsIf DocumentName = "InvoicePayment" Then
-		Amount = -1*Source.DocumentTotalRC;
-		Date = Source.Date;
-		BankAccount = Source.BankAccount;
-	Else
-		return;
-	EndIf;
-	If DocumentPosting.RequiresExcludingFromBankReconciliation(Source.Ref, Amount, Date, BankAccount, WriteMode) Then
-		MessageText = String(Source.Ref) + ": " + NStr("en='This document is already included in a bank reconciliation. Please remove it from the bank rec first.'");
-		CommonUseClientServer.MessageToUser(MessageText,,,,Cancel);
-	EndIf;
-EndProcedure
-
-Procedure DocumentObject_OnSetNewNumber_GenerateNumber(Source, StandardProcessing, Prefix) Export
-	
-	// Generating of new document sequential number.
-	
-EndProcedure
 
 ////////////////////////////////////////////////////////////////////////////////
-// EXPORTED PUBLIC FUNCTIONS
+#Region PUBLIC_INTERFACE
 
 //------------------------------------------------------------------------------
-// Supplimental functions checking state of selected flags of document/recordset objects
+// Supplemental functions checking state of selected flags of document/recordset objects
 
-// Check presence of boolean flag in document properties and returns it value
-// If flag don't exist, False is returned
+// Check presence of boolean flag in document properties and returns it value.
+// If flag don't exist, False is returned.
 //
 // Parameters:
-//  Properties - Structure of document parameters containing required attributes and tables
-//  Property   - String, name of requested property in Properties structure
+//  Properties - Structure - Document parameters containing required attributes and tables.
+//  Flag       - String    - Name of requested property in Properties structure.
 //
-// Value returned:
-//  Boolean    - Value of property
+// Returns:
+//  Boolean    - Value of property.
 //
 Function FlagValue(Properties, Flag) Export
 	Var FlagValue;
-
+	
 	Return Properties.Property(Flag, FlagValue) And FlagValue;
-
+	
 EndFunction
 
-// Check flag of new document
+// Check flag of new document.
 //
 // Parameters:
-//  AdditionalProperties - Structure of additional document parameters containing required attributes and tables
+//  AdditionalProperties - Structure - Document parameters containing required attributes and tables.
+//    * IsNew            - Boolean   - New document flag.
 //
-// Value returned:
-//  Boolean - Value of IsNew flag
+// Returns:
+//  Boolean - Value of new document flag.
 //
 Function IsNew(AdditionalProperties) Export
-
+	
 	Return FlagValue(AdditionalProperties, "IsNew");
-
+	
 EndFunction
 
-// Check flag of presence of manual ajustment in the document postings
+// Check flag of presence of manual ajustment in the document postings.
 //
 // Parameters:
-//  AdditionalProperties - Structure of additional document parameters containing required attributes and tables
+//  AdditionalProperties - Structure - Document parameters containing required attributes and tables.
+//    * ManualAdjustment - Boolean   - Manual ajustment flag.
 //
-// Value returned:
-//  Boolean - Value of manual ajustment
+// Returns:
+//  Boolean - Value of manual ajustment flag.
 //
 Function ManualAdjustment(AdditionalProperties) Export
-
+	
 	Return FlagValue(AdditionalProperties, "ManualAdjustment");
-
+	
 EndFunction
 
-// Check flag of registration of changes in postings only
+// Check flag of registration of changes in postings only.
 //
 // Parameters:
-//  AdditionalProperties - Structure of additional record set parameters containing required attributes and tables
+//  AdditionalProperties - Structure - Additional record set parameters containing required attributes and tables.
+//    * WriteChangesOnly - Boolean   - Registration of changes only flag.
 //
-// Value returned:
-//  Boolean - Value of registration of changes only
+// Returns:
+//  Boolean - Value of registration of changes only flag.
 //
 Function WriteChangesOnly(AdditionalProperties) Export
 	
 	Return FlagValue(AdditionalProperties, "WriteChangesOnly");
-
+	
 EndFunction
 
 //------------------------------------------------------------------------------
 // Preparing the document data before write an object
 
-// Save additional document parameters required for posting before writing an object
+// Save additional document parameters required for posting before writing an object.
 //
 // Parameters:
-//  AdditionalProperties - Structure of additional object parameters containing required attributes and tables
-//  DocumentParameters	 - Structure of object attributes, inaccessible on the server call to be packed into AdditionalProperties
-//  Cancel               - Flag of transaction cancel
-//  WriteMode            - Invoked document writing mode (write, posting)
-//  PostingMode          - Invoked document posting mode (operational, non-operational)
+//  AdditionalProperties - Structure - Additional object parameters containing required attributes and tables.
+//  DocumentParameters   - Structure - Object attributes, inaccessible on the server call to be packed into AdditionalProperties structure.
+//  Cancel               - Boolean   - Flag of transaction cancel.
+//  WriteMode            - DocumentWriteMode   - Invoked document writing mode (write or posting).
+//  PostingMode          - DocumentPostingMode - Invoked document posting mode (real-time or regular).
 //
 Procedure PrepareDataStructuresBeforeWrite(AdditionalProperties, DocumentParameters, Cancel, WriteMode, PostingMode) Export
 	
-	// Cache document attributes minimizing data requests - pack posting parameters into AdditionalProperties
+	// Cache document attributes minimizing data requests - pack posting parameters into AdditionalProperties.
 	For Each DocumentParameter In DocumentParameters Do
 		AdditionalProperties.Insert(DocumentParameter.Key, DocumentParameter.Value);
 	EndDo;
 	
-	// Posting - Structure containing data to be transferred on the server and post the document
+	// Posting - Structure containing data to be transferred on the server and post the document.
 	AdditionalProperties.Insert("Posting", New Structure);
 	
-	// Specify Writing / Posting mode of document
+	// Specify Writing / Posting mode of document.
 	AdditionalProperties.Posting.Insert("WriteMode",   WriteMode);
 	AdditionalProperties.Posting.Insert("PostingMode", PostingMode);
 	
 EndProcedure
 
 // Performs managed (manual) lock of object data
-// preventing other clients reding data which will be changed during posting transaction
+// preventing other clients reding data which will be changed during posting transaction.
 //
 // Parameters:
-//  ObjectName	 - Name of object where datalock will be applied
-//  DataSource	 - Query result, containing flat table having all requred dimensions in columns
-//  DataSource	 - Lock mode: Shared or Exclusive
-//  WriteMode            - Invoked document writing mode (write, posting)
-//  PostingMode          - Invoked document posting mode (operational, non-operational)
-//  
+//  ObjectName   - String       - Name of object where datalock will be applied.
+//  DataSource   - QueryResult  - Contains flat table having all requred dimensions in columns.
+//  DataLockMode - DataLockMode - Shared or Exclusive.
+//
 Procedure LockDataSourceBeforeWrite(ObjectName, DataSource, DataLockMode) Export
 	
-	// Create new managed data lock
+	// Create new managed data lock.
 	DataLock = New DataLock;
 	
-	// Set data lock parameters
+	// Set data lock parameters.
 	LockItem = DataLock.Add(ObjectName);
 	LockItem.Mode = DataLockMode;
 	LockItem.DataSource = DataSource;
@@ -166,7 +124,7 @@ Procedure LockDataSourceBeforeWrite(ObjectName, DataSource, DataLockMode) Export
 		LockItem.UseFromDataSource(Column.Name, Column.Name);
 	EndDo;
 	
-	// Set lock on the object
+	// Set lock on the object.
 	DataLock.Lock();
 	
 EndProcedure
@@ -177,13 +135,13 @@ EndProcedure
 // Save data and structures which will be used in posting procedure as additional parameters of object.
 //
 // Parameters:
-//  AdditionalProperties - Structure of additional object parameters (to be filled)
+//  AdditionalProperties - Structure - Additional object parameters (to be filled).
 //
 Procedure PrepareDataStructuresBeforePosting(AdditionalProperties) Export
-
-	// PostingTables - Structure containing document tables data for posting the document
+	
+	// PostingTables - Structure containing document tables data for posting the document.
 	AdditionalProperties.Posting.Insert("PostingTables", New Structure);
-
+	
 	// TempTablesManager - Temporary tables manager, containing document data requested for creating document postings.
 	AdditionalProperties.Posting.Insert("StructTempTablesManager", New Structure("TempTablesManager", New TempTablesManager));
 	
@@ -192,153 +150,154 @@ EndProcedure
 // Clear used additional document data passed as additional properties.
 //
 // Parameters:
-//  AdditionalProperties - Structure of additional object parameters (to be cleared)
+//  AdditionalProperties - Structure - Additional object parameters (to be cleared).
+//    * Posting          - Structure - Structure of document posting parameters.
+//       ** StructTempTablesManager  - Structure - Structure containing temporary tables.
+//          *** TempTablesManager    - TempTablesManager - Manager of temporary tables.
 //
 Procedure ClearDataStructuresAfterPosting(AdditionalProperties) Export
-
-	// Dispose used temporary tables managers
+	
+	// Dispose used temporary tables managers.
 	AdditionalProperties.Posting.StructTempTablesManager.TempTablesManager.Close();
-
+	
 EndProcedure
 
 //------------------------------------------------------------------------------
 // Document's recordset changing - common handlers
 
 // Prepares recordsets of the document to be posted in registers.
-// 1. Clear old records from recordset (required for thick client only)
-// 2. Trigger flag Write for records, which document has on previous posting
-// 3. Switch manually adjusted recordsets to the active state
-// 4. Writes empty recordsets if previously posted document has new date shifted forward
-// Called from document module on posting
+// 1. Clear old records from recordset (required for thick client only).
+// 2. Trigger flag Write for records, which document has on previous posting.
+// 3. Switch manually adjusted recordsets to the active state.
+// 4. Writes empty recordsets if previously posted document has new date shifted forward.
+// Called from document module on posting.
 //
 // Parameters:
-//  AdditionalProperties - Structure of additional object parameters containing required attributes and tables
-//  RegisterRecords      - Document postings list, which will be filled during document posting
-//  ForcedWriteClearedRegistersHavingDocumentPostings - Boolean, defines forced writing recordsets before posting the document:
+//  AdditionalProperties - Structure                 - Additional object parameters containing required attributes and tables.
+//  RegisterRecords      - RegisterRecordsCollection - Document postings list, which will be filled during document posting.
+//  ForcedClearWriteRecordsetsBeforePosing - Boolean - Defines forced writing recordsets before posting the document:
 //    False: Registers, having postings, will be cleared, but not written in the database (required for analyse of current state);
 //    True:  All registers having document postings will be foced written before posting the document (analyse is not required).
 //
 Procedure PrepareRecordSetsForPosting(AdditionalProperties, RegisterRecords, ForcedClearWriteRecordsetsBeforePosing = False) Export
 	
-	// Skip recordset processing for new documents
+	// Skip recordset processing for new documents.
 	If IsNew(AdditionalProperties) Then
 		Return;
 	EndIf;
 	
-	// Create array of registers which having postings and thus require forced write
+	// Create array of registers which having postings and thus require forced write.
 	ArrayOfRegistersHavingDocumentPostings = GetArrayOfRegistersHavingDocumentPostings(
-		AdditionalProperties.Ref, 
-		AdditionalProperties.Metadata.RegisterRecords);
-
-	// Mark all of register recordsets, where document has postings, for writing
+	                                         AdditionalProperties.Ref,
+	                                         AdditionalProperties.Metadata.RegisterRecords);
+	
+	// Mark all of register recordsets, where document has postings, for writing.
 	For Each RegisterName In ArrayOfRegistersHavingDocumentPostings Do
 		RegisterRecords[RegisterName].Write = True;
 	EndDo;
 	
-	// Process manual postings
+	// Process manual postings.
 	If ManualAdjustment(AdditionalProperties) Then
 		
-		// Reactivate manually created register records
+		// Reactivate manually created register records.
 		For Each RegisterName In ArrayOfRegistersHavingDocumentPostings Do
 			RegisterRecords[RegisterName].Read();
 			RegisterRecords[RegisterName].SetActive(True);
 		EndDo;
 		
-	// Process automatical postings	
+	// Process automatical postings.
 	Else
-		
-		// Clear existing postings in all registers, where document has bookings
+		// Clear existing postings in all registers, where document has bookings.
 		For Each RecordSet In RegisterRecords Do
 			If RecordSet.Count() > 0 Then
 				RecordSet.Clear();
 			EndIf;
 		EndDo;
 		
-		// Process forced clearing of data sets (performs forced check of register balances)
+		// Process forced clearing of data sets (performs forced check of register balances).
 		If ForcedClearWriteRecordsetsBeforePosing Then
 			For Each RegisterName In ArrayOfRegistersHavingDocumentPostings Do
-				// Forced write of registers
+				// Forced write of registers.
 				RegisterRecords[RegisterName].Write();
 				RegisterRecords[RegisterName].Write = False;
 			EndDo;
 		EndIf;
-			
+		
 	EndIf;
 	
 EndProcedure
 
 // Prepares recordsets of the document to clearing posted records in registers.
 // 1. Trigger flag Write for records, which document has on a posting.
-// 3. Switch manually adjusted recordsets to the inactive state
-// Called from document module on undo posting
+// 2. Switch manually adjusted recordsets to the inactive state.
+// Called from document module on undo posting.
 //
 // Parameters:
-//  AdditionalProperties - Structure of additional object parameters containing required attributes and tables
-//  RegisterRecords - Document postings list, which will be cleared during document posting clearing
+//  AdditionalProperties - Structure                 - Additional object parameters containing required attributes and tables.
+//  RegisterRecords      - RegisterRecordsCollection - Document postings list, which will be cleared during document posting clearing.
 //
 Procedure PrepareRecordSetsForPostingClearing(AdditionalProperties, RegisterRecords) Export
 	
-	// Create array of registers which are require forced cleaning
+	// Create array of registers which are require forced cleaning.
 	ArrayOfRegistersHavingDocumentPostings = GetArrayOfRegistersHavingDocumentPostings(
-		AdditionalProperties.Ref, 
-		AdditionalProperties.Metadata.RegisterRecords);
-
-	// Mark all of register recordsets, where document has postings, for writing
+	                                         AdditionalProperties.Ref,
+	                                         AdditionalProperties.Metadata.RegisterRecords);
+	
+	// Mark all of register recordsets, where document has postings, for writing.
 	For Each RegisterName In ArrayOfRegistersHavingDocumentPostings Do
 		RegisterRecords[RegisterName].Write = True;
 	EndDo;
 	
-	// Process manual postings
+	// Process manual postings.
 	If ManualAdjustment(AdditionalProperties) Then
 		
-		// Deactivate manually created register records
+		// Deactivate manually created register records.
 		For Each RegisterName In ArrayOfRegistersHavingDocumentPostings Do
 			RegisterRecords[RegisterName].Read();
 			RegisterRecords[RegisterName].SetActive(False);
 		EndDo;
 		RegisterRecords.Write();
 		
-	// Process automatical postings	
+	// Process automatical postings.
 	Else
-		// Postings will be automatically cleared on writing the datasets
+		// Postings will be automatically cleared on writing the datasets.
 	EndIf;
 	
 EndProcedure
 
-// Write prepared recordsets into document's register records
+// Write prepared recordsets into document's register records.
 //
 // Parameters:
-//  AdditionalProperties - Structure of additional object parameters containing required attributes and tables
-//  RegisterRecords      - Document postings list, which is filled during document posting
-//  Cancel               - Flag of transaction cancel
+//  AdditionalProperties - Structure                 - Additional object parameters containing required attributes and tables.
+//  RegisterRecords      - RegisterRecordsCollection - Document postings list, which is filled during document posting.
+//  Cancel               - Boolean                   - Flag of transaction cancel.
 //
 Procedure FillRecordSets(AdditionalProperties, RegisterRecords, Cancel) Export
 	Var TableRecordSet;
 	
-	// Write prepared table of records to the Document's RecordSet
+	// Write prepared table of records to the Document's RecordSet.
 	For Each RecordSet In RegisterRecords Do
 		
-		// Get recordset name by it's presentation (without accessing to metadata properties)
+		// Get recordset name by it's presentation (without accessing to metadata properties).
 		RecordSetFullName = String(RecordSet);
 		RecordSetName = Mid(RecordSetFullName, Find(RecordSetFullName,".") + 1);
 		
-		// Get postings table from Additional properties of Document
+		// Get postings table from Additional properties of Document.
 		If AdditionalProperties.Posting.PostingTables.Property(
 			StrReplace("Table_{Recordset}", "{Recordset}", RecordSetName),
 			TableRecordSet) Then
 			
-			// Skip posting if none of items present
+			// Skip posting if none of items present.
 			If Cancel Or TableRecordSet.Count() = 0 Then
 				Continue;
 			EndIf;
 			
-			// Load prepared postings into register
+			// Load prepared postings into register.
 			RecordSet.Write = True;
 			RecordSet.Load(TableRecordSet);
-			
 		EndIf;
 	EndDo;
-
+	
 EndProcedure
 
 // Writes document records to appropriate recordsets.
@@ -346,71 +305,71 @@ EndProcedure
 // of recordsets changes (to avoid full reposting of document).
 //
 // Parameters:
-//  AdditionalProperties - Structure of additional object parameters containing required attributes and tables
-//  RegisterRecords - Document postings list, which is filled during document posting
+//  AdditionalProperties - Structure                 - Additional object parameters containing required attributes and tables.
+//  RegisterRecords      - RegisterRecordsCollection - Document postings list, which is filled during document posting.
 //
 Procedure WriteRecordSets(AdditionalProperties, RegisterRecords) Export
 	Var BalanceCheck;
-
-	// Create list of registers to create table of changes
+	
+	// Create list of registers to create table of changes.
 	If AdditionalProperties.Posting.Property("BalanceCheck", BalanceCheck) Then
 		For Each BalanceRegister In BalanceCheck Do
 			
-			// Fill recordset properties
+			// Fill recordset properties.
 			RecordSet = RegisterRecords[BalanceRegister.Key];
 			If RecordSet.Write Then
 				
-				// Assign additional recordset properties for posting register records
+				// Assign additional recordset properties for posting register records.
 				RecordSet.AdditionalProperties.Insert("IsNew", IsNew(AdditionalProperties));
 				RecordSet.AdditionalProperties.Insert("WriteChangesOnly", True);
 				RecordSet.AdditionalProperties.Insert("Metadata", RecordSet.Metadata());
-
-				// Structure of temporary tables to pass it to recordset
+				
+				// Structure of temporary tables to pass it to recordset.
 				RecordSet.AdditionalProperties.Insert("Posting", New Structure);
-				RecordSet.AdditionalProperties.Posting.Insert("StructTempTablesManager", 
+				RecordSet.AdditionalProperties.Posting.Insert("StructTempTablesManager",
 					AdditionalProperties.Posting.StructTempTablesManager);
-
-				// Pass an array of checked register resources to recordset
-				RecordSet.AdditionalProperties.Posting.Insert("CheckPostings", 
+				
+				// Pass an array of checked register resources to recordset.
+				RecordSet.AdditionalProperties.Posting.Insert("CheckPostings",
 					BalanceRegister.Value.CheckPostings);
 			EndIf;
 		EndDo;
 	EndIf;
-
-	// Proceed with write of document records
+	
+	// Proceed with write of document records.
 	RegisterRecords.Write();
-
+	
 EndProcedure
 
 //------------------------------------------------------------------------------
 // Check recordset changes
 
-// Prepares a table of old document register records before write recordset
-// Used on document reposting to deteremine required balance check of register
-// Result is placed in temporary tables manager defined in additional properties
+// Prepares a table of old document register records before write recordset.
+// Used on document reposting to deteremine required balance check of register.
+// Result is placed in temporary tables manager defined in additional properties.
 //
 // Parameters:
-//  Recorder             - Recorder placing register records into recordset
-//  AdditionalProperties - Structure of additional recordset parameters containing required attributes and tables
-//  Cancel               - Flag of transaction cancel
+//  Recorder             - DocumentRef - Recorder placing register records into recordset.
+//  AdditionalProperties - Structure   - Additional recordset parameters containing required attributes and tables.
+//  Cancel               - Boolean     - Flag of transaction cancel.
 //
 Procedure CheckRecordsetChangesBeforeWrite(Recorder, AdditionalProperties, Cancel) Export
 	Var CheckPostings;
 	
-	// Skip checking if resources for checking are not defined
+	// Skip checking if resources for checking are not defined.
 	If Not AdditionalProperties.Posting.Property("CheckPostings", CheckPostings)
 	   Or CheckPostings.Count() = 0 Then
 		Return;
 	EndIf;
 	
 	// 0. Current recordset is placed in temporary table RegisterRecords[<Register name>]
-	// to compare new recordset (on write) with previous which already exists
+	// to compare new recordset (on write) with previous which already exists.
 	Query = New Query;
 	Query.SetParameter("Recorder", Recorder);
 	Query.SetParameter("IsNew",    AdditionalProperties.IsNew);
 	Query.TempTablesManager =      AdditionalProperties.Posting.StructTempTablesManager.TempTablesManager;
 	
-	// 1. Create a query for all of register records, containing dimensions and resources
+	// 1. Create a query for all of register records, containing dimensions and resources.
 	QueryText = 
 	"SELECT
 	|	{Selection}
@@ -422,7 +381,7 @@ Procedure CheckRecordsetChangesBeforeWrite(Recorder, AdditionalProperties, Cance
 	|	Table.Recorder = &Recorder
 	|	AND (NOT &IsNew)";
 	
-	// 2. Add to query dimensions and resources of register
+	// 2. Add to query dimensions and resources of register.
 	SelectionText = "Table.Period AS Period";
 	For Each Dimension In AdditionalProperties.Metadata.Dimensions Do
 		DimensionText = StrReplace("Table.{Dimension} AS {Dimension}", "{Dimension}", Dimension.Name);
@@ -436,41 +395,41 @@ Procedure CheckRecordsetChangesBeforeWrite(Recorder, AdditionalProperties, Cance
 	EndDo;
 	QueryText = StrReplace(QueryText, "{Selection}", SelectionText);
 	
-	// 3. Combine final query text
+	// 3. Combine final query text.
 	QueryText = StrReplace(QueryText, "{Register}",  AdditionalProperties.Metadata.Name);
 	
-	// 4. Complete and execute query. Result is placed in temporary table
+	// 4. Complete and execute query. Result is placed in temporary table.
 	Query.Text = QueryText;
 	Query.Execute();
 	
 EndProcedure
 
-// Compares a table of old document postings with new ones written to the register
-// Used on document reposting to deteremine required balance check of register
-// Result is placed in structure of temporary tables manager in additional properties
+// Compares a table of old document postings with new ones written to the register.
+// Used on document reposting to deteremine required balance check of register.
+// Result is placed in structure of temporary tables manager in additional properties.
 //
 // Parameters:
-//  Recorder             - Recorder placing register records into recordset
-//  AdditionalProperties - Structure of additional recordset parameters containing required attributes and tables
-//  Cancel               - Flag of transaction cancel
+//  Recorder             - DocumentRef - Recorder placing register records into recordset.
+//  AdditionalProperties - Structure   - Additional recordset parameters containing required attributes and tables.
+//  Cancel               - Boolean     - Flag of transaction cancel.
 //
 Procedure CheckRecordsetChangesOnWrite(Recorder, AdditionalProperties, Cancel) Export
 	Var CheckPostings;
 	
-	// Skip checking if resources for checking are not defined
+	// Skip checking if resources for checking are not defined.
 	If Not AdditionalProperties.Posting.Property("CheckPostings", CheckPostings)
 	   Or CheckPostings.Count() = 0 Then
 		Return;
 	EndIf;
 	
 	// 0. Current recordset is placed in temporary table RegisterRecords[<Register name>]
-	// to compare new recordset (on write) with previous which already exists
+	// to compare new recordset (on write) with previous which already exists.
 	Query = New Query;
 	Query.SetParameter("Recorder", Recorder);
 	Query.TempTablesManager =      AdditionalProperties.Posting.StructTempTablesManager.TempTablesManager;
 	
-	// 1. Create a query for all of register records, containing dimensions and having changes in resources
-	QueryText = 
+	// 1. Create a query for all of register records, containing dimensions and having changes in resources.
+	QueryText =
 	"SELECT
 	|	{Selection}
 	|INTO
@@ -492,7 +451,7 @@ Procedure CheckRecordsetChangesOnWrite(Recorder, AdditionalProperties, Cancel) E
 	|////////////////////////////////////////////////////////////////////////////////
 	|DROP RegisterRecords_{Register}_BeforeWrite";
 	
-	// Add to query dimensions and resources of register
+	// Add to query dimensions and resources of register.
 	SelectionText = "TableDiff.Period AS Period";
 	For Each Dimension In AdditionalProperties.Metadata.Dimensions Do
 		DimensionText = StrReplace("TableDiff.{Dimension} AS {Dimension}", "{Dimension}", Dimension.Name);
@@ -506,15 +465,14 @@ Procedure CheckRecordsetChangesOnWrite(Recorder, AdditionalProperties, Cancel) E
 	EndDo;
 	QueryText = StrReplace(QueryText, "{Selection}", SelectionText);
 	
-	
-	// 2. Create query reading data saved before write
+	// 2. Create query reading data saved before write.
 	NestedQuery_BeforeWrite = 
 		"SELECT
 	|		{Selection}
 	|	FROM
 	|		RegisterRecords_{Register}_BeforeWrite AS TableBeforeWrite";
 	
-	// Add to query dimensions and resources of register
+	// Add to query dimensions and resources of register.
 	SelectionText = "TableBeforeWrite.Period AS Period";
 	For Each Dimension In AdditionalProperties.Metadata.Dimensions Do
 		DimensionText = StrReplace("TableBeforeWrite.{Dimension} AS {Dimension}", "{Dimension}", Dimension.Name);
@@ -529,15 +487,14 @@ Procedure CheckRecordsetChangesOnWrite(Recorder, AdditionalProperties, Cancel) E
 	NestedQuery_BeforeWrite = StrReplace(NestedQuery_BeforeWrite, "{Selection}", SelectionText);
 	QueryText = StrReplace(QueryText, "{NestedQuery_BeforeWrite}", NestedQuery_BeforeWrite);
 	
-	
-	// 3. Create query reading actual data produced on write
+	// 3. Create query reading actual data produced on write.
 	NestedQuery_OnWrite = 
 		"SELECT
 	|		{Selection}
 	|	FROM
 	|		AccumulationRegister.{Register} AS TableOnWrite";
 	
- 	// Add to query dimensions and resources of register
+	// Add to query dimensions and resources of register.
 	SelectionText = "TableOnWrite.Period";
 	For Each Dimension In AdditionalProperties.Metadata.Dimensions Do
 		DimensionText = StrReplace("TableOnWrite.{Dimension}", "{Dimension}", Dimension.Name);
@@ -551,9 +508,8 @@ Procedure CheckRecordsetChangesOnWrite(Recorder, AdditionalProperties, Cancel) E
 	EndDo;
 	NestedQuery_OnWrite = StrReplace(NestedQuery_OnWrite, "{Selection}", SelectionText);
 	QueryText = StrReplace(QueryText, "{NestedQuery_OnWrite}", NestedQuery_OnWrite);
-
 	
-	// 4. Complete GroupBy clause
+	// 4. Complete GroupBy clause.
 	SelectionText = "TableDiff.Period";
 	For Each Dimension In AdditionalProperties.Metadata.Dimensions Do
 		DimensionText = StrReplace("TableDiff.{Dimension}", "{Dimension}", Dimension.Name);
@@ -562,7 +518,7 @@ Procedure CheckRecordsetChangesOnWrite(Recorder, AdditionalProperties, Cancel) E
 	EndDo;
 	QueryText = StrReplace(QueryText, "{GroupBy}", SelectionText);
 	
-	// 5. Complete Having clause
+	// 5. Complete Having clause.
 	SelectionText = "";
 	For Each CheckDiff In CheckPostings Do
 		ResourceCheck = StringFunctionsClientServer.SplitStringIntoSubstringArray(CheckDiff);
@@ -576,16 +532,15 @@ Procedure CheckRecordsetChangesOnWrite(Recorder, AdditionalProperties, Cancel) E
 	EndDo;
 	QueryText = StrReplace(QueryText, "{Having}", SelectionText);
 	
-	// 6. Combine final query text
+	// 6. Combine final query text.
 	QueryText = StrReplace(QueryText, "{Register}",  AdditionalProperties.Metadata.Name);
-
 	
-	// 7. Complete and execute query. Result is placed in temporary table
+	// 7. Complete and execute query. Result is placed in temporary table.
 	Query.Text = QueryText;
-	Selection  = Query.ExecuteBatch()[0].Choose();
+	Selection  = Query.ExecuteBatch()[0].Select();
 	Selection.Next();
 	
-	// 8. Add table with changes into additional parameters of recordset
+	// 8. Add table with changes into additional parameters of recordset.
 	AdditionalProperties.Posting.StructTempTablesManager.Insert(StrReplace("RegisterRecords_{Register}_Diff", "{Register}", AdditionalProperties.Metadata.Name), Selection.Count > 0);
 	
 EndProcedure
@@ -596,43 +551,42 @@ EndProcedure
 // Check posting result (non-negative balances and s.o.).
 //
 // Parameters:
-//  AdditionalProperties - Structure of additional object parameters containing required attributes and tables
-//  PostingParameters	 - Structure of object and transaction parameters, inaccessible on the server call to be packed into AdditionalProperties
-//  Cancel               - Flag of transaction cancel
+//  AdditionalProperties - Structure - Additional object parameters containing required attributes and tables.
+//  PostingParameters    - Structure - Object and transaction parameters, inaccessible on the server call to be packed into AdditionalProperties.
+//  Cancel               - Boolean   - Flag of transaction cancel.
 //
 Procedure CheckPostingResults(AdditionalProperties, RegisterRecords, Cancel) Export
 	Var BalanceCheck, CheckBalances, CheckMessages;
-
-	// Skip check if no balance registers are present
+	
+	// Skip check if no balance registers are present.
 	If Not AdditionalProperties.Posting.Property("BalanceCheck", BalanceCheck)
 	   Or BalanceCheck.Count() = 0 Then
 		Return;
 	EndIf;
-
-	// 0. Create query to temporary tables having differences in postings
+	
+	// 0. Create query to temporary tables having differences in postings.
 	Query        = New Query;
 	QueryText    = "";
 	QueryTables  = AdditionalProperties.Posting.StructTempTablesManager;
 	CheckList    = New Array;
-	//DisplayCodes = GeneralFunctionsReusable.FunctionalOptionValue("DisplayCodes");
 	
-	// 1. Create a query for register balances, which document can affect changing it's postings
+	// 1. Create a query for register balances, which document can affect changing it's postings.
 	For Each QueryTable In QueryTables Do
 		
-		// 1.1.Skip service data, tables having no changes, incomplete balances check specification
+		// 1.1.Skip service data, tables having no changes, incomplete balances check specification.
 		TableName       = QueryTable.Key;
 		TableHasChanges = QueryTable.Value;
 		
-		// Skip TempTablesManager itself and tables having no changes
+		// Skip TempTablesManager itself and tables having no changes.
 		If (TableName = "TempTablesManager") Or (Not TableHasChanges) Then
 			Continue;
 		EndIf;
 		
-		// Define register for balance check by table name
+		// Define register for balance check by table name.
 		CheckRegister = StrReplace(TableName,     "RegisterRecords_", ""); // Table name has following format:
 		CheckRegister = StrReplace(CheckRegister, "_Diff",            ""); // RegisterRecords_{Register}_Diff
 		
-		// Skip checking if resources for balance checking are not defined
+		// Skip checking if resources for balance checking are not defined.
 		If    Not BalanceCheck[CheckRegister].Property("CheckBalances", CheckBalances)
 		   Or Not BalanceCheck[CheckRegister].Property("CheckMessages", CheckMessages)
 		   Or CheckBalances.Count() <> CheckMessages.Count()
@@ -641,14 +595,13 @@ Procedure CheckPostingResults(AdditionalProperties, RegisterRecords, Cancel) Exp
 			Continue;
 		EndIf;
 		
-		
-		// 1.2. Add changed register in checklist 
+		// 1.2. Add changed register in checklist.
 		CheckList.Add(CheckRegister);
 		
-		// 1.3. Request register structure from metadata
+		// 1.3. Request register structure from metadata.
 		RegisterMetadata = RegisterRecords[CheckRegister].AdditionalProperties.Metadata;
 		
-		// 1.4. Create query template for balnces of selected register
+		// 1.4. Create query template for balnces of selected register.
 		QueryText = QueryText +
 		"SELECT
 		|	{Selection}
@@ -660,7 +613,7 @@ Procedure CheckPostingResults(AdditionalProperties, RegisterRecords, Cancel) Exp
 		|WHERE
 		|	{Condition}";
 		
-		// 1.5. Add to query dimensions and resources of register
+		// 1.5. Add to query dimensions and resources of register.
 		SelectionText = "";
 		For Each Dimension In RegisterMetadata.Dimensions Do
 			DimensionText = StrReplace("Balances.{Dimension} AS {Dimension}", "{Dimension}", Dimension.Name);
@@ -674,13 +627,12 @@ Procedure CheckPostingResults(AdditionalProperties, RegisterRecords, Cancel) Exp
 		EndDo;
 		QueryText = StrReplace(QueryText, "{Selection}", SelectionText);
 		
-		
-		// 1.6. Complete Filter by differences found during posting
+		// 1.6. Complete Filter by differences found during posting.
 		FilterText =
 				"({Selection}) IN
 		|			({NestedQuery})";
 		
-		// Add dimensions of register to balances filter
+		// Add dimensions of register to balances filter.
 		SelectionText = "";
 		For Each Dimension In RegisterMetadata.Dimensions Do
 			DimensionText = Dimension.Name;
@@ -688,14 +640,14 @@ Procedure CheckPostingResults(AdditionalProperties, RegisterRecords, Cancel) Exp
 		EndDo;
 		FilterText = StrReplace(FilterText, "{Selection}", SelectionText);
 		
-		// Add nested query to differences table in temporary tables manager
+		// Add nested query to differences table in temporary tables manager.
 		NestedQuery = 
 					"SELECT
 		|				{Selection}
 		|			FROM
 		|				RegisterRecords_{Register}_Diff AS TableDiff";
 		
-		// Add to query dimensions of register
+		// Add to query dimensions of register.
 		SelectionText = "";
 		For Each Dimension In RegisterMetadata.Dimensions Do
 			DimensionText = StrReplace("TableDiff.{Dimension}", "{Dimension}", Dimension.Name);
@@ -706,8 +658,7 @@ Procedure CheckPostingResults(AdditionalProperties, RegisterRecords, Cancel) Exp
 		FilterText  = StrReplace(FilterText,  "{NestedQuery}", NestedQuery);
 		QueryText   = StrReplace(QueryText,   "{Filter}",      FilterText);
 		
-		
-		// 1.7. Complete Where clause
+		// 1.7. Complete Where clause.
 		SelectionText = "";
 		For Each CheckBalance In CheckBalances Do
 			ResourceCheck = StringFunctionsClientServer.SplitStringIntoSubstringArray(CheckBalance);
@@ -721,59 +672,55 @@ Procedure CheckPostingResults(AdditionalProperties, RegisterRecords, Cancel) Exp
 		EndDo;
 		QueryText = StrReplace(QueryText, "{Condition}", SelectionText);
 		
-		
-		// 1.8. Combine query text for a selected register
+		// 1.8. Combine query text for a selected register.
 		QueryText = StrReplace(QueryText, "{Register}",  CheckRegister);
 		
-		// 1.9. Add delimiter to a query
+		// 1.9. Add delimiter to a query.
 		QueryText = QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
-		
 	EndDo;
-		
-	// 2. Skip check if no changes in balance registers are found
+	
+	// 2. Skip check if no changes in balance registers are found.
 	If CheckList.Count() = 0 Then
 		Return;
 	EndIf;
 	
-	
-	// 3. Execute batch query
+	// 3. Execute batch query.
 	Query.TempTablesManager = QueryTables.TempTablesManager;
 	Query.Text  = QueryText;
 	QueryResult = Query.ExecuteBatch();
-
 	
-	// 4. Create messages for user about insufficient balances
+	// 4. Create messages for user about insufficient balances.
 	SubQuery = Undefined;
 	Errors   = 0;
 	I = -1;
 	For Each Result In QueryResult Do
 		I = I + 1;
 		
-		// 4.1. Skip empty tables (positive balanced registers)
-		Selection = Result.Choose();
+		// 4.1. Skip empty tables (positive balanced registers).
+		Selection = Result.Select();
 		If Not Selection.Next() Or Selection.Count = 0 Then
 			Continue;
 		EndIf;
-
-		// 4.2. Error found - create individual massages for each register
+		
+		// 4.2. Error found - create individual massages for each register.
 		CheckRegister    = CheckList[I];
 		RegisterMetadata = RegisterRecords[CheckRegister].AdditionalProperties.Metadata;
 		
 		// 4.3. Create value table with unique combination of register dimension
-		//     (to reduce count of possible errors about the same dimensions)
+		//     (to reduce count of possible errors about the same dimensions).
 		SearchRec = New Structure;
 		ReportedCombinations = New ValueTable;
 		For Each Dimension In RegisterMetadata.Dimensions Do
 			ReportedCombinations.Columns.Add(Dimension.Name);
 		EndDo;
-			
-		// 4.4. Create new query for detection, which trigger alarmed
+		
+		// 4.4. Create new query for detection, which trigger alarmed.
 		If SubQuery = Undefined Then
 			SubQuery = New Query;
 			SubQuery.TempTablesManager = QueryTables.TempTablesManager;
 		EndIf;
 		
-		// 4.5. Request data from temporary table
+		// 4.5. Request data from temporary table.
 		QueryText =
 		"SELECT
 		|	*
@@ -782,12 +729,12 @@ Procedure CheckPostingResults(AdditionalProperties, RegisterRecords, Cancel) Exp
 		|WHERE
 		|	{Condition}";
 		
-		// 4.6. Test each condition and create individual message
+		// 4.6. Test each condition and create individual message.
 		J = -1;
 		For Each CheckBalance In CheckBalances Do
 			J = J + 1;
 			
-			// 4.6.1. Select condition to check from list of conditions
+			// 4.6.1. Select condition to check from list of conditions.
 			ResourceCheck  = StringFunctionsClientServer.SplitStringIntoSubstringArray(CheckBalance);
 			ResourceText   = StrReplace("{Resource} {Sign} {Value}", "{Resource}", ResourceCheck[0]);
 			ResourceText   = StrReplace(ResourceText, "{Sign}", ResourceCheck[1]);
@@ -795,47 +742,47 @@ Procedure CheckPostingResults(AdditionalProperties, RegisterRecords, Cancel) Exp
 			ResourceText   = StrReplace(ResourceText, "{Table}", "Table");
 			ResourceText   = StrReplace(ResourceText, "{Balance}", "");
 			
-			// 4.6.2. Create subquery based on query template
+			// 4.6.2. Create subquery based on query template.
 			SubQueryText   = StrReplace(QueryText,    "{Condition}", ResourceText);
 			SubQueryText   = StrReplace(SubQueryText, "{Register}",  CheckRegister);
 			
-			// 4.6.3. Execute query to a temporary table and fill appropriate message with correct data
+			// 4.6.3. Execute query to a temporary table and fill appropriate message with correct data.
 			SubQuery.Text  = SubQueryText;
 			SubQueryResult = SubQuery.Execute();
 			
-			// 4.6.4. Skip unused conditions
+			// 4.6.4. Skip unused conditions.
 			If SubQueryResult.IsEmpty() Then
 				Continue;
 			EndIf;
-			Selection = SubQueryResult.Choose();
+			Selection = SubQueryResult.Select();
 			
-			// 4.6.5. Get formatted message template
+			// 4.6.5. Get formatted message template.
 			MessageTemplate = CheckMessages[J];
-				
-			// 4.6.6. Cycle throu found errors and fill appropriate messages
+			
+			// 4.6.6. Cycle through found errors and fill appropriate messages.
 			While Selection.Next() Do
 				
-				// 4.6.6.1. Skip already reported errors (by dimensions combinations)
+				// 4.6.6.1. Skip already reported errors (by dimensions combinations).
 				For Each Dimension In RegisterMetadata.Dimensions Do
 					SearchRec.Insert(Dimension.Name, Selection[Dimension.Name]);
 				EndDo;
 				If ReportedCombinations.FindRows(SearchRec).Count() > 0 Then
-					// Skip message
+					// Skip message.
 					Continue;
 				Else
-					// Add combination to cache
+					// Add combination to cache.
 					ReportedCombination = ReportedCombinations.Add();
 					FillPropertyValues(ReportedCombination, SearchRec);
 				EndIf;
 				
-				// 4.6.6.2. Create message text
+				// 4.6.6.2. Create message text.
 				MessageText = MessageTemplate;
 				For Each Dimension In RegisterMetadata.Dimensions Do
 					
-					// Skip unused presentations
+					// Skip unused presentations.
 					If Find(MessageText, "{"+Dimension.Name+"}") = 0 Then Continue; EndIf;
 					
-					// Convert value to it's presentation
+					// Convert value to it's presentation.
 					Value = Selection[Dimension.Name];
 					If TypeOf(Value) = Type("CatalogRef.Companies") Then
 						Presentation = TrimAll(Value.Code) + " " + TrimAll(Value.Description);
@@ -847,178 +794,61 @@ Procedure CheckPostingResults(AdditionalProperties, RegisterRecords, Cancel) Exp
 						Presentation = TrimAll(Value);
 					EndIf;
 					
-					// Replace template with presentation of selection value
+					// Replace template with presentation of selection value.
 					MessageText  = StrReplace(MessageText, "{"+Dimension.Name+"}", Presentation);
-					
-				EndDo;
-				For Each Resource In RegisterMetadata.Resources Do
-					
-					// Skip unused presentations
-					If Find(MessageText, "{"+Resource.Name+"}") = 0 Then Continue; EndIf;
-					
-					// Replace template with selection value
-					MessageText  = StrReplace(MessageText, "{"+Resource.Name+"}",  TrimAll(Selection[Resource.Name]));
-					
 				EndDo;
 				
-				// 4.6.6.3. Transfer message to user
+				For Each Resource In RegisterMetadata.Resources Do
+					
+					// Skip unused presentations.
+					If Find(MessageText, "{"+Resource.Name+"}") = 0 Then Continue; EndIf;
+					
+					// Replace resource template with unar minus with negative selection value.
+					MessageText  = StrReplace(MessageText, "-{"+Resource.Name+"}", TrimAll(-Selection[Resource.Name]));
+					
+					// Replace resource template with selection value.
+					MessageText  = StrReplace(MessageText, "{"+Resource.Name+"}", TrimAll(Selection[Resource.Name]));
+				EndDo;
+				
+				// 4.6.6.3. Transfer message to user.
 				Errors = Errors + 1;
-				If Errors <= 10 Then // There is no need to inform user more then 10 times
+				If Errors <= 10 Then // There is no need to inform user more then 10 times.
 					CommonUseClientServer.MessageToUser(MessageText, AdditionalProperties.Ref,,, Cancel);
 				EndIf;
 			EndDo;
 		EndDo;
 	EndDo;
-	// 4.6.7. Inform user about remaining errors	
+	
+	// 4.6.7. Inform user about remaining errors.
 	If Errors > 10 Then
 		MessageText = NStr("en = 'There are also %1 error(s) found'");
 		MessageText = StringFunctionsClientServer.SubstituteParametersInString(MessageText, Format(Errors-10, "NFD=0; NG=0"));
 		CommonUseClientServer.MessageToUser(MessageText, AdditionalProperties.Ref,,, Cancel);
 	EndIf;
-
 	
-	// 5. Create message about common status of operation
+	// 5. Create message about common status of operation.
 	If Cancel Then
 		If AdditionalProperties.Posting.WriteMode = DocumentWriteMode.Posting Then
 			MessageText = NStr("en = 'Posting aborted'");
 		ElsIf AdditionalProperties.Posting.WriteMode = DocumentWriteMode.UndoPosting Then
 			MessageText = NStr("en = 'Posting can''t be canceled'");
 		EndIf;
-
 		CommonUseClientServer.MessageToUser(MessageText, AdditionalProperties.Ref);
 	EndIf;
-
+	
 EndProcedure
-
-// Permits writing of the document 
-// if WriteParameters are correct
-Function DocumentWritePermitted(WriteParameters) Export
-	If Not WriteParameters.Property("PeriodClosingPassword") Then
-		return False;
-	EndIf;
-	If (TypeOf(WriteParameters.PeriodClosingPassword) <> Type("String")) Then
-		return False;
-	EndIf;
-	SetPrivilegedMode(True);
-	CurrentPassword = Constants.PeriodClosingPassword.Get();
-	CurrentOption	= Constants.PeriodClosingOption.Get();
-	SetPrivilegedMode(False);
-	If (CurrentOption = Enums.PeriodClosingOptions.WarnAndRequirePassword) Then
-		If TrimAll(CurrentPassword) = TrimAll(WriteParameters.PeriodClosingPassword) Then
-			return True;
-		Else
-			return False;
-		EndIf;
-	Else
-		If WriteParameters.PeriodClosingPassword = "Yes" Then
-			return True;
-		Else
-			return False;
-		EndIf;
-	EndIf;
-EndFunction
-
-
-// Defines whether the document is required to be excluded from bank rec. document
-// Should be excluded in the following cases:
-//  1. amount differs from what is in the database
-//  2. bank account differs from what is in the database
-//  3. date exceeds the period of bank reconciliation document
-// Parameters:
-//  Ref - DocumentRef - Document being checked
-//  NewAmount - Number - new amount of the document. 
-//  NewDate - Date - new date of the document
-//  NewAccount - CatalogRef.BankAccounts - new bank account of the document
-//  WriteMode - DocumentWriteMode - current write mode
-//
-Function RequiresExcludingFromBankReconciliation(Val Ref, Val NewAmount, Val NewDate, Val NewAccount, Val WriteMode) Export
-	If WriteMode = DocumentWriteMode.Posting Then
-		SetPrivilegedMode(True);
-		Query = New Query("SELECT
-		                  |	TransactionReconciliation.Document,
-		                  |	TransactionReconciliation.Amount,
-		                  |	TransactionReconciliation.Account
-		                  |INTO ReconciledValues
-		                  |FROM
-		                  |	InformationRegister.TransactionReconciliation AS TransactionReconciliation
-		                  |WHERE
-		                  |	TransactionReconciliation.Document = &Ref
-		                  |	AND TransactionReconciliation.Reconciled = TRUE
-		                  |;
-		                  |
-		                  |////////////////////////////////////////////////////////////////////////////////
-		                  |SELECT
-		                  |	ReconciledValues.Document,
-		                  |	ReconciledValues.Amount,
-		                  |	BankReconciliationLineItems.Ref.StatementToDate,
-		                  |	ReconciledValues.Account,
-		                  |	CASE
-		                  |		WHEN ReconciledValues.Amount <> &NewAmount
-		                  |				OR ENDOFPERIOD(BankReconciliationLineItems.Ref.StatementToDate, DAY) < &NewDate
-		                  |				OR ReconciledValues.Account <> &NewAccount
-		                  |			THEN TRUE
-		                  |		ELSE FALSE
-		                  |	END AS RequiresExcluding
-		                  |FROM
-		                  |	ReconciledValues AS ReconciledValues
-		                  |		INNER JOIN Document.BankReconciliation.LineItems AS BankReconciliationLineItems
-		                  |		ON ReconciledValues.Document = BankReconciliationLineItems.Transaction
-		                  |			AND (BankReconciliationLineItems.Cleared = TRUE)
-		                  |			AND (BankReconciliationLineItems.Ref.Posted = TRUE)
-		                  |			AND (BankReconciliationLineItems.Ref.DeletionMark = FALSE)");
-		Query.SetParameter("Ref", Ref);
-		Query.SetParameter("NewAmount", NewAmount);
-		Query.SetParameter("NewDate", NewDate);
-		Query.SetParameter("NewAccount", NewAccount);
-		
-	    Selection = Query.Execute();
-	
-		SetPrivilegedMode(False);
-	
-		If NOT Selection.IsEmpty() Then
-			Sel = Selection.Select();
-			Sel.Next();
-			return Sel.RequiresExcluding;
-		Else
-			return False;
-		EndIf;	
-	ElsIf WriteMode = DocumentWriteMode.UndoPosting Then
-		SetPrivilegedMode(True);
-		
-		Query = New Query("SELECT
-					  |	TransactionReconciliation.Document
-					  |FROM
-					  |	InformationRegister.TransactionReconciliation AS TransactionReconciliation
-					  |WHERE
-					  |	TransactionReconciliation.Document = &Ref
-					  |	AND TransactionReconciliation.Reconciled = TRUE");
-		Query.SetParameter("Ref", Ref);
-		
-		Selection = Query.Execute();
-		
-		SetPrivilegedMode(False);
-		
-		If NOT Selection.IsEmpty() Then
-			return True;
-		Else
-			return False;
-		EndIf;
-	Else
-		return False;		
-	EndIf;
-EndFunction
 
 //------------------------------------------------------------------------------
 // Service query functions
 
-// Returns text delimiter (comment string) for visual splitting of batch query
-// 
-// Return value:
-//  String, containing batch query delimiter
+// Returns text delimiter (comment string) for visual splitting of batch query.
+//
+// Returns:
+//  String - Batch query delimiter.
 //
 Function GetDelimeterOfBatchQuery() Export
-
-	// Create delimiter text
+	
+	// Create delimiter text.
 	DelimiterText =
 	";
 	|
@@ -1026,89 +856,89 @@ Function GetDelimeterOfBatchQuery() Export
 	|";
 	
 	Return DelimiterText;
-
+	
 EndFunction
 
 // Converts linear query result to structure.
-// Structure contains keys from column names, and values from first line of query result
-// 
-// Parameters:
-//  QueryResult - linear query result to be converted to structure
+// Structure contains keys from column names, and values from first line of query result.
 //
-// Return value:
-//  Structure, converted from query result
+// Parameters:
+//  QueryResult - QueryResult - Linear query result to be converted to structure.
+//
+// Returns:
+//  Structure   - Query data converted from query result.
 //
 Function GetStructureFromQueryResult(QueryResult) Export
-
-	// Structure of returned parameters
+	
+	// Structure of returned parameters.
 	ParametersStructure = New Structure;
 	
-	// Fill structure with query values
-	Selection = QueryResult.Choose();
+	// Fill structure with query values.
+	Selection = QueryResult.Select();
 	Selection.Next();
 	For Each Column In QueryResult.Columns Do
 		ParametersStructure.Insert(Column.Name, Selection[Column.Name]);
 	EndDo;
-
-	// Return filled structure
-    Return ParametersStructure;
-
+	
+	// Return filled structure.
+	Return ParametersStructure;
+	
 EndFunction
 
-// Returns content of temporary table in particular tables manager
-// Used for debugging of posting procedures
+// Returns content of temporary table in particular tables manager.
+// Used for debugging of posting procedures.
 //
 // Parameters:
-//  TempTablesManager - Temporary tables manager (storage of queried data)
-//  TempTableName     - String: Name of temporary table in a manager
+//  TempTablesManager - TempTablesManager - Temporary tables manager (storage of queried data).
+//  TempTableName     - String            - Name of required temporary table in a manager.
 //
-// Return value:
-//  Value table, containing requested temporary table from manager
+// Returns:
+//  ValueTable - Containing requested temporary table from manager.
 //
 Function GetTemporaryTable(TempTablesManager, TempTableName) Export
-
-	// Query full content of temporary table by it's name in a manager
+	
+	// Query full content of temporary table by it's name in a manager.
 	QueryText = 
 	"SELECT
 	|	*
 	|FROM
 	|	{TempTableName}";
 	
-	// Assign parameters to query 
+	// Assign parameters to query.
 	Query = New Query;
 	Query.Text = StrReplace(QueryText, "{TempTableName}", TempTableName);
 	Query.TempTablesManager = TempTablesManager;
 	
-	// Execute query and return the table to user
+	// Execute query and return the table to user.
 	Return Query.Execute().Unload();
 	
 EndFunction
 
-// Puts value table into temporary tables manager to access it in batch query
-// If TempTablesManager is omitted then new TempTablesManager will be created
+// Puts value table into temporary tables manager to access it in batch query.
+// If TempTablesManager is omitted then new TempTablesManager will be created.
 //
 // Parameters:
-//  TempTableData     - Unloaded value table data
-//  TempTableName     - String: Name of temporary table in a manager
-//  TempTablesManager - Temporary tables manager (to put value table into)
+//  TempTableData     - ValueTable        - Unloaded value table data.
+//  TempTableName     - String            - Name of temporary table in a manager.
+//  TempTablesManager - TempTablesManager - Temporary tables manager (to put value table into).
 //
-// Return value:
-//  TempTablesManager, containing requested temporary table from value table
+// Returns:
+//  TempTablesManager - New TempTablesManager containing requested temporary table (if not supplied).
 //
 Function PutTemporaryTable(TempTableData, TempTableName, TempTablesManager = Undefined) Export
 	
-	// Create a query to put value table
+	// Create a query to put value table.
 	Query = New Query;
 	
-	// Assign TempTablesManager to a query
+	// Assign TempTablesManager to a query.
 	If TempTablesManager = Undefined Then
 		Query.TempTablesManager = New TempTablesManager;
 	Else
 		Query.TempTablesManager = TempTablesManager;
 	EndIf;
 	
-	// Query full content of value table and put it by it's name in a manager
-	QueryText = 
+	// Query full content of value table and put it by it's name in a manager.
+	QueryText =
 	"SELECT
 	|	*
 	|INTO
@@ -1119,73 +949,67 @@ Function PutTemporaryTable(TempTableData, TempTableName, TempTablesManager = Und
 	Query.SetParameter(TempTableName, TempTableData);
 	Query.ExecuteBatch();
 	
-	// If temporary tables manager is not supplied - will be returnd as value
+	// If temporary tables manager is not supplied - will be returnd as value.
 	If TempTablesManager = Undefined Then
 		Return Query.TempTablesManager;
 	Else
-		// Protection against lost temporary tables
+		// Protection against lost temporary tables.
 		Return Undefined;
 	EndIf;
 	
 EndFunction
 
-////////////////////////////////////////////////////////////////////////////////
-// Document posting: Server call
-//------------------------------------------------------------------------------
-// Available on:
-// - Server
-// - Server call from client
-//
+#EndRegion
 
 ////////////////////////////////////////////////////////////////////////////////
-// INTERNAL PRIVATE FUNCTIONS
+#Region PRIVATE_IMPLEMENTATION
 
 // Creates array of register names, where the document has recorded it's bookings.
-// 
-// Parameters:
-// 	DocumentRef 	- DocumentObject for listing of register names
-// 	RegisterRecords - Metadata of document, containing list of registers, where bookings of document can be recorded
-//  ArrayOfExcludedRegisters - Array of registers to skip checking of register records
 //
-// Value returned:
-// 	Array of strings - names of registers
+// Parameters:
+//  DocumentRef     - DocumentRef              - Reference for listing of register names.
+//  RegisterRecords - MetadataObjectCollection - Metadata of document, containing list of registers, where bookings of document can be recorded.
+//  ArrayOfExcludedRegisters           - Array - List of registers to skip checking of register records (strings).
+//
+// Returns:
+//  Array - Names of registers (strings).
 //
 Function GetArrayOfRegistersHavingDocumentPostings(DocumentRef, RegisterRecords, ArrayOfExcludedRegisters = Undefined)
-
-	// Create a query and set predefined filter by document
+	
+	// Create a query and set predefined filter by document.
 	Query = New Query;
 	Query.SetParameter("Recorder", DocumentRef);
-
-	// Result: Array of registers names
+	
+	// Result: Array of registers names.
 	Result = New Array;
 	MaxTablesInQuery = 256;
-
-	// Initialize counters
+	
+	// Initialize counters.
 	CounterTables = 0;
 	CounterRecordings = 0;
 	TotalRecordings = RegisterRecords.Count();
 	QueryText = "";
 	
-	// Cycle thru registers available for document
+	// Cycle through registers available for document.
 	For Each RegisterRecord In RegisterRecords Do
-		// Update iterator
+		// Update iterator.
 		CounterRecordings = CounterRecordings + 1;
-
-		// Check skipping of register
+		
+		// Check skipping of register.
 		SkipRegister = ArrayOfExcludedRegisters <> Undefined
-				   And ArrayOfExcludedRegisters.Find(RegisterRecord.Name) <> Undefined;
-				   
-		// Add register records to query text		   
+		           And ArrayOfExcludedRegisters.Find(RegisterRecord.Name) <> Undefined;
+		
+		// Add register records to query text.
 		If Not SkipRegister Then
-
-			// Add UNION to query
+			
+			// Add UNION to query.
 			If CounterTables > 0 Then
 				QueryText = QueryText + "
 				|UNION ALL
 				|";
 			EndIf;
-
-			// Add register name to query
+			
+			// Add register name to query.
 			CounterTables = CounterTables + 1;
 			QueryText = QueryText + 
 			"
@@ -1197,98 +1021,30 @@ Function GetArrayOfRegistersHavingDocumentPostings(DocumentRef, RegisterRecords,
 			|WHERE Recorder = &Recorder
 			|";
 		EndIf;
-
-		// Execute query by using nopt more then MaxTablesInQuery tables in the same query
+		
+		// Execute query by using not more then MaxTablesInQuery tables in the same query.
 		If CounterTables = MaxTablesInQuery Or CounterRecordings = TotalRecordings Then
-            // Apply assembled query text
+			// Apply assembled query text.
 			Query.Text = QueryText;
 			QueryText = "";
 			CounterTables = 0;
-
-			// Add query result to an array
+			
+			// Add query result to an array.
 			If Result.Count() = 0 Then
-				// First query - unload query result to an array
+				// First query - unload query result to an array.
 				Result = Query.Execute().Unload().UnloadColumn("RegisterName");
 			Else
-				// Add query result to an array
-				Selection = Query.Execute().Choose();
+				// Add query result to an array.
+				Selection = Query.Execute().Select();
 				While Selection.Next() Do
 					Result.Add(Selection.RegisterName);
 				EndDo;
 			EndIf;
 		EndIf;
 	EndDo;
-
-	// Return formed result
+	
+	// Return registers list.
 	Return Result;
 EndFunction
 
-//------------------------------------------------------------------------------
-// Closing the books 
-// Defines whether the document falls in the closed period
-Function DocumentPeriodIsClosed(DocumentReference, Date) Export
-	SetPrivilegedMode(True);
-	If DocumentReference.IsEmpty() Then
-		CurrentClosingDate = Constants.PeriodClosingDate.Get();
-		SetPrivilegedMode(False);
-		If Date > EndOfDay(CurrentClosingDate) Then
-			return False;
-		Else
-			return True;
-		EndIf;
-	Else
-		Request = New Query("SELECT
-		                    |	Document.Date AS DocumentDate,
-		                    |	PeriodClosingDate.Value AS PeriodClosingDate
-		                    |FROM
-		                    |	Document." + TrimAll(DocumentReference.Metadata().Name) + " AS Document,
-		                    |	Constant.PeriodClosingDate AS PeriodClosingDate
-		                    |WHERE
-		                    |	Document.Ref = &Ref");
-		Request.SetParameter("Ref", DocumentReference);
-		Res = Request.Execute().Choose();
-		If Res.Next() Then
-			If (Date > EndOfDay(Res.PeriodClosingDate)) And (Res.DocumentDate > EndOfDay(Res.PeriodClosingDate)) Then
-				return False;
-			Else
-				return True;
-			EndIf;
-		Else
-			return True;
-		EndIf;
-		SetPrivilegedMode(False);
-	EndIf;
-EndFunction
-
-//Event subscribtion handler. Prevents document deletion in closed period
-Procedure ClosedPeriodDeletionProtectionBeforeDelete(Source, Cancel) Export
-	//Period closing
-	If Source.DataExchange.Load Then
-		return;
-	EndIf;
-	If DocumentPosting.DocumentPeriodIsClosed(Source.Ref, Source.Date) Then
-		MessageText = String(Source) + NStr("en = ': This document''s date is prior to your company''s closing date. Delete failed!'");
-		CommonUseClientServer.MessageToUser(MessageText,,,,Cancel);
-		return;
-	EndIf; 
-EndProcedure
-
-//Event subscribtion handler. Prevents changes to the document in closed period
-Procedure ClosedPeriodBeforeWriteBeforeWrite(Source, Cancel, WriteMode, PostingMode) Export
-	//Period closing
-	If Source.DataExchange.Load Then
-		return;
-	EndIf;
-	If DocumentPosting.DocumentPeriodIsClosed(Source.Ref, Source.Date) Then
-		If Source.AdditionalProperties.Property("PermitWrite") Then
-			PermitWrite = Source.AdditionalProperties.PermitWrite;
-		Else
-			PermitWrite = False;
-		EndIf;
-		If Not PermitWrite Then
-			MessageText = String(Source) + NStr("en = ': This document''s date is prior to your company''s closing date. The document could not be written!'");
-			CommonUseClientServer.MessageToUser(MessageText,,,,Cancel);
-			return;
-		EndIf;
-	EndIf;
-EndProcedure
+#EndRegion

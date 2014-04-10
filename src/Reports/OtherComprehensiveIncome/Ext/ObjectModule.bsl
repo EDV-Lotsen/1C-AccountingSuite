@@ -49,7 +49,7 @@
 	                  |	ChartOfAccounts.AccountType");
 	Query.Parameters.Insert("StartDate", StartDate);
 	Query.Parameters.Insert("EndDate", EndDate);
-	Selection = Query.Execute().Choose();
+	Selection = Query.Execute().Select();
 	
 	MainSection = Template.GetArea("MainSection");
 	

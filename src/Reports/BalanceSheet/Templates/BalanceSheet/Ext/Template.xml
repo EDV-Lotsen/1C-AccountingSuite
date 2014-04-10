@@ -18,7 +18,7 @@
 				<dcscom:accountTypeExpression>Account.Type</dcscom:accountTypeExpression>
 				<dcscom:ignoreNullValues>true</dcscom:ignoreNullValues>
 			</role>
-			<presentationExpression>Account.Description</presentationExpression>
+			<presentationExpression>Account.Code</presentationExpression>
 		</field>
 		<field xsi:type="DataSetFieldField">
 			<dataPath>Currency</dataPath>
@@ -214,19 +214,63 @@
 				</dcscor:item>
 			</appearance>
 		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>AmountRCTurnover</dataPath>
+			<field>AmountRCTurnover</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Turnover RC</v8:content>
+				</v8:item>
+			</title>
+			<useRestriction>
+				<group>true</group>
+			</useRestriction>
+			<appearance>
+				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+					<dcscor:parameter>Format</dcscor:parameter>
+					<dcscor:value xsi:type="xs:string">NFD=2; NZ=0.00; NG=3,0</dcscor:value>
+				</dcscor:item>
+			</appearance>
+		</field>
 		<dataSource>DataSource1</dataSource>
-		<query>///////////////////////////////////////////////////////////////////////////
-// Define list of mandatory balance divisions and sections
- 		  SELECT "Assets" AS Division,                 "Current Assets" AS Section, 1 AS SectionOrder INTO BalanceSections
-UNION ALL SELECT "Assets",                             "Noncurrent Assets",         2
-UNION ALL SELECT "Liabilities and Stockholder Equity", "Current Liabilities",       3
-UNION ALL SELECT "Liabilities and Stockholder Equity", "Long Term Liabilities",     4
-UNION ALL SELECT "Liabilities and Stockholder Equity", "Stockholder Equity",        5;
+		<query>SELECT
+	"Assets" AS Division,
+	"Current Assets" AS Section,
+	1 AS SectionOrder
+INTO BalanceSections
 
-///////////////////////////////////////////////////////////////////////////
-// Select balances by the balance sections for ends of selected periods
+UNION ALL
+
+SELECT
+	"Assets",
+	"Noncurrent Assets",
+	2
+
+UNION ALL
+
+SELECT
+	"Liabilities and Stockholder Equity",
+	"Current Liabilities",
+	3
+
+UNION ALL
+
+SELECT
+	"Liabilities and Stockholder Equity",
+	"Long Term Liabilities",
+	4
+
+UNION ALL
+
+SELECT
+	"Liabilities and Stockholder Equity",
+	"Stockholder Equity",
+	5
+;
+
+////////////////////////////////////////////////////////////////////////////////
 SELECT ALLOWED
-	//Companies.Ref AS OurCompany,
 	SystemTitle.Value AS OurCompany,
 	BalanceSections.Division,
 	BalanceSections.Section,
@@ -238,60 +282,58 @@ SELECT ALLOWED
 	GeneralJournalBalanceAndTurnovers.MonthPeriod AS MonthPeriod,
 	GeneralJournalBalanceAndTurnovers.QuarterPeriod AS QuarterPeriod,
 	GeneralJournalBalanceAndTurnovers.YearPeriod AS YearPeriod,
-	CASE WHEN (NOT GeneralJournalBalanceAndTurnovers.Account IS NULL)
-		THEN GeneralJournalBalanceAndTurnovers.AmountRCClosingBalance
-		ELSE 0 END AS AmountRCBalance,
-	CASE WHEN (NOT GeneralJournalBalanceAndTurnovers.Account IS NULL)
-		THEN GeneralJournalBalanceAndTurnovers.AmountRCOpeningBalance
-		ELSE 0 END AS AmountRCOpeningBalance
-	{SELECT
-		AccountType.*,
-		Account.*,
-		YearPeriod,
-		QuarterPeriod,
-		MonthPeriod,
-		WeekPeriod,
-		DayPeriod}
+	CASE
+		WHEN NOT GeneralJournalBalanceAndTurnovers.Account IS NULL 
+			THEN GeneralJournalBalanceAndTurnovers.AmountRCClosingBalance
+		ELSE 0
+	END AS AmountRCBalance,
+	CASE
+		WHEN NOT GeneralJournalBalanceAndTurnovers.Account IS NULL 
+			THEN GeneralJournalBalanceAndTurnovers.AmountRCOpeningBalance
+		ELSE 0
+	END AS AmountRCOpeningBalance,
+	CASE
+		WHEN NOT GeneralJournalBalanceAndTurnovers.Account IS NULL 
+			THEN GeneralJournalBalanceAndTurnovers.AmountRCTurnover
+		ELSE 0
+	END AS AmountRCTurnover
+{SELECT
+	AccountType.*,
+	Account.*,
+	YearPeriod,
+	QuarterPeriod,
+	MonthPeriod,
+	WeekPeriod,
+	DayPeriod}
 FROM
 	BalanceSections AS BalanceSections
-		LEFT JOIN AccountingRegister.GeneralJournal.BalanceAndTurnovers(,, Auto, RegisterRecordsAndPeriodBoundaries,,,) AS GeneralJournalBalanceAndTurnovers
-			ON // Define balance sections for all of 
-			CASE WHEN GeneralJournalBalanceAndTurnovers.Account.AccountType IN
-			(VALUE(Enum.AccountTypes.Bank),
-			 VALUE(Enum.AccountTypes.Inventory),
-			 VALUE(Enum.AccountTypes.AccountsReceivable),
-			 VALUE(Enum.AccountTypes.OtherCurrentAsset)) THEN "Current Assets"
-			WHEN GeneralJournalBalanceAndTurnovers.Account.AccountType IN
-			(VALUE(Enum.AccountTypes.FixedAsset),
-			 VALUE(Enum.AccountTypes.AccumulatedDepreciation),
-			 VALUE(Enum.AccountTypes.OtherNoncurrentAsset)) THEN "Noncurrent Assets"
-			WHEN GeneralJournalBalanceAndTurnovers.Account.AccountType IN
-			(VALUE(Enum.AccountTypes.AccountsPayable),
-			 VALUE(Enum.AccountTypes.OtherCurrentLiability)) THEN "Current Liabilities"
-			WHEN GeneralJournalBalanceAndTurnovers.Account.AccountType IN
-			(VALUE(Enum.AccountTypes.LongTermLiability)) THEN "Long Term Liabilities"
-			WHEN GeneralJournalBalanceAndTurnovers.Account.AccountType IN
-			(VALUE(Enum.AccountTypes.Equity)) THEN "Stockholder Equity"
-			// Net Income (accumulated) section in Stockholder Equity
-			WHEN GeneralJournalBalanceAndTurnovers.Account.AccountType IN
-			(VALUE(Enum.AccountTypes.Income),
-			 VALUE(Enum.AccountTypes.CostOfSales),
-			 VALUE(Enum.AccountTypes.Expense),
-			 VALUE(Enum.AccountTypes.OtherIncome),
-			 VALUE(Enum.AccountTypes.OtherExpense)) THEN "Stockholder Equity"
-			ELSE NULL END = BalanceSections.Section,
-			// Our company for a possible multicompany accounting in a future
-			//LEFT JOIN Catalog.Companies AS Companies
-				//ON (Companies.Ref = VALUE(Catalog.Companies.OurCompany))
-		Constant.SystemTitle AS SystemTitle
-	{WHERE
-		GeneralJournalBalanceAndTurnovers.Account.AccountType AS AccountType,
-		GeneralJournalBalanceAndTurnovers.Account AS Account,
-		GeneralJournalBalanceAndTurnovers.YearPeriod AS YearPeriod,
-		GeneralJournalBalanceAndTurnovers.QuarterPeriod AS QuarterPeriod,
-		GeneralJournalBalanceAndTurnovers.MonthPeriod AS MonthPeriod,
-		GeneralJournalBalanceAndTurnovers.WeekPeriod AS WeekPeriod,
-		GeneralJournalBalanceAndTurnovers.DayPeriod AS DayPeriod}</query>
+		LEFT JOIN Constant.SystemTitle AS SystemTitle
+		ON (TRUE)
+		LEFT JOIN AccountingRegister.GeneralJournal.BalanceAndTurnovers(, , Auto, RegisterRecordsAndPeriodBoundaries, , , ) AS GeneralJournalBalanceAndTurnovers
+		ON (CASE
+				WHEN GeneralJournalBalanceAndTurnovers.Account.AccountType IN (VALUE(Enum.AccountTypes.Bank), VALUE(Enum.AccountTypes.Inventory), VALUE(Enum.AccountTypes.AccountsReceivable), VALUE(Enum.AccountTypes.OtherCurrentAsset))
+					THEN "Current Assets"
+				WHEN GeneralJournalBalanceAndTurnovers.Account.AccountType IN (VALUE(Enum.AccountTypes.FixedAsset), VALUE(Enum.AccountTypes.AccumulatedDepreciation), VALUE(Enum.AccountTypes.OtherNoncurrentAsset))
+					THEN "Noncurrent Assets"
+				WHEN GeneralJournalBalanceAndTurnovers.Account.AccountType IN (VALUE(Enum.AccountTypes.AccountsPayable), VALUE(Enum.AccountTypes.OtherCurrentLiability))
+					THEN "Current Liabilities"
+				WHEN GeneralJournalBalanceAndTurnovers.Account.AccountType IN (VALUE(Enum.AccountTypes.LongTermLiability))
+					THEN "Long Term Liabilities"
+				WHEN GeneralJournalBalanceAndTurnovers.Account.AccountType IN (VALUE(Enum.AccountTypes.Equity))
+					THEN "Stockholder Equity"
+				WHEN GeneralJournalBalanceAndTurnovers.Account.AccountType IN (VALUE(Enum.AccountTypes.Income), VALUE(Enum.AccountTypes.CostOfSales), VALUE(Enum.AccountTypes.Expense), VALUE(Enum.AccountTypes.OtherIncome), VALUE(Enum.AccountTypes.OtherExpense), VALUE(Enum.AccountTypes.IncomeTaxExpense))
+						AND GeneralJournalBalanceAndTurnovers.Account.OtherComprehensiveIncome = FALSE
+					THEN "Stockholder Equity"
+				ELSE NULL
+			END = BalanceSections.Section)
+{WHERE
+	GeneralJournalBalanceAndTurnovers.Account.AccountType AS AccountType,
+	GeneralJournalBalanceAndTurnovers.Account AS Account,
+	GeneralJournalBalanceAndTurnovers.YearPeriod AS YearPeriod,
+	GeneralJournalBalanceAndTurnovers.QuarterPeriod AS QuarterPeriod,
+	GeneralJournalBalanceAndTurnovers.MonthPeriod AS MonthPeriod,
+	GeneralJournalBalanceAndTurnovers.WeekPeriod AS WeekPeriod,
+	GeneralJournalBalanceAndTurnovers.DayPeriod AS DayPeriod}</query>
 	</dataSet>
 	<totalField>
 		<dataPath>AmountRCBalance</dataPath>
@@ -300,6 +342,10 @@ FROM
 	<totalField>
 		<dataPath>AmountRCOpeningBalance</dataPath>
 		<expression>Sum(AmountRCOpeningBalance)</expression>
+	</totalField>
+	<totalField>
+		<dataPath>AmountRCTurnover</dataPath>
+		<expression>Sum(AmountRCTurnover)</expression>
 	</totalField>
 	<parameter>
 		<name>BeginOfPeriod</name>
@@ -1192,7 +1238,7 @@ FROM
 		</template>
 		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
 			<dcsat:name>Account</dcsat:name>
-			<dcsat:expression>Account</dcsat:expression>
+			<dcsat:expression>Account.Code</dcsat:expression>
 		</parameter>
 		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
 			<dcsat:name>AmountRCBalance</dcsat:name>
@@ -1200,7 +1246,7 @@ FROM
 		</parameter>
 		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
 			<dcsat:name>AccountPresentation</dcsat:name>
-			<dcsat:expression>Presentation(Account)</dcsat:expression>
+			<dcsat:expression>Account.Description</dcsat:expression>
 		</parameter>
 		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:DetailsAreaTemplateParameter">
 			<dcsat:name>Detail</dcsat:name>
@@ -1788,7 +1834,7 @@ FROM
 		</template>
 		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
 			<dcsat:name>Account</dcsat:name>
-			<dcsat:expression>Account</dcsat:expression>
+			<dcsat:expression>Account.Code</dcsat:expression>
 		</parameter>
 		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:DetailsAreaTemplateParameter">
 			<dcsat:name>Detail</dcsat:name>
@@ -1796,7 +1842,7 @@ FROM
 		</parameter>
 		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
 			<dcsat:name>AccountPresentation</dcsat:name>
-			<dcsat:expression>Presentation(Account)</dcsat:expression>
+			<dcsat:expression>Account.Description</dcsat:expression>
 		</parameter>
 		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
 			<dcsat:name>AmountRCBalance</dcsat:name>
@@ -1836,7 +1882,8 @@ FROM
 						<dcsat:value xsi:type="v8:LocalStringType">
 							<v8:item>
 								<v8:lang>en</v8:lang>
-								<v8:content>NI</v8:content>
+								<v8:content>Retained Earnings
+Net Income</v8:content>
 							</v8:item>
 						</dcsat:value>
 					</dcsat:item>
@@ -1847,7 +1894,7 @@ FROM
 						</dcscor:item>
 						<dcscor:item>
 							<dcscor:parameter>HorizontalAlign</dcscor:parameter>
-							<dcscor:value xsi:type="v8ui:HorizontalAlign">Right</dcscor:value>
+							<dcscor:value xsi:type="v8ui:HorizontalAlign">Left</dcscor:value>
 						</dcscor:item>
 						<dcscor:item>
 							<dcscor:parameter>MinimumWidth</dcscor:parameter>
@@ -1864,14 +1911,6 @@ FROM
 					</dcsat:appearance>
 				</dcsat:tableCell>
 				<dcsat:tableCell>
-					<dcsat:item xsi:type="dcsat:Field">
-						<dcsat:value xsi:type="v8:LocalStringType">
-							<v8:item>
-								<v8:lang>en</v8:lang>
-								<v8:content>Net Income</v8:content>
-							</v8:item>
-						</dcsat:value>
-					</dcsat:item>
 					<dcsat:appearance>
 						<dcscor:item>
 							<dcscor:parameter>MinimumWidth</dcscor:parameter>
@@ -1882,14 +1921,38 @@ FROM
 							<dcscor:value xsi:type="xs:decimal">32</dcscor:value>
 						</dcscor:item>
 						<dcscor:item>
-							<dcscor:parameter>Details</dcscor:parameter>
-							<dcscor:value xsi:type="dcscor:Parameter">Detail</dcscor:value>
+							<dcscor:parameter>HorizontalMerge</dcscor:parameter>
+							<dcscor:value xsi:type="xs:boolean">true</dcscor:value>
 						</dcscor:item>
 					</dcsat:appearance>
 				</dcsat:tableCell>
 				<dcsat:tableCell>
 					<dcsat:item xsi:type="dcsat:Field">
-						<dcsat:value xsi:type="dcscor:Parameter">AmountRCBalance</dcsat:value>
+						<dcsat:value xsi:type="dcscor:Parameter">AmountRCOpeningBalance</dcsat:value>
+						<dcsat:appearance>
+							<dcscor:item>
+								<dcscor:parameter>Format</dcscor:parameter>
+								<dcscor:value xsi:type="xs:string">NFD=2; NZ=0.00; NG=3,0</dcscor:value>
+							</dcscor:item>
+						</dcsat:appearance>
+					</dcsat:item>
+					<dcsat:item xsi:type="dcsat:Field">
+						<dcsat:value xsi:type="v8:LocalStringType">
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>
+</v8:content>
+							</v8:item>
+						</dcsat:value>
+						<dcsat:appearance>
+							<dcscor:item>
+								<dcscor:parameter>Format</dcscor:parameter>
+								<dcscor:value xsi:type="xs:string">NFD=2; NZ=0.00; NG=3,0</dcscor:value>
+							</dcscor:item>
+						</dcsat:appearance>
+					</dcsat:item>
+					<dcsat:item xsi:type="dcsat:Field">
+						<dcsat:value xsi:type="dcscor:Parameter">AmountRCTurnover</dcsat:value>
 						<dcsat:appearance>
 							<dcscor:item>
 								<dcscor:parameter>Format</dcscor:parameter>
@@ -1898,6 +1961,10 @@ FROM
 						</dcsat:appearance>
 					</dcsat:item>
 					<dcsat:appearance>
+						<dcscor:item>
+							<dcscor:parameter>HorizontalAlign</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:HorizontalAlign">Right</dcscor:value>
+						</dcscor:item>
 						<dcscor:item>
 							<dcscor:parameter>MinimumWidth</dcscor:parameter>
 							<dcscor:value xsi:type="xs:decimal">12</dcscor:value>
@@ -1919,8 +1986,12 @@ FROM
 			<dcsat:mainAction>DrillDown</dcsat:mainAction>
 		</parameter>
 		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
-			<dcsat:name>AmountRCBalance</dcsat:name>
-			<dcsat:expression>-AmountRCBalance</dcsat:expression>
+			<dcsat:name>AmountRCOpeningBalance</dcsat:name>
+			<dcsat:expression>ISNULL(-AmountRCOpeningBalance, 0)</dcsat:expression>
+		</parameter>
+		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
+			<dcsat:name>AmountRCTurnover</dcsat:name>
+			<dcsat:expression>ISNULL(-AmountRCTurnover, 0)</dcsat:expression>
 		</parameter>
 	</template>
 	<template>
@@ -2607,11 +2678,11 @@ FROM
 		</parameter>
 		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
 			<dcsat:name>Account</dcsat:name>
-			<dcsat:expression>Account</dcsat:expression>
+			<dcsat:expression>Account.Code</dcsat:expression>
 		</parameter>
 		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
 			<dcsat:name>AccountPresentation</dcsat:name>
-			<dcsat:expression>Presentation(Account)</dcsat:expression>
+			<dcsat:expression>Account.Description</dcsat:expression>
 		</parameter>
 	</template>
 	<template>
@@ -3004,11 +3075,11 @@ FROM
 		</parameter>
 		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
 			<dcsat:name>Account</dcsat:name>
-			<dcsat:expression>Account</dcsat:expression>
+			<dcsat:expression>Account.Code</dcsat:expression>
 		</parameter>
 		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
 			<dcsat:name>AccountPresentation</dcsat:name>
-			<dcsat:expression>Presentation(Account)</dcsat:expression>
+			<dcsat:expression>Account.Description</dcsat:expression>
 		</parameter>
 	</template>
 	<template>
@@ -3797,7 +3868,8 @@ FROM
 						<dcsat:value xsi:type="v8:LocalStringType">
 							<v8:item>
 								<v8:lang>en</v8:lang>
-								<v8:content>NI</v8:content>
+								<v8:content>Retained Earnings
+Net Income</v8:content>
 							</v8:item>
 						</dcsat:value>
 					</dcsat:item>
@@ -3808,7 +3880,7 @@ FROM
 						</dcscor:item>
 						<dcscor:item>
 							<dcscor:parameter>HorizontalAlign</dcscor:parameter>
-							<dcscor:value xsi:type="v8ui:HorizontalAlign">Right</dcscor:value>
+							<dcscor:value xsi:type="v8ui:HorizontalAlign">Left</dcscor:value>
 						</dcscor:item>
 						<dcscor:item>
 							<dcscor:parameter>MinimumWidth</dcscor:parameter>
@@ -3818,21 +3890,9 @@ FROM
 							<dcscor:parameter>MaximumWidth</dcscor:parameter>
 							<dcscor:value xsi:type="xs:decimal">6</dcscor:value>
 						</dcscor:item>
-						<dcscor:item>
-							<dcscor:parameter>Details</dcscor:parameter>
-							<dcscor:value xsi:type="dcscor:Parameter">Detail</dcscor:value>
-						</dcscor:item>
 					</dcsat:appearance>
 				</dcsat:tableCell>
 				<dcsat:tableCell>
-					<dcsat:item xsi:type="dcsat:Field">
-						<dcsat:value xsi:type="v8:LocalStringType">
-							<v8:item>
-								<v8:lang>en</v8:lang>
-								<v8:content>Net Income</v8:content>
-							</v8:item>
-						</dcsat:value>
-					</dcsat:item>
 					<dcsat:appearance>
 						<dcscor:item>
 							<dcscor:parameter>MinimumWidth</dcscor:parameter>
@@ -3843,16 +3903,13 @@ FROM
 							<dcscor:value xsi:type="xs:decimal">32</dcscor:value>
 						</dcscor:item>
 						<dcscor:item>
-							<dcscor:parameter>Details</dcscor:parameter>
-							<dcscor:value xsi:type="dcscor:Parameter">Detail</dcscor:value>
+							<dcscor:parameter>HorizontalMerge</dcscor:parameter>
+							<dcscor:value xsi:type="xs:boolean">true</dcscor:value>
 						</dcscor:item>
 					</dcsat:appearance>
 				</dcsat:tableCell>
 			</dcsat:item>
 		</template>
-		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:DetailsAreaTemplateParameter">
-			<dcsat:name>Detail</dcsat:name>
-		</parameter>
 	</template>
 	<template>
 		<name>Template44</name>
@@ -3989,7 +4046,31 @@ FROM
 			<dcsat:item xsi:type="dcsat:TableRow">
 				<dcsat:tableCell>
 					<dcsat:item xsi:type="dcsat:Field">
-						<dcsat:value xsi:type="dcscor:Parameter">AmountRCBalance</dcsat:value>
+						<dcsat:value xsi:type="dcscor:Parameter">AmountRCOpeningBalance</dcsat:value>
+						<dcsat:appearance>
+							<dcscor:item>
+								<dcscor:parameter>Format</dcscor:parameter>
+								<dcscor:value xsi:type="xs:string">NFD=2; NZ=0.00; NG=3,0</dcscor:value>
+							</dcscor:item>
+						</dcsat:appearance>
+					</dcsat:item>
+					<dcsat:item xsi:type="dcsat:Field">
+						<dcsat:value xsi:type="v8:LocalStringType">
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>
+</v8:content>
+							</v8:item>
+						</dcsat:value>
+						<dcsat:appearance>
+							<dcscor:item>
+								<dcscor:parameter>Format</dcscor:parameter>
+								<dcscor:value xsi:type="xs:string">NFD=2; NZ=0.00; NG=3,0</dcscor:value>
+							</dcscor:item>
+						</dcsat:appearance>
+					</dcsat:item>
+					<dcsat:item xsi:type="dcsat:Field">
+						<dcsat:value xsi:type="dcscor:Parameter">AmountRCTurnover</dcsat:value>
 						<dcsat:appearance>
 							<dcscor:item>
 								<dcscor:parameter>Format</dcscor:parameter>
@@ -3999,6 +4080,10 @@ FROM
 					</dcsat:item>
 					<dcsat:appearance>
 						<dcscor:item>
+							<dcscor:parameter>HorizontalAlign</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:HorizontalAlign">Right</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
 							<dcscor:parameter>Details</dcscor:parameter>
 							<dcscor:value xsi:type="dcscor:Parameter">Detail</dcscor:value>
 						</dcscor:item>
@@ -4006,13 +4091,17 @@ FROM
 				</dcsat:tableCell>
 			</dcsat:item>
 		</template>
-		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
-			<dcsat:name>AmountRCBalance</dcsat:name>
-			<dcsat:expression>-AmountRCBalance</dcsat:expression>
-		</parameter>
 		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:DetailsAreaTemplateParameter">
 			<dcsat:name>Detail</dcsat:name>
 			<dcsat:mainAction>DrillDown</dcsat:mainAction>
+		</parameter>
+		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
+			<dcsat:name>AmountRCOpeningBalance</dcsat:name>
+			<dcsat:expression>ISNULL(-AmountRCOpeningBalance, 0)</dcsat:expression>
+		</parameter>
+		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
+			<dcsat:name>AmountRCTurnover</dcsat:name>
+			<dcsat:expression>ISNULL(-AmountRCTurnover, 0)</dcsat:expression>
 		</parameter>
 	</template>
 	<template>
@@ -4267,7 +4356,7 @@ FROM
 		</template>
 		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
 			<dcsat:name>Account</dcsat:name>
-			<dcsat:expression>Account</dcsat:expression>
+			<dcsat:expression>Account.Code</dcsat:expression>
 		</parameter>
 		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:DetailsAreaTemplateParameter">
 			<dcsat:name>Detail</dcsat:name>
@@ -4275,7 +4364,7 @@ FROM
 		</parameter>
 		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
 			<dcsat:name>AccountPresentation</dcsat:name>
-			<dcsat:expression>Presentation(Account)</dcsat:expression>
+			<dcsat:expression>Account.Description</dcsat:expression>
 		</parameter>
 		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
 			<dcsat:name>AmountRCBalance</dcsat:name>
@@ -6059,10 +6148,6 @@ FROM
 					<dcsset:orderType>Asc</dcsset:orderType>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:OrderItemField">
-					<dcsset:field>AccountType.Order</dcsset:field>
-					<dcsset:orderType>Asc</dcsset:orderType>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:OrderItemField">
 					<dcsset:field>Account.Code</dcsset:field>
 					<dcsset:orderType>Asc</dcsset:orderType>
 				</dcsset:item>
@@ -6203,7 +6288,7 @@ FROM
 						</dcsset:item>
 						<dcsset:item xsi:type="dcsset:GroupItemField">
 							<dcsset:field>Account</dcsset:field>
-							<dcsset:groupType>Items</dcsset:groupType>
+							<dcsset:groupType>Hierarchy</dcsset:groupType>
 							<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 							<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 							<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -6276,7 +6361,7 @@ FROM
 						</dcsset:item>
 						<dcsset:item xsi:type="dcsset:GroupItemField">
 							<dcsset:field>Account</dcsset:field>
-							<dcsset:groupType>Items</dcsset:groupType>
+							<dcsset:groupType>Hierarchy</dcsset:groupType>
 							<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 							<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 							<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -6414,7 +6499,7 @@ FROM
 						</dcsset:item>
 						<dcsset:item xsi:type="dcsset:GroupItemField">
 							<dcsset:field>Account</dcsset:field>
-							<dcsset:groupType>Items</dcsset:groupType>
+							<dcsset:groupType>Hierarchy</dcsset:groupType>
 							<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 							<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 							<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -6487,7 +6572,7 @@ FROM
 						</dcsset:item>
 						<dcsset:item xsi:type="dcsset:GroupItemField">
 							<dcsset:field>Account</dcsset:field>
-							<dcsset:groupType>Items</dcsset:groupType>
+							<dcsset:groupType>Hierarchy</dcsset:groupType>
 							<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 							<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 							<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -6566,7 +6651,7 @@ FROM
 						</dcsset:item>
 						<dcsset:item xsi:type="dcsset:GroupItemField">
 							<dcsset:field>Account</dcsset:field>
-							<dcsset:groupType>Items</dcsset:groupType>
+							<dcsset:groupType>Hierarchy</dcsset:groupType>
 							<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 							<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 							<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -6603,6 +6688,7 @@ FROM
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Expense</dcsset:right>
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherIncome</dcsset:right>
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherExpense</dcsset:right>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.IncomeTaxExpense</dcsset:right>
 						</dcsset:item>
 					</dcsset:filter>
 					<dcsset:order>
@@ -6687,10 +6773,6 @@ FROM
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:OrderItemField">
 					<dcsset:field>SectionOrder</dcsset:field>
-					<dcsset:orderType>Asc</dcsset:orderType>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:OrderItemField">
-					<dcsset:field>AccountType.Order</dcsset:field>
 					<dcsset:orderType>Asc</dcsset:orderType>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:OrderItemField">
@@ -6869,7 +6951,7 @@ FROM
 							</dcsset:item>
 							<dcsset:item xsi:type="dcsset:GroupItemField">
 								<dcsset:field>Account</dcsset:field>
-								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
 								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -6938,7 +7020,7 @@ FROM
 							</dcsset:item>
 							<dcsset:item xsi:type="dcsset:GroupItemField">
 								<dcsset:field>Account</dcsset:field>
-								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
 								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -7073,7 +7155,7 @@ FROM
 							</dcsset:item>
 							<dcsset:item xsi:type="dcsset:GroupItemField">
 								<dcsset:field>Account</dcsset:field>
-								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
 								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -7142,7 +7224,7 @@ FROM
 							</dcsset:item>
 							<dcsset:item xsi:type="dcsset:GroupItemField">
 								<dcsset:field>Account</dcsset:field>
-								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
 								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -7217,7 +7299,7 @@ FROM
 							</dcsset:item>
 							<dcsset:item xsi:type="dcsset:GroupItemField">
 								<dcsset:field>Account</dcsset:field>
-								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
 								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -7254,6 +7336,7 @@ FROM
 								<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Expense</dcsset:right>
 								<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherIncome</dcsset:right>
 								<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherExpense</dcsset:right>
+								<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.IncomeTaxExpense</dcsset:right>
 							</dcsset:item>
 						</dcsset:filter>
 						<dcsset:order>
@@ -7331,10 +7414,6 @@ FROM
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:OrderItemField">
 					<dcsset:field>SectionOrder</dcsset:field>
-					<dcsset:orderType>Asc</dcsset:orderType>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:OrderItemField">
-					<dcsset:field>AccountType.Order</dcsset:field>
 					<dcsset:orderType>Asc</dcsset:orderType>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:OrderItemField">
@@ -7513,7 +7592,7 @@ FROM
 							</dcsset:item>
 							<dcsset:item xsi:type="dcsset:GroupItemField">
 								<dcsset:field>Account</dcsset:field>
-								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
 								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -7582,7 +7661,7 @@ FROM
 							</dcsset:item>
 							<dcsset:item xsi:type="dcsset:GroupItemField">
 								<dcsset:field>Account</dcsset:field>
-								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
 								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -7717,7 +7796,7 @@ FROM
 							</dcsset:item>
 							<dcsset:item xsi:type="dcsset:GroupItemField">
 								<dcsset:field>Account</dcsset:field>
-								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
 								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -7786,7 +7865,7 @@ FROM
 							</dcsset:item>
 							<dcsset:item xsi:type="dcsset:GroupItemField">
 								<dcsset:field>Account</dcsset:field>
-								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
 								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -7861,7 +7940,7 @@ FROM
 							</dcsset:item>
 							<dcsset:item xsi:type="dcsset:GroupItemField">
 								<dcsset:field>Account</dcsset:field>
-								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
 								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -7898,6 +7977,7 @@ FROM
 								<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Expense</dcsset:right>
 								<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherIncome</dcsset:right>
 								<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherExpense</dcsset:right>
+								<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.IncomeTaxExpense</dcsset:right>
 							</dcsset:item>
 						</dcsset:filter>
 						<dcsset:order>
@@ -7979,10 +8059,6 @@ FROM
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:OrderItemField">
 					<dcsset:field>SectionOrder</dcsset:field>
-					<dcsset:orderType>Asc</dcsset:orderType>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:OrderItemField">
-					<dcsset:field>AccountType.Order</dcsset:field>
 					<dcsset:orderType>Asc</dcsset:orderType>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:OrderItemField">
@@ -8161,7 +8237,7 @@ FROM
 							</dcsset:item>
 							<dcsset:item xsi:type="dcsset:GroupItemField">
 								<dcsset:field>Account</dcsset:field>
-								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
 								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -8230,7 +8306,7 @@ FROM
 							</dcsset:item>
 							<dcsset:item xsi:type="dcsset:GroupItemField">
 								<dcsset:field>Account</dcsset:field>
-								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
 								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -8365,7 +8441,7 @@ FROM
 							</dcsset:item>
 							<dcsset:item xsi:type="dcsset:GroupItemField">
 								<dcsset:field>Account</dcsset:field>
-								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
 								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -8434,7 +8510,7 @@ FROM
 							</dcsset:item>
 							<dcsset:item xsi:type="dcsset:GroupItemField">
 								<dcsset:field>Account</dcsset:field>
-								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
 								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -8509,7 +8585,7 @@ FROM
 							</dcsset:item>
 							<dcsset:item xsi:type="dcsset:GroupItemField">
 								<dcsset:field>Account</dcsset:field>
-								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
 								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -8546,6 +8622,7 @@ FROM
 								<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Expense</dcsset:right>
 								<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherIncome</dcsset:right>
 								<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherExpense</dcsset:right>
+								<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.IncomeTaxExpense</dcsset:right>
 							</dcsset:item>
 						</dcsset:filter>
 						<dcsset:order>
@@ -8627,10 +8704,6 @@ FROM
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:OrderItemField">
 					<dcsset:field>SectionOrder</dcsset:field>
-					<dcsset:orderType>Asc</dcsset:orderType>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:OrderItemField">
-					<dcsset:field>AccountType.Order</dcsset:field>
 					<dcsset:orderType>Asc</dcsset:orderType>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:OrderItemField">
@@ -8809,7 +8882,7 @@ FROM
 							</dcsset:item>
 							<dcsset:item xsi:type="dcsset:GroupItemField">
 								<dcsset:field>Account</dcsset:field>
-								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
 								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -8878,7 +8951,7 @@ FROM
 							</dcsset:item>
 							<dcsset:item xsi:type="dcsset:GroupItemField">
 								<dcsset:field>Account</dcsset:field>
-								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
 								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -9013,7 +9086,7 @@ FROM
 							</dcsset:item>
 							<dcsset:item xsi:type="dcsset:GroupItemField">
 								<dcsset:field>Account</dcsset:field>
-								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
 								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -9082,7 +9155,7 @@ FROM
 							</dcsset:item>
 							<dcsset:item xsi:type="dcsset:GroupItemField">
 								<dcsset:field>Account</dcsset:field>
-								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
 								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -9157,7 +9230,7 @@ FROM
 							</dcsset:item>
 							<dcsset:item xsi:type="dcsset:GroupItemField">
 								<dcsset:field>Account</dcsset:field>
-								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
 								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -9194,6 +9267,7 @@ FROM
 								<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Expense</dcsset:right>
 								<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherIncome</dcsset:right>
 								<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherExpense</dcsset:right>
+								<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.IncomeTaxExpense</dcsset:right>
 							</dcsset:item>
 						</dcsset:filter>
 						<dcsset:order>
@@ -9275,10 +9349,6 @@ FROM
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:OrderItemField">
 					<dcsset:field>SectionOrder</dcsset:field>
-					<dcsset:orderType>Asc</dcsset:orderType>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:OrderItemField">
-					<dcsset:field>AccountType.Order</dcsset:field>
 					<dcsset:orderType>Asc</dcsset:orderType>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:OrderItemField">
@@ -9457,7 +9527,7 @@ FROM
 							</dcsset:item>
 							<dcsset:item xsi:type="dcsset:GroupItemField">
 								<dcsset:field>Account</dcsset:field>
-								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
 								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -9526,7 +9596,7 @@ FROM
 							</dcsset:item>
 							<dcsset:item xsi:type="dcsset:GroupItemField">
 								<dcsset:field>Account</dcsset:field>
-								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
 								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -9661,7 +9731,7 @@ FROM
 							</dcsset:item>
 							<dcsset:item xsi:type="dcsset:GroupItemField">
 								<dcsset:field>Account</dcsset:field>
-								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
 								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -9730,7 +9800,7 @@ FROM
 							</dcsset:item>
 							<dcsset:item xsi:type="dcsset:GroupItemField">
 								<dcsset:field>Account</dcsset:field>
-								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
 								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -9805,7 +9875,7 @@ FROM
 							</dcsset:item>
 							<dcsset:item xsi:type="dcsset:GroupItemField">
 								<dcsset:field>Account</dcsset:field>
-								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
 								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -9842,6 +9912,7 @@ FROM
 								<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Expense</dcsset:right>
 								<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherIncome</dcsset:right>
 								<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherExpense</dcsset:right>
+								<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.IncomeTaxExpense</dcsset:right>
 							</dcsset:item>
 						</dcsset:filter>
 						<dcsset:order>

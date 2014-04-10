@@ -24,3 +24,17 @@ Procedure BeforeWrite(Cancel)
 		EndIf;
 	EndIf;
 EndProcedure
+
+Procedure BeforeDelete(Cancel)
+	
+	//Delete records in registers
+	//BankTransactions
+	BTRecordset = InformationRegisters.BankTransactions.CreateRecordSet();
+	BTRecordset.Filter.BankAccount.Set(ThisObject.Ref);
+	BTRecordset.Write(True);
+	//BankTransactionCategorization
+	BTCRecordset = InformationRegisters.BankTransactionCategorization.CreateRecordSet();
+	BTCRecordset.Filter.BankAccount.Set(ThisObject.Ref);
+	BTCRecordset.Write(True);
+
+EndProcedure

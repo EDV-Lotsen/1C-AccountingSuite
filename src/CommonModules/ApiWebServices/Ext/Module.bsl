@@ -60,15 +60,15 @@
 				return errorJSON;
 			EndIf;
 		Else
-			errorMessage = New Map();
-			strMessage = " [company_type] : This is a required field ";
-			errorMessage.Insert("message", strMessage);
-			errorMessage.Insert("status", "error"); 
-			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
-			return errorJSON;
+			//errorMessage = New Map();
+			//strMessage = " [company_type] : This is a required field ";
+			//errorMessage.Insert("message", strMessage);
+			//errorMessage.Insert("status", "error"); 
+			//errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+			//return errorJSON; 
+			NewCompany.Customer = True;
 		EndIf;
-		//NewCompany.Customer = True;
-		
+				
 		NewCompany.DefaultCurrency = Constants.DefaultCurrency.Get();
 		NewCompany.Terms = Catalogs.PaymentTerms.Net30;
 		
@@ -337,7 +337,7 @@
 	
 	
 EndFunction
-
+		
 Function inoutCompaniesUpdate(jsonin, object_code) Export
 	
 	CompanyCodeJSON = InternetConnectionClientServer.DecodeJSON(object_code);
@@ -861,7 +861,7 @@ Function inoutCompaniesGet(jsonin) Export
 	//				  |WHERE
 	//				  |	Addresses.Owner = &Company");
 	//Query.SetParameter("Company", Company);
-	//Result = Query.Execute().Choose();
+	//Result = Query.Execute().Select();
 	//
 	//Addresses = New Array();
 	//
@@ -963,10 +963,13 @@ Function inoutCompaniesListAll(jsonin) Export
 	Query = New Query("SELECT
 	                  |	Companies.Ref
 	                  |FROM
-	                  |	Catalog.Companies AS Companies");
+	                  |	Catalog.Companies AS Companies
+	                  |
+	                  |ORDER BY
+	                  |	Companies.Description");
 	                  //|WHERE
 	                  //|	Companies.Customer = TRUE");
-	Result = Query.Execute().Choose();
+	Result = Query.Execute().Select();
 	
 	Companies = New Array();
 	
@@ -1081,12 +1084,16 @@ Function inoutItemsCreate(jsonin) Export
 			NewProduct.Type = Enums.InventoryTypes.NonInventory;
 			NewProduct.InventoryOrExpenseAccount = Constants.ExpenseAccount.Get();
 		Else
-			errorMessage = New Map();
-			strMessage = " [item_type] : This is a required field. Must be either product or service ";
-			errorMessage.Insert("message", strMessage);
-			errorMessage.Insert("status", "error"); 
-			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
-			return errorJSON;
+			//errorMessage = New Map();
+			//strMessage = " [item_type] : This is a required field. Must be either product or service ";
+			//errorMessage.Insert("message", strMessage);
+			//errorMessage.Insert("status", "error"); 
+			//errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+			//return errorJSON;
+			
+			//defaults to service
+			NewProduct.Type = Enums.InventoryTypes.NonInventory;
+			NewProduct.InventoryOrExpenseAccount = Constants.ExpenseAccount.Get();
 		EndIf;
 		
 		NewProduct.IncomeAccount = Constants.IncomeAccount.Get();
@@ -1469,13 +1476,16 @@ EndFunction
 Function inoutItemsListAll(jsonin) Export
 		
 	Query = New Query("SELECT
-					  | Products.Ref,
-					  | Products.Code,
-					  | Products.Description,
-					  | Products.Type
-					  |FROM
-					  |	Catalog.Products AS Products");
-	Result = Query.Execute().Choose();
+	                  |	Products.Ref,
+	                  |	Products.Code AS Code,
+	                  |	Products.Description,
+	                  |	Products.Type
+	                  |FROM
+	                  |	Catalog.Products AS Products
+	                  |
+	                  |ORDER BY
+	                  |	Code");
+	Result = Query.Execute().Select();
 	
 	Products = New Array();
 	
@@ -1661,7 +1671,7 @@ Function inoutCashSalesCreate(jsonin) Export
 	                  |WHERE
 	                  |	CashSaleLineItems.Ref = &CashSale");
 	Query.SetParameter("CashSale", NewCashSale.Ref);
-	Result = Query.Execute().Choose();
+	Result = Query.Execute().Select();
 	
 	LineItems = New Array();
 	
@@ -1837,7 +1847,7 @@ Function inoutCashSalesUpdate(jsonin, object_code) Export
 	                  |WHERE
 	                  |	CashSaleLineItems.Ref = &CashSale");
 	Query.SetParameter("CashSale", NewCashSale.Ref);
-	Result = Query.Execute().Choose();
+	Result = Query.Execute().Select();
 	
 	LineItems = New Array();
 	
@@ -1940,7 +1950,7 @@ Function inoutCashSalesGet(jsonin) Export
 	                  |WHERE
 	                  |	CashSaleLineItems.Ref = &CashSale");
 	Query.SetParameter("CashSale", NewCashSale.Ref);
-	Result = Query.Execute().Choose();
+	Result = Query.Execute().Select();
 	
 	LineItems = New Array();
 	
@@ -2026,7 +2036,7 @@ Function inoutCashSalesListAll(jsonin) Export
 	                  |	CashSale.DataVersion,
 	                  |	CashSale.DeletionMark,
 	                  |	CashSale.Number,
-	                  |	CashSale.Date,
+	                  |	CashSale.Date AS Date,
 	                  |	CashSale.Posted,
 	                  |	CashSale.Company,
 	                  |	CashSale.RefNum,
@@ -2071,8 +2081,11 @@ Function inoutCashSalesListAll(jsonin) Export
 	                  |		Project
 	                  |	)
 	                  |FROM
-	                  |	Document.CashSale AS CashSale");
-	Result = Query.Execute().Choose();
+	                  |	Document.CashSale AS CashSale
+	                  |
+	                  |ORDER BY
+	                  |	Date");
+	Result = Query.Execute().Select();
 	
 	CashSales = New Array();
 	
@@ -2161,13 +2174,13 @@ Function inoutInvoicesCreate(jsonin) Export
 	NewInvoice.ARAccount = DefaultCurrency.DefaultARAccount;
 	//NewCashSale.BankAccount = Constants.BankAccount.Get();
 	NewInvoice.ExchangeRate = 1;
-	NewInvoice.Location = Catalogs.Locations.MainWarehouse;
+	NewInvoice.LocationActual = Catalogs.Locations.MainWarehouse;
 	
-	Try NewInvoice.LineSubtotalRC = ParsedJSON.line_subtotal; Except EndTry;
-	Try NewInvoice.DiscountRC = ParsedJSON.discount; Except EndTry;
+	Try NewInvoice.LineSubtotal = ParsedJSON.line_subtotal; Except EndTry;
+	Try NewInvoice.Discount = ParsedJSON.discount; Except EndTry;
 	Try NewInvoice.DiscountPercent = ParsedJSON.discount_percent; Except EndTry;
-	Try NewInvoice.SubTotalRC = ParsedJSON.subtotal; Except EndTry;
-	Try NewInvoice.ShippingRC = ParsedJSON.shipping; Except EndTry;
+	Try NewInvoice.SubTotal = ParsedJSON.subtotal; Except EndTry;
+	Try NewInvoice.Shipping = ParsedJSON.shipping; Except EndTry;
 	
 	DataLineItems = ParsedJSON.lines.line_items;
 	
@@ -2231,11 +2244,11 @@ Function inoutInvoicesCreate(jsonin) Export
 	InvoiceData.Insert("memo", NewInvoice.Memo);
 	InvoiceData.Insert("sales_tax_total", NewInvoice.SalesTaxRC);
 	InvoiceData.Insert("doc_total", NewInvoice.DocumentTotalRC);
-	InvoiceData.Insert("line_subtotal", NewInvoice.LineSubtotalRC);
-	InvoiceData.Insert("discount", NewInvoice.DiscountRC);
+	InvoiceData.Insert("line_subtotal", NewInvoice.LineSubtotal);
+	InvoiceData.Insert("discount", NewInvoice.Discount);
 	InvoiceData.Insert("discount_percent", NewInvoice.DiscountPercent);
-	InvoiceData.Insert("subtotal", NewInvoice.SubTotalRC);
-	InvoiceData.Insert("shipping", NewInvoice.ShippingRC);
+	InvoiceData.Insert("subtotal", NewInvoice.SubTotal);
+	InvoiceData.Insert("shipping", NewInvoice.Shipping);
 
 	Query = New Query("SELECT
 	                  |	InvoiceLineItems.Product,
@@ -2247,7 +2260,7 @@ Function inoutInvoicesCreate(jsonin) Export
 	                  |WHERE
 	                  |	InvoiceLineItems.Ref = &Invoice");
 	Query.SetParameter("Invoice", NewInvoice.Ref);
-	Result = Query.Execute().Choose();
+	Result = Query.Execute().Select();
 	
 	LineItems = New Array();
 	
@@ -2335,12 +2348,12 @@ Function inoutInvoicesUpdate(jsonin, object_code) Export
 	NewInvoice.ARAccount = DefaultCurrency.DefaultARAccount;
 	//NewCashSale.BankAccount = Constants.BankAccount.Get();
 	NewInvoice.ExchangeRate = 1;
-	NewInvoice.Location = Catalogs.Locations.MainWarehouse;
-	Try NewInvoice.LineSubtotalRC = ParsedJSON.line_subtotal; Except EndTry;
-	Try NewInvoice.DiscountRC = ParsedJSON.discount; Except EndTry;
+	NewInvoice.LocationActual = Catalogs.Locations.MainWarehouse;
+	Try NewInvoice.LineSubtotal = ParsedJSON.line_subtotal; Except EndTry;
+	Try NewInvoice.Discount = ParsedJSON.discount; Except EndTry;
 	Try NewInvoice.DiscountPercent = ParsedJSON.discount_percent; Except EndTry;
-	Try NewInvoice.SubTotalRC = ParsedJSON.subtotal; Except EndTry;
-	Try NewInvoice.ShippingRC = ParsedJSON.shipping; Except EndTry;
+	Try NewInvoice.SubTotal = ParsedJSON.subtotal; Except EndTry;
+	Try NewInvoice.Shipping = ParsedJSON.shipping; Except EndTry;
 
 	
 	DataLineItems = ParsedJSON.lines.line_items;
@@ -2405,11 +2418,11 @@ Function inoutInvoicesUpdate(jsonin, object_code) Export
 	InvoiceData.Insert("memo", NewInvoice.Memo);
 	InvoiceData.Insert("sales_tax_total", NewInvoice.SalesTaxRC);
 	InvoiceData.Insert("doc_total", NewInvoice.DocumentTotalRC);
-	InvoiceData.Insert("line_subtotal", NewInvoice.LineSubtotalRC);
-	InvoiceData.Insert("discount", NewInvoice.DiscountRC);
+	InvoiceData.Insert("line_subtotal", NewInvoice.LineSubtotal);
+	InvoiceData.Insert("discount", NewInvoice.Discount);
 	InvoiceData.Insert("discount_percent", NewInvoice.DiscountPercent);
-	InvoiceData.Insert("subtotal", NewInvoice.SubTotalRC);
-	InvoiceData.Insert("shipping", NewInvoice.ShippingRC);
+	InvoiceData.Insert("subtotal", NewInvoice.SubTotal);
+	InvoiceData.Insert("shipping", NewInvoice.Shipping);
 
 	Query = New Query("SELECT
 	                  |	InvoiceLineItems.Product,
@@ -2421,7 +2434,7 @@ Function inoutInvoicesUpdate(jsonin, object_code) Export
 	                  |WHERE
 	                  |	InvoiceLineItems.Ref = &Invoice");
 	Query.SetParameter("Invoice", NewInvoice.Ref);
-	Result = Query.Execute().Choose();
+	Result = Query.Execute().Select();
 	
 	LineItems = New Array();
 	
@@ -2483,7 +2496,7 @@ Function inoutInvoicesGet(jsonin) Export
 	SIresult = SIQuery.Execute();
 	If SIresult.IsEmpty() Then
 			errorMessage = New Map();
-			strMessage = " [api_code] : The sales order does not exist. Double check that the ID# is correct. ";
+			strMessage = " [api_code] : The sales invoice does not exist. Double check that the ID# is correct. ";
 			errorMessage.Insert("message", strMessage);
 			errorMessage.Insert("status", "error"); 
 			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -2507,11 +2520,11 @@ Function inoutInvoicesGet(jsonin) Export
 	InvoiceData.Insert("memo", NewInvoice.Memo);
 	InvoiceData.Insert("sales_tax_total", NewInvoice.SalesTaxRC);
 	InvoiceData.Insert("doc_total", NewInvoice.DocumentTotalRC);
-	InvoiceData.Insert("line_subtotal", NewInvoice.LineSubtotalRC);
-	InvoiceData.Insert("discount", NewInvoice.DiscountRC);
+	InvoiceData.Insert("line_subtotal", NewInvoice.LineSubtotal);
+	InvoiceData.Insert("discount", NewInvoice.Discount);
 	InvoiceData.Insert("discount_percent", NewInvoice.DiscountPercent);
-	InvoiceData.Insert("subtotal", NewInvoice.SubTotalRC);
-	InvoiceData.Insert("shipping", NewInvoice.ShippingRC);
+	InvoiceData.Insert("subtotal", NewInvoice.SubTotal);
+	InvoiceData.Insert("shipping", NewInvoice.Shipping);
 
 	Query = New Query("SELECT
 	                  |	InvoiceLineItems.Product,
@@ -2523,7 +2536,7 @@ Function inoutInvoicesGet(jsonin) Export
 	                  |WHERE
 	                  |	InvoiceLineItems.Ref = &Invoice");
 	Query.SetParameter("Invoice", NewInvoice.Ref);
-	Result = Query.Execute().Choose();
+	Result = Query.Execute().Select();
 	
 	LineItems = New Array();
 	
@@ -2610,58 +2623,79 @@ Function inoutInvoicesListAll(jsonin) Export
 	                  |	SalesInvoice.DataVersion,
 	                  |	SalesInvoice.DeletionMark,
 	                  |	SalesInvoice.Number,
-	                  |	SalesInvoice.Date,
+	                  |	SalesInvoice.Date AS Date,
 	                  |	SalesInvoice.Posted,
 	                  |	SalesInvoice.Company,
+	                  |	SalesInvoice.ShipTo,
+	                  |	SalesInvoice.BillTo,
+	                  |	SalesInvoice.ConfirmTo,
+	                  |	SalesInvoice.RefNum,
+	                  |	SalesInvoice.DropshipCompany,
+	                  |	SalesInvoice.DropshipShipTo,
+	                  |	SalesInvoice.DropshipConfirmTo,
+	                  |	SalesInvoice.DropshipRefNum,
+	                  |	SalesInvoice.SalesPerson,
 	                  |	SalesInvoice.Currency,
 	                  |	SalesInvoice.ExchangeRate,
-	                  |	SalesInvoice.Location,
-	                  |	SalesInvoice.DeliveryDate,
-	                  |	SalesInvoice.DueDate,
-	                  |	SalesInvoice.Terms,
-	                  |	SalesInvoice.Memo,
 	                  |	SalesInvoice.ARAccount,
-	                  |	SalesInvoice.ShipTo,
-	                  |	SalesInvoice.RefNum,
+	                  |	SalesInvoice.DueDate,
+	                  |	SalesInvoice.LocationActual,
+	                  |	SalesInvoice.DeliveryDateActual,
+	                  |	SalesInvoice.Project,
+	                  |	SalesInvoice.Class,
+	                  |	SalesInvoice.Terms,
+	                  |	SalesInvoice.URL,
+	                  |	SalesInvoice.Paid,
+	                  |	SalesInvoice.Memo,
 	                  |	SalesInvoice.BegBal,
 	                  |	SalesInvoice.ManualAdjustment,
-	                  |	SalesInvoice.Project,
-	                  |	SalesInvoice.NewObject,
-	                  |	SalesInvoice.LastEmail,
-	                  |	SalesInvoice.Paid,
-	                  |	SalesInvoice.EmailTo,
-	                  |	SalesInvoice.EmailNote,
-	                  |	SalesInvoice.PayHTML,
-	                  |	SalesInvoice.EmailCC,
-	                  |	SalesInvoice.PaidInvoice,
-	                  |	SalesInvoice.BillTo,
-	                  |	SalesInvoice.SalesPerson,
-	                  |	SalesInvoice.CF1String,
-	                  |	SalesInvoice.LineSubtotalRC,
-	                  |	SalesInvoice.DiscountRC,
-	                  |	SalesInvoice.SubTotalRC,
-	                  |	SalesInvoice.ShippingRC,
+	                  |	SalesInvoice.LineSubtotal,
+	                  |	SalesInvoice.DiscountPercent,
+	                  |	SalesInvoice.Discount,
+	                  |	SalesInvoice.SubTotal,
+	                  |	SalesInvoice.Shipping,
+	                  |	SalesInvoice.SalesTax,
 	                  |	SalesInvoice.SalesTaxRC,
 	                  |	SalesInvoice.DocumentTotal,
 	                  |	SalesInvoice.DocumentTotalRC,
-	                  |	SalesInvoice.DiscountPercent,
+	                  |	SalesInvoice.______Review______,
+	                  |	SalesInvoice.NewObject,
+	                  |	SalesInvoice.CF1String,
+	                  |	SalesInvoice.EmailTo,
+	                  |	SalesInvoice.EmailCC,
+	                  |	SalesInvoice.EmailNote,
+	                  |	SalesInvoice.LastEmail,
+	                  |	SalesInvoice.PaidInvoice,
+	                  |	SalesInvoice.PayHTML,
 	                  |	SalesInvoice.FOB,
 	                  |	SalesInvoice.Carrier,
 	                  |	SalesInvoice.TrackingNumber,
+	                  |	SalesInvoice.PrePaySO,
 	                  |	SalesInvoice.LineItems.(
 	                  |		Ref,
 	                  |		LineNumber,
 	                  |		Product,
 	                  |		ProductDescription,
-	                  |		Price,
 	                  |		Quantity,
+	                  |		UM,
+	                  |		Price,
 	                  |		LineTotal,
+	                  |		Taxable,
+	                  |		TaxableAmount,
 	                  |		LineItems.Order,
-	                  |		Project
+	                  |		Location,
+	                  |		LocationActual,
+	                  |		DeliveryDate,
+	                  |		DeliveryDateActual,
+	                  |		Project,
+	                  |		Class
 	                  |	)
 	                  |FROM
-	                  |	Document.SalesInvoice AS SalesInvoice");
-	Result = Query.Execute().Choose();
+	                  |	Document.SalesInvoice AS SalesInvoice
+	                  |
+	                  |ORDER BY
+	                  |	Date");
+	Result = Query.Execute().Select();
 	
 	Invoices = New Array();
 	
@@ -2684,11 +2718,11 @@ Function inoutInvoicesListAll(jsonin) Export
 		Invoice.Insert("memo", Result.Memo);
 		Invoice.Insert("sales_tax_total", Result.SalesTaxRC);
 		Invoice.Insert("doc_total", Result.DocumentTotalRC);
-		Invoice.Insert("line_subtotal", Result.LineSubtotalRC);
-		Invoice.Insert("discount", Result.DiscountRC);
+		Invoice.Insert("line_subtotal", Result.LineSubtotal);
+		Invoice.Insert("discount", Result.Discount);
 		Invoice.Insert("discount_percent", Result.DiscountPercent);
-		Invoice.Insert("subtotal", Result.SubTotalRC);
-		Invoice.Insert("shipping", Result.ShippingRC);
+		Invoice.Insert("subtotal", Result.SubTotal);
+		Invoice.Insert("shipping", Result.Shipping);
 		
 		Invoices.Add(Invoice);
 		
@@ -3107,11 +3141,11 @@ Function inoutSalesOrdersCreate(jsonin) Export
 	NewSO.ExchangeRate = 1;
 	NewSO.Location = Catalogs.Locations.MainWarehouse;
 	
-	Try NewSO.LineSubtotalRC = ParsedJSON.line_subtotal; Except EndTry;
-	Try NewSO.DiscountRC = ParsedJSON.discount; Except EndTry;
+	Try NewSO.LineSubtotal = ParsedJSON.line_subtotal; Except EndTry;
+	Try NewSO.Discount = ParsedJSON.discount; Except EndTry;
 	Try NewSO.DiscountPercent = ParsedJSON.discount_percent; Except EndTry;
-	Try NewSO.SubTotalRC = ParsedJSON.subtotal; Except EndTry;
-	Try NewSO.ShippingRC = ParsedJSON.shipping; Except EndTry;
+	Try NewSO.SubTotal = ParsedJSON.subtotal; Except EndTry;
+	Try NewSO.Shipping = ParsedJSON.shipping; Except EndTry;
 	
 	//DataLineItems = ParsedJSON.lines.line_items;
 	
@@ -3290,7 +3324,7 @@ Function inoutSalesOrdersCreate(jsonin) Export
 	//				  |WHERE
 	//				  |	SOLineItems.Ref = &SO");
 	//Query.SetParameter("SO", NewSO.Ref);
-	//Result = Query.Execute().Choose();
+	//Result = Query.Execute().Select();
 	//
 	//LineItems = New Array();
 	//
@@ -3977,7 +4011,7 @@ Function inoutSalesOrdersUpdate(jsonin, object_code) Export
 	//				  |WHERE
 	//				  |	SOLineItems.Ref = &SO");
 	//Query.SetParameter("SO", NewSO.Ref);
-	//Result = Query.Execute().Choose();
+	//Result = Query.Execute().Select();
 	//
 	//LineItems = New Array();
 	//
@@ -4097,9 +4131,12 @@ Function inoutSalesOrdersListAll(jsonin) Export
 	Query = New Query("SELECT
 	                  |	SalesOrder.Ref
 	                  |FROM
-	                  |	Document.SalesOrder AS SalesOrder");
+	                  |	Document.SalesOrder AS SalesOrder
+	                  |
+	                  |ORDER BY
+	                  |	SalesOrder.Date");
 					  
-	Result = Query.Execute().Choose();
+	Result = Query.Execute().Select();
 	
 	SO = New Array();
 	
@@ -4191,7 +4228,7 @@ Function inoutPurchaseOrdersCreate(jsonin) Export
 			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
 			return errorJSON;
 		EndIf;
-		NewPO.PurchaseAddress = addr;
+		NewPO.CompanyAddress = addr;
 		
 	Else
 		
@@ -4291,12 +4328,12 @@ Function inoutPurchaseOrdersCreate(jsonin) Export
 			Try AddressLine.SalesTaxCode = Catalogs.SalesTaxCodes.FindByCode(ParsedJSON.purchase_sales_tax_code); Except EndTry;			
 			
 			AddressLine.Write();
-			NewPO.PurchaseAddress = AddressLine.Ref;
+			NewPO.CompanyAddress = AddressLine.Ref;
 			
 		Else
 			// select first address in the dataset
 			Dataset = QueryResult.Unload();
-			NewPO.PurchaseAddress = Dataset[0].Ref; 
+			NewPO.CompanyAddress = Dataset[0].Ref; 
 		EndIf
 
 	EndIf;
@@ -4334,14 +4371,14 @@ Function inoutPurchaseOrdersCreate(jsonin) Export
 			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
 			return errorJSON;
 		EndIf;					 
-		NewPO.DropshipCustomer = cust;
+		NewPO.DropshipCompany = cust;
 		
 	EndIf;
 	
 	Try ds_address_api_code = ParsedJSON.ds_address_api_code Except ds_address_api_code = Undefined EndTry;
 	If NOT ds_address_api_code = Undefined Then
 		// todo - check if address belongs to company
-		NewPO.DropshipAddress = Catalogs.Addresses.GetRef(New UUID(ds_address_api_code));
+		NewPO.DropshipShipTo = Catalogs.Addresses.GetRef(New UUID(ds_address_api_code));
 		Try addrDrop = Catalogs.Addresses.GetRef(New UUID(ds_address_api_code)) Except addrDrop = Undefined EndTry;
 		
 		newQuery = New Query("SELECT
@@ -4352,7 +4389,7 @@ Function inoutPurchaseOrdersCreate(jsonin) Export
 							 |	Addresses.Owner = &Customer
 							 |	AND Addresses.Ref = &addrCode");
 							 
-		newQuery.SetParameter("Customer", NewPO.DropshipCustomer);
+		newQuery.SetParameter("Customer", NewPO.DropshipCompany);
 		newQuery.SetParameter("addrCode", addrDrop);
 		DropResult = newQuery.Execute();
 		If DropResult.IsEmpty() Then
@@ -4363,7 +4400,7 @@ Function inoutPurchaseOrdersCreate(jsonin) Export
 			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
 			return errorJSON;
 		EndIf;
-		NewPO.DropshipAddress = addrDrop;
+		NewPO.DropshipShipTo = addrDrop;
 		
 	EndIf;
 		
@@ -4646,9 +4683,160 @@ Function inoutPurchaseOrdersCreate(jsonin) Export
 				
 	EndDo;
 	
+	Try
+		NewPO.Number = ParsedJSON.po_number;
+		If NewPO.Number <> "" Then
+			Query = New Query("SELECT
+			                  |	PurchaseOrder.Ref
+			                  |FROM
+			                  |	Document.PurchaseOrder AS PurchaseOrder
+			                  |WHERE
+			                  |	PurchaseOrder.Number = &Code");
+			Query.SetParameter("Code", ParsedJSON.po_number);
+			QueryResult = Query.Execute();
+			
+			If QueryResult.IsEmpty() = False Then
+				errorMessage = New Map();
+				strMessage = "[po_number] : The document number entered is not unique." ;
+				errorMessage.Insert("status", "error");
+				errorMessage.Insert("message", strMessage );
+				errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+				return errorJSON;
+			EndIf;
+
+			Numerator = Catalogs.DocumentNumbering.PurchaseOrder.GetObject();
+			Numerator.Number = GeneralFunctions.Increment(Numerator.Number);
+			Numerator.Write();
+		Else
+			Numerator = Catalogs.DocumentNumbering.PurchaseOrder.GetObject();
+			NewPO.Number = GeneralFunctions.Increment(Numerator.Number);
+			Numerator.Number = NewPO.Number;
+			Numerator.Write();
+		EndIf;
+				
+	Except
+		Numerator = Catalogs.DocumentNumbering.PurchaseOrder.GetObject();
+		NewPO.Number = GeneralFunctions.Increment(Numerator.Number);
+		Numerator.Number = NewPO.Number;
+		Numerator.Write();
+	EndTry;
+	
 	NewPO.Write(DocumentWriteMode.Posting);
 		
 	jsonout = InternetConnectionClientServer.EncodeJSON(Webhooks.ReturnPurchaseOrderMap(NewPO.Ref));
 	
 	Return jsonout;
 EndFunction
+
+
+Function inoutCashReceiptCreate(jsonin) Export
+		
+	ParsedJSON = InternetConnectionClientServer.DecodeJSON(jsonin);
+		
+	NCR = Documents.CashReceipt.CreateDocument();
+	NCR.Date = CurrentDate(); // ParsedJSON.date; convert from seconds to normal date
+	NCR.Memo = ParsedJSON.memo;
+	
+	Customer = Catalogs.Companies.FindByDescription(ParsedJSON.company_name);
+	
+	If Customer = Catalogs.Companies.EmptyRef() Then
+		
+		NewCompany = Catalogs.Companies.CreateItem();
+		
+		NewCompany.Description = ParsedJSON.company_name;
+		NewCompany.Customer = True;
+		NewCompany.DefaultCurrency = Constants.DefaultCurrency.Get();
+		NewCompany.Terms = Catalogs.PaymentTerms.Net30;
+
+		NewCompany.Write();
+			
+		AddressLine = Catalogs.Addresses.CreateItem();
+		AddressLine.Owner = NewCompany.Ref;
+		AddressLine.Description = "Primary";
+		AddressLine.Write();
+		
+		Customer = NewCompany.Ref;
+		
+	Else	
+	EndIf;
+		
+	NCR.Company = Customer;
+	//NCR.CompanyCode = Customer.Code;
+	NCR.RefNum = ParsedJSON.ref_num;
+	NCR.DepositType = "1";   
+	
+	NCR.CashPayment = Number(ParsedJSON.amount);
+	NCR.UnappliedPayment = Number(ParsedJSON.amount);
+	NCR.DocumentTotal = Number(ParsedJSON.amount);
+	NCR.DocumentTotalRC = Number(ParsedJSON.amount);
+	NCR.PaymentMethod = Catalogs.PaymentMethods.DebitCard;
+	NCR.Currency = Constants.DefaultCurrency.Get();
+	NCR.ARAccount = NCR.Currency.DefaultARAccount;
+	
+	NCR.Write(DocumentWriteMode.Posting);
+	
+	///
+	
+	//Query = New Query("SELECT
+	//				  |	Addresses.Description,
+	//				  |	Addresses.FirstName,
+	//				  |	Addresses.LastName,
+	//				  |	Addresses.DefaultBilling,
+	//				  |	Addresses.DefaultShipping,
+	//				  |	Addresses.Code,
+	//				  |	Addresses.MiddleName,
+	//				  |	Addresses.Phone,
+	//				  |	Addresses.Email,
+	//				  |	Addresses.AddressLine1,
+	//				  |	Addresses.AddressLine2,
+	//				  |	Addresses.City,
+	//				  |	Addresses.State,
+	//				  |	Addresses.Country,
+	//				  |	Addresses.ZIP
+	//				  |FROM
+	//				  |	Catalog.Addresses AS Addresses
+	//				  |WHERE
+	//				  |	Addresses.Owner = &Company");
+	//Query.SetParameter("Company", NewCompany.Ref);
+	//Result = Query.Execute().Select();
+	//
+	//Addresses = New Array();
+	//
+	//While Result.Next() Do
+	//	
+	//	Address = New Map();
+	//	Address.Insert("address_id", Result.Description);
+	//	Address.Insert("address_code", Result.Code);
+	//	Address.Insert("first_name", Result.FirstName);
+	//	Address.Insert("middle_name", Result.MiddleName);
+	//	Address.Insert("last_name", Result.LastName);
+	//	Address.Insert("phone", Result.Phone);
+	//	Address.Insert("email", Result.Email);
+	//	Address.Insert("address_line1", Result.AddressLine1);
+	//	Address.Insert("address_line2", Result.AddressLine2);
+	//	Address.Insert("city", Result.City);
+	//	Address.Insert("state", Result.State.Code);
+	//	Address.Insert("zip", Result.ZIP);
+	//	Address.Insert("country", Result.Country.Description);
+	//	Address.Insert("default_billing", Result.DefaultBilling);
+	//	Address.Insert("default_shipping", Result.DefaultShipping);
+	//	
+	//	Addresses.Add(Address);
+	//	
+	//EndDo;
+	//
+	//DataAddresses = New Map();
+	//DataAddresses.Insert("addresses", Addresses);
+	//
+	//CompanyData = New Map();
+	//CompanyData.Insert("company_name", NewCompany.Description);
+	//CompanyData.Insert("company_code", NewCompany.Code);
+	//CompanyData.Insert("company_type", "customer");
+	//CompanyData.Insert("lines", DataAddresses);
+	//
+	jsonout = InternetConnectionClientServer.EncodeJSON(Webhooks.ReturnCashReceiptMap(NCR.Ref));
+	
+	Return jsonout;
+	
+EndFunction
+

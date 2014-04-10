@@ -36,34 +36,40 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="18"/>
-			<SearchStringAddition name="ListSearchString" id="35">
+			<SearchStringAddition name="ListSearchString" id="38">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="36"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="37"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="39"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="40"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="38">
+			<ViewStatusAddition name="ListViewStatus" id="41">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="39"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="40"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="42"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="43"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="41">
+			<SearchControlAddition name="ListSearchControl" id="44">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="42"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="43"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="45"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="46"/>
 			</SearchControlAddition>
 			<ChildItems>
 				<LabelField name="Date" id="4">
 					<DataPath>List.Date</DataPath>
 					<DefaultItem>true</DefaultItem>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Bill date</v8:content>
+						</v8:item>
+					</ToolTip>
 					<HorizontalAlign>Right</HorizontalAlign>
 					<Width>10</Width>
 					<ContextMenu name="DateContextMenu" id="5"/>
@@ -71,6 +77,12 @@
 				</LabelField>
 				<LabelField name="DueDate" id="26">
 					<DataPath>List.DueDate</DataPath>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Bill due date</v8:content>
+						</v8:item>
+					</ToolTip>
 					<HorizontalAlign>Right</HorizontalAlign>
 					<Width>10</Width>
 					<ContextMenu name="DueDateContextMenu" id="27"/>
@@ -84,13 +96,27 @@
 							<v8:content>Status</v8:content>
 						</v8:item>
 					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Bill status</v8:content>
+						</v8:item>
+					</ToolTip>
 					<Width>10</Width>
+					<HorizontalStretch>false</HorizontalStretch>
 					<ContextMenu name="InvoiceStatusContextMenu" id="17"/>
 					<ExtendedTooltip name="InvoiceStatusExtendedTooltip" id="20"/>
 				</LabelField>
 				<LabelField name="Number" id="6">
 					<DataPath>List.Number</DataPath>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Bill number</v8:content>
+						</v8:item>
+					</ToolTip>
 					<Width>10</Width>
+					<HorizontalStretch>false</HorizontalStretch>
 					<ContextMenu name="NumberContextMenu" id="7"/>
 					<ExtendedTooltip name="NumberExtendedTooltip" id="21"/>
 				</LabelField>
@@ -102,18 +128,48 @@
 							<v8:content>Vendor</v8:content>
 						</v8:item>
 					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Vendor name</v8:content>
+						</v8:item>
+					</ToolTip>
 					<Width>15</Width>
 					<ContextMenu name="CompanyContextMenu" id="9"/>
 					<ExtendedTooltip name="CompanyExtendedTooltip" id="22"/>
 				</LabelField>
+				<LabelField name="Terms" id="35">
+					<DataPath>List.Terms</DataPath>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Bill payment terms</v8:content>
+						</v8:item>
+					</ToolTip>
+					<Width>15</Width>
+					<ContextMenu name="TermsContextMenu" id="36"/>
+					<ExtendedTooltip name="TermsExtendedTooltip" id="37"/>
+				</LabelField>
 				<LabelField name="DocumentTotal" id="10">
 					<DataPath>List.DocumentTotal</DataPath>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Document total in foreign currency</v8:content>
+						</v8:item>
+					</ToolTip>
 					<Width>10</Width>
 					<ContextMenu name="DocumentTotalContextMenu" id="11"/>
 					<ExtendedTooltip name="DocumentTotalExtendedTooltip" id="24"/>
 				</LabelField>
 				<LabelField name="DocumentTotalRC" id="12">
 					<DataPath>List.DocumentTotalRC</DataPath>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Document total in report currency</v8:content>
+						</v8:item>
+					</ToolTip>
 					<Width>10</Width>
 					<ContextMenu name="DocumentTotalRCContextMenu" id="13"/>
 					<ExtendedTooltip name="DocumentTotalRCExtendedTooltip" id="25"/>
@@ -129,10 +185,11 @@
 					<ToolTip>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Balance FCY</v8:content>
+							<v8:content>Document balance in foreign currency</v8:content>
 						</v8:item>
 					</ToolTip>
-					<Width>12</Width>
+					<Width>10</Width>
+					<HorizontalStretch>false</HorizontalStretch>
 					<Format>
 						<v8:item>
 							<v8:lang>en</v8:lang>
@@ -150,7 +207,14 @@
 							<v8:content>Balance</v8:content>
 						</v8:item>
 					</Title>
-					<Width>12</Width>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Document balance in report currency</v8:content>
+						</v8:item>
+					</ToolTip>
+					<Width>10</Width>
+					<HorizontalStretch>false</HorizontalStretch>
 					<Format>
 						<v8:item>
 							<v8:lang>en</v8:lang>
@@ -184,6 +248,7 @@
 	DocumentPurchaseInvoice.PointInTime,
 	// Document attributes
 	DocumentPurchaseInvoice.Company,
+	DocumentPurchaseInvoice.CompanyAddress,
 	DocumentPurchaseInvoice.Currency,
 	DocumentPurchaseInvoice.ExchangeRate,
 	DocumentPurchaseInvoice.APAccount,
@@ -225,7 +290,8 @@ FROM
 	LEFT JOIN AccountingRegister.GeneralJournal.Balance (,,, ExtDimension2 REFS Document.PurchaseInvoice) AS GeneralJournalBalance
 		ON  (GeneralJournalBalance.Account = DocumentPurchaseInvoice.APAccount)
 		AND (GeneralJournalBalance.ExtDimension1 = DocumentPurchaseInvoice.Company)
-		AND (GeneralJournalBalance.ExtDimension2 = DocumentPurchaseInvoice.Ref)</QueryText>
+		AND (GeneralJournalBalance.ExtDimension2 = DocumentPurchaseInvoice.Ref)
+</QueryText>
 				<MainTable>Document.PurchaseInvoice</MainTable>
 				<ListSettings>
 					<dcsset:filter>
@@ -249,6 +315,7 @@ FROM
 									<dcsset:comparisonType>InList</dcsset:comparisonType>
 									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.InvoiceStatuses.Deleted</dcsset:right>
 									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.InvoiceStatuses.Draft</dcsset:right>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.InvoiceStatuses.New</dcsset:right>
 								</dcsset:item>
 							</dcsset:filter>
 							<dcsset:appearance>
@@ -268,7 +335,6 @@ FROM
 								<dcsset:item xsi:type="dcsset:FilterItemComparison">
 									<dcsset:left xsi:type="dcscor:Field">InvoiceStatus</dcsset:left>
 									<dcsset:comparisonType>InList</dcsset:comparisonType>
-									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.InvoiceStatuses.New</dcsset:right>
 									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.InvoiceStatuses.NoCharge</dcsset:right>
 									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.InvoiceStatuses.Paid</dcsset:right>
 								</dcsset:item>
@@ -335,6 +401,15 @@ FROM
 				<Command>0:349faa7b-a8e2-492c-b6d6-ed3c598ea1cd</Command>
 				<Type>Auto</Type>
 				<DefaultVisible>false</DefaultVisible>
+			</Item>
+			<Item>
+				<Command>Document.PurchaseInvoice.Command.Print</Command>
+				<Type>Auto</Type>
+				<CommandGroup>FormCommandBarImportant</CommandGroup>
+				<DefaultVisible>false</DefaultVisible>
+				<Visible>
+					<xr:Common>false</xr:Common>
+				</Visible>
 			</Item>
 		</CommandBar>
 	</CommandInterface>

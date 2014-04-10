@@ -5,12 +5,93 @@
 	<UseForFoldersAndItems>Items</UseForFoldersAndItems>
 	<AutoCommandBar name="FormCommandBar" id="-1"/>
 	<Events>
+		<Event name="AfterWriteAtServer">AfterWriteAtServer</Event>
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
 	</Events>
 	<ChildItems>
 		<Pages name="Group2" id="84">
 			<ExtendedTooltip name="Group2ExtendedTooltip" id="85"/>
 			<ChildItems>
+				<Page name="Group4" id="98">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Address</v8:content>
+						</v8:item>
+					</Title>
+					<ExtendedTooltip name="Group4ExtendedTooltip" id="99"/>
+					<ChildItems>
+						<InputField name="Owner" id="100">
+							<DataPath>Object.Owner</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Customer/vendor</v8:content>
+								</v8:item>
+							</Title>
+							<ContextMenu name="OwnerContextMenu" id="101"/>
+							<ExtendedTooltip name="OwnerExtendedTooltip" id="102"/>
+						</InputField>
+						<InputField name="Description" id="1">
+							<DataPath>Object.Description</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="DescriptionContextMenu" id="2"/>
+							<ExtendedTooltip name="DescriptionExtendedTooltip" id="33"/>
+						</InputField>
+						<InputField name="Email" id="13">
+							<DataPath>Object.Email</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="EmailContextMenu" id="14"/>
+							<ExtendedTooltip name="EmailExtendedTooltip" id="39"/>
+						</InputField>
+						<InputField name="AddressLine1" id="15">
+							<DataPath>Object.AddressLine1</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="AddressLine1ContextMenu" id="16"/>
+							<ExtendedTooltip name="AddressLine1ExtendedTooltip" id="40"/>
+						</InputField>
+						<InputField name="AddressLine2" id="17">
+							<DataPath>Object.AddressLine2</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="AddressLine2ContextMenu" id="18"/>
+							<ExtendedTooltip name="AddressLine2ExtendedTooltip" id="41"/>
+						</InputField>
+						<InputField name="AddressLine3" id="66">
+							<DataPath>Object.AddressLine3</DataPath>
+							<ContextMenu name="AddressLine3ContextMenu" id="67"/>
+							<ExtendedTooltip name="AddressLine3ExtendedTooltip" id="68"/>
+						</InputField>
+						<InputField name="City" id="19">
+							<DataPath>Object.City</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="CityContextMenu" id="20"/>
+							<ExtendedTooltip name="CityExtendedTooltip" id="42"/>
+						</InputField>
+						<InputField name="State" id="21">
+							<DataPath>Object.State</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="StateContextMenu" id="22"/>
+							<ExtendedTooltip name="StateExtendedTooltip" id="43"/>
+						</InputField>
+						<InputField name="Country" id="23">
+							<DataPath>Object.Country</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="CountryContextMenu" id="24"/>
+							<ExtendedTooltip name="CountryExtendedTooltip" id="44"/>
+						</InputField>
+						<InputField name="ZIP" id="25">
+							<DataPath>Object.ZIP</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="ZIPContextMenu" id="26"/>
+							<ExtendedTooltip name="ZIPExtendedTooltip" id="45"/>
+						</InputField>
+						<InputField name="RemitTo" id="31">
+							<DataPath>Object.RemitTo</DataPath>
+							<ContextMenu name="RemitToContextMenu" id="32"/>
+							<ExtendedTooltip name="RemitToExtendedTooltip" id="46"/>
+						</InputField>
+					</ChildItems>
+				</Page>
 				<Page name="Main" id="86">
 					<Title>
 						<v8:item>
@@ -26,18 +107,6 @@
 					</ToolTip>
 					<ExtendedTooltip name="MainExtendedTooltip" id="87"/>
 					<ChildItems>
-						<InputField name="Description" id="1">
-							<DataPath>Object.Description</DataPath>
-							<EditMode>EnterOnInput</EditMode>
-							<ContextMenu name="DescriptionContextMenu" id="2"/>
-							<ExtendedTooltip name="DescriptionExtendedTooltip" id="33"/>
-						</InputField>
-						<InputField name="Email" id="13">
-							<DataPath>Object.Email</DataPath>
-							<EditMode>EnterOnInput</EditMode>
-							<ContextMenu name="EmailContextMenu" id="14"/>
-							<ExtendedTooltip name="EmailExtendedTooltip" id="39"/>
-						</InputField>
 						<InputField name="Salutation" id="60">
 							<DataPath>Object.Salutation</DataPath>
 							<Width>10</Width>
@@ -116,58 +185,6 @@
 						</UsualGroup>
 					</ChildItems>
 				</Page>
-				<Page name="Group4" id="98">
-					<Title>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Address</v8:content>
-						</v8:item>
-					</Title>
-					<ExtendedTooltip name="Group4ExtendedTooltip" id="99"/>
-					<ChildItems>
-						<InputField name="AddressLine1" id="15">
-							<DataPath>Object.AddressLine1</DataPath>
-							<EditMode>EnterOnInput</EditMode>
-							<ContextMenu name="AddressLine1ContextMenu" id="16"/>
-							<ExtendedTooltip name="AddressLine1ExtendedTooltip" id="40"/>
-						</InputField>
-						<InputField name="AddressLine2" id="17">
-							<DataPath>Object.AddressLine2</DataPath>
-							<EditMode>EnterOnInput</EditMode>
-							<ContextMenu name="AddressLine2ContextMenu" id="18"/>
-							<ExtendedTooltip name="AddressLine2ExtendedTooltip" id="41"/>
-						</InputField>
-						<InputField name="AddressLine3" id="66">
-							<DataPath>Object.AddressLine3</DataPath>
-							<ContextMenu name="AddressLine3ContextMenu" id="67"/>
-							<ExtendedTooltip name="AddressLine3ExtendedTooltip" id="68"/>
-						</InputField>
-						<InputField name="City" id="19">
-							<DataPath>Object.City</DataPath>
-							<EditMode>EnterOnInput</EditMode>
-							<ContextMenu name="CityContextMenu" id="20"/>
-							<ExtendedTooltip name="CityExtendedTooltip" id="42"/>
-						</InputField>
-						<InputField name="State" id="21">
-							<DataPath>Object.State</DataPath>
-							<EditMode>EnterOnInput</EditMode>
-							<ContextMenu name="StateContextMenu" id="22"/>
-							<ExtendedTooltip name="StateExtendedTooltip" id="43"/>
-						</InputField>
-						<InputField name="Country" id="23">
-							<DataPath>Object.Country</DataPath>
-							<EditMode>EnterOnInput</EditMode>
-							<ContextMenu name="CountryContextMenu" id="24"/>
-							<ExtendedTooltip name="CountryExtendedTooltip" id="44"/>
-						</InputField>
-						<InputField name="ZIP" id="25">
-							<DataPath>Object.ZIP</DataPath>
-							<EditMode>EnterOnInput</EditMode>
-							<ContextMenu name="ZIPContextMenu" id="26"/>
-							<ExtendedTooltip name="ZIPExtendedTooltip" id="45"/>
-						</InputField>
-					</ChildItems>
-				</Page>
 				<Page name="Group3" id="96">
 					<Title>
 						<v8:item>
@@ -186,16 +203,6 @@
 							<DataPath>Object.SalesPerson</DataPath>
 							<ContextMenu name="SalesPersonContextMenu" id="94"/>
 							<ExtendedTooltip name="SalesPersonExtendedTooltip" id="95"/>
-						</InputField>
-						<InputField name="RemitTo" id="31">
-							<DataPath>Object.RemitTo</DataPath>
-							<ContextMenu name="RemitToContextMenu" id="32"/>
-							<ExtendedTooltip name="RemitToExtendedTooltip" id="46"/>
-						</InputField>
-						<InputField name="SalesTaxCode" id="49">
-							<DataPath>Object.SalesTaxCode</DataPath>
-							<ContextMenu name="SalesTaxCodeContextMenu" id="50"/>
-							<ExtendedTooltip name="SalesTaxCodeExtendedTooltip" id="51"/>
 						</InputField>
 						<InputField name="Notes" id="55">
 							<DataPath>Object.Notes</DataPath>

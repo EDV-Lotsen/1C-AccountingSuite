@@ -103,6 +103,8 @@ Procedure AuditLogDeleteBeforeDelete(Source, Cancel) Export
 				Else
 					Reg.Amount = SourceObj.DocumentTotalRC;
 				EndIf;
+
+
 				
 				If TypeOf(SourceObj) = Type("DocumentObject.SalesOrder") Then
 					Reg.ObjectName = SourceObj.Number;
@@ -288,7 +290,7 @@ Function DocumentType(Object,Reg) Export
 		Else
 			
 		EndIf;
-		
+
 EndFunction
 
 Procedure DocumentNewSetBeforeWrite(Source, Cancel, WriteMode, PostingMode) Export

@@ -4,7 +4,9 @@
 //------------------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////////////
-// RECORDSET EVENTS HANDLERS
+#Region EVENT_HANDLERS
+
+#If Server Or ThickClientOrdinaryApplication Or ExternalConnection Then
 
 Procedure BeforeWrite(Cancel, Replacing)
 	
@@ -32,3 +34,7 @@ Procedure OnWrite(Cancel, Replacing)
 	DocumentPosting.CheckRecordsetChangesOnWrite(Filter.Recorder.Value, AdditionalProperties, Cancel);	
 
 EndProcedure
+
+#EndIf
+
+#EndRegion

@@ -27,8 +27,8 @@ EndFunction
 Procedure BeforeWrite(Cancel, WriteParameters)
 	
 	//Closing period
-	If DocumentPosting.DocumentPeriodIsClosed(Object.Ref, Object.Date) Then
-		Cancel = Not DocumentPosting.DocumentWritePermitted(WriteParameters);
+	If PeriodClosingServerCall.DocumentPeriodIsClosed(Object.Ref, Object.Date) Then
+		Cancel = Not PeriodClosingServerCall.DocumentWritePermitted(WriteParameters);
 		If Cancel Then
 			If WriteParameters.Property("PeriodClosingPassword") And WriteParameters.Property("Password") Then
 				If WriteParameters.Password = TRUE Then //Writing the document requires a password
@@ -64,6 +64,43 @@ Procedure BeforeWrite(Cancel, WriteParameters)
 		EndIf;
 	
 	EndIf;
+	
+	If checkMixture() = True Then
+		Message("Cannot have both A/R and A/P accounts in a single transaction.");
+		Cancel = True;
+        Return;
+	EndIf;
+	
+	If linkedCorrectly() = 1 Then
+		Message("Cannot indicate a company in a line with an account that is NOT A/R or A/P.");
+		Cancel = True;
+        Return;
+	EndIf;
+	
+	If linkedCorrectly() = 2 Then
+		Message("For Accounts Payable, the company indicated must be a vendor.");
+		Cancel = True;
+        Return;
+	EndIf;
+
+	If linkedCorrectly() = 3 Then
+		Message("For Accounts Receivable, the company indicated must be a customer.");
+		Cancel = True;
+        Return;
+	EndIf;
+
+	If linkedCorrectly() = 4 Then
+		Message("Lines with an A/P account must have a vendor indicated.");
+		Cancel = True;
+        Return;
+	EndIf;
+
+	If linkedCorrectly() = 5 Then
+		Message("Lines with an A/R account must have a customer indicated.");
+		Cancel = True;
+        Return;
+	EndIf;
+
 	
 EndProcedure
 
@@ -116,6 +153,52 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
 	Items.ExchangeRate.Title = GeneralFunctionsReusable.DefaultCurrencySymbol() + "/1" + Object.Currency.Symbol;
 	
+	ApplyConditionalAppearance();
+EndProcedure
+
+&AtServer
+Procedure ApplyConditionalAppearance()
+	
+	CA = ThisForm.ConditionalAppearance; 
+ 	CA.Items.Clear(); 
+	
+	//If Class analytics is not applicable for an account then make Class column invisible
+	ElementCA = CA.Items.Add();
+	
+	FieldAppearance = ElementCA.Fields.Items.Add(); 
+	FieldAppearance.Field = New DataCompositionField("LineItemsClass"); 
+ 	FieldAppearance.Use = True;
+	
+	Request = New Query("SELECT ALLOWED
+	                    |	ChartOfAccounts.Ref
+	                    |FROM
+	                    |	ChartOfAccounts.ChartOfAccounts AS ChartOfAccounts
+	                    |WHERE
+	                    |	ChartOfAccounts.AccountType IN(&AccountTypes)");
+	
+	AvailableAccountTypes = New ValueList();
+	AvailableAccountTypes.Add(Enums.AccountTypes.Expense);
+	AvailableAccountTypes.Add(Enums.AccountTypes.OtherExpense);
+	AvailableAccountTypes.Add(Enums.AccountTypes.CostOfSales);
+	AvailableAccountTypes.Add(Enums.AccountTypes.IncomeTaxExpense);
+	AvailableAccountTypes.Add(Enums.AccountTypes.Income);
+	AvailableAccountTypes.Add(Enums.AccountTypes.OtherIncome);
+	Request.SetParameter("AccountTypes", AvailableAccountTypes);
+	
+	ResTab = Request.Execute().Unload();
+	AccArray = ResTab.UnloadColumn("Ref");
+	AvailableAccounts = New ValueList();
+	AvailableAccounts.LoadValues(AccArray);
+	
+ 	FilterElement = ElementCA.Filter.Items.Add(Type("DataCompositionFilterItem")); // current row filter 
+ 	FilterElement.LeftValue 		= New DataCompositionField("Object.LineItems.Account"); 
+ 	FilterElement.ComparisonType 	= DataCompositionComparisonType.NotInList; 
+	FilterElement.RightValue 		= AvailableAccounts; 
+	FilterElement.Use				= True;
+	
+	ElementCA.Appearance.SetParameterValue("Readonly", True); 
+	ElementCA.Appearance.SetParameterValue("BackColor", WebColors.WhiteSmoke); 
+
 EndProcedure
 
 &AtClient
@@ -137,8 +220,8 @@ EndProcedure
 Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
 	
 	//Period closing
-	If DocumentPosting.DocumentPeriodIsClosed(CurrentObject.Ref, CurrentObject.Date) Then
-		PermitWrite = DocumentPosting.DocumentWritePermitted(WriteParameters);
+	If PeriodClosingServerCall.DocumentPeriodIsClosed(CurrentObject.Ref, CurrentObject.Date) Then
+		PermitWrite = PeriodClosingServerCall.DocumentWritePermitted(WriteParameters);
 		CurrentObject.AdditionalProperties.Insert("PermitWrite", PermitWrite);	
 	EndIf;
 
@@ -214,6 +297,69 @@ Procedure ReverseJournalEntry(Old)
 	
 EndProcedure
 
+Function checkMixture()
+	
+	containsAP = False;
+	containsAR = False;
+	
+	For Each CurRowLineItems In Object.LineItems Do
+		
+		If CurRowLineItems.Account.AccountType = Enums.AccountTypes.AccountsPayable Then
+			containsAP = True;
+		EndIf;
+		
+		If CurRowLineItems.Account.AccountType = Enums.AccountTypes.AccountsReceivable Then
+			containsAR = True;
+		EndIf;
+		
+	EndDo;
+	
+	If containsAR = True AND containsAP = True Then
+		Return True;
+	EndIf;
+	
+	Return False;
+	
+EndFunction
+
+Function linkedCorrectly()
+	
+	For Each CurRowLineItems In Object.LineItems Do
+		
+		If CurRowLineItems.Company <> Catalogs.Companies.EmptyRef() Then
+			
+			If CurRowLineItems.Account.AccountType <> Enums.AccountTypes.AccountsPayable AND 
+					CurRowLineItems.Account.AccountType <> Enums.AccountTypes.AccountsReceivable Then
+				Return 1; // error - other account with company
+			EndIf;
+			
+			If CurRowLineItems.Account.AccountType = Enums.AccountTypes.AccountsPayable Then
+				If CurRowLineItems.Company.Vendor <> True Then
+					Return 2; // error - ap with wrong company type
+				EndIf;
+			EndIf;
+				
+			If CurRowLineItems.Account.AccountType = Enums.AccountTypes.AccountsReceivable Then
+				If CurRowLineItems.Company.Customer <> True Then
+					Return 3; // error - ar with wrong company type
+				EndIf;
+			EndIf;
+			
+		Else
+			
+			If CurRowLineItems.Account.AccountType = Enums.AccountTypes.AccountsPayable Then
+				Return 4; // must have vendor
+			EndIf;
+				
+			If CurRowLineItems.Account.AccountType = Enums.AccountTypes.AccountsReceivable Then
+				Return 5;  // must have customer
+			EndIf
+			
+		EndIf;
+		
+	EndDo
+	
+EndFunction
 
 
 

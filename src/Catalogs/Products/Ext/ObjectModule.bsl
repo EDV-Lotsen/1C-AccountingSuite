@@ -58,42 +58,61 @@ Procedure OnWrite(Cancel)
 	////			
 	////Message("Sent /bigcomproduct request");
 	//
-	//// zapier webhooks
-	//
-	//Query = New Query("SELECT
-	//				  |	ZapierWebhooks.Description
-	//				  |FROM
-	//				  |	Catalog.ZapierWebhooks AS ZapierWebhooks
-	//				  |WHERE
-	//				  |	ZapierWebhooks.Code = ""new_item_webhook""");
-	//				  
-	//QueryResult = Query.Execute();
-	//If QueryResult.IsEmpty() Then		
-	//Else
-	//	
-	//	WebhookMap = New Map(); 
-	//	WebhookMap.Insert("apisecretkey",Constants.APISecretKey.Get());
-	//	WebhookMap.Insert("resource","items");
-	//	If NewObject = True Then
-	//		WebhookMap.Insert("action","create");
-	//	Else
-	//		WebhookMap.Insert("action","update");
-	//	EndIf;
-	//	WebhookMap.Insert("api_code",Ref.api_code);
-	//	WebhookMap.Insert("item_code",Ref.Code);
-	//	WebhookMap.Insert("item_description",Ref.Description);
-	//	
-	//	Selection = QueryResult.Choose();
-	//	While Selection.Next() Do
-	//		
-	//		WebhookParams = New Array();
-	//		WebhookParams.Add(Selection.Description);
-	//		WebhookParams.Add(WebhookMap);
-	//		LongActions.ExecuteInBackground("GeneralFunctions.SendWebhook", WebhookParams);
-	//		
-	//	EndDo;						
-	//EndIf;
+	// zapier webhooks
 	
+	Query = New Query("SELECT
+					  |	ZapierWebhooks.Description
+					  |FROM
+					  |	Catalog.ZapierWebhooks AS ZapierWebhooks
+					  |WHERE
+					  |	ZapierWebhooks.Code = ""new_item_webhook""");
+					  
+	QueryResult = Query.Execute();
+	If QueryResult.IsEmpty() Then		
+	Else
+		
+		WebhookMap = New Map(); 
+		WebhookMap.Insert("apisecretkey",Constants.APISecretKey.Get());
+		WebhookMap.Insert("resource","items");
+		If NewObject = True Then
+			WebhookMap.Insert("action","create");
+		Else
+			WebhookMap.Insert("action","update");
+		EndIf;
+		//WebhookMap.Insert("api_code",Ref.api_code);
+		WebhookMap.Insert("item_code",Ref.Code);
+		WebhookMap.Insert("item_description",Ref.Description);
+		
+		Selection = QueryResult.Select();
+		While Selection.Next() Do
+			
+			WebhookParams = New Array();
+			WebhookParams.Add(Selection.Description);
+			WebhookParams.Add(WebhookMap);
+			LongActions.ExecuteInBackground("GeneralFunctions.SendWebhook", WebhookParams);
+			
+		EndDo;						
+	EndIf;
+	
+	email_items_webhook = Constants.items_webhook_email.Get();
+	
+	If NOT email_items_webhook = "" Then
+	//If true then			
+		WebhookMap2 = GeneralFunctions.ReturnProductObjectMap(Ref);
+		WebhookMap2.Insert("resource","items");
+		If NewObject = True Then
+			WebhookMap2.Insert("action","create");
+		Else
+			WebhookMap2.Insert("action","update");
+		EndIf;
+		WebhookMap2.Insert("apisecretkey",Constants.APISecretKey.Get());
+		
+		WebhookParams2 = New Array();
+		WebhookParams2.Add(email_items_webhook);
+		WebhookParams2.Add(WebhookMap2);
+		LongActions.ExecuteInBackground("GeneralFunctions.EmailWebhook", WebhookParams2);
+		
+	EndIf;
 
 EndProcedure
 

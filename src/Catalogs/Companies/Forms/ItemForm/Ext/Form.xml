@@ -57,6 +57,9 @@
 					<CheckBoxType>Auto</CheckBoxType>
 					<ContextMenu name="CustomerContextMenu" id="44"/>
 					<ExtendedTooltip name="CustomerExtendedTooltip" id="157"/>
+					<Events>
+						<Event name="OnChange">CustomerOnChange</Event>
+					</Events>
 				</CheckBoxField>
 				<CheckBoxField name="Vendor" id="45">
 					<DataPath>Object.Vendor</DataPath>
@@ -224,7 +227,6 @@
 						</InputField>
 						<InputField name="DwollaID" id="290">
 							<DataPath>Object.DwollaID</DataPath>
-							<Visible>false</Visible>
 							<ContextMenu name="DwollaIDContextMenu" id="291"/>
 							<ExtendedTooltip name="DwollaIDExtendedTooltip" id="292"/>
 						</InputField>
@@ -292,7 +294,6 @@
 					</ChildItems>
 				</Page>
 				<Page name="CreditCard" id="182">
-					<Visible>false</Visible>
 					<Title>
 						<v8:item>
 							<v8:lang>en</v8:lang>
@@ -408,29 +409,29 @@
 							<ContextMenu name="ProjectTableContextMenu" id="231"/>
 							<AutoCommandBar name="ProjectTableCommandBar" id="232"/>
 							<ExtendedTooltip name="ProjectTableExtendedTooltip" id="233"/>
-							<SearchStringAddition name="ProjectTableSearchString" id="356">
+							<SearchStringAddition name="ProjectTableSearchString" id="367">
 								<AdditionSource>
 									<Item>ProjectTable</Item>
 									<Type>SearchStringRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="ProjectTableSearchStringContextMenu" id="357"/>
-								<ExtendedTooltip name="ProjectTableSearchStringExtendedTooltip" id="358"/>
+								<ContextMenu name="ProjectTableSearchStringContextMenu" id="368"/>
+								<ExtendedTooltip name="ProjectTableSearchStringExtendedTooltip" id="369"/>
 							</SearchStringAddition>
-							<ViewStatusAddition name="ProjectTableViewStatus" id="359">
+							<ViewStatusAddition name="ProjectTableViewStatus" id="370">
 								<AdditionSource>
 									<Item>ProjectTable</Item>
 									<Type>ViewStatusRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="ProjectTableViewStatusContextMenu" id="360"/>
-								<ExtendedTooltip name="ProjectTableViewStatusExtendedTooltip" id="361"/>
+								<ContextMenu name="ProjectTableViewStatusContextMenu" id="371"/>
+								<ExtendedTooltip name="ProjectTableViewStatusExtendedTooltip" id="372"/>
 							</ViewStatusAddition>
-							<SearchControlAddition name="ProjectTableSearchControl" id="362">
+							<SearchControlAddition name="ProjectTableSearchControl" id="373">
 								<AdditionSource>
 									<Item>ProjectTable</Item>
 									<Type>SearchControl</Type>
 								</AdditionSource>
-								<ContextMenu name="ProjectTableSearchControlContextMenu" id="363"/>
-								<ExtendedTooltip name="ProjectTableSearchControlExtendedTooltip" id="364"/>
+								<ContextMenu name="ProjectTableSearchControlContextMenu" id="374"/>
+								<ExtendedTooltip name="ProjectTableSearchControlExtendedTooltip" id="375"/>
 							</SearchControlAddition>
 							<ChildItems>
 								<LabelField name="ProjectTableRef" id="263">
@@ -548,6 +549,55 @@
 							</Title>
 							<ContextMenu name="api_codeContextMenu" id="344"/>
 							<ExtendedTooltip name="api_codeExtendedTooltip" id="345"/>
+						</InputField>
+					</ChildItems>
+				</Page>
+				<Page name="TaxTab" id="356">
+					<Visible>false</Visible>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Sales Tax</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Tax tab</v8:content>
+						</v8:item>
+					</ToolTip>
+					<ExtendedTooltip name="TaxTabExtendedTooltip" id="357"/>
+					<ChildItems>
+						<CheckBoxField name="Taxable" id="358">
+							<DataPath>Object.Taxable</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Customer is taxable</v8:content>
+								</v8:item>
+							</Title>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="TaxableContextMenu" id="359"/>
+							<ExtendedTooltip name="TaxableExtendedTooltip" id="360"/>
+							<Events>
+								<Event name="OnChange">TaxableOnChange</Event>
+							</Events>
+						</CheckBoxField>
+						<InputField name="SalesTaxRate" id="361">
+							<DataPath>Object.SalesTaxRate</DataPath>
+							<ContextMenu name="SalesTaxRateContextMenu" id="362"/>
+							<ExtendedTooltip name="SalesTaxRateExtendedTooltip" id="363"/>
+						</InputField>
+						<InputField name="ResaleNO" id="364">
+							<DataPath>Object.ResaleNO</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Tax resale #</v8:content>
+								</v8:item>
+							</Title>
+							<ContextMenu name="ResaleNOContextMenu" id="365"/>
+							<ExtendedTooltip name="ResaleNOExtendedTooltip" id="366"/>
 						</InputField>
 					</ChildItems>
 				</Page>

@@ -17,7 +17,7 @@
 			<Location>Constant.MultiLocation</Location>
 			<PrivilegedGetMode>true</PrivilegedGetMode>
 			<Content>
-				<xr:Object>Document.SalesInvoice.Attribute.Location</xr:Object>
+				<xr:Object>Document.SalesInvoice.Attribute.LocationActual</xr:Object>
 				<xr:Object>Document.PurchaseInvoice.Attribute.LocationActual</xr:Object>
 				<xr:Object>Document.PurchaseOrder.Attribute.Location</xr:Object>
 				<xr:Object>Document.SalesOrder.Attribute.Location</xr:Object>
@@ -28,6 +28,13 @@
 				<xr:Object>Document.InventoryBeginningBalances.Attribute.Location</xr:Object>
 				<xr:Object>AccumulationRegister.InventoryJrnl.Dimension.Location</xr:Object>
 				<xr:Object>Catalog.Products.Attribute.DefaultLocation</xr:Object>
+				<xr:Object>Document.SalesInvoice.TabularSection.LineItems.Attribute.Location</xr:Object>
+				<xr:Object>Document.SalesInvoice.TabularSection.LineItems.Attribute.LocationActual</xr:Object>
+				<xr:Object>Document.SalesOrder.TabularSection.LineItems.Attribute.Location</xr:Object>
+				<xr:Object>Document.PurchaseOrder.TabularSection.LineItems.Attribute.Location</xr:Object>
+				<xr:Object>Document.PurchaseInvoice.TabularSection.LineItems.Attribute.Location</xr:Object>
+				<xr:Object>Document.PurchaseInvoice.TabularSection.LineItems.Attribute.LocationActual</xr:Object>
+				<xr:Object>Catalog.Locations</xr:Object>
 			</Content>
 		</Properties>
 	</FunctionalOption>

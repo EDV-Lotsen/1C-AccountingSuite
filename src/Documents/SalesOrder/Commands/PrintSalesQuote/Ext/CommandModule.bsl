@@ -1,19 +1,42 @@
-﻿&AtClient
-Procedure CommandProcessing(CommandParameter, CommandExecuteParameters)
-	//{{_PRINT_WIZARD(Print)
-	Spreadsheet = New SpreadsheetDocument;
-	Print(Spreadsheet, CommandParameter);
+﻿
+////////////////////////////////////////////////////////////////////////////////
+// Sales order: Print command
+//------------------------------------------------------------------------------
+// Available on:
+// - Client (managed application)
+// - Server
+//
 
-	Spreadsheet.ShowGrid = False;
-	Spreadsheet.Protection = False;
-	Spreadsheet.FitToPage = True;
-	Spreadsheet.ReadOnly = False;
+////////////////////////////////////////////////////////////////////////////////
+#Region COMMANDS_HANDLERS
+
+&AtClient
+Procedure CommandProcessing(CommandParameter, CommandExecuteParameters)
+	
+	// Create a new spreadsheet.
+	Spreadsheet      = New SpreadsheetDocument;
+	SpreadsheetTitle = "";
+	
+	// Output the documents to spreadsheet.
+	Print(Spreadsheet, SpreadsheetTitle, CommandParameter);
+	
+	// Set the proper options and open the preview.
+	Spreadsheet.ShowGrid    = False;
 	Spreadsheet.ShowHeaders = False;
-	Spreadsheet.Show("Sales quote");
-	//}}
+	Spreadsheet.FitToPage   = True;
+	Spreadsheet.ReadOnly    = False;
+	Spreadsheet.Protection  = False;
+	Spreadsheet.Show(NStr("en = 'Print preview'") + ?(Not IsBlankString(SpreadsheetTitle), ": " + SpreadsheetTitle, ""));
+	
 EndProcedure
 
 &AtServer
-Procedure Print(Spreadsheet, CommandParameter)
-	Documents.SalesOrder.PrintQuote(Spreadsheet, CommandParameter);
+Procedure Print(Spreadsheet, SpreadsheetTitle, CommandParameter)
+	
+	// Call document module to print the document.
+	Documents.SalesOrder.PrintQuote(Spreadsheet, SpreadsheetTitle, CommandParameter);
+	
 EndProcedure
+
+#EndRegion
+

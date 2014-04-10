@@ -318,13 +318,13 @@
 	END AS D0,
 	CASE
 		WHEN DATEDIFF(GeneralJournalBalance.ExtDimension2.Date, &amp;EndOfPeriod, DAY) &lt;= &amp;Interval1
-				AND DATEDIFF(GeneralJournalBalance.ExtDimension2.Date, &amp;EndOfPeriod, DAY) &gt; 0
+				AND DATEDIFF(GeneralJournalBalance.ExtDimension2.Date, &amp;EndOfPeriod, DAY) &gt;= 0
 			THEN GeneralJournalBalance.AmountClosingBalance
 		ELSE 0
 	END AS D1_FCY,
 	CASE
 		WHEN DATEDIFF(GeneralJournalBalance.ExtDimension2.Date, &amp;EndOfPeriod, DAY) &lt;= &amp;Interval1
-				AND DATEDIFF(GeneralJournalBalance.ExtDimension2.Date, &amp;EndOfPeriod, DAY) &gt; 0
+				AND DATEDIFF(GeneralJournalBalance.ExtDimension2.Date, &amp;EndOfPeriod, DAY) &gt;= 0
 			THEN GeneralJournalBalance.AmountRCClosingBalance
 		ELSE 0
 	END AS D1,

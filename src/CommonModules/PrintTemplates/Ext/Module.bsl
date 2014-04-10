@@ -77,7 +77,8 @@ Function ContactInfoDataset(Company, Type, AddressID) Export
 		                  |	Addresses.State.Code AS State,
 		                  |	Addresses.Country,
 		                  |	Addresses.ZIP,
-		                  |	Addresses.RemitTo
+		                  |	Addresses.RemitTo,
+		                  |	Addresses.Salutation
 		                  |FROM
 		                  |	Catalog.Addresses AS Addresses
 		                  |WHERE
@@ -98,7 +99,8 @@ Function ContactInfoDataset(Company, Type, AddressID) Export
 		                  |	Addresses.City,
 		                  |	Addresses.State.Code AS State,
 		                  |	Addresses.Country,
-		                  |	Addresses.ZIP
+		                  |	Addresses.ZIP,
+		                  |	Addresses.Salutation
 		                  |FROM
 		                  |	Catalog.Addresses AS Addresses
 		                  |WHERE
@@ -144,6 +146,7 @@ Function ContactInfoDataset(Company, Type, AddressID) Export
 		Info.Insert("ThemShipFirstName", Dataset[0].FirstName);
 		Info.Insert("ThemShipMiddleName", Dataset[0].MiddleName);
 		Info.Insert("ThemShipLastName", Dataset[0].Lastname);
+		Info.Insert("ThemShipSalutation", Dataset[0].Salutation);
 	ElsIf Type = "ThemBill" Then
 		Info.Insert("ThemCode", Company.Code);
 		Info.Insert("ThemName", Company.Description);
@@ -162,6 +165,7 @@ Function ContactInfoDataset(Company, Type, AddressID) Export
 		Info.Insert("ThemBillFirstName", Dataset[0].FirstName);
 		Info.Insert("ThemBillMiddleName", Dataset[0].MiddleName);
 		Info.Insert("ThemBillLastName", Dataset[0].Lastname);
+		Info.Insert("ThemBillSalutation", Dataset[0].Salutation);
 		Info.Insert("RemitTo", Dataset[0].RemitTo);
 	EndIf;
 

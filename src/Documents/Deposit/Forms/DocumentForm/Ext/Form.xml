@@ -104,29 +104,29 @@
 							<ContextMenu name="LineItemsContextMenu" id="10"/>
 							<AutoCommandBar name="LineItemsCommandBar" id="11"/>
 							<ExtendedTooltip name="LineItemsExtendedTooltip" id="66"/>
-							<SearchStringAddition name="LineItemsSearchString" id="99">
+							<SearchStringAddition name="LineItemsSearchString" id="105">
 								<AdditionSource>
 									<Item>LineItems</Item>
 									<Type>SearchStringRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="LineItemsSearchStringContextMenu" id="100"/>
-								<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="101"/>
+								<ContextMenu name="LineItemsSearchStringContextMenu" id="106"/>
+								<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="107"/>
 							</SearchStringAddition>
-							<ViewStatusAddition name="LineItemsViewStatus" id="102">
+							<ViewStatusAddition name="LineItemsViewStatus" id="108">
 								<AdditionSource>
 									<Item>LineItems</Item>
 									<Type>ViewStatusRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="LineItemsViewStatusContextMenu" id="103"/>
-								<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="104"/>
+								<ContextMenu name="LineItemsViewStatusContextMenu" id="109"/>
+								<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="110"/>
 							</ViewStatusAddition>
-							<SearchControlAddition name="LineItemsSearchControl" id="105">
+							<SearchControlAddition name="LineItemsSearchControl" id="111">
 								<AdditionSource>
 									<Item>LineItems</Item>
 									<Type>SearchControl</Type>
 								</AdditionSource>
-								<ContextMenu name="LineItemsSearchControlContextMenu" id="106"/>
-								<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="107"/>
+								<ContextMenu name="LineItemsSearchControlContextMenu" id="112"/>
+								<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="113"/>
 							</SearchControlAddition>
 							<Events>
 								<Event name="BeforeAddRow">LineItemsBeforeAddRow</Event>
@@ -216,29 +216,29 @@
 							<ContextMenu name="AccountsContextMenu" id="45"/>
 							<AutoCommandBar name="AccountsCommandBar" id="46"/>
 							<ExtendedTooltip name="AccountsExtendedTooltip" id="74"/>
-							<SearchStringAddition name="AccountsSearchString" id="108">
+							<SearchStringAddition name="AccountsSearchString" id="114">
 								<AdditionSource>
 									<Item>Accounts</Item>
 									<Type>SearchStringRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="AccountsSearchStringContextMenu" id="109"/>
-								<ExtendedTooltip name="AccountsSearchStringExtendedTooltip" id="110"/>
+								<ContextMenu name="AccountsSearchStringContextMenu" id="115"/>
+								<ExtendedTooltip name="AccountsSearchStringExtendedTooltip" id="116"/>
 							</SearchStringAddition>
-							<ViewStatusAddition name="AccountsViewStatus" id="111">
+							<ViewStatusAddition name="AccountsViewStatus" id="117">
 								<AdditionSource>
 									<Item>Accounts</Item>
 									<Type>ViewStatusRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="AccountsViewStatusContextMenu" id="112"/>
-								<ExtendedTooltip name="AccountsViewStatusExtendedTooltip" id="113"/>
+								<ContextMenu name="AccountsViewStatusContextMenu" id="118"/>
+								<ExtendedTooltip name="AccountsViewStatusExtendedTooltip" id="119"/>
 							</ViewStatusAddition>
-							<SearchControlAddition name="AccountsSearchControl" id="114">
+							<SearchControlAddition name="AccountsSearchControl" id="120">
 								<AdditionSource>
 									<Item>Accounts</Item>
 									<Type>SearchControl</Type>
 								</AdditionSource>
-								<ContextMenu name="AccountsSearchControlContextMenu" id="115"/>
-								<ExtendedTooltip name="AccountsSearchControlExtendedTooltip" id="116"/>
+								<ContextMenu name="AccountsSearchControlContextMenu" id="121"/>
+								<ExtendedTooltip name="AccountsSearchControlExtendedTooltip" id="122"/>
 							</SearchControlAddition>
 							<Events>
 								<Event name="OnChange">AccountsOnChange</Event>
@@ -276,6 +276,18 @@
 									<EditMode>EnterOnInput</EditMode>
 									<ContextMenu name="AccountsMemoContextMenu" id="54"/>
 									<ExtendedTooltip name="AccountsMemoExtendedTooltip" id="78"/>
+								</InputField>
+								<InputField name="AccountsProject" id="99">
+									<DataPath>Object.Accounts.Project</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="AccountsProjectContextMenu" id="100"/>
+									<ExtendedTooltip name="AccountsProjectExtendedTooltip" id="101"/>
+								</InputField>
+								<InputField name="AccountsClass" id="102">
+									<DataPath>Object.Accounts.Class</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="AccountsClassContextMenu" id="103"/>
+									<ExtendedTooltip name="AccountsClassExtendedTooltip" id="104"/>
 								</InputField>
 							</ChildItems>
 						</Table>

@@ -36,75 +36,177 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="20"/>
-			<SearchStringAddition name="ListSearchString" id="35">
+			<SearchStringAddition name="ListSearchString" id="38">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="36"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="37"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="39"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="40"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="38">
+			<ViewStatusAddition name="ListViewStatus" id="41">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="39"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="40"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="42"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="43"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="41">
+			<SearchControlAddition name="ListSearchControl" id="44">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="42"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="43"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="45"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="46"/>
 			</SearchControlAddition>
 			<ChildItems>
 				<LabelField name="Date" id="4">
 					<DataPath>List.Date</DataPath>
 					<DefaultItem>true</DefaultItem>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Sales order date</v8:content>
+						</v8:item>
+					</ToolTip>
 					<HorizontalAlign>Right</HorizontalAlign>
+					<Width>10</Width>
 					<ContextMenu name="DateContextMenu" id="5"/>
 					<ExtendedTooltip name="DateExtendedTooltip" id="21"/>
 				</LabelField>
-				<LabelField name="PromisedDate" id="16">
-					<DataPath>List.PromisedDate</DataPath>
-					<ContextMenu name="PromisedDateContextMenu" id="17"/>
-					<ExtendedTooltip name="PromisedDateExtendedTooltip" id="22"/>
+				<LabelField name="DeliveryDate" id="16">
+					<DataPath>List.DeliveryDate</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Exp. deliv.</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Expected delivery date</v8:content>
+						</v8:item>
+					</ToolTip>
+					<HorizontalAlign>Right</HorizontalAlign>
+					<Width>10</Width>
+					<ContextMenu name="DeliveryDateContextMenu" id="17"/>
+					<ExtendedTooltip name="DeliveryDateExtendedTooltip" id="22"/>
 				</LabelField>
 				<LabelField name="OrderStatus" id="18">
 					<DataPath>List.OrderStatus</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Status</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Sales order status</v8:content>
+						</v8:item>
+					</ToolTip>
 					<Width>10</Width>
+					<HorizontalStretch>false</HorizontalStretch>
 					<ContextMenu name="OrderStatusContextMenu" id="19"/>
 					<ExtendedTooltip name="OrderStatusExtendedTooltip" id="23"/>
 				</LabelField>
 				<LabelField name="Number" id="6">
 					<DataPath>List.Number</DataPath>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Sales order number</v8:content>
+						</v8:item>
+					</ToolTip>
+					<Width>10</Width>
+					<HorizontalStretch>false</HorizontalStretch>
 					<ContextMenu name="NumberContextMenu" id="7"/>
 					<ExtendedTooltip name="NumberExtendedTooltip" id="24"/>
 				</LabelField>
 				<LabelField name="RefNum" id="29">
 					<DataPath>List.RefNum</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Ref. #</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Customer purchase order number /
+Reference number</v8:content>
+						</v8:item>
+					</ToolTip>
+					<Width>10</Width>
+					<HorizontalStretch>false</HorizontalStretch>
 					<ContextMenu name="RefNumContextMenu" id="30"/>
 					<ExtendedTooltip name="RefNumExtendedTooltip" id="31"/>
 				</LabelField>
 				<LabelField name="Company" id="8">
 					<DataPath>List.Company</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Customer</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Customer name</v8:content>
+						</v8:item>
+					</ToolTip>
+					<Width>15</Width>
 					<ContextMenu name="CompanyContextMenu" id="9"/>
 					<ExtendedTooltip name="CompanyExtendedTooltip" id="25"/>
 				</LabelField>
+				<LabelField name="DropshipCompany" id="32">
+					<DataPath>List.DropshipCompany</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Dropship customer</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Dropship customer name</v8:content>
+						</v8:item>
+					</ToolTip>
+					<Width>18</Width>
+					<ContextMenu name="DropshipCompanyContextMenu" id="33"/>
+					<ExtendedTooltip name="DropshipCompanyExtendedTooltip" id="34"/>
+				</LabelField>
 				<LabelField name="DocumentTotal" id="10">
 					<DataPath>List.DocumentTotal</DataPath>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Document total in foreign currency</v8:content>
+						</v8:item>
+					</ToolTip>
+					<Width>10</Width>
 					<ContextMenu name="DocumentTotalContextMenu" id="11"/>
 					<ExtendedTooltip name="DocumentTotalExtendedTooltip" id="27"/>
 				</LabelField>
 				<LabelField name="DocumentTotalRC" id="12">
 					<DataPath>List.DocumentTotalRC</DataPath>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Document total in report currency</v8:content>
+						</v8:item>
+					</ToolTip>
+					<Width>10</Width>
 					<ContextMenu name="DocumentTotalRCContextMenu" id="13"/>
 					<ExtendedTooltip name="DocumentTotalRCExtendedTooltip" id="28"/>
 				</LabelField>
-				<LabelField name="AmountBalance" id="32">
+				<LabelField name="AmountBalance" id="35">
 					<DataPath>List.AmountBalance</DataPath>
 					<Title>
 						<v8:item>
@@ -112,8 +214,8 @@
 							<v8:content>Balance</v8:content>
 						</v8:item>
 					</Title>
-					<ContextMenu name="AmountBalanceContextMenu" id="33"/>
-					<ExtendedTooltip name="AmountBalanceExtendedTooltip" id="34"/>
+					<ContextMenu name="AmountBalanceContextMenu" id="36"/>
+					<ExtendedTooltip name="AmountBalanceExtendedTooltip" id="37"/>
 				</LabelField>
 			</ChildItems>
 		</Table>
@@ -128,36 +230,50 @@
 				<ManualQuery>true</ManualQuery>
 				<DynamicDataRead>true</DynamicDataRead>
 				<QueryText>SELECT
+	// Standard attributes
 	DocumentSalesOrder.Ref,
 	DocumentSalesOrder.DataVersion,
 	DocumentSalesOrder.DeletionMark,
-	DocumentSalesOrder.Number,
-	DocumentSalesOrder.RefNum,
-	DocumentSalesOrder.Date,
 	DocumentSalesOrder.Posted,
+	DocumentSalesOrder.Number,
+	DocumentSalesOrder.Date,
+	DocumentSalesOrder.Presentation,
+	DocumentSalesOrder.PointInTime,
+	// Document attributes
 	DocumentSalesOrder.Company,
-	DocumentSalesOrder.SalesTaxRC,
-	DocumentSalesOrder.DocumentTotal,
+	DocumentSalesOrder.ShipTo,
+	DocumentSalesOrder.BillTo,
+	DocumentSalesOrder.ConfirmTo,
+	DocumentSalesOrder.RefNum,
+	DocumentSalesOrder.DropshipCompany,
+	DocumentSalesOrder.DropshipShipTo,
+	DocumentSalesOrder.DropshipConfirmTo,
+	DocumentSalesOrder.DropshipRefNum,
+	DocumentSalesOrder.SalesPerson,
 	DocumentSalesOrder.Currency,
 	DocumentSalesOrder.ExchangeRate,
-	DocumentSalesOrder.DocumentTotalRC,
 	DocumentSalesOrder.Location,
-	DocumentSalesOrder.Memo,
-	DocumentSalesOrder.ShipTo,
-	DocumentSalesOrder.PromisedDate,
-	DocumentSalesOrder.ConfirmTo,
+	DocumentSalesOrder.DeliveryDate,
+	DocumentSalesOrder.Project,
+	DocumentSalesOrder.Class,
 	DocumentSalesOrder.ManualAdjustment,
-	DocumentSalesOrder.PointInTime,
+	// Document totals
+	DocumentSalesOrder.SalesTax,
+	DocumentSalesOrder.SalesTaxRC,
+	DocumentSalesOrder.DocumentTotal,
+	DocumentSalesOrder.DocumentTotalRC,
+	// Order status
 	CASE
-		WHEN DocumentSalesOrder.DeletionMark
-			THEN VALUE(Enum.OrderStatuses.Deleted)
-		WHEN NOT DocumentSalesOrder.Posted
-			THEN VALUE(Enum.OrderStatuses.Draft)
-		WHEN OrdersStatuses.Status IS NULL 
-			THEN VALUE(Enum.OrderStatuses.Open)
-		WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.EmptyRef)
-			THEN VALUE(Enum.OrderStatuses.Open)
-		ELSE OrdersStatuses.Status
+		WHEN DocumentSalesOrder.DeletionMark THEN
+			 VALUE(Enum.OrderStatuses.Deleted)
+		WHEN NOT DocumentSalesOrder.Posted THEN
+			 VALUE(Enum.OrderStatuses.Draft)
+		WHEN OrdersStatuses.Status IS NULL THEN
+			 VALUE(Enum.OrderStatuses.Open)
+		WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.EmptyRef) THEN
+			 VALUE(Enum.OrderStatuses.Open)
+		ELSE
+			 OrdersStatuses.Status
 	END AS OrderStatus,
 	OrderTransactionsBalance.AmountBalance
 FROM
@@ -177,6 +293,88 @@ FROM
 						<dcsset:userSettingID>88619765-ccb3-46c6-ac52-38e9c992ebd4</dcsset:userSettingID>
 					</dcsset:order>
 					<dcsset:conditionalAppearance>
+						<dcsset:item>
+							<dcsset:selection>
+								<dcsset:item>
+									<dcsset:field>OrderStatus</dcsset:field>
+								</dcsset:item>
+							</dcsset:selection>
+							<dcsset:filter>
+								<dcsset:item xsi:type="dcsset:FilterItemComparison">
+									<dcsset:left xsi:type="dcscor:Field">OrderStatus</dcsset:left>
+									<dcsset:comparisonType>InList</dcsset:comparisonType>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.OrderStatuses.Deleted</dcsset:right>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.OrderStatuses.Draft</dcsset:right>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.OrderStatuses.New</dcsset:right>
+								</dcsset:item>
+							</dcsset:filter>
+							<dcsset:appearance>
+								<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+									<dcscor:parameter>TextColor</dcscor:parameter>
+									<dcscor:value xsi:type="v8ui:Color">web:DarkGray</dcscor:value>
+								</dcscor:item>
+							</dcsset:appearance>
+						</dcsset:item>
+						<dcsset:item>
+							<dcsset:selection>
+								<dcsset:item>
+									<dcsset:field>OrderStatus</dcsset:field>
+								</dcsset:item>
+							</dcsset:selection>
+							<dcsset:filter>
+								<dcsset:item xsi:type="dcsset:FilterItemComparison">
+									<dcsset:left xsi:type="dcscor:Field">OrderStatus</dcsset:left>
+									<dcsset:comparisonType>Equal</dcsset:comparisonType>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.OrderStatuses.Closed</dcsset:right>
+								</dcsset:item>
+							</dcsset:filter>
+							<dcsset:appearance>
+								<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+									<dcscor:parameter>TextColor</dcscor:parameter>
+									<dcscor:value xsi:type="v8ui:Color">web:DarkGreen</dcscor:value>
+								</dcscor:item>
+							</dcsset:appearance>
+						</dcsset:item>
+						<dcsset:item>
+							<dcsset:selection>
+								<dcsset:item>
+									<dcsset:field>OrderStatus</dcsset:field>
+								</dcsset:item>
+							</dcsset:selection>
+							<dcsset:filter>
+								<dcsset:item xsi:type="dcsset:FilterItemComparison">
+									<dcsset:left xsi:type="dcscor:Field">OrderStatus</dcsset:left>
+									<dcsset:comparisonType>Equal</dcsset:comparisonType>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.OrderStatuses.Backordered</dcsset:right>
+								</dcsset:item>
+							</dcsset:filter>
+							<dcsset:appearance>
+								<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+									<dcscor:parameter>TextColor</dcscor:parameter>
+									<dcscor:value xsi:type="v8ui:Color">web:DarkGoldenRod</dcscor:value>
+								</dcscor:item>
+							</dcsset:appearance>
+						</dcsset:item>
+						<dcsset:item>
+							<dcsset:selection>
+								<dcsset:item>
+									<dcsset:field>OrderStatus</dcsset:field>
+								</dcsset:item>
+							</dcsset:selection>
+							<dcsset:filter>
+								<dcsset:item xsi:type="dcsset:FilterItemComparison">
+									<dcsset:left xsi:type="dcscor:Field">OrderStatus</dcsset:left>
+									<dcsset:comparisonType>Equal</dcsset:comparisonType>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.OrderStatuses.Open</dcsset:right>
+								</dcsset:item>
+							</dcsset:filter>
+							<dcsset:appearance>
+								<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+									<dcscor:parameter>TextColor</dcscor:parameter>
+									<dcscor:value xsi:type="v8ui:Color">web:DarkRed</dcscor:value>
+								</dcscor:item>
+							</dcsset:appearance>
+						</dcsset:item>
 						<dcsset:viewMode>Normal</dcsset:viewMode>
 						<dcsset:userSettingID>b75fecce-942b-4aed-abc9-e6a02e460fb3</dcsset:userSettingID>
 					</dcsset:conditionalAppearance>
@@ -192,6 +390,14 @@ FROM
 				<Command>0:d51c9da7-9597-4c87-8248-3ffa95e22ea8</Command>
 				<Type>Auto</Type>
 				<DefaultVisible>false</DefaultVisible>
+			</Item>
+			<Item>
+				<Command>Document.SalesOrder.Command.PrintSalesQuote</Command>
+				<Type>Auto</Type>
+				<CommandGroup>FormCommandBarImportant</CommandGroup>
+				<Visible>
+					<xr:Common>false</xr:Common>
+				</Visible>
 			</Item>
 		</CommandBar>
 	</CommandInterface>

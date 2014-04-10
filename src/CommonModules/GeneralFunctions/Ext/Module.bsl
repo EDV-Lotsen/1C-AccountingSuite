@@ -2,6 +2,82 @@
 // THIS MODULE CONTAINS GENERAL PURPOSE FUNCTIONS AND PROCEDURES
 // 
 
+Function Increment(NumberToInc) Export
+	
+	//Last = Constants.SalesInvoiceLastNumber.Get();
+	Last = NumberToInc;
+	//Last = "AAAAA";
+	LastCount = StrLen(Last);
+	Digits = new Array();
+	For i = 1 to LastCount Do	
+		Digits.Add(Mid(Last,i,1));
+
+	EndDo;
+	
+	NumPos = 9999;
+	lengthcount = 0;
+	firstnum = false;
+	j = 0;
+	While j < LastCount Do
+		If NumCheck(Digits[LastCount - 1 - j]) Then
+			if firstnum = false then //first number encountered, remember position
+				firstnum = true;
+				NumPos = LastCount - 1 - j;
+				lengthcount = lengthcount + 1;
+			Else
+				If firstnum = true Then
+					If NumCheck(Digits[LastCount - j]) Then //if the previous char is a number
+						lengthcount = lengthcount + 1;  //next numbers, add to length.
+					Else
+						break;
+					Endif;
+				Endif;
+			Endif;
+						
+		Endif;
+		j = j + 1;
+	EndDo;
+	
+	NewString = "";
+	
+	If lengthcount > 0 Then //if there are numbers in the string
+		changenumber = Mid(Last,(NumPos - lengthcount + 2),lengthcount);
+		NumVal = Number(changenumber);
+		NumVal = NumVal + 1;
+		StringVal = String(NumVal);
+		StringVal = StrReplace(StringVal,",","");
+		
+		StringValLen = StrLen(StringVal);
+		changenumberlen = StrLen(changenumber);
+		LeadingZeros = Left(changenumber,(changenumberlen - StringValLen));
+
+		LeftSide = Left(Last,(NumPos - lengthcount + 1));
+		RightSide = Right(Last,(LastCount - NumPos - 1));
+		NewString = LeftSide + LeadingZeros + StringVal + RightSide; //left side + incremented number + right side
+		
+	Endif;
+	
+	Next = NewString;
+
+	return NewString;
+	
+EndFunction
+
+&AtServer
+Function NumCheck(CheckValue)
+	 
+	For i = 0 to  9 Do
+		If CheckValue = String(i) Then
+			Return True;
+		Endif;
+	EndDo;
+		
+	Return False;
+		
+EndFunction
+
+
+
 // Rupasov
 Procedure CheckConnectionAtServer() Export
 	
@@ -32,6 +108,19 @@ Procedure ObjectBeforeDelete(Source, Cancel) Export
 	test = cancel;
 	
 	ReferencedObjects = FindByRef(ReferenceList);
+	
+	i = 0;
+	While i < ReferencedObjects.Count() Do
+		If TypeOf(ReferencedObjects[i][0]) = TypeOf(ReferencedObjects[i][1]) Then
+			If ReferencedObjects[i][0] = ReferencedObjects[i][1] Then
+				ReferencedObjects.Delete(ReferencedObjects[i]);
+			Else 
+				i = i + 1;
+			EndIf;
+		Else
+			i = i + 1;
+		EndIf;
+	EndDo;
 	
 	If ReferencedObjects.Count() = 0 Then
 
@@ -98,7 +187,7 @@ Function ReturnSaleOrderMap(NewOrder) Export
 	OrderData.Insert("ship_to_phone",String(NewOrder.ShipTo.Phone));
 	OrderData.Insert("ship_to_cell",String(NewOrder.ShipTo.Cell));
 	OrderData.Insert("ship_to_email",String(NewOrder.ShipTo.Email));
-	OrderData.Insert("ship_to_sales_tax_code",String(NewOrder.ShipTo.SalesTaxCode));
+	//OrderData.Insert("ship_to_sales_tax_code",String(NewOrder.ShipTo.SalesTaxCode));
 	OrderData.Insert("ship_to_notes",String(NewOrder.ShipTo.Notes));
 	
 	OrderData.Insert("bill_to_address_id",String(NewOrder.BillTo.Description));
@@ -113,7 +202,7 @@ Function ReturnSaleOrderMap(NewOrder) Export
 	OrderData.Insert("bill_to_phone",String(NewOrder.BillTo.Phone));
 	OrderData.Insert("bill_to_cell",String(NewOrder.BillTo.Cell));
 	OrderData.Insert("bill_to_email",String(NewOrder.BillTo.Email));
-	OrderData.Insert("bill_to_sales_tax_code",String(NewOrder.BillTo.SalesTaxCode));
+	//OrderData.Insert("bill_to_sales_tax_code",String(NewOrder.BillTo.SalesTaxCode));
 	OrderData.Insert("bill_to_notes",String(NewOrder.BillTo.Notes));
 
 
@@ -827,6 +916,19 @@ Function ReturnCompanyObjectMap(NewCompany) Export
 	CompanyData.Insert("cf5_string", NewCompany.CF5String);
 	CompanyData.Insert("cf5_num", NewCompany.CF5Num);
 	
+	balanceQuery = New Query("SELECT
+	                         |	GeneralJournalBalance.AmountRCBalance
+	                         |FROM
+	                         |	Catalog.Companies AS CatalogCompanies
+	                         |		LEFT JOIN AccountingRegister.GeneralJournal.Balance AS GeneralJournalBalance
+	                         |		ON (GeneralJournalBalance.ExtDimension1 = CatalogCompanies.Ref)
+	                         |WHERE
+	                         |	CatalogCompanies.Ref = &companyref");
+	balanceQuery.SetParameter("companyref", NewCompany.Ref);
+	resultBalance = balanceQuery.Execute().Unload();
+	
+	CompanyData.Insert("balance",resultBalance[0].AmountRCBalance);
+	
 	QueryText = "SELECT
 				|	Addresses.Ref
 				|FROM
@@ -859,7 +961,7 @@ Function ReturnCompanyObjectMap(NewCompany) Export
 			CompanyData3.Insert("phone",AddressItem.Ref.Phone);
 			CompanyData3.Insert("cell",AddressItem.Ref.Cell);
 			CompanyData3.Insert("email",AddressItem.Ref.Email);
-			CompanyData3.Insert("sales_tax_code",AddressItem.Ref.SalesTaxCode);
+			//CompanyData3.Insert("sales_tax_code",AddressItem.Ref.SalesTaxCode);
 			CompanyData3.Insert("notes",AddressItem.Ref.Notes);
 			If AddressItem.Ref.DefaultShipping = True Then
 				CompanyData3.Insert("default_shipping","true");
@@ -1344,13 +1446,49 @@ Procedure SendWebhook(webhook_address, WebhookMap) Export
 	
 EndProcedure
 
+Procedure EmailWebhook(email_addr, webhookmap) Export
+	
+		MailProfil = New InternetMailProfile; 
+	    
+	    MailProfil.SMTPServerAddress = ServiceParameters.SMTPServer();
+	    MailProfil.SMTPUseSSL = ServiceParameters.SMTPUseSSL();
+	    MailProfil.SMTPPort = 465;  
+	    MailProfil.Timeout = 180; 
+		MailProfil.SMTPPassword = ServiceParameters.SendGridPassword();  
+		MailProfil.SMTPUser = ServiceParameters.SendGridUserName();
+
+		send = New InternetMailMessage; 
+		send.To.Add(email_addr); 
+		
+		//If Object.EmailCC <> "" Then
+		//	EAddresses = StringFunctionsClientServer.SplitStringIntoSubstringArray(Object.EmailCC, ",");
+		//	For Each EmailAddress in EAddresses Do
+		//		send.CC.Add(EmailAddress);
+		//	EndDo;
+		//Endif;
+		
+	    send.From.Address = "support@accountingsuite.com" ;//Constants.Email.Get();
+	    send.From.DisplayName = "AccountingSuite";
+	    send.Subject = "ACS Webhooks: " + webhookmap.Get("resource") + ", " + webhookmap.Get("action") + ", " +
+			webhookmap.Get("api_code") + ", " + webhookmap.Get("apisecretkey");
+		send.Texts.Add(InternetConnectionClientServer.EncodeJSON(webhookmap));
+			
+		Posta = New InternetMail; 
+		Posta.Logon(MailProfil); 
+		Posta.Send(send); 
+		Posta.Logoff();
+ 		//MailProfil -> Send -> Posta
+	
+EndProcedure
+
+
 Function GetSystemTitle() Export
 	
 	Return Constants.SystemTitle.Get();	
 	
 EndFunction
 
-Function GetCustomTemplate(TemplateName) Export
+Function GetCustomTemplate(ObjectName, TemplateName) Export
 	
 	Query = New Query;
 	
@@ -1358,16 +1496,18 @@ Function GetCustomTemplate(TemplateName) Export
 					|FROM
 					|	InformationRegister.CustomPrintForms
 					|WHERE
-					|	TemplateName=&TemplateName";
+					|	ObjectName=&ObjectName
+					|	AND	TemplateName=&TemplateName";
 	
+	Query.Parameters.Insert("ObjectName", ObjectName);
 	Query.Parameters.Insert("TemplateName", TemplateName);
 		
-	Cursor = Query.Execute().Choose();
+	Cursor = Query.Execute().Select();
 	
 	Result = Undefined;
 	
 	If Cursor.Next() Then
-		Result = Cursor.Template.Get();
+		Result = Cursor.Template.Get(); //.Получить();
 	Else
 	EndIf;
 	
@@ -1407,7 +1547,7 @@ Function GetLogo() Export
 	Query.Parameters.Insert("ObjectName", "logo");
 	Query.Parameters.Insert("TemplateName", "logo");
 		
-	Cursor = Query.Execute().Choose();
+	Cursor = Query.Execute().Select();
 	
 	Result = Undefined;
 	
@@ -1434,7 +1574,7 @@ Function GetFooter1() Export
 	Query.Parameters.Insert("ObjectName", "footer1");
 	Query.Parameters.Insert("TemplateName", "footer1");
 		
-	Cursor = Query.Execute().Choose();
+	Cursor = Query.Execute().Select();
 	
 	Result = Undefined;
 	
@@ -1461,7 +1601,7 @@ Function GetFooter2() Export
 	Query.Parameters.Insert("ObjectName", "footer2");
 	Query.Parameters.Insert("TemplateName", "footer2");
 		
-	Cursor = Query.Execute().Choose();
+	Cursor = Query.Execute().Select();
 	
 	Result = Undefined;
 	
@@ -1488,7 +1628,7 @@ Function GetFooter3() Export
 	Query.Parameters.Insert("ObjectName", "footer3");
 	Query.Parameters.Insert("TemplateName", "footer3");
 		
-	Cursor = Query.Execute().Choose();
+	Cursor = Query.Execute().Select();
 	
 	Result = Undefined;
 	
@@ -1500,6 +1640,34 @@ Function GetFooter3() Export
 	Return Result;
 	
 EndFunction
+
+Function GetFooterPO(imagename) Export
+	
+	Query = New Query;
+	
+	Query.Text = "Select Template AS Template
+					|FROM
+					|	InformationRegister.CustomPrintForms
+					|WHERE
+					|	ObjectName=&ObjectName
+					|	AND	TemplateName=&TemplateName";
+	
+	Query.Parameters.Insert("ObjectName", imagename);
+	Query.Parameters.Insert("TemplateName", imagename);
+		
+	Cursor = Query.Execute().Select();
+	
+	Result = Undefined;
+	
+	If Cursor.Next() Then
+		Result = Cursor.Template.Get();
+	Else
+	EndIf;
+	
+	Return Result;
+	
+EndFunction
+
 
 
 
@@ -2156,7 +2324,7 @@ Procedure AddBankTransactionCategoryAndAccount(CategoryCode, CategoryDescription
 	If Res.IsEmpty() Then
 		CategoryObject = Catalogs.BankTransactionCategories.CreateItem();
 	Else
-		Sel = Res.Choose();
+		Sel = Res.Select();
 		Sel.Next();
 		CategoryObject = Sel.Ref.GetObject();
 	EndIf;
@@ -2182,7 +2350,7 @@ Procedure AddBankTransactionCategoryAndAccount(CategoryCode, CategoryDescription
 	Request.SetParameter("CashFlowSection", CashFlowSection);
 	Res = Request.Execute();
 	If Not Res.IsEmpty() Then
-		Sel = Res.Choose();
+		Sel = Res.Select();
 		Sel.Next();
 		CategoryObject.Account = Sel.Ref;
 		CategoryObject.Write();
@@ -2292,16 +2460,20 @@ Procedure FirstLaunch() Export
 	
 	BeginTransaction();
 	
-	    Constants.SalesInvoiceLastNumber.Set("1000");
-		Constants.CashReceiptLastNumber.Set("1000");
-		Constants.CashSaleLastNumber.Set("1000");
-		Constants.DepositLastNumber.Set("1000");
-		Constants.BankTransferLastNumber.Set("1000");
-		Constants.WarehouseTransferLastNumber.Set("1000");
-		Constants.CreditMemoLastNumber.Set("1000");
-		Constants.SalesOrderLastNumber.Set("1000");
-		Constants.PurchaseOrderLastNumber.Set("1000");
-		Constants.GJEntryLastNumber.Set("1000");
+		Numerator = Catalogs.DocumentNumbering.PurchaseOrder.GetObject();
+		Numerator.Number = 999;
+		Numerator.Write();
+
+		//Constants.SalesInvoiceLastNumber.Set("1000");
+		//Constants.CashReceiptLastNumber.Set("1000");
+		//Constants.CashSaleLastNumber.Set("1000");
+		//Constants.DepositLastNumber.Set("1000");
+		//Constants.BankTransferLastNumber.Set("1000");
+		//Constants.WarehouseTransferLastNumber.Set("1000");
+		//Constants.CreditMemoLastNumber.Set("1000");
+		//Constants.SalesOrderLastNumber.Set("1000");
+		//Constants.PurchaseOrderLastNumber.Set("1000");
+		//Constants.GJEntryLastNumber.Set("1000");
 		// Adding account types to predefined accounts and
 		// assigning default posting accounts.
 		
@@ -4057,7 +4229,14 @@ NewCountry.Write();
 		Constants.CF2CType.Set("None");
 		Constants.CF3CType.Set("None");
 		Constants.CF4CType.Set("None");
-		Constants.CF5CType.Set("None");	
+		Constants.CF5CType.Set("None");
+		
+		Constants.SIFoot1Type.Set(Enums.TextOrImage.None);
+		Constants.SIFoot2Type.Set(Enums.TextOrImage.None);
+		Constants.SIFoot3Type.Set(Enums.TextOrImage.None);
+		Constants.POFoot1Type.Set(Enums.TextOrImage.None);
+		Constants.POFoot2Type.Set(Enums.TextOrImage.None);
+		Constants.POFoot3Type.Set(Enums.TextOrImage.None);
 		
 		// mt_change	
 		

@@ -4,11 +4,45 @@
 //------------------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////////////
-// OBJECT EVENTS HANDLERS
+#Region EVENT_HANDLERS
+
+#If Server Or ThickClientOrdinaryApplication Or ExternalConnection Then
+
+// -> CODE REVIEW
+Procedure BeforeDelete(Cancel)
+	
+	companies_webhook = Constants.sales_invoices_webhook.Get();
+	
+	If NOT companies_webhook = "" Then
+		
+		//double_slash = Find(companies_webhook, "//");
+		//
+		//companies_webhook = Right(companies_webhook,StrLen(companies_webhook) - double_slash - 1);
+		//
+		//first_slash = Find(companies_webhook, "/");
+		//webhook_address = Left(companies_webhook,first_slash - 1);
+		//webhook_resource = Right(companies_webhook,StrLen(companies_webhook) - first_slash + 1); 		
+		
+		WebhookMap = New Map(); 
+		WebhookMap.Insert("apisecretkey",Constants.APISecretKey.Get());
+		WebhookMap.Insert("resource","salesinvoices");
+		WebhookMap.Insert("action","delete");
+		WebhookMap.Insert("api_code",String(Ref.UUID()));
+		
+		WebhookParams = New Array();
+		WebhookParams.Add(Constants.sales_invoices_webhook.Get());
+		WebhookParams.Add(WebhookMap);
+		LongActions.ExecuteInBackground("GeneralFunctions.SendWebhook", WebhookParams);
+		
+	EndIf;
+	
+EndProcedure
+// <- CODE REVIEW
 
 Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 	
-	// for webhooks
+	// -> CODE REVIEW
+	// For webhooks.
 	If NewObject = True Then
 		NewObject = False;
 	Else
@@ -16,29 +50,29 @@ Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 			NewObject = True;
 		EndIf;
 	EndIf;
-
+	// <- CODE REVIEW
 	
-	// Save document parameters before posting the document
+	// Save document parameters before posting the document.
 	If WriteMode = DocumentWriteMode.Posting
 	Or WriteMode = DocumentWriteMode.UndoPosting Then
-	
-		// Save custom document parameters
+		
+		// Save custom document parameters.
 		Orders = LineItems.UnloadColumn("Order");
 		GeneralFunctions.NormalizeArray(Orders);
-	
-		// Common filling of parameters
+		
+		// Common filling of parameters.
 		DocumentParameters = New Structure("Ref, Date, IsNew,   Posted, ManualAdjustment, Metadata,   Orders",
 		                                    Ref, Date, IsNew(), Posted, ManualAdjustment, Metadata(), Orders);
 		DocumentPosting.PrepareDataStructuresBeforeWrite(AdditionalProperties, DocumentParameters, Cancel, WriteMode, PostingMode);
 	EndIf;
-		
-	// Prcheck of register balances to complete filling of document posting
+	
+	// Precheck of register balances to complete filling of document posting
 	If WriteMode = DocumentWriteMode.Posting Then
 		
 		// Precheck of document data, calculation of temporary data, required for document posting
 		If (Not ManualAdjustment) And (Orders.Count() > 0) Then
 			DocumentParameters = New Structure("Ref, PointInTime,   Company, LineItems",
-			                                    Ref, PointInTime(), Company, LineItems.Unload(, "Order, Product, Quantity"));
+			                                    Ref, PointInTime(), Company, LineItems.Unload(, "Order, Product, Location, DeliveryDate, Project, Class, Quantity"));
 			Documents.SalesInvoice.PrepareDataBeforeWrite(AdditionalProperties, DocumentParameters, Cancel);
 		EndIf;
 		
@@ -46,37 +80,167 @@ Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 	
 EndProcedure
 
+Procedure FillCheckProcessing(Cancel, CheckedAttributes)
+	
+	// -> CODE REVIEW
+	If Discount > 0 Then
+		// ??? !!!
+		Message = New UserMessage();
+		Message.Text=NStr("en='A discount should be a negative number'");
+		//Message.Field = "Object.Description";
+		Message.Message();
+		Cancel = True;
+		Return;
+	EndIf;
+	// <- CODE REVIEW
+	
+	
+	// Create items filter by non-empty orders.
+	FilledOrders = GeneralFunctions.InvertCollectionFilter(LineItems, LineItems.FindRows(New Structure("Order", Documents.SalesOrder.EmptyRef())));
+	
+	// Check doubles in items (to be sure of proper orders placement).
+	GeneralFunctions.CheckDoubleItems(Ref, LineItems, "Product, Order, Location, DeliveryDate, Project, Class, LineNumber", FilledOrders, Cancel);
+	
+	// Check proper closing of order items by the invoice items.
+	If Not Cancel Then
+		Documents.SalesInvoice.CheckOrderQuantity(Ref, Date, Company, LineItems, FilledOrders, Cancel);
+	EndIf;
+	
+EndProcedure
+
+Procedure Filling(FillingData, StandardProcessing)
+	
+	// Forced assign the new document number.
+	If ThisObject.IsNew() Then ThisObject.SetNewNumber(); EndIf;
+	
+	// Filling new document or filling on the base of another document.
+	If FillingData = Undefined Then
+		// Filling of the new created document with default values.
+		Currency         = Constants.DefaultCurrency.Get();
+		ExchangeRate     = GeneralFunctions.GetExchangeRate(Date, Currency);
+		ARAccount        = Currency.DefaultARAccount;
+		LocationActual   = Catalogs.Locations.MainWarehouse;
+		
+	Else
+		// Generate on the base of Sales order & Shipment.
+		Cancel = False; TabularSectionData = Undefined;
+		
+		// 0. Custom check of sales order for interactive generate of sales invoice on the base of sales order.
+		If (TypeOf(FillingData) = Type("DocumentRef.SalesOrder"))
+		And Not Documents.SalesInvoice.CheckStatusOfSalesOrder(Ref, FillingData) Then
+			Cancel = True;
+			Return;
+		EndIf;
+		
+		// 1. Common filling of parameters.
+		DocumentParameters = New Structure("Ref, Date, Metadata",
+		                                    Ref, ?(ValueIsFilled(Date), Date, CurrentSessionDate()), Metadata());
+		DocumentFilling.PrepareDataStructuresBeforeFilling(AdditionalProperties, DocumentParameters, FillingData, Cancel);
+		
+		// 2. Cancel filling on failed data.
+		If Cancel Then
+			Return;
+		EndIf;
+		
+		// 3. Collect document data, available for filling, and fill created structure.
+		Documents.SalesInvoice.PrepareDataStructuresForFilling(Ref, AdditionalProperties);
+		
+		// 4. Check collected data.
+		DocumentFilling.CheckDataStructuresOnFilling(AdditionalProperties, Cancel);
+		
+		// 5. Fill document fields.
+		If Not Cancel Then
+			// Fill "draft" values to attributes (all including non-critical fields will be filled).
+			FillPropertyValues(ThisObject, AdditionalProperties.Filling.FillingTables.Table_Attributes[0]);
+			
+			// Fill checked unique values to attributes (critical fields will be filled).
+			FillPropertyValues(ThisObject, AdditionalProperties.Filling.FillingTables.Table_Check[0]);
+			
+			// Fill line items.
+			For Each TabularSection In AdditionalProperties.Metadata.TabularSections Do
+				If AdditionalProperties.Filling.FillingTables.Property("Table_" + TabularSection.Name, TabularSectionData) Then
+					ThisObject[TabularSection.Name].Load(TabularSectionData);
+				EndIf;
+			EndDo;
+		EndIf;
+		
+		// 6. Clear used temporary document data.
+		DocumentFilling.ClearDataStructuresAfterFilling(AdditionalProperties);
+	EndIf;
+	
+EndProcedure
+
+Procedure OnCopy(CopiedObject)
+	
+	// Clear manual ajustment attribute.
+	ManualAdjustment = False;
+	
+EndProcedure
+
+// -> CODE REVIEW
+Procedure OnWrite(Cancel)
+	
+	//companies_webhook = Constants.sales_invoices_webhook.Get();
+	//
+	//If NOT companies_webhook = "" Then
+	//	
+	//	//double_slash = Find(companies_webhook, "//");
+	//	//
+	//	//companies_webhook = Right(companies_webhook,StrLen(companies_webhook) - double_slash - 1);
+	//	//
+	//	//first_slash = Find(companies_webhook, "/");
+	//	//webhook_address = Left(companies_webhook,first_slash - 1);
+	//	//webhook_resource = Right(companies_webhook,StrLen(companies_webhook) - first_slash + 1);
+	//	
+	//	WebhookMap = New Map(); 
+	//	WebhookMap.Insert("apisecretkey",Constants.APISecretKey.Get());
+	//	WebhookMap.Insert("resource","salesinvoices");
+	//	If NewObject = True Then
+	//		WebhookMap.Insert("action","create");
+	//	Else
+	//		WebhookMap.Insert("action","update");
+	//	EndIf;
+	//	WebhookMap.Insert("api_code",String(Ref.UUID()));
+	//	
+	//	WebhookParams = New Array();
+	//	WebhookParams.Add(Constants.sales_invoices_webhook.Get());
+	//	WebhookParams.Add(WebhookMap);
+	//	LongActions.ExecuteInBackground("GeneralFunctions.SendWebhook", WebhookParams);
+	//	
+	//EndIf;
+	
+EndProcedure
+// <- CODE REVIEW
+
 Procedure Posting(Cancel, PostingMode)
 	
-	// 1. Common postings clearing / reactivate manual ajusted postings
+	// 1. Common postings clearing / reactivate manual ajusted postings.
 	DocumentPosting.PrepareRecordSetsForPosting(AdditionalProperties, RegisterRecords);
 	
-	// 2. Skip manually adjusted documents
+	// 2. Skip manually adjusted documents.
 	If ManualAdjustment Then
 		Return;
 	EndIf;
-
-	// 3. Create structures with document data to pass it on the server
+	
+	// 3. Create structures with document data to pass it on the server.
 	DocumentPosting.PrepareDataStructuresBeforePosting(AdditionalProperties);
 	
-	// 4. Collect document data, available for posing, and fill created structure 
+	// 4. Collect document data, available for posing, and fill created structure.
 	Documents.SalesInvoice.PrepareDataStructuresForPosting(Ref, AdditionalProperties, RegisterRecords);
-
-	// 5. Fill register records with document's postings
+	
+	// 5. Fill register records with document's postings.
 	DocumentPosting.FillRecordSets(AdditionalProperties, RegisterRecords, Cancel);
-
-	// 6. Write document postings to register
+	
+	// 6. Write document postings to register.
 	DocumentPosting.WriteRecordSets(AdditionalProperties, RegisterRecords);
-
-	// 7. Check register blanaces according to document's changes
+	
+	// 7. Check register blanaces according to document's changes.
 	DocumentPosting.CheckPostingResults(AdditionalProperties, RegisterRecords, Cancel);
-
-	// 8. Clear used temporary document data
+	
+	// 8. Clear used temporary document data.
 	DocumentPosting.ClearDataStructuresAfterPosting(AdditionalProperties);
 	
-	
-	// OLD Posting
-	
+// -> CODE REVIEW
 	IncomeBooking = True;
 	
 	If BegBal Then
@@ -103,46 +267,38 @@ Procedure Posting(Cancel, PostingMode)
 	EndIf;
 	
 	RegisterRecords.InventoryJrnl.Write = True;
+	RegisterRecords.CashFlowData.Write = True;
 	
 	If IncomeBooking Then
 		
-		// create a value table for posting amounts
-		
+		// Create a value table for posting amounts.
 		PostingDatasetIncome = New ValueTable();
 		PostingDatasetIncome.Columns.Add("IncomeAccount");
+		PostingDatasetIncome.Columns.Add("Class");
 		PostingDatasetIncome.Columns.Add("AmountRC");
 		
 		PostingDatasetCOGS = New ValueTable();
 		PostingDatasetCOGS.Columns.Add("COGSAccount");
+		PostingDatasetCOGS.Columns.Add("Class");
 		PostingDatasetCOGS.Columns.Add("AmountRC");	
 		
 		PostingDatasetInvOrExp = New ValueTable();
 		PostingDatasetInvOrExp.Columns.Add("InvOrExpAccount");
 		PostingDatasetInvOrExp.Columns.Add("AmountRC");
 		
-		//PostingDatasetVAT = New ValueTable();
-		//PostingDatasetVAT.Columns.Add("VATAccount");
-		//PostingDatasetVAT.Columns.Add("AmountRC");
-		
-		//AllowNegativeInventory = Constants.AllowNegativeInventory.Get();
-		
 		For Each CurRowLineItems In LineItems Do
 						
 			If CurRowLineItems.Product.Type = Enums.InventoryTypes.Inventory Then
-												
-				// check inventory balances and cancel if not sufficient
 				
+				// Check inventory balances and cancel if not sufficient.
 				CurrentBalance = 0;
 									
 				Query = New Query("SELECT
 				                  |	InventoryJrnlBalance.QtyBalance
 				                  |FROM
-				                  |	AccumulationRegister.InventoryJrnl.Balance AS InventoryJrnlBalance
-				                  |WHERE
-				                  |	InventoryJrnlBalance.Product = &Product
-				                  |	AND InventoryJrnlBalance.Location = &Location");
+				                  |	AccumulationRegister.InventoryJrnl.Balance(, Product = &Product AND Location = &Location) AS InventoryJrnlBalance");
 				Query.SetParameter("Product", CurRowLineItems.Product);
-				Query.SetParameter("Location", Location);
+				Query.SetParameter("Location", CurRowLineItems.LocationActual);
 				QueryResult = Query.Execute();
 				
 				If QueryResult.IsEmpty() Then
@@ -165,8 +321,7 @@ Procedure Posting(Cancel, PostingMode)
 					//EndIf;
 				EndIf;
 				
-				// inventory journal update and costing procedure
-				
+				// Inventory journal update and costing procedure.
 				ItemCost = 0;
 				
 				If CurRowLineItems.Product.CostingMethod = Enums.InventoryCosting.WeightedAverage Then
@@ -174,14 +329,12 @@ Procedure Posting(Cancel, PostingMode)
 					AverageCost = 0;
 					
 					Query = New Query("SELECT
-					                  |	SUM(InventoryJrnlBalance.QtyBalance) AS QtyBalance,
-					                  |	SUM(InventoryJrnlBalance.AmountBalance) AS AmountBalance
+					                  |	InventoryJrnlBalance.QtyBalance    AS QtyBalance,
+					                  |	InventoryJrnlBalance.AmountBalance AS AmountBalance
 					                  |FROM
-					                  |	AccumulationRegister.InventoryJrnl.Balance(,Location = &Location) AS InventoryJrnlBalance
-					                  |WHERE
-					                  |	InventoryJrnlBalance.Product = &Product");
+					                  |	AccumulationRegister.InventoryJrnl.Balance(, Product = &Product AND Location = &Location) AS InventoryJrnlBalance");
 					Query.SetParameter("Product", CurRowLineItems.Product);
-					Query.SetParameter("Location", Location);
+					Query.SetParameter("Location", CurRowLineItems.LocationActual);
 					QueryResult = Query.Execute().Unload();
 					If  QueryResult.Count() > 0    // If  QueryResult.Rows.Count() > 0
 					And (Not QueryResult[0].QtyBalance = Null)
@@ -195,7 +348,7 @@ Procedure Posting(Cancel, PostingMode)
 					Record.RecordType = AccumulationRecordType.Expense;
 					Record.Period = Date;
 					Record.Product = CurRowLineItems.Product;
-					Record.Location = Location;
+					Record.Location = CurRowLineItems.LocationActual;
 					Record.Qty = CurRowLineItems.Quantity;
 					ItemCost = CurRowLineItems.Quantity * AverageCost;
 					Record.Amount = ItemCost;
@@ -219,16 +372,12 @@ Procedure Posting(Cancel, PostingMode)
 					                  |	InventoryJrnlBalance.Layer,
 					                  |	InventoryJrnlBalance.Layer.Date AS LayerDate
 					                  |FROM
-					                  |	AccumulationRegister.InventoryJrnl.Balance AS InventoryJrnlBalance
-					                  |WHERE
-					                  |	InventoryJrnlBalance.Product = &Product
-					                  |	AND InventoryJrnlBalance.Location = &Location
-					                  |
+					                  |	AccumulationRegister.InventoryJrnl.Balance(, Product = &Product AND Location = &Location) AS InventoryJrnlBalance
 					                  |ORDER BY
 					                  |	LayerDate " + Sorting + "");
 					Query.SetParameter("Product", CurRowLineItems.Product);
-					Query.SetParameter("Location", Location);
-					Selection = Query.Execute().Choose();
+					Query.SetParameter("Location", CurRowLineItems.LocationActual);
+					Selection = Query.Execute().Select();
 					
 					While Selection.Next() Do
 						If ItemQty > 0 Then
@@ -237,7 +386,7 @@ Procedure Posting(Cancel, PostingMode)
 							Record.RecordType = AccumulationRecordType.Expense;
 							Record.Period = Date;
 							Record.Product = CurRowLineItems.Product;
-							Record.Location = Location;
+							Record.Location = CurRowLineItems.LocationActual;
 							Record.Layer = Selection.Layer;
 							If ItemQty >= Selection.QtyBalance Then
 								ItemCost = ItemCost + Selection.AmountBalance;
@@ -252,50 +401,36 @@ Procedure Posting(Cancel, PostingMode)
 							EndIf;
 						EndIf;
 					EndDo;
-										
+					
 				EndIf;
 				
-				// adding to the posting dataset
-				
+				// Adding to the posting dataset.
 				PostingLineCOGS = PostingDatasetCOGS.Add();
 				PostingLineCOGS.COGSAccount = CurRowLineItems.Product.COGSAccount;
+				PostingLineCOGS.Class = CurRowLineItems.Class;
 				PostingLineCOGS.AmountRC = ItemCost;
 				
 				PostingLineInvOrExp = PostingDatasetInvOrExp.Add();
 				PostingLineInvOrExp.InvOrExpAccount = CurRowLineItems.Product.InventoryOrExpenseAccount;
 				PostingLineInvOrExp.AmountRC = ItemCost;
 				
-			EndIf;				
-						
-			// fill in the account posting value table with amounts
+			EndIf;
 			
+			// Fill in the account posting value table with amounts.
 			PostingLineIncome = PostingDatasetIncome.Add();
-			PostingLineIncome.IncomeAccount = CurRowLineItems.Product.IncomeAccount;	
-			//If PriceIncludesVAT Then
-			//	PostingLineIncome.AmountRC = (CurRowLineItems.LineTotal - CurRowLineItems.VAT) * ExchangeRate;
-			//Else
-				PostingLineIncome.AmountRC = CurRowLineItems.LineTotal * ExchangeRate;
-			//EndIf;
-						
-			//If CurRowLineItems.VAT > 0 Then
-			//	
-			//	PostingLineVAT = PostingDatasetVAT.Add();
-			//	PostingLineVAT.VATAccount = VAT_FL.VATAccount(CurRowLineItems.VATCode, "Sales");
-			//	PostingLineVAT.AmountRC = CurRowLineItems.VAT * ExchangeRate;
-			//					
-			//EndIf;
+			PostingLineIncome.IncomeAccount = CurRowLineItems.Product.IncomeAccount;
+			PostingLineIncome.Class = CurRowLineItems.Class;
+			PostingLineIncome.AmountRC = CurRowLineItems.LineTotal * ExchangeRate;
 			
 		EndDo;
 		
 	EndIf;
 	
-	
 	If IncomeBooking Then
 		
 		// GL posting
-		
 		RegisterRecords.GeneralJournal.Write = True;	
-					
+		
 		Record = RegisterRecords.GeneralJournal.AddDebit();
 		Record.Account = ARAccount;
 		Record.Period = Date;
@@ -305,7 +440,7 @@ Procedure Posting(Cancel, PostingMode)
 		Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Company] = Company;
 		Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Document] = Ref;
 		
-		If DiscountRC <> 0 Then			
+		If Discount <> 0 Then			
 			Record = RegisterRecords.GeneralJournal.AddDebit();
 			DiscountsAccount = Constants.DiscountsAccount.Get();
 			If DiscountsAccount = ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
@@ -314,10 +449,28 @@ Procedure Posting(Cancel, PostingMode)
 				Record.Account = DiscountsAccount;
 			EndIf;
 			Record.Period = Date;
-			Record.AmountRC = DiscountRC * -1 * ExchangeRate;				
+			Record.AmountRC = Discount * -1 * ExchangeRate;
+				
+			Record = RegisterRecords.CashFlowData.Add();
+			Record.RecordType = AccumulationRecordType.Expense;
+			Record.Period = Date;
+			Record.Company = Company;
+			Record.Document = Ref;
+			If DiscountsAccount = ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
+				Record.Account = Constants.ExpenseAccount.Get();
+			Else
+				Record.Account = DiscountsAccount;
+			EndIf;
+			//Record.Account = CurRowLineItems.Product.InventoryOrExpenseAccount;
+			//Record.CashFlowSection = CurRowLineItems.Product.InventoryOrExpenseAccount.CashFlowSection;
+			Record.AmountRC = (Discount * -1 * ExchangeRate) * -1;
+			//Record.PaymentMethod = PaymentMethod;
+			Record.SalesPerson = SalesPerson;
+			
 		EndIf;
 		
-		If ShippingRC <> 0 Then			
+		If Shipping <> 0 Then
+			
 			Record = RegisterRecords.GeneralJournal.AddCredit();
 			ShippingExpenseAccount = Constants.ShippingExpenseAccount.Get();
 			If ShippingExpenseAccount = ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
@@ -326,9 +479,26 @@ Procedure Posting(Cancel, PostingMode)
 				Record.Account = ShippingExpenseAccount;
 			EndIf;
 			Record.Period = Date;
-			Record.AmountRC = ShippingRC * ExchangeRate;				
+			Record.AmountRC = Shipping * ExchangeRate;
+			
+			Record = RegisterRecords.CashFlowData.Add();
+			Record.RecordType = AccumulationRecordType.Expense;
+			Record.Period = Date;
+			Record.Company = Company;
+			Record.Document = Ref;
+			ShippingExpenseAccount = Constants.ShippingExpenseAccount.Get();
+			If ShippingExpenseAccount = ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
+				Record.Account = Constants.IncomeAccount.Get();
+			Else
+				Record.Account = ShippingExpenseAccount;
+			EndIf;
+			Record.AmountRC = Shipping * ExchangeRate;
+			Record.SalesPerson = SalesPerson;
+			
 		EndIf;
-
+		
+		PostingClassesIncome = PostingDatasetIncome.Copy();
+		PostingClassesCOGS	= PostingDatasetCOGS.Copy();
 		
 		PostingDatasetIncome.GroupBy("IncomeAccount", "AmountRC");
 		NoOfPostingRows = PostingDatasetIncome.Count();
@@ -338,7 +508,7 @@ Procedure Posting(Cancel, PostingMode)
 			Record.Period = Date;
 			Record.AmountRC = PostingDatasetIncome[i][1];				
 		EndDo;
-
+		
 		PostingDatasetCOGS.GroupBy("COGSAccount", "AmountRC");
 		NoOfPostingRows = PostingDatasetCOGS.Count();
 		For i = 0 To NoOfPostingRows - 1 Do			
@@ -347,7 +517,7 @@ Procedure Posting(Cancel, PostingMode)
 			Record.Period = Date;
 			Record.AmountRC = PostingDatasetCOGS[i][1];				
 		EndDo;
-
+		
 		PostingDatasetInvOrExp.GroupBy("InvOrExpAccount", "AmountRC");
 		NoOfPostingRows = PostingDatasetInvOrExp.Count();
 		For i = 0 To NoOfPostingRows - 1 Do			
@@ -356,340 +526,159 @@ Procedure Posting(Cancel, PostingMode)
 			Record.Period = Date;
 			Record.AmountRC = PostingDatasetInvOrExp[i][1];				
 		EndDo;
-				
-		If SalesTaxRC > 0 Then
+		
+		If SalesTax > 0 Then
 			Record = RegisterRecords.GeneralJournal.AddCredit();
 			Record.Account = Constants.TaxPayableAccount.Get();
 			Record.Period = Date;
-			Record.AmountRC = SalesTaxRC * ExchangeRate;
-		EndIf;		
-
-		//PostingDatasetVAT.GroupBy("VATAccount", "AmountRC");
-		//NoOfPostingRows = PostingDatasetVAT.Count();
-		//For i = 0 To NoOfPostingRows - 1 Do
-		//	Record = RegisterRecords.GeneralJournal.AddCredit();
-		//	Record.Account = PostingDatasetVAT[i][0];
-		//	Record.Period = Date;
-		//	Record.AmountRC = PostingDatasetVAT[i][1];	
-		//EndDo;	
-					
+			Record.AmountRC = SalesTax * ExchangeRate;
+		EndIf;
+		
 	EndIf;
 	
-	// writing ProjectData
+	// Writing ProjectData.
 	
 	RegisterRecords.ProjectData.Write = True;
+	RegisterRecords.ClassData.Write = True;
 	For Each CurRowLineItems In LineItems Do
-		If NOT CurRowLineItems.Project.IsEmpty() Then
-			Record = RegisterRecords.ProjectData.Add();
-			Record.RecordType = AccumulationRecordType.Receipt;
-			Record.Period = Date;
-			Record.Project = CurRowLineItems.Project;
-			Record.Amount = CurRowLineItems.LineTotal;
-		Endif;
+		Record = RegisterRecords.ProjectData.Add();
+		Record.RecordType = AccumulationRecordType.Receipt;
+		Record.Period = Date;
+		Record.Project = CurRowLineItems.Project;
+		Record.Amount = CurRowLineItems.LineTotal;
 	EndDo;
 	
-	// end writing ProjectData
+	// End writing ProjectData.
 	
+	// Writing CashFlowData
+	For Each CurRowLineItems in LineItems Do	
+		Record = RegisterRecords.CashFlowData.Add();
+		Record.RecordType = AccumulationRecordType.Expense;
+		Record.Period = Date;
+		Record.Company = Company;
+		Record.Document = Ref;
+		Record.Account = CurRowLineItems.Product.IncomeAccount;
+		//Record.Account = CurRowLineItems.Product.InventoryOrExpenseAccount;
+		//Record.CashFlowSection = CurRowLineItems.Product.InventoryOrExpenseAccount.CashFlowSection;
+		Record.AmountRC = CurRowLineItems.LineTotal * ExchangeRate;
+		//Record.PaymentMethod = PaymentMethod;
+		Record.SalesPerson = SalesPerson;
+	EndDo;
+	
+	// add sales tax - needs to be in the Tax Payment document?
+	// add shipping
+	// add discount
+	
+	// End writing CashFlowData
+
+	
+	// Writing Class data.
+	PostingClassesIncome.GroupBy("IncomeAccount, Class", "AmountRC");
+	PostingClassesCOGS.GroupBy("COGSAccount, Class", "AmountRC");	
+	
+	// Income by Class
+	For Each ClassesIncomeLine In PostingClassesIncome Do
+		Record = RegisterRecords.ClassData.Add();
+		Record.RecordType = AccumulationRecordType.Receipt;
+		Record.Period = Date;
+		Record.Account = ClassesIncomeLine.IncomeAccount;
+		Record.Class = ClassesIncomeLine.Class;
+		Record.Amount = ClassesIncomeLine.AmountRC;
+	EndDo;
+	
+	// COGS by Class.
+	For Each ClassesCOGSLine In PostingClassesCOGS Do
+		Record = RegisterRecords.ClassData.Add();
+		Record.RecordType = AccumulationRecordType.Expense;
+		Record.Period = Date;
+		Record.Account = ClassesCOGSLine.COGSAccount;
+		Record.Class = ClassesCOGSLine.Class;
+		Record.Amount = ClassesCOGSLine.AmountRC;
+	EndDo;
+	// End writing Class data.
+	
+	RegisterRecords.OrderTransactions.Write = True;
 	For Each CurRowLineItems In LineItems Do
 		If NOT CurRowLineItems.Order.IsEmpty() Then
-
-			RegisterRecords.OrderTransactions.Write = True;	
 			Record = RegisterRecords.OrderTransactions.Add();
 			Record.RecordType = AccumulationRecordType.Expense;
 			Record.Period = Date;
 			Record.Order = CurRowLineItems.Order;
 			Record.Amount = CurRowLineItems.LineTotal;
-			
 		EndIf;
 	EndDo;
-
-
-	 	 	
-EndProcedure
-
-Procedure UndoPosting(Cancel)
-
-	// 1. Common posting clearing / deactivate manual ajusted postings
-	DocumentPosting.PrepareRecordSetsForPostingClearing(AdditionalProperties, RegisterRecords);
 	
-	// 2. Skip manually adjusted documents
-	If ManualAdjustment Then
-		Return;
-	EndIf;
+	// <- CODE REVIEW
 	
-	// 3. Create structures with document data to pass it on the server
-	DocumentPosting.PrepareDataStructuresBeforePosting(AdditionalProperties);
+	invoice_url_webhook = Constants.sales_invoices_webhook.Get();
 	
-	// 4. Collect document data, required for posing clearing, and fill created structure 
-	Documents.SalesInvoice.PrepareDataStructuresForPostingClearing(Ref, AdditionalProperties, RegisterRecords);
-	
-	// 5. Write document postings to register
-	DocumentPosting.WriteRecordSets(AdditionalProperties, RegisterRecords);
-
-	// 6. Check register blanaces according to document's changes
-	DocumentPosting.CheckPostingResults(AdditionalProperties, RegisterRecords, Cancel);
-
-	// 7. Clear used temporary document data
-	DocumentPosting.ClearDataStructuresAfterPosting(AdditionalProperties);
-
-EndProcedure
-
-Procedure OnCopy(CopiedObject)
-	
-	// Clear manual ajustment attribute
-	ManualAdjustment = False;
-	
-EndProcedure
-
-Procedure Filling(FillingData, StandardProcessing)
-	                                            
-	Var TabularSectionData; Cancel = False;
-	
-	// Set the doc's number if it's new (Rupasov)
-	If ThisObject.IsNew() Then ThisObject.SetNewNumber() EndIf;
-
-	
-	// Filling on the base of other referenced object
-	If FillingData <> Undefined Then
+	If NOT invoice_url_webhook = "" Then
 		
-		// 0. Custom check of sales order for interactive generate of sales invoice on the base of sales order
-		If (TypeOf(FillingData) = Type("DocumentRef.SalesOrder"))
-		And Not Documents.SalesInvoice.CheckStatusOfSalesOrder(FillingData) Then
-			Cancel = True;
-			Return;
-		EndIf;		
-		
-		// 1. Common filling of parameters
-		DocumentParameters = New Structure("Ref, Date, Metadata",
-		                                    Ref, ?(ValueIsFilled(Date), Date, CurrentSessionDate()), Metadata());
-		DocumentFilling.PrepareDataStructuresBeforeFilling(AdditionalProperties, DocumentParameters, FillingData, Cancel);
-		
-		// 2. Cancel filling on failed data
-		If Cancel Then
-			Return;
-		EndIf;
-			
-		// 3. Collect document data, available for filling, and fill created structure 
-		Documents.SalesInvoice.PrepareDataStructuresForFilling(Ref, AdditionalProperties);
-			
-		// 4. Check collected data
-		DocumentFilling.CheckDataStructuresOnFilling(AdditionalProperties, Cancel);
-		
-		// 5. Fill document fields
-		If Not Cancel Then
-			// Fill "draft" values to attributes (all including non-critical fields will be filled)
-			FillPropertyValues(ThisObject, AdditionalProperties.Filling.FillingTables.Table_Attributes[0]);
-			
-			// Fill checked unique values to attributes (critical fields will be filled)
-			FillPropertyValues(ThisObject, AdditionalProperties.Filling.FillingTables.Table_Check[0]);
-			
-			// Fill line items
-			For Each TabularSection In AdditionalProperties.Metadata.TabularSections Do
-				If AdditionalProperties.Filling.FillingTables.Property("Table_" + TabularSection.Name, TabularSectionData) Then
-					ThisObject[TabularSection.Name].Load(TabularSectionData);
-				EndIf;
-			EndDo;
-		EndIf;
-		
-		// 6. Clear used temporary document data
-		DocumentFilling.ClearDataStructuresAfterFilling(AdditionalProperties);
-		
-		//If (TypeOf(FillingData) = Type("DocumentRef.SalesOrder")) Then
-		//	For Each SaleOrderItem In LineItems Do
-		//		CurTaxRate = (FillingData.ShipTo.SalesTaxCode.TaxRate)/100;
-		//		SalesTax = SalesTax + (SaleOrderItem.TaxableAmount*CurTaxRate);
-		//	EndDo;
-		//Else
-		//	
-		//	For Each SaleOrderItem In LineItems Do
-		//		CurTaxRate = (SaleOrderItem.Order.ShipTo.SalesTaxCode.TaxRate)/100;
-		//		SalesTax = SalesTax + (SaleOrderItem.TaxableAmount*CurTaxRate);
-		//	EndDo;
-		//Endif;
-		//DocumentTotal = DocumentTotal + SalesTax;
-		//DocumentTotalRC = DocumentTotalRC + SalesTax;
-		
-		ThisObject.LineSubtotalRC = LineItems.Total("LineTotal");
-		ThisObject.SubTotalRC = ThisObject.LineSubtotalRC;
-		
-		If (TypeOf(FillingData) = Type("DocumentRef.SalesOrder")) Then
-
-				//prepay beg
-				SOString = "";
-				ExistBalance = False;
-				
-				Query = New Query;
-				Query.Text = "SELECT
-				             |	CashReceipt.Ref,
-				             |	CashReceipt.Company,
-				             |	CashReceipt.Date
-				             |FROM
-				             |	Document.CashReceipt AS CashReceipt
-				             |WHERE
-				             |	CashReceipt.SalesOrder = &SaleOrder";
-				Query.SetParameter("SaleOrder", FillingData.Ref);
-				QueryResult = Query.Execute().Unload();
-				
-				Total = 0;
-				For Each CashRec In QueryResult Do
-					
-					Query.Text = "SELECT
-					             |	-GeneralJournalBalance.AmountBalance AS Bal,
-					             |	GeneralJournalBalance.Account.Ref
-					             |FROM
-					             |	AccountingRegister.GeneralJournal.Balance AS GeneralJournalBalance
-					             |WHERE
-					             |	GeneralJournalBalance.ExtDimension2 = &CashReceipt
-					             |	AND GeneralJournalBalance.ExtDimension1 = &Company";
-					Query.SetParameter("CashReceipt", CashRec.Ref);
-					Query.SetParameter("Company",CashRec.Company);
-
-					QueryResult2 = Query.Execute().Unload();
-										
-					Total = Total + QueryResult2[0].Bal;
-					
-				EndDo;
-				
-				Query.Text = "SELECT
-				             |	-GeneralJournalBalance.AmountBalance AS Bal,
-				             |	GeneralJournalBalance.Account.Ref
-				             |FROM
-				             |	AccountingRegister.GeneralJournal.Balance AS GeneralJournalBalance
-				             |WHERE
- 							 |			ExtDimension1 = &Company AND
-			                 |          (ExtDimension2 REFS Document.SalesReturn AND
-			                 |			ExtDimension2.ReturnType = VALUE(Enum.ReturnTypes.CreditMemo))";
-				Query.SetParameter("Company",FillingData.Company);
-
-				QueryResult3 = Query.Execute().Unload();
-				
-				Total = Total + QueryResult3.Total("Bal");
-
-				
-				If Total > 0 Then
-						SOString = SOString + FillingData.Ref;
-				EndIf;
-				PrePaySO = SOString;
-				
-				//
-
-			Try	
-				RefNum = FillingData.RefNum;
-			Except;
-			EndTry;
-			
-			Try	
-				BillTo = FillingData.BillTo;
-			Except;
-			EndTry;
-
-			Try	
-				DropshipCustomer = FillingData.DropshipCustomer;
-			Except;
-			EndTry;
-
-			Try	
-				DropshipAddress = FillingData.DropshipAddress;
-			Except;
-			EndTry;
-			
-			DiscountRC = FillingData.DiscountRC;
-			DiscountPercent = FillingData.DiscountPercent;
-
-			If DiscountPercent <> 0 Or DiscountRC <> 0 Then
-				LineSubtotalRC = LineItems.Total("LineTotal");
-				SubTotalRC = LineItems.Total("LineTotal") + DiscountRC;
-
-				DocTotal = LineSubtotalRC + DiscountRC + ShippingRC + SalesTaxRC;
-				DocumentTotal = DocTotal;
-				DocumentTotalRC = DocTotal * ExchangeRate;
-			EndIf;
-
-
-			
-		EndIf;	
-
-
-	EndIf;
-	
-EndProcedure
-
-Procedure FillCheckProcessing(Cancel, CheckedAttributes)
-	
-	If DiscountRC > 0 Then
-		Message = New UserMessage();
-		Message.Text=NStr("en='A discount should be a negative number'");
-		//Message.Field = "Object.Description";
-		Message.Message();
-		Cancel = True;
-		Return;
-	EndIf;
-	
-	// Check doubles in items (to be sure of proper orders placement)
-	GeneralFunctions.CheckDoubleItems(Ref, LineItems, "Project, Order, Product, LineNumber",, Cancel);
-	
-EndProcedure
-
-Procedure OnWrite(Cancel)
-	
-	companies_webhook = Constants.sales_invoices_webhook.Get();
-	
-	If NOT companies_webhook = "" Then
-		
-		//double_slash = Find(companies_webhook, "//");
-		//
-		//companies_webhook = Right(companies_webhook,StrLen(companies_webhook) - double_slash - 1);
-		//
-		//first_slash = Find(companies_webhook, "/");
-		//webhook_address = Left(companies_webhook,first_slash - 1);
-		//webhook_resource = Right(companies_webhook,StrLen(companies_webhook) - first_slash + 1); 		
-		
-		WebhookMap = New Map(); 
-		WebhookMap.Insert("apisecretkey",Constants.APISecretKey.Get());
+		WebhookMap = Webhooks.ReturnSalesInvoiceMap(Ref);
 		WebhookMap.Insert("resource","salesinvoices");
 		If NewObject = True Then
 			WebhookMap.Insert("action","create");
 		Else
 			WebhookMap.Insert("action","update");
 		EndIf;
-		WebhookMap.Insert("api_code",String(Ref.UUID()));
-		
-		WebhookParams = New Array();
-		WebhookParams.Add(Constants.sales_invoices_webhook.Get());
-		WebhookParams.Add(WebhookMap);
-		LongActions.ExecuteInBackground("GeneralFunctions.SendWebhook", WebhookParams);
-	
-	EndIf;
-
-EndProcedure
-
-Procedure BeforeDelete(Cancel)
-	
-	companies_webhook = Constants.sales_invoices_webhook.Get();
-	
-	If NOT companies_webhook = "" Then
-		
-		//double_slash = Find(companies_webhook, "//");
-		//
-		//companies_webhook = Right(companies_webhook,StrLen(companies_webhook) - double_slash - 1);
-		//
-		//first_slash = Find(companies_webhook, "/");
-		//webhook_address = Left(companies_webhook,first_slash - 1);
-		//webhook_resource = Right(companies_webhook,StrLen(companies_webhook) - first_slash + 1); 		
-		
-		WebhookMap = New Map(); 
 		WebhookMap.Insert("apisecretkey",Constants.APISecretKey.Get());
-		WebhookMap.Insert("resource","salesinvoices");
-		WebhookMap.Insert("action","delete");
-		WebhookMap.Insert("api_code",String(Ref.UUID()));
 		
 		WebhookParams = New Array();
 		WebhookParams.Add(Constants.sales_invoices_webhook.Get());
 		WebhookParams.Add(WebhookMap);
 		LongActions.ExecuteInBackground("GeneralFunctions.SendWebhook", WebhookParams);
-	
+		
 	EndIf;
-
+	
+	email_invoice_webhook = Constants.invoice_webhook_email.Get();
+	
+	If NOT email_invoice_webhook = "" Then
+	//If true then			
+		WebhookMap2 = Webhooks.ReturnSalesInvoiceMap(Ref);
+		WebhookMap2.Insert("resource","salesinvoices");
+		If NewObject = True Then
+			WebhookMap2.Insert("action","create");
+		Else
+			WebhookMap2.Insert("action","update");
+		EndIf;
+		WebhookMap2.Insert("apisecretkey",Constants.APISecretKey.Get());
+		
+		WebhookParams2 = New Array();
+		WebhookParams2.Add(Constants.invoice_webhook_email.Get());
+		WebhookParams2.Add(WebhookMap2);
+		LongActions.ExecuteInBackground("GeneralFunctions.EmailWebhook", WebhookParams2);
+		
+	EndIf;
+	
 EndProcedure
 
+Procedure UndoPosting(Cancel)
+	
+	// 1. Common posting clearing / deactivate manual ajusted postings.
+	DocumentPosting.PrepareRecordSetsForPostingClearing(AdditionalProperties, RegisterRecords);
+	
+	// 2. Skip manually adjusted documents.
+	If ManualAdjustment Then
+		Return;
+	EndIf;
+	
+	// 3. Create structures with document data to pass it on the server.
+	DocumentPosting.PrepareDataStructuresBeforePosting(AdditionalProperties);
+	
+	// 4. Collect document data, required for posing clearing, and fill created structure.
+	Documents.SalesInvoice.PrepareDataStructuresForPostingClearing(Ref, AdditionalProperties, RegisterRecords);
+	
+	// 5. Write document postings to register.
+	DocumentPosting.WriteRecordSets(AdditionalProperties, RegisterRecords);
+	
+	// 6. Check register blanaces according to document's changes.
+	DocumentPosting.CheckPostingResults(AdditionalProperties, RegisterRecords, Cancel);
+	
+	// 7. Clear used temporary document data.
+	DocumentPosting.ClearDataStructuresAfterPosting(AdditionalProperties);
+	
+EndProcedure
 
+#EndIf
+
+#EndRegion

@@ -4,7 +4,12 @@
 //------------------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////////////
-// DOCUMENT POSTING
+#Region PUBLIC_INTERFACE
+
+#If Server Or ThickClientOrdinaryApplication Or ExternalConnection Then
+
+//------------------------------------------------------------------------------
+// Document posting
 
 // Collect document data for posting on the server (in terms of document)
 Function PrepareDataStructuresForPosting(DocumentRef, AdditionalProperties, RegisterRecords) Export
@@ -37,6 +42,268 @@ Function PrepareDataStructuresForPostingClearing(DocumentRef, AdditionalProperti
 	FillRegistersCheckList(AdditionalProperties, RegisterRecords);
 	
 EndFunction
+
+//------------------------------------------------------------------------------
+// Document filling
+
+// Collect source data for filling document on the server (in terms of document)
+Function PrepareDataStructuresForFilling(DocumentRef, AdditionalProperties) Export
+	
+	// Create list of posting tables (according to the list of registers)
+	TablesList = New Structure;
+	
+	// Create a query to request document data
+	Query = New Query;
+	Query.TempTablesManager = New TempTablesManager;
+	Query.SetParameter("Ref",  DocumentRef);
+	Query.SetParameter("Date", AdditionalProperties.Date);
+	
+	// Query for document's tables
+	Query.Text   = "";
+	For Each FillingData In AdditionalProperties.Filling.FillingData Do
+		
+		// Construct query by passed sources
+		If FillingData.Key = "Document_PurchaseOrder" Then
+			Query.Text = Query.Text +
+						 Query_Filling_Document_PurchaseOrder_Attributes(TablesList) +
+						 Query_Filling_Document_PurchaseOrder_OrdersStatuses(TablesList) +
+						 Query_Filling_Document_PurchaseOrder_OrdersDispatched(TablesList) +
+						 Query_Filling_Document_PurchaseOrder_LineItems(TablesList) +
+						 Query_Filling_Document_PurchaseOrder_Totals(TablesList);
+			
+		Else // Next filling source
+		EndIf;
+		
+		Query.SetParameter("FillingData_" + FillingData.Key, FillingData.Value);
+	EndDo;
+	
+	// Add combining query
+	Query.Text = Query.Text +
+				 Query_Filling_Attributes(TablesList) +
+				 Query_Filling_LineItems(TablesList);
+				 
+	// Add check query
+	Query.Text = Query.Text +
+				 Query_Filling_Check(TablesList, FillingCheckList(AdditionalProperties));
+	
+	// Execute query, fill temporary tables with filling data
+	If TablesList.Count() > 3 Then
+		
+		// Execute query
+		QueryResult = Query.ExecuteBatch();
+		
+		AdditionalProperties.Filling.FillingTables.Insert("Table_Attributes", DocumentPosting.GetTemporaryTable(Query.TempTablesManager, "Table_Attributes"));
+		For Each TabularSection In AdditionalProperties.Metadata.TabularSections Do
+			If TablesList.Property("Table_"+TabularSection.Name) Then
+				AdditionalProperties.Filling.FillingTables.Insert("Table_"+TabularSection.Name, DocumentPosting.GetTemporaryTable(Query.TempTablesManager, "Table_"+TabularSection.Name));
+			EndIf;
+		EndDo;	
+		AdditionalProperties.Filling.FillingTables.Insert("Table_Check", DocumentPosting.GetTemporaryTable(Query.TempTablesManager, "Table_Check"));
+	EndIf;
+	
+EndFunction
+
+// Check status of passed purchase order by ref
+// Returns True if status passed for filling
+Function CheckStatusOfPurchaseOrder(DocumentRef, FillingRef) Export
+	
+	// Create new query
+	Query = New Query;
+	Query.SetParameter("Ref", FillingRef);
+	
+	QueryText =
+		"SELECT
+		|	CASE
+		|		WHEN PurchaseOrder.DeletionMark THEN
+		|			 VALUE(Enum.OrderStatuses.Deleted)
+		|		WHEN NOT PurchaseOrder.Posted THEN
+		|			 VALUE(Enum.OrderStatuses.Draft)
+		|		WHEN OrdersStatuses.Status IS NULL THEN
+		|			 VALUE(Enum.OrderStatuses.Open)
+		|		WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.EmptyRef) THEN
+		|			 VALUE(Enum.OrderStatuses.Open)
+		|		ELSE
+		|			 OrdersStatuses.Status
+		|	END AS Status
+		|FROM
+		|	Document.PurchaseOrder AS PurchaseOrder
+		|	LEFT JOIN InformationRegister.OrdersStatuses.SliceLast AS OrdersStatuses
+		|		ON PurchaseOrder.Ref = OrdersStatuses.Order
+		|WHERE
+		|	PurchaseOrder.Ref = &Ref";
+	Query.Text  = QueryText;
+	OrderStatus = Query.Execute().Unload()[0].Status;
+	
+	StatusOK = (OrderStatus = Enums.OrderStatuses.Open) Or (OrderStatus = Enums.OrderStatuses.Backordered);
+	If Not StatusOK Then
+		MessageText = NStr("en = 'Failed to generate the %1 on the base of %2 %3.'");
+		MessageText = StringFunctionsClientServer.SubstituteParametersInString(MessageText,
+		                                                                       Lower(Metadata.FindByType(TypeOf(DocumentRef)).Presentation()),
+		                                                                       Lower(OrderStatus),
+		                                                                       Lower(Metadata.FindByType(TypeOf(FillingRef)).Presentation())); 
+		CommonUseClientServer.MessageToUser(MessageText, FillingRef);
+	EndIf;
+	Return StatusOK;
+	
+EndFunction
+
+#EndIf
+
+#EndRegion
+
+////////////////////////////////////////////////////////////////////////////////
+#Region COMMANDS_HANDLERS
+
+#If Server Or ThickClientOrdinaryApplication Or ExternalConnection Then
+
+Procedure Print(Spreadsheet, Ref) Export  // ObjectArray, PrintObjects
+	
+	CustomTemplate = GeneralFunctions.GetCustomTemplate("Document.ItemReceipt", "Item receipt");
+	
+	If CustomTemplate = Undefined Then
+		Template = Documents.ItemReceipt.GetTemplate("PF_MXL_ItemReceipt");
+	Else
+		Template = CustomTemplate;
+	EndIf;
+	
+	// Create a spreadsheet document and set print parameters.
+	//SpreadsheetDocument = New SpreadsheetDocument;
+	//SpreadsheetDocument.PrintParametersName = "PrintParameters_ItemReceipt";
+
+	// Quering necessary data.
+	Query = New Query();
+	Query.Text =
+	"SELECT
+	|	ItemReceipt.Ref,
+	|	ItemReceipt.Company,
+	|	ItemReceipt.Date,
+	|	ItemReceipt.DocumentTotal,
+	|	ItemReceipt.Number,
+	//|	ItemReceipt.PriceIncludesVAT,
+	|	ItemReceipt.Currency,
+	//|	ItemReceipt.VATTotal,
+	|	ItemReceipt.LineItems.(
+	|		Product,
+	|		ProductDescription,
+	|		Product.UM AS UM,
+	|		Quantity,
+	|		Price,
+	//|		VATCode,
+	//|		VAT,
+	|		LineTotal
+	|	)
+	|FROM
+	|	Document.ItemReceipt AS ItemReceipt
+	|WHERE
+	|	ItemReceipt.Ref IN(&Ref)";
+	Query.SetParameter("Ref", Ref);
+	Selection = Query.Execute().Select();
+	
+	//AreaCaption = Template.GetArea("Caption");
+	//Header = Template.GetArea("Header");
+	Spreadsheet.Clear();
+
+	InsertPageBreak = False;
+	While Selection.Next() Do
+
+	
+   //	FirstDocument = True;
+   //
+   //	While Selection.Next() Do
+   // 	
+   // 	If Not FirstDocument Then
+   // 		// All documents need to be outputted on separate pages.
+   // 		Spreadsheet.PutHorizontalPageBreak();
+   // 	EndIf;
+   // 	FirstDocument = False;
+   // 	// Remember current document output beginning line number.
+   // 	BeginningLineNumber = Spreadsheet.TableHeight + 1;
+	 	 
+	TemplateArea = Template.GetArea("Header");
+	
+	UsBill = PrintTemplates.ContactInfoDatasetUs();
+	ThemBill = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemBill", Catalogs.Addresses.EmptyRef());
+	
+	TemplateArea.Parameters.Fill(UsBill);
+	TemplateArea.Parameters.Fill(ThemBill);
+	 	 
+	 TemplateArea.Parameters.Date = Selection.Date;
+	 TemplateArea.Parameters.Number = Selection.Number;
+	 
+	 Spreadsheet.Put(TemplateArea);
+
+	 TemplateArea = Template.GetArea("LineItemsHeader");
+	 Spreadsheet.Put(TemplateArea);
+	 
+	 SelectionLineItems = Selection.LineItems.Select();
+	 TemplateArea = Template.GetArea("LineItems");
+	 LineTotalSum = 0;
+	 While SelectionLineItems.Next() Do
+		 
+		 TemplateArea.Parameters.Fill(SelectionLineItems);
+		 LineTotal = SelectionLineItems.LineTotal;
+		 LineTotalSum = LineTotalSum + LineTotal;
+		 Spreadsheet.Put(TemplateArea, SelectionLineItems.Level());
+		 
+	 EndDo;
+	 
+	//If Selection.SalesTax <> 0 Then;
+	//	 TemplateArea = Template.GetArea("Subtotal");
+	//	 TemplateArea.Parameters.Subtotal = LineTotalSum;
+	//	 Spreadsheet.Put(TemplateArea);
+	//	 
+	//	 TemplateArea = Template.GetArea("SalesTax");
+	//	 TemplateArea.Parameters.SalesTaxTotal = Selection.SalesTax;
+	//	 Spreadsheet.Put(TemplateArea);
+	//EndIf; 
+
+	
+	//If Selection.VATTotal <> 0 Then;
+	//	 TemplateArea = Template.GetArea("Subtotal");
+	//	 TemplateArea.Parameters.Subtotal = LineTotalSum;
+	//	 Spreadsheet.Put(TemplateArea);
+	//	 
+	//	 TemplateArea = Template.GetArea("VAT");
+	//	 TemplateArea.Parameters.VATTotal = Selection.VATTotal;
+	//	 Spreadsheet.Put(TemplateArea);
+	//EndIf; 
+		 
+	 TemplateArea = Template.GetArea("Total");
+	//If Selection.PriceIncludesVAT Then
+	 	TemplateArea.Parameters.DocumentTotal = LineTotalSum; //+ Selection.SalesTax;
+	//Else
+	//	TemplateArea.Parameters.DocumentTotal = LineTotalSum + Selection.VATTotal;
+	//EndIf;
+
+	 Spreadsheet.Put(TemplateArea);
+
+	 //TemplateArea = Template.GetArea("Currency");
+	 //TemplateArea.Parameters.Currency = Selection.Currency;
+	 //Spreadsheet.Put(TemplateArea);
+	 
+     // Setting a print area in the spreadsheet document where to output the object.
+     // Necessary for kit printing. 
+     //PrintManagement.SetDocumentPrintArea(SpreadsheetDocument, BeginningLineNumber, PrintObjects, Selection.Ref);
+
+	 InsertPageBreak = True;
+	 
+   EndDo;
+   
+   //Return SpreadsheetDocument;
+   
+EndProcedure
+
+#EndIf
+
+#EndRegion
+
+////////////////////////////////////////////////////////////////////////////////
+#Region PRIVATE_IMPLEMENTATION
+
+#If Server Or ThickClientOrdinaryApplication Or ExternalConnection Then
+
+//------------------------------------------------------------------------------
+// Document posting
 
 // Query for document data
 Function Query_OrdersStatuses(TablesList)
@@ -137,65 +404,8 @@ Procedure FillRegistersCheckList(AdditionalProperties, RegisterRecords)
 	
 EndProcedure
 
-////////////////////////////////////////////////////////////////////////////////
-// DOCUMENT FILLING
-
-// Collect source data for filling document on the server (in terms of document)
-Function PrepareDataStructuresForFilling(DocumentRef, AdditionalProperties) Export
-	
-	// Create list of posting tables (according to the list of registers)
-	TablesList = New Structure;
-	
-	// Create a query to request document data
-	Query = New Query;
-	Query.TempTablesManager = New TempTablesManager;
-	Query.SetParameter("Ref",  DocumentRef);
-	Query.SetParameter("Date", AdditionalProperties.Date);
-	
-	// Query for document's tables
-	Query.Text   = "";
-	For Each FillingData In AdditionalProperties.Filling.FillingData Do
-		
-		// Construct query by passed sources
-		If FillingData.Key = "Document_PurchaseOrder" Then
-			Query.Text = Query.Text +
-						 Query_Filling_Document_PurchaseOrder_Attributes(TablesList) +
-						 Query_Filling_Document_PurchaseOrder_OrdersStatuses(TablesList) +
-						 Query_Filling_Document_PurchaseOrder_OrdersDispatched(TablesList) +
-						 Query_Filling_Document_PurchaseOrder_LineItems(TablesList) +
-						 Query_Filling_Document_PurchaseOrder_Totals(TablesList);
-			
-		Else // Next filling source
-		EndIf;
-		
-		Query.SetParameter("FillingData_" + FillingData.Key, FillingData.Value);
-	EndDo;
-	
-	// Add combining query
-	Query.Text = Query.Text +
-				 Query_Filling_Attributes(TablesList) +
-				 Query_Filling_LineItems(TablesList);
-				 
-	// Add check query
-	Query.Text = Query.Text +
-				 Query_Filling_Check(TablesList, FillingCheckList(AdditionalProperties));
-	
-	// Execute query, fill temporary tables with filling data
-	If TablesList.Count() > 3 Then
-		
-		// Execute query
-		QueryResult = Query.ExecuteBatch();
-		
-		AdditionalProperties.Filling.FillingTables.Insert("Table_Attributes", DocumentPosting.GetTemporaryTable(Query.TempTablesManager, "Table_Attributes"));
-		For Each TabularSection In AdditionalProperties.Metadata.TabularSections Do
-			If TablesList.Property("Table_"+TabularSection.Name) Then
-				AdditionalProperties.Filling.FillingTables.Insert("Table_"+TabularSection.Name, DocumentPosting.GetTemporaryTable(Query.TempTablesManager, "Table_"+TabularSection.Name));
-			EndIf;
-		EndDo;	
-		AdditionalProperties.Filling.FillingTables.Insert("Table_Check", DocumentPosting.GetTemporaryTable(Query.TempTablesManager, "Table_Check"));
-	EndIf;
-	
-EndFunction
+//------------------------------------------------------------------------------
+// Document filling
 
 // Query for document filling
 Function Query_Filling_Document_PurchaseOrder_Attributes(TablesList)
@@ -621,186 +831,6 @@ Function Query_Filling_Check(TablesList, CheckAttributes)
 	
 EndFunction
 
-// Check status of passed purchase order by ref
-// Returns True if status passed for filling
-Function CheckStatusOfPurchaseOrder(DocumentRef, FillingRef) Export
-	
-	// Create new query
-	Query = New Query;
-	Query.SetParameter("Ref", FillingRef);
-	
-	QueryText =
-		"SELECT
-		|	CASE
-		|		WHEN PurchaseOrder.DeletionMark THEN
-		|			 VALUE(Enum.OrderStatuses.Deleted)
-		|		WHEN NOT PurchaseOrder.Posted THEN
-		|			 VALUE(Enum.OrderStatuses.Draft)
-		|		WHEN OrdersStatuses.Status IS NULL THEN
-		|			 VALUE(Enum.OrderStatuses.Open)
-		|		WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.EmptyRef) THEN
-		|			 VALUE(Enum.OrderStatuses.Open)
-		|		ELSE
-		|			 OrdersStatuses.Status
-		|	END AS Status
-		|FROM
-		|	Document.PurchaseOrder AS PurchaseOrder
-		|	LEFT JOIN InformationRegister.OrdersStatuses.SliceLast AS OrdersStatuses
-		|		ON PurchaseOrder.Ref = OrdersStatuses.Order
-		|WHERE
-		|	PurchaseOrder.Ref = &Ref";
-	Query.Text  = QueryText;
-	OrderStatus = Query.Execute().Unload()[0].Status;
-	
-	StatusOK = (OrderStatus = Enums.OrderStatuses.Open) Or (OrderStatus = Enums.OrderStatuses.Backordered);
-	If Not StatusOK Then
-		MessageText = NStr("en = 'Failed to generate the %1 on the base of %2 %3.'");
-		MessageText = StringFunctionsClientServer.SubstituteParametersInString(MessageText,
-		                                                                       Lower(Metadata.FindByType(TypeOf(DocumentRef)).Presentation()),
-		                                                                       Lower(OrderStatus),
-		                                                                       Lower(Metadata.FindByType(TypeOf(FillingRef)).Presentation())); 
-		CommonUseClientServer.MessageToUser(MessageText, FillingRef);
-	EndIf;
-	Return StatusOK;
-	
-EndFunction
+#EndIf
 
-////////////////////////////////////////////////////////////////////////////////
-// DOCUMENT PRINTING (OLD)
-
-Procedure Print(Spreadsheet, Ref) Export  // ObjectArray, PrintObjects
-	
-	CustomTemplate = GeneralFunctions.GetCustomTemplate("Item receipt");
-	
-	If CustomTemplate = Undefined Then
-		Template = Documents.ItemReceipt.GetTemplate("PF_MXL_ItemReceipt");
-	Else
-		Template = CustomTemplate;
-	EndIf;
-	
-	// Create a spreadsheet document and set print parameters.
-	//SpreadsheetDocument = New SpreadsheetDocument;
-	//SpreadsheetDocument.PrintParametersName = "PrintParameters_ItemReceipt";
-
-	// Quering necessary data.
-	Query = New Query();
-	Query.Text =
-	"SELECT
-	|	ItemReceipt.Ref,
-	|	ItemReceipt.Company,
-	|	ItemReceipt.Date,
-	|	ItemReceipt.DocumentTotal,
-	|	ItemReceipt.Number,
-	//|	ItemReceipt.PriceIncludesVAT,
-	|	ItemReceipt.Currency,
-	//|	ItemReceipt.VATTotal,
-	|	ItemReceipt.LineItems.(
-	|		Product,
-	|		ProductDescription,
-	|		Product.UM AS UM,
-	|		Quantity,
-	|		Price,
-	//|		VATCode,
-	//|		VAT,
-	|		LineTotal
-	|	)
-	|FROM
-	|	Document.ItemReceipt AS ItemReceipt
-	|WHERE
-	|	ItemReceipt.Ref IN(&Ref)";
-	Query.SetParameter("Ref", Ref);
-	Selection = Query.Execute().Choose();
-	
-	//AreaCaption = Template.GetArea("Caption");
-	//Header = Template.GetArea("Header");
-	Spreadsheet.Clear();
-
-	InsertPageBreak = False;
-	While Selection.Next() Do
-
-	
-   //	FirstDocument = True;
-   //
-   //	While Selection.Next() Do
-   // 	
-   // 	If Not FirstDocument Then
-   // 		// All documents need to be outputted on separate pages.
-   // 		Spreadsheet.PutHorizontalPageBreak();
-   // 	EndIf;
-   // 	FirstDocument = False;
-   // 	// Remember current document output beginning line number.
-   // 	BeginningLineNumber = Spreadsheet.TableHeight + 1;
-	 	 
-	TemplateArea = Template.GetArea("Header");
-	
-	UsBill = PrintTemplates.ContactInfoDatasetUs();
-	ThemBill = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemBill", Catalogs.Addresses.EmptyRef());
-	
-	TemplateArea.Parameters.Fill(UsBill);
-	TemplateArea.Parameters.Fill(ThemBill);
-	 	 
-	 TemplateArea.Parameters.Date = Selection.Date;
-	 TemplateArea.Parameters.Number = Selection.Number;
-	 
-	 Spreadsheet.Put(TemplateArea);
-
-	 TemplateArea = Template.GetArea("LineItemsHeader");
-	 Spreadsheet.Put(TemplateArea);
-	 
-	 SelectionLineItems = Selection.LineItems.Choose();
-	 TemplateArea = Template.GetArea("LineItems");
-	 LineTotalSum = 0;
-	 While SelectionLineItems.Next() Do
-		 
-		 TemplateArea.Parameters.Fill(SelectionLineItems);
-		 LineTotal = SelectionLineItems.LineTotal;
-		 LineTotalSum = LineTotalSum + LineTotal;
-		 Spreadsheet.Put(TemplateArea, SelectionLineItems.Level());
-		 
-	 EndDo;
-	 
-	//If Selection.SalesTax <> 0 Then;
-	//	 TemplateArea = Template.GetArea("Subtotal");
-	//	 TemplateArea.Parameters.Subtotal = LineTotalSum;
-	//	 Spreadsheet.Put(TemplateArea);
-	//	 
-	//	 TemplateArea = Template.GetArea("SalesTax");
-	//	 TemplateArea.Parameters.SalesTaxTotal = Selection.SalesTax;
-	//	 Spreadsheet.Put(TemplateArea);
-	//EndIf; 
-
-	
-	//If Selection.VATTotal <> 0 Then;
-	//	 TemplateArea = Template.GetArea("Subtotal");
-	//	 TemplateArea.Parameters.Subtotal = LineTotalSum;
-	//	 Spreadsheet.Put(TemplateArea);
-	//	 
-	//	 TemplateArea = Template.GetArea("VAT");
-	//	 TemplateArea.Parameters.VATTotal = Selection.VATTotal;
-	//	 Spreadsheet.Put(TemplateArea);
-	//EndIf; 
-		 
-	 TemplateArea = Template.GetArea("Total");
-	//If Selection.PriceIncludesVAT Then
-	 	TemplateArea.Parameters.DocumentTotal = LineTotalSum; //+ Selection.SalesTax;
-	//Else
-	//	TemplateArea.Parameters.DocumentTotal = LineTotalSum + Selection.VATTotal;
-	//EndIf;
-
-	 Spreadsheet.Put(TemplateArea);
-
-	 //TemplateArea = Template.GetArea("Currency");
-	 //TemplateArea.Parameters.Currency = Selection.Currency;
-	 //Spreadsheet.Put(TemplateArea);
-	 
-     // Setting a print area in the spreadsheet document where to output the object.
-     // Necessary for kit printing. 
-     //PrintManagement.SetDocumentPrintArea(SpreadsheetDocument, BeginningLineNumber, PrintObjects, Selection.Ref);
-
-	 InsertPageBreak = True;
-	 
-   EndDo;
-   
-   //Return SpreadsheetDocument;
-   
-EndProcedure
+#EndRegion

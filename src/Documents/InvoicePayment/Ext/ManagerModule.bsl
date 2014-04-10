@@ -30,7 +30,7 @@
 	
 	//Selection = Query.Execute().Unload();
 	
-	Selection = Query.Execute().Choose();
+	Selection = Query.Execute().Select();
 	
 	/////
 	AreaCaption = Template.GetArea("Caption");
@@ -118,7 +118,7 @@
 		
 		
 //InvoicePayment Fill
-	SelectionLineItems = Selection.LineItems.Choose();
+	SelectionLineItems = Selection.LineItems.Select();
 	 
 	TemplateBills = Template.GetArea("Bills");
 	InvoiceCount = 0;
@@ -192,7 +192,7 @@
 		 Spreadsheet.Put(Head2);
 		 
 //Second InvoiceFill
-	SelectionLineItems = Selection.LineItems.Choose();
+	SelectionLineItems = Selection.LineItems.Select();
 	 
 	TemplateBills = Template.GetArea("Bills2");
 	InvoiceCount = 0;

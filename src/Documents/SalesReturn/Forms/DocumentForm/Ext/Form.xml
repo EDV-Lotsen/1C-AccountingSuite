@@ -97,7 +97,7 @@
 											<DataPath>Object.ReturnType</DataPath>
 											<TitleLocation>Left</TitleLocation>
 											<EditMode>EnterOnInput</EditMode>
-											<RadioButtonType>Tumbler</RadioButtonType>
+											<RadioButtonType>RadioButtons</RadioButtonType>
 											<ChoiceList>
 												<xr:Item>
 													<xr:Presentation/>
@@ -628,6 +628,9 @@
 					<DataPath>Object.SalesTaxRC</DataPath>
 					<ContextMenu name="SalesTaxContextMenu" id="21"/>
 					<ExtendedTooltip name="SalesTaxExtendedTooltip" id="133"/>
+					<Events>
+						<Event name="OnChange">SalesTaxOnChange</Event>
+					</Events>
 				</InputField>
 				<InputField name="DocumentTotal" id="24">
 					<DataPath>Object.DocumentTotal</DataPath>

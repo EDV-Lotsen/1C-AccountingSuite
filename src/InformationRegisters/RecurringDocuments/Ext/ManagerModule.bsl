@@ -9,6 +9,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 #Region PUBLIC_INTERFACE
 
+#If Server Or ThickClientOrdinaryApplication Or ExternalConnection Then
+
 //------------------------------------------------------------------------------
 // Schedule conversation functions
 
@@ -669,7 +671,7 @@ Function ProcessCurrentScheduledActions(CurrentEventDate, SelectedDocument = Und
 			RecordManager = InformationRegisters.RecurringDocuments.CreateRecordManager();
 			
 			// Get current document.
-			Selection = QueryResult.Choose();
+			Selection = QueryResult.Select();
 			While Selection.Next() Do
 				
 				// Get schedule details.
@@ -739,7 +741,7 @@ Function ProcessCurrentScheduledActions(CurrentEventDate, SelectedDocument = Und
 				RecordManager = InformationRegisters.RecurringDocuments.CreateRecordManager();
 				
 				// Get current document.
-				Selection = QueryResult.Choose();
+				Selection = QueryResult.Select();
 				While Selection.Next() Do
 					
 					// Update schedule data.
@@ -832,6 +834,8 @@ Function ExecuteScheduledAction(RecurringDocument, FromSchedule, ScheduledDate, 
 	Return SuccessfullyCompleted;
 	
 EndFunction
+
+#EndIf
 
 #EndRegion
 

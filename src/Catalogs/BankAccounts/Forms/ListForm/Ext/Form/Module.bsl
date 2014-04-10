@@ -71,7 +71,7 @@ Function RemoveAccountAtServer(Item)
 	//						|	AND BankAccounts.DeletionMark = FALSE");
 	//	Request.SetParameter("ItemID",ItemID);
 	//	Res = Request.Execute();
-	//	Sel = Res.Choose();
+	//	Sel = Res.Select();
 	//	Sel.Next();
 	//	SetPrivilegedMode(False);
 	//	If (Sel.UsedAccountsCount = 1) Then

@@ -141,10 +141,6 @@
 			<field>Account</field>
 		</field>
 		<field xsi:type="DataSetFieldField">
-			<dataPath>AccountDescription</dataPath>
-			<field>AccountDescription</field>
-		</field>
-		<field xsi:type="DataSetFieldField">
 			<dataPath>Amount</dataPath>
 			<field>Amount</field>
 		</field>
@@ -227,7 +223,6 @@
 	PurchaseInvoiceAccounts.Ref,
 	PurchaseInvoiceAccounts.LineNumber,
 	PurchaseInvoiceAccounts.Account,
-	PurchaseInvoiceAccounts.AccountDescription,
 	PurchaseInvoiceAccounts.Amount,
 	PurchaseInvoiceAccounts.Memo,
 	PurchaseInvoiceAccounts.Project,
@@ -278,7 +273,6 @@ UNION ALL
 SELECT
 	PurchaseInvoiceLineItems.Ref,
 	PurchaseInvoiceLineItems.LineNumber,
-	NULL,
 	NULL,
 	NULL,
 	NULL,
@@ -349,6 +343,7 @@ FROM
 					<dcsset:field>DeliveryDateActual1</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:use>false</dcsset:use>
 					<dcsset:field>AccountDescription</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">

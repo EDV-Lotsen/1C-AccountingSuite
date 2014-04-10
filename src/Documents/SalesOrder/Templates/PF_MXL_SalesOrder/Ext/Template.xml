@@ -1060,10 +1060,47 @@
 			</c>
 		</row>
 	</rowsItem>
+	<rowsItem>
+		<index>26</index>
+		<row>
+			<c>
+				<c>
+					<f>42</f>
+					<tl>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Additional Notes</v8:content>
+						</v8:item>
+					</tl>
+				</c>
+			</c>
+		</row>
+	</rowsItem>
+	<rowsItem>
+		<index>27</index>
+		<row>
+			<c>
+				<c>
+					<f>43</f>
+					<parameter>TermAndCond</parameter>
+				</c>
+			</c>
+		</row>
+	</rowsItem>
+	<rowsItem>
+		<index>28</index>
+		<row>
+			<c>
+				<c>
+					<f>44</f>
+				</c>
+			</c>
+		</row>
+	</rowsItem>
 	<drawing>
 		<drawingType>Picture</drawingType>
-		<id>1</id>
-		<formatIndex>42</formatIndex>
+		<id>2</id>
+		<formatIndex>45</formatIndex>
 		<beginRow>1</beginRow>
 		<beginRowOffset>12</beginRowOffset>
 		<endRow>6</endRow>
@@ -1082,9 +1119,9 @@
 		<picture/>
 	</picture>
 	<templateMode>true</templateMode>
-	<defaultFormatIndex>43</defaultFormatIndex>
-	<height>26</height>
-	<vgRows>26</vgRows>
+	<defaultFormatIndex>46</defaultFormatIndex>
+	<height>29</height>
+	<vgRows>29</vgRows>
 	<merge>
 		<r>15</r>
 		<c>1</c>
@@ -1095,8 +1132,23 @@
 		<c>1</c>
 		<w>1</w>
 	</merge>
+	<merge>
+		<r>26</r>
+		<c>0</c>
+		<w>5</w>
+	</merge>
+	<merge>
+		<r>27</r>
+		<c>0</c>
+		<w>5</w>
+	</merge>
+	<merge>
+		<r>28</r>
+		<c>0</c>
+		<w>5</w>
+	</merge>
 	<namedItem xsi:type="NamedItemCells">
-		<name>DiscountRC</name>
+		<name>Discount</name>
 		<area>
 			<type>Rows</type>
 			<beginRow>20</beginRow>
@@ -1136,7 +1188,7 @@
 		</area>
 	</namedItem>
 	<namedItem xsi:type="NamedItemCells">
-		<name>LineSubtotalRC</name>
+		<name>LineSubtotal</name>
 		<area>
 			<type>Rows</type>
 			<beginRow>19</beginRow>
@@ -1147,10 +1199,10 @@
 	</namedItem>
 	<namedItem xsi:type="NamedItemDrawing">
 		<name>Logo</name>
-		<drawingID>1</drawingID>
+		<drawingID>2</drawingID>
 	</namedItem>
 	<namedItem xsi:type="NamedItemCells">
-		<name>SalesTaxRC</name>
+		<name>SalesTax</name>
 		<area>
 			<type>Rows</type>
 			<beginRow>23</beginRow>
@@ -1160,7 +1212,7 @@
 		</area>
 	</namedItem>
 	<namedItem xsi:type="NamedItemCells">
-		<name>ShippingRC</name>
+		<name>Shipping</name>
 		<area>
 			<type>Rows</type>
 			<beginRow>22</beginRow>
@@ -1170,7 +1222,7 @@
 		</area>
 	</namedItem>
 	<namedItem xsi:type="NamedItemCells">
-		<name>SubtotalRC</name>
+		<name>Subtotal</name>
 		<area>
 			<type>Rows</type>
 			<beginRow>21</beginRow>
@@ -1180,7 +1232,17 @@
 		</area>
 	</namedItem>
 	<namedItem xsi:type="NamedItemCells">
-		<name>TotalRC</name>
+		<name>TermandCondition</name>
+		<area>
+			<type>Rows</type>
+			<beginRow>25</beginRow>
+			<endRow>28</endRow>
+			<beginColumn>-1</beginColumn>
+			<endColumn>-1</endColumn>
+		</area>
+	</namedItem>
+	<namedItem xsi:type="NamedItemCells">
+		<name>Total</name>
 		<area>
 			<type>Rows</type>
 			<beginRow>24</beginRow>
@@ -1479,6 +1541,24 @@
 				<v8:content>NFD=2; NZ=0.00</v8:content>
 			</v8:item>
 		</format>
+	</format>
+	<format>
+		<font>3</font>
+		<border>0</border>
+		<horizontalAlignment>Center</horizontalAlignment>
+	</format>
+	<format>
+		<font>2</font>
+		<leftBorder>0</leftBorder>
+		<rightBorder>0</rightBorder>
+		<textPlacement>Wrap</textPlacement>
+		<fillType>Parameter</fillType>
+	</format>
+	<format>
+		<font>2</font>
+		<leftBorder>0</leftBorder>
+		<rightBorder>0</rightBorder>
+		<bottomBorder>0</bottomBorder>
 	</format>
 	<format>
 		<print>true</print>

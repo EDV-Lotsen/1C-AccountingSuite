@@ -32,10 +32,16 @@ Procedure Posting(Cancel, Mode)
 				Record.Company = Company;
 				Record.Document = DocumentObject.Ref;
 				Record.Account = Item.Product.InventoryOrExpenseAccount;
+				If Item.Product.Type = Enums.InventoryTypes.Inventory Then
+					Record.Account = Item.Product.COGSAccount;
+				Else
+					Record.Account = Item.Product.InventoryOrExpenseAccount;
+				EndIf;
 				//Record.CashFlowSection = Item.Product.InventoryOrExpenseAccount.CashFlowSection;
 				Record.PaymentMethod = PaymentMethod;
 				Record.AmountRC = ((Item.LineTotal * ExchangeRate) * DocumentLine.Payment)/DocumentObject.DocumentTotalRC;
 			EndDo;
+
 
 		
 			Record = RegisterRecords.GeneralJournal.AddDebit();
@@ -81,6 +87,21 @@ Procedure Posting(Cancel, Mode)
 				Record.Amount = DocumentLine.Payment * ExchangeRate;
 			EndIf;
 			Record.AmountRC = DocumentLine.Payment * ExchangeRate;
+			
+			For Each Item In DocumentObject.LineItems Do
+				Record = RegisterRecords.CashFlowData.Add();
+				Record.RecordType = AccumulationRecordType.Receipt;
+				Record.Period = Date;
+				Record.Company = Company;
+				Record.Document = DocumentObject.Ref;
+				Record.Account = Item.Product.IncomeAccount;
+				//Record.Account = CurRowLineItems.Product.InventoryOrExpenseAccount;
+				//Record.CashFlowSection = CurRowLineItems.Product.InventoryOrExpenseAccount.CashFlowSection;
+				//Record.AmountRC = Item.LineTotal * ExchangeRate * -1;
+				Record.AmountRC = -1 * ((Item.LineTotal * ExchangeRate) * DocumentLine.Payment)/DocumentObject.DocumentTotalRC
+				//Record.PaymentMethod = PaymentMethod;
+			EndDo
+
 		
 		EndIf;
 				
@@ -137,8 +158,10 @@ Procedure Posting(Cancel, Mode)
 	
 EndProcedure
 
-
 Procedure UndoPosting(Cancel)
+	
+	//Remove physical num for checking
+	PhysicalCheckNum = 0;
 	
 	// Deleting bank reconciliation data
 	
@@ -147,15 +170,22 @@ Procedure UndoPosting(Cancel)
 	Records.Account = BankAccount;
 	Records.Read();
 	Records.Delete();
+		
 
 EndProcedure
 
-
 Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 		
-	If WriteMode = DocumentWriteMode.Write Then
+	If WriteMode = DocumentWriteMode.Write AND PaymentMethod = Catalogs.PaymentMethods.Check Then
 		Number = "DRAFT";
 	EndIf;
 
 EndProcedure
 
+Procedure BeforeDelete(Cancel)
+	
+	TRRecordset = InformationRegisters.TransactionReconciliation.CreateRecordSet();
+	TRRecordset.Filter.Document.Set(ThisObject.Ref);
+	TRRecordset.Write(True);
+
+EndProcedure

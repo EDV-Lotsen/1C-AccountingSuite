@@ -87,8 +87,8 @@ EndProcedure
 Procedure BeforeWrite(Cancel, WriteParameters)
 	
 	//Closing period
-	If DocumentPosting.DocumentPeriodIsClosed(Object.Ref, Object.Date) Then
-		Cancel = Not DocumentPosting.DocumentWritePermitted(WriteParameters);
+	If PeriodClosingServerCall.DocumentPeriodIsClosed(Object.Ref, Object.Date) Then
+		Cancel = Not PeriodClosingServerCall.DocumentWritePermitted(WriteParameters);
 		If Cancel Then
 			If WriteParameters.Property("PeriodClosingPassword") And WriteParameters.Property("Password") Then
 				If WriteParameters.Password = TRUE Then //Writing the document requires a password
@@ -109,8 +109,8 @@ EndProcedure
 Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
 	
 	//Period closing
-	If DocumentPosting.DocumentPeriodIsClosed(CurrentObject.Ref, CurrentObject.Date) Then
-		PermitWrite = DocumentPosting.DocumentWritePermitted(WriteParameters);
+	If PeriodClosingServerCall.DocumentPeriodIsClosed(CurrentObject.Ref, CurrentObject.Date) Then
+		PermitWrite = PeriodClosingServerCall.DocumentWritePermitted(WriteParameters);
 		CurrentObject.AdditionalProperties.Insert("PermitWrite", PermitWrite);	
 	EndIf;
 

@@ -1,0 +1,325 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<AutoTime>CurrentOrLast</AutoTime>
+	<UsePostingMode>Auto</UsePostingMode>
+	<RepostOnWrite>true</RepostOnWrite>
+	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<ChildItems>
+		<UsualGroup name="Caption" id="37">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Caption</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Caption</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Group>Horizontal</Group>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="CaptionExtendedTooltip" id="38"/>
+			<ChildItems>
+				<UsualGroup name="LeftCaption" id="39">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Left caption</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Left caption</v8:content>
+						</v8:item>
+					</ToolTip>
+					<Group>Vertical</Group>
+					<ShowTitle>false</ShowTitle>
+					<ExtendedTooltip name="LeftCaptionExtendedTooltip" id="40"/>
+					<ChildItems>
+						<InputField name="SalesTaxAgency" id="10">
+							<DataPath>Object.SalesTaxAgency</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="SalesTaxAgencyContextMenu" id="11"/>
+							<ExtendedTooltip name="SalesTaxAgencyExtendedTooltip" id="12"/>
+							<Events>
+								<Event name="OnChange">SalesTaxAgencyOnChange</Event>
+							</Events>
+						</InputField>
+						<InputField name="BankAccount" id="7">
+							<DataPath>Object.BankAccount</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="BankAccountContextMenu" id="8"/>
+							<ExtendedTooltip name="BankAccountExtendedTooltip" id="9"/>
+						</InputField>
+					</ChildItems>
+				</UsualGroup>
+				<UsualGroup name="RightCaption" id="41">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Right caption</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Right caption</v8:content>
+						</v8:item>
+					</ToolTip>
+					<Group>Vertical</Group>
+					<ShowTitle>false</ShowTitle>
+					<ExtendedTooltip name="RightCaptionExtendedTooltip" id="42"/>
+					<ChildItems>
+						<InputField name="Number" id="1">
+							<DataPath>Object.Number</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="NumberContextMenu" id="2"/>
+							<ExtendedTooltip name="NumberExtendedTooltip" id="3"/>
+						</InputField>
+						<InputField name="Date" id="4">
+							<DataPath>Object.Date</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Payment date</v8:content>
+								</v8:item>
+							</Title>
+							<HorizontalAlign>Right</HorizontalAlign>
+							<EditMode>EnterOnInput</EditMode>
+							<Width>10</Width>
+							<EditFormat>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>DLF=D</v8:content>
+								</v8:item>
+							</EditFormat>
+							<ContextMenu name="DateContextMenu" id="5"/>
+							<ExtendedTooltip name="DateExtendedTooltip" id="6"/>
+						</InputField>
+					</ChildItems>
+				</UsualGroup>
+			</ChildItems>
+		</UsualGroup>
+		<LabelDecoration name="PaymentDecorationStart" id="53">
+			<HorizontalStretch>true</HorizontalStretch>
+			<Border width="1">
+				<v8ui:style xsi:type="v8ui:ControlBorderType">Underline</v8ui:style>
+			</Border>
+			<ContextMenu name="PaymentDecorationStartContextMenu" id="54"/>
+			<ExtendedTooltip name="PaymentDecorationStartExtendedTooltip" id="55"/>
+		</LabelDecoration>
+		<UsualGroup name="PaymentGroup" id="65">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Payment group</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Payment group</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Group>Horizontal</Group>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="PaymentGroupExtendedTooltip" id="66"/>
+			<ChildItems>
+				<UsualGroup name="LeftPaymentGroup" id="67">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Left payment group</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Left payment group</v8:content>
+						</v8:item>
+					</ToolTip>
+					<Group>Vertical</Group>
+					<ShowTitle>false</ShowTitle>
+					<ExtendedTooltip name="LeftPaymentGroupExtendedTooltip" id="68"/>
+					<ChildItems>
+						<InputField name="TaxPeriodEnding" id="13">
+							<DataPath>Object.TaxPeriodEnding</DataPath>
+							<HorizontalAlign>Right</HorizontalAlign>
+							<EditMode>EnterOnInput</EditMode>
+							<EditFormat>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>DLF=D</v8:content>
+								</v8:item>
+							</EditFormat>
+							<ContextMenu name="TaxPeriodEndingContextMenu" id="14"/>
+							<ExtendedTooltip name="TaxPeriodEndingExtendedTooltip" id="15"/>
+							<Events>
+								<Event name="OnChange">TaxPeriodEndingOnChange</Event>
+							</Events>
+						</InputField>
+						<InputField name="Payment" id="16">
+							<DataPath>Object.Payment</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="PaymentContextMenu" id="17"/>
+							<ExtendedTooltip name="PaymentExtendedTooltip" id="18"/>
+							<Events>
+								<Event name="OnChange">PaymentOnChange</Event>
+							</Events>
+						</InputField>
+					</ChildItems>
+				</UsualGroup>
+				<UsualGroup name="TaxPayment" id="43">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Tax payment</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Tax payment</v8:content>
+						</v8:item>
+					</ToolTip>
+					<Group>Vertical</Group>
+					<ShowTitle>false</ShowTitle>
+					<ExtendedTooltip name="TaxPaymentExtendedTooltip" id="44"/>
+					<ChildItems>
+						<InputField name="AccountingBasis" id="62">
+							<DataPath>Object.AccountingBasis</DataPath>
+							<ContextMenu name="AccountingBasisContextMenu" id="63"/>
+							<ExtendedTooltip name="AccountingBasisExtendedTooltip" id="64"/>
+							<Events>
+								<Event name="OnChange">AccountingBasisOnChange</Event>
+							</Events>
+						</InputField>
+						<CheckBoxField name="MadeAdjustment" id="19">
+							<DataPath>Object.MadeAdjustment</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="MadeAdjustmentContextMenu" id="20"/>
+							<ExtendedTooltip name="MadeAdjustmentExtendedTooltip" id="21"/>
+							<Events>
+								<Event name="OnChange">MadeAdjustmentOnChange</Event>
+							</Events>
+						</CheckBoxField>
+					</ChildItems>
+				</UsualGroup>
+			</ChildItems>
+		</UsualGroup>
+		<UsualGroup name="AdjustmentGroup" id="45">
+			<Enabled>false</Enabled>
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Adjustment group</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Adjustment group</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Group>Vertical</Group>
+			<ShowTitle>false</ShowTitle>
+			<BackColor>web:WhiteSmoke</BackColor>
+			<ExtendedTooltip name="AdjustmentGroupExtendedTooltip" id="46"/>
+			<ChildItems>
+				<LabelDecoration name="AdjustmentDecoration" id="56">
+					<HorizontalStretch>true</HorizontalStretch>
+					<Font ref="style:SmallTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
+					<Title formatted="false">
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Adjustment</v8:content>
+						</v8:item>
+					</Title>
+					<Border width="1">
+						<v8ui:style xsi:type="v8ui:ControlBorderType">Underline</v8ui:style>
+					</Border>
+					<ContextMenu name="AdjustmentDecorationContextMenu" id="57"/>
+					<ExtendedTooltip name="AdjustmentDecorationExtendedTooltip" id="58"/>
+				</LabelDecoration>
+				<UsualGroup name="AdjustmentAmountGroup" id="47">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Adjustment amount group</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Adjustment amount group</v8:content>
+						</v8:item>
+					</ToolTip>
+					<Group>Horizontal</Group>
+					<ShowTitle>false</ShowTitle>
+					<ExtendedTooltip name="AdjustmentAmountGroupExtendedTooltip" id="48"/>
+					<ChildItems>
+						<InputField name="AdjustmentAmount" id="22">
+							<DataPath>Object.AdjustmentAmount</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="AdjustmentAmountContextMenu" id="23"/>
+							<ExtendedTooltip name="AdjustmentAmountExtendedTooltip" id="24"/>
+							<Events>
+								<Event name="OnChange">AdjustmentAmountOnChange</Event>
+							</Events>
+						</InputField>
+						<InputField name="AdjustmentAccount" id="28">
+							<DataPath>Object.AdjustmentAccount</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="AdjustmentAccountContextMenu" id="29"/>
+							<ExtendedTooltip name="AdjustmentAccountExtendedTooltip" id="30"/>
+						</InputField>
+					</ChildItems>
+				</UsualGroup>
+				<InputField name="AdjustmentReason" id="25">
+					<DataPath>Object.AdjustmentReason</DataPath>
+					<EditMode>EnterOnInput</EditMode>
+					<ContextMenu name="AdjustmentReasonContextMenu" id="26"/>
+					<ExtendedTooltip name="AdjustmentReasonExtendedTooltip" id="27"/>
+				</InputField>
+			</ChildItems>
+		</UsualGroup>
+		<LabelDecoration name="PaymentDecorationEnd" id="59">
+			<HorizontalStretch>true</HorizontalStretch>
+			<Border width="1">
+				<v8ui:style xsi:type="v8ui:ControlBorderType">Underline</v8ui:style>
+			</Border>
+			<ContextMenu name="PaymentDecorationEndContextMenu" id="60"/>
+			<ExtendedTooltip name="PaymentDecorationEndExtendedTooltip" id="61"/>
+		</LabelDecoration>
+		<LabelField name="TotalPayment" id="31">
+			<DataPath>Object.TotalPayment</DataPath>
+			<TitleFont ref="style:NormalTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
+			<EditMode>EnterOnInput</EditMode>
+			<Font ref="style:NormalTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
+			<ContextMenu name="TotalPaymentContextMenu" id="32"/>
+			<ExtendedTooltip name="TotalPaymentExtendedTooltip" id="33"/>
+		</LabelField>
+		<InputField name="Memo" id="34">
+			<DataPath>Object.Memo</DataPath>
+			<EditMode>EnterOnInput</EditMode>
+			<ContextMenu name="MemoContextMenu" id="35"/>
+			<ExtendedTooltip name="MemoExtendedTooltip" id="36"/>
+		</InputField>
+	</ChildItems>
+	<Attributes>
+		<Attribute name="Object" id="1">
+			<Type>
+				<v8:Type>cfg:DocumentObject.SalesTaxPayment</v8:Type>
+			</Type>
+			<MainAttribute>true</MainAttribute>
+			<SavedData>true</SavedData>
+			<UseAlways>
+				<Field>Object.RegisterRecords</Field>
+			</UseAlways>
+		</Attribute>
+	</Attributes>
+</Form>

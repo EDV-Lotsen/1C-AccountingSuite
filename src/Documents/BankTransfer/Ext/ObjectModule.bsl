@@ -82,3 +82,12 @@ Procedure UndoPosting(Cancel)
 
 EndProcedure
 
+
+Procedure BeforeDelete(Cancel)
+	
+	TRRecordset = InformationRegisters.TransactionReconciliation.CreateRecordSet();
+	TRRecordset.Filter.Document.Set(ThisObject.Ref);
+	TRRecordset.Write(True);
+
+EndProcedure
+

@@ -20,10 +20,10 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	IsNewRow     = False;
 	
 	// Fill object attributes cache.
-	DeliveryDateActual   = Object.DeliveryDateActual;
-	LocationActual       = Object.LocationActual;
-	Project              = Object.Project;
-	Class                = Object.Class;
+	DeliveryDateActual = Object.DeliveryDateActual;
+	LocationActual     = Object.LocationActual;
+	Project            = Object.Project;
+	Class              = Object.Class;
 	
 	//------------------------------------------------------------------------------
 	// 2. Calculate values of form object attributes.
@@ -37,8 +37,11 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	//------------------------------------------------------------------------------
 	// 3. Set custom controls presentation.
 	
-	// Set proper Company field presentation.
-	Items.CompanyTitle.Title = GeneralFunctionsReusable.GetVendorName() + ":";
+	// Set proper company field presentation.
+	VendorName                      = GeneralFunctionsReusable.GetVendorName();
+	Items.Company.Title             = VendorName;
+	Items.Company.ToolTip           = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = '%1 name'"),    VendorName);
+	Items.CompanyAddress.ToolTip    = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = '%1 address'"), VendorName);
 	
 	// Update quantities presentation.
 	QuantityPrecision = Format(Constants.QtyPrecision.Get(), "NFD=0; NZ=0; NG=0");
@@ -56,23 +59,148 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
 	// Update visibility of controls depending on functional options.
 	If Not GeneralFunctionsReusable.FunctionalOptionValue("MultiCurrency") Then
-		Items.FCYGroup.Visible = False;
+		Items.FCYGroup.Visible    = False;
 	EndIf;
 	
 	// Ajust controls availability for the begining balances documents.
 	If Object.BegBal  Then
-		//Items.VATTotal.ReadOnly        = False;
-		Items.DocumentTotalRC.ReadOnly = False;
 		Items.DocumentTotal.ReadOnly   = False;
+		Items.DocumentTotalRC.ReadOnly = False;
 	EndIf;
 	
 	// Set currency title.
-	DefaultCurrencySymbol    = GeneralFunctionsReusable.DefaultCurrencySymbol();
-	ForeignCurrencySymbol    = Object.Currency.Symbol;
-	Items.ExchangeRate.Title = DefaultCurrencySymbol + "/1" + ForeignCurrencySymbol;
-	//Items.VATCurrency.Title  = ForeignCurrencySymbol;
-	Items.RCCurrency.Title   = DefaultCurrencySymbol;
-	Items.FCYCurrency.Title  = ForeignCurrencySymbol;
+	DefaultCurrencySymbol          = GeneralFunctionsReusable.DefaultCurrencySymbol();
+	ForeignCurrencySymbol          = Object.Currency.Symbol;
+	Items.ExchangeRate.Title       = DefaultCurrencySymbol + "/1" + ForeignCurrencySymbol;
+	Items.FCYCurrency.Title        = ForeignCurrencySymbol;
+	Items.RCCurrency.Title         = DefaultCurrencySymbol;
+	
+EndProcedure
+
+// -> CODE REVIEW
+&AtClient
+Procedure BeforeWrite(Cancel, WriteParameters)
+	
+	//Closing period
+	If PeriodClosingServerCall.DocumentPeriodIsClosed(Object.Ref, Object.Date) Then
+		Cancel = Not PeriodClosingServerCall.DocumentWritePermitted(WriteParameters);
+		If Cancel Then
+			If WriteParameters.Property("PeriodClosingPassword") And WriteParameters.Property("Password") Then
+				If WriteParameters.Password = TRUE Then //Writing the document requires a password
+					ShowMessageBox(, "Invalid password!",, "Closed period notification");
+				EndIf;
+			Else
+				Notify = New NotifyDescription("ProcessUserResponseOnDocumentPeriodClosed", ThisObject, WriteParameters);
+				Password = "";
+				OpenForm("CommonForm.ClosedPeriodNotification", New Structure, ThisForm,,,, Notify, FormWindowOpeningMode.LockOwnerWindow);
+			EndIf;
+			return;
+		EndIf;
+	EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure ProcessUserResponseOnDocumentPeriodClosed(Result, Parameters) Export
+	
+	If (TypeOf(Result) = Type("String")) Then //Inserted password
+		Parameters.Insert("PeriodClosingPassword", Result);
+		Parameters.Insert("Password", TRUE);
+		Write(Parameters);
+		
+	ElsIf (TypeOf(Result) = Type("DialogReturnCode")) Then //Yes, No or Cancel
+		If Result = DialogReturnCode.Yes Then
+			Parameters.Insert("PeriodClosingPassword", "Yes");
+			Parameters.Insert("Password", FALSE);
+			Write(Parameters);
+		EndIf;
+	EndIf;
+	
+EndProcedure
+// <- CODE REVIEW
+
+&AtServer
+Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
+	
+	// -> CODE REVIEW
+	//Period closing
+	If PeriodClosingServerCall.DocumentPeriodIsClosed(CurrentObject.Ref, CurrentObject.Date) Then
+		PermitWrite = PeriodClosingServerCall.DocumentWritePermitted(WriteParameters);
+		CurrentObject.AdditionalProperties.Insert("PermitWrite", PermitWrite);	
+	EndIf;
+	
+	// Finds an invoice with the same number, if so, do not allow.
+	If Not IsBlankString(Object.Number) Then
+		QueryText2 = "SELECT
+		             |	PurchaseInvoice.Ref
+		             |FROM
+		             |	Document.PurchaseInvoice AS PurchaseInvoice
+		             |WHERE
+		             |	PurchaseInvoice.Ref <> &Ref
+		             |	AND PurchaseInvoice.Company = &Company
+		             |	AND PurchaseInvoice.Number = &Number";
+		Query = New Query(QueryText2);
+		Query.SetParameter("Ref", Object.Ref);
+		Query.SetParameter("Company", Object.Company);
+		Query.SetParameter("Number", Object.Number);
+		QueryResult = Query.Execute();
+		
+		If QueryResult.IsEmpty() Then
+		Else
+			Message("Bill # for this vendor already exists");
+			Cancel = True;
+		Endif;
+	EndIf;
+	
+	// Check empty bill.
+	If Object.LineItems.Count() = 0 AND Object.Accounts.Count() = 0 Then
+		Message("Cannot post when there are no expenses or items.");
+		Cancel = True;
+	EndIf;
+	// <- CODE REVIEW
+	
+	
+	//------------------------------------------------------------------------------
+	// 1. Correct the invoice date according to the orders dates.
+	
+	// Request orders dates.
+	QueryText = "
+		|SELECT TOP 1
+		|	PurchaseOrder.Date AS Date,
+		|	PurchaseOrder.Ref AS Ref
+		|FROM
+		|	Document.PurchaseOrder AS PurchaseOrder
+		|WHERE
+		|	PurchaseOrder.Ref IN (&Orders)
+		|ORDER BY
+		|	PurchaseOrder.Date DESC";
+	Query = New Query(QueryText);
+	Query.SetParameter("Orders", CurrentObject.LineItems.UnloadColumn("Order"));
+	QueryResult = Query.Execute();
+	
+	// Compare letest order date with current invoice date.
+	If Not QueryResult.IsEmpty() Then
+		
+		// Check latest order date.
+		LatestOrder  = QueryResult.Unload()[0];
+		If (Not LatestOrder.Date = Null) And (LatestOrder.Date >= CurrentObject.Date) Then
+			
+			// Invoice writing before the order.
+			If BegOfDay(LatestOrder.Date) = BegOfDay(CurrentObject.Date) Then
+				// The date is the same - simply correct the document time (it will not be shown to the user).
+				CurrentObject.Date = LatestOrder.Date + 1;
+				
+			Else
+				// The invoice writing too early.
+				CurrentObjectPresentation = StringFunctionsClientServer.SubstituteParametersInString(
+				        NStr("en = '%1 %2 from %3'"), CurrentObject.Metadata().Synonym, CurrentObject.Number, Format(CurrentObject.Date, "DLF=D"));
+				Message(StringFunctionsClientServer.SubstituteParametersInString(
+				        NStr("en = 'The %1 can not be written before the %2'"), CurrentObjectPresentation, LatestOrder.Ref));
+				Cancel = True;
+			EndIf;
+			
+		EndIf;
+	EndIf;
 	
 EndProcedure
 
@@ -80,7 +208,7 @@ EndProcedure
 Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 	
 	//------------------------------------------------------------------------------
-	// Realculate values of form object attributes.
+	// Recalculate values of form object attributes.
 	
 	// Request and fill invoice status from database.
 	FillInvoiceStatusAtServer();
@@ -89,7 +217,6 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 	FillBackorderQuantityAtServer();
 	
 EndProcedure
-
 
 #EndRegion
 
@@ -121,41 +248,6 @@ Procedure DateOnChangeAtServer()
 	
 EndProcedure
 
-//&AtClient
-//Procedure CompanyCodeTextEditEnd(Item, Text, ChoiceData, Parameters, StandardProcessing)
-//	
-//	// Search for a company ref and assign it to a company.
-//	CompanyCodeTextEditEndAtServer(Text, Object.Company, StandardProcessing);
-//	If StandardProcessing Then
-//		// Company successfully found and assigned.
-//		CompanyOnChange(Items.Company);
-//	EndIf;
-//	
-//EndProcedure
-
-//&AtServerNoContext
-//Procedure CompanyCodeTextEditEndAtServer(Text, CompanyRef, StandardProcessing)
-//	
-//	// Search for a company with entered code.
-//	CompanyRef = Catalogs.Companies.FindByCode(Text);
-//	If CompanyRef.IsEmpty() Then
-//		
-//		// Try to find company using full code.
-//		CodeLength = Metadata.Catalogs.Companies.CodeLength;
-//		FullCode   = Right("0000000000" + Text, CodeLength);
-//		CompanyRef = Catalogs.Companies.FindByCode(FullCode);
-//		
-//		// If company found by the full code then update the text.
-//		If Not CompanyRef.IsEmpty() Then
-//			Text = FullCode;
-//		EndIf;
-//	EndIf;
-//	
-//	// If company is not found - let the system show, that something going wrong.
-//	StandardProcessing = Not CompanyRef.IsEmpty();
-//	
-//EndProcedure
-
 &AtClient
 Procedure CompanyOnChange(Item)
 	
@@ -170,8 +262,8 @@ EndProcedure
 &AtServer
 Procedure CompanyOnChangeAtServer()
 	
-	// Update company presentation.
-	//Object.CompanyCode = Object.Company.Code;
+	// Reset company adresses (if company was changed).
+	FillCompanyAddressesAtServer(Object.Company, Object.CompanyAddress);
 	
 	// Request company default settings.
 	Object.Currency    = Object.Company.DefaultCurrency;
@@ -240,16 +332,15 @@ EndProcedure
 Procedure CurrencyOnChangeAtServer()
 	
 	// Update currency presentation.
-	DefaultCurrencySymbol    = GeneralFunctionsReusable.DefaultCurrencySymbol();
-	ForeignCurrencySymbol    = Object.Currency.Symbol;
-	Items.ExchangeRate.Title = DefaultCurrencySymbol + "/1" + ForeignCurrencySymbol;
-	//Items.VATCurrency.Title  = ForeignCurrencySymbol;
-	Items.RCCurrency.Title   = DefaultCurrencySymbol;
-	Items.FCYCurrency.Title  = ForeignCurrencySymbol;
+	DefaultCurrencySymbol          = GeneralFunctionsReusable.DefaultCurrencySymbol();
+	ForeignCurrencySymbol          = Object.Currency.Symbol;
+	Items.ExchangeRate.Title       = DefaultCurrencySymbol + "/1" + ForeignCurrencySymbol;
+	Items.FCYCurrency.Title        = ForeignCurrencySymbol;
+	Items.RCCurrency.Title         = DefaultCurrencySymbol;
 	
 	// Request currency default settings.
-	Object.ExchangeRate      = GeneralFunctions.GetExchangeRate(Object.Date, Object.Currency);
-	Object.APAccount         = Object.Currency.DefaultAPAccount;
+	Object.ExchangeRate            = GeneralFunctions.GetExchangeRate(Object.Date, Object.Currency);
+	Object.APAccount               = Object.Currency.DefaultAPAccount;
 	
 	// Process settings changes.
 	ExchangeRateOnChangeAtServer();
@@ -271,27 +362,6 @@ Procedure ExchangeRateOnChangeAtServer()
 	RecalculateTotalsAtServer();
 	
 EndProcedure
-
-//&AtClient
-//Procedure PriceIncludesVATOnChange(Item)
-//	
-//	// Request server operation.
-//	PriceIncludesVATOnChangeAtServer();
-//	
-//EndProcedure
-
-//&AtServer
-//Procedure PriceIncludesVATOnChangeAtServer()
-//	
-//	// Calculate taxes by line total.
-//	For Each TableSectionRow In Object.LineItems Do
-//		TableSectionRow.VAT = VAT_FL.VATLine(TableSectionRow.LineTotal, TableSectionRow.VATCode, "Purchase", Object.PriceIncludesVAT);
-//	EndDo;
-//	
-//	// Update overall totals.
-//	RecalculateTotalsAtServer();
-//	
-//EndProcedure
 
 &AtClient
 Procedure DueDateOnChange(Item)
@@ -526,21 +596,17 @@ Procedure LineItemsProductOnChangeAtServer(TableSectionRow)
 	// Request product properties.
 	ProductProperties = CommonUse.GetAttributeValues(TableSectionRow.Product, New Structure("Description, UM"));
 	TableSectionRow.ProductDescription = ProductProperties.Description;
-	//TableSectionRow.VATCode            = ProductProperties.PurchaseVATCode;
 	TableSectionRow.UM                 = ProductProperties.UM;
 	TableSectionRow.Price              = GeneralFunctions.ProductLastCost(TableSectionRow.Product);
 	
-	// Clear up order data.
-	TableSectionRow.Order              = Documents.PurchaseOrder.EmptyRef();
-	TableSectionRow.OrderPrice         = 0;
-	TableSectionRow.DeliveryDate       = '00010101';
-	TableSectionRow.Location           = Catalogs.Locations.EmptyRef();
-	
 	// Reset default values.
-	TableSectionRow.DeliveryDateActual = Object.DeliveryDateActual;
-	TableSectionRow.LocationActual     = Object.LocationActual;
-	TableSectionRow.Project            = Object.Project;
-	TableSectionRow.Class              = Object.Class;
+	FillPropertyValues(TableSectionRow, Object, "LocationActual, DeliveryDateActual, Project, Class");
+	
+	// Clear up order data.
+	TableSectionRow.Order        = Documents.PurchaseOrder.EmptyRef();
+	TableSectionRow.OrderPrice   = 0;
+	TableSectionRow.DeliveryDate = '00010101';
+	TableSectionRow.Location     = Catalogs.Locations.EmptyRef();
 	
 	// Assign default quantities.
 	TableSectionRow.Quantity  = 0;
@@ -551,7 +617,6 @@ Procedure LineItemsProductOnChangeAtServer(TableSectionRow)
 	
 	// Calculate totals by line.
 	TableSectionRow.LineTotal = 0;
-	//TableSectionRow.VAT       = 0;
 	
 EndProcedure
 
@@ -656,44 +721,7 @@ Procedure LineItemsLineTotalOnChangeAtServer(TableSectionRow)
 	TableSectionRow.Price = ?(Round(TableSectionRow.Quantity, QuantityPrecision) > 0,
 	                          Round(TableSectionRow.LineTotal / Round(TableSectionRow.Quantity, QuantityPrecision), 2), 0);
 	
-	// Calculate taxes by line total.
-	//LineItemsVATCodeOnChangeAtServer(TableSectionRow);
-	
 EndProcedure
-
-//&AtClient
-//Procedure LineItemsVATCodeOnChange(Item)
-//	
-//	// Fill line data for editing.
-//	TableSectionRow = GetLineItemsRowStructure();
-//	FillPropertyValues(TableSectionRow, Items.LineItems.CurrentData);
-//	
-//	// Request server operation.
-//	LineItemsVATCodeOnChangeAtServer(TableSectionRow);
-//	
-//	// Load processed data back.
-//	FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
-//	
-//	// Refresh totals cache.
-//	RecalculateTotals();
-//	
-//EndProcedure
-
-//&AtServer
-//Procedure LineItemsVATCodeOnChangeAtServer(TableSectionRow)
-//	
-//	// Calculate taxes by line total.
-//	TableSectionRow.VAT = VAT_FL.VATLine(TableSectionRow.LineTotal, TableSectionRow.VATCode, "Purchase", Object.PriceIncludesVAT);
-//	
-//EndProcedure
-
-//&AtClient
-//Procedure LineItemsVATOnChange(Item)
-//	
-//	// Refresh totals cache.
-//	RecalculateTotals();
-//	
-//EndProcedure
 
 //------------------------------------------------------------------------------
 // Tabular section Accounts event handlers.
@@ -772,6 +800,63 @@ Procedure URLOpen(Command)
 	
 EndProcedure
 
+// -> CODE REVIEW
+//------------------------------------------------------------------------------
+// Invoice payment
+
+&AtClient
+Procedure PayInvoice(Command)
+	
+	PayInvoiceAtServer();
+	
+EndProcedure
+
+&AtServer
+Procedure PayInvoiceAtServer()
+	
+	If Object.Posted = False Then
+		Message("An invoice payment cannot be created for the invoice because it has not yet been created(posted)");
+	Else
+		
+		NewCashReceipt = Documents.InvoicePayment.CreateDocument();
+		NewCashReceipt.Company = Object.Company;
+		NewCashReceipt.Date = CurrentDate();
+		NewCashReceipt.Currency = Object.Currency;
+		NewCashReceipt.DocumentTotal = Object.DocumentTotalRC;
+		NewCashReceipt.DocumentTotalRC = Object.DocumentTotalRC;
+		NewCashReceipt.BankAccount = Constants.BankAccount.Get();
+		NewCashReceipt.PaymentMethod = Catalogs.PaymentMethods.Check;
+		//NewCashReceipt.Number = 
+		NewLine = NewCashReceipt.LineItems.Add();
+		NewLine.Check = True;
+		NewLine.Document = Object.Ref;
+		NewLine.Balance = Object.DocumentTotalRC;
+		NewLine.Payment = Object.DocumentTotalRC;
+		        
+		NewCashReceipt.Write(DocumentWriteMode.Posting);
+		CommandBar.ChildItems.FormPayInvoice.Enabled = False;
+		PaidInvoiceCheck = True;
+		
+		Message("Am invoice payment has been created for " + Object.Ref);
+		
+	Endif;
+	
+EndProcedure
+
+&AtClient
+Procedure BillPayments(Command)
+	
+	FormParameters = New Structure();
+	
+	FltrParameters = New Structure();
+	FltrParameters.Insert("BillPays", Object.Ref);
+	FormParameters.Insert("Filter", FltrParameters);
+	OpenForm("CommonForm.BillPayList",FormParameters, Object.Ref);
+	
+EndProcedure
+
+// <- CODE REVIEW
+
 #EndRegion
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -781,7 +866,7 @@ EndProcedure
 // Calculate values of form object attributes.
 
 &AtServer
-// Request invoice status from database
+// Request invoice status from database.
 Procedure FillInvoiceStatusAtServer()
 	
 	// Request invoice status.
@@ -819,7 +904,7 @@ Procedure FillInvoiceStatusAtServer()
 	// Fill extended invoice status presentation (depending of document state).
 	If Not ValueIsFilled(Object.Ref) Then
 		InvoiceStatusPresentation = String(Enums.InvoiceStatuses.New);
-		Items.InvoiceStatusPresentation.TextColor = WebColors.DarkGreen;
+		Items.InvoiceStatusPresentation.TextColor = WebColors.DarkGray;
 		
 	ElsIf Object.DeletionMark Then
 		InvoiceStatusPresentation = String(Enums.InvoiceStatuses.Deleted);
@@ -847,7 +932,7 @@ Procedure FillInvoiceStatusAtServer()
 EndProcedure
 
 &AtServer
-// Request demanded order items from database
+// Request demanded order items from database.
 Procedure FillBackorderQuantityAtServer()
 	
 	// Request ordered items quantities
@@ -929,7 +1014,47 @@ Procedure FillBackorderQuantityAtServer()
 EndProcedure
 
 &AtServer
-// Check presence of non-closed orders for the object's company
+// Request and fill company addresses used for proper goods delivery.
+Procedure FillCompanyAddressesAtServer(Company, ShipTo, BillTo = Undefined, ConfirmTo = Undefined);
+	
+	// Check if company changed and addresses are required to be refilled.
+	If Not ValueIsFilled(BillTo)    Or BillTo.Owner    <> Company
+	Or Not ValueIsFilled(ShipTo)    Or ShipTo.Owner    <> Company
+	Or Not ValueIsFilled(ConfirmTo) Or ConfirmTo.Owner <> Company Then
+		
+		// Create new query
+		Query = New Query;
+		Query.SetParameter("Ref", Company);
+		
+		Query.Text =
+		"SELECT
+		|	Addresses.Ref,
+		|	Addresses.DefaultBilling,
+		|	Addresses.DefaultShipping
+		|FROM
+		|	Catalog.Addresses AS Addresses
+		|WHERE
+		|	Addresses.Owner = &Ref
+		|	AND (Addresses.DefaultBilling
+		|	  OR Addresses.DefaultShipping)";
+		Selection = Query.Execute().Select();
+		
+		// Assign default addresses.
+		While Selection.Next() Do
+			If Selection.DefaultBilling Then
+				BillTo = Selection.Ref;
+			EndIf;
+			If Selection.DefaultShipping Then
+				ShipTo = Selection.Ref;
+			EndIf;
+		EndDo;
+		ConfirmTo = Catalogs.Addresses.EmptyRef();
+	EndIf;
+	
+EndProcedure
+
+&AtServer
+// Check presence of non-closed orders for the object's company.
 Procedure FillCompanyHasNonClosedOrders()
 	
 	// Create new query
@@ -937,7 +1062,7 @@ Procedure FillCompanyHasNonClosedOrders()
 	Query.SetParameter("Company", Object.Company);
 	
 	QueryText = 
-		"SELECT
+		"SELECT TOP 1
 		|	PurchaseOrder.Ref
 		|FROM
 		|	Document.PurchaseOrder AS PurchaseOrder
@@ -966,8 +1091,8 @@ Procedure FillCompanyHasNonClosedOrders()
 EndProcedure
 
 &AtServer
-// Fills document on the base of passed array of orders
-// Returns flag o successfull filing
+// Fills document on the base of passed array of orders.
+// Returns flag of successfull filing.
 Function FillDocumentWithSelectedOrders(SelectedOrders)
 	
 	// Fill table on the base of selected orders
@@ -1001,18 +1126,11 @@ EndFunction
 // Calculate totals and fill object attributes.
 
 &AtClient
-// The procedure recalculates the document's totals.
-// VATTotal        - VAT total in foreign currency.
-// VATTotalRC      - VAT total in reporting currency.
-// DocumentTotal   - document total in foreign currency.
-// DocumentTotalRC - document total in reporting currency.
-//
 Procedure RecalculateTotals()
 	
 	// Calculate document totals.
 	LineItemsTotal = 0; AccountsTotal = 0;
 	For Each Row In Object.LineItems Do
-		//VATTotal       = VATTotal       + Row.VAT;
 		LineItemsTotal = LineItemsTotal + Row.LineTotal;
 	EndDo;
 	For Each Row In Object.Accounts Do
@@ -1020,25 +1138,15 @@ Procedure RecalculateTotals()
 	EndDo;
 	
 	// Assign totals to the object fields.
-	//Object.VATTotal        = VATTotal;
-	//Object.VATTotalRC      = Round(Object.VATTotal * Object.ExchangeRate, 2);
 	Object.DocumentTotal   = LineItemsTotal + AccountsTotal;
 	Object.DocumentTotalRC = Round(Object.DocumentTotal * Object.ExchangeRate, 2);
 	
 EndProcedure
 
 &AtServer
-// The procedure recalculates the document's totals.
-// VATTotal        - VAT total in foreign currency.
-// VATTotalRC      - VAT total in reporting currency.
-// DocumentTotal   - document total in foreign currency.
-// DocumentTotalRC - document total in reporting currency.
-//
 Procedure RecalculateTotalsAtServer()
 	
 	// Calculate document totals.
-	//Object.VATTotal        = Object.LineItems.Total("VAT");
-	//Object.VATTotalRC      = Round(Object.VATTotal * Object.ExchangeRate, 2);
 	Object.DocumentTotal   = Object.LineItems.Total("LineTotal") + Object.Accounts.Total("Amount");
 	Object.DocumentTotalRC = Round(Object.DocumentTotal * Object.ExchangeRate, 2);
 	
@@ -1052,189 +1160,8 @@ EndProcedure
 Function GetLineItemsRowStructure()
 	
 	// Define control row fields.
-	Return New Structure("Product, ProductDescription, Quantity, UM, Ordered, Backorder, Received, Invoiced, OrderPrice, Price, LineTotal, Order, ItemReceipt, Location, LocationActual, DeliveryDate, DeliveryDateActual, Project, Class");
+	Return New Structure("LineNumber, Product, ProductDescription, Quantity, UM, Ordered, Backorder, Received, Invoiced, OrderPrice, Price, LineTotal, Order, ItemReceipt, Location, LocationActual, DeliveryDate, DeliveryDateActual, Project, Class");
 	
 EndFunction
-
-#EndRegion
-
-////////////////////////////////////////////////////////////////////////////////
-#Region CODE_REVIEW
-
-//------------------------------------------------------------------------------
-// Closing the period
-
-&AtClient
-Procedure BeforeWrite(Cancel, WriteParameters)
-	
-	//Closing period
-	If DocumentPosting.DocumentPeriodIsClosed(Object.Ref, Object.Date) Then
-		Cancel = Not DocumentPosting.DocumentWritePermitted(WriteParameters);
-		If Cancel Then
-			If WriteParameters.Property("PeriodClosingPassword") And WriteParameters.Property("Password") Then
-				If WriteParameters.Password = TRUE Then //Writing the document requires a password
-					ShowMessageBox(, "Invalid password!",, "Closed period notification");
-				EndIf;
-			Else
-				Notify = New NotifyDescription("ProcessUserResponseOnDocumentPeriodClosed", ThisObject, WriteParameters);
-				Password = "";
-				OpenForm("CommonForm.ClosedPeriodNotification", New Structure, ThisForm,,,, Notify, FormWindowOpeningMode.LockOwnerWindow);
-			EndIf;
-			return;
-		EndIf;
-	EndIf;
-
-EndProcedure
-
-&AtServer
-Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
-	
-	//Period closing
-	If DocumentPosting.DocumentPeriodIsClosed(CurrentObject.Ref, CurrentObject.Date) Then
-		PermitWrite = DocumentPosting.DocumentWritePermitted(WriteParameters);
-		CurrentObject.AdditionalProperties.Insert("PermitWrite", PermitWrite);	
-	EndIf;
-
-	// Finds an invoice with the same number, if so, do not allow.
-	If Not IsBlankString(Object.Number) Then
-		QueryText2 = "
-					|SELECT
-		            |	PurchaseInvoice.Ref
-		            |FROM
-		            |	Document.PurchaseInvoice AS PurchaseInvoice
-		            |WHERE
-		            |	PurchaseInvoice.Ref <> &Ref
-		            |	AND PurchaseInvoice.Company = &Company
-		            |	AND PurchaseInvoice.Number = &Number";
-		Query = New Query(QueryText2);
-		Query.SetParameter("Ref", Object.Ref);
-		Query.SetParameter("Company", Object.Company);
-		Query.SetParameter("Number", Object.Number);
-		QueryResult = Query.Execute();
-		
-		If QueryResult.IsEmpty() Then
-		Else
-			Message("Bill # for this vendor already exists");
-			Cancel = True;
-		Endif;
-	EndIf;
-	
-	// Check empty bill.
-	If Object.LineItems.Count() = 0 AND Object.Accounts.Count() = 0 Then
-		Message("Cannot post when there are no expenses or items.");
-		Cancel = True;
-	EndIf;
-	
-	//------------------------------------------------------------------------------
-	// 1. Correct the invoice date according to the orders dates.
-	
-	// Request orders dates.
-	QueryText = "
-		|SELECT TOP 1
-		|	PurchaseOrder.Date AS Date,
-		|	PurchaseOrder.Ref AS Ref
-		|FROM
-		|	Document.PurchaseOrder AS PurchaseOrder
-		|WHERE
-		|	PurchaseOrder.Ref IN (&Orders)
-		|ORDER BY
-		|	PurchaseOrder.Date DESC";
-	Query = New Query(QueryText);
-	Query.SetParameter("Orders", CurrentObject.LineItems.UnloadColumn("Order"));
-	QueryResult = Query.Execute();
-	
-	// Compare letest order date with current invoice date.
-	If Not QueryResult.IsEmpty() Then
-		
-		// Check latest order date.
-		LatestOrder  = QueryResult.Unload()[0];
-		If (Not LatestOrder.Date = Null) And (LatestOrder.Date >= CurrentObject.Date) Then
-			
-			// Invoice writing before the order.
-			If BegOfDay(LatestOrder.Date) = BegOfDay(CurrentObject.Date) Then
-				// The date is the same - simply correct the document time (it will not be shown to the user).
-				CurrentObject.Date = LatestOrder.Date + 1;
-				
-			Else
-				// The invoice writing too early.
-				CurrentObjectPresentation = StringFunctionsClientServer.SubstituteParametersInString(
-				        NStr("en = '%1 %2 from %3'"), CurrentObject.Metadata().Synonym, CurrentObject.Number, Format(CurrentObject.Date, "DLF=D"));
-				Message(StringFunctionsClientServer.SubstituteParametersInString(
-				        NStr("en = 'The %1 can not be written before the %2'"), CurrentObjectPresentation, LatestOrder.Ref));
-				Cancel = True;
-			EndIf;
-			
-		EndIf;
-	EndIf;
-		
-EndProcedure
-
-&AtClient
-Procedure ProcessUserResponseOnDocumentPeriodClosed(Result, Parameters) Export
-	If (TypeOf(Result) = Type("String")) Then //Inserted password
-		Parameters.Insert("PeriodClosingPassword", Result);
-		Parameters.Insert("Password", TRUE);
-		Write(Parameters);
-	ElsIf (TypeOf(Result) = Type("DialogReturnCode")) Then //Yes, No or Cancel
-		If Result = DialogReturnCode.Yes Then
-			Parameters.Insert("PeriodClosingPassword", "Yes");
-			Parameters.Insert("Password", FALSE);
-			Write(Parameters);
-		EndIf;
-	EndIf;	
-EndProcedure
-
-//------------------------------------------------------------------------------
-// Invoice payment
-
-&AtClient
-Procedure PayInvoice(Command)
-	PayInvoiceAtServer();
-EndProcedure
-
-&AtServer
-Procedure PayInvoiceAtServer()
-	
-	If Object.Posted = False Then
-		Message("An invoice payment cannot be created for the invoice because it has not yet been created(posted)");
-	Else
-	
-		NewCashReceipt = Documents.InvoicePayment.CreateDocument();
-		NewCashReceipt.Company = Object.Company;
-		NewCashReceipt.Date = CurrentDate();
-		//NewCashReceipt.CompanyCode = Object.CompanyCode;
-		NewCashReceipt.Currency = Object.Currency;
-		NewCashReceipt.DocumentTotal = Object.DocumentTotalRC;
-		NewCashReceipt.DocumentTotalRC = Object.DocumentTotalRC;
-		NewCashReceipt.BankAccount = Constants.BankAccount.Get();
-		NewCashReceipt.PaymentMethod = Catalogs.PaymentMethods.Check;
-		//NewCashReceipt.Number = 
-		NewLine = NewCashReceipt.LineItems.Add();
-		NewLine.Check = True;
-		NewLine.Document = Object.Ref;
-		NewLine.Balance = Object.DocumentTotalRC;
-		NewLine.Payment = Object.DocumentTotalRC;
-		        
-		NewCashReceipt.Write(DocumentWriteMode.Posting);
-		CommandBar.ChildItems.FormPayInvoice.Enabled = False;
-		PaidInvoiceCheck = True;
-		
-		Message("Am invoice payment has been created for " + Object.Ref);
-		
-	Endif;
-
-EndProcedure
-
-&AtClient
-Procedure BillPayments(Command)
-	
-	FormParameters = New Structure();
-	
-	FltrParameters = New Structure();
-	FltrParameters.Insert("BillPays", Object.Ref);
-	FormParameters.Insert("Filter", FltrParameters);
-	OpenForm("CommonForm.BillPayList",FormParameters, Object.Ref);
-
-EndProcedure
 
 #EndRegion

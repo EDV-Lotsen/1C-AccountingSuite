@@ -32,6 +32,16 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Items.CreditCardBalanceGroup.Visible = False;
 	EndIf;
 	
+	ATArray = New Array();
+	ATArray.Add(Enums.AccountTypes.Bank);
+	ATArray.Add(Enums.AccountTypes.OtherCurrentAsset);
+	ATArray.Add(Enums.AccountTypes.OtherCurrentLiability);
+	NewParameter = New ChoiceParameter("Filter.AccountType", ATArray);
+	NewArray = New Array();
+	NewArray.Add(NewParameter);
+	NewParameters = New FixedArray(NewArray);
+	Items.AccountingAccount.ChoiceParameters = NewParameters;	
+	
 EndProcedure
 
 &AtClient

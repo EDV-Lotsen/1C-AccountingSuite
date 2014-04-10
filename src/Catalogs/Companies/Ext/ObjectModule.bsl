@@ -70,7 +70,7 @@ Procedure OnWrite(Cancel)
 		WebhookMap.Insert("company_name",Ref.Description);
 
 		
-		Selection = QueryResult.Choose();
+		Selection = QueryResult.Select();
 		While Selection.Next() Do
 			
 			WebhookParams = New Array();

@@ -14,7 +14,7 @@
 	|WHERE
 	|	Check.Ref IN(&Ref)";
 	Query.Parameters.Insert("Ref", Ref);
-	Selection = Query.Execute().Choose();
+	Selection = Query.Execute().Select();
 
 	AreaCaption = Template.GetArea("Caption");
 	Header = Template.GetArea("Header");

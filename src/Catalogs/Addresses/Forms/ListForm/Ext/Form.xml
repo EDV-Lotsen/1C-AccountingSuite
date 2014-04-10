@@ -36,31 +36,42 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="38"/>
-			<SearchStringAddition name="ListSearchString" id="59">
+			<SearchStringAddition name="ListSearchString" id="65">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="60"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="61"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="66"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="67"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="62">
+			<ViewStatusAddition name="ListViewStatus" id="68">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="63"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="64"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="69"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="70"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="65">
+			<SearchControlAddition name="ListSearchControl" id="71">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="66"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="67"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="72"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="73"/>
 			</SearchControlAddition>
 			<ChildItems>
+				<LabelField name="Owner" id="59">
+					<DataPath>List.Owner</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Customer / vendor</v8:content>
+						</v8:item>
+					</Title>
+					<ContextMenu name="OwnerContextMenu" id="60"/>
+					<ExtendedTooltip name="OwnerExtendedTooltip" id="61"/>
+				</LabelField>
 				<LabelField name="Code" id="36">
 					<DataPath>List.Code</DataPath>
 					<ContextMenu name="CodeContextMenu" id="37"/>
@@ -154,6 +165,11 @@
 					<ContextMenu name="DefaultShippingContextMenu" id="33"/>
 					<ExtendedTooltip name="DefaultShippingExtendedTooltip" id="55"/>
 				</CheckBoxField>
+				<LabelField name="SalesPerson" id="62">
+					<DataPath>List.SalesPerson</DataPath>
+					<ContextMenu name="SalesPersonContextMenu" id="63"/>
+					<ExtendedTooltip name="SalesPersonExtendedTooltip" id="64"/>
+				</LabelField>
 			</ChildItems>
 		</Table>
 	</ChildItems>

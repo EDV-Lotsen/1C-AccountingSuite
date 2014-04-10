@@ -6,10 +6,10 @@
 	<RepostOnWrite>true</RepostOnWrite>
 	<AutoCommandBar name="FormCommandBar" id="-1">
 		<ChildItems>
-			<Button name="FormBillPayments" id="379">
+			<Button name="FormBillPayments" id="385">
 				<Type>CommandBarButton</Type>
 				<CommandName>Form.Command.BillPayments</CommandName>
-				<ExtendedTooltip name="FormBillPaymentsExtendedTooltip" id="380"/>
+				<ExtendedTooltip name="FormBillPaymentsExtendedTooltip" id="386"/>
 			</Button>
 		</ChildItems>
 	</AutoCommandBar>
@@ -28,6 +28,7 @@
 			<ChildItems>
 				<Pages name="HeaderTabs" id="159">
 					<HorizontalStretch>true</HorizontalStretch>
+					<VerticalStretch>true</VerticalStretch>
 					<ExtendedTooltip name="HeaderTabsExtendedTooltip" id="160"/>
 					<ChildItems>
 						<Page name="Main" id="161">
@@ -41,61 +42,56 @@
 							<ExtendedTooltip name="MainExtendedTooltip" id="162"/>
 							<ChildItems>
 								<UsualGroup name="MainLeftColumn" id="41">
+									<VerticalStretch>true</VerticalStretch>
 									<Group>Vertical</Group>
 									<Representation>None</Representation>
 									<ShowTitle>false</ShowTitle>
 									<ExtendedTooltip name="MainLeftColumnExtendedTooltip" id="101"/>
 									<ChildItems>
-										<UsualGroup name="GroupComapny" id="189">
-											<Group>Horizontal</Group>
-											<Representation>None</Representation>
-											<ShowTitle>false</ShowTitle>
-											<ExtendedTooltip name="GroupComapnyExtendedTooltip" id="190"/>
-											<ChildItems>
-												<LabelDecoration name="CompanyTitle" id="191">
-													<Width>7</Width>
-													<HorizontalStretch>false</HorizontalStretch>
-													<SkipOnInput>true</SkipOnInput>
-													<Font ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont" scale="120"/>
-													<Title formatted="false">
-														<v8:item>
-															<v8:lang>en</v8:lang>
-															<v8:content>Vendor:</v8:content>
-														</v8:item>
-													</Title>
-													<ContextMenu name="CompanyTitleContextMenu" id="192"/>
-													<ExtendedTooltip name="CompanyTitleExtendedTooltip" id="193"/>
-												</LabelDecoration>
-												<InputField name="Company" id="5">
-													<DataPath>Object.Company</DataPath>
-													<TitleLocation>None</TitleLocation>
-													<EditMode>EnterOnInput</EditMode>
-													<Width>15</Width>
-													<HorizontalStretch>true</HorizontalStretch>
-													<Font ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont" scale="120"/>
-													<ContextMenu name="CompanyContextMenu" id="6"/>
-													<ExtendedTooltip name="CompanyExtendedTooltip" id="109"/>
-													<Events>
-														<Event name="OnChange">CompanyOnChange</Event>
-													</Events>
-												</InputField>
-											</ChildItems>
-										</UsualGroup>
-										<UsualGroup name="GroupAccount" id="339">
-											<Group>Horizontal</Group>
-											<Representation>None</Representation>
-											<ShowTitle>false</ShowTitle>
-											<ExtendedTooltip name="GroupAccountExtendedTooltip" id="340"/>
-											<ChildItems>
-												<InputField name="APAccount" id="228">
-													<DataPath>Object.APAccount</DataPath>
-													<Width>22</Width>
-													<HorizontalStretch>false</HorizontalStretch>
-													<ContextMenu name="APAccountContextMenu" id="229"/>
-													<ExtendedTooltip name="APAccountExtendedTooltip" id="230"/>
-												</InputField>
-											</ChildItems>
-										</UsualGroup>
+										<InputField name="Company" id="5">
+											<DataPath>Object.Company</DataPath>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Vendor</v8:content>
+												</v8:item>
+											</Title>
+											<TitleFont ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont" scale="120"/>
+											<ToolTip>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Vendor name</v8:content>
+												</v8:item>
+											</ToolTip>
+											<EditMode>EnterOnInput</EditMode>
+											<Width>15</Width>
+											<HorizontalStretch>true</HorizontalStretch>
+											<Font ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont" scale="120"/>
+											<ContextMenu name="CompanyContextMenu" id="6"/>
+											<ExtendedTooltip name="CompanyExtendedTooltip" id="109"/>
+											<Events>
+												<Event name="OnChange">CompanyOnChange</Event>
+											</Events>
+										</InputField>
+										<InputField name="CompanyAddress" id="382">
+											<DataPath>Object.CompanyAddress</DataPath>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Address</v8:content>
+												</v8:item>
+											</Title>
+											<ToolTip>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Vendor address</v8:content>
+												</v8:item>
+											</ToolTip>
+											<Width>15</Width>
+											<HorizontalStretch>true</HorizontalStretch>
+											<ContextMenu name="CompanyAddressContextMenu" id="383"/>
+											<ExtendedTooltip name="CompanyAddressExtendedTooltip" id="384"/>
+										</InputField>
 									</ChildItems>
 								</UsualGroup>
 								<UsualGroup name="MainMiddleColumn" id="45">
@@ -107,6 +103,12 @@
 										<InputField name="Terms" id="257">
 											<DataPath>Object.Terms</DataPath>
 											<TitleFont ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont" scale="120"/>
+											<ToolTip>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Payment terms</v8:content>
+												</v8:item>
+											</ToolTip>
 											<Width>15</Width>
 											<HorizontalStretch>true</HorizontalStretch>
 											<Font ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont" scale="120"/>
@@ -116,11 +118,19 @@
 												<Event name="OnChange">TermsOnChange</Event>
 											</Events>
 										</InputField>
-										<LabelDecoration name="MainMargin" id="353">
+										<InputField name="APAccount" id="228">
+											<DataPath>Object.APAccount</DataPath>
+											<ToolTip>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Account payable</v8:content>
+												</v8:item>
+											</ToolTip>
+											<Width>15</Width>
 											<HorizontalStretch>true</HorizontalStretch>
-											<ContextMenu name="MainMarginContextMenu" id="354"/>
-											<ExtendedTooltip name="MainMarginExtendedTooltip" id="355"/>
-										</LabelDecoration>
+											<ContextMenu name="APAccountContextMenu" id="229"/>
+											<ExtendedTooltip name="APAccountExtendedTooltip" id="230"/>
+										</InputField>
 									</ChildItems>
 								</UsualGroup>
 								<UsualGroup name="MainRightColumn" id="42">
@@ -129,37 +139,6 @@
 									<ShowTitle>false</ShowTitle>
 									<ExtendedTooltip name="MainRightColumnExtendedTooltip" id="108"/>
 									<ChildItems>
-										<UsualGroup name="DeliveryDateStatus" id="201">
-											<Group>Horizontal</Group>
-											<Representation>None</Representation>
-											<ShowTitle>false</ShowTitle>
-											<ExtendedTooltip name="DeliveryDateStatusExtendedTooltip" id="202"/>
-											<ChildItems>
-												<InputField name="DueDate" id="231">
-													<DataPath>Object.DueDate</DataPath>
-													<TitleFont ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont" scale="120"/>
-													<HorizontalAlign>Right</HorizontalAlign>
-													<Width>10</Width>
-													<HorizontalStretch>false</HorizontalStretch>
-													<Font ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont" scale="120"/>
-													<ContextMenu name="DueDateContextMenu" id="232"/>
-													<ExtendedTooltip name="DueDateExtendedTooltip" id="233"/>
-													<Events>
-														<Event name="OnChange">DueDateOnChange</Event>
-													</Events>
-												</InputField>
-												<LabelField name="InvoiceStatusPresentation" id="87">
-													<DataPath>InvoiceStatusPresentation</DataPath>
-													<ReadOnly>true</ReadOnly>
-													<TitleFont ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont" scale="120"/>
-													<Width>9</Width>
-													<HorizontalStretch>false</HorizontalStretch>
-													<Font ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont" scale="120"/>
-													<ContextMenu name="InvoiceStatusPresentationContextMenu" id="88"/>
-													<ExtendedTooltip name="InvoiceStatusPresentationExtendedTooltip" id="104"/>
-												</LabelField>
-											</ChildItems>
-										</UsualGroup>
 										<UsualGroup name="DateNumber" id="199">
 											<Group>Horizontal</Group>
 											<Representation>None</Representation>
@@ -168,6 +147,7 @@
 											<ChildItems>
 												<InputField name="Date" id="3">
 													<DataPath>Object.Date</DataPath>
+													<TitleFont ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont" scale="120"/>
 													<ToolTip>
 														<v8:item>
 															<v8:lang>en</v8:lang>
@@ -178,6 +158,7 @@
 													<EditMode>EnterOnInput</EditMode>
 													<Width>10</Width>
 													<HorizontalStretch>false</HorizontalStretch>
+													<Font ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont" scale="120"/>
 													<ContextMenu name="DateContextMenu" id="4"/>
 													<ExtendedTooltip name="DateExtendedTooltip" id="106"/>
 													<Events>
@@ -186,6 +167,7 @@
 												</InputField>
 												<InputField name="Number" id="1">
 													<DataPath>Object.Number</DataPath>
+													<TitleFont ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont" scale="120"/>
 													<ToolTip>
 														<v8:item>
 															<v8:lang>en</v8:lang>
@@ -193,11 +175,51 @@
 														</v8:item>
 													</ToolTip>
 													<EditMode>EnterOnInput</EditMode>
-													<Width>8</Width>
+													<Width>9</Width>
 													<HorizontalStretch>false</HorizontalStretch>
+													<Font ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont" scale="120"/>
 													<ContextMenu name="NumberContextMenu" id="2"/>
 													<ExtendedTooltip name="NumberExtendedTooltip" id="102"/>
 												</InputField>
+											</ChildItems>
+										</UsualGroup>
+										<UsualGroup name="DeliveryDateStatus" id="201">
+											<Group>Horizontal</Group>
+											<Representation>None</Representation>
+											<ShowTitle>false</ShowTitle>
+											<ExtendedTooltip name="DeliveryDateStatusExtendedTooltip" id="202"/>
+											<ChildItems>
+												<InputField name="DueDate" id="231">
+													<DataPath>Object.DueDate</DataPath>
+													<ToolTip>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Bill due date</v8:content>
+														</v8:item>
+													</ToolTip>
+													<HorizontalAlign>Right</HorizontalAlign>
+													<Width>10</Width>
+													<HorizontalStretch>false</HorizontalStretch>
+													<ContextMenu name="DueDateContextMenu" id="232"/>
+													<ExtendedTooltip name="DueDateExtendedTooltip" id="233"/>
+													<Events>
+														<Event name="OnChange">DueDateOnChange</Event>
+													</Events>
+												</InputField>
+												<LabelField name="InvoiceStatusPresentation" id="87">
+													<DataPath>InvoiceStatusPresentation</DataPath>
+													<ReadOnly>true</ReadOnly>
+													<ToolTip>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Bill status</v8:content>
+														</v8:item>
+													</ToolTip>
+													<Width>10</Width>
+													<HorizontalStretch>false</HorizontalStretch>
+													<ContextMenu name="InvoiceStatusPresentationContextMenu" id="88"/>
+													<ExtendedTooltip name="InvoiceStatusPresentationExtendedTooltip" id="104"/>
+												</LabelField>
 											</ChildItems>
 										</UsualGroup>
 									</ChildItems>
@@ -222,6 +244,12 @@
 									<ChildItems>
 										<InputField name="Project" id="141">
 											<DataPath>Object.Project</DataPath>
+											<ToolTip>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Default project</v8:content>
+												</v8:item>
+											</ToolTip>
 											<Width>15</Width>
 											<HorizontalStretch>true</HorizontalStretch>
 											<ContextMenu name="ProjectContextMenu" id="142"/>
@@ -238,16 +266,14 @@
 													<v8:content>Act.location</v8:content>
 												</v8:item>
 											</Title>
-											<TitleFont kind="AutoFont" scale="120"/>
 											<ToolTip>
 												<v8:item>
 													<v8:lang>en</v8:lang>
-													<v8:content>Actual location</v8:content>
+													<v8:content>Default actual location</v8:content>
 												</v8:item>
 											</ToolTip>
 											<Width>15</Width>
 											<HorizontalStretch>true</HorizontalStretch>
-											<Font kind="AutoFont" scale="120"/>
 											<ContextMenu name="LocationActualContextMenu" id="37"/>
 											<ExtendedTooltip name="LocationActualExtendedTooltip" id="111"/>
 											<Events>
@@ -264,6 +290,12 @@
 									<ChildItems>
 										<InputField name="Class" id="205">
 											<DataPath>Object.Class</DataPath>
+											<ToolTip>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Default class</v8:content>
+												</v8:item>
+											</ToolTip>
 											<Width>15</Width>
 											<HorizontalStretch>true</HorizontalStretch>
 											<ContextMenu name="ClassContextMenu" id="206"/>
@@ -281,17 +313,15 @@
 													<v8:content>Act.delivery</v8:content>
 												</v8:item>
 											</Title>
-											<TitleFont kind="AutoFont" scale="120"/>
 											<ToolTip>
 												<v8:item>
 													<v8:lang>en</v8:lang>
-													<v8:content>Actual delivery date</v8:content>
+													<v8:content>Default actual delivery date</v8:content>
 												</v8:item>
 											</ToolTip>
 											<HorizontalAlign>Right</HorizontalAlign>
 											<Width>10</Width>
 											<HorizontalStretch>false</HorizontalStretch>
-											<Font kind="AutoFont" scale="120"/>
 											<ContextMenu name="DeliveryDateActualContextMenu" id="139"/>
 											<ExtendedTooltip name="DeliveryDateActualExtendedTooltip" id="140"/>
 											<Events>
@@ -352,12 +382,6 @@
 												</InputField>
 											</ChildItems>
 										</UsualGroup>
-										<UsualGroup name="PriceDetermination" id="375">
-											<Group>Horizontal</Group>
-											<Representation>None</Representation>
-											<ShowTitle>false</ShowTitle>
-											<ExtendedTooltip name="PriceDeterminationExtendedTooltip" id="376"/>
-										</UsualGroup>
 									</ChildItems>
 								</UsualGroup>
 							</ChildItems>
@@ -386,6 +410,12 @@
 											<ChildItems>
 												<InputField name="URL" id="248">
 													<DataPath>Object.URL</DataPath>
+													<ToolTip>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Link to external resource containg the bill</v8:content>
+														</v8:item>
+													</ToolTip>
 													<InputHint>
 														<v8:item>
 															<v8:lang>en</v8:lang>
@@ -410,6 +440,12 @@
 											<ChildItems>
 												<CheckBoxField name="BegBal" id="254">
 													<DataPath>Object.BegBal</DataPath>
+													<ToolTip>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>The document represents company's beginning balance</v8:content>
+														</v8:item>
+													</ToolTip>
 													<CheckBoxType>Auto</CheckBoxType>
 													<ContextMenu name="BegBalContextMenu" id="255"/>
 													<ExtendedTooltip name="BegBalExtendedTooltip" id="256"/>
@@ -433,6 +469,34 @@
 									<ShowTitle>false</ShowTitle>
 									<ExtendedTooltip name="OtherRightColumnExtendedTooltip" id="247"/>
 								</UsualGroup>
+							</ChildItems>
+						</Page>
+						<Page name="MemoPage" id="387">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Memo</v8:content>
+								</v8:item>
+							</Title>
+							<Group>Horizontal</Group>
+							<ExtendedTooltip name="MemoPageExtendedTooltip" id="388"/>
+							<ChildItems>
+								<InputField name="Memo" id="389">
+									<DataPath>Object.Memo</DataPath>
+									<TitleLocation>Left</TitleLocation>
+									<ToolTip>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Sales order notes</v8:content>
+										</v8:item>
+									</ToolTip>
+									<Height>2</Height>
+									<HorizontalStretch>true</HorizontalStretch>
+									<VerticalStretch>false</VerticalStretch>
+									<MultiLine>true</MultiLine>
+									<ContextMenu name="MemoContextMenu" id="390"/>
+									<ExtendedTooltip name="MemoExtendedTooltip" id="391"/>
+								</InputField>
 							</ChildItems>
 						</Page>
 					</ChildItems>
@@ -470,29 +534,29 @@
 									<ContextMenu name="AccountsContextMenu" id="273"/>
 									<AutoCommandBar name="AccountsCommandBar" id="274"/>
 									<ExtendedTooltip name="AccountsExtendedTooltip" id="275"/>
-									<SearchStringAddition name="AccountsSearchString" id="381">
+									<SearchStringAddition name="AccountsSearchString" id="394">
 										<AdditionSource>
 											<Item>Accounts</Item>
 											<Type>SearchStringRepresentation</Type>
 										</AdditionSource>
-										<ContextMenu name="AccountsSearchStringContextMenu" id="382"/>
-										<ExtendedTooltip name="AccountsSearchStringExtendedTooltip" id="383"/>
+										<ContextMenu name="AccountsSearchStringContextMenu" id="395"/>
+										<ExtendedTooltip name="AccountsSearchStringExtendedTooltip" id="396"/>
 									</SearchStringAddition>
-									<ViewStatusAddition name="AccountsViewStatus" id="384">
+									<ViewStatusAddition name="AccountsViewStatus" id="397">
 										<AdditionSource>
 											<Item>Accounts</Item>
 											<Type>ViewStatusRepresentation</Type>
 										</AdditionSource>
-										<ContextMenu name="AccountsViewStatusContextMenu" id="385"/>
-										<ExtendedTooltip name="AccountsViewStatusExtendedTooltip" id="386"/>
+										<ContextMenu name="AccountsViewStatusContextMenu" id="398"/>
+										<ExtendedTooltip name="AccountsViewStatusExtendedTooltip" id="399"/>
 									</ViewStatusAddition>
-									<SearchControlAddition name="AccountsSearchControl" id="387">
+									<SearchControlAddition name="AccountsSearchControl" id="400">
 										<AdditionSource>
 											<Item>Accounts</Item>
 											<Type>SearchControl</Type>
 										</AdditionSource>
-										<ContextMenu name="AccountsSearchControlContextMenu" id="388"/>
-										<ExtendedTooltip name="AccountsSearchControlExtendedTooltip" id="389"/>
+										<ContextMenu name="AccountsSearchControlContextMenu" id="401"/>
+										<ExtendedTooltip name="AccountsSearchControlExtendedTooltip" id="402"/>
 									</SearchControlAddition>
 									<Events>
 										<Event name="OnEditEnd">AccountsOnEditEnd</Event>
@@ -582,29 +646,29 @@
 									<ContextMenu name="LineItemsContextMenu" id="10"/>
 									<AutoCommandBar name="LineItemsCommandBar" id="11"/>
 									<ExtendedTooltip name="LineItemsExtendedTooltip" id="113"/>
-									<SearchStringAddition name="LineItemsSearchString" id="390">
+									<SearchStringAddition name="LineItemsSearchString" id="403">
 										<AdditionSource>
 											<Item>LineItems</Item>
 											<Type>SearchStringRepresentation</Type>
 										</AdditionSource>
-										<ContextMenu name="LineItemsSearchStringContextMenu" id="391"/>
-										<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="392"/>
+										<ContextMenu name="LineItemsSearchStringContextMenu" id="404"/>
+										<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="405"/>
 									</SearchStringAddition>
-									<ViewStatusAddition name="LineItemsViewStatus" id="393">
+									<ViewStatusAddition name="LineItemsViewStatus" id="406">
 										<AdditionSource>
 											<Item>LineItems</Item>
 											<Type>ViewStatusRepresentation</Type>
 										</AdditionSource>
-										<ContextMenu name="LineItemsViewStatusContextMenu" id="394"/>
-										<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="395"/>
+										<ContextMenu name="LineItemsViewStatusContextMenu" id="407"/>
+										<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="408"/>
 									</ViewStatusAddition>
-									<SearchControlAddition name="LineItemsSearchControl" id="396">
+									<SearchControlAddition name="LineItemsSearchControl" id="409">
 										<AdditionSource>
 											<Item>LineItems</Item>
 											<Type>SearchControl</Type>
 										</AdditionSource>
-										<ContextMenu name="LineItemsSearchControlContextMenu" id="397"/>
-										<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="398"/>
+										<ContextMenu name="LineItemsSearchControlContextMenu" id="410"/>
+										<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="411"/>
 									</SearchControlAddition>
 									<Events>
 										<Event name="OnEditEnd">LineItemsOnEditEnd</Event>
@@ -966,29 +1030,16 @@
 			</ChildItems>
 		</UsualGroup>
 		<UsualGroup name="Footer" id="53">
-			<Group>Horizontal</Group>
+			<Group>Vertical</Group>
 			<Representation>None</Representation>
 			<ShowTitle>false</ShowTitle>
 			<ExtendedTooltip name="FooterExtendedTooltip" id="124"/>
 			<ChildItems>
-				<UsualGroup name="FooterLeftColumn" id="99">
-					<Group>Vertical</Group>
-					<Representation>None</Representation>
-					<ShowTitle>false</ShowTitle>
-					<ExtendedTooltip name="FooterLeftColumnExtendedTooltip" id="125"/>
-					<ChildItems>
-						<InputField name="Memo" id="55">
-							<DataPath>Object.Memo</DataPath>
-							<ContextMenu name="MemoContextMenu" id="56"/>
-							<ExtendedTooltip name="MemoExtendedTooltip" id="126"/>
-						</InputField>
-					</ChildItems>
-				</UsualGroup>
-				<UsualGroup name="FooterRightColumn" id="54">
+				<UsualGroup name="TotalRow" id="392">
 					<Group>Horizontal</Group>
 					<Representation>None</Representation>
 					<ShowTitle>false</ShowTitle>
-					<ExtendedTooltip name="FooterRightColumnExtendedTooltip" id="128"/>
+					<ExtendedTooltip name="TotalRowExtendedTooltip" id="393"/>
 					<ChildItems>
 						<UsualGroup name="FCYGroup" id="62">
 							<Group>Horizontal</Group>
@@ -1297,12 +1348,6 @@
 					<v8:content>Bill payments</v8:content>
 				</v8:item>
 			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Bill payments</v8:content>
-				</v8:item>
-			</ToolTip>
 			<Action>BillPayments</Action>
 		</Command>
 	</Commands>
@@ -1329,6 +1374,15 @@
 				<Command>0:349faa7b-a8e2-492c-b6d6-ed3c598ea1cd</Command>
 				<Type>Auto</Type>
 				<DefaultVisible>false</DefaultVisible>
+			</Item>
+			<Item>
+				<Command>Document.PurchaseInvoice.Command.Print</Command>
+				<Type>Auto</Type>
+				<CommandGroup>FormCommandBarImportant</CommandGroup>
+				<DefaultVisible>false</DefaultVisible>
+				<Visible>
+					<xr:Common>false</xr:Common>
+				</Visible>
 			</Item>
 		</CommandBar>
 	</CommandInterface>

@@ -11,6 +11,7 @@
 		<Event name="BeforeWrite">BeforeWrite</Event>
 		<Event name="BeforeWriteAtServer">BeforeWriteAtServer</Event>
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+		<Event name="FillCheckProcessingAtServer">FillCheckProcessingAtServer</Event>
 	</Events>
 	<ChildItems>
 		<UsualGroup name="DocumentCap" id="127">
@@ -47,18 +48,36 @@
 									<v8:content>Main</v8:content>
 								</v8:item>
 							</ToolTip>
-							<Group>Horizontal</Group>
 							<ExtendedTooltip name="MainExtendedTooltip" id="98"/>
 							<ChildItems>
-								<UsualGroup name="Group2" id="136">
-									<Group>Vertical</Group>
+								<UsualGroup name="Balance" id="99">
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Balance</v8:content>
+										</v8:item>
+									</Title>
+									<ToolTip>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Balance</v8:content>
+										</v8:item>
+									</ToolTip>
+									<Group>Horizontal</Group>
+									<ChildItemsWidth>Equal</ChildItemsWidth>
 									<ShowTitle>false</ShowTitle>
-									<ExtendedTooltip name="Group2ExtendedTooltip" id="137"/>
+									<ExtendedTooltip name="BalanceExtendedTooltip" id="100"/>
 									<ChildItems>
-										<UsualGroup name="Group6" id="101">
-											<Group>Horizontal</Group>
+										<UsualGroup name="Group7" id="103">
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Balance</v8:content>
+												</v8:item>
+											</Title>
+											<Group>Vertical</Group>
 											<ShowTitle>false</ShowTitle>
-											<ExtendedTooltip name="Group6ExtendedTooltip" id="102"/>
+											<ExtendedTooltip name="Group7ExtendedTooltip" id="104"/>
 											<ChildItems>
 												<InputField name="BankAccount" id="62">
 													<DataPath>Object.BankAccount</DataPath>
@@ -68,29 +87,16 @@
 															<v8:content>Bank account</v8:content>
 														</v8:item>
 													</Title>
-													<Width>20</Width>
-													<HorizontalStretch>false</HorizontalStretch>
 													<ContextMenu name="BankAccountContextMenu" id="63"/>
 													<ExtendedTooltip name="BankAccountExtendedTooltip" id="72"/>
 													<Events>
 														<Event name="OnChange">BankAccountOnChange</Event>
 													</Events>
 												</InputField>
-											</ChildItems>
-										</UsualGroup>
-										<UsualGroup name="Group7" id="103">
-											<Title>
-												<v8:item>
-													<v8:lang>en</v8:lang>
-													<v8:content>Balance</v8:content>
-												</v8:item>
-											</Title>
-											<Group>Horizontal</Group>
-											<ExtendedTooltip name="Group7ExtendedTooltip" id="104"/>
-											<ChildItems>
 												<InputField name="BeginningBalance" id="21">
 													<DataPath>Object.BeginningBalance</DataPath>
 													<EditMode>EnterOnInput</EditMode>
+													<HorizontalStretch>true</HorizontalStretch>
 													<ContextMenu name="BeginningBalanceContextMenu" id="22"/>
 													<ExtendedTooltip name="BeginningBalanceExtendedTooltip" id="75"/>
 													<Events>
@@ -99,24 +105,15 @@
 												</InputField>
 											</ChildItems>
 										</UsualGroup>
-									</ChildItems>
-								</UsualGroup>
-								<UsualGroup name="Group3" id="138">
-									<Group>Vertical</Group>
-									<ShowTitle>false</ShowTitle>
-									<ExtendedTooltip name="Group3ExtendedTooltip" id="139"/>
-									<ChildItems>
-										<UsualGroup name="Group5" id="140">
+										<UsualGroup name="Group8" id="142">
 											<Group>Vertical</Group>
 											<ShowTitle>false</ShowTitle>
-											<ExtendedTooltip name="Group5ExtendedTooltip" id="141"/>
+											<ExtendedTooltip name="Group8ExtendedTooltip" id="143"/>
 											<ChildItems>
 												<InputField name="StatementToDate" id="5">
 													<DataPath>Object.StatementToDate</DataPath>
 													<HorizontalAlign>Right</HorizontalAlign>
 													<EditMode>EnterOnInput</EditMode>
-													<Width>17</Width>
-													<HorizontalStretch>false</HorizontalStretch>
 													<EditFormat>
 														<v8:item>
 															<v8:lang>en</v8:lang>
@@ -129,15 +126,10 @@
 														<Event name="OnChange">StatementToDateOnChange</Event>
 													</Events>
 												</InputField>
-											</ChildItems>
-										</UsualGroup>
-										<UsualGroup name="Group8" id="142">
-											<Group>Vertical</Group>
-											<ExtendedTooltip name="Group8ExtendedTooltip" id="143"/>
-											<ChildItems>
 												<InputField name="EndingBalance" id="23">
 													<DataPath>Object.EndingBalance</DataPath>
 													<EditMode>EnterOnInput</EditMode>
+													<HorizontalStretch>true</HorizontalStretch>
 													<ContextMenu name="EndingBalanceContextMenu" id="24"/>
 													<ExtendedTooltip name="EndingBalanceExtendedTooltip" id="76"/>
 													<Events>
@@ -148,47 +140,27 @@
 										</UsualGroup>
 									</ChildItems>
 								</UsualGroup>
-								<UsualGroup name="Group1" id="111">
-									<Width>10</Width>
-									<HorizontalStretch>false</HorizontalStretch>
-									<Group>Vertical</Group>
-									<ShowTitle>false</ShowTitle>
-									<ExtendedTooltip name="Group1ExtendedTooltip" id="112"/>
-									<ChildItems>
-										<LabelDecoration name="BankAccountLabel" id="65">
-											<Visible>false</Visible>
-											<ContextMenu name="BankAccountLabelContextMenu" id="66"/>
-											<ExtendedTooltip name="BankAccountLabelExtendedTooltip" id="73"/>
-										</LabelDecoration>
-									</ChildItems>
-								</UsualGroup>
 							</ChildItems>
 						</Page>
-						<Page name="Additional" id="99">
+						<Page name="GroupServiceCharge" id="107">
 							<Title>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Additional</v8:content>
+									<v8:content>Service charge</v8:content>
 								</v8:item>
 							</Title>
 							<ToolTip>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Additional</v8:content>
+									<v8:content>Group service charge</v8:content>
 								</v8:item>
 							</ToolTip>
-							<Group>Horizontal</Group>
-							<ExtendedTooltip name="AdditionalExtendedTooltip" id="100"/>
+							<ExtendedTooltip name="GroupServiceChargeExtendedTooltip" id="108"/>
 							<ChildItems>
-								<UsualGroup name="Group9" id="107">
-									<Title>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Service charge</v8:content>
-										</v8:item>
-									</Title>
-									<Group>Vertical</Group>
-									<ExtendedTooltip name="Group9ExtendedTooltip" id="108"/>
+								<UsualGroup name="Group11" id="190">
+									<Group>Horizontal</Group>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="Group11ExtendedTooltip" id="191"/>
 									<ChildItems>
 										<InputField name="ServiceCharge" id="9">
 											<DataPath>Object.ServiceCharge</DataPath>
@@ -223,18 +195,47 @@
 										</InputField>
 									</ChildItems>
 								</UsualGroup>
-								<UsualGroup name="Group10" id="109">
+								<InputField name="BankServiceChargeAccount" id="187">
+									<DataPath>Object.BankServiceChargeAccount</DataPath>
 									<Title>
 										<v8:item>
 											<v8:lang>en</v8:lang>
-											<v8:content>Interest</v8:content>
+											<v8:content>Account</v8:content>
 										</v8:item>
 									</Title>
-									<Group>Vertical</Group>
-									<ExtendedTooltip name="Group10ExtendedTooltip" id="110"/>
+									<ContextMenu name="BankServiceChargeAccountContextMenu" id="188"/>
+									<ExtendedTooltip name="BankServiceChargeAccountExtendedTooltip" id="189"/>
+								</InputField>
+							</ChildItems>
+						</Page>
+						<Page name="GroupInterest" id="109">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Interest</v8:content>
+								</v8:item>
+							</Title>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Group interest</v8:content>
+								</v8:item>
+							</ToolTip>
+							<ExtendedTooltip name="GroupInterestExtendedTooltip" id="110"/>
+							<ChildItems>
+								<UsualGroup name="Group12" id="192">
+									<Group>Horizontal</Group>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="Group12ExtendedTooltip" id="193"/>
 									<ChildItems>
 										<InputField name="InterestEarned" id="15">
 											<DataPath>Object.InterestEarned</DataPath>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Amount</v8:content>
+												</v8:item>
+											</Title>
 											<EditMode>EnterOnInput</EditMode>
 											<Width>15</Width>
 											<HorizontalStretch>false</HorizontalStretch>
@@ -249,7 +250,7 @@
 											<Title>
 												<v8:item>
 													<v8:lang>en</v8:lang>
-													<v8:content>Interest date</v8:content>
+													<v8:content>Date</v8:content>
 												</v8:item>
 											</Title>
 											<EditMode>EnterOnInput</EditMode>
@@ -260,6 +261,17 @@
 										</InputField>
 									</ChildItems>
 								</UsualGroup>
+								<InputField name="BankInterestEarnedAccount" id="184">
+									<DataPath>Object.BankInterestEarnedAccount</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Account</v8:content>
+										</v8:item>
+									</Title>
+									<ContextMenu name="BankInterestEarnedAccountContextMenu" id="185"/>
+									<ExtendedTooltip name="BankInterestEarnedAccountExtendedTooltip" id="186"/>
+								</InputField>
 							</ChildItems>
 						</Page>
 					</ChildItems>
@@ -406,6 +418,12 @@
 							<CommandSource>Item.LineItems</CommandSource>
 							<ExtendedTooltip name="ShortLineItemsCommandBarExtendedTooltip" id="135"/>
 							<ChildItems>
+								<Button name="LineItemsRefreshList" id="182">
+									<Type>CommandBarButton</Type>
+									<Representation>PictureAndText</Representation>
+									<CommandName>Form.Command.RefreshList</CommandName>
+									<ExtendedTooltip name="LineItemsRefreshListExtendedTooltip" id="183"/>
+								</Button>
 								<ButtonGroup name="LineItemsStandardCommands" id="152">
 									<Title>
 										<v8:item>
@@ -495,29 +513,29 @@
 				<HorizontalAlign>Right</HorizontalAlign>
 			</AutoCommandBar>
 			<ExtendedTooltip name="LineItemsExtendedTooltip" id="83"/>
-			<SearchStringAddition name="LineItemsSearchString" id="182">
+			<SearchStringAddition name="LineItemsSearchString" id="194">
 				<AdditionSource>
 					<Item>LineItems</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="LineItemsSearchStringContextMenu" id="183"/>
-				<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="184"/>
+				<ContextMenu name="LineItemsSearchStringContextMenu" id="195"/>
+				<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="196"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="LineItemsViewStatus" id="185">
+			<ViewStatusAddition name="LineItemsViewStatus" id="197">
 				<AdditionSource>
 					<Item>LineItems</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="LineItemsViewStatusContextMenu" id="186"/>
-				<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="187"/>
+				<ContextMenu name="LineItemsViewStatusContextMenu" id="198"/>
+				<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="199"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="LineItemsSearchControl" id="188">
+			<SearchControlAddition name="LineItemsSearchControl" id="200">
 				<AdditionSource>
 					<Item>LineItems</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="LineItemsSearchControlContextMenu" id="189"/>
-				<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="190"/>
+				<ContextMenu name="LineItemsSearchControlContextMenu" id="201"/>
+				<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="202"/>
 			</SearchControlAddition>
 			<Events>
 				<Event name="OnActivateRow">LineItemsOnActivateRow</Event>
@@ -960,6 +978,25 @@
 				<xr:LoadTransparent>true</xr:LoadTransparent>
 			</Picture>
 			<Action>UnclearAll</Action>
+		</Command>
+		<Command name="RefreshList" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Refresh</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Refresh list</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Picture>
+				<xr:Ref>StdPicture.Refresh</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
+			<Action>RefreshList</Action>
 		</Command>
 	</Commands>
 	<CommandInterface>

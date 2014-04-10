@@ -11,10 +11,6 @@
 			<field>Account</field>
 		</field>
 		<field xsi:type="DataSetFieldField">
-			<dataPath>AccountDescription</dataPath>
-			<field>AccountDescription</field>
-		</field>
-		<field xsi:type="DataSetFieldField">
 			<dataPath>Amount</dataPath>
 			<field>Amount</field>
 		</field>
@@ -141,7 +137,6 @@
 	CheckLineItems.Ref,
 	CheckLineItems.LineNumber,
 	CheckLineItems.Account,
-	CheckLineItems.AccountDescription,
 	CheckLineItems.Amount,
 	CheckLineItems.Memo,
 	CheckLineItems.Project,
@@ -179,6 +174,7 @@ FROM
 					<dcsset:field>Account</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:use>false</dcsset:use>
 					<dcsset:field>AccountDescription</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">

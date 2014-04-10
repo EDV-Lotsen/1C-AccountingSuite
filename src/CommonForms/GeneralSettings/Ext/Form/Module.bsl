@@ -18,7 +18,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	TempStorageAddress = PutToTempStorage(BinaryLogo,UUID);
 	ImageAddress = TempStorageAddress;
 	Items.image.PictureSize = PictureSize.AutoSize;
-
+	
 	BinaryLogo = GeneralFunctions.GetFooter1();
 	TempStorageAddress = PutToTempStorage(BinaryLogo,UUID);
 	FooterImageAddr1 = TempStorageAddress;
@@ -33,6 +33,21 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	TempStorageAddress = PutToTempStorage(BinaryLogo,UUID);
 	FooterImageAddr3 = TempStorageAddress;
 	Items.FooterImageAddr3.PictureSize = PictureSize.AutoSize;
+	
+	BinaryLogo = GeneralFunctions.GetFooterPO("POfooter1");
+	TempStorageAddress = PutToTempStorage(BinaryLogo,UUID);
+	POFooterImageAddr1 = TempStorageAddress;
+	Items.POFooterImageAddr1.PictureSize = PictureSize.AutoSize;
+	
+	BinaryLogo = GeneralFunctions.GetFooterPO("POfooter2");
+	TempStorageAddress = PutToTempStorage(BinaryLogo,UUID);
+	POFooterImageAddr2 = TempStorageAddress;
+	Items.POFooterImageAddr2.PictureSize = PictureSize.AutoSize;
+	
+	BinaryLogo = GeneralFunctions.GetFooterPO("POfooter3");
+	TempStorageAddress = PutToTempStorage(BinaryLogo,UUID);
+	POFooterImageAddr3 = TempStorageAddress;
+	Items.POFooterImageAddr3.PictureSize = PictureSize.AutoSize;
 
 	
 	//Closing the books
@@ -66,7 +81,14 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	EndIf;
 	
 	Items.DefaultCurrency.ReadOnly = True;
-			
+	
+	//Sales tax
+	ChargingSalesTax = ?(ConstantsSet.SalesTaxCharging, 1, 2);
+	If ConstantsSet.SalesTaxCharging Then
+		Items.SalesTaxDefaults.Enabled = True;
+	Else
+		Items.SalesTaxDefaults.Enabled = False;
+	EndIf;
 EndProcedure
 
 &AtClient
@@ -178,6 +200,18 @@ Procedure OnOpen(Cancel)
 
 	    Items.Common.ChildItems.Logo.ChildItems.UploadLogo.Enabled = false;
 		Items.Common.ChildItems.Integrations.ChildItems.Stripe.ChildItems.StripeConnect.Enabled = false;
+		Items.ClosingTheBooks.ChildItems.PeriodClosingDate.ReadOnly = True;
+		Items.ClosingTheBooks.ChildItems.PeriodClosingOption.ReadOnly = True;
+		Items.ClosingTheBooks.ChildItems.PeriodClosingPassword.ReadOnly = True;
+		Items.ClosingTheBooks.ChildItems.PeriodClosingPasswordConfirm.ReadOnly = True;
+		
+		Items.CompanyContact.ChildItems.Group1.ChildItems.Cell.ReadOnly = True;
+		Items.CompanyContact.ChildItems.Group1.ChildItems.Fax.ReadOnly = True;
+		Items.CompanyContact.ChildItems.Group1.ChildItems.FederalTaxID.ReadOnly = True;
+		Items.CompanyContact.ChildItems.Group2.ChildItems.CurrentUserEmail.ReadOnly = True;
+		Items.GeneralSettings.ReadOnly = True;
+		Items.PostingAccounts.ReadOnly = True;
+		Items.Development.ChildItems.APISecretKey.Visible = False;
 		Message("You are viewing settings with limited rights(Non-Admin).");
 
 	 Else
@@ -257,6 +291,7 @@ EndProcedure
 &AtClient
 Procedure AfterWrite(WriteParameters)
 	RefreshInterface();
+	RefreshReusableValues();
 EndProcedure                 
 
 &AtClient
@@ -411,12 +446,117 @@ Procedure PlaceImageFile3(TempStorageName)
 		DeleteFromTempStorage(TempStorageName);
 		
 	EndIf;
-	
-	//BinaryLogo = GeneralFunctions.GetLogo();
-	//TempStorageAddress = PutToTempStorage(BinaryLogo,UUID);
-	//ImageAddress = TempStorageAddress;
-  	
+	  	
 EndProcedure
+
+&AtClient
+Procedure POUploadFooter1(Command)
+
+	Var SelectedName;
+	FooterImageAddr1 = "";
+	
+	NotifyDescription = New NotifyDescription("FileUploadPO1",ThisForm);
+	BeginPutFile(NotifyDescription,,"",True);
+	
+	BinaryLogo = GeneralFunctions.GetFooterPO("POfooter1");
+	TempStorageAddress = PutToTempStorage(BinaryLogo,UUID);
+	POFooterImageAddr1 = TempStorageAddress;
+	
+EndProcedure
+
+&AtClient
+Procedure POUploadFooter2(Command)
+
+	Var SelectedName;
+	FooterImageAddr1 = "";
+	
+	NotifyDescription = New NotifyDescription("FileUploadPO2",ThisForm);
+	BeginPutFile(NotifyDescription,,"",True);
+	
+	BinaryLogo = GeneralFunctions.GetFooterPO("POfooter2");
+	TempStorageAddress = PutToTempStorage(BinaryLogo,UUID);
+	POFooterImageAddr2 = TempStorageAddress;
+
+	
+EndProcedure
+
+&AtClient
+Procedure POUploadFooter3(Command)
+
+	Var SelectedName;
+	FooterImageAddr1 = "";
+	
+	NotifyDescription = New NotifyDescription("FileUploadPO3",ThisForm);
+	BeginPutFile(NotifyDescription,,"",True);
+	
+	BinaryLogo = GeneralFunctions.GetFooterPO("POfooter3");
+	TempStorageAddress = PutToTempStorage(BinaryLogo,UUID);
+	POFooterImageAddr3 = TempStorageAddress;
+
+	
+EndProcedure
+
+&AtClient
+Procedure FileUploadPO1(a,b,c,d) Export
+	
+	PlaceImageFilePO(b,"POfooter1");
+	
+EndProcedure
+
+&AtClient
+Procedure FileUploadPO2(a,b,c,d) Export
+	
+	PlaceImageFilePO(b,"POfooter2");
+	
+EndProcedure
+
+&AtClient
+Procedure FileUploadPO3(a,b,c,d) Export
+	
+	PlaceImageFilePO(b,"POfooter3");
+	
+EndProcedure
+
+
+
+&AtServer
+Procedure PlaceImageFilePO(TempStorageName,imagename)
+	
+	If NOT TempStorageName = Undefined Then
+	
+		BinaryData = GetFromTempStorage(TempStorageName);
+				
+		NewRow = InformationRegisters.CustomPrintForms.CreateRecordManager();
+		NewRow.ObjectName = imagename;
+		NewRow.TemplateName = imagename;
+		NewRow.Template = New ValueStorage(BinaryData, New Deflation(9));
+		NewRow.Write();	
+		DeleteFromTempStorage(TempStorageName);
+		
+	EndIf;
+	  	
+EndProcedure
+
+&AtClient
+Procedure ApiLogConnect(Command)
+	GoToURL("https://apilog.accountingsuite.com");
+EndProcedure
+
+&AtClient
+Procedure DocConnect(Command)
+	GoToURL("http://developer.accountingsuite.com");
+EndProcedure
+
+&AtClient
+Procedure ChargingSalesTaxOnChange(Item)
+	ConstantsSet.SalesTaxCharging = ?(ChargingSalesTax = 1, True, False);
+	If ConstantsSet.SalesTaxCharging Then
+		Items.SalesTaxDefaults.Enabled = True;
+	Else
+		Items.SalesTaxDefaults.Enabled = False;
+	EndIf;
+EndProcedure
+
 
 
 //&AtServer

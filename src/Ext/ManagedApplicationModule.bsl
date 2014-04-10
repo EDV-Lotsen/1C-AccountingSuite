@@ -1,7 +1,6 @@
 ﻿
 Procedure OnStart()
 	
-	//#If WebClient Then
 		STitle = GeneralFunctions.GetSystemTitle();
 		CurrentUser = GeneralFunctions.GetUserName();
 		
@@ -15,8 +14,5 @@ Procedure OnStart()
 		SetApplicationCaption(AppTitle);
 	
 		GeneralFunctions.FirstLaunch();
-		//GeneralFunctions.CheckConnectionAtServer();
-		//GeneralFunctions.FullAccessUpdateProc();
-	//#EndIf
 	
 EndProcedure

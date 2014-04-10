@@ -78,7 +78,7 @@ Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 		Cancel = True;
 		Message = New UserMessage();
 		Message.Text=NStr("en='Select a currency';de='Währung auswählen'");
-		Message.Field = "Object.Currency";
+		//Message.Field = "Object.Currency";
 		Message.Message();
 		Return;
 	EndIf;

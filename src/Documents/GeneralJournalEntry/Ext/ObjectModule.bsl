@@ -191,5 +191,33 @@ Procedure Posting(Cancel, Mode)
 		EndDo;
 		
 	EndIf;
+	
+	//Posting classes
+	RegisterRecords.ClassData.Write = True;
+	For Each CurRowLineItems In LineItems Do
+		If ((CurRowLineItems.Account.AccountType = Enums.AccountTypes.Expense) OR
+			(CurRowLineItems.Account.AccountType = Enums.AccountTypes.OtherExpense) OR
+			(CurRowLineItems.Account.AccountType = Enums.AccountTypes.CostOfSales) OR
+			(CurRowLineItems.Account.AccountType = Enums.AccountTypes.IncomeTaxExpense)) Then
+			//Due increasing  - in Debit
+			RecordType = ?(CurRowLineItems.AmountDr > 0, AccumulationRecordType.Expense, AccumulationRecordType.Receipt);		
+			CurAmount = ?(CurRowLineItems.AmountDr > 0, CurRowLineItems.AmountDr, CurRowLineItems.AmountCr);
+		ElsIf
+			((CurRowLineItems.Account.AccountType = Enums.AccountTypes.Income) OR
+			(CurRowLineItems.Account.AccountType = Enums.AccountTypes.OtherIncome)) Then
+			//Income increase - in Credit
+			RecordType = ?(CurRowLineItems.AmountDr > 0, AccumulationRecordType.Expense, AccumulationRecordType.Receipt);		
+			CurAmount = ?(CurRowLineItems.AmountDr > 0, CurRowLineItems.AmountDr, CurRowLineItems.AmountCr);
+		Else
+			Continue;
+		EndIf;
+		
+		Record = RegisterRecords.ClassData.Add();
+		Record.RecordType = RecordType;
+		Record.Period = Date;
+		Record.Account = CurRowLineItems.Account;
+		Record.Class = CurRowLineItems.Class;
+		Record.Amount = CurAmount;
+	EndDo;
 
 EndProcedure

@@ -45,7 +45,7 @@
 	EndIf;
 	
 	If ThisExpensify Then
-		Items.Date.Title = "Purchase invoice date";
+		Items.Date.Title = "Bill date";
 	EndIf;
 	
 	Items.ExpensifyVendor.Visible = ThisExpensify;
@@ -1817,10 +1817,27 @@
 		NewPI = Documents.PurchaseInvoice.CreateDocument();
 		
 		NewPI.Company = ExpensifyVendor;
+		
+		Query = New Query("SELECT
+		                  |	Addresses.Ref
+		                  |FROM
+		                  |	Catalog.Addresses AS Addresses
+		                  |WHERE
+		                  |	Addresses.DefaultBilling = True
+		                  |	AND Addresses.Owner = &ExpensifyVendor");
+		Query.Parameters.Insert("ExpensifyVendor", ExpensifyVendor);
+		
+		QueryResult = Query.Execute();		
+		If QueryResult.IsEmpty() Then
+		Else
+			Dataset = QueryResult.Unload();
+			NewPI.CompanyAddress = Dataset[0][0];
+		EndIf;
+		
 		//NewPI.CompanyCode = ExpensifyVendor.Code;
 		NewPI.Currency = GeneralFunctionsReusable.DefaultCurrency();
 		NewPI.ExchangeRate = 1;
-		NewPI.Location = Catalogs.Locations.MainWarehouse;
+		NewPI.LocationActual = Catalogs.Locations.MainWarehouse;
 		NewPI.Date = Date;
 		NewPI.DueDate = Date;
 		NewPI.Terms = Catalogs.PaymentTerms.DueOnReceipt;
@@ -1835,7 +1852,7 @@
 				NewLine = NewPI.Accounts.Add();
 				
 				NewLine.Account = DataLine.ExpensifyAccount;
-				NewLine.AccountDescription = DataLine.ExpensifyAccount.Description;
+				//NewLine.AccountDescription = DataLine.ExpensifyAccount.Description;
 				NewLine.Amount = DataLine.ExpensifyAmount;
 				NewLine.Memo = DataLine.ExpensifyMemo;
 				
@@ -1857,9 +1874,13 @@
 		
 		ItemDataSet = New Array();
 		For Each DataLine In Object.DataList Do
-			ItemLine = New Structure("ProductType, ProductCode, ProductDescription, ProductIncomeAcct, ProductInvOrExpenseAcct, ProductCOGSAcct, ProductCategory, ProductUoM, ProductPrice, ProductQty, ProductValue, ProductCF1String, ProductCF1Num, ProductCF2String, ProductCF2Num, ProductCF3String, ProductCF3Num, ProductCF4String, ProductCF4Num, ProductCF5String, ProductCF5Num");
-			FillPropertyValues(ItemLine, DataLine);
-			ItemDataSet.Add(ItemLine);
+			
+			If DataLine.ФлагЗагрузки Then
+				ItemLine = New Structure("ProductType, ProductCode, ProductDescription, ProductIncomeAcct, ProductInvOrExpenseAcct, ProductCOGSAcct, ProductCategory, ProductUoM, ProductPrice, ProductQty, ProductValue, ProductCF1String, ProductCF1Num, ProductCF2String, ProductCF2Num, ProductCF3String, ProductCF3Num, ProductCF4String, ProductCF4Num, ProductCF5String, ProductCF5Num");
+				FillPropertyValues(ItemLine, DataLine);
+				ItemDataSet.Add(ItemLine);
+			EndIf;
+			
 		EndDo;	
 		
 		Params = New Array();
@@ -2409,7 +2430,7 @@ Procedure CheckExpensifyVendor()
 		If ExpensifyVendor = Catalogs.Companies.EmptyRef() Then
 			Message = New UserMessage;
 			Message.Text = "Please select a Vendor";
-			Message.Field = "ExpensifyVendor";
+			//Message.Field = "ExpensifyVendor";
 			Message.Message();
 			Return;
 		EndIf;

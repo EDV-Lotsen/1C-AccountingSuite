@@ -80,7 +80,7 @@ Function PrepareDataStructuresForPrinting(DocumentRef, AdditionalProperties, Pri
 	              DocumentPrinting.Query_CustomPrintForms_Logo(TablesList) +
 	              DocumentPrinting.Query_CustomPrintForms_Template(TablesList);
 	
-	// Execute query
+	// Execute query.
 	QueryResult = Query.ExecuteBatch();
 	
 	// Save document tables in printing parameters.
@@ -103,7 +103,7 @@ EndFunction
 
 #If Server Or ThickClientOrdinaryApplication Or ExternalConnection Then
 
-// Handler of standard print command
+// Handler of standard print command.
 //
 // Parameters:
 //  Spreadsheet  - SpreadsheetDocument - Output spreadsheet.
@@ -121,7 +121,7 @@ EndFunction
 Procedure Print(Spreadsheet, SheetTitle, DocumentRef, TemplateName = Undefined) Export
 	
 	//------------------------------------------------------------------------------
-	// 1. Filling of parameters
+	// 1. Filling of parameters.
 	
 	// Common filling of parameters.
 	PrintingTables                  = New Structure;
@@ -145,6 +145,17 @@ Procedure Print(Spreadsheet, SheetTitle, DocumentRef, TemplateName = Undefined) 
 	
 	// Prepare the output.
 	Spreadsheet.Clear();
+	
+	Try
+		FooterLogo = GeneralFunctions.GetFooterPO("POfooter1");
+		Footer1Pic = New Picture(FooterLogo);
+		FooterLogo2 = GeneralFunctions.GetFooterPO("POfooter2");
+		Footer2Pic = New Picture(FooterLogo2);
+		FooterLogo3 = GeneralFunctions.GetFooterPO("POfooter3");
+		Footer3Pic = New Picture(FooterLogo3);
+	Except
+	EndTry;
+
 	
 	// Go thru references and fill out the spreadsheet by each document.
 	For Each DocumentAttributes In PrintingTables.Table_Printing_Document_Attributes Do
@@ -185,6 +196,64 @@ Procedure Print(Spreadsheet, SheetTitle, DocumentRef, TemplateName = Undefined) 
 			TemplateArea.Parameters.Fill(PrintingTables.Table_OurCompany_Addresses_BillingAddress[0]);
 			TemplateArea.Parameters.Fill(PrintingTables.Table_Company_Addresses_BillingAddress.Find(DocumentAttributes.Ref, "Ref"));
 			
+
+			//if a dropship customer exists
+			If DocumentRef[0].DropshipCompany <> Catalogs.Companies.EmptyRef() Then
+				
+				TemplateArea.Parameters.UsName = DocumentRef[0].DropshipCompany;
+				TemplateArea.Parameters.UsBillLine1 = DocumentRef[0].DropshipShipTo.AddressLine1;
+				TemplateArea.Parameters.UsBillLine2 = DocumentRef[0].DropshipShipTo.AddressLine2;
+				TemplateArea.Parameters.UsBillCityStateZIP = DocumentRef[0].DropshipShipTo.City + ", " + DocumentRef[0].DropshipShipTo.State.Code + " " +  DocumentRef[0].DropshipShipTo.Zip;
+				TemplateArea.Parameters.UsBillCountry = DocumentRef[0].DropshipShipTo.Country;
+				
+			EndIf;
+
+			If Constants.POShowEmail.Get() = False Then
+				  TemplateArea.Parameters.UsBillEmail = "";
+				 	
+
+			EndIf;
+			  
+			If Constants.POShowFedTax.Get() = False Then
+				  TemplateArea.Parameters.UsBillFedTaxID = "";
+			  Else
+				  TemplateArea.Parameters.UsBillFedTaxID = Constants.FederalTaxID.Get();
+			EndIf;
+
+			If Constants.POShowFax.Get() = False Then
+				  TemplateArea.Parameters.UsBillFax = "";
+			Else
+				  TemplateArea.Parameters.UsBillFax = Constants.Fax.Get();	  	
+			EndIf;
+
+			Try
+				If Constants.POShowWebsite.Get() = False Then
+					  TemplateArea.Parameters.Website = "";
+				Else
+					  TemplateArea.Parameters.Website = Constants.Website.Get(); 
+				  EndIf;
+			Except
+			EndTry;
+			  
+			If Constants.POShowPhone2.Get() = False Then
+				  TemplateArea.Parameters.UsBillCell = "";
+			Else
+				  TemplateArea.Parameters.UsBillCell = Constants.Cell.Get();
+			EndIf;
+			  
+			Try
+				If TemplateArea.Parameters.UsBillFax <> "" And TemplateArea.Parameters.UsBillFax <> Undefined Then
+					TemplateArea.Parameters.Fax = "Fax";
+				EndIf;
+
+				If TemplateArea.Parameters.USBillFedTaxID <> "" And TemplateArea.Parameters.USBillFedTaxID <> Undefined Then
+					TemplateArea.Parameters.FederalTaxID = "Fed Tax ID";
+				EndIf;
+			Except
+			EndTry;
+  
+
+			
 			// Output the header to the sheet.
 			Spreadsheet.Put(TemplateArea);
 			
@@ -196,32 +265,78 @@ Procedure Print(Spreadsheet, SheetTitle, DocumentRef, TemplateName = Undefined) 
 			TemplateArea = Template.GetArea("LineItems");
 			LineItems = PrintingTables.Table_Printing_Document_LineItems.FindRows(New Structure("Ref", DocumentAttributes.Ref));
 			For Each Row In LineItems Do
+				//If vendor code or vendor description supplied, replace in template.
 				TemplateArea.Parameters.Fill(Row);
+				CurProd = Row.Product;
+				If CurProd.vendor_code <> "" Then
+					TemplateArea.Parameters.Product = CurProd.vendor_code;
+				EndIf;
+				
+				If CurProd.vendor_description <> "" Then
+					TemplateArea.Parameters.ProductDescription = CurProd.vendor_description;
+				EndIf;
 				Spreadsheet.Put(TemplateArea, 1);
 			EndDo;
 			
-			// Output VAT (for VAT financial localization).
-			//If DocumentAttributes.VATTotal <> 0 Then;
-			//	// Put subtotal.
-			//	TemplateArea = Template.GetArea("Subtotal");
-			//	TemplateArea.Parameters.Subtotal = ?(DocumentAttributes.PriceIncludesVAT,
-			//										 DocumentAttributes.DocumentTotal,
-			//										 DocumentAttributes.DocumentTotal - DocumentAttributes.VATTotal);
-			//	Spreadsheet.Put(TemplateArea);
-			//	
-			//	// Put VAT.
-			//	TemplateArea = Template.GetArea("VAT");
-			//	TemplateArea.Parameters.VATTotal = DocumentAttributes.VATTotal;
-			//	Spreadsheet.Put(TemplateArea);
-			//EndIf;
-			
 			// Output document total.
 			TemplateArea = Template.GetArea("Total");
-			TemplateArea.Parameters.DocumentTotal = DocumentAttributes.DocumentTotal;
+			TemplateArea.Parameters.Fill(DocumentAttributes);
 			Spreadsheet.Put(TemplateArea);
 		EndIf;
-	EndDo;
+		
+//newlyadded
+
+
+ 	TemplateArea = Template.GetArea("Notes");
+	TemplateArea.Parameters.Notes = Constants.PONotes.Get();
+	Spreadsheet.Put(TemplateArea);
 	
+
+
+	Try
+		If Constants.POFoot1Type.Get()= Enums.TextOrImage.Image Then
+			DocumentPrinting.FillPictureInDocumentTemplate(Template,Footer1Pic, "POfooter1");
+		EndIf;
+		If Constants.POFoot2Type.Get()= Enums.TextOrImage.Image Then
+			DocumentPrinting.FillPictureInDocumentTemplate(Template, Footer2Pic, "POfooter2");
+		EndIf;
+		If Constants.POFoot3Type.Get()= Enums.TextOrImage.Image Then
+			DocumentPrinting.FillPictureInDocumentTemplate(Template, Footer3Pic, "POfooter3");
+		EndIf;	
+	Except
+	EndTry;	
+	
+	Row = Template.GetArea("SpaceRow");
+	Footer = Template.GetArea("Footer");
+	RowsToCheck = New Array();
+	RowsToCheck.Add(Row);
+	RowsToCheck.Add(Footer);
+	
+	If Constants.POFoot1Type.Get() = Enums.TextOrImage.Text Then
+		Footer.Parameters.POFooterLeft = Constants.POFooterTextLeft.Get();
+	EndIf;
+	If Constants.POFoot2Type.Get() = Enums.TextOrImage.Text Then
+		Footer.Parameters.POFooterCenter = Constants.POFooterTextCenter.Get();
+	EndIf;
+	If Constants.POFoot3Type.Get() = Enums.TextOrImage.Text Then
+		Footer.Parameters.POFooterRight = Constants.POFooterTextRight.Get();
+	EndIf;
+
+	
+	While Spreadsheet.CheckPut(RowsToCheck) Do
+		 SpreadSheet.Put(Row);
+
+		 RowsToCheck.Clear();
+		 RowsToCheck.Add(Row);
+		 RowsToCheck.Add(Footer);
+		 RowsToCheck.Add(Row);
+	EndDo;
+
+	Spreadsheet.Put(Footer);
+//newlyadded
+	Spreadsheet.PutHorizontalPageBreak();
+	EndDo;
+		
 EndProcedure
 
 #EndIf
@@ -236,7 +351,7 @@ EndProcedure
 //------------------------------------------------------------------------------
 // Document posting
 
-// Query for document data
+// Query for document data.
 Function Query_OrdersStatuses(TablesList)
 	
 	// Add OrdersStatuses table to document structure.
@@ -269,7 +384,7 @@ Function Query_OrdersStatuses(TablesList)
 	
 EndFunction
 
-// Query for document data
+// Query for document data.
 Function Query_OrdersDispatched(TablesList)
 	
 	// Add OrdersDispatched table to document structure.
@@ -313,7 +428,7 @@ Function Query_OrdersDispatched(TablesList)
 	
 EndFunction
 
-// Put structure of registers, which balance should be checked during posting
+// Put structure of registers, which balance should be checked during posting.
 Procedure FillRegistersCheckList(AdditionalProperties, RegisterRecords)
 	
 	// Create structure of registers and its resources to check balances.
@@ -343,9 +458,9 @@ Procedure FillRegistersCheckList(AdditionalProperties, RegisterRecords)
 		
 	ElsIf AdditionalProperties.Posting.WriteMode = DocumentWriteMode.UndoPosting Then
 		
-		// Add resources for check the balances.
+		// Add resources for check changes in recordset.
 		CheckPostings = New Array;
-		CheckPostings.Add("{Table}.Quantity{Posting},  <, 0"); // Check decreasing quantity.
+		CheckPostings.Add("{Table}.Quantity{Posting}, <, 0"); // Check decreasing quantity.
 		
 		// Add resources for check register balances.
 		CheckBalances = New Array;
@@ -374,7 +489,7 @@ EndProcedure
 //------------------------------------------------------------------------------
 // Document printing
 
-// Query for document data
+// Query for document data.
 Function Query_Printing_Document_Data(TablesList)
 	
 	// Add document table to query structure.
@@ -400,7 +515,7 @@ Function Query_Printing_Document_Data(TablesList)
 	
 EndFunction
 
-// Query for document data
+// Query for document data.
 Function Query_Printing_Document_Attributes(TablesList)
 	
 	// Add document table to query structure.
@@ -416,11 +531,9 @@ Function Query_Printing_Document_Attributes(TablesList)
 	|	Document.Date                         AS Date,
 	|	Document.Company                      AS Company,
 	|	Document.Currency                     AS Currency,
-	//|	Document.PriceIncludesVAT             AS PriceIncludesVAT,
 	// ------------------------------------------------------
 	// Totals
 	|	Document.DocumentTotal                AS DocumentTotal
-	//|	Document.VATTotal                     AS VATTotal
 	// ------------------------------------------------------
 	|FROM
 	|	Table_Printing_Document_Data AS Document_Data
@@ -433,7 +546,7 @@ Function Query_Printing_Document_Attributes(TablesList)
 	
 EndFunction
 
-// Query for document data
+// Query for document data.
 Function Query_Printing_Document_LineItems(TablesList)
 	
 	// Add document table to query structure.

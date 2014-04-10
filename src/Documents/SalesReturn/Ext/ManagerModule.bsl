@@ -1,6 +1,6 @@
 ﻿Procedure Print(Spreadsheet, Ref) Export
 		
-	CustomTemplate = GeneralFunctions.GetCustomTemplate("Credit memo");
+	CustomTemplate = GeneralFunctions.GetCustomTemplate("Document.SalesReturn", "Credit memo");
 	
 	If CustomTemplate = Undefined Then
 		Template = Documents.SalesReturn.GetTemplate("PF_MXL_SalesReturn");
@@ -48,7 +48,7 @@
    |WHERE
    |	SalesReturn.Ref IN(&Ref)";
    Query.SetParameter("Ref", Ref);
-   Selection = Query.Execute().Choose();
+   Selection = Query.Execute().Select();
    
    Spreadsheet.Clear();
    //InsertPageBreak = False;
@@ -77,12 +77,67 @@
 
 	 
 	//Template = PrintManagement.GetTemplate("Document.SalesInvoice.PF_MXL_SalesInvoice");
+	
+ Query = New Query();
+   Query.Text =
+   "SELECT
+   |	SalesReturn.Ref,
+   |	SalesReturn.Company,
+   |	SalesReturn.Date,
+   |	SalesReturn.DocumentTotal,
+   |	SalesReturn.SalesTaxRC,
+   |	SalesReturn.ReturnType,
+   |	SalesReturn.ParentDocument,
+   |	SalesReturn.RefNum,
+   |	SalesReturn.Number,
+   |	SalesReturn.Currency,
+   //|	SalesReturn.PriceIncludesVAT,
+   //|	SalesReturn.VATTotal,
+   |	SalesReturn.LineItems.(
+   |		Product,
+   |		Product.UM AS UM,
+   |		ProductDescription,
+   |		Quantity,
+   //|		VATCode,
+   //|		VAT,
+   |		Price,
+   |		LineTotal
+   |	),
+   |	SalesReturn.DueDate,
+   |	GeneralJournalBalance.AmountRCBalance AS Balance
+   |FROM
+   |	AccountingRegister.GeneralJournal.Balance AS GeneralJournalBalance
+   |		RIGHT JOIN Document.SalesReturn AS SalesReturn
+   |		ON (GeneralJournalBalance.ExtDimension1 = SalesReturn.Company
+   |			AND GeneralJournalBalance.ExtDimension2 = SalesReturn.Ref)
+   |WHERE
+   |	SalesReturn.Ref IN(&Ref)";
+   Query.SetParameter("Ref", Ref);
+   Test = Query.Execute().Select();
 	 
 	TemplateArea = Template.GetArea("Header");
 	  		
 	UsBill = PrintTemplates.ContactInfoDatasetUs();
 	//ThemShip = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemShip", Selection.ShipTo);
-	ThemBill = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemBill", Catalogs.Addresses.EmptyRef());
+	
+	Query = New Query;
+		Query.Text =
+		"SELECT
+		|	Addresses.Ref
+		|FROM
+		|	Catalog.Addresses AS Addresses
+		|WHERE
+		|	Addresses.Owner = &Owner
+		|	AND Addresses.DefaultBilling = &True";
+	Query.Parameters.Insert("Owner", Selection.Company);
+	Query.Parameters.Insert("True", True);
+	BillAddr = Query.Execute().Unload();
+	If BillAddr.Count() > 0 Then
+		ThemBill = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemBill", BillAddr[0].Ref);
+	Else
+		ThemBill = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemBill",Catalogs.Addresses.EmptyRef());
+	EndIf;
+
 	
 	TemplateArea.Parameters.Fill(UsBill);
 	//TemplateArea.Parameters.Fill(ThemShip);
@@ -109,7 +164,7 @@
 	 TemplateArea = Template.GetArea("LineItemsHeader");
 	 Spreadsheet.Put(TemplateArea);
 	 
-	 SelectionLineItems = Selection.LineItems.Choose();
+	 SelectionLineItems = Selection.LineItems.Select();
 	 TemplateArea = Template.GetArea("LineItems");
 	 LineTotalSum = 0;
 	 While SelectionLineItems.Next() Do

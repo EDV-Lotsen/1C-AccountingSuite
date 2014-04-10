@@ -66,7 +66,7 @@
 	                  |	ChartOfAccounts.AccountType");
 	Query.Parameters.Insert("StartDate", StartDate);
 	Query.Parameters.Insert("EndDate", EndDate);
-	Selection = Query.Execute().Choose();
+	Selection = Query.Execute().Select();
 	
 	IncomeHeader = Template.GetArea("IncomeHeader");
 	SpreadsheetDocument.Put(IncomeHeader);
@@ -124,7 +124,7 @@
 	                  |	ChartOfAccounts.AccountType");
 	Query.Parameters.Insert("StartDate", StartDate);
 	Query.Parameters.Insert("EndDate", EndDate);
-	Selection = Query.Execute().Choose();
+	Selection = Query.Execute().Select();
 	
 	COGSHeader = Template.GetArea("COGSHeader");
 	SpreadsheetDocument.Put(COGSHeader);
@@ -198,7 +198,7 @@
 	                  |	ChartOfAccounts.AccountType");
 	Query.Parameters.Insert("StartDate", StartDate);
 	Query.Parameters.Insert("EndDate", EndDate);
-	Selection = Query.Execute().Choose();
+	Selection = Query.Execute().Select();
 	
 	ExpensesHeader = Template.GetArea("ExpensesHeader");
 	SpreadsheetDocument.Put(ExpensesHeader);
@@ -277,7 +277,7 @@
 	                  |	ChartOfAccounts.AccountType");
 	Query.Parameters.Insert("StartDate", StartDate);
 	Query.Parameters.Insert("EndDate", EndDate);
-	Selection = Query.Execute().Choose();
+	Selection = Query.Execute().Select();
 	
 	OtherIncomeHeader = Template.GetArea("OtherIncomeHeader");
 	SpreadsheetDocument.Put(OtherIncomeHeader);
@@ -339,7 +339,7 @@
 	                  |	ChartOfAccounts.AccountType");
 	Query.Parameters.Insert("StartDate", StartDate);
 	Query.Parameters.Insert("EndDate", EndDate);
-	Selection = Query.Execute().Choose();
+	Selection = Query.Execute().Select();
 	
 	OtherExpensesHeader = Template.GetArea("OtherExpensesHeader");
 	SpreadsheetDocument.Put(OtherExpensesHeader);
@@ -418,7 +418,7 @@
 	                  |	ChartOfAccounts.AccountType");
 	Query.Parameters.Insert("StartDate", StartDate);
 	Query.Parameters.Insert("EndDate", EndDate);
-	Selection = Query.Execute().Choose();
+	Selection = Query.Execute().Select();
 			
 	TotalIncomeTaxBudget = 0;
 	TotalIncomeTax = 0;

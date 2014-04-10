@@ -4,6 +4,21 @@
 // 
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
+	//If Constants.SalesTaxCharging.Get() = False OR Object.Customer <> True Then
+	//	Items.Taxable.Visible = False;
+	//	Items.ResaleNO.Visible = False;
+	//	Items.SalesTaxRate.Visible = False;
+	//EndIf;
+	//
+	//If Object.Taxable = True Then
+	//	Items.SalesTaxRate.Enabled = True;
+	//	//Object.SalesTaxRate = Constants.SalesTaxDefault.Get();
+	//	Items.ResaleNO.Enabled = True;
+	//Else
+	//	Items.SalesTaxRate.Enabled = False;
+	//	Items.ResaleNO.Enabled = False;
+	//EndIf;
+	
 	If GeneralFunctionsReusable.DisplayAPICodesSetting() = False Then
 		Items.api_code.Visible = False;
 	EndIf;
@@ -202,7 +217,7 @@ Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 		
 		Message = New UserMessage();
 		Message.Text=NStr("en='Select if the company is a customer, vendor, or both'");
-		Message.Field = "Object.Customer";
+		//Message.Field = "Object.Customer";
 		Message.Message();
 		Cancel = True;
 		Return;
@@ -227,7 +242,7 @@ Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 		QueryResult = Query.Execute();
 		If QueryResult.IsEmpty() Then		
 		Else
-			Selection = QueryResult.Choose();
+			Selection = QueryResult.Select();
 			While Selection.Next() Do
 				
 				If Selection.DefaultShipping = True
@@ -247,7 +262,7 @@ Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 			
 			Message = New UserMessage();
 			Message.Text=NStr("en='Set one default shipping and one default billing address'");
-			Message.Field = "Object.Addresses";
+			//Message.Field = "Object.Addresses";
 			Message.Message();
 			Cancel = True;
 			Return;
@@ -464,5 +479,58 @@ Procedure VendorOnChange(Item)
 		Items.Group1099.Visible = False;
 	EndIf;
 	
+EndProcedure
+
+
+&AtClient
+Procedure CustomerOnChange(Item)
+	CustomerOnChangeAtServer();
+EndProcedure
+
+
+&AtServer
+Procedure CustomerOnChangeAtServer()
+	
+	//If Constants.SalesTaxCharging.Get() = True AND Object.Customer = True Then
+	//	Items.Taxable.Visible = True;
+	//	Items.SalesTaxRate.Visible = True;
+	//	Items.ResaleNO.Visible = True;
+	//	Items.SalesTaxRate.Enabled = False;
+	//	Items.ResaleNO.Enabled = False;
+	//Else
+	//	Items.Taxable.Visible = False;
+	//	Items.SalesTaxRate.Visible = False;
+	//	Items.ResaleNO.Visible = False;
+	//EndIf;
+	
+	//If Constants.SalesTaxMarkNewCustomersTaxable.Get() = True Then
+	//	Object.Taxable = True;
+	//	Items.SalesTaxRate.Enabled = True;
+	//	Items.ResaleNO.Enabled = True;
+	//	Object.SalesTaxRate = Constants.SalesTaxDefault.Get();
+	//EndIf;
+	
+EndProcedure
+
+
+&AtClient
+Procedure TaxableOnChange(Item)
+	
+	//TaxableOnChangeAtServer();
+	//
+	//If Object.Taxable = True Then
+	//	Items.SalesTaxRate.Enabled = True;
+	//	Items.ResaleNO.Enabled = True;
+	//Else
+	//	Items.SalesTaxRate.Enabled = False;
+	//	Items.ResaleNO.Enabled = False;
+	//EndIf;	
+	
+EndProcedure
+
+
+&AtServer
+Procedure TaxableOnChangeAtServer()
+	// Insert handler contents.
 EndProcedure
 

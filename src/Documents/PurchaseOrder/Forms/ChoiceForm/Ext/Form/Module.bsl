@@ -13,11 +13,13 @@
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
-	// Set proper Company field presentation.
-	CompanyTitle = GeneralFunctionsReusable.GetVendorName();
-	Items.Company.Title     = CompanyTitle;
-	//Items.CompanyCode.Title = StringFunctionsClientServer.SubstituteParametersInString(
-	//						  NStr("en = '%1 #'"), CompanyTitle);
+	// Set proper company field presentation.
+	VendorName   = GeneralFunctionsReusable.GetVendorName();
+	CustomerName = GeneralFunctionsReusable.GetCustomerName();
+	Items.Company.Title           = VendorName;
+	Items.Company.ToolTip         = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = '%1 name'"), VendorName);
+	Items.DropshipCompany.Title   = CustomerName;
+	Items.DropshipCompany.ToolTip = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = '%1 name'"), CustomerName);
 	
 EndProcedure
 

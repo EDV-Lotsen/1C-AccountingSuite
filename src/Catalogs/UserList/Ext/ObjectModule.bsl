@@ -20,8 +20,11 @@ EndProcedure
 &AtServer
 Procedure DeleteUser(userstring)
 	
-	SetPrivilegedMode(True);
-
+	
+		//Insert handler contents.
+		 
+		SetPrivilegedMode(True);
+		
 		theuser = InfoBaseUsers.FindByName(userstring);
 		
 		theuser.Delete();

@@ -6,7 +6,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #Region EVENT_HANDLERS
 
-//------------------------------------------------------------------------------
 #If Server Or ThickClientOrdinaryApplication Or ExternalConnection Then
 
 Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
@@ -14,7 +13,7 @@ Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 	// Save document parameters before posting the document
 	If WriteMode = DocumentWriteMode.Posting
 	Or WriteMode = DocumentWriteMode.UndoPosting Then
-	
+		
 		// Save custom document parameters
 		Orders = LineItems.UnloadColumn("Order");
 		GeneralFunctions.NormalizeArray(Orders);
@@ -57,15 +56,14 @@ EndProcedure
 Procedure Filling(FillingData, StandardProcessing)
 	
 	If FillingData = Undefined Then
-		// Filling of the new created document.
+		// Filling of the new created document with default values.
 		Currency         = Constants.DefaultCurrency.Get();
+		ExchangeRate     = GeneralFunctions.GetExchangeRate(Date, Currency);
 		APAccount        = Currency.DefaultAPAccount;
-		ExchangeRate     = 1;
-		//PriceIncludesVAT = GeneralFunctionsReusable.PriceIncludesVAT();
 		LocationActual   = Catalogs.Locations.MainWarehouse;
 		
 	Else
-		// Generate on th base of Purchase order & Item receipt.
+		// Generate on the base of Purchase order & Item receipt.
 		Cancel = False; TabularSectionData = Undefined;
 		
 		// 0. Custom check of purchase order for interactive generate of purchase invoice on the base of purchase order
@@ -120,17 +118,6 @@ Procedure OnCopy(CopiedObject)
 	
 EndProcedure
 
-#EndIf
-//------------------------------------------------------------------------------
-
-#EndRegion
-
-////////////////////////////////////////////////////////////////////////////////
-#Region CODE_REVIEW
-
-//------------------------------------------------------------------------------
-#If Server Or ThickClientOrdinaryApplication Or ExternalConnection Then
-
 Procedure Posting(Cancel, PostingMode)
 	
 	// 1. Common postings clearing / reactivate manual ajusted postings
@@ -159,8 +146,8 @@ Procedure Posting(Cancel, PostingMode)
 	// 8. Clear used temporary document data
 	DocumentPosting.ClearDataStructuresAfterPosting(AdditionalProperties);
 	
-	// OLD Posting
 	
+	// -> CODE REVIEW
 	RegisterInventory = True;
 	
 	If BegBal Then
@@ -215,17 +202,11 @@ Procedure Posting(Cancel, PostingMode)
 			EndIf;
 		EndDo;
 		
-	EndIf;	
-		
-	// fill in the account posting value table with amounts
-	
-	//PostingDatasetVAT = New ValueTable();
-	//PostingDatasetVAT.Columns.Add("VATAccount");
-	//PostingDatasetVAT.Columns.Add("AmountRC");
+	EndIf;
 	
 	PostingDataset = New ValueTable();
 	PostingDataset.Columns.Add("Account");
-	PostingDataset.Columns.Add("AmountRC");	
+	PostingDataset.Columns.Add("AmountRC");
 	
 	CalculateByPlannedCosting = False;
 	//PurchaseVarianceAccount = Constants.PurchaseVarianceAccount.Get();
@@ -239,11 +220,17 @@ Procedure Posting(Cancel, PostingMode)
 		Record.Period = Date;
 		Record.Company = Company;
 		Record.Document = Ref;
-		Record.Account = CurRowLineItems.Product.InventoryOrExpenseAccount;
+		If CurRowLineItems.Product.Type = Enums.InventoryTypes.Inventory Then
+			Record.Account = CurRowLineItems.Product.COGSAccount;
+		Else
+			Record.Account = CurRowLineItems.Product.InventoryOrExpenseAccount;
+		EndIf;
+		//Record.Account = CurRowLineItems.Product.InventoryOrExpenseAccount;
 		//Record.CashFlowSection = CurRowLineItems.Product.InventoryOrExpenseAccount.CashFlowSection;
 		Record.AmountRC = CurRowLineItems.LineTotal * ExchangeRate;
 		//Record.PaymentMethod = PaymentMethod;
 
+		
 		// Detect inventory item in table part
 		IsInventoryPosting = (Not CurRowLineItems.Product.IsEmpty()) And (CurRowLineItems.Product.Type = Enums.InventoryTypes.Inventory);
 		
@@ -252,12 +239,8 @@ Procedure Posting(Cancel, PostingMode)
 			//PostingLine.Account = AccruedPurchasesAccount;
 		Else
 			PostingLine.Account = CurRowLineItems.Product.InventoryOrExpenseAccount;
-		EndIf;	
-		//If PriceIncludesVAT Then
-		//	PostingLine.AmountRC = (CurRowLineItems.LineTotal - CurRowLineItems.VAT) * ExchangeRate;
-		//Else
-			PostingLine.AmountRC = CurRowLineItems.LineTotal * ExchangeRate;
-		//EndIf;
+		EndIf;
+		PostingLine.AmountRC = CurRowLineItems.LineTotal * ExchangeRate;
 		
 		// Calculating diference between ordered cost and invoiced cost of inventory items
 		//If CalculateByPlannedCosting And IsInventoryPosting Then
@@ -274,12 +257,6 @@ Procedure Posting(Cancel, PostingMode)
 		//	EndIf;
 		//EndIf;
 		
-		//If CurRowLineItems.VAT > 0 Then
-		//	PostingLineVAT = PostingDatasetVAT.Add();
-		//	PostingLineVAT.VATAccount = VAT_FL.VATAccount(CurRowLineItems.VATCode, "Purchase");
-		//	PostingLineVAT.AmountRC = CurRowLineItems.VAT * ExchangeRate;
-		//EndIf;
-		
 	EndDo;
 	
 	For Each CurRowAccount in Accounts Do
@@ -294,6 +271,7 @@ Procedure Posting(Cancel, PostingMode)
 		Record.AmountRC = CurRowAccount.Amount * ExchangeRate;
 		//Record.PaymentMethod = PaymentMethod;
 
+		
 		PostingLine = PostingDataset.Add();
 		PostingLine.Account = CurRowAccount.Account;
 		PostingLine.AmountRC = CurRowAccount.Amount * ExchangeRate;
@@ -304,7 +282,6 @@ Procedure Posting(Cancel, PostingMode)
 	NoOfPostingRows = PostingDataset.Count();
 	
 	// GL posting
-	
 	RegisterRecords.GeneralJournal.Write = True;	
 	
 	For i = 0 To NoOfPostingRows - 1 Do
@@ -321,7 +298,7 @@ Procedure Posting(Cancel, PostingMode)
 			Record.Period = Date;
 			Record.AmountRC = -PostingDataset[i][1];
 			
-		EndIf;	
+		EndIf;
 	EndDo;
 	
 	Record = RegisterRecords.GeneralJournal.AddCredit();
@@ -333,48 +310,70 @@ Procedure Posting(Cancel, PostingMode)
 	Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Company] = Company;
 	Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Document] = Ref;
 	
-	//PostingDatasetVAT.GroupBy("VATAccount", "AmountRC");
-	//NoOfPostingRows = PostingDatasetVAT.Count();
-	//For i = 0 To NoOfPostingRows - 1 Do
-	//	Record = RegisterRecords.GeneralJournal.AddDebit();
-	//	Record.Account = PostingDatasetVAT[i][0];
-	//	Record.Period = Date;
-	//	Record.AmountRC = PostingDatasetVAT[i][1];	
-	//EndDo;
-	
-	
 	RegisterRecords.ProjectData.Write = True;
+	RegisterRecords.ClassData.Write	=True;
 	For Each CurRowLineItems In LineItems Do
-		If NOT CurRowLineItems.Project.IsEmpty() Then
-			Record = RegisterRecords.ProjectData.Add();
-			Record.RecordType = AccumulationRecordType.Expense;
-			Record.Period = Date;
-			Record.Project = CurRowLineItems.Project;
-			Record.Amount = CurRowLineItems.LineTotal;
-		Endif;
+		Record = RegisterRecords.ProjectData.Add();
+		Record.RecordType = AccumulationRecordType.Expense;
+		Record.Period = Date;
+		Record.Project = CurRowLineItems.Project;
+		Record.Amount = CurRowLineItems.LineTotal;
 		
-	EndDo;         
-		 	 						
-	For Each CurRowAccount In Accounts Do
-		If NOT CurRowAccount.Project.IsEmpty() Then
-			Record = RegisterRecords.ProjectData.Add();
+		If CurRowLineItems.Product.Type = Enums.InventoryTypes.Inventory Then
+			ProductAccountType = CurRowLineItems.Product.COGSAccount.AccountType;
+		Else
+			ProductAccountType = CurRowLineItems.Product.InventoryOrExpenseAccount.AccountType;
+		EndIf;
+		If (ProductAccountType = Enums.AccountTypes.Expense) OR
+			(ProductAccountType = Enums.AccountTypes.OtherExpense) OR
+			(ProductAccountType = Enums.AccountTypes.CostOfSales) OR
+			(ProductAccountType = Enums.AccountTypes.IncomeTaxExpense) OR
+			(ProductAccountType = Enums.AccountTypes.Income) OR
+			(ProductAccountType = Enums.AccountTypes.OtherIncome) Then
+			
+			Record = RegisterRecords.ClassData.Add();
 			Record.RecordType = AccumulationRecordType.Expense;
-			//FormattedDate = Format(Date, "DF=""dd/MM/yyyy"""); 
-			test = CurRowAccount.Amount;
-			//Record.Period = Format(Date, "DF=""dd/MM/yyyy""");
 			Record.Period = Date;
-			Record.Project = CurRowAccount.Project;
-			Record.Amount = CurRowAccount.Amount;
-		Endif;
+			test = CurRowLineItems.Product.Type;
+			If CurRowLineItems.Product.Type = Enums.InventoryTypes.Inventory Then
+				Record.Account = CurRowLineItems.Product.COGSAccount;
+			Else
+				Record.Account = CurRowLineItems.Product.InventoryOrExpenseAccount;
+			EndIf;
+			Record.Class = CurRowLineItems.Class;
+			Record.Amount = CurRowLineItems.LineTotal;	
+		EndIf;
 	EndDo;
 	
+	For Each CurRowAccount In Accounts Do
+		Record = RegisterRecords.ProjectData.Add();
+		Record.RecordType = AccumulationRecordType.Expense;
+		Record.Period = Date;
+		Record.Project = CurRowAccount.Project;
+		Record.Amount = CurRowAccount.Amount;
+		
+		If (CurRowAccount.Account.AccountType = Enums.AccountTypes.Expense) OR
+			(CurRowAccount.Account.AccountType = Enums.AccountTypes.OtherExpense) OR
+			(CurRowAccount.Account.AccountType = Enums.AccountTypes.CostOfSales) OR
+			(CurRowAccount.Account.AccountType = Enums.AccountTypes.IncomeTaxExpense) OR
+			(CurRowAccount.Account.AccountType = Enums.AccountTypes.Income) OR
+			(CurRowAccount.Account.AccountType = Enums.AccountTypes.OtherIncome) Then
+
+			Record = RegisterRecords.ClassData.Add();
+			Record.RecordType = AccumulationRecordType.Expense;
+			Record.Period = Date;
+			Record.Account = CurRowAccount.Account;
+			Record.Class = CurRowAccount.Class;
+			Record.Amount = CurRowAccount.Amount;
+		EndIf;
+	EndDo;
+	// <- CODE REVIEW
 	
 EndProcedure
 
 Procedure UndoPosting(Cancel)
 	
-	// OLD Undo Posting
-	
+	// -> CODE REVIEW
 	If BegBal Then
 		Return;
 	EndIf;
@@ -433,6 +432,7 @@ Procedure UndoPosting(Cancel)
 		EndIf;
 		
 	EndDo;
+	// <- CODE REVIEW
 	
 	
 	// 1. Common posting clearing / deactivate manual ajusted postings
@@ -461,6 +461,5 @@ Procedure UndoPosting(Cancel)
 EndProcedure
 
 #EndIf
-//------------------------------------------------------------------------------
 
 #EndRegion

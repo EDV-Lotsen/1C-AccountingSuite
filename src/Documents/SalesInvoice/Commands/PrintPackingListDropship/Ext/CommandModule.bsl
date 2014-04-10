@@ -1,19 +1,41 @@
-﻿&AtClient
-Procedure CommandProcessing(CommandParameter, CommandExecuteParameters)
-	//{{_PRINT_WIZARD(Print)
-	Spreadsheet = New SpreadsheetDocument;
-	PrintPackingList(Spreadsheet, CommandParameter);
+﻿
+////////////////////////////////////////////////////////////////////////////////
+// Sales invoice: Print command
+//------------------------------------------------------------------------------
+// Available on:
+// - Client (managed application)
+// - Server
+//
 
-	Spreadsheet.ShowGrid = False;
-	Spreadsheet.FitToPage = True;
-	Spreadsheet.Protection = False;
-	Spreadsheet.ReadOnly = False;
+////////////////////////////////////////////////////////////////////////////////
+#Region COMMANDS_HANDLERS
+
+&AtClient
+Procedure CommandProcessing(CommandParameter, CommandExecuteParameters)
+	
+	// Create a new spreadsheet.
+	Spreadsheet      = New SpreadsheetDocument;
+	SpreadsheetTitle = "";
+	
+	// Output the documents to spreadsheet.
+	Print(Spreadsheet, SpreadsheetTitle, CommandParameter);
+	
+	// Set the proper options and open the preview.
+	Spreadsheet.ShowGrid    = False;
 	Spreadsheet.ShowHeaders = False;
-	Spreadsheet.Show("Packing list (dropship)");
-	//}}
+	Spreadsheet.FitToPage   = True;
+	Spreadsheet.ReadOnly    = False;
+	Spreadsheet.Protection  = False;
+	Spreadsheet.Show(NStr("en = 'Print preview'") + ?(Not IsBlankString(SpreadsheetTitle), ": " + SpreadsheetTitle, ""));
+	
 EndProcedure
 
 &AtServer
-Procedure PrintPackingList(Spreadsheet, CommandParameter)
-	Documents.SalesInvoice.PrintPackingListDropship(Spreadsheet, CommandParameter);
+Procedure Print(Spreadsheet, SpreadsheetTitle, CommandParameter)
+	
+	// Call document module to print the document.
+	Documents.SalesInvoice.PrintPackingListDropship(Spreadsheet, SpreadsheetTitle, CommandParameter);
+	
 EndProcedure
+
+#EndRegion

@@ -51,6 +51,13 @@
 			<ContextMenu name="ObjectProjectContextMenu" id="8"/>
 			<ExtendedTooltip name="ObjectProjectExtendedTooltip" id="9"/>
 		</InputField>
+		<InputField name="ObjectClass" id="37">
+			<DataPath>Object.Class</DataPath>
+			<HorizontalStretch>false</HorizontalStretch>
+			<OpenButton>false</OpenButton>
+			<ContextMenu name="ObjectClassContextMenu" id="38"/>
+			<ExtendedTooltip name="ObjectClassExtendedTooltip" id="39"/>
+		</InputField>
 		<InputField name="ObjectTask" id="10">
 			<DataPath>Object.Task</DataPath>
 			<HorizontalStretch>false</HorizontalStretch>
@@ -88,29 +95,29 @@
 			<ContextMenu name="DaysAndHoursContextMenu" id="14"/>
 			<AutoCommandBar name="DaysAndHoursCommandBar" id="15"/>
 			<ExtendedTooltip name="DaysAndHoursExtendedTooltip" id="16"/>
-			<SearchStringAddition name="DaysAndHoursSearchString" id="37">
+			<SearchStringAddition name="DaysAndHoursSearchString" id="40">
 				<AdditionSource>
 					<Item>DaysAndHours</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="DaysAndHoursSearchStringContextMenu" id="38"/>
-				<ExtendedTooltip name="DaysAndHoursSearchStringExtendedTooltip" id="39"/>
+				<ContextMenu name="DaysAndHoursSearchStringContextMenu" id="41"/>
+				<ExtendedTooltip name="DaysAndHoursSearchStringExtendedTooltip" id="42"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="DaysAndHoursViewStatus" id="40">
+			<ViewStatusAddition name="DaysAndHoursViewStatus" id="43">
 				<AdditionSource>
 					<Item>DaysAndHours</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="DaysAndHoursViewStatusContextMenu" id="41"/>
-				<ExtendedTooltip name="DaysAndHoursViewStatusExtendedTooltip" id="42"/>
+				<ContextMenu name="DaysAndHoursViewStatusContextMenu" id="44"/>
+				<ExtendedTooltip name="DaysAndHoursViewStatusExtendedTooltip" id="45"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="DaysAndHoursSearchControl" id="43">
+			<SearchControlAddition name="DaysAndHoursSearchControl" id="46">
 				<AdditionSource>
 					<Item>DaysAndHours</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="DaysAndHoursSearchControlContextMenu" id="44"/>
-				<ExtendedTooltip name="DaysAndHoursSearchControlExtendedTooltip" id="45"/>
+				<ContextMenu name="DaysAndHoursSearchControlContextMenu" id="47"/>
+				<ExtendedTooltip name="DaysAndHoursSearchControlExtendedTooltip" id="48"/>
 			</SearchControlAddition>
 			<Events>
 				<Event name="OnChange">DaysAndHoursOnChange</Event>
@@ -213,7 +220,7 @@
 						<v8:Type>xs:decimal</v8:Type>
 						<v8:NumberQualifiers>
 							<v8:Digits>10</v8:Digits>
-							<v8:FractionDigits>0</v8:FractionDigits>
+							<v8:FractionDigits>2</v8:FractionDigits>
 							<v8:AllowedSign>Nonnegative</v8:AllowedSign>
 						</v8:NumberQualifiers>
 					</Type>

@@ -9,6 +9,13 @@
 //
 Procedure StatementToDateOnChange(Item)
 	
+	RefillReconcilliation();
+		
+EndProcedure
+
+&AtClient
+Procedure RefillReconcilliation()
+	
 	FillReconciliationSpec(Object.StatementToDate, Object.BankAccount);
 	Object.ClearedAmount = 0;
 	
@@ -117,7 +124,7 @@ Procedure FillReconciliationSpec(StatementToDate, BankAccount)
 	Query.SetParameter("StatementToDate", EndOfDay(StatementToDate));
 	Query.SetParameter("BankAccount", BankAccount);
 	
-	Result = Query.Execute().Choose();
+	Result = Query.Execute().Select();
 	
 	While Result.Next() Do
 		
@@ -267,6 +274,11 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	Else
 	EndIf; 
 	
+	If Object.Ref.IsEmpty() Then
+		Object.BankServiceChargeAccount 	= Constants.BankServiceChargeAccount.Get();
+		Object.BankInterestEarnedAccount 	= Constants.BankInterestEarnedAccount.Get();
+	EndIf;
+	
 	//Items.BankAccountLabel.Title =
 	//	CommonUse.GetAttributeValue(Object.BankAccount, "Description");
 	
@@ -311,8 +323,8 @@ EndFunction
 &AtClient
 Procedure BeforeWrite(Cancel, WriteParameters)
 	//Closing period
-	If DocumentPosting.DocumentPeriodIsClosed(Object.Ref, Object.Date) Then
-		Cancel = Not DocumentPosting.DocumentWritePermitted(WriteParameters);
+	If PeriodClosingServerCall.DocumentPeriodIsClosed(Object.Ref, Object.Date) Then
+		Cancel = Not PeriodClosingServerCall.DocumentWritePermitted(WriteParameters);
 		If Cancel Then
 			If WriteParameters.Property("PeriodClosingPassword") And WriteParameters.Property("Password") Then
 				If WriteParameters.Password = TRUE Then //Writing the document requires a password
@@ -354,8 +366,8 @@ EndProcedure
 &AtServer
 Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
 	//Period closing
-	If DocumentPosting.DocumentPeriodIsClosed(CurrentObject.Ref, CurrentObject.Date) Then
-		PermitWrite = DocumentPosting.DocumentWritePermitted(WriteParameters);
+	If PeriodClosingServerCall.DocumentPeriodIsClosed(CurrentObject.Ref, CurrentObject.Date) Then
+		PermitWrite = PeriodClosingServerCall.DocumentWritePermitted(WriteParameters);
 		CurrentObject.AdditionalProperties.Insert("PermitWrite", PermitWrite);	
 	EndIf;
 EndProcedure
@@ -450,6 +462,84 @@ Procedure LineItemsOnActivateRow(Item)
 	CurrentBankTransactionDescription 	= Item.CurrentData.BankTransactionDescription;
 	CurrentBankTransactionDate			= Item.CurrentData.BankTransactionDate;
 	CurrentBankTransactionAmount		= Item.CurrentData.BankTransactionAmount;
+EndProcedure
+
+&AtClient
+Procedure RefreshList(Command)
+	
+	RefillReconcilliation();
+	
+EndProcedure
+
+&AtServer
+Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
+	
+	If Not ValueIsFilled(Object.BankInterestEarnedAccount) And (ValueIsFilled(Object.InterestEarned)) Then
+		Cancel = True;
+		Message = New UserMessage();
+		Message.SetData(Object);
+		Message.Field = "Object.BankInterestEarnedAccount";
+		Message.Text = NStr("en = 'Bank interest earned account is not filled'");
+		Message.Message();
+	EndIf;
+	
+	If (Not ValueIsFilled(Object.BankServiceChargeAccount)) And (ValueIsFilled(Object.ServiceCharge)) Then
+		Cancel = True;
+		Message = New UserMessage();
+		Message.SetData(Object);
+		Message.Field = "Object.BankServiceChargeAccount";
+		Message.Text = NStr("en = 'Bank service charge account is not filled'");
+		Message.Message();
+	EndIf;
+
+	Request = New Query("SELECT
+	                    |	BankDocuments.Transaction AS Document,
+	                    |	BankDocuments.TransactionAmount AS Amount
+	                    |INTO ReconcilliationDocuments
+	                    |FROM
+	                    |	&BankDocuments AS BankDocuments
+	                    |;
+	                    |
+	                    |////////////////////////////////////////////////////////////////////////////////
+	                    |SELECT ALLOWED
+	                    |	IncorrectRows.Document,
+	                    |	IncorrectRows.Amount,
+	                    |	IncorrectRows.UnreconciledAmount
+	                    |FROM
+	                    |	(SELECT
+	                    |		ReconcilliationDocuments.Document AS Document,
+	                    |		ReconcilliationDocuments.Amount AS Amount,
+	                    |		ReconcilliationDocuments.Amount - ISNULL(TransactionReconciliation.Amount, 0) AS UnreconciledAmount
+	                    |	FROM
+	                    |		ReconcilliationDocuments AS ReconcilliationDocuments
+	                    |			LEFT JOIN InformationRegister.TransactionReconciliation AS TransactionReconciliation
+	                    |			ON ReconcilliationDocuments.Document = TransactionReconciliation.Document
+	                    |				AND (TransactionReconciliation.Account = &Account)) AS IncorrectRows
+	                    |WHERE
+	                    |	(IncorrectRows.Amount = 0
+	                    |			OR IncorrectRows.UnreconciledAmount <> 0)");
+	BankDocuments = Object.LineItems.Unload(,"Transaction, TransactionAmount");
+	Request.SetParameter("BankDocuments", BankDocuments);
+	Request.SetParameter("Account", Object.BankAccount);
+	Result = Request.Execute();
+	If Result.IsEmpty() Then 
+		return;
+	EndIf;
+	Sel = Result.Select();
+	While Sel.Next() Do
+		FoundRow = Object.LineItems.FindRows(New Structure("Transaction", Sel.Document));
+		RowNumber = FoundRow[0].LineNumber;
+		Message = New UserMessage();
+		Message.SetData(Object);
+		Message.Text=NStr("en = 'Current amount differs from the amount, available for reconcilliation. Please, use the Refresh button to fix it!'");
+		If (FoundRow[0].TransactionAmount < 0) Then
+			Message.Field = "Object.LineItems[" + String(RowNumber-1) + "].Payment";
+		Else
+			Message.Field = "Object.LineItems[" + String(RowNumber-1) + "].Deposit";
+		EndIf;
+		Message.Message();
+		Cancel = True; 
+	EndDo;	     
 EndProcedure
 
 

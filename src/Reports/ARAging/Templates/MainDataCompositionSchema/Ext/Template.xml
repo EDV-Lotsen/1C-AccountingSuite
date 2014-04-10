@@ -304,15 +304,27 @@
 	CASE
 		WHEN GeneralJournalBalance.ExtDimension2 REFS Document.SalesReturn
 			THEN PRESENTATION(GeneralJournalBalance.ExtDimension2.ReturnType)
+		WHEN GeneralJournalBalance.ExtDimension2 REFS Document.CashReceipt
+			THEN PRESENTATION("Cash Receipt")
 		ELSE ""
 	END AS ReturnType,
 	CASE
 		WHEN DATEDIFF(GeneralJournalBalance.ExtDimension2.DueDate, &amp;EndOfPeriod, DAY) &lt;= 0
 			THEN GeneralJournalBalance.AmountClosingBalance
+		WHEN GeneralJournalBalance.ExtDimension2 REFS Document.CashReceipt
+			THEN GeneralJournalBalance.AmountClosingBalance
+		WHEN DATEDIFF(GeneralJournalBalance.ExtDimension2.DueDate, &amp;EndOfPeriod, DAY) &gt; &amp;Interval3
+				AND GeneralJournalBalance.ExtDimension2 REFS Document.SalesReturn
+			THEN GeneralJournalBalance.AmountClosingBalance
 		ELSE 0
 	END AS D0_FCY,
 	CASE
 		WHEN DATEDIFF(GeneralJournalBalance.ExtDimension2.DueDate, &amp;EndOfPeriod, DAY) &lt;= 0
+			THEN GeneralJournalBalance.AmountRCClosingBalance
+		WHEN GeneralJournalBalance.ExtDimension2 REFS Document.CashReceipt
+			THEN GeneralJournalBalance.AmountRCClosingBalance
+		WHEN DATEDIFF(GeneralJournalBalance.ExtDimension2.DueDate, &amp;EndOfPeriod, DAY) &gt; &amp;Interval3
+				AND GeneralJournalBalance.ExtDimension2 REFS Document.SalesReturn
 			THEN GeneralJournalBalance.AmountRCClosingBalance
 		ELSE 0
 	END AS D0,
@@ -354,11 +366,13 @@
 	END AS D3,
 	CASE
 		WHEN DATEDIFF(GeneralJournalBalance.ExtDimension2.DueDate, &amp;EndOfPeriod, DAY) &gt; &amp;Interval3
+				AND NOT GeneralJournalBalance.ExtDimension2 REFS Document.SalesReturn
 			THEN GeneralJournalBalance.AmountClosingBalance
 		ELSE 0
 	END AS D4_FCY,
 	CASE
 		WHEN DATEDIFF(GeneralJournalBalance.ExtDimension2.DueDate, &amp;EndOfPeriod, DAY) &gt; &amp;Interval3
+				AND NOT GeneralJournalBalance.ExtDimension2 REFS Document.SalesReturn
 			THEN GeneralJournalBalance.AmountRCClosingBalance
 		ELSE 0
 	END AS D4,

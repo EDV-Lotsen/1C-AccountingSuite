@@ -8,7 +8,6 @@
 		<ChildItems>
 			<Button name="FormPayWithDwolla" id="114">
 				<Type>CommandBarButton</Type>
-				<Visible>false</Visible>
 				<CommandName>Form.Command.PayWithDwolla</CommandName>
 				<ExtendedTooltip name="FormPayWithDwollaExtendedTooltip" id="115"/>
 			</Button>
@@ -85,6 +84,7 @@
 											<v8:content>Left column</v8:content>
 										</v8:item>
 									</ToolTip>
+									<VerticalStretch>true</VerticalStretch>
 									<Group>Vertical</Group>
 									<Representation>None</Representation>
 									<ShowTitle>false</ShowTitle>
@@ -204,7 +204,6 @@
 							<ExtendedTooltip name="AdditionalExtendedTooltip" id="107"/>
 							<ChildItems>
 								<UsualGroup name="Group3" id="123">
-									<Visible>false</Visible>
 									<Group>Vertical</Group>
 									<ShowTitle>false</ShowTitle>
 									<ExtendedTooltip name="Group3ExtendedTooltip" id="124"/>

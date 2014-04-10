@@ -137,7 +137,7 @@
 	CASE
 		WHEN DocumentCashSale.DepositType = "1" 
 			THEN "Undeposited"
-		ELSE "Bank acc."
+		ELSE "Bank Acct."
 	END AS DepositT,
 	DocumentCashSale.Deposited,
 	DocumentCashSale.Currency,

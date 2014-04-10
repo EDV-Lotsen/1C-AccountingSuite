@@ -15,7 +15,7 @@
 		</Command>
 		<Command name="DataProcessor.PeriodClosing.Command.PeriodClosing">
 			<Visibility>
-				<xr:Common>true</xr:Common>
+				<xr:Common>false</xr:Common>
 			</Visibility>
 		</Command>
 		<Command name="Document.Budget.StandardCommand.OpenList">
@@ -44,36 +44,11 @@
 				<xr:Value name="Role.ReportOnly">false</xr:Value>
 			</Visibility>
 		</Command>
-		<Command name="0:a88c5809-ee22-495c-8b8d-15687ababe5d">
-			<Visibility>
-				<xr:Common>true</xr:Common>
-			</Visibility>
-		</Command>
 		<Command name="Catalog.PaymentMethods.StandardCommand.OpenList">
 			<Visibility>
 				<xr:Common>true</xr:Common>
 				<xr:Value name="Role.ListUser">false</xr:Value>
 				<xr:Value name="Role.ReportOnly">false</xr:Value>
-			</Visibility>
-		</Command>
-		<Command name="0:f3b61ee7-0199-4c49-9e3b-e0510040862e">
-			<Visibility>
-				<xr:Common>false</xr:Common>
-			</Visibility>
-		</Command>
-		<Command name="0:26a39045-1b46-4d91-bfc7-4ca0619a5bef">
-			<Visibility>
-				<xr:Common>false</xr:Common>
-			</Visibility>
-		</Command>
-		<Command name="0:495f4a3f-e857-4acf-be92-25cef7d22ec1">
-			<Visibility>
-				<xr:Common>false</xr:Common>
-			</Visibility>
-		</Command>
-		<Command name="DataProcessor.PeriodClosing.StandardCommand.Open">
-			<Visibility>
-				<xr:Common>false</xr:Common>
 			</Visibility>
 		</Command>
 		<Command name="CommonForm.GeneralSettings.StandardCommand.Open">
@@ -96,10 +71,6 @@
 			<Placement>Auto</Placement>
 		</Command>
 		<Command name="Catalog.USTaxCategories1099.StandardCommand.OpenList">
-			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
-			<Placement>Auto</Placement>
-		</Command>
-		<Command name="0:a88c5809-ee22-495c-8b8d-15687ababe5d">
 			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
@@ -133,9 +104,6 @@
 		<Command name="Catalog.USTaxCategories1099.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
 		</Command>
-		<Command name="0:a88c5809-ee22-495c-8b8d-15687ababe5d">
-			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
-		</Command>
 		<Command name="Catalog.PaymentMethods.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
 		</Command>
@@ -146,9 +114,6 @@
 			<CommandGroup>ActionsPanelCreate</CommandGroup>
 		</Command>
 		<Command name="ChartOfAccounts.ChartOfAccounts.StandardCommand.Create">
-			<CommandGroup>ActionsPanelCreate</CommandGroup>
-		</Command>
-		<Command name="1:a88c5809-ee22-495c-8b8d-15687ababe5d">
 			<CommandGroup>ActionsPanelCreate</CommandGroup>
 		</Command>
 		<Command name="Document.InventoryBeginningBalances.StandardCommand.Create">
@@ -162,30 +127,6 @@
 		</Command>
 		<Command name="Catalog.ExpensifyCategories.StandardCommand.Create">
 			<CommandGroup>ActionsPanelCreate</CommandGroup>
-		</Command>
-		<Command name="Report.GeneralLedger.StandardCommand.Open">
-			<CommandGroup>ActionsPanelReports</CommandGroup>
-		</Command>
-		<Command name="Report.TrialBalance.StandardCommand.Open">
-			<CommandGroup>ActionsPanelReports</CommandGroup>
-		</Command>
-		<Command name="Report.IncomeStatement.StandardCommand.Open">
-			<CommandGroup>ActionsPanelReports</CommandGroup>
-		</Command>
-		<Command name="Report.BalanceSheet.StandardCommand.Open">
-			<CommandGroup>ActionsPanelReports</CommandGroup>
-		</Command>
-		<Command name="0:f3b61ee7-0199-4c49-9e3b-e0510040862e">
-			<CommandGroup>ActionsPanelReports</CommandGroup>
-		</Command>
-		<Command name="0:26a39045-1b46-4d91-bfc7-4ca0619a5bef">
-			<CommandGroup>ActionsPanelReports</CommandGroup>
-		</Command>
-		<Command name="0:495f4a3f-e857-4acf-be92-25cef7d22ec1">
-			<CommandGroup>ActionsPanelReports</CommandGroup>
-		</Command>
-		<Command name="Report.BudgetPlanActual.StandardCommand.Open">
-			<CommandGroup>ActionsPanelReports</CommandGroup>
 		</Command>
 	</CommandsOrder>
 	<GroupsOrder>

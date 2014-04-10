@@ -13,6 +13,14 @@
 //------------------------------------------------------------------------------
 // Query typical document data for printing
 
+// Query returns biiling address data for our company.
+//
+// Parameters:
+//  TablesList - Structure - Contains temporary table names and it's count number.
+//
+// Returns:
+//  String - The batch report section text.
+//
 Function Query_OurCompany_Addresses_BillingAddress(TablesList) Export
 	
 	// Add address table to query structure.
@@ -56,6 +64,14 @@ Function Query_OurCompany_Addresses_BillingAddress(TablesList) Export
 	
 EndFunction
 
+// Query returns biiling address data for document's company.
+//
+// Parameters:
+//  TablesList - Structure - Contains temporary table names and it's count number.
+//
+// Returns:
+//  String - The batch report section text.
+//
 Function Query_Company_Addresses_BillingAddress(TablesList) Export
 	
 	// Add address table to query structure.
@@ -105,6 +121,14 @@ Function Query_Company_Addresses_BillingAddress(TablesList) Export
 	
 EndFunction
 
+// Query returns shipping address data for document's company.
+//
+// Parameters:
+//  TablesList - Structure - Contains temporary table names and it's count number.
+//
+// Returns:
+//  String - The batch report section text.
+//
 Function Query_Company_Addresses_ShipingAddress(TablesList) Export
 	
 	// Add address table to query structure.
@@ -152,6 +176,14 @@ Function Query_Company_Addresses_ShipingAddress(TablesList) Export
 	
 EndFunction
 
+// Query returns logo picture data for document's company.
+//
+// Parameters:
+//  TablesList - Structure - Contains temporary table names and it's count number.
+//
+// Returns:
+//  String - The batch report section text.
+//
 Function Query_CustomPrintForms_Logo(TablesList) Export
 	
 	// Add custom print form table to query structure.
@@ -174,6 +206,14 @@ Function Query_CustomPrintForms_Logo(TablesList) Export
 	
 EndFunction
 
+// Query returns custom print form template (if defined) for document's company.
+//
+// Parameters:
+//  TablesList - Structure - Contains temporary table names and it's count number.
+//
+// Returns:
+//  String - The batch report section text.
+//
 Function Query_CustomPrintForms_Template(TablesList) Export
 	
 	// Add custom print form table to query structure.
@@ -206,13 +246,13 @@ EndFunction
 // if special template name is not used.
 //
 // Parameters:
-//  DocumentParameters - Structure - Document parameters:
-//   Ref               - DocumentRef, Array of DocumentRef - Refs to documents to be printed
-//   Metadata          - MetadataObject - Metadata of print document
-//   TemplateName      - String, Undefined - Name of template which will be used for printing.
-//  PrintingTables     - Structure - Data query request result, Key - table name, Value - table contents.
-//  TemplateName       - String - An individual template name to be found (from the list of requested).
-//                       If not specified, then standard template will be used.
+//  DocumentParameters - Structure          - Document parameters.
+//    * Ref            - DocumentRef, Array - Ref to document to be printed,
+//    * Metadata       - MetadataObject     - Metadata of printing document.
+//    * TemplateName   - String             - Common predefined template name.
+//  PrintingTables     - Structure          - Data query request result, Key - table name, Value - table contents.
+//  TemplateName       - String             - An individual template name to be found (from the list of requested).
+//                     - Undefined          - if not specified, then predefined template will be used.
 //
 // Returns:
 //  SpreadsheetDocument - Document print template.
@@ -283,16 +323,16 @@ Function GetDocumentTemplate(DocumentParameters, PrintingTables, TemplateName = 
 	
 EndFunction
 
-// Returns the name of individual template assigned to the selecxted document ref.
+// Returns the name of individual template assigned to the selected document ref.
 //
 // Parameters:
-//  DocumentsRef       - Array       - Collection of references to documents,
-//                     - DocumentRef - Single document ref.
-//  CurrentDocumentRef - DocumentRef - Reference to a current document, which template must be returned.
-//  DocumentParameters - Structure - Document parameters:
-//   Ref               - DocumentRef, Array of DocumentRef - Refs to documents to be printed
-//   Metadata          - MetadataObject - Metadata of print document
-//   TemplateName      - String, Undefined - Name of template which will be used for printing.
+//  DocumentsRef       - Array              - Collection of references to documents.
+//                     - DocumentRef        - Single document ref.
+//  CurrentDocumentRef - DocumentRef        - Reference to a current document, which template must be returned.
+//  DocumentParameters - Structure          - Document parameters.
+//    * Ref            - DocumentRef, Array - Ref to document to be printed,
+//    * Metadata       - MetadataObject     - Metadata of printing document.
+//    * TemplateName   - Array              - Array of corresponding templates to the documents refs.
 //
 // Returns:
 //  String             - Name of individual print template.
@@ -323,11 +363,12 @@ EndFunction
 // Defines the standard document logo (if defined)
 //
 // Parameters:
-//  DocumentParameters - Structure - Document parameters:
-//   Ref               - DocumentRef, Array of DocumentRef - Refs to documents to be printed
-//   Metadata          - MetadataObject - Metadata of print document
-//   TemplateName      - String, Undefined - Name of template which will be used for printing.
-//  PrintingTables     - Structure - Data query request result, Key - table name, Value - table contents.
+//  DocumentParameters - Structure          - Document parameters.
+//  DocumentParameters - Structure          - Document parameters.
+//    * Ref            - DocumentRef, Array - Ref to document to be printed,
+//    * Metadata       - MetadataObject     - Metadata of printing document.
+//    * TemplateName   - Array              - Array of corresponding templates to the documents refs.
+//  PrintingTables     - Structure          - Data query request result, Key - table name, Value - table contents.
 //
 // Returns:
 //  Picture            - Logo picture.
@@ -349,30 +390,48 @@ Function GetDocumentLogo(DocumentParameters, PrintingTables) Export
 	
 EndFunction
 
-// Fills template drawing with logo picture.
+// Fills standard logo area in document template.
 //
 // Parameters:
-//  Template    - SpreadsheetDocument - A template for output the logo.
-//  LogoPicture - Picture             - A picture to place in logo drawing.
+//  Template - SpreadsheetDocument - A template for output the logo.
+//  Picture  - Picture             - A picture to place in logo drawing.
 //
 // Returns:
-//  Boolean     - Flag shows whether template is filled with the logo.
+//  Boolean  - Flag shows whether template is filled with the logo.
 //
-Function FillLogoInDocumentTemplate(Template, LogoPicture) Export
+Function FillLogoInDocumentTemplate(Template, Picture) Export
+	
+	// Call standard picture filling in "Logo" area.
+	Return FillPictureInDocumentTemplate(Template, Picture, "Logo");
+	
+EndFunction
+
+// Fills template drawing with picture.
+//
+// Parameters:
+//  Template - SpreadsheetDocument - A template for output the picture.
+//  Picture  - Picture             - A picture to place in a drawing.
+//  AreaName - String              - Area name, where the picture must be placed.
+//
+// Returns:
+//  Boolean  - Flag shows whether template is filled with the picture.
+//
+Function FillPictureInDocumentTemplate(Template, Picture, AreaName) Export
 	
 	// Define succession flag.
-	LogoFilled = False;
+	PictureFilled = False;
 	
-	// Search drawing with name of "Logo".
-	If LogoPicture <> Undefined Then
+	// Search drawing with specified name.
+	If Picture <> Undefined Then
 		For Each Drawing In Template.Drawings Do
-			If Upper(Drawing.Name) = "LOGO" Then
-				// Logo drawing found.
+			If Upper(Drawing.Name) = Upper(AreaName) Then
+				
+				// Passed drawing found.
 				If Drawing.Picture.Type = PictureType.Empty Then
-					// Output logo.
-					Drawing.Picture = LogoPicture;
+					// Output picture.
+					Drawing.Picture = Picture;
 				EndIf;
-				LogoFilled = True;
+				PictureFilled = True;
 				
 				// Stop searching.
 				Break;
@@ -380,54 +439,17 @@ Function FillLogoInDocumentTemplate(Template, LogoPicture) Export
 		EndDo;
 	EndIf;
 	
-	Return LogoFilled;
+	Return PictureFilled;
 	
 EndFunction
-
-// Fills template drawing with footer picture.
-//
-// Parameters:
-//  Template    - SpreadsheetDocument - A template for output the logo.
-//  FooterPicture - Picture             - A picture to place in footer drawing.
-//  FooterType - String 				- Name of the footer drawing in template
-//
-// Returns:
-//  Boolean     - Flag shows whether template is filled with the footer.
-//
-Function FillFooterInDocumentTemplate(Template, FooterPicture, FooterType) Export
-	
-	// Define succession flag.
-	FooterFilled = False;
-	
-	// Search drawing with name of "Logo".
-	If FooterPicture <> Undefined Then
-		For Each Drawing In Template.Drawings Do
-			If Drawing.Name = FooterType Then
-				// Logo drawing found.
-				If Drawing.Picture.Type = PictureType.Empty Then
-					// Output logo.
-					Drawing.Picture = FooterPicture;
-				EndIf;
-				FooterFilled = True;
-				
-				// Stop searching.
-				Break;
-			EndIf;
-		EndDo;
-	EndIf;
-	
-	Return FooterFilled;
-	
-EndFunction
-
 
 // Fills template title.
 //
 // Parameters:
-//  DocumentParameters - Structure - Document parameters:
-//   Ref               - DocumentRef, Array of DocumentRef - Refs to documents to be printed
-//   Metadata          - MetadataObject - Metadata of print document
-//   TemplateName      - String, Undefined - Name of template which will be used for printing.
+//  DocumentParameters - Structure          - Document parameters.
+//    * Ref            - DocumentRef, Array - Ref to document to be printed,
+//    * Metadata       - MetadataObject     - Metadata of printing document.
+//    * TemplateName   - String             - Common predefined template name.
 //
 // Returns:
 //  String             - Spreadsheet title.

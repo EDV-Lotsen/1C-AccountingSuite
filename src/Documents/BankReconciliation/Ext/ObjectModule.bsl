@@ -11,7 +11,7 @@ Procedure Posting(Cancel, Mode)
 		Record.AmountRC = InterestEarned;
 
 		Record = RegisterRecords.GeneralJournal.AddCredit();
-		Record.Account = Constants.BankInterestEarnedAccount.Get();
+		Record.Account = BankInterestEarnedAccount;
 		Record.Period = InterestEarnedDate;
 		Record.AmountRC = InterestEarned;
 	EndIf;
@@ -23,7 +23,7 @@ Procedure Posting(Cancel, Mode)
 		Record.AmountRC = ServiceCharge;
 
 		Record = RegisterRecords.GeneralJournal.AddDebit();
-		Record.Account = Constants.BankServiceChargeAccount.Get();
+		Record.Account = BankServiceChargeAccount;
 		Record.Period = ServiceChargeDate;
 		Record.AmountRC = ServiceCharge;
 	EndIf;
@@ -77,5 +77,25 @@ Procedure UndoPosting(Cancel)
 	EndDo;
 
 EndProcedure
+
+Procedure BeforeDelete(Cancel)
+	
+	For Each CurRowLineItems In LineItems Do
+		
+		If CurRowLineItems.Cleared = True Then
+		
+			Records = InformationRegisters.TransactionReconciliation.CreateRecordSet();
+			Records.Filter.Document.Set(CurRowLineItems.Transaction);
+			Records.Filter.Account.Set(BankAccount);
+			Records.Read();
+			Records[0].Reconciled = False;
+			Records.Write();
+			
+		EndIf;
+
+	EndDo;
+
+EndProcedure
+
 
 

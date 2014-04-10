@@ -227,29 +227,29 @@
 					<ContextMenu name="LineItemsContextMenu" id="10"/>
 					<AutoCommandBar name="LineItemsCommandBar" id="11"/>
 					<ExtendedTooltip name="LineItemsExtendedTooltip" id="62"/>
-					<SearchStringAddition name="LineItemsSearchString" id="75">
+					<SearchStringAddition name="LineItemsSearchString" id="78">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>SearchStringRepresentation</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsSearchStringContextMenu" id="76"/>
-						<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="77"/>
+						<ContextMenu name="LineItemsSearchStringContextMenu" id="79"/>
+						<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="80"/>
 					</SearchStringAddition>
-					<ViewStatusAddition name="LineItemsViewStatus" id="78">
+					<ViewStatusAddition name="LineItemsViewStatus" id="81">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>ViewStatusRepresentation</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsViewStatusContextMenu" id="79"/>
-						<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="80"/>
+						<ContextMenu name="LineItemsViewStatusContextMenu" id="82"/>
+						<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="83"/>
 					</ViewStatusAddition>
-					<SearchControlAddition name="LineItemsSearchControl" id="81">
+					<SearchControlAddition name="LineItemsSearchControl" id="84">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>SearchControl</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsSearchControlContextMenu" id="82"/>
-						<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="83"/>
+						<ContextMenu name="LineItemsSearchControlContextMenu" id="85"/>
+						<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="86"/>
 					</SearchControlAddition>
 					<ChildItems>
 						<LabelField name="LineItemsLineNumber" id="12">
@@ -295,6 +295,12 @@
 							<EditMode>EnterOnInput</EditMode>
 							<ContextMenu name="LineItemsMemoContextMenu" id="48"/>
 							<ExtendedTooltip name="LineItemsMemoExtendedTooltip" id="69"/>
+						</InputField>
+						<InputField name="LineItemsClass" id="75">
+							<DataPath>Object.LineItems.Class</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="LineItemsClassContextMenu" id="76"/>
+							<ExtendedTooltip name="LineItemsClassExtendedTooltip" id="77"/>
 						</InputField>
 					</ChildItems>
 				</Table>

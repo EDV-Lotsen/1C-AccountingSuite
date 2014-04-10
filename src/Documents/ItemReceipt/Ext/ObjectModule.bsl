@@ -4,7 +4,9 @@
 //------------------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////////////
-// OBJECT EVENTS HANDLERS
+#Region EVENT_HANDLERS
+
+#If Server Or ThickClientOrdinaryApplication Or ExternalConnection Then
 
 Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 	
@@ -181,14 +183,11 @@ Procedure Posting(Cancel, PostingMode)
 	
 	RegisterRecords.ProjectData.Write = True;
 	For Each CurRowLineItems In LineItems Do
-		If NOT CurRowLineItems.Project.IsEmpty() Then
-			Record = RegisterRecords.ProjectData.Add();
-			Record.RecordType = AccumulationRecordType.Expense;
-			Record.Period = Date;
-			Record.Project = CurRowLineItems.Project;
-			Record.Amount = CurRowLineItems.LineTotal;
-		Endif;
-		
+		Record = RegisterRecords.ProjectData.Add();
+		Record.RecordType = AccumulationRecordType.Expense;
+		Record.Period = Date;
+		Record.Project = CurRowLineItems.Project;
+		Record.Amount = CurRowLineItems.LineTotal;		
 	EndDo;
 	
 EndProcedure
@@ -209,7 +208,7 @@ Procedure UndoPosting(Cancel)
 	                  |GROUP BY
 	                  |	ItemReceiptLineItems.Product");
 	Query.SetParameter("Ref", Ref);
-	Dataset = Query.Execute().Choose();
+	Dataset = Query.Execute().Select();
 	
 	//AllowNegativeInventory = Constants.AllowNegativeInventory.Get();
 	
@@ -340,4 +339,6 @@ Procedure FillCheckProcessing(Cancel, CheckedAttributes)
 	
 EndProcedure
 
+#EndIf
 
+#EndRegion

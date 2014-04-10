@@ -73,7 +73,7 @@ Function GetAttributeValues(Ref, AttributeNames) Export
 		|	AliasForSpecifiedTable.Ref = &Ref
 		|");
 	Query.SetParameter("Ref", Ref);
-	Selection = Query.Execute().Choose();
+	Selection = Query.Execute().Select();
 	Selection.Next();
 
 	Result = New Structure;
@@ -141,7 +141,7 @@ Function ObjectAttributeValues(RefArray, AttributeNames) Export
 		|	Table.Ref IN (&RefArray)";
 	Query.SetParameter("RefArray", RefArray);
 	
-	Selection = Query.Execute().Choose();
+	Selection = Query.Execute().Select();
 	While Selection.Next() Do
 		Result = New Structure(AttributeNames);
 		FillPropertyValues(Result, Selection);
@@ -1723,7 +1723,7 @@ Function RefIfOnlyOne(Type) Export
 	Query = New Query;
 	Query.Text = QueryText;
 	
-	Selection = Query.Execute().Choose();
+	Selection = Query.Execute().Select();
 	If Selection.Count() = 1 Then
 		Selection.Next();
 		Return Selection.Ref;

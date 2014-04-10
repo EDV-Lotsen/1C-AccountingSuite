@@ -47,7 +47,7 @@ Try
 		BankQuery.SetParameter("ServiceID", ContainerService.contentServiceID);
 		QueryRes = BankQuery.Execute();
 		If Not QueryRes.IsEmpty() Then
-			BankSel = QueryRes.Choose();
+			BankSel = QueryRes.Select();
 			BankSel.Next();
 			BankRef = BankSel.Ref;
 			CurBank = BankRef.GetObject();
@@ -160,7 +160,7 @@ Procedure YodleeUpdateBankAccounts(YodleeMain = Undefined, DeleteUninitializedAc
 					AccountQuery.SetParameter("ServiceID", ItemSummary.contentServiceId);
 					QueryRes = AccountQuery.Execute();
 					If Not QueryRes.IsEmpty() Then
-						AccountSel = QueryRes.Choose();
+						AccountSel = QueryRes.Select();
 						AccountSel.Next();
 						AccountRef = AccountSel.Ref;
 						CurAccount = AccountRef.GetObject();
@@ -179,7 +179,7 @@ Procedure YodleeUpdateBankAccounts(YodleeMain = Undefined, DeleteUninitializedAc
 						BankQuery.SetParameter("ServiceID", ItemSummary.contentServiceId);
 						QueryRes = BankQuery.Execute();
 						If Not QueryRes.IsEmpty() Then
-							BankSel = QueryRes.Choose();
+							BankSel = QueryRes.Select();
 							BankSel.Next();
 							BankRef = BankSel.Ref;
 						Else
@@ -194,15 +194,19 @@ Procedure YodleeUpdateBankAccounts(YodleeMain = Undefined, DeleteUninitializedAc
 					bankData				= Result.GetBankDataByID(j);
 					If bankData <> Undefined Then
 						CurAccount.ItemAccountID 		= bankData.itemAccountID;
-						If Result.ContainerName = "banks" Then
+						If Result.ContainerName = "bank" Then
 							CurAccount.AvailableBalance 	= bankData.availableBalance.amount;
 							CurAccount.CurrentBalance 		= bankData.currentBalance.amount;
 						ElsIf Result.ContainerName = "credits" Then
 							CurAccount.AvailableBalance		= bankData.availableCredit.amount;
 							CurAccount.CurrentBalance		= bankData.runningBalance.amount;
-							CurAccount.CreditCard_AmountDue	= bankData.amountDue.amount;
 							CurAccount.CreditCard_TotalCreditline	= bankData.totalCreditLine.amount;
-							CurAccount.CreditCard_Type	= bankData.cardType;
+							If bankData.amountDue <> Undefined Then
+								CurAccount.CreditCard_AmountDue	= bankData.amountDue.amount;
+							EndIf;
+							If bankData.cardType <> Undefined Then
+								CurAccount.CreditCard_Type	= bankData.cardType;
+							EndIf;
 						EndIf;
 						CurAccount.AccountType			= bankData.acctType;
 						CurAccount.Description 			= ItemSummary.itemDisplayName + ":" + bankData.accountNumber;
@@ -238,7 +242,7 @@ Procedure YodleeUpdateBankAccounts(YodleeMain = Undefined, DeleteUninitializedAc
 				AccountQuery.SetParameter("ServiceID", ItemSummary.contentServiceId);
 				QueryRes = AccountQuery.Execute();
 				If Not QueryRes.IsEmpty() Then
-					AccountSel = QueryRes.Choose();
+					AccountSel = QueryRes.Select();
 					AccountSel.Next();
 					AccountRef = AccountSel.Ref;
 					CurAccount = AccountRef.GetObject();
@@ -258,7 +262,7 @@ Procedure YodleeUpdateBankAccounts(YodleeMain = Undefined, DeleteUninitializedAc
 					BankQuery.SetParameter("ServiceID", ItemSummary.contentServiceId);
 					QueryRes = BankQuery.Execute();
 					If Not QueryRes.IsEmpty() Then
-						BankSel = QueryRes.Choose();
+						BankSel = QueryRes.Select();
 						BankSel.Next();
 						BankRef = BankSel.Ref;
 					Else
@@ -297,7 +301,7 @@ Procedure YodleeUpdateBankAccounts(YodleeMain = Undefined, DeleteUninitializedAc
 		                    |	BankAccounts.YodleeAccount = TRUE
 		                    |	AND NOT BankAccounts.Ref IN (&YodleeAccounts)");
 		Request.SetParameter("YodleeAccounts", YodleeAccounts);
-		ReqSelect = Request.Execute().Choose();
+		ReqSelect = Request.Execute().Select();
 		While ReqSelect.Next() Do
 			Try
 				AccObject = ReqSelect.Ref.GetObject();
@@ -371,7 +375,7 @@ Function RemoveBankAccountAtServer(Item) Export
 				                       |WHERE
 				                       |	BankAccounts.ItemID = &ItemID");
 				AccRequest.SetParameter("ItemID", ItemID);
-				AccSelection = AccRequest.Execute().Choose(); 
+				AccSelection = AccRequest.Execute().Select(); 
 				cnt = 0;
 				While AccSelection.Next() Do
 					Try
@@ -433,7 +437,7 @@ Function RemoveYodleeBankAccountAtServer(Item) Export
 		                    |	AND BankAccounts.DeletionMark = FALSE");
 		Request.SetParameter("ItemID",ItemID);
 		Res = Request.Execute();
-		Sel = Res.Choose();
+		Sel = Res.Select();
 		Sel.Next();
 		If (Sel.UsedAccountsCount = 1) Then
 			return Yodlee.RemoveBankAccountAtServer(Item);
@@ -459,16 +463,6 @@ Function RemoveYodleeBankAccountAtServer(Item) Export
 				NewRecord.ItemID = Item.ItemID;
 				NewRecord.ItemAccountID = Item.ItemAccountID;
 				RecordSet.Write(True);
-				
-				//Delete records in registers
-				//BankTransactions
-				BTRecordset = InformationRegisters.BankTransactions.CreateRecordSet();
-				BTRecordset.Filter.BankAccount.Set(Item);
-				BTRecordset.Write(True);
-				//BankTransactionCategorization
-				BTCRecordset = InformationRegisters.BankTransactionCategorization.CreateRecordSet();
-				BTCRecordset.Filter.BankAccount.Set(Item);
-				BTCRecordset.Write(True);
 				
 				AccObject = Item.GetObject();
 				AccObject.Delete();
@@ -507,7 +501,7 @@ Procedure YodleeRefreshTransactions() Export
 	                    |	BankAccounts.YodleeAccount = TRUE
 	                    |	AND BankAccounts.DeletionMark = FALSE
 	                    |	AND BankAccounts.TransactionsRefreshTimeUTC <= BankAccounts.LastUpdatedTimeUTC");
-	Sel = Request.Execute().Choose();
+	Sel = Request.Execute().Select();
 	While Sel.Next() Do
 		Try
 			BankAccount = Sel.Ref;
@@ -610,7 +604,7 @@ Function RefreshTransactionsOfGroupOfAccounts(BankAccount, TempStorageAddress = 
 	                    |	BankAccounts.YodleeAccount = TRUE
 	                    |	AND BankAccounts.ItemID = &ItemID");
 	Request.SetParameter("ItemID", BankAccount.ItemID);
-	Sel = Request.Execute().Choose();
+	Sel = Request.Execute().Select();
 	While Sel.Next() Do
 		Try
 			BankAccount = Sel.Ref;
@@ -685,7 +679,7 @@ Procedure RefreshTransactionCategories() Export
 			EndIf;
 			//Res = Request.Execute();
 			//If Not Res.IsEmpty() Then
-			//	Sel = Res.Choose();
+			//	Sel = Res.Select();
 			//	Sel.Next();
 			//	CategoryObject = Sel.Ref.GetObject();
 			//Else
@@ -790,6 +784,11 @@ Function ViewTransactions(BankAccount, TransactionsFromDate = Undefined, Transac
 			TransactionSearchResult.FillInTransactions();
 			For i = 0 To TransactionSearchResult.Count()-1 Do
 				YodleeTran 	= TransactionSearchResult.GetByID(i);
+				//Upload only Posted transactions
+				If YodleeTran.status.statusId <> 1 Then
+					Continue;
+				EndIf;
+					
 				NewTran 	= Transactions.Add();
 				NewTran.TransactionDate = YodleeTran.transactionDate;
 				NewTran.BankAccount 	= BankAccount;
@@ -1818,7 +1817,7 @@ Procedure DeleteUninitializedAccounts(BankAccountToDelete = Undefined)
 			Else
 				EmptyBA_Request.SetParameter("BankAccountToDelete", BankAccountToDelete);
 			EndIf;								
-			EmptyBA_Result = EmptyBA_Request.Execute().Choose();
+			EmptyBA_Result = EmptyBA_Request.Execute().Select();
 			While EmptyBA_Result.Next() Do
 				//Remove from Yodlee server
 				RemoveItem(EmptyBA_Result.ItemID);

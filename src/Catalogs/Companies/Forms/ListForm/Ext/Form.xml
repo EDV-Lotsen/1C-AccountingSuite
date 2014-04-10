@@ -51,29 +51,29 @@
 								<Autofill>false</Autofill>
 							</AutoCommandBar>
 							<ExtendedTooltip name="ListExtendedTooltip" id="16"/>
-							<SearchStringAddition name="ListSearchString" id="112">
+							<SearchStringAddition name="ListSearchString" id="115">
 								<AdditionSource>
 									<Item>List</Item>
 									<Type>SearchStringRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="ListSearchStringContextMenu" id="113"/>
-								<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="114"/>
+								<ContextMenu name="ListSearchStringContextMenu" id="116"/>
+								<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="117"/>
 							</SearchStringAddition>
-							<ViewStatusAddition name="ListViewStatus" id="115">
+							<ViewStatusAddition name="ListViewStatus" id="118">
 								<AdditionSource>
 									<Item>List</Item>
 									<Type>ViewStatusRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="ListViewStatusContextMenu" id="116"/>
-								<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="117"/>
+								<ContextMenu name="ListViewStatusContextMenu" id="119"/>
+								<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="120"/>
 							</ViewStatusAddition>
-							<SearchControlAddition name="ListSearchControl" id="118">
+							<SearchControlAddition name="ListSearchControl" id="121">
 								<AdditionSource>
 									<Item>List</Item>
 									<Type>SearchControl</Type>
 								</AdditionSource>
-								<ContextMenu name="ListSearchControlContextMenu" id="119"/>
-								<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="120"/>
+								<ContextMenu name="ListSearchControlContextMenu" id="122"/>
+								<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="123"/>
 							</SearchControlAddition>
 							<Events>
 								<Event name="OnActivateRow">ContractorsOnActivateRow</Event>
@@ -102,6 +102,25 @@
 									<ContextMenu name="VendorContextMenu" id="9"/>
 									<ExtendedTooltip name="VendorExtendedTooltip" id="20"/>
 								</CheckBoxField>
+								<LabelField name="AmountRCBalance" id="112">
+									<DataPath>List.AmountRCBalance</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Balance</v8:content>
+										</v8:item>
+									</Title>
+									<Width>20</Width>
+									<HorizontalStretch>true</HorizontalStretch>
+									<Format>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>NFD=2; NZ=0.00</v8:content>
+										</v8:item>
+									</Format>
+									<ContextMenu name="AmountRCBalanceContextMenu" id="113"/>
+									<ExtendedTooltip name="AmountRCBalanceExtendedTooltip" id="114"/>
+								</LabelField>
 								<LabelField name="Terms" id="22">
 									<DataPath>List.Terms</DataPath>
 									<ContextMenu name="TermsContextMenu" id="23"/>
@@ -284,29 +303,29 @@
 							<ContextMenu name="TransactionsContextMenu" id="26"/>
 							<AutoCommandBar name="TransactionsCommandBar" id="27"/>
 							<ExtendedTooltip name="TransactionsExtendedTooltip" id="28"/>
-							<SearchStringAddition name="TransactionsSearchString" id="121">
+							<SearchStringAddition name="TransactionsSearchString" id="124">
 								<AdditionSource>
 									<Item>Transactions</Item>
 									<Type>SearchStringRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="TransactionsSearchStringContextMenu" id="122"/>
-								<ExtendedTooltip name="TransactionsSearchStringExtendedTooltip" id="123"/>
+								<ContextMenu name="TransactionsSearchStringContextMenu" id="125"/>
+								<ExtendedTooltip name="TransactionsSearchStringExtendedTooltip" id="126"/>
 							</SearchStringAddition>
-							<ViewStatusAddition name="TransactionsViewStatus" id="124">
+							<ViewStatusAddition name="TransactionsViewStatus" id="127">
 								<AdditionSource>
 									<Item>Transactions</Item>
 									<Type>ViewStatusRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="TransactionsViewStatusContextMenu" id="125"/>
-								<ExtendedTooltip name="TransactionsViewStatusExtendedTooltip" id="126"/>
+								<ContextMenu name="TransactionsViewStatusContextMenu" id="128"/>
+								<ExtendedTooltip name="TransactionsViewStatusExtendedTooltip" id="129"/>
 							</ViewStatusAddition>
-							<SearchControlAddition name="TransactionsSearchControl" id="127">
+							<SearchControlAddition name="TransactionsSearchControl" id="130">
 								<AdditionSource>
 									<Item>Transactions</Item>
 									<Type>SearchControl</Type>
 								</AdditionSource>
-								<ContextMenu name="TransactionsSearchControlContextMenu" id="128"/>
-								<ExtendedTooltip name="TransactionsSearchControlExtendedTooltip" id="129"/>
+								<ContextMenu name="TransactionsSearchControlContextMenu" id="131"/>
+								<ExtendedTooltip name="TransactionsSearchControlExtendedTooltip" id="132"/>
 							</SearchControlAddition>
 							<ChildItems>
 								<LabelField name="TransactionsDate" id="31">
@@ -368,7 +387,6 @@
 	CatalogCompanies.Code,
 	CatalogCompanies.Description,
 	CatalogCompanies.USTaxID,
-	CatalogCompanies.SalesTaxCode,
 	CatalogCompanies.DefaultCurrency,
 	CatalogCompanies.Vendor1099,
 	CatalogCompanies.Customer,
@@ -394,9 +412,12 @@
 	CatalogCompanies.CF2Num,
 	CatalogCompanies.CF3Num,
 	CatalogCompanies.CF4Num,
-	CatalogCompanies.CF5Num
+	CatalogCompanies.CF5Num,
+	GeneralJournalBalance.AmountRCBalance
 FROM
-	Catalog.Companies AS CatalogCompanies</QueryText>
+	Catalog.Companies AS CatalogCompanies
+		LEFT JOIN AccountingRegister.GeneralJournal.Balance AS GeneralJournalBalance
+		ON (GeneralJournalBalance.ExtDimension1 = CatalogCompanies.Ref)</QueryText>
 				<MainTable>Catalog.Companies</MainTable>
 				<ListSettings>
 					<dcsset:filter>

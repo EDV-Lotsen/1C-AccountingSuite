@@ -25,7 +25,120 @@ Procedure Posting(Cancel, PostingMode)
 	ExchangeGainAccount = Constants.ExchangeGain.Get();
 	ExchangeLossAccount = Constants.ExchangeLoss.Get();
 	
+	RegisterRecords.CashFlowData.Write = True;
+	
+	//Alan - need payment total before writing into cash flow
+	paymentTotal = 0;
+	For Each line In LineItems Do
+		paymentTotal = paymentTotal + line.Payment;
+	EndDo;
+	
+	// need total of credit memo payment
+	cmPayment = 0;
+	For Each line In CreditMemos Do
+		lineObject = line.Document.GetObject();
+		If TypeOf(lineObject.Ref) = Type("DocumentRef.SalesReturn") Then
+			cmPayment = cmPayment + line.Payment;
+		EndIf;
+	EndDo;
+	//end_Alan
+	
 	For Each DocumentLine In LineItems Do
+		
+		// writing CashFlowData
+		
+		DocumentObject = DocumentLine.Document.GetObject(); 	 
+		ExchangeRate = GeneralFunctions.GetExchangeRate(Date, DocumentObject.Currency);
+
+		If TypeOf(DocumentObject.Ref) = Type("DocumentRef.SalesInvoice") Then
+			
+			If DocumentObject.Discount <> 0 Then
+				Record = RegisterRecords.CashFlowData.Add();
+				Record.RecordType = AccumulationRecordType.Receipt;
+				Record.Period = Date;
+				Record.Company = Company;
+				Record.Document = DocumentObject.Ref;
+				DiscountsAccount = Constants.DiscountsAccount.Get();
+				If DiscountsAccount = ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
+					Record.Account = Constants.ExpenseAccount.Get();
+				Else
+					Record.Account = DiscountsAccount;
+				EndIf;
+				//Record.Account = CurRowLineItems.Product.InventoryOrExpenseAccount;
+				//Record.CashFlowSection = CurRowLineItems.Product.InventoryOrExpenseAccount.CashFlowSection;
+				//Alan - changed old AmountRC to be multiplied by the payment ratio				
+				tempAmount = ((DocumentObject.Discount * -1 * ExchangeRate) * -1) * DocumentLine.Payment / DocumentObject.DocumentTotalRC;
+				//Record.PaymentMethod = PaymentMethod;
+				Record.AmountRC = tempAmount * ((paymentTotal-cmPayment)/paymentTotal);
+				//End_alan
+				Record.SalesPerson = DocumentObject.SalesPerson;
+			EndIf;
+			
+			If DocumentObject.Shipping <> 0 Then
+							
+				Record = RegisterRecords.CashFlowData.Add();
+				Record.RecordType = AccumulationRecordType.Receipt;
+				Record.Period = Date;
+				Record.Company = Company;
+				Record.Document = DocumentObject.Ref;
+				ShippingExpenseAccount = Constants.ShippingExpenseAccount.Get();
+				If ShippingExpenseAccount = ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
+					Record.Account = Constants.IncomeAccount.Get();
+				Else
+					Record.Account = ShippingExpenseAccount;
+				EndIf;
+				tempAmount = (DocumentObject.Shipping * ExchangeRate) * DocumentLine.Payment / DocumentObject.DocumentTotalRC;
+				Record.AmountRC = tempAmount * ((paymentTotal-cmPayment)/paymentTotal);
+				Record.SalesPerson = DocumentObject.SalesPerson;
+			
+			EndIf;
+
+			
+			For Each Item In DocumentObject.LineItems Do
+			
+				Record = RegisterRecords.CashFlowData.Add();
+				Record.RecordType = AccumulationRecordType.Receipt;
+				Record.Period = Date;
+				Record.Company = Company;
+				Record.Document = DocumentObject.Ref;
+				Record.Account = Item.Product.IncomeAccount;
+				//Record.CashFlowSection = Item.Product.InventoryOrExpenseAccount.CashFlowSection;
+				//Record.PaymentMethod = PaymentMethod;
+				//Alan - changed old AmountRC to be multiplied by the payment ratiov				
+				tempAmount = ((Item.LineTotal * ExchangeRate) * DocumentLine.Payment)/DocumentObject.DocumentTotalRC;
+				Record.AmountRC = tempAmount * ((paymentTotal-cmPayment)/paymentTotal);   
+				//End_Alan
+				Record.SalesPerson = DocumentObject.SalesPerson;
+			
+			EndDo;
+			
+		EndIf;
+		
+		If TypeOf(DocumentObject.Ref) = Type("DocumentRef.PurchaseReturn") Then
+			
+			For Each Item In DocumentObject.LineItems Do
+			
+				Record = RegisterRecords.CashFlowData.Add();
+				Record.RecordType = AccumulationRecordType.Expense;
+				Record.Period = Date;
+				Record.Company = Company;
+				Record.Document = DocumentObject.Ref;
+				If Item.Product.Type = Enums.InventoryTypes.Inventory Then
+					Record.Account = Item.Product.COGSAccount;
+				Else
+					Record.Account = Item.Product.InventoryOrExpenseAccount;
+				EndIf;
+				//Record.CashFlowSection = Item.Product.InventoryOrExpenseAccount.CashFlowSection;
+				//Record.PaymentMethod = PaymentMethod;
+				Record.AmountRC = -1 * ((Item.LineTotal * ExchangeRate) * DocumentLine.Payment) / DocumentObject.DocumentTotalRC;
+			
+			EndDo;
+
+			
+		EndIf;
+			
+		// end writing CashFlowData
+
 		
 		DocumentObject = DocumentLine.Document.GetObject();		
 		
@@ -48,6 +161,18 @@ Procedure Posting(Cancel, PostingMode)
 		Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Company] =  Company;
 		Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Document] = DocumentObject.Ref;
 		
+		RegisterRecords.OrderTransactions.Write = True;
+		//If TypeOf(DocumentObject) = Type("DocumentRef.CashReceipt") Then
+			If SalesOrder <> Documents.SalesOrder.EmptyRef() Then			
+				Record = RegisterRecords.OrderTransactions.Add();
+				Record.RecordType = AccumulationRecordType.Receipt;
+				Record.Period = Date;
+				Record.Order = SalesOrder;
+				Record.Amount = CashPayment;
+			EndIf
+		//EndIf;
+
+		
 	EndDo;
 	
 	Credits = 0;
@@ -58,6 +183,36 @@ Procedure Posting(Cancel, PostingMode)
 		
 		If TypeOf(DocumentObject.Ref) = Type("DocumentRef.SalesReturn") Then
 			DocumentObjectAccount = DocumentObject.ARAccount;
+			
+			//Alan - write into cashflow for credit memo when its being applied
+			For Each Item In DocumentObject.LineItems Do
+				
+				Record = RegisterRecords.CashFlowData.Add();
+				Record.RecordType = AccumulationRecordType.Receipt;
+				Record.Period = Date;
+				Record.Company = Company;
+				Record.Document = DocumentObject.Ref;
+				
+				Record.Account = Item.Product.IncomeAccount;
+				//Record.CashFlowSection = Item.Product.InventoryOrExpenseAccount.CashFlowSection;
+				//Record.PaymentMethod = PaymentMethod;
+				Record.AmountRC = CreditLine.Payment;
+				
+				Record = RegisterRecords.CashFlowData.Add();
+				Record.RecordType = AccumulationRecordType.Receipt;
+				Record.Period = Date;
+				Record.Company = Company;
+				Record.Document = DocumentObject.Ref;
+				
+				Record.Account = Item.Product.IncomeAccount;
+				//Record.CashFlowSection = Item.Product.InventoryOrExpenseAccount.CashFlowSection;
+				//Record.PaymentMethod = PaymentMethod;
+				Record.AmountRC = CreditLine.Payment*-1;
+			
+			EndDo;
+				
+			//end_alan
+	
 			
 		ElsIf TypeOf(DocumentObject.Ref) = Type("DocumentRef.CashReceipt") Then
 			DocumentObjectAccount = DocumentObject.ARAccount;			
@@ -77,7 +232,7 @@ Procedure Posting(Cancel, PostingMode)
 		Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Company] = Company;
 		Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Document] = DocumentObject.Ref;
 		
-		Rate2 = GeneralFunctions.GetExchangeRate(DocumentLine.Document.Date, Company.DefaultCurrency);
+		Rate2 = GeneralFunctions.GetExchangeRate(CreditLine.Document.Date, Company.DefaultCurrency);
 		FXGainLoss = (CreditLine.Payment * Rate2) - (CreditLine.Payment * Rate);
 		
 		RegisterRecords.OrderTransactions.Write = True;
@@ -142,11 +297,22 @@ Procedure Posting(Cancel, PostingMode)
 
 	If UnappliedPayment > 0  Then 
 				
-			
+			Record = RegisterRecords.CashFlowData.Add();
+			Record.RecordType = AccumulationRecordType.Receipt;
+			Record.Period = Date;
+			Record.Company = Company;
+			Record.Document = Ref;
+			//Record.Account = Constants.ExpenseAccount.Get();
+			//Record.Account = CurRowLineItems.Product.InventoryOrExpenseAccount;
+			//Record.CashFlowSection = CurRowLineItems.Product.InventoryOrExpenseAccount.CashFlowSection;
+			Record.AmountRC = UnappliedPayment * Rate;
+			//Record.PaymentMethod = PaymentMethod;
+
+		
 			DefaultCurrency = GeneralFunctionsReusable.DefaultCurrency();
 			Record = RegisterRecords.GeneralJournal.AddCredit();
 			Record.Period =   Date;
-			Record.Account =  DefaultCurrency.DefaultARAccount;
+			Record.Account =  ARAccount;
 			Record.Currency = Company.DefaultCurrency;
 			Rate = GeneralFunctions.GetExchangeRate(Date,Company.DefaultCurrency);
 			Record.Amount =   UnappliedPayment;
@@ -261,6 +427,10 @@ Procedure BeforeDelete(Cancel)
 		LongActions.ExecuteInBackground("GeneralFunctions.SendWebhook", WebhookParams);
 	
 	EndIf;
+		
+	TRRecordset = InformationRegisters.TransactionReconciliation.CreateRecordSet();
+	TRRecordset.Filter.Document.Set(ThisObject.Ref);
+	TRRecordset.Write(True);
 
 EndProcedure
 

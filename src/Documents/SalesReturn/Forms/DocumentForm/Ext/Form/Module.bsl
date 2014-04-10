@@ -253,7 +253,7 @@ If Object.Ref.IsEmpty() Then
 		EndDo;
 		
 	    	 
-	  	    MailProfil = New InternetMailProfile; 
+	    MailProfil = New InternetMailProfile; 
 	    
 	    MailProfil.SMTPServerAddress = ServiceParameters.SMTPServer(); 
 		//MailProfil.SMTPServerAddress = Constants.MailProfAddress.Get();
@@ -265,7 +265,8 @@ If Object.Ref.IsEmpty() Then
 	    
 		MailProfil.SMTPPassword = ServiceParameters.SendGridPassword();
 	 	  
-		MailProfil.SMTPUser = ServiceParameters.SendGridUserName();	    
+		MailProfil.SMTPUser = ServiceParameters.SendGridUserName();
+
 	    
 	    send = New InternetMailMessage; 
 	    //send.To.Add(object.shipto.Email);
@@ -402,7 +403,9 @@ Procedure EmailSet()
 			QueryResult = Query.Execute();	
 		Dataset = QueryResult.Unload();
 		
-	Object.EmailTo = Dataset[0].Email;
+	If Dataset.Count() > 0 Then	
+		Object.EmailTo = Dataset[0].Email;
+	EndIf;
 	
 EndProcedure
 
@@ -503,8 +506,8 @@ EndFunction
 Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
 	
 	//Period closing
-	If DocumentPosting.DocumentPeriodIsClosed(CurrentObject.Ref, CurrentObject.Date) Then
-		PermitWrite = DocumentPosting.DocumentWritePermitted(WriteParameters);
+	If PeriodClosingServerCall.DocumentPeriodIsClosed(CurrentObject.Ref, CurrentObject.Date) Then
+		PermitWrite = PeriodClosingServerCall.DocumentWritePermitted(WriteParameters);
 		CurrentObject.AdditionalProperties.Insert("PermitWrite", PermitWrite);	
 	EndIf;
 
@@ -539,8 +542,8 @@ EndProcedure
 Procedure BeforeWrite(Cancel, WriteParameters)
 	
 	//Closing period
-	If DocumentPosting.DocumentPeriodIsClosed(Object.Ref, Object.Date) Then
-		Cancel = Not DocumentPosting.DocumentWritePermitted(WriteParameters);
+	If PeriodClosingServerCall.DocumentPeriodIsClosed(Object.Ref, Object.Date) Then
+		Cancel = Not PeriodClosingServerCall.DocumentWritePermitted(WriteParameters);
 		If Cancel Then
 			If WriteParameters.Property("PeriodClosingPassword") And WriteParameters.Property("Password") Then
 				If WriteParameters.Password = TRUE Then //Writing the document requires a password
@@ -571,6 +574,17 @@ Procedure ProcessUserResponseOnDocumentPeriodClosed(Result, Parameters) Export
 			Write(Parameters);
 		EndIf;
 	EndIf;	
+EndProcedure
+
+&AtClient
+Procedure SalesTaxOnChange(Item)
+	SalesTaxOnChangeAtServer();
+	RecalcTotal();
+EndProcedure
+
+&AtServer
+Procedure SalesTaxOnChangeAtServer()
+	// Insert handler contents.
 EndProcedure
 
 

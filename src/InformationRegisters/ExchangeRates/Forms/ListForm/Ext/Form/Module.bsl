@@ -33,7 +33,7 @@ Procedure UpdateRatesServer()
 	QueryResult = Query.Execute();
 	If QueryResult.IsEmpty() Then		
 	Else
-		Selection = QueryResult.Choose();
+		Selection = QueryResult.Select();
 		While Selection.Next() Do
 			
 			Rate = 1;

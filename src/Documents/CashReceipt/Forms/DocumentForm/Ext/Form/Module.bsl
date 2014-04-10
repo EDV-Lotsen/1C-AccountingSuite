@@ -38,7 +38,7 @@ Procedure FillDocumentList(Company)
 	Query.SetParameter("Date",    ?(ValueIsFilled(Object.Ref), Object.Date, CurrentSessionDate()));
 	Query.SetParameter("Company", Company);
 	
-	ResultSelection = Query.Execute().Choose();
+	ResultSelection = Query.Execute().Select();
 	While ResultSelection.Next() Do
 		LineItems = Object.LineItems.Add();
 		FillPropertyValues(LineItems, ResultSelection);
@@ -86,7 +86,7 @@ Procedure FillCreditMemos(Company)
 	Query.SetParameter("Date",    ?(ValueIsFilled(Object.Ref), Object.Date, CurrentSessionDate()));
 	Query.SetParameter("Company", Company);
 	
-	ResultSelection = Query.Execute().Choose();
+	ResultSelection = Query.Execute().Select();
 	While ResultSelection.Next() Do
 		LineItems = Object.CreditMemos.Add();
 		FillPropertyValues(LineItems, ResultSelection);
@@ -620,8 +620,8 @@ EndProcedure
 Procedure BeforeWrite(Cancel, WriteParameters)	
 	
 	//Closing period
-	If DocumentPosting.DocumentPeriodIsClosed(Object.Ref, Object.Date) Then
-		Cancel = Not DocumentPosting.DocumentWritePermitted(WriteParameters);
+	If PeriodClosingServerCall.DocumentPeriodIsClosed(Object.Ref, Object.Date) Then
+		Cancel = Not PeriodClosingServerCall.DocumentWritePermitted(WriteParameters);
 		If Cancel Then
 			If WriteParameters.Property("PeriodClosingPassword") And WriteParameters.Property("Password") Then
 				If WriteParameters.Password = TRUE Then //Writing the document requires a password
@@ -637,7 +637,7 @@ Procedure BeforeWrite(Cancel, WriteParameters)
 	EndIf;
 	
 	// preventing posting if already included in a bank rec
-	If DocumentPosting.RequiresExcludingFromBankReconciliation(Object.Ref, Object.CashPayment, Object.Date, Object.BankAccount, WriteParameters.WriteMode) Then
+	If ReconciledDocumentsServerCall.RequiresExcludingFromBankReconciliation(Object.Ref, Object.CashPayment, Object.Date, Object.BankAccount, WriteParameters.WriteMode) Then
 		Cancel = True;
 		CommonUseClient.ShowCustomMessageBox(ThisForm, "Bank reconciliation", "The transaction you are editing has been reconciled. Saving 
 		|your changes could put you out of balance the next time you try to reconcile. 
@@ -758,8 +758,8 @@ EndProcedure
 Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
 	
 	//Period closing
-	If DocumentPosting.DocumentPeriodIsClosed(CurrentObject.Ref, CurrentObject.Date) Then
-		PermitWrite = DocumentPosting.DocumentWritePermitted(WriteParameters);
+	If PeriodClosingServerCall.DocumentPeriodIsClosed(CurrentObject.Ref, CurrentObject.Date) Then
+		PermitWrite = PeriodClosingServerCall.DocumentWritePermitted(WriteParameters);
 		CurrentObject.AdditionalProperties.Insert("PermitWrite", PermitWrite);	
 	EndIf;
 	
@@ -840,9 +840,17 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Items.BankAccount.ReadOnly = True;
 	EndIf;
 	
+	//If Object.BankAccount.IsEmpty() Then
+	//	Object.BankAccount = Constants.BankAccount.Get();
+	//Else
+	//EndIf;
+	
 	If Object.BankAccount.IsEmpty() Then
-		Object.BankAccount = Constants.BankAccount.Get();
-	Else
+		If Object.DepositType = "2" Then
+			Object.BankAccount = Constants.BankAccount.Get();
+		Else
+			Object.BankAccount = Constants.UndepositedFundsAccount.Get();
+		EndIf;
 	EndIf;
 	
 	If Object.ARAccount.IsEmpty() Then
@@ -916,18 +924,18 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 	
 EndProcedure
 
-&AtClient
-// Disables editing of the Bank Account field if the deposit type is Undeposited Funds
-//
-Procedure DepositTypeOnChange(Item)
-	
-	If Object.DepositType = "2" Then
-		Items.BankAccount.ReadOnly = False;
-	Else // 1, Null, ""
-		Items.BankAccount.ReadOnly = True;
-	EndIf;
-	
-EndProcedure
+//&AtClient
+//// Disables editing of the Bank Account field if the deposit type is Undeposited Funds
+////
+//Procedure DepositTypeOnChange(Item)
+//	
+//	If Object.DepositType = "2" Then
+//		Items.BankAccount.ReadOnly = False;
+//	Else // 1, Null, ""
+//		Items.BankAccount.ReadOnly = True;
+//	EndIf;
+//	
+//EndProcedure
 
 &AtClient
 Procedure CheckOnChange(Item)
@@ -1328,9 +1336,9 @@ Procedure SendEmailAtServer()
 	 	EndDo;
 
 	    	 
-	   	    MailProfil = New InternetMailProfile; 
+	    MailProfil = New InternetMailProfile; 
 	    
-	    MailProfil.SMTPServerAddress = ServiceParameters.SMTPServer(); 
+	    MailProfil.SMTPServerAddress = ServiceParameters.SMTPServer();
 		//MailProfil.SMTPServerAddress = Constants.MailProfAddress.Get();
 	    MailProfil.SMTPUseSSL = ServiceParameters.SMTPUseSSL();
 		//MailProfil.SMTPUseSSL = Constants.MailProfSSL.Get();
@@ -1338,9 +1346,17 @@ Procedure SendEmailAtServer()
 	    
 	    MailProfil.Timeout = 180; 
 	    
+		
 		MailProfil.SMTPPassword = ServiceParameters.SendGridPassword();
 	 	  
-		MailProfil.SMTPUser = ServiceParameters.SendGridUserName();	    
+		MailProfil.SMTPUser = ServiceParameters.SendGridUserName();
+		
+		//MailProfil.SMTPPassword = "At/XCgOEv2nAyR+Nu7CC0WnhUVvbqndhaz1UkUkmQQTU"; 
+		//MailProfil.SMTPPassword = Constants.MailProfPass.Get();
+	    
+	    //MailProfil.SMTPUser = "AKIAJIZ4ECYUL7N3P3BA"; 
+		//MailProfil.SMTPUser = Constants.MailProfUser.Get();
+	    
 	    
 	    send = New InternetMailMessage; 
 	    //send.To.Add(object.shipto.Email);
@@ -1423,6 +1439,13 @@ Procedure SendEmailAtServer()
 	 	  FormatHTML2 = StrReplace(FormatHTML2,"myemail",Constants.Email.Get());
 	 	  
 	 	  FormatHTML2 = StrReplace(FormatHTML2,"object.total",Format(TotalAmount,"NFD=2"));
+		  FormatHTML2 = StrReplace(FormatHTML2,"object.totpayment",Format(Object.CashPayment,"NFD=2"));
+		  
+	   If Object.UnappliedPayment = 0 Then
+	 	   FormatHTML2 = StrReplace(FormatHTML2,"object.unapplied","0.00");
+	   Else
+	  		 FormatHTML2 = StrReplace(FormatHTML2,"object.unapplied",Format(Object.UnappliedPayment,"NFD=2"));
+	   Endif;
 		  
 	   If TotalCredits = 0 Then
 	 	   FormatHTML2 = StrReplace(FormatHTML2,"object.credits","0.00");
@@ -1482,11 +1505,10 @@ Procedure EmailSet()
 			QueryResult = Query.Execute();	
 		Dataset = QueryResult.Unload();
 		
-	Try
-		Object.EmailTo = Dataset[0].Email;
-	Except
-	EndTry;
-	
+	If Dataset.Count() > 0 Then
+			Object.EmailTo = Dataset[0].Email;
+		EndIf;
+		
 EndProcedure
 
 &AtClient
@@ -1652,5 +1674,23 @@ Procedure ProcessNewCashReceipt(SalesInvoice)
 
 	
 	
+EndProcedure
+
+
+&AtClient
+Procedure DepositTypeOnChange(Item)
+	DepositTypeOnChangeAtServer();
+EndProcedure
+
+
+&AtServer
+Procedure DepositTypeOnChangeAtServer()
+	If Object.DepositType = "2" Then
+		Items.BankAccount.ReadOnly = False;
+		Object.BankAccount = Constants.BankAccount.Get();
+	Else // 1, Null, ""
+		Object.BankAccount = Constants.UndepositedFundsAccount.Get();
+		Items.BankAccount.ReadOnly = True;
+	EndIf;
 EndProcedure
 

@@ -113,7 +113,7 @@ Procedure Posting(Cancel, Mode)
 				                  |	LayerDate " + Sorting + "");
 				Query.SetParameter("Product", CurRowLineItems.Product);
 				Query.SetParameter("Location", LocationFrom);
-				Selection = Query.Execute().Choose();
+				Selection = Query.Execute().Select();
 				
 				While Selection.Next() Do
 					If ItemQty > 0 Then

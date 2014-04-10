@@ -12,10 +12,9 @@ Procedure OnWriteAtServer(Cancel, CurrentObject, WriteParameters)
 			NewUser.FullName = Object.Description;
 			NewUser.StandardAuthentication = True;
 			//RNG = New RandomNumberGenerator(255);	
-			//NewUser.Password = RNG.RandomNumber(0, 10000);
-			//NewUser.Roles.Add(Metadata.Roles.FullAccess1);
 			NewUser.Password = Password;
-			
+			//NewUser.Roles.Add(Metadata.Roles.FullAccess1);
+			           
 			If Object.AdminAccess = True Then
 				NewUser.Roles.Add(MetaData.Roles.FullAccess1);
 			Else
@@ -97,7 +96,7 @@ Procedure OnWriteAtServer(Cancel, CurrentObject, WriteParameters)
 			NewUser.ShowInList = False;
 
 			NewUser.Write();
-			
+						
 		Else
 			
 			
@@ -188,6 +187,7 @@ Procedure OnWriteAtServer(Cancel, CurrentObject, WriteParameters)
 		EndIf;
 		
 		SetPrivilegedMode(False);
+	
 			
 EndProcedure
 
@@ -196,19 +196,21 @@ Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 	
 	// check correct e-mail address formatting
 	
+Object.Description = Lower(Object.Description);	
+	
 If Object.Ref.IsEmpty() Then
 
 	
-	//If NOT EmailCheck(Object.Description) Then
-	//	
-	//	Message = New UserMessage();
-	//	Message.Text=NStr("en='Please enter a correct e-mail address'");
-	//	Message.Field = "Object.Description";
-	//	Message.Message();
-	//	Cancel = True;
-	//	Return;
-	//	
-	//EndIf;
+	If NOT EmailCheck(Object.Description) Then
+		
+		Message = New UserMessage();
+		Message.Text=NStr("en='Please enter a correct e-mail address'");
+		//Message.Field = "Object.Description";
+		Message.Message();
+		Cancel = True;
+		Return;
+		
+	EndIf;
 	
 	// check uniqueness of the name
 		
@@ -226,7 +228,7 @@ If Object.Ref.IsEmpty() Then
 		
 		Message = New UserMessage();
 		Message.Text=NStr("en='E-mail address is not unique'");
-		Message.Field = "Object.Description";
+		//Message.Field = "Object.Description";
 		Message.Message();
 		Cancel = True;
 		Return;

@@ -17,7 +17,7 @@
 	OrderData.Insert("ship_to_phone",String(NewOrder.ShipTo.Phone));
 	OrderData.Insert("ship_to_cell",String(NewOrder.ShipTo.Cell));
 	OrderData.Insert("ship_to_email",String(NewOrder.ShipTo.Email));
-	OrderData.Insert("ship_to_sales_tax_code",String(NewOrder.ShipTo.SalesTaxCode));
+//	OrderData.Insert("ship_to_sales_tax_code",String(NewOrder.ShipTo.SalesTaxCode));
 	OrderData.Insert("ship_to_notes",String(NewOrder.ShipTo.Notes));
 	
 	OrderData.Insert("bill_to_address_id",String(NewOrder.BillTo.Description));
@@ -32,7 +32,7 @@
 	OrderData.Insert("bill_to_phone",String(NewOrder.BillTo.Phone));
 	OrderData.Insert("bill_to_cell",String(NewOrder.BillTo.Cell));
 	OrderData.Insert("bill_to_email",String(NewOrder.BillTo.Email));
-	OrderData.Insert("bill_to_sales_tax_code",String(NewOrder.BillTo.SalesTaxCode));
+	//OrderData.Insert("bill_to_sales_tax_code",String(NewOrder.BillTo.SalesTaxCode));
 	OrderData.Insert("bill_to_notes",String(NewOrder.BillTo.Notes));
 
 	OrderData.Insert("company", string(NewOrder.Company));
@@ -96,7 +96,7 @@ Function ReturnSalesInvoiceMap(NewOrder) Export
 	OrderData.Insert("ship_to_phone",String(NewOrder.ShipTo.Phone));
 	OrderData.Insert("ship_to_cell",String(NewOrder.ShipTo.Cell));
 	OrderData.Insert("ship_to_email",String(NewOrder.ShipTo.Email));
-	OrderData.Insert("ship_to_sales_tax_code",String(NewOrder.ShipTo.SalesTaxCode));
+	//OrderData.Insert("ship_to_sales_tax_code",String(NewOrder.ShipTo.SalesTaxCode));
 	OrderData.Insert("ship_to_notes",String(NewOrder.ShipTo.Notes));
 	
 	OrderData.Insert("bill_to_address_id",String(NewOrder.BillTo.Description));
@@ -111,7 +111,7 @@ Function ReturnSalesInvoiceMap(NewOrder) Export
 	OrderData.Insert("bill_to_phone",String(NewOrder.BillTo.Phone));
 	OrderData.Insert("bill_to_cell",String(NewOrder.BillTo.Cell));
 	OrderData.Insert("bill_to_email",String(NewOrder.BillTo.Email));
-	OrderData.Insert("bill_to_sales_tax_code",String(NewOrder.BillTo.SalesTaxCode));
+	//OrderData.Insert("bill_to_sales_tax_code",String(NewOrder.BillTo.SalesTaxCode));
 	OrderData.Insert("bill_to_notes",String(NewOrder.BillTo.Notes));
 
 	OrderData.Insert("company", string(NewOrder.Company));
@@ -119,14 +119,14 @@ Function ReturnSalesInvoiceMap(NewOrder) Export
 	OrderData.Insert("date",NewOrder.Date);
 	OrderData.Insert("ref_num", NewOrder.RefNum);
 	OrderData.Insert("memo", NewOrder.Memo);
-	OrderData.Insert("sales_tax_total", NewOrder.SalesTaxRC);
-	OrderData.Insert("doc_total", NewOrder.DocumentTotalRC);
+	OrderData.Insert("sales_tax_total", NewOrder.SalesTax);
+	OrderData.Insert("doc_total", NewOrder.DocumentTotal);
 	
-	OrderData.Insert("line_subtotal", NewOrder.LineSubtotalRC);
-	OrderData.Insert("discount", NewOrder.DiscountRC);
+	OrderData.Insert("line_subtotal", NewOrder.LineSubtotal);
+	OrderData.Insert("discount", NewOrder.Discount);
 	OrderData.Insert("discount_percent", NewOrder.DiscountPercent);
-	OrderData.Insert("subtotal", NewOrder.SubTotalRC);
-	OrderData.Insert("shipping", NewOrder.ShippingRC);
+	OrderData.Insert("subtotal", NewOrder.SubTotal);
+	OrderData.Insert("shipping", NewOrder.Shipping);
 	OrderData.Insert("email_to", NewOrder.EmailTo);
 	OrderData.Insert("email_cc", NewOrder.EmailCC);
 	OrderData.Insert("email_note", NewOrder.EmailNote);
@@ -409,21 +409,30 @@ Function ReturnPurchaseInvoiceMap(NewOrder) Export
 	OrderData.Insert("bill_date",NewOrder.Date);
 	OrderData.Insert("due_date",NewOrder.DueDate);
 	OrderData.Insert("terms", string(NewOrder.Terms));
-	//OrderData.Insert("ref_num", NewOrder.RefNum);
-	//OrderData.Insert("currency", string(NewOrder.Currency));
-	//OrderData.Insert("return_type", NewOrder.ReturnType);
 	
 	OrderData.Insert("ap_account", NewOrder.APAccount.Description);
-	//OrderData.Insert("purchase_invoice", String(NewOrder.ParentDocument));
-	//OrderData.Insert("email_to", NewOrder.EmailTo);
-	//OrderData.Insert("email_cc", NewOrder.EmailCC);
-	//OrderData.Insert("email_note", NewOrder.EmailNote);
 	OrderData.Insert("memo", NewOrder.Memo);
 	OrderData.Insert("doc_total", NewOrder.DocumentTotalRC);
 	OrderData.Insert("project", string(NewOrder.Project));
 	OrderData.Insert("act_location", string(NewOrder.LocationActual));
 	OrderData.Insert("class", string(NewOrder.Class));
 	OrderData.Insert("url", string(NewOrder.URL));
+	
+	OrderData.Insert("address_api_code",String(NewOrder.CompanyAddress.Ref.UUID()));
+	OrderData.Insert("address_address_id",String(NewOrder.CompanyAddress.Description));
+	OrderData.Insert("address_first_name",String(NewOrder.CompanyAddress.FirstName));
+	OrderData.Insert("address_middle_name",String(NewOrder.CompanyAddress.MiddleName));
+	OrderData.Insert("address_address_line1",String(NewOrder.CompanyAddress.AddressLine1));
+	OrderData.Insert("address_address_line2",String(NewOrder.CompanyAddress.AddressLine2));
+	OrderData.Insert("address_city",String(NewOrder.CompanyAddress.City));
+	OrderData.Insert("address_state",String(NewOrder.CompanyAddress.State));
+	OrderData.Insert("address_zip",String(NewOrder.CompanyAddress.ZIP));
+	OrderData.Insert("address_country",String(NewOrder.CompanyAddress.Country));
+	OrderData.Insert("address_phone",String(NewOrder.CompanyAddress.Phone));
+	OrderData.Insert("address_cell",String(NewOrder.CompanyAddress.Cell));
+	OrderData.Insert("address_email",String(NewOrder.CompanyAddress.Email));
+	//OrderData.Insert("address_sales_tax_code",String(NewOrder.CompanyAddress.SalesTaxCode));
+	OrderData.Insert("address_notes",String(NewOrder.CompanyAddress.Notes));
 
 
 	
@@ -765,25 +774,25 @@ Function ReturnPurchaseOrderMap(NewOrder) Export
 	OrderData = New Map();
 	OrderData.Insert("api_code", String(NewOrder.Ref.UUID()));
 	OrderData.Insert("customer_api_code", String(NewOrder.Company.Ref.UUID()));
-	OrderData.Insert("address_api_code",String(NewOrder.PurchaseAddress.Ref.UUID()));
-	OrderData.Insert("ds_address_api_code",String(NewOrder.DropshipAddress.Ref.UUID()));
-	OrderData.Insert("purchase_address_id",String(NewOrder.PurchaseAddress.Description));
-	OrderData.Insert("purchase_first_name",String(NewOrder.PurchaseAddress.FirstName));
-	OrderData.Insert("purchase_middle_name",String(NewOrder.PurchaseAddress.MiddleName));
-	OrderData.Insert("purchase_address_line1",String(NewOrder.PurchaseAddress.AddressLine1));
-	OrderData.Insert("purchase_address_line2",String(NewOrder.PurchaseAddress.AddressLine2));
-	OrderData.Insert("purchase_city",String(NewOrder.PurchaseAddress.City));
-	OrderData.Insert("purchase_state",String(NewOrder.PurchaseAddress.State));
-	OrderData.Insert("purchase_zip",String(NewOrder.PurchaseAddress.ZIP));
-	OrderData.Insert("purchase_country",String(NewOrder.PurchaseAddress.Country));
-	OrderData.Insert("purchase_phone",String(NewOrder.PurchaseAddress.Phone));
-	OrderData.Insert("purchase_cell",String(NewOrder.PurchaseAddress.Cell));
-	OrderData.Insert("purchase_email",String(NewOrder.PurchaseAddress.Email));
-	OrderData.Insert("purchase_sales_tax_code",String(NewOrder.PurchaseAddress.SalesTaxCode));
-	OrderData.Insert("purchase_notes",String(NewOrder.PurchaseAddress.Notes));
-	OrderData.Insert("ds_address_id",String(NewOrder.DropshipAddress.Description));
-	OrderData.Insert("ds_customer",String(NewOrder.DropshipCustomer.Description));
-	OrderData.Insert("ds_customer_api_code", String(NewOrder.DropshipCustomer.Ref.UUID()));
+	OrderData.Insert("address_api_code",String(NewOrder.CompanyAddress.Ref.UUID()));
+	OrderData.Insert("ds_address_api_code",String(NewOrder.DropshipShipTo.Ref.UUID()));
+	OrderData.Insert("purchase_address_id",String(NewOrder.CompanyAddress.Description));
+	OrderData.Insert("purchase_first_name",String(NewOrder.CompanyAddress.FirstName));
+	OrderData.Insert("purchase_middle_name",String(NewOrder.CompanyAddress.MiddleName));
+	OrderData.Insert("purchase_address_line1",String(NewOrder.CompanyAddress.AddressLine1));
+	OrderData.Insert("purchase_address_line2",String(NewOrder.CompanyAddress.AddressLine2));
+	OrderData.Insert("purchase_city",String(NewOrder.CompanyAddress.City));
+	OrderData.Insert("purchase_state",String(NewOrder.CompanyAddress.State));
+	OrderData.Insert("purchase_zip",String(NewOrder.CompanyAddress.ZIP));
+	OrderData.Insert("purchase_country",String(NewOrder.CompanyAddress.Country));
+	OrderData.Insert("purchase_phone",String(NewOrder.CompanyAddress.Phone));
+	OrderData.Insert("purchase_cell",String(NewOrder.CompanyAddress.Cell));
+	OrderData.Insert("purchase_email",String(NewOrder.CompanyAddress.Email));
+	//OrderData.Insert("purchase_sales_tax_code",String(NewOrder.CompanyAddress.SalesTaxCode));
+	OrderData.Insert("purchase_notes",String(NewOrder.CompanyAddress.Notes));
+	OrderData.Insert("ds_address_id",String(NewOrder.DropshipShipTo.Description));
+	OrderData.Insert("ds_customer",String(NewOrder.DropshipCompany.Description));
+	OrderData.Insert("ds_customer_api_code", String(NewOrder.DropshipCompany.Ref.UUID()));
 
 	OrderData.Insert("company", string(NewOrder.Company));
 	OrderData.Insert("project", string(NewOrder.Project));

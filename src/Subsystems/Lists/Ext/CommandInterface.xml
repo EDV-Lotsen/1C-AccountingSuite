@@ -16,6 +16,34 @@
 				<xr:Common>false</xr:Common>
 			</Visibility>
 		</Command>
+		<Command name="InformationRegister.AuditLog.StandardCommand.OpenList">
+			<Visibility>
+				<xr:Common>true</xr:Common>
+				<xr:Value name="Role.SalesFull">false</xr:Value>
+				<xr:Value name="Role.SalesView">false</xr:Value>
+				<xr:Value name="Role.PurchasingFull">false</xr:Value>
+				<xr:Value name="Role.PurchasingView">false</xr:Value>
+				<xr:Value name="Role.WarehouseFull">false</xr:Value>
+				<xr:Value name="Role.WarehouseView">false</xr:Value>
+				<xr:Value name="Role.BankReceiveFull">false</xr:Value>
+				<xr:Value name="Role.BankReceiveView">false</xr:Value>
+				<xr:Value name="Role.BankSendFull">false</xr:Value>
+				<xr:Value name="Role.BankSendView">false</xr:Value>
+				<xr:Value name="Role.AccountingFull">false</xr:Value>
+				<xr:Value name="Role.AccountingView">false</xr:Value>
+				<xr:Value name="Role.ListUser">false</xr:Value>
+				<xr:Value name="Role.ReportOnly">false</xr:Value>
+				<xr:Value name="Role.ProjectsFull">false</xr:Value>
+				<xr:Value name="Role.ProjectsView">false</xr:Value>
+				<xr:Value name="Role.TimeTrackFull">false</xr:Value>
+				<xr:Value name="Role.TimeTrackView">false</xr:Value>
+			</Visibility>
+		</Command>
+		<Command name="AccumulationRegister.ClassData.StandardCommand.OpenList">
+			<Visibility>
+				<xr:Common>true</xr:Common>
+			</Visibility>
+		</Command>
 		<Command name="Catalog.UserList.StandardCommand.OpenList">
 			<Visibility>
 				<xr:Common>true</xr:Common>
@@ -158,11 +186,6 @@
 				<xr:Common>false</xr:Common>
 			</Visibility>
 		</Command>
-		<Command name="DataProcessor.DataImport.StandardCommand.Open">
-			<Visibility>
-				<xr:Common>false</xr:Common>
-			</Visibility>
-		</Command>
 	</CommandsVisibility>
 	<CommandsPlacement>
 		<Command name="Catalog.Companies.StandardCommand.OpenList">
@@ -192,6 +215,9 @@
 		<Command name="Catalog.Projects.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelImportant</CommandGroup>
 		</Command>
+		<Command name="Catalog.Addresses.StandardCommand.OpenList">
+			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
+		</Command>
 		<Command name="Catalog.Countries.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
 		</Command>
@@ -220,6 +246,9 @@
 			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
 		</Command>
 		<Command name="InformationRegister.AuditLog.StandardCommand.OpenList">
+			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
+		</Command>
+		<Command name="AccumulationRegister.ClassData.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
 		</Command>
 		<Command name="Catalog.UserList.StandardCommand.OpenList">
@@ -267,6 +296,9 @@
 		<Command name="InformationRegister.AuditLog.StandardCommand.Create">
 			<CommandGroup>ActionsPanelCreate</CommandGroup>
 		</Command>
+		<Command name="Catalog.Addresses.StandardCommand.Create">
+			<CommandGroup>ActionsPanelCreate</CommandGroup>
+		</Command>
 		<Command name="DataProcessor.DeleteMarkedObjects.StandardCommand.Open">
 			<CommandGroup>ActionsPanelTools</CommandGroup>
 		</Command>
@@ -274,6 +306,9 @@
 			<CommandGroup>ActionsPanelTools</CommandGroup>
 		</Command>
 		<Command name="DataProcessor.DataImport.StandardCommand.Open">
+			<CommandGroup>ActionsPanelTools</CommandGroup>
+		</Command>
+		<Command name="DataProcessor.DataExport.StandardCommand.Open">
 			<CommandGroup>ActionsPanelTools</CommandGroup>
 		</Command>
 	</CommandsOrder>

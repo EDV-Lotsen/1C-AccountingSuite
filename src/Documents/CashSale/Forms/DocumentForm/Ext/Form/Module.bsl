@@ -170,9 +170,17 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	//	Object.PriceIncludesVAT = GeneralFunctionsReusable.PriceIncludesVAT();
 	//EndIf;
 	
+	//If Object.BankAccount.IsEmpty() Then
+	//	Object.BankAccount = Constants.BankAccount.Get();
+	//Else
+	//EndIf;
+	
 	If Object.BankAccount.IsEmpty() Then
-		Object.BankAccount = Constants.BankAccount.Get();
-	Else
+		If Object.DepositType = "2" Then
+			Object.BankAccount = Constants.BankAccount.Get();
+		Else
+			Object.BankAccount = Constants.UndepositedFundsAccount.Get();
+		EndIf;
 	EndIf; 
 				
 	If NOT GeneralFunctionsReusable.FunctionalOptionValue("MultiCurrency") Then
@@ -205,18 +213,18 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
 EndProcedure
 
-&AtClient
-// Disables editing of the Bank Account field if the deposit type is Undeposited Funds
-//
-Procedure DepositTypeOnChange(Item)
-	
-	If Object.DepositType = "1" Then
-		Items.BankAccount.ReadOnly = True;
-	Else
-		Items.BankAccount.ReadOnly = False;
-	EndIf;
+//&AtClient
+//// Disables editing of the Bank Account field if the deposit type is Undeposited Funds
+////
+//Procedure DepositTypeOnChange(Item)
+//	
+//	If Object.DepositType = "1" Then
+//		Items.BankAccount.ReadOnly = True;
+//	Else
+//		Items.BankAccount.ReadOnly = False;
+//	EndIf;
 
-EndProcedure
+//EndProcedure
 
 &AtServer
 Function SessionTenant()
@@ -347,19 +355,20 @@ Procedure SendEmailAtServer()
 	  //EndDo;
 
 	    	 
-	   	    MailProfil = New InternetMailProfile; 
+	    MailProfil = New InternetMailProfile; 
 	    
-	    MailProfil.SMTPServerAddress = ServiceParameters.SMTPServer(); 
+	    MailProfil.SMTPServerAddress = ServiceParameters.SMTPServer();
 		//MailProfil.SMTPServerAddress = Constants.MailProfAddress.Get();
 	    MailProfil.SMTPUseSSL = ServiceParameters.SMTPUseSSL();
 		//MailProfil.SMTPUseSSL = Constants.MailProfSSL.Get();
-	    MailProfil.SMTPPort = 465;  
+	    MailProfil.SMTPPort = 465; 
 	    
 	    MailProfil.Timeout = 180; 
 	    
 		MailProfil.SMTPPassword = ServiceParameters.SendGridPassword();
 	 	  
 		MailProfil.SMTPUser = ServiceParameters.SendGridUserName();
+			    
 	    
 	    send = New InternetMailMessage; 
 	    //send.To.Add(object.shipto.Email);
@@ -507,10 +516,9 @@ Procedure EmailSet()
 			QueryResult = Query.Execute();	
 		Dataset = QueryResult.Unload();
 		
-	Try	
+	If Dataset.Count() > 0 Then
 		Object.EmailTo = Dataset[0].Email;
-	Except
-	EndTry;
+	EndIf;
 	
 EndProcedure
 
@@ -611,8 +619,8 @@ EndFunction
 Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
 	
 	//Period closing
-	If DocumentPosting.DocumentPeriodIsClosed(CurrentObject.Ref, CurrentObject.Date) Then
-		PermitWrite = DocumentPosting.DocumentWritePermitted(WriteParameters);
+	If PeriodClosingServerCall.DocumentPeriodIsClosed(CurrentObject.Ref, CurrentObject.Date) Then
+		PermitWrite = PeriodClosingServerCall.DocumentWritePermitted(WriteParameters);
 		CurrentObject.AdditionalProperties.Insert("PermitWrite", PermitWrite);	
 	EndIf;
 	
@@ -644,8 +652,8 @@ EndProcedure
 Procedure BeforeWrite(Cancel, WriteParameters)
 	
 	//Closing period
-	If DocumentPosting.DocumentPeriodIsClosed(Object.Ref, Object.Date) Then
-		Cancel = Not DocumentPosting.DocumentWritePermitted(WriteParameters);
+	If PeriodClosingServerCall.DocumentPeriodIsClosed(Object.Ref, Object.Date) Then
+		Cancel = Not PeriodClosingServerCall.DocumentWritePermitted(WriteParameters);
 		If Cancel Then
 			If WriteParameters.Property("PeriodClosingPassword") And WriteParameters.Property("Password") Then
 				If WriteParameters.Password = TRUE Then //Writing the document requires a password
@@ -661,7 +669,7 @@ Procedure BeforeWrite(Cancel, WriteParameters)
 	EndIf;
 	
 	// preventing posting if already included in a bank rec
-	If DocumentPosting.RequiresExcludingFromBankReconciliation(Object.Ref, Object.DocumentTotalRC, Object.Date, Object.BankAccount, WriteParameters.WriteMode) Then
+	If ReconciledDocumentsServerCall.RequiresExcludingFromBankReconciliation(Object.Ref, Object.DocumentTotalRC, Object.Date, Object.BankAccount, WriteParameters.WriteMode) Then
 		Cancel = True;
 		CommonUseClient.ShowCustomMessageBox(ThisForm, "Bank reconciliation", "The transaction you are editing has been reconciled. Saving 
 		|your changes could put you out of balance the next time you try to reconcile. 
@@ -709,5 +717,25 @@ EndProcedure
 Procedure DiscountPercentOnChange(Item)
 	Object.DiscountRC = (-1 * Object.LineSubtotalRC * Object.DiscountPercent ) / 100;
 	RecalcTotal();
+EndProcedure
+
+
+&AtClient
+Procedure DepositTypeOnChange(Item)
+	DepositTypeOnChangeAtServer();
+EndProcedure
+
+
+&AtServer
+Procedure DepositTypeOnChangeAtServer()
+	// Insert handler contents.
+	If Object.DepositType = "1" Then
+		Object.BankAccount = Constants.UndepositedFundsAccount.Get();
+		Items.BankAccount.ReadOnly = True;
+	Else
+		Items.BankAccount.ReadOnly = False;
+		Object.BankAccount = Constants.BankAccount.Get();
+	EndIf;
+
 EndProcedure
 

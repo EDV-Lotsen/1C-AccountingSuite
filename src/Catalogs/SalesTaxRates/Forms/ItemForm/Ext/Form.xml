@@ -1,0 +1,410 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<WindowOpeningMode>LockOwnerWindow</WindowOpeningMode>
+	<UseForFoldersAndItems>Items</UseForFoldersAndItems>
+	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<Events>
+		<Event name="OnReadAtServer">OnReadAtServer</Event>
+		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+		<Event name="OnWriteAtServer">OnWriteAtServer</Event>
+		<Event name="FillCheckProcessingAtServer">FillCheckProcessingAtServer</Event>
+	</Events>
+	<ChildItems>
+		<RadioButtonField name="CombinedOrSingle" id="19">
+			<DataPath>CombinedOrSingle</DataPath>
+			<TitleLocation>None</TitleLocation>
+			<RadioButtonType>RadioButtons</RadioButtonType>
+			<ColumnsCount>1</ColumnsCount>
+			<ChoiceList>
+				<xr:Item>
+					<xr:Presentation/>
+					<xr:CheckState>0</xr:CheckState>
+					<xr:Value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>Single tax rate</v8:content>
+							</v8:item>
+						</Presentation>
+						<Value xsi:type="xs:decimal">0</Value>
+					</xr:Value>
+				</xr:Item>
+				<xr:Item>
+					<xr:Presentation/>
+					<xr:CheckState>0</xr:CheckState>
+					<xr:Value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>Combined tax rate</v8:content>
+							</v8:item>
+						</Presentation>
+						<Value xsi:type="xs:decimal">1</Value>
+					</xr:Value>
+				</xr:Item>
+			</ChoiceList>
+			<ContextMenu name="CombinedOrSingleContextMenu" id="20"/>
+			<ExtendedTooltip name="CombinedOrSingleExtendedTooltip" id="21"/>
+			<Events>
+				<Event name="OnChange">CombinedOrSingleOnChange</Event>
+			</Events>
+		</RadioButtonField>
+		<UsualGroup name="CaptionGroup" id="38">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Caption group</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Caption group</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Width>50</Width>
+			<Group>Horizontal</Group>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="CaptionGroupExtendedTooltip" id="39"/>
+			<ChildItems>
+				<InputField name="Description" id="4">
+					<DataPath>Object.Description</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Tax name</v8:content>
+						</v8:item>
+					</Title>
+					<TitleLocation>Top</TitleLocation>
+					<EditMode>EnterOnInput</EditMode>
+					<Width>25</Width>
+					<ContextMenu name="DescriptionContextMenu" id="5"/>
+					<ExtendedTooltip name="DescriptionExtendedTooltip" id="6"/>
+				</InputField>
+				<InputField name="Agency" id="10">
+					<DataPath>Object.Agency</DataPath>
+					<TitleLocation>Top</TitleLocation>
+					<EditMode>EnterOnInput</EditMode>
+					<AutoMarkIncomplete>true</AutoMarkIncomplete>
+					<ContextMenu name="AgencyContextMenu" id="11"/>
+					<ExtendedTooltip name="AgencyExtendedTooltip" id="12"/>
+				</InputField>
+				<InputField name="Rate" id="13">
+					<DataPath>Object.Rate</DataPath>
+					<TitleLocation>Top</TitleLocation>
+					<EditMode>EnterOnInput</EditMode>
+					<ContextMenu name="RateContextMenu" id="14"/>
+					<ExtendedTooltip name="RateExtendedTooltip" id="15"/>
+				</InputField>
+				<LabelDecoration name="CaptionSpace" id="53">
+					<HorizontalStretch>true</HorizontalStretch>
+					<ContextMenu name="CaptionSpaceContextMenu" id="54"/>
+					<ExtendedTooltip name="CaptionSpaceExtendedTooltip" id="55"/>
+				</LabelDecoration>
+			</ChildItems>
+		</UsualGroup>
+		<UsualGroup name="CombinedTaxRateGroup" id="40">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Combined tax rate group</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Combined tax rate group</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Group>Vertical</Group>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="CombinedTaxRateGroupExtendedTooltip" id="41"/>
+			<ChildItems>
+				<LabelDecoration name="CombinedTaxRateDecoration" id="50">
+					<HorizontalStretch>true</HorizontalStretch>
+					<Font ref="style:SmallTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
+					<Title formatted="false">
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Tax components</v8:content>
+						</v8:item>
+					</Title>
+					<Border width="1">
+						<v8ui:style xsi:type="v8ui:ControlBorderType">Underline</v8ui:style>
+					</Border>
+					<ContextMenu name="CombinedTaxRateDecorationContextMenu" id="51"/>
+					<ExtendedTooltip name="CombinedTaxRateDecorationExtendedTooltip" id="52"/>
+				</LabelDecoration>
+				<Table name="CombinedRates" id="22">
+					<Representation>List</Representation>
+					<Height>5</Height>
+					<UseAlternationRowColor>true</UseAlternationRowColor>
+					<AutoInsertNewRow>true</AutoInsertNewRow>
+					<EnableStartDrag>true</EnableStartDrag>
+					<EnableDrag>true</EnableDrag>
+					<DataPath>CombinedRates</DataPath>
+					<SearchStringLocation>None</SearchStringLocation>
+					<ViewStatusLocation>None</ViewStatusLocation>
+					<SearchControlLocation>None</SearchControlLocation>
+					<RowFilter xsi:nil="true"/>
+					<ContextMenu name="CombinedRatesContextMenu" id="23"/>
+					<AutoCommandBar name="CombinedRatesCommandBar" id="24">
+						<ChildItems>
+							<Button name="CombinedRatesButton1" id="56">
+								<Type>CommandBarButton</Type>
+								<Representation>Picture</Representation>
+								<CommandName>Form.Item.CombinedRates.StandardCommand.Add</CommandName>
+								<ExtendedTooltip name="CombinedRatesButton1ExtendedTooltip" id="57"/>
+							</Button>
+							<Button name="CombinedRatesButton2" id="58">
+								<Type>CommandBarButton</Type>
+								<Representation>Picture</Representation>
+								<OnlyInAllActions>true</OnlyInAllActions>
+								<CommandName>Form.Item.CombinedRates.StandardCommand.Copy</CommandName>
+								<ExtendedTooltip name="CombinedRatesButton2ExtendedTooltip" id="59"/>
+							</Button>
+							<Button name="CombinedRatesButton3" id="60">
+								<Type>CommandBarButton</Type>
+								<Representation>Picture</Representation>
+								<OnlyInAllActions>true</OnlyInAllActions>
+								<CommandName>Form.Item.CombinedRates.StandardCommand.Change</CommandName>
+								<ExtendedTooltip name="CombinedRatesButton3ExtendedTooltip" id="61"/>
+							</Button>
+							<Button name="CombinedRatesButton4" id="62">
+								<Type>CommandBarButton</Type>
+								<Representation>Picture</Representation>
+								<OnlyInAllActions>true</OnlyInAllActions>
+								<CommandName>Form.Item.CombinedRates.StandardCommand.Delete</CommandName>
+								<ExtendedTooltip name="CombinedRatesButton4ExtendedTooltip" id="63"/>
+							</Button>
+						</ChildItems>
+					</AutoCommandBar>
+					<ExtendedTooltip name="CombinedRatesExtendedTooltip" id="25"/>
+					<SearchStringAddition name="CombinedRatesSearchString" id="64">
+						<AdditionSource>
+							<Item>CombinedRates</Item>
+							<Type>SearchStringRepresentation</Type>
+						</AdditionSource>
+						<ContextMenu name="CombinedRatesSearchStringContextMenu" id="65"/>
+						<ExtendedTooltip name="CombinedRatesSearchStringExtendedTooltip" id="66"/>
+					</SearchStringAddition>
+					<ViewStatusAddition name="CombinedRatesViewStatus" id="67">
+						<AdditionSource>
+							<Item>CombinedRates</Item>
+							<Type>ViewStatusRepresentation</Type>
+						</AdditionSource>
+						<ContextMenu name="CombinedRatesViewStatusContextMenu" id="68"/>
+						<ExtendedTooltip name="CombinedRatesViewStatusExtendedTooltip" id="69"/>
+					</ViewStatusAddition>
+					<SearchControlAddition name="CombinedRatesSearchControl" id="70">
+						<AdditionSource>
+							<Item>CombinedRates</Item>
+							<Type>SearchControl</Type>
+						</AdditionSource>
+						<ContextMenu name="CombinedRatesSearchControlContextMenu" id="71"/>
+						<ExtendedTooltip name="CombinedRatesSearchControlExtendedTooltip" id="72"/>
+					</SearchControlAddition>
+					<Events>
+						<Event name="Selection">CombinedRatesSelection</Event>
+						<Event name="BeforeDeleteRow">CombinedRatesBeforeDeleteRow</Event>
+						<Event name="OnStartEdit">CombinedRatesOnStartEdit</Event>
+						<Event name="OnChange">CombinedRatesOnChange</Event>
+					</Events>
+					<ChildItems>
+						<InputField name="CombinedRatesDescription" id="29">
+							<DataPath>CombinedRates.Description</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Component name</v8:content>
+								</v8:item>
+							</Title>
+							<EditMode>EnterOnInput</EditMode>
+							<Width>25</Width>
+							<ContextMenu name="CombinedRatesDescriptionContextMenu" id="30"/>
+							<ExtendedTooltip name="CombinedRatesDescriptionExtendedTooltip" id="31"/>
+						</InputField>
+						<InputField name="CombinedRatesAgency" id="32">
+							<DataPath>CombinedRates.Agency</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<AutoMarkIncomplete>true</AutoMarkIncomplete>
+							<ContextMenu name="CombinedRatesAgencyContextMenu" id="33"/>
+							<ExtendedTooltip name="CombinedRatesAgencyExtendedTooltip" id="34"/>
+						</InputField>
+						<InputField name="CombinedRatesRate" id="35">
+							<DataPath>CombinedRates.Rate</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Rate, %</v8:content>
+								</v8:item>
+							</Title>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="CombinedRatesRateContextMenu" id="36"/>
+							<ExtendedTooltip name="CombinedRatesRateExtendedTooltip" id="37"/>
+							<Events>
+								<Event name="OnChange">CombinedRatesRateOnChange</Event>
+							</Events>
+						</InputField>
+					</ChildItems>
+				</Table>
+				<UsualGroup name="TotalRateGroup" id="45">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Total rate group</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Total rate group</v8:content>
+						</v8:item>
+					</ToolTip>
+					<Group>Horizontal</Group>
+					<ShowTitle>false</ShowTitle>
+					<ExtendedTooltip name="TotalRateGroupExtendedTooltip" id="46"/>
+					<ChildItems>
+						<LabelDecoration name="Decoration1" id="47">
+							<HorizontalStretch>true</HorizontalStretch>
+							<ContextMenu name="Decoration1ContextMenu" id="48"/>
+							<ExtendedTooltip name="Decoration1ExtendedTooltip" id="49"/>
+						</LabelDecoration>
+						<LabelField name="TotalCombinedRate" id="42">
+							<DataPath>TotalCombinedRate</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Total Tax Rate</v8:content>
+								</v8:item>
+							</Title>
+							<TitleFont ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
+							<Width>6</Width>
+							<Font ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
+							<ContextMenu name="TotalCombinedRateContextMenu" id="43"/>
+							<ExtendedTooltip name="TotalCombinedRateExtendedTooltip" id="44"/>
+						</LabelField>
+					</ChildItems>
+				</UsualGroup>
+			</ChildItems>
+		</UsualGroup>
+	</ChildItems>
+	<Attributes>
+		<Attribute name="Object" id="1">
+			<Type>
+				<v8:Type>cfg:CatalogObject.SalesTaxRates</v8:Type>
+			</Type>
+			<MainAttribute>true</MainAttribute>
+			<SavedData>true</SavedData>
+		</Attribute>
+		<Attribute name="CombinedOrSingle" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Combined or single</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:decimal</v8:Type>
+				<v8:NumberQualifiers>
+					<v8:Digits>10</v8:Digits>
+					<v8:FractionDigits>0</v8:FractionDigits>
+					<v8:AllowedSign>Any</v8:AllowedSign>
+				</v8:NumberQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="CombinedRates" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Combined rates</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>v8:ValueTable</v8:Type>
+			</Type>
+			<SavedData>true</SavedData>
+			<Columns>
+				<Column name="SalesTaxRate" id="1">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Sales tax rate</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>cfg:CatalogRef.SalesTaxRates</v8:Type>
+					</Type>
+				</Column>
+				<Column name="Description" id="2">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Description</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:string</v8:Type>
+						<v8:StringQualifiers>
+							<v8:Length>50</v8:Length>
+							<v8:AllowedLength>Variable</v8:AllowedLength>
+						</v8:StringQualifiers>
+					</Type>
+				</Column>
+				<Column name="Agency" id="3">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Agency</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>cfg:CatalogRef.SalesTaxAgencies</v8:Type>
+					</Type>
+				</Column>
+				<Column name="Rate" id="4">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Rate</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:decimal</v8:Type>
+						<v8:NumberQualifiers>
+							<v8:Digits>4</v8:Digits>
+							<v8:FractionDigits>2</v8:FractionDigits>
+							<v8:AllowedSign>Any</v8:AllowedSign>
+						</v8:NumberQualifiers>
+					</Type>
+				</Column>
+				<Column name="WasModified" id="5">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Was modified</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:boolean</v8:Type>
+					</Type>
+				</Column>
+			</Columns>
+		</Attribute>
+		<Attribute name="TotalCombinedRate" id="4">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Total combined rate</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>6</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+	</Attributes>
+</Form>

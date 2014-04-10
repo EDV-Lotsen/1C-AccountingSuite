@@ -97,11 +97,11 @@
 									<ExtendedTooltip name="SalesItemsExtendedTooltip" id="104"/>
 									<ChildItems>
 										<LabelDecoration name="SalesTitle" id="10">
-											<Font ref="sys:DefaultGUIFont" height="14" kind="WindowsFont"/>
+											<Font ref="sys:DefaultGUIFont" height="12" kind="WindowsFont"/>
 											<Title formatted="false">
 												<v8:item>
 													<v8:lang>en</v8:lang>
-													<v8:content>Sales</v8:content>
+													<v8:content>Sales (create...)</v8:content>
 												</v8:item>
 												<v8:item>
 													<v8:lang>de</v8:lang>
@@ -257,11 +257,11 @@
 									<ExtendedTooltip name="PurchasingItemsExtendedTooltip" id="110"/>
 									<ChildItems>
 										<LabelDecoration name="PurchasingTitle" id="26">
-											<Font ref="sys:DefaultGUIFont" height="14" kind="WindowsFont"/>
+											<Font ref="sys:DefaultGUIFont" height="12" kind="WindowsFont"/>
 											<Title formatted="false">
 												<v8:item>
 													<v8:lang>en</v8:lang>
-													<v8:content>Purchasing</v8:content>
+													<v8:content>Purchases (create...)</v8:content>
 												</v8:item>
 												<v8:item>
 													<v8:lang>de</v8:lang>
@@ -425,11 +425,11 @@
 									<ExtendedTooltip name="BankItemsExtendedTooltip" id="117"/>
 									<ChildItems>
 										<LabelDecoration name="BankTitle" id="44">
-											<Font ref="sys:DefaultGUIFont" height="14" kind="WindowsFont"/>
+											<Font ref="sys:DefaultGUIFont" height="12" kind="WindowsFont"/>
 											<Title formatted="false">
 												<v8:item>
 													<v8:lang>en</v8:lang>
-													<v8:content>Bank</v8:content>
+													<v8:content>Bank (create...)</v8:content>
 												</v8:item>
 												<v8:item>
 													<v8:lang>de</v8:lang>
@@ -464,6 +464,12 @@
 														<Button name="Check" id="182">
 															<Type>Hyperlink</Type>
 															<CommandName>Form.Command.Check</CommandName>
+															<Title>
+																<v8:item>
+																	<v8:lang>en</v8:lang>
+																	<v8:content>Payment (Check)</v8:content>
+																</v8:item>
+															</Title>
 															<ExtendedTooltip name="CheckExtendedTooltip" id="183"/>
 														</Button>
 														<Button name="Deposit" id="216">
@@ -556,11 +562,11 @@
 									<ExtendedTooltip name="AccountingItemsExtendedTooltip" id="123"/>
 									<ChildItems>
 										<LabelDecoration name="AccountingTitle" id="60">
-											<Font ref="sys:DefaultGUIFont" height="14" kind="WindowsFont"/>
+											<Font ref="sys:DefaultGUIFont" height="12" kind="WindowsFont"/>
 											<Title formatted="false">
 												<v8:item>
 													<v8:lang>en</v8:lang>
-													<v8:content>Accounting</v8:content>
+													<v8:content>Accounting (create...)</v8:content>
 												</v8:item>
 												<v8:item>
 													<v8:lang>de</v8:lang>
@@ -592,15 +598,15 @@
 													<ShowTitle>false</ShowTitle>
 													<ExtendedTooltip name="AccLeftExtendedTooltip" id="189"/>
 													<ChildItems>
-														<Button name="ChartOfAccounts" id="192">
-															<Type>Hyperlink</Type>
-															<CommandName>Form.Command.ChartOfAccounts</CommandName>
-															<ExtendedTooltip name="ChartOfAccountsExtendedTooltip" id="193"/>
-														</Button>
 														<Button name="GJEntry" id="194">
 															<Type>Hyperlink</Type>
 															<CommandName>Form.Command.GJEntry</CommandName>
 															<ExtendedTooltip name="GJEntryExtendedTooltip" id="195"/>
+														</Button>
+														<Button name="ChartOfAccounts" id="192">
+															<Type>Hyperlink</Type>
+															<CommandName>Form.Command.ChartOfAccounts</CommandName>
+															<ExtendedTooltip name="ChartOfAccountsExtendedTooltip" id="193"/>
 														</Button>
 													</ChildItems>
 												</UsualGroup>
@@ -694,7 +700,7 @@
 									<ExtendedTooltip name="ListsItemsExtendedTooltip" id="130"/>
 									<ChildItems>
 										<LabelDecoration name="ListsTitle" id="78">
-											<Font ref="sys:DefaultGUIFont" height="14" kind="WindowsFont"/>
+											<Font ref="sys:DefaultGUIFont" height="12" kind="WindowsFont"/>
 											<Title formatted="false">
 												<v8:item>
 													<v8:lang>en</v8:lang>

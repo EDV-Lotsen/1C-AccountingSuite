@@ -2,6 +2,8 @@
 //
 Procedure Posting(Cancel, Mode)
 	
+	RegisterRecords.CashFlowData.Write = True;
+	
 	If BegBal Then
 		
 		Reg = AccountingRegisters.GeneralJournal.CreateRecordSet();
@@ -47,6 +49,19 @@ Procedure Posting(Cancel, Mode)
 	RegisterRecords.InventoryJrnl.Write = True;
 	For Each CurRowLineItems In LineItems Do
 		
+		If Ref.ReturnType = Enums.ReturnTypes.Refund Then
+			Record = RegisterRecords.CashFlowData.Add();
+			Record.RecordType = AccumulationRecordType.Expense;
+			Record.Period = Date;
+			Record.Company = Company;
+			Record.Document = Ref;
+			Record.Account = CurRowLineItems.Product.IncomeAccount;
+			//Record.Account = CurRowLineItems.Product.InventoryOrExpenseAccount;
+			//Record.CashFlowSection = CurRowLineItems.Product.InventoryOrExpenseAccount.CashFlowSection;
+			Record.AmountRC = CurRowLineItems.LineTotal * ExchangeRate * -1;
+			//Record.PaymentMethod = PaymentMethod;
+		EndIf;
+	
 		If CurRowLineItems.Product.Type = Enums.InventoryTypes.Inventory Then
 			
 			// last cost calculation
@@ -225,10 +240,11 @@ Procedure Filling(FillingData, StandardProcessing)
 		Currency = FillingData.Currency;
 		ExchangeRate = FillingData.ExchangeRate;
 		ARAccount = FillingData.ARAccount;
-		Location = FillingData.Location;
+		Location = FillingData.LocationActual;
 		//VATTotal = FillingData.VATTotal;
 		ARAccount = FillingData.ARAccount;
 		//PriceIncludesVAT = FillingData.PriceIncludesVAT;
+		LineSubtotalRC = FillingData.LineSubtotal;
 		
 		For Each CurRowLineItems In FillingData.LineItems Do
 			NewRow = LineItems.Add();

@@ -22,7 +22,36 @@ Procedure Posting(Cancel, Mode)
 	
 	//AllowNegativeInventory = Constants.AllowNegativeInventory.Get();
 	
+	RegisterRecords.CashFlowData.Write = True;
+	
 	For Each CurRowLineItems In LineItems Do
+		
+		// writing CashFlowData
+
+		Record = RegisterRecords.CashFlowData.Add();
+		Record.RecordType = AccumulationRecordType.Expense;
+		Record.Period = Date;
+		Record.Company = Company;
+		Record.Document = Ref;
+		Record.Account = CurRowLineItems.Product.IncomeAccount;
+		//Record.Account = CurRowLineItems.Product.InventoryOrExpenseAccount;
+		//Record.CashFlowSection = CurRowLineItems.Product.InventoryOrExpenseAccount.CashFlowSection;
+		Record.AmountRC = CurRowLineItems.LineTotal * ExchangeRate;
+		//Record.PaymentMethod = PaymentMethod;
+		
+		Record = RegisterRecords.CashFlowData.Add();
+		Record.RecordType = AccumulationRecordType.Receipt;
+		Record.Period = Date;
+		Record.Company = Company;
+		Record.Document = Ref;
+		Record.Account = CurRowLineItems.Product.IncomeAccount;
+		//Record.Account = CurRowLineItems.Product.InventoryOrExpenseAccount;
+		//Record.CashFlowSection = CurRowLineItems.Product.InventoryOrExpenseAccount.CashFlowSection;
+		Record.AmountRC = CurRowLineItems.LineTotal * ExchangeRate;
+		//Record.PaymentMethod = PaymentMethod;
+
+		// end writing CashFlowData
+
 				
 		If CurRowLineItems.Product.Type = Enums.InventoryTypes.Inventory Then
 						
@@ -124,7 +153,7 @@ Procedure Posting(Cancel, Mode)
 				                  |	LayerDate " + Sorting + "");
 				Query.SetParameter("Product", CurRowLineItems.Product);
 				Query.SetParameter("Location", Location);
-				Selection = Query.Execute().Choose();
+				Selection = Query.Execute().Select();
 				
 				While Selection.Next() Do
 					If ItemQty > 0 Then
@@ -310,13 +339,11 @@ Procedure Posting(Cancel, Mode)
 	
 	RegisterRecords.ProjectData.Write = True;	
 	For Each CurRowLineItems In LineItems Do
-		If NOT CurRowLineItems.Project.IsEmpty() Then
-			Record = RegisterRecords.ProjectData.Add();
-			Record.RecordType = AccumulationRecordType.Receipt;
-			Record.Period = Date;
-			Record.Project = CurRowLineItems.Project;
-			Record.Amount = CurRowLineItems.LineTotal;
-		Endif;
+		Record = RegisterRecords.ProjectData.Add();
+		Record.RecordType = AccumulationRecordType.Receipt;
+		Record.Period = Date;
+		Record.Project = CurRowLineItems.Project;
+		Record.Amount = CurRowLineItems.LineTotal;
 	EndDo;
 	
 EndProcedure
@@ -405,7 +432,11 @@ Procedure BeforeDelete(Cancel)
 		LongActions.ExecuteInBackground("GeneralFunctions.SendWebhook", WebhookParams);	
 	
 	EndIf;
-
+	
+	TRRecordset = InformationRegisters.TransactionReconciliation.CreateRecordSet();
+	TRRecordset.Filter.Document.Set(ThisObject.Ref);
+	TRRecordset.Write(True);
+	
 EndProcedure
 
 Procedure Filling(FillingData, StandardProcessing)

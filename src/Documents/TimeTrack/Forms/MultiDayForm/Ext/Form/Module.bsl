@@ -45,6 +45,7 @@ Procedure CreateEntriesAtServer()
 		NewTimeEntry.User = Object.User;
 		NewTimeEntry.Company = Object.Company;
 		NewTimeEntry.Project = Object.Project;
+		NewTimeEntry.Class = Object.Class;
 		NewTimeEntry.Task = Object.Task;
 		NewTimeEntry.Price = Object.Price;
 		NewTimeEntry.Billable = Object.Billable;

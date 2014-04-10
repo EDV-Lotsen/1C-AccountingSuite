@@ -4,8 +4,14 @@
 //
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
+	//If Constants.SalesTaxCharging.Get() = False Then
+		Items.Taxable.Visible = False;
+	//	Taxable = False;
+	//EndIf;
+	
 	If Object.Ref <> Catalogs.Products.EmptyRef() Then
 		  Items.Type.ReadOnly = True;
+		  Items.CostingMethod.ReadOnly = True;
 	EndIf;
 	
 	If GeneralFunctionsReusable.DisplayAPICodesSetting() = False Then
@@ -198,7 +204,13 @@ EndProcedure
 
 &AtServer
 Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
-		
+	
+	 If Object.Ref <> Catalogs.Products.EmptyRef() Then
+		  Items.Type.ReadOnly = True;
+		  Items.CostingMethod.ReadOnly = True;
+	EndIf;
+
+	
 	If  (Object.Type = Enums.InventoryTypes.Inventory) Then
 		// Fill item cost values
 		FillLastAverageAccountingCost();
@@ -214,7 +226,7 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 	ChildItems.Indicators.ChildItems.Right.ChildItems.QtyOnHand.Visible = IsInventoryType;
 	ChildItems.Indicators.ChildItems.Right.ChildItems.QtyAvailableToPromise.Visible = IsInventoryType;
 	
-	AddPriceList();
+	//AddPriceList();
 	
 	companies_webhook = Constants.items_webhook.Get();
 	
@@ -285,7 +297,7 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 		WebhookMap.Insert("item_code",Object.Ref.Code);
 		WebhookMap.Insert("item_description",Object.Ref.Description);
 		
-		Selection = QueryResult.Choose();
+		Selection = QueryResult.Select();
 		While Selection.Next() Do
 			
 			WebhookParams = New Array();
@@ -399,7 +411,7 @@ Procedure FillLastAverageAccountingCost()
 		Query.SetParameter("Ref", Object.Ref);
 		
 		// Execute query and read costs
-		Selection = Query.Execute().Choose();
+		Selection = Query.Execute().Select();
 		// Last cost
 		If Selection.Next() Then LastCost = Selection.Cost;	Else LastCost = 0; EndIf;
 		// Average cost
@@ -542,7 +554,7 @@ Procedure FillItemQuantity_OnPO_OnSO_OnHand_AvailableToPromise()
 		QueryResult = Query.ExecuteBatch();
 		
 		// Fill form attributes with query result
-		Selection   = QueryResult[QueryTables].Choose();
+		Selection   = QueryResult[QueryTables].Select();
 		If Selection.Next() Then
 			FillPropertyValues(ThisForm, Selection, "QtyOnPO, QtyOnSO, QtyOnHand, QtyAvailableToPromise");
 		EndIf;
@@ -575,6 +587,8 @@ Procedure TypeOnChange(Item)
 		//Items.InventoryAcctLabel.Title = AccountDescription;
 		Items.CostingMethod.ReadOnly = False;
 		
+		TypeOnChangeAtServer();
+		
 	EndIf;
 	
 	If (NOT GeneralFunctions.InventoryType(NewItemType)) AND Object.Ref.IsEmpty() Then
@@ -589,6 +603,10 @@ Procedure TypeOnChange(Item)
 		Object.InventoryOrExpenseAccount = Acct;
 		//Items.InventoryAcctLabel.Title = AccountDescription;
 		Object.COGSAccount = GeneralFunctions.GetEmptyAcct();
+		
+		//service taxable defaults to false
+		//Object.Taxable = False;
+		
 	EndIf;
 
 
@@ -613,6 +631,15 @@ Procedure TypeOnChange(Item)
 EndProcedure
 
 &AtServer
+Procedure TypeOnChangeAtServer()
+	
+	//If Constants.SalesTaxMarkNewProductsTaxable.Get() = True Then
+	//	Object.Taxable = True;
+	//EndIf;
+	
+EndProcedure
+
+&AtServer
 Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 	
 	// Doesn't allow to save an inventory product type without a set costing type
@@ -622,7 +649,7 @@ Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 		If Object.CostingMethod.IsEmpty() Then
 			Message = New UserMessage();
 			Message.Text=NStr("en='Costing method field is empty'");
-			Message.Field = "Object.CostingMethod";
+			//Message.Field = "Object.CostingMethod";
 			Message.Message();
 			Cancel = True;
 			Return;
@@ -632,7 +659,7 @@ Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 			
 			Message = New UserMessage();
 			Message.Text=NStr("en='COGS account is empty'");
-			Message.Field = "Object.COGSAccount";
+			//Message.Field = "Object.COGSAccount";
 			Message.Message();
 			Cancel = True;
 			Return;
@@ -643,7 +670,7 @@ Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 			
 			Message = New UserMessage();
 			Message.Text=NStr("en='Inventory account is empty'");
-			Message.Field = "Object.InventoryOrExpenseAccount";
+			//Message.Field = "Object.InventoryOrExpenseAccount";
 			Message.Message();
 			Cancel = True;
 			Return;

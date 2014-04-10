@@ -19,6 +19,14 @@
 		<InputField name="Customer" id="7">
 			<DataPath>Object.Customer</DataPath>
 			<OpenButton>false</OpenButton>
+			<ChoiceParameters>
+				<app:item name="Filter.Customer">
+					<app:value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation/>
+						<Value xsi:type="xs:boolean">true</Value>
+					</app:value>
+				</app:item>
+			</ChoiceParameters>
 			<ContextMenu name="CustomerContextMenu" id="8"/>
 			<ExtendedTooltip name="CustomerExtendedTooltip" id="9"/>
 		</InputField>

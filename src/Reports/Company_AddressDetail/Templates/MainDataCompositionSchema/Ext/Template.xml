@@ -241,10 +241,6 @@
 			<field>OwnerSalesPerson</field>
 		</field>
 		<field xsi:type="DataSetFieldField">
-			<dataPath>OwnerSalesTaxCode</dataPath>
-			<field>OwnerSalesTaxCode</field>
-		</field>
-		<field xsi:type="DataSetFieldField">
 			<dataPath>OwnerStripeID</dataPath>
 			<field>OwnerStripeID</field>
 		</field>
@@ -301,10 +297,6 @@
 			<field>SalesPerson</field>
 		</field>
 		<field xsi:type="DataSetFieldField">
-			<dataPath>SalesTaxCode</dataPath>
-			<field>SalesTaxCode</field>
-		</field>
-		<field xsi:type="DataSetFieldField">
 			<dataPath>Salutation</dataPath>
 			<field>Salutation</field>
 		</field>
@@ -345,7 +337,6 @@
 	Addresses.DefaultBilling,
 	Addresses.DefaultShipping,
 	Addresses.RemitTo,
-	Addresses.SalesTaxCode,
 	Addresses.Notes,
 	Addresses.Salutation,
 	Addresses.Suffix,
@@ -365,7 +356,6 @@
 	Addresses.Owner.Code,
 	Addresses.Owner.Description,
 	Addresses.Owner.USTaxID,
-	Addresses.Owner.SalesTaxCode,
 	Addresses.Owner.DefaultCurrency,
 	Addresses.Owner.Vendor1099,
 	Addresses.Owner.Customer,
@@ -627,9 +617,6 @@ FROM
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>SalesPerson</dcsset:field>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>SalesTaxCode</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Salutation</dcsset:field>

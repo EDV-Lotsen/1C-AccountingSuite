@@ -140,7 +140,7 @@ Function GetBankAccountByItemID(newItemID)
 	If Result.IsEmpty() Then
 		return Catalogs.BankAccounts.EmptyRef();
 	Else
-		Sel = Result.Choose();
+		Sel = Result.Select();
 		Sel.Next();
 		return Sel.Ref;
 	EndIf;
@@ -262,7 +262,7 @@ Function RemoveAccountAtServer(ItemID)
 		                         |WHERE
 		                         |	BankAccounts.ItemID = &ItemID");
 		AccRequest.SetParameter("ItemID", ItemID);
-		AccSelection = AccRequest.Execute().Choose();
+		AccSelection = AccRequest.Execute().Select();
 		While AccSelection.Next() Do
 			Try
 				AccObject = AccSelection.Ref.GetObject();
@@ -314,7 +314,7 @@ Function GetAccountsForAssigning(CurrentBankAccount)
 	                    |			OR BankAccounts.Ref = &CurrentBankAccount)");
 	Request.SetParameter("ItemID", ItemID);
 	Request.SetParameter("CurrentBankAccount", CurrentBankAccount);
-	Sel = Request.Execute().Choose();
+	Sel = Request.Execute().Select();
 	AvailableList = New Array();
 	While Sel.Next() Do
 		AvailableList.Add(New Structure("BankAccount, BankAccountDescription, Type, CurrentBalance, AccountType, Connect"));
@@ -345,7 +345,7 @@ Function GetAvailableListOfAccounts(CurrentAccountType = Undefined, CurrentBankA
 	RequestRes = Request.Execute();
 	AvailableList = New ValueList();
 	If Not RequestRes.IsEmpty() Then
-		Sel = RequestRes.Choose();
+		Sel = RequestRes.Select();
 		While Sel.Next() Do
 			AvailableList.Add(Sel.Ref, String(Sel.AccountType) + " (" + String(Sel.Code) + "-" + Sel.Description + ")");
 		EndDo;

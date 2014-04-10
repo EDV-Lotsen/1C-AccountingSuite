@@ -8,7 +8,6 @@
 		<ChildItems>
 			<Button name="FormChargeWithStripe" id="95">
 				<Type>CommandBarButton</Type>
-				<Visible>false</Visible>
 				<CommandName>Form.Command.ChargeWithStripe</CommandName>
 				<ExtendedTooltip name="FormChargeWithStripeExtendedTooltip" id="98"/>
 			</Button>
@@ -87,6 +86,7 @@
 											<v8:content>Left column</v8:content>
 										</v8:item>
 									</ToolTip>
+									<VerticalStretch>true</VerticalStretch>
 									<Group>Vertical</Group>
 									<Representation>None</Representation>
 									<ShowTitle>false</ShowTitle>
@@ -116,7 +116,7 @@
 												</v8:item>
 											</Title>
 											<EditMode>EnterOnInput</EditMode>
-											<RadioButtonType>Tumbler</RadioButtonType>
+											<RadioButtonType>RadioButtons</RadioButtonType>
 											<ChoiceList>
 												<xr:Item>
 													<xr:Presentation/>
@@ -142,7 +142,7 @@
 														<Presentation>
 															<v8:item>
 																<v8:lang>en</v8:lang>
-																<v8:content>Bank acc.</v8:content>
+																<v8:content>Bank Acct.</v8:content>
 															</v8:item>
 															<v8:item>
 																<v8:lang>de</v8:lang>
@@ -198,6 +198,12 @@
 										</InputField>
 										<InputField name="BankAccount" id="59">
 											<DataPath>Object.BankAccount</DataPath>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Account</v8:content>
+												</v8:item>
+											</Title>
 											<Width>15</Width>
 											<HorizontalStretch>false</HorizontalStretch>
 											<ContextMenu name="BankAccountContextMenu" id="60"/>
@@ -325,6 +331,7 @@
 										</CheckBoxField>
 										<InputField name="Number" id="1">
 											<DataPath>Object.Number</DataPath>
+											<Visible>false</Visible>
 											<EditMode>EnterOnInput</EditMode>
 											<Width>15</Width>
 											<HorizontalStretch>false</HorizontalStretch>
@@ -334,7 +341,6 @@
 									</ChildItems>
 								</UsualGroup>
 								<UsualGroup name="Group1" id="169">
-									<Visible>false</Visible>
 									<Group>Vertical</Group>
 									<ShowTitle>false</ShowTitle>
 									<ExtendedTooltip name="Group1ExtendedTooltip" id="170"/>
@@ -358,7 +364,6 @@
 									</ChildItems>
 								</UsualGroup>
 								<UsualGroup name="Group5" id="171">
-									<Visible>false</Visible>
 									<Group>Vertical</Group>
 									<ShowTitle>false</ShowTitle>
 									<ExtendedTooltip name="Group5ExtendedTooltip" id="172"/>
@@ -382,7 +387,6 @@
 									</ChildItems>
 								</UsualGroup>
 								<UsualGroup name="Group6" id="179">
-									<Visible>false</Visible>
 									<Group>Vertical</Group>
 									<ShowTitle>false</ShowTitle>
 									<ExtendedTooltip name="Group6ExtendedTooltip" id="180"/>
@@ -730,7 +734,7 @@
 							<Title>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Credit memos</v8:content>
+									<v8:content>Credits</v8:content>
 								</v8:item>
 								<v8:item>
 									<v8:lang>de</v8:lang>

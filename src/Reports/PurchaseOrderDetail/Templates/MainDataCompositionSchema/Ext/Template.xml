@@ -63,14 +63,6 @@
 			<field>DocumentTotalRC</field>
 		</field>
 		<field xsi:type="DataSetFieldField">
-			<dataPath>DropshipAddress</dataPath>
-			<field>DropshipAddress</field>
-		</field>
-		<field xsi:type="DataSetFieldField">
-			<dataPath>DropshipCustomer</dataPath>
-			<field>DropshipCustomer</field>
-		</field>
-		<field xsi:type="DataSetFieldField">
 			<dataPath>ExchangeRate</dataPath>
 			<field>ExchangeRate</field>
 		</field>
@@ -143,10 +135,6 @@
 			</title>
 		</field>
 		<field xsi:type="DataSetFieldField">
-			<dataPath>PurchaseAddress</dataPath>
-			<field>PurchaseAddress</field>
-		</field>
-		<field xsi:type="DataSetFieldField">
 			<dataPath>Quantity</dataPath>
 			<field>Quantity</field>
 		</field>
@@ -167,6 +155,22 @@
 		<field xsi:type="DataSetFieldField">
 			<dataPath>UM</dataPath>
 			<field>UM</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>CompanyAddress</dataPath>
+			<field>CompanyAddress</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>DropshipBillTo</dataPath>
+			<field>DropshipBillTo</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>DropshipCompany</dataPath>
+			<field>DropshipCompany</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>DropshipShipTo</dataPath>
+			<field>DropshipShipTo</field>
 		</field>
 		<dataSource>DataSource1</dataSource>
 		<query>SELECT
@@ -199,9 +203,10 @@
 	PurchaseOrderLineItems.Ref.ManualAdjustment,
 	PurchaseOrderLineItems.Ref.DocumentTotal,
 	PurchaseOrderLineItems.Ref.DocumentTotalRC,
-	PurchaseOrderLineItems.Ref.DropshipCustomer,
-	PurchaseOrderLineItems.Ref.DropshipAddress,
-	PurchaseOrderLineItems.Ref.PurchaseAddress,
+	PurchaseOrderLineItems.Ref.DropshipCompany,
+	PurchaseOrderLineItems.Ref.DropshipShipTo,
+	PurchaseOrderLineItems.Ref.DropshipBillTo,
+	PurchaseOrderLineItems.Ref.CompanyAddress,
 	PurchaseOrderLineItems.Ref.Presentation,
 	PurchaseOrderLineItems.Ref.PointInTime
 FROM
@@ -261,15 +266,26 @@ FROM
 					<dcsset:field>Ref</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>DropshipBillTo</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>DropshipCompany</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:use>false</dcsset:use>
 					<dcsset:field>DropshipAddress</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Company</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>CompanyAddress</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Currency</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:use>false</dcsset:use>
 					<dcsset:field>DropshipCustomer</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
@@ -300,6 +316,10 @@ FROM
 					<dcsset:field>Posted</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>DropshipShipTo</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:use>false</dcsset:use>
 					<dcsset:field>PurchaseAddress</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">

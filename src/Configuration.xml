@@ -51,7 +51,7 @@
 				<xr:Item xsi:type="xr:MDObjectRef">Role.FullAccess</xr:Item>
 			</DefaultRoles>
 			<Vendor>1C Company</Vendor>
-			<Version>1.1.35.03</Version>
+			<Version>1.1.36.01</Version>
 			<UpdateCatalogAddress/>
 			<IncludeHelpInContents>false</IncludeHelpInContents>
 			<UseManagedFormInOrdinaryApplication>true</UseManagedFormInOrdinaryApplication>
@@ -173,6 +173,8 @@
 			<Subsystem>StandardSubsystems</Subsystem>
 			<Subsystem>ProjectAndTime</Subsystem>
 			<Subsystem>Yodlee</Subsystem>
+			<Subsystem>SalesTax</Subsystem>
+			<Subsystem>Reports</Subsystem>
 			<StyleItem>ColorDisabledLabel</StyleItem>
 			<StyleItem>ColorGroupLabel</StyleItem>
 			<StyleItem>ColorInformationLabel</StyleItem>
@@ -235,20 +237,21 @@
 			<CommonModule>ApiStripeSettingsOverridable</CommonModule>
 			<CommonModule>CommonUse</CommonModule>
 			<CommonModule>CommonUseClientServer</CommonModule>
+			<CommonModule>CommonUseServerCall</CommonModule>
 			<CommonModule>DataCompositionSchemeEvaluationExtention</CommonModule>
 			<CommonModule>DocumentPosting</CommonModule>
 			<CommonModule>DocumentFilling</CommonModule>
-			<CommonModule>DocumentNumbering</CommonModule>
 			<CommonModule>DocumentPrinting</CommonModule>
 			<CommonModule>GeneralFunctions</CommonModule>
 			<CommonModule>GeneralFunctionsReusable</CommonModule>
-			<CommonModule>CommonUseServerCall</CommonModule>
 			<CommonModule>InternetConnectionClientServer</CommonModule>
 			<CommonModule>LongActions</CommonModule>
 			<CommonModule>LongActionsClient</CommonModule>
 			<CommonModule>LongActionsClientReusable</CommonModule>
+			<CommonModule>PeriodClosingServerCall</CommonModule>
 			<CommonModule>PrintTemplates</CommonModule>
 			<CommonModule>RrecurringDocuments</CommonModule>
+			<CommonModule>ReconciledDocumentsServerCall</CommonModule>
 			<CommonModule>US_FL</CommonModule>
 			<CommonModule>FTSE</CommonModule>
 			<CommonModule>StringFunctionsClientServer</CommonModule>
@@ -292,7 +295,6 @@
 			<WebService>salesordersdeletecode</WebService>
 			<WebService>salesordersgetcode</WebService>
 			<WebService>purchaseorderspost</WebService>
-			<EventSubscription>DocumentSetNewNumber</EventSubscription>
 			<EventSubscription>ObjectDelete</EventSubscription>
 			<EventSubscription>ClosedPeriodDeletionProtection</EventSubscription>
 			<EventSubscription>ClosedPeriodBeforeWrite</EventSubscription>
@@ -313,6 +315,11 @@
 			<DefinedType>RecurringDocuments</DefinedType>
 			<CommandGroup>Reports</CommandGroup>
 			<CommandGroup>Print</CommandGroup>
+			<CommandGroup>Sales</CommandGroup>
+			<CommandGroup>ProjectTime</CommandGroup>
+			<CommandGroup>Purchases</CommandGroup>
+			<CommandGroup>Inventory</CommandGroup>
+			<CommandGroup>Accounting</CommandGroup>
 			<Constant>access_token</Constant>
 			<Constant>AddressLine1</Constant>
 			<Constant>AddressLine2</Constant>
@@ -458,6 +465,25 @@
 			<Constant>SIShowFax</Constant>
 			<Constant>SIShowWebsite</Constant>
 			<Constant>SIShowPhone2</Constant>
+			<Constant>POShowEmail</Constant>
+			<Constant>POShowFax</Constant>
+			<Constant>POShowWebsite</Constant>
+			<Constant>POShowPhone2</Constant>
+			<Constant>POShowFedTax</Constant>
+			<Constant>POFoot1Type</Constant>
+			<Constant>POFoot2Type</Constant>
+			<Constant>POFoot3Type</Constant>
+			<Constant>POFooterTextLeft</Constant>
+			<Constant>POFooterTextCenter</Constant>
+			<Constant>POFooterTextRight</Constant>
+			<Constant>PONotes</Constant>
+			<Constant>SIShowFullName</Constant>
+			<Constant>SalesTaxCharging</Constant>
+			<Constant>SalesTaxDefault</Constant>
+			<Constant>SalesTaxMarkNewCustomersTaxable</Constant>
+			<Constant>SalesTaxMarkNewProductsTaxable</Constant>
+			<Constant>invoice_webhook_email</Constant>
+			<Constant>items_webhook_email</Constant>
 			<CommonForm>GeneralSettings</CommonForm>
 			<CommonForm>LongAction</CommonForm>
 			<CommonForm>NavigationFull</CommonForm>
@@ -485,7 +511,6 @@
 			<Catalog>ProductCategories</Catalog>
 			<Catalog>Products</Catalog>
 			<Catalog>Projects</Catalog>
-			<Catalog>SalesTaxCodes</Catalog>
 			<Catalog>States</Catalog>
 			<Catalog>UM</Catalog>
 			<Catalog>UserList</Catalog>
@@ -495,6 +520,9 @@
 			<Catalog>BankTransactionCategories</Catalog>
 			<Catalog>SalesPeople</Catalog>
 			<Catalog>ShippingCarriers</Catalog>
+			<Catalog>SalesTaxAgencies</Catalog>
+			<Catalog>SalesTaxRates</Catalog>
+			<Catalog>DocumentNumbering</Catalog>
 			<Document>BankReconciliation</Document>
 			<Document>BankTransfer</Document>
 			<Document>CashReceipt</Document>
@@ -514,6 +542,7 @@
 			<Document>TimeTrack</Document>
 			<Document>WarehouseTransfer</Document>
 			<Document>Budget</Document>
+			<Document>SalesTaxPayment</Document>
 			<DocumentJournal>DocumentJournal1</DocumentJournal>
 			<Enum>AccountTypes</Enum>
 			<Enum>BegBalTypes</Enum>
@@ -530,9 +559,10 @@
 			<Enum>FederalIDType</Enum>
 			<Enum>YodleeContainerTypes</Enum>
 			<Enum>TextOrImage</Enum>
+			<Enum>AccountingMethod</Enum>
 			<Report>APAging</Report>
 			<Report>ARAging</Report>
-			<Report>BalanceSheet</Report>
+			<Report>BalanceSheet_old</Report>
 			<Report>BankBalances</Report>
 			<Report>CashFlowDirect</Report>
 			<Report>CheckRegister</Report>
@@ -552,7 +582,6 @@
 			<Report>Vendors1099</Report>
 			<Report>BankReconDetail</Report>
 			<Report>BankTransferDetail</Report>
-			<Report>BillDetail</Report>
 			<Report>BillPaymentDetail</Report>
 			<Report>BudgetDetail</Report>
 			<Report>CashReceiptDetail</Report>
@@ -564,23 +593,27 @@
 			<Report>GeneralJournalDetail</Report>
 			<Report>ItemAdjustmentDetail</Report>
 			<Report>ItemsDetail</Report>
-			<Report>PaymentDetail</Report>
 			<Report>PriceMatrixDetail</Report>
 			<Report>Project_JobsDetail</Report>
-			<Report>PurchaseOrderDetail</Report>
 			<Report>PurchaseReturnsDetail</Report>
 			<Report>SalesInvoiceDetail2</Report>
 			<Report>SalesOrderDetail</Report>
 			<Report>TimeTrackingDetail</Report>
 			<Report>WarehouseTransferDetail</Report>
+			<Report>BillDetail</Report>
+			<Report>PaymentDetail</Report>
+			<Report>PurchaseOrderDetail</Report>
+			<Report>IncomeStatementCashBasis</Report>
+			<Report>BalanceSheet</Report>
 			<DataProcessor>PeriodClosing</DataProcessor>
 			<DataProcessor>DeleteMarkedObjects</DataProcessor>
 			<DataProcessor>DataImport</DataProcessor>
 			<DataProcessor>DownloadedTransactions</DataProcessor>
 			<DataProcessor>YodleeBankAccountsManagement</DataProcessor>
-			<DataProcessor>Testing</DataProcessor>
 			<DataProcessor>_UnitTestRunner</DataProcessor>
 			<DataProcessor>ActiveUserList</DataProcessor>
+			<DataProcessor>DataExport_bad</DataProcessor>
+			<DataProcessor>DataExport</DataProcessor>
 			<InformationRegister>BankTransactions</InformationRegister>
 			<InformationRegister>CustomPrintForms</InformationRegister>
 			<InformationRegister>ExchangeRates</InformationRegister>
@@ -595,12 +628,15 @@
 			<InformationRegister>DisconnectedBankAccounts</InformationRegister>
 			<InformationRegister>BankTransactionCategorization</InformationRegister>
 			<InformationRegister>AuditLog</InformationRegister>
+			<InformationRegister>SalesTaxOwedDetails</InformationRegister>
 			<AccumulationRegister>InventoryJrnl</AccumulationRegister>
 			<AccumulationRegister>OrdersDispatched</AccumulationRegister>
 			<AccumulationRegister>OrdersRegistered</AccumulationRegister>
 			<AccumulationRegister>ProjectData</AccumulationRegister>
 			<AccumulationRegister>OrderTransactions</AccumulationRegister>
 			<AccumulationRegister>CashFlowData</AccumulationRegister>
+			<AccumulationRegister>ClassData</AccumulationRegister>
+			<AccumulationRegister>SalesTaxOwed</AccumulationRegister>
 			<ChartOfCharacteristicTypes>Dimensions</ChartOfCharacteristicTypes>
 			<ChartOfAccounts>ChartOfAccounts</ChartOfAccounts>
 			<AccountingRegister>GeneralJournal</AccountingRegister>

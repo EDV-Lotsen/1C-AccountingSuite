@@ -25,7 +25,7 @@ Procedure FillDocumentList(Company)
 				 
 	Query.SetParameter("Company", Company);
 	
-	Result = Query.Execute().Choose();
+	Result = Query.Execute().Select();
 	
 	While Result.Next() Do
 		// Skip credit memos. Due to high load on subdimensions in query and small quantity of returns - do this in loop
@@ -83,8 +83,8 @@ EndProcedure
 Procedure BeforeWrite(Cancel, WriteParameters)
 	
 	//Closing period
-	If DocumentPosting.DocumentPeriodIsClosed(Object.Ref, Object.Date) Then
-		Cancel = Not DocumentPosting.DocumentWritePermitted(WriteParameters);
+	If PeriodClosingServerCall.DocumentPeriodIsClosed(Object.Ref, Object.Date) Then
+		Cancel = Not PeriodClosingServerCall.DocumentWritePermitted(WriteParameters);
 		If Cancel Then
 			If WriteParameters.Property("PeriodClosingPassword") And WriteParameters.Property("Password") Then
 				If WriteParameters.Password = TRUE Then //Writing the document requires a password
@@ -100,7 +100,7 @@ Procedure BeforeWrite(Cancel, WriteParameters)
 	EndIf;
 	
 	// preventing posting if already included in a bank rec
-	If DocumentPosting.RequiresExcludingFromBankReconciliation(Object.Ref, -1*Object.DocumentTotalRC, Object.Date, Object.BankAccount, WriteParameters.WriteMode) Then
+	If ReconciledDocumentsServerCall.RequiresExcludingFromBankReconciliation(Object.Ref, -1*Object.DocumentTotalRC, Object.Date, Object.BankAccount, WriteParameters.WriteMode) Then
 		Cancel = True;
 		CommonUseClient.ShowCustomMessageBox(ThisForm, "Bank reconciliation", "The transaction you are editing has been reconciled. Saving 
 		|your changes could put you out of balance the next time you try to reconcile. 
@@ -209,31 +209,46 @@ EndProcedure
 Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
 	
 	//Period closing
-	If DocumentPosting.DocumentPeriodIsClosed(CurrentObject.Ref, CurrentObject.Date) Then
-		PermitWrite = DocumentPosting.DocumentWritePermitted(WriteParameters);
+	If PeriodClosingServerCall.DocumentPeriodIsClosed(CurrentObject.Ref, CurrentObject.Date) Then
+		PermitWrite = PeriodClosingServerCall.DocumentWritePermitted(WriteParameters);
 		CurrentObject.AdditionalProperties.Insert("PermitWrite", PermitWrite);	
 	EndIf;
 	
-	If Object.PaymentMethod = Catalogs.PaymentMethods.Check Then
+	If WriteParameters.WriteMode = DocumentWriteMode.Posting Then
 		
-		If CurrentObject.Ref.IsEmpty() Then
-		
-			LastNumber = GeneralFunctions.LastCheckNumber(Object.BankAccount);
+		If Object.PaymentMethod = Catalogs.PaymentMethods.Check Then
 			
-			LastNumberString = "";
-			If LastNumber < 10000 Then
-				LastNumberString = Left(String(LastNumber+1),1) + Right(String(LastNumber+1),3)
+			If ExistCheck(Object.Number) = False Then
+		
+				If CurrentObject.Ref.IsEmpty() Or CurrentObject.Number = "DRAFT" Then
+				
+					LastNumber = GeneralFunctions.LastCheckNumber(Object.BankAccount);
+					
+					LastNumberString = "";
+					If LastNumber < 10000 Then
+						LastNumberString = Left(String(LastNumber+1),1) + Right(String(LastNumber+1),3)
+					Else
+						LastNumberString = Left(String(LastNumber+1),2) + Right(String(LastNumber+1),3)
+					EndIf;
+					
+					CurrentObject.Number = LastNumberString;
+					CurrentObject.PhysicalCheckNum = LastNumber + 1;
+					
+				Else
+					Try
+						CurrentObject.PhysicalCheckNum = Number(CurrentObject.Number);
+					Except
+					EndTry;
+
+					//CurrentObject.PhysicalCheckNum = Number(CurrentObject.Number);		
+				EndIf;
 			Else
-				LastNumberString = Left(String(LastNumber+1),2) + Right(String(LastNumber+1),3)
+				Message("Check number already exists for this bank account");
+				Cancel = True;
 			EndIf;
-			
-			CurrentObject.Number = LastNumberString;
-			CurrentObject.PhysicalCheckNum = LastNumber + 1;
-			
-		Else
-			CurrentObject.PhysicalCheckNum = Number(CurrentObject.Number);		
-		EndIf;
-	Endif;
+
+		Endif;
+	EndIf;
 	
 
 EndProcedure
@@ -242,16 +257,17 @@ EndProcedure
 Procedure PaymentMethodOnChange(Item)
 	
 	If Object.PaymentMethod = CheckPaymentMethod() Then
-		
+				
 		If Object.Number = ""  AND Object.Ref.IsEmpty() = False Then
 			Object.Number = StrReplace(Generalfunctions.LastCheckNumber(object.BankAccount),",","");
-		Else
+		Elsif Object.Number = "" And Object.Ref.IsEmpty() OR Object.Number = "DRAFT" Then
 			Object.Number = StrReplace(Generalfunctions.LastCheckNumber(object.BankAccount) + 1,",","");
+		Else
 		EndIf;
 
 	Else
-		Object.Number = "";
-		Items.Number.ReadOnly = False;
+		//Object.Number = "";
+		//Items.Number.ReadOnly = False;
 	EndIf;
 
 EndProcedure
@@ -271,7 +287,7 @@ Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 		Cancel = True;
 		Message = New UserMessage();
 		Message.Text=NStr("en='Select a payment method'");
-		Message.Field = "Object.PaymentMethod";
+		//Message.Field = "Object.PaymentMethod";
 		Message.Message();
 	EndIf;	
 	
@@ -282,7 +298,7 @@ Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 			Cancel = True;
 			Message = New UserMessage();
 			Message.Text=NStr("en='Enter a check number from 0 to 9999 (99999)'");
-			Message.Field = "Object.Number";
+			//Message.Field = "Object.Number";
 			Message.Message();
 		EndIf;
 	Except
@@ -291,7 +307,7 @@ Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 				Cancel = True;
 				Message = New UserMessage();
 				Message.Text=NStr("en='Enter a check number from 0 to 9999 (99999)'");
-				Message.Field = "Object.Number";
+				//Message.Field = "Object.Number";
 				Message.Message();
 			EndIF;
 	EndTry;
@@ -556,4 +572,50 @@ Function coinbase_api_key()
 	
 EndFunction
 
+Function ExistCheck(Num)
+	
+	Try
+	    CheckNum = Number(Object.Number);
+		Query = New Query("SELECT
+		                  |	Check.PhysicalCheckNum AS Number,
+		                  |	Check.Ref
+		                  |FROM
+		                  |	Document.Check AS Check
+		                  |WHERE
+		                  |	Check.BankAccount = &BankAccount
+		                  |	AND Check.PaymentMethod = VALUE(Catalog.PaymentMethods.Check)
+		                  |	AND Check.PhysicalCheckNum = &CheckNum
+		                  |
+		                  |UNION ALL
+		                  |
+		                  |SELECT
+		                  |	InvoicePayment.PhysicalCheckNum,
+		                  |	InvoicePayment.Ref
+		                  |FROM
+		                  |	Document.InvoicePayment AS InvoicePayment
+		                  |WHERE
+		                  |	InvoicePayment.BankAccount = &BankAccount
+		                  |	AND InvoicePayment.PaymentMethod = VALUE(Catalog.PaymentMethods.Check)
+		                  |	AND InvoicePayment.PhysicalCheckNum = &CheckNum
+		                  |
+		                  |ORDER BY
+		                  |	Number DESC");
+		Query.SetParameter("BankAccount", Object.BankAccount);
+		Query.SetParameter("CheckNum", CheckNum);
+		//Query.SetParameter("Number", Object.Number);
+		QueryResult = Query.Execute().Unload();
+		If QueryResult.Count() = 0 Then
+			Return False;
+		ElsIf QueryResult.Count() = 1 And QueryResult[0].Ref = Object.Ref Then
+			Return False;
+		Else	
+
+			Return True;
+		EndIf;
+	Except
+		Return False
+	EndTry;
+		
+	
+EndFunction
 

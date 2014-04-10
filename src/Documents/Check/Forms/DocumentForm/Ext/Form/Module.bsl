@@ -4,8 +4,8 @@ Procedure BankAccountOnChange(Item)
 	
 	// test
 	
-	Items.BankAccountLabel.Title =
-		CommonUse.GetAttributeValue(Object.BankAccount, "Description");
+	//Items.BankAccountLabel.Title =
+	//	CommonUse.GetAttributeValue(Object.BankAccount, "Description");
 
 	//Object.Number = GeneralFunctions.NextCheckNumber(Object.BankAccount);	
 	
@@ -47,8 +47,8 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	//	Object.Number = GeneralFunctions.NextCheckNumber(Object.BankAccount);
 	//EndIf;
 	
-	Items.BankAccountLabel.Title =
-		CommonUse.GetAttributeValue(Object.BankAccount, "Description");
+	//Items.BankAccountLabel.Title =
+	//	CommonUse.GetAttributeValue(Object.BankAccount, "Description");
 		
 	//AccountCurrency = CommonUse.GetAttributeValue(Object.BankAccount, "Currency");
 	//Items.ExchangeRate.Title = GeneralFunctionsReusable.DefaultCurrencySymbol() + "/1" + CommonUse.GetAttributeValue(AccountCurrency, "Symbol");
@@ -85,7 +85,7 @@ Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 		Cancel = True;
 		Message = New UserMessage();
 		Message.Text=NStr("en='Select a payment method'");
-		Message.Field = "Object.PaymentMethod";
+		//Message.Field = "Object.PaymentMethod";
 		Message.Message();
 	EndIf;		
 	
@@ -96,7 +96,7 @@ Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 			Cancel = True;
 			Message = New UserMessage();
 			Message.Text=NStr("en='Enter a check number from 0 to 9999 (99999)'");
-			Message.Field = "Object.Number";
+			//Message.Field = "Object.Number";
 			Message.Message();
 		EndIf;
 	Except
@@ -104,7 +104,7 @@ Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 				Cancel = True;
 				Message = New UserMessage();
 				Message.Text=NStr("en='Enter a check number from 0 to 9999 (99999)'");
-				Message.Field = "Object.Number";
+				//Message.Field = "Object.Number";
 				Message.Message();
 			EndIf;
 	EndTry;	
@@ -118,7 +118,7 @@ Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 		Cancel = True;
 		Message = New UserMessage();
 		Message.Text=NStr("en='Enter at least one account and amount in the line items';de='Geben Sie mindestens ein Konto und einen Betrag in der Zeile'");
-		Message.Field = "Object.LineItems";
+		//Message.Field = "Object.LineItems";
 		Message.Message();
 
 	EndIf;
@@ -245,32 +245,11 @@ EndProcedure
 Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
 	
 	//Period closing
-	If DocumentPosting.DocumentPeriodIsClosed(CurrentObject.Ref, CurrentObject.Date) Then
-		PermitWrite = DocumentPosting.DocumentWritePermitted(WriteParameters);
+	If PeriodClosingServerCall.DocumentPeriodIsClosed(CurrentObject.Ref, CurrentObject.Date) Then
+		PermitWrite = PeriodClosingServerCall.DocumentWritePermitted(WriteParameters);
 		CurrentObject.AdditionalProperties.Insert("PermitWrite", PermitWrite);	
 	EndIf;
-
-	//If Object.PaymentMethod = Catalogs.PaymentMethods.Check Then
-	//	
-	//	If CurrentObject.Ref.IsEmpty() Then
-	//	
-	//		LastNumber = GeneralFunctions.LastCheckNumber(Object.BankAccount);
-	//		
-	//		LastNumberString = "";
-	//		If LastNumber < 10000 Then
-	//			LastNumberString = Left(String(LastNumber+1),1) + Right(String(LastNumber+1),3)
-	//		Else
-	//			LastNumberString = Left(String(LastNumber+1),2) + Right(String(LastNumber+1),3)
-	//		EndIf;
-	//		
-	//		CurrentObject.Number = LastNumberString;
-	//		CurrentObject.PhysicalCheckNum = LastNumber + 1;
-	//		
-	//	Else
-	//		CurrentObject.PhysicalCheckNum = Number(CurrentObject.Number);		
-	//	EndIf;
-	//Endif;	
-
+	
 EndProcedure
 
 &AtClient
@@ -287,8 +266,8 @@ Procedure PaymentMethodOnChange(Item)
 
 
 	Else
-		Object.Number = "";
-		Items.Number.ReadOnly = False;
+		//Object.Number = "";
+		//Items.Number.ReadOnly = False;
 	EndIf;
 	
 EndProcedure
@@ -436,7 +415,6 @@ Procedure NumberOnChangeAtServer()
 	CheckExist = Documents.Check.FindByNumber(Object.Number);
 	If CheckExist <> Documents.Check.EmptyRef() Then
 		Message("Check number already exists");
-		Object.Number = "";
 	Endif;
 	
 EndProcedure
@@ -452,8 +430,8 @@ EndFunction
 Procedure BeforeWrite(Cancel, WriteParameters)
 	
 	//Closing period
-	If DocumentPosting.DocumentPeriodIsClosed(Object.Ref, Object.Date) Then
-		Cancel = Not DocumentPosting.DocumentWritePermitted(WriteParameters);
+	If PeriodClosingServerCall.DocumentPeriodIsClosed(Object.Ref, Object.Date) Then
+		Cancel = Not PeriodClosingServerCall.DocumentWritePermitted(WriteParameters);
 		If Cancel Then
 			If WriteParameters.Property("PeriodClosingPassword") And WriteParameters.Property("Password") Then
 				If WriteParameters.Password = TRUE Then //Writing the document requires a password
@@ -469,7 +447,7 @@ Procedure BeforeWrite(Cancel, WriteParameters)
 	EndIf;
 	
 	// preventing posting if already included in a bank rec
-	If DocumentPosting.RequiresExcludingFromBankReconciliation(Object.Ref, -1*Object.DocumentTotalRC, Object.Date, Object.BankAccount, WriteParameters.WriteMode) Then
+	If ReconciledDocumentsServerCall.RequiresExcludingFromBankReconciliation(Object.Ref, -1*Object.DocumentTotalRC, Object.Date, Object.BankAccount, WriteParameters.WriteMode) Then
 		Cancel = True;
 		CommonUseClient.ShowCustomMessageBox(ThisForm, "Bank reconciliation", "The transaction you are editing has been reconciled. Saving 
 		|your changes could put you out of balance the next time you try to reconcile. 

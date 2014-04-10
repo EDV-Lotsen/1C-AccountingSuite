@@ -11,10 +11,6 @@
 			<field>Account</field>
 		</field>
 		<field xsi:type="DataSetFieldField">
-			<dataPath>AccountDescription</dataPath>
-			<field>AccountDescription</field>
-		</field>
-		<field xsi:type="DataSetFieldField">
 			<dataPath>Adjusting</dataPath>
 			<field>Adjusting</field>
 		</field>
@@ -115,7 +111,6 @@
 	GeneralJournalEntryLineItems.Ref,
 	GeneralJournalEntryLineItems.LineNumber,
 	GeneralJournalEntryLineItems.Account,
-	GeneralJournalEntryLineItems.AccountDescription,
 	GeneralJournalEntryLineItems.AmountDr,
 	GeneralJournalEntryLineItems.AmountCr,
 	GeneralJournalEntryLineItems.Memo,
@@ -157,6 +152,7 @@ FROM
 					<dcsset:field>Company</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:use>false</dcsset:use>
 					<dcsset:field>AccountDescription</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">

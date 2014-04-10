@@ -18,7 +18,7 @@
 				<dcscom:accountTypeExpression>Account.Type</dcscom:accountTypeExpression>
 				<dcscom:ignoreNullValues>true</dcscom:ignoreNullValues>
 			</role>
-			<presentationExpression>Account.Description</presentationExpression>
+			<presentationExpression>"   " + Account.Code + " " + Account.Description</presentationExpression>
 		</field>
 		<field xsi:type="DataSetFieldField">
 			<dataPath>AmountRCTurnover</dataPath>
@@ -117,6 +117,12 @@
 		<field xsi:type="DataSetFieldField">
 			<dataPath>Recorder</dataPath>
 			<field>Recorder</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Transactions</v8:content>
+				</v8:item>
+			</title>
 			<role>
 				<dcscom:periodNumber>1</dcscom:periodNumber>
 				<dcscom:periodType>Additional</dcscom:periodType>
@@ -157,7 +163,6 @@
 				<group>true</group>
 				<order>true</order>
 			</attributeUseRestriction>
-			<presentationExpression>Presentation(OurCompany)</presentationExpression>
 		</field>
 		<field xsi:type="DataSetFieldField">
 			<dataPath>AccountType</dataPath>
@@ -173,24 +178,6 @@
 			<presentationExpression>AccountTypePresentation</presentationExpression>
 		</field>
 		<field xsi:type="DataSetFieldField">
-			<dataPath>IsTaxAccount</dataPath>
-			<field>IsTaxAccount</field>
-			<title xsi:type="v8:LocalStringType">
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Tax account</v8:content>
-				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>Steuerkonto</v8:content>
-				</v8:item>
-			</title>
-			<useRestriction>
-				<group>true</group>
-				<order>true</order>
-			</useRestriction>
-		</field>
-		<field xsi:type="DataSetFieldField">
 			<dataPath>AccountTypePresentation</dataPath>
 			<field>AccountTypePresentation</field>
 			<useRestriction>
@@ -202,67 +189,68 @@
 		</field>
 		<dataSource>DataSource1</dataSource>
 		<query>SELECT ALLOWED
-	//Companies.Ref AS OurCompany,								// Defined always
 	SystemTitle.Value AS OurCompany,
-	CASE WHEN (GeneralJournalTurnovers.Account.IncomeTaxAccount)// Defined for Account sections
-		THEN NULL
-		ELSE AccountTypes.Ref END AS AccountType,
-	CASE WHEN (GeneralJournalTurnovers.Account.IncomeTaxAccount)// Defined for Account sections
-		THEN NULL
-		ELSE CASE WHEN AccountTypes.Ref = VALUE(Enum.AccountTypes.Income) THEN "Income"
-				  WHEN AccountTypes.Ref = VALUE(Enum.AccountTypes.CostOfSales) THEN "COGS"
-				  WHEN AccountTypes.Ref = VALUE(Enum.AccountTypes.Expense) THEN "Expenses"
-				  WHEN AccountTypes.Ref = VALUE(Enum.AccountTypes.OtherIncome) THEN "Other Income"
-				  WHEN AccountTypes.Ref = VALUE(Enum.AccountTypes.OtherExpense) THEN "Other Expenses"
-				  ELSE "" END
-		END AS AccountTypePresentation,
-	CASE WHEN (NOT GeneralJournalTurnovers.Account IS NULL)		// Defined always
-		THEN GeneralJournalTurnovers.Account.IncomeTaxAccount
-		ELSE False END AS IsTaxAccount,
-	GeneralJournalTurnovers.Account AS Account,					// Defined for Turnovers
-	GeneralJournalTurnovers.DayPeriod AS DayPeriod,				// Defined for Turnovers
-	GeneralJournalTurnovers.WeekPeriod AS WeekPeriod,			// Defined for Turnovers
-	GeneralJournalTurnovers.MonthPeriod AS MonthPeriod,			// Defined for Turnovers
-	GeneralJournalTurnovers.QuarterPeriod AS QuarterPeriod,		// Defined for Turnovers
-	GeneralJournalTurnovers.YearPeriod AS YearPeriod,			// Defined for Turnovers
-	GeneralJournalTurnovers.Recorder AS Recorder,				// Defined for Turnovers
-	CASE WHEN (NOT GeneralJournalTurnovers.Account IS NULL)
-		THEN -GeneralJournalTurnovers.AmountRCTurnover
-		ELSE 0 END AS AmountRCTurnover							// Defined always
-	{SELECT
-		AccountType.*,
-		Account.*,
-		Recorder,
-		YearPeriod,
-		QuarterPeriod,
-		MonthPeriod,
-		WeekPeriod,
-		DayPeriod}
+	AccountTypes.Ref AS AccountType,
+	CASE
+		WHEN AccountTypes.Ref = VALUE(Enum.AccountTypes.Income)
+			THEN "Income"
+		WHEN AccountTypes.Ref = VALUE(Enum.AccountTypes.CostOfSales)
+			THEN "COGS"
+		WHEN AccountTypes.Ref = VALUE(Enum.AccountTypes.Expense)
+			THEN "Expenses"
+		WHEN AccountTypes.Ref = VALUE(Enum.AccountTypes.OtherIncome)
+			THEN "Other Income"
+		WHEN AccountTypes.Ref = VALUE(Enum.AccountTypes.OtherExpense)
+			THEN "Other Expenses"
+		WHEN AccountTypes.Ref = VALUE(Enum.AccountTypes.IncomeTaxExpense)
+			THEN "Income Tax Expense"
+		ELSE ""
+	END AS AccountTypePresentation,
+	GeneralJournalTurnovers.Account AS Account,
+	GeneralJournalTurnovers.DayPeriod AS DayPeriod,
+	GeneralJournalTurnovers.WeekPeriod AS WeekPeriod,
+	GeneralJournalTurnovers.MonthPeriod AS MonthPeriod,
+	GeneralJournalTurnovers.QuarterPeriod AS QuarterPeriod,
+	GeneralJournalTurnovers.YearPeriod AS YearPeriod,
+	GeneralJournalTurnovers.Recorder AS Recorder,
+	CASE
+		WHEN NOT GeneralJournalTurnovers.Account IS NULL 
+			THEN -GeneralJournalTurnovers.AmountRCTurnover
+		ELSE 0
+	END AS AmountRCTurnover
+{SELECT
+	AccountType.*,
+	Account.*,
+	Recorder,
+	YearPeriod,
+	QuarterPeriod,
+	MonthPeriod,
+	WeekPeriod,
+	DayPeriod}
 FROM
-	// Turnover by sections, accounts and periods by the selected account types or by income taxes
-	AccountingRegister.GeneralJournal.Turnovers(, , Auto, (Account.AccountType IN (VALUE(Enum.AccountTypes.Income), VALUE(Enum.AccountTypes.CostOfSales), VALUE(Enum.AccountTypes.Expense), VALUE(Enum.AccountTypes.OtherExpense), VALUE(Enum.AccountTypes.OtherIncome)) OR Account.IncomeTaxAccount = TRUE) AND (Account.OtherComprehensiveIncome = FALSE), , ) AS GeneralJournalTurnovers
-		// Report sections of accounts (mandatory by the selected sections - see output settings sections)
+	AccountingRegister.GeneralJournal.Turnovers(
+			,
+			,
+			Auto,
+			Account.AccountType IN (VALUE(Enum.AccountTypes.Income), VALUE(Enum.AccountTypes.CostOfSales), VALUE(Enum.AccountTypes.Expense), VALUE(Enum.AccountTypes.OtherExpense), VALUE(Enum.AccountTypes.OtherIncome), VALUE(Enum.AccountTypes.IncomeTaxExpense))
+				AND Account.OtherComprehensiveIncome = FALSE,
+			,
+			) AS GeneralJournalTurnovers
 		FULL JOIN Enum.AccountTypes AS AccountTypes
-			ON (AccountTypes.Ref = GeneralJournalTurnovers.Account.AccountType)
-			OR (GeneralJournalTurnovers.Account.IncomeTaxAccount AND AccountTypes.Ref = VALUE(Enum.AccountTypes.Income)), // Assign taxes to first row of fixed sections
-		// Our company for a possible multicompany accounting in a future
-		//LEFT JOIN Catalog.Companies AS Companies
-			//ON (Companies.Ref = VALUE(Catalog.Companies.OurCompany))
-	Constant.SystemTitle AS SystemTitle
+		ON (AccountTypes.Ref = GeneralJournalTurnovers.Account.AccountType)
+		LEFT JOIN Constant.SystemTitle AS SystemTitle
+		ON (TRUE)
 WHERE
-	// Mandatory sections of report
-	AccountTypes.Ref IN (VALUE(Enum.AccountTypes.Income), VALUE(Enum.AccountTypes.CostOfSales), VALUE(Enum.AccountTypes.Expense), VALUE(Enum.AccountTypes.OtherExpense), VALUE(Enum.AccountTypes.OtherIncome))
-	{WHERE
-		CASE WHEN (GeneralJournalTurnovers.Account.IncomeTaxAccount)
-			THEN NULL
-			ELSE AccountTypes.Ref END AS AccountType,
-		GeneralJournalTurnovers.Account AS Account,
-		GeneralJournalTurnovers.Recorder AS Recorder,
-		GeneralJournalTurnovers.YearPeriod AS YearPeriod,
-		GeneralJournalTurnovers.QuarterPeriod AS QuarterPeriod,
-		GeneralJournalTurnovers.MonthPeriod AS MonthPeriod,
-		GeneralJournalTurnovers.WeekPeriod AS WeekPeriod,
-		GeneralJournalTurnovers.DayPeriod AS DayPeriod}</query>
+	AccountTypes.Ref IN (VALUE(Enum.AccountTypes.Income), VALUE(Enum.AccountTypes.CostOfSales), VALUE(Enum.AccountTypes.Expense), VALUE(Enum.AccountTypes.OtherExpense), VALUE(Enum.AccountTypes.OtherIncome), VALUE(Enum.AccountTypes.IncomeTaxExpense))
+{WHERE
+	AccountTypes.Ref AS AccountType,
+	GeneralJournalTurnovers.Account AS Account,
+	GeneralJournalTurnovers.Recorder AS Recorder,
+	GeneralJournalTurnovers.YearPeriod AS YearPeriod,
+	GeneralJournalTurnovers.QuarterPeriod AS QuarterPeriod,
+	GeneralJournalTurnovers.MonthPeriod AS MonthPeriod,
+	GeneralJournalTurnovers.WeekPeriod AS WeekPeriod,
+	GeneralJournalTurnovers.DayPeriod AS DayPeriod}</query>
 	</dataSet>
 	<totalField>
 		<dataPath>AmountRCTurnover</dataPath>
@@ -4406,13 +4394,6 @@ WHERE
 			</v8:item>
 		</dcsset:presentation>
 		<dcsset:settings xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows">
-			<dcsset:filter>
-				<dcsset:item xsi:type="dcsset:FilterItemComparison">
-					<dcsset:left xsi:type="dcscor:Field">OurCompany</dcsset:left>
-					<dcsset:comparisonType>Filled</dcsset:comparisonType>
-					<dcsset:viewMode>Inaccessible</dcsset:viewMode>
-				</dcsset:item>
-			</dcsset:filter>
 			<dcsset:dataParameters>
 				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 					<dcscor:parameter>Period</dcscor:parameter>
@@ -4477,6 +4458,9 @@ WHERE
 				<dcsset:order>
 					<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
 				</dcsset:order>
+				<dcsset:selection>
+					<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+				</dcsset:selection>
 				<dcsset:outputParameters>
 					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 						<dcscor:use>false</dcscor:use>
@@ -4501,12 +4485,6 @@ WHERE
 						<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
 						<dcsset:comparisonType>Equal</dcsset:comparisonType>
 						<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Income</dcsset:right>
-						<dcsset:viewMode>Inaccessible</dcsset:viewMode>
-					</dcsset:item>
-					<dcsset:item xsi:type="dcsset:FilterItemComparison">
-						<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-						<dcsset:comparisonType>Equal</dcsset:comparisonType>
-						<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
 						<dcsset:viewMode>Inaccessible</dcsset:viewMode>
 					</dcsset:item>
 				</dcsset:filter>
@@ -4542,7 +4520,7 @@ WHERE
 					<dcsset:groupItems>
 						<dcsset:item xsi:type="dcsset:GroupItemField">
 							<dcsset:field>Account</dcsset:field>
-							<dcsset:groupType>Items</dcsset:groupType>
+							<dcsset:groupType>Hierarchy</dcsset:groupType>
 							<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 							<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 							<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -4591,12 +4569,6 @@ WHERE
 						<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.CostOfSales</dcsset:right>
 						<dcsset:viewMode>Inaccessible</dcsset:viewMode>
 					</dcsset:item>
-					<dcsset:item xsi:type="dcsset:FilterItemComparison">
-						<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-						<dcsset:comparisonType>Equal</dcsset:comparisonType>
-						<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
-						<dcsset:viewMode>Inaccessible</dcsset:viewMode>
-					</dcsset:item>
 				</dcsset:filter>
 				<dcsset:order>
 					<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
@@ -4630,7 +4602,7 @@ WHERE
 					<dcsset:groupItems>
 						<dcsset:item xsi:type="dcsset:GroupItemField">
 							<dcsset:field>Account</dcsset:field>
-							<dcsset:groupType>Items</dcsset:groupType>
+							<dcsset:groupType>Hierarchy</dcsset:groupType>
 							<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 							<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 							<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -4670,11 +4642,6 @@ WHERE
 						<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Income</dcsset:right>
 						<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.CostOfSales</dcsset:right>
 					</dcsset:item>
-					<dcsset:item xsi:type="dcsset:FilterItemComparison">
-						<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-						<dcsset:comparisonType>Equal</dcsset:comparisonType>
-						<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
-					</dcsset:item>
 				</dcsset:filter>
 				<dcsset:order>
 					<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
@@ -4707,12 +4674,6 @@ WHERE
 						<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
 						<dcsset:comparisonType>Equal</dcsset:comparisonType>
 						<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Expense</dcsset:right>
-						<dcsset:viewMode>Inaccessible</dcsset:viewMode>
-					</dcsset:item>
-					<dcsset:item xsi:type="dcsset:FilterItemComparison">
-						<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-						<dcsset:comparisonType>Equal</dcsset:comparisonType>
-						<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
 						<dcsset:viewMode>Inaccessible</dcsset:viewMode>
 					</dcsset:item>
 				</dcsset:filter>
@@ -4748,7 +4709,7 @@ WHERE
 					<dcsset:groupItems>
 						<dcsset:item xsi:type="dcsset:GroupItemField">
 							<dcsset:field>Account</dcsset:field>
-							<dcsset:groupType>Items</dcsset:groupType>
+							<dcsset:groupType>Hierarchy</dcsset:groupType>
 							<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 							<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 							<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -4789,11 +4750,6 @@ WHERE
 						<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.CostOfSales</dcsset:right>
 						<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Expense</dcsset:right>
 					</dcsset:item>
-					<dcsset:item xsi:type="dcsset:FilterItemComparison">
-						<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-						<dcsset:comparisonType>Equal</dcsset:comparisonType>
-						<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
-					</dcsset:item>
 				</dcsset:filter>
 				<dcsset:order>
 					<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
@@ -4826,12 +4782,6 @@ WHERE
 						<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
 						<dcsset:comparisonType>Equal</dcsset:comparisonType>
 						<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherIncome</dcsset:right>
-						<dcsset:viewMode>Inaccessible</dcsset:viewMode>
-					</dcsset:item>
-					<dcsset:item xsi:type="dcsset:FilterItemComparison">
-						<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-						<dcsset:comparisonType>Equal</dcsset:comparisonType>
-						<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
 						<dcsset:viewMode>Inaccessible</dcsset:viewMode>
 					</dcsset:item>
 				</dcsset:filter>
@@ -4867,7 +4817,7 @@ WHERE
 					<dcsset:groupItems>
 						<dcsset:item xsi:type="dcsset:GroupItemField">
 							<dcsset:field>Account</dcsset:field>
-							<dcsset:groupType>Items</dcsset:groupType>
+							<dcsset:groupType>Hierarchy</dcsset:groupType>
 							<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 							<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 							<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -4916,12 +4866,6 @@ WHERE
 						<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherExpense</dcsset:right>
 						<dcsset:viewMode>Inaccessible</dcsset:viewMode>
 					</dcsset:item>
-					<dcsset:item xsi:type="dcsset:FilterItemComparison">
-						<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-						<dcsset:comparisonType>Equal</dcsset:comparisonType>
-						<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
-						<dcsset:viewMode>Inaccessible</dcsset:viewMode>
-					</dcsset:item>
 				</dcsset:filter>
 				<dcsset:order>
 					<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
@@ -4955,7 +4899,7 @@ WHERE
 					<dcsset:groupItems>
 						<dcsset:item xsi:type="dcsset:GroupItemField">
 							<dcsset:field>Account</dcsset:field>
-							<dcsset:groupType>Items</dcsset:groupType>
+							<dcsset:groupType>Hierarchy</dcsset:groupType>
 							<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 							<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 							<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -4998,11 +4942,6 @@ WHERE
 						<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherIncome</dcsset:right>
 						<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherExpense</dcsset:right>
 					</dcsset:item>
-					<dcsset:item xsi:type="dcsset:FilterItemComparison">
-						<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-						<dcsset:comparisonType>Equal</dcsset:comparisonType>
-						<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
-					</dcsset:item>
 				</dcsset:filter>
 				<dcsset:order>
 					<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
@@ -5020,12 +4959,22 @@ WHERE
 				</dcsset:outputParameters>
 			</dcsset:item>
 			<dcsset:item xsi:type="dcsset:StructureItemGroup">
-				<dcsset:name>IncomeTaxList</dcsset:name>
+				<dcsset:name>AccountTypeList</dcsset:name>
+				<dcsset:groupItems>
+					<dcsset:item xsi:type="dcsset:GroupItemField">
+						<dcsset:field>AccountType</dcsset:field>
+						<dcsset:groupType>Items</dcsset:groupType>
+						<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+						<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+						<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+					</dcsset:item>
+				</dcsset:groupItems>
 				<dcsset:filter>
 					<dcsset:item xsi:type="dcsset:FilterItemComparison">
-						<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
+						<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
 						<dcsset:comparisonType>Equal</dcsset:comparisonType>
-						<dcsset:right xsi:type="xs:boolean">true</dcsset:right>
+						<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.IncomeTaxExpense</dcsset:right>
+						<dcsset:viewMode>Inaccessible</dcsset:viewMode>
 					</dcsset:item>
 				</dcsset:filter>
 				<dcsset:order>
@@ -5038,38 +4987,49 @@ WHERE
 				</dcsset:selection>
 				<dcsset:outputParameters>
 					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+						<dcscor:parameter>TotalsPlacement</dcscor:parameter>
+						<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">End</dcscor:value>
+					</dcscor:item>
+					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+						<dcscor:parameter>VerticalOverallPlacement</dcscor:parameter>
+						<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">None</dcscor:value>
+					</dcscor:item>
+					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 						<dcscor:parameter>FilterOutput</dcscor:parameter>
 						<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
 					</dcscor:item>
 				</dcsset:outputParameters>
+				<dcsset:item xsi:type="dcsset:StructureItemGroup">
+					<dcsset:name>AccountList</dcsset:name>
+					<dcsset:groupItems>
+						<dcsset:item xsi:type="dcsset:GroupItemField">
+							<dcsset:field>Account</dcsset:field>
+							<dcsset:groupType>Hierarchy</dcsset:groupType>
+							<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+							<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+							<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+						</dcsset:item>
+					</dcsset:groupItems>
+					<dcsset:order>
+						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
+					</dcsset:order>
+					<dcsset:selection>
+						<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+					</dcsset:selection>
+				</dcsset:item>
 			</dcsset:item>
 			<dcsset:item xsi:type="dcsset:StructureItemGroup">
 				<dcsset:name>NetIncomeList</dcsset:name>
 				<dcsset:filter>
-					<dcsset:item xsi:type="dcsset:FilterItemGroup">
-						<dcsset:groupType>OrGroup</dcsset:groupType>
-						<dcsset:item xsi:type="dcsset:FilterItemGroup">
-							<dcsset:groupType>AndGroup</dcsset:groupType>
-							<dcsset:item xsi:type="dcsset:FilterItemComparison">
-								<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
-								<dcsset:comparisonType>InList</dcsset:comparisonType>
-								<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Income</dcsset:right>
-								<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.CostOfSales</dcsset:right>
-								<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Expense</dcsset:right>
-								<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherIncome</dcsset:right>
-								<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherExpense</dcsset:right>
-							</dcsset:item>
-							<dcsset:item xsi:type="dcsset:FilterItemComparison">
-								<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-								<dcsset:comparisonType>Equal</dcsset:comparisonType>
-								<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
-							</dcsset:item>
-						</dcsset:item>
-						<dcsset:item xsi:type="dcsset:FilterItemComparison">
-							<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-							<dcsset:comparisonType>Equal</dcsset:comparisonType>
-							<dcsset:right xsi:type="xs:boolean">true</dcsset:right>
-						</dcsset:item>
+					<dcsset:item xsi:type="dcsset:FilterItemComparison">
+						<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
+						<dcsset:comparisonType>InList</dcsset:comparisonType>
+						<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Income</dcsset:right>
+						<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.CostOfSales</dcsset:right>
+						<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Expense</dcsset:right>
+						<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherIncome</dcsset:right>
+						<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherExpense</dcsset:right>
+						<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.IncomeTaxExpense</dcsset:right>
 					</dcsset:item>
 				</dcsset:filter>
 				<dcsset:order>
@@ -5102,13 +5062,6 @@ WHERE
 			</v8:item>
 		</dcsset:presentation>
 		<dcsset:settings xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows">
-			<dcsset:filter>
-				<dcsset:item xsi:type="dcsset:FilterItemComparison">
-					<dcsset:left xsi:type="dcscor:Field">OurCompany</dcsset:left>
-					<dcsset:comparisonType>Filled</dcsset:comparisonType>
-					<dcsset:viewMode>Inaccessible</dcsset:viewMode>
-				</dcsset:item>
-			</dcsset:filter>
 			<dcsset:dataParameters>
 				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 					<dcscor:parameter>Period</dcscor:parameter>
@@ -5181,6 +5134,9 @@ WHERE
 				<dcsset:order>
 					<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
 				</dcsset:order>
+				<dcsset:selection>
+					<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+				</dcsset:selection>
 				<dcsset:outputParameters>
 					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 						<dcscor:use>false</dcscor:use>
@@ -5261,12 +5217,6 @@ WHERE
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Income</dcsset:right>
 							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
 						</dcsset:item>
-						<dcsset:item xsi:type="dcsset:FilterItemComparison">
-							<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-							<dcsset:comparisonType>Equal</dcsset:comparisonType>
-							<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
-							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
-						</dcsset:item>
 					</dcsset:filter>
 					<dcsset:order>
 						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
@@ -5296,7 +5246,7 @@ WHERE
 						<dcsset:groupItems>
 							<dcsset:item xsi:type="dcsset:GroupItemField">
 								<dcsset:field>Account</dcsset:field>
-								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
 								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -5345,12 +5295,6 @@ WHERE
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.CostOfSales</dcsset:right>
 							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
 						</dcsset:item>
-						<dcsset:item xsi:type="dcsset:FilterItemComparison">
-							<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-							<dcsset:comparisonType>Equal</dcsset:comparisonType>
-							<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
-							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
-						</dcsset:item>
 					</dcsset:filter>
 					<dcsset:order>
 						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
@@ -5380,7 +5324,7 @@ WHERE
 						<dcsset:groupItems>
 							<dcsset:item xsi:type="dcsset:GroupItemField">
 								<dcsset:field>Account</dcsset:field>
-								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
 								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -5420,11 +5364,6 @@ WHERE
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Income</dcsset:right>
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.CostOfSales</dcsset:right>
 						</dcsset:item>
-						<dcsset:item xsi:type="dcsset:FilterItemComparison">
-							<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-							<dcsset:comparisonType>Equal</dcsset:comparisonType>
-							<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
-						</dcsset:item>
 					</dcsset:filter>
 					<dcsset:order>
 						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
@@ -5459,12 +5398,6 @@ WHERE
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Expense</dcsset:right>
 							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
 						</dcsset:item>
-						<dcsset:item xsi:type="dcsset:FilterItemComparison">
-							<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-							<dcsset:comparisonType>Equal</dcsset:comparisonType>
-							<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
-							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
-						</dcsset:item>
 					</dcsset:filter>
 					<dcsset:order>
 						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
@@ -5494,7 +5427,7 @@ WHERE
 						<dcsset:groupItems>
 							<dcsset:item xsi:type="dcsset:GroupItemField">
 								<dcsset:field>Account</dcsset:field>
-								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
 								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -5535,11 +5468,6 @@ WHERE
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.CostOfSales</dcsset:right>
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Expense</dcsset:right>
 						</dcsset:item>
-						<dcsset:item xsi:type="dcsset:FilterItemComparison">
-							<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-							<dcsset:comparisonType>Equal</dcsset:comparisonType>
-							<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
-						</dcsset:item>
 					</dcsset:filter>
 					<dcsset:order>
 						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
@@ -5574,12 +5502,6 @@ WHERE
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherIncome</dcsset:right>
 							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
 						</dcsset:item>
-						<dcsset:item xsi:type="dcsset:FilterItemComparison">
-							<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-							<dcsset:comparisonType>Equal</dcsset:comparisonType>
-							<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
-							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
-						</dcsset:item>
 					</dcsset:filter>
 					<dcsset:order>
 						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
@@ -5609,7 +5531,7 @@ WHERE
 						<dcsset:groupItems>
 							<dcsset:item xsi:type="dcsset:GroupItemField">
 								<dcsset:field>Account</dcsset:field>
-								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
 								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -5658,12 +5580,6 @@ WHERE
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherExpense</dcsset:right>
 							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
 						</dcsset:item>
-						<dcsset:item xsi:type="dcsset:FilterItemComparison">
-							<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-							<dcsset:comparisonType>Equal</dcsset:comparisonType>
-							<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
-							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
-						</dcsset:item>
 					</dcsset:filter>
 					<dcsset:order>
 						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
@@ -5693,7 +5609,7 @@ WHERE
 						<dcsset:groupItems>
 							<dcsset:item xsi:type="dcsset:GroupItemField">
 								<dcsset:field>Account</dcsset:field>
-								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
 								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -5736,11 +5652,6 @@ WHERE
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherIncome</dcsset:right>
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherExpense</dcsset:right>
 						</dcsset:item>
-						<dcsset:item xsi:type="dcsset:FilterItemComparison">
-							<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-							<dcsset:comparisonType>Equal</dcsset:comparisonType>
-							<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
-						</dcsset:item>
 					</dcsset:filter>
 					<dcsset:order>
 						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
@@ -5758,12 +5669,22 @@ WHERE
 					</dcsset:outputParameters>
 				</dcsset:row>
 				<dcsset:row>
-					<dcsset:name>IncomeTax</dcsset:name>
+					<dcsset:name>AccountType</dcsset:name>
+					<dcsset:groupItems>
+						<dcsset:item xsi:type="dcsset:GroupItemField">
+							<dcsset:field>AccountType</dcsset:field>
+							<dcsset:groupType>Items</dcsset:groupType>
+							<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+							<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+							<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+						</dcsset:item>
+					</dcsset:groupItems>
 					<dcsset:filter>
 						<dcsset:item xsi:type="dcsset:FilterItemComparison">
-							<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
+							<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
 							<dcsset:comparisonType>Equal</dcsset:comparisonType>
-							<dcsset:right xsi:type="xs:boolean">true</dcsset:right>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.IncomeTaxExpense</dcsset:right>
+							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
 						</dcsset:item>
 					</dcsset:filter>
 					<dcsset:order>
@@ -5776,38 +5697,45 @@ WHERE
 					</dcsset:selection>
 					<dcsset:outputParameters>
 						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+							<dcscor:parameter>TotalsPlacement</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">End</dcscor:value>
+						</dcscor:item>
+						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 							<dcscor:parameter>FilterOutput</dcscor:parameter>
 							<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
 						</dcscor:item>
 					</dcsset:outputParameters>
+					<dcsset:item>
+						<dcsset:name>Account</dcsset:name>
+						<dcsset:groupItems>
+							<dcsset:item xsi:type="dcsset:GroupItemField">
+								<dcsset:field>Account</dcsset:field>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
+								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+							</dcsset:item>
+						</dcsset:groupItems>
+						<dcsset:order>
+							<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
+						</dcsset:order>
+						<dcsset:selection>
+							<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+						</dcsset:selection>
+					</dcsset:item>
 				</dcsset:row>
 				<dcsset:row>
 					<dcsset:name>NetIncome</dcsset:name>
 					<dcsset:filter>
-						<dcsset:item xsi:type="dcsset:FilterItemGroup">
-							<dcsset:groupType>OrGroup</dcsset:groupType>
-							<dcsset:item xsi:type="dcsset:FilterItemGroup">
-								<dcsset:groupType>AndGroup</dcsset:groupType>
-								<dcsset:item xsi:type="dcsset:FilterItemComparison">
-									<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
-									<dcsset:comparisonType>InList</dcsset:comparisonType>
-									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Income</dcsset:right>
-									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.CostOfSales</dcsset:right>
-									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Expense</dcsset:right>
-									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherIncome</dcsset:right>
-									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherExpense</dcsset:right>
-								</dcsset:item>
-								<dcsset:item xsi:type="dcsset:FilterItemComparison">
-									<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-									<dcsset:comparisonType>Equal</dcsset:comparisonType>
-									<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
-								</dcsset:item>
-							</dcsset:item>
-							<dcsset:item xsi:type="dcsset:FilterItemComparison">
-								<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-								<dcsset:comparisonType>Equal</dcsset:comparisonType>
-								<dcsset:right xsi:type="xs:boolean">true</dcsset:right>
-							</dcsset:item>
+						<dcsset:item xsi:type="dcsset:FilterItemComparison">
+							<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
+							<dcsset:comparisonType>InList</dcsset:comparisonType>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Income</dcsset:right>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.CostOfSales</dcsset:right>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Expense</dcsset:right>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherIncome</dcsset:right>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherExpense</dcsset:right>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.IncomeTaxExpense</dcsset:right>
 						</dcsset:item>
 					</dcsset:filter>
 					<dcsset:order>
@@ -5837,13 +5765,6 @@ WHERE
 			</v8:item>
 		</dcsset:presentation>
 		<dcsset:settings xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows">
-			<dcsset:filter>
-				<dcsset:item xsi:type="dcsset:FilterItemComparison">
-					<dcsset:left xsi:type="dcscor:Field">OurCompany</dcsset:left>
-					<dcsset:comparisonType>Filled</dcsset:comparisonType>
-					<dcsset:viewMode>Inaccessible</dcsset:viewMode>
-				</dcsset:item>
-			</dcsset:filter>
 			<dcsset:dataParameters>
 				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 					<dcscor:parameter>Period</dcscor:parameter>
@@ -5863,7 +5784,7 @@ WHERE
 					<dcsset:orderType>Asc</dcsset:orderType>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:OrderItemField">
-					<dcsset:field>YearPeriod</dcsset:field>
+					<dcsset:field>QuarterPeriod</dcsset:field>
 					<dcsset:orderType>Asc</dcsset:orderType>
 				</dcsset:item>
 			</dcsset:order>
@@ -5916,6 +5837,9 @@ WHERE
 				<dcsset:order>
 					<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
 				</dcsset:order>
+				<dcsset:selection>
+					<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+				</dcsset:selection>
 				<dcsset:outputParameters>
 					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 						<dcscor:use>false</dcscor:use>
@@ -5996,12 +5920,6 @@ WHERE
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Income</dcsset:right>
 							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
 						</dcsset:item>
-						<dcsset:item xsi:type="dcsset:FilterItemComparison">
-							<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-							<dcsset:comparisonType>Equal</dcsset:comparisonType>
-							<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
-							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
-						</dcsset:item>
 					</dcsset:filter>
 					<dcsset:order>
 						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
@@ -6031,7 +5949,7 @@ WHERE
 						<dcsset:groupItems>
 							<dcsset:item xsi:type="dcsset:GroupItemField">
 								<dcsset:field>Account</dcsset:field>
-								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
 								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -6080,12 +5998,6 @@ WHERE
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.CostOfSales</dcsset:right>
 							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
 						</dcsset:item>
-						<dcsset:item xsi:type="dcsset:FilterItemComparison">
-							<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-							<dcsset:comparisonType>Equal</dcsset:comparisonType>
-							<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
-							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
-						</dcsset:item>
 					</dcsset:filter>
 					<dcsset:order>
 						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
@@ -6115,7 +6027,7 @@ WHERE
 						<dcsset:groupItems>
 							<dcsset:item xsi:type="dcsset:GroupItemField">
 								<dcsset:field>Account</dcsset:field>
-								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
 								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -6155,11 +6067,6 @@ WHERE
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Income</dcsset:right>
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.CostOfSales</dcsset:right>
 						</dcsset:item>
-						<dcsset:item xsi:type="dcsset:FilterItemComparison">
-							<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-							<dcsset:comparisonType>Equal</dcsset:comparisonType>
-							<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
-						</dcsset:item>
 					</dcsset:filter>
 					<dcsset:order>
 						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
@@ -6194,12 +6101,6 @@ WHERE
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Expense</dcsset:right>
 							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
 						</dcsset:item>
-						<dcsset:item xsi:type="dcsset:FilterItemComparison">
-							<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-							<dcsset:comparisonType>Equal</dcsset:comparisonType>
-							<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
-							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
-						</dcsset:item>
 					</dcsset:filter>
 					<dcsset:order>
 						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
@@ -6229,7 +6130,7 @@ WHERE
 						<dcsset:groupItems>
 							<dcsset:item xsi:type="dcsset:GroupItemField">
 								<dcsset:field>Account</dcsset:field>
-								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
 								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -6270,11 +6171,6 @@ WHERE
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.CostOfSales</dcsset:right>
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Expense</dcsset:right>
 						</dcsset:item>
-						<dcsset:item xsi:type="dcsset:FilterItemComparison">
-							<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-							<dcsset:comparisonType>Equal</dcsset:comparisonType>
-							<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
-						</dcsset:item>
 					</dcsset:filter>
 					<dcsset:order>
 						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
@@ -6309,12 +6205,6 @@ WHERE
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherIncome</dcsset:right>
 							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
 						</dcsset:item>
-						<dcsset:item xsi:type="dcsset:FilterItemComparison">
-							<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-							<dcsset:comparisonType>Equal</dcsset:comparisonType>
-							<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
-							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
-						</dcsset:item>
 					</dcsset:filter>
 					<dcsset:order>
 						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
@@ -6344,7 +6234,7 @@ WHERE
 						<dcsset:groupItems>
 							<dcsset:item xsi:type="dcsset:GroupItemField">
 								<dcsset:field>Account</dcsset:field>
-								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
 								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -6393,12 +6283,6 @@ WHERE
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherExpense</dcsset:right>
 							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
 						</dcsset:item>
-						<dcsset:item xsi:type="dcsset:FilterItemComparison">
-							<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-							<dcsset:comparisonType>Equal</dcsset:comparisonType>
-							<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
-							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
-						</dcsset:item>
 					</dcsset:filter>
 					<dcsset:order>
 						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
@@ -6428,7 +6312,7 @@ WHERE
 						<dcsset:groupItems>
 							<dcsset:item xsi:type="dcsset:GroupItemField">
 								<dcsset:field>Account</dcsset:field>
-								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
 								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -6471,11 +6355,6 @@ WHERE
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherIncome</dcsset:right>
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherExpense</dcsset:right>
 						</dcsset:item>
-						<dcsset:item xsi:type="dcsset:FilterItemComparison">
-							<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-							<dcsset:comparisonType>Equal</dcsset:comparisonType>
-							<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
-						</dcsset:item>
 					</dcsset:filter>
 					<dcsset:order>
 						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
@@ -6493,12 +6372,22 @@ WHERE
 					</dcsset:outputParameters>
 				</dcsset:row>
 				<dcsset:row>
-					<dcsset:name>IncomeTax</dcsset:name>
+					<dcsset:name>AccountType</dcsset:name>
+					<dcsset:groupItems>
+						<dcsset:item xsi:type="dcsset:GroupItemField">
+							<dcsset:field>AccountType</dcsset:field>
+							<dcsset:groupType>Items</dcsset:groupType>
+							<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+							<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+							<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+						</dcsset:item>
+					</dcsset:groupItems>
 					<dcsset:filter>
 						<dcsset:item xsi:type="dcsset:FilterItemComparison">
-							<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
+							<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
 							<dcsset:comparisonType>Equal</dcsset:comparisonType>
-							<dcsset:right xsi:type="xs:boolean">true</dcsset:right>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.IncomeTaxExpense</dcsset:right>
+							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
 						</dcsset:item>
 					</dcsset:filter>
 					<dcsset:order>
@@ -6511,38 +6400,45 @@ WHERE
 					</dcsset:selection>
 					<dcsset:outputParameters>
 						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+							<dcscor:parameter>TotalsPlacement</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">End</dcscor:value>
+						</dcscor:item>
+						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 							<dcscor:parameter>FilterOutput</dcscor:parameter>
 							<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
 						</dcscor:item>
 					</dcsset:outputParameters>
+					<dcsset:item>
+						<dcsset:name>Account</dcsset:name>
+						<dcsset:groupItems>
+							<dcsset:item xsi:type="dcsset:GroupItemField">
+								<dcsset:field>Account</dcsset:field>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
+								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+							</dcsset:item>
+						</dcsset:groupItems>
+						<dcsset:order>
+							<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
+						</dcsset:order>
+						<dcsset:selection>
+							<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+						</dcsset:selection>
+					</dcsset:item>
 				</dcsset:row>
 				<dcsset:row>
 					<dcsset:name>NetIncome</dcsset:name>
 					<dcsset:filter>
-						<dcsset:item xsi:type="dcsset:FilterItemGroup">
-							<dcsset:groupType>OrGroup</dcsset:groupType>
-							<dcsset:item xsi:type="dcsset:FilterItemGroup">
-								<dcsset:groupType>AndGroup</dcsset:groupType>
-								<dcsset:item xsi:type="dcsset:FilterItemComparison">
-									<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
-									<dcsset:comparisonType>InList</dcsset:comparisonType>
-									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Income</dcsset:right>
-									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.CostOfSales</dcsset:right>
-									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Expense</dcsset:right>
-									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherIncome</dcsset:right>
-									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherExpense</dcsset:right>
-								</dcsset:item>
-								<dcsset:item xsi:type="dcsset:FilterItemComparison">
-									<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-									<dcsset:comparisonType>Equal</dcsset:comparisonType>
-									<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
-								</dcsset:item>
-							</dcsset:item>
-							<dcsset:item xsi:type="dcsset:FilterItemComparison">
-								<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-								<dcsset:comparisonType>Equal</dcsset:comparisonType>
-								<dcsset:right xsi:type="xs:boolean">true</dcsset:right>
-							</dcsset:item>
+						<dcsset:item xsi:type="dcsset:FilterItemComparison">
+							<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
+							<dcsset:comparisonType>InList</dcsset:comparisonType>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Income</dcsset:right>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.CostOfSales</dcsset:right>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Expense</dcsset:right>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherIncome</dcsset:right>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherExpense</dcsset:right>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.IncomeTaxExpense</dcsset:right>
 						</dcsset:item>
 					</dcsset:filter>
 					<dcsset:order>
@@ -6576,13 +6472,6 @@ WHERE
 			</v8:item>
 		</dcsset:presentation>
 		<dcsset:settings xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows">
-			<dcsset:filter>
-				<dcsset:item xsi:type="dcsset:FilterItemComparison">
-					<dcsset:left xsi:type="dcscor:Field">OurCompany</dcsset:left>
-					<dcsset:comparisonType>Filled</dcsset:comparisonType>
-					<dcsset:viewMode>Inaccessible</dcsset:viewMode>
-				</dcsset:item>
-			</dcsset:filter>
 			<dcsset:dataParameters>
 				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 					<dcscor:parameter>Period</dcscor:parameter>
@@ -6602,7 +6491,7 @@ WHERE
 					<dcsset:orderType>Asc</dcsset:orderType>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:OrderItemField">
-					<dcsset:field>YearPeriod</dcsset:field>
+					<dcsset:field>MonthPeriod</dcsset:field>
 					<dcsset:orderType>Asc</dcsset:orderType>
 				</dcsset:item>
 			</dcsset:order>
@@ -6655,6 +6544,9 @@ WHERE
 				<dcsset:order>
 					<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
 				</dcsset:order>
+				<dcsset:selection>
+					<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+				</dcsset:selection>
 				<dcsset:outputParameters>
 					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 						<dcscor:use>false</dcscor:use>
@@ -6735,12 +6627,6 @@ WHERE
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Income</dcsset:right>
 							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
 						</dcsset:item>
-						<dcsset:item xsi:type="dcsset:FilterItemComparison">
-							<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-							<dcsset:comparisonType>Equal</dcsset:comparisonType>
-							<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
-							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
-						</dcsset:item>
 					</dcsset:filter>
 					<dcsset:order>
 						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
@@ -6770,7 +6656,7 @@ WHERE
 						<dcsset:groupItems>
 							<dcsset:item xsi:type="dcsset:GroupItemField">
 								<dcsset:field>Account</dcsset:field>
-								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
 								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -6819,12 +6705,6 @@ WHERE
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.CostOfSales</dcsset:right>
 							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
 						</dcsset:item>
-						<dcsset:item xsi:type="dcsset:FilterItemComparison">
-							<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-							<dcsset:comparisonType>Equal</dcsset:comparisonType>
-							<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
-							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
-						</dcsset:item>
 					</dcsset:filter>
 					<dcsset:order>
 						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
@@ -6854,7 +6734,7 @@ WHERE
 						<dcsset:groupItems>
 							<dcsset:item xsi:type="dcsset:GroupItemField">
 								<dcsset:field>Account</dcsset:field>
-								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
 								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -6894,11 +6774,6 @@ WHERE
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Income</dcsset:right>
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.CostOfSales</dcsset:right>
 						</dcsset:item>
-						<dcsset:item xsi:type="dcsset:FilterItemComparison">
-							<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-							<dcsset:comparisonType>Equal</dcsset:comparisonType>
-							<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
-						</dcsset:item>
 					</dcsset:filter>
 					<dcsset:order>
 						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
@@ -6933,12 +6808,6 @@ WHERE
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Expense</dcsset:right>
 							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
 						</dcsset:item>
-						<dcsset:item xsi:type="dcsset:FilterItemComparison">
-							<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-							<dcsset:comparisonType>Equal</dcsset:comparisonType>
-							<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
-							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
-						</dcsset:item>
 					</dcsset:filter>
 					<dcsset:order>
 						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
@@ -6968,7 +6837,7 @@ WHERE
 						<dcsset:groupItems>
 							<dcsset:item xsi:type="dcsset:GroupItemField">
 								<dcsset:field>Account</dcsset:field>
-								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
 								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -7009,11 +6878,6 @@ WHERE
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.CostOfSales</dcsset:right>
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Expense</dcsset:right>
 						</dcsset:item>
-						<dcsset:item xsi:type="dcsset:FilterItemComparison">
-							<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-							<dcsset:comparisonType>Equal</dcsset:comparisonType>
-							<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
-						</dcsset:item>
 					</dcsset:filter>
 					<dcsset:order>
 						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
@@ -7048,12 +6912,6 @@ WHERE
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherIncome</dcsset:right>
 							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
 						</dcsset:item>
-						<dcsset:item xsi:type="dcsset:FilterItemComparison">
-							<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-							<dcsset:comparisonType>Equal</dcsset:comparisonType>
-							<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
-							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
-						</dcsset:item>
 					</dcsset:filter>
 					<dcsset:order>
 						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
@@ -7083,7 +6941,7 @@ WHERE
 						<dcsset:groupItems>
 							<dcsset:item xsi:type="dcsset:GroupItemField">
 								<dcsset:field>Account</dcsset:field>
-								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
 								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -7132,12 +6990,6 @@ WHERE
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherExpense</dcsset:right>
 							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
 						</dcsset:item>
-						<dcsset:item xsi:type="dcsset:FilterItemComparison">
-							<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-							<dcsset:comparisonType>Equal</dcsset:comparisonType>
-							<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
-							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
-						</dcsset:item>
 					</dcsset:filter>
 					<dcsset:order>
 						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
@@ -7167,7 +7019,7 @@ WHERE
 						<dcsset:groupItems>
 							<dcsset:item xsi:type="dcsset:GroupItemField">
 								<dcsset:field>Account</dcsset:field>
-								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
 								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -7210,11 +7062,6 @@ WHERE
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherIncome</dcsset:right>
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherExpense</dcsset:right>
 						</dcsset:item>
-						<dcsset:item xsi:type="dcsset:FilterItemComparison">
-							<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-							<dcsset:comparisonType>Equal</dcsset:comparisonType>
-							<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
-						</dcsset:item>
 					</dcsset:filter>
 					<dcsset:order>
 						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
@@ -7232,12 +7079,22 @@ WHERE
 					</dcsset:outputParameters>
 				</dcsset:row>
 				<dcsset:row>
-					<dcsset:name>IncomeTax</dcsset:name>
+					<dcsset:name>AccountType</dcsset:name>
+					<dcsset:groupItems>
+						<dcsset:item xsi:type="dcsset:GroupItemField">
+							<dcsset:field>AccountType</dcsset:field>
+							<dcsset:groupType>Items</dcsset:groupType>
+							<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+							<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+							<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+						</dcsset:item>
+					</dcsset:groupItems>
 					<dcsset:filter>
 						<dcsset:item xsi:type="dcsset:FilterItemComparison">
-							<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
+							<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
 							<dcsset:comparisonType>Equal</dcsset:comparisonType>
-							<dcsset:right xsi:type="xs:boolean">true</dcsset:right>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.IncomeTaxExpense</dcsset:right>
+							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
 						</dcsset:item>
 					</dcsset:filter>
 					<dcsset:order>
@@ -7250,38 +7107,45 @@ WHERE
 					</dcsset:selection>
 					<dcsset:outputParameters>
 						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+							<dcscor:parameter>TotalsPlacement</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">End</dcscor:value>
+						</dcscor:item>
+						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 							<dcscor:parameter>FilterOutput</dcscor:parameter>
 							<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
 						</dcscor:item>
 					</dcsset:outputParameters>
+					<dcsset:item>
+						<dcsset:name>Account</dcsset:name>
+						<dcsset:groupItems>
+							<dcsset:item xsi:type="dcsset:GroupItemField">
+								<dcsset:field>Account</dcsset:field>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
+								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+							</dcsset:item>
+						</dcsset:groupItems>
+						<dcsset:order>
+							<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
+						</dcsset:order>
+						<dcsset:selection>
+							<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+						</dcsset:selection>
+					</dcsset:item>
 				</dcsset:row>
 				<dcsset:row>
 					<dcsset:name>NetIncome</dcsset:name>
 					<dcsset:filter>
-						<dcsset:item xsi:type="dcsset:FilterItemGroup">
-							<dcsset:groupType>OrGroup</dcsset:groupType>
-							<dcsset:item xsi:type="dcsset:FilterItemGroup">
-								<dcsset:groupType>AndGroup</dcsset:groupType>
-								<dcsset:item xsi:type="dcsset:FilterItemComparison">
-									<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
-									<dcsset:comparisonType>InList</dcsset:comparisonType>
-									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Income</dcsset:right>
-									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.CostOfSales</dcsset:right>
-									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Expense</dcsset:right>
-									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherIncome</dcsset:right>
-									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherExpense</dcsset:right>
-								</dcsset:item>
-								<dcsset:item xsi:type="dcsset:FilterItemComparison">
-									<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-									<dcsset:comparisonType>Equal</dcsset:comparisonType>
-									<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
-								</dcsset:item>
-							</dcsset:item>
-							<dcsset:item xsi:type="dcsset:FilterItemComparison">
-								<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-								<dcsset:comparisonType>Equal</dcsset:comparisonType>
-								<dcsset:right xsi:type="xs:boolean">true</dcsset:right>
-							</dcsset:item>
+						<dcsset:item xsi:type="dcsset:FilterItemComparison">
+							<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
+							<dcsset:comparisonType>InList</dcsset:comparisonType>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Income</dcsset:right>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.CostOfSales</dcsset:right>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Expense</dcsset:right>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherIncome</dcsset:right>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherExpense</dcsset:right>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.IncomeTaxExpense</dcsset:right>
 						</dcsset:item>
 					</dcsset:filter>
 					<dcsset:order>
@@ -7315,13 +7179,6 @@ WHERE
 			</v8:item>
 		</dcsset:presentation>
 		<dcsset:settings xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows">
-			<dcsset:filter>
-				<dcsset:item xsi:type="dcsset:FilterItemComparison">
-					<dcsset:left xsi:type="dcscor:Field">OurCompany</dcsset:left>
-					<dcsset:comparisonType>Filled</dcsset:comparisonType>
-					<dcsset:viewMode>Inaccessible</dcsset:viewMode>
-				</dcsset:item>
-			</dcsset:filter>
 			<dcsset:dataParameters>
 				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 					<dcscor:parameter>Period</dcscor:parameter>
@@ -7341,7 +7198,7 @@ WHERE
 					<dcsset:orderType>Asc</dcsset:orderType>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:OrderItemField">
-					<dcsset:field>YearPeriod</dcsset:field>
+					<dcsset:field>WeekPeriod</dcsset:field>
 					<dcsset:orderType>Asc</dcsset:orderType>
 				</dcsset:item>
 			</dcsset:order>
@@ -7394,6 +7251,9 @@ WHERE
 				<dcsset:order>
 					<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
 				</dcsset:order>
+				<dcsset:selection>
+					<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+				</dcsset:selection>
 				<dcsset:outputParameters>
 					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 						<dcscor:use>false</dcscor:use>
@@ -7474,12 +7334,6 @@ WHERE
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Income</dcsset:right>
 							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
 						</dcsset:item>
-						<dcsset:item xsi:type="dcsset:FilterItemComparison">
-							<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-							<dcsset:comparisonType>Equal</dcsset:comparisonType>
-							<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
-							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
-						</dcsset:item>
 					</dcsset:filter>
 					<dcsset:order>
 						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
@@ -7509,7 +7363,7 @@ WHERE
 						<dcsset:groupItems>
 							<dcsset:item xsi:type="dcsset:GroupItemField">
 								<dcsset:field>Account</dcsset:field>
-								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
 								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -7558,12 +7412,6 @@ WHERE
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.CostOfSales</dcsset:right>
 							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
 						</dcsset:item>
-						<dcsset:item xsi:type="dcsset:FilterItemComparison">
-							<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-							<dcsset:comparisonType>Equal</dcsset:comparisonType>
-							<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
-							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
-						</dcsset:item>
 					</dcsset:filter>
 					<dcsset:order>
 						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
@@ -7593,7 +7441,7 @@ WHERE
 						<dcsset:groupItems>
 							<dcsset:item xsi:type="dcsset:GroupItemField">
 								<dcsset:field>Account</dcsset:field>
-								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
 								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -7633,11 +7481,6 @@ WHERE
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Income</dcsset:right>
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.CostOfSales</dcsset:right>
 						</dcsset:item>
-						<dcsset:item xsi:type="dcsset:FilterItemComparison">
-							<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-							<dcsset:comparisonType>Equal</dcsset:comparisonType>
-							<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
-						</dcsset:item>
 					</dcsset:filter>
 					<dcsset:order>
 						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
@@ -7672,12 +7515,6 @@ WHERE
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Expense</dcsset:right>
 							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
 						</dcsset:item>
-						<dcsset:item xsi:type="dcsset:FilterItemComparison">
-							<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-							<dcsset:comparisonType>Equal</dcsset:comparisonType>
-							<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
-							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
-						</dcsset:item>
 					</dcsset:filter>
 					<dcsset:order>
 						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
@@ -7707,7 +7544,7 @@ WHERE
 						<dcsset:groupItems>
 							<dcsset:item xsi:type="dcsset:GroupItemField">
 								<dcsset:field>Account</dcsset:field>
-								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
 								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -7748,11 +7585,6 @@ WHERE
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.CostOfSales</dcsset:right>
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Expense</dcsset:right>
 						</dcsset:item>
-						<dcsset:item xsi:type="dcsset:FilterItemComparison">
-							<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-							<dcsset:comparisonType>Equal</dcsset:comparisonType>
-							<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
-						</dcsset:item>
 					</dcsset:filter>
 					<dcsset:order>
 						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
@@ -7787,12 +7619,6 @@ WHERE
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherIncome</dcsset:right>
 							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
 						</dcsset:item>
-						<dcsset:item xsi:type="dcsset:FilterItemComparison">
-							<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-							<dcsset:comparisonType>Equal</dcsset:comparisonType>
-							<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
-							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
-						</dcsset:item>
 					</dcsset:filter>
 					<dcsset:order>
 						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
@@ -7822,7 +7648,7 @@ WHERE
 						<dcsset:groupItems>
 							<dcsset:item xsi:type="dcsset:GroupItemField">
 								<dcsset:field>Account</dcsset:field>
-								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
 								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -7871,12 +7697,6 @@ WHERE
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherExpense</dcsset:right>
 							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
 						</dcsset:item>
-						<dcsset:item xsi:type="dcsset:FilterItemComparison">
-							<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-							<dcsset:comparisonType>Equal</dcsset:comparisonType>
-							<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
-							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
-						</dcsset:item>
 					</dcsset:filter>
 					<dcsset:order>
 						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
@@ -7906,7 +7726,7 @@ WHERE
 						<dcsset:groupItems>
 							<dcsset:item xsi:type="dcsset:GroupItemField">
 								<dcsset:field>Account</dcsset:field>
-								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
 								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -7949,11 +7769,6 @@ WHERE
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherIncome</dcsset:right>
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherExpense</dcsset:right>
 						</dcsset:item>
-						<dcsset:item xsi:type="dcsset:FilterItemComparison">
-							<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-							<dcsset:comparisonType>Equal</dcsset:comparisonType>
-							<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
-						</dcsset:item>
 					</dcsset:filter>
 					<dcsset:order>
 						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
@@ -7971,12 +7786,22 @@ WHERE
 					</dcsset:outputParameters>
 				</dcsset:row>
 				<dcsset:row>
-					<dcsset:name>IncomeTax</dcsset:name>
+					<dcsset:name>AccountType</dcsset:name>
+					<dcsset:groupItems>
+						<dcsset:item xsi:type="dcsset:GroupItemField">
+							<dcsset:field>AccountType</dcsset:field>
+							<dcsset:groupType>Items</dcsset:groupType>
+							<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+							<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+							<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+						</dcsset:item>
+					</dcsset:groupItems>
 					<dcsset:filter>
 						<dcsset:item xsi:type="dcsset:FilterItemComparison">
-							<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
+							<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
 							<dcsset:comparisonType>Equal</dcsset:comparisonType>
-							<dcsset:right xsi:type="xs:boolean">true</dcsset:right>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.IncomeTaxExpense</dcsset:right>
+							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
 						</dcsset:item>
 					</dcsset:filter>
 					<dcsset:order>
@@ -7989,38 +7814,45 @@ WHERE
 					</dcsset:selection>
 					<dcsset:outputParameters>
 						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+							<dcscor:parameter>TotalsPlacement</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">End</dcscor:value>
+						</dcscor:item>
+						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 							<dcscor:parameter>FilterOutput</dcscor:parameter>
 							<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
 						</dcscor:item>
 					</dcsset:outputParameters>
+					<dcsset:item>
+						<dcsset:name>Account</dcsset:name>
+						<dcsset:groupItems>
+							<dcsset:item xsi:type="dcsset:GroupItemField">
+								<dcsset:field>Account</dcsset:field>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
+								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+							</dcsset:item>
+						</dcsset:groupItems>
+						<dcsset:order>
+							<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
+						</dcsset:order>
+						<dcsset:selection>
+							<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+						</dcsset:selection>
+					</dcsset:item>
 				</dcsset:row>
 				<dcsset:row>
 					<dcsset:name>NetIncome</dcsset:name>
 					<dcsset:filter>
-						<dcsset:item xsi:type="dcsset:FilterItemGroup">
-							<dcsset:groupType>OrGroup</dcsset:groupType>
-							<dcsset:item xsi:type="dcsset:FilterItemGroup">
-								<dcsset:groupType>AndGroup</dcsset:groupType>
-								<dcsset:item xsi:type="dcsset:FilterItemComparison">
-									<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
-									<dcsset:comparisonType>InList</dcsset:comparisonType>
-									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Income</dcsset:right>
-									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.CostOfSales</dcsset:right>
-									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Expense</dcsset:right>
-									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherIncome</dcsset:right>
-									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherExpense</dcsset:right>
-								</dcsset:item>
-								<dcsset:item xsi:type="dcsset:FilterItemComparison">
-									<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-									<dcsset:comparisonType>Equal</dcsset:comparisonType>
-									<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
-								</dcsset:item>
-							</dcsset:item>
-							<dcsset:item xsi:type="dcsset:FilterItemComparison">
-								<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-								<dcsset:comparisonType>Equal</dcsset:comparisonType>
-								<dcsset:right xsi:type="xs:boolean">true</dcsset:right>
-							</dcsset:item>
+						<dcsset:item xsi:type="dcsset:FilterItemComparison">
+							<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
+							<dcsset:comparisonType>InList</dcsset:comparisonType>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Income</dcsset:right>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.CostOfSales</dcsset:right>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Expense</dcsset:right>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherIncome</dcsset:right>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherExpense</dcsset:right>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.IncomeTaxExpense</dcsset:right>
 						</dcsset:item>
 					</dcsset:filter>
 					<dcsset:order>
@@ -8054,13 +7886,6 @@ WHERE
 			</v8:item>
 		</dcsset:presentation>
 		<dcsset:settings xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows">
-			<dcsset:filter>
-				<dcsset:item xsi:type="dcsset:FilterItemComparison">
-					<dcsset:left xsi:type="dcscor:Field">OurCompany</dcsset:left>
-					<dcsset:comparisonType>Filled</dcsset:comparisonType>
-					<dcsset:viewMode>Inaccessible</dcsset:viewMode>
-				</dcsset:item>
-			</dcsset:filter>
 			<dcsset:dataParameters>
 				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 					<dcscor:parameter>Period</dcscor:parameter>
@@ -8080,7 +7905,7 @@ WHERE
 					<dcsset:orderType>Asc</dcsset:orderType>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:OrderItemField">
-					<dcsset:field>YearPeriod</dcsset:field>
+					<dcsset:field>DayPeriod</dcsset:field>
 					<dcsset:orderType>Asc</dcsset:orderType>
 				</dcsset:item>
 			</dcsset:order>
@@ -8133,6 +7958,9 @@ WHERE
 				<dcsset:order>
 					<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
 				</dcsset:order>
+				<dcsset:selection>
+					<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+				</dcsset:selection>
 				<dcsset:outputParameters>
 					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 						<dcscor:use>false</dcscor:use>
@@ -8213,12 +8041,6 @@ WHERE
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Income</dcsset:right>
 							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
 						</dcsset:item>
-						<dcsset:item xsi:type="dcsset:FilterItemComparison">
-							<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-							<dcsset:comparisonType>Equal</dcsset:comparisonType>
-							<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
-							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
-						</dcsset:item>
 					</dcsset:filter>
 					<dcsset:order>
 						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
@@ -8248,7 +8070,7 @@ WHERE
 						<dcsset:groupItems>
 							<dcsset:item xsi:type="dcsset:GroupItemField">
 								<dcsset:field>Account</dcsset:field>
-								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
 								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -8297,12 +8119,6 @@ WHERE
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.CostOfSales</dcsset:right>
 							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
 						</dcsset:item>
-						<dcsset:item xsi:type="dcsset:FilterItemComparison">
-							<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-							<dcsset:comparisonType>Equal</dcsset:comparisonType>
-							<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
-							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
-						</dcsset:item>
 					</dcsset:filter>
 					<dcsset:order>
 						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
@@ -8332,7 +8148,7 @@ WHERE
 						<dcsset:groupItems>
 							<dcsset:item xsi:type="dcsset:GroupItemField">
 								<dcsset:field>Account</dcsset:field>
-								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
 								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -8372,11 +8188,6 @@ WHERE
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Income</dcsset:right>
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.CostOfSales</dcsset:right>
 						</dcsset:item>
-						<dcsset:item xsi:type="dcsset:FilterItemComparison">
-							<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-							<dcsset:comparisonType>Equal</dcsset:comparisonType>
-							<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
-						</dcsset:item>
 					</dcsset:filter>
 					<dcsset:order>
 						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
@@ -8411,12 +8222,6 @@ WHERE
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Expense</dcsset:right>
 							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
 						</dcsset:item>
-						<dcsset:item xsi:type="dcsset:FilterItemComparison">
-							<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-							<dcsset:comparisonType>Equal</dcsset:comparisonType>
-							<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
-							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
-						</dcsset:item>
 					</dcsset:filter>
 					<dcsset:order>
 						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
@@ -8446,7 +8251,7 @@ WHERE
 						<dcsset:groupItems>
 							<dcsset:item xsi:type="dcsset:GroupItemField">
 								<dcsset:field>Account</dcsset:field>
-								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
 								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -8487,11 +8292,6 @@ WHERE
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.CostOfSales</dcsset:right>
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Expense</dcsset:right>
 						</dcsset:item>
-						<dcsset:item xsi:type="dcsset:FilterItemComparison">
-							<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-							<dcsset:comparisonType>Equal</dcsset:comparisonType>
-							<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
-						</dcsset:item>
 					</dcsset:filter>
 					<dcsset:order>
 						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
@@ -8526,12 +8326,6 @@ WHERE
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherIncome</dcsset:right>
 							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
 						</dcsset:item>
-						<dcsset:item xsi:type="dcsset:FilterItemComparison">
-							<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-							<dcsset:comparisonType>Equal</dcsset:comparisonType>
-							<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
-							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
-						</dcsset:item>
 					</dcsset:filter>
 					<dcsset:order>
 						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
@@ -8561,7 +8355,7 @@ WHERE
 						<dcsset:groupItems>
 							<dcsset:item xsi:type="dcsset:GroupItemField">
 								<dcsset:field>Account</dcsset:field>
-								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
 								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -8610,12 +8404,6 @@ WHERE
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherExpense</dcsset:right>
 							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
 						</dcsset:item>
-						<dcsset:item xsi:type="dcsset:FilterItemComparison">
-							<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-							<dcsset:comparisonType>Equal</dcsset:comparisonType>
-							<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
-							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
-						</dcsset:item>
 					</dcsset:filter>
 					<dcsset:order>
 						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
@@ -8645,7 +8433,7 @@ WHERE
 						<dcsset:groupItems>
 							<dcsset:item xsi:type="dcsset:GroupItemField">
 								<dcsset:field>Account</dcsset:field>
-								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
 								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
@@ -8688,11 +8476,6 @@ WHERE
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherIncome</dcsset:right>
 							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherExpense</dcsset:right>
 						</dcsset:item>
-						<dcsset:item xsi:type="dcsset:FilterItemComparison">
-							<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-							<dcsset:comparisonType>Equal</dcsset:comparisonType>
-							<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
-						</dcsset:item>
 					</dcsset:filter>
 					<dcsset:order>
 						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
@@ -8710,12 +8493,22 @@ WHERE
 					</dcsset:outputParameters>
 				</dcsset:row>
 				<dcsset:row>
-					<dcsset:name>IncomeTax</dcsset:name>
+					<dcsset:name>AccountType</dcsset:name>
+					<dcsset:groupItems>
+						<dcsset:item xsi:type="dcsset:GroupItemField">
+							<dcsset:field>AccountType</dcsset:field>
+							<dcsset:groupType>Items</dcsset:groupType>
+							<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+							<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+							<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+						</dcsset:item>
+					</dcsset:groupItems>
 					<dcsset:filter>
 						<dcsset:item xsi:type="dcsset:FilterItemComparison">
-							<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
+							<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
 							<dcsset:comparisonType>Equal</dcsset:comparisonType>
-							<dcsset:right xsi:type="xs:boolean">true</dcsset:right>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.IncomeTaxExpense</dcsset:right>
+							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
 						</dcsset:item>
 					</dcsset:filter>
 					<dcsset:order>
@@ -8728,38 +8521,45 @@ WHERE
 					</dcsset:selection>
 					<dcsset:outputParameters>
 						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+							<dcscor:parameter>TotalsPlacement</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">End</dcscor:value>
+						</dcscor:item>
+						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 							<dcscor:parameter>FilterOutput</dcscor:parameter>
 							<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
 						</dcscor:item>
 					</dcsset:outputParameters>
+					<dcsset:item>
+						<dcsset:name>Account</dcsset:name>
+						<dcsset:groupItems>
+							<dcsset:item xsi:type="dcsset:GroupItemField">
+								<dcsset:field>Account</dcsset:field>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
+								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+							</dcsset:item>
+						</dcsset:groupItems>
+						<dcsset:order>
+							<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
+						</dcsset:order>
+						<dcsset:selection>
+							<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+						</dcsset:selection>
+					</dcsset:item>
 				</dcsset:row>
 				<dcsset:row>
 					<dcsset:name>NetIncome</dcsset:name>
 					<dcsset:filter>
-						<dcsset:item xsi:type="dcsset:FilterItemGroup">
-							<dcsset:groupType>OrGroup</dcsset:groupType>
-							<dcsset:item xsi:type="dcsset:FilterItemGroup">
-								<dcsset:groupType>AndGroup</dcsset:groupType>
-								<dcsset:item xsi:type="dcsset:FilterItemComparison">
-									<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
-									<dcsset:comparisonType>InList</dcsset:comparisonType>
-									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Income</dcsset:right>
-									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.CostOfSales</dcsset:right>
-									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Expense</dcsset:right>
-									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherIncome</dcsset:right>
-									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherExpense</dcsset:right>
-								</dcsset:item>
-								<dcsset:item xsi:type="dcsset:FilterItemComparison">
-									<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-									<dcsset:comparisonType>Equal</dcsset:comparisonType>
-									<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
-								</dcsset:item>
-							</dcsset:item>
-							<dcsset:item xsi:type="dcsset:FilterItemComparison">
-								<dcsset:left xsi:type="dcscor:Field">IsTaxAccount</dcsset:left>
-								<dcsset:comparisonType>Equal</dcsset:comparisonType>
-								<dcsset:right xsi:type="xs:boolean">true</dcsset:right>
-							</dcsset:item>
+						<dcsset:item xsi:type="dcsset:FilterItemComparison">
+							<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
+							<dcsset:comparisonType>InList</dcsset:comparisonType>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Income</dcsset:right>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.CostOfSales</dcsset:right>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Expense</dcsset:right>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherIncome</dcsset:right>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherExpense</dcsset:right>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.IncomeTaxExpense</dcsset:right>
 						</dcsset:item>
 					</dcsset:filter>
 					<dcsset:order>

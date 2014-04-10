@@ -2,6 +2,17 @@
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
+	If NOT Object.Ref = Catalogs.Addresses.EmptyRef() Then
+		Items.Owner.ReadOnly = True;
+	EndIf;
+
+	
+	If Object.Owner.Vendor = True Then
+		Items.RemitTo.Visible = True;
+	Else
+		Items.RemitTo.Visible = False;
+	EndIf;
+	
 	CF1AName = Constants.CF1AName.Get();
 	If CF1AName <> "" Then
 		Items.CF1String.Title = CF1AName;
@@ -28,9 +39,6 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Items.CF5String.Title = CF5AName;
 	EndIf;
 	
-	If Object.Owner.Customer = False Then
-		Items.SalesTaxCode.Visible = False;	
-	EndIf;
 EndProcedure
 
 &AtClient
@@ -85,6 +93,17 @@ Procedure DefaultShippingOnChangeAtServer()
   EndIf;
   
 EndProcedure
+
+&AtServer
+Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
+	
+	If NOT Object.Ref = Catalogs.Addresses.EmptyRef() Then
+		Items.Owner.ReadOnly = True;
+	EndIf;
+
+EndProcedure
+
+
 
 
 

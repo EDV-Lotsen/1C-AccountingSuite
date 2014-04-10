@@ -1,0 +1,244 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<CommandInterface xmlns="http://v8.1c.ru/8.3/xcf/extrnprops" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<CommandsVisibility>
+		<Command name="Report.ARAging.StandardCommand.Open">
+			<Visibility>
+				<xr:Common>true</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="Report.ARAgingDocument.StandardCommand.Open">
+			<Visibility>
+				<xr:Common>true</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="Report.SalesTransactionDetail.StandardCommand.Open">
+			<Visibility>
+				<xr:Common>true</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="Report.Projects.StandardCommand.Open">
+			<Visibility>
+				<xr:Common>true</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="Report.APAging.StandardCommand.Open">
+			<Visibility>
+				<xr:Common>true</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="Report.APAgingDocument.StandardCommand.Open">
+			<Visibility>
+				<xr:Common>true</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="Report.PurchasingTransactionDetail.StandardCommand.Open">
+			<Visibility>
+				<xr:Common>true</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="Report.InventoryBalances.StandardCommand.Open">
+			<Visibility>
+				<xr:Common>true</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="Report.ItemActivityReport.StandardCommand.Open">
+			<Visibility>
+				<xr:Common>true</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="Report.GeneralLedger.StandardCommand.Open">
+			<Visibility>
+				<xr:Common>true</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="Report.TrialBalance.StandardCommand.Open">
+			<Visibility>
+				<xr:Common>true</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="Report.IncomeStatement.StandardCommand.Open">
+			<Visibility>
+				<xr:Common>true</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="Report.IncomeStatementCashBasis.StandardCommand.Open">
+			<Visibility>
+				<xr:Common>true</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="Report.BalanceSheet.StandardCommand.Open">
+			<Visibility>
+				<xr:Common>true</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="Report.BalanceSheet_old.StandardCommand.Open">
+			<Visibility>
+				<xr:Common>false</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="Report.Vendors1099.StandardCommand.Open">
+			<Visibility>
+				<xr:Common>true</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="Report.BankBalances.StandardCommand.Open">
+			<Visibility>
+				<xr:Common>true</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="Report.CheckRegister.StandardCommand.Open">
+			<Visibility>
+				<xr:Common>true</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="Report.BudgetPlanActual.StandardCommand.Open">
+			<Visibility>
+				<xr:Common>true</xr:Common>
+			</Visibility>
+		</Command>
+	</CommandsVisibility>
+	<CommandsPlacement>
+		<Command name="Report.ARAging.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Sales</CommandGroup>
+			<Placement>Auto</Placement>
+		</Command>
+		<Command name="Report.ARAgingDocument.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Sales</CommandGroup>
+			<Placement>Auto</Placement>
+		</Command>
+		<Command name="Report.SalesTransactionDetail.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Sales</CommandGroup>
+			<Placement>Auto</Placement>
+		</Command>
+		<Command name="Report.Projects.StandardCommand.Open">
+			<CommandGroup>CommandGroup.ProjectTime</CommandGroup>
+			<Placement>Auto</Placement>
+		</Command>
+		<Command name="Report.APAging.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Purchases</CommandGroup>
+			<Placement>Auto</Placement>
+		</Command>
+		<Command name="Report.APAgingDocument.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Purchases</CommandGroup>
+			<Placement>Auto</Placement>
+		</Command>
+		<Command name="Report.PurchasingTransactionDetail.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Purchases</CommandGroup>
+			<Placement>Auto</Placement>
+		</Command>
+		<Command name="Report.InventoryBalances.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Inventory</CommandGroup>
+			<Placement>Auto</Placement>
+		</Command>
+		<Command name="Report.ItemActivityReport.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Inventory</CommandGroup>
+			<Placement>Auto</Placement>
+		</Command>
+		<Command name="Report.GeneralLedger.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Accounting</CommandGroup>
+			<Placement>Auto</Placement>
+		</Command>
+		<Command name="Report.TrialBalance.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Accounting</CommandGroup>
+			<Placement>Auto</Placement>
+		</Command>
+		<Command name="Report.IncomeStatement.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Accounting</CommandGroup>
+			<Placement>Auto</Placement>
+		</Command>
+		<Command name="Report.IncomeStatementCashBasis.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Accounting</CommandGroup>
+			<Placement>Auto</Placement>
+		</Command>
+		<Command name="Report.BalanceSheet.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Accounting</CommandGroup>
+			<Placement>Auto</Placement>
+		</Command>
+		<Command name="Report.BalanceSheet_old.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Accounting</CommandGroup>
+			<Placement>Auto</Placement>
+		</Command>
+		<Command name="Report.Vendors1099.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Accounting</CommandGroup>
+			<Placement>Auto</Placement>
+		</Command>
+		<Command name="Report.BankBalances.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Accounting</CommandGroup>
+			<Placement>Auto</Placement>
+		</Command>
+		<Command name="Report.CheckRegister.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Accounting</CommandGroup>
+			<Placement>Auto</Placement>
+		</Command>
+		<Command name="Report.BudgetPlanActual.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Accounting</CommandGroup>
+			<Placement>Auto</Placement>
+		</Command>
+	</CommandsPlacement>
+	<CommandsOrder>
+		<Command name="Report.ARAging.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Sales</CommandGroup>
+		</Command>
+		<Command name="Report.ARAgingDocument.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Sales</CommandGroup>
+		</Command>
+		<Command name="Report.SalesTransactionDetail.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Sales</CommandGroup>
+		</Command>
+		<Command name="Report.Projects.StandardCommand.Open">
+			<CommandGroup>CommandGroup.ProjectTime</CommandGroup>
+		</Command>
+		<Command name="Report.APAging.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Purchases</CommandGroup>
+		</Command>
+		<Command name="Report.APAgingDocument.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Purchases</CommandGroup>
+		</Command>
+		<Command name="Report.PurchasingTransactionDetail.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Purchases</CommandGroup>
+		</Command>
+		<Command name="Report.InventoryBalances.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Inventory</CommandGroup>
+		</Command>
+		<Command name="Report.ItemActivityReport.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Inventory</CommandGroup>
+		</Command>
+		<Command name="Report.GeneralLedger.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Accounting</CommandGroup>
+		</Command>
+		<Command name="Report.TrialBalance.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Accounting</CommandGroup>
+		</Command>
+		<Command name="Report.IncomeStatement.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Accounting</CommandGroup>
+		</Command>
+		<Command name="Report.IncomeStatementCashBasis.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Accounting</CommandGroup>
+		</Command>
+		<Command name="Report.BalanceSheet.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Accounting</CommandGroup>
+		</Command>
+		<Command name="Report.BalanceSheet_old.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Accounting</CommandGroup>
+		</Command>
+		<Command name="Report.Vendors1099.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Accounting</CommandGroup>
+		</Command>
+		<Command name="Report.BankBalances.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Accounting</CommandGroup>
+		</Command>
+		<Command name="Report.CheckRegister.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Accounting</CommandGroup>
+		</Command>
+		<Command name="Report.BudgetPlanActual.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Accounting</CommandGroup>
+		</Command>
+	</CommandsOrder>
+	<GroupsOrder>
+		<Group>CommandGroup.Sales</Group>
+		<Group>CommandGroup.ProjectTime</Group>
+		<Group>CommandGroup.Purchases</Group>
+		<Group>CommandGroup.Inventory</Group>
+		<Group>CommandGroup.Accounting</Group>
+	</GroupsOrder>
+</CommandInterface>

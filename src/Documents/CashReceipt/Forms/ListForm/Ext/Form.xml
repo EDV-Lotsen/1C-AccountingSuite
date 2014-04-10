@@ -36,29 +36,29 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="24"/>
-			<SearchStringAddition name="ListSearchString" id="46">
+			<SearchStringAddition name="ListSearchString" id="55">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="47"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="48"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="56"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="57"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="49">
+			<ViewStatusAddition name="ListViewStatus" id="58">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="50"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="51"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="59"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="60"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="52">
+			<SearchControlAddition name="ListSearchControl" id="61">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="53"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="54"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="62"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="63"/>
 			</SearchControlAddition>
 			<ChildItems>
 				<LabelField name="Date" id="4">
@@ -72,6 +72,11 @@
 					<DataPath>List.Number</DataPath>
 					<ContextMenu name="NumberContextMenu" id="7"/>
 					<ExtendedTooltip name="NumberExtendedTooltip" id="26"/>
+				</LabelField>
+				<LabelField name="RefNum" id="46">
+					<DataPath>List.RefNum</DataPath>
+					<ContextMenu name="RefNumContextMenu" id="47"/>
+					<ExtendedTooltip name="RefNumExtendedTooltip" id="48"/>
 				</LabelField>
 				<LabelField name="DepositT" id="40">
 					<DataPath>List.DepositT</DataPath>
@@ -117,6 +122,28 @@
 					<ContextMenu name="DocumentTotalRCContextMenu" id="17"/>
 					<ExtendedTooltip name="DocumentTotalRCExtendedTooltip" id="30"/>
 				</LabelField>
+				<LabelField name="BalanceRC" id="52">
+					<DataPath>List.BalanceRC</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Balance</v8:content>
+						</v8:item>
+					</Title>
+					<Format>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>NFD=2; NZ=0.00</v8:content>
+						</v8:item>
+					</Format>
+					<ContextMenu name="BalanceRCContextMenu" id="53"/>
+					<ExtendedTooltip name="BalanceRCExtendedTooltip" id="54"/>
+				</LabelField>
+				<LabelField name="Memo" id="49">
+					<DataPath>List.Memo</DataPath>
+					<ContextMenu name="MemoContextMenu" id="50"/>
+					<ExtendedTooltip name="MemoExtendedTooltip" id="51"/>
+				</LabelField>
 			</ChildItems>
 		</Table>
 	</ChildItems>
@@ -145,7 +172,7 @@
 		CASE
 		WHEN DocumentCashReceipt.DepositType = "1" 
 			THEN "Undeposited"
-		ELSE "Bank acc."
+		ELSE "Bank Acct."
 	END AS DepositT,
 	DocumentCashReceipt.Deposited,
 	DocumentCashReceipt.DocumentTotalRC,
@@ -165,9 +192,15 @@
 	DocumentCashReceipt.BalChange,
 	DocumentCashReceipt.CreditMemos,
 	DocumentCashReceipt.LineItems,
-	DocumentCashReceipt.PointInTime
+	DocumentCashReceipt.PointInTime,
+	ISNULL(GeneralJournalBalance.AmountBalance * -1, 0)   AS Balance,
+	ISNULL(GeneralJournalBalance.AmountRCBalance * -1, 0) AS BalanceRC
 FROM
-	Document.CashReceipt AS DocumentCashReceipt</QueryText>
+	Document.CashReceipt AS DocumentCashReceipt
+		LEFT JOIN AccountingRegister.GeneralJournal.Balance (,,, ExtDimension2 REFS Document.CashReceipt) AS GeneralJournalBalance
+		ON  (GeneralJournalBalance.Account = DocumentCashReceipt.ARAccount)
+		AND (GeneralJournalBalance.ExtDimension1 = DocumentCashReceipt.Company)
+		AND (GeneralJournalBalance.ExtDimension2 = DocumentCashReceipt.Ref)</QueryText>
 				<MainTable>Document.CashReceipt</MainTable>
 				<ListSettings>
 					<dcsset:filter>

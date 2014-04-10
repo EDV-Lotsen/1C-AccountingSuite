@@ -24,6 +24,8 @@ Procedure Posting(Cancel, Mode)
 		Record.AmountRC = TotalDepositsRC;
 	EndIf;
 	
+	RegisterRecords.ProjectData.Write = True;	
+	RegisterRecords.ClassData.Write = True;
 	For Each AccountLine in Accounts Do
 		If AccountLine.Amount > 0 Then
 			Record = RegisterRecords.GeneralJournal.AddCredit();
@@ -36,6 +38,21 @@ Procedure Posting(Cancel, Mode)
 			Record.Period = Date;
 			Record.AmountRC = AccountLine.Amount * -1;
 		EndIf;
+		
+		//Posting projects and classes
+		Record = RegisterRecords.ProjectData.Add();
+		Record.RecordType = AccumulationRecordType.Receipt;
+		Record.Period = Date;
+		Record.Project = AccountLine.Project;
+		Record.Amount = AccountLine.Amount;
+			
+		Record = RegisterRecords.ClassData.Add();
+		Record.RecordType = AccumulationRecordType.Receipt;
+		Record.Period = Date;
+		Record.Account = AccountLine.Account;
+		Record.Class = AccountLine.Class;
+		Record.Amount = AccountLine.Amount;
+
 	EndDo;
 	
 	// Writing bank reconciliation data
@@ -95,5 +112,11 @@ Procedure UndoPosting(Cancel)
 
 EndProcedure
 
+Procedure BeforeDelete(Cancel)
+	
+	TRRecordset = InformationRegisters.TransactionReconciliation.CreateRecordSet();
+	TRRecordset.Filter.Document.Set(ThisObject.Ref);
+	TRRecordset.Write(True);
 
+EndProcedure
 

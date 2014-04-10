@@ -23,6 +23,7 @@ EndProcedure
 
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
+	
 	If Constants.SubStatus.Get() = "" Then
 		Items.SubStatus.Title = "Status: Free Trial";
 		Items.Decoration1.Visible = False;
@@ -33,6 +34,9 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Items.Premium.Visible = False;
 		Items.Decoration1.Visible = True;
 	Endif;
+
+	
+	
 EndProcedure
 
 

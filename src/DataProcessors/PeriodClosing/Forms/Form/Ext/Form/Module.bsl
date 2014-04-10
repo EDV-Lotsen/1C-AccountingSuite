@@ -29,7 +29,7 @@ Procedure PeriodClosing(TransactionDate, RetainedEarningsAccount);
 					  | ChartOfAccounts.AccountType = VALUE(Enum.AccountTypes.CostOfSales) OR
 					  | ChartOfAccounts.AccountType = VALUE(Enum.AccountTypes.Expense) OR
 					  | ChartOfAccounts.AccountType = VALUE(Enum.AccountTypes.OtherExpense)");					  
-	Result = Query.Execute().Choose();
+	Result = Query.Execute().Select();
 		
 	While Result.Next() Do
 
@@ -60,7 +60,6 @@ Procedure PeriodClosing(TransactionDate, RetainedEarningsAccount);
 			
 			NewRow = Transaction.LineItems.Add();
 			NewRow.Account = Result.Ref;
-			NewRow.AccountDescription = Result.Ref.Description;
 			
 			If Result.Ref.AccountType = Enums.AccountTypes.Income OR
 				Result.Ref.AccountType = Enums.AccountTypes.OtherIncome Then
@@ -94,12 +93,10 @@ Procedure PeriodClosing(TransactionDate, RetainedEarningsAccount);
 	If TotalRE > 0 Then
 		NewRow = Transaction.LineItems.Add();
 		NewRow.Account = RetainedEarningsAccount;
-		NewRow.AccountDescription = RetainedEarningsAccount.Description;
 		NewRow.AmountCr = TotalRE;
 	ElsIf TotalRE < 0 Then
 		NewRow = Transaction.LineItems.Add();
 		NewRow.Account = RetainedEarningsAccount;
-		NewRow.AccountDescription = RetainedEarningsAccount.Description;
 		NewRow.AmountDr = TotalRE * -1;
 		TotalDr = TotalDr + TotalRE * -1;
     EndIf;

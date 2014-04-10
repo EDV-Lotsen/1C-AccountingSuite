@@ -33,7 +33,25 @@ Procedure Posting(Cancel, Mode)
 	
 	//AllowNegativeInventory = Constants.AllowNegativeInventory.Get();
 	
+	RegisterRecords.CashFlowData.Write = True;
+	
 	For Each CurRowLineItems In LineItems Do
+		
+		Record = RegisterRecords.CashFlowData.Add();
+		Record.RecordType = AccumulationRecordType.Receipt;
+		Record.Period = Date;
+		Record.Company = Company;
+		Record.Document = Ref;
+		If CurRowLineItems.Product.Type = Enums.InventoryTypes.Inventory Then
+			Record.Account = CurRowLineItems.Product.COGSAccount;
+		Else
+			Record.Account = CurRowLineItems.Product.InventoryOrExpenseAccount;
+		EndIf;
+		//Record.Account = CurRowLineItems.Product.InventoryOrExpenseAccount;
+		//Record.CashFlowSection = CurRowLineItems.Product.InventoryOrExpenseAccount.CashFlowSection;
+		Record.AmountRC = CurRowLineItems.LineTotal * ExchangeRate * -1;
+		//Record.PaymentMethod = PaymentMethod;
+
 				
 		If CurRowLineItems.Product.Type = Enums.InventoryTypes.Inventory Then
 						
@@ -133,7 +151,7 @@ Procedure Posting(Cancel, Mode)
 				                  |	LayerDate " + Sorting + "");
 				Query.SetParameter("Product", CurRowLineItems.Product);
 				Query.SetParameter("Location", Location);
-				Selection = Query.Execute().Choose();
+				Selection = Query.Execute().Select();
 				
 				While Selection.Next() Do
 					If ItemQty > 0 Then
@@ -287,7 +305,7 @@ Procedure Filling(FillingData, StandardProcessing)
 		ParentDocument = FillingData.Ref;
 		Currency = FillingData.Currency;
 		ExchangeRate = FillingData.ExchangeRate;
-		Location = FillingData.Location;
+		Location = FillingData.LocationActual;
 		//VATTotal = FillingData.VATTotal;
 		APAccount = FillingData.APAccount;
 		//PriceIncludesVAT = FillingData.PriceIncludesVAT;

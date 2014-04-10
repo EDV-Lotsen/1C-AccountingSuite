@@ -55,7 +55,7 @@ EndProcedure
 
 &AtClient
 Procedure ChartOfAccounts(Command)
-	OpenForm("ChartOfAccounts.ChartOfAccounts.Form.ListForm");
+	OpenForm("ChartOfAccounts.ChartOfAccounts.Form.AccountForm");
 EndProcedure
 
 &AtClient

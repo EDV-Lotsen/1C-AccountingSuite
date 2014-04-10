@@ -114,14 +114,14 @@ Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 	QueryResult = Query.Execute();
 	If QueryResult.IsEmpty() Then		
 	Else
-		Selection = QueryResult.Choose();
+		Selection = QueryResult.Select();
 		While Selection.Next() Do
 			
 			If Object.Description = Selection.Description Then
 				
 				Message = New UserMessage();
 				Message.Text=NStr("en='Currency name is not unique'");
-				Message.Field = "Object.Description";
+				//Message.Field = "Object.Description";
 				Message.Message();
 				Cancel = True;
 				Return;
