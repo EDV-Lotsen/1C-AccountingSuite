@@ -1,0 +1,181 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<ChildItems>
+		<LabelDecoration name="Decoration1" id="8">
+			<ContextMenu name="Decoration1ContextMenu" id="9"/>
+			<ExtendedTooltip name="Decoration1ExtendedTooltip" id="10"/>
+		</LabelDecoration>
+		<UsualGroup name="Group1" id="11">
+			<Group>Horizontal</Group>
+			<Representation>None</Representation>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="Group1ExtendedTooltip" id="12"/>
+			<ChildItems>
+				<Table name="SelectedDocumentList" id="1">
+					<Representation>List</Representation>
+					<CommandBarLocation>None</CommandBarLocation>
+					<AutoInsertNewRow>true</AutoInsertNewRow>
+					<EnableStartDrag>true</EnableStartDrag>
+					<EnableDrag>true</EnableDrag>
+					<DataPath>SelectedDocumentList</DataPath>
+					<SearchStringLocation>None</SearchStringLocation>
+					<ViewStatusLocation>None</ViewStatusLocation>
+					<SearchControlLocation>None</SearchControlLocation>
+					<RowFilter xsi:nil="true"/>
+					<ContextMenu name="SelectedDocumentListContextMenu" id="2"/>
+					<AutoCommandBar name="SelectedDocumentListCommandBar" id="3"/>
+					<ExtendedTooltip name="SelectedDocumentListExtendedTooltip" id="4"/>
+					<SearchStringAddition name="SelectedDocumentListSearchString" id="27">
+						<AdditionSource>
+							<Item>SelectedDocumentList</Item>
+							<Type>SearchStringRepresentation</Type>
+						</AdditionSource>
+						<ContextMenu name="SelectedDocumentListSearchStringContextMenu" id="28"/>
+						<ExtendedTooltip name="SelectedDocumentListSearchStringExtendedTooltip" id="29"/>
+					</SearchStringAddition>
+					<ViewStatusAddition name="SelectedDocumentListViewStatus" id="30">
+						<AdditionSource>
+							<Item>SelectedDocumentList</Item>
+							<Type>ViewStatusRepresentation</Type>
+						</AdditionSource>
+						<ContextMenu name="SelectedDocumentListViewStatusContextMenu" id="31"/>
+						<ExtendedTooltip name="SelectedDocumentListViewStatusExtendedTooltip" id="32"/>
+					</ViewStatusAddition>
+					<SearchControlAddition name="SelectedDocumentListSearchControl" id="33">
+						<AdditionSource>
+							<Item>SelectedDocumentList</Item>
+							<Type>SearchControl</Type>
+						</AdditionSource>
+						<ContextMenu name="SelectedDocumentListSearchControlContextMenu" id="34"/>
+						<ExtendedTooltip name="SelectedDocumentListSearchControlExtendedTooltip" id="35"/>
+					</SearchControlAddition>
+					<ChildItems>
+						<InputField name="SelectedDocumentListDocument" id="5">
+							<DataPath>SelectedDocumentList.Document</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="SelectedDocumentListDocumentContextMenu" id="6"/>
+							<ExtendedTooltip name="SelectedDocumentListDocumentExtendedTooltip" id="7"/>
+						</InputField>
+					</ChildItems>
+				</Table>
+				<UsualGroup name="Group2" id="13">
+					<Group>Vertical</Group>
+					<Representation>None</Representation>
+					<ShowTitle>false</ShowTitle>
+					<ExtendedTooltip name="Group2ExtendedTooltip" id="14"/>
+					<ChildItems>
+						<InputField name="EmailTo" id="15">
+							<DataPath>EmailTo</DataPath>
+							<ContextMenu name="EmailToContextMenu" id="16"/>
+							<ExtendedTooltip name="EmailToExtendedTooltip" id="17"/>
+						</InputField>
+						<InputField name="CCTo" id="18">
+							<DataPath>CCTo</DataPath>
+							<ContextMenu name="CCToContextMenu" id="19"/>
+							<ExtendedTooltip name="CCToExtendedTooltip" id="20"/>
+						</InputField>
+						<InputField name="Subject" id="21">
+							<DataPath>Subject</DataPath>
+							<ContextMenu name="SubjectContextMenu" id="22"/>
+							<ExtendedTooltip name="SubjectExtendedTooltip" id="23"/>
+						</InputField>
+						<InputField name="Body" id="24">
+							<DataPath>Body</DataPath>
+							<MultiLine>true</MultiLine>
+							<ContextMenu name="BodyContextMenu" id="25"/>
+							<ExtendedTooltip name="BodyExtendedTooltip" id="26"/>
+						</InputField>
+					</ChildItems>
+				</UsualGroup>
+			</ChildItems>
+		</UsualGroup>
+	</ChildItems>
+	<Attributes>
+		<Attribute name="SelectedDocumentList" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Selected document list</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>v8:ValueTable</v8:Type>
+			</Type>
+			<Columns>
+				<Column name="Document" id="1">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Document</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>cfg:DocumentRef.SalesInvoice</v8:Type>
+						<v8:Type>cfg:DocumentRef.SalesOrder</v8:Type>
+					</Type>
+				</Column>
+			</Columns>
+		</Attribute>
+		<Attribute name="EmailTo" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Email to</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="CCTo" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>CCTo</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="Subject" id="4">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Subject</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="Body" id="5">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Body</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+	</Attributes>
+</Form>

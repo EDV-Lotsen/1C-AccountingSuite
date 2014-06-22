@@ -51,18 +51,14 @@ Procedure BeforeWrite(Cancel, WriteParameters)
 	TotalCr = Object.LineItems.Total("AmountCr"); 
 	
 	Object.DocumentTotal = TotalDr;
-	Object.DocumentTotalRC = TotalDr * Object.ExchangeRate;
-	
-	If Not GeneralFunctions.FunctionalOptionValue("UnbalancedGJEntryPosting") Then
+	Object.DocumentTotalRC = TotalDr * Object.ExchangeRate;	
 		
-		If TotalDr <> TotalCr Then
-			Message = New UserMessage();
-			Message.Text = NStr("en='Balance The Transaction'");
-			Message.Message();
-			Cancel = True;
-            Return;
-		EndIf;
-	
+	If TotalDr <> TotalCr Then
+		Message = New UserMessage();
+		Message.Text = NStr("en='Balance The Transaction'");
+		Message.Message();
+		Cancel = True;
+        Return;
 	EndIf;
 	
 	If checkMixture() = True Then
@@ -125,11 +121,18 @@ Procedure LineItemsAmountCrOnChange(Item)
 	
 	TabularPartRow = Items.LineItems.CurrentData;
 	TabularPartRow.AmountDr = 0;
-	
+		
 EndProcedure
 
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
+	
+	If Parameters.Property("Company") Then
+		
+		NewLine = Object.LineItems.Add();
+		NewLine.Company = Parameters.Company; 	
+		
+	EndIf;
 	
 	If Object.Ref.IsEmpty() Then
 		Items.ReverseButton.Visible = False;
@@ -361,5 +364,29 @@ Function linkedCorrectly()
 	
 EndFunction
 
+&AtClient
+Procedure LineItemsAccountOnChange(Item)
+	//LineItemsAccountOnChangeAtServer();
+	TotalDr = Object.LineItems.Total("AmountDr");
+	TotalCr = Object.LineItems.Total("AmountCr");
+	
+	If TotalDr > TotalCr Then
+		Difference = TotalDr - TotalCr;
+		TabularPartRow = Items.LineItems.CurrentData;
+		If TabularPartRow.AmountCr = 0 AND TabularPartRow.AmountDr = 0 Then
+			TabularPartRow.AmountCr = Difference;
+			TabularPartRow.AmountDr = 0;
+		EndIf;
+	Elsif TotalCr > TotalDr Then
+		Difference = TotalCr - TotalDr;
+		TabularPartRow = Items.LineItems.CurrentData;
+		If TabularPartRow.AmountCr = 0 AND TabularPartRow.AmountDr = 0 Then
+			TabularPartRow.AmountDr = Difference;
+			TabularPartRow.AmountCr = 0;
+		EndIf;
+	Else
+		
+	EndIf;
+EndProcedure
 
 

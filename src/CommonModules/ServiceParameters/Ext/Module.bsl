@@ -1,6 +1,6 @@
 ﻿Function MongoAPIKey() Export
 	
-	Return "";	
+	Return "";
 	
 EndFunction
 

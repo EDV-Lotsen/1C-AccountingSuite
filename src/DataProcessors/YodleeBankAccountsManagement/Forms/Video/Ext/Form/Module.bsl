@@ -14,3 +14,8 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	|</body>
 	|</html>";
 EndProcedure
+
+&AtClient
+Procedure Decoration10Click(Item)
+	OpenForm("DataProcessor.YodleeBankAccountsManagement.Form.Video", New Structure, ThisForm,,,,,FormWindowOpeningMode.LockOwnerWindow);
+EndProcedure

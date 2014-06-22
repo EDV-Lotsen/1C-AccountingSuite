@@ -113,3 +113,18 @@ EndProcedure
 Procedure WarehouseTransferCommand(Command)
 	OpenForm("Report.WarehouseTransferDetail.Form");
 EndProcedure
+
+&AtClient
+Procedure ProjectDataCommand(Command)
+	OpenForm("AccumulationRegister.ProjectData.ListForm");
+EndProcedure
+
+&AtClient
+Procedure ClassDataCommand(Command)
+	OpenForm("AccumulationRegister.ClassData.ListForm");
+EndProcedure
+
+&AtClient
+Procedure InventoryJournalCommand(Command)
+	OpenForm("AccumulationRegister.InventoryJournal.ListForm");
+EndProcedure

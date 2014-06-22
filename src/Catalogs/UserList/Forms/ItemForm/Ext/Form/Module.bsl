@@ -2,6 +2,8 @@
 &AtServer
 Procedure OnWriteAtServer(Cancel, CurrentObject, WriteParameters)
 	
+	//If Constants.ServiceDB.Get() = True Then
+	
 		SetPrivilegedMode(True);
 		
 		If Object.Ref.IsEmpty() Then
@@ -12,6 +14,7 @@ Procedure OnWriteAtServer(Cancel, CurrentObject, WriteParameters)
 			NewUser.FullName = Object.Description;
 			NewUser.StandardAuthentication = True;
 			//RNG = New RandomNumberGenerator(255);	
+			//NewUser.Password = RNG.RandomNumber(0, 10000);
 			NewUser.Password = Password;
 			//NewUser.Roles.Add(Metadata.Roles.FullAccess1);
 			           
@@ -181,13 +184,13 @@ Procedure OnWriteAtServer(Cancel, CurrentObject, WriteParameters)
 		    	
 		    Endif;
 			
-			ExistingUser.Password = Password;
 			ExistingUser.Write();
 				
 		EndIf;
 		
 		SetPrivilegedMode(False);
-	
+		
+	//EndIf;
 			
 EndProcedure
 

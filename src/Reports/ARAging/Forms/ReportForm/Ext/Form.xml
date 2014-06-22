@@ -2,16 +2,25 @@
 <Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
 	<CommandBarLocation>None</CommandBarLocation>
 	<VerticalScroll>useIfNecessary</VerticalScroll>
+	<CommandSet>
+		<ExcludedCommand>LoadVariant</ExcludedCommand>
+		<ExcludedCommand>Generate</ExcludedCommand>
+	</CommandSet>
 	<ReportResult>Result</ReportResult>
 	<DetailsData>DetailsData</DetailsData>
 	<ReportFormType>Main</ReportFormType>
 	<VariantAppearance>CurrentVariantDescription</VariantAppearance>
 	<AutoShowState>Auto</AutoShowState>
+	<CustomSettingsFolder>SettingsComposerUserSettings</CustomSettingsFolder>
 	<AutoCommandBar name="FormCommandBar" id="-1">
 		<Autofill>false</Autofill>
 	</AutoCommandBar>
+	<Events>
+		<Event name="OnOpen">OnOpen</Event>
+	</Events>
 	<ChildItems>
 		<UsualGroup name="VariantGroup" id="1">
+			<Visible>false</Visible>
 			<Title>
 				<v8:item>
 					<v8:lang>en</v8:lang>
@@ -32,22 +41,119 @@
 				</InputField>
 				<Button name="LoadVariant" id="6">
 					<Type>UsualButton</Type>
-					<CommandName>Form.StandardCommand.LoadVariant</CommandName>
+					<CommandName>0:b08b7a35-583a-4756-b814-0436ff9139c0</CommandName>
 					<ExtendedTooltip name="LoadVariantExtendedTooltip" id="7"/>
 				</Button>
 			</ChildItems>
 		</UsualGroup>
-		<CommandBar name="MainCommandBar" id="8">
+		<UsualGroup name="MenuBar" id="17">
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Menu bar</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Group>Horizontal</Group>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="MenuBarExtendedTooltip" id="18"/>
+			<ChildItems>
+				<InputField name="Variant" id="23">
+					<DataPath>Variant</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Option</v8:content>
+						</v8:item>
+					</Title>
+					<HorizontalAlign>Left</HorizontalAlign>
+					<HorizontalStretch>false</HorizontalStretch>
+					<DropListButton>true</DropListButton>
+					<ChoiceList>
+						<xr:Item>
+							<xr:Presentation/>
+							<xr:CheckState>0</xr:CheckState>
+							<xr:Value xsi:type="FormChoiceListDesTimeValue">
+								<Presentation>
+									<v8:item>
+										<v8:lang>en</v8:lang>
+										<v8:content>Reporting currency</v8:content>
+									</v8:item>
+								</Presentation>
+								<Value xsi:type="xs:string">Reporting currency</Value>
+							</xr:Value>
+						</xr:Item>
+						<xr:Item>
+							<xr:Presentation/>
+							<xr:CheckState>0</xr:CheckState>
+							<xr:Value xsi:type="FormChoiceListDesTimeValue">
+								<Presentation>
+									<v8:item>
+										<v8:lang>en</v8:lang>
+										<v8:content>Foreign currency</v8:content>
+									</v8:item>
+								</Presentation>
+								<Value xsi:type="xs:string">Foreign currency</Value>
+							</xr:Value>
+						</xr:Item>
+					</ChoiceList>
+					<ContextMenu name="VariantContextMenu" id="24"/>
+					<ExtendedTooltip name="VariantExtendedTooltip" id="25"/>
+					<Events>
+						<Event name="OnChange">VariantOnChange</Event>
+					</Events>
+				</InputField>
+				<Button name="Create" id="21">
+					<Type>UsualButton</Type>
+					<DefaultButton>true</DefaultButton>
+					<DefaultItem>true</DefaultItem>
+					<CommandName>Form.Command.Create</CommandName>
+					<Font bold="true" kind="AutoFont"/>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Create Report</v8:content>
+						</v8:item>
+					</Title>
+					<ExtendedTooltip name="CreateExtendedTooltip" id="22"/>
+				</Button>
+				<Button name="Excel" id="19">
+					<Type>UsualButton</Type>
+					<CommandName>Form.Command.Excel</CommandName>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Export to Excel</v8:content>
+						</v8:item>
+					</Title>
+					<ExtendedTooltip name="ExcelExtendedTooltip" id="20"/>
+				</Button>
+				<CommandBar name="MainCommandBar" id="8">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Main command bar</v8:content>
+						</v8:item>
+					</Title>
+					<CommandSource>Form</CommandSource>
+					<ExtendedTooltip name="MainCommandBarExtendedTooltip" id="9"/>
+				</CommandBar>
+			</ChildItems>
+		</UsualGroup>
+		<UsualGroup name="SettingsComposerUserSettings" id="26">
+			<Visible>false</Visible>
 			<Title>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Main command bar</v8:content>
+					<v8:content>Custom settings folder</v8:content>
 				</v8:item>
 			</Title>
-			<CommandSource>Form</CommandSource>
-			<ExtendedTooltip name="MainCommandBarExtendedTooltip" id="9"/>
-		</CommandBar>
-		<Table name="SettingsComposerUserSettings" id="10">
+			<HorizontalStretch>false</HorizontalStretch>
+			<VerticalStretch>false</VerticalStretch>
+			<Group>Vertical</Group>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="SettingsComposerUserSettingsExtendedTooltip" id="27"/>
+		</UsualGroup>
+		<Table name="SettingsComposerUserSettings1" id="28">
 			<CommandBarLocation>None</CommandBarLocation>
 			<Autofill>true</Autofill>
 			<Header>false</Header>
@@ -68,37 +174,36 @@
 			<ViewStatusLocation>None</ViewStatusLocation>
 			<SearchControlLocation>None</SearchControlLocation>
 			<ViewMode>QuickAccess</ViewMode>
-			<ContextMenu name="SettingsComposerUserSettingsContextMenu" id="11"/>
-			<AutoCommandBar name="SettingsComposerUserSettingsCommandBar" id="12"/>
-			<ExtendedTooltip name="SettingsComposerUserSettingsExtendedTooltip" id="13"/>
-			<SearchStringAddition name="SettingsComposerUserSettingsSearchString" id="17">
+			<ContextMenu name="SettingsComposerUserSettings1ContextMenu" id="29"/>
+			<AutoCommandBar name="SettingsComposerUserSettings1CommandBar" id="30"/>
+			<ExtendedTooltip name="SettingsComposerUserSettings1ExtendedTooltip" id="31"/>
+			<SearchStringAddition name="SettingsComposerUserSettings1SearchString" id="32">
 				<AdditionSource>
-					<Item>SettingsComposerUserSettings</Item>
+					<Item>SettingsComposerUserSettings1</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="SettingsComposerUserSettingsSearchStringContextMenu" id="18"/>
-				<ExtendedTooltip name="SettingsComposerUserSettingsSearchStringExtendedTooltip" id="19"/>
+				<ContextMenu name="SettingsComposerUserSettings1SearchStringContextMenu" id="33"/>
+				<ExtendedTooltip name="SettingsComposerUserSettings1SearchStringExtendedTooltip" id="34"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="SettingsComposerUserSettingsViewStatus" id="20">
+			<ViewStatusAddition name="SettingsComposerUserSettings1ViewStatus" id="35">
 				<AdditionSource>
-					<Item>SettingsComposerUserSettings</Item>
+					<Item>SettingsComposerUserSettings1</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="SettingsComposerUserSettingsViewStatusContextMenu" id="21"/>
-				<ExtendedTooltip name="SettingsComposerUserSettingsViewStatusExtendedTooltip" id="22"/>
+				<ContextMenu name="SettingsComposerUserSettings1ViewStatusContextMenu" id="36"/>
+				<ExtendedTooltip name="SettingsComposerUserSettings1ViewStatusExtendedTooltip" id="37"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="SettingsComposerUserSettingsSearchControl" id="23">
+			<SearchControlAddition name="SettingsComposerUserSettings1SearchControl" id="38">
 				<AdditionSource>
-					<Item>SettingsComposerUserSettings</Item>
+					<Item>SettingsComposerUserSettings1</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="SettingsComposerUserSettingsSearchControlContextMenu" id="24"/>
-				<ExtendedTooltip name="SettingsComposerUserSettingsSearchControlExtendedTooltip" id="25"/>
+				<ContextMenu name="SettingsComposerUserSettings1SearchControlContextMenu" id="39"/>
+				<ExtendedTooltip name="SettingsComposerUserSettings1SearchControlExtendedTooltip" id="40"/>
 			</SearchControlAddition>
 		</Table>
 		<SpreadSheetDocumentField name="Result" id="14">
 			<DataPath>Result</DataPath>
-			<DefaultItem>true</DefaultItem>
 			<TitleLocation>None</TitleLocation>
 			<Width>100</Width>
 			<ContextMenu name="ResultContextMenu" id="15"/>
@@ -147,5 +252,55 @@
 				</v8:StringQualifiers>
 			</Type>
 		</Attribute>
+		<Attribute name="Variant" id="5">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Variant</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+			<FunctionalOptions>
+				<Item>FunctionalOption.MultiCurrency</Item>
+			</FunctionalOptions>
+		</Attribute>
 	</Attributes>
+	<Commands>
+		<Command name="Excel" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Excel</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Excel</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>Excel</Action>
+		</Command>
+		<Command name="Create" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Create</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Create</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>Create</Action>
+		</Command>
+	</Commands>
 </Form>

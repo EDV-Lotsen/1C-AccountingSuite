@@ -18,15 +18,16 @@
 			<IncludeInCommandInterface>true</IncludeInCommandInterface>
 			<Explanation/>
 			<Picture>
-				<xr:Ref>CommonPicture.Warehouse</xr:Ref>
+				<xr:Ref>CommonPicture.NewInventory32</xr:Ref>
 				<xr:LoadTransparent>true</xr:LoadTransparent>
 			</Picture>
 			<Content>
 				<xr:Item xsi:type="xr:MDObjectRef">Catalog.Locations</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">Document.WarehouseTransfer</xr:Item>
-				<xr:Item xsi:type="xr:MDObjectRef">AccumulationRegister.InventoryJrnl</xr:Item>
-				<xr:Item xsi:type="xr:MDObjectRef">InformationRegister.ItemLastCost</xr:Item>
-				<xr:Item xsi:type="xr:MDObjectRef">Document.InventoryBeginningBalances</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">AccumulationRegister.InventoryJournal</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">InformationRegister.ItemLastCosts</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Document.ItemAdjustment</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Catalog.Products</xr:Item>
 			</Content>
 		</Properties>
 		<ChildObjects/>

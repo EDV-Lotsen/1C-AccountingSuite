@@ -91,37 +91,125 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	EndIf;
 
 	// end custom fields
-
-	
-	Try
-		Items.Customer.Title = GeneralFunctionsReusable.GetCustomerName();
-		Items.Vendor.Title = GeneralFunctionsReusable.GetVendorName();
-	Except
-	EndTry;
 	
 	Transactions.Parameters.SetParameterValue("Company", Catalogs.Companies.EmptyRef());
+	
 EndProcedure
 
 &AtClient
 Procedure ContractorsOnActivateRow(Item) 
-	//AttachIdleHandler("AttachFilter", 0.2, True);
-	AttachFilter();
-	CompanyInfoCall();	
-	test3 = 3;
+	
+	CurrentRow = Items.List.CurrentRow;
+	
+	If CurrentRow = Undefined Then
+		Transactions.Parameters.SetParameterValue("Company", PredefinedValue("Catalog.Companies.EmptyRef"));
+	Else
+		Transactions.Parameters.SetParameterValue("Company", CurrentRow);
+	EndIf;
+	
 EndProcedure
 
-&AtClient 
-Procedure AttachFilter() Export
-	curCustomer = Items.List.CurrentRow;	
+&AtClient
+Procedure TransactionsSelection(Item, SelectedRow, Field, StandardProcessing)
 	
-	Transactions.Parameters.SetParameterValue("Company", curCustomer);
+	StandardProcessing = False;
+	
+	ShowValue(, GetDocumentOfTransaction()); 
 	
 EndProcedure
 
 &AtServer
-Procedure CompanyInfoCall()
+Function GetDocumentOfTransaction()
 	
-	Company = Items.List.CurrentRow;
-	test3 = 3;
+	Return Items.Transactions.CurrentRow.Document;	
+	
+EndFunction
+
+&AtServerNoContext
+Function GetCompanyTypes(Company)
+	
+	Return New Structure("Customer, Vendor", Company.Customer, Company.Vendor); 	
+	
+EndFunction
+
+&AtClient
+Procedure CommandCreate(Command)
+	
+	CurrentRow = Items.List.CurrentRow; 
+	
+	If CurrentRow = Undefined Or TypeOf(CurrentRow) <> Type("CatalogRef.Companies") Then
+		
+		Return;
+		
+	Else
+		
+		CommandList = New ValueList;
+		CompanyTypes = GetCompanyTypes(CurrentRow);
+		
+		If CompanyTypes.Customer And Not CompanyTypes.Vendor Then
+			CommandList.Add("Quote",               "Quote");
+			CommandList.Add("SalesInvoice",        "Sales invoice");
+			CommandList.Add("SalesOrder",          "Sales order");
+			CommandList.Add("TimeTrack",           "Time tracking");
+			CommandList.Add("CashReceipt",         "Cash receipt");
+			CommandList.Add("CashSale",            "Cash sale");
+			CommandList.Add("SalesReturn",         "Credit memo");
+			CommandList.Add("Deposit",             "Deposit");
+			CommandList.Add("GeneralJournalEntry", "General journal entry");
+			CommandList.Add("InvoicePayment",      "Bill payment (Check)");
+		ElsIf Not CompanyTypes.Customer And CompanyTypes.Vendor Then 
+			CommandList.Add("PurchaseInvoice",     "Bill");
+			CommandList.Add("PurchaseOrder",       "Purchase order");
+			CommandList.Add("InvoicePayment",      "Bill payment (Check)");
+			CommandList.Add("Check",               "Payment (Check)");
+			CommandList.Add("GeneralJournalEntry", "General journal entry");
+			CommandList.Add("PurchaseReturn",      "Purchase return");
+			CommandList.Add("CashReceipt",         "Cash receipt");
+			CommandList.Add("Deposit",             "Deposit");
+		ElsIf CompanyTypes.Customer And CompanyTypes.Vendor Then 
+			CommandList.Add("Quote",               "Quote");
+			CommandList.Add("SalesInvoice",        "Sales invoice");
+			CommandList.Add("PurchaseInvoice",     "Bill");
+			CommandList.Add("SalesOrder",          "Sales order");
+			CommandList.Add("PurchaseOrder",       "Purchase order");
+			CommandList.Add("TimeTrack",           "Time tracking");
+			CommandList.Add("CashReceipt",         "Cash receipt");
+			CommandList.Add("InvoicePayment",      "Bill payment (Check)");
+			CommandList.Add("CashSale",            "Cash sale");
+			CommandList.Add("Check",               "Payment (Check)");
+			CommandList.Add("SalesReturn",         "Credit memo");
+			CommandList.Add("PurchaseReturn",      "Purchase return");
+			CommandList.Add("Deposit",             "Deposit");
+			CommandList.Add("GeneralJournalEntry", "General journal entry");
+		EndIf;	
+		
+		Res = New NotifyDescription("AfterChooseFromMenu", ThisObject, CurrentRow); 
+		ShowChooseFromMenu(Res, CommandList, Items.TransactionsCommandCreate);
+		
+	EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure AfterChooseFromMenu(DocumentName = Undefined, CompanyRef) Export
+	
+	If DocumentName <> Undefined Then
+		
+	ParametersStructure = New Structure;
+	ParametersStructure.Insert("Company", CompanyRef); 
+	
+	OpenForm("Document." + DocumentName.Value + ".ObjectForm", ParametersStructure);
+	
+	EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure Refresh(Command)
+	
+	//PerformanceMeasurementClientServer.StartTimeMeasurement("CustomerVendorCenter Refresh");
+	
+	Items.List.Refresh();
+	Items.Transactions.Refresh();
 	
 EndProcedure

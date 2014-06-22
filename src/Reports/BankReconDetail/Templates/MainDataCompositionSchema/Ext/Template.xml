@@ -126,6 +126,14 @@
 			<dataPath>TransactionAmount</dataPath>
 			<field>TransactionAmount</field>
 		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>BankInterestEarnedAccount</dataPath>
+			<field>BankInterestEarnedAccount</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>BankServiceChargeAccount</dataPath>
+			<field>BankServiceChargeAccount</field>
+		</field>
 		<dataSource>DataSource1</dataSource>
 		<query>SELECT
 	BankReconciliationLineItems.Ref,
@@ -154,6 +162,8 @@
 	BankReconciliationLineItems.Ref.ClearedAmount,
 	BankReconciliationLineItems.Ref.Memo,
 	BankReconciliationLineItems.Ref.BankAccount,
+	BankReconciliationLineItems.Ref.BankInterestEarnedAccount,
+	BankReconciliationLineItems.Ref.BankServiceChargeAccount,
 	BankReconciliationLineItems.Ref.Presentation,
 	BankReconciliationLineItems.Ref.PointInTime
 FROM
@@ -190,6 +200,12 @@ FROM
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>BankAccount</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>BankInterestEarnedAccount</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>BankServiceChargeAccount</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>BeginningBalance</dcsset:field>

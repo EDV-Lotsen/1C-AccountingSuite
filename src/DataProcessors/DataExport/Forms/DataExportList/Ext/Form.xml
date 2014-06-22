@@ -279,6 +279,41 @@
 						</Button>
 					</ChildItems>
 				</UsualGroup>
+				<UsualGroup name="Group14" id="77">
+					<Group>Vertical</Group>
+					<Representation>None</Representation>
+					<ShowTitle>false</ShowTitle>
+					<ExtendedTooltip name="Group14ExtendedTooltip" id="78"/>
+					<ChildItems>
+						<Button name="ProjectDataCommand" id="79">
+							<Type>Hyperlink</Type>
+							<CommandName>Form.Command.ProjectDataCommand</CommandName>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Project data</v8:content>
+								</v8:item>
+							</Title>
+							<ExtendedTooltip name="ProjectDataCommandExtendedTooltip" id="80"/>
+						</Button>
+						<Button name="ClassDataCommand" id="81">
+							<Type>Hyperlink</Type>
+							<CommandName>Form.Command.ClassDataCommand</CommandName>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Class data</v8:content>
+								</v8:item>
+							</Title>
+							<ExtendedTooltip name="ClassDataCommandExtendedTooltip" id="82"/>
+						</Button>
+						<Button name="InventoryJournalCommand" id="83">
+							<Type>Hyperlink</Type>
+							<CommandName>Form.Command.InventoryJournalCommand</CommandName>
+							<ExtendedTooltip name="InventoryJournalCommandExtendedTooltip" id="84"/>
+						</Button>
+					</ChildItems>
+				</UsualGroup>
 			</ChildItems>
 		</UsualGroup>
 	</ChildItems>
@@ -635,6 +670,51 @@
 				</v8:item>
 			</ToolTip>
 			<Action>WarehouseTransferCommand</Action>
+		</Command>
+		<Command name="ProjectDataCommand" id="24">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Project data command</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Project data command</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>ProjectDataCommand</Action>
+		</Command>
+		<Command name="ClassDataCommand" id="25">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Class data command</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Class data command</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>ClassDataCommand</Action>
+		</Command>
+		<Command name="InventoryJournalCommand" id="26">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Inventory journal</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Inventory journal command</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>InventoryJournalCommand</Action>
 		</Command>
 	</Commands>
 </Form>

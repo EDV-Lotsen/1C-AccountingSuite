@@ -102,7 +102,7 @@ Procedure Posting(Cancel, Mode)
 				//Record.PaymentMethod = PaymentMethod;
 			EndDo
 
-		
+			
 		EndIf;
 				
 		FXGainLoss = (DocumentObject.ExchangeRate - ExchangeRate) * DocumentLine.Payment;
@@ -146,6 +146,8 @@ Procedure Posting(Cancel, Mode)
 	EndIf;
 	Records.Write();
 	
+	ReconciledDocumentsServerCall.AddDocumentForReconciliation(RegisterRecords, Ref, BankAccount, Date, -1 * DocumentTotalRC);
+	
 	//Records = InformationRegisters.TransactionReconciliation.CreateRecordSet();
 	//Records.Filter.Document.Set(Ref);
 	//Records.Filter.Account.Set(BankAccount);
@@ -175,11 +177,14 @@ Procedure UndoPosting(Cancel)
 EndProcedure
 
 Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
-		
-	If WriteMode = DocumentWriteMode.Write AND PaymentMethod = Catalogs.PaymentMethods.Check Then
-		Number = "DRAFT";
+	
+	// Document date adjustment patch (tunes the date of drafts like for the new documents).
+	If  WriteMode = DocumentWriteMode.Posting And Not Posted // Posting of new or draft (saved but unposted) document.
+	And BegOfDay(Date) = BegOfDay(CurrentSessionDate()) Then // Operational posting (by the current date).
+		// Shift document time to the time of posting.
+		Date = CurrentSessionDate();
 	EndIf;
-
+	
 EndProcedure
 
 Procedure BeforeDelete(Cancel)

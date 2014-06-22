@@ -1,4 +1,7 @@
 ﻿&AtClient
+Var SalesTaxRateInactive, AgenciesRatesInactive;//Cache for storing inactive rates previously used in the document
+
+&AtClient
 // ProductOnChange UI event handler.
 // The procedure clears quantities, line total, and taxable amount in the line item,
 // selects price for the new product from the price-list, divides the price by the document
@@ -22,7 +25,7 @@ Procedure LineItemsProductOnChange(Item)
 	TabularPartRow.Taxable = CommonUse.GetAttributeValue(TabularPartRow.Product, "Taxable");
 	//TabularPartRow.VATCode = CommonUse.GetAttributeValue(TabularPartRow.Product, "SalesVATCode");
 	
-	RecalcTotal();
+	RecalculateTotals();
 	
 EndProcedure
 
@@ -31,16 +34,110 @@ EndProcedure
 // DocumentTotal - document's currency in FCY (foreign currency).
 // DocumentTotalRC - company's reporting currency.
 //
-Procedure RecalcTotal()
+Procedure RecalculateTotals()
 	
-	Object.LineSubtotalRC = Object.LineItems.Total("LineTotal");
-	Object.SubTotalRC = Object.LineItems.Total("LineTotal"); // + Object.DiscountRC;
-	
-	DocTotal = Object.LineSubtotalRC + Object.SalesTaxRC;   // Object.DiscountRC + Object.ShippingRC + 
-	Object.DocumentTotal = DocTotal;
-	Object.DocumentTotalRC = DocTotal * Object.ExchangeRate;
+	RecalculateTotalsNoContext(Object);
+	//return;
+	//
+	//Object.LineSubtotal = Object.LineItems.Total("LineTotal");
+	//Object.SubTotal = Object.LineItems.Total("LineTotal"); // + Object.DiscountRC;
+	//
+	//// Recalculate the discount and it's percent.
+	//Object.Discount     = Round(-1 * Object.LineSubtotal * Object.DiscountPercent/100, 2);
+	//If Object.Discount < -Object.LineSubtotal Then
+	//	Object.Discount = -Object.LineSubtotal;
+	//EndIf;
+	//If Object.LineSubtotal > 0 Then
+	//	Object.DiscountPercent = Round(-1 * 100 * Object.Discount / Object.LineSubtotal, 2);
+	//EndIf;
 
+	////Calculate sales tax
+	//TaxableSubtotal = 0;
+	//For Each LineItem In Object.LineItems Do
+	//	TaxableSubtotal = TaxableSubtotal + ?(LineItem.Taxable, LineItem.LineTotal, 0);
+	//EndDo;
+	//If Object.DiscountIsTaxable Then
+	//	Object.TaxableSubtotal = TaxableSubtotal;
+	//Else
+	//	Object.TaxableSubtotal = TaxableSubtotal + Round(-1 * TaxableSubtotal * Object.DiscountPercent/100, 2);
+	//EndIf;
+	//CurrentAgenciesRates = Undefined;
+	//If Object.SalesTaxAcrossAgencies.Count() > 0 Then
+	//	CurrentAgenciesRates = New Array();
+	//	For Each AgencyRate In Object.SalesTaxAcrossAgencies Do
+	//		CurrentAgenciesRates.Add(New Structure("Agency, Rate", AgencyRate.Agency, AgencyRate.Rate));
+	//	EndDo;
+	//EndIf;
+	//SalesTaxAcrossAgencies = SalesTaxClient.CalculateSalesTax(Object.TaxableSubtotal, Object.SalesTaxRate, CurrentAgenciesRates);
+	//Object.SalesTaxAcrossAgencies.Clear();
+	//For Each STAcrossAgencies In SalesTaxAcrossAgencies Do 
+	//	NewRow = Object.SalesTaxAcrossAgencies.Add();
+	//	FillPropertyValues(NewRow, STAcrossAgencies);
+	//EndDo;
+	//Object.SalesTaxRC = Object.SalesTaxAcrossAgencies.Total("Amount");
+
+	//// Calculate the rest of the totals.
+	//Object.SubTotal         = Object.LineSubtotal + Object.Discount;
+	//Object.DocumentTotal    = Object.SubTotal + Object.Shipping + Object.SalesTaxRC;
+	//Object.DocumentTotalRC  = Round(Object.DocumentTotal * Object.ExchangeRate, 2);
+
+EndProcedure
+
+&AtClientAtServerNoContext
+// The procedure recalculates the document's total.
+// DocumentTotal - document's currency in FCY (foreign currency).
+// DocumentTotalRC - company's reporting currency.
+//
+Procedure RecalculateTotalsNoContext(Object)
 	
+	Object.LineSubtotal = Object.LineItems.Total("LineTotal");
+	Object.SubTotal = Object.LineItems.Total("LineTotal"); // + Object.DiscountRC;
+	
+	// Recalculate the discount and it's percent.
+	Object.Discount     = Round(-1 * Object.LineSubtotal * Object.DiscountPercent/100, 2);
+	If Object.Discount < -Object.LineSubtotal Then
+		Object.Discount = -Object.LineSubtotal;
+	EndIf;
+	If Object.LineSubtotal > 0 Then
+		Object.DiscountPercent = Round(-1 * 100 * Object.Discount / Object.LineSubtotal, 2);
+	EndIf;
+
+	//Calculate sales tax
+	TaxableSubtotal = 0;
+	For Each LineItem In Object.LineItems Do
+		TaxableSubtotal = TaxableSubtotal + ?(LineItem.Taxable, LineItem.LineTotal, 0);
+	EndDo;
+	If Object.DiscountIsTaxable Then
+		Object.TaxableSubtotal = TaxableSubtotal;
+	Else
+		Object.TaxableSubtotal = TaxableSubtotal + Round(-1 * TaxableSubtotal * Object.DiscountPercent/100, 2);
+	EndIf;
+	CurrentAgenciesRates = Undefined;
+	If Object.SalesTaxAcrossAgencies.Count() > 0 Then
+		CurrentAgenciesRates = New Array();
+		For Each AgencyRate In Object.SalesTaxAcrossAgencies Do
+			CurrentAgenciesRates.Add(New Structure("Agency, Rate", AgencyRate.Agency, AgencyRate.Rate));
+		EndDo;
+	EndIf;
+	
+#If AtClient Then
+	SalesTaxAcrossAgencies = SalesTaxClient.CalculateSalesTax(Object.TaxableSubtotal, Object.SalesTaxRate, CurrentAgenciesRates);	
+#Else		
+	SalesTaxAcrossAgencies = SalesTax.CalculateSalesTax(Object.TaxableSubtotal, Object.SalesTaxRate, CurrentAgenciesRates);
+#EndIf
+
+	Object.SalesTaxAcrossAgencies.Clear();
+	For Each STAcrossAgencies In SalesTaxAcrossAgencies Do 
+		NewRow = Object.SalesTaxAcrossAgencies.Add();
+		FillPropertyValues(NewRow, STAcrossAgencies);
+	EndDo;
+	Object.SalesTaxRC = Object.SalesTaxAcrossAgencies.Total("Amount");
+
+	// Calculate the rest of the totals.
+	Object.SubTotal         = Object.LineSubtotal + Object.Discount;
+	Object.DocumentTotal    = Object.SubTotal + Object.Shipping + Object.SalesTaxRC;
+	Object.DocumentTotalRC  = Round(Object.DocumentTotal * Object.ExchangeRate, 2);
+
 EndProcedure
 
 &AtClient
@@ -56,8 +153,14 @@ Procedure CompanyOnChange(Item)
 	Object.ExchangeRate = GeneralFunctions.GetExchangeRate(Object.Date, Object.Currency);
 	Items.ExchangeRate.Title = GeneralFunctionsReusable.DefaultCurrencySymbol() + "/1" + CommonUse.GetAttributeValue(Object.Currency, "Symbol");
 	Items.FCYCurrency.Title = CommonUse.GetAttributeValue(Object.Currency, "Symbol");
+	
 	//RecalcSalesTax();
-	RecalcTotal();
+	If Not ValueIsFilled(Object.ParentDocument) Then
+		SalesTaxRate = SalesTax.GetDefaultSalesTaxRate(Object.Company);
+		SetSalesTaxRate(SalesTaxRate);
+	EndIf;
+	
+	RecalculateTotals();
 	EmailSet();
 	
 EndProcedure
@@ -77,7 +180,8 @@ Procedure LineItemsPriceOnChange(Item)
 	
 	//RecalcTaxableAmount();
 	//RecalcSalesTax();
-	RecalcTotal();
+	//RecalculateTotals();
+	RecalculateTotalsNoContext(Object);
 
 EndProcedure
 
@@ -90,7 +194,7 @@ Procedure DateOnChange(Item)
 	
 	Object.ExchangeRate = GeneralFunctions.GetExchangeRate(Object.Date, Object.Currency);
 	//RecalcSalesTax();
-	RecalcTotal();
+	RecalculateTotals();
 	
 EndProcedure
 
@@ -101,12 +205,26 @@ EndProcedure
 //
 Procedure CurrencyOnChange(Item)
 	
-	Object.ExchangeRate = GeneralFunctions.GetExchangeRate(Object.Date, Object.Currency);
-	Object.ARAccount = CommonUse.GetAttributeValue(Object.Currency, "DefaultARAccount");
-	Items.ExchangeRate.Title = GeneralFunctionsReusable.DefaultCurrencySymbol() + "/1" + CommonUse.GetAttributeValue(Object.Currency, "Symbol");
-	Items.FCYCurrency.Title = CommonUse.GetAttributeValue(Object.Currency, "Symbol");
-	//RecalcSalesTax();
-	RecalcTotal();
+	DisplayCurrencySimbols(ThisForm, Object.Currency);
+	RecalculateTotals();
+	
+EndProcedure
+
+&AtClientAtServerNoContext
+Procedure DisplayCurrencySimbols(Form, ObjectCurrency)
+	
+	DefaultCurrencySymbol = GeneralFunctionsReusable.DefaultCurrencySymbol();
+	DocumentCurrencySymbol = CommonUse.GetAttributeValue(ObjectCurrency, "Symbol");
+	
+	Form.Items.ExchangeRate.Title = DefaultCurrencySymbol + "/1" + DocumentCurrencySymbol;
+	Form.Items.RCCurrency.Title = DefaultCurrencySymbol;
+	
+	Form.Items.SalesTaxCurrency.Title = DocumentCurrencySymbol;
+	Form.Items.TaxableSubtotalCurrency.Title = DocumentCurrencySymbol;
+	Form.Items.DiscountCurrency.Title = DocumentCurrencySymbol;
+	Form.Items.ShippingCurrency.Title = DocumentCurrencySymbol;
+	Form.Items.SubtotalCurrency.Title = DocumentCurrencySymbol;
+	Form.Items.FCYCurrency.Title = DocumentCurrencySymbol;
 	
 EndProcedure
 
@@ -116,7 +234,7 @@ EndProcedure
 Procedure LineItemsAfterDeleteRow(Item)
 	
 	//RecalcSalesTax();
-	RecalcTotal();
+	RecalculateTotals();
 	
 EndProcedure
 
@@ -134,7 +252,7 @@ Procedure LineItemsQuantityOnChange(Item)
 	
 	//RecalcTaxableAmount();
 	//RecalcSalesTax();
-	RecalcTotal();
+	RecalculateTotals();
 
 EndProcedure
 
@@ -145,6 +263,10 @@ EndProcedure
 // 
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
+	If Parameters.Property("Company") And Parameters.Company.Customer Then
+		Object.Company = Parameters.Company;
+	EndIf;
+
 	//ConstantCreditMemo = Constants.CreditMemoLastNumber.Get();
 	//If Object.Ref.IsEmpty() Then		
 	//	
@@ -152,13 +274,8 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	//Endif;
 
 	
-	Items.LineItemsQuantity.EditFormat = "NFD=" + Constants.QtyPrecision.Get();
-	Items.LineItemsQuantity.Format = "NFD=" + Constants.QtyPrecision.Get();
-
-	If Object.BegBal = False Then
-		Items.DocumentTotalRC.ReadOnly = True;
-		Items.DocumentTotal.ReadOnly = True;
-	EndIf;
+	Items.LineItemsQuantity.EditFormat = GeneralFunctionsReusable.DefaultQuantityFormat();
+	Items.LineItemsQuantity.Format = GeneralFunctionsReusable.DefaultQuantityFormat();
 	
 	Items.Company.Title = GeneralFunctionsReusable.GetCustomerName();
 	
@@ -167,12 +284,46 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	//If Object.Ref.IsEmpty() Then
 	//	Object.PriceIncludesVAT = GeneralFunctionsReusable.PriceIncludesVAT();
 	//EndIf;
-		
-	If NOT GeneralFunctionsReusable.FunctionalOptionValue("MultiCurrency") Then
-		Items.FCYCurrency.Visible = False;
-		Items.RCCurrency.Visible = False;
+	
+	// Request tax rate for US sales tax calculation.
+	If GeneralFunctionsReusable.FunctionalOptionValue("SalesTaxCharging") Then
+		//Fill the list of available tax rates
+		ListOfAvailableTaxRates = SalesTax.GetSalesTaxRatesList();
+		For Each TaxRateItem In ListOfAvailableTaxRates Do
+			Items.SalesTaxRate.ChoiceList.Add(TaxRateItem.Value, TaxRateItem.Presentation);
+		EndDo;
+		If Object.Ref.IsEmpty() Then
+			If Not ValueIsFilled(Parameters.Basis) Then
+				Object.DiscountIsTaxable = True;
+			Else //If filled on the basis of Sales Order
+				RecalculateTotalsNoContext(Object);
+			EndIf;
+			//If filled on the basis of Sales Order set current value
+			SalesTaxRate = Object.SalesTaxRate;
+		Else
+			TaxRate = Object.SalesTaxAcrossAgencies.Total("Rate");
+			SalesTaxRateText = "Sales tax rate: " + String(TaxRate) + "%";
+			Items.SalesTaxPercentDecoration.Title = SalesTaxRateText;
+			//Determine if document's sales tax rate is inactive (has been changed)
+			AgenciesRates = New Array();
+			For Each AgencyRate In Object.SalesTaxAcrossAgencies Do
+				AgenciesRates.Add(New Structure("Agency, Rate", AgencyRate.Agency, AgencyRate.Rate));
+			EndDo;
+			If SalesTax.DocumentSalesTaxRateIsInactive(Object.SalesTaxRate, AgenciesRates) Then
+				SalesTaxRate = 0;
+				Representation = SalesTax.GetSalesTaxRatePresentation(Object.SalesTaxRate.Description, TaxRate) + " - Inactive";
+				Items.SalesTaxRate.ChoiceList.Add(0, Representation);
+			Else
+				SalesTaxRate = Object.SalesTaxRate;
+			EndIf;
+		EndIf;
+	Else
+		Items.SalesTaxPercentDecoration.Title = "";
+		Items.SalesTaxPercentDecoration.Border = New Border(ControlBorderType.WithoutBorder);
+		Items.TotalsColumn3.Visible = False;
+		Items.SalesTaxRate.Visible = False;
 	EndIf;
-		
+				
 	//If GeneralFunctionsReusable.FunctionalOptionValue("MultiLocation") Then
 	//Else
 		If Object.Location.IsEmpty() Then
@@ -187,11 +338,28 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	Else
 	EndIf; 
 	
-	Items.ExchangeRate.Title = GeneralFunctionsReusable.DefaultCurrencySymbol() + "/1" + Object.Currency.Symbol;
-	//Items.VATCurrency.Title = GeneralFunctionsReusable.DefaultCurrencySymbol();
-	Items.RCCurrency.Title = GeneralFunctionsReusable.DefaultCurrencySymbol();
-	//Items.SalesTaxCurrency.Title = GeneralFunctionsReusable.DefaultCurrencySymbol();
-	Items.FCYCurrency.Title = CommonUse.GetAttributeValue(Object.Currency, "Symbol");
+	DisplayCurrencySimbols(ThisForm, Object.Currency);
+	
+	If NOT GeneralFunctionsReusable.FunctionalOptionValue("MultiCurrency") Then
+		//Items.FCYCurrency.Visible = False;
+		//Items.RCCurrency.Visible = False;
+		Items.RCCurrency.Title = "";
+	EndIf;
+
+	//DefaultCurrencySymbol = GeneralFunctionsReusable.DefaultCurrencySymbol();
+	//DocumentCurrencySymbol = CommonUse.GetAttributeValue(Object.Currency, "Symbol");
+	//
+	//Items.ExchangeRate.Title = DefaultCurrencySymbol + "/1" + Object.Currency.Symbol;
+	////Items.VATCurrency.Title = GeneralFunctionsReusable.DefaultCurrencySymbol();
+	//Items.RCCurrency.Title = DefaultCurrencySymbol;
+	//Items.SalesTaxCurrency.Title = DefaultCurrencySymbol;
+	//Items.TaxableSubtotalCurrency.Title = DefaultCurrencySymbol;
+	//
+	//Items.DiscountCurrency.Title = DocumentCurrencySymbol;
+	//Items.ShippingCurrency.Title = DocumentCurrencySymbol;
+	//Items.SubtotalCurrency.Title = DocumentCurrencySymbol;
+	//Items.FCYCurrency.Title = DocumentCurrencySymbol;
+	
 	
 EndProcedure
 
@@ -202,22 +370,10 @@ EndProcedure
 //	
 //	TabularPartRow = Items.LineItems.CurrentData;
 //	TabularPartRow.VAT = VAT_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Sales", Object.PriceIncludesVAT);
-//	RecalcTotal();
+//	RecalculateTotals();
 
 //EndProcedure
 
-&AtClient
-Procedure BegBalOnChange(Item)
-	
-	If Object.BegBal = True Then
-		Items.DocumentTotalRC.ReadOnly = False;
-		Items.DocumentTotal.ReadOnly = False;
-	ElsIf Object.BegBal = False Then
-		Items.DocumentTotalRC.ReadOnly = True;
-		Items.DocumentTotal.ReadOnly = True;
-	EndIf;
-
-EndProcedure
 
 &AtClient
 Procedure SendEmail(Command)
@@ -270,7 +426,14 @@ If Object.Ref.IsEmpty() Then
 	    
 	    send = New InternetMailMessage; 
 	    //send.To.Add(object.shipto.Email);
-	    send.To.Add(object.EmailTo);
+	    //send.To.Add(object.EmailTo);
+		
+		If Object.EmailTo <> "" Then
+			EAddresses = StringFunctionsClientServer.SplitStringIntoSubstringArray(Object.EmailTo, ",");
+			For Each EmailAddress in EAddresses Do
+				send.To.Add(EmailAddress);
+			EndDo;
+		Endif;
 		
 		If Object.EmailCC <> "" Then
 			EAddresses = StringFunctionsClientServer.SplitStringIntoSubstringArray(Object.EmailCC, ",");
@@ -579,12 +742,130 @@ EndProcedure
 &AtClient
 Procedure SalesTaxOnChange(Item)
 	SalesTaxOnChangeAtServer();
-	RecalcTotal();
+	RecalculateTotals();
 EndProcedure
 
 &AtServer
 Procedure SalesTaxOnChangeAtServer()
 	// Insert handler contents.
+EndProcedure
+
+&AtClient
+Procedure OnOpen(Cancel)
+	
+	AttachIdleHandler("AfterOpen", 0.1, True);	
+	
+EndProcedure
+
+&AtClient
+Procedure AfterOpen()
+	
+	ThisForm.Activate();
+	
+	If ThisForm.IsInputAvailable() Then
+		///////////////////////////////////////////////
+		DetachIdleHandler("AfterOpen");
+		
+		If  Object.Ref.IsEmpty() And ValueIsFilled(Object.Company) Then
+			CompanyOnChange(Items.Company);	
+		EndIf;	
+		///////////////////////////////////////////////
+	Else
+		AttachIdleHandler("AfterOpen", 0.1, True);	
+	EndIf;		
+	
+EndProcedure
+
+&AtClient
+Procedure SetSalesTaxRate(NewSalesTaxRate)
+	//Cache inactive sales tax rates
+	If ValueIsFilled(Object.SalesTaxRate) Then
+		AgenciesRates = New Array();
+		For Each AgencyRate In Object.SalesTaxAcrossAgencies Do
+			AgenciesRates.Add(New Structure("Agency, Rate, SalesTaxRate, SalesTaxComponent", AgencyRate.Agency, AgencyRate.Rate, AgencyRate.SalesTaxRate, AgencyRate.SalesTaxComponent));
+		EndDo;
+		If SalesTax.DocumentSalesTaxRateIsInactive(Object.SalesTaxRate, AgenciesRates) Then
+			SalesTaxRateInactive = Object.SalesTaxRate;
+			AgenciesRatesInactive = AgenciesRates;
+		EndIf;
+	EndIf;
+	//Restore inactive sales tax rates
+	If TypeOf(NewSalesTaxRate) = Type("Number") Then //user returned inactive sales tax rate
+		Object.SalesTaxRate = SalesTaxRateInactive;
+		Object.SalesTaxAcrossAgencies.Clear();
+		For Each AgencyRateInactive In AgenciesRatesInactive Do
+			FillPropertyValues(Object.SalesTaxAcrossAgencies.Add(), AgencyRateInactive);
+		EndDo;
+	Else
+		Object.SalesTaxRate = NewSalesTaxRate;
+		Object.SalesTaxAcrossAgencies.Clear();
+	EndIf;
+	ShowSalesTaxRate();
+	RecalculateTotals();
+EndProcedure
+
+&AtClient
+Procedure ShowSalesTaxRate()
+	If Object.SalesTaxAcrossAgencies.Count() = 0 Then
+		SalesTaxRateAttr = CommonUse.GetAttributeValues(Object.SalesTaxRate, "Rate");
+		TaxRate = SalesTaxRateAttr.Rate;
+	Else
+		TaxRate = Object.SalesTaxAcrossAgencies.Total("Rate");
+	EndIf;
+	SalesTaxRateText = "Sales tax rate: " + String(TaxRate) + " %";
+	Items.SalesTaxPercentDecoration.Title = SalesTaxRateText;
+EndProcedure
+
+&AtClient
+Procedure DiscountIsTaxableOnChange(Item)
+	RecalculateTotals();
+EndProcedure
+
+&AtClient
+Procedure SalesTaxRateOnChange(Item)
+	SetSalesTaxRate(SalesTaxRate);
+EndProcedure
+
+&AtClient
+Procedure DiscountPercentOnChange(Item)
+	
+	Object.Discount = Round(-1 * Object.LineSubtotal * Object.DiscountPercent/100, 2);
+	RecalculateTotals();
+	
+EndProcedure
+
+&AtClient
+Procedure DiscountOnChange(Item)
+	
+	// Discount can not override the total.
+	If Object.Discount < -Object.LineSubtotal Then
+		Object.Discount = - Object.LineSubtotal;
+	EndIf;
+	
+	// Recalculate discount value by it's percent.
+	If Object.LineSubtotal > 0 Then
+		Object.DiscountPercent = Round(-1 * 100 * Object.Discount / Object.LineSubtotal, 2);
+	EndIf;
+	
+	RecalculateTotals();
+	
+EndProcedure
+
+&AtClient
+Procedure ShippingOnChange(Item)
+	
+	RecalculateTotals();
+	
+EndProcedure
+
+&AtClient
+Procedure LineItemsTaxableOnChange(Item)
+	RecalculateTotals();
+EndProcedure
+
+&AtClient
+Procedure ExchangeRateOnChange(Item)
+	RecalculateTotals();
 EndProcedure
 
 

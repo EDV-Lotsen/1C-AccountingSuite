@@ -18,7 +18,7 @@
 			<IncludeInCommandInterface>true</IncludeInCommandInterface>
 			<Explanation/>
 			<Picture>
-				<xr:Ref>CommonPicture.Accounting</xr:Ref>
+				<xr:Ref>CommonPicture.Accounting32</xr:Ref>
 				<xr:LoadTransparent>false</xr:LoadTransparent>
 			</Picture>
 			<Content>
@@ -26,15 +26,17 @@
 				<xr:Item xsi:type="xr:MDObjectRef">AccountingRegister.GeneralJournal</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">Document.GeneralJournalEntry</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">Catalog.USTaxCategories1099</xr:Item>
-				<xr:Item xsi:type="xr:MDObjectRef">Document.InventoryBeginningBalances</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Document.ItemAdjustment</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">Catalog.PaymentMethods</xr:Item>
-				<xr:Item xsi:type="xr:MDObjectRef">Report.IncomeStatementDetailed</xr:Item>
-				<xr:Item xsi:type="xr:MDObjectRef">Report.OtherComprehensiveIncome</xr:Item>
-				<xr:Item xsi:type="xr:MDObjectRef">Report.CashFlowDirect</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">CommonForm.GeneralSettings</xr:Item>
-				<xr:Item xsi:type="xr:MDObjectRef">DataProcessor.PeriodClosing</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">c0b6228e-bd7d-43a3-933c-1f008c4b6972</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">Catalog.ExpensifyCategories</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">Document.Budget</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Document.Deposit</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Document.BankTransfer</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Catalog.Classes</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">InformationRegister.AuditLog</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Document.BankReconciliation</xr:Item>
 			</Content>
 		</Properties>
 		<ChildObjects/>

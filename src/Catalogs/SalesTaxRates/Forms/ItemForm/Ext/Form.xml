@@ -4,6 +4,8 @@
 	<UseForFoldersAndItems>Items</UseForFoldersAndItems>
 	<AutoCommandBar name="FormCommandBar" id="-1"/>
 	<Events>
+		<Event name="AfterWrite">AfterWrite</Event>
+		<Event name="AfterWriteAtServer">AfterWriteAtServer</Event>
 		<Event name="OnReadAtServer">OnReadAtServer</Event>
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
 		<Event name="OnWriteAtServer">OnWriteAtServer</Event>
@@ -80,6 +82,9 @@
 					<Width>25</Width>
 					<ContextMenu name="DescriptionContextMenu" id="5"/>
 					<ExtendedTooltip name="DescriptionExtendedTooltip" id="6"/>
+					<Events>
+						<Event name="OnChange">DescriptionOnChange</Event>
+					</Events>
 				</InputField>
 				<InputField name="Agency" id="10">
 					<DataPath>Object.Agency</DataPath>
@@ -206,6 +211,7 @@
 					</SearchControlAddition>
 					<Events>
 						<Event name="Selection">CombinedRatesSelection</Event>
+						<Event name="BeforeAddRow">CombinedRatesBeforeAddRow</Event>
 						<Event name="BeforeDeleteRow">CombinedRatesBeforeDeleteRow</Event>
 						<Event name="OnStartEdit">CombinedRatesOnStartEdit</Event>
 						<Event name="OnChange">CombinedRatesOnChange</Event>
@@ -223,6 +229,9 @@
 							<Width>25</Width>
 							<ContextMenu name="CombinedRatesDescriptionContextMenu" id="30"/>
 							<ExtendedTooltip name="CombinedRatesDescriptionExtendedTooltip" id="31"/>
+							<Events>
+								<Event name="OnChange">CombinedRatesDescriptionOnChange</Event>
+							</Events>
 						</InputField>
 						<InputField name="CombinedRatesAgency" id="32">
 							<DataPath>CombinedRates.Agency</DataPath>
@@ -387,6 +396,17 @@
 					</Title>
 					<Type>
 						<v8:Type>xs:boolean</v8:Type>
+					</Type>
+				</Column>
+				<Column name="SalesTaxComponentRef" id="6">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Sales tax component ref</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>cfg:CatalogRef.SalesTaxComponents</v8:Type>
 					</Type>
 				</Column>
 			</Columns>

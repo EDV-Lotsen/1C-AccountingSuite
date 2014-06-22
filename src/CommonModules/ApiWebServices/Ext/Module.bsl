@@ -960,6 +960,8 @@ EndFunction
 
 Function inoutCompaniesListAll(jsonin) Export
 		
+	ParsedJSON = InternetConnectionClientServer.DecodeJSON(jsonin);
+	
 	Query = New Query("SELECT
 	                  |	Companies.Ref
 	                  |FROM
@@ -970,30 +972,100 @@ Function inoutCompaniesListAll(jsonin) Export
 	                  //|WHERE
 	                  //|	Companies.Customer = TRUE");
 	Result = Query.Execute().Select();
+	Result_array = Query.Execute().Unload();
 	
 	Companies = New Array();
 	
-	While Result.Next() Do
-		
-		//Company = New Map();
-		//Company.Insert("api_code", String(Result.Ref.UUID()));
-		//Company.Insert("company_code", Result.Code);
-		//Company.Insert("company_name", Result.Description);
-		//If Result.Customer = TRUE AND Result.Vendor = TRUE Then
-		//	Company.Insert("company_type", "customer+vendor");
-		//Elsif Result.Customer = TRUE AND Result.Vendor = FALSE Then
-		//	Company.Insert("company_type", "customer");
-		//Else
-		//	Company.Insert("company_type", "vendor");
-		//Endif;
-			
-		
-		Companies.Add(GeneralFunctions.ReturnCompanyObjectMap(Result.Ref));
-		
-	EndDo;
+	Try 
+		count = ParsedJSON.limit;
+		If count > 100 Then count = 100; EndIf;
+	Except count = 10; EndTry;
 	
+	Try offset = ParsedJSON.start_from;
+		offsetNum = 0;
+		start = 0;
+		While Result.Next() Do
+			If string(offset) = string(Result.Ref.UUID()) Then
+				start = offsetNum+1;
+				break;
+			Else
+				offsetNum = offsetNum +1;
+			EndIf;
+		EndDo;	
+			
+	Except offset = undefined; start = 0; EndTry;
+	
+	Try last = ParsedJSON.end_before;
+		offsetNum = 0;
+		start = 0;
+		While Result.Next() Do
+			If string(last) = string(Result.Ref.UUID()) Then
+				start = offsetNum-1;
+				break;
+			Else
+				offsetNum = offsetNum +1;
+			EndIf;
+		EndDo;	
+			
+	Except last = undefined; start = 0; EndTry;
+	
+	If last <> undefined AND offset <> undefined Then
+		errorMessage = New Map();
+		strMessage = "Cannot have both start_after and end_before.";
+		errorMessage.Insert("message", strMessage);
+		errorMessage.Insert("status", "error"); 
+		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+		return errorJSON;
+	EndIf;
+	
+	numRecords = 0;
+	Try
+		
+		If last <> undefined Then
+			If start-count < 0 Then
+				i = 0;
+			Else
+				i = start-count;
+			EndIf;
+			While i < start Do
+				Companies.Add(GeneralFunctions.ReturnCompanyObjectMap(Result_array[i].Ref));
+				numRecords = numRecords+1;
+				i = i + 1;
+			EndDo;
+			has_more = true;
+		Else
+			
+			If count >= Result.Count() Then
+				For i=start to Result.Count()-1 Do
+					numRecords = numRecords+1;
+					Companies.Add(GeneralFunctions.ReturnCompanyObjectMap(Result_array[i].Ref));
+				EndDo;
+				has_more = false;
+			Else
+				For i=start to start+count-1 Do
+					numRecords = numRecords+1;
+					Companies.Add(GeneralFunctions.ReturnCompanyObjectMap(Result_array[i].Ref));
+				EndDo;
+				has_more = true;
+			EndIf;
+			
+		EndIf;
+			
+	Except
+		
+		//While Result.Next() Do
+		//	
+		//	Companies.Add(GeneralFunctions.ReturnCompanyObjectMap(Result.Ref));
+		//
+		//EndDo;
+		has_more = false;
+		
+	EndTry;
+		
 	CompanyList = New Map();
 	CompanyList.Insert("companies", Companies);
+	CompanyList.Insert("has_more", has_more);
+	CompanyList.Insert("numOfRecords",numRecords);
 	
 	jsonout = InternetConnectionClientServer.EncodeJSON(CompanyList);
 	
@@ -1474,6 +1546,8 @@ Function inoutItemsDelete(jsonin) Export
 EndFunction
 
 Function inoutItemsListAll(jsonin) Export
+	
+	ParsedJSON = InternetConnectionClientServer.DecodeJSON(jsonin);
 		
 	Query = New Query("SELECT
 	                  |	Products.Ref,
@@ -1486,56 +1560,97 @@ Function inoutItemsListAll(jsonin) Export
 	                  |ORDER BY
 	                  |	Code");
 	Result = Query.Execute().Select();
+	Result_array = Query.Execute().Unload();
 	
 	Products = New Array();
 	
-	While Result.Next() Do
-		
-		//Product = New Map();
-		//Product.Insert("item_code", Result.Code);
-		//Product.Insert("api_code", String(Result.Ref.UUID()));
-		//Product.Insert("item_description", Result.Description);
-		//If Result.Type = Enums.InventoryTypes.Inventory Then
-		//	Product.Insert("item_type", "product");
-		//ElsIf Result.Type = Enums.InventoryTypes.NonInventory Then
-		//	Product.Insert("item_type", "service");
-		//EndIf;
-		//
-		//Products.Add(Product);
-		Products.Add(GeneralFunctions.ReturnProductObjectMap(Result.Ref));
-		
-	EndDo;
+	Try 
+		count = ParsedJSON.limit;
+		If count > 100 Then count = 100; EndIf;
+	Except count = 10; EndTry;
 	
+	Try offset = ParsedJSON.start_after;
+		offsetNum = 0;
+		start = 0;
+		While Result.Next() Do
+			If string(offset) = string(Result.Ref.UUID()) Then
+				start = offsetNum+1;
+				break;
+			Else
+				offsetNum = offsetNum +1;
+			EndIf;
+		EndDo;	
+			
+	Except offset = undefined; start = 0; EndTry;
+	
+	Try last = ParsedJSON.end_before;
+		offsetNum = 0;
+		start = 0;
+		While Result.Next() Do
+			If string(last) = string(Result.Ref.UUID()) Then
+				start = offsetNum;
+				break;
+			Else
+				offsetNum = offsetNum +1;
+			EndIf;
+		EndDo;	
+			
+	Except last = undefined; start = 0; EndTry;
+	
+	If last <> undefined AND offset <> undefined Then
+		errorMessage = New Map();
+		strMessage = "Cannot have both start_after and end_before.";
+		errorMessage.Insert("message", strMessage);
+		errorMessage.Insert("status", "error"); 
+		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+		return errorJSON;
+	EndIf;
+	
+	numRecords = 0;
+	Try
+		If last <> undefined Then
+			If start-count < 0 Then
+				i = 0;
+			Else
+				i = start-count;
+			EndIf;
+			While i < start Do
+				Products.Add(GeneralFunctions.ReturnProductObjectMap(Result_array[i].Ref));
+				numRecords = numRecords+1;
+				i = i + 1;
+			EndDo;
+			has_more = true;
+		Else
+			
+			If count >= Result.Count() Then
+				For i=start to Result.Count()-1 Do
+					numRecords = numRecords+1;
+					Products.Add(GeneralFunctions.ReturnProductObjectMap(Result_array[i].Ref));
+				EndDo;
+				has_more = false;
+			Else
+				For i=start to start+count-1 Do
+					numRecords = numRecords+1;
+					Products.Add(GeneralFunctions.ReturnProductObjectMap(Result_array[i].Ref));
+				EndDo;
+				has_more = true;
+			EndIf;
+			
+		EndIf;
+
+			
+	Except
+
+		has_more = false;
+		
+	EndTry;
+		
 	ProductList = New Map();
 	ProductList.Insert("items", Products);
+	ProductList.Insert("has_more", has_more);
+	ProductList.Insert("numOfRecords",numRecords);
 	
 	jsonout = InternetConnectionClientServer.EncodeJSON(ProductList);
-	
-	//Query = New Query("SELECT
-	//				  | Products.Ref,
-	//				  | Products.Code,
-	//				  | Products.Description,
-	//				  | Products.Type
-	//				  |FROM
-	//				  |	Catalog.Products AS Products");
-
-	//Result = Query.Execute().Unload();
-	//
-	//Products = New Array();
-	//
-	//For Each ResultObj In Result Do
-	//	
-	//	Product = GeneralFunctions.ReturnProductObjectMap(ResultObj.Ref);		
-	//	Products.Add(Product);
-	//	
-	//EndDo;
-
-	//
-	//ProductList = New Map();
-	//ProductList.Insert("orders", Products);
-	//
-	//jsonout = InternetConnectionClientServer.EncodeJSON(ProductList);
-
 	
 	Return jsonout;
 
@@ -1584,11 +1699,11 @@ Function inoutCashSalesCreate(jsonin) Export
 	NewCashSale.ExchangeRate = 1;
 	NewCashSale.Location = Catalogs.Locations.MainWarehouse;
 	
-	Try NewCashSale.LineSubtotalRC = ParsedJSON.line_subtotal; Except EndTry;
-	Try NewCashSale.DiscountRC = ParsedJSON.discount; Except EndTry;
+	Try NewCashSale.LineSubtotal = ParsedJSON.line_subtotal; Except EndTry;
+	Try NewCashSale.Discount = ParsedJSON.discount; Except EndTry;
 	Try NewCashSale.DiscountPercent = ParsedJSON.discount_percent; Except EndTry;
-	Try NewCashSale.SubTotalRC = ParsedJSON.subtotal; Except EndTry;
-	Try NewCashSale.ShippingRC = ParsedJSON.shipping; Except EndTry;
+	Try NewCashSale.SubTotal = ParsedJSON.subtotal; Except EndTry;
+	Try NewCashSale.Shipping = ParsedJSON.shipping; Except EndTry;
 	
 	DataLineItems = ParsedJSON.lines.line_items;
 	
@@ -1654,11 +1769,11 @@ Function inoutCashSalesCreate(jsonin) Export
 	CashSaleData.Insert("sales_tax_total", NewCashSale.SalesTaxRC);
 	CashSaleData.Insert("doc_total", NewCashSale.DocumentTotalRC);
 	
-	CashSaleData.Insert("line_subtotal", NewCashSale.LineSubtotalRC);
-	CashSaleData.Insert("discount", NewCashSale.DiscountRC);
+	CashSaleData.Insert("line_subtotal", NewCashSale.LineSubtotal);
+	CashSaleData.Insert("discount", NewCashSale.Discount);
 	CashSaleData.Insert("discount_percent", NewCashSale.DiscountPercent);
-	CashSaleData.Insert("subtotal", NewCashSale.SubTotalRC);
-	CashSaleData.Insert("shipping", NewCashSale.ShippingRC);
+	CashSaleData.Insert("subtotal", NewCashSale.SubTotal);
+	CashSaleData.Insert("shipping", NewCashSale.Shipping);
 
 
 	Query = New Query("SELECT
@@ -1759,11 +1874,11 @@ Function inoutCashSalesUpdate(jsonin, object_code) Export
 	UpdatedCashSaleObj.ExchangeRate = 1;
 	UpdatedCashSaleObj.Location = Catalogs.Locations.MainWarehouse;
 	
-	Try UpdatedCashSaleObj.LineSubtotalRC = ParsedJSON.line_subtotal; Except EndTry;
-	Try UpdatedCashSaleObj.DiscountRC = ParsedJSON.discount; Except EndTry;
+	Try UpdatedCashSaleObj.LineSubtotal = ParsedJSON.line_subtotal; Except EndTry;
+	Try UpdatedCashSaleObj.Discount = ParsedJSON.discount; Except EndTry;
 	Try UpdatedCashSaleObj.DiscountPercent = ParsedJSON.discount_percent; Except EndTry;
-	Try UpdatedCashSaleObj.SubTotalRC = ParsedJSON.subtotal; Except EndTry;
-	Try UpdatedCashSaleObj.ShippingRC = ParsedJSON.shipping; Except EndTry;
+	Try UpdatedCashSaleObj.SubTotal = ParsedJSON.subtotal; Except EndTry;
+	Try UpdatedCashSaleObj.Shipping = ParsedJSON.shipping; Except EndTry;
 	
 	DataLineItems = ParsedJSON.lines.line_items;
 	
@@ -1831,11 +1946,11 @@ Function inoutCashSalesUpdate(jsonin, object_code) Export
 	CashSaleData.Insert("memo", NewCashSale.Memo);
 	CashSaleData.Insert("sales_tax_total", NewCashSale.SalesTaxRC);
 	CashSaleData.Insert("doc_total", NewCashSale.DocumentTotalRC);
-	CashSaleData.Insert("line_subtotal", NewCashSale.LineSubtotalRC);
-	CashSaleData.Insert("discount", NewCashSale.DiscountRC);
+	CashSaleData.Insert("line_subtotal", NewCashSale.LineSubtotal);
+	CashSaleData.Insert("discount", NewCashSale.Discount);
 	CashSaleData.Insert("discount_percent", NewCashSale.DiscountPercent);
-	CashSaleData.Insert("subtotal", NewCashSale.SubTotalRC);
-	CashSaleData.Insert("shipping", NewCashSale.ShippingRC);
+	CashSaleData.Insert("subtotal", NewCashSale.SubTotal);
+	CashSaleData.Insert("shipping", NewCashSale.Shipping);
 
 	Query = New Query("SELECT
 	                  |	CashSaleLineItems.Product,
@@ -1934,11 +2049,11 @@ Function inoutCashSalesGet(jsonin) Export
 	CashSaleData.Insert("memo", NewCashSale.Memo);
 	CashSaleData.Insert("sales_tax_total", NewCashSale.SalesTaxRC);
 	CashSaleData.Insert("doc_total", NewCashSale.DocumentTotalRC);
-	CashSaleData.Insert("line_subtotal", NewCashSale.LineSubtotalRC);
-	CashSaleData.Insert("discount", NewCashSale.DiscountRC);
+	CashSaleData.Insert("line_subtotal", NewCashSale.LineSubtotal);
+	CashSaleData.Insert("discount", NewCashSale.Discount);
 	CashSaleData.Insert("discount_percent", NewCashSale.DiscountPercent);	
-	CashSaleData.Insert("subtotal", NewCashSale.SubTotalRC);
-	CashSaleData.Insert("shipping", NewCashSale.ShippingRC);
+	CashSaleData.Insert("subtotal", NewCashSale.SubTotal);
+	CashSaleData.Insert("shipping", NewCashSale.Shipping);
 
 	Query = New Query("SELECT
 	                  |	CashSaleLineItems.Product,
@@ -2030,97 +2145,107 @@ Function inoutCashSalesDelete(jsonin) Export
 EndFunction
 
 Function inoutCashSalesListAll(jsonin) Export
+	
+	ParsedJSON = InternetConnectionClientServer.DecodeJSON(jsonin);
 		
 	Query = New Query("SELECT
 	                  |	CashSale.Ref,
-	                  |	CashSale.DataVersion,
-	                  |	CashSale.DeletionMark,
-	                  |	CashSale.Number,
-	                  |	CashSale.Date AS Date,
-	                  |	CashSale.Posted,
-	                  |	CashSale.Company,
-	                  |	CashSale.RefNum,
-	                  |	CashSale.Memo,
-	                  |	CashSale.DepositType,
-	                  |	CashSale.Deposited,
-	                  |	CashSale.Currency,
-	                  |	CashSale.ExchangeRate,
-	                  |	CashSale.Location,
-	                  |	CashSale.BankAccount,
-	                  |	CashSale.PaymentMethod,
-	                  |	CashSale.ShipTo,
-	                  |	CashSale.Project,
-	                  |	CashSale.StripeID,
-	                  |	CashSale.StripeCardName,
-	                  |	CashSale.StripeAmount,
-	                  |	CashSale.StripeCreated,
-	                  |	CashSale.StripeCardType,
-	                  |	CashSale.StripeLast4,
-	                  |	CashSale.NewObject,
-	                  |	CashSale.EmailTo,
-	                  |	CashSale.EmailNote,
-	                  |	CashSale.EmailCC,
-	                  |	CashSale.LastEmail,
-	                  |	CashSale.LineSubtotalRC,
-	                  |	CashSale.DiscountRC,
-	                  |	CashSale.SubtotalRC,
-	                  |	CashSale.ShippingRC,
-	                  |	CashSale.SalesTaxRC,
-	                  |	CashSale.DocumentTotal,
-	                  |	CashSale.DocumentTotalRC,
-	                  |	CashSale.BillTo,
-	                  |	CashSale.DiscountPercent,
-	                  |	CashSale.LineItems.(
-	                  |		Ref,
-	                  |		LineNumber,
-	                  |		Product,
-	                  |		Price,
-	                  |		Quantity,
-	                  |		LineTotal,
-	                  |		ProductDescription,
-	                  |		Project
-	                  |	)
+	                  |	CashSale.Date AS Date
 	                  |FROM
 	                  |	Document.CashSale AS CashSale
 	                  |
 	                  |ORDER BY
 	                  |	Date");
 	Result = Query.Execute().Select();
+	Result_array = Query.Execute().Unload();
 	
 	CashSales = New Array();
 	
-	While Result.Next() Do
+	Try 
+		count = ParsedJSON.limit;
+		If count > 100 Then count = 100; EndIf;
+	Except count = 10; EndTry;
+	
+	Try offset = ParsedJSON.start_from;
+		offsetNum = 0;
+		start = 0;
+		While Result.Next() Do
+			If string(offset) = string(Result.Ref.UUID()) Then
+				start = offsetNum+1;
+				break;
+			Else
+				offsetNum = offsetNum +1;
+			EndIf;
+		EndDo;	
+			
+	Except offset = undefined; start = 0; EndTry;
+	
+	Try last = ParsedJSON.end_before;
+		offsetNum = 0;
+		start = 0;
+		While Result.Next() Do
+			If string(last) = string(Result.Ref.UUID()) Then
+				start = offsetNum-1;
+				break;
+			Else
+				offsetNum = offsetNum +1;
+			EndIf;
+		EndDo;	
+			
+	Except last = undefined; start = 0; EndTry;
+	
+	If last <> undefined AND offset <> undefined Then
+		errorMessage = New Map();
+		strMessage = "Cannot have both start_after and end_before.";
+		errorMessage.Insert("message", strMessage);
+		errorMessage.Insert("status", "error"); 
+		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+		return errorJSON;
+	EndIf;
+	
+	numRecords = 0;
+	Try
 		
-		CashSale = New Map();
-		CashSale.Insert("api_code", String(Result.Ref.UUID()));
-		CashSale.Insert("customer_api_code", String(Result.Company.Ref.UUID()));
-		CashSale.Insert("company_name", Result.Company.Description);
-		CashSale.Insert("company_code", Result.Company.Code);
-		CashSale.Insert("ship_to_api_code", String(Result.ShipTo.Ref.UUID()));
-		CashSale.Insert("ship_to_address_code", Result.ShipTo.Code);
-		CashSale.Insert("ship_to_address_id", Result.ShipTo.Description);
-		// date - convert into the same format as input
-		CashSale.Insert("cash_sale_number", Result.Number);
-		// payment method - same format as input
-		CashSale.Insert("payment_method", Result.PaymentMethod.Description);
-		// date - convert to input format
-		CashSale.Insert("date", Result.Date);
-		CashSale.Insert("ref_num", Result.RefNum);
-		CashSale.Insert("memo", Result.Memo);
-		CashSale.Insert("sales_tax_total", Result.SalesTaxRC);
-		CashSale.Insert("doc_total", Result.DocumentTotalRC);
-		CashSale.Insert("line_subtotal", Result.LineSubtotalRC);
-		CashSale.Insert("discount", Result.DiscountRC);
-		CashSale.Insert("discount_percent", Result.DiscountPercent);
-		CashSale.Insert("subtotal", Result.SubTotalRC);
-		CashSale.Insert("shipping", Result.ShippingRC);
+		If last <> undefined Then
+			If start-count < 0 Then
+				i = 0;
+			Else
+				i = start-count;
+			EndIf;
+			While i < start Do
+				CashSales.Add(Webhooks.ReturnCashSaleMap(Result_array[i].Ref));
+				numRecords = numRecords+1;
+				i = i + 1;
+			EndDo;
+			has_more = true;
+		Else
+
+			If count >= Result.Count() Then
+				For i=start to Result.Count()-1 Do
+					numRecords = numRecords+1;
+					CashSales.Add(Webhooks.ReturnCashSaleMap(Result_array[i].Ref));
+				EndDo;
+				has_more = false;
+			Else
+				For i=start to start+count-1 Do
+					numRecords = numRecords+1;
+					CashSales.Add(Webhooks.ReturnCashSaleMap(Result_array[i].Ref));
+				EndDo;
+				has_more = true;
+			EndIf;
+			
+		EndIf;
+			
+	Except
+
+		has_more = false;
 		
-		CashSales.Add(CashSale);
-		
-	EndDo;
+	EndTry;
 	
 	CashSalesList = New Map();
 	CashSalesList.Insert("cash_sales", CashSales);
+	CashSalesList.Insert("has_more", has_more);
+	CashSalesList.Insert("numOfRecords",numRecords);
 	
 	jsonout = InternetConnectionClientServer.EncodeJSON(CashSalesList);
 	
@@ -2617,119 +2742,107 @@ Function inoutInvoicesDelete(jsonin) Export
 EndFunction
 
 Function inoutInvoicesListAll(jsonin) Export
+	
+	ParsedJSON = InternetConnectionClientServer.DecodeJSON(jsonin);
 		
 	Query = New Query("SELECT
-	                  |	SalesInvoice.Ref,
-	                  |	SalesInvoice.DataVersion,
-	                  |	SalesInvoice.DeletionMark,
-	                  |	SalesInvoice.Number,
-	                  |	SalesInvoice.Date AS Date,
-	                  |	SalesInvoice.Posted,
-	                  |	SalesInvoice.Company,
-	                  |	SalesInvoice.ShipTo,
-	                  |	SalesInvoice.BillTo,
-	                  |	SalesInvoice.ConfirmTo,
-	                  |	SalesInvoice.RefNum,
-	                  |	SalesInvoice.DropshipCompany,
-	                  |	SalesInvoice.DropshipShipTo,
-	                  |	SalesInvoice.DropshipConfirmTo,
-	                  |	SalesInvoice.DropshipRefNum,
-	                  |	SalesInvoice.SalesPerson,
-	                  |	SalesInvoice.Currency,
-	                  |	SalesInvoice.ExchangeRate,
-	                  |	SalesInvoice.ARAccount,
-	                  |	SalesInvoice.DueDate,
-	                  |	SalesInvoice.LocationActual,
-	                  |	SalesInvoice.DeliveryDateActual,
-	                  |	SalesInvoice.Project,
-	                  |	SalesInvoice.Class,
-	                  |	SalesInvoice.Terms,
-	                  |	SalesInvoice.URL,
-	                  |	SalesInvoice.Paid,
-	                  |	SalesInvoice.Memo,
-	                  |	SalesInvoice.BegBal,
-	                  |	SalesInvoice.ManualAdjustment,
-	                  |	SalesInvoice.LineSubtotal,
-	                  |	SalesInvoice.DiscountPercent,
-	                  |	SalesInvoice.Discount,
-	                  |	SalesInvoice.SubTotal,
-	                  |	SalesInvoice.Shipping,
-	                  |	SalesInvoice.SalesTax,
-	                  |	SalesInvoice.SalesTaxRC,
-	                  |	SalesInvoice.DocumentTotal,
-	                  |	SalesInvoice.DocumentTotalRC,
-	                  |	SalesInvoice.______Review______,
-	                  |	SalesInvoice.NewObject,
-	                  |	SalesInvoice.CF1String,
-	                  |	SalesInvoice.EmailTo,
-	                  |	SalesInvoice.EmailCC,
-	                  |	SalesInvoice.EmailNote,
-	                  |	SalesInvoice.LastEmail,
-	                  |	SalesInvoice.PaidInvoice,
-	                  |	SalesInvoice.PayHTML,
-	                  |	SalesInvoice.FOB,
-	                  |	SalesInvoice.Carrier,
-	                  |	SalesInvoice.TrackingNumber,
-	                  |	SalesInvoice.PrePaySO,
-	                  |	SalesInvoice.LineItems.(
-	                  |		Ref,
-	                  |		LineNumber,
-	                  |		Product,
-	                  |		ProductDescription,
-	                  |		Quantity,
-	                  |		UM,
-	                  |		Price,
-	                  |		LineTotal,
-	                  |		Taxable,
-	                  |		TaxableAmount,
-	                  |		LineItems.Order,
-	                  |		Location,
-	                  |		LocationActual,
-	                  |		DeliveryDate,
-	                  |		DeliveryDateActual,
-	                  |		Project,
-	                  |		Class
-	                  |	)
+	                  |	SalesInvoice.Ref
 	                  |FROM
 	                  |	Document.SalesInvoice AS SalesInvoice
 	                  |
 	                  |ORDER BY
-	                  |	Date");
+	                  |	SalesInvoice.Date");
 	Result = Query.Execute().Select();
+
+	Result_array = Query.Execute().Unload();
 	
 	Invoices = New Array();
 	
-	While Result.Next() Do
-		
-		Invoice = New Map();
-		Invoice.Insert("api_code", String(Result.Ref.UUID()));
-		Invoice.Insert("company_name", Result.Company.Description);
-		Invoice.Insert("company_code", Result.Company.Code);
-		Invoice.Insert("ship_to_address_code", Result.ShipTo.Code);
-		Invoice.Insert("ship_to_address_id", Result.ShipTo.Description);
-		// date - convert into the same format as input
-		Invoice.Insert("invoice_number", Result.Number);
-		// payment method - same format as input
-		//CashSale.Insert("payment_method", Result.PaymentMethod.Description);
-		// date - convert to input format
-		Invoice.Insert("date", Result.Date);
-		Invoice.Insert("due_date", Result.DueDate);
-		Invoice.Insert("ref_num", Result.RefNum);
-		Invoice.Insert("memo", Result.Memo);
-		Invoice.Insert("sales_tax_total", Result.SalesTaxRC);
-		Invoice.Insert("doc_total", Result.DocumentTotalRC);
-		Invoice.Insert("line_subtotal", Result.LineSubtotal);
-		Invoice.Insert("discount", Result.Discount);
-		Invoice.Insert("discount_percent", Result.DiscountPercent);
-		Invoice.Insert("subtotal", Result.SubTotal);
-		Invoice.Insert("shipping", Result.Shipping);
-		
-		Invoices.Add(Invoice);
-		
-	EndDo;
+	Try 
+		count = ParsedJSON.limit;
+		If count > 100 Then count = 100; EndIf;
+	Except count = 10; EndTry;
 	
+	Try offset = ParsedJSON.start_from;
+		offsetNum = 0;
+		start = 0;
+		While Result.Next() Do
+			If string(offset) = string(Result.Ref.UUID()) Then
+				start = offsetNum+1;
+				break;
+			Else
+				offsetNum = offsetNum +1;
+			EndIf;
+		EndDo;	
+			
+	Except offset = undefined; start = 0; EndTry;
+	
+	Try last = ParsedJSON.end_before;
+		offsetNum = 0;
+		start = 0;
+		While Result.Next() Do
+			If string(last) = string(Result.Ref.UUID()) Then
+				start = offsetNum-1;
+				break;
+			Else
+				offsetNum = offsetNum +1;
+			EndIf;
+		EndDo;	
+			
+	Except last = undefined; start = 0; EndTry;
+	
+	If last <> undefined AND offset <> undefined Then
+		errorMessage = New Map();
+		strMessage = "Cannot have both start_after and end_before.";
+		errorMessage.Insert("message", strMessage);
+		errorMessage.Insert("status", "error"); 
+		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+		return errorJSON;
+	EndIf;
+	
+	numRecords = 0;
+	Try
+		
+		If last <> undefined Then
+			If start-count < 0 Then
+				i = 0;
+			Else
+				i = start-count;
+			EndIf;
+			While i < start Do
+				Invoices.Add(Webhooks.ReturnSalesInvoiceMap(Result_array[i].Ref));
+				numRecords = numRecords+1;
+				i = i + 1;
+			EndDo;
+			has_more = true;
+		Else
+			
+			If count >= Result.Count() Then
+				For i=start to Result.Count()-1 Do
+					numRecords = numRecords+1;
+					Invoices.Add(Webhooks.ReturnSalesInvoiceMap(Result_array[i].Ref));
+				EndDo;
+				has_more = false;
+			Else
+				For i=start to start+count-1 Do
+					numRecords = numRecords+1;
+					Invoices.Add(Webhooks.ReturnSalesInvoiceMap(Result_array[i].Ref));
+				EndDo;
+				has_more = true;
+			EndIf;
+			
+		EndIf;
+	
+	Except
+
+		has_more = false;
+		
+	EndTry;
+			
 	InvoicesList = New Map();
 	InvoicesList.Insert("invoices", Invoices);
+	InvoicesList.Insert("has_more", has_more);
+	InvoicesList.Insert("numOfRecords",numRecords);
 	
 	jsonout = InternetConnectionClientServer.EncodeJSON(InvoicesList);
 	
@@ -4128,6 +4241,9 @@ Function inoutSalesOrdersDelete(jsonin) Export
 EndFunction
 
 Function inoutSalesOrdersListAll(jsonin) Export
+	
+	ParsedJSON = InternetConnectionClientServer.DecodeJSON(jsonin);
+		
 	Query = New Query("SELECT
 	                  |	SalesOrder.Ref
 	                  |FROM
@@ -4137,17 +4253,94 @@ Function inoutSalesOrdersListAll(jsonin) Export
 	                  |	SalesOrder.Date");
 					  
 	Result = Query.Execute().Select();
+
+	Result_array = Query.Execute().Unload();
 	
 	SO = New Array();
 	
-	While Result.Next() Do
-				
-		SO.Add(GeneralFunctions.ReturnSaleOrderMap(Result.Ref));
+	Try 
+		count = ParsedJSON.limit;
+		If count > 100 Then count = 100; EndIf;
+	Except count = 10; EndTry;
+	
+	Try offset = ParsedJSON.start_from;
+		offsetNum = 0;
+		start = 0;
+		While Result.Next() Do
+			If string(offset) = string(Result.Ref.UUID()) Then
+				start = offsetNum+1;
+				break;
+			Else
+				offsetNum = offsetNum +1;
+			EndIf;
+		EndDo;	
+			
+	Except offset = undefined; start = 0; EndTry;
+	
+	Try last = ParsedJSON.end_before;
+		offsetNum = 0;
+		start = 0;
+		While Result.Next() Do
+			If string(last) = string(Result.Ref.UUID()) Then
+				start = offsetNum-1;
+				break;
+			Else
+				offsetNum = offsetNum +1;
+			EndIf;
+		EndDo;	
+			
+	Except last = undefined; start = 0; EndTry;
+	
+	If last <> undefined AND offset <> undefined Then
+		errorMessage = New Map();
+		strMessage = "Cannot have both start_after and end_before.";
+		errorMessage.Insert("message", strMessage);
+		errorMessage.Insert("status", "error"); 
+		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+		return errorJSON;
+	EndIf;
+	
+	numRecords = 0;
+	Try
 		
-	EndDo;
+		If last <> undefined Then
+			If start-count < 0 Then
+				i = 0;
+			Else
+				i = start-count;
+			EndIf;
+			While i < start Do
+				SO.Add(GeneralFunctions.ReturnSaleOrderMap(Result_array[i].Ref));
+				numRecords = numRecords+1;
+				i = i + 1;
+			EndDo;
+			has_more = true;
+		Else
+			If count >= Result.Count() Then
+				For i=start to Result.Count()-1 Do
+					numRecords = numRecords+1;
+					SO.Add(GeneralFunctions.ReturnSaleOrderMap(Result_array[i].Ref));
+				EndDo;
+				has_more = false;
+			Else
+				For i=start to start+count-1 Do
+					numRecords = numRecords+1;
+					SO.Add(GeneralFunctions.ReturnSaleOrderMap(Result_array[i].Ref));
+				EndDo;
+				has_more = true;
+			EndIf;
+		EndIf;
+			
+	Except
+
+		has_more = false;
+		
+	EndTry;
 	
 	soList = New Map();
 	soList.Insert("Sales Orders", SO);
+	soList.Insert("has_more", has_more);
+	soList.Insert("numOfRecords",numRecords);
 	
 	jsonout = InternetConnectionClientServer.EncodeJSON(soList);
 	
@@ -4682,6 +4875,27 @@ Function inoutPurchaseOrdersCreate(jsonin) Export
 			
 				
 	EndDo;
+	
+	Try
+		NewPO.Number = ParsedJSON.po_number;
+		Numerator = Catalogs.DocumentNumbering.PurchaseOrder.GetObject();
+		Numerator.Number = GeneralFunctions.Increment(Numerator.Number);
+		Numerator.Write();
+	Except
+		Numerator = Catalogs.DocumentNumbering.PurchaseOrder.GetObject();
+		If Numerator.Number = "" Then
+			errorMessage = New Map();
+			strMessage = "[po_number] : Document numbering for PO is not set. Please manual enter a PO number." ;
+			errorMessage.Insert("status", "error");
+			errorMessage.Insert("message", strMessage );
+			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+			return errorJSON;
+		Else
+			NewPO.Number = GeneralFunctions.Increment(Numerator.Number);
+			Numerator.Number = NewPO.Number;
+			Numerator.Write();
+		EndIf;
+	EndTry;
 	
 	Try
 		NewPO.Number = ParsedJSON.po_number;

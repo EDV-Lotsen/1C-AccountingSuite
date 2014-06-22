@@ -94,6 +94,26 @@ Procedure OnWrite(Cancel)
 		EndDo;						
 	EndIf;
 	
+	items_url = Constants.items_webhook.Get();
+	
+	If NOT items_url = "" Then
+		
+		WebhookMap = GeneralFunctions.ReturnProductObjectMap(Ref);
+		WebhookMap.Insert("resource","items");
+		If NewObject = True Then
+			WebhookMap.Insert("action","create");
+		Else
+			WebhookMap.Insert("action","update");
+		EndIf;
+		WebhookMap.Insert("apisecretkey",Constants.APISecretKey.Get());
+		
+		WebhookParams = New Array();
+		WebhookParams.Add(items_url);
+		WebhookParams.Add(WebhookMap);
+		LongActions.ExecuteInBackground("GeneralFunctions.SendWebhook", WebhookParams);
+	
+	EndIf;
+	
 	email_items_webhook = Constants.items_webhook_email.Get();
 	
 	If NOT email_items_webhook = "" Then
@@ -113,7 +133,7 @@ Procedure OnWrite(Cancel)
 		LongActions.ExecuteInBackground("GeneralFunctions.EmailWebhook", WebhookParams2);
 		
 	EndIf;
-
+	
 EndProcedure
 
 Procedure BeforeWrite(Cancel)
@@ -126,7 +146,7 @@ Procedure BeforeWrite(Cancel)
 			NewObject = True;
 		EndIf;
 	EndIf;
-
+	
 EndProcedure
 
 Procedure BeforeDelete(Cancel)

@@ -161,20 +161,6 @@ Procedure GetMFAFormFieldsAtServer(Bank, TempStorageAddress)
 EndProcedure
 
 &AtServerNoContext
-Procedure GetMFAFormFieldsAtServerForEdit(BankAccount, TempStorageAddress)
-	
-	//Prepare data for background execution
-	ProcParameters = New Array;
- 	ProcParameters.Add(BankAccount.ItemID);
- 	ProcParameters.Add(TempStorageAddress);
-	
-	//Performing background operation
-	JobTitle = NStr("en = 'Obtaining MFA fields from Yodlee'");
-	Job = BackgroundJobs.Execute("Yodlee.EditItem_GetFormFields", ProcParameters, , JobTitle);
-
-EndProcedure
-
-&AtServerNoContext
 Procedure UpdateBankAccountsAtServer(DeleteUninitializedAccounts = False, CurrentBankAccount, TempStorageAddress)
 	Params = New Array();
 	If DeleteUninitializedAccounts Then
@@ -201,12 +187,6 @@ Function ContinueMFARefreshAtServer(ProgrammaticElems, Params, TempStorageAddres
 EndFunction
 
 //Starts the refresh procedure on an account with ItemID
-&AtServerNoContext
-Function RefreshItem(ItemID)
-	Params = Yodlee.RefreshItem(ItemID);
-	return Params;
-EndFunction
-
 &AtServerNoContext
 Procedure RefreshItemAtServer(ItemID, TempStorageAddress)
 	//Prepare data for background execution
@@ -474,11 +454,6 @@ Procedure OnlineAccountOnChange(Item)
 		Items.AccountDescription.Visible = True;
 		Items.AccountType.Visible = True;
 	EndIf;
-EndProcedure
-
-&AtClient
-Procedure Decoration10Click(Item)
-	OpenForm("DataProcessor.YodleeBankAccountsManagement.Form.Video", New Structure, ThisForm,,,,,FormWindowOpeningMode.LockOwnerWindow);
 EndProcedure
 
 &AtClient

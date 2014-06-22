@@ -106,6 +106,10 @@
 				</v8:item>
 			</title>
 		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Class</dataPath>
+			<field>Class</field>
+		</field>
 		<dataSource>DataSource1</dataSource>
 		<query>SELECT
 	GeneralJournalEntryLineItems.Ref,
@@ -115,6 +119,7 @@
 	GeneralJournalEntryLineItems.AmountCr,
 	GeneralJournalEntryLineItems.Memo,
 	GeneralJournalEntryLineItems.Company,
+	GeneralJournalEntryLineItems.Class,
 	GeneralJournalEntryLineItems.Ref.Ref AS Ref1,
 	GeneralJournalEntryLineItems.Ref.DataVersion,
 	GeneralJournalEntryLineItems.Ref.DeletionMark,
@@ -149,11 +154,10 @@ FROM
 					<dcsset:field>AmountDr</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>Company</dcsset:field>
+					<dcsset:field>Class</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:use>false</dcsset:use>
-					<dcsset:field>AccountDescription</dcsset:field>
+					<dcsset:field>Company</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>LineNumber</dcsset:field>

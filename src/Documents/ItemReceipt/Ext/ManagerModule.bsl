@@ -11,34 +11,42 @@
 //------------------------------------------------------------------------------
 // Document posting
 
-// Collect document data for posting on the server (in terms of document)
+// Collect document data for posting on the server (in terms of document).
 Function PrepareDataStructuresForPosting(DocumentRef, AdditionalProperties, RegisterRecords) Export
-	// Create list of posting tables (according to the list of registers)
+	
+	// Create list of posting tables (according to the list of registers).
 	TablesList = New Structure;
 	
-	// Create a query to request document data
+	// Create a query to request document data.
 	Query = New Query;
+	Query.TempTablesManager = New TempTablesManager;
 	Query.SetParameter("Ref", DocumentRef);
 	
-	// Query for document's tables
+	// Query for document's tables.
 	Query.Text  = Query_OrdersStatuses(TablesList) +
 	              Query_OrdersDispatched(TablesList);
 	QueryResult = Query.ExecuteBatch();
 	
-	// Save documents table in posting parameters
+	// Save documents table in posting parameters.
 	For Each DocumentTable In TablesList Do
-		AdditionalProperties.Posting.PostingTables.Insert(DocumentTable.Key, QueryResult[DocumentTable.Value].Unload());
+		ResultTable = QueryResult[DocumentTable.Value].Unload();
+		If Not DocumentPosting.IsTemporaryTable(ResultTable) Then
+			AdditionalProperties.Posting.PostingTables.Insert(DocumentTable.Key, ResultTable);
+		EndIf;
 	EndDo;
 	
-	// Fill list of registers to check (non-negative) balances in posting parameters
+	// Clear used temporary tables manager.
+	Query.TempTablesManager.Close();
+	
+	// Fill list of registers to check (non-negative) balances in posting parameters.
 	FillRegistersCheckList(AdditionalProperties, RegisterRecords);
 	
 EndFunction
 
-// Collect document data for posting on the server (in terms of document)
+// Collect document data for posting on the server (in terms of document).
 Function PrepareDataStructuresForPostingClearing(DocumentRef, AdditionalProperties, RegisterRecords) Export
 	
-	// Fill list of registers to check (non-negative) balances in posting parameters
+	// Fill list of registers to check (non-negative) balances in posting parameters.
 	FillRegistersCheckList(AdditionalProperties, RegisterRecords);
 	
 EndFunction
@@ -46,50 +54,50 @@ EndFunction
 //------------------------------------------------------------------------------
 // Document filling
 
-// Collect source data for filling document on the server (in terms of document)
+// Collect source data for filling document on the server (in terms of document).
 Function PrepareDataStructuresForFilling(DocumentRef, AdditionalProperties) Export
 	
-	// Create list of posting tables (according to the list of registers)
+	// Create list of posting tables (according to the list of registers).
 	TablesList = New Structure;
 	
-	// Create a query to request document data
+	// Create a query to request document data.
 	Query = New Query;
 	Query.TempTablesManager = New TempTablesManager;
 	Query.SetParameter("Ref",  DocumentRef);
 	Query.SetParameter("Date", AdditionalProperties.Date);
 	
-	// Query for document's tables
+	// Query for document's tables.
 	Query.Text   = "";
 	For Each FillingData In AdditionalProperties.Filling.FillingData Do
 		
-		// Construct query by passed sources
+		// Construct query by passed sources.
 		If FillingData.Key = "Document_PurchaseOrder" Then
 			Query.Text = Query.Text +
-						 Query_Filling_Document_PurchaseOrder_Attributes(TablesList) +
-						 Query_Filling_Document_PurchaseOrder_OrdersStatuses(TablesList) +
-						 Query_Filling_Document_PurchaseOrder_OrdersDispatched(TablesList) +
-						 Query_Filling_Document_PurchaseOrder_LineItems(TablesList) +
-						 Query_Filling_Document_PurchaseOrder_Totals(TablesList);
+			             Query_Filling_Document_PurchaseOrder_Attributes(TablesList) +
+			             Query_Filling_Document_PurchaseOrder_OrdersStatuses(TablesList) +
+			             Query_Filling_Document_PurchaseOrder_OrdersDispatched(TablesList) +
+			             Query_Filling_Document_PurchaseOrder_LineItems(TablesList) +
+			             Query_Filling_Document_PurchaseOrder_Totals(TablesList);
 			
-		Else // Next filling source
+		Else // Next filling source.
 		EndIf;
 		
 		Query.SetParameter("FillingData_" + FillingData.Key, FillingData.Value);
 	EndDo;
 	
-	// Add combining query
+	// Add combining query.
 	Query.Text = Query.Text +
-				 Query_Filling_Attributes(TablesList) +
-				 Query_Filling_LineItems(TablesList);
-				 
-	// Add check query
-	Query.Text = Query.Text +
-				 Query_Filling_Check(TablesList, FillingCheckList(AdditionalProperties));
+	             Query_Filling_Attributes(TablesList) +
+	             Query_Filling_LineItems(TablesList);
 	
-	// Execute query, fill temporary tables with filling data
+	// Add check query.
+	Query.Text = Query.Text +
+	             Query_Filling_Check(TablesList, FillingCheckList(AdditionalProperties));
+	
+	// Execute query, fill temporary tables with filling data.
 	If TablesList.Count() > 3 Then
 		
-		// Execute query
+		// Execute query.
 		QueryResult = Query.ExecuteBatch();
 		
 		AdditionalProperties.Filling.FillingTables.Insert("Table_Attributes", DocumentPosting.GetTemporaryTable(Query.TempTablesManager, "Table_Attributes"));
@@ -103,11 +111,11 @@ Function PrepareDataStructuresForFilling(DocumentRef, AdditionalProperties) Expo
 	
 EndFunction
 
-// Check status of passed purchase order by ref
-// Returns True if status passed for filling
+// Check status of passed purchase order by ref.
+// Returns True if status passed for filling.
 Function CheckStatusOfPurchaseOrder(DocumentRef, FillingRef) Export
 	
-	// Create new query
+	// Create new query.
 	Query = New Query;
 	Query.SetParameter("Ref", FillingRef);
 	
@@ -143,6 +151,7 @@ Function CheckStatusOfPurchaseOrder(DocumentRef, FillingRef) Export
 		                                                                       Lower(Metadata.FindByType(TypeOf(FillingRef)).Presentation())); 
 		CommonUseClientServer.MessageToUser(MessageText, FillingRef);
 	EndIf;
+	
 	Return StatusOK;
 	
 EndFunction
@@ -156,7 +165,7 @@ EndFunction
 
 #If Server Or ThickClientOrdinaryApplication Or ExternalConnection Then
 
-Procedure Print(Spreadsheet, Ref) Export  // ObjectArray, PrintObjects
+Procedure Print(Spreadsheet, Ref) Export
 	
 	CustomTemplate = GeneralFunctions.GetCustomTemplate("Document.ItemReceipt", "Item receipt");
 	
@@ -305,13 +314,13 @@ EndProcedure
 //------------------------------------------------------------------------------
 // Document posting
 
-// Query for document data
+// Query for document data.
 Function Query_OrdersStatuses(TablesList)
 	
-	// Add OrdersStatuses table to document structure
+	// Add OrdersStatuses table to document structure.
 	TablesList.Insert("Table_OrdersStatuses", TablesList.Count());
 	
-	// Collect orders statuses data
+	// Collect orders statuses data.
 	QueryText =
 	"SELECT DISTINCT
 	// ------------------------------------------------------
@@ -341,13 +350,13 @@ Function Query_OrdersStatuses(TablesList)
 	
 EndFunction
 
-// Query for document data
+// Query for document data.
 Function Query_OrdersDispatched(TablesList)
 	
-	// Add OrdersDispatched table to document structure
+	// Add OrdersDispatched table to document structure.
 	TablesList.Insert("Table_OrdersDispatched", TablesList.Count());
 	
-	// Collect orders dispatched data
+	// Collect orders dispatched data.
 	QueryText =
 	"SELECT
 	// ------------------------------------------------------
@@ -382,22 +391,22 @@ Function Query_OrdersDispatched(TablesList)
 	
 EndFunction
 
-// Put structure of registers, which balance should be checked during posting
+// Put structure of registers, which balance should be checked during posting.
 Procedure FillRegistersCheckList(AdditionalProperties, RegisterRecords)
 	
-	// Create structure of registers and its resources to check balances
+	// Create structure of registers and its resources to check balances.
 	BalanceCheck = New Structure;
 	
-	// Fill structure depending on document write mode
+	// Fill structure depending on document write mode.
 	If AdditionalProperties.Posting.WriteMode = DocumentWriteMode.Posting Then
 		
-		// No checks performed while posting
+		// No checks performed while posting.
 	ElsIf AdditionalProperties.Posting.WriteMode = DocumentWriteMode.UndoPosting Then
 		
-		// No checks performed while unposting
+		// No checks performed while unposting.
 	EndIf;
 	
-	// Return structure of registers to check
+	// Return structure of registers to check.
 	If BalanceCheck.Count() > 0 Then
 		AdditionalProperties.Posting.Insert("BalanceCheck", BalanceCheck);
 	EndIf;
@@ -407,13 +416,13 @@ EndProcedure
 //------------------------------------------------------------------------------
 // Document filling
 
-// Query for document filling
+// Query for document filling.
 Function Query_Filling_Document_PurchaseOrder_Attributes(TablesList)
 	
-	// Add Attributes table to document structure
+	// Add Attributes table to document structure.
 	TablesList.Insert("Table_Document_PurchaseOrder_Attributes", TablesList.Count());
 	
-	// Collect attributes data
+	// Collect attributes data.
 	QueryText =
 		"SELECT
 		|	PurchaseOrder.Ref                       AS FillingData,
@@ -435,13 +444,13 @@ Function Query_Filling_Document_PurchaseOrder_Attributes(TablesList)
 	
 EndFunction
 
-// Query for document filling
+// Query for document filling.
 Function Query_Filling_Document_PurchaseOrder_OrdersStatuses(TablesList)
 	
-	// Add OrdersStatuses table to document structure
+	// Add OrdersStatuses table to document structure.
 	TablesList.Insert("Table_Document_PurchaseOrder_OrdersStatuses", TablesList.Count());
 	
-	// Collect orders statuses data
+	// Collect orders statuses data.
 	QueryText =
 		"SELECT
 		// ------------------------------------------------------
@@ -475,13 +484,13 @@ Function Query_Filling_Document_PurchaseOrder_OrdersStatuses(TablesList)
 	
 EndFunction
 
-// Query for document filling
+// Query for document filling.
 Function Query_Filling_Document_PurchaseOrder_OrdersDispatched(TablesList)
 	
-	// Add OrdersDispatched table to document structure
+	// Add OrdersDispatched table to document structure.
 	TablesList.Insert("Table_Document_PurchaseOrder_OrdersDispatched", TablesList.Count());
 	
-	// Collect orders items data
+	// Collect orders items data.
 	QueryText =
 		"SELECT
 		// ------------------------------------------------------
@@ -532,13 +541,13 @@ Function Query_Filling_Document_PurchaseOrder_OrdersDispatched(TablesList)
 	
 EndFunction
 
-// Query for document filling
+// Query for document filling.
 Function Query_Filling_Document_PurchaseOrder_LineItems(TablesList)
 	
-	// Add LineItems table to document structure
+	// Add LineItems table to document structure.
 	TablesList.Insert("Table_Document_PurchaseOrder_LineItems", TablesList.Count());
 	
-	// Collect line items data
+	// Collect line items data.
 	QueryText =
 		"SELECT
 		|	PurchaseOrderLineItems.Ref                 AS FillingData,
@@ -606,13 +615,13 @@ Function Query_Filling_Document_PurchaseOrder_LineItems(TablesList)
 	
 EndFunction
 
-// Query for document filling
+// Query for document filling.
 Function Query_Filling_Document_PurchaseOrder_Totals(TablesList)
 	
-	// Add Totals table to document structure
+	// Add Totals table to document structure.
 	TablesList.Insert("Table_Document_PurchaseOrder_Totals", TablesList.Count());
 	
-	// Collect totals data
+	// Collect totals data.
 	QueryText =
 		"SELECT
 		// Totals of document
@@ -657,13 +666,13 @@ Function Query_Filling_Document_PurchaseOrder_Totals(TablesList)
 	
 EndFunction
 
-// Query for document filling
+// Query for document filling.
 Function Query_Filling_Attributes(TablesList)
 	
-	// Add Attributes table to document structure
+	// Add Attributes table to document structure.
 	TablesList.Insert("Table_Attributes", TablesList.Count());
 	
-	// Fill data from attributes and totals
+	// Fill data from attributes and totals.
 	QueryText = "";
 	If TablesList.Property("Table_Document_PurchaseOrder_Attributes") Then
 		QueryText = QueryText + ?(Not IsBlankString(QueryText),
@@ -700,20 +709,20 @@ Function Query_Filling_Attributes(TablesList)
 		""));
 	EndIf;
 	
-	// Fill data from next source
-	// --------------------------
+	// Fill data from next source.
+	// ---------------------------
 	
 	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
 	
 EndFunction
 
-// Query for document filling
+// Query for document filling.
 Function Query_Filling_LineItems(TablesList)
 	
-	// Add LineItems table to document structure
+	// Add LineItems table to document structure.
 	TablesList.Insert("Table_LineItems", TablesList.Count());
 	
-	// Fill data from attributes and totals
+	// Fill data from attributes and totals.
 	QueryText = "";
 	If TablesList.Property("Table_Document_PurchaseOrder_LineItems") Then
 		QueryText = QueryText + ?(Not IsBlankString(QueryText),
@@ -749,53 +758,53 @@ Function Query_Filling_LineItems(TablesList)
 		""));
 	EndIf;
 	
-	// Fill data from next source
-	// --------------------------
+	// Fill data from next source.
+	// ---------------------------
 	
 	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
 	
 EndFunction
 
-// Fill structure of attributes, which should be checked during filling
+// Fill structure of attributes, which should be checked during filling.
 Function FillingCheckList(AdditionalProperties)
 	
-	// Create structure of registers and its resources to check balances
+	// Create structure of registers and its resources to check balances.
 	CheckAttributes = New Structure;
-	// Group by attributes to check uniqueness
+	// Group by attributes to check uniqueness.
 	CheckAttributes.Insert("Company",          "Check");
 	CheckAttributes.Insert("Currency",         "Check");
 	CheckAttributes.Insert("ExchangeRate",     "Check");
 	CheckAttributes.Insert("Location",         "Check");
 	//CheckAttributes.Insert("PriceIncludesVAT", "Check");
-	// Maximal possible values
+	// Maximal possible values.
 	// {No min/max fields are defined}
-	// Summarize totals
+	// Summarize totals.
 	//CheckAttributes.Insert("VATTotal",         "Sum");
 	CheckAttributes.Insert("DocumentTotal",    "Sum");
 	CheckAttributes.Insert("DocumentTotalRC",  "Sum");
 	
-	// Save structure of attributes to check
+	// Save structure of attributes to check.
 	If CheckAttributes.Count() > 0 Then
 		AdditionalProperties.Filling.Insert("CheckAttributes", CheckAttributes);
 	EndIf;
 	
-	// Return saved structure
+	// Return saved structure.
 	Return CheckAttributes;
 	
 EndFunction
 
-// Query for document filling
+// Query for document filling.
 Function Query_Filling_Check(TablesList, CheckAttributes)
 	
-	// Check attributes to be checked
+	// Check attributes to be checked.
 	If CheckAttributes.Count() = 0 Then
 		Return "";
 	EndIf;
 	
-	// Add Attributes table to document structure
+	// Add Attributes table to document structure.
 	TablesList.Insert("Table_Check", TablesList.Count());
 	
-	// Fill data from attributes and totals
+	// Fill data from attributes and totals.
 	QueryText =
 	"SELECT
 	|	{Selection}
@@ -809,19 +818,25 @@ Function Query_Filling_Check(TablesList, CheckAttributes)
 	SelectionText = ""; GroupByText = "";
 	For Each Attribute In CheckAttributes Do
 		If Attribute.Value = "Check" Then
-			// Attributes - uniqueness check
+			// Attributes - uniqueness check.
 			DimensionText = StrReplace("Attributes.{Attribute} AS {Attribute}", "{Attribute}", Attribute.Key);
 			SelectionText = ?(IsBlankString(SelectionText), DimensionText, SelectionText+",
 				|	"+DimensionText);
-			// Group by section
+			// Group by section.
 			DimensionText = StrReplace("Attributes.{Attribute}", "{Attribute}", Attribute.Key);
 			GroupByText   = ?(IsBlankString(GroupByText), DimensionText, GroupByText+",
 				|	"+DimensionText);
 		Else
-			// Agregate function
-			DimensionText = StrReplace(Upper(Attribute.Value)+"(Attributes.{Attribute}) AS {Attribute}", "{Attribute}", Attribute.Key);
-			SelectionText = ?(IsBlankString(SelectionText), DimensionText, SelectionText+",
-				|	"+DimensionText);
+			// Agregate function.
+			If Find(Attribute.Value, "(") > 0 Then
+				// Agregate function with custom declaration.
+				AggregationText = StrReplace(Attribute.Value + " AS {Attribute}", "{Attribute}", Attribute.Key);
+			Else
+				// Attribute agregate function.
+				AggregationText = StrReplace(Upper(Attribute.Value)+"(Attributes.{Attribute}) AS {Attribute}", "{Attribute}", Attribute.Key);
+			EndIf;
+			SelectionText = ?(IsBlankString(SelectionText), AggregationText, SelectionText+",
+				|	"+AggregationText);
 		EndIf;
 	EndDo;
 	QueryText = StrReplace(QueryText, "{Selection}", SelectionText);

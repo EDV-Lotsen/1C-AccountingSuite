@@ -18,7 +18,7 @@ Procedure BeforeWrite(Cancel, Replacing)
 	// Lock register, preventing other transactions to read data from register before changing.
 	LockForUpdate = True;
 	
-	// Save current state of register records before write of recordset
+	// Save current state of register records before write of recordset.
 	DocumentPosting.CheckRecordsetChangesBeforeWrite(Filter.Recorder.Value, AdditionalProperties, Cancel);
 	
 EndProcedure

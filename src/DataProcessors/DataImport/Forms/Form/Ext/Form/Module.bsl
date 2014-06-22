@@ -2338,7 +2338,7 @@
 		//	EndIf;
 		//	
 		//	If DataLine.ProductQty <> 0 Then
-		//		IBB = Documents.InventoryBeginningBalances.CreateDocument();
+		//		IBB = Documents.ItemAdjustment.CreateDocument();
 		//		IBB.Product = NewProduct.Ref;
 		//		IBB.Location = Catalogs.Locations.MainWarehouse;
 		//		IBB.Quantity = DataLine.ProductQty;

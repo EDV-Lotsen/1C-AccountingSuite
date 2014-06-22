@@ -1,6 +1,43 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
-	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<AutoCommandBar name="FormCommandBar" id="-1">
+		<ChildItems>
+			<Button name="Transactions" id="25">
+				<Type>CommandBarButton</Type>
+				<CommandName>Form.Command.Transactions</CommandName>
+				<ExtendedTooltip name="TransactionsExtendedTooltip" id="26"/>
+			</Button>
+			<Button name="TransactionsWithoutProject" id="27">
+				<Type>CommandBarButton</Type>
+				<CommandName>Form.Command.TransactionsWithoutProject</CommandName>
+				<ExtendedTooltip name="TransactionsWithoutProjectExtendedTooltip" id="28"/>
+			</Button>
+			<Button name="FormOutputList" id="31">
+				<Type>CommandBarButton</Type>
+				<Representation>PictureAndText</Representation>
+				<OnlyInAllActions>true</OnlyInAllActions>
+				<CommandName>Form.StandardCommand.OutputList</CommandName>
+				<Picture>
+					<xr:Ref>StdPicture.DataCompositionOrder</xr:Ref>
+					<xr:LoadTransparent>true</xr:LoadTransparent>
+				</Picture>
+				<Title>
+					<v8:item>
+						<v8:lang>en</v8:lang>
+						<v8:content>Export list</v8:content>
+					</v8:item>
+				</Title>
+				<ExtendedTooltip name="FormOutputListExtendedTooltip" id="32"/>
+			</Button>
+			<Button name="FormRefresh" id="29">
+				<Type>CommandBarButton</Type>
+				<Representation>Picture</Representation>
+				<OnlyInAllActions>true</OnlyInAllActions>
+				<CommandName>Form.StandardCommand.Refresh</CommandName>
+				<ExtendedTooltip name="FormRefreshExtendedTooltip" id="30"/>
+			</Button>
+		</ChildItems>
+	</AutoCommandBar>
 	<ChildItems>
 		<UsualGroup name="ListSettingsComposerUserSettings" id="1">
 			<Title>
@@ -45,29 +82,29 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="6"/>
-			<SearchStringAddition name="ListSearchString" id="25">
+			<SearchStringAddition name="ListSearchString" id="33">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="26"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="27"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="34"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="35"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="28">
+			<ViewStatusAddition name="ListViewStatus" id="36">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="29"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="30"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="37"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="38"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="31">
+			<SearchControlAddition name="ListSearchControl" id="39">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="32"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="33"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="40"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="41"/>
 			</SearchControlAddition>
 			<ChildItems>
 				<LabelField name="Customer" id="10">
@@ -193,4 +230,36 @@ GROUP BY
 			</Settings>
 		</Attribute>
 	</Attributes>
+	<Commands>
+		<Command name="Transactions" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Transactions</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Transactions</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>Transactions</Action>
+		</Command>
+		<Command name="TransactionsWithoutProject" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Transactions w/o project</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Transactions without project</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>TransactionsWithoutProject</Action>
+		</Command>
+	</Commands>
 </Form>

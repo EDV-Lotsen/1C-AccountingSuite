@@ -185,6 +185,11 @@ EndProcedure
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
+	If Parameters.Property("Company") And Object.Ref.IsEmpty() Then
+		Object.Company = Parameters.Company;
+		OpenOrdersSelectionForm = True; 
+	EndIf;
+	
 	Items.FormPayWithDwolla.Enabled = IsBlankString(Object.DwollaTrxID);
 	
 	//Title = "Payment " + Object.Number + " " + Format(Object.Date, "DLF=D");
@@ -205,10 +210,36 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
 EndProcedure
 
+&AtClient
+Procedure OnOpen(Cancel)
+	
+	AttachIdleHandler("AfterOpen", 0.1, True);
+	
+EndProcedure
+
+&AtClient
+Procedure AfterOpen()
+	
+	ThisForm.Activate();
+	
+	If ThisForm.IsInputAvailable() Then
+		///////////////////////////////////////////////
+		DetachIdleHandler("AfterOpen");
+		
+		If OpenOrdersSelectionForm Then
+			CompanyOnChange(Items.Company);	
+		EndIf;	
+		///////////////////////////////////////////////
+	Else 
+		AttachIdleHandler("AfterOpen", 0.1, True);
+	EndIf;		
+	
+EndProcedure
+
 &AtServer
 Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
 	
-	//Period closing
+//Period closing
 	If PeriodClosingServerCall.DocumentPeriodIsClosed(CurrentObject.Ref, CurrentObject.Date) Then
 		PermitWrite = PeriodClosingServerCall.DocumentWritePermitted(WriteParameters);
 		CurrentObject.AdditionalProperties.Insert("PermitWrite", PermitWrite);	
@@ -220,28 +251,7 @@ Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
 			
 			If ExistCheck(Object.Number) = False Then
 		
-				If CurrentObject.Ref.IsEmpty() Or CurrentObject.Number = "DRAFT" Then
-				
-					LastNumber = GeneralFunctions.LastCheckNumber(Object.BankAccount);
-					
-					LastNumberString = "";
-					If LastNumber < 10000 Then
-						LastNumberString = Left(String(LastNumber+1),1) + Right(String(LastNumber+1),3)
-					Else
-						LastNumberString = Left(String(LastNumber+1),2) + Right(String(LastNumber+1),3)
-					EndIf;
-					
-					CurrentObject.Number = LastNumberString;
-					CurrentObject.PhysicalCheckNum = LastNumber + 1;
-					
-				Else
-					Try
-						CurrentObject.PhysicalCheckNum = Number(CurrentObject.Number);
-					Except
-					EndTry;
-
-					//CurrentObject.PhysicalCheckNum = Number(CurrentObject.Number);		
-				EndIf;
+				CurrentObject.PhysicalCheckNum = CurrentObject.Number;
 			Else
 				Message("Check number already exists for this bank account");
 				Cancel = True;
@@ -249,6 +259,7 @@ Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
 
 		Endif;
 	EndIf;
+
 	
 
 EndProcedure
@@ -257,18 +268,17 @@ EndProcedure
 Procedure PaymentMethodOnChange(Item)
 	
 	If Object.PaymentMethod = CheckPaymentMethod() Then
-				
+		
 		If Object.Number = ""  AND Object.Ref.IsEmpty() = False Then
 			Object.Number = StrReplace(Generalfunctions.LastCheckNumber(object.BankAccount),",","");
-		Elsif Object.Number = "" And Object.Ref.IsEmpty() OR Object.Number = "DRAFT" Then
+		Elsif Object.Number = "" And Object.Ref.IsEmpty() Then
 			Object.Number = StrReplace(Generalfunctions.LastCheckNumber(object.BankAccount) + 1,",","");
 		Else
 		EndIf;
 
 	Else
-		//Object.Number = "";
-		//Items.Number.ReadOnly = False;
 	EndIf;
+
 
 EndProcedure
 
@@ -287,32 +297,29 @@ Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 		Cancel = True;
 		Message = New UserMessage();
 		Message.Text=NStr("en='Select a payment method'");
-		//Message.Field = "Object.PaymentMethod";
 		Message.Message();
 	EndIf;	
 	
-	If NOT Object.Ref.IsEmpty() And Object.PaymentMethod = CheckPaymentMethod() Then
+	If Object.PaymentMethod = CheckPaymentMethod() Then
 	
-	Try
-		If Number(Object.Number) <= 0 OR Number(Object.Number) >= 100000 Then
-			Cancel = True;
-			Message = New UserMessage();
-			Message.Text=NStr("en='Enter a check number from 0 to 9999 (99999)'");
-			//Message.Field = "Object.Number";
-			Message.Message();
-		EndIf;
-	Except
-		
-		 	If Object.Number <> "DRAFT" Then
+		Try
+			If Number(Object.Number) < 0 OR Number(Object.Number) > 100000 Then
 				Cancel = True;
 				Message = New UserMessage();
-				Message.Text=NStr("en='Enter a check number from 0 to 9999 (99999)'");
-				//Message.Field = "Object.Number";
+				Message.Text=NStr("en='Enter a check number from 0 to 10000'");
 				Message.Message();
-			EndIF;
-	EndTry;
+			EndIf;
+		Except
+			
+			Cancel = True;
+			Message = New UserMessage();
+			Message.Text=NStr("en='Enter a check number from 0 to 10000'");
+			Message.Message();
+
+		EndTry;
 		
 	Endif;
+
 
 EndProcedure
 
@@ -618,4 +625,23 @@ Function ExistCheck(Num)
 		
 	
 EndFunction
+
+
+&AtClient
+Procedure BankAccountOnChange(Item)
+	
+	If Object.PaymentMethod = CheckPaymentMethod() Then
+		ChoiceProcessing = New NotifyDescription("UpdateBankCheck", ThisForm);
+		ShowQueryBox(ChoiceProcessing, "Would you like to load the next check number for this bank account?", QuestionDialogMode.YesNo, 0);
+	EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure UpdateBankCheck(Result, Parameters) Export
+   	If Result = DialogReturnCode.Yes Then
+		Object.Number = StrReplace(Generalfunctions.LastCheckNumber(object.BankAccount) + 1,",","");       
+    EndIf;              
+EndProcedure
+
 

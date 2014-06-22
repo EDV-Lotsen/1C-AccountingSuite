@@ -23,10 +23,10 @@ Function GenInvoiceAtServer(SelectedItem,Str,Valid)
 	
 	RefObject = SelectedItem.Ref.GetObject();
 	
-	If RefObject.SalesInvoice.IsEmpty() Then
-	Else
-		Message("A selected document is currently linked to an existing invoice. The invoice will be unlinked and a new invoice will be created.");
-	EndIf;
+	//If RefObject.SalesInvoice.IsEmpty() Then
+	//Else
+	//	Message("A selected document is currently linked to an existing invoice. The invoice will be unlinked and a new invoice will be created.");
+	//EndIf;
 	
 	rowcount = items.List.SelectedRows.Count();
 	rownum = 0;

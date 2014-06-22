@@ -4,6 +4,12 @@
 	<UsePostingMode>Auto</UsePostingMode>
 	<RepostOnWrite>true</RepostOnWrite>
 	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<Events>
+		<Event name="AfterWriteAtServer">AfterWriteAtServer</Event>
+		<Event name="BeforeWrite">BeforeWrite</Event>
+		<Event name="BeforeWriteAtServer">BeforeWriteAtServer</Event>
+		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+	</Events>
 	<ChildItems>
 		<UsualGroup name="Caption" id="37">
 			<Title>
@@ -145,31 +151,133 @@
 					<ShowTitle>false</ShowTitle>
 					<ExtendedTooltip name="LeftPaymentGroupExtendedTooltip" id="68"/>
 					<ChildItems>
-						<InputField name="TaxPeriodEnding" id="13">
-							<DataPath>Object.TaxPeriodEnding</DataPath>
-							<HorizontalAlign>Right</HorizontalAlign>
-							<EditMode>EnterOnInput</EditMode>
-							<EditFormat>
+						<UsualGroup name="TaxPeriodBalancesGroup" id="79">
+							<ToolTip>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>DLF=D</v8:content>
+									<v8:content>Tax period balances group</v8:content>
 								</v8:item>
-							</EditFormat>
-							<ContextMenu name="TaxPeriodEndingContextMenu" id="14"/>
-							<ExtendedTooltip name="TaxPeriodEndingExtendedTooltip" id="15"/>
-							<Events>
-								<Event name="OnChange">TaxPeriodEndingOnChange</Event>
-							</Events>
-						</InputField>
-						<InputField name="Payment" id="16">
-							<DataPath>Object.Payment</DataPath>
-							<EditMode>EnterOnInput</EditMode>
-							<ContextMenu name="PaymentContextMenu" id="17"/>
-							<ExtendedTooltip name="PaymentExtendedTooltip" id="18"/>
-							<Events>
-								<Event name="OnChange">PaymentOnChange</Event>
-							</Events>
-						</InputField>
+							</ToolTip>
+							<Group>Horizontal</Group>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="TaxPeriodBalancesGroupExtendedTooltip" id="80"/>
+							<ChildItems>
+								<InputField name="TaxPeriodEnding" id="13">
+									<DataPath>Object.TaxPeriodEnding</DataPath>
+									<HorizontalAlign>Right</HorizontalAlign>
+									<EditMode>EnterOnInput</EditMode>
+									<EditFormat>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>DLF=D</v8:content>
+										</v8:item>
+									</EditFormat>
+									<ContextMenu name="TaxPeriodEndingContextMenu" id="14"/>
+									<ExtendedTooltip name="TaxPeriodEndingExtendedTooltip" id="15"/>
+									<Events>
+										<Event name="OnChange">TaxPeriodEndingOnChange</Event>
+									</Events>
+								</InputField>
+								<RadioButtonField name="FillFrom" id="87">
+									<DataPath>FillFrom</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Fill payment with balances</v8:content>
+										</v8:item>
+									</Title>
+									<RadioButtonType>Auto</RadioButtonType>
+									<ChoiceList>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>Accrual-based</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">Accrual</Value>
+											</xr:Value>
+										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>Cash-based</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">Cash</Value>
+											</xr:Value>
+										</xr:Item>
+									</ChoiceList>
+									<ContextMenu name="FillFromContextMenu" id="88"/>
+									<ExtendedTooltip name="FillFromExtendedTooltip" id="89"/>
+									<Events>
+										<Event name="OnChange">FillFromOnChange</Event>
+									</Events>
+								</RadioButtonField>
+							</ChildItems>
+						</UsualGroup>
+						<UsualGroup name="PaymentAmountGroup" id="90">
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Payment amount group</v8:content>
+								</v8:item>
+							</ToolTip>
+							<Group>Horizontal</Group>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="PaymentAmountGroupExtendedTooltip" id="91"/>
+							<ChildItems>
+								<InputField name="Payment" id="16">
+									<DataPath>Object.Payment</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="PaymentContextMenu" id="17"/>
+									<ExtendedTooltip name="PaymentExtendedTooltip" id="18"/>
+									<Events>
+										<Event name="OnChange">PaymentOnChange</Event>
+									</Events>
+								</InputField>
+								<LabelDecoration name="EmptySpaceDecoration1" id="98">
+									<Width>2</Width>
+									<ContextMenu name="EmptySpaceDecoration1ContextMenu" id="99"/>
+									<ExtendedTooltip name="EmptySpaceDecoration1ExtendedTooltip" id="100"/>
+								</LabelDecoration>
+								<LabelField name="AccrualBalance" id="92">
+									<DataPath>AccrualBalance</DataPath>
+									<TitleTextColor>style:ColorInformationLabel</TitleTextColor>
+									<TitleFont ref="style:SmallTextFont" bold="false" italic="true" underline="false" strikeout="false" kind="StyleItem"/>
+									<HorizontalAlign>Center</HorizontalAlign>
+									<Width>7</Width>
+									<Border width="1">
+										<v8ui:style xsi:type="v8ui:ControlBorderType">Underline</v8ui:style>
+									</Border>
+									<TextColor>style:ColorInformationLabel</TextColor>
+									<Font ref="style:SmallTextFont" bold="false" italic="true" underline="false" strikeout="false" kind="StyleItem"/>
+									<ContextMenu name="AccrualBalanceContextMenu" id="93"/>
+									<ExtendedTooltip name="AccrualBalanceExtendedTooltip" id="94"/>
+								</LabelField>
+								<LabelField name="CashBalance" id="95">
+									<DataPath>CashBalance</DataPath>
+									<TitleTextColor>style:ColorInformationLabel</TitleTextColor>
+									<TitleFont ref="style:SmallTextFont" bold="false" italic="true" underline="false" strikeout="false" kind="StyleItem"/>
+									<HorizontalAlign>Center</HorizontalAlign>
+									<Width>7</Width>
+									<Border width="1">
+										<v8ui:style xsi:type="v8ui:ControlBorderType">Underline</v8ui:style>
+									</Border>
+									<TextColor>style:ColorInformationLabel</TextColor>
+									<Font ref="style:SmallTextFont" bold="false" italic="true" underline="false" strikeout="false" kind="StyleItem"/>
+									<ContextMenu name="CashBalanceContextMenu" id="96"/>
+									<ExtendedTooltip name="CashBalanceExtendedTooltip" id="97"/>
+								</LabelField>
+							</ChildItems>
+						</UsualGroup>
 					</ChildItems>
 				</UsualGroup>
 				<UsualGroup name="TaxPayment" id="43">
@@ -189,8 +297,13 @@
 					<ShowTitle>false</ShowTitle>
 					<ExtendedTooltip name="TaxPaymentExtendedTooltip" id="44"/>
 					<ChildItems>
+						<LabelDecoration name="EmptySpaceDecoration" id="69">
+							<ContextMenu name="EmptySpaceDecorationContextMenu" id="70"/>
+							<ExtendedTooltip name="EmptySpaceDecorationExtendedTooltip" id="71"/>
+						</LabelDecoration>
 						<InputField name="AccountingBasis" id="62">
 							<DataPath>Object.AccountingBasis</DataPath>
+							<Visible>false</Visible>
 							<ContextMenu name="AccountingBasisContextMenu" id="63"/>
 							<ExtendedTooltip name="AccountingBasisExtendedTooltip" id="64"/>
 							<Events>
@@ -199,6 +312,13 @@
 						</InputField>
 						<CheckBoxField name="MadeAdjustment" id="19">
 							<DataPath>Object.MadeAdjustment</DataPath>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Adjustment is an increase or decrease to the sales tax. Examples include credits, discounts, fines, interest, penalties and corrections for rounding errors. </v8:content>
+								</v8:item>
+							</ToolTip>
+							<ToolTipRepresentation>Button</ToolTipRepresentation>
 							<EditMode>EnterOnInput</EditMode>
 							<CheckBoxType>Auto</CheckBoxType>
 							<ContextMenu name="MadeAdjustmentContextMenu" id="20"/>
@@ -273,7 +393,22 @@
 						</InputField>
 						<InputField name="AdjustmentAccount" id="28">
 							<DataPath>Object.AdjustmentAccount</DataPath>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Don't use the Sales Tax Payable account, the adjustment won't post correctly. Instead: 
+●Creadit or need to apply a discount? - Choose an income account. 
+●Fine, penalty, or interest due? - Choose an expense account.</v8:content>
+								</v8:item>
+							</ToolTip>
+							<ToolTipRepresentation>Button</ToolTipRepresentation>
 							<EditMode>EnterOnInput</EditMode>
+							<InputHint>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Income or expense account</v8:content>
+								</v8:item>
+							</InputHint>
 							<ContextMenu name="AdjustmentAccountContextMenu" id="29"/>
 							<ExtendedTooltip name="AdjustmentAccountExtendedTooltip" id="30"/>
 						</InputField>
@@ -295,20 +430,62 @@
 			<ContextMenu name="PaymentDecorationEndContextMenu" id="60"/>
 			<ExtendedTooltip name="PaymentDecorationEndExtendedTooltip" id="61"/>
 		</LabelDecoration>
-		<LabelField name="TotalPayment" id="31">
-			<DataPath>Object.TotalPayment</DataPath>
-			<TitleFont ref="style:NormalTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
-			<EditMode>EnterOnInput</EditMode>
-			<Font ref="style:NormalTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
-			<ContextMenu name="TotalPaymentContextMenu" id="32"/>
-			<ExtendedTooltip name="TotalPaymentExtendedTooltip" id="33"/>
-		</LabelField>
-		<InputField name="Memo" id="34">
-			<DataPath>Object.Memo</DataPath>
-			<EditMode>EnterOnInput</EditMode>
-			<ContextMenu name="MemoContextMenu" id="35"/>
-			<ExtendedTooltip name="MemoExtendedTooltip" id="36"/>
-		</InputField>
+		<UsualGroup name="BottomGroup" id="72">
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Bottom group</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Group>Horizontal</Group>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="BottomGroupExtendedTooltip" id="73"/>
+			<ChildItems>
+				<UsualGroup name="TotalsGroup" id="77">
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Totals group</v8:content>
+						</v8:item>
+					</ToolTip>
+					<Group>Horizontal</Group>
+					<ShowTitle>false</ShowTitle>
+					<BackColor>web:Gainsboro</BackColor>
+					<ExtendedTooltip name="TotalsGroupExtendedTooltip" id="78"/>
+					<ChildItems>
+						<InputField name="TotalPayment" id="31">
+							<DataPath>Object.TotalPayment</DataPath>
+							<ReadOnly>true</ReadOnly>
+							<TitleFont ref="style:NormalTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
+							<EditMode>EnterOnInput</EditMode>
+							<Width>10</Width>
+							<HorizontalStretch>false</HorizontalStretch>
+							<Font ref="style:NormalTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
+							<ContextMenu name="TotalPaymentContextMenu" id="32"/>
+							<ExtendedTooltip name="TotalPaymentExtendedTooltip" id="33"/>
+						</InputField>
+						<LabelDecoration name="CurrencyLabel" id="74">
+							<Width>2</Width>
+							<HorizontalStretch>false</HorizontalStretch>
+							<Title formatted="false">
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>$</v8:content>
+								</v8:item>
+							</Title>
+							<ContextMenu name="CurrencyLabelContextMenu" id="75"/>
+							<ExtendedTooltip name="CurrencyLabelExtendedTooltip" id="76"/>
+						</LabelDecoration>
+					</ChildItems>
+				</UsualGroup>
+				<InputField name="Memo" id="34">
+					<DataPath>Object.Memo</DataPath>
+					<EditMode>EnterOnInput</EditMode>
+					<ContextMenu name="MemoContextMenu" id="35"/>
+					<ExtendedTooltip name="MemoExtendedTooltip" id="36"/>
+				</InputField>
+			</ChildItems>
+		</UsualGroup>
 	</ChildItems>
 	<Attributes>
 		<Attribute name="Object" id="1">
@@ -321,5 +498,71 @@
 				<Field>Object.RegisterRecords</Field>
 			</UseAlways>
 		</Attribute>
+		<Attribute name="AccrualBalance" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Accrual balance</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:decimal</v8:Type>
+				<v8:NumberQualifiers>
+					<v8:Digits>15</v8:Digits>
+					<v8:FractionDigits>2</v8:FractionDigits>
+					<v8:AllowedSign>Any</v8:AllowedSign>
+				</v8:NumberQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="CashBalance" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Cash balance</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:decimal</v8:Type>
+				<v8:NumberQualifiers>
+					<v8:Digits>15</v8:Digits>
+					<v8:FractionDigits>2</v8:FractionDigits>
+					<v8:AllowedSign>Any</v8:AllowedSign>
+				</v8:NumberQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="FillFrom" id="4">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Fill from</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>10</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+			<SavedData>true</SavedData>
+		</Attribute>
 	</Attributes>
+	<CommandInterface>
+		<NavigationPanel>
+			<Item>
+				<Command>AccountingRegister.GeneralJournal.StandardCommand.OpenByRecorder</Command>
+				<Type>Auto</Type>
+				<DefaultVisible>false</DefaultVisible>
+			</Item>
+			<Item>
+				<Command>AccumulationRegister.SalesTaxOwed.StandardCommand.OpenByRecorder</Command>
+				<Type>Auto</Type>
+				<CommandGroup>FormNavigationPanelGoTo</CommandGroup>
+				<DefaultVisible>false</DefaultVisible>
+				<Visible>
+					<xr:Common>false</xr:Common>
+				</Visible>
+			</Item>
+		</NavigationPanel>
+	</CommandInterface>
 </Form>

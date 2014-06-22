@@ -10,6 +10,13 @@
 
 Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 	
+	// Document date adjustment patch (tunes the date of drafts like for the new documents).
+	If  WriteMode = DocumentWriteMode.Posting And Not Posted // Posting of new or draft (saved but unposted) document.
+	And BegOfDay(Date) = BegOfDay(CurrentSessionDate()) Then // Operational posting (by the current date).
+		// Shift document time to the time of posting.
+		Date = CurrentSessionDate();
+	EndIf;
+	
 	// Save document parameters before posting the document.
 	If WriteMode = DocumentWriteMode.Posting
 	Or WriteMode = DocumentWriteMode.UndoPosting Then
@@ -32,7 +39,7 @@ EndProcedure
 
 Procedure Filling(FillingData, StandardProcessing)
 	
-	If ThisObject.IsNew() Then ThisObject.SetNewNumber() EndIf;
+	If ThisObject.IsNew() And Not ValueIsFilled(ThisObject.Number) Then ThisObject.SetNewNumber() EndIf;
 	
 	If FillingData = Undefined Then
 		// Filling of the new created document with default values.
@@ -41,14 +48,65 @@ Procedure Filling(FillingData, StandardProcessing)
 		Location         = Catalogs.Locations.MainWarehouse;
 		
 	Else
+		
 		// Generate on the base of some document.
+		
+		If TypeOf(FillingData) = Type("DocumentRef.SalesOrder") Then
+			
+			//Fill attributes
+			Date         = CurrentSessionDate(); 
+			BaseDocument = FillingData; 
+			
+			Currency     = FillingData.Currency;
+			ExchangeRate = FillingData.ExchangeRate;
+			Location     = FillingData.Location;
+			DeliveryDate = FillingData.DeliveryDate;
+			Project      = FillingData.Project;
+			Class        = FillingData.Class;
+			
+			If Constants.CopyDropshipPrintOptionsSO_PO.Get() Then
+				
+				DropshipCompany   = FillingData.DropshipCompany;
+				DropshipShipTo    = FillingData.DropshipShipTo;
+				DropshipConfirmTo = FillingData.DropshipConfirmTo; 
+				DropshipRefNum    = FillingData.DropshipRefNum;
+				
+			EndIf;
+			
+			//Fill "line items"
+			QuantityPrecision = 0; //QuantityPrecision = Constants.QtyPrecision.Get(); 
+			For Each Line In FillingData.LineItems Do 
+				
+				NewLine = LineItems.Add();
+				NewLine.Product            = Line.Product;
+				NewLine.ProductDescription = Line.ProductDescription;
+				NewLine.Quantity           = Line.Quantity;
+				NewLine.UM                 = Line.UM;
+				NewLine.Price              = GeneralFunctions.ProductLastCost(NewLine.Product);
+				NewLine.LineTotal          = Round(Round(NewLine.Quantity, QuantityPrecision) * NewLine.Price, 2);
+				NewLine.Price              = ?(Round(NewLine.Quantity, QuantityPrecision) > 0,
+	                                           Round(NewLine.LineTotal / Round(NewLine.Quantity, QuantityPrecision), 2), 0);
+				NewLine.Location           = Line.Location;
+				NewLine.DeliveryDate       = Line.DeliveryDate;
+				NewLine.Project            = Line.Project;
+				NewLine.Class              = Line.Class;
+				
+			EndDo;
+			
+			DocumentTotal   = LineItems.Total("LineTotal");
+			DocumentTotalRC = Round(DocumentTotal * ExchangeRate, 2);
+			
+		EndIf;
+		
 	EndIf;
 	
 EndProcedure
 
 Procedure OnCopy(CopiedObject)
 	
-	// Clear manual ajustment attribute.
+	If ThisObject.IsNew() Then ThisObject.SetNewNumber() EndIf;
+	
+	// Clear manual adjustment attribute.
 	ManualAdjustment = False;
 	
 EndProcedure
@@ -115,14 +173,19 @@ EndProcedure
 Procedure OnSetNewNumber(StandardProcessing, Prefix)
 	
 	StandardProcessing = False;
-	BeginTransaction();
-	Numerator = Catalogs.DocumentNumbering.PurchaseOrder.GetObject();
-	ThisObject.Number = GeneralFunctions.Increment(Numerator.Number);
-	//ThisObject.Number = Prefix + String(Numerator.Number + 1);
-	//Numerator.Number = Numerator.Number + 1;
-	Numerator.Number = ThisObject.Number;
-	Numerator.Write();
-	CommitTransaction();
+	
+	Numerator = Catalogs.DocumentNumbering.PurchaseOrder;
+	NextNumber = GeneralFunctions.Increment(Numerator.Number);
+	
+	While Documents.PurchaseOrder.FindByNumber(NextNumber) <> Documents.PurchaseOrder.EmptyRef() And NextNumber <> "" Do
+		ObjectNumerator = Numerator.GetObject();
+		ObjectNumerator.Number = NextNumber;
+		ObjectNumerator.Write();
+		
+		NextNumber = GeneralFunctions.Increment(NextNumber);
+	EndDo;
+	
+	ThisObject.Number = NextNumber; 
 
 EndProcedure
 

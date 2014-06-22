@@ -14,10 +14,16 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		
 		Items.Online.Visible = True;
 		
+		If Object.RefreshStatusCode <> 0 Then
+			Items.StatusCodeDescriptionDecoration.Visible = True;
+		Else
+			Items.StatusCodeDescriptionDecoration.Visible = False;
+		EndIf;
+		
 	Else //If offline account
 		
 		Items.Online.Visible = False;
-		
+			
 	EndIf;
 	
 	If Object.Owner.ContainerType = Enums.YodleeContainerTypes.Credit_Card Then
@@ -52,4 +58,9 @@ Procedure OnOpen(Cancel)
 	LastUpdateAttemptTime = ?(ValueIsFilled(Object.LastUpdateAttemptTimeUTC), ToLocalTime(Object.LastUpdateAttemptTimeUTC), Object.LastUpdateAttemptTimeUTC);
 	NextUpdateTime = ?(ValueIsFilled(Object.NextUpdateTimeUTC), ToLocalTime(Object.NextUpdateTimeUTC), Object.NextUpdateTimeUTC);
 
+EndProcedure
+
+&AtClient
+Procedure StatusCodeDescriptionDecorationClick(Item)
+	OpenForm("DataProcessor.DownloadedTransactions.Form.DetailedErrorMessage", New Structure("StatusCode", String(Object.RefreshStatusCode)), ThisForm,,,,,FormWindowOpeningMode.LockOwnerWindow);
 EndProcedure

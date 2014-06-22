@@ -308,7 +308,6 @@ Reference number</v8:content>
 	DocumentSalesInvoice.Terms,
 	DocumentSalesInvoice.URL,
 	DocumentSalesInvoice.Paid,
-	DocumentSalesInvoice.BegBal,
 	DocumentSalesInvoice.ManualAdjustment,
 	// Document totals
 	DocumentSalesInvoice.LineSubtotal,
@@ -453,9 +452,44 @@ FROM
 	<CommandInterface>
 		<CommandBar>
 			<Item>
+				<Command>Document.SalesInvoice.Command.PrintPackingList</Command>
+				<Type>Auto</Type>
+				<CommandGroup>CommandGroup.Print</CommandGroup>
+				<Index>1</Index>
+				<Visible>
+					<xr:Common>false</xr:Common>
+				</Visible>
+			</Item>
+			<Item>
+				<Command>Document.SalesInvoice.Command.PrintPackingListDropship</Command>
+				<Type>Auto</Type>
+				<CommandGroup>CommandGroup.Print</CommandGroup>
+				<Index>2</Index>
+				<Visible>
+					<xr:Common>false</xr:Common>
+				</Visible>
+			</Item>
+			<Item>
 				<Command>Document.SalesInvoice.Command.Print</Command>
 				<Type>Auto</Type>
-				<CommandGroup>FormCommandBarImportant</CommandGroup>
+				<CommandGroup>CommandGroup.Print</CommandGroup>
+				<Visible>
+					<xr:Common>false</xr:Common>
+				</Visible>
+			</Item>
+			<Item>
+				<Command>Document.SalesReturn.StandardCommand.CreateBasedOn</Command>
+				<Type>Auto</Type>
+				<CommandGroup>FormCommandBarCreateBasedOn</CommandGroup>
+				<DefaultVisible>false</DefaultVisible>
+				<Visible>
+					<xr:Common>false</xr:Common>
+				</Visible>
+			</Item>
+			<Item>
+				<Command>Document.SalesInvoice.Command.SendEmail</Command>
+				<Type>Auto</Type>
+				<DefaultVisible>false</DefaultVisible>
 				<Visible>
 					<xr:Common>false</xr:Common>
 				</Visible>

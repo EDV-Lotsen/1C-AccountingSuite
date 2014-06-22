@@ -12,7 +12,6 @@
 		<Autofill>false</Autofill>
 	</AutoCommandBar>
 	<Events>
-		<Event name="BeforeClose">BeforeClose</Event>
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
 	</Events>
 	<ChildItems>
@@ -31,9 +30,6 @@
 			<Font ref="style:NormalTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
 			<ContextMenu name="ProcessingPeriodContextMenu" id="2"/>
 			<ExtendedTooltip name="ProcessingPeriodExtendedTooltip" id="3"/>
-			<Events>
-				<Event name="OnChange">ProcessingPeriodOnChange</Event>
-			</Events>
 		</InputField>
 		<UsualGroup name="Group1" id="6">
 			<Group>Horizontal</Group>

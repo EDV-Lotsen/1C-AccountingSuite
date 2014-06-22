@@ -1,0 +1,311 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<WindowOpeningMode>LockWholeInterface</WindowOpeningMode>
+	<CommandBarLocation>None</CommandBarLocation>
+	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<Events>
+		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+	</Events>
+	<ChildItems>
+		<Table name="VT" id="1">
+			<Representation>List</Representation>
+			<CommandBarLocation>None</CommandBarLocation>
+			<ReadOnly>true</ReadOnly>
+			<AutoInsertNewRow>true</AutoInsertNewRow>
+			<EnableStartDrag>true</EnableStartDrag>
+			<EnableDrag>true</EnableDrag>
+			<DataPath>VT</DataPath>
+			<CommandSet>
+				<ExcludedCommand>Copy</ExcludedCommand>
+				<ExcludedCommand>Delete</ExcludedCommand>
+				<ExcludedCommand>EndEdit</ExcludedCommand>
+				<ExcludedCommand>Add</ExcludedCommand>
+				<ExcludedCommand>Change</ExcludedCommand>
+			</CommandSet>
+			<SearchStringLocation>None</SearchStringLocation>
+			<ViewStatusLocation>None</ViewStatusLocation>
+			<SearchControlLocation>None</SearchControlLocation>
+			<RowFilter xsi:nil="true"/>
+			<ContextMenu name="VTContextMenu" id="2"/>
+			<AutoCommandBar name="VTCommandBar" id="3"/>
+			<ExtendedTooltip name="VTExtendedTooltip" id="4"/>
+			<SearchStringAddition name="VTSearchString" id="34">
+				<AdditionSource>
+					<Item>VT</Item>
+					<Type>SearchStringRepresentation</Type>
+				</AdditionSource>
+				<ContextMenu name="VTSearchStringContextMenu" id="35"/>
+				<ExtendedTooltip name="VTSearchStringExtendedTooltip" id="36"/>
+			</SearchStringAddition>
+			<ViewStatusAddition name="VTViewStatus" id="37">
+				<AdditionSource>
+					<Item>VT</Item>
+					<Type>ViewStatusRepresentation</Type>
+				</AdditionSource>
+				<ContextMenu name="VTViewStatusContextMenu" id="38"/>
+				<ExtendedTooltip name="VTViewStatusExtendedTooltip" id="39"/>
+			</ViewStatusAddition>
+			<SearchControlAddition name="VTSearchControl" id="40">
+				<AdditionSource>
+					<Item>VT</Item>
+					<Type>SearchControl</Type>
+				</AdditionSource>
+				<ContextMenu name="VTSearchControlContextMenu" id="41"/>
+				<ExtendedTooltip name="VTSearchControlExtendedTooltip" id="42"/>
+			</SearchControlAddition>
+			<ChildItems>
+				<InputField name="VTLocation" id="5">
+					<DataPath>VT.Location</DataPath>
+					<EditMode>EnterOnInput</EditMode>
+					<Width>1</Width>
+					<ContextMenu name="VTLocationContextMenu" id="6"/>
+					<ExtendedTooltip name="VTLocationExtendedTooltip" id="7"/>
+				</InputField>
+				<InputField name="VTQtyOnPO" id="8">
+					<DataPath>VT.QtyOnPO</DataPath>
+					<EditMode>EnterOnInput</EditMode>
+					<Width>1</Width>
+					<ContextMenu name="VTQtyOnPOContextMenu" id="9"/>
+					<ExtendedTooltip name="VTQtyOnPOExtendedTooltip" id="10"/>
+				</InputField>
+				<InputField name="VTQtyOnSO" id="11">
+					<DataPath>VT.QtyOnSO</DataPath>
+					<EditMode>EnterOnInput</EditMode>
+					<Width>1</Width>
+					<ContextMenu name="VTQtyOnSOContextMenu" id="12"/>
+					<ExtendedTooltip name="VTQtyOnSOExtendedTooltip" id="13"/>
+				</InputField>
+				<InputField name="VTQtyOnHand" id="14">
+					<DataPath>VT.QtyOnHand</DataPath>
+					<EditMode>EnterOnInput</EditMode>
+					<Width>1</Width>
+					<ContextMenu name="VTQtyOnHandContextMenu" id="15"/>
+					<ExtendedTooltip name="VTQtyOnHandExtendedTooltip" id="16"/>
+				</InputField>
+				<InputField name="VTQtyAvailableToPromise" id="17">
+					<DataPath>VT.QtyAvailableToPromise</DataPath>
+					<EditMode>EnterOnInput</EditMode>
+					<Width>1</Width>
+					<ContextMenu name="VTQtyAvailableToPromiseContextMenu" id="18"/>
+					<ExtendedTooltip name="VTQtyAvailableToPromiseExtendedTooltip" id="19"/>
+				</InputField>
+			</ChildItems>
+		</Table>
+		<UsualGroup name="Right" id="20">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Item quantities</v8:content>
+				</v8:item>
+			</Title>
+			<HorizontalStretch>true</HorizontalStretch>
+			<Group>Vertical</Group>
+			<Representation>StrongSeparation</Representation>
+			<ExtendedTooltip name="RightExtendedTooltip" id="21"/>
+			<ChildItems>
+				<InputField name="QtyOnPO" id="22">
+					<DataPath>QtyOnPO</DataPath>
+					<ReadOnly>true</ReadOnly>
+					<EditFormat>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>NFD=0; NZ=0; NG=3,0</v8:content>
+						</v8:item>
+					</EditFormat>
+					<ContextMenu name="QtyOnPOContextMenu" id="23"/>
+					<ExtendedTooltip name="QtyOnPOExtendedTooltip" id="24"/>
+				</InputField>
+				<InputField name="QtyOnSO" id="25">
+					<DataPath>QtyOnSO</DataPath>
+					<ReadOnly>true</ReadOnly>
+					<EditFormat>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>NFD=0; NZ=0; NG=3,0</v8:content>
+						</v8:item>
+					</EditFormat>
+					<ContextMenu name="QtyOnSOContextMenu" id="26"/>
+					<ExtendedTooltip name="QtyOnSOExtendedTooltip" id="27"/>
+				</InputField>
+				<InputField name="QtyOnHand" id="28">
+					<DataPath>QtyOnHand</DataPath>
+					<ReadOnly>true</ReadOnly>
+					<EditFormat>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>NFD=0; NZ=0; NG=3,0</v8:content>
+						</v8:item>
+					</EditFormat>
+					<ContextMenu name="QtyOnHandContextMenu" id="29"/>
+					<ExtendedTooltip name="QtyOnHandExtendedTooltip" id="30"/>
+				</InputField>
+				<InputField name="QtyAvailableToPromise" id="31">
+					<DataPath>QtyAvailableToPromise</DataPath>
+					<ReadOnly>true</ReadOnly>
+					<EditFormat>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>NFD=0; NZ=0; NG=3,0</v8:content>
+						</v8:item>
+					</EditFormat>
+					<ContextMenu name="QtyAvailableToPromiseContextMenu" id="32"/>
+					<ExtendedTooltip name="QtyAvailableToPromiseExtendedTooltip" id="33"/>
+				</InputField>
+			</ChildItems>
+		</UsualGroup>
+	</ChildItems>
+	<Attributes>
+		<Attribute name="Object" id="1">
+			<Type>
+				<v8:Type>cfg:DataProcessorObject.InventorySiteInfo</v8:Type>
+			</Type>
+			<MainAttribute>true</MainAttribute>
+		</Attribute>
+		<Attribute name="VT" id="2">
+			<Type>
+				<v8:Type>v8:ValueTable</v8:Type>
+			</Type>
+			<Columns>
+				<Column name="Location" id="1">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Location</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>cfg:CatalogRef.Locations</v8:Type>
+					</Type>
+				</Column>
+				<Column name="QtyOnPO" id="2">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Qty on PO</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:decimal</v8:Type>
+						<v8:NumberQualifiers>
+							<v8:Digits>15</v8:Digits>
+							<v8:FractionDigits>4</v8:FractionDigits>
+							<v8:AllowedSign>Any</v8:AllowedSign>
+						</v8:NumberQualifiers>
+					</Type>
+				</Column>
+				<Column name="QtyOnSO" id="3">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Qty on SO</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:decimal</v8:Type>
+						<v8:NumberQualifiers>
+							<v8:Digits>15</v8:Digits>
+							<v8:FractionDigits>4</v8:FractionDigits>
+							<v8:AllowedSign>Any</v8:AllowedSign>
+						</v8:NumberQualifiers>
+					</Type>
+				</Column>
+				<Column name="QtyOnHand" id="4">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>On hand</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:decimal</v8:Type>
+						<v8:NumberQualifiers>
+							<v8:Digits>15</v8:Digits>
+							<v8:FractionDigits>4</v8:FractionDigits>
+							<v8:AllowedSign>Any</v8:AllowedSign>
+						</v8:NumberQualifiers>
+					</Type>
+				</Column>
+				<Column name="QtyAvailableToPromise" id="5">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Available to promise</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:decimal</v8:Type>
+						<v8:NumberQualifiers>
+							<v8:Digits>15</v8:Digits>
+							<v8:FractionDigits>4</v8:FractionDigits>
+							<v8:AllowedSign>Any</v8:AllowedSign>
+						</v8:NumberQualifiers>
+					</Type>
+				</Column>
+			</Columns>
+		</Attribute>
+		<Attribute name="QtyOnSO" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Qty on SO</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:decimal</v8:Type>
+				<v8:NumberQualifiers>
+					<v8:Digits>15</v8:Digits>
+					<v8:FractionDigits>4</v8:FractionDigits>
+					<v8:AllowedSign>Any</v8:AllowedSign>
+				</v8:NumberQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="QtyOnPO" id="4">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Qty on PO</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:decimal</v8:Type>
+				<v8:NumberQualifiers>
+					<v8:Digits>15</v8:Digits>
+					<v8:FractionDigits>4</v8:FractionDigits>
+					<v8:AllowedSign>Any</v8:AllowedSign>
+				</v8:NumberQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="QtyOnHand" id="5">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>On hand</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:decimal</v8:Type>
+				<v8:NumberQualifiers>
+					<v8:Digits>15</v8:Digits>
+					<v8:FractionDigits>4</v8:FractionDigits>
+					<v8:AllowedSign>Any</v8:AllowedSign>
+				</v8:NumberQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="QtyAvailableToPromise" id="6">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Available to promise</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:decimal</v8:Type>
+				<v8:NumberQualifiers>
+					<v8:Digits>15</v8:Digits>
+					<v8:FractionDigits>4</v8:FractionDigits>
+					<v8:AllowedSign>Any</v8:AllowedSign>
+				</v8:NumberQualifiers>
+			</Type>
+		</Attribute>
+	</Attributes>
+</Form>

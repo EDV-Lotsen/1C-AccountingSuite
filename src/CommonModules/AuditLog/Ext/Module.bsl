@@ -54,7 +54,6 @@ Procedure AuditLogCatalogBeforeWrite(Source, Cancel) Export
 EndProcedure
 
 Procedure AuditLogDeleteBeforeDelete(Source, Cancel) Export
-	
 	SourceObj = Source;
 			
 		If CommonUse.IsCatalog(SourceObj.Metadata()) Then
@@ -86,8 +85,8 @@ Procedure AuditLogDeleteBeforeDelete(Source, Cancel) Export
 			
 		Else
 
-			If TypeOf(SourceObj) <> Type("DocumentObject.PurchaseOrder") AND TypeOf(SourceObj) <> Type("DocumentObject.SalesOrder") AND TypeOf(SourceObj) <> Type("DocumentObject.InventoryBeginningBalances")
-				AND TypeOf(SourceObj) <> Type("DocumentObject.TimeTrack") AND TypeOf(SourceObj) <> Type("DocumentObject.WarehouseTransfer") AND TypeOf(SourceObj) <> Type("DocumentObject.Budget") Then
+			If TypeOf(SourceObj) <> Type("DocumentObject.PurchaseOrder") AND TypeOf(SourceObj) <> Type("DocumentObject.SalesOrder") //AND TypeOf(SourceObj) <> Type("DocumentObject.ItemAdjustment")
+				AND TypeOf(SourceObj) <> Type("DocumentObject.TimeTrack") AND TypeOf(SourceObj) <> Type("DocumentObject.WarehouseTransfer") AND TypeOf(SourceObj) <> Type("DocumentObject.Budget") AND TypeOf(SourceObj) <> Type("ChartOfAccountsObject.ChartOfAccounts") Then
 
 			   
 				Reg = InformationRegisters.AuditLog.CreateRecordManager();
@@ -97,9 +96,10 @@ Procedure AuditLogDeleteBeforeDelete(Source, Cancel) Export
 				Reg.Action = "Delete";
 				Reg.Reference = DocumentType(SourceObj,Reg);
 				Reg.DateCreated = SourceObj.Date;
-				If TypeOf(SourceObj) = Type("DocumentObject.BankTransfer") Then
+				If TypeOf(SourceObj) = Type("DocumentObject.BankTransfer") OR TypeOf(SourceObj) = Type("DocumentObject.ItemAdjustment") Then
 					Reg.Amount = SourceObj.Amount;
 				ElsIf TypeOf(SourceObj) = Type("DocumentObject.BankReconciliation") Then
+				ElsIf TypeOf(SourceObj) = Type("DocumentObject.Statement") Then
 				Else
 					Reg.Amount = SourceObj.DocumentTotalRC;
 				EndIf;
@@ -109,6 +109,8 @@ Procedure AuditLogDeleteBeforeDelete(Source, Cancel) Export
 				If TypeOf(SourceObj) = Type("DocumentObject.SalesOrder") Then
 					Reg.ObjectName = SourceObj.Number;
 					Reg.DataJSON = InternetConnectionClientServer.EncodeJSON(GeneralFunctions.ReturnSaleOrderMap(SourceObj));
+				ElsIf TypeOf(SourceObj) = Type("DocumentObject.ItemAdjustment") Then
+					Reg.ObjectName = "Item: " + String(SourceObj.Product);
 				Else
 					Reg.ObjectName = String(SourceObj.Number);
 				EndIf;
@@ -117,15 +119,14 @@ Procedure AuditLogDeleteBeforeDelete(Source, Cancel) Export
 				
 			EndIf;
 			
-		EndIf;
-	
+		EndIf;	
 EndProcedure
 	
 Procedure AuditLogDocumentOnWrite(Source, Cancel, WriteMode, PostingMode) Export
 	
 	SourceObj = Source;
 	//If SourceObj.NewObject = True Then
-	If TypeOf(SourceObj) <> Type("DocumentObject.PurchaseOrder") AND TypeOf(SourceObj) <> Type("DocumentObject.SalesOrder") AND TypeOf(SourceObj) <> Type("DocumentObject.InventoryBeginningBalances")
+	If TypeOf(SourceObj) <> Type("DocumentObject.PurchaseOrder") AND TypeOf(SourceObj) <> Type("DocumentObject.SalesOrder") //AND TypeOf(SourceObj) <> Type("DocumentObject.ItemAdjustment")
 		AND TypeOf(SourceObj) <> Type("DocumentObject.TimeTrack") AND TypeOf(SourceObj) <> Type("DocumentObject.WarehouseTransfer") AND TypeOf(SourceObj) <> Type("DocumentObject.Budget") Then
 				
 		If SourceObj.AdditionalProperties.Property("NewDoc") Then
@@ -135,24 +136,30 @@ Procedure AuditLogDocumentOnWrite(Source, Cancel, WriteMode, PostingMode) Export
 			Reg.User = InfobaseUsers.CurrentUser();
 			Reg.ObjUUID = String(SourceObj.Ref.UUID());
 			Reg.Action = "Create";
-			Reg.ObjectName = String(SourceObj.Number);
+			
+			If TypeOf(SourceObj) = Type("DocumentObject.ItemAdjustment") Then
+				Reg.ObjectName = "Item: " + String(SourceObj.Product);
+			Else
+				Reg.ObjectName = String(SourceObj.Number);
+			EndIf;
+
 			Reg.Reference = DocumentType(SourceObj,Reg);
 			Reg.DateCreated = SourceObj.Date;
-			If TypeOf(SourceObj) = Type("DocumentObject.BankTransfer") Then
+			If TypeOf(SourceObj) = Type("DocumentObject.BankTransfer") OR TypeOf(SourceObj) = Type("DocumentObject.ItemAdjustment") Then
 				Reg.Amount = SourceObj.Amount;
 			ElsIf TypeOf(SourceObj) = Type("DocumentObject.BankReconciliation") Then
+			ElsIf TypeOf(SourceObj) = Type("DocumentObject.SalesTaxPayment") Then
+				Reg.Amount = SourceObj.TotalPayment;
 			Else
 				Reg.Amount = SourceObj.DocumentTotalRC;
 			EndIf;
-
-
 			
 			If TypeOf(SourceObj) = Type("DocumentObject.SalesOrder") Then
 				Reg.ObjectName = SourceObj.Number;
 				Reg.DataJSON = InternetConnectionClientServer.EncodeJSON(GeneralFunctions.ReturnSaleOrderMap(SourceObj));
 			Else
 			EndIf;
-						
+									
 			Reg.Write();
 		Else
 			Reg = InformationRegisters.AuditLog.CreateRecordManager();
@@ -160,12 +167,19 @@ Procedure AuditLogDocumentOnWrite(Source, Cancel, WriteMode, PostingMode) Export
 			Reg.User = InfobaseUsers.CurrentUser();
 			Reg.ObjUUID = String(SourceObj.Ref.UUID());
 			Reg.Action = "Update";
-			Reg.ObjectName = String(SourceObj.Number);
+			If TypeOf(SourceObj) = Type("DocumentObject.ItemAdjustment") Then
+				Reg.ObjectName = "Item: " + String(SourceObj.Product);
+			Else
+				Reg.ObjectName = String(SourceObj.Number);
+			EndIf;
+
 			Reg.Reference = DocumentType(SourceObj,Reg);
 			Reg.DateCreated = SourceObj.Date;
-			If TypeOf(SourceObj) = Type("DocumentObject.BankTransfer") Then
+			If TypeOf(SourceObj) = Type("DocumentObject.BankTransfer") OR TypeOf(SourceObj) = Type("DocumentObject.ItemAdjustment") Then
 				Reg.Amount = SourceObj.Amount;
 			ElsIf TypeOf(SourceObj) = Type("DocumentObject.BankReconciliation") Then
+			ElsIf TypeOf(SourceObj) = Type("DocumentObject.SalesTaxPayment") Then
+				Reg.Amount = SourceObj.TotalPayment;
 			Else
 				Reg.Amount = SourceObj.DocumentTotalRC;
 			EndIf;
@@ -245,8 +259,8 @@ EndFunction
 Function DocumentType(Object,Reg) Export
 		
 		If TypeOf(Object) = Type("DocumentObject.BankReconciliation") Then
-			Reg.DataJSON = InternetConnectionClientServer.EncodeJSON(Webhooks.ReturnBankReconMap(Object));
-			Return "Bank Reconciliation";
+			Reg.DataJSON = InternetConnectionClientServer.EncodeJSON(Webhooks.ReturnBankReconMapNew(Object));
+			Return "Bank Reconciliation";	
 		ElsIf TypeOf(Object) = Type("DocumentObject.BankTransfer") Then
 			Reg.DataJSON = InternetConnectionClientServer.EncodeJSON(Webhooks.ReturnBankTransferMap(Object));
 			Return "Bank Transfer";
@@ -287,6 +301,16 @@ Function DocumentType(Object,Reg) Export
 		ElsIf TypeOf(Object) = Type("DocumentObject.SalesReturn") Then
 			Reg.DataJSON = InternetConnectionClientServer.EncodeJSON(Webhooks.ReturnSalesReturnMap(Object));
 			Return "Credit Memo";
+		ElsIf TypeOf(Object) = Type("DocumentObject.ItemAdjustment") Then
+			Reg.DataJSON = InternetConnectionClientServer.EncodeJSON(Webhooks.ReturnItemAdjustmentMap(Object));
+			Return "Item Adjustment";
+		ElsIf TypeOf(Object) = Type("DocumentObject.SalesTaxPayment") Then
+			Reg.DataJSON = InternetConnectionClientServer.EncodeJSON(Webhooks.ReturnSalesTaxPaymentMap(Object));
+			Return "Sales Tax Payment";
+		ElsIf TypeOf(Object) = Type("DocumentObject.Statement") Then
+			Return "Statement";
+		ElsIf TypeOf(Object) = Type("DocumentObject.Quote") Then
+			Return "Quote";
 		Else
 			
 		EndIf;

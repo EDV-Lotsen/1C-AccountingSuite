@@ -4,20 +4,20 @@
 // 
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
-	//If Constants.SalesTaxCharging.Get() = False OR Object.Customer <> True Then
-	//	Items.Taxable.Visible = False;
-	//	Items.ResaleNO.Visible = False;
-	//	Items.SalesTaxRate.Visible = False;
-	//EndIf;
-	//
-	//If Object.Taxable = True Then
-	//	Items.SalesTaxRate.Enabled = True;
-	//	//Object.SalesTaxRate = Constants.SalesTaxDefault.Get();
-	//	Items.ResaleNO.Enabled = True;
-	//Else
-	//	Items.SalesTaxRate.Enabled = False;
-	//	Items.ResaleNO.Enabled = False;
-	//EndIf;
+	If Constants.SalesTaxCharging.Get() = False OR Object.Customer <> True Then
+		Items.Taxable.Visible = False;
+		Items.ResaleNO.Visible = False;
+		Items.SalesTaxRate.Visible = False;
+	EndIf;
+	
+	If Object.Taxable = True Then
+		Items.SalesTaxRate.Enabled = True;
+		//Object.SalesTaxRate = Constants.SalesTaxDefault.Get();
+		Items.ResaleNO.Enabled = True;
+	Else
+		Items.SalesTaxRate.Enabled = False;
+		Items.ResaleNO.Enabled = False;
+	EndIf;
 	
 	If GeneralFunctionsReusable.DisplayAPICodesSetting() = False Then
 		Items.api_code.Visible = False;
@@ -178,9 +178,16 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	//	Items.Terms.Visible = False;
 	//EndIf;
 	
-	Items.FormRegisterCard.Enabled = IsBlankString(Object.StripeToken);
-	Items.FormDeleteCard.Enabled   = Not IsBlankString(Object.StripeID);
+	//Items.FormRegisterCard.Enabled = IsBlankString(Object.StripeToken);
+	//Items.FormDeleteCard.Enabled   = Not IsBlankString(Object.StripeID);
 	//Items.FormRegisterCustomer.Enabled = IsBlankString(Object.StripeID) And Not IsBlankString(Object.StripeToken);
+	
+	If Object.Ref.IsEmpty() Then
+		Transactions.Parameters.SetParameterValue("Company", Catalogs.Companies.EmptyRef());
+		Items.GroupTransactions.Visible = False;
+	Else
+		Transactions.Parameters.SetParameterValue("Company", Object.Ref);
+	EndIf;
 	
 EndProcedure
 
@@ -332,6 +339,46 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 
 	//EndIf;
 	
+	companies_url = Constants.companies_webhook.Get();
+	
+	If NOT companies_url = "" Then
+		
+		WebhookMap = GeneralFunctions.ReturnCompanyObjectMap(Object.Ref);
+		WebhookMap.Insert("resource","companies");
+		If Object.NewObject = True Then
+			WebhookMap.Insert("action","create");
+		Else
+			WebhookMap.Insert("action","update");
+		EndIf;
+		WebhookMap.Insert("apisecretkey",Constants.APISecretKey.Get());
+		
+		WebhookParams = New Array();
+		WebhookParams.Add(companies_url);
+		WebhookParams.Add(WebhookMap);
+		LongActions.ExecuteInBackground("GeneralFunctions.SendWebhook", WebhookParams);
+	
+	EndIf;
+	
+	email_companies_webhook = Constants.companies_webhook_email.Get();
+	
+	If NOT email_companies_webhook = "" Then
+	//If true then			
+		WebhookMap2 = GeneralFunctions.ReturnCompanyObjectMap(Object.Ref);
+		WebhookMap2.Insert("resource","companies");
+		If Object.NewObject = True Then
+			WebhookMap2.Insert("action","create");
+		Else
+			WebhookMap2.Insert("action","update");
+		EndIf;
+		WebhookMap2.Insert("apisecretkey",Constants.APISecretKey.Get());
+		
+		WebhookParams2 = New Array();
+		WebhookParams2.Add(email_companies_webhook);
+		WebhookParams2.Add(WebhookMap2);
+		LongActions.ExecuteInBackground("GeneralFunctions.EmailWebhook", WebhookParams2);
+		
+	EndIf;
+	
 
 	
 
@@ -346,89 +393,6 @@ Function GetAPISecretKey()
 	
 EndFunction
 
-&AtClient
-Procedure RegisterCard(Command)
-	
-	// Check element saved.
-	If Object.Ref.IsEmpty() Or Modified Then
-		ShowMessageBox(Undefined, NStr("en = 'Current item is not saved.
-                                       |Save customer first.'"));
-		Return;
-	EndIf;
-	
-	//K.Zuzik
-	statestring = GetAPISecretKey() + Object.Code;
-	GotoURL("https://addcard.accountingsuite.com/check?state=" + statestring);
-	Close();
-	
-EndProcedure
-
-&AtClient
-Procedure DeleteCard(Command)
-	
-	// Check element saved.
-	If Object.Ref.IsEmpty() Or Modified Then
-		// Save the customer first.
-		ShowMessageBox(Undefined, NStr("en = 'Current item is not saved.
-		                                     |Save customer first.'"));
-	Else
-		// Request Stripe to delete card.
-		ResultDescription = DeleteCardAtServer();
-		ShowMessageBox(Undefined, ResultDescription);
-	EndIf;
-	
-EndProcedure
-
-&AtServer
-Function DeleteCardAtServer()
-	var deleted, id, code;
-	
-	// Request Stripe to delete cuctomer (and it's card) from Stripe API.
-	RequestResult = ApiStripeRequestorInterface.DeleteCustomer(Object.StripeID);
-	RequestResultObj = RequestResult.Result;
-	If  (RequestResultObj <> Undefined)
-	And (TypeOf(RequestResultObj) = Type("Structure"))
-	And (RequestResultObj.Property("id", id) And id = Object.StripeID)
-	And (RequestResultObj.Property("deleted", deleted) And deleted = True)
-	Then
-		// Requested object deleted as expected.
-		Object.StripeToken = "";
-		Object.StripeID    = "";
-		Object.last4       = "";
-		Object.exp_month   = 0;
-		Object.exp_year    = 0;
-		Object.type        = "";
-		
-		// Create user message.
-		ResultDescription  = NStr("en = 'Customer card successfully deleted.'");
-		
-	ElsIf (RequestResultObj = Undefined)
-	  And (RequestResult.AdditionalData.Property("Code", code) And code = 404) // Not found
-	Then
-		// Requested object already deleted.
-		Object.StripeToken = "";
-		Object.StripeID    = "";
-		Object.last4       = "";
-		Object.exp_month   = 0;
-		Object.exp_year    = 0;
-		Object.type        = "";
-		
-		// Create user message.
-		ResultDescription  = NStr("en = 'Customer card already deleted in Stripe.'");
-	Else
-		
-		// Create user message.
-		ResultDescription  = RequestResult.Description;
-	EndIf;
-	
-	// Update elements presentation.
-	Items.FormRegisterCard.Enabled = IsBlankString(Object.StripeToken);
-	Items.FormDeleteCard.Enabled   = Not IsBlankString(Object.StripeID);
-	
-	// Return user message.
-	Return ResultDescription;
-	
-EndFunction
 
 &AtClient
 Procedure SalesTransactions(Command)
@@ -491,24 +455,24 @@ EndProcedure
 &AtServer
 Procedure CustomerOnChangeAtServer()
 	
-	//If Constants.SalesTaxCharging.Get() = True AND Object.Customer = True Then
-	//	Items.Taxable.Visible = True;
-	//	Items.SalesTaxRate.Visible = True;
-	//	Items.ResaleNO.Visible = True;
-	//	Items.SalesTaxRate.Enabled = False;
-	//	Items.ResaleNO.Enabled = False;
-	//Else
-	//	Items.Taxable.Visible = False;
-	//	Items.SalesTaxRate.Visible = False;
-	//	Items.ResaleNO.Visible = False;
-	//EndIf;
+	If Constants.SalesTaxCharging.Get() = True AND Object.Customer = True Then
+		Items.Taxable.Visible = True;
+		Items.SalesTaxRate.Visible = True;
+		Items.ResaleNO.Visible = True;
+		Items.SalesTaxRate.Enabled = False;
+		Items.ResaleNO.Enabled = False;
+	Else
+		Items.Taxable.Visible = False;
+		Items.SalesTaxRate.Visible = False;
+		Items.ResaleNO.Visible = False;
+	EndIf;
 	
-	//If Constants.SalesTaxMarkNewCustomersTaxable.Get() = True Then
-	//	Object.Taxable = True;
-	//	Items.SalesTaxRate.Enabled = True;
-	//	Items.ResaleNO.Enabled = True;
-	//	Object.SalesTaxRate = Constants.SalesTaxDefault.Get();
-	//EndIf;
+	If Constants.SalesTaxMarkNewCustomersTaxable.Get() = True Then
+		Object.Taxable = True;
+		Items.SalesTaxRate.Enabled = True;
+		Items.ResaleNO.Enabled = True;
+		Object.SalesTaxRate = Constants.SalesTaxDefault.Get();
+	EndIf;
 	
 EndProcedure
 
@@ -516,15 +480,15 @@ EndProcedure
 &AtClient
 Procedure TaxableOnChange(Item)
 	
-	//TaxableOnChangeAtServer();
-	//
-	//If Object.Taxable = True Then
-	//	Items.SalesTaxRate.Enabled = True;
-	//	Items.ResaleNO.Enabled = True;
-	//Else
-	//	Items.SalesTaxRate.Enabled = False;
-	//	Items.ResaleNO.Enabled = False;
-	//EndIf;	
+	TaxableOnChangeAtServer();
+	
+	If Object.Taxable = True Then
+		Items.SalesTaxRate.Enabled = True;
+		Items.ResaleNO.Enabled = True;
+	Else
+		Items.SalesTaxRate.Enabled = False;
+		Items.ResaleNO.Enabled = False;
+	EndIf;	
 	
 EndProcedure
 
@@ -533,4 +497,20 @@ EndProcedure
 Procedure TaxableOnChangeAtServer()
 	// Insert handler contents.
 EndProcedure
+
+&AtClient
+Procedure TransactionsSelection(Item, SelectedRow, Field, StandardProcessing)
+	
+	StandardProcessing = False;
+	
+	ShowValue(, GetDocumentOfTransaction()); 
+	
+EndProcedure
+
+&AtServer
+Function GetDocumentOfTransaction()
+	
+	Return Items.Transactions.CurrentRow.Document;	
+	
+EndFunction
 

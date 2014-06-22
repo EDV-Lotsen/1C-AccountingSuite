@@ -371,27 +371,68 @@ Function SubstituteParametersInStringFromArray(Val SubstitutionString, Val Param
 	
 EndFunction
 
-// Substitutes parameter values for their names in the string pattern. Parameters in the string are enclosed in square brackets.
+// Substitutes parameter values for their names in the string pattern. Parameters in the string are enclosed in braces.
+// Optional parameters are enclosed in braces preceded by question mark (?), optional templates are placed in string after vertical bar (|).
+// Optional template will be placed in original string if it's value isn't empty.
 //
 // Parameters:
 //
-// StringPattern - String - string where values will be substituted;
+// StringPattern  - String    - string where values will be substituted;
 // ValuesToInsert - Structure - value structure where keys are parameter names without reserved characters
-// and values are values to be substituted.
+//                              and values are values to be substituted.
+// ValuesFormat   - Structure - value structure where keys are parameter names without reserved characters
+//                              and values are format strings to be applied to value before filling the pattern.
 //
 // Returns:
 // String - string with substituted values.
 //
 // Example:
-// SubstituteParametersInStringByName("Hello, [Name] [Surname].", New Structure("Surname,Name", "Doe", "John"));
+// SubstituteParametersInStringByName("Hello, {Name} {Surname}.", New Structure("Surname,Name", "Doe", "John"));
 // Returns: "Hello, John Doe".
 //
-Function SubstituteParametersInStringByName(Val StringPattern, ValuesToInsert) Export
-	Result = StringPattern;
+// Example:
+// SubstituteParametersInStringByName("Hello?{Name}!|Name = "", dear {Name}"" ", New Structure("Name", "John Doe"));
+// Returns: "Hello, dear John Doe!". If value Name in structure will be empty the function will return: "Hello!".
+//
+Function SubstituteParametersInStringByName(Val StringPattern, ValuesToInsert, ValuesFormat = Undefined) Export
+	
+	Result    = StringPattern;
+	FormatStr = "";
+	
+	OptionalPartsDelimiterPosition = Find(StringPattern, "|");
+	If OptionalPartsDelimiterPosition > 0 Then
+		
+		// Decode optional patterns from string.
+		OptionalPatterns = GetParametersFromString(Mid(StringPattern, OptionalPartsDelimiterPosition + 1));
+		OptionalPattern  = "";
+		Result           = Left(StringPattern, OptionalPartsDelimiterPosition - 1);
+		
+		// Replace original patterns from string with their optional patterns.
+		For Each Parameter In ValuesToInsert Do
+			If ValueIsFilled(Parameter.Value) And OptionalPatterns.Property(Parameter.Key, OptionalPattern)Then
+				Result = StrReplace(Result, "?{" + Parameter.Key + "}", OptionalPattern);
+			Else
+				Result = StrReplace(Result, "?{" + Parameter.Key + "}", "");
+			EndIf;
+		EndDo;
+	EndIf;
+	
 	For Each Parameter In ValuesToInsert Do
-		Result = StrReplace(Result, "[" + Parameter.Key + "]", Parameter.Value);
+		
+		// Check preserved formatting.
+		ApplyFormat = ValueIsFilled(ValuesFormat) And ValuesFormat.Property(Parameter.Key, FormatStr);
+		
+		// Unar minus operation.
+		If Find(Result, "{-" + Parameter.Key + "}") > 0 Then
+			Result = StrReplace(Result, "{-" + Parameter.Key + "}", ?(ApplyFormat, Format(-Parameter.Value, FormatStr), -Parameter.Value));
+		EndIf;
+		
+		// Standard operation.
+		Result = StrReplace(Result, "{"  + Parameter.Key + "}", ?(ApplyFormat, Format(Parameter.Value, FormatStr), Parameter.Value));
 	EndDo;
+	
 	Return Result;
+	
 EndFunction
 
 // Gets parameter values from the string.
@@ -400,7 +441,7 @@ EndFunction
 // ParameterString - String - string that contains parameters, each of them is a substring
 // in the following format: <Parameter name>=<Value>.
 // Substrings are separated from each other by the ; character.
-// If the value contains the space character, it must be enclosed in double quotation marks (").
+//
 // Example:
 // "File=""c:\InfoBases\Trade""; Usr=""Director"";"
 //
@@ -440,6 +481,7 @@ Function GetParametersFromString(Val ParameterString) Export
 	EndDo;
 	
 	Return Result;
+	
 EndFunction
 
 // Checks whether the string contains numeric characters only.
@@ -830,60 +872,6 @@ Function ConvertNumberIntoArabNotation(RomanNumber) Export
 	
 EndFunction 
 
-// Returns a text presentation of a number with a unit of measurement in the correct form (singular or plural).
-//
-// Parameters:
-// Number - Number - Any integer number.
-//  UnitOfMeasureInWordParameters - String - different spelling of a unit of measurement, separated by comma.
-//
-// Returns:
-// String - text presentation of a unit of measurement and a number writen in digits.
-//
-// Examples:
-// NumberInDigitsUnitOfMeasurementInWords(23, "Hours,Minutes,Seconds") = "23 Minutes";
-//  NumberInDigitsUnitOfMeasurementInWords(15, "Hours,Minutes,Seconds") = "15 Minutes".
-//
-Function NumberInDigitsUnitOfMeasurementInWords(Val Number, Val UnitOfMeasureInWordParameters) Export
-
-	Raise("CHECK ON TEST");
-
-	Result = Format(Number,"NZ=0");
-	
-	PresentationArray = New Array;
-	
-	Position = Find(UnitOfMeasureInWordParameters, ",");
-	While Position > 0 Do
-		Value = TrimAll(Left(UnitOfMeasureInWordParameters, Position-1));
-		UnitOfMeasureInWordParameters = Mid(UnitOfMeasureInWordParameters, Position + 1);
-		PresentationArray.Add(Value);
-		Position = Find(UnitOfMeasureInWordParameters, ",");
-	EndDo;
-	
-	If StrLen(UnitOfMeasureInWordParameters) > 0 Then
-		Value = TrimAll(UnitOfMeasureInWordParameters);
-		PresentationArray.Add(Value);
-	EndIf;	
-	
-	If Number >= 100 Then
-		Number = Number - Int(Number / 100)*100;
-	EndIf;
-	
-	If Number > 20 Then
-		Number = Number - Int(Number/10)*10;
-	EndIf;
-	
-	If Number = 1 Then
-		Result = Result + " " + PresentationArray[0];
-	ElsIf Number > 1 And Number < 5 Then
-		Result = Result + " " + PresentationArray[1];
-	Else
-		Result = Result + " " + PresentationArray[2];
-	EndIf;
-	
-	Return Result;	
-			
-EndFunction
-
 // Deletes HTML tags from the text and returns the unformatted text. 
 //
 // Parameters:
@@ -941,7 +929,7 @@ Function ExtractTextFromHTML(Val SourceText) Export
 		Position = Find(Text, "<style");
 	EndDo;
 	
-	// Removing all tags	
+	// Removing all tags
 	Position = Find(Text, "<");
 	While Position > 0 Do
 		Result = Result + Left(SourceText, Position-1);
@@ -957,6 +945,7 @@ Function ExtractTextFromHTML(Val SourceText) Export
 	Result = Result + SourceText;
 	
 	Return TrimAll(Result);
+	
 EndFunction
 
 #EndRegion

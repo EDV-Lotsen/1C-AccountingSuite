@@ -43,6 +43,7 @@ Procedure Posting(Cancel, Mode)
 		Record = RegisterRecords.ProjectData.Add();
 		Record.RecordType = AccumulationRecordType.Receipt;
 		Record.Period = Date;
+		Record.Account = AccountLine.Account;
 		Record.Project = AccountLine.Project;
 		Record.Amount = AccountLine.Amount;
 			
@@ -81,6 +82,8 @@ Procedure Posting(Cancel, Mode)
 		Records[0].Amount = DocumentTotalRC;
 	EndIf;
 	Records.Write();
+	
+	ReconciledDocumentsServerCall.AddDocumentForReconciliation(RegisterRecords, Ref, BankAccount, Date, DocumentTotalRC);
 
 EndProcedure
 
@@ -88,16 +91,23 @@ EndProcedure
 //
 Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 	
+	// Document date adjustment patch (tunes the date of drafts like for the new documents).
+	If  WriteMode = DocumentWriteMode.Posting And Not Posted // Posting of new or draft (saved but unposted) document.
+	And BegOfDay(Date) = BegOfDay(CurrentSessionDate()) Then // Operational posting (by the current date).
+		// Shift document time to the time of posting.
+		Date = CurrentSessionDate();
+	EndIf;
+	
 	If Posted Then
 		
 		For Each DocumentLine in LineItems Do
 			
 			GeneralFunctions.ClearDepositData(DocumentLine.Document);
 			
-		EndDo;	
-
-	EndIf;	
-
+		EndDo;
+		
+	EndIf;
+	
 EndProcedure
 
 Procedure UndoPosting(Cancel)

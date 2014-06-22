@@ -13,6 +13,14 @@
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
+	If Object.Ref.IsEmpty() Then
+		FirstNumber = Object.Number;
+	EndIf;
+	
+	If Parameters.Property("Company") And Parameters.Company.Vendor Then
+		Object.Company = Parameters.Company;
+	EndIf;
+	
 	//------------------------------------------------------------------------------
 	// 1. Form attributes initialization.
 	
@@ -52,8 +60,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	                                                                                                      |Reference number'"), CustomerName);
 	
 	// Update quantities presentation.
-	QuantityPrecision = Format(Constants.QtyPrecision.Get(), "NFD=0; NZ=0; NG=0");
-	QuantityFormat    = "NFD=" + QuantityPrecision + "; NZ=0";
+	QuantityFormat = GeneralFunctionsReusable.DefaultQuantityFormat();
 	Items.LineItemsQuantity.EditFormat  = QuantityFormat;
 	Items.LineItemsQuantity.Format      = QuantityFormat;
 	Items.LineItemsReceived.EditFormat  = QuantityFormat;
@@ -74,6 +81,10 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	Items.ExchangeRate.Title = DefaultCurrencySymbol + "/1" + ForeignCurrencySymbol;
 	Items.FCYCurrency.Title  = ForeignCurrencySymbol;
 	Items.RCCurrency.Title   = DefaultCurrencySymbol;
+	
+	If Object.Ref.IsEmpty() Then
+		Object.EmailNote = Constants.PurOrderFooter.Get();
+	EndIf;
 	
 EndProcedure
 
@@ -132,6 +143,18 @@ EndProcedure
 
 &AtServer
 Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
+	
+	If FirstNumber <> "" Then
+		
+		Numerator = Catalogs.DocumentNumbering.PurchaseOrder.GetObject();
+		NextNumber = GeneralFunctions.Increment(Numerator.Number);
+		If FirstNumber = NextNumber And NextNumber = Object.Number Then
+			Numerator.Number = FirstNumber;
+			Numerator.Write();
+		EndIf;
+		
+		FirstNumber = "";
+	EndIf;
 	
 	//------------------------------------------------------------------------------
 	// Recalculate values of form object attributes.
@@ -778,5 +801,48 @@ Function GetLineItemsRowStructure()
 	Return New Structure("LineNumber, Product, ProductDescription, Quantity, UM, Backorder, Price, LineTotal, Location, DeliveryDate, Project, Class, Received, Invoiced");
 	
 EndFunction
+
+&AtClient
+Procedure OnOpen(Cancel)
+	
+	AttachIdleHandler("AfterOpen", 0.1, True);	
+	
+EndProcedure
+
+&AtClient
+Procedure AfterOpen()
+	
+	ThisForm.Activate();
+	
+	If ThisForm.IsInputAvailable() Then
+		///////////////////////////////////////////////
+		DetachIdleHandler("AfterOpen");
+		
+		If  Object.Ref.IsEmpty() And ValueIsFilled(Object.Company) Then
+			CompanyOnChange(Items.Company);	
+		EndIf;	
+		///////////////////////////////////////////////
+	Else
+		AttachIdleHandler("AfterOpen", 0.1, True);	
+	EndIf;		
+	
+EndProcedure
+
+&AtClient
+Procedure SendEmail(Command)
+	If Object.Ref.IsEmpty() OR IsPosted() = False Then
+		Message("An email cannot be sent until the cash receipt is posted");
+	Else	
+		FormParameters = New Structure("Ref",Object.Ref );
+		OpenForm("CommonForm.EmailForm", FormParameters,,,,,, FormWindowOpeningMode.LockOwnerWindow);	
+	EndIf;
+
+EndProcedure
+
+&AtServer
+Function IsPosted()
+	Return Object.Ref.Posted;	
+EndFunction
+
 
 #EndRegion

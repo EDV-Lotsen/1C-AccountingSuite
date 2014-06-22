@@ -42,6 +42,9 @@ Procedure Posting(Cancel, PostingMode)
 	EndIf;
 	Records.Write();
 	
+	ReconciledDocumentsServerCall.AddDocumentForReconciliation(RegisterRecords, Ref, AccountFrom, Date, -1 * Amount);
+	ReconciledDocumentsServerCall.AddDocumentForReconciliation(RegisterRecords, Ref, AccountTo, Date, Amount);
+	
 	//Records = InformationRegisters.TransactionReconciliation.CreateRecordSet();
 	//Records.Filter.Document.Set(Ref);
 	//Records.Filter.Account.Set(AccountFrom);

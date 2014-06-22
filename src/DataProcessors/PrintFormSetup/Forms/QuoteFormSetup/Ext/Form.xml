@@ -1,0 +1,718 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<WindowOpeningMode>LockOwnerWindow</WindowOpeningMode>
+	<VerticalScroll>useIfNecessary</VerticalScroll>
+	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<Events>
+		<Event name="AfterWrite">AfterWrite</Event>
+		<Event name="AfterWriteAtServer">AfterWriteAtServer</Event>
+		<Event name="OnOpen">OnOpen</Event>
+		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+		<Event name="BeforeWriteAtServer">BeforeWriteAtServer</Event>
+		<Event name="OnWriteAtServer">OnWriteAtServer</Event>
+		<Event name="FillCheckProcessingAtServer">FillCheckProcessingAtServer</Event>
+	</Events>
+	<ChildItems>
+		<UsualGroup name="PrintFormSetup2" id="1056">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Sales Order Form</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Print form setup</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Group>Vertical</Group>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="PrintFormSetup2ExtendedTooltip" id="1057"/>
+			<ChildItems>
+				<UsualGroup name="SalesInvoices1" id="1058">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Sales invoices</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Sales invoices</v8:content>
+						</v8:item>
+					</ToolTip>
+					<Group>Vertical</Group>
+					<Collapsed>true</Collapsed>
+					<ControlRepresentation>Picture</ControlRepresentation>
+					<ShowTitle>false</ShowTitle>
+					<ExtendedTooltip name="SalesInvoices1ExtendedTooltip" id="1059"/>
+					<ChildItems>
+						<UsualGroup name="Display1" id="1060">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Display</v8:content>
+								</v8:item>
+							</Title>
+							<TitleTextColor>#008000</TitleTextColor>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Display</v8:content>
+								</v8:item>
+							</ToolTip>
+							<Group>Vertical</Group>
+							<ExtendedTooltip name="Display1ExtendedTooltip" id="1061"/>
+							<ChildItems>
+								<UsualGroup name="TopRow1" id="1062">
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Top row</v8:content>
+										</v8:item>
+									</Title>
+									<ToolTip>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Top row</v8:content>
+										</v8:item>
+									</ToolTip>
+									<Group>Horizontal</Group>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="TopRow1ExtendedTooltip" id="1063"/>
+									<ChildItems>
+										<CheckBoxField name="QuoteShowPhone3" id="1064">
+											<DataPath>ConstantsSet.QuoteShowPhone2</DataPath>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Show Mobile</v8:content>
+												</v8:item>
+											</Title>
+											<CheckBoxType>Auto</CheckBoxType>
+											<ContextMenu name="QuoteShowPhone3ContextMenu" id="1065"/>
+											<ExtendedTooltip name="QuoteShowPhone3ExtendedTooltip" id="1066"/>
+										</CheckBoxField>
+										<CheckBoxField name="QuoteShowEmail1" id="1067">
+											<DataPath>ConstantsSet.QuoteShowEmail</DataPath>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Show Email</v8:content>
+												</v8:item>
+											</Title>
+											<CheckBoxType>Auto</CheckBoxType>
+											<ContextMenu name="QuoteShowEmail1ContextMenu" id="1068"/>
+											<ExtendedTooltip name="QuoteShowEmail1ExtendedTooltip" id="1069"/>
+										</CheckBoxField>
+										<CheckBoxField name="QuoteShowWebsite1" id="1070">
+											<DataPath>ConstantsSet.QuoteShowWebsite</DataPath>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Show Website</v8:content>
+												</v8:item>
+											</Title>
+											<CheckBoxType>Auto</CheckBoxType>
+											<ContextMenu name="QuoteShowWebsite1ContextMenu" id="1071"/>
+											<ExtendedTooltip name="QuoteShowWebsite1ExtendedTooltip" id="1072"/>
+										</CheckBoxField>
+									</ChildItems>
+								</UsualGroup>
+								<UsualGroup name="SecondRow1" id="1073">
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Second row</v8:content>
+										</v8:item>
+									</Title>
+									<ToolTip>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Second row</v8:content>
+										</v8:item>
+									</ToolTip>
+									<Group>Horizontal</Group>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="SecondRow1ExtendedTooltip" id="1074"/>
+									<ChildItems>
+										<CheckBoxField name="QuoteShowFullName1" id="1075">
+											<DataPath>ConstantsSet.QuoteShowFullName</DataPath>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Show Contact Name</v8:content>
+												</v8:item>
+											</Title>
+											<CheckBoxType>Auto</CheckBoxType>
+											<ContextMenu name="QuoteShowFullName1ContextMenu" id="1076"/>
+											<ExtendedTooltip name="QuoteShowFullName1ExtendedTooltip" id="1077"/>
+										</CheckBoxField>
+										<CheckBoxField name="QuoteShowFedTax1" id="1078">
+											<DataPath>ConstantsSet.QuoteShowFedTax</DataPath>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Show Federal Tax ID</v8:content>
+												</v8:item>
+											</Title>
+											<CheckBoxType>Auto</CheckBoxType>
+											<ContextMenu name="QuoteShowFedTax1ContextMenu" id="1079"/>
+											<ExtendedTooltip name="QuoteShowFedTax1ExtendedTooltip" id="1080"/>
+										</CheckBoxField>
+										<CheckBoxField name="QuoteShowFax1" id="1081">
+											<DataPath>ConstantsSet.QuoteShowFax</DataPath>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Show Fax</v8:content>
+												</v8:item>
+											</Title>
+											<CheckBoxType>Auto</CheckBoxType>
+											<ContextMenu name="QuoteShowFax1ContextMenu" id="1082"/>
+											<ExtendedTooltip name="QuoteShowFax1ExtendedTooltip" id="1083"/>
+										</CheckBoxField>
+									</ChildItems>
+								</UsualGroup>
+							</ChildItems>
+						</UsualGroup>
+						<LabelDecoration name="Decoration8" id="1084">
+							<ContextMenu name="Decoration8ContextMenu" id="1085"/>
+							<ExtendedTooltip name="Decoration8ExtendedTooltip" id="1086"/>
+						</LabelDecoration>
+						<Pages name="SIFooterPage1" id="1087">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>SIFooter page</v8:content>
+								</v8:item>
+							</Title>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>SIFooter page</v8:content>
+								</v8:item>
+							</ToolTip>
+							<ExtendedTooltip name="SIFooterPage1ExtendedTooltip" id="1088"/>
+							<ChildItems>
+								<Page name="LeftPage1" id="1089">
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Left Footer Column</v8:content>
+										</v8:item>
+									</Title>
+									<ToolTip>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Left page</v8:content>
+										</v8:item>
+									</ToolTip>
+									<ExtendedTooltip name="LeftPage1ExtendedTooltip" id="1090"/>
+									<ChildItems>
+										<UsualGroup name="Left1" id="1091">
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Footer Left</v8:content>
+												</v8:item>
+											</Title>
+											<ToolTip>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Left</v8:content>
+												</v8:item>
+											</ToolTip>
+											<Group>Vertical</Group>
+											<ShowTitle>false</ShowTitle>
+											<ExtendedTooltip name="Left1ExtendedTooltip" id="1092"/>
+											<ChildItems>
+												<RadioButtonField name="Field4" id="1093">
+													<DataPath>ConstantsSet.QuoteFoot1Type</DataPath>
+													<TitleLocation>None</TitleLocation>
+													<RadioButtonType>RadioButtons</RadioButtonType>
+													<ChoiceList>
+														<xr:Item>
+															<xr:Presentation/>
+															<xr:CheckState>0</xr:CheckState>
+															<xr:Value xsi:type="FormChoiceListDesTimeValue">
+																<Presentation/>
+																<Value xsi:type="xr:DesignTimeRef">Enum.TextOrImage.EnumValue.Text</Value>
+															</xr:Value>
+														</xr:Item>
+														<xr:Item>
+															<xr:Presentation/>
+															<xr:CheckState>0</xr:CheckState>
+															<xr:Value xsi:type="FormChoiceListDesTimeValue">
+																<Presentation/>
+																<Value xsi:type="xr:DesignTimeRef">Enum.TextOrImage.EnumValue.Image</Value>
+															</xr:Value>
+														</xr:Item>
+														<xr:Item>
+															<xr:Presentation/>
+															<xr:CheckState>0</xr:CheckState>
+															<xr:Value xsi:type="FormChoiceListDesTimeValue">
+																<Presentation/>
+																<Value xsi:type="xr:DesignTimeRef">Enum.TextOrImage.EnumValue.None</Value>
+															</xr:Value>
+														</xr:Item>
+													</ChoiceList>
+													<ContextMenu name="Field4ContextMenu" id="1094"/>
+													<ExtendedTooltip name="Field4ExtendedTooltip" id="1095"/>
+												</RadioButtonField>
+												<UsualGroup name="FooterLeft1" id="1096">
+													<Title>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Footer left</v8:content>
+														</v8:item>
+													</Title>
+													<ToolTip>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Footer left</v8:content>
+														</v8:item>
+													</ToolTip>
+													<Group>Horizontal</Group>
+													<ShowTitle>false</ShowTitle>
+													<ExtendedTooltip name="FooterLeft1ExtendedTooltip" id="1097"/>
+													<ChildItems>
+														<InputField name="QuoteFooterTextLeft1" id="1098">
+															<DataPath>ConstantsSet.QuoteFooterTextLeft</DataPath>
+															<Title>
+																<v8:item>
+																	<v8:lang>en</v8:lang>
+																	<v8:content>Text</v8:content>
+																</v8:item>
+															</Title>
+															<Height>5</Height>
+															<HorizontalStretch>false</HorizontalStretch>
+															<VerticalStretch>false</VerticalStretch>
+															<ContextMenu name="QuoteFooterTextLeft1ContextMenu" id="1099"/>
+															<ExtendedTooltip name="QuoteFooterTextLeft1ExtendedTooltip" id="1100"/>
+														</InputField>
+														<UsualGroup name="Group29" id="1101">
+															<Group>Vertical</Group>
+															<ShowTitle>false</ShowTitle>
+															<ExtendedTooltip name="Group29ExtendedTooltip" id="1102"/>
+															<ChildItems>
+																<Button name="UploadFooter4" id="1103">
+																	<Type>UsualButton</Type>
+																	<CommandName>Form.Command.QuoteUploadFooter1</CommandName>
+																	<Title>
+																		<v8:item>
+																			<v8:lang>en</v8:lang>
+																			<v8:content>Upload Left Image</v8:content>
+																		</v8:item>
+																	</Title>
+																	<ToolTipRepresentation>None</ToolTipRepresentation>
+																	<ExtendedTooltip name="UploadFooter4ExtendedTooltip" id="1104"/>
+																</Button>
+																<PictureField name="QuoteFooterImageAddr1" id="1105">
+																	<DataPath>QuoteFooterImageAddr1</DataPath>
+																	<TitleLocation>None</TitleLocation>
+																	<Width>30</Width>
+																	<HorizontalStretch>false</HorizontalStretch>
+																	<VerticalStretch>false</VerticalStretch>
+																	<ContextMenu name="QuoteFooterImageAddr1ContextMenu" id="1106"/>
+																	<ExtendedTooltip name="QuoteFooterImageAddr1ExtendedTooltip" id="1107"/>
+																</PictureField>
+															</ChildItems>
+														</UsualGroup>
+													</ChildItems>
+												</UsualGroup>
+											</ChildItems>
+										</UsualGroup>
+									</ChildItems>
+								</Page>
+								<Page name="CenterPage1" id="1108">
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Center Footer Column</v8:content>
+										</v8:item>
+									</Title>
+									<ToolTip>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Center page</v8:content>
+										</v8:item>
+									</ToolTip>
+									<ExtendedTooltip name="CenterPage1ExtendedTooltip" id="1109"/>
+									<ChildItems>
+										<UsualGroup name="Center1" id="1110">
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Footer Center</v8:content>
+												</v8:item>
+											</Title>
+											<ToolTip>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Center</v8:content>
+												</v8:item>
+											</ToolTip>
+											<Group>Vertical</Group>
+											<ShowTitle>false</ShowTitle>
+											<ExtendedTooltip name="Center1ExtendedTooltip" id="1111"/>
+											<ChildItems>
+												<RadioButtonField name="QuoteFoot2Type1" id="1112">
+													<DataPath>ConstantsSet.QuoteFoot2Type</DataPath>
+													<TitleLocation>None</TitleLocation>
+													<RadioButtonType>RadioButtons</RadioButtonType>
+													<ChoiceList>
+														<xr:Item>
+															<xr:Presentation/>
+															<xr:CheckState>0</xr:CheckState>
+															<xr:Value xsi:type="FormChoiceListDesTimeValue">
+																<Presentation/>
+																<Value xsi:type="xr:DesignTimeRef">Enum.TextOrImage.EnumValue.Text</Value>
+															</xr:Value>
+														</xr:Item>
+														<xr:Item>
+															<xr:Presentation/>
+															<xr:CheckState>0</xr:CheckState>
+															<xr:Value xsi:type="FormChoiceListDesTimeValue">
+																<Presentation/>
+																<Value xsi:type="xr:DesignTimeRef">Enum.TextOrImage.EnumValue.Image</Value>
+															</xr:Value>
+														</xr:Item>
+														<xr:Item>
+															<xr:Presentation/>
+															<xr:CheckState>0</xr:CheckState>
+															<xr:Value xsi:type="FormChoiceListDesTimeValue">
+																<Presentation/>
+																<Value xsi:type="xr:DesignTimeRef">Enum.TextOrImage.EnumValue.None</Value>
+															</xr:Value>
+														</xr:Item>
+													</ChoiceList>
+													<ContextMenu name="QuoteFoot2Type1ContextMenu" id="1113"/>
+													<ExtendedTooltip name="QuoteFoot2Type1ExtendedTooltip" id="1114"/>
+												</RadioButtonField>
+												<UsualGroup name="FooterCenter1" id="1115">
+													<Title>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Footer center</v8:content>
+														</v8:item>
+													</Title>
+													<ToolTip>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Footer center</v8:content>
+														</v8:item>
+													</ToolTip>
+													<Group>Horizontal</Group>
+													<ShowTitle>false</ShowTitle>
+													<ExtendedTooltip name="FooterCenter1ExtendedTooltip" id="1116"/>
+													<ChildItems>
+														<InputField name="QuoteFooterTextCenter1" id="1117">
+															<DataPath>ConstantsSet.QuoteFooterTextCenter</DataPath>
+															<Title>
+																<v8:item>
+																	<v8:lang>en</v8:lang>
+																	<v8:content>Text</v8:content>
+																</v8:item>
+															</Title>
+															<Height>5</Height>
+															<HorizontalStretch>false</HorizontalStretch>
+															<VerticalStretch>false</VerticalStretch>
+															<ContextMenu name="QuoteFooterTextCenter1ContextMenu" id="1118"/>
+															<ExtendedTooltip name="QuoteFooterTextCenter1ExtendedTooltip" id="1119"/>
+														</InputField>
+														<UsualGroup name="Group30" id="1120">
+															<Group>Vertical</Group>
+															<ShowTitle>false</ShowTitle>
+															<ExtendedTooltip name="Group30ExtendedTooltip" id="1121"/>
+															<ChildItems>
+																<Button name="UploadFooter5" id="1122">
+																	<Type>UsualButton</Type>
+																	<CommandName>Form.Command.QuoteUploadFooter2</CommandName>
+																	<Title>
+																		<v8:item>
+																			<v8:lang>en</v8:lang>
+																			<v8:content>Upload Center Image</v8:content>
+																		</v8:item>
+																	</Title>
+																	<ToolTipRepresentation>None</ToolTipRepresentation>
+																	<ExtendedTooltip name="UploadFooter5ExtendedTooltip" id="1123"/>
+																</Button>
+																<PictureField name="QuoteFooterImageAddr2" id="1124">
+																	<DataPath>QuoteFooterImageAddr2</DataPath>
+																	<TitleLocation>None</TitleLocation>
+																	<Width>30</Width>
+																	<HorizontalStretch>false</HorizontalStretch>
+																	<VerticalStretch>false</VerticalStretch>
+																	<ContextMenu name="QuoteFooterImageAddr2ContextMenu" id="1125"/>
+																	<ExtendedTooltip name="QuoteFooterImageAddr2ExtendedTooltip" id="1126"/>
+																</PictureField>
+															</ChildItems>
+														</UsualGroup>
+													</ChildItems>
+												</UsualGroup>
+											</ChildItems>
+										</UsualGroup>
+									</ChildItems>
+								</Page>
+								<Page name="RightPage1" id="1127">
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Right Footer Column</v8:content>
+										</v8:item>
+									</Title>
+									<ToolTip>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Right page</v8:content>
+										</v8:item>
+									</ToolTip>
+									<ExtendedTooltip name="RightPage1ExtendedTooltip" id="1128"/>
+									<ChildItems>
+										<UsualGroup name="Right1" id="1129">
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Footer Right</v8:content>
+												</v8:item>
+											</Title>
+											<ToolTip>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Right</v8:content>
+												</v8:item>
+											</ToolTip>
+											<Group>Vertical</Group>
+											<ShowTitle>false</ShowTitle>
+											<ExtendedTooltip name="Right1ExtendedTooltip" id="1130"/>
+											<ChildItems>
+												<RadioButtonField name="QuoteFoot3Type" id="1131">
+													<DataPath>ConstantsSet.QuoteFoot3Type</DataPath>
+													<TitleLocation>None</TitleLocation>
+													<RadioButtonType>RadioButtons</RadioButtonType>
+													<ChoiceList>
+														<xr:Item>
+															<xr:Presentation/>
+															<xr:CheckState>0</xr:CheckState>
+															<xr:Value xsi:type="FormChoiceListDesTimeValue">
+																<Presentation/>
+																<Value xsi:type="xr:DesignTimeRef">Enum.TextOrImage.EnumValue.Text</Value>
+															</xr:Value>
+														</xr:Item>
+														<xr:Item>
+															<xr:Presentation/>
+															<xr:CheckState>0</xr:CheckState>
+															<xr:Value xsi:type="FormChoiceListDesTimeValue">
+																<Presentation/>
+																<Value xsi:type="xr:DesignTimeRef">Enum.TextOrImage.EnumValue.Image</Value>
+															</xr:Value>
+														</xr:Item>
+														<xr:Item>
+															<xr:Presentation/>
+															<xr:CheckState>0</xr:CheckState>
+															<xr:Value xsi:type="FormChoiceListDesTimeValue">
+																<Presentation/>
+																<Value xsi:type="xr:DesignTimeRef">Enum.TextOrImage.EnumValue.None</Value>
+															</xr:Value>
+														</xr:Item>
+													</ChoiceList>
+													<ContextMenu name="QuoteFoot3TypeContextMenu" id="1132"/>
+													<ExtendedTooltip name="QuoteFoot3TypeExtendedTooltip" id="1133"/>
+												</RadioButtonField>
+												<UsualGroup name="FooterRight1" id="1134">
+													<Title>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Footer right</v8:content>
+														</v8:item>
+													</Title>
+													<ToolTip>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Footer right</v8:content>
+														</v8:item>
+													</ToolTip>
+													<Group>Horizontal</Group>
+													<ShowTitle>false</ShowTitle>
+													<ExtendedTooltip name="FooterRight1ExtendedTooltip" id="1135"/>
+													<ChildItems>
+														<InputField name="QuoteFooterTextRight" id="1136">
+															<DataPath>ConstantsSet.QuoteFooterTextRight</DataPath>
+															<Title>
+																<v8:item>
+																	<v8:lang>en</v8:lang>
+																	<v8:content>Text</v8:content>
+																</v8:item>
+															</Title>
+															<Height>5</Height>
+															<HorizontalStretch>false</HorizontalStretch>
+															<VerticalStretch>false</VerticalStretch>
+															<ContextMenu name="QuoteFooterTextRightContextMenu" id="1137"/>
+															<ExtendedTooltip name="QuoteFooterTextRightExtendedTooltip" id="1138"/>
+														</InputField>
+														<UsualGroup name="Group31" id="1139">
+															<Group>Vertical</Group>
+															<ShowTitle>false</ShowTitle>
+															<ExtendedTooltip name="Group31ExtendedTooltip" id="1140"/>
+															<ChildItems>
+																<Button name="UploadFooter6" id="1141">
+																	<Type>UsualButton</Type>
+																	<CommandName>Form.Command.QuoteUploadFooter3</CommandName>
+																	<Title>
+																		<v8:item>
+																			<v8:lang>en</v8:lang>
+																			<v8:content>Upload Right Image</v8:content>
+																		</v8:item>
+																	</Title>
+																	<ToolTipRepresentation>None</ToolTipRepresentation>
+																	<ExtendedTooltip name="UploadFooter6ExtendedTooltip" id="1142"/>
+																</Button>
+																<PictureField name="QuoteFooterImageAddr3" id="1143">
+																	<DataPath>QuoteFooterImageAddr3</DataPath>
+																	<TitleLocation>None</TitleLocation>
+																	<Width>30</Width>
+																	<HorizontalStretch>false</HorizontalStretch>
+																	<VerticalStretch>false</VerticalStretch>
+																	<ContextMenu name="QuoteFooterImageAddr3ContextMenu" id="1144"/>
+																	<ExtendedTooltip name="QuoteFooterImageAddr3ExtendedTooltip" id="1145"/>
+																</PictureField>
+															</ChildItems>
+														</UsualGroup>
+													</ChildItems>
+												</UsualGroup>
+											</ChildItems>
+										</UsualGroup>
+									</ChildItems>
+								</Page>
+							</ChildItems>
+						</Pages>
+						<LabelDecoration name="Decoration9" id="1146">
+							<ContextMenu name="Decoration9ContextMenu" id="1147"/>
+							<ExtendedTooltip name="Decoration9ExtendedTooltip" id="1148"/>
+						</LabelDecoration>
+						<InputField name="QuoteFooter" id="1149">
+							<DataPath>ConstantsSet.QuoteFooter</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Terms and Conditions / Notes</v8:content>
+								</v8:item>
+							</Title>
+							<TitleTextColor>#008000</TitleTextColor>
+							<TitleFont ref="sys:DefaultGUIFont" height="12" kind="WindowsFont"/>
+							<VerticalStretch>false</VerticalStretch>
+							<MultiLine>true</MultiLine>
+							<ContextMenu name="QuoteFooterContextMenu" id="1150"/>
+							<ExtendedTooltip name="QuoteFooterExtendedTooltip" id="1151"/>
+						</InputField>
+					</ChildItems>
+				</UsualGroup>
+			</ChildItems>
+		</UsualGroup>
+	</ChildItems>
+	<Attributes>
+		<Attribute name="ConstantsSet" id="1">
+			<Type>
+				<v8:Type>cfg:ConstantsSet</v8:Type>
+			</Type>
+			<MainAttribute>true</MainAttribute>
+			<SavedData>true</SavedData>
+			<UseAlways>
+				<Field>ConstantsSet.SalesTaxCharging</Field>
+				<Field>ConstantsSet.SOFoot3Type.Ref</Field>
+				<Field>ConstantsSet.SOFoot2Type.Ref</Field>
+				<Field>ConstantsSet.SOFoot1Type.Ref</Field>
+				<Field>ConstantsSet.SIFoot3Type.Ref</Field>
+				<Field>ConstantsSet.SIFoot2Type.Ref</Field>
+				<Field>ConstantsSet.SIFoot1Type.Ref</Field>
+				<Field>ConstantsSet.QuoteFoot3Type.Ref</Field>
+				<Field>ConstantsSet.QuoteFoot2Type.Ref</Field>
+				<Field>ConstantsSet.QuoteFoot1Type.Ref</Field>
+				<Field>ConstantsSet.PeriodClosingOption.Ref</Field>
+				<Field>ConstantsSet.POFoot3Type.Ref</Field>
+				<Field>ConstantsSet.POFoot2Type.Ref</Field>
+				<Field>ConstantsSet.POFoot1Type.Ref</Field>
+				<Field>ConstantsSet.CRFoot3Type.Ref</Field>
+				<Field>ConstantsSet.CRFoot2Type.Ref</Field>
+				<Field>ConstantsSet.CRFoot1Type.Ref</Field>
+			</UseAlways>
+		</Attribute>
+		<Attribute name="QuoteFooterImageAddr1" id="13">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>QuoteFooterImageAddr1</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="QuoteFooterImageAddr2" id="14">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>QuoteFooterImageAddr2</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="QuoteFooterImageAddr3" id="15">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>QuoteFooterImageAddr3</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+	</Attributes>
+	<Commands>
+		<Command name="QuoteUploadFooter1" id="33">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Quote upload footer1</v8:content>
+				</v8:item>
+			</Title>
+			<Action>QuoteUploadFooter1</Action>
+		</Command>
+		<Command name="QuoteUploadFooter2" id="34">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Quote upload footer2</v8:content>
+				</v8:item>
+			</Title>
+			<Action>QuoteUploadFooter2</Action>
+		</Command>
+		<Command name="QuoteUploadFooter3" id="35">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Quote upload footer3</v8:content>
+				</v8:item>
+			</Title>
+			<Action>QuoteUploadFooter3</Action>
+		</Command>
+	</Commands>
+</Form>

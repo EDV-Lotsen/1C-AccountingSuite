@@ -42,11 +42,11 @@
 	OrderData.Insert("memo", NewOrder.Memo);
 	OrderData.Insert("sales_tax_total", NewOrder.SalesTaxRC);
 	OrderData.Insert("doc_total", NewOrder.DocumentTotalRC);	
-	OrderData.Insert("line_subtotal", NewOrder.LineSubtotalRC);
-	OrderData.Insert("discount", NewOrder.DiscountRC);
+	OrderData.Insert("line_subtotal", NewOrder.LineSubtotal);
+	OrderData.Insert("discount", NewOrder.Discount);
 	OrderData.Insert("discount_percent", NewOrder.DiscountPercent);
-	OrderData.Insert("subtotal", NewOrder.SubTotalRC);
-	OrderData.Insert("shipping", NewOrder.ShippingRC);
+	OrderData.Insert("subtotal", NewOrder.SubTotal);
+	OrderData.Insert("shipping", NewOrder.Shipping);
 	
 	OrderData.Insert("email_to", NewOrder.EmailTo);
 	OrderData.Insert("email_cc", NewOrder.EmailCC);
@@ -330,7 +330,7 @@ Function ReturnSalesReturnMap(NewOrder) Export
 	OrderData.Insert("email_cc", NewOrder.EmailCC);
 	OrderData.Insert("email_note", NewOrder.EmailNote);
 	OrderData.Insert("memo", NewOrder.Memo);
-	OrderData.Insert("line_subtotal", NewOrder.LineSubtotalRC);
+	OrderData.Insert("line_subtotal", NewOrder.LineSubtotal);
 	OrderData.Insert("sales_tax", NewOrder.SalesTaxRC);
 	OrderData.Insert("doc_total", NewOrder.DocumentTotalRC);
 	
@@ -769,7 +769,51 @@ Function ReturnGJEntryMap(NewOrder) Export
 	Return OrderData;
 EndFunction
 
+Function ReturnItemAdjustmentMap(NewOrder) Export
+	
+	OrderData = New Map();
+	
+	OrderData.Insert("api_code", String(NewOrder.Ref.UUID()));
+	OrderData.Insert("item",String(NewOrder.Product));
+	OrderData.Insert("date",String(NewOrder.Date));
+	OrderData.Insert("location", String(NewOrder.Location));
+	OrderData.Insert("layer", String(NewOrder.Layer));
+	OrderData.Insert("account", String(NewOrder.IncomeExpenseAccount));
+	
+	OrderData.Insert("quantity", NewOrder.Quantity);
+	OrderData.Insert("amount", NewOrder.Amount);
+	
+		
+	Return OrderData;
+	
+EndFunction
+
+Function ReturnSalesTaxPaymentMap(NewOrder) Export
+	
+	OrderData = New Map();
+	
+	OrderData.Insert("api_code", String(NewOrder.Ref.UUID()));
+	OrderData.Insert("number",String(NewOrder.Number));
+	OrderData.Insert("payment_date",String(NewOrder.Date));
+	OrderData.Insert("tax_period_ending", String(NewOrder.TaxPeriodEnding));
+	OrderData.Insert("sales_tax_agency", String(NewOrder.SalesTaxAgency));
+	OrderData.Insert("bank_account", String(NewOrder.BankAccount));
+	OrderData.Insert("payment", String(NewOrder.Payment));
+	OrderData.Insert("accounting_basis", String(NewOrder.AccountingBasis));
+	OrderData.Insert("made_adjustment", String(NewOrder.MadeAdjustment));
+	OrderData.Insert("total_payment", String(NewOrder.TotalPayment));
+	OrderData.Insert("memo", String(NewOrder.Memo));
+	
+	OrderData.Insert("adjustment_amount", String(NewOrder.AdjustmentAmount));
+	OrderData.Insert("adjustment_reason", String(NewOrder.AdjustmentReason));
+	OrderData.Insert("adjustment_account", String(NewOrder.AdjustmentAccount));
+
+	Return OrderData;
+	
+EndFunction
+
 Function ReturnPurchaseOrderMap(NewOrder) Export
+	
 	
 	OrderData = New Map();
 	OrderData.Insert("api_code", String(NewOrder.Ref.UUID()));
@@ -825,4 +869,52 @@ Function ReturnPurchaseOrderMap(NewOrder) Export
 
 	Return OrderData;
 
+EndFunction
+
+Function ReturnBankReconMapNew(NewOrder) Export
+	
+	OrderData = New Map();
+	
+	OrderData.Insert("api_code", String(NewOrder.Ref.UUID()));
+	OrderData.Insert("beginning_balance", NewOrder.BeginningBalance);
+	OrderData.Insert("ending_balance", NewOrder.EndingBalance);
+	OrderData.Insert("bank_account", String(NewOrder.BankAccount));
+	OrderData.Insert("statement_date", String(NewOrder.Date));
+	
+	OrderData.Insert("charge_date", NewOrder.ServiceChargeDate);
+	OrderData.Insert("service_charge", NewOrder.ServiceCharge);
+	OrderData.Insert("interest_earned", NewOrder.InterestEarned);
+	OrderData.Insert("earned_date", NewOrder.InterestEarnedDate);
+	OrderData.Insert("bank_service_charge_account", NewOrder.BankServiceChargeAccount);
+	OrderData.Insert("bank_interest_earned_account", NewOrder.BankInterestEarnedAccount);
+	
+	OrderData.Insert("memo", NewOrder.Memo);
+	OrderData.Insert("cleared_amount", NewOrder.ClearedAmount);
+	OrderData.Insert("cleared_balance", NewOrder.ClearedBalance);
+	OrderData.Insert("difference", NewOrder.Difference);
+	
+		
+	OrderData2 = New Array();
+	
+	For Each LineItem in NewOrder.LineItems Do
+		
+			OrderData3 = New Map();
+
+			OrderData3.Insert("transaction_api_code", String(LineItem.Transaction.Ref.UUID()));
+			OrderData3.Insert("transaction_description", String(LineItem.Transaction));
+			OrderData3.Insert("transaction_amount", LineItem.TransactionAmount);
+			OrderData3.Insert("cleared", LineItem.Cleared);
+			//OrderData3.Insert("company", String(LineItem.Company));
+			//OrderData3.Insert("company_api_code", String(LineItem.Company.Ref.UUID()));
+			//OrderData3.Insert("is_cleared", LineItem.Deposit);
+			//OrderData3.Insert("transaction_amount", LineItem.Payment);
+			//
+			OrderData2.Add(OrderData3);
+	
+	EndDo;
+		
+	OrderData.Insert("line_items",OrderData2);
+	
+	
+	Return OrderData;
 EndFunction

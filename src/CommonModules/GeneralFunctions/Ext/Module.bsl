@@ -104,14 +104,28 @@ Procedure ObjectBeforeDelete(Source, Cancel) Export
 
 	ReferenceList = New Array();
 	ReferenceList.Add(Source.Ref);
-	SourceObj = Source.Ref.GetObject();	
+	SourceObj = Source.Ref.GetObject();
 	test = cancel;
 	
 	ReferencedObjects = FindByRef(ReferenceList);
+	CoDeletedObjects  = New Array();
 	
 	i = 0;
 	While i < ReferencedObjects.Count() Do
-		If TypeOf(ReferencedObjects[i][0]) = TypeOf(ReferencedObjects[i][1]) Then
+		//--//
+		If TypeOf(ReferencedObjects[i][0]) = Type("ChartOfAccountsRef.ChartOfAccounts") And TypeOf(ReferencedObjects[i][1]) = Type("InformationRegisterRecordKey.HierarchyChartOfAccounts") Then
+			ReferencedObjects.Delete(ReferencedObjects[i]);
+		ElsIf TypeOf(ReferencedObjects[i][1]) = Type("InformationRegisterRecordKey.DocumentJournalOfCompanies") Then
+			ReferencedObjects.Delete(ReferencedObjects[i]);
+		ElsIf TypeOf(ReferencedObjects[i][1]) = Type("InformationRegisterRecordKey.DocumentLastEmail") Then
+			ReferencedObjects.Delete(ReferencedObjects[i]);
+		ElsIf TypeOf(ReferencedObjects[i][0]) = Type("CatalogRef.Products") And TypeOf(ReferencedObjects[i][1]) = Type("CatalogRef.Units") Then
+			CoDeletedObjects.Add(ReferencedObjects[i][1]);
+			ReferencedObjects.Delete(ReferencedObjects[i]);
+		ElsIf TypeOf(ReferencedObjects[i][0]) = Type("CatalogRef.Units") And TypeOf(ReferencedObjects[i][1]) = Type("CatalogRef.Products") Then
+			ReferencedObjects.Delete(ReferencedObjects[i]);
+		//--//
+		ElsIf TypeOf(ReferencedObjects[i][0]) = TypeOf(ReferencedObjects[i][1]) Then
 			If ReferencedObjects[i][0] = ReferencedObjects[i][1] Then
 				ReferencedObjects.Delete(ReferencedObjects[i]);
 			Else 
@@ -122,10 +136,20 @@ Procedure ObjectBeforeDelete(Source, Cancel) Export
 		EndIf;
 	EndDo;
 	
+	// Delete subordinated referenced objects.
+	If CoDeletedObjects.Count() > 0 And ReferencedObjects.Count() = 0 Then
+		InTransaction = True;
+		Try BeginTransaction(); Except InTransaction = False; EndTry;
+		For Each Item In CoDeletedObjects Do
+			Item.GetObject().Delete();
+		EndDo;
+		If InTransaction Then
+			CommitTransaction();
+		EndIf;
+	EndIf;
+	
 	If ReferencedObjects.Count() = 0 Then
-
 		AuditLog.AuditLogDeleteBeforeDelete(SourceObj,False);
-
 	Else
 		MessageText = "Linked objects found: ";
 		For Each Ref In ReferencedObjects Do
@@ -136,7 +160,7 @@ Procedure ObjectBeforeDelete(Source, Cancel) Export
 		Message(MessageText);
 		Cancel = True;
 	EndIf;
-
+	
 EndProcedure
 
 
@@ -202,7 +226,7 @@ Function ReturnSaleOrderMap(NewOrder) Export
 	OrderData.Insert("bill_to_phone",String(NewOrder.BillTo.Phone));
 	OrderData.Insert("bill_to_cell",String(NewOrder.BillTo.Cell));
 	OrderData.Insert("bill_to_email",String(NewOrder.BillTo.Email));
-	//OrderData.Insert("bill_to_sales_tax_code",String(NewOrder.BillTo.SalesTaxCode));
+//	OrderData.Insert("bill_to_sales_tax_code",String(NewOrder.BillTo.SalesTaxCode));
 	OrderData.Insert("bill_to_notes",String(NewOrder.BillTo.Notes));
 
 
@@ -1052,7 +1076,7 @@ Procedure CreateItemCSV(Date, Date2, ItemDataSet) Export
 		EndIf;
 		
 		If DataLine.ProductQty <> 0 Then
-			IBB = Documents.InventoryBeginningBalances.CreateDocument();
+			IBB = Documents.ItemAdjustment.CreateDocument();
 			IBB.Product = NewProduct.Ref;
 			IBB.Location = Catalogs.Locations.MainWarehouse;
 			IBB.Quantity = DataLine.ProductQty;
@@ -2025,11 +2049,9 @@ EndFunction
 Function ProductLastCost(Product) Export
 	
 	Query = New Query("SELECT
-	                  |	ItemLastCost.Cost
+	                  |	ItemLastCostsSliceLast.Cost AS Cost
 	                  |FROM
-	                  |	InformationRegister.ItemLastCost AS ItemLastCost
-	                  |WHERE
-	                  |	ItemLastCost.Product = &Product");
+	                  |	InformationRegister.ItemLastCosts.SliceLast(, Product = &Product) AS ItemLastCostsSliceLast");
 	Query.SetParameter("Product", Product);
 	QueryResult = Query.Execute();
 	
@@ -2201,6 +2223,55 @@ Procedure NormalizeArray(Array) Export
 	EndDo;
 	
 EndProcedure
+
+// Creates new value table and fill it from passed object data preserving fields data type.
+// 
+// Parameters:
+//  Source   - Object    - Data for filling the value table.
+//           - Structure - Structure containing keys as fields and values as contents.
+//  Fields   - String    - Columns names to be created as fields and filled from the object.
+//  Metadata - MetadataObjectCollection - Fields description data containing fields type.
+//
+// Returns:
+//  ValueTable - The table containing the single row filled from the data source.
+//
+Function ValueTableCopyFrom(Source, Fields = "", Metadata = Undefined) Export
+	
+	// Create values table and define it's columns.
+	Table = New ValueTable;
+	Types = New Array(1);
+	
+	// Define table columns.
+	If Not IsBlankString(Fields) Then
+		// Create columns by the supplied fields list.
+		FiledsList = StringFunctionsClientServer.SplitStringIntoSubstringArray(Fields, ",", True);
+		For Each FieldName In FiledsList Do
+			Field = TrimAll(FieldName);
+			Types[0] = TypeOf(Source[Field]);
+			Table.Columns.Add(Field, ?(Metadata = Undefined Or Metadata.Find(Field) = Undefined, New TypeDescription(Types), Metadata[Field].Type));
+		EndDo;
+		
+	ElsIf Metadata <> Undefined Then
+		// Create columns by the supplied metadata collection.
+		For Each Meta In Metadata Do
+			Table.Columns.Add(Meta.Name, Meta.Type);
+		EndDo;
+		
+	ElsIf TypeOf(Source) = Type("Structure") Then
+		// Create columns from structure keys.
+		For Each Element In Source Do
+			Types[0] = TypeOf(Element.Value);
+			Table.Columns.Add(Element.Key, New TypeDescription(Types));
+		EndDo;
+	EndIf;
+	
+	// Add new row and fill it from source data;
+	FillPropertyValues(Table.Add(), Source);
+	
+	// Return the filled values table.
+	Return Table;
+	
+EndFunction
 
 // Compares two passed objects by their properties (as analogue to FillPropertyValues)
 // Compares Source property values with values of properties of the Receiver. Matching is done by property names.
@@ -2460,20 +2531,25 @@ Procedure FirstLaunch() Export
 	
 	BeginTransaction();
 	
+		Constants.CopyDropshipPrintOptionsSO_PO.Set(True);
+		
+		//
 		Numerator = Catalogs.DocumentNumbering.PurchaseOrder.GetObject();
 		Numerator.Number = 999;
 		Numerator.Write();
+		
+		Numerator = Catalogs.DocumentNumbering.SalesOrder.GetObject();
+		Numerator.Number = 999;
+		Numerator.Write();
 
-		//Constants.SalesInvoiceLastNumber.Set("1000");
-		//Constants.CashReceiptLastNumber.Set("1000");
-		//Constants.CashSaleLastNumber.Set("1000");
-		//Constants.DepositLastNumber.Set("1000");
-		//Constants.BankTransferLastNumber.Set("1000");
-		//Constants.WarehouseTransferLastNumber.Set("1000");
-		//Constants.CreditMemoLastNumber.Set("1000");
-		//Constants.SalesOrderLastNumber.Set("1000");
-		//Constants.PurchaseOrderLastNumber.Set("1000");
-		//Constants.GJEntryLastNumber.Set("1000");
+		Numerator = Catalogs.DocumentNumbering.SalesInvoice.GetObject();
+		Numerator.Number = 999;
+		Numerator.Write();
+
+		Numerator = Catalogs.DocumentNumbering.Quote.GetObject();
+		Numerator.Number = 999;
+		Numerator.Write();
+	
 		// Adding account types to predefined accounts and
 		// assigning default posting accounts.
 		
@@ -2656,24 +2732,63 @@ Procedure FirstLaunch() Export
 		// Setting 1099 thresholds
 		
 		Cat1099 = Catalogs.USTaxCategories1099.Box1.GetObject();
+		Cat1099.Code = 1;
 		Cat1099.Threshold = 600;
 		Cat1099.Write();
 		
 		Cat1099 = Catalogs.USTaxCategories1099.Box2.GetObject();
+		Cat1099.Code = 2;
 		Cat1099.Threshold = 10;
 		Cat1099.Write();
 		
+		Cat1099 = Catalogs.USTaxCategories1099.Box3.GetObject();
+		Cat1099.Code = 3;
+		Cat1099.Threshold = 600;
+		Cat1099.Write();
+		
+		Cat1099 = Catalogs.USTaxCategories1099.Box4.GetObject();
+		Cat1099.Code = 4;
+		Cat1099.Write();
+		
+		Cat1099 = Catalogs.USTaxCategories1099.Box5.GetObject();
+		Cat1099.Code = 5;
+		Cat1099.Write();
+	
+		Cat1099 = Catalogs.USTaxCategories1099.Box6.GetObject();
+		Cat1099.Code = 6;
+		Cat1099.Threshold = 600;
+		Cat1099.Write();
+		
 		Cat1099 = Catalogs.USTaxCategories1099.Box7.GetObject();
+		Cat1099.Code = 7;
 		Cat1099.Threshold = 600;
 		Cat1099.Write();
 		
 		Cat1099 = Catalogs.USTaxCategories1099.Box8.GetObject();
+		Cat1099.Code = 8;
 		Cat1099.Threshold = 10;
 		Cat1099.Write();
 		
 		Cat1099 = Catalogs.USTaxCategories1099.Box9.GetObject();
+		Cat1099.Code = 9;
 		Cat1099.Threshold = 5000;
 		Cat1099.Write();
+		
+		Cat1099 = Catalogs.USTaxCategories1099.Box10.GetObject();
+		Cat1099.Code  = 10;
+		Cat1099.Threshold = 600;
+		Cat1099.Write();
+		
+		Cat1099 = Catalogs.USTaxCategories1099.Box13.GetObject();
+		Cat1099.Code = 13;
+		Cat1099.Write();
+		
+		Cat1099 = Catalogs.USTaxCategories1099.Box14.GetObject();
+		Cat1099.Code = 14;
+		Cat1099.Threshold = 600;
+		Cat1099.Write();
+
+
 		
 		// Creating a user with full rights
 		
@@ -4251,4 +4366,513 @@ EndIf;
 	
 EndProcedure // FirstLaunch()
 
+#Region Updating_Hierarchy_ChartOfAccounts
 
+Procedure UpdatingHierarchyChartOfAccounts() Export
+	
+	If Constants.HierarchyChartOfAccountsUpdated.Get() = False Then
+		
+		BeginTransaction();
+		/////////////////////////////////////////////////////////////////////
+		ChartOfAccountsSelection = ChartsOfAccounts.ChartOfAccounts.Select();
+		While ChartOfAccountsSelection.Next() Do
+			WriteHierarchy(ChartOfAccountsSelection.Ref);
+		EndDo;
+		/////////////////////////////////////////////////////////////////////
+		CommitTransaction();
+		
+		Constants.HierarchyChartOfAccountsUpdated.Set(True);
+		
+	EndIf;
+	
+EndProcedure //UpdatingHierarchyChartOfAccounts
+
+Procedure WriteHierarchy(Item)
+	
+	IR = InformationRegisters.HierarchyChartOfAccounts.CreateRecordSet();
+	IR.Filter.Account.Set(Item);
+	
+	NewIRecord = IR.Add();
+	NewIRecord.Account = Item;
+	NewIRecord.Route = GetHierarchy(Item, "/");
+	
+	IR.Write();
+	
+EndProcedure
+
+Function GetHierarchy(Item, Route)
+	
+	Route = Route + Item.Code + "/";
+	
+	If ValueIsFilled(Item.Parent) Then
+		GetHierarchy(Item.Parent, Route)	
+	EndIf;	
+	
+	Return Route;	
+	
+EndFunction	
+
+#EndRegion
+
+Procedure SetNumbering() Export
+	
+	If Constants.set_numbering.Get() = False Then
+		
+		If Catalogs.DocumentNumbering.PurchaseOrder.Number = "" Then
+			Numerator = Catalogs.DocumentNumbering.PurchaseOrder.GetObject();
+			Numerator.Number = "999";
+			Numerator.Write();
+		EndIf;
+		
+		If Catalogs.DocumentNumbering.SalesOrder.Number = "" Then
+			Numerator = Catalogs.DocumentNumbering.SalesOrder.GetObject();
+			Numerator.Number = "999";
+			Numerator.Write();
+		EndIf;
+
+		If Catalogs.DocumentNumbering.SalesInvoice.Number = "" Then
+			Numerator = Catalogs.DocumentNumbering.SalesInvoice.GetObject();
+			Numerator.Number = "999";
+			Numerator.Write();
+		EndIf;	
+		
+		Constants.set_numbering.Set(True);
+		
+	EndIf;
+	
+EndProcedure 
+
+#Region Updating_InformationRegister_DocumentJournalOfCompanies
+
+Procedure DocumentJournalOfCompaniesOnWrite(Source, Cancel) Export
+	
+	If Cancel Then Return; EndIf;
+	
+	SourceType = TypeOf(Source.Ref);
+	
+	RecordSet = InformationRegisters.DocumentJournalOfCompanies.CreateRecordSet();	
+	RecordSet.Filter.Document.Set(Source.Ref);
+	
+	VT = RecordSet.Unload();
+	VT.Clear();
+	
+	//1.
+	If SourceType = Type("DocumentRef.SalesInvoice") Then
+		
+		LineVT = VT.Add();
+		LineVT.Company        = Source.Company; 
+		LineVT.Document       = Source.Ref; 
+		LineVT.Line           = 1;
+		LineVT.DocumentStatus = GetDocumentStatus(Source.Ref);
+		LineVT.Date           = Source.Date;
+		LineVT.DueDate        = Source.DueDate;
+		LineVT.Total          = Source.DocumentTotalRC;
+		LineVT.Memo           = Source.Memo;
+		
+		//2.	
+	ElsIf SourceType = Type("DocumentRef.SalesOrder") Then
+		
+		LineVT = VT.Add();
+		LineVT.Company        = Source.Company; 
+		LineVT.Document       = Source.Ref; 
+		LineVT.Line           = 1;
+		LineVT.DocumentStatus = GetDocumentStatus(Source.Ref);
+		LineVT.Date           = Source.Date;
+		LineVT.DueDate        = Source.DeliveryDate;
+		LineVT.Total          = Source.DocumentTotalRC;
+		LineVT.Memo           = Source.Memo;
+		
+		//3.	
+	ElsIf SourceType = Type("DocumentRef.SalesReturn") Then
+		
+		LineVT = VT.Add();
+		LineVT.Company        = Source.Company; 
+		LineVT.Document       = Source.Ref; 
+		LineVT.Line           = 1;
+		LineVT.DocumentStatus = GetDocumentStatus(Source.Ref);
+		LineVT.Date           = Source.Date;
+		LineVT.DueDate        = Source.DueDate;
+		LineVT.Total          = Source.DocumentTotalRC;
+		LineVT.Memo           = Source.Memo;
+		
+		//4.	
+	ElsIf SourceType = Type("DocumentRef.PurchaseReturn") Then
+		
+		LineVT = VT.Add();
+		LineVT.Company        = Source.Company; 
+		LineVT.Document       = Source.Ref; 
+		LineVT.Line           = 1;
+		LineVT.DocumentStatus = GetDocumentStatus(Source.Ref);
+		LineVT.Date           = Source.Date;
+		LineVT.DueDate        = Source.DueDate;
+		LineVT.Total          = Source.DocumentTotalRC;
+		LineVT.Memo           = Source.Memo;
+		
+		//5.	
+	ElsIf SourceType = Type("DocumentRef.PurchaseOrder") Then
+		
+		LineVT = VT.Add();
+		LineVT.Company        = Source.Company; 
+		LineVT.Document       = Source.Ref; 
+		LineVT.Line           = 1;
+		LineVT.DocumentStatus = GetDocumentStatus(Source.Ref);
+		LineVT.Date           = Source.Date;
+		LineVT.DueDate        = Source.DeliveryDate;
+		LineVT.Total          = Source.DocumentTotalRC;
+		LineVT.Memo           = Source.Memo;
+		
+		//6.	
+	ElsIf SourceType = Type("DocumentRef.PurchaseInvoice") Then
+		
+		LineVT = VT.Add();
+		LineVT.Company        = Source.Company; 
+		LineVT.Document       = Source.Ref; 
+		LineVT.Line           = 1;
+		LineVT.DocumentStatus = GetDocumentStatus(Source.Ref);
+		LineVT.Date           = Source.Date;
+		LineVT.DueDate        = Source.DueDate;
+		LineVT.Total          = Source.DocumentTotalRC;
+		LineVT.Memo           = Source.Memo;
+		
+		//7.	
+	ElsIf SourceType = Type("DocumentRef.InvoicePayment") Then
+		
+		LineVT = VT.Add();
+		LineVT.Company        = Source.Company; 
+		LineVT.Document       = Source.Ref; 
+		LineVT.Line           = 1;
+		LineVT.DocumentStatus = GetDocumentStatus(Source.Ref);
+		LineVT.Date           = Source.Date;
+		//LineVT.DueDate        = Source.DueDate;
+		LineVT.Total          = Source.DocumentTotalRC;
+		LineVT.Memo           = Source.Memo;
+		
+		//8.	
+	ElsIf SourceType = Type("DocumentRef.Check") Then
+		
+		LineVT = VT.Add();
+		LineVT.Company        = Source.Company; 
+		LineVT.Document       = Source.Ref; 
+		LineVT.Line           = 1;
+		LineVT.DocumentStatus = GetDocumentStatus(Source.Ref);
+		LineVT.Date           = Source.Date;
+		//LineVT.DueDate        = Source.DueDate;
+		LineVT.Total          = Source.DocumentTotalRC;
+		LineVT.Memo           = Source.Memo;
+		
+		//9.	
+	ElsIf SourceType = Type("DocumentRef.CashSale") Then
+		
+		LineVT = VT.Add();
+		LineVT.Company        = Source.Company; 
+		LineVT.Document       = Source.Ref; 
+		LineVT.Line           = 1;
+		LineVT.DocumentStatus = GetDocumentStatus(Source.Ref);
+		LineVT.Date           = Source.Date;
+		//LineVT.DueDate        = Source.DueDate;
+		LineVT.Total          = Source.DocumentTotalRC;
+		LineVT.Memo           = Source.Memo;
+		
+		//10.	
+	ElsIf SourceType = Type("DocumentRef.CashReceipt") Then
+		
+		LineVT = VT.Add();
+		LineVT.Company        = Source.Company; 
+		LineVT.Document       = Source.Ref; 
+		LineVT.Line           = 1;
+		LineVT.DocumentStatus = GetDocumentStatus(Source.Ref);
+		LineVT.Date           = Source.Date;
+		//LineVT.DueDate        = Source.DueDate;
+		LineVT.Total          = Source.CashPayment;
+		LineVT.Memo           = Source.Memo;
+		
+		//11.	
+	ElsIf SourceType = Type("DocumentRef.Deposit") Then
+		
+		LineNumber = 0;
+		
+		For Each SourceLine In Source.Accounts Do
+			
+			LineNumber = LineNumber + 1;
+			
+			LineVT = VT.Add();
+			LineVT.Company        = SourceLine.Company; 
+			LineVT.Document       = Source.Ref; 
+			LineVT.Line           = LineNumber;
+			LineVT.DocumentStatus = GetDocumentStatus(Source.Ref);
+			LineVT.Date           = Source.Date;
+			//LineVT.DueDate        = SourceLine.DueDate;
+			LineVT.Total          = SourceLine.Amount;
+			LineVT.Memo           = SourceLine.Memo;
+			
+		EndDo;
+		
+		//12.	
+	ElsIf SourceType = Type("DocumentRef.GeneralJournalEntry") Then
+		
+		LineNumber = 0;
+		
+		For Each SourceLine In Source.LineItems Do
+			
+			LineNumber = LineNumber + 1;
+			
+			LineVT = VT.Add();
+			LineVT.Company        = SourceLine.Company; 
+			LineVT.Document       = Source.Ref; 
+			LineVT.Line           = LineNumber;
+			LineVT.DocumentStatus = GetDocumentStatus(Source.Ref);
+			LineVT.Date           = Source.Date;
+			LineVT.DueDate        = Source.DueDate;
+			LineVT.Total          = ?(SourceLine.AmountDr = 0, SourceLine.AmountCr, SourceLine.AmountDr);
+			LineVT.Memo           = SourceLine.Memo;
+			
+		EndDo;
+		
+		//13.	
+	ElsIf SourceType = Type("DocumentRef.TimeTrack") Then
+		
+		LineVT = VT.Add();
+		LineVT.Company        = Source.Company; 
+		LineVT.Document       = Source.Ref; 
+		LineVT.Line           = 1;
+		LineVT.DocumentStatus = GetDocumentStatus(Source.Ref);
+		LineVT.Date           = Source.Date;
+		//LineVT.DueDate        = Source.DueDate;
+		LineVT.Total          = Source.Price * Source.TimeComplete;
+		LineVT.Memo           = Source.Memo;
+		
+		//14.	
+	ElsIf SourceType = Type("DocumentRef.Statement") Then
+		
+		LineVT = VT.Add();
+		LineVT.Company        = Source.Company; 
+		LineVT.Document       = Source.Ref; 
+		LineVT.Line           = 1;
+		LineVT.DocumentStatus = GetDocumentStatus(Source.Ref);
+		LineVT.Date           = Source.Date;
+		//LineVT.DueDate        = Source.DueDate;
+		//LineVT.Total          = Source.Price * Source.TimeComplete;
+		//LineVT.Memo           = Source.Memo;
+		
+		//15.	
+	ElsIf SourceType = Type("DocumentRef.Quote") Then
+		
+		LineVT = VT.Add();
+		LineVT.Company        = Source.Company; 
+		LineVT.Document       = Source.Ref; 
+		LineVT.Line           = 1;
+		LineVT.DocumentStatus = GetDocumentStatus(Source.Ref);
+		LineVT.Date           = Source.Date;
+		//LineVT.DueDate        = Source.DueDate;
+		LineVT.Total          = Source.DocumentTotalRC;
+		LineVT.Memo           = Source.Memo;
+		
+	EndIf;
+	
+	If Not Cancel Then
+		
+		RecordSet.Load(VT);
+		RecordSet.Write();
+		
+	EndIf;
+	
+EndProcedure
+
+Function GetDocumentStatus(DocumentRef)
+	
+	DocumentStatus = 0;	
+	
+	If Not DocumentRef.Posted And Not DocumentRef.DeletionMark Then
+		DocumentStatus = 0;
+	ElsIf DocumentRef.Posted And Not DocumentRef.DeletionMark Then
+		DocumentStatus = 1;
+	ElsIf Not DocumentRef.Posted And DocumentRef.DeletionMark Then
+		DocumentStatus = 2;
+	ElsIf DocumentRef.Posted AND DocumentRef.DeletionMark Then
+		DocumentStatus = 4;
+	EndIf;
+		
+	Return DocumentStatus;
+	
+EndFunction
+
+Procedure UpdatingDocumentJournalOfCompanies() Export
+	
+	RecordSet = InformationRegisters.DocumentJournalOfCompanies.CreateRecordSet();
+	RecordSet.Read();
+	
+	If RecordSet.Count() = 0 Then
+		FillDocumentJournalOfCompanies("SalesInvoice");
+		FillDocumentJournalOfCompanies("SalesOrder");
+		FillDocumentJournalOfCompanies("SalesReturn");
+		FillDocumentJournalOfCompanies("PurchaseReturn");
+		FillDocumentJournalOfCompanies("PurchaseOrder");
+		FillDocumentJournalOfCompanies("PurchaseInvoice");
+		FillDocumentJournalOfCompanies("InvoicePayment");
+		FillDocumentJournalOfCompanies("Check");
+		FillDocumentJournalOfCompanies("CashSale");
+		FillDocumentJournalOfCompanies("CashReceipt");
+		FillDocumentJournalOfCompanies("Deposit");
+		FillDocumentJournalOfCompanies("GeneralJournalEntry");
+		FillDocumentJournalOfCompanies("TimeTrack");
+	EndIf;
+	
+EndProcedure
+
+Procedure FillDocumentJournalOfCompanies(DocName)
+	
+	DocumentSelection = Documents[DocName].Select();
+	
+	While DocumentSelection.Next() Do
+		
+		GeneralFunctions.DocumentJournalOfCompaniesOnWrite(DocumentSelection.Ref, False);
+		
+	EndDo;
+	
+EndProcedure
+
+#EndRegion
+
+#Region Period_Manager
+
+Function GetCustomizedPeriodsList() Export
+	
+	Array = New Array;
+	
+	Array.Add("All Dates"); 
+	Array.Add("Custom"); 
+	Array.Add("Today"); 
+	//Array.Add("Yesterday"); 
+	Array.Add("This Week"); 
+	//Array.Add("This Week-to-date"); 
+	Array.Add("This Month"); 
+	//Array.Add("This Month-to-date"); 
+	Array.Add("This Quarter"); 
+	//Array.Add("This Quarter-to-date"); 
+	Array.Add("This Year"); 
+	//Array.Add("This Year-to-date"); 
+	//Array.Add("Last Week"); 
+	//Array.Add("Last Week-to-date"); 
+	Array.Add("Last Month"); 
+	//Array.Add("Last Month-to-date"); 
+	Array.Add("Last Quarter"); 
+	//Array.Add("Last Quarter-to-date"); 
+	Array.Add("Last Year"); 
+	//Array.Add("Last Year-to-date");
+	
+	Return Array;
+	
+EndFunction
+
+Function GetDefaultPeriodVariant() Export 
+	
+	Return "This Year";
+	
+EndFunction
+
+Function GetCustomVariantName() Export 
+	
+	Return "Custom"; 
+	
+EndFunction
+
+Procedure ChangeDatesByPeriod(PeriodVariant, PeriodStartDate, PeriodEndDate) Export
+	
+	CurrentDate = CurrentSessionDate();
+	DayIntoSeconds = 86400;
+	
+	If PeriodVariant = "All Dates" Or PeriodVariant = "" Then 
+		PeriodStartDate = '00010101';
+		PeriodEndDate = '00010101';
+	ElsIf PeriodVariant = "Today" Then
+		PeriodStartDate = CurrentDate;
+		PeriodEndDate = CurrentDate;
+	ElsIf PeriodVariant = "Yesterday" Then
+		PeriodStartDate = CurrentDate - DayIntoSeconds;
+		PeriodEndDate = CurrentDate - DayIntoSeconds;
+		/////////////////////////////////////////////////
+	ElsIf PeriodVariant = "This Week" Then
+		PeriodStartDate = BegOfWeek(CurrentDate);
+		PeriodEndDate = EndOfWeek(CurrentDate);
+	ElsIf PeriodVariant = "This Week-to-date" Then
+		PeriodStartDate = BegOfWeek(CurrentDate);
+		PeriodEndDate = CurrentDate;
+	ElsIf PeriodVariant = "This Month" Then
+		PeriodStartDate = BegOfMonth(CurrentDate);
+		PeriodEndDate = EndOfMonth(CurrentDate);
+	ElsIf PeriodVariant = "This Month-to-date" Then
+		PeriodStartDate = BegOfMonth(CurrentDate);
+		PeriodEndDate = CurrentDate;
+	ElsIf PeriodVariant = "This Quarter" Then
+		PeriodStartDate = BegOfQuarter(CurrentDate);
+		PeriodEndDate = EndOfQuarter(CurrentDate);
+	ElsIf PeriodVariant = "This Quarter-to-date" Then
+		PeriodStartDate = BegOfQuarter(CurrentDate);
+		PeriodEndDate = CurrentDate;
+	ElsIf PeriodVariant = "This Year" Then
+		PeriodStartDate = BegOfYear(CurrentDate);
+		PeriodEndDate = EndOfYear(CurrentDate);
+	ElsIf PeriodVariant = "This Year-to-date" Then
+		PeriodStartDate = BegOfYear(CurrentDate);
+		PeriodEndDate = CurrentDate;
+		/////////////////////////////////////////////////
+	ElsIf PeriodVariant = "Last Week" Then
+		PeriodStartDate = BegOfWeek(CurrentDate - DayIntoSeconds * 7);
+		PeriodEndDate = EndOfWeek(CurrentDate - DayIntoSeconds * 7);
+	ElsIf PeriodVariant = "Last Week-to-date" Then
+		PeriodStartDate = BegOfWeek(CurrentDate - DayIntoSeconds * 7);
+		PeriodEndDate = CurrentDate - DayIntoSeconds * 7;
+	ElsIf PeriodVariant = "Last Month" Then
+		PeriodStartDate = BegOfMonth(AddMonth(CurrentDate, -1));
+		PeriodEndDate = EndOfMonth(AddMonth(CurrentDate, - 1));
+	ElsIf PeriodVariant = "Last Month-to-date" Then
+		PeriodStartDate = BegOfMonth(AddMonth(CurrentDate, -1));
+		PeriodEndDate = AddMonth(CurrentDate, -1);
+	ElsIf PeriodVariant = "Last Quarter" Then
+		PeriodStartDate = BegOfQuarter(AddMonth(CurrentDate, -3));
+		PeriodEndDate = EndOfQuarter(AddMonth(CurrentDate, -3));
+	ElsIf PeriodVariant = "Last Quarter-to-date" Then
+		PeriodStartDate = BegOfQuarter(AddMonth(CurrentDate, -3));
+		PeriodEndDate = AddMonth(CurrentDate, -3);
+	ElsIf PeriodVariant = "Last Year" Then
+		PeriodStartDate = BegOfYear(AddMonth(CurrentDate, -12));
+		PeriodEndDate = EndOfYear(AddMonth(CurrentDate, -12));
+	ElsIf PeriodVariant = "Last Year-to-date" Then
+		PeriodStartDate = BegOfYear(AddMonth(CurrentDate, -12));
+		PeriodEndDate = AddMonth(CurrentDate, -12);
+	EndIf;
+	
+EndProcedure
+
+Procedure ChangePeriodIntoUserSettings(SettingsComposer, PeriodStartDate, PeriodEndDate) Export 
+	
+	ReportFormSettings = SettingsComposer.Settings;
+	PeriodSettingID = ReportFormSettings.DataParameters.Items.Find("Period").UserSettingID;
+	UserSettings = SettingsComposer.UserSettings.Items;
+	
+	UserSettings.Find(PeriodSettingID).Value = New StandardPeriod(PeriodStartDate, PeriodEndDate);
+	UserSettings.Find(PeriodSettingID).Use = ?(ValueIsFilled(PeriodEndDate), True, False);
+
+EndProcedure
+
+Procedure ChangePeriodIntoReportForm(SettingsComposer, PeriodVariant, PeriodStartDate, PeriodEndDate) Export
+	
+	ReportFormSettings = SettingsComposer.Settings;
+	PeriodSettingID = ReportFormSettings.DataParameters.Items.Find("Period").UserSettingID;
+	UserSettings = SettingsComposer.UserSettings.Items;
+	
+	If Not UserSettings.Find(PeriodSettingID).Use Then
+		PeriodVariant = "All Dates"; 
+		PeriodStartDate = '00010101';
+		PeriodEndDate = '00010101';
+	Else
+		NewPeriod = UserSettings.Find(PeriodSettingID).Value;
+		
+		PeriodVariant = "Custom"; 
+		PeriodStartDate = NewPeriod.StartDate;
+		PeriodEndDate = NewPeriod.EndDate;
+	EndIf;
+	
+EndProcedure
+
+#EndRegion

@@ -1,6 +1,33 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
-	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<AutoCommandBar name="FormCommandBar" id="-1">
+		<ChildItems>
+			<Button name="FormOutputList" id="75">
+				<Type>CommandBarButton</Type>
+				<Representation>PictureAndText</Representation>
+				<OnlyInAllActions>true</OnlyInAllActions>
+				<CommandName>Form.StandardCommand.OutputList</CommandName>
+				<Picture>
+					<xr:Ref>StdPicture.DataCompositionOrder</xr:Ref>
+					<xr:LoadTransparent>true</xr:LoadTransparent>
+				</Picture>
+				<Title>
+					<v8:item>
+						<v8:lang>en</v8:lang>
+						<v8:content>Export list</v8:content>
+					</v8:item>
+				</Title>
+				<ExtendedTooltip name="FormOutputListExtendedTooltip" id="76"/>
+			</Button>
+			<Button name="FormRefresh" id="73">
+				<Type>CommandBarButton</Type>
+				<Representation>Picture</Representation>
+				<OnlyInAllActions>true</OnlyInAllActions>
+				<CommandName>Form.StandardCommand.Refresh</CommandName>
+				<ExtendedTooltip name="FormRefreshExtendedTooltip" id="74"/>
+			</Button>
+		</ChildItems>
+	</AutoCommandBar>
 	<ChildItems>
 		<UsualGroup name="ListSettingsComposerUserSettings" id="1">
 			<Title>
@@ -51,29 +78,29 @@
 						<Autofill>false</Autofill>
 					</AutoCommandBar>
 					<ExtendedTooltip name="ListExtendedTooltip" id="6"/>
-					<SearchStringAddition name="ListSearchString" id="73">
+					<SearchStringAddition name="ListSearchString" id="77">
 						<AdditionSource>
 							<Item>List</Item>
 							<Type>SearchStringRepresentation</Type>
 						</AdditionSource>
-						<ContextMenu name="ListSearchStringContextMenu" id="74"/>
-						<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="75"/>
+						<ContextMenu name="ListSearchStringContextMenu" id="78"/>
+						<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="79"/>
 					</SearchStringAddition>
-					<ViewStatusAddition name="ListViewStatus" id="76">
+					<ViewStatusAddition name="ListViewStatus" id="80">
 						<AdditionSource>
 							<Item>List</Item>
 							<Type>ViewStatusRepresentation</Type>
 						</AdditionSource>
-						<ContextMenu name="ListViewStatusContextMenu" id="77"/>
-						<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="78"/>
+						<ContextMenu name="ListViewStatusContextMenu" id="81"/>
+						<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="82"/>
 					</ViewStatusAddition>
-					<SearchControlAddition name="ListSearchControl" id="79">
+					<SearchControlAddition name="ListSearchControl" id="83">
 						<AdditionSource>
 							<Item>List</Item>
 							<Type>SearchControl</Type>
 						</AdditionSource>
-						<ContextMenu name="ListSearchControlContextMenu" id="80"/>
-						<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="81"/>
+						<ContextMenu name="ListSearchControlContextMenu" id="84"/>
+						<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="85"/>
 					</SearchControlAddition>
 					<ChildItems>
 						<LabelField name="Year" id="62">
@@ -98,29 +125,29 @@
 						<Autofill>false</Autofill>
 					</AutoCommandBar>
 					<ExtendedTooltip name="LineItemExtendedTooltip" id="16"/>
-					<SearchStringAddition name="LineItemSearchString" id="82">
+					<SearchStringAddition name="LineItemSearchString" id="86">
 						<AdditionSource>
 							<Item>LineItem</Item>
 							<Type>SearchStringRepresentation</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemSearchStringContextMenu" id="83"/>
-						<ExtendedTooltip name="LineItemSearchStringExtendedTooltip" id="84"/>
+						<ContextMenu name="LineItemSearchStringContextMenu" id="87"/>
+						<ExtendedTooltip name="LineItemSearchStringExtendedTooltip" id="88"/>
 					</SearchStringAddition>
-					<ViewStatusAddition name="LineItemViewStatus" id="85">
+					<ViewStatusAddition name="LineItemViewStatus" id="89">
 						<AdditionSource>
 							<Item>LineItem</Item>
 							<Type>ViewStatusRepresentation</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemViewStatusContextMenu" id="86"/>
-						<ExtendedTooltip name="LineItemViewStatusExtendedTooltip" id="87"/>
+						<ContextMenu name="LineItemViewStatusContextMenu" id="90"/>
+						<ExtendedTooltip name="LineItemViewStatusExtendedTooltip" id="91"/>
 					</ViewStatusAddition>
-					<SearchControlAddition name="LineItemSearchControl" id="88">
+					<SearchControlAddition name="LineItemSearchControl" id="92">
 						<AdditionSource>
 							<Item>LineItem</Item>
 							<Type>SearchControl</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemSearchControlContextMenu" id="89"/>
-						<ExtendedTooltip name="LineItemSearchControlExtendedTooltip" id="90"/>
+						<ContextMenu name="LineItemSearchControlContextMenu" id="93"/>
+						<ExtendedTooltip name="LineItemSearchControlExtendedTooltip" id="94"/>
 					</SearchControlAddition>
 					<ChildItems>
 						<InputField name="LineItemAccount" id="17">

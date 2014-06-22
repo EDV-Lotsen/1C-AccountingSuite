@@ -38,46 +38,117 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="14"/>
-			<SearchStringAddition name="ListSearchString" id="48">
+			<SearchStringAddition name="ListSearchString" id="63">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="49"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="50"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="64"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="65"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="51">
+			<ViewStatusAddition name="ListViewStatus" id="66">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="52"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="53"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="67"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="68"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="54">
+			<SearchControlAddition name="ListSearchControl" id="69">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="55"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="56"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="70"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="71"/>
 			</SearchControlAddition>
 			<ChildItems>
 				<LabelField name="Code" id="8">
 					<DataPath>List.Code</DataPath>
+					<Width>10</Width>
 					<ContextMenu name="CodeContextMenu" id="9"/>
 					<ExtendedTooltip name="CodeExtendedTooltip" id="15"/>
 				</LabelField>
 				<LabelField name="Description" id="4">
 					<DataPath>List.Description</DataPath>
 					<DefaultItem>true</DefaultItem>
+					<Width>40</Width>
 					<ContextMenu name="DescriptionContextMenu" id="5"/>
 					<ExtendedTooltip name="DescriptionExtendedTooltip" id="16"/>
 				</LabelField>
 				<LabelField name="Type" id="6">
 					<DataPath>List.Type</DataPath>
+					<Width>10</Width>
 					<ContextMenu name="TypeContextMenu" id="7"/>
 					<ExtendedTooltip name="TypeExtendedTooltip" id="17"/>
+				</LabelField>
+				<LabelField name="Category" id="48">
+					<DataPath>List.Category</DataPath>
+					<Width>20</Width>
+					<ContextMenu name="CategoryContextMenu" id="49"/>
+					<ExtendedTooltip name="CategoryExtendedTooltip" id="50"/>
+				</LabelField>
+				<LabelField name="QtyOnPO" id="51">
+					<DataPath>List.QtyOnPO</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Qty on PO</v8:content>
+						</v8:item>
+					</Title>
+					<Format>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>NFD=4</v8:content>
+						</v8:item>
+					</Format>
+					<ContextMenu name="QtyOnPOContextMenu" id="52"/>
+					<ExtendedTooltip name="QtyOnPOExtendedTooltip" id="53"/>
+				</LabelField>
+				<LabelField name="QtyOnSO" id="54">
+					<DataPath>List.QtyOnSO</DataPath>
+					<Format>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>NFD=4</v8:content>
+						</v8:item>
+					</Format>
+					<ContextMenu name="QtyOnSOContextMenu" id="55"/>
+					<ExtendedTooltip name="QtyOnSOExtendedTooltip" id="56"/>
+				</LabelField>
+				<LabelField name="QtyOnHand" id="57">
+					<DataPath>List.QtyOnHand</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>On hand</v8:content>
+						</v8:item>
+					</Title>
+					<Format>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>NFD=4</v8:content>
+						</v8:item>
+					</Format>
+					<ContextMenu name="QtyOnHandContextMenu" id="58"/>
+					<ExtendedTooltip name="QtyOnHandExtendedTooltip" id="59"/>
+				</LabelField>
+				<LabelField name="QtyAvailableToPromise" id="60">
+					<DataPath>List.QtyAvailableToPromise</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Available to promise</v8:content>
+						</v8:item>
+					</Title>
+					<Format>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>NFD=4</v8:content>
+						</v8:item>
+					</Format>
+					<ContextMenu name="QtyAvailableToPromiseContextMenu" id="61"/>
+					<ExtendedTooltip name="QtyAvailableToPromiseExtendedTooltip" id="62"/>
 				</LabelField>
 				<LabelField name="CF1String" id="18">
 					<DataPath>List.CF1String</DataPath>
@@ -164,9 +235,66 @@
 	CatalogProducts.CF2Num,
 	CatalogProducts.CF3Num,
 	CatalogProducts.CF4Num,
-	CatalogProducts.CF5Num
+	CatalogProducts.CF5Num,
+	CatalogProducts.Category,
+	CASE
+		WHEN CatalogProducts.Type = VALUE(Enum.InventoryTypes.Inventory)
+			THEN CASE
+					WHEN OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.ReceivedBalance &gt; 0
+						THEN OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.ReceivedBalance
+					ELSE 0
+				END
+		WHEN CatalogProducts.Type = VALUE(Enum.InventoryTypes.NonInventory)
+			THEN CASE
+					WHEN OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.InvoicedBalance &gt; 0
+						THEN OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.InvoicedBalance
+					ELSE 0
+				END
+		ELSE 0
+	END AS QtyOnPO,
+	CASE
+		WHEN CatalogProducts.Type = VALUE(Enum.InventoryTypes.Inventory)
+			THEN CASE
+					WHEN OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.ShippedBalance &gt; 0
+						THEN OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.ShippedBalance
+					ELSE 0
+				END
+		WHEN CatalogProducts.Type = VALUE(Enum.InventoryTypes.NonInventory)
+			THEN CASE
+					WHEN OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.InvoicedBalance &gt; 0
+						THEN OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.InvoicedBalance
+					ELSE 0
+				END
+		ELSE 0
+	END AS QtyOnSO,
+	CASE
+		WHEN CatalogProducts.Type = VALUE(Enum.InventoryTypes.Inventory)
+			THEN InventoryJournalBalance.QuantityBalance
+		WHEN CatalogProducts.Type = VALUE(Enum.InventoryTypes.NonInventory)
+			THEN 0
+		ELSE 0
+	END AS QtyOnHand,
+	CASE
+		WHEN CatalogProducts.Type = VALUE(Enum.InventoryTypes.Inventory)
+			THEN ISNULL(InventoryJournalBalance.QuantityBalance, 0) + CASE
+					WHEN ISNULL(OrdersDispatchedBalance.QuantityBalance, 0) - ISNULL(OrdersDispatchedBalance.ReceivedBalance, 0) &gt; 0
+						THEN ISNULL(OrdersDispatchedBalance.QuantityBalance, 0) - ISNULL(OrdersDispatchedBalance.ReceivedBalance, 0)
+					ELSE 0
+				END - CASE
+					WHEN ISNULL(OrdersRegisteredBalance.QuantityBalance, 0) - ISNULL(OrdersRegisteredBalance.ShippedBalance, 0) &gt; 0
+						THEN ISNULL(OrdersRegisteredBalance.QuantityBalance, 0) - ISNULL(OrdersRegisteredBalance.ShippedBalance, 0)
+					ELSE 0
+				END
+		ELSE 0
+	END AS QtyAvailableToPromise
 FROM
-	Catalog.Products AS CatalogProducts</QueryText>
+	Catalog.Products AS CatalogProducts
+		LEFT JOIN AccumulationRegister.InventoryJournal.Balance AS InventoryJournalBalance
+		ON CatalogProducts.Ref = InventoryJournalBalance.Product
+		LEFT JOIN AccumulationRegister.OrdersDispatched.Balance AS OrdersDispatchedBalance
+		ON CatalogProducts.Ref = OrdersDispatchedBalance.Product
+		LEFT JOIN AccumulationRegister.OrdersRegistered.Balance AS OrdersRegisteredBalance
+		ON CatalogProducts.Ref = OrdersRegisteredBalance.Product</QueryText>
 				<MainTable>Catalog.Products</MainTable>
 				<ListSettings>
 					<dcsset:filter>

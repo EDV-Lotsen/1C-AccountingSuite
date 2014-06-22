@@ -4,9 +4,24 @@
 	<AutoTime>CurrentOrLast</AutoTime>
 	<UsePostingMode>Auto</UsePostingMode>
 	<RepostOnWrite>true</RepostOnWrite>
-	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<AutoCommandBar name="FormCommandBar" id="-1">
+		<ChildItems>
+			<Button name="FormSendEmail" id="299">
+				<Type>CommandBarButton</Type>
+				<CommandName>Form.Command.SendEmail</CommandName>
+				<Title>
+					<v8:item>
+						<v8:lang>en</v8:lang>
+						<v8:content>Email</v8:content>
+					</v8:item>
+				</Title>
+				<ExtendedTooltip name="FormSendEmailExtendedTooltip" id="300"/>
+			</Button>
+		</ChildItems>
+	</AutoCommandBar>
 	<Events>
 		<Event name="AfterWriteAtServer">AfterWriteAtServer</Event>
+		<Event name="OnOpen">OnOpen</Event>
 		<Event name="BeforeWrite">BeforeWrite</Event>
 		<Event name="BeforeWriteAtServer">BeforeWriteAtServer</Event>
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
@@ -485,6 +500,54 @@ Reference number</v8:content>
 								</UsualGroup>
 							</ChildItems>
 						</Page>
+						<Page name="ExternalMemo" id="292">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Vendor Memo</v8:content>
+								</v8:item>
+							</Title>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>External memo</v8:content>
+								</v8:item>
+							</ToolTip>
+							<Group>Horizontal</Group>
+							<ExtendedTooltip name="ExternalMemoExtendedTooltip" id="293"/>
+							<ChildItems>
+								<UsualGroup name="EmailingMiddleColumn" id="294">
+									<Group>Vertical</Group>
+									<Representation>None</Representation>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="EmailingMiddleColumnExtendedTooltip" id="295"/>
+									<ChildItems>
+										<InputField name="EmailNote" id="296">
+											<DataPath>Object.EmailNote</DataPath>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Note</v8:content>
+												</v8:item>
+											</Title>
+											<TitleLocation>None</TitleLocation>
+											<Width>15</Width>
+											<HorizontalStretch>true</HorizontalStretch>
+											<VerticalStretch>false</VerticalStretch>
+											<MultiLine>true</MultiLine>
+											<InputHint>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Written notes here will be shown on the printed purchase order as well as email body.</v8:content>
+												</v8:item>
+											</InputHint>
+											<ContextMenu name="EmailNoteContextMenu" id="297"/>
+											<ExtendedTooltip name="EmailNoteExtendedTooltip" id="298"/>
+										</InputField>
+									</ChildItems>
+								</UsualGroup>
+							</ChildItems>
+						</Page>
 						<Page name="MemoPage" id="285">
 							<Title>
 								<v8:item>
@@ -541,29 +604,29 @@ Reference number</v8:content>
 							<ContextMenu name="LineItemsContextMenu" id="10"/>
 							<AutoCommandBar name="LineItemsCommandBar" id="11"/>
 							<ExtendedTooltip name="LineItemsExtendedTooltip" id="113"/>
-							<SearchStringAddition name="LineItemsSearchString" id="292">
+							<SearchStringAddition name="LineItemsSearchString" id="301">
 								<AdditionSource>
 									<Item>LineItems</Item>
 									<Type>SearchStringRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="LineItemsSearchStringContextMenu" id="293"/>
-								<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="294"/>
+								<ContextMenu name="LineItemsSearchStringContextMenu" id="302"/>
+								<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="303"/>
 							</SearchStringAddition>
-							<ViewStatusAddition name="LineItemsViewStatus" id="295">
+							<ViewStatusAddition name="LineItemsViewStatus" id="304">
 								<AdditionSource>
 									<Item>LineItems</Item>
 									<Type>ViewStatusRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="LineItemsViewStatusContextMenu" id="296"/>
-								<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="297"/>
+								<ContextMenu name="LineItemsViewStatusContextMenu" id="305"/>
+								<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="306"/>
 							</ViewStatusAddition>
-							<SearchControlAddition name="LineItemsSearchControl" id="298">
+							<SearchControlAddition name="LineItemsSearchControl" id="307">
 								<AdditionSource>
 									<Item>LineItems</Item>
 									<Type>SearchControl</Type>
 								</AdditionSource>
-								<ContextMenu name="LineItemsSearchControlContextMenu" id="299"/>
-								<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="300"/>
+								<ContextMenu name="LineItemsSearchControlContextMenu" id="308"/>
+								<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="309"/>
 							</SearchControlAddition>
 							<Events>
 								<Event name="OnEditEnd">LineItemsOnEditEnd</Event>
@@ -1077,8 +1140,51 @@ Reference number</v8:content>
 				<v8:Type>cfg:CatalogRef.Classes</v8:Type>
 			</Type>
 		</Attribute>
+		<Attribute name="FirstNumber" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>First number</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>20</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
 	</Attributes>
+	<Commands>
+		<Command name="SendEmail" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Email Receipt</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Send email</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>SendEmail</Action>
+		</Command>
+	</Commands>
 	<CommandInterface>
+		<NavigationPanel>
+			<Item>
+				<Command>InformationRegister.DocumentJournalOfCompanies.StandardCommand.OpenByValue.Document</Command>
+				<Type>Auto</Type>
+				<CommandGroup>FormNavigationPanelGoTo</CommandGroup>
+				<DefaultVisible>false</DefaultVisible>
+				<Visible>
+					<xr:Common>false</xr:Common>
+				</Visible>
+			</Item>
+		</NavigationPanel>
 		<CommandBar>
 			<Item>
 				<Command>Document.PurchaseInvoice.StandardCommand.CreateBasedOn</Command>

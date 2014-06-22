@@ -1,0 +1,97 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<WindowOpeningMode>LockOwnerWindow</WindowOpeningMode>
+	<UseForFoldersAndItems>Items</UseForFoldersAndItems>
+	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<Events>
+		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+	</Events>
+	<ChildItems>
+		<UsualGroup name="GroupOwner" id="24">
+			<Group>Horizontal</Group>
+			<ShowTitle>false</ShowTitle>
+			<BackColor>style:ReportHeaderBackColor</BackColor>
+			<ExtendedTooltip name="GroupOwnerExtendedTooltip" id="25"/>
+			<ChildItems>
+				<LabelField name="Owner" id="21">
+					<DataPath>Object.Owner</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Item</v8:content>
+						</v8:item>
+					</Title>
+					<HorizontalAlign>Right</HorizontalAlign>
+					<Width>4</Width>
+					<Hiperlink>true</Hiperlink>
+					<ContextMenu name="OwnerContextMenu" id="22"/>
+					<ExtendedTooltip name="OwnerExtendedTooltip" id="23"/>
+				</LabelField>
+				<LabelField name="OwnerDescription" id="26">
+					<DataPath>Object.Owner.Description</DataPath>
+					<TitleLocation>None</TitleLocation>
+					<Width>20</Width>
+					<ContextMenu name="OwnerDescriptionContextMenu" id="27"/>
+					<ExtendedTooltip name="OwnerDescriptionExtendedTooltip" id="28"/>
+				</LabelField>
+			</ChildItems>
+		</UsualGroup>
+		<UsualGroup name="FactorFormula" id="10">
+			<Group>Horizontal</Group>
+			<Representation>None</Representation>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="FactorFormulaExtendedTooltip" id="11"/>
+			<ChildItems>
+				<InputField name="Description" id="1">
+					<DataPath>Object.Description</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Unit</v8:content>
+						</v8:item>
+					</Title>
+					<HorizontalAlign>Right</HorizontalAlign>
+					<EditMode>EnterOnInput</EditMode>
+					<Width>3</Width>
+					<ContextMenu name="DescriptionContextMenu" id="2"/>
+					<ExtendedTooltip name="DescriptionExtendedTooltip" id="3"/>
+				</InputField>
+				<LabelDecoration name="Decoration" id="15">
+					<Title formatted="false">
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>contains</v8:content>
+						</v8:item>
+					</Title>
+					<ContextMenu name="DecorationContextMenu" id="16"/>
+					<ExtendedTooltip name="DecorationExtendedTooltip" id="17"/>
+				</LabelDecoration>
+				<InputField name="Factor" id="7">
+					<DataPath>Object.Factor</DataPath>
+					<TitleLocation>None</TitleLocation>
+					<EditMode>EnterOnInput</EditMode>
+					<Width>5</Width>
+					<ChoiceButton>false</ChoiceButton>
+					<ContextMenu name="FactorContextMenu" id="8"/>
+					<ExtendedTooltip name="FactorExtendedTooltip" id="9"/>
+				</InputField>
+				<LabelField name="OwnerUM" id="18">
+					<DataPath>Object.Owner.UM</DataPath>
+					<TitleLocation>None</TitleLocation>
+					<Width>5</Width>
+					<ContextMenu name="OwnerUMContextMenu" id="19"/>
+					<ExtendedTooltip name="OwnerUMExtendedTooltip" id="20"/>
+				</LabelField>
+			</ChildItems>
+		</UsualGroup>
+	</ChildItems>
+	<Attributes>
+		<Attribute name="Object" id="1">
+			<Type>
+				<v8:Type>cfg:CatalogObject.Units</v8:Type>
+			</Type>
+			<MainAttribute>true</MainAttribute>
+			<SavedData>true</SavedData>
+		</Attribute>
+	</Attributes>
+</Form>

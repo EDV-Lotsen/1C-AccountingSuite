@@ -23,6 +23,7 @@
 					<v8:content>Group caption</v8:content>
 				</v8:item>
 			</ToolTip>
+			<VerticalStretch>true</VerticalStretch>
 			<Group>Horizontal</Group>
 			<ShowTitle>false</ShowTitle>
 			<ExtendedTooltip name="GroupCaptionExtendedTooltip" id="8"/>
@@ -40,7 +41,8 @@
 					<ExtendedTooltip name="MessageIconExtendedTooltip" id="3"/>
 				</PictureDecoration>
 				<LabelDecoration name="Message" id="4">
-					<Height>2</Height>
+					<Height>4</Height>
+					<VerticalStretch>true</VerticalStretch>
 					<Font ref="sys:DefaultGUIFont" height="10" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
 					<Title formatted="false">
 						<v8:item>

@@ -2,6 +2,9 @@
 <Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
 	<CommandBarLocation>None</CommandBarLocation>
 	<VerticalScroll>useIfNecessary</VerticalScroll>
+	<CommandSet>
+		<ExcludedCommand>LoadVariant</ExcludedCommand>
+	</CommandSet>
 	<ReportResult>Result</ReportResult>
 	<DetailsData>DetailsData</DetailsData>
 	<ReportFormType>Main</ReportFormType>
@@ -10,8 +13,13 @@
 	<AutoCommandBar name="FormCommandBar" id="-1">
 		<Autofill>false</Autofill>
 	</AutoCommandBar>
+	<Events>
+		<Event name="OnOpen">OnOpen</Event>
+		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+	</Events>
 	<ChildItems>
 		<UsualGroup name="VariantGroup" id="1">
+			<Visible>false</Visible>
 			<Title>
 				<v8:item>
 					<v8:lang>en</v8:lang>
@@ -32,7 +40,7 @@
 				</InputField>
 				<Button name="LoadVariant" id="4">
 					<Type>UsualButton</Type>
-					<CommandName>Form.StandardCommand.LoadVariant</CommandName>
+					<CommandName>0:b08b7a35-583a-4756-b814-0436ff9139c0</CommandName>
 					<ExtendedTooltip name="LoadVariantExtendedTooltip" id="13"/>
 				</Button>
 			</ChildItems>
@@ -71,29 +79,29 @@
 			<ContextMenu name="SettingsComposerUserSettingsContextMenu" id="7"/>
 			<AutoCommandBar name="SettingsComposerUserSettingsCommandBar" id="8"/>
 			<ExtendedTooltip name="SettingsComposerUserSettingsExtendedTooltip" id="15"/>
-			<SearchStringAddition name="SettingsComposerUserSettingsSearchString" id="16">
+			<SearchStringAddition name="SettingsComposerUserSettingsSearchString" id="17">
 				<AdditionSource>
 					<Item>SettingsComposerUserSettings</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="SettingsComposerUserSettingsSearchStringContextMenu" id="17"/>
-				<ExtendedTooltip name="SettingsComposerUserSettingsSearchStringExtendedTooltip" id="18"/>
+				<ContextMenu name="SettingsComposerUserSettingsSearchStringContextMenu" id="18"/>
+				<ExtendedTooltip name="SettingsComposerUserSettingsSearchStringExtendedTooltip" id="19"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="SettingsComposerUserSettingsViewStatus" id="19">
+			<ViewStatusAddition name="SettingsComposerUserSettingsViewStatus" id="20">
 				<AdditionSource>
 					<Item>SettingsComposerUserSettings</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="SettingsComposerUserSettingsViewStatusContextMenu" id="20"/>
-				<ExtendedTooltip name="SettingsComposerUserSettingsViewStatusExtendedTooltip" id="21"/>
+				<ContextMenu name="SettingsComposerUserSettingsViewStatusContextMenu" id="21"/>
+				<ExtendedTooltip name="SettingsComposerUserSettingsViewStatusExtendedTooltip" id="22"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="SettingsComposerUserSettingsSearchControl" id="22">
+			<SearchControlAddition name="SettingsComposerUserSettingsSearchControl" id="23">
 				<AdditionSource>
 					<Item>SettingsComposerUserSettings</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="SettingsComposerUserSettingsSearchControlContextMenu" id="23"/>
-				<ExtendedTooltip name="SettingsComposerUserSettingsSearchControlExtendedTooltip" id="24"/>
+				<ContextMenu name="SettingsComposerUserSettingsSearchControlContextMenu" id="24"/>
+				<ExtendedTooltip name="SettingsComposerUserSettingsSearchControlExtendedTooltip" id="25"/>
 			</SearchControlAddition>
 		</Table>
 		<SpreadSheetDocumentField name="Result" id="9">
@@ -102,13 +110,13 @@
 			<TitleLocation>None</TitleLocation>
 			<Width>100</Width>
 			<ContextMenu name="ResultContextMenu" id="10"/>
-			<ExtendedTooltip name="ResultExtendedTooltip" id="25"/>
+			<ExtendedTooltip name="ResultExtendedTooltip" id="16"/>
 		</SpreadSheetDocumentField>
 	</ChildItems>
 	<Attributes>
 		<Attribute name="Report" id="1">
 			<Type>
-				<v8:Type>cfg:ReportObject.GeneralLedger</v8:Type>
+				<v8:Type>cfg:ReportObject</v8:Type>
 			</Type>
 			<MainAttribute>true</MainAttribute>
 		</Attribute>
@@ -145,6 +153,17 @@
 					<v8:Length>0</v8:Length>
 					<v8:AllowedLength>Variable</v8:AllowedLength>
 				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="GenerateOnOpen" id="5">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Generate on open</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
 			</Type>
 		</Attribute>
 	</Attributes>

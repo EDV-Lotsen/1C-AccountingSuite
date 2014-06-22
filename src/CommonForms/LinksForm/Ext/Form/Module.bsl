@@ -1,12 +1,13 @@
 ﻿
 &AtClient
 Procedure Support(Command)
-	GotoURL("http://accountingsuite.com/support");
+	GotoURL("http://help.accountingsuite.com");
 EndProcedure
 
 &AtClient
 Procedure UserGuide(Command)
-	OpenHelpContent();
+	GotoURL("http://userguide.accountingsuite.com");
+	//OpenHelpContent();
 EndProcedure
 
 &AtClient

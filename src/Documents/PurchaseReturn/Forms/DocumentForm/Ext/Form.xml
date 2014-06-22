@@ -6,6 +6,7 @@
 	<RepostOnWrite>true</RepostOnWrite>
 	<AutoCommandBar name="FormCommandPanel" id="-1"/>
 	<Events>
+		<Event name="OnOpen">OnOpen</Event>
 		<Event name="BeforeWrite">BeforeWrite</Event>
 		<Event name="BeforeWriteAtServer">BeforeWriteAtServer</Event>
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
@@ -278,7 +279,7 @@
 									<ToolTip>
 										<v8:item>
 											<v8:lang>en</v8:lang>
-											<v8:content>read only, auto-filled if a Credit Memo is created based on a Sales Invoice</v8:content>
+											<v8:content>read only, auto-filled if a Purchase Return is created based on a Bill</v8:content>
 										</v8:item>
 									</ToolTip>
 									<ToolTipRepresentation>Button</ToolTipRepresentation>
@@ -471,15 +472,6 @@
 							<ContextMenu name="MemoContextMenu" id="72"/>
 							<ExtendedTooltip name="MemoExtendedTooltip" id="127"/>
 						</InputField>
-						<CheckBoxField name="BegBal" id="98">
-							<DataPath>Object.BegBal</DataPath>
-							<CheckBoxType>Auto</CheckBoxType>
-							<ContextMenu name="BegBalContextMenu" id="99"/>
-							<ExtendedTooltip name="BegBalExtendedTooltip" id="128"/>
-							<Events>
-								<Event name="OnChange">BegBalOnChange</Event>
-							</Events>
-						</CheckBoxField>
 					</ChildItems>
 				</UsualGroup>
 				<UsualGroup name="FooterRightColumn" id="70">
@@ -614,9 +606,18 @@
 				<DefaultVisible>false</DefaultVisible>
 			</Item>
 			<Item>
-				<Command>AccumulationRegister.InventoryJrnl.StandardCommand.OpenByRecorder</Command>
+				<Command>AccumulationRegister.InventoryJournal.StandardCommand.OpenByRecorder</Command>
 				<Type>Auto</Type>
 				<DefaultVisible>false</DefaultVisible>
+			</Item>
+			<Item>
+				<Command>InformationRegister.DocumentJournalOfCompanies.StandardCommand.OpenByValue.Document</Command>
+				<Type>Auto</Type>
+				<CommandGroup>FormNavigationPanelGoTo</CommandGroup>
+				<DefaultVisible>false</DefaultVisible>
+				<Visible>
+					<xr:Common>false</xr:Common>
+				</Visible>
 			</Item>
 		</NavigationPanel>
 		<CommandBar>

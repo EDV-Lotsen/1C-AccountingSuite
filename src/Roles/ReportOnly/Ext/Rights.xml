@@ -18,6 +18,13 @@
 		</right>
 	</object>
 	<object>
+		<name>Catalog.SalesTaxRates.Attribute.SalesTaxComponent</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
 		<name>Constant.CF1Name</name>
 		<right>
 			<name>Edit</name>
@@ -135,6 +142,69 @@
 		</right>
 	</object>
 	<object>
+		<name>Document.SalesTaxPayment</name>
+		<right>
+			<name>Insert</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Update</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Delete</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Posting</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>UndoPosting</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveInsert</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDelete</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractivePosting</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractivePostingRegular</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveUndoPosting</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveChangeOfPosted</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
 		<name>InformationRegister.PriceList.Dimension.ProductCategory</name>
 		<right>
 			<name>View</name>
@@ -147,6 +217,13 @@
 	</object>
 	<object>
 		<name>Constant.City</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.SalesTaxRates.Attribute.Rate</name>
 		<right>
 			<name>Edit</name>
 			<value>false</value>
@@ -169,13 +246,6 @@
 			<name>View</name>
 			<value>false</value>
 		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Constant.UnbalancedGJEntryPosting</name>
 		<right>
 			<name>Edit</name>
 			<value>false</value>
@@ -277,6 +347,10 @@
 	<object>
 		<name>Catalog.UM</name>
 		<right>
+			<name>Insert</name>
+			<value>false</value>
+		</right>
+		<right>
 			<name>InteractiveInsert</name>
 			<value>false</value>
 		</right>
@@ -318,7 +392,7 @@
 		</right>
 	</object>
 	<object>
-		<name>InformationRegister.ItemLastCost</name>
+		<name>InformationRegister.ItemLastCosts</name>
 		<right>
 			<name>View</name>
 			<value>false</value>
@@ -329,7 +403,7 @@
 		</right>
 	</object>
 	<object>
-		<name>InformationRegister.ItemLastCost.StandardAttribute.Active</name>
+		<name>InformationRegister.ItemLastCosts.StandardAttribute.Active</name>
 		<right>
 			<name>View</name>
 			<value>false</value>
@@ -340,7 +414,7 @@
 		</right>
 	</object>
 	<object>
-		<name>InformationRegister.ItemLastCost.StandardAttribute.LineNumber</name>
+		<name>InformationRegister.ItemLastCosts.StandardAttribute.LineNumber</name>
 		<right>
 			<name>View</name>
 			<value>false</value>
@@ -351,7 +425,7 @@
 		</right>
 	</object>
 	<object>
-		<name>InformationRegister.ItemLastCost.StandardAttribute.Recorder</name>
+		<name>InformationRegister.ItemLastCosts.StandardAttribute.Recorder</name>
 		<right>
 			<name>View</name>
 			<value>false</value>
@@ -362,7 +436,7 @@
 		</right>
 	</object>
 	<object>
-		<name>InformationRegister.ItemLastCost.StandardAttribute.Period</name>
+		<name>InformationRegister.ItemLastCosts.StandardAttribute.Period</name>
 		<right>
 			<name>View</name>
 			<value>false</value>
@@ -373,7 +447,7 @@
 		</right>
 	</object>
 	<object>
-		<name>AccumulationRegister.InventoryJrnl</name>
+		<name>AccumulationRegister.InventoryJournal</name>
 		<right>
 			<name>View</name>
 			<value>false</value>
@@ -384,7 +458,7 @@
 		</right>
 	</object>
 	<object>
-		<name>AccumulationRegister.InventoryJrnl.StandardAttribute.RecordType</name>
+		<name>AccumulationRegister.InventoryJournal.StandardAttribute.RecordType</name>
 		<right>
 			<name>View</name>
 			<value>false</value>
@@ -395,7 +469,7 @@
 		</right>
 	</object>
 	<object>
-		<name>AccumulationRegister.InventoryJrnl.StandardAttribute.Active</name>
+		<name>AccumulationRegister.InventoryJournal.StandardAttribute.Active</name>
 		<right>
 			<name>View</name>
 			<value>false</value>
@@ -406,7 +480,7 @@
 		</right>
 	</object>
 	<object>
-		<name>AccumulationRegister.InventoryJrnl.StandardAttribute.LineNumber</name>
+		<name>AccumulationRegister.InventoryJournal.StandardAttribute.LineNumber</name>
 		<right>
 			<name>View</name>
 			<value>false</value>
@@ -417,7 +491,7 @@
 		</right>
 	</object>
 	<object>
-		<name>AccumulationRegister.InventoryJrnl.StandardAttribute.Recorder</name>
+		<name>AccumulationRegister.InventoryJournal.StandardAttribute.Recorder</name>
 		<right>
 			<name>View</name>
 			<value>false</value>
@@ -428,18 +502,11 @@
 		</right>
 	</object>
 	<object>
-		<name>AccumulationRegister.InventoryJrnl.StandardAttribute.Period</name>
+		<name>AccumulationRegister.InventoryJournal.StandardAttribute.Period</name>
 		<right>
 			<name>View</name>
 			<value>false</value>
 		</right>
-		<right>
-			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>Constant.BeginningBalancesInDocuments</name>
 		<right>
 			<name>Edit</name>
 			<value>false</value>
@@ -447,6 +514,13 @@
 	</object>
 	<object>
 		<name>Constant.CF2Name</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.SalesTaxComponents.Attribute.Agency</name>
 		<right>
 			<name>Edit</name>
 			<value>false</value>
@@ -481,7 +555,7 @@
 		</right>
 	</object>
 	<object>
-		<name>AccumulationRegister.InventoryJrnl.Dimension.Location</name>
+		<name>AccumulationRegister.InventoryJournal.Dimension.Location</name>
 		<right>
 			<name>View</name>
 			<value>false</value>
@@ -567,7 +641,7 @@
 		</right>
 	</object>
 	<object>
-		<name>InformationRegister.ItemLastCost.Resource.Cost</name>
+		<name>InformationRegister.ItemLastCosts.Resource.Cost</name>
 		<right>
 			<name>View</name>
 			<value>false</value>
@@ -674,6 +748,49 @@
 		</right>
 	</object>
 	<object>
+		<name>Document.BankReconciliation</name>
+		<right>
+			<name>InteractiveInsert</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDelete</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractivePosting</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractivePostingRegular</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveUndoPosting</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveChangeOfPosted</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InputByString</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
 		<name>Catalog.PriceLevels</name>
 		<right>
 			<name>InteractiveInsert</name>
@@ -717,7 +834,7 @@
 		</right>
 	</object>
 	<object>
-		<name>AccumulationRegister.InventoryJrnl.Resource.Qty</name>
+		<name>AccumulationRegister.InventoryJournal.Resource.Quantity</name>
 		<right>
 			<name>View</name>
 			<value>false</value>
@@ -854,6 +971,124 @@
 		</right>
 	</object>
 	<object>
+		<name>Catalog.SalesTaxRates</name>
+		<right>
+			<name>Insert</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Update</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Delete</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveInsert</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDelete</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeletePredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveSetDeletionMarkPredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMarkPredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarkedPredefinedData</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.SalesTaxRates.StandardAttribute.PredefinedDataName</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.SalesTaxRates.StandardAttribute.Predefined</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.SalesTaxRates.StandardAttribute.Ref</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.SalesTaxRates.StandardAttribute.DeletionMark</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.SalesTaxRates.StandardAttribute.IsFolder</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.SalesTaxRates.StandardAttribute.Owner</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.SalesTaxRates.StandardAttribute.Parent</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.SalesTaxRates.StandardAttribute.Description</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.SalesTaxRates.StandardAttribute.Code</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
 		<name>Document.Budget</name>
 		<right>
 			<name>InteractiveDelete</name>
@@ -966,6 +1201,13 @@
 		</right>
 	</object>
 	<object>
+		<name>Catalog.SalesTaxRates.Attribute.CombinedTaxRate</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
 		<name>Constant.VendorName</name>
 		<right>
 			<name>Edit</name>
@@ -1004,6 +1246,124 @@
 		</right>
 		<right>
 			<name>InteractiveDeleteMarkedPredefinedData</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.SalesTaxAgencies</name>
+		<right>
+			<name>Insert</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Update</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Delete</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveInsert</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDelete</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeletePredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveSetDeletionMarkPredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMarkPredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarkedPredefinedData</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.SalesTaxAgencies.StandardAttribute.PredefinedDataName</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.SalesTaxAgencies.StandardAttribute.Predefined</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.SalesTaxAgencies.StandardAttribute.Ref</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.SalesTaxAgencies.StandardAttribute.DeletionMark</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.SalesTaxAgencies.StandardAttribute.IsFolder</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.SalesTaxAgencies.StandardAttribute.Owner</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.SalesTaxAgencies.StandardAttribute.Parent</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.SalesTaxAgencies.StandardAttribute.Description</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.SalesTaxAgencies.StandardAttribute.Code</name>
+		<right>
+			<name>Edit</name>
 			<value>false</value>
 		</right>
 	</object>
@@ -1122,7 +1482,7 @@
 		</right>
 	</object>
 	<object>
-		<name>InformationRegister.ItemLastCost.Dimension.Product</name>
+		<name>InformationRegister.ItemLastCosts.Dimension.Product</name>
 		<right>
 			<name>View</name>
 			<value>false</value>
@@ -1235,6 +1595,53 @@
 		</right>
 		<right>
 			<name>InteractiveDeleteMarked</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeletePredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveSetDeletionMarkPredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMarkPredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarkedPredefinedData</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.Units</name>
+		<right>
+			<name>Insert</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveInsert</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDelete</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InputByString</name>
 			<value>false</value>
 		</right>
 		<right>
@@ -1595,6 +2002,124 @@
 		</right>
 	</object>
 	<object>
+		<name>Catalog.SalesTaxComponents</name>
+		<right>
+			<name>Insert</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Update</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Delete</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveInsert</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDelete</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeletePredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveSetDeletionMarkPredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMarkPredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarkedPredefinedData</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.SalesTaxComponents.StandardAttribute.PredefinedDataName</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.SalesTaxComponents.StandardAttribute.Predefined</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.SalesTaxComponents.StandardAttribute.Ref</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.SalesTaxComponents.StandardAttribute.DeletionMark</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.SalesTaxComponents.StandardAttribute.IsFolder</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.SalesTaxComponents.StandardAttribute.Owner</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.SalesTaxComponents.StandardAttribute.Parent</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.SalesTaxComponents.StandardAttribute.Description</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.SalesTaxComponents.StandardAttribute.Code</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
 		<name>Catalog.Projects</name>
 		<right>
 			<name>Insert</name>
@@ -1642,7 +2167,7 @@
 		</right>
 	</object>
 	<object>
-		<name>AccumulationRegister.InventoryJrnl.Dimension.Product</name>
+		<name>AccumulationRegister.InventoryJournal.Dimension.Product</name>
 		<right>
 			<name>View</name>
 			<value>false</value>
@@ -1924,20 +2449,13 @@
 		</right>
 	</object>
 	<object>
-		<name>AccumulationRegister.InventoryJrnl.Dimension.Layer</name>
+		<name>AccumulationRegister.InventoryJournal.Dimension.Layer</name>
 		<right>
 			<name>View</name>
 			<value>false</value>
 		</right>
 		<right>
 			<name>Edit</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>DataProcessor.PeriodClosing</name>
-		<right>
-			<name>View</name>
 			<value>false</value>
 		</right>
 	</object>
@@ -2192,6 +2710,13 @@
 		</right>
 	</object>
 	<object>
+		<name>Catalog.SalesTaxRates.Attribute.Agency</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
 		<name>Constant.bigcom_apipath</name>
 		<right>
 			<name>Edit</name>
@@ -2412,7 +2937,7 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.InventoryBeginningBalances</name>
+		<name>Document.ItemAdjustment</name>
 		<right>
 			<name>InteractiveInsert</name>
 			<value>false</value>
@@ -2661,49 +3186,6 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.BankReconciliation</name>
-		<right>
-			<name>InteractiveInsert</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractiveDelete</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractiveSetDeletionMark</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractiveClearDeletionMark</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractiveDeleteMarked</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractivePosting</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractivePostingRegular</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractiveUndoPosting</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractiveChangeOfPosted</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InputByString</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
 		<name>Constant.bigcom_user</name>
 		<right>
 			<name>Edit</name>
@@ -2726,6 +3208,13 @@
 	</object>
 	<object>
 		<name>Constant.IncomeAccount</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.SalesTaxComponents.Attribute.Rate</name>
 		<right>
 			<name>Edit</name>
 			<value>false</value>
@@ -2835,7 +3324,7 @@
 		</right>
 	</object>
 	<object>
-		<name>AccumulationRegister.InventoryJrnl.Resource.Amount</name>
+		<name>AccumulationRegister.InventoryJournal.Resource.Amount</name>
 		<right>
 			<name>View</name>
 			<value>false</value>

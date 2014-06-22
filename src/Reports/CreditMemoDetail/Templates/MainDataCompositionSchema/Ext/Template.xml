@@ -11,10 +11,6 @@
 			<field>ARAccount</field>
 		</field>
 		<field xsi:type="DataSetFieldField">
-			<dataPath>BegBal</dataPath>
-			<field>BegBal</field>
-		</field>
-		<field xsi:type="DataSetFieldField">
 			<dataPath>Company</dataPath>
 			<field>Company</field>
 		</field>
@@ -69,10 +65,6 @@
 		<field xsi:type="DataSetFieldField">
 			<dataPath>LineNumber</dataPath>
 			<field>LineNumber</field>
-		</field>
-		<field xsi:type="DataSetFieldField">
-			<dataPath>LineSubtotalRC</dataPath>
-			<field>LineSubtotalRC</field>
 		</field>
 		<field xsi:type="DataSetFieldField">
 			<dataPath>LineTotal</dataPath>
@@ -145,22 +137,54 @@
 			<field>SalesTaxRC</field>
 		</field>
 		<field xsi:type="DataSetFieldField">
-			<dataPath>SubtotalRC</dataPath>
-			<field>SubtotalRC</field>
-		</field>
-		<field xsi:type="DataSetFieldField">
 			<dataPath>Taxable</dataPath>
 			<field>Taxable</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Discount</dataPath>
+			<field>Discount</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>DiscountIsTaxable</dataPath>
+			<field>DiscountIsTaxable</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>DiscountPercent</dataPath>
+			<field>DiscountPercent</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>LineSubtotal</dataPath>
+			<field>LineSubtotal</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>ManualAdjustment</dataPath>
+			<field>ManualAdjustment</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>SalesTaxRate</dataPath>
+			<field>SalesTaxRate</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Shipping</dataPath>
+			<field>Shipping</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Subtotal</dataPath>
+			<field>Subtotal</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>TaxableSubtotal</dataPath>
+			<field>TaxableSubtotal</field>
 		</field>
 		<dataSource>DataSource1</dataSource>
 		<query>SELECT
 	SalesReturnLineItems.Ref,
 	SalesReturnLineItems.LineNumber,
 	SalesReturnLineItems.Product,
+	SalesReturnLineItems.ProductDescription,
 	SalesReturnLineItems.Price,
 	SalesReturnLineItems.Quantity,
 	SalesReturnLineItems.LineTotal,
-	SalesReturnLineItems.ProductDescription,
 	SalesReturnLineItems.Taxable,
 	SalesReturnLineItems.Ref.Ref AS Ref1,
 	SalesReturnLineItems.Ref.DataVersion,
@@ -181,13 +205,19 @@
 	SalesReturnLineItems.Ref.Memo,
 	SalesReturnLineItems.Ref.ARAccount,
 	SalesReturnLineItems.Ref.RefNum,
-	SalesReturnLineItems.Ref.BegBal,
 	SalesReturnLineItems.Ref.EmailTo,
 	SalesReturnLineItems.Ref.EmailNote,
 	SalesReturnLineItems.Ref.EmailCC,
 	SalesReturnLineItems.Ref.LastEmail,
-	SalesReturnLineItems.Ref.LineSubtotalRC,
-	SalesReturnLineItems.Ref.SubtotalRC,
+	SalesReturnLineItems.Ref.LineSubtotal,
+	SalesReturnLineItems.Ref.Subtotal,
+	SalesReturnLineItems.Ref.ManualAdjustment,
+	SalesReturnLineItems.Ref.SalesTaxRate,
+	SalesReturnLineItems.Ref.DiscountIsTaxable,
+	SalesReturnLineItems.Ref.TaxableSubtotal,
+	SalesReturnLineItems.Ref.DiscountPercent,
+	SalesReturnLineItems.Ref.Discount,
+	SalesReturnLineItems.Ref.Shipping,
 	SalesReturnLineItems.Ref.Presentation,
 	SalesReturnLineItems.Ref.PointInTime
 FROM
@@ -226,9 +256,6 @@ FROM
 					<dcsset:field>ARAccount</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>BegBal</dcsset:field>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Company</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
@@ -242,6 +269,15 @@ FROM
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>DeletionMark</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Discount</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>DiscountIsTaxable</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>DiscountPercent</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>DueDate</dcsset:field>
@@ -262,10 +298,13 @@ FROM
 					<dcsset:field>LastEmail</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>LineSubtotalRC</dcsset:field>
+					<dcsset:field>LineSubtotal</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Location</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>ManualAdjustment</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Memo</dcsset:field>
@@ -289,7 +328,16 @@ FROM
 					<dcsset:field>SalesTaxRC</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>SubtotalRC</dcsset:field>
+					<dcsset:field>SalesTaxRate</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Shipping</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Subtotal</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>TaxableSubtotal</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>DocumentTotalRC</dcsset:field>

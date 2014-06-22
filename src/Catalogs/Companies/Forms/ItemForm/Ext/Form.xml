@@ -76,6 +76,182 @@
 			<Width>50</Width>
 			<ExtendedTooltip name="Group1ExtendedTooltip" id="159"/>
 			<ChildItems>
+				<Page name="GroupTransactions" id="367">
+					<Visible>false</Visible>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Transactions</v8:content>
+						</v8:item>
+					</Title>
+					<ExtendedTooltip name="GroupTransactionsExtendedTooltip" id="368"/>
+					<ChildItems>
+						<Table name="Transactions" id="369">
+							<ChangeRowSet>false</ChangeRowSet>
+							<ChangeRowOrder>false</ChangeRowOrder>
+							<UseAlternationRowColor>true</UseAlternationRowColor>
+							<DataPath>Transactions</DataPath>
+							<RowPictureDataPath>Transactions.DocumentStatus</RowPictureDataPath>
+							<RowsPicture>
+								<xr:Ref>CommonPicture.DocumentStatus</xr:Ref>
+								<xr:LoadTransparent>true</xr:LoadTransparent>
+							</RowsPicture>
+							<CommandSet>
+								<ExcludedCommand>Copy</ExcludedCommand>
+								<ExcludedCommand>Create</ExcludedCommand>
+								<ExcludedCommand>LoadDynamicListSettings</ExcludedCommand>
+								<ExcludedCommand>DynamicListStandardSettings</ExcludedCommand>
+								<ExcludedCommand>CopyToClipboard</ExcludedCommand>
+								<ExcludedCommand>Choose</ExcludedCommand>
+								<ExcludedCommand>Delete</ExcludedCommand>
+								<ExcludedCommand>SaveDynamicListSettings</ExcludedCommand>
+								<ExcludedCommand>Change</ExcludedCommand>
+							</CommandSet>
+							<SearchStringLocation>None</SearchStringLocation>
+							<ViewStatusLocation>None</ViewStatusLocation>
+							<SearchControlLocation>None</SearchControlLocation>
+							<AutoRefresh>false</AutoRefresh>
+							<AutoRefreshPeriod>60</AutoRefreshPeriod>
+							<Period>
+								<v8:variant xsi:type="v8:StandardPeriodVariant">Custom</v8:variant>
+								<v8:startDate>0001-01-01T00:00:00</v8:startDate>
+								<v8:endDate>0001-01-01T00:00:00</v8:endDate>
+							</Period>
+							<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
+							<RestoreCurrentRow>false</RestoreCurrentRow>
+							<TopLevelParent xsi:nil="true"/>
+							<ShowRoot>true</ShowRoot>
+							<AllowRootChoice>false</AllowRootChoice>
+							<UpdateOnDataChange>Auto</UpdateOnDataChange>
+							<ContextMenu name="TransactionsContextMenu" id="370">
+								<ChildItems>
+									<Button name="TransactionsContextMenuListSettings" id="433">
+										<Type>CommandBarButton</Type>
+										<CommandName>Form.Item.Transactions.StandardCommand.ListSettings</CommandName>
+										<ExtendedTooltip name="TransactionsContextMenuListSettingsExtendedTooltip" id="434"/>
+									</Button>
+									<Button name="TransactionsContextMenuFind" id="394">
+										<Type>CommandBarButton</Type>
+										<CommandName>Form.Item.Transactions.StandardCommand.Find</CommandName>
+										<ExtendedTooltip name="TransactionsContextMenuFindExtendedTooltip" id="395"/>
+									</Button>
+									<Button name="TransactionsContextMenuCancelSearch" id="396">
+										<Type>CommandBarButton</Type>
+										<CommandName>Form.Item.Transactions.StandardCommand.CancelSearch</CommandName>
+										<ExtendedTooltip name="TransactionsContextMenuCancelSearchExtendedTooltip" id="397"/>
+									</Button>
+									<Button name="TransactionsContextMenuRefresh" id="398">
+										<Type>CommandBarButton</Type>
+										<CommandName>Form.Item.Transactions.StandardCommand.Refresh</CommandName>
+										<ExtendedTooltip name="TransactionsContextMenuRefreshExtendedTooltip" id="399"/>
+									</Button>
+									<Button name="TransactionsContextMenuOutputList" id="435">
+										<Type>CommandBarButton</Type>
+										<CommandName>Form.Item.Transactions.StandardCommand.OutputList</CommandName>
+										<ExtendedTooltip name="TransactionsContextMenuOutputListExtendedTooltip" id="436"/>
+									</Button>
+								</ChildItems>
+							</ContextMenu>
+							<AutoCommandBar name="TransactionsCommandBar" id="371">
+								<Autofill>false</Autofill>
+							</AutoCommandBar>
+							<ExtendedTooltip name="TransactionsExtendedTooltip" id="372"/>
+							<SearchStringAddition name="TransactionsSearchString" id="437">
+								<AdditionSource>
+									<Item>Transactions</Item>
+									<Type>SearchStringRepresentation</Type>
+								</AdditionSource>
+								<ContextMenu name="TransactionsSearchStringContextMenu" id="438"/>
+								<ExtendedTooltip name="TransactionsSearchStringExtendedTooltip" id="439"/>
+							</SearchStringAddition>
+							<ViewStatusAddition name="TransactionsViewStatus" id="440">
+								<AdditionSource>
+									<Item>Transactions</Item>
+									<Type>ViewStatusRepresentation</Type>
+								</AdditionSource>
+								<ContextMenu name="TransactionsViewStatusContextMenu" id="441"/>
+								<ExtendedTooltip name="TransactionsViewStatusExtendedTooltip" id="442"/>
+							</ViewStatusAddition>
+							<SearchControlAddition name="TransactionsSearchControl" id="443">
+								<AdditionSource>
+									<Item>Transactions</Item>
+									<Type>SearchControl</Type>
+								</AdditionSource>
+								<ContextMenu name="TransactionsSearchControlContextMenu" id="444"/>
+								<ExtendedTooltip name="TransactionsSearchControlExtendedTooltip" id="445"/>
+							</SearchControlAddition>
+							<Events>
+								<Event name="Selection">TransactionsSelection</Event>
+							</Events>
+							<ChildItems>
+								<LabelField name="TransactionsDate" id="424">
+									<DataPath>Transactions.Date</DataPath>
+									<Width>1</Width>
+									<HorizontalStretch>false</HorizontalStretch>
+									<Format>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>DLF=D</v8:content>
+										</v8:item>
+									</Format>
+									<ContextMenu name="TransactionsDateContextMenu" id="425"/>
+									<ExtendedTooltip name="TransactionsDateExtendedTooltip" id="426"/>
+								</LabelField>
+								<LabelField name="TransactionsDocumentType" id="427">
+									<DataPath>Transactions.DocumentType</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Document</v8:content>
+										</v8:item>
+									</Title>
+									<ContextMenu name="TransactionsDocumentTypeContextMenu" id="428"/>
+									<ExtendedTooltip name="TransactionsDocumentTypeExtendedTooltip" id="429"/>
+								</LabelField>
+								<LabelField name="TransactionsNumber" id="430">
+									<DataPath>Transactions.DocNumber</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Number</v8:content>
+										</v8:item>
+									</Title>
+									<Width>1</Width>
+									<HorizontalStretch>false</HorizontalStretch>
+									<ContextMenu name="TransactionsNumberContextMenu" id="431"/>
+									<ExtendedTooltip name="TransactionsNumberExtendedTooltip" id="432"/>
+								</LabelField>
+								<LabelField name="TransactionsTotal" id="421">
+									<DataPath>Transactions.Total</DataPath>
+									<ContextMenu name="TransactionsTotalContextMenu" id="422"/>
+									<ExtendedTooltip name="TransactionsTotalExtendedTooltip" id="423"/>
+								</LabelField>
+								<LabelField name="TransactionsRCBalance" id="418">
+									<DataPath>Transactions.RCBalance</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Balance</v8:content>
+										</v8:item>
+									</Title>
+									<Format>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>NFD=2; NZ=-</v8:content>
+										</v8:item>
+									</Format>
+									<ContextMenu name="TransactionsRCBalanceContextMenu" id="419"/>
+									<ExtendedTooltip name="TransactionsRCBalanceExtendedTooltip" id="420"/>
+								</LabelField>
+								<LabelField name="TransactionsDueDate" id="415">
+									<DataPath>Transactions.DueDate</DataPath>
+									<ContextMenu name="TransactionsDueDateContextMenu" id="416"/>
+									<ExtendedTooltip name="TransactionsDueDateExtendedTooltip" id="417"/>
+								</LabelField>
+							</ChildItems>
+						</Table>
+					</ChildItems>
+				</Page>
 				<Page name="Address" id="237">
 					<Visible>false</Visible>
 					<Title>
@@ -294,6 +470,7 @@
 					</ChildItems>
 				</Page>
 				<Page name="CreditCard" id="182">
+					<Visible>false</Visible>
 					<Title>
 						<v8:item>
 							<v8:lang>en</v8:lang>
@@ -316,11 +493,6 @@
 					</ToolTip>
 					<ExtendedTooltip name="CreditCardExtendedTooltip" id="183"/>
 					<ChildItems>
-						<Button name="FormRegisterCard" id="199">
-							<Type>UsualButton</Type>
-							<CommandName>Form.Command.RegisterCard</CommandName>
-							<ExtendedTooltip name="FormRegisterCardExtendedTooltip" id="200"/>
-						</Button>
 						<InputField name="type" id="196">
 							<DataPath>Object.type</DataPath>
 							<ReadOnly>true</ReadOnly>
@@ -345,11 +517,6 @@
 							<ContextMenu name="exp_yearContextMenu" id="194"/>
 							<ExtendedTooltip name="exp_yearExtendedTooltip" id="195"/>
 						</InputField>
-						<Button name="FormDeleteCard" id="207">
-							<Type>UsualButton</Type>
-							<CommandName>Form.Command.DeleteCard</CommandName>
-							<ExtendedTooltip name="FormDeleteCardExtendedTooltip" id="208"/>
-						</Button>
 					</ChildItems>
 				</Page>
 				<Page name="Projects" id="201">
@@ -409,29 +576,29 @@
 							<ContextMenu name="ProjectTableContextMenu" id="231"/>
 							<AutoCommandBar name="ProjectTableCommandBar" id="232"/>
 							<ExtendedTooltip name="ProjectTableExtendedTooltip" id="233"/>
-							<SearchStringAddition name="ProjectTableSearchString" id="367">
+							<SearchStringAddition name="ProjectTableSearchString" id="446">
 								<AdditionSource>
 									<Item>ProjectTable</Item>
 									<Type>SearchStringRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="ProjectTableSearchStringContextMenu" id="368"/>
-								<ExtendedTooltip name="ProjectTableSearchStringExtendedTooltip" id="369"/>
+								<ContextMenu name="ProjectTableSearchStringContextMenu" id="447"/>
+								<ExtendedTooltip name="ProjectTableSearchStringExtendedTooltip" id="448"/>
 							</SearchStringAddition>
-							<ViewStatusAddition name="ProjectTableViewStatus" id="370">
+							<ViewStatusAddition name="ProjectTableViewStatus" id="449">
 								<AdditionSource>
 									<Item>ProjectTable</Item>
 									<Type>ViewStatusRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="ProjectTableViewStatusContextMenu" id="371"/>
-								<ExtendedTooltip name="ProjectTableViewStatusExtendedTooltip" id="372"/>
+								<ContextMenu name="ProjectTableViewStatusContextMenu" id="450"/>
+								<ExtendedTooltip name="ProjectTableViewStatusExtendedTooltip" id="451"/>
 							</ViewStatusAddition>
-							<SearchControlAddition name="ProjectTableSearchControl" id="373">
+							<SearchControlAddition name="ProjectTableSearchControl" id="452">
 								<AdditionSource>
 									<Item>ProjectTable</Item>
 									<Type>SearchControl</Type>
 								</AdditionSource>
-								<ContextMenu name="ProjectTableSearchControlContextMenu" id="374"/>
-								<ExtendedTooltip name="ProjectTableSearchControlExtendedTooltip" id="375"/>
+								<ContextMenu name="ProjectTableSearchControlContextMenu" id="453"/>
+								<ExtendedTooltip name="ProjectTableSearchControlExtendedTooltip" id="454"/>
 							</SearchControlAddition>
 							<ChildItems>
 								<LabelField name="ProjectTableRef" id="263">
@@ -553,7 +720,6 @@
 					</ChildItems>
 				</Page>
 				<Page name="TaxTab" id="356">
-					<Visible>false</Visible>
 					<Title>
 						<v8:item>
 							<v8:lang>en</v8:lang>
@@ -677,23 +843,99 @@ WHERE
 				</v8:StringQualifiers>
 			</Type>
 		</Attribute>
-	</Attributes>
-	<Commands>
-		<Command name="RegisterCard" id="1">
+		<Attribute name="Transactions" id="5">
 			<Title>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Register card in Stripe</v8:content>
+					<v8:content>Transactions</v8:content>
 				</v8:item>
 			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Register card</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Action>RegisterCard</Action>
-		</Command>
+			<Type>
+				<v8:Type>cfg:DynamicList</v8:Type>
+			</Type>
+			<Settings xsi:type="DynamicList">
+				<ManualQuery>true</ManualQuery>
+				<DynamicDataRead>true</DynamicDataRead>
+				<QueryText>SELECT
+	DocumentJournalOfCompanies.Total,
+	DocumentJournalOfCompanies.Company,
+	DocumentJournalOfCompanies.DueDate,
+	DocumentJournalOfCompanies.Document,
+	DocumentJournalOfCompanies.DocumentStatus,
+	DocumentJournalOfCompanies.Date,
+	CASE
+		WHEN DocumentJournalOfCompanies.Document REFS Document.GeneralJournalEntry
+			THEN "Journal entry"
+		WHEN DocumentJournalOfCompanies.Document REFS Document.Deposit
+			THEN "Deposit"
+		WHEN DocumentJournalOfCompanies.Document REFS Document.CashSale 
+			THEN "Cash sale"
+		WHEN DocumentJournalOfCompanies.Document REFS Document.SalesReturn   
+			THEN "Credit memo"
+		WHEN DocumentJournalOfCompanies.Document REFS Document.Check 
+			THEN "Payment"
+		WHEN DocumentJournalOfCompanies.Document REFS Document.PurchaseInvoice 
+			THEN "Bill"
+		WHEN DocumentJournalOfCompanies.Document REFS Document.TimeTrack 
+			THEN "Time tracking"
+		WHEN DocumentJournalOfCompanies.Document REFS Document.Statement 
+			THEN "Statement"
+		WHEN DocumentJournalOfCompanies.Document REFS Document.CashReceipt 
+			THEN "Cash receipt"
+		WHEN DocumentJournalOfCompanies.Document REFS Document.PurchaseOrder 
+			THEN "PO"
+		WHEN DocumentJournalOfCompanies.Document REFS Document.InvoicePayment 
+			THEN "Bill payment"
+		WHEN DocumentJournalOfCompanies.Document REFS Document.SalesInvoice 
+			THEN "Sales invoice"
+		WHEN DocumentJournalOfCompanies.Document REFS Document.PurchaseReturn 
+			THEN "Purchase return"
+		WHEN DocumentJournalOfCompanies.Document REFS Document.SalesOrder 
+			THEN "SO"
+		WHEN DocumentJournalOfCompanies.Document REFS Document.Quote
+			THEN "Quote"
+		ELSE ""
+	END AS DocumentType,
+	DocumentJournalOfCompanies.Document.Number AS DocNumber,
+	ISNULL(GeneralJournalBalance.AmountRCBalance, 0) AS RCBalance
+FROM
+	InformationRegister.DocumentJournalOfCompanies AS DocumentJournalOfCompanies
+		LEFT JOIN AccountingRegister.GeneralJournal.Balance(, , , ) AS GeneralJournalBalance
+		ON DocumentJournalOfCompanies.Document = GeneralJournalBalance.ExtDimension2
+WHERE
+	DocumentJournalOfCompanies.Company = &amp;Company</QueryText>
+				<MainTable>InformationRegister.DocumentJournalOfCompanies</MainTable>
+				<ListSettings>
+					<dcsset:filter>
+						<dcsset:item xsi:type="dcsset:FilterItemComparison">
+							<dcsset:use>false</dcsset:use>
+							<dcsset:left xsi:type="dcscor:Field">DocumentType</dcsset:left>
+							<dcsset:comparisonType>Equal</dcsset:comparisonType>
+							<dcsset:right xsi:type="xs:string"/>
+							<dcsset:userSettingID>40c45783-c21c-46f8-b3aa-4703a7416860</dcsset:userSettingID>
+							<dcsset:userSettingPresentation xsi:type="xs:string">Document Type</dcsset:userSettingPresentation>
+						</dcsset:item>
+						<dcsset:userSettingID>dfcece9d-5077-440b-b6b3-45a5cb4538eb</dcsset:userSettingID>
+					</dcsset:filter>
+					<dcsset:order>
+						<dcsset:item xsi:type="dcsset:OrderItemField">
+							<dcsset:field>Date</dcsset:field>
+							<dcsset:orderType>Asc</dcsset:orderType>
+						</dcsset:item>
+						<dcsset:viewMode>Normal</dcsset:viewMode>
+						<dcsset:userSettingID>88619765-ccb3-46c6-ac52-38e9c992ebd4</dcsset:userSettingID>
+					</dcsset:order>
+					<dcsset:conditionalAppearance>
+						<dcsset:viewMode>Normal</dcsset:viewMode>
+						<dcsset:userSettingID>b75fecce-942b-4aed-abc9-e6a02e460fb3</dcsset:userSettingID>
+					</dcsset:conditionalAppearance>
+					<dcsset:itemsViewMode>Normal</dcsset:itemsViewMode>
+					<dcsset:itemsUserSettingID>911b6018-f537-43e8-a417-da56b22f9aec</dcsset:itemsUserSettingID>
+				</ListSettings>
+			</Settings>
+		</Attribute>
+	</Attributes>
+	<Commands>
 		<Command name="Projects" id="3">
 			<Title>
 				<v8:item>
@@ -716,25 +958,6 @@ WHERE
 				</v8:item>
 			</ToolTip>
 			<Action>Projects</Action>
-		</Command>
-		<Command name="DeleteCard" id="2">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Delete card from Stripe</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Delete card</v8:content>
-				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>Karte löschen</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Action>DeleteCard</Action>
 		</Command>
 		<Command name="SalesTransactions" id="4">
 			<Title>
@@ -762,6 +985,15 @@ WHERE
 			<Item>
 				<Command>4:a4a3dc76-48df-4a24-afd9-00a434279493</Command>
 				<Type>Auto</Type>
+				<DefaultVisible>false</DefaultVisible>
+				<Visible>
+					<xr:Common>false</xr:Common>
+				</Visible>
+			</Item>
+			<Item>
+				<Command>InformationRegister.DocumentJournalOfCompanies.StandardCommand.OpenByValue.Company</Command>
+				<Type>Auto</Type>
+				<CommandGroup>FormNavigationPanelGoTo</CommandGroup>
 				<DefaultVisible>false</DefaultVisible>
 				<Visible>
 					<xr:Common>false</xr:Common>

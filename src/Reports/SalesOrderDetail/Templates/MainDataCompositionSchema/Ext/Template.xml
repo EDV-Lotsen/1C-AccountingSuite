@@ -244,6 +244,26 @@
 			<dataPath>SubTotal</dataPath>
 			<field>SubTotal</field>
 		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>DiscountIsTaxable</dataPath>
+			<field>DiscountIsTaxable</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>ExternalMemo</dataPath>
+			<field>ExternalMemo</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>SalesTaxAmount</dataPath>
+			<field>SalesTaxAmount</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>SalesTaxRate</dataPath>
+			<field>SalesTaxRate</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>TaxableSubtotal</dataPath>
+			<field>TaxableSubtotal</field>
+		</field>
 		<dataSource>DataSource1</dataSource>
 		<query>SELECT
 	SalesOrderLineItems.Ref,
@@ -297,6 +317,11 @@
 	SalesOrderLineItems.Ref.NewObject,
 	SalesOrderLineItems.Ref.CF1String,
 	SalesOrderLineItems.Ref.EmailNote,
+	SalesOrderLineItems.Ref.SalesTaxRate,
+	SalesOrderLineItems.Ref.DiscountIsTaxable,
+	SalesOrderLineItems.Ref.SalesTaxAmount,
+	SalesOrderLineItems.Ref.TaxableSubtotal,
+	SalesOrderLineItems.Ref.ExternalMemo,
 	SalesOrderLineItems.Ref.Presentation,
 	SalesOrderLineItems.Ref.PointInTime
 FROM
@@ -392,6 +417,9 @@ FROM
 					<dcsset:field>DiscountPercent</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>DiscountIsTaxable</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>DropshipRefNum</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
@@ -399,6 +427,9 @@ FROM
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>ExchangeRate</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>ExternalMemo</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>LineSubtotal</dcsset:field>
@@ -434,19 +465,31 @@ FROM
 					<dcsset:field>SalesTax</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>SalesTaxAmount</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>SalesTaxRate</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>SalesTaxRC</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>DropshipShipTo</dcsset:field>
+					<dcsset:field>ShipTo</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>ShipTo</dcsset:field>
+					<dcsset:field>DropshipShipTo</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Shipping</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>SubTotal</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>TaxableSubtotal</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>TaxableSubtotal</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>DocumentTotalRC</dcsset:field>

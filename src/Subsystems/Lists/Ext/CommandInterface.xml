@@ -3,12 +3,12 @@
 	<CommandsVisibility>
 		<Command name="Catalog.Companies.StandardCommand.OpenList">
 			<Visibility>
-				<xr:Common>true</xr:Common>
+				<xr:Common>false</xr:Common>
 			</Visibility>
 		</Command>
 		<Command name="Catalog.Products.StandardCommand.OpenList">
 			<Visibility>
-				<xr:Common>true</xr:Common>
+				<xr:Common>false</xr:Common>
 			</Visibility>
 		</Command>
 		<Command name="Catalog.Projects.StandardCommand.OpenList">
@@ -39,14 +39,9 @@
 				<xr:Value name="Role.TimeTrackView">false</xr:Value>
 			</Visibility>
 		</Command>
-		<Command name="AccumulationRegister.ClassData.StandardCommand.OpenList">
-			<Visibility>
-				<xr:Common>true</xr:Common>
-			</Visibility>
-		</Command>
 		<Command name="Catalog.UserList.StandardCommand.OpenList">
 			<Visibility>
-				<xr:Common>true</xr:Common>
+				<xr:Common>false</xr:Common>
 			</Visibility>
 		</Command>
 		<Command name="Catalog.Companies.StandardCommand.Create">
@@ -149,28 +144,6 @@
 			</Visibility>
 		</Command>
 		<Command name="Catalog.UserList.StandardCommand.Create">
-			<Visibility>
-				<xr:Common>false</xr:Common>
-				<xr:Value name="Role.TimeTrackView">false</xr:Value>
-				<xr:Value name="Role.TimeTrackFull">false</xr:Value>
-				<xr:Value name="Role.ProjectsView">false</xr:Value>
-				<xr:Value name="Role.ProjectsFull">false</xr:Value>
-				<xr:Value name="Role.ReportOnly">false</xr:Value>
-				<xr:Value name="Role.ListUser">false</xr:Value>
-			</Visibility>
-		</Command>
-		<Command name="Catalog.ProductCategories.StandardCommand.Create">
-			<Visibility>
-				<xr:Common>false</xr:Common>
-				<xr:Value name="Role.TimeTrackView">false</xr:Value>
-				<xr:Value name="Role.TimeTrackFull">false</xr:Value>
-				<xr:Value name="Role.ProjectsView">false</xr:Value>
-				<xr:Value name="Role.ProjectsFull">false</xr:Value>
-				<xr:Value name="Role.ReportOnly">false</xr:Value>
-				<xr:Value name="Role.ListUser">false</xr:Value>
-			</Visibility>
-		</Command>
-		<Command name="Catalog.Classes.StandardCommand.Create">
 			<Visibility>
 				<xr:Common>false</xr:Common>
 				<xr:Value name="Role.TimeTrackView">false</xr:Value>
@@ -236,19 +209,13 @@
 		<Command name="Catalog.UM.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
 		</Command>
-		<Command name="Catalog.Classes.StandardCommand.OpenList">
-			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
-		</Command>
 		<Command name="Catalog.ShippingCarriers.StandardCommand.OpenList">
-			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
-		</Command>
-		<Command name="Catalog.ProductCategories.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
 		</Command>
 		<Command name="InformationRegister.AuditLog.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
 		</Command>
-		<Command name="AccumulationRegister.ClassData.StandardCommand.OpenList">
+		<Command name="Catalog.DocumentNumbering.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
 		</Command>
 		<Command name="Catalog.UserList.StandardCommand.OpenList">
@@ -284,12 +251,6 @@
 		<Command name="Catalog.UserList.StandardCommand.Create">
 			<CommandGroup>ActionsPanelCreate</CommandGroup>
 		</Command>
-		<Command name="Catalog.ProductCategories.StandardCommand.Create">
-			<CommandGroup>ActionsPanelCreate</CommandGroup>
-		</Command>
-		<Command name="Catalog.Classes.StandardCommand.Create">
-			<CommandGroup>ActionsPanelCreate</CommandGroup>
-		</Command>
 		<Command name="Catalog.ShippingCarriers.StandardCommand.Create">
 			<CommandGroup>ActionsPanelCreate</CommandGroup>
 		</Command>
@@ -297,6 +258,9 @@
 			<CommandGroup>ActionsPanelCreate</CommandGroup>
 		</Command>
 		<Command name="Catalog.Addresses.StandardCommand.Create">
+			<CommandGroup>ActionsPanelCreate</CommandGroup>
+		</Command>
+		<Command name="Catalog.DocumentNumbering.StandardCommand.Create">
 			<CommandGroup>ActionsPanelCreate</CommandGroup>
 		</Command>
 		<Command name="DataProcessor.DeleteMarkedObjects.StandardCommand.Open">

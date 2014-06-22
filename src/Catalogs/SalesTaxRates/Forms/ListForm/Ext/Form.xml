@@ -1,6 +1,16 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
-	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<AutoCommandBar name="FormCommandBar" id="-1">
+		<ChildItems>
+			<Button name="FormRefresh" id="33">
+				<Type>CommandBarButton</Type>
+				<Representation>Picture</Representation>
+				<OnlyInAllActions>true</OnlyInAllActions>
+				<CommandName>Form.StandardCommand.Refresh</CommandName>
+				<ExtendedTooltip name="FormRefreshExtendedTooltip" id="34"/>
+			</Button>
+		</ChildItems>
+	</AutoCommandBar>
 	<Events>
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
 	</Events>
@@ -22,9 +32,7 @@
 			<CommandBarLocation>None</CommandBarLocation>
 			<DefaultItem>true</DefaultItem>
 			<InitialListView>Beginning</InitialListView>
-			<InitialTreeView>ExpandAllLevels</InitialTreeView>
-			<EnableStartDrag>true</EnableStartDrag>
-			<EnableDrag>true</EnableDrag>
+			<InitialTreeView>ExpandTopLevel</InitialTreeView>
 			<DataPath>List</DataPath>
 			<RowPictureDataPath>List.DefaultPicture</RowPictureDataPath>
 			<SearchStringLocation>None</SearchStringLocation>
@@ -49,29 +57,29 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="6"/>
-			<SearchStringAddition name="ListSearchString" id="16">
+			<SearchStringAddition name="ListSearchString" id="35">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="17"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="18"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="36"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="37"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="19">
+			<ViewStatusAddition name="ListViewStatus" id="38">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="20"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="21"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="39"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="40"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="22">
+			<SearchControlAddition name="ListSearchControl" id="41">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="23"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="24"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="42"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="43"/>
 			</SearchControlAddition>
 			<ChildItems>
 				<LabelField name="Description" id="7">
@@ -100,8 +108,120 @@
 						</v8:item>
 					</Title>
 					<Width>7</Width>
+					<Format>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>ND=4; NFD=2; NZ=</v8:content>
+						</v8:item>
+					</Format>
 					<ContextMenu name="RateContextMenu" id="14"/>
 					<ExtendedTooltip name="RateExtendedTooltip" id="15"/>
+				</LabelField>
+			</ChildItems>
+		</Table>
+		<Table name="ComponentsList" id="16">
+			<TitleLocation>Top</TitleLocation>
+			<CommandBarLocation>None</CommandBarLocation>
+			<UseAlternationRowColor>true</UseAlternationRowColor>
+			<EnableStartDrag>true</EnableStartDrag>
+			<DataPath>ComponentsList</DataPath>
+			<RowPictureDataPath>ComponentsList.DefaultPicture</RowPictureDataPath>
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Components list (for editing component names and rates)</v8:content>
+				</v8:item>
+			</Title>
+			<TitleFont ref="style:SmallTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
+			<CommandSet>
+				<ExcludedCommand>Copy</ExcludedCommand>
+				<ExcludedCommand>Create</ExcludedCommand>
+				<ExcludedCommand>SetDeletionMark</ExcludedCommand>
+			</CommandSet>
+			<SearchStringLocation>None</SearchStringLocation>
+			<ViewStatusLocation>None</ViewStatusLocation>
+			<SearchControlLocation>None</SearchControlLocation>
+			<AutoRefresh>false</AutoRefresh>
+			<AutoRefreshPeriod>60</AutoRefreshPeriod>
+			<Period>
+				<v8:variant xsi:type="v8:StandardPeriodVariant">Custom</v8:variant>
+				<v8:startDate>0001-01-01T00:00:00</v8:startDate>
+				<v8:endDate>0001-01-01T00:00:00</v8:endDate>
+			</Period>
+			<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
+			<RestoreCurrentRow>false</RestoreCurrentRow>
+			<TopLevelParent xsi:nil="true"/>
+			<ShowRoot>true</ShowRoot>
+			<AllowRootChoice>false</AllowRootChoice>
+			<UpdateOnDataChange>Auto</UpdateOnDataChange>
+			<ContextMenu name="ComponentsListContextMenu" id="17">
+				<ChildItems>
+					<Button name="ComponentsListContextMenuButton1" id="29">
+						<Type>CommandBarButton</Type>
+						<CommandName>Form.Item.ComponentsList.StandardCommand.Change</CommandName>
+						<ExtendedTooltip name="ComponentsListContextMenuButton1ExtendedTooltip" id="30"/>
+					</Button>
+					<Button name="ComponentsListContextMenuButton2" id="31">
+						<Type>CommandBarButton</Type>
+						<CommandName>Form.Item.ComponentsList.StandardCommand.Delete</CommandName>
+						<ExtendedTooltip name="ComponentsListContextMenuButton2ExtendedTooltip" id="32"/>
+					</Button>
+				</ChildItems>
+			</ContextMenu>
+			<AutoCommandBar name="ComponentsListCommandBar" id="18"/>
+			<ExtendedTooltip name="ComponentsListExtendedTooltip" id="19"/>
+			<SearchStringAddition name="ComponentsListSearchString" id="44">
+				<AdditionSource>
+					<Item>ComponentsList</Item>
+					<Type>SearchStringRepresentation</Type>
+				</AdditionSource>
+				<ContextMenu name="ComponentsListSearchStringContextMenu" id="45"/>
+				<ExtendedTooltip name="ComponentsListSearchStringExtendedTooltip" id="46"/>
+			</SearchStringAddition>
+			<ViewStatusAddition name="ComponentsListViewStatus" id="47">
+				<AdditionSource>
+					<Item>ComponentsList</Item>
+					<Type>ViewStatusRepresentation</Type>
+				</AdditionSource>
+				<ContextMenu name="ComponentsListViewStatusContextMenu" id="48"/>
+				<ExtendedTooltip name="ComponentsListViewStatusExtendedTooltip" id="49"/>
+			</ViewStatusAddition>
+			<SearchControlAddition name="ComponentsListSearchControl" id="50">
+				<AdditionSource>
+					<Item>ComponentsList</Item>
+					<Type>SearchControl</Type>
+				</AdditionSource>
+				<ContextMenu name="ComponentsListSearchControlContextMenu" id="51"/>
+				<ExtendedTooltip name="ComponentsListSearchControlExtendedTooltip" id="52"/>
+			</SearchControlAddition>
+			<ChildItems>
+				<LabelField name="ComponentsListDescription" id="20">
+					<DataPath>ComponentsList.Description</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Component name</v8:content>
+						</v8:item>
+					</Title>
+					<ContextMenu name="ComponentsListDescriptionContextMenu" id="21"/>
+					<ExtendedTooltip name="ComponentsListDescriptionExtendedTooltip" id="22"/>
+				</LabelField>
+				<LabelField name="ComponentsListAgency" id="23">
+					<DataPath>ComponentsList.Agency</DataPath>
+					<ContextMenu name="ComponentsListAgencyContextMenu" id="24"/>
+					<ExtendedTooltip name="ComponentsListAgencyExtendedTooltip" id="25"/>
+				</LabelField>
+				<LabelField name="ComponentsListRate" id="26">
+					<DataPath>ComponentsList.Rate</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Rate, %</v8:content>
+						</v8:item>
+					</Title>
+					<Width>7</Width>
+					<ContextMenu name="ComponentsListRateContextMenu" id="27"/>
+					<ExtendedTooltip name="ComponentsListRateExtendedTooltip" id="28"/>
 				</LabelField>
 			</ChildItems>
 		</Table>
@@ -116,6 +236,38 @@
 				<ManualQuery>false</ManualQuery>
 				<DynamicDataRead>true</DynamicDataRead>
 				<MainTable>Catalog.SalesTaxRates</MainTable>
+				<ListSettings>
+					<dcsset:filter>
+						<dcsset:viewMode>Normal</dcsset:viewMode>
+						<dcsset:userSettingID>dfcece9d-5077-440b-b6b3-45a5cb4538eb</dcsset:userSettingID>
+					</dcsset:filter>
+					<dcsset:order>
+						<dcsset:viewMode>Normal</dcsset:viewMode>
+						<dcsset:userSettingID>88619765-ccb3-46c6-ac52-38e9c992ebd4</dcsset:userSettingID>
+					</dcsset:order>
+					<dcsset:conditionalAppearance>
+						<dcsset:viewMode>Normal</dcsset:viewMode>
+						<dcsset:userSettingID>b75fecce-942b-4aed-abc9-e6a02e460fb3</dcsset:userSettingID>
+					</dcsset:conditionalAppearance>
+					<dcsset:itemsViewMode>Normal</dcsset:itemsViewMode>
+					<dcsset:itemsUserSettingID>911b6018-f537-43e8-a417-da56b22f9aec</dcsset:itemsUserSettingID>
+				</ListSettings>
+			</Settings>
+		</Attribute>
+		<Attribute name="ComponentsList" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Components list</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>cfg:DynamicList</v8:Type>
+			</Type>
+			<Settings xsi:type="DynamicList">
+				<ManualQuery>false</ManualQuery>
+				<DynamicDataRead>true</DynamicDataRead>
+				<MainTable>Catalog.SalesTaxComponents</MainTable>
 				<ListSettings>
 					<dcsset:filter>
 						<dcsset:viewMode>Normal</dcsset:viewMode>

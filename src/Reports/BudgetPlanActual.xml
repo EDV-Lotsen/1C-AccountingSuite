@@ -15,6 +15,10 @@
 			<Name>BudgetPlanActual</Name>
 			<Synonym>
 				<v8:item>
+					<v8:lang>de</v8:lang>
+					<v8:content>Gewinn- und Verlustrechnung</v8:content>
+				</v8:item>
+				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Budget plan actual</v8:content>
 				</v8:item>
@@ -23,7 +27,7 @@
 			<UseStandardCommands>true</UseStandardCommands>
 			<DefaultForm>Report.BudgetPlanActual.Form.ReportForm</DefaultForm>
 			<AuxiliaryForm/>
-			<MainDataCompositionSchema/>
+			<MainDataCompositionSchema>Report.BudgetPlanActual.Template.BudgetPlanActual</MainDataCompositionSchema>
 			<DefaultSettingsForm/>
 			<AuxiliarySettingsForm/>
 			<DefaultVariantForm/>
@@ -35,7 +39,7 @@
 		</Properties>
 		<ChildObjects>
 			<Form>ReportForm</Form>
-			<Template>Template</Template>
+			<Template>BudgetPlanActual</Template>
 		</ChildObjects>
 	</Report>
 </MetaDataObject>

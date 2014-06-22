@@ -11,10 +11,6 @@
 			<field>APAccount</field>
 		</field>
 		<field xsi:type="DataSetFieldField">
-			<dataPath>BegBal</dataPath>
-			<field>BegBal</field>
-		</field>
-		<field xsi:type="DataSetFieldField">
 			<dataPath>Company</dataPath>
 			<field>Company</field>
 		</field>
@@ -120,6 +116,10 @@
 			<dataPath>ReturnType</dataPath>
 			<field>ReturnType</field>
 		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>ManualAdjustment</dataPath>
+			<field>ManualAdjustment</field>
+		</field>
 		<dataSource>DataSource1</dataSource>
 		<query>SELECT
 	PurchaseReturnLineItems.Ref,
@@ -147,7 +147,7 @@
 	PurchaseReturnLineItems.Ref.Memo,
 	PurchaseReturnLineItems.Ref.APAccount,
 	PurchaseReturnLineItems.Ref.ReturnType,
-	PurchaseReturnLineItems.Ref.BegBal,
+	PurchaseReturnLineItems.Ref.ManualAdjustment,
 	PurchaseReturnLineItems.Ref.Presentation,
 	PurchaseReturnLineItems.Ref.PointInTime
 FROM
@@ -158,6 +158,9 @@ FROM
 		<dcsset:presentation xsi:type="xs:string">Default</dcsset:presentation>
 		<dcsset:settings xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows">
 			<dcsset:selection>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Price</dcsset:field>
+				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>ProductDescription</dcsset:field>
 				</dcsset:item>
@@ -171,9 +174,6 @@ FROM
 					<dcsset:field>LineTotal</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>Price</dcsset:field>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Quantity</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
@@ -184,9 +184,6 @@ FROM
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>APAccount</dcsset:field>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>BegBal</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Company</dcsset:field>
@@ -211,6 +208,9 @@ FROM
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Location</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>ManualAdjustment</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Memo</dcsset:field>

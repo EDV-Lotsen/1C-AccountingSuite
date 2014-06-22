@@ -398,7 +398,6 @@
 					</ChildItems>
 				</Page>
 				<Page name="Online" id="43">
-					<ReadOnly>true</ReadOnly>
 					<Title>
 						<v8:item>
 							<v8:lang>en</v8:lang>
@@ -521,6 +520,21 @@
 											<ContextMenu name="NextUpdateTimeContextMenu" id="60"/>
 											<ExtendedTooltip name="NextUpdateTimeExtendedTooltip" id="61"/>
 										</InputField>
+										<LabelDecoration name="StatusCodeDescriptionDecoration" id="131">
+											<TextColor>style:SpecialTextColor</TextColor>
+											<Title formatted="false">
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Status code description</v8:content>
+												</v8:item>
+											</Title>
+											<Hyperlink>true</Hyperlink>
+											<ContextMenu name="StatusCodeDescriptionDecorationContextMenu" id="132"/>
+											<ExtendedTooltip name="StatusCodeDescriptionDecorationExtendedTooltip" id="133"/>
+											<Events>
+												<Event name="Click">StatusCodeDescriptionDecorationClick</Event>
+											</Events>
+										</LabelDecoration>
 									</ChildItems>
 								</UsualGroup>
 							</ChildItems>

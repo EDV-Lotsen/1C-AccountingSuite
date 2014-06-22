@@ -79,8 +79,8 @@ Procedure UserList(Command)
 EndProcedure
 
 &AtClient
-Procedure ItemReceipt(Command)
-	OpenForm("Document.InventoryBeginningBalances.Form.DocumentForm");
+Procedure ItemAdjustment(Command)
+	OpenForm("Document.ItemAdjustment.Form.DocumentForm");
 EndProcedure
 
 &AtClient

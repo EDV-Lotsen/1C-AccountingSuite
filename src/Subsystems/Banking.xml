@@ -15,18 +15,14 @@
 			</Synonym>
 			<Comment/>
 			<IncludeHelpInContents>false</IncludeHelpInContents>
-			<IncludeInCommandInterface>true</IncludeInCommandInterface>
+			<IncludeInCommandInterface>false</IncludeInCommandInterface>
 			<Explanation/>
 			<Picture>
 				<xr:Ref>CommonPicture.Banking</xr:Ref>
 				<xr:LoadTransparent>false</xr:LoadTransparent>
 			</Picture>
 			<Content>
-				<xr:Item xsi:type="xr:MDObjectRef">Document.Deposit</xr:Item>
-				<xr:Item xsi:type="xr:MDObjectRef">Document.BankReconciliation</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">Document.InvoicePayment</xr:Item>
-				<xr:Item xsi:type="xr:MDObjectRef">Document.Check</xr:Item>
-				<xr:Item xsi:type="xr:MDObjectRef">Document.BankTransfer</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">InformationRegister.TransactionReconciliation</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">DataProcessor.DownloadedTransactions</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">Catalog.Banks</xr:Item>

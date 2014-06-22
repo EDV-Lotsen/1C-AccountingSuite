@@ -147,6 +147,8 @@ Procedure Posting(Cancel, PostingMode)
 	EndIf;
 	Records.Write();
 	
+	ReconciledDocumentsServerCall.AddDocumentForReconciliation(RegisterRecords, Ref, BankAccount, Date, -1 * DocumentTotalRC);
+	
 	//Records = InformationRegisters.TransactionReconciliation.CreateRecordSet();
 	//Records.Filter.Document.Set(Ref);
 	//Records.Filter.Account.Set(BankAccount);
@@ -163,6 +165,7 @@ Procedure Posting(Cancel, PostingMode)
 		Record = RegisterRecords.ProjectData.Add();
 		Record.RecordType = AccumulationRecordType.Expense;
 		Record.Period = Date;
+		Record.Account = CurRowLineItems.Account;
 		Record.Project = CurRowLineItems.Project;
 		Record.Amount = CurRowLineItems.Amount;
 		
@@ -172,31 +175,6 @@ Procedure Posting(Cancel, PostingMode)
 		Record.Account = CurRowLineItems.Account;
 		Record.Class = CurRowLineItems.Class;
 		Record.Amount = CurRowLineItems.Amount;
-	EndDo;
-	
-	RegisterRecords.CashFlowData.Write = True;
-	For Each CurRowLineItems In LineItems Do			
-		
-		Record = RegisterRecords.CashFlowData.Add();
-		Record.RecordType = AccumulationRecordType.Receipt;
-		Record.Period = Date;
-		Record.Company = Company;
-		Record.Document = Ref;
-		Record.Account = CurRowLineItems.Account;
-		//Record.CashFlowSection = CurRowLineItems.Account.CashFlowSection;
-		Record.AmountRC = CurRowLineItems.Amount * ExchangeRate;
-		//Record.PaymentMethod = PaymentMethod;
-
-		
-		Record = RegisterRecords.CashFlowData.Add();
-		Record.RecordType = AccumulationRecordType.Expense;
-		Record.Period = Date;
-		Record.Company = Company;
-		Record.Document = Ref;
-		Record.Account = CurRowLineItems.Account;
-		//Record.CashFlowSection = CurRowLineItems.Account.CashFlowSection;
-		Record.AmountRC = CurRowLineItems.Amount * ExchangeRate;
-		//Record.PaymentMethod = PaymentMethod;
 	EndDo;
 	
 	RegisterRecords.CashFlowData.Write = True;
@@ -244,35 +222,44 @@ EndProcedure
 
 Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 	
+	// Document date adjustment patch (tunes the date of drafts like for the new documents).
+	If  WriteMode = DocumentWriteMode.Posting And Not Posted // Posting of new or draft (saved but unposted) document.
+	And BegOfDay(Date) = BegOfDay(CurrentSessionDate()) Then // Operational posting (by the current date).
+		// Shift document time to the time of posting.
+		Date = CurrentSessionDate();
+	EndIf;
+	
 	If WriteMode = DocumentWriteMode.Posting Then
-				
+		
 		If PaymentMethod = Catalogs.PaymentMethods.Check Then
 			
 			If ExistCheck(Number) = False Then
-	
-					StrNextNum = StrReplace(String(GeneralFunctions.LastCheckNumber(BankAccount)+ 1),",","");
-					test = Ref.IsEmpty();
-					If PhysicalCheckNum = 0 And Number = StrNextNum Or Number = "DRAFT" Then
-					
-						LastNumber = GeneralFunctions.LastCheckNumber(BankAccount);
-						
-						LastNumberString = "";
-						If LastNumber < 10000 Then
-							LastNumberString = Left(String(LastNumber+1),1) + Right(String(LastNumber+1),3)
-						Else
-							LastNumberString = Left(String(LastNumber+1),2) + Right(String(LastNumber+1),3)
-						EndIf;
-						
-						Number = LastNumberString;
-						PhysicalCheckNum = LastNumber + 1;
-									
-					Else
-						Try
-							PhysicalCheckNum = Number(Number);
-						Except
-						EndTry;
 				
-					EndIf;
+				//	StrNextNum = StrReplace(String(GeneralFunctions.LastCheckNumber(BankAccount)+ 1),",","");
+				//	test = Ref.IsEmpty();
+				//	If PhysicalCheckNum = 0 And Number = StrNextNum Then
+				//	
+				//		LastNumber = GeneralFunctions.LastCheckNumber(BankAccount);
+				//		
+				//		LastNumberString = "";
+				//		If LastNumber < 10000 Then
+				//			LastNumberString = Left(String(LastNumber+1),1) + Right(String(LastNumber+1),3)
+				//		Else
+				//			LastNumberString = Left(String(LastNumber+1),2) + Right(String(LastNumber+1),3)
+				//		EndIf;
+				//		
+				//		Number = LastNumberString;
+				//		PhysicalCheckNum = LastNumber + 1;
+				//					
+				//	Else
+				//		Try
+				//			PhysicalCheckNum = Number(Number);
+				//		Except
+				//		EndTry;
+				//
+				//	EndIf;
+				
+				PhysicalCheckNum = Number;
 					
 			Else
 				Message("Check number already exists for this bank account");
@@ -282,11 +269,6 @@ Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 		
 	EndIf;
 	
-	If WriteMode = DocumentWriteMode.Write AND PaymentMethod = Catalogs.PaymentMethods.Check Then
-		Number = "DRAFT";
-	EndIf;
-
-
 EndProcedure
 
 Procedure BeforeDelete(Cancel)

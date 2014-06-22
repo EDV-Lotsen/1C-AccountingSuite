@@ -203,94 +203,111 @@
 						</UsualGroup>
 					</ChildItems>
 				</Page>
-				<Page name="ClosingTheBooks" id="650">
+				<Page name="Lists" id="986">
 					<Title>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Closing the books</v8:content>
+							<v8:content>Lists</v8:content>
 						</v8:item>
 					</Title>
 					<ToolTip>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Closing the books</v8:content>
+							<v8:content>Lists</v8:content>
 						</v8:item>
 					</ToolTip>
-					<ExtendedTooltip name="ClosingTheBooksExtendedTooltip" id="651"/>
+					<Group>Horizontal</Group>
+					<ExtendedTooltip name="ListsExtendedTooltip" id="987"/>
 					<ChildItems>
-						<LabelDecoration name="ClosingTheBooksDescription" id="655">
-							<Font ref="style:SmallTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
-							<Title formatted="false">
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Closing the books helps you prevent changes to transactions dated prior to the closing date.</v8:content>
-								</v8:item>
-							</Title>
-							<ContextMenu name="ClosingTheBooksDescriptionContextMenu" id="656"/>
-							<ExtendedTooltip name="ClosingTheBooksDescriptionExtendedTooltip" id="657"/>
-						</LabelDecoration>
-						<InputField name="PeriodClosingDate" id="652">
-							<DataPath>ConstantsSet.PeriodClosingDate</DataPath>
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Closing date</v8:content>
-								</v8:item>
-							</Title>
-							<ContextMenu name="PeriodClosingDateContextMenu" id="653"/>
-							<ExtendedTooltip name="PeriodClosingDateExtendedTooltip" id="654"/>
-						</InputField>
-						<LabelDecoration name="ClosingOptionDescription" id="658">
-							<Font ref="style:SmallTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
-							<Title formatted="false">
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Anyone who tries to save changes must either acknowledge a warning or enter the password to save the change.</v8:content>
-								</v8:item>
-							</Title>
-							<ContextMenu name="ClosingOptionDescriptionContextMenu" id="659"/>
-							<ExtendedTooltip name="ClosingOptionDescriptionExtendedTooltip" id="660"/>
-						</LabelDecoration>
-						<RadioButtonField name="PeriodClosingOption" id="661">
-							<DataPath>ConstantsSet.PeriodClosingOption</DataPath>
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Closing date warning type</v8:content>
-								</v8:item>
-							</Title>
-							<RadioButtonType>Tumbler</RadioButtonType>
-							<Font ref="style:NormalTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
-							<ContextMenu name="PeriodClosingOptionContextMenu" id="662"/>
-							<ExtendedTooltip name="PeriodClosingOptionExtendedTooltip" id="663"/>
-							<Events>
-								<Event name="OnChange">PeriodClosingOptionOnChange</Event>
-							</Events>
-						</RadioButtonField>
-						<InputField name="PeriodClosingPassword" id="664">
-							<DataPath>ConstantsSet.PeriodClosingPassword</DataPath>
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Password</v8:content>
-								</v8:item>
-							</Title>
-							<PasswordMode>true</PasswordMode>
-							<ContextMenu name="PeriodClosingPasswordContextMenu" id="665"/>
-							<ExtendedTooltip name="PeriodClosingPasswordExtendedTooltip" id="666"/>
-						</InputField>
-						<InputField name="PeriodClosingPasswordConfirm" id="667">
-							<DataPath>PeriodClosingPasswordConfirm</DataPath>
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Password confirm</v8:content>
-								</v8:item>
-							</Title>
-							<PasswordMode>true</PasswordMode>
-							<ContextMenu name="PeriodClosingPasswordConfirmContextMenu" id="668"/>
-							<ExtendedTooltip name="PeriodClosingPasswordConfirmExtendedTooltip" id="669"/>
-						</InputField>
+						<UsualGroup name="Group26" id="1006">
+							<Group>Vertical</Group>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="Group26ExtendedTooltip" id="1007"/>
+							<ChildItems>
+								<Button name="AddressesContacts" id="988">
+									<Type>Hyperlink</Type>
+									<CommandName>Form.Command.AddressesContacts</CommandName>
+									<ExtendedTooltip name="AddressesContactsExtendedTooltip" id="989"/>
+								</Button>
+								<Button name="Countries" id="992">
+									<Type>Hyperlink</Type>
+									<CommandName>Form.Command.Countries</CommandName>
+									<ExtendedTooltip name="CountriesExtendedTooltip" id="993"/>
+								</Button>
+								<Button name="States" id="990">
+									<Type>Hyperlink</Type>
+									<CommandName>Form.Command.States</CommandName>
+									<ExtendedTooltip name="StatesExtendedTooltip" id="991"/>
+								</Button>
+								<Button name="Currencies" id="994">
+									<Type>Hyperlink</Type>
+									<CommandName>Form.Command.Currencies</CommandName>
+									<ExtendedTooltip name="CurrenciesExtendedTooltip" id="995"/>
+								</Button>
+								<Button name="ExchangeRates" id="996">
+									<Type>Hyperlink</Type>
+									<CommandName>Form.Command.ExchangeRates</CommandName>
+									<ExtendedTooltip name="ExchangeRatesExtendedTooltip" id="997"/>
+								</Button>
+								<Button name="PaymentTerms" id="998">
+									<Type>Hyperlink</Type>
+									<CommandName>Form.Command.PaymentTerms</CommandName>
+									<ExtendedTooltip name="PaymentTermsExtendedTooltip" id="999"/>
+								</Button>
+								<Button name="UnitsOfMeasure" id="1000">
+									<Type>Hyperlink</Type>
+									<CommandName>Form.Command.UnitsOfMeasure</CommandName>
+									<ExtendedTooltip name="UnitsOfMeasureExtendedTooltip" id="1001"/>
+								</Button>
+								<Button name="Classes" id="1022">
+									<Type>Hyperlink</Type>
+									<CommandName>Form.Command.Classes</CommandName>
+									<ExtendedTooltip name="ClassesExtendedTooltip" id="1023"/>
+								</Button>
+							</ChildItems>
+						</UsualGroup>
+						<UsualGroup name="Group27" id="1008">
+							<Group>Vertical</Group>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="Group27ExtendedTooltip" id="1009"/>
+							<ChildItems>
+								<Button name="Locations" id="1020">
+									<Type>Hyperlink</Type>
+									<CommandName>Form.Command.Locations</CommandName>
+									<ExtendedTooltip name="LocationsExtendedTooltip" id="1021"/>
+								</Button>
+								<Button name="ShippingCarriers" id="1004">
+									<Type>Hyperlink</Type>
+									<CommandName>Form.Command.ShippingCarriers</CommandName>
+									<ExtendedTooltip name="ShippingCarriersExtendedTooltip" id="1005"/>
+								</Button>
+								<Button name="DocumentNumbering" id="1010">
+									<Type>Hyperlink</Type>
+									<CommandName>Form.Command.DocumentNumbering</CommandName>
+									<ExtendedTooltip name="DocumentNumberingExtendedTooltip" id="1011"/>
+								</Button>
+								<Button name="ItemCategories" id="1012">
+									<Type>Hyperlink</Type>
+									<CommandName>Form.Command.ItemCategories</CommandName>
+									<ExtendedTooltip name="ItemCategoriesExtendedTooltip" id="1013"/>
+								</Button>
+								<Button name="ActiveUserList" id="1014">
+									<Type>Hyperlink</Type>
+									<CommandName>Form.Command.ActiveUserList</CommandName>
+									<ExtendedTooltip name="ActiveUserListExtendedTooltip" id="1015"/>
+								</Button>
+								<Button name="SalesPeople" id="1016">
+									<Type>Hyperlink</Type>
+									<CommandName>Form.Command.SalesPeople</CommandName>
+									<ExtendedTooltip name="SalesPeopleExtendedTooltip" id="1017"/>
+								</Button>
+								<Button name="PriceLevels" id="1018">
+									<Type>Hyperlink</Type>
+									<CommandName>Form.Command.PriceLevels</CommandName>
+									<ExtendedTooltip name="PriceLevelsExtendedTooltip" id="1019"/>
+								</Button>
+							</ChildItems>
+						</UsualGroup>
 					</ChildItems>
 				</Page>
 				<Page name="GeneralSettings" id="56">
@@ -317,13 +334,6 @@
 					<HorizontalStretch>false</HorizontalStretch>
 					<ExtendedTooltip name="GeneralSettingsExtendedTooltip" id="302"/>
 					<ChildItems>
-						<CheckBoxField name="BeginningBalancesInDocuments" id="277">
-							<DataPath>ConstantsSet.BeginningBalancesInDocuments</DataPath>
-							<Visible>false</Visible>
-							<CheckBoxType>Auto</CheckBoxType>
-							<ContextMenu name="BeginningBalancesInDocumentsContextMenu" id="278"/>
-							<ExtendedTooltip name="BeginningBalancesInDocumentsExtendedTooltip" id="305"/>
-						</CheckBoxField>
 						<CheckBoxField name="MultiLocation" id="27">
 							<DataPath>ConstantsSet.MultiLocation</DataPath>
 							<CheckBoxType>Auto</CheckBoxType>
@@ -341,13 +351,6 @@
 							<Events>
 								<Event name="OnChange">MultiCurrencyOnChange</Event>
 							</Events>
-						</CheckBoxField>
-						<CheckBoxField name="UnbalancedGJEntryPosting" id="42">
-							<DataPath>ConstantsSet.UnbalancedGJEntryPosting</DataPath>
-							<Visible>false</Visible>
-							<CheckBoxType>Auto</CheckBoxType>
-							<ContextMenu name="UnbalancedGJEntryPostingContextMenu" id="43"/>
-							<ExtendedTooltip name="UnbalancedGJEntryPostingExtendedTooltip" id="310"/>
 						</CheckBoxField>
 						<InputField name="DefaultCurrency" id="155">
 							<DataPath>ConstantsSet.DefaultCurrency</DataPath>
@@ -436,6 +439,24 @@
 							<ContextMenu name="QtyPrecisionContextMenu" id="481"/>
 							<ExtendedTooltip name="QtyPrecisionExtendedTooltip" id="482"/>
 						</InputField>
+						<CheckBoxField name="show_yodlee_upload_period" id="1042">
+							<DataPath>ConstantsSet.show_yodlee_upload_period</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Display upload period in Cloud Banking</v8:content>
+								</v8:item>
+							</Title>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="show_yodlee_upload_periodContextMenu" id="1043"/>
+							<ExtendedTooltip name="show_yodlee_upload_periodExtendedTooltip" id="1044"/>
+						</CheckBoxField>
+						<CheckBoxField name="CopyDropshipPrintOptionsSO_PO" id="1170">
+							<DataPath>ConstantsSet.CopyDropshipPrintOptionsSO_PO</DataPath>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="CopyDropshipPrintOptionsSO_POContextMenu" id="1171"/>
+							<ExtendedTooltip name="CopyDropshipPrintOptionsSO_POExtendedTooltip" id="1172"/>
+						</CheckBoxField>
 					</ChildItems>
 				</Page>
 				<Page name="PostingAccounts" id="74">
@@ -570,8 +591,97 @@
 						</UsualGroup>
 					</ChildItems>
 				</Page>
+				<Page name="ClosingTheBooks" id="650">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Closing the books</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Closing the books</v8:content>
+						</v8:item>
+					</ToolTip>
+					<ExtendedTooltip name="ClosingTheBooksExtendedTooltip" id="651"/>
+					<ChildItems>
+						<LabelDecoration name="ClosingTheBooksDescription" id="655">
+							<Font ref="style:SmallTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
+							<Title formatted="false">
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Closing the books helps you prevent changes to transactions dated prior to the closing date.</v8:content>
+								</v8:item>
+							</Title>
+							<ContextMenu name="ClosingTheBooksDescriptionContextMenu" id="656"/>
+							<ExtendedTooltip name="ClosingTheBooksDescriptionExtendedTooltip" id="657"/>
+						</LabelDecoration>
+						<InputField name="PeriodClosingDate" id="652">
+							<DataPath>ConstantsSet.PeriodClosingDate</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Closing date</v8:content>
+								</v8:item>
+							</Title>
+							<ContextMenu name="PeriodClosingDateContextMenu" id="653"/>
+							<ExtendedTooltip name="PeriodClosingDateExtendedTooltip" id="654"/>
+						</InputField>
+						<LabelDecoration name="ClosingOptionDescription" id="658">
+							<Font ref="style:SmallTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
+							<Title formatted="false">
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Anyone who tries to save changes must either acknowledge a warning or enter the password to save the change.</v8:content>
+								</v8:item>
+							</Title>
+							<ContextMenu name="ClosingOptionDescriptionContextMenu" id="659"/>
+							<ExtendedTooltip name="ClosingOptionDescriptionExtendedTooltip" id="660"/>
+						</LabelDecoration>
+						<RadioButtonField name="PeriodClosingOption" id="661">
+							<DataPath>ConstantsSet.PeriodClosingOption</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Closing date warning type</v8:content>
+								</v8:item>
+							</Title>
+							<RadioButtonType>Tumbler</RadioButtonType>
+							<Font ref="style:NormalTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
+							<ContextMenu name="PeriodClosingOptionContextMenu" id="662"/>
+							<ExtendedTooltip name="PeriodClosingOptionExtendedTooltip" id="663"/>
+							<Events>
+								<Event name="OnChange">PeriodClosingOptionOnChange</Event>
+							</Events>
+						</RadioButtonField>
+						<InputField name="PeriodClosingPassword" id="664">
+							<DataPath>ConstantsSet.PeriodClosingPassword</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Password</v8:content>
+								</v8:item>
+							</Title>
+							<PasswordMode>true</PasswordMode>
+							<ContextMenu name="PeriodClosingPasswordContextMenu" id="665"/>
+							<ExtendedTooltip name="PeriodClosingPasswordExtendedTooltip" id="666"/>
+						</InputField>
+						<InputField name="PeriodClosingPasswordConfirm" id="667">
+							<DataPath>PeriodClosingPasswordConfirm</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Password confirm</v8:content>
+								</v8:item>
+							</Title>
+							<PasswordMode>true</PasswordMode>
+							<ContextMenu name="PeriodClosingPasswordConfirmContextMenu" id="668"/>
+							<ExtendedTooltip name="PeriodClosingPasswordConfirmExtendedTooltip" id="669"/>
+						</InputField>
+					</ChildItems>
+				</Page>
 				<Page name="SalesTax" id="912">
-					<Visible>false</Visible>
 					<Title>
 						<v8:item>
 							<v8:lang>en</v8:lang>
@@ -664,6 +774,9 @@
 									<QuickChoice>true</QuickChoice>
 									<ContextMenu name="SalesTaxDefaultContextMenu" id="936"/>
 									<ExtendedTooltip name="SalesTaxDefaultExtendedTooltip" id="937"/>
+									<Events>
+										<Event name="OnChange">SalesTaxDefaultOnChange</Event>
+									</Events>
 								</InputField>
 								<CheckBoxField name="SalesTaxMarkNewCustomersTaxable" id="938">
 									<DataPath>ConstantsSet.SalesTaxMarkNewCustomersTaxable</DataPath>
@@ -1316,132 +1429,133 @@
 								</CheckBoxField>
 							</ChildItems>
 						</UsualGroup>
-					</ChildItems>
-				</Page>
-				<Page name="AddressCustomFields" id="675">
-					<Title>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Address custom fields</v8:content>
-						</v8:item>
-					</Title>
-					<ToolTip>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Address custom fields</v8:content>
-						</v8:item>
-					</ToolTip>
-					<ExtendedTooltip name="AddressCustomFieldsExtendedTooltip" id="676"/>
-					<ChildItems>
-						<UsualGroup name="CustomField1" id="692">
+						<UsualGroup name="AddressCustomFields" id="675">
 							<Title>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Custom field1</v8:content>
+									<v8:content>Address custom fields</v8:content>
 								</v8:item>
 							</Title>
 							<ToolTip>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Custom field1</v8:content>
+									<v8:content>Address custom fields</v8:content>
 								</v8:item>
 							</ToolTip>
 							<Group>Vertical</Group>
-							<Behavior>Collapsible</Behavior>
-							<Collapsed>true</Collapsed>
-							<ControlRepresentation>Picture</ControlRepresentation>
-							<Representation>StrongSeparation</Representation>
-							<ExtendedTooltip name="CustomField1ExtendedTooltip" id="693"/>
+							<ExtendedTooltip name="AddressCustomFieldsExtendedTooltip" id="676"/>
 							<ChildItems>
-								<InputField name="CF1AName" id="677">
-									<DataPath>ConstantsSet.CF1AName</DataPath>
-									<ContextMenu name="CF1ANameContextMenu" id="678"/>
-									<ExtendedTooltip name="CF1ANameExtendedTooltip" id="679"/>
-								</InputField>
-							</ChildItems>
-						</UsualGroup>
-						<UsualGroup name="Group22" id="694">
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Custom field 2</v8:content>
-								</v8:item>
-							</Title>
-							<Group>Vertical</Group>
-							<Behavior>Collapsible</Behavior>
-							<Collapsed>true</Collapsed>
-							<ControlRepresentation>Picture</ControlRepresentation>
-							<Representation>StrongSeparation</Representation>
-							<ExtendedTooltip name="Group22ExtendedTooltip" id="695"/>
-							<ChildItems>
-								<InputField name="CF2AName" id="680">
-									<DataPath>ConstantsSet.CF2AName</DataPath>
-									<ContextMenu name="CF2ANameContextMenu" id="681"/>
-									<ExtendedTooltip name="CF2ANameExtendedTooltip" id="682"/>
-								</InputField>
-							</ChildItems>
-						</UsualGroup>
-						<UsualGroup name="Group23" id="696">
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Custom field 3</v8:content>
-								</v8:item>
-							</Title>
-							<Group>Vertical</Group>
-							<Behavior>Collapsible</Behavior>
-							<Collapsed>true</Collapsed>
-							<ControlRepresentation>Picture</ControlRepresentation>
-							<Representation>StrongSeparation</Representation>
-							<ExtendedTooltip name="Group23ExtendedTooltip" id="697"/>
-							<ChildItems>
-								<InputField name="CF3AName" id="683">
-									<DataPath>ConstantsSet.CF3AName</DataPath>
-									<ContextMenu name="CF3ANameContextMenu" id="684"/>
-									<ExtendedTooltip name="CF3ANameExtendedTooltip" id="685"/>
-								</InputField>
-							</ChildItems>
-						</UsualGroup>
-						<UsualGroup name="Group24" id="698">
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Custom field 4</v8:content>
-								</v8:item>
-							</Title>
-							<Group>Vertical</Group>
-							<Behavior>Collapsible</Behavior>
-							<Collapsed>true</Collapsed>
-							<ControlRepresentation>Picture</ControlRepresentation>
-							<Representation>StrongSeparation</Representation>
-							<ExtendedTooltip name="Group24ExtendedTooltip" id="699"/>
-							<ChildItems>
-								<InputField name="CF4AName" id="686">
-									<DataPath>ConstantsSet.CF4AName</DataPath>
-									<ContextMenu name="CF4ANameContextMenu" id="687"/>
-									<ExtendedTooltip name="CF4ANameExtendedTooltip" id="688"/>
-								</InputField>
-							</ChildItems>
-						</UsualGroup>
-						<UsualGroup name="Group25" id="700">
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Custom field 5</v8:content>
-								</v8:item>
-							</Title>
-							<Group>Vertical</Group>
-							<Behavior>Collapsible</Behavior>
-							<Collapsed>true</Collapsed>
-							<ControlRepresentation>Picture</ControlRepresentation>
-							<Representation>StrongSeparation</Representation>
-							<ExtendedTooltip name="Group25ExtendedTooltip" id="701"/>
-							<ChildItems>
-								<InputField name="CF5AName" id="689">
-									<DataPath>ConstantsSet.CF5AName</DataPath>
-									<ContextMenu name="CF5ANameContextMenu" id="690"/>
-									<ExtendedTooltip name="CF5ANameExtendedTooltip" id="691"/>
-								</InputField>
+								<UsualGroup name="CustomField1" id="692">
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Custom field1</v8:content>
+										</v8:item>
+									</Title>
+									<ToolTip>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Custom field1</v8:content>
+										</v8:item>
+									</ToolTip>
+									<Group>Vertical</Group>
+									<Behavior>Collapsible</Behavior>
+									<Collapsed>true</Collapsed>
+									<ControlRepresentation>Picture</ControlRepresentation>
+									<Representation>StrongSeparation</Representation>
+									<ExtendedTooltip name="CustomField1ExtendedTooltip" id="693"/>
+									<ChildItems>
+										<InputField name="CF1AName" id="677">
+											<DataPath>ConstantsSet.CF1AName</DataPath>
+											<ContextMenu name="CF1ANameContextMenu" id="678"/>
+											<ExtendedTooltip name="CF1ANameExtendedTooltip" id="679"/>
+										</InputField>
+									</ChildItems>
+								</UsualGroup>
+								<UsualGroup name="Group22" id="694">
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Custom field 2</v8:content>
+										</v8:item>
+									</Title>
+									<Group>Vertical</Group>
+									<Behavior>Collapsible</Behavior>
+									<Collapsed>true</Collapsed>
+									<ControlRepresentation>Picture</ControlRepresentation>
+									<Representation>StrongSeparation</Representation>
+									<ExtendedTooltip name="Group22ExtendedTooltip" id="695"/>
+									<ChildItems>
+										<InputField name="CF2AName" id="680">
+											<DataPath>ConstantsSet.CF2AName</DataPath>
+											<ContextMenu name="CF2ANameContextMenu" id="681"/>
+											<ExtendedTooltip name="CF2ANameExtendedTooltip" id="682"/>
+										</InputField>
+									</ChildItems>
+								</UsualGroup>
+								<UsualGroup name="Group23" id="696">
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Custom field 3</v8:content>
+										</v8:item>
+									</Title>
+									<Group>Vertical</Group>
+									<Behavior>Collapsible</Behavior>
+									<Collapsed>true</Collapsed>
+									<ControlRepresentation>Picture</ControlRepresentation>
+									<Representation>StrongSeparation</Representation>
+									<ExtendedTooltip name="Group23ExtendedTooltip" id="697"/>
+									<ChildItems>
+										<InputField name="CF3AName" id="683">
+											<DataPath>ConstantsSet.CF3AName</DataPath>
+											<ContextMenu name="CF3ANameContextMenu" id="684"/>
+											<ExtendedTooltip name="CF3ANameExtendedTooltip" id="685"/>
+										</InputField>
+									</ChildItems>
+								</UsualGroup>
+								<UsualGroup name="Group24" id="698">
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Custom field 4</v8:content>
+										</v8:item>
+									</Title>
+									<Group>Vertical</Group>
+									<Behavior>Collapsible</Behavior>
+									<Collapsed>true</Collapsed>
+									<ControlRepresentation>Picture</ControlRepresentation>
+									<Representation>StrongSeparation</Representation>
+									<ExtendedTooltip name="Group24ExtendedTooltip" id="699"/>
+									<ChildItems>
+										<InputField name="CF4AName" id="686">
+											<DataPath>ConstantsSet.CF4AName</DataPath>
+											<ContextMenu name="CF4ANameContextMenu" id="687"/>
+											<ExtendedTooltip name="CF4ANameExtendedTooltip" id="688"/>
+										</InputField>
+									</ChildItems>
+								</UsualGroup>
+								<UsualGroup name="Group25" id="700">
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Custom field 5</v8:content>
+										</v8:item>
+									</Title>
+									<Group>Vertical</Group>
+									<Behavior>Collapsible</Behavior>
+									<Collapsed>true</Collapsed>
+									<ControlRepresentation>Picture</ControlRepresentation>
+									<Representation>StrongSeparation</Representation>
+									<ExtendedTooltip name="Group25ExtendedTooltip" id="701"/>
+									<ChildItems>
+										<InputField name="CF5AName" id="689">
+											<DataPath>ConstantsSet.CF5AName</DataPath>
+											<ContextMenu name="CF5ANameContextMenu" id="690"/>
+											<ExtendedTooltip name="CF5ANameExtendedTooltip" id="691"/>
+										</InputField>
+									</ChildItems>
+								</UsualGroup>
 							</ChildItems>
 						</UsualGroup>
 					</ChildItems>
@@ -1951,7 +2065,6 @@
 					</ChildItems>
 				</Page>
 				<Page name="Integrations" id="423">
-					<Visible>false</Visible>
 					<Title>
 						<v8:item>
 							<v8:lang>en</v8:lang>
@@ -1968,6 +2081,7 @@
 					<ExtendedTooltip name="IntegrationsExtendedTooltip" id="424"/>
 					<ChildItems>
 						<UsualGroup name="Stripe" id="440">
+							<Visible>false</Visible>
 							<Title>
 								<v8:item>
 									<v8:lang>en</v8:lang>
@@ -1997,9 +2111,66 @@
 									</Picture>
 									<ExtendedTooltip name="StripeConnectExtendedTooltip" id="422"/>
 								</Button>
+								<LabelDecoration name="Decoration6" id="1026">
+									<TextColor>style:ButtonTextColor</TextColor>
+									<Title formatted="false">
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Please log out from your Stripe account before disconnecting</v8:content>
+										</v8:item>
+									</Title>
+									<ContextMenu name="Decoration6ContextMenu" id="1027"/>
+									<ExtendedTooltip name="Decoration6ExtendedTooltip" id="1028"/>
+								</LabelDecoration>
+								<UsualGroup name="Group28" id="1048">
+									<HorizontalStretch>false</HorizontalStretch>
+									<Group>Horizontal</Group>
+									<Representation>None</Representation>
+									<ExtendedTooltip name="Group28ExtendedTooltip" id="1049"/>
+									<ChildItems>
+										<Button name="StripeDisconnect" id="1024">
+											<Type>Hyperlink</Type>
+											<CommandName>Form.Command.StripeDisconnect</CommandName>
+											<ExtendedTooltip name="StripeDisconnectExtendedTooltip" id="1025"/>
+										</Button>
+										<InputField name="StripeUser" id="1045">
+											<DataPath>ConstantsSet.StripeUser</DataPath>
+											<ReadOnly>true</ReadOnly>
+											<TitleLocation>None</TitleLocation>
+											<InputHint>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Stripe email</v8:content>
+												</v8:item>
+											</InputHint>
+											<ContextMenu name="StripeUserContextMenu" id="1046"/>
+											<ExtendedTooltip name="StripeUserExtendedTooltip" id="1047"/>
+										</InputField>
+										<InputField name="stripe_display_name" id="1053">
+											<DataPath>ConstantsSet.stripe_display_name</DataPath>
+											<ReadOnly>true</ReadOnly>
+											<TitleLocation>None</TitleLocation>
+											<InputHint>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Stripe display name</v8:content>
+												</v8:item>
+											</InputHint>
+											<ContextMenu name="stripe_display_nameContextMenu" id="1054"/>
+											<ExtendedTooltip name="stripe_display_nameExtendedTooltip" id="1055"/>
+										</InputField>
+										<LabelField name="stripe_live_status" id="1050">
+											<DataPath>ConstantsSet.stripe_live_status</DataPath>
+											<TitleLocation>None</TitleLocation>
+											<ContextMenu name="stripe_live_statusContextMenu" id="1051"/>
+											<ExtendedTooltip name="stripe_live_statusExtendedTooltip" id="1052"/>
+										</LabelField>
+									</ChildItems>
+								</UsualGroup>
 							</ChildItems>
 						</UsualGroup>
 						<UsualGroup name="Dwolla" id="501">
+							<Visible>false</Visible>
 							<Title>
 								<v8:item>
 									<v8:lang>en</v8:lang>
@@ -2026,6 +2197,27 @@
 										<xr:LoadTransparent>true</xr:LoadTransparent>
 									</Picture>
 									<ExtendedTooltip name="DwollaConnectExtendedTooltip" id="504"/>
+								</Button>
+								<LabelDecoration name="Decoration7" id="1029">
+									<Title formatted="false">
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Please log out from your Dwolla account before disconnecting</v8:content>
+										</v8:item>
+									</Title>
+									<ContextMenu name="Decoration7ContextMenu" id="1030"/>
+									<ExtendedTooltip name="Decoration7ExtendedTooltip" id="1031"/>
+								</LabelDecoration>
+								<Button name="DwollaDisconnect" id="1032">
+									<Type>Hyperlink</Type>
+									<CommandName>Form.Command.DwollaDisconnect</CommandName>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Disconnect</v8:content>
+										</v8:item>
+									</Title>
+									<ExtendedTooltip name="DwollaDisconnectExtendedTooltip" id="1033"/>
 								</Button>
 							</ChildItems>
 						</UsualGroup>
@@ -2169,6 +2361,29 @@
 							<ContextMenu name="APISecretKeyContextMenu" id="282"/>
 							<ExtendedTooltip name="APISecretKeyExtendedTooltip" id="318"/>
 						</InputField>
+						<LabelDecoration name="warning" id="1036">
+							<Font ref="style:SmallTextFont" kind="StyleItem"/>
+							<Title formatted="false">
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Regenerating your API Key could cause any applications using it to stop functioning.</v8:content>
+								</v8:item>
+							</Title>
+							<ContextMenu name="warningContextMenu" id="1037"/>
+							<ExtendedTooltip name="warningExtendedTooltip" id="1038"/>
+						</LabelDecoration>
+						<Button name="roll" id="1034">
+							<Type>Hyperlink</Type>
+							<Width>7</Width>
+							<CommandName>Form.Command.RollAPI</CommandName>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Regenerate</v8:content>
+								</v8:item>
+							</Title>
+							<ExtendedTooltip name="rollExtendedTooltip" id="1035"/>
+						</Button>
 						<CheckBoxField name="display_api_codes" id="702">
 							<DataPath>ConstantsSet.display_api_codes</DataPath>
 							<CheckBoxType>Auto</CheckBoxType>
@@ -2179,7 +2394,8 @@
 							<Title>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Webhooks</v8:content>
+									<v8:content>Webhooks
+ </v8:content>
 								</v8:item>
 							</Title>
 							<ToolTip>
@@ -2191,64 +2407,264 @@
 							<Group>Vertical</Group>
 							<ExtendedTooltip name="WebhooksExtendedTooltip" id="479"/>
 							<ChildItems>
-								<InputField name="companies_webhook" id="466">
-									<DataPath>ConstantsSet.companies_webhook</DataPath>
-									<ContextMenu name="companies_webhookContextMenu" id="467"/>
-									<ExtendedTooltip name="companies_webhookExtendedTooltip" id="468"/>
-								</InputField>
-								<InputField name="items_webhook" id="469">
-									<DataPath>ConstantsSet.items_webhook</DataPath>
+								<UsualGroup name="companies" id="973">
 									<Title>
 										<v8:item>
 											<v8:lang>en</v8:lang>
-											<v8:content>Items URL</v8:content>
+											<v8:content>Companies</v8:content>
 										</v8:item>
 									</Title>
-									<ContextMenu name="items_webhookContextMenu" id="470"/>
-									<ExtendedTooltip name="items_webhookExtendedTooltip" id="471"/>
-								</InputField>
-								<InputField name="items_webhook_email" id="952">
-									<DataPath>ConstantsSet.items_webhook_email</DataPath>
+									<TitleTextColor>style:FormTextColor</TitleTextColor>
+									<ToolTip>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Companies</v8:content>
+										</v8:item>
+									</ToolTip>
+									<Group>Horizontal</Group>
+									<Representation>None</Representation>
+									<ExtendedTooltip name="companiesExtendedTooltip" id="974"/>
+									<ChildItems>
+										<InputField name="companies_webhook" id="466">
+											<DataPath>ConstantsSet.companies_webhook</DataPath>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>URL</v8:content>
+												</v8:item>
+											</Title>
+											<ContextMenu name="companies_webhookContextMenu" id="467"/>
+											<ExtendedTooltip name="companies_webhookExtendedTooltip" id="468"/>
+										</InputField>
+										<InputField name="companies_webhook_email" id="958">
+											<DataPath>ConstantsSet.companies_webhook_email</DataPath>
+											<Visible>false</Visible>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Email</v8:content>
+												</v8:item>
+											</Title>
+											<ContextMenu name="companies_webhook_emailContextMenu" id="959"/>
+											<ExtendedTooltip name="companies_webhook_emailExtendedTooltip" id="960"/>
+										</InputField>
+									</ChildItems>
+								</UsualGroup>
+								<UsualGroup name="items" id="975">
 									<Title>
 										<v8:item>
 											<v8:lang>en</v8:lang>
-											<v8:content>Items Email</v8:content>
+											<v8:content>Items</v8:content>
 										</v8:item>
 									</Title>
-									<ContextMenu name="items_webhook_emailContextMenu" id="953"/>
-									<ExtendedTooltip name="items_webhook_emailExtendedTooltip" id="954"/>
-								</InputField>
-								<InputField name="cash_sales_webhook" id="472">
-									<DataPath>ConstantsSet.cash_sales_webhook</DataPath>
-									<ContextMenu name="cash_sales_webhookContextMenu" id="473"/>
-									<ExtendedTooltip name="cash_sales_webhookExtendedTooltip" id="474"/>
-								</InputField>
-								<InputField name="sales_invoices_webhook" id="475">
-									<DataPath>ConstantsSet.sales_invoices_webhook</DataPath>
-									<ContextMenu name="sales_invoices_webhookContextMenu" id="476"/>
-									<ExtendedTooltip name="sales_invoices_webhookExtendedTooltip" id="477"/>
-								</InputField>
-								<InputField name="invoice_webhook_email" id="949">
-									<DataPath>ConstantsSet.invoice_webhook_email</DataPath>
+									<TitleTextColor>style:FormTextColor</TitleTextColor>
+									<ToolTip>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Items</v8:content>
+										</v8:item>
+									</ToolTip>
+									<Group>Horizontal</Group>
+									<Representation>None</Representation>
+									<ExtendedTooltip name="itemsExtendedTooltip" id="976"/>
+									<ChildItems>
+										<InputField name="items_webhook" id="469">
+											<DataPath>ConstantsSet.items_webhook</DataPath>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>URL</v8:content>
+												</v8:item>
+											</Title>
+											<ContextMenu name="items_webhookContextMenu" id="470"/>
+											<ExtendedTooltip name="items_webhookExtendedTooltip" id="471"/>
+										</InputField>
+										<InputField name="items_webhook_email" id="952">
+											<DataPath>ConstantsSet.items_webhook_email</DataPath>
+											<Visible>false</Visible>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Email</v8:content>
+												</v8:item>
+											</Title>
+											<ContextMenu name="items_webhook_emailContextMenu" id="953"/>
+											<ExtendedTooltip name="items_webhook_emailExtendedTooltip" id="954"/>
+										</InputField>
+									</ChildItems>
+								</UsualGroup>
+								<UsualGroup name="salesorders1" id="984">
 									<Title>
 										<v8:item>
 											<v8:lang>en</v8:lang>
-											<v8:content>Email to</v8:content>
+											<v8:content>Sales Orders</v8:content>
 										</v8:item>
 									</Title>
-									<ContextMenu name="invoice_webhook_emailContextMenu" id="950"/>
-									<ExtendedTooltip name="invoice_webhook_emailExtendedTooltip" id="951"/>
-								</InputField>
-								<InputField name="cash_receipts_webhook" id="644">
-									<DataPath>ConstantsSet.cash_receipts_webhook</DataPath>
-									<ContextMenu name="cash_receipts_webhookContextMenu" id="645"/>
-									<ExtendedTooltip name="cash_receipts_webhookExtendedTooltip" id="646"/>
-								</InputField>
-								<InputField name="sales_orders_webhook" id="647">
-									<DataPath>ConstantsSet.sales_orders_webhook</DataPath>
-									<ContextMenu name="sales_orders_webhookContextMenu" id="648"/>
-									<ExtendedTooltip name="sales_orders_webhookExtendedTooltip" id="649"/>
-								</InputField>
+									<TitleTextColor>style:FormTextColor</TitleTextColor>
+									<ToolTip>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Salesorders1</v8:content>
+										</v8:item>
+									</ToolTip>
+									<Group>Horizontal</Group>
+									<Representation>None</Representation>
+									<ExtendedTooltip name="salesorders1ExtendedTooltip" id="985"/>
+									<ChildItems>
+										<InputField name="sales_orders_webhook" id="647">
+											<DataPath>ConstantsSet.sales_orders_webhook</DataPath>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>URL</v8:content>
+												</v8:item>
+											</Title>
+											<ContextMenu name="sales_orders_webhookContextMenu" id="648"/>
+											<ExtendedTooltip name="sales_orders_webhookExtendedTooltip" id="649"/>
+										</InputField>
+										<InputField name="so_webhook_email" id="955">
+											<DataPath>ConstantsSet.so_webhook_email</DataPath>
+											<Visible>false</Visible>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Email</v8:content>
+												</v8:item>
+											</Title>
+											<ContextMenu name="so_webhook_emailContextMenu" id="956"/>
+											<ExtendedTooltip name="so_webhook_emailExtendedTooltip" id="957"/>
+										</InputField>
+									</ChildItems>
+								</UsualGroup>
+								<UsualGroup name="invoices" id="979">
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Sales Invoices</v8:content>
+										</v8:item>
+									</Title>
+									<TitleTextColor>style:FormTextColor</TitleTextColor>
+									<ToolTip>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Invoices</v8:content>
+										</v8:item>
+									</ToolTip>
+									<Group>Horizontal</Group>
+									<Representation>None</Representation>
+									<ExtendedTooltip name="invoicesExtendedTooltip" id="980"/>
+									<ChildItems>
+										<InputField name="sales_invoices_webhook" id="475">
+											<DataPath>ConstantsSet.sales_invoices_webhook</DataPath>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>URL</v8:content>
+												</v8:item>
+											</Title>
+											<ContextMenu name="sales_invoices_webhookContextMenu" id="476"/>
+											<ExtendedTooltip name="sales_invoices_webhookExtendedTooltip" id="477"/>
+										</InputField>
+										<InputField name="invoice_webhook_email" id="949">
+											<DataPath>ConstantsSet.invoice_webhook_email</DataPath>
+											<Visible>false</Visible>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Email</v8:content>
+												</v8:item>
+											</Title>
+											<ContextMenu name="invoice_webhook_emailContextMenu" id="950"/>
+											<ExtendedTooltip name="invoice_webhook_emailExtendedTooltip" id="951"/>
+										</InputField>
+									</ChildItems>
+								</UsualGroup>
+								<UsualGroup name="cashsales" id="977">
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Cash Sales</v8:content>
+										</v8:item>
+									</Title>
+									<TitleTextColor>style:FormTextColor</TitleTextColor>
+									<ToolTip>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Cashsales</v8:content>
+										</v8:item>
+									</ToolTip>
+									<Group>Horizontal</Group>
+									<Representation>None</Representation>
+									<ExtendedTooltip name="cashsalesExtendedTooltip" id="978"/>
+									<ChildItems>
+										<InputField name="cash_sales_webhook" id="472">
+											<DataPath>ConstantsSet.cash_sales_webhook</DataPath>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>URL</v8:content>
+												</v8:item>
+											</Title>
+											<ContextMenu name="cash_sales_webhookContextMenu" id="473"/>
+											<ExtendedTooltip name="cash_sales_webhookExtendedTooltip" id="474"/>
+										</InputField>
+										<InputField name="cash_webhook_email" id="961">
+											<DataPath>ConstantsSet.cash_webhook_email</DataPath>
+											<Visible>false</Visible>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Email</v8:content>
+												</v8:item>
+											</Title>
+											<ContextMenu name="cash_webhook_emailContextMenu" id="962"/>
+											<ExtendedTooltip name="cash_webhook_emailExtendedTooltip" id="963"/>
+										</InputField>
+									</ChildItems>
+								</UsualGroup>
+								<UsualGroup name="cashreceipts" id="969">
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Cash Receipts</v8:content>
+										</v8:item>
+									</Title>
+									<TitleTextColor>style:FormTextColor</TitleTextColor>
+									<ToolTip>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Cashreceipts</v8:content>
+										</v8:item>
+									</ToolTip>
+									<Group>Horizontal</Group>
+									<Representation>None</Representation>
+									<ExtendedTooltip name="cashreceiptsExtendedTooltip" id="970"/>
+									<ChildItems>
+										<InputField name="cash_receipts_webhook" id="981">
+											<DataPath>ConstantsSet.cash_receipts_webhook</DataPath>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>URL</v8:content>
+												</v8:item>
+											</Title>
+											<ContextMenu name="cash_receipts_webhookContextMenu" id="982"/>
+											<ExtendedTooltip name="cash_receipts_webhookExtendedTooltip" id="983"/>
+										</InputField>
+										<InputField name="receipt_webhook_email" id="964">
+											<DataPath>ConstantsSet.receipt_webhook_email</DataPath>
+											<Visible>false</Visible>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Email</v8:content>
+												</v8:item>
+											</Title>
+											<ContextMenu name="receipt_webhook_emailContextMenu" id="965"/>
+											<ExtendedTooltip name="receipt_webhook_emailExtendedTooltip" id="966"/>
+										</InputField>
+									</ChildItems>
+								</UsualGroup>
 							</ChildItems>
 						</UsualGroup>
 						<InputField name="SubStatus" id="523">
@@ -2289,1315 +2705,77 @@
 						</UsualGroup>
 					</ChildItems>
 				</Page>
-				<Page name="PrintFormSetup" id="483">
+				<Page name="SetupPrintForms" id="1158">
 					<Title>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Sales Invoice Form</v8:content>
+							<v8:content>Setup Print Forms</v8:content>
 						</v8:item>
 					</Title>
 					<ToolTip>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Print form setup</v8:content>
+							<v8:content>Setup print forms</v8:content>
 						</v8:item>
 					</ToolTip>
-					<ExtendedTooltip name="PrintFormSetupExtendedTooltip" id="484"/>
+					<ExtendedTooltip name="SetupPrintFormsExtendedTooltip" id="1159"/>
 					<ChildItems>
-						<UsualGroup name="SalesInvoices" id="494">
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Sales invoices</v8:content>
-								</v8:item>
-							</Title>
-							<ToolTip>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Sales invoices</v8:content>
-								</v8:item>
-							</ToolTip>
-							<Group>Vertical</Group>
-							<Collapsed>true</Collapsed>
-							<ControlRepresentation>Picture</ControlRepresentation>
-							<ShowTitle>false</ShowTitle>
-							<ExtendedTooltip name="SalesInvoicesExtendedTooltip" id="495"/>
-							<ChildItems>
-								<UsualGroup name="Display" id="728">
-									<Title>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Display</v8:content>
-										</v8:item>
-									</Title>
-									<TitleTextColor>#008000</TitleTextColor>
-									<ToolTip>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Display</v8:content>
-										</v8:item>
-									</ToolTip>
-									<Group>Vertical</Group>
-									<ExtendedTooltip name="DisplayExtendedTooltip" id="729"/>
-									<ChildItems>
-										<UsualGroup name="TopRow" id="730">
-											<Title>
-												<v8:item>
-													<v8:lang>en</v8:lang>
-													<v8:content>Top row</v8:content>
-												</v8:item>
-											</Title>
-											<ToolTip>
-												<v8:item>
-													<v8:lang>en</v8:lang>
-													<v8:content>Top row</v8:content>
-												</v8:item>
-											</ToolTip>
-											<Group>Horizontal</Group>
-											<ShowTitle>false</ShowTitle>
-											<ExtendedTooltip name="TopRowExtendedTooltip" id="731"/>
-											<ChildItems>
-												<CheckBoxField name="SIShowPhone2" id="732">
-													<DataPath>ConstantsSet.SIShowPhone2</DataPath>
-													<Title>
-														<v8:item>
-															<v8:lang>en</v8:lang>
-															<v8:content>Show Mobile</v8:content>
-														</v8:item>
-													</Title>
-													<CheckBoxType>Auto</CheckBoxType>
-													<ContextMenu name="SIShowPhone2ContextMenu" id="733"/>
-													<ExtendedTooltip name="SIShowPhone2ExtendedTooltip" id="734"/>
-												</CheckBoxField>
-												<CheckBoxField name="SIShowEmail" id="735">
-													<DataPath>ConstantsSet.SIShowEmail</DataPath>
-													<Title>
-														<v8:item>
-															<v8:lang>en</v8:lang>
-															<v8:content>Show Email</v8:content>
-														</v8:item>
-													</Title>
-													<CheckBoxType>Auto</CheckBoxType>
-													<ContextMenu name="SIShowEmailContextMenu" id="736"/>
-													<ExtendedTooltip name="SIShowEmailExtendedTooltip" id="737"/>
-												</CheckBoxField>
-												<CheckBoxField name="SIShowWebsite" id="744">
-													<DataPath>ConstantsSet.SIShowWebsite</DataPath>
-													<Title>
-														<v8:item>
-															<v8:lang>en</v8:lang>
-															<v8:content>Show Website</v8:content>
-														</v8:item>
-													</Title>
-													<CheckBoxType>Auto</CheckBoxType>
-													<ContextMenu name="SIShowWebsiteContextMenu" id="745"/>
-													<ExtendedTooltip name="SIShowWebsiteExtendedTooltip" id="746"/>
-												</CheckBoxField>
-											</ChildItems>
-										</UsualGroup>
-										<UsualGroup name="SecondRow" id="910">
-											<Title>
-												<v8:item>
-													<v8:lang>en</v8:lang>
-													<v8:content>Second row</v8:content>
-												</v8:item>
-											</Title>
-											<ToolTip>
-												<v8:item>
-													<v8:lang>en</v8:lang>
-													<v8:content>Second row</v8:content>
-												</v8:item>
-											</ToolTip>
-											<Group>Horizontal</Group>
-											<ShowTitle>false</ShowTitle>
-											<ExtendedTooltip name="SecondRowExtendedTooltip" id="911"/>
-											<ChildItems>
-												<CheckBoxField name="SIShowFullName" id="907">
-													<DataPath>ConstantsSet.SIShowFullName</DataPath>
-													<Title>
-														<v8:item>
-															<v8:lang>en</v8:lang>
-															<v8:content>Show Contact Name</v8:content>
-														</v8:item>
-													</Title>
-													<CheckBoxType>Auto</CheckBoxType>
-													<ContextMenu name="SIShowFullNameContextMenu" id="908"/>
-													<ExtendedTooltip name="SIShowFullNameExtendedTooltip" id="909"/>
-												</CheckBoxField>
-												<CheckBoxField name="SIShowFedTax" id="738">
-													<DataPath>ConstantsSet.SIShowFedTax</DataPath>
-													<Title>
-														<v8:item>
-															<v8:lang>en</v8:lang>
-															<v8:content>Show Federal Tax ID</v8:content>
-														</v8:item>
-													</Title>
-													<CheckBoxType>Auto</CheckBoxType>
-													<ContextMenu name="SIShowFedTaxContextMenu" id="739"/>
-													<ExtendedTooltip name="SIShowFedTaxExtendedTooltip" id="740"/>
-												</CheckBoxField>
-												<CheckBoxField name="SIShowFax" id="741">
-													<DataPath>ConstantsSet.SIShowFax</DataPath>
-													<Title>
-														<v8:item>
-															<v8:lang>en</v8:lang>
-															<v8:content>Show Fax</v8:content>
-														</v8:item>
-													</Title>
-													<CheckBoxType>Auto</CheckBoxType>
-													<ContextMenu name="SIShowFaxContextMenu" id="742"/>
-													<ExtendedTooltip name="SIShowFaxExtendedTooltip" id="743"/>
-												</CheckBoxField>
-											</ChildItems>
-										</UsualGroup>
-									</ChildItems>
-								</UsualGroup>
-								<LabelDecoration name="Decoration1" id="792">
-									<ContextMenu name="Decoration1ContextMenu" id="793"/>
-									<ExtendedTooltip name="Decoration1ExtendedTooltip" id="794"/>
-								</LabelDecoration>
-								<Pages name="SIFooterPage" id="866">
-									<Title>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>SIFooter page</v8:content>
-										</v8:item>
-									</Title>
-									<ToolTip>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>SIFooter page</v8:content>
-										</v8:item>
-									</ToolTip>
-									<ExtendedTooltip name="SIFooterPageExtendedTooltip" id="867"/>
-									<ChildItems>
-										<Page name="LeftPage" id="868">
-											<Title>
-												<v8:item>
-													<v8:lang>en</v8:lang>
-													<v8:content>Left Footer Column</v8:content>
-												</v8:item>
-											</Title>
-											<ToolTip>
-												<v8:item>
-													<v8:lang>en</v8:lang>
-													<v8:content>Left page</v8:content>
-												</v8:item>
-											</ToolTip>
-											<ExtendedTooltip name="LeftPageExtendedTooltip" id="869"/>
-											<ChildItems>
-												<UsualGroup name="Left" id="747">
-													<Title>
-														<v8:item>
-															<v8:lang>en</v8:lang>
-															<v8:content>Footer Left</v8:content>
-														</v8:item>
-													</Title>
-													<ToolTip>
-														<v8:item>
-															<v8:lang>en</v8:lang>
-															<v8:content>Left</v8:content>
-														</v8:item>
-													</ToolTip>
-													<Group>Vertical</Group>
-													<ShowTitle>false</ShowTitle>
-													<ExtendedTooltip name="LeftExtendedTooltip" id="748"/>
-													<ChildItems>
-														<RadioButtonField name="Field1" id="749">
-															<DataPath>ConstantsSet.SIFoot1Type</DataPath>
-															<TitleLocation>None</TitleLocation>
-															<RadioButtonType>RadioButtons</RadioButtonType>
-															<ChoiceList>
-																<xr:Item>
-																	<xr:Presentation/>
-																	<xr:CheckState>0</xr:CheckState>
-																	<xr:Value xsi:type="FormChoiceListDesTimeValue">
-																		<Presentation/>
-																		<Value xsi:type="xr:DesignTimeRef">Enum.TextOrImage.EnumValue.Text</Value>
-																	</xr:Value>
-																</xr:Item>
-																<xr:Item>
-																	<xr:Presentation/>
-																	<xr:CheckState>0</xr:CheckState>
-																	<xr:Value xsi:type="FormChoiceListDesTimeValue">
-																		<Presentation/>
-																		<Value xsi:type="xr:DesignTimeRef">Enum.TextOrImage.EnumValue.Image</Value>
-																	</xr:Value>
-																</xr:Item>
-																<xr:Item>
-																	<xr:Presentation/>
-																	<xr:CheckState>0</xr:CheckState>
-																	<xr:Value xsi:type="FormChoiceListDesTimeValue">
-																		<Presentation/>
-																		<Value xsi:type="xr:DesignTimeRef">Enum.TextOrImage.EnumValue.None</Value>
-																	</xr:Value>
-																</xr:Item>
-															</ChoiceList>
-															<ContextMenu name="Field1ContextMenu" id="750"/>
-															<ExtendedTooltip name="Field1ExtendedTooltip" id="751"/>
-														</RadioButtonField>
-														<UsualGroup name="FooterLeft" id="752">
-															<Title>
-																<v8:item>
-																	<v8:lang>en</v8:lang>
-																	<v8:content>Footer left</v8:content>
-																</v8:item>
-															</Title>
-															<ToolTip>
-																<v8:item>
-																	<v8:lang>en</v8:lang>
-																	<v8:content>Footer left</v8:content>
-																</v8:item>
-															</ToolTip>
-															<Group>Horizontal</Group>
-															<ShowTitle>false</ShowTitle>
-															<ExtendedTooltip name="FooterLeftExtendedTooltip" id="753"/>
-															<ChildItems>
-																<InputField name="InvoiceFooterTextLeft" id="754">
-																	<DataPath>ConstantsSet.InvoiceFooterTextLeft</DataPath>
-																	<Title>
-																		<v8:item>
-																			<v8:lang>en</v8:lang>
-																			<v8:content>Text</v8:content>
-																		</v8:item>
-																	</Title>
-																	<Height>5</Height>
-																	<HorizontalStretch>false</HorizontalStretch>
-																	<VerticalStretch>false</VerticalStretch>
-																	<ContextMenu name="InvoiceFooterTextLeftContextMenu" id="755"/>
-																	<ExtendedTooltip name="InvoiceFooterTextLeftExtendedTooltip" id="756"/>
-																</InputField>
-																<UsualGroup name="Group6" id="757">
-																	<Group>Vertical</Group>
-																	<ShowTitle>false</ShowTitle>
-																	<ExtendedTooltip name="Group6ExtendedTooltip" id="758"/>
-																	<ChildItems>
-																		<Button name="UploadFooter1" id="798">
-																			<Type>UsualButton</Type>
-																			<CommandName>Form.Command.UploadFooter1</CommandName>
-																			<Title>
-																				<v8:item>
-																					<v8:lang>en</v8:lang>
-																					<v8:content>Upload Left Image</v8:content>
-																				</v8:item>
-																			</Title>
-																			<ExtendedTooltip name="UploadFooter1ExtendedTooltip" id="799"/>
-																		</Button>
-																		<PictureField name="FooterImageAddr1" id="759">
-																			<DataPath>FooterImageAddr1</DataPath>
-																			<TitleLocation>None</TitleLocation>
-																			<Width>30</Width>
-																			<HorizontalStretch>false</HorizontalStretch>
-																			<VerticalStretch>false</VerticalStretch>
-																			<ContextMenu name="FooterImageAddr1ContextMenu" id="760"/>
-																			<ExtendedTooltip name="FooterImageAddr1ExtendedTooltip" id="761"/>
-																		</PictureField>
-																	</ChildItems>
-																</UsualGroup>
-															</ChildItems>
-														</UsualGroup>
-													</ChildItems>
-												</UsualGroup>
-											</ChildItems>
-										</Page>
-										<Page name="CenterPage" id="870">
-											<Title>
-												<v8:item>
-													<v8:lang>en</v8:lang>
-													<v8:content>Center Footer Column</v8:content>
-												</v8:item>
-											</Title>
-											<ToolTip>
-												<v8:item>
-													<v8:lang>en</v8:lang>
-													<v8:content>Center page</v8:content>
-												</v8:item>
-											</ToolTip>
-											<ExtendedTooltip name="CenterPageExtendedTooltip" id="871"/>
-											<ChildItems>
-												<UsualGroup name="Center" id="762">
-													<Title>
-														<v8:item>
-															<v8:lang>en</v8:lang>
-															<v8:content>Footer Center</v8:content>
-														</v8:item>
-													</Title>
-													<ToolTip>
-														<v8:item>
-															<v8:lang>en</v8:lang>
-															<v8:content>Center</v8:content>
-														</v8:item>
-													</ToolTip>
-													<Group>Vertical</Group>
-													<ShowTitle>false</ShowTitle>
-													<ExtendedTooltip name="CenterExtendedTooltip" id="763"/>
-													<ChildItems>
-														<RadioButtonField name="SIFoot2Type" id="764">
-															<DataPath>ConstantsSet.SIFoot2Type</DataPath>
-															<TitleLocation>None</TitleLocation>
-															<RadioButtonType>RadioButtons</RadioButtonType>
-															<ChoiceList>
-																<xr:Item>
-																	<xr:Presentation/>
-																	<xr:CheckState>0</xr:CheckState>
-																	<xr:Value xsi:type="FormChoiceListDesTimeValue">
-																		<Presentation/>
-																		<Value xsi:type="xr:DesignTimeRef">Enum.TextOrImage.EnumValue.Text</Value>
-																	</xr:Value>
-																</xr:Item>
-																<xr:Item>
-																	<xr:Presentation/>
-																	<xr:CheckState>0</xr:CheckState>
-																	<xr:Value xsi:type="FormChoiceListDesTimeValue">
-																		<Presentation/>
-																		<Value xsi:type="xr:DesignTimeRef">Enum.TextOrImage.EnumValue.Image</Value>
-																	</xr:Value>
-																</xr:Item>
-																<xr:Item>
-																	<xr:Presentation/>
-																	<xr:CheckState>0</xr:CheckState>
-																	<xr:Value xsi:type="FormChoiceListDesTimeValue">
-																		<Presentation/>
-																		<Value xsi:type="xr:DesignTimeRef">Enum.TextOrImage.EnumValue.None</Value>
-																	</xr:Value>
-																</xr:Item>
-															</ChoiceList>
-															<ContextMenu name="SIFoot2TypeContextMenu" id="765"/>
-															<ExtendedTooltip name="SIFoot2TypeExtendedTooltip" id="766"/>
-														</RadioButtonField>
-														<UsualGroup name="FooterCenter" id="767">
-															<Title>
-																<v8:item>
-																	<v8:lang>en</v8:lang>
-																	<v8:content>Footer center</v8:content>
-																</v8:item>
-															</Title>
-															<ToolTip>
-																<v8:item>
-																	<v8:lang>en</v8:lang>
-																	<v8:content>Footer center</v8:content>
-																</v8:item>
-															</ToolTip>
-															<Group>Horizontal</Group>
-															<ShowTitle>false</ShowTitle>
-															<ExtendedTooltip name="FooterCenterExtendedTooltip" id="768"/>
-															<ChildItems>
-																<InputField name="InvoiceFooterTextCenter" id="769">
-																	<DataPath>ConstantsSet.InvoiceFooterTextCenter</DataPath>
-																	<Title>
-																		<v8:item>
-																			<v8:lang>en</v8:lang>
-																			<v8:content>Text</v8:content>
-																		</v8:item>
-																	</Title>
-																	<Height>5</Height>
-																	<HorizontalStretch>false</HorizontalStretch>
-																	<VerticalStretch>false</VerticalStretch>
-																	<ContextMenu name="InvoiceFooterTextCenterContextMenu" id="770"/>
-																	<ExtendedTooltip name="InvoiceFooterTextCenterExtendedTooltip" id="771"/>
-																</InputField>
-																<UsualGroup name="Group9" id="772">
-																	<Group>Vertical</Group>
-																	<ShowTitle>false</ShowTitle>
-																	<ExtendedTooltip name="Group9ExtendedTooltip" id="773"/>
-																	<ChildItems>
-																		<Button name="UploadFooter2" id="800">
-																			<Type>UsualButton</Type>
-																			<CommandName>Form.Command.UploadFooter2</CommandName>
-																			<Title>
-																				<v8:item>
-																					<v8:lang>en</v8:lang>
-																					<v8:content>Upload Center Image</v8:content>
-																				</v8:item>
-																			</Title>
-																			<ExtendedTooltip name="UploadFooter2ExtendedTooltip" id="801"/>
-																		</Button>
-																		<PictureField name="FooterImageAddr2" id="774">
-																			<DataPath>FooterImageAddr2</DataPath>
-																			<TitleLocation>None</TitleLocation>
-																			<Width>30</Width>
-																			<HorizontalStretch>false</HorizontalStretch>
-																			<VerticalStretch>false</VerticalStretch>
-																			<ContextMenu name="FooterImageAddr2ContextMenu" id="775"/>
-																			<ExtendedTooltip name="FooterImageAddr2ExtendedTooltip" id="776"/>
-																		</PictureField>
-																	</ChildItems>
-																</UsualGroup>
-															</ChildItems>
-														</UsualGroup>
-													</ChildItems>
-												</UsualGroup>
-											</ChildItems>
-										</Page>
-										<Page name="RightPage" id="872">
-											<Title>
-												<v8:item>
-													<v8:lang>en</v8:lang>
-													<v8:content>Right Footer Column</v8:content>
-												</v8:item>
-											</Title>
-											<ToolTip>
-												<v8:item>
-													<v8:lang>en</v8:lang>
-													<v8:content>Right page</v8:content>
-												</v8:item>
-											</ToolTip>
-											<ExtendedTooltip name="RightPageExtendedTooltip" id="873"/>
-											<ChildItems>
-												<UsualGroup name="Right" id="777">
-													<Title>
-														<v8:item>
-															<v8:lang>en</v8:lang>
-															<v8:content>Footer Right</v8:content>
-														</v8:item>
-													</Title>
-													<ToolTip>
-														<v8:item>
-															<v8:lang>en</v8:lang>
-															<v8:content>Right</v8:content>
-														</v8:item>
-													</ToolTip>
-													<Group>Vertical</Group>
-													<ShowTitle>false</ShowTitle>
-													<ExtendedTooltip name="RightExtendedTooltip" id="778"/>
-													<ChildItems>
-														<RadioButtonField name="SIFoot3Type" id="779">
-															<DataPath>ConstantsSet.SIFoot3Type</DataPath>
-															<TitleLocation>None</TitleLocation>
-															<RadioButtonType>RadioButtons</RadioButtonType>
-															<ChoiceList>
-																<xr:Item>
-																	<xr:Presentation/>
-																	<xr:CheckState>0</xr:CheckState>
-																	<xr:Value xsi:type="FormChoiceListDesTimeValue">
-																		<Presentation/>
-																		<Value xsi:type="xr:DesignTimeRef">Enum.TextOrImage.EnumValue.Text</Value>
-																	</xr:Value>
-																</xr:Item>
-																<xr:Item>
-																	<xr:Presentation/>
-																	<xr:CheckState>0</xr:CheckState>
-																	<xr:Value xsi:type="FormChoiceListDesTimeValue">
-																		<Presentation/>
-																		<Value xsi:type="xr:DesignTimeRef">Enum.TextOrImage.EnumValue.Image</Value>
-																	</xr:Value>
-																</xr:Item>
-																<xr:Item>
-																	<xr:Presentation/>
-																	<xr:CheckState>0</xr:CheckState>
-																	<xr:Value xsi:type="FormChoiceListDesTimeValue">
-																		<Presentation/>
-																		<Value xsi:type="xr:DesignTimeRef">Enum.TextOrImage.EnumValue.None</Value>
-																	</xr:Value>
-																</xr:Item>
-															</ChoiceList>
-															<ContextMenu name="SIFoot3TypeContextMenu" id="780"/>
-															<ExtendedTooltip name="SIFoot3TypeExtendedTooltip" id="781"/>
-														</RadioButtonField>
-														<UsualGroup name="FooterRight" id="782">
-															<Title>
-																<v8:item>
-																	<v8:lang>en</v8:lang>
-																	<v8:content>Footer right</v8:content>
-																</v8:item>
-															</Title>
-															<ToolTip>
-																<v8:item>
-																	<v8:lang>en</v8:lang>
-																	<v8:content>Footer right</v8:content>
-																</v8:item>
-															</ToolTip>
-															<Group>Horizontal</Group>
-															<ShowTitle>false</ShowTitle>
-															<ExtendedTooltip name="FooterRightExtendedTooltip" id="783"/>
-															<ChildItems>
-																<InputField name="InvoiceFooterTextRight" id="784">
-																	<DataPath>ConstantsSet.InvoiceFooterTextRight</DataPath>
-																	<Title>
-																		<v8:item>
-																			<v8:lang>en</v8:lang>
-																			<v8:content>Text</v8:content>
-																		</v8:item>
-																	</Title>
-																	<Height>5</Height>
-																	<HorizontalStretch>false</HorizontalStretch>
-																	<VerticalStretch>false</VerticalStretch>
-																	<ContextMenu name="InvoiceFooterTextRightContextMenu" id="785"/>
-																	<ExtendedTooltip name="InvoiceFooterTextRightExtendedTooltip" id="786"/>
-																</InputField>
-																<UsualGroup name="Group10" id="787">
-																	<Group>Vertical</Group>
-																	<ShowTitle>false</ShowTitle>
-																	<ExtendedTooltip name="Group10ExtendedTooltip" id="788"/>
-																	<ChildItems>
-																		<Button name="UploadFooter3" id="802">
-																			<Type>UsualButton</Type>
-																			<CommandName>Form.Command.UploadFooter3</CommandName>
-																			<Title>
-																				<v8:item>
-																					<v8:lang>en</v8:lang>
-																					<v8:content>Upload Right Image</v8:content>
-																				</v8:item>
-																			</Title>
-																			<ExtendedTooltip name="UploadFooter3ExtendedTooltip" id="803"/>
-																		</Button>
-																		<PictureField name="FooterImageAddr3" id="789">
-																			<DataPath>FooterImageAddr3</DataPath>
-																			<TitleLocation>None</TitleLocation>
-																			<Width>30</Width>
-																			<HorizontalStretch>false</HorizontalStretch>
-																			<VerticalStretch>false</VerticalStretch>
-																			<ContextMenu name="FooterImageAddr3ContextMenu" id="790"/>
-																			<ExtendedTooltip name="FooterImageAddr3ExtendedTooltip" id="791"/>
-																		</PictureField>
-																	</ChildItems>
-																</UsualGroup>
-															</ChildItems>
-														</UsualGroup>
-													</ChildItems>
-												</UsualGroup>
-											</ChildItems>
-										</Page>
-									</ChildItems>
-								</Pages>
-								<LabelDecoration name="Decoration3" id="795">
-									<ContextMenu name="Decoration3ContextMenu" id="796"/>
-									<ExtendedTooltip name="Decoration3ExtendedTooltip" id="797"/>
-								</LabelDecoration>
-								<InputField name="SalesInvoiceFooter" id="485">
-									<DataPath>ConstantsSet.SalesInvoiceFooter</DataPath>
-									<Title>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Terms and Conditions / Notes</v8:content>
-										</v8:item>
-									</Title>
-									<TitleTextColor>#008000</TitleTextColor>
-									<TitleFont ref="sys:DefaultGUIFont" height="12" kind="WindowsFont"/>
-									<VerticalStretch>false</VerticalStretch>
-									<MultiLine>true</MultiLine>
-									<ContextMenu name="SalesInvoiceFooterContextMenu" id="486"/>
-									<ExtendedTooltip name="SalesInvoiceFooterExtendedTooltip" id="487"/>
-								</InputField>
-								<CheckBoxField name="SalesInvoicePO" id="488">
-									<DataPath>ConstantsSet.SalesInvoicePO</DataPath>
-									<Visible>false</Visible>
-									<ReadOnly>true</ReadOnly>
-									<CheckBoxType>Auto</CheckBoxType>
-									<ContextMenu name="SalesInvoicePOContextMenu" id="489"/>
-									<ExtendedTooltip name="SalesInvoicePOExtendedTooltip" id="490"/>
-								</CheckBoxField>
-							</ChildItems>
-						</UsualGroup>
-					</ChildItems>
-				</Page>
-				<Page name="POPrintSetup" id="804">
-					<Title>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Purchase Order Form</v8:content>
-						</v8:item>
-					</Title>
-					<ToolTip>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>POPrint setup</v8:content>
-						</v8:item>
-					</ToolTip>
-					<ExtendedTooltip name="POPrintSetupExtendedTooltip" id="805"/>
-					<ChildItems>
-						<UsualGroup name="PurchaseOrders" id="806">
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Purchase orders</v8:content>
-								</v8:item>
-							</Title>
-							<ToolTip>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Purchase orders</v8:content>
-								</v8:item>
-							</ToolTip>
-							<Group>Vertical</Group>
-							<ShowTitle>false</ShowTitle>
-							<ExtendedTooltip name="PurchaseOrdersExtendedTooltip" id="807"/>
-							<ChildItems>
-								<UsualGroup name="PODisplay" id="808">
-									<Title>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Display</v8:content>
-										</v8:item>
-									</Title>
-									<ToolTip>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>PODisplay</v8:content>
-										</v8:item>
-									</ToolTip>
-									<Group>Horizontal</Group>
-									<ExtendedTooltip name="PODisplayExtendedTooltip" id="809"/>
-									<ChildItems>
-										<CheckBoxField name="POShowPhone2" id="816">
-											<DataPath>ConstantsSet.POShowPhone2</DataPath>
-											<Title>
-												<v8:item>
-													<v8:lang>en</v8:lang>
-													<v8:content>Show Cell</v8:content>
-												</v8:item>
-											</Title>
-											<CheckBoxType>Auto</CheckBoxType>
-											<ContextMenu name="POShowPhone2ContextMenu" id="817"/>
-											<ExtendedTooltip name="POShowPhone2ExtendedTooltip" id="818"/>
-										</CheckBoxField>
-										<CheckBoxField name="POShowEmail" id="810">
-											<DataPath>ConstantsSet.POShowEmail</DataPath>
-											<Title>
-												<v8:item>
-													<v8:lang>en</v8:lang>
-													<v8:content>Show Email</v8:content>
-												</v8:item>
-											</Title>
-											<CheckBoxType>Auto</CheckBoxType>
-											<ContextMenu name="POShowEmailContextMenu" id="811"/>
-											<ExtendedTooltip name="POShowEmailExtendedTooltip" id="812"/>
-										</CheckBoxField>
-										<CheckBoxField name="POShowFedTax" id="819">
-											<DataPath>ConstantsSet.POShowFedTax</DataPath>
-											<Title>
-												<v8:item>
-													<v8:lang>en</v8:lang>
-													<v8:content>Show Federal Tax ID</v8:content>
-												</v8:item>
-											</Title>
-											<CheckBoxType>Auto</CheckBoxType>
-											<ContextMenu name="POShowFedTaxContextMenu" id="820"/>
-											<ExtendedTooltip name="POShowFedTaxExtendedTooltip" id="821"/>
-										</CheckBoxField>
-										<CheckBoxField name="POShowFax" id="813">
-											<DataPath>ConstantsSet.POShowFax</DataPath>
-											<Title>
-												<v8:item>
-													<v8:lang>en</v8:lang>
-													<v8:content>Show Fax</v8:content>
-												</v8:item>
-											</Title>
-											<CheckBoxType>Auto</CheckBoxType>
-											<ContextMenu name="POShowFaxContextMenu" id="814"/>
-											<ExtendedTooltip name="POShowFaxExtendedTooltip" id="815"/>
-										</CheckBoxField>
-										<CheckBoxField name="POShowWebsite" id="822">
-											<DataPath>ConstantsSet.POShowWebsite</DataPath>
-											<Title>
-												<v8:item>
-													<v8:lang>en</v8:lang>
-													<v8:content>Show Website</v8:content>
-												</v8:item>
-											</Title>
-											<CheckBoxType>Auto</CheckBoxType>
-											<ContextMenu name="POShowWebsiteContextMenu" id="823"/>
-											<ExtendedTooltip name="POShowWebsiteExtendedTooltip" id="824"/>
-										</CheckBoxField>
-									</ChildItems>
-								</UsualGroup>
-								<LabelDecoration name="Decoration4" id="895">
-									<ContextMenu name="Decoration4ContextMenu" id="896"/>
-									<ExtendedTooltip name="Decoration4ExtendedTooltip" id="897"/>
-								</LabelDecoration>
-								<Pages name="POFooterPage" id="874">
-									<Title>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>POFooter page</v8:content>
-										</v8:item>
-									</Title>
-									<ToolTip>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>POFooter page</v8:content>
-										</v8:item>
-									</ToolTip>
-									<ExtendedTooltip name="POFooterPageExtendedTooltip" id="875"/>
-									<ChildItems>
-										<Page name="POLeftPage" id="876">
-											<Title>
-												<v8:item>
-													<v8:lang>en</v8:lang>
-													<v8:content>Left Footer Column</v8:content>
-												</v8:item>
-											</Title>
-											<ToolTip>
-												<v8:item>
-													<v8:lang>en</v8:lang>
-													<v8:content>POLeft page</v8:content>
-												</v8:item>
-											</ToolTip>
-											<ExtendedTooltip name="POLeftPageExtendedTooltip" id="877"/>
-											<ChildItems>
-												<UsualGroup name="POLeft" id="825">
-													<Title>
-														<v8:item>
-															<v8:lang>en</v8:lang>
-															<v8:content>POLeft</v8:content>
-														</v8:item>
-													</Title>
-													<ToolTip>
-														<v8:item>
-															<v8:lang>en</v8:lang>
-															<v8:content>POLeft</v8:content>
-														</v8:item>
-													</ToolTip>
-													<Group>Vertical</Group>
-													<ShowTitle>false</ShowTitle>
-													<ExtendedTooltip name="POLeftExtendedTooltip" id="826"/>
-													<ChildItems>
-														<RadioButtonField name="Field2" id="827">
-															<DataPath>ConstantsSet.POFoot1Type</DataPath>
-															<TitleLocation>None</TitleLocation>
-															<RadioButtonType>RadioButtons</RadioButtonType>
-															<ChoiceList>
-																<xr:Item>
-																	<xr:Presentation/>
-																	<xr:CheckState>0</xr:CheckState>
-																	<xr:Value xsi:type="FormChoiceListDesTimeValue">
-																		<Presentation/>
-																		<Value xsi:type="xr:DesignTimeRef">Enum.TextOrImage.EnumValue.Text</Value>
-																	</xr:Value>
-																</xr:Item>
-																<xr:Item>
-																	<xr:Presentation/>
-																	<xr:CheckState>0</xr:CheckState>
-																	<xr:Value xsi:type="FormChoiceListDesTimeValue">
-																		<Presentation/>
-																		<Value xsi:type="xr:DesignTimeRef">Enum.TextOrImage.EnumValue.Image</Value>
-																	</xr:Value>
-																</xr:Item>
-																<xr:Item>
-																	<xr:Presentation/>
-																	<xr:CheckState>0</xr:CheckState>
-																	<xr:Value xsi:type="FormChoiceListDesTimeValue">
-																		<Presentation/>
-																		<Value xsi:type="xr:DesignTimeRef">Enum.TextOrImage.EnumValue.None</Value>
-																	</xr:Value>
-																</xr:Item>
-															</ChoiceList>
-															<ContextMenu name="Field2ContextMenu" id="828"/>
-															<ExtendedTooltip name="Field2ExtendedTooltip" id="829"/>
-														</RadioButtonField>
-														<UsualGroup name="POFooterLeft" id="830">
-															<Title>
-																<v8:item>
-																	<v8:lang>en</v8:lang>
-																	<v8:content>POFooter left</v8:content>
-																</v8:item>
-															</Title>
-															<ToolTip>
-																<v8:item>
-																	<v8:lang>en</v8:lang>
-																	<v8:content>POFooter left</v8:content>
-																</v8:item>
-															</ToolTip>
-															<HorizontalStretch>false</HorizontalStretch>
-															<VerticalStretch>false</VerticalStretch>
-															<Group>Horizontal</Group>
-															<Representation>None</Representation>
-															<ShowTitle>false</ShowTitle>
-															<ExtendedTooltip name="POFooterLeftExtendedTooltip" id="831"/>
-															<ChildItems>
-																<InputField name="POFooterTextLeft" id="832">
-																	<DataPath>ConstantsSet.POFooterTextLeft</DataPath>
-																	<Title>
-																		<v8:item>
-																			<v8:lang>en</v8:lang>
-																			<v8:content>Text</v8:content>
-																		</v8:item>
-																	</Title>
-																	<TitleLocation>Top</TitleLocation>
-																	<Height>5</Height>
-																	<ContextMenu name="POFooterTextLeftContextMenu" id="833"/>
-																	<ExtendedTooltip name="POFooterTextLeftExtendedTooltip" id="834"/>
-																</InputField>
-																<UsualGroup name="Group11" id="835">
-																	<Group>Vertical</Group>
-																	<ShowTitle>false</ShowTitle>
-																	<ExtendedTooltip name="Group11ExtendedTooltip" id="836"/>
-																	<ChildItems>
-																		<Button name="POUploadFooter1" id="837">
-																			<Type>UsualButton</Type>
-																			<CommandName>Form.Command.POUploadFooter1</CommandName>
-																			<Title>
-																				<v8:item>
-																					<v8:lang>en</v8:lang>
-																					<v8:content>Upload Left Image</v8:content>
-																				</v8:item>
-																			</Title>
-																			<ExtendedTooltip name="POUploadFooter1ExtendedTooltip" id="838"/>
-																		</Button>
-																		<PictureField name="POFooterImageAddr1" id="839">
-																			<DataPath>POFooterImageAddr1</DataPath>
-																			<TitleLocation>None</TitleLocation>
-																			<Width>30</Width>
-																			<HorizontalStretch>false</HorizontalStretch>
-																			<VerticalStretch>false</VerticalStretch>
-																			<ContextMenu name="POFooterImageAddr1ContextMenu" id="840"/>
-																			<ExtendedTooltip name="POFooterImageAddr1ExtendedTooltip" id="841"/>
-																		</PictureField>
-																	</ChildItems>
-																</UsualGroup>
-															</ChildItems>
-														</UsualGroup>
-													</ChildItems>
-												</UsualGroup>
-											</ChildItems>
-										</Page>
-										<Page name="POCenterPage" id="878">
-											<Title>
-												<v8:item>
-													<v8:lang>en</v8:lang>
-													<v8:content>Center Footer Column</v8:content>
-												</v8:item>
-											</Title>
-											<ToolTip>
-												<v8:item>
-													<v8:lang>en</v8:lang>
-													<v8:content>POCenter page</v8:content>
-												</v8:item>
-											</ToolTip>
-											<ExtendedTooltip name="POCenterPageExtendedTooltip" id="879"/>
-											<ChildItems>
-												<UsualGroup name="POCenter" id="842">
-													<Title>
-														<v8:item>
-															<v8:lang>en</v8:lang>
-															<v8:content>POCenter</v8:content>
-														</v8:item>
-													</Title>
-													<ToolTip>
-														<v8:item>
-															<v8:lang>en</v8:lang>
-															<v8:content>POCenter</v8:content>
-														</v8:item>
-													</ToolTip>
-													<Group>Vertical</Group>
-													<ShowTitle>false</ShowTitle>
-													<ExtendedTooltip name="POCenterExtendedTooltip" id="843"/>
-													<ChildItems>
-														<RadioButtonField name="POFoot2Type" id="844">
-															<DataPath>ConstantsSet.POFoot2Type</DataPath>
-															<TitleLocation>None</TitleLocation>
-															<RadioButtonType>RadioButtons</RadioButtonType>
-															<ChoiceList>
-																<xr:Item>
-																	<xr:Presentation/>
-																	<xr:CheckState>0</xr:CheckState>
-																	<xr:Value xsi:type="FormChoiceListDesTimeValue">
-																		<Presentation/>
-																		<Value xsi:type="xr:DesignTimeRef">Enum.TextOrImage.EnumValue.Text</Value>
-																	</xr:Value>
-																</xr:Item>
-																<xr:Item>
-																	<xr:Presentation/>
-																	<xr:CheckState>0</xr:CheckState>
-																	<xr:Value xsi:type="FormChoiceListDesTimeValue">
-																		<Presentation/>
-																		<Value xsi:type="xr:DesignTimeRef">Enum.TextOrImage.EnumValue.Image</Value>
-																	</xr:Value>
-																</xr:Item>
-																<xr:Item>
-																	<xr:Presentation/>
-																	<xr:CheckState>0</xr:CheckState>
-																	<xr:Value xsi:type="FormChoiceListDesTimeValue">
-																		<Presentation/>
-																		<Value xsi:type="xr:DesignTimeRef">Enum.TextOrImage.EnumValue.None</Value>
-																	</xr:Value>
-																</xr:Item>
-															</ChoiceList>
-															<ContextMenu name="POFoot2TypeContextMenu" id="845"/>
-															<ExtendedTooltip name="POFoot2TypeExtendedTooltip" id="846"/>
-														</RadioButtonField>
-														<UsualGroup name="POFooterCenter" id="847">
-															<Title>
-																<v8:item>
-																	<v8:lang>en</v8:lang>
-																	<v8:content>POFooterCenter</v8:content>
-																</v8:item>
-															</Title>
-															<ToolTip>
-																<v8:item>
-																	<v8:lang>en</v8:lang>
-																	<v8:content>POFooter center</v8:content>
-																</v8:item>
-															</ToolTip>
-															<Group>Horizontal</Group>
-															<ShowTitle>false</ShowTitle>
-															<ExtendedTooltip name="POFooterCenterExtendedTooltip" id="848"/>
-															<ChildItems>
-																<InputField name="POFooterTextCenter" id="849">
-																	<DataPath>ConstantsSet.POFooterTextCenter</DataPath>
-																	<Title>
-																		<v8:item>
-																			<v8:lang>en</v8:lang>
-																			<v8:content>Text</v8:content>
-																		</v8:item>
-																	</Title>
-																	<Height>5</Height>
-																	<HorizontalStretch>false</HorizontalStretch>
-																	<VerticalStretch>false</VerticalStretch>
-																	<ContextMenu name="POFooterTextCenterContextMenu" id="850"/>
-																	<ExtendedTooltip name="POFooterTextCenterExtendedTooltip" id="851"/>
-																</InputField>
-																<UsualGroup name="Group12" id="852">
-																	<Group>Vertical</Group>
-																	<ShowTitle>false</ShowTitle>
-																	<ExtendedTooltip name="Group12ExtendedTooltip" id="853"/>
-																	<ChildItems>
-																		<Button name="POUploadFooter2" id="854">
-																			<Type>UsualButton</Type>
-																			<CommandName>Form.Command.POUploadFooter2</CommandName>
-																			<Title>
-																				<v8:item>
-																					<v8:lang>en</v8:lang>
-																					<v8:content>Upload Center Image</v8:content>
-																				</v8:item>
-																			</Title>
-																			<ExtendedTooltip name="POUploadFooter2ExtendedTooltip" id="855"/>
-																		</Button>
-																		<PictureField name="POFooterImageAddr2" id="856">
-																			<DataPath>POFooterImageAddr2</DataPath>
-																			<TitleLocation>None</TitleLocation>
-																			<Width>30</Width>
-																			<HorizontalStretch>false</HorizontalStretch>
-																			<VerticalStretch>false</VerticalStretch>
-																			<ContextMenu name="POFooterImageAddr2ContextMenu" id="857"/>
-																			<ExtendedTooltip name="POFooterImageAddr2ExtendedTooltip" id="858"/>
-																		</PictureField>
-																	</ChildItems>
-																</UsualGroup>
-															</ChildItems>
-														</UsualGroup>
-													</ChildItems>
-												</UsualGroup>
-											</ChildItems>
-										</Page>
-										<Page name="PORightPage" id="880">
-											<Title>
-												<v8:item>
-													<v8:lang>en</v8:lang>
-													<v8:content>Right Footer Column</v8:content>
-												</v8:item>
-											</Title>
-											<ToolTip>
-												<v8:item>
-													<v8:lang>en</v8:lang>
-													<v8:content>PORight page</v8:content>
-												</v8:item>
-											</ToolTip>
-											<ExtendedTooltip name="PORightPageExtendedTooltip" id="881"/>
-											<ChildItems>
-												<UsualGroup name="PORight" id="859">
-													<Title>
-														<v8:item>
-															<v8:lang>en</v8:lang>
-															<v8:content>PORight</v8:content>
-														</v8:item>
-													</Title>
-													<ToolTip>
-														<v8:item>
-															<v8:lang>en</v8:lang>
-															<v8:content>PORight</v8:content>
-														</v8:item>
-													</ToolTip>
-													<Group>Vertical</Group>
-													<ShowTitle>false</ShowTitle>
-													<ExtendedTooltip name="PORightExtendedTooltip" id="860"/>
-													<ChildItems>
-														<RadioButtonField name="Field3" id="861">
-															<DataPath>ConstantsSet.POFoot3Type</DataPath>
-															<TitleLocation>None</TitleLocation>
-															<RadioButtonType>RadioButtons</RadioButtonType>
-															<ChoiceList>
-																<xr:Item>
-																	<xr:Presentation/>
-																	<xr:CheckState>0</xr:CheckState>
-																	<xr:Value xsi:type="FormChoiceListDesTimeValue">
-																		<Presentation/>
-																		<Value xsi:type="xr:DesignTimeRef">Enum.TextOrImage.EnumValue.Text</Value>
-																	</xr:Value>
-																</xr:Item>
-																<xr:Item>
-																	<xr:Presentation/>
-																	<xr:CheckState>0</xr:CheckState>
-																	<xr:Value xsi:type="FormChoiceListDesTimeValue">
-																		<Presentation/>
-																		<Value xsi:type="xr:DesignTimeRef">Enum.TextOrImage.EnumValue.Image</Value>
-																	</xr:Value>
-																</xr:Item>
-																<xr:Item>
-																	<xr:Presentation/>
-																	<xr:CheckState>0</xr:CheckState>
-																	<xr:Value xsi:type="FormChoiceListDesTimeValue">
-																		<Presentation/>
-																		<Value xsi:type="xr:DesignTimeRef">Enum.TextOrImage.EnumValue.None</Value>
-																	</xr:Value>
-																</xr:Item>
-															</ChoiceList>
-															<ContextMenu name="Field3ContextMenu" id="862"/>
-															<ExtendedTooltip name="Field3ExtendedTooltip" id="863"/>
-														</RadioButtonField>
-														<UsualGroup name="POFooterRight" id="864">
-															<Title>
-																<v8:item>
-																	<v8:lang>en</v8:lang>
-																	<v8:content>POFooter right</v8:content>
-																</v8:item>
-															</Title>
-															<ToolTip>
-																<v8:item>
-																	<v8:lang>en</v8:lang>
-																	<v8:content>POFooter right</v8:content>
-																</v8:item>
-															</ToolTip>
-															<Group>Horizontal</Group>
-															<ShowTitle>false</ShowTitle>
-															<ExtendedTooltip name="POFooterRightExtendedTooltip" id="865"/>
-															<ChildItems>
-																<InputField name="POFooterTextRight" id="882">
-																	<DataPath>ConstantsSet.POFooterTextRight</DataPath>
-																	<Title>
-																		<v8:item>
-																			<v8:lang>en</v8:lang>
-																			<v8:content>Text</v8:content>
-																		</v8:item>
-																	</Title>
-																	<Height>5</Height>
-																	<HorizontalStretch>false</HorizontalStretch>
-																	<ContextMenu name="POFooterTextRightContextMenu" id="883"/>
-																	<ExtendedTooltip name="POFooterTextRightExtendedTooltip" id="884"/>
-																</InputField>
-																<UsualGroup name="Group13" id="885">
-																	<Group>Vertical</Group>
-																	<ShowTitle>false</ShowTitle>
-																	<ExtendedTooltip name="Group13ExtendedTooltip" id="886"/>
-																	<ChildItems>
-																		<Button name="POUploadFooter3" id="887">
-																			<Type>UsualButton</Type>
-																			<CommandName>Form.Command.POUploadFooter3</CommandName>
-																			<Title>
-																				<v8:item>
-																					<v8:lang>en</v8:lang>
-																					<v8:content>Upload Right Image</v8:content>
-																				</v8:item>
-																			</Title>
-																			<ExtendedTooltip name="POUploadFooter3ExtendedTooltip" id="888"/>
-																		</Button>
-																		<PictureField name="POFooterImageAddr3" id="889">
-																			<DataPath>POFooterImageAddr3</DataPath>
-																			<TitleLocation>None</TitleLocation>
-																			<Width>30</Width>
-																			<HorizontalStretch>false</HorizontalStretch>
-																			<VerticalStretch>false</VerticalStretch>
-																			<ContextMenu name="POFooterImageAddr3ContextMenu" id="890"/>
-																			<ExtendedTooltip name="POFooterImageAddr3ExtendedTooltip" id="891"/>
-																		</PictureField>
-																	</ChildItems>
-																</UsualGroup>
-															</ChildItems>
-														</UsualGroup>
-													</ChildItems>
-												</UsualGroup>
-											</ChildItems>
-										</Page>
-									</ChildItems>
-								</Pages>
-								<LabelDecoration name="Decoration5" id="898">
-									<ContextMenu name="Decoration5ContextMenu" id="899"/>
-									<ExtendedTooltip name="Decoration5ExtendedTooltip" id="900"/>
-								</LabelDecoration>
-							</ChildItems>
-						</UsualGroup>
-						<InputField name="PONotes" id="892">
-							<DataPath>ConstantsSet.PONotes</DataPath>
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Additional Notes</v8:content>
-								</v8:item>
-							</Title>
-							<TitleTextColor>#008000</TitleTextColor>
-							<TitleFont ref="sys:DefaultGUIFont" height="12" kind="WindowsFont"/>
-							<VerticalStretch>false</VerticalStretch>
-							<MultiLine>true</MultiLine>
-							<ContextMenu name="PONotesContextMenu" id="893"/>
-							<ExtendedTooltip name="PONotesExtendedTooltip" id="894"/>
-						</InputField>
-					</ChildItems>
-				</Page>
-				<Page name="DocumentNumbering" id="603">
-					<Visible>false</Visible>
-					<Title>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Document numbering</v8:content>
-						</v8:item>
-					</Title>
-					<ToolTip>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Document numbering</v8:content>
-						</v8:item>
-					</ToolTip>
-					<ExtendedTooltip name="DocumentNumberingExtendedTooltip" id="604"/>
-					<ChildItems>
-						<LabelDecoration name="NextNumber" id="617">
-							<TextColor>#008000</TextColor>
-							<Font ref="style:NormalTextFont" kind="StyleItem"/>
-							<Title formatted="false">
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Next document number:</v8:content>
-								</v8:item>
-							</Title>
-							<ContextMenu name="NextNumberContextMenu" id="618"/>
-							<ExtendedTooltip name="NextNumberExtendedTooltip" id="619"/>
-						</LabelDecoration>
-						<InputField name="SalesInvoiceLastNumber" id="605">
-							<DataPath>ConstantsSet.SalesInvoiceLastNumber</DataPath>
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Sales Invoice</v8:content>
-								</v8:item>
-							</Title>
-							<Width>15</Width>
-							<HorizontalStretch>false</HorizontalStretch>
-							<ContextMenu name="SalesInvoiceLastNumberContextMenu" id="606"/>
-							<ExtendedTooltip name="SalesInvoiceLastNumberExtendedTooltip" id="607"/>
-						</InputField>
-						<InputField name="SalesOrderLastNumber" id="629">
-							<DataPath>ConstantsSet.SalesOrderLastNumber</DataPath>
+						<Button name="OpenQuote" id="1168">
+							<Type>Hyperlink</Type>
+							<CommandName>Form.Command.OpenQuote</CommandName>
+							<ExtendedTooltip name="OpenQuoteExtendedTooltip" id="1169"/>
+						</Button>
+						<Button name="Button1" id="1160">
+							<Type>Hyperlink</Type>
+							<CommandName>Form.Command.OpenSalesOrder</CommandName>
 							<Title>
 								<v8:item>
 									<v8:lang>en</v8:lang>
 									<v8:content>Sales Order</v8:content>
 								</v8:item>
 							</Title>
-							<Width>15</Width>
-							<HorizontalStretch>false</HorizontalStretch>
-							<ContextMenu name="SalesOrderLastNumberContextMenu" id="630"/>
-							<ExtendedTooltip name="SalesOrderLastNumberExtendedTooltip" id="631"/>
-						</InputField>
-						<InputField name="PurchaseOrderLastNumber" id="632">
-							<DataPath>ConstantsSet.PurchaseOrderLastNumber</DataPath>
+							<ExtendedTooltip name="Button1ExtendedTooltip" id="1161"/>
+						</Button>
+						<Button name="OpenInvoice" id="1162">
+							<Type>Hyperlink</Type>
+							<CommandName>Form.Command.OpenInvoice</CommandName>
 							<Title>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Purchase Order</v8:content>
+									<v8:content>Sales Invoice</v8:content>
 								</v8:item>
 							</Title>
-							<Width>15</Width>
-							<HorizontalStretch>false</HorizontalStretch>
-							<ContextMenu name="PurchaseOrderLastNumberContextMenu" id="633"/>
-							<ExtendedTooltip name="PurchaseOrderLastNumberExtendedTooltip" id="634"/>
-						</InputField>
-						<InputField name="CashReceiptLastNumber" id="608">
-							<DataPath>ConstantsSet.CashReceiptLastNumber</DataPath>
+							<ExtendedTooltip name="OpenInvoiceExtendedTooltip" id="1163"/>
+						</Button>
+						<Button name="OpenCashReceipt" id="1166">
+							<Type>Hyperlink</Type>
+							<CommandName>Form.Command.OpenCashReceipt</CommandName>
 							<Title>
 								<v8:item>
 									<v8:lang>en</v8:lang>
 									<v8:content>Cash Receipt</v8:content>
 								</v8:item>
 							</Title>
-							<Width>15</Width>
-							<HorizontalStretch>false</HorizontalStretch>
-							<ContextMenu name="CashReceiptLastNumberContextMenu" id="609"/>
-							<ExtendedTooltip name="CashReceiptLastNumberExtendedTooltip" id="610"/>
-						</InputField>
-						<InputField name="CashSaleLastNumber" id="611">
-							<DataPath>ConstantsSet.CashSaleLastNumber</DataPath>
+							<ExtendedTooltip name="OpenCashReceiptExtendedTooltip" id="1167"/>
+						</Button>
+						<Button name="OpenPO" id="1164">
+							<Type>Hyperlink</Type>
+							<CommandName>Form.Command.OpenPO</CommandName>
 							<Title>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Cash Sale</v8:content>
+									<v8:content>Purchase Order</v8:content>
 								</v8:item>
 							</Title>
-							<Width>15</Width>
-							<HorizontalStretch>false</HorizontalStretch>
-							<ContextMenu name="CashSaleLastNumberContextMenu" id="612"/>
-							<ExtendedTooltip name="CashSaleLastNumberExtendedTooltip" id="613"/>
-						</InputField>
-						<InputField name="DepositLastNumber" id="614">
-							<DataPath>ConstantsSet.DepositLastNumber</DataPath>
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Deposit</v8:content>
-								</v8:item>
-							</Title>
-							<Width>15</Width>
-							<HorizontalStretch>false</HorizontalStretch>
-							<ContextMenu name="DepositLastNumberContextMenu" id="615"/>
-							<ExtendedTooltip name="DepositLastNumberExtendedTooltip" id="616"/>
-						</InputField>
-						<InputField name="BankTransferLastNumber" id="620">
-							<DataPath>ConstantsSet.BankTransferLastNumber</DataPath>
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Bank Transfer</v8:content>
-								</v8:item>
-							</Title>
-							<Width>15</Width>
-							<HorizontalStretch>false</HorizontalStretch>
-							<ContextMenu name="BankTransferLastNumberContextMenu" id="621"/>
-							<ExtendedTooltip name="BankTransferLastNumberExtendedTooltip" id="622"/>
-						</InputField>
-						<InputField name="WarehouseTransferLastNumber" id="623">
-							<DataPath>ConstantsSet.WarehouseTransferLastNumber</DataPath>
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Warehouse Transfer</v8:content>
-								</v8:item>
-							</Title>
-							<Width>15</Width>
-							<HorizontalStretch>false</HorizontalStretch>
-							<ContextMenu name="WarehouseTransferLastNumberContextMenu" id="624"/>
-							<ExtendedTooltip name="WarehouseTransferLastNumberExtendedTooltip" id="625"/>
-						</InputField>
-						<InputField name="CreditMemoLastNumber" id="626">
-							<DataPath>ConstantsSet.CreditMemoLastNumber</DataPath>
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Credit Memo</v8:content>
-								</v8:item>
-							</Title>
-							<Width>15</Width>
-							<HorizontalStretch>false</HorizontalStretch>
-							<ContextMenu name="CreditMemoLastNumberContextMenu" id="627"/>
-							<ExtendedTooltip name="CreditMemoLastNumberExtendedTooltip" id="628"/>
-						</InputField>
-						<InputField name="GJournalEntry" id="635">
-							<DataPath>ConstantsSet.GJEntryLastNumber</DataPath>
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>General Journal Entry</v8:content>
-								</v8:item>
-							</Title>
-							<Width>15</Width>
-							<HorizontalStretch>false</HorizontalStretch>
-							<ContextMenu name="GJournalEntryContextMenu" id="636"/>
-							<ExtendedTooltip name="GJournalEntryExtendedTooltip" id="637"/>
-						</InputField>
+							<ExtendedTooltip name="OpenPOExtendedTooltip" id="1165"/>
+						</Button>
 					</ChildItems>
 				</Page>
-				<Page name="EmailSetup" id="955">
+				<Page name="EmailSetup" id="1173">
 					<Title>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Email setup</v8:content>
+							<v8:content>E-mail setup</v8:content>
 						</v8:item>
 					</Title>
 					<ToolTip>
@@ -3606,28 +2784,58 @@
 							<v8:content>Email setup</v8:content>
 						</v8:item>
 					</ToolTip>
-					<ExtendedTooltip name="EmailSetupExtendedTooltip" id="956"/>
+					<ExtendedTooltip name="EmailSetupExtendedTooltip" id="1174"/>
 					<ChildItems>
-						<InputField name="MailProfAddress" id="957">
+						<InputField name="MailProfAddress" id="1175">
 							<DataPath>ConstantsSet.MailProfAddress</DataPath>
-							<ContextMenu name="MailProfAddressContextMenu" id="958"/>
-							<ExtendedTooltip name="MailProfAddressExtendedTooltip" id="959"/>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Server</v8:content>
+								</v8:item>
+							</Title>
+							<Width>25</Width>
+							<HorizontalStretch>false</HorizontalStretch>
+							<ContextMenu name="MailProfAddressContextMenu" id="1176"/>
+							<ExtendedTooltip name="MailProfAddressExtendedTooltip" id="1177"/>
 						</InputField>
-						<InputField name="MailProfUser" id="960">
+						<InputField name="MailProfUser" id="1178">
 							<DataPath>ConstantsSet.MailProfUser</DataPath>
-							<ContextMenu name="MailProfUserContextMenu" id="961"/>
-							<ExtendedTooltip name="MailProfUserExtendedTooltip" id="962"/>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>User name</v8:content>
+								</v8:item>
+							</Title>
+							<Width>25</Width>
+							<HorizontalStretch>false</HorizontalStretch>
+							<ContextMenu name="MailProfUserContextMenu" id="1179"/>
+							<ExtendedTooltip name="MailProfUserExtendedTooltip" id="1180"/>
 						</InputField>
-						<InputField name="MailProfPass" id="963">
+						<InputField name="MailProfPass" id="1181">
 							<DataPath>ConstantsSet.MailProfPass</DataPath>
-							<ContextMenu name="MailProfPassContextMenu" id="964"/>
-							<ExtendedTooltip name="MailProfPassExtendedTooltip" id="965"/>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Password</v8:content>
+								</v8:item>
+							</Title>
+							<Width>25</Width>
+							<HorizontalStretch>false</HorizontalStretch>
+							<ContextMenu name="MailProfPassContextMenu" id="1182"/>
+							<ExtendedTooltip name="MailProfPassExtendedTooltip" id="1183"/>
 						</InputField>
-						<CheckBoxField name="MailProfSSL" id="966">
+						<CheckBoxField name="MailProfSSL" id="1184">
 							<DataPath>ConstantsSet.MailProfSSL</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>SSL</v8:content>
+								</v8:item>
+							</Title>
 							<CheckBoxType>Auto</CheckBoxType>
-							<ContextMenu name="MailProfSSLContextMenu" id="967"/>
-							<ExtendedTooltip name="MailProfSSLExtendedTooltip" id="968"/>
+							<ContextMenu name="MailProfSSLContextMenu" id="1185"/>
+							<ExtendedTooltip name="MailProfSSLExtendedTooltip" id="1186"/>
 						</CheckBoxField>
 					</ChildItems>
 				</Page>
@@ -3643,13 +2851,22 @@
 			<SavedData>true</SavedData>
 			<UseAlways>
 				<Field>ConstantsSet.SalesTaxCharging</Field>
+				<Field>ConstantsSet.SOFoot3Type.Ref</Field>
+				<Field>ConstantsSet.SOFoot2Type.Ref</Field>
+				<Field>ConstantsSet.SOFoot1Type.Ref</Field>
 				<Field>ConstantsSet.SIFoot3Type.Ref</Field>
 				<Field>ConstantsSet.SIFoot2Type.Ref</Field>
 				<Field>ConstantsSet.SIFoot1Type.Ref</Field>
+				<Field>ConstantsSet.QuoteFoot3Type.Ref</Field>
+				<Field>ConstantsSet.QuoteFoot2Type.Ref</Field>
+				<Field>ConstantsSet.QuoteFoot1Type.Ref</Field>
 				<Field>ConstantsSet.PeriodClosingOption.Ref</Field>
 				<Field>ConstantsSet.POFoot3Type.Ref</Field>
 				<Field>ConstantsSet.POFoot2Type.Ref</Field>
 				<Field>ConstantsSet.POFoot1Type.Ref</Field>
+				<Field>ConstantsSet.CRFoot3Type.Ref</Field>
+				<Field>ConstantsSet.CRFoot2Type.Ref</Field>
+				<Field>ConstantsSet.CRFoot1Type.Ref</Field>
 			</UseAlways>
 		</Attribute>
 		<Attribute name="ImageAddress" id="2">
@@ -3693,105 +2910,6 @@
 				</v8:StringQualifiers>
 			</Type>
 		</Attribute>
-		<Attribute name="FooterImageAddr1" id="5">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Footer image addr1</v8:content>
-				</v8:item>
-			</Title>
-			<Type>
-				<v8:Type>xs:string</v8:Type>
-				<v8:StringQualifiers>
-					<v8:Length>0</v8:Length>
-					<v8:AllowedLength>Variable</v8:AllowedLength>
-				</v8:StringQualifiers>
-			</Type>
-		</Attribute>
-		<Attribute name="FooterImageAddr2" id="6">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Footer image addr2</v8:content>
-				</v8:item>
-			</Title>
-			<Type>
-				<v8:Type>xs:string</v8:Type>
-				<v8:StringQualifiers>
-					<v8:Length>0</v8:Length>
-					<v8:AllowedLength>Variable</v8:AllowedLength>
-				</v8:StringQualifiers>
-			</Type>
-		</Attribute>
-		<Attribute name="FooterImageAddr3" id="7">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Footer image addr3</v8:content>
-				</v8:item>
-			</Title>
-			<Type>
-				<v8:Type>xs:string</v8:Type>
-				<v8:StringQualifiers>
-					<v8:Length>0</v8:Length>
-					<v8:AllowedLength>Variable</v8:AllowedLength>
-				</v8:StringQualifiers>
-			</Type>
-		</Attribute>
-		<Attribute name="Attribute1" id="8">
-			<Type>
-				<v8:Type>xs:string</v8:Type>
-				<v8:StringQualifiers>
-					<v8:Length>0</v8:Length>
-					<v8:AllowedLength>Variable</v8:AllowedLength>
-				</v8:StringQualifiers>
-			</Type>
-		</Attribute>
-		<Attribute name="POFooterImageAddr1" id="9">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>POFooter image addr1</v8:content>
-				</v8:item>
-			</Title>
-			<Type>
-				<v8:Type>xs:string</v8:Type>
-				<v8:StringQualifiers>
-					<v8:Length>0</v8:Length>
-					<v8:AllowedLength>Variable</v8:AllowedLength>
-				</v8:StringQualifiers>
-			</Type>
-		</Attribute>
-		<Attribute name="POFooterImageAddr2" id="10">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>POFooter image addr2</v8:content>
-				</v8:item>
-			</Title>
-			<Type>
-				<v8:Type>xs:string</v8:Type>
-				<v8:StringQualifiers>
-					<v8:Length>0</v8:Length>
-					<v8:AllowedLength>Variable</v8:AllowedLength>
-				</v8:StringQualifiers>
-			</Type>
-		</Attribute>
-		<Attribute name="POFooterImageAddr3" id="11">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>POFooter image addr3</v8:content>
-				</v8:item>
-			</Title>
-			<Type>
-				<v8:Type>xs:string</v8:Type>
-				<v8:StringQualifiers>
-					<v8:Length>0</v8:Length>
-					<v8:AllowedLength>Variable</v8:AllowedLength>
-				</v8:StringQualifiers>
-			</Type>
-		</Attribute>
 		<Attribute name="ChargingSalesTax" id="12">
 			<Title>
 				<v8:item>
@@ -3806,6 +2924,21 @@
 					<v8:FractionDigits>0</v8:FractionDigits>
 					<v8:AllowedSign>Any</v8:AllowedSign>
 				</v8:NumberQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="old_key" id="8">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Old key</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
 			</Type>
 		</Attribute>
 	</Attributes>
@@ -3870,96 +3003,6 @@
 			</ToolTip>
 			<Action>DwollaConnect</Action>
 		</Command>
-		<Command name="UploadFooter1" id="5">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Upload footer1</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Upload footer1</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Action>UploadFooter1</Action>
-		</Command>
-		<Command name="UploadFooter2" id="6">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Upload footer2</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Upload footer2</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Action>UploadFooter2</Action>
-		</Command>
-		<Command name="UploadFooter3" id="7">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Upload footer3</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Upload footer3</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Action>UploadFooter3</Action>
-		</Command>
-		<Command name="POUploadFooter1" id="8">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>POUpload footer1</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>POUpload footer1</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Action>POUploadFooter1</Action>
-		</Command>
-		<Command name="POUploadFooter2" id="9">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>POUpload footer2</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>POUpload footer2</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Action>POUploadFooter2</Action>
-		</Command>
-		<Command name="POUploadFooter3" id="10">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>POUpload footer3</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>POUpload footer3</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Action>POUploadFooter3</Action>
-		</Command>
 		<Command name="ApiLogConnect" id="11">
 			<Title>
 				<v8:item>
@@ -3989,6 +3032,375 @@
 				</v8:item>
 			</ToolTip>
 			<Action>DocConnect</Action>
+		</Command>
+		<Command name="AddressesContacts" id="13">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Addresses / contacts</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Addresses contacts</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>AddressesContacts</Action>
+		</Command>
+		<Command name="Countries" id="14">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Countries</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Countries</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>Countries</Action>
+		</Command>
+		<Command name="States" id="15">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>States</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>States</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>States</Action>
+		</Command>
+		<Command name="Currencies" id="16">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Currencies</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Currencies</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>Currencies</Action>
+		</Command>
+		<Command name="ExchangeRates" id="17">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Exchange rates</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Exchange rates</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>ExchangeRates</Action>
+		</Command>
+		<Command name="PaymentTerms" id="18">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Payment terms</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Payment terms</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>PaymentTerms</Action>
+		</Command>
+		<Command name="UnitsOfMeasure" id="19">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Units of measure</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Units of measure</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>UnitsOfMeasure</Action>
+		</Command>
+		<Command name="ShippingCarriers" id="20">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Shipping carriers</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Shipping carriers</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>ShippingCarriers</Action>
+		</Command>
+		<Command name="DocumentNumbering" id="22">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Document numbering</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Document numbering</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>DocumentNumbering</Action>
+		</Command>
+		<Command name="ItemCategories" id="23">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Item categories</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Item categories</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>ItemCategories</Action>
+		</Command>
+		<Command name="ActiveUserList" id="24">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Active user list</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Active user list</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>ActiveUserList</Action>
+		</Command>
+		<Command name="SalesPeople" id="25">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Sales people</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Sales people</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>SalesPeople</Action>
+		</Command>
+		<Command name="PriceLevels" id="26">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Price levels</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Price levels</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>PriceLevels</Action>
+		</Command>
+		<Command name="ExpensifyCategories" id="27">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Expensify categories</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Expensify categories</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>ExpensifyCategories</Action>
+		</Command>
+		<Command name="PaymentMethods" id="28">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Payment methods</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Payment methods</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>PaymentMethods</Action>
+		</Command>
+		<Command name="Locations" id="29">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Locations</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Locations</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>Locations</Action>
+		</Command>
+		<Command name="Classes" id="21">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Classes</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Classes</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>Classes</Action>
+		</Command>
+		<Command name="StripeDisconnect" id="30">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Disconnect</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Stripe disconnect</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>StripeDisconnect</Action>
+		</Command>
+		<Command name="DwollaDisconnect" id="31">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Dwolla disconnect</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Dwolla disconnect</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>DwollaDisconnect</Action>
+		</Command>
+		<Command name="RollAPI" id="32">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Roll API</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Roll API</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>RollAPI</Action>
+		</Command>
+		<Command name="OpenSalesOrder" id="36">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Sales Order</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Open sales order</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>OpenSalesOrder</Action>
+		</Command>
+		<Command name="OpenInvoice" id="33">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Open invoice</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Open invoice</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>OpenInvoice</Action>
+		</Command>
+		<Command name="OpenPO" id="5">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Open PO</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Open PO</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>OpenPO</Action>
+		</Command>
+		<Command name="OpenCashReceipt" id="6">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Open cash receipt</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Open cash receipt</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>OpenCashReceipt</Action>
+		</Command>
+		<Command name="OpenQuote" id="7">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Quote</v8:content>
+				</v8:item>
+			</Title>
+			<Action>OpenQuote</Action>
 		</Command>
 	</Commands>
 </Form>

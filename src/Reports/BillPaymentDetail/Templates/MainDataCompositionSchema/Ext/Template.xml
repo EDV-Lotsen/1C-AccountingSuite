@@ -122,6 +122,10 @@
 			<dataPath>Voided</dataPath>
 			<field>Voided</field>
 		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>RemitAddress</dataPath>
+			<field>RemitAddress</field>
+		</field>
 		<dataSource>DataSource1</dataSource>
 		<query>SELECT
 	InvoicePaymentLineItems.Ref,
@@ -149,6 +153,7 @@
 	InvoicePaymentLineItems.Ref.Voided,
 	InvoicePaymentLineItems.Ref.DwollaTrxID,
 	InvoicePaymentLineItems.Ref.CoinbaseTrxID,
+	InvoicePaymentLineItems.Ref.RemitAddress,
 	InvoicePaymentLineItems.Ref.Presentation,
 	InvoicePaymentLineItems.Ref.PointInTime
 FROM
@@ -227,6 +232,9 @@ FROM
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Posted</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>RemitAddress</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>DocumentTotalRC</dcsset:field>

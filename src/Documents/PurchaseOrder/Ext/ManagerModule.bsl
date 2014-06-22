@@ -4,6 +4,20 @@
 //------------------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////////////
+#Region EVENTS_HANDLERS
+
+Procedure PresentationGetProcessing(Data, Presentation, StandardProcessing)
+	
+	StandardProcessing = False;
+	
+	Presentation = "PO #" + Data.Number + " " + Format(Data.Date, "DLF=D"); 
+	
+EndProcedure
+
+#EndRegion
+
+
+////////////////////////////////////////////////////////////////////////////////
 #Region PUBLIC_INTERFACE
 
 #If Server Or ThickClientOrdinaryApplication Or ExternalConnection Then
@@ -19,6 +33,7 @@ Function PrepareDataStructuresForPosting(DocumentRef, AdditionalProperties, Regi
 	
 	// Create a query to request document data.
 	Query = New Query;
+	Query.TempTablesManager = New TempTablesManager;
 	Query.SetParameter("Ref", DocumentRef);
 	
 	// Query for document's tables.
@@ -28,8 +43,14 @@ Function PrepareDataStructuresForPosting(DocumentRef, AdditionalProperties, Regi
 	
 	// Save documents table in posting parameters.
 	For Each DocumentTable In TablesList Do
-		AdditionalProperties.Posting.PostingTables.Insert(DocumentTable.Key, QueryResult[DocumentTable.Value].Unload());
+		ResultTable = QueryResult[DocumentTable.Value].Unload();
+		If Not DocumentPosting.IsTemporaryTable(ResultTable) Then
+			AdditionalProperties.Posting.PostingTables.Insert(DocumentTable.Key, ResultTable);
+		EndIf;
 	EndDo;
+	
+	// Clear used temporary tables manager.
+	Query.TempTablesManager.Close();
 	
 	// Fill list of registers to check (non-negative) balances in posting parameters.
 	FillRegistersCheckList(AdditionalProperties, RegisterRecords);
@@ -118,33 +139,73 @@ EndFunction
 //  Spreadsheet  - Filled print form.
 //  Title        - Filled spreadsheet title.
 //
-Procedure Print(Spreadsheet, SheetTitle, DocumentRef, TemplateName = Undefined) Export
+Procedure Print(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
+SheetTitle = "Purchase order";
+	CustomTemplate = GeneralFunctions.GetCustomTemplate("Document.PurchaseOrder", SheetTitle);
 	
-	//------------------------------------------------------------------------------
-	// 1. Filling of parameters.
+	If CustomTemplate = Undefined Then
+		Template = Documents.PurchaseOrder.GetTemplate("NewPOPrintForm");
+	Else
+		Template = CustomTemplate;
+	EndIf;
 	
-	// Common filling of parameters.
-	PrintingTables                  = New Structure;
-	DocumentParameters              = New Structure("Ref, Metadata, TemplateName");
-	DocumentParameters.Ref          = DocumentRef;
-	DocumentParameters.Metadata     = Metadata.Documents.PurchaseOrder;
-	DocumentParameters.TemplateName = TemplateName;
-	
-	//------------------------------------------------------------------------------
-	// 2. Collect document data, available for printing, and fill printing structure.
-	PrepareDataStructuresForPrinting(DocumentRef, DocumentParameters, PrintingTables);
-	
-	//------------------------------------------------------------------------------
-	// 3. Fill output spreadsheet using the template and requested document data.
-	
-	// Define common template for the document.
-	CommonTemplate       = DocumentPrinting.GetDocumentTemplate(DocumentParameters, PrintingTables);
-	LogoPicture          = DocumentPrinting.GetDocumentLogo(DocumentParameters, PrintingTables);
-	SheetTitle           = DocumentPrinting.GetDocumentTitle(DocumentParameters);
-	LastUsedTemplateName = Undefined;
-	
-	// Prepare the output.
-	Spreadsheet.Clear();
+   // Quering necessary data.
+   Query = New Query();
+   Query.Text =
+   "SELECT
+   |	PurchaseOrder.Ref,
+   |	PurchaseOrder.DataVersion,
+   |	PurchaseOrder.DeletionMark,
+   |	PurchaseOrder.Number,
+   |	PurchaseOrder.Date,
+   |	PurchaseOrder.Posted,
+   |	PurchaseOrder.Company,
+   |	PurchaseOrder.CompanyAddress,
+   |	PurchaseOrder.DropshipCompany,
+   |	PurchaseOrder.DropshipShipTo,
+   |	PurchaseOrder.DropshipBillTo,
+   |	PurchaseOrder.DropshipConfirmTo,
+   |	PurchaseOrder.DropshipRefNum,
+   |	PurchaseOrder.SalesPerson,
+   |	PurchaseOrder.Currency,
+   |	PurchaseOrder.ExchangeRate,
+   |	PurchaseOrder.Location,
+   |	PurchaseOrder.DeliveryDate,
+   |	PurchaseOrder.Project,
+   |	PurchaseOrder.Class,
+   |	PurchaseOrder.Memo,
+   |	PurchaseOrder.ManualAdjustment,
+   |	PurchaseOrder.DocumentTotal,
+   |	PurchaseOrder.DocumentTotalRC,
+   |	PurchaseOrder.BaseDocument,
+   |	PurchaseOrder.LineItems.(
+   |		Ref,
+   |		LineNumber,
+   |		Product,
+   |		ProductDescription,
+   |		Quantity,
+   |		UM,
+   |		Price,
+   |		LineTotal,
+   |		Location,
+   |		DeliveryDate,
+   |		Project,
+   |		Class
+   |	)
+   |FROM
+   |	Document.PurchaseOrder AS PurchaseOrder
+   |WHERE
+   |	PurchaseOrder.Ref IN(&Ref)";
+   Query.SetParameter("Ref", Ref);
+   Selection = Query.Execute().Select();
+  
+   Spreadsheet.Clear();
+   
+    While Selection.Next() Do
+	   
+	BinaryLogo = GeneralFunctions.GetLogo();
+	LogoPicture = New Picture(BinaryLogo);
+	DocumentPrinting.FillLogoInDocumentTemplate(Template, LogoPicture); 
 	
 	Try
 		FooterLogo = GeneralFunctions.GetFooterPO("POfooter1");
@@ -155,187 +216,664 @@ Procedure Print(Spreadsheet, SheetTitle, DocumentRef, TemplateName = Undefined) 
 		Footer3Pic = New Picture(FooterLogo3);
 	Except
 	EndTry;
-
 	
-	// Go thru references and fill out the spreadsheet by each document.
-	For Each DocumentAttributes In PrintingTables.Table_Printing_Document_Attributes Do
-		
-		//------------------------------------------------------------------------------
-		// 3.1. Define template for the document.
-		
-		// Set the document template.
-		If (DocumentParameters.TemplateName = Undefined)
-		Or TypeOf(DocumentParameters.TemplateName) = Type("String") Then
-			// Assign the common template for all documents.
-			Template = CommonTemplate;
+	//Add footer with page count	
+	Template.Footer.Enabled = True;
+	Template.Footer.RightText = "Page [&PageNumber] of [&PagesTotal]";
+   
+	TemplateArea = Template.GetArea("Header");
+	  		
+	UsBill = PrintTemplates.ContactInfoDatasetUs();
+	If Selection.DropshipShipTo <> Catalogs.Addresses.EmptyRef() Then
+		ThemShip = PrintTemplates.ContactInfoDataset(Selection.DropshipCompany, "ThemShip", Selection.DropshipShipTo);
+	Else
+		// ship to us //
+		ThemShip = PrintTemplates.ContactInfoDatasetUs();
+	EndIf;
+	
+	ThemBill = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemBill", Selection.CompanyAddress);
+	
+	TemplateArea.Parameters.Fill(UsBill);
+	Try TemplateArea.Parameters.Fill(ThemShip); Except Endtry;
+	TemplateArea.Parameters.Fill(ThemBill);
+//	TemplateArea.Parameters.RefNum = Selection.RefNum;
+	//TemplateArea.Parameters.SalesPerson = Selection.SalesPerson;
 			
-		ElsIf TypeOf(DocumentParameters.TemplateName) = Type("Array") Then
-			// Use an individual template for each document.
-			IndividualTemplateName = DocumentPrinting.GetIndividualTemplateName(DocumentRef, DocumentAttributes.Ref, DocumentParameters);
-			If IndividualTemplateName = Undefined Then
-				Template = CommonTemplate;
-				LastUsedTemplateName = Undefined;
-			ElsIf IndividualTemplateName <> LastUsedTemplateName Then
-				Template = DocumentPrinting.GetDocumentTemplate(DocumentParameters, PrintingTables, IndividualTemplateName);
-				LastUsedTemplateName = IndividualTemplateName;
-			EndIf;
+	////If Constants.SIShowFullName.Get() = True Then
+	//If SessionParameters.TenantValue = "1100674" Or Constants.SIShowFullName.Get() = True Then
+	//	TemplateArea.Parameters.ThemFullName = ThemBill.ThemBillSalutation + " " + ThemBill.ThemBillFirstName + " " + ThemBill.ThemBillLastName;
+	//	TemplateArea.Parameters.ThemFullName2 = ThemShip.ThemShipSalutation + " " + ThemShip.ThemShipFirstName + " " + ThemShip.ThemShipLastName;
+
+	//EndIf;
+	
+	TemplateArea.Parameters.VendorString = Upper(Constants.VendorName.Get()) + ":";
+		
+	If Constants.POShowFullName.Get() = True Then
+		//If SessionParameters.TenantValue = "1100674" Or Constants.SIShowFullName.Get() = True Then
+		If Selection.DropshipShipTo <> Catalogs.Addresses.EmptyRef() Then
+			TemplateArea.Parameters.ThemFullName = ThemShip.ThemShipSalutation + " " + ThemShip.ThemShipFirstName + " " + ThemShip.ThemShipLastName;
+		Else
+			// ship to us
+			TemplateArea.Parameters.ThemFullName = "";
+		EndIf;
+	EndIf;
+	
+	TemplateArea.Parameters.Date = Selection.Date;
+	TemplateArea.Parameters.Number = Selection.Number;
+	//TemplateArea.Parameters.RefNum = Selection.RefNum;
+	//TemplateArea.Parameters.Carrier = Selection.Carrier;
+	//TemplateArea.Parameters.TrackingNumber = Selection.TrackingNumber;
+	//TemplateArea.Parameters.SalesPerson = Selection.SalesPerson;
+	//TemplateArea.Parameters.FOB = Selection.FOB;
+	 Try
+	 	TemplateArea.Parameters.Terms = Selection.Terms;
+		TemplateArea.Parameters.DueDate = Selection.DueDate;
+	Except
+	EndTry;
+	
+	//UsBill filling
+	If TemplateArea.Parameters.UsBillLine1 <> "" Then
+		TemplateArea.Parameters.UsBillLine1 = TemplateArea.Parameters.UsBillLine1 + Chars.LF; 
+	EndIf;
+
+	If TemplateArea.Parameters.UsBillLine2 <> "" Then
+		TemplateArea.Parameters.UsBillLine2 = TemplateArea.Parameters.UsBillLine2 + Chars.LF; 
+	EndIf;
+	
+	If TemplateArea.Parameters.UsBillCityStateZIP <> "" Then
+		TemplateArea.Parameters.UsBillCityStateZIP = TemplateArea.Parameters.UsBillCityStateZIP + Chars.LF; 
+	EndIf;
+	
+	If TemplateArea.Parameters.UsBillPhone <> "" Then
+		TemplateArea.Parameters.UsBillPhone = TemplateArea.Parameters.UsBillPhone + Chars.LF; 
+	EndIf;
+	
+	If TemplateArea.Parameters.UsBillEmail <> "" AND Constants.POShowEmail.Get() = False Then
+		TemplateArea.Parameters.UsBillEmail = ""; 
+	EndIf;
+	
+	//ThemBill filling
+	If TemplateArea.Parameters.ThemBillLine1 <> "" Then
+		TemplateArea.Parameters.ThemBillLine1 = TemplateArea.Parameters.ThemBillLine1 + Chars.LF; 
+	Else
+		TemplateArea.Parameters.ThemBillLine1 = "";
+	EndIf;
+
+	If TemplateArea.Parameters.ThemBillLine2 <> "" Then
+		TemplateArea.Parameters.ThemBillLine2 = TemplateArea.Parameters.ThemBillLine2 + Chars.LF; 
+	Else
+		TemplateArea.Parameters.ThemBillLine2 = "";
+	EndIf;
+	
+	If TemplateArea.Parameters.ThemBillLine3 <> "" Then
+		TemplateArea.Parameters.ThemBillLine3 = TemplateArea.Parameters.ThemBillLine3 + Chars.LF; 
+	Else
+		TemplateArea.Parameters.ThemBillLine3 = "";
+	EndIf;
+	
+	//ThemShip filling
+	Try
+		If TemplateArea.Parameters.ThemShipLine1 <> "" Then
+			TemplateArea.Parameters.ThemShipLine1 = TemplateArea.Parameters.ThemShipLine1 + Chars.LF; 
+		Else
+			TemplateArea.Parameters.ThemShipLine1 = "";
+		EndIf;
+
+		If TemplateArea.Parameters.ThemShipLine2 <> "" Then
+			TemplateArea.Parameters.ThemShipLine2 = TemplateArea.Parameters.ThemShipLine2 + Chars.LF; 
+		Else
+			TemplateArea.Parameters.ThemShipLine2 = "";
 		EndIf;
 		
-		//------------------------------------------------------------------------------
-		// 3.2. Output document data to spreadsheet using selected template.
+		If TemplateArea.Parameters.ThemShipLine3 <> "" Then
+			TemplateArea.Parameters.ThemShipLine3 = TemplateArea.Parameters.ThemShipLine3 + Chars.LF; 
+		Else
+			TemplateArea.Parameters.ThemShipLine3 = "";
+		EndIf;
+	Except // ship to us
+		If Constants.MultiLocation.Get() = True Then
+			
+			TemplateArea.Parameters.ThemShipLine1 = Selection.Location.AddressLine1 + Chars.LF; 
+			TemplateArea.Parameters.ThemShipLine2 = Selection.Location.AddressLine2 + Chars.LF;  
+			TemplateArea.Parameters.ThemShipLine3 = Selection.Location.AddressLine3 + Chars.LF; 
+			TemplateArea.Parameters.ThemShipName = String(Selection.Location) + Chars.LF;
+			If Selection.Location.City <> "" AND String(Selection.Location.State) <> "" Then
+				comma = ", ";
+			Else
+				comma = "";
+			EndIf;
+			TemplateArea.Parameters.ThemShipCityStateZIP = Selection.Location.City + comma + Selection.Location.State + " " + Selection.Location.ZIP;  
+			TemplateArea.Parameters.ThemShipPhone = "";  
+			TemplateArea.Parameters.ThemShipFax = ""; 
+			TemplateArea.Parameters.ThemShipEmail = "";
+			
+		Else
 		
-		// Document output.
-		If Template <> Undefined Then
-			
-			// Put logo into the template.
-			DocumentPrinting.FillLogoInDocumentTemplate(Template, LogoPicture);
-			
-			// Fill document header.
-			TemplateArea = Template.GetArea("Header");
-			TemplateArea.Parameters.Fill(DocumentAttributes);
-			TemplateArea.Parameters.Fill(PrintingTables.Table_OurCompany_Addresses_BillingAddress[0]);
-			TemplateArea.Parameters.Fill(PrintingTables.Table_Company_Addresses_BillingAddress.Find(DocumentAttributes.Ref, "Ref"));
-			
+			If TemplateArea.Parameters.UsBillLine1 <> "" Then
+			TemplateArea.Parameters.ThemShipLine1 = TemplateArea.Parameters.UsBillLine1; 
+			EndIf;
 
-			//if a dropship customer exists
-			If DocumentRef[0].DropshipCompany <> Catalogs.Companies.EmptyRef() Then
+			If TemplateArea.Parameters.UsBillLine2 <> "" Then
+				TemplateArea.Parameters.ThemShipLine2 = TemplateArea.Parameters.UsBillLine2; 
+			EndIf;
+			
+			TemplateArea.Parameters.ThemShipLine3 = "";
+			TemplateArea.Parameters.ThemShipName = TemplateArea.Parameters.UsName;
+			
+			If TemplateArea.Parameters.UsBillCityStateZIP <> "" Then
+				TemplateArea.Parameters.ThemShipCityStateZIP = TemplateArea.Parameters.UsBillCityStateZIP; 
+			EndIf;
+			
+				TemplateArea.Parameters.ThemShipPhone = ""; 			
+				TemplateArea.Parameters.ThemShipFax = ""; 
+				TemplateArea.Parameters.ThemShipEmail = "";		
+		EndIf;
+		
+	EndTry;
+	 
+	 Spreadsheet.Put(TemplateArea);
+	 	 
+	If Constants.POShowPhone2.Get() = False Then
+		Direction = SpreadsheetDocumentShiftType.Vertical;
+		Area = Spreadsheet.Area("MobileArea");
+		Spreadsheet.DeleteArea(Area, Direction);
+		Spreadsheet.InsertArea(Spreadsheet.Area("R10"), Spreadsheet.Area("R10"), 
+        SpreadsheetDocumentShiftType.Vertical);
+	EndIf;
+	
+	If Constants.POShowWebsite.Get() = False Then
+		Direction = SpreadsheetDocumentShiftType.Vertical;
+		Area = Spreadsheet.Area("WebsiteArea");
+		Spreadsheet.DeleteArea(Area, Direction);
+		Spreadsheet.InsertArea(Spreadsheet.Area("R10"), Spreadsheet.Area("R10"), 
+		SpreadsheetDocumentShiftType.Vertical);
+
+	EndIf;
+	
+	If Constants.POShowFax.Get() = False Then
+		Direction = SpreadsheetDocumentShiftType.Vertical;
+		Area = Spreadsheet.Area("FaxArea");
+		Spreadsheet.DeleteArea(Area, Direction);
+		Spreadsheet.InsertArea(Spreadsheet.Area("R10"), Spreadsheet.Area("R10"), 
+		SpreadsheetDocumentShiftType.Vertical);
+
+	EndIf;
+	
+	If Constants.POShowFedTax.Get() = False Then
+		Direction = SpreadsheetDocumentShiftType.Vertical;
+		Area = Spreadsheet.Area("FedTaxArea");
+		Spreadsheet.DeleteArea(Area, Direction);
+		Spreadsheet.InsertArea(Spreadsheet.Area("R10"), Spreadsheet.Area("R10"), 
+		SpreadsheetDocumentShiftType.Vertical);
+
+	EndIf;
+		
+	SelectionLineItems = Selection.LineItems.Select();
+	TemplateArea = Template.GetArea("LineItems");
+	LineTotalSum = 0;
+	LineItemSwitch = False;
+	CurrentLineItemIndex = 0;
+	While SelectionLineItems.Next() Do
+				 
+		TemplateArea.Parameters.Fill(SelectionLineItems);
+		CompanyName = Selection.Company.Description;
+		CompanyNameLen = StrLen(CompanyName);
+		Try
+			 If NOT SelectionLineItems.Project = "" Then
+				ProjectLen = StrLen(SelectionLineItems.Project);
+			 	TemplateArea.Parameters.Project = Right(SelectionLineItems.Project, ProjectLen - CompanyNameLen - 2);
+			EndIf;
+		Except
+		EndTry;
+		If SelectionLineItems.Product.vendor_code <> "" Then
+			TemplateArea.Parameters.Product = SelectionLineItems.Product.vendor_code;
+		EndIf;
+		If SelectionLineItems.Product.vendor_description <> "" Then
+			TemplateArea.Parameters.ProductDescription = SelectionLineItems.Product.vendor_description;
+		EndIf;
+		LineTotal = SelectionLineItems.LineTotal;
+		TemplateArea.Parameters.UM = SelectionLineItems.Product.UM;
+		TemplateArea.Parameters.Price = "$" + Format(SelectionLineItems.Price, "NFD=2; NZ=");
+		TemplateArea.Parameters.LineTotal = "$" + Format(SelectionLineItems.LineTotal, "NFD=2; NZ=");		
+		Spreadsheet.Put(TemplateArea, SelectionLineItems.Level());
 				
-				TemplateArea.Parameters.UsName = DocumentRef[0].DropshipCompany;
-				TemplateArea.Parameters.UsBillLine1 = DocumentRef[0].DropshipShipTo.AddressLine1;
-				TemplateArea.Parameters.UsBillLine2 = DocumentRef[0].DropshipShipTo.AddressLine2;
-				TemplateArea.Parameters.UsBillCityStateZIP = DocumentRef[0].DropshipShipTo.City + ", " + DocumentRef[0].DropshipShipTo.State.Code + " " +  DocumentRef[0].DropshipShipTo.Zip;
-				TemplateArea.Parameters.UsBillCountry = DocumentRef[0].DropshipShipTo.Country;
-				
-			EndIf;
-
-			If Constants.POShowEmail.Get() = False Then
-				  TemplateArea.Parameters.UsBillEmail = "";
-				 	
-
-			EndIf;
-			  
-			If Constants.POShowFedTax.Get() = False Then
-				  TemplateArea.Parameters.UsBillFedTaxID = "";
-			  Else
-				  TemplateArea.Parameters.UsBillFedTaxID = Constants.FederalTaxID.Get();
-			EndIf;
-
-			If Constants.POShowFax.Get() = False Then
-				  TemplateArea.Parameters.UsBillFax = "";
-			Else
-				  TemplateArea.Parameters.UsBillFax = Constants.Fax.Get();	  	
-			EndIf;
-
-			Try
-				If Constants.POShowWebsite.Get() = False Then
-					  TemplateArea.Parameters.Website = "";
-				Else
-					  TemplateArea.Parameters.Website = Constants.Website.Get(); 
-				  EndIf;
-			Except
-			EndTry;
-			  
-			If Constants.POShowPhone2.Get() = False Then
-				  TemplateArea.Parameters.UsBillCell = "";
-			Else
-				  TemplateArea.Parameters.UsBillCell = Constants.Cell.Get();
-			EndIf;
-			  
-			Try
-				If TemplateArea.Parameters.UsBillFax <> "" And TemplateArea.Parameters.UsBillFax <> Undefined Then
-					TemplateArea.Parameters.Fax = "Fax";
-				EndIf;
-
-				If TemplateArea.Parameters.USBillFedTaxID <> "" And TemplateArea.Parameters.USBillFedTaxID <> Undefined Then
-					TemplateArea.Parameters.FederalTaxID = "Fed Tax ID";
-				EndIf;
-			Except
-			EndTry;
-  
-
-			
-			// Output the header to the sheet.
-			Spreadsheet.Put(TemplateArea);
-			
-			// Output the line items header to the sheet.
-			TemplateArea = Template.GetArea("LineItemsHeader");
-			Spreadsheet.Put(TemplateArea);
-			
-			// Output line items of current document.
+		If LineItemSwitch = False Then
+			TemplateArea = Template.GetArea("LineItems2");
+			LineItemSwitch = True;
+		Else
 			TemplateArea = Template.GetArea("LineItems");
-			LineItems = PrintingTables.Table_Printing_Document_LineItems.FindRows(New Structure("Ref", DocumentAttributes.Ref));
-			For Each Row In LineItems Do
-				//If vendor code or vendor description supplied, replace in template.
-				TemplateArea.Parameters.Fill(Row);
-				CurProd = Row.Product;
-				If CurProd.vendor_code <> "" Then
-					TemplateArea.Parameters.Product = CurProd.vendor_code;
-				EndIf;
-				
-				If CurProd.vendor_description <> "" Then
-					TemplateArea.Parameters.ProductDescription = CurProd.vendor_description;
-				EndIf;
-				Spreadsheet.Put(TemplateArea, 1);
-			EndDo;
-			
-			// Output document total.
-			TemplateArea = Template.GetArea("Total");
-			TemplateArea.Parameters.Fill(DocumentAttributes);
-			Spreadsheet.Put(TemplateArea);
+			LineItemSwitch = False;
 		EndIf;
 		
-//newlyadded
+		// If can't fit next line, place header
+		
+		Footer = Template.GetArea("Area3");
+		RowsToCheck = New Array();
+		RowsToCheck.Add(TemplateArea);
+		DividerArea = Template.GetArea("DividerArea");
+		RowsToCheck.Add(Footer);
+		RowsToCheck.Add(DividerArea);
+		
+		If Spreadsheet.CheckPut(RowsToCheck) = False Then
+			
+			// Add divider and footer to bottom, break to next page, add header.
+			
+			Row = Template.GetArea("EmptyRow");
+			Spreadsheet.Put(Row);
+			
+			DividerArea = Template.GetArea("DividerArea");
+			Spreadsheet.Put(DividerArea);
 
-
- 	TemplateArea = Template.GetArea("Notes");
-	TemplateArea.Parameters.Notes = Constants.PONotes.Get();
+			If Constants.POFoot1Type.Get()= Enums.TextOrImage.Image Then	
+				DocumentPrinting.FillPictureInDocumentTemplate(Template, Footer1Pic, "POfooter1");
+				TemplateArea2 = Template.GetArea("FooterField|FooterSection1");	
+				Spreadsheet.Put(TemplateArea2);
+			Elsif Constants.POFoot1Type.Get() = Enums.TextOrImage.Text Then
+				TemplateArea2 = Template.GetArea("TextField|FooterSection1");
+				TemplateArea2.Parameters.FooterTextLeft = Constants.POFooterTextLeft.Get();
+				Spreadsheet.Put(TemplateArea2);
+			EndIf;
+		
+			If Constants.POFoot2Type.Get()= Enums.TextOrImage.Image Then
+				DocumentPrinting.FillPictureInDocumentTemplate(Template, Footer2Pic, "POfooter2");
+				TemplateArea2 = Template.GetArea("FooterField|FooterSection2");	
+				Spreadsheet.Join(TemplateArea2);
+			
+			Elsif Constants.POFoot2Type.Get() = Enums.TextOrImage.Text Then
+				TemplateArea2 = Template.GetArea("TextField|FooterSection2");
+				TemplateArea2.Parameters.FooterTextCenter = Constants.POFooterTextCenter.Get();
+				Spreadsheet.Join(TemplateArea2);
+			EndIf;
+		
+			If Constants.POFoot3Type.Get()= Enums.TextOrImage.Image Then
+					DocumentPrinting.FillPictureInDocumentTemplate(Template, Footer3Pic, "POfooter3");
+					TemplateArea2 = Template.GetArea("FooterField|FooterSection3");	
+					Spreadsheet.Join(TemplateArea2);
+			Elsif Constants.POFoot3Type.Get() = Enums.TextOrImage.Text Then
+					TemplateArea2 = Template.GetArea("TextField|FooterSection3");
+					TemplateArea2.Parameters.FooterTextRight = Constants.POFooterTextRight.Get();
+					Spreadsheet.Join(TemplateArea2);
+			EndIf;	
+			
+			Spreadsheet.PutHorizontalPageBreak();
+			Header =  Spreadsheet.GetArea("TopHeader");
+			
+			LineItemsHeader = Template.GetArea("LineItemsHeader");
+			EmptySpace = Template.GetArea("EmptyRow");
+			Spreadsheet.Put(Header);
+			Spreadsheet.Put(EmptySpace);
+			If CurrentLineItemIndex < SelectionLineItems.Count() Then
+				Spreadsheet.Put(LineItemsHeader);
+			EndIf;
+		EndIf;
+		 
+	 EndDo;
+	
+	TemplateArea = Template.GetArea("EmptySpace");
 	Spreadsheet.Put(TemplateArea);
 	
-
-
-	Try
-		If Constants.POFoot1Type.Get()= Enums.TextOrImage.Image Then
-			DocumentPrinting.FillPictureInDocumentTemplate(Template,Footer1Pic, "POfooter1");
-		EndIf;
-		If Constants.POFoot2Type.Get()= Enums.TextOrImage.Image Then
-			DocumentPrinting.FillPictureInDocumentTemplate(Template, Footer2Pic, "POfooter2");
-		EndIf;
-		If Constants.POFoot3Type.Get()= Enums.TextOrImage.Image Then
-			DocumentPrinting.FillPictureInDocumentTemplate(Template, Footer3Pic, "POfooter3");
-		EndIf;	
-	Except
-	EndTry;	
+	Row = Template.GetArea("EmptyRow");
+	DetailArea = Template.GetArea("Area3");
+	Compensator = Template.GetArea("Compensator");
+	RowsToCheck = New Array();
+	RowsToCheck.Add(Row);
+	RowsToCheck.Add(DetailArea);
 	
-	Row = Template.GetArea("SpaceRow");
-	Footer = Template.GetArea("Footer");
+	
+	// If Area3 does not fit, print to next page and add preceding header
+	
+	AddHeader = False;
+	If Spreadsheet.CheckPut(DetailArea) = False Then
+		AddHeader = True;
+	EndIf;
+		
+	While Spreadsheet.CheckPut(RowsToCheck) = False Do
+		 Spreadsheet.Put(Row);
+	   	 RowsToCheck.Clear();
+	  	 RowsToCheck.Add(DetailArea);
+		 RowsToCheck.Add(Row);
+	EndDo;
+	
+	//Push down until bottom with space for footer  -  Saved here for future reference.
+
+		//Footer = Template.GetArea("FooterField");
+		//RowsToCheck.Add(Row);
+		//RowsToCheck.Add(Footer);
+		//While Spreadsheet.CheckPut(RowsToCheck) Do
+		//	 Spreadsheet.Put(Row);
+		//   	 RowsToCheck.Clear();
+		//  	 RowsToCheck.Add(DetailArea);
+		//	 RowsToCheck.Add(Row);
+		//	 RowsToCheck.Add(Footer);
+		//	 RowsToCheck.Add(Row);
+		//	 RowsToCheck.Add(Row);
+		//EndDo;
+	
+	If AddHeader = True Then
+		HeaderArea = Spreadsheet.GetArea("TopHeader");
+		Spreadsheet.Put(HeaderArea);
+		Spreadsheet.Put(Row);
+	EndIf;
+
+	 
+	TemplateArea = Template.GetArea("Area3|Area1");					
+	TemplateArea.Parameters.TermAndCond = Constants.PurOrderFooter.Get();
+	Spreadsheet.Put(TemplateArea);
+
+	
+	TemplateArea = Template.GetArea("Area3|Area2");
+	//TemplateArea.Parameters.LineSubtotal = Selection.Currency.Symbol + Format(Selection.LineSubtotal, "NFD=2; NZ=");
+	//TemplateArea.Parameters.Discount = "("+ Selection.Currency.Symbol + Format(Selection.Discount, "NFD=2; NZ=") + ")";
+	//TemplateArea.Parameters.Subtotal = Selection.Currency.Symbol + Format(Selection.Subtotal, "NFD=2; NZ=");
+	//TemplateArea.Parameters.Shipping = Selection.Currency.Symbol + Format(Selection.Shipping, "NFD=2; NZ=");
+	//TemplateArea.Parameters.SalesTax = Selection.Currency.Symbol + Format(Selection.SalesTax, "NFD=2; NZ=");
+	TemplateArea.Parameters.Total = Selection.Currency.Symbol + Format(Selection.DocumentTotal, "NFD=2; NZ=");
+//	TemplateArea.Parameters.Balance = Selection.Currency.Symbol + Format(Selection.Balance, "NFD=2; NZ=");
+
+	Spreadsheet.Join(TemplateArea);
+		
+	Row = Template.GetArea("EmptyRow");
+	Footer = Template.GetArea("FooterField");
+	Compensator = Template.GetArea("Compensator");
 	RowsToCheck = New Array();
 	RowsToCheck.Add(Row);
 	RowsToCheck.Add(Footer);
+	RowsToCheck.Add(Row);
 	
-	If Constants.POFoot1Type.Get() = Enums.TextOrImage.Text Then
-		Footer.Parameters.POFooterLeft = Constants.POFooterTextLeft.Get();
-	EndIf;
-	If Constants.POFoot2Type.Get() = Enums.TextOrImage.Text Then
-		Footer.Parameters.POFooterCenter = Constants.POFooterTextCenter.Get();
-	EndIf;
-	If Constants.POFoot3Type.Get() = Enums.TextOrImage.Text Then
-		Footer.Parameters.POFooterRight = Constants.POFooterTextRight.Get();
-	EndIf;
-
 	
 	While Spreadsheet.CheckPut(RowsToCheck) Do
-		 SpreadSheet.Put(Row);
+		 Spreadsheet.Put(Row);
+	   	 RowsToCheck.Clear();
+	  	 RowsToCheck.Add(Footer);
+		 RowsToCheck.Add(Row);
+	 EndDo;
+	 
+	 While Spreadsheet.CheckPut(RowsToCheck) Do
+		 Spreadsheet.Put(Row);
+	   	 RowsToCheck.Clear();
+	  	 RowsToCheck.Add(Footer);
+		 RowsToCheck.Add(Row);
+		 RowsToCheck.Add(Row);
+		 RowsToCheck.Add(Row);
 
-		 RowsToCheck.Clear();
-		 RowsToCheck.Add(Row);
-		 RowsToCheck.Add(Footer);
-		 RowsToCheck.Add(Row);
 	EndDo;
 
-	Spreadsheet.Put(Footer);
-//newlyadded
-	Spreadsheet.PutHorizontalPageBreak();
-	EndDo;
+
+	TemplateArea = Template.GetArea("DividerArea");
+	Spreadsheet.Put(TemplateArea);
+	
+	//Final footer
+	
+	If Constants.POFoot1Type.Get()= Enums.TextOrImage.Image Then	
+			DocumentPrinting.FillPictureInDocumentTemplate(Template, Footer1Pic, "POfooter1");
+			TemplateArea = Template.GetArea("FooterField|FooterSection1");	
+			Spreadsheet.Put(TemplateArea);
+	Elsif Constants.POFoot1Type.Get() = Enums.TextOrImage.Text Then
+			TemplateArea = Template.GetArea("TextField|FooterSection1");
+			TemplateArea.Parameters.FooterTextLeft = Constants.POFooterTextLeft.Get();
+			Spreadsheet.Put(TemplateArea);
+	EndIf;
+		
+	If Constants.POFoot2Type.Get()= Enums.TextOrImage.Image Then
+			DocumentPrinting.FillPictureInDocumentTemplate(Template, Footer2Pic, "POfooter2");
+			TemplateArea = Template.GetArea("FooterField|FooterSection2");	
+			Spreadsheet.Join(TemplateArea);		
+	Elsif Constants.POFoot2Type.Get() = Enums.TextOrImage.Text Then
+			TemplateArea = Template.GetArea("TextField|FooterSection2");
+			TemplateArea.Parameters.FooterTextCenter = Constants.POFooterTextCenter.Get();
+			Spreadsheet.Join(TemplateArea);
+	EndIf;
+		
+	If Constants.POFoot3Type.Get()= Enums.TextOrImage.Image Then
+			DocumentPrinting.FillPictureInDocumentTemplate(Template, Footer3Pic, "POfooter3");
+			TemplateArea = Template.GetArea("FooterField|FooterSection3");	
+			Spreadsheet.Join(TemplateArea);
+	Elsif Constants.POFoot3Type.Get() = Enums.TextOrImage.Text Then
+			TemplateArea = Template.GetArea("TextField|FooterSection3");
+			TemplateArea.Parameters.FooterTextRight = Constants.POFooterTextRight.Get();
+			Spreadsheet.Join(TemplateArea);
+	EndIf;
+		
+	Spreadsheet.PutHorizontalPageBreak(); //.ВывестиГоризонтальныйРазделительСтраниц();
+	Spreadsheet.FitToPage  = True;
+	
+	// Remove footer information if only a page.
+	If Spreadsheet.PageCount() = 1 Then
+		Spreadsheet.Footer.Enabled = False;
+	EndIf;
+
+   EndDo;	
+	
+	//	
+//	//------------------------------------------------------------------------------
+//	// 1. Filling of parameters.
+//	
+//	// Common filling of parameters.
+//	PrintingTables                  = New Structure;
+//	DocumentParameters              = New Structure("Ref, Metadata, TemplateName");
+//	DocumentParameters.Ref          = DocumentRef;
+//	DocumentParameters.Metadata     = Metadata.Documents.PurchaseOrder;
+//	DocumentParameters.TemplateName = TemplateName;
+//	
+//	//------------------------------------------------------------------------------
+//	// 2. Collect document data, available for printing, and fill printing structure.
+//	PrepareDataStructuresForPrinting(DocumentRef, DocumentParameters, PrintingTables);
+//	
+//	//------------------------------------------------------------------------------
+//	// 3. Fill output spreadsheet using the template and requested document data.
+//	
+//	// Define common template for the document.
+//	CommonTemplate       = DocumentPrinting.GetDocumentTemplate(DocumentParameters, PrintingTables);
+//	LogoPicture          = DocumentPrinting.GetDocumentLogo(DocumentParameters, PrintingTables);
+//	SheetTitle           = DocumentPrinting.GetDocumentTitle(DocumentParameters);
+//	LastUsedTemplateName = Undefined;
+//	
+//	// Prepare the output.
+//	Spreadsheet.Clear();
+//	
+//	Try
+//		FooterLogo = GeneralFunctions.GetFooterPO("POfooter1");
+//		Footer1Pic = New Picture(FooterLogo);
+//		FooterLogo2 = GeneralFunctions.GetFooterPO("POfooter2");
+//		Footer2Pic = New Picture(FooterLogo2);
+//		FooterLogo3 = GeneralFunctions.GetFooterPO("POfooter3");
+//		Footer3Pic = New Picture(FooterLogo3);
+//	Except
+//	EndTry;
+
+//	
+//	// Go thru references and fill out the spreadsheet by each document.
+//	For Each DocumentAttributes In PrintingTables.Table_Printing_Document_Attributes Do
+//		
+//		//------------------------------------------------------------------------------
+//		// 3.1. Define template for the document.
+//		
+//		// Set the document template.
+//		If (DocumentParameters.TemplateName = Undefined)
+//		Or TypeOf(DocumentParameters.TemplateName) = Type("String") Then
+//			// Assign the common template for all documents.
+//			Template = CommonTemplate;
+//			
+//		ElsIf TypeOf(DocumentParameters.TemplateName) = Type("Array") Then
+//			// Use an individual template for each document.
+//			IndividualTemplateName = DocumentPrinting.GetIndividualTemplateName(DocumentRef, DocumentAttributes.Ref, DocumentParameters);
+//			If IndividualTemplateName = Undefined Then
+//				Template = CommonTemplate;
+//				LastUsedTemplateName = Undefined;
+//			ElsIf IndividualTemplateName <> LastUsedTemplateName Then
+//				Template = DocumentPrinting.GetDocumentTemplate(DocumentParameters, PrintingTables, IndividualTemplateName);
+//				LastUsedTemplateName = IndividualTemplateName;
+//			EndIf;
+//		EndIf;
+//		
+//		//------------------------------------------------------------------------------
+//		// 3.2. Output document data to spreadsheet using selected template.
+//		
+//		// Document output.
+//		If Template <> Undefined Then
+//			
+//			// Put logo into the template.
+//			DocumentPrinting.FillLogoInDocumentTemplate(Template, LogoPicture);
+//			
+//			// Fill document header.
+//			TemplateArea = Template.GetArea("Header");
+//			TemplateArea.Parameters.Fill(DocumentAttributes);
+//			TemplateArea.Parameters.Fill(PrintingTables.Table_OurCompany_Addresses_BillingAddress[0]);
+//			TemplateArea.Parameters.Fill(PrintingTables.Table_Company_Addresses_BillingAddress.Find(DocumentAttributes.Ref, "Ref"));
+//			TemplateArea.Parameters.UsName2 = TemplateArea.Parameters.UsName;
+//			TemplateArea.Parameters.UsBillCityStateZip2 = TemplateArea.Parameters.UsBillCityStateZip;
+//			
+//			
+//			//If Shipto has an address
+//			If DocumentRef[0].Location.AddressLine1 <> "" Then
+//				
+//				TemplateArea.Parameters.UsBillLine1 = DocumentRef[0].Location.AddressLine1;
+//				TemplateArea.Parameters.UsBillLine2 = DocumentRef[0].Location.AddressLine2;
+//				TemplateArea.Parameters.UsBillCityStateZIP = DocumentRef[0].Location.City + ", " + DocumentRef[0].Location.State.Code + " " +  DocumentRef[0].Location.ZIP;
+//				TemplateArea.Parameters.UsBillCountry = DocumentRef[0].Location.Country;
+//				
+//			EndIf;
+//			
+//			//If a dropship customer exists
+//			If DocumentRef[0].DropshipCompany <> Catalogs.Companies.EmptyRef() Then
+//				
+//				TemplateArea.Parameters.UsName = DocumentRef[0].DropshipCompany;
+//				TemplateArea.Parameters.UsBillLine1 = DocumentRef[0].DropshipShipTo.AddressLine1;
+//				TemplateArea.Parameters.UsBillLine2 = DocumentRef[0].DropshipShipTo.AddressLine2;
+//				TemplateArea.Parameters.UsBillCityStateZIP = DocumentRef[0].DropshipShipTo.City + ", " + DocumentRef[0].DropshipShipTo.State.Code + " " +  DocumentRef[0].DropshipShipTo.Zip;
+//				TemplateArea.Parameters.UsBillCountry = DocumentRef[0].DropshipShipTo.Country;
+//				
+//			EndIf;
+//			
+//			If Constants.POShowEmail.Get() = False Then
+//				  TemplateArea.Parameters.UsBillEmail = "";
+//				 	
+
+//			EndIf;
+//			  
+//			If Constants.POShowFedTax.Get() = False Then
+//				  TemplateArea.Parameters.UsBillFedTaxID = "";
+//			  Else
+//				  TemplateArea.Parameters.UsBillFedTaxID = Constants.FederalTaxID.Get();
+//			EndIf;
+
+//			If Constants.POShowFax.Get() = False Then
+//				  TemplateArea.Parameters.UsBillFax = "";
+//			Else
+//				  TemplateArea.Parameters.UsBillFax = Constants.Fax.Get();	  	
+//			EndIf;
+
+//			Try
+//				If Constants.POShowWebsite.Get() = False Then
+//					  TemplateArea.Parameters.Website = "";
+//				Else
+//					  TemplateArea.Parameters.Website = Constants.Website.Get(); 
+//				  EndIf;
+//			Except
+//			EndTry;
+//			  
+//			If Constants.POShowPhone2.Get() = False Then
+//				  TemplateArea.Parameters.UsBillCell = "";
+//			Else
+//				  TemplateArea.Parameters.UsBillCell = Constants.Cell.Get();
+//			EndIf;
+//			  
+//			Try
+//				If TemplateArea.Parameters.UsBillFax <> "" And TemplateArea.Parameters.UsBillFax <> Undefined Then
+//					TemplateArea.Parameters.Fax = "Fax";
+//				EndIf;
+
+//				If TemplateArea.Parameters.USBillFedTaxID <> "" And TemplateArea.Parameters.USBillFedTaxID <> Undefined Then
+//					TemplateArea.Parameters.FederalTaxID = "Fed Tax ID";
+//				EndIf;
+//			Except
+//			EndTry;
+//  
+
+//			
+//			// Output the header to the sheet.
+//			Spreadsheet.Put(TemplateArea);
+//			
+//			// Output the line items header to the sheet.
+//			TemplateArea = Template.GetArea("LineItemsHeader");
+//			Spreadsheet.Put(TemplateArea);
+//			
+//			// Output line items of current document.
+//			TemplateArea = Template.GetArea("LineItems");
+//			LineItems = PrintingTables.Table_Printing_Document_LineItems.FindRows(New Structure("Ref", DocumentAttributes.Ref));
+//			For Each Row In LineItems Do
+//				//If vendor code or vendor description supplied, replace in template.
+//				TemplateArea.Parameters.Fill(Row);
+//				CurProd = Row.Product;
+//				If CurProd.vendor_code <> "" Then
+//					TemplateArea.Parameters.Product = CurProd.vendor_code;
+//				EndIf;
+//				
+//				If CurProd.vendor_description <> "" Then
+//					TemplateArea.Parameters.ProductDescription = CurProd.vendor_description;
+//				EndIf;
+//				Spreadsheet.Put(TemplateArea, 1);
+//			EndDo;
+//			
+//			// Output document total.
+//			TemplateArea = Template.GetArea("Total");
+//		 	TemplateArea.Parameters.TotalCur = "Total " + DocumentRef[0].Currency.Symbol;
+//			TemplateArea.Parameters.Fill(DocumentAttributes);
+//			Spreadsheet.Put(TemplateArea);
+//		EndIf;
+//		
+////newlyadded
+
+
+// 	TemplateArea = Template.GetArea("Notes");
+//	TemplateArea.Parameters.Notes = Constants.PONotes.Get();
+//	Spreadsheet.Put(TemplateArea);
+//	
+
+
+//	Try
+//		If Constants.POFoot1Type.Get()= Enums.TextOrImage.Image Then
+//			DocumentPrinting.FillPictureInDocumentTemplate(Template,Footer1Pic, "POfooter1");
+//		EndIf;
+//		If Constants.POFoot2Type.Get()= Enums.TextOrImage.Image Then
+//			DocumentPrinting.FillPictureInDocumentTemplate(Template, Footer2Pic, "POfooter2");
+//		EndIf;
+//		If Constants.POFoot3Type.Get()= Enums.TextOrImage.Image Then
+//			DocumentPrinting.FillPictureInDocumentTemplate(Template, Footer3Pic, "POfooter3");
+//		EndIf;	
+//	Except
+//	EndTry;	
+//	
+//	Row = Template.GetArea("SpaceRow");
+//	Footer = Template.GetArea("Footer");
+//	RowsToCheck = New Array();
+//	RowsToCheck.Add(Row);
+//	RowsToCheck.Add(Footer);
+//	
+//	If Constants.POFoot1Type.Get() = Enums.TextOrImage.Text Then
+//		Footer.Parameters.POFooterLeft = Constants.POFooterTextLeft.Get();
+//	EndIf;
+//	If Constants.POFoot2Type.Get() = Enums.TextOrImage.Text Then
+//		Footer.Parameters.POFooterCenter = Constants.POFooterTextCenter.Get();
+//	EndIf;
+//	If Constants.POFoot3Type.Get() = Enums.TextOrImage.Text Then
+//		Footer.Parameters.POFooterRight = Constants.POFooterTextRight.Get();
+//	EndIf;
+
+//	
+//	While Spreadsheet.CheckPut(RowsToCheck) Do
+//		 SpreadSheet.Put(Row);
+
+//		 RowsToCheck.Clear();
+//		 RowsToCheck.Add(Row);
+//		 RowsToCheck.Add(Footer);
+//		 RowsToCheck.Add(Row);
+//	EndDo;
+
+//	Spreadsheet.Put(Footer);
+////newlyadded
+//	Spreadsheet.PutHorizontalPageBreak();
+//	EndDo;
 		
 EndProcedure
 

@@ -2,8 +2,6 @@
 &AtClient
 Procedure BankAccountOnChange(Item)
 	
-	// test
-	
 	//Items.BankAccountLabel.Title =
 	//	CommonUse.GetAttributeValue(Object.BankAccount, "Description");
 
@@ -18,6 +16,11 @@ Procedure BankAccountOnChange(Item)
 	Items.FCYCurrency.Title = CommonUse.GetAttributeValue(AccountCurrency, "Symbol");
     Items.RCCurrency.Title = GeneralFunctionsReusable.DefaultCurrencySymbol(); 
 	
+	If Object.PaymentMethod = CheckPaymentMethod() Then
+		ChoiceProcessing = New NotifyDescription("UpdateBankCheck", ThisForm);
+		ShowQueryBox(ChoiceProcessing, "Would you like to load the next check number for this bank account?", QuestionDialogMode.YesNo, 0);
+	EndIf;
+	
 EndProcedure
 
 
@@ -25,9 +28,11 @@ EndProcedure
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
+	If Parameters.Property("Company") Then
+		Object.Company = Parameters.Company;
+	EndIf;
+	
 	Items.FormPayWithDwolla.Enabled = IsBlankString(Object.DwollaTrxID);
-		
-	//Title = "Check " + Object.Number + " " + Format(Object.Date, "DLF=D");
 	
 	Items.Company.Title = GeneralFunctionsReusable.GetVendorName();
 	
@@ -42,11 +47,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Object.ExchangeRate = GeneralFunctions.GetExchangeRate(Object.Date, AccountCurrency);
 	Else
 	EndIf; 
-	
-	//If Object.Ref.IsEmpty() Then
-	//	Object.Number = GeneralFunctions.NextCheckNumber(Object.BankAccount);
-	//EndIf;
-	
+		
 	//Items.BankAccountLabel.Title =
 	//	CommonUse.GetAttributeValue(Object.BankAccount, "Description");
 		
@@ -81,35 +82,33 @@ EndProcedure
 &AtServer
 Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 	
-	If Object.PaymentMethod.IsEmpty() Then
+If Object.PaymentMethod.IsEmpty() Then
 		Cancel = True;
 		Message = New UserMessage();
 		Message.Text=NStr("en='Select a payment method'");
-		//Message.Field = "Object.PaymentMethod";
 		Message.Message();
 	EndIf;		
 	
-	If NOT Object.Ref.IsEmpty() AND Object.PaymentMethod = CheckPaymentMethod() Then
+	If Object.PaymentMethod = CheckPaymentMethod() Then
 	
-	Try
-		If Number(Object.Number) <= 0 OR Number(Object.Number) >= 100000 Then
-			Cancel = True;
-			Message = New UserMessage();
-			Message.Text=NStr("en='Enter a check number from 0 to 9999 (99999)'");
-			//Message.Field = "Object.Number";
-			Message.Message();
-		EndIf;
-	Except
-		    If Object.Number <> "DRAFT" Then
+		Try
+			If Number(Object.Number) < 0 OR Number(Object.Number) > 100000 Then
 				Cancel = True;
 				Message = New UserMessage();
-				Message.Text=NStr("en='Enter a check number from 0 to 9999 (99999)'");
-				//Message.Field = "Object.Number";
+				Message.Text=NStr("en='Enter a check number from 0 to 10000'");
 				Message.Message();
 			EndIf;
-	EndTry;	
+		Except
+			
+			Cancel = True;
+			Message = New UserMessage();
+			Message.Text=NStr("en='Enter a check number from 0 to 10000'");
+			Message.Message();
+
+		EndTry;
 		
 	Endif;
+
 	
 	NoOfRows = Object.LineItems.Count();
 	
@@ -257,17 +256,18 @@ Procedure PaymentMethodOnChange(Item)
 	
 	If Object.PaymentMethod = CheckPaymentMethod() Then
 		
+		//if existing check has payment method changed
 		If Object.Number = ""  AND Object.Ref.IsEmpty() = False Then
 			Object.Number = StrReplace(Generalfunctions.LastCheckNumber(object.BankAccount),",","");
-		Elsif Object.Number = "" And Object.Ref.IsEmpty() OR Object.Number = "DRAFT" Then
+		//if a new check has its payment method changed
+		Elsif Object.Number = "" And Object.Ref.IsEmpty() Then
 			Object.Number = StrReplace(Generalfunctions.LastCheckNumber(object.BankAccount) + 1,",","");
 		Else
 		EndIf;
 
 
 	Else
-		//Object.Number = "";
-		//Items.Number.ReadOnly = False;
+		
 	EndIf;
 	
 EndProcedure
@@ -545,5 +545,36 @@ Function coinbase_api_key()
 	Return Constants.coinbase_api_key.Get();	
 	
 EndFunction
+
+&AtClient
+Procedure OnOpen(Cancel)
+	
+	AttachIdleHandler("AfterOpen", 0.1, True);
+	
+EndProcedure
+
+&AtClient
+Procedure AfterOpen()
+	
+	If ThisForm.IsInputAvailable() Then
+		
+		DetachIdleHandler("AfterOpen");
+		
+		If  Object.Ref.IsEmpty() And ValueIsFilled(Object.Company) Then
+			CompanyOnChange(Items.Company);	
+		EndIf;	
+		
+	EndIf;		
+	
+EndProcedure
+
+&AtClient
+Procedure UpdateBankCheck(Result, Parameters) Export
+   	If Result = DialogReturnCode.Yes Then
+		Object.Number = StrReplace(Generalfunctions.LastCheckNumber(object.BankAccount) + 1,",","");       
+    EndIf;              
+EndProcedure
+
+
 
 

@@ -199,8 +199,8 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
 	//Title = "Item receipt " + Object.Number + " " + Format(Object.Date, "DLF=D");
 	
-	Items.LineItemsQuantity.EditFormat = "NFD=" + Constants.QtyPrecision.Get();
-	Items.LineItemsQuantity.Format = "NFD=" + Constants.QtyPrecision.Get();
+	Items.LineItemsQuantity.EditFormat = GeneralFunctionsReusable.DefaultQuantityFormat();
+	Items.LineItemsQuantity.Format = GeneralFunctionsReusable.DefaultQuantityFormat();
 	
 	//If Object.Ref.IsEmpty() Then
 	//	Object.PriceIncludesVAT = GeneralFunctionsReusable.PriceIncludesVAT();

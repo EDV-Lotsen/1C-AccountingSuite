@@ -1,6 +1,11 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <CommandInterface xmlns="http://v8.1c.ru/8.3/xcf/extrnprops" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
 	<CommandsVisibility>
+		<Command name="Document.Quote.StandardCommand.OpenList">
+			<Visibility>
+				<xr:Common>true</xr:Common>
+			</Visibility>
+		</Command>
 		<Command name="Document.SalesOrder.StandardCommand.OpenList">
 			<Visibility>
 				<xr:Common>true</xr:Common>
@@ -26,19 +31,17 @@
 				<xr:Common>true</xr:Common>
 			</Visibility>
 		</Command>
-		<Command name="Catalog.SalesPeople.StandardCommand.OpenList">
+		<Command name="Document.Statement.StandardCommand.OpenList">
 			<Visibility>
 				<xr:Common>true</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="Catalog.SalesPeople.StandardCommand.OpenList">
+			<Visibility>
+				<xr:Common>false</xr:Common>
 			</Visibility>
 		</Command>
 		<Command name="Catalog.PriceLevels.StandardCommand.OpenList">
-			<Visibility>
-				<xr:Common>true</xr:Common>
-				<xr:Value name="Role.ReportOnly">false</xr:Value>
-				<xr:Value name="Role.ListUser">false</xr:Value>
-			</Visibility>
-		</Command>
-		<Command name="0:695ba940-5eca-4197-ba49-cbe4c63675a4">
 			<Visibility>
 				<xr:Common>false</xr:Common>
 				<xr:Value name="Role.ReportOnly">false</xr:Value>
@@ -47,6 +50,10 @@
 		</Command>
 	</CommandsVisibility>
 	<CommandsPlacement>
+		<Command name="Document.Quote.StandardCommand.OpenList">
+			<CommandGroup>NavigationPanelImportant</CommandGroup>
+			<Placement>Auto</Placement>
+		</Command>
 		<Command name="Document.SalesOrder.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelImportant</CommandGroup>
 			<Placement>Auto</Placement>
@@ -67,6 +74,10 @@
 			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
+		<Command name="Document.Statement.StandardCommand.OpenList">
+			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
+			<Placement>Auto</Placement>
+		</Command>
 		<Command name="Catalog.SalesPeople.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
 			<Placement>Auto</Placement>
@@ -75,12 +86,11 @@
 			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
-		<Command name="0:695ba940-5eca-4197-ba49-cbe4c63675a4">
-			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
-			<Placement>Auto</Placement>
-		</Command>
 	</CommandsPlacement>
 	<CommandsOrder>
+		<Command name="Document.Quote.StandardCommand.OpenList">
+			<CommandGroup>NavigationPanelImportant</CommandGroup>
+		</Command>
 		<Command name="Document.SalesOrder.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelImportant</CommandGroup>
 		</Command>
@@ -102,13 +112,13 @@
 		<Command name="InformationRegister.PriceList.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
 		</Command>
+		<Command name="Document.Statement.StandardCommand.OpenList">
+			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
+		</Command>
 		<Command name="Catalog.SalesPeople.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
 		</Command>
 		<Command name="Catalog.PriceLevels.StandardCommand.OpenList">
-			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
-		</Command>
-		<Command name="0:695ba940-5eca-4197-ba49-cbe4c63675a4">
 			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
 		</Command>
 		<Command name="Document.SalesOrder.StandardCommand.Create">
@@ -126,9 +136,6 @@
 		<Command name="InformationRegister.PriceList.StandardCommand.Create">
 			<CommandGroup>ActionsPanelCreate</CommandGroup>
 		</Command>
-		<Command name="1:695ba940-5eca-4197-ba49-cbe4c63675a4">
-			<CommandGroup>ActionsPanelCreate</CommandGroup>
-		</Command>
 		<Command name="Catalog.PriceLevels.StandardCommand.Create">
 			<CommandGroup>ActionsPanelCreate</CommandGroup>
 		</Command>
@@ -138,20 +145,11 @@
 		<Command name="Catalog.SalesPeople.StandardCommand.Create">
 			<CommandGroup>ActionsPanelCreate</CommandGroup>
 		</Command>
-		<Command name="Report.ARAging.StandardCommand.Open">
-			<CommandGroup>ActionsPanelReports</CommandGroup>
+		<Command name="Document.Statement.StandardCommand.Create">
+			<CommandGroup>ActionsPanelCreate</CommandGroup>
 		</Command>
-		<Command name="Report.ARAgingDocument.StandardCommand.Open">
-			<CommandGroup>ActionsPanelReports</CommandGroup>
-		</Command>
-		<Command name="Report.SalesTransactionDetail.StandardCommand.Open">
-			<CommandGroup>ActionsPanelReports</CommandGroup>
-		</Command>
-		<Command name="Report.ItemActivityReport.StandardCommand.Open">
-			<CommandGroup>ActionsPanelReports</CommandGroup>
-		</Command>
-		<Command name="0:0034fe87-ffac-4846-860f-0b175608c3fd">
-			<CommandGroup>ActionsPanelReports</CommandGroup>
+		<Command name="Document.Quote.StandardCommand.Create">
+			<CommandGroup>ActionsPanelCreate</CommandGroup>
 		</Command>
 	</CommandsOrder>
 	<GroupsOrder>

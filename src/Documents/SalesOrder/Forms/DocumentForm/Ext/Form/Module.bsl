@@ -6,13 +6,24 @@
 // - Client (managed application)
 // - Server
 //
+&AtClient
+Var SalesTaxRateInactive, AgenciesRatesInactive;//Cache for storing inactive rates previously used in the document
 
 ////////////////////////////////////////////////////////////////////////////////
 #Region EVENTS_HANDLERS
 
 &AtServer
-Procedure OnCreateAtServer(Cancel, StandardProcessing)
+Procedure OnCreateAtServer(Cancel, StandardProcessing)	
 	
+	If Object.Ref.IsEmpty() Then
+		FirstNumber = Object.Number;
+	EndIf;
+	
+	If Parameters.Property("Company") And Parameters.Company.Customer And Object.Ref.IsEmpty() Then
+		Object.Company = Parameters.Company;
+		AutoCompanyOnChange = True;
+	EndIf;
+		
 	//------------------------------------------------------------------------------
 	// 1. Form attributes initialization.
 	
@@ -24,6 +35,8 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	Location     = Object.Location;
 	Project      = Object.Project;
 	Class        = Object.Class;
+	Date         = Object.Date;
+	Company      = Object.Company;
 	
 	//------------------------------------------------------------------------------
 	// 2. Calculate values of form object attributes.
@@ -55,8 +68,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	                                                                                                      |Reference number'"),    Lower(CustomerName));
 	
 	// Update quantities presentation.
-	QuantityPrecision = Format(Constants.QtyPrecision.Get(), "NFD=0; NZ=0; NG=0");
-	QuantityFormat    = "NFD=" + QuantityPrecision + "; NZ=0";
+	QuantityFormat = GeneralFunctionsReusable.DefaultQuantityFormat();
 	Items.LineItemsQuantity.EditFormat  = QuantityFormat;
 	Items.LineItemsQuantity.Format      = QuantityFormat;
 	Items.LineItemsShipped.EditFormat   = QuantityFormat;
@@ -66,15 +78,51 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	Items.LineItemsBackorder.EditFormat = QuantityFormat;
 	Items.LineItemsBackorder.Format     = QuantityFormat;
 	
-	// Request tax rate for US sales tax calcualation.
-	TaxRate = ?(Not Object.ShipTo.IsEmpty(), 0, 0); // GetTaxRate(Object.ShipTo)
-	
-	// Update visibility of controls depending on functional options.
-	If Not GeneralFunctionsReusable.FunctionalOptionValue("MultiCurrency") Then
-		Items.FCYGroup.Visible     = False;
-		//Items.STaxFCYGroup.Visible = False;
+	//// Request tax rate for US sales tax calcualation.
+	//TaxRate = ?(Not Object.ShipTo.IsEmpty(), 0, 0); // GetTaxRate(Object.ShipTo)
+	If GeneralFunctionsReusable.FunctionalOptionValue("SalesTaxCharging") Then
+		//Fill the list of available tax rates
+		ListOfAvailableTaxRates = SalesTax.GetSalesTaxRatesList();
+		For Each TaxRateItem In ListOfAvailableTaxRates Do
+			Items.SalesTaxRate.ChoiceList.Add(TaxRateItem.Value, TaxRateItem.Presentation);
+		EndDo;
+		If Object.Ref.IsEmpty() Then
+			If Not ValueIsFilled(Parameters.Basis) Then
+				Object.DiscountIsTaxable = True;
+			Else //If filled on the basis of Sales Order
+				RecalculateTotalsAtServer();
+			EndIf;
+			//If filled on the basis of Sales Order set current value
+			SalesTaxRate = Object.SalesTaxRate;
+			TaxRate = Object.SalesTaxAcrossAgencies.Total("Rate");
+			SalesTaxRateText = "Sales tax rate: " + String(TaxRate) + "%";
+			Items.SalesTaxPercentDecoration.Title = SalesTaxRateText;
+		Else
+			TaxRate = Object.SalesTaxAcrossAgencies.Total("Rate");
+			SalesTaxRateText = "Sales tax rate: " + String(TaxRate) + "%";
+			Items.SalesTaxPercentDecoration.Title = SalesTaxRateText;
+			//Determine if document's sales tax rate is inactive (has been changed)
+			AgenciesRates = New Array();
+			For Each AgencyRate In Object.SalesTaxAcrossAgencies Do
+				AgenciesRates.Add(New Structure("Agency, Rate", AgencyRate.Agency, AgencyRate.Rate));
+			EndDo;
+			If SalesTax.DocumentSalesTaxRateIsInactive(Object.SalesTaxRate, AgenciesRates) Then
+				SalesTaxRate = 0;
+				Representation = SalesTax.GetSalesTaxRatePresentation(Object.SalesTaxRate.Description, TaxRate) + " - Inactive";
+				Items.SalesTaxRate.ChoiceList.Add(0, Representation);
+			Else
+				SalesTaxRate = Object.SalesTaxRate;
+			EndIf;
+		EndIf;
+	Else
+		Items.SalesTaxPercentDecoration.Title = "";
+		Items.SalesTaxPercentDecoration.Border = New Border(ControlBorderType.WithoutBorder);
+		Items.TotalsColumn3Labels.Visible = False;
+		//Items.TaxableSubtotalCurrency.Visible = False;
+		//Items.SalesTaxCurrency.Visible = False;
+		Items.SalesTaxRate.Visible = False;
 	EndIf;
-	
+		
 	// Set currency titles.
 	DefaultCurrencySymbol            = GeneralFunctionsReusable.DefaultCurrencySymbol();
 	ForeignCurrencySymbol            = Object.Currency.Symbol;
@@ -87,6 +135,20 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	Items.FCYCurrency.Title          = ForeignCurrencySymbol;
 	Items.RCCurrency.Title           = DefaultCurrencySymbol;
 	
+	// Update visibility of controls depending on functional options.
+	If Not GeneralFunctionsReusable.FunctionalOptionValue("MultiCurrency") Then
+		//Items.FCYGroup.Visible     = False;
+		Items.RCCurrency.Title 	= " "; 
+	EndIf;
+	
+	// Cancel opening form if filling on the base was failed
+	If Object.Ref.IsEmpty() And Parameters.Basis <> Undefined
+	And Object.Company <> Parameters.Basis.Company Then
+		// Object is not filled as expected
+		Cancel = True;
+		Return;
+	EndIf;
+			
 EndProcedure
 
 // -> CODE REVIEW
@@ -145,6 +207,18 @@ EndProcedure
 &AtServer
 Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 	
+	If FirstNumber <> "" Then
+		
+		Numerator = Catalogs.DocumentNumbering.SalesOrder.GetObject();
+		NextNumber = GeneralFunctions.Increment(Numerator.Number);
+		If FirstNumber = NextNumber And NextNumber = Object.Number Then
+			Numerator.Number = FirstNumber;
+			Numerator.Write();
+		EndIf;
+		
+		FirstNumber = "";
+	EndIf;
+	
 	//------------------------------------------------------------------------------
 	// Recalculate values of form object attributes.
 	
@@ -164,16 +238,13 @@ EndProcedure
 &AtClient
 Procedure DateOnChange(Item)
 	
-	// Request server operation.
-	DateOnChangeAtServer();
+	// Ask user about updating the setting and update the line items accordingly.
+	CommonDefaultSettingOnChange(Item, "price");
 	
 EndProcedure
 
 &AtServer
 Procedure DateOnChangeAtServer()
-	
-	// Recalculate the retail price for all rows for new date.
-	FillRetailPricesAtServer();
 	
 	// Request exchange rate on the new date.
 	Object.ExchangeRate = GeneralFunctions.GetExchangeRate(Object.Date, Object.Currency);
@@ -186,8 +257,8 @@ EndProcedure
 &AtClient
 Procedure CompanyOnChange(Item)
 	
-	// Request server operation.
-	CompanyOnChangeAtServer();
+	// Ask user about updating the setting and update the line items accordingly.
+	CommonDefaultSettingOnChange(Item, "price");
 	
 EndProcedure
 
@@ -196,16 +267,40 @@ Procedure CompanyOnChangeAtServer()
 	
 	// Reset company adresses (if company was changed).
 	FillCompanyAddressesAtServer(Object.Company, Object.ShipTo, Object.BillTo, Object.ConfirmTo);
-	TaxRate = ?(Not Object.ShipTo.IsEmpty(), 0, 0); // GetTaxRate(Object.ShipTo)
-	
-	// Recalculate sales prices for the company.
-	FillRetailPricesAtServer();
 	
 	// Request company default settings.
 	Object.Currency    = Object.Company.DefaultCurrency;
+	Object.SalesPerson = Object.Company.SalesPerson;
 	
 	// Process settings changes.
 	CurrencyOnChangeAtServer();
+	
+	
+	// Tax calculation.
+	SalesTaxRate = SalesTax.GetDefaultSalesTaxRate(Object.Company);
+	Object.SalesTaxRate = SalesTaxRate;
+	Object.DiscountIsTaxable = True;
+	If Object.SalesTaxAcrossAgencies.Count() > 0 Then
+		CurrentAgenciesRates = New Array();
+		For Each AgencyRate In Object.SalesTaxAcrossAgencies Do
+			CurrentAgenciesRates.Add(New Structure("Agency, Rate", AgencyRate.Agency, AgencyRate.Rate));
+		EndDo;
+	EndIf;
+	SalesTaxAcrossAgencies = SalesTax.CalculateSalesTax(Object.TaxableSubtotal, Object.SalesTaxRate, CurrentAgenciesRates);
+	Object.SalesTaxAcrossAgencies.Clear();
+	For Each STAcrossAgencies In SalesTaxAcrossAgencies Do 
+		NewRow = Object.SalesTaxAcrossAgencies.Add();
+		FillPropertyValues(NewRow, STAcrossAgencies);
+	EndDo;
+	If Object.SalesTaxAcrossAgencies.Count() = 0 Then
+		SalesTaxRateAttr = CommonUse.GetAttributeValues(Object.SalesTaxRate, "Rate");
+		TaxRate = SalesTaxRateAttr.Rate;
+	Else
+		TaxRate = Object.SalesTaxAcrossAgencies.Total("Rate");
+	EndIf;
+	SalesTaxRateText = "Sales tax rate: " + String(TaxRate) + " %";
+	Items.SalesTaxPercentDecoration.Title = SalesTaxRateText;
+	RecalculateTotalsAtServer();
 	
 EndProcedure
 
@@ -237,7 +332,7 @@ EndProcedure
 Procedure ShipToOnChangeAtServer()
 	
 	// Recalculate the tax rate depending on the shipping address.
-	TaxRate = ?(Not Object.ShipTo.IsEmpty(), 0, 0); // GetTaxRate(Object.ShipTo)
+	//TaxRate = ?(Not Object.ShipTo.IsEmpty(), 0, 0); // GetTaxRate(Object.ShipTo)
 	
 	// Recalculate totals with new tax rate.
 	RecalculateTotalsAtServer();
@@ -265,7 +360,8 @@ Procedure CurrencyOnChangeAtServer()
 	Items.ShippingCurrency.Title     = ForeignCurrencySymbol;
 	Items.SalesTaxCurrency.Title     = ForeignCurrencySymbol;
 	Items.FCYCurrency.Title          = ForeignCurrencySymbol;
-	Items.RCCurrency.Title           = DefaultCurrencySymbol;
+	//Items.RCCurrency.Title           = DefaultCurrencySymbol;
+	Items.TaxableSubtotalCurrency.Title = ForeignCurrencySymbol;
 	
 	// Request currency default settings.
 	Object.ExchangeRate = GeneralFunctions.GetExchangeRate(Object.Date, Object.Currency);
@@ -417,6 +513,7 @@ Procedure CommonDefaultSettingOnChange(Item, ItemPresentation)
 	Else
 		// Keep new setting.
 		ThisForm[DefaultSetting] = Object[DefaultSetting];
+		DefaultSettingOnChangeAtServer(DefaultSetting, False);
 	EndIf;
 	
 EndProcedure
@@ -431,11 +528,12 @@ Procedure DefaultSettingOnChangeChoiceProcessing(ChoiceResult, ChoiceParameters)
 	If ChoiceResult = DialogReturnCode.Yes Then
 		// Set new setting for all LineItems.
 		ThisForm[DefaultSetting] = Object[DefaultSetting];
-		DefaultSettingOnChangeAtServer(DefaultSetting);
+		DefaultSettingOnChangeAtServer(DefaultSetting, True);
 		
 	ElsIf ChoiceResult = DialogReturnCode.No Then
 		// Keep new setting, do not update line items.
 		ThisForm[DefaultSetting] = Object[DefaultSetting];
+		DefaultSettingOnChangeAtServer(DefaultSetting, False);
 		
 	Else
 		// Restore previously entered setting.
@@ -445,12 +543,54 @@ Procedure DefaultSettingOnChangeChoiceProcessing(ChoiceResult, ChoiceParameters)
 EndProcedure
 
 &AtServer
-Procedure DefaultSettingOnChangeAtServer(DefaultSetting)
+Procedure DefaultSettingOnChangeAtServer(DefaultSetting, RecalculateLineItems)
 	
-	// Update line items fields by the object default value.
-	For Each Row In Object.LineItems Do
-		Row[DefaultSetting] = Object[DefaultSetting];
-	EndDo;
+	// Process attribute change.
+	If Object.Ref.Metadata().TabularSections.LineItems.Attributes.Find(DefaultSetting) <> Undefined Then
+		// Process attributes by the matching name to the header's default values.
+		
+		// Process line items change.
+		If RecalculateLineItems Then
+			// Apply default to all of the items.
+			For Each Row In Object.LineItems Do
+				Row[DefaultSetting] = Object[DefaultSetting];
+			EndDo;
+		EndIf;
+		
+	// Process attributes by the name.
+	ElsIf DefaultSetting = "Date" Then
+		
+		// Process the attribute change in any case.
+		DateOnChangeAtServer();
+		
+		// Process line items change.
+		If RecalculateLineItems Then
+			// Recalculate retail price.
+			For Each Row In Object.LineItems Do
+				Row.Price = Round(GeneralFunctions.RetailPrice(Object.Date, Row.Product, Object.Company) /
+				                        ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), 2);
+				LineItemsPriceOnChangeAtServer(Row);
+			EndDo;
+		EndIf;
+		
+	ElsIf DefaultSetting = "Company" Then
+		
+		// Process the attribute change in any case.
+		CompanyOnChangeAtServer();
+		
+		// Process line items change.
+		If RecalculateLineItems Then
+			// Recalculate retail price.
+			For Each Row In Object.LineItems Do
+				Row.Price = Round(GeneralFunctions.RetailPrice(Object.Date, Row.Product, Object.Company) /
+				                        ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), 2);
+				LineItemsPriceOnChangeAtServer(Row);
+			EndDo;
+		EndIf;
+		
+	Else
+		// Process other attributes.
+	EndIf;
 	
 EndProcedure
 
@@ -537,12 +677,12 @@ EndProcedure
 Procedure LineItemsProductOnChangeAtServer(TableSectionRow)
 	
 	// Request product properties.
-	ProductProperties = CommonUse.GetAttributeValues(TableSectionRow.Product, New Structure("Description, UM, Type"));
+	ProductProperties = CommonUse.GetAttributeValues(TableSectionRow.Product, New Structure("Description, UM, Taxable"));
 	TableSectionRow.ProductDescription = ProductProperties.Description;
 	TableSectionRow.UM                 = ProductProperties.UM;
+	TableSectionRow.Taxable            = ProductProperties.Taxable;
 	TableSectionRow.Price              = Round(GeneralFunctions.RetailPrice(Object.Date, TableSectionRow.Product, Object.Company) /
 	                                     ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), 2);
-	TableSectionRow.Taxable            = (ProductProperties.Type = Enums.InventoryTypes.Inventory);
 	
 	// Reset default values.
 	TableSectionRow.Location     = Object.Location;
@@ -875,19 +1015,6 @@ Procedure FillBackorderQuantityAtServer()
 EndProcedure
 
 &AtServer
-// Request retail prices of the products from database.
-Procedure FillRetailPricesAtServer()
-	
-	// Recalculate retail price for each row (later the new function scanning prices for the product must be used).
-	For Each TableSectionRow In Object.LineItems Do
-		TableSectionRow.Price = Round(GeneralFunctions.RetailPrice(Object.Date, TableSectionRow.Product, Object.Company) /
-		                        ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), 2);
-		LineItemsPriceOnChangeAtServer(TableSectionRow);
-	EndDo;
-	
-EndProcedure
-
-&AtServer
 // Request and fill company addresses used for proper goods delivery.
 Procedure FillCompanyAddressesAtServer(Company, ShipTo, BillTo = Undefined, ConfirmTo = Undefined);
 	
@@ -936,8 +1063,10 @@ Procedure RecalculateTotals()
 	
 	// Calculate document totals.
 	LineSubtotal = 0;
+	TaxableSubtotal = 0;
 	For Each Row In Object.LineItems Do
 		LineSubtotal = LineSubtotal  + Row.LineTotal;
+		TaxableSubtotal = TaxableSubtotal + Row.TaxableAmount;
 	EndDo;
 	
 	// Assign totals to the object fields.
@@ -953,9 +1082,31 @@ Procedure RecalculateTotals()
 		EndIf;
 	EndIf;
 	
+	//Calculate sales tax
+	If Object.DiscountIsTaxable Then
+		Object.TaxableSubtotal = TaxableSubtotal;
+	Else
+		Object.TaxableSubtotal = TaxableSubtotal + Round(-1 * TaxableSubtotal * Object.DiscountPercent/100, 2);
+	EndIf;
+	CurrentAgenciesRates = Undefined;
+	If Object.SalesTaxAcrossAgencies.Count() > 0 Then
+		CurrentAgenciesRates = New Array();
+		For Each AgencyRate In Object.SalesTaxAcrossAgencies Do
+			CurrentAgenciesRates.Add(New Structure("Agency, Rate", AgencyRate.Agency, AgencyRate.Rate));
+		EndDo;
+	EndIf;
+	SalesTaxAcrossAgencies = SalesTaxClient.CalculateSalesTax(Object.TaxableSubtotal, Object.SalesTaxRate, CurrentAgenciesRates);
+	Object.SalesTaxAcrossAgencies.Clear();
+	For Each STAcrossAgencies In SalesTaxAcrossAgencies Do 
+		NewRow = Object.SalesTaxAcrossAgencies.Add();
+		FillPropertyValues(NewRow, STAcrossAgencies);
+	EndDo;
+	Object.SalesTax = Object.SalesTaxAcrossAgencies.Total("Amount");
+	
 	// Calculate the rest of the totals.
 	Object.SubTotal         = LineSubtotal + Object.Discount;
 	Object.SalesTaxRC       = Round(Object.SalesTax * Object.ExchangeRate, 2);
+	//Object.DocumentTotal    = Object.SubTotal + Object.Shipping + Object.SalesTaxAmount;
 	Object.DocumentTotal    = Object.SubTotal + Object.Shipping + Object.SalesTax;
 	Object.DocumentTotalRC  = Round(Object.DocumentTotal * Object.ExchangeRate, 2);
 	
@@ -966,7 +1117,13 @@ EndProcedure
 Procedure RecalculateTotalsAtServer()
 	
 	// Calculate document totals.
-	LineSubtotal = Object.LineItems.Total("LineTotal");
+	LineSubtotal = 0;
+	TaxableSubtotal = 0;
+	For Each Row In Object.LineItems Do
+		LineSubtotal = LineSubtotal  + Row.LineTotal;
+		TaxableSubtotal = TaxableSubtotal + Row.TaxableAmount;
+	EndDo;
+
 	
 	// Assign totals to the object fields.
 	If Object.LineSubtotal <> LineSubtotal Then
@@ -980,13 +1137,37 @@ Procedure RecalculateTotalsAtServer()
 			Object.DiscountPercent = Round(-1 * 100 * Object.Discount / Object.LineSubtotal, 2);
 		EndIf;
 	EndIf;
+		
+	//Calculate sales tax
+	If Object.DiscountIsTaxable Then
+		Object.TaxableSubtotal = TaxableSubtotal;
+	Else
+		Object.TaxableSubtotal = TaxableSubtotal + Round(-1 * TaxableSubtotal * Object.DiscountPercent/100, 2);
+	EndIf;
+	CurrentAgenciesRates = Undefined;
+	If Object.SalesTaxAcrossAgencies.Count() > 0 Then
+		CurrentAgenciesRates = New Array();
+		For Each AgencyRate In Object.SalesTaxAcrossAgencies Do
+			CurrentAgenciesRates.Add(New Structure("Agency, Rate", AgencyRate.Agency, AgencyRate.Rate));
+		EndDo;
+	EndIf;
+	SalesTaxAcrossAgencies = SalesTax.CalculateSalesTax(Object.TaxableSubtotal, Object.SalesTaxRate, CurrentAgenciesRates);
+	Object.SalesTaxAcrossAgencies.Clear();
+	For Each STAcrossAgencies In SalesTaxAcrossAgencies Do 
+		NewRow = Object.SalesTaxAcrossAgencies.Add();
+		FillPropertyValues(NewRow, STAcrossAgencies);
+	EndDo;
+	Object.SalesTax = Object.SalesTaxAcrossAgencies.Total("Amount");
 	
-	// Calculate the rest of the totals.
+		// Calculate the rest of the totals.
 	Object.SubTotal         = LineSubtotal + Object.Discount;
 	Object.SalesTaxRC       = Round(Object.SalesTax * Object.ExchangeRate, 2);
+
+	//Object.DocumentTotal    = Object.SubTotal + Object.Shipping + Object.SalesTaxAmount;
 	Object.DocumentTotal    = Object.SubTotal + Object.Shipping + Object.SalesTax;
 	Object.DocumentTotalRC  = Round(Object.DocumentTotal * Object.ExchangeRate, 2);
 	
+
 EndProcedure
 
 //------------------------------------------------------------------------------
@@ -1000,5 +1181,109 @@ Function GetLineItemsRowStructure()
 	Return New Structure("LineNumber, Product, ProductDescription, Quantity, UM, Backorder, Price, LineTotal, Taxable, TaxableAmount, Location, DeliveryDate, Project, Class, Shipped, Invoiced");
 	
 EndFunction
+
+&AtClient
+Procedure DiscountIsTaxableOnChange(Item)
+	DiscountIsTaxableOnChangeAtServer();
+	RecalculateTotalsAtServer();
+EndProcedure
+
+&AtServer
+Procedure DiscountIsTaxableOnChangeAtServer()
+	// Insert handler contents.
+EndProcedure
+
+&AtClient
+Procedure OnOpen(Cancel)
+	
+	AttachIdleHandler("AfterOpen", 0.1, True);	
+	
+EndProcedure
+
+&AtClient
+Procedure AfterOpen()
+	
+	ThisForm.Activate();
+	
+	If ThisForm.IsInputAvailable() Then
+		///////////////////////////////////////////////
+		DetachIdleHandler("AfterOpen");
+		
+		If AutoCompanyOnChange Then
+			CompanyOnChange(Items.Company);	
+		EndIf;	
+		///////////////////////////////////////////////
+	Else
+		AttachIdleHandler("AfterOpen", 0.1, True);	
+	EndIf;		
+	
+EndProcedure
+
+&AtClient
+Procedure SalesTaxRateOnChange(Item)
+	SetSalesTaxRate(SalesTaxRate);
+EndProcedure
+
+&AtServer
+Procedure SalesTaxRateOnChangeAtServer()
+	// Insert handler contents.
+EndProcedure
+
+&AtClient
+Procedure SetSalesTaxRate(NewSalesTaxRate)
+	//Cache inactive sales tax rates
+	If ValueIsFilled(Object.SalesTaxRate) Then
+		AgenciesRates = New Array();
+		For Each AgencyRate In Object.SalesTaxAcrossAgencies Do
+			AgenciesRates.Add(New Structure("Agency, Rate, SalesTaxRate, SalesTaxComponent", AgencyRate.Agency, AgencyRate.Rate, AgencyRate.SalesTaxRate, AgencyRate.SalesTaxComponent));
+		EndDo;
+		If SalesTax.DocumentSalesTaxRateIsInactive(Object.SalesTaxRate, AgenciesRates) Then
+			SalesTaxRateInactive = Object.SalesTaxRate;
+			AgenciesRatesInactive = AgenciesRates;
+		EndIf;
+	EndIf;
+	//Restore inactive sales tax rates
+	If TypeOf(NewSalesTaxRate) = Type("Number") Then //user returned inactive sales tax rate
+		Object.SalesTaxRate = SalesTaxRateInactive;
+		Object.SalesTaxAcrossAgencies.Clear();
+		For Each AgencyRateInactive In AgenciesRatesInactive Do
+			FillPropertyValues(Object.SalesTaxAcrossAgencies.Add(), AgencyRateInactive);
+		EndDo;
+	Else
+		Object.SalesTaxRate = NewSalesTaxRate;
+		Object.SalesTaxAcrossAgencies.Clear();
+	EndIf;
+	ShowSalesTaxRate();
+	RecalculateTotals();
+EndProcedure
+
+&AtClient
+Procedure ShowSalesTaxRate()
+	If Object.SalesTaxAcrossAgencies.Count() = 0 Then
+		SalesTaxRateAttr = CommonUse.GetAttributeValues(Object.SalesTaxRate, "Rate");
+		TaxRate = SalesTaxRateAttr.Rate;
+	Else
+		TaxRate = Object.SalesTaxAcrossAgencies.Total("Rate");
+	EndIf;
+	SalesTaxRateText = "Sales tax rate: " + String(TaxRate) + " %";
+	Items.SalesTaxPercentDecoration.Title = SalesTaxRateText;
+
+EndProcedure
+
+&AtClient
+Procedure SendEmail(Command)
+	If Object.Ref.IsEmpty() Then
+		Message("An email cannot be sent until the sales order is posted");
+	Else	
+		FormParameters = New Structure("Ref",Object.Ref );
+		OpenForm("CommonForm.EmailForm", FormParameters,,,,,, FormWindowOpeningMode.LockOwnerWindow);	
+		//SendSOEmail();
+	EndIf;
+EndProcedure
+
+&AtServer
+Procedure SendSOEmail()
+	// Insert handler contents.
+EndProcedure
 
 #EndRegion

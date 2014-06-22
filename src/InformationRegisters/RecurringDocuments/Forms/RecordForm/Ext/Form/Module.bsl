@@ -514,7 +514,7 @@ EndProcedure
 Procedure SchedulePresentationUpdate()
 	
 	// Update schedule presentation basing on the schedule options.
-	SchedulePresentation = "[ActionPresentation][IntervalPresentation][RangePresentation].";
+	SchedulePresentation = "{ActionPresentation}{IntervalPresentation}{RangePresentation}.";
 	
 	// Action parameters.
 	If Action                        = 1 Then // Generate.

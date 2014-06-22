@@ -1,7 +1,34 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
 	<VerticalScroll>useIfNecessary</VerticalScroll>
-	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<AutoCommandBar name="FormCommandBar" id="-1">
+		<ChildItems>
+			<Button name="FormOutputList" id="40">
+				<Type>CommandBarButton</Type>
+				<Representation>PictureAndText</Representation>
+				<OnlyInAllActions>true</OnlyInAllActions>
+				<CommandName>Form.StandardCommand.OutputList</CommandName>
+				<Picture>
+					<xr:Ref>StdPicture.DataCompositionOrder</xr:Ref>
+					<xr:LoadTransparent>true</xr:LoadTransparent>
+				</Picture>
+				<Title>
+					<v8:item>
+						<v8:lang>en</v8:lang>
+						<v8:content>Export list</v8:content>
+					</v8:item>
+				</Title>
+				<ExtendedTooltip name="FormOutputListExtendedTooltip" id="41"/>
+			</Button>
+			<Button name="FormRefresh" id="38">
+				<Type>CommandBarButton</Type>
+				<Representation>Picture</Representation>
+				<OnlyInAllActions>true</OnlyInAllActions>
+				<CommandName>Form.StandardCommand.Refresh</CommandName>
+				<ExtendedTooltip name="FormRefreshExtendedTooltip" id="39"/>
+			</Button>
+		</ChildItems>
+	</AutoCommandBar>
 	<Events>
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
 	</Events>
@@ -36,29 +63,29 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="20"/>
-			<SearchStringAddition name="ListSearchString" id="38">
+			<SearchStringAddition name="ListSearchString" id="45">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="39"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="40"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="46"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="47"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="41">
+			<ViewStatusAddition name="ListViewStatus" id="48">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="42"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="43"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="49"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="50"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="44">
+			<SearchControlAddition name="ListSearchControl" id="51">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="45"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="46"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="52"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="53"/>
 			</SearchControlAddition>
 			<ChildItems>
 				<LabelField name="Date" id="4">
@@ -211,11 +238,16 @@ Reference number</v8:content>
 					<Title>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Balance</v8:content>
+							<v8:content>Payment balance</v8:content>
 						</v8:item>
 					</Title>
 					<ContextMenu name="AmountBalanceContextMenu" id="36"/>
 					<ExtendedTooltip name="AmountBalanceExtendedTooltip" id="37"/>
+				</LabelField>
+				<LabelField name="EmailDate" id="42">
+					<DataPath>List.EmailDate</DataPath>
+					<ContextMenu name="EmailDateContextMenu" id="43"/>
+					<ExtendedTooltip name="EmailDateExtendedTooltip" id="44"/>
 				</LabelField>
 			</ChildItems>
 		</Table>
@@ -230,7 +262,6 @@ Reference number</v8:content>
 				<ManualQuery>true</ManualQuery>
 				<DynamicDataRead>true</DynamicDataRead>
 				<QueryText>SELECT
-	// Standard attributes
 	DocumentSalesOrder.Ref,
 	DocumentSalesOrder.DataVersion,
 	DocumentSalesOrder.DeletionMark,
@@ -239,7 +270,6 @@ Reference number</v8:content>
 	DocumentSalesOrder.Date,
 	DocumentSalesOrder.Presentation,
 	DocumentSalesOrder.PointInTime,
-	// Document attributes
 	DocumentSalesOrder.Company,
 	DocumentSalesOrder.ShipTo,
 	DocumentSalesOrder.BillTo,
@@ -257,31 +287,31 @@ Reference number</v8:content>
 	DocumentSalesOrder.Project,
 	DocumentSalesOrder.Class,
 	DocumentSalesOrder.ManualAdjustment,
-	// Document totals
 	DocumentSalesOrder.SalesTax,
 	DocumentSalesOrder.SalesTaxRC,
 	DocumentSalesOrder.DocumentTotal,
 	DocumentSalesOrder.DocumentTotalRC,
-	// Order status
 	CASE
-		WHEN DocumentSalesOrder.DeletionMark THEN
-			 VALUE(Enum.OrderStatuses.Deleted)
-		WHEN NOT DocumentSalesOrder.Posted THEN
-			 VALUE(Enum.OrderStatuses.Draft)
-		WHEN OrdersStatuses.Status IS NULL THEN
-			 VALUE(Enum.OrderStatuses.Open)
-		WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.EmptyRef) THEN
-			 VALUE(Enum.OrderStatuses.Open)
-		ELSE
-			 OrdersStatuses.Status
+		WHEN DocumentSalesOrder.DeletionMark
+			THEN VALUE(Enum.OrderStatuses.Deleted)
+		WHEN NOT DocumentSalesOrder.Posted
+			THEN VALUE(Enum.OrderStatuses.Draft)
+		WHEN OrdersStatuses.Status IS NULL 
+			THEN VALUE(Enum.OrderStatuses.Open)
+		WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.EmptyRef)
+			THEN VALUE(Enum.OrderStatuses.Open)
+		ELSE OrdersStatuses.Status
 	END AS OrderStatus,
-	OrderTransactionsBalance.AmountBalance
+	OrderTransactionsBalance.AmountBalance,
+	LastEmails.Date AS EmailDate
 FROM
 	Document.SalesOrder AS DocumentSalesOrder
 		LEFT JOIN InformationRegister.OrdersStatuses.SliceLast AS OrdersStatuses
 		ON DocumentSalesOrder.Ref = OrdersStatuses.Order
 		LEFT JOIN AccumulationRegister.OrderTransactions.Balance AS OrderTransactionsBalance
-		ON (OrderTransactionsBalance.Order = DocumentSalesOrder.Ref)</QueryText>
+		ON (OrderTransactionsBalance.Order = DocumentSalesOrder.Ref)
+		LEFT JOIN InformationRegister.DocumentLastEmail AS LastEmails
+		ON (LastEmails.Document = DocumentSalesOrder.Ref)</QueryText>
 				<MainTable>Document.SalesOrder</MainTable>
 				<ListSettings>
 					<dcsset:filter>
@@ -394,7 +424,34 @@ FROM
 			<Item>
 				<Command>Document.SalesOrder.Command.PrintSalesQuote</Command>
 				<Type>Auto</Type>
-				<CommandGroup>FormCommandBarImportant</CommandGroup>
+				<CommandGroup>CommandGroup.Print</CommandGroup>
+				<Index>2</Index>
+				<DefaultVisible>false</DefaultVisible>
+				<Visible>
+					<xr:Common>false</xr:Common>
+				</Visible>
+			</Item>
+			<Item>
+				<Command>Document.SalesInvoice.StandardCommand.CreateBasedOn</Command>
+				<Type>Auto</Type>
+				<CommandGroup>FormCommandBarCreateBasedOn</CommandGroup>
+				<Visible>
+					<xr:Common>false</xr:Common>
+				</Visible>
+			</Item>
+			<Item>
+				<Command>Document.SalesOrder.Command.PickList</Command>
+				<Type>Auto</Type>
+				<CommandGroup>CommandGroup.Print</CommandGroup>
+				<Index>1</Index>
+				<Visible>
+					<xr:Common>false</xr:Common>
+				</Visible>
+			</Item>
+			<Item>
+				<Command>Document.SalesOrder.Command.Print</Command>
+				<Type>Auto</Type>
+				<CommandGroup>CommandGroup.Print</CommandGroup>
 				<Visible>
 					<xr:Common>false</xr:Common>
 				</Visible>

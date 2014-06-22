@@ -11,6 +11,13 @@ EndProcedure
 //
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
+	If Parameters.Property("Company") Then
+		
+		NewLine = Object.Accounts.Add();
+		NewLine.Company = Parameters.Company; 	
+		
+	EndIf;
+	
 	//ConstantDeposit = Constants.DepositLastNumber.Get();
 	//If Object.Ref.IsEmpty() Then		
 	//	
@@ -374,4 +381,31 @@ Procedure ProcessUserResponseOnDocumentPeriodClosed(Result, Parameters) Export
 		EndIf;
 	EndIf;	
 EndProcedure
+
+&AtClient
+Procedure OnOpen(Cancel)
+	
+	AttachIdleHandler("AfterOpen", 0.1, True);
+	
+EndProcedure
+
+&AtClient
+Procedure AfterOpen()
+	
+	ThisForm.Activate();
+	
+	If ThisForm.IsInputAvailable() Then
+		///////////////////////////////////////////////
+		DetachIdleHandler("AfterOpen");
+		
+		If  Object.Ref.IsEmpty() Then
+			AccountsOnChange(Items.Accounts);	
+		EndIf;	
+		///////////////////////////////////////////////
+	Else
+		AttachIdleHandler("AfterOpen", 0.1, True);
+	EndIf;		
+	
+EndProcedure
+
 

@@ -14,41 +14,12 @@ EndProcedure
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
+	old_key = Constants.APISecretKey.Get();
+	
 	BinaryLogo = GeneralFunctions.GetLogo();
 	TempStorageAddress = PutToTempStorage(BinaryLogo,UUID);
 	ImageAddress = TempStorageAddress;
 	Items.image.PictureSize = PictureSize.AutoSize;
-	
-	BinaryLogo = GeneralFunctions.GetFooter1();
-	TempStorageAddress = PutToTempStorage(BinaryLogo,UUID);
-	FooterImageAddr1 = TempStorageAddress;
-	Items.FooterImageAddr1.PictureSize = PictureSize.AutoSize;
-	
-	BinaryLogo = GeneralFunctions.GetFooter2();
-	TempStorageAddress = PutToTempStorage(BinaryLogo,UUID);
-	FooterImageAddr2 = TempStorageAddress;
-	Items.FooterImageAddr2.PictureSize = PictureSize.AutoSize;
-
-	BinaryLogo = GeneralFunctions.GetFooter3();
-	TempStorageAddress = PutToTempStorage(BinaryLogo,UUID);
-	FooterImageAddr3 = TempStorageAddress;
-	Items.FooterImageAddr3.PictureSize = PictureSize.AutoSize;
-	
-	BinaryLogo = GeneralFunctions.GetFooterPO("POfooter1");
-	TempStorageAddress = PutToTempStorage(BinaryLogo,UUID);
-	POFooterImageAddr1 = TempStorageAddress;
-	Items.POFooterImageAddr1.PictureSize = PictureSize.AutoSize;
-	
-	BinaryLogo = GeneralFunctions.GetFooterPO("POfooter2");
-	TempStorageAddress = PutToTempStorage(BinaryLogo,UUID);
-	POFooterImageAddr2 = TempStorageAddress;
-	Items.POFooterImageAddr2.PictureSize = PictureSize.AutoSize;
-	
-	BinaryLogo = GeneralFunctions.GetFooterPO("POfooter3");
-	TempStorageAddress = PutToTempStorage(BinaryLogo,UUID);
-	POFooterImageAddr3 = TempStorageAddress;
-	Items.POFooterImageAddr3.PictureSize = PictureSize.AutoSize;
-
 	
 	//Closing the books
 	ChoiceList = Items.PeriodClosingOption.ChoiceList;
@@ -321,223 +292,6 @@ Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 EndProcedure
 
 &AtClient
-Procedure UploadFooter1(Command) Export
-
-	Var SelectedName;
-	FooterImageAddr1 = "";
-	
-	NotifyDescription = New NotifyDescription("FileUpload1",ThisForm);
-	BeginPutFile(NotifyDescription,,"",True);
-	
-	BinaryLogo = GeneralFunctions.GetFooter1();
-	TempStorageAddress = PutToTempStorage(BinaryLogo,UUID);
-	FooterImageAddr1 = TempStorageAddress;
-
-EndProcedure
-
-&AtClient
-Procedure FileUpload1(a,b,c,d) Export
-	
-	PlaceImageFile1(b);
-	
-EndProcedure
-
-&AtServer
-Procedure PlaceImageFile1(TempStorageName)
-	
-	If NOT TempStorageName = Undefined Then
-	
-		BinaryData = GetFromTempStorage(TempStorageName);
-				
-		NewRow = InformationRegisters.CustomPrintForms.CreateRecordManager();
-		NewRow.ObjectName = "footer1";
-		NewRow.TemplateName = "footer1";
-		NewRow.Template = New ValueStorage(BinaryData, New Deflation(9));
-		NewRow.Write();	
-		DeleteFromTempStorage(TempStorageName);
-		
-	EndIf;
-	
-	//BinaryLogo = GeneralFunctions.GetLogo();
-	//TempStorageAddress = PutToTempStorage(BinaryLogo,UUID);
-	//ImageAddress = TempStorageAddress;
-  	
-EndProcedure
-
-&AtClient
-Procedure UploadFooter2(Command) Export
-	
-	Var SelectedName;
-	ImageAddress = "";
-	
-	NotifyDescription = New NotifyDescription("FileUpload2",ThisForm);
-	BeginPutFile(NotifyDescription,,"",True);
-	
-	//BinaryLogo = GeneralFunctions.GetLogo();
-	//TempStorageAddress = PutToTempStorage(BinaryLogo,UUID);
-	//ImageAddress = TempStorageAddress;
-	
-EndProcedure
-
-&AtClient
-Procedure FileUpload2(a,b,c,d) Export
-	
-	PlaceImageFile2(b);
-	
-EndProcedure
-
-&AtServer
-Procedure PlaceImageFile2(TempStorageName)
-	
-	If NOT TempStorageName = Undefined Then
-	
-		BinaryData = GetFromTempStorage(TempStorageName);
-				
-		NewRow = InformationRegisters.CustomPrintForms.CreateRecordManager();
-		NewRow.ObjectName = "footer2";
-		NewRow.TemplateName = "footer2";
-		NewRow.Template = New ValueStorage(BinaryData, New Deflation(9));
-		NewRow.Write();	
-		DeleteFromTempStorage(TempStorageName);
-		
-	EndIf;
-	
-	//BinaryLogo = GeneralFunctions.GetLogo();
-	//TempStorageAddress = PutToTempStorage(BinaryLogo,UUID);
-	//ImageAddress = TempStorageAddress;
-  	
-EndProcedure
-
-
-&AtClient
-Procedure UploadFooter3(Command) Export
-
-	Var SelectedName;
-	ImageAddress = "";
-	
-	NotifyDescription = New NotifyDescription("FileUpload3",ThisForm);
-	BeginPutFile(NotifyDescription,,"",True);
-	
-	//BinaryLogo = GeneralFunctions.GetLogo();
-	//TempStorageAddress = PutToTempStorage(BinaryLogo,UUID);
-	//ImageAddress = TempStorageAddress;
-
-EndProcedure
-
-&AtClient
-Procedure FileUpload3(a,b,c,d) Export
-	
-	PlaceImageFile3(b);
-	
-EndProcedure
-
-&AtServer
-Procedure PlaceImageFile3(TempStorageName)
-	
-	If NOT TempStorageName = Undefined Then
-	
-		BinaryData = GetFromTempStorage(TempStorageName);
-				
-		NewRow = InformationRegisters.CustomPrintForms.CreateRecordManager();
-		NewRow.ObjectName = "footer3";
-		NewRow.TemplateName = "footer3";
-		NewRow.Template = New ValueStorage(BinaryData, New Deflation(9));
-		NewRow.Write();	
-		DeleteFromTempStorage(TempStorageName);
-		
-	EndIf;
-	  	
-EndProcedure
-
-&AtClient
-Procedure POUploadFooter1(Command)
-
-	Var SelectedName;
-	FooterImageAddr1 = "";
-	
-	NotifyDescription = New NotifyDescription("FileUploadPO1",ThisForm);
-	BeginPutFile(NotifyDescription,,"",True);
-	
-	BinaryLogo = GeneralFunctions.GetFooterPO("POfooter1");
-	TempStorageAddress = PutToTempStorage(BinaryLogo,UUID);
-	POFooterImageAddr1 = TempStorageAddress;
-	
-EndProcedure
-
-&AtClient
-Procedure POUploadFooter2(Command)
-
-	Var SelectedName;
-	FooterImageAddr1 = "";
-	
-	NotifyDescription = New NotifyDescription("FileUploadPO2",ThisForm);
-	BeginPutFile(NotifyDescription,,"",True);
-	
-	BinaryLogo = GeneralFunctions.GetFooterPO("POfooter2");
-	TempStorageAddress = PutToTempStorage(BinaryLogo,UUID);
-	POFooterImageAddr2 = TempStorageAddress;
-
-	
-EndProcedure
-
-&AtClient
-Procedure POUploadFooter3(Command)
-
-	Var SelectedName;
-	FooterImageAddr1 = "";
-	
-	NotifyDescription = New NotifyDescription("FileUploadPO3",ThisForm);
-	BeginPutFile(NotifyDescription,,"",True);
-	
-	BinaryLogo = GeneralFunctions.GetFooterPO("POfooter3");
-	TempStorageAddress = PutToTempStorage(BinaryLogo,UUID);
-	POFooterImageAddr3 = TempStorageAddress;
-
-	
-EndProcedure
-
-&AtClient
-Procedure FileUploadPO1(a,b,c,d) Export
-	
-	PlaceImageFilePO(b,"POfooter1");
-	
-EndProcedure
-
-&AtClient
-Procedure FileUploadPO2(a,b,c,d) Export
-	
-	PlaceImageFilePO(b,"POfooter2");
-	
-EndProcedure
-
-&AtClient
-Procedure FileUploadPO3(a,b,c,d) Export
-	
-	PlaceImageFilePO(b,"POfooter3");
-	
-EndProcedure
-
-
-
-&AtServer
-Procedure PlaceImageFilePO(TempStorageName,imagename)
-	
-	If NOT TempStorageName = Undefined Then
-	
-		BinaryData = GetFromTempStorage(TempStorageName);
-				
-		NewRow = InformationRegisters.CustomPrintForms.CreateRecordManager();
-		NewRow.ObjectName = imagename;
-		NewRow.TemplateName = imagename;
-		NewRow.Template = New ValueStorage(BinaryData, New Deflation(9));
-		NewRow.Write();	
-		DeleteFromTempStorage(TempStorageName);
-		
-	EndIf;
-	  	
-EndProcedure
-
-&AtClient
 Procedure ApiLogConnect(Command)
 	GoToURL("https://apilog.accountingsuite.com");
 EndProcedure
@@ -556,6 +310,204 @@ Procedure ChargingSalesTaxOnChange(Item)
 		Items.SalesTaxDefaults.Enabled = False;
 	EndIf;
 EndProcedure
+
+&AtClient
+Procedure AddressesContacts(Command)
+	OpenForm("Catalog.Addresses.ListForm", , , , , );
+EndProcedure
+
+&AtClient
+Procedure Countries(Command)
+	OpenForm("Catalog.Countries.ListForm", , , , , );
+EndProcedure
+
+&AtClient
+Procedure States(Command)
+	OpenForm("Catalog.States.ListForm", , , , , );
+EndProcedure
+
+&AtClient
+Procedure Currencies(Command)
+	OpenForm("Catalog.Currencies.ListForm", , , , , );
+EndProcedure
+
+&AtClient
+Procedure ExchangeRates(Command)
+	OpenForm("InformationRegister.ExchangeRates.ListForm",,,,,,,);
+EndProcedure
+
+&AtClient
+Procedure PaymentTerms(Command)
+	OpenForm("Catalog.PaymentTerms.ListForm", , , , , );
+EndProcedure
+
+&AtClient
+Procedure UnitsOfMeasure(Command)
+	OpenForm("Catalog.UM.ListForm", , , , , );
+EndProcedure
+
+&AtClient
+Procedure ShippingCarriers(Command)
+	OpenForm("Catalog.ShippingCarriers.ListForm", , , , , );
+EndProcedure
+
+&AtClient
+Procedure DocumentNumbering(Command)
+	OpenForm("Catalog.DocumentNumbering.ListForm", , , , , );
+EndProcedure
+
+&AtClient
+Procedure ItemCategories(Command)
+	OpenForm("Catalog.ProductCategories.ListForm", , , , , );
+EndProcedure
+
+&AtClient
+Procedure ActiveUserList(Command)
+	OpenForm("DataProcessor.ActiveUserList.Form.ActiveUserListForm",,,,,,,);
+EndProcedure
+
+&AtClient
+Procedure SalesPeople(Command)
+	OpenForm("Catalog.SalesPeople.ListForm", , , , , );
+EndProcedure
+
+&AtClient
+Procedure PriceLevels(Command)
+	OpenForm("Catalog.PriceLevels.ListForm", , , , , );
+EndProcedure
+
+&AtClient
+Procedure ExpensifyCategories(Command)
+	OpenForm("Catalog.ExpensifyCategories.ListForm", , , , , );
+EndProcedure
+
+&AtClient
+Procedure PaymentMethods(Command)
+	OpenForm("Catalog.PaymentMethods.ListForm", , , , , );
+EndProcedure
+
+&AtClient
+Procedure Locations(Command)
+	OpenForm("Catalog.Locations.ListForm", , , , , );
+EndProcedure
+
+&AtClient
+Procedure Classes(Command)
+	OpenForm("Catalog.Classes.ListForm", , , , , );
+EndProcedure
+
+&AtClient
+Procedure StripeDisconnect(Command)
+	StripeDisconnectServer();
+EndProcedure
+
+&AtServer
+Procedure StripeDisconnectServer();
+	
+	Constants.spk.Set("");
+	Constants.spk2.Set("");
+	Constants.spk3.Set("");
+	Constants.secret_temp.Set("");
+	Constants.publishable_temp.Set("");
+	Constants.StripeUser.Set("");
+	Constants.stripe_live_status.Set("");
+	Constants.stripe_display_name.Set("");
+	// add user name and live/test status
+	
+	//SetPrivilegedMode(True);
+		 
+	HeadersMap = New Map();
+	HeadersMap.Insert("apisecretkey", Constants.APISecretKey.Get());
+	
+	HTTPRequest = New HTTPRequest("/deletestripeauth", HeadersMap);
+	
+	SSLConnection = New OpenSSLSecureConnection();
+	
+	HTTPConnection = New HTTPConnection("intacs.accountingsuite.com",,,,,,SSLConnection);
+	Result = HTTPConnection.Post(HTTPRequest);
+		
+	//SetPrivilegedMode(False);
+
+	Message("Your Stripe account has been disconnected from AccountingSuite");	
+	
+	
+EndProcedure
+
+&AtClient
+Procedure DwollaDisconnect(Command)
+	DwollaDisconnectServer();
+EndProcedure
+
+&AtServer
+Procedure DwollaDisconnectServer();
+	
+	Constants.dwolla_access_token.Set("");
+	Message("Your Dwolla account has been disconnected from AccountingSuite");
+	
+EndProcedure
+
+&AtClient
+Procedure RollAPI(Command)
+	RollAPIAtServer();
+EndProcedure
+
+&AtServer
+Procedure RollAPIAtServer()
+	
+	SymbolString = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"; //62
+	RandomString20 = "";
+	RNG = New RandomNumberGenerator;	
+	For i = 0 to 19 Do
+		RN = RNG.RandomNumber(1, 62);
+		RandomString20 = RandomString20 + Mid(SymbolString,RN,1);
+	EndDo;
+	ConstantsSet.APISecretKey = RandomString20;
+	ThisForm.Modified = True;
+	ThisForm.Write();
+	
+	new_key = Constants.APISecretKey.get();
+	
+	HeadersMap = New Map();
+	HeadersMap.Insert("oldkey", old_key );
+	HeadersMap.Insert("newkey", new_key);	
+	HTTPRequest = New HTTPRequest("/rollapi", HeadersMap);
+	SSLConnection = New OpenSSLSecureConnection();
+	HTTPConnection = New HTTPConnection("intacs.accountingsuite.com",,,,,,SSLConnection);
+	Result = HTTPConnection.Post(HTTPRequest);
+	
+	SetPrivilegedMode(True);
+	ChangeUser = InfoBaseUsers.FindByName("api");
+	ChangeUser.Password = new_key;
+	ChangeUser.Write();
+	SetPrivilegedMode(False);
+	
+EndProcedure
+
+&AtClient
+Procedure OpenSalesOrder(Command)
+	OpenForm("DataProcessor.PrintFormSetup.Form.SOFormSetup" );
+EndProcedure
+
+&AtClient
+Procedure OpenInvoice(Command)
+	OpenForm("DataProcessor.PrintFormSetup.Form.SIFormSetup" );
+EndProcedure
+
+&AtClient
+Procedure OpenPO(Command)
+	OpenForm("DataProcessor.PrintFormSetup.Form.POFormSetup" );
+EndProcedure
+
+&AtClient
+Procedure OpenCashReceipt(Command)
+	OpenForm("DataProcessor.PrintFormSetup.Form.CRFormSetup" );
+EndProcedure
+
+&AtClient
+Procedure OpenQuote(Command)
+	OpenForm("DataProcessor.PrintFormSetup.Form.QuoteFormSetup" );
+EndProcedure
+
 
 
 

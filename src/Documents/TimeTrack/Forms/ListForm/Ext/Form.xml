@@ -13,6 +13,23 @@
 				</Title>
 				<ExtendedTooltip name="GenerateInvoiceExtendedTooltip" id="26"/>
 			</Button>
+			<Button name="FormOutputList" id="50">
+				<Type>CommandBarButton</Type>
+				<Representation>PictureAndText</Representation>
+				<OnlyInAllActions>true</OnlyInAllActions>
+				<CommandName>Form.StandardCommand.OutputList</CommandName>
+				<Picture>
+					<xr:Ref>StdPicture.DataCompositionOrder</xr:Ref>
+					<xr:LoadTransparent>true</xr:LoadTransparent>
+				</Picture>
+				<Title>
+					<v8:item>
+						<v8:lang>en</v8:lang>
+						<v8:content>Export list</v8:content>
+					</v8:item>
+				</Title>
+				<ExtendedTooltip name="FormOutputListExtendedTooltip" id="51"/>
+			</Button>
 			<Button name="Refresh" id="33">
 				<Type>CommandBarButton</Type>
 				<CommandName>Form.Command.RefreshItems</CommandName>
@@ -68,29 +85,29 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="6"/>
-			<SearchStringAddition name="ListSearchString" id="47">
+			<SearchStringAddition name="ListSearchString" id="52">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="48"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="49"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="53"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="54"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="50">
+			<ViewStatusAddition name="ListViewStatus" id="55">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="51"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="52"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="56"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="57"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="53">
+			<SearchControlAddition name="ListSearchControl" id="58">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="54"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="55"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="59"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="60"/>
 			</SearchControlAddition>
 			<ChildItems>
 				<LabelField name="InvoiceSent" id="38">
@@ -112,6 +129,13 @@
 					<ContextMenu name="RefContextMenu" id="36"/>
 					<ExtendedTooltip name="RefExtendedTooltip" id="37"/>
 				</LabelField>
+				<CheckBoxField name="Billable" id="47">
+					<DataPath>List.Billable</DataPath>
+					<Visible>false</Visible>
+					<CheckBoxType>Auto</CheckBoxType>
+					<ContextMenu name="BillableContextMenu" id="48"/>
+					<ExtendedTooltip name="BillableExtendedTooltip" id="49"/>
+				</CheckBoxField>
 				<LabelField name="DateFrom" id="44">
 					<DataPath>List.DateFrom</DataPath>
 					<Title>

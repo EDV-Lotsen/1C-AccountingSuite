@@ -13,6 +13,12 @@
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
+	If Parameters.Property("Company") And Parameters.Company.Vendor And Object.Ref.IsEmpty() Then
+		Object.Company = Parameters.Company;
+		OpenOrdersSelectionForm = True; 
+	EndIf;
+
+	
 	//------------------------------------------------------------------------------
 	// 1. Form attributes initialization.
 	
@@ -44,8 +50,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	Items.CompanyAddress.ToolTip    = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = '%1 address'"), VendorName);
 	
 	// Update quantities presentation.
-	QuantityPrecision = Format(Constants.QtyPrecision.Get(), "NFD=0; NZ=0; NG=0");
-	QuantityFormat    = "NFD=" + QuantityPrecision + "; NZ=0";
+	QuantityFormat = GeneralFunctionsReusable.DefaultQuantityFormat();
 	Items.LineItemsQuantity.EditFormat  = QuantityFormat;
 	Items.LineItemsQuantity.Format      = QuantityFormat;
 	Items.LineItemsOrdered.EditFormat   = QuantityFormat;
@@ -61,13 +66,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	If Not GeneralFunctionsReusable.FunctionalOptionValue("MultiCurrency") Then
 		Items.FCYGroup.Visible    = False;
 	EndIf;
-	
-	// Ajust controls availability for the begining balances documents.
-	If Object.BegBal  Then
-		Items.DocumentTotal.ReadOnly   = False;
-		Items.DocumentTotalRC.ReadOnly = False;
-	EndIf;
-	
+		
 	// Set currency title.
 	DefaultCurrencySymbol          = GeneralFunctionsReusable.DefaultCurrencySymbol();
 	ForeignCurrencySymbol          = Object.Currency.Symbol;
@@ -429,15 +428,6 @@ Procedure TermsOnChangeAtServer()
 	// Update due date basing on the currently selected terms.
 	Object.DueDate = ?(Not Object.Terms.IsEmpty(), Object.Date + Object.Terms.Days * 60*60*24, EmptyDate);
 	// Does not require standard processing.
-	
-EndProcedure
-
-&AtClient
-Procedure BegBalOnChange(Item)
-	
-	// Define totals eiditng by beginning balance flag.
-	Items.DocumentTotal.ReadOnly   = Not Object.BegBal;
-	Items.DocumentTotalRC.ReadOnly = Not Object.BegBal;
 	
 EndProcedure
 
@@ -1163,5 +1153,32 @@ Function GetLineItemsRowStructure()
 	Return New Structure("LineNumber, Product, ProductDescription, Quantity, UM, Ordered, Backorder, Received, Invoiced, OrderPrice, Price, LineTotal, Order, ItemReceipt, Location, LocationActual, DeliveryDate, DeliveryDateActual, Project, Class");
 	
 EndFunction
+
+&AtClient
+Procedure OnOpen(Cancel)
+	
+	AttachIdleHandler("AfterOpen", 0.1, True);	
+	
+EndProcedure
+
+&AtClient
+Procedure AfterOpen()
+	
+	ThisForm.Activate();
+	
+	If ThisForm.IsInputAvailable() Then
+		///////////////////////////////////////////////
+		DetachIdleHandler("AfterOpen");
+		
+		If OpenOrdersSelectionForm Then
+			CompanyOnChange(Items.Company);	
+		EndIf;	
+		///////////////////////////////////////////////
+	Else
+		AttachIdleHandler("AfterOpen", 0.1, True);
+	EndIf;	
+	
+EndProcedure
+
 
 #EndRegion

@@ -26,15 +26,15 @@ EndProcedure
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
-	ConstantWarehouseTransfer = Constants.WarehouseTransferLastNumber.Get();
-	If Object.Ref.IsEmpty() Then		
-		
-		Object.Number = Constants.WarehouseTransferLastNumber.Get();
-	Endif;
+	//ConstantWarehouseTransfer = Constants.WarehouseTransferLastNumber.Get();
+	//If Object.Ref.IsEmpty() Then		
+	//	
+	//	Object.Number = Constants.WarehouseTransferLastNumber.Get();
+	//Endif;
 
 	
-	Items.LineItemsQuantity.EditFormat = "NFD=" + Constants.QtyPrecision.Get();
-	Items.LineItemsQuantity.Format = "NFD=" + Constants.QtyPrecision.Get();
+	Items.LineItemsQuantity.EditFormat = GeneralFunctionsReusable.DefaultQuantityFormat();
+	Items.LineItemsQuantity.Format     = GeneralFunctionsReusable.DefaultQuantityFormat();
 
 EndProcedure
 
@@ -124,23 +124,23 @@ Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
 	EndIf;
 
 	
-	If Object.Ref.IsEmpty() Then
-	
-		MatchVal = Increment(Constants.WarehouseTransferLastNumber.Get());
-		If Object.Number = MatchVal Then
-			Constants.WarehouseTransferLastNumber.Set(MatchVal);
-		Else
-			If Increment(Object.Number) = "" Then
-			Else
-				If StrLen(Increment(Object.Number)) > 20 Then
-					 Constants.WarehouseTransferLastNumber.Set("");
-				Else
-					Constants.WarehouseTransferLastNumber.Set(Increment(Object.Number));
-				Endif;
+	//If Object.Ref.IsEmpty() Then
+	//
+	//	MatchVal = Increment(Constants.WarehouseTransferLastNumber.Get());
+	//	If Object.Number = MatchVal Then
+	//		Constants.WarehouseTransferLastNumber.Set(MatchVal);
+	//	Else
+	//		If Increment(Object.Number) = "" Then
+	//		Else
+	//			If StrLen(Increment(Object.Number)) > 20 Then
+	//				 Constants.WarehouseTransferLastNumber.Set("");
+	//			Else
+	//				Constants.WarehouseTransferLastNumber.Set(Increment(Object.Number));
+	//			Endif;
 
-			Endif;
-		Endif;
-	Endif;
+	//		Endif;
+	//	Endif;
+	//Endif;
 	
 	If Object.Number = "" Then
 		Message("WarehouseTransfer Number is empty");

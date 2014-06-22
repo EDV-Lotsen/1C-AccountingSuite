@@ -1,6 +1,10 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
 	<VerticalScroll>useIfNecessary</VerticalScroll>
+	<CommandSet>
+		<ExcludedCommand>UndoPosting</ExcludedCommand>
+		<ExcludedCommand>Write</ExcludedCommand>
+	</CommandSet>
 	<AutoTime>CurrentOrLast</AutoTime>
 	<UsePostingMode>Auto</UsePostingMode>
 	<RepostOnWrite>true</RepostOnWrite>
@@ -8,6 +12,7 @@
 		<ChildItems>
 			<Button name="FormPayWithDwolla" id="119">
 				<Type>CommandBarButton</Type>
+				<Visible>false</Visible>
 				<CommandName>Form.Command.PayWithDwolla</CommandName>
 				<ExtendedTooltip name="FormPayWithDwollaExtendedTooltip" id="120"/>
 			</Button>
@@ -20,6 +25,7 @@
 	</AutoCommandBar>
 	<Events>
 		<Event name="AfterWriteAtServer">AfterWriteAtServer</Event>
+		<Event name="OnOpen">OnOpen</Event>
 		<Event name="BeforeWrite">BeforeWrite</Event>
 		<Event name="BeforeWriteAtServer">BeforeWriteAtServer</Event>
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
@@ -89,6 +95,17 @@
 									<ShowTitle>false</ShowTitle>
 									<ExtendedTooltip name="LeftColumnExtendedTooltip" id="48"/>
 									<ChildItems>
+										<InputField name="BankAccount" id="5">
+											<DataPath>Object.BankAccount</DataPath>
+											<EditMode>EnterOnInput</EditMode>
+											<Width>14</Width>
+											<HorizontalStretch>false</HorizontalStretch>
+											<ContextMenu name="BankAccountContextMenu" id="6"/>
+											<ExtendedTooltip name="BankAccountExtendedTooltip" id="63"/>
+											<Events>
+												<Event name="OnChange">BankAccountOnChange</Event>
+											</Events>
+										</InputField>
 										<InputField name="PaymentMethod" id="73">
 											<DataPath>Object.PaymentMethod</DataPath>
 											<Width>14</Width>
@@ -168,14 +185,6 @@
 												<Event name="OnChange">CompanyOnChange</Event>
 											</Events>
 										</InputField>
-										<InputField name="DocumentTotal" id="35">
-											<DataPath>Object.DocumentTotal</DataPath>
-											<ReadOnly>true</ReadOnly>
-											<Width>14</Width>
-											<HorizontalStretch>false</HorizontalStretch>
-											<ContextMenu name="DocumentTotalContextMenu" id="36"/>
-											<ExtendedTooltip name="DocumentTotalExtendedTooltip" id="56"/>
-										</InputField>
 									</ChildItems>
 								</UsualGroup>
 								<UsualGroup name="Middle2" id="80">
@@ -227,16 +236,13 @@
 									<ShowTitle>false</ShowTitle>
 									<ExtendedTooltip name="RightColumnExtendedTooltip" id="61"/>
 									<ChildItems>
-										<InputField name="BankAccount" id="5">
-											<DataPath>Object.BankAccount</DataPath>
-											<EditMode>EnterOnInput</EditMode>
+										<InputField name="DocumentTotal" id="35">
+											<DataPath>Object.DocumentTotal</DataPath>
+											<ReadOnly>true</ReadOnly>
 											<Width>14</Width>
 											<HorizontalStretch>false</HorizontalStretch>
-											<ContextMenu name="BankAccountContextMenu" id="6"/>
-											<ExtendedTooltip name="BankAccountExtendedTooltip" id="63"/>
-											<Events>
-												<Event name="OnChange">BankAccountOnChange</Event>
-											</Events>
+											<ContextMenu name="DocumentTotalContextMenu" id="36"/>
+											<ExtendedTooltip name="DocumentTotalExtendedTooltip" id="56"/>
 										</InputField>
 										<InputField name="DocumentTotalRC" id="25">
 											<DataPath>Object.DocumentTotalRC</DataPath>
@@ -618,6 +624,20 @@
 				<Command>2:f6b8de2b-bc31-451e-8917-10c32ebab7a0</Command>
 				<Type>Auto</Type>
 				<DefaultVisible>false</DefaultVisible>
+			</Item>
+			<Item>
+				<Command>AccumulationRegister.BankReconciliation.StandardCommand.OpenByRecorder</Command>
+				<Type>Auto</Type>
+				<DefaultVisible>false</DefaultVisible>
+			</Item>
+			<Item>
+				<Command>InformationRegister.DocumentJournalOfCompanies.StandardCommand.OpenByValue.Document</Command>
+				<Type>Auto</Type>
+				<CommandGroup>FormNavigationPanelGoTo</CommandGroup>
+				<DefaultVisible>false</DefaultVisible>
+				<Visible>
+					<xr:Common>false</xr:Common>
+				</Visible>
 			</Item>
 		</NavigationPanel>
 	</CommandInterface>

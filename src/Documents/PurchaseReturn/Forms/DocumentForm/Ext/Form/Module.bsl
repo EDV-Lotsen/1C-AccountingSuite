@@ -132,14 +132,13 @@ EndProcedure
 // 
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
-	Items.LineItemsQuantity.EditFormat = "NFD=" + Constants.QtyPrecision.Get();
-	Items.LineItemsQuantity.Format = "NFD=" + Constants.QtyPrecision.Get();
-	
-	If Object.BegBal = False Then
-		Items.DocumentTotalRC.ReadOnly = True;
-		Items.DocumentTotal.ReadOnly = True;
+	If Parameters.Property("Company") And Parameters.Company.Vendor Then
+		Object.Company = Parameters.Company;
 	EndIf;
 	
+	Items.LineItemsQuantity.EditFormat = GeneralFunctionsReusable.DefaultQuantityFormat();
+	Items.LineItemsQuantity.Format = GeneralFunctionsReusable.DefaultQuantityFormat();
+		
 	Items.Company.Title = GeneralFunctionsReusable.GetVendorName();
 	
 	//Title = "Purchase Return " + Object.Number + " " + Format(Object.Date, "DLF=D");
@@ -187,19 +186,6 @@ EndProcedure
 //	RecalcTotal();
 
 //EndProcedure
-
-&AtClient
-Procedure BegBalOnChange(Item)
-	
-	If Object.BegBal = True Then
-		Items.DocumentTotalRC.ReadOnly = False;
-		Items.DocumentTotal.ReadOnly = False;
-	ElsIf Object.BegBal = False Then
-		Items.DocumentTotalRC.ReadOnly = True;
-		Items.DocumentTotal.ReadOnly = True;
-	EndIf;
-
-EndProcedure
 
 &AtServer
 Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
@@ -254,4 +240,31 @@ Procedure ProcessUserResponseOnDocumentPeriodClosed(Result, Parameters) Export
 		EndIf;
 	EndIf;	
 EndProcedure
+
+&AtClient
+Procedure OnOpen(Cancel)
+	
+	AttachIdleHandler("AfterOpen", 0.1, True);	
+	
+EndProcedure
+
+&AtClient
+Procedure AfterOpen()
+	
+	ThisForm.Activate();
+	
+	If ThisForm.IsInputAvailable() Then
+		///////////////////////////////////////////////
+		DetachIdleHandler("AfterOpen");
+		
+		If  Object.Ref.IsEmpty() And ValueIsFilled(Object.Company) Then
+			CompanyOnChange(Items.Company);	
+		EndIf;	
+		///////////////////////////////////////////////
+	Else
+		AttachIdleHandler("AfterOpen", 0.1, True);	
+	EndIf;		
+	
+EndProcedure
+
 

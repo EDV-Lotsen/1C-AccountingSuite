@@ -52,6 +52,13 @@ Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 	EndIf;
 	// <- CODE REVIEW
 	
+	// Document date adjustment patch (tunes the date of drafts like for the new documents).
+	If  WriteMode = DocumentWriteMode.Posting And Not Posted // Posting of new or draft (saved but unposted) document.
+	And BegOfDay(Date) = BegOfDay(CurrentSessionDate()) Then // Operational posting (by the current date).
+		// Shift document time to the time of posting.
+		Date = CurrentSessionDate();
+	EndIf;
+	
 	// Save document parameters before posting the document.
 	If WriteMode = DocumentWriteMode.Posting
 	Or WriteMode = DocumentWriteMode.UndoPosting Then
@@ -66,13 +73,13 @@ Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 		DocumentPosting.PrepareDataStructuresBeforeWrite(AdditionalProperties, DocumentParameters, Cancel, WriteMode, PostingMode);
 	EndIf;
 	
-	// Precheck of register balances to complete filling of document posting
+	// Precheck of register balances to complete filling of document posting.
 	If WriteMode = DocumentWriteMode.Posting Then
 		
-		// Precheck of document data, calculation of temporary data, required for document posting
-		If (Not ManualAdjustment) And (Orders.Count() > 0) Then
+		// Precheck of document data, calculation of temporary data, required for document posting.
+		If (Not ManualAdjustment) Then
 			DocumentParameters = New Structure("Ref, PointInTime,   Company, LineItems",
-			                                    Ref, PointInTime(), Company, LineItems.Unload(, "Order, Product, Location, DeliveryDate, Project, Class, Quantity"));
+			                                    Ref, PointInTime(), Company, LineItems.Unload(, "Order, Product, Location, LocationActual, DeliveryDate, Project, Class, Quantity"));
 			Documents.SalesInvoice.PrepareDataBeforeWrite(AdditionalProperties, DocumentParameters, Cancel);
 		EndIf;
 		
@@ -111,7 +118,7 @@ EndProcedure
 Procedure Filling(FillingData, StandardProcessing)
 	
 	// Forced assign the new document number.
-	If ThisObject.IsNew() Then ThisObject.SetNewNumber(); EndIf;
+	If ThisObject.IsNew() And Not ValueIsFilled(ThisObject.Number) Then ThisObject.SetNewNumber(); EndIf;
 	
 	// Filling new document or filling on the base of another document.
 	If FillingData = Undefined Then
@@ -122,6 +129,56 @@ Procedure Filling(FillingData, StandardProcessing)
 		LocationActual   = Catalogs.Locations.MainWarehouse;
 		
 	Else
+		
+		//Quote
+		If TypeOf(FillingData) = Type("DocumentRef.Quote") Then
+			
+			If Not Documents.Quote.IsOpen(FillingData) Then
+				Cancel = True;
+				Return;	
+			EndIf;
+			
+			//Fill attributes
+			FillPropertyValues(ThisObject, FillingData, "Company, ShipTo, BillTo, ConfirmTo, SalesPerson, Project,
+			|Class, DropshipCompany, DropshipShipTo, DropshipConfirmTo, DropshipRefNum, Currency, ExchangeRate, SalesTaxRate,
+			|DiscountIsTaxable, DiscountPercent, TaxableSubtotal, DocumentTotalRC, LineSubtotal, Discount, SalesTax, Shipping,
+			|DocumentTotal, SubTotal, SalesTaxRC, Terms"); 
+			
+			Date               = CurrentSessionDate(); 
+			BaseDocument       = FillingData; 
+			LocationActual     = FillingData.Location; 
+			DeliveryDateActual = FillingData.DeliveryDate;
+			ARAccount          = Currency.DefaultARAccount;
+			DueDate            = ?(Not Terms.IsEmpty(), Date + Terms.Days * 60*60*24, '00010101');
+			EmailNote          = Constants.SalesInvoiceFooter.Get(); 
+			
+			//Fill "line items"
+			For Each Line In FillingData.LineItems Do
+				
+				NewLine = ThisObject.LineItems.Add();	
+				NewLine.Product = Line.Product;
+				NewLine.ProductDescription = Line.ProductDescription;
+				NewLine.Quantity = Line.Quantity;
+				NewLine.UM = Line.UM;
+				NewLine.Price = Line.Price;
+				NewLine.LineTotal = Line.LineTotal;
+				NewLine.Taxable = Line.Taxable;
+				NewLine.TaxableAmount = Line.TaxableAmount;
+				NewLine.LocationActual = Line.Location;
+				NewLine.DeliveryDateActual = Line.DeliveryDate;
+				NewLine.Project = Line.Project;
+				NewLine.Class = Line.Class;
+				
+			EndDo;
+			
+			//Fill "Sales tax across agencies"
+			ThisObject.SalesTaxAcrossAgencies.Load(FillingData.SalesTaxAcrossAgencies.Unload());
+			
+			Return;
+			
+		EndIf;
+		//End Quote
+		
 		// Generate on the base of Sales order & Shipment.
 		Cancel = False; TabularSectionData = Undefined;
 		
@@ -131,10 +188,10 @@ Procedure Filling(FillingData, StandardProcessing)
 			Cancel = True;
 			Return;
 		EndIf;
-		
+				
 		// 1. Common filling of parameters.
 		DocumentParameters = New Structure("Ref, Date, Metadata",
-		                                    Ref, ?(ValueIsFilled(Date), Date, CurrentSessionDate()), Metadata());
+											Ref, ?(ValueIsFilled(Date), Date, CurrentSessionDate()), Metadata());
 		DocumentFilling.PrepareDataStructuresBeforeFilling(AdditionalProperties, DocumentParameters, FillingData, Cancel);
 		
 		// 2. Cancel filling on failed data.
@@ -166,13 +223,16 @@ Procedure Filling(FillingData, StandardProcessing)
 		
 		// 6. Clear used temporary document data.
 		DocumentFilling.ClearDataStructuresAfterFilling(AdditionalProperties);
+		
 	EndIf;
 	
 EndProcedure
 
 Procedure OnCopy(CopiedObject)
 	
-	// Clear manual ajustment attribute.
+	If ThisObject.IsNew() Then ThisObject.SetNewNumber(); EndIf;
+	
+	// Clear manual adjustment attribute.
 	ManualAdjustment = False;
 	
 EndProcedure
@@ -240,33 +300,10 @@ Procedure Posting(Cancel, PostingMode)
 	// 8. Clear used temporary document data.
 	DocumentPosting.ClearDataStructuresAfterPosting(AdditionalProperties);
 	
-// -> CODE REVIEW
+	
+	// -> CODE REVIEW
 	IncomeBooking = True;
-	
-	If BegBal Then
 		
-		Reg = AccountingRegisters.GeneralJournal.CreateRecordSet();
-		Reg.Filter.Recorder.Set(Ref);
-		Reg.Clear();
-		RegLine = Reg.AddDebit();
-		RegLine.Account = ARAccount;
-		RegLine.Period = Date;
-		If GetFunctionalOption("MultiCurrency") Then
-			RegLine.Amount = DocumentTotal;
-		Else
-			RegLine.Amount = DocumentTotalRC;
-		EndIf;
-		RegLine.AmountRC = DocumentTotalRC;
-		RegLine.Currency = Currency;
-		RegLine.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Company] = Company;
-		RegLine.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Document] = Ref;
-		Reg.Write();
-		
-		Return;
-		
-	EndIf;
-	
-	RegisterRecords.InventoryJrnl.Write = True;
 	RegisterRecords.CashFlowData.Write = True;
 	
 	If IncomeBooking Then
@@ -275,11 +312,13 @@ Procedure Posting(Cancel, PostingMode)
 		PostingDatasetIncome = New ValueTable();
 		PostingDatasetIncome.Columns.Add("IncomeAccount");
 		PostingDatasetIncome.Columns.Add("Class");
+		PostingDatasetIncome.Columns.Add("Project");
 		PostingDatasetIncome.Columns.Add("AmountRC");
 		
 		PostingDatasetCOGS = New ValueTable();
 		PostingDatasetCOGS.Columns.Add("COGSAccount");
 		PostingDatasetCOGS.Columns.Add("Class");
+		PostingDatasetCOGS.Columns.Add("Project");
 		PostingDatasetCOGS.Columns.Add("AmountRC");	
 		
 		PostingDatasetInvOrExp = New ValueTable();
@@ -287,41 +326,11 @@ Procedure Posting(Cancel, PostingMode)
 		PostingDatasetInvOrExp.Columns.Add("AmountRC");
 		
 		For Each CurRowLineItems In LineItems Do
-						
+			
 			If CurRowLineItems.Product.Type = Enums.InventoryTypes.Inventory Then
 				
-				// Check inventory balances and cancel if not sufficient.
-				CurrentBalance = 0;
-									
-				Query = New Query("SELECT
-				                  |	InventoryJrnlBalance.QtyBalance
-				                  |FROM
-				                  |	AccumulationRegister.InventoryJrnl.Balance(, Product = &Product AND Location = &Location) AS InventoryJrnlBalance");
-				Query.SetParameter("Product", CurRowLineItems.Product);
-				Query.SetParameter("Location", CurRowLineItems.LocationActual);
-				QueryResult = Query.Execute();
-				
-				If QueryResult.IsEmpty() Then
-				Else
-					Dataset = QueryResult.Unload();
-					CurrentBalance = Dataset[0][0];
-				EndIf;
-				
-				If CurRowLineItems.Quantity > CurrentBalance Then
-					
-					CurProd = CurRowLineItems.Product;
-					Message = New UserMessage();
-					Message.Text= StringFunctionsClientServer.SubstituteParametersInString(
-					NStr("en='Insufficient balance on %1';de='Nicht ausreichende Bilanz'"),CurProd);
-					
-					Message.Message();
-					//If NOT AllowNegativeInventory Then
-						Cancel = True;
-						Return;
-					//EndIf;
-				EndIf;
-				
 				// Inventory journal update and costing procedure.
+				
 				ItemCost = 0;
 				
 				If CurRowLineItems.Product.CostingMethod = Enums.InventoryCosting.WeightedAverage Then
@@ -329,75 +338,49 @@ Procedure Posting(Cancel, PostingMode)
 					AverageCost = 0;
 					
 					Query = New Query("SELECT
-					                  |	InventoryJrnlBalance.QtyBalance    AS QtyBalance,
-					                  |	InventoryJrnlBalance.AmountBalance AS AmountBalance
+					                  |	InventoryJournalBalance.QuantityBalance AS QuantityBalance,
+					                  |	InventoryJournalBalance.AmountBalance   AS AmountBalance
 					                  |FROM
-					                  |	AccumulationRegister.InventoryJrnl.Balance(, Product = &Product AND Location = &Location) AS InventoryJrnlBalance");
+					                  |	AccumulationRegister.InventoryJournal.Balance(, Product = &Product) AS InventoryJournalBalance");
 					Query.SetParameter("Product", CurRowLineItems.Product);
-					Query.SetParameter("Location", CurRowLineItems.LocationActual);
 					QueryResult = Query.Execute().Unload();
-					If  QueryResult.Count() > 0    // If  QueryResult.Rows.Count() > 0
-					And (Not QueryResult[0].QtyBalance = Null)
+					If  QueryResult.Count() > 0
+					And (Not QueryResult[0].QuantityBalance = Null)
 					And (Not QueryResult[0].AmountBalance = Null)
-					And QueryResult[0].QtyBalance > 0
+					And QueryResult[0].QuantityBalance > 0
 					Then
-						AverageCost = QueryResult[0].AmountBalance / QueryResult[0].QtyBalance;
+						AverageCost = QueryResult[0].AmountBalance / QueryResult[0].QuantityBalance;
 					EndIf;
 					
-					Record = RegisterRecords.InventoryJrnl.Add();
-					Record.RecordType = AccumulationRecordType.Expense;
-					Record.Period = Date;
-					Record.Product = CurRowLineItems.Product;
-					Record.Location = CurRowLineItems.LocationActual;
-					Record.Qty = CurRowLineItems.Quantity;
 					ItemCost = CurRowLineItems.Quantity * AverageCost;
-					Record.Amount = ItemCost;
 					
 				EndIf;
 				
-				//If CurRowLineItems.Product.CostingMethod = Enums.InventoryCosting.LIFO OR
-					If CurRowLineItems.Product.CostingMethod = Enums.InventoryCosting.FIFO Then
+				If CurRowLineItems.Product.CostingMethod = Enums.InventoryCosting.FIFO Then
 					
-					ItemQty = CurRowLineItems.Quantity;
-					
-					//If CurRowLineItems.Product.CostingMethod = Enums.InventoryCosting.LIFO Then
-						//Sorting = "DESC";
-					//Else
-						Sorting = "ASC";
-					//EndIf;
+					ItemQuantity = CurRowLineItems.Quantity;
 					
 					Query = New Query("SELECT
-					                  |	InventoryJrnlBalance.QtyBalance,
-					                  |	InventoryJrnlBalance.AmountBalance,
-					                  |	InventoryJrnlBalance.Layer,
-					                  |	InventoryJrnlBalance.Layer.Date AS LayerDate
+					                  |	InventoryJournalBalance.QuantityBalance,
+					                  |	InventoryJournalBalance.AmountBalance,
+					                  |	InventoryJournalBalance.Layer,
+					                  |	InventoryJournalBalance.Layer.Date AS LayerDate
 					                  |FROM
-					                  |	AccumulationRegister.InventoryJrnl.Balance(, Product = &Product AND Location = &Location) AS InventoryJrnlBalance
+					                  |	AccumulationRegister.InventoryJournal.Balance(, Product = &Product AND Location = &Location) AS InventoryJournalBalance
 					                  |ORDER BY
-					                  |	LayerDate " + Sorting + "");
+					                  |	LayerDate ASC");
 					Query.SetParameter("Product", CurRowLineItems.Product);
 					Query.SetParameter("Location", CurRowLineItems.LocationActual);
 					Selection = Query.Execute().Select();
 					
 					While Selection.Next() Do
-						If ItemQty > 0 Then
-							
-							Record = RegisterRecords.InventoryJrnl.Add();
-							Record.RecordType = AccumulationRecordType.Expense;
-							Record.Period = Date;
-							Record.Product = CurRowLineItems.Product;
-							Record.Location = CurRowLineItems.LocationActual;
-							Record.Layer = Selection.Layer;
-							If ItemQty >= Selection.QtyBalance Then
+						If ItemQuantity > 0 Then
+							If ItemQuantity >= Selection.QuantityBalance Then
 								ItemCost = ItemCost + Selection.AmountBalance;
-								Record.Qty = Selection.QtyBalance;
-								Record.Amount = Selection.AmountBalance;
-								ItemQty = ItemQty - Record.Qty;
+								ItemQuantity = ItemQuantity - Selection.QuantityBalance;
 							Else
-								ItemCost = ItemCost + ItemQty * (Selection.AmountBalance / Selection.QtyBalance);
-								Record.Qty = ItemQty;
-								Record.Amount = ItemQty * (Selection.AmountBalance / Selection.QtyBalance);
-								ItemQty = 0;
+								ItemCost = ItemCost + ItemQuantity * (Selection.AmountBalance / Selection.QuantityBalance);
+								ItemQuantity = 0;
 							EndIf;
 						EndIf;
 					EndDo;
@@ -408,6 +391,7 @@ Procedure Posting(Cancel, PostingMode)
 				PostingLineCOGS = PostingDatasetCOGS.Add();
 				PostingLineCOGS.COGSAccount = CurRowLineItems.Product.COGSAccount;
 				PostingLineCOGS.Class = CurRowLineItems.Class;
+				PostingLineCOGS.Project = CurRowLineItems.Project;
 				PostingLineCOGS.AmountRC = ItemCost;
 				
 				PostingLineInvOrExp = PostingDatasetInvOrExp.Add();
@@ -420,6 +404,7 @@ Procedure Posting(Cancel, PostingMode)
 			PostingLineIncome = PostingDatasetIncome.Add();
 			PostingLineIncome.IncomeAccount = CurRowLineItems.Product.IncomeAccount;
 			PostingLineIncome.Class = CurRowLineItems.Class;
+			PostingLineIncome.Project = CurRowLineItems.Project;
 			PostingLineIncome.AmountRC = CurRowLineItems.LineTotal * ExchangeRate;
 			
 		EndDo;
@@ -428,8 +413,9 @@ Procedure Posting(Cancel, PostingMode)
 	
 	If IncomeBooking Then
 		
-		// GL posting
-		RegisterRecords.GeneralJournal.Write = True;	
+		// GL posting.
+		
+		RegisterRecords.GeneralJournal.Write = True;
 		
 		Record = RegisterRecords.GeneralJournal.AddDebit();
 		Record.Account = ARAccount;
@@ -440,7 +426,7 @@ Procedure Posting(Cancel, PostingMode)
 		Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Company] = Company;
 		Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Document] = Ref;
 		
-		If Discount <> 0 Then			
+		If Discount <> 0 Then
 			Record = RegisterRecords.GeneralJournal.AddDebit();
 			DiscountsAccount = Constants.DiscountsAccount.Get();
 			If DiscountsAccount = ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
@@ -450,7 +436,7 @@ Procedure Posting(Cancel, PostingMode)
 			EndIf;
 			Record.Period = Date;
 			Record.AmountRC = Discount * -1 * ExchangeRate;
-				
+			
 			Record = RegisterRecords.CashFlowData.Add();
 			Record.RecordType = AccumulationRecordType.Expense;
 			Record.Period = Date;
@@ -466,11 +452,11 @@ Procedure Posting(Cancel, PostingMode)
 			Record.AmountRC = (Discount * -1 * ExchangeRate) * -1;
 			//Record.PaymentMethod = PaymentMethod;
 			Record.SalesPerson = SalesPerson;
+
 			
 		EndIf;
 		
 		If Shipping <> 0 Then
-			
 			Record = RegisterRecords.GeneralJournal.AddCredit();
 			ShippingExpenseAccount = Constants.ShippingExpenseAccount.Get();
 			If ShippingExpenseAccount = ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
@@ -494,62 +480,49 @@ Procedure Posting(Cancel, PostingMode)
 			EndIf;
 			Record.AmountRC = Shipping * ExchangeRate;
 			Record.SalesPerson = SalesPerson;
-			
+
 		EndIf;
 		
-		PostingClassesIncome = PostingDatasetIncome.Copy();
-		PostingClassesCOGS	= PostingDatasetCOGS.Copy();
+		PostingDatasetIncomeGJ = PostingDatasetIncome.Copy();
 		
-		PostingDatasetIncome.GroupBy("IncomeAccount", "AmountRC");
-		NoOfPostingRows = PostingDatasetIncome.Count();
-		For i = 0 To NoOfPostingRows - 1 Do			
+		PostingDatasetIncomeGJ.GroupBy("IncomeAccount", "AmountRC");
+		NoOfPostingRows = PostingDatasetIncomeGJ.Count();
+		For i = 0 To NoOfPostingRows - 1 Do
 			Record = RegisterRecords.GeneralJournal.AddCredit();
-			Record.Account = PostingDatasetIncome[i][0];
+			Record.Account = PostingDatasetIncomeGJ[i][0];
 			Record.Period = Date;
-			Record.AmountRC = PostingDatasetIncome[i][1];				
+			Record.AmountRC = PostingDatasetIncomeGJ[i][1];
 		EndDo;
 		
-		PostingDatasetCOGS.GroupBy("COGSAccount", "AmountRC");
-		NoOfPostingRows = PostingDatasetCOGS.Count();
-		For i = 0 To NoOfPostingRows - 1 Do			
+		PostingDatasetCOGS_GJ   = PostingDatasetCOGS.Copy();
+		
+		PostingDatasetCOGS_GJ.GroupBy("COGSAccount", "AmountRC");
+		NoOfPostingRows = PostingDatasetCOGS_GJ.Count();
+		For i = 0 To NoOfPostingRows - 1 Do
 			Record = RegisterRecords.GeneralJournal.AddDebit();
-			Record.Account = PostingDatasetCOGS[i][0];
+			Record.Account = PostingDatasetCOGS_GJ[i][0];
 			Record.Period = Date;
-			Record.AmountRC = PostingDatasetCOGS[i][1];				
+			Record.AmountRC = PostingDatasetCOGS_GJ[i][1];
 		EndDo;
 		
 		PostingDatasetInvOrExp.GroupBy("InvOrExpAccount", "AmountRC");
 		NoOfPostingRows = PostingDatasetInvOrExp.Count();
-		For i = 0 To NoOfPostingRows - 1 Do			
+		For i = 0 To NoOfPostingRows - 1 Do
 			Record = RegisterRecords.GeneralJournal.AddCredit();
 			Record.Account = PostingDatasetInvOrExp[i][0];
 			Record.Period = Date;
-			Record.AmountRC = PostingDatasetInvOrExp[i][1];				
+			Record.AmountRC = PostingDatasetInvOrExp[i][1];
 		EndDo;
 		
-		If SalesTax > 0 Then
-			Record = RegisterRecords.GeneralJournal.AddCredit();
-			Record.Account = Constants.TaxPayableAccount.Get();
-			Record.Period = Date;
-			Record.AmountRC = SalesTax * ExchangeRate;
-		EndIf;
+		//If SalesTax > 0 Then
+		//	Record = RegisterRecords.GeneralJournal.AddCredit();
+		//	Record.Account = Constants.TaxPayableAccount.Get();
+		//	Record.Period = Date;
+		//	Record.AmountRC = SalesTax * ExchangeRate;
+		//EndIf;
 		
 	EndIf;
-	
-	// Writing ProjectData.
-	
-	RegisterRecords.ProjectData.Write = True;
-	RegisterRecords.ClassData.Write = True;
-	For Each CurRowLineItems In LineItems Do
-		Record = RegisterRecords.ProjectData.Add();
-		Record.RecordType = AccumulationRecordType.Receipt;
-		Record.Period = Date;
-		Record.Project = CurRowLineItems.Project;
-		Record.Amount = CurRowLineItems.LineTotal;
-	EndDo;
-	
-	// End writing ProjectData.
-	
+		
 	// Writing CashFlowData
 	For Each CurRowLineItems in LineItems Do	
 		Record = RegisterRecords.CashFlowData.Add();
@@ -565,14 +538,14 @@ Procedure Posting(Cancel, PostingMode)
 		Record.SalesPerson = SalesPerson;
 	EndDo;
 	
-	// add sales tax - needs to be in the Tax Payment document?
-	// add shipping
-	// add discount
-	
-	// End writing CashFlowData
-
+	// Writing ProjectData and ClassData 	
+	RegisterRecords.ProjectData.Write = True;
+	RegisterRecords.ClassData.Write = True;
 	
 	// Writing Class data.
+	PostingClassesIncome = PostingDatasetIncome.Copy();
+	PostingClassesCOGS   = PostingDatasetCOGS.Copy();
+	
 	PostingClassesIncome.GroupBy("IncomeAccount, Class", "AmountRC");
 	PostingClassesCOGS.GroupBy("COGSAccount, Class", "AmountRC");	
 	
@@ -597,6 +570,36 @@ Procedure Posting(Cancel, PostingMode)
 	EndDo;
 	// End writing Class data.
 	
+	//--------------------------------------------------------------------------------------
+	
+	// Writing Project data.
+	PostingClassesIncomeProject = PostingDatasetIncome.Copy();
+	PostingClassesCOGSProject = PostingDatasetCOGS.Copy();
+	
+	PostingClassesIncomeProject.GroupBy("IncomeAccount, Project", "AmountRC");
+	PostingClassesCOGSProject.GroupBy("COGSAccount, Project", "AmountRC");	
+	
+	// Income by Project
+	For Each ClassesIncomeLine In PostingClassesIncomeProject Do
+		Record = RegisterRecords.ProjectData.Add();
+		Record.RecordType = AccumulationRecordType.Receipt;
+		Record.Period = Date;
+		Record.Account = ClassesIncomeLine.IncomeAccount;
+		Record.Project = ClassesIncomeLine.Project;
+		Record.Amount = ClassesIncomeLine.AmountRC;
+	EndDo;
+	
+	// COGS by Project.
+	For Each ClassesCOGSLine In PostingClassesCOGSProject Do
+		Record = RegisterRecords.ProjectData.Add();
+		Record.RecordType = AccumulationRecordType.Expense;
+		Record.Period = Date;
+		Record.Account = ClassesCOGSLine.COGSAccount;
+		Record.Project = ClassesCOGSLine.Project;
+		Record.Amount = ClassesCOGSLine.AmountRC;
+	EndDo;
+	// End writing Project data.
+	
 	RegisterRecords.OrderTransactions.Write = True;
 	For Each CurRowLineItems In LineItems Do
 		If NOT CurRowLineItems.Order.IsEmpty() Then
@@ -604,11 +607,9 @@ Procedure Posting(Cancel, PostingMode)
 			Record.RecordType = AccumulationRecordType.Expense;
 			Record.Period = Date;
 			Record.Order = CurRowLineItems.Order;
-			Record.Amount = CurRowLineItems.LineTotal;
+			Record.Amount = 0; // CurRowLineItems.LineTotal;
 		EndIf;
 	EndDo;
-	
-	// <- CODE REVIEW
 	
 	invoice_url_webhook = Constants.sales_invoices_webhook.Get();
 	
@@ -633,7 +634,7 @@ Procedure Posting(Cancel, PostingMode)
 	email_invoice_webhook = Constants.invoice_webhook_email.Get();
 	
 	If NOT email_invoice_webhook = "" Then
-	//If true then			
+		
 		WebhookMap2 = Webhooks.ReturnSalesInvoiceMap(Ref);
 		WebhookMap2.Insert("resource","salesinvoices");
 		If NewObject = True Then
@@ -650,9 +651,12 @@ Procedure Posting(Cancel, PostingMode)
 		
 	EndIf;
 	
+	// <- CODE REVIEW
+	
 EndProcedure
 
 Procedure UndoPosting(Cancel)
+		
 	
 	// 1. Common posting clearing / deactivate manual ajusted postings.
 	DocumentPosting.PrepareRecordSetsForPostingClearing(AdditionalProperties, RegisterRecords);
@@ -680,5 +684,24 @@ Procedure UndoPosting(Cancel)
 EndProcedure
 
 #EndIf
+
+Procedure OnSetNewNumber(StandardProcessing, Prefix)
+	
+	StandardProcessing = False;
+	
+	Numerator = Catalogs.DocumentNumbering.SalesInvoice;
+	NextNumber = GeneralFunctions.Increment(Numerator.Number);
+	
+	While Documents.SalesInvoice.FindByNumber(NextNumber) <> Documents.SalesInvoice.EmptyRef() And NextNumber <> "" Do
+		ObjectNumerator = Numerator.GetObject();
+		ObjectNumerator.Number = NextNumber;
+		ObjectNumerator.Write();
+		
+		NextNumber = GeneralFunctions.Increment(NextNumber);
+	EndDo;
+	
+	ThisObject.Number = NextNumber; 
+
+EndProcedure
 
 #EndRegion

@@ -4,10 +4,10 @@
 //
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
-	//If Constants.SalesTaxCharging.Get() = False Then
+	If Constants.SalesTaxCharging.Get() = False Then
 		Items.Taxable.Visible = False;
-	//	Taxable = False;
-	//EndIf;
+		Taxable = False;
+	EndIf;
 	
 	If Object.Ref <> Catalogs.Products.EmptyRef() Then
 		  Items.Type.ReadOnly = True;
@@ -190,14 +190,30 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		FillItemQuantity_OnPO_OnSO_OnHand_AvailableToPromise();
 		
 		// Update visibility
-		ChildItems.Indicators.Visible = True;
+		Items.CostAndQuantity.Visible = True;
 		IsInventoryType = (Object.Type = Enums.InventoryTypes.Inventory);
-		ChildItems.Indicators.ChildItems.Left.Visible = IsInventoryType;
-		ChildItems.Indicators.ChildItems.Right.ChildItems.QtyOnHand.Visible = IsInventoryType;
-		ChildItems.Indicators.ChildItems.Right.ChildItems.QtyAvailableToPromise.Visible = IsInventoryType;
+		Items.CostAndQuantity.ChildItems.Left.Visible = IsInventoryType;
+		Items.CostAndQuantity.ChildItems.Right.ChildItems.QtyOnHand.Visible = IsInventoryType;
+		Items.CostAndQuantity.ChildItems.Right.ChildItems.QtyAvailableToPromise.Visible = IsInventoryType;
+		//Items.CostAndQuantity.ChildItems.Right.ChildItems.InventorySiteInfo.Visible = IsInventoryType;
+		Items.UnitsLeft.ReadOnly = False;
 	Else
 		// New item: hide indicators
-		ChildItems.Indicators.Visible = False;
+		Items.CostAndQuantity.Visible = False;
+		Items.UnitsLeft.ReadOnly = True;
+	EndIf;
+	
+EndProcedure
+
+&AtServer
+Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
+	
+	// Add new object flag.
+	WriteParameters.Insert("IsNew", CurrentObject.IsNew());
+	
+	// Base unit auto filling.
+	If  CurrentObject.UM.IsEmpty() Then
+		CurrentObject.UM = Catalogs.UM.each;
 	EndIf;
 	
 EndProcedure
@@ -205,11 +221,34 @@ EndProcedure
 &AtServer
 Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 	
-	 If Object.Ref <> Catalogs.Products.EmptyRef() Then
+	// Create new unit and assign it as default unit for the item.
+	If WriteParameters.IsNew And CurrentObject.DefaultReportUnit.IsEmpty() Then
+		// Create default unit.
+		DefaultUnit = Catalogs.Units.CreateItem();
+		DefaultUnit.Owner       = CurrentObject.Ref;
+		DefaultUnit.Description = "each";
+		DefaultUnit.Factor      = 1;
+		DefaultUnit.Write();
+		
+		// Update item with new units.
+		CurrentObject.DefaultReportUnit = DefaultUnit.Ref;
+		If  CurrentObject.DefaultSaleUnit.IsEmpty() Then
+			CurrentObject.DefaultSaleUnit = DefaultUnit.Ref;
+		EndIf;
+		If  CurrentObject.DefaultPurchaseUnit.IsEmpty() Then
+			CurrentObject.DefaultPurchaseUnit = DefaultUnit.Ref;
+		EndIf;
+		CurrentObject.Write();
+		
+		// Reread filled object to form
+		ValueToFormAttribute(CurrentObject, "Object");
+	EndIf;
+	
+	
+	If Object.Ref <> Catalogs.Products.EmptyRef() Then
 		  Items.Type.ReadOnly = True;
 		  Items.CostingMethod.ReadOnly = True;
 	EndIf;
-
 	
 	If  (Object.Type = Enums.InventoryTypes.Inventory) Then
 		// Fill item cost values
@@ -220,41 +259,43 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 	FillItemQuantity_OnPO_OnSO_OnHand_AvailableToPromise();
 	
 	// Update visibility
-	ChildItems.Indicators.Visible = True;
+	Items.CostAndQuantity.Visible = True;
 	IsInventoryType = (Object.Type = Enums.InventoryTypes.Inventory);
-	ChildItems.Indicators.ChildItems.Left.Visible = IsInventoryType;
-	ChildItems.Indicators.ChildItems.Right.ChildItems.QtyOnHand.Visible = IsInventoryType;
-	ChildItems.Indicators.ChildItems.Right.ChildItems.QtyAvailableToPromise.Visible = IsInventoryType;
+	Items.CostAndQuantity.ChildItems.Left.Visible = IsInventoryType;
+	Items.CostAndQuantity.ChildItems.Right.ChildItems.QtyOnHand.Visible = IsInventoryType;
+	Items.CostAndQuantity.ChildItems.Right.ChildItems.QtyAvailableToPromise.Visible = IsInventoryType;
+	//Items.CostAndQuantity.ChildItems.Right.ChildItems.InventorySiteInfo.Visible = IsInventoryType;
+	Items.UnitsLeft.ReadOnly = False;
 	
 	//AddPriceList();
 	
-	companies_webhook = Constants.items_webhook.Get();
+	//companies_webhook = Constants.items_webhook.Get();
 	
-	If NOT companies_webhook = "" Then
-		
-		//double_slash = Find(companies_webhook, "//");
-		
-		//companies_webhook = Right(companies_webhook,StrLen(companies_webhook) - double_slash - 1);
-		
-		//first_slash = Find(companies_webhook, "/");
-		//webhook_address = Left(companies_webhook,first_slash - 1);
-		//webhook_resource = Right(companies_webhook,StrLen(companies_webhook) - first_slash + 1); 		
-		
-		WebhookMap = GeneralFunctions.ReturnProductObjectMap(Object.Ref);
-		WebhookMap.Insert("resource","items");
-		If object.NewObject = True Then
-			WebhookMap.Insert("action","create");
-		Else
-			WebhookMap.Insert("action","update");
-		EndIf;
-		WebhookMap.Insert("apisecretkey",Constants.APISecretKey.Get());
-		WebhookParams = New Array();
-		WebhookParams.Add(Constants.items_webhook.Get());
-		WebhookParams.Add(WebhookMap);
-		LongActions.ExecuteInBackground("GeneralFunctions.SendWebhook", WebhookParams);
+	//If NOT companies_webhook = "" Then
+	//	
+	//	//double_slash = Find(companies_webhook, "//");
+	//	
+	//	//companies_webhook = Right(companies_webhook,StrLen(companies_webhook) - double_slash - 1);
+	//	
+	//	//first_slash = Find(companies_webhook, "/");
+	//	//webhook_address = Left(companies_webhook,first_slash - 1);
+	//	//webhook_resource = Right(companies_webhook,StrLen(companies_webhook) - first_slash + 1); 		
+	//	
+	//	WebhookMap = GeneralFunctions.ReturnProductObjectMap(Object.Ref);
+	//	WebhookMap.Insert("resource","items");
+	//	If object.NewObject = True Then
+	//		WebhookMap.Insert("action","create");
+	//	Else
+	//		WebhookMap.Insert("action","update");
+	//	EndIf;
+	//	WebhookMap.Insert("apisecretkey",Constants.APISecretKey.Get());
+	//	WebhookParams = New Array();
+	//	WebhookParams.Add(Constants.items_webhook.Get());
+	//	WebhookParams.Add(WebhookMap);
+	//	LongActions.ExecuteInBackground("GeneralFunctions.SendWebhook", WebhookParams);
 
-	
-	EndIf;
+	//
+	//EndIf;
 	
 	// Insert handler code.
 	
@@ -348,42 +389,40 @@ Procedure FillLastAverageAccountingCost()
 	
 		// Define query for all types of cost
 		QTItemLastCost = "
-			|// Last item cost from information register ItemLastCost
+			|// Last item cost from information register ItemLastCosts
 			|SELECT
-			|	ItemLastCost.Cost AS Cost
+			|	ItemLastCostsSliceLast.Cost AS Cost
 			|INTO
 			|	LastCost
 			|FROM
-			|	InformationRegister.ItemLastCost AS ItemLastCost
-			|WHERE
-			|	ItemLastCost.Product = &Ref;";
+			|	InformationRegister.ItemLastCosts.SliceLast(, Product = &Ref) AS ItemLastCostsSliceLast;";
 		
 		QTItemAverageCost = "
 			|// Average cost, based on all availble stock
 			|SELECT
-			|	CASE WHEN InventoryJrnlBalance.QtyBalance <= 0 THEN 0
-			|		 ELSE CAST(InventoryJrnlBalance.AmountBalance / InventoryJrnlBalance.QtyBalance AS Number(15, 2)) END AS Cost
+			|	CASE WHEN InventoryJournalBalance.QuantityBalance <= 0 THEN 0
+			|		 ELSE CAST(InventoryJournalBalance.AmountBalance / InventoryJournalBalance.QuantityBalance AS Number(15, 2)) END AS Cost
 			|INTO
 			|	AverageCost
 			|FROM
-			|	AccumulationRegister.InventoryJrnl.Balance(&Boundary, Product = &Ref) AS InventoryJrnlBalance;";
+			|	AccumulationRegister.InventoryJournal.Balance(&Boundary, Product = &Ref) AS InventoryJournalBalance;";
 		
 		QTItemAccountingFirstLastCost = "
 			|// Current accounting cost => First / Last lot item cost
 			|SELECT TOP 1
-			|	CASE WHEN InventoryJrnlBalance.QtyBalance <= 0 THEN 0
-			|		 ELSE CAST(InventoryJrnlBalance.AmountBalance / InventoryJrnlBalance.QtyBalance AS Number(15, 2)) END AS Cost,
-			|	InventoryJrnlBalance.Layer AS Layer
+			|	CASE WHEN InventoryJournalBalance.QuantityBalance <= 0 THEN 0
+			|		 ELSE CAST(InventoryJournalBalance.AmountBalance / InventoryJournalBalance.QuantityBalance AS Number(15, 2)) END AS Cost,
+			|	InventoryJournalBalance.Layer AS Layer
 			|INTO
 			|	AccountingCost
 			|FROM
-			|	AccumulationRegister.InventoryJrnl.Balance(&Boundary, Product = &Ref) AS InventoryJrnlBalance
+			|	AccumulationRegister.InventoryJournal.Balance(&Boundary, Product = &Ref) AS InventoryJournalBalance
 			|ORDER BY
-			|	InventoryJrnlBalance.Layer.PointInTime %1;";
+			|	InventoryJournalBalance.Layer.PointInTime %1;";
 		
 		Query = New Query(
-			// Last item cost from information register ItemLastCost
-			QTItemLastCost + 	// INTO LastCost.Cost
+			// Last item cost from information register ItemLastCosts
+			QTItemLastCost +    // INTO LastCost.Cost
 			// Average cost, based on all availble stock
 			QTItemAverageCost + // INTO AverageCost.Cost
 			// Current accounting cost => First / Last lot item cost for FIFO/LIFO, NONE for Average
@@ -470,7 +509,7 @@ Procedure FillItemQuantity_OnPO_OnSO_OnHand_AvailableToPromise()
 		|	0                                 AS QtyOnSO,
 		|	0                                 AS QtyOnHand
 		|INTO
-		|	Table_OrdersDispatched_OrdersRegistered_InventoryJrnl
+		|	Table_OrdersDispatched_OrdersRegistered_InventoryJournal
 		|FROM
 		|	AccumulationRegister.OrdersDispatched.Balance AS OrdersDispatchedBalance
 		|	LEFT JOIN InformationRegister.OrdersStatuses.SliceLast AS OrdersStatusesSliceLast
@@ -512,38 +551,39 @@ Procedure FillItemQuantity_OnPO_OnSO_OnHand_AvailableToPromise()
 		|
 		|SELECT
 		// ------------------------------------------------------
-		// QtyOnHand = Inventory.Qty(0) 
+		// QtyOnHand = Inventory.Quantity(0)
 		|	NULL,
 		|	NULL,
-		|	InventoryJrnlBalance.Product,
+		|	InventoryJournalBalance.Product,
 		|	0,
 		|	0,
 		|	CASE WHEN &Type = VALUE(Enum.InventoryTypes.Inventory)
-		|	          THEN InventoryJrnlBalance.QtyBalance
+		|	          THEN InventoryJournalBalance.QuantityBalance
 		|        WHEN &Type = VALUE(Enum.InventoryTypes.NonInventory)
 		|             THEN 0
 		|        ELSE 0 END
 		|FROM
-		|	AccumulationRegister.InventoryJrnl.Balance(, Product = &Ref) AS InventoryJrnlBalance";
+		|	AccumulationRegister.InventoryJournal.Balance(, Product = &Ref) AS InventoryJournalBalance";
 		QueryText   = QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
 		QueryTables = QueryTables + 1;
 		
 		// Group data by product accumulating quantities by different companies and orders
 		QueryText = QueryText +
 		"SELECT
-		|	TableBalances.Product        AS Product,
-		|	SUM(TableBalances.QtyOnPO)   AS QtyOnPO,
-		|	SUM(TableBalances.QtyOnSO)   AS QtyOnSO,
+		|	TableBalances.Product AS Product,
+		|	SUM(TableBalances.QtyOnPO) AS QtyOnPO,
+		|	SUM(TableBalances.QtyOnSO) AS QtyOnSO,
 		|	SUM(TableBalances.QtyOnHand) AS QtyOnHand,
-		|	CASE WHEN &Type = VALUE(Enum.InventoryTypes.Inventory)
-		|             THEN CASE WHEN SUM(TableBalances.QtyOnHand) + SUM(TableBalances.QtyOnPO) - SUM(TableBalances.QtyOnSO) > 0
-		|	                    THEN SUM(TableBalances.QtyOnHand) + SUM(TableBalances.QtyOnPO) - SUM(TableBalances.QtyOnSO)
-		|		                ELSE 0 END
-		|        WHEN &Type = VALUE(Enum.InventoryTypes.NonInventory)
-		|             THEN 0
-		|        ELSE 0 END              AS QtyAvailableToPromise
+		|	CASE
+		|		WHEN &Type = VALUE(Enum.InventoryTypes.Inventory)
+		|			THEN SUM(TableBalances.QtyOnHand) + SUM(TableBalances.QtyOnPO) - SUM(TableBalances.QtyOnSO)
+		|		WHEN &Type = VALUE(Enum.InventoryTypes.NonInventory)
+		|			THEN 0
+		|		ELSE 0
+		|	END AS QtyAvailableToPromise
 		|FROM
-		|	Table_OrdersDispatched_OrdersRegistered_InventoryJrnl AS TableBalances
+		|	Table_OrdersDispatched_OrdersRegistered_InventoryJournal AS TableBalances
+		|
 		|GROUP BY
 		|	TableBalances.Product";
 		QueryText   = QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
@@ -605,7 +645,7 @@ Procedure TypeOnChange(Item)
 		Object.COGSAccount = GeneralFunctions.GetEmptyAcct();
 		
 		//service taxable defaults to false
-		//Object.Taxable = False;
+		Object.Taxable = False;
 		
 	EndIf;
 
@@ -633,9 +673,9 @@ EndProcedure
 &AtServer
 Procedure TypeOnChangeAtServer()
 	
-	//If Constants.SalesTaxMarkNewProductsTaxable.Get() = True Then
-	//	Object.Taxable = True;
-	//EndIf;
+	If Constants.SalesTaxMarkNewProductsTaxable.Get() = True Then
+		Object.Taxable = True;
+	EndIf;
 	
 EndProcedure
 
@@ -766,6 +806,20 @@ Procedure AddPriceList()
 	Endif;
 
 	
+EndProcedure
+
+&AtClient
+Procedure InventorySiteInfo(Command)
+	
+	ParametersStructure = New Structure;
+	ParametersStructure.Insert("Product", Object.Ref); 
+	ParametersStructure.Insert("QtyOnPO", QtyOnPO); 
+	ParametersStructure.Insert("QtyOnSO", QtyOnSO); 
+	ParametersStructure.Insert("QtyOnHand", QtyOnHand); 
+	ParametersStructure.Insert("QtyAvailableToPromise", QtyAvailableToPromise); 
+	
+	OpenForm("DataProcessor.InventorySiteInfo.Form", ParametersStructure);
+
 EndProcedure
 
 //&AtServer

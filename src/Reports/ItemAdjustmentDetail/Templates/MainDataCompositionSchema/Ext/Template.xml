@@ -51,26 +51,41 @@
 			<field>Ref</field>
 		</field>
 		<field xsi:type="DataSetFieldField">
-			<dataPath>Value</dataPath>
-			<field>Value</field>
+			<dataPath>Amount</dataPath>
+			<field>Amount</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>IncomeExpenseAccount</dataPath>
+			<field>IncomeExpenseAccount</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Layer</dataPath>
+			<field>Layer</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>ManualAdjustment</dataPath>
+			<field>ManualAdjustment</field>
 		</field>
 		<dataSource>DataSource1</dataSource>
 		<query>SELECT
-	InventoryBeginningBalances.Ref,
-	InventoryBeginningBalances.DataVersion,
-	InventoryBeginningBalances.DeletionMark,
-	InventoryBeginningBalances.Number,
-	InventoryBeginningBalances.Date,
-	InventoryBeginningBalances.Posted,
-	InventoryBeginningBalances.Product,
-	InventoryBeginningBalances.Location,
-	InventoryBeginningBalances.Quantity,
-	InventoryBeginningBalances.Value,
-	InventoryBeginningBalances.PurchaseOrder,
-	InventoryBeginningBalances.Presentation,
-	InventoryBeginningBalances.PointInTime
+	ItemAdjustment.Ref,
+	ItemAdjustment.DataVersion,
+	ItemAdjustment.DeletionMark,
+	ItemAdjustment.Number,
+	ItemAdjustment.Date,
+	ItemAdjustment.Posted,
+	ItemAdjustment.Product,
+	ItemAdjustment.Location,
+	ItemAdjustment.Layer,
+	ItemAdjustment.IncomeExpenseAccount,
+	ItemAdjustment.PurchaseOrder,
+	ItemAdjustment.Quantity,
+	ItemAdjustment.Amount,
+	ItemAdjustment.ManualAdjustment,
+	ItemAdjustment.Presentation,
+	ItemAdjustment.PointInTime
 FROM
-	Document.InventoryBeginningBalances AS InventoryBeginningBalances</query>
+	Document.ItemAdjustment AS ItemAdjustment</query>
 	</dataSet>
 	<settingsVariant>
 		<dcsset:name>Default</dcsset:name>
@@ -87,10 +102,19 @@ FROM
 					<dcsset:field>DeletionMark</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>IncomeExpenseAccount</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Product</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Layer</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Location</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>ManualAdjustment</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Number</dcsset:field>
@@ -111,7 +135,7 @@ FROM
 					<dcsset:field>Ref</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>Value</dcsset:field>
+					<dcsset:field>Amount</dcsset:field>
 				</dcsset:item>
 			</dcsset:selection>
 			<dcsset:item xsi:type="dcsset:StructureItemGroup">

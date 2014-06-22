@@ -118,3 +118,30 @@ Function WeightedAverage() Export
 	Return Enums.InventoryCosting.WeightedAverage;
 	
 EndFunction
+
+// Returns typical format string for quantities.
+//
+// Returns:
+//  String - Format string for quantities.
+//
+Function DefaultQuantityFormat() Export
+	
+	// Define quantity precision.
+	QuantityPrecision = Format(Constants.QtyPrecision.Get(), "NFD=0; NZ=0; NG=0");
+	
+	// Define format string.
+	Return "NFD=" + QuantityPrecision + "; NZ=";
+	
+EndFunction
+
+// Returns typical format string for amounts.
+//
+// Returns:
+//  String - Format string for amounts.
+//
+Function DefaultAmountFormat() Export
+	
+	// Define format string.
+	Return "NFD=2; NZ=";
+	
+EndFunction

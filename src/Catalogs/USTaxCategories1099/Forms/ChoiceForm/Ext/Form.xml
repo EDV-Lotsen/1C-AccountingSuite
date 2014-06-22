@@ -35,41 +35,47 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="10"/>
-			<SearchStringAddition name="ListSearchString" id="11">
+			<SearchStringAddition name="ListSearchString" id="16">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="12"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="13"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="17"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="18"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="14">
+			<ViewStatusAddition name="ListViewStatus" id="19">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="15"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="16"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="20"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="21"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="17">
+			<SearchControlAddition name="ListSearchControl" id="22">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="18"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="19"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="23"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="24"/>
 			</SearchControlAddition>
 			<ChildItems>
+				<LabelField name="Code" id="13">
+					<DataPath>List.Code</DataPath>
+					<ReadOnly>true</ReadOnly>
+					<ContextMenu name="CodeContextMenu" id="14"/>
+					<ExtendedTooltip name="CodeExtendedTooltip" id="15"/>
+				</LabelField>
 				<LabelField name="Description" id="8">
 					<DataPath>List.Description</DataPath>
 					<ContextMenu name="DescriptionContextMenu" id="9"/>
-					<ExtendedTooltip name="DescriptionExtendedTooltip" id="20"/>
+					<ExtendedTooltip name="DescriptionExtendedTooltip" id="11"/>
 				</LabelField>
 				<LabelField name="Threshold" id="6">
 					<DataPath>List.Threshold</DataPath>
 					<DefaultItem>true</DefaultItem>
 					<ContextMenu name="ThresholdContextMenu" id="7"/>
-					<ExtendedTooltip name="ThresholdExtendedTooltip" id="21"/>
+					<ExtendedTooltip name="ThresholdExtendedTooltip" id="12"/>
 				</LabelField>
 			</ChildItems>
 		</Table>

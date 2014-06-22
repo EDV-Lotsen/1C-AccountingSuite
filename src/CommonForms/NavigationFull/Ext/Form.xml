@@ -78,7 +78,7 @@
 										</v8:item>
 									</Title>
 									<Picture>
-										<xr:Ref>CommonPicture.Sales</xr:Ref>
+										<xr:Ref>CommonPicture.NewSales32</xr:Ref>
 										<xr:LoadTransparent>false</xr:LoadTransparent>
 									</Picture>
 									<ContextMenu name="SalesPictureContextMenu" id="6"/>
@@ -232,7 +232,7 @@
 										</v8:item>
 									</Title>
 									<Picture>
-										<xr:Ref>CommonPicture.Purchasing</xr:Ref>
+										<xr:Ref>CommonPicture.NewPurchase32</xr:Ref>
 										<xr:LoadTransparent>false</xr:LoadTransparent>
 									</Picture>
 									<ContextMenu name="PurchasingPictureContextMenu" id="22"/>
@@ -327,11 +327,11 @@
 															<CommandName>Form.Command.InvoicePayment</CommandName>
 															<ExtendedTooltip name="InvoicePaymentExtendedTooltip" id="179"/>
 														</Button>
-														<Button name="ItemReceipt" id="208">
+														<Button name="ItemAdjustment" id="208">
 															<Type>Hyperlink</Type>
 															<Visible>false</Visible>
-															<CommandName>Form.Command.ItemReceipt</CommandName>
-															<ExtendedTooltip name="ItemReceiptExtendedTooltip" id="209"/>
+															<CommandName>Form.Command.ItemAdjustment</CommandName>
+															<ExtendedTooltip name="ItemAdjustmentExtendedTooltip" id="209"/>
 														</Button>
 													</ChildItems>
 												</UsualGroup>
@@ -349,6 +349,7 @@
 					<ExtendedTooltip name="Group7ExtendedTooltip" id="213"/>
 					<ChildItems>
 						<UsualGroup name="Bank" id="37">
+							<Visible>false</Visible>
 							<UserVisible>
 								<xr:Common>true</xr:Common>
 								<xr:Value name="Role.SalesFull">false</xr:Value>
@@ -400,7 +401,7 @@
 										</v8:item>
 									</Title>
 									<Picture>
-										<xr:Ref>CommonPicture.Banking</xr:Ref>
+										<xr:Ref>CommonPicture.Accounting32</xr:Ref>
 										<xr:LoadTransparent>false</xr:LoadTransparent>
 									</Picture>
 									<ContextMenu name="BankPictureContextMenu" id="40"/>
@@ -537,7 +538,7 @@
 										</v8:item>
 									</Title>
 									<Picture>
-										<xr:Ref>CommonPicture.Accounting</xr:Ref>
+										<xr:Ref>CommonPicture.Accounting32</xr:Ref>
 										<xr:LoadTransparent>false</xr:LoadTransparent>
 									</Picture>
 									<ContextMenu name="AccountingPictureContextMenu" id="56"/>
@@ -624,6 +625,7 @@
 					<ExtendedTooltip name="Group8ExtendedTooltip" id="215"/>
 					<ChildItems>
 						<UsualGroup name="Lists" id="71">
+							<Visible>false</Visible>
 							<UserVisible>
 								<xr:Common>true</xr:Common>
 								<xr:Value name="Role.SalesFull">false</xr:Value>
@@ -675,7 +677,7 @@
 										</v8:item>
 									</Title>
 									<Picture>
-										<xr:Ref>CommonPicture.Lists</xr:Ref>
+										<xr:Ref>CommonPicture.Accounting32</xr:Ref>
 										<xr:LoadTransparent>false</xr:LoadTransparent>
 									</Picture>
 									<ContextMenu name="ListsPictureContextMenu" id="74"/>
@@ -1168,11 +1170,11 @@
 			</ToolTip>
 			<Action>UserList</Action>
 		</Command>
-		<Command name="ItemReceipt" id="7">
+		<Command name="ItemAdjustment" id="7">
 			<Title>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Item receipt</v8:content>
+					<v8:content>Item adjustment</v8:content>
 				</v8:item>
 				<v8:item>
 					<v8:lang>de</v8:lang>
@@ -1182,14 +1184,14 @@
 			<ToolTip>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Item receipt</v8:content>
+					<v8:content>Item adjustment</v8:content>
 				</v8:item>
 				<v8:item>
 					<v8:lang>de</v8:lang>
 					<v8:content>Anfangsbestand</v8:content>
 				</v8:item>
 			</ToolTip>
-			<Action>ItemReceipt</Action>
+			<Action>ItemAdjustment</Action>
 		</Command>
 	</Commands>
 </Form>

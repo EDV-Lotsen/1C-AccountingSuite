@@ -44,6 +44,13 @@ Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 	EndIf;
 	// <- CODE REVIEW
 	
+	// Document date adjustment patch (tunes the date of drafts like for the new documents).
+	If  WriteMode = DocumentWriteMode.Posting And Not Posted // Posting of new or draft (saved but unposted) document.
+	And BegOfDay(Date) = BegOfDay(CurrentSessionDate()) Then // Operational posting (by the current date).
+		// Shift document time to the time of posting.
+		Date = CurrentSessionDate();
+	EndIf;
+	
 	// Save document parameters before posting the document.
 	If WriteMode = DocumentWriteMode.Posting
 	Or WriteMode = DocumentWriteMode.UndoPosting Then
@@ -79,7 +86,7 @@ EndProcedure
 Procedure Filling(FillingData, StandardProcessing)
 	
 	// Forced assign the new document number.
-	If ThisObject.IsNew() Then ThisObject.SetNewNumber(); EndIf;
+	If ThisObject.IsNew() And Not ValueIsFilled(ThisObject.Number) Then ThisObject.SetNewNumber(); EndIf;
 	
 	// Filling new document or filling on the base of another document.
 	If FillingData = Undefined Then
@@ -89,14 +96,41 @@ Procedure Filling(FillingData, StandardProcessing)
 		Location         = Catalogs.Locations.MainWarehouse;
 		
 	Else
-		// Generate on the base of another document.
+		
+		If TypeOf(FillingData) = Type("DocumentRef.Quote") Then
+			
+			If Not Documents.Quote.IsOpen(FillingData) Then
+				Cancel = True;
+				Return;	
+			EndIf;
+			
+			//Fill attributes
+			FillPropertyValues(ThisObject, FillingData, "Company, ShipTo, BillTo, ConfirmTo, SalesPerson, Project,
+			|Class, DropshipCompany, DropshipShipTo, DropshipConfirmTo, DropshipRefNum, Currency, ExchangeRate, SalesTaxRate,
+			|DiscountIsTaxable, DiscountPercent, TaxableSubtotal, DocumentTotalRC, LineSubtotal, Discount, SalesTax, Shipping,
+			|DocumentTotal, SubTotal, SalesTaxRC, Location, DeliveryDate, Terms"); 
+			
+			Date         = CurrentSessionDate(); 
+			BaseDocument = FillingData; 
+			ExternalMemo = Constants.SalesOrderFooter.Get();
+			
+			//Fill "line items"
+			ThisObject.LineItems.Load(FillingData.LineItems.Unload());
+			
+			//Fill "Sales tax across agencies"
+			ThisObject.SalesTaxAcrossAgencies.Load(FillingData.SalesTaxAcrossAgencies.Unload());
+			
+		EndIf;
+		
 	EndIf;
 	
 EndProcedure
 
 Procedure OnCopy(CopiedObject)
 	
-	// Clear manual ajustment attribute.
+	If ThisObject.IsNew() Then ThisObject.SetNewNumber(); EndIf;
+	
+	// Clear manual adjustment attribute.
 	ManualAdjustment = False;
 	
 EndProcedure
@@ -104,26 +138,26 @@ EndProcedure
 // -> CODE REVIEW
 Procedure OnWrite(Cancel)
 	
-	companies_webhook = Constants.sales_orders_webhook.Get();
-	
-	If NOT companies_webhook = "" Then	
-		
-		WebhookMap = New Map(); 
-		WebhookMap.Insert("apisecretkey",Constants.APISecretKey.Get());
-		WebhookMap.Insert("resource","salesorders");
-		If NewObject = True Then
-			WebhookMap.Insert("action","create");
-		Else
-			WebhookMap.Insert("action","update");
-		EndIf;
-		WebhookMap.Insert("api_code",String(Ref.UUID()));
-		
-		WebhookParams = New Array();
-		WebhookParams.Add(Constants.sales_orders_webhook.Get());
-		WebhookParams.Add(WebhookMap);
-		LongActions.ExecuteInBackground("GeneralFunctions.SendWebhook", WebhookParams);
-	
-	EndIf;
+	//companies_webhook = Constants.sales_orders_webhook.Get();
+	//
+	//If NOT companies_webhook = "" Then	
+	//	
+	//	WebhookMap = New Map(); 
+	//	WebhookMap.Insert("apisecretkey",Constants.APISecretKey.Get());
+	//	WebhookMap.Insert("resource","salesorders");
+	//	If NewObject = True Then
+	//		WebhookMap.Insert("action","create");
+	//	Else
+	//		WebhookMap.Insert("action","update");
+	//	EndIf;
+	//	WebhookMap.Insert("api_code",String(Ref.UUID()));
+	//	
+	//	WebhookParams = New Array();
+	//	WebhookParams.Add(Constants.sales_orders_webhook.Get());
+	//	WebhookParams.Add(WebhookMap);
+	//	LongActions.ExecuteInBackground("GeneralFunctions.SendWebhook", WebhookParams);
+	//
+	//EndIf;
 	
 EndProcedure
 // <- CODE REVIEW
@@ -166,6 +200,48 @@ Procedure Posting(Cancel, PostingMode)
 	Record.Amount = DocumentTotalRC;
 	// <- CODE REVIEW
 	
+	so_url_webhook = Constants.sales_orders_webhook.Get();
+	
+	If NOT so_url_webhook = "" Then
+		
+		WebhookMap = GeneralFunctions.ReturnSaleOrderMap(Ref);
+		WebhookMap.Insert("resource","salesorders");
+		If NewObject = True Then
+			WebhookMap.Insert("action","create");
+		Else
+			WebhookMap.Insert("action","update");
+		EndIf;
+		WebhookMap.Insert("apisecretkey",Constants.APISecretKey.Get());
+		
+		WebhookParams = New Array();
+		WebhookParams.Add(so_url_webhook);
+		WebhookParams.Add(WebhookMap);
+		LongActions.ExecuteInBackground("GeneralFunctions.SendWebhook", WebhookParams);
+		
+	EndIf;
+	
+	email_so_webhook = Constants.so_webhook_email.Get();
+	
+	If NOT email_so_webhook = "" Then
+		
+		WebhookMap2 = GeneralFunctions.ReturnSaleOrderMap(Ref);
+		WebhookMap2.Insert("resource","salesorders");
+		If NewObject = True Then
+			WebhookMap2.Insert("action","create");
+		Else
+			WebhookMap2.Insert("action","update");
+		EndIf;
+		WebhookMap2.Insert("apisecretkey",Constants.APISecretKey.Get());
+		
+		WebhookParams2 = New Array();
+		WebhookParams2.Add(email_so_webhook);
+		WebhookParams2.Add(WebhookMap2);
+		LongActions.ExecuteInBackground("GeneralFunctions.EmailWebhook", WebhookParams2);
+		
+	EndIf;
+	
+	
+	
 EndProcedure
 
 Procedure UndoPosting(Cancel)
@@ -196,5 +272,24 @@ Procedure UndoPosting(Cancel)
 EndProcedure
 
 #EndIf
+
+Procedure OnSetNewNumber(StandardProcessing, Prefix)
+	
+	StandardProcessing = False;
+	
+	Numerator = Catalogs.DocumentNumbering.SalesOrder;
+	NextNumber = GeneralFunctions.Increment(Numerator.Number);
+	
+	While Documents.SalesOrder.FindByNumber(NextNumber) <> Documents.SalesOrder.EmptyRef() And NextNumber <> "" Do
+		ObjectNumerator = Numerator.GetObject();
+		ObjectNumerator.Number = NextNumber;
+		ObjectNumerator.Write();
+		
+		NextNumber = GeneralFunctions.Increment(NextNumber);
+	EndDo;
+	
+	ThisObject.Number = NextNumber; 
+
+EndProcedure
 
 #EndRegion

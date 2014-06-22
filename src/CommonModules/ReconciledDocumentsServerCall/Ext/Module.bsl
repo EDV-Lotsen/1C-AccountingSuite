@@ -60,38 +60,70 @@ EndProcedure
 Function RequiresExcludingFromBankReconciliation(Val Ref, Val NewAmount, Val NewDate, Val NewAccount, Val WriteMode) Export
 	If WriteMode = DocumentWriteMode.Posting Then
 		SetPrivilegedMode(True);
+		//Query = New Query("SELECT
+		//				  |	TransactionReconciliation.Document,
+		//				  |	TransactionReconciliation.Amount,
+		//				  |	TransactionReconciliation.Account
+		//				  |INTO ReconciledValues
+		//				  |FROM
+		//				  |	InformationRegister.TransactionReconciliation AS TransactionReconciliation
+		//				  |WHERE
+		//				  |	TransactionReconciliation.Document = &Ref
+		//				  |	AND TransactionReconciliation.Reconciled = TRUE
+		//				  |;
+		//				  |
+		//				  |////////////////////////////////////////////////////////////////////////////////
+		//				  |SELECT
+		//				  |	ReconciledValues.Document,
+		//				  |	ReconciledValues.Amount,
+		//				  |	BankReconciliationLineItems.Ref.StatementToDate,
+		//				  |	ReconciledValues.Account,
+		//				  |	CASE
+		//				  |		WHEN ReconciledValues.Amount <> &NewAmount
+		//				  |				OR ENDOFPERIOD(BankReconciliationLineItems.Ref.StatementToDate, DAY) < &NewDate
+		//				  |				OR ReconciledValues.Account <> &NewAccount
+		//				  |			THEN TRUE
+		//				  |		ELSE FALSE
+		//				  |	END AS RequiresExcluding
+		//				  |FROM
+		//				  |	ReconciledValues AS ReconciledValues
+		//				  |		INNER JOIN Document.BankReconciliation.LineItems AS BankReconciliationLineItems
+		//				  |		ON ReconciledValues.Document = BankReconciliationLineItems.Transaction
+		//				  |			AND (BankReconciliationLineItems.Cleared = TRUE)
+		//				  |			AND (BankReconciliationLineItems.Ref.Posted = TRUE)
+		//				  |			AND (BankReconciliationLineItems.Ref.DeletionMark = FALSE)");
 		Query = New Query("SELECT
-		                  |	TransactionReconciliation.Document,
-		                  |	TransactionReconciliation.Amount,
-		                  |	TransactionReconciliation.Account
+		                  |	BankReconciliation.Document,
+		                  |	MIN(BankReconciliation.Account) AS Account,
+		                  |	SUM(BankReconciliation.Amount) AS Amount,
+		                  |	MIN(BankReconciliation.Period) AS StatementToDate
 		                  |INTO ReconciledValues
 		                  |FROM
-		                  |	InformationRegister.TransactionReconciliation AS TransactionReconciliation
+		                  |	AccumulationRegister.BankReconciliation AS BankReconciliation
 		                  |WHERE
-		                  |	TransactionReconciliation.Document = &Ref
-		                  |	AND TransactionReconciliation.Reconciled = TRUE
+		                  |	BankReconciliation.Document = &Ref
+		                  |	AND BankReconciliation.RecordType = VALUE(AccumulationRecordType.Expense)
+		                  |	AND BankReconciliation.Active = TRUE
+		                  |
+		                  |GROUP BY
+		                  |	BankReconciliation.Document
 		                  |;
 		                  |
 		                  |////////////////////////////////////////////////////////////////////////////////
 		                  |SELECT
 		                  |	ReconciledValues.Document,
-		                  |	ReconciledValues.Amount,
-		                  |	BankReconciliationLineItems.Ref.StatementToDate,
 		                  |	ReconciledValues.Account,
+		                  |	ReconciledValues.Amount,
+		                  |	ReconciledValues.StatementToDate,
 		                  |	CASE
 		                  |		WHEN ReconciledValues.Amount <> &NewAmount
-		                  |				OR ENDOFPERIOD(BankReconciliationLineItems.Ref.StatementToDate, DAY) < &NewDate
+		                  |				OR ENDOFPERIOD(ReconciledValues.StatementToDate, DAY) < &NewDate
 		                  |				OR ReconciledValues.Account <> &NewAccount
 		                  |			THEN TRUE
 		                  |		ELSE FALSE
 		                  |	END AS RequiresExcluding
 		                  |FROM
-		                  |	ReconciledValues AS ReconciledValues
-		                  |		INNER JOIN Document.BankReconciliation.LineItems AS BankReconciliationLineItems
-		                  |		ON ReconciledValues.Document = BankReconciliationLineItems.Transaction
-		                  |			AND (BankReconciliationLineItems.Cleared = TRUE)
-		                  |			AND (BankReconciliationLineItems.Ref.Posted = TRUE)
-		                  |			AND (BankReconciliationLineItems.Ref.DeletionMark = FALSE)");
+		                  |	ReconciledValues AS ReconciledValues");
 		Query.SetParameter("Ref", Ref);
 		Query.SetParameter("NewAmount", NewAmount);
 		Query.SetParameter("NewDate", NewDate);
@@ -111,13 +143,22 @@ Function RequiresExcludingFromBankReconciliation(Val Ref, Val NewAmount, Val New
 	ElsIf WriteMode = DocumentWriteMode.UndoPosting Then
 		SetPrivilegedMode(True);
 		
+		//Query = New Query("SELECT
+		//			  |	TransactionReconciliation.Document
+		//			  |FROM
+		//			  |	InformationRegister.TransactionReconciliation AS TransactionReconciliation
+		//			  |WHERE
+		//			  |	TransactionReconciliation.Document = &Ref
+		//			  |	AND TransactionReconciliation.Reconciled = TRUE");
+		
 		Query = New Query("SELECT
-					  |	TransactionReconciliation.Document
-					  |FROM
-					  |	InformationRegister.TransactionReconciliation AS TransactionReconciliation
-					  |WHERE
-					  |	TransactionReconciliation.Document = &Ref
-					  |	AND TransactionReconciliation.Reconciled = TRUE");
+		                  |	BankReconciliation.Document
+		                  |FROM
+		                  |	AccumulationRegister.BankReconciliation AS BankReconciliation
+		                  |WHERE
+		                  |	BankReconciliation.Document = &Ref
+		                  |	AND BankReconciliation.RecordType = VALUE(AccumulationRecordType.Expense)
+		                  |	AND BankReconciliation.Active = TRUE");
 		Query.SetParameter("Ref", Ref);
 		
 		Selection = Query.Execute();
@@ -133,3 +174,19 @@ Function RequiresExcludingFromBankReconciliation(Val Ref, Val NewAmount, Val New
 		return False;		
 	EndIf;
 EndFunction
+
+// Posts the document to the Bank Reconciliation accumulation register
+// Parameters:
+//  RegisterRecords - RegisterRecordsCollection - Document postings list, containing BankReconciliation register records.
+//  DocumentRef     - DocumentRef - Reference of the document being posted
+//  Account         - ChartOfAccountsRef.ChartOfAccounts - G/L bank account 
+//  Amount          - Amount, being posted to the reconciliation register. Influences G/L bank account balance
+Procedure AddDocumentForReconciliation(RegisterRecords, DocumentRef, Account, Date, Amount) Export
+	RegisterRecords.BankReconciliation.Write = True;
+	Record = RegisterRecords.BankReconciliation.AddReceipt();
+	Record.Period 	= Date;
+	Record.Recorder = DocumentRef;
+	Record.Account 	= Account;
+	Record.Document = DocumentRef;
+	Record.Amount 	= Amount;
+EndProcedure

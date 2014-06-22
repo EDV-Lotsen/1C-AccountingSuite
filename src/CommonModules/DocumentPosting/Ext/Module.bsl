@@ -45,14 +45,14 @@ Function IsNew(AdditionalProperties) Export
 	
 EndFunction
 
-// Check flag of presence of manual ajustment in the document postings.
+// Check flag of presence of manual adjustment in the document postings.
 //
 // Parameters:
 //  AdditionalProperties - Structure - Document parameters containing required attributes and tables.
-//    * ManualAdjustment - Boolean   - Manual ajustment flag.
+//    * ManualAdjustment - Boolean   - Manual adjustment flag.
 //
 // Returns:
-//  Boolean - Value of manual ajustment flag.
+//  Boolean - Value of manual adjustment flag.
 //
 Function ManualAdjustment(AdditionalProperties) Export
 	
@@ -72,6 +72,37 @@ EndFunction
 Function WriteChangesOnly(AdditionalProperties) Export
 	
 	Return FlagValue(AdditionalProperties, "WriteChangesOnly");
+	
+EndFunction
+
+// Check if passed table is not a query result but temporary table summary.
+//
+// Parameters:
+//  Table - ValueTable - Table to be checked against query result.
+//
+// Returns:
+//  Boolean - Is a temporary table summary.
+//
+Function IsTemporaryTable(Table) Export
+	
+	// Check table columns.
+	If Table.Columns.Count() = 1 Then
+		
+		// Examine the first column.
+		CheckColumn = Table.Columns[0];
+		If  CheckColumn.Name       = "Count"
+		And CheckColumn.Title      = "Count"
+		And CheckColumn.Width      = 32
+		And CheckColumn.ValueType  = New TypeDescription("Number")
+		Then
+			// This is definitely temporary table summary.
+			Return True;
+		EndIf;
+		
+	EndIf;
+	
+	// The table doesn't match the temporary table criteria.
+	Return False;
 	
 EndFunction
 
@@ -602,7 +633,7 @@ Procedure CheckPostingResults(AdditionalProperties, RegisterRecords, Cancel) Exp
 		RegisterMetadata = RegisterRecords[CheckRegister].AdditionalProperties.Metadata;
 		
 		// 1.4. Create query template for balnces of selected register.
-		QueryText = QueryText +
+		QueryText = QueryText + // Primary check for actual balances.
 		"SELECT
 		|	{Selection}
 		|INTO
@@ -612,6 +643,21 @@ Procedure CheckPostingResults(AdditionalProperties, RegisterRecords, Cancel) Exp
 		|		{Filter}) AS Balances
 		|WHERE
 		|	{Condition}";
+		
+		// Additional check of in-time balances for new document posted by back-date or a document that already saved.
+		If Not IsNew(AdditionalProperties) Or BegOfDay(AdditionalProperties.Date) < BegOfDay(CurrentSessionDate()) Then
+			QueryText = QueryText + "
+			|
+			|UNION
+			|
+			|SELECT
+			|	{Selection}
+			|FROM
+			|	AccumulationRegister.{Register}.Balance(&PointInTime,
+			|		{Filter}) AS Balances
+			|WHERE
+			|	{Condition}";
+		EndIf;
 		
 		// 1.5. Add to query dimensions and resources of register.
 		SelectionText = "";
@@ -684,14 +730,31 @@ Procedure CheckPostingResults(AdditionalProperties, RegisterRecords, Cancel) Exp
 		Return;
 	EndIf;
 	
-	// 3. Execute batch query.
+	// 3.1. Set query parameters.
+	If IsNew(AdditionalProperties) And BegOfDay(AdditionalProperties.Date) < BegOfDay(CurrentSessionDate()) Then
+		// New document posted in back-date.
+		Query.SetParameter("PointInTime", New Boundary(EndOfDay(AdditionalProperties.Date), BoundaryType.Including));
+	ElsIf Not IsNew(AdditionalProperties) Then
+		// Document was already saved.
+		Query.SetParameter("PointInTime",
+			New Boundary(New PointInTime(AdditionalProperties.Date, AdditionalProperties.Ref), BoundaryType.Including));
+	EndIf;
+	
+	// 3.2. Execute batch query.
 	Query.TempTablesManager = QueryTables.TempTablesManager;
 	Query.Text  = QueryText;
 	QueryResult = Query.ExecuteBatch();
 	
 	// 4. Create messages for user about insufficient balances.
-	SubQuery = Undefined;
-	Errors   = 0;
+	MessageTemplate   = "";
+	MessageParams     = New Structure;
+	ParamsFormat      = New Structure;
+	QuantityFormat    = GeneralFunctionsReusable.DefaultQuantityFormat();
+	QuantityTypeDescr = New TypeDescription("Number", New NumberQualifiers(15, 4));
+	AmountFormat      = GeneralFunctionsReusable.DefaultAmountFormat();
+	AmountTypeDescr   = New TypeDescription("Number", New NumberQualifiers(15, 2));
+	SubQuery          = Undefined;
+	Errors            = 0;
 	I = -1;
 	For Each Result In QueryResult Do
 		I = I + 1;
@@ -758,6 +821,8 @@ Procedure CheckPostingResults(AdditionalProperties, RegisterRecords, Cancel) Exp
 			
 			// 4.6.5. Get formatted message template.
 			MessageTemplate = CheckMessages[J];
+			MessageParams.Clear();
+			ParamsFormat.Clear();
 			
 			// 4.6.6. Cycle through found errors and fill appropriate messages.
 			While Selection.Next() Do
@@ -776,11 +841,10 @@ Procedure CheckPostingResults(AdditionalProperties, RegisterRecords, Cancel) Exp
 				EndIf;
 				
 				// 4.6.6.2. Create message text.
-				MessageText = MessageTemplate;
 				For Each Dimension In RegisterMetadata.Dimensions Do
 					
 					// Skip unused presentations.
-					If Find(MessageText, "{"+Dimension.Name+"}") = 0 Then Continue; EndIf;
+					If Find(MessageTemplate, "{"+Dimension.Name+"}") = 0 Then Continue; EndIf;
 					
 					// Convert value to it's presentation.
 					Value = Selection[Dimension.Name];
@@ -794,21 +858,28 @@ Procedure CheckPostingResults(AdditionalProperties, RegisterRecords, Cancel) Exp
 						Presentation = TrimAll(Value);
 					EndIf;
 					
-					// Replace template with presentation of selection value.
-					MessageText  = StrReplace(MessageText, "{"+Dimension.Name+"}", Presentation);
+					// Add parameters for message filling.
+					MessageParams.Insert(Dimension.Name, Presentation);
 				EndDo;
 				
 				For Each Resource In RegisterMetadata.Resources Do
 					
 					// Skip unused presentations.
-					If Find(MessageText, "{"+Resource.Name+"}") = 0 Then Continue; EndIf;
+					If Find(MessageTemplate, "{"+Resource.Name+"}") + Find(MessageTemplate, "{-"+Resource.Name+"}") = 0 Then Continue; EndIf;
 					
-					// Replace resource template with unar minus with negative selection value.
-					MessageText  = StrReplace(MessageText, "-{"+Resource.Name+"}", TrimAll(-Selection[Resource.Name]));
+					// Add parameters for message filling.
+					MessageParams.Insert(Resource.Name, Selection[Resource.Name]);
 					
-					// Replace resource template with selection value.
-					MessageText  = StrReplace(MessageText, "{"+Resource.Name+"}", TrimAll(Selection[Resource.Name]));
+					// Apply special formatting to resources.
+					If Resource.Type = QuantityTypeDescr Then
+						ParamsFormat.Insert(Resource.Name, QuantityFormat);
+					ElsIf Resource.Type = AmountTypeDescr Then
+						ParamsFormat.Insert(Resource.Name, AmountFormat);
+					EndIf;
 				EndDo;
+				
+				// Fill pattern with parameters.
+				MessageText = StringFunctionsClientServer.SubstituteParametersInStringByName(MessageTemplate, MessageParams, ParamsFormat);
 				
 				// 4.6.6.3. Transfer message to user.
 				Errors = Errors + 1;

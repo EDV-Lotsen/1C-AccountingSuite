@@ -50,12 +50,14 @@
 		</InputField>
 		<CheckBoxField name="NonCash" id="19">
 			<DataPath>Object.Noncash</DataPath>
+			<Visible>false</Visible>
 			<CheckBoxType>Auto</CheckBoxType>
 			<ContextMenu name="NonCashContextMenu" id="20"/>
 			<ExtendedTooltip name="NonCashExtendedTooltip" id="29"/>
 		</CheckBoxField>
 		<CheckBoxField name="OtherComprehensiveIncome" id="9">
 			<DataPath>Object.OtherComprehensiveIncome</DataPath>
+			<Visible>false</Visible>
 			<CheckBoxType>Auto</CheckBoxType>
 			<ContextMenu name="OtherComprehensiveIncomeContextMenu" id="10"/>
 			<ExtendedTooltip name="OtherComprehensiveIncomeExtendedTooltip" id="30"/>
@@ -83,4 +85,17 @@
 			<SavedData>true</SavedData>
 		</Attribute>
 	</Attributes>
+	<CommandInterface>
+		<NavigationPanel>
+			<Item>
+				<Command>InformationRegister.HierarchyChartOfAccounts.StandardCommand.OpenByValue.Account</Command>
+				<Type>Auto</Type>
+				<CommandGroup>FormNavigationPanelGoTo</CommandGroup>
+				<DefaultVisible>false</DefaultVisible>
+				<Visible>
+					<xr:Common>false</xr:Common>
+				</Visible>
+			</Item>
+		</NavigationPanel>
+	</CommandInterface>
 </Form>

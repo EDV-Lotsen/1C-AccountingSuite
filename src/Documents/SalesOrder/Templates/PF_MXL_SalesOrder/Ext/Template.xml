@@ -1004,17 +1004,8 @@
 			</c>
 			<c>
 				<c>
-					<f>35</f>
-					<tl>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Total $</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Gesamt</v8:content>
-						</v8:item>
-					</tl>
+					<f>42</f>
+					<parameter>TotalCur</parameter>
 				</c>
 			</c>
 			<c>
@@ -1065,7 +1056,7 @@
 		<row>
 			<c>
 				<c>
-					<f>42</f>
+					<f>43</f>
 					<tl>
 						<v8:item>
 							<v8:lang>en</v8:lang>
@@ -1081,7 +1072,7 @@
 		<row>
 			<c>
 				<c>
-					<f>43</f>
+					<f>44</f>
 					<parameter>TermAndCond</parameter>
 				</c>
 			</c>
@@ -1092,15 +1083,15 @@
 		<row>
 			<c>
 				<c>
-					<f>44</f>
+					<f>45</f>
 				</c>
 			</c>
 		</row>
 	</rowsItem>
 	<drawing>
 		<drawingType>Picture</drawingType>
-		<id>2</id>
-		<formatIndex>45</formatIndex>
+		<id>1</id>
+		<formatIndex>46</formatIndex>
 		<beginRow>1</beginRow>
 		<beginRowOffset>12</beginRowOffset>
 		<endRow>6</endRow>
@@ -1119,7 +1110,7 @@
 		<picture/>
 	</picture>
 	<templateMode>true</templateMode>
-	<defaultFormatIndex>46</defaultFormatIndex>
+	<defaultFormatIndex>47</defaultFormatIndex>
 	<height>29</height>
 	<vgRows>29</vgRows>
 	<merge>
@@ -1199,7 +1190,7 @@
 	</namedItem>
 	<namedItem xsi:type="NamedItemDrawing">
 		<name>Logo</name>
-		<drawingID>2</drawingID>
+		<drawingID>1</drawingID>
 	</namedItem>
 	<namedItem xsi:type="NamedItemCells">
 		<name>SalesTax</name>
@@ -1541,6 +1532,12 @@
 				<v8:content>NFD=2; NZ=0.00</v8:content>
 			</v8:item>
 		</format>
+	</format>
+	<format>
+		<font>3</font>
+		<width>114</width>
+		<horizontalAlignment>Right</horizontalAlignment>
+		<fillType>Parameter</fillType>
 	</format>
 	<format>
 		<font>3</font>

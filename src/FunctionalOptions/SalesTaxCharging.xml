@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<MetaDataObject xmlns="http://v8.1c.ru/8.3/MDClasses" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:cmi="http://v8.1c.ru/8.2/managed-application/cmi" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xen="http://v8.1c.ru/8.3/xcf/enums" xmlns:xpr="http://v8.1c.ru/8.3/xcf/predef" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<FunctionalOption uuid="f48441b3-5a4e-4992-b1fc-be07cc194839">
+		<Properties>
+			<Name>SalesTaxCharging</Name>
+			<Synonym>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Sales tax charging</v8:content>
+				</v8:item>
+			</Synonym>
+			<Comment/>
+			<Location>Constant.SalesTaxCharging</Location>
+			<PrivilegedGetMode>true</PrivilegedGetMode>
+			<Content>
+				<xr:Object>Subsystem.SalesTax</xr:Object>
+				<xr:Object>Document.SalesInvoice.Attribute.SalesTax</xr:Object>
+				<xr:Object>Document.SalesInvoice.Attribute.SalesTaxRC</xr:Object>
+				<xr:Object>Document.SalesInvoice.Attribute.SalesTaxRate</xr:Object>
+				<xr:Object>Document.SalesInvoice.Attribute.DiscountIsTaxable</xr:Object>
+				<xr:Object>Document.SalesInvoice.Attribute.TaxableSubtotal</xr:Object>
+				<xr:Object>Document.SalesInvoice.TabularSection.LineItems.Attribute.Taxable</xr:Object>
+				<xr:Object>Document.SalesInvoice.TabularSection.LineItems.Attribute.TaxableAmount</xr:Object>
+				<xr:Object>Document.SalesTaxPayment</xr:Object>
+				<xr:Object>Document.SalesInvoice.TabularSection.SalesTaxAcrossAgencies</xr:Object>
+				<xr:Object>Document.SalesOrder.Attribute.SalesTax</xr:Object>
+				<xr:Object>Document.SalesOrder.Attribute.SalesTaxRC</xr:Object>
+				<xr:Object>Document.SalesOrder.Attribute.SalesTaxRate</xr:Object>
+				<xr:Object>Document.SalesOrder.Attribute.DiscountIsTaxable</xr:Object>
+				<xr:Object>Document.SalesOrder.Attribute.TaxableSubtotal</xr:Object>
+				<xr:Object>Document.SalesOrder.TabularSection.LineItems.Attribute.Taxable</xr:Object>
+				<xr:Object>Document.SalesOrder.TabularSection.LineItems.Attribute.TaxableAmount</xr:Object>
+				<xr:Object>Document.SalesOrder.TabularSection.SalesTaxAcrossAgencies</xr:Object>
+				<xr:Object>Document.SalesReturn.Attribute.SalesTaxRC</xr:Object>
+				<xr:Object>Document.SalesReturn.Attribute.SalesTaxRate</xr:Object>
+				<xr:Object>Document.SalesReturn.Attribute.DiscountIsTaxable</xr:Object>
+				<xr:Object>Document.SalesReturn.Attribute.TaxableSubtotal</xr:Object>
+				<xr:Object>Document.SalesReturn.TabularSection.SalesTaxAcrossAgencies</xr:Object>
+				<xr:Object>Document.SalesReturn.TabularSection.LineItems.Attribute.Taxable</xr:Object>
+				<xr:Object>Document.CashSale.Attribute.SalesTaxRC</xr:Object>
+				<xr:Object>Document.CashSale.Attribute.SalesTaxRate</xr:Object>
+				<xr:Object>Document.CashSale.Attribute.SalesTax</xr:Object>
+				<xr:Object>Document.CashSale.Attribute.DiscountIsTaxable</xr:Object>
+				<xr:Object>Document.CashSale.Attribute.TaxableSubtotal</xr:Object>
+				<xr:Object>Document.CashSale.TabularSection.SalesTaxAcrossAgencies</xr:Object>
+				<xr:Object>Document.CashSale.TabularSection.LineItems.Attribute.Taxable</xr:Object>
+				<xr:Object>Document.CashSale.TabularSection.LineItems.Attribute.TaxableAmount</xr:Object>
+				<xr:Object>Document.Quote.Attribute.SalesTax</xr:Object>
+				<xr:Object>Document.Quote.Attribute.SalesTaxRC</xr:Object>
+				<xr:Object>Document.Quote.Attribute.SalesTaxRate</xr:Object>
+				<xr:Object>Document.Quote.Attribute.DiscountIsTaxable</xr:Object>
+				<xr:Object>Document.Quote.Attribute.TaxableSubtotal</xr:Object>
+				<xr:Object>Document.Quote.TabularSection.LineItems.Attribute.Taxable</xr:Object>
+				<xr:Object>Document.Quote.TabularSection.LineItems.Attribute.TaxableAmount</xr:Object>
+				<xr:Object>Document.Quote.TabularSection.SalesTaxAcrossAgencies</xr:Object>
+			</Content>
+		</Properties>
+	</FunctionalOption>
+</MetaDataObject>

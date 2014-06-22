@@ -1,7 +1,39 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
 	<VerticalScroll>useIfNecessary</VerticalScroll>
-	<AutoCommandBar name="FormCommandPanel" id="-1"/>
+	<AutoCommandBar name="FormCommandPanel" id="-1">
+		<ChildItems>
+			<Button name="FormGeneralLedger" id="20">
+				<Type>CommandBarButton</Type>
+				<CommandName>Form.Command.GeneralLedger</CommandName>
+				<ExtendedTooltip name="FormGeneralLedgerExtendedTooltip" id="21"/>
+			</Button>
+			<Button name="FormOutputList" id="24">
+				<Type>CommandBarButton</Type>
+				<Representation>PictureAndText</Representation>
+				<OnlyInAllActions>true</OnlyInAllActions>
+				<CommandName>Form.StandardCommand.OutputList</CommandName>
+				<Picture>
+					<xr:Ref>StdPicture.DataCompositionOrder</xr:Ref>
+					<xr:LoadTransparent>true</xr:LoadTransparent>
+				</Picture>
+				<Title>
+					<v8:item>
+						<v8:lang>en</v8:lang>
+						<v8:content>Export list</v8:content>
+					</v8:item>
+				</Title>
+				<ExtendedTooltip name="FormOutputListExtendedTooltip" id="25"/>
+			</Button>
+			<Button name="FormRefresh" id="22">
+				<Type>CommandBarButton</Type>
+				<Representation>Picture</Representation>
+				<OnlyInAllActions>true</OnlyInAllActions>
+				<CommandName>Form.StandardCommand.Refresh</CommandName>
+				<ExtendedTooltip name="FormRefreshExtendedTooltip" id="23"/>
+			</Button>
+		</ChildItems>
+	</AutoCommandBar>
 	<ChildItems>
 		<Table name="List" id="1">
 			<Representation>List</Representation>
@@ -27,7 +59,7 @@
 			<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
 			<RestoreCurrentRow>false</RestoreCurrentRow>
 			<TopLevelParent xsi:nil="true"/>
-			<ShowRoot>true</ShowRoot>
+			<ShowRoot>false</ShowRoot>
 			<AllowRootChoice>false</AllowRootChoice>
 			<UpdateOnDataChange>Auto</UpdateOnDataChange>
 			<ContextMenu name="ListContextMenu" id="2"/>
@@ -35,29 +67,29 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="10"/>
-			<SearchStringAddition name="ListSearchString" id="17">
+			<SearchStringAddition name="ListSearchString" id="26">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="18"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="19"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="27"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="28"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="20">
+			<ViewStatusAddition name="ListViewStatus" id="29">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="21"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="22"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="30"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="31"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="23">
+			<SearchControlAddition name="ListSearchControl" id="32">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="24"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="25"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="33"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="34"/>
 			</SearchControlAddition>
 			<ChildItems>
 				<LabelField name="Code" id="4">
@@ -76,6 +108,23 @@
 					<ContextMenu name="AccountTypeContextMenu" id="9"/>
 					<ExtendedTooltip name="AccountTypeExtendedTooltip" id="13"/>
 				</LabelField>
+				<InputField name="Balance" id="17">
+					<DataPath>List.Balance</DataPath>
+					<Format>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>NFD=2; NZ=0.00</v8:content>
+						</v8:item>
+					</Format>
+					<EditFormat>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>NFD=2; NZ=0.00</v8:content>
+						</v8:item>
+					</EditFormat>
+					<ContextMenu name="BalanceContextMenu" id="18"/>
+					<ExtendedTooltip name="BalanceExtendedTooltip" id="19"/>
+				</InputField>
 				<LabelField name="Category1099" id="14">
 					<DataPath>List.Category1099</DataPath>
 					<ContextMenu name="Category1099ContextMenu" id="15"/>
@@ -91,8 +140,45 @@
 			</Type>
 			<MainAttribute>true</MainAttribute>
 			<Settings xsi:type="DynamicList">
-				<ManualQuery>false</ManualQuery>
+				<ManualQuery>true</ManualQuery>
 				<DynamicDataRead>true</DynamicDataRead>
+				<QueryText>SELECT
+	ChartOfAccountsChartOfAccounts.Ref AS Ref,
+	ChartOfAccountsChartOfAccounts.Code AS Code,
+	ChartOfAccountsChartOfAccounts.Description AS Description,
+	ChartOfAccountsChartOfAccounts.AccountType AS AccountType,
+	SUM(CASE
+			WHEN GeneralJournalBalance.AmountRCBalance IS NULL 
+				THEN 0
+			WHEN ChartOfAccountsChartOfAccounts.AccountType = VALUE(Enum.AccountTypes.AccountsPayable)
+					OR ChartOfAccountsChartOfAccounts.AccountType = VALUE(Enum.AccountTypes.OtherCurrentLiability)
+					OR ChartOfAccountsChartOfAccounts.AccountType = VALUE(Enum.AccountTypes.LongTermLiability)
+					OR ChartOfAccountsChartOfAccounts.AccountType = VALUE(Enum.AccountTypes.Equity)
+					OR ChartOfAccountsChartOfAccounts.AccountType = VALUE(Enum.AccountTypes.Income)
+					OR ChartOfAccountsChartOfAccounts.AccountType = VALUE(Enum.AccountTypes.OtherIncome)
+				THEN -GeneralJournalBalance.AmountRCBalance
+			ELSE GeneralJournalBalance.AmountRCBalance
+		END) AS Balance,
+	ChartOfAccountsChartOfAccounts.Category1099 AS Category1099
+FROM
+	ChartOfAccounts.ChartOfAccounts AS ChartOfAccountsChartOfAccounts
+		LEFT JOIN (SELECT
+			ChartOfAccounts.Ref AS Ref,
+			ISNULL(HierarchyChartOfAccounts.Route, "") AS Route
+		FROM
+			ChartOfAccounts.ChartOfAccounts AS ChartOfAccounts
+				LEFT JOIN InformationRegister.HierarchyChartOfAccounts AS HierarchyChartOfAccounts
+				ON ChartOfAccounts.Ref = HierarchyChartOfAccounts.Account) AS NestedSelect
+			LEFT JOIN AccountingRegister.GeneralJournal.Balance AS GeneralJournalBalance
+			ON NestedSelect.Ref = GeneralJournalBalance.Account
+		ON (NestedSelect.Route LIKE "%/" + ChartOfAccountsChartOfAccounts.Code + "/%")
+
+GROUP BY
+	ChartOfAccountsChartOfAccounts.Ref,
+	ChartOfAccountsChartOfAccounts.Code,
+	ChartOfAccountsChartOfAccounts.Description,
+	ChartOfAccountsChartOfAccounts.AccountType,
+	ChartOfAccountsChartOfAccounts.Category1099</QueryText>
 				<MainTable>ChartOfAccounts.ChartOfAccounts</MainTable>
 				<ListSettings>
 					<dcsset:filter>
@@ -113,4 +199,21 @@
 			</Settings>
 		</Attribute>
 	</Attributes>
+	<Commands>
+		<Command name="GeneralLedger" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>General ledger</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>General ledger</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>GeneralLedger</Action>
+		</Command>
+	</Commands>
 </Form>

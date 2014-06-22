@@ -15,6 +15,7 @@
 	</AutoCommandBar>
 	<Events>
 		<Event name="AfterWriteAtServer">AfterWriteAtServer</Event>
+		<Event name="OnOpen">OnOpen</Event>
 		<Event name="BeforeWrite">BeforeWrite</Event>
 		<Event name="BeforeWriteAtServer">BeforeWriteAtServer</Event>
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
@@ -251,7 +252,7 @@
 												</v8:item>
 											</ToolTip>
 											<Width>15</Width>
-											<HorizontalStretch>true</HorizontalStretch>
+											<HorizontalStretch>false</HorizontalStretch>
 											<ContextMenu name="ProjectContextMenu" id="142"/>
 											<ExtendedTooltip name="ProjectExtendedTooltip" id="143"/>
 											<Events>
@@ -273,7 +274,7 @@
 												</v8:item>
 											</ToolTip>
 											<Width>15</Width>
-											<HorizontalStretch>true</HorizontalStretch>
+											<HorizontalStretch>false</HorizontalStretch>
 											<ContextMenu name="LocationActualContextMenu" id="37"/>
 											<ExtendedTooltip name="LocationActualExtendedTooltip" id="111"/>
 											<Events>
@@ -297,7 +298,7 @@
 												</v8:item>
 											</ToolTip>
 											<Width>15</Width>
-											<HorizontalStretch>true</HorizontalStretch>
+											<HorizontalStretch>false</HorizontalStretch>
 											<ContextMenu name="ClassContextMenu" id="206"/>
 											<ExtendedTooltip name="ClassExtendedTooltip" id="207"/>
 											<Events>
@@ -306,7 +307,6 @@
 										</InputField>
 										<InputField name="DeliveryDateActual" id="138">
 											<DataPath>Object.DeliveryDateActual</DataPath>
-											<Visible>false</Visible>
 											<Title>
 												<v8:item>
 													<v8:lang>en</v8:lang>
@@ -320,7 +320,7 @@
 												</v8:item>
 											</ToolTip>
 											<HorizontalAlign>Right</HorizontalAlign>
-											<Width>10</Width>
+											<Width>15</Width>
 											<HorizontalStretch>false</HorizontalStretch>
 											<ContextMenu name="DeliveryDateActualContextMenu" id="139"/>
 											<ExtendedTooltip name="DeliveryDateActualExtendedTooltip" id="140"/>
@@ -430,29 +430,6 @@
 													<CommandName>Form.Command.URLOpen</CommandName>
 													<ExtendedTooltip name="URLOpenExtendedTooltip" id="368"/>
 												</Button>
-											</ChildItems>
-										</UsualGroup>
-										<UsualGroup name="BegBalGroup" id="377">
-											<Group>Horizontal</Group>
-											<Representation>None</Representation>
-											<ShowTitle>false</ShowTitle>
-											<ExtendedTooltip name="BegBalGroupExtendedTooltip" id="378"/>
-											<ChildItems>
-												<CheckBoxField name="BegBal" id="254">
-													<DataPath>Object.BegBal</DataPath>
-													<ToolTip>
-														<v8:item>
-															<v8:lang>en</v8:lang>
-															<v8:content>The document represents company's beginning balance</v8:content>
-														</v8:item>
-													</ToolTip>
-													<CheckBoxType>Auto</CheckBoxType>
-													<ContextMenu name="BegBalContextMenu" id="255"/>
-													<ExtendedTooltip name="BegBalExtendedTooltip" id="256"/>
-													<Events>
-														<Event name="OnChange">BegBalOnChange</Event>
-													</Events>
-												</CheckBoxField>
 											</ChildItems>
 										</UsualGroup>
 									</ChildItems>
@@ -1305,6 +1282,17 @@
 				<v8:Type>cfg:EnumRef.InvoiceStatuses</v8:Type>
 			</Type>
 		</Attribute>
+		<Attribute name="OpenOrdersSelectionForm" id="11">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Open orders selection form</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
+			</Type>
+		</Attribute>
 	</Attributes>
 	<Commands>
 		<Command name="PayInvoice" id="1">
@@ -1354,7 +1342,7 @@
 	<CommandInterface>
 		<NavigationPanel>
 			<Item>
-				<Command>AccumulationRegister.InventoryJrnl.StandardCommand.OpenByRecorder</Command>
+				<Command>AccumulationRegister.InventoryJournal.StandardCommand.OpenByRecorder</Command>
 				<Type>Auto</Type>
 				<DefaultVisible>false</DefaultVisible>
 			</Item>
@@ -1362,6 +1350,15 @@
 				<Command>AccountingRegister.GeneralJournal.StandardCommand.OpenByRecorder</Command>
 				<Type>Auto</Type>
 				<DefaultVisible>false</DefaultVisible>
+			</Item>
+			<Item>
+				<Command>InformationRegister.DocumentJournalOfCompanies.StandardCommand.OpenByValue.Document</Command>
+				<Type>Auto</Type>
+				<CommandGroup>FormNavigationPanelGoTo</CommandGroup>
+				<DefaultVisible>false</DefaultVisible>
+				<Visible>
+					<xr:Common>false</xr:Common>
+				</Visible>
 			</Item>
 		</NavigationPanel>
 		<CommandBar>

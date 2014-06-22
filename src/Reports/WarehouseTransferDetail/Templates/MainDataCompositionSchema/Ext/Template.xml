@@ -84,15 +84,19 @@
 				</v8:item>
 			</title>
 		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>ManualAdjustment</dataPath>
+			<field>ManualAdjustment</field>
+		</field>
 		<dataSource>DataSource1</dataSource>
 		<query>SELECT
 	WarehouseTransferLineItems.Ref,
 	WarehouseTransferLineItems.LineNumber,
 	WarehouseTransferLineItems.Product,
+	WarehouseTransferLineItems.ProductDescription,
 	WarehouseTransferLineItems.Quantity,
 	WarehouseTransferLineItems.Price,
 	WarehouseTransferLineItems.LineTotal,
-	WarehouseTransferLineItems.ProductDescription,
 	WarehouseTransferLineItems.Ref.Ref AS Ref1,
 	WarehouseTransferLineItems.Ref.DataVersion,
 	WarehouseTransferLineItems.Ref.DeletionMark,
@@ -103,6 +107,7 @@
 	WarehouseTransferLineItems.Ref.LocationTo,
 	WarehouseTransferLineItems.Ref.DocumentTotalRC,
 	WarehouseTransferLineItems.Ref.Memo,
+	WarehouseTransferLineItems.Ref.ManualAdjustment,
 	WarehouseTransferLineItems.Ref.Presentation,
 	WarehouseTransferLineItems.Ref.PointInTime
 FROM
@@ -135,22 +140,25 @@ FROM
 					<dcsset:field>Ref1</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>DeletionMark</dcsset:field>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>Date</dcsset:field>
+					<dcsset:field>Ref</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>DataVersion</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>Ref</dcsset:field>
+					<dcsset:field>Date</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>DeletionMark</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>LocationFrom</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>LocationTo</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>ManualAdjustment</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Memo</dcsset:field>

@@ -323,6 +323,7 @@ WHERE
 			<v8:endDate>0001-01-01T00:00:00</v8:endDate>
 		</value>
 		<useRestriction>false</useRestriction>
+		<use>Always</use>
 	</parameter>
 	<parameter>
 		<name>PeriodPresentation</name>
@@ -359,11 +360,11 @@ WHERE
 						</dcscor:item>
 						<dcscor:item>
 							<dcscor:parameter>MinimumWidth</dcscor:parameter>
-							<dcscor:value xsi:type="xs:decimal">42</dcscor:value>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
 						</dcscor:item>
 						<dcscor:item>
 							<dcscor:parameter>MaximumWidth</dcscor:parameter>
-							<dcscor:value xsi:type="xs:decimal">42</dcscor:value>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
 						</dcscor:item>
 						<dcscor:item>
 							<dcscor:parameter>Details</dcscor:parameter>
@@ -421,11 +422,11 @@ WHERE
 						</dcscor:item>
 						<dcscor:item>
 							<dcscor:parameter>MinimumWidth</dcscor:parameter>
-							<dcscor:value xsi:type="xs:decimal">42</dcscor:value>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
 						</dcscor:item>
 						<dcscor:item>
 							<dcscor:parameter>MaximumWidth</dcscor:parameter>
-							<dcscor:value xsi:type="xs:decimal">42</dcscor:value>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
 						</dcscor:item>
 						<dcscor:item>
 							<dcscor:parameter>Details</dcscor:parameter>
@@ -463,6 +464,25 @@ WHERE
 					</dcsat:appearance>
 				</dcsat:tableCell>
 			</dcsat:item>
+			<dcsat:item xsi:type="dcsat:TableRow">
+				<dcsat:tableCell>
+					<dcsat:appearance>
+						<dcscor:item>
+							<dcscor:parameter>BackColor</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Color">#FFFFFF</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MinimumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MaximumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
+						</dcscor:item>
+					</dcsat:appearance>
+				</dcsat:tableCell>
+				<dcsat:tableCell/>
+			</dcsat:item>
 		</template>
 		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:DetailsAreaTemplateParameter">
 			<dcsat:name>Detail</dcsat:name>
@@ -483,16 +503,19 @@ WHERE
 			<dcsat:item xsi:type="dcsat:TableRow">
 				<dcsat:tableCell>
 					<dcsat:item xsi:type="dcsat:Field">
+						<dcsat:value xsi:type="dcscor:Parameter">Indent</dcsat:value>
+					</dcsat:item>
+					<dcsat:item xsi:type="dcsat:Field">
 						<dcsat:value xsi:type="dcscor:Parameter">Account</dcsat:value>
 					</dcsat:item>
 					<dcsat:appearance>
 						<dcscor:item>
 							<dcscor:parameter>MinimumWidth</dcscor:parameter>
-							<dcscor:value xsi:type="xs:decimal">42</dcscor:value>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
 						</dcscor:item>
 						<dcscor:item>
 							<dcscor:parameter>MaximumWidth</dcscor:parameter>
-							<dcscor:value xsi:type="xs:decimal">42</dcscor:value>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
 						</dcscor:item>
 						<dcscor:item>
 							<dcscor:parameter>Details</dcscor:parameter>
@@ -532,12 +555,24 @@ WHERE
 			<dcsat:mainAction>DrillDown</dcsat:mainAction>
 		</parameter>
 		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
-			<dcsat:name>Account</dcsat:name>
-			<dcsat:expression>Presentation(Account)</dcsat:expression>
-		</parameter>
-		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
 			<dcsat:name>AmountRCTurnover</dcsat:name>
 			<dcsat:expression>-AmountRCTurnover</dcsat:expression>
+		</parameter>
+		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
+			<dcsat:name>Indent</dcsat:name>
+			<dcsat:expression>CASE
+	WHEN SystemFields.LevelInGroup = 1
+		THEN ""
+	WHEN SystemFields.LevelInGroup = 2
+		THEN "   "
+	WHEN SystemFields.LevelInGroup = 3
+		THEN "      "
+	ELSE "         "
+END</dcsat:expression>
+		</parameter>
+		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
+			<dcsat:name>Account</dcsat:name>
+			<dcsat:expression>Presentation(Account)</dcsat:expression>
 		</parameter>
 	</template>
 	<template>
@@ -560,11 +595,11 @@ WHERE
 						</dcscor:item>
 						<dcscor:item>
 							<dcscor:parameter>MinimumWidth</dcscor:parameter>
-							<dcscor:value xsi:type="xs:decimal">42</dcscor:value>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
 						</dcscor:item>
 						<dcscor:item>
 							<dcscor:parameter>MaximumWidth</dcscor:parameter>
-							<dcscor:value xsi:type="xs:decimal">42</dcscor:value>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
 						</dcscor:item>
 					</dcsat:appearance>
 				</dcsat:tableCell>
@@ -593,6 +628,25 @@ WHERE
 						</dcscor:item>
 					</dcsat:appearance>
 				</dcsat:tableCell>
+			</dcsat:item>
+			<dcsat:item xsi:type="dcsat:TableRow">
+				<dcsat:tableCell>
+					<dcsat:appearance>
+						<dcscor:item>
+							<dcscor:parameter>BackColor</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Color">#FFFFFF</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MinimumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MaximumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
+						</dcscor:item>
+					</dcsat:appearance>
+				</dcsat:tableCell>
+				<dcsat:tableCell/>
 			</dcsat:item>
 		</template>
 		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
@@ -620,11 +674,11 @@ WHERE
 						</dcscor:item>
 						<dcscor:item>
 							<dcscor:parameter>MinimumWidth</dcscor:parameter>
-							<dcscor:value xsi:type="xs:decimal">42</dcscor:value>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
 						</dcscor:item>
 						<dcscor:item>
 							<dcscor:parameter>MaximumWidth</dcscor:parameter>
-							<dcscor:value xsi:type="xs:decimal">42</dcscor:value>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
 						</dcscor:item>
 					</dcsat:appearance>
 				</dcsat:tableCell>
@@ -653,6 +707,25 @@ WHERE
 						</dcscor:item>
 					</dcsat:appearance>
 				</dcsat:tableCell>
+			</dcsat:item>
+			<dcsat:item xsi:type="dcsat:TableRow">
+				<dcsat:tableCell>
+					<dcsat:appearance>
+						<dcscor:item>
+							<dcscor:parameter>BackColor</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Color">#FFFFFF</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MinimumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MaximumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
+						</dcscor:item>
+					</dcsat:appearance>
+				</dcsat:tableCell>
+				<dcsat:tableCell/>
 			</dcsat:item>
 		</template>
 		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
@@ -680,11 +753,11 @@ WHERE
 						</dcscor:item>
 						<dcscor:item>
 							<dcscor:parameter>MinimumWidth</dcscor:parameter>
-							<dcscor:value xsi:type="xs:decimal">42</dcscor:value>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
 						</dcscor:item>
 						<dcscor:item>
 							<dcscor:parameter>MaximumWidth</dcscor:parameter>
-							<dcscor:value xsi:type="xs:decimal">42</dcscor:value>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
 						</dcscor:item>
 					</dcsat:appearance>
 				</dcsat:tableCell>
@@ -714,78 +787,29 @@ WHERE
 					</dcsat:appearance>
 				</dcsat:tableCell>
 			</dcsat:item>
+			<dcsat:item xsi:type="dcsat:TableRow">
+				<dcsat:tableCell>
+					<dcsat:appearance>
+						<dcscor:item>
+							<dcscor:parameter>BackColor</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Color">#FFFFFF</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MinimumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MaximumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
+						</dcscor:item>
+					</dcsat:appearance>
+				</dcsat:tableCell>
+				<dcsat:tableCell/>
+			</dcsat:item>
 		</template>
 		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
 			<dcsat:name>AmountRCTurnover</dcsat:name>
 			<dcsat:expression>AmountRCTurnover</dcsat:expression>
-		</parameter>
-	</template>
-	<template>
-		<name>Template10</name>
-		<template xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:AreaTemplate">
-			<dcsat:item xsi:type="dcsat:TableRow">
-				<dcsat:tableCell>
-					<dcsat:item xsi:type="dcsat:Field">
-						<dcsat:value xsi:type="v8:LocalStringType">
-							<v8:item>
-								<v8:lang>en</v8:lang>
-								<v8:content>Income Tax</v8:content>
-							</v8:item>
-						</dcsat:value>
-					</dcsat:item>
-					<dcsat:appearance>
-						<dcscor:item>
-							<dcscor:parameter>MinimumWidth</dcscor:parameter>
-							<dcscor:value xsi:type="xs:decimal">42</dcscor:value>
-						</dcscor:item>
-						<dcscor:item>
-							<dcscor:parameter>MaximumWidth</dcscor:parameter>
-							<dcscor:value xsi:type="xs:decimal">42</dcscor:value>
-						</dcscor:item>
-						<dcscor:item>
-							<dcscor:parameter>Details</dcscor:parameter>
-							<dcscor:value xsi:type="dcscor:Parameter">Detail</dcscor:value>
-						</dcscor:item>
-					</dcsat:appearance>
-				</dcsat:tableCell>
-				<dcsat:tableCell>
-					<dcsat:item xsi:type="dcsat:Field">
-						<dcsat:value xsi:type="dcscor:Parameter">AmountRCTurnover</dcsat:value>
-						<dcsat:appearance>
-							<dcscor:item>
-								<dcscor:parameter>Format</dcscor:parameter>
-								<dcscor:value xsi:type="xs:string">NFD=2; NZ=0.00; NG=3,0</dcscor:value>
-							</dcscor:item>
-						</dcsat:appearance>
-					</dcsat:item>
-					<dcsat:appearance>
-						<dcscor:item>
-							<dcscor:parameter>MinimumWidth</dcscor:parameter>
-							<dcscor:value xsi:type="xs:decimal">10</dcscor:value>
-						</dcscor:item>
-						<dcscor:item>
-							<dcscor:parameter>MaximumWidth</dcscor:parameter>
-							<dcscor:value xsi:type="xs:decimal">10</dcscor:value>
-						</dcscor:item>
-						<dcscor:item>
-							<dcscor:parameter>Details</dcscor:parameter>
-							<dcscor:value xsi:type="dcscor:Parameter">Detail</dcscor:value>
-						</dcscor:item>
-					</dcsat:appearance>
-				</dcsat:tableCell>
-			</dcsat:item>
-		</template>
-		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:DetailsAreaTemplateParameter">
-			<dcsat:name>Detail</dcsat:name>
-			<dcsat:fieldExpression>
-				<dcsat:field>IsTaxAccount</dcsat:field>
-				<dcsat:expression>True</dcsat:expression>
-			</dcsat:fieldExpression>
-			<dcsat:mainAction>DrillDown</dcsat:mainAction>
-		</parameter>
-		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
-			<dcsat:name>AmountRCTurnover</dcsat:name>
-			<dcsat:expression>-AmountRCTurnover</dcsat:expression>
 		</parameter>
 	</template>
 	<template>
@@ -808,11 +832,11 @@ WHERE
 						</dcscor:item>
 						<dcscor:item>
 							<dcscor:parameter>MinimumWidth</dcscor:parameter>
-							<dcscor:value xsi:type="xs:decimal">42</dcscor:value>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
 						</dcscor:item>
 						<dcscor:item>
 							<dcscor:parameter>MaximumWidth</dcscor:parameter>
-							<dcscor:value xsi:type="xs:decimal">42</dcscor:value>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
 						</dcscor:item>
 						<dcscor:item>
 							<dcscor:parameter>Details</dcscor:parameter>
@@ -875,11 +899,11 @@ WHERE
 						</dcscor:item>
 						<dcscor:item>
 							<dcscor:parameter>MinimumWidth</dcscor:parameter>
-							<dcscor:value xsi:type="xs:decimal">42</dcscor:value>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
 						</dcscor:item>
 						<dcscor:item>
 							<dcscor:parameter>MaximumWidth</dcscor:parameter>
-							<dcscor:value xsi:type="xs:decimal">42</dcscor:value>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
 						</dcscor:item>
 						<dcscor:item>
 							<dcscor:parameter>Details</dcscor:parameter>
@@ -937,11 +961,11 @@ WHERE
 						</dcscor:item>
 						<dcscor:item>
 							<dcscor:parameter>MinimumWidth</dcscor:parameter>
-							<dcscor:value xsi:type="xs:decimal">42</dcscor:value>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
 						</dcscor:item>
 						<dcscor:item>
 							<dcscor:parameter>MaximumWidth</dcscor:parameter>
-							<dcscor:value xsi:type="xs:decimal">42</dcscor:value>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
 						</dcscor:item>
 						<dcscor:item>
 							<dcscor:parameter>Details</dcscor:parameter>
@@ -979,6 +1003,25 @@ WHERE
 					</dcsat:appearance>
 				</dcsat:tableCell>
 			</dcsat:item>
+			<dcsat:item xsi:type="dcsat:TableRow">
+				<dcsat:tableCell>
+					<dcsat:appearance>
+						<dcscor:item>
+							<dcscor:parameter>BackColor</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Color">#FFFFFF</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MinimumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MaximumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
+						</dcscor:item>
+					</dcsat:appearance>
+				</dcsat:tableCell>
+				<dcsat:tableCell/>
+			</dcsat:item>
 		</template>
 		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
 			<dcsat:name>AccountType</dcsat:name>
@@ -999,16 +1042,19 @@ WHERE
 			<dcsat:item xsi:type="dcsat:TableRow">
 				<dcsat:tableCell>
 					<dcsat:item xsi:type="dcsat:Field">
+						<dcsat:value xsi:type="dcscor:Parameter">Indent</dcsat:value>
+					</dcsat:item>
+					<dcsat:item xsi:type="dcsat:Field">
 						<dcsat:value xsi:type="dcscor:Parameter">Account</dcsat:value>
 					</dcsat:item>
 					<dcsat:appearance>
 						<dcscor:item>
 							<dcscor:parameter>MinimumWidth</dcscor:parameter>
-							<dcscor:value xsi:type="xs:decimal">42</dcscor:value>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
 						</dcscor:item>
 						<dcscor:item>
 							<dcscor:parameter>MaximumWidth</dcscor:parameter>
-							<dcscor:value xsi:type="xs:decimal">42</dcscor:value>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
 						</dcscor:item>
 						<dcscor:item>
 							<dcscor:parameter>Details</dcscor:parameter>
@@ -1043,10 +1089,6 @@ WHERE
 				</dcsat:tableCell>
 			</dcsat:item>
 		</template>
-		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
-			<dcsat:name>Account</dcsat:name>
-			<dcsat:expression>Presentation(Account)</dcsat:expression>
-		</parameter>
 		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:DetailsAreaTemplateParameter">
 			<dcsat:name>Detail</dcsat:name>
 			<dcsat:mainAction>DrillDown</dcsat:mainAction>
@@ -1054,6 +1096,22 @@ WHERE
 		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
 			<dcsat:name>AmountRCTurnover</dcsat:name>
 			<dcsat:expression>AmountRCTurnover</dcsat:expression>
+		</parameter>
+		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
+			<dcsat:name>Indent</dcsat:name>
+			<dcsat:expression>CASE
+	WHEN SystemFields.LevelInGroup = 1
+		THEN ""
+	WHEN SystemFields.LevelInGroup = 2
+		THEN "   "
+	WHEN SystemFields.LevelInGroup = 3
+		THEN "      "
+	ELSE "         "
+END</dcsat:expression>
+		</parameter>
+		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
+			<dcsat:name>Account</dcsat:name>
+			<dcsat:expression>Presentation(Account)</dcsat:expression>
 		</parameter>
 	</template>
 	<template>
@@ -1076,30 +1134,32 @@ WHERE
 						</dcscor:item>
 						<dcscor:item>
 							<dcscor:parameter>MinimumWidth</dcscor:parameter>
-							<dcscor:value xsi:type="xs:decimal">42</dcscor:value>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
 						</dcscor:item>
 						<dcscor:item>
 							<dcscor:parameter>MaximumWidth</dcscor:parameter>
-							<dcscor:value xsi:type="xs:decimal">42</dcscor:value>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
 						</dcscor:item>
 					</dcsat:appearance>
 				</dcsat:tableCell>
-				<dcsat:tableCell/>
 			</dcsat:item>
 			<dcsat:item xsi:type="dcsat:TableRow">
 				<dcsat:tableCell>
 					<dcsat:appearance>
 						<dcscor:item>
+							<dcscor:parameter>BackColor</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Color">#FFFFFF</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
 							<dcscor:parameter>MinimumWidth</dcscor:parameter>
-							<dcscor:value xsi:type="xs:decimal">42</dcscor:value>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
 						</dcscor:item>
 						<dcscor:item>
 							<dcscor:parameter>MaximumWidth</dcscor:parameter>
-							<dcscor:value xsi:type="xs:decimal">42</dcscor:value>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
 						</dcscor:item>
 					</dcsat:appearance>
 				</dcsat:tableCell>
-				<dcsat:tableCell/>
 			</dcsat:item>
 			<dcsat:item xsi:type="dcsat:TableRow">
 				<dcsat:tableCell>
@@ -1109,15 +1169,14 @@ WHERE
 					<dcsat:appearance>
 						<dcscor:item>
 							<dcscor:parameter>MinimumWidth</dcscor:parameter>
-							<dcscor:value xsi:type="xs:decimal">42</dcscor:value>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
 						</dcscor:item>
 						<dcscor:item>
 							<dcscor:parameter>MaximumWidth</dcscor:parameter>
-							<dcscor:value xsi:type="xs:decimal">42</dcscor:value>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
 						</dcscor:item>
 					</dcsat:appearance>
 				</dcsat:tableCell>
-				<dcsat:tableCell/>
 			</dcsat:item>
 			<dcsat:item xsi:type="dcsat:TableRow">
 				<dcsat:tableCell>
@@ -1131,15 +1190,32 @@ WHERE
 						</dcscor:item>
 						<dcscor:item>
 							<dcscor:parameter>MinimumWidth</dcscor:parameter>
-							<dcscor:value xsi:type="xs:decimal">42</dcscor:value>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
 						</dcscor:item>
 						<dcscor:item>
 							<dcscor:parameter>MaximumWidth</dcscor:parameter>
-							<dcscor:value xsi:type="xs:decimal">42</dcscor:value>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
 						</dcscor:item>
 					</dcsat:appearance>
 				</dcsat:tableCell>
-				<dcsat:tableCell/>
+			</dcsat:item>
+			<dcsat:item xsi:type="dcsat:TableRow">
+				<dcsat:tableCell>
+					<dcsat:appearance>
+						<dcscor:item>
+							<dcscor:parameter>BackColor</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Color">#FFFFFF</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MinimumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MaximumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
+						</dcscor:item>
+					</dcsat:appearance>
+				</dcsat:tableCell>
 			</dcsat:item>
 		</template>
 		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
@@ -1241,6 +1317,9 @@ WHERE
 			<dcsat:item xsi:type="dcsat:TableRow">
 				<dcsat:tableCell>
 					<dcsat:item xsi:type="dcsat:Field">
+						<dcsat:value xsi:type="dcscor:Parameter">Indent</dcsat:value>
+					</dcsat:item>
+					<dcsat:item xsi:type="dcsat:Field">
 						<dcsat:value xsi:type="dcscor:Parameter">Account</dcsat:value>
 					</dcsat:item>
 					<dcsat:appearance>
@@ -1260,13 +1339,25 @@ WHERE
 				</dcsat:tableCell>
 			</dcsat:item>
 		</template>
-		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
-			<dcsat:name>Account</dcsat:name>
-			<dcsat:expression>Presentation(Account)</dcsat:expression>
-		</parameter>
 		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:DetailsAreaTemplateParameter">
 			<dcsat:name>Detail</dcsat:name>
 			<dcsat:mainAction>DrillDown</dcsat:mainAction>
+		</parameter>
+		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
+			<dcsat:name>Indent</dcsat:name>
+			<dcsat:expression>CASE
+	WHEN SystemFields.LevelInGroup = 1
+		THEN ""
+	WHEN SystemFields.LevelInGroup = 2
+		THEN "   "
+	WHEN SystemFields.LevelInGroup = 3
+		THEN "      "
+	ELSE "         "
+END</dcsat:expression>
+		</parameter>
+		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
+			<dcsat:name>Account</dcsat:name>
+			<dcsat:expression>Presentation(Account)</dcsat:expression>
 		</parameter>
 	</template>
 	<template>
@@ -1275,6 +1366,18 @@ WHERE
 			<dcsat:item xsi:type="dcsat:TableRow">
 				<dcsat:tableCell>
 					<dcsat:appearance>
+						<dcscor:item>
+							<dcscor:parameter>BackColor</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Color">#FFFFFF</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MinimumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">42</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MaximumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">42</dcscor:value>
+						</dcscor:item>
 						<dcscor:item>
 							<dcscor:parameter>MinimumHeight</dcscor:parameter>
 							<dcscor:value xsi:type="xs:decimal">9</dcscor:value>
@@ -1317,6 +1420,18 @@ WHERE
 				<dcsat:tableCell>
 					<dcsat:appearance>
 						<dcscor:item>
+							<dcscor:parameter>BackColor</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Color">#FFFFFF</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MinimumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">42</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MaximumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">42</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
 							<dcscor:parameter>MinimumHeight</dcscor:parameter>
 							<dcscor:value xsi:type="xs:decimal">9</dcscor:value>
 						</dcscor:item>
@@ -1358,6 +1473,18 @@ WHERE
 				<dcsat:tableCell>
 					<dcsat:appearance>
 						<dcscor:item>
+							<dcscor:parameter>BackColor</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Color">#FFFFFF</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MinimumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">42</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MaximumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">42</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
 							<dcscor:parameter>MinimumHeight</dcscor:parameter>
 							<dcscor:value xsi:type="xs:decimal">9</dcscor:value>
 						</dcscor:item>
@@ -1393,29 +1520,15 @@ WHERE
 		</template>
 	</template>
 	<template>
-		<name>Template21</name>
+		<name>Template22</name>
 		<template xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:AreaTemplate">
 			<dcsat:item xsi:type="dcsat:TableRow">
 				<dcsat:tableCell>
 					<dcsat:appearance>
 						<dcscor:item>
-							<dcscor:parameter>MinimumHeight</dcscor:parameter>
-							<dcscor:value xsi:type="xs:decimal">9</dcscor:value>
+							<dcscor:parameter>BackColor</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Color">#FFFFFF</dcscor:value>
 						</dcscor:item>
-					</dcsat:appearance>
-				</dcsat:tableCell>
-			</dcsat:item>
-			<dcsat:item xsi:type="dcsat:TableRow">
-				<dcsat:tableCell>
-					<dcsat:item xsi:type="dcsat:Field">
-						<dcsat:value xsi:type="v8:LocalStringType">
-							<v8:item>
-								<v8:lang>en</v8:lang>
-								<v8:content>Income Tax</v8:content>
-							</v8:item>
-						</dcsat:value>
-					</dcsat:item>
-					<dcsat:appearance>
 						<dcscor:item>
 							<dcscor:parameter>MinimumWidth</dcscor:parameter>
 							<dcscor:value xsi:type="xs:decimal">42</dcscor:value>
@@ -1424,29 +1537,6 @@ WHERE
 							<dcscor:parameter>MaximumWidth</dcscor:parameter>
 							<dcscor:value xsi:type="xs:decimal">42</dcscor:value>
 						</dcscor:item>
-						<dcscor:item>
-							<dcscor:parameter>Details</dcscor:parameter>
-							<dcscor:value xsi:type="dcscor:Parameter">Detail</dcscor:value>
-						</dcscor:item>
-					</dcsat:appearance>
-				</dcsat:tableCell>
-			</dcsat:item>
-		</template>
-		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:DetailsAreaTemplateParameter">
-			<dcsat:name>Detail</dcsat:name>
-			<dcsat:fieldExpression>
-				<dcsat:field>IsTaxAccount</dcsat:field>
-				<dcsat:expression>True</dcsat:expression>
-			</dcsat:fieldExpression>
-			<dcsat:mainAction>DrillDown</dcsat:mainAction>
-		</parameter>
-	</template>
-	<template>
-		<name>Template22</name>
-		<template xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:AreaTemplate">
-			<dcsat:item xsi:type="dcsat:TableRow">
-				<dcsat:tableCell>
-					<dcsat:appearance>
 						<dcscor:item>
 							<dcscor:parameter>MinimumHeight</dcscor:parameter>
 							<dcscor:value xsi:type="xs:decimal">9</dcscor:value>
@@ -1580,6 +1670,9 @@ WHERE
 			<dcsat:item xsi:type="dcsat:TableRow">
 				<dcsat:tableCell>
 					<dcsat:item xsi:type="dcsat:Field">
+						<dcsat:value xsi:type="dcscor:Parameter">Indent</dcsat:value>
+					</dcsat:item>
+					<dcsat:item xsi:type="dcsat:Field">
 						<dcsat:value xsi:type="dcscor:Parameter">Account</dcsat:value>
 					</dcsat:item>
 					<dcsat:appearance>
@@ -1599,13 +1692,25 @@ WHERE
 				</dcsat:tableCell>
 			</dcsat:item>
 		</template>
-		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
-			<dcsat:name>Account</dcsat:name>
-			<dcsat:expression>Presentation(Account)</dcsat:expression>
-		</parameter>
 		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:DetailsAreaTemplateParameter">
 			<dcsat:name>Detail</dcsat:name>
 			<dcsat:mainAction>DrillDown</dcsat:mainAction>
+		</parameter>
+		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
+			<dcsat:name>Indent</dcsat:name>
+			<dcsat:expression>CASE
+	WHEN SystemFields.LevelInGroup = 1
+		THEN ""
+	WHEN SystemFields.LevelInGroup = 2
+		THEN "   "
+	WHEN SystemFields.LevelInGroup = 3
+		THEN "      "
+	ELSE "         "
+END</dcsat:expression>
+		</parameter>
+		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
+			<dcsat:name>Account</dcsat:name>
+			<dcsat:expression>Presentation(Account)</dcsat:expression>
 		</parameter>
 	</template>
 	<template>
@@ -1614,6 +1719,10 @@ WHERE
 			<dcsat:item xsi:type="dcsat:TableRow">
 				<dcsat:tableCell>
 					<dcsat:appearance>
+						<dcscor:item>
+							<dcscor:parameter>BackColor</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Color">#FFFFFF</dcscor:value>
+						</dcscor:item>
 						<dcscor:item>
 							<dcscor:parameter>MinimumWidth</dcscor:parameter>
 							<dcscor:value xsi:type="xs:decimal">10</dcscor:value>
@@ -1682,6 +1791,10 @@ WHERE
 				<dcsat:tableCell>
 					<dcsat:appearance>
 						<dcscor:item>
+							<dcscor:parameter>BackColor</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Color">#FFFFFF</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
 							<dcscor:parameter>MinimumWidth</dcscor:parameter>
 							<dcscor:value xsi:type="xs:decimal">10</dcscor:value>
 						</dcscor:item>
@@ -1749,12 +1862,16 @@ WHERE
 				<dcsat:tableCell>
 					<dcsat:appearance>
 						<dcscor:item>
+							<dcscor:parameter>BackColor</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Color">#FFFFFF</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
 							<dcscor:parameter>MinimumWidth</dcscor:parameter>
-							<dcscor:value xsi:type="xs:decimal">10</dcscor:value>
+							<dcscor:value xsi:type="xs:decimal">42</dcscor:value>
 						</dcscor:item>
 						<dcscor:item>
 							<dcscor:parameter>MaximumWidth</dcscor:parameter>
-							<dcscor:value xsi:type="xs:decimal">10</dcscor:value>
+							<dcscor:value xsi:type="xs:decimal">42</dcscor:value>
 						</dcscor:item>
 						<dcscor:item>
 							<dcscor:parameter>MinimumHeight</dcscor:parameter>
@@ -1943,6 +2060,18 @@ WHERE
 				<dcsat:tableCell>
 					<dcsat:appearance>
 						<dcscor:item>
+							<dcscor:parameter>BackColor</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Color">#FFFFFF</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MinimumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">10</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MaximumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">10</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
 							<dcscor:parameter>MinimumHeight</dcscor:parameter>
 							<dcscor:value xsi:type="xs:decimal">9</dcscor:value>
 						</dcscor:item>
@@ -1988,6 +2117,18 @@ WHERE
 			<dcsat:item xsi:type="dcsat:TableRow">
 				<dcsat:tableCell>
 					<dcsat:appearance>
+						<dcscor:item>
+							<dcscor:parameter>BackColor</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Color">#FFFFFF</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MinimumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">10</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MaximumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">10</dcscor:value>
+						</dcscor:item>
 						<dcscor:item>
 							<dcscor:parameter>MinimumHeight</dcscor:parameter>
 							<dcscor:value xsi:type="xs:decimal">9</dcscor:value>
@@ -2035,6 +2176,18 @@ WHERE
 				<dcsat:tableCell>
 					<dcsat:appearance>
 						<dcscor:item>
+							<dcscor:parameter>BackColor</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Color">#FFFFFF</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MinimumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">10</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MaximumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">10</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
 							<dcscor:parameter>MinimumHeight</dcscor:parameter>
 							<dcscor:value xsi:type="xs:decimal">9</dcscor:value>
 						</dcscor:item>
@@ -2075,30 +2228,15 @@ WHERE
 		</parameter>
 	</template>
 	<template>
-		<name>Template43</name>
+		<name>Template47</name>
 		<template xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:AreaTemplate">
 			<dcsat:item xsi:type="dcsat:TableRow">
 				<dcsat:tableCell>
 					<dcsat:appearance>
 						<dcscor:item>
-							<dcscor:parameter>MinimumHeight</dcscor:parameter>
-							<dcscor:value xsi:type="xs:decimal">9</dcscor:value>
+							<dcscor:parameter>BackColor</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Color">#FFFFFF</dcscor:value>
 						</dcscor:item>
-					</dcsat:appearance>
-				</dcsat:tableCell>
-			</dcsat:item>
-			<dcsat:item xsi:type="dcsat:TableRow">
-				<dcsat:tableCell>
-					<dcsat:item xsi:type="dcsat:Field">
-						<dcsat:value xsi:type="dcscor:Parameter">AmountRCTurnover</dcsat:value>
-						<dcsat:appearance>
-							<dcscor:item>
-								<dcscor:parameter>Format</dcscor:parameter>
-								<dcscor:value xsi:type="xs:string">NFD=2; NZ=0.00; NG=3,0</dcscor:value>
-							</dcscor:item>
-						</dcsat:appearance>
-					</dcsat:item>
-					<dcsat:appearance>
 						<dcscor:item>
 							<dcscor:parameter>MinimumWidth</dcscor:parameter>
 							<dcscor:value xsi:type="xs:decimal">10</dcscor:value>
@@ -2107,33 +2245,6 @@ WHERE
 							<dcscor:parameter>MaximumWidth</dcscor:parameter>
 							<dcscor:value xsi:type="xs:decimal">10</dcscor:value>
 						</dcscor:item>
-						<dcscor:item>
-							<dcscor:parameter>Details</dcscor:parameter>
-							<dcscor:value xsi:type="dcscor:Parameter">Detail</dcscor:value>
-						</dcscor:item>
-					</dcsat:appearance>
-				</dcsat:tableCell>
-			</dcsat:item>
-		</template>
-		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
-			<dcsat:name>AmountRCTurnover</dcsat:name>
-			<dcsat:expression>-AmountRCTurnover</dcsat:expression>
-		</parameter>
-		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:DetailsAreaTemplateParameter">
-			<dcsat:name>Detail</dcsat:name>
-			<dcsat:fieldExpression>
-				<dcsat:field>IsTaxAccount</dcsat:field>
-				<dcsat:expression>True</dcsat:expression>
-			</dcsat:fieldExpression>
-			<dcsat:mainAction>DrillDown</dcsat:mainAction>
-		</parameter>
-	</template>
-	<template>
-		<name>Template47</name>
-		<template xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:AreaTemplate">
-			<dcsat:item xsi:type="dcsat:TableRow">
-				<dcsat:tableCell>
-					<dcsat:appearance>
 						<dcscor:item>
 							<dcscor:parameter>MinimumHeight</dcscor:parameter>
 							<dcscor:value xsi:type="xs:decimal">9</dcscor:value>
@@ -2251,6 +2362,9 @@ WHERE
 			<dcsat:item xsi:type="dcsat:TableRow">
 				<dcsat:tableCell>
 					<dcsat:item xsi:type="dcsat:Field">
+						<dcsat:value xsi:type="dcscor:Parameter">Indent</dcsat:value>
+					</dcsat:item>
+					<dcsat:item xsi:type="dcsat:Field">
 						<dcsat:value xsi:type="dcscor:Parameter">Account</dcsat:value>
 					</dcsat:item>
 					<dcsat:appearance>
@@ -2295,10 +2409,6 @@ WHERE
 				</dcsat:tableCell>
 			</dcsat:item>
 		</template>
-		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
-			<dcsat:name>Account</dcsat:name>
-			<dcsat:expression>Presentation(Account)</dcsat:expression>
-		</parameter>
 		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:DetailsAreaTemplateParameter">
 			<dcsat:name>Detail</dcsat:name>
 			<dcsat:mainAction>DrillDown</dcsat:mainAction>
@@ -2306,6 +2416,22 @@ WHERE
 		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
 			<dcsat:name>AmountRCTurnover</dcsat:name>
 			<dcsat:expression>AmountRCTurnover</dcsat:expression>
+		</parameter>
+		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
+			<dcsat:name>Indent</dcsat:name>
+			<dcsat:expression>CASE
+	WHEN SystemFields.LevelInGroup = 1
+		THEN ""
+	WHEN SystemFields.LevelInGroup = 2
+		THEN "   "
+	WHEN SystemFields.LevelInGroup = 3
+		THEN "      "
+	ELSE "         "
+END</dcsat:expression>
+		</parameter>
+		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
+			<dcsat:name>Account</dcsat:name>
+			<dcsat:expression>Presentation(Account)</dcsat:expression>
 		</parameter>
 	</template>
 	<template>
@@ -2327,7 +2453,7 @@ WHERE
 						</dcscor:item>
 						<dcscor:item>
 							<dcscor:parameter>Details</dcscor:parameter>
-							<dcscor:value xsi:type="dcscor:Parameter">Detail</dcscor:value>
+							<dcscor:value xsi:type="dcscor:Parameter">Details</dcscor:value>
 						</dcscor:item>
 					</dcsat:appearance>
 				</dcsat:tableCell>
@@ -2352,27 +2478,23 @@ WHERE
 						</dcscor:item>
 						<dcscor:item>
 							<dcscor:parameter>Details</dcscor:parameter>
-							<dcscor:value xsi:type="dcscor:Parameter">Detail</dcscor:value>
+							<dcscor:value xsi:type="dcscor:Parameter">Details</dcscor:value>
 						</dcscor:item>
 					</dcsat:appearance>
 				</dcsat:tableCell>
 			</dcsat:item>
 		</template>
 		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
-			<dcsat:name>Recorder</dcsat:name>
-			<dcsat:expression>Presentation(Recorder)</dcsat:expression>
-		</parameter>
-		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:DetailsAreaTemplateParameter">
-			<dcsat:name>Detail</dcsat:name>
-			<dcsat:fieldExpression>
-				<dcsat:field>Recorder</dcsat:field>
-				<dcsat:expression>Recorder</dcsat:expression>
-			</dcsat:fieldExpression>
-			<dcsat:mainAction>OpenValue</dcsat:mainAction>
-		</parameter>
-		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
 			<dcsat:name>AmountRCTurnover</dcsat:name>
 			<dcsat:expression>AmountRCTurnover</dcsat:expression>
+		</parameter>
+		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
+			<dcsat:name>Details</dcsat:name>
+			<dcsat:expression>Recorder</dcsat:expression>
+		</parameter>
+		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
+			<dcsat:name>Recorder</dcsat:name>
+			<dcsat:expression>Presentation(Recorder)</dcsat:expression>
 		</parameter>
 	</template>
 	<template>
@@ -3030,6 +3152,239 @@ WHERE
 			<dcsat:expression>Format(WeekPeriod, "DF=yyyy")</dcsat:expression>
 		</parameter>
 	</template>
+	<template>
+		<name>Template61</name>
+		<template xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:AreaTemplate">
+			<dcsat:item xsi:type="dcsat:TableRow">
+				<dcsat:tableCell>
+					<dcsat:item xsi:type="dcsat:Field">
+						<dcsat:value xsi:type="v8:LocalStringType">
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>Income Statement</v8:content>
+							</v8:item>
+						</dcsat:value>
+					</dcsat:item>
+					<dcsat:appearance>
+						<dcscor:item>
+							<dcscor:parameter>Font</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Font" faceName="Arial" height="12" bold="true" italic="false" underline="false" strikeout="false" kind="Absolute"/>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MinimumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MaximumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
+						</dcscor:item>
+					</dcsat:appearance>
+				</dcsat:tableCell>
+			</dcsat:item>
+			<dcsat:item xsi:type="dcsat:TableRow">
+				<dcsat:tableCell>
+					<dcsat:appearance>
+						<dcscor:item>
+							<dcscor:parameter>BackColor</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Color">#FFFFFF</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MinimumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MaximumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
+						</dcscor:item>
+					</dcsat:appearance>
+				</dcsat:tableCell>
+			</dcsat:item>
+			<dcsat:item xsi:type="dcsat:TableRow">
+				<dcsat:tableCell>
+					<dcsat:item xsi:type="dcsat:Field">
+						<dcsat:value xsi:type="dcscor:Parameter">OurCompany</dcsat:value>
+					</dcsat:item>
+					<dcsat:appearance>
+						<dcscor:item>
+							<dcscor:parameter>MinimumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MaximumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
+						</dcscor:item>
+					</dcsat:appearance>
+				</dcsat:tableCell>
+			</dcsat:item>
+			<dcsat:item xsi:type="dcsat:TableRow">
+				<dcsat:tableCell>
+					<dcsat:item xsi:type="dcsat:Field">
+						<dcsat:value xsi:type="dcscor:Parameter">DataParameters.PeriodPresentation</dcsat:value>
+					</dcsat:item>
+					<dcsat:appearance>
+						<dcscor:item>
+							<dcscor:parameter>Font</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Font" faceName="Arial" height="8" bold="false" italic="true" underline="false" strikeout="false" kind="Absolute"/>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MinimumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MaximumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
+						</dcscor:item>
+					</dcsat:appearance>
+				</dcsat:tableCell>
+			</dcsat:item>
+			<dcsat:item xsi:type="dcsat:TableRow">
+				<dcsat:tableCell>
+					<dcsat:appearance>
+						<dcscor:item>
+							<dcscor:parameter>BackColor</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Color">#FFFFFF</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MinimumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MaximumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
+						</dcscor:item>
+					</dcsat:appearance>
+				</dcsat:tableCell>
+			</dcsat:item>
+		</template>
+		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
+			<dcsat:name>OurCompany</dcsat:name>
+			<dcsat:expression>Constants.SystemTitle.Get()</dcsat:expression>
+		</parameter>
+		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
+			<dcsat:name>DataParameters.PeriodPresentation</dcsat:name>
+			<dcsat:expression>DataParameters.PeriodPresentation</dcsat:expression>
+		</parameter>
+	</template>
+	<template>
+		<name>Template62</name>
+		<template xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:AreaTemplate">
+			<dcsat:item xsi:type="dcsat:TableRow">
+				<dcsat:tableCell>
+					<dcsat:appearance>
+						<dcscor:item>
+							<dcscor:parameter>BackColor</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Color">#FFFFFF</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MinimumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MaximumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
+						</dcscor:item>
+					</dcsat:appearance>
+				</dcsat:tableCell>
+			</dcsat:item>
+			<dcsat:item xsi:type="dcsat:TableRow">
+				<dcsat:tableCell>
+					<dcsat:item xsi:type="dcsat:Field">
+						<dcsat:value xsi:type="dcscor:Parameter">CurrentDate</dcsat:value>
+					</dcsat:item>
+					<dcsat:item xsi:type="dcsat:Field">
+						<dcsat:value xsi:type="v8:LocalStringType">
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content> - Accrual basis</v8:content>
+							</v8:item>
+						</dcsat:value>
+					</dcsat:item>
+					<dcsat:appearance>
+						<dcscor:item>
+							<dcscor:parameter>TextColor</dcscor:parameter>
+							<dcscor:value xmlns:d8p1="http://v8.1c.ru/8.1/data/ui/colors/web" xsi:type="v8ui:Color">d8p1:Gray</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>Font</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Font" faceName="Arial" height="8" bold="false" italic="true" underline="false" strikeout="false" kind="Absolute"/>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MinimumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MaximumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">52</dcscor:value>
+						</dcscor:item>
+					</dcsat:appearance>
+				</dcsat:tableCell>
+			</dcsat:item>
+		</template>
+		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
+			<dcsat:name>CurrentDate</dcsat:name>
+			<dcsat:expression>Format(CurrentDate(), "DF='dddd, MMM d, yyyy h:mm:ss tt'")</dcsat:expression>
+		</parameter>
+	</template>
+	<template>
+		<name>Template63</name>
+		<template xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:AreaTemplate">
+			<dcsat:item xsi:type="dcsat:TableRow">
+				<dcsat:tableCell>
+					<dcsat:appearance>
+						<dcscor:item>
+							<dcscor:parameter>BackColor</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Color">#FFFFFF</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MinimumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">42</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MaximumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">42</dcscor:value>
+						</dcscor:item>
+					</dcsat:appearance>
+				</dcsat:tableCell>
+			</dcsat:item>
+			<dcsat:item xsi:type="dcsat:TableRow">
+				<dcsat:tableCell>
+					<dcsat:item xsi:type="dcsat:Field">
+						<dcsat:value xsi:type="dcscor:Parameter">CurrentDate</dcsat:value>
+					</dcsat:item>
+					<dcsat:item xsi:type="dcsat:Field">
+						<dcsat:value xsi:type="v8:LocalStringType">
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content> - Accrual basis</v8:content>
+							</v8:item>
+						</dcsat:value>
+					</dcsat:item>
+					<dcsat:appearance>
+						<dcscor:item>
+							<dcscor:parameter>TextColor</dcscor:parameter>
+							<dcscor:value xmlns:d8p1="http://v8.1c.ru/8.1/data/ui/colors/web" xsi:type="v8ui:Color">d8p1:Gray</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>Font</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Font" faceName="Arial" height="8" bold="false" italic="true" underline="false" strikeout="false" kind="Absolute"/>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MinimumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">42</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MaximumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">42</dcscor:value>
+						</dcscor:item>
+					</dcsat:appearance>
+				</dcsat:tableCell>
+			</dcsat:item>
+		</template>
+		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
+			<dcsat:name>CurrentDate</dcsat:name>
+			<dcsat:expression>Format(CurrentDate(), "DF='dddd, MMM d, yyyy h:mm:ss tt'")</dcsat:expression>
+		</parameter>
+	</template>
 	<groupTemplate>
 		<groupName>Header</groupName>
 		<templateType>Header</templateType>
@@ -3081,11 +3436,6 @@ WHERE
 		<template>Template8</template>
 	</groupTemplate>
 	<groupTemplate>
-		<groupName>IncomeTaxList</groupName>
-		<templateType>Header</templateType>
-		<template>Template10</template>
-	</groupTemplate>
-	<groupTemplate>
 		<groupName>NetIncomeList</groupName>
 		<templateType>Header</templateType>
 		<template>Template9</template>
@@ -3134,11 +3484,6 @@ WHERE
 		<groupName>NetIncomeBeforeTax</groupName>
 		<templateType>Header</templateType>
 		<template>Template20</template>
-	</groupTemplate>
-	<groupTemplate>
-		<groupName>IncomeTax</groupName>
-		<templateType>Header</templateType>
-		<template>Template21</template>
 	</groupTemplate>
 	<groupTemplate>
 		<groupName>NetIncome</groupName>
@@ -3255,6 +3600,16 @@ WHERE
 		<templateType>OverallFooter</templateType>
 		<template>Template55</template>
 	</groupTemplate>
+	<groupTemplate>
+		<groupName>ReportFooter</groupName>
+		<templateType>Header</templateType>
+		<template>Template62</template>
+	</groupTemplate>
+	<groupTemplate>
+		<groupName>PeriodReportFooter</groupName>
+		<templateType>Header</templateType>
+		<template>Template63</template>
+	</groupTemplate>
 	<groupHeaderTemplate>
 		<groupName>AccountType</groupName>
 		<templateType>Header</templateType>
@@ -3265,6 +3620,11 @@ WHERE
 		<templateType>Header</templateType>
 		<template>Template37</template>
 	</groupHeaderTemplate>
+	<groupHeaderTemplate>
+		<groupName>ReportHeader</groupName>
+		<templateType>Header</templateType>
+		<template>Template61</template>
+	</groupHeaderTemplate>
 	<totalFieldsTemplate>
 		<groupName1>AccountType</groupName1>
 		<templateType1>Header</templateType1>
@@ -3327,13 +3687,6 @@ WHERE
 		<groupName2>YearPeriod</groupName2>
 		<templateType2>Header</templateType2>
 		<template>Template42</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupName1>IncomeTax</groupName1>
-		<templateType1>Header</templateType1>
-		<groupName2>YearPeriod</groupName2>
-		<templateType2>Header</templateType2>
-		<template>Template43</template>
 	</totalFieldsTemplate>
 	<totalFieldsTemplate>
 		<groupName1>NetIncome</groupName1>
@@ -3406,13 +3759,6 @@ WHERE
 		<template>Template42</template>
 	</totalFieldsTemplate>
 	<totalFieldsTemplate>
-		<groupName1>IncomeTax</groupName1>
-		<templateType1>Header</templateType1>
-		<groupName2>QuarterPeriod</groupName2>
-		<templateType2>Header</templateType2>
-		<template>Template43</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
 		<groupName1>NetIncome</groupName1>
 		<templateType1>Header</templateType1>
 		<groupName2>QuarterPeriod</groupName2>
@@ -3483,13 +3829,6 @@ WHERE
 		<template>Template42</template>
 	</totalFieldsTemplate>
 	<totalFieldsTemplate>
-		<groupName1>IncomeTax</groupName1>
-		<templateType1>Header</templateType1>
-		<groupName2>MonthPeriod</groupName2>
-		<templateType2>Header</templateType2>
-		<template>Template43</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
 		<groupName1>NetIncome</groupName1>
 		<templateType1>Header</templateType1>
 		<groupName2>MonthPeriod</groupName2>
@@ -3560,13 +3899,6 @@ WHERE
 		<template>Template42</template>
 	</totalFieldsTemplate>
 	<totalFieldsTemplate>
-		<groupName1>IncomeTax</groupName1>
-		<templateType1>Header</templateType1>
-		<groupName2>WeekPeriod</groupName2>
-		<templateType2>Header</templateType2>
-		<template>Template43</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
 		<groupName1>NetIncome</groupName1>
 		<templateType1>Header</templateType1>
 		<groupName2>WeekPeriod</groupName2>
@@ -3637,13 +3969,6 @@ WHERE
 		<template>Template42</template>
 	</totalFieldsTemplate>
 	<totalFieldsTemplate>
-		<groupName1>IncomeTax</groupName1>
-		<templateType1>Header</templateType1>
-		<groupName2>DayPeriod</groupName2>
-		<templateType2>Header</templateType2>
-		<template>Template43</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
 		<groupName1>NetIncome</groupName1>
 		<templateType1>Header</templateType1>
 		<groupName2>DayPeriod</groupName2>
@@ -3712,13 +4037,6 @@ WHERE
 		<groupName2>Total</groupName2>
 		<templateType2>Header</templateType2>
 		<template>Template42</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupName1>IncomeTax</groupName1>
-		<templateType1>Header</templateType1>
-		<groupName2>Total</groupName2>
-		<templateType2>Header</templateType2>
-		<template>Template43</template>
 	</totalFieldsTemplate>
 	<totalFieldsTemplate>
 		<groupName1>NetIncome</groupName1>
@@ -4386,11 +4704,11 @@ WHERE
 		<template>Template57</template>
 	</totalFieldsTemplate>
 	<settingsVariant>
-		<dcsset:name>List</dcsset:name>
+		<dcsset:name>Total</dcsset:name>
 		<dcsset:presentation xsi:type="v8:LocalStringType">
 			<v8:item>
 				<v8:lang>en</v8:lang>
-				<v8:content>1. Income (total)</v8:content>
+				<v8:content>Total</v8:content>
 			</v8:item>
 		</dcsset:presentation>
 		<dcsset:settings xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows">
@@ -4468,75 +4786,41 @@ WHERE
 						<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
 					</dcscor:item>
 				</dcsset:outputParameters>
-			</dcsset:item>
-			<dcsset:item xsi:type="dcsset:StructureItemGroup">
-				<dcsset:name>AccountTypeListNegative</dcsset:name>
-				<dcsset:groupItems>
-					<dcsset:item xsi:type="dcsset:GroupItemField">
-						<dcsset:field>AccountType</dcsset:field>
-						<dcsset:groupType>Items</dcsset:groupType>
-						<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
-						<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
-						<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
-					</dcsset:item>
-				</dcsset:groupItems>
-				<dcsset:filter>
-					<dcsset:item xsi:type="dcsset:FilterItemComparison">
-						<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
-						<dcsset:comparisonType>Equal</dcsset:comparisonType>
-						<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Income</dcsset:right>
-						<dcsset:viewMode>Inaccessible</dcsset:viewMode>
-					</dcsset:item>
-				</dcsset:filter>
-				<dcsset:order>
-					<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
-				</dcsset:order>
-				<dcsset:selection>
-					<dcsset:item xsi:type="dcsset:SelectedItemField">
-						<dcsset:field>AmountRCTurnover</dcsset:field>
-					</dcsset:item>
-				</dcsset:selection>
-				<dcsset:outputParameters>
-					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-						<dcscor:parameter>TotalsPlacement</dcscor:parameter>
-						<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">End</dcscor:value>
-					</dcscor:item>
-					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-						<dcscor:parameter>VerticalOverallPlacement</dcscor:parameter>
-						<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">None</dcscor:value>
-					</dcscor:item>
-					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-						<dcscor:use>false</dcscor:use>
-						<dcscor:parameter>TitleOutput</dcscor:parameter>
-						<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
-					</dcscor:item>
-					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-						<dcscor:parameter>FilterOutput</dcscor:parameter>
-						<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
-					</dcscor:item>
-				</dcsset:outputParameters>
 				<dcsset:item xsi:type="dcsset:StructureItemGroup">
-					<dcsset:name>AccountListNegative</dcsset:name>
+					<dcsset:name>AccountTypeListNegative</dcsset:name>
 					<dcsset:groupItems>
 						<dcsset:item xsi:type="dcsset:GroupItemField">
-							<dcsset:field>Account</dcsset:field>
-							<dcsset:groupType>Hierarchy</dcsset:groupType>
+							<dcsset:field>AccountType</dcsset:field>
+							<dcsset:groupType>Items</dcsset:groupType>
 							<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 							<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 							<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
 						</dcsset:item>
 					</dcsset:groupItems>
+					<dcsset:filter>
+						<dcsset:item xsi:type="dcsset:FilterItemComparison">
+							<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
+							<dcsset:comparisonType>Equal</dcsset:comparisonType>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Income</dcsset:right>
+							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
+						</dcsset:item>
+					</dcsset:filter>
 					<dcsset:order>
 						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
 					</dcsset:order>
 					<dcsset:selection>
-						<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+						<dcsset:item xsi:type="dcsset:SelectedItemField">
+							<dcsset:field>AmountRCTurnover</dcsset:field>
+						</dcsset:item>
 					</dcsset:selection>
 					<dcsset:outputParameters>
 						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-							<dcscor:use>false</dcscor:use>
 							<dcscor:parameter>TotalsPlacement</dcscor:parameter>
 							<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">End</dcscor:value>
+						</dcscor:item>
+						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+							<dcscor:parameter>VerticalOverallPlacement</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">None</dcscor:value>
 						</dcscor:item>
 						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 							<dcscor:use>false</dcscor:use>
@@ -4544,81 +4828,81 @@ WHERE
 							<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
 						</dcscor:item>
 						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-							<dcscor:use>false</dcscor:use>
 							<dcscor:parameter>FilterOutput</dcscor:parameter>
 							<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
 						</dcscor:item>
 					</dcsset:outputParameters>
+					<dcsset:item xsi:type="dcsset:StructureItemGroup">
+						<dcsset:name>AccountListNegative</dcsset:name>
+						<dcsset:groupItems>
+							<dcsset:item xsi:type="dcsset:GroupItemField">
+								<dcsset:field>Account</dcsset:field>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
+								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+							</dcsset:item>
+						</dcsset:groupItems>
+						<dcsset:order>
+							<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
+						</dcsset:order>
+						<dcsset:selection>
+							<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+						</dcsset:selection>
+						<dcsset:outputParameters>
+							<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+								<dcscor:use>false</dcscor:use>
+								<dcscor:parameter>TotalsPlacement</dcscor:parameter>
+								<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">End</dcscor:value>
+							</dcscor:item>
+							<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+								<dcscor:use>false</dcscor:use>
+								<dcscor:parameter>TitleOutput</dcscor:parameter>
+								<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
+							</dcscor:item>
+							<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+								<dcscor:use>false</dcscor:use>
+								<dcscor:parameter>FilterOutput</dcscor:parameter>
+								<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
+							</dcscor:item>
+						</dcsset:outputParameters>
+					</dcsset:item>
 				</dcsset:item>
-			</dcsset:item>
-			<dcsset:item xsi:type="dcsset:StructureItemGroup">
-				<dcsset:name>AccountTypeList</dcsset:name>
-				<dcsset:groupItems>
-					<dcsset:item xsi:type="dcsset:GroupItemField">
-						<dcsset:field>AccountType</dcsset:field>
-						<dcsset:groupType>Items</dcsset:groupType>
-						<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
-						<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
-						<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
-					</dcsset:item>
-				</dcsset:groupItems>
-				<dcsset:filter>
-					<dcsset:item xsi:type="dcsset:FilterItemComparison">
-						<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
-						<dcsset:comparisonType>Equal</dcsset:comparisonType>
-						<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.CostOfSales</dcsset:right>
-						<dcsset:viewMode>Inaccessible</dcsset:viewMode>
-					</dcsset:item>
-				</dcsset:filter>
-				<dcsset:order>
-					<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
-				</dcsset:order>
-				<dcsset:selection>
-					<dcsset:item xsi:type="dcsset:SelectedItemField">
-						<dcsset:field>AmountRCTurnover</dcsset:field>
-					</dcsset:item>
-				</dcsset:selection>
-				<dcsset:outputParameters>
-					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-						<dcscor:parameter>TotalsPlacement</dcscor:parameter>
-						<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">End</dcscor:value>
-					</dcscor:item>
-					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-						<dcscor:parameter>VerticalOverallPlacement</dcscor:parameter>
-						<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">None</dcscor:value>
-					</dcscor:item>
-					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-						<dcscor:use>false</dcscor:use>
-						<dcscor:parameter>TitleOutput</dcscor:parameter>
-						<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
-					</dcscor:item>
-					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-						<dcscor:parameter>FilterOutput</dcscor:parameter>
-						<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
-					</dcscor:item>
-				</dcsset:outputParameters>
 				<dcsset:item xsi:type="dcsset:StructureItemGroup">
-					<dcsset:name>AccountList</dcsset:name>
+					<dcsset:name>AccountTypeList</dcsset:name>
 					<dcsset:groupItems>
 						<dcsset:item xsi:type="dcsset:GroupItemField">
-							<dcsset:field>Account</dcsset:field>
-							<dcsset:groupType>Hierarchy</dcsset:groupType>
+							<dcsset:field>AccountType</dcsset:field>
+							<dcsset:groupType>Items</dcsset:groupType>
 							<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 							<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 							<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
 						</dcsset:item>
 					</dcsset:groupItems>
+					<dcsset:filter>
+						<dcsset:item xsi:type="dcsset:FilterItemComparison">
+							<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
+							<dcsset:comparisonType>Equal</dcsset:comparisonType>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.CostOfSales</dcsset:right>
+							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
+						</dcsset:item>
+					</dcsset:filter>
 					<dcsset:order>
 						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
 					</dcsset:order>
 					<dcsset:selection>
-						<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+						<dcsset:item xsi:type="dcsset:SelectedItemField">
+							<dcsset:field>AmountRCTurnover</dcsset:field>
+						</dcsset:item>
 					</dcsset:selection>
 					<dcsset:outputParameters>
 						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-							<dcscor:use>false</dcscor:use>
 							<dcscor:parameter>TotalsPlacement</dcscor:parameter>
 							<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">End</dcscor:value>
+						</dcscor:item>
+						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+							<dcscor:parameter>VerticalOverallPlacement</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">None</dcscor:value>
 						</dcscor:item>
 						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 							<dcscor:use>false</dcscor:use>
@@ -4626,106 +4910,106 @@ WHERE
 							<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
 						</dcscor:item>
 						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-							<dcscor:use>false</dcscor:use>
+							<dcscor:parameter>FilterOutput</dcscor:parameter>
+							<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
+						</dcscor:item>
+					</dcsset:outputParameters>
+					<dcsset:item xsi:type="dcsset:StructureItemGroup">
+						<dcsset:name>AccountList</dcsset:name>
+						<dcsset:groupItems>
+							<dcsset:item xsi:type="dcsset:GroupItemField">
+								<dcsset:field>Account</dcsset:field>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
+								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+							</dcsset:item>
+						</dcsset:groupItems>
+						<dcsset:order>
+							<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
+						</dcsset:order>
+						<dcsset:selection>
+							<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+						</dcsset:selection>
+						<dcsset:outputParameters>
+							<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+								<dcscor:use>false</dcscor:use>
+								<dcscor:parameter>TotalsPlacement</dcscor:parameter>
+								<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">End</dcscor:value>
+							</dcscor:item>
+							<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+								<dcscor:use>false</dcscor:use>
+								<dcscor:parameter>TitleOutput</dcscor:parameter>
+								<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
+							</dcscor:item>
+							<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+								<dcscor:use>false</dcscor:use>
+								<dcscor:parameter>FilterOutput</dcscor:parameter>
+								<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
+							</dcscor:item>
+						</dcsset:outputParameters>
+					</dcsset:item>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:StructureItemGroup">
+					<dcsset:name>GrossProfitList</dcsset:name>
+					<dcsset:filter>
+						<dcsset:item xsi:type="dcsset:FilterItemComparison">
+							<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
+							<dcsset:comparisonType>InList</dcsset:comparisonType>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Income</dcsset:right>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.CostOfSales</dcsset:right>
+						</dcsset:item>
+					</dcsset:filter>
+					<dcsset:order>
+						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
+					</dcsset:order>
+					<dcsset:selection>
+						<dcsset:item xsi:type="dcsset:SelectedItemField">
+							<dcsset:field>AmountRCTurnover</dcsset:field>
+						</dcsset:item>
+					</dcsset:selection>
+					<dcsset:outputParameters>
+						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 							<dcscor:parameter>FilterOutput</dcscor:parameter>
 							<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
 						</dcscor:item>
 					</dcsset:outputParameters>
 				</dcsset:item>
-			</dcsset:item>
-			<dcsset:item xsi:type="dcsset:StructureItemGroup">
-				<dcsset:name>GrossProfitList</dcsset:name>
-				<dcsset:filter>
-					<dcsset:item xsi:type="dcsset:FilterItemComparison">
-						<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
-						<dcsset:comparisonType>InList</dcsset:comparisonType>
-						<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Income</dcsset:right>
-						<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.CostOfSales</dcsset:right>
-					</dcsset:item>
-				</dcsset:filter>
-				<dcsset:order>
-					<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
-				</dcsset:order>
-				<dcsset:selection>
-					<dcsset:item xsi:type="dcsset:SelectedItemField">
-						<dcsset:field>AmountRCTurnover</dcsset:field>
-					</dcsset:item>
-				</dcsset:selection>
-				<dcsset:outputParameters>
-					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-						<dcscor:parameter>FilterOutput</dcscor:parameter>
-						<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
-					</dcscor:item>
-				</dcsset:outputParameters>
-			</dcsset:item>
-			<dcsset:item xsi:type="dcsset:StructureItemGroup">
-				<dcsset:name>AccountTypeList</dcsset:name>
-				<dcsset:groupItems>
-					<dcsset:item xsi:type="dcsset:GroupItemField">
-						<dcsset:field>AccountType</dcsset:field>
-						<dcsset:groupType>Items</dcsset:groupType>
-						<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
-						<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
-						<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
-					</dcsset:item>
-				</dcsset:groupItems>
-				<dcsset:filter>
-					<dcsset:item xsi:type="dcsset:FilterItemComparison">
-						<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
-						<dcsset:comparisonType>Equal</dcsset:comparisonType>
-						<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Expense</dcsset:right>
-						<dcsset:viewMode>Inaccessible</dcsset:viewMode>
-					</dcsset:item>
-				</dcsset:filter>
-				<dcsset:order>
-					<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
-				</dcsset:order>
-				<dcsset:selection>
-					<dcsset:item xsi:type="dcsset:SelectedItemField">
-						<dcsset:field>AmountRCTurnover</dcsset:field>
-					</dcsset:item>
-				</dcsset:selection>
-				<dcsset:outputParameters>
-					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-						<dcscor:parameter>TotalsPlacement</dcscor:parameter>
-						<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">End</dcscor:value>
-					</dcscor:item>
-					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-						<dcscor:parameter>VerticalOverallPlacement</dcscor:parameter>
-						<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">None</dcscor:value>
-					</dcscor:item>
-					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-						<dcscor:use>false</dcscor:use>
-						<dcscor:parameter>TitleOutput</dcscor:parameter>
-						<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
-					</dcscor:item>
-					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-						<dcscor:parameter>FilterOutput</dcscor:parameter>
-						<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
-					</dcscor:item>
-				</dcsset:outputParameters>
 				<dcsset:item xsi:type="dcsset:StructureItemGroup">
-					<dcsset:name>AccountList</dcsset:name>
+					<dcsset:name>AccountTypeList</dcsset:name>
 					<dcsset:groupItems>
 						<dcsset:item xsi:type="dcsset:GroupItemField">
-							<dcsset:field>Account</dcsset:field>
-							<dcsset:groupType>Hierarchy</dcsset:groupType>
+							<dcsset:field>AccountType</dcsset:field>
+							<dcsset:groupType>Items</dcsset:groupType>
 							<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 							<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 							<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
 						</dcsset:item>
 					</dcsset:groupItems>
+					<dcsset:filter>
+						<dcsset:item xsi:type="dcsset:FilterItemComparison">
+							<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
+							<dcsset:comparisonType>Equal</dcsset:comparisonType>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Expense</dcsset:right>
+							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
+						</dcsset:item>
+					</dcsset:filter>
 					<dcsset:order>
 						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
 					</dcsset:order>
 					<dcsset:selection>
-						<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+						<dcsset:item xsi:type="dcsset:SelectedItemField">
+							<dcsset:field>AmountRCTurnover</dcsset:field>
+						</dcsset:item>
 					</dcsset:selection>
 					<dcsset:outputParameters>
 						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-							<dcscor:use>false</dcscor:use>
 							<dcscor:parameter>TotalsPlacement</dcscor:parameter>
 							<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">End</dcscor:value>
+						</dcscor:item>
+						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+							<dcscor:parameter>VerticalOverallPlacement</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">None</dcscor:value>
 						</dcscor:item>
 						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 							<dcscor:use>false</dcscor:use>
@@ -4733,107 +5017,107 @@ WHERE
 							<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
 						</dcscor:item>
 						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-							<dcscor:use>false</dcscor:use>
+							<dcscor:parameter>FilterOutput</dcscor:parameter>
+							<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
+						</dcscor:item>
+					</dcsset:outputParameters>
+					<dcsset:item xsi:type="dcsset:StructureItemGroup">
+						<dcsset:name>AccountList</dcsset:name>
+						<dcsset:groupItems>
+							<dcsset:item xsi:type="dcsset:GroupItemField">
+								<dcsset:field>Account</dcsset:field>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
+								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+							</dcsset:item>
+						</dcsset:groupItems>
+						<dcsset:order>
+							<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
+						</dcsset:order>
+						<dcsset:selection>
+							<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+						</dcsset:selection>
+						<dcsset:outputParameters>
+							<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+								<dcscor:use>false</dcscor:use>
+								<dcscor:parameter>TotalsPlacement</dcscor:parameter>
+								<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">End</dcscor:value>
+							</dcscor:item>
+							<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+								<dcscor:use>false</dcscor:use>
+								<dcscor:parameter>TitleOutput</dcscor:parameter>
+								<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
+							</dcscor:item>
+							<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+								<dcscor:use>false</dcscor:use>
+								<dcscor:parameter>FilterOutput</dcscor:parameter>
+								<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
+							</dcscor:item>
+						</dcsset:outputParameters>
+					</dcsset:item>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:StructureItemGroup">
+					<dcsset:name>OperatingIncomeList</dcsset:name>
+					<dcsset:filter>
+						<dcsset:item xsi:type="dcsset:FilterItemComparison">
+							<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
+							<dcsset:comparisonType>InList</dcsset:comparisonType>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Income</dcsset:right>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.CostOfSales</dcsset:right>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Expense</dcsset:right>
+						</dcsset:item>
+					</dcsset:filter>
+					<dcsset:order>
+						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
+					</dcsset:order>
+					<dcsset:selection>
+						<dcsset:item xsi:type="dcsset:SelectedItemField">
+							<dcsset:field>AmountRCTurnover</dcsset:field>
+						</dcsset:item>
+					</dcsset:selection>
+					<dcsset:outputParameters>
+						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 							<dcscor:parameter>FilterOutput</dcscor:parameter>
 							<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
 						</dcscor:item>
 					</dcsset:outputParameters>
 				</dcsset:item>
-			</dcsset:item>
-			<dcsset:item xsi:type="dcsset:StructureItemGroup">
-				<dcsset:name>OperatingIncomeList</dcsset:name>
-				<dcsset:filter>
-					<dcsset:item xsi:type="dcsset:FilterItemComparison">
-						<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
-						<dcsset:comparisonType>InList</dcsset:comparisonType>
-						<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Income</dcsset:right>
-						<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.CostOfSales</dcsset:right>
-						<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Expense</dcsset:right>
-					</dcsset:item>
-				</dcsset:filter>
-				<dcsset:order>
-					<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
-				</dcsset:order>
-				<dcsset:selection>
-					<dcsset:item xsi:type="dcsset:SelectedItemField">
-						<dcsset:field>AmountRCTurnover</dcsset:field>
-					</dcsset:item>
-				</dcsset:selection>
-				<dcsset:outputParameters>
-					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-						<dcscor:parameter>FilterOutput</dcscor:parameter>
-						<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
-					</dcscor:item>
-				</dcsset:outputParameters>
-			</dcsset:item>
-			<dcsset:item xsi:type="dcsset:StructureItemGroup">
-				<dcsset:name>AccountTypeListNegative</dcsset:name>
-				<dcsset:groupItems>
-					<dcsset:item xsi:type="dcsset:GroupItemField">
-						<dcsset:field>AccountType</dcsset:field>
-						<dcsset:groupType>Items</dcsset:groupType>
-						<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
-						<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
-						<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
-					</dcsset:item>
-				</dcsset:groupItems>
-				<dcsset:filter>
-					<dcsset:item xsi:type="dcsset:FilterItemComparison">
-						<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
-						<dcsset:comparisonType>Equal</dcsset:comparisonType>
-						<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherIncome</dcsset:right>
-						<dcsset:viewMode>Inaccessible</dcsset:viewMode>
-					</dcsset:item>
-				</dcsset:filter>
-				<dcsset:order>
-					<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
-				</dcsset:order>
-				<dcsset:selection>
-					<dcsset:item xsi:type="dcsset:SelectedItemField">
-						<dcsset:field>AmountRCTurnover</dcsset:field>
-					</dcsset:item>
-				</dcsset:selection>
-				<dcsset:outputParameters>
-					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-						<dcscor:parameter>TotalsPlacement</dcscor:parameter>
-						<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">End</dcscor:value>
-					</dcscor:item>
-					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-						<dcscor:parameter>VerticalOverallPlacement</dcscor:parameter>
-						<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">None</dcscor:value>
-					</dcscor:item>
-					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-						<dcscor:use>false</dcscor:use>
-						<dcscor:parameter>TitleOutput</dcscor:parameter>
-						<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
-					</dcscor:item>
-					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-						<dcscor:parameter>FilterOutput</dcscor:parameter>
-						<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
-					</dcscor:item>
-				</dcsset:outputParameters>
 				<dcsset:item xsi:type="dcsset:StructureItemGroup">
-					<dcsset:name>AccountListNegative</dcsset:name>
+					<dcsset:name>AccountTypeListNegative</dcsset:name>
 					<dcsset:groupItems>
 						<dcsset:item xsi:type="dcsset:GroupItemField">
-							<dcsset:field>Account</dcsset:field>
-							<dcsset:groupType>Hierarchy</dcsset:groupType>
+							<dcsset:field>AccountType</dcsset:field>
+							<dcsset:groupType>Items</dcsset:groupType>
 							<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 							<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 							<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
 						</dcsset:item>
 					</dcsset:groupItems>
+					<dcsset:filter>
+						<dcsset:item xsi:type="dcsset:FilterItemComparison">
+							<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
+							<dcsset:comparisonType>Equal</dcsset:comparisonType>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherIncome</dcsset:right>
+							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
+						</dcsset:item>
+					</dcsset:filter>
 					<dcsset:order>
 						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
 					</dcsset:order>
 					<dcsset:selection>
-						<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+						<dcsset:item xsi:type="dcsset:SelectedItemField">
+							<dcsset:field>AmountRCTurnover</dcsset:field>
+						</dcsset:item>
 					</dcsset:selection>
 					<dcsset:outputParameters>
 						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-							<dcscor:use>false</dcscor:use>
 							<dcscor:parameter>TotalsPlacement</dcscor:parameter>
 							<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">End</dcscor:value>
+						</dcscor:item>
+						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+							<dcscor:parameter>VerticalOverallPlacement</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">None</dcscor:value>
 						</dcscor:item>
 						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 							<dcscor:use>false</dcscor:use>
@@ -4841,81 +5125,81 @@ WHERE
 							<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
 						</dcscor:item>
 						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-							<dcscor:use>false</dcscor:use>
 							<dcscor:parameter>FilterOutput</dcscor:parameter>
 							<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
 						</dcscor:item>
 					</dcsset:outputParameters>
+					<dcsset:item xsi:type="dcsset:StructureItemGroup">
+						<dcsset:name>AccountListNegative</dcsset:name>
+						<dcsset:groupItems>
+							<dcsset:item xsi:type="dcsset:GroupItemField">
+								<dcsset:field>Account</dcsset:field>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
+								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+							</dcsset:item>
+						</dcsset:groupItems>
+						<dcsset:order>
+							<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
+						</dcsset:order>
+						<dcsset:selection>
+							<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+						</dcsset:selection>
+						<dcsset:outputParameters>
+							<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+								<dcscor:use>false</dcscor:use>
+								<dcscor:parameter>TotalsPlacement</dcscor:parameter>
+								<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">End</dcscor:value>
+							</dcscor:item>
+							<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+								<dcscor:use>false</dcscor:use>
+								<dcscor:parameter>TitleOutput</dcscor:parameter>
+								<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
+							</dcscor:item>
+							<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+								<dcscor:use>false</dcscor:use>
+								<dcscor:parameter>FilterOutput</dcscor:parameter>
+								<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
+							</dcscor:item>
+						</dcsset:outputParameters>
+					</dcsset:item>
 				</dcsset:item>
-			</dcsset:item>
-			<dcsset:item xsi:type="dcsset:StructureItemGroup">
-				<dcsset:name>AccountTypeList</dcsset:name>
-				<dcsset:groupItems>
-					<dcsset:item xsi:type="dcsset:GroupItemField">
-						<dcsset:field>AccountType</dcsset:field>
-						<dcsset:groupType>Items</dcsset:groupType>
-						<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
-						<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
-						<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
-					</dcsset:item>
-				</dcsset:groupItems>
-				<dcsset:filter>
-					<dcsset:item xsi:type="dcsset:FilterItemComparison">
-						<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
-						<dcsset:comparisonType>Equal</dcsset:comparisonType>
-						<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherExpense</dcsset:right>
-						<dcsset:viewMode>Inaccessible</dcsset:viewMode>
-					</dcsset:item>
-				</dcsset:filter>
-				<dcsset:order>
-					<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
-				</dcsset:order>
-				<dcsset:selection>
-					<dcsset:item xsi:type="dcsset:SelectedItemField">
-						<dcsset:field>AmountRCTurnover</dcsset:field>
-					</dcsset:item>
-				</dcsset:selection>
-				<dcsset:outputParameters>
-					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-						<dcscor:parameter>TotalsPlacement</dcscor:parameter>
-						<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">End</dcscor:value>
-					</dcscor:item>
-					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-						<dcscor:parameter>VerticalOverallPlacement</dcscor:parameter>
-						<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">None</dcscor:value>
-					</dcscor:item>
-					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-						<dcscor:use>false</dcscor:use>
-						<dcscor:parameter>TitleOutput</dcscor:parameter>
-						<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
-					</dcscor:item>
-					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-						<dcscor:parameter>FilterOutput</dcscor:parameter>
-						<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
-					</dcscor:item>
-				</dcsset:outputParameters>
 				<dcsset:item xsi:type="dcsset:StructureItemGroup">
-					<dcsset:name>AccountList</dcsset:name>
+					<dcsset:name>AccountTypeList</dcsset:name>
 					<dcsset:groupItems>
 						<dcsset:item xsi:type="dcsset:GroupItemField">
-							<dcsset:field>Account</dcsset:field>
-							<dcsset:groupType>Hierarchy</dcsset:groupType>
+							<dcsset:field>AccountType</dcsset:field>
+							<dcsset:groupType>Items</dcsset:groupType>
 							<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 							<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 							<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
 						</dcsset:item>
 					</dcsset:groupItems>
+					<dcsset:filter>
+						<dcsset:item xsi:type="dcsset:FilterItemComparison">
+							<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
+							<dcsset:comparisonType>Equal</dcsset:comparisonType>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherExpense</dcsset:right>
+							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
+						</dcsset:item>
+					</dcsset:filter>
 					<dcsset:order>
 						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
 					</dcsset:order>
 					<dcsset:selection>
-						<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+						<dcsset:item xsi:type="dcsset:SelectedItemField">
+							<dcsset:field>AmountRCTurnover</dcsset:field>
+						</dcsset:item>
 					</dcsset:selection>
 					<dcsset:outputParameters>
 						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-							<dcscor:use>false</dcscor:use>
 							<dcscor:parameter>TotalsPlacement</dcscor:parameter>
 							<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">End</dcscor:value>
+						</dcscor:item>
+						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+							<dcscor:parameter>VerticalOverallPlacement</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">None</dcscor:value>
 						</dcscor:item>
 						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 							<dcscor:use>false</dcscor:use>
@@ -4923,138 +5207,178 @@ WHERE
 							<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
 						</dcscor:item>
 						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-							<dcscor:use>false</dcscor:use>
+							<dcscor:parameter>FilterOutput</dcscor:parameter>
+							<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
+						</dcscor:item>
+					</dcsset:outputParameters>
+					<dcsset:item xsi:type="dcsset:StructureItemGroup">
+						<dcsset:name>AccountList</dcsset:name>
+						<dcsset:groupItems>
+							<dcsset:item xsi:type="dcsset:GroupItemField">
+								<dcsset:field>Account</dcsset:field>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
+								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+							</dcsset:item>
+						</dcsset:groupItems>
+						<dcsset:order>
+							<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
+						</dcsset:order>
+						<dcsset:selection>
+							<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+						</dcsset:selection>
+						<dcsset:outputParameters>
+							<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+								<dcscor:use>false</dcscor:use>
+								<dcscor:parameter>TotalsPlacement</dcscor:parameter>
+								<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">End</dcscor:value>
+							</dcscor:item>
+							<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+								<dcscor:use>false</dcscor:use>
+								<dcscor:parameter>TitleOutput</dcscor:parameter>
+								<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
+							</dcscor:item>
+							<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+								<dcscor:use>false</dcscor:use>
+								<dcscor:parameter>FilterOutput</dcscor:parameter>
+								<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
+							</dcscor:item>
+						</dcsset:outputParameters>
+					</dcsset:item>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:StructureItemGroup">
+					<dcsset:name>NetIncomeBeforeTaxList</dcsset:name>
+					<dcsset:filter>
+						<dcsset:item xsi:type="dcsset:FilterItemComparison">
+							<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
+							<dcsset:comparisonType>InList</dcsset:comparisonType>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Income</dcsset:right>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.CostOfSales</dcsset:right>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Expense</dcsset:right>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherIncome</dcsset:right>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherExpense</dcsset:right>
+						</dcsset:item>
+					</dcsset:filter>
+					<dcsset:order>
+						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
+					</dcsset:order>
+					<dcsset:selection>
+						<dcsset:item xsi:type="dcsset:SelectedItemField">
+							<dcsset:field>AmountRCTurnover</dcsset:field>
+						</dcsset:item>
+					</dcsset:selection>
+					<dcsset:outputParameters>
+						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 							<dcscor:parameter>FilterOutput</dcscor:parameter>
 							<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
 						</dcscor:item>
 					</dcsset:outputParameters>
 				</dcsset:item>
-			</dcsset:item>
-			<dcsset:item xsi:type="dcsset:StructureItemGroup">
-				<dcsset:name>NetIncomeBeforeTaxList</dcsset:name>
-				<dcsset:filter>
-					<dcsset:item xsi:type="dcsset:FilterItemComparison">
-						<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
-						<dcsset:comparisonType>InList</dcsset:comparisonType>
-						<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Income</dcsset:right>
-						<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.CostOfSales</dcsset:right>
-						<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Expense</dcsset:right>
-						<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherIncome</dcsset:right>
-						<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherExpense</dcsset:right>
-					</dcsset:item>
-				</dcsset:filter>
-				<dcsset:order>
-					<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
-				</dcsset:order>
-				<dcsset:selection>
-					<dcsset:item xsi:type="dcsset:SelectedItemField">
-						<dcsset:field>AmountRCTurnover</dcsset:field>
-					</dcsset:item>
-				</dcsset:selection>
-				<dcsset:outputParameters>
-					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-						<dcscor:parameter>FilterOutput</dcscor:parameter>
-						<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
-					</dcscor:item>
-				</dcsset:outputParameters>
-			</dcsset:item>
-			<dcsset:item xsi:type="dcsset:StructureItemGroup">
-				<dcsset:name>AccountTypeList</dcsset:name>
-				<dcsset:groupItems>
-					<dcsset:item xsi:type="dcsset:GroupItemField">
-						<dcsset:field>AccountType</dcsset:field>
-						<dcsset:groupType>Items</dcsset:groupType>
-						<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
-						<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
-						<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
-					</dcsset:item>
-				</dcsset:groupItems>
-				<dcsset:filter>
-					<dcsset:item xsi:type="dcsset:FilterItemComparison">
-						<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
-						<dcsset:comparisonType>Equal</dcsset:comparisonType>
-						<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.IncomeTaxExpense</dcsset:right>
-						<dcsset:viewMode>Inaccessible</dcsset:viewMode>
-					</dcsset:item>
-				</dcsset:filter>
-				<dcsset:order>
-					<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
-				</dcsset:order>
-				<dcsset:selection>
-					<dcsset:item xsi:type="dcsset:SelectedItemField">
-						<dcsset:field>AmountRCTurnover</dcsset:field>
-					</dcsset:item>
-				</dcsset:selection>
-				<dcsset:outputParameters>
-					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-						<dcscor:parameter>TotalsPlacement</dcscor:parameter>
-						<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">End</dcscor:value>
-					</dcscor:item>
-					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-						<dcscor:parameter>VerticalOverallPlacement</dcscor:parameter>
-						<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">None</dcscor:value>
-					</dcscor:item>
-					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-						<dcscor:parameter>FilterOutput</dcscor:parameter>
-						<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
-					</dcscor:item>
-				</dcsset:outputParameters>
 				<dcsset:item xsi:type="dcsset:StructureItemGroup">
-					<dcsset:name>AccountList</dcsset:name>
+					<dcsset:name>AccountTypeList</dcsset:name>
 					<dcsset:groupItems>
 						<dcsset:item xsi:type="dcsset:GroupItemField">
-							<dcsset:field>Account</dcsset:field>
-							<dcsset:groupType>Hierarchy</dcsset:groupType>
+							<dcsset:field>AccountType</dcsset:field>
+							<dcsset:groupType>Items</dcsset:groupType>
 							<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
 							<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
 							<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
 						</dcsset:item>
 					</dcsset:groupItems>
+					<dcsset:filter>
+						<dcsset:item xsi:type="dcsset:FilterItemComparison">
+							<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
+							<dcsset:comparisonType>Equal</dcsset:comparisonType>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.IncomeTaxExpense</dcsset:right>
+							<dcsset:viewMode>Inaccessible</dcsset:viewMode>
+						</dcsset:item>
+					</dcsset:filter>
 					<dcsset:order>
 						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
 					</dcsset:order>
 					<dcsset:selection>
-						<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+						<dcsset:item xsi:type="dcsset:SelectedItemField">
+							<dcsset:field>AmountRCTurnover</dcsset:field>
+						</dcsset:item>
 					</dcsset:selection>
+					<dcsset:outputParameters>
+						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+							<dcscor:parameter>TotalsPlacement</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">End</dcscor:value>
+						</dcscor:item>
+						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+							<dcscor:parameter>VerticalOverallPlacement</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">None</dcscor:value>
+						</dcscor:item>
+						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+							<dcscor:parameter>FilterOutput</dcscor:parameter>
+							<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
+						</dcscor:item>
+					</dcsset:outputParameters>
+					<dcsset:item xsi:type="dcsset:StructureItemGroup">
+						<dcsset:name>AccountList</dcsset:name>
+						<dcsset:groupItems>
+							<dcsset:item xsi:type="dcsset:GroupItemField">
+								<dcsset:field>Account</dcsset:field>
+								<dcsset:groupType>Hierarchy</dcsset:groupType>
+								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+							</dcsset:item>
+						</dcsset:groupItems>
+						<dcsset:order>
+							<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
+						</dcsset:order>
+						<dcsset:selection>
+							<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+						</dcsset:selection>
+					</dcsset:item>
 				</dcsset:item>
-			</dcsset:item>
-			<dcsset:item xsi:type="dcsset:StructureItemGroup">
-				<dcsset:name>NetIncomeList</dcsset:name>
-				<dcsset:filter>
-					<dcsset:item xsi:type="dcsset:FilterItemComparison">
-						<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
-						<dcsset:comparisonType>InList</dcsset:comparisonType>
-						<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Income</dcsset:right>
-						<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.CostOfSales</dcsset:right>
-						<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Expense</dcsset:right>
-						<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherIncome</dcsset:right>
-						<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherExpense</dcsset:right>
-						<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.IncomeTaxExpense</dcsset:right>
-					</dcsset:item>
-				</dcsset:filter>
-				<dcsset:order>
-					<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
-				</dcsset:order>
-				<dcsset:selection>
-					<dcsset:item xsi:type="dcsset:SelectedItemField">
-						<dcsset:field>AmountRCTurnover</dcsset:field>
-					</dcsset:item>
-				</dcsset:selection>
-				<dcsset:outputParameters>
-					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-						<dcscor:parameter>FilterOutput</dcscor:parameter>
-						<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
-					</dcscor:item>
-				</dcsset:outputParameters>
+				<dcsset:item xsi:type="dcsset:StructureItemGroup">
+					<dcsset:name>NetIncomeList</dcsset:name>
+					<dcsset:filter>
+						<dcsset:item xsi:type="dcsset:FilterItemComparison">
+							<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
+							<dcsset:comparisonType>InList</dcsset:comparisonType>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Income</dcsset:right>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.CostOfSales</dcsset:right>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Expense</dcsset:right>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherIncome</dcsset:right>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherExpense</dcsset:right>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.IncomeTaxExpense</dcsset:right>
+						</dcsset:item>
+					</dcsset:filter>
+					<dcsset:order>
+						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
+					</dcsset:order>
+					<dcsset:selection>
+						<dcsset:item xsi:type="dcsset:SelectedItemField">
+							<dcsset:field>AmountRCTurnover</dcsset:field>
+						</dcsset:item>
+					</dcsset:selection>
+					<dcsset:outputParameters>
+						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+							<dcscor:parameter>FilterOutput</dcscor:parameter>
+							<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
+						</dcscor:item>
+					</dcsset:outputParameters>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:StructureItemGroup">
+					<dcsset:name>ReportFooter</dcsset:name>
+					<dcsset:order>
+						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
+					</dcsset:order>
+				</dcsset:item>
 			</dcsset:item>
 		</dcsset:settings>
 	</settingsVariant>
 	<settingsVariant>
-		<dcsset:name>Yearly</dcsset:name>
+		<dcsset:name>Years</dcsset:name>
 		<dcsset:presentation xsi:type="v8:LocalStringType">
 			<v8:item>
 				<v8:lang>en</v8:lang>
-				<v8:content>2. Income (years)</v8:content>
+				<v8:content>Years</v8:content>
 			</v8:item>
 			<v8:item>
 				<v8:lang>de</v8:lang>
@@ -5121,6 +5445,7 @@ WHERE
 				</dcscor:item>
 			</dcsset:outputParameters>
 			<dcsset:item xsi:type="dcsset:StructureItemGroup">
+				<dcsset:use>false</dcsset:use>
 				<dcsset:name>Header</dcsset:name>
 				<dcsset:groupItems>
 					<dcsset:item xsi:type="dcsset:GroupItemField">
@@ -5200,6 +5525,31 @@ WHERE
 					</dcsset:outputParameters>
 				</dcsset:column>
 				<dcsset:row>
+					<dcsset:name>ReportHeader</dcsset:name>
+					<dcsset:outputParameters>
+						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+							<dcscor:use>false</dcscor:use>
+							<dcscor:parameter>TotalsPlacement</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">None</dcscor:value>
+						</dcscor:item>
+						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+							<dcscor:use>false</dcscor:use>
+							<dcscor:parameter>GroupPlacement</dcscor:parameter>
+							<dcscor:value xsi:type="dcsset:DataCompositionGroupPlacement">None</dcscor:value>
+						</dcscor:item>
+						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+							<dcscor:use>false</dcscor:use>
+							<dcscor:parameter>OverallsPlacement</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">None</dcscor:value>
+						</dcscor:item>
+						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+							<dcscor:use>false</dcscor:use>
+							<dcscor:parameter>FilterOutput</dcscor:parameter>
+							<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
+						</dcscor:item>
+					</dcsset:outputParameters>
+				</dcsset:row>
+				<dcsset:row>
 					<dcsset:name>AccountTypeNegative</dcsset:name>
 					<dcsset:groupItems>
 						<dcsset:item xsi:type="dcsset:GroupItemField">
@@ -5235,6 +5585,11 @@ WHERE
 							<dcscor:use>false</dcscor:use>
 							<dcscor:parameter>TitleOutput</dcscor:parameter>
 							<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
+						</dcscor:item>
+						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+							<dcscor:use>false</dcscor:use>
+							<dcscor:parameter>Title</dcscor:parameter>
+							<dcscor:value xsi:type="v8:LocalStringType"/>
 						</dcscor:item>
 						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 							<dcscor:parameter>FilterOutput</dcscor:parameter>
@@ -5753,15 +6108,47 @@ WHERE
 						</dcscor:item>
 					</dcsset:outputParameters>
 				</dcsset:row>
+				<dcsset:row>
+					<dcsset:name>PeriodReportFooter</dcsset:name>
+					<dcsset:groupItems>
+						<dcsset:item xsi:type="dcsset:GroupItemField">
+							<dcsset:field>OurCompany</dcsset:field>
+							<dcsset:groupType>Items</dcsset:groupType>
+							<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+							<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+							<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+						</dcsset:item>
+					</dcsset:groupItems>
+					<dcsset:order>
+						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
+					</dcsset:order>
+					<dcsset:selection>
+						<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+					</dcsset:selection>
+					<dcsset:outputParameters>
+						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+							<dcscor:parameter>TotalsPlacement</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">None</dcscor:value>
+						</dcscor:item>
+						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+							<dcscor:parameter>OverallsPlacement</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">None</dcscor:value>
+						</dcscor:item>
+						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+							<dcscor:parameter>FilterOutput</dcscor:parameter>
+							<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
+						</dcscor:item>
+					</dcsset:outputParameters>
+				</dcsset:row>
 			</dcsset:item>
 		</dcsset:settings>
 	</settingsVariant>
 	<settingsVariant>
-		<dcsset:name>Quarterly</dcsset:name>
+		<dcsset:name>Quarters</dcsset:name>
 		<dcsset:presentation xsi:type="v8:LocalStringType">
 			<v8:item>
 				<v8:lang>en</v8:lang>
-				<v8:content>3. Income (quarters)</v8:content>
+				<v8:content>Quarters</v8:content>
 			</v8:item>
 		</dcsset:presentation>
 		<dcsset:settings xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows">
@@ -5824,6 +6211,7 @@ WHERE
 				</dcscor:item>
 			</dcsset:outputParameters>
 			<dcsset:item xsi:type="dcsset:StructureItemGroup">
+				<dcsset:use>false</dcsset:use>
 				<dcsset:name>Header</dcsset:name>
 				<dcsset:groupItems>
 					<dcsset:item xsi:type="dcsset:GroupItemField">
@@ -5903,6 +6291,26 @@ WHERE
 					</dcsset:outputParameters>
 				</dcsset:column>
 				<dcsset:row>
+					<dcsset:name>ReportHeader</dcsset:name>
+					<dcsset:outputParameters>
+						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+							<dcscor:use>false</dcscor:use>
+							<dcscor:parameter>TotalsPlacement</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">None</dcscor:value>
+						</dcscor:item>
+						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+							<dcscor:use>false</dcscor:use>
+							<dcscor:parameter>OverallsPlacement</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">None</dcscor:value>
+						</dcscor:item>
+						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+							<dcscor:use>false</dcscor:use>
+							<dcscor:parameter>FilterOutput</dcscor:parameter>
+							<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
+						</dcscor:item>
+					</dcsset:outputParameters>
+				</dcsset:row>
+				<dcsset:row>
 					<dcsset:name>AccountTypeNegative</dcsset:name>
 					<dcsset:groupItems>
 						<dcsset:item xsi:type="dcsset:GroupItemField">
@@ -6456,15 +6864,47 @@ WHERE
 						</dcscor:item>
 					</dcsset:outputParameters>
 				</dcsset:row>
+				<dcsset:row>
+					<dcsset:name>PeriodReportFooter</dcsset:name>
+					<dcsset:groupItems>
+						<dcsset:item xsi:type="dcsset:GroupItemField">
+							<dcsset:field>OurCompany</dcsset:field>
+							<dcsset:groupType>Items</dcsset:groupType>
+							<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+							<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+							<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+						</dcsset:item>
+					</dcsset:groupItems>
+					<dcsset:order>
+						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
+					</dcsset:order>
+					<dcsset:selection>
+						<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+					</dcsset:selection>
+					<dcsset:outputParameters>
+						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+							<dcscor:parameter>TotalsPlacement</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">None</dcscor:value>
+						</dcscor:item>
+						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+							<dcscor:parameter>OverallsPlacement</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">None</dcscor:value>
+						</dcscor:item>
+						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+							<dcscor:parameter>FilterOutput</dcscor:parameter>
+							<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
+						</dcscor:item>
+					</dcsset:outputParameters>
+				</dcsset:row>
 			</dcsset:item>
 		</dcsset:settings>
 	</settingsVariant>
 	<settingsVariant>
-		<dcsset:name>Monthly</dcsset:name>
+		<dcsset:name>Months</dcsset:name>
 		<dcsset:presentation xsi:type="v8:LocalStringType">
 			<v8:item>
 				<v8:lang>en</v8:lang>
-				<v8:content>4. Income (months)</v8:content>
+				<v8:content>Months</v8:content>
 			</v8:item>
 			<v8:item>
 				<v8:lang>de</v8:lang>
@@ -6531,6 +6971,7 @@ WHERE
 				</dcscor:item>
 			</dcsset:outputParameters>
 			<dcsset:item xsi:type="dcsset:StructureItemGroup">
+				<dcsset:use>false</dcsset:use>
 				<dcsset:name>Header</dcsset:name>
 				<dcsset:groupItems>
 					<dcsset:item xsi:type="dcsset:GroupItemField">
@@ -6610,6 +7051,26 @@ WHERE
 					</dcsset:outputParameters>
 				</dcsset:column>
 				<dcsset:row>
+					<dcsset:name>ReportHeader</dcsset:name>
+					<dcsset:outputParameters>
+						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+							<dcscor:use>false</dcscor:use>
+							<dcscor:parameter>TotalsPlacement</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">None</dcscor:value>
+						</dcscor:item>
+						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+							<dcscor:use>false</dcscor:use>
+							<dcscor:parameter>OverallsPlacement</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">None</dcscor:value>
+						</dcscor:item>
+						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+							<dcscor:use>false</dcscor:use>
+							<dcscor:parameter>FilterOutput</dcscor:parameter>
+							<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
+						</dcscor:item>
+					</dcsset:outputParameters>
+				</dcsset:row>
+				<dcsset:row>
 					<dcsset:name>AccountTypeNegative</dcsset:name>
 					<dcsset:groupItems>
 						<dcsset:item xsi:type="dcsset:GroupItemField">
@@ -7163,15 +7624,47 @@ WHERE
 						</dcscor:item>
 					</dcsset:outputParameters>
 				</dcsset:row>
+				<dcsset:row>
+					<dcsset:name>PeriodReportFooter</dcsset:name>
+					<dcsset:groupItems>
+						<dcsset:item xsi:type="dcsset:GroupItemField">
+							<dcsset:field>OurCompany</dcsset:field>
+							<dcsset:groupType>Items</dcsset:groupType>
+							<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+							<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+							<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+						</dcsset:item>
+					</dcsset:groupItems>
+					<dcsset:order>
+						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
+					</dcsset:order>
+					<dcsset:selection>
+						<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+					</dcsset:selection>
+					<dcsset:outputParameters>
+						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+							<dcscor:parameter>TotalsPlacement</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">None</dcscor:value>
+						</dcscor:item>
+						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+							<dcscor:parameter>OverallsPlacement</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">None</dcscor:value>
+						</dcscor:item>
+						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+							<dcscor:parameter>FilterOutput</dcscor:parameter>
+							<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
+						</dcscor:item>
+					</dcsset:outputParameters>
+				</dcsset:row>
 			</dcsset:item>
 		</dcsset:settings>
 	</settingsVariant>
 	<settingsVariant>
-		<dcsset:name>Weekly</dcsset:name>
+		<dcsset:name>Weeks</dcsset:name>
 		<dcsset:presentation xsi:type="v8:LocalStringType">
 			<v8:item>
 				<v8:lang>en</v8:lang>
-				<v8:content>5. Income (weeks)</v8:content>
+				<v8:content>Weeks</v8:content>
 			</v8:item>
 			<v8:item>
 				<v8:lang>de</v8:lang>
@@ -7238,6 +7731,7 @@ WHERE
 				</dcscor:item>
 			</dcsset:outputParameters>
 			<dcsset:item xsi:type="dcsset:StructureItemGroup">
+				<dcsset:use>false</dcsset:use>
 				<dcsset:name>Header</dcsset:name>
 				<dcsset:groupItems>
 					<dcsset:item xsi:type="dcsset:GroupItemField">
@@ -7317,6 +7811,26 @@ WHERE
 					</dcsset:outputParameters>
 				</dcsset:column>
 				<dcsset:row>
+					<dcsset:name>ReportHeader</dcsset:name>
+					<dcsset:outputParameters>
+						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+							<dcscor:use>false</dcscor:use>
+							<dcscor:parameter>TotalsPlacement</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">None</dcscor:value>
+						</dcscor:item>
+						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+							<dcscor:use>false</dcscor:use>
+							<dcscor:parameter>OverallsPlacement</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">None</dcscor:value>
+						</dcscor:item>
+						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+							<dcscor:use>false</dcscor:use>
+							<dcscor:parameter>FilterOutput</dcscor:parameter>
+							<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
+						</dcscor:item>
+					</dcsset:outputParameters>
+				</dcsset:row>
+				<dcsset:row>
 					<dcsset:name>AccountTypeNegative</dcsset:name>
 					<dcsset:groupItems>
 						<dcsset:item xsi:type="dcsset:GroupItemField">
@@ -7870,15 +8384,47 @@ WHERE
 						</dcscor:item>
 					</dcsset:outputParameters>
 				</dcsset:row>
+				<dcsset:row>
+					<dcsset:name>PeriodReportFooter</dcsset:name>
+					<dcsset:groupItems>
+						<dcsset:item xsi:type="dcsset:GroupItemField">
+							<dcsset:field>OurCompany</dcsset:field>
+							<dcsset:groupType>Items</dcsset:groupType>
+							<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+							<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+							<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+						</dcsset:item>
+					</dcsset:groupItems>
+					<dcsset:order>
+						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
+					</dcsset:order>
+					<dcsset:selection>
+						<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+					</dcsset:selection>
+					<dcsset:outputParameters>
+						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+							<dcscor:parameter>TotalsPlacement</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">None</dcscor:value>
+						</dcscor:item>
+						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+							<dcscor:parameter>OverallsPlacement</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">None</dcscor:value>
+						</dcscor:item>
+						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+							<dcscor:parameter>FilterOutput</dcscor:parameter>
+							<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
+						</dcscor:item>
+					</dcsset:outputParameters>
+				</dcsset:row>
 			</dcsset:item>
 		</dcsset:settings>
 	</settingsVariant>
 	<settingsVariant>
-		<dcsset:name>Daily</dcsset:name>
+		<dcsset:name>Days</dcsset:name>
 		<dcsset:presentation xsi:type="v8:LocalStringType">
 			<v8:item>
 				<v8:lang>en</v8:lang>
-				<v8:content>6. Income (days)</v8:content>
+				<v8:content>Days</v8:content>
 			</v8:item>
 			<v8:item>
 				<v8:lang>de</v8:lang>
@@ -7945,6 +8491,7 @@ WHERE
 				</dcscor:item>
 			</dcsset:outputParameters>
 			<dcsset:item xsi:type="dcsset:StructureItemGroup">
+				<dcsset:use>false</dcsset:use>
 				<dcsset:name>Header</dcsset:name>
 				<dcsset:groupItems>
 					<dcsset:item xsi:type="dcsset:GroupItemField">
@@ -8024,6 +8571,26 @@ WHERE
 					</dcsset:outputParameters>
 				</dcsset:column>
 				<dcsset:row>
+					<dcsset:name>ReportHeader</dcsset:name>
+					<dcsset:outputParameters>
+						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+							<dcscor:use>false</dcscor:use>
+							<dcscor:parameter>TotalsPlacement</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">None</dcscor:value>
+						</dcscor:item>
+						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+							<dcscor:use>false</dcscor:use>
+							<dcscor:parameter>OverallsPlacement</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">None</dcscor:value>
+						</dcscor:item>
+						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+							<dcscor:use>false</dcscor:use>
+							<dcscor:parameter>FilterOutput</dcscor:parameter>
+							<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
+						</dcscor:item>
+					</dcsset:outputParameters>
+				</dcsset:row>
+				<dcsset:row>
 					<dcsset:name>AccountTypeNegative</dcsset:name>
 					<dcsset:groupItems>
 						<dcsset:item xsi:type="dcsset:GroupItemField">
@@ -8571,6 +9138,38 @@ WHERE
 						</dcsset:item>
 					</dcsset:selection>
 					<dcsset:outputParameters>
+						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+							<dcscor:parameter>FilterOutput</dcscor:parameter>
+							<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
+						</dcscor:item>
+					</dcsset:outputParameters>
+				</dcsset:row>
+				<dcsset:row>
+					<dcsset:name>PeriodReportFooter</dcsset:name>
+					<dcsset:groupItems>
+						<dcsset:item xsi:type="dcsset:GroupItemField">
+							<dcsset:field>OurCompany</dcsset:field>
+							<dcsset:groupType>Items</dcsset:groupType>
+							<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+							<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+							<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+						</dcsset:item>
+					</dcsset:groupItems>
+					<dcsset:order>
+						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
+					</dcsset:order>
+					<dcsset:selection>
+						<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+					</dcsset:selection>
+					<dcsset:outputParameters>
+						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+							<dcscor:parameter>TotalsPlacement</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">None</dcscor:value>
+						</dcscor:item>
+						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+							<dcscor:parameter>OverallsPlacement</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">None</dcscor:value>
+						</dcscor:item>
 						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 							<dcscor:parameter>FilterOutput</dcscor:parameter>
 							<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>

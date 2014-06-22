@@ -8,7 +8,6 @@
 	<Events>
 		<Event name="OnOpen">OnOpen</Event>
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
-		<Event name="FillCheckProcessingAtServer">FillCheckProcessingAtServer</Event>
 	</Events>
 	<ChildItems>
 		<UsualGroup name="TitleGroup" id="93">
@@ -118,9 +117,11 @@
 									<BorderColor>style:FieldSelectionBackColor</BorderColor>
 									<TextColor>style:FieldSelectionBackColor</TextColor>
 									<BackColor>style:FormBackColor</BackColor>
-									<Font ref="style:NormalTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
 									<ContextMenu name="AccountInBankLastUpdatedTimeUTCContextMenu" id="221"/>
 									<ExtendedTooltip name="AccountInBankLastUpdatedTimeUTCExtendedTooltip" id="222"/>
+									<Events>
+										<Event name="URLProcessing">AccountInBankLastUpdatedTimeUTCURLProcessing</Event>
+									</Events>
 								</LabelField>
 							</ChildItems>
 						</UsualGroup>
@@ -346,6 +347,7 @@
 									<ExtendedTooltip name="Group3ExtendedTooltip" id="289"/>
 									<ChildItems>
 										<CommandBar name="Group1" id="286">
+											<ReadOnly>true</ReadOnly>
 											<ExtendedTooltip name="Group1ExtendedTooltip" id="287"/>
 											<ChildItems>
 												<ButtonGroup name="BankTransactionsUnacceptedGroup1" id="109">
@@ -374,30 +376,55 @@
 															<CommandName>Form.Command.UnmarkAllUnaccepted</CommandName>
 															<ExtendedTooltip name="BankTransactionsUnacceptedUnmarkAllUnacceptedExtendedTooltip" id="114"/>
 														</Button>
-														<Button name="BankTransactionsUnacceptedInvertUnaccepted" id="115">
-															<Type>CommandBarButton</Type>
-															<CommandName>Form.Command.InvertUnaccepted</CommandName>
-															<ExtendedTooltip name="BankTransactionsUnacceptedInvertUnacceptedExtendedTooltip" id="116"/>
-														</Button>
 													</ChildItems>
 												</ButtonGroup>
-												<ButtonGroup name="BankTransactionsUnacceptedGroup2" id="130">
-													<ExtendedTooltip name="BankTransactionsUnacceptedGroup2ExtendedTooltip" id="131"/>
+												<Popup name="BatchOperationsGroup" id="329">
+													<Title>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Batch operations</v8:content>
+														</v8:item>
+													</Title>
+													<ToolTip>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Batch operations group</v8:content>
+														</v8:item>
+													</ToolTip>
+													<Picture>
+														<xr:Ref>CommonPicture.CheckFlag</xr:Ref>
+														<xr:LoadTransparent>true</xr:LoadTransparent>
+													</Picture>
+													<Representation>PictureAndText</Representation>
+													<ExtendedTooltip name="BatchOperationsGroupExtendedTooltip" id="330"/>
 													<ChildItems>
-														<Button name="BankTransactionsUnacceptedButton2" id="126">
+														<Button name="BankTransactionsUnacceptedAcceptTransactions" id="120">
 															<Type>CommandBarButton</Type>
-															<Representation>Picture</Representation>
-															<OnlyInAllActions>true</OnlyInAllActions>
-															<CommandName>Form.Command.DeleteSelectedTransactions</CommandName>
-															<ExtendedTooltip name="BankTransactionsUnacceptedButton2ExtendedTooltip" id="127"/>
+															<CommandName>Form.Command.AcceptTransactions</CommandName>
+															<ExtendedTooltip name="BankTransactionsUnacceptedAcceptTransactionsExtendedTooltip" id="121"/>
 														</Button>
+														<Button name="HideTransactions" id="331">
+															<Type>CommandBarButton</Type>
+															<CommandName>Form.Command.HideTransactions</CommandName>
+															<ExtendedTooltip name="HideTransactionsExtendedTooltip" id="332"/>
+														</Button>
+														<Button name="ShowTransactions" id="333">
+															<Type>CommandBarButton</Type>
+															<CommandName>Form.Command.ShowTransactions</CommandName>
+															<ExtendedTooltip name="ShowTransactionsExtendedTooltip" id="334"/>
+														</Button>
+														<ButtonGroup name="Group5" id="340">
+															<ExtendedTooltip name="Group5ExtendedTooltip" id="341"/>
+															<ChildItems>
+																<Button name="DeleteSelectedTransactions" id="338">
+																	<Type>CommandBarButton</Type>
+																	<CommandName>Form.Command.DeleteSelectedTransactions</CommandName>
+																	<ExtendedTooltip name="DeleteSelectedTransactionsExtendedTooltip" id="339"/>
+																</Button>
+															</ChildItems>
+														</ButtonGroup>
 													</ChildItems>
-												</ButtonGroup>
-												<Button name="BankTransactionsUnacceptedAcceptTransactions" id="120">
-													<Type>CommandBarButton</Type>
-													<CommandName>Form.Command.AcceptTransactions</CommandName>
-													<ExtendedTooltip name="BankTransactionsUnacceptedAcceptTransactionsExtendedTooltip" id="121"/>
-												</Button>
+												</Popup>
 												<Button name="CategorizeTransactions" id="306">
 													<Type>CommandBarButton</Type>
 													<CommandName>Form.Command.CategorizeTransactions</CommandName>
@@ -460,6 +487,11 @@
 													<CommandName>Form.Command.RefreshTransactions</CommandName>
 													<ExtendedTooltip name="RefreshTransactionsExtendedTooltip" id="169"/>
 												</Button>
+												<Button name="HideShowSidePanel" id="327">
+													<Type>UsualButton</Type>
+													<CommandName>Form.Command.HideShowSidePanel</CommandName>
+													<ExtendedTooltip name="HideShowSidePanelExtendedTooltip" id="328"/>
+												</Button>
 												<Button name="UploadFromCSV1" id="248">
 													<Type>UsualButton</Type>
 													<Visible>false</Visible>
@@ -494,29 +526,29 @@
 										<Autofill>false</Autofill>
 									</AutoCommandBar>
 									<ExtendedTooltip name="BankTransactionsUnacceptedExtendedTooltip" id="4"/>
-									<SearchStringAddition name="BankTransactionsUnacceptedSearchString" id="322">
+									<SearchStringAddition name="BankTransactionsUnacceptedSearchString" id="342">
 										<AdditionSource>
 											<Item>BankTransactionsUnaccepted</Item>
 											<Type>SearchStringRepresentation</Type>
 										</AdditionSource>
-										<ContextMenu name="BankTransactionsUnacceptedSearchStringContextMenu" id="323"/>
-										<ExtendedTooltip name="BankTransactionsUnacceptedSearchStringExtendedTooltip" id="324"/>
+										<ContextMenu name="BankTransactionsUnacceptedSearchStringContextMenu" id="343"/>
+										<ExtendedTooltip name="BankTransactionsUnacceptedSearchStringExtendedTooltip" id="344"/>
 									</SearchStringAddition>
-									<ViewStatusAddition name="BankTransactionsUnacceptedViewStatus" id="325">
+									<ViewStatusAddition name="BankTransactionsUnacceptedViewStatus" id="345">
 										<AdditionSource>
 											<Item>BankTransactionsUnaccepted</Item>
 											<Type>ViewStatusRepresentation</Type>
 										</AdditionSource>
-										<ContextMenu name="BankTransactionsUnacceptedViewStatusContextMenu" id="326"/>
-										<ExtendedTooltip name="BankTransactionsUnacceptedViewStatusExtendedTooltip" id="327"/>
+										<ContextMenu name="BankTransactionsUnacceptedViewStatusContextMenu" id="346"/>
+										<ExtendedTooltip name="BankTransactionsUnacceptedViewStatusExtendedTooltip" id="347"/>
 									</ViewStatusAddition>
-									<SearchControlAddition name="BankTransactionsUnacceptedSearchControl" id="328">
+									<SearchControlAddition name="BankTransactionsUnacceptedSearchControl" id="348">
 										<AdditionSource>
 											<Item>BankTransactionsUnaccepted</Item>
 											<Type>SearchControl</Type>
 										</AdditionSource>
-										<ContextMenu name="BankTransactionsUnacceptedSearchControlContextMenu" id="329"/>
-										<ExtendedTooltip name="BankTransactionsUnacceptedSearchControlExtendedTooltip" id="330"/>
+										<ContextMenu name="BankTransactionsUnacceptedSearchControlContextMenu" id="349"/>
+										<ExtendedTooltip name="BankTransactionsUnacceptedSearchControlExtendedTooltip" id="350"/>
 									</SearchControlAddition>
 									<Events>
 										<Event name="Selection">BankTransactionsUnacceptedSelection</Event>
@@ -526,6 +558,7 @@
 									</Events>
 									<ChildItems>
 										<ColumnGroup name="BankTransactionsUnacceptedGroup5" id="149">
+											<Visible>false</Visible>
 											<Group>Horizontal</Group>
 											<ExtendedTooltip name="BankTransactionsUnacceptedGroup5ExtendedTooltip" id="150"/>
 											<ChildItems>
@@ -618,19 +651,19 @@
 													<Title>
 														<v8:item>
 															<v8:lang>en</v8:lang>
-															<v8:content>Assign</v8:content>
+															<v8:content>Add or Match</v8:content>
 														</v8:item>
 													</Title>
 													<ToolTip>
 														<v8:item>
 															<v8:lang>en</v8:lang>
-															<v8:content>Choose whether to create a new document (Assign) or match with an existing one (Match)</v8:content>
+															<v8:content>Choose whether to create a new document (Add) or match with an existing one (Match)</v8:content>
 														</v8:item>
 													</ToolTip>
 													<ToolTipRepresentation>Button</ToolTipRepresentation>
 													<EditMode>EnterOnInput</EditMode>
 													<CellHyperlink>true</CellHyperlink>
-													<Width>20</Width>
+													<Width>25</Width>
 													<DropListButton>true</DropListButton>
 													<ChoiceButton>false</ChoiceButton>
 													<ClearButton>false</ClearButton>
@@ -678,7 +711,7 @@
 														<InputField name="BankTransactionsUnacceptedCompany" id="14">
 															<DataPath>Object.BankTransactionsUnaccepted.Company</DataPath>
 															<EditMode>EnterOnInput</EditMode>
-															<Width>20</Width>
+															<Width>15</Width>
 															<ContextMenu name="BankTransactionsUnacceptedCompanyContextMenu" id="15"/>
 															<ExtendedTooltip name="BankTransactionsUnacceptedCompanyExtendedTooltip" id="16"/>
 															<Events>
@@ -689,7 +722,7 @@
 														<InputField name="BankTransactionsUnacceptedCategory" id="23">
 															<DataPath>Object.BankTransactionsUnaccepted.Category</DataPath>
 															<EditMode>EnterOnInput</EditMode>
-															<Width>20</Width>
+															<Width>15</Width>
 															<ContextMenu name="BankTransactionsUnacceptedCategoryContextMenu" id="24"/>
 															<ExtendedTooltip name="BankTransactionsUnacceptedCategoryExtendedTooltip" id="25"/>
 															<Events>
@@ -700,7 +733,7 @@
 														<InputField name="BankTransactionsUnacceptedClass" id="308">
 															<DataPath>Object.BankTransactionsUnaccepted.Class</DataPath>
 															<EditMode>EnterOnInput</EditMode>
-															<Width>15</Width>
+															<Width>12</Width>
 															<ContextMenu name="BankTransactionsUnacceptedClassContextMenu" id="309"/>
 															<ExtendedTooltip name="BankTransactionsUnacceptedClassExtendedTooltip" id="310"/>
 															<Events>
@@ -710,7 +743,7 @@
 														<InputField name="BankTransactionsUnacceptedProject" id="311">
 															<DataPath>Object.BankTransactionsUnaccepted.Project</DataPath>
 															<EditMode>EnterOnInput</EditMode>
-															<Width>15</Width>
+															<Width>12</Width>
 															<ContextMenu name="BankTransactionsUnacceptedProjectContextMenu" id="312"/>
 															<ExtendedTooltip name="BankTransactionsUnacceptedProjectExtendedTooltip" id="313"/>
 															<Events>
@@ -721,6 +754,20 @@
 												</ColumnGroup>
 											</ChildItems>
 										</ColumnGroup>
+										<LabelField name="BankTransactionsUnacceptedAction" id="335">
+											<DataPath>Object.BankTransactionsUnaccepted.Action</DataPath>
+											<ReadOnly>true</ReadOnly>
+											<EditMode>EnterOnInput</EditMode>
+											<CellHyperlink>true</CellHyperlink>
+											<HeaderPicture>
+												<xr:Ref>StdPicture.Post</xr:Ref>
+												<xr:LoadTransparent>true</xr:LoadTransparent>
+											</HeaderPicture>
+											<TextColor>web:MediumSeaGreen</TextColor>
+											<Font ref="style:NormalTextFont" kind="StyleItem"/>
+											<ContextMenu name="BankTransactionsUnacceptedActionContextMenu" id="336"/>
+											<ExtendedTooltip name="BankTransactionsUnacceptedActionExtendedTooltip" id="337"/>
+										</LabelField>
 									</ChildItems>
 								</Table>
 								<UsualGroup name="UnacceptedTransactionsBottomPanel" id="166">
@@ -855,29 +902,29 @@
 										</ChildItems>
 									</AutoCommandBar>
 									<ExtendedTooltip name="BankTransactionsAcceptedExtendedTooltip" id="38"/>
-									<SearchStringAddition name="BankTransactionsAcceptedSearchString" id="331">
+									<SearchStringAddition name="BankTransactionsAcceptedSearchString" id="351">
 										<AdditionSource>
 											<Item>BankTransactionsAccepted</Item>
 											<Type>SearchStringRepresentation</Type>
 										</AdditionSource>
-										<ContextMenu name="BankTransactionsAcceptedSearchStringContextMenu" id="332"/>
-										<ExtendedTooltip name="BankTransactionsAcceptedSearchStringExtendedTooltip" id="333"/>
+										<ContextMenu name="BankTransactionsAcceptedSearchStringContextMenu" id="352"/>
+										<ExtendedTooltip name="BankTransactionsAcceptedSearchStringExtendedTooltip" id="353"/>
 									</SearchStringAddition>
-									<ViewStatusAddition name="BankTransactionsAcceptedViewStatus" id="334">
+									<ViewStatusAddition name="BankTransactionsAcceptedViewStatus" id="354">
 										<AdditionSource>
 											<Item>BankTransactionsAccepted</Item>
 											<Type>ViewStatusRepresentation</Type>
 										</AdditionSource>
-										<ContextMenu name="BankTransactionsAcceptedViewStatusContextMenu" id="335"/>
-										<ExtendedTooltip name="BankTransactionsAcceptedViewStatusExtendedTooltip" id="336"/>
+										<ContextMenu name="BankTransactionsAcceptedViewStatusContextMenu" id="355"/>
+										<ExtendedTooltip name="BankTransactionsAcceptedViewStatusExtendedTooltip" id="356"/>
 									</ViewStatusAddition>
-									<SearchControlAddition name="BankTransactionsAcceptedSearchControl" id="337">
+									<SearchControlAddition name="BankTransactionsAcceptedSearchControl" id="357">
 										<AdditionSource>
 											<Item>BankTransactionsAccepted</Item>
 											<Type>SearchControl</Type>
 										</AdditionSource>
-										<ContextMenu name="BankTransactionsAcceptedSearchControlContextMenu" id="338"/>
-										<ExtendedTooltip name="BankTransactionsAcceptedSearchControlExtendedTooltip" id="339"/>
+										<ContextMenu name="BankTransactionsAcceptedSearchControlContextMenu" id="358"/>
+										<ExtendedTooltip name="BankTransactionsAcceptedSearchControlExtendedTooltip" id="359"/>
 									</SearchControlAddition>
 									<ChildItems>
 										<LabelField name="BankTransactionsAcceptedLineNumber" id="39">
@@ -910,6 +957,21 @@
 											<ContextMenu name="BankTransactionsAcceptedTransactionDateContextMenu" id="43"/>
 											<ExtendedTooltip name="BankTransactionsAcceptedTransactionDateExtendedTooltip" id="44"/>
 										</InputField>
+										<InputField name="BankTransactionsAcceptedDocument" id="60">
+											<DataPath>Object.BankTransactionsAccepted.Document</DataPath>
+											<EditMode>EnterOnInput</EditMode>
+											<DropListButton>false</DropListButton>
+											<ChoiceButton>false</ChoiceButton>
+											<ClearButton>false</ClearButton>
+											<SpinButton>false</SpinButton>
+											<OpenButton>true</OpenButton>
+											<CreateButton>false</CreateButton>
+											<QuickChoice>false</QuickChoice>
+											<ChooseType>false</ChooseType>
+											<TextEdit>false</TextEdit>
+											<ContextMenu name="BankTransactionsAcceptedDocumentContextMenu" id="61"/>
+											<ExtendedTooltip name="BankTransactionsAcceptedDocumentExtendedTooltip" id="62"/>
+										</InputField>
 										<InputField name="BankTransactionsAcceptedBankAccount" id="45">
 											<DataPath>Object.BankTransactionsAccepted.BankAccount</DataPath>
 											<Visible>false</Visible>
@@ -939,21 +1001,6 @@
 											<Width>10</Width>
 											<ContextMenu name="BankTransactionsAcceptedAmountContextMenu" id="55"/>
 											<ExtendedTooltip name="BankTransactionsAcceptedAmountExtendedTooltip" id="56"/>
-										</InputField>
-										<InputField name="BankTransactionsAcceptedDocument" id="60">
-											<DataPath>Object.BankTransactionsAccepted.Document</DataPath>
-											<EditMode>EnterOnInput</EditMode>
-											<DropListButton>false</DropListButton>
-											<ChoiceButton>false</ChoiceButton>
-											<ClearButton>false</ClearButton>
-											<SpinButton>false</SpinButton>
-											<OpenButton>true</OpenButton>
-											<CreateButton>false</CreateButton>
-											<QuickChoice>false</QuickChoice>
-											<ChooseType>false</ChooseType>
-											<TextEdit>false</TextEdit>
-											<ContextMenu name="BankTransactionsAcceptedDocumentContextMenu" id="61"/>
-											<ExtendedTooltip name="BankTransactionsAcceptedDocumentExtendedTooltip" id="62"/>
 										</InputField>
 										<InputField name="BankTransactionsAcceptedCategory" id="57">
 											<DataPath>Object.BankTransactionsAccepted.Category</DataPath>
@@ -1104,29 +1151,29 @@
 											<ContextMenu name="AvailableBankAccountsContextMenu" id="214"/>
 											<AutoCommandBar name="AvailableBankAccountsCommandBar" id="215"/>
 											<ExtendedTooltip name="AvailableBankAccountsExtendedTooltip" id="216"/>
-											<SearchStringAddition name="AvailableBankAccountsSearchString" id="340">
+											<SearchStringAddition name="AvailableBankAccountsSearchString" id="360">
 												<AdditionSource>
 													<Item>AvailableBankAccounts</Item>
 													<Type>SearchStringRepresentation</Type>
 												</AdditionSource>
-												<ContextMenu name="AvailableBankAccountsSearchStringContextMenu" id="341"/>
-												<ExtendedTooltip name="AvailableBankAccountsSearchStringExtendedTooltip" id="342"/>
+												<ContextMenu name="AvailableBankAccountsSearchStringContextMenu" id="361"/>
+												<ExtendedTooltip name="AvailableBankAccountsSearchStringExtendedTooltip" id="362"/>
 											</SearchStringAddition>
-											<ViewStatusAddition name="AvailableBankAccountsViewStatus" id="343">
+											<ViewStatusAddition name="AvailableBankAccountsViewStatus" id="363">
 												<AdditionSource>
 													<Item>AvailableBankAccounts</Item>
 													<Type>ViewStatusRepresentation</Type>
 												</AdditionSource>
-												<ContextMenu name="AvailableBankAccountsViewStatusContextMenu" id="344"/>
-												<ExtendedTooltip name="AvailableBankAccountsViewStatusExtendedTooltip" id="345"/>
+												<ContextMenu name="AvailableBankAccountsViewStatusContextMenu" id="364"/>
+												<ExtendedTooltip name="AvailableBankAccountsViewStatusExtendedTooltip" id="365"/>
 											</ViewStatusAddition>
-											<SearchControlAddition name="AvailableBankAccountsSearchControl" id="346">
+											<SearchControlAddition name="AvailableBankAccountsSearchControl" id="366">
 												<AdditionSource>
 													<Item>AvailableBankAccounts</Item>
 													<Type>SearchControl</Type>
 												</AdditionSource>
-												<ContextMenu name="AvailableBankAccountsSearchControlContextMenu" id="347"/>
-												<ExtendedTooltip name="AvailableBankAccountsSearchControlExtendedTooltip" id="348"/>
+												<ContextMenu name="AvailableBankAccountsSearchControlContextMenu" id="367"/>
+												<ExtendedTooltip name="AvailableBankAccountsSearchControlExtendedTooltip" id="368"/>
 											</SearchControlAddition>
 											<Events>
 												<Event name="Selection">AvailableBankAccountsSelection</Event>
@@ -1464,6 +1511,21 @@
 							<v8:Type>cfg:CatalogRef.BankTransactionCategories</v8:Type>
 						</Type>
 					</Column>
+					<Column name="Action" id="9">
+						<Title>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>Action</v8:content>
+							</v8:item>
+						</Title>
+						<Type>
+							<v8:Type>xs:string</v8:Type>
+							<v8:StringQualifiers>
+								<v8:Length>6</v8:Length>
+								<v8:AllowedLength>Variable</v8:AllowedLength>
+							</v8:StringQualifiers>
+						</Type>
+					</Column>
 				</AdditionalColumns>
 				<AdditionalColumns table="Object.HiddenTransactionsUnaccepted">
 					<Column name="CategoryDescription" id="1">
@@ -1621,11 +1683,7 @@
 				</v8:item>
 			</Title>
 			<Type>
-				<v8:Type>xs:string</v8:Type>
-				<v8:StringQualifiers>
-					<v8:Length>20</v8:Length>
-					<v8:AllowedLength>Variable</v8:AllowedLength>
-				</v8:StringQualifiers>
+				<v8:Type>v8ui:FormattedString</v8:Type>
 			</Type>
 		</Attribute>
 		<Attribute name="CurrentBankAccountDescription" id="10">
@@ -1693,24 +1751,46 @@
 				</v8:NumberQualifiers>
 			</Type>
 		</Attribute>
+		<Attribute name="BankTransactionsLocked" id="15">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Bank transactions locked</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
+			</Type>
+		</Attribute>
+		<Attribute name="PreviousAccountInBank" id="16">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Previous account in bank</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>cfg:CatalogRef.BankAccounts</v8:Type>
+			</Type>
+		</Attribute>
 		<ConditionalAppearance>
 			<dcsset:item>
 				<dcsset:selection>
 					<dcsset:item>
-						<dcsset:field>BankTransactionsUnacceptedAmount</dcsset:field>
+						<dcsset:field>BankTransactionsUnaccepted</dcsset:field>
 					</dcsset:item>
 				</dcsset:selection>
 				<dcsset:filter>
 					<dcsset:item xsi:type="dcsset:FilterItemComparison">
-						<dcsset:left xsi:type="dcscor:Field">Object.BankTransactionsUnaccepted.Amount</dcsset:left>
+						<dcsset:left xsi:type="dcscor:Field">BankTransactionsLocked</dcsset:left>
 						<dcsset:comparisonType>Equal</dcsset:comparisonType>
-						<dcsset:right xsi:type="xs:decimal">10</dcsset:right>
+						<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
 					</dcsset:item>
 				</dcsset:filter>
 				<dcsset:appearance>
 					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-						<dcscor:parameter>BackColor</dcscor:parameter>
-						<dcscor:value xsi:type="v8ui:Color">style:ColorGroupLabel</dcscor:value>
+						<dcscor:parameter>ReadOnly</dcscor:parameter>
+						<dcscor:value xsi:type="xs:boolean">true</dcscor:value>
 					</dcscor:item>
 				</dcsset:appearance>
 			</dcsset:item>
@@ -1755,26 +1835,6 @@
 				<xr:LoadTransparent>true</xr:LoadTransparent>
 			</Picture>
 			<Action>UnmarkAllUnaccepted</Action>
-			<Representation>Picture</Representation>
-		</Command>
-		<Command name="InvertUnaccepted" id="3">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Invert unaccepted</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Invert unaccepted</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Picture>
-				<xr:Ref>CommonPicture.InvertFlags</xr:Ref>
-				<xr:LoadTransparent>true</xr:LoadTransparent>
-			</Picture>
-			<Action>InvertUnaccepted</Action>
 			<Representation>Picture</Representation>
 		</Command>
 		<Command name="AcceptTransactions" id="4">
@@ -1959,7 +2019,7 @@
 			<Title>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Delete selected</v8:content>
+					<v8:content>Delete Selected</v8:content>
 				</v8:item>
 			</Title>
 			<ToolTip>
@@ -1993,6 +2053,65 @@
 				<xr:LoadTransparent>true</xr:LoadTransparent>
 			</Picture>
 			<Action>CategorizeTransactions</Action>
+			<Representation>TextPicture</Representation>
+		</Command>
+		<Command name="HideShowSidePanel" id="15">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Hide show side panel</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Hide side panel</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Picture>
+				<xr:Ref>StdPicture.Forward</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
+			<Action>HideShowSidePanel</Action>
+			<Representation>Picture</Representation>
+		</Command>
+		<Command name="HideTransactions" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Hide Selected</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Hide transactions</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Picture>
+				<xr:Ref>StdPicture.SaveValues</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
+			<Action>HideTransactions</Action>
+		</Command>
+		<Command name="ShowTransactions" id="16">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Show Selected</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Show transactions</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Picture>
+				<xr:Ref>StdPicture.RestoreValues</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
+			<Action>ShowTransactions</Action>
 			<Representation>TextPicture</Representation>
 		</Command>
 	</Commands>

@@ -11,7 +11,12 @@
 				<xr:Common>true</xr:Common>
 			</Visibility>
 		</Command>
-		<Command name="Report.SalesTransactionDetail.StandardCommand.Open">
+		<Command name="Report.OpenSalesOrdersByItem.StandardCommand.Open">
+			<Visibility>
+				<xr:Common>true</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="Report.IncomeStatementSalesPerson.StandardCommand.Open">
 			<Visibility>
 				<xr:Common>true</xr:Common>
 			</Visibility>
@@ -21,7 +26,7 @@
 				<xr:Common>true</xr:Common>
 			</Visibility>
 		</Command>
-		<Command name="Report.APAging.StandardCommand.Open">
+		<Command name="Report.TimeTrackingDetailReport.StandardCommand.Open">
 			<Visibility>
 				<xr:Common>true</xr:Common>
 			</Visibility>
@@ -31,12 +36,37 @@
 				<xr:Common>true</xr:Common>
 			</Visibility>
 		</Command>
-		<Command name="Report.PurchasingTransactionDetail.StandardCommand.Open">
+		<Command name="Report.APAging.StandardCommand.Open">
 			<Visibility>
 				<xr:Common>true</xr:Common>
 			</Visibility>
 		</Command>
-		<Command name="Report.InventoryBalances.StandardCommand.Open">
+		<Command name="Report.OpenPurchaseOrdersByItem.StandardCommand.Open">
+			<Visibility>
+				<xr:Common>true</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="Report.QuantityOnHandByLocation.StandardCommand.Open">
+			<Visibility>
+				<xr:Common>true</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="Report.InventoryItemQuickReport.StandardCommand.Open">
+			<Visibility>
+				<xr:Common>true</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="Report.InventoryValuationSummary.StandardCommand.Open">
+			<Visibility>
+				<xr:Common>true</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="Report.InventoryValuationDetail.StandardCommand.Open">
+			<Visibility>
+				<xr:Common>true</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="Report.InventoryStockStatusByItem.StandardCommand.Open">
 			<Visibility>
 				<xr:Common>true</xr:Common>
 			</Visibility>
@@ -66,14 +96,34 @@
 				<xr:Common>true</xr:Common>
 			</Visibility>
 		</Command>
+		<Command name="Report.ProfitAndLossByClass.StandardCommand.Open">
+			<Visibility>
+				<xr:Common>true</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="Report.ProfitAndLossByProject.StandardCommand.Open">
+			<Visibility>
+				<xr:Common>true</xr:Common>
+			</Visibility>
+		</Command>
 		<Command name="Report.BalanceSheet.StandardCommand.Open">
 			<Visibility>
 				<xr:Common>true</xr:Common>
 			</Visibility>
 		</Command>
-		<Command name="Report.BalanceSheet_old.StandardCommand.Open">
+		<Command name="Report.StatementOfCashFlows.StandardCommand.Open">
 			<Visibility>
-				<xr:Common>false</xr:Common>
+				<xr:Common>true</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="Report.BudgetPlanActual.StandardCommand.Open">
+			<Visibility>
+				<xr:Common>true</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="Report.SalesTaxOwed.StandardCommand.Open">
+			<Visibility>
+				<xr:Common>true</xr:Common>
 			</Visibility>
 		</Command>
 		<Command name="Report.Vendors1099.StandardCommand.Open">
@@ -81,17 +131,7 @@
 				<xr:Common>true</xr:Common>
 			</Visibility>
 		</Command>
-		<Command name="Report.BankBalances.StandardCommand.Open">
-			<Visibility>
-				<xr:Common>true</xr:Common>
-			</Visibility>
-		</Command>
 		<Command name="Report.CheckRegister.StandardCommand.Open">
-			<Visibility>
-				<xr:Common>true</xr:Common>
-			</Visibility>
-		</Command>
-		<Command name="Report.BudgetPlanActual.StandardCommand.Open">
 			<Visibility>
 				<xr:Common>true</xr:Common>
 			</Visibility>
@@ -106,7 +146,11 @@
 			<CommandGroup>CommandGroup.Sales</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
-		<Command name="Report.SalesTransactionDetail.StandardCommand.Open">
+		<Command name="Report.OpenSalesOrdersByItem.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Sales</CommandGroup>
+			<Placement>Auto</Placement>
+		</Command>
+		<Command name="Report.IncomeStatementSalesPerson.StandardCommand.Open">
 			<CommandGroup>CommandGroup.Sales</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
@@ -114,19 +158,39 @@
 			<CommandGroup>CommandGroup.ProjectTime</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
-		<Command name="Report.APAging.StandardCommand.Open">
-			<CommandGroup>CommandGroup.Purchases</CommandGroup>
+		<Command name="Report.TimeTrackingDetailReport.StandardCommand.Open">
+			<CommandGroup>CommandGroup.ProjectTime</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
 		<Command name="Report.APAgingDocument.StandardCommand.Open">
 			<CommandGroup>CommandGroup.Purchases</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
-		<Command name="Report.PurchasingTransactionDetail.StandardCommand.Open">
+		<Command name="Report.APAging.StandardCommand.Open">
 			<CommandGroup>CommandGroup.Purchases</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
-		<Command name="Report.InventoryBalances.StandardCommand.Open">
+		<Command name="Report.OpenPurchaseOrdersByItem.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Purchases</CommandGroup>
+			<Placement>Auto</Placement>
+		</Command>
+		<Command name="Report.QuantityOnHandByLocation.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Inventory</CommandGroup>
+			<Placement>Auto</Placement>
+		</Command>
+		<Command name="Report.InventoryItemQuickReport.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Inventory</CommandGroup>
+			<Placement>Auto</Placement>
+		</Command>
+		<Command name="Report.InventoryValuationSummary.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Inventory</CommandGroup>
+			<Placement>Auto</Placement>
+		</Command>
+		<Command name="Report.InventoryValuationDetail.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Inventory</CommandGroup>
+			<Placement>Auto</Placement>
+		</Command>
+		<Command name="Report.InventoryStockStatusByItem.StandardCommand.Open">
 			<CommandGroup>CommandGroup.Inventory</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
@@ -150,11 +214,27 @@
 			<CommandGroup>CommandGroup.Accounting</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
+		<Command name="Report.ProfitAndLossByClass.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Accounting</CommandGroup>
+			<Placement>Auto</Placement>
+		</Command>
+		<Command name="Report.ProfitAndLossByProject.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Accounting</CommandGroup>
+			<Placement>Auto</Placement>
+		</Command>
 		<Command name="Report.BalanceSheet.StandardCommand.Open">
 			<CommandGroup>CommandGroup.Accounting</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
-		<Command name="Report.BalanceSheet_old.StandardCommand.Open">
+		<Command name="Report.StatementOfCashFlows.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Accounting</CommandGroup>
+			<Placement>Auto</Placement>
+		</Command>
+		<Command name="Report.BudgetPlanActual.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Accounting</CommandGroup>
+			<Placement>Auto</Placement>
+		</Command>
+		<Command name="Report.SalesTaxOwed.StandardCommand.Open">
 			<CommandGroup>CommandGroup.Accounting</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
@@ -162,15 +242,7 @@
 			<CommandGroup>CommandGroup.Accounting</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
-		<Command name="Report.BankBalances.StandardCommand.Open">
-			<CommandGroup>CommandGroup.Accounting</CommandGroup>
-			<Placement>Auto</Placement>
-		</Command>
 		<Command name="Report.CheckRegister.StandardCommand.Open">
-			<CommandGroup>CommandGroup.Accounting</CommandGroup>
-			<Placement>Auto</Placement>
-		</Command>
-		<Command name="Report.BudgetPlanActual.StandardCommand.Open">
 			<CommandGroup>CommandGroup.Accounting</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
@@ -182,22 +254,40 @@
 		<Command name="Report.ARAgingDocument.StandardCommand.Open">
 			<CommandGroup>CommandGroup.Sales</CommandGroup>
 		</Command>
-		<Command name="Report.SalesTransactionDetail.StandardCommand.Open">
+		<Command name="Report.OpenSalesOrdersByItem.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Sales</CommandGroup>
+		</Command>
+		<Command name="Report.IncomeStatementSalesPerson.StandardCommand.Open">
 			<CommandGroup>CommandGroup.Sales</CommandGroup>
 		</Command>
 		<Command name="Report.Projects.StandardCommand.Open">
 			<CommandGroup>CommandGroup.ProjectTime</CommandGroup>
 		</Command>
-		<Command name="Report.APAging.StandardCommand.Open">
-			<CommandGroup>CommandGroup.Purchases</CommandGroup>
+		<Command name="Report.TimeTrackingDetailReport.StandardCommand.Open">
+			<CommandGroup>CommandGroup.ProjectTime</CommandGroup>
 		</Command>
 		<Command name="Report.APAgingDocument.StandardCommand.Open">
 			<CommandGroup>CommandGroup.Purchases</CommandGroup>
 		</Command>
-		<Command name="Report.PurchasingTransactionDetail.StandardCommand.Open">
+		<Command name="Report.APAging.StandardCommand.Open">
 			<CommandGroup>CommandGroup.Purchases</CommandGroup>
 		</Command>
-		<Command name="Report.InventoryBalances.StandardCommand.Open">
+		<Command name="Report.OpenPurchaseOrdersByItem.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Purchases</CommandGroup>
+		</Command>
+		<Command name="Report.QuantityOnHandByLocation.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Inventory</CommandGroup>
+		</Command>
+		<Command name="Report.InventoryItemQuickReport.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Inventory</CommandGroup>
+		</Command>
+		<Command name="Report.InventoryValuationSummary.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Inventory</CommandGroup>
+		</Command>
+		<Command name="Report.InventoryValuationDetail.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Inventory</CommandGroup>
+		</Command>
+		<Command name="Report.InventoryStockStatusByItem.StandardCommand.Open">
 			<CommandGroup>CommandGroup.Inventory</CommandGroup>
 		</Command>
 		<Command name="Report.ItemActivityReport.StandardCommand.Open">
@@ -215,22 +305,28 @@
 		<Command name="Report.IncomeStatementCashBasis.StandardCommand.Open">
 			<CommandGroup>CommandGroup.Accounting</CommandGroup>
 		</Command>
+		<Command name="Report.ProfitAndLossByClass.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Accounting</CommandGroup>
+		</Command>
+		<Command name="Report.ProfitAndLossByProject.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Accounting</CommandGroup>
+		</Command>
 		<Command name="Report.BalanceSheet.StandardCommand.Open">
 			<CommandGroup>CommandGroup.Accounting</CommandGroup>
 		</Command>
-		<Command name="Report.BalanceSheet_old.StandardCommand.Open">
+		<Command name="Report.StatementOfCashFlows.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Accounting</CommandGroup>
+		</Command>
+		<Command name="Report.BudgetPlanActual.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Accounting</CommandGroup>
+		</Command>
+		<Command name="Report.SalesTaxOwed.StandardCommand.Open">
 			<CommandGroup>CommandGroup.Accounting</CommandGroup>
 		</Command>
 		<Command name="Report.Vendors1099.StandardCommand.Open">
 			<CommandGroup>CommandGroup.Accounting</CommandGroup>
 		</Command>
-		<Command name="Report.BankBalances.StandardCommand.Open">
-			<CommandGroup>CommandGroup.Accounting</CommandGroup>
-		</Command>
 		<Command name="Report.CheckRegister.StandardCommand.Open">
-			<CommandGroup>CommandGroup.Accounting</CommandGroup>
-		</Command>
-		<Command name="Report.BudgetPlanActual.StandardCommand.Open">
 			<CommandGroup>CommandGroup.Accounting</CommandGroup>
 		</Command>
 	</CommandsOrder>

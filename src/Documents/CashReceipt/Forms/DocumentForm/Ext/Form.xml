@@ -6,15 +6,15 @@
 	<RepostOnWrite>true</RepostOnWrite>
 	<AutoCommandBar name="FormCommandBar" id="-1">
 		<ChildItems>
-			<Button name="FormChargeWithStripe" id="95">
-				<Type>CommandBarButton</Type>
-				<CommandName>Form.Command.ChargeWithStripe</CommandName>
-				<ExtendedTooltip name="FormChargeWithStripeExtendedTooltip" id="98"/>
-			</Button>
 			<Button name="FormSendEmail" id="198">
 				<Type>CommandBarButton</Type>
 				<CommandName>Form.Command.SendEmail</CommandName>
 				<ExtendedTooltip name="FormSendEmailExtendedTooltip" id="199"/>
+			</Button>
+			<Button name="FormButton1" id="230">
+				<Type>CommandBarButton</Type>
+				<CommandName>0</CommandName>
+				<ExtendedTooltip name="FormButton1ExtendedTooltip" id="231"/>
 			</Button>
 		</ChildItems>
 	</AutoCommandBar>
@@ -412,6 +412,7 @@
 							</ChildItems>
 						</Page>
 						<Page name="Emailing" id="200">
+							<Visible>false</Visible>
 							<Title>
 								<v8:item>
 									<v8:lang>en</v8:lang>
@@ -518,29 +519,6 @@
 													<Representation>None</Representation>
 													<ShowTitle>false</ShowTitle>
 													<ExtendedTooltip name="Group7ExtendedTooltip" id="209"/>
-													<ChildItems>
-														<InputField name="EmailNote" id="205">
-															<DataPath>Object.EmailNote</DataPath>
-															<TitleLocation>None</TitleLocation>
-															<ToolTip>
-																<v8:item>
-																	<v8:lang>en</v8:lang>
-																	<v8:content>Write additional information and notes here that you would like to show in the email.</v8:content>
-																</v8:item>
-															</ToolTip>
-															<Width>28</Width>
-															<HorizontalStretch>false</HorizontalStretch>
-															<MultiLine>true</MultiLine>
-															<InputHint>
-																<v8:item>
-																	<v8:lang>en</v8:lang>
-																	<v8:content>Write additional notes to show in email here</v8:content>
-																</v8:item>
-															</InputHint>
-															<ContextMenu name="EmailNoteContextMenu" id="206"/>
-															<ExtendedTooltip name="EmailNoteExtendedTooltip" id="207"/>
-														</InputField>
-													</ChildItems>
 												</UsualGroup>
 											</ChildItems>
 										</UsualGroup>
@@ -557,6 +535,38 @@
 										</LabelField>
 									</ChildItems>
 								</UsualGroup>
+							</ChildItems>
+						</Page>
+						<Page name="ExternalMemo" id="232">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Customer Memo</v8:content>
+								</v8:item>
+							</Title>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>External memo</v8:content>
+								</v8:item>
+							</ToolTip>
+							<ExtendedTooltip name="ExternalMemoExtendedTooltip" id="233"/>
+							<ChildItems>
+								<InputField name="EmailNote" id="205">
+									<DataPath>Object.EmailNote</DataPath>
+									<TitleLocation>None</TitleLocation>
+									<Width>50</Width>
+									<HorizontalStretch>false</HorizontalStretch>
+									<MultiLine>true</MultiLine>
+									<InputHint>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Written notes here will be shown on the printed receipt as well as email body.</v8:content>
+										</v8:item>
+									</InputHint>
+									<ContextMenu name="EmailNoteContextMenu" id="206"/>
+									<ExtendedTooltip name="EmailNoteExtendedTooltip" id="207"/>
+								</InputField>
 							</ChildItems>
 						</Page>
 					</ChildItems>
@@ -637,29 +647,29 @@
 									<ContextMenu name="LineItemsContextMenu" id="36"/>
 									<AutoCommandBar name="LineItemsCommandBar" id="37"/>
 									<ExtendedTooltip name="LineItemsExtendedTooltip" id="127"/>
-									<SearchStringAddition name="LineItemsSearchString" id="230">
+									<SearchStringAddition name="LineItemsSearchString" id="234">
 										<AdditionSource>
 											<Item>LineItems</Item>
 											<Type>SearchStringRepresentation</Type>
 										</AdditionSource>
-										<ContextMenu name="LineItemsSearchStringContextMenu" id="231"/>
-										<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="232"/>
+										<ContextMenu name="LineItemsSearchStringContextMenu" id="235"/>
+										<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="236"/>
 									</SearchStringAddition>
-									<ViewStatusAddition name="LineItemsViewStatus" id="233">
+									<ViewStatusAddition name="LineItemsViewStatus" id="237">
 										<AdditionSource>
 											<Item>LineItems</Item>
 											<Type>ViewStatusRepresentation</Type>
 										</AdditionSource>
-										<ContextMenu name="LineItemsViewStatusContextMenu" id="234"/>
-										<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="235"/>
+										<ContextMenu name="LineItemsViewStatusContextMenu" id="238"/>
+										<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="239"/>
 									</ViewStatusAddition>
-									<SearchControlAddition name="LineItemsSearchControl" id="236">
+									<SearchControlAddition name="LineItemsSearchControl" id="240">
 										<AdditionSource>
 											<Item>LineItems</Item>
 											<Type>SearchControl</Type>
 										</AdditionSource>
-										<ContextMenu name="LineItemsSearchControlContextMenu" id="237"/>
-										<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="238"/>
+										<ContextMenu name="LineItemsSearchControlContextMenu" id="241"/>
+										<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="242"/>
 									</SearchControlAddition>
 									<ChildItems>
 										<LabelField name="LineItemsLineNumber" id="38">
@@ -773,29 +783,29 @@
 									<ContextMenu name="CreditMemosContextMenu" id="76"/>
 									<AutoCommandBar name="CreditMemosCommandBar" id="77"/>
 									<ExtendedTooltip name="CreditMemosExtendedTooltip" id="117"/>
-									<SearchStringAddition name="CreditMemosSearchString" id="239">
+									<SearchStringAddition name="CreditMemosSearchString" id="243">
 										<AdditionSource>
 											<Item>CreditMemos</Item>
 											<Type>SearchStringRepresentation</Type>
 										</AdditionSource>
-										<ContextMenu name="CreditMemosSearchStringContextMenu" id="240"/>
-										<ExtendedTooltip name="CreditMemosSearchStringExtendedTooltip" id="241"/>
+										<ContextMenu name="CreditMemosSearchStringContextMenu" id="244"/>
+										<ExtendedTooltip name="CreditMemosSearchStringExtendedTooltip" id="245"/>
 									</SearchStringAddition>
-									<ViewStatusAddition name="CreditMemosViewStatus" id="242">
+									<ViewStatusAddition name="CreditMemosViewStatus" id="246">
 										<AdditionSource>
 											<Item>CreditMemos</Item>
 											<Type>ViewStatusRepresentation</Type>
 										</AdditionSource>
-										<ContextMenu name="CreditMemosViewStatusContextMenu" id="243"/>
-										<ExtendedTooltip name="CreditMemosViewStatusExtendedTooltip" id="244"/>
+										<ContextMenu name="CreditMemosViewStatusContextMenu" id="247"/>
+										<ExtendedTooltip name="CreditMemosViewStatusExtendedTooltip" id="248"/>
 									</ViewStatusAddition>
-									<SearchControlAddition name="CreditMemosSearchControl" id="245">
+									<SearchControlAddition name="CreditMemosSearchControl" id="249">
 										<AdditionSource>
 											<Item>CreditMemos</Item>
 											<Type>SearchControl</Type>
 										</AdditionSource>
-										<ContextMenu name="CreditMemosSearchControlContextMenu" id="246"/>
-										<ExtendedTooltip name="CreditMemosSearchControlExtendedTooltip" id="247"/>
+										<ContextMenu name="CreditMemosSearchControlContextMenu" id="250"/>
+										<ExtendedTooltip name="CreditMemosSearchControlExtendedTooltip" id="251"/>
 									</SearchControlAddition>
 									<ChildItems>
 										<LabelField name="CreditMemosLineNumber" id="78">
@@ -1067,23 +1077,19 @@
 				<v8:Type>xs:boolean</v8:Type>
 			</Type>
 		</Attribute>
-	</Attributes>
-	<Commands>
-		<Command name="ChargeWithStripe" id="1">
+		<Attribute name="AutoselectInvoices" id="5">
 			<Title>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Charge with stripe</v8:content>
+					<v8:content>Autoselect invoices</v8:content>
 				</v8:item>
 			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Charge with stripe</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Action>ChargeWithStripe</Action>
-		</Command>
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
+			</Type>
+		</Attribute>
+	</Attributes>
+	<Commands>
 		<Command name="SendEmail" id="2">
 			<Title>
 				<v8:item>
@@ -1144,6 +1150,26 @@
 			<Item>
 				<Command>2:f6b8de2b-bc31-451e-8917-10c32ebab7a0</Command>
 				<Type>Auto</Type>
+				<DefaultVisible>false</DefaultVisible>
+			</Item>
+			<Item>
+				<Command>AccumulationRegister.BankReconciliation.StandardCommand.OpenByRecorder</Command>
+				<Type>Auto</Type>
+				<DefaultVisible>false</DefaultVisible>
+			</Item>
+			<Item>
+				<Command>InformationRegister.DocumentJournalOfCompanies.StandardCommand.OpenByValue.Document</Command>
+				<Type>Auto</Type>
+				<CommandGroup>FormNavigationPanelGoTo</CommandGroup>
+				<DefaultVisible>false</DefaultVisible>
+				<Visible>
+					<xr:Common>false</xr:Common>
+				</Visible>
+			</Item>
+			<Item>
+				<Command>Document.CashReceipt.Command.Print</Command>
+				<Type>Auto</Type>
+				<CommandGroup>FormNavigationPanelImportant</CommandGroup>
 				<DefaultVisible>false</DefaultVisible>
 			</Item>
 		</NavigationPanel>

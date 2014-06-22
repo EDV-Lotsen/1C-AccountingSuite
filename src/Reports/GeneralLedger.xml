@@ -16,18 +16,14 @@
 			<Synonym>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>General Ledger</v8:content>
-				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>Buchungsjournal</v8:content>
+					<v8:content>General ledger</v8:content>
 				</v8:item>
 			</Synonym>
 			<Comment/>
 			<UseStandardCommands>true</UseStandardCommands>
 			<DefaultForm>Report.GeneralLedger.Form.ReportForm</DefaultForm>
 			<AuxiliaryForm/>
-			<MainDataCompositionSchema>Report.GeneralLedger.Template.MainDataCompositionSchema</MainDataCompositionSchema>
+			<MainDataCompositionSchema>Report.GeneralLedger.Template.GeneralLedger</MainDataCompositionSchema>
 			<DefaultSettingsForm/>
 			<AuxiliarySettingsForm/>
 			<DefaultVariantForm/>
@@ -39,7 +35,7 @@
 		</Properties>
 		<ChildObjects>
 			<Form>ReportForm</Form>
-			<Template>MainDataCompositionSchema</Template>
+			<Template>GeneralLedger</Template>
 		</ChildObjects>
 	</Report>
 </MetaDataObject>

@@ -10,6 +10,13 @@
 
 Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 	
+	// Document date adjustment patch (tunes the date of drafts like for the new documents).
+	If  WriteMode = DocumentWriteMode.Posting And Not Posted // Posting of new or draft (saved but unposted) document.
+	And BegOfDay(Date) = BegOfDay(CurrentSessionDate()) Then // Operational posting (by the current date).
+		// Shift document time to the time of posting.
+		Date = CurrentSessionDate();
+	EndIf;
+	
 	// Save document parameters before posting the document
 	If WriteMode = DocumentWriteMode.Posting
 	Or WriteMode = DocumentWriteMode.UndoPosting Then
@@ -113,7 +120,7 @@ EndProcedure
 
 Procedure OnCopy(CopiedObject)
 	
-	// Clear manual ajustment attribute
+	// Clear manual adjustment attribute
 	ManualAdjustment = False;
 	
 EndProcedure
@@ -148,62 +155,7 @@ Procedure Posting(Cancel, PostingMode)
 	
 	
 	// -> CODE REVIEW
-	RegisterInventory = True;
-	
-	If BegBal Then
-				
-		Reg = AccountingRegisters.GeneralJournal.CreateRecordSet();
-		Reg.Filter.Recorder.Set(Ref);
-		Reg.Clear();
-		RegLine = Reg.AddCredit();
-		RegLine.Account = APAccount;
-		RegLine.Period = Date;
-		If GetFunctionalOption("MultiCurrency") Then
-			RegLine.Amount = DocumentTotal;
-		Else
-			RegLine.Amount = DocumentTotalRC;
-		EndIf;
-		RegLine.AmountRC = DocumentTotalRC;
-		RegLine.Currency = Currency;
-		RegLine.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Company] = Company;
-		RegLine.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Document] = Ref;
-		Reg.Write();
 		
-		Return;
-		
-	EndIf;
-	
-	If RegisterInventory Then
-		
-		RegisterRecords.InventoryJrnl.Write = True;
-		
-		For Each CurRowLineItems In LineItems Do
-			If CurRowLineItems.Product.Type = Enums.InventoryTypes.Inventory Then
-				Record = RegisterRecords.InventoryJrnl.Add();
-				Record.RecordType = AccumulationRecordType.Receipt;
-				Record.Period = Date;
-				Record.Product = CurRowLineItems.Product;
-				Record.Location = CurRowLineItems.LocationActual;
-				If CurRowLineItems.Product.CostingMethod = Enums.InventoryCosting.WeightedAverage Then
-				Else
-					Record.Layer = Ref;
-				EndIf;
-				Record.Qty = CurRowLineItems.Quantity;				
-				ItemAmount = 0;
-				ItemAmount = CurRowLineItems.Quantity * CurRowLineItems.Price * ExchangeRate; 
-				Record.Amount = ItemAmount;
-				
-				// Updating the ItemLastCost register
-				Reg = InformationRegisters.ItemLastCost.CreateRecordManager();
-				Reg.Product = CurRowLineItems.Product;
-				Reg.Cost = CurRowLineItems.Price * ExchangeRate;
-				Reg.Write(True);
-				
-			EndIf;
-		EndDo;
-		
-	EndIf;
-	
 	PostingDataset = New ValueTable();
 	PostingDataset.Columns.Add("Account");
 	PostingDataset.Columns.Add("AmountRC");
@@ -313,44 +265,44 @@ Procedure Posting(Cancel, PostingMode)
 	RegisterRecords.ProjectData.Write = True;
 	RegisterRecords.ClassData.Write	=True;
 	For Each CurRowLineItems In LineItems Do
-		Record = RegisterRecords.ProjectData.Add();
-		Record.RecordType = AccumulationRecordType.Expense;
-		Record.Period = Date;
-		Record.Project = CurRowLineItems.Project;
-		Record.Amount = CurRowLineItems.LineTotal;
 		
-		If CurRowLineItems.Product.Type = Enums.InventoryTypes.Inventory Then
-			ProductAccountType = CurRowLineItems.Product.COGSAccount.AccountType;
-		Else
+		If CurRowLineItems.Product.Type = Enums.InventoryTypes.NonInventory Then
+		//	ProductAccountType = CurRowLineItems.Product.COGSAccount.AccountType;
+		//Else
 			ProductAccountType = CurRowLineItems.Product.InventoryOrExpenseAccount.AccountType;
-		EndIf;
-		If (ProductAccountType = Enums.AccountTypes.Expense) OR
-			(ProductAccountType = Enums.AccountTypes.OtherExpense) OR
-			(ProductAccountType = Enums.AccountTypes.CostOfSales) OR
-			(ProductAccountType = Enums.AccountTypes.IncomeTaxExpense) OR
-			(ProductAccountType = Enums.AccountTypes.Income) OR
-			(ProductAccountType = Enums.AccountTypes.OtherIncome) Then
-			
-			Record = RegisterRecords.ClassData.Add();
-			Record.RecordType = AccumulationRecordType.Expense;
-			Record.Period = Date;
-			test = CurRowLineItems.Product.Type;
-			If CurRowLineItems.Product.Type = Enums.InventoryTypes.Inventory Then
-				Record.Account = CurRowLineItems.Product.COGSAccount;
-			Else
+		//EndIf;
+			If (ProductAccountType = Enums.AccountTypes.Expense) OR
+				(ProductAccountType = Enums.AccountTypes.OtherExpense) OR
+				(ProductAccountType = Enums.AccountTypes.CostOfSales) OR
+				(ProductAccountType = Enums.AccountTypes.IncomeTaxExpense) OR
+				(ProductAccountType = Enums.AccountTypes.Income) OR
+				(ProductAccountType = Enums.AccountTypes.OtherIncome) Then
+				
+				//ClassData
+				Record = RegisterRecords.ClassData.Add();
+				Record.RecordType = AccumulationRecordType.Expense;
+				Record.Period = Date;
+				//If CurRowLineItems.Product.Type = Enums.InventoryTypes.Inventory Then
+					//Record.Account = CurRowLineItems.Product.COGSAccount;
+				//Else
 				Record.Account = CurRowLineItems.Product.InventoryOrExpenseAccount;
+				//EndIf;
+				Record.Class = CurRowLineItems.Class;
+				Record.Amount = CurRowLineItems.LineTotal;	
+				
+				//ProjectData
+				Record = RegisterRecords.ProjectData.Add();
+				Record.RecordType = AccumulationRecordType.Expense;
+				Record.Period = Date;
+				Record.Account = CurRowLineItems.Product.InventoryOrExpenseAccount;
+				Record.Project = CurRowLineItems.Project;
+				Record.Amount = CurRowLineItems.LineTotal;
+				
 			EndIf;
-			Record.Class = CurRowLineItems.Class;
-			Record.Amount = CurRowLineItems.LineTotal;	
 		EndIf;
 	EndDo;
 	
 	For Each CurRowAccount In Accounts Do
-		Record = RegisterRecords.ProjectData.Add();
-		Record.RecordType = AccumulationRecordType.Expense;
-		Record.Period = Date;
-		Record.Project = CurRowAccount.Project;
-		Record.Amount = CurRowAccount.Amount;
 		
 		If (CurRowAccount.Account.AccountType = Enums.AccountTypes.Expense) OR
 			(CurRowAccount.Account.AccountType = Enums.AccountTypes.OtherExpense) OR
@@ -359,81 +311,30 @@ Procedure Posting(Cancel, PostingMode)
 			(CurRowAccount.Account.AccountType = Enums.AccountTypes.Income) OR
 			(CurRowAccount.Account.AccountType = Enums.AccountTypes.OtherIncome) Then
 
+			//ClassData
 			Record = RegisterRecords.ClassData.Add();
 			Record.RecordType = AccumulationRecordType.Expense;
 			Record.Period = Date;
 			Record.Account = CurRowAccount.Account;
 			Record.Class = CurRowAccount.Class;
 			Record.Amount = CurRowAccount.Amount;
+			
+			//ProjectData
+			Record = RegisterRecords.ProjectData.Add();
+			Record.RecordType = AccumulationRecordType.Expense;
+			Record.Period = Date;
+			Record.Account = CurRowAccount.Account;
+			Record.Project = CurRowAccount.Project;
+			Record.Amount = CurRowAccount.Amount;
+			
 		EndIf;
+		
 	EndDo;
 	// <- CODE REVIEW
 	
 EndProcedure
 
-Procedure UndoPosting(Cancel)
-	
-	// -> CODE REVIEW
-	If BegBal Then
-		Return;
-	EndIf;
-	
-	Query = New Query("SELECT
-					  |	PurchaseInvoiceLineItems.Product,
-					  |	PurchaseInvoiceLineItems.LocationActual,
-					  |	SUM(PurchaseInvoiceLineItems.Quantity) AS Quantity
-					  |FROM
-					  |	Document.PurchaseInvoice.LineItems AS PurchaseInvoiceLineItems
-					  |WHERE
-					  |	PurchaseInvoiceLineItems.Ref = &Ref
-					  |	AND PurchaseInvoiceLineItems.Product.Type = VALUE(Enum.InventoryTypes.Inventory)
-					  |
-					  |GROUP BY
-					  |	PurchaseInvoiceLineItems.Product,
-					  |	PurchaseInvoiceLineItems.LocationActual");
-	Query.SetParameter("Ref", Ref);
-	Dataset = Query.Execute().Select();
-	
-	//AllowNegativeInventory = Constants.AllowNegativeInventory.Get();
-	
-	While Dataset.Next() Do
-	
-		CurrentBalance = 0;
-		
-		Query2 = New Query("SELECT
-						  |	InventoryJrnlBalance.QtyBalance
-						  |FROM
-						  |	AccumulationRegister.InventoryJrnl.Balance AS InventoryJrnlBalance
-						  |WHERE
-						  |	InventoryJrnlBalance.Product = &Product
-						  |	AND InventoryJrnlBalance.Location = &Location");			
-		
-		Query2.SetParameter("Product", Dataset.Product);
-		Query2.SetParameter("Location", Dataset.LocationActual);
-		
-		QueryResult = Query2.Execute();
-			
-		If QueryResult.IsEmpty() Then
-		Else
-			Dataset2 = QueryResult.Unload();
-			CurrentBalance = Dataset2[0][0];
-		EndIf;
-						
-		If Dataset.Quantity > CurrentBalance Then
-			CurProd = Dataset.Product;
-			Message = New UserMessage();
-			Message.Text= StringFunctionsClientServer.SubstituteParametersInString(
-			NStr("en='Insufficient balance on %1';de='Nicht ausreichende Bilanz'"),CurProd);
-			Message.Message();
-			//If NOT AllowNegativeInventory Then
-				Cancel = True;
-				Return;
-			//EndIf;
-		EndIf;
-		
-	EndDo;
-	// <- CODE REVIEW
-	
+Procedure UndoPosting(Cancel)	
 	
 	// 1. Common posting clearing / deactivate manual ajusted postings
 	DocumentPosting.PrepareRecordSetsForPostingClearing(AdditionalProperties, RegisterRecords);

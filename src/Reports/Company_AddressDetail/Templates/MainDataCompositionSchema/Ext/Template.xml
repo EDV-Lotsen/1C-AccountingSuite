@@ -227,16 +227,6 @@
 			<field>OwnerPriceLevel</field>
 		</field>
 		<field xsi:type="DataSetFieldField">
-			<dataPath>OwnerRef1</dataPath>
-			<field>OwnerRef1</field>
-			<title xsi:type="v8:LocalStringType">
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Owner ref1</v8:content>
-				</v8:item>
-			</title>
-		</field>
-		<field xsi:type="DataSetFieldField">
 			<dataPath>OwnerSalesPerson</dataPath>
 			<field>OwnerSalesPerson</field>
 		</field>
@@ -312,6 +302,30 @@
 			<dataPath>ZIP</dataPath>
 			<field>ZIP</field>
 		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>OwnerFederalIDType</dataPath>
+			<field>OwnerFederalIDType</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>OwnerFullName</dataPath>
+			<field>OwnerFullName</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>OwnerRef</dataPath>
+			<field>OwnerRef</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>OwnerResaleNO</dataPath>
+			<field>OwnerResaleNO</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>OwnerSalesTaxRate</dataPath>
+			<field>OwnerSalesTaxRate</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>OwnerTaxable</dataPath>
+			<field>OwnerTaxable</field>
+		</field>
 		<dataSource>DataSource1</dataSource>
 		<query>SELECT
 	Addresses.Ref,
@@ -350,11 +364,13 @@
 	Addresses.Predefined,
 	Addresses.PredefinedDataName,
 	Addresses.Presentation,
-	Addresses.Owner.Ref AS OwnerRef1,
+	Addresses.Owner.Ref,
 	Addresses.Owner.DataVersion,
 	Addresses.Owner.DeletionMark,
 	Addresses.Owner.Code,
 	Addresses.Owner.Description,
+	Addresses.Owner.FullName,
+	Addresses.Owner.FederalIDType,
 	Addresses.Owner.USTaxID,
 	Addresses.Owner.DefaultCurrency,
 	Addresses.Owner.Vendor1099,
@@ -365,8 +381,8 @@
 	Addresses.Owner.Website,
 	Addresses.Owner.Notes,
 	Addresses.Owner.Terms,
-	Addresses.Owner.StripeToken,
 	Addresses.Owner.StripeID,
+	Addresses.Owner.StripeToken,
 	Addresses.Owner.ARAccount,
 	Addresses.Owner.APAccount,
 	Addresses.Owner.PriceLevel,
@@ -388,6 +404,9 @@
 	Addresses.Owner.CF5Num,
 	Addresses.Owner.bitcoin_address,
 	Addresses.Owner.SalesPerson,
+	Addresses.Owner.Taxable,
+	Addresses.Owner.SalesTaxRate,
+	Addresses.Owner.ResaleNO,
 	Addresses.Owner.Predefined,
 	Addresses.Owner.PredefinedDataName,
 	Addresses.Owner.Presentation
@@ -475,9 +494,6 @@ FROM
 					<dcsset:field>Owner</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>OwnerRef1</dcsset:field>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>OwnerVendor1099</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
@@ -547,6 +563,12 @@ FROM
 					<dcsset:field>OwnerExpenseAccount</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>OwnerFederalIDType</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>OwnerFullName</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>OwnerIncomeAccount</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
@@ -571,10 +593,16 @@ FROM
 					<dcsset:field>OwnerPriceLevel</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>OwnerRef</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>OwnerResaleNO</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>OwnerSalesPerson</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>OwnerSalesTaxCode</dcsset:field>
+					<dcsset:field>OwnerSalesTaxRate</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>OwnerStripeID</dcsset:field>
@@ -584,6 +612,9 @@ FROM
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>OwnerUSTaxID</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>OwnerTaxable</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>OwnerTerms</dcsset:field>
