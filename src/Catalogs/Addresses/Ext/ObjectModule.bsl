@@ -2,6 +2,7 @@
 Procedure BeforeWrite(Cancel)
 	
 	If IsNew() Then
+		NewObject = True;
 	  addrQuery = New Query("SELECT
 	                        | Addresses.Ref
 	                        |FROM
@@ -47,7 +48,8 @@ Procedure BeforeWrite(Cancel)
 	   Message("Another address is already set as the default shipping address.");
 	   Cancel = True;
 	  EndIf;
-	 Else
+  Else
+	  NewObject = False;
 	  addrQuery = New Query("SELECT
 	                        | Addresses.Ref
 	                        |FROM

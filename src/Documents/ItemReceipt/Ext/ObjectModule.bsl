@@ -67,8 +67,8 @@ Procedure Posting(Cancel, PostingMode)
 	PostingDataset.Columns.Add("AmountRC");
 	
 	CalculateByPlannedCosting = False;
-	PurchaseLiabilityAccount  = Constants.PurchaseLiabilityAccount.Get();
-	CostVarianceAccount       = Constants.CostVarianceAccount.Get();
+	PurchaseLiabilityAccount  = ChartsOfAccounts.ChartOfAccounts.EmptyRef(); // Constants.PurchaseLiabilityAccount.Get();
+	CostVarianceAccount       = ChartsOfAccounts.ChartOfAccounts.EmptyRef(); // Constants.CostVarianceAccount.Get();
 	
 	For Each CurRowLineItems in LineItems Do
 		// Detect inventory item in table part.

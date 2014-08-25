@@ -205,6 +205,10 @@
 				</dcscor:item>
 			</appearance>
 		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Unit</dataPath>
+			<field>Unit</field>
+		</field>
 		<dataSource>DataSource1</dataSource>
 		<query>SELECT
 	OrdersDispatchedBalance.Order,
@@ -213,24 +217,32 @@
 	OrdersDispatchedBalance.DeliveryDate AS DueDate,
 	OrdersDispatchedBalance.Project AS Project,
 	OrdersDispatchedBalance.Class AS Class,
-	OrdersDispatchedBalance.QuantityBalance AS Qty,
+	OrdersDispatchedBalance.QuantityBalance * OrdersDispatchedBalance.Unit.Factor AS Qty,
 	CASE
 		WHEN OrdersDispatchedBalance.Product.Type = VALUE(Enum.InventoryTypes.Inventory)
 			THEN CASE
 					WHEN OrdersDispatchedBalance.QuantityBalance &gt; OrdersDispatchedBalance.ReceivedBalance
-						THEN OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.ReceivedBalance
+						THEN (OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.ReceivedBalance) * OrdersDispatchedBalance.Unit.Factor
 					ELSE 0
 				END
 		ELSE CASE
 				WHEN OrdersDispatchedBalance.QuantityBalance &gt; OrdersDispatchedBalance.InvoicedBalance
-					THEN OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.InvoicedBalance
+					THEN (OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.InvoicedBalance) * OrdersDispatchedBalance.Unit.Factor
 				ELSE 0
 			END
 	END AS Backorder,
-	OrdersDispatchedBalance.ReceivedBalance AS Received,
-	OrdersDispatchedBalance.InvoicedBalance AS Invoiced,
-	PurchaseOrderLineItems.Price,
-	PurchaseOrderLineItems.LineTotal
+	OrdersDispatchedBalance.ReceivedBalance * OrdersDispatchedBalance.Unit.Factor AS Received,
+	OrdersDispatchedBalance.InvoicedBalance * OrdersDispatchedBalance.Unit.Factor AS Invoiced,
+	CASE
+		WHEN PurchaseOrderLineItems.QtyUM &gt; 0
+			THEN PurchaseOrderLineItems.LineTotal / PurchaseOrderLineItems.QtyUM
+		ELSE PurchaseOrderLineItems.PriceUnits / CASE
+				WHEN PurchaseOrderLineItems.Unit.Factor &gt; 0
+					THEN PurchaseOrderLineItems.Unit.Factor
+				ELSE 1
+			END
+	END * PurchaseOrderLineItems.Ref.ExchangeRate AS Price,
+	PurchaseOrderLineItems.LineTotal * PurchaseOrderLineItems.Ref.ExchangeRate AS LineTotal
 INTO TT
 FROM
 	AccumulationRegister.OrdersDispatched.Balance({(&amp;P)}, {(Order.Date BETWEEN &amp;BeginOfPeriod AND &amp;EndOfPeriod)}) AS OrdersDispatchedBalance
@@ -241,6 +253,8 @@ FROM
 			AND OrdersDispatchedBalance.DeliveryDate = PurchaseOrderLineItems.DeliveryDate
 			AND OrdersDispatchedBalance.Project = PurchaseOrderLineItems.Project
 			AND OrdersDispatchedBalance.Class = PurchaseOrderLineItems.Class
+			AND OrdersDispatchedBalance.Unit = PurchaseOrderLineItems.Unit
+			AND OrdersDispatchedBalance.Company = PurchaseOrderLineItems.Ref.Company
 ;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -252,12 +266,12 @@ SELECT
 	TT.Item.PreferredVendor,
 	TT.DueDate,
 	TT.Order.Company AS Customer,
-	TT.Qty,
-	TT.Received,
-	TT.Invoiced,
-	TT.Backorder,
-	TT.LineTotal AS Amount,
-	TT.Backorder * TT.Price AS OpenBalance
+	SUM(TT.Qty) AS Qty,
+	SUM(TT.Received) AS Received,
+	SUM(TT.Invoiced) AS Invoiced,
+	SUM(TT.Backorder) AS Backorder,
+	SUM(TT.LineTotal) AS Amount,
+	SUM(TT.Backorder * TT.Price) AS OpenBalance
 FROM
 	TT AS TT
 WHERE
@@ -269,6 +283,15 @@ WHERE
 				THEN NOT TT.Qty = TT.Invoiced
 			ELSE TRUE
 		END
+
+GROUP BY
+	TT.Order,
+	TT.Item,
+	TT.Item.Type,
+	TT.Item.Category,
+	TT.Item.PreferredVendor,
+	TT.DueDate,
+	TT.Order.Company
 
 ORDER BY
 	TT.Order.PointInTime</query>

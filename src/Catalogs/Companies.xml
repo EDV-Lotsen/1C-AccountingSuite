@@ -30,10 +30,6 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>Customer / Vendor Central</v8:content>
 				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>Unternehmen</v8:content>
-				</v8:item>
 			</Synonym>
 			<Comment/>
 			<Hierarchical>false</Hierarchical>
@@ -250,10 +246,6 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Name</v8:content>
 						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Name</v8:content>
-						</v8:item>
 					</xr:Synonym>
 					<xr:Comment/>
 					<xr:FullTextSearch>Use</xr:FullTextSearch>
@@ -319,10 +311,6 @@
 				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Company</v8:content>
-				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>Unternehmen</v8:content>
 				</v8:item>
 			</ObjectPresentation>
 			<ExtendedObjectPresentation/>
@@ -423,10 +411,6 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Tax ID</v8:content>
 						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Steuercode</v8:content>
-						</v8:item>
 					</Synonym>
 					<Comment/>
 					<Type>
@@ -470,10 +454,6 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Default currency</v8:content>
 						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Standardwährung</v8:content>
-						</v8:item>
 					</Synonym>
 					<Comment/>
 					<Type>
@@ -512,10 +492,6 @@
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>1099 vendor</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Kontoklasse Lieferanten</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -556,10 +532,6 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Customer</v8:content>
 						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Kunde</v8:content>
-						</v8:item>
 					</Synonym>
 					<Comment/>
 					<Type>
@@ -598,10 +570,6 @@
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Vendor</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Lieferant</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -642,10 +610,6 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Expense account</v8:content>
 						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Aufwand</v8:content>
-						</v8:item>
 					</Synonym>
 					<Comment/>
 					<Type>
@@ -683,11 +647,7 @@
 					<Synonym>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Income account</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Erlöse</v8:content>
+							<v8:content>Sales</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -727,10 +687,6 @@
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Website</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Webseite</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -775,10 +731,6 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Notes</v8:content>
 						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Notizen</v8:content>
-						</v8:item>
 					</Synonym>
 					<Comment/>
 					<Type>
@@ -821,10 +773,6 @@
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Terms</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Zahlungsfrist</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -951,10 +899,6 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>A/R account</v8:content>
 						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Debitorenkonto</v8:content>
-						</v8:item>
 					</Synonym>
 					<Comment/>
 					<Type>
@@ -975,7 +919,11 @@
 					<FillChecking>DontCheck</FillChecking>
 					<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
 					<ChoiceParameterLinks/>
-					<ChoiceParameters/>
+					<ChoiceParameters>
+						<app:item name="Filter.AccountType">
+							<app:value xsi:type="xr:DesignTimeRef">Enum.AccountTypes.EnumValue.AccountsReceivable</app:value>
+						</app:item>
+					</ChoiceParameters>
 					<QuickChoice>Auto</QuickChoice>
 					<CreateOnInput>Auto</CreateOnInput>
 					<ChoiceForm/>
@@ -994,10 +942,6 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>A/P account</v8:content>
 						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Kreditorenkonto</v8:content>
-						</v8:item>
 					</Synonym>
 					<Comment/>
 					<Type>
@@ -1018,7 +962,11 @@
 					<FillChecking>DontCheck</FillChecking>
 					<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
 					<ChoiceParameterLinks/>
-					<ChoiceParameters/>
+					<ChoiceParameters>
+						<app:item name="Filter.AccountType">
+							<app:value xsi:type="xr:DesignTimeRef">Enum.AccountTypes.EnumValue.AccountsPayable</app:value>
+						</app:item>
+					</ChoiceParameters>
 					<QuickChoice>Auto</QuickChoice>
 					<CreateOnInput>Auto</CreateOnInput>
 					<ChoiceForm/>
@@ -1036,10 +984,6 @@
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Price level</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Preisniveau </v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -1210,10 +1154,6 @@
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Type</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Typ</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>

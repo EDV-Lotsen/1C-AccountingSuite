@@ -30,10 +30,6 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>Bank reconciliation</v8:content>
 				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>Bankbuch</v8:content>
-				</v8:item>
 			</Synonym>
 			<Comment/>
 			<UseStandardCommands>true</UseStandardCommands>
@@ -208,7 +204,6 @@
 			<SequenceFilling>AutoFill</SequenceFilling>
 			<RegisterRecords>
 				<xr:Item xsi:type="xr:MDObjectRef">AccumulationRegister.CashFlowData</xr:Item>
-				<xr:Item xsi:type="xr:MDObjectRef">AccountingRegister.GeneralJournal</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">AccumulationRegister.BankReconciliation</xr:Item>
 			</RegisterRecords>
 			<PostInPrivilegedMode>true</PostInPrivilegedMode>
@@ -224,10 +219,6 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>Bank reconciliations</v8:content>
 				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>Bankbücher</v8:content>
-				</v8:item>
 			</ListPresentation>
 			<ExtendedListPresentation/>
 			<Explanation/>
@@ -241,10 +232,6 @@
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Bank account</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Bankkonto</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -362,11 +349,7 @@
 					<Synonym>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Beginning balance</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Anfangsbestand</v8:content>
+							<v8:content>Item adjustment</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -496,10 +479,6 @@
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Difference</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Differenz</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -679,10 +658,6 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Memo</v8:content>
 						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Kommentar</v8:content>
-						</v8:item>
 					</Synonym>
 					<Comment/>
 					<Type>
@@ -828,11 +803,7 @@
 					<Synonym>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Line items</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Artikel</v8:content>
+							<v8:content>Products</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -840,10 +811,6 @@
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Reconciliation documents</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Belege für Abstimmung</v8:content>
 						</v8:item>
 					</ToolTip>
 					<FillChecking>DontCheck</FillChecking>
@@ -884,14 +851,11 @@
 									<v8:lang>en</v8:lang>
 									<v8:content>Transaction</v8:content>
 								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Transaktion</v8:content>
-								</v8:item>
 							</Synonym>
 							<Comment/>
 							<Type>
 								<v8:Type>cfg:DocumentRef.BankTransfer</v8:Type>
+								<v8:Type>cfg:DocumentRef.GeneralJournalEntry</v8:Type>
 								<v8:Type>cfg:DocumentRef.Deposit</v8:Type>
 								<v8:Type>cfg:DocumentRef.CashSale</v8:Type>
 								<v8:Type>cfg:DocumentRef.Check</v8:Type>

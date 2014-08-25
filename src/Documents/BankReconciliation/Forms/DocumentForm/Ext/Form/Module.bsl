@@ -14,18 +14,14 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	If Object.Ref.IsEmpty() Then
 		Object.BankAccount = Constants.BankAccount.Get();
 		Object.Date = CurrentDate();
-		Object.BankServiceChargeAccount 	= Constants.BankServiceChargeAccount.Get();
-		Object.BankInterestEarnedAccount 	= Constants.BankInterestEarnedAccount.Get();
+		
 		//Auto-fill beginning balance and available documents
 		Object.BeginningBalance = GetBeginningBalance(Object.BankAccount, Object.Date, Object.Ref);
-		Object.InterestEarnedDate = Object.Date;
-		Object.ServiceChargeDate = Object.Date;
-		
+				
 		FillReconciliationSpec(Object.Date, Object.BankAccount);
 		//Calculate totals
 		Object.ClearedAmount = 0;
-		Object.ClearedBalance = Object.BeginningBalance + Object.InterestEarned -
-		Object.ServiceCharge + Object.ClearedAmount;	
+		Object.ClearedBalance = Object.BeginningBalance + Object.ClearedAmount;	
 		Object.Difference = Object.EndingBalance - Object.ClearedBalance;
 	
 		Items.LineItemsCleared.FooterText = Format(Object.ClearedAmount, "NFD=2; NZ=");	
@@ -153,8 +149,7 @@ Procedure OnReadAtServer(CurrentObject)
 	For Each ClearedRow In ClearedRows Do
 		Object.ClearedAmount = Object.ClearedAmount + ClearedRow.TransactionAmount;
 	EndDo;
-	Object.ClearedBalance = Object.BeginningBalance + Object.InterestEarned -
-		Object.ServiceCharge + Object.ClearedAmount;	
+	Object.ClearedBalance = Object.BeginningBalance + Object.ClearedAmount;	
 	Object.Difference = Object.EndingBalance - Object.ClearedBalance;
 	
 	Items.LineItemsCleared.FooterText = Format(Object.ClearedAmount, "NFD=2; NZ=");
@@ -182,25 +177,7 @@ EndProcedure
 
 &AtServer
 Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
-	
-	If Not ValueIsFilled(Object.BankInterestEarnedAccount) And (ValueIsFilled(Object.InterestEarned)) Then
-		Cancel = True;
-		Message = New UserMessage();
-		Message.SetData(Object);
-		Message.Field = "Object.BankInterestEarnedAccount";
-		Message.Text = NStr("en = 'Bank interest earned account is not filled'");
-		Message.Message();
-	EndIf;
-	
-	If (Not ValueIsFilled(Object.BankServiceChargeAccount)) And (ValueIsFilled(Object.ServiceCharge)) Then
-		Cancel = True;
-		Message = New UserMessage();
-		Message.SetData(Object);
-		Message.Field = "Object.BankServiceChargeAccount";
-		Message.Text = NStr("en = 'Bank service charge account is not filled'");
-		Message.Message();
-	EndIf;
-     
+		     
 EndProcedure
 
 &AtClient
@@ -239,24 +216,6 @@ Procedure StatementToDateOnChange(Item)
 	Object.BeginningBalance = GetBeginningBalance(Object.BankAccount, Object.Date, Object.Ref);
 	RefillReconcilliation();
 		
-EndProcedure
-
-&AtClient
-// ServiceChargeOnChange UI event handler. The procedure recalculates a cleared balance.
-//
-Procedure ServiceChargeOnChange(Item)
-	
-	RecalcClearedBalance(0);
-	
-EndProcedure
-
-&AtClient
-// InterestEarnedOnChange UI event handler. The procedure recalculates a cleared balance.
-//
-Procedure InterestEarnedOnChange(Item)
-	
-	RecalcClearedBalance(0);
-	
 EndProcedure
 
 &AtClient
@@ -337,6 +296,16 @@ Procedure LineItemsBeforeDeleteRow(Item, Cancel)
 	EndIf;
 EndProcedure
 
+&AtClient
+Procedure LineItemsTransactionStartChoice(Item, ChoiceData, StandardProcessing)
+	StandardProcessing = False;
+EndProcedure
+
+&AtClient
+Procedure LineItemsTransactionClearing(Item, StandardProcessing)
+	StandardProcessing = False;
+EndProcedure
+
 #EndRegion
 
 #Region COMMANDS_HANDLERS
@@ -386,9 +355,7 @@ Procedure RefillReconcilliation()
 	Object.ClearedAmount = DTotal;
 	
 	RecalcClearedBalance(0);
-	Object.InterestEarnedDate = Object.Date;
-	Object.ServiceChargeDate = Object.Date;
-	
+		
 EndProcedure
 
 &AtServer
@@ -517,8 +484,7 @@ Procedure FillReconciliationSpec(Date, BankAccount)
 	For Each ClearedRow In ClearedRows Do
 		Object.ClearedAmount = Object.ClearedAmount + ClearedRow.TransactionAmount;
 	EndDo;
-	Object.ClearedBalance = Object.BeginningBalance + Object.InterestEarned -
-		Object.ServiceCharge + Object.ClearedAmount;	
+	Object.ClearedBalance = Object.BeginningBalance + Object.ClearedAmount;	
 	Object.Difference = Object.EndingBalance - Object.ClearedBalance;
 	
 	Items.LineItemsCleared.FooterText = Format(Object.ClearedAmount, "NFD=2; NZ=");
@@ -537,8 +503,7 @@ EndProcedure
 Procedure RecalcClearedBalance(Amount)
 	
 	Object.ClearedAmount = Object.ClearedAmount + Amount;	
-	Object.ClearedBalance = Object.BeginningBalance + Object.InterestEarned -
-		Object.ServiceCharge + Object.ClearedAmount;	
+	Object.ClearedBalance = Object.BeginningBalance + Object.ClearedAmount;	
 	Object.Difference = Object.EndingBalance - Object.ClearedBalance;
 	
 	Items.LineItemsCleared.FooterText = Format(Object.ClearedAmount, "NFD=2; NZ=");	

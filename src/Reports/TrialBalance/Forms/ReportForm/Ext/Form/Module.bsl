@@ -193,3 +193,11 @@ Procedure OnUpdateUserSettingSetAtServer(StandardProcessing)
 		
 EndProcedure
 
+&AtClient
+Procedure Excel(Command)
+	
+	Structure = GeneralFunctions.GetExcelFile("Trial balance", Result);
+	
+	GetFile(Structure.Address, Structure.FileName, True); 
+
+EndProcedure

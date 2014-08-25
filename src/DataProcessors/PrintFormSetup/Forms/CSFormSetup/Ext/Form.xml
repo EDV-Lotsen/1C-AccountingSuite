@@ -1,0 +1,731 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<WindowOpeningMode>LockOwnerWindow</WindowOpeningMode>
+	<VerticalScroll>useIfNecessary</VerticalScroll>
+	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<Events>
+		<Event name="AfterWrite">AfterWrite</Event>
+		<Event name="AfterWriteAtServer">AfterWriteAtServer</Event>
+		<Event name="OnOpen">OnOpen</Event>
+		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+		<Event name="BeforeWriteAtServer">BeforeWriteAtServer</Event>
+		<Event name="OnWriteAtServer">OnWriteAtServer</Event>
+		<Event name="FillCheckProcessingAtServer">FillCheckProcessingAtServer</Event>
+	</Events>
+	<ChildItems>
+		<UsualGroup name="CashSales" id="494">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Cash sales</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Cash sales</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Group>Vertical</Group>
+			<Collapsed>true</Collapsed>
+			<ControlRepresentation>Picture</ControlRepresentation>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="CashSalesExtendedTooltip" id="495"/>
+			<ChildItems>
+				<UsualGroup name="Display" id="728">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Display</v8:content>
+						</v8:item>
+					</Title>
+					<TitleTextColor>#008000</TitleTextColor>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Display</v8:content>
+						</v8:item>
+					</ToolTip>
+					<Group>Vertical</Group>
+					<ExtendedTooltip name="DisplayExtendedTooltip" id="729"/>
+					<ChildItems>
+						<UsualGroup name="TopRow" id="730">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Top row</v8:content>
+								</v8:item>
+							</Title>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Top row</v8:content>
+								</v8:item>
+							</ToolTip>
+							<Group>Horizontal</Group>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="TopRowExtendedTooltip" id="731"/>
+							<ChildItems>
+								<CheckBoxField name="CSShowPhone2" id="732">
+									<DataPath>ConstantsSet.CSShowPhone2</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Show Mobile</v8:content>
+										</v8:item>
+									</Title>
+									<CheckBoxType>Auto</CheckBoxType>
+									<ContextMenu name="CSShowPhone2ContextMenu" id="733"/>
+									<ExtendedTooltip name="CSShowPhone2ExtendedTooltip" id="734"/>
+								</CheckBoxField>
+								<CheckBoxField name="CSShowEmail" id="735">
+									<DataPath>ConstantsSet.CSShowEmail</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Show Email</v8:content>
+										</v8:item>
+									</Title>
+									<CheckBoxType>Auto</CheckBoxType>
+									<ContextMenu name="CSShowEmailContextMenu" id="736"/>
+									<ExtendedTooltip name="CSShowEmailExtendedTooltip" id="737"/>
+								</CheckBoxField>
+								<CheckBoxField name="CSShowWebsite" id="744">
+									<DataPath>ConstantsSet.CSShowWebsite</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Show Website</v8:content>
+										</v8:item>
+									</Title>
+									<CheckBoxType>Auto</CheckBoxType>
+									<ContextMenu name="CSShowWebsiteContextMenu" id="745"/>
+									<ExtendedTooltip name="CSShowWebsiteExtendedTooltip" id="746"/>
+								</CheckBoxField>
+							</ChildItems>
+						</UsualGroup>
+						<UsualGroup name="SecondRow" id="910">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Second row</v8:content>
+								</v8:item>
+							</Title>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Second row</v8:content>
+								</v8:item>
+							</ToolTip>
+							<Group>Horizontal</Group>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="SecondRowExtendedTooltip" id="911"/>
+							<ChildItems>
+								<CheckBoxField name="CSShowFullName" id="907">
+									<DataPath>ConstantsSet.CSShowFullName</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Show Contact Name</v8:content>
+										</v8:item>
+									</Title>
+									<CheckBoxType>Auto</CheckBoxType>
+									<ContextMenu name="CSShowFullNameContextMenu" id="908"/>
+									<ExtendedTooltip name="CSShowFullNameExtendedTooltip" id="909"/>
+								</CheckBoxField>
+								<CheckBoxField name="CSShowFedTax" id="738">
+									<DataPath>ConstantsSet.CSShowFedTax</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Show Federal Tax ID</v8:content>
+										</v8:item>
+									</Title>
+									<CheckBoxType>Auto</CheckBoxType>
+									<ContextMenu name="CSShowFedTaxContextMenu" id="739"/>
+									<ExtendedTooltip name="CSShowFedTaxExtendedTooltip" id="740"/>
+								</CheckBoxField>
+								<CheckBoxField name="CSShowFax" id="741">
+									<DataPath>ConstantsSet.CSShowFax</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Show Fax</v8:content>
+										</v8:item>
+									</Title>
+									<CheckBoxType>Auto</CheckBoxType>
+									<ContextMenu name="CSShowFaxContextMenu" id="742"/>
+									<ExtendedTooltip name="CSShowFaxExtendedTooltip" id="743"/>
+								</CheckBoxField>
+							</ChildItems>
+						</UsualGroup>
+					</ChildItems>
+				</UsualGroup>
+				<Pages name="SIFooterPage" id="866">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>SIFooter page</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>SIFooter page</v8:content>
+						</v8:item>
+					</ToolTip>
+					<ExtendedTooltip name="SIFooterPageExtendedTooltip" id="867"/>
+					<ChildItems>
+						<Page name="LeftPage" id="868">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Left Footer Column</v8:content>
+								</v8:item>
+							</Title>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Left page</v8:content>
+								</v8:item>
+							</ToolTip>
+							<ExtendedTooltip name="LeftPageExtendedTooltip" id="869"/>
+							<ChildItems>
+								<UsualGroup name="Left" id="747">
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Footer Left</v8:content>
+										</v8:item>
+									</Title>
+									<ToolTip>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Left</v8:content>
+										</v8:item>
+									</ToolTip>
+									<Group>Vertical</Group>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="LeftExtendedTooltip" id="748"/>
+									<ChildItems>
+										<RadioButtonField name="CSFoot1Type" id="749">
+											<DataPath>ConstantsSet.CSFoot1Type</DataPath>
+											<TitleLocation>None</TitleLocation>
+											<RadioButtonType>RadioButtons</RadioButtonType>
+											<ChoiceList>
+												<xr:Item>
+													<xr:Presentation/>
+													<xr:CheckState>0</xr:CheckState>
+													<xr:Value xsi:type="FormChoiceListDesTimeValue">
+														<Presentation/>
+														<Value xsi:type="xr:DesignTimeRef">Enum.TextOrImage.EnumValue.Text</Value>
+													</xr:Value>
+												</xr:Item>
+												<xr:Item>
+													<xr:Presentation/>
+													<xr:CheckState>0</xr:CheckState>
+													<xr:Value xsi:type="FormChoiceListDesTimeValue">
+														<Presentation/>
+														<Value xsi:type="xr:DesignTimeRef">Enum.TextOrImage.EnumValue.Image</Value>
+													</xr:Value>
+												</xr:Item>
+												<xr:Item>
+													<xr:Presentation/>
+													<xr:CheckState>0</xr:CheckState>
+													<xr:Value xsi:type="FormChoiceListDesTimeValue">
+														<Presentation/>
+														<Value xsi:type="xr:DesignTimeRef">Enum.TextOrImage.EnumValue.None</Value>
+													</xr:Value>
+												</xr:Item>
+											</ChoiceList>
+											<ContextMenu name="CSFoot1TypeContextMenu" id="750"/>
+											<ExtendedTooltip name="CSFoot1TypeExtendedTooltip" id="751"/>
+										</RadioButtonField>
+										<UsualGroup name="FooterLeft" id="752">
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Footer left</v8:content>
+												</v8:item>
+											</Title>
+											<ToolTip>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Footer left</v8:content>
+												</v8:item>
+											</ToolTip>
+											<Group>Horizontal</Group>
+											<ShowTitle>false</ShowTitle>
+											<ExtendedTooltip name="FooterLeftExtendedTooltip" id="753"/>
+											<ChildItems>
+												<InputField name="CSFooterTextLeft" id="754">
+													<DataPath>ConstantsSet.CSFooterTextLeft</DataPath>
+													<Title>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Text</v8:content>
+														</v8:item>
+													</Title>
+													<Height>5</Height>
+													<HorizontalStretch>false</HorizontalStretch>
+													<VerticalStretch>false</VerticalStretch>
+													<ContextMenu name="CSFooterTextLeftContextMenu" id="755"/>
+													<ExtendedTooltip name="CSFooterTextLeftExtendedTooltip" id="756"/>
+												</InputField>
+												<UsualGroup name="Group6" id="757">
+													<Group>Vertical</Group>
+													<ShowTitle>false</ShowTitle>
+													<ExtendedTooltip name="Group6ExtendedTooltip" id="758"/>
+													<ChildItems>
+														<Button name="UploadFooter1" id="798">
+															<Type>UsualButton</Type>
+															<CommandName>Form.Command.UploadFooter1</CommandName>
+															<Title>
+																<v8:item>
+																	<v8:lang>en</v8:lang>
+																	<v8:content>Upload Left Image</v8:content>
+																</v8:item>
+															</Title>
+															<ExtendedTooltip name="UploadFooter1ExtendedTooltip" id="799"/>
+														</Button>
+														<PictureField name="CSFooterImageAddr1" id="759">
+															<DataPath>CSFooterImageAddr1</DataPath>
+															<TitleLocation>None</TitleLocation>
+															<Width>30</Width>
+															<HorizontalStretch>false</HorizontalStretch>
+															<VerticalStretch>false</VerticalStretch>
+															<ContextMenu name="CSFooterImageAddr1ContextMenu" id="760"/>
+															<ExtendedTooltip name="CSFooterImageAddr1ExtendedTooltip" id="761"/>
+														</PictureField>
+													</ChildItems>
+												</UsualGroup>
+											</ChildItems>
+										</UsualGroup>
+									</ChildItems>
+								</UsualGroup>
+							</ChildItems>
+						</Page>
+						<Page name="CenterPage" id="870">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Center Footer Column</v8:content>
+								</v8:item>
+							</Title>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Center page</v8:content>
+								</v8:item>
+							</ToolTip>
+							<ExtendedTooltip name="CenterPageExtendedTooltip" id="871"/>
+							<ChildItems>
+								<UsualGroup name="Center" id="762">
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Footer Center</v8:content>
+										</v8:item>
+									</Title>
+									<ToolTip>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Center</v8:content>
+										</v8:item>
+									</ToolTip>
+									<Group>Vertical</Group>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="CenterExtendedTooltip" id="763"/>
+									<ChildItems>
+										<RadioButtonField name="CSFoot2Type" id="764">
+											<DataPath>ConstantsSet.CSFoot2Type</DataPath>
+											<TitleLocation>None</TitleLocation>
+											<RadioButtonType>RadioButtons</RadioButtonType>
+											<ChoiceList>
+												<xr:Item>
+													<xr:Presentation/>
+													<xr:CheckState>0</xr:CheckState>
+													<xr:Value xsi:type="FormChoiceListDesTimeValue">
+														<Presentation/>
+														<Value xsi:type="xr:DesignTimeRef">Enum.TextOrImage.EnumValue.Text</Value>
+													</xr:Value>
+												</xr:Item>
+												<xr:Item>
+													<xr:Presentation/>
+													<xr:CheckState>0</xr:CheckState>
+													<xr:Value xsi:type="FormChoiceListDesTimeValue">
+														<Presentation/>
+														<Value xsi:type="xr:DesignTimeRef">Enum.TextOrImage.EnumValue.Image</Value>
+													</xr:Value>
+												</xr:Item>
+												<xr:Item>
+													<xr:Presentation/>
+													<xr:CheckState>0</xr:CheckState>
+													<xr:Value xsi:type="FormChoiceListDesTimeValue">
+														<Presentation/>
+														<Value xsi:type="xr:DesignTimeRef">Enum.TextOrImage.EnumValue.None</Value>
+													</xr:Value>
+												</xr:Item>
+											</ChoiceList>
+											<ContextMenu name="CSFoot2TypeContextMenu" id="765"/>
+											<ExtendedTooltip name="CSFoot2TypeExtendedTooltip" id="766"/>
+										</RadioButtonField>
+										<UsualGroup name="FooterCenter" id="767">
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Footer center</v8:content>
+												</v8:item>
+											</Title>
+											<ToolTip>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Footer center</v8:content>
+												</v8:item>
+											</ToolTip>
+											<Group>Horizontal</Group>
+											<ShowTitle>false</ShowTitle>
+											<ExtendedTooltip name="FooterCenterExtendedTooltip" id="768"/>
+											<ChildItems>
+												<InputField name="CSFooterTextCenter" id="769">
+													<DataPath>ConstantsSet.CSFooterTextCenter</DataPath>
+													<Title>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Text</v8:content>
+														</v8:item>
+													</Title>
+													<Height>5</Height>
+													<HorizontalStretch>false</HorizontalStretch>
+													<VerticalStretch>false</VerticalStretch>
+													<ContextMenu name="CSFooterTextCenterContextMenu" id="770"/>
+													<ExtendedTooltip name="CSFooterTextCenterExtendedTooltip" id="771"/>
+												</InputField>
+												<UsualGroup name="Group9" id="772">
+													<Group>Vertical</Group>
+													<ShowTitle>false</ShowTitle>
+													<ExtendedTooltip name="Group9ExtendedTooltip" id="773"/>
+													<ChildItems>
+														<Button name="UploadFooter2" id="800">
+															<Type>UsualButton</Type>
+															<CommandName>Form.Command.UploadFooter2</CommandName>
+															<Title>
+																<v8:item>
+																	<v8:lang>en</v8:lang>
+																	<v8:content>Upload Center Image</v8:content>
+																</v8:item>
+															</Title>
+															<ExtendedTooltip name="UploadFooter2ExtendedTooltip" id="801"/>
+														</Button>
+														<PictureField name="CSFooterImageAddr2" id="774">
+															<DataPath>CSFooterImageAddr2</DataPath>
+															<TitleLocation>None</TitleLocation>
+															<Width>30</Width>
+															<HorizontalStretch>false</HorizontalStretch>
+															<VerticalStretch>false</VerticalStretch>
+															<ContextMenu name="CSFooterImageAddr2ContextMenu" id="775"/>
+															<ExtendedTooltip name="CSFooterImageAddr2ExtendedTooltip" id="776"/>
+														</PictureField>
+													</ChildItems>
+												</UsualGroup>
+											</ChildItems>
+										</UsualGroup>
+									</ChildItems>
+								</UsualGroup>
+							</ChildItems>
+						</Page>
+						<Page name="RightPage" id="872">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Right Footer Column</v8:content>
+								</v8:item>
+							</Title>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Right page</v8:content>
+								</v8:item>
+							</ToolTip>
+							<ExtendedTooltip name="RightPageExtendedTooltip" id="873"/>
+							<ChildItems>
+								<UsualGroup name="Right" id="777">
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Footer Right</v8:content>
+										</v8:item>
+									</Title>
+									<ToolTip>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Right</v8:content>
+										</v8:item>
+									</ToolTip>
+									<Group>Vertical</Group>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="RightExtendedTooltip" id="778"/>
+									<ChildItems>
+										<RadioButtonField name="CSFoot3Type" id="779">
+											<DataPath>ConstantsSet.CSFoot3Type</DataPath>
+											<TitleLocation>None</TitleLocation>
+											<RadioButtonType>RadioButtons</RadioButtonType>
+											<ChoiceList>
+												<xr:Item>
+													<xr:Presentation/>
+													<xr:CheckState>0</xr:CheckState>
+													<xr:Value xsi:type="FormChoiceListDesTimeValue">
+														<Presentation/>
+														<Value xsi:type="xr:DesignTimeRef">Enum.TextOrImage.EnumValue.Text</Value>
+													</xr:Value>
+												</xr:Item>
+												<xr:Item>
+													<xr:Presentation/>
+													<xr:CheckState>0</xr:CheckState>
+													<xr:Value xsi:type="FormChoiceListDesTimeValue">
+														<Presentation/>
+														<Value xsi:type="xr:DesignTimeRef">Enum.TextOrImage.EnumValue.Image</Value>
+													</xr:Value>
+												</xr:Item>
+												<xr:Item>
+													<xr:Presentation/>
+													<xr:CheckState>0</xr:CheckState>
+													<xr:Value xsi:type="FormChoiceListDesTimeValue">
+														<Presentation/>
+														<Value xsi:type="xr:DesignTimeRef">Enum.TextOrImage.EnumValue.None</Value>
+													</xr:Value>
+												</xr:Item>
+											</ChoiceList>
+											<ContextMenu name="CSFoot3TypeContextMenu" id="780"/>
+											<ExtendedTooltip name="CSFoot3TypeExtendedTooltip" id="781"/>
+										</RadioButtonField>
+										<UsualGroup name="FooterRight" id="782">
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Footer right</v8:content>
+												</v8:item>
+											</Title>
+											<ToolTip>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Footer right</v8:content>
+												</v8:item>
+											</ToolTip>
+											<Group>Horizontal</Group>
+											<ShowTitle>false</ShowTitle>
+											<ExtendedTooltip name="FooterRightExtendedTooltip" id="783"/>
+											<ChildItems>
+												<InputField name="CSFooterTextRight" id="784">
+													<DataPath>ConstantsSet.CSFooterTextRight</DataPath>
+													<Title>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Text</v8:content>
+														</v8:item>
+													</Title>
+													<Height>5</Height>
+													<HorizontalStretch>false</HorizontalStretch>
+													<VerticalStretch>false</VerticalStretch>
+													<ContextMenu name="CSFooterTextRightContextMenu" id="785"/>
+													<ExtendedTooltip name="CSFooterTextRightExtendedTooltip" id="786"/>
+												</InputField>
+												<UsualGroup name="Group10" id="787">
+													<Group>Vertical</Group>
+													<ShowTitle>false</ShowTitle>
+													<ExtendedTooltip name="Group10ExtendedTooltip" id="788"/>
+													<ChildItems>
+														<Button name="UploadFooter3" id="802">
+															<Type>UsualButton</Type>
+															<CommandName>Form.Command.UploadFooter3</CommandName>
+															<Title>
+																<v8:item>
+																	<v8:lang>en</v8:lang>
+																	<v8:content>Upload Right Image</v8:content>
+																</v8:item>
+															</Title>
+															<ExtendedTooltip name="UploadFooter3ExtendedTooltip" id="803"/>
+														</Button>
+														<PictureField name="CSFooterImageAddr3" id="789">
+															<DataPath>CSFooterImageAddr3</DataPath>
+															<TitleLocation>None</TitleLocation>
+															<Width>30</Width>
+															<HorizontalStretch>false</HorizontalStretch>
+															<VerticalStretch>false</VerticalStretch>
+															<ContextMenu name="CSFooterImageAddr3ContextMenu" id="790"/>
+															<ExtendedTooltip name="CSFooterImageAddr3ExtendedTooltip" id="791"/>
+														</PictureField>
+													</ChildItems>
+												</UsualGroup>
+											</ChildItems>
+										</UsualGroup>
+									</ChildItems>
+								</UsualGroup>
+							</ChildItems>
+						</Page>
+					</ChildItems>
+				</Pages>
+				<LabelDecoration name="Decoration3" id="795">
+					<ContextMenu name="Decoration3ContextMenu" id="796"/>
+					<ExtendedTooltip name="Decoration3ExtendedTooltip" id="797"/>
+				</LabelDecoration>
+				<InputField name="CashSaleFooter" id="485">
+					<DataPath>ConstantsSet.CashSaleFooter</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Terms and Conditions / Notes</v8:content>
+						</v8:item>
+					</Title>
+					<TitleTextColor>#008000</TitleTextColor>
+					<TitleFont ref="sys:DefaultGUIFont" height="12" kind="WindowsFont"/>
+					<VerticalStretch>false</VerticalStretch>
+					<MultiLine>true</MultiLine>
+					<ContextMenu name="CashSaleFooterContextMenu" id="486"/>
+					<ExtendedTooltip name="CashSaleFooterExtendedTooltip" id="487"/>
+				</InputField>
+			</ChildItems>
+		</UsualGroup>
+	</ChildItems>
+	<Attributes>
+		<Attribute name="ConstantsSet" id="1">
+			<Type>
+				<v8:Type>cfg:ConstantsSet</v8:Type>
+			</Type>
+			<MainAttribute>true</MainAttribute>
+			<SavedData>true</SavedData>
+			<UseAlways>
+				<Field>ConstantsSet.SalesTaxCharging</Field>
+				<Field>ConstantsSet.SOFoot3Type.Ref</Field>
+				<Field>ConstantsSet.SOFoot2Type.Ref</Field>
+				<Field>ConstantsSet.SOFoot1Type.Ref</Field>
+				<Field>ConstantsSet.SIFoot3Type.Ref</Field>
+				<Field>ConstantsSet.SIFoot2Type.Ref</Field>
+				<Field>ConstantsSet.SIFoot1Type.Ref</Field>
+				<Field>ConstantsSet.QuoteFoot3Type.Ref</Field>
+				<Field>ConstantsSet.QuoteFoot2Type.Ref</Field>
+				<Field>ConstantsSet.QuoteFoot1Type.Ref</Field>
+				<Field>ConstantsSet.PeriodClosingOption.Ref</Field>
+				<Field>ConstantsSet.POFoot3Type.Ref</Field>
+				<Field>ConstantsSet.POFoot2Type.Ref</Field>
+				<Field>ConstantsSet.POFoot1Type.Ref</Field>
+				<Field>ConstantsSet.CSFoot3Type.Ref</Field>
+				<Field>ConstantsSet.CSFoot2Type.Ref</Field>
+				<Field>ConstantsSet.CSFoot1Type.Ref</Field>
+				<Field>ConstantsSet.CRFoot3Type.Ref</Field>
+				<Field>ConstantsSet.CRFoot2Type.Ref</Field>
+				<Field>ConstantsSet.CRFoot1Type.Ref</Field>
+				<Field>ConstantsSet.CMFoot3Type.Ref</Field>
+				<Field>ConstantsSet.CMFoot2Type.Ref</Field>
+				<Field>ConstantsSet.CMFoot1Type.Ref</Field>
+			</UseAlways>
+		</Attribute>
+		<Attribute name="CSFooterImageAddr1" id="5">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>CSFooter image addr1</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="CSFooterImageAddr2" id="6">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>CSFooter image addr2</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="CSFooterImageAddr3" id="7">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>CSFooter image addr3</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+	</Attributes>
+	<Commands>
+		<Command name="UploadLogo" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Upload logo</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Upload logo</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>UploadLogo</Action>
+		</Command>
+		<Command name="UploadFooter1" id="5">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Upload footer1</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Upload footer1</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>CSUploadFooter1</Action>
+		</Command>
+		<Command name="UploadFooter2" id="6">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Upload footer2</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Upload footer2</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>CSUploadFooter2</Action>
+		</Command>
+		<Command name="UploadFooter3" id="7">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Upload footer3</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Upload footer3</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>CSUploadFooter3</Action>
+		</Command>
+	</Commands>
+</Form>

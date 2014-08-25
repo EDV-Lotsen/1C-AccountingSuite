@@ -1,22 +1,28 @@
 ﻿
 &AtClient
 Procedure CommandProcessing(CommandParameter, CommandExecuteParameters)
+	// Create a new spreadsheet.
+	Spreadsheet      = New SpreadsheetDocument;
+	SpreadsheetTitle = "";
 	
-	Spreadsheet = New SpreadsheetDocument;
+	// Output the documents to spreadsheet.
+	Print(Spreadsheet, SpreadsheetTitle, CommandParameter);
 	
-	Print(Spreadsheet, CommandParameter);
-
-	Spreadsheet.ShowGrid = False;
-	Spreadsheet.FitToPage = True;
-	Spreadsheet.Protection = False;
-	Spreadsheet.ReadOnly = False;
+	// Set the proper options and open the preview.
+	Spreadsheet.ShowGrid    = False;
 	Spreadsheet.ShowHeaders = False;
-	Spreadsheet.Show("Credit memo");
+	Spreadsheet.FitToPage   = True;
+	Spreadsheet.ReadOnly    = False;
+	Spreadsheet.Protection  = False;
+	Spreadsheet.Show(NStr("en = 'Print preview'") + ?(Not IsBlankString(SpreadsheetTitle), ": " + SpreadsheetTitle, ""));
+	
 	
 EndProcedure
 
 &AtServer
-Procedure Print(Spreadsheet, CommandParameter)
-	Documents.SalesReturn.Print(Spreadsheet, CommandParameter);
+Procedure Print(Spreadsheet, SpreadsheetTitle, CommandParameter)
+	
+	// Call document module to print the document.
+	Documents.SalesReturn.Print(Spreadsheet, SpreadsheetTitle, CommandParameter);
+	
 EndProcedure
-

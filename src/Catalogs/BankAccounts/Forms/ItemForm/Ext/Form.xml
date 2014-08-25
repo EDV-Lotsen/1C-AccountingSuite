@@ -1,15 +1,39 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
 	<WindowOpeningMode>LockOwnerWindow</WindowOpeningMode>
+	<CommandSet>
+		<ExcludedCommand>SetDeletionMark</ExcludedCommand>
+		<ExcludedCommand>Delete</ExcludedCommand>
+	</CommandSet>
 	<UseForFoldersAndItems>Items</UseForFoldersAndItems>
-	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<AutoCommandBar name="FormCommandBar" id="-1">
+		<ChildItems>
+			<Button name="EditSignInInfo" id="134">
+				<Type>CommandBarButton</Type>
+				<CommandName>Form.Command.EditSignInInfo</CommandName>
+				<TextColor>style:FieldBackColor</TextColor>
+				<BackColor>style:ColorInformationLabel</BackColor>
+				<ExtendedTooltip name="EditSignInInfoExtendedTooltip" id="135"/>
+			</Button>
+			<Button name="DeleteAccount" id="136">
+				<Type>CommandBarButton</Type>
+				<CommandName>Form.Command.DeleteAccount</CommandName>
+				<ExtendedTooltip name="DeleteAccountExtendedTooltip" id="137"/>
+			</Button>
+			<Button name="FormMergeTransactions" id="141">
+				<Type>CommandBarButton</Type>
+				<CommandName>Form.Command.MergeTransactions</CommandName>
+				<ExtendedTooltip name="FormMergeTransactionsExtendedTooltip" id="142"/>
+			</Button>
+		</ChildItems>
+	</AutoCommandBar>
 	<Events>
 		<Event name="OnOpen">OnOpen</Event>
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
 	</Events>
 	<ChildItems>
 		<UsualGroup name="Group1" id="41">
-			<Group>Horizontal</Group>
+			<Group>Vertical</Group>
 			<ExtendedTooltip name="Group1ExtendedTooltip" id="42"/>
 			<ChildItems>
 				<InputField name="Owner" id="7">
@@ -24,20 +48,353 @@
 					<ContextMenu name="OwnerContextMenu" id="8"/>
 					<ExtendedTooltip name="OwnerExtendedTooltip" id="9"/>
 				</InputField>
+				<InputField name="Description" id="4">
+					<DataPath>Object.Description</DataPath>
+					<EditMode>EnterOnInput</EditMode>
+					<ContextMenu name="DescriptionContextMenu" id="5"/>
+					<ExtendedTooltip name="DescriptionExtendedTooltip" id="6"/>
+				</InputField>
 				<InputField name="Code" id="1">
 					<DataPath>Object.Code</DataPath>
+					<Visible>false</Visible>
 					<EditMode>EnterOnInput</EditMode>
 					<ContextMenu name="CodeContextMenu" id="2"/>
 					<ExtendedTooltip name="CodeExtendedTooltip" id="3"/>
 				</InputField>
+				<UsualGroup name="BankAccountGroup" id="84">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Bank account</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Bank account group</v8:content>
+						</v8:item>
+					</ToolTip>
+					<Group>Horizontal</Group>
+					<ShowTitle>false</ShowTitle>
+					<ExtendedTooltip name="BankAccountGroupExtendedTooltip" id="85"/>
+					<ChildItems>
+						<LabelField name="AccountType" id="16">
+							<DataPath>Object.AccountType</DataPath>
+							<TitleFont ref="style:NormalTextFont" kind="StyleItem"/>
+							<TitleHeight>1</TitleHeight>
+							<EditMode>EnterOnInput</EditMode>
+							<Border width="1">
+								<v8ui:style xsi:type="v8ui:ControlBorderType">Underline</v8ui:style>
+							</Border>
+							<ContextMenu name="AccountTypeContextMenu" id="17"/>
+							<ExtendedTooltip name="AccountTypeExtendedTooltip" id="18"/>
+						</LabelField>
+					</ChildItems>
+				</UsualGroup>
+				<UsualGroup name="CreditCardAccountGroup" id="86">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Credit card account</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Credit card account group</v8:content>
+						</v8:item>
+					</ToolTip>
+					<Group>Vertical</Group>
+					<ShowTitle>false</ShowTitle>
+					<ExtendedTooltip name="CreditCardAccountGroupExtendedTooltip" id="87"/>
+					<ChildItems>
+						<LabelField name="CreditCard_Type" id="88">
+							<DataPath>Object.CreditCard_Type</DataPath>
+							<Border width="1">
+								<v8ui:style xsi:type="v8ui:ControlBorderType">Underline</v8ui:style>
+							</Border>
+							<ContextMenu name="CreditCard_TypeContextMenu" id="89"/>
+							<ExtendedTooltip name="CreditCard_TypeExtendedTooltip" id="90"/>
+						</LabelField>
+					</ChildItems>
+				</UsualGroup>
+				<UsualGroup name="BalanceGroup" id="72">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Balance</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Balance group</v8:content>
+						</v8:item>
+					</ToolTip>
+					<Group>Horizontal</Group>
+					<ShowTitle>false</ShowTitle>
+					<ExtendedTooltip name="BalanceGroupExtendedTooltip" id="73"/>
+					<ChildItems>
+						<UsualGroup name="Group2" id="62">
+							<Group>Horizontal</Group>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="Group2ExtendedTooltip" id="63"/>
+							<ChildItems>
+								<LabelField name="CurrentBalance" id="19">
+									<DataPath>Object.CurrentBalance</DataPath>
+									<ReadOnly>true</ReadOnly>
+									<EditMode>EnterOnInput</EditMode>
+									<Format>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>NFD=2; NZ=</v8:content>
+										</v8:item>
+									</Format>
+									<Border width="1">
+										<v8ui:style xsi:type="v8ui:ControlBorderType">Underline</v8ui:style>
+									</Border>
+									<Font ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
+									<ContextMenu name="CurrentBalanceContextMenu" id="20"/>
+									<ExtendedTooltip name="CurrentBalanceExtendedTooltip" id="21"/>
+								</LabelField>
+								<LabelDecoration name="CurrentBalanceCurrency" id="64">
+									<ContextMenu name="CurrentBalanceCurrencyContextMenu" id="65"/>
+									<ExtendedTooltip name="CurrentBalanceCurrencyExtendedTooltip" id="66"/>
+								</LabelDecoration>
+							</ChildItems>
+						</UsualGroup>
+						<UsualGroup name="Group3" id="67">
+							<Group>Horizontal</Group>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="Group3ExtendedTooltip" id="68"/>
+							<ChildItems>
+								<LabelField name="AvailableBalance" id="22">
+									<DataPath>Object.AvailableBalance</DataPath>
+									<ReadOnly>true</ReadOnly>
+									<EditMode>EnterOnInput</EditMode>
+									<Format>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>NFD=2; NZ=</v8:content>
+										</v8:item>
+									</Format>
+									<Border width="1">
+										<v8ui:style xsi:type="v8ui:ControlBorderType">Underline</v8ui:style>
+									</Border>
+									<Font ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
+									<ContextMenu name="AvailableBalanceContextMenu" id="23"/>
+									<ExtendedTooltip name="AvailableBalanceExtendedTooltip" id="24"/>
+								</LabelField>
+								<LabelDecoration name="AvailableBalanceCurrency" id="69">
+									<ContextMenu name="AvailableBalanceCurrencyContextMenu" id="70"/>
+									<ExtendedTooltip name="AvailableBalanceCurrencyExtendedTooltip" id="71"/>
+								</LabelDecoration>
+							</ChildItems>
+						</UsualGroup>
+					</ChildItems>
+				</UsualGroup>
+				<UsualGroup name="CreditCardBalanceGroup" id="91">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Balance</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Credit card balance group</v8:content>
+						</v8:item>
+					</ToolTip>
+					<Group>Vertical</Group>
+					<ShowTitle>false</ShowTitle>
+					<ExtendedTooltip name="CreditCardBalanceGroupExtendedTooltip" id="92"/>
+					<ChildItems>
+						<UsualGroup name="Group4" id="93">
+							<Group>Horizontal</Group>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="Group4ExtendedTooltip" id="94"/>
+							<ChildItems>
+								<UsualGroup name="Group5" id="95">
+									<Group>Horizontal</Group>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="Group5ExtendedTooltip" id="96"/>
+									<ChildItems>
+										<UsualGroup name="Group7" id="105">
+											<Group>Vertical</Group>
+											<ShowTitle>false</ShowTitle>
+											<ExtendedTooltip name="Group7ExtendedTooltip" id="106"/>
+											<ChildItems>
+												<LabelField name="RunningBalance" id="99">
+													<DataPath>Object.CurrentBalance</DataPath>
+													<ReadOnly>true</ReadOnly>
+													<Title>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Running balance</v8:content>
+														</v8:item>
+													</Title>
+													<Format>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>NFD=2; NZ=</v8:content>
+														</v8:item>
+													</Format>
+													<Border width="1">
+														<v8ui:style xsi:type="v8ui:ControlBorderType">Underline</v8ui:style>
+													</Border>
+													<Font ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
+													<ContextMenu name="RunningBalanceContextMenu" id="100"/>
+													<ExtendedTooltip name="RunningBalanceExtendedTooltip" id="101"/>
+												</LabelField>
+												<LabelField name="TotalCreditLine" id="109">
+													<DataPath>Object.CreditCard_TotalCreditline</DataPath>
+													<ReadOnly>true</ReadOnly>
+													<EditMode>EnterOnInput</EditMode>
+													<Format>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>NFD=2; NZ=</v8:content>
+														</v8:item>
+													</Format>
+													<Border width="1">
+														<v8ui:style xsi:type="v8ui:ControlBorderType">Underline</v8ui:style>
+													</Border>
+													<Font ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
+													<ContextMenu name="TotalCreditLineContextMenu" id="110"/>
+													<ExtendedTooltip name="TotalCreditLineExtendedTooltip" id="111"/>
+												</LabelField>
+											</ChildItems>
+										</UsualGroup>
+										<UsualGroup name="Group8" id="107">
+											<Group>Vertical</Group>
+											<ShowTitle>false</ShowTitle>
+											<ExtendedTooltip name="Group8ExtendedTooltip" id="108"/>
+											<ChildItems>
+												<LabelDecoration name="RunningBalanceCurrency" id="102">
+													<ContextMenu name="RunningBalanceCurrencyContextMenu" id="103"/>
+													<ExtendedTooltip name="RunningBalanceCurrencyExtendedTooltip" id="104"/>
+												</LabelDecoration>
+												<LabelDecoration name="TotalCreditLineCurrency" id="112">
+													<ContextMenu name="TotalCreditLineCurrencyContextMenu" id="113"/>
+													<ExtendedTooltip name="TotalCreditLineCurrencyExtendedTooltip" id="114"/>
+												</LabelDecoration>
+											</ChildItems>
+										</UsualGroup>
+									</ChildItems>
+								</UsualGroup>
+								<UsualGroup name="Group6" id="97">
+									<Group>Horizontal</Group>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="Group6ExtendedTooltip" id="98"/>
+									<ChildItems>
+										<UsualGroup name="Group9" id="115">
+											<Group>Vertical</Group>
+											<ShowTitle>false</ShowTitle>
+											<ExtendedTooltip name="Group9ExtendedTooltip" id="116"/>
+											<ChildItems>
+												<LabelField name="AvailableCredit" id="119">
+													<DataPath>Object.AvailableBalance</DataPath>
+													<ReadOnly>true</ReadOnly>
+													<Title>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Available credit</v8:content>
+														</v8:item>
+													</Title>
+													<EditMode>EnterOnInput</EditMode>
+													<Format>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>NFD=2; NZ=</v8:content>
+														</v8:item>
+													</Format>
+													<Border width="1">
+														<v8ui:style xsi:type="v8ui:ControlBorderType">Underline</v8ui:style>
+													</Border>
+													<Font ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
+													<ContextMenu name="AvailableCreditContextMenu" id="120"/>
+													<ExtendedTooltip name="AvailableCreditExtendedTooltip" id="121"/>
+												</LabelField>
+												<LabelField name="AmountDue" id="125">
+													<DataPath>Object.CreditCard_AmountDue</DataPath>
+													<ReadOnly>true</ReadOnly>
+													<Title>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Amount due</v8:content>
+														</v8:item>
+													</Title>
+													<EditMode>EnterOnInput</EditMode>
+													<Format>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>NFD=2; NZ=</v8:content>
+														</v8:item>
+													</Format>
+													<Border width="1">
+														<v8ui:style xsi:type="v8ui:ControlBorderType">Underline</v8ui:style>
+													</Border>
+													<Font ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
+													<ContextMenu name="AmountDueContextMenu" id="126"/>
+													<ExtendedTooltip name="AmountDueExtendedTooltip" id="127"/>
+												</LabelField>
+											</ChildItems>
+										</UsualGroup>
+										<UsualGroup name="Group10" id="117">
+											<Group>Vertical</Group>
+											<ShowTitle>false</ShowTitle>
+											<ExtendedTooltip name="Group10ExtendedTooltip" id="118"/>
+											<ChildItems>
+												<LabelDecoration name="AvailableCreditCurrency" id="122">
+													<ContextMenu name="AvailableCreditCurrencyContextMenu" id="123"/>
+													<ExtendedTooltip name="AvailableCreditCurrencyExtendedTooltip" id="124"/>
+												</LabelDecoration>
+												<LabelDecoration name="AmountDueCurrency" id="128">
+													<ContextMenu name="AmountDueCurrencyContextMenu" id="129"/>
+													<ExtendedTooltip name="AmountDueCurrencyExtendedTooltip" id="130"/>
+												</LabelDecoration>
+											</ChildItems>
+										</UsualGroup>
+									</ChildItems>
+								</UsualGroup>
+							</ChildItems>
+						</UsualGroup>
+					</ChildItems>
+				</UsualGroup>
+				<UsualGroup name="AccountingGroup" id="82">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Accounting</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Accounting group</v8:content>
+						</v8:item>
+					</ToolTip>
+					<Group>Vertical</Group>
+					<ShowTitle>false</ShowTitle>
+					<ExtendedTooltip name="AccountingGroupExtendedTooltip" id="83"/>
+					<ChildItems>
+						<InputField name="AccountingAccount" id="47">
+							<DataPath>Object.AccountingAccount</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Assigned to</v8:content>
+								</v8:item>
+							</Title>
+							<QuickChoice>true</QuickChoice>
+							<ContextMenu name="AccountingAccountContextMenu" id="48"/>
+							<ExtendedTooltip name="AccountingAccountExtendedTooltip" id="49"/>
+						</InputField>
+					</ChildItems>
+				</UsualGroup>
 			</ChildItems>
 		</UsualGroup>
-		<InputField name="Description" id="4">
-			<DataPath>Object.Description</DataPath>
-			<EditMode>EnterOnInput</EditMode>
-			<ContextMenu name="DescriptionContextMenu" id="5"/>
-			<ExtendedTooltip name="DescriptionExtendedTooltip" id="6"/>
-		</InputField>
 		<Pages name="PagesGroup" id="37">
 			<Title>
 				<v8:item>
@@ -67,335 +424,6 @@
 						</v8:item>
 					</ToolTip>
 					<ExtendedTooltip name="MainExtendedTooltip" id="40"/>
-					<ChildItems>
-						<UsualGroup name="BankAccountGroup" id="84">
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Bank account</v8:content>
-								</v8:item>
-							</Title>
-							<ToolTip>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Bank account group</v8:content>
-								</v8:item>
-							</ToolTip>
-							<Group>Horizontal</Group>
-							<ExtendedTooltip name="BankAccountGroupExtendedTooltip" id="85"/>
-							<ChildItems>
-								<LabelField name="AccountType" id="16">
-									<DataPath>Object.AccountType</DataPath>
-									<TitleFont ref="style:NormalTextFont" kind="StyleItem"/>
-									<TitleHeight>1</TitleHeight>
-									<EditMode>EnterOnInput</EditMode>
-									<Border width="1">
-										<v8ui:style xsi:type="v8ui:ControlBorderType">Underline</v8ui:style>
-									</Border>
-									<ContextMenu name="AccountTypeContextMenu" id="17"/>
-									<ExtendedTooltip name="AccountTypeExtendedTooltip" id="18"/>
-								</LabelField>
-							</ChildItems>
-						</UsualGroup>
-						<UsualGroup name="CreditCardAccountGroup" id="86">
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Credit card account</v8:content>
-								</v8:item>
-							</Title>
-							<ToolTip>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Credit card account group</v8:content>
-								</v8:item>
-							</ToolTip>
-							<Group>Vertical</Group>
-							<ExtendedTooltip name="CreditCardAccountGroupExtendedTooltip" id="87"/>
-							<ChildItems>
-								<LabelField name="CreditCard_Type" id="88">
-									<DataPath>Object.CreditCard_Type</DataPath>
-									<Border width="1">
-										<v8ui:style xsi:type="v8ui:ControlBorderType">Underline</v8ui:style>
-									</Border>
-									<ContextMenu name="CreditCard_TypeContextMenu" id="89"/>
-									<ExtendedTooltip name="CreditCard_TypeExtendedTooltip" id="90"/>
-								</LabelField>
-							</ChildItems>
-						</UsualGroup>
-						<UsualGroup name="BalanceGroup" id="72">
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Balance</v8:content>
-								</v8:item>
-							</Title>
-							<ToolTip>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Balance group</v8:content>
-								</v8:item>
-							</ToolTip>
-							<Group>Horizontal</Group>
-							<ExtendedTooltip name="BalanceGroupExtendedTooltip" id="73"/>
-							<ChildItems>
-								<UsualGroup name="Group2" id="62">
-									<Group>Horizontal</Group>
-									<ShowTitle>false</ShowTitle>
-									<ExtendedTooltip name="Group2ExtendedTooltip" id="63"/>
-									<ChildItems>
-										<LabelField name="CurrentBalance" id="19">
-											<DataPath>Object.CurrentBalance</DataPath>
-											<ReadOnly>true</ReadOnly>
-											<EditMode>EnterOnInput</EditMode>
-											<Format>
-												<v8:item>
-													<v8:lang>en</v8:lang>
-													<v8:content>NFD=2; NZ=</v8:content>
-												</v8:item>
-											</Format>
-											<Border width="1">
-												<v8ui:style xsi:type="v8ui:ControlBorderType">Underline</v8ui:style>
-											</Border>
-											<Font ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
-											<ContextMenu name="CurrentBalanceContextMenu" id="20"/>
-											<ExtendedTooltip name="CurrentBalanceExtendedTooltip" id="21"/>
-										</LabelField>
-										<LabelDecoration name="CurrentBalanceCurrency" id="64">
-											<ContextMenu name="CurrentBalanceCurrencyContextMenu" id="65"/>
-											<ExtendedTooltip name="CurrentBalanceCurrencyExtendedTooltip" id="66"/>
-										</LabelDecoration>
-									</ChildItems>
-								</UsualGroup>
-								<UsualGroup name="Group3" id="67">
-									<Group>Horizontal</Group>
-									<ShowTitle>false</ShowTitle>
-									<ExtendedTooltip name="Group3ExtendedTooltip" id="68"/>
-									<ChildItems>
-										<LabelField name="AvailableBalance" id="22">
-											<DataPath>Object.AvailableBalance</DataPath>
-											<ReadOnly>true</ReadOnly>
-											<EditMode>EnterOnInput</EditMode>
-											<Format>
-												<v8:item>
-													<v8:lang>en</v8:lang>
-													<v8:content>NFD=2; NZ=</v8:content>
-												</v8:item>
-											</Format>
-											<Border width="1">
-												<v8ui:style xsi:type="v8ui:ControlBorderType">Underline</v8ui:style>
-											</Border>
-											<Font ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
-											<ContextMenu name="AvailableBalanceContextMenu" id="23"/>
-											<ExtendedTooltip name="AvailableBalanceExtendedTooltip" id="24"/>
-										</LabelField>
-										<LabelDecoration name="AvailableBalanceCurrency" id="69">
-											<ContextMenu name="AvailableBalanceCurrencyContextMenu" id="70"/>
-											<ExtendedTooltip name="AvailableBalanceCurrencyExtendedTooltip" id="71"/>
-										</LabelDecoration>
-									</ChildItems>
-								</UsualGroup>
-							</ChildItems>
-						</UsualGroup>
-						<UsualGroup name="CreditCardBalanceGroup" id="91">
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Balance</v8:content>
-								</v8:item>
-							</Title>
-							<ToolTip>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Credit card balance group</v8:content>
-								</v8:item>
-							</ToolTip>
-							<Group>Vertical</Group>
-							<ExtendedTooltip name="CreditCardBalanceGroupExtendedTooltip" id="92"/>
-							<ChildItems>
-								<UsualGroup name="Group4" id="93">
-									<Group>Horizontal</Group>
-									<ShowTitle>false</ShowTitle>
-									<ExtendedTooltip name="Group4ExtendedTooltip" id="94"/>
-									<ChildItems>
-										<UsualGroup name="Group5" id="95">
-											<Group>Horizontal</Group>
-											<ShowTitle>false</ShowTitle>
-											<ExtendedTooltip name="Group5ExtendedTooltip" id="96"/>
-											<ChildItems>
-												<UsualGroup name="Group7" id="105">
-													<Group>Vertical</Group>
-													<ShowTitle>false</ShowTitle>
-													<ExtendedTooltip name="Group7ExtendedTooltip" id="106"/>
-													<ChildItems>
-														<LabelField name="RunningBalance" id="99">
-															<DataPath>Object.CurrentBalance</DataPath>
-															<ReadOnly>true</ReadOnly>
-															<Title>
-																<v8:item>
-																	<v8:lang>en</v8:lang>
-																	<v8:content>Running balance</v8:content>
-																</v8:item>
-															</Title>
-															<Format>
-																<v8:item>
-																	<v8:lang>en</v8:lang>
-																	<v8:content>NFD=2; NZ=</v8:content>
-																</v8:item>
-															</Format>
-															<Border width="1">
-																<v8ui:style xsi:type="v8ui:ControlBorderType">Underline</v8ui:style>
-															</Border>
-															<Font ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
-															<ContextMenu name="RunningBalanceContextMenu" id="100"/>
-															<ExtendedTooltip name="RunningBalanceExtendedTooltip" id="101"/>
-														</LabelField>
-														<LabelField name="TotalCreditLine" id="109">
-															<DataPath>Object.CreditCard_TotalCreditline</DataPath>
-															<ReadOnly>true</ReadOnly>
-															<EditMode>EnterOnInput</EditMode>
-															<Format>
-																<v8:item>
-																	<v8:lang>en</v8:lang>
-																	<v8:content>NFD=2; NZ=</v8:content>
-																</v8:item>
-															</Format>
-															<Border width="1">
-																<v8ui:style xsi:type="v8ui:ControlBorderType">Underline</v8ui:style>
-															</Border>
-															<Font ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
-															<ContextMenu name="TotalCreditLineContextMenu" id="110"/>
-															<ExtendedTooltip name="TotalCreditLineExtendedTooltip" id="111"/>
-														</LabelField>
-													</ChildItems>
-												</UsualGroup>
-												<UsualGroup name="Group8" id="107">
-													<Group>Vertical</Group>
-													<ShowTitle>false</ShowTitle>
-													<ExtendedTooltip name="Group8ExtendedTooltip" id="108"/>
-													<ChildItems>
-														<LabelDecoration name="RunningBalanceCurrency" id="102">
-															<ContextMenu name="RunningBalanceCurrencyContextMenu" id="103"/>
-															<ExtendedTooltip name="RunningBalanceCurrencyExtendedTooltip" id="104"/>
-														</LabelDecoration>
-														<LabelDecoration name="TotalCreditLineCurrency" id="112">
-															<ContextMenu name="TotalCreditLineCurrencyContextMenu" id="113"/>
-															<ExtendedTooltip name="TotalCreditLineCurrencyExtendedTooltip" id="114"/>
-														</LabelDecoration>
-													</ChildItems>
-												</UsualGroup>
-											</ChildItems>
-										</UsualGroup>
-										<UsualGroup name="Group6" id="97">
-											<Group>Horizontal</Group>
-											<ShowTitle>false</ShowTitle>
-											<ExtendedTooltip name="Group6ExtendedTooltip" id="98"/>
-											<ChildItems>
-												<UsualGroup name="Group9" id="115">
-													<Group>Vertical</Group>
-													<ShowTitle>false</ShowTitle>
-													<ExtendedTooltip name="Group9ExtendedTooltip" id="116"/>
-													<ChildItems>
-														<LabelField name="AvailableCredit" id="119">
-															<DataPath>Object.AvailableBalance</DataPath>
-															<ReadOnly>true</ReadOnly>
-															<Title>
-																<v8:item>
-																	<v8:lang>en</v8:lang>
-																	<v8:content>Available credit</v8:content>
-																</v8:item>
-															</Title>
-															<EditMode>EnterOnInput</EditMode>
-															<Format>
-																<v8:item>
-																	<v8:lang>en</v8:lang>
-																	<v8:content>NFD=2; NZ=</v8:content>
-																</v8:item>
-															</Format>
-															<Border width="1">
-																<v8ui:style xsi:type="v8ui:ControlBorderType">Underline</v8ui:style>
-															</Border>
-															<Font ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
-															<ContextMenu name="AvailableCreditContextMenu" id="120"/>
-															<ExtendedTooltip name="AvailableCreditExtendedTooltip" id="121"/>
-														</LabelField>
-														<LabelField name="AmountDue" id="125">
-															<DataPath>Object.CreditCard_AmountDue</DataPath>
-															<ReadOnly>true</ReadOnly>
-															<Title>
-																<v8:item>
-																	<v8:lang>en</v8:lang>
-																	<v8:content>Amount due</v8:content>
-																</v8:item>
-															</Title>
-															<EditMode>EnterOnInput</EditMode>
-															<Format>
-																<v8:item>
-																	<v8:lang>en</v8:lang>
-																	<v8:content>NFD=2; NZ=</v8:content>
-																</v8:item>
-															</Format>
-															<Border width="1">
-																<v8ui:style xsi:type="v8ui:ControlBorderType">Underline</v8ui:style>
-															</Border>
-															<Font ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
-															<ContextMenu name="AmountDueContextMenu" id="126"/>
-															<ExtendedTooltip name="AmountDueExtendedTooltip" id="127"/>
-														</LabelField>
-													</ChildItems>
-												</UsualGroup>
-												<UsualGroup name="Group10" id="117">
-													<Group>Vertical</Group>
-													<ShowTitle>false</ShowTitle>
-													<ExtendedTooltip name="Group10ExtendedTooltip" id="118"/>
-													<ChildItems>
-														<LabelDecoration name="AvailableCreditCurrency" id="122">
-															<ContextMenu name="AvailableCreditCurrencyContextMenu" id="123"/>
-															<ExtendedTooltip name="AvailableCreditCurrencyExtendedTooltip" id="124"/>
-														</LabelDecoration>
-														<LabelDecoration name="AmountDueCurrency" id="128">
-															<ContextMenu name="AmountDueCurrencyContextMenu" id="129"/>
-															<ExtendedTooltip name="AmountDueCurrencyExtendedTooltip" id="130"/>
-														</LabelDecoration>
-													</ChildItems>
-												</UsualGroup>
-											</ChildItems>
-										</UsualGroup>
-									</ChildItems>
-								</UsualGroup>
-							</ChildItems>
-						</UsualGroup>
-						<UsualGroup name="AccountingGroup" id="82">
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Accounting</v8:content>
-								</v8:item>
-							</Title>
-							<ToolTip>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Accounting group</v8:content>
-								</v8:item>
-							</ToolTip>
-							<Group>Vertical</Group>
-							<ExtendedTooltip name="AccountingGroupExtendedTooltip" id="83"/>
-							<ChildItems>
-								<InputField name="AccountingAccount" id="47">
-									<DataPath>Object.AccountingAccount</DataPath>
-									<Title>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Assigned to</v8:content>
-										</v8:item>
-									</Title>
-									<QuickChoice>true</QuickChoice>
-									<ContextMenu name="AccountingAccountContextMenu" id="48"/>
-									<ExtendedTooltip name="AccountingAccountExtendedTooltip" id="49"/>
-								</InputField>
-							</ChildItems>
-						</UsualGroup>
-					</ChildItems>
 				</Page>
 				<Page name="Online" id="43">
 					<Title>
@@ -412,6 +440,13 @@
 					</ToolTip>
 					<ExtendedTooltip name="OnlineExtendedTooltip" id="44"/>
 					<ChildItems>
+						<CheckBoxField name="YodleeAccount" id="138">
+							<DataPath>Object.YodleeAccount</DataPath>
+							<ReadOnly>true</ReadOnly>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="YodleeAccountContextMenu" id="139"/>
+							<ExtendedTooltip name="YodleeAccountExtendedTooltip" id="140"/>
+						</CheckBoxField>
 						<UsualGroup name="IDGroup" id="80">
 							<Title>
 								<v8:item>
@@ -609,4 +644,66 @@
 			</Type>
 		</Attribute>
 	</Attributes>
+	<Commands>
+		<Command name="EditSignInInfo" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Edit sign-in info</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Edit sign in info</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Picture>
+				<xr:Ref>StdPicture.Properties</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
+			<Action>EditSignInInfo</Action>
+			<Representation>TextPicture</Representation>
+		</Command>
+		<Command name="DeleteAccount" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Delete account</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Delete account</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Picture>
+				<xr:Ref>StdPicture.DeleteDirectly</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
+			<Action>DeleteAccount</Action>
+			<Representation>TextPicture</Representation>
+		</Command>
+		<Command name="MergeTransactions" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Merge transactions</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Merge transactions to this account</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Picture>
+				<xr:Ref>CommonPicture.Merge</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
+			<Action>MergeTransactions</Action>
+			<Representation>TextPicture</Representation>
+		</Command>
+	</Commands>
 </Form>

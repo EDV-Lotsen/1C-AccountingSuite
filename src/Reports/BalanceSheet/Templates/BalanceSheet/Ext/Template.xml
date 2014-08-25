@@ -520,7 +520,6 @@ FROM
 				WHEN GeneralJournalSummary.Account.AccountType IN (VALUE(Enum.AccountTypes.Equity))
 					THEN "Stockholder Equity"
 				WHEN GeneralJournalSummary.Account.AccountType IN (VALUE(Enum.AccountTypes.Income), VALUE(Enum.AccountTypes.CostOfSales), VALUE(Enum.AccountTypes.Expense), VALUE(Enum.AccountTypes.OtherIncome), VALUE(Enum.AccountTypes.OtherExpense), VALUE(Enum.AccountTypes.IncomeTaxExpense))
-						AND GeneralJournalSummary.Account.OtherComprehensiveIncome = FALSE
 					THEN "Stockholder Equity"
 				ELSE NULL
 			END = BalanceSections.Section)</query>
@@ -552,10 +551,6 @@ FROM
 				<v8:lang>en</v8:lang>
 				<v8:content>Begin of period</v8:content>
 			</v8:item>
-			<v8:item>
-				<v8:lang>de</v8:lang>
-				<v8:content>Periodenanfang</v8:content>
-			</v8:item>
 		</title>
 		<valueType>
 			<v8:Type>xs:dateTime</v8:Type>
@@ -574,10 +569,6 @@ FROM
 			<v8:item>
 				<v8:lang>en</v8:lang>
 				<v8:content>End of period</v8:content>
-			</v8:item>
-			<v8:item>
-				<v8:lang>de</v8:lang>
-				<v8:content>Ende der Periode</v8:content>
 			</v8:item>
 		</title>
 		<valueType>
@@ -598,10 +589,6 @@ FROM
 				<v8:lang>en</v8:lang>
 				<v8:content>Period</v8:content>
 			</v8:item>
-			<v8:item>
-				<v8:lang>de</v8:lang>
-				<v8:content>Periode</v8:content>
-			</v8:item>
 		</title>
 		<valueType>
 			<v8:Type>v8:StandardPeriod</v8:Type>
@@ -612,7 +599,6 @@ FROM
 			<v8:endDate>0001-01-01T00:00:00</v8:endDate>
 		</value>
 		<useRestriction>false</useRestriction>
-		<use>Always</use>
 	</parameter>
 	<parameter>
 		<name>PeriodPresentation</name>
@@ -643,11 +629,7 @@ FROM
 						<dcsat:value xsi:type="v8:LocalStringType">
 							<v8:item>
 								<v8:lang>en</v8:lang>
-								<v8:content>Balance Sheet</v8:content>
-							</v8:item>
-							<v8:item>
-								<v8:lang>de</v8:lang>
-								<v8:content>Bilanz</v8:content>
+								<v8:content>Balance sheet (accrual basis)</v8:content>
 							</v8:item>
 						</dcsat:value>
 					</dcsat:item>
@@ -742,11 +724,7 @@ FROM
 						<dcsat:value xsi:type="v8:LocalStringType">
 							<v8:item>
 								<v8:lang>en</v8:lang>
-								<v8:content>Balance Sheet</v8:content>
-							</v8:item>
-							<v8:item>
-								<v8:lang>de</v8:lang>
-								<v8:content>Bilanz</v8:content>
+								<v8:content>Balance sheet (accrual basis)</v8:content>
 							</v8:item>
 						</dcsat:value>
 					</dcsat:item>
@@ -918,10 +896,6 @@ FROM
 								<v8:lang>en</v8:lang>
 								<v8:content>Total </v8:content>
 							</v8:item>
-							<v8:item>
-								<v8:lang>de</v8:lang>
-								<v8:content>Total </v8:content>
-							</v8:item>
 						</dcsat:value>
 					</dcsat:item>
 					<dcsat:item xsi:type="dcsat:Field">
@@ -1013,10 +987,6 @@ FROM
 								<v8:content> 	</v8:content>
 							</v8:item>
 							<v8:item>
-								<v8:lang>de</v8:lang>
-								<v8:content> 	</v8:content>
-							</v8:item>
-							<v8:item>
 								<v8:lang>ru</v8:lang>
 								<v8:content> 	</v8:content>
 							</v8:item>
@@ -1072,10 +1042,6 @@ FROM
 						<dcsat:value xsi:type="v8:LocalStringType">
 							<v8:item>
 								<v8:lang>en</v8:lang>
-								<v8:content> 	Total </v8:content>
-							</v8:item>
-							<v8:item>
-								<v8:lang>de</v8:lang>
 								<v8:content> 	Total </v8:content>
 							</v8:item>
 							<v8:item>
@@ -1154,10 +1120,6 @@ FROM
 								<v8:content> 		</v8:content>
 							</v8:item>
 							<v8:item>
-								<v8:lang>de</v8:lang>
-								<v8:content> 		</v8:content>
-							</v8:item>
-							<v8:item>
 								<v8:lang>ru</v8:lang>
 								<v8:content> 		</v8:content>
 							</v8:item>
@@ -1173,10 +1135,6 @@ FROM
 						<dcsat:value xsi:type="v8:LocalStringType">
 							<v8:item>
 								<v8:lang>en</v8:lang>
-								<v8:content> </v8:content>
-							</v8:item>
-							<v8:item>
-								<v8:lang>de</v8:lang>
 								<v8:content> </v8:content>
 							</v8:item>
 							<v8:item>
@@ -1345,10 +1303,6 @@ END</dcsat:expression>
 								<v8:lang>en</v8:lang>
 								<v8:content>Total </v8:content>
 							</v8:item>
-							<v8:item>
-								<v8:lang>de</v8:lang>
-								<v8:content>Total </v8:content>
-							</v8:item>
 						</dcsat:value>
 					</dcsat:item>
 					<dcsat:item xsi:type="dcsat:Field">
@@ -1440,10 +1394,6 @@ END</dcsat:expression>
 								<v8:content> 	</v8:content>
 							</v8:item>
 							<v8:item>
-								<v8:lang>de</v8:lang>
-								<v8:content> 	</v8:content>
-							</v8:item>
-							<v8:item>
 								<v8:lang>ru</v8:lang>
 								<v8:content> 	</v8:content>
 							</v8:item>
@@ -1499,10 +1449,6 @@ END</dcsat:expression>
 						<dcsat:value xsi:type="v8:LocalStringType">
 							<v8:item>
 								<v8:lang>en</v8:lang>
-								<v8:content> 	Total </v8:content>
-							</v8:item>
-							<v8:item>
-								<v8:lang>de</v8:lang>
 								<v8:content> 	Total </v8:content>
 							</v8:item>
 							<v8:item>
@@ -1581,10 +1527,6 @@ END</dcsat:expression>
 								<v8:content> 		</v8:content>
 							</v8:item>
 							<v8:item>
-								<v8:lang>de</v8:lang>
-								<v8:content> 		</v8:content>
-							</v8:item>
-							<v8:item>
 								<v8:lang>ru</v8:lang>
 								<v8:content> 		</v8:content>
 							</v8:item>
@@ -1600,10 +1542,6 @@ END</dcsat:expression>
 						<dcsat:value xsi:type="v8:LocalStringType">
 							<v8:item>
 								<v8:lang>en</v8:lang>
-								<v8:content> </v8:content>
-							</v8:item>
-							<v8:item>
-								<v8:lang>de</v8:lang>
 								<v8:content> </v8:content>
 							</v8:item>
 							<v8:item>
@@ -1898,10 +1836,6 @@ END</dcsat:expression>
 								<v8:lang>en</v8:lang>
 								<v8:content>Total </v8:content>
 							</v8:item>
-							<v8:item>
-								<v8:lang>de</v8:lang>
-								<v8:content>Total </v8:content>
-							</v8:item>
 						</dcsat:value>
 					</dcsat:item>
 					<dcsat:item xsi:type="dcsat:Field">
@@ -1967,10 +1901,6 @@ END</dcsat:expression>
 								<v8:content> 	</v8:content>
 							</v8:item>
 							<v8:item>
-								<v8:lang>de</v8:lang>
-								<v8:content> 	</v8:content>
-							</v8:item>
-							<v8:item>
 								<v8:lang>ru</v8:lang>
 								<v8:content> 	</v8:content>
 							</v8:item>
@@ -2018,10 +1948,6 @@ END</dcsat:expression>
 						<dcsat:value xsi:type="v8:LocalStringType">
 							<v8:item>
 								<v8:lang>en</v8:lang>
-								<v8:content> 	Total </v8:content>
-							</v8:item>
-							<v8:item>
-								<v8:lang>de</v8:lang>
 								<v8:content> 	Total </v8:content>
 							</v8:item>
 							<v8:item>
@@ -2075,10 +2001,6 @@ END</dcsat:expression>
 								<v8:content> 		</v8:content>
 							</v8:item>
 							<v8:item>
-								<v8:lang>de</v8:lang>
-								<v8:content> 		</v8:content>
-							</v8:item>
-							<v8:item>
 								<v8:lang>ru</v8:lang>
 								<v8:content> 		</v8:content>
 							</v8:item>
@@ -2094,10 +2016,6 @@ END</dcsat:expression>
 						<dcsat:value xsi:type="v8:LocalStringType">
 							<v8:item>
 								<v8:lang>en</v8:lang>
-								<v8:content> </v8:content>
-							</v8:item>
-							<v8:item>
-								<v8:lang>de</v8:lang>
 								<v8:content> </v8:content>
 							</v8:item>
 							<v8:item>
@@ -2245,10 +2163,6 @@ END</dcsat:expression>
 								<v8:content> 	</v8:content>
 							</v8:item>
 							<v8:item>
-								<v8:lang>de</v8:lang>
-								<v8:content> 	</v8:content>
-							</v8:item>
-							<v8:item>
 								<v8:lang>ru</v8:lang>
 								<v8:content> 	</v8:content>
 							</v8:item>
@@ -2299,10 +2213,6 @@ END</dcsat:expression>
 								<v8:content> 		</v8:content>
 							</v8:item>
 							<v8:item>
-								<v8:lang>de</v8:lang>
-								<v8:content> 		</v8:content>
-							</v8:item>
-							<v8:item>
 								<v8:lang>ru</v8:lang>
 								<v8:content> 		</v8:content>
 							</v8:item>
@@ -2318,10 +2228,6 @@ END</dcsat:expression>
 						<dcsat:value xsi:type="v8:LocalStringType">
 							<v8:item>
 								<v8:lang>en</v8:lang>
-								<v8:content> </v8:content>
-							</v8:item>
-							<v8:item>
-								<v8:lang>de</v8:lang>
 								<v8:content> </v8:content>
 							</v8:item>
 							<v8:item>
@@ -2392,10 +2298,6 @@ END</dcsat:expression>
 						<dcsat:value xsi:type="v8:LocalStringType">
 							<v8:item>
 								<v8:lang>en</v8:lang>
-								<v8:content> 	Total </v8:content>
-							</v8:item>
-							<v8:item>
-								<v8:lang>de</v8:lang>
 								<v8:content> 	Total </v8:content>
 							</v8:item>
 							<v8:item>
@@ -2910,10 +2812,6 @@ END</dcsat:expression>
 								<v8:lang>en</v8:lang>
 								<v8:content>Total </v8:content>
 							</v8:item>
-							<v8:item>
-								<v8:lang>de</v8:lang>
-								<v8:content>Total </v8:content>
-							</v8:item>
 						</dcsat:value>
 					</dcsat:item>
 					<dcsat:item xsi:type="dcsat:Field">
@@ -3358,10 +3256,6 @@ END</dcsat:expression>
 						<dcsat:value xsi:type="v8:LocalStringType">
 							<v8:item>
 								<v8:lang>en</v8:lang>
-								<v8:content> </v8:content>
-							</v8:item>
-							<v8:item>
-								<v8:lang>de</v8:lang>
 								<v8:content> </v8:content>
 							</v8:item>
 							<v8:item>
@@ -4069,11 +3963,7 @@ END</dcsat:expression>
 						<dcsat:value xsi:type="v8:LocalStringType">
 							<v8:item>
 								<v8:lang>en</v8:lang>
-								<v8:content>Balance Sheet</v8:content>
-							</v8:item>
-							<v8:item>
-								<v8:lang>de</v8:lang>
-								<v8:content>Bilanz</v8:content>
+								<v8:content>Balance sheet (accrual basis)</v8:content>
 							</v8:item>
 						</dcsat:value>
 					</dcsat:item>
@@ -5457,6 +5347,7 @@ END</dcsat:expression>
 					<dcscor:value xsi:type="v8:StandardPeriod">
 						<v8:variant xsi:type="v8:StandardPeriodVariant">Today</v8:variant>
 					</dcscor:value>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 					<dcsset:userSettingID>f5c88f45-fdd5-40ce-8159-1ac9f6d76461</dcsset:userSettingID>
 				</dcscor:item>
 			</dcsset:dataParameters>
@@ -5488,11 +5379,7 @@ END</dcsat:expression>
 					<dcscor:value xsi:type="v8:LocalStringType">
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Balance Sheet</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Bilanz</v8:content>
+							<v8:content>Balance sheet (accrual basis)</v8:content>
 						</v8:item>
 					</dcscor:value>
 				</dcscor:item>
@@ -6079,10 +5966,6 @@ END</dcsat:expression>
 				<v8:lang>en</v8:lang>
 				<v8:content>Years</v8:content>
 			</v8:item>
-			<v8:item>
-				<v8:lang>de</v8:lang>
-				<v8:content>2. Bilanz (Jahre)</v8:content>
-			</v8:item>
 		</dcsset:presentation>
 		<dcsset:settings xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows">
 			<dcsset:dataParameters>
@@ -6091,6 +5974,7 @@ END</dcsat:expression>
 					<dcscor:value xsi:type="v8:StandardPeriod">
 						<v8:variant xsi:type="v8:StandardPeriodVariant">ThisYear</v8:variant>
 					</dcscor:value>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 					<dcsset:userSettingID>f5c88f45-fdd5-40ce-8159-1ac9f6d76461</dcsset:userSettingID>
 				</dcscor:item>
 			</dcsset:dataParameters>
@@ -6130,11 +6014,7 @@ END</dcsat:expression>
 					<dcscor:value xsi:type="v8:LocalStringType">
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Balance Sheet</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Bilanz</v8:content>
+							<v8:content>Balance sheet (accrual basis)</v8:content>
 						</v8:item>
 					</dcscor:value>
 				</dcscor:item>
@@ -6771,6 +6651,7 @@ END</dcsat:expression>
 					<dcscor:value xsi:type="v8:StandardPeriod">
 						<v8:variant xsi:type="v8:StandardPeriodVariant">ThisYear</v8:variant>
 					</dcscor:value>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 					<dcsset:userSettingID>f5c88f45-fdd5-40ce-8159-1ac9f6d76461</dcsset:userSettingID>
 				</dcscor:item>
 			</dcsset:dataParameters>
@@ -6810,11 +6691,7 @@ END</dcsat:expression>
 					<dcscor:value xsi:type="v8:LocalStringType">
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Balance Sheet</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Bilanz</v8:content>
+							<v8:content>Balance sheet (accrual basis)</v8:content>
 						</v8:item>
 					</dcscor:value>
 				</dcscor:item>
@@ -7443,10 +7320,6 @@ END</dcsat:expression>
 				<v8:lang>en</v8:lang>
 				<v8:content>Months</v8:content>
 			</v8:item>
-			<v8:item>
-				<v8:lang>de</v8:lang>
-				<v8:content>4. Bilanz (Monate)</v8:content>
-			</v8:item>
 		</dcsset:presentation>
 		<dcsset:settings xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows">
 			<dcsset:dataParameters>
@@ -7455,6 +7328,7 @@ END</dcsat:expression>
 					<dcscor:value xsi:type="v8:StandardPeriod">
 						<v8:variant xsi:type="v8:StandardPeriodVariant">ThisQuarter</v8:variant>
 					</dcscor:value>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 					<dcsset:userSettingID>f5c88f45-fdd5-40ce-8159-1ac9f6d76461</dcsset:userSettingID>
 				</dcscor:item>
 			</dcsset:dataParameters>
@@ -7494,11 +7368,7 @@ END</dcsat:expression>
 					<dcscor:value xsi:type="v8:LocalStringType">
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Balance Sheet</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Bilanz</v8:content>
+							<v8:content>Balance sheet (accrual basis)</v8:content>
 						</v8:item>
 					</dcscor:value>
 				</dcscor:item>
@@ -8127,10 +7997,6 @@ END</dcsat:expression>
 				<v8:lang>en</v8:lang>
 				<v8:content>Weeks</v8:content>
 			</v8:item>
-			<v8:item>
-				<v8:lang>de</v8:lang>
-				<v8:content>5. Bilanz (Wochen)</v8:content>
-			</v8:item>
 		</dcsset:presentation>
 		<dcsset:settings xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows">
 			<dcsset:dataParameters>
@@ -8139,6 +8005,7 @@ END</dcsat:expression>
 					<dcscor:value xsi:type="v8:StandardPeriod">
 						<v8:variant xsi:type="v8:StandardPeriodVariant">ThisMonth</v8:variant>
 					</dcscor:value>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 					<dcsset:userSettingID>f5c88f45-fdd5-40ce-8159-1ac9f6d76461</dcsset:userSettingID>
 				</dcscor:item>
 			</dcsset:dataParameters>
@@ -8178,11 +8045,7 @@ END</dcsat:expression>
 					<dcscor:value xsi:type="v8:LocalStringType">
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Balance Sheet</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Bilanz</v8:content>
+							<v8:content>Balance sheet (accrual basis)</v8:content>
 						</v8:item>
 					</dcscor:value>
 				</dcscor:item>
@@ -8811,10 +8674,6 @@ END</dcsat:expression>
 				<v8:lang>en</v8:lang>
 				<v8:content>Days</v8:content>
 			</v8:item>
-			<v8:item>
-				<v8:lang>de</v8:lang>
-				<v8:content>6. Bilanz (Tage)</v8:content>
-			</v8:item>
 		</dcsset:presentation>
 		<dcsset:settings xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows">
 			<dcsset:dataParameters>
@@ -8823,6 +8682,7 @@ END</dcsat:expression>
 					<dcscor:value xsi:type="v8:StandardPeriod">
 						<v8:variant xsi:type="v8:StandardPeriodVariant">ThisWeek</v8:variant>
 					</dcscor:value>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 					<dcsset:userSettingID>f5c88f45-fdd5-40ce-8159-1ac9f6d76461</dcsset:userSettingID>
 				</dcscor:item>
 			</dcsset:dataParameters>
@@ -8862,11 +8722,7 @@ END</dcsat:expression>
 					<dcscor:value xsi:type="v8:LocalStringType">
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Balance Sheet</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Bilanz</v8:content>
+							<v8:content>Balance sheet (accrual basis)</v8:content>
 						</v8:item>
 					</dcscor:value>
 				</dcscor:item>

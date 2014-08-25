@@ -119,6 +119,18 @@
 											<ContextMenu name="SOShowWebsiteContextMenu" id="1071"/>
 											<ExtendedTooltip name="SOShowWebsiteExtendedTooltip" id="1072"/>
 										</CheckBoxField>
+										<CheckBoxField name="SOShowCountry" id="1158">
+											<DataPath>ConstantsSet.SOShowCountry</DataPath>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Show Country in Address</v8:content>
+												</v8:item>
+											</Title>
+											<CheckBoxType>Auto</CheckBoxType>
+											<ContextMenu name="SOShowCountryContextMenu" id="1159"/>
+											<ExtendedTooltip name="SOShowCountryExtendedTooltip" id="1160"/>
+										</CheckBoxField>
 									</ChildItems>
 								</UsualGroup>
 								<UsualGroup name="SecondRow1" id="1073">
@@ -143,7 +155,7 @@
 											<Title>
 												<v8:item>
 													<v8:lang>en</v8:lang>
-													<v8:content>Show Contact Name</v8:content>
+													<v8:content>Show Contact Name in Address</v8:content>
 												</v8:item>
 											</Title>
 											<CheckBoxType>Auto</CheckBoxType>
@@ -643,9 +655,15 @@
 				<Field>ConstantsSet.POFoot3Type.Ref</Field>
 				<Field>ConstantsSet.POFoot2Type.Ref</Field>
 				<Field>ConstantsSet.POFoot1Type.Ref</Field>
+				<Field>ConstantsSet.CSFoot3Type.Ref</Field>
+				<Field>ConstantsSet.CSFoot2Type.Ref</Field>
+				<Field>ConstantsSet.CSFoot1Type.Ref</Field>
 				<Field>ConstantsSet.CRFoot3Type.Ref</Field>
 				<Field>ConstantsSet.CRFoot2Type.Ref</Field>
 				<Field>ConstantsSet.CRFoot1Type.Ref</Field>
+				<Field>ConstantsSet.CMFoot3Type.Ref</Field>
+				<Field>ConstantsSet.CMFoot2Type.Ref</Field>
+				<Field>ConstantsSet.CMFoot1Type.Ref</Field>
 			</UseAlways>
 		</Attribute>
 		<Attribute name="SOFooterImageAddr1" id="13">

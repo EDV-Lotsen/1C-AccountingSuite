@@ -35,11 +35,7 @@ Procedure BeforeDelete(Cancel)
 		LongActions.ExecuteInBackground("GeneralFunctions.SendWebhook", WebhookParams);	
 	
 	EndIf;
-	
-	TRRecordset = InformationRegisters.TransactionReconciliation.CreateRecordSet();
-	TRRecordset.Filter.Document.Set(ThisObject.Ref);
-	TRRecordset.Write(True);
-	
+		
 EndProcedure
 // <- CODE REVIEW
 
@@ -79,7 +75,7 @@ Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 		// Precheck of document data, calculation of temporary data, required for document posting.
 		If (Not ManualAdjustment) Then
 			DocumentParameters = New Structure("Ref, PointInTime,   Company, Location, LineItems",
-			                                    Ref, PointInTime(), Company, Location, LineItems.Unload(, "Product, Quantity"));
+			                                    Ref, PointInTime(), Company, Location, LineItems.Unload(, "Product, Unit, Project, Class, QtyUM"));
 			Documents.CashSale.PrepareDataBeforeWrite(AdditionalProperties, DocumentParameters, Cancel);
 		EndIf;
 		
@@ -198,6 +194,9 @@ Procedure Posting(Cancel, Mode)
 	
 	RegisterRecords.CashFlowData.Write = True;
 	
+	// Request actual time point.
+	PointInTime = PointInTime();
+	
 	For Each CurRowLineItems In LineItems Do
 		
 		// writing CashFlowData
@@ -243,7 +242,8 @@ Procedure Posting(Cancel, Mode)
 				                  |	InventoryJournalBalance.QuantityBalance AS QuantityBalance,
 				                  |	InventoryJournalBalance.AmountBalance   AS AmountBalance
 				                  |FROM
-				                  |	AccumulationRegister.InventoryJournal.Balance(, Product = &Product) AS InventoryJournalBalance");
+				                  |	AccumulationRegister.InventoryJournal.Balance(&PointInTime, Product = &Product) AS InventoryJournalBalance");
+				Query.SetParameter("PointInTime", PointInTime);
 				Query.SetParameter("Product", CurRowLineItems.Product);
 				QueryResult = Query.Execute().Unload();
 				If  QueryResult.Count() > 0
@@ -254,13 +254,13 @@ Procedure Posting(Cancel, Mode)
 					AverageCost = QueryResult[0].AmountBalance / QueryResult[0].QuantityBalance;
 				EndIf;
 				
-				ItemCost = CurRowLineItems.Quantity * AverageCost;
+				ItemCost = CurRowLineItems.QtyUM * AverageCost;
 				
 			EndIf;
 			
 			If CurRowLineItems.Product.CostingMethod = Enums.InventoryCosting.FIFO Then
 				
-				ItemQuantity = CurRowLineItems.Quantity;
+				ItemQuantity = CurRowLineItems.QtyUM;
 				
 				Query = New Query("SELECT
 				                  |	InventoryJournalBalance.QuantityBalance,
@@ -268,9 +268,10 @@ Procedure Posting(Cancel, Mode)
 				                  |	InventoryJournalBalance.Layer,
 				                  |	InventoryJournalBalance.Layer.Date AS LayerDate
 				                  |FROM
-				                  |	AccumulationRegister.InventoryJournal.Balance(, Product = &Product AND Location = &Location) AS InventoryJournalBalance
+				                  |	AccumulationRegister.InventoryJournal.Balance(&PointInTime, Product = &Product AND Location = &Location) AS InventoryJournalBalance
 				                  |ORDER BY
 				                  |	LayerDate ASC");
+				Query.SetParameter("PointInTime", PointInTime);
 				Query.SetParameter("Product", CurRowLineItems.Product);
 				Query.SetParameter("Location", Location);
 				Selection = Query.Execute().Select();
@@ -444,21 +445,6 @@ Procedure Posting(Cancel, Mode)
 	//	Record.AmountRC = SalesTaxRC * ExchangeRate;
 	//EndIf;
 	
-	Records = InformationRegisters.TransactionReconciliation.CreateRecordSet();
-	Records.Filter.Document.Set(Ref);
-	Records.Read();
-	If Records.Count() = 0 Then
-		Record = Records.Add();
-		Record.Document = Ref;
-		Record.Account = BankAccount;
-		Record.Reconciled = False;
-		Record.Amount = DocumentTotalRC;
-	Else
-		Records[0].Account = BankAccount;
-		Records[0].Amount = DocumentTotalRC;
-	EndIf;
-	Records.Write();
-	
 	ReconciledDocumentsServerCall.AddDocumentForReconciliation(RegisterRecords, Ref, BankAccount, Date, DocumentTotalRC);
 	
 	//RegisterRecords.ProjectData.Write = True;
@@ -515,18 +501,7 @@ Procedure Posting(Cancel, Mode)
 EndProcedure
 
 Procedure UndoPosting(Cancel)
-	
-	// -> CODE REVIEW
-	
-	// Deleting bank reconciliation data.
-	Records = InformationRegisters.TransactionReconciliation.CreateRecordManager();
-	Records.Document = Ref;
-	Records.Account = BankAccount;
-	Records.Read();
-	Records.Delete();
-	
-	// <- CODE REVIEW
-	
+			
 	// 1. Common posting clearing / deactivate manual ajusted postings.
 	DocumentPosting.PrepareRecordSetsForPostingClearing(AdditionalProperties, RegisterRecords);
 	

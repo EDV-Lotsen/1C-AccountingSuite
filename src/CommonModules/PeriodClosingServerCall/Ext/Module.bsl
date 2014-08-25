@@ -1,36 +1,93 @@
 ﻿
 // Closing the books. Defines whether the document falls in the closed period.
+//Parameters:
+// DocumentReference - type: DocumentRef - document reference 
+// Date - type: date - the new date of the document
+//
+//Result:
+// boolean - if period is closed true else false
+//
 Function DocumentPeriodIsClosed(DocumentReference, Date) Export
 	SetPrivilegedMode(True);
-	If DocumentReference.IsEmpty() Then
-		CurrentClosingDate = Constants.PeriodClosingDate.Get();
-		SetPrivilegedMode(False);
-		If Date > EndOfDay(CurrentClosingDate) Then
-			return False;
-		Else
-			return True;
-		EndIf;
-	Else
+	
+	SettingsRequest = New Query("SELECT
+	                            |	PeriodClosingDate.Value AS PeriodClosingDate,
+	                            |	PeriodClosingByModule.Value AS PeriodClosingByModule
+	                            |FROM
+	                            |	Constant.PeriodClosingDate AS PeriodClosingDate,
+	                            |	Constant.PeriodClosingByModule AS PeriodClosingByModule");
+	SettingsTable = SettingsRequest.Execute().Unload();
+	CurrentClosingDate = SettingsTable[0].PeriodClosingDate;
+	
+	If SettingsTable[0].PeriodClosingByModule Then
+		CurrentDocumentName = TrimAll(DocumentReference.Metadata().Name);
 		Request = New Query("SELECT
-		                    |	Document.Date AS DocumentDate,
-		                    |	PeriodClosingDate.Value AS PeriodClosingDate
+		                    |	PeriodClosingByModule.Document,
+		                    |	PeriodClosingByModule.PeriodClosingDate
 		                    |FROM
-		                    |	Document." + TrimAll(DocumentReference.Metadata().Name) + " AS Document,
-		                    |	Constant.PeriodClosingDate AS PeriodClosingDate
+		                    |	InformationRegister.PeriodClosingByModule AS PeriodClosingByModule
 		                    |WHERE
-		                    |	Document.Ref = &Ref");
+		                    |	PeriodClosingByModule.Document = &CurrentDocumentName
+		                    |;
+		                    |
+		                    |////////////////////////////////////////////////////////////////////////////////
+		                    |SELECT
+		                    |	CurrentDocument.Date AS DocumentDate
+		                    |FROM
+		                    |	Document." + CurrentDocumentName + " AS CurrentDocument
+		                    |WHERE
+		                    |	CurrentDocument.Ref = &Ref");
+		Request.SetParameter("CurrentDocumentName", CurrentDocumentName);
 		Request.SetParameter("Ref", DocumentReference);
-		Res = Request.Execute().Select();
-		If Res.Next() Then
-			If (Date > EndOfDay(Res.PeriodClosingDate)) And (Res.DocumentDate > EndOfDay(Res.PeriodClosingDate)) Then
+		Res = Request.ExecuteBatch();
+		PeriodClosingByModule = Res[0].Select();
+		If PeriodClosingByModule.Next() Then
+			CurrentClosingDate = PeriodClosingByModule.PeriodClosingDate;		
+		EndIf;
+		
+		If DocumentReference.IsEmpty() Then
+			If Date > EndOfDay(CurrentClosingDate) Then
+				return False;
+			Else
+				return True;
+			EndIf;
+		Else 
+			DocumentInfo = Res[1].Select();
+			DocumentInfo.Next();
+			If (Date > EndOfDay(CurrentClosingDate)) And (DocumentInfo.DocumentDate > EndOfDay(CurrentClosingDate)) Then
+				return False;
+			Else
+				return True;
+			EndIf;
+		EndIf;
+
+	Else //Single period closing date
+		If DocumentReference.IsEmpty() Then			
+			If Date > EndOfDay(CurrentClosingDate) Then
 				return False;
 			Else
 				return True;
 			EndIf;
 		Else
-			return True;
+			CurrentDocumentName = TrimAll(DocumentReference.Metadata().Name);
+			Request = New Query("SELECT
+			                    |	Document.Date AS DocumentDate
+			                    |FROM
+			                    |	Document." + CurrentDocumentName + " AS Document
+			                    |WHERE
+			                    |	Document.Ref = &Ref");
+			Request.SetParameter("Ref", DocumentReference);
+			Res = Request.Execute().Select();
+			If Res.Next() Then
+				If (Date > EndOfDay(CurrentClosingDate)) And (Res.DocumentDate > EndOfDay(CurrentClosingDate)) Then
+					return False;
+				Else
+					return True;
+				EndIf;
+			Else
+				return True;
+			EndIf;
 		EndIf;
-		SetPrivilegedMode(False);
 	EndIf;
 EndFunction
 

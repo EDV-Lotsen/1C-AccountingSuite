@@ -6,10 +6,14 @@
 			<v8:content>Matching transactions</v8:content>
 		</v8:item>
 	</Title>
+	<WindowOpeningMode>LockOwnerWindow</WindowOpeningMode>
 	<AutoTitle>false</AutoTitle>
 	<AutoCommandBar name="FormCommandBar" id="-1">
 		<Autofill>false</Autofill>
 	</AutoCommandBar>
+	<Events>
+		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+	</Events>
 	<ChildItems>
 		<Table name="DocumentList" id="1">
 			<UseAlternationRowColor>true</UseAlternationRowColor>
@@ -67,29 +71,29 @@
 				</ChildItems>
 			</AutoCommandBar>
 			<ExtendedTooltip name="DocumentListExtendedTooltip" id="4"/>
-			<SearchStringAddition name="DocumentListSearchString" id="37">
+			<SearchStringAddition name="DocumentListSearchString" id="40">
 				<AdditionSource>
 					<Item>DocumentList</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="DocumentListSearchStringContextMenu" id="38"/>
-				<ExtendedTooltip name="DocumentListSearchStringExtendedTooltip" id="39"/>
+				<ContextMenu name="DocumentListSearchStringContextMenu" id="41"/>
+				<ExtendedTooltip name="DocumentListSearchStringExtendedTooltip" id="42"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="DocumentListViewStatus" id="40">
+			<ViewStatusAddition name="DocumentListViewStatus" id="43">
 				<AdditionSource>
 					<Item>DocumentList</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="DocumentListViewStatusContextMenu" id="41"/>
-				<ExtendedTooltip name="DocumentListViewStatusExtendedTooltip" id="42"/>
+				<ContextMenu name="DocumentListViewStatusContextMenu" id="44"/>
+				<ExtendedTooltip name="DocumentListViewStatusExtendedTooltip" id="45"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="DocumentListSearchControl" id="43">
+			<SearchControlAddition name="DocumentListSearchControl" id="46">
 				<AdditionSource>
 					<Item>DocumentList</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="DocumentListSearchControlContextMenu" id="44"/>
-				<ExtendedTooltip name="DocumentListSearchControlExtendedTooltip" id="45"/>
+				<ContextMenu name="DocumentListSearchControlContextMenu" id="47"/>
+				<ExtendedTooltip name="DocumentListSearchControlExtendedTooltip" id="48"/>
 			</SearchControlAddition>
 			<Events>
 				<Event name="Selection">DocumentListSelection</Event>
@@ -140,6 +144,12 @@
 					<ContextMenu name="DocumentListProjectContextMenu" id="27"/>
 					<ExtendedTooltip name="DocumentListProjectExtendedTooltip" id="28"/>
 				</LabelField>
+				<LabelField name="DocumentListRef" id="37">
+					<DataPath>DocumentList.Ref</DataPath>
+					<Visible>false</Visible>
+					<ContextMenu name="DocumentListRefContextMenu" id="38"/>
+					<ExtendedTooltip name="DocumentListRefExtendedTooltip" id="39"/>
+				</LabelField>
 			</ChildItems>
 		</Table>
 	</ChildItems>
@@ -160,9 +170,12 @@
 			<Type>
 				<v8:Type>cfg:DynamicList</v8:Type>
 			</Type>
+			<UseAlways>
+				<Field>DocumentList.Ref</Field>
+			</UseAlways>
 			<Settings xsi:type="DynamicList">
 				<ManualQuery>true</ManualQuery>
-				<DynamicDataRead>true</DynamicDataRead>
+				<DynamicDataRead>false</DynamicDataRead>
 				<QueryText>SELECT
 	DocumentJournalDocumentJournal1.Ref,
 	DocumentJournalDocumentJournal1.Date,
@@ -180,8 +193,166 @@ FROM
 		LEFT JOIN InformationRegister.BankTransactions AS BankTransactions
 		ON DocumentJournalDocumentJournal1.Ref = BankTransactions.Document
 WHERE
-	BankTransactions.Document IS NULL </QueryText>
-				<MainTable>DocumentJournal.DocumentJournal1</MainTable>
+	DocumentJournalDocumentJournal1.Type IN(&amp;ListWithoutTransfersAndJE)
+	AND DocumentJournalDocumentJournal1.Date BETWEEN &amp;PeriodStart AND &amp;PeriodEnd
+	AND DocumentJournalDocumentJournal1.Total = &amp;Amount
+	AND (BankTransactions.Document IS NULL 
+			OR BankTransactions.ID = &amp;TransactionID)
+	AND DocumentJournalDocumentJournal1.BankAccount = &amp;BankAccount
+
+UNION ALL
+
+SELECT
+	DocumentJournal1.Ref,
+	DocumentJournal1.Date,
+	DocumentJournal1.DeletionMark,
+	DocumentJournal1.Number,
+	DocumentJournal1.Posted,
+	DocumentJournal1.Total,
+	DocumentJournal1.Memo,
+	DocumentJournal1.Company,
+	DocumentJournal1.DueDate,
+	DocumentJournal1.Project,
+	DocumentJournal1.Type
+FROM
+	DocumentJournal.DocumentJournal1 AS DocumentJournal1
+		INNER JOIN (SELECT
+			BankTransfer.Ref AS Ref
+		FROM
+			Document.BankTransfer AS BankTransfer
+				LEFT JOIN InformationRegister.BankTransactions AS BankTransactions
+				ON BankTransfer.Ref = BankTransactions.Document
+					AND (BankTransactions.BankAccount = &amp;AccountInBank)
+		WHERE
+			BankTransfer.Date BETWEEN &amp;PeriodStart AND &amp;PeriodEnd
+			AND CASE
+					WHEN &amp;IncomingPayment
+						THEN BankTransfer.AccountTo = &amp;BankAccount
+					ELSE BankTransfer.AccountFrom = &amp;BankAccount
+				END
+			AND (BankTransactions.Document IS NULL 
+					OR BankTransactions.ID = &amp;TransactionID)) AS BankTransfers
+		ON DocumentJournal1.Ref = BankTransfers.Ref
+WHERE
+	DocumentJournal1.Type IN(&amp;ListOfDocumentTypes)
+	AND DocumentJournal1.Total = &amp;Amount
+
+UNION ALL
+
+SELECT
+	DocumentJournal1.Ref,
+	DocumentJournal1.Date,
+	DocumentJournal1.DeletionMark,
+	DocumentJournal1.Number,
+	DocumentJournal1.Posted,
+	NestedSelect.Amount,
+	DocumentJournal1.Memo,
+	DocumentJournal1.Company,
+	DocumentJournal1.DueDate,
+	DocumentJournal1.Project,
+	DocumentJournal1.Type
+FROM
+	DocumentJournal.DocumentJournal1 AS DocumentJournal1
+		INNER JOIN (SELECT
+			GeneralJournalTurnovers.Recorder AS Recorder,
+			CASE
+				WHEN &amp;IncomingPayment
+					THEN GeneralJournalTurnovers.AmountRCTurnoverDr
+				ELSE GeneralJournalTurnovers.AmountRCTurnoverCr
+			END AS Amount
+		FROM
+			AccountingRegister.GeneralJournal.Turnovers(&amp;PeriodStart, &amp;PeriodEnd, Recorder, Account = &amp;BankAccount, , ) AS GeneralJournalTurnovers
+				LEFT JOIN InformationRegister.BankTransactions AS BankTransactions
+				ON GeneralJournalTurnovers.Recorder = BankTransactions.Document
+					AND (BankTransactions.BankAccount = &amp;AccountInBank)
+		WHERE
+			CASE
+					WHEN &amp;IncomingPayment
+						THEN GeneralJournalTurnovers.AmountRCTurnoverDr = &amp;Amount
+					ELSE GeneralJournalTurnovers.AmountRCTurnoverCr = &amp;Amount
+				END
+			AND (BankTransactions.Document IS NULL 
+					OR BankTransactions.ID = &amp;TransactionID)
+			AND GeneralJournalTurnovers.Recorder REFS Document.GeneralJournalEntry) AS NestedSelect
+		ON DocumentJournal1.Ref = NestedSelect.Recorder
+WHERE
+	DocumentJournal1.Type IN(&amp;ListOfDocumentTypes)
+
+UNION ALL
+
+SELECT
+	DocumentJournal1.Ref,
+	DocumentJournal1.Date,
+	DocumentJournal1.DeletionMark,
+	DocumentJournal1.Number,
+	DocumentJournal1.Posted,
+	NestedSelect.AmountBalance,
+	DocumentJournal1.Memo,
+	DocumentJournal1.Company,
+	DocumentJournal1.DueDate,
+	DocumentJournal1.Project,
+	DocumentJournal1.Type
+FROM
+	DocumentJournal.DocumentJournal1 AS DocumentJournal1
+		INNER JOIN (SELECT
+			GeneralJournalBalance.AmountRCBalanceDr AS AmountBalance,
+			GeneralJournalBalance.ExtDimension1.Ref AS ExtDimension1Ref
+		FROM
+			AccountingRegister.GeneralJournal.Balance(
+					,
+					,
+					&amp;DocumentExtD,
+					ExtDimension1 IN
+						(SELECT
+							SalesInvoice.Ref
+						FROM
+							Document.SalesInvoice AS SalesInvoice
+						WHERE
+							SalesInvoice.Posted = TRUE
+							AND SalesInvoice.Date &gt;= &amp;PeriodStart
+							AND SalesInvoice.Date &lt;= &amp;PeriodEnd)) AS GeneralJournalBalance
+		WHERE
+			GeneralJournalBalance.AmountRCBalanceDr &gt;= &amp;Amount
+			AND &amp;IncomingPayment) AS NestedSelect
+		ON DocumentJournal1.Ref = NestedSelect.ExtDimension1Ref
+
+UNION ALL
+
+SELECT
+	DocumentJournal1.Ref,
+	DocumentJournal1.Date,
+	DocumentJournal1.DeletionMark,
+	DocumentJournal1.Number,
+	DocumentJournal1.Posted,
+	NestedSelect.AmountBalance,
+	DocumentJournal1.Memo,
+	DocumentJournal1.Company,
+	DocumentJournal1.DueDate,
+	DocumentJournal1.Project,
+	DocumentJournal1.Type
+FROM
+	DocumentJournal.DocumentJournal1 AS DocumentJournal1
+		INNER JOIN (SELECT
+			GeneralJournalBalance.AmountRCBalanceCr AS AmountBalance,
+			GeneralJournalBalance.ExtDimension1.Ref AS ExtDimension1Ref
+		FROM
+			AccountingRegister.GeneralJournal.Balance(
+					,
+					,
+					&amp;DocumentExtD,
+					ExtDimension1 IN
+						(SELECT
+							PurchaseInvoice.Ref
+						FROM
+							Document.PurchaseInvoice AS PurchaseInvoice
+						WHERE
+							PurchaseInvoice.Posted = TRUE
+							AND PurchaseInvoice.Date &gt;= &amp;PeriodStart
+							AND PurchaseInvoice.Date &lt;= &amp;PeriodEnd)) AS GeneralJournalBalance
+		WHERE
+			GeneralJournalBalance.AmountRCBalanceCr &gt;= &amp;Amount
+			AND NOT &amp;IncomingPayment) AS NestedSelect
+		ON DocumentJournal1.Ref = NestedSelect.ExtDimension1Ref</QueryText>
 				<ListSettings>
 					<dcsset:filter>
 						<dcsset:viewMode>Normal</dcsset:viewMode>
@@ -223,4 +394,49 @@ WHERE
 			<Representation>TextPicture</Representation>
 		</Command>
 	</Commands>
+	<Parameters>
+		<Parameter name="TransactionDate">
+			<Type>
+				<v8:Type>xs:dateTime</v8:Type>
+				<v8:DateQualifiers>
+					<v8:DateFractions>Date</v8:DateFractions>
+				</v8:DateQualifiers>
+			</Type>
+		</Parameter>
+		<Parameter name="BankAccount">
+			<Type>
+				<v8:Type>cfg:ChartOfAccountsRef.ChartOfAccounts</v8:Type>
+			</Type>
+		</Parameter>
+		<Parameter name="ListOfDocumentTypes">
+			<Type>
+				<v8:Type>v8:ValueListType</v8:Type>
+			</Type>
+		</Parameter>
+		<Parameter name="Amount">
+			<Type>
+				<v8:Type>xs:decimal</v8:Type>
+				<v8:NumberQualifiers>
+					<v8:Digits>15</v8:Digits>
+					<v8:FractionDigits>2</v8:FractionDigits>
+					<v8:AllowedSign>Any</v8:AllowedSign>
+				</v8:NumberQualifiers>
+			</Type>
+		</Parameter>
+		<Parameter name="IncomingPayment">
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
+			</Type>
+		</Parameter>
+		<Parameter name="AccountInBank">
+			<Type>
+				<v8:Type>cfg:CatalogRef.BankAccounts</v8:Type>
+			</Type>
+		</Parameter>
+		<Parameter name="TransactionID">
+			<Type>
+				<v8:Type>v8:UUID</v8:Type>
+			</Type>
+		</Parameter>
+	</Parameters>
 </Form>

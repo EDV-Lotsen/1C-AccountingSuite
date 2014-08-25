@@ -27,10 +27,6 @@
 			<field>ClearedBalance</field>
 		</field>
 		<field xsi:type="DataSetFieldField">
-			<dataPath>Company</dataPath>
-			<field>Company</field>
-		</field>
-		<field xsi:type="DataSetFieldField">
 			<dataPath>DataVersion</dataPath>
 			<field>DataVersion</field>
 		</field>
@@ -39,26 +35,12 @@
 			<field>Date</field>
 		</field>
 		<field xsi:type="DataSetFieldField">
-			<dataPath>Date1</dataPath>
-			<field>Date1</field>
-			<title xsi:type="v8:LocalStringType">
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Date1</v8:content>
-				</v8:item>
-			</title>
-		</field>
-		<field xsi:type="DataSetFieldField">
 			<dataPath>DeletionMark</dataPath>
 			<field>DeletionMark</field>
 		</field>
 		<field xsi:type="DataSetFieldField">
 			<dataPath>Difference</dataPath>
 			<field>Difference</field>
-		</field>
-		<field xsi:type="DataSetFieldField">
-			<dataPath>DocNumber</dataPath>
-			<field>DocNumber</field>
 		</field>
 		<field xsi:type="DataSetFieldField">
 			<dataPath>EndingBalance</dataPath>
@@ -115,10 +97,6 @@
 			<field>ServiceChargeDate</field>
 		</field>
 		<field xsi:type="DataSetFieldField">
-			<dataPath>StatementToDate</dataPath>
-			<field>StatementToDate</field>
-		</field>
-		<field xsi:type="DataSetFieldField">
 			<dataPath>Transaction</dataPath>
 			<field>Transaction</field>
 		</field>
@@ -139,31 +117,27 @@
 	BankReconciliationLineItems.Ref,
 	BankReconciliationLineItems.LineNumber,
 	BankReconciliationLineItems.Transaction,
-	BankReconciliationLineItems.Cleared,
-	BankReconciliationLineItems.DocNumber,
 	BankReconciliationLineItems.TransactionAmount,
-	BankReconciliationLineItems.Company,
-	BankReconciliationLineItems.Date,
+	BankReconciliationLineItems.Cleared,
 	BankReconciliationLineItems.Ref.Ref AS Ref1,
 	BankReconciliationLineItems.Ref.DataVersion,
 	BankReconciliationLineItems.Ref.DeletionMark,
 	BankReconciliationLineItems.Ref.Number,
-	BankReconciliationLineItems.Ref.Date AS Date1,
+	BankReconciliationLineItems.Ref.Date,
 	BankReconciliationLineItems.Ref.Posted,
-	BankReconciliationLineItems.Ref.StatementToDate,
-	BankReconciliationLineItems.Ref.ServiceCharge,
-	BankReconciliationLineItems.Ref.ServiceChargeDate,
-	BankReconciliationLineItems.Ref.InterestEarned,
-	BankReconciliationLineItems.Ref.InterestEarnedDate,
-	BankReconciliationLineItems.Ref.BeginningBalance,
-	BankReconciliationLineItems.Ref.EndingBalance,
-	BankReconciliationLineItems.Ref.ClearedBalance,
-	BankReconciliationLineItems.Ref.Difference,
-	BankReconciliationLineItems.Ref.ClearedAmount,
-	BankReconciliationLineItems.Ref.Memo,
 	BankReconciliationLineItems.Ref.BankAccount,
 	BankReconciliationLineItems.Ref.BankInterestEarnedAccount,
 	BankReconciliationLineItems.Ref.BankServiceChargeAccount,
+	BankReconciliationLineItems.Ref.BeginningBalance,
+	BankReconciliationLineItems.Ref.ClearedAmount,
+	BankReconciliationLineItems.Ref.ClearedBalance,
+	BankReconciliationLineItems.Ref.Difference,
+	BankReconciliationLineItems.Ref.EndingBalance,
+	BankReconciliationLineItems.Ref.InterestEarned,
+	BankReconciliationLineItems.Ref.InterestEarnedDate,
+	BankReconciliationLineItems.Ref.Memo,
+	BankReconciliationLineItems.Ref.ServiceCharge,
+	BankReconciliationLineItems.Ref.ServiceChargeDate,
 	BankReconciliationLineItems.Ref.Presentation,
 	BankReconciliationLineItems.Ref.PointInTime
 FROM
@@ -176,18 +150,6 @@ FROM
 			<dcsset:selection>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Cleared</dcsset:field>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>Company</dcsset:field>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>Date</dcsset:field>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>Date1</dcsset:field>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>DocNumber</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>LineNumber</dcsset:field>
@@ -247,13 +209,13 @@ FROM
 					<dcsset:field>Posted</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Date</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>ServiceCharge</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>ServiceChargeDate</dcsset:field>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>StatementToDate</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Transaction</dcsset:field>

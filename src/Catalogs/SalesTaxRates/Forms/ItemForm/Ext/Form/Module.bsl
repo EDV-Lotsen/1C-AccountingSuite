@@ -1,4 +1,6 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
+&AtClient
+Var ThisIsNew;
 #Region EVENTS_HANDLERS
 
 &AtServer
@@ -159,8 +161,20 @@ Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 EndProcedure
 
 &AtClient
+Procedure BeforeWrite(Cancel, WriteParameters)
+	If Object.Ref.IsEmpty() Then 
+		ThisIsNew = True;
+	Else
+		ThisIsNew = False;
+	EndIf;
+EndProcedure
+
+&AtClient
 Procedure AfterWrite(WriteParameters)
 	NotifyChanged(PredefinedValue("Catalog.SalesTaxComponents.EmptyRef"));
+	If ThisIsNew Then
+		Notify("SalesTaxRateAdded", Object.Ref);
+	EndIf;
 EndProcedure
 
 #ENDREGION
@@ -450,7 +464,6 @@ Procedure FillInCombinedRates(ParentRef)
 	CombinedRates.Load(Query.Execute().Unload());	
 EndProcedure
 
-
 &AtClient
 Procedure CombinedRatesBeforeAddRow(Item, Cancel, Clone, Parent, Folder, Parameter)
 	If Clone Then
@@ -462,4 +475,5 @@ Procedure CombinedRatesBeforeAddRow(Item, Cancel, Clone, Parent, Folder, Paramet
 		Item.CurrentRow = NewRow.GetID();
 	EndIf;
 EndProcedure
+
 #EndRegion

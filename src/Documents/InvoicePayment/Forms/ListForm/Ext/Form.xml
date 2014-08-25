@@ -66,29 +66,29 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="24"/>
-			<SearchStringAddition name="ListSearchString" id="39">
+			<SearchStringAddition name="ListSearchString" id="42">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="40"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="41"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="43"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="44"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="42">
+			<ViewStatusAddition name="ListViewStatus" id="45">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="43"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="44"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="46"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="47"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="45">
+			<SearchControlAddition name="ListSearchControl" id="48">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="46"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="47"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="49"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="50"/>
 			</SearchControlAddition>
 			<ChildItems>
 				<LabelField name="Date" id="4">
@@ -115,10 +115,6 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Bank account</v8:content>
 						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Bankkonto</v8:content>
-						</v8:item>
 					</Title>
 					<ContextMenu name="BankAccountNameContextMenu" id="21"/>
 					<ExtendedTooltip name="BankAccountNameExtendedTooltip" id="27"/>
@@ -143,6 +139,14 @@
 					</Format>
 					<ContextMenu name="DocumentTotalRCContextMenu" id="13"/>
 					<ExtendedTooltip name="DocumentTotalRCExtendedTooltip" id="31"/>
+				</LabelField>
+				<LabelField name="VoidEntry" id="39">
+					<DataPath>List.VoidEntry</DataPath>
+					<ShowInHeader>false</ShowInHeader>
+					<Width>6</Width>
+					<HorizontalStretch>false</HorizontalStretch>
+					<ContextMenu name="VoidEntryContextMenu" id="40"/>
+					<ExtendedTooltip name="VoidEntryExtendedTooltip" id="41"/>
 				</LabelField>
 			</ChildItems>
 		</Table>
@@ -169,11 +173,18 @@
 	DocumentInvoicePayment.BankAccount,
 	DocumentInvoicePayment.PointInTime,
 	ChartOfAccounts.Description AS BankAccountName,
-	DocumentInvoicePayment.PaymentMethod
+	DocumentInvoicePayment.PaymentMethod,
+	CASE
+		WHEN DocumentInvoicePayment.Ref = GeneralJournalEntry.VoidingEntry
+			THEN VALUE(Enum.VoidingTypes.VOID)
+		ELSE 0
+	END AS VoidEntry
 FROM
 	Document.InvoicePayment AS DocumentInvoicePayment
 		LEFT JOIN ChartOfAccounts.ChartOfAccounts AS ChartOfAccounts
-		ON DocumentInvoicePayment.BankAccount = ChartOfAccounts.Ref</QueryText>
+		ON DocumentInvoicePayment.BankAccount = ChartOfAccounts.Ref
+		LEFT JOIN Document.GeneralJournalEntry AS GeneralJournalEntry
+		ON (GeneralJournalEntry.VoidingEntry = DocumentInvoicePayment.Ref)</QueryText>
 				<MainTable>Document.InvoicePayment</MainTable>
 				<ListSettings>
 					<dcsset:filter>
@@ -213,6 +224,48 @@ FROM
 				</ListSettings>
 			</Settings>
 		</Attribute>
+		<ConditionalAppearance>
+			<dcsset:item>
+				<dcsset:selection>
+					<dcsset:item>
+						<dcsset:field>List</dcsset:field>
+					</dcsset:item>
+				</dcsset:selection>
+				<dcsset:filter>
+					<dcsset:item xsi:type="dcsset:FilterItemComparison">
+						<dcsset:left xsi:type="dcscor:Field">List.VoidEntry</dcsset:left>
+						<dcsset:comparisonType>Equal</dcsset:comparisonType>
+						<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.VoidingTypes.VOID</dcsset:right>
+					</dcsset:item>
+				</dcsset:filter>
+				<dcsset:appearance>
+					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+						<dcscor:parameter>TextColor</dcscor:parameter>
+						<dcscor:value xsi:type="v8ui:Color">#808080</dcscor:value>
+					</dcscor:item>
+				</dcsset:appearance>
+			</dcsset:item>
+			<dcsset:item>
+				<dcsset:selection>
+					<dcsset:item>
+						<dcsset:field>VoidEntry</dcsset:field>
+					</dcsset:item>
+				</dcsset:selection>
+				<dcsset:filter>
+					<dcsset:item xsi:type="dcsset:FilterItemComparison">
+						<dcsset:left xsi:type="dcscor:Field">List.VoidEntry</dcsset:left>
+						<dcsset:comparisonType>Equal</dcsset:comparisonType>
+						<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.VoidingTypes.VOID</dcsset:right>
+					</dcsset:item>
+				</dcsset:filter>
+				<dcsset:appearance>
+					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+						<dcscor:parameter>TextColor</dcscor:parameter>
+						<dcscor:value xsi:type="v8ui:Color">#FF0000</dcscor:value>
+					</dcscor:item>
+				</dcsset:appearance>
+			</dcsset:item>
+		</ConditionalAppearance>
 	</Attributes>
 	<Commands>
 		<Command name="MarkVoid" id="1">

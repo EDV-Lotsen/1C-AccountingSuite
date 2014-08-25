@@ -144,9 +144,58 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		ReverseJournalEntry(PreviousRef);
 		Items.ReverseButton.Visible = False;
 	EndIf;
-
 	
-	//Title = "GL entry " + Object.Number + " " + Format(Object.Date, "DLF=D");
+	//Displays voiding info if entry voids a document (after written)
+	Voided();
+	
+	// If voiding from Check
+	If Parameters.Property("CheckRef") Then
+		
+		PreviousRef = Parameters.CheckRef;
+		//PreviousRef = Documents.Check.FindByNumber(PreviousRef);
+		
+		For Each LineItem In PreviousRef.LineItems Do
+			NewEntry = Object.LineItems.Add();
+			NewEntry.Account = LineItem.Account;
+			NewEntry.AmountCr = LineItem.Amount;
+			NewEntry.VoidedEntry = PreviousRef;			
+		EndDo;
+		
+		NewEntry = Object.LineItems.Add();
+		NewEntry.Account = PreviousRef.BankAccount;
+		NewEntry.AmountDr = PreviousRef.DocumentTotalRC;
+		NewEntry.VoidedEntry = PreviousRef;
+
+		Object.Memo = "Voiding entry for " + PreviousRef;
+		Object.Date = Parameters.VoidDate;
+		Object.VoidingEntry = PreviousRef;
+
+	EndIf;
+	
+	// If voiding from invoice payment
+	If Parameters.Property("InvoicePayRef") Then
+		
+		PreviousRef = Parameters.InvoicePayRef;
+		//PreviousRef = Documents.InvoicePayment.FindByNumber(PreviousRef);
+				
+		For Each LineItem In PreviousRef.LineItems Do
+			NewEntry = Object.LineItems.Add();
+			NewEntry.Account = LineItem.Document.APAccount;
+			NewEntry.AmountCr = LineItem.Payment;
+			NewEntry.Company = PreviousRef.Company;
+			NewEntry.VoidedEntry = LineItem.Document;
+			
+			NewEntry = Object.LineItems.Add();
+			NewEntry.Account = PreviousRef.BankAccount;
+			NewEntry.AmountDr = LineItem.Payment;
+			NewEntry.VoidedEntry = LineItem.Document;
+		EndDo;
+				
+		Object.Memo = "Voiding entry for " + PreviousRef;
+		Object.Date = Parameters.VoidDate;
+		Object.VoidingEntry = PreviousRef;
+	EndIf;
+
 	
 	If Object.Currency.IsEmpty() Then
 		Object.Currency = Constants.DefaultCurrency.Get();
@@ -155,7 +204,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	EndIf;
 	
 	Items.ExchangeRate.Title = GeneralFunctionsReusable.DefaultCurrencySymbol() + "/1" + Object.Currency.Symbol;
-	
+		
 	ApplyConditionalAppearance();
 EndProcedure
 
@@ -386,6 +435,26 @@ Procedure LineItemsAccountOnChange(Item)
 		EndIf;
 	Else
 		
+	EndIf;
+EndProcedure
+
+&AtClient
+Procedure AfterWrite(WriteParameters)
+	
+	If Object.VoidingEntry <> Undefined Then
+		Voided();
+		Notify("UpdateVoid",Object.VoidingEntry);
+	EndIf;
+	
+EndProcedure
+
+&AtServer
+Procedure Voided()
+	If Object.VoidingEntry <> Undefined Then
+		Items.VoidMessage.Title = "This entry is voiding";
+		Items.VoidInfo.Visible = True;
+	Else
+		Items.VoidInfo.Visible = False;
 	EndIf;
 EndProcedure
 

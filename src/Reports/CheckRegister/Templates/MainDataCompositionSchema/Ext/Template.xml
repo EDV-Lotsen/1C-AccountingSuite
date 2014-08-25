@@ -51,6 +51,64 @@
 				</v8:item>
 			</title>
 		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Account</dataPath>
+			<field>Account</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Cleared</dataPath>
+			<field>Cleared</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Cleared</v8:content>
+				</v8:item>
+			</title>
+			<presentationExpression>Case When Cleared Then "Cleared" Else "-" End</presentationExpression>
+			<appearance>
+				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+					<dcscor:use>false</dcscor:use>
+					<dcscor:parameter>Font</dcscor:parameter>
+					<dcscor:value xsi:type="v8ui:Font" kind="AutoFont"/>
+				</dcscor:item>
+				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+					<dcscor:parameter>HorizontalAlign</dcscor:parameter>
+					<dcscor:value xsi:type="v8ui:HorizontalAlign">Center</dcscor:value>
+				</dcscor:item>
+			</appearance>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Document</dataPath>
+			<field>Document</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Reconciled</dataPath>
+			<field>Reconciled</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Reconciled</v8:content>
+				</v8:item>
+			</title>
+			<presentationExpression>Case When Reconciled Then "Reconciled" Else "-" End</presentationExpression>
+			<appearance>
+				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+					<dcscor:parameter>HorizontalAlign</dcscor:parameter>
+					<dcscor:value xsi:type="v8ui:HorizontalAlign">Center</dcscor:value>
+				</dcscor:item>
+			</appearance>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Voided</dataPath>
+			<field>Voided</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Voided</v8:content>
+				</v8:item>
+			</title>
+			<presentationExpression>Case When Voided Then "Voided" Else "-" End</presentationExpression>
+		</field>
 		<dataSource>DataSource1</dataSource>
 		<query>SELECT
 	InvoicePayment.Ref,
@@ -61,10 +119,13 @@
 	InvoicePayment.Memo,
 	InvoicePayment.Company,
 	InvoicePayment.BankAccount
+INTO BaseTable
 FROM
 	Document.InvoicePayment AS InvoicePayment
 WHERE
 	InvoicePayment.PaymentMethod = VALUE(Catalog.PaymentMethods.Check)
+{WHERE
+	(InvoicePayment.BankAccount = &amp;BankAccount)}
 
 UNION ALL
 
@@ -80,8 +141,139 @@ SELECT
 FROM
 	Document.Check AS Check
 WHERE
-	Check.PaymentMethod = VALUE(Catalog.PaymentMethods.Check)</query>
+	Check.PaymentMethod = VALUE(Catalog.PaymentMethods.Check)
+{WHERE
+	(Check.BankAccount = &amp;BankAccount)}
+;
+
+////////////////////////////////////////////////////////////////////////////////
+SELECT
+	BaseTable.Ref,
+	BaseTable.Number,
+	BaseTable.Date,
+	BaseTable.DocumentTotalRC,
+	BaseTable.DocumentTotal,
+	BaseTable.Memo,
+	BaseTable.Company,
+	BaseTable.BankAccount,
+	ISNULL(BankTransactions.Accepted, FALSE) AS Cleared,
+	CASE
+		WHEN ISNULL(BankReconciliationBalance.AmountBalance, 0) = 0
+			THEN TRUE
+		ELSE FALSE
+	END AS Reconciled,
+	CASE
+		WHEN GeneralJournalEntry.Ref IS NULL 
+			THEN FALSE
+		ELSE TRUE
+	END AS Voided
+FROM
+	BaseTable AS BaseTable
+		LEFT JOIN InformationRegister.BankTransactions AS BankTransactions
+		ON BaseTable.Ref = BankTransactions.Document
+			AND BaseTable.BankAccount = BankTransactions.BankAccount.AccountingAccount
+		LEFT JOIN AccumulationRegister.BankReconciliation.Balance(
+				{(&amp;P)},
+				Document IN
+					(SELECT
+						BaseTable.Ref
+					FROM
+						BaseTable)) AS BankReconciliationBalance
+		ON BaseTable.BankAccount = BankReconciliationBalance.Account
+			AND BaseTable.Ref = BankReconciliationBalance.Document
+		LEFT JOIN Document.GeneralJournalEntry AS GeneralJournalEntry
+		ON BaseTable.Ref = GeneralJournalEntry.VoidingEntry
+WHERE
+	BaseTable.Date &gt;= &amp;StartDate
+	AND (BaseTable.Date &lt;= &amp;EndDate
+			OR &amp;EndDate = DATETIME(1, 1, 1))</query>
 	</dataSet>
+	<parameter>
+		<name>Period</name>
+		<title xsi:type="v8:LocalStringType">
+			<v8:item>
+				<v8:lang>en</v8:lang>
+				<v8:content>Period</v8:content>
+			</v8:item>
+		</title>
+		<valueType>
+			<v8:Type>v8:StandardPeriod</v8:Type>
+		</valueType>
+		<value xsi:type="v8:StandardPeriod">
+			<v8:variant xsi:type="v8:StandardPeriodVariant">Custom</v8:variant>
+			<v8:startDate>0001-01-01T00:00:00</v8:startDate>
+			<v8:endDate>0001-01-01T00:00:00</v8:endDate>
+		</value>
+		<useRestriction>false</useRestriction>
+	</parameter>
+	<parameter>
+		<name>StartDate</name>
+		<title xsi:type="v8:LocalStringType">
+			<v8:item>
+				<v8:lang>en</v8:lang>
+				<v8:content>Start date</v8:content>
+			</v8:item>
+		</title>
+		<valueType>
+			<v8:Type>xs:dateTime</v8:Type>
+			<v8:DateQualifiers>
+				<v8:DateFractions>DateTime</v8:DateFractions>
+			</v8:DateQualifiers>
+		</valueType>
+		<value xsi:type="xs:dateTime">0001-01-01T00:00:00</value>
+		<useRestriction>true</useRestriction>
+		<expression>&amp;Period.StartDate</expression>
+	</parameter>
+	<parameter>
+		<name>EndDate</name>
+		<title xsi:type="v8:LocalStringType">
+			<v8:item>
+				<v8:lang>en</v8:lang>
+				<v8:content>End date</v8:content>
+			</v8:item>
+		</title>
+		<valueType>
+			<v8:Type>xs:dateTime</v8:Type>
+			<v8:DateQualifiers>
+				<v8:DateFractions>DateTime</v8:DateFractions>
+			</v8:DateQualifiers>
+		</valueType>
+		<value xsi:type="xs:dateTime">0001-01-01T00:00:00</value>
+		<useRestriction>true</useRestriction>
+		<expression>&amp;Period.EndDate</expression>
+	</parameter>
+	<parameter>
+		<name>BankAccount</name>
+		<title xsi:type="v8:LocalStringType">
+			<v8:item>
+				<v8:lang>en</v8:lang>
+				<v8:content>Account</v8:content>
+			</v8:item>
+		</title>
+		<valueType>
+			<v8:Type xmlns:d4p1="http://v8.1c.ru/8.1/data/enterprise/current-config">d4p1:ChartOfAccountsRef.ChartOfAccounts</v8:Type>
+		</valueType>
+		<value xsi:nil="true"/>
+		<useRestriction>false</useRestriction>
+		<use>Always</use>
+	</parameter>
+	<parameter>
+		<name>P</name>
+		<title xsi:type="v8:LocalStringType">
+			<v8:item>
+				<v8:lang>en</v8:lang>
+				<v8:content>P</v8:content>
+			</v8:item>
+		</title>
+		<valueType>
+			<v8:Type>xs:dateTime</v8:Type>
+			<v8:DateQualifiers>
+				<v8:DateFractions>DateTime</v8:DateFractions>
+			</v8:DateQualifiers>
+		</valueType>
+		<value xsi:type="xs:dateTime">0001-01-01T00:00:00</value>
+		<useRestriction>true</useRestriction>
+	</parameter>
 	<settingsVariant>
 		<dcsset:name>Default</dcsset:name>
 		<dcsset:presentation xsi:type="xs:string">Default</dcsset:presentation>
@@ -111,15 +303,59 @@ WHERE
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>DocumentTotal</dcsset:field>
 				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Cleared</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Reconciled</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Voided</dcsset:field>
+				</dcsset:item>
 			</dcsset:selection>
 			<dcsset:filter>
 				<dcsset:item xsi:type="dcsset:FilterItemComparison">
 					<dcsset:use>false</dcsset:use>
-					<dcsset:left xsi:type="dcscor:Field">BankAccount</dcsset:left>
+					<dcsset:left xsi:type="dcscor:Field">Voided</dcsset:left>
 					<dcsset:comparisonType>Equal</dcsset:comparisonType>
-					<dcsset:userSettingID>52f24fb0-c420-40f1-bec4-2a4be15f3e48</dcsset:userSettingID>
+					<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
+					<dcsset:userSettingID>49ca7b9e-9596-4dcd-a592-3588a7460119</dcsset:userSettingID>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:FilterItemComparison">
+					<dcsset:use>false</dcsset:use>
+					<dcsset:left xsi:type="dcscor:Field">Cleared</dcsset:left>
+					<dcsset:comparisonType>Equal</dcsset:comparisonType>
+					<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
+					<dcsset:userSettingID>778a73b9-cabf-48b2-9be1-62c57fb08bd1</dcsset:userSettingID>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:FilterItemComparison">
+					<dcsset:use>false</dcsset:use>
+					<dcsset:left xsi:type="dcscor:Field">Reconciled</dcsset:left>
+					<dcsset:comparisonType>Equal</dcsset:comparisonType>
+					<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
+					<dcsset:userSettingID>1cf911bc-5b71-4d1a-9e81-66aad8934a5f</dcsset:userSettingID>
 				</dcsset:item>
 			</dcsset:filter>
+			<dcsset:dataParameters>
+				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+					<dcscor:parameter>Period</dcscor:parameter>
+					<dcscor:value xsi:type="v8:StandardPeriod">
+						<v8:variant xsi:type="v8:StandardPeriodVariant">ThisYear</v8:variant>
+					</dcscor:value>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
+					<dcsset:userSettingID>fffc8ac5-1199-4eea-bd8e-50b9e03df4c0</dcsset:userSettingID>
+				</dcscor:item>
+				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+					<dcscor:use>false</dcscor:use>
+					<dcscor:parameter>BankAccount</dcscor:parameter>
+					<dcscor:value xsi:nil="true"/>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
+					<dcsset:userSettingID>32cd5b01-f98e-45a1-b403-4b0c7c16a37b</dcsset:userSettingID>
+				</dcscor:item>
+			</dcsset:dataParameters>
 			<dcsset:order>
 				<dcsset:item xsi:type="dcsset:OrderItemField">
 					<dcsset:field>Number</dcsset:field>

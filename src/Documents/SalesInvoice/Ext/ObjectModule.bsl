@@ -79,7 +79,7 @@ Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 		// Precheck of document data, calculation of temporary data, required for document posting.
 		If (Not ManualAdjustment) Then
 			DocumentParameters = New Structure("Ref, PointInTime,   Company, LineItems",
-			                                    Ref, PointInTime(), Company, LineItems.Unload(, "Order, Product, Location, LocationActual, DeliveryDate, Project, Class, Quantity"));
+			                                    Ref, PointInTime(), Company, LineItems.Unload(, "Order, Product, Unit, Location, LocationActual, DeliveryDate, Project, Class, QtyUM"));
 			Documents.SalesInvoice.PrepareDataBeforeWrite(AdditionalProperties, DocumentParameters, Cancel);
 		EndIf;
 		
@@ -106,7 +106,7 @@ Procedure FillCheckProcessing(Cancel, CheckedAttributes)
 	FilledOrders = GeneralFunctions.InvertCollectionFilter(LineItems, LineItems.FindRows(New Structure("Order", Documents.SalesOrder.EmptyRef())));
 	
 	// Check doubles in items (to be sure of proper orders placement).
-	GeneralFunctions.CheckDoubleItems(Ref, LineItems, "Product, Order, Location, DeliveryDate, Project, Class, LineNumber", FilledOrders, Cancel);
+	GeneralFunctions.CheckDoubleItems(Ref, LineItems, "Product, Unit, Order, Location, DeliveryDate, Project, Class, LineNumber", FilledOrders, Cancel);
 	
 	// Check proper closing of order items by the invoice items.
 	If Not Cancel Then
@@ -139,7 +139,7 @@ Procedure Filling(FillingData, StandardProcessing)
 			EndIf;
 			
 			//Fill attributes
-			FillPropertyValues(ThisObject, FillingData, "Company, ShipTo, BillTo, ConfirmTo, SalesPerson, Project,
+			FillPropertyValues(ThisObject, FillingData, "Company, RefNum, ShipTo, BillTo, ConfirmTo, SalesPerson, Project,
 			|Class, DropshipCompany, DropshipShipTo, DropshipConfirmTo, DropshipRefNum, Currency, ExchangeRate, SalesTaxRate,
 			|DiscountIsTaxable, DiscountPercent, TaxableSubtotal, DocumentTotalRC, LineSubtotal, Discount, SalesTax, Shipping,
 			|DocumentTotal, SubTotal, SalesTaxRC, Terms"); 
@@ -153,22 +153,12 @@ Procedure Filling(FillingData, StandardProcessing)
 			EmailNote          = Constants.SalesInvoiceFooter.Get(); 
 			
 			//Fill "line items"
-			For Each Line In FillingData.LineItems Do
-				
-				NewLine = ThisObject.LineItems.Add();	
-				NewLine.Product = Line.Product;
-				NewLine.ProductDescription = Line.ProductDescription;
-				NewLine.Quantity = Line.Quantity;
-				NewLine.UM = Line.UM;
-				NewLine.Price = Line.Price;
-				NewLine.LineTotal = Line.LineTotal;
-				NewLine.Taxable = Line.Taxable;
-				NewLine.TaxableAmount = Line.TaxableAmount;
-				NewLine.LocationActual = Line.Location;
-				NewLine.DeliveryDateActual = Line.DeliveryDate;
-				NewLine.Project = Line.Project;
-				NewLine.Class = Line.Class;
-				
+			ThisObject.LineItems.Load(FillingData.LineItems.Unload());
+			
+			//Fill additional fields in "line items"
+			For Each Line In ThisObject.LineItems Do
+				Line.LocationActual = Line.Location;
+				Line.DeliveryDateActual = Line.DeliveryDate;
 			EndDo;
 			
 			//Fill "Sales tax across agencies"
@@ -234,6 +224,8 @@ Procedure OnCopy(CopiedObject)
 	
 	// Clear manual adjustment attribute.
 	ManualAdjustment = False;
+	
+	BaseDocument = Undefined;
 	
 EndProcedure
 
@@ -325,6 +317,9 @@ Procedure Posting(Cancel, PostingMode)
 		PostingDatasetInvOrExp.Columns.Add("InvOrExpAccount");
 		PostingDatasetInvOrExp.Columns.Add("AmountRC");
 		
+		// Request actual time point.
+		PointInTime = PointInTime();
+		
 		For Each CurRowLineItems In LineItems Do
 			
 			If CurRowLineItems.Product.Type = Enums.InventoryTypes.Inventory Then
@@ -341,7 +336,8 @@ Procedure Posting(Cancel, PostingMode)
 					                  |	InventoryJournalBalance.QuantityBalance AS QuantityBalance,
 					                  |	InventoryJournalBalance.AmountBalance   AS AmountBalance
 					                  |FROM
-					                  |	AccumulationRegister.InventoryJournal.Balance(, Product = &Product) AS InventoryJournalBalance");
+					                  |	AccumulationRegister.InventoryJournal.Balance(&PointInTime, Product = &Product) AS InventoryJournalBalance");
+					Query.SetParameter("PointInTime", PointInTime);
 					Query.SetParameter("Product", CurRowLineItems.Product);
 					QueryResult = Query.Execute().Unload();
 					If  QueryResult.Count() > 0
@@ -352,13 +348,13 @@ Procedure Posting(Cancel, PostingMode)
 						AverageCost = QueryResult[0].AmountBalance / QueryResult[0].QuantityBalance;
 					EndIf;
 					
-					ItemCost = CurRowLineItems.Quantity * AverageCost;
+					ItemCost = CurRowLineItems.QtyUM * AverageCost;
 					
 				EndIf;
 				
 				If CurRowLineItems.Product.CostingMethod = Enums.InventoryCosting.FIFO Then
 					
-					ItemQuantity = CurRowLineItems.Quantity;
+					ItemQuantity = CurRowLineItems.QtyUM;
 					
 					Query = New Query("SELECT
 					                  |	InventoryJournalBalance.QuantityBalance,
@@ -366,9 +362,10 @@ Procedure Posting(Cancel, PostingMode)
 					                  |	InventoryJournalBalance.Layer,
 					                  |	InventoryJournalBalance.Layer.Date AS LayerDate
 					                  |FROM
-					                  |	AccumulationRegister.InventoryJournal.Balance(, Product = &Product AND Location = &Location) AS InventoryJournalBalance
+					                  |	AccumulationRegister.InventoryJournal.Balance(&PointInTime, Product = &Product AND Location = &Location) AS InventoryJournalBalance
 					                  |ORDER BY
 					                  |	LayerDate ASC");
+					Query.SetParameter("PointInTime", PointInTime);
 					Query.SetParameter("Product", CurRowLineItems.Product);
 					Query.SetParameter("Location", CurRowLineItems.LocationActual);
 					Selection = Query.Execute().Select();
@@ -611,6 +608,10 @@ Procedure Posting(Cancel, PostingMode)
 		EndIf;
 	EndDo;
 	
+	
+	
+	
+	// -> CODE REVIEW
 	invoice_url_webhook = Constants.sales_invoices_webhook.Get();
 	
 	If NOT invoice_url_webhook = "" Then

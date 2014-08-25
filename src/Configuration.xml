@@ -34,10 +34,6 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>AccountingSuite</v8:content>
 				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>AccountingSuite</v8:content>
-				</v8:item>
 			</Synonym>
 			<Comment/>
 			<NamePrefix/>
@@ -51,7 +47,7 @@
 				<xr:Item xsi:type="xr:MDObjectRef">Role.FullAccess</xr:Item>
 			</DefaultRoles>
 			<Vendor>1C Company</Vendor>
-			<Version>1.1.37.02</Version>
+			<Version>1.1.40.01</Version>
 			<UpdateCatalogAddress/>
 			<IncludeHelpInContents>false</IncludeHelpInContents>
 			<UseManagedFormInOrdinaryApplication>true</UseManagedFormInOrdinaryApplication>
@@ -126,28 +122,16 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>AccountingSuite (TM) owned by 1C LLC. All rights reserved.</v8:content>
 				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>AccountingSuite (TM) owned by 1C LLC. All rights reserved.</v8:content>
-				</v8:item>
 			</Copyright>
 			<VendorInformationAddress>
 				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>accountingsuite.com</v8:content>
 				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>accountingsuite.com</v8:content>
-				</v8:item>
 			</VendorInformationAddress>
 			<ConfigurationInformationAddress>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>accountingsuite.com</v8:content>
-				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
 					<v8:content>accountingsuite.com</v8:content>
 				</v8:item>
 			</ConfigurationInformationAddress>
@@ -163,6 +147,7 @@
 			<Language>English</Language>
 			<Language>German</Language>
 			<Language>Russian</Language>
+			<Language>Русский</Language>
 			<Subsystem>StripeAPI</Subsystem>
 			<Subsystem>Banking</Subsystem>
 			<Subsystem>Accounting</Subsystem>
@@ -234,9 +219,16 @@
 			<CommonPicture>discover_logo</CommonPicture>
 			<CommonPicture>jcb_logo</CommonPicture>
 			<CommonPicture>dinersclub_logo</CommonPicture>
+			<CommonPicture>Sum</CommonPicture>
+			<CommonPicture>SSLSign</CommonPicture>
+			<CommonPicture>CloudBankingDiagram</CommonPicture>
+			<CommonPicture>ManyToOneEmail</CommonPicture>
+			<CommonPicture>OneToOneEmail</CommonPicture>
+			<CommonPicture>Merge</CommonPicture>
 			<SessionParameter>TenantValue</SessionParameter>
 			<SessionParameter>TenantUse</SessionParameter>
 			<SessionParameter>ACSUser</SessionParameter>
+			<SessionParameter>TimeTrackToInvoiceDate</SessionParameter>
 			<Role>API</Role>
 			<Role>FullAccess</Role>
 			<Role>FullAccess1</Role>
@@ -258,6 +250,7 @@
 			<Role>ProjectsView</Role>
 			<Role>TimeTrackFull</Role>
 			<Role>TimeTrackView</Role>
+			<Role>НастройкаИОценкаПроизводительности</Role>
 			<CommonTemplate>Template</CommonTemplate>
 			<CommonModule>CommonUse</CommonModule>
 			<CommonModule>CommonUseClientServer</CommonModule>
@@ -289,6 +282,10 @@
 			<CommonModule>AuditLog</CommonModule>
 			<CommonModule>SalesTax</CommonModule>
 			<CommonModule>SalesTaxClient</CommonModule>
+			<CommonModule>EmailHandling</CommonModule>
+			<CommonModule>_UnitTestsPrintForms</CommonModule>
+			<CommonModule>PrintFormFunctions</CommonModule>
+			<CommonModule>zoho_Functions</CommonModule>
 			<WebService>companiespost</WebService>
 			<WebService>companiesget</WebService>
 			<WebService>companiesputcode</WebService>
@@ -321,6 +318,7 @@
 			<WebService>salesordersdeletecode</WebService>
 			<WebService>salesordersgetcode</WebService>
 			<WebService>purchaseorderspost</WebService>
+			<WebService>zoho_integration</WebService>
 			<EventSubscription>ObjectDelete</EventSubscription>
 			<EventSubscription>ClosedPeriodDeletionProtection</EventSubscription>
 			<EventSubscription>ClosedPeriodBeforeWrite</EventSubscription>
@@ -349,42 +347,40 @@
 			<CommandGroup>Accounting</CommandGroup>
 			<Constant>access_token</Constant>
 			<Constant>AddressLine1</Constant>
-			<Constant>AddressLine2</Constant>
 			<Constant>APISecretKey</Constant>
-			<Constant>BankAccount</Constant>
-			<Constant>BankInterestEarnedAccount</Constant>
-			<Constant>BankServiceChargeAccount</Constant>
 			<Constant>bigcom_apipath</Constant>
 			<Constant>bigcom_base64</Constant>
+			<Constant>BankInterestEarnedAccount</Constant>
+			<Constant>BankServiceChargeAccount</Constant>
 			<Constant>bigcom_storeid</Constant>
 			<Constant>bigcom_token</Constant>
 			<Constant>bigcom_user</Constant>
 			<Constant>CF1Name</Constant>
 			<Constant>CF1Type</Constant>
-			<Constant>CF1Required</Constant>
 			<Constant>CF2Name</Constant>
 			<Constant>CF2Type</Constant>
-			<Constant>CF2Required</Constant>
+			<Constant>CF1Required</Constant>
 			<Constant>CF3Name</Constant>
 			<Constant>CF3Type</Constant>
-			<Constant>CF3Required</Constant>
+			<Constant>CF2Required</Constant>
 			<Constant>CF4Name</Constant>
 			<Constant>CF4Type</Constant>
-			<Constant>CF4Required</Constant>
+			<Constant>CF3Required</Constant>
 			<Constant>CF5Name</Constant>
 			<Constant>CF5Type</Constant>
-			<Constant>CF5Required</Constant>
+			<Constant>CF4Required</Constant>
 			<Constant>CheckHorizontalAdj</Constant>
 			<Constant>CheckVerticalAdj</Constant>
+			<Constant>CF5Required</Constant>
 			<Constant>City</Constant>
 			<Constant>COGSAccount</Constant>
 			<Constant>Country</Constant>
 			<Constant>CustomerName</Constant>
 			<Constant>DefaultCurrency</Constant>
 			<Constant>Email</Constant>
-			<Constant>ExchangeGain</Constant>
 			<Constant>ExchangeLoss</Constant>
 			<Constant>ExpenseAccount</Constant>
+			<Constant>ExchangeGain</Constant>
 			<Constant>FirstLaunch</Constant>
 			<Constant>FirstName</Constant>
 			<Constant>IncomeAccount</Constant>
@@ -420,20 +416,20 @@
 			<Constant>stripe_email</Constant>
 			<Constant>CF1CName</Constant>
 			<Constant>CF1CType</Constant>
-			<Constant>CF1CRequired</Constant>
 			<Constant>CF2CName</Constant>
 			<Constant>CF2CType</Constant>
-			<Constant>CF2CRequired</Constant>
+			<Constant>CF1CRequired</Constant>
 			<Constant>CF3CName</Constant>
 			<Constant>CF3CType</Constant>
-			<Constant>CF3CRequired</Constant>
+			<Constant>CF2CRequired</Constant>
 			<Constant>CF4CName</Constant>
 			<Constant>CF4CType</Constant>
-			<Constant>CF4CRequired</Constant>
+			<Constant>CF3CRequired</Constant>
 			<Constant>CF5CName</Constant>
-			<Constant>CF5CRequired</Constant>
 			<Constant>CF5CType</Constant>
+			<Constant>CF4CRequired</Constant>
 			<Constant>dwolla_access_token</Constant>
+			<Constant>CF5CRequired</Constant>
 			<Constant>stripeinvoicenum</Constant>
 			<Constant>stripeinvoicedate</Constant>
 			<Constant>stripeinvoiceamount</Constant>
@@ -441,10 +437,10 @@
 			<Constant>YodleeUserPassword</Constant>
 			<Constant>dwolla_funding_source</Constant>
 			<Constant>SubStatus</Constant>
-			<Constant>PurchaseLiabilityAccount</Constant>
-			<Constant>CostVarianceAccount</Constant>
 			<Constant>MailProfAddress</Constant>
 			<Constant>MailProfSSL</Constant>
+			<Constant>PurchaseLiabilityAccount</Constant>
+			<Constant>CostVarianceAccount</Constant>
 			<Constant>MailProfPass</Constant>
 			<Constant>MailProfUser</Constant>
 			<Constant>ServiceDB</Constant>
@@ -457,6 +453,7 @@
 			<Constant>PeriodClosingDate</Constant>
 			<Constant>PeriodClosingOption</Constant>
 			<Constant>PeriodClosingPassword</Constant>
+			<Constant>PeriodClosingByModule</Constant>
 			<Constant>CF1AName</Constant>
 			<Constant>CF2AName</Constant>
 			<Constant>CF3AName</Constant>
@@ -497,13 +494,13 @@
 			<Constant>SalesTaxDefault</Constant>
 			<Constant>SalesTaxMarkNewCustomersTaxable</Constant>
 			<Constant>SalesTaxMarkNewProductsTaxable</Constant>
+			<Constant>HierarchyChartOfAccountsUpdated</Constant>
 			<Constant>invoice_webhook_email</Constant>
 			<Constant>items_webhook_email</Constant>
 			<Constant>so_webhook_email</Constant>
 			<Constant>companies_webhook_email</Constant>
 			<Constant>cash_webhook_email</Constant>
 			<Constant>receipt_webhook_email</Constant>
-			<Constant>HierarchyChartOfAccountsUpdated</Constant>
 			<Constant>set_numbering</Constant>
 			<Constant>show_yodlee_upload_period</Constant>
 			<Constant>StripeUser</Constant>
@@ -551,6 +548,47 @@
 			<Constant>CopyDropshipPrintOptionsSO_PO</Constant>
 			<Constant>POShowFullName</Constant>
 			<Constant>PurOrderFooter</Constant>
+			<Constant>CMFoot1Type</Constant>
+			<Constant>CMFoot2Type</Constant>
+			<Constant>CMFoot3Type</Constant>
+			<Constant>CMShowEmail</Constant>
+			<Constant>CMShowFedTax</Constant>
+			<Constant>CMShowFax</Constant>
+			<Constant>CMShowWebsite</Constant>
+			<Constant>CMShowPhone2</Constant>
+			<Constant>CMShowFullName</Constant>
+			<Constant>CMFooterTextLeft</Constant>
+			<Constant>CMFooterTextCenter</Constant>
+			<Constant>CMFooterTextRight</Constant>
+			<Constant>CreditMemoFooter</Constant>
+			<Constant>CurrentConfigurationVersion</Constant>
+			<Constant>CSFoot1Type</Constant>
+			<Constant>CSFoot2Type</Constant>
+			<Constant>CSFoot3Type</Constant>
+			<Constant>CSShowEmail</Constant>
+			<Constant>CSShowFedTax</Constant>
+			<Constant>CSShowFax</Constant>
+			<Constant>CSShowWebsite</Constant>
+			<Constant>CSShowPhone2</Constant>
+			<Constant>CSShowFullName</Constant>
+			<Constant>CSFooterTextLeft</Constant>
+			<Constant>CSFooterTextCenter</Constant>
+			<Constant>CSFooterTextRight</Constant>
+			<Constant>CashSaleFooter</Constant>
+			<Constant>PublicDemo</Constant>
+			<Constant>BankAccount</Constant>
+			<Constant>VersionNumber</Constant>
+			<Constant>FreeTrial30</Constant>
+			<Constant>SIShowCountry</Constant>
+			<Constant>SOShowCountry</Constant>
+			<Constant>POShowCountry</Constant>
+			<Constant>CRShowCountry</Constant>
+			<Constant>QuoteShowCountry</Constant>
+			<Constant>DisplayExtendedAccountInfo</Constant>
+			<Constant>DefaultUoMSet</Constant>
+			<Constant>SIShowShipTo</Constant>
+			<Constant>SIShowSVCCol</Constant>
+			<Constant>AddressLine2</Constant>
 			<CommonForm>GeneralSettings</CommonForm>
 			<CommonForm>LongAction</CommonForm>
 			<CommonForm>NavigationFull</CommonForm>
@@ -564,6 +602,9 @@
 			<CommonForm>EmailForm</CommonForm>
 			<CommonForm>EmailFormSO</CommonForm>
 			<CommonForm>MultiEmail</CommonForm>
+			<CommonForm>TimeTrackToInvoiceForm</CommonForm>
+			<CommonForm>VoidDateForm</CommonForm>
+			<CommonForm>InvoicePayList</CommonForm>
 			<Catalog>Addresses</Catalog>
 			<Catalog>BankAccounts</Catalog>
 			<Catalog>Banks</Catalog>
@@ -580,12 +621,12 @@
 			<Catalog>PriceLevels</Catalog>
 			<Catalog>ProductCategories</Catalog>
 			<Catalog>Products</Catalog>
+			<Catalog>UnitSets</Catalog>
 			<Catalog>Units</Catalog>
 			<Catalog>Projects</Catalog>
 			<Catalog>States</Catalog>
 			<Catalog>UM</Catalog>
 			<Catalog>UserList</Catalog>
-			<Catalog>UserLog</Catalog>
 			<Catalog>USTaxCategories1099</Catalog>
 			<Catalog>ZapierWebhooks</Catalog>
 			<Catalog>BankTransactionCategories</Catalog>
@@ -595,6 +636,10 @@
 			<Catalog>SalesTaxRates</Catalog>
 			<Catalog>DocumentNumbering</Catalog>
 			<Catalog>SalesTaxComponents</Catalog>
+			<Catalog>zoho_productCodeMap</Catalog>
+			<Catalog>zoho_accountCodeMap</Catalog>
+			<Catalog>zoho_contactCodeMap</Catalog>
+			<Catalog>zoho_pricebookCodeMap</Catalog>
 			<Document>BankReconciliation</Document>
 			<Document>BankTransfer</Document>
 			<Document>CashReceipt</Document>
@@ -611,16 +656,15 @@
 			<Document>SalesInvoice</Document>
 			<Document>SalesOrder</Document>
 			<Document>SalesReturn</Document>
+			<Document>Quote</Document>
 			<Document>TimeTrack</Document>
 			<Document>WarehouseTransfer</Document>
 			<Document>Budget</Document>
 			<Document>SalesTaxPayment</Document>
 			<Document>Statement</Document>
-			<Document>Quote</Document>
 			<DocumentJournal>DocumentJournal1</DocumentJournal>
 			<Enum>AccountTypes</Enum>
 			<Enum>CashFlowSections</Enum>
-			<Enum>GJEntryType</Enum>
 			<Enum>InventoryCosting</Enum>
 			<Enum>InventoryTypes</Enum>
 			<Enum>InvoiceStatuses</Enum>
@@ -634,6 +678,10 @@
 			<Enum>TextOrImage</Enum>
 			<Enum>AccountingMethod</Enum>
 			<Enum>УровниПроизводительности</Enum>
+			<Enum>ДоступныеПериодыОтчета</Enum>
+			<Enum>VoidingTypes</Enum>
+			<Enum>GJEntryType</Enum>
+			<Enum>TimeTrackStatus</Enum>
 			<Report>APAging</Report>
 			<Report>ARAging</Report>
 			<Report>BalanceSheet</Report>
@@ -684,12 +732,18 @@
 			<Report>ProfitAndLossByClass</Report>
 			<Report>ProfitAndLossByProject</Report>
 			<Report>TimeTrackingDetailReport</Report>
+			<Report>УниверсальныйОтчетПоМетаданным</Report>
 			<Report>StatementOfCashFlows</Report>
+			<Report>SalesByItemSummary</Report>
+			<Report>SalesByItemDetail</Report>
+			<Report>PurchasesByItemSummary</Report>
+			<Report>PurchasesByItemDetail</Report>
 			<DataProcessor>DeleteMarkedObjects</DataProcessor>
 			<DataProcessor>DataImport</DataProcessor>
 			<DataProcessor>DownloadedTransactions</DataProcessor>
 			<DataProcessor>YodleeBankAccountsManagement</DataProcessor>
 			<DataProcessor>Testing</DataProcessor>
+			<DataProcessor>zoho</DataProcessor>
 			<DataProcessor>_UnitTestRunner</DataProcessor>
 			<DataProcessor>ActiveUserList</DataProcessor>
 			<DataProcessor>DataExport_bad</DataProcessor>
@@ -697,6 +751,8 @@
 			<DataProcessor>InventorySiteInfo</DataProcessor>
 			<DataProcessor>GenerateStatements</DataProcessor>
 			<DataProcessor>PrintFormSetup</DataProcessor>
+			<DataProcessor>_UnitTestPrintFormRunner</DataProcessor>
+			<DataProcessor>InitialDemobasePopulation</DataProcessor>
 			<InformationRegister>BankTransactions</InformationRegister>
 			<InformationRegister>CustomPrintForms</InformationRegister>
 			<InformationRegister>ExchangeRates</InformationRegister>
@@ -715,6 +771,8 @@
 			<InformationRegister>HierarchyChartOfAccounts</InformationRegister>
 			<InformationRegister>DocumentJournalOfCompanies</InformationRegister>
 			<InformationRegister>DocumentLastEmail</InformationRegister>
+			<InformationRegister>_PrintFormLogs</InformationRegister>
+			<InformationRegister>PeriodClosingByModule</InformationRegister>
 			<AccumulationRegister>InventoryJournal</AccumulationRegister>
 			<AccumulationRegister>OrdersDispatched</AccumulationRegister>
 			<AccumulationRegister>OrdersRegistered</AccumulationRegister>

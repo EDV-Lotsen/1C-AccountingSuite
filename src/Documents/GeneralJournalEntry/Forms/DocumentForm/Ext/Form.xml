@@ -14,30 +14,66 @@
 		</ChildItems>
 	</AutoCommandBar>
 	<Events>
+		<Event name="AfterWrite">AfterWrite</Event>
 		<Event name="BeforeWrite">BeforeWrite</Event>
 		<Event name="BeforeWriteAtServer">BeforeWriteAtServer</Event>
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
 	</Events>
 	<ChildItems>
+		<UsualGroup name="VoidInfo" id="81">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Void info</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Void info</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Group>Horizontal</Group>
+			<Representation>None</Representation>
+			<ShowTitle>false</ShowTitle>
+			<BackColor>#FFFF99</BackColor>
+			<ExtendedTooltip name="VoidInfoExtendedTooltip" id="82"/>
+			<ChildItems>
+				<LabelDecoration name="VoidMessage" id="83">
+					<HorizontalStretch>true</HorizontalStretch>
+					<Font ref="sys:DefaultGUIFont" faceName="Segoe UI" height="12" kind="WindowsFont"/>
+					<Title formatted="false">
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Void message</v8:content>
+						</v8:item>
+					</Title>
+					<HorizontalAlign>Right</HorizontalAlign>
+					<ContextMenu name="VoidMessageContextMenu" id="84"/>
+					<ExtendedTooltip name="VoidMessageExtendedTooltip" id="85"/>
+				</LabelDecoration>
+				<LabelField name="VoidingEntry" id="86">
+					<DataPath>Object.VoidingEntry</DataPath>
+					<TitleLocation>None</TitleLocation>
+					<HorizontalAlign>Left</HorizontalAlign>
+					<Hiperlink>true</Hiperlink>
+					<Font ref="sys:DefaultGUIFont" faceName="Segoe UI" height="12" kind="WindowsFont"/>
+					<ContextMenu name="VoidingEntryContextMenu" id="87"/>
+					<ExtendedTooltip name="VoidingEntryExtendedTooltip" id="88"/>
+				</LabelField>
+			</ChildItems>
+		</UsualGroup>
 		<UsualGroup name="Header" id="32">
 			<Title>
 				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Header</v8:content>
 				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>Kopfzeile</v8:content>
-				</v8:item>
 			</Title>
 			<ToolTip>
 				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Header</v8:content>
-				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>Kopfzeile</v8:content>
 				</v8:item>
 			</ToolTip>
 			<Group>Horizontal</Group>
@@ -88,19 +124,11 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Middle column</v8:content>
 						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Mittlere Spalte</v8:content>
-						</v8:item>
 					</Title>
 					<ToolTip>
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Middle column</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Mittlere Spalte</v8:content>
 						</v8:item>
 					</ToolTip>
 					<Group>Vertical</Group>
@@ -161,19 +189,11 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>Footer</v8:content>
 				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>Fußzeile</v8:content>
-				</v8:item>
 			</Title>
 			<ToolTip>
 				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Footer</v8:content>
-				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>Fußzeile</v8:content>
 				</v8:item>
 			</ToolTip>
 			<Group>Horizontal</Group>
@@ -194,19 +214,11 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>Transactions</v8:content>
 				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>Transaktionen</v8:content>
-				</v8:item>
 			</Title>
 			<ToolTip>
 				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Transactions</v8:content>
-				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>Transaktionen</v8:content>
 				</v8:item>
 			</ToolTip>
 			<Group>Vertical</Group>
@@ -227,29 +239,29 @@
 					<ContextMenu name="LineItemsContextMenu" id="10"/>
 					<AutoCommandBar name="LineItemsCommandBar" id="11"/>
 					<ExtendedTooltip name="LineItemsExtendedTooltip" id="62"/>
-					<SearchStringAddition name="LineItemsSearchString" id="81">
+					<SearchStringAddition name="LineItemsSearchString" id="89">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>SearchStringRepresentation</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsSearchStringContextMenu" id="82"/>
-						<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="83"/>
+						<ContextMenu name="LineItemsSearchStringContextMenu" id="90"/>
+						<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="91"/>
 					</SearchStringAddition>
-					<ViewStatusAddition name="LineItemsViewStatus" id="84">
+					<ViewStatusAddition name="LineItemsViewStatus" id="92">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>ViewStatusRepresentation</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsViewStatusContextMenu" id="85"/>
-						<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="86"/>
+						<ContextMenu name="LineItemsViewStatusContextMenu" id="93"/>
+						<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="94"/>
 					</ViewStatusAddition>
-					<SearchControlAddition name="LineItemsSearchControl" id="87">
+					<SearchControlAddition name="LineItemsSearchControl" id="95">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>SearchControl</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsSearchControlContextMenu" id="88"/>
-						<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="89"/>
+						<ContextMenu name="LineItemsSearchControlContextMenu" id="96"/>
+						<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="97"/>
 					</SearchControlAddition>
 					<ChildItems>
 						<LabelField name="LineItemsLineNumber" id="12">
@@ -260,6 +272,12 @@
 						</LabelField>
 						<InputField name="LineItemsAccount" id="14">
 							<DataPath>Object.LineItems.Account</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Acct.</v8:content>
+								</v8:item>
+							</Title>
 							<EditMode>EnterOnInput</EditMode>
 							<ContextMenu name="LineItemsAccountContextMenu" id="15"/>
 							<ExtendedTooltip name="LineItemsAccountExtendedTooltip" id="64"/>
@@ -279,6 +297,12 @@
 						</InputField>
 						<InputField name="LineItemsAmountCr" id="18">
 							<DataPath>Object.LineItems.AmountCr</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Amount Cr</v8:content>
+								</v8:item>
+							</Title>
 							<EditMode>EnterOnInput</EditMode>
 							<FooterDataPath>Object.LineItems.TotalAmountCr</FooterDataPath>
 							<ContextMenu name="LineItemsAmountCrContextMenu" id="19"/>
@@ -363,6 +387,11 @@
 				<Visible>
 					<xr:Common>false</xr:Common>
 				</Visible>
+			</Item>
+			<Item>
+				<Command>AccumulationRegister.BankReconciliation.StandardCommand.OpenByRecorder</Command>
+				<Type>Auto</Type>
+				<DefaultVisible>false</DefaultVisible>
 			</Item>
 		</NavigationPanel>
 	</CommandInterface>

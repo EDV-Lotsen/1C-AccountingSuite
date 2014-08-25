@@ -17,7 +17,6 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	OwnerFiltered = Parameters.Property("Filter") And Parameters.Filter.Property("Owner")
 	                And ValueIsFilled(Parameters.Filter.Owner);
 	Items.Owner.Visible = Not OwnerFiltered;
-	Items.OwnerDescription.Visible = Not OwnerFiltered;
 	
 	// Update quantities presentation.
 	QuantityFormat = GeneralFunctionsReusable.DefaultQuantityFormat();

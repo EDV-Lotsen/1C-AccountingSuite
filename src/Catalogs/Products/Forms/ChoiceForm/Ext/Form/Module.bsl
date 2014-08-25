@@ -89,8 +89,13 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Items.CF5Num.Visible = False;
 		Items.CF5String.Visible = False;
 	EndIf;
-
 	
 	// end custom fields
+	
+	QuantityFormat = GeneralFunctionsReusable.DefaultQuantityFormat();
+	Items.QtyOnPO.Format               = QuantityFormat; 
+	Items.QtyOnSO.Format               = QuantityFormat; 
+	Items.QtyOnHand.Format             = QuantityFormat; 
+	Items.QtyAvailableToPromise.Format = QuantityFormat; 
 
 EndProcedure

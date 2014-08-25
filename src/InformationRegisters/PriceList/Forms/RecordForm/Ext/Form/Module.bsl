@@ -221,6 +221,61 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 		
 	
 	EndIf;
+	
+	If Constants.zoho_auth_token.Get() <> "" Then
+		zohoUpdatePricebook();
+	EndIf;
 
 EndProcedure
 
+Procedure zohoUpdatePricebook()
+	If Record.PriceType = "ItemPriceLevel" Then
+		// using http request so no need for https:// anymore
+		PathDef = "crm.zoho.com/crm/private/xml/PriceBooks/";
+		
+		idQuery = new Query("SELECT
+							|	zoho_pricebookCodeMap.zoho_id
+							|FROM
+							|	Catalog.zoho_pricebookCodeMap AS zoho_pricebookCodeMap
+							|WHERE
+							|	zoho_pricebookCodeMap.acs_api_code = &acs_api_code");
+					   
+		idQuery.SetParameter("acs_api_code", string(Record.PriceLevel.Ref.UUID()));
+		queryResult = idQuery.Execute();
+		queryResultobj = queryResult.Unload();
+		
+		zohoID = queryResultobj[0].zoho_id;
+		
+		itemQuery = new Query("SELECT
+							|	zoho_productCodeMap.zoho_id
+							|FROM
+							|	Catalog.zoho_productCodeMap AS zoho_productCodeMap
+							|WHERE
+							|	zoho_productCodeMap.acs_api_code = &acs_api_code");
+					   
+		itemQuery.SetParameter("acs_api_code", string(Record.Product.Ref.UUID()));
+		queryResult = itemQuery.Execute();
+		queryResultobj = queryResult.Unload();
+		productID = queryResultobj[0].zoho_id;
+						
+		ProductXML = "<Products>"
+				+ "<row no=""1"">"
+				+ "<FL val=""PRODUCTID"">" + productID + "</FL>"
+				+ "<FL val=""list_price"">" + StrReplace(String(Record.Price),",","") + "</FL>"
+				+ "</row>"
+				+ "</Products>";
+
+		AuthHeader = "authtoken=" + Constants.zoho_auth_token.Get() + "&scope=crmapi" + "&id=" + zohoID
+						+ "&relatedModule=Products";
+			
+		URLstring = PathDef + "updateRelatedRecords?" + AuthHeader + "&xmlData=" + ProductXML;
+		
+		HeadersMap = New Map();			
+		HTTPRequest = New HTTPRequest("", HeadersMap);	
+		SSLConnection = New OpenSSLSecureConnection();
+		HTTPConnection = New HTTPConnection(URLstring,,,,,,SSLConnection);
+		Result = HTTPConnection.Post(HTTPRequest);
+	
+	EndIf;
+	
+EndProcedure

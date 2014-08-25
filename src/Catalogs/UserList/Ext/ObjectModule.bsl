@@ -20,7 +20,7 @@ EndProcedure
 &AtServer
 Procedure DeleteUser(userstring)
 	
-	//If Constants.ServiceDB.Get() = True Then
+	If Constants.ServiceDB.Get() = True Then
 	
 		//Insert handler contents.
 		 
@@ -32,7 +32,7 @@ Procedure DeleteUser(userstring)
 		
 		SetPrivilegedMode(False);
 		
-	//EndIf;
+	EndIf;
 	
 EndProcedure
 

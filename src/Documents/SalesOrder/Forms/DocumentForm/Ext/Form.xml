@@ -1,37 +1,268 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<CommandBarLocation>None</CommandBarLocation>
 	<VerticalScroll>useIfNecessary</VerticalScroll>
+	<CommandSet>
+		<ExcludedCommand>UndoPosting</ExcludedCommand>
+		<ExcludedCommand>Post</ExcludedCommand>
+		<ExcludedCommand>PostAndClose</ExcludedCommand>
+		<ExcludedCommand>Write</ExcludedCommand>
+	</CommandSet>
 	<AutoTime>CurrentOrLast</AutoTime>
 	<UsePostingMode>Auto</UsePostingMode>
 	<RepostOnWrite>true</RepostOnWrite>
-	<AutoCommandBar name="FormCommandBar" id="-1">
-		<ChildItems>
-			<Button name="FormSendEmail" id="463">
-				<Type>CommandBarButton</Type>
-				<CommandName>Form.Command.SendEmail</CommandName>
-				<Title>
-					<v8:item>
-						<v8:lang>en</v8:lang>
-						<v8:content>Email</v8:content>
-					</v8:item>
-				</Title>
-				<ExtendedTooltip name="FormSendEmailExtendedTooltip" id="464"/>
-			</Button>
-			<Button name="FormTransactions" id="328">
-				<Type>CommandBarButton</Type>
-				<CommandName>Form.Command.Transactions</CommandName>
-				<ExtendedTooltip name="FormTransactionsExtendedTooltip" id="329"/>
-			</Button>
-		</ChildItems>
-	</AutoCommandBar>
+	<AutoCommandBar name="FormCommandBar" id="-1"/>
 	<Events>
 		<Event name="AfterWriteAtServer">AfterWriteAtServer</Event>
+		<Event name="NotificationProcessing">NotificationProcessing</Event>
 		<Event name="OnOpen">OnOpen</Event>
 		<Event name="BeforeWrite">BeforeWrite</Event>
 		<Event name="BeforeWriteAtServer">BeforeWriteAtServer</Event>
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
 	</Events>
 	<ChildItems>
+		<UsualGroup name="CommandBar" id="476">
+			<Group>Horizontal</Group>
+			<Representation>None</Representation>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="CommandBarExtendedTooltip" id="477"/>
+			<ChildItems>
+				<CommandBar name="CommandBar1" id="478">
+					<Width>73</Width>
+					<HorizontalStretch>false</HorizontalStretch>
+					<ExtendedTooltip name="CommandBar1ExtendedTooltip" id="479"/>
+					<ChildItems>
+						<ButtonGroup name="ButtonGroup1" id="480">
+							<ExtendedTooltip name="ButtonGroup1ExtendedTooltip" id="481"/>
+							<ChildItems>
+								<Button name="PostAndClose" id="482">
+									<Type>CommandBarButton</Type>
+									<DefaultButton>true</DefaultButton>
+									<DefaultItem>true</DefaultItem>
+									<CommandName>Form.Command.PostAndClose</CommandName>
+									<ExtendedTooltip name="PostAndCloseExtendedTooltip" id="483"/>
+								</Button>
+								<Button name="Save" id="484">
+									<Type>CommandBarButton</Type>
+									<CommandName>Form.Command.Save</CommandName>
+									<ExtendedTooltip name="SaveExtendedTooltip" id="485"/>
+								</Button>
+								<Button name="Post" id="486">
+									<Type>CommandBarButton</Type>
+									<CommandName>Form.Command.Post</CommandName>
+									<ExtendedTooltip name="PostExtendedTooltip" id="487"/>
+								</Button>
+							</ChildItems>
+						</ButtonGroup>
+						<ButtonGroup name="ButtonGroupGenerate" id="488">
+							<ExtendedTooltip name="ButtonGroupGenerateExtendedTooltip" id="489"/>
+							<ChildItems>
+								<Popup name="GroupGenerate" id="490">
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Generate</v8:content>
+										</v8:item>
+									</Title>
+									<ExtendedTooltip name="GroupGenerateExtendedTooltip" id="491"/>
+									<ChildItems>
+										<Button name="DocumentSalesInvoiceCreateBasedOn" id="492">
+											<Type>CommandBarButton</Type>
+											<CommandName>Document.SalesInvoice.StandardCommand.CreateBasedOn</CommandName>
+											<DataPath>Object.Ref</DataPath>
+											<ExtendedTooltip name="DocumentSalesInvoiceCreateBasedOnExtendedTooltip" id="493"/>
+										</Button>
+									</ChildItems>
+								</Popup>
+								<Popup name="GroupPrint" id="494">
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Print</v8:content>
+										</v8:item>
+									</Title>
+									<ExtendedTooltip name="GroupPrintExtendedTooltip" id="495"/>
+									<ChildItems>
+										<Button name="DocumentSalesOrderPrint" id="496">
+											<Type>CommandBarButton</Type>
+											<CommandName>Document.SalesOrder.Command.Print</CommandName>
+											<DataPath>Object.Ref</DataPath>
+											<ExtendedTooltip name="DocumentSalesOrderPrintExtendedTooltip" id="497"/>
+										</Button>
+										<Button name="DocumentSalesOrderPickList" id="498">
+											<Type>CommandBarButton</Type>
+											<CommandName>Document.SalesOrder.Command.PickList</CommandName>
+											<DataPath>Object.Ref</DataPath>
+											<ExtendedTooltip name="DocumentSalesOrderPickListExtendedTooltip" id="499"/>
+										</Button>
+									</ChildItems>
+								</Popup>
+								<Button name="SendEmail" id="500">
+									<Type>CommandBarButton</Type>
+									<OnlyInAllActions>true</OnlyInAllActions>
+									<CommandName>Form.Command.SendEmail</CommandName>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Email</v8:content>
+										</v8:item>
+									</Title>
+									<ExtendedTooltip name="SendEmailExtendedTooltip" id="501"/>
+								</Button>
+								<Button name="Transactions" id="502">
+									<Type>CommandBarButton</Type>
+									<OnlyInAllActions>true</OnlyInAllActions>
+									<CommandName>Form.Command.Transactions</CommandName>
+									<ExtendedTooltip name="TransactionsExtendedTooltip" id="503"/>
+								</Button>
+							</ChildItems>
+						</ButtonGroup>
+					</ChildItems>
+				</CommandBar>
+				<UsualGroup name="CommandBar2" id="504">
+					<HorizontalStretch>false</HorizontalStretch>
+					<Group>Horizontal</Group>
+					<Representation>None</Representation>
+					<ShowTitle>false</ShowTitle>
+					<BackColor>web:AntiqueWhite</BackColor>
+					<ExtendedTooltip name="CommandBar2ExtendedTooltip" id="505"/>
+					<ChildItems>
+						<Button name="DocumentPurchaseOrderCreateBasedOn" id="506">
+							<Type>UsualButton</Type>
+							<Width>9</Width>
+							<CommandName>Document.PurchaseOrder.StandardCommand.CreateBasedOn</CommandName>
+							<DataPath>Object.Ref</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Generate PO</v8:content>
+								</v8:item>
+							</Title>
+							<ExtendedTooltip name="DocumentPurchaseOrderCreateBasedOnExtendedTooltip" id="507"/>
+						</Button>
+						<Button name="POs" id="508">
+							<Type>Hyperlink</Type>
+							<Width>6</Width>
+							<CommandName>Form.Command.POs</CommandName>
+							<ExtendedTooltip name="POsExtendedTooltip" id="509"/>
+						</Button>
+					</ChildItems>
+				</UsualGroup>
+				<CommandBar name="CommandBar3" id="510">
+					<CommandSource>Form</CommandSource>
+					<ExtendedTooltip name="CommandBar3ExtendedTooltip" id="511"/>
+					<ChildItems>
+						<ButtonGroup name="ButtonGroup3" id="512">
+							<ExtendedTooltip name="ButtonGroup3ExtendedTooltip" id="513"/>
+							<ChildItems>
+								<Button name="FormPostAndClose" id="514">
+									<Type>CommandBarButton</Type>
+									<OnlyInAllActions>false</OnlyInAllActions>
+									<CommandName>Form.Command.PostAndClose</CommandName>
+									<ExtendedTooltip name="FormPostAndCloseExtendedTooltip" id="515"/>
+								</Button>
+								<Button name="FormSave" id="516">
+									<Type>CommandBarButton</Type>
+									<OnlyInAllActions>false</OnlyInAllActions>
+									<CommandName>Form.Command.Save</CommandName>
+									<ExtendedTooltip name="FormSaveExtendedTooltip" id="517"/>
+								</Button>
+							</ChildItems>
+						</ButtonGroup>
+						<ButtonGroup name="ButtonGroup4" id="518">
+							<ExtendedTooltip name="ButtonGroup4ExtendedTooltip" id="519"/>
+							<ChildItems>
+								<Button name="FormPost" id="520">
+									<Type>CommandBarButton</Type>
+									<OnlyInAllActions>false</OnlyInAllActions>
+									<CommandName>Form.Command.Post</CommandName>
+									<ExtendedTooltip name="FormPostExtendedTooltip" id="521"/>
+								</Button>
+								<Button name="FormClearPosting" id="522">
+									<Type>CommandBarButton</Type>
+									<OnlyInAllActions>false</OnlyInAllActions>
+									<CommandName>Form.Command.ClearPosting</CommandName>
+									<ExtendedTooltip name="FormClearPostingExtendedTooltip" id="523"/>
+								</Button>
+							</ChildItems>
+						</ButtonGroup>
+						<ButtonGroup name="ButtonGroupGenerate1" id="524">
+							<ExtendedTooltip name="ButtonGroupGenerate1ExtendedTooltip" id="525"/>
+							<ChildItems>
+								<Popup name="GroupGenerate1" id="526">
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Generate</v8:content>
+										</v8:item>
+									</Title>
+									<ExtendedTooltip name="GroupGenerate1ExtendedTooltip" id="527"/>
+									<ChildItems>
+										<Button name="FormDocumentSalesInvoiceCreateBasedOn" id="528">
+											<Type>CommandBarButton</Type>
+											<OnlyInAllActions>false</OnlyInAllActions>
+											<CommandName>Document.SalesInvoice.StandardCommand.CreateBasedOn</CommandName>
+											<DataPath>Object.Ref</DataPath>
+											<ExtendedTooltip name="FormDocumentSalesInvoiceCreateBasedOnExtendedTooltip" id="529"/>
+										</Button>
+										<Button name="FormDocumentPurchaseOrderCreateBasedOn" id="530">
+											<Type>CommandBarButton</Type>
+											<OnlyInAllActions>false</OnlyInAllActions>
+											<CommandName>Document.PurchaseOrder.StandardCommand.CreateBasedOn</CommandName>
+											<DataPath>Object.Ref</DataPath>
+											<ExtendedTooltip name="FormDocumentPurchaseOrderCreateBasedOnExtendedTooltip" id="531"/>
+										</Button>
+									</ChildItems>
+								</Popup>
+								<Popup name="GroupPrint1" id="532">
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Print</v8:content>
+										</v8:item>
+									</Title>
+									<ExtendedTooltip name="GroupPrint1ExtendedTooltip" id="533"/>
+									<ChildItems>
+										<Button name="FormDocumentSalesOrderPrint" id="534">
+											<Type>CommandBarButton</Type>
+											<OnlyInAllActions>false</OnlyInAllActions>
+											<CommandName>Document.SalesOrder.Command.Print</CommandName>
+											<DataPath>Object.Ref</DataPath>
+											<ExtendedTooltip name="FormDocumentSalesOrderPrintExtendedTooltip" id="535"/>
+										</Button>
+										<Button name="FormDocumentSalesOrderPickList" id="536">
+											<Type>CommandBarButton</Type>
+											<OnlyInAllActions>false</OnlyInAllActions>
+											<CommandName>Document.SalesOrder.Command.PickList</CommandName>
+											<DataPath>Object.Ref</DataPath>
+											<ExtendedTooltip name="FormDocumentSalesOrderPickListExtendedTooltip" id="537"/>
+										</Button>
+									</ChildItems>
+								</Popup>
+								<Button name="FormSendEmail" id="538">
+									<Type>CommandBarButton</Type>
+									<OnlyInAllActions>false</OnlyInAllActions>
+									<CommandName>Form.Command.SendEmail</CommandName>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Email</v8:content>
+										</v8:item>
+									</Title>
+									<ExtendedTooltip name="FormSendEmailExtendedTooltip" id="539"/>
+								</Button>
+								<Button name="FormTransactions" id="540">
+									<Type>CommandBarButton</Type>
+									<OnlyInAllActions>false</OnlyInAllActions>
+									<CommandName>Form.Command.Transactions</CommandName>
+									<ExtendedTooltip name="FormTransactionsExtendedTooltip" id="541"/>
+								</Button>
+							</ChildItems>
+						</ButtonGroup>
+					</ChildItems>
+				</CommandBar>
+			</ChildItems>
+		</UsualGroup>
 		<UsualGroup name="Header" id="51">
 			<Group>Horizontal</Group>
 			<Representation>None</Representation>
@@ -90,13 +321,13 @@
 											<Title>
 												<v8:item>
 													<v8:lang>en</v8:lang>
-													<v8:content>Customer P.O. / Ref. #</v8:content>
+													<v8:content>P.O. / Ref. #</v8:content>
 												</v8:item>
 											</Title>
 											<ToolTip>
 												<v8:item>
 													<v8:lang>en</v8:lang>
-													<v8:content>Customer purchase order number /
+													<v8:content>Purchase order number /
 Reference number</v8:content>
 												</v8:item>
 											</ToolTip>
@@ -174,7 +405,7 @@ Reference number</v8:content>
 													<Title>
 														<v8:item>
 															<v8:lang>en</v8:lang>
-															<v8:content>Exp. deliv.</v8:content>
+															<v8:content>Promise date</v8:content>
 														</v8:item>
 													</Title>
 													<ToolTip>
@@ -562,6 +793,11 @@ Reference number</v8:content>
 											<ContextMenu name="DropshipShipToContextMenu" id="286"/>
 											<ExtendedTooltip name="DropshipShipToExtendedTooltip" id="287"/>
 										</InputField>
+										<Button name="CopyMainShipping" id="474">
+											<Type>UsualButton</Type>
+											<CommandName>Form.Command.CopyMainShipping</CommandName>
+											<ExtendedTooltip name="CopyMainShippingExtendedTooltip" id="475"/>
+										</Button>
 									</ChildItems>
 								</UsualGroup>
 								<UsualGroup name="DropshipRightColumn" id="291">
@@ -591,14 +827,41 @@ Reference number</v8:content>
 							<Title>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Memos</v8:content>
+									<v8:content>Memo</v8:content>
 								</v8:item>
 							</Title>
 							<Group>Horizontal</Group>
 							<ExtendedTooltip name="MemoPageExtendedTooltip" id="300"/>
 							<ChildItems>
+								<InputField name="EmailNote" id="384">
+									<DataPath>Object.EmailNote</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Ext.</v8:content>
+										</v8:item>
+									</Title>
+									<TitleLocation>Left</TitleLocation>
+									<Height>2</Height>
+									<VerticalStretch>false</VerticalStretch>
+									<MultiLine>true</MultiLine>
+									<InputHint>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Notes here will be shown on the printed document as well as email body</v8:content>
+										</v8:item>
+									</InputHint>
+									<ContextMenu name="EmailNoteContextMenu" id="385"/>
+									<ExtendedTooltip name="EmailNoteExtendedTooltip" id="386"/>
+								</InputField>
 								<InputField name="Memo" id="63">
 									<DataPath>Object.Memo</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Int.</v8:content>
+										</v8:item>
+									</Title>
 									<TitleLocation>Left</TitleLocation>
 									<ToolTip>
 										<v8:item>
@@ -610,16 +873,14 @@ Reference number</v8:content>
 									<HorizontalStretch>true</HorizontalStretch>
 									<VerticalStretch>false</VerticalStretch>
 									<MultiLine>true</MultiLine>
+									<InputHint>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Internal memo</v8:content>
+										</v8:item>
+									</InputHint>
 									<ContextMenu name="MemoContextMenu" id="64"/>
 									<ExtendedTooltip name="MemoExtendedTooltip" id="131"/>
-								</InputField>
-								<InputField name="ExternalMemo" id="384">
-									<DataPath>Object.ExternalMemo</DataPath>
-									<TitleLocation>Left</TitleLocation>
-									<Height>2</Height>
-									<VerticalStretch>false</VerticalStretch>
-									<ContextMenu name="ExternalMemoContextMenu" id="385"/>
-									<ExtendedTooltip name="ExternalMemoExtendedTooltip" id="386"/>
 								</InputField>
 							</ChildItems>
 						</Page>
@@ -693,29 +954,29 @@ Reference number</v8:content>
 									<ContextMenu name="SalesTaxAcrossAgenciesContextMenu" id="418"/>
 									<AutoCommandBar name="SalesTaxAcrossAgenciesCommandBar" id="419"/>
 									<ExtendedTooltip name="SalesTaxAcrossAgenciesExtendedTooltip" id="420"/>
-									<SearchStringAddition name="SalesTaxAcrossAgenciesSearchString" id="465">
+									<SearchStringAddition name="SalesTaxAcrossAgenciesSearchString" id="542">
 										<AdditionSource>
 											<Item>SalesTaxAcrossAgencies</Item>
 											<Type>SearchStringRepresentation</Type>
 										</AdditionSource>
-										<ContextMenu name="SalesTaxAcrossAgenciesSearchStringContextMenu" id="466"/>
-										<ExtendedTooltip name="SalesTaxAcrossAgenciesSearchStringExtendedTooltip" id="467"/>
+										<ContextMenu name="SalesTaxAcrossAgenciesSearchStringContextMenu" id="543"/>
+										<ExtendedTooltip name="SalesTaxAcrossAgenciesSearchStringExtendedTooltip" id="544"/>
 									</SearchStringAddition>
-									<ViewStatusAddition name="SalesTaxAcrossAgenciesViewStatus" id="468">
+									<ViewStatusAddition name="SalesTaxAcrossAgenciesViewStatus" id="545">
 										<AdditionSource>
 											<Item>SalesTaxAcrossAgencies</Item>
 											<Type>ViewStatusRepresentation</Type>
 										</AdditionSource>
-										<ContextMenu name="SalesTaxAcrossAgenciesViewStatusContextMenu" id="469"/>
-										<ExtendedTooltip name="SalesTaxAcrossAgenciesViewStatusExtendedTooltip" id="470"/>
+										<ContextMenu name="SalesTaxAcrossAgenciesViewStatusContextMenu" id="546"/>
+										<ExtendedTooltip name="SalesTaxAcrossAgenciesViewStatusExtendedTooltip" id="547"/>
 									</ViewStatusAddition>
-									<SearchControlAddition name="SalesTaxAcrossAgenciesSearchControl" id="471">
+									<SearchControlAddition name="SalesTaxAcrossAgenciesSearchControl" id="548">
 										<AdditionSource>
 											<Item>SalesTaxAcrossAgencies</Item>
 											<Type>SearchControl</Type>
 										</AdditionSource>
-										<ContextMenu name="SalesTaxAcrossAgenciesSearchControlContextMenu" id="472"/>
-										<ExtendedTooltip name="SalesTaxAcrossAgenciesSearchControlExtendedTooltip" id="473"/>
+										<ContextMenu name="SalesTaxAcrossAgenciesSearchControlContextMenu" id="549"/>
+										<ExtendedTooltip name="SalesTaxAcrossAgenciesSearchControlExtendedTooltip" id="550"/>
 									</SearchControlAddition>
 									<ChildItems>
 										<InputField name="SalesTaxAcrossAgenciesSalesTaxComponent" id="424">
@@ -777,29 +1038,29 @@ Reference number</v8:content>
 							<ContextMenu name="LineItemsContextMenu" id="12"/>
 							<AutoCommandBar name="LineItemsCommandBar" id="13"/>
 							<ExtendedTooltip name="LineItemsExtendedTooltip" id="116"/>
-							<SearchStringAddition name="LineItemsSearchString" id="474">
+							<SearchStringAddition name="LineItemsSearchString" id="551">
 								<AdditionSource>
 									<Item>LineItems</Item>
 									<Type>SearchStringRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="LineItemsSearchStringContextMenu" id="475"/>
-								<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="476"/>
+								<ContextMenu name="LineItemsSearchStringContextMenu" id="552"/>
+								<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="553"/>
 							</SearchStringAddition>
-							<ViewStatusAddition name="LineItemsViewStatus" id="477">
+							<ViewStatusAddition name="LineItemsViewStatus" id="554">
 								<AdditionSource>
 									<Item>LineItems</Item>
 									<Type>ViewStatusRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="LineItemsViewStatusContextMenu" id="478"/>
-								<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="479"/>
+								<ContextMenu name="LineItemsViewStatusContextMenu" id="555"/>
+								<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="556"/>
 							</ViewStatusAddition>
-							<SearchControlAddition name="LineItemsSearchControl" id="480">
+							<SearchControlAddition name="LineItemsSearchControl" id="557">
 								<AdditionSource>
 									<Item>LineItems</Item>
 									<Type>SearchControl</Type>
 								</AdditionSource>
-								<ContextMenu name="LineItemsSearchControlContextMenu" id="481"/>
-								<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="482"/>
+								<ContextMenu name="LineItemsSearchControlContextMenu" id="558"/>
+								<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="559"/>
 							</SearchControlAddition>
 							<Events>
 								<Event name="OnEditEnd">LineItemsOnEditEnd</Event>
@@ -817,6 +1078,12 @@ Reference number</v8:content>
 								</LabelField>
 								<InputField name="LineItemsProduct" id="16">
 									<DataPath>Object.LineItems.Product</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Item</v8:content>
+										</v8:item>
+									</Title>
 									<EditMode>EnterOnInput</EditMode>
 									<Width>10</Width>
 									<ContextMenu name="LineItemsProductContextMenu" id="17"/>
@@ -832,12 +1099,18 @@ Reference number</v8:content>
 									<ContextMenu name="LineItemsProductDescriptionContextMenu" id="60"/>
 									<ExtendedTooltip name="LineItemsProductDescriptionExtendedTooltip" id="119"/>
 								</InputField>
-								<InputField name="LineItemsQuantity" id="20">
-									<DataPath>Object.LineItems.Quantity</DataPath>
+								<InputField name="LineItemsQuantity" id="468">
+									<DataPath>Object.LineItems.QtyUnits</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Qty</v8:content>
+										</v8:item>
+									</Title>
 									<ToolTip>
 										<v8:item>
 											<v8:lang>en</v8:lang>
-											<v8:content>Quantity</v8:content>
+											<v8:content>Quantity in item units</v8:content>
 										</v8:item>
 									</ToolTip>
 									<EditMode>EnterOnInput</EditMode>
@@ -854,31 +1127,33 @@ Reference number</v8:content>
 											<v8:content>NFD=0; NZ=0</v8:content>
 										</v8:item>
 									</EditFormat>
-									<ContextMenu name="LineItemsQuantityContextMenu" id="21"/>
-									<ExtendedTooltip name="LineItemsQuantityExtendedTooltip" id="120"/>
+									<ContextMenu name="LineItemsQuantityContextMenu" id="469"/>
+									<ExtendedTooltip name="LineItemsQuantityExtendedTooltip" id="470"/>
 									<Events>
 										<Event name="OnChange">LineItemsQuantityOnChange</Event>
 									</Events>
 								</InputField>
-								<InputField name="LineItemsUM" id="200">
-									<DataPath>Object.LineItems.UM</DataPath>
-									<ReadOnly>true</ReadOnly>
+								<InputField name="LineItemsUnit" id="465">
+									<DataPath>Object.LineItems.Unit</DataPath>
 									<Title>
 										<v8:item>
 											<v8:lang>en</v8:lang>
-											<v8:content>UM</v8:content>
+											<v8:content>UoM</v8:content>
 										</v8:item>
 									</Title>
 									<ToolTip>
 										<v8:item>
 											<v8:lang>en</v8:lang>
-											<v8:content>Unit of measure</v8:content>
+											<v8:content>Item unit</v8:content>
 										</v8:item>
 									</ToolTip>
 									<EditMode>EnterOnInput</EditMode>
 									<Width>8</Width>
-									<ContextMenu name="LineItemsUMContextMenu" id="201"/>
-									<ExtendedTooltip name="LineItemsUMExtendedTooltip" id="202"/>
+									<ContextMenu name="LineItemsUnitContextMenu" id="466"/>
+									<ExtendedTooltip name="LineItemsUnitExtendedTooltip" id="467"/>
+									<Events>
+										<Event name="OnChange">LineItemsUnitOnChange</Event>
+									</Events>
 								</InputField>
 								<InputField name="LineItemsBackorder" id="98">
 									<DataPath>Object.LineItems.Backorder</DataPath>
@@ -906,24 +1181,36 @@ Reference number</v8:content>
 									<ContextMenu name="LineItemsBackorderContextMenu" id="99"/>
 									<ExtendedTooltip name="LineItemsBackorderExtendedTooltip" id="121"/>
 								</InputField>
-								<InputField name="LineItemsPrice" id="18">
-									<DataPath>Object.LineItems.Price</DataPath>
+								<InputField name="LineItemsPrice" id="471">
+									<DataPath>Object.LineItems.PriceUnits</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Price</v8:content>
+										</v8:item>
+									</Title>
 									<ToolTip>
 										<v8:item>
 											<v8:lang>en</v8:lang>
-											<v8:content>Price in document currency</v8:content>
+											<v8:content>Price in document currency for item unit</v8:content>
 										</v8:item>
 									</ToolTip>
 									<EditMode>EnterOnInput</EditMode>
 									<Width>10</Width>
-									<ContextMenu name="LineItemsPriceContextMenu" id="19"/>
-									<ExtendedTooltip name="LineItemsPriceExtendedTooltip" id="122"/>
+									<ContextMenu name="LineItemsPriceContextMenu" id="472"/>
+									<ExtendedTooltip name="LineItemsPriceExtendedTooltip" id="473"/>
 									<Events>
 										<Event name="OnChange">LineItemsPriceOnChange</Event>
 									</Events>
 								</InputField>
 								<InputField name="LineItemsLineTotal" id="22">
 									<DataPath>Object.LineItems.LineTotal</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Total</v8:content>
+										</v8:item>
+									</Title>
 									<ToolTip>
 										<v8:item>
 											<v8:lang>en</v8:lang>
@@ -984,7 +1271,7 @@ Reference number</v8:content>
 									<Title>
 										<v8:item>
 											<v8:lang>en</v8:lang>
-											<v8:content>Exp. location</v8:content>
+											<v8:content>Ship from</v8:content>
 										</v8:item>
 									</Title>
 									<ToolTip>
@@ -1003,7 +1290,7 @@ Reference number</v8:content>
 									<Title>
 										<v8:item>
 											<v8:lang>en</v8:lang>
-											<v8:content>Exp. delivery</v8:content>
+											<v8:content>Promise date</v8:content>
 										</v8:item>
 									</Title>
 									<ToolTip>
@@ -1555,10 +1842,6 @@ Reference number</v8:content>
 								<v8:lang>en</v8:lang>
 								<v8:content>Shipped</v8:content>
 							</v8:item>
-							<v8:item>
-								<v8:lang>de</v8:lang>
-								<v8:content>Versendet</v8:content>
-							</v8:item>
 						</Title>
 						<Type>
 							<v8:Type>xs:decimal</v8:Type>
@@ -1720,6 +2003,7 @@ Reference number</v8:content>
 					<v8:AllowedSign>Any</v8:AllowedSign>
 				</v8:NumberQualifiers>
 			</Type>
+			<SavedData>true</SavedData>
 		</Attribute>
 		<Attribute name="Date" id="3">
 			<Title>
@@ -1798,6 +2082,92 @@ Reference number</v8:content>
 			</ToolTip>
 			<Action>SendEmail</Action>
 		</Command>
+		<Command name="CopyMainShipping" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Copy Main/Shipping</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Copy main shipping</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>CopyMainShipping</Action>
+		</Command>
+		<Command name="ClearPosting" id="4">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Clear posting</v8:content>
+				</v8:item>
+			</Title>
+			<Picture>
+				<xr:Ref>StdPicture.UndoPosting</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
+			<Action>ClearPosting</Action>
+			<Representation>Text</Representation>
+		</Command>
+		<Command name="POs" id="5">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>PO(-s)</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Purchase order(-s)</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>POs</Action>
+		</Command>
+		<Command name="Post" id="6">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Post</v8:content>
+				</v8:item>
+			</Title>
+			<Picture>
+				<xr:Ref>StdPicture.Post</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
+			<Action>Post</Action>
+			<Representation>Text</Representation>
+		</Command>
+		<Command name="PostAndClose" id="7">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Post and close</v8:content>
+				</v8:item>
+			</Title>
+			<Picture>
+				<xr:Ref>StdPicture.WriteAndClose</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
+			<Action>PostAndClose</Action>
+			<Representation>Text</Representation>
+		</Command>
+		<Command name="Save" id="8">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Save</v8:content>
+				</v8:item>
+			</Title>
+			<Picture>
+				<xr:Ref>StdPicture.Write</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
+			<Action>Save</Action>
+			<Representation>Text</Representation>
+		</Command>
 	</Commands>
 	<CommandInterface>
 		<NavigationPanel>
@@ -1831,6 +2201,7 @@ Reference number</v8:content>
 				<Command>Document.SalesInvoice.StandardCommand.CreateBasedOn</Command>
 				<Type>Auto</Type>
 				<CommandGroup>FormCommandBarCreateBasedOn</CommandGroup>
+				<DefaultVisible>false</DefaultVisible>
 				<Visible>
 					<xr:Common>false</xr:Common>
 				</Visible>
@@ -1840,6 +2211,7 @@ Reference number</v8:content>
 				<Type>Auto</Type>
 				<CommandGroup>CommandGroup.Print</CommandGroup>
 				<Index>1</Index>
+				<DefaultVisible>false</DefaultVisible>
 				<Visible>
 					<xr:Common>false</xr:Common>
 				</Visible>
@@ -1848,6 +2220,7 @@ Reference number</v8:content>
 				<Command>Document.SalesOrder.Command.Print</Command>
 				<Type>Auto</Type>
 				<CommandGroup>CommandGroup.Print</CommandGroup>
+				<DefaultVisible>false</DefaultVisible>
 				<Visible>
 					<xr:Common>false</xr:Common>
 				</Visible>
@@ -1856,6 +2229,16 @@ Reference number</v8:content>
 				<Command>Document.SalesOrder.Command.SendEmail</Command>
 				<Type>Auto</Type>
 				<CommandGroup>FormCommandBarImportant</CommandGroup>
+				<DefaultVisible>false</DefaultVisible>
+				<Visible>
+					<xr:Common>false</xr:Common>
+				</Visible>
+			</Item>
+			<Item>
+				<Command>Document.PurchaseOrder.StandardCommand.CreateBasedOn</Command>
+				<Type>Auto</Type>
+				<CommandGroup>FormCommandBarCreateBasedOn</CommandGroup>
+				<Index>1</Index>
 				<DefaultVisible>false</DefaultVisible>
 				<Visible>
 					<xr:Common>false</xr:Common>

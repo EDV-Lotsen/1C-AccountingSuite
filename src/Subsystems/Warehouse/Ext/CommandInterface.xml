@@ -16,6 +16,11 @@
 				<xr:Common>true</xr:Common>
 			</Visibility>
 		</Command>
+		<Command name="Catalog.Units.StandardCommand.OpenList">
+			<Visibility>
+				<xr:Common>false</xr:Common>
+			</Visibility>
+		</Command>
 		<Command name="InformationRegister.ItemLastCosts.StandardCommand.OpenList">
 			<Visibility>
 				<xr:Common>true</xr:Common>
@@ -23,7 +28,7 @@
 		</Command>
 		<Command name="Catalog.Locations.StandardCommand.OpenList">
 			<Visibility>
-				<xr:Common>false</xr:Common>
+				<xr:Common>true</xr:Common>
 			</Visibility>
 		</Command>
 	</CommandsVisibility>
@@ -55,6 +60,12 @@
 		<Command name="Document.WarehouseTransfer.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelImportant</CommandGroup>
 		</Command>
+		<Command name="Catalog.UnitSets.StandardCommand.OpenList">
+			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
+		</Command>
+		<Command name="Catalog.Units.StandardCommand.OpenList">
+			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
+		</Command>
 		<Command name="AccumulationRegister.InventoryJournal.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
 		</Command>
@@ -74,6 +85,12 @@
 			<CommandGroup>ActionsPanelCreate</CommandGroup>
 		</Command>
 		<Command name="Catalog.Products.StandardCommand.Create">
+			<CommandGroup>ActionsPanelCreate</CommandGroup>
+		</Command>
+		<Command name="Catalog.UnitSets.StandardCommand.Create">
+			<CommandGroup>ActionsPanelCreate</CommandGroup>
+		</Command>
+		<Command name="Catalog.Units.StandardCommand.Create">
 			<CommandGroup>ActionsPanelCreate</CommandGroup>
 		</Command>
 	</CommandsOrder>

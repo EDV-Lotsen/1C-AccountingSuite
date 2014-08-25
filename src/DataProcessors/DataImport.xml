@@ -18,10 +18,6 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>Data import</v8:content>
 				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>Datenimport</v8:content>
-				</v8:item>
 			</Synonym>
 			<Comment/>
 			<UseStandardCommands>true</UseStandardCommands>
@@ -87,13 +83,17 @@
 					</StandardAttributes>
 				</Properties>
 				<ChildObjects>
-					<Attribute uuid="b3e1bc03-04a4-400f-a976-5d03d28d41b8">
+					<Attribute uuid="f2dcea4f-8c66-47c5-972e-491e45430ae8">
 						<Properties>
-							<Name>ФлагЗагрузки</Name>
+							<Name>LoadFlag</Name>
 							<Synonym>
 								<v8:item>
 									<v8:lang>ru</v8:lang>
-									<v8:content>Флаг загрузки</v8:content>
+									<v8:content>Load flag</v8:content>
+								</v8:item>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Load flag</v8:content>
 								</v8:item>
 							</Synonym>
 							<Comment/>
@@ -129,10 +129,6 @@
 							<Synonym>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Code</v8:content>
-								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
 									<v8:content>Code</v8:content>
 								</v8:item>
 							</Synonym>
@@ -175,10 +171,6 @@
 									<v8:lang>en</v8:lang>
 									<v8:content>Description</v8:content>
 								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Bezeichnung</v8:content>
-								</v8:item>
 							</Synonym>
 							<Comment/>
 							<Type>
@@ -211,6 +203,42 @@
 							<ChoiceHistoryOnInput>Auto</ChoiceHistoryOnInput>
 						</Properties>
 					</Attribute>
+					<Attribute uuid="b8bdcbe0-fed1-41f4-86bb-9ea4f8ff1cd6">
+						<Properties>
+							<Name>CofASubaccountOf</Name>
+							<Synonym>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Subaccount of</v8:content>
+								</v8:item>
+							</Synonym>
+							<Comment/>
+							<Type>
+								<v8:Type>cfg:ChartOfAccountsRef.ChartOfAccounts</v8:Type>
+							</Type>
+							<PasswordMode>false</PasswordMode>
+							<Format/>
+							<EditFormat/>
+							<ToolTip/>
+							<MarkNegatives>false</MarkNegatives>
+							<Mask/>
+							<MultiLine>false</MultiLine>
+							<ExtendedEdit>false</ExtendedEdit>
+							<MinValue xsi:nil="true"/>
+							<MaxValue xsi:nil="true"/>
+							<FillFromFillingValue>false</FillFromFillingValue>
+							<FillValue xsi:nil="true"/>
+							<FillChecking>DontCheck</FillChecking>
+							<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
+							<ChoiceParameterLinks/>
+							<ChoiceParameters/>
+							<QuickChoice>Auto</QuickChoice>
+							<CreateOnInput>Auto</CreateOnInput>
+							<ChoiceForm/>
+							<LinkByType/>
+							<ChoiceHistoryOnInput>Auto</ChoiceHistoryOnInput>
+						</Properties>
+					</Attribute>
 					<Attribute uuid="db156ade-b39e-4a16-ab0a-ec2a91095a55">
 						<Properties>
 							<Name>CofAType</Name>
@@ -218,10 +246,6 @@
 								<v8:item>
 									<v8:lang>en</v8:lang>
 									<v8:content>Type</v8:content>
-								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Typ</v8:content>
 								</v8:item>
 							</Synonym>
 							<Comment/>
@@ -257,10 +281,6 @@
 							<Synonym>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Update</v8:content>
-								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
 									<v8:content>Update</v8:content>
 								</v8:item>
 							</Synonym>
@@ -338,11 +358,7 @@
 							<Synonym>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Description</v8:content>
-								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Bezeichnung</v8:content>
+									<v8:content>Company name</v8:content>
 								</v8:item>
 							</Synonym>
 							<Comment/>
@@ -384,10 +400,6 @@
 									<v8:lang>en</v8:lang>
 									<v8:content>Notes</v8:content>
 								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Notizen</v8:content>
-								</v8:item>
 							</Synonym>
 							<Comment/>
 							<Type>
@@ -427,10 +439,6 @@
 								<v8:item>
 									<v8:lang>en</v8:lang>
 									<v8:content>Terms</v8:content>
-								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Zahlungsfrist</v8:content>
 								</v8:item>
 							</Synonym>
 							<Comment/>
@@ -508,16 +516,12 @@
 									<v8:lang>en</v8:lang>
 									<v8:content>First name</v8:content>
 								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Vorname</v8:content>
-								</v8:item>
 							</Synonym>
 							<Comment/>
 							<Type>
 								<v8:Type>xs:string</v8:Type>
 								<v8:StringQualifiers>
-									<v8:Length>0</v8:Length>
+									<v8:Length>200</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
 							</Type>
@@ -552,16 +556,12 @@
 									<v8:lang>en</v8:lang>
 									<v8:content>Middle name</v8:content>
 								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Zweiter Vorname</v8:content>
-								</v8:item>
 							</Synonym>
 							<Comment/>
 							<Type>
 								<v8:Type>xs:string</v8:Type>
 								<v8:StringQualifiers>
-									<v8:Length>0</v8:Length>
+									<v8:Length>200</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
 							</Type>
@@ -601,7 +601,7 @@
 							<Type>
 								<v8:Type>xs:string</v8:Type>
 								<v8:StringQualifiers>
-									<v8:Length>0</v8:Length>
+									<v8:Length>200</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
 							</Type>
@@ -636,16 +636,12 @@
 									<v8:lang>en</v8:lang>
 									<v8:content>Phone</v8:content>
 								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Telefon</v8:content>
-								</v8:item>
 							</Synonym>
 							<Comment/>
 							<Type>
 								<v8:Type>xs:string</v8:Type>
 								<v8:StringQualifiers>
-									<v8:Length>0</v8:Length>
+									<v8:Length>50</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
 							</Type>
@@ -680,16 +676,12 @@
 									<v8:lang>en</v8:lang>
 									<v8:content>Cell</v8:content>
 								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Telefon</v8:content>
-								</v8:item>
 							</Synonym>
 							<Comment/>
 							<Type>
 								<v8:Type>xs:string</v8:Type>
 								<v8:StringQualifiers>
-									<v8:Length>0</v8:Length>
+									<v8:Length>50</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
 							</Type>
@@ -724,16 +716,12 @@
 									<v8:lang>en</v8:lang>
 									<v8:content>Fax</v8:content>
 								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Fax</v8:content>
-								</v8:item>
 							</Synonym>
 							<Comment/>
 							<Type>
 								<v8:Type>xs:string</v8:Type>
 								<v8:StringQualifiers>
-									<v8:Length>0</v8:Length>
+									<v8:Length>50</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
 							</Type>
@@ -766,18 +754,14 @@
 							<Synonym>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>E-mail</v8:content>
-								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>E-Mail</v8:content>
+									<v8:content>Email</v8:content>
 								</v8:item>
 							</Synonym>
 							<Comment/>
 							<Type>
 								<v8:Type>xs:string</v8:Type>
 								<v8:StringQualifiers>
-									<v8:Length>0</v8:Length>
+									<v8:Length>100</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
 							</Type>
@@ -810,18 +794,14 @@
 							<Synonym>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Address line1</v8:content>
-								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Adresse Zeile 1</v8:content>
+									<v8:content>Address line 1</v8:content>
 								</v8:item>
 							</Synonym>
 							<Comment/>
 							<Type>
 								<v8:Type>xs:string</v8:Type>
 								<v8:StringQualifiers>
-									<v8:Length>0</v8:Length>
+									<v8:Length>250</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
 							</Type>
@@ -854,18 +834,14 @@
 							<Synonym>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Address line2</v8:content>
-								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Adresse Zeile 2</v8:content>
+									<v8:content>Address line 2</v8:content>
 								</v8:item>
 							</Synonym>
 							<Comment/>
 							<Type>
 								<v8:Type>xs:string</v8:Type>
 								<v8:StringQualifiers>
-									<v8:Length>0</v8:Length>
+									<v8:Length>250</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
 							</Type>
@@ -898,18 +874,14 @@
 							<Synonym>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Address line3</v8:content>
-								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Adresse Zeile 2</v8:content>
+									<v8:content>Address line 3</v8:content>
 								</v8:item>
 							</Synonym>
 							<Comment/>
 							<Type>
 								<v8:Type>xs:string</v8:Type>
 								<v8:StringQualifiers>
-									<v8:Length>0</v8:Length>
+									<v8:Length>250</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
 							</Type>
@@ -949,7 +921,7 @@
 							<Type>
 								<v8:Type>xs:string</v8:Type>
 								<v8:StringQualifiers>
-									<v8:Length>0</v8:Length>
+									<v8:Length>100</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
 							</Type>
@@ -983,10 +955,6 @@
 								<v8:item>
 									<v8:lang>en</v8:lang>
 									<v8:content>State</v8:content>
-								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Bundesland</v8:content>
 								</v8:item>
 							</Synonym>
 							<Comment/>
@@ -1024,10 +992,6 @@
 									<v8:lang>en</v8:lang>
 									<v8:content>Country</v8:content>
 								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Land</v8:content>
-								</v8:item>
 							</Synonym>
 							<Comment/>
 							<Type>
@@ -1064,16 +1028,12 @@
 									<v8:lang>en</v8:lang>
 									<v8:content>ZIP</v8:content>
 								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>PLZ</v8:content>
-								</v8:item>
 							</Synonym>
 							<Comment/>
 							<Type>
 								<v8:Type>xs:string</v8:Type>
 								<v8:StringQualifiers>
-									<v8:Length>0</v8:Length>
+									<v8:Length>20</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
 							</Type>
@@ -1188,10 +1148,6 @@
 									<v8:lang>en</v8:lang>
 									<v8:content>Debit</v8:content>
 								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Soll</v8:content>
-								</v8:item>
 							</Synonym>
 							<Comment/>
 							<Type>
@@ -1233,10 +1189,6 @@
 									<v8:lang>en</v8:lang>
 									<v8:content>Credit</v8:content>
 								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Haben</v8:content>
-								</v8:item>
 							</Synonym>
 							<Comment/>
 							<Type>
@@ -1276,11 +1228,7 @@
 							<Synonym>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Account</v8:content>
-								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Konto</v8:content>
+									<v8:content>Bank Acct.</v8:content>
 								</v8:item>
 							</Synonym>
 							<Comment/>
@@ -1316,10 +1264,6 @@
 							<Synonym>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Code</v8:content>
-								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
 									<v8:content>Code</v8:content>
 								</v8:item>
 							</Synonym>
@@ -1362,10 +1306,6 @@
 									<v8:lang>en</v8:lang>
 									<v8:content>Description</v8:content>
 								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Bezeichnung</v8:content>
-								</v8:item>
 							</Synonym>
 							<Comment/>
 							<Type>
@@ -1405,10 +1345,6 @@
 								<v8:item>
 									<v8:lang>en</v8:lang>
 									<v8:content>Type</v8:content>
-								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Typ</v8:content>
 								</v8:item>
 							</Synonym>
 							<Comment/>
@@ -1518,10 +1454,6 @@
 									<v8:lang>en</v8:lang>
 									<v8:content>COGS account</v8:content>
 								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Wareneinsatz</v8:content>
-								</v8:item>
 							</Synonym>
 							<Comment/>
 							<Type>
@@ -1557,10 +1489,6 @@
 								<v8:item>
 									<v8:lang>en</v8:lang>
 									<v8:content>Price</v8:content>
-								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Artikelpreis</v8:content>
 								</v8:item>
 							</Synonym>
 							<Comment/>
@@ -1620,42 +1548,6 @@
 							<MaxValue xsi:nil="true"/>
 							<FillFromFillingValue>false</FillFromFillingValue>
 							<FillValue xsi:type="xr:DesignTimeRef">Catalog.ProductCategories.EmptyRef</FillValue>
-							<FillChecking>DontCheck</FillChecking>
-							<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
-							<ChoiceParameterLinks/>
-							<ChoiceParameters/>
-							<QuickChoice>Auto</QuickChoice>
-							<CreateOnInput>Auto</CreateOnInput>
-							<ChoiceForm/>
-							<LinkByType/>
-							<ChoiceHistoryOnInput>Auto</ChoiceHistoryOnInput>
-						</Properties>
-					</Attribute>
-					<Attribute uuid="53ac977e-68e5-4c1f-b852-4a9722a28e46">
-						<Properties>
-							<Name>ProductUoM</Name>
-							<Synonym>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>UoM</v8:content>
-								</v8:item>
-							</Synonym>
-							<Comment/>
-							<Type>
-								<v8:Type>cfg:CatalogRef.UM</v8:Type>
-							</Type>
-							<PasswordMode>false</PasswordMode>
-							<Format/>
-							<EditFormat/>
-							<ToolTip/>
-							<MarkNegatives>false</MarkNegatives>
-							<Mask/>
-							<MultiLine>false</MultiLine>
-							<ExtendedEdit>false</ExtendedEdit>
-							<MinValue xsi:nil="true"/>
-							<MaxValue xsi:nil="true"/>
-							<FillFromFillingValue>false</FillFromFillingValue>
-							<FillValue xsi:type="xr:DesignTimeRef">Catalog.UM.EmptyRef</FillValue>
 							<FillChecking>DontCheck</FillChecking>
 							<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
 							<ChoiceParameterLinks/>
@@ -2165,11 +2057,10 @@
 							</Synonym>
 							<Comment/>
 							<Type>
-								<v8:Type>xs:string</v8:Type>
-								<v8:StringQualifiers>
-									<v8:Length>0</v8:Length>
-									<v8:AllowedLength>Variable</v8:AllowedLength>
-								</v8:StringQualifiers>
+								<v8:Type>xs:dateTime</v8:Type>
+								<v8:DateQualifiers>
+									<v8:DateFractions>Date</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -2182,7 +2073,7 @@
 							<MinValue xsi:nil="true"/>
 							<MaxValue xsi:nil="true"/>
 							<FillFromFillingValue>false</FillFromFillingValue>
-							<FillValue xsi:type="xs:string"/>
+							<FillValue xsi:nil="true"/>
 							<FillChecking>DontCheck</FillChecking>
 							<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
 							<ChoiceParameterLinks/>
@@ -2277,10 +2168,6 @@
 								<v8:item>
 									<v8:lang>en</v8:lang>
 									<v8:content>Check vendor</v8:content>
-								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Lieferanten prüfen</v8:content>
 								</v8:item>
 							</Synonym>
 							<Comment/>
@@ -2784,11 +2671,7 @@
 							<Synonym>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Number</v8:content>
-								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Nummer</v8:content>
+									<v8:content>Quote #</v8:content>
 								</v8:item>
 							</Synonym>
 							<Comment/>
@@ -2828,11 +2711,7 @@
 							<Synonym>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Date</v8:content>
-								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Datum</v8:content>
+									<v8:content>Terms</v8:content>
 								</v8:item>
 							</Synonym>
 							<Comment/>
@@ -2873,10 +2752,6 @@
 									<v8:lang>en</v8:lang>
 									<v8:content>Memo</v8:content>
 								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Kommentar</v8:content>
-								</v8:item>
 							</Synonym>
 							<Comment/>
 							<Type>
@@ -2916,10 +2791,6 @@
 								<v8:item>
 									<v8:lang>en</v8:lang>
 									<v8:content>Amount</v8:content>
-								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Betrag</v8:content>
 								</v8:item>
 							</Synonym>
 							<Comment/>
@@ -3032,11 +2903,7 @@
 							<Synonym>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Account</v8:content>
-								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Konto</v8:content>
+									<v8:content>Bank Acct.</v8:content>
 								</v8:item>
 							</Synonym>
 							<Comment/>
@@ -3073,10 +2940,6 @@
 								<v8:item>
 									<v8:lang>en</v8:lang>
 									<v8:content>Dr</v8:content>
-								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Soll</v8:content>
 								</v8:item>
 							</Synonym>
 							<Comment/>
@@ -3117,11 +2980,7 @@
 							<Synonym>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Cr</v8:content>
-								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Haben</v8:content>
+									<v8:content>Credit</v8:content>
 								</v8:item>
 							</Synonym>
 							<Comment/>
@@ -3164,10 +3023,6 @@
 									<v8:lang>en</v8:lang>
 									<v8:content>Memo</v8:content>
 								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Kommentar</v8:content>
-								</v8:item>
 							</Synonym>
 							<Comment/>
 							<Type>
@@ -3208,10 +3063,6 @@
 									<v8:lang>en</v8:lang>
 									<v8:content>Customer / vendor</v8:content>
 								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Kunde / Lieferant</v8:content>
-								</v8:item>
 							</Synonym>
 							<Comment/>
 							<Type>
@@ -3246,11 +3097,7 @@
 							<Synonym>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Invoice</v8:content>
-								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Rechnung</v8:content>
+									<v8:content>Order</v8:content>
 								</v8:item>
 							</Synonym>
 							<Comment/>
@@ -3287,11 +3134,7 @@
 							<Synonym>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Item</v8:content>
-								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Artikel</v8:content>
+									<v8:content>Products</v8:content>
 								</v8:item>
 							</Synonym>
 							<Comment/>
@@ -3327,11 +3170,7 @@
 							<Synonym>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Qty</v8:content>
-								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Menge</v8:content>
+									<v8:content>Quantity UM</v8:content>
 								</v8:item>
 							</Synonym>
 							<Comment/>
@@ -3372,11 +3211,7 @@
 							<Synonym>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Price</v8:content>
-								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Preis</v8:content>
+									<v8:content>Price UM</v8:content>
 								</v8:item>
 							</Synonym>
 							<Comment/>
@@ -3417,11 +3252,7 @@
 							<Synonym>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Number</v8:content>
-								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Nummer</v8:content>
+									<v8:content>Quote #</v8:content>
 								</v8:item>
 							</Synonym>
 							<Comment/>
@@ -3461,11 +3292,7 @@
 							<Synonym>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Date</v8:content>
-								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Datum</v8:content>
+									<v8:content>Terms</v8:content>
 								</v8:item>
 							</Synonym>
 							<Comment/>
@@ -3542,10 +3369,6 @@
 									<v8:lang>en</v8:lang>
 									<v8:content>Due date</v8:content>
 								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Fälligkeitstag</v8:content>
-								</v8:item>
 							</Synonym>
 							<Comment/>
 							<Type>
@@ -3621,10 +3444,6 @@
 									<v8:lang>en</v8:lang>
 									<v8:content>Memo</v8:content>
 								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Kommentar</v8:content>
-								</v8:item>
 							</Synonym>
 							<Comment/>
 							<Type>
@@ -3665,10 +3484,6 @@
 									<v8:lang>en</v8:lang>
 									<v8:content>Amount</v8:content>
 								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Betrag</v8:content>
-								</v8:item>
 							</Synonym>
 							<Comment/>
 							<Type>
@@ -3708,11 +3523,7 @@
 							<Synonym>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Invoice</v8:content>
-								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Rechnung</v8:content>
+									<v8:content>Order</v8:content>
 								</v8:item>
 							</Synonym>
 							<Comment/>
@@ -3748,11 +3559,7 @@
 							<Synonym>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Account</v8:content>
-								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Konto</v8:content>
+									<v8:content>Bank Acct.</v8:content>
 								</v8:item>
 							</Synonym>
 							<Comment/>
@@ -3789,10 +3596,6 @@
 								<v8:item>
 									<v8:lang>en</v8:lang>
 									<v8:content>Amount</v8:content>
-								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Betrag</v8:content>
 								</v8:item>
 							</Synonym>
 							<Comment/>
@@ -3835,10 +3638,6 @@
 									<v8:lang>en</v8:lang>
 									<v8:content>Memo</v8:content>
 								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Kommentar</v8:content>
-								</v8:item>
 							</Synonym>
 							<Comment/>
 							<Type>
@@ -3877,11 +3676,7 @@
 							<Synonym>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Number</v8:content>
-								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Nummer</v8:content>
+									<v8:content>Quote #</v8:content>
 								</v8:item>
 							</Synonym>
 							<Comment/>
@@ -3921,11 +3716,7 @@
 							<Synonym>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Date</v8:content>
-								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Datum</v8:content>
+									<v8:content>Terms</v8:content>
 								</v8:item>
 							</Synonym>
 							<Comment/>
@@ -4002,10 +3793,6 @@
 									<v8:lang>en</v8:lang>
 									<v8:content>Memo</v8:content>
 								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Kommentar</v8:content>
-								</v8:item>
 							</Synonym>
 							<Comment/>
 							<Type>
@@ -4045,10 +3832,6 @@
 								<v8:item>
 									<v8:lang>en</v8:lang>
 									<v8:content>Amount</v8:content>
-								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Betrag</v8:content>
 								</v8:item>
 							</Synonym>
 							<Comment/>
@@ -4618,7 +4401,7 @@
 							<Type>
 								<v8:Type>xs:string</v8:Type>
 								<v8:StringQualifiers>
-									<v8:Length>0</v8:Length>
+									<v8:Length>15</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
 							</Type>
@@ -4658,7 +4441,7 @@
 							<Type>
 								<v8:Type>xs:string</v8:Type>
 								<v8:StringQualifiers>
-									<v8:Length>0</v8:Length>
+									<v8:Length>10</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
 							</Type>
@@ -4698,7 +4481,7 @@
 							<Type>
 								<v8:Type>xs:string</v8:Type>
 								<v8:StringQualifiers>
-									<v8:Length>0</v8:Length>
+									<v8:Length>200</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
 							</Type>
@@ -4738,7 +4521,7 @@
 							<Type>
 								<v8:Type>xs:string</v8:Type>
 								<v8:StringQualifiers>
-									<v8:Length>0</v8:Length>
+									<v8:Length>200</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
 							</Type>
@@ -4778,7 +4561,7 @@
 							<Type>
 								<v8:Type>xs:string</v8:Type>
 								<v8:StringQualifiers>
-									<v8:Length>0</v8:Length>
+									<v8:Length>200</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
 							</Type>
@@ -4818,7 +4601,7 @@
 							<Type>
 								<v8:Type>xs:string</v8:Type>
 								<v8:StringQualifiers>
-									<v8:Length>0</v8:Length>
+									<v8:Length>200</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
 							</Type>
@@ -4858,7 +4641,7 @@
 							<Type>
 								<v8:Type>xs:string</v8:Type>
 								<v8:StringQualifiers>
-									<v8:Length>0</v8:Length>
+									<v8:Length>200</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
 							</Type>
@@ -4898,7 +4681,7 @@
 							<Type>
 								<v8:Type>xs:string</v8:Type>
 								<v8:StringQualifiers>
-									<v8:Length>0</v8:Length>
+									<v8:Length>200</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
 							</Type>
@@ -5010,7 +4793,7 @@
 							<Type>
 								<v8:Type>xs:string</v8:Type>
 								<v8:StringQualifiers>
-									<v8:Length>0</v8:Length>
+									<v8:Length>200</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
 							</Type>
@@ -5145,10 +4928,502 @@
 							<ChoiceHistoryOnInput>Auto</ChoiceHistoryOnInput>
 						</Properties>
 					</Attribute>
+					<Attribute uuid="b0d00fdd-c075-4cb2-a860-32130cde0d8b">
+						<Properties>
+							<Name>CustomerCode</Name>
+							<Synonym>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Company code</v8:content>
+								</v8:item>
+							</Synonym>
+							<Comment/>
+							<Type>
+								<v8:Type>xs:string</v8:Type>
+								<v8:StringQualifiers>
+									<v8:Length>5</v8:Length>
+									<v8:AllowedLength>Variable</v8:AllowedLength>
+								</v8:StringQualifiers>
+							</Type>
+							<PasswordMode>false</PasswordMode>
+							<Format/>
+							<EditFormat/>
+							<ToolTip/>
+							<MarkNegatives>false</MarkNegatives>
+							<Mask/>
+							<MultiLine>false</MultiLine>
+							<ExtendedEdit>false</ExtendedEdit>
+							<MinValue xsi:nil="true"/>
+							<MaxValue xsi:nil="true"/>
+							<FillFromFillingValue>false</FillFromFillingValue>
+							<FillValue xsi:type="xs:string"/>
+							<FillChecking>DontCheck</FillChecking>
+							<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
+							<ChoiceParameterLinks/>
+							<ChoiceParameters/>
+							<QuickChoice>Auto</QuickChoice>
+							<CreateOnInput>Auto</CreateOnInput>
+							<ChoiceForm/>
+							<LinkByType/>
+							<ChoiceHistoryOnInput>Auto</ChoiceHistoryOnInput>
+						</Properties>
+					</Attribute>
+					<Attribute uuid="acf5a50d-53f9-447c-af3c-4c45090644df">
+						<Properties>
+							<Name>CustomerFullName</Name>
+							<Synonym>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Full name</v8:content>
+								</v8:item>
+							</Synonym>
+							<Comment/>
+							<Type>
+								<v8:Type>xs:string</v8:Type>
+								<v8:StringQualifiers>
+									<v8:Length>150</v8:Length>
+									<v8:AllowedLength>Variable</v8:AllowedLength>
+								</v8:StringQualifiers>
+							</Type>
+							<PasswordMode>false</PasswordMode>
+							<Format/>
+							<EditFormat/>
+							<ToolTip/>
+							<MarkNegatives>false</MarkNegatives>
+							<Mask/>
+							<MultiLine>false</MultiLine>
+							<ExtendedEdit>false</ExtendedEdit>
+							<MinValue xsi:nil="true"/>
+							<MaxValue xsi:nil="true"/>
+							<FillFromFillingValue>false</FillFromFillingValue>
+							<FillValue xsi:type="xs:string"/>
+							<FillChecking>DontCheck</FillChecking>
+							<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
+							<ChoiceParameterLinks/>
+							<ChoiceParameters/>
+							<QuickChoice>Auto</QuickChoice>
+							<CreateOnInput>Auto</CreateOnInput>
+							<ChoiceForm/>
+							<LinkByType/>
+							<ChoiceHistoryOnInput>Auto</ChoiceHistoryOnInput>
+						</Properties>
+					</Attribute>
+					<Attribute uuid="9d2b32c4-2735-455e-a697-4637f0a27c5c">
+						<Properties>
+							<Name>CustomerVendor1099</Name>
+							<Synonym>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>1099 vendor</v8:content>
+								</v8:item>
+							</Synonym>
+							<Comment/>
+							<Type>
+								<v8:Type>xs:boolean</v8:Type>
+							</Type>
+							<PasswordMode>false</PasswordMode>
+							<Format/>
+							<EditFormat/>
+							<ToolTip/>
+							<MarkNegatives>false</MarkNegatives>
+							<Mask/>
+							<MultiLine>false</MultiLine>
+							<ExtendedEdit>false</ExtendedEdit>
+							<MinValue xsi:nil="true"/>
+							<MaxValue xsi:nil="true"/>
+							<FillFromFillingValue>false</FillFromFillingValue>
+							<FillValue xsi:nil="true"/>
+							<FillChecking>DontCheck</FillChecking>
+							<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
+							<ChoiceParameterLinks/>
+							<ChoiceParameters/>
+							<QuickChoice>Auto</QuickChoice>
+							<CreateOnInput>Auto</CreateOnInput>
+							<ChoiceForm/>
+							<LinkByType/>
+							<ChoiceHistoryOnInput>Auto</ChoiceHistoryOnInput>
+						</Properties>
+					</Attribute>
+					<Attribute uuid="18e85618-b5d0-4e01-85d8-f012c02cce3f">
+						<Properties>
+							<Name>CustomerEIN_SSN</Name>
+							<Synonym>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>EIN or SSN</v8:content>
+								</v8:item>
+							</Synonym>
+							<Comment/>
+							<Type>
+								<v8:Type>cfg:EnumRef.FederalIDType</v8:Type>
+							</Type>
+							<PasswordMode>false</PasswordMode>
+							<Format/>
+							<EditFormat/>
+							<ToolTip/>
+							<MarkNegatives>false</MarkNegatives>
+							<Mask/>
+							<MultiLine>false</MultiLine>
+							<ExtendedEdit>false</ExtendedEdit>
+							<MinValue xsi:nil="true"/>
+							<MaxValue xsi:nil="true"/>
+							<FillFromFillingValue>false</FillFromFillingValue>
+							<FillValue xsi:nil="true"/>
+							<FillChecking>DontCheck</FillChecking>
+							<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
+							<ChoiceParameterLinks/>
+							<ChoiceParameters/>
+							<QuickChoice>Auto</QuickChoice>
+							<CreateOnInput>Auto</CreateOnInput>
+							<ChoiceForm/>
+							<LinkByType/>
+							<ChoiceHistoryOnInput>Auto</ChoiceHistoryOnInput>
+						</Properties>
+					</Attribute>
+					<Attribute uuid="00403864-18c5-4fbf-9e9a-1034beb82ed1">
+						<Properties>
+							<Name>CustomerIncomeAccount</Name>
+							<Synonym>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Income account</v8:content>
+								</v8:item>
+							</Synonym>
+							<Comment/>
+							<Type>
+								<v8:Type>cfg:ChartOfAccountsRef.ChartOfAccounts</v8:Type>
+							</Type>
+							<PasswordMode>false</PasswordMode>
+							<Format/>
+							<EditFormat/>
+							<ToolTip/>
+							<MarkNegatives>false</MarkNegatives>
+							<Mask/>
+							<MultiLine>false</MultiLine>
+							<ExtendedEdit>false</ExtendedEdit>
+							<MinValue xsi:nil="true"/>
+							<MaxValue xsi:nil="true"/>
+							<FillFromFillingValue>false</FillFromFillingValue>
+							<FillValue xsi:nil="true"/>
+							<FillChecking>DontCheck</FillChecking>
+							<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
+							<ChoiceParameterLinks/>
+							<ChoiceParameters/>
+							<QuickChoice>Auto</QuickChoice>
+							<CreateOnInput>Auto</CreateOnInput>
+							<ChoiceForm/>
+							<LinkByType/>
+							<ChoiceHistoryOnInput>Auto</ChoiceHistoryOnInput>
+						</Properties>
+					</Attribute>
+					<Attribute uuid="cb8cf301-3e6f-4143-803a-7a314613d8c8">
+						<Properties>
+							<Name>CustomerExpenseAccount</Name>
+							<Synonym>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Expense account</v8:content>
+								</v8:item>
+							</Synonym>
+							<Comment/>
+							<Type>
+								<v8:Type>cfg:ChartOfAccountsRef.ChartOfAccounts</v8:Type>
+							</Type>
+							<PasswordMode>false</PasswordMode>
+							<Format/>
+							<EditFormat/>
+							<ToolTip/>
+							<MarkNegatives>false</MarkNegatives>
+							<Mask/>
+							<MultiLine>false</MultiLine>
+							<ExtendedEdit>false</ExtendedEdit>
+							<MinValue xsi:nil="true"/>
+							<MaxValue xsi:nil="true"/>
+							<FillFromFillingValue>false</FillFromFillingValue>
+							<FillValue xsi:nil="true"/>
+							<FillChecking>DontCheck</FillChecking>
+							<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
+							<ChoiceParameterLinks/>
+							<ChoiceParameters/>
+							<QuickChoice>Auto</QuickChoice>
+							<CreateOnInput>Auto</CreateOnInput>
+							<ChoiceForm/>
+							<LinkByType/>
+							<ChoiceHistoryOnInput>Auto</ChoiceHistoryOnInput>
+						</Properties>
+					</Attribute>
+					<Attribute uuid="317e06c5-0042-47a4-8ead-d770500fb0b0">
+						<Properties>
+							<Name>DepositDate</Name>
+							<Synonym>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Date</v8:content>
+								</v8:item>
+							</Synonym>
+							<Comment/>
+							<Type>
+								<v8:Type>xs:dateTime</v8:Type>
+								<v8:DateQualifiers>
+									<v8:DateFractions>Date</v8:DateFractions>
+								</v8:DateQualifiers>
+							</Type>
+							<PasswordMode>false</PasswordMode>
+							<Format/>
+							<EditFormat/>
+							<ToolTip/>
+							<MarkNegatives>false</MarkNegatives>
+							<Mask/>
+							<MultiLine>false</MultiLine>
+							<ExtendedEdit>false</ExtendedEdit>
+							<MinValue xsi:nil="true"/>
+							<MaxValue xsi:nil="true"/>
+							<FillFromFillingValue>false</FillFromFillingValue>
+							<FillValue xsi:nil="true"/>
+							<FillChecking>DontCheck</FillChecking>
+							<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
+							<ChoiceParameterLinks/>
+							<ChoiceParameters/>
+							<QuickChoice>Auto</QuickChoice>
+							<CreateOnInput>Auto</CreateOnInput>
+							<ChoiceForm/>
+							<LinkByType/>
+							<ChoiceHistoryOnInput>Auto</ChoiceHistoryOnInput>
+						</Properties>
+					</Attribute>
+					<Attribute uuid="a6a96b77-7a79-40c8-babc-6a3f4f62286f">
+						<Properties>
+							<Name>DepositBankAccount</Name>
+							<Synonym>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Bank account</v8:content>
+								</v8:item>
+							</Synonym>
+							<Comment/>
+							<Type>
+								<v8:Type>cfg:ChartOfAccountsRef.ChartOfAccounts</v8:Type>
+							</Type>
+							<PasswordMode>false</PasswordMode>
+							<Format/>
+							<EditFormat/>
+							<ToolTip/>
+							<MarkNegatives>false</MarkNegatives>
+							<Mask/>
+							<MultiLine>false</MultiLine>
+							<ExtendedEdit>false</ExtendedEdit>
+							<MinValue xsi:nil="true"/>
+							<MaxValue xsi:nil="true"/>
+							<FillFromFillingValue>false</FillFromFillingValue>
+							<FillValue xsi:nil="true"/>
+							<FillChecking>DontCheck</FillChecking>
+							<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
+							<ChoiceParameterLinks/>
+							<ChoiceParameters/>
+							<QuickChoice>Auto</QuickChoice>
+							<CreateOnInput>Auto</CreateOnInput>
+							<ChoiceForm/>
+							<LinkByType/>
+							<ChoiceHistoryOnInput>Auto</ChoiceHistoryOnInput>
+						</Properties>
+					</Attribute>
+					<Attribute uuid="63030163-aa02-45c3-b7e1-727925b98ccc">
+						<Properties>
+							<Name>DepositMemo</Name>
+							<Synonym>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Memo</v8:content>
+								</v8:item>
+							</Synonym>
+							<Comment/>
+							<Type>
+								<v8:Type>xs:string</v8:Type>
+								<v8:StringQualifiers>
+									<v8:Length>0</v8:Length>
+									<v8:AllowedLength>Variable</v8:AllowedLength>
+								</v8:StringQualifiers>
+							</Type>
+							<PasswordMode>false</PasswordMode>
+							<Format/>
+							<EditFormat/>
+							<ToolTip/>
+							<MarkNegatives>false</MarkNegatives>
+							<Mask/>
+							<MultiLine>false</MultiLine>
+							<ExtendedEdit>false</ExtendedEdit>
+							<MinValue xsi:nil="true"/>
+							<MaxValue xsi:nil="true"/>
+							<FillFromFillingValue>false</FillFromFillingValue>
+							<FillValue xsi:type="xs:string"/>
+							<FillChecking>DontCheck</FillChecking>
+							<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
+							<ChoiceParameterLinks/>
+							<ChoiceParameters/>
+							<QuickChoice>Auto</QuickChoice>
+							<CreateOnInput>Auto</CreateOnInput>
+							<ChoiceForm/>
+							<LinkByType/>
+							<ChoiceHistoryOnInput>Auto</ChoiceHistoryOnInput>
+						</Properties>
+					</Attribute>
+					<Attribute uuid="33908f59-cd44-4e55-8924-c90b10313546">
+						<Properties>
+							<Name>DepositLineCompany</Name>
+							<Synonym>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Line company</v8:content>
+								</v8:item>
+							</Synonym>
+							<Comment/>
+							<Type>
+								<v8:Type>cfg:CatalogRef.Companies</v8:Type>
+							</Type>
+							<PasswordMode>false</PasswordMode>
+							<Format/>
+							<EditFormat/>
+							<ToolTip/>
+							<MarkNegatives>false</MarkNegatives>
+							<Mask/>
+							<MultiLine>false</MultiLine>
+							<ExtendedEdit>false</ExtendedEdit>
+							<MinValue xsi:nil="true"/>
+							<MaxValue xsi:nil="true"/>
+							<FillFromFillingValue>false</FillFromFillingValue>
+							<FillValue xsi:nil="true"/>
+							<FillChecking>DontCheck</FillChecking>
+							<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
+							<ChoiceParameterLinks/>
+							<ChoiceParameters/>
+							<QuickChoice>Auto</QuickChoice>
+							<CreateOnInput>Auto</CreateOnInput>
+							<ChoiceForm/>
+							<LinkByType/>
+							<ChoiceHistoryOnInput>Auto</ChoiceHistoryOnInput>
+						</Properties>
+					</Attribute>
+					<Attribute uuid="52b659d2-b08d-483c-a383-373604cfc629">
+						<Properties>
+							<Name>DepositLineAccount</Name>
+							<Synonym>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Line account</v8:content>
+								</v8:item>
+							</Synonym>
+							<Comment/>
+							<Type>
+								<v8:Type>cfg:ChartOfAccountsRef.ChartOfAccounts</v8:Type>
+							</Type>
+							<PasswordMode>false</PasswordMode>
+							<Format/>
+							<EditFormat/>
+							<ToolTip/>
+							<MarkNegatives>false</MarkNegatives>
+							<Mask/>
+							<MultiLine>false</MultiLine>
+							<ExtendedEdit>false</ExtendedEdit>
+							<MinValue xsi:nil="true"/>
+							<MaxValue xsi:nil="true"/>
+							<FillFromFillingValue>false</FillFromFillingValue>
+							<FillValue xsi:nil="true"/>
+							<FillChecking>DontCheck</FillChecking>
+							<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
+							<ChoiceParameterLinks/>
+							<ChoiceParameters/>
+							<QuickChoice>Auto</QuickChoice>
+							<CreateOnInput>Auto</CreateOnInput>
+							<ChoiceForm/>
+							<LinkByType/>
+							<ChoiceHistoryOnInput>Auto</ChoiceHistoryOnInput>
+						</Properties>
+					</Attribute>
+					<Attribute uuid="da320a80-25b5-4151-af5e-20531e8e5c14">
+						<Properties>
+							<Name>DepositLineAmount</Name>
+							<Synonym>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Line amount</v8:content>
+								</v8:item>
+							</Synonym>
+							<Comment/>
+							<Type>
+								<v8:Type>xs:decimal</v8:Type>
+								<v8:NumberQualifiers>
+									<v8:Digits>15</v8:Digits>
+									<v8:FractionDigits>2</v8:FractionDigits>
+									<v8:AllowedSign>Any</v8:AllowedSign>
+								</v8:NumberQualifiers>
+							</Type>
+							<PasswordMode>false</PasswordMode>
+							<Format/>
+							<EditFormat/>
+							<ToolTip/>
+							<MarkNegatives>false</MarkNegatives>
+							<Mask/>
+							<MultiLine>false</MultiLine>
+							<ExtendedEdit>false</ExtendedEdit>
+							<MinValue xsi:nil="true"/>
+							<MaxValue xsi:nil="true"/>
+							<FillFromFillingValue>false</FillFromFillingValue>
+							<FillValue xsi:nil="true"/>
+							<FillChecking>DontCheck</FillChecking>
+							<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
+							<ChoiceParameterLinks/>
+							<ChoiceParameters/>
+							<QuickChoice>Auto</QuickChoice>
+							<CreateOnInput>Auto</CreateOnInput>
+							<ChoiceForm/>
+							<LinkByType/>
+							<ChoiceHistoryOnInput>Auto</ChoiceHistoryOnInput>
+						</Properties>
+					</Attribute>
+					<Attribute uuid="5cfb4948-8933-4f39-9ccb-de4ee772b78e">
+						<Properties>
+							<Name>DepositLineMemo</Name>
+							<Synonym>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Line memo</v8:content>
+								</v8:item>
+							</Synonym>
+							<Comment/>
+							<Type>
+								<v8:Type>xs:string</v8:Type>
+								<v8:StringQualifiers>
+									<v8:Length>100</v8:Length>
+									<v8:AllowedLength>Variable</v8:AllowedLength>
+								</v8:StringQualifiers>
+							</Type>
+							<PasswordMode>false</PasswordMode>
+							<Format/>
+							<EditFormat/>
+							<ToolTip/>
+							<MarkNegatives>false</MarkNegatives>
+							<Mask/>
+							<MultiLine>false</MultiLine>
+							<ExtendedEdit>false</ExtendedEdit>
+							<MinValue xsi:nil="true"/>
+							<MaxValue xsi:nil="true"/>
+							<FillFromFillingValue>false</FillFromFillingValue>
+							<FillValue xsi:type="xs:string"/>
+							<FillChecking>DontCheck</FillChecking>
+							<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
+							<ChoiceParameterLinks/>
+							<ChoiceParameters/>
+							<QuickChoice>Auto</QuickChoice>
+							<CreateOnInput>Auto</CreateOnInput>
+							<ChoiceForm/>
+							<LinkByType/>
+							<ChoiceHistoryOnInput>Auto</ChoiceHistoryOnInput>
+						</Properties>
+					</Attribute>
 				</ChildObjects>
 			</TabularSection>
 			<Form>Form</Form>
-			<Template>Макет</Template>
+			<Template>Template</Template>
 			<Command uuid="0c93a74b-e3db-4b86-9520-6be14754e686">
 				<Properties>
 					<Name>DataImport</Name>

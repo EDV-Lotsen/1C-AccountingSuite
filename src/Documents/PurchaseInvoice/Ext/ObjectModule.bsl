@@ -17,27 +17,27 @@ Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 		Date = CurrentSessionDate();
 	EndIf;
 	
-	// Save document parameters before posting the document
+	// Save document parameters before posting the document.
 	If WriteMode = DocumentWriteMode.Posting
 	Or WriteMode = DocumentWriteMode.UndoPosting Then
 		
-		// Save custom document parameters
+		// Save custom document parameters.
 		Orders = LineItems.UnloadColumn("Order");
 		GeneralFunctions.NormalizeArray(Orders);
 		
-		// Common filling of parameters
+		// Common filling of parameters.
 		DocumentParameters = New Structure("Ref, Date, IsNew,   Posted, ManualAdjustment, Metadata,   Orders",
 		                                    Ref, Date, IsNew(), Posted, ManualAdjustment, Metadata(), Orders);
 		DocumentPosting.PrepareDataStructuresBeforeWrite(AdditionalProperties, DocumentParameters, Cancel, WriteMode, PostingMode);
 	EndIf;
 	
-	// Precheck of register balances to complete filling of document posting
+	// Precheck of register balances to complete filling of document posting.
 	If WriteMode = DocumentWriteMode.Posting Then
 		
-		// Precheck of document data, calculation of temporary data, required for document posting
-		If (Not ManualAdjustment) And (Orders.Count() > 0) Then
+		// Precheck of document data, calculation of temporary data, required for document posting.
+		If (Not ManualAdjustment) Then
 			DocumentParameters = New Structure("Ref, PointInTime,   Company, LineItems",
-			                                    Ref, PointInTime(), Company, LineItems.Unload(, "Order, Product, Location, DeliveryDate, Project, Class, Quantity"));
+			                                    Ref, PointInTime(), Company, LineItems.Unload(, "Order, Product, Unit, Location, LocationActual, DeliveryDate, Project, Class, QtyUM"));
 			Documents.PurchaseInvoice.PrepareDataBeforeWrite(AdditionalProperties, DocumentParameters, Cancel);
 		EndIf;
 		
@@ -51,7 +51,7 @@ Procedure FillCheckProcessing(Cancel, CheckedAttributes)
 	FilledOrders = GeneralFunctions.InvertCollectionFilter(LineItems, LineItems.FindRows(New Structure("Order", Documents.PurchaseOrder.EmptyRef())));
 	
 	// Check doubles in items (to be sure of proper orders placement).
-	GeneralFunctions.CheckDoubleItems(Ref, LineItems, "Product, Order, Location, DeliveryDate, Project, Class, LineNumber", FilledOrders, Cancel);
+	GeneralFunctions.CheckDoubleItems(Ref, LineItems, "Product, Unit, Order, Location, DeliveryDate, Project, Class, LineNumber", FilledOrders, Cancel);
 	
 	// Check proper closing of order items by the invoice items.
 	If Not Cancel Then
@@ -62,6 +62,7 @@ EndProcedure
 
 Procedure Filling(FillingData, StandardProcessing)
 	
+	// Filling new document or filling on the base of another document.
 	If FillingData = Undefined Then
 		// Filling of the new created document with default values.
 		Currency         = Constants.DefaultCurrency.Get();
@@ -73,38 +74,38 @@ Procedure Filling(FillingData, StandardProcessing)
 		// Generate on the base of Purchase order & Item receipt.
 		Cancel = False; TabularSectionData = Undefined;
 		
-		// 0. Custom check of purchase order for interactive generate of purchase invoice on the base of purchase order
+		// 0. Custom check of purchase order for interactive generate of purchase invoice on the base of purchase order.
 		If (TypeOf(FillingData) = Type("DocumentRef.PurchaseOrder"))
 		And Not Documents.PurchaseInvoice.CheckStatusOfPurchaseOrder(Ref, FillingData) Then
 			Cancel = True;
 			Return;
 		EndIf;
 		
-		// 1. Common filling of parameters
+		// 1. Common filling of parameters.
 		DocumentParameters = New Structure("Ref, Date, Metadata",
 		                                    Ref, ?(ValueIsFilled(Date), Date, CurrentSessionDate()), Metadata());
 		DocumentFilling.PrepareDataStructuresBeforeFilling(AdditionalProperties, DocumentParameters, FillingData, Cancel);
 		
-		// 2. Cancel filling on failed data
+		// 2. Cancel filling on failed data.
 		If Cancel Then
 			Return;
 		EndIf;
 		
-		// 3. Collect document data, available for filling, and fill created structure 
+		// 3. Collect document data, available for filling, and fill created structure.
 		Documents.PurchaseInvoice.PrepareDataStructuresForFilling(Ref, AdditionalProperties);
 		
-		// 4. Check collected data
+		// 4. Check collected data.
 		DocumentFilling.CheckDataStructuresOnFilling(AdditionalProperties, Cancel);
 		
-		// 5. Fill document fields
+		// 5. Fill document fields.
 		If Not Cancel Then
-			// Fill "draft" values to attributes (all including non-critical fields will be filled)
+			// Fill "draft" values to attributes (all including non-critical fields will be filled).
 			FillPropertyValues(ThisObject, AdditionalProperties.Filling.FillingTables.Table_Attributes[0]);
 			
-			// Fill checked unique values to attributes (critical fields will be filled)
+			// Fill checked unique values to attributes (critical fields will be filled).
 			FillPropertyValues(ThisObject, AdditionalProperties.Filling.FillingTables.Table_Check[0]);
 			
-			// Fill line items
+			// Fill line items.
 			For Each TabularSection In AdditionalProperties.Metadata.TabularSections Do
 				If AdditionalProperties.Filling.FillingTables.Property("Table_" + TabularSection.Name, TabularSectionData) Then
 					ThisObject[TabularSection.Name].Load(TabularSectionData);
@@ -112,45 +113,46 @@ Procedure Filling(FillingData, StandardProcessing)
 			EndDo;
 		EndIf;
 		
-		// 6. Clear used temporary document data
+		// 6. Clear used temporary document data.
 		DocumentFilling.ClearDataStructuresAfterFilling(AdditionalProperties);
+		
 	EndIf;
 	
 EndProcedure
 
 Procedure OnCopy(CopiedObject)
 	
-	// Clear manual adjustment attribute
+	// Clear manual adjustment attribute.
 	ManualAdjustment = False;
 	
 EndProcedure
 
 Procedure Posting(Cancel, PostingMode)
 	
-	// 1. Common postings clearing / reactivate manual ajusted postings
+	// 1. Common postings clearing / reactivate manual ajusted postings.
 	DocumentPosting.PrepareRecordSetsForPosting(AdditionalProperties, RegisterRecords);
 	
-	// 2. Skip manually adjusted documents
+	// 2. Skip manually adjusted documents.
 	If ManualAdjustment Then
 		Return;
 	EndIf;
 	
-	// 3. Create structures with document data to pass it on the server
+	// 3. Create structures with document data to pass it on the server.
 	DocumentPosting.PrepareDataStructuresBeforePosting(AdditionalProperties);
 	
-	// 4. Collect document data, available for posing, and fill created structure 
+	// 4. Collect document data, available for posing, and fill created structure.
 	Documents.PurchaseInvoice.PrepareDataStructuresForPosting(Ref, AdditionalProperties, RegisterRecords);
 	
-	// 5. Fill register records with document's postings
+	// 5. Fill register records with document's postings.
 	DocumentPosting.FillRecordSets(AdditionalProperties, RegisterRecords, Cancel);
 	
-	// 6. Write document postings to register
+	// 6. Write document postings to register.
 	DocumentPosting.WriteRecordSets(AdditionalProperties, RegisterRecords);
 	
-	// 7. Check register blanaces according to document's changes
+	// 7. Check register blanaces according to document's changes.
 	DocumentPosting.CheckPostingResults(AdditionalProperties, RegisterRecords, Cancel);
 	
-	// 8. Clear used temporary document data
+	// 8. Clear used temporary document data.
 	DocumentPosting.ClearDataStructuresAfterPosting(AdditionalProperties);
 	
 	
@@ -194,7 +196,7 @@ Procedure Posting(Cancel, PostingMode)
 		EndIf;
 		PostingLine.AmountRC = CurRowLineItems.LineTotal * ExchangeRate;
 		
-		// Calculating diference between ordered cost and invoiced cost of inventory items
+		// Calculating diference between ordered cost and invoiced cost of inventory items.
 		//If CalculateByPlannedCosting And IsInventoryPosting Then
 		//	// Calculate difference in ordered and invoiced sum
 		//	OrderCostDiff = CurRowLineItems.Quantity * (CurRowLineItems.OrderPrice - CurRowLineItems.Price);
@@ -334,29 +336,29 @@ Procedure Posting(Cancel, PostingMode)
 	
 EndProcedure
 
-Procedure UndoPosting(Cancel)	
+Procedure UndoPosting(Cancel)
 	
-	// 1. Common posting clearing / deactivate manual ajusted postings
+	// 1. Common posting clearing / deactivate manual ajusted postings.
 	DocumentPosting.PrepareRecordSetsForPostingClearing(AdditionalProperties, RegisterRecords);
 	
-	// 2. Skip manually adjusted documents
+	// 2. Skip manually adjusted documents.
 	If ManualAdjustment Then
 		Return;
 	EndIf;
 	
-	// 3. Create structures with document data to pass it on the server
+	// 3. Create structures with document data to pass it on the server.
 	DocumentPosting.PrepareDataStructuresBeforePosting(AdditionalProperties);
 	
-	// 4. Collect document data, required for posing clearing, and fill created structure 
+	// 4. Collect document data, required for posing clearing, and fill created structure.
 	Documents.PurchaseInvoice.PrepareDataStructuresForPostingClearing(Ref, AdditionalProperties, RegisterRecords);
 	
-	// 5. Write document postings to register
+	// 5. Write document postings to register.
 	DocumentPosting.WriteRecordSets(AdditionalProperties, RegisterRecords);
 	
-	// 6. Check register blanaces according to document's changes
+	// 6. Check register blanaces according to document's changes.
 	DocumentPosting.CheckPostingResults(AdditionalProperties, RegisterRecords, Cancel);
 	
-	// 7. Clear used temporary document data
+	// 7. Clear used temporary document data.
 	DocumentPosting.ClearDataStructuresAfterPosting(AdditionalProperties);
 	
 EndProcedure

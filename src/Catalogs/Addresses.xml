@@ -30,10 +30,6 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>Addresses / contacts</v8:content>
 				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>Adressen / Kontakte</v8:content>
-				</v8:item>
 			</Synonym>
 			<Comment/>
 			<Hierarchical>false</Hierarchical>
@@ -334,10 +330,6 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>First name</v8:content>
 						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Vorname</v8:content>
-						</v8:item>
 					</Synonym>
 					<Comment/>
 					<Type>
@@ -380,10 +372,6 @@
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Middle name</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Zweiter Vorname</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -428,10 +416,6 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Last name</v8:content>
 						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Nachname</v8:content>
-						</v8:item>
 					</Synonym>
 					<Comment/>
 					<Type>
@@ -474,10 +458,6 @@
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Phone</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Telefon</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -565,10 +545,6 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Fax</v8:content>
 						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Fax</v8:content>
-						</v8:item>
 					</Synonym>
 					<Comment/>
 					<Type>
@@ -610,11 +586,7 @@
 					<Synonym>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>E-mail</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>E-Mail</v8:content>
+							<v8:content>Email</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -659,10 +631,6 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Address line 1</v8:content>
 						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Adresse Zeile 1</v8:content>
-						</v8:item>
 					</Synonym>
 					<Comment/>
 					<Type>
@@ -705,10 +673,6 @@
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Address line 2</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Adresse Zeile 2</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -753,10 +717,6 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Address line 3</v8:content>
 						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Adresse Zeile 2</v8:content>
-						</v8:item>
 					</Synonym>
 					<Comment/>
 					<Type>
@@ -799,10 +759,6 @@
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>City</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Stadt</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -847,10 +803,6 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Region/State</v8:content>
 						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Region/Land</v8:content>
-						</v8:item>
 					</Synonym>
 					<Comment/>
 					<Type>
@@ -890,10 +842,6 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Country</v8:content>
 						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Land</v8:content>
-						</v8:item>
 					</Synonym>
 					<Comment/>
 					<Type>
@@ -932,10 +880,6 @@
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>ZIP code</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>PLZ-Code</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -1492,6 +1436,45 @@
 					<Comment/>
 					<Type>
 						<v8:Type>cfg:CatalogRef.SalesPeople</v8:Type>
+					</Type>
+					<PasswordMode>false</PasswordMode>
+					<Format/>
+					<EditFormat/>
+					<ToolTip/>
+					<MarkNegatives>false</MarkNegatives>
+					<Mask/>
+					<MultiLine>false</MultiLine>
+					<ExtendedEdit>false</ExtendedEdit>
+					<MinValue xsi:nil="true"/>
+					<MaxValue xsi:nil="true"/>
+					<FillFromFillingValue>false</FillFromFillingValue>
+					<FillValue xsi:nil="true"/>
+					<FillChecking>DontCheck</FillChecking>
+					<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
+					<ChoiceParameterLinks/>
+					<ChoiceParameters/>
+					<QuickChoice>Auto</QuickChoice>
+					<CreateOnInput>Auto</CreateOnInput>
+					<ChoiceForm/>
+					<LinkByType/>
+					<ChoiceHistoryOnInput>Auto</ChoiceHistoryOnInput>
+					<Use>ForItem</Use>
+					<Indexing>DontIndex</Indexing>
+					<FullTextSearch>Use</FullTextSearch>
+				</Properties>
+			</Attribute>
+			<Attribute uuid="a8dde7ac-9dfd-49dd-8f16-bfc87244d2d9">
+				<Properties>
+					<Name>NewObject</Name>
+					<Synonym>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>New object</v8:content>
+						</v8:item>
+					</Synonym>
+					<Comment/>
+					<Type>
+						<v8:Type>xs:boolean</v8:Type>
 					</Type>
 					<PasswordMode>false</PasswordMode>
 					<Format/>

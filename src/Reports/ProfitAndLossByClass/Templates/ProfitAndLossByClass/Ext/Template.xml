@@ -213,7 +213,7 @@ FROM
 			,
 			Auto,
 			Account.AccountType IN (VALUE(Enum.AccountTypes.Income), VALUE(Enum.AccountTypes.CostOfSales), VALUE(Enum.AccountTypes.Expense), VALUE(Enum.AccountTypes.OtherExpense), VALUE(Enum.AccountTypes.OtherIncome), VALUE(Enum.AccountTypes.IncomeTaxExpense))
-				AND Account.OtherComprehensiveIncome = FALSE) AS ClassDataTurnovers
+				) AS ClassDataTurnovers
 		FULL JOIN Enum.AccountTypes AS AccountTypes
 		ON (AccountTypes.Ref = ClassDataTurnovers.Account.AccountType)
 		LEFT JOIN Constant.SystemTitle AS SystemTitle
@@ -241,10 +241,6 @@ WHERE
 				<v8:lang>en</v8:lang>
 				<v8:content>Begin of period</v8:content>
 			</v8:item>
-			<v8:item>
-				<v8:lang>de</v8:lang>
-				<v8:content>Periodenanfang</v8:content>
-			</v8:item>
 		</title>
 		<valueType>
 			<v8:Type>xs:dateTime</v8:Type>
@@ -263,10 +259,6 @@ WHERE
 			<v8:item>
 				<v8:lang>en</v8:lang>
 				<v8:content>End of period</v8:content>
-			</v8:item>
-			<v8:item>
-				<v8:lang>de</v8:lang>
-				<v8:content>Ende der Periode</v8:content>
 			</v8:item>
 		</title>
 		<valueType>
@@ -287,10 +279,6 @@ WHERE
 				<v8:lang>en</v8:lang>
 				<v8:content>Period</v8:content>
 			</v8:item>
-			<v8:item>
-				<v8:lang>de</v8:lang>
-				<v8:content>Periode</v8:content>
-			</v8:item>
 		</title>
 		<valueType>
 			<v8:Type>v8:StandardPeriod</v8:Type>
@@ -301,7 +289,6 @@ WHERE
 			<v8:endDate>0001-01-01T00:00:00</v8:endDate>
 		</value>
 		<useRestriction>false</useRestriction>
-		<use>Always</use>
 	</parameter>
 	<parameter>
 		<name>PeriodPresentation</name>
@@ -6113,6 +6100,7 @@ END</dcsat:expression>
 					<dcscor:value xsi:type="v8:StandardPeriod">
 						<v8:variant xsi:type="v8:StandardPeriodVariant">ThisMonth</v8:variant>
 					</dcscor:value>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 					<dcsset:userSettingID>0b91604f-fb44-42b7-a76c-75aa3e01c1b2</dcsset:userSettingID>
 				</dcscor:item>
 			</dcsset:dataParameters>
@@ -6148,11 +6136,7 @@ END</dcsat:expression>
 					<dcscor:value xsi:type="v8:LocalStringType">
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Income Statement</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Gewinn- und Verlustrechnung</v8:content>
+							<v8:content>Statement of cash flows</v8:content>
 						</v8:item>
 					</dcscor:value>
 				</dcscor:item>
@@ -6875,10 +6859,6 @@ END</dcsat:expression>
 				<v8:lang>en</v8:lang>
 				<v8:content>Years</v8:content>
 			</v8:item>
-			<v8:item>
-				<v8:lang>de</v8:lang>
-				<v8:content>2. Gewinn (Jahre)</v8:content>
-			</v8:item>
 		</dcsset:presentation>
 		<dcsset:settings xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows">
 			<dcsset:dataParameters>
@@ -6887,6 +6867,7 @@ END</dcsat:expression>
 					<dcscor:value xsi:type="v8:StandardPeriod">
 						<v8:variant xsi:type="v8:StandardPeriodVariant">ThisYear</v8:variant>
 					</dcscor:value>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 					<dcsset:userSettingID>0b91604f-fb44-42b7-a76c-75aa3e01c1b2</dcsset:userSettingID>
 				</dcscor:item>
 			</dcsset:dataParameters>
@@ -6922,11 +6903,7 @@ END</dcsat:expression>
 					<dcscor:value xsi:type="v8:LocalStringType">
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Income Statement</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Gewinn- und Verlustrechnung</v8:content>
+							<v8:content>Statement of cash flows</v8:content>
 						</v8:item>
 					</dcscor:value>
 				</dcscor:item>
@@ -7707,6 +7684,7 @@ END</dcsat:expression>
 					<dcscor:value xsi:type="v8:StandardPeriod">
 						<v8:variant xsi:type="v8:StandardPeriodVariant">ThisYear</v8:variant>
 					</dcscor:value>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 					<dcsset:userSettingID>0b91604f-fb44-42b7-a76c-75aa3e01c1b2</dcsset:userSettingID>
 				</dcscor:item>
 			</dcsset:dataParameters>
@@ -7742,11 +7720,7 @@ END</dcsat:expression>
 					<dcscor:value xsi:type="v8:LocalStringType">
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Income Statement</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Gewinn- und Verlustrechnung</v8:content>
+							<v8:content>Statement of cash flows</v8:content>
 						</v8:item>
 					</dcscor:value>
 				</dcscor:item>
@@ -8504,10 +8478,6 @@ END</dcsat:expression>
 				<v8:lang>en</v8:lang>
 				<v8:content>Months</v8:content>
 			</v8:item>
-			<v8:item>
-				<v8:lang>de</v8:lang>
-				<v8:content>4. Gewinn (Monate)</v8:content>
-			</v8:item>
 		</dcsset:presentation>
 		<dcsset:settings xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows">
 			<dcsset:dataParameters>
@@ -8516,6 +8486,7 @@ END</dcsat:expression>
 					<dcscor:value xsi:type="v8:StandardPeriod">
 						<v8:variant xsi:type="v8:StandardPeriodVariant">ThisQuarter</v8:variant>
 					</dcscor:value>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 					<dcsset:userSettingID>0b91604f-fb44-42b7-a76c-75aa3e01c1b2</dcsset:userSettingID>
 				</dcscor:item>
 			</dcsset:dataParameters>
@@ -8551,11 +8522,7 @@ END</dcsat:expression>
 					<dcscor:value xsi:type="v8:LocalStringType">
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Income Statement</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Gewinn- und Verlustrechnung</v8:content>
+							<v8:content>Statement of cash flows</v8:content>
 						</v8:item>
 					</dcscor:value>
 				</dcscor:item>
@@ -9313,10 +9280,6 @@ END</dcsat:expression>
 				<v8:lang>en</v8:lang>
 				<v8:content>Weeks</v8:content>
 			</v8:item>
-			<v8:item>
-				<v8:lang>de</v8:lang>
-				<v8:content>5. Gewinn (Wochen)</v8:content>
-			</v8:item>
 		</dcsset:presentation>
 		<dcsset:settings xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows">
 			<dcsset:dataParameters>
@@ -9325,6 +9288,7 @@ END</dcsat:expression>
 					<dcscor:value xsi:type="v8:StandardPeriod">
 						<v8:variant xsi:type="v8:StandardPeriodVariant">ThisMonth</v8:variant>
 					</dcscor:value>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 					<dcsset:userSettingID>0b91604f-fb44-42b7-a76c-75aa3e01c1b2</dcsset:userSettingID>
 				</dcscor:item>
 			</dcsset:dataParameters>
@@ -9360,11 +9324,7 @@ END</dcsat:expression>
 					<dcscor:value xsi:type="v8:LocalStringType">
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Income Statement</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Gewinn- und Verlustrechnung</v8:content>
+							<v8:content>Statement of cash flows</v8:content>
 						</v8:item>
 					</dcscor:value>
 				</dcscor:item>
@@ -10122,10 +10082,6 @@ END</dcsat:expression>
 				<v8:lang>en</v8:lang>
 				<v8:content>Days</v8:content>
 			</v8:item>
-			<v8:item>
-				<v8:lang>de</v8:lang>
-				<v8:content>6. Gewinn (Tage)</v8:content>
-			</v8:item>
 		</dcsset:presentation>
 		<dcsset:settings xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows">
 			<dcsset:dataParameters>
@@ -10134,6 +10090,7 @@ END</dcsat:expression>
 					<dcscor:value xsi:type="v8:StandardPeriod">
 						<v8:variant xsi:type="v8:StandardPeriodVariant">ThisWeek</v8:variant>
 					</dcscor:value>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 					<dcsset:userSettingID>0b91604f-fb44-42b7-a76c-75aa3e01c1b2</dcsset:userSettingID>
 				</dcscor:item>
 			</dcsset:dataParameters>
@@ -10169,11 +10126,7 @@ END</dcsat:expression>
 					<dcscor:value xsi:type="v8:LocalStringType">
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Income Statement</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Gewinn- und Verlustrechnung</v8:content>
+							<v8:content>Statement of cash flows</v8:content>
 						</v8:item>
 					</dcscor:value>
 				</dcscor:item>

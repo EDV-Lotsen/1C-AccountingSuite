@@ -6,17 +6,41 @@
 // 
 Procedure LineItemsProductOnChange(Item)
 	
-	TabularPartRow = Items.LineItems.CurrentData;
+	// Fill line data for editing.
+	TableSectionRow = GetLineItemsRowStructure();
+	FillPropertyValues(TableSectionRow, Items.LineItems.CurrentData);
 	
-	TabularPartRow.ProductDescription = CommonUse.GetAttributeValue(TabularPartRow.Product, "Description");
-	TabularPartRow.Quantity = 0;
-	TabularPartRow.LineTotal = 0;
-	TabularPartRow.Price = 0;
-	//TabularPartRow.VAT = 0;
+	// Request server operation.
+	LineItemsProductOnChangeAtServer(TableSectionRow);
 	
-	//TabularPartRow.VATCode = CommonUse.GetAttributeValue(TabularPartRow.Product, "PurchaseVATCode");
+	// Load processed data back.
+	FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
 	
-	RecalcTotal();
+	// Refresh totals cache.
+	RecalculateTotals();
+	
+EndProcedure
+
+&AtServer
+Procedure LineItemsProductOnChangeAtServer(TableSectionRow)
+	
+	// Request product properties.
+	ProductProperties = CommonUse.GetAttributeValues(TableSectionRow.Product,   New Structure("Description, UnitSet"));
+	UnitSetProperties = CommonUse.GetAttributeValues(ProductProperties.UnitSet, New Structure("DefaultPurchaseUnit"));
+	TableSectionRow.ProductDescription = ProductProperties.Description;
+	TableSectionRow.UnitSet            = ProductProperties.UnitSet;
+	TableSectionRow.Unit               = UnitSetProperties.DefaultPurchaseUnit;
+	//TableSectionRow.UM                 = UnitSetProperties.UM;
+	TableSectionRow.PriceUnits         = Round(GeneralFunctions.ProductLastCost(TableSectionRow.Product, PointInTime) *
+	                                     ?(TableSectionRow.Unit.Factor > 0, TableSectionRow.Unit.Factor, 1) /
+	                                     ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), 2);
+	
+	// Assign default quantities.
+	TableSectionRow.QtyUnits  = 0;
+	TableSectionRow.QtyUM     = 0;
+	
+	// Calculate totals by line.
+	TableSectionRow.LineTotal = 0;
 	
 EndProcedure
 
@@ -25,7 +49,7 @@ EndProcedure
 // DocumentTotal - document's currency in FCY (foreign currency).
 // DocumentTotalRC - company's reporting currency.
 //
-Procedure RecalcTotal()
+Procedure RecalculateTotals()
 	
 	//If Object.PriceIncludesVAT Then
 	//	Object.DocumentTotal = Object.LineItems.Total("LineTotal");
@@ -51,9 +75,21 @@ Procedure CompanyOnChange(Item)
 	Object.ExchangeRate = GeneralFunctions.GetExchangeRate(Object.Date, Object.Currency);
 	Items.ExchangeRate.Title = GeneralFunctionsReusable.DefaultCurrencySymbol() + "/1" + CommonUse.GetAttributeValue(Object.Currency, "Symbol");
 	Items.FCYCurrency.Title = CommonUse.GetAttributeValue(Object.Currency, "Symbol");
-	RecalcTotal();
+	RecalculateTotals();
 	
+	CompanyOnChangeAtServer();	
 EndProcedure
+
+&AtServer
+Procedure CompanyOnChangeAtServer()
+	If Object.Company.APAccount <> ChartsofAccounts.ChartOfAccounts.EmptyRef() Then
+		Object.APAccount = Object.Company.APAccount;
+	Else
+		DefaultCurrency = GeneralFunctionsReusable.DefaultCurrency();
+		Object.APAccount = DefaultCurrency.DefaultAPAccount;
+	EndIf;
+EndProcedure
+
 
 &AtClient
 // LineItemsPriceOnChange UI event handler.
@@ -63,14 +99,31 @@ EndProcedure
 // 
 Procedure LineItemsPriceOnChange(Item)
 	
-	TabularPartRow = Items.LineItems.CurrentData;
+	// Fill line data for editing.
+	TableSectionRow = GetLineItemsRowStructure();
+	FillPropertyValues(TableSectionRow, Items.LineItems.CurrentData);
 	
-	TabularPartRow.LineTotal = TabularPartRow.Quantity * TabularPartRow.Price;
+	// Request server operation.
+	LineItemsPriceOnChangeAtServer(TableSectionRow);
 	
-	//TabularPartRow.VAT = VAT_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Purchase", Object.PriceIncludesVAT);
+	// Load processed data back.
+	FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
 	
-	RecalcTotal();
+	// Refresh totals cache.
+	RecalculateTotals();
 
+EndProcedure
+
+
+&AtServer
+Procedure LineItemsPriceOnChangeAtServer(TableSectionRow)
+	
+	// Calculate total by line.
+	TableSectionRow.LineTotal = Round(Round(TableSectionRow.QtyUnits, QuantityPrecision) * TableSectionRow.PriceUnits, 2);
+	
+	// Process settings changes.
+	LineItemsLineTotalOnChangeAtServer(TableSectionRow);
+	
 EndProcedure
 
 &AtClient
@@ -80,7 +133,10 @@ EndProcedure
 Procedure DateOnChange(Item)
 	
 	Object.ExchangeRate = GeneralFunctions.GetExchangeRate(Object.Date, Object.Currency);
-	RecalcTotal();
+	
+	RecalculateTotals();
+	
+	UpdatePointInTime();
 	
 EndProcedure
 
@@ -95,7 +151,7 @@ Procedure CurrencyOnChange(Item)
 	Object.APAccount = CommonUse.GetAttributeValue(Object.Currency, "DefaultAPAccount");
 	Items.ExchangeRate.Title = GeneralFunctionsReusable.DefaultCurrencySymbol() + "/1" + CommonUse.GetAttributeValue(Object.Currency, "Symbol");
 	Items.FCYCurrency.Title = CommonUse.GetAttributeValue(Object.Currency, "Symbol");
-	RecalcTotal();
+	RecalculateTotals();
 	
 EndProcedure
 
@@ -104,7 +160,7 @@ EndProcedure
 // 
 Procedure LineItemsAfterDeleteRow(Item)
 	
-	RecalcTotal();
+	RecalculateTotals();
 	
 EndProcedure
 
@@ -117,12 +173,30 @@ EndProcedure
 // 
 Procedure LineItemsQuantityOnChange(Item)
 	
-	TabularPartRow = Items.LineItems.CurrentData;
-	TabularPartRow.LineTotal = TabularPartRow.Quantity * TabularPartRow.Price;
-	//TabularPartRow.VAT = VAT_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Purchase", Object.PriceIncludesVAT);
+	// Fill line data for editing.
+	TableSectionRow = GetLineItemsRowStructure();
+	FillPropertyValues(TableSectionRow, Items.LineItems.CurrentData);
 	
-	RecalcTotal();
+	// Request server operation.
+	LineItemsQuantityOnChangeAtServer(TableSectionRow);
+	
+	// Load processed data back.
+	FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
+	
+	// Refresh totals cache.
+	RecalculateTotals();
 
+EndProcedure
+
+&AtServer
+Procedure LineItemsQuantityOnChangeAtServer(TableSectionRow)
+	
+	// Calculate total by line.
+	TableSectionRow.LineTotal = Round(Round(TableSectionRow.QtyUnits, QuantityPrecision) * TableSectionRow.PriceUnits, 2);
+	
+	// Process settings changes.
+	LineItemsLineTotalOnChangeAtServer(TableSectionRow);
+	
 EndProcedure
 
 &AtServer
@@ -136,8 +210,10 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Object.Company = Parameters.Company;
 	EndIf;
 	
-	Items.LineItemsQuantity.EditFormat = GeneralFunctionsReusable.DefaultQuantityFormat();
-	Items.LineItemsQuantity.Format = GeneralFunctionsReusable.DefaultQuantityFormat();
+	QuantityPrecision = GeneralFunctionsReusable.DefaultQuantityPrecision();
+	QuantityFormat    = GeneralFunctionsReusable.DefaultQuantityFormat();
+	Items.LineItemsQuantity.EditFormat = QuantityFormat;
+	Items.LineItemsQuantity.Format     = QuantityFormat;
 		
 	Items.Company.Title = GeneralFunctionsReusable.GetVendorName();
 	
@@ -173,6 +249,21 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	//Items.VATCurrency.Title = GeneralFunctionsReusable.DefaultCurrencySymbol();
 	Items.RCCurrency.Title = GeneralFunctionsReusable.DefaultCurrencySymbol();
 	Items.FCYCurrency.Title = CommonUse.GetAttributeValue(Object.Currency, "Symbol");
+	
+	// Define point in time for requesting the balances.
+	If Object.Ref.IsEmpty() Then
+		// The new document.
+		If ValueIsFilled(Object.Date) And BegOfDay(Object.Date) < BegOfDay(CurrentSessionDate()) Then
+			// New document in back-date.
+			PointInTime = New Boundary(EndOfDay(Object.Date), BoundaryType.Including);
+		Else
+			// New actual document.
+			PointInTime = Undefined;
+		EndIf;
+	Else
+		// Document was already saved (but date can actually be changed).
+		PointInTime = New Boundary(New PointInTime(Object.Date, Object.Ref), BoundaryType.Including);
+	EndIf;
 
 EndProcedure
 
@@ -183,7 +274,7 @@ EndProcedure
 //	
 //	TabularPartRow = Items.LineItems.CurrentData;
 //	TabularPartRow.VAT = VAT_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Purchase", Object.PriceIncludesVAT);
-//	RecalcTotal();
+//	RecalculateTotals();
 
 //EndProcedure
 
@@ -267,4 +358,100 @@ Procedure AfterOpen()
 	
 EndProcedure
 
+&AtClient
+Procedure LineItemsUnitOnChange(Item)
+	
+	// Fill line data for editing.
+	TableSectionRow = GetLineItemsRowStructure();
+	FillPropertyValues(TableSectionRow, Items.LineItems.CurrentData);
+	
+	// Request server operation.
+	LineItemsUnitOnChangeAtServer(TableSectionRow);
+	
+	// Load processed data back.
+	FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
+	
+	// Refresh totals cache.
+	RecalculateTotals();
+	
+EndProcedure
 
+&AtServer
+Procedure LineItemsUnitOnChangeAtServer(TableSectionRow)
+	
+	// Calculate new unit price.
+	TableSectionRow.PriceUnits = Round(GeneralFunctions.ProductLastCost(TableSectionRow.Product, PointInTime) *
+	                             ?(TableSectionRow.Unit.Factor > 0, TableSectionRow.Unit.Factor, 1) /
+	                             ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), 2);
+	
+	// Process settings changes.
+	LineItemsQuantityOnChangeAtServer(TableSectionRow);
+	
+EndProcedure
+
+&AtClient
+// Returns fields structure of LineItems form control.
+Function GetLineItemsRowStructure()
+	
+	// Define control row fields.
+	Return New Structure("LineNumber, Product, ProductDescription, UnitSet, QtyUnits, Unit, QtyUM, UM, PriceUnits, LineTotal");
+	
+EndFunction
+
+&AtClient
+Procedure LineItemsLineTotalOnChange(Item)
+	
+	// Fill line data for editing.
+	TableSectionRow = GetLineItemsRowStructure();
+	FillPropertyValues(TableSectionRow, Items.LineItems.CurrentData);
+	
+	// Request server operation.
+	LineItemsLineTotalOnChangeAtServer(TableSectionRow);
+	
+	// Load processed data back.
+	FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
+	
+	// Refresh totals cache.
+	RecalculateTotals();
+	
+EndProcedure
+
+&AtServer
+Procedure LineItemsLineTotalOnChangeAtServer(TableSectionRow)
+	
+	// Back-step price calculation with totals priority.
+	TableSectionRow.PriceUnits = ?(Round(TableSectionRow.QtyUnits, QuantityPrecision) > 0,
+	                               Round(TableSectionRow.LineTotal / Round(TableSectionRow.QtyUnits, QuantityPrecision), 2), 0);
+	
+	// Back-calculation of quantity in base units.
+	TableSectionRow.QtyUM      = Round(Round(TableSectionRow.QtyUnits, QuantityPrecision) *
+	                             ?(TableSectionRow.Unit.Factor > 0, TableSectionRow.Unit.Factor, 1), QuantityPrecision);
+	
+EndProcedure
+
+&AtServer
+Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
+	
+	UpdatePointInTime();
+	
+EndProcedure
+
+&AtServer
+Procedure UpdatePointInTime()
+	
+	// Update point in time for requesting the balances.
+	If Object.Ref.IsEmpty() Then
+		// The new document.
+		If BegOfDay(Object.Date) < BegOfDay(CurrentSessionDate()) Then
+			// New document in back-date.
+			PointInTime = New Boundary(EndOfDay(Object.Date), BoundaryType.Including);
+		Else
+			// New actual document.
+			PointInTime = Undefined;
+		EndIf;
+	Else
+		// Document was already saved (but date can actually be changed).
+		PointInTime = New Boundary(New PointInTime(Object.Date, Object.Ref), BoundaryType.Including);
+	EndIf;
+	
+EndProcedure

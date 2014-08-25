@@ -30,10 +30,6 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>Journal entry</v8:content>
 				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>Buchung</v8:content>
-				</v8:item>
 			</Synonym>
 			<Comment/>
 			<UseStandardCommands>true</UseStandardCommands>
@@ -206,6 +202,7 @@
 				<xr:Item xsi:type="xr:MDObjectRef">AccumulationRegister.ClassData</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">AccumulationRegister.ProjectData</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">AccountingRegister.GeneralJournal</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">AccumulationRegister.BankReconciliation</xr:Item>
 			</RegisterRecords>
 			<PostInPrivilegedMode>true</PostInPrivilegedMode>
 			<UnpostInPrivilegedMode>true</UnpostInPrivilegedMode>
@@ -220,10 +217,6 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>Journal entries</v8:content>
 				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>Buchungen</v8:content>
-				</v8:item>
 			</ListPresentation>
 			<ExtendedListPresentation/>
 			<Explanation/>
@@ -237,10 +230,6 @@
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Memo</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Kommentar</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -283,10 +272,6 @@
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Total</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Gesamtbetrag</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -341,10 +326,6 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Currency</v8:content>
 						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Währung</v8:content>
-						</v8:item>
 					</Synonym>
 					<Comment/>
 					<Type>
@@ -382,10 +363,6 @@
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Exchange rate</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Wechselkurs</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -429,10 +406,6 @@
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Total FCY</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Gesamtbetrag ind Fremdwährung</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -486,10 +459,6 @@
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Due date</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Fälligkeitstag</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -600,6 +569,45 @@
 					<FullTextSearch>Use</FullTextSearch>
 				</Properties>
 			</Attribute>
+			<Attribute uuid="d5df4351-c2e7-4520-8055-5857a2e30828">
+				<Properties>
+					<Name>VoidingEntry</Name>
+					<Synonym>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Voiding entry</v8:content>
+						</v8:item>
+					</Synonym>
+					<Comment/>
+					<Type>
+						<v8:Type>cfg:DocumentRef.Check</v8:Type>
+						<v8:Type>cfg:DocumentRef.InvoicePayment</v8:Type>
+					</Type>
+					<PasswordMode>false</PasswordMode>
+					<Format/>
+					<EditFormat/>
+					<ToolTip/>
+					<MarkNegatives>false</MarkNegatives>
+					<Mask/>
+					<MultiLine>false</MultiLine>
+					<ExtendedEdit>false</ExtendedEdit>
+					<MinValue xsi:nil="true"/>
+					<MaxValue xsi:nil="true"/>
+					<FillFromFillingValue>false</FillFromFillingValue>
+					<FillValue xsi:nil="true"/>
+					<FillChecking>DontCheck</FillChecking>
+					<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
+					<ChoiceParameterLinks/>
+					<ChoiceParameters/>
+					<QuickChoice>Auto</QuickChoice>
+					<CreateOnInput>Auto</CreateOnInput>
+					<ChoiceForm/>
+					<LinkByType/>
+					<ChoiceHistoryOnInput>Auto</ChoiceHistoryOnInput>
+					<Indexing>DontIndex</Indexing>
+					<FullTextSearch>Use</FullTextSearch>
+				</Properties>
+			</Attribute>
 			<Form>DocumentForm</Form>
 			<Form>ListForm</Form>
 			<Form>ChoiceForm</Form>
@@ -619,11 +627,7 @@
 					<Synonym>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Line items</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Artikel</v8:content>
+							<v8:content>Products</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -637,11 +641,7 @@
 							<Synonym>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Acct</v8:content>
-								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Konto</v8:content>
+									<v8:content>Bank Acct.</v8:content>
 								</v8:item>
 							</Synonym>
 							<Comment/>
@@ -678,10 +678,6 @@
 								<v8:item>
 									<v8:lang>en</v8:lang>
 									<v8:content>Amount Dr</v8:content>
-								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Soll</v8:content>
 								</v8:item>
 							</Synonym>
 							<Comment/>
@@ -722,11 +718,7 @@
 							<Synonym>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Amount Cr</v8:content>
-								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Haben</v8:content>
+									<v8:content>Credit</v8:content>
 								</v8:item>
 							</Synonym>
 							<Comment/>
@@ -769,10 +761,6 @@
 									<v8:lang>en</v8:lang>
 									<v8:content>Memo</v8:content>
 								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Kommentar</v8:content>
-								</v8:item>
 							</Synonym>
 							<Comment/>
 							<Type>
@@ -812,10 +800,6 @@
 								<v8:item>
 									<v8:lang>en</v8:lang>
 									<v8:content>Company</v8:content>
-								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Unternehmen</v8:content>
 								</v8:item>
 							</Synonym>
 							<Comment/>
@@ -893,6 +877,44 @@
 							<Comment/>
 							<Type>
 								<v8:Type>cfg:CatalogRef.Projects</v8:Type>
+							</Type>
+							<PasswordMode>false</PasswordMode>
+							<Format/>
+							<EditFormat/>
+							<ToolTip/>
+							<MarkNegatives>false</MarkNegatives>
+							<Mask/>
+							<MultiLine>false</MultiLine>
+							<ExtendedEdit>false</ExtendedEdit>
+							<MinValue xsi:nil="true"/>
+							<MaxValue xsi:nil="true"/>
+							<FillChecking>DontCheck</FillChecking>
+							<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
+							<ChoiceParameterLinks/>
+							<ChoiceParameters/>
+							<QuickChoice>Auto</QuickChoice>
+							<CreateOnInput>Auto</CreateOnInput>
+							<ChoiceForm/>
+							<LinkByType/>
+							<ChoiceHistoryOnInput>Auto</ChoiceHistoryOnInput>
+							<Indexing>DontIndex</Indexing>
+							<FullTextSearch>Use</FullTextSearch>
+						</Properties>
+					</Attribute>
+					<Attribute uuid="c6deb1ef-129c-4de6-b251-2196511511ea">
+						<Properties>
+							<Name>VoidedEntry</Name>
+							<Synonym>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Voided entry</v8:content>
+								</v8:item>
+							</Synonym>
+							<Comment/>
+							<Type>
+								<v8:Type>cfg:DocumentRef.SalesReturn</v8:Type>
+								<v8:Type>cfg:DocumentRef.Check</v8:Type>
+								<v8:Type>cfg:DocumentRef.PurchaseInvoice</v8:Type>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>

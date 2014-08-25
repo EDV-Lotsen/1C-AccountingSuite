@@ -28,11 +28,7 @@
 			<Synonym>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Purchase order</v8:content>
-				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>Bestellung</v8:content>
+					<v8:content>Purchase Order</v8:content>
 				</v8:item>
 			</Synonym>
 			<Comment/>
@@ -231,10 +227,6 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>Purchase orders</v8:content>
 				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>Bestellungen</v8:content>
-				</v8:item>
 			</ListPresentation>
 			<ExtendedListPresentation/>
 			<Explanation/>
@@ -248,10 +240,6 @@
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Company</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Unternehmen</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -423,11 +411,7 @@
 					<Synonym>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Bill to</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Liefern an</v8:content>
+							<v8:content>Ship To</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -472,10 +456,6 @@
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Confirm to</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Bestätigen an</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -601,10 +581,6 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Currency</v8:content>
 						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Währung</v8:content>
-						</v8:item>
 					</Synonym>
 					<Comment/>
 					<Type>
@@ -642,10 +618,6 @@
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Exchange rate</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Wechselkurs</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -690,10 +662,6 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Location</v8:content>
 						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Standort</v8:content>
-						</v8:item>
 					</Synonym>
 					<Comment/>
 					<Type>
@@ -702,12 +670,7 @@
 					<PasswordMode>false</PasswordMode>
 					<Format/>
 					<EditFormat/>
-					<ToolTip>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Lagerort</v8:content>
-						</v8:item>
-					</ToolTip>
+					<ToolTip/>
 					<MarkNegatives>false</MarkNegatives>
 					<Mask/>
 					<MultiLine>false</MultiLine>
@@ -864,10 +827,6 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Memo</v8:content>
 						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Kommentar</v8:content>
-						</v8:item>
 					</Synonym>
 					<Comment/>
 					<Type>
@@ -948,10 +907,6 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Total FCY</v8:content>
 						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Gesamtbetrag ind Fremdwährung</v8:content>
-						</v8:item>
 					</Synonym>
 					<Comment/>
 					<Type>
@@ -993,11 +948,7 @@
 					<Synonym>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Total</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Gesamtbertrag</v8:content>
+							<v8:content>Total RC</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -1201,6 +1152,7 @@
 			<Form>DocumentForm</Form>
 			<Form>ListForm</Form>
 			<Form>ChoiceForm</Form>
+			<Form>ListFormForSO</Form>
 			<TabularSection uuid="10f13995-1158-47ea-80f5-16b3e0a3d5c9">
 				<InternalInfo>
 					<xr:GeneratedType name="DocumentTabularSection.PurchaseOrder.LineItems" category="TabularSection">
@@ -1217,11 +1169,7 @@
 					<Synonym>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Line items</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Artikel</v8:content>
+							<v8:content>Products</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -1235,11 +1183,7 @@
 							<Synonym>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Item</v8:content>
-								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Artikel</v8:content>
+									<v8:content>Products</v8:content>
 								</v8:item>
 							</Synonym>
 							<Comment/>
@@ -1277,10 +1221,6 @@
 									<v8:lang>en</v8:lang>
 									<v8:content>Description</v8:content>
 								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Bezeichnung</v8:content>
-								</v8:item>
 							</Synonym>
 							<Comment/>
 							<Type>
@@ -1313,20 +1253,135 @@
 							<FullTextSearch>Use</FullTextSearch>
 						</Properties>
 					</Attribute>
-					<Attribute uuid="94e03a4b-8aba-4291-9819-49243b320e14">
+					<Attribute uuid="8424e973-a3a4-4d2d-ab11-9cf15e3586b8">
 						<Properties>
-							<Name>Quantity</Name>
+							<Name>UnitSet</Name>
 							<Synonym>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Qty</v8:content>
-								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Menge</v8:content>
+									<v8:content>U/M set</v8:content>
 								</v8:item>
 							</Synonym>
 							<Comment/>
+							<Type>
+								<v8:Type>cfg:CatalogRef.UnitSets</v8:Type>
+							</Type>
+							<PasswordMode>false</PasswordMode>
+							<Format/>
+							<EditFormat/>
+							<ToolTip/>
+							<MarkNegatives>false</MarkNegatives>
+							<Mask/>
+							<MultiLine>false</MultiLine>
+							<ExtendedEdit>false</ExtendedEdit>
+							<MinValue xsi:nil="true"/>
+							<MaxValue xsi:nil="true"/>
+							<FillChecking>DontCheck</FillChecking>
+							<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
+							<ChoiceParameterLinks/>
+							<ChoiceParameters/>
+							<QuickChoice>Auto</QuickChoice>
+							<CreateOnInput>Auto</CreateOnInput>
+							<ChoiceForm/>
+							<LinkByType/>
+							<ChoiceHistoryOnInput>Auto</ChoiceHistoryOnInput>
+							<Indexing>DontIndex</Indexing>
+							<FullTextSearch>Use</FullTextSearch>
+						</Properties>
+					</Attribute>
+					<Attribute uuid="4243854d-2af7-4e2e-84cd-d32aa0a17146">
+						<Properties>
+							<Name>QtyUnits</Name>
+							<Synonym>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Quantity UM</v8:content>
+								</v8:item>
+							</Synonym>
+							<Comment>Quantity in item units (Unit)</Comment>
+							<Type>
+								<v8:Type>xs:decimal</v8:Type>
+								<v8:NumberQualifiers>
+									<v8:Digits>10</v8:Digits>
+									<v8:FractionDigits>4</v8:FractionDigits>
+									<v8:AllowedSign>Nonnegative</v8:AllowedSign>
+								</v8:NumberQualifiers>
+							</Type>
+							<PasswordMode>false</PasswordMode>
+							<Format/>
+							<EditFormat/>
+							<ToolTip/>
+							<MarkNegatives>false</MarkNegatives>
+							<Mask/>
+							<MultiLine>false</MultiLine>
+							<ExtendedEdit>false</ExtendedEdit>
+							<MinValue xsi:nil="true"/>
+							<MaxValue xsi:nil="true"/>
+							<FillChecking>DontCheck</FillChecking>
+							<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
+							<ChoiceParameterLinks/>
+							<ChoiceParameters/>
+							<QuickChoice>Auto</QuickChoice>
+							<CreateOnInput>Auto</CreateOnInput>
+							<ChoiceForm/>
+							<LinkByType/>
+							<ChoiceHistoryOnInput>Auto</ChoiceHistoryOnInput>
+							<Indexing>DontIndex</Indexing>
+							<FullTextSearch>Use</FullTextSearch>
+						</Properties>
+					</Attribute>
+					<Attribute uuid="6bb9b74e-2a6c-4c3b-9f01-b5094c69e13d">
+						<Properties>
+							<Name>Unit</Name>
+							<Synonym>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Unit</v8:content>
+								</v8:item>
+							</Synonym>
+							<Comment>Item unit</Comment>
+							<Type>
+								<v8:Type>cfg:CatalogRef.Units</v8:Type>
+							</Type>
+							<PasswordMode>false</PasswordMode>
+							<Format/>
+							<EditFormat/>
+							<ToolTip/>
+							<MarkNegatives>false</MarkNegatives>
+							<Mask/>
+							<MultiLine>false</MultiLine>
+							<ExtendedEdit>false</ExtendedEdit>
+							<MinValue xsi:nil="true"/>
+							<MaxValue xsi:nil="true"/>
+							<FillChecking>DontCheck</FillChecking>
+							<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
+							<ChoiceParameterLinks>
+								<xr:Link>
+									<xr:Name>Filter.Owner</xr:Name>
+									<xr:DataPath xsi:type="xs:string">Document.PurchaseOrder.TabularSection.LineItems.Attribute.UnitSet</xr:DataPath>
+									<xr:ValueChange>Clear</xr:ValueChange>
+								</xr:Link>
+							</ChoiceParameterLinks>
+							<ChoiceParameters/>
+							<QuickChoice>Auto</QuickChoice>
+							<CreateOnInput>Auto</CreateOnInput>
+							<ChoiceForm/>
+							<LinkByType/>
+							<ChoiceHistoryOnInput>Auto</ChoiceHistoryOnInput>
+							<Indexing>DontIndex</Indexing>
+							<FullTextSearch>Use</FullTextSearch>
+						</Properties>
+					</Attribute>
+					<Attribute uuid="94e03a4b-8aba-4291-9819-49243b320e14">
+						<Properties>
+							<Name>QtyUM</Name>
+							<Synonym>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Quantity UM</v8:content>
+								</v8:item>
+							</Synonym>
+							<Comment>Quantity in base units (UM)</Comment>
 							<Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:NumberQualifiers>
@@ -1366,12 +1421,8 @@
 									<v8:lang>en</v8:lang>
 									<v8:content>Unit of measure</v8:content>
 								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Mengeneinheit</v8:content>
-								</v8:item>
 							</Synonym>
-							<Comment/>
+							<Comment>Base unit</Comment>
 							<Type>
 								<v8:Type>cfg:CatalogRef.UM</v8:Type>
 							</Type>
@@ -1398,20 +1449,57 @@
 							<FullTextSearch>Use</FullTextSearch>
 						</Properties>
 					</Attribute>
-					<Attribute uuid="112a3d2d-7d6a-4bc0-816f-d66d5785c46a">
+					<Attribute uuid="76cf5594-f0c4-4f69-8d19-6ca82cbde58e">
 						<Properties>
-							<Name>Price</Name>
+							<Name>PriceUnits</Name>
 							<Synonym>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Cost</v8:content>
-								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Preis</v8:content>
+									<v8:content>Price UM</v8:content>
 								</v8:item>
 							</Synonym>
-							<Comment/>
+							<Comment>Cost for the item unit (Units)</Comment>
+							<Type>
+								<v8:Type>xs:decimal</v8:Type>
+								<v8:NumberQualifiers>
+									<v8:Digits>15</v8:Digits>
+									<v8:FractionDigits>2</v8:FractionDigits>
+									<v8:AllowedSign>Nonnegative</v8:AllowedSign>
+								</v8:NumberQualifiers>
+							</Type>
+							<PasswordMode>false</PasswordMode>
+							<Format/>
+							<EditFormat/>
+							<ToolTip/>
+							<MarkNegatives>false</MarkNegatives>
+							<Mask/>
+							<MultiLine>false</MultiLine>
+							<ExtendedEdit>false</ExtendedEdit>
+							<MinValue xsi:nil="true"/>
+							<MaxValue xsi:nil="true"/>
+							<FillChecking>DontCheck</FillChecking>
+							<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
+							<ChoiceParameterLinks/>
+							<ChoiceParameters/>
+							<QuickChoice>Auto</QuickChoice>
+							<CreateOnInput>Auto</CreateOnInput>
+							<ChoiceForm/>
+							<LinkByType/>
+							<ChoiceHistoryOnInput>Auto</ChoiceHistoryOnInput>
+							<Indexing>DontIndex</Indexing>
+							<FullTextSearch>Use</FullTextSearch>
+						</Properties>
+					</Attribute>
+					<Attribute uuid="112a3d2d-7d6a-4bc0-816f-d66d5785c46a">
+						<Properties>
+							<Name>PriceUM</Name>
+							<Synonym>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Price UM</v8:content>
+								</v8:item>
+							</Synonym>
+							<Comment>Cost for base unit (UM)</Comment>
 							<Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:NumberQualifiers>
@@ -1449,11 +1537,7 @@
 							<Synonym>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Line total</v8:content>
-								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Gesamtbetrag</v8:content>
+									<v8:content>Total</v8:content>
 								</v8:item>
 							</Synonym>
 							<Comment/>
@@ -1496,10 +1580,6 @@
 									<v8:lang>en</v8:lang>
 									<v8:content>Location</v8:content>
 								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Standort</v8:content>
-								</v8:item>
 							</Synonym>
 							<Comment/>
 							<Type>
@@ -1508,12 +1588,7 @@
 							<PasswordMode>false</PasswordMode>
 							<Format/>
 							<EditFormat/>
-							<ToolTip>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Lagerort</v8:content>
-								</v8:item>
-							</ToolTip>
+							<ToolTip/>
 							<MarkNegatives>false</MarkNegatives>
 							<Mask/>
 							<MultiLine>false</MultiLine>
@@ -1666,10 +1741,6 @@
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Print</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Drucken</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>

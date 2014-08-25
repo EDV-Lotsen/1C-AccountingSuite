@@ -18,6 +18,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
 	If Object.Ref.IsEmpty() Then
 		Object.DateFrom = CurrentDate();
+		Object.Billable = True;
 	EndIf;
 	
 EndProcedure
@@ -53,9 +54,9 @@ Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
 	If Changed = True Then	
 		
 		If CurrentObject.Billable = False Then
-			CurrentObject.InvoiceSent = "Unbillable";
+			CurrentObject.InvoiceStatus = Enums.TimeTrackStatus.Unbillable;
 		Else
-			CurrentObject.InvoiceSent = "Unbilled";
+			CurrentObject.InvoiceStatus = Enums.TimeTrackStatus.Unbilled;
 		Endif;
 		
 	Endif;
@@ -277,7 +278,7 @@ Procedure UnlinkSalesInvoiceAtServer()
 	Object.SalesInvoice = Documents.SalesInvoice.EmptyRef();
 	Items.SalesInvoice.Visible = False;
 	Items.UnlinkSalesInvoice.Visible = False;
-	Object.InvoiceSent = "Unbilled";
+	Object.InvoiceStatus = Enums.TimeTrackStatus.Unbilled;
 	Modified = True;
 	
 EndProcedure

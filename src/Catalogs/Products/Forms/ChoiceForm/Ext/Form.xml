@@ -38,29 +38,29 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="14"/>
-			<SearchStringAddition name="ListSearchString" id="63">
+			<SearchStringAddition name="ListSearchString" id="69">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="64"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="65"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="70"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="71"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="66">
+			<ViewStatusAddition name="ListViewStatus" id="72">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="67"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="68"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="73"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="74"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="69">
+			<SearchControlAddition name="ListSearchControl" id="75">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="70"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="71"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="76"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="77"/>
 			</SearchControlAddition>
 			<ChildItems>
 				<LabelField name="Code" id="8">
@@ -82,11 +82,28 @@
 					<ContextMenu name="TypeContextMenu" id="7"/>
 					<ExtendedTooltip name="TypeExtendedTooltip" id="17"/>
 				</LabelField>
+				<LabelField name="Price" id="63">
+					<DataPath>List.Price</DataPath>
+					<ContextMenu name="PriceContextMenu" id="64"/>
+					<ExtendedTooltip name="PriceExtendedTooltip" id="65"/>
+				</LabelField>
 				<LabelField name="Category" id="48">
 					<DataPath>List.Category</DataPath>
 					<Width>20</Width>
 					<ContextMenu name="CategoryContextMenu" id="49"/>
 					<ExtendedTooltip name="CategoryExtendedTooltip" id="50"/>
+				</LabelField>
+				<LabelField name="UM" id="66">
+					<DataPath>List.UM</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Base UoM</v8:content>
+						</v8:item>
+					</Title>
+					<Width>6</Width>
+					<ContextMenu name="UMContextMenu" id="67"/>
+					<ExtendedTooltip name="UMExtendedTooltip" id="68"/>
 				</LabelField>
 				<LabelField name="QtyOnPO" id="51">
 					<DataPath>List.QtyOnPO</DataPath>
@@ -214,18 +231,19 @@
 				<DynamicDataRead>true</DynamicDataRead>
 				<QueryText>SELECT
 	CatalogProducts.Ref,
-	CatalogProducts.DataVersion,
 	CatalogProducts.DeletionMark,
-	CatalogProducts.Predefined,
 	CatalogProducts.Code,
 	CatalogProducts.Description,
-	CatalogProducts.CostingMethod,
 	CatalogProducts.Type,
+	CatalogProducts.CostingMethod,
 	CatalogProducts.InventoryOrExpenseAccount,
 	CatalogProducts.IncomeAccount,
 	CatalogProducts.COGSAccount,
-	CatalogProducts.UM,
+	CatalogProducts.UnitSet,
+	Units.Code AS UM,
 	CatalogProducts.DefaultLocation,
+	CatalogProducts.PreferredVendor,
+	CatalogProducts.Price,
 	CatalogProducts.CF1String,
 	CatalogProducts.CF2String,
 	CatalogProducts.CF3String,
@@ -237,64 +255,96 @@
 	CatalogProducts.CF4Num,
 	CatalogProducts.CF5Num,
 	CatalogProducts.Category,
+	CatalogProducts.NewObject,
+	CatalogProducts.Predefined,
+	CatalogProducts.PredefinedDataName,
+	ISNULL(TT.QtyOnSO, 0) AS QtyOnSO,
+	ISNULL(TT.QtyOnPO, 0) AS QtyOnPO,
+	ISNULL(TT.QtyOnHand, 0) AS QtyOnHand,
 	CASE
 		WHEN CatalogProducts.Type = VALUE(Enum.InventoryTypes.Inventory)
-			THEN CASE
-					WHEN OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.ReceivedBalance &gt; 0
-						THEN OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.ReceivedBalance
-					ELSE 0
-				END
-		WHEN CatalogProducts.Type = VALUE(Enum.InventoryTypes.NonInventory)
-			THEN CASE
-					WHEN OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.InvoicedBalance &gt; 0
-						THEN OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.InvoicedBalance
-					ELSE 0
-				END
-		ELSE 0
-	END AS QtyOnPO,
-	CASE
-		WHEN CatalogProducts.Type = VALUE(Enum.InventoryTypes.Inventory)
-			THEN CASE
-					WHEN OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.ShippedBalance &gt; 0
-						THEN OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.ShippedBalance
-					ELSE 0
-				END
-		WHEN CatalogProducts.Type = VALUE(Enum.InventoryTypes.NonInventory)
-			THEN CASE
-					WHEN OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.InvoicedBalance &gt; 0
-						THEN OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.InvoicedBalance
-					ELSE 0
-				END
-		ELSE 0
-	END AS QtyOnSO,
-	CASE
-		WHEN CatalogProducts.Type = VALUE(Enum.InventoryTypes.Inventory)
-			THEN InventoryJournalBalance.QuantityBalance
+			THEN ISNULL(TT.QtyOnHand, 0) + ISNULL(TT.QtyOnPO, 0) - ISNULL(TT.QtyOnSO, 0)
 		WHEN CatalogProducts.Type = VALUE(Enum.InventoryTypes.NonInventory)
 			THEN 0
-		ELSE 0
-	END AS QtyOnHand,
-	CASE
-		WHEN CatalogProducts.Type = VALUE(Enum.InventoryTypes.Inventory)
-			THEN ISNULL(InventoryJournalBalance.QuantityBalance, 0) + CASE
-					WHEN ISNULL(OrdersDispatchedBalance.QuantityBalance, 0) - ISNULL(OrdersDispatchedBalance.ReceivedBalance, 0) &gt; 0
-						THEN ISNULL(OrdersDispatchedBalance.QuantityBalance, 0) - ISNULL(OrdersDispatchedBalance.ReceivedBalance, 0)
-					ELSE 0
-				END - CASE
-					WHEN ISNULL(OrdersRegisteredBalance.QuantityBalance, 0) - ISNULL(OrdersRegisteredBalance.ShippedBalance, 0) &gt; 0
-						THEN ISNULL(OrdersRegisteredBalance.QuantityBalance, 0) - ISNULL(OrdersRegisteredBalance.ShippedBalance, 0)
-					ELSE 0
-				END
 		ELSE 0
 	END AS QtyAvailableToPromise
 FROM
 	Catalog.Products AS CatalogProducts
-		LEFT JOIN AccumulationRegister.InventoryJournal.Balance AS InventoryJournalBalance
-		ON CatalogProducts.Ref = InventoryJournalBalance.Product
-		LEFT JOIN AccumulationRegister.OrdersDispatched.Balance AS OrdersDispatchedBalance
-		ON CatalogProducts.Ref = OrdersDispatchedBalance.Product
-		LEFT JOIN AccumulationRegister.OrdersRegistered.Balance AS OrdersRegisteredBalance
-		ON CatalogProducts.Ref = OrdersRegisteredBalance.Product</QueryText>
+		LEFT JOIN (SELECT
+			ISNULL(OrdersRegisteredBalance.Product, TT_QtyOnHandAndQtyOnPO.Product) AS Product,
+			SUM(CASE
+					WHEN OrdersRegisteredBalance.Product.Type = VALUE(Enum.InventoryTypes.Inventory)
+						THEN CASE
+								WHEN OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.ShippedBalance &gt; 0
+									THEN (OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.ShippedBalance) * OrdersRegisteredBalance.Unit.Factor
+								ELSE 0
+							END
+					WHEN OrdersRegisteredBalance.Product.Type = VALUE(Enum.InventoryTypes.NonInventory)
+						THEN CASE
+								WHEN OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.InvoicedBalance &gt; 0
+									THEN (OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.InvoicedBalance) * OrdersRegisteredBalance.Unit.Factor
+								ELSE 0
+							END
+					ELSE 0
+				END) AS QtyOnSO,
+			ISNULL(TT_QtyOnHandAndQtyOnPO.QtyOnPO, 0) AS QtyOnPO,
+			ISNULL(TT_QtyOnHandAndQtyOnPO.QtyOnHand, 0) AS QtyOnHand
+		FROM
+			AccumulationRegister.OrdersRegistered.Balance AS OrdersRegisteredBalance
+				LEFT JOIN InformationRegister.OrdersStatuses.SliceLast AS OrdersStatusesSliceLast
+				ON OrdersRegisteredBalance.Order = OrdersStatusesSliceLast.Order
+					AND (OrdersStatusesSliceLast.Status = VALUE(Enum.OrderStatuses.Open)
+						OR OrdersStatusesSliceLast.Status = VALUE(Enum.OrderStatuses.Backordered))
+				FULL JOIN (SELECT
+					ISNULL(OrdersDispatchedBalance.Product, TT_QtyOnHand.Product) AS Product,
+					SUM(CASE
+							WHEN OrdersDispatchedBalance.Product.Type = VALUE(Enum.InventoryTypes.Inventory)
+								THEN CASE
+										WHEN OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.ReceivedBalance &gt; 0
+											THEN (OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.ReceivedBalance) * OrdersDispatchedBalance.Unit.Factor
+										ELSE 0
+									END
+							WHEN OrdersDispatchedBalance.Product.Type = VALUE(Enum.InventoryTypes.NonInventory)
+								THEN CASE
+										WHEN OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.InvoicedBalance &gt; 0
+											THEN (OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.InvoicedBalance) * OrdersDispatchedBalance.Unit.Factor
+										ELSE 0
+									END
+							ELSE 0
+						END) AS QtyOnPO,
+					ISNULL(TT_QtyOnHand.QtyOnHand, 0) AS QtyOnHand
+				FROM
+					AccumulationRegister.OrdersDispatched.Balance AS OrdersDispatchedBalance
+						LEFT JOIN InformationRegister.OrdersStatuses.SliceLast AS OrdersStatusesSliceLast
+						ON OrdersDispatchedBalance.Order = OrdersStatusesSliceLast.Order
+							AND (OrdersStatusesSliceLast.Status = VALUE(Enum.OrderStatuses.Open)
+								OR OrdersStatusesSliceLast.Status = VALUE(Enum.OrderStatuses.Backordered))
+						FULL JOIN (SELECT
+							InventoryJournalBalance.Product AS Product,
+							CASE
+								WHEN InventoryJournalBalance.Product.Type = VALUE(Enum.InventoryTypes.Inventory)
+									THEN InventoryJournalBalance.QuantityBalance
+								WHEN InventoryJournalBalance.Product.Type = VALUE(Enum.InventoryTypes.NonInventory)
+									THEN 0
+								ELSE 0
+							END AS QtyOnHand
+						FROM
+							AccumulationRegister.InventoryJournal.Balance(, ) AS InventoryJournalBalance) AS TT_QtyOnHand
+						ON OrdersDispatchedBalance.Product = TT_QtyOnHand.Product
+				
+				GROUP BY
+					ISNULL(OrdersDispatchedBalance.Product, TT_QtyOnHand.Product),
+					ISNULL(TT_QtyOnHand.QtyOnHand, 0)) AS TT_QtyOnHandAndQtyOnPO
+				ON OrdersRegisteredBalance.Product = TT_QtyOnHandAndQtyOnPO.Product
+		
+		GROUP BY
+			ISNULL(OrdersRegisteredBalance.Product, TT_QtyOnHandAndQtyOnPO.Product),
+			ISNULL(TT_QtyOnHandAndQtyOnPO.QtyOnPO, 0),
+			ISNULL(TT_QtyOnHandAndQtyOnPO.QtyOnHand, 0)) AS TT
+		ON CatalogProducts.Ref = TT.Product
+		LEFT JOIN Catalog.Units AS Units
+		ON CatalogProducts.UnitSet = Units.Owner
+			AND (Units.BaseUnit = TRUE)</QueryText>
 				<MainTable>Catalog.Products</MainTable>
 				<ListSettings>
 					<dcsset:filter>

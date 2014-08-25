@@ -109,10 +109,6 @@
 			<field>Posted</field>
 		</field>
 		<field xsi:type="DataSetFieldField">
-			<dataPath>Price</dataPath>
-			<field>Price</field>
-		</field>
-		<field xsi:type="DataSetFieldField">
 			<dataPath>Product</dataPath>
 			<field>Product</field>
 		</field>
@@ -133,10 +129,6 @@
 					<v8:content>Project1</v8:content>
 				</v8:item>
 			</title>
-		</field>
-		<field xsi:type="DataSetFieldField">
-			<dataPath>Quantity</dataPath>
-			<field>Quantity</field>
 		</field>
 		<field xsi:type="DataSetFieldField">
 			<dataPath>Ref</dataPath>
@@ -184,15 +176,23 @@
 			<dataPath>SalesPerson</dataPath>
 			<field>SalesPerson</field>
 		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>QtyUM</dataPath>
+			<field>QtyUM</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>PriceUnits</dataPath>
+			<field>PriceUnits</field>
+		</field>
 		<dataSource>DataSource1</dataSource>
 		<query>SELECT
 	PurchaseOrderLineItems.Ref,
 	PurchaseOrderLineItems.LineNumber,
 	PurchaseOrderLineItems.Product,
 	PurchaseOrderLineItems.ProductDescription,
-	PurchaseOrderLineItems.Quantity,
-	PurchaseOrderLineItems.UM,
-	PurchaseOrderLineItems.Price,
+	PurchaseOrderLineItems.QtyUM,
+	PurchaseOrderLineItems.Unit.code AS UM,
+	PurchaseOrderLineItems.PriceUnits,
 	PurchaseOrderLineItems.LineTotal,
 	PurchaseOrderLineItems.Location,
 	PurchaseOrderLineItems.DeliveryDate,
@@ -239,9 +239,6 @@ FROM
 					<dcsset:field>Class1</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>Price</dcsset:field>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>DeliveryDate1</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
@@ -270,9 +267,6 @@ FROM
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Project1</dcsset:field>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>Quantity</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Ref1</dcsset:field>

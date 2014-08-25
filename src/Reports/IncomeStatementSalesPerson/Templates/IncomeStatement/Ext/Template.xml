@@ -187,8 +187,7 @@ FROM
 			,
 			Auto,
 			Account.AccountType IN (VALUE(Enum.AccountTypes.Income), VALUE(Enum.AccountTypes.OtherIncome))
-					AND Account.Noncash = FALSE
-					AND Account.OtherComprehensiveIncome = FALSE
+				
 				OR Account = VALUE(ChartOfAccounts.ChartOfAccounts.EmptyRef)) AS CashFlowDataTurnovers
 		LEFT JOIN Constant.SystemTitle AS SystemTitle
 		ON (TRUE)
@@ -511,11 +510,11 @@ WHERE
 		<template>Template2</template>
 	</groupTemplate>
 	<settingsVariant>
-		<dcsset:name>SalesPersonTotal</dcsset:name>
+		<dcsset:name>Total</dcsset:name>
 		<dcsset:presentation xsi:type="v8:LocalStringType">
 			<v8:item>
 				<v8:lang>en</v8:lang>
-				<v8:content>1. Sales Person (total)</v8:content>
+				<v8:content>Total</v8:content>
 			</v8:item>
 		</dcsset:presentation>
 		<dcsset:settings xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows">
@@ -532,6 +531,7 @@ WHERE
 					<dcsset:use>false</dcsset:use>
 					<dcsset:left xsi:type="dcscor:Field">SalesPerson</dcsset:left>
 					<dcsset:comparisonType>Equal</dcsset:comparisonType>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 					<dcsset:userSettingID>d7140134-32f1-4f71-8285-748f748897d4</dcsset:userSettingID>
 				</dcsset:item>
 			</dcsset:filter>
@@ -541,6 +541,7 @@ WHERE
 					<dcscor:value xsi:type="v8:StandardPeriod">
 						<v8:variant xsi:type="v8:StandardPeriodVariant">ThisYear</v8:variant>
 					</dcscor:value>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 					<dcsset:userSettingID>0e3c6943-07f3-4d80-a3cc-9101d9d0ac33</dcsset:userSettingID>
 				</dcscor:item>
 			</dcsset:dataParameters>
@@ -570,11 +571,11 @@ WHERE
 		</dcsset:settings>
 	</settingsVariant>
 	<settingsVariant>
-		<dcsset:name>SalesPersonYears</dcsset:name>
+		<dcsset:name>Years</dcsset:name>
 		<dcsset:presentation xsi:type="v8:LocalStringType">
 			<v8:item>
 				<v8:lang>en</v8:lang>
-				<v8:content>2. Sales Person (years)</v8:content>
+				<v8:content>Years</v8:content>
 			</v8:item>
 		</dcsset:presentation>
 		<dcsset:settings xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows">
@@ -588,6 +589,7 @@ WHERE
 					<dcsset:use>false</dcsset:use>
 					<dcsset:left xsi:type="dcscor:Field">SalesPerson</dcsset:left>
 					<dcsset:comparisonType>Equal</dcsset:comparisonType>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 					<dcsset:userSettingID>1dc05cdc-8c1c-4c3b-be83-407e099e86a7</dcsset:userSettingID>
 				</dcsset:item>
 			</dcsset:filter>
@@ -603,6 +605,7 @@ WHERE
 					<dcscor:value xsi:type="v8:StandardPeriod">
 						<v8:variant xsi:type="v8:StandardPeriodVariant">ThisYear</v8:variant>
 					</dcscor:value>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 					<dcsset:userSettingID>62b91d41-d2aa-4d2a-a45a-ca5cee301e2a</dcsset:userSettingID>
 				</dcscor:item>
 			</dcsset:dataParameters>
@@ -658,11 +661,11 @@ WHERE
 		</dcsset:settings>
 	</settingsVariant>
 	<settingsVariant>
-		<dcsset:name>SalesPersonQuarters</dcsset:name>
+		<dcsset:name>Quarters</dcsset:name>
 		<dcsset:presentation xsi:type="v8:LocalStringType">
 			<v8:item>
 				<v8:lang>en</v8:lang>
-				<v8:content>3. Sales Person (quarters)</v8:content>
+				<v8:content>Quarters</v8:content>
 			</v8:item>
 		</dcsset:presentation>
 		<dcsset:settings xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows">
@@ -676,6 +679,7 @@ WHERE
 					<dcsset:use>false</dcsset:use>
 					<dcsset:left xsi:type="dcscor:Field">SalesPerson</dcsset:left>
 					<dcsset:comparisonType>Equal</dcsset:comparisonType>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 					<dcsset:userSettingID>c93a4c98-7b1c-44c4-abf1-a4a5cda19b34</dcsset:userSettingID>
 				</dcsset:item>
 			</dcsset:filter>
@@ -691,6 +695,7 @@ WHERE
 					<dcscor:value xsi:type="v8:StandardPeriod">
 						<v8:variant xsi:type="v8:StandardPeriodVariant">ThisYear</v8:variant>
 					</dcscor:value>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 					<dcsset:userSettingID>62b91d41-d2aa-4d2a-a45a-ca5cee301e2a</dcsset:userSettingID>
 				</dcscor:item>
 			</dcsset:dataParameters>
@@ -746,11 +751,11 @@ WHERE
 		</dcsset:settings>
 	</settingsVariant>
 	<settingsVariant>
-		<dcsset:name>SalesPersonMonth</dcsset:name>
+		<dcsset:name>Months</dcsset:name>
 		<dcsset:presentation xsi:type="v8:LocalStringType">
 			<v8:item>
 				<v8:lang>en</v8:lang>
-				<v8:content>4. Sales Person (months)</v8:content>
+				<v8:content>Months</v8:content>
 			</v8:item>
 		</dcsset:presentation>
 		<dcsset:settings xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows">
@@ -764,6 +769,7 @@ WHERE
 					<dcsset:use>false</dcsset:use>
 					<dcsset:left xsi:type="dcscor:Field">SalesPerson</dcsset:left>
 					<dcsset:comparisonType>Equal</dcsset:comparisonType>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 					<dcsset:userSettingID>b1e9e36b-4059-404f-917b-12483a384c5b</dcsset:userSettingID>
 				</dcsset:item>
 			</dcsset:filter>
@@ -779,6 +785,7 @@ WHERE
 					<dcscor:value xsi:type="v8:StandardPeriod">
 						<v8:variant xsi:type="v8:StandardPeriodVariant">ThisYear</v8:variant>
 					</dcscor:value>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 					<dcsset:userSettingID>62b91d41-d2aa-4d2a-a45a-ca5cee301e2a</dcsset:userSettingID>
 				</dcscor:item>
 			</dcsset:dataParameters>
@@ -834,11 +841,11 @@ WHERE
 		</dcsset:settings>
 	</settingsVariant>
 	<settingsVariant>
-		<dcsset:name>SalesPersonWeeks</dcsset:name>
+		<dcsset:name>Weeks</dcsset:name>
 		<dcsset:presentation xsi:type="v8:LocalStringType">
 			<v8:item>
 				<v8:lang>en</v8:lang>
-				<v8:content>5. Sales Person (weeks)</v8:content>
+				<v8:content>Weeks</v8:content>
 			</v8:item>
 		</dcsset:presentation>
 		<dcsset:settings xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows">
@@ -852,6 +859,7 @@ WHERE
 					<dcsset:use>false</dcsset:use>
 					<dcsset:left xsi:type="dcscor:Field">SalesPerson</dcsset:left>
 					<dcsset:comparisonType>Equal</dcsset:comparisonType>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 					<dcsset:userSettingID>2c3e5cb2-e6b7-41d3-9659-03850178837f</dcsset:userSettingID>
 				</dcsset:item>
 			</dcsset:filter>
@@ -867,6 +875,7 @@ WHERE
 					<dcscor:value xsi:type="v8:StandardPeriod">
 						<v8:variant xsi:type="v8:StandardPeriodVariant">ThisMonth</v8:variant>
 					</dcscor:value>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 					<dcsset:userSettingID>62b91d41-d2aa-4d2a-a45a-ca5cee301e2a</dcsset:userSettingID>
 				</dcscor:item>
 			</dcsset:dataParameters>
@@ -922,11 +931,11 @@ WHERE
 		</dcsset:settings>
 	</settingsVariant>
 	<settingsVariant>
-		<dcsset:name>SalesPersonDays</dcsset:name>
+		<dcsset:name>Days</dcsset:name>
 		<dcsset:presentation xsi:type="v8:LocalStringType">
 			<v8:item>
 				<v8:lang>en</v8:lang>
-				<v8:content>6. Sales Person (days)</v8:content>
+				<v8:content>Days</v8:content>
 			</v8:item>
 		</dcsset:presentation>
 		<dcsset:settings xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows">
@@ -940,6 +949,7 @@ WHERE
 					<dcsset:use>false</dcsset:use>
 					<dcsset:left xsi:type="dcscor:Field">SalesPerson</dcsset:left>
 					<dcsset:comparisonType>Equal</dcsset:comparisonType>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 					<dcsset:userSettingID>b996a5df-2eec-4cfe-b3fa-391cea86f16a</dcsset:userSettingID>
 				</dcsset:item>
 			</dcsset:filter>
@@ -955,6 +965,7 @@ WHERE
 					<dcscor:value xsi:type="v8:StandardPeriod">
 						<v8:variant xsi:type="v8:StandardPeriodVariant">ThisWeek</v8:variant>
 					</dcscor:value>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 					<dcsset:userSettingID>62b91d41-d2aa-4d2a-a45a-ca5cee301e2a</dcsset:userSettingID>
 				</dcscor:item>
 			</dcsset:dataParameters>

@@ -144,7 +144,14 @@ Procedure Posting(Cancel, Mode)
 				
 				If CurRowLineItems.Company <> Catalogs.Companies.EmptyRef() Then
 					Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Company] = CurRowLineItems.Company;
-					Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Document] = Ref;
+					
+					//If entry is used for voiding, take the lineitem's voided document
+					If VoidingEntry <> Undefined Then
+						Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Document] = CurRowLineItems.VoidedEntry;
+					Else
+						Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Document] = Ref;
+					EndIf;
+					
 				EndIf;
 			
 			EndIf;
@@ -313,7 +320,20 @@ Procedure Posting(Cancel, Mode)
 		Record.Amount = CurAmount;
 		
 	EndDo;
-
+	
+	//Writing bank reconciliation data
+	LineItemsGroupped = LineItems.Unload(, "Account, AmountDr, AmountCr");
+	LineItemsGroupped.Columns.Add("AccountType", New TypeDescription("EnumRef.AccountTypes"));
+	For Each LineItem In LineItemsGroupped Do
+		LineItem.AccountType = LineItem.Account.AccountType;
+	EndDo;
+	LineItemsGroupped.GroupBy("AccountType, Account", "AmountDr, AmountCr");
+	For Each BankRow In LineItemsGroupped Do
+		If (BankRow.AccountType = Enums.AccountTypes.Bank) OR (BankRow.AccountType = Enums.AccountTypes.OtherCurrentAsset)
+			OR (BankRow.AccountType = Enums.AccountTypes.OtherCurrentLiability) Then
+			ReconciledDocumentsServerCall.AddDocumentForReconciliation(RegisterRecords, Ref, BankRow.Account, Date, BankRow.AmountDr-BankRow.AmountCr);
+		EndIf;
+	EndDo;
 EndProcedure
 
 #EndIf

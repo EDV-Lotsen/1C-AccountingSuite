@@ -19,10 +19,6 @@
 			<field>Location</field>
 		</field>
 		<field xsi:type="DataSetFieldField">
-			<dataPath>Price</dataPath>
-			<field>Price</field>
-		</field>
-		<field xsi:type="DataSetFieldField">
 			<dataPath>Product</dataPath>
 			<field>Product</field>
 		</field>
@@ -33,10 +29,6 @@
 		<field xsi:type="DataSetFieldField">
 			<dataPath>Project</dataPath>
 			<field>Project</field>
-		</field>
-		<field xsi:type="DataSetFieldField">
-			<dataPath>Quantity</dataPath>
-			<field>Quantity</field>
 		</field>
 		<field xsi:type="DataSetFieldField">
 			<dataPath>Ref</dataPath>
@@ -249,10 +241,6 @@
 			<field>DiscountIsTaxable</field>
 		</field>
 		<field xsi:type="DataSetFieldField">
-			<dataPath>ExternalMemo</dataPath>
-			<field>ExternalMemo</field>
-		</field>
-		<field xsi:type="DataSetFieldField">
 			<dataPath>SalesTaxAmount</dataPath>
 			<field>SalesTaxAmount</field>
 		</field>
@@ -264,15 +252,23 @@
 			<dataPath>TaxableSubtotal</dataPath>
 			<field>TaxableSubtotal</field>
 		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>QtyUM</dataPath>
+			<field>QtyUM</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>PriceUnits</dataPath>
+			<field>PriceUnits</field>
+		</field>
 		<dataSource>DataSource1</dataSource>
 		<query>SELECT
 	SalesOrderLineItems.Ref,
 	SalesOrderLineItems.LineNumber,
 	SalesOrderLineItems.Product,
 	SalesOrderLineItems.ProductDescription,
-	SalesOrderLineItems.Quantity,
-	SalesOrderLineItems.UM,
-	SalesOrderLineItems.Price,
+	SalesOrderLineItems.QtyUM,
+	SalesOrderLineItems.Unit.Code AS UM,
+	SalesOrderLineItems.PriceUnits,
 	SalesOrderLineItems.LineTotal,
 	SalesOrderLineItems.Taxable,
 	SalesOrderLineItems.TaxableAmount,
@@ -321,7 +317,7 @@
 	SalesOrderLineItems.Ref.DiscountIsTaxable,
 	SalesOrderLineItems.Ref.SalesTaxAmount,
 	SalesOrderLineItems.Ref.TaxableSubtotal,
-	SalesOrderLineItems.Ref.ExternalMemo,
+	//SalesOrderLineItems.Ref.ExternalMemo,
 	SalesOrderLineItems.Ref.Presentation,
 	SalesOrderLineItems.Ref.PointInTime
 FROM
@@ -363,16 +359,10 @@ FROM
 					<dcsset:field>Location1</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>Price</dcsset:field>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Project</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Project1</dcsset:field>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>Quantity</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Ref1</dcsset:field>
@@ -427,9 +417,6 @@ FROM
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>ExchangeRate</dcsset:field>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>ExternalMemo</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>LineSubtotal</dcsset:field>

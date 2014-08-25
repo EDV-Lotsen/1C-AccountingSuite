@@ -151,8 +151,7 @@ Procedure BeforeWrite(Cancel, WriteParameters)
 	// preventing posting if already included in a bank rec
 	If ReconciledDocumentsServerCall.RequiresExcludingFromBankReconciliation(Object.Ref, Object.Amount, Object.Date, Object.AccountTo, WriteParameters.WriteMode) Then
 		Cancel = True;
-		CommonUseClient.ShowCustomMessageBox(ThisForm, "Bank reconciliation", "The transaction you are editing has been reconciled. Saving 
-		|your changes could put you out of balance the next time you try to reconcile. 
+		CommonUseClient.ShowCustomMessageBox(ThisForm, "Bank reconciliation", "The transaction you are editing has been reconciled. Saving your changes could put you out of balance the next time you try to reconcile. 
 		|To modify it you should exclude it from the Bank rec. document.", PredefinedValue("Enum.MessageStatus.Warning"));
 	EndIf;    
 

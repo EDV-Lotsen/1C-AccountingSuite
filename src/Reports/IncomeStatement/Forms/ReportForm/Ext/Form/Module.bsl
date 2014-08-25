@@ -113,58 +113,14 @@ Function ProcessDetailsAtServer(Val ReportRF, Val ResultRF, Val DetailsDataRF, V
 	
 EndFunction
 
-//////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////
-
 &AtClient
 Procedure Excel(Command)
 	
-	//Result.Write("" + GetSystemTitle() + " - Income statement" , SpreadsheetDocumentFileType.XLSX); 
+	Structure = GeneralFunctions.GetExcelFile("Income statement", Result);
 	
-	FileName = "" + GetSystemTitle() + " - Income statement.xlsx"; 
-	GetFile(GetFileName(), FileName, True); 
+	GetFile(Structure.Address, Structure.FileName, True); 
 
 EndProcedure
-
-&AtServer
-Function GetFileName()
-	
-	TemporaryFileName = GetTempFileName(".xlsx");
-	
-	Result.Write(TemporaryFileName, SpreadsheetDocumentFileType.XLSX);
-	BinaryData = New BinaryData(TemporaryFileName);
-	
-	DeleteFiles(TemporaryFileName);
-	
-	Return PutToTempStorage(BinaryData);
-	
-EndFunction
-
-&AtServerNoContext
-Function GetSystemTitle()
-	
-	SystemTitle = Constants.SystemTitle.Get();
-	
-	NewSystemTitle = "";
-	
-	For i = 1 To StrLen(SystemTitle) Do
-		
-		Char = Mid(SystemTitle, i, 1);
-		
-		If Find("#&\/:*?""<>|.", Char) > 0 Then
-			NewSystemTitle = NewSystemTitle + " ";	
-		Else
-			NewSystemTitle = NewSystemTitle + Char;	
-		EndIf;
-		
-	EndDo;	
-	
-	Return NewSystemTitle;
-	
-EndFunction
-
-//////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////
 
 &AtClient
 Procedure VariantOnChange(Item)

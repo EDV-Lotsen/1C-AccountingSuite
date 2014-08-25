@@ -32,6 +32,7 @@
 			<ExtendedTooltip name="DocumentCapExtendedTooltip" id="128"/>
 			<ChildItems>
 				<Pages name="Group4" id="95">
+					<PagesRepresentation>None</PagesRepresentation>
 					<ExtendedTooltip name="Group4ExtendedTooltip" id="96"/>
 					<ChildItems>
 						<Page name="Main" id="97">
@@ -49,6 +50,31 @@
 							</ToolTip>
 							<ExtendedTooltip name="MainExtendedTooltip" id="98"/>
 							<ChildItems>
+								<LabelDecoration name="Decoration1" id="220">
+									<HorizontalStretch>true</HorizontalStretch>
+									<Title formatted="false">
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Main</v8:content>
+										</v8:item>
+									</Title>
+									<Border width="1">
+										<v8ui:style xsi:type="v8ui:ControlBorderType">Underline</v8ui:style>
+									</Border>
+									<ContextMenu name="Decoration1ContextMenu" id="221"/>
+									<ExtendedTooltip name="Decoration1ExtendedTooltip" id="222"/>
+								</LabelDecoration>
+								<UsualGroup name="CaptionGroup" id="218">
+									<ToolTip>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Caption group</v8:content>
+										</v8:item>
+									</ToolTip>
+									<Group>Horizontal</Group>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="CaptionGroupExtendedTooltip" id="219"/>
+								</UsualGroup>
 								<UsualGroup name="Balance" id="99">
 									<Title>
 										<v8:item>
@@ -121,6 +147,7 @@
 													</Title>
 													<HorizontalAlign>Right</HorizontalAlign>
 													<EditMode>EnterOnInput</EditMode>
+													<Width>10</Width>
 													<EditFormat>
 														<v8:item>
 															<v8:lang>en</v8:lang>
@@ -147,142 +174,6 @@
 										</UsualGroup>
 									</ChildItems>
 								</UsualGroup>
-							</ChildItems>
-						</Page>
-						<Page name="GroupServiceCharge" id="107">
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Service charge</v8:content>
-								</v8:item>
-							</Title>
-							<ToolTip>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Group service charge</v8:content>
-								</v8:item>
-							</ToolTip>
-							<ExtendedTooltip name="GroupServiceChargeExtendedTooltip" id="108"/>
-							<ChildItems>
-								<UsualGroup name="Group11" id="190">
-									<Group>Horizontal</Group>
-									<ShowTitle>false</ShowTitle>
-									<ExtendedTooltip name="Group11ExtendedTooltip" id="191"/>
-									<ChildItems>
-										<InputField name="ServiceCharge" id="9">
-											<DataPath>Object.ServiceCharge</DataPath>
-											<Title>
-												<v8:item>
-													<v8:lang>en</v8:lang>
-													<v8:content>Amount</v8:content>
-												</v8:item>
-											</Title>
-											<EditMode>EnterOnInput</EditMode>
-											<Width>15</Width>
-											<HorizontalStretch>false</HorizontalStretch>
-											<ContextMenu name="ServiceChargeContextMenu" id="10"/>
-											<ExtendedTooltip name="ServiceChargeExtendedTooltip" id="78"/>
-											<Events>
-												<Event name="OnChange">ServiceChargeOnChange</Event>
-											</Events>
-										</InputField>
-										<InputField name="ServiceChargeDate" id="11">
-											<DataPath>Object.ServiceChargeDate</DataPath>
-											<Title>
-												<v8:item>
-													<v8:lang>en</v8:lang>
-													<v8:content>Date</v8:content>
-												</v8:item>
-											</Title>
-											<EditMode>EnterOnInput</EditMode>
-											<Width>15</Width>
-											<HorizontalStretch>false</HorizontalStretch>
-											<ContextMenu name="ServiceChargeDateContextMenu" id="12"/>
-											<ExtendedTooltip name="ServiceChargeDateExtendedTooltip" id="79"/>
-										</InputField>
-									</ChildItems>
-								</UsualGroup>
-								<InputField name="BankServiceChargeAccount" id="187">
-									<DataPath>Object.BankServiceChargeAccount</DataPath>
-									<Title>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Account</v8:content>
-										</v8:item>
-									</Title>
-									<DropListButton>false</DropListButton>
-									<ChoiceButtonRepresentation>ShowInInputField</ChoiceButtonRepresentation>
-									<ContextMenu name="BankServiceChargeAccountContextMenu" id="188"/>
-									<ExtendedTooltip name="BankServiceChargeAccountExtendedTooltip" id="189"/>
-								</InputField>
-							</ChildItems>
-						</Page>
-						<Page name="GroupInterest" id="109">
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Interest</v8:content>
-								</v8:item>
-							</Title>
-							<ToolTip>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Group interest</v8:content>
-								</v8:item>
-							</ToolTip>
-							<ExtendedTooltip name="GroupInterestExtendedTooltip" id="110"/>
-							<ChildItems>
-								<UsualGroup name="Group12" id="192">
-									<Group>Horizontal</Group>
-									<ShowTitle>false</ShowTitle>
-									<ExtendedTooltip name="Group12ExtendedTooltip" id="193"/>
-									<ChildItems>
-										<InputField name="InterestEarned" id="15">
-											<DataPath>Object.InterestEarned</DataPath>
-											<Title>
-												<v8:item>
-													<v8:lang>en</v8:lang>
-													<v8:content>Amount</v8:content>
-												</v8:item>
-											</Title>
-											<EditMode>EnterOnInput</EditMode>
-											<Width>15</Width>
-											<HorizontalStretch>false</HorizontalStretch>
-											<ContextMenu name="InterestEarnedContextMenu" id="16"/>
-											<ExtendedTooltip name="InterestEarnedExtendedTooltip" id="81"/>
-											<Events>
-												<Event name="OnChange">InterestEarnedOnChange</Event>
-											</Events>
-										</InputField>
-										<InputField name="InterestEarnedDate" id="17">
-											<DataPath>Object.InterestEarnedDate</DataPath>
-											<Title>
-												<v8:item>
-													<v8:lang>en</v8:lang>
-													<v8:content>Date</v8:content>
-												</v8:item>
-											</Title>
-											<EditMode>EnterOnInput</EditMode>
-											<Width>15</Width>
-											<HorizontalStretch>false</HorizontalStretch>
-											<ContextMenu name="InterestEarnedDateContextMenu" id="18"/>
-											<ExtendedTooltip name="InterestEarnedDateExtendedTooltip" id="82"/>
-										</InputField>
-									</ChildItems>
-								</UsualGroup>
-								<InputField name="BankInterestEarnedAccount" id="184">
-									<DataPath>Object.BankInterestEarnedAccount</DataPath>
-									<Title>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Account</v8:content>
-										</v8:item>
-									</Title>
-									<DropListButton>false</DropListButton>
-									<ChoiceButtonRepresentation>ShowInInputField</ChoiceButtonRepresentation>
-									<ContextMenu name="BankInterestEarnedAccountContextMenu" id="185"/>
-									<ExtendedTooltip name="BankInterestEarnedAccountExtendedTooltip" id="186"/>
-								</InputField>
 							</ChildItems>
 						</Page>
 					</ChildItems>
@@ -418,72 +309,71 @@
 								</Page>
 							</ChildItems>
 						</Pages>
-						<CommandBar name="ShortLineItemsCommandBar" id="134">
-							<ToolTip>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Short line items command bar</v8:content>
-								</v8:item>
-							</ToolTip>
-							<HorizontalLocation>Right</HorizontalLocation>
-							<CommandSource>Item.LineItems</CommandSource>
-							<ExtendedTooltip name="ShortLineItemsCommandBarExtendedTooltip" id="135"/>
-							<ChildItems>
-								<Button name="LineItemsRefreshList" id="182">
-									<Type>CommandBarButton</Type>
-									<Representation>PictureAndText</Representation>
-									<CommandName>Form.Command.RefreshList</CommandName>
-									<ExtendedTooltip name="LineItemsRefreshListExtendedTooltip" id="183"/>
-								</Button>
-								<ButtonGroup name="LineItemsStandardCommands" id="152">
-									<Title>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Line items standard commands</v8:content>
-										</v8:item>
-									</Title>
-									<ToolTip>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Line items standard commands</v8:content>
-										</v8:item>
-									</ToolTip>
-									<ExtendedTooltip name="LineItemsStandardCommandsExtendedTooltip" id="153"/>
-									<ChildItems>
-										<Button name="LineItemsSortListAsc" id="148">
-											<Type>CommandBarButton</Type>
-											<OnlyInAllActions>true</OnlyInAllActions>
-											<CommandName>Form.Item.LineItems.StandardCommand.SortListAsc</CommandName>
-											<ExtendedTooltip name="LineItemsSortListAscExtendedTooltip" id="149"/>
-										</Button>
-										<Button name="LineItemsSortListDesc" id="150">
-											<Type>CommandBarButton</Type>
-											<OnlyInAllActions>true</OnlyInAllActions>
-											<CommandName>Form.Item.LineItems.StandardCommand.SortListDesc</CommandName>
-											<ExtendedTooltip name="LineItemsSortListDescExtendedTooltip" id="151"/>
-										</Button>
-									</ChildItems>
-								</ButtonGroup>
-								<Button name="LineItemsClearAll" id="121">
-									<Type>CommandBarButton</Type>
-									<CommandName>Form.Command.ClearAll</CommandName>
-									<Picture>
-										<xr:Ref>StdPicture.CheckAll</xr:Ref>
-										<xr:LoadTransparent>true</xr:LoadTransparent>
-									</Picture>
-									<ExtendedTooltip name="LineItemsClearAllExtendedTooltip" id="122"/>
-								</Button>
-								<Button name="LineItemsUnclearAll" id="123">
-									<Type>CommandBarButton</Type>
-									<CommandName>Form.Command.UnclearAll</CommandName>
-									<ExtendedTooltip name="LineItemsUnclearAllExtendedTooltip" id="124"/>
-								</Button>
-							</ChildItems>
-						</CommandBar>
 					</ChildItems>
 				</UsualGroup>
 			</ChildItems>
 		</UsualGroup>
+		<CommandBar name="ShortLineItemsCommandBar" id="134">
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Short line items command bar</v8:content>
+				</v8:item>
+			</ToolTip>
+			<CommandSource>Item.LineItems</CommandSource>
+			<ExtendedTooltip name="ShortLineItemsCommandBarExtendedTooltip" id="135"/>
+			<ChildItems>
+				<Button name="LineItemsRefreshList" id="182">
+					<Type>CommandBarButton</Type>
+					<Representation>PictureAndText</Representation>
+					<CommandName>Form.Command.RefreshList</CommandName>
+					<ExtendedTooltip name="LineItemsRefreshListExtendedTooltip" id="183"/>
+				</Button>
+				<ButtonGroup name="LineItemsStandardCommands" id="152">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Line items standard commands</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Line items standard commands</v8:content>
+						</v8:item>
+					</ToolTip>
+					<ExtendedTooltip name="LineItemsStandardCommandsExtendedTooltip" id="153"/>
+					<ChildItems>
+						<Button name="LineItemsSortListAsc" id="148">
+							<Type>CommandBarButton</Type>
+							<OnlyInAllActions>true</OnlyInAllActions>
+							<CommandName>Form.Item.LineItems.StandardCommand.SortListAsc</CommandName>
+							<ExtendedTooltip name="LineItemsSortListAscExtendedTooltip" id="149"/>
+						</Button>
+						<Button name="LineItemsSortListDesc" id="150">
+							<Type>CommandBarButton</Type>
+							<OnlyInAllActions>true</OnlyInAllActions>
+							<CommandName>Form.Item.LineItems.StandardCommand.SortListDesc</CommandName>
+							<ExtendedTooltip name="LineItemsSortListDescExtendedTooltip" id="151"/>
+						</Button>
+					</ChildItems>
+				</ButtonGroup>
+				<Button name="LineItemsClearAll" id="121">
+					<Type>CommandBarButton</Type>
+					<CommandName>Form.Command.ClearAll</CommandName>
+					<Picture>
+						<xr:Ref>StdPicture.CheckAll</xr:Ref>
+						<xr:LoadTransparent>true</xr:LoadTransparent>
+					</Picture>
+					<ExtendedTooltip name="LineItemsClearAllExtendedTooltip" id="122"/>
+				</Button>
+				<Button name="LineItemsUnclearAll" id="123">
+					<Type>CommandBarButton</Type>
+					<CommandName>Form.Command.UnclearAll</CommandName>
+					<ExtendedTooltip name="LineItemsUnclearAllExtendedTooltip" id="124"/>
+				</Button>
+			</ChildItems>
+		</CommandBar>
 		<Table name="LineItems" id="31">
 			<Representation>List</Representation>
 			<CommandBarLocation>None</CommandBarLocation>
@@ -522,29 +412,29 @@
 				<HorizontalAlign>Right</HorizontalAlign>
 			</AutoCommandBar>
 			<ExtendedTooltip name="LineItemsExtendedTooltip" id="83"/>
-			<SearchStringAddition name="LineItemsSearchString" id="218">
+			<SearchStringAddition name="LineItemsSearchString" id="223">
 				<AdditionSource>
 					<Item>LineItems</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="LineItemsSearchStringContextMenu" id="219"/>
-				<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="220"/>
+				<ContextMenu name="LineItemsSearchStringContextMenu" id="224"/>
+				<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="225"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="LineItemsViewStatus" id="221">
+			<ViewStatusAddition name="LineItemsViewStatus" id="226">
 				<AdditionSource>
 					<Item>LineItems</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="LineItemsViewStatusContextMenu" id="222"/>
-				<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="223"/>
+				<ContextMenu name="LineItemsViewStatusContextMenu" id="227"/>
+				<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="228"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="LineItemsSearchControl" id="224">
+			<SearchControlAddition name="LineItemsSearchControl" id="229">
 				<AdditionSource>
 					<Item>LineItems</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="LineItemsSearchControlContextMenu" id="225"/>
-				<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="226"/>
+				<ContextMenu name="LineItemsSearchControlContextMenu" id="230"/>
+				<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="231"/>
 			</SearchControlAddition>
 			<Events>
 				<Event name="BeforeAddRow">LineItemsBeforeAddRow</Event>
@@ -554,10 +444,18 @@
 			<ChildItems>
 				<InputField name="LineItemsTransaction" id="194">
 					<DataPath>LineItems.Transaction</DataPath>
-					<ReadOnly>true</ReadOnly>
 					<EditMode>EnterOnInput</EditMode>
+					<DropListButton>false</DropListButton>
+					<ChoiceButton>false</ChoiceButton>
+					<ClearButton>false</ClearButton>
+					<OpenButton>true</OpenButton>
+					<TextEdit>false</TextEdit>
 					<ContextMenu name="LineItemsTransactionContextMenu" id="195"/>
 					<ExtendedTooltip name="LineItemsTransactionExtendedTooltip" id="196"/>
+					<Events>
+						<Event name="StartChoice">LineItemsTransactionStartChoice</Event>
+						<Event name="Clearing">LineItemsTransactionClearing</Event>
+					</Events>
 				</InputField>
 				<InputField name="LineItemsDocNumber" id="200">
 					<DataPath>LineItems.DocNumber</DataPath>
@@ -640,19 +538,11 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>Footer</v8:content>
 				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>Fußzeile</v8:content>
-				</v8:item>
 			</Title>
 			<ToolTip>
 				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Footer</v8:content>
-				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>Fußzeile</v8:content>
 				</v8:item>
 			</ToolTip>
 			<Group>Horizontal</Group>
@@ -768,6 +658,7 @@
 					</Title>
 					<Type>
 						<v8:Type>cfg:DocumentRef.BankTransfer</v8:Type>
+						<v8:Type>cfg:DocumentRef.GeneralJournalEntry</v8:Type>
 						<v8:Type>cfg:DocumentRef.Deposit</v8:Type>
 						<v8:Type>cfg:DocumentRef.CashSale</v8:Type>
 						<v8:Type>cfg:DocumentRef.Check</v8:Type>

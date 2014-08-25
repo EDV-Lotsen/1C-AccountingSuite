@@ -1,0 +1,110 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<AutoCommandBar name="FormCommandBar" id="-1">
+		<Autofill>false</Autofill>
+	</AutoCommandBar>
+	<Events>
+		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+	</Events>
+	<ChildItems>
+		<LabelDecoration name="Decoration1" id="1">
+			<Font ref="sys:DefaultGUIFont" faceName="Leelawadee UI" height="11" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
+			<Title formatted="false">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Set date in which this document should be voided:</v8:content>
+				</v8:item>
+			</Title>
+			<ContextMenu name="Decoration1ContextMenu" id="2"/>
+			<ExtendedTooltip name="Decoration1ExtendedTooltip" id="3"/>
+		</LabelDecoration>
+		<UsualGroup name="Group1" id="4">
+			<Group>Horizontal</Group>
+			<Representation>None</Representation>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="Group1ExtendedTooltip" id="5"/>
+			<ChildItems>
+				<LabelDecoration name="Decoration2" id="6">
+					<Width>11</Width>
+					<ContextMenu name="Decoration2ContextMenu" id="7"/>
+					<ExtendedTooltip name="Decoration2ExtendedTooltip" id="8"/>
+				</LabelDecoration>
+				<InputField name="VoidDate" id="9">
+					<DataPath>VoidDate</DataPath>
+					<TitleLocation>None</TitleLocation>
+					<ContextMenu name="VoidDateContextMenu" id="10"/>
+					<ExtendedTooltip name="VoidDateExtendedTooltip" id="11"/>
+				</InputField>
+			</ChildItems>
+		</UsualGroup>
+		<UsualGroup name="Group2" id="12">
+			<Group>Horizontal</Group>
+			<Representation>None</Representation>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="Group2ExtendedTooltip" id="13"/>
+			<ChildItems>
+				<LabelDecoration name="Decoration3" id="14">
+					<HorizontalStretch>true</HorizontalStretch>
+					<ContextMenu name="Decoration3ContextMenu" id="15"/>
+					<ExtendedTooltip name="Decoration3ExtendedTooltip" id="16"/>
+				</LabelDecoration>
+				<Button name="AcceptButton" id="17">
+					<Type>UsualButton</Type>
+					<CommandName>Form.Command.AcceptButton</CommandName>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Accept</v8:content>
+						</v8:item>
+					</Title>
+					<ExtendedTooltip name="AcceptButtonExtendedTooltip" id="18"/>
+				</Button>
+			</ChildItems>
+		</UsualGroup>
+	</ChildItems>
+	<Attributes>
+		<Attribute name="VoidDate" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Void date</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:dateTime</v8:Type>
+				<v8:DateQualifiers>
+					<v8:DateFractions>Date</v8:DateFractions>
+				</v8:DateQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="ObjectRef" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Object ref</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>cfg:DocumentRef.Check</v8:Type>
+				<v8:Type>cfg:DocumentRef.InvoicePayment</v8:Type>
+			</Type>
+		</Attribute>
+	</Attributes>
+	<Commands>
+		<Command name="AcceptButton" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Accept button</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Accept button</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>AcceptButton</Action>
+		</Command>
+	</Commands>
+</Form>

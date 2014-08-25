@@ -35,35 +35,35 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="8"/>
-			<SearchStringAddition name="ListSearchString" id="9">
+			<SearchStringAddition name="ListSearchString" id="11">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="10"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="11"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="12"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="13"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="12">
+			<ViewStatusAddition name="ListViewStatus" id="14">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="13"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="14"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="15"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="16"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="15">
+			<SearchControlAddition name="ListSearchControl" id="17">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="16"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="17"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="18"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="19"/>
 			</SearchControlAddition>
 			<ChildItems>
 				<LabelField name="Code" id="6">
 					<DataPath>List.Code</DataPath>
 					<ContextMenu name="CodeContextMenu" id="7"/>
-					<ExtendedTooltip name="CodeExtendedTooltip" id="18"/>
+					<ExtendedTooltip name="CodeExtendedTooltip" id="9"/>
 				</LabelField>
 				<LabelField name="Description" id="4">
 					<DataPath>List.Description</DataPath>
@@ -73,13 +73,9 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>State</v8:content>
 						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Bundesland</v8:content>
-						</v8:item>
 					</Title>
 					<ContextMenu name="DescriptionContextMenu" id="5"/>
-					<ExtendedTooltip name="DescriptionExtendedTooltip" id="19"/>
+					<ExtendedTooltip name="DescriptionExtendedTooltip" id="10"/>
 				</LabelField>
 			</ChildItems>
 		</Table>

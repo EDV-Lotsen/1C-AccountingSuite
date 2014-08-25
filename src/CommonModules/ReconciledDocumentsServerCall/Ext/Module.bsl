@@ -60,38 +60,6 @@ EndProcedure
 Function RequiresExcludingFromBankReconciliation(Val Ref, Val NewAmount, Val NewDate, Val NewAccount, Val WriteMode) Export
 	If WriteMode = DocumentWriteMode.Posting Then
 		SetPrivilegedMode(True);
-		//Query = New Query("SELECT
-		//				  |	TransactionReconciliation.Document,
-		//				  |	TransactionReconciliation.Amount,
-		//				  |	TransactionReconciliation.Account
-		//				  |INTO ReconciledValues
-		//				  |FROM
-		//				  |	InformationRegister.TransactionReconciliation AS TransactionReconciliation
-		//				  |WHERE
-		//				  |	TransactionReconciliation.Document = &Ref
-		//				  |	AND TransactionReconciliation.Reconciled = TRUE
-		//				  |;
-		//				  |
-		//				  |////////////////////////////////////////////////////////////////////////////////
-		//				  |SELECT
-		//				  |	ReconciledValues.Document,
-		//				  |	ReconciledValues.Amount,
-		//				  |	BankReconciliationLineItems.Ref.StatementToDate,
-		//				  |	ReconciledValues.Account,
-		//				  |	CASE
-		//				  |		WHEN ReconciledValues.Amount <> &NewAmount
-		//				  |				OR ENDOFPERIOD(BankReconciliationLineItems.Ref.StatementToDate, DAY) < &NewDate
-		//				  |				OR ReconciledValues.Account <> &NewAccount
-		//				  |			THEN TRUE
-		//				  |		ELSE FALSE
-		//				  |	END AS RequiresExcluding
-		//				  |FROM
-		//				  |	ReconciledValues AS ReconciledValues
-		//				  |		INNER JOIN Document.BankReconciliation.LineItems AS BankReconciliationLineItems
-		//				  |		ON ReconciledValues.Document = BankReconciliationLineItems.Transaction
-		//				  |			AND (BankReconciliationLineItems.Cleared = TRUE)
-		//				  |			AND (BankReconciliationLineItems.Ref.Posted = TRUE)
-		//				  |			AND (BankReconciliationLineItems.Ref.DeletionMark = FALSE)");
 		Query = New Query("SELECT
 		                  |	BankReconciliation.Document,
 		                  |	MIN(BankReconciliation.Account) AS Account,
@@ -142,15 +110,7 @@ Function RequiresExcludingFromBankReconciliation(Val Ref, Val NewAmount, Val New
 		EndIf;	
 	ElsIf WriteMode = DocumentWriteMode.UndoPosting Then
 		SetPrivilegedMode(True);
-		
-		//Query = New Query("SELECT
-		//			  |	TransactionReconciliation.Document
-		//			  |FROM
-		//			  |	InformationRegister.TransactionReconciliation AS TransactionReconciliation
-		//			  |WHERE
-		//			  |	TransactionReconciliation.Document = &Ref
-		//			  |	AND TransactionReconciliation.Reconciled = TRUE");
-		
+						
 		Query = New Query("SELECT
 		                  |	BankReconciliation.Document
 		                  |FROM
@@ -182,7 +142,9 @@ EndFunction
 //  Account         - ChartOfAccountsRef.ChartOfAccounts - G/L bank account 
 //  Amount          - Amount, being posted to the reconciliation register. Influences G/L bank account balance
 Procedure AddDocumentForReconciliation(RegisterRecords, DocumentRef, Account, Date, Amount) Export
-	RegisterRecords.BankReconciliation.Write = True;
+	If Not RegisterRecords.BankReconciliation.Write Then
+		RegisterRecords.BankReconciliation.Write = True;
+	EndIf;
 	Record = RegisterRecords.BankReconciliation.AddReceipt();
 	Record.Period 	= Date;
 	Record.Recorder = DocumentRef;

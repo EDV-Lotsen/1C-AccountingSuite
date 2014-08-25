@@ -68,6 +68,7 @@
 	</AutoCommandBar>
 	<Events>
 		<Event name="AfterWriteAtServer">AfterWriteAtServer</Event>
+		<Event name="NotificationProcessing">NotificationProcessing</Event>
 		<Event name="OnOpen">OnOpen</Event>
 		<Event name="BeforeWrite">BeforeWrite</Event>
 		<Event name="BeforeWriteAtServer">BeforeWriteAtServer</Event>
@@ -123,7 +124,7 @@
 												<Event name="OnChange">CompanyOnChange</Event>
 											</Events>
 										</InputField>
-										<InputField name="RefNum" id="16">
+										<InputField name="RefNum" id="323">
 											<DataPath>Object.RefNum</DataPath>
 											<Title>
 												<v8:item>
@@ -139,8 +140,8 @@
 											</ToolTip>
 											<Width>20</Width>
 											<HorizontalStretch>false</HorizontalStretch>
-											<ContextMenu name="RefNumContextMenu" id="17"/>
-											<ExtendedTooltip name="RefNumExtendedTooltip" id="18"/>
+											<ContextMenu name="RefNumContextMenu" id="324"/>
+											<ExtendedTooltip name="RefNumExtendedTooltip" id="325"/>
 										</InputField>
 									</ChildItems>
 								</UsualGroup>
@@ -437,7 +438,6 @@
 									<v8:content>Currency</v8:content>
 								</v8:item>
 							</Title>
-							<Group>Horizontal</Group>
 							<ExtendedTooltip name="GroupCurrencyExtendedTooltip" id="79"/>
 							<ChildItems>
 								<InputField name="Currency" id="80">
@@ -448,7 +448,7 @@
 											<v8:content>Document currency</v8:content>
 										</v8:item>
 									</ToolTip>
-									<Width>10</Width>
+									<Width>15</Width>
 									<HorizontalStretch>false</HorizontalStretch>
 									<ContextMenu name="CurrencyContextMenu" id="81"/>
 									<ExtendedTooltip name="CurrencyExtendedTooltip" id="82"/>
@@ -470,7 +470,7 @@
 											<v8:content>Document currency rate</v8:content>
 										</v8:item>
 									</ToolTip>
-									<Width>10</Width>
+									<Width>15</Width>
 									<HorizontalStretch>false</HorizontalStretch>
 									<ContextMenu name="ExchangeRateContextMenu" id="84"/>
 									<ExtendedTooltip name="ExchangeRateExtendedTooltip" id="85"/>
@@ -590,45 +590,6 @@ Reference number</v8:content>
 								</UsualGroup>
 							</ChildItems>
 						</Page>
-						<Page name="ExternalmemoTab" id="305">
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Customer Memo</v8:content>
-								</v8:item>
-							</Title>
-							<ToolTip>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Externalmemo tab</v8:content>
-								</v8:item>
-							</ToolTip>
-							<ExtendedTooltip name="ExternalmemoTabExtendedTooltip" id="306"/>
-							<ChildItems>
-								<InputField name="EmailNote" id="307">
-									<DataPath>Object.EmailNote</DataPath>
-									<Title>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Note</v8:content>
-										</v8:item>
-									</Title>
-									<TitleLocation>None</TitleLocation>
-									<Width>15</Width>
-									<HorizontalStretch>true</HorizontalStretch>
-									<VerticalStretch>false</VerticalStretch>
-									<MultiLine>true</MultiLine>
-									<InputHint>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Written notes here will be shown on the printed quote as well as email body.</v8:content>
-										</v8:item>
-									</InputHint>
-									<ContextMenu name="EmailNoteContextMenu" id="308"/>
-									<ExtendedTooltip name="EmailNoteExtendedTooltip" id="309"/>
-								</InputField>
-							</ChildItems>
-						</Page>
 						<Page name="GroupMemo" id="106">
 							<Title>
 								<v8:item>
@@ -639,31 +600,49 @@ Reference number</v8:content>
 							<Group>Horizontal</Group>
 							<ExtendedTooltip name="GroupMemoExtendedTooltip" id="107"/>
 							<ChildItems>
-								<InputField name="Memo" id="108">
-									<DataPath>Object.Memo</DataPath>
-									<TitleLocation>Left</TitleLocation>
-									<ToolTip>
+								<InputField name="EmailNote" id="307">
+									<DataPath>Object.EmailNote</DataPath>
+									<Title>
 										<v8:item>
 											<v8:lang>en</v8:lang>
-											<v8:content>Quote notes</v8:content>
+											<v8:content>Ext.</v8:content>
 										</v8:item>
-									</ToolTip>
+									</Title>
+									<TitleLocation>Left</TitleLocation>
+									<Width>15</Width>
+									<HorizontalStretch>true</HorizontalStretch>
+									<VerticalStretch>false</VerticalStretch>
+									<MultiLine>true</MultiLine>
+									<InputHint>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Notes here will be shown on the printed document as well as email body</v8:content>
+										</v8:item>
+									</InputHint>
+									<ContextMenu name="EmailNoteContextMenu" id="308"/>
+									<ExtendedTooltip name="EmailNoteExtendedTooltip" id="309"/>
+								</InputField>
+								<InputField name="Memo" id="108">
+									<DataPath>Object.Memo</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Int.</v8:content>
+										</v8:item>
+									</Title>
+									<TitleLocation>Left</TitleLocation>
 									<Height>2</Height>
 									<HorizontalStretch>true</HorizontalStretch>
 									<VerticalStretch>false</VerticalStretch>
 									<MultiLine>true</MultiLine>
+									<InputHint>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Internal memo</v8:content>
+										</v8:item>
+									</InputHint>
 									<ContextMenu name="MemoContextMenu" id="109"/>
 									<ExtendedTooltip name="MemoExtendedTooltip" id="110"/>
-								</InputField>
-								<InputField name="ExternalMemo" id="111">
-									<DataPath>Object.ExternalMemo</DataPath>
-									<Visible>false</Visible>
-									<TitleLocation>Left</TitleLocation>
-									<Height>2</Height>
-									<VerticalStretch>false</VerticalStretch>
-									<MultiLine>true</MultiLine>
-									<ContextMenu name="ExternalMemoContextMenu" id="112"/>
-									<ExtendedTooltip name="ExternalMemoExtendedTooltip" id="113"/>
 								</InputField>
 							</ChildItems>
 						</Page>
@@ -731,29 +710,29 @@ Reference number</v8:content>
 									<ContextMenu name="SalesTaxAcrossAgenciesContextMenu" id="125"/>
 									<AutoCommandBar name="SalesTaxAcrossAgenciesCommandBar" id="126"/>
 									<ExtendedTooltip name="SalesTaxAcrossAgenciesExtendedTooltip" id="127"/>
-									<SearchStringAddition name="SalesTaxAcrossAgenciesSearchString" id="310">
+									<SearchStringAddition name="SalesTaxAcrossAgenciesSearchString" id="326">
 										<AdditionSource>
 											<Item>SalesTaxAcrossAgencies</Item>
 											<Type>SearchStringRepresentation</Type>
 										</AdditionSource>
-										<ContextMenu name="SalesTaxAcrossAgenciesSearchStringContextMenu" id="311"/>
-										<ExtendedTooltip name="SalesTaxAcrossAgenciesSearchStringExtendedTooltip" id="312"/>
+										<ContextMenu name="SalesTaxAcrossAgenciesSearchStringContextMenu" id="327"/>
+										<ExtendedTooltip name="SalesTaxAcrossAgenciesSearchStringExtendedTooltip" id="328"/>
 									</SearchStringAddition>
-									<ViewStatusAddition name="SalesTaxAcrossAgenciesViewStatus" id="313">
+									<ViewStatusAddition name="SalesTaxAcrossAgenciesViewStatus" id="329">
 										<AdditionSource>
 											<Item>SalesTaxAcrossAgencies</Item>
 											<Type>ViewStatusRepresentation</Type>
 										</AdditionSource>
-										<ContextMenu name="SalesTaxAcrossAgenciesViewStatusContextMenu" id="314"/>
-										<ExtendedTooltip name="SalesTaxAcrossAgenciesViewStatusExtendedTooltip" id="315"/>
+										<ContextMenu name="SalesTaxAcrossAgenciesViewStatusContextMenu" id="330"/>
+										<ExtendedTooltip name="SalesTaxAcrossAgenciesViewStatusExtendedTooltip" id="331"/>
 									</ViewStatusAddition>
-									<SearchControlAddition name="SalesTaxAcrossAgenciesSearchControl" id="316">
+									<SearchControlAddition name="SalesTaxAcrossAgenciesSearchControl" id="332">
 										<AdditionSource>
 											<Item>SalesTaxAcrossAgencies</Item>
 											<Type>SearchControl</Type>
 										</AdditionSource>
-										<ContextMenu name="SalesTaxAcrossAgenciesSearchControlContextMenu" id="317"/>
-										<ExtendedTooltip name="SalesTaxAcrossAgenciesSearchControlExtendedTooltip" id="318"/>
+										<ContextMenu name="SalesTaxAcrossAgenciesSearchControlContextMenu" id="333"/>
+										<ExtendedTooltip name="SalesTaxAcrossAgenciesSearchControlExtendedTooltip" id="334"/>
 									</SearchControlAddition>
 									<ChildItems>
 										<InputField name="SalesTaxAcrossAgenciesSalesTaxComponent" id="143">
@@ -806,12 +785,55 @@ Reference number</v8:content>
 					<ShowTitle>false</ShowTitle>
 					<ExtendedTooltip name="LineItemsSectionExtendedTooltip" id="147"/>
 					<ChildItems>
+						<UsualGroup name="CommandBarLineItems" id="310">
+							<Group>Horizontal</Group>
+							<Representation>None</Representation>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="CommandBarLineItemsExtendedTooltip" id="311"/>
+							<ChildItems>
+								<CommandBar name="CommandBarLineItems1" id="318">
+									<HorizontalStretch>false</HorizontalStretch>
+									<ExtendedTooltip name="CommandBarLineItems1ExtendedTooltip" id="319"/>
+									<ChildItems>
+										<Button name="AddLine" id="314">
+											<Type>CommandBarButton</Type>
+											<CommandName>Form.Command.AddLine</CommandName>
+											<ExtendedTooltip name="AddLineExtendedTooltip" id="315"/>
+										</Button>
+									</ChildItems>
+								</CommandBar>
+								<LabelField name="InformationCurrentRow" id="320">
+									<DataPath>InformationCurrentRow</DataPath>
+									<TitleLocation>None</TitleLocation>
+									<BackColor>web:AntiqueWhite</BackColor>
+									<ContextMenu name="InformationCurrentRowContextMenu" id="321"/>
+									<ExtendedTooltip name="InformationCurrentRowExtendedTooltip" id="322"/>
+								</LabelField>
+								<CommandBar name="CommandBarLineItems2" id="312">
+									<HorizontalStretch>false</HorizontalStretch>
+									<CommandSource>Item.LineItems</CommandSource>
+									<ExtendedTooltip name="CommandBarLineItems2ExtendedTooltip" id="313"/>
+									<ChildItems>
+										<Button name="AddLine1" id="316">
+											<Type>CommandBarButton</Type>
+											<OnlyInAllActions>false</OnlyInAllActions>
+											<CommandName>Form.Command.AddLine</CommandName>
+											<ExtendedTooltip name="AddLine1ExtendedTooltip" id="317"/>
+										</Button>
+									</ChildItems>
+								</CommandBar>
+							</ChildItems>
+						</UsualGroup>
 						<Table name="LineItems" id="148">
 							<Representation>List</Representation>
+							<CommandBarLocation>None</CommandBarLocation>
 							<AutoInsertNewRow>true</AutoInsertNewRow>
 							<EnableStartDrag>true</EnableStartDrag>
 							<EnableDrag>true</EnableDrag>
 							<DataPath>Object.LineItems</DataPath>
+							<CommandSet>
+								<ExcludedCommand>Add</ExcludedCommand>
+							</CommandSet>
 							<SearchStringLocation>None</SearchStringLocation>
 							<ViewStatusLocation>None</ViewStatusLocation>
 							<SearchControlLocation>None</SearchControlLocation>
@@ -819,33 +841,34 @@ Reference number</v8:content>
 							<ContextMenu name="LineItemsContextMenu" id="149"/>
 							<AutoCommandBar name="LineItemsCommandBar" id="150"/>
 							<ExtendedTooltip name="LineItemsExtendedTooltip" id="151"/>
-							<SearchStringAddition name="LineItemsSearchString" id="319">
+							<SearchStringAddition name="LineItemsSearchString" id="335">
 								<AdditionSource>
 									<Item>LineItems</Item>
 									<Type>SearchStringRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="LineItemsSearchStringContextMenu" id="320"/>
-								<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="321"/>
+								<ContextMenu name="LineItemsSearchStringContextMenu" id="336"/>
+								<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="337"/>
 							</SearchStringAddition>
-							<ViewStatusAddition name="LineItemsViewStatus" id="322">
+							<ViewStatusAddition name="LineItemsViewStatus" id="338">
 								<AdditionSource>
 									<Item>LineItems</Item>
 									<Type>ViewStatusRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="LineItemsViewStatusContextMenu" id="323"/>
-								<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="324"/>
+								<ContextMenu name="LineItemsViewStatusContextMenu" id="339"/>
+								<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="340"/>
 							</ViewStatusAddition>
-							<SearchControlAddition name="LineItemsSearchControl" id="325">
+							<SearchControlAddition name="LineItemsSearchControl" id="341">
 								<AdditionSource>
 									<Item>LineItems</Item>
 									<Type>SearchControl</Type>
 								</AdditionSource>
-								<ContextMenu name="LineItemsSearchControlContextMenu" id="326"/>
-								<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="327"/>
+								<ContextMenu name="LineItemsSearchControlContextMenu" id="342"/>
+								<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="343"/>
 							</SearchControlAddition>
 							<Events>
 								<Event name="OnEditEnd">LineItemsOnEditEnd</Event>
 								<Event name="BeforeAddRow">LineItemsBeforeAddRow</Event>
+								<Event name="OnActivateRow">LineItemsOnActivateRow</Event>
 								<Event name="AfterDeleteRow">LineItemsAfterDeleteRow</Event>
 								<Event name="OnChange">LineItemsOnChange</Event>
 							</Events>
@@ -859,6 +882,12 @@ Reference number</v8:content>
 								</LabelField>
 								<InputField name="LineItemsProduct" id="155">
 									<DataPath>Object.LineItems.Product</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Item</v8:content>
+										</v8:item>
+									</Title>
 									<EditMode>EnterOnInput</EditMode>
 									<Width>10</Width>
 									<ContextMenu name="LineItemsProductContextMenu" id="156"/>
@@ -875,11 +904,17 @@ Reference number</v8:content>
 									<ExtendedTooltip name="LineItemsProductDescriptionExtendedTooltip" id="160"/>
 								</InputField>
 								<InputField name="LineItemsQuantity" id="161">
-									<DataPath>Object.LineItems.Quantity</DataPath>
+									<DataPath>Object.LineItems.QtyUnits</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Qty</v8:content>
+										</v8:item>
+									</Title>
 									<ToolTip>
 										<v8:item>
 											<v8:lang>en</v8:lang>
-											<v8:content>Quantity</v8:content>
+											<v8:content>Quantity in item units</v8:content>
 										</v8:item>
 									</ToolTip>
 									<EditMode>EnterOnInput</EditMode>
@@ -902,32 +937,40 @@ Reference number</v8:content>
 										<Event name="OnChange">LineItemsQuantityOnChange</Event>
 									</Events>
 								</InputField>
-								<InputField name="LineItemsUM" id="164">
-									<DataPath>Object.LineItems.UM</DataPath>
-									<ReadOnly>true</ReadOnly>
+								<InputField name="LineItemsUnit" id="164">
+									<DataPath>Object.LineItems.Unit</DataPath>
 									<Title>
 										<v8:item>
 											<v8:lang>en</v8:lang>
-											<v8:content>UM</v8:content>
+											<v8:content>UoM</v8:content>
 										</v8:item>
 									</Title>
 									<ToolTip>
 										<v8:item>
 											<v8:lang>en</v8:lang>
-											<v8:content>Unit of measure</v8:content>
+											<v8:content>Item unit</v8:content>
 										</v8:item>
 									</ToolTip>
 									<EditMode>EnterOnInput</EditMode>
 									<Width>8</Width>
-									<ContextMenu name="LineItemsUMContextMenu" id="165"/>
-									<ExtendedTooltip name="LineItemsUMExtendedTooltip" id="166"/>
+									<ContextMenu name="LineItemsUnitContextMenu" id="165"/>
+									<ExtendedTooltip name="LineItemsUnitExtendedTooltip" id="166"/>
+									<Events>
+										<Event name="OnChange">LineItemsUnitOnChange</Event>
+									</Events>
 								</InputField>
 								<InputField name="LineItemsPrice" id="167">
-									<DataPath>Object.LineItems.Price</DataPath>
+									<DataPath>Object.LineItems.PriceUnits</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Price</v8:content>
+										</v8:item>
+									</Title>
 									<ToolTip>
 										<v8:item>
 											<v8:lang>en</v8:lang>
-											<v8:content>Price in document currency</v8:content>
+											<v8:content>Price in document currency for item unit</v8:content>
 										</v8:item>
 									</ToolTip>
 									<EditMode>EnterOnInput</EditMode>
@@ -1013,6 +1056,9 @@ Reference number</v8:content>
 									<Width>17</Width>
 									<ContextMenu name="LineItemsLocationContextMenu" id="180"/>
 									<ExtendedTooltip name="LineItemsLocationExtendedTooltip" id="181"/>
+									<Events>
+										<Event name="OnChange">LineItemsLocationOnChange</Event>
+									</Events>
 								</InputField>
 								<InputField name="LineItemsDeliveryDate" id="182">
 									<DataPath>Object.LineItems.DeliveryDate</DataPath>
@@ -1514,6 +1560,7 @@ Reference number</v8:content>
 					<v8:AllowedSign>Any</v8:AllowedSign>
 				</v8:NumberQualifiers>
 			</Type>
+			<SavedData>true</SavedData>
 		</Attribute>
 		<Attribute name="FirstNumber" id="4">
 			<Title>
@@ -1634,6 +1681,21 @@ Reference number</v8:content>
 				<v8:Type>xs:boolean</v8:Type>
 			</Type>
 		</Attribute>
+		<Attribute name="InformationCurrentRow" id="14">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Current row</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
 	</Attributes>
 	<Commands>
 		<Command name="SaveAndClose" id="1">
@@ -1696,6 +1758,20 @@ Reference number</v8:content>
 				</v8:item>
 			</ToolTip>
 			<Action>SendEmail</Action>
+		</Command>
+		<Command name="AddLine" id="6">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Add</v8:content>
+				</v8:item>
+			</Title>
+			<Picture>
+				<xr:Ref>StdPicture.CreateListItem</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
+			<Action>AddLine</Action>
+			<Representation>Text</Representation>
 		</Command>
 	</Commands>
 	<CommandInterface>

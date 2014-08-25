@@ -34,10 +34,6 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>Orders dispatched</v8:content>
 				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>Kundenaufträge</v8:content>
-				</v8:item>
 			</Synonym>
 			<Comment>Requested items according to purchase and internal orders</Comment>
 			<UseStandardCommands>false</UseStandardCommands>
@@ -197,10 +193,6 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Quantity</v8:content>
 						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Bestellt</v8:content>
-						</v8:item>
 					</Synonym>
 					<Comment/>
 					<Type>
@@ -254,10 +246,6 @@
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Received</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Versandt</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -357,11 +345,7 @@
 					<Synonym>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Company</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Kunde</v8:content>
+							<v8:content>Customer</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -409,10 +393,6 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Order</v8:content>
 						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Auftrag</v8:content>
-						</v8:item>
 					</Synonym>
 					<Comment/>
 					<Type>
@@ -455,11 +435,7 @@
 					<Synonym>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Item</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Artikel</v8:content>
+							<v8:content>Products</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -491,6 +467,44 @@
 					<UseInTotals>true</UseInTotals>
 				</Properties>
 			</Dimension>
+			<Dimension uuid="f5d95d19-c958-4be8-98f4-326489935cca">
+				<Properties>
+					<Name>Unit</Name>
+					<Synonym>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Unit</v8:content>
+						</v8:item>
+					</Synonym>
+					<Comment/>
+					<Type>
+						<v8:Type>cfg:CatalogRef.Units</v8:Type>
+					</Type>
+					<PasswordMode>false</PasswordMode>
+					<Format/>
+					<EditFormat/>
+					<ToolTip/>
+					<MarkNegatives>false</MarkNegatives>
+					<Mask/>
+					<MultiLine>false</MultiLine>
+					<ExtendedEdit>false</ExtendedEdit>
+					<MinValue xsi:nil="true"/>
+					<MaxValue xsi:nil="true"/>
+					<FillChecking>DontCheck</FillChecking>
+					<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
+					<ChoiceParameterLinks/>
+					<ChoiceParameters/>
+					<QuickChoice>Auto</QuickChoice>
+					<CreateOnInput>Auto</CreateOnInput>
+					<ChoiceForm/>
+					<LinkByType/>
+					<ChoiceHistoryOnInput>Auto</ChoiceHistoryOnInput>
+					<DenyIncompleteValues>false</DenyIncompleteValues>
+					<Indexing>Index</Indexing>
+					<FullTextSearch>Use</FullTextSearch>
+					<UseInTotals>true</UseInTotals>
+				</Properties>
+			</Dimension>
 			<Dimension uuid="66012f3a-a101-441d-9040-7acee2ea56dd">
 				<Properties>
 					<Name>Location</Name>
@@ -498,10 +512,6 @@
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Location</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Standort</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
@@ -511,12 +521,7 @@
 					<PasswordMode>false</PasswordMode>
 					<Format/>
 					<EditFormat/>
-					<ToolTip>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Lagerort</v8:content>
-						</v8:item>
-					</ToolTip>
+					<ToolTip/>
 					<MarkNegatives>false</MarkNegatives>
 					<Mask/>
 					<MultiLine>false</MultiLine>

@@ -6,23 +6,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Items.Group1.Visible = False;
 		Items.Group2.Visible = False;
 	EndIf;
-	Items.ARAccountLabel.Title = CommonUse.GetAttributeValue(Object.DefaultARAccount, "Description");
-	Items.APAccountLabel.Title = CommonUse.GetAttributeValue(Object.DefaultAPAccount, "Description");
 	
-EndProcedure
-
-&AtClient
-Procedure DefaultARAccountOnChange(Item)
-	
-		Items.ARAccountLabel.Title = CommonUse.GetAttributeValue(Object.DefaultARAccount, "Description");
-
-EndProcedure
-
-&AtClient
-Procedure DefaultAPAccountOnChange(Item)
-	
-		Items.APAccountLabel.Title = CommonUse.GetAttributeValue(Object.DefaultAPAccount, "Description");
-
 EndProcedure
 
 &AtServer

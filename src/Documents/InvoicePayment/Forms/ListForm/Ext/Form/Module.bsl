@@ -2,40 +2,26 @@
 
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
-	Items.Company.Title = GeneralFunctionsReusable.GetVendorName();
-	
-	currentButton = Items.Add("Button1", Type("FormButton"), Items.ListContextMenu);
-	currentButton.CommandName = "MarkVoid";
+	Items.Company.Title = GeneralFunctionsReusable.GetVendorName();	
+	//currentButton = Items.Add("Button1", Type("FormButton"), Items.ListContextMenu);
+	//currentButton.CommandName = "MarkVoid";
 
 EndProcedure
 
 &AtClient
 Procedure MarkAsVoid(Command)
-		  MarkVoid();
+	Notify = New NotifyDescription("OpenJournalEntry", ThisObject);
+	OpenForm("CommonForm.VoidDateForm",,,,,,Notify,FormWindowOpeningMode.LockOwnerWindow);
 EndProcedure
 
-&AtServer
-Procedure MarkVoid()
-
+&AtClient
+Procedure OpenJournalEntry(Parameter1,Parameter2) Export
 	
-	//Message("Check has been voided. Please refresh the list");
-	Test = Items.List.CurrentRow;
-	//Test.Voided = true;
-	Selection = Documents.InvoicePayment.Select();	
-	While Selection.Next() Do 
-		Object = Selection.GetObject();
-		If Object.Ref = Test.Ref Then
-			Object.Voided = Not Object.Voided;
-			If Object.Voided = False Then
-				Object.Write(DocumentWriteMode.Posting);
-			Else
-				Object.Write(DocumentWriteMode.UndoPosting);
-			Endif;
-				
-		Endif;
-
-	EndDo;
-
-	Items.List.Refresh();
-
+	SelectedItemNumber = Items.List.CurrentData.Number;
+	Str = New Structure;
+	Str.Insert("InvoicePayNumber", SelectedItemNumber);
+	Str.Insert("VoidDate", Parameter1);
+	If Parameter1 <> Undefined Then
+		OpenForm("Document.GeneralJournalEntry.ObjectForm",Str);	
+	EndIf;
 EndProcedure

@@ -79,7 +79,7 @@ Procedure FillCheckProcessing(Cancel, CheckedAttributes)
 	
 	
 	// Check doubles in items (to be sure of proper orders placement).
-	GeneralFunctions.CheckDoubleItems(Ref, LineItems, "Product, Location, DeliveryDate, Project, Class, LineNumber",, Cancel);
+	GeneralFunctions.CheckDoubleItems(Ref, LineItems, "Product, Unit, Location, DeliveryDate, Project, Class, LineNumber",, Cancel);
 	
 EndProcedure
 
@@ -105,14 +105,13 @@ Procedure Filling(FillingData, StandardProcessing)
 			EndIf;
 			
 			//Fill attributes
-			FillPropertyValues(ThisObject, FillingData, "Company, ShipTo, BillTo, ConfirmTo, SalesPerson, Project,
+			FillPropertyValues(ThisObject, FillingData, "Company, RefNum, ShipTo, BillTo, ConfirmTo, SalesPerson, Project,
 			|Class, DropshipCompany, DropshipShipTo, DropshipConfirmTo, DropshipRefNum, Currency, ExchangeRate, SalesTaxRate,
 			|DiscountIsTaxable, DiscountPercent, TaxableSubtotal, DocumentTotalRC, LineSubtotal, Discount, SalesTax, Shipping,
 			|DocumentTotal, SubTotal, SalesTaxRC, Location, DeliveryDate, Terms"); 
 			
 			Date         = CurrentSessionDate(); 
 			BaseDocument = FillingData; 
-			ExternalMemo = Constants.SalesOrderFooter.Get();
 			
 			//Fill "line items"
 			ThisObject.LineItems.Load(FillingData.LineItems.Unload());
@@ -132,6 +131,8 @@ Procedure OnCopy(CopiedObject)
 	
 	// Clear manual adjustment attribute.
 	ManualAdjustment = False;
+	
+	BaseDocument = Undefined;
 	
 EndProcedure
 

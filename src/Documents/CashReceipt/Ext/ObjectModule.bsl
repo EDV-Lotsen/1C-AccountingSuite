@@ -33,7 +33,7 @@ Procedure Posting(Cancel, PostingMode)
 	TodayRate = GeneralFunctions.GetExchangeRate(Date, Company.DefaultCurrency);
 	ExchangeGainLoss = 0;
 	
-	ExchangeGainAccount = Constants.ExchangeGain.Get();
+	//ExchangeGainAccount = Constants.ExchangeGain.Get();
 	ExchangeLossAccount = Constants.ExchangeLoss.Get();
 	
 	RegisterRecords.CashFlowData.Write = True;
@@ -147,7 +147,6 @@ Procedure Posting(Cancel, PostingMode)
 
 			
 		EndIf;
-
 		
 		// end writing CashFlowData
 		
@@ -260,6 +259,36 @@ Procedure Posting(Cancel, PostingMode)
 
 			
 	EndDo;
+	
+	DefaultCurrency = GeneralFunctionsReusable.DefaultCurrency();
+	CompanyCurrency = Company.DefaultCurrency;
+	Rate = GeneralFunctions.GetExchangeRate(Date, CompanyCurrency);	
+	
+	PayTotal = 0;
+	BalanceFCY = 0;
+	For Each LineItem In LineItems Do
+				PayTotal =  PayTotal + LineItem.Payment;
+				BalanceFCY = BalanceFCY + LineItem.BalanceFCY;
+	EndDo;
+			
+	If PayTotal = 0 And UnappliedPayment = 0 Then
+		Message("No payment is being made.");
+		Cancel = True;
+		Return;
+	EndIf;
+		
+
+	If CompanyCurrency = DefaultCurrency Then
+		If PayTotal > (CashPayment + CreditTotal)  Then
+			Message("Payment is greater than (Set Payment + Credit)");
+			Cancel = True;
+		Return;
+		Endif;
+		
+	EndIf;
+	
+	DocumentTotalRC = PayTotal*Rate;
+	DocumentTotal = PayTotal;	
 			
 		
 			If DepositType = "1" Then 
@@ -287,21 +316,6 @@ Procedure Posting(Cancel, PostingMode)
 	// Writing bank reconciliation data 
 	
 	If DepositType = "2" Then
-		
-		Records = InformationRegisters.TransactionReconciliation.CreateRecordSet();
-		Records.Filter.Document.Set(Ref);
-		Records.Read();
-		If Records.Count() = 0 Then
-			Record = Records.Add();
-			Record.Document = Ref;
-			Record.Account = BankAccount;
-			Record.Reconciled = False;
-			Record.Amount = CashPayment;	
-		Else
-			Records[0].Account = BankAccount;
-			Records[0].Amount = CashPayment;
-		EndIf;
-		Records.Write();
 		
 		ReconciledDocumentsServerCall.AddDocumentForReconciliation(RegisterRecords, Ref, BankAccount, Date, CashPayment);
 	
@@ -577,7 +591,7 @@ Procedure Posting(Cancel, PostingMode)
 		
 	If ExchangeGainLoss < 0 Then
 		Record = RegisterRecords.GeneralJournal.AddCredit();
-		Record.Account = ExchangeGainAccount;
+		Record.Account = ExchangeLossAccount;
 		Record.Period = Date;
 		Record.AmountRC = -ExchangeGainLoss;
 					
@@ -630,18 +644,6 @@ Procedure Posting(Cancel, PostingMode)
 
 
 	
-EndProcedure
-
-Procedure UndoPosting(Cancel)
-			
-	// Deleting bank reconciliation data
-	
-	Records = InformationRegisters.TransactionReconciliation.CreateRecordManager();
-	Records.Document = Ref;
-	Records.Account = BankAccount;
-	Records.Read();
-	Records.Delete();
-
 EndProcedure
 
 Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
@@ -725,16 +727,24 @@ Procedure BeforeDelete(Cancel)
 	
 	EndIf;
 		
-	TRRecordset = InformationRegisters.TransactionReconciliation.CreateRecordSet();
-	TRRecordset.Filter.Document.Set(ThisObject.Ref);
-	TRRecordset.Write(True);
-
 EndProcedure
 
 Procedure Filling(FillingData, StandardProcessing)
 	
 	// Set the doc's number if it's new (Rupasov)
 	If ThisObject.IsNew() Then ThisObject.SetNewNumber() EndIf;
+	
+	// Filling new document or filling on the base of another document.
+	If FillingData = Undefined Then
+		// Filling of the new created document with default values.
+		//ExchangeRate     = GeneralFunctions.GetExchangeRate(Date, Currency);
+		//Location         = Catalogs.Locations.MainWarehouse;
+		Currency = Constants.DefaultCurrency.Get();
+		
+	Else
+		// Generate on the base of another document.
+	EndIf;
+
 
 EndProcedure
 

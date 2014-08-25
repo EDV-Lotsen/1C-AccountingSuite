@@ -17,7 +17,6 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Object.Company = Parameters.Company;
 		OpenOrdersSelectionForm = True; 
 	EndIf;
-
 	
 	//------------------------------------------------------------------------------
 	// 1. Form attributes initialization.
@@ -50,29 +49,47 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	Items.CompanyAddress.ToolTip    = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = '%1 address'"), VendorName);
 	
 	// Update quantities presentation.
-	QuantityFormat = GeneralFunctionsReusable.DefaultQuantityFormat();
+	QuantityPrecision = GeneralFunctionsReusable.DefaultQuantityPrecision();
+	QuantityFormat    = GeneralFunctionsReusable.DefaultQuantityFormat();
 	Items.LineItemsQuantity.EditFormat  = QuantityFormat;
 	Items.LineItemsQuantity.Format      = QuantityFormat;
 	Items.LineItemsOrdered.EditFormat   = QuantityFormat;
 	Items.LineItemsOrdered.Format       = QuantityFormat;
 	Items.LineItemsReceived.EditFormat  = QuantityFormat;
 	Items.LineItemsReceived.Format      = QuantityFormat;
-	Items.LineItemsBackorder.EditFormat = QuantityFormat;
-	Items.LineItemsBackorder.Format     = QuantityFormat;
 	Items.LineItemsInvoiced.EditFormat  = QuantityFormat;
 	Items.LineItemsInvoiced.Format      = QuantityFormat;
+	Items.LineItemsBackorder.EditFormat = QuantityFormat;
+	Items.LineItemsBackorder.Format     = QuantityFormat;
 	
 	// Update visibility of controls depending on functional options.
 	If Not GeneralFunctionsReusable.FunctionalOptionValue("MultiCurrency") Then
 		Items.FCYGroup.Visible    = False;
 	EndIf;
-		
+	
 	// Set currency title.
 	DefaultCurrencySymbol          = GeneralFunctionsReusable.DefaultCurrencySymbol();
 	ForeignCurrencySymbol          = Object.Currency.Symbol;
 	Items.ExchangeRate.Title       = DefaultCurrencySymbol + "/1" + ForeignCurrencySymbol;
 	Items.FCYCurrency.Title        = ForeignCurrencySymbol;
 	Items.RCCurrency.Title         = DefaultCurrencySymbol;
+	
+	// Define point in time for requesting the balances.
+	If Object.Ref.IsEmpty() Then
+		// The new document.
+		If ValueIsFilled(Object.Date) And BegOfDay(Object.Date) < BegOfDay(CurrentSessionDate()) Then
+			// New document in back-date.
+			PointInTime = New Boundary(EndOfDay(Object.Date), BoundaryType.Including);
+		Else
+			// New actual document.
+			PointInTime = Undefined;
+		EndIf;
+	Else
+		// Document was already saved (but date can actually be changed).
+		PointInTime = New Boundary(New PointInTime(Object.Date, Object.Ref), BoundaryType.Including);
+	EndIf;
+	
+	UpdateInformationBillPayments(); 
 	
 EndProcedure
 
@@ -206,6 +223,21 @@ EndProcedure
 &AtServer
 Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 	
+	// Update point in time for requesting the balances.
+	If Object.Ref.IsEmpty() Then
+		// The new document.
+		If BegOfDay(Object.Date) < BegOfDay(CurrentSessionDate()) Then
+			// New document in back-date.
+			PointInTime = New Boundary(EndOfDay(Object.Date), BoundaryType.Including);
+		Else
+			// New actual document.
+			PointInTime = Undefined;
+		EndIf;
+	Else
+		// Document was already saved (but date can actually be changed).
+		PointInTime = New Boundary(New PointInTime(Object.Date, Object.Ref), BoundaryType.Including);
+	EndIf;
+	
 	//------------------------------------------------------------------------------
 	// Recalculate values of form object attributes.
 	
@@ -217,6 +249,17 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 	
 EndProcedure
 
+&AtClient
+Procedure NotificationProcessing(EventName, Parameter, Source)
+	
+	If EventName = "UpdateBillInformation" And Parameter = Object.Company Then
+		
+		UpdateInformationBillPayments();
+		
+	EndIf;
+	
+EndProcedure
+
 #EndRegion
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -225,13 +268,28 @@ EndProcedure
 &AtClient
 Procedure DateOnChange(Item)
 	
-	// Request server operation.
-	DateOnChangeAtServer();
+	// Ask user about updating the setting and update the line items accordingly.
+	CommonDefaultSettingOnChange(Item, "cost", NStr("en = 'line items'"));
 	
 EndProcedure
 
 &AtServer
 Procedure DateOnChangeAtServer()
+	
+	// Update point in time for requesting the balances.
+	If Object.Ref.IsEmpty() Then
+		// The new document.
+		If BegOfDay(Object.Date) < BegOfDay(CurrentSessionDate()) Then
+			// New document in back-date.
+			PointInTime = New Boundary(EndOfDay(Object.Date), BoundaryType.Including);
+		Else
+			// New actual document.
+			PointInTime = Undefined;
+		EndIf;
+	Else
+		// Document was already saved (but date can actually be changed).
+		PointInTime = New Boundary(New PointInTime(Object.Date, Object.Ref), BoundaryType.Including);
+	EndIf;
 	
 	// Request exchange rate on the new date.
 	Object.ExchangeRate = GeneralFunctions.GetExchangeRate(Object.Date, Object.Currency);
@@ -266,7 +324,7 @@ Procedure CompanyOnChangeAtServer()
 	
 	// Request company default settings.
 	Object.Currency    = Object.Company.DefaultCurrency;
-	Object.Terms       = CommonUse.GetAttributeValue(Object.Company, "Terms");
+	Object.Terms       = Object.Company.Terms;
 	
 	// Check company orders for further orders selection.
 	FillCompanyHasNonClosedOrders();
@@ -274,6 +332,14 @@ Procedure CompanyOnChangeAtServer()
 	// Process settings changes.
 	CurrencyOnChangeAtServer();
 	TermsOnChangeAtServer();
+	
+	//newALAN
+	If Object.Company.APAccount <> ChartsofAccounts.ChartOfAccounts.EmptyRef() Then
+		Object.APAccount = Object.Company.APAccount;
+	Else
+		DefaultCurrency = GeneralFunctionsReusable.DefaultCurrency();
+		Object.APAccount = DefaultCurrency.DefaultAPAccount;
+	EndIf;
 	
 EndProcedure
 
@@ -448,6 +514,7 @@ Procedure CommonDefaultSettingOnChange(Item, ItemPresentation, Destination)
 	Else
 		// Keep new setting.
 		ThisForm[DefaultSetting] = Object[DefaultSetting];
+		DefaultSettingOnChangeAtServer(DefaultSetting, False);
 	EndIf;
 	
 EndProcedure
@@ -462,11 +529,12 @@ Procedure DefaultSettingOnChangeChoiceProcessing(ChoiceResult, ChoiceParameters)
 	If ChoiceResult = DialogReturnCode.Yes Then
 		// Set new setting for all line items and accounts.
 		ThisForm[DefaultSetting] = Object[DefaultSetting];
-		DefaultSettingOnChangeAtServer(DefaultSetting);
+		DefaultSettingOnChangeAtServer(DefaultSetting, True);
 		
 	ElsIf ChoiceResult = DialogReturnCode.No Then
 		// Keep new setting, do not update line items and accounts.
 		ThisForm[DefaultSetting] = Object[DefaultSetting];
+		DefaultSettingOnChangeAtServer(DefaultSetting, False);
 		
 	Else
 		// Restore previously entered setting.
@@ -476,20 +544,52 @@ Procedure DefaultSettingOnChangeChoiceProcessing(ChoiceResult, ChoiceParameters)
 EndProcedure
 
 &AtServer
-Procedure DefaultSettingOnChangeAtServer(DefaultSetting)
+Procedure DefaultSettingOnChangeAtServer(DefaultSetting, RecalculateLineItems)
 	
-	// Update line items fields by the object default value.
-	For Each Row In Object.LineItems Do
-		Row[DefaultSetting] = Object[DefaultSetting];
-	EndDo;
-	
-	// Update accounts fields by the object default value.
-	Try // Real check defined by: Metadata.FindByType(TypeOf(Object.Ref)).TabularSections.Accounts.Attributes.Find(DefaultSetting) <> Undefined
-		For Each Row In Object.Accounts Do
-			Row[DefaultSetting] = Object[DefaultSetting];
-		EndDo;
-	Except
-	EndTry;
+	// Process attribute change.
+	If Object.Ref.Metadata().TabularSections.LineItems.Attributes.Find(DefaultSetting) <> Undefined
+	Or Object.Ref.Metadata().TabularSections.Accounts.Attributes.Find(DefaultSetting) <> Undefined Then
+		// Process attributes by the matching name to the header's default values.
+		
+		// Process line items change.
+		If RecalculateLineItems Then
+			
+			// Apply default to all of the items.
+			If Object.Ref.Metadata().TabularSections.LineItems.Attributes.Find(DefaultSetting) <> Undefined Then
+				For Each Row In Object.LineItems Do
+					Row[DefaultSetting] = Object[DefaultSetting];
+				EndDo;
+			EndIf;
+			
+			// Apply default to all of the accounts.
+			If Object.Ref.Metadata().TabularSections.Accounts.Attributes.Find(DefaultSetting) <> Undefined Then
+				For Each Row In Object.Accounts Do
+					Row[DefaultSetting] = Object[DefaultSetting];
+				EndDo;
+			EndIf;
+			
+		EndIf;
+		
+	// Process attributes by the name.
+	ElsIf DefaultSetting = "Date" Then
+		
+		// Process the attribute change in any case.
+		DateOnChangeAtServer();
+		
+		// Process line items change.
+		If RecalculateLineItems Then
+			// Recalculate retail price.
+			For Each Row In Object.LineItems Do
+				Row.PriceUnits = Round(GeneralFunctions.ProductLastCost(Row.Product, PointInTime) *
+				                 ?(Row.Unit.Factor > 0, Row.Unit.Factor, 1) /
+				                 ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), 2);
+				LineItemsPriceOnChangeAtServer(Row);
+			EndDo;
+		EndIf;
+		
+	Else
+		// Process other attributes.
+	EndIf;
 	
 EndProcedure
 
@@ -520,7 +620,7 @@ Procedure LineItemsOnChange(Item)
 		EndDo;
 		
 		// Clear order data on duplicate row.
-		ClearFields  = New Structure("Order, OrderPrice, Location, DeliveryDate");
+		ClearFields  = New Structure("Order, OrderPriceUnits, Location, DeliveryDate");
 		For Each ClearField In ClearFields Do
 			If Not ValueIsFilled(Item.CurrentData[ObjectField.Key]) Then
 				Item.CurrentData[ObjectField.Key] = Undefined;
@@ -584,22 +684,28 @@ EndProcedure
 Procedure LineItemsProductOnChangeAtServer(TableSectionRow)
 	
 	// Request product properties.
-	ProductProperties = CommonUse.GetAttributeValues(TableSectionRow.Product, New Structure("Description, UM"));
+	ProductProperties = CommonUse.GetAttributeValues(TableSectionRow.Product,   New Structure("Description, UnitSet"));
+	UnitSetProperties = CommonUse.GetAttributeValues(ProductProperties.UnitSet, New Structure("DefaultPurchaseUnit"));
 	TableSectionRow.ProductDescription = ProductProperties.Description;
-	TableSectionRow.UM                 = ProductProperties.UM;
-	TableSectionRow.Price              = GeneralFunctions.ProductLastCost(TableSectionRow.Product);
+	TableSectionRow.UnitSet            = ProductProperties.UnitSet;
+	TableSectionRow.Unit               = UnitSetProperties.DefaultPurchaseUnit;
+	//TableSectionRow.UM                 = UnitSetProperties.UM;
+	TableSectionRow.PriceUnits         = Round(GeneralFunctions.ProductLastCost(TableSectionRow.Product, PointInTime) *
+	                                     ?(TableSectionRow.Unit.Factor > 0, TableSectionRow.Unit.Factor, 1) /
+	                                     ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), 2);
 	
 	// Reset default values.
 	FillPropertyValues(TableSectionRow, Object, "LocationActual, DeliveryDateActual, Project, Class");
 	
 	// Clear up order data.
-	TableSectionRow.Order        = Documents.PurchaseOrder.EmptyRef();
-	TableSectionRow.OrderPrice   = 0;
-	TableSectionRow.DeliveryDate = '00010101';
-	TableSectionRow.Location     = Catalogs.Locations.EmptyRef();
+	TableSectionRow.Order           = Documents.PurchaseOrder.EmptyRef();
+	TableSectionRow.OrderPriceUnits = 0;
+	TableSectionRow.DeliveryDate    = '00010101';
+	TableSectionRow.Location        = Catalogs.Locations.EmptyRef();
 	
 	// Assign default quantities.
-	TableSectionRow.Quantity  = 0;
+	TableSectionRow.QtyUnits  = 0;
+	TableSectionRow.QtyUM     = 0;
 	TableSectionRow.Ordered   = 0;
 	TableSectionRow.Backorder = 0;
 	TableSectionRow.Received  = 0;
@@ -607,6 +713,37 @@ Procedure LineItemsProductOnChangeAtServer(TableSectionRow)
 	
 	// Calculate totals by line.
 	TableSectionRow.LineTotal = 0;
+	
+EndProcedure
+
+&AtClient
+Procedure LineItemsUnitOnChange(Item)
+	
+	// Fill line data for editing.
+	TableSectionRow = GetLineItemsRowStructure();
+	FillPropertyValues(TableSectionRow, Items.LineItems.CurrentData);
+	
+	// Request server operation.
+	LineItemsUnitOnChangeAtServer(TableSectionRow);
+	
+	// Load processed data back.
+	FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
+	
+	// Refresh totals cache.
+	RecalculateTotals();
+	
+EndProcedure
+
+&AtServer
+Procedure LineItemsUnitOnChangeAtServer(TableSectionRow)
+	
+	// Calculate new unit price.
+	TableSectionRow.PriceUnits = Round(GeneralFunctions.ProductLastCost(TableSectionRow.Product, PointInTime) *
+	                             ?(TableSectionRow.Unit.Factor > 0, TableSectionRow.Unit.Factor, 1) /
+	                             ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), 2);
+	
+	// Process settings changes.
+	LineItemsQuantityOnChangeAtServer(TableSectionRow);
 	
 EndProcedure
 
@@ -650,7 +787,7 @@ Procedure LineItemsQuantityOnChangeAtServer(TableSectionRow)
 	//EndIf;
 	
 	// Calculate total by line.
-	TableSectionRow.LineTotal = Round(Round(TableSectionRow.Quantity, QuantityPrecision) * TableSectionRow.Price, 2);
+	TableSectionRow.LineTotal = Round(Round(TableSectionRow.QtyUnits, QuantityPrecision) * TableSectionRow.PriceUnits, 2);
 	
 	// Process settings changes.
 	LineItemsLineTotalOnChangeAtServer(TableSectionRow);
@@ -679,7 +816,7 @@ EndProcedure
 Procedure LineItemsPriceOnChangeAtServer(TableSectionRow)
 	
 	// Calculate total by line.
-	TableSectionRow.LineTotal = Round(Round(TableSectionRow.Quantity, QuantityPrecision) * TableSectionRow.Price, 2);
+	TableSectionRow.LineTotal = Round(Round(TableSectionRow.QtyUnits, QuantityPrecision) * TableSectionRow.PriceUnits, 2);
 	
 	// Process settings changes.
 	LineItemsLineTotalOnChangeAtServer(TableSectionRow);
@@ -708,8 +845,12 @@ EndProcedure
 Procedure LineItemsLineTotalOnChangeAtServer(TableSectionRow)
 	
 	// Back-step price calculation with totals priority.
-	TableSectionRow.Price = ?(Round(TableSectionRow.Quantity, QuantityPrecision) > 0,
-	                          Round(TableSectionRow.LineTotal / Round(TableSectionRow.Quantity, QuantityPrecision), 2), 0);
+	TableSectionRow.PriceUnits = ?(Round(TableSectionRow.QtyUnits, QuantityPrecision) > 0,
+	                               Round(TableSectionRow.LineTotal / Round(TableSectionRow.QtyUnits, QuantityPrecision), 2), 0);
+	
+	// Back-calculation of quantity in base units.
+	TableSectionRow.QtyUM      = Round(Round(TableSectionRow.QtyUnits, QuantityPrecision) *
+	                             ?(TableSectionRow.Unit.Factor > 0, TableSectionRow.Unit.Factor, 1), QuantityPrecision);
 	
 EndProcedure
 
@@ -797,7 +938,9 @@ EndProcedure
 &AtClient
 Procedure PayInvoice(Command)
 	
-	PayInvoiceAtServer();
+	//PayInvoiceAtServer();
+	
+	GenerateDoc("InvoicePayment");
 	
 EndProcedure
 
@@ -846,6 +989,41 @@ Procedure BillPayments(Command)
 EndProcedure
 
 // <- CODE REVIEW
+
+&AtClient
+Procedure PostAndClose(Command)
+	
+	If Write(New Structure("WriteMode", DocumentWriteMode.Posting)) Then Close() EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure Save(Command)
+	
+	Write();
+	
+EndProcedure
+
+&AtClient
+Procedure Post(Command)
+	
+	Write(New Structure("WriteMode", DocumentWriteMode.Posting));
+	
+EndProcedure
+
+&AtClient
+Procedure ClearPosting(Command)
+	
+	Write(New Structure("WriteMode", DocumentWriteMode.UndoPosting));
+	
+EndProcedure
+
+&AtClient
+Procedure GeneratePurchaseReturn(Command)
+	
+	GenerateDoc("PurchaseReturn");
+	
+EndProcedure
 
 #EndRegion
 
@@ -1150,14 +1328,14 @@ EndProcedure
 Function GetLineItemsRowStructure()
 	
 	// Define control row fields.
-	Return New Structure("LineNumber, Product, ProductDescription, Quantity, UM, Ordered, Backorder, Received, Invoiced, OrderPrice, Price, LineTotal, Order, ItemReceipt, Location, LocationActual, DeliveryDate, DeliveryDateActual, Project, Class");
+	Return New Structure("LineNumber, Product, ProductDescription, UnitSet, QtyUnits, Unit, QtyUM, UM, Ordered, Backorder, Received, Invoiced, OrderPriceUnits, PriceUnits, LineTotal, Order, ItemReceipt, Location, LocationActual, DeliveryDate, DeliveryDateActual, Project, Class");
 	
 EndFunction
 
 &AtClient
 Procedure OnOpen(Cancel)
 	
-	AttachIdleHandler("AfterOpen", 0.1, True);	
+	AttachIdleHandler("AfterOpen", 0.1, True);
 	
 EndProcedure
 
@@ -1171,8 +1349,8 @@ Procedure AfterOpen()
 		DetachIdleHandler("AfterOpen");
 		
 		If OpenOrdersSelectionForm Then
-			CompanyOnChange(Items.Company);	
-		EndIf;	
+			CompanyOnChange(Items.Company);
+		EndIf;
 		///////////////////////////////////////////////
 	Else
 		AttachIdleHandler("AfterOpen", 0.1, True);
@@ -1180,5 +1358,60 @@ Procedure AfterOpen()
 	
 EndProcedure
 
+&AtClient
+Procedure GenerateDoc(DocumentType) 
+	
+	If Object.Ref.IsEmpty() Then
+		ShowMessageBox(,NStr("en = 'Data has not yet been recorded.'"));		
+	Else
+		FormParameters  = New Structure("Basis", Object.Ref);
+		OpenForm("Document." + DocumentType + ".ObjectForm", FormParameters);
+	EndIf;
+	
+EndProcedure
+
+&AtServer
+Procedure UpdateInformationBillPayments()
+	
+	Items.BillPayments.Title = "no payment(-s)";
+	Items.BillPayments.TextColor = WebColors.Gray;
+	Items.PayInvoice.Visible = True;
+	
+	Query = New Query;
+	Query.Text = "SELECT
+	             |	GeneralJournalTurnovers.ExtDimension2 AS Bill,
+	             |	COUNT(DISTINCT GeneralJournalTurnovers.Recorder) AS Recorder,
+	             |	SUM(GeneralJournalTurnovers.AmountTurnover) AS Amount,
+	             |	SUM(GeneralJournalTurnovers.AmountRCTurnover) AS AmountRC
+	             |FROM
+	             |	AccountingRegister.GeneralJournal.Turnovers(, , Auto, , , ExtDimension2 = &Doc) AS GeneralJournalTurnovers
+	             |WHERE
+	             |	GeneralJournalTurnovers.Recorder <> &Doc
+	             |
+	             |GROUP BY
+	             |	GeneralJournalTurnovers.ExtDimension2";
+
+	Query.SetParameter("Doc", Object.Ref);
+
+	QueryResult = Query.Execute();
+
+	SelectionDetailRecords = QueryResult.Select();
+
+	While SelectionDetailRecords.Next() Do
+		
+		Amount = Format(SelectionDetailRecords.Amount, "NFD=2; NZ=0.00");
+		
+		Items.BillPayments.Title = "Bill payments: " + SelectionDetailRecords.Recorder + " (" + Object.Currency.Symbol + Amount + ")" ;
+		Items.BillPayments.TextColor = WebColors.Green;
+		
+		If Object.DocumentTotalRC > SelectionDetailRecords.AmountRC Then 
+			Items.PayInvoice.Visible = True;
+		Else
+			Items.PayInvoice.Visible = False;
+		EndIf;
+		
+	EndDo;
+	
+EndProcedure
 
 #EndRegion

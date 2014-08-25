@@ -205,6 +205,10 @@
 				</v8:item>
 			</title>
 		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Unit</dataPath>
+			<field>Unit</field>
+		</field>
 		<dataSource>DataSource1</dataSource>
 		<query>SELECT
 	OrdersRegisteredBalance.Order,
@@ -213,34 +217,44 @@
 	OrdersRegisteredBalance.DeliveryDate AS DueDate,
 	OrdersRegisteredBalance.Project AS Project,
 	OrdersRegisteredBalance.Class AS Class,
-	OrdersRegisteredBalance.QuantityBalance AS Qty,
+	OrdersRegisteredBalance.QuantityBalance * OrdersRegisteredBalance.Unit.Factor AS Qty,
 	CASE
 		WHEN OrdersRegisteredBalance.Product.Type = VALUE(Enum.InventoryTypes.Inventory)
 			THEN CASE
 					WHEN OrdersRegisteredBalance.QuantityBalance &gt; OrdersRegisteredBalance.ShippedBalance
-						THEN OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.ShippedBalance
+						THEN (OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.ShippedBalance) * OrdersRegisteredBalance.Unit.Factor
 					ELSE 0
 				END
 		ELSE CASE
 				WHEN OrdersRegisteredBalance.QuantityBalance &gt; OrdersRegisteredBalance.InvoicedBalance
-					THEN OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.InvoicedBalance
+					THEN (OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.InvoicedBalance) * OrdersRegisteredBalance.Unit.Factor
 				ELSE 0
 			END
 	END AS Backorder,
-	OrdersRegisteredBalance.ShippedBalance AS Shipped,
-	OrdersRegisteredBalance.InvoicedBalance AS Invoiced,
-	SalesOrderLineItems.Price,
-	SalesOrderLineItems.LineTotal
+	OrdersRegisteredBalance.ShippedBalance * OrdersRegisteredBalance.Unit.Factor AS Shipped,
+	OrdersRegisteredBalance.InvoicedBalance * OrdersRegisteredBalance.Unit.Factor AS Invoiced,
+	CASE
+		WHEN SalesOrderLineItems.QtyUM &gt; 0
+			THEN SalesOrderLineItems.LineTotal / SalesOrderLineItems.QtyUM
+		ELSE SalesOrderLineItems.PriceUnits / CASE
+				WHEN SalesOrderLineItems.Unit.Factor &gt; 0
+					THEN SalesOrderLineItems.Unit.Factor
+				ELSE 1
+			END
+	END * SalesOrderLineItems.Ref.ExchangeRate AS Price,
+	SalesOrderLineItems.LineTotal * SalesOrderLineItems.Ref.ExchangeRate AS LineTotal
 INTO TT
 FROM
 	AccumulationRegister.OrdersRegistered.Balance({(&amp;P)}, {(Order.Date BETWEEN &amp;BeginOfPeriod AND &amp;EndOfPeriod)}) AS OrdersRegisteredBalance
 		LEFT JOIN Document.SalesOrder.LineItems AS SalesOrderLineItems
-		ON OrdersRegisteredBalance.Order = SalesOrderLineItems.Ref
-			AND OrdersRegisteredBalance.Product = SalesOrderLineItems.Product
+		ON OrdersRegisteredBalance.Product = SalesOrderLineItems.Product
 			AND OrdersRegisteredBalance.Location = SalesOrderLineItems.Location
 			AND OrdersRegisteredBalance.DeliveryDate = SalesOrderLineItems.DeliveryDate
 			AND OrdersRegisteredBalance.Project = SalesOrderLineItems.Project
 			AND OrdersRegisteredBalance.Class = SalesOrderLineItems.Class
+			AND OrdersRegisteredBalance.Unit = SalesOrderLineItems.Unit
+			AND OrdersRegisteredBalance.Order = SalesOrderLineItems.Ref
+			AND OrdersRegisteredBalance.Company = SalesOrderLineItems.Ref.Company
 ;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -252,12 +266,12 @@ SELECT
 	TT.Item.PreferredVendor,
 	TT.DueDate,
 	TT.Order.Company AS Customer,
-	TT.Qty,
-	TT.Shipped,
-	TT.Invoiced,
-	TT.Backorder,
-	TT.LineTotal AS Amount,
-	TT.Backorder * TT.Price AS OpenBalance
+	SUM(TT.Qty) AS Qty,
+	SUM(TT.Shipped) AS Shipped,
+	SUM(TT.Invoiced) AS Invoiced,
+	SUM(TT.Backorder) AS Backorder,
+	SUM(TT.LineTotal) AS Amount,
+	SUM(TT.Backorder * TT.Price) AS OpenBalance
 FROM
 	TT AS TT
 WHERE
@@ -269,6 +283,15 @@ WHERE
 				THEN NOT TT.Qty = TT.Invoiced
 			ELSE TRUE
 		END
+
+GROUP BY
+	TT.Order,
+	TT.Item,
+	TT.Item.Type,
+	TT.Item.Category,
+	TT.Item.PreferredVendor,
+	TT.DueDate,
+	TT.Order.Company
 
 ORDER BY
 	TT.Order.PointInTime</query>
@@ -316,6 +339,23 @@ ORDER BY
 		<useRestriction>false</useRestriction>
 	</parameter>
 	<parameter>
+		<name>P</name>
+		<title xsi:type="v8:LocalStringType">
+			<v8:item>
+				<v8:lang>en</v8:lang>
+				<v8:content>P</v8:content>
+			</v8:item>
+		</title>
+		<valueType>
+			<v8:Type>xs:dateTime</v8:Type>
+			<v8:DateQualifiers>
+				<v8:DateFractions>DateTime</v8:DateFractions>
+			</v8:DateQualifiers>
+		</valueType>
+		<value xsi:type="xs:dateTime">0001-01-01T00:00:00</value>
+		<useRestriction>true</useRestriction>
+	</parameter>
+	<parameter>
 		<name>BeginOfPeriod</name>
 		<title xsi:type="v8:LocalStringType">
 			<v8:item>
@@ -326,7 +366,7 @@ ORDER BY
 		<valueType>
 			<v8:Type>xs:dateTime</v8:Type>
 			<v8:DateQualifiers>
-				<v8:DateFractions>Date</v8:DateFractions>
+				<v8:DateFractions>DateTime</v8:DateFractions>
 			</v8:DateQualifiers>
 		</valueType>
 		<value xsi:type="xs:dateTime">0001-01-01T00:00:00</value>
@@ -344,29 +384,12 @@ ORDER BY
 		<valueType>
 			<v8:Type>xs:dateTime</v8:Type>
 			<v8:DateQualifiers>
-				<v8:DateFractions>Date</v8:DateFractions>
-			</v8:DateQualifiers>
-		</valueType>
-		<value xsi:type="xs:dateTime">0001-01-01T00:00:00</value>
-		<useRestriction>true</useRestriction>
-		<expression>&amp;Period.EndDate</expression>
-	</parameter>
-	<parameter>
-		<name>P</name>
-		<title xsi:type="v8:LocalStringType">
-			<v8:item>
-				<v8:lang>en</v8:lang>
-				<v8:content>P</v8:content>
-			</v8:item>
-		</title>
-		<valueType>
-			<v8:Type>xs:dateTime</v8:Type>
-			<v8:DateQualifiers>
 				<v8:DateFractions>DateTime</v8:DateFractions>
 			</v8:DateQualifiers>
 		</valueType>
 		<value xsi:type="xs:dateTime">0001-01-01T00:00:00</value>
 		<useRestriction>true</useRestriction>
+		<expression>&amp;Period.EndDate</expression>
 	</parameter>
 	<settingsVariant>
 		<dcsset:name>Default</dcsset:name>
@@ -453,13 +476,6 @@ ORDER BY
 					</dcscor:value>
 					<dcsset:viewMode>Normal</dcsset:viewMode>
 					<dcsset:userSettingID>88d5bcfc-3bd2-4189-8bf6-d17a3ecdaa7c</dcsset:userSettingID>
-				</dcscor:item>
-				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-					<dcscor:use>false</dcscor:use>
-					<dcscor:parameter>EndOfPeriod</dcscor:parameter>
-					<dcscor:value xsi:type="xs:dateTime">0001-01-01T00:00:00</dcscor:value>
-					<dcsset:viewMode>Normal</dcsset:viewMode>
-					<dcsset:userSettingID>12f5284e-d12d-4602-978e-42d16e6177a9</dcsset:userSettingID>
 				</dcscor:item>
 			</dcsset:dataParameters>
 			<dcsset:conditionalAppearance>

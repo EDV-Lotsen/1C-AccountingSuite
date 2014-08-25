@@ -131,7 +131,7 @@
 				</LabelField>
 				<LabelField name="AmountExpense" id="13">
 					<DataPath>List.AmountExpense</DataPath>
-					<Width>19</Width>
+					<Width>20</Width>
 					<HorizontalStretch>false</HorizontalStretch>
 					<ContextMenu name="AmountExpenseContextMenu" id="14"/>
 					<ExtendedTooltip name="AmountExpenseExtendedTooltip" id="15"/>
@@ -157,6 +157,8 @@
 							<v8:content>Hours Logged</v8:content>
 						</v8:item>
 					</Title>
+					<Width>20</Width>
+					<HorizontalStretch>false</HorizontalStretch>
 					<ContextMenu name="HoursContextMenu" id="23"/>
 					<ExtendedTooltip name="HoursExtendedTooltip" id="24"/>
 				</LabelField>
@@ -183,25 +185,22 @@
 	ProjectDataTurnovers.AmountTurnover,
 	ProjectDataTurnovers.AmountReceipt,
 	ProjectDataTurnovers.AmountExpense,
-	SUM(TimeTrack.TimeComplete) AS Hours
+	ISNULL(TimeTrack.TimeComplete, 0) AS Hours
 FROM
 	Catalog.Projects AS CatalogProjects
-		LEFT JOIN Document.TimeTrack AS TimeTrack
-		ON TimeTrack.Project = CatalogProjects.Ref
 		LEFT JOIN AccumulationRegister.ProjectData.Turnovers AS ProjectDataTurnovers
 		ON (ProjectDataTurnovers.Project = CatalogProjects.Ref)
-
-GROUP BY
-	CatalogProjects.Ref,
-	CatalogProjects.DeletionMark,
-	CatalogProjects.Description,
-	CatalogProjects.Customer,
-	CatalogProjects.Internal,
-	CatalogProjects.Predefined,
-	CatalogProjects.PredefinedDataName,
-	ProjectDataTurnovers.AmountTurnover,
-	ProjectDataTurnovers.AmountReceipt,
-	ProjectDataTurnovers.AmountExpense</QueryText>
+		LEFT JOIN (SELECT
+			TT.Project AS Project,
+			SUM(TT.TimeComplete) AS TimeComplete
+		FROM
+			Document.TimeTrack AS TT
+		WHERE
+			TT.Posted = TRUE
+		
+		GROUP BY
+			TT.Project) AS TimeTrack
+		ON (TimeTrack.Project = CatalogProjects.Ref)</QueryText>
 				<MainTable>Catalog.Projects</MainTable>
 				<ListSettings>
 					<dcsset:filter>

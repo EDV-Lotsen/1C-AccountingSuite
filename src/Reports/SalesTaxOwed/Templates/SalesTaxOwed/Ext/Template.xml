@@ -799,7 +799,6 @@ FROM
 			<v8:endDate>0001-01-01T00:00:00</v8:endDate>
 		</value>
 		<useRestriction>false</useRestriction>
-		<use>Always</use>
 	</parameter>
 	<settingsVariant>
 		<dcsset:name>Default</dcsset:name>
@@ -835,18 +834,21 @@ FROM
 					<dcsset:left xsi:type="dcscor:Field">ChargeType</dcsset:left>
 					<dcsset:comparisonType>Equal</dcsset:comparisonType>
 					<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountingMethod.Accrual</dcsset:right>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 					<dcsset:userSettingID>00926bb1-3fb8-4fd8-abbe-688ad7a51fcc</dcsset:userSettingID>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:FilterItemComparison">
 					<dcsset:use>false</dcsset:use>
 					<dcsset:left xsi:type="dcscor:Field">Agency</dcsset:left>
 					<dcsset:comparisonType>Equal</dcsset:comparisonType>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:FilterItemComparison">
 					<dcsset:use>false</dcsset:use>
 					<dcsset:left xsi:type="dcscor:Field">TaxRate</dcsset:left>
 					<dcsset:comparisonType>Equal</dcsset:comparisonType>
 					<dcsset:right xsi:type="xs:decimal">0</dcsset:right>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 				</dcsset:item>
 			</dcsset:filter>
 			<dcsset:dataParameters>
@@ -855,6 +857,7 @@ FROM
 					<dcscor:value xsi:type="v8:StandardPeriod">
 						<v8:variant xsi:type="v8:StandardPeriodVariant">ThisYear</v8:variant>
 					</dcscor:value>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 					<dcsset:userSettingID>4dab5f43-86f0-4baa-9aca-cffd521134df</dcsset:userSettingID>
 				</dcscor:item>
 			</dcsset:dataParameters>
@@ -979,18 +982,21 @@ FROM
 					<dcsset:left xsi:type="dcscor:Field">ChargeType</dcsset:left>
 					<dcsset:comparisonType>Equal</dcsset:comparisonType>
 					<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountingMethod.Accrual</dcsset:right>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 					<dcsset:userSettingID>00926bb1-3fb8-4fd8-abbe-688ad7a51fcc</dcsset:userSettingID>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:FilterItemComparison">
 					<dcsset:use>false</dcsset:use>
 					<dcsset:left xsi:type="dcscor:Field">Agency</dcsset:left>
 					<dcsset:comparisonType>Equal</dcsset:comparisonType>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:FilterItemComparison">
 					<dcsset:use>false</dcsset:use>
 					<dcsset:left xsi:type="dcscor:Field">TaxRate</dcsset:left>
 					<dcsset:comparisonType>Equal</dcsset:comparisonType>
 					<dcsset:right xsi:type="xs:decimal">0</dcsset:right>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 				</dcsset:item>
 			</dcsset:filter>
 			<dcsset:dataParameters>
@@ -999,6 +1005,7 @@ FROM
 					<dcscor:value xsi:type="v8:StandardPeriod">
 						<v8:variant xsi:type="v8:StandardPeriodVariant">ThisYear</v8:variant>
 					</dcscor:value>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 					<dcsset:userSettingID>4dab5f43-86f0-4baa-9aca-cffd521134df</dcsset:userSettingID>
 				</dcscor:item>
 			</dcsset:dataParameters>
@@ -1123,18 +1130,21 @@ FROM
 					<dcsset:left xsi:type="dcscor:Field">ChargeType</dcsset:left>
 					<dcsset:comparisonType>Equal</dcsset:comparisonType>
 					<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountingMethod.Accrual</dcsset:right>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 					<dcsset:userSettingID>00926bb1-3fb8-4fd8-abbe-688ad7a51fcc</dcsset:userSettingID>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:FilterItemComparison">
 					<dcsset:use>false</dcsset:use>
 					<dcsset:left xsi:type="dcscor:Field">Agency</dcsset:left>
 					<dcsset:comparisonType>Equal</dcsset:comparisonType>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:FilterItemComparison">
 					<dcsset:use>false</dcsset:use>
 					<dcsset:left xsi:type="dcscor:Field">TaxRate</dcsset:left>
 					<dcsset:comparisonType>Equal</dcsset:comparisonType>
 					<dcsset:right xsi:type="xs:decimal">0</dcsset:right>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 				</dcsset:item>
 			</dcsset:filter>
 			<dcsset:dataParameters>
@@ -1143,6 +1153,7 @@ FROM
 					<dcscor:value xsi:type="v8:StandardPeriod">
 						<v8:variant xsi:type="v8:StandardPeriodVariant">ThisYear</v8:variant>
 					</dcscor:value>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 					<dcsset:userSettingID>4dab5f43-86f0-4baa-9aca-cffd521134df</dcsset:userSettingID>
 				</dcscor:item>
 			</dcsset:dataParameters>
@@ -1263,18 +1274,21 @@ FROM
 					<dcsset:left xsi:type="dcscor:Field">ChargeType</dcsset:left>
 					<dcsset:comparisonType>Equal</dcsset:comparisonType>
 					<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountingMethod.Accrual</dcsset:right>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 					<dcsset:userSettingID>00926bb1-3fb8-4fd8-abbe-688ad7a51fcc</dcsset:userSettingID>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:FilterItemComparison">
 					<dcsset:use>false</dcsset:use>
 					<dcsset:left xsi:type="dcscor:Field">Agency</dcsset:left>
 					<dcsset:comparisonType>Equal</dcsset:comparisonType>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:FilterItemComparison">
 					<dcsset:use>false</dcsset:use>
 					<dcsset:left xsi:type="dcscor:Field">TaxRate</dcsset:left>
 					<dcsset:comparisonType>Equal</dcsset:comparisonType>
 					<dcsset:right xsi:type="xs:decimal">0</dcsset:right>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 				</dcsset:item>
 			</dcsset:filter>
 			<dcsset:dataParameters>
@@ -1283,6 +1297,7 @@ FROM
 					<dcscor:value xsi:type="v8:StandardPeriod">
 						<v8:variant xsi:type="v8:StandardPeriodVariant">ThisYear</v8:variant>
 					</dcscor:value>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 					<dcsset:userSettingID>4dab5f43-86f0-4baa-9aca-cffd521134df</dcsset:userSettingID>
 				</dcscor:item>
 			</dcsset:dataParameters>
@@ -1403,18 +1418,21 @@ FROM
 					<dcsset:left xsi:type="dcscor:Field">ChargeType</dcsset:left>
 					<dcsset:comparisonType>Equal</dcsset:comparisonType>
 					<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountingMethod.Accrual</dcsset:right>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 					<dcsset:userSettingID>00926bb1-3fb8-4fd8-abbe-688ad7a51fcc</dcsset:userSettingID>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:FilterItemComparison">
 					<dcsset:use>false</dcsset:use>
 					<dcsset:left xsi:type="dcscor:Field">Agency</dcsset:left>
 					<dcsset:comparisonType>Equal</dcsset:comparisonType>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:FilterItemComparison">
 					<dcsset:use>false</dcsset:use>
 					<dcsset:left xsi:type="dcscor:Field">TaxRate</dcsset:left>
 					<dcsset:comparisonType>Equal</dcsset:comparisonType>
 					<dcsset:right xsi:type="xs:decimal">0</dcsset:right>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 				</dcsset:item>
 			</dcsset:filter>
 			<dcsset:dataParameters>
@@ -1423,6 +1441,7 @@ FROM
 					<dcscor:value xsi:type="v8:StandardPeriod">
 						<v8:variant xsi:type="v8:StandardPeriodVariant">ThisYear</v8:variant>
 					</dcscor:value>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 					<dcsset:userSettingID>4dab5f43-86f0-4baa-9aca-cffd521134df</dcsset:userSettingID>
 				</dcscor:item>
 			</dcsset:dataParameters>
@@ -1538,6 +1557,7 @@ FROM
 					<dcsset:left xsi:type="dcscor:Field">ChargeType</dcsset:left>
 					<dcsset:comparisonType>Equal</dcsset:comparisonType>
 					<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountingMethod.Accrual</dcsset:right>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 					<dcsset:userSettingID>00926bb1-3fb8-4fd8-abbe-688ad7a51fcc</dcsset:userSettingID>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:FilterItemComparison">
@@ -1552,6 +1572,7 @@ FROM
 					<dcscor:value xsi:type="v8:StandardPeriod">
 						<v8:variant xsi:type="v8:StandardPeriodVariant">ThisYear</v8:variant>
 					</dcscor:value>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 					<dcsset:userSettingID>4dab5f43-86f0-4baa-9aca-cffd521134df</dcsset:userSettingID>
 				</dcscor:item>
 			</dcsset:dataParameters>

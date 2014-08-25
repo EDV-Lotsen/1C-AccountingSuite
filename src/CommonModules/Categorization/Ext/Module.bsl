@@ -670,6 +670,7 @@ Procedure ProcessTransactionForCategorization(TabRow)
 			i = i + 1;
 		EndIf;
 	EndDo;
+	LexemNumber = 0;
 	RecordSet = InformationRegisters.BankTransactionCategorization.CreateRecordSet();
 	IDFilter = RecordSet.Filter.TransactionID;
 	IDFilter.Use = True;
@@ -678,17 +679,20 @@ Procedure ProcessTransactionForCategorization(TabRow)
 	
 	For Each lexem In lexemes Do
 		NewRecord = RecordSet.Add();
-		NewRecord.BankAccount = TabRow.BankAccount;
-		NewRecord.Lexem = lexem;
+		NewRecord.BankAccount 	= TabRow.BankAccount;
+		NewRecord.Lexem 	= lexem;
 		NewRecord.TransactionID = TabRow.ID;
-		NewRecord.Customer = TabRow.Company;
-		NewRecord.Category = ?(TabRow.Category = TabRow.YodleeCategory, ChartsOfAccounts.ChartOfAccounts.EmptyRef(), TabRow.Category);
+		NewRecord.LexemNumber	= LexemNumber; 
+		NewRecord.Customer 	= TabRow.Company;
+		NewRecord.Category 	= ?(TabRow.Category = TabRow.YodleeCategory, ChartsOfAccounts.ChartOfAccounts.EmptyRef(), TabRow.Category);
+		LexemNumber			= LexemNumber + 1;
 	EndDo;	
 	//Add the record with the full description
 	NewRecord = RecordSet.Add();
 	NewRecord.BankAccount = TabRow.BankAccount;
 	NewRecord.Lexem = Description;
 	NewRecord.TransactionID = TabRow.ID;
+	NewRecord.LexemNumber	= LexemNumber;
 	NewRecord.Customer = TabRow.Company;
 	NewRecord.Category = TabRow.Category;
 	NewRecord.FullDescription = True;

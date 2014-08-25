@@ -50,6 +50,10 @@
 				</v8:item>
 			</title>
 		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Account</dataPath>
+			<field>Account</field>
+		</field>
 		<dataSource>DataSource1</dataSource>
 		<query>SELECT
 	ProjectDataTurnovers.Project.Description,
@@ -67,10 +71,6 @@ FROM
 			<v8:item>
 				<v8:lang>en</v8:lang>
 				<v8:content>Begin of period</v8:content>
-			</v8:item>
-			<v8:item>
-				<v8:lang>de</v8:lang>
-				<v8:content>Periodenanfang</v8:content>
 			</v8:item>
 		</title>
 		<valueType>
@@ -91,10 +91,6 @@ FROM
 				<v8:lang>en</v8:lang>
 				<v8:content>Period</v8:content>
 			</v8:item>
-			<v8:item>
-				<v8:lang>de</v8:lang>
-				<v8:content>Periode</v8:content>
-			</v8:item>
 		</title>
 		<valueType>
 			<v8:Type>v8:StandardPeriod</v8:Type>
@@ -110,10 +106,6 @@ FROM
 			<v8:item>
 				<v8:lang>en</v8:lang>
 				<v8:content>End of period</v8:content>
-			</v8:item>
-			<v8:item>
-				<v8:lang>de</v8:lang>
-				<v8:content>Ende der Periode</v8:content>
 			</v8:item>
 		</title>
 		<valueType>
@@ -151,6 +143,7 @@ FROM
 					<dcscor:value xsi:type="v8:StandardPeriod">
 						<v8:variant xsi:type="v8:StandardPeriodVariant">ThisMonth</v8:variant>
 					</dcscor:value>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 					<dcsset:userSettingID>7cbc1c35-5c30-4bc7-9521-dc05e76b3da2</dcsset:userSettingID>
 				</dcscor:item>
 			</dcsset:dataParameters>

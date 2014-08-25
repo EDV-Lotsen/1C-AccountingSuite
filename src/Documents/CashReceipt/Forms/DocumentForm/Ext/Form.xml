@@ -1,6 +1,9 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
 	<VerticalScroll>useIfNecessary</VerticalScroll>
+	<CommandSet>
+		<ExcludedCommand>Copy</ExcludedCommand>
+	</CommandSet>
 	<AutoTime>CurrentOrLast</AutoTime>
 	<UsePostingMode>Auto</UsePostingMode>
 	<RepostOnWrite>true</RepostOnWrite>
@@ -34,19 +37,11 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>Header</v8:content>
 				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>Kopfzeile</v8:content>
-				</v8:item>
 			</Title>
 			<ToolTip>
 				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Header</v8:content>
-				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>Kopfzeile</v8:content>
 				</v8:item>
 			</ToolTip>
 			<Group>Horizontal</Group>
@@ -95,7 +90,7 @@
 										<InputField name="Company" id="5">
 											<DataPath>Object.Company</DataPath>
 											<EditMode>EnterOnInput</EditMode>
-											<Width>15</Width>
+											<Width>25</Width>
 											<HorizontalStretch>false</HorizontalStretch>
 											<ContextMenu name="CompanyContextMenu" id="6"/>
 											<ExtendedTooltip name="CompanyExtendedTooltip" id="113"/>
@@ -110,10 +105,6 @@
 													<v8:lang>en</v8:lang>
 													<v8:content>Type</v8:content>
 												</v8:item>
-												<v8:item>
-													<v8:lang>de</v8:lang>
-													<v8:content>Typ</v8:content>
-												</v8:item>
 											</Title>
 											<EditMode>EnterOnInput</EditMode>
 											<RadioButtonType>RadioButtons</RadioButtonType>
@@ -127,10 +118,6 @@
 																<v8:lang>en</v8:lang>
 																<v8:content>Undeposited</v8:content>
 															</v8:item>
-															<v8:item>
-																<v8:lang>de</v8:lang>
-																<v8:content>Nicht eingelegt</v8:content>
-															</v8:item>
 														</Presentation>
 														<Value xsi:type="xs:string">1</Value>
 													</xr:Value>
@@ -143,10 +130,6 @@
 															<v8:item>
 																<v8:lang>en</v8:lang>
 																<v8:content>Bank Acct.</v8:content>
-															</v8:item>
-															<v8:item>
-																<v8:lang>de</v8:lang>
-																<v8:content>Konto</v8:content>
 															</v8:item>
 														</Presentation>
 														<Value xsi:type="xs:string">2</Value>
@@ -167,19 +150,11 @@
 											<v8:lang>en</v8:lang>
 											<v8:content>Middle column</v8:content>
 										</v8:item>
-										<v8:item>
-											<v8:lang>de</v8:lang>
-											<v8:content>Mittlere Spalte</v8:content>
-										</v8:item>
 									</Title>
 									<ToolTip>
 										<v8:item>
 											<v8:lang>en</v8:lang>
 											<v8:content>Middle column</v8:content>
-										</v8:item>
-										<v8:item>
-											<v8:lang>de</v8:lang>
-											<v8:content>Mittlere Spalte</v8:content>
 										</v8:item>
 									</ToolTip>
 									<Group>Vertical</Group>
@@ -289,7 +264,7 @@
 							<Title>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>More</v8:content>
+									<v8:content>Trx detail</v8:content>
 								</v8:item>
 							</Title>
 							<ToolTip>
@@ -306,13 +281,6 @@
 									<ShowTitle>false</ShowTitle>
 									<ExtendedTooltip name="Group4ExtendedTooltip" id="146"/>
 									<ChildItems>
-										<InputField name="ARAccount" id="157">
-											<DataPath>Object.ARAccount</DataPath>
-											<Width>15</Width>
-											<HorizontalStretch>false</HorizontalStretch>
-											<ContextMenu name="ARAccountContextMenu" id="158"/>
-											<ExtendedTooltip name="ARAccountExtendedTooltip" id="159"/>
-										</InputField>
 										<CheckBoxField name="ManualCheck" id="195">
 											<DataPath>ManualCheck</DataPath>
 											<Visible>false</Visible>
@@ -537,11 +505,41 @@
 								</UsualGroup>
 							</ChildItems>
 						</Page>
+						<Page name="Accounting" id="234">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Accounting</v8:content>
+								</v8:item>
+							</Title>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Accounting</v8:content>
+								</v8:item>
+							</ToolTip>
+							<ExtendedTooltip name="AccountingExtendedTooltip" id="235"/>
+							<ChildItems>
+								<InputField name="ARAccount" id="157">
+									<DataPath>Object.ARAccount</DataPath>
+									<Width>15</Width>
+									<HorizontalStretch>false</HorizontalStretch>
+									<ContextMenu name="ARAccountContextMenu" id="158"/>
+									<ExtendedTooltip name="ARAccountExtendedTooltip" id="159"/>
+								</InputField>
+								<CheckBoxField name="Deposited" id="236">
+									<DataPath>Object.Deposited</DataPath>
+									<CheckBoxType>Auto</CheckBoxType>
+									<ContextMenu name="DepositedContextMenu" id="237"/>
+									<ExtendedTooltip name="DepositedExtendedTooltip" id="238"/>
+								</CheckBoxField>
+							</ChildItems>
+						</Page>
 						<Page name="ExternalMemo" id="232">
 							<Title>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Customer Memo</v8:content>
+									<v8:content>Memo</v8:content>
 								</v8:item>
 							</Title>
 							<ToolTip>
@@ -554,14 +552,20 @@
 							<ChildItems>
 								<InputField name="EmailNote" id="205">
 									<DataPath>Object.EmailNote</DataPath>
-									<TitleLocation>None</TitleLocation>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Ext.</v8:content>
+										</v8:item>
+									</Title>
+									<TitleLocation>Left</TitleLocation>
 									<Width>50</Width>
 									<HorizontalStretch>false</HorizontalStretch>
 									<MultiLine>true</MultiLine>
 									<InputHint>
 										<v8:item>
 											<v8:lang>en</v8:lang>
-											<v8:content>Written notes here will be shown on the printed receipt as well as email body.</v8:content>
+											<v8:content>Notes here will be shown on the printed document as well as email body</v8:content>
 										</v8:item>
 									</InputHint>
 									<ContextMenu name="EmailNoteContextMenu" id="206"/>
@@ -599,19 +603,11 @@
 									<v8:lang>en</v8:lang>
 									<v8:content>Invoices</v8:content>
 								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Dokumente</v8:content>
-								</v8:item>
 							</Title>
 							<ToolTip>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Documents</v8:content>
-								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Dokumente</v8:content>
+									<v8:content>Invoices</v8:content>
 								</v8:item>
 							</ToolTip>
 							<ExtendedTooltip name="DocumentsExtendedTooltip" id="126"/>
@@ -647,29 +643,29 @@
 									<ContextMenu name="LineItemsContextMenu" id="36"/>
 									<AutoCommandBar name="LineItemsCommandBar" id="37"/>
 									<ExtendedTooltip name="LineItemsExtendedTooltip" id="127"/>
-									<SearchStringAddition name="LineItemsSearchString" id="234">
+									<SearchStringAddition name="LineItemsSearchString" id="239">
 										<AdditionSource>
 											<Item>LineItems</Item>
 											<Type>SearchStringRepresentation</Type>
 										</AdditionSource>
-										<ContextMenu name="LineItemsSearchStringContextMenu" id="235"/>
-										<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="236"/>
+										<ContextMenu name="LineItemsSearchStringContextMenu" id="240"/>
+										<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="241"/>
 									</SearchStringAddition>
-									<ViewStatusAddition name="LineItemsViewStatus" id="237">
+									<ViewStatusAddition name="LineItemsViewStatus" id="242">
 										<AdditionSource>
 											<Item>LineItems</Item>
 											<Type>ViewStatusRepresentation</Type>
 										</AdditionSource>
-										<ContextMenu name="LineItemsViewStatusContextMenu" id="238"/>
-										<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="239"/>
+										<ContextMenu name="LineItemsViewStatusContextMenu" id="243"/>
+										<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="244"/>
 									</ViewStatusAddition>
-									<SearchControlAddition name="LineItemsSearchControl" id="240">
+									<SearchControlAddition name="LineItemsSearchControl" id="245">
 										<AdditionSource>
 											<Item>LineItems</Item>
 											<Type>SearchControl</Type>
 										</AdditionSource>
-										<ContextMenu name="LineItemsSearchControlContextMenu" id="241"/>
-										<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="242"/>
+										<ContextMenu name="LineItemsSearchControlContextMenu" id="246"/>
+										<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="247"/>
 									</SearchControlAddition>
 									<ChildItems>
 										<LabelField name="LineItemsLineNumber" id="38">
@@ -746,19 +742,11 @@
 									<v8:lang>en</v8:lang>
 									<v8:content>Credits</v8:content>
 								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Storni/Gutschriften</v8:content>
-								</v8:item>
 							</Title>
 							<ToolTip>
 								<v8:item>
 									<v8:lang>en</v8:lang>
 									<v8:content>Credit memos</v8:content>
-								</v8:item>
-								<v8:item>
-									<v8:lang>de</v8:lang>
-									<v8:content>Storni/Gutschriften</v8:content>
 								</v8:item>
 							</ToolTip>
 							<ExtendedTooltip name="CreditMemosGroupExtendedTooltip" id="116"/>
@@ -783,29 +771,29 @@
 									<ContextMenu name="CreditMemosContextMenu" id="76"/>
 									<AutoCommandBar name="CreditMemosCommandBar" id="77"/>
 									<ExtendedTooltip name="CreditMemosExtendedTooltip" id="117"/>
-									<SearchStringAddition name="CreditMemosSearchString" id="243">
+									<SearchStringAddition name="CreditMemosSearchString" id="248">
 										<AdditionSource>
 											<Item>CreditMemos</Item>
 											<Type>SearchStringRepresentation</Type>
 										</AdditionSource>
-										<ContextMenu name="CreditMemosSearchStringContextMenu" id="244"/>
-										<ExtendedTooltip name="CreditMemosSearchStringExtendedTooltip" id="245"/>
+										<ContextMenu name="CreditMemosSearchStringContextMenu" id="249"/>
+										<ExtendedTooltip name="CreditMemosSearchStringExtendedTooltip" id="250"/>
 									</SearchStringAddition>
-									<ViewStatusAddition name="CreditMemosViewStatus" id="246">
+									<ViewStatusAddition name="CreditMemosViewStatus" id="251">
 										<AdditionSource>
 											<Item>CreditMemos</Item>
 											<Type>ViewStatusRepresentation</Type>
 										</AdditionSource>
-										<ContextMenu name="CreditMemosViewStatusContextMenu" id="247"/>
-										<ExtendedTooltip name="CreditMemosViewStatusExtendedTooltip" id="248"/>
+										<ContextMenu name="CreditMemosViewStatusContextMenu" id="252"/>
+										<ExtendedTooltip name="CreditMemosViewStatusExtendedTooltip" id="253"/>
 									</ViewStatusAddition>
-									<SearchControlAddition name="CreditMemosSearchControl" id="249">
+									<SearchControlAddition name="CreditMemosSearchControl" id="254">
 										<AdditionSource>
 											<Item>CreditMemos</Item>
 											<Type>SearchControl</Type>
 										</AdditionSource>
-										<ContextMenu name="CreditMemosSearchControlContextMenu" id="250"/>
-										<ExtendedTooltip name="CreditMemosSearchControlExtendedTooltip" id="251"/>
+										<ContextMenu name="CreditMemosSearchControlContextMenu" id="255"/>
+										<ExtendedTooltip name="CreditMemosSearchControlExtendedTooltip" id="256"/>
 									</SearchControlAddition>
 									<ChildItems>
 										<LabelField name="CreditMemosLineNumber" id="78">
@@ -899,19 +887,11 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>Footer</v8:content>
 				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>Fußzeile</v8:content>
-				</v8:item>
 			</Title>
 			<ToolTip>
 				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Footer</v8:content>
-				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>Fußzeile</v8:content>
 				</v8:item>
 			</ToolTip>
 			<Group>Horizontal</Group>
@@ -978,10 +958,6 @@
 								<v8:lang>en</v8:lang>
 								<v8:content>Exchange rate</v8:content>
 							</v8:item>
-							<v8:item>
-								<v8:lang>de</v8:lang>
-								<v8:content>Wechselkurs</v8:content>
-							</v8:item>
 						</Title>
 						<Type>
 							<v8:Type>xs:decimal</v8:Type>
@@ -999,10 +975,6 @@
 							<v8:item>
 								<v8:lang>en</v8:lang>
 								<v8:content>Exchange rate</v8:content>
-							</v8:item>
-							<v8:item>
-								<v8:lang>de</v8:lang>
-								<v8:content>Wechselkurs</v8:content>
 							</v8:item>
 						</Title>
 						<Type>

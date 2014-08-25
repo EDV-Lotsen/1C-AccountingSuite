@@ -63,16 +63,8 @@
 			<field>ExtDimensionTypes.TurnoversOnly</field>
 		</field>
 		<field xsi:type="DataSetFieldField">
-			<dataPath>IncomeTaxAccount</dataPath>
-			<field>IncomeTaxAccount</field>
-		</field>
-		<field xsi:type="DataSetFieldField">
 			<dataPath>Memo</dataPath>
 			<field>Memo</field>
-		</field>
-		<field xsi:type="DataSetFieldField">
-			<dataPath>Noncash</dataPath>
-			<field>Noncash</field>
 		</field>
 		<field xsi:type="DataSetFieldField">
 			<dataPath>OffBalance</dataPath>
@@ -81,10 +73,6 @@
 		<field xsi:type="DataSetFieldField">
 			<dataPath>Order</dataPath>
 			<field>Order</field>
-		</field>
-		<field xsi:type="DataSetFieldField">
-			<dataPath>OtherComprehensiveIncome</dataPath>
-			<field>OtherComprehensiveIncome</field>
 		</field>
 		<field xsi:type="DataSetFieldField">
 			<dataPath>Parent</dataPath>
@@ -119,11 +107,8 @@
 	ChartOfAccounts.OffBalance,
 	ChartOfAccounts.AccountType,
 	ChartOfAccounts.Category1099,
-	ChartOfAccounts.OtherComprehensiveIncome,
 	ChartOfAccounts.Currency,
-	ChartOfAccounts.IncomeTaxAccount,
 	ChartOfAccounts.CashFlowSection,
-	ChartOfAccounts.Noncash,
 	ChartOfAccounts.Memo,
 	ChartOfAccounts.ExtDimensionTypes.(
 		Ref,
@@ -180,9 +165,6 @@ FROM
 					</dcsset:item>
 					<dcsset:item xsi:type="dcsset:SelectedItemField">
 						<dcsset:field>DeletionMark</dcsset:field>
-					</dcsset:item>
-					<dcsset:item xsi:type="dcsset:SelectedItemField">
-						<dcsset:field>IncomeTaxAccount</dcsset:field>
 					</dcsset:item>
 					<dcsset:item xsi:type="dcsset:SelectedItemField">
 						<dcsset:field>Memo</dcsset:field>

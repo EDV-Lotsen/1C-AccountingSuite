@@ -10,6 +10,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	If Object.User = Catalogs.UserList.EmptyRef() Then
 		Object.User =  Catalogs.UserList.FindByDescription(GeneralFunctions.GetUserName());
 	Endif;
+	Object.Billable = True;
 
 EndProcedure
 
@@ -53,9 +54,9 @@ Procedure CreateEntriesAtServer()
 		NewTimeEntry.TimeComplete = Line.Hours;
 		NewTimeEntry.Memo = Line.Note;
 		If Object.Billable = False Then
-			NewTimeEntry.InvoiceSent = "Unbillable";
+			NewTimeEntry.InvoiceStatus = Enums.TimeTrackStatus.Unbillable;
 		Else
-			NewTimeEntry.InvoiceSent = "Unbilled";
+			NewTimeEntry.InvoiceStatus = Enums.TimeTrackStatus.Unbilled;
 		Endif;
 
 		

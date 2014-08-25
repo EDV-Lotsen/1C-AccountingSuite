@@ -230,15 +230,6 @@ FROM
 
 ////////////////////////////////////////////////////////////////////////////////
 SELECT
-	PriceListSliceLast.Product AS Product,
-	PriceListSliceLast.Price AS SalePrice
-INTO SalePrice
-FROM
-	InformationRegister.PriceList.SliceLast({(&amp;EndOfPeriod)}, ) AS PriceListSliceLast
-;
-
-////////////////////////////////////////////////////////////////////////////////
-SELECT
 	Products.Type,
 	Products.Category,
 	Products.Ref AS Item,
@@ -254,8 +245,8 @@ SELECT
 	ISNULL(AverageCostTT.AverageCost, 0) AS AverageCost,
 	ISNULL(AverageCostTT.AverageCost, 0) * ISNULL(OnHandTT.OnHand, 0) AS AssetValue,
 	ISNULL(LastCostTT.LastCost, 0) AS LastCost,
-	ISNULL(SalePriceTT.SalePrice, 0) AS SalePrice,
-	ISNULL(SalePriceTT.SalePrice, 0) * ISNULL(OnHandTT.OnHand, 0) AS RetailValue
+	Products.Price AS SalePrice,
+	Products.Price * ISNULL(OnHandTT.OnHand, 0) AS RetailValue
 FROM
 	Catalog.Products AS Products
 		LEFT JOIN OnHand AS OnHandTT
@@ -265,9 +256,7 @@ FROM
 		LEFT JOIN AverageCost AS AverageCostTT
 		ON Products.Ref = AverageCostTT.Product
 		LEFT JOIN FIFOCost AS FIFOCostTT
-		ON Products.Ref = FIFOCostTT.Product
-		LEFT JOIN SalePrice AS SalePriceTT
-		ON Products.Ref = SalePriceTT.Product</query>
+		ON Products.Ref = FIFOCostTT.Product</query>
 	</dataSet>
 	<calculatedField>
 		<dataPath>SumAssetValue</dataPath>

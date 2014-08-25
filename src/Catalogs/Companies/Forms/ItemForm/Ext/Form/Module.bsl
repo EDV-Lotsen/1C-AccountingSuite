@@ -284,6 +284,16 @@ EndProcedure
 &AtServer
 Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 	
+	////  create account in zoho
+	//If Constants.zoho_auth_token.Get() <> "" Then
+	//	If Object.NewObject = True Then
+	//		ThisAction = "create";
+	//	Else
+	//		ThisAction = "update";
+	//	EndIf;
+	//	zoho_ThisAccount(ThisAction);
+	//EndIf;
+	
 	Query = New Query("SELECT
 	                  |	Addresses.Ref
 	                  |FROM
@@ -301,6 +311,11 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 		AddressLine.DefaultBilling = True;
 		AddressLine.Write();
 	EndIf;
+	
+	////create zoho syncing
+	//If constants.zoho_auth_token.Get() <> "" Then
+	//	addPrimaryToZoho(AddressLine);
+	//EndIf;
 	
 	// Update visibility of flags
 	Items.Customer.Enabled = Not Object.Customer;
@@ -378,11 +393,7 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 		LongActions.ExecuteInBackground("GeneralFunctions.EmailWebhook", WebhookParams2);
 		
 	EndIf;
-	
-
-	
-
-	
+		
 EndProcedure
 
 &AtServer
@@ -392,7 +403,6 @@ Function GetAPISecretKey()
 	Return Constants.APISecretKey.Get();
 	
 EndFunction
-
 
 &AtClient
 Procedure SalesTransactions(Command)
@@ -513,4 +523,3 @@ Function GetDocumentOfTransaction()
 	Return Items.Transactions.CurrentRow.Document;	
 	
 EndFunction
-

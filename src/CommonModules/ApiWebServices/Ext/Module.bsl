@@ -1204,27 +1204,27 @@ Function inoutItemsCreate(jsonin) Export
 			NewProduct.Category = cat_result[0].Ref;
 		EndIf;
 		
-		Try uom = ParsedJSON.unit_of_measure Except uom = Undefined EndTry;
-		If NOT uom = Undefined Then
-			uomQuery = New Query("SELECT
-			                     |	UM.Ref
-			                     |FROM
-			                     |	Catalog.UM AS UM
-			                     |WHERE
-			                     |	UM.Description = &uomCode");
-			uomQuery.SetParameter("uomCode", uom );
-			uomQueryResult = uomQuery.Execute();
-			If uomQueryResult.IsEmpty() Then
-				errorMessage = New Map();
-				strMessage = " [unit_of_measure] : This does not exist. You must create the unit of measure first. ";
-				errorMessage.Insert("message", strMessage);
-				errorMessage.Insert("status", "error"); 
-				errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
-				return errorJSON;
-			EndIf;
-			uom_result = uomQueryResult.Unload();
-			NewProduct.UM = uom_result[0].Ref;
-		EndIf;
+		//Try uom = ParsedJSON.unit_of_measure Except uom = Undefined EndTry;
+		//If NOT uom = Undefined Then
+		//	uomQuery = New Query("SELECT
+		//						 |	UM.Ref
+		//						 |FROM
+		//						 |	Catalog.UM AS UM
+		//						 |WHERE
+		//						 |	UM.Description = &uomCode");
+		//	uomQuery.SetParameter("uomCode", uom );
+		//	uomQueryResult = uomQuery.Execute();
+		//	If uomQueryResult.IsEmpty() Then
+		//		errorMessage = New Map();
+		//		strMessage = " [unit_of_measure] : This does not exist. You must create the unit of measure first. ";
+		//		errorMessage.Insert("message", strMessage);
+		//		errorMessage.Insert("status", "error"); 
+		//		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+		//		return errorJSON;
+		//	EndIf;
+		//	uom_result = uomQueryResult.Unload();
+		//	NewProduct.UM = uom_result[0].Ref;
+		//EndIf;
 		
 		Try NewProduct.CF1String = ParsedJSON.cf1_string; Except EndTry;
 		Try NewProduct.CF2String = ParsedJSON.cf2_string; Except EndTry;
@@ -1387,27 +1387,27 @@ Function inoutItemsUpdate(jsonin, object_code) Export
 	EndIf;
 	
 	//Try UpdatedProductObj.UM = ParsedJSON.unit_of_measure; Except EndTry;
-	Try uom = ParsedJSON.unit_of_measure Except uom = Undefined EndTry;
-	If NOT uom = Undefined Then
-		uomQuery = New Query("SELECT
-		                     |	UM.Ref
-		                     |FROM
-		                     |	Catalog.UM AS UM
-		                     |WHERE
-		                     |	UM.Description = &uomCode");
-		uomQuery.SetParameter("uomCode", uom );
-		uomQueryResult = uomQuery.Execute();
-		If uomQueryResult.IsEmpty() Then
-			errorMessage = New Map();
-			strMessage = " [unit_of_measure] : This does not exist. You must create the unit of measure first. ";
-			errorMessage.Insert("message", strMessage);
-			errorMessage.Insert("status", "error"); 
-			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
-			return errorJSON;
-		EndIf;
-		uom_result = uomQueryResult.Unload();
-		UpdatedProductObj.UM = uom_result[0].Ref;
-	EndIf;
+	//Try uom = ParsedJSON.unit_of_measure Except uom = Undefined EndTry;
+	//If NOT uom = Undefined Then
+	//	uomQuery = New Query("SELECT
+	//						 |	UM.Ref
+	//						 |FROM
+	//						 |	Catalog.UM AS UM
+	//						 |WHERE
+	//						 |	UM.Description = &uomCode");
+	//	uomQuery.SetParameter("uomCode", uom );
+	//	uomQueryResult = uomQuery.Execute();
+	//	If uomQueryResult.IsEmpty() Then
+	//		errorMessage = New Map();
+	//		strMessage = " [unit_of_measure] : This does not exist. You must create the unit of measure first. ";
+	//		errorMessage.Insert("message", strMessage);
+	//		errorMessage.Insert("status", "error"); 
+	//		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+	//		return errorJSON;
+	//	EndIf;
+	//	uom_result = uomQueryResult.Unload();
+	//	UpdatedProductObj.UM = uom_result[0].Ref;
+	//EndIf;
 	
 	Try checkItemType = ParsedJSON.item_type; Except checkItemType = Undefined EndTry;
 	If NOT checkItemType = Undefined Then
@@ -4801,29 +4801,29 @@ Function inoutPurchaseOrdersCreate(jsonin) Export
 		
 		Try NewLine.Location = Catalogs.Locations.MainWarehouse; Except EndTry;
 		
-		Try 
-			um = DataLineItems[i].unit_of_measure;
-			newQuery = New Query("SELECT
-			                     |	UM.Ref
-			                     |FROM
-			                     |	Catalog.UM AS UM
-			                     |WHERE
-			                     |	UM.Description = &Description");
-								 
-			newQuery.SetParameter("Description", um);
-			umResult = newQuery.Execute();
-			If umResult.IsEmpty() Then
-				errorMessage = New Map();
-				strMessage = "[unit_of_measure] : The unit of measure does not exist." ;
-				errorMessage.Insert("status", "error");
-				errorMessage.Insert("message", strMessage );
-				errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
-				return errorJSON;
-			EndIf; 
-			umUnload = umResult.Unload();
-			NewLine.UM = umUnload[0].Ref;
-		Except
-		EndTry;
+		//Try 
+		//	um = DataLineItems[i].unit_of_measure;
+		//	newQuery = New Query("SELECT
+		//						 |	UM.Ref
+		//						 |FROM
+		//						 |	Catalog.UM AS UM
+		//						 |WHERE
+		//						 |	UM.Description = &Description");
+		//						 
+		//	newQuery.SetParameter("Description", um);
+		//	umResult = newQuery.Execute();
+		//	If umResult.IsEmpty() Then
+		//		errorMessage = New Map();
+		//		strMessage = "[unit_of_measure] : The unit of measure does not exist." ;
+		//		errorMessage.Insert("status", "error");
+		//		errorMessage.Insert("message", strMessage );
+		//		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+		//		return errorJSON;
+		//	EndIf; 
+		//	umUnload = umResult.Unload();
+		//	NewLine.UM = umUnload[0].Ref;
+		//Except
+		//EndTry;
 		
 		Try 
 			proj = DataLineItems[i].project;

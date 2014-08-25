@@ -80,6 +80,17 @@ Function BankAccountType() Export
 	
 EndFunction
 
+// Returns the Inventory account type
+// 
+// Returned value:
+// Enum.AccountTypes
+//
+Function InventoryAccountType() Export
+	
+	Return Enums.AccountTypes.Inventory;
+	
+EndFunction
+
 // Returns the A/R account type
 // 
 // Returned value:
@@ -88,6 +99,50 @@ EndFunction
 Function ARAccountType() Export
 	
 	Return Enums.AccountTypes.AccountsReceivable;
+	
+EndFunction
+
+// Returns the Other Current Asset account type
+// 
+// Returned value:
+// Enum.AccountTypes
+//
+Function OtherCurrentAssetAccountType() Export
+	
+	Return Enums.AccountTypes.OtherCurrentAsset;
+	
+EndFunction
+
+// Returns the Fixed Asset account type
+// 
+// Returned value:
+// Enum.AccountTypes
+//
+Function FixedAssetAccountType() Export
+	
+	Return Enums.AccountTypes.FixedAsset;
+	
+EndFunction
+
+// Returns the Accumulated Depreciation account type
+// 
+// Returned value:
+// Enum.AccountTypes
+//
+Function AccumulatedDepreciationAccountType() Export
+	
+	Return Enums.AccountTypes.AccumulatedDepreciation;
+	
+EndFunction
+
+// Returns the Other Non Current Asset account type
+// 
+// Returned value:
+// Enum.AccountTypes
+//
+Function OtherNonCurrentAssetAccountType() Export
+	
+	Return Enums.AccountTypes.OtherNonCurrentAsset;
 	
 EndFunction
 
@@ -101,6 +156,41 @@ Function APAccountType() Export
 	Return Enums.AccountTypes.AccountsPayable;
 	
 EndFunction
+
+// Returns the Other Current Liability account type
+// 
+// Returned value:
+// Enum.AccountTypes
+//
+Function OtherCurrentLiabilityAccountType() Export
+	
+	Return Enums.AccountTypes.OtherCurrentLiability;
+	
+EndFunction
+
+// Returns the Long Term Liability account type
+// 
+// Returned value:
+// Enum.AccountTypes
+//
+Function LongTermLiabilityAccountType() Export
+	
+	Return Enums.AccountTypes.LongTermLiability;
+	
+EndFunction
+
+// Returns the Equity account type
+// 
+// Returned value:
+// Enum.AccountTypes
+//
+Function EquityAccountType() Export
+	
+	Return Enums.AccountTypes.Equity;
+	
+EndFunction
+
+
 
 // Returns a Currency catalog empty value
 //
@@ -119,6 +209,24 @@ Function WeightedAverage() Export
 	
 EndFunction
 
+Function CashFlowOperatingSection() Export
+	
+	Return Enums.CashFlowSections.Operating;
+	
+EndFunction
+
+Function CashFlowInvestingSection() Export
+	
+	Return Enums.CashFlowSections.Investing;
+	
+EndFunction
+
+Function CashFlowFinancingSection() Export
+	
+	Return Enums.CashFlowSections.Financing;
+	
+EndFunction
+
 // Returns typical format string for quantities.
 //
 // Returns:
@@ -126,11 +234,20 @@ EndFunction
 //
 Function DefaultQuantityFormat() Export
 	
-	// Define quantity precision.
-	QuantityPrecision = Format(Constants.QtyPrecision.Get(), "NFD=0; NZ=0; NG=0");
-	
 	// Define format string.
-	Return "NFD=" + QuantityPrecision + "; NZ=";
+	Return "NFD=" + DefaultQuantityPrecision() + "; NZ=";
+	
+EndFunction
+
+// Returns typical precision for quantities.
+//
+// Returns:
+//  Number - Quantity precision.
+//
+Function DefaultQuantityPrecision() Export
+	
+	// Define quantity precision.
+	Return Format(Constants.QtyPrecision.Get(), "NFD=0; NZ=0; NG=0");
 	
 EndFunction
 

@@ -73,6 +73,8 @@ Procedure AfterWrite(WriteParameters)
 		RepresentDataChange(DocumentLine.Document, DataChangeType.Update);
 		
 	EndDo;
+	
+	Notify("UpdateBillInformation", Object.Company);
 		
 EndProcedure
 
@@ -102,8 +104,7 @@ Procedure BeforeWrite(Cancel, WriteParameters)
 	// preventing posting if already included in a bank rec
 	If ReconciledDocumentsServerCall.RequiresExcludingFromBankReconciliation(Object.Ref, -1*Object.DocumentTotalRC, Object.Date, Object.BankAccount, WriteParameters.WriteMode) Then
 		Cancel = True;
-		CommonUseClient.ShowCustomMessageBox(ThisForm, "Bank reconciliation", "The transaction you are editing has been reconciled. Saving 
-		|your changes could put you out of balance the next time you try to reconcile. 
+		CommonUseClient.ShowCustomMessageBox(ThisForm, "Bank reconciliation", "The transaction you are editing has been reconciled. Saving your changes could put you out of balance the next time you try to reconcile. 
 		|To modify it you should exclude it from the Bank rec. document.", PredefinedValue("Enum.MessageStatus.Warning"));
 	EndIf;	
 	
@@ -190,7 +191,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		OpenOrdersSelectionForm = True; 
 	EndIf;
 	
-	Items.FormPayWithDwolla.Enabled = IsBlankString(Object.DwollaTrxID);
+	//Items.FormPayWithDwolla.Enabled = IsBlankString(Object.DwollaTrxID);
 	
 	//Title = "Payment " + Object.Number + " " + Format(Object.Date, "DLF=D");
 	
@@ -206,6 +207,38 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
 	If GeneralFunctionsReusable.FunctionalOptionValue("MultiCurrency") Then	
 		Items.LineItemsPayment.Title = "Payment FCY";	
+	EndIf;
+	
+	//Disable voiding if document is not posted
+	If Object.Ref.Posted = False Then
+		Items.FormMarkAsVoid.Enabled = False;
+	EndIf;
+	
+	CheckVoid();
+	Attribute1 = Object.Ref;	
+EndProcedure
+
+&AtServer
+Procedure CheckVoid()
+	
+	//Check if there is a voiding entry for this document
+	Query = New Query;
+	Query.Text = "SELECT
+	             |	GeneralJournalEntry.Ref
+	             |FROM
+	             |	Document.GeneralJournalEntry AS GeneralJournalEntry
+	             |WHERE
+	             |	GeneralJournalEntry.VoidingEntry = &Ref";
+				 
+	Query.SetParameter("Ref", Object.Ref);
+	QueryResult = Query.Execute().Unload();
+	If QueryResult.Count() <> 0 Then
+		Items.VoidMessage.Title = "This bill payment has been voided by";
+		VoidingGJ = QueryResult[0].Ref;
+		Items.VoidInfo.Visible = True;
+		Items.FormMarkAsVoid.Enabled = False;
+	Else
+		Items.VoidInfo.Visible = False;
 	EndIf;
 	
 EndProcedure
@@ -322,105 +355,6 @@ Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 
 
 EndProcedure
-
-
-&AtClient
-Procedure PayWithDwolla(Command)
-	
-	DAT = DwollaAccessToken();
-	
-	If IsBlankString(DAT) Then
-		Message(NStr("en = 'Please connect to Dwolla in Settings > Integrations.'"));
-		Return;
-	EndIf;
-	
-	// Check document saved.
-	If Object.Ref.IsEmpty() Or Modified Then
-		Message(NStr("en = 'The document is not saved. Please save the document first.'"));
-		Return;
-	EndIf;
-	
-	// Check DwollaID
-	DwollaID = CommonUse.GetAttributeValue(Object.Company, "DwollaID");
-	If IsBlankString(DwollaID) Then
-		Message(NStr("en = 'Enter a Dwolla e-mail ID on the customer card.'"));
-		Return;
-	Else
-		AtSign = Find(DwollaID,"@");
-		If AtSign = 0 Then
-			IsEmail = False;
-		Else
-			IsEmail = True;
-		EndIf;
-	EndIf;
-		
-	If IsEmail Then
-					
-		DwollaData = New Map();
-		DwollaData.Insert("destinationId", DwollaID);
-		DwollaData.Insert("oauth_token", DAT);
-		DwollaData.Insert("amount", Format(Object.DocumentTotalRC,"NG=0"));
-		DwollaData.Insert("fundsSource", DwollaFundingSource());
-		DwollaData.Insert("destinationType", "Email");
-		DwollaData.Insert("pin", DwollaPin);
-		
-		DataJSON = InternetConnectionClientServer.EncodeJSON(DwollaData);
-			
-	Else
-		
-		DwollaData = New Map();
-		DwollaData.Insert("destinationId", DwollaID);
-		DwollaData.Insert("oauth_token", DAT);
-		DwollaData.Insert("amount", Format(Object.DocumentTotalRC,"NG=0"));
-		DwollaData.Insert("fundsSource", DwollaFundingSource());
-		DwollaData.Insert("pin", DwollaPin);
-		
-		DataJSON = InternetConnectionClientServer.EncodeJSON(DwollaData);
-	
-	EndIf;
-
-	ResultBodyJSON = DwollaCharge(DataJSON);
-	 	
-	If ResultBodyJSON.Success AND ResultBodyJSON.Message = "Success" Then
-		Object.DwollaTrxID = Format(ResultBodyJSON.Response, "NG=0");
-		Message(NStr("en = 'Payment was successfully made. Please save the document.'"));
-		Modified = True;
-	Else
-		Message(ResultBodyJSON.Message);
-	EndIf;
-	
-	Items.FormPayWithDwolla.Enabled = IsBlankString(Object.DwollaTrxID);
-
-EndProcedure
-
-&AtServer
-Function DwollaCharge(DataJSON)
-	
-	HeadersMap = New Map();
-	HeadersMap.Insert("Content-Type", "application/json");		
-	ConnectionSettings = New Structure;
-	Connection = InternetConnectionClientServer.CreateConnection( "https://www.dwolla.com/oauth/rest/transactions/send", ConnectionSettings).Result;
-	ResultBody = InternetConnectionClientServer.SendRequest(Connection, "Post", ConnectionSettings, HeadersMap, DataJSON).Result;
-
-	
-	//HeadersMap = New Map();
-	//HeadersMap.Insert("Content-Type", "application/json");
-	//
-	//HTTPRequest = New HTTPRequest("/oauth/rest/transactions/send",HeadersMap);
-	//	
-	//HTTPRequest.SetBodyFromString(DataJSON,TextEncoding.ANSI);
-	//
-	//SSLConnection = New OpenSSLSecureConnection();
-	//
-	//HTTPConnection = New HTTPConnection("www.dwolla.com",,,,,,SSLConnection);
-	//Result = HTTPConnection.Post(HTTPRequest);
-	//ResultBody = Result.GetBodyAsString(TextEncoding.UTF8);
-	
-	ResultBodyJSON = InternetConnectionClientServer.DecodeJSON(ResultBody);
-	
-	Return ResultBodyJSON;
-	
-EndFunction
 
 &AtServer
 Function DwollaAccessToken()
@@ -643,5 +577,34 @@ Procedure UpdateBankCheck(Result, Parameters) Export
 		Object.Number = StrReplace(Generalfunctions.LastCheckNumber(object.BankAccount) + 1,",","");       
     EndIf;              
 EndProcedure
+
+&AtClient
+Procedure MarkAsVoid(Command)
+	Notify = New NotifyDescription("OpenJournalEntry", ThisObject);
+	OpenForm("CommonForm.VoidDateForm",,,,,,Notify,FormWindowOpeningMode.LockOwnerWindow);
+EndProcedure
+
+&AtClient
+Procedure OpenJournalEntry(Parameter1,Parameter2) Export
+	
+	Str = New Structure;
+	Str.Insert("InvoicePayRef", Object.Ref);
+	Str.Insert("VoidDate", Parameter1);
+	If Parameter1 <> Undefined Then
+		OpenForm("Document.GeneralJournalEntry.ObjectForm",Str);	
+	EndIf;
+EndProcedure
+
+&AtClient
+Procedure NotificationProcessing(EventName, Parameter, Source)
+	
+	If EventName = "UpdateVoid" And Parameter = Object.Ref Then
+		
+		CheckVoid();
+		
+	EndIf;
+
+EndProcedure
+
 
 

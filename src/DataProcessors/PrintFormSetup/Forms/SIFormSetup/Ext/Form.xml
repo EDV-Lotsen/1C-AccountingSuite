@@ -102,37 +102,6 @@
 									<ContextMenu name="SIShowWebsiteContextMenu" id="745"/>
 									<ExtendedTooltip name="SIShowWebsiteExtendedTooltip" id="746"/>
 								</CheckBoxField>
-							</ChildItems>
-						</UsualGroup>
-						<UsualGroup name="SecondRow" id="910">
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Second row</v8:content>
-								</v8:item>
-							</Title>
-							<ToolTip>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Second row</v8:content>
-								</v8:item>
-							</ToolTip>
-							<Group>Horizontal</Group>
-							<ShowTitle>false</ShowTitle>
-							<ExtendedTooltip name="SecondRowExtendedTooltip" id="911"/>
-							<ChildItems>
-								<CheckBoxField name="SIShowFullName" id="907">
-									<DataPath>ConstantsSet.SIShowFullName</DataPath>
-									<Title>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Show Contact Name</v8:content>
-										</v8:item>
-									</Title>
-									<CheckBoxType>Auto</CheckBoxType>
-									<ContextMenu name="SIShowFullNameContextMenu" id="908"/>
-									<ExtendedTooltip name="SIShowFullNameExtendedTooltip" id="909"/>
-								</CheckBoxField>
 								<CheckBoxField name="SIShowFedTax" id="738">
 									<DataPath>ConstantsSet.SIShowFedTax</DataPath>
 									<Title>
@@ -156,6 +125,73 @@
 									<CheckBoxType>Auto</CheckBoxType>
 									<ContextMenu name="SIShowFaxContextMenu" id="742"/>
 									<ExtendedTooltip name="SIShowFaxExtendedTooltip" id="743"/>
+								</CheckBoxField>
+							</ChildItems>
+						</UsualGroup>
+						<UsualGroup name="SecondRow" id="910">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Second row</v8:content>
+								</v8:item>
+							</Title>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Second row</v8:content>
+								</v8:item>
+							</ToolTip>
+							<Group>Horizontal</Group>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="SecondRowExtendedTooltip" id="911"/>
+							<ChildItems>
+								<CheckBoxField name="SIShowCountry" id="912">
+									<DataPath>ConstantsSet.SIShowCountry</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Show Country in Address</v8:content>
+										</v8:item>
+									</Title>
+									<CheckBoxType>Auto</CheckBoxType>
+									<ContextMenu name="SIShowCountryContextMenu" id="913"/>
+									<ExtendedTooltip name="SIShowCountryExtendedTooltip" id="914"/>
+								</CheckBoxField>
+								<CheckBoxField name="SIShowFullName" id="907">
+									<DataPath>ConstantsSet.SIShowFullName</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Show Contact Name in Address</v8:content>
+										</v8:item>
+									</Title>
+									<CheckBoxType>Auto</CheckBoxType>
+									<ContextMenu name="SIShowFullNameContextMenu" id="908"/>
+									<ExtendedTooltip name="SIShowFullNameExtendedTooltip" id="909"/>
+								</CheckBoxField>
+								<CheckBoxField name="SIShowShipTo1" id="918">
+									<DataPath>ConstantsSet.SIShowShipTo</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Always show Ship To Address</v8:content>
+										</v8:item>
+									</Title>
+									<CheckBoxType>Auto</CheckBoxType>
+									<ContextMenu name="SIShowShipTo1ContextMenu" id="919"/>
+									<ExtendedTooltip name="SIShowShipTo1ExtendedTooltip" id="920"/>
+								</CheckBoxField>
+								<CheckBoxField name="SIShowSVC" id="915">
+									<DataPath>ConstantsSet.SIShowSVCCol</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Show Service Date Column</v8:content>
+										</v8:item>
+									</Title>
+									<CheckBoxType>Auto</CheckBoxType>
+									<ContextMenu name="SIShowSVCContextMenu" id="916"/>
+									<ExtendedTooltip name="SIShowSVCExtendedTooltip" id="917"/>
 								</CheckBoxField>
 							</ChildItems>
 						</UsualGroup>
@@ -621,9 +657,15 @@
 				<Field>ConstantsSet.POFoot3Type.Ref</Field>
 				<Field>ConstantsSet.POFoot2Type.Ref</Field>
 				<Field>ConstantsSet.POFoot1Type.Ref</Field>
+				<Field>ConstantsSet.CSFoot3Type.Ref</Field>
+				<Field>ConstantsSet.CSFoot2Type.Ref</Field>
+				<Field>ConstantsSet.CSFoot1Type.Ref</Field>
 				<Field>ConstantsSet.CRFoot3Type.Ref</Field>
 				<Field>ConstantsSet.CRFoot2Type.Ref</Field>
 				<Field>ConstantsSet.CRFoot1Type.Ref</Field>
+				<Field>ConstantsSet.CMFoot3Type.Ref</Field>
+				<Field>ConstantsSet.CMFoot2Type.Ref</Field>
+				<Field>ConstantsSet.CMFoot1Type.Ref</Field>
 			</UseAlways>
 		</Attribute>
 		<Attribute name="FooterImageAddr1" id="5">

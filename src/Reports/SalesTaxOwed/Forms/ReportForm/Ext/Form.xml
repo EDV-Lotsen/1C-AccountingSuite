@@ -3,8 +3,10 @@
 	<CommandBarLocation>None</CommandBarLocation>
 	<VerticalScroll>useIfNecessary</VerticalScroll>
 	<CommandSet>
+		<ExcludedCommand>SaveVariant</ExcludedCommand>
 		<ExcludedCommand>LoadVariant</ExcludedCommand>
 		<ExcludedCommand>Generate</ExcludedCommand>
+		<ExcludedCommand>ChangeVariant</ExcludedCommand>
 	</CommandSet>
 	<ReportResult>Result</ReportResult>
 	<DetailsData>DetailsData</DetailsData>
@@ -15,7 +17,9 @@
 		<Autofill>false</Autofill>
 	</AutoCommandBar>
 	<Events>
+		<Event name="OnOpen">OnOpen</Event>
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+		<Event name="OnUpdateUserSettingSetAtServer">OnUpdateUserSettingSetAtServer</Event>
 	</Events>
 	<ChildItems>
 		<UsualGroup name="MenuBar" id="17">
@@ -29,6 +33,38 @@
 			<ShowTitle>false</ShowTitle>
 			<ExtendedTooltip name="MenuBarExtendedTooltip" id="18"/>
 			<ChildItems>
+				<InputField name="PeriodVariant" id="22">
+					<DataPath>PeriodVariant</DataPath>
+					<Width>10</Width>
+					<HorizontalStretch>false</HorizontalStretch>
+					<ListChoiceMode>true</ListChoiceMode>
+					<TextEdit>false</TextEdit>
+					<ContextMenu name="PeriodVariantContextMenu" id="23"/>
+					<ExtendedTooltip name="PeriodVariantExtendedTooltip" id="24"/>
+					<Events>
+						<Event name="OnChange">PeriodVariantOnChange</Event>
+					</Events>
+				</InputField>
+				<InputField name="PeriodStartDate" id="25">
+					<DataPath>PeriodStartDate</DataPath>
+					<Width>9</Width>
+					<HorizontalStretch>false</HorizontalStretch>
+					<ContextMenu name="PeriodStartDateContextMenu" id="26"/>
+					<ExtendedTooltip name="PeriodStartDateExtendedTooltip" id="27"/>
+					<Events>
+						<Event name="OnChange">PeriodStartDateOnChange</Event>
+					</Events>
+				</InputField>
+				<InputField name="PeriodEndDate" id="28">
+					<DataPath>PeriodEndDate</DataPath>
+					<Width>9</Width>
+					<HorizontalStretch>false</HorizontalStretch>
+					<ContextMenu name="PeriodEndDateContextMenu" id="29"/>
+					<ExtendedTooltip name="PeriodEndDateExtendedTooltip" id="30"/>
+					<Events>
+						<Event name="OnChange">PeriodEndDateOnChange</Event>
+					</Events>
+				</InputField>
 				<InputField name="Variant" id="19">
 					<DataPath>Variant</DataPath>
 					<Title>
@@ -37,8 +73,10 @@
 							<v8:content>Show by</v8:content>
 						</v8:item>
 					</Title>
+					<Width>18</Width>
 					<HorizontalStretch>false</HorizontalStretch>
 					<ListChoiceMode>true</ListChoiceMode>
+					<TextEdit>false</TextEdit>
 					<ChoiceList>
 						<xr:Item>
 							<xr:Presentation/>
@@ -112,51 +150,14 @@
 						<Event name="OnChange">VariantOnChange</Event>
 					</Events>
 				</InputField>
-				<Button name="Create" id="22">
+				<Button name="FormReportSettings" id="35">
 					<Type>UsualButton</Type>
-					<Representation>PictureAndText</Representation>
-					<DefaultButton>true</DefaultButton>
-					<CommandName>Form.Command.Create</CommandName>
-					<Font ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
-					<Picture>
-						<xr:Ref>StdPicture.GenerateReport</xr:Ref>
-						<xr:LoadTransparent>true</xr:LoadTransparent>
-					</Picture>
-					<Title>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Create Report</v8:content>
-						</v8:item>
-					</Title>
-					<ExtendedTooltip name="CreateExtendedTooltip" id="23"/>
-				</Button>
-				<LabelDecoration name="EmptySpaceDecoration" id="26">
-					<HorizontalStretch>true</HorizontalStretch>
-					<ContextMenu name="EmptySpaceDecorationContextMenu" id="27"/>
-					<ExtendedTooltip name="EmptySpaceDecorationExtendedTooltip" id="28"/>
-				</LabelDecoration>
-				<Button name="FormExcel" id="24">
-					<Type>UsualButton</Type>
-					<CommandName>Form.Command.Excel</CommandName>
-					<TextColor>style:FieldBackColor</TextColor>
-					<BackColor>style:ColorInformationLabel</BackColor>
-					<Font ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
-					<Title>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Export to Excel</v8:content>
-						</v8:item>
-					</Title>
-					<ExtendedTooltip name="FormExcelExtendedTooltip" id="25"/>
-				</Button>
-				<Button name="Print" id="29">
-					<Type>UsualButton</Type>
-					<Representation>PictureAndText</Representation>
-					<CommandName>Form.StandardCommand.Print</CommandName>
-					<TextColor>style:FieldBackColor</TextColor>
-					<BackColor>style:ColorInformationLabel</BackColor>
-					<Font ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
-					<ExtendedTooltip name="PrintExtendedTooltip" id="30"/>
+					<OnlyInAllActions>true</OnlyInAllActions>
+					<CommandName>Form.StandardCommand.ReportSettings</CommandName>
+					<TextColor>#FFFFFF</TextColor>
+					<BackColor>#00A000</BackColor>
+					<BorderColor>#008200</BorderColor>
+					<ExtendedTooltip name="FormReportSettingsExtendedTooltip" id="36"/>
 				</Button>
 				<CommandBar name="MainCommandBar" id="5">
 					<Title>
@@ -165,92 +166,39 @@
 							<v8:content>Main command bar</v8:content>
 						</v8:item>
 					</Title>
-					<HorizontalStretch>false</HorizontalStretch>
 					<CommandSource>Form</CommandSource>
 					<ExtendedTooltip name="MainCommandBarExtendedTooltip" id="14"/>
+					<ChildItems>
+						<Button name="Create" id="31">
+							<Type>CommandBarButton</Type>
+							<DefaultButton>true</DefaultButton>
+							<OnlyInAllActions>true</OnlyInAllActions>
+							<CommandName>Form.Command.Create</CommandName>
+							<Font bold="true" kind="AutoFont"/>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Run report</v8:content>
+								</v8:item>
+							</Title>
+							<ExtendedTooltip name="CreateExtendedTooltip" id="32"/>
+						</Button>
+						<Button name="FormExcel" id="33">
+							<Type>CommandBarButton</Type>
+							<OnlyInAllActions>true</OnlyInAllActions>
+							<CommandName>Form.Command.Excel</CommandName>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Export to Excel</v8:content>
+								</v8:item>
+							</Title>
+							<ExtendedTooltip name="FormExcelExtendedTooltip" id="34"/>
+						</Button>
+					</ChildItems>
 				</CommandBar>
 			</ChildItems>
 		</UsualGroup>
-		<UsualGroup name="VariantGroup" id="1">
-			<Visible>false</Visible>
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Group of variant</v8:content>
-				</v8:item>
-			</Title>
-			<Group>Horizontal</Group>
-			<Representation>None</Representation>
-			<ShowTitle>false</ShowTitle>
-			<ExtendedTooltip name="VariantGroupExtendedTooltip" id="11"/>
-			<ChildItems>
-				<InputField name="CurrentVariantDescription" id="2">
-					<DataPath>CurrentVariantDescription</DataPath>
-					<ReadOnly>true</ReadOnly>
-					<TitleLocation>Left</TitleLocation>
-					<ContextMenu name="CurrentVariantDescriptionContextMenu" id="3"/>
-					<ExtendedTooltip name="CurrentVariantDescriptionExtendedTooltip" id="12"/>
-				</InputField>
-				<Button name="LoadVariant" id="4">
-					<Type>UsualButton</Type>
-					<CommandName>0:b08b7a35-583a-4756-b814-0436ff9139c0</CommandName>
-					<ExtendedTooltip name="LoadVariantExtendedTooltip" id="13"/>
-				</Button>
-			</ChildItems>
-		</UsualGroup>
-		<Table name="SettingsComposerUserSettings" id="6">
-			<Representation>Tree</Representation>
-			<CommandBarLocation>None</CommandBarLocation>
-			<Autofill>true</Autofill>
-			<Header>false</Header>
-			<InitialTreeView>ExpandAllLevels</InitialTreeView>
-			<VerticalStretch>false</VerticalStretch>
-			<EnableStartDrag>true</EnableStartDrag>
-			<EnableDrag>true</EnableDrag>
-			<DataPath>Report.SettingsComposer.UserSettings</DataPath>
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Table of custom settings</v8:content>
-				</v8:item>
-			</Title>
-			<CommandSet>
-				<ExcludedCommand>HierarchicalList</ExcludedCommand>
-				<ExcludedCommand>Tree</ExcludedCommand>
-				<ExcludedCommand>List</ExcludedCommand>
-			</CommandSet>
-			<SearchStringLocation>None</SearchStringLocation>
-			<ViewStatusLocation>None</ViewStatusLocation>
-			<SearchControlLocation>None</SearchControlLocation>
-			<ViewMode>QuickAccess</ViewMode>
-			<ContextMenu name="SettingsComposerUserSettingsContextMenu" id="7"/>
-			<AutoCommandBar name="SettingsComposerUserSettingsCommandBar" id="8"/>
-			<ExtendedTooltip name="SettingsComposerUserSettingsExtendedTooltip" id="15"/>
-			<SearchStringAddition name="SettingsComposerUserSettingsSearchString" id="31">
-				<AdditionSource>
-					<Item>SettingsComposerUserSettings</Item>
-					<Type>SearchStringRepresentation</Type>
-				</AdditionSource>
-				<ContextMenu name="SettingsComposerUserSettingsSearchStringContextMenu" id="32"/>
-				<ExtendedTooltip name="SettingsComposerUserSettingsSearchStringExtendedTooltip" id="33"/>
-			</SearchStringAddition>
-			<ViewStatusAddition name="SettingsComposerUserSettingsViewStatus" id="34">
-				<AdditionSource>
-					<Item>SettingsComposerUserSettings</Item>
-					<Type>ViewStatusRepresentation</Type>
-				</AdditionSource>
-				<ContextMenu name="SettingsComposerUserSettingsViewStatusContextMenu" id="35"/>
-				<ExtendedTooltip name="SettingsComposerUserSettingsViewStatusExtendedTooltip" id="36"/>
-			</ViewStatusAddition>
-			<SearchControlAddition name="SettingsComposerUserSettingsSearchControl" id="37">
-				<AdditionSource>
-					<Item>SettingsComposerUserSettings</Item>
-					<Type>SearchControl</Type>
-				</AdditionSource>
-				<ContextMenu name="SettingsComposerUserSettingsSearchControlContextMenu" id="38"/>
-				<ExtendedTooltip name="SettingsComposerUserSettingsSearchControlExtendedTooltip" id="39"/>
-			</SearchControlAddition>
-		</Table>
 		<SpreadSheetDocumentField name="Result" id="9">
 			<DataPath>Result</DataPath>
 			<DefaultItem>true</DefaultItem>
@@ -310,6 +258,49 @@
 				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Variant</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="PeriodEndDate" id="6">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>To</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:dateTime</v8:Type>
+				<v8:DateQualifiers>
+					<v8:DateFractions>Date</v8:DateFractions>
+				</v8:DateQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="PeriodStartDate" id="7">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>From</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:dateTime</v8:Type>
+				<v8:DateQualifiers>
+					<v8:DateFractions>Date</v8:DateFractions>
+				</v8:DateQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="PeriodVariant" id="8">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Period</v8:content>
 				</v8:item>
 			</Title>
 			<Type>

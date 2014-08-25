@@ -1,80 +1,32 @@
 ﻿// The procedure posts interest earned and bank service charge transactions.
 // Also posting cleared transactions on BankReconciliation register
 Procedure Posting(Cancel, Mode)
-	If ServiceCharge > 0 Then
-		
-		If BankServiceChargeAccount.AccountType = Enums.AccountTypes.CostOfSales OR
-		   BankServiceChargeAccount.AccountType = Enums.AccountTypes.Expense OR
-		   BankServiceChargeAccount.AccountType = Enums.AccountTypes.OtherExpense OR
-		   BankServiceChargeAccount.AccountType = Enums.AccountTypes.IncomeTaxExpense Then
-		   
-		   		Record = RegisterRecords.CashFlowData.Add();
-				Record.RecordType = AccumulationRecordType.Receipt;
-				Record.Period = Date;
-				Record.Document = Ref;
-				Record.Account = BankServiceChargeAccount;
-				Record.AmountRC = ServiceCharge;
-				
-				Record = RegisterRecords.CashFlowData.Add();
-				Record.RecordType = AccumulationRecordType.Expense;
-				Record.Period = Date;
-				Record.Document = Ref;
-				Record.Account = BankServiceChargeAccount;
-				Record.AmountRC = ServiceCharge;
-		   
-		EndIf;
-
-		
-	EndIf;
 	
-	If InterestEarned > 0 Then
-		
-		If BankInterestEarnedAccount.AccountType = Enums.AccountTypes.Income OR
-		   BankInterestEarnedAccount.AccountType = Enums.AccountTypes.OtherIncome Then
-		   
-		   		Record = RegisterRecords.CashFlowData.Add();
-				Record.RecordType = AccumulationRecordType.Expense;
-				Record.Period = Date;
-				Record.Document = Ref;
-				Record.Account = BankInterestEarnedAccount;
-				Record.AmountRC = InterestEarned;
-				
-				Record = RegisterRecords.CashFlowData.Add();
-				Record.RecordType = AccumulationRecordType.Receipt;
-				Record.Period = Date;
-				Record.Document = Ref;
-				Record.Account = BankInterestEarnedAccount;
-				Record.AmountRC = InterestEarned;
-	   
-		EndIf;
+	//RegisterRecords.GeneralJournal.Write = True;
+	//
+	//If (InterestEarned <> 0) Then
+	//	Record = RegisterRecords.GeneralJournal.AddDebit();
+	//	Record.Account = BankAccount;
+	//	Record.Period = InterestEarnedDate;
+	//	Record.AmountRC = InterestEarned;
 
-	EndIf;
-	
-	RegisterRecords.GeneralJournal.Write = True;
-	
-	If (InterestEarned <> 0) Then
-		Record = RegisterRecords.GeneralJournal.AddDebit();
-		Record.Account = BankAccount;
-		Record.Period = InterestEarnedDate;
-		Record.AmountRC = InterestEarned;
+	//	Record = RegisterRecords.GeneralJournal.AddCredit();
+	//	Record.Account = BankInterestEarnedAccount;
+	//	Record.Period = InterestEarnedDate;
+	//	Record.AmountRC = InterestEarned;
+	//EndIf;
+	//
+	//If (ServiceCharge <> 0) Then
+	//	Record = RegisterRecords.GeneralJournal.AddCredit();
+	//	Record.Account = BankAccount;
+	//	Record.Period = ServiceChargeDate;
+	//	Record.AmountRC = ServiceCharge;
 
-		Record = RegisterRecords.GeneralJournal.AddCredit();
-		Record.Account = BankInterestEarnedAccount;
-		Record.Period = InterestEarnedDate;
-		Record.AmountRC = InterestEarned;
-	EndIf;
-	
-	If (ServiceCharge <> 0) Then
-		Record = RegisterRecords.GeneralJournal.AddCredit();
-		Record.Account = BankAccount;
-		Record.Period = ServiceChargeDate;
-		Record.AmountRC = ServiceCharge;
-
-		Record = RegisterRecords.GeneralJournal.AddDebit();
-		Record.Account = BankServiceChargeAccount;
-		Record.Period = ServiceChargeDate;
-		Record.AmountRC = ServiceCharge;
-	EndIf;
+	//	Record = RegisterRecords.GeneralJournal.AddDebit();
+	//	Record.Account = BankServiceChargeAccount;
+	//	Record.Period = ServiceChargeDate;
+	//	Record.AmountRC = ServiceCharge;
+	//EndIf;
 	
 	//Bank reconciliation data
 	//Apply data lock
@@ -139,6 +91,7 @@ Procedure Posting(Cancel, Mode)
 	                  |SELECT
 	                  |	LineItems.LineNumber,
 	                  |	LineItems.Document,
+	                  |	LineItems.Document.Presentation,
 	                  |	LineItems.Amount,
 	                  |	CASE
 	                  |		WHEN LineItems.Amount >= 0
@@ -198,7 +151,7 @@ Procedure Posting(Cancel, Mode)
 		//Show message to the user
 		RowNumber = Result.LineNumber;
 		Message = New UserMessage();
-		Message.Text=NStr("en = 'Current amount " + Format(Result.Amount, "NFD=2; NZ=") + " exceeds the amount, available for reconciliation " + Format(Result.AvailableAmount, "NFD=2; NZ=") + "." + Chars.LF + "Please, use the Refresh button to update the tabular section!'");
+		Message.Text=NStr("en = '" + Result.DocumentPresentation + ". Current amount " + Format(Result.Amount, "NFD=2; NZ=") + " exceeds the amount, available for reconciliation " + Format(Result.AvailableAmount, "NFD=2; NZ=") + "." + Chars.LF + "Please, use the Refresh button to update the tabular section!'");
 		If (Result.Amount < 0) Then
 			Message.Field = "LineItems[" + String(RowNumber-1) + "].Payment";
 		Else

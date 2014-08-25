@@ -89,7 +89,7 @@ Procedure OnWrite(Cancel)
 			
 		EndDo;						
 	EndIf;
-
+	
 EndProcedure
 
 Procedure BeforeDelete(Cancel)
@@ -120,7 +120,4 @@ Procedure BeforeDelete(Cancel)
 	EndIf;
 
 EndProcedure
-
-
-
 

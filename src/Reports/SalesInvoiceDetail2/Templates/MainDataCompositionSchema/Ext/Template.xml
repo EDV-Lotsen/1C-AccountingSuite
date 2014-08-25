@@ -123,10 +123,6 @@
 			<field>Posted</field>
 		</field>
 		<field xsi:type="DataSetFieldField">
-			<dataPath>Price</dataPath>
-			<field>Price</field>
-		</field>
-		<field xsi:type="DataSetFieldField">
 			<dataPath>Product</dataPath>
 			<field>Product</field>
 		</field>
@@ -147,10 +143,6 @@
 					<v8:content>Project1</v8:content>
 				</v8:item>
 			</title>
-		</field>
-		<field xsi:type="DataSetFieldField">
-			<dataPath>Quantity</dataPath>
-			<field>Quantity</field>
 		</field>
 		<field xsi:type="DataSetFieldField">
 			<dataPath>Ref</dataPath>
@@ -324,15 +316,23 @@
 			<dataPath>TaxableSubtotal</dataPath>
 			<field>TaxableSubtotal</field>
 		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>QtyUM</dataPath>
+			<field>QtyUM</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>PriceUnits</dataPath>
+			<field>PriceUnits</field>
+		</field>
 		<dataSource>DataSource1</dataSource>
 		<query>SELECT
 	SalesInvoiceLineItems.Ref,
 	SalesInvoiceLineItems.LineNumber,
 	SalesInvoiceLineItems.Product,
 	SalesInvoiceLineItems.ProductDescription,
-	SalesInvoiceLineItems.Quantity,
-	SalesInvoiceLineItems.UM,
-	SalesInvoiceLineItems.Price,
+	SalesInvoiceLineItems.QtyUM,
+	SalesInvoiceLineItems.Unit.Code As UM,
+	SalesInvoiceLineItems.PriceUnits,
 	SalesInvoiceLineItems.LineTotal,
 	SalesInvoiceLineItems.Taxable,
 	SalesInvoiceLineItems.TaxableAmount,
@@ -444,16 +444,10 @@ FROM
 					<dcsset:field>LocationActual1</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>Price</dcsset:field>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Project</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Project1</dcsset:field>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>Quantity</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Ref1</dcsset:field>

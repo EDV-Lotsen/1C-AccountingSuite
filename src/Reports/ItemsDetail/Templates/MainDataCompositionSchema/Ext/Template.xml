@@ -115,10 +115,6 @@
 			<field>Type</field>
 		</field>
 		<field xsi:type="DataSetFieldField">
-			<dataPath>UM</dataPath>
-			<field>UM</field>
-		</field>
-		<field xsi:type="DataSetFieldField">
 			<dataPath>UPC</dataPath>
 			<field>UPC</field>
 		</field>
@@ -142,7 +138,7 @@
 	Products.InventoryOrExpenseAccount,
 	Products.IncomeAccount,
 	Products.COGSAccount,
-	Products.UM,
+	//Products.UnitSet.UM,
 	Products.DefaultLocation,
 	Products.PreferredVendor,
 	Products.CF1String,
@@ -258,9 +254,6 @@ FROM
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Type</dcsset:field>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>UM</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>UPC</dcsset:field>

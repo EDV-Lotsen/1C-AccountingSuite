@@ -1,10 +1,18 @@
-﻿
+﻿&AtServer
+Var OpeningReportForm; 
+
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
 	If Parameters.GenerateOnOpen <> Undefined And Parameters.GenerateOnOpen Then
 		GenerateOnOpen = True;
 	EndIf;
+	
+	Items.PeriodVariant.ChoiceList.LoadValues(GeneralFunctions.GetCustomizedPeriodsList());
+	PeriodVariant = GeneralFunctions.GetDefaultPeriodVariant();
+	GeneralFunctions.ChangeDatesByPeriod(PeriodVariant, PeriodStartDate, PeriodEndDate);
+	
+	OpeningReportForm = True;
 			
 EndProcedure
 
@@ -24,6 +32,12 @@ Procedure OnOpenAtServer()
 		
 		Items.Result.StatePresentation.Visible = False;
 		Items.Result.StatePresentation.AdditionalShowMode = AdditionalShowMode.DontUse;
+		
+		GeneralFunctions.ChangePeriodIntoReportForm(ThisForm.Report.SettingsComposer, PeriodVariant, PeriodStartDate, PeriodEndDate);
+		
+	Else
+		
+		GeneralFunctions.ChangePeriodIntoUserSettings(ThisForm.Report.SettingsComposer, PeriodStartDate, PeriodEndDate);
 		
 	EndIf;
 	
@@ -99,58 +113,14 @@ Function ProcessDetailsAtServer(Val ReportRF, Val ResultRF, Val DetailsDataRF, V
 	
 EndFunction
 
-//////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////
-
 &AtClient
 Procedure Excel(Command)
 	
-	//Result.Write("" + GetSystemTitle() + " - Income statement" , SpreadsheetDocumentFileType.XLSX); 
+	Structure = GeneralFunctions.GetExcelFile("Budget plan actual", Result);
 	
-	FileName = "" + GetSystemTitle() + " - Budget plan actual.xlsx"; 
-	GetFile(GetFileName(), FileName, True); 
+	GetFile(Structure.Address, Structure.FileName, True); 
 
 EndProcedure
-
-&AtServer
-Function GetFileName()
-	
-	TemporaryFileName = GetTempFileName(".xlsx");
-	
-	Result.Write(TemporaryFileName, SpreadsheetDocumentFileType.XLSX);
-	BinaryData = New BinaryData(TemporaryFileName);
-	
-	DeleteFiles(TemporaryFileName);
-	
-	Return PutToTempStorage(BinaryData);
-	
-EndFunction
-
-&AtServerNoContext
-Function GetSystemTitle()
-	
-	SystemTitle = Constants.SystemTitle.Get();
-	
-	NewSystemTitle = "";
-	
-	For i = 1 To StrLen(SystemTitle) Do
-		
-		Char = Mid(SystemTitle, i, 1);
-		
-		If Find("#&\/:*?""<>|.", Char) > 0 Then
-			NewSystemTitle = NewSystemTitle + " ";	
-		Else
-			NewSystemTitle = NewSystemTitle + Char;	
-		EndIf;
-		
-	EndDo;	
-	
-	Return NewSystemTitle;
-	
-EndFunction
-
-//////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////
 
 &AtClient
 Procedure VariantOnChange(Item)
@@ -173,5 +143,48 @@ EndProcedure
 
 &AtClient
 Procedure Create(Command)
+	
+	GeneralFunctions.ChangePeriodIntoUserSettings(ThisForm.Report.SettingsComposer, PeriodStartDate, PeriodEndDate);
+	Report.SettingsComposer.LoadUserSettings(Report.SettingsComposer.UserSettings);
+	
 	ComposeResult();
+	
+EndProcedure
+
+&AtClient
+Procedure PeriodVariantOnChange(Item)
+	
+	GeneralFunctions.ChangeDatesByPeriod(PeriodVariant, PeriodStartDate, PeriodEndDate);
+	GeneralFunctions.ChangePeriodIntoUserSettings(ThisForm.Report.SettingsComposer, PeriodStartDate, PeriodEndDate);
+	ModifiedStatePresentation();
+	
+EndProcedure
+
+&AtClient
+Procedure PeriodStartDateOnChange(Item)
+	
+	PeriodVariant = GeneralFunctions.GetCustomVariantName();
+	GeneralFunctions.ChangePeriodIntoUserSettings(ThisForm.Report.SettingsComposer, PeriodStartDate, PeriodEndDate);
+	ModifiedStatePresentation();
+	
+EndProcedure
+
+&AtClient
+Procedure PeriodEndDateOnChange(Item)
+	
+	PeriodVariant = GeneralFunctions.GetCustomVariantName();
+	GeneralFunctions.ChangePeriodIntoUserSettings(ThisForm.Report.SettingsComposer, PeriodStartDate, PeriodEndDate);
+	ModifiedStatePresentation();
+	
+EndProcedure
+
+&AtServer
+Procedure OnUpdateUserSettingSetAtServer(StandardProcessing)
+	
+	If OpeningReportForm <> Undefined And OpeningReportForm Then
+		
+	Else
+		GeneralFunctions.ChangePeriodIntoReportForm(ThisForm.Report.SettingsComposer, PeriodVariant, PeriodStartDate, PeriodEndDate);
+	EndIf;	
+		
 EndProcedure

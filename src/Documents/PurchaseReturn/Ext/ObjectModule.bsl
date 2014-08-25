@@ -33,7 +33,7 @@ Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 		// Precheck of document data, calculation of temporary data, required for document posting.
 		If (Not ManualAdjustment) Then
 			DocumentParameters = New Structure("Ref, PointInTime,   Company, Location, LineItems",
-			                                    Ref, PointInTime(), Company, Location, LineItems.Unload(, "Product, Quantity"));
+			                                    Ref, PointInTime(), Company, Location, LineItems.Unload(, "Product, Unit, QtyUM"));
 			Documents.PurchaseReturn.PrepareDataBeforeWrite(AdditionalProperties, DocumentParameters, Cancel);
 		EndIf;
 		
@@ -69,11 +69,7 @@ Procedure Filling(FillingData, StandardProcessing)
 			
 			For Each CurRowLineItems In FillingData.LineItems Do
 				NewRow = LineItems.Add();
-				NewRow.Product   = CurRowLineItems.Product;
-				NewRow.ProductDescription = CurRowLineItems.ProductDescription;
-				NewRow.Quantity  = CurRowLineItems.Quantity;
-				NewRow.Price     = CurRowLineItems.Price;
-				NewRow.LineTotal = CurRowLineItems.LineTotal;
+				FillPropertyValues(NewRow, CurRowLineItems);
 			EndDo;
 			// <- CODE REVIEW
 			
@@ -125,7 +121,9 @@ Procedure Posting(Cancel, Mode)
 	PostingDatasetInvOrExp.Columns.Add("AmountRC");
 	
 	RegisterRecords.CashFlowData.Write = True;
-
+	
+	// Request actual time point.
+	PointInTime = PointInTime();
 	
 	For Each CurRowLineItems In LineItems Do
 		
@@ -159,7 +157,8 @@ Procedure Posting(Cancel, Mode)
 				                  |	InventoryJournalBalance.QuantityBalance AS QuantityBalance,
 				                  |	InventoryJournalBalance.AmountBalance   AS AmountBalance
 				                  |FROM
-				                  |	AccumulationRegister.InventoryJournal.Balance(, Product = &Product) AS InventoryJournalBalance");
+				                  |	AccumulationRegister.InventoryJournal.Balance(&PointInTime, Product = &Product) AS InventoryJournalBalance");
+				Query.SetParameter("PointInTime", PointInTime);
 				Query.SetParameter("Product", CurRowLineItems.Product);
 				QueryResult = Query.Execute().Unload();
 				If  QueryResult.Count() > 0
@@ -170,13 +169,13 @@ Procedure Posting(Cancel, Mode)
 					AverageCost = QueryResult[0].AmountBalance / QueryResult[0].QuantityBalance;
 				EndIf;
 				
-				ItemCost = CurRowLineItems.Quantity * AverageCost;
+				ItemCost = CurRowLineItems.QtyUM * AverageCost;
 				
 			EndIf;
 			
 			If CurRowLineItems.Product.CostingMethod = Enums.InventoryCosting.FIFO Then
 				
-				ItemQuantity = CurRowLineItems.Quantity;
+				ItemQuantity = CurRowLineItems.QtyUM;
 				
 				Query = New Query("SELECT
 				                  |	InventoryJournalBalance.QuantityBalance,
@@ -184,9 +183,10 @@ Procedure Posting(Cancel, Mode)
 				                  |	InventoryJournalBalance.Layer,
 				                  |	InventoryJournalBalance.Layer.Date AS LayerDate
 				                  |FROM
-				                  |	AccumulationRegister.InventoryJournal.Balance(, Product = &Product AND Location = &Location) AS InventoryJournalBalance
+				                  |	AccumulationRegister.InventoryJournal.Balance(&PointInTime, Product = &Product AND Location = &Location) AS InventoryJournalBalance
 				                  |ORDER BY
 				                  |	LayerDate ASC");
+				Query.SetParameter("PointInTime", PointInTime);
 				Query.SetParameter("Product", CurRowLineItems.Product);
 				Query.SetParameter("Location", Location);
 				Selection = Query.Execute().Select();
@@ -280,7 +280,7 @@ Procedure Posting(Cancel, Mode)
 		Record = RegisterRecords.GeneralJournal.AddDebit();
 		Record.Account = Constants.ExpenseAccount.Get();
 		Record.Period = Date;
-		Record.AmountRC = VarianceAmount;
+		Record.AmountRC = -VarianceAmount;
 		Record.Memo = "Purchase Return variance";
 	EndIf;
 	

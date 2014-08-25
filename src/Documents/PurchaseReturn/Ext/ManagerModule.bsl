@@ -208,7 +208,7 @@ Function Query_InventoryJournal_LineItems(TablesList)
 	|	LineItems.Ref.Location                   AS Location,
 	// ------------------------------------------------------
 	// Agregates
-	|	SUM(LineItems.Quantity)                  AS QuantityRequested
+	|	SUM(LineItems.QtyUM)                     AS QuantityRequested
 	// ------------------------------------------------------
 	|INTO
 	|	Table_InventoryJournal_LineItems
@@ -233,7 +233,7 @@ Function Query_InventoryJournal_LineItems(TablesList)
 	|	LineItems.Ref.Location                   AS Location,
 	// ------------------------------------------------------
 	// Agregates
-	|	SUM(LineItems.Quantity)                  AS QuantityRequested
+	|	SUM(LineItems.QtyUM)                     AS QuantityRequested
 	// ------------------------------------------------------
 	|FROM
 	|	Document.PurchaseReturn.LineItems AS LineItems
@@ -256,7 +256,7 @@ Function Query_InventoryJournal_LineItems(TablesList)
 	|	VALUE(Catalog.Locations.EmptyRef)        AS Location,
 	// ------------------------------------------------------
 	// Agregates
-	|	SUM(LineItems.Quantity)                  AS QuantityRequested
+	|	SUM(LineItems.QtyUM)                     AS QuantityRequested
 	// ------------------------------------------------------
 	|FROM
 	|	Document.PurchaseReturn.LineItems AS LineItems

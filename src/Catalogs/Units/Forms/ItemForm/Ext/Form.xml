@@ -5,83 +5,66 @@
 	<AutoCommandBar name="FormCommandBar" id="-1"/>
 	<Events>
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+		<Event name="BeforeWriteAtServer">BeforeWriteAtServer</Event>
 	</Events>
 	<ChildItems>
-		<UsualGroup name="GroupOwner" id="24">
-			<Group>Horizontal</Group>
-			<ShowTitle>false</ShowTitle>
-			<BackColor>style:ReportHeaderBackColor</BackColor>
-			<ExtendedTooltip name="GroupOwnerExtendedTooltip" id="25"/>
-			<ChildItems>
-				<LabelField name="Owner" id="21">
-					<DataPath>Object.Owner</DataPath>
-					<Title>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Item</v8:content>
-						</v8:item>
-					</Title>
-					<HorizontalAlign>Right</HorizontalAlign>
-					<Width>4</Width>
-					<Hiperlink>true</Hiperlink>
-					<ContextMenu name="OwnerContextMenu" id="22"/>
-					<ExtendedTooltip name="OwnerExtendedTooltip" id="23"/>
-				</LabelField>
-				<LabelField name="OwnerDescription" id="26">
-					<DataPath>Object.Owner.Description</DataPath>
-					<TitleLocation>None</TitleLocation>
-					<Width>20</Width>
-					<ContextMenu name="OwnerDescriptionContextMenu" id="27"/>
-					<ExtendedTooltip name="OwnerDescriptionExtendedTooltip" id="28"/>
-				</LabelField>
-			</ChildItems>
-		</UsualGroup>
-		<UsualGroup name="FactorFormula" id="10">
-			<Group>Horizontal</Group>
-			<Representation>None</Representation>
-			<ShowTitle>false</ShowTitle>
-			<ExtendedTooltip name="FactorFormulaExtendedTooltip" id="11"/>
+		<UsualGroup name="ItemUnit" id="35">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Item unit</v8:content>
+				</v8:item>
+			</Title>
+			<Group>Vertical</Group>
+			<ExtendedTooltip name="ItemUnitExtendedTooltip" id="36"/>
 			<ChildItems>
 				<InputField name="Description" id="1">
 					<DataPath>Object.Description</DataPath>
 					<Title>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Unit</v8:content>
+							<v8:content>Unit name</v8:content>
 						</v8:item>
 					</Title>
-					<HorizontalAlign>Right</HorizontalAlign>
 					<EditMode>EnterOnInput</EditMode>
-					<Width>3</Width>
 					<ContextMenu name="DescriptionContextMenu" id="2"/>
 					<ExtendedTooltip name="DescriptionExtendedTooltip" id="3"/>
 				</InputField>
-				<LabelDecoration name="Decoration" id="15">
-					<Title formatted="false">
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>contains</v8:content>
-						</v8:item>
-					</Title>
-					<ContextMenu name="DecorationContextMenu" id="16"/>
-					<ExtendedTooltip name="DecorationExtendedTooltip" id="17"/>
-				</LabelDecoration>
+				<InputField name="Code" id="32">
+					<DataPath>Object.Code</DataPath>
+					<ContextMenu name="CodeContextMenu" id="33"/>
+					<ExtendedTooltip name="CodeExtendedTooltip" id="34"/>
+				</InputField>
+			</ChildItems>
+		</UsualGroup>
+		<UsualGroup name="UnitFactor" id="10">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Factor</v8:content>
+				</v8:item>
+			</Title>
+			<Group>Horizontal</Group>
+			<ExtendedTooltip name="UnitFactorExtendedTooltip" id="11"/>
+			<ChildItems>
 				<InputField name="Factor" id="7">
 					<DataPath>Object.Factor</DataPath>
-					<TitleLocation>None</TitleLocation>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Unit contain</v8:content>
+						</v8:item>
+					</Title>
 					<EditMode>EnterOnInput</EditMode>
-					<Width>5</Width>
+					<Width>7</Width>
 					<ChoiceButton>false</ChoiceButton>
 					<ContextMenu name="FactorContextMenu" id="8"/>
 					<ExtendedTooltip name="FactorExtendedTooltip" id="9"/>
 				</InputField>
-				<LabelField name="OwnerUM" id="18">
-					<DataPath>Object.Owner.UM</DataPath>
-					<TitleLocation>None</TitleLocation>
-					<Width>5</Width>
-					<ContextMenu name="OwnerUMContextMenu" id="19"/>
-					<ExtendedTooltip name="OwnerUMExtendedTooltip" id="20"/>
-				</LabelField>
+				<LabelDecoration name="BaseUnit" id="37">
+					<ContextMenu name="BaseUnitContextMenu" id="38"/>
+					<ExtendedTooltip name="BaseUnitExtendedTooltip" id="39"/>
+				</LabelDecoration>
 			</ChildItems>
 		</UsualGroup>
 	</ChildItems>

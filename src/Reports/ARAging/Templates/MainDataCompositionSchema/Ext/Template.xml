@@ -18,10 +18,6 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>Company</v8:content>
 				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>Unternehmen</v8:content>
-				</v8:item>
 			</title>
 			<role>
 				<dcscom:dimension>true</dcscom:dimension>
@@ -33,11 +29,7 @@
 			<title xsi:type="v8:LocalStringType">
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Document</v8:content>
-				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>Dokument</v8:content>
+					<v8:content>Document (A/R, A/P)</v8:content>
 				</v8:item>
 			</title>
 			<role>
@@ -110,10 +102,6 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>91 and over</v8:content>
 				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>91 und länger</v8:content>
-				</v8:item>
 			</title>
 			<appearance>
 				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
@@ -129,10 +117,6 @@
 				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Total</v8:content>
-				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>Gesamtbetrag</v8:content>
 				</v8:item>
 			</title>
 			<appearance>
@@ -237,10 +221,6 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>91 and over</v8:content>
 				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>91 und länger</v8:content>
-				</v8:item>
 			</title>
 			<appearance>
 				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
@@ -256,10 +236,6 @@
 				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Total</v8:content>
-				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>Gesamtbetrag</v8:content>
 				</v8:item>
 			</title>
 			<appearance>
@@ -508,11 +484,7 @@ WHERE
 		<title xsi:type="v8:LocalStringType">
 			<v8:item>
 				<v8:lang>en</v8:lang>
-				<v8:content>Date</v8:content>
-			</v8:item>
-			<v8:item>
-				<v8:lang>de</v8:lang>
-				<v8:content>Datum</v8:content>
+				<v8:content>Terms</v8:content>
 			</v8:item>
 		</title>
 		<valueType>
@@ -524,8 +496,6 @@ WHERE
 			<v8:endDate>0001-01-01T00:00:00</v8:endDate>
 		</value>
 		<useRestriction>false</useRestriction>
-		<denyIncompleteValues>true</denyIncompleteValues>
-		<use>Always</use>
 	</parameter>
 	<parameter>
 		<name>Interval1</name>
@@ -591,10 +561,6 @@ WHERE
 				<v8:lang>en</v8:lang>
 				<v8:content>Customer</v8:content>
 			</v8:item>
-			<v8:item>
-				<v8:lang>de</v8:lang>
-				<v8:content>Kunde</v8:content>
-			</v8:item>
 		</title>
 		<valueType>
 			<v8:Type xmlns:d4p1="http://v8.1c.ru/8.1/data/enterprise/current-config">d4p1:CatalogRef.Companies</v8:Type>
@@ -609,10 +575,6 @@ WHERE
 				<v8:lang>en</v8:lang>
 				<v8:content>Begin of period</v8:content>
 			</v8:item>
-			<v8:item>
-				<v8:lang>de</v8:lang>
-				<v8:content>Periodenanfang</v8:content>
-			</v8:item>
 		</title>
 		<valueType>
 			<v8:Type>xs:dateTime</v8:Type>
@@ -622,7 +584,6 @@ WHERE
 		</valueType>
 		<value xsi:type="xs:dateTime">0001-01-01T00:00:00</value>
 		<useRestriction>true</useRestriction>
-		<expression>&amp;Period.StartDate</expression>
 	</parameter>
 	<parameter>
 		<name>EndOfPeriod</name>
@@ -630,10 +591,6 @@ WHERE
 			<v8:item>
 				<v8:lang>en</v8:lang>
 				<v8:content>End of period</v8:content>
-			</v8:item>
-			<v8:item>
-				<v8:lang>de</v8:lang>
-				<v8:content>Ende der Periode</v8:content>
 			</v8:item>
 		</title>
 		<valueType>
@@ -1021,12 +978,14 @@ WHERE
 					<dcscor:value xsi:type="v8:StandardPeriod">
 						<v8:variant xsi:type="v8:StandardPeriodVariant">ThisWeek</v8:variant>
 					</dcscor:value>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 					<dcsset:userSettingID>04f6b78d-8f12-4d21-8b0c-8096308cf531</dcsset:userSettingID>
 				</dcscor:item>
 				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 					<dcscor:use>false</dcscor:use>
 					<dcscor:parameter>Customer</dcscor:parameter>
 					<dcscor:value xsi:nil="true"/>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 					<dcsset:userSettingID>0a7bedcb-c30c-48dc-a3ee-4205ed96e62a</dcsset:userSettingID>
 				</dcscor:item>
 			</dcsset:dataParameters>
@@ -1065,12 +1024,7 @@ WHERE
 				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 					<dcscor:use>false</dcscor:use>
 					<dcscor:parameter>Title</dcscor:parameter>
-					<dcscor:value xsi:type="v8:LocalStringType">
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Forderungen in Details</v8:content>
-						</v8:item>
-					</dcscor:value>
+					<dcscor:value xsi:type="v8:LocalStringType"/>
 				</dcscor:item>
 				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 					<dcscor:parameter>DataParametersOutput</dcscor:parameter>
@@ -1192,10 +1146,6 @@ WHERE
 				<v8:lang>en</v8:lang>
 				<v8:content>Foreign currency</v8:content>
 			</v8:item>
-			<v8:item>
-				<v8:lang>de</v8:lang>
-				<v8:content>Fremdwährung</v8:content>
-			</v8:item>
 		</dcsset:presentation>
 		<dcsset:settings xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows">
 			<dcsset:selection>
@@ -1233,12 +1183,14 @@ WHERE
 					<dcscor:value xsi:type="v8:StandardPeriod">
 						<v8:variant xsi:type="v8:StandardPeriodVariant">ThisWeek</v8:variant>
 					</dcscor:value>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 					<dcsset:userSettingID>53c53e7c-3dc3-47ef-b49f-62e49374092c</dcsset:userSettingID>
 				</dcscor:item>
 				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 					<dcscor:use>false</dcscor:use>
 					<dcscor:parameter>Customer</dcscor:parameter>
 					<dcscor:value xsi:nil="true"/>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 					<dcsset:userSettingID>f6b0e327-5a5c-489a-bdc4-12d3a5f56728</dcsset:userSettingID>
 				</dcscor:item>
 			</dcsset:dataParameters>
@@ -1270,10 +1222,6 @@ WHERE
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>AR Aging Detail FCY</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Forderungen in Fremdwährung detailliert</v8:content>
 						</v8:item>
 					</dcscor:value>
 				</dcscor:item>

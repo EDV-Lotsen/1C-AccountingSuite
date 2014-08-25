@@ -34,14 +34,10 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>Project data</v8:content>
 				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>Projektdaten</v8:content>
-				</v8:item>
 			</Synonym>
 			<Comment/>
 			<UseStandardCommands>true</UseStandardCommands>
-			<DefaultListForm/>
+			<DefaultListForm>AccumulationRegister.ProjectData.Form.ListForm</DefaultListForm>
 			<AuxiliaryListForm/>
 			<RegisterType>Balance</RegisterType>
 			<IncludeHelpInContents>false</IncludeHelpInContents>
@@ -139,10 +135,6 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Project</v8:content>
 						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Projekt</v8:content>
-						</v8:item>
 					</Synonym>
 					<Comment/>
 					<Type>
@@ -173,6 +165,7 @@
 					<UseInTotals>true</UseInTotals>
 				</Properties>
 			</Dimension>
+			<Form>ListForm</Form>
 		</ChildObjects>
 	</AccumulationRegister>
 </MetaDataObject>

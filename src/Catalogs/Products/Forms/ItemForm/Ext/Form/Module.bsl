@@ -10,14 +10,15 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	EndIf;
 	
 	If Object.Ref <> Catalogs.Products.EmptyRef() Then
-		  Items.Type.ReadOnly = True;
-		  Items.CostingMethod.ReadOnly = True;
+		Items.Type.ReadOnly = True;
+		Items.CostingMethod.ReadOnly = True;
+	Else	
+		Object.UnitSet = Constants.DefaultUoMSet.Get();
 	EndIf;
 	
 	If GeneralFunctionsReusable.DisplayAPICodesSetting() = False Then
 		Items.api_code.Visible = False;
 	EndIf;
-
 	
 	If NOT Object.Ref.IsEmpty() Then
 		api_code = String(Object.Ref.UUID());
@@ -180,11 +181,8 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	// Display indicators
 	If ValueIsFilled(Object.Ref) Then
 		
-		// Fill last item cost
-		If  (Object.Type = Enums.InventoryTypes.Inventory) Then
-			// Fill item cost values
-			FillLastAverageAccountingCost();
-		EndIf;
+		// Fill item cost values
+		FillLastAverageAccountingCost();
 		
 		// Fill item quantities
 		FillItemQuantity_OnPO_OnSO_OnHand_AvailableToPromise();
@@ -192,17 +190,29 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		// Update visibility
 		Items.CostAndQuantity.Visible = True;
 		IsInventoryType = (Object.Type = Enums.InventoryTypes.Inventory);
-		Items.CostAndQuantity.ChildItems.Left.Visible = IsInventoryType;
+		Items.CostAndQuantity.ChildItems.Left.ChildItems.AverageCost.Visible = IsInventoryType;
+		Items.CostAndQuantity.ChildItems.Left.ChildItems.AccountingCost.Visible = IsInventoryType;
+		Items.CostAndQuantity.ChildItems.Left.ChildItems.InventorySiteInfo.Visible = IsInventoryType;
 		Items.CostAndQuantity.ChildItems.Right.ChildItems.QtyOnHand.Visible = IsInventoryType;
 		Items.CostAndQuantity.ChildItems.Right.ChildItems.QtyAvailableToPromise.Visible = IsInventoryType;
 		//Items.CostAndQuantity.ChildItems.Right.ChildItems.InventorySiteInfo.Visible = IsInventoryType;
-		Items.UnitsLeft.ReadOnly = False;
 	Else
 		// New item: hide indicators
 		Items.CostAndQuantity.Visible = False;
-		Items.UnitsLeft.ReadOnly = True;
 	EndIf;
 	
+	QuantityFormat = GeneralFunctionsReusable.DefaultQuantityFormat();
+	Items.QtyOnPO.Format                   = QuantityFormat; 
+	Items.QtyOnPO.EditFormat               = QuantityFormat; 
+	Items.QtyOnSO.Format                   = QuantityFormat; 
+	Items.QtyOnSO.EditFormat               = QuantityFormat; 
+	Items.QtyOnHand.Format                 = QuantityFormat; 
+	Items.QtyOnHand.EditFormat             = QuantityFormat; 
+	Items.QtyAvailableToPromise.Format     = QuantityFormat; 
+	Items.QtyAvailableToPromise.EditFormat = QuantityFormat; 
+	
+	SetBaseUnit();
+
 EndProcedure
 
 &AtServer
@@ -211,39 +221,10 @@ Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
 	// Add new object flag.
 	WriteParameters.Insert("IsNew", CurrentObject.IsNew());
 	
-	// Base unit auto filling.
-	If  CurrentObject.UM.IsEmpty() Then
-		CurrentObject.UM = Catalogs.UM.each;
-	EndIf;
-	
 EndProcedure
 
 &AtServer
 Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
-	
-	// Create new unit and assign it as default unit for the item.
-	If WriteParameters.IsNew And CurrentObject.DefaultReportUnit.IsEmpty() Then
-		// Create default unit.
-		DefaultUnit = Catalogs.Units.CreateItem();
-		DefaultUnit.Owner       = CurrentObject.Ref;
-		DefaultUnit.Description = "each";
-		DefaultUnit.Factor      = 1;
-		DefaultUnit.Write();
-		
-		// Update item with new units.
-		CurrentObject.DefaultReportUnit = DefaultUnit.Ref;
-		If  CurrentObject.DefaultSaleUnit.IsEmpty() Then
-			CurrentObject.DefaultSaleUnit = DefaultUnit.Ref;
-		EndIf;
-		If  CurrentObject.DefaultPurchaseUnit.IsEmpty() Then
-			CurrentObject.DefaultPurchaseUnit = DefaultUnit.Ref;
-		EndIf;
-		CurrentObject.Write();
-		
-		// Reread filled object to form
-		ValueToFormAttribute(CurrentObject, "Object");
-	EndIf;
-	
 	
 	If Object.Ref <> Catalogs.Products.EmptyRef() Then
 		  Items.Type.ReadOnly = True;
@@ -265,7 +246,6 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 	Items.CostAndQuantity.ChildItems.Right.ChildItems.QtyOnHand.Visible = IsInventoryType;
 	Items.CostAndQuantity.ChildItems.Right.ChildItems.QtyAvailableToPromise.Visible = IsInventoryType;
 	//Items.CostAndQuantity.ChildItems.Right.ChildItems.InventorySiteInfo.Visible = IsInventoryType;
-	Items.UnitsLeft.ReadOnly = False;
 	
 	//AddPriceList();
 	
@@ -372,7 +352,16 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 		//
 		//HTTPConnection = New HTTPConnection("pay.accountingsuite.com",,,,,,SSLConnection);
 		//Result = HTTPConnection.Post(HTTPRequest);
-
+		
+		//  create item in zoho
+		If Constants.zoho_auth_token.Get() <> "" Then
+			If Object.NewObject = True Then
+				ThisAction = "create";
+			Else
+				ThisAction = "update";
+			EndIf;
+			zoho_Functions.zoho_ThisItem(ThisAction,Object.Ref);
+		EndIf;
 	
 EndProcedure
 
@@ -381,8 +370,10 @@ Procedure FillLastAverageAccountingCost()
 	
 	// Default values for new item (or item without lots - no goods recepts / purchase invoices occured)
 	LastCost = 0;
+	PriceMatrix = 0;
 	AverageCost = 0;
 	AccountingCost = 0;
+	Margin = 0;
 		
 	// Check object is new
 	If ValueIsFilled(Object.Ref) Then
@@ -395,8 +386,30 @@ Procedure FillLastAverageAccountingCost()
 			|INTO
 			|	LastCost
 			|FROM
-			|	InformationRegister.ItemLastCosts.SliceLast(, Product = &Ref) AS ItemLastCostsSliceLast;";
+			|	InformationRegister.ItemLastCosts.SliceLast(, Product = &Ref) AS ItemLastCostsSliceLast
+			|
+			|UNION ALL
+			|
+			|SELECT
+			|	0;";
 		
+		QTItemPriceMatrix = "
+			|// Price matrix item cost from information register PriceList
+			|SELECT
+		    |	PriceListSliceLast.Price AS Cost
+		    |INTO PriceMatrix
+		    |FROM
+		    |	InformationRegister.PriceList.SliceLast(
+		    |			,
+		    |			Product = &Ref
+		    |				AND PriceLevel = VALUE(Catalog.PriceLevels.EmptyRef)
+		    |				AND ProductCategory = VALUE(Catalog.ProductCategories.EmptyRef)) AS PriceListSliceLast
+			|
+			|UNION ALL
+			|
+			|SELECT
+			|	0;";
+			
 		QTItemAverageCost = "
 			|// Average cost, based on all availble stock
 			|SELECT
@@ -405,7 +418,12 @@ Procedure FillLastAverageAccountingCost()
 			|INTO
 			|	AverageCost
 			|FROM
-			|	AccumulationRegister.InventoryJournal.Balance(&Boundary, Product = &Ref) AS InventoryJournalBalance;";
+			|	AccumulationRegister.InventoryJournal.Balance(&Boundary, Product = &Ref) AS InventoryJournalBalance
+			|
+			|UNION ALL
+			|
+			|SELECT
+			|	0;";
 		
 		QTItemAccountingFirstLastCost = "
 			|// Current accounting cost => First / Last lot item cost
@@ -423,6 +441,8 @@ Procedure FillLastAverageAccountingCost()
 		Query = New Query(
 			// Last item cost from information register ItemLastCosts
 			QTItemLastCost +    // INTO LastCost.Cost
+			// Price matrix item cost from information register PriceList
+			QTItemPriceMatrix + // INTO PriceMatrix.Cost
 			// Average cost, based on all availble stock
 			QTItemAverageCost + // INTO AverageCost.Cost
 			// Current accounting cost => First / Last lot item cost for FIFO/LIFO, NONE for Average
@@ -434,11 +454,17 @@ Procedure FillLastAverageAccountingCost()
 				"") +			// INTO AccountingCost.Cost
 			"
 			|SELECT
-			|	ISNULL(LastCost.Cost, 0) AS Cost
+			|	SUM(LastCost.Cost) AS Cost
 			|
 			|UNION ALL
+			|
 			|SELECT
-			|	ISNULL(AverageCost.Cost, 0)" +
+			|	SUM(PriceMatrix.Cost)
+			|
+			|UNION ALL
+			|
+			|SELECT
+			|	SUM(AverageCost.Cost)" +
 			//?(Object.CostingMethod = Enums.InventoryCosting.FIFO OR Object.CostingMethod = Enums.InventoryCosting.LIFO, "
 			?(Object.CostingMethod = Enums.InventoryCosting.FIFO, "
 			|
@@ -453,6 +479,8 @@ Procedure FillLastAverageAccountingCost()
 		Selection = Query.Execute().Select();
 		// Last cost
 		If Selection.Next() Then LastCost = Selection.Cost;	Else LastCost = 0; EndIf;
+		// Price matrix
+		If Selection.Next() Then PriceMatrix = Selection.Cost;	Else PriceMatrix = 0; EndIf;
 		// Average cost
 		If Selection.Next() Then AverageCost = Selection.Cost;	Else AverageCost = 0; EndIf;
 		// Accounting cost
@@ -462,6 +490,10 @@ Procedure FillLastAverageAccountingCost()
 		Else
 			AccountingCost = AverageCost;
 		EndIf;
+		
+		//--//
+		Margin = ?(LastCost = 0, 0, (PriceMatrix / LastCost) * 100); 
+		//--//
 		
 	EndIf;
 	
@@ -497,13 +529,14 @@ Procedure FillItemQuantity_OnPO_OnSO_OnHand_AvailableToPromise()
 		|	OrdersDispatchedBalance.Company   AS Company,
 		|	OrdersDispatchedBalance.Order     AS Order,
 		|	OrdersDispatchedBalance.Product   AS Product,
+		|   OrdersDispatchedBalance.Unit      AS Unit,
 		|	CASE WHEN &Type = VALUE(Enum.InventoryTypes.Inventory)
 		|             THEN CASE WHEN OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.ReceivedBalance > 0
-		|	                    THEN OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.ReceivedBalance 
+		|	                    THEN (OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.ReceivedBalance) * OrdersDispatchedBalance.Unit.Factor 
 		|	                    ELSE 0 END
 		|        WHEN &Type = VALUE(Enum.InventoryTypes.NonInventory)
 		|             THEN CASE WHEN OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.InvoicedBalance > 0
-		|	                    THEN OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.InvoicedBalance 
+		|	                    THEN (OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.InvoicedBalance) * OrdersDispatchedBalance.Unit.Factor 
 		|	                    ELSE 0 END
 		|        ELSE 0 END                   AS QtyOnPO,
 		|	0                                 AS QtyOnSO,
@@ -527,14 +560,15 @@ Procedure FillItemQuantity_OnPO_OnSO_OnHand_AvailableToPromise()
 		|	OrdersRegisteredBalance.Company,
 		|	OrdersRegisteredBalance.Order,
 		|	OrdersRegisteredBalance.Product,
+		|   OrdersRegisteredBalance.Unit,
 		|	0,
 		|	CASE WHEN &Type = VALUE(Enum.InventoryTypes.Inventory)
 		|             THEN CASE WHEN OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.ShippedBalance > 0
-		|	                    THEN OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.ShippedBalance 
+		|	                    THEN (OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.ShippedBalance) * OrdersRegisteredBalance.Unit.Factor 
 		|	                    ELSE 0 END
 		|        WHEN &Type = VALUE(Enum.InventoryTypes.NonInventory)
 		|             THEN CASE WHEN OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.InvoicedBalance > 0
-		|	                    THEN OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.InvoicedBalance 
+		|	                    THEN (OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.InvoicedBalance) * OrdersRegisteredBalance.Unit.Factor 
 		|	                    ELSE 0 END
 		|        ELSE 0 END,
 		|	0
@@ -555,6 +589,7 @@ Procedure FillItemQuantity_OnPO_OnSO_OnHand_AvailableToPromise()
 		|	NULL,
 		|	NULL,
 		|	InventoryJournalBalance.Product,
+		|	NULL,
 		|	0,
 		|	0,
 		|	CASE WHEN &Type = VALUE(Enum.InventoryTypes.Inventory)
@@ -822,6 +857,21 @@ Procedure InventorySiteInfo(Command)
 
 EndProcedure
 
+&AtClient
+Procedure UnitSetOnChange(Item)
+	
+	SetBaseUnit();
+	
+EndProcedure
+
+&AtServer 
+Function SetBaseUnit()
+	
+	BaseUnit = GeneralFunctions.GetBaseUnit(Object.UnitSet); 
+	Items.Right.Title = "Item quantities in " + BaseUnit.Code;
+	
+EndFunction
+
 //&AtServer
 //Procedure WriteAPICode()
 //	
@@ -831,7 +881,6 @@ EndProcedure
 
 //	
 //EndProcedure
-
 
 
 

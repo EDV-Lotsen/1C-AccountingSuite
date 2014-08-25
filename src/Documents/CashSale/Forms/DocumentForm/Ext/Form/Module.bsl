@@ -11,25 +11,49 @@ Var SalesTaxRateInactive, AgenciesRatesInactive;//Cache for storing inactive rat
 // 
 Procedure LineItemsProductOnChange(Item)
 	
-	TabularPartRow = Items.LineItems.CurrentData;
+	// Fill line data for editing.
+	TableSectionRow = GetLineItemsRowStructure();
+	FillPropertyValues(TableSectionRow, Items.LineItems.CurrentData);
 	
-	TabularPartRow.ProductDescription = CommonUse.GetAttributeValue(TabularPartRow.Product, "Description");
-	TabularPartRow.Quantity = 0;
-	TabularPartRow.Price = 0;
-	TabularPartRow.LineTotal = 0;
-	TabularPartRow.TaxableAmount = 0;
-   // TabularPartRow.VAT = 0;
+	// Request server operation.
+	LineItemsProductOnChangeAtServer(TableSectionRow);
 	
-	Price = GeneralFunctions.RetailPrice(CurrentDate(), TabularPartRow.Product, Object.Company);
-	TabularPartRow.Price = Price / Object.ExchangeRate;
-	TabularPartRow.Taxable = CommonUse.GetAttributeValue(TabularPartRow.Product, "Taxable");
-	//TabularPartRow.SalesTaxType = US_FL.GetSalesTaxType(TabularPartRow.Product);
-	//TabularPartRow.VATCode = CommonUse.GetAttributeValue(TabularPartRow.Product, "SalesVATCode");
+	// Load processed data back.
+	FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
 	
-	RecalcTotal();
+	// Refresh totals cache.
+	RecalculateTotals();
 	
 EndProcedure
 
+&AtServer
+Procedure LineItemsProductOnChangeAtServer(TableSectionRow)
+	
+	// Request product properties.
+	ProductProperties = CommonUse.GetAttributeValues(TableSectionRow.Product,   New Structure("Description, UnitSet, Taxable"));
+	UnitSetProperties = CommonUse.GetAttributeValues(ProductProperties.UnitSet, New Structure("DefaultSaleUnit"));
+	TableSectionRow.ProductDescription = ProductProperties.Description;
+	TableSectionRow.UnitSet            = ProductProperties.UnitSet;
+	TableSectionRow.Unit               = UnitSetProperties.DefaultSaleUnit;
+	//TableSectionRow.UM                 = UnitSetProperties.UM;
+	TableSectionRow.Taxable            = ProductProperties.Taxable;
+	TableSectionRow.PriceUnits         = Round(GeneralFunctions.RetailPrice(Object.Date, TableSectionRow.Product, Object.Company) /
+	                                     // The price is returned for default sales unit factor.
+	                                     ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), 2);
+	
+	// Reset default values.
+	TableSectionRow.Project            = Object.Project;
+	//TableSectionRow.Class              = Object.Class;
+	
+	// Assign default quantities.
+	TableSectionRow.QtyUnits  = 0;
+	TableSectionRow.QtyUM     = 0;
+	
+	// Calculate totals by line.
+	TableSectionRow.LineTotal     = 0;
+	TableSectionRow.TaxableAmount = 0;
+	
+EndProcedure
 
 
 &AtClient
@@ -37,7 +61,7 @@ EndProcedure
 // DocumentTotal - document's currency in FCY (foreign currency).
 // DocumentTotalRC - company's reporting currency.
 //
-Procedure RecalcTotal()
+Procedure RecalculateTotals()
 	
 	//Object.LineSubtotalRC = Object.LineItems.Total("LineTotal");
 	//Object.SubTotalRC = Object.LineItems.Total("LineTotal") + Object.DiscountRC;
@@ -82,7 +106,7 @@ Procedure RecalcTotal()
 	If Object.SalesTaxAcrossAgencies.Count() > 0 Then
 		CurrentAgenciesRates = New Array();
 		For Each AgencyRate In Object.SalesTaxAcrossAgencies Do
-			CurrentAgenciesRates.Add(New Structure("Agency, Rate", AgencyRate.Agency, AgencyRate.Rate));
+			CurrentAgenciesRates.Add(New Structure("Agency, Rate, SalesTaxRate, SalesTaxComponent", AgencyRate.Agency, AgencyRate.Rate, AgencyRate.SalesTaxRate, AgencyRate.SalesTaxComponent));
 		EndDo;
 	EndIf;
 	SalesTaxAcrossAgencies = SalesTaxClient.CalculateSalesTax(Object.TaxableSubtotal, Object.SalesTaxRate, CurrentAgenciesRates);
@@ -109,7 +133,7 @@ EndProcedure
 // DocumentTotal - document's currency in FCY (foreign currency).
 // DocumentTotalRC - company's reporting currency.
 //
-Procedure RecalcTotalAtServer()
+Procedure RecalculateTotalsAtServer()
 	
 	//Object.LineSubtotalRC = Object.LineItems.Total("LineTotal");
 	//Object.SubTotalRC = Object.LineItems.Total("LineTotal") + Object.DiscountRC;
@@ -153,7 +177,7 @@ Procedure RecalcTotalAtServer()
 	If Object.SalesTaxAcrossAgencies.Count() > 0 Then
 		CurrentAgenciesRates = New Array();
 		For Each AgencyRate In Object.SalesTaxAcrossAgencies Do
-			CurrentAgenciesRates.Add(New Structure("Agency, Rate", AgencyRate.Agency, AgencyRate.Rate));
+			CurrentAgenciesRates.Add(New Structure("Agency, Rate, SalesTaxRate, SalesTaxComponent", AgencyRate.Agency, AgencyRate.Rate, AgencyRate.SalesTaxRate, AgencyRate.SalesTaxComponent));
 		EndDo;
 	EndIf;
 	SalesTaxAcrossAgencies = SalesTax.CalculateSalesTax(Object.TaxableSubtotal, Object.SalesTaxRate, CurrentAgenciesRates);
@@ -174,9 +198,6 @@ Procedure RecalcTotalAtServer()
 	Object.DocumentTotalRC  = Round(Object.DocumentTotal * Object.ExchangeRate, 2);
 	
 EndProcedure
-
-
-
 
 &AtClient
 // CustomerOnChange UI event handler.
@@ -204,7 +225,7 @@ Procedure CompanyOnChange(Item)
 	EndIf;
 	
 	//RecalcSalesTax();
-	RecalcTotal();
+	RecalculateTotals();
 	EmailSet();
 	
 	
@@ -241,33 +262,29 @@ EndProcedure
 // 
 Procedure LineItemsPriceOnChange(Item)
 	
-	TabularPartRow = Items.LineItems.CurrentData;
+	// Fill line data for editing.
+	TableSectionRow = GetLineItemsRowStructure();
+	FillPropertyValues(TableSectionRow, Items.LineItems.CurrentData);
 	
-	TabularPartRow.LineTotal = TabularPartRow.Quantity * TabularPartRow.Price;
+	// Request server operation.
+	LineItemsPriceOnChangeAtServer(TableSectionRow);
 	
-	//TabularPartRow.VAT = VAT_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Sales", Object.PriceIncludesVAT);
+	// Load processed data back.
+	FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
 	
-	//RecalcTaxableAmount();
-	//RecalcSalesTax();
-	RecalcTotalAtServer();
-
+	// Refresh totals cache.
+	RecalculateTotals();
+	
 EndProcedure
 
 &AtServer
 Procedure LineItemsPriceOnChangeAtServer(TableSectionRow)
 	
 	// Calculate total by line.
-	TableSectionRow.LineTotal = Round(Round(TableSectionRow.Quantity, QuantityPrecision) * TableSectionRow.Price, 2);
+	TableSectionRow.LineTotal = Round(Round(TableSectionRow.QtyUnits, QuantityPrecision) * TableSectionRow.PriceUnits, 2);
 	
-	//// Process settings changes.
-	//LineItemsLineTotalOnChangeAtServer(TableSectionRow);
-	
-	// Back-step price calculation with totals priority.
-	TableSectionRow.Price = ?(Round(TableSectionRow.Quantity, QuantityPrecision) > 0,
-	                          Round(TableSectionRow.LineTotal / Round(TableSectionRow.Quantity, QuantityPrecision), 2), 0);
-	
-	// Calculate sales tax by line total.
-	TableSectionRow.TaxableAmount = ?(TableSectionRow.Taxable, TableSectionRow.LineTotal, 0);
+	// Process settings changes.
+	LineItemsLineTotalOnChangeAtServer(TableSectionRow);
 	
 EndProcedure
 
@@ -280,7 +297,7 @@ Procedure DateOnChange(Item)
 	
 	Object.ExchangeRate = GeneralFunctions.GetExchangeRate(Object.Date, Object.Currency);
 	//RecalcSalesTax();
-	RecalcTotal();
+	RecalculateTotals();
 	
 EndProcedure
 
@@ -295,10 +312,9 @@ Procedure CurrencyOnChange(Item)
 	Items.ExchangeRate.Title = GeneralFunctionsReusable.DefaultCurrencySymbol() + "/1" + CommonUse.GetAttributeValue(Object.Currency, "Symbol");
 	Items.FCYCurrency.Title = CommonUse.GetAttributeValue(Object.Currency, "Symbol");
 	//RecalcSalesTax();
-	RecalcTotal();
+	RecalculateTotals();
 	
 EndProcedure
-
 
 &AtClient
 // LineItemsAfterDeleteRow UI event handler.
@@ -306,7 +322,7 @@ EndProcedure
 Procedure LineItemsAfterDeleteRow(Item)
 	
 	//RecalcSalesTax();
-	RecalcTotal();
+	RecalculateTotals();
 	
 EndProcedure
 
@@ -319,14 +335,30 @@ EndProcedure
 // 
 Procedure LineItemsQuantityOnChange(Item)
 	
-	TabularPartRow = Items.LineItems.CurrentData;
-	TabularPartRow.LineTotal = TabularPartRow.Quantity * TabularPartRow.Price;
-	//TabularPartRow.VAT = VAT_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Sales", Object.PriceIncludesVAT);
+	// Fill line data for editing.
+	TableSectionRow = GetLineItemsRowStructure();
+	FillPropertyValues(TableSectionRow, Items.LineItems.CurrentData);
 	
-	//RecalcTaxableAmount();
-	//RecalcSalesTax();
-	RecalcTotal();
+	// Request server operation.
+	LineItemsQuantityOnChangeAtServer(TableSectionRow);
+	
+	// Load processed data back.
+	FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
+	
+	// Refresh totals cache.
+	RecalculateTotals();
+	
+EndProcedure
 
+&AtServer
+Procedure LineItemsQuantityOnChangeAtServer(TableSectionRow)
+	
+	// Calculate total by line.
+	TableSectionRow.LineTotal = Round(Round(TableSectionRow.QtyUnits, QuantityPrecision) * TableSectionRow.PriceUnits, 2);
+	
+	// Process settings changes.
+	LineItemsLineTotalOnChangeAtServer(TableSectionRow);
+	
 EndProcedure
 
 
@@ -348,8 +380,10 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	//Endif;
 
 	
-	Items.LineItemsQuantity.EditFormat = GeneralFunctionsReusable.DefaultQuantityFormat();
-	Items.LineItemsQuantity.Format = GeneralFunctionsReusable.DefaultQuantityFormat();
+	QuantityPrecision = GeneralFunctionsReusable.DefaultQuantityPrecision();
+	QuantityFormat    = GeneralFunctionsReusable.DefaultQuantityFormat();
+	Items.LineItemsQuantity.EditFormat = QuantityFormat;
+	Items.LineItemsQuantity.Format     = QuantityFormat;
 	
 	Items.Company.Title = GeneralFunctionsReusable.GetCustomerName();
 	
@@ -383,7 +417,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 			If Not ValueIsFilled(Parameters.Basis) Then
 				Object.DiscountIsTaxable = True;
 			Else //If filled on the basis of Sales Order
-				RecalcTotalAtServer();
+				RecalculateTotalsAtServer();
 			EndIf;
 			//If filled on the basis of Sales Order set current value
 			SalesTaxRate = Object.SalesTaxRate;
@@ -439,6 +473,10 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	If NOT GeneralFunctionsReusable.FunctionalOptionValue("MultiCurrency") Then
 		//Items.FCYCurrency.Visible = False;
 		Items.RCCurrency.Title = " ";
+	EndIf;
+	
+	If Object.Ref.IsEmpty() Then
+		Object.EmailNote = Constants.CashSaleFooter.Get();
 	EndIf;
 
 	
@@ -515,7 +553,7 @@ Procedure SendEmailAtServer()
 		For Each DocumentLine in Object.LineItems Do
 			
 			TotalAmount = TotalAmount + DocumentLine.LineTotal;
-			datastring = datastring + "<TR height=""20""><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.Product +  "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.ProductDescription + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.Project + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.Quantity + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.Price + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.LineTotal + "</TD></TR>";
+			datastring = datastring + "<TR height=""20""><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.Product +  "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.ProductDescription + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.Project + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.QtyUnits + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.PriceUnits + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.LineTotal + "</TD></TR>";
 
 		EndDo;
 		
@@ -841,8 +879,7 @@ Procedure BeforeWrite(Cancel, WriteParameters)
 	// preventing posting if already included in a bank rec
 	If ReconciledDocumentsServerCall.RequiresExcludingFromBankReconciliation(Object.Ref, Object.DocumentTotalRC, Object.Date, Object.BankAccount, WriteParameters.WriteMode) Then
 		Cancel = True;
-		CommonUseClient.ShowCustomMessageBox(ThisForm, "Bank reconciliation", "The transaction you are editing has been reconciled. Saving 
-		|your changes could put you out of balance the next time you try to reconcile. 
+		CommonUseClient.ShowCustomMessageBox(ThisForm, "Bank reconciliation", "The transaction you are editing has been reconciled. Saving your changes could put you out of balance the next time you try to reconcile. 
 		|To modify it you should exclude it from the Bank rec. document.", PredefinedValue("Enum.MessageStatus.Warning"));
 	EndIf;    
 
@@ -877,26 +914,26 @@ Procedure DiscountOnChange(Item)
 		Object.DiscountPercent = Round(-1 * 100 * Object.Discount / Object.LineSubtotal, 2);
 	EndIf;
 
-	RecalcTotal();
+	RecalculateTotals();
 EndProcedure
 
 
 &AtClient
 Procedure ShippingOnChange(Item)
-	RecalcTotal();
+	RecalculateTotals();
 EndProcedure
 
 
 &AtClient
 Procedure SalesTaxOnChange(Item)
-	RecalcTotal();
+	RecalculateTotals();
 EndProcedure
 
 
 &AtClient
 Procedure DiscountPercentOnChange(Item)
 	Object.Discount = (-1 * Object.LineSubtotal * Object.DiscountPercent ) / 100;
-	RecalcTotal();
+	RecalculateTotals();
 EndProcedure
 
 
@@ -948,6 +985,10 @@ EndProcedure
 
 &AtClient
 Procedure SetSalesTaxRate(NewSalesTaxRate)
+	//Update SalesTaxRate field choice list
+	If ValueIsFilled(NewSalesTaxRate) And (Items.SalesTaxRate.ChoiceList.FindByValue(NewSalesTaxRate) = Undefined) Then
+		Items.SalesTaxRate.ChoiceList.Add(NewSalesTaxRate);
+	EndIf;
 	//Cache inactive sales tax rates
 	If ValueIsFilled(Object.SalesTaxRate) Then
 		AgenciesRates = New Array();
@@ -971,7 +1012,7 @@ Procedure SetSalesTaxRate(NewSalesTaxRate)
 		Object.SalesTaxAcrossAgencies.Clear();
 	EndIf;
 	ShowSalesTaxRate();
-	RecalcTotal();
+	RecalculateTotals();
 EndProcedure
 
 &AtClient
@@ -989,41 +1030,61 @@ EndProcedure
 
 &AtClient
 Procedure LineItemsLineTotalOnChange(Item)
-	//LineItemsLineTotalOnChangeAtServer();
+	
 	// Fill line data for editing.
 	TableSectionRow = GetLineItemsRowStructure();
 	FillPropertyValues(TableSectionRow, Items.LineItems.CurrentData);
 	
-	// Back-step price calculation with totals priority.
-	TableSectionRow.Price = ?(Round(TableSectionRow.Quantity, QuantityPrecision) > 0,
-							  Round(TableSectionRow.LineTotal / Round(TableSectionRow.Quantity, QuantityPrecision), 2), 0);
-					  
-	 // Calculate sales tax by line total.
-	TableSectionRow.TaxableAmount = ?(TableSectionRow.Taxable, TableSectionRow.LineTotal, 0);
-							  
-	//// Request server operation.
-	//LineItemsLineTotalOnChangeAtServer(TableSectionRow);
+	// Request server operation.
+	LineItemsLineTotalOnChangeAtServer(TableSectionRow);
 	
 	// Load processed data back.
 	FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
 
-	RecalcTotal();
+	RecalculateTotals();
+	
+EndProcedure
+
+&AtServer
+Procedure LineItemsLineTotalOnChangeAtServer(TableSectionRow)
+	
+	// Back-step price calculation with totals priority.
+	TableSectionRow.PriceUnits = ?(TableSectionRow.QtyUnits > 0,
+	                             Round(TableSectionRow.LineTotal / Round(TableSectionRow.QtyUnits, QuantityPrecision), 2), 0);
+	
+	// Back-calculation of quantity in base units.
+	TableSectionRow.QtyUM      = Round(Round(TableSectionRow.QtyUnits, QuantityPrecision) *
+	                             ?(TableSectionRow.Unit.Factor > 0, TableSectionRow.Unit.Factor, 1), QuantityPrecision);
+	
+	// Calculate taxes by line total.
+	LineItemsTaxableOnChangeAtServer(TableSectionRow);
+	
+EndProcedure
+
+&AtServer
+Procedure LineItemsTaxableOnChangeAtServer(TableSectionRow)
+	
+	// Calculate sales tax by line total.
+	TableSectionRow.TaxableAmount = ?(TableSectionRow.Taxable, TableSectionRow.LineTotal, 0);
+	
 EndProcedure
 
 &AtClient
 Procedure LineItemsTaxableOnChange(Item)
+	
 	// Fill line data for editing.
 	TableSectionRow = GetLineItemsRowStructure();
 	FillPropertyValues(TableSectionRow, Items.LineItems.CurrentData);
 	
-	// Calculate sales tax by line total.
-	TableSectionRow.TaxableAmount = ?(TableSectionRow.Taxable, TableSectionRow.LineTotal, 0);
-
-	//LineItemsTaxableOnChangeAtServer(TableSectionRow);
+	// Request server operation.
+	LineItemsTaxableOnChangeAtServer(TableSectionRow);
+	
 	// Load processed data back.
 	FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
 	
-	RecalcTotal();
+	// Refresh totals cache.
+	RecalculateTotals();
+	
 EndProcedure
 
 &AtClient
@@ -1031,18 +1092,14 @@ EndProcedure
 Function GetLineItemsRowStructure()
 	
 	// Define control row fields.
-	Return New Structure("LineNumber, Product, ProductDescription, Quantity, Price, LineTotal, Taxable, TaxableAmount, Project");
+	Return New Structure("LineNumber, Product, ProductDescription, UnitSet, QtyUnits, Unit, QtyUM, UM, PriceUnits, LineTotal, Taxable, TaxableAmount, Project, Class");
 	
-	//// Define control row fields.
-	//Return New Structure("LineNumber, Product, ProductDescription, Quantity, UM, Ordered, Backorder, Shipped, Invoiced, Price, LineTotal, Taxable, TaxableAmount, Order, Location, LocationActual, DeliveryDate, DeliveryDateActual, Project, Class");
-	
-
 EndFunction
 
 &AtClient
 Procedure DiscountIsTaxableOnChange(Item)
 	DiscountIsTaxableOnChangeAtServer();
-	RecalcTotal();
+	RecalculateTotals();
 EndProcedure
 
 &AtServer
@@ -1058,8 +1115,51 @@ EndProcedure
 &AtClient
 Procedure LineItemsTaxableAmountOnChange(Item)
 	// Insert handler contents.
-	RecalcTotal();
+	RecalculateTotals();
 EndProcedure
 
+&AtClient
+Procedure NotificationProcessing(EventName, Parameter, Source)
+	
+	If EventName = "SalesTaxRateAdded" Then
+		If Items.SalesTaxRate.ChoiceList.FindByValue(Parameter) = Undefined Then
+			Items.SalesTaxRate.ChoiceList.Add(Parameter);
+		EndIf;
+	EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure LineItemsUnitOnChange(Item)
+	
+	// Fill line data for editing.
+	TableSectionRow = GetLineItemsRowStructure();
+	FillPropertyValues(TableSectionRow, Items.LineItems.CurrentData);
+	
+	// Request server operation.
+	LineItemsUnitOnChangeAtServer(TableSectionRow);
+	
+	// Load processed data back.
+	FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
+	
+	// Refresh totals cache.
+	RecalculateTotals();
+	
+EndProcedure
+
+
+&AtServer
+Procedure LineItemsUnitOnChangeAtServer(TableSectionRow)
+	
+	// Calculate new unit price.
+	TableSectionRow.PriceUnits = Round(GeneralFunctions.RetailPrice(Object.Date, TableSectionRow.Product, Object.Company) *
+	                             ?(TableSectionRow.Unit.Factor > 0, TableSectionRow.Unit.Factor, 1) /
+	                             ?(TableSectionRow.UnitSet.DefaultSaleUnit.Factor > 0, TableSectionRow.UnitSet.DefaultSaleUnit.Factor, 1) /
+	                             ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), 2);
+								 
+	// Process settings changes.
+	LineItemsQuantityOnChangeAtServer(TableSectionRow);
+	
+EndProcedure
 
 

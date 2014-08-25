@@ -85,33 +85,47 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="6"/>
-			<SearchStringAddition name="ListSearchString" id="52">
+			<SearchStringAddition name="ListSearchString" id="61">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="53"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="54"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="62"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="63"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="55">
+			<ViewStatusAddition name="ListViewStatus" id="64">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="56"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="57"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="65"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="66"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="58">
+			<SearchControlAddition name="ListSearchControl" id="67">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="59"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="60"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="68"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="69"/>
 			</SearchControlAddition>
 			<ChildItems>
+				<LabelField name="InvoiceStatus" id="58">
+					<DataPath>List.InvoiceStatus</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Invoice Status</v8:content>
+						</v8:item>
+					</Title>
+					<Width>1</Width>
+					<HorizontalStretch>false</HorizontalStretch>
+					<ContextMenu name="InvoiceStatusContextMenu" id="59"/>
+					<ExtendedTooltip name="InvoiceStatusExtendedTooltip" id="60"/>
+				</LabelField>
 				<LabelField name="InvoiceSent" id="38">
 					<DataPath>List.InvoiceSent</DataPath>
+					<Visible>false</Visible>
 					<Title>
 						<v8:item>
 							<v8:lang>en</v8:lang>
@@ -178,6 +192,17 @@
 					<ContextMenu name="TaskContextMenu" id="17"/>
 					<ExtendedTooltip name="TaskExtendedTooltip" id="18"/>
 				</LabelField>
+				<LabelField name="Price" id="52">
+					<DataPath>List.Price</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Hourly Rate</v8:content>
+						</v8:item>
+					</Title>
+					<ContextMenu name="PriceContextMenu" id="53"/>
+					<ExtendedTooltip name="PriceExtendedTooltip" id="54"/>
+				</LabelField>
 				<LabelField name="TimeComplete" id="19">
 					<DataPath>List.TimeComplete</DataPath>
 					<Title>
@@ -188,6 +213,17 @@
 					</Title>
 					<ContextMenu name="TimeCompleteContextMenu" id="20"/>
 					<ExtendedTooltip name="TimeCompleteExtendedTooltip" id="21"/>
+				</LabelField>
+				<LabelField name="Total" id="55">
+					<DataPath>List.Total</DataPath>
+					<Format>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>NFD=2</v8:content>
+						</v8:item>
+					</Format>
+					<ContextMenu name="TotalContextMenu" id="56"/>
+					<ExtendedTooltip name="TotalExtendedTooltip" id="57"/>
 				</LabelField>
 			</ChildItems>
 		</Table>
@@ -202,8 +238,33 @@
 				<Field>List.Ref</Field>
 			</UseAlways>
 			<Settings xsi:type="DynamicList">
-				<ManualQuery>false</ManualQuery>
+				<ManualQuery>true</ManualQuery>
 				<DynamicDataRead>true</DynamicDataRead>
+				<QueryText>SELECT
+	DocumentTimeTrack.Ref,
+	DocumentTimeTrack.DeletionMark,
+	DocumentTimeTrack.Number,
+	DocumentTimeTrack.Date,
+	DocumentTimeTrack.Posted,
+	DocumentTimeTrack.Company,
+	DocumentTimeTrack.Project,
+	DocumentTimeTrack.Task,
+	DocumentTimeTrack.Price,
+	DocumentTimeTrack.TimeComplete,
+	DocumentTimeTrack.User,
+	DocumentTimeTrack.Memo,
+	DocumentTimeTrack.DateFrom,
+	DocumentTimeTrack.Billable,
+	DocumentTimeTrack.InvoiceSent,
+	DocumentTimeTrack.SalesInvoice,
+	DocumentTimeTrack.Class,
+	DocumentTimeTrack.SalesOrder,
+	DocumentTimeTrack.InvoiceDate,
+	DocumentTimeTrack.PointInTime,
+	DocumentTimeTrack.Price * DocumentTimeTrack.TimeComplete AS Total,
+	DocumentTimeTrack.InvoiceStatus
+FROM
+	Document.TimeTrack AS DocumentTimeTrack</QueryText>
 				<MainTable>Document.TimeTrack</MainTable>
 				<ListSettings>
 					<dcsset:filter>
@@ -222,6 +283,21 @@
 					<dcsset:itemsUserSettingID>911b6018-f537-43e8-a417-da56b22f9aec</dcsset:itemsUserSettingID>
 				</ListSettings>
 			</Settings>
+		</Attribute>
+		<Attribute name="TempAddress" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Temp address</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
 		</Attribute>
 	</Attributes>
 	<Commands>

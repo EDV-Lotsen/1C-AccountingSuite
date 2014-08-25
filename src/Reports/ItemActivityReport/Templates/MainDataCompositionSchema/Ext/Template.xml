@@ -12,21 +12,13 @@
 			<title xsi:type="v8:LocalStringType">
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Price level</v8:content>
-				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>Preisniveau</v8:content>
+					<v8:content>Price levels</v8:content>
 				</v8:item>
 			</title>
 		</field>
 		<field xsi:type="DataSetFieldField">
 			<dataPath>LineTotal</dataPath>
 			<field>LineTotal</field>
-		</field>
-		<field xsi:type="DataSetFieldField">
-			<dataPath>Price</dataPath>
-			<field>Price</field>
 		</field>
 		<field xsi:type="DataSetFieldField">
 			<dataPath>ProductCategory</dataPath>
@@ -36,21 +28,7 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>Product category</v8:content>
 				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>Artikelkategorie</v8:content>
-				</v8:item>
 			</title>
-		</field>
-		<field xsi:type="DataSetFieldField">
-			<dataPath>Quantity</dataPath>
-			<field>Quantity</field>
-			<appearance>
-				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-					<dcscor:parameter>Format</dcscor:parameter>
-					<dcscor:value xsi:type="xs:string">NFD=0</dcscor:value>
-				</dcscor:item>
-			</appearance>
 		</field>
 		<field xsi:type="DataSetFieldField">
 			<dataPath>Ref</dataPath>
@@ -58,11 +36,7 @@
 			<title xsi:type="v8:LocalStringType">
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Document</v8:content>
-				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>Dokument</v8:content>
+					<v8:content>Document (A/R, A/P)</v8:content>
 				</v8:item>
 			</title>
 		</field>
@@ -114,10 +88,6 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>Posted</v8:content>
 				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>Gebucht</v8:content>
-				</v8:item>
 			</title>
 		</field>
 		<field xsi:type="DataSetFieldField">
@@ -144,10 +114,6 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>Due</v8:content>
 				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>Fällig</v8:content>
-				</v8:item>
 			</title>
 			<appearance>
 				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
@@ -164,17 +130,33 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>Customer</v8:content>
 				</v8:item>
+			</title>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>PriceUnits</dataPath>
+			<field>PriceUnits</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>QtyUnits</dataPath>
+			<field>QtyUnits</field>
+			<title xsi:type="v8:LocalStringType">
 				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>Kunde</v8:content>
+					<v8:lang>en</v8:lang>
+					<v8:content>Qty</v8:content>
 				</v8:item>
 			</title>
+			<appearance>
+				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+					<dcscor:parameter>Format</dcscor:parameter>
+					<dcscor:value xsi:type="xs:string">NFD=</dcscor:value>
+				</dcscor:item>
+			</appearance>
 		</field>
 		<dataSource>DataSource1</dataSource>
 		<query>SELECT
 	SalesInvoiceLineItems.Ref.Company,
-	SalesInvoiceLineItems.Quantity,
-	SalesInvoiceLineItems.Price,
+	SalesInvoiceLineItems.QtyUnits,
+	SalesInvoiceLineItems.PriceUnits,
 	SalesInvoiceLineItems.LineTotal,
 	SalesInvoiceLineItems.Ref,
 	SalesInvoiceLineItems.Ref.Terms,
@@ -191,13 +173,13 @@
 	CASE
 		WHEN GeneralJournalBalance.AmountRCBalance IS NULL 
 				AND SalesInvoiceLineItems.Ref.Terms &lt;&gt; VALUE(Catalog.PaymentTerms.Consignment)
-				AND SalesInvoiceLineItems.Price &lt;&gt; 0
-			THEN SalesInvoiceLineItems.Quantity * PriceListSliceLast.Cost
+				AND SalesInvoiceLineItems.PriceUnits &lt;&gt; 0
+			THEN SalesInvoiceLineItems.QtyUnits * PriceListSliceLast.Cost
 		ELSE 0
 	END AS Due
 FROM
 	Document.SalesInvoice.LineItems AS SalesInvoiceLineItems
-		INNER JOIN InformationRegister.PriceList.SliceLast AS PriceListSliceLast
+		LEFT JOIN InformationRegister.PriceList.SliceLast AS PriceListSliceLast
 		ON SalesInvoiceLineItems.Ref.Company.PriceLevel = PriceListSliceLast.PriceLevel
 			AND SalesInvoiceLineItems.Product.Category = PriceListSliceLast.ProductCategory
 		LEFT JOIN AccountingRegister.GeneralJournal.Balance AS GeneralJournalBalance
@@ -211,8 +193,8 @@ UNION ALL
 
 SELECT
 	SalesReturnLineItems.Ref.Company,
-	SalesReturnLineItems.Quantity,
-	SalesReturnLineItems.Price,
+	SalesReturnLineItems.QtyUnits,
+	SalesReturnLineItems.PriceUnits,
 	SalesReturnLineItems.LineTotal,
 	SalesReturnLineItems.Ref,
 	NULL,
@@ -223,27 +205,27 @@ SELECT
 	SalesReturnLineItems.Ref.Posted,
 	1,
 	CASE
-		WHEN SalesReturnLineItems.Ref.Company.Terms &lt;&gt; VALUE(Catalog.PaymentTerms.Consignment) 			
-		THEN SalesReturnLineItems.Quantity * PriceListSliceLast.Cost * -1
+		WHEN SalesReturnLineItems.Ref.Company.Terms &lt;&gt; VALUE(Catalog.PaymentTerms.Consignment)
+			THEN SalesReturnLineItems.QtyUnits * PriceListSliceLast.Cost * -1
 		ELSE 0
 	END
 FROM
 	Document.SalesReturn.LineItems AS SalesReturnLineItems
-		INNER JOIN InformationRegister.PriceList.SliceLast AS PriceListSliceLast
+		LEFT JOIN InformationRegister.PriceList.SliceLast AS PriceListSliceLast
 		ON SalesReturnLineItems.Ref.Company.PriceLevel = PriceListSliceLast.PriceLevel
 			AND SalesReturnLineItems.Product.Category = PriceListSliceLast.ProductCategory
 		LEFT JOIN AccountingRegister.GeneralJournal.Balance AS GeneralJournalBalance
 		ON (GeneralJournalBalance.ExtDimension2 REFS Document.SalesReturn)
 			AND (GeneralJournalBalance.ExtDimension2 = SalesReturnLineItems.Ref)
 WHERE
-	SalesReturnLineItems.Product = &amp;Product 
+	SalesReturnLineItems.Product = &amp;Product
 
 UNION ALL
 
 SELECT
 	SalesInvoiceLineItems.Ref.Company,
-	SalesInvoiceLineItems.Quantity,
-	SalesInvoiceLineItems.Price,
+	SalesInvoiceLineItems.QtyUnits,
+	SalesInvoiceLineItems.PriceUnits,
 	SalesInvoiceLineItems.LineTotal,
 	SalesInvoiceLineItems.Ref,
 	SalesInvoiceLineItems.Ref.Terms,
@@ -252,13 +234,16 @@ SELECT
 	PriceListSliceLast.Cost,
 	NULL,
 	SalesInvoiceLineItems.Ref.Posted,
-	1,
 	CASE
-		WHEN SalesInvoiceLineItems.Price &lt;&gt; 0
-			THEN SalesInvoiceLineItems.Quantity * PriceListSliceLast.Cost
+		WHEN SalesInvoiceLineItems.Ref.Terms &lt;&gt; VALUE(Catalog.PaymentTerms.Consignment)
+			THEN 1
 		ELSE 0
-	END AS Due
-	
+	END,
+	CASE
+		WHEN SalesInvoiceLineItems.PriceUnits &lt;&gt; 0
+			THEN SalesInvoiceLineItems.QtyUnits * PriceListSliceLast.Cost
+		ELSE 0
+	END
 FROM
 	Document.SalesInvoice.LineItems AS SalesInvoiceLineItems
 		LEFT JOIN InformationRegister.PriceList.SliceLast AS PriceListSliceLast
@@ -279,10 +264,6 @@ WHERE
 				<v8:lang>en</v8:lang>
 				<v8:content>Period</v8:content>
 			</v8:item>
-			<v8:item>
-				<v8:lang>de</v8:lang>
-				<v8:content>Periode</v8:content>
-			</v8:item>
 		</title>
 		<valueType>
 			<v8:Type>xs:dateTime</v8:Type>
@@ -298,11 +279,7 @@ WHERE
 		<title xsi:type="v8:LocalStringType">
 			<v8:item>
 				<v8:lang>en</v8:lang>
-				<v8:content>Product</v8:content>
-			</v8:item>
-			<v8:item>
-				<v8:lang>de</v8:lang>
-				<v8:content>Artikel</v8:content>
+				<v8:content>Products</v8:content>
 			</v8:item>
 		</title>
 		<valueType>
@@ -330,7 +307,7 @@ WHERE
 					<dcsset:field>ProductCategory</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>Quantity</dcsset:field>
+					<dcsset:field>QtyUnits</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Terms</dcsset:field>

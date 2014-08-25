@@ -61,8 +61,8 @@
 			OrderData3 = New Map();
 			OrderData3.Insert("api_code",String(LineItem.Product.Ref.UUID()));
 			OrderData3.Insert("Product",LineItem.Product.Code);
-			OrderData3.Insert("quantity",LineItem.Quantity);
-			OrderData3.Insert("price",LineItem.Price);
+			OrderData3.Insert("quantity",LineItem.QtyUM);
+			OrderData3.Insert("price",LineItem.PriceUnits);
 			OrderData3.Insert("line_total",LineItem.LineTotal);
 			
 			OrderData2.Add(OrderData3);
@@ -141,8 +141,8 @@ Function ReturnSalesInvoiceMap(NewOrder) Export
 			OrderData3 = New Map();
 			OrderData3.Insert("api_code",String(LineItem.Product.Ref.UUID()));
 			OrderData3.Insert("Product",LineItem.Product.Code);
-			OrderData3.Insert("quantity",LineItem.Quantity);
-			OrderData3.Insert("price",LineItem.Price);
+			OrderData3.Insert("quantity",LineItem.QtyUM);
+			OrderData3.Insert("price",LineItem.PriceUnits);
 			OrderData3.Insert("line_total",LineItem.LineTotal);
 			OrderData2.Add(OrderData3);
 
@@ -344,8 +344,8 @@ Function ReturnSalesReturnMap(NewOrder) Export
 			OrderData3.Insert("api_code", String(LineItem.Product.Ref.UUID()));
 			OrderData3.Insert("item", LineItem.Product.Code);
 			OrderData3.Insert("product_description", LineItem.ProductDescription);
-			OrderData3.Insert("quantity",LineItem.Quantity);
-			OrderData3.Insert("price",LineItem.Price);
+			OrderData3.Insert("quantity",LineItem.QtyUM);
+			OrderData3.Insert("price",LineItem.PriceUnits);
 			OrderData3.Insert("line_total",LineItem.LineTotal);
 			
 			OrderData2.Add(OrderData3);
@@ -385,8 +385,8 @@ Function ReturnPurchaseReturnMap(NewOrder) Export
 			OrderData3.Insert("api_code", String(LineItem.Product.Ref.UUID()));
 			OrderData3.Insert("item", LineItem.Product.Code);
 			OrderData3.Insert("product_description", LineItem.ProductDescription);
-			OrderData3.Insert("quantity",LineItem.Quantity);
-			OrderData3.Insert("price",LineItem.Price);			
+			OrderData3.Insert("quantity",LineItem.QtyUM);
+			OrderData3.Insert("price",LineItem.PriceUnits);			
 			
 			
 			OrderData3.Insert("line_total",LineItem.LineTotal);
@@ -445,12 +445,12 @@ Function ReturnPurchaseInvoiceMap(NewOrder) Export
 			OrderData3.Insert("api_code", String(LineItem.Product.Ref.UUID()));
 			OrderData3.Insert("item", LineItem.Product.Code);
 			OrderData3.Insert("product_description", LineItem.ProductDescription);
-			OrderData3.Insert("quantity",LineItem.Quantity);
-			OrderData3.Insert("price",LineItem.Price);
+			OrderData3.Insert("quantity",LineItem.QtyUM);
+			OrderData3.Insert("price",LineItem.PriceUnits);
 			OrderData3.Insert("line_total",LineItem.LineTotal);
-			
-			OrderData3.Insert("order_price",LineItem.OrderPrice);
-			OrderData3.Insert("unit_of_measure", string(LineItem.UM));
+			                 
+			OrderData3.Insert("order_price",LineItem.OrderPriceUnits);
+			//OrderData3.Insert("unit_of_measure", string(LineItem.UM));
 			OrderData3.Insert("po_number",string(LineItem.Order));
 			OrderData3.Insert("exp_location",LineItem.Location);
 			OrderData3.Insert("act_location",LineItem.LocationActual);
@@ -856,7 +856,7 @@ Function ReturnPurchaseOrderMap(NewOrder) Export
 			OrderData3.Insert("item",LineItem.Product.Code);
 			OrderData3.Insert("item_description",LineItem.ProductDescription);
 			OrderData3.Insert("quantity",LineItem.Quantity);
-			OrderData3.Insert("unit_of_measure",String(LineItem.UM));
+			//OrderData3.Insert("unit_of_measure",String(LineItem.UM));
 			OrderData3.Insert("price",LineItem.Price);
 			OrderData3.Insert("line_total",LineItem.LineTotal);
 			OrderData3.Insert("project",String(LineItem.Project));
@@ -881,12 +881,12 @@ Function ReturnBankReconMapNew(NewOrder) Export
 	OrderData.Insert("bank_account", String(NewOrder.BankAccount));
 	OrderData.Insert("statement_date", String(NewOrder.Date));
 	
-	OrderData.Insert("charge_date", NewOrder.ServiceChargeDate);
-	OrderData.Insert("service_charge", NewOrder.ServiceCharge);
-	OrderData.Insert("interest_earned", NewOrder.InterestEarned);
-	OrderData.Insert("earned_date", NewOrder.InterestEarnedDate);
-	OrderData.Insert("bank_service_charge_account", NewOrder.BankServiceChargeAccount);
-	OrderData.Insert("bank_interest_earned_account", NewOrder.BankInterestEarnedAccount);
+	//OrderData.Insert("charge_date", NewOrder.ServiceChargeDate);
+	//OrderData.Insert("service_charge", NewOrder.ServiceCharge);
+	//OrderData.Insert("interest_earned", NewOrder.InterestEarned);
+	//OrderData.Insert("earned_date", NewOrder.InterestEarnedDate);
+	//OrderData.Insert("bank_service_charge_account", NewOrder.BankServiceChargeAccount);
+	//OrderData.Insert("bank_interest_earned_account", NewOrder.BankInterestEarnedAccount);
 	
 	OrderData.Insert("memo", NewOrder.Memo);
 	OrderData.Insert("cleared_amount", NewOrder.ClearedAmount);

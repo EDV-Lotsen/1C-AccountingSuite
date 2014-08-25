@@ -11,6 +11,12 @@
 
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
+	
+	If Not Constants.ServiceDB.Get() Then
+		Cancel = True;
+		return;
+	EndIf;
+
 	BankAccounts.Parameters.SetParameterValue("Bank", Catalogs.Banks.EmptyRef());
 	Items.ProgressGroup.Visible = False;
 	OnlineAccount = "Online";
@@ -52,6 +58,12 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Items.RefreshRightTab.Visible = False;
 		Items.RefreshLowerTab.Visible = False;
 		Items.GotoAssigningPage.Visible = False;
+		
+		//In the Demo mode adding new accounts is unavailable
+		If Constants.PublicDemo.Get() Then
+			Items.DemoConfigurationGroup.Visible = True;
+			Items.AddAccounts.Enabled = False;
+		EndIf;
 	EndIf;
 	If PerformEditAccount Then
 		Items.AccountsRefreshPage.Visible = False;
@@ -95,6 +107,29 @@ Procedure ApplyConditionalAppearance()
 	FilterElement.Use				= True;
 	
 	ElementCA.Appearance.SetParameterValue("BackColor", WebColors.MistyRose);
+	
+	//Inform the user about the creation of a new G/L account
+	For Each AssigningRow In AssigningAccountType Do 
+		ElementCA = CA.Items.Add(); 
+	
+		FieldAppearance = ElementCA.Fields.Items.Add(); 
+		FieldAppearance.Field = New DataCompositionField("AssigningAccountTypeAccountType"); 
+		FieldAppearance.Use = True; 
+
+		FilterElement = ElementCA.Filter.Items.Add(Type("DataCompositionFilterItem")); // current row filter 
+		FilterElement.LeftValue 		= New DataCompositionField("AssigningAccountType.AccountType"); 
+		FilterElement.ComparisonType 	= DataCompositionComparisonType.Equal; 
+		FilterElement.RightValue 		= ChartsOfAccounts.ChartOfAccounts.EmptyRef(); 
+		FilterElement.Use				= True;
+		
+		FilterElement = ElementCA.Filter.Items.Add(Type("DataCompositionFilterItem")); // current row filter 
+		FilterElement.LeftValue 		= New DataCompositionField("AssigningAccountType.BankAccountDescription"); 
+		FilterElement.ComparisonType 	= DataCompositionComparisonType.Equal; 
+		FilterElement.RightValue 		= AssigningRow.BankAccountDescription; 
+		FilterElement.Use				= True;
+	
+		ElementCA.Appearance.SetParameterValue("Text", AssigningRow.BankAccountDescription);
+	EndDo;
 
 EndProcedure
 
@@ -285,9 +320,15 @@ Function GetAccountsForAssigning(CurrentBankAccount)
 	                    |		WHEN BankAccounts.DeletionMark = TRUE
 	                    |			THEN FALSE
 	                    |		ELSE TRUE
-	                    |	END AS Connect
+	                    |	END AS Connect,
+	                    |	CASE
+	                    |		WHEN BankAccount.Value = VALUE(ChartOfAccounts.ChartOfAccounts.EmptyRef)
+	                    |			THEN FALSE
+	                    |		ELSE TRUE
+	                    |	END AS DefaultBankAccountFilled
 	                    |FROM
-	                    |	Catalog.BankAccounts AS BankAccounts
+	                    |	Catalog.BankAccounts AS BankAccounts,
+	                    |	Constant.BankAccount AS BankAccount
 	                    |WHERE
 	                    |	(BankAccounts.ItemID = &ItemID
 	                    |				AND BankAccounts.ItemID <> 0
@@ -297,7 +338,7 @@ Function GetAccountsForAssigning(CurrentBankAccount)
 	Sel = Request.Execute().Select();
 	AvailableList = New Array();
 	While Sel.Next() Do
-		AvailableList.Add(New Structure("BankAccount, BankAccountDescription, Type, CurrentBalance, AccountType, Connect"));
+		AvailableList.Add(New Structure("BankAccount, BankAccountDescription, Type, CurrentBalance, AccountType, Connect, DefaultBankAccountFilled"));
 		FillPropertyValues(AvailableList[AvailableList.Count()-1], Sel);
 	EndDo;
 	return AvailableList;
@@ -327,41 +368,136 @@ Function GetAvailableListOfAccounts(CurrentAccountType = Undefined, CurrentBankA
 	If Not RequestRes.IsEmpty() Then
 		Sel = RequestRes.Select();
 		While Sel.Next() Do
-			AvailableList.Add(Sel.Ref, String(Sel.AccountType) + " (" + String(Sel.Code) + "-" + Sel.Description + ")");
+			AvailableList.Add(Sel.Ref, String(Sel.AccountType) + " (" + String(Sel.Code) + "-" + TrimAll(Sel.Description) + ")");
 		EndDo;
 	EndIf;
 	If CurrentAccountType <> Undefined Then
 		If AvailableList.FindByValue(CurrentAccountType) = Undefined Then
-			AvailableList.Add(CurrentAccountType, String(CurrentAccountType.AccountType) + " (" + String(CurrentAccountType.Code) + "-" + CurrentAccountType.Description + ")");
+			AvailableList.Add(CurrentAccountType, String(CurrentAccountType.AccountType) + " (" + String(CurrentAccountType.Code) + "-" + TrimAll(CurrentAccountType.Description) + ")");
 		EndIf;
 	EndIf;
 	If (CurrentBankAccount <> Undefined) Then
 		BankAA = CurrentBankAccount.AccountingAccount;
 		If ValueIsFilled(CurrentBankAccount.AccountingAccount) And (BankAA <> CurrentAccountType) Then
-			AvailableList.Add(BankAA, String(BankAA.AccountType) + " (" + String(BankAA.Code) + "-" + BankAA.Description + ")");	
+			AvailableList.Add(BankAA, String(BankAA.AccountType) + " (" + String(BankAA.Code) + "-" + TrimAll(BankAA.Description) + ")");	
 		EndIf;
 	EndIf;
 	return AvailableList;
 EndFunction
 
 &AtServerNoContext
-Function AssignAccountTypeAtServer(CurrentBankAccount, BankAccountType, Connect = True)
+Function FindVacantCode(CodeStart, CodeEnd, AccountType)
+	Request = New Query("SELECT
+	                    |	ChartOfAccounts.Code,
+	                    |	ChartOfAccounts.AccountType,
+	                    |	ChartOfAccounts.Order
+	                    |FROM
+	                    |	ChartOfAccounts.ChartOfAccounts AS ChartOfAccounts
+	                    |WHERE
+	                    |	ChartOfAccounts.Code >= &CodeStart
+	                    |	AND ChartOfAccounts.Code <= &CodeEnd
+	                    |
+	                    |ORDER BY
+	                    |	ChartOfAccounts.Code DESC");
+	Request.SetParameter("CodeStart", CodeStart);
+	Request.SetParameter("CodeEnd", CodeEnd);
+	FoundAccounts = Request.Execute().Unload();
+	FoundAccountsOfType = FoundAccounts.FindRows(New Structure("AccountType", AccountType));
+	NewCode = CodeStart;
+	If FoundAccountsOfType.Count() > 0 Then
+		For Each AccountOfType In FoundAccountsOfType Do
+			Try
+				If Format(Number(TrimAll(AccountOfType.Code)), "NFD=; NG=0") = TrimAll(AccountOfType.Code) Then //Found digital code
+					NewCode = Format(Number(TrimAll(AccountOfType.Code)) + 10 ,"NFD=; NG=0");
+					If NewCode > CodeEnd Then
+						NewCode = CodeStart;
+					EndIf;
+					Break;
+				EndIf;
+			Except
+			EndTry;
+		EndDo;
+	EndIf;
+	//Check if the new code is vacant
+	ExistingAccounts = FoundAccounts.FindRows(New Structure("Code", NewCode));
+	If ExistingAccounts.Count() = 0 Then
+		return NewCode;
+	EndIf;
+	//If the new code is already in use
+	//Start searching the vacant one from the very beginning
+	CodeStartDigital = Number(CodeStart);
+	CodeEndDigital = Number(CodeEnd);
+	NewCode = "";
+	For DigitalCode = CodeStartDigital To CodeEndDigital Do
+		CurrentCode = Format(DigitalCode,"NFD=; NG=0");
+		ExistingAccounts = FoundAccounts.FindRows(New Structure("Code", CurrentCode));
+		If ExistingAccounts.Count() = 0 Then
+			NewCode = CurrentCode;
+			Break;
+		EndIf;
+	EndDo;
+	return NewCode;
+EndFunction
+
+&AtServerNoContext
+Function AssignAccountTypeAtServer(Val CurrentBankAccount, Val BankAccountType, Val Connect = True, Val SetAsDefault = False)
 	ReturnStructure = New Structure("ReturnValue, ErrorMessage", True, "");
 	If (CurrentBankAccount.AccountingAccount = BankAccountType) And (ValueIsFilled(CurrentBankAccount.AccountingAccount)) Then
 		ReturnStructure.ReturnValue = True;
 		return ReturnStructure;
 	EndIf;
-	If Connect Then
-		BAObject = CurrentBankAccount.GetObject();
-		BAObject.AccountingAccount = BankAccountType;
-		GetUserMessages(True);
-	Else
-		BAObject = CurrentBankAccount.GetObject();
-		//BAObject.DeletionMark = True;
-		GetUserMessages(True);
-	EndIf;
 	BeginTransaction(DataLockControlMode.Managed);
+	
+	//Set DataLock on ChartOfAccounts
+	GLLock = New DataLock();
+	LockItem = GLLock.Add("ChartOfAccounts.ChartOfAccounts");
+	LockItem.Mode = DataLockMode.Exclusive;
+	GLLock.Lock();
+	
 	Try
+		If Connect Then
+			BAObject = CurrentBankAccount.GetObject();
+			//Create appropriate G/L account 
+			If Not ValueIsFilled(BankAccountType) Then
+				NewGLAccount = ChartsOfAccounts.ChartOfAccounts.CreateAccount();
+				NewGLAccount.Description = CurrentBankAccount.Description;
+				If CurrentBankAccount.Owner.ContainerType = Enums.YodleeContainerTypes.Bank Then
+					NewGLAccount.AccountType = Enums.AccountTypes.Bank;
+					StartCode = "1000";
+					EndCode = "2000";
+					NewCode = FindVacantCode(StartCode, EndCode, Enums.AccountTypes.Bank);
+				Else
+					NewGLAccount.AccountType = Enums.AccountTypes.OtherCurrentLiability;
+					StartCode = "2100";
+					EndCode = "3000";
+					NewCode = FindVacantCode(StartCode, EndCode, Enums.AccountTypes.OtherCurrentLiability);
+				EndIf;
+				If Not ValueIsFilled(NewCode) Then
+					UM = GetUserMessages(True);
+					If UM.Count()>0 Then
+						ReturnStructure.ErrorMessage = UM[0].Text;
+					Else
+						ReturnStructure.ErrorMessage = "Couldn't create the new G/L account """ + CurrentBankAccount.Description + """"
+						+ " for no vacant code found between " + StartCode + " and " + EndCode;
+					EndIf;
+					ReturnStructure.ReturnValue = False;
+					return ReturnStructure;
+				EndIf;
+				NewGLAccount.Code = NewCode;
+				NewGLAccount.Order = NewCode;
+				NewGLAccount.Write();
+				BAObject.AccountingAccount = NewGLAccount.Ref;
+				ReturnStructure.Insert("NewGLAccount", NewGLAccount.Ref);
+			Else
+				BAObject.AccountingAccount = BankAccountType;
+			EndIf;
+			GetUserMessages(True);
+		Else
+			BAObject = CurrentBankAccount.GetObject();
+			//BAObject.DeletionMark = True;
+			GetUserMessages(True);
+		EndIf;
+
 		If Connect Then
 			BAObject.Write();
 		Else
@@ -381,6 +517,9 @@ Function AssignAccountTypeAtServer(CurrentBankAccount, BankAccountType, Connect 
 			NewRecord.ItemAccountID = CurrentBankAccount.ItemAccountID;
 			RecordSet.Write(True);
 			BAObject.Delete();
+		EndIf;
+		If SetAsDefault Then
+			Constants.BankAccount.Set(BankAccountType);
 		EndIf;
 		CommitTransaction();
 	Except
@@ -470,6 +609,7 @@ Procedure GotoAssigningPage(Command)
 	EndIf;
 	FillAssigningTable();
 	FillAvailableAccounts();
+	ApplyConditionalAppearance();
 EndProcedure
 
 &AtClient
@@ -484,6 +624,7 @@ Procedure AddAccounts(Command)
 		//Show the ProgressGroup, Attach idle handler
 	
 		Items.AddingAccountProgress.Title = "Obtaining authorization fields from server...";
+		Items.BankDetails.Visible = False;
 		Items.ProgressGroup.Visible = True;
 		AttachIdleHandler("DispatchAddAccount", 0.1, True);
 		
@@ -571,7 +712,7 @@ EndProcedure
 
 &AtClient
 Procedure BankOnChange(Item)
-	LogotypeAddress = GetLogotypeAddress(Bank);
+	FillDetailsAtServer();
 EndProcedure
 
 &AtClient
@@ -582,7 +723,7 @@ Procedure AssignAccountType(Command)
 	FailReason = "";
 	i = 1;
 	For Each Str In AssigningAccountType Do
-		ReturnStructure = AssignAccountTypeAtServer(Str.BankAccount, Str.AccountType, Str.Connect);
+		ReturnStructure = AssignAccountTypeAtServer(Str.BankAccount, Str.AccountType, Str.Connect, Str.SetDefault);
 		If Not ReturnStructure.ReturnValue Then
 			CurrentFailReason = "Row #" + String(i) + ". Assigning failed. Reason: " + ReturnStructure.ErrorMessage + " Please, choose an account type once again.";
 			FailReason = FailReason + ?(StrLen(FailReason)>0, Chars.CR + Chars.LF, "") + CurrentFailReason;
@@ -593,6 +734,9 @@ Procedure AssignAccountType(Command)
 			EndIf;
 		Else
 			Str.AssigningFailed = False;	
+			If (Not ValueIsFilled(Str.AccountType)) And (ReturnStructure.Property("NewGLAccount")) Then
+				Str.AccountType = ReturnStructure.NewGLAccount;
+			EndIf;
 		EndIf;
 		i = i + 1;
 	EndDo;
@@ -659,14 +803,14 @@ Function CheckDataFill()
 			i = i + 1;
 			Continue;
 		EndIf;
-		If Not ValueIsFilled(CurAccount.AccountType) Then
-			Result = False;
-			MessOnError = New UserMessage();
-			//MessOnError.SetData(Object);
-			MessOnError.Field = "AssigningAccountType[" + String(i) + "]." + "AccountType";
-			MessOnError.Text  = "Field """ + "G/L account" + """ in row №" + String(i+1) + " is not filled";
-			MessOnError.Message();
-		EndIf;
+		//If Not ValueIsFilled(CurAccount.AccountType) Then
+		//	Result = False;
+		//	MessOnError = New UserMessage();
+		//	//MessOnError.SetData(Object);
+		//	MessOnError.Field = "AssigningAccountType[" + String(i) + "]." + "AccountType";
+		//	MessOnError.Text  = "Field """ + "G/L account" + """ in row №" + String(i+1) + " is not filled";
+		//	MessOnError.Message();
+		//EndIf;
 		i = i + 1;
 	EndDo;
 	Return Result;
@@ -677,6 +821,7 @@ Procedure GetMFAFields(ProgrammaticElems, Params) Export
 	If TypeOf(ProgrammaticElems) <> Type("Array") Then
 		ShowMessageBox(,"Operation failed. Try to repeat the operation",,"Adding bank accounts");
 		Items.ProgressGroup.Visible = False;
+		Items.BankDetails.Visible = True;
 		return;
 	EndIf;
 	
@@ -699,6 +844,7 @@ Procedure DispatchAddAccount() Export
 	Progress = GetFromTempStorage(TempStorageAddress);
 	If TypeOf(Progress) <> Type("Structure") Then
 		Items.ProgressGroup.Visible = False;
+		Items.BankDetails.Visible = True;
 		ShowMessageBox(, "An error occured while adding an account",, "Adding bank account");
 		return;
 	EndIf;
@@ -716,6 +862,7 @@ Procedure DispatchAddAccount() Export
 		If Not Params.ReturnValue Then
 			ShowMessageBox(,"Operation failed. Try to repeat the operation",,"Adding bank accounts");
 			Items.ProgressGroup.Visible = False;
+			Items.BankDetails.Visible = True;
 			return;
 		EndIf;
 		
@@ -731,6 +878,7 @@ Procedure DispatchAddAccount() Export
 		Else
 			ShowCustomMessageBox(ThisForm, "Adding bank accounts","Operation failed. Try to repeat the operation", PredefinedValue("Enum.MessageStatus.Warning"));
 			Items.ProgressGroup.Visible = False;
+			Items.BankDetails.Visible = True;
 		EndIf;	
 	ElsIf Progress.Step = 3 Then
 		CurrentBankAccount = GetBankAccountByItemID(Params.NewItemID);
@@ -1145,6 +1293,28 @@ Procedure FillAssigningTable()
 		EndIf;
 		NewRow = AssigningAccountType.Add();
 		FillPropertyValues(NewRow, AL);
+		If AssigningAccountType.Count() = 1 And NOT AL.DefaultBankAccountFilled Then
+			NewRow.SetDefault = True;
+		EndIf;
+		AvailableAccounts = GetAvailableListOfAccounts(, NewRow.BankAccount);
+		//Exclude items already used
+		For Each Str In AssigningAccountType Do
+			If Str = NewRow Then
+				Continue;
+			EndIf;
+			FoundItem = AvailableAccounts.FindByValue(Str.AccountType);
+			If FoundItem <> Undefined Then
+				AvailableAccounts.Delete(FoundItem);
+			EndIf;
+		EndDo;
+		For Each AvailableAccount In AvailableAccounts Do
+			Presentation = AvailableAccount.Presentation;
+			Pos = Find(Presentation, NewRow.BankAccountDescription);
+			If (Pos > 1) And Mid(Presentation, Pos-1, 1) = "-" Then
+				NewRow.AccountType = AvailableAccount.Value;
+				Break;
+			EndIf;
+		EndDo;
 	EndDo;
 EndProcedure
 
@@ -1161,10 +1331,16 @@ Procedure FillAvailableAccounts()
 		AvailableList = GetAvailableListOfAccounts();	
 	EndIf;
 	
+	AppropriateGLAccountFound = False;
 	ChoiceList = Items.AssigningAccountTypeAccountType.ChoiceList;
 	ChoiceList.Clear();
 	For Each El IN AvailableList Do
 		ChoiceList.Add(El.Value, El.Presentation);
+		If CurrentData <> Undefined Then
+			If Find(El.Presentation, CurrentData.BankAccountDescription) > 0 Then
+				AppropriateGLAccountFound = True;
+			EndIf;
+		EndIf;
 	EndDo;
 	//Exclude items already used
 	For Each Str In AssigningAccountType Do
@@ -1176,6 +1352,115 @@ Procedure FillAvailableAccounts()
 			ChoiceList.Delete(FoundItem);
 		EndIf;
 	EndDo;
+	//If an account with the same name as bank account is absent then add one
+	If Not AppropriateGLAccountFound And (CurrentData <> Undefined) Then
+		ChoiceList.Add(PredefinedValue("ChartOfAccounts.ChartOfAccounts.EmptyRef"), CurrentData.BankAccountDescription);
+	EndIf;
+EndProcedure
+
+&AtClient
+Procedure ChooseWellsFargo(Command)
+	ChooseBankAtServer(5);
+EndProcedure
+
+&AtServer
+Procedure ChooseBankAtServer(ServiceID)
+	Request = New Query("SELECT
+	                    |	Banks.Ref
+	                    |FROM
+	                    |	Catalog.Banks AS Banks
+	                    |WHERE
+	                    |	Banks.ServiceID = &ServiceID");
+	Request.SetParameter("ServiceID", ServiceID);
+	
+	Result = Request.Execute();
+	If Not Result.IsEmpty() Then
+		BankTab = Result.Unload();
+		Bank = BankTab[0].Ref;
+		LogotypeAddress = GetLogotypeAddress(Bank);
+		Items.ServiceURL.Title = Bank.ServiceURL;
+	EndIf;	
+EndProcedure
+
+&AtServer
+Procedure FillDetailsAtServer()
+	LogotypeAddress = GetLogotypeAddress(Bank);
+	Items.ServiceURL.Title = Bank.ServiceURL;
+EndProcedure
+
+&AtClient
+Procedure ChooseAmericanExpressCreditCard(Command)
+	ChooseBankAtServer(12);
+EndProcedure
+
+&AtClient
+Procedure ChooseBankOfAmerica(Command)
+	ChooseBankAtServer(2931);
+EndProcedure
+
+&AtClient
+Procedure ChooseChaseBank(Command)
+	ChooseBankAtServer(663);
+EndProcedure
+
+&AtClient
+Procedure ChooseJPMorganChaseBank(Command)
+	ChooseBankAtServer(663);
+EndProcedure
+
+&AtClient
+Procedure ChoosePayPalBank(Command)
+	ChooseBankAtServer(10817);
+EndProcedure
+
+&AtClient
+Procedure ChooseUSBank(Command)
+	ChooseBankAtServer(545);
+EndProcedure
+
+&AtClient
+Procedure ChooseCapitalOneCreditCard(Command)
+	ChooseBankAtServer(2935);
+EndProcedure
+
+&AtClient
+Procedure ChooseSunTrustBank(Command)
+	ChooseBankAtServer(12729);
+EndProcedure
+
+&AtClient
+Procedure ChoosePNCBank(Command)
+	ChooseBankAtServer(2199);
+EndProcedure
+
+&AtClient
+Procedure ServiceURLURLProcessing(Item, URL, StandardProcessing)
+	EndProcedure
+
+&AtClient
+Procedure ServiceURLClick(Item)
+	StandardProcessing = false;
+	If ValueIsFilled(Item.Title) Then
+		GotoUrl(Item.Title);
+	EndIf;
+EndProcedure
+
+&AtClient
+Procedure AssigningAccountTypeSetDefaultOnChange(Item)
+	// Only one bank account can be set as default
+	CurrentData = Items.AssigningAccountType.CurrentData;
+	If Not CurrentData.SetDefault Then
+		return;
+	EndIf;
+	For Each Row In AssigningAccountType Do
+		If Row.GetID() = Items.AssigningAccountType.CurrentRow Then
+			Continue;
+		EndIf;
+		If Row.SetDefault Then
+			Row.SetDefault = False;
+		EndIf;
+	EndDo;
+	
 EndProcedure
 
 #ENDREGION

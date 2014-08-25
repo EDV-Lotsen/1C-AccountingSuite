@@ -7,7 +7,18 @@
 #Region EVENT_HANDLERS
 
 #If Server Or ThickClientOrdinaryApplication Or ExternalConnection Then
+
+Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 	
+	// Document date adjustment patch (tunes the date of drafts like for the new documents).
+	If  WriteMode = DocumentWriteMode.Posting And Not Posted // Posting of new or draft (saved but unposted) document.
+	And BegOfDay(Date) = BegOfDay(CurrentSessionDate()) Then // Operational posting (by the current date).
+		// Shift document time to the time of posting.
+		Date = CurrentSessionDate();
+	EndIf;
+	
+EndProcedure
+
 Procedure FillCheckProcessing(Cancel, CheckedAttributes)
 	
 	If Discount > 0 Then
@@ -20,10 +31,10 @@ Procedure FillCheckProcessing(Cancel, CheckedAttributes)
 	EndIf;
 	
 	// Check doubles in items (to be sure of proper orders placement).
-	GeneralFunctions.CheckDoubleItems(Ref, LineItems, "Product, Location, DeliveryDate, Project, Class, LineNumber",, Cancel);
+	GeneralFunctions.CheckDoubleItems(Ref, LineItems, "Product, Unit, Location, DeliveryDate, Project, Class, LineNumber",, Cancel);
 	
 EndProcedure
-	
+
 Procedure Filling(FillingData, StandardProcessing)
 	
 	// Forced assign the new document number.

@@ -143,6 +143,10 @@
 			<dataPath>Description</dataPath>
 			<field>Description</field>
 		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Unit</dataPath>
+			<field>Unit</field>
+		</field>
 		<dataSource>DataSource1</dataSource>
 		<query>SELECT
 	OrdersDispatchedBalance.Product AS Product,
@@ -150,13 +154,13 @@
 		WHEN OrdersDispatchedBalance.Product.Type = VALUE(Enum.InventoryTypes.Inventory)
 			THEN CASE
 					WHEN OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.ReceivedBalance &gt; 0
-						THEN OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.ReceivedBalance
+						THEN (OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.ReceivedBalance) * OrdersDispatchedBalance.Unit.Factor
 					ELSE 0
 				END
 		WHEN OrdersDispatchedBalance.Product.Type = VALUE(Enum.InventoryTypes.NonInventory)
 			THEN CASE
 					WHEN OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.InvoicedBalance &gt; 0
-						THEN OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.InvoicedBalance
+						THEN (OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.InvoicedBalance) * OrdersDispatchedBalance.Unit.Factor
 					ELSE 0
 				END
 		ELSE 0
@@ -176,13 +180,13 @@ SELECT
 		WHEN OrdersRegisteredBalance.Product.Type = VALUE(Enum.InventoryTypes.Inventory)
 			THEN CASE
 					WHEN OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.ShippedBalance &gt; 0
-						THEN OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.ShippedBalance
+						THEN (OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.ShippedBalance) * OrdersRegisteredBalance.Unit.Factor
 					ELSE 0
 				END
 		WHEN OrdersRegisteredBalance.Product.Type = VALUE(Enum.InventoryTypes.NonInventory)
 			THEN CASE
 					WHEN OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.InvoicedBalance &gt; 0
-						THEN OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.InvoicedBalance
+						THEN (OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.InvoicedBalance) * OrdersRegisteredBalance.Unit.Factor
 					ELSE 0
 				END
 		ELSE 0

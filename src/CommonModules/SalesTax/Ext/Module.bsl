@@ -83,28 +83,19 @@ EndFunction
 //Returns list of sales tax rates
 Function GetSalesTaxRatesList() Export
 	Request = New Query("SELECT
-	                    |	SalesTaxRates.Ref,
-	                    |	SalesTaxRates.Presentation,
-	                    |	CASE
-	                    |		WHEN SalesTaxRates.Parent = VALUE(Catalog.SalesTaxRates.EmptyRef)
-	                    |			THEN SalesTaxRates.Ref
-	                    |		ELSE SalesTaxRates.Parent
-	                    |	END AS OrderField,
-	                    |	CASE
-	                    |		WHEN SalesTaxRates.Parent = VALUE(Catalog.SalesTaxRates.EmptyRef)
-	                    |			THEN 1
-	                    |		ELSE 2
-	                    |	END AS CombinedOrNot
+	                    |	SalesTaxRates.Ref AS Ref,
+	                    |	SalesTaxRates.Presentation
 	                    |FROM
 	                    |	Catalog.SalesTaxRates AS SalesTaxRates
+	                    |WHERE
+	                    |	SalesTaxRates.Parent = VALUE(Catalog.SalesTaxRates.EmptyRef)
 	                    |
 	                    |ORDER BY
-	                    |	OrderField,
-	                    |	CombinedOrNot");
+	                    |	Ref");
 	TaxRatesTab = Request.Execute().Unload();
 	RatesList = New ValueList();
 	For Each TaxRate In TaxRatesTab Do
-		RatesList.Add(TaxRate.Ref, ?(TaxRate.CombinedOrNot = 1, TaxRate.Presentation, "-  " + TaxRate.Presentation));
+		RatesList.Add(TaxRate.Ref, TaxRate.Presentation);
 	EndDo;	
 	//No sales tax
 	RatesList.Add(Catalogs.SalesTaxRates.EmptyRef(), "No sales tax (0%)");

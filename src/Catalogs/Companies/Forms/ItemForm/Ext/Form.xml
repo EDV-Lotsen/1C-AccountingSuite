@@ -338,19 +338,11 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Financial</v8:content>
 						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Finanziell</v8:content>
-						</v8:item>
 					</Title>
 					<ToolTip>
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Financial</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Finanziell</v8:content>
 						</v8:item>
 					</ToolTip>
 					<ExtendedTooltip name="FinancialExtendedTooltip" id="160"/>
@@ -469,75 +461,17 @@
 						</InputField>
 					</ChildItems>
 				</Page>
-				<Page name="CreditCard" id="182">
-					<Visible>false</Visible>
-					<Title>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Credit card</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Kreditkarte</v8:content>
-						</v8:item>
-					</Title>
-					<ToolTip>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Credit card</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Kreditkarte</v8:content>
-						</v8:item>
-					</ToolTip>
-					<ExtendedTooltip name="CreditCardExtendedTooltip" id="183"/>
-					<ChildItems>
-						<InputField name="type" id="196">
-							<DataPath>Object.type</DataPath>
-							<ReadOnly>true</ReadOnly>
-							<ContextMenu name="typeContextMenu" id="197"/>
-							<ExtendedTooltip name="typeExtendedTooltip" id="198"/>
-						</InputField>
-						<InputField name="last4" id="187">
-							<DataPath>Object.last4</DataPath>
-							<ReadOnly>true</ReadOnly>
-							<ContextMenu name="last4ContextMenu" id="188"/>
-							<ExtendedTooltip name="last4ExtendedTooltip" id="189"/>
-						</InputField>
-						<InputField name="exp_month" id="190">
-							<DataPath>Object.exp_month</DataPath>
-							<ReadOnly>true</ReadOnly>
-							<ContextMenu name="exp_monthContextMenu" id="191"/>
-							<ExtendedTooltip name="exp_monthExtendedTooltip" id="192"/>
-						</InputField>
-						<InputField name="exp_year" id="193">
-							<DataPath>Object.exp_year</DataPath>
-							<ReadOnly>true</ReadOnly>
-							<ContextMenu name="exp_yearContextMenu" id="194"/>
-							<ExtendedTooltip name="exp_yearExtendedTooltip" id="195"/>
-						</InputField>
-					</ChildItems>
-				</Page>
 				<Page name="Projects" id="201">
 					<Title>
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Projects</v8:content>
 						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Projekte</v8:content>
-						</v8:item>
 					</Title>
 					<ToolTip>
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Projects</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Projekte</v8:content>
 						</v8:item>
 					</ToolTip>
 					<ExtendedTooltip name="ProjectsExtendedTooltip" id="202"/>
@@ -942,19 +876,11 @@ WHERE
 					<v8:lang>en</v8:lang>
 					<v8:content>Projects / Jobs</v8:content>
 				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>Projekte/Aufgaben</v8:content>
-				</v8:item>
 			</Title>
 			<ToolTip>
 				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Projects</v8:content>
-				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>Projekte</v8:content>
 				</v8:item>
 			</ToolTip>
 			<Action>Projects</Action>

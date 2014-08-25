@@ -252,6 +252,18 @@
 				</InputField>
 			</ChildItems>
 		</UsualGroup>
+		<InputField name="InvoiceStatus" id="88">
+			<DataPath>Object.InvoiceStatus</DataPath>
+			<Visible>false</Visible>
+			<ContextMenu name="InvoiceStatusContextMenu" id="89"/>
+			<ExtendedTooltip name="InvoiceStatusExtendedTooltip" id="90"/>
+		</InputField>
+		<InputField name="InvoiceSent" id="91">
+			<DataPath>Object.InvoiceSent</DataPath>
+			<Visible>false</Visible>
+			<ContextMenu name="InvoiceSentContextMenu" id="92"/>
+			<ExtendedTooltip name="InvoiceSentExtendedTooltip" id="93"/>
+		</InputField>
 	</ChildItems>
 	<Attributes>
 		<Attribute name="Object" id="1">

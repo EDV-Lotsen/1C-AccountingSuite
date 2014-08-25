@@ -10,22 +10,42 @@ Var SalesTaxRateInactive, AgenciesRatesInactive;//Cache for storing inactive rat
 // 
 Procedure LineItemsProductOnChange(Item)
 	
-	TabularPartRow = Items.LineItems.CurrentData;
+	// Fill line data for editing.
+	TableSectionRow = GetLineItemsRowStructure();
+	FillPropertyValues(TableSectionRow, Items.LineItems.CurrentData);
 	
-	TabularPartRow.ProductDescription = CommonUse.GetAttributeValue(TabularPartRow.Product, "Description");
-	TabularPartRow.Quantity = 0;
-	TabularPartRow.LineTotal = 0;
-	TabularPartRow.Price = 0;
-	//TabularPartRow.TaxableAmount = 0;
-	//TabularPartRow.VAT = 0;
+	// Request server operation.
+	LineItemsProductOnChangeAtServer(TableSectionRow);
 	
-	Price = GeneralFunctions.RetailPrice(CurrentDate(), TabularPartRow.Product, Object.Company);
-	TabularPartRow.Price = Price / Object.ExchangeRate;
-		
-	TabularPartRow.Taxable = CommonUse.GetAttributeValue(TabularPartRow.Product, "Taxable");
-	//TabularPartRow.VATCode = CommonUse.GetAttributeValue(TabularPartRow.Product, "SalesVATCode");
+	// Load processed data back.
+	FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
 	
+	// Refresh totals cache.
 	RecalculateTotals();
+	
+EndProcedure
+
+&AtServer
+Procedure LineItemsProductOnChangeAtServer(TableSectionRow)
+	
+	// Request product properties.
+	ProductProperties = CommonUse.GetAttributeValues(TableSectionRow.Product,   New Structure("Description, UnitSet, Taxable"));
+	UnitSetProperties = CommonUse.GetAttributeValues(ProductProperties.UnitSet, New Structure("DefaultSaleUnit"));
+	TableSectionRow.ProductDescription = ProductProperties.Description;
+	TableSectionRow.UnitSet            = ProductProperties.UnitSet;
+	TableSectionRow.Unit               = UnitSetProperties.DefaultSaleUnit;
+	//TableSectionRow.UM                 = UnitSetProperties.UM;
+	TableSectionRow.Taxable            = ProductProperties.Taxable;
+	TableSectionRow.PriceUnits         = Round(GeneralFunctions.RetailPrice(Object.Date, TableSectionRow.Product, Object.Company) /
+	                                     // The price is returned for default sales unit factor.
+	                                     ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), 2);
+	
+	// Assign default quantities.
+	TableSectionRow.QtyUnits  = 0;
+	TableSectionRow.QtyUM     = 0;
+	
+	// Calculate totals by line.
+	TableSectionRow.LineTotal     = 0;
 	
 EndProcedure
 
@@ -116,7 +136,7 @@ Procedure RecalculateTotalsNoContext(Object)
 	If Object.SalesTaxAcrossAgencies.Count() > 0 Then
 		CurrentAgenciesRates = New Array();
 		For Each AgencyRate In Object.SalesTaxAcrossAgencies Do
-			CurrentAgenciesRates.Add(New Structure("Agency, Rate", AgencyRate.Agency, AgencyRate.Rate));
+			CurrentAgenciesRates.Add(New Structure("Agency, Rate, SalesTaxRate, SalesTaxComponent", AgencyRate.Agency, AgencyRate.Rate, AgencyRate.SalesTaxRate, AgencyRate.SalesTaxComponent));
 		EndDo;
 	EndIf;
 	
@@ -163,26 +183,51 @@ Procedure CompanyOnChange(Item)
 	RecalculateTotals();
 	EmailSet();
 	
+	CompanyOnChangeAtServer();
+	
+EndProcedure
+
+&AtServer
+Procedure CompanyOnChangeAtServer()
+	If Object.Company.ARAccount <> ChartsofAccounts.ChartOfAccounts.EmptyRef() Then
+		Object.ARAccount = Object.Company.ARAccount;
+	Else
+		DefaultCurrency = GeneralFunctionsReusable.DefaultCurrency();
+		Object.ARAccount = DefaultCurrency.DefaultARAccount;
+	EndIf;
 EndProcedure
 
 &AtClient
 // PriceOnChange UI event handler.
 // Calculates line total by multiplying a price by a quantity in either the selected
 // unit of measure (U/M) or in the base U/M, and recalculates the line's taxable amount and total.
-//  
+// 
 Procedure LineItemsPriceOnChange(Item)
 	
-	TabularPartRow = Items.LineItems.CurrentData;
+	// Fill line data for editing.
+	TableSectionRow = GetLineItemsRowStructure();
+	FillPropertyValues(TableSectionRow, Items.LineItems.CurrentData);
 	
-	TabularPartRow.LineTotal = TabularPartRow.Quantity * TabularPartRow.Price;
+	// Request server operation.
+	LineItemsPriceOnChangeAtServer(TableSectionRow);
 	
-	//TabularPartRow.VAT = VAT_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Sales", Object.PriceIncludesVAT);
+	// Load processed data back.
+	FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
 	
-	//RecalcTaxableAmount();
-	//RecalcSalesTax();
-	//RecalculateTotals();
-	RecalculateTotalsNoContext(Object);
+	// Refresh totals cache.
+	RecalculateTotals();
 
+EndProcedure
+
+&AtServer
+Procedure LineItemsPriceOnChangeAtServer(TableSectionRow)
+	
+	// Calculate total by line.
+	TableSectionRow.LineTotal = Round(Round(TableSectionRow.QtyUnits, QuantityPrecision) * TableSectionRow.PriceUnits, 2);
+	
+	// Process settings changes.
+	LineItemsLineTotalOnChangeAtServer(TableSectionRow);
+	
 EndProcedure
 
 &AtClient
@@ -246,14 +291,30 @@ EndProcedure
 //  
 Procedure LineItemsQuantityOnChange(Item)
 	
-	TabularPartRow = Items.LineItems.CurrentData;
-	TabularPartRow.LineTotal = TabularPartRow.Quantity * TabularPartRow.Price;
-	//TabularPartRow.VAT = VAT_FL.VATLine(TabularPartRow.LineTotal, TabularPartRow.VATCode, "Sales", Object.PriceIncludesVAT);
+	// Fill line data for editing.
+	TableSectionRow = GetLineItemsRowStructure();
+	FillPropertyValues(TableSectionRow, Items.LineItems.CurrentData);
 	
-	//RecalcTaxableAmount();
-	//RecalcSalesTax();
+	// Request server operation.
+	LineItemsQuantityOnChangeAtServer(TableSectionRow);
+	
+	// Load processed data back.
+	FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
+	
+	// Refresh totals cache.
 	RecalculateTotals();
 
+EndProcedure
+
+&AtServer
+Procedure LineItemsQuantityOnChangeAtServer(TableSectionRow)
+	
+	// Calculate total by line.
+	TableSectionRow.LineTotal = Round(Round(TableSectionRow.QtyUnits, QuantityPrecision) * TableSectionRow.PriceUnits, 2);
+	
+	// Process settings changes.
+	LineItemsLineTotalOnChangeAtServer(TableSectionRow);
+	
 EndProcedure
 
 &AtServer
@@ -274,8 +335,10 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	//Endif;
 
 	
-	Items.LineItemsQuantity.EditFormat = GeneralFunctionsReusable.DefaultQuantityFormat();
-	Items.LineItemsQuantity.Format = GeneralFunctionsReusable.DefaultQuantityFormat();
+	QuantityPrecision = GeneralFunctionsReusable.DefaultQuantityPrecision();
+	QuantityFormat    = GeneralFunctionsReusable.DefaultQuantityFormat();
+	Items.LineItemsQuantity.EditFormat = QuantityFormat;
+	Items.LineItemsQuantity.Format     = QuantityFormat;
 	
 	Items.Company.Title = GeneralFunctionsReusable.GetCustomerName();
 	
@@ -300,6 +363,9 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 			EndIf;
 			//If filled on the basis of Sales Order set current value
 			SalesTaxRate = Object.SalesTaxRate;
+			TaxRate = Object.SalesTaxAcrossAgencies.Total("Rate");
+			SalesTaxRateText = "Sales tax rate: " + String(TaxRate) + "%";
+			Items.SalesTaxPercentDecoration.Title = SalesTaxRateText;
 		Else
 			TaxRate = Object.SalesTaxAcrossAgencies.Total("Rate");
 			SalesTaxRateText = "Sales tax rate: " + String(TaxRate) + "%";
@@ -345,6 +411,10 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		//Items.RCCurrency.Visible = False;
 		Items.RCCurrency.Title = "";
 	EndIf;
+	
+	If Object.Ref.IsEmpty() Then
+		Object.EmailNote = Constants.CreditMemoFooter.Get();
+	EndIf;
 
 	//DefaultCurrencySymbol = GeneralFunctionsReusable.DefaultCurrencySymbol();
 	//DocumentCurrencySymbol = CommonUse.GetAttributeValue(Object.Currency, "Symbol");
@@ -377,166 +447,173 @@ EndProcedure
 
 &AtClient
 Procedure SendEmail(Command)
-	SendEmailAtServer();
+	If Object.Ref.IsEmpty() Then
+		Message("An email cannot be sent until the credit memo is posted");
+	Else	
+		FormParameters = New Structure("Ref",Object.Ref );
+		OpenForm("CommonForm.EmailForm", FormParameters,,,,,, FormWindowOpeningMode.LockOwnerWindow);	
+	EndIf;
+
+	//SendEmailAtServer();
 EndProcedure
 
 &AtServer
 Procedure SendEmailAtServer()
 	
-If Object.Ref.IsEmpty() Then
-		Message("An email cannot be sent until the invoice is posted or written");
-	Else
-		
-	If Object.EmailTo <> "" Then
-		
-	// 	//imagelogo = Base64String(GeneralFunctions.GetLogo());
-	 	If constants.logoURL.Get() = "" Then
-			 imagelogo = "http://www.accountingsuite.com/images/logo-a.png";
-	 	else
-			 imagelogo = Constants.logoURL.Get();  
-	 	Endif;
-	 	
-		
-		
-		datastring = "";
-		TotalAmount = 0;
-		TotalCredits = 0;
-		For Each DocumentLine in Object.LineItems Do
-			
-			TotalAmount = TotalAmount + DocumentLine.LineTotal;
-			datastring = datastring + "<TR height=""20""><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.Product +  "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.ProductDescription + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.Quantity + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.Price + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.LineTotal + "</TD></TR>";
+//If Object.Ref.IsEmpty() Then
+//		Message("An email cannot be sent until the invoice is posted or written");
+//	Else
+//		
+//	If Object.EmailTo <> "" Then
+//		
+//	// 	//imagelogo = Base64String(GeneralFunctions.GetLogo());
+//	 	If constants.logoURL.Get() = "" Then
+//			 imagelogo = "http://www.accountingsuite.com/images/logo-a.png";
+//	 	else
+//			 imagelogo = Constants.logoURL.Get();  
+//	 	Endif;
+//	 	
+//		
+//		
+//		datastring = "";
+//		TotalAmount = 0;
+//		TotalCredits = 0;
+//		For Each DocumentLine in Object.LineItems Do
+//			
+//			TotalAmount = TotalAmount + DocumentLine.LineTotal;
+//			datastring = datastring + "<TR height=""20""><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.Product +  "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.ProductDescription + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.QtyUnits + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.PriceUnits + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.LineTotal + "</TD></TR>";
 
-		EndDo;
-		
-	    	 
-	    MailProfil = New InternetMailProfile; 
-	    
-	    MailProfil.SMTPServerAddress = ServiceParameters.SMTPServer(); 
-		//MailProfil.SMTPServerAddress = Constants.MailProfAddress.Get();
-	    MailProfil.SMTPUseSSL = ServiceParameters.SMTPUseSSL();
-		//MailProfil.SMTPUseSSL = Constants.MailProfSSL.Get();
-	    MailProfil.SMTPPort = 465;  
-	    
-	    MailProfil.Timeout = 180; 
-	    
-		MailProfil.SMTPPassword = ServiceParameters.SendGridPassword();
-	 	  
-		MailProfil.SMTPUser = ServiceParameters.SendGridUserName();
+//		EndDo;
+//		
+//			 
+//		MailProfil = New InternetMailProfile; 
+//		
+//		MailProfil.SMTPServerAddress = ServiceParameters.SMTPServer(); 
+//		//MailProfil.SMTPServerAddress = Constants.MailProfAddress.Get();
+//		MailProfil.SMTPUseSSL = ServiceParameters.SMTPUseSSL();
+//		//MailProfil.SMTPUseSSL = Constants.MailProfSSL.Get();
+//		MailProfil.SMTPPort = 465;  
+//		
+//		MailProfil.Timeout = 180; 
+//		
+//		MailProfil.SMTPPassword = ServiceParameters.SendGridPassword();
+//	 	  
+//		MailProfil.SMTPUser = ServiceParameters.SendGridUserName();
 
-	    
-	    send = New InternetMailMessage; 
-	    //send.To.Add(object.shipto.Email);
-	    //send.To.Add(object.EmailTo);
-		
-		If Object.EmailTo <> "" Then
-			EAddresses = StringFunctionsClientServer.SplitStringIntoSubstringArray(Object.EmailTo, ",");
-			For Each EmailAddress in EAddresses Do
-				send.To.Add(EmailAddress);
-			EndDo;
-		Endif;
-		
-		If Object.EmailCC <> "" Then
-			EAddresses = StringFunctionsClientServer.SplitStringIntoSubstringArray(Object.EmailCC, ",");
-			For Each EmailAddress in EAddresses Do
-				send.CC.Add(EmailAddress);
-			EndDo;
-		Endif;
-		
-		
-	    send.From.Address = Constants.Email.Get();
-	    send.From.DisplayName = "AccountingSuite";
-	    send.Subject = Constants.SystemTitle.Get() + " - Credit Memo " + Object.Number + " from " + Format(Object.Date,"DLF=D") + " - $" + Format(Object.DocumentTotalRC,"NFD=2");
-	    
-	    FormatHTML = FormAttributeToValue("Object").GetTemplate("Template").GetText();
-	 	  
-	 	 
-		FormatHTML2 = StrReplace(FormatHTML,"object.number",object.RefNum);
-		
-		FormatHTML2 = StrReplace(FormatHTML2,"imagelogo",imagelogo);
-	 	  FormatHTML2 = StrReplace(FormatHTML2,"object.date",Format(object.Date,"DLF=D"));
-	 	  //BillTo
-	 	  FormatHTML2 = StrReplace(FormatHTML2,"object.company",object.Company);
+//		
+//		send = New InternetMailMessage; 
+//		//send.To.Add(object.shipto.Email);
+//		//send.To.Add(object.EmailTo);
+//		
+//		If Object.EmailTo <> "" Then
+//			EAddresses = StringFunctionsClientServer.SplitStringIntoSubstringArray(Object.EmailTo, ",");
+//			For Each EmailAddress in EAddresses Do
+//				send.To.Add(EmailAddress);
+//			EndDo;
+//		Endif;
+//		
+//		If Object.EmailCC <> "" Then
+//			EAddresses = StringFunctionsClientServer.SplitStringIntoSubstringArray(Object.EmailCC, ",");
+//			For Each EmailAddress in EAddresses Do
+//				send.CC.Add(EmailAddress);
+//			EndDo;
+//		Endif;
+//		
+//		
+//		send.From.Address = Constants.Email.Get();
+//		send.From.DisplayName = "AccountingSuite";
+//		send.Subject = Constants.SystemTitle.Get() + " - Credit Memo " + Object.Number + " from " + Format(Object.Date,"DLF=D") + " - $" + Format(Object.DocumentTotalRC,"NFD=2");
+//		
+//		FormatHTML = FormAttributeToValue("Object").GetTemplate("Template").GetText();
+//	 	  
+//	 	 
+//		FormatHTML2 = StrReplace(FormatHTML,"object.number",object.RefNum);
+//		
+//		FormatHTML2 = StrReplace(FormatHTML2,"imagelogo",imagelogo);
+//	 	  FormatHTML2 = StrReplace(FormatHTML2,"object.date",Format(object.Date,"DLF=D"));
+//	 	  //BillTo
+//	 	  FormatHTML2 = StrReplace(FormatHTML2,"object.company",object.Company);
 
-		  Query = New Query("SELECT
-		                  |	Addresses.FirstName,
-		                  |	Addresses.MiddleName,
-		                  |	Addresses.LastName,
-		                  |	Addresses.Phone,
-		                  |	Addresses.Fax,
-		                  |	Addresses.Email,
-		                  |	Addresses.AddressLine1,
-		                  |	Addresses.AddressLine2,
-		                  |	Addresses.City,
-		                  |	Addresses.State.Code AS State,
-		                  |	Addresses.Country,
-		                  |	Addresses.ZIP,
-		                  |	Addresses.RemitTo
-		                  |FROM
-		                  |	Catalog.Addresses AS Addresses
-		                  |WHERE
-		                  |	Addresses.Owner = &Company
-		                  |	AND Addresses.DefaultBilling = TRUE");
-		Query.SetParameter("Company", object.company);
-			QueryResult = Query.Execute();	
-		Dataset = QueryResult.Unload();
+//		  Query = New Query("SELECT
+//						  |	Addresses.FirstName,
+//						  |	Addresses.MiddleName,
+//						  |	Addresses.LastName,
+//						  |	Addresses.Phone,
+//						  |	Addresses.Fax,
+//						  |	Addresses.Email,
+//						  |	Addresses.AddressLine1,
+//						  |	Addresses.AddressLine2,
+//						  |	Addresses.City,
+//						  |	Addresses.State.Code AS State,
+//						  |	Addresses.Country,
+//						  |	Addresses.ZIP,
+//						  |	Addresses.RemitTo
+//						  |FROM
+//						  |	Catalog.Addresses AS Addresses
+//						  |WHERE
+//						  |	Addresses.Owner = &Company
+//						  |	AND Addresses.DefaultBilling = TRUE");
+//		Query.SetParameter("Company", object.company);
+//			QueryResult = Query.Execute();	
+//		Dataset = QueryResult.Unload();
 
-		  
-		  
-		  FormatHTML2 = StrReplace(FormatHTML2,"object.shipto1",Dataset[0].AddressLine1);
-	 	  FormatHTML2 = StrReplace(FormatHTML2,"object.shipto2",Dataset[0].AddressLine2);
-	 	 CityStateZip = Dataset[0].City + Dataset[0].State + Dataset[0].ZIP;
-	 	 
-	 	 If CityStateZip = "" Then
-	 	 	FormatHTML2 = StrReplace(FormatHTML2,"object.city object.state object.zip","");
-	 	 Else
-	 	  	FormatHTML2 = StrReplace(FormatHTML2,"object.city object.state object.zip",Dataset[0].City + ", " + Dataset[0].State + " " + Dataset[0].ZIP);
-	 	 Endif;
-	 	  FormatHTML2 = StrReplace(FormatHTML2,"object.country",Dataset[0].Country);
-	 	  //lineitems
-	 	  FormatHTML2 = StrReplace(FormatHTML2,"lineitems",datastring);
- 	   
-	 	  //User's company info
-	 	  FormatHTML2 = StrReplace(FormatHTML2,"mycompany",Constants.SystemTitle.Get()); 
-	 	  FormatHTML2 = StrReplace(FormatHTML2,"myaddress1",Constants.AddressLine1.Get());
-	 	  FormatHTML2 = StrReplace(FormatHTML2,"myaddress2",Constants.AddressLine2.Get());
-	 	  FormatHTML2 = StrReplace(FormatHTML2,"mycity mystate myzip",Constants.City.Get() + ", " + Constants.State.Get() + " " + Constants.ZIP.Get());
-	 	  FormatHTML2 = StrReplace(FormatHTML2,"myphone",Constants.Phone.Get());
-	 	  FormatHTML2 = StrReplace(FormatHTML2,"myemail",Constants.Email.Get());
-	 	  
-	 	  FormatHTML2 = StrReplace(FormatHTML2,"object.subtotal",Format(Object.DocumentTotalRC,"NFD=2"));
-		  
-	   If object.SalesTaxRC = 0 Then
-	    	FormatHTML2 = StrReplace(FormatHTML2,"object.salestax","0.00");
-	   Else
-	 	 	 FormatHTML2 = StrReplace(FormatHTML2,"object.salestax",Format(object.SalesTaxRC,"NFD=2"));
-	   Endif;
-  
-		  
-	   If TotalAmount = 0 Then
-	 	   FormatHTML2 = StrReplace(FormatHTML2,"object.total","0.00");
-	   Else
-	  		 FormatHTML2 = StrReplace(FormatHTML2,"object.total",Format(TotalAmount,"NFD=2"));
-	   Endif;
+//		  
+//		  
+//		  FormatHTML2 = StrReplace(FormatHTML2,"object.shipto1",Dataset[0].AddressLine1);
+//	 	  FormatHTML2 = StrReplace(FormatHTML2,"object.shipto2",Dataset[0].AddressLine2);
+//	 	 CityStateZip = Dataset[0].City + Dataset[0].State + Dataset[0].ZIP;
+//	 	 
+//	 	 If CityStateZip = "" Then
+//	 	 	FormatHTML2 = StrReplace(FormatHTML2,"object.city object.state object.zip","");
+//	 	 Else
+//	 	  	FormatHTML2 = StrReplace(FormatHTML2,"object.city object.state object.zip",Dataset[0].City + ", " + Dataset[0].State + " " + Dataset[0].ZIP);
+//	 	 Endif;
+//	 	  FormatHTML2 = StrReplace(FormatHTML2,"object.country",Dataset[0].Country);
+//	 	  //lineitems
+//	 	  FormatHTML2 = StrReplace(FormatHTML2,"lineitems",datastring);
+// 	   
+//	 	  //User's company info
+//	 	  FormatHTML2 = StrReplace(FormatHTML2,"mycompany",Constants.SystemTitle.Get()); 
+//	 	  FormatHTML2 = StrReplace(FormatHTML2,"myaddress1",Constants.AddressLine1.Get());
+//	 	  FormatHTML2 = StrReplace(FormatHTML2,"myaddress2",Constants.AddressLine2.Get());
+//	 	  FormatHTML2 = StrReplace(FormatHTML2,"mycity mystate myzip",Constants.City.Get() + ", " + Constants.State.Get() + " " + Constants.ZIP.Get());
+//	 	  FormatHTML2 = StrReplace(FormatHTML2,"myphone",Constants.Phone.Get());
+//	 	  FormatHTML2 = StrReplace(FormatHTML2,"myemail",Constants.Email.Get());
+//	 	  
+//	 	  FormatHTML2 = StrReplace(FormatHTML2,"object.subtotal",Format(Object.DocumentTotalRC,"NFD=2"));
+//		  
+//	   If object.SalesTaxRC = 0 Then
+//			FormatHTML2 = StrReplace(FormatHTML2,"object.salestax","0.00");
+//	   Else
+//	 	 	 FormatHTML2 = StrReplace(FormatHTML2,"object.salestax",Format(object.SalesTaxRC,"NFD=2"));
+//	   Endif;
+//  
+//		  
+//	   If TotalAmount = 0 Then
+//	 	   FormatHTML2 = StrReplace(FormatHTML2,"object.total","0.00");
+//	   Else
+//	  		 FormatHTML2 = StrReplace(FormatHTML2,"object.total",Format(TotalAmount,"NFD=2"));
+//	   Endif;
 
-	   //Note
-	   FormatHTML2 = StrReplace(FormatHTML2,"object.note",Object.EmailNote);
-	  
-		send.Texts.Add(FormatHTML2,InternetMailTextType.HTML);
-			
-		Posta = New InternetMail; 
-		Posta.Logon(MailProfil); 
-		Posta.Send(send); 
-		Posta.Logoff();
-		
-		Message("Credit Memo email has been sent");
-		
-		SentEmail = True;
+//	   //Note
+//	   FormatHTML2 = StrReplace(FormatHTML2,"object.note",Object.EmailNote);
+//	  
+//		send.Texts.Add(FormatHTML2,InternetMailTextType.HTML);
+//			
+//		Posta = New InternetMail; 
+//		Posta.Logon(MailProfil); 
+//		Posta.Send(send); 
+//		Posta.Logoff();
+//		
+//		Message("Credit Memo email has been sent");
+//		
+//		SentEmail = True;
 
-		Else
-	 		 Message("The recipient email has not been specified");
-	    Endif;
-	 	
-	Endif;
+//		Else
+//	 		 Message("The recipient email has not been specified");
+//		Endif;
+//	 	
+//	Endif;
 	
 
  EndProcedure
@@ -778,6 +855,10 @@ EndProcedure
 
 &AtClient
 Procedure SetSalesTaxRate(NewSalesTaxRate)
+	//Update SalesTaxRate field choice list
+	If ValueIsFilled(NewSalesTaxRate) And (Items.SalesTaxRate.ChoiceList.FindByValue(NewSalesTaxRate) = Undefined) Then
+		Items.SalesTaxRate.ChoiceList.Add(NewSalesTaxRate);
+	EndIf;
 	//Cache inactive sales tax rates
 	If ValueIsFilled(Object.SalesTaxRate) Then
 		AgenciesRates = New Array();
@@ -860,7 +941,10 @@ EndProcedure
 
 &AtClient
 Procedure LineItemsTaxableOnChange(Item)
+	
+	// Refresh totals cache.
 	RecalculateTotals();
+	
 EndProcedure
 
 &AtClient
@@ -868,5 +952,82 @@ Procedure ExchangeRateOnChange(Item)
 	RecalculateTotals();
 EndProcedure
 
+&AtClient
+Procedure NotificationProcessing(EventName, Parameter, Source)
+	If EventName = "SalesTaxRateAdded" Then
+		If Items.SalesTaxRate.ChoiceList.FindByValue(Parameter) = Undefined Then
+			Items.SalesTaxRate.ChoiceList.Add(Parameter);
+		EndIf;
+	EndIf;
+EndProcedure
 
+&AtClient
+// Returns fields structure of LineItems form control.
+Function GetLineItemsRowStructure()
+	
+	// Define control row fields.
+	Return New Structure("LineNumber, Product, ProductDescription, UnitSet, QtyUnits, Unit, QtyUM, UM, PriceUnits, LineTotal, Taxable");
 
+EndFunction
+
+&AtClient
+Procedure LineItemsLineTotalOnChange(Item)
+	
+	// Fill line data for editing.
+	TableSectionRow = GetLineItemsRowStructure();
+	FillPropertyValues(TableSectionRow, Items.LineItems.CurrentData);
+	
+	// Request server operation.
+	LineItemsLineTotalOnChangeAtServer(TableSectionRow);
+	
+	// Load processed data back.
+	FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
+
+	RecalculateTotals();
+	
+EndProcedure
+
+&AtServer
+Procedure LineItemsLineTotalOnChangeAtServer(TableSectionRow)
+	
+	// Back-step price calculation with totals priority.
+	TableSectionRow.PriceUnits = ?(TableSectionRow.QtyUnits > 0,
+	                             Round(TableSectionRow.LineTotal / Round(TableSectionRow.QtyUnits, QuantityPrecision), 2), 0);
+	
+	// Back-calculation of quantity in base units.
+	TableSectionRow.QtyUM      = Round(Round(TableSectionRow.QtyUnits, QuantityPrecision) *
+	                             ?(TableSectionRow.Unit.Factor > 0, TableSectionRow.Unit.Factor, 1), QuantityPrecision);
+	
+EndProcedure
+
+&AtClient
+Procedure LineItemsUnitOnChange(Item)
+	
+	// Fill line data for editing.
+	TableSectionRow = GetLineItemsRowStructure();
+	FillPropertyValues(TableSectionRow, Items.LineItems.CurrentData);
+	
+	// Request server operation.
+	LineItemsUnitOnChangeAtServer(TableSectionRow);
+	
+	// Load processed data back.
+	FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
+	
+	// Refresh totals cache.
+	RecalculateTotals();
+	
+EndProcedure
+
+&AtServer
+Procedure LineItemsUnitOnChangeAtServer(TableSectionRow)
+	
+	// Calculate new unit price.
+	TableSectionRow.PriceUnits = Round(GeneralFunctions.RetailPrice(Object.Date, TableSectionRow.Product, Object.Company) *
+	                             ?(TableSectionRow.Unit.Factor > 0, TableSectionRow.Unit.Factor, 1) /
+	                             ?(TableSectionRow.UnitSet.DefaultSaleUnit.Factor > 0, TableSectionRow.UnitSet.DefaultSaleUnit.Factor, 1) /
+	                             ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), 2);
+	
+	// Process settings changes.
+	LineItemsQuantityOnChangeAtServer(TableSectionRow);
+	
+EndProcedure

@@ -240,8 +240,8 @@ Function CatalogType(Object) Export
 			Return "Sales Tax Codes";
 		Elsif  TypeOf(Object) = Type("CatalogObject.States") Then
 			Return "States";
-		Elsif  TypeOf(Object) = Type("CatalogObject.UM") Then
-			Return "Unit of Measurement";
+		//Elsif  TypeOf(Object) = Type("CatalogObject.UM") Then
+		//	Return "Unit of Measurement";
 		Elsif  TypeOf(Object) = Type("CatalogObject.PaymentMethods") Then
 			Return "Payment Methods";
 		Elsif  TypeOf(Object) = Type("CatalogObject.UserList") Then

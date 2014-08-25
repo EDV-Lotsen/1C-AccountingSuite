@@ -1,4 +1,7 @@
-﻿// The procedure posts a payment document. Also an FX gain or loss is calculated and posted.
+﻿
+#Region EVENT_HANDLERS
+
+// The procedure posts a payment document. Also an FX gain or loss is calculated and posted.
 //
 Procedure Posting(Cancel, Mode)
 	
@@ -110,7 +113,7 @@ Procedure Posting(Cancel, Mode)
 	    If FXGainLoss > 0 Then
 			
 			Record = RegisterRecords.GeneralJournal.AddCredit();
-	    	Record.Account = Constants.ExchangeGain.Get();
+	    	Record.Account = Constants.ExchangeLoss.Get();
 	    	Record.Period = Date;
 	    	Record.AmountRC = FXGainLoss;
 	    	
@@ -130,34 +133,9 @@ Procedure Posting(Cancel, Mode)
 	EndDo;
 	
 	// Writing bank reconciliation data
-	
-	Records = InformationRegisters.TransactionReconciliation.CreateRecordSet();
-	Records.Filter.Document.Set(Ref);
-	Records.Read();
-	If Records.Count() = 0 Then
-		Record = Records.Add();
-		Record.Document = Ref;
-		Record.Account = BankAccount;
-		Record.Reconciled = False;
-		Record.Amount = -1 * DocumentTotalRC;		
-	Else
-		Records[0].Account = BankAccount;
-		Records[0].Amount = -1 * DocumentTotalRC;
-	EndIf;
-	Records.Write();
-	
+			
 	ReconciledDocumentsServerCall.AddDocumentForReconciliation(RegisterRecords, Ref, BankAccount, Date, -1 * DocumentTotalRC);
-	
-	//Records = InformationRegisters.TransactionReconciliation.CreateRecordSet();
-	//Records.Filter.Document.Set(Ref);
-	//Records.Filter.Account.Set(BankAccount);
-	//Record = Records.Add();
-	//Record.Document = Ref;
-	//Record.Account = BankAccount;
-	//Record.Reconciled = False;
-	//Record.Amount = -1 * DocumentTotalRC;
-	//Records.Write();
-	
+		
 EndProcedure
 
 Procedure UndoPosting(Cancel)
@@ -165,15 +143,6 @@ Procedure UndoPosting(Cancel)
 	//Remove physical num for checking
 	PhysicalCheckNum = 0;
 	
-	// Deleting bank reconciliation data
-	
-	Records = InformationRegisters.TransactionReconciliation.CreateRecordManager();
-	Records.Document = Ref;
-	Records.Account = BankAccount;
-	Records.Read();
-	Records.Delete();
-		
-
 EndProcedure
 
 Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
@@ -187,10 +156,66 @@ Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 	
 EndProcedure
 
-Procedure BeforeDelete(Cancel)
+Procedure Filling(FillingData, StandardProcessing)
 	
-	TRRecordset = InformationRegisters.TransactionReconciliation.CreateRecordSet();
-	TRRecordset.Filter.Document.Set(ThisObject.Ref);
-	TRRecordset.Write(True);
-
+	If FillingData <> Undefined And TypeOf(FillingData) = Type("DocumentRef.PurchaseInvoice") Then
+		
+		Company = FillingData.Company;
+		
+		FillDocumentList(FillingData);
+		
+	EndIf;
+	
 EndProcedure
+
+#EndRegion
+
+#Region PRIVATE_IMPLEMENTATION
+
+// The procedure selects all vendor invoices and customer returns having an unpaid balance
+// and fills in line items of an invoice payment.
+//
+Procedure FillDocumentList(BaseDocument)
+		
+	LineItems.Clear();
+	
+	Query = New Query;
+	Query.Text = "SELECT
+	             |	GeneralJournalBalance.AmountBalance * -1 AS AmountBalance,
+	             |	GeneralJournalBalance.AmountRCBalance * -1 AS AmountRCBalance,
+	             |	GeneralJournalBalance.ExtDimension2.Ref AS Ref,
+				 |  GeneralJournalBalance.ExtDimension2.Date
+	             |FROM
+	             |	AccountingRegister.GeneralJournal.Balance AS GeneralJournalBalance
+	             |WHERE
+	             |	GeneralJournalBalance.AmountBalance <> 0
+	             |	AND (GeneralJournalBalance.ExtDimension2 REFS Document.PurchaseInvoice OR
+	             |       GeneralJournalBalance.ExtDimension2 REFS Document.SalesReturn)
+	             |	AND GeneralJournalBalance.ExtDimension1 = &Company
+				 |ORDER BY
+				 |	GeneralJournalBalance.ExtDimension2.Date";
+				 
+	Query.SetParameter("Company", Company);
+	
+	Result = Query.Execute().Select();
+	
+	While Result.Next() Do
+		
+		If Result.Ref = BaseDocument Then
+			
+			DataLine = LineItems.Add();
+			
+			DataLine.Document = Result.Ref;
+			DataLine.Currency = Result.Ref.Currency;
+			Dataline.BalanceFCY = Result.AmountBalance;
+			Dataline.Balance = Result.AmountRCBalance;
+			DataLine.Payment = 0;
+			
+		EndIf;
+		
+	EndDo;	
+	
+EndProcedure
+
+#EndRegion
+

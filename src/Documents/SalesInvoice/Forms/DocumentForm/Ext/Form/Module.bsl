@@ -8,6 +8,7 @@
 //
 &AtClient
 Var SalesTaxRateInactive, AgenciesRatesInactive;//Cache for storing inactive rates previously used in the document
+
 ////////////////////////////////////////////////////////////////////////////////
 #Region EVENTS_HANDLERS
 
@@ -52,9 +53,9 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	CustomerName                    = GeneralFunctionsReusable.GetCustomerName();
 	Items.Company.Title             = CustomerName;
 	Items.Company.ToolTip           = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = '%1 name'"),             CustomerName);
-	Items.RefNum.Title              = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = '%1 P.O. / Ref. #'"),    CustomerName);
-	Items.RefNum.ToolTip            = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = '%1 purchase order number /
-	                                                                                                      |Reference number'"),    CustomerName);
+	//Items.RefNum.Title              = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = '%1 P.O. / Ref. #'"),    CustomerName);
+	//Items.RefNum.ToolTip            = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = '%1 purchase order number /
+	//																									  |Reference number'"),    CustomerName);
 	Items.ShipTo.ToolTip            = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = '%1 shipping address'"), CustomerName);
 	Items.BillTo.ToolTip            = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = '%1 billing address'"),  CustomerName);
 	Items.ConfirmTo.ToolTip         = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = '%1 confirm address'"),  CustomerName);
@@ -66,7 +67,8 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	                                                                                                      |Reference number'"),    Lower(CustomerName));
 	
 	// Update quantities presentation.
-	QuantityFormat = GeneralFunctionsReusable.DefaultQuantityFormat();
+	QuantityPrecision = GeneralFunctionsReusable.DefaultQuantityPrecision();
+	QuantityFormat    = GeneralFunctionsReusable.DefaultQuantityFormat();
 	Items.LineItemsQuantity.EditFormat  = QuantityFormat;
 	Items.LineItemsQuantity.Format      = QuantityFormat;
 	Items.LineItemsOrdered.EditFormat   = QuantityFormat;
@@ -159,13 +161,12 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
 	// checking if Reverse journal entry button was clicked
 	If Parameters.Property("timetrackobjs") Then
-		FillFromTimeTrack(Parameters.timetrackobjs);
+		FillFromTimeTrack(Parameters.timetrackobjs,Parameters.invoicedate);
 		TimeEntriesAddr = PutToTempStorage(Parameters.timetrackobjs, New UUID());	
 	EndIf;
-
-
-
 	
+	UpdateInformationPayments();
+		
 EndProcedure
 
 // -> CODE REVIEW
@@ -384,6 +385,23 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 	
 EndProcedure
 
+&AtClient
+Procedure NotificationProcessing(EventName, Parameter, Source)
+	
+	If EventName = "SalesTaxRateAdded" Then
+		If Items.SalesTaxRate.ChoiceList.FindByValue(Parameter) = Undefined Then
+			Items.SalesTaxRate.ChoiceList.Add(Parameter);
+		EndIf;
+	EndIf;
+	
+	If EventName = "UpdatePayInvoiceInformation" And Parameter = Object.Company Then
+		
+		UpdateInformationPayments();
+		
+	EndIf;
+	
+EndProcedure
+
 #EndRegion
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -450,6 +468,14 @@ Procedure CompanyOnChangeAtServer()
 	TermsOnChangeAtServer();
 	
 	SalesTaxRate = SalesTax.GetDefaultSalesTaxRate(Object.Company);
+	
+	//newALAN
+	If Object.Company.ARAccount <> ChartsofAccounts.ChartOfAccounts.EmptyRef() Then
+		Object.ARAccount = Object.Company.ARAccount;
+	Else
+		DefaultCurrency = GeneralFunctionsReusable.DefaultCurrency();
+		Object.ARAccount = DefaultCurrency.DefaultARAccount;
+	EndIf;
 	
 EndProcedure
 
@@ -831,8 +857,10 @@ Procedure DefaultSettingOnChangeAtServer(DefaultSetting, RecalculateLineItems)
 		If RecalculateLineItems Then
 			// Recalculate retail price.
 			For Each Row In Object.LineItems Do
-				Row.Price = Round(GeneralFunctions.RetailPrice(Object.Date, Row.Product, Object.Company) /
-				                        ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), 2);
+				Row.PriceUnits = Round(GeneralFunctions.RetailPrice(Object.Date, Row.Product, Object.Company) *
+				                 ?(Row.Unit.Factor > 0, Row.Unit.Factor, 1) /
+				                 ?(Row.UnitSet.DefaultSaleUnit.Factor > 0, Row.UnitSet.DefaultSaleUnit.Factor, 1) /
+				                 ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), 2);
 				LineItemsPriceOnChangeAtServer(Row);
 			EndDo;
 		EndIf;
@@ -846,8 +874,10 @@ Procedure DefaultSettingOnChangeAtServer(DefaultSetting, RecalculateLineItems)
 		If RecalculateLineItems Then
 			// Recalculate retail price.
 			For Each Row In Object.LineItems Do
-				Row.Price = Round(GeneralFunctions.RetailPrice(Object.Date, Row.Product, Object.Company) /
-				                        ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), 2);
+				Row.PriceUnits = Round(GeneralFunctions.RetailPrice(Object.Date, Row.Product, Object.Company) *
+				                 ?(Row.Unit.Factor > 0, Row.Unit.Factor, 1) /
+				                 ?(Row.UnitSet.DefaultSaleUnit.Factor > 0, Row.UnitSet.DefaultSaleUnit.Factor, 1) /
+				                 ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), 2);
 				LineItemsPriceOnChangeAtServer(Row);
 			EndDo;
 		EndIf;
@@ -949,12 +979,16 @@ EndProcedure
 Procedure LineItemsProductOnChangeAtServer(TableSectionRow)
 	
 	// Request product properties.
-	ProductProperties = CommonUse.GetAttributeValues(TableSectionRow.Product, New Structure("Description, UM, Type, Taxable"));
+	ProductProperties = CommonUse.GetAttributeValues(TableSectionRow.Product,   New Structure("Description, UnitSet, Taxable"));
+	UnitSetProperties = CommonUse.GetAttributeValues(ProductProperties.UnitSet, New Structure("DefaultSaleUnit"));
 	TableSectionRow.ProductDescription = ProductProperties.Description;
-	TableSectionRow.UM                 = ProductProperties.UM;
-	TableSectionRow.Price              = Round(GeneralFunctions.RetailPrice(Object.Date, TableSectionRow.Product, Object.Company) /
-	                                     ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), 2);
+	TableSectionRow.UnitSet            = ProductProperties.UnitSet;
+	TableSectionRow.Unit               = UnitSetProperties.DefaultSaleUnit;
+	//TableSectionRow.UM                 = UnitSetProperties.UM;
 	TableSectionRow.Taxable            = ProductProperties.Taxable;
+	TableSectionRow.PriceUnits         = Round(GeneralFunctions.RetailPrice(Object.Date, TableSectionRow.Product, Object.Company) /
+	                                     // The price is returned for default sales unit factor.
+	                                     ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), 2);
 	
 	// Clear up order data.
 	TableSectionRow.Order              = Documents.SalesOrder.EmptyRef();
@@ -968,7 +1002,8 @@ Procedure LineItemsProductOnChangeAtServer(TableSectionRow)
 	TableSectionRow.Class              = Object.Class;
 	
 	// Assign default quantities.
-	TableSectionRow.Quantity  = 0;
+	TableSectionRow.QtyUnits  = 0;
+	TableSectionRow.QtyUM     = 0;
 	TableSectionRow.Ordered   = 0;
 	TableSectionRow.Backorder = 0;
 	TableSectionRow.Shipped   = 0;
@@ -981,14 +1016,14 @@ Procedure LineItemsProductOnChangeAtServer(TableSectionRow)
 EndProcedure
 
 &AtClient
-Procedure LineItemsQuantityOnChange(Item)
+Procedure LineItemsUnitOnChange(Item)
 	
 	// Fill line data for editing.
 	TableSectionRow = GetLineItemsRowStructure();
 	FillPropertyValues(TableSectionRow, Items.LineItems.CurrentData);
 	
 	// Request server operation.
-	LineItemsQuantityOnChangeAtClient(TableSectionRow);
+	LineItemsUnitOnChangeAtServer(TableSectionRow);
 	
 	// Load processed data back.
 	FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
@@ -998,8 +1033,40 @@ Procedure LineItemsQuantityOnChange(Item)
 	
 EndProcedure
 
+&AtServer
+Procedure LineItemsUnitOnChangeAtServer(TableSectionRow)
+	
+	// Calculate new unit price.
+	TableSectionRow.PriceUnits = Round(GeneralFunctions.RetailPrice(Object.Date, TableSectionRow.Product, Object.Company) *
+	                             ?(TableSectionRow.Unit.Factor > 0, TableSectionRow.Unit.Factor, 1) /
+	                             ?(TableSectionRow.UnitSet.DefaultSaleUnit.Factor > 0, TableSectionRow.UnitSet.DefaultSaleUnit.Factor, 1) /
+	                             ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), 2);
+	
+	// Process settings changes.
+	LineItemsQuantityOnChangeAtServer(TableSectionRow);
+	
+EndProcedure
+
 &AtClient
-Procedure LineItemsQuantityOnChangeAtClient(TableSectionRow)
+Procedure LineItemsQuantityOnChange(Item)
+	
+	// Fill line data for editing.
+	TableSectionRow = GetLineItemsRowStructure();
+	FillPropertyValues(TableSectionRow, Items.LineItems.CurrentData);
+	
+	// Request server operation.
+	LineItemsQuantityOnChangeAtServer(TableSectionRow);
+	
+	// Load processed data back.
+	FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
+	
+	// Refresh totals cache.
+	RecalculateTotals();
+	
+EndProcedure
+
+&AtServer
+Procedure LineItemsQuantityOnChangeAtServer(TableSectionRow)
 	
 	//// Update backorder quantity basing on document status.
 	//If OrderStatus = Enums.OrderStatuses.Open Then
@@ -1020,10 +1087,10 @@ Procedure LineItemsQuantityOnChangeAtClient(TableSectionRow)
 	//EndIf;
 	
 	// Calculate total by line.
-	TableSectionRow.LineTotal = Round(Round(TableSectionRow.Quantity, QuantityPrecision) * TableSectionRow.Price, 2);
+	TableSectionRow.LineTotal = Round(Round(TableSectionRow.QtyUnits, QuantityPrecision) * TableSectionRow.PriceUnits, 2);
 	
 	// Process settings changes.
-	LineItemsLineTotalOnChangeAtClient(TableSectionRow);
+	LineItemsLineTotalOnChangeAtServer(TableSectionRow);
 	
 EndProcedure
 
@@ -1035,7 +1102,7 @@ Procedure LineItemsPriceOnChange(Item)
 	FillPropertyValues(TableSectionRow, Items.LineItems.CurrentData);
 	
 	// Request server operation.
-	LineItemsPriceOnChangeAtClient(TableSectionRow);
+	LineItemsPriceOnChangeAtServer(TableSectionRow);
 	
 	// Load processed data back.
 	FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
@@ -1045,14 +1112,14 @@ Procedure LineItemsPriceOnChange(Item)
 	
 EndProcedure
 
-&AtClient
-Procedure LineItemsPriceOnChangeAtClient(TableSectionRow)
+&AtServer
+Procedure LineItemsPriceOnChangeAtServer(TableSectionRow)
 	
 	// Calculate total by line.
-	TableSectionRow.LineTotal = Round(Round(TableSectionRow.Quantity, QuantityPrecision) * TableSectionRow.Price, 2);
+	TableSectionRow.LineTotal = Round(Round(TableSectionRow.QtyUnits, QuantityPrecision) * TableSectionRow.PriceUnits, 2);
 	
 	// Process settings changes.
-	LineItemsLineTotalOnChangeAtClient(TableSectionRow);
+	LineItemsLineTotalOnChangeAtServer(TableSectionRow);
 	
 EndProcedure
 
@@ -1064,7 +1131,7 @@ Procedure LineItemsLineTotalOnChange(Item)
 	FillPropertyValues(TableSectionRow, Items.LineItems.CurrentData);
 	
 	// Request server operation.
-	LineItemsLineTotalOnChangeAtClient(TableSectionRow);
+	LineItemsLineTotalOnChangeAtServer(TableSectionRow);
 	
 	// Load processed data back.
 	FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
@@ -1074,15 +1141,19 @@ Procedure LineItemsLineTotalOnChange(Item)
 	
 EndProcedure
 
-&AtClient
-Procedure LineItemsLineTotalOnChangeAtClient(TableSectionRow)
+&AtServer
+Procedure LineItemsLineTotalOnChangeAtServer(TableSectionRow)
 	
 	// Back-step price calculation with totals priority.
-	TableSectionRow.Price = ?(Round(TableSectionRow.Quantity, QuantityPrecision) > 0,
-	                          Round(TableSectionRow.LineTotal / Round(TableSectionRow.Quantity, QuantityPrecision), 2), 0);
+	TableSectionRow.PriceUnits = ?(TableSectionRow.QtyUnits > 0,
+	                             Round(TableSectionRow.LineTotal / Round(TableSectionRow.QtyUnits, QuantityPrecision), 2), 0);
+	
+	// Back-calculation of quantity in base units.
+	TableSectionRow.QtyUM      = Round(Round(TableSectionRow.QtyUnits, QuantityPrecision) *
+	                             ?(TableSectionRow.Unit.Factor > 0, TableSectionRow.Unit.Factor, 1), QuantityPrecision);
 	
 	// Calculate taxes by line total.
-	LineItemsTaxableOnChangeAtClient(TableSectionRow);
+	LineItemsTaxableOnChangeAtServer(TableSectionRow);
 	
 EndProcedure
 
@@ -1094,7 +1165,7 @@ Procedure LineItemsTaxableOnChange(Item)
 	FillPropertyValues(TableSectionRow, Items.LineItems.CurrentData);
 	
 	// Request server operation.
-	LineItemsTaxableOnChangeAtClient(TableSectionRow);
+	LineItemsTaxableOnChangeAtServer(TableSectionRow);
 	
 	// Load processed data back.
 	FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
@@ -1104,8 +1175,8 @@ Procedure LineItemsTaxableOnChange(Item)
 	
 EndProcedure
 
-&AtClient
-Procedure LineItemsTaxableOnChangeAtClient(TableSectionRow)
+&AtServer
+Procedure LineItemsTaxableOnChangeAtServer(TableSectionRow)
 	
 	// Calculate sales tax by line total.
 	TableSectionRow.TaxableAmount = ?(TableSectionRow.Taxable, TableSectionRow.LineTotal, 0);
@@ -1117,48 +1188,6 @@ Procedure LineItemsTaxableAmountOnChange(Item)
 	
 	// Refresh totals cache.
 	RecalculateTotals();
-	
-EndProcedure
-
-&AtServer
-Procedure LineItemsQuantityOnChangeAtServer(TableSectionRow)
-	
-	// Calculate total by line.
-	TableSectionRow.LineTotal = Round(Round(TableSectionRow.Quantity, QuantityPrecision) * TableSectionRow.Price, 2);
-	
-	// Process settings changes.
-	LineItemsLineTotalOnChangeAtServer(TableSectionRow);
-	
-EndProcedure
-
-&AtServer
-Procedure LineItemsPriceOnChangeAtServer(TableSectionRow)
-	
-	// Calculate total by line.
-	TableSectionRow.LineTotal = Round(Round(TableSectionRow.Quantity, QuantityPrecision) * TableSectionRow.Price, 2);
-	
-	// Process settings changes.
-	LineItemsLineTotalOnChangeAtServer(TableSectionRow);
-	
-EndProcedure
-
-&AtServer
-Procedure LineItemsLineTotalOnChangeAtServer(TableSectionRow)
-	
-	// Back-step price calculation with totals priority.
-	TableSectionRow.Price = ?(Round(TableSectionRow.Quantity, QuantityPrecision) > 0,
-	                          Round(TableSectionRow.LineTotal / Round(TableSectionRow.Quantity, QuantityPrecision), 2), 0);
-	
-	// Calculate taxes by line total.
-	LineItemsTaxableOnChangeAtServer(TableSectionRow);
-	
-EndProcedure
-
-&AtServer
-Procedure LineItemsTaxableOnChangeAtServer(TableSectionRow)
-	
-	// Calculate sales tax by line total.
-	TableSectionRow.TaxableAmount = ?(TableSectionRow.Taxable, TableSectionRow.LineTotal, 0);
 	
 EndProcedure
 
@@ -1250,13 +1279,15 @@ Procedure AvaTaxCall()
 		
 	//DataJSON = "{""DocDate"": ""2013-06-01"",""CustomerCode"": ""abc456789"",""DocType"": ""SalesInvoice"",""Addresses"":[{""AddressCode"": ""Origin"",""Line1"": ""118 N Clark St"",""City"": ""Chicago"",""Region"": ""IL"",""PostalCode"": ""60602-1304"",""Country"": ""US""},{""AddressCode"": ""Dest"",""Line1"": ""1060 W. Addison St"",""City"": ""Chicago"",""Region"": ""IL"",""PostalCode"": ""60613-4566"",""Country"": ""US""}],""Lines"":[{""LineNo"": ""00001"",""DestinationCode"": ""Dest"",""OriginCode"": ""Origin"",""ItemCode"": ""SP-001"",""Description"": ""Running Shoe"",""TaxCode"": ""PC030147"",""Qty"": 1,""Amount"": 100}]}";
 	
-	DataJSON = "{""DocDate"": ""2014-05-01"",""CustomerCode"": ""abc456789"",""DocType"": ""SalesInvoice"",""Addresses"":[{""AddressCode"": ""Origin1"",""Line1"": ""2535 Cleveland Ave"",""City"": ""Columbus"",""Region"": ""OH"",""PostalCode"": ""43211"",""Country"": ""US""},{""AddressCode"": ""Origin2"",""Line1"": ""8525 Winton Rd"",""City"": ""Cincinnati"",""Region"": ""OH"",""PostalCode"": ""45231"",""Country"": ""US""},{""AddressCode"": ""Dest1"",""Line1"": ""45 Kurtz Ave"",""City"": ""Dayton"",""Region"": ""OH"",""PostalCode"": ""45405"",""Country"": ""US""},{""AddressCode"": ""Dest2"",""Line1"": ""1979 W 25th St"",""City"": ""Cleveland"",""Region"": ""OH"",""PostalCode"": ""44113"",""Country"": ""US""}],""Lines"":[{""LineNo"": ""00001"",""DestinationCode"": ""Dest1"",""OriginCode"": ""Origin1"",""ItemCode"": ""SP-001"",""Description"": ""Running Shoe"",""TaxCode"": ""PC030147"",""Qty"": 1,""Amount"": 100},{""LineNo"": ""00002"",""DestinationCode"": ""Dest2"",""OriginCode"": ""Origin1"",""ItemCode"": ""SP-001"",""Description"": ""Running Shoe"",""TaxCode"": ""PC030147"",""Qty"": 1,""Amount"": 100},{""LineNo"": ""00003"",""DestinationCode"": ""Dest1"",""OriginCode"": ""Origin2"",""ItemCode"": ""SP-001"",""Description"": ""Running Shoe"",""TaxCode"": ""PC030147"",""Qty"": 1,""Amount"": 100},{""LineNo"": ""00004"",""DestinationCode"": ""Dest2"",""OriginCode"": ""Origin2"",""ItemCode"": ""SP-001"",""Description"": ""Running Shoe"",""TaxCode"": ""PC030147"",""Qty"": 1,""Amount"": 100}]}";
+	//DataJSON = "{""DocDate"": ""2014-05-01"",""CustomerCode"": ""abc456789"",""DocType"": ""SalesInvoice"",""Addresses"":[{""AddressCode"": ""Origin1"",""Line1"": ""2535 Cleveland Ave"",""City"": ""Columbus"",""Region"": ""OH"",""PostalCode"": ""43211"",""Country"": ""US""},{""AddressCode"": ""Origin2"",""Line1"": ""8525 Winton Rd"",""City"": ""Cincinnati"",""Region"": ""OH"",""PostalCode"": ""45231"",""Country"": ""US""},{""AddressCode"": ""Dest1"",""Line1"": ""45 Kurtz Ave"",""City"": ""Dayton"",""Region"": ""OH"",""PostalCode"": ""45405"",""Country"": ""US""},{""AddressCode"": ""Dest2"",""Line1"": ""1979 W 25th St"",""City"": ""Cleveland"",""Region"": ""OH"",""PostalCode"": ""44113"",""Country"": ""US""}],""Lines"":[{""LineNo"": ""00001"",""DestinationCode"": ""Dest1"",""OriginCode"": ""Origin1"",""ItemCode"": ""SP-001"",""Description"": ""Running Shoe"",""TaxCode"": ""PC030147"",""Qty"": 1,""Amount"": 100},{""LineNo"": ""00002"",""DestinationCode"": ""Dest2"",""OriginCode"": ""Origin1"",""ItemCode"": ""SP-001"",""Description"": ""Running Shoe"",""TaxCode"": ""PC030147"",""Qty"": 1,""Amount"": 100},{""LineNo"": ""00003"",""DestinationCode"": ""Dest1"",""OriginCode"": ""Origin2"",""ItemCode"": ""SP-001"",""Description"": ""Running Shoe"",""TaxCode"": ""PC030147"",""Qty"": 1,""Amount"": 100},{""LineNo"": ""00004"",""DestinationCode"": ""Dest2"",""OriginCode"": ""Origin2"",""ItemCode"": ""SP-001"",""Description"": ""Running Shoe"",""TaxCode"": ""PC030147"",""Qty"": 1,""Amount"": 100}]}";
+	//DataJSON = "{""DocDate"": ""2014-05-01"",""CustomerCode"": ""abc456789"",""DocType"": ""SalesInvoice"",""Addresses"":[{""AddressCode"": ""Origin1"",""Line1"": ""156 2nd St."",""City"": ""San Francisco"",""Region"": ""CA"",""PostalCode"": ""94105"",""Country"": ""US""},{""AddressCode"": ""Dest1"",""Line1"": ""Russell Pl"",""City"": ""Brighton"",""Region"": ""BN1 2RG"",""PostalCode"": """",""Country"": ""United Kingdom""}],""Lines"":[{""LineNo"": ""00001"",""DestinationCode"": ""Dest1"",""OriginCode"": ""Origin1"",""ItemCode"": ""SP-001"",""Description"": ""Running Shoe"",""TaxCode"": ""PC030147"",""Qty"": 1,""Amount"": 100},{""LineNo"": ""00002"",""DestinationCode"": ""Dest1"",""OriginCode"": ""Origin1"",""ItemCode"": ""SP-001"",""Description"": ""Running Shoe"",""TaxCode"": ""PC030147"",""Qty"": 1,""Amount"": 100}], ""BusinessIdentificationNo"": ""GB999 9999 73""}";
+	DataJSON = "{""DocDate"": ""2014-05-01"",""CustomerCode"": ""abc456789"",""BusinessIdentificationNo"": ""391532058"",""CurrencyCode"": ""GBP"",""DocType"": ""SalesInvoice"",""Addresses"":[{""AddressCode"": ""Origin1"",""Line1"": ""156 2nd St."",""City"": ""San Francisco"",""Region"": ""CA"",""PostalCode"": ""94105"",""Country"": ""US""},{""AddressCode"": ""Dest1"",""Line1"": ""Unit 3 Factory"",""City"": ""Upton"",""Region"": """",""PostalCode"": ""BH16 5SJ"",""Country"": ""GB""}],""Lines"":[{""LineNo"": ""00001"",""DestinationCode"": ""Dest1"",""OriginCode"": ""Origin1"",""ItemCode"": ""SP-001"",""Description"": ""Running Shoe"",""TaxCode"": ""PB200742"",""Qty"": 1,""Amount"": 100000},{""LineNo"": ""00002"",""DestinationCode"": ""Dest1"",""OriginCode"": ""Origin1"",""ItemCode"": ""SP-001"",""Description"": ""Running Shoe"",""TaxCode"": ""PB200742"",""Qty"": 1,""Amount"": 100000}]}";
 	
 	HeadersMap = New Map();
 	HeadersMap.Insert("Content-Type", "text/json");
 	HeadersMap.Insert("Authorization", ServiceParameters.AvalaraAuth());
 	ConnectionSettings = New Structure;
-	Connection = InternetConnectionClientServer.CreateConnection("https://development.avalara.net/1.0/tax/get", ConnectionSettings).Result;
+	Connection = InternetConnectionClientServer.CreateConnection("https://avatax.avalara.net/1.0/tax/get", ConnectionSettings).Result; // https://development.avalara.net
 	ResultBody = InternetConnectionClientServer.SendRequest(Connection, "Post", ConnectionSettings, HeadersMap, DataJSON).Result;
 	DecodedResultBody = InternetConnectionClientServer.DecodeJSON(ResultBody);
 	Object.SalesTax = DecodedResultBody.TotalTax;
@@ -1297,6 +1328,18 @@ EndProcedure
 Procedure ClearPosting(Command)
 	
 	Write(New Structure("WriteMode", DocumentWriteMode.UndoPosting));
+	
+EndProcedure
+
+&AtClient
+Procedure Payments(Command)
+	
+	FormParameters = New Structure();
+	
+	FltrParameters = New Structure();
+	FltrParameters.Insert("InvoisPays", Object.Ref);
+	FormParameters.Insert("Filter", FltrParameters);
+	OpenForm("CommonForm.InvoicePayList",FormParameters, Object.Ref);
 	
 EndProcedure
 
@@ -1453,19 +1496,6 @@ Procedure FillBackorderQuantityAtServer()
 		//EndDo;
 		
 	EndIf;
-	
-EndProcedure
-
-&AtClient
-// Request retail prices of the products from database.
-Procedure FillRetailPricesAtClient()
-	
-	// Recalculate retail price for each row (later the new function scanning prices for the product must be used).
-	For Each TableSectionRow In Object.LineItems Do
-		TableSectionRow.Price = Round(GeneralFunctions.RetailPrice(Object.Date, TableSectionRow.Product, Object.Company) /
-		                        ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), 2);
-		LineItemsPriceOnChange(TableSectionRow);
-	EndDo;
 	
 EndProcedure
 
@@ -1735,7 +1765,7 @@ Procedure RecalculateTotals()
 	If Object.SalesTaxAcrossAgencies.Count() > 0 Then
 		CurrentAgenciesRates = New Array();
 		For Each AgencyRate In Object.SalesTaxAcrossAgencies Do
-			CurrentAgenciesRates.Add(New Structure("Agency, Rate", AgencyRate.Agency, AgencyRate.Rate));
+			CurrentAgenciesRates.Add(New Structure("Agency, Rate, SalesTaxRate, SalesTaxComponent", AgencyRate.Agency, AgencyRate.Rate, AgencyRate.SalesTaxRate, AgencyRate.SalesTaxComponent));
 		EndDo;
 	EndIf;
 	SalesTaxAcrossAgencies = SalesTaxClient.CalculateSalesTax(Object.TaxableSubtotal, Object.SalesTaxRate, CurrentAgenciesRates);
@@ -1785,7 +1815,7 @@ Procedure RecalculateTotalsAtServer()
 	If Object.SalesTaxAcrossAgencies.Count() > 0 Then
 		CurrentAgenciesRates = New Array();
 		For Each AgencyRate In Object.SalesTaxAcrossAgencies Do
-			CurrentAgenciesRates.Add(New Structure("Agency, Rate", AgencyRate.Agency, AgencyRate.Rate));
+			CurrentAgenciesRates.Add(New Structure("Agency, Rate, SalesTaxRate, SalesTaxComponent", AgencyRate.Agency, AgencyRate.Rate, AgencyRate.SalesTaxRate, AgencyRate.SalesTaxComponent));
 		EndDo;
 	EndIf;
 	SalesTaxAcrossAgencies = SalesTax.CalculateSalesTax(Object.TaxableSubtotal, Object.SalesTaxRate, CurrentAgenciesRates);
@@ -1812,21 +1842,21 @@ EndProcedure
 Function GetLineItemsRowStructure()
 	
 	// Define control row fields.
-	Return New Structure("LineNumber, Product, ProductDescription, Quantity, UM, Ordered, Backorder, Shipped, Invoiced, Price, LineTotal, Taxable, TaxableAmount, Order, Location, LocationActual, DeliveryDate, DeliveryDateActual, Project, Class");
+	Return New Structure("LineNumber, Product, ProductDescription, UnitSet, QtyUnits, Unit, QtyUM, UM, Ordered, Backorder, Shipped, Invoiced, PriceUnits, LineTotal, Taxable, TaxableAmount, Order, Location, LocationActual, DeliveryDate, DeliveryDateActual, Project, Class");
 	
 EndFunction
 
-//When generated from time tracking, fills invoice with selected entries.
+// When generated from time tracking, fills invoice with selected entries.
 &AtServer
-Procedure FillFromTimeTrack(timedocs)
+Procedure FillFromTimeTrack(timedocs,InvoiceDate)
 		
 	Object.Company = timedocs[0].Company;
 	Object.Project = timedocs[0].Project;
 	Object.Terms = Object.Company.Terms;
 	Object.Memo = timedocs[0].Memo;
-	
+	Object.Date = InvoiceDate;
 	If Not Object.Terms.IsEmpty() Then
-		Object.DueDate = CurrentDate() + Object.Terms.Days * 60*60*24;
+		Object.DueDate = InvoiceDate + Object.Terms.Days * 60*60*24;
 	EndIf;
 
 	
@@ -1900,9 +1930,9 @@ Procedure FillFromTimeTrack(timedocs)
 			
 			NewLine.Product = Entry.Task;
 			NewLine.ProductDescription = Entry.Memo;
-			NewLine.UM = NewLine.Product.UM;
-			NewLine.Price = Entry.Price;
-			NewLine.Quantity = Entry.TimeComplete;
+			//NewLine.UM = NewLine.Product.UnitSet.UM;
+			NewLine.PriceUnits = Entry.Price;
+			NewLine.QtyUnits = Entry.TimeComplete;
 			NewLine.LineTotal = Entry.Price * Entry.TimeComplete; 
 			NewLine.Project = Entry.Project;
 			NewLine.Class = Entry.Class;
@@ -1927,6 +1957,10 @@ EndProcedure
 
 &AtClient
 Procedure SetSalesTaxRate(NewSalesTaxRate)
+	//Update SalesTaxRate field choice list
+	If ValueIsFilled(NewSalesTaxRate) And (Items.SalesTaxRate.ChoiceList.FindByValue(NewSalesTaxRate) = Undefined) Then
+		Items.SalesTaxRate.ChoiceList.Add(NewSalesTaxRate);
+	EndIf;
 	//Cache inactive sales tax rates
 	If ValueIsFilled(Object.SalesTaxRate) Then
 		AgenciesRates = New Array();
@@ -1978,10 +2012,58 @@ Procedure UpdateTimeEntries()
 		For Each Entry In TimeEntries Do
 			EntryObject = Entry.Ref.GetObject();
 			EntryObject.SalesInvoice = Object.Ref;
-			EntryObject.InvoiceSent = "Billed";
+			EntryObject.InvoiceStatus = Enums.TimeTrackStatus.Billed;
 			EntryObject.Write(DocumentWriteMode.Posting);		
 		EndDo;
 	EndIf;
+	
+EndProcedure
+
+&AtServer
+Procedure UpdateInformationPayments()
+	
+	Items.Payments.Title = "no payment(-s)";
+	ThisForm.Commands.Find("Payments").ToolTip = "no payment(-s)";
+	Items.Payments.TextColor = WebColors.Gray;
+	Items.PayInvoice.Visible = True;
+	
+	Query = New Query;
+	Query.Text = "SELECT
+	             |	GeneralJournalTurnovers.ExtDimension2 AS Payment,
+	             |	COUNT(DISTINCT GeneralJournalTurnovers.Recorder) AS Recorder,
+	             |	SUM(-GeneralJournalTurnovers.AmountTurnover) AS Amount,
+	             |	SUM(-GeneralJournalTurnovers.AmountRCTurnover) AS AmountRC
+	             |FROM
+	             |	AccountingRegister.GeneralJournal.Turnovers(, , Auto, , , ExtDimension2 = &Doc) AS GeneralJournalTurnovers
+	             |WHERE
+	             |	GeneralJournalTurnovers.Recorder <> &Doc
+	             |
+	             |GROUP BY
+	             |	GeneralJournalTurnovers.ExtDimension2";
+
+	Query.SetParameter("Doc", Object.Ref);
+
+	QueryResult = Query.Execute();
+
+	SelectionDetailRecords = QueryResult.Select();
+
+	While SelectionDetailRecords.Next() Do
+		
+		Amount = Format(SelectionDetailRecords.Amount, "NFD=2; NZ=0.00");
+		
+		PaymentsTitle = "Cash receipts: " + SelectionDetailRecords.Recorder + " (" + Object.Currency.Symbol + Amount + ")";
+		
+		Items.Payments.Title = PaymentsTitle;		
+		ThisForm.Commands.Find("Payments").ToolTip = PaymentsTitle;
+		Items.Payments.TextColor = WebColors.Green;
+		
+		If Object.DocumentTotalRC > SelectionDetailRecords.AmountRC Then 
+			Items.PayInvoice.Visible = True;
+		Else
+			Items.PayInvoice.Visible = False;
+		EndIf;
+		
+	EndDo;
 	
 EndProcedure
 

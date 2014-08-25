@@ -16,3 +16,4 @@ Procedure OnOpenAtServer()
 	EndTry;
 
 EndProcedure
+

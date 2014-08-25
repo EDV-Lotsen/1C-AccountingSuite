@@ -573,10 +573,14 @@
 							</Synonym>
 							<Comment/>
 							<Type>
+								<v8:Type>cfg:DocumentRef.BankTransfer</v8:Type>
+								<v8:Type>cfg:DocumentRef.GeneralJournalEntry</v8:Type>
 								<v8:Type>cfg:DocumentRef.Deposit</v8:Type>
 								<v8:Type>cfg:DocumentRef.Check</v8:Type>
+								<v8:Type>cfg:DocumentRef.PurchaseInvoice</v8:Type>
 								<v8:Type>cfg:DocumentRef.CashReceipt</v8:Type>
 								<v8:Type>cfg:DocumentRef.InvoicePayment</v8:Type>
+								<v8:Type>cfg:DocumentRef.SalesInvoice</v8:Type>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -1469,10 +1473,14 @@
 							</Synonym>
 							<Comment/>
 							<Type>
+								<v8:Type>cfg:DocumentRef.BankTransfer</v8:Type>
+								<v8:Type>cfg:DocumentRef.GeneralJournalEntry</v8:Type>
 								<v8:Type>cfg:DocumentRef.Deposit</v8:Type>
 								<v8:Type>cfg:DocumentRef.Check</v8:Type>
+								<v8:Type>cfg:DocumentRef.PurchaseInvoice</v8:Type>
 								<v8:Type>cfg:DocumentRef.CashReceipt</v8:Type>
 								<v8:Type>cfg:DocumentRef.InvoicePayment</v8:Type>
+								<v8:Type>cfg:DocumentRef.SalesInvoice</v8:Type>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -2329,10 +2337,14 @@
 							</Synonym>
 							<Comment/>
 							<Type>
+								<v8:Type>cfg:DocumentRef.BankTransfer</v8:Type>
+								<v8:Type>cfg:DocumentRef.GeneralJournalEntry</v8:Type>
 								<v8:Type>cfg:DocumentRef.Deposit</v8:Type>
 								<v8:Type>cfg:DocumentRef.Check</v8:Type>
+								<v8:Type>cfg:DocumentRef.PurchaseInvoice</v8:Type>
 								<v8:Type>cfg:DocumentRef.CashReceipt</v8:Type>
 								<v8:Type>cfg:DocumentRef.InvoicePayment</v8:Type>
+								<v8:Type>cfg:DocumentRef.SalesInvoice</v8:Type>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -2832,6 +2844,7 @@
 			<Form>DocumentMatching</Form>
 			<Form>ProgressForm</Form>
 			<Form>DetailedErrorMessage</Form>
+			<Form>StartPageForm</Form>
 			<Template>Spreadsheet</Template>
 			<Template>DetailedErrorMessages</Template>
 			<Command uuid="b933756b-f1c7-46cf-946c-e3e20aa15438">

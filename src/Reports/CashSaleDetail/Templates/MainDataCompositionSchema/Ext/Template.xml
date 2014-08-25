@@ -111,10 +111,6 @@
 			<field>Posted</field>
 		</field>
 		<field xsi:type="DataSetFieldField">
-			<dataPath>Price</dataPath>
-			<field>Price</field>
-		</field>
-		<field xsi:type="DataSetFieldField">
 			<dataPath>Product</dataPath>
 			<field>Product</field>
 		</field>
@@ -135,10 +131,6 @@
 					<v8:content>Project1</v8:content>
 				</v8:item>
 			</title>
-		</field>
-		<field xsi:type="DataSetFieldField">
-			<dataPath>Quantity</dataPath>
-			<field>Quantity</field>
 		</field>
 		<field xsi:type="DataSetFieldField">
 			<dataPath>Ref</dataPath>
@@ -242,14 +234,27 @@
 			<dataPath>TaxableSubtotal</dataPath>
 			<field>TaxableSubtotal</field>
 		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>PriceUnits</dataPath>
+			<field>PriceUnits</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>QtyUnits</dataPath>
+			<field>QtyUnits</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Unit</dataPath>
+			<field>Unit</field>
+		</field>
 		<dataSource>DataSource1</dataSource>
 		<query>SELECT
 	CashSaleLineItems.Ref,
 	CashSaleLineItems.LineNumber,
 	CashSaleLineItems.Product,
 	CashSaleLineItems.ProductDescription,
-	CashSaleLineItems.Price,
-	CashSaleLineItems.Quantity,
+	CashSaleLineItems.QtyUnits,
+	CashSaleLineItems.Unit,
+	CashSaleLineItems.PriceUnits,
 	CashSaleLineItems.LineTotal,
 	CashSaleLineItems.Project,
 	CashSaleLineItems.Taxable,
@@ -316,22 +321,25 @@ FROM
 					<dcsset:field>Product</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>QtyUnits</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Unit</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>PriceUnits</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>LineNumber</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>LineTotal</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>Price</dcsset:field>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Project</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Project1</dcsset:field>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>Quantity</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Ref1</dcsset:field>

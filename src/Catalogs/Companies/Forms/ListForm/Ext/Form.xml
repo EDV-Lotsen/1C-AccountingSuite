@@ -122,11 +122,11 @@
 							<Title>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>C/V</v8:content>
+									<v8:content>Type</v8:content>
 								</v8:item>
 							</Title>
 							<HorizontalAlign>Center</HorizontalAlign>
-							<Width>5</Width>
+							<Width>6</Width>
 							<HorizontalStretch>false</HorizontalStretch>
 							<ContextMenu name="CVContextMenu" id="244"/>
 							<ExtendedTooltip name="CVExtendedTooltip" id="245"/>
@@ -543,13 +543,13 @@
 	CASE
 		WHEN CatalogCompanies.Customer
 				AND CatalogCompanies.Vendor
-			THEN "CV"
+			THEN "C/V"
 		WHEN CatalogCompanies.Customer
 				AND NOT CatalogCompanies.Vendor
-			THEN "C"
+			THEN "Cust"
 		WHEN NOT CatalogCompanies.Customer
 				AND CatalogCompanies.Vendor
-			THEN "V"
+			THEN "Vend"
 		ELSE ""
 	END AS CV,
 	ISNULL(GeneralJournalBalance.AmountRCBalance, 0) AS AmountRCBalance
@@ -727,6 +727,84 @@ WHERE
 					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 						<dcscor:parameter>TextColor</dcscor:parameter>
 						<dcscor:value xsi:type="v8ui:Color">web:LightGray</dcscor:value>
+					</dcscor:item>
+				</dcsset:appearance>
+			</dcsset:item>
+			<dcsset:item>
+				<dcsset:selection>
+					<dcsset:item>
+						<dcsset:field>Description</dcsset:field>
+					</dcsset:item>
+					<dcsset:item>
+						<dcsset:field>CV</dcsset:field>
+					</dcsset:item>
+					<dcsset:item>
+						<dcsset:field>Code</dcsset:field>
+					</dcsset:item>
+				</dcsset:selection>
+				<dcsset:filter>
+					<dcsset:item xsi:type="dcsset:FilterItemComparison">
+						<dcsset:left xsi:type="dcscor:Field">List.CV</dcsset:left>
+						<dcsset:comparisonType>Equal</dcsset:comparisonType>
+						<dcsset:right xsi:type="xs:string">Cust</dcsset:right>
+					</dcsset:item>
+				</dcsset:filter>
+				<dcsset:appearance>
+					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+						<dcscor:parameter>TextColor</dcscor:parameter>
+						<dcscor:value xsi:type="v8ui:Color">web:Green</dcscor:value>
+					</dcscor:item>
+				</dcsset:appearance>
+			</dcsset:item>
+			<dcsset:item>
+				<dcsset:selection>
+					<dcsset:item>
+						<dcsset:field>Description</dcsset:field>
+					</dcsset:item>
+					<dcsset:item>
+						<dcsset:field>CV</dcsset:field>
+					</dcsset:item>
+					<dcsset:item>
+						<dcsset:field>Code</dcsset:field>
+					</dcsset:item>
+				</dcsset:selection>
+				<dcsset:filter>
+					<dcsset:item xsi:type="dcsset:FilterItemComparison">
+						<dcsset:left xsi:type="dcscor:Field">List.CV</dcsset:left>
+						<dcsset:comparisonType>Equal</dcsset:comparisonType>
+						<dcsset:right xsi:type="xs:string">Vend</dcsset:right>
+					</dcsset:item>
+				</dcsset:filter>
+				<dcsset:appearance>
+					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+						<dcscor:parameter>TextColor</dcscor:parameter>
+						<dcscor:value xsi:type="v8ui:Color">web:Brown</dcscor:value>
+					</dcscor:item>
+				</dcsset:appearance>
+			</dcsset:item>
+			<dcsset:item>
+				<dcsset:selection>
+					<dcsset:item>
+						<dcsset:field>Description</dcsset:field>
+					</dcsset:item>
+					<dcsset:item>
+						<dcsset:field>CV</dcsset:field>
+					</dcsset:item>
+					<dcsset:item>
+						<dcsset:field>Code</dcsset:field>
+					</dcsset:item>
+				</dcsset:selection>
+				<dcsset:filter>
+					<dcsset:item xsi:type="dcsset:FilterItemComparison">
+						<dcsset:left xsi:type="dcscor:Field">List.CV</dcsset:left>
+						<dcsset:comparisonType>Equal</dcsset:comparisonType>
+						<dcsset:right xsi:type="xs:string">C/V</dcsset:right>
+					</dcsset:item>
+				</dcsset:filter>
+				<dcsset:appearance>
+					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+						<dcscor:parameter>TextColor</dcscor:parameter>
+						<dcscor:value xsi:type="v8ui:Color">web:Blue</dcscor:value>
 					</dcscor:item>
 				</dcsset:appearance>
 			</dcsset:item>

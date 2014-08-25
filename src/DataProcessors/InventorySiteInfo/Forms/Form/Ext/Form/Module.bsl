@@ -11,7 +11,9 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 			Items.VTQtyAvailableToPromise.Visible = False;
 		EndIf;
 		
-		ThisForm.Title = Parameters.Product.Description; 
+		BaseUnit = GeneralFunctions.GetBaseUnit(Parameters.Product.UnitSet).Code;
+		ThisForm.Title = Parameters.Product.Description + " (quantities in " + BaseUnit + ")"; 
+		Items.Right.Title = "Item quantities in " + BaseUnit;
 		
 		QtyOnPO = Parameters.QtyOnPO;
 		QtyOnSO = Parameters.QtyOnSO;
@@ -25,17 +27,18 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Query.Text = "SELECT
 		             |	OrdersDispatchedBalance.Product AS Product,
 		             |	OrdersDispatchedBalance.Location AS Location,
-		             |	CASE
+					 |  OrdersDispatchedBalance.Unit AS Unit,
+					 |	CASE
 		             |		WHEN OrdersDispatchedBalance.Product.Type = VALUE(Enum.InventoryTypes.Inventory)
 		             |			THEN CASE
 		             |					WHEN OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.ReceivedBalance > 0
-		             |						THEN OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.ReceivedBalance
+		             |						THEN (OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.ReceivedBalance) * OrdersDispatchedBalance.Unit.Factor 
 		             |					ELSE 0
 		             |				END
 		             |		WHEN OrdersDispatchedBalance.Product.Type = VALUE(Enum.InventoryTypes.NonInventory)
 		             |			THEN CASE
 		             |					WHEN OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.InvoicedBalance > 0
-		             |						THEN OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.InvoicedBalance
+		             |						THEN (OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.InvoicedBalance) * OrdersDispatchedBalance.Unit.Factor 
 		             |					ELSE 0
 		             |				END
 		             |		ELSE 0
@@ -51,18 +54,19 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		             |SELECT
 		             |	OrdersRegisteredBalance.Product,
 		             |	OrdersRegisteredBalance.Location,
-		             |	0,
+					 |  OrdersRegisteredBalance.Unit,
+					 |	0,
 		             |	CASE
 		             |		WHEN OrdersRegisteredBalance.Product.Type = VALUE(Enum.InventoryTypes.Inventory)
 		             |			THEN CASE
 		             |					WHEN OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.ShippedBalance > 0
-		             |						THEN OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.ShippedBalance
+		             |						THEN (OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.ShippedBalance) * OrdersRegisteredBalance.Unit.Factor
 		             |					ELSE 0
 		             |				END
 		             |		WHEN OrdersRegisteredBalance.Product.Type = VALUE(Enum.InventoryTypes.NonInventory)
 		             |			THEN CASE
 		             |					WHEN OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.InvoicedBalance > 0
-		             |						THEN OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.InvoicedBalance
+		             |						THEN (OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.InvoicedBalance) * OrdersRegisteredBalance.Unit.Factor
 		             |					ELSE 0
 		             |				END
 		             |		ELSE 0
@@ -76,6 +80,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		             |SELECT
 		             |	InventoryJournalBalance.Product,
 		             |	InventoryJournalBalance.Location,
+					 |  NULL,
 		             |	0,
 		             |	0,
 		             |	CASE
@@ -129,5 +134,21 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		ValueToFormData(Query.Execute().Unload(), VT);
 		
 	EndIf;
+	
+	QuantityFormat = GeneralFunctionsReusable.DefaultQuantityFormat();
+	
+	Items.QtyOnPO.Format                   = QuantityFormat; 
+	Items.QtyOnPO.EditFormat               = QuantityFormat; 
+	Items.QtyOnSO.Format                   = QuantityFormat; 
+	Items.QtyOnSO.EditFormat               = QuantityFormat; 
+	Items.QtyOnHand.Format                 = QuantityFormat; 
+	Items.QtyOnHand.EditFormat             = QuantityFormat; 
+	Items.QtyAvailableToPromise.Format     = QuantityFormat; 
+	Items.QtyAvailableToPromise.EditFormat = QuantityFormat; 
+	
+	Items.VTQtyOnPO.Format                 = QuantityFormat; 
+	Items.VTQtyOnSO.Format                 = QuantityFormat; 
+	Items.VTQtyOnHand.Format               = QuantityFormat; 
+	Items.VTQtyAvailableToPromise.Format   = QuantityFormat; 
 	
 EndProcedure

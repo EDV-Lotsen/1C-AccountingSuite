@@ -1505,6 +1505,11 @@ Function LoginUser(YodleeMain = Undefined) Export
 			return false;
 		EndIf;
 		
+		If Not Constants.ServiceDB.Get() Then
+			WriteLogEvent("Yodlee.LoginUser", EventLogLevel.Error,,, "User login failed. Login to Yodlee available only in the Service DB");
+			return False;
+		EndIf;
+		
 		UserName = Constants.YodleeUserName.Get();
 		UserPassword = Constants.YodleeUserPassword.Get();
 		
@@ -1648,6 +1653,9 @@ Function ProcessMFA(ItemId, YodleeMain, TempStorageAddress = Undefined)
 				ReturnStructure.Status = "CAPTCHA images are not supported";
 				ReturnStructure.IsMFA = False;
 				WriteLogEvent("Yodlee.RefreshItem_ProcessMFA", EventLogLevel.Error,,, "CAPTCHA images are not supported. ItemID:" + String(ItemID));
+				If TempStorageAddress <> Undefined Then
+					PutToTempStorage(New Structure("Params, CurrentStatus, Step", ReturnStructure, "Error on obtaining MFA fields...", 4), TempStorageAddress);
+				EndIf;
 				return ReturnStructure;
 			ElsIf RefreshProcess.fieldInfoType = "SecurityQuestionFieldInfo" Then
 				ArrOfElements = New Array();

@@ -334,8 +334,20 @@ Procedure CompanyOnChange(Item)
 		Items.PayAllDoc.Visible = false;
 	Endif;
 
+	CompanyOnChangeAtServer();
 	
 EndProcedure
+
+&AtServer
+Procedure CompanyOnChangeAtServer()
+	If Object.Company.ARAccount <> ChartsofAccounts.ChartOfAccounts.EmptyRef() Then
+		Object.ARAccount = Object.Company.ARAccount;
+	Else
+		DefaultCurrency = GeneralFunctionsReusable.DefaultCurrency();
+		Object.ARAccount = DefaultCurrency.DefaultARAccount;
+	EndIf;
+EndProcedure
+
 
 &AtClient
 Procedure RemainingBalance()
@@ -592,7 +604,7 @@ Procedure AdditionalPaymentCall()
 			PayTotal =  PayTotal + LineItem.Payment;
 		Else
 			PayTotal =  PayTotal + LineItem.Payment * LineItem.ExchangeRate;
-			
+			//PayTotal =  PayTotal + LineItem.Payment; //alan fix
 		Endif;
 			
 			
@@ -643,42 +655,8 @@ Procedure BeforeWrite(Cancel, WriteParameters)
 	// preventing posting if already included in a bank rec
 	If ReconciledDocumentsServerCall.RequiresExcludingFromBankReconciliation(Object.Ref, Object.CashPayment, Object.Date, Object.BankAccount, WriteParameters.WriteMode) Then
 		Cancel = True;
-		CommonUseClient.ShowCustomMessageBox(ThisForm, "Bank reconciliation", "The transaction you are editing has been reconciled. Saving 
-		|your changes could put you out of balance the next time you try to reconcile. 
+		CommonUseClient.ShowCustomMessageBox(ThisForm, "Bank reconciliation", "The transaction you are editing has been reconciled. Saving your changes could put you out of balance the next time you try to reconcile. 
 		|To modify it you should exclude it from the Bank rec. document.", PredefinedValue("Enum.MessageStatus.Warning"));
-	EndIf;
-	
-	DefaultCurrency = GeneralFunctionsReusable.DefaultCurrency();
-	CompanyCurrency = CompanyCurrency();
-	Rate = GeneralFunctions.GetExchangeRate(Object.Date, CompanyCurrency);
-	
-	PayTotal = 0;
-	BalanceFCY = 0;
-	For Each LineItem In Object.LineItems Do
-				PayTotal =  PayTotal + LineItem.Payment;
-				BalanceFCY = BalanceFCY + LineItem.BalanceFCY;
-	EndDo;
-			
-	If PayTotal = 0 And Object.UnappliedPayment = 0 Then
-		Message("No payment is being made.");
-		Cancel = True;
-		Return;
-	EndIf;
-		
-
-	If CompanyCurrency = DefaultCurrency Then
-		If PayTotal > (Object.CashPayment + Object.CreditTotal)  Then
-			Message("Payment is greater than (Set Payment + Credit)");
-			Cancel = True;
-		Return;
-		Endif;
-	Else
-		//If PayTotal > (Round((Object.CashPayment/Rate),2) + Object.CreditTotal)  Then
-		//Message("Payment is greater than (Set Payment + Credit)");
-		//Cancel = True;
-		//Return;
-		//Endif;
-		
 	EndIf;
 	
  //   If Object.CreditTotal > 0 or Object.UnappliedPayment > 0 Then
@@ -718,12 +696,6 @@ Procedure BeforeWrite(Cancel, WriteParameters)
 		NumberOfLines = NumberOfLines - 1;
 		
 	EndDo;
-
-	//
-	//If Object.DocumentTotalRC = 0 Then
-		  Object.DocumentTotalRC = PayTotal*Rate;
-		  Object.DocumentTotal = PayTotal;
-	//Endif;
 	
 	//Object.Currency = Object.LineItems[0].Currency;
 	//NumberOfRows = Object.LineItems.Count() - 1;
@@ -817,6 +789,8 @@ Procedure AfterWrite(WriteParameters)
 		RepresentDataChange(DocumentLine.Document, DataChangeType.Update);
 		
 	EndDo;
+	
+	Notify("UpdatePayInvoiceInformation", Object.Company);
 
 EndProcedure
 
@@ -1649,6 +1623,7 @@ Procedure ProcessNewCashReceipt(SalesInvoice)
 	For Each Doc In Object.LineItems Do
 		If Doc.Document = SalesInvoice Then
 			Doc.Payment = Doc.Balance;
+			//Doc.Payment = Doc.BalanceFCY; //alan fix
 			Object.CashPayment = Doc.Balance;
 			Object.DocumentTotal = Doc.Balance;
 			Object.DocumentTotalRC = Doc.BalanceFCY;

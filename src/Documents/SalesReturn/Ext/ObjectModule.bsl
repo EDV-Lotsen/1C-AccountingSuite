@@ -33,7 +33,7 @@ Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 		// Precheck of document data, calculation of temporary data, required for document posting.
 		If (Not ManualAdjustment) Then
 			DocumentParameters = New Structure("Ref, PointInTime,   Company, Location, LineItems",
-			                                    Ref, PointInTime(), Company, Location, LineItems.Unload(, "Product, Quantity"));
+			                                    Ref, PointInTime(), Company, Location, LineItems.Unload(, "Product, Unit, QtyUM"));
 			Documents.SalesReturn.PrepareDataBeforeWrite(AdditionalProperties, DocumentParameters, Cancel);
 		EndIf;
 		
@@ -58,27 +58,25 @@ Procedure Filling(FillingData, StandardProcessing)
 		If (TypeOf(FillingData) = Type("DocumentRef.SalesInvoice")) Then
 			
 			// -> CODE REVIEW
-			ParentDocument = FillingData.Ref;
-			Company = FillingData.Company;
-			DocumentTotal = FillingData.DocumentTotal;
-			DocumentTotalRC = FillingData.DocumentTotalRC;
-			SalesTaxRC = FillingData.SalesTaxRC;
-			Currency = FillingData.Currency;
-			ExchangeRate = FillingData.ExchangeRate;
-			ARAccount = FillingData.ARAccount;
-			Location = FillingData.LocationActual;
-			ARAccount = FillingData.ARAccount;
-			LineSubtotalRC = FillingData.LineSubtotal;
-			SalesTaxRate = FillingData.SalesTaxRate;
+			ParentDocument    = FillingData.Ref;
+			Company           = FillingData.Company;
+			DocumentTotal     = FillingData.DocumentTotal;
+			DocumentTotalRC   = FillingData.DocumentTotalRC;
+			SalesTaxRC        = FillingData.SalesTaxRC;
+			Currency          = FillingData.Currency;
+			ExchangeRate      = FillingData.ExchangeRate;
+			ARAccount         = FillingData.ARAccount;
+			Location          = FillingData.LocationActual;
+			ARAccount         = FillingData.ARAccount;
+			LineSubtotalRC    = FillingData.LineSubtotal;
+			SalesTaxRate      = FillingData.SalesTaxRate;
+			DiscountPercent   = FillingData.DiscountPercent;
+			Discount          = FillingData.Discount;
+			DiscountIsTaxable = FillingData.DiscountIsTaxable;
 			
 			For Each CurRowLineItems In FillingData.LineItems Do
 				NewRow = LineItems.Add();
-				NewRow.LineTotal = CurRowLineItems.LineTotal;
-				NewRow.Price = CurRowLineItems.Price;
-				NewRow.Product = CurRowLineItems.Product;
-				NewRow.ProductDescription = CurRowLineItems.ProductDescription;
-				NewRow.Quantity = CurRowLineItems.Quantity;
-				NewRow.Taxable = CurRowLineItems.Taxable;
+				FillPropertyValues(NewRow, CurRowLineItems);
 			EndDo;
 			
 			For Each SalesTaxAA In FillingData.SalesTaxAcrossAgencies Do
@@ -145,6 +143,9 @@ Procedure Posting(Cancel, Mode)
 	PostingDatasetInvOrExp.Columns.Add("InvOrExpAccount");
 	PostingDatasetInvOrExp.Columns.Add("AmountRC");
 	
+	// Request actual time point.
+	PointInTime = PointInTime();
+	
 	For Each CurRowLineItems In LineItems Do
 		
 		If Ref.ReturnType = Enums.ReturnTypes.Refund Then
@@ -173,7 +174,8 @@ Procedure Posting(Cancel, Mode)
 				                  |	InventoryJournalBalance.QuantityBalance AS QuantityBalance,
 				                  |	InventoryJournalBalance.AmountBalance   AS AmountBalance
 				                  |FROM
-				                  |	AccumulationRegister.InventoryJournal.Balance(, Product = &Product) AS InventoryJournalBalance");
+				                  |	AccumulationRegister.InventoryJournal.Balance(&PointInTime, Product = &Product) AS InventoryJournalBalance");
+				Query.SetParameter("PointInTime", PointInTime);
 				Query.SetParameter("Product", CurRowLineItems.Product);
 				QueryResult = Query.Execute().Unload();
 				If  QueryResult.Count() > 0
@@ -193,9 +195,10 @@ Procedure Posting(Cancel, Mode)
 				                  |	InventoryJournalBalance.Layer,
 				                  |	InventoryJournalBalance.Layer.Date AS LayerDate
 				                  |FROM
-				                  |	AccumulationRegister.InventoryJournal.Balance(, Product = &Product AND Location = &Location) AS InventoryJournalBalance
+				                  |	AccumulationRegister.InventoryJournal.Balance(&PointInTime, Product = &Product AND Location = &Location) AS InventoryJournalBalance
 				                  |ORDER BY
 				                  |	LayerDate ASC");
+				Query.SetParameter("PointInTime", PointInTime);
 				Query.SetParameter("Product", CurRowLineItems.Product);
 				Query.SetParameter("Location", Location);
 				Selection = Query.Execute().Unload();
@@ -210,11 +213,11 @@ Procedure Posting(Cancel, Mode)
 			// Adding to posting datasets.
 			PostingLineCOGS = PostingDatasetCOGS.Add();
 			PostingLineCOGS.COGSAccount = CurRowLineItems.Product.COGSAccount;
-			PostingLineCOGS.AmountRC = CurRowLineItems.Quantity * LastCost;
+			PostingLineCOGS.AmountRC = CurRowLineItems.QtyUM * LastCost;
 			
 			PostingLineInvOrExp = PostingDatasetInvOrExp.Add();
 			PostingLineInvOrExp.InvOrExpAccount = CurRowLineItems.Product.InventoryOrExpenseAccount;
-			PostingLineInvOrExp.AmountRC = CurRowLineItems.Quantity * LastCost;
+			PostingLineInvOrExp.AmountRC = CurRowLineItems.QtyUM * LastCost;
 			
 		EndIf;
 		

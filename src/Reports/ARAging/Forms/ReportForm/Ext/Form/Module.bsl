@@ -1,59 +1,22 @@
-﻿//////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////
+﻿&AtServer
+Var OpeningReportForm; 
 
 &AtClient
 Procedure Excel(Command)
 	
-	//Result.Write("" + GetSystemTitle() + " - Income statement" , SpreadsheetDocumentFileType.XLSX); 
+	Structure = GeneralFunctions.GetExcelFile("AR aging (due date)", Result);
 	
-	FileName = "" + GetSystemTitle() + " - AR aging (due date).xlsx"; 
-	GetFile(GetFileName(), FileName, True); 
+	GetFile(Structure.Address, Structure.FileName, True); 
 
 EndProcedure
 
-&AtServer
-Function GetFileName()
-	
-	TemporaryFileName = GetTempFileName(".xlsx");
-	
-	Result.Write(TemporaryFileName, SpreadsheetDocumentFileType.XLSX);
-	BinaryData = New BinaryData(TemporaryFileName);
-	
-	DeleteFiles(TemporaryFileName);
-	
-	Return PutToTempStorage(BinaryData);
-	
-EndFunction
-
-&AtServerNoContext
-Function GetSystemTitle()
-	
-	SystemTitle = Constants.SystemTitle.Get();
-	
-	NewSystemTitle = "";
-	
-	For i = 1 To StrLen(SystemTitle) Do
-		
-		Char = Mid(SystemTitle, i, 1);
-		
-		If Find("#&\/:*?""<>|.", Char) > 0 Then
-			NewSystemTitle = NewSystemTitle + " ";	
-		Else
-			NewSystemTitle = NewSystemTitle + Char;	
-		EndIf;
-		
-	EndDo;	
-	
-	Return NewSystemTitle;
-	
-EndFunction
-
-//////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////
-
 &AtClient
 Procedure OnOpen(Cancel)
+	
 	Variant = CurrentVariantDescription;
+	
+	GeneralFunctions.ChangePeriodIntoUserSettings(ThisForm.Report.SettingsComposer, PeriodStartDate, PeriodEndDate);
+	
 EndProcedure
 
 &AtClient
@@ -77,6 +40,59 @@ EndProcedure
 
 &AtClient
 Procedure Create(Command)
+	
+	GeneralFunctions.ChangePeriodIntoUserSettings(ThisForm.Report.SettingsComposer, PeriodStartDate, PeriodEndDate);
+	Report.SettingsComposer.LoadUserSettings(Report.SettingsComposer.UserSettings);
+	
 	ComposeResult();
+	
 EndProcedure
 
+&AtServer
+Procedure OnCreateAtServer(Cancel, StandardProcessing)
+	
+	Items.PeriodVariant.ChoiceList.LoadValues(GeneralFunctions.GetCustomizedPeriodsList());
+	PeriodVariant = GeneralFunctions.GetDefaultPeriodVariant();
+	GeneralFunctions.ChangeDatesByPeriod(PeriodVariant, PeriodStartDate, PeriodEndDate);
+	
+	OpeningReportForm = True;
+	
+EndProcedure
+
+&AtClient
+Procedure PeriodVariantOnChange(Item)
+	
+	GeneralFunctions.ChangeDatesByPeriod(PeriodVariant, PeriodStartDate, PeriodEndDate);
+	GeneralFunctions.ChangePeriodIntoUserSettings(ThisForm.Report.SettingsComposer, PeriodStartDate, PeriodEndDate);
+	ModifiedStatePresentation();
+	
+EndProcedure
+
+&AtClient
+Procedure PeriodStartDateOnChange(Item)
+	
+	PeriodVariant = GeneralFunctions.GetCustomVariantName();
+	GeneralFunctions.ChangePeriodIntoUserSettings(ThisForm.Report.SettingsComposer, PeriodStartDate, PeriodEndDate);
+	ModifiedStatePresentation();
+	
+EndProcedure
+
+&AtClient
+Procedure PeriodEndDateOnChange(Item)
+	
+	PeriodVariant = GeneralFunctions.GetCustomVariantName();
+	GeneralFunctions.ChangePeriodIntoUserSettings(ThisForm.Report.SettingsComposer, PeriodStartDate, PeriodEndDate);
+	ModifiedStatePresentation();
+	
+EndProcedure
+
+&AtServer
+Procedure OnUpdateUserSettingSetAtServer(StandardProcessing)
+	
+	If OpeningReportForm <> Undefined And OpeningReportForm Then
+		
+	Else
+		GeneralFunctions.ChangePeriodIntoReportForm(ThisForm.Report.SettingsComposer, PeriodVariant, PeriodStartDate, PeriodEndDate);
+	EndIf;	
+	
+EndProcedure

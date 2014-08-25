@@ -6,6 +6,8 @@
 // - Client (managed application)
 // - Server
 //
+&AtClient
+Var SalesTaxRateInactive, AgenciesRatesInactive;//Cache for storing inactive rates previously used in the document
 
 ////////////////////////////////////////////////////////////////////////////////
 #Region EVENTS_HANDLERS
@@ -49,9 +51,9 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	CustomerName                    = GeneralFunctionsReusable.GetCustomerName();
 	Items.Company.Title             = CustomerName;
 	Items.Company.ToolTip           = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = '%1 name'"),             CustomerName);
-	Items.RefNum.Title              = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = '%1 RFQ / Ref. #'"),    CustomerName);
-	Items.RefNum.ToolTip            = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = '%1 RFQ /
-	                                                                                                      |Reference number'"),    CustomerName);
+	//Items.RefNum.Title              = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = '%1 RFQ / Ref. #'"),    CustomerName);
+	//Items.RefNum.ToolTip            = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = '%1 RFQ /
+	//                                                                                                      |Reference number'"),    CustomerName);
 	Items.ShipTo.ToolTip            = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = '%1 shipping address'"), CustomerName);
 	Items.BillTo.ToolTip            = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = '%1 billing address'"),  CustomerName);
 	Items.ConfirmTo.ToolTip         = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = '%1 confirm address'"),  CustomerName);
@@ -63,7 +65,8 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	                                                                                                      |Reference number'"),    Lower(CustomerName));
 	
 	// Update quantities presentation.
-	QuantityFormat = GeneralFunctionsReusable.DefaultQuantityFormat();
+	QuantityPrecision = GeneralFunctionsReusable.DefaultQuantityPrecision();
+	QuantityFormat    = GeneralFunctionsReusable.DefaultQuantityFormat();
 	Items.LineItemsQuantity.EditFormat  = QuantityFormat;
 	Items.LineItemsQuantity.Format      = QuantityFormat;
 	
@@ -232,6 +235,15 @@ Procedure AfterOpen()
 	
 EndProcedure
 
+&AtClient
+Procedure NotificationProcessing(EventName, Parameter, Source)
+	If EventName = "SalesTaxRateAdded" Then
+		If Items.SalesTaxRate.ChoiceList.FindByValue(Parameter) = Undefined Then
+			Items.SalesTaxRate.ChoiceList.Add(Parameter);
+		EndIf;
+	EndIf;
+EndProcedure
+
 #EndRegion
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -286,7 +298,7 @@ Procedure CompanyOnChangeAtServer()
 	If Object.SalesTaxAcrossAgencies.Count() > 0 Then
 		CurrentAgenciesRates = New Array();
 		For Each AgencyRate In Object.SalesTaxAcrossAgencies Do
-			CurrentAgenciesRates.Add(New Structure("Agency, Rate", AgencyRate.Agency, AgencyRate.Rate));
+			CurrentAgenciesRates.Add(New Structure("Agency, Rate, SalesTaxRate, SalesTaxComponent", AgencyRate.Agency, AgencyRate.Rate, AgencyRate.SalesTaxRate, AgencyRate.SalesTaxComponent));
 		EndDo;
 	EndIf;
 	SalesTaxAcrossAgencies = SalesTax.CalculateSalesTax(Object.TaxableSubtotal, Object.SalesTaxRate, CurrentAgenciesRates);
@@ -425,6 +437,8 @@ Procedure DiscountPercentOnChange(Item)
 	// Request server operation.
 	DiscountPercentOnChangeAtServer();
 	
+	UpdateInformationCurrentRow();
+	
 EndProcedure
 
 &AtServer
@@ -443,6 +457,8 @@ Procedure DiscountOnChange(Item)
 	
 	// Request server operation.
 	DiscountOnChangeAtServer();
+	
+	UpdateInformationCurrentRow();
 	
 EndProcedure
 
@@ -592,8 +608,10 @@ Procedure DefaultSettingOnChangeAtServer(DefaultSetting, RecalculateLineItems)
 		If RecalculateLineItems Then
 			// Recalculate retail price.
 			For Each Row In Object.LineItems Do
-				Row.Price = Round(GeneralFunctions.RetailPrice(Object.Date, Row.Product, Object.Company) /
-				                        ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), 2);
+				Row.PriceUnits = Round(GeneralFunctions.RetailPrice(Object.Date, Row.Product, Object.Company) *
+				                 ?(Row.Unit.Factor > 0, Row.Unit.Factor, 1) /
+				                 ?(Row.UnitSet.DefaultSaleUnit.Factor > 0, Row.UnitSet.DefaultSaleUnit.Factor, 1) /
+				                 ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), 2);
 				LineItemsPriceOnChangeAtServer(Row);
 			EndDo;
 		EndIf;
@@ -607,8 +625,10 @@ Procedure DefaultSettingOnChangeAtServer(DefaultSetting, RecalculateLineItems)
 		If RecalculateLineItems Then
 			// Recalculate retail price.
 			For Each Row In Object.LineItems Do
-				Row.Price = Round(GeneralFunctions.RetailPrice(Object.Date, Row.Product, Object.Company) /
-				                        ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), 2);
+				Row.PriceUnits = Round(GeneralFunctions.RetailPrice(Object.Date, Row.Product, Object.Company) *
+				                 ?(Row.Unit.Factor > 0, Row.Unit.Factor, 1) /
+				                 ?(Row.UnitSet.DefaultSaleUnit.Factor > 0, Row.UnitSet.DefaultSaleUnit.Factor, 1) /
+				                 ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), 2);
 				LineItemsPriceOnChangeAtServer(Row);
 			EndDo;
 		EndIf;
@@ -696,17 +716,23 @@ Procedure LineItemsProductOnChange(Item)
 	// Refresh totals cache.
 	RecalculateTotals();
 	
+	UpdateInformationCurrentRow();
+	
 EndProcedure
 
 &AtServer
 Procedure LineItemsProductOnChangeAtServer(TableSectionRow)
 	
 	// Request product properties.
-	ProductProperties = CommonUse.GetAttributeValues(TableSectionRow.Product, New Structure("Description, UM, Taxable"));
+	ProductProperties = CommonUse.GetAttributeValues(TableSectionRow.Product,   New Structure("Description, UnitSet, Taxable"));
+	UnitSetProperties = CommonUse.GetAttributeValues(ProductProperties.UnitSet, New Structure("DefaultSaleUnit"));
 	TableSectionRow.ProductDescription = ProductProperties.Description;
-	TableSectionRow.UM                 = ProductProperties.UM;
+	TableSectionRow.UnitSet            = ProductProperties.UnitSet;
+	TableSectionRow.Unit               = UnitSetProperties.DefaultSaleUnit;
+	//TableSectionRow.UM                 = UnitSetProperties.UM;
 	TableSectionRow.Taxable            = ProductProperties.Taxable;
-	TableSectionRow.Price              = Round(GeneralFunctions.RetailPrice(Object.Date, TableSectionRow.Product, Object.Company) /
+	TableSectionRow.PriceUnits         = Round(GeneralFunctions.RetailPrice(Object.Date, TableSectionRow.Product, Object.Company) /
+	                                     // The price is returned for default sales unit factor.
 	                                     ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), 2);
 	
 	// Reset default values.
@@ -716,14 +742,44 @@ Procedure LineItemsProductOnChangeAtServer(TableSectionRow)
 	TableSectionRow.Class        = Object.Class;
 	
 	// Assign default quantities.
-	TableSectionRow.Quantity  = 0;
-	TableSectionRow.Backorder = 0;
-	TableSectionRow.Shipped   = 0;
-	TableSectionRow.Invoiced  = 0;
+	TableSectionRow.QtyUnits  = 0;
+	TableSectionRow.QtyUM     = 0;
 	
 	// Calculate totals by line.
 	TableSectionRow.LineTotal     = 0;
 	TableSectionRow.TaxableAmount = 0;
+	
+EndProcedure
+
+&AtClient
+Procedure LineItemsUnitOnChange(Item)
+	
+	// Fill line data for editing.
+	TableSectionRow = GetLineItemsRowStructure();
+	FillPropertyValues(TableSectionRow, Items.LineItems.CurrentData);
+	
+	// Request server operation.
+	LineItemsUnitOnChangeAtServer(TableSectionRow);
+	
+	// Load processed data back.
+	FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
+	
+	// Refresh totals cache.
+	RecalculateTotals();
+	
+EndProcedure
+
+&AtServer
+Procedure LineItemsUnitOnChangeAtServer(TableSectionRow)
+	
+	// Calculate new unit price.
+	TableSectionRow.PriceUnits = Round(GeneralFunctions.RetailPrice(Object.Date, TableSectionRow.Product, Object.Company) *
+	                             ?(TableSectionRow.Unit.Factor > 0, TableSectionRow.Unit.Factor, 1) /
+	                             ?(TableSectionRow.UnitSet.DefaultSaleUnit.Factor > 0, TableSectionRow.UnitSet.DefaultSaleUnit.Factor, 1) /
+	                             ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), 2);
+	
+	// Process settings changes.
+	LineItemsQuantityOnChangeAtServer(TableSectionRow);
 	
 EndProcedure
 
@@ -743,13 +799,15 @@ Procedure LineItemsQuantityOnChange(Item)
 	// Refresh totals cache.
 	RecalculateTotals();
 	
+	UpdateInformationCurrentRow();
+	
 EndProcedure
 
 &AtServer
 Procedure LineItemsQuantityOnChangeAtServer(TableSectionRow)
 	
 	// Calculate total by line.
-	TableSectionRow.LineTotal = Round(Round(TableSectionRow.Quantity, QuantityPrecision) * TableSectionRow.Price, 2);
+	TableSectionRow.LineTotal = Round(Round(TableSectionRow.QtyUnits, QuantityPrecision) * TableSectionRow.PriceUnits, 2);
 	
 	// Process settings changes.
 	LineItemsLineTotalOnChangeAtServer(TableSectionRow);
@@ -772,13 +830,15 @@ Procedure LineItemsPriceOnChange(Item)
 	// Refresh totals cache.
 	RecalculateTotals();
 	
+	UpdateInformationCurrentRow();
+	
 EndProcedure
 
 &AtServer
 Procedure LineItemsPriceOnChangeAtServer(TableSectionRow)
 	
 	// Calculate total by line.
-	TableSectionRow.LineTotal = Round(Round(TableSectionRow.Quantity, QuantityPrecision) * TableSectionRow.Price, 2);
+	TableSectionRow.LineTotal = Round(Round(TableSectionRow.QtyUnits, QuantityPrecision) * TableSectionRow.PriceUnits, 2);
 	
 	// Process settings changes.
 	LineItemsLineTotalOnChangeAtServer(TableSectionRow);
@@ -807,8 +867,12 @@ EndProcedure
 Procedure LineItemsLineTotalOnChangeAtServer(TableSectionRow)
 	
 	// Back-step price calculation with totals priority.
-	TableSectionRow.Price = ?(Round(TableSectionRow.Quantity, QuantityPrecision) > 0,
-	                          Round(TableSectionRow.LineTotal / Round(TableSectionRow.Quantity, QuantityPrecision), 2), 0);
+	TableSectionRow.PriceUnits = ?(TableSectionRow.QtyUnits > 0,
+	                             Round(TableSectionRow.LineTotal / Round(TableSectionRow.QtyUnits, QuantityPrecision), 2), 0);
+	
+	// Back-calculation of quantity in base units.
+	TableSectionRow.QtyUM      = Round(Round(TableSectionRow.QtyUnits, QuantityPrecision) *
+	                             ?(TableSectionRow.Unit.Factor > 0, TableSectionRow.Unit.Factor, 1), QuantityPrecision);
 	
 	// Calculate taxes by line total.
 	LineItemsTaxableOnChangeAtServer(TableSectionRow);
@@ -865,7 +929,10 @@ EndProcedure
 
 &AtClient
 Procedure SetSalesTaxRate(NewSalesTaxRate)
-	
+	//Update SalesTaxRate field choice list
+	If ValueIsFilled(NewSalesTaxRate) And (Items.SalesTaxRate.ChoiceList.FindByValue(NewSalesTaxRate) = Undefined) Then
+		Items.SalesTaxRate.ChoiceList.Add(NewSalesTaxRate);
+	EndIf;
 	//Cache inactive sales tax rates
 	If ValueIsFilled(Object.SalesTaxRate) Then
 		AgenciesRates = New Array();
@@ -908,6 +975,19 @@ Procedure ShowSalesTaxRate()
 
 EndProcedure
 
+&AtClient
+Procedure LineItemsOnActivateRow(Item)
+	
+	UpdateInformationCurrentRow();
+	
+EndProcedure
+
+&AtClient
+Procedure LineItemsLocationOnChange(Item)
+	
+	UpdateInformationCurrentRow();
+	
+EndProcedure
 
 #EndRegion
 
@@ -917,12 +997,16 @@ EndProcedure
 &AtClient
 Procedure SaveAndClose(Command)
 	
+	//PerformanceMeasurementClientServer.StartTimeMeasurement("Quote SaveAndClose");
+	
 	If Write() Then Close() EndIf;
 	
 EndProcedure
 
 &AtClient
 Procedure Save(Command)
+	
+	//PerformanceMeasurementClientServer.StartTimeMeasurement("Quote Save");
 	
 	Write();
 	
@@ -951,6 +1035,13 @@ Procedure SendEmail(Command)
 		FormParameters = New Structure("Ref",Object.Ref );
 		OpenForm("CommonForm.EmailForm", FormParameters,,,,,, FormWindowOpeningMode.LockOwnerWindow);
 	EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure AddLine(Command)
+	
+	Items.LineItems.AddRow();
 	
 EndProcedure
 
@@ -1105,7 +1196,7 @@ Procedure RecalculateTotals()
 	If Object.SalesTaxAcrossAgencies.Count() > 0 Then
 		CurrentAgenciesRates = New Array();
 		For Each AgencyRate In Object.SalesTaxAcrossAgencies Do
-			CurrentAgenciesRates.Add(New Structure("Agency, Rate", AgencyRate.Agency, AgencyRate.Rate));
+			CurrentAgenciesRates.Add(New Structure("Agency, Rate, SalesTaxRate, SalesTaxComponent", AgencyRate.Agency, AgencyRate.Rate, AgencyRate.SalesTaxRate, AgencyRate.SalesTaxComponent));
 		EndDo;
 	EndIf;
 	SalesTaxAcrossAgencies = SalesTaxClient.CalculateSalesTax(Object.TaxableSubtotal, Object.SalesTaxRate, CurrentAgenciesRates);
@@ -1161,7 +1252,7 @@ Procedure RecalculateTotalsAtServer()
 	If Object.SalesTaxAcrossAgencies.Count() > 0 Then
 		CurrentAgenciesRates = New Array();
 		For Each AgencyRate In Object.SalesTaxAcrossAgencies Do
-			CurrentAgenciesRates.Add(New Structure("Agency, Rate", AgencyRate.Agency, AgencyRate.Rate));
+			CurrentAgenciesRates.Add(New Structure("Agency, Rate, SalesTaxRate, SalesTaxComponent", AgencyRate.Agency, AgencyRate.Rate, AgencyRate.SalesTaxRate, AgencyRate.SalesTaxComponent));
 		EndDo;
 	EndIf;
 	SalesTaxAcrossAgencies = SalesTax.CalculateSalesTax(Object.TaxableSubtotal, Object.SalesTaxRate, CurrentAgenciesRates);
@@ -1191,12 +1282,32 @@ EndProcedure
 Function GetLineItemsRowStructure()
 	
 	// Define control row fields.
-	Return New Structure("LineNumber, Product, ProductDescription, Quantity, UM, Backorder, Price, LineTotal, Taxable, TaxableAmount, Location, DeliveryDate, Project, Class, Shipped, Invoiced");
+	Return New Structure("LineNumber, Product, ProductDescription, UnitSet, QtyUnits, Unit, QtyUM, PriceUnits, LineTotal, Taxable, TaxableAmount, Location, DeliveryDate, Project, Class");
 	
 EndFunction
 
 &AtClient
 Procedure GenerateDoc(DocumentType) 
+	
+	//------------------------------------------------------------------------------------------------------
+	OpenWindows = GetWindows();
+	
+	For Each LineOpenWindows In OpenWindows Do
+		
+		FormWindow = LineOpenWindows.GetContent();
+		
+		Try
+			If FormWindow.Object.BaseDocument = Object.Ref Then
+				
+				Message(NStr("en = 'This document is converted.'"));
+				Return;
+				
+			EndIf;
+		Except
+		EndTry;	
+		
+	EndDo;
+	//------------------------------------------------------------------------------------------------------
 	
 	If Object.Ref.IsEmpty() Then
 		ShowMessageBox(,NStr("en = 'Data has not yet been recorded.'"));		
@@ -1206,6 +1317,269 @@ Procedure GenerateDoc(DocumentType)
 	EndIf;
 	
 EndProcedure
+
+&AtClient
+Procedure UpdateInformationCurrentRow()
+	
+	InformationCurrentRow = "";
+	
+	CurrentRow = Items.LineItems.CurrentData;
+	
+	If CurrentRow <> Undefined Then
+		
+		If CurrentRow.Product <> PredefinedValue("Catalog.Products.EmptyRef") Then
+			
+			InformationCurrentRow = GetInformationCurrentRow(CurrentRow.Product, CurrentRow.Location, CurrentRow.QtyUM, CurrentRow.LineTotal,
+																Object.Currency, Object.ExchangeRate, Object.DiscountPercent, Object.LineItems); 
+			InformationCurrentRow = "" + InformationCurrentRow;
+			
+		EndIf;
+		
+	EndIf;
+	
+EndProcedure
+
+&AtServerNoContext
+Function GetInformationCurrentRow(Product, Location, Quantity, LineTotal, Currency, ExchangeRate, DiscountPercent, Val LineItems) 
+	
+	QuantityFormat    = GeneralFunctionsReusable.DefaultQuantityFormat();
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	Cost        = "";
+	Margin      = "";
+	MarginTotal = "";
+
+	Query = New Query;
+	Query.Text = "SELECT
+	             |	ItemLastCostsSliceLast.Product,
+	             |	ItemLastCostsSliceLast.Cost
+	             |FROM
+	             |	InformationRegister.ItemLastCosts.SliceLast(, Product IN (&Products)) AS ItemLastCostsSliceLast";
+
+	Query.SetParameter("Products", LineItems.Unload(, "Product"));
+	ItemLastCosts = Query.Execute().Unload();
+	
+	LastCostRow = ItemLastCosts.Find(Product, "Product");
+	
+	//Cost
+	Cost = ?(LastCostRow <> Undefined, LastCostRow.Cost, 0);
+	Cost = "Cost " + Currency.Symbol + Format(?(ExchangeRate = 0, 0, Cost / ExchangeRate), "NFD=2; NZ=0.00"); 
+	
+	//Margin
+	LineTotalLC = ?(LastCostRow <> Undefined, LastCostRow.Cost, 0) * Quantity; 
+	LineTotalLC = ?(ExchangeRate = 0, 0, LineTotalLC / ExchangeRate);
+	
+	LineTotalP = LineTotal - (LineTotal * DiscountPercent / 100);	
+	
+	MarginSum = Currency.Symbol + Format(LineTotalP - LineTotalLC, "NFD=2; NZ=0.00"); 
+	
+	If LineTotalLC = 0 Then
+		Margin = "Margin 0.00% / " + MarginSum;
+	Else
+		Margin = "Margin " + Format((LineTotalP / LineTotalLC) * 100 - 100, "NFD=2; NZ=0.00") + "% / " + MarginSum;
+	EndIf;
+	
+	//MarginTotal
+	LineTotalLCSum = 0;
+	LineTotalSum   = 0;
+	
+	For Each Item In LineItems Do
+		
+		LastCostRow = ItemLastCosts.Find(Item.Product, "Product");
+		
+		//LineTotalLCSum
+		LineTotalLC = ?(LastCostRow <> Undefined, LastCostRow.Cost, 0) * Item.QtyUM; 
+		LineTotalLC = ?(ExchangeRate = 0, 0, LineTotalLC / ExchangeRate);
+		
+		LineTotalLCSum = LineTotalLCSum + LineTotalLC;
+		
+		//LineTotalSum
+		LineTotalP = Item.LineTotal - (Item.LineTotal * DiscountPercent / 100);	
+		
+		LineTotalSum = LineTotalSum + LineTotalP;
+		
+	EndDo;
+	
+	MarginSum = Currency.Symbol + Format(LineTotalSum - LineTotalLCSum, "NFD=2; NZ=0.00"); 
+	
+	If LineTotalLCSum = 0 Then
+		MarginTotal = "Total 0.00% / " + MarginSum;
+	Else
+		MarginTotal = "Total " + Format((LineTotalSum / LineTotalLCSum) * 100 - 100, "NFD=2; NZ=0.00") + "% / " + MarginSum;
+	EndIf;
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	Query = New Query;
+	
+	Query.SetParameter("Ref", Product);
+	Query.SetParameter("Type", Product.Type);
+	Query.SetParameter("Location", Location);
+	
+	Query.Text = "SELECT
+	             |	OrdersDispatchedBalance.Company AS Company,
+	             |	OrdersDispatchedBalance.Order AS Order,
+	             |	OrdersDispatchedBalance.Product AS Product,
+	             |	OrdersDispatchedBalance.Location,
+	             |	OrdersDispatchedBalance.Unit AS Unit,
+	             |	CASE
+	             |		WHEN &Type = VALUE(Enum.InventoryTypes.Inventory)
+	             |			THEN CASE
+	             |					WHEN OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.ReceivedBalance > 0
+	             |						THEN (OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.ReceivedBalance) * OrdersDispatchedBalance.Unit.Factor
+	             |					ELSE 0
+	             |				END
+	             |		WHEN &Type = VALUE(Enum.InventoryTypes.NonInventory)
+	             |			THEN CASE
+	             |					WHEN OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.InvoicedBalance > 0
+	             |						THEN (OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.InvoicedBalance) * OrdersDispatchedBalance.Unit.Factor
+	             |					ELSE 0
+	             |				END
+	             |		ELSE 0
+	             |	END AS QtyOnPO,
+	             |	0 AS QtyOnSO,
+	             |	0 AS QtyOnHand
+	             |INTO Table_OrdersDispatched_OrdersRegistered_InventoryJournal
+	             |FROM
+	             |	AccumulationRegister.OrdersDispatched.Balance(
+	             |			,
+	             |			Product = &Ref
+	             |				AND Location = &Location) AS OrdersDispatchedBalance
+	             |		LEFT JOIN InformationRegister.OrdersStatuses.SliceLast AS OrdersStatusesSliceLast
+	             |		ON OrdersDispatchedBalance.Order = OrdersStatusesSliceLast.Order
+	             |			AND (OrdersStatusesSliceLast.Status = VALUE(Enum.OrderStatuses.Open)
+	             |				OR OrdersStatusesSliceLast.Status = VALUE(Enum.OrderStatuses.Backordered))
+	             |
+	             |UNION ALL
+	             |
+	             |SELECT
+	             |	OrdersRegisteredBalance.Company,
+	             |	OrdersRegisteredBalance.Order,
+	             |	OrdersRegisteredBalance.Product,
+	             |	OrdersRegisteredBalance.Location,
+	             |	OrdersRegisteredBalance.Unit,
+	             |	0,
+	             |	CASE
+	             |		WHEN &Type = VALUE(Enum.InventoryTypes.Inventory)
+	             |			THEN CASE
+	             |					WHEN OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.ShippedBalance > 0
+	             |						THEN (OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.ShippedBalance) * OrdersRegisteredBalance.Unit.Factor
+	             |					ELSE 0
+	             |				END
+	             |		WHEN &Type = VALUE(Enum.InventoryTypes.NonInventory)
+	             |			THEN CASE
+	             |					WHEN OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.InvoicedBalance > 0
+	             |						THEN (OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.InvoicedBalance) * OrdersRegisteredBalance.Unit.Factor
+	             |					ELSE 0
+	             |				END
+	             |		ELSE 0
+	             |	END,
+	             |	0
+	             |FROM
+	             |	AccumulationRegister.OrdersRegistered.Balance(
+	             |			,
+	             |			Product = &Ref
+	             |				AND Location = &Location) AS OrdersRegisteredBalance
+	             |		LEFT JOIN InformationRegister.OrdersStatuses.SliceLast AS OrdersStatusesSliceLast
+	             |		ON OrdersRegisteredBalance.Order = OrdersStatusesSliceLast.Order
+	             |			AND (OrdersStatusesSliceLast.Status = VALUE(Enum.OrderStatuses.Open)
+	             |				OR OrdersStatusesSliceLast.Status = VALUE(Enum.OrderStatuses.Backordered))
+	             |
+	             |UNION ALL
+	             |
+	             |SELECT
+	             |	NULL,
+	             |	NULL,
+	             |	InventoryJournalBalance.Product,
+	             |	InventoryJournalBalance.Location,
+	             |	NULL,
+	             |	0,
+	             |	0,
+	             |	CASE
+	             |		WHEN &Type = VALUE(Enum.InventoryTypes.Inventory)
+	             |			THEN InventoryJournalBalance.QuantityBalance
+	             |		WHEN &Type = VALUE(Enum.InventoryTypes.NonInventory)
+	             |			THEN 0
+	             |		ELSE 0
+	             |	END
+	             |FROM
+	             |	AccumulationRegister.InventoryJournal.Balance(
+	             |			,
+	             |			Product = &Ref
+	             |				AND Location = &Location) AS InventoryJournalBalance
+	             |;
+	             |
+	             |////////////////////////////////////////////////////////////////////////////////
+	             |SELECT
+	             |	TableBalances.Product AS Product,
+	             |	TableBalances.Location,
+	             |	SUM(ISNULL(TableBalances.QtyOnPO, 0)) AS QtyOnPO,
+	             |	SUM(ISNULL(TableBalances.QtyOnSO, 0)) AS QtyOnSO,
+	             |	SUM(ISNULL(TableBalances.QtyOnHand, 0)) AS QtyOnHand,
+	             |	CASE
+	             |		WHEN &Type = VALUE(Enum.InventoryTypes.Inventory)
+	             |			THEN SUM(ISNULL(TableBalances.QtyOnHand, 0)) + SUM(ISNULL(TableBalances.QtyOnPO, 0)) - SUM(ISNULL(TableBalances.QtyOnSO, 0))
+	             |		WHEN &Type = VALUE(Enum.InventoryTypes.NonInventory)
+	             |			THEN 0
+	             |		ELSE 0
+	             |	END AS QtyAvailableToPromise
+	             |INTO TotalTable
+	             |FROM
+	             |	Table_OrdersDispatched_OrdersRegistered_InventoryJournal AS TableBalances
+	             |
+	             |GROUP BY
+	             |	TableBalances.Product,
+	             |	TableBalances.Location
+	             |;
+	             |
+	             |////////////////////////////////////////////////////////////////////////////////
+	             |SELECT
+	             |	TotalTable.Product,
+	             |	TotalTable.Location,
+	             |	TotalTable.QtyOnPO,
+	             |	TotalTable.QtyOnSO,
+	             |	TotalTable.QtyOnHand,
+	             |	TotalTable.QtyAvailableToPromise
+	             |FROM
+	             |	TotalTable AS TotalTable
+	             |WHERE
+	             |	(TotalTable.QtyOnPO <> 0
+	             |			OR TotalTable.QtyOnSO <> 0
+	             |			OR TotalTable.QtyOnHand <> 0
+	             |			OR TotalTable.QtyAvailableToPromise <> 0)";
+	
+	
+	SelectionDetailRecords = Query.Execute().Select();
+	
+	OnPO   = Format(0, QuantityFormat);
+	OnSO   = Format(0, QuantityFormat);
+	OnHand = Format(0, QuantityFormat);
+	ATP    = Format(0, QuantityFormat);
+	
+	While SelectionDetailRecords.Next() Do
+		
+		OnPO   = Format(SelectionDetailRecords.QtyOnPO, QuantityFormat);
+		OnSO   = Format(SelectionDetailRecords.QtyOnSO, QuantityFormat);
+		OnHand = Format(SelectionDetailRecords.QtyOnHand, QuantityFormat);
+		ATP    = Format(SelectionDetailRecords.QtyAvailableToPromise, QuantityFormat);
+		
+	EndDo;
+	
+	If Product.Type = Enums.InventoryTypes.Inventory Then
+		QuantityInformation = "On PO: " + OnPO + " On SO: " + OnSO + " On hand: " + OnHand + " ATP: " + ATP;
+	Else
+		QuantityInformation = "On PO: " + OnPO + " On SO: " + OnSO;
+	EndIf;
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	BaseUnit =  GeneralFunctions.GetBaseUnit(Product.UnitSet).Code;
+	
+	Return Cost + " | " + Margin + " | " + MarginTotal + " | Item quantities in " + BaseUnit + " " + QuantityInformation;
+	
+EndFunction
 
 #EndRegion
 

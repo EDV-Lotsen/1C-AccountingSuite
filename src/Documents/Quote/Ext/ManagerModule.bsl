@@ -98,7 +98,6 @@ Procedure Print(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
 	             |	Quote.DropshipConfirmTo,
 	             |	Quote.DropshipRefNum,
 	             |	Quote.Memo,
-	             |	Quote.ExternalMemo,
 	             |	Quote.Currency,
 	             |	Quote.ExchangeRate,
 	             |	Quote.SalesTaxRate,
@@ -121,9 +120,9 @@ Procedure Print(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
 	             |		LineNumber,
 	             |		Product,
 	             |		ProductDescription,
-	             |		Quantity,
-	             |		UM,
-	             |		Price,
+	             |		QtyUnits,
+	             |		Unit,
+	             |		PriceUnits,
 	             |		LineTotal,
 	             |		Taxable,
 	             |		TaxableAmount,
@@ -140,7 +139,8 @@ Procedure Print(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
 	             |		Amount,
 	             |		SalesTaxRate,
 	             |		SalesTaxComponent
-	             |	)
+	             |	),
+	             |	Quote.EmailNote
 	             |FROM
 	             |	Document.Quote AS Quote
 	             |WHERE
@@ -191,7 +191,11 @@ Procedure Print(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
 				TemplateArea.Parameters.ThemShipFullName = TempFullName + Chars.LF;
 			EndIf;
 		EndIf;
-		
+			
+		If Constants.QuoteShowCountry.Get() = False Then
+			TemplateArea.Parameters.ThemBillCountry = "";
+			TemplateArea.Parameters.ThemShipCountry = "";
+		EndIf;	
 		
 		TemplateArea.Parameters.Date = Selection.Date;
 		TemplateArea.Parameters.Number = Selection.Number;
@@ -243,6 +247,10 @@ Procedure Print(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
 			TemplateArea.Parameters.ThemBillLine3 = "";
 		EndIf;
 		
+		If TemplateArea.Parameters.ThemBillCityStateZIP <> "" Then
+			TemplateArea.Parameters.ThemBillCityStateZIP = TemplateArea.Parameters.ThemBillCityStateZIP + Chars.LF; 
+		EndIf;
+		
 		//ThemShip filling
 		If TemplateArea.Parameters.ThemShipLine1 <> "" Then
 			TemplateArea.Parameters.ThemShipLine1 = TemplateArea.Parameters.ThemShipLine1 + Chars.LF; 
@@ -261,6 +269,11 @@ Procedure Print(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
 		Else
 			TemplateArea.Parameters.ThemShipLine3 = "";
 		EndIf;
+		
+		If TemplateArea.Parameters.ThemShipCityStateZIP <> "" Then
+			TemplateArea.Parameters.ThemShipCityStateZIP = TemplateArea.Parameters.ThemShipCityStateZIP + Chars.LF; 
+		EndIf;
+
 		
 		Spreadsheet.Put(TemplateArea);
 		
@@ -309,6 +322,7 @@ Procedure Print(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
 		EndIf;
 		
 		CurrencySymbol = Selection.Currency.Symbol; 
+		QuantityFormat = GeneralFunctionsReusable.DefaultQuantityFormat();
 		
 		SelectionLineItems = Selection.LineItems.Select();
 		TemplateArea = Template.GetArea("LineItems");
@@ -327,8 +341,10 @@ Procedure Print(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
 			Except
 			EndTry;
 			LineTotal = SelectionLineItems.LineTotal;
-			TemplateArea.Parameters.Price = CurrencySymbol + Format(SelectionLineItems.Price, "NFD=2; NZ=");
-			TemplateArea.Parameters.LineTotal = CurrencySymbol + Format(SelectionLineItems.LineTotal, "NFD=2; NZ=");		
+			TemplateArea.Parameters.Unit = SelectionLineItems.Unit.Code;
+			//TemplateArea.Parameters.Quantity = Format(SelectionLineItems.QtyUnits, QuantityFormat)+ " " + SelectionLineItems.Unit;
+			TemplateArea.Parameters.Price = CurrencySymbol + Format(SelectionLineItems.PriceUnits, "NFD=2; NZ=");
+			TemplateArea.Parameters.LineTotal = CurrencySymbol + Format(SelectionLineItems.LineTotal, "NFD=2; NZ=");
 			Spreadsheet.Put(TemplateArea, SelectionLineItems.Level());
 			
 			If LineItemSwitch = False Then
@@ -345,7 +361,7 @@ Procedure Print(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
 		Spreadsheet.Put(TemplateArea);
 		
 		TemplateArea = Template.GetArea("Area3|Area1");					
-		TemplateArea.Parameters.TermAndCond = Constants.QuoteFooter.Get();
+		TemplateArea.Parameters.TermAndCond = Selection.EmailNote;
 		Spreadsheet.Put(TemplateArea);
 		
 		TemplateArea = Template.GetArea("Area3|Area2");

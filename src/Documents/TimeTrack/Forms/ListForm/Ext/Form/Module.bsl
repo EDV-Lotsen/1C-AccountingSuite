@@ -3,21 +3,37 @@
 Procedure GenInvoice(Command)
 	SelectedItem = Items.List.CurrentData;
 	
-	Valid = False;
-	Str = New Structure;
-	Valid = GenInvoiceAtServer(SelectedItem,Str,Valid);
-	OpenInvoice(Str,Valid);	
+	If SelectedItem <> Undefined Then
+		Valid = False;
+		Str = New Structure;
+		Valid = GenInvoiceAtServer(SelectedItem,Str,Valid);
+		OpenInvoiceDateForm(Str,Valid);	
+	Else
+		Message("There are no entries to generate an invoice");
+	EndIf;
 EndProcedure
 
 &AtClient
-Procedure OpenInvoice(Str,Valid)
-	
-If Valid = True Then	
-	OpenForm("Document.SalesInvoice.Form.DocumentForm",Str);
+Procedure OpenInvoiceDateForm(Str,Valid)
+		
+If Valid = True Then
+	TempAddress = PutToTempStorage(Str,ThisForm.UUID);
+	Notify = New NotifyDescription("OpenInvoice", ThisObject);
+	OpenForm("CommonForm.TimeTrackToInvoiceForm",,ThisForm,,,,Notify,FormWindowOpeningMode.LockOwnerWindow);
 EndIf;
 	
 EndProcedure
 
+&AtClient
+Procedure OpenInvoice(Parameter1,Parameter2) Export
+	
+NewStr = GetFromTempStorage(TempAddress);
+NewStr.Insert("InvoiceDate",Parameter1);
+If Parameter1 <> Undefined Then
+	OpenForm("Document.SalesInvoice.Form.DocumentForm",NewStr);	
+EndIf;
+	
+EndProcedure
 &AtServer
 Function GenInvoiceAtServer(SelectedItem,Str,Valid)
 	
@@ -33,7 +49,7 @@ Function GenInvoiceAtServer(SelectedItem,Str,Valid)
 	DocBillable = True;
 	While rownum < rowcount Do
 		CheckRow = Items.List.SelectedRows.Get(rownum);
-		If CheckRow.Billable = False  Then
+		If CheckRow.InvoiceStatus = Enums.TimeTrackStatus.Unbillable  Then
 			DocBillable = False;			
 		Endif;
 			

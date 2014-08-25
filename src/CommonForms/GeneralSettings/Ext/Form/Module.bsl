@@ -28,7 +28,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	PeriodClosingPasswordConfirm = ConstantsSet.PeriodClosingPassword;
 	
 	If Not ValueIsFilled(ConstantsSet.PeriodClosingOption) Then
-		ConstantsSet.PeriodClosingOption = Enums.PeriodClosingOptions.WarnAndRequirePassword
+		ConstantsSet.PeriodClosingOption = Enums.PeriodClosingOptions.OnlyWarn;
 	EndIf;
 	
 	If ConstantsSet.PeriodClosingOption = Enums.PeriodClosingOptions.WarnAndRequirePassword Then
@@ -38,6 +38,16 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Items.PeriodClosingPassword.Visible = False;
 		Items.PeriodClosingPasswordConfirm.Visible = False;
 	EndIf;
+	
+	If ConstantsSet.PeriodClosingByModule Then
+		Items.ClosingDateByModule.Visible = True;
+		Items.FillClosingDate.Visible = True;
+	Else
+		Items.ClosingDateByModule.Visible = False;
+		Items.FillClosingDate.Visible = False;
+	EndIf;
+	
+	FillClosingDateByModule();
 		
 	If NOT Constants.APISecretKey.Get() = "" Then
 		Items.APISecretKey.ReadOnly = True;		
@@ -60,6 +70,39 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	Else
 		Items.SalesTaxDefaults.Enabled = False;
 	EndIf;
+EndProcedure
+
+&AtServer
+Procedure FillClosingDateByModule()
+	SetPrivilegedMode(True);
+	DocumentsTable = ClosingDateByModule.Unload();
+	DocumentsTable.Clear();
+	For Each MetaDocument In Metadata.Documents Do
+		NewRow = DocumentsTable.Add();
+		NewRow.DocumentName = MetaDocument.Name;
+		NewRow.DocumentPresentation = MetaDocument.Synonym;
+	EndDo;
+	Request = New Query("SELECT
+	                    |	DocumentTypes.DocumentName,
+	                    |	DocumentTypes.DocumentPresentation
+	                    |INTO DocumentTypes
+	                    |FROM
+	                    |	&DocumentTypes AS DocumentTypes
+	                    |;
+	                    |
+	                    |////////////////////////////////////////////////////////////////////////////////
+	                    |SELECT
+	                    |	DocumentTypes.DocumentName,
+	                    |	DocumentTypes.DocumentPresentation,
+	                    |	ISNULL(PeriodClosingByModule.PeriodClosingDate, &CommonClosingDate) AS ClosingDate
+	                    |FROM
+	                    |	DocumentTypes AS DocumentTypes
+	                    |		LEFT JOIN InformationRegister.PeriodClosingByModule AS PeriodClosingByModule
+	                    |		ON DocumentTypes.DocumentName = PeriodClosingByModule.Document");
+	Request.SetParameter("DocumentTypes", DocumentsTable);
+	Request.SetParameter("CommonClosingDate", ConstantsSet.PeriodClosingDate);
+	ClosingDateByModule.Load(Request.Execute().Unload());
+	SetPrivilegedMode(False);
 EndProcedure
 
 &AtClient
@@ -147,15 +190,6 @@ Procedure PlaceImageFile(TempStorageName)
   	
 EndProcedure
 
- 
-&AtClient
-Procedure StripeConnect(Command)
-	
-	statestring = GetAPISecretKeyF();
-	GotoURL("https://addcard.accountingsuite.com/connect?state=" + statestring);
-
-EndProcedure
-
 &AtServer
 Function GetAPISecretKeyF()
 	
@@ -170,11 +204,13 @@ Procedure OnOpen(Cancel)
 	 If SettingAccessCheck() = false Then
 
 	    Items.Common.ChildItems.Logo.ChildItems.UploadLogo.Enabled = false;
-		Items.Common.ChildItems.Integrations.ChildItems.Stripe.ChildItems.StripeConnect.Enabled = false;
-		Items.ClosingTheBooks.ChildItems.PeriodClosingDate.ReadOnly = True;
-		Items.ClosingTheBooks.ChildItems.PeriodClosingOption.ReadOnly = True;
-		Items.ClosingTheBooks.ChildItems.PeriodClosingPassword.ReadOnly = True;
-		Items.ClosingTheBooks.ChildItems.PeriodClosingPasswordConfirm.ReadOnly = True;
+		//Items.Common.ChildItems.Integrations.ChildItems.Stripe.ChildItems.StripeConnect.Enabled = false;
+		Items.PeriodClosingDate.ReadOnly = True;
+		Items.PeriodClosingOption.ReadOnly = True;
+		Items.PeriodClosingPassword.ReadOnly = True;
+		Items.PeriodClosingPasswordConfirm.ReadOnly = True;
+		Items.PeriodClosingByModule.ReadOnly = True;
+		Items.ClosingDateByModule.ReadOnly = True;
 		
 		Items.CompanyContact.ChildItems.Group1.ChildItems.Cell.ReadOnly = True;
 		Items.CompanyContact.ChildItems.Group1.ChildItems.Fax.ReadOnly = True;
@@ -187,7 +223,7 @@ Procedure OnOpen(Cancel)
 
 	 Else
 		Items.Common.ChildItems.Logo.ChildItems.UploadLogo.Enabled = true;
-		Items.Common.ChildItems.Integrations.ChildItems.Stripe.ChildItems.StripeConnect.Enabled = true;
+		//Items.Common.ChildItems.Integrations.ChildItems.Stripe.ChildItems.StripeConnect.Enabled = true;
 
 	 Endif;
 	
@@ -195,6 +231,7 @@ EndProcedure
 
 &AtServer
 Function SettingAccessCheck()
+	return True;
 	CurUser = InfoBaseUsers.FindByName(SessionParameters.ACSUser);
 	If CurUser.Roles.Contains(Metadata.Roles.FullAccess1) = true Or CurUser.Roles.Contains(Metadata.Roles.FullAccess) = true Then
 		Return true;
@@ -202,39 +239,6 @@ Function SettingAccessCheck()
 		Return false;
 	Endif
 EndFunction
-
-
-//&AtClient
-//Procedure VerifyEmail(Command)
-//	VerifyEmailAtServer();
-//EndProcedure
-
-
-//&AtServer
-//Procedure VerifyEmailAtServer()
-//		HeadersMap = New Map();
-//	
-//		HTTPRequest = New HTTPRequest("/ses_email_verify",HeadersMap);
-//		HTTPRequest.SetBodyFromString(Constants.Email.Get(),TextEncoding.ANSI);
-
-//	
-//		SSLConnection = New OpenSSLSecureConnection();
-//	
-//		HTTPConnection = New HTTPConnection("intacs.accountingsuite.com",,,,,,SSLConnection);
-//		Result = HTTPConnection.Post(HTTPRequest);
-//		
-//		Message("You will receive a verification email to " + Constants.Email.Get());
-
-//EndProcedure
-
-
-&AtClient
-Procedure DwollaConnect(Command)
-	
-	statestring = GetAPISecretKeyF();	
-	GoToURL("https://www.dwolla.com/oauth/v2/authenticate?client_id=" + ServiceParameters.DwollaClientID() + "&response_type=code&redirect_uri=https://pay.accountingsuite.com/dwolla_oauth?state=" + GetTenantValue() + "&scope=send%7Ctransactions%7Cfunding%7Cbalance");
-	
-EndProcedure
 
 &AtServer
 Function GetTenantValue()
@@ -281,12 +285,28 @@ EndProcedure
 &AtServer
 Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 	
+	//If ConstantsSet.PeriodClosingOption = PredefinedValue("Enum.PeriodClosingOptions.WarnAndRequirePassword") Then
+	//	Items.PeriodClosingPassword.Visible = True;
+	//	Items.PeriodClosingPasswordConfirm.Visible = True;
+	//Else
+	//	Items.PeriodClosingPassword.Visible = False;
+	//	Items.PeriodClosingPasswordConfirm.Visible = False;
+	//EndIf;
 	If ConstantsSet.PeriodClosingOption = PredefinedValue("Enum.PeriodClosingOptions.WarnAndRequirePassword") Then
-		Items.PeriodClosingPassword.Visible = True;
-		Items.PeriodClosingPasswordConfirm.Visible = True;
-	Else
-		Items.PeriodClosingPassword.Visible = False;
-		Items.PeriodClosingPasswordConfirm.Visible = False;
+		If Not ValueIsFilled(ConstantsSet.PeriodClosingPassword) Then
+			Cancel = True;
+			MessOnError = New UserMessage();
+			MessOnError.Field = "ConstantsSet.PeriodClosingPassword";
+			MessOnError.Text  = "Field ""Password"" not filled";
+			MessOnError.Message();
+		EndIf;
+		If PeriodClosingPasswordConfirm <> ConstantsSet.PeriodClosingPassword Then
+			Cancel = True;
+			MessOnError = New UserMessage();
+			MessOnError.Field = "PeriodClosingPasswordConfirm";
+			MessOnError.Text  = "Password confirmation failed. Re-enter password.";
+			MessOnError.Message();
+		EndIf;
 	EndIf;
 
 EndProcedure
@@ -341,10 +361,10 @@ Procedure PaymentTerms(Command)
 	OpenForm("Catalog.PaymentTerms.ListForm", , , , , );
 EndProcedure
 
-&AtClient
-Procedure UnitsOfMeasure(Command)
-	OpenForm("Catalog.UM.ListForm", , , , , );
-EndProcedure
+//&AtClient
+//Procedure UnitsOfMeasure(Command)
+//	OpenForm("Catalog.UM.ListForm", , , , , );
+//EndProcedure
 
 &AtClient
 Procedure ShippingCarriers(Command)
@@ -387,55 +407,8 @@ Procedure PaymentMethods(Command)
 EndProcedure
 
 &AtClient
-Procedure Locations(Command)
-	OpenForm("Catalog.Locations.ListForm", , , , , );
-EndProcedure
-
-&AtClient
 Procedure Classes(Command)
 	OpenForm("Catalog.Classes.ListForm", , , , , );
-EndProcedure
-
-&AtClient
-Procedure StripeDisconnect(Command)
-	StripeDisconnectServer();
-EndProcedure
-
-&AtServer
-Procedure StripeDisconnectServer();
-	
-	Constants.spk.Set("");
-	Constants.spk2.Set("");
-	Constants.spk3.Set("");
-	Constants.secret_temp.Set("");
-	Constants.publishable_temp.Set("");
-	Constants.StripeUser.Set("");
-	Constants.stripe_live_status.Set("");
-	Constants.stripe_display_name.Set("");
-	// add user name and live/test status
-	
-	//SetPrivilegedMode(True);
-		 
-	HeadersMap = New Map();
-	HeadersMap.Insert("apisecretkey", Constants.APISecretKey.Get());
-	
-	HTTPRequest = New HTTPRequest("/deletestripeauth", HeadersMap);
-	
-	SSLConnection = New OpenSSLSecureConnection();
-	
-	HTTPConnection = New HTTPConnection("intacs.accountingsuite.com",,,,,,SSLConnection);
-	Result = HTTPConnection.Post(HTTPRequest);
-		
-	//SetPrivilegedMode(False);
-
-	Message("Your Stripe account has been disconnected from AccountingSuite");	
-	
-	
-EndProcedure
-
-&AtClient
-Procedure DwollaDisconnect(Command)
-	DwollaDisconnectServer();
 EndProcedure
 
 &AtServer
@@ -443,43 +416,6 @@ Procedure DwollaDisconnectServer();
 	
 	Constants.dwolla_access_token.Set("");
 	Message("Your Dwolla account has been disconnected from AccountingSuite");
-	
-EndProcedure
-
-&AtClient
-Procedure RollAPI(Command)
-	RollAPIAtServer();
-EndProcedure
-
-&AtServer
-Procedure RollAPIAtServer()
-	
-	SymbolString = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"; //62
-	RandomString20 = "";
-	RNG = New RandomNumberGenerator;	
-	For i = 0 to 19 Do
-		RN = RNG.RandomNumber(1, 62);
-		RandomString20 = RandomString20 + Mid(SymbolString,RN,1);
-	EndDo;
-	ConstantsSet.APISecretKey = RandomString20;
-	ThisForm.Modified = True;
-	ThisForm.Write();
-	
-	new_key = Constants.APISecretKey.get();
-	
-	HeadersMap = New Map();
-	HeadersMap.Insert("oldkey", old_key );
-	HeadersMap.Insert("newkey", new_key);	
-	HTTPRequest = New HTTPRequest("/rollapi", HeadersMap);
-	SSLConnection = New OpenSSLSecureConnection();
-	HTTPConnection = New HTTPConnection("intacs.accountingsuite.com",,,,,,SSLConnection);
-	Result = HTTPConnection.Post(HTTPRequest);
-	
-	SetPrivilegedMode(True);
-	ChangeUser = InfoBaseUsers.FindByName("api");
-	ChangeUser.Password = new_key;
-	ChangeUser.Write();
-	SetPrivilegedMode(False);
 	
 EndProcedure
 
@@ -506,6 +442,51 @@ EndProcedure
 &AtClient
 Procedure OpenQuote(Command)
 	OpenForm("DataProcessor.PrintFormSetup.Form.QuoteFormSetup" );
+EndProcedure
+
+&AtClient
+Procedure OpenCreditMemo(Command)
+	OpenForm("DataProcessor.PrintFormSetup.Form.CMFormSetup" );
+EndProcedure
+
+&AtClient
+Procedure zoho_productmapping(Command)
+	OpenForm("Catalog.zoho_productCodeMap.ListForm" );
+EndProcedure
+
+&AtClient
+Procedure PeriodClosingByModuleOnChange(Item)
+	If ConstantsSet.PeriodClosingByModule Then
+		Items.ClosingDateByModule.Visible = True;
+		Items.FillClosingDate.Visible = True;
+	Else
+		Items.ClosingDateByModule.Visible = False;
+		Items.FillClosingDate.Visible = False;
+	EndIf;
+EndProcedure
+
+&AtServer
+Procedure OnWriteAtServer(Cancel, CurrentObject, WriteParameters)
+	RecordSet = InformationRegisters.PeriodClosingByModule.CreateRecordSet();
+	For Each ClosingDatePerDocument In ClosingDateByModule Do
+		NewRecord = RecordSet.Add();
+		NewRecord.Document = ClosingDatePerDocument.DocumentName;
+		NewRecord.PeriodClosingDate = ClosingDatePerDocument.ClosingDate;
+	EndDo;
+	RecordSet.Write = True;
+	RecordSet.Write(True);
+EndProcedure
+
+&AtClient
+Procedure OpenCashSale(Command)
+	OpenForm("DataProcessor.PrintFormSetup.Form.CSFormSetup" );
+EndProcedure
+
+&AtClient
+Procedure FillClosingDate(Command)
+	For Each ClosingDatePerModule In ClosingDateByModule Do
+		ClosingDatePerModule.ClosingDate = ConstantsSet.PeriodClosingDate;
+	EndDo;
 EndProcedure
 
 

@@ -48,55 +48,36 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="6"/>
-			<SearchStringAddition name="ListSearchString" id="22">
+			<SearchStringAddition name="ListSearchString" id="31">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="23"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="24"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="32"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="33"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="25">
+			<ViewStatusAddition name="ListViewStatus" id="34">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="26"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="27"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="35"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="36"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="28">
+			<SearchControlAddition name="ListSearchControl" id="37">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="29"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="30"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="38"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="39"/>
 			</SearchControlAddition>
 			<ChildItems>
-				<LabelField name="Owner" id="10">
-					<DataPath>List.Owner</DataPath>
-					<Title>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Item code</v8:content>
-						</v8:item>
-					</Title>
-					<HorizontalAlign>Right</HorizontalAlign>
-					<Width>5</Width>
-					<ContextMenu name="OwnerContextMenu" id="11"/>
-					<ExtendedTooltip name="OwnerExtendedTooltip" id="12"/>
-				</LabelField>
-				<LabelField name="OwnerDescription" id="13">
-					<DataPath>List.Owner.Description</DataPath>
-					<Title>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Item description</v8:content>
-						</v8:item>
-					</Title>
-					<Width>20</Width>
-					<ContextMenu name="OwnerDescriptionContextMenu" id="14"/>
-					<ExtendedTooltip name="OwnerDescriptionExtendedTooltip" id="15"/>
+				<LabelField name="Code" id="25">
+					<DataPath>List.Code</DataPath>
+					<Width>10</Width>
+					<ContextMenu name="CodeContextMenu" id="26"/>
+					<ExtendedTooltip name="CodeExtendedTooltip" id="27"/>
 				</LabelField>
 				<LabelField name="Description" id="7">
 					<DataPath>List.Description</DataPath>
@@ -104,7 +85,7 @@
 					<Title>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Unit</v8:content>
+							<v8:content>Unit name</v8:content>
 						</v8:item>
 					</Title>
 					<HorizontalAlign>Right</HorizontalAlign>
@@ -124,17 +105,29 @@
 					<ContextMenu name="FactorContextMenu" id="17"/>
 					<ExtendedTooltip name="FactorExtendedTooltip" id="18"/>
 				</LabelField>
-				<LabelField name="OwnerUM" id="19">
-					<DataPath>List.Owner.UM</DataPath>
+				<LabelField name="UM" id="28">
+					<DataPath>List.UM</DataPath>
 					<Title>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>UM</v8:content>
+							<v8:content>UoM</v8:content>
 						</v8:item>
 					</Title>
+					<ContextMenu name="UMContextMenu" id="29"/>
+					<ExtendedTooltip name="UMExtendedTooltip" id="30"/>
+				</LabelField>
+				<LabelField name="Owner" id="10">
+					<DataPath>List.Owner</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>U/M Set</v8:content>
+						</v8:item>
+					</Title>
+					<HorizontalAlign>Right</HorizontalAlign>
 					<Width>10</Width>
-					<ContextMenu name="OwnerUMContextMenu" id="20"/>
-					<ExtendedTooltip name="OwnerUMExtendedTooltip" id="21"/>
+					<ContextMenu name="OwnerContextMenu" id="11"/>
+					<ExtendedTooltip name="OwnerExtendedTooltip" id="12"/>
 				</LabelField>
 			</ChildItems>
 		</Table>
@@ -146,8 +139,24 @@
 			</Type>
 			<MainAttribute>true</MainAttribute>
 			<Settings xsi:type="DynamicList">
-				<ManualQuery>false</ManualQuery>
+				<ManualQuery>true</ManualQuery>
 				<DynamicDataRead>true</DynamicDataRead>
+				<QueryText>SELECT
+	CatalogUnits.Ref,
+	CatalogUnits.DeletionMark,
+	CatalogUnits.Owner,
+	CatalogUnits.Code,
+	CatalogUnits.Description,
+	CatalogUnits.BaseUnit,
+	CatalogUnits.Factor,
+	CatalogUnits.Predefined,
+	CatalogUnits.PredefinedDataName,
+	CatalogUnits1.Code AS UM
+FROM
+	Catalog.Units AS CatalogUnits
+		LEFT JOIN Catalog.Units AS CatalogUnits1
+		ON CatalogUnits.Owner = CatalogUnits1.Owner
+			AND (CatalogUnits1.BaseUnit = TRUE)</QueryText>
 				<MainTable>Catalog.Units</MainTable>
 				<ListSettings>
 					<dcsset:filter>

@@ -2,6 +2,12 @@
 // THIS MODULE CONTAINS GENERAL PURPOSE FUNCTIONS AND PROCEDURES
 // 
 
+&AtServer
+Function GetCFOTodayConstant() Export
+	Return Constants.CFOToday.Get();
+EndFunction
+
+
 Function Increment(NumberToInc) Export
 	
 	//Last = Constants.SalesInvoiceLastNumber.Get();
@@ -119,10 +125,10 @@ Procedure ObjectBeforeDelete(Source, Cancel) Export
 			ReferencedObjects.Delete(ReferencedObjects[i]);
 		ElsIf TypeOf(ReferencedObjects[i][1]) = Type("InformationRegisterRecordKey.DocumentLastEmail") Then
 			ReferencedObjects.Delete(ReferencedObjects[i]);
-		ElsIf TypeOf(ReferencedObjects[i][0]) = Type("CatalogRef.Products") And TypeOf(ReferencedObjects[i][1]) = Type("CatalogRef.Units") Then
+		ElsIf TypeOf(ReferencedObjects[i][0]) = Type("CatalogRef.UnitSets") And TypeOf(ReferencedObjects[i][1]) = Type("CatalogRef.Units") Then
 			CoDeletedObjects.Add(ReferencedObjects[i][1]);
 			ReferencedObjects.Delete(ReferencedObjects[i]);
-		ElsIf TypeOf(ReferencedObjects[i][0]) = Type("CatalogRef.Units") And TypeOf(ReferencedObjects[i][1]) = Type("CatalogRef.Products") Then
+		ElsIf TypeOf(ReferencedObjects[i][0]) = Type("CatalogRef.Units") And TypeOf(ReferencedObjects[i][1]) = Type("CatalogRef.UnitSets") Then
 			ReferencedObjects.Delete(ReferencedObjects[i]);
 		//--//
 		ElsIf TypeOf(ReferencedObjects[i][0]) = TypeOf(ReferencedObjects[i][1]) Then
@@ -849,7 +855,7 @@ Function ReturnProductObjectMap(NewProduct) Export
 	ProductData.Insert("inventory_or_expense_account", NewProduct.InventoryOrExpenseAccount.Code);
 	ProductData.Insert("income_account", NewProduct.IncomeAccount.Code);
 	ProductData.Insert("cogs_account", NewProduct.COGSAccount.Code);
-	ProductData.Insert("unit_of_measure", NewProduct.UM.Description);
+	//ProductData.Insert("unit_of_measure", NewProduct.UM.Description);
 	ProductData.Insert("category", NewProduct.Category.Description);
 	Try
 		ProductData.Insert("item_price",GeneralFunctions.RetailPrice(CurrentDate(),NewProduct,Catalogs.Companies.EmptyRef()));
@@ -1032,7 +1038,7 @@ Procedure CreateItemCSV(Date, Date2, ItemDataSet) Export
 		//NewProduct.SalesVATCode = Constants.DefaultSalesVAT.Get();
 		//NewProduct.api_code = GeneralFunctions.NextProductNumber();
 		NewProduct.Category = DataLine.ProductCategory;
-		NewProduct.UM = DataLine.ProductUoM;
+		//NewProduct.UM = DataLine.ProductUoM;
 		
 		If DataLine.ProductCF1String <> "" Then 
 			NewProduct.CF1String = DataLine.ProductCF1String;
@@ -1090,9 +1096,9 @@ Procedure CreateItemCSV(Date, Date2, ItemDataSet) Export
 	
 EndProcedure
 
-Procedure CreateCustomerVendorCSV(IncomeAccount, ExpenseAccount, ARAccount, APAccount, ItemDataSet) Export
+Procedure CreateCustomerVendorCSV(ItemDataSet) Export
 	
-	// add transactions 1-500
+		// add transactions 1-500
 	
 	For Each DataLine In ItemDataSet Do
 		
@@ -1102,8 +1108,13 @@ Procedure CreateCustomerVendorCSV(IncomeAccount, ExpenseAccount, ARAccount, APAc
 			CreatingNewCompany = True;
 			
 			NewCompany = Catalogs.Companies.CreateItem();
+			
+			If DataLine.CustomerCode <> "" Then
+				NewCompany.Code = DataLine.CustomerCode
+			EndIf;
 	
 			NewCompany.Description = DataLine.CustomerDescription;
+			NewCompany.FullName = DataLine.CustomerFullName;
 			
 			If DataLine.CustomerType = 0 Then
 				NewCompany.Customer = True;
@@ -1114,6 +1125,20 @@ Procedure CreateCustomerVendorCSV(IncomeAccount, ExpenseAccount, ARAccount, APAc
 				NewCompany.Vendor = True;
 			Else
 				NewCompany.Customer = True;
+			EndIf;
+			
+			NewCompany.Vendor1099 = DataLine.CustomerVendor1099;
+			
+			If DataLine.CustomerEIN_SSN <> Enums.FederalIDType.EmptyRef() Then
+				NewCompany.FederalIDType = DataLine.CustomerEIN_SSN;
+			EndIf;
+			
+			If DataLine.CustomerIncomeAccount <> ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
+				NewCompany.IncomeAccount = DataLine.CustomerIncomeAccount;
+			EndIf;
+			
+			If DataLine.CustomerExpenseAccount <> ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
+				NewCompany.ExpenseAccount = DataLine.CustomerExpenseAccount;
 			EndIf;
 			
 			NewCompany.DefaultCurrency = Constants.DefaultCurrency.Get();
@@ -1150,25 +1175,25 @@ Procedure CreateCustomerVendorCSV(IncomeAccount, ExpenseAccount, ARAccount, APAc
 			EndIf;
 			NewCompany.CF5Num = DataLine.CustomerCF5Num;
 
-			If IncomeAccount <> ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
-				NewCompany.IncomeAccount = IncomeAccount;
-			Else
-			EndIf;
-			
-			If ARAccount <> ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
-				NewCompany.ARAccount = ARAccount;
-			Else
-			EndIf;
-			
-			If ExpenseAccount <> ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
-				NewCompany.ExpenseAccount = ExpenseAccount;
-			Else
-			EndIf;
-			
-			If APAccount <> ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
-				NewCompany.APAccount = APAccount;
-			Else
-			EndIf;
+			//If IncomeAccount <> ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
+			//	NewCompany.IncomeAccount = IncomeAccount;
+			//Else
+			//EndIf;
+			//
+			//If ARAccount <> ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
+			//	NewCompany.ARAccount = ARAccount;
+			//Else
+			//EndIf;
+			//
+			//If ExpenseAccount <> ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
+			//	NewCompany.ExpenseAccount = ExpenseAccount;
+			//Else
+			//EndIf;
+			//
+			//If APAccount <> ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
+			//	NewCompany.APAccount = APAccount;
+			//Else
+			//EndIf;
 			
 			If DataLine.CustomerSalesPerson <> Catalogs.SalesPeople.EmptyRef() Then
 				NewCompany.SalesPerson = DataLine.CustomerSalesPerson;
@@ -1231,7 +1256,7 @@ Procedure CreateCustomerVendorCSV(IncomeAccount, ExpenseAccount, ARAccount, APAc
 		AddressLine.Write();
 				
 	EndDo;
-
+	
 EndProcedure
 
 
@@ -1707,12 +1732,18 @@ EndFunction
 //
 Function RetailPrice(ActualDate, Product, Customer) Export
 	
-	// item cat -> item cat + price level -> item -> item + price level 
+	// standard price -> item cat -> item cat + price level -> item -> item + price level 
 	
 	If Customer = Catalogs.Companies.EmptyRef() Then
 		PriceLevel = Catalogs.PriceLevels.EmptyRef()
 	Else
 		PriceLevel = Customer.PriceLevel
+	EndIf;
+	
+	standard_price = 0;
+	If Product = Catalogs.Products.EmptyRef() Then
+	Else
+		standard_price = Product.Price;
 	EndIf;
 	
 	item_cat_price = 0;
@@ -1760,6 +1791,8 @@ Function RetailPrice(ActualDate, Product, Customer) Export
 		Return item_cat_price_level_price
 	ElsIf item_cat_price <> 0 Then
 		Return item_cat_price
+	ElsIf standard_price <> 0 Then
+		Return standard_price
 	Else
 		Return 0;
 	EndIf;	
@@ -2046,12 +2079,13 @@ Function GetBillToAddress(Company) Export
 	
 EndFunction
 
-Function ProductLastCost(Product) Export
+Function ProductLastCost(Product, Period = Undefined) Export
 	
 	Query = New Query("SELECT
 	                  |	ItemLastCostsSliceLast.Cost AS Cost
 	                  |FROM
-	                  |	InformationRegister.ItemLastCosts.SliceLast(, Product = &Product) AS ItemLastCostsSliceLast");
+	                  |	InformationRegister.ItemLastCosts.SliceLast(&Period, Product = &Product) AS ItemLastCostsSliceLast");
+	Query.SetParameter("Period",  Period);
 	Query.SetParameter("Product", Product);
 	QueryResult = Query.Execute();
 	
@@ -2444,7 +2478,7 @@ EndProcedure
 // 2. Business accounts for bank transaction categories
 Procedure AddBankTransactionCategoriesAndAccounts() Export
 	
-	AddBankTransactionCategoryAndAccount(1, "Uncategorized", "Uncategorized", , , ,ChartsOfAccounts.ChartOfAccounts.Expense);
+	AddBankTransactionCategoryAndAccount(1, "Uncategorized", "Uncategorized", , , ,Constants.ExpenseAccount.Get());
 	AddBankTransactionCategoryAndAccount(2, "Automotive Expenses", "expense", Enums.AccountTypes.Expense, Enums.CashFlowSections.Operating, "6020");
 	AddBankTransactionCategoryAndAccount(3, "Charitable Giving", "expense", Enums.AccountTypes.Expense, Enums.CashFlowSections.Operating, "6030");
 	AddBankTransactionCategoryAndAccount(4, "Child/Dependent Expenses", "expense", Enums.AccountTypes.Expense, Enums.CashFlowSections.Operating, "6040");
@@ -2470,7 +2504,7 @@ Procedure AddBankTransactionCategoriesAndAccounts() Export
 	AddBankTransactionCategoryAndAccount(22, "Restaurants/Dining", "expense", Enums.AccountTypes.Expense, Enums.CashFlowSections.Operating, "6260");
 	AddBankTransactionCategoryAndAccount(23, "Travel", "expense", Enums.AccountTypes.Expense, Enums.CashFlowSections.Operating, "6280");
 	
-	AddBankTransactionCategoryAndAccount(24, "Service Charges/Fees", "expense", , , ,ChartsOfAccounts.ChartOfAccounts.BankServiceCharge);
+	AddBankTransactionCategoryAndAccount(24, "Service Charges/Fees", "expense", , , ,Constants.ExpenseAccount.Get());
 	
 	AddBankTransactionCategoryAndAccount(25, "ATM/Cash Withdrawals", "expense", Enums.AccountTypes.Expense, Enums.CashFlowSections.Operating, "6300");
 	
@@ -2506,8 +2540,8 @@ Procedure AddBankTransactionCategoriesAndAccounts() Export
 	AddBankTransactionCategoryAndAccount(45, "Office Supplies", "expense", Enums.AccountTypes.Expense, Enums.CashFlowSections.Operating, "6500");
 	
 	AddBankTransactionCategoryAndAccount(92, "Consulting", "income", Enums.AccountTypes.Income, Enums.CashFlowSections.Operating, "4500");
-	AddBankTransactionCategoryAndAccount(94, "Sales", "income", , , , ChartsOfAccounts.ChartOfAccounts.Income);
-	AddBankTransactionCategoryAndAccount(96, "Interest", "income", , , ,ChartsOfAccounts.ChartOfAccounts.BankInterestEarned);
+	AddBankTransactionCategoryAndAccount(94, "Sales", "income", , , , Constants.IncomeAccount.Get());
+	AddBankTransactionCategoryAndAccount(96, "Interest", "income", , , ,Constants.IncomeAccount.Get());
 	AddBankTransactionCategoryAndAccount(98, "Services", "income", Enums.AccountTypes.Income, Enums.CashFlowSections.Operating, "4600");
 	
 	AddBankTransactionCategoryAndAccount(100, "Advertising", "expense", Enums.AccountTypes.Expense, Enums.CashFlowSections.Operating, "6520");
@@ -2553,144 +2587,164 @@ Procedure FirstLaunch() Export
 		// Adding account types to predefined accounts and
 		// assigning default posting accounts.
 		
-		Account = ChartsOfAccounts.ChartOfAccounts.BankAccount.GetObject();
-		Account.AccountType = Enums.AccountTypes.Bank;
-		Account.Currency = Catalogs.Currencies.USD;
-		Account.CashFlowSection = Enums.CashFlowSections.Operating;
-		Account.Order = Account.Code;
-		Account.Write();
-		Constants.BankAccount.Set(Account.Ref);
-		
-		Account = ChartsOfAccounts.ChartOfAccounts.UndepositedFunds.GetObject();
-		Account.AccountType = Enums.AccountTypes.OtherCurrentAsset;
-		Account.Currency = Catalogs.Currencies.USD;
-		Account.CashFlowSection = Enums.CashFlowSections.Operating;
-		Account.Order = Account.Code;
-		Account.Write();
-		Constants.UndepositedFundsAccount.Set(Account.Ref);
-		
-		Account = ChartsOfAccounts.ChartOfAccounts.AccountsReceivable.GetObject();
-		Account.AccountType = Enums.AccountTypes.AccountsReceivable;
-		Account.Currency = Catalogs.Currencies.USD;
-		Account.CashFlowSection = Enums.CashFlowSections.Operating;
-		Account.Order = Account.Code;
-		Account.Write();
+		//Account = ChartsOfAccounts.ChartOfAccounts.BankAccount.GetObject();
+		//Account.AccountType = Enums.AccountTypes.Bank;
+		//Account.Currency = Catalogs.Currencies.USD;
+		//Account.CashFlowSection = Enums.CashFlowSections.Operating;
+		//Account.Order = Account.Code;
+		//Account.Write();
+		//Constants.BankAccount.Set(Account.Ref);
+				
+		NewAccount = ChartsOfAccounts.ChartOfAccounts.CreateAccount();
+		NewAccount.Code = "1100";
+		NewAccount.Order = "1100";
+		NewAccount.Description = "Undeposited funds";
+		NewAccount.AccountType = Enums.AccountTypes.OtherCurrentAsset;
+		//NewAccount.Currency = Catalogs.Currencies.USD;
+		NewAccount.CashFlowSection = Enums.CashFlowSections.Operating;
+		NewAccount.Write();			
+		Constants.UndepositedFundsAccount.Set(NewAccount.Ref);
+
+		NewAccount = ChartsOfAccounts.ChartOfAccounts.CreateAccount();
+		NewAccount.Code = "1200";
+		NewAccount.Order = "1200";
+		NewAccount.Description = "Accounts receivable";
+		NewAccount.AccountType = Enums.AccountTypes.AccountsReceivable;
+		NewAccount.Currency = Catalogs.Currencies.USD;
+		NewAccount.CashFlowSection = Enums.CashFlowSections.Operating;
+		NewAccount.Write();
+		Account = NewAccount.Ref;
+		AccountObject = Account.GetObject();		
+		Dimension = AccountObject.ExtDimensionTypes.Find(ChartsOfCharacteristicTypes.Dimensions.Company, "ExtDimensionType");
+		If Dimension = Undefined Then	
+			NewType = AccountObject.ExtDimensionTypes.Insert(0);
+			NewType.ExtDimensionType = ChartsOfCharacteristicTypes.Dimensions.Company;
+		EndIf;		
+		Dimension = AccountObject.ExtDimensionTypes.Find(ChartsOfCharacteristicTypes.Dimensions.Document, "ExtDimensionType");
+		If Dimension = Undefined Then
+			NewType = AccountObject.ExtDimensionTypes.Insert(1);
+			NewType.ExtDimensionType = ChartsOfCharacteristicTypes.Dimensions.Document;
+		EndIf;		
+		AccountObject.Write();
 		
 		USDCurrency = Catalogs.Currencies.USD.GetObject();
-		USDCurrency.DefaultARAccount = Account.Ref;
+		USDCurrency.DefaultARAccount = NewAccount.Ref;
+		USDCurrency.Write();
+				
+		NewAccount = ChartsOfAccounts.ChartOfAccounts.CreateAccount();
+		NewAccount.Code = "1300";
+		NewAccount.Order = "1300";
+		NewAccount.Description = "Inventory";
+		NewAccount.AccountType = Enums.AccountTypes.Inventory;
+		//NewAccount.Currency = Catalogs.Currencies.USD;
+		NewAccount.CashFlowSection = Enums.CashFlowSections.Operating;
+		NewAccount.Write();			
+		Constants.InventoryAccount.Set(NewAccount.Ref);
+
+		NewAccount = ChartsOfAccounts.ChartOfAccounts.CreateAccount();
+		NewAccount.Code = "2000";
+		NewAccount.Order = "2000";
+		NewAccount.Description = "Accounts payable";
+		NewAccount.AccountType = Enums.AccountTypes.AccountsPayable;
+		NewAccount.Currency = Catalogs.Currencies.USD;
+		NewAccount.CashFlowSection = Enums.CashFlowSections.Operating;
+		NewAccount.Write();
+		Account = NewAccount.Ref;
+		AccountObject = Account.GetObject();		
+		Dimension = AccountObject.ExtDimensionTypes.Find(ChartsOfCharacteristicTypes.Dimensions.Company, "ExtDimensionType");
+		If Dimension = Undefined Then	
+			NewType = AccountObject.ExtDimensionTypes.Insert(0);
+			NewType.ExtDimensionType = ChartsOfCharacteristicTypes.Dimensions.Company;
+		EndIf;		
+		Dimension = AccountObject.ExtDimensionTypes.Find(ChartsOfCharacteristicTypes.Dimensions.Document, "ExtDimensionType");
+		If Dimension = Undefined Then
+			NewType = AccountObject.ExtDimensionTypes.Insert(1);
+			NewType.ExtDimensionType = ChartsOfCharacteristicTypes.Dimensions.Document;
+		EndIf;		
+		AccountObject.Write();
 		
-		Account = ChartsOfAccounts.ChartOfAccounts.Inventory.GetObject();
-		Account.AccountType = Enums.AccountTypes.Inventory;
-		Account.Currency = Catalogs.Currencies.USD;
-		Account.CashFlowSection = Enums.CashFlowSections.Operating;
-		Account.Order = Account.Code;
-		Account.Write();
-		Constants.InventoryAccount.Set(Account.Ref);
-		
-		Account = ChartsOfAccounts.ChartOfAccounts.AccountsPayable.GetObject();
-		Account.AccountType = Enums.AccountTypes.AccountsPayable;
-		Account.Currency = Catalogs.Currencies.USD;
-		Account.CashFlowSection = Enums.CashFlowSections.Operating;
-		Account.Order = Account.Code;
-		Account.Write();
-		
-		USDCurrency.DefaultAPAccount = Account.Ref;
+		USDCurrency = Catalogs.Currencies.USD.GetObject();
+		USDCurrency.DefaultAPAccount = NewAccount.Ref;
 		USDCurrency.Write();
 		
-		Account = ChartsOfAccounts.ChartOfAccounts.TaxPayable.GetObject();
-		Account.AccountType = Enums.AccountTypes.OtherCurrentLiability;
-		Account.Currency = Catalogs.Currencies.USD;
-		Account.CashFlowSection = Enums.CashFlowSections.Operating;
-		Account.Order = Account.Code;
-		Account.Write();
-		Constants.TaxPayableAccount.Set(Account.Ref);
+		NewAccount = ChartsOfAccounts.ChartOfAccounts.CreateAccount();
+		NewAccount.Code = "2200";
+		NewAccount.Order = "2200";
+		NewAccount.Description = "Tax payable";
+		NewAccount.AccountType = Enums.AccountTypes.OtherCurrentLiability;
+		//NewAccount.Currency = Catalogs.Currencies.USD;
+		NewAccount.CashFlowSection = Enums.CashFlowSections.Operating;
+		NewAccount.Write();			
+		Constants.TaxPayableAccount.Set(NewAccount.Ref);
 				
-		Account = ChartsOfAccounts.ChartOfAccounts.Income.GetObject();
-		Account.AccountType = Enums.AccountTypes.Income;
-		Account.Currency = Catalogs.Currencies.USD;
-		Account.CashFlowSection = Enums.CashFlowSections.Operating;
-		Account.Order = Account.Code;
-		Account.Write();
-		Constants.IncomeAccount.Set(Account.Ref);
+		NewAccount = ChartsOfAccounts.ChartOfAccounts.CreateAccount();
+		NewAccount.Code = "4000";
+		NewAccount.Order = "4000";
+		NewAccount.Description = "Sales";
+		NewAccount.AccountType = Enums.AccountTypes.Income;
+		//NewAccount.Currency = Catalogs.Currencies.USD;
+		//NewAccount.CashFlowSection = Enums.CashFlowSections.Operating;
+		NewAccount.Write();			
+		Constants.IncomeAccount.Set(NewAccount.Ref);
+				
+		NewAccount = ChartsOfAccounts.ChartOfAccounts.CreateAccount();
+		NewAccount.Code = "5000";
+		NewAccount.Order = "5000";
+		NewAccount.Description = "Cost of goods sold";
+		NewAccount.AccountType = Enums.AccountTypes.Expense;
+		//NewAccount.Currency = Catalogs.Currencies.USD;
+		//NewAccount.CashFlowSection = Enums.CashFlowSections.Operating;
+		NewAccount.Write();			
+		Constants.COGSAccount.Set(NewAccount.Ref);
+				
+		NewAccount = ChartsOfAccounts.ChartOfAccounts.CreateAccount();
+		NewAccount.Code = "3000";
+		NewAccount.Order = "3000";
+		NewAccount.Description = "Equity";
+		NewAccount.AccountType = Enums.AccountTypes.Equity;
+		//NewAccount.Currency = Catalogs.Currencies.USD;
+		NewAccount.CashFlowSection = Enums.CashFlowSections.Financing;
+		NewAccount.Write();			
+				
+		NewAccount = ChartsOfAccounts.ChartOfAccounts.CreateAccount();
+		NewAccount.Code = "3100";
+		NewAccount.Order = "3100";
+		NewAccount.Description = "Retained Earnings";
+		NewAccount.AccountType = Enums.AccountTypes.Equity;
+		//NewAccount.Currency = Catalogs.Currencies.USD;
+		NewAccount.CashFlowSection = Enums.CashFlowSections.Financing;
+		NewAccount.Write();	
 		
-		Account = ChartsOfAccounts.ChartOfAccounts.COGS.GetObject();
-		Account.AccountType = Enums.AccountTypes.CostOfSales;
-		Account.Currency = Catalogs.Currencies.USD;
-		Account.CashFlowSection = Enums.CashFlowSections.Operating;
-		Account.Order = Account.Code;
-		Account.Write();
-		Constants.COGSAccount.Set(Account.Ref);
+		//NewAccount = ChartsOfAccounts.ChartOfAccounts.CreateAccount();
+		//NewAccount.Code = "8200";
+		//NewAccount.Order = "8200";
+		//NewAccount.Description = "Exchange gain";
+		//NewAccount.AccountType = Enums.AccountTypes.OtherIncome;
+		//NewAccount.Currency = Catalogs.Currencies.USD;
+		//NewAccount.CashFlowSection = Enums.CashFlowSections.Operating;
+		//NewAccount.Write();			
+		//Constants.ExchangeGain.Set(NewAccount.Ref);
 		
-		Account = ChartsOfAccounts.ChartOfAccounts.Equity.GetObject();
-		Account.AccountType = Enums.AccountTypes.Equity;
-		Account.Currency = Catalogs.Currencies.USD;
-		Account.CashFlowSection = Enums.CashFlowSections.Operating;
-		Account.Order = Account.Code;
-		Account.Write();
+		NewAccount = ChartsOfAccounts.ChartOfAccounts.CreateAccount();
+		NewAccount.Code = "8300";
+		NewAccount.Order = "8300";
+		NewAccount.Description = "Exchange gain or loss";
+		NewAccount.AccountType = Enums.AccountTypes.OtherExpense;
+		//NewAccount.Currency = Catalogs.Currencies.USD;
+		//NewAccount.CashFlowSection = Enums.CashFlowSections.Operating;
+		NewAccount.Write();			
+		Constants.ExchangeLoss.Set(NewAccount.Ref);
 		
-		Account = ChartsOfAccounts.ChartOfAccounts.RetainedEarnings.GetObject();
-		Account.AccountType = Enums.AccountTypes.Equity;
-		Account.Currency = Catalogs.Currencies.USD;
-		Account.CashFlowSection = Enums.CashFlowSections.Operating;
-		Account.Order = Account.Code;
-		Account.Write();
-
-		Account = ChartsOfAccounts.ChartOfAccounts.BankServiceCharge.GetObject();
-		Account.AccountType = Enums.AccountTypes.OtherExpense;
-		Account.Currency = Catalogs.Currencies.USD;
-		Account.CashFlowSection = Enums.CashFlowSections.Operating;
-		Account.Order = Account.Code;
-		Account.Write();
-		Constants.BankServiceChargeAccount.Set(Account.Ref);
-		
-		Account = ChartsOfAccounts.ChartOfAccounts.BankInterestEarned.GetObject();
-		Account.AccountType = Enums.AccountTypes.OtherIncome;
-		Account.Currency = Catalogs.Currencies.USD;
-		Account.CashFlowSection = Enums.CashFlowSections.Operating;
-		Account.Order = Account.Code;
-		Account.Write();
-		Constants.BankInterestEarnedAccount.Set(Account.Ref);
-		
-		Account = ChartsOfAccounts.ChartOfAccounts.ExchangeGain.GetObject();
-		Account.AccountType = Enums.AccountTypes.OtherIncome;
-		Account.Currency = Catalogs.Currencies.USD;
-		Account.CashFlowSection = Enums.CashFlowSections.Operating;
-		Account.Order = Account.Code;
-		Account.Write();
-		Constants.ExchangeGain.Set(Account.Ref);
-		
-		Account = ChartsOfAccounts.ChartOfAccounts.ExchangeLoss.GetObject();
-		Account.AccountType = Enums.AccountTypes.OtherExpense;
-		Account.Currency = Catalogs.Currencies.USD;
-		Account.CashFlowSection = Enums.CashFlowSections.Operating;
-		Account.Order = Account.Code;
-		Account.Write();
-		Constants.ExchangeLoss.Set(Account.Ref);
-		
-		Account = ChartsOfAccounts.ChartOfAccounts.Expense.GetObject();
-		Account.AccountType = Enums.AccountTypes.Expense;
-		Account.Currency = Catalogs.Currencies.USD;
-		Account.CashFlowSection = Enums.CashFlowSections.Operating;
-		Account.Order = Account.Code;
-		Account.Write();
-		Constants.ExpenseAccount.Set(Account.Ref);
-		
-		Account = ChartsOfAccounts.ChartOfAccounts.PurchaseLiability.GetObject();
-		Account.AccountType = Enums.AccountTypes.OtherCurrentLiability;
-		Account.Currency = Catalogs.Currencies.USD;
-		Account.CashFlowSection = Enums.CashFlowSections.Operating;
-		Account.Order = Account.Code;
-		Account.Write();
-		Constants.PurchaseLiabilityAccount.Set(Account.Ref);
-		
-		Account = ChartsOfAccounts.ChartOfAccounts.CostVariance.GetObject();
-		Account.AccountType = Enums.AccountTypes.CostOfSales;
-		Account.Currency = Catalogs.Currencies.USD;
-		Account.CashFlowSection = Enums.CashFlowSections.Operating;
-		Account.Order = Account.Code;
-		Account.Write();
-		Constants.CostVarianceAccount.Set(Account.Ref);
-					
+		NewAccount = ChartsOfAccounts.ChartOfAccounts.CreateAccount();
+		NewAccount.Code = "6000";
+		NewAccount.Order = "6000";
+		NewAccount.Description = "Expense";
+		NewAccount.AccountType = Enums.AccountTypes.Expense;
+		//NewAccount.Currency = Catalogs.Currencies.USD;
+		//NewAccount.CashFlowSection = Enums.CashFlowSections.Operating;
+		NewAccount.Write();			
+		Constants.ExpenseAccount.Set(NewAccount.Ref);
+							
 		// Adding OurCompany's full name
 		
 		//OC = Catalogs.Companies.OurCompany.GetObject();
@@ -4353,6 +4407,27 @@ NewCountry.Write();
 		Constants.POFoot2Type.Set(Enums.TextOrImage.None);
 		Constants.POFoot3Type.Set(Enums.TextOrImage.None);
 		
+		//Create "Default UoM Set"
+		DefaultUoMSet = Catalogs.UnitSets.CreateItem();
+		DefaultUoMSet.Description = "Each";
+		DefaultUoMSet.Write();
+		
+		DefaultUnit = Catalogs.Units.CreateItem();
+		DefaultUnit.Owner       = DefaultUoMSet.Ref;   // Set name
+		DefaultUnit.Code        = "ea";                // Abbreviation
+		DefaultUnit.Description = "Each";              // Unit name
+		DefaultUnit.BaseUnit    = True;                // Base ref of set
+		DefaultUnit.Factor      = 1;
+		DefaultUnit.Write();
+		
+		DefaultUoMSet.DefaultReportUnit   = DefaultUnit.Ref;
+		DefaultUoMSet.DefaultSaleUnit     = DefaultUnit.Ref;
+		DefaultUoMSet.DefaultPurchaseUnit = DefaultUnit.Ref;
+		DefaultUoMSet.Write();
+		
+		Constants.DefaultUoMSet.Set(DefaultUoMSet.Ref);
+		//
+		
 		// mt_change	
 		
 	//Adding Yodlee transaction categories and respective business accounts 
@@ -4365,6 +4440,296 @@ NewCountry.Write();
 EndIf;
 	
 EndProcedure // FirstLaunch()
+
+#Region Updating_Infobase_Version
+
+//Procedure updates an infobase to the new configuration version
+//
+Procedure UpdateInfobase() Export
+	SetPrivilegedMode(True);
+	CurrentVersion = Constants.CurrentConfigurationVersion.Get();
+	ConfigurationVersion = Metadata.Version;
+	If Not InfobaseUpdateNeeded(CurrentVersion, ConfigurationVersion) Then
+		return;
+	EndIf;
+	//Updating Infobase for the configuration version "1.1.40.01"
+	If UpdateRequiredForVersion(ConfigurationVersion, CurrentVersion, "1.1.40.01") OR (NOT ValueIsFilled(CurrentVersion)) Then
+		//Unmark all g/l accounts marked for deletion (caused by predefined accounts deletion)
+		Try
+			BeginTransaction(DataLockControlMode.Managed);
+			//Lock ChartOfAccounts
+			DLock = New DataLock();
+			LockItem = DLock.Add("ChartOfAccounts.ChartOfAccounts");
+			LockItem.Mode = DataLockMode.Exclusive;
+			DLock.Lock();
+			Request = New Query("SELECT
+			                    |	ChartOfAccounts.Ref
+			                    |FROM
+			                    |	ChartOfAccounts.ChartOfAccounts AS ChartOfAccounts
+			                    |WHERE
+			                    |	ChartOfAccounts.DeletionMark = TRUE");
+			Res = Request.Execute().Select();
+			While Res.Next() Do
+				AccountObject = Res.Ref.GetObject();
+				AccountObject.DeletionMark = False;
+				AccountObject.Write();
+			EndDo;
+			
+			//Update UM
+			UpdateUnitsOfMeasure();
+			
+			Constants.CurrentConfigurationVersion.Set(TrimAll(ConfigurationVersion));
+			
+			WriteLogEvent(
+			InfobaseUpdateEvent(),
+			EventLogLevel.Information,
+			,
+			,
+			"Updating to the version ""1.1.40.01"" succeeded.");
+
+		Except
+			ErrorDescription = ErrorDescription();
+			If TransactionActive() Then
+				RollbackTransaction();
+			EndIf;
+			
+			WriteLogEvent(
+			InfobaseUpdateEvent(),
+			EventLogLevel.Error,
+			,
+			,
+			"Updating to the version ""1.1.40.01"". During the update an error occured: " + ErrorDescription);
+
+			return;
+		EndTry;
+		CommitTransaction();
+	EndIf;
+EndProcedure
+
+Function InfobaseUpdateNeeded(Val CurrentVersion, Val ConfigurationVersion)
+	return (TrimAll(CurrentVersion) <> TrimAll(ConfigurationVersion)) AND (Not IsBlankString(ConfigurationVersion));
+EndFunction
+
+Function UpdateRequiredForVersion(ConfigurationVersion, CurrentVersion, UpdatingVersion)
+	ConfigurationVersionLexemes = StringFunctionsClientServer.SplitStringIntoSubstringArray(ConfigurationVersion, ".");
+	CurrentVersionLexemes = StringFunctionsClientServer.SplitStringIntoSubstringArray(CurrentVersion, ".");
+	UpdatingVersionLexemes = StringFunctionsClientServer.SplitStringIntoSubstringArray(UpdatingVersion, ".");
+	If (ConfigurationVersionLexemes.Count() <> 4) Or (CurrentVersionLexemes.Count() <> 4) 
+		Or (UpdatingVersionLexemes.Count() <> 4) Then
+		return False;
+	EndIf;
+	CurrentVersionUpdateRequired = False;
+	//If CurrentVersion >= UpdatingVersion then update is not required
+	For i = 0 To 3 Do
+		If Number(CurrentVersionLexemes[i]) < Number(UpdatingVersionLexemes[i]) Then
+			CurrentVersionUpdateRequired = True;
+			Break;
+		ElsIf Number(CurrentVersionLexemes[i]) > Number(UpdatingVersionLexemes[i]) Then
+			CurrentVersionUpdateRequired = False;
+			Break;
+		EndIf;
+	EndDo;
+	If Not CurrentVersionUpdateRequired Then
+		return False;
+	EndIf;
+	ConfigurationVersionUpdateRequired = True;
+	//If ConfigurationVersion < UpdatingVersion then update is not required
+	For i = 0 To 3 Do
+		If Number(ConfigurationVersionLexemes[i]) > Number(UpdatingVersionLexemes[i]) Then
+			ConfigurationVersionUpdateRequired = True;
+			Break;
+		ElsIf Number(ConfigurationVersionLexemes[i]) < Number(UpdatingVersionLexemes[i]) Then
+			ConfigurationVersionUpdateRequired = False;
+			Break;			
+		EndIf;
+	EndDo;
+	return CurrentVersionUpdateRequired AND ConfigurationVersionUpdateRequired;
+EndFunction
+
+Function InfobaseUpdateEvent()
+	return "Infobase.UpdatingInfobase";
+EndFunction
+
+#Region Updating_UnitsOfMeasure
+
+Procedure UpdateUnitsOfMeasure()
+	
+	//----------------------------------------------------------------------------------------------------
+	PeriodClosingDate = Constants.PeriodClosingDate.Get();
+	Constants.PeriodClosingDate.Set('00010101');
+	
+	// 1. Create UoM Sets and Units.
+	UnitsMap = New Map;
+	
+	UMSelection = Catalogs.UM.Select();
+	
+	While UMSelection.Next() Do
+		
+		// 1.1 Create UoM Set.
+		NewUoMSet = Catalogs.UnitSets.CreateItem();
+		NewUoMSet.Description = UMSelection.Description;
+		NewUoMSet.Write();
+		
+		// 1.2 Create Unit.
+		NewUnit = Catalogs.Units.CreateItem();
+		NewUnit.Owner       = NewUoMSet.Ref;                                                                 // Set name
+		NewUnit.Code        = ?(ValueIsFilled(UMSelection.Code), UMSelection.Code, UMSelection.Description); // Abbreviation
+		NewUnit.Description = UMSelection.Description;                                                       // Unit name
+		NewUnit.BaseUnit    = True;                                                                          // Base ref of set
+		NewUnit.Factor      = 1;
+		NewUnit.Write();
+		
+		NewUoMSet.DefaultReportUnit   = NewUnit.Ref;
+		NewUoMSet.DefaultSaleUnit     = NewUnit.Ref;
+		NewUoMSet.DefaultPurchaseUnit = NewUnit.Ref;
+		NewUoMSet.Write();
+		
+		If UMSelection.Ref = Catalogs.UM.each Then
+			Constants.DefaultUoMSet.Set(NewUoMSet.Ref);
+		EndIf;
+		
+		UnitsMap.Insert(UMSelection.Ref, NewUnit.Ref); 	
+		
+	EndDo;
+	
+	// 2. Set default UoM Set for all items.
+	ProductsSelection = Catalogs.Products.Select();
+	
+	DefaultUoMSet = Constants.DefaultUoMSet.Get();
+	While ProductsSelection.Next() Do
+		
+		ProductObj = ProductsSelection.GetObject();
+		
+		UoMSet = UnitsMap.Get(ProductObj.UM);
+		ProductObj.UnitSet = ?(UoMSet = Undefined, DefaultUoMSet, UoMSet.Owner);
+		ProductObj.Write();
+		
+	EndDo;
+	
+	// 3.
+	For Each Doc In Metadata.Documents Do
+		
+		NameDoc = Doc.Name;
+		
+		For Each DocTS In Doc.TabularSections Do
+			
+			NameDocTS = DocTS.Name;
+			
+			For Each DocTS_A In DocTS.Attributes Do
+				
+				NameDocTS_A = DocTS_A.Name;
+				
+				// 3.1 Change value Unit and UoM Set for all needed documents. 
+				If DocTS_A.Type = New TypeDescription("CatalogRef.Units") Then
+					
+					ChangeValueUnitAttribute(NameDoc, NameDocTS, NameDocTS_A, UnitsMap);
+					
+				EndIf;
+				
+			EndDo;
+			
+		EndDo;
+		
+	EndDo;
+	
+	// 4. Change rows accumulation register "Orders dispatched".
+	ChangeUnitAR("OrdersDispatched", "PurchaseInvoice");
+	
+	// 5. Change rows accumulation register "Orders registered".
+	ChangeUnitAR("OrdersRegistered", "SalesInvoice");
+		
+	Constants.PeriodClosingDate.Set(PeriodClosingDate);
+	//----------------------------------------------------------------------------------------------------
+	
+EndProcedure
+
+Procedure ChangeValueUnitAttribute(NameDoc, NameDocTS, NameDocTS_A, UnitsMap)
+	
+	DocSelection = Documents[NameDoc].Select();
+	
+	While DocSelection.Next() Do
+		
+		DocObj = DocSelection.GetObject();
+		
+		For Each LineTS In DocObj[NameDocTS] Do
+			
+			LineTS[NameDocTS_A]        = UnitsMap.Get(LineTS.UM); 
+			LineTS.UnitSet             = LineTS[NameDocTS_A].Owner; 
+			
+			LineTS.UM                  = Catalogs.UM.each;
+			
+			LineTS.QtyUnits            = LineTS.QtyUM;
+			LineTS.PriceUnits          = LineTS.PriceUM;
+			
+			If NameDoc = "PurchaseInvoice" Then 
+				LineTS.OrderPriceUnits = LineTS.OrderPriceUM;
+			EndIf;
+		
+		EndDo;
+		
+		DocObj.Write();
+		
+	EndDo;
+	
+EndProcedure
+
+Procedure ChangeUnitAR(Register, DocCancellation)
+	
+	Query = New Query;
+	Query.Text = 
+		"SELECT
+		|	AR.Recorder AS Recorder
+		|FROM
+		|	AccumulationRegister." + Register + " AS AR
+		|
+		|GROUP BY
+		|	AR.Recorder";
+
+	QueryResult = Query.Execute();
+
+	SelectionDetailRecords = QueryResult.Select();
+
+	While SelectionDetailRecords.Next() Do
+		
+		Recorder = SelectionDetailRecords.Recorder;
+		
+		RecordSet =  AccumulationRegisters[Register].CreateRecordSet();
+		RecordSet.Filter.Recorder.Set(Recorder);
+		RecordSet.Read();
+		
+		VT = RecordSet.Unload(); 
+		
+		For Each LineVT In VT Do
+			
+			FilterParameters = New Structure;
+			FilterParameters.Insert("Product",      LineVT.Product); 
+			FilterParameters.Insert("Location",     LineVT.Location);
+			FilterParameters.Insert("DeliveryDate", LineVT.DeliveryDate);
+			FilterParameters.Insert("Project",      LineVT.Project);
+			FilterParameters.Insert("Class",        LineVT.Class);
+			
+			If TypeOf(Recorder) = Type("DocumentRef." + DocCancellation) Then
+				FilterParameters.Insert("Order",    LineVT.Order);
+			EndIf;
+			
+			FoundLines = Recorder.LineItems.FindRows(FilterParameters);
+			
+			For Each Line In FoundLines Do
+				LineVT.Unit = Line.Unit;	
+			EndDo;
+			
+		EndDo;
+		
+		RecordSet.Load(VT);
+		RecordSet.Write(True);
+		
+	EndDo;
+	
+EndProcedure
+
+#EndRegion
+
+#EndRegion
 
 #Region Updating_Hierarchy_ChartOfAccounts
 
@@ -4874,5 +5239,79 @@ Procedure ChangePeriodIntoReportForm(SettingsComposer, PeriodVariant, PeriodStar
 	EndIf;
 	
 EndProcedure
+
+#EndRegion
+
+#Region Excel_Manager
+
+Function GetExcelFile(FileName, SpreadsheetDocument) Export
+	
+	Structure = New Structure("FileName, Address");
+	
+	Structure.FileName = "" + GetCorrectSystemTitle() + " - " + FileName + ".xlsx"; 
+	Structure.Address = GetFileName(SpreadsheetDocument); 
+	
+	Return Structure;	
+
+EndFunction
+
+Function GetFileName(SpreadsheetDocument)
+	
+	TemporaryFileName = GetTempFileName(".xlsx");
+	
+	SpreadsheetDocument.Write(TemporaryFileName, SpreadsheetDocumentFileType.XLSX);
+	
+	Try
+		COMExcel = New COMObject("Excel.Application"); 
+		Doc = COMExcel.Application.Workbooks.Open(TemporaryFileName); 
+		
+		Doc.Windows(1).DisplayWorkbookTabs = True;
+		Doc.Windows(1).TabRatio = 0.5;
+		COMExcel.ReferenceStyle = 1;
+		
+		Doc.Save();
+		Doc.Close();
+	Except
+	EndTry;
+	
+	BinaryData = New BinaryData(TemporaryFileName);
+	
+	DeleteFiles(TemporaryFileName);
+	
+	Return PutToTempStorage(BinaryData);
+	
+EndFunction
+
+Function GetCorrectSystemTitle()
+	
+	SystemTitle = Constants.SystemTitle.Get();
+	
+	NewSystemTitle = "";
+	
+	For i = 1 To StrLen(SystemTitle) Do
+		
+		Char = Mid(SystemTitle, i, 1);
+		
+		If Find("#&\/:*?""<>|.", Char) > 0 Then
+			NewSystemTitle = NewSystemTitle + " ";	
+		Else
+			NewSystemTitle = NewSystemTitle + Char;	
+		EndIf;
+		
+	EndDo;	
+	
+	Return NewSystemTitle;
+	
+EndFunction
+
+#EndRegion
+
+#Region Unit_Manager 
+
+Function GetBaseUnit(UnitSet) Export 
+	
+	Return Catalogs.Units.FindByAttribute("BaseUnit", True, , UnitSet);
+		
+EndFunction
 
 #EndRegion

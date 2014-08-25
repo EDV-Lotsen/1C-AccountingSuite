@@ -22,6 +22,9 @@ Function PrepareDataBeforeWrite(AdditionalProperties, DocumentParameters, Cancel
 	LocksList    = New Structure;
 	BalancesList = New Structure;
 	
+	// 0.3. Set optional accounting flags.
+	OrdersPosting    = AdditionalProperties.Orders.Count() > 0;
+	
 	
 	// 1.1. Create a query to request data.
 	Query = New Query;
@@ -39,10 +42,11 @@ Function PrepareDataBeforeWrite(AdditionalProperties, DocumentParameters, Cancel
 	EndDo;
 	
 	
-	// 2.1. Request data for lock in register before accessing balances.
+	// 2.1. Request data for lock in registers before accessing balances.
 	Query.Text = "";
-	If AdditionalProperties.Orders.Count() > 0 Then
-		Query.Text = Query.Text + Query_OrdersDispatched_Lock(LocksList);
+	If OrdersPosting Then
+		Query.Text = Query.Text +
+		             Query_OrdersDispatched_Lock(LocksList);
 	EndIf;
 	
 	// 2.2. Proceed with locking the data.
@@ -54,10 +58,11 @@ Function PrepareDataBeforeWrite(AdditionalProperties, DocumentParameters, Cancel
 	EndIf;
 	
 	
-	// 3.1. Query for order balances excluding document data (if it already affected to).
+	// 3.1. Query for register balances excluding document data (if it already affected to).
 	Query.Text = "";
-	If AdditionalProperties.Orders.Count() > 0 Then
-		Query.Text = Query.Text + Query_OrdersDispatched_Balance(BalancesList);
+	If OrdersPosting Then
+		Query.Text = Query.Text +
+		             Query_OrdersDispatched_Balance(BalancesList);
 	EndIf;
 	
 	// 3.2. Save balances in posting parameters.
@@ -87,7 +92,7 @@ Function PrepareDataStructuresForPosting(DocumentRef, AdditionalProperties, Regi
 	OrdersPosting    = AdditionalProperties.Orders.Count() > 0;
 	InventoryPosting = True; // Post always.
 	
-	// Create list of posting tables (according to the list of registers.)
+	// Create list of posting tables (according to the list of registers).
 	TablesList = New Structure;
 	
 	// Create a query to request document data.
@@ -115,19 +120,19 @@ Function PrepareDataStructuresForPosting(DocumentRef, AdditionalProperties, Regi
 	//------------------------------------------------------------------------------
 	// 3. Execute query and fill data structures.
 	
-	// Fill optional precheck data for orders backorder posting.
-	If OrdersPosting Then
+	// Execute query, fill temporary tables with postings data.
+	If Not IsBlankString(Query.Text) Then
 		// Fill data from precheck.
 		If AdditionalProperties.Posting.Property("PreCheck", PreCheck) And PreCheck.Count() > 0 Then
 			For Each PreCheckTable In PreCheck Do
 				DocumentPosting.PutTemporaryTable(PreCheckTable.Value, PreCheckTable.Key, Query.TempTablesManager);
 			EndDo;
 		EndIf;
-	EndIf;
-	
-	// Execute query.
-	If Not IsBlankString(Query.Text) Then
+		
+		// Execute query.
 		QueryResult = Query.ExecuteBatch();
+		
+		// Save documents table in posting parameters.
 		For Each DocumentTable In TablesList Do
 			ResultTable = QueryResult[DocumentTable.Value].Unload();
 			If Not DocumentPosting.IsTemporaryTable(ResultTable) Then
@@ -175,7 +180,7 @@ Procedure CheckOrderQuantity(DocumentRef, DocumentDate, Company, LineItems, Filt
 	Query.SetParameter("Date", DocumentDate);
 	
 	// 2. Fill out the line items table.
-	InvoiceLineItems = LineItems.Unload(Filter, "LineNumber, Order, Product, Location, DeliveryDate, Project, Class, Quantity");
+	InvoiceLineItems = LineItems.Unload(Filter, "LineNumber, Order, Product, Unit, Location, DeliveryDate, Project, Class, QtyUnits");
 	InvoiceLineItems.Columns.Insert(1, "Company", New TypeDescription("CatalogRef.Companies"), "", 20);
 	InvoiceLineItems.FillValues(Company, "Company");
 	DocumentPosting.PutTemporaryTable(InvoiceLineItems, "InvoiceLineItems", Query.TempTablesManager);
@@ -187,14 +192,15 @@ Procedure CheckOrderQuantity(DocumentRef, DocumentDate, Company, LineItems, Filt
 		|	LineItems.Order               AS Order,
 		|	LineItems.Product.Code        AS ProductCode,
 		|	LineItems.Product.Description AS ProductDescription,
-		|	OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.InvoicedBalance - LineItems.Quantity AS UninvoicedQuantity
+		|	OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.InvoicedBalance - LineItems.QtyUnits AS UninvoicedQuantity
 		|FROM
 		|	InvoiceLineItems AS LineItems
-		|	LEFT JOIN AccumulationRegister.OrdersDispatched.Balance(&Date, (Company, Order, Product, Location, DeliveryDate, Project, Class)
-		|		      IN (SELECT Company, Order, Product, Location, DeliveryDate, Project, Class FROM InvoiceLineItems)) AS OrdersDispatchedBalance
+		|	LEFT JOIN AccumulationRegister.OrdersDispatched.Balance(&Date, (Company, Order, Product, Unit, Location, DeliveryDate, Project, Class)
+		|		      IN (SELECT Company, Order, Product, Unit, Location, DeliveryDate, Project, Class FROM InvoiceLineItems)) AS OrdersDispatchedBalance
 		|		ON  LineItems.Company      = OrdersDispatchedBalance.Company
 		|		AND LineItems.Order        = OrdersDispatchedBalance.Order
 		|		AND LineItems.Product      = OrdersDispatchedBalance.Product
+		|		AND LineItems.Unit         = OrdersDispatchedBalance.Unit
 		|		AND LineItems.Location     = OrdersDispatchedBalance.Location
 		|		AND LineItems.DeliveryDate = OrdersDispatchedBalance.DeliveryDate
 		|		AND LineItems.Project      = OrdersDispatchedBalance.Project
@@ -613,6 +619,7 @@ Function Query_OrdersDispatched(TablesList)
 	|	LineItems.Ref.Company                 AS Company,
 	|	LineItems.Order                       AS Order,
 	|	LineItems.Product                     AS Product,
+	|	LineItems.Unit                        AS Unit,
 	|	LineItems.Location                    AS Location,
 	|	LineItems.DeliveryDate                AS DeliveryDate,
 	|	LineItems.Project                     AS Project,
@@ -621,17 +628,17 @@ Function Query_OrdersDispatched(TablesList)
 	// Resources
 	|	0                                     AS Quantity,
 	|	CASE WHEN LineItems.Product.Type = VALUE(Enum.InventoryTypes.Inventory)
-	|	     THEN CASE WHEN LineItems.Quantity - 
+	|	     THEN CASE WHEN LineItems.QtyUnits - 
 	|	                    CASE WHEN OrdersDispatchedBalance.Received - OrdersDispatchedBalance.Invoiced > 0
 	|	                         THEN OrdersDispatchedBalance.Received - OrdersDispatchedBalance.Invoiced
 	|	                         ELSE 0 END > 0
-	|	               THEN LineItems.Quantity - 
+	|	               THEN LineItems.QtyUnits - 
 	|	                    CASE WHEN OrdersDispatchedBalance.Received - OrdersDispatchedBalance.Invoiced > 0
 	|	                         THEN OrdersDispatchedBalance.Received - OrdersDispatchedBalance.Invoiced
 	|	                         ELSE 0 END
 	|	               ELSE 0 END
 	|	     ELSE 0 END                       AS Received,
-	|	LineItems.Quantity                    AS Invoiced
+	|	LineItems.QtyUnits                    AS Invoiced
 	// ------------------------------------------------------
 	// Attributes
 	// ------------------------------------------------------
@@ -641,6 +648,7 @@ Function Query_OrdersDispatched(TablesList)
 	|		ON  OrdersDispatchedBalance.Company      = LineItems.Ref.Company
 	|		AND OrdersDispatchedBalance.Order        = LineItems.Order
 	|		AND OrdersDispatchedBalance.Product      = LineItems.Product
+	|		AND OrdersDispatchedBalance.Unit         = LineItems.Unit
 	|		AND OrdersDispatchedBalance.Location     = LineItems.Location
 	|		AND OrdersDispatchedBalance.DeliveryDate = LineItems.DeliveryDate
 	|		AND OrdersDispatchedBalance.Project      = LineItems.Project
@@ -668,7 +676,8 @@ Function Query_OrdersDispatched_Lock(TablesList)
 	// Dimensions
 	|	&Company                              AS Company,
 	|	LineItems.Order                       AS Order,
-	|	LineItems.Product                     AS Product
+	|	LineItems.Product                     AS Product,
+	|	LineItems.Unit                        AS Unit
 	// ------------------------------------------------------
 	|FROM
 	|	Table_LineItems AS LineItems
@@ -693,6 +702,7 @@ Function Query_OrdersDispatched_Balance(TablesList)
 	|	OrdersDispatchedBalance.Company          AS Company,
 	|	OrdersDispatchedBalance.Order            AS Order,
 	|	OrdersDispatchedBalance.Product          AS Product,
+	|	OrdersDispatchedBalance.Unit             AS Unit,
 	|	OrdersDispatchedBalance.Location         AS Location,
 	|	OrdersDispatchedBalance.DeliveryDate     AS DeliveryDate,
 	|	OrdersDispatchedBalance.Project          AS Project,
@@ -729,7 +739,7 @@ Function Query_InventoryJournal_LineItems(TablesList)
 	|	LineItems.LocationActual                 AS Location,
 	// ------------------------------------------------------
 	// Agregates
-	|	SUM(LineItems.Quantity)                  AS QuantityRequested,
+	|	SUM(LineItems.QtyUM)                     AS QuantityRequested,
 	|	SUM(LineItems.LineTotal)                 AS AmountRequested
 	// ------------------------------------------------------
 	|INTO
@@ -755,7 +765,7 @@ Function Query_InventoryJournal_LineItems(TablesList)
 	|	LineItems.LocationActual                 AS Location,
 	// ------------------------------------------------------
 	// Agregates
-	|	SUM(LineItems.Quantity)                  AS QuantityRequested,
+	|	SUM(LineItems.QtyUM)                     AS QuantityRequested,
 	|	SUM(LineItems.LineTotal)                 AS AmountRequested
 	// ------------------------------------------------------
 	|FROM
@@ -771,7 +781,7 @@ Function Query_InventoryJournal_LineItems(TablesList)
 	|
 	|UNION ALL
 	|
-	|SELECT // WeightedAverage by amount
+	|SELECT // WAve for amount calcualtion
 	// ------------------------------------------------------
 	// Dimensions
 	|	LineItems.Product.CostingMethod          AS Type,
@@ -779,7 +789,7 @@ Function Query_InventoryJournal_LineItems(TablesList)
 	|	VALUE(Catalog.Locations.EmptyRef)        AS Location,
 	// ------------------------------------------------------
 	// Agregates
-	|	SUM(LineItems.Quantity)                  AS QuantityRequested,
+	|	SUM(LineItems.QtyUM)                     AS QuantityRequested,
 	|	SUM(LineItems.LineTotal)                 AS AmountRequested
 	// ------------------------------------------------------
 	|FROM
@@ -916,18 +926,24 @@ Function Query_ItemLastCosts(TablesList)
 	"SELECT
 	// ------------------------------------------------------
 	// Standard attributes
-	|	LineItems.Ref                         AS Recorder,
-	|	LineItems.Ref.Date                    AS Period,
-	|	LineItems.LineNumber                  AS LineNumber,
-	|	True                                  AS Active,
+	|	LineItems.Ref AS Recorder,
+	|	LineItems.Ref.Date AS Period,
+	|	MIN(LineItems.LineNumber) AS LineNumber,
+	|	TRUE AS Active,
 	// ------------------------------------------------------
 	// Dimensions
-	|	LineItems.Product                     AS Product,
+	|	LineItems.Product AS Product,
 	// ------------------------------------------------------
 	// Resources
-	|	CAST( // Format(Price * ExchangeRate, ""ND=15; NFD=2"")
-	|		LineItems.Price * LineItems.Ref.ExchangeRate
-	|		AS NUMBER (15, 2))                AS Cost
+	|	AVG(CAST(LineItems.PriceUnits * CASE
+	|				WHEN LineItems.Ref.ExchangeRate > 0
+	|					THEN LineItems.Ref.ExchangeRate
+	|				ELSE 1
+	|			END / CASE
+	|				WHEN LineItems.Unit.Factor > 0
+	|					THEN LineItems.Unit.Factor
+	|				ELSE 1
+	|			END AS NUMBER(15, 2))) AS Cost
 	// ------------------------------------------------------
 	// Attributes
 	// ------------------------------------------------------
@@ -935,7 +951,21 @@ Function Query_ItemLastCosts(TablesList)
 	|	Document.PurchaseInvoice.LineItems AS LineItems
 	|WHERE
 	|	LineItems.Ref = &Ref
-	|	AND LineItems.Product.Type = VALUE(Enum.InventoryTypes.Inventory)
+	|	AND (CAST(LineItems.PriceUnits * CASE
+	|				WHEN LineItems.Ref.ExchangeRate > 0
+	|					THEN LineItems.Ref.ExchangeRate
+	|				ELSE 1
+	|			END / CASE
+	|				WHEN LineItems.Unit.Factor > 0
+	|					THEN LineItems.Unit.Factor
+	|				ELSE 1
+	|			END AS NUMBER(15, 2))) > 0
+	|
+	|GROUP BY
+	|	LineItems.Product,
+	|	LineItems.Ref,
+	|	LineItems.Ref.Date
+	|
 	|ORDER BY
 	|	LineNumber";
 	
@@ -1028,6 +1058,7 @@ Procedure CheckCloseParentOrders(DocumentRef, AdditionalProperties, TempTablesMa
 	|	OrdersDispatchedBalance.Company          AS Company,
 	|	OrdersDispatchedBalance.Order            AS Order,
 	|	OrdersDispatchedBalance.Product          AS Product,
+	|	OrdersDispatchedBalance.Unit             AS Unit,
 	|	OrdersDispatchedBalance.Location         AS Location,
 	|	OrdersDispatchedBalance.DeliveryDate     AS DeliveryDate,
 	|	OrdersDispatchedBalance.Project          AS Project,
@@ -1052,6 +1083,7 @@ Procedure CheckCloseParentOrders(DocumentRef, AdditionalProperties, TempTablesMa
 	|	OrdersDispatched.Company,
 	|	OrdersDispatched.Order,
 	|	OrdersDispatched.Product,
+	|	OrdersDispatched.Unit,
 	|	OrdersDispatched.Location,
 	|	OrdersDispatched.DeliveryDate,
 	|	OrdersDispatched.Project,
@@ -1078,6 +1110,7 @@ Procedure CheckCloseParentOrders(DocumentRef, AdditionalProperties, TempTablesMa
 	|	OrdersDispatchedBalance.Order            AS Order,
 	|	OrdersDispatchedBalance.Product          AS Product,
 	|	OrdersDispatchedBalance.Product.Type     AS Type,
+	|	OrdersDispatchedBalance.Unit             AS Unit,
 	|	OrdersDispatchedBalance.Location         AS Location,
 	|	OrdersDispatchedBalance.DeliveryDate     AS DeliveryDate,
 	|	OrdersDispatchedBalance.Project          AS Project,
@@ -1097,6 +1130,7 @@ Procedure CheckCloseParentOrders(DocumentRef, AdditionalProperties, TempTablesMa
 	|	OrdersDispatchedBalance.Order,
 	|	OrdersDispatchedBalance.Product,
 	|	OrdersDispatchedBalance.Product.Type,
+	|	OrdersDispatchedBalance.Unit,
 	|	OrdersDispatchedBalance.Location,
 	|	OrdersDispatchedBalance.DeliveryDate,
 	|	OrdersDispatchedBalance.Project,
@@ -1112,6 +1146,7 @@ Procedure CheckCloseParentOrders(DocumentRef, AdditionalProperties, TempTablesMa
 	|	OrdersDispatchedBalance.Company          AS Company,
 	|	OrdersDispatchedBalance.Order            AS Order,
 	|	OrdersDispatchedBalance.Product          AS Product,
+	|	OrdersDispatchedBalance.Unit             AS Unit,
 	|	OrdersDispatchedBalance.Location         AS Location,
 	|	OrdersDispatchedBalance.DeliveryDate     AS DeliveryDate,
 	|	OrdersDispatchedBalance.Project          AS Project,
@@ -1319,6 +1354,7 @@ Function Query_Filling_Document_PurchaseOrder_OrdersDispatched(TablesList)
 		|	OrdersDispatchedBalance.Company          AS Company,
 		|	OrdersDispatchedBalance.Order            AS Order,
 		|	OrdersDispatchedBalance.Product          AS Product,
+		|	OrdersDispatchedBalance.Unit             AS Unit,
 		|	OrdersDispatchedBalance.Location         AS Location,
 		|	OrdersDispatchedBalance.DeliveryDate     AS DeliveryDate,
 		|	OrdersDispatchedBalance.Project          AS Project,
@@ -1350,11 +1386,12 @@ Function Query_Filling_Document_PurchaseOrder_OrdersDispatched(TablesList)
 		|	Table_Document_PurchaseOrder_OrdersDispatched
 		|FROM
 		|	AccumulationRegister.OrdersDispatched.Balance(,
-		|		(Company, Order, Product, Location, DeliveryDate, Project, Class) IN
+		|		(Company, Order, Product, Unit, Location, DeliveryDate, Project, Class) IN
 		|			(SELECT
 		|				PurchaseOrderLineItems.Ref.Company,
 		|				PurchaseOrderLineItems.Ref,
 		|				PurchaseOrderLineItems.Product,
+		|				PurchaseOrderLineItems.Unit,
 		|				PurchaseOrderLineItems.Location,
 		|				PurchaseOrderLineItems.DeliveryDate,
 		|				PurchaseOrderLineItems.Project,
@@ -1382,29 +1419,54 @@ Function Query_Filling_Document_PurchaseOrder_LineItems(TablesList)
 		|	PurchaseOrderLineItems.Ref                 AS FillingData,
 		|	PurchaseOrderLineItems.Product             AS Product,
 		|	PurchaseOrderLineItems.ProductDescription  AS ProductDescription,
-		|	PurchaseOrderLineItems.UM                  AS UM,
-		|	PurchaseOrderLineItems.Price               AS Price,
-		|	PurchaseOrderLineItems.Price               AS OrderPrice,
+		|	PurchaseOrderLineItems.UnitSet             AS UnitSet,
+		|	PurchaseOrderLineItems.Unit                AS Unit,
+		//|	PurchaseOrderLineItems.UM                  AS UM,
+		|	PurchaseOrderLineItems.PriceUnits          AS PriceUnits,
+		|	PurchaseOrderLineItems.PriceUnits          AS OrderPriceUnits,
+		|	
+		|	// QtyUnits
 		|	CASE
 		|		WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Open)
-		|			THEN ISNULL(OrdersDispatched.Quantity, PurchaseOrderLineItems.Quantity)
+		|			THEN ISNULL(OrdersDispatched.Quantity, PurchaseOrderLineItems.QtyUnits)
 		|		WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Backordered)
-		|			THEN ISNULL(OrdersDispatched.Backorder, PurchaseOrderLineItems.Quantity)
+		|			THEN ISNULL(OrdersDispatched.Backorder, PurchaseOrderLineItems.QtyUnits)
 		|		WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Closed)
 		|			THEN ISNULL(OrdersDispatched.Backorder, 0)
 		|		ELSE 0
-		|	END                                        AS Quantity,
-		|	CAST( // Format(Quantity * Price, ""ND=15; NFD=2"")
+		|	END                                        AS QtyUnits,
+		|	
+		|	// QtyUM
+		|	CAST( // Format(Quantity * Unit.Factor, ""ND=15; NFD={4}"")
 		|		CASE
 		|			WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Open)
-		|				THEN ISNULL(OrdersDispatched.Quantity, PurchaseOrderLineItems.Quantity)
+		|				THEN ISNULL(OrdersDispatched.Quantity, PurchaseOrderLineItems.QtyUnits)
 		|			WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Backordered)
-		|				THEN ISNULL(OrdersDispatched.Backorder, PurchaseOrderLineItems.Quantity)
+		|				THEN ISNULL(OrdersDispatched.Backorder, PurchaseOrderLineItems.QtyUnits)
 		|			WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Closed)
 		|				THEN ISNULL(OrdersDispatched.Backorder, 0)
 		|			ELSE 0
-		|		END * PurchaseOrderLineItems.Price 
+		|		END * 
+		|		CASE
+		|			WHEN PurchaseOrderLineItems.Unit.Factor > 0
+		|				THEN PurchaseOrderLineItems.Unit.Factor
+		|			ELSE 1
+		|		END
+		|		AS NUMBER (15, {QuantityPrecision}))   AS QtyUM,
+		|	
+		|	// LineTotal
+		|	CAST( // Format(Quantity * Price, ""ND=15; NFD=2"")
+		|		CASE
+		|			WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Open)
+		|				THEN ISNULL(OrdersDispatched.Quantity, PurchaseOrderLineItems.QtyUnits)
+		|			WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Backordered)
+		|				THEN ISNULL(OrdersDispatched.Backorder, PurchaseOrderLineItems.QtyUnits)
+		|			WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Closed)
+		|				THEN ISNULL(OrdersDispatched.Backorder, 0)
+		|			ELSE 0
+		|		END * PurchaseOrderLineItems.PriceUnits
 		|		AS NUMBER (15, 2))                     AS LineTotal,
+		|	
 		|	PurchaseOrderLineItems.Ref                 AS Order,
 		|	VALUE(Document.ItemReceipt.EmptyRef)       AS ItemReceipt,
 		|	PurchaseOrderLineItems.Location            AS Location,
@@ -1422,6 +1484,7 @@ Function Query_Filling_Document_PurchaseOrder_LineItems(TablesList)
 		|		ON  OrdersDispatched.Company      = PurchaseOrderLineItems.Ref.Company
 		|		AND OrdersDispatched.Order        = PurchaseOrderLineItems.Ref
 		|		AND OrdersDispatched.Product      = PurchaseOrderLineItems.Product
+		|		AND OrdersDispatched.Unit         = PurchaseOrderLineItems.Unit
 		|		AND OrdersDispatched.Location     = PurchaseOrderLineItems.Location
 		|		AND OrdersDispatched.DeliveryDate = PurchaseOrderLineItems.DeliveryDate
 		|		AND OrdersDispatched.Project      = PurchaseOrderLineItems.Project
@@ -1431,6 +1494,10 @@ Function Query_Filling_Document_PurchaseOrder_LineItems(TablesList)
 		|WHERE
 		|	PurchaseOrderLineItems.Ref IN (&FillingData_Document_PurchaseOrder)";
 	
+	// Update query rounding using quantity precision.
+	QueryText = StrReplace(QueryText, "{QuantityPrecision}", GeneralFunctionsReusable.DefaultQuantityPrecision());
+	
+	// Return text of query
 	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
 	
 EndFunction
@@ -1510,6 +1577,7 @@ Function Query_Filling_Attributes(TablesList)
 		|	LEFT JOIN Table_Document_PurchaseOrder_Totals AS Document_PurchaseOrder_Totals
 		|		ON Document_PurchaseOrder_Totals.FillingData = Document_PurchaseOrder_Attributes.FillingData";
 		
+		// Add selection to a query.
 		QueryText = QueryText + StrReplace(SelectionText, "{Into}",
 		?(IsBlankString(QueryText), 
 		"INTO
@@ -1548,10 +1616,13 @@ Function Query_Filling_LineItems(TablesList)
 		|	Document_PurchaseOrder_LineItems.FillingData,
 		|	Document_PurchaseOrder_LineItems.Product,
 		|	Document_PurchaseOrder_LineItems.ProductDescription,
-		|	Document_PurchaseOrder_LineItems.Quantity,
-		|	Document_PurchaseOrder_LineItems.UM,
-		|	Document_PurchaseOrder_LineItems.OrderPrice,
-		|	Document_PurchaseOrder_LineItems.Price,
+		|	Document_PurchaseOrder_LineItems.UnitSet,
+		|	Document_PurchaseOrder_LineItems.QtyUnits,
+		|	Document_PurchaseOrder_LineItems.Unit,
+		|	Document_PurchaseOrder_LineItems.QtyUM,
+		//|	Document_PurchaseOrder_LineItems.UM,
+		|	Document_PurchaseOrder_LineItems.PriceUnits,
+		|	Document_PurchaseOrder_LineItems.OrderPriceUnits,
 		|	Document_PurchaseOrder_LineItems.LineTotal,
 		|	Document_PurchaseOrder_LineItems.Order,
 		|	Document_PurchaseOrder_LineItems.ItemReceipt,
@@ -1565,8 +1636,9 @@ Function Query_Filling_LineItems(TablesList)
 		|FROM
 		|	Table_Document_PurchaseOrder_LineItems AS Document_PurchaseOrder_LineItems
 		|WHERE
-		|	Document_PurchaseOrder_LineItems.Quantity > 0";
+		|	Document_PurchaseOrder_LineItems.QtyUnits > 0";
 		
+		// Add selection to a query.
 		QueryText = QueryText + StrReplace(SelectionText, "{Into}",
 		?(IsBlankString(QueryText), 
 		"INTO
@@ -1736,9 +1808,9 @@ Function Query_Printing_Document_LineItems(TablesList)
 	|	DocumentLineItems.LineNumber          AS LineNumber,
 	|	DocumentLineItems.Product             AS Product,
 	|	DocumentLineItems.ProductDescription  AS ProductDescription,
-	|	DocumentLineItems.Quantity            AS Quantity,
-	|	DocumentLineItems.UM                  AS UM,
-	|	DocumentLineItems.Price               AS Price,
+	|	DocumentLineItems.QtyUnits            AS QtyUnits,
+	|	DocumentLineItems.Unit                AS Unit,
+	|	DocumentLineItems.PriceUnits          AS PriceUnits,
 	|	DocumentLineItems.LineTotal           AS LineTotal
 	// ------------------------------------------------------
 	|FROM

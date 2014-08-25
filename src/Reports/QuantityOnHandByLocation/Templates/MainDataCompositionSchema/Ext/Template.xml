@@ -184,18 +184,21 @@ FROM
 					<dcsset:left xsi:type="dcscor:Field">Location</dcsset:left>
 					<dcsset:comparisonType>Equal</dcsset:comparisonType>
 					<dcsset:right xsi:type="dcscor:DesignTimeValue">Catalog.Locations.MainWarehouse</dcsset:right>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 					<dcsset:userSettingID>9350e374-3b29-40f1-9017-254b4e0887d0</dcsset:userSettingID>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:FilterItemComparison">
 					<dcsset:use>false</dcsset:use>
 					<dcsset:left xsi:type="dcscor:Field">Category</dcsset:left>
 					<dcsset:comparisonType>Equal</dcsset:comparisonType>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 					<dcsset:userSettingID>8e100d4a-e4e7-4a9f-8367-e810de23169f</dcsset:userSettingID>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:FilterItemComparison">
 					<dcsset:use>false</dcsset:use>
 					<dcsset:left xsi:type="dcscor:Field">Item</dcsset:left>
 					<dcsset:comparisonType>Equal</dcsset:comparisonType>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 					<dcsset:userSettingID>07fb867a-5b59-4122-8454-bc88660ab3dd</dcsset:userSettingID>
 				</dcsset:item>
 			</dcsset:filter>
@@ -205,6 +208,7 @@ FROM
 					<dcscor:value xsi:type="v8:StandardPeriod">
 						<v8:variant xsi:type="v8:StandardPeriodVariant">ThisWeek</v8:variant>
 					</dcscor:value>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 					<dcsset:userSettingID>f7488329-75b5-41c8-9f8c-e08ba51189b5</dcsset:userSettingID>
 				</dcscor:item>
 			</dcsset:dataParameters>

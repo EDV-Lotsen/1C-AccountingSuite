@@ -33,14 +33,16 @@ EndProcedure
 Procedure FillCheckProcessing(Cancel, CheckedAttributes)
 	
 	// Check doubles in items (to be sure of proper orders placement).
-	GeneralFunctions.CheckDoubleItems(Ref, LineItems, "Product, Location, DeliveryDate, Project, Class, LineNumber",, Cancel);
+	GeneralFunctions.CheckDoubleItems(Ref, LineItems, "Product, Unit, Location, DeliveryDate, Project, Class, LineNumber",, Cancel);
 	
 EndProcedure
 
 Procedure Filling(FillingData, StandardProcessing)
 	
-	If ThisObject.IsNew() And Not ValueIsFilled(ThisObject.Number) Then ThisObject.SetNewNumber() EndIf;
+	// Forced assign the new document number.
+	If ThisObject.IsNew() And Not ValueIsFilled(ThisObject.Number) Then ThisObject.SetNewNumber(); EndIf;
 	
+	// Filling new document or filling on the base of another document.
 	If FillingData = Undefined Then
 		// Filling of the new created document with default values.
 		Currency         = Constants.DefaultCurrency.Get();
@@ -50,7 +52,6 @@ Procedure Filling(FillingData, StandardProcessing)
 	Else
 		
 		// Generate on the base of some document.
-		
 		If TypeOf(FillingData) = Type("DocumentRef.SalesOrder") Then
 			
 			//Fill attributes
@@ -68,28 +69,43 @@ Procedure Filling(FillingData, StandardProcessing)
 				
 				DropshipCompany   = FillingData.DropshipCompany;
 				DropshipShipTo    = FillingData.DropshipShipTo;
-				DropshipConfirmTo = FillingData.DropshipConfirmTo; 
+				DropshipConfirmTo = FillingData.DropshipConfirmTo;
 				DropshipRefNum    = FillingData.DropshipRefNum;
 				
 			EndIf;
 			
 			//Fill "line items"
-			QuantityPrecision = 0; //QuantityPrecision = Constants.QtyPrecision.Get(); 
+			QuantityPrecision = GeneralFunctionsReusable.DefaultQuantityPrecision();
 			For Each Line In FillingData.LineItems Do 
 				
 				NewLine = LineItems.Add();
 				NewLine.Product            = Line.Product;
 				NewLine.ProductDescription = Line.ProductDescription;
-				NewLine.Quantity           = Line.Quantity;
-				NewLine.UM                 = Line.UM;
-				NewLine.Price              = GeneralFunctions.ProductLastCost(NewLine.Product);
-				NewLine.LineTotal          = Round(Round(NewLine.Quantity, QuantityPrecision) * NewLine.Price, 2);
-				NewLine.Price              = ?(Round(NewLine.Quantity, QuantityPrecision) > 0,
-	                                           Round(NewLine.LineTotal / Round(NewLine.Quantity, QuantityPrecision), 2), 0);
+				NewLine.UnitSet            = Line.UnitSet;
+				//1.
+				NewLine.Unit               = Line.Unit;
+				NewLine.QtyUnits           = Line.QtyUnits;
+				
+				NewLine.QtyUM              = Round(Round(NewLine.QtyUnits, QuantityPrecision) *
+				                             ?(NewLine.Unit.Factor > 0, NewLine.Unit.Factor, 1), QuantityPrecision);
+				//2.							 
+				NewLine.Unit			   = NewLine.UnitSet.DefaultPurchaseUnit;							 
+				NewLine.QtyUnits		   = Round(NewLine.QtyUM / ?(NewLine.Unit.Factor <> 0, NewLine.Unit.Factor, 1), QuantityPrecision); 
+				
+				NewLine.QtyUM              = Round(NewLine.QtyUnits *
+				                             ?(NewLine.Unit.Factor > 0, NewLine.Unit.Factor, 1), QuantityPrecision);
+				//
+				NewLine.PriceUnits         = Round(GeneralFunctions.ProductLastCost(NewLine.Product) *
+				                             ?(NewLine.Unit.Factor > 0, NewLine.Unit.Factor, 1) /
+				                             ?(FillingData.ExchangeRate > 0, FillingData.ExchangeRate, 1), 2);
+				NewLine.LineTotal          = Round(Round(NewLine.QtyUnits, QuantityPrecision) * NewLine.PriceUnits, 2);
+				NewLine.PriceUnits         = ?(Round(NewLine.QtyUnits, QuantityPrecision) > 0,
+				                             Round(NewLine.LineTotal / Round(NewLine.QtyUnits, QuantityPrecision), 2), 0);
 				NewLine.Location           = Line.Location;
 				NewLine.DeliveryDate       = Line.DeliveryDate;
 				NewLine.Project            = Line.Project;
 				NewLine.Class              = Line.Class;
+				//NewLine.UM                 = Line.UM;
 				
 			EndDo;
 			
@@ -104,10 +120,12 @@ EndProcedure
 
 Procedure OnCopy(CopiedObject)
 	
-	If ThisObject.IsNew() Then ThisObject.SetNewNumber() EndIf;
+	If ThisObject.IsNew() Then ThisObject.SetNewNumber(); EndIf;
 	
 	// Clear manual adjustment attribute.
 	ManualAdjustment = False;
+	
+	BaseDocument = Undefined;
 	
 EndProcedure
 

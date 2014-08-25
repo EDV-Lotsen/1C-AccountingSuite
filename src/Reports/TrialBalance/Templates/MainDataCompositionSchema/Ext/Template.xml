@@ -218,10 +218,6 @@ FROM
 				<v8:lang>en</v8:lang>
 				<v8:content>Begin of period</v8:content>
 			</v8:item>
-			<v8:item>
-				<v8:lang>de</v8:lang>
-				<v8:content>Periodenanfang</v8:content>
-			</v8:item>
 		</title>
 		<valueType>
 			<v8:Type>xs:dateTime</v8:Type>
@@ -241,10 +237,6 @@ FROM
 				<v8:lang>en</v8:lang>
 				<v8:content>End of period</v8:content>
 			</v8:item>
-			<v8:item>
-				<v8:lang>de</v8:lang>
-				<v8:content>Ende der Periode</v8:content>
-			</v8:item>
 		</title>
 		<valueType>
 			<v8:Type>xs:dateTime</v8:Type>
@@ -263,10 +255,6 @@ FROM
 			<v8:item>
 				<v8:lang>en</v8:lang>
 				<v8:content>Period</v8:content>
-			</v8:item>
-			<v8:item>
-				<v8:lang>de</v8:lang>
-				<v8:content>Periode</v8:content>
 			</v8:item>
 		</title>
 		<valueType>
@@ -317,6 +305,7 @@ FROM
 					<dcscor:value xsi:type="v8:StandardPeriod">
 						<v8:variant xsi:type="v8:StandardPeriodVariant">ThisWeek</v8:variant>
 					</dcscor:value>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 					<dcsset:userSettingID>4c7c7280-62fe-4c5f-90d9-cfe3aeb971c4</dcsset:userSettingID>
 				</dcscor:item>
 			</dcsset:dataParameters>

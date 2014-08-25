@@ -36,6 +36,8 @@
 				<xr:Item xsi:type="xr:MDObjectRef">Document.Deposit</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">Document.ItemReceipt</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">Document.Quote</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Document.BankTransfer</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Document.GeneralJournalEntry</xr:Item>
 			</RegisteredDocuments>
 			<IncludeHelpInContents>false</IncludeHelpInContents>
 			<ListPresentation/>
@@ -66,6 +68,8 @@
 						<xr:Item xsi:type="xr:MDObjectRef">Document.SalesReturn.Attribute.DocumentTotalRC</xr:Item>
 						<xr:Item xsi:type="xr:MDObjectRef">Document.CashReceipt.Attribute.CashPayment</xr:Item>
 						<xr:Item xsi:type="xr:MDObjectRef">Document.Deposit.Attribute.DocumentTotalRC</xr:Item>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.BankTransfer.Attribute.Amount</xr:Item>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.GeneralJournalEntry.Attribute.DocumentTotalRC</xr:Item>
 					</References>
 				</Properties>
 			</Column>
@@ -91,6 +95,8 @@
 						<xr:Item xsi:type="xr:MDObjectRef">Document.SalesInvoice.Attribute.Memo</xr:Item>
 						<xr:Item xsi:type="xr:MDObjectRef">Document.SalesOrder.Attribute.Memo</xr:Item>
 						<xr:Item xsi:type="xr:MDObjectRef">Document.SalesReturn.Attribute.Memo</xr:Item>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.BankTransfer.Attribute.Memo</xr:Item>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.GeneralJournalEntry.Attribute.Memo</xr:Item>
 					</References>
 				</Properties>
 			</Column>
@@ -156,6 +162,27 @@
 						<xr:Item xsi:type="xr:MDObjectRef">Document.PurchaseOrder.Attribute.Project</xr:Item>
 						<xr:Item xsi:type="xr:MDObjectRef">Document.SalesInvoice.Attribute.Project</xr:Item>
 						<xr:Item xsi:type="xr:MDObjectRef">Document.SalesOrder.Attribute.Project</xr:Item>
+					</References>
+				</Properties>
+			</Column>
+			<Column uuid="8db58fe8-f541-4341-9388-a80479f4b2d9">
+				<Properties>
+					<Name>BankAccount</Name>
+					<Synonym>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Bank account</v8:content>
+						</v8:item>
+					</Synonym>
+					<Comment/>
+					<Indexing>DontIndex</Indexing>
+					<References>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.BankTransfer.Attribute.AccountFrom</xr:Item>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.CashReceipt.Attribute.BankAccount</xr:Item>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.CashSale.Attribute.BankAccount</xr:Item>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.Check.Attribute.BankAccount</xr:Item>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.Deposit.Attribute.BankAccount</xr:Item>
+						<xr:Item xsi:type="xr:MDObjectRef">Document.InvoicePayment.Attribute.BankAccount</xr:Item>
 					</References>
 				</Properties>
 			</Column>

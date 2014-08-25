@@ -91,7 +91,7 @@ Function PrepareDataBeforeWrite(AdditionalProperties, DocumentParameters, Cancel
 		                                  "Table_InventoryJournal_Lock", Query.TempTablesManager);
 	EndIf;
 	
-	// 3.3. Save balances in posting parameters.
+	// 3.2. Save balances in posting parameters.
 	If Not IsBlankString(Query.Text) Then
 		QueryResult = Query.ExecuteBatch();
 		For Each BalanceTable In BalancesList Do
@@ -100,7 +100,7 @@ Function PrepareDataBeforeWrite(AdditionalProperties, DocumentParameters, Cancel
 		Query.TempTablesManager.Close();
 	EndIf;
 	
-	// 3.4. Put structure of prechecked registers in additional properties.
+	// 3.3. Put structure of prechecked registers in additional properties.
 	If PreCheck.Count() > 0 Then
 		AdditionalProperties.Posting.Insert("PreCheck", PreCheck);
 	EndIf;
@@ -132,7 +132,7 @@ Function PrepareDataStructuresForPosting(DocumentRef, AdditionalProperties, Regi
 	
 	// Query for document's tables.
 	Query.Text   = "";
-	If OrdersPosting > 0 Then
+	If OrdersPosting Then
 		Query.Text = Query.Text +
 		             Query_OrdersStatuses(TablesList) +
 		             Query_OrdersRegistered(TablesList);
@@ -178,7 +178,8 @@ Function PrepareDataStructuresForPosting(DocumentRef, AdditionalProperties, Regi
 	// 4. Final check of posting data correctness (i.e. negative balances and s.o.).
 	
 	// Custom orders update after filling of all tables.
-	If OrdersPosting > 0 Then
+	If OrdersPosting Then
+		// Custom update after filling of all tables.
 		CheckCloseParentOrders(DocumentRef, AdditionalProperties, Query.TempTablesManager);
 	EndIf;
 	
@@ -212,7 +213,7 @@ Procedure CheckOrderQuantity(DocumentRef, DocumentDate, Company, LineItems, Filt
 	Query.SetParameter("Date", DocumentDate);
 	
 	// 2. Fill out the line items table.
-	InvoiceLineItems = LineItems.Unload(Filter, "LineNumber, Order, Product, Location, DeliveryDate, Project, Class, Quantity");
+	InvoiceLineItems = LineItems.Unload(Filter, "LineNumber, Order, Product, Unit, Location, DeliveryDate, Project, Class, QtyUnits");
 	InvoiceLineItems.Columns.Insert(1, "Company", New TypeDescription("CatalogRef.Companies"), "", 20);
 	InvoiceLineItems.FillValues(Company, "Company");
 	DocumentPosting.PutTemporaryTable(InvoiceLineItems, "InvoiceLineItems", Query.TempTablesManager);
@@ -224,14 +225,15 @@ Procedure CheckOrderQuantity(DocumentRef, DocumentDate, Company, LineItems, Filt
 		|	LineItems.Order               AS Order,
 		|	LineItems.Product.Code        AS ProductCode,
 		|	LineItems.Product.Description AS ProductDescription,
-		|	OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.InvoicedBalance - LineItems.Quantity AS UninvoicedQuantity
+		|	OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.InvoicedBalance - LineItems.QtyUnits AS UninvoicedQuantity
 		|FROM
 		|	InvoiceLineItems AS LineItems
-		|	LEFT JOIN AccumulationRegister.OrdersRegistered.Balance(&Date, (Company, Order, Product, Location, DeliveryDate, Project, Class)
-		|		   IN (SELECT Company, Order, Product, Location, DeliveryDate, Project, Class FROM InvoiceLineItems)) AS OrdersRegisteredBalance
+		|	LEFT JOIN AccumulationRegister.OrdersRegistered.Balance(&Date, (Company, Order, Product, Unit, Location, DeliveryDate, Project, Class)
+		|		   IN (SELECT Company, Order, Product, Unit, Location, DeliveryDate, Project, Class FROM InvoiceLineItems)) AS OrdersRegisteredBalance
 		|		ON  LineItems.Company      = OrdersRegisteredBalance.Company
 		|		AND LineItems.Order        = OrdersRegisteredBalance.Order
 		|		AND LineItems.Product      = OrdersRegisteredBalance.Product
+		|		AND LineItems.Unit         = OrdersRegisteredBalance.Unit
 		|		AND LineItems.Location     = OrdersRegisteredBalance.Location
 		|		AND LineItems.DeliveryDate = OrdersRegisteredBalance.DeliveryDate
 		|		AND LineItems.Project      = OrdersRegisteredBalance.Project
@@ -310,11 +312,11 @@ Function PrepareDataStructuresForFilling(DocumentRef, AdditionalProperties) Expo
 	Query.Text = Query.Text +
 	             Query_Filling_Attributes(TablesList) +
 	             Query_Filling_LineItems(TablesList);
-				 
+	
 	// Add check query.
 	Query.Text = Query.Text +
 	             Query_Filling_Check(TablesList, FillingCheckList(AdditionalProperties));
-				 
+	
 	If GeneralFunctionsReusable.FunctionalOptionValue("SalesTaxCharging") Then
 		Query.Text = Query.Text + Query_Filling_SalesTaxAcrossAgencies(TablesList);			 
 	EndIf;
@@ -397,460 +399,7 @@ EndFunction
 
 // -> CODE REVIEW
 Procedure Print(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
-	
-	SheetTitle = "Sales invoice";
-	CustomTemplate = GeneralFunctions.GetCustomTemplate("Document.SalesInvoice", SheetTitle);
-	
-	If CustomTemplate = Undefined Then
-		If Constants.SalesInvoicePO.Get() = False Then
-			Template = Documents.SalesInvoice.GetTemplate("New_SalesInvoice_Form");//("PF_MXL_SalesInvoice");
-		ElsIf Constants.SalesInvoicePO.Get() = True Then
-			Template = Documents.SalesInvoice.GetTemplate("PF_MXL_SalesInvoice_PO");
-		EndIf;
-	Else
-		Template = CustomTemplate;
-	EndIf;
-	
-	// Create a spreadsheet document and set print parameters.
-  // SpreadsheetDocument = New SpreadsheetDocument;
-   //SpreadsheetDocument.PrintParametersName = "PrintParameters_SalesInvoice";
-
-   // Quering necessary data.
-   Query = New Query();
-   Query.Text =
-   "SELECT
-   |	SalesInvoice.Ref,
-   |	SalesInvoice.Company,
-   |	SalesInvoice.Date,
-   |	SalesInvoice.DocumentTotal,
-   |	SalesInvoice.SalesTax,
-   |	SalesInvoice.Number,
-   |	SalesInvoice.ShipTo,
-   |	SalesInvoice.Currency,
-   |	SalesInvoice.LineItems.(
-   |		Product,
-   |		Product.UM AS UM,
-   |		ProductDescription,
-   |		LineItems.Order.RefNum AS PO,
-   |		Quantity,
-   |		Price,
-   |		LineTotal,
-   |		Project
-   |	),
-   |	SalesInvoice.Terms,
-   |	SalesInvoice.DueDate,
-   |	GeneralJournalBalance.AmountRCBalance AS Balance,
-   |	SalesInvoice.BillTo,
-   |	SalesInvoice.Posted,
-   |	SalesInvoice.LineSubtotal,
-   |	SalesInvoice.Discount,
-   |	SalesInvoice.SubTotal,
-   |	SalesInvoice.Shipping,
-   |	SalesInvoice.DocumentTotal AS DocumentTotal1,
-   |	SalesInvoice.RefNum,
-   |	SalesInvoice.TrackingNumber,
-   |	SalesInvoice.Carrier,
-   |	SalesInvoice.SalesPerson,
-   |	SalesInvoice.FOB,
-   |	SalesInvoice.DropshipCompany,
-   |	SalesInvoice.DropshipShipTo,
-   |	SalesInvoice.DropshipRefNum
-   |FROM
-   |	Document.SalesInvoice AS SalesInvoice
-   |		LEFT JOIN AccountingRegister.GeneralJournal.Balance AS GeneralJournalBalance
-   |		ON (GeneralJournalBalance.ExtDimension1 = SalesInvoice.Company)
-   |			AND (GeneralJournalBalance.ExtDimension2 = SalesInvoice.Ref)
-   |WHERE
-   |	SalesInvoice.Ref IN(&Ref)";
-   Query.SetParameter("Ref", Ref);
-   Selection = Query.Execute().Select();
-   
-   Spreadsheet.Clear();
-
-   While Selection.Next() Do
-	   
-	BinaryLogo = GeneralFunctions.GetLogo();
-	LogoPicture = New Picture(BinaryLogo);
-	DocumentPrinting.FillLogoInDocumentTemplate(Template, LogoPicture); 
-	
-	Try
-		FooterLogo = GeneralFunctions.GetFooter1();
-		Footer1Pic = New Picture(FooterLogo);
-		FooterLogo2 = GeneralFunctions.GetFooter2();
-		Footer2Pic = New Picture(FooterLogo2);
-		FooterLogo3 = GeneralFunctions.GetFooter3();
-		Footer3Pic = New Picture(FooterLogo3);
-	Except
-	EndTry;
-	
-	//Add footer with page count	
-	Template.Footer.Enabled = True;
-	Template.Footer.RightText = "Page [&PageNumber] of [&PagesTotal]";
-   
-	TemplateArea = Template.GetArea("Header");
-	  		
-	UsBill = PrintTemplates.ContactInfoDatasetUs();
-	If Selection.DropshipShipTo <> Catalogs.Addresses.EmptyRef() Then
-		ThemShip = PrintTemplates.ContactInfoDataset(Selection.DropshipCompany, "ThemShip", Selection.DropshipShipTo);
-	Else
-		ThemShip = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemShip", Selection.ShipTo);
-	EndIf;
-	
-	ThemBill = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemBill", Selection.BillTo);
-	
-	TemplateArea.Parameters.Fill(UsBill);
-	TemplateArea.Parameters.Fill(ThemShip);
-	TemplateArea.Parameters.Fill(ThemBill);
-		
-	If Constants.SIShowFullName.Get() = True Then
-		TemplateArea.Parameters.ThemFullName = ThemBill.ThemBillSalutation + " " + ThemBill.ThemBillFirstName + " " + ThemBill.ThemBillLastName;
-		TemplateArea.Parameters.ThemShipFullName = ThemShip.ThemShipSalutation + " " + ThemShip.ThemShipFirstName + " " + ThemShip.ThemShipLastName + Chars.LF;
-	EndIf;
-
-
-	
-	TemplateArea.Parameters.Date = Selection.Date;
-	TemplateArea.Parameters.Number = Selection.Number;
-	
-	If Selection.DropshipShipTo <> Catalogs.Addresses.EmptyRef() Then
-		TemplateArea.Parameters.RefNum = Selection.DropShipRefNum;	
-	Else 
-		TemplateArea.Parameters.RefNum = Selection.RefNum;
-	EndIf;
-
-	TemplateArea.Parameters.Carrier = Selection.Carrier;
-	TemplateArea.Parameters.TrackingNumber = Selection.TrackingNumber;
-	TemplateArea.Parameters.SalesPerson = Selection.SalesPerson;
-	TemplateArea.Parameters.FOB = Selection.FOB;
-	 Try
-	 	TemplateArea.Parameters.Terms = Selection.Terms;
-		TemplateArea.Parameters.DueDate = Selection.DueDate;
-	Except
-	EndTry;
-	
-	//UsBill filling
-	If TemplateArea.Parameters.UsBillLine1 <> "" Then
-		TemplateArea.Parameters.UsBillLine1 = TemplateArea.Parameters.UsBillLine1 + Chars.LF; 
-	EndIf;
-
-	If TemplateArea.Parameters.UsBillLine2 <> "" Then
-		TemplateArea.Parameters.UsBillLine2 = TemplateArea.Parameters.UsBillLine2 + Chars.LF; 
-	EndIf;
-	
-	If TemplateArea.Parameters.UsBillCityStateZIP <> "" Then
-		TemplateArea.Parameters.UsBillCityStateZIP = TemplateArea.Parameters.UsBillCityStateZIP + Chars.LF; 
-	EndIf;
-	
-	If TemplateArea.Parameters.UsBillPhone <> "" Then
-		TemplateArea.Parameters.UsBillPhone = TemplateArea.Parameters.UsBillPhone + Chars.LF; 
-	EndIf;
-	
-	If TemplateArea.Parameters.UsBillEmail <> "" AND Constants.SIShowEmail.Get() = False Then
-		TemplateArea.Parameters.UsBillEmail = ""; 
-	EndIf;
-		
-	
-	//ThemBill filling
-	If TemplateArea.Parameters.ThemBillLine1 <> "" Then
-		TemplateArea.Parameters.ThemBillLine1 = TemplateArea.Parameters.ThemBillLine1 + Chars.LF; 
-	EndIf;
-
-	If TemplateArea.Parameters.ThemBillLine2 <> "" Then
-		TemplateArea.Parameters.ThemBillLine2 = TemplateArea.Parameters.ThemBillLine2 + Chars.LF; 
-	EndIf;
-	
-	If TemplateArea.Parameters.ThemBillLine3 <> "" Then
-		TemplateArea.Parameters.ThemBillLine3 = TemplateArea.Parameters.ThemBillLine3 + Chars.LF; 
-	EndIf;
-	
-	//ThemShip filling
-	If TemplateArea.Parameters.ThemShipLine1 <> "" Then
-		TemplateArea.Parameters.ThemShipLine1 = TemplateArea.Parameters.ThemShipLine1 + Chars.LF; 
-	EndIf;
-
-	If TemplateArea.Parameters.ThemShipLine2 <> "" Then
-		TemplateArea.Parameters.ThemShipLine2 = TemplateArea.Parameters.ThemShipLine2 + Chars.LF; 
-	EndIf;
-	
-	If TemplateArea.Parameters.ThemShipLine3 <> "" Then
-		TemplateArea.Parameters.ThemShipLine3 = TemplateArea.Parameters.ThemShipLine3 + Chars.LF; 
-	EndIf;
-	 
-	 Spreadsheet.Put(TemplateArea);	 	 
-	 	 
-	If Constants.SIShowPhone2.Get() = False Then
-		Direction = SpreadsheetDocumentShiftType.Vertical;
-		Area = Spreadsheet.Area("MobileArea");
-		Spreadsheet.DeleteArea(Area, Direction);
-		Spreadsheet.InsertArea(Spreadsheet.Area("R10"), Spreadsheet.Area("R10"), 
-        SpreadsheetDocumentShiftType.Vertical);
-	EndIf;
-	
-	If Constants.SIShowWebsite.Get() = False Then
-		Direction = SpreadsheetDocumentShiftType.Vertical;
-		Area = Spreadsheet.Area("WebsiteArea");
-		Spreadsheet.DeleteArea(Area, Direction);
-		Spreadsheet.InsertArea(Spreadsheet.Area("R10"), Spreadsheet.Area("R10"), 
-		SpreadsheetDocumentShiftType.Vertical);
-
-	EndIf;
-	
-	If Constants.SIShowFax.Get() = False Then
-		Direction = SpreadsheetDocumentShiftType.Vertical;
-		Area = Spreadsheet.Area("FaxArea");
-		Spreadsheet.DeleteArea(Area, Direction);
-		Spreadsheet.InsertArea(Spreadsheet.Area("R10"), Spreadsheet.Area("R10"), 
-		SpreadsheetDocumentShiftType.Vertical);
-
-	EndIf;
-	
-	If Constants.SIShowFedTax.Get() = False Then
-		Direction = SpreadsheetDocumentShiftType.Vertical;
-		Area = Spreadsheet.Area("FedTaxArea");
-		Spreadsheet.DeleteArea(Area, Direction);
-		Spreadsheet.InsertArea(Spreadsheet.Area("R10"), Spreadsheet.Area("R10"), 
-		SpreadsheetDocumentShiftType.Vertical);
-
-	EndIf;
-		
-	SelectionLineItems = Selection.LineItems.Select();
-	TemplateArea = Template.GetArea("LineItems");
-	LineTotalSum = 0;
-	LineItemSwitch = False;
-	CurrentLineItemIndex = 0;
-	
-	While SelectionLineItems.Next() Do
-				 
-		CurrentLineItemIndex = CurrentLineItemIndex + 1;
-		
-		TemplateArea.Parameters.Fill(SelectionLineItems);
-		CompanyName = Selection.Company.Description;
-		CompanyNameLen = StrLen(CompanyName);
-		Try
-			 If NOT SelectionLineItems.Project = "" Then
-				ProjectLen = StrLen(SelectionLineItems.Project);
-			 	TemplateArea.Parameters.Project = Right(SelectionLineItems.Project, ProjectLen - CompanyNameLen - 2);
-			EndIf;
-		Except
-		EndTry;
-		LineTotal = SelectionLineItems.LineTotal;
-		TemplateArea.Parameters.Price = Selection.Currency.Symbol + Format(SelectionLineItems.Price, "NFD=2; NZ=");
-		TemplateArea.Parameters.LineTotal = Selection.Currency.Symbol + Format(SelectionLineItems.LineTotal, "NFD=2; NZ=");
-		
-		Spreadsheet.Put(TemplateArea, SelectionLineItems.Level());
-		
-		If LineItemSwitch = False Then
-			TemplateArea = Template.GetArea("LineItems2");
-			LineItemSwitch = True;
-		Else
-			TemplateArea = Template.GetArea("LineItems");
-			LineItemSwitch = False;
-		EndIf;
-		
-		// If can't fit next line, place header
-		
-		Footer = Template.GetArea("Area3");
-		RowsToCheck = New Array();
-		RowsToCheck.Add(TemplateArea);
-		DividerArea = Template.GetArea("DividerArea");
-		RowsToCheck.Add(DividerArea);
-		RowsToCheck.Add(Footer);
-		
-		If Spreadsheet.CheckPut(RowsToCheck) = False Then
-			
-			// Add divider and footer to bottom, break to next page, add header.
-			
-			Row = Template.GetArea("EmptyRow");
-			Spreadsheet.Put(Row);
-			
-			DividerArea = Template.GetArea("DividerArea");
-			Spreadsheet.Put(DividerArea);
-
-			If Constants.SIFoot1Type.Get()= Enums.TextOrImage.Image Then	
-				DocumentPrinting.FillPictureInDocumentTemplate(Template, Footer1Pic, "footer1");
-				TemplateArea2 = Template.GetArea("FooterField|FooterSection1");	
-				Spreadsheet.Put(TemplateArea2);
-			Elsif Constants.SIFoot1Type.Get() = Enums.TextOrImage.Text Then
-				TemplateArea2 = Template.GetArea("TextField|FooterSection1");
-				TemplateArea2.Parameters.FooterTextLeft = Constants.InvoiceFooterTextLeft.Get();
-				Spreadsheet.Put(TemplateArea2);
-			EndIf;
-		
-			If Constants.SIFoot2Type.Get()= Enums.TextOrImage.Image Then
-				DocumentPrinting.FillPictureInDocumentTemplate(Template, Footer2Pic, "footer2");
-				TemplateArea2 = Template.GetArea("FooterField|FooterSection2");	
-				Spreadsheet.Join(TemplateArea2);
-			
-			Elsif Constants.SIFoot2Type.Get() = Enums.TextOrImage.Text Then
-				TemplateArea2 = Template.GetArea("TextField|FooterSection2");
-				TemplateArea2.Parameters.FooterTextCenter = Constants.InvoiceFooterTextCenter.Get();
-				Spreadsheet.Join(TemplateArea2);
-			EndIf;
-		
-			If Constants.SIFoot3Type.Get()= Enums.TextOrImage.Image Then
-					DocumentPrinting.FillPictureInDocumentTemplate(Template, Footer3Pic, "footer3");
-					TemplateArea2 = Template.GetArea("FooterField|FooterSection3");	
-					Spreadsheet.Join(TemplateArea2);
-			Elsif Constants.SIFoot3Type.Get() = Enums.TextOrImage.Text Then
-					TemplateArea2 = Template.GetArea("TextField|FooterSection3");
-					TemplateArea2.Parameters.FooterTextRight = Constants.InvoiceFooterTextRight.Get();
-					Spreadsheet.Join(TemplateArea2);
-			EndIf;	
-			
-			Spreadsheet.PutHorizontalPageBreak();
-			Header =  Spreadsheet.GetArea("TopHeader");
-			
-			LineItemsHeader = Template.GetArea("LineItemsHeader");
-			EmptySpace = Template.GetArea("EmptyRow");
-			Spreadsheet.Put(Header);
-			Spreadsheet.Put(EmptySpace);
-			If CurrentLineItemIndex < SelectionLineItems.Count() Then
-				Spreadsheet.Put(LineItemsHeader);
-			EndIf;
-		EndIf;
-
-		 
-	 EndDo;
-	
-	TemplateArea = Template.GetArea("EmptySpace");
-	Spreadsheet.Put(TemplateArea);
-
-	 
-	Row = Template.GetArea("EmptyRow");
-	DetailArea = Template.GetArea("Area3");
-	Compensator = Template.GetArea("Compensator");
-	RowsToCheck = New Array();
-	RowsToCheck.Add(Row);
-	RowsToCheck.Add(DetailArea);
-	
-	
-	// If Area3 does not fit, print to next page and add preceding header
-	
-	AddHeader = False;
-	If Spreadsheet.CheckPut(DetailArea) = False Then
-		AddHeader = True;
-	EndIf;
-		
-	While Spreadsheet.CheckPut(RowsToCheck) = False Do
-		 Spreadsheet.Put(Row);
-	   	 RowsToCheck.Clear();
-	  	 RowsToCheck.Add(DetailArea);
-		 RowsToCheck.Add(Row);
-	EndDo;
-	
-	//Push down until bottom with space for footer  -  Saved here for future reference.
-
-		//Footer = Template.GetArea("FooterField");
-		//RowsToCheck.Add(Row);
-		//RowsToCheck.Add(Footer);
-		//While Spreadsheet.CheckPut(RowsToCheck) Do
-		//	 Spreadsheet.Put(Row);
-		//   	 RowsToCheck.Clear();
-		//  	 RowsToCheck.Add(DetailArea);
-		//	 RowsToCheck.Add(Row);
-		//	 RowsToCheck.Add(Footer);
-		//	 RowsToCheck.Add(Row);
-		//	 RowsToCheck.Add(Row);
-		//EndDo;
-	
-	If AddHeader = True Then
-		HeaderArea = Spreadsheet.GetArea("TopHeader");
-		Spreadsheet.Put(HeaderArea);
-		Spreadsheet.Put(Row);
-	EndIf;
-	
-	TemplateArea = Template.GetArea("Area3|Area1");					
-	TemplateArea.Parameters.TermAndCond = Selection.Ref.EmailNote;
-	Spreadsheet.Put(TemplateArea);
-
-	
-	TemplateArea = Template.GetArea("Area3|Area2");
-	TemplateArea.Parameters.LineSubtotal = Selection.Currency.Symbol + Format(Selection.LineSubtotal, "NFD=2; NZ=");
-	TemplateArea.Parameters.Discount = "(" + Selection.Currency.Symbol + Format(Selection.Discount, "NFD=2; NZ=") + ")";
-	TemplateArea.Parameters.Subtotal = Selection.Currency.Symbol + Format(Selection.Subtotal, "NFD=2; NZ=");
-	TemplateArea.Parameters.Shipping = Selection.Currency.Symbol + Format(Selection.Shipping, "NFD=2; NZ=");
-	TemplateArea.Parameters.SalesTax = Selection.Currency.Symbol + Format(Selection.SalesTax, "NFD=2; NZ=");
-	TemplateArea.Parameters.Total = Selection.Currency.Symbol + Format(Selection.DocumentTotal, "NFD=2; NZ=");
-	NonNullBalance = 0;
-	If Selection.Balance <> NULL Then NonNullBalance = Selection.Balance; EndIf;
-	TemplateArea.Parameters.Balance = Selection.Currency.Symbol + Format(NonNullBalance, "NFD=2; NZ=");
-
-	Spreadsheet.Join(TemplateArea);	
-		
-	Row = Template.GetArea("EmptyRow");
-	Footer = Template.GetArea("FooterField");
-	Compensator = Template.GetArea("Compensator");
-	RowsToCheck = New Array();
-	RowsToCheck.Add(Row);
-	RowsToCheck.Add(Footer);
-	RowsToCheck.Add(Row);	
-	
-	While Spreadsheet.CheckPut(RowsToCheck) = False Do
-		 Spreadsheet.Put(Row);
-	   	 RowsToCheck.Clear();
-	  	 RowsToCheck.Add(Footer);
-		 RowsToCheck.Add(Row);
-	EndDo;
-	 
-	While Spreadsheet.CheckPut(RowsToCheck) Do
-		 Spreadsheet.Put(Row);
-	   	 RowsToCheck.Clear();
-	  	 RowsToCheck.Add(Footer);
-		 RowsToCheck.Add(Row);
-		 RowsToCheck.Add(Row);
-		 RowsToCheck.Add(Row);
-
-	EndDo;
-
-
-	TemplateArea = Template.GetArea("DividerArea");
-	Spreadsheet.Put(TemplateArea);
-	
-	// Final footer 
-	
-	If Constants.SIFoot1Type.Get()= Enums.TextOrImage.Image Then	
-			DocumentPrinting.FillPictureInDocumentTemplate(Template, Footer1Pic, "footer1");
-			TemplateArea = Template.GetArea("FooterField|FooterSection1");	
-			Spreadsheet.Put(TemplateArea);
-	Elsif Constants.SIFoot1Type.Get() = Enums.TextOrImage.Text Then
-			TemplateArea = Template.GetArea("TextField|FooterSection1");
-			TemplateArea.Parameters.FooterTextLeft = Constants.InvoiceFooterTextLeft.Get();
-			Spreadsheet.Put(TemplateArea);
-	EndIf;
-		
-	If Constants.SIFoot2Type.Get()= Enums.TextOrImage.Image Then
-			DocumentPrinting.FillPictureInDocumentTemplate(Template, Footer2Pic, "footer2");
-			TemplateArea = Template.GetArea("FooterField|FooterSection2");	
-			Spreadsheet.Join(TemplateArea);
-			
-	Elsif Constants.SIFoot2Type.Get() = Enums.TextOrImage.Text Then
-			TemplateArea = Template.GetArea("TextField|FooterSection2");
-			TemplateArea.Parameters.FooterTextCenter = Constants.InvoiceFooterTextCenter.Get();
-			Spreadsheet.Join(TemplateArea);
-	EndIf;
-		
-	If Constants.SIFoot3Type.Get()= Enums.TextOrImage.Image Then
-			DocumentPrinting.FillPictureInDocumentTemplate(Template, Footer3Pic, "footer3");
-			TemplateArea = Template.GetArea("FooterField|FooterSection3");	
-			Spreadsheet.Join(TemplateArea);
-	Elsif Constants.SIFoot3Type.Get() = Enums.TextOrImage.Text Then
-			TemplateArea = Template.GetArea("TextField|FooterSection3");
-			TemplateArea.Parameters.FooterTextRight = Constants.InvoiceFooterTextRight.Get();
-			Spreadsheet.Join(TemplateArea);
-	EndIf;	
-	
-	Spreadsheet.PutHorizontalPageBreak(); //.ВывестиГоризонтальныйРазделительСтраниц();
-	Spreadsheet.FitToPage  = True;
-	
-	// Remove footer information if only a page.
-	If Spreadsheet.PageCount() = 1 Then
-		Spreadsheet.Footer.Enabled = False;
-	EndIf;
-
-   EndDo;
-   
-   //Return SpreadsheetDocument;
-   
+	PrintFormFunctions.PrintSI(Spreadsheet, SheetTitle, Ref, TemplateName); 	  
 EndProcedure
 
 Procedure PrintPackingList(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export  
@@ -882,11 +431,13 @@ Procedure PrintPackingList(Spreadsheet, SheetTitle, Ref, TemplateName = Undefine
    |	SalesInvoice.Currency,
    |	SalesInvoice.LineItems.(
    |		Product,
-   |		Product.UM AS UM,
    |		ProductDescription,
-   |		LineItems.Order.RefNum AS PO,
-   |		Quantity,
-   |		Price,
+   |		Order.RefNum AS PO,
+   |		QtyUnits,
+   |		Unit,
+   |		QtyUM,
+   //|		UM,
+   |		PriceUnits,
    |		LineTotal,
    |		Project
    |	),
@@ -975,9 +526,11 @@ Procedure PrintPackingList(Spreadsheet, SheetTitle, Ref, TemplateName = Undefine
 	 SelectionLineItems = Selection.LineItems.Select();
 	 TemplateArea = Template.GetArea("LineItems");
 	 LineTotalSum = 0;
+	 QuantityFormat = GeneralFunctionsReusable.DefaultQuantityFormat();
 	 While SelectionLineItems.Next() Do
 		 
 		 TemplateArea.Parameters.Fill(SelectionLineItems);
+		 TemplateArea.Parameters.Quantity  = Format(SelectionLineItems.QtyUnits, QuantityFormat)+ " " + SelectionLineItems.Unit;
 		 //TemplateArea.Parameters.PO = SelectionLineItems.PO;
 		 //LineTotal = SelectionLineItems.LineTotal;
 		 //LineTotalSum = LineTotalSum + LineTotal;
@@ -1070,11 +623,13 @@ Procedure PrintPackingListDropship(Spreadsheet, SheetTitle, Ref, TemplateName = 
    |	SalesInvoice.Currency,
    |	SalesInvoice.LineItems.(
    |		Product,
-   |		Product.UM AS UM,
    |		ProductDescription,
-   |		LineItems.Order.RefNum AS PO,
-   |		Quantity,
-   |		Price,
+   |		Order.RefNum AS PO,
+   |		QtyUnits,
+   |		Unit,
+   |		QtyUM,
+   //|		UM,
+   |		PriceUnits,
    |		LineTotal,
    |		Project
    |	),
@@ -1148,9 +703,11 @@ Procedure PrintPackingListDropship(Spreadsheet, SheetTitle, Ref, TemplateName = 
 	 SelectionLineItems = Selection.LineItems.Select();
 	 TemplateArea = Template.GetArea("LineItems");
 	 LineTotalSum = 0;
+	 QuantityFormat = GeneralFunctionsReusable.DefaultQuantityFormat();
 	 While SelectionLineItems.Next() Do
 		 
 		 TemplateArea.Parameters.Fill(SelectionLineItems);
+		 TemplateArea.Parameters.Quantity  = Format(SelectionLineItems.QtyUnits, QuantityFormat)+ " " + SelectionLineItems.Unit;
 		 Spreadsheet.Put(TemplateArea, SelectionLineItems.Level());
 		 
 	 EndDo;
@@ -1230,6 +787,7 @@ Function Query_OrdersRegistered(TablesList)
 	|	LineItems.Ref.Company                 AS Company,
 	|	LineItems.Order                       AS Order,
 	|	LineItems.Product                     AS Product,
+	|	LineItems.Unit                        AS Unit,
 	|	LineItems.Location                    AS Location,
 	|	LineItems.DeliveryDate                AS DeliveryDate,
 	|	LineItems.Project                     AS Project,
@@ -1238,17 +796,17 @@ Function Query_OrdersRegistered(TablesList)
 	// Resources
 	|	0                                     AS Quantity,
 	|	CASE WHEN LineItems.Product.Type = VALUE(Enum.InventoryTypes.Inventory)
-	|	     THEN CASE WHEN LineItems.Quantity - 
+	|	     THEN CASE WHEN LineItems.QtyUnits - 
 	|	                    CASE WHEN OrdersRegisteredBalance.Shipped - OrdersRegisteredBalance.Invoiced > 0
 	|	                         THEN OrdersRegisteredBalance.Shipped - OrdersRegisteredBalance.Invoiced
 	|	                         ELSE 0 END > 0
-	|	               THEN LineItems.Quantity - 
+	|	               THEN LineItems.QtyUnits - 
 	|	                    CASE WHEN OrdersRegisteredBalance.Shipped - OrdersRegisteredBalance.Invoiced > 0
 	|	                         THEN OrdersRegisteredBalance.Shipped - OrdersRegisteredBalance.Invoiced
 	|	                         ELSE 0 END
 	|	               ELSE 0 END
 	|	     ELSE 0 END                       AS Shipped,
-	|	LineItems.Quantity                    AS Invoiced
+	|	LineItems.QtyUnits                    AS Invoiced
 	// ------------------------------------------------------
 	// Attributes
 	// ------------------------------------------------------
@@ -1258,6 +816,7 @@ Function Query_OrdersRegistered(TablesList)
 	|		ON  OrdersRegisteredBalance.Company      = LineItems.Ref.Company
 	|		AND OrdersRegisteredBalance.Order        = LineItems.Order
 	|		AND OrdersRegisteredBalance.Product      = LineItems.Product
+	|		AND OrdersRegisteredBalance.Unit         = LineItems.Unit
 	|		AND OrdersRegisteredBalance.Location     = LineItems.Location
 	|		AND OrdersRegisteredBalance.DeliveryDate = LineItems.DeliveryDate
 	|		AND OrdersRegisteredBalance.Project      = LineItems.Project
@@ -1285,7 +844,8 @@ Function Query_OrdersRegistered_Lock(TablesList)
 	// Dimensions
 	|	&Company                              AS Company,
 	|	LineItems.Order                       AS Order,
-	|	LineItems.Product                     AS Product
+	|	LineItems.Product                     AS Product,
+	|	LineItems.Unit                        AS Unit
 	// ------------------------------------------------------
 	|FROM
 	|	Table_LineItems AS LineItems
@@ -1310,6 +870,7 @@ Function Query_OrdersRegistered_Balance(TablesList)
 	|	OrdersRegisteredBalance.Company          AS Company,
 	|	OrdersRegisteredBalance.Order            AS Order,
 	|	OrdersRegisteredBalance.Product          AS Product,
+	|	OrdersRegisteredBalance.Unit             AS Unit,
 	|	OrdersRegisteredBalance.Location         AS Location,
 	|	OrdersRegisteredBalance.DeliveryDate     AS DeliveryDate,
 	|	OrdersRegisteredBalance.Project          AS Project,
@@ -1346,7 +907,7 @@ Function Query_InventoryJournal_LineItems(TablesList)
 	|	LineItems.LocationActual                 AS Location,
 	// ------------------------------------------------------
 	// Agregates
-	|	SUM(LineItems.Quantity)                  AS QuantityRequested
+	|	SUM(LineItems.QtyUM)                     AS QuantityRequested
 	// ------------------------------------------------------
 	|INTO
 	|	Table_InventoryJournal_LineItems
@@ -1371,7 +932,7 @@ Function Query_InventoryJournal_LineItems(TablesList)
 	|	LineItems.LocationActual                 AS Location,
 	// ------------------------------------------------------
 	// Agregates
-	|	SUM(LineItems.Quantity)                  AS QuantityRequested
+	|	SUM(LineItems.QtyUM)                     AS QuantityRequested
 	// ------------------------------------------------------
 	|FROM
 	|	Document.SalesInvoice.LineItems AS LineItems
@@ -1394,7 +955,7 @@ Function Query_InventoryJournal_LineItems(TablesList)
 	|	VALUE(Catalog.Locations.EmptyRef)        AS Location,
 	// ------------------------------------------------------
 	// Agregates
-	|	SUM(LineItems.Quantity)                  AS QuantityRequested
+	|	SUM(LineItems.QtyUM)                     AS QuantityRequested
 	// ------------------------------------------------------
 	|FROM
 	|	Document.SalesInvoice.LineItems AS LineItems
@@ -1836,6 +1397,253 @@ Function Query_InventoryJournal_Balance(TablesList)
 	
 EndFunction
 
+// Query for document data.
+Function Query_GeneralJournal_Income(TablesList)
+	
+	// Add GeneralJournal income table to document structure.
+	TablesList.Insert("Table_GeneralJournal_Income", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // Income amounts selection
+	// ------------------------------------------------------
+	// Dimensions
+	|	LineItems.Product.IncomeAccount       AS IncomeAccount,
+	|	LineItems.Class                       AS Class,
+	|	LineItems.Project                     AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	LineItems.LineTotal                   AS Amount,
+	|	CASE WHEN LineItems.Ref.ExchangeRate > 0
+	|		 THEN LineItems.Ref.ExchangeRate
+	|		 ELSE 1 END                       AS ExchangeRate
+	// ------------------------------------------------------
+	|INTO
+	|	Table_GeneralJournal_Income
+	|FROM
+	|	Document.SalesInvoice.LineItems AS LineItems
+	|WHERE
+	|	LineItems.Ref = &Ref
+	|	AND // Amount > 0
+	|	LineItems.LineTotal > 0";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_GeneralJournal_Income_Accounts(TablesList)
+	
+	// Add GeneralJournal income accounts table to document structure.
+	TablesList.Insert("Table_GeneralJournal_Income_Accounts", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // Income accounts selection
+	// ------------------------------------------------------
+	// Dimensions
+	|	Income.IncomeAccount                  AS IncomeAccount,
+	// ------------------------------------------------------
+	// Resources
+	|	SUM(Income.Amount)                    AS Amount
+	// ------------------------------------------------------
+	|INTO
+	|	Table_GeneralJournal_Income_Accounts
+	|FROM
+	|	Table_GeneralJournal_Income AS Income
+	|GROUP BY
+	|	Income.IncomeAccount";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_GeneralJournal(TablesList)
+	
+	// Add GeneralJournal table to document structure.
+	TablesList.Insert("Table_GeneralJournal", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // Dr: Accounts receivable
+	// ------------------------------------------------------
+	// Standard attributes
+	|	SalesInvoice.Ref                      AS Recorder,
+	|	SalesInvoice.Date                     AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccountingRecordType.Debit)     AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	SalesInvoice.ARAccount                AS Account,
+	|	VALUE(ChartOfCharacteristicTypes.Dimensions.Company)
+	|	                                      AS ExtDimensionType1,
+	|	SalesInvoice.Company                  AS ExtDimension1,
+	|	VALUE(ChartOfCharacteristicTypes.Dimensions.Document)
+	|	                                      AS ExtDimensionType2,
+	|	SalesInvoice.Ref                      AS ExtDimension2,
+	// ------------------------------------------------------
+	// Dimensions
+	|	SalesInvoice.Currency                 AS Currency,
+	// ------------------------------------------------------
+	// Resources
+	|	SalesInvoice.DocumentTotal            AS Amount,
+	|	SalesInvoice.DocumentTotalRC          AS AmountRC,
+	// ------------------------------------------------------
+	// Attributes
+	|	Null                                  AS Memo
+	// ------------------------------------------------------
+	|FROM
+	|	Document.SalesInvoice AS SalesInvoice
+	|WHERE
+	|	SalesInvoice.Ref = &Ref
+	|	AND // Amount > 0
+	|	SalesInvoice.DocumentTotal > 0
+	|
+	|UNION ALL
+	|
+	|SELECT // Dr: Discount
+	// ------------------------------------------------------
+	// Standard attributes
+	|	SalesInvoice.Ref                      AS Recorder,
+	|	SalesInvoice.Date                     AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccountingRecordType.Debit)     AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	CASE
+	|		WHEN ISNULL(Constants.DiscountsAccount, VALUE(ChartOfAccounts.ChartOfAccounts.EmptyRef)) = VALUE(ChartOfAccounts.ChartOfAccounts.EmptyRef)
+	|		THEN Constants.ExpenseAccount     // Default expense account
+	|		ELSE Constants.DiscountsAccount   // Default discount account
+	|	END                                   AS Account,
+	|	NULL                                  AS ExtDimensionType1,
+	|	NULL                                  AS ExtDimension1,
+	|	NULL                                  AS ExtDimensionType2,
+	|	NULL                                  AS ExtDimension2,
+	// ------------------------------------------------------
+	// Dimensions
+	|	NULL                                  AS Currency,
+	// ------------------------------------------------------
+	// Resources
+	|	NULL                                  AS Amount,
+	|	CAST( // Format(-Discount * ExchangeRate, ""ND=15; NFD=2"")
+	|		-SalesInvoice.Discount *
+	|		 CASE WHEN SalesInvoice.ExchangeRate > 0
+	|			  THEN SalesInvoice.ExchangeRate
+	|			  ELSE 1 END
+	|		 AS NUMBER (15, 2))               AS AmountRC,
+	// ------------------------------------------------------
+	// Attributes
+	|	NULL                                  AS Memo
+	// ------------------------------------------------------
+	|FROM
+	|	Document.SalesInvoice AS SalesInvoice
+	|	LEFT JOIN Constants AS Constants
+	|		ON True
+	|WHERE
+	|	SalesInvoice.Ref = &Ref
+	|	AND // Discount > 0
+	|	-SalesInvoice.Discount > 0
+	|
+	|UNION ALL
+	|
+	|SELECT // Cr: Shipping
+	// ------------------------------------------------------
+	// Standard attributes
+	|	SalesInvoice.Ref                      AS Recorder,
+	|	SalesInvoice.Date                     AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccountingRecordType.Credit)    AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	CASE
+	|		WHEN ISNULL(Constants.ShippingExpenseAccount, VALUE(ChartOfAccounts.ChartOfAccounts.EmptyRef)) = VALUE(ChartOfAccounts.ChartOfAccounts.EmptyRef)
+	|		THEN Constants.IncomeAccount           // Default income account
+	|		ELSE Constants.ShippingExpenseAccount  // Default shipping expense account
+	|	END                                   AS Account,
+	|	NULL                                  AS ExtDimensionType1,
+	|	NULL                                  AS ExtDimension1,
+	|	NULL                                  AS ExtDimensionType2,
+	|	NULL                                  AS ExtDimension2,
+	// ------------------------------------------------------
+	// Dimensions
+	|	NULL                                  AS Currency,
+	// ------------------------------------------------------
+	// Resources
+	|	NULL                                  AS Amount,
+	|	CAST( // Format(Shipping * ExchangeRate, ""ND=15; NFD=2"")
+	|		SalesInvoice.Shipping *
+	|		CASE WHEN SalesInvoice.ExchangeRate > 0
+	|			 THEN SalesInvoice.ExchangeRate
+	|			 ELSE 1 END
+	|		AS NUMBER (15, 2))                AS AmountRC,
+	// ------------------------------------------------------
+	// Attributes
+	|	NULL                                  AS Memo
+	// ------------------------------------------------------
+	|FROM
+	|	Document.SalesInvoice AS SalesInvoice
+	|	LEFT JOIN Constants AS Constants
+	|		ON True
+	|WHERE
+	|	SalesInvoice.Ref = &Ref
+	|	AND // Discount > 0
+	|	-SalesInvoice.Discount > 0
+	|
+	|UNION ALL
+	|
+	|SELECT // Cr: Income
+	// ------------------------------------------------------
+	// Standard attributes
+	|	SalesInvoice.Ref                      AS Recorder,
+	|	SalesInvoice.Date                     AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccountingRecordType.Credit)    AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	Income.IncomeAccount                  AS Account,
+	|	NULL                                  AS ExtDimensionType1,
+	|	NULL                                  AS ExtDimension1,
+	|	NULL                                  AS ExtDimensionType2,
+	|	NULL                                  AS ExtDimension2,
+	// ------------------------------------------------------
+	// Dimensions
+	|	NULL                                  AS Currency,
+	// ------------------------------------------------------
+	// Resources
+	|	NULL                                  AS Amount,
+	|	CAST( // Format(Amount * ExchangeRate, ""ND=15; NFD=2"")
+	|		Income.Amount *
+	|		CASE WHEN SalesInvoice.ExchangeRate > 0
+	|			 THEN SalesInvoice.ExchangeRate
+	|			 ELSE 1 END
+	|		AS NUMBER (15, 2))                AS AmountRC,
+	// ------------------------------------------------------
+	// Attributes
+	|	NULL                                  AS Memo
+	// ------------------------------------------------------
+	|FROM
+	|	Table_GeneralJournal_Income_Accounts AS Income
+	|	LEFT JOIN Document.SalesInvoice AS SalesInvoice
+	|		ON True
+	|WHERE
+	|	SalesInvoice.Ref = &Ref
+	|	AND // Amount > 0
+	|	Income.Amount > 0";
+	//|
+	//|UNION ALL
+	//|
+	//|// COGS
+	//|// InvOrExp";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
 // Query for sales tax data
 Function Query_SalesTaxOwed(TablesList)
 	
@@ -1892,7 +1700,7 @@ Function Query_GeneralJournal_SalesTax(TablesList)
 	|	0                                        AS LineNumber,
 	|	VALUE(AccountingRecordType.Credit)       AS RecordType,
 	|	True                                     AS Active,
-	|	VALUE(ChartOfAccounts.ChartOfAccounts.TaxPayable) AS Account,
+	|	TaxPayableAccount.Value                  AS Account,
 	|	NULL                                     AS ExtDimensionTypeDr1,
 	|	NULL                                     AS ExtDimensionTypeDr2,
 	|	NULL                                     AS ExtDimensionDr1,
@@ -1909,7 +1717,8 @@ Function Query_GeneralJournal_SalesTax(TablesList)
 	|	""""                                     AS Memo
 	// ------------------------------------------------------
 	|FROM
-	|	Document.SalesInvoice AS SalesInvoice
+	|	Document.SalesInvoice      AS SalesInvoice,
+	|	Constant.TaxPayableAccount AS TaxPayableAccount
 	|WHERE
 	|	SalesInvoice.Ref = &Ref";
 	
@@ -1987,6 +1796,7 @@ Procedure CheckCloseParentOrders(DocumentRef, AdditionalProperties, TempTablesMa
 	|	OrdersRegisteredBalance.Company          AS Company,
 	|	OrdersRegisteredBalance.Order            AS Order,
 	|	OrdersRegisteredBalance.Product          AS Product,
+	|	OrdersRegisteredBalance.Unit             AS Unit,
 	|	OrdersRegisteredBalance.Location         AS Location,
 	|	OrdersRegisteredBalance.DeliveryDate     AS DeliveryDate,
 	|	OrdersRegisteredBalance.Project          AS Project,
@@ -2011,6 +1821,7 @@ Procedure CheckCloseParentOrders(DocumentRef, AdditionalProperties, TempTablesMa
 	|	OrdersRegistered.Company,
 	|	OrdersRegistered.Order,
 	|	OrdersRegistered.Product,
+	|	OrdersRegistered.Unit,
 	|	OrdersRegistered.Location,
 	|	OrdersRegistered.DeliveryDate,
 	|	OrdersRegistered.Project,
@@ -2037,6 +1848,7 @@ Procedure CheckCloseParentOrders(DocumentRef, AdditionalProperties, TempTablesMa
 	|	OrdersRegisteredBalance.Order            AS Order,
 	|	OrdersRegisteredBalance.Product          AS Product,
 	|	OrdersRegisteredBalance.Product.Type     AS Type,
+	|	OrdersRegisteredBalance.Unit             AS Unit,
 	|	OrdersRegisteredBalance.Location         AS Location,
 	|	OrdersRegisteredBalance.DeliveryDate     AS DeliveryDate,
 	|	OrdersRegisteredBalance.Project          AS Project,
@@ -2056,6 +1868,7 @@ Procedure CheckCloseParentOrders(DocumentRef, AdditionalProperties, TempTablesMa
 	|	OrdersRegisteredBalance.Order,
 	|	OrdersRegisteredBalance.Product,
 	|	OrdersRegisteredBalance.Product.Type,
+	|	OrdersRegisteredBalance.Unit,
 	|	OrdersRegisteredBalance.Location,
 	|	OrdersRegisteredBalance.DeliveryDate,
 	|	OrdersRegisteredBalance.Project,
@@ -2071,6 +1884,7 @@ Procedure CheckCloseParentOrders(DocumentRef, AdditionalProperties, TempTablesMa
 	|	OrdersRegisteredBalance.Company          AS Company,
 	|	OrdersRegisteredBalance.Order            AS Order,
 	|	OrdersRegisteredBalance.Product          AS Product,
+	|	OrdersRegisteredBalance.Unit             AS Unit,
 	|	OrdersRegisteredBalance.Location         AS Location,
 	|	OrdersRegisteredBalance.DeliveryDate     AS DeliveryDate,
 	|	OrdersRegisteredBalance.Project          AS Project,
@@ -2328,6 +2142,7 @@ Function Query_Filling_Document_SalesOrder_OrdersRegistered(TablesList)
 		|	OrdersRegisteredBalance.Company          AS Company,
 		|	OrdersRegisteredBalance.Order            AS Order,
 		|	OrdersRegisteredBalance.Product          AS Product,
+		|	OrdersRegisteredBalance.Unit             AS Unit,
 		|	OrdersRegisteredBalance.Location         AS Location,
 		|	OrdersRegisteredBalance.DeliveryDate     AS DeliveryDate,
 		|	OrdersRegisteredBalance.Project          AS Project,
@@ -2359,11 +2174,12 @@ Function Query_Filling_Document_SalesOrder_OrdersRegistered(TablesList)
 		|	Table_Document_SalesOrder_OrdersRegistered
 		|FROM
 		|	AccumulationRegister.OrdersRegistered.Balance(,
-		|		(Company, Order, Product, Location, DeliveryDate, Project, Class) IN
+		|		(Company, Order, Product, Unit, Location, DeliveryDate, Project, Class) IN
 		|			(SELECT
 		|				SalesOrderLineItems.Ref.Company,
 		|				SalesOrderLineItems.Ref,
 		|				SalesOrderLineItems.Product,
+		|				SalesOrderLineItems.Unit,
 		|				SalesOrderLineItems.Location,
 		|				SalesOrderLineItems.DeliveryDate,
 		|				SalesOrderLineItems.Project,
@@ -2391,31 +2207,51 @@ Function Query_Filling_Document_SalesOrder_LineItems(TablesList)
 		|	SalesOrderLineItems.Ref                 AS FillingData,
 		|	SalesOrderLineItems.Product             AS Product,
 		|	SalesOrderLineItems.ProductDescription  AS ProductDescription,
-		|	SalesOrderLineItems.UM                  AS UM,
-		|	SalesOrderLineItems.Price               AS Price,
+		|	SalesOrderLineItems.UnitSet             AS UnitSet,
+		|	SalesOrderLineItems.Unit                AS Unit,
+		//|	SalesOrderLineItems.UM                  AS UM,
+		|	SalesOrderLineItems.PriceUnits          AS PriceUnits,
 		|	
-		|	// Quantity
+		|	// QtyUnits
 		|	CASE
 		|		WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Open)
-		|			THEN ISNULL(OrdersRegistered.Quantity, SalesOrderLineItems.Quantity)
+		|			THEN ISNULL(OrdersRegistered.Quantity, SalesOrderLineItems.QtyUnits)
 		|		WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Backordered)
-		|			THEN ISNULL(OrdersRegistered.Backorder, SalesOrderLineItems.Quantity)
+		|			THEN ISNULL(OrdersRegistered.Backorder, SalesOrderLineItems.QtyUnits)
 		|		WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Closed)
 		|			THEN ISNULL(OrdersRegistered.Backorder, 0)
 		|		ELSE 0
-		|	END                                     AS Quantity,
+		|	END                                     AS QtyUnits,
+		|	
+		|	// QtyUM
+		|	CAST( // Format(Quantity * Unit.Factor, ""ND=15; NFD={4}"")
+		|		CASE
+		|			WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Open)
+		|				THEN ISNULL(OrdersRegistered.Quantity, SalesOrderLineItems.QtyUnits)
+		|			WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Backordered)
+		|				THEN ISNULL(OrdersRegistered.Backorder, SalesOrderLineItems.QtyUnits)
+		|			WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Closed)
+		|				THEN ISNULL(OrdersRegistered.Backorder, 0)
+		|			ELSE 0
+		|		END * 
+		|		CASE
+		|			WHEN SalesOrderLineItems.Unit.Factor > 0
+		|				THEN SalesOrderLineItems.Unit.Factor
+		|			ELSE 1
+		|		END
+		|		AS NUMBER (15, {QuantityPrecision}))                  AS QtyUM,
 		|	
 		|	// LineTotal
 		|	CAST( // Format(Quantity * Price, ""ND=15; NFD=2"")
 		|		CASE
 		|			WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Open)
-		|				THEN ISNULL(OrdersRegistered.Quantity, SalesOrderLineItems.Quantity)
+		|				THEN ISNULL(OrdersRegistered.Quantity, SalesOrderLineItems.QtyUnits)
 		|			WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Backordered)
-		|				THEN ISNULL(OrdersRegistered.Backorder, SalesOrderLineItems.Quantity)
+		|				THEN ISNULL(OrdersRegistered.Backorder, SalesOrderLineItems.QtyUnits)
 		|			WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Closed)
 		|				THEN ISNULL(OrdersRegistered.Backorder, 0)
 		|			ELSE 0
-		|		END * SalesOrderLineItems.Price
+		|		END * SalesOrderLineItems.PriceUnits
 		|		AS NUMBER (15, 2))                  AS LineTotal,
 		|	
 		|	// Discount
@@ -2425,13 +2261,13 @@ Function Query_Filling_Document_SalesOrder_LineItems(TablesList)
 		|				SalesOrderLineItems.Ref.Discount *
 		|				CASE // LineTotal = Quantity * Price
 		|					WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Open)
-		|						THEN ISNULL(OrdersRegistered.Quantity, SalesOrderLineItems.Quantity)
+		|						THEN ISNULL(OrdersRegistered.Quantity, SalesOrderLineItems.QtyUnits)
 		|					WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Backordered)
-		|						THEN ISNULL(OrdersRegistered.Backorder, SalesOrderLineItems.Quantity)
+		|						THEN ISNULL(OrdersRegistered.Backorder, SalesOrderLineItems.QtyUnits)
 		|					WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Closed)
 		|						THEN ISNULL(OrdersRegistered.Backorder, 0)
 		|					ELSE 0
-		|				END * SalesOrderLineItems.Price /
+		|				END * SalesOrderLineItems.PriceUnits /
 		|				SalesOrderLineItems.Ref.LineSubtotal
 		|			ELSE 0
 		|		END
@@ -2446,13 +2282,13 @@ Function Query_Filling_Document_SalesOrder_LineItems(TablesList)
 		|			WHEN SalesOrderLineItems.Taxable = True THEN
 		|				CASE // Quantity * Price
 		|					WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Open)
-		|						THEN ISNULL(OrdersRegistered.Quantity, SalesOrderLineItems.Quantity)
+		|						THEN ISNULL(OrdersRegistered.Quantity, SalesOrderLineItems.QtyUnits)
 		|					WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Backordered)
-		|						THEN ISNULL(OrdersRegistered.Backorder, SalesOrderLineItems.Quantity)
+		|						THEN ISNULL(OrdersRegistered.Backorder, SalesOrderLineItems.QtyUnits)
 		|					WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Closed)
 		|						THEN ISNULL(OrdersRegistered.Backorder, 0)
 		|					ELSE 0
-		|				END * SalesOrderLineItems.Price
+		|				END * SalesOrderLineItems.PriceUnits
 		|			ELSE 0
 		|		END
 		|		AS NUMBER (15, 2))                  AS TaxableAmount,
@@ -2464,26 +2300,26 @@ Function Query_Filling_Document_SalesOrder_LineItems(TablesList)
 		|			WHEN SalesOrderLineItems.Taxable = True THEN
 		|				CASE // LineTotal
 		|					WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Open)
-		|						THEN ISNULL(OrdersRegistered.Quantity, SalesOrderLineItems.Quantity)
+		|						THEN ISNULL(OrdersRegistered.Quantity, SalesOrderLineItems.QtyUnits)
 		|					WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Backordered)
-		|						THEN ISNULL(OrdersRegistered.Backorder, SalesOrderLineItems.Quantity)
+		|						THEN ISNULL(OrdersRegistered.Backorder, SalesOrderLineItems.QtyUnits)
 		|					WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Closed)
 		|						THEN ISNULL(OrdersRegistered.Backorder, 0)
 		|					ELSE 0
-		|				END * SalesOrderLineItems.Price
+		|				END * SalesOrderLineItems.PriceUnits
 		|				+
 		|				CASE // Discount
 		|					WHEN SalesOrderLineItems.Ref.LineSubtotal > 0 THEN
 		|						SalesOrderLineItems.Ref.Discount *
 		|						CASE // LineTotal = Quantity * Price
 		|							WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Open)
-		|								THEN ISNULL(OrdersRegistered.Quantity, SalesOrderLineItems.Quantity)
+		|								THEN ISNULL(OrdersRegistered.Quantity, SalesOrderLineItems.QtyUnits)
 		|							WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Backordered)
-		|								THEN ISNULL(OrdersRegistered.Backorder, SalesOrderLineItems.Quantity)
+		|								THEN ISNULL(OrdersRegistered.Backorder, SalesOrderLineItems.QtyUnits)
 		|							WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Closed)
 		|								THEN ISNULL(OrdersRegistered.Backorder, 0)
 		|							ELSE 0
-		|						END * SalesOrderLineItems.Price /
+		|						END * SalesOrderLineItems.PriceUnits /
 		|						SalesOrderLineItems.Ref.LineSubtotal
 		|					ELSE 0
 		|				END
@@ -2516,6 +2352,7 @@ Function Query_Filling_Document_SalesOrder_LineItems(TablesList)
 		|		ON  OrdersRegistered.Company      = SalesOrderLineItems.Ref.Company
 		|		AND OrdersRegistered.Order        = SalesOrderLineItems.Ref
 		|		AND OrdersRegistered.Product      = SalesOrderLineItems.Product
+		|		AND OrdersRegistered.Unit         = SalesOrderLineItems.Unit
 		|		AND OrdersRegistered.Location     = SalesOrderLineItems.Location
 		|		AND OrdersRegistered.DeliveryDate = SalesOrderLineItems.DeliveryDate
 		|		AND OrdersRegistered.Project      = SalesOrderLineItems.Project
@@ -2524,6 +2361,9 @@ Function Query_Filling_Document_SalesOrder_LineItems(TablesList)
 		|		ON OrdersStatuses.Order = SalesOrderLineItems.Ref
 		|WHERE
 		|	SalesOrderLineItems.Ref IN (&FillingData_Document_SalesOrder)";
+		
+	// Update query rounding using quantity precision.
+	QueryText = StrReplace(QueryText, "{QuantityPrecision}", GeneralFunctionsReusable.DefaultQuantityPrecision());
 	
 	// Return text of query
 	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
@@ -2667,9 +2507,12 @@ Function Query_Filling_LineItems(TablesList)
 		|	Document_SalesOrder_LineItems.FillingData,
 		|	Document_SalesOrder_LineItems.Product,
 		|	Document_SalesOrder_LineItems.ProductDescription,
-		|	Document_SalesOrder_LineItems.Quantity,
-		|	Document_SalesOrder_LineItems.UM,
-		|	Document_SalesOrder_LineItems.Price,
+		|	Document_SalesOrder_LineItems.UnitSet,
+		|	Document_SalesOrder_LineItems.QtyUnits,
+		|	Document_SalesOrder_LineItems.Unit,
+		|	Document_SalesOrder_LineItems.QtyUM,
+		//|	Document_SalesOrder_LineItems.UM,
+		|	Document_SalesOrder_LineItems.PriceUnits,
 		|	Document_SalesOrder_LineItems.LineTotal,
 		|	Document_SalesOrder_LineItems.Taxable,
 		|	Document_SalesOrder_LineItems.TaxableAmount,
@@ -2684,7 +2527,7 @@ Function Query_Filling_LineItems(TablesList)
 		|FROM
 		|	Table_Document_SalesOrder_LineItems AS Document_SalesOrder_LineItems
 		|WHERE
-		|	Document_SalesOrder_LineItems.Quantity > 0";
+		|	Document_SalesOrder_LineItems.QtyUnits > 0";
 		
 		// Add selection to a query
 		QueryText = QueryText + StrReplace(SelectionText, "{Into}",

@@ -178,14 +178,19 @@ SheetTitle = "Purchase order";
    |	PurchaseOrder.DocumentTotal,
    |	PurchaseOrder.DocumentTotalRC,
    |	PurchaseOrder.BaseDocument,
+   |	PurchaseOrder.EmailNote,
+   |	PurchaseOrder.LastEmail,
+   |	PurchaseOrder.EmailTo,
    |	PurchaseOrder.LineItems.(
    |		Ref,
    |		LineNumber,
    |		Product,
    |		ProductDescription,
-   |		Quantity,
-   |		UM,
-   |		Price,
+   |		UnitSet,
+   |		QtyUnits,
+   |		Unit,
+   |		QtyUM,
+   |		PriceUnits,
    |		LineTotal,
    |		Location,
    |		DeliveryDate,
@@ -222,10 +227,14 @@ SheetTitle = "Purchase order";
 	Template.Footer.RightText = "Page [&PageNumber] of [&PagesTotal]";
    
 	TemplateArea = Template.GetArea("Header");
+	
+	TemplateArea.Parameters.CustomerPO = Selection.DropShipRefNum;
 	  		
 	UsBill = PrintTemplates.ContactInfoDatasetUs();
+	//UseDropShip = False;
 	If Selection.DropshipShipTo <> Catalogs.Addresses.EmptyRef() Then
 		ThemShip = PrintTemplates.ContactInfoDataset(Selection.DropshipCompany, "ThemShip", Selection.DropshipShipTo);
+		//UseDropShip = True;
 	Else
 		// ship to us //
 		ThemShip = PrintTemplates.ContactInfoDatasetUs();
@@ -236,15 +245,6 @@ SheetTitle = "Purchase order";
 	TemplateArea.Parameters.Fill(UsBill);
 	Try TemplateArea.Parameters.Fill(ThemShip); Except Endtry;
 	TemplateArea.Parameters.Fill(ThemBill);
-//	TemplateArea.Parameters.RefNum = Selection.RefNum;
-	//TemplateArea.Parameters.SalesPerson = Selection.SalesPerson;
-			
-	////If Constants.SIShowFullName.Get() = True Then
-	//If SessionParameters.TenantValue = "1100674" Or Constants.SIShowFullName.Get() = True Then
-	//	TemplateArea.Parameters.ThemFullName = ThemBill.ThemBillSalutation + " " + ThemBill.ThemBillFirstName + " " + ThemBill.ThemBillLastName;
-	//	TemplateArea.Parameters.ThemFullName2 = ThemShip.ThemShipSalutation + " " + ThemShip.ThemShipFirstName + " " + ThemShip.ThemShipLastName;
-
-	//EndIf;
 	
 	TemplateArea.Parameters.VendorString = Upper(Constants.VendorName.Get()) + ":";
 		
@@ -258,14 +258,15 @@ SheetTitle = "Purchase order";
 		EndIf;
 	EndIf;
 	
+	
+	If Constants.POShowCountry.Get() = False Then
+		TemplateArea.Parameters.ThemBillCountry = "";
+		TemplateArea.Parameters.ThemShipCountry = "";
+	EndIf;
+
 	TemplateArea.Parameters.Date = Selection.Date;
 	TemplateArea.Parameters.Number = Selection.Number;
-	//TemplateArea.Parameters.RefNum = Selection.RefNum;
-	//TemplateArea.Parameters.Carrier = Selection.Carrier;
-	//TemplateArea.Parameters.TrackingNumber = Selection.TrackingNumber;
-	//TemplateArea.Parameters.SalesPerson = Selection.SalesPerson;
-	//TemplateArea.Parameters.FOB = Selection.FOB;
-	 Try
+	Try
 	 	TemplateArea.Parameters.Terms = Selection.Terms;
 		TemplateArea.Parameters.DueDate = Selection.DueDate;
 	Except
@@ -311,6 +312,10 @@ SheetTitle = "Purchase order";
 		TemplateArea.Parameters.ThemBillLine3 = "";
 	EndIf;
 	
+	If TemplateArea.Parameters.ThemBillCityStateZIP <> "" Then
+		TemplateArea.Parameters.ThemBillCityStateZIP = TemplateArea.Parameters.ThemBillCityStateZIP + Chars.LF; 
+	EndIf;
+	
 	//ThemShip filling
 	Try
 		If TemplateArea.Parameters.ThemShipLine1 <> "" Then
@@ -330,6 +335,11 @@ SheetTitle = "Purchase order";
 		Else
 			TemplateArea.Parameters.ThemShipLine3 = "";
 		EndIf;
+		
+		If TemplateArea.Parameters.ThemShipCityStateZIP <> "" Then
+			TemplateArea.Parameters.ThemShipCityStateZIP = TemplateArea.Parameters.ThemShipCityStateZIP + Chars.LF; 
+		EndIf;
+	
 	Except // ship to us
 		If Constants.MultiLocation.Get() = True Then
 			
@@ -342,10 +352,10 @@ SheetTitle = "Purchase order";
 			Else
 				comma = "";
 			EndIf;
-			TemplateArea.Parameters.ThemShipCityStateZIP = Selection.Location.City + comma + Selection.Location.State + " " + Selection.Location.ZIP;  
-			TemplateArea.Parameters.ThemShipPhone = "";  
-			TemplateArea.Parameters.ThemShipFax = ""; 
-			TemplateArea.Parameters.ThemShipEmail = "";
+			TemplateArea.Parameters.ThemShipCityStateZIP = Selection.Location.City + comma + Selection.Location.State + " " + Selection.Location.ZIP + Chars.LF;  
+			//TemplateArea.Parameters.ThemShipPhone = "";  
+			//TemplateArea.Parameters.ThemShipFax = ""; 
+			//TemplateArea.Parameters.ThemShipEmail = "";
 			
 		Else
 		
@@ -361,18 +371,19 @@ SheetTitle = "Purchase order";
 			TemplateArea.Parameters.ThemShipName = TemplateArea.Parameters.UsName;
 			
 			If TemplateArea.Parameters.UsBillCityStateZIP <> "" Then
-				TemplateArea.Parameters.ThemShipCityStateZIP = TemplateArea.Parameters.UsBillCityStateZIP; 
+				TemplateArea.Parameters.ThemShipCityStateZIP = TemplateArea.Parameters.UsBillCityStateZIP + Chars.LF; 
 			EndIf;
 			
-				TemplateArea.Parameters.ThemShipPhone = ""; 			
-				TemplateArea.Parameters.ThemShipFax = ""; 
-				TemplateArea.Parameters.ThemShipEmail = "";		
+//				TemplateArea.Parameters.ThemShipPhone = ""; 			
+//				TemplateArea.Parameters.ThemShipFax = ""; 
+//				TemplateArea.Parameters.ThemShipEmail = "";		
 		EndIf;
 		
 	EndTry;
+
 	 
 	 Spreadsheet.Put(TemplateArea);
-	 	 
+	 	
 	If Constants.POShowPhone2.Get() = False Then
 		Direction = SpreadsheetDocumentShiftType.Vertical;
 		Area = Spreadsheet.Area("MobileArea");
@@ -413,6 +424,7 @@ SheetTitle = "Purchase order";
 	LineTotalSum = 0;
 	LineItemSwitch = False;
 	CurrentLineItemIndex = 0;
+	QuantityFormat = GeneralFunctionsReusable.DefaultQuantityFormat();
 	While SelectionLineItems.Next() Do
 				 
 		TemplateArea.Parameters.Fill(SelectionLineItems);
@@ -432,9 +444,10 @@ SheetTitle = "Purchase order";
 			TemplateArea.Parameters.ProductDescription = SelectionLineItems.Product.vendor_description;
 		EndIf;
 		LineTotal = SelectionLineItems.LineTotal;
-		TemplateArea.Parameters.UM = SelectionLineItems.Product.UM;
-		TemplateArea.Parameters.Price = "$" + Format(SelectionLineItems.Price, "NFD=2; NZ=");
-		TemplateArea.Parameters.LineTotal = "$" + Format(SelectionLineItems.LineTotal, "NFD=2; NZ=");		
+		TemplateArea.Parameters.Quantity = Format(SelectionLineItems.QtyUnits, QuantityFormat);
+		TemplateArea.Parameters.Price = Selection.Currency.Symbol + Format(SelectionLineItems.PriceUnits, "NFD=2; NZ=");
+		TemplateArea.Parameters.UM = SelectionLineItems.Unit.Code;
+		TemplateArea.Parameters.LineTotal = Selection.Currency.Symbol + Format(SelectionLineItems.LineTotal, "NFD=2; NZ=");		
 		Spreadsheet.Put(TemplateArea, SelectionLineItems.Level());
 				
 		If LineItemSwitch = False Then
@@ -534,21 +547,6 @@ SheetTitle = "Purchase order";
 		 RowsToCheck.Add(Row);
 	EndDo;
 	
-	//Push down until bottom with space for footer  -  Saved here for future reference.
-
-		//Footer = Template.GetArea("FooterField");
-		//RowsToCheck.Add(Row);
-		//RowsToCheck.Add(Footer);
-		//While Spreadsheet.CheckPut(RowsToCheck) Do
-		//	 Spreadsheet.Put(Row);
-		//   	 RowsToCheck.Clear();
-		//  	 RowsToCheck.Add(DetailArea);
-		//	 RowsToCheck.Add(Row);
-		//	 RowsToCheck.Add(Footer);
-		//	 RowsToCheck.Add(Row);
-		//	 RowsToCheck.Add(Row);
-		//EndDo;
-	
 	If AddHeader = True Then
 		HeaderArea = Spreadsheet.GetArea("TopHeader");
 		Spreadsheet.Put(HeaderArea);
@@ -557,18 +555,12 @@ SheetTitle = "Purchase order";
 
 	 
 	TemplateArea = Template.GetArea("Area3|Area1");					
-	TemplateArea.Parameters.TermAndCond = Constants.PurOrderFooter.Get();
+	TemplateArea.Parameters.TermAndCond = Selection.Ref.EmailNote;
 	Spreadsheet.Put(TemplateArea);
 
 	
 	TemplateArea = Template.GetArea("Area3|Area2");
-	//TemplateArea.Parameters.LineSubtotal = Selection.Currency.Symbol + Format(Selection.LineSubtotal, "NFD=2; NZ=");
-	//TemplateArea.Parameters.Discount = "("+ Selection.Currency.Symbol + Format(Selection.Discount, "NFD=2; NZ=") + ")";
-	//TemplateArea.Parameters.Subtotal = Selection.Currency.Symbol + Format(Selection.Subtotal, "NFD=2; NZ=");
-	//TemplateArea.Parameters.Shipping = Selection.Currency.Symbol + Format(Selection.Shipping, "NFD=2; NZ=");
-	//TemplateArea.Parameters.SalesTax = Selection.Currency.Symbol + Format(Selection.SalesTax, "NFD=2; NZ=");
 	TemplateArea.Parameters.Total = Selection.Currency.Symbol + Format(Selection.DocumentTotal, "NFD=2; NZ=");
-//	TemplateArea.Parameters.Balance = Selection.Currency.Symbol + Format(Selection.Balance, "NFD=2; NZ=");
 
 	Spreadsheet.Join(TemplateArea);
 		
@@ -644,237 +636,6 @@ SheetTitle = "Purchase order";
 
    EndDo;	
 	
-	//	
-//	//------------------------------------------------------------------------------
-//	// 1. Filling of parameters.
-//	
-//	// Common filling of parameters.
-//	PrintingTables                  = New Structure;
-//	DocumentParameters              = New Structure("Ref, Metadata, TemplateName");
-//	DocumentParameters.Ref          = DocumentRef;
-//	DocumentParameters.Metadata     = Metadata.Documents.PurchaseOrder;
-//	DocumentParameters.TemplateName = TemplateName;
-//	
-//	//------------------------------------------------------------------------------
-//	// 2. Collect document data, available for printing, and fill printing structure.
-//	PrepareDataStructuresForPrinting(DocumentRef, DocumentParameters, PrintingTables);
-//	
-//	//------------------------------------------------------------------------------
-//	// 3. Fill output spreadsheet using the template and requested document data.
-//	
-//	// Define common template for the document.
-//	CommonTemplate       = DocumentPrinting.GetDocumentTemplate(DocumentParameters, PrintingTables);
-//	LogoPicture          = DocumentPrinting.GetDocumentLogo(DocumentParameters, PrintingTables);
-//	SheetTitle           = DocumentPrinting.GetDocumentTitle(DocumentParameters);
-//	LastUsedTemplateName = Undefined;
-//	
-//	// Prepare the output.
-//	Spreadsheet.Clear();
-//	
-//	Try
-//		FooterLogo = GeneralFunctions.GetFooterPO("POfooter1");
-//		Footer1Pic = New Picture(FooterLogo);
-//		FooterLogo2 = GeneralFunctions.GetFooterPO("POfooter2");
-//		Footer2Pic = New Picture(FooterLogo2);
-//		FooterLogo3 = GeneralFunctions.GetFooterPO("POfooter3");
-//		Footer3Pic = New Picture(FooterLogo3);
-//	Except
-//	EndTry;
-
-//	
-//	// Go thru references and fill out the spreadsheet by each document.
-//	For Each DocumentAttributes In PrintingTables.Table_Printing_Document_Attributes Do
-//		
-//		//------------------------------------------------------------------------------
-//		// 3.1. Define template for the document.
-//		
-//		// Set the document template.
-//		If (DocumentParameters.TemplateName = Undefined)
-//		Or TypeOf(DocumentParameters.TemplateName) = Type("String") Then
-//			// Assign the common template for all documents.
-//			Template = CommonTemplate;
-//			
-//		ElsIf TypeOf(DocumentParameters.TemplateName) = Type("Array") Then
-//			// Use an individual template for each document.
-//			IndividualTemplateName = DocumentPrinting.GetIndividualTemplateName(DocumentRef, DocumentAttributes.Ref, DocumentParameters);
-//			If IndividualTemplateName = Undefined Then
-//				Template = CommonTemplate;
-//				LastUsedTemplateName = Undefined;
-//			ElsIf IndividualTemplateName <> LastUsedTemplateName Then
-//				Template = DocumentPrinting.GetDocumentTemplate(DocumentParameters, PrintingTables, IndividualTemplateName);
-//				LastUsedTemplateName = IndividualTemplateName;
-//			EndIf;
-//		EndIf;
-//		
-//		//------------------------------------------------------------------------------
-//		// 3.2. Output document data to spreadsheet using selected template.
-//		
-//		// Document output.
-//		If Template <> Undefined Then
-//			
-//			// Put logo into the template.
-//			DocumentPrinting.FillLogoInDocumentTemplate(Template, LogoPicture);
-//			
-//			// Fill document header.
-//			TemplateArea = Template.GetArea("Header");
-//			TemplateArea.Parameters.Fill(DocumentAttributes);
-//			TemplateArea.Parameters.Fill(PrintingTables.Table_OurCompany_Addresses_BillingAddress[0]);
-//			TemplateArea.Parameters.Fill(PrintingTables.Table_Company_Addresses_BillingAddress.Find(DocumentAttributes.Ref, "Ref"));
-//			TemplateArea.Parameters.UsName2 = TemplateArea.Parameters.UsName;
-//			TemplateArea.Parameters.UsBillCityStateZip2 = TemplateArea.Parameters.UsBillCityStateZip;
-//			
-//			
-//			//If Shipto has an address
-//			If DocumentRef[0].Location.AddressLine1 <> "" Then
-//				
-//				TemplateArea.Parameters.UsBillLine1 = DocumentRef[0].Location.AddressLine1;
-//				TemplateArea.Parameters.UsBillLine2 = DocumentRef[0].Location.AddressLine2;
-//				TemplateArea.Parameters.UsBillCityStateZIP = DocumentRef[0].Location.City + ", " + DocumentRef[0].Location.State.Code + " " +  DocumentRef[0].Location.ZIP;
-//				TemplateArea.Parameters.UsBillCountry = DocumentRef[0].Location.Country;
-//				
-//			EndIf;
-//			
-//			//If a dropship customer exists
-//			If DocumentRef[0].DropshipCompany <> Catalogs.Companies.EmptyRef() Then
-//				
-//				TemplateArea.Parameters.UsName = DocumentRef[0].DropshipCompany;
-//				TemplateArea.Parameters.UsBillLine1 = DocumentRef[0].DropshipShipTo.AddressLine1;
-//				TemplateArea.Parameters.UsBillLine2 = DocumentRef[0].DropshipShipTo.AddressLine2;
-//				TemplateArea.Parameters.UsBillCityStateZIP = DocumentRef[0].DropshipShipTo.City + ", " + DocumentRef[0].DropshipShipTo.State.Code + " " +  DocumentRef[0].DropshipShipTo.Zip;
-//				TemplateArea.Parameters.UsBillCountry = DocumentRef[0].DropshipShipTo.Country;
-//				
-//			EndIf;
-//			
-//			If Constants.POShowEmail.Get() = False Then
-//				  TemplateArea.Parameters.UsBillEmail = "";
-//				 	
-
-//			EndIf;
-//			  
-//			If Constants.POShowFedTax.Get() = False Then
-//				  TemplateArea.Parameters.UsBillFedTaxID = "";
-//			  Else
-//				  TemplateArea.Parameters.UsBillFedTaxID = Constants.FederalTaxID.Get();
-//			EndIf;
-
-//			If Constants.POShowFax.Get() = False Then
-//				  TemplateArea.Parameters.UsBillFax = "";
-//			Else
-//				  TemplateArea.Parameters.UsBillFax = Constants.Fax.Get();	  	
-//			EndIf;
-
-//			Try
-//				If Constants.POShowWebsite.Get() = False Then
-//					  TemplateArea.Parameters.Website = "";
-//				Else
-//					  TemplateArea.Parameters.Website = Constants.Website.Get(); 
-//				  EndIf;
-//			Except
-//			EndTry;
-//			  
-//			If Constants.POShowPhone2.Get() = False Then
-//				  TemplateArea.Parameters.UsBillCell = "";
-//			Else
-//				  TemplateArea.Parameters.UsBillCell = Constants.Cell.Get();
-//			EndIf;
-//			  
-//			Try
-//				If TemplateArea.Parameters.UsBillFax <> "" And TemplateArea.Parameters.UsBillFax <> Undefined Then
-//					TemplateArea.Parameters.Fax = "Fax";
-//				EndIf;
-
-//				If TemplateArea.Parameters.USBillFedTaxID <> "" And TemplateArea.Parameters.USBillFedTaxID <> Undefined Then
-//					TemplateArea.Parameters.FederalTaxID = "Fed Tax ID";
-//				EndIf;
-//			Except
-//			EndTry;
-//  
-
-//			
-//			// Output the header to the sheet.
-//			Spreadsheet.Put(TemplateArea);
-//			
-//			// Output the line items header to the sheet.
-//			TemplateArea = Template.GetArea("LineItemsHeader");
-//			Spreadsheet.Put(TemplateArea);
-//			
-//			// Output line items of current document.
-//			TemplateArea = Template.GetArea("LineItems");
-//			LineItems = PrintingTables.Table_Printing_Document_LineItems.FindRows(New Structure("Ref", DocumentAttributes.Ref));
-//			For Each Row In LineItems Do
-//				//If vendor code or vendor description supplied, replace in template.
-//				TemplateArea.Parameters.Fill(Row);
-//				CurProd = Row.Product;
-//				If CurProd.vendor_code <> "" Then
-//					TemplateArea.Parameters.Product = CurProd.vendor_code;
-//				EndIf;
-//				
-//				If CurProd.vendor_description <> "" Then
-//					TemplateArea.Parameters.ProductDescription = CurProd.vendor_description;
-//				EndIf;
-//				Spreadsheet.Put(TemplateArea, 1);
-//			EndDo;
-//			
-//			// Output document total.
-//			TemplateArea = Template.GetArea("Total");
-//		 	TemplateArea.Parameters.TotalCur = "Total " + DocumentRef[0].Currency.Symbol;
-//			TemplateArea.Parameters.Fill(DocumentAttributes);
-//			Spreadsheet.Put(TemplateArea);
-//		EndIf;
-//		
-////newlyadded
-
-
-// 	TemplateArea = Template.GetArea("Notes");
-//	TemplateArea.Parameters.Notes = Constants.PONotes.Get();
-//	Spreadsheet.Put(TemplateArea);
-//	
-
-
-//	Try
-//		If Constants.POFoot1Type.Get()= Enums.TextOrImage.Image Then
-//			DocumentPrinting.FillPictureInDocumentTemplate(Template,Footer1Pic, "POfooter1");
-//		EndIf;
-//		If Constants.POFoot2Type.Get()= Enums.TextOrImage.Image Then
-//			DocumentPrinting.FillPictureInDocumentTemplate(Template, Footer2Pic, "POfooter2");
-//		EndIf;
-//		If Constants.POFoot3Type.Get()= Enums.TextOrImage.Image Then
-//			DocumentPrinting.FillPictureInDocumentTemplate(Template, Footer3Pic, "POfooter3");
-//		EndIf;	
-//	Except
-//	EndTry;	
-//	
-//	Row = Template.GetArea("SpaceRow");
-//	Footer = Template.GetArea("Footer");
-//	RowsToCheck = New Array();
-//	RowsToCheck.Add(Row);
-//	RowsToCheck.Add(Footer);
-//	
-//	If Constants.POFoot1Type.Get() = Enums.TextOrImage.Text Then
-//		Footer.Parameters.POFooterLeft = Constants.POFooterTextLeft.Get();
-//	EndIf;
-//	If Constants.POFoot2Type.Get() = Enums.TextOrImage.Text Then
-//		Footer.Parameters.POFooterCenter = Constants.POFooterTextCenter.Get();
-//	EndIf;
-//	If Constants.POFoot3Type.Get() = Enums.TextOrImage.Text Then
-//		Footer.Parameters.POFooterRight = Constants.POFooterTextRight.Get();
-//	EndIf;
-
-//	
-//	While Spreadsheet.CheckPut(RowsToCheck) Do
-//		 SpreadSheet.Put(Row);
-
-//		 RowsToCheck.Clear();
-//		 RowsToCheck.Add(Row);
-//		 RowsToCheck.Add(Footer);
-//		 RowsToCheck.Add(Row);
-//	EndDo;
-
-//	Spreadsheet.Put(Footer);
-////newlyadded
-//	Spreadsheet.PutHorizontalPageBreak();
-//	EndDo;
-		
 EndProcedure
 
 #EndIf
@@ -943,13 +704,14 @@ Function Query_OrdersDispatched(TablesList)
 	|	LineItems.Ref.Company                 AS Company,
 	|	LineItems.Ref                         AS Order,
 	|	LineItems.Product                     AS Product,
+	|	LineItems.Unit                        AS Unit,
 	|	LineItems.Location                    AS Location,
 	|	LineItems.DeliveryDate                AS DeliveryDate,
 	|	LineItems.Project                     AS Project,
 	|	LineItems.Class                       AS Class,
 	// ------------------------------------------------------
 	// Resources
-	|	LineItems.Quantity                    AS Quantity,
+	|	LineItems.QtyUnits                    AS Quantity,
 	|	0                                     AS Received,
 	|	0                                     AS Invoiced
 	// ------------------------------------------------------
@@ -1100,7 +862,7 @@ Function Query_Printing_Document_LineItems(TablesList)
 	|	DocumentLineItems.Product             AS Product,
 	|	DocumentLineItems.ProductDescription  AS ProductDescription,
 	|	DocumentLineItems.Quantity            AS Quantity,
-	|	DocumentLineItems.UM                  AS UM,
+	//|	DocumentLineItems.UM                  AS UM,
 	|	DocumentLineItems.Price               AS Price,
 	|	DocumentLineItems.LineTotal           AS LineTotal
 	// ------------------------------------------------------

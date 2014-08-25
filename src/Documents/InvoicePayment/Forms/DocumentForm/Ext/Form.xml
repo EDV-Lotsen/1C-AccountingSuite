@@ -10,21 +10,27 @@
 	<RepostOnWrite>true</RepostOnWrite>
 	<AutoCommandBar name="FormCommandBar" id="-1">
 		<ChildItems>
-			<Button name="FormPayWithDwolla" id="114">
-				<Type>CommandBarButton</Type>
-				<Visible>false</Visible>
-				<CommandName>Form.Command.PayWithDwolla</CommandName>
-				<ExtendedTooltip name="FormPayWithDwollaExtendedTooltip" id="115"/>
-			</Button>
 			<Button name="FormPayWithBitcoin" id="130">
 				<Type>CommandBarButton</Type>
 				<CommandName>Form.Command.PayWithBitcoin</CommandName>
 				<ExtendedTooltip name="FormPayWithBitcoinExtendedTooltip" id="131"/>
 			</Button>
+			<Button name="FormMarkAsVoid" id="132">
+				<Type>CommandBarButton</Type>
+				<CommandName>Form.Command.MarkAsVoid</CommandName>
+				<Title>
+					<v8:item>
+						<v8:lang>en</v8:lang>
+						<v8:content>Void payment</v8:content>
+					</v8:item>
+				</Title>
+				<ExtendedTooltip name="FormMarkAsVoidExtendedTooltip" id="133"/>
+			</Button>
 		</ChildItems>
 	</AutoCommandBar>
 	<Events>
 		<Event name="AfterWrite">AfterWrite</Event>
+		<Event name="NotificationProcessing">NotificationProcessing</Event>
 		<Event name="OnOpen">OnOpen</Event>
 		<Event name="BeforeWrite">BeforeWrite</Event>
 		<Event name="BeforeWriteAtServer">BeforeWriteAtServer</Event>
@@ -32,25 +38,60 @@
 		<Event name="FillCheckProcessingAtServer">FillCheckProcessingAtServer</Event>
 	</Events>
 	<ChildItems>
+		<UsualGroup name="VoidInfo" id="134">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Void info</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Void info</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Group>Horizontal</Group>
+			<Representation>None</Representation>
+			<ShowTitle>false</ShowTitle>
+			<BackColor>#FFFF99</BackColor>
+			<ExtendedTooltip name="VoidInfoExtendedTooltip" id="135"/>
+			<ChildItems>
+				<LabelDecoration name="VoidMessage" id="136">
+					<HorizontalStretch>true</HorizontalStretch>
+					<Font ref="sys:DefaultGUIFont" faceName="Segoe UI" height="12" bold="false" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
+					<Title formatted="false">
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Void message</v8:content>
+						</v8:item>
+					</Title>
+					<HorizontalAlign>Right</HorizontalAlign>
+					<ContextMenu name="VoidMessageContextMenu" id="137"/>
+					<ExtendedTooltip name="VoidMessageExtendedTooltip" id="138"/>
+				</LabelDecoration>
+				<LabelField name="VoidingGJ" id="139">
+					<DataPath>VoidingGJ</DataPath>
+					<TitleLocation>None</TitleLocation>
+					<HorizontalAlign>Left</HorizontalAlign>
+					<Hiperlink>true</Hiperlink>
+					<Font ref="sys:DefaultGUIFont" faceName="Segoe UI" height="12" kind="WindowsFont"/>
+					<ContextMenu name="VoidingGJContextMenu" id="140"/>
+					<ExtendedTooltip name="VoidingGJExtendedTooltip" id="141"/>
+				</LabelField>
+			</ChildItems>
+		</UsualGroup>
 		<UsualGroup name="Header" id="46">
 			<Title>
 				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Header</v8:content>
 				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>Kopfzeile</v8:content>
-				</v8:item>
 			</Title>
 			<ToolTip>
 				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Header</v8:content>
-				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>Kopfzeile</v8:content>
 				</v8:item>
 			</ToolTip>
 			<Group>Horizontal</Group>
@@ -115,19 +156,11 @@
 											<v8:lang>en</v8:lang>
 											<v8:content>Middle column</v8:content>
 										</v8:item>
-										<v8:item>
-											<v8:lang>de</v8:lang>
-											<v8:content>Mittlere Spalte</v8:content>
-										</v8:item>
 									</Title>
 									<ToolTip>
 										<v8:item>
 											<v8:lang>en</v8:lang>
 											<v8:content>Middle column</v8:content>
-										</v8:item>
-										<v8:item>
-											<v8:lang>de</v8:lang>
-											<v8:content>Mittlere Spalte</v8:content>
 										</v8:item>
 									</ToolTip>
 									<Group>Vertical</Group>
@@ -200,7 +233,7 @@
 							<Title>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>More</v8:content>
+									<v8:content>Trx detail</v8:content>
 								</v8:item>
 							</Title>
 							<ToolTip>
@@ -260,19 +293,11 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>Paid invoices</v8:content>
 				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>Bezahlte Rechnungen</v8:content>
-				</v8:item>
 			</Title>
 			<ToolTip>
 				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Paid invoices</v8:content>
-				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>Bezahlte Rechnungen</v8:content>
 				</v8:item>
 			</ToolTip>
 			<Group>Vertical</Group>
@@ -303,29 +328,29 @@
 					<ContextMenu name="LineItemsContextMenu" id="52"/>
 					<AutoCommandBar name="LineItemsCommandBar" id="53"/>
 					<ExtendedTooltip name="LineItemsExtendedTooltip" id="87"/>
-					<SearchStringAddition name="LineItemsSearchString" id="132">
+					<SearchStringAddition name="LineItemsSearchString" id="142">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>SearchStringRepresentation</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsSearchStringContextMenu" id="133"/>
-						<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="134"/>
+						<ContextMenu name="LineItemsSearchStringContextMenu" id="143"/>
+						<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="144"/>
 					</SearchStringAddition>
-					<ViewStatusAddition name="LineItemsViewStatus" id="135">
+					<ViewStatusAddition name="LineItemsViewStatus" id="145">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>ViewStatusRepresentation</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsViewStatusContextMenu" id="136"/>
-						<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="137"/>
+						<ContextMenu name="LineItemsViewStatusContextMenu" id="146"/>
+						<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="147"/>
 					</ViewStatusAddition>
-					<SearchControlAddition name="LineItemsSearchControl" id="138">
+					<SearchControlAddition name="LineItemsSearchControl" id="148">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>SearchControl</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsSearchControlContextMenu" id="139"/>
-						<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="140"/>
+						<ContextMenu name="LineItemsSearchControlContextMenu" id="149"/>
+						<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="150"/>
 					</SearchControlAddition>
 					<ChildItems>
 						<LabelField name="LineItemsLineNumber" id="54">
@@ -406,19 +431,11 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>Footer</v8:content>
 				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>Fußzeile</v8:content>
-				</v8:item>
 			</Title>
 			<ToolTip>
 				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Footer</v8:content>
-				</v8:item>
-				<v8:item>
-					<v8:lang>de</v8:lang>
-					<v8:content>Fußzeile</v8:content>
 				</v8:item>
 			</ToolTip>
 			<Group>Horizontal</Group>
@@ -439,19 +456,11 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Footer right column</v8:content>
 						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Rechte Spalte in der Fußzeile</v8:content>
-						</v8:item>
 					</Title>
 					<ToolTip>
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Footer right column</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Rechte Spalte in der Fußzeile</v8:content>
 						</v8:item>
 					</ToolTip>
 					<Group>Horizontal</Group>
@@ -516,23 +525,19 @@
 				<v8:Type>xs:boolean</v8:Type>
 			</Type>
 		</Attribute>
-	</Attributes>
-	<Commands>
-		<Command name="PayWithDwolla" id="1">
+		<Attribute name="VoidingGJ" id="4">
 			<Title>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Pay with Dwolla</v8:content>
+					<v8:content>Voiding GJ</v8:content>
 				</v8:item>
 			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Pay with dwolla</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Action>PayWithDwolla</Action>
-		</Command>
+			<Type>
+				<v8:Type>cfg:DocumentRef.GeneralJournalEntry</v8:Type>
+			</Type>
+		</Attribute>
+	</Attributes>
+	<Commands>
 		<Command name="PayAll" id="2">
 			<Title>
 				<v8:item>
@@ -562,6 +567,21 @@
 				</v8:item>
 			</ToolTip>
 			<Action>PayWithBitcoin</Action>
+		</Command>
+		<Command name="MarkAsVoid" id="4">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Void Payment</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Mark as void</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>MarkAsVoid</Action>
 		</Command>
 	</Commands>
 	<CommandInterface>

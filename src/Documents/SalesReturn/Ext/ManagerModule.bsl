@@ -73,7 +73,7 @@ Function PrepareDataBeforeWrite(AdditionalProperties, DocumentParameters, Cancel
 		                                  "Table_ItemLastCosts_Lock", Query.TempTablesManager);
 	EndIf;
 	
-	// 3.3. Save balances in posting parameters.
+	// 3.2. Save balances in posting parameters.
 	If Not IsBlankString(Query.Text) Then
 		QueryResult = Query.ExecuteBatch();
 		For Each BalanceTable In BalancesList Do
@@ -82,7 +82,7 @@ Function PrepareDataBeforeWrite(AdditionalProperties, DocumentParameters, Cancel
 		Query.TempTablesManager.Close();
 	EndIf;
 	
-	// 3.4. Put structure of prechecked registers in additional properties.
+	// 3.3. Put structure of prechecked registers in additional properties.
 	If PreCheck.Count() > 0 Then
 		AdditionalProperties.Posting.Insert("PreCheck", PreCheck);
 	EndIf;
@@ -189,276 +189,360 @@ EndFunction
 // Document printing
 
 // -> CODE REVIEW
-Procedure Print(Spreadsheet, Ref) Export
-		
-	CustomTemplate = GeneralFunctions.GetCustomTemplate("Document.SalesReturn", "Credit memo");
-	
-	If CustomTemplate = Undefined Then
-		Template = Documents.SalesReturn.GetTemplate("PF_MXL_SalesReturn");
-	Else
-		Template = CustomTemplate;
-	EndIf;
-	
-	// Create a spreadsheet document and set print parameters.
-  // SpreadsheetDocument = New SpreadsheetDocument;
-   //SpreadsheetDocument.PrintParametersName = "PrintParameters_SalesInvoice";
-
+Procedure Print(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
+	SheetTitle = "Credit Memo";
+    CustomTemplate = GeneralFunctions.GetCustomTemplate("Document.CreditMemo", SheetTitle);
+    
+    If CustomTemplate = Undefined Then
+    	Template = Documents.SalesReturn.GetTemplate("New_CreditMemo_Form2");
+    Else
+    	Template = CustomTemplate;
+    EndIf;
+ 
    // Quering necessary data.
    Query = New Query();
    Query.Text =
    "SELECT
    |	SalesReturn.Ref,
-   |	SalesReturn.Company,
-   |	SalesReturn.Date,
-   |	SalesReturn.DocumentTotal,
-   |	SalesReturn.SalesTaxRC,
-   |	SalesReturn.ReturnType,
-   |	SalesReturn.ParentDocument,
-   |	SalesReturn.RefNum,
+   |	SalesReturn.DataVersion,
+   |	SalesReturn.DeletionMark,
    |	SalesReturn.Number,
+   |	SalesReturn.Date,
+   |	SalesReturn.Posted,
+   |	SalesReturn.Company,
+   |	SalesReturn.ReturnType,
+   |	SalesReturn.SalesTaxRC,
+   |	SalesReturn.DocumentTotal,
+   |	SalesReturn.ParentDocument,
    |	SalesReturn.Currency,
-   //|	SalesReturn.PriceIncludesVAT,
-   //|	SalesReturn.VATTotal,
-   |	SalesReturn.LineItems.(
-   |		Product,
-   |		Product.UM AS UM,
-   |		ProductDescription,
-   |		Quantity,
-   //|		VATCode,
-   //|		VAT,
-   |		Price,
-   |		LineTotal
-   |	),
+   |	SalesReturn.ExchangeRate,
+   |	SalesReturn.DocumentTotalRC,
+   |	SalesReturn.Location,
    |	SalesReturn.DueDate,
-   |	GeneralJournalBalance.AmountRCBalance AS Balance
+   |	SalesReturn.Memo,
+   |	SalesReturn.ARAccount,
+   |	SalesReturn.RefNum,
+   |	SalesReturn.EmailTo,
+   |	SalesReturn.EmailNote,
+   |	SalesReturn.EmailCC,
+   |	SalesReturn.LastEmail,
+   |	SalesReturn.LineSubtotal,
+   |	SalesReturn.Subtotal,
+   |	SalesReturn.ManualAdjustment,
+   |	SalesReturn.SalesTaxRate,
+   |	SalesReturn.DiscountIsTaxable,
+   |	SalesReturn.TaxableSubtotal,
+   |	SalesReturn.DiscountPercent,
+   |	SalesReturn.Discount,
+   |	SalesReturn.Shipping,
+   |	SalesReturn.LineItems.(
+   |		Ref,
+   |		LineNumber,
+   |		Product,
+   |		ProductDescription,
+   |		UnitSet,
+   |		QtyUnits,
+   |		Unit,
+   |		QtyUM,
+   |		PriceUnits,
+   |		LineTotal,
+   |		Taxable
+   |	),
+   |	SalesReturn.SalesTaxAcrossAgencies.(
+   |		Ref,
+   |		LineNumber,
+   |		Agency,
+   |		Rate,
+   |		Amount,
+   |		SalesTaxRate,
+   |		SalesTaxComponent
+   |	)
    |FROM
-   |	AccountingRegister.GeneralJournal.Balance AS GeneralJournalBalance
-   |		RIGHT JOIN Document.SalesReturn AS SalesReturn
-   |		ON (GeneralJournalBalance.ExtDimension1 = SalesReturn.Company
-   |			AND GeneralJournalBalance.ExtDimension2 = SalesReturn.Ref)
+   |	Document.SalesReturn AS SalesReturn
    |WHERE
    |	SalesReturn.Ref IN(&Ref)";
    Query.SetParameter("Ref", Ref);
    Selection = Query.Execute().Select();
    
    Spreadsheet.Clear();
-   //InsertPageBreak = False;
-   While Selection.Next() Do
-	   
-	BinaryLogo = GeneralFunctions.GetLogo();
-	MyPicture = New Picture(BinaryLogo);
-	Pict=Template.Drawings.Add(SpreadsheetDocumentDrawingType.Picture);
-	IndexOf=Template.Drawings.IndexOf(Pict);
-	Template.Drawings[IndexOf].Picture = MyPicture;
-	Template.Drawings[IndexOf].Line = New Line(SpreadsheetDocumentDrawingLineType.None);
-	Template.Drawings[IndexOf].Place(Spreadsheet.Area("R3C1:R6C2"));
-	   
-	   
-   //	FirstDocument = True;
-   //
-   //	While Selection.Next() Do
-   // 	
-   // 	If Not FirstDocument Then
-   // 		// All documents need to be outputted on separate pages.
-   // 		SpreadsheetDocument.PutHorizontalPageBreak();
-   // 	EndIf;
-   // 	FirstDocument = False;
-   // 	// Remember current document output beginning line number.
-   // 	BeginningLineNumber = SpreadsheetDocument.TableHeight + 1;
 
-	 
-	//Template = PrintManagement.GetTemplate("Document.SalesInvoice.PF_MXL_SalesInvoice");
-	
- Query = New Query();
-   Query.Text =
+   While Selection.Next() Do
+  	 
+    BinaryLogo = GeneralFunctions.GetLogo();
+    LogoPicture = New Picture(BinaryLogo);
+    DocumentPrinting.FillLogoInDocumentTemplate(Template, LogoPicture); 
+    
+    Try
+    	FooterLogo = GeneralFunctions.GetFooterPO("CMfooter1");
+    	Footer1Pic = New Picture(FooterLogo);
+    	FooterLogo2 = GeneralFunctions.GetFooterPO("CMfooter2");
+    	Footer2Pic = New Picture(FooterLogo2);
+    	FooterLogo3 = GeneralFunctions.GetFooterPO("CMfooter3");
+    	Footer3Pic = New Picture(FooterLogo3);
+    Except
+    EndTry;
+   
+   QueryAddr = New Query();
+   QueryAddr.Text =
    "SELECT
-   |	SalesReturn.Ref,
-   |	SalesReturn.Company,
-   |	SalesReturn.Date,
-   |	SalesReturn.DocumentTotal,
-   |	SalesReturn.SalesTaxRC,
-   |	SalesReturn.ReturnType,
-   |	SalesReturn.ParentDocument,
-   |	SalesReturn.RefNum,
-   |	SalesReturn.Number,
-   |	SalesReturn.Currency,
-   //|	SalesReturn.PriceIncludesVAT,
-   //|	SalesReturn.VATTotal,
-   |	SalesReturn.LineItems.(
-   |		Product,
-   |		Product.UM AS UM,
-   |		ProductDescription,
-   |		Quantity,
-   //|		VATCode,
-   //|		VAT,
-   |		Price,
-   |		LineTotal
-   |	),
-   |	SalesReturn.DueDate,
-   |	GeneralJournalBalance.AmountRCBalance AS Balance
+   |	Addresses.Ref,
+   |	Addresses.DataVersion,
+   |	Addresses.DeletionMark,
+   |	Addresses.Owner,
+   |	Addresses.Code,
+   |	Addresses.Description,
+   |	Addresses.FirstName,
+   |	Addresses.MiddleName,
+   |	Addresses.LastName,
+   |	Addresses.Phone,
+   |	Addresses.Cell,
+   |	Addresses.Fax,
+   |	Addresses.Email,
+   |	Addresses.AddressLine1,
+   |	Addresses.AddressLine2,
+   |	Addresses.AddressLine3,
+   |	Addresses.City,
+   |	Addresses.State,
+   |	Addresses.Country,
+   |	Addresses.ZIP,
+   |	Addresses.DefaultBilling,
+   |	Addresses.DefaultShipping,
+   |	Addresses.RemitTo,
+   |	Addresses.Notes,
+   |	Addresses.Salutation,
+   |	Addresses.Suffix,
+   |	Addresses.CF1String,
+   |	Addresses.CF2String,
+   |	Addresses.CF3String,
+   |	Addresses.CF4String,
+   |	Addresses.CF5String,
+   |	Addresses.JobTitle,
+   |	Addresses.SalesPerson,
+   |	Addresses.Predefined,
+   |	Addresses.PredefinedDataName
    |FROM
-   |	AccountingRegister.GeneralJournal.Balance AS GeneralJournalBalance
-   |		RIGHT JOIN Document.SalesReturn AS SalesReturn
-   |		ON (GeneralJournalBalance.ExtDimension1 = SalesReturn.Company
-   |			AND GeneralJournalBalance.ExtDimension2 = SalesReturn.Ref)
+   |	Catalog.Addresses AS Addresses
    |WHERE
-   |	SalesReturn.Ref IN(&Ref)";
-   Query.SetParameter("Ref", Ref);
-   Test = Query.Execute().Select();
-	 
-	TemplateArea = Template.GetArea("Header");
-	  		
-	UsBill = PrintTemplates.ContactInfoDatasetUs();
-	//ThemShip = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemShip", Selection.ShipTo);
+   |	Addresses.Owner = &Owner
+   |	AND Addresses.DefaultBilling = &DefaultBilling";
+   QueryAddr.SetParameter("Owner", Selection.Company);
+   QueryAddr.SetParameter("DefaultBilling", True);
+   SelectionAddr = QueryAddr.Execute().Unload();
+
+   
+   
+    TemplateArea = Template.GetArea("Header");
+  			
+    UsBill = PrintTemplates.ContactInfoDatasetUs();
+    
+    ThemBill = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemBill", SelectionAddr[0].Ref);
+    
+    TemplateArea.Parameters.Fill(UsBill);
+    TemplateArea.Parameters.Fill(ThemBill);
+    		
+		
+	If Constants.CMShowFullName.Get() = True Then
+		TemplateArea.Parameters.ThemFullName = ThemBill.ThemBillSalutation + " " + ThemBill.ThemBillFirstName + " " + ThemBill.ThemBillLastName;
+	EndIf;
+	    
+    TemplateArea.Parameters.Date = Selection.Date;
+    TemplateArea.Parameters.Number = Selection.Number;
+	TemplateArea.Parameters.RefNum = Selection.RefNum;
 	
-	Query = New Query;
-		Query.Text =
-		"SELECT
-		|	Addresses.Ref
-		|FROM
-		|	Catalog.Addresses AS Addresses
-		|WHERE
-		|	Addresses.Owner = &Owner
-		|	AND Addresses.DefaultBilling = &True";
-	Query.Parameters.Insert("Owner", Selection.Company);
-	Query.Parameters.Insert("True", True);
-	BillAddr = Query.Execute().Unload();
-	If BillAddr.Count() > 0 Then
-		ThemBill = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemBill", BillAddr[0].Ref);
-	Else
-		ThemBill = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemBill",Catalogs.Addresses.EmptyRef());
+	//UsBill filling
+    If TemplateArea.Parameters.UsBillLine1 <> "" Then
+    	TemplateArea.Parameters.UsBillLine1 = TemplateArea.Parameters.UsBillLine1 + Chars.LF; 
+    EndIf;
+
+    If TemplateArea.Parameters.UsBillLine2 <> "" Then
+    	TemplateArea.Parameters.UsBillLine2 = TemplateArea.Parameters.UsBillLine2 + Chars.LF; 
+    EndIf;
+    
+    If TemplateArea.Parameters.UsBillCityStateZIP <> "" Then
+    	TemplateArea.Parameters.UsBillCityStateZIP = TemplateArea.Parameters.UsBillCityStateZIP + Chars.LF; 
+    EndIf;
+    
+    If TemplateArea.Parameters.UsBillPhone <> "" Then
+    	TemplateArea.Parameters.UsBillPhone = TemplateArea.Parameters.UsBillPhone + Chars.LF; 
+    EndIf;
+    
+    If TemplateArea.Parameters.UsBillEmail <> "" AND Constants.CMShowEmail.Get() = False Then
+    	TemplateArea.Parameters.UsBillEmail = ""; 
+    EndIf;
+
+
+    	
+    
+   // ThemBill filling
+	If TemplateArea.Parameters.ThemBillLine1 <> "" Then
+		TemplateArea.Parameters.ThemBillLine1 = TemplateArea.Parameters.ThemBillLine1 + Chars.LF; 
 	EndIf;
 
+	If TemplateArea.Parameters.ThemBillLine2 <> "" Then
+		TemplateArea.Parameters.ThemBillLine2 = TemplateArea.Parameters.ThemBillLine2 + Chars.LF; 
+	EndIf;
 	
-	TemplateArea.Parameters.Fill(UsBill);
-	//TemplateArea.Parameters.Fill(ThemShip);
-	TemplateArea.Parameters.Fill(ThemBill);
+	If TemplateArea.Parameters.ThemBillLine3 <> "" Then
+		TemplateArea.Parameters.ThemBillLine3 = TemplateArea.Parameters.ThemBillLine3 + Chars.LF; 
+	EndIf;
 	
-	  //  TemplateArea = Template.GetArea("Footer");
-	  //  OurContactInfo = UsBill.UsName + " - " + UsBill.UsBillLine1Line2 + " - " + UsBill.UsBillCityStateZIP + " - " + UsBill.UsBillPhone;
-	  //  TemplateArea.Parameters.OurContactInfo = OurContactInfo;
-	  //Spreadsheet.Put(TemplateArea);
-
-	
-	
-	 TemplateArea.Parameters.Date = Selection.Date;
-	 TemplateArea.Parameters.Number = Selection.Number;
-	 TemplateArea.Parameters.RMA = Selection.RefNum;
-	 Try
-	 	TemplateArea.Parameters.Terms = Selection.Terms;
-		TemplateArea.Parameters.DueDate = Selection.DueDate;
-	Except
-	EndTry;
+         
+     Spreadsheet.Put(TemplateArea);	
 	 
-	 Spreadsheet.Put(TemplateArea);
+	 	 
+    If Constants.CMShowPhone2.Get() = False Then
+    	Direction = SpreadsheetDocumentShiftType.Vertical;
+    	Area = Spreadsheet.Area("MobileArea");
+    	Spreadsheet.DeleteArea(Area, Direction);
+    	Spreadsheet.InsertArea(Spreadsheet.Area("R10"), Spreadsheet.Area("R10"), 
+  	  SpreadsheetDocumentShiftType.Vertical);
+    EndIf;
+    
+    If Constants.CMShowWebsite.Get() = False Then
+    	Direction = SpreadsheetDocumentShiftType.Vertical;
+    	Area = Spreadsheet.Area("WebsiteArea");
+    	Spreadsheet.DeleteArea(Area, Direction);
+    	Spreadsheet.InsertArea(Spreadsheet.Area("R10"), Spreadsheet.Area("R10"), 
+    	SpreadsheetDocumentShiftType.Vertical);
 
-	 TemplateArea = Template.GetArea("LineItemsHeader");
-	 Spreadsheet.Put(TemplateArea);
-	 
-	 SelectionLineItems = Selection.LineItems.Select();
-	 TemplateArea = Template.GetArea("LineItems");
-	 LineTotalSum = 0;
-	 While SelectionLineItems.Next() Do
-		 
-		 TemplateArea.Parameters.Fill(SelectionLineItems);
-		 CompanyName = Selection.Company.Description;
-		 CompanyNameLen = StrLen(CompanyName);
-		 Try
+    EndIf;
+    
+    If Constants.CMShowFax.Get() = False Then
+    	Direction = SpreadsheetDocumentShiftType.Vertical;
+    	Area = Spreadsheet.Area("FaxArea");
+    	Spreadsheet.DeleteArea(Area, Direction);
+    	Spreadsheet.InsertArea(Spreadsheet.Area("R10"), Spreadsheet.Area("R10"), 
+    	SpreadsheetDocumentShiftType.Vertical);
+
+    EndIf;
+    
+    If Constants.CMShowFedTax.Get() = False Then
+    	Direction = SpreadsheetDocumentShiftType.Vertical;
+    	Area = Spreadsheet.Area("FedTaxArea");
+    	Spreadsheet.DeleteArea(Area, Direction);
+    	Spreadsheet.InsertArea(Spreadsheet.Area("R10"), Spreadsheet.Area("R10"), 
+    	SpreadsheetDocumentShiftType.Vertical);
+
+    EndIf;
+    	
+	SelectionLineItems = Selection.LineItems.Select();
+	TemplateArea = Template.GetArea("LineItems");
+	LineTotalSum = 0;
+	LineItemSwitch = False;
+	//QuantityFormat = GeneralFunctionsReusable.DefaultQuantityFormat();
+	While SelectionLineItems.Next() Do
+				 
+		TemplateArea.Parameters.Fill(SelectionLineItems);
+		CompanyName = Selection.Company.Description;
+		CompanyNameLen = StrLen(CompanyName);
+		Try
 			 If NOT SelectionLineItems.Project = "" Then
 				ProjectLen = StrLen(SelectionLineItems.Project);
 			 	TemplateArea.Parameters.Project = Right(SelectionLineItems.Project, ProjectLen - CompanyNameLen - 2);
 			EndIf;
 		Except
 		EndTry;
-		 //TemplateArea.Parameters.PO = SelectionLineItems.PO;
-		 LineTotal = SelectionLineItems.LineTotal;
-		 LineTotalSum = LineTotalSum + LineTotal;
-		 Spreadsheet.Put(TemplateArea, SelectionLineItems.Level());
+		LineTotal = SelectionLineItems.LineTotal;
+		TemplateArea.Parameters.Quantity = Format(SelectionLineItems.QtyUnits);
+		TemplateArea.Parameters.Price = Selection.Currency.Symbol + Format(SelectionLineItems.PriceUnits, "NFD=2; NZ=");
+		TemplateArea.Parameters.UM = SelectionLineItems.Unit.Code;
+		TemplateArea.Parameters.LineTotal = Selection.Currency.Symbol + Format(SelectionLineItems.LineTotal, "NFD=2; NZ=");
+		Spreadsheet.Put(TemplateArea, SelectionLineItems.Level());
+				
+		If LineItemSwitch = False Then
+			TemplateArea = Template.GetArea("LineItems2");
+			LineItemSwitch = True;
+		Else
+			TemplateArea = Template.GetArea("LineItems");
+			LineItemSwitch = False;
+		EndIf;
 		 
 	 EndDo;
-	 //////   sales tax check
-	//If Selection.SalesTax <> 0 Then;
-		 TemplateArea = Template.GetArea("Subtotal");
-		 TemplateArea.Parameters.Subtotal = LineTotalSum;
-		 Spreadsheet.Put(TemplateArea);
-		 
-		 TemplateArea = Template.GetArea("SalesTax");
-		 TemplateArea.Parameters.SalesTaxTotal = Selection.SalesTaxRC;
-		 Spreadsheet.Put(TemplateArea);
-	//EndIf; 
-	  ////////
+    
+    TemplateArea = Template.GetArea("EmptySpace");
+    Spreadsheet.Put(TemplateArea);
+
+     
+    TemplateArea = Template.GetArea("Area3|Area1");					
+    TemplateArea.Parameters.TermAndCond = Selection.EmailNote;
+    Spreadsheet.Put(TemplateArea);
+     
+    TemplateArea = Template.GetArea("Area3|Area2");
+	TemplateArea.Parameters.LineSubtotal = Selection.Currency.Symbol + Format(Selection.LineSubtotal, "NFD=2; NZ=");
+	TemplateArea.Parameters.Discount = "("+ Selection.Currency.Symbol + Format(Selection.Discount, "NFD=2; NZ=") + ")";
+	TemplateArea.Parameters.Subtotal = Selection.Currency.Symbol + Format(Selection.Subtotal, "NFD=2; NZ=");
+	TemplateArea.Parameters.Shipping = Selection.Currency.Symbol + Format(Selection.Shipping, "NFD=2; NZ=");
+	TemplateArea.Parameters.SalesTax = Selection.Currency.Symbol + Format(Selection.SalesTaxRC, "NFD=2; NZ=");
+	TemplateArea.Parameters.Total = Selection.Currency.Symbol + Format(Selection.DocumentTotal, "NFD=2; NZ=");
+
+	Spreadsheet.Join(TemplateArea);
+    
+    TemplateArea = Template.GetArea("EmptyRow");
+    Spreadsheet.Put(TemplateArea);
+    
+    	
+    Row = Template.GetArea("EmptyRow");
+    Footer = Template.GetArea("FooterField");
+    Compensator = Template.GetArea("Compensator");
+    RowsToCheck = New Array();
+    RowsToCheck.Add(Row);
+    RowsToCheck.Add(Footer);
+    
+    
+    While Spreadsheet.CheckPut(RowsToCheck) = False Do
+    	 Spreadsheet.Put(Row);
+  	 	 RowsToCheck.Clear();
+  		 RowsToCheck.Add(Footer);
+    	 RowsToCheck.Add(Row);
+    EndDo;
+     
+    While Spreadsheet.CheckPut(RowsToCheck) Do
+    	 Spreadsheet.Put(Row);
+  	 	 RowsToCheck.Clear();
+  		 RowsToCheck.Add(Footer);
+    	 RowsToCheck.Add(Row);
+	 EndDo;
 	 
-	//If Selection.VATTotal <> 0 Then;
-	//	 TemplateArea = Template.GetArea("Subtotal");
-	//	 TemplateArea.Parameters.Subtotal = LineTotalSum;
-	//	 Spreadsheet.Put(TemplateArea);
-	//	 
-	//	 TemplateArea = Template.GetArea("VAT");
-	//	 TemplateArea.Parameters.VATTotal = Selection.VATTotal;
-	//	 Spreadsheet.Put(TemplateArea);
-	//EndIf; 
-		 
-	 TemplateArea = Template.GetArea("Total");
-	 //If Selection.PriceIncludesVAT Then
-	 	DTotal = LineTotalSum + Selection.SalesTaxRC;
-	//Else
-	//	DTotal = LineTotalSum + Selection.VATTotal;
-	//EndIf;
-	TemplateArea.Parameters.DocumentTotal = DTotal;
+	 TemplateArea = Template.GetArea("DividerArea");
 	Spreadsheet.Put(TemplateArea);
-	
-	//TemplateArea = Template.GetArea("Credits");
-	//If NOT Selection.Balance = NULL Then
-	//	TemplateArea.Parameters.Credits = DTotal - Selection.Balance;
-	//ElsIf Selection.Ref.Posted = FALSE Then
-	//	TemplateArea.Parameters.Credits = 0;
-	//Else
-	//	TemplateArea.Parameters.Credits = DTotal;
-	//EndIf;
-	//Spreadsheet.Put(TemplateArea);
-	//
-	//TemplateArea = Template.GetArea("Balance");
-	//If NOT Selection.Balance = NULL Then
-	//	TemplateArea.Parameters.Balance = Selection.Balance;
-	//Else
-	//	TemplateArea.Parameters.Balance = 0;
-	//EndIf;
-	//Spreadsheet.Put(TemplateArea);
-	 
-	//Try
-	// 	TemplateArea = Template.GetArea("Footer");
-	//	OurContactInfo = UsBill.UsName + " - " + UsBill.UsBillLine1Line2 + " - " + UsBill.UsBillCityStateZIP + " - " + UsBill.UsBillPhone;
-	//	TemplateArea.Parameters.OurContactInfo = OurContactInfo;
-	// 	Spreadsheet.Put(TemplateArea);
-	// Except
-	//EndTry;
+    
+	If Constants.CMFoot1Type.Get()= Enums.TextOrImage.Image Then	
+			DocumentPrinting.FillPictureInDocumentTemplate(Template, Footer1Pic, "CMfooter1");
+			TemplateArea = Template.GetArea("FooterField|FooterSection1");	
+			Spreadsheet.Put(TemplateArea);
+	Elsif Constants.CMFoot1Type.Get() = Enums.TextOrImage.Text Then
+			TemplateArea = Template.GetArea("TextField|FooterSection1");
+			TemplateArea.Parameters.CMFooterTextLeft = Constants.CMFooterTextLeft.Get();
+			Spreadsheet.Put(TemplateArea);
+	EndIf;
+		
+	If Constants.CMFoot2Type.Get()= Enums.TextOrImage.Image Then
+			DocumentPrinting.FillPictureInDocumentTemplate(Template, Footer2Pic, "CMfooter2");
+			TemplateArea = Template.GetArea("FooterField|FooterSection2");	
+			Spreadsheet.Join(TemplateArea);		
+	Elsif Constants.CMFoot2Type.Get() = Enums.TextOrImage.Text Then
+			TemplateArea = Template.GetArea("TextField|FooterSection2");
+			TemplateArea.Parameters.CMFooterTextCenter = Constants.CMFooterTextCenter.Get();
+			Spreadsheet.Join(TemplateArea);
+	EndIf;
+		
+	If Constants.CMFoot3Type.Get()= Enums.TextOrImage.Image Then
+			DocumentPrinting.FillPictureInDocumentTemplate(Template, Footer3Pic, "CMfooter3");
+			TemplateArea = Template.GetArea("FooterField|FooterSection3");	
+			Spreadsheet.Join(TemplateArea);
+	Elsif Constants.CMFoot3Type.Get() = Enums.TextOrImage.Text Then
+			TemplateArea = Template.GetArea("TextField|FooterSection3");
+			TemplateArea.Parameters.CMFooterTextRight = Constants.CMFooterTextRight.Get();
+			Spreadsheet.Join(TemplateArea);
+	EndIf;         
+    
+    	 
+    Spreadsheet.PutHorizontalPageBreak(); //.ВывестиГоризонтальныйРазделительСтраниц();
+    Spreadsheet.FitToPage  = True;
 
-
-	 //TemplateArea = Template.GetArea("Currency");
-	 //TemplateArea.Parameters.Currency = Selection.Currency;
-	 //Spreadsheet.Put(TemplateArea);
-	 
-     // Setting a print area in the spreadsheet document where to output the object.
-     // Necessary for kit printing.
-     //PrintManagement.SetDocumentPrintArea(SpreadsheetDocument, BeginningLineNumber, PrintObjects, Selection.Ref);
-
-	 //InsertPageBreak = True;
-	 
-	TemplateArea = Template.GetArea("EmptySpace");
-	Spreadsheet.Put(TemplateArea);
-
-	 
-	 TemplateArea = Template.GetArea("Footer");
-	 TemplateArea.Parameters.FooterContents = Constants.SalesInvoiceFooter.Get();
-	Spreadsheet.Put(TemplateArea);
-	 
-	Spreadsheet.ВывестиГоризонтальныйРазделительСтраниц();
-
-	 
+     
    EndDo;
-   
-   //Return SpreadsheetDocument;
-   
+	   
 EndProcedure
 // <- CODE REVIEW
 
@@ -490,7 +574,7 @@ Function Query_InventoryJournal_LineItems(TablesList)
 	|	LineItems.Ref.Location                   AS Location,
 	// ------------------------------------------------------
 	// Agregates
-	|	SUM(LineItems.Quantity)                  AS QuantityRequested
+	|	SUM(LineItems.QtyUM)                     AS QuantityRequested
 	// ------------------------------------------------------
 	|INTO
 	|	Table_InventoryJournal_LineItems
@@ -515,7 +599,7 @@ Function Query_InventoryJournal_LineItems(TablesList)
 	|	LineItems.Ref.Location                   AS Location,
 	// ------------------------------------------------------
 	// Agregates
-	|	SUM(LineItems.Quantity)                  AS QuantityRequested
+	|	SUM(LineItems.QtyUM)                     AS QuantityRequested
 	// ------------------------------------------------------
 	|FROM
 	|	Document.SalesReturn.LineItems           AS LineItems
@@ -538,7 +622,7 @@ Function Query_InventoryJournal_LineItems(TablesList)
 	|	VALUE(Catalog.Locations.EmptyRef)        AS Location,
 	// ------------------------------------------------------
 	// Agregates
-	|	SUM(LineItems.Quantity)                  AS QuantityRequested
+	|	SUM(LineItems.QtyUM)                     AS QuantityRequested
 	// ------------------------------------------------------
 	|FROM
 	|	Document.SalesReturn.LineItems           AS LineItems

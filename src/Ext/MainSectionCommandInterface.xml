@@ -13,7 +13,24 @@
 		</Command>
 		<Command name="DataProcessor.DownloadedTransactions.Command.DownloadedTransactions">
 			<Visibility>
-				<xr:Common>true</xr:Common>
+				<xr:Common>false</xr:Common>
+				<xr:Value name="Role.SalesFull">false</xr:Value>
+				<xr:Value name="Role.SalesView">false</xr:Value>
+				<xr:Value name="Role.PurchasingFull">false</xr:Value>
+				<xr:Value name="Role.PurchasingView">false</xr:Value>
+				<xr:Value name="Role.WarehouseFull">false</xr:Value>
+				<xr:Value name="Role.WarehouseView">false</xr:Value>
+				<xr:Value name="Role.BankReceiveFull">false</xr:Value>
+				<xr:Value name="Role.BankReceiveView">false</xr:Value>
+				<xr:Value name="Role.BankSendFull">false</xr:Value>
+				<xr:Value name="Role.BankSendView">false</xr:Value>
+				<xr:Value name="Role.ListUser">false</xr:Value>
+				<xr:Value name="Role.ReportOnly">false</xr:Value>
+				<xr:Value name="Role.ProjectsFull">false</xr:Value>
+				<xr:Value name="Role.ProjectsView">false</xr:Value>
+				<xr:Value name="Role.TimeTrackFull">false</xr:Value>
+				<xr:Value name="Role.TimeTrackView">false</xr:Value>
+				<xr:Value name="Role.НастройкаИОценкаПроизводительности">false</xr:Value>
 			</Visibility>
 		</Command>
 		<Command name="CommonCommand.LaunchSettings">
@@ -43,7 +60,7 @@
 		</Command>
 		<Command name="DataProcessor.DataExport.Command.DataExport">
 			<Visibility>
-				<xr:Common>true</xr:Common>
+				<xr:Common>false</xr:Common>
 			</Visibility>
 		</Command>
 		<Command name="Report.ARAging.StandardCommand.Open">
@@ -51,17 +68,7 @@
 				<xr:Common>false</xr:Common>
 			</Visibility>
 		</Command>
-		<Command name="0:00ec6294-236f-4b84-95ee-fb2434e1dd71">
-			<Visibility>
-				<xr:Common>false</xr:Common>
-			</Visibility>
-		</Command>
 		<Command name="Report.APAging.StandardCommand.Open">
-			<Visibility>
-				<xr:Common>false</xr:Common>
-			</Visibility>
-		</Command>
-		<Command name="0:e9a56080-f19e-4fde-9db1-70ba5edf74ad">
 			<Visibility>
 				<xr:Common>false</xr:Common>
 			</Visibility>
@@ -87,6 +94,11 @@
 			</Visibility>
 		</Command>
 		<Command name="Report.BudgetPlanActual.StandardCommand.Open">
+			<Visibility>
+				<xr:Common>false</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="DataProcessor.DownloadedTransactions.StandardCommand.Open">
 			<Visibility>
 				<xr:Common>false</xr:Common>
 			</Visibility>
@@ -133,15 +145,7 @@
 			<CommandGroup>ActionsPanelReports</CommandGroup>
 			<Placement>Manual</Placement>
 		</Command>
-		<Command name="0:00ec6294-236f-4b84-95ee-fb2434e1dd71">
-			<CommandGroup>ActionsPanelReports</CommandGroup>
-			<Placement>Manual</Placement>
-		</Command>
 		<Command name="Report.APAging.StandardCommand.Open">
-			<CommandGroup>ActionsPanelReports</CommandGroup>
-			<Placement>Manual</Placement>
-		</Command>
-		<Command name="0:e9a56080-f19e-4fde-9db1-70ba5edf74ad">
 			<CommandGroup>ActionsPanelReports</CommandGroup>
 			<Placement>Manual</Placement>
 		</Command>
@@ -163,6 +167,10 @@
 		</Command>
 		<Command name="Report.BudgetPlanActual.StandardCommand.Open">
 			<CommandGroup>ActionsPanelReports</CommandGroup>
+			<Placement>Manual</Placement>
+		</Command>
+		<Command name="DataProcessor.DownloadedTransactions.StandardCommand.Open">
+			<CommandGroup>ActionsPanelTools</CommandGroup>
 			<Placement>Manual</Placement>
 		</Command>
 	</CommandsPlacement>
@@ -197,13 +205,7 @@
 		<Command name="Report.ARAging.StandardCommand.Open">
 			<CommandGroup>ActionsPanelReports</CommandGroup>
 		</Command>
-		<Command name="0:00ec6294-236f-4b84-95ee-fb2434e1dd71">
-			<CommandGroup>ActionsPanelReports</CommandGroup>
-		</Command>
 		<Command name="Report.APAging.StandardCommand.Open">
-			<CommandGroup>ActionsPanelReports</CommandGroup>
-		</Command>
-		<Command name="0:e9a56080-f19e-4fde-9db1-70ba5edf74ad">
 			<CommandGroup>ActionsPanelReports</CommandGroup>
 		</Command>
 		<Command name="Report.GeneralLedger.StandardCommand.Open">

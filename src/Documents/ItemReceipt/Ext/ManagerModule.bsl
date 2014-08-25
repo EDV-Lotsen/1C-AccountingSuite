@@ -194,7 +194,7 @@ Procedure Print(Spreadsheet, Ref) Export
 	|	ItemReceipt.LineItems.(
 	|		Product,
 	|		ProductDescription,
-	|		Product.UM AS UM,
+	//|		Product.UnitSet.UM AS UM,
 	|		Quantity,
 	|		Price,
 	//|		VATCode,

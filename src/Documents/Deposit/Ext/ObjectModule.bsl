@@ -57,32 +57,7 @@ Procedure Posting(Cancel, Mode)
 	EndDo;
 	
 	// Writing bank reconciliation data
-	
-	//Records = InformationRegisters.TransactionReconciliation.CreateRecordSet();
-	//Records.Filter.Document.Set(Ref);
-	//Records.Filter.Account.Set(BankAccount);
-	//Record = Records.Add();
-	//Record.Document = Ref;
-	//Record.Account = BankAccount;
-	//Record.Reconciled = False;
-	//Record.Amount = DocumentTotalRC;
-	//Records.Write();
-	
-	Records = InformationRegisters.TransactionReconciliation.CreateRecordSet();
-	Records.Filter.Document.Set(Ref);
-	Records.Read();
-	If Records.Count() = 0 Then
-		Record = Records.Add();
-		Record.Document = Ref;
-		Record.Account = BankAccount;
-		Record.Reconciled = False;
-		Record.Amount = DocumentTotalRC;		
-	Else
-		Records[0].Account = BankAccount;
-		Records[0].Amount = DocumentTotalRC;
-	EndIf;
-	Records.Write();
-	
+			
 	ReconciledDocumentsServerCall.AddDocumentForReconciliation(RegisterRecords, Ref, BankAccount, Date, DocumentTotalRC);
 
 EndProcedure
@@ -110,23 +85,4 @@ Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 	
 EndProcedure
 
-Procedure UndoPosting(Cancel)
-	
-	// Deleting bank reconciliation data
-	
-	Records = InformationRegisters.TransactionReconciliation.CreateRecordManager();
-	Records.Document = Ref;
-	Records.Account = BankAccount;
-	Records.Read();
-	Records.Delete();
-
-EndProcedure
-
-Procedure BeforeDelete(Cancel)
-	
-	TRRecordset = InformationRegisters.TransactionReconciliation.CreateRecordSet();
-	TRRecordset.Filter.Document.Set(ThisObject.Ref);
-	TRRecordset.Write(True);
-
-EndProcedure
 

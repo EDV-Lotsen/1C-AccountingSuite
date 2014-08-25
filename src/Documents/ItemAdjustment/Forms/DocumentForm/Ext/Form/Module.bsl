@@ -26,7 +26,8 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	// 3. Set custom controls presentation.
 	
 	// Update quantities presentation.
-	QuantityFormat = GeneralFunctionsReusable.DefaultQuantityFormat();
+	QuantityPrecision = GeneralFunctionsReusable.DefaultQuantityPrecision();
+	QuantityFormat    = GeneralFunctionsReusable.DefaultQuantityFormat();
 	Items.QuantityBefore.EditFormat  = QuantityFormat;
 	Items.QuantityBefore.Format      = QuantityFormat;
 	Items.Quantity.EditFormat        = QuantityFormat;

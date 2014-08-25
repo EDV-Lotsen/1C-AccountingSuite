@@ -126,10 +126,6 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Balance FCY</v8:content>
 						</v8:item>
-						<v8:item>
-							<v8:lang>de</v8:lang>
-							<v8:content>Fällig in Fremdwährung</v8:content>
-						</v8:item>
 					</Title>
 					<Format>
 						<v8:item>
@@ -198,4 +194,16 @@ FROM
 			</Settings>
 		</Attribute>
 	</Attributes>
+	<CommandInterface>
+		<CommandBar>
+			<Item>
+				<Command>Document.SalesReturn.Command.Print</Command>
+				<Type>Auto</Type>
+				<CommandGroup>FormCommandBarImportant</CommandGroup>
+				<Visible>
+					<xr:Common>false</xr:Common>
+				</Visible>
+			</Item>
+		</CommandBar>
+	</CommandInterface>
 </Form>

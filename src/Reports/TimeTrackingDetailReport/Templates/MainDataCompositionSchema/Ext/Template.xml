@@ -7,13 +7,6 @@
 	<dataSet xsi:type="DataSetQuery">
 		<name>DataSet1</name>
 		<field xsi:type="DataSetFieldField">
-			<dataPath>Billed</dataPath>
-			<field>Billed</field>
-			<useRestriction>
-				<group>true</group>
-			</useRestriction>
-		</field>
-		<field xsi:type="DataSetFieldField">
 			<dataPath>Class</dataPath>
 			<field>Class</field>
 		</field>
@@ -128,8 +121,14 @@
 			<field>User</field>
 		</field>
 		<field xsi:type="DataSetFieldField">
-			<dataPath>Billable</dataPath>
-			<field>Billable</field>
+			<dataPath>InvoiceStatus</dataPath>
+			<field>InvoiceStatus</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Status</v8:content>
+				</v8:item>
+			</title>
 		</field>
 		<dataSource>DataSource1</dataSource>
 		<query>SELECT
@@ -142,18 +141,17 @@
 	TimeTrack.User,
 	TimeTrack.Memo,
 	TimeTrack.DateFrom,
-	TimeTrack.Billable,
-	TimeTrack.Billed,
 	TimeTrack.SalesInvoice,
 	TimeTrack.Class,
-	TimeTrack.SalesOrder
+	TimeTrack.SalesOrder,
+	TimeTrack.InvoiceStatus
 FROM
 	Document.TimeTrack AS TimeTrack
 WHERE
 	TimeTrack.DeletionMark = FALSE
 {WHERE
 	(TimeTrack.Date BETWEEN &amp;BeginOfPeriod AND &amp;EndOfPeriod),
-	(TimeTrack.Billed = &amp;Billed)}</query>
+	(TimeTrack.InvoiceStatus = &amp;InvoiceStatus)}</query>
 	</dataSet>
 	<calculatedField>
 		<dataPath>Amount</dataPath>
@@ -244,17 +242,17 @@ WHERE
 		<useRestriction>false</useRestriction>
 	</parameter>
 	<parameter>
-		<name>Billed</name>
+		<name>InvoiceStatus</name>
 		<title xsi:type="v8:LocalStringType">
 			<v8:item>
 				<v8:lang>en</v8:lang>
-				<v8:content>Billed</v8:content>
+				<v8:content>Status</v8:content>
 			</v8:item>
 		</title>
 		<valueType>
-			<v8:Type>xs:boolean</v8:Type>
+			<v8:Type xmlns:d4p1="http://v8.1c.ru/8.1/data/enterprise/current-config">d4p1:EnumRef.TimeTrackStatus</v8:Type>
 		</valueType>
-		<value xsi:type="xs:boolean">true</value>
+		<value xsi:type="dcscor:DesignTimeValue">Enum.TimeTrackStatus.Billed</value>
 		<useRestriction>false</useRestriction>
 	</parameter>
 	<settingsVariant>
@@ -281,7 +279,7 @@ WHERE
 					<dcsset:field>Task</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>Billable</dcsset:field>
+					<dcsset:field>InvoiceStatus</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>DateFrom</dcsset:field>
@@ -291,9 +289,6 @@ WHERE
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>SalesOrder</dcsset:field>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>Billed</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Memo</dcsset:field>
@@ -317,11 +312,14 @@ WHERE
 						<v8:startDate>0001-01-01T00:00:00</v8:startDate>
 						<v8:endDate>0001-01-01T00:00:00</v8:endDate>
 					</dcscor:value>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 					<dcsset:userSettingID>eacb2753-9a53-4649-9d61-98b94fb63b39</dcsset:userSettingID>
 				</dcscor:item>
 				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-					<dcscor:parameter>Billed</dcscor:parameter>
-					<dcscor:value xsi:type="xs:boolean">true</dcscor:value>
+					<dcscor:use>false</dcscor:use>
+					<dcscor:parameter>InvoiceStatus</dcscor:parameter>
+					<dcscor:value xsi:type="dcscor:DesignTimeValue">Enum.TimeTrackStatus.Billed</dcscor:value>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
 					<dcsset:userSettingID>91a19214-8c07-4a31-8996-412f304d95a3</dcsset:userSettingID>
 				</dcscor:item>
 			</dcsset:dataParameters>
@@ -345,6 +343,7 @@ WHERE
 					<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
 				</dcsset:selection>
 			</dcsset:item>
+			<dcsset:itemsViewMode>Normal</dcsset:itemsViewMode>
 			<dcsset:itemsUserSettingID>f9be6cd4-60d7-403d-8a91-156589acc92c</dcsset:itemsUserSettingID>
 		</dcsset:settings>
 	</settingsVariant>

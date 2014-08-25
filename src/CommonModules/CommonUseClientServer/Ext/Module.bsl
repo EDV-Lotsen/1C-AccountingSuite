@@ -1439,16 +1439,16 @@ Function ChangeFilterItems(SearchArea,
 								Val ViewMode = Undefined) Export
 	
 	If ValueIsFilled(FieldName) Then
-		SearchMethod = New DataCompositionField(FieldName);
+		SearchValue = New DataCompositionField(FieldName);
 		SearchMethod = 1;
 	Else
+		SearchValue  = Presentation;
 		SearchMethod = 2;
-		SearchMethod = Presentation;
 	EndIf;
 	
 	ItemArray = New Array;
 	
-	FindRecursively(SearchArea.Items, ItemArray, SearchMethod, SearchMethod);
+	FindRecursively(SearchArea.Items, ItemArray, SearchMethod, SearchValue);
 	
 	For Each Item In ItemArray Do
 		If FieldName <> Undefined Then

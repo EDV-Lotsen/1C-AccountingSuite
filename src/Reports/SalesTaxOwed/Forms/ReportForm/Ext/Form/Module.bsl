@@ -1,7 +1,11 @@
-﻿#Region EVENTS_HANDLERS
+﻿&AtServer
+Var OpeningReportForm; 
+
+#Region EVENTS_HANDLERS
 
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
+	
 	ThisIsDrillDown = False;
 	If ValueIsFilled(Parameters.VariantKey) Then
 		SetCurrentVariant(Parameters.VariantKey);
@@ -19,6 +23,31 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	Else
 		SetCurrentVariant(CurrentVariantKey);
 	EndIf;
+	
+	Items.PeriodVariant.ChoiceList.LoadValues(GeneralFunctions.GetCustomizedPeriodsList());
+	PeriodVariant = GeneralFunctions.GetDefaultPeriodVariant();
+	GeneralFunctions.ChangeDatesByPeriod(PeriodVariant, PeriodStartDate, PeriodEndDate);
+	
+	OpeningReportForm = True;
+	
+EndProcedure
+
+&AtClient
+Procedure OnOpen(Cancel)
+	
+	GeneralFunctions.ChangePeriodIntoUserSettings(ThisForm.Report.SettingsComposer, PeriodStartDate, PeriodEndDate);
+	
+EndProcedure
+
+&AtServer
+Procedure OnUpdateUserSettingSetAtServer(StandardProcessing)
+	
+	If OpeningReportForm <> Undefined And OpeningReportForm Then
+		
+	Else
+		GeneralFunctions.ChangePeriodIntoReportForm(ThisForm.Report.SettingsComposer, PeriodVariant, PeriodStartDate, PeriodEndDate);
+	EndIf;	
+		
 EndProcedure
 
 #EndRegion
@@ -51,9 +80,32 @@ Procedure ResultDetailProcessing(Item, Details, StandardProcessing)
 	EndIf;
 EndProcedure
 
-#EndRegion
+&AtClient
+Procedure PeriodVariantOnChange(Item)
+	
+	GeneralFunctions.ChangeDatesByPeriod(PeriodVariant, PeriodStartDate, PeriodEndDate);
+	GeneralFunctions.ChangePeriodIntoUserSettings(ThisForm.Report.SettingsComposer, PeriodStartDate, PeriodEndDate);
+	ModifiedStatePresentation();
+	
+EndProcedure
 
-#Region TABULAR_SECTION_EVENTS_HANDLERS
+&AtClient
+Procedure PeriodStartDateOnChange(Item)
+	
+	PeriodVariant = GeneralFunctions.GetCustomVariantName();
+	GeneralFunctions.ChangePeriodIntoUserSettings(ThisForm.Report.SettingsComposer, PeriodStartDate, PeriodEndDate);
+	ModifiedStatePresentation();
+	
+EndProcedure
+
+&AtClient
+Procedure PeriodEndDateOnChange(Item)
+	
+	PeriodVariant = GeneralFunctions.GetCustomVariantName();
+	GeneralFunctions.ChangePeriodIntoUserSettings(ThisForm.Report.SettingsComposer, PeriodStartDate, PeriodEndDate);
+	ModifiedStatePresentation();
+	
+EndProcedure
 
 #EndRegion
 
@@ -61,58 +113,26 @@ EndProcedure
 
 &AtClient
 Procedure Create(Command)
+	
+	GeneralFunctions.ChangePeriodIntoUserSettings(ThisForm.Report.SettingsComposer, PeriodStartDate, PeriodEndDate);
+	Report.SettingsComposer.LoadUserSettings(Report.SettingsComposer.UserSettings);
+	
 	ComposeResult();
+	
 EndProcedure
 
 &AtClient
 Procedure Excel(Command)
 	
-	FileName = "" + GetSystemTitle() + " - Sales tax owed.xlsx"; 
-	GetFile(GetFileName(), FileName, True); 
+	Structure = GeneralFunctions.GetExcelFile("Sales tax owed", Result);
+	
+	GetFile(Structure.Address, Structure.FileName, True); 
 
 EndProcedure
-
 
 #EndRegion
 
 #Region PRIVATE_IMPLEMENTATION
-
-&AtServer
-Function GetFileName()
-	
-	TemporaryFileName = GetTempFileName(".xlsx");
-	
-	Result.Write(TemporaryFileName, SpreadsheetDocumentFileType.XLSX);
-	BinaryData = New BinaryData(TemporaryFileName);
-	
-	DeleteFiles(TemporaryFileName);
-	
-	Return PutToTempStorage(BinaryData);
-	
-EndFunction
-
-&AtServerNoContext
-Function GetSystemTitle()
-	
-	SystemTitle = Constants.SystemTitle.Get();
-	
-	NewSystemTitle = "";
-	
-	For i = 1 To StrLen(SystemTitle) Do
-		
-		Char = Mid(SystemTitle, i, 1);
-		
-		If Find("#&\/:*?""<>|.", Char) > 0 Then
-			NewSystemTitle = NewSystemTitle + " ";	
-		Else
-			NewSystemTitle = NewSystemTitle + Char;	
-		EndIf;
-		
-	EndDo;	
-	
-	Return NewSystemTitle;
-	
-EndFunction
 
 &AtServer
 Procedure ModifiedStatePresentation()

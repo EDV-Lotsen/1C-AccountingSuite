@@ -54,9 +54,9 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	CustomerName                    = GeneralFunctionsReusable.GetCustomerName();
 	Items.Company.Title             = CustomerName;
 	Items.Company.ToolTip           = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = '%1 name'"),             CustomerName);
-	Items.RefNum.Title              = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = '%1 P.O. / Ref. #'"),    CustomerName);
-	Items.RefNum.ToolTip            = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = '%1 purchase order number /
-	                                                                                                      |Reference number'"),    CustomerName);
+	//Items.RefNum.Title              = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = '%1 P.O. / Ref. #'"),    CustomerName);
+	//Items.RefNum.ToolTip            = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = '%1 purchase order number /
+	//																									  |Reference number'"),    CustomerName);
 	Items.ShipTo.ToolTip            = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = '%1 shipping address'"), CustomerName);
 	Items.BillTo.ToolTip            = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = '%1 billing address'"),  CustomerName);
 	Items.ConfirmTo.ToolTip         = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = '%1 confirm address'"),  CustomerName);
@@ -68,7 +68,8 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	                                                                                                      |Reference number'"),    Lower(CustomerName));
 	
 	// Update quantities presentation.
-	QuantityFormat = GeneralFunctionsReusable.DefaultQuantityFormat();
+	QuantityPrecision = GeneralFunctionsReusable.DefaultQuantityPrecision();
+	QuantityFormat    = GeneralFunctionsReusable.DefaultQuantityFormat();
 	Items.LineItemsQuantity.EditFormat  = QuantityFormat;
 	Items.LineItemsQuantity.Format      = QuantityFormat;
 	Items.LineItemsShipped.EditFormat   = QuantityFormat;
@@ -148,7 +149,13 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Cancel = True;
 		Return;
 	EndIf;
-			
+	
+	UpdateInformationPO();
+	
+	If Object.Ref.IsEmpty() Then
+		Object.EmailNote = Constants.SalesOrderFooter.Get();
+	EndIf;
+	
 EndProcedure
 
 // -> CODE REVIEW
@@ -230,6 +237,23 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 	
 EndProcedure
 
+&AtClient
+Procedure NotificationProcessing(EventName, Parameter, Source)
+	
+	If EventName = "SalesTaxRateAdded" Then
+		If Items.SalesTaxRate.ChoiceList.FindByValue(Parameter) = Undefined Then
+			Items.SalesTaxRate.ChoiceList.Add(Parameter);
+		EndIf;
+	EndIf;
+	
+	If EventName = "UpdatePOInformation" And Parameter = Object.Ref Then
+		
+		UpdateInformationPO();
+		
+	EndIf;
+	
+EndProcedure
+
 #EndRegion
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -283,7 +307,7 @@ Procedure CompanyOnChangeAtServer()
 	If Object.SalesTaxAcrossAgencies.Count() > 0 Then
 		CurrentAgenciesRates = New Array();
 		For Each AgencyRate In Object.SalesTaxAcrossAgencies Do
-			CurrentAgenciesRates.Add(New Structure("Agency, Rate", AgencyRate.Agency, AgencyRate.Rate));
+			CurrentAgenciesRates.Add(New Structure("Agency, Rate, SalesTaxRate, SalesTaxComponent", AgencyRate.Agency, AgencyRate.Rate, AgencyRate.SalesTaxRate, AgencyRate.SalesTaxComponent));
 		EndDo;
 	EndIf;
 	SalesTaxAcrossAgencies = SalesTax.CalculateSalesTax(Object.TaxableSubtotal, Object.SalesTaxRate, CurrentAgenciesRates);
@@ -567,8 +591,10 @@ Procedure DefaultSettingOnChangeAtServer(DefaultSetting, RecalculateLineItems)
 		If RecalculateLineItems Then
 			// Recalculate retail price.
 			For Each Row In Object.LineItems Do
-				Row.Price = Round(GeneralFunctions.RetailPrice(Object.Date, Row.Product, Object.Company) /
-				                        ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), 2);
+				Row.PriceUnits = Round(GeneralFunctions.RetailPrice(Object.Date, Row.Product, Object.Company) *
+				                 ?(Row.Unit.Factor > 0, Row.Unit.Factor, 1) /
+				                 ?(Row.UnitSet.DefaultSaleUnit.Factor > 0, Row.UnitSet.DefaultSaleUnit.Factor, 1) /
+				                 ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), 2);
 				LineItemsPriceOnChangeAtServer(Row);
 			EndDo;
 		EndIf;
@@ -582,8 +608,10 @@ Procedure DefaultSettingOnChangeAtServer(DefaultSetting, RecalculateLineItems)
 		If RecalculateLineItems Then
 			// Recalculate retail price.
 			For Each Row In Object.LineItems Do
-				Row.Price = Round(GeneralFunctions.RetailPrice(Object.Date, Row.Product, Object.Company) /
-				                        ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), 2);
+				Row.PriceUnits = Round(GeneralFunctions.RetailPrice(Object.Date, Row.Product, Object.Company) *
+				                 ?(Row.Unit.Factor > 0, Row.Unit.Factor, 1) /
+				                 ?(Row.UnitSet.DefaultSaleUnit.Factor > 0, Row.UnitSet.DefaultSaleUnit.Factor, 1) /
+				                 ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), 2);
 				LineItemsPriceOnChangeAtServer(Row);
 			EndDo;
 		EndIf;
@@ -677,11 +705,15 @@ EndProcedure
 Procedure LineItemsProductOnChangeAtServer(TableSectionRow)
 	
 	// Request product properties.
-	ProductProperties = CommonUse.GetAttributeValues(TableSectionRow.Product, New Structure("Description, UM, Taxable"));
+	ProductProperties = CommonUse.GetAttributeValues(TableSectionRow.Product,   New Structure("Description, UnitSet, Taxable"));
+	UnitSetProperties = CommonUse.GetAttributeValues(ProductProperties.UnitSet, New Structure("DefaultSaleUnit"));
 	TableSectionRow.ProductDescription = ProductProperties.Description;
-	TableSectionRow.UM                 = ProductProperties.UM;
+	TableSectionRow.UnitSet            = ProductProperties.UnitSet;
+	TableSectionRow.Unit               = UnitSetProperties.DefaultSaleUnit;
+	//TableSectionRow.UM                 = UnitSetProperties.UM;
 	TableSectionRow.Taxable            = ProductProperties.Taxable;
-	TableSectionRow.Price              = Round(GeneralFunctions.RetailPrice(Object.Date, TableSectionRow.Product, Object.Company) /
+	TableSectionRow.PriceUnits         = Round(GeneralFunctions.RetailPrice(Object.Date, TableSectionRow.Product, Object.Company) /
+	                                     // The price is returned for default sales unit factor.
 	                                     ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), 2);
 	
 	// Reset default values.
@@ -691,7 +723,8 @@ Procedure LineItemsProductOnChangeAtServer(TableSectionRow)
 	TableSectionRow.Class        = Object.Class;
 	
 	// Assign default quantities.
-	TableSectionRow.Quantity  = 0;
+	TableSectionRow.QtyUnits  = 0;
+	TableSectionRow.QtyUM     = 0;
 	TableSectionRow.Backorder = 0;
 	TableSectionRow.Shipped   = 0;
 	TableSectionRow.Invoiced  = 0;
@@ -699,6 +732,38 @@ Procedure LineItemsProductOnChangeAtServer(TableSectionRow)
 	// Calculate totals by line.
 	TableSectionRow.LineTotal     = 0;
 	TableSectionRow.TaxableAmount = 0;
+	
+EndProcedure
+
+&AtClient
+Procedure LineItemsUnitOnChange(Item)
+	
+	// Fill line data for editing.
+	TableSectionRow = GetLineItemsRowStructure();
+	FillPropertyValues(TableSectionRow, Items.LineItems.CurrentData);
+	
+	// Request server operation.
+	LineItemsUnitOnChangeAtServer(TableSectionRow);
+	
+	// Load processed data back.
+	FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
+	
+	// Refresh totals cache.
+	RecalculateTotals();
+	
+EndProcedure
+
+&AtServer
+Procedure LineItemsUnitOnChangeAtServer(TableSectionRow)
+	
+	// Calculate new unit price.
+	TableSectionRow.PriceUnits = Round(GeneralFunctions.RetailPrice(Object.Date, TableSectionRow.Product, Object.Company) *
+	                             ?(TableSectionRow.Unit.Factor > 0, TableSectionRow.Unit.Factor, 1) /
+	                             ?(TableSectionRow.UnitSet.DefaultSaleUnit.Factor > 0, TableSectionRow.UnitSet.DefaultSaleUnit.Factor, 1) /
+	                             ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), 2);
+	
+	// Process settings changes.
+	LineItemsQuantityOnChangeAtServer(TableSectionRow);
 	
 EndProcedure
 
@@ -729,9 +794,9 @@ Procedure LineItemsQuantityOnChangeAtServer(TableSectionRow)
 		
 	ElsIf OrderStatus = Enums.OrderStatuses.Backordered Then
 		If TableSectionRow.Product.Type = Enums.InventoryTypes.Inventory Then
-			TableSectionRow.Backorder = Max(TableSectionRow.Quantity - TableSectionRow.Shipped, 0);
+			TableSectionRow.Backorder = Max(TableSectionRow.QtyUnits - TableSectionRow.Shipped, 0);
 		Else // TableSectionRow.Product.Type = Enums.InventoryTypes.NonInventory;
-			TableSectionRow.Backorder = Max(TableSectionRow.Quantity - TableSectionRow.Invoiced, 0);
+			TableSectionRow.Backorder = Max(TableSectionRow.QtyUnits - TableSectionRow.Invoiced, 0);
 		EndIf;
 		
 	ElsIf OrderStatus = Enums.OrderStatuses.Closed Then
@@ -742,7 +807,7 @@ Procedure LineItemsQuantityOnChangeAtServer(TableSectionRow)
 	EndIf;
 	
 	// Calculate total by line.
-	TableSectionRow.LineTotal = Round(Round(TableSectionRow.Quantity, QuantityPrecision) * TableSectionRow.Price, 2);
+	TableSectionRow.LineTotal = Round(Round(TableSectionRow.QtyUnits, QuantityPrecision) * TableSectionRow.PriceUnits, 2);
 	
 	// Process settings changes.
 	LineItemsLineTotalOnChangeAtServer(TableSectionRow);
@@ -771,7 +836,7 @@ EndProcedure
 Procedure LineItemsPriceOnChangeAtServer(TableSectionRow)
 	
 	// Calculate total by line.
-	TableSectionRow.LineTotal = Round(Round(TableSectionRow.Quantity, QuantityPrecision) * TableSectionRow.Price, 2);
+	TableSectionRow.LineTotal = Round(Round(TableSectionRow.QtyUnits, QuantityPrecision) * TableSectionRow.PriceUnits, 2);
 	
 	// Process settings changes.
 	LineItemsLineTotalOnChangeAtServer(TableSectionRow);
@@ -800,8 +865,12 @@ EndProcedure
 Procedure LineItemsLineTotalOnChangeAtServer(TableSectionRow)
 	
 	// Back-step price calculation with totals priority.
-	TableSectionRow.Price = ?(Round(TableSectionRow.Quantity, QuantityPrecision) > 0,
-	                          Round(TableSectionRow.LineTotal / Round(TableSectionRow.Quantity, QuantityPrecision), 2), 0);
+	TableSectionRow.PriceUnits = ?(TableSectionRow.QtyUnits > 0,
+	                             Round(TableSectionRow.LineTotal / Round(TableSectionRow.QtyUnits, QuantityPrecision), 2), 0);
+	
+	// Back-calculation of quantity in base units.
+	TableSectionRow.QtyUM      = Round(Round(TableSectionRow.QtyUnits, QuantityPrecision) *
+	                             ?(TableSectionRow.Unit.Factor > 0, TableSectionRow.Unit.Factor, 1), QuantityPrecision);
 	
 	// Calculate taxes by line total.
 	LineItemsTaxableOnChangeAtServer(TableSectionRow);
@@ -860,6 +929,46 @@ Procedure Transactions(Command)
 	
 	// Open form with selected filter.
 	OpenForm("CommonForm.OrderTransactions", FormParameters, Object.Ref);
+	
+EndProcedure
+
+&AtClient
+Procedure PostAndClose(Command)
+	
+	If Write(New Structure("WriteMode", DocumentWriteMode.Posting)) Then Close() EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure Save(Command)
+	
+	Write();
+	
+EndProcedure
+
+&AtClient
+Procedure Post(Command)
+	
+	Write(New Structure("WriteMode", DocumentWriteMode.Posting));
+	
+EndProcedure
+
+&AtClient
+Procedure ClearPosting(Command)
+	
+	Write(New Structure("WriteMode", DocumentWriteMode.UndoPosting));
+	
+EndProcedure
+
+&AtClient
+Procedure POs(Command)
+	
+	FormParameters = New Structure();
+	
+	FltrParameters = New Structure();
+	FltrParameters.Insert("BaseDocument", Object.Ref);
+	FormParameters.Insert("Filter", FltrParameters);
+	OpenForm("Document.PurchaseOrder.Form.ListFormForSO", FormParameters, Object.Ref);
 	
 EndProcedure
 
@@ -949,12 +1058,13 @@ Procedure FillBackorderQuantityAtServer()
 			|	LineItems.LineNumber                     AS LineNumber,
 			//  Request dimensions
 			|	OrdersRegisteredBalance.Product          AS Product,
+			|	OrdersRegisteredBalance.Unit             AS Unit,
 			|	OrdersRegisteredBalance.Location         AS Location,
 			|	OrdersRegisteredBalance.DeliveryDate     AS DeliveryDate,
 			|	OrdersRegisteredBalance.Project          AS Project,
 			|	OrdersRegisteredBalance.Class            AS Class,
 			//  Request resources                                                                                               // ---------------------------------------
-			|	OrdersRegisteredBalance.QuantityBalance  AS Quantity,                                                           // Backorder quantity calculation
+			|	OrdersRegisteredBalance.QuantityBalance  AS QtyUnits,                                                           // Backorder quantity calculation
 			|	CASE                                                                                                            // ---------------------------------------
 			|		WHEN &OrderStatus = VALUE(Enum.OrderStatuses.Open)        THEN 0                                            // Order status = Open:
 			|		WHEN &OrderStatus = VALUE(Enum.OrderStatuses.Backordered) THEN                                              //   Backorder = 0
@@ -982,11 +1092,12 @@ Procedure FillBackorderQuantityAtServer()
 			|		ON    ( LineItems.Ref.Company         = OrdersRegisteredBalance.Company
 			|			AND LineItems.Ref                 = OrdersRegisteredBalance.Order
 			|			AND LineItems.Product             = OrdersRegisteredBalance.Product
+			|			AND LineItems.Unit                = OrdersRegisteredBalance.Unit
 			|			AND LineItems.Location            = OrdersRegisteredBalance.Location
 			|			AND LineItems.DeliveryDate        = OrdersRegisteredBalance.DeliveryDate
 			|			AND LineItems.Project             = OrdersRegisteredBalance.Project
 			|			AND LineItems.Class               = OrdersRegisteredBalance.Class
-			|			AND LineItems.Quantity            = OrdersRegisteredBalance.QuantityBalance)
+			|			AND LineItems.QtyUnits            = OrdersRegisteredBalance.QuantityBalance)
 			//  Request filtering
 			|WHERE
 			|	LineItems.Ref = &Ref
@@ -996,7 +1107,7 @@ Procedure FillBackorderQuantityAtServer()
 		Selection = Query.Execute().Select();
 		
 		// Fill ordered items quantities
-		SearchRec = New Structure("LineNumber, Product, Location, DeliveryDate, Project, Class, Quantity");
+		SearchRec = New Structure("LineNumber, Product, Unit, Location, DeliveryDate, Project, Class, QtyUnits");
 		While Selection.Next() Do
 			
 			// Search for appropriate line in tabular section of order
@@ -1092,7 +1203,7 @@ Procedure RecalculateTotals()
 	If Object.SalesTaxAcrossAgencies.Count() > 0 Then
 		CurrentAgenciesRates = New Array();
 		For Each AgencyRate In Object.SalesTaxAcrossAgencies Do
-			CurrentAgenciesRates.Add(New Structure("Agency, Rate", AgencyRate.Agency, AgencyRate.Rate));
+			CurrentAgenciesRates.Add(New Structure("Agency, Rate, SalesTaxRate, SalesTaxComponent", AgencyRate.Agency, AgencyRate.Rate, AgencyRate.SalesTaxRate, AgencyRate.SalesTaxComponent));
 		EndDo;
 	EndIf;
 	SalesTaxAcrossAgencies = SalesTaxClient.CalculateSalesTax(Object.TaxableSubtotal, Object.SalesTaxRate, CurrentAgenciesRates);
@@ -1148,7 +1259,7 @@ Procedure RecalculateTotalsAtServer()
 	If Object.SalesTaxAcrossAgencies.Count() > 0 Then
 		CurrentAgenciesRates = New Array();
 		For Each AgencyRate In Object.SalesTaxAcrossAgencies Do
-			CurrentAgenciesRates.Add(New Structure("Agency, Rate", AgencyRate.Agency, AgencyRate.Rate));
+			CurrentAgenciesRates.Add(New Structure("Agency, Rate, SalesTaxRate, SalesTaxComponent", AgencyRate.Agency, AgencyRate.Rate, AgencyRate.SalesTaxRate, AgencyRate.SalesTaxComponent));
 		EndDo;
 	EndIf;
 	SalesTaxAcrossAgencies = SalesTax.CalculateSalesTax(Object.TaxableSubtotal, Object.SalesTaxRate, CurrentAgenciesRates);
@@ -1178,7 +1289,7 @@ EndProcedure
 Function GetLineItemsRowStructure()
 	
 	// Define control row fields.
-	Return New Structure("LineNumber, Product, ProductDescription, Quantity, UM, Backorder, Price, LineTotal, Taxable, TaxableAmount, Location, DeliveryDate, Project, Class, Shipped, Invoiced");
+	Return New Structure("LineNumber, Product, ProductDescription, UnitSet, QtyUnits, Unit, QtyUM, UM, Backorder, PriceUnits, LineTotal, Taxable, TaxableAmount, Location, DeliveryDate, Project, Class, Shipped, Invoiced");
 	
 EndFunction
 
@@ -1231,6 +1342,10 @@ EndProcedure
 
 &AtClient
 Procedure SetSalesTaxRate(NewSalesTaxRate)
+	//Update SalesTaxRate field choice list
+	If ValueIsFilled(NewSalesTaxRate) And (Items.SalesTaxRate.ChoiceList.FindByValue(NewSalesTaxRate) = Undefined) Then
+		Items.SalesTaxRate.ChoiceList.Add(NewSalesTaxRate);
+	EndIf;
 	//Cache inactive sales tax rates
 	If ValueIsFilled(Object.SalesTaxRate) Then
 		AgenciesRates = New Array();
@@ -1284,6 +1399,47 @@ EndProcedure
 &AtServer
 Procedure SendSOEmail()
 	// Insert handler contents.
+EndProcedure
+
+&AtClient
+Procedure CopyMainShipping(Command)
+	Object.DropshipCompany = Object.Company;
+	Object.DropshipRefNum = Object.RefNum;
+	Object.DropshipConfirmTo = Object.ConfirmTo;
+	Object.DropshipShipTo = Object.ShipTo;
+EndProcedure
+
+&AtServer
+Procedure UpdateInformationPO()
+	
+	Items.POs.Title = "no PO(-s)";
+	Items.POs.TextColor = WebColors.Gray;
+	
+	Query = New Query;
+	Query.Text = 
+		"SELECT
+		|	COUNT(DISTINCT PurchaseOrder.Ref) AS Qty
+		|FROM
+		|	Document.PurchaseOrder AS PurchaseOrder
+		|WHERE
+		|	PurchaseOrder.BaseDocument = &BaseDocument
+		|	AND PurchaseOrder.BaseDocument <> VALUE(Document.SalesOrder.EmptyRef)";
+
+	Query.SetParameter("BaseDocument", Object.Ref);
+
+	QueryResult = Query.Execute();
+
+	SelectionDetailRecords = QueryResult.Select();
+
+	While SelectionDetailRecords.Next() Do
+		
+		If SelectionDetailRecords.Qty <> 0 Then
+			Items.POs.Title = "" + SelectionDetailRecords.Qty + " PO(-s)";		
+			Items.POs.TextColor = WebColors.Green;
+		EndIf;
+		
+	EndDo;
+	
 EndProcedure
 
 #EndRegion

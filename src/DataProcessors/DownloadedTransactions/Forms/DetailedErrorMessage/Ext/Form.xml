@@ -126,24 +126,37 @@
 			<ContextMenu name="Decoration2ContextMenu" id="34"/>
 			<ExtendedTooltip name="Decoration2ExtendedTooltip" id="35"/>
 		</LabelDecoration>
-		<LabelField name="ErrorDescription" id="10">
-			<DataPath>ErrorDescription</DataPath>
-			<TitleFont ref="style:NormalTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
-			<Height>2</Height>
-			<VerticalStretch>true</VerticalStretch>
-			<BackColor>web:LavenderBlush</BackColor>
-			<ContextMenu name="ErrorDescriptionContextMenu" id="11"/>
-			<ExtendedTooltip name="ErrorDescriptionExtendedTooltip" id="12"/>
-		</LabelField>
-		<LabelField name="PossibleWorkarounds" id="13">
+		<UsualGroup name="Group1" id="36">
+			<Group>Vertical</Group>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="Group1ExtendedTooltip" id="37"/>
+			<ChildItems>
+				<InputField name="ErrorDescription" id="10">
+					<DataPath>ErrorDescription</DataPath>
+					<ReadOnly>true</ReadOnly>
+					<TitleFont ref="style:NormalTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
+					<Width>50</Width>
+					<VerticalStretch>true</VerticalStretch>
+					<MultiLine>true</MultiLine>
+					<BackColor>web:LavenderBlush</BackColor>
+					<BorderColor>style:FormBackColor</BorderColor>
+					<ContextMenu name="ErrorDescriptionContextMenu" id="11"/>
+					<ExtendedTooltip name="ErrorDescriptionExtendedTooltip" id="12"/>
+				</InputField>
+			</ChildItems>
+		</UsualGroup>
+		<InputField name="PossibleWorkarounds" id="13">
 			<DataPath>PossibleWorkarounds</DataPath>
+			<ReadOnly>true</ReadOnly>
 			<TitleFont ref="style:NormalTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
 			<Height>2</Height>
 			<VerticalStretch>true</VerticalStretch>
+			<MultiLine>true</MultiLine>
 			<BackColor>web:HoneyDew</BackColor>
+			<BorderColor>style:FormBackColor</BorderColor>
 			<ContextMenu name="PossibleWorkaroundsContextMenu" id="14"/>
 			<ExtendedTooltip name="PossibleWorkaroundsExtendedTooltip" id="15"/>
-		</LabelField>
+		</InputField>
 	</ChildItems>
 	<Attributes>
 		<Attribute name="Object" id="1">

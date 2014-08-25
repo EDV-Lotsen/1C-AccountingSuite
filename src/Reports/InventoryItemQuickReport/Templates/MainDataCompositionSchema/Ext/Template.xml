@@ -92,6 +92,10 @@
 			<dataPath>Layer</dataPath>
 			<field>Layer</field>
 		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Unit</dataPath>
+			<field>Unit</field>
+		</field>
 		<dataSource>DataSource1</dataSource>
 		<query>SELECT
 	"On hand" AS ViewQty,
@@ -141,13 +145,13 @@ SELECT
 		WHEN OrdersDispatchedBalance.Product.Type = VALUE(Enum.InventoryTypes.Inventory)
 			THEN CASE
 					WHEN OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.ReceivedBalance &gt; 0
-						THEN OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.ReceivedBalance
+						THEN (OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.ReceivedBalance) * OrdersDispatchedBalance.Unit.Factor
 					ELSE 0
 				END
 		WHEN OrdersDispatchedBalance.Product.Type = VALUE(Enum.InventoryTypes.NonInventory)
 			THEN CASE
 					WHEN OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.InvoicedBalance &gt; 0
-						THEN OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.InvoicedBalance
+						THEN (OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.InvoicedBalance) * OrdersDispatchedBalance.Unit.Factor
 					ELSE 0
 				END
 		ELSE 0
@@ -166,13 +170,13 @@ SELECT
 		WHEN OrdersDispatchedTurnovers.Product.Type = VALUE(Enum.InventoryTypes.Inventory)
 			THEN CASE
 					WHEN OrdersDispatchedTurnovers.QuantityTurnover - OrdersDispatchedTurnovers.ReceivedTurnover &gt; 0
-						THEN OrdersDispatchedTurnovers.QuantityTurnover - OrdersDispatchedTurnovers.ReceivedTurnover
+						THEN (OrdersDispatchedTurnovers.QuantityTurnover - OrdersDispatchedTurnovers.ReceivedTurnover) * OrdersDispatchedTurnovers.Unit.Factor
 					ELSE 0
 				END
 		WHEN OrdersDispatchedTurnovers.Product.Type = VALUE(Enum.InventoryTypes.NonInventory)
 			THEN CASE
 					WHEN OrdersDispatchedTurnovers.QuantityTurnover - OrdersDispatchedTurnovers.InvoicedTurnover &gt; 0
-						THEN OrdersDispatchedTurnovers.QuantityTurnover - OrdersDispatchedTurnovers.InvoicedTurnover
+						THEN (OrdersDispatchedTurnovers.QuantityTurnover - OrdersDispatchedTurnovers.InvoicedTurnover) * OrdersDispatchedTurnovers.Unit.Factor
 					ELSE 0
 				END
 		ELSE 0
@@ -193,13 +197,13 @@ SELECT
 		WHEN OrdersRegisteredBalance.Product.Type = VALUE(Enum.InventoryTypes.Inventory)
 			THEN CASE
 					WHEN OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.ShippedBalance &gt; 0
-						THEN -(OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.ShippedBalance)
+						THEN -(OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.ShippedBalance) * OrdersRegisteredBalance.Unit.Factor
 					ELSE 0
 				END
 		WHEN OrdersRegisteredBalance.Product.Type = VALUE(Enum.InventoryTypes.NonInventory)
 			THEN CASE
 					WHEN OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.InvoicedBalance &gt; 0
-						THEN -(OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.InvoicedBalance)
+						THEN -(OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.InvoicedBalance) * OrdersRegisteredBalance.Unit.Factor
 					ELSE 0
 				END
 		ELSE 0
@@ -218,13 +222,13 @@ SELECT
 		WHEN OrdersRegisteredTurnovers.Product.Type = VALUE(Enum.InventoryTypes.Inventory)
 			THEN CASE
 					WHEN OrdersRegisteredTurnovers.QuantityTurnover - OrdersRegisteredTurnovers.ShippedTurnover &gt; 0
-						THEN -(OrdersRegisteredTurnovers.QuantityTurnover - OrdersRegisteredTurnovers.ShippedTurnover)
+						THEN -(OrdersRegisteredTurnovers.QuantityTurnover - OrdersRegisteredTurnovers.ShippedTurnover) * OrdersRegisteredTurnovers.Unit.Factor
 					ELSE 0
 				END
 		WHEN OrdersRegisteredTurnovers.Product.Type = VALUE(Enum.InventoryTypes.NonInventory)
 			THEN CASE
 					WHEN OrdersRegisteredTurnovers.QuantityTurnover - OrdersRegisteredTurnovers.InvoicedTurnover &gt; 0
-						THEN -(OrdersRegisteredTurnovers.QuantityTurnover - OrdersRegisteredTurnovers.InvoicedTurnover)
+						THEN -(OrdersRegisteredTurnovers.QuantityTurnover - OrdersRegisteredTurnovers.InvoicedTurnover) * OrdersRegisteredTurnovers.Unit.Factor
 					ELSE 0
 				END
 		ELSE 0
