@@ -70,6 +70,11 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	Items.LineItemsQuantity.EditFormat  = QuantityFormat;
 	Items.LineItemsQuantity.Format      = QuantityFormat;
 	
+	// Update prices presentation.
+	PriceFormat = GeneralFunctionsReusable.DefaultPriceFormat();
+	Items.LineItemsPrice.EditFormat  = PriceFormat;
+	Items.LineItemsPrice.Format      = PriceFormat;
+	
 	// Request tax rate for US sales tax calcualation.
 	If GeneralFunctionsReusable.FunctionalOptionValue("SalesTaxCharging") Then
 		//Fill the list of available tax rates
@@ -108,19 +113,13 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	Else
 		Items.SalesTaxPercentDecoration.Title = "";
 		Items.SalesTaxPercentDecoration.Border = New Border(ControlBorderType.WithoutBorder);
-		Items.TotalsColumn3Labels.Visible = False;
 		Items.SalesTaxRate.Visible = False;
 	EndIf;
 		
 	// Set currency titles.
 	DefaultCurrencySymbol            = GeneralFunctionsReusable.DefaultCurrencySymbol();
 	ForeignCurrencySymbol            = Object.Currency.Symbol;
-	Items.ExchangeRate.Title         = DefaultCurrencySymbol + "/1" + ForeignCurrencySymbol;
-	Items.LineSubtotalCurrency.Title = ForeignCurrencySymbol;
-	Items.DiscountCurrency.Title     = ForeignCurrencySymbol;
-	Items.SubTotalCurrency.Title     = ForeignCurrencySymbol;
-	Items.ShippingCurrency.Title     = ForeignCurrencySymbol;
-	Items.SalesTaxCurrency.Title     = ForeignCurrencySymbol;
+	Items.ExchangeRate.Title         = DefaultCurrencySymbol + "/1 " + ForeignCurrencySymbol;
 	Items.FCYCurrency.Title          = ForeignCurrencySymbol;
 	Items.RCCurrency.Title           = DefaultCurrencySymbol;
 	
@@ -131,6 +130,19 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
 	If Object.Ref.IsEmpty() Then
 		Object.EmailNote = Constants.QuoteFooter.Get();
+	EndIf;
+	
+	If Object.CreatedFromZoho = True Then
+		taxQuery = new Query("SELECT
+							 |	SalesTaxRates.Ref
+							 |FROM
+							 |	Catalog.SalesTaxRates AS SalesTaxRates
+							 |WHERE
+							 |	SalesTaxRates.Description = &Description");
+						   
+		taxQuery.SetParameter("Description", "TaxFromZoho"); // zoho product id
+		taxResult = taxQuery.Execute().Unload();
+		SalesTaxRate = taxResult[0].ref;
 	EndIf;
 	
 EndProcedure
@@ -207,6 +219,15 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 	// Request and fill order status from database.
 	FillQuoteStatusAtServer();
 	
+	If Constants.zoho_auth_token.Get() <> "" Then
+		If Object.NewObject = True Then
+			ThisAction = "create";
+		Else
+			ThisAction = "update";
+		EndIf;
+		zoho_Functions.ZohoThisQuote(ThisAction, Object.Ref);
+	EndIf;
+	
 EndProcedure
 
 &AtClient
@@ -255,6 +276,8 @@ Procedure DateOnChange(Item)
 	// Ask user about updating the setting and update the line items accordingly.
 	CommonDefaultSettingOnChange(Item, "price");
 	
+	Object.ExpirationDate = Undefined;
+	
 EndProcedure
 
 &AtServer
@@ -265,6 +288,22 @@ Procedure DateOnChangeAtServer()
 	
 	// Process settings changes.
 	ExchangeRateOnChangeAtServer();
+	
+EndProcedure
+
+&AtClient
+Procedure ExpirationDateOnChange(Item)
+	
+	If ValueIsFilled(Object.ExpirationDate) And Object.ExpirationDate < Object.Date Then
+		
+		Object.ExpirationDate = Undefined;
+		
+		Message = New UserMessage();
+		Message.Text = NStr("en = 'The expiration date must be greater than or equal to the quote date!'");
+		Message.Field = "Object.ExpirationDate";
+		Message.Message();
+		
+	EndIf;
 	
 EndProcedure
 
@@ -365,15 +404,8 @@ Procedure CurrencyOnChangeAtServer()
 	// Set currency titles.
 	DefaultCurrencySymbol            = GeneralFunctionsReusable.DefaultCurrencySymbol();
 	ForeignCurrencySymbol            = Object.Currency.Symbol;
-	Items.ExchangeRate.Title         = DefaultCurrencySymbol + "/1" + ForeignCurrencySymbol;
-	Items.LineSubtotalCurrency.Title = ForeignCurrencySymbol;
-	Items.DiscountCurrency.Title     = ForeignCurrencySymbol;
-	Items.SubTotalCurrency.Title     = ForeignCurrencySymbol;
-	Items.ShippingCurrency.Title     = ForeignCurrencySymbol;
-	Items.SalesTaxCurrency.Title     = ForeignCurrencySymbol;
+	Items.ExchangeRate.Title         = DefaultCurrencySymbol + "/1 " + ForeignCurrencySymbol;
 	Items.FCYCurrency.Title          = ForeignCurrencySymbol;
-	//Items.RCCurrency.Title           = DefaultCurrencySymbol;
-	Items.TaxableSubtotalCurrency.Title = ForeignCurrencySymbol;
 	
 	// Request currency default settings.
 	Object.ExchangeRate = GeneralFunctions.GetExchangeRate(Object.Date, Object.Currency);
@@ -611,9 +643,10 @@ Procedure DefaultSettingOnChangeAtServer(DefaultSetting, RecalculateLineItems)
 				Row.PriceUnits = Round(GeneralFunctions.RetailPrice(Object.Date, Row.Product, Object.Company) *
 				                 ?(Row.Unit.Factor > 0, Row.Unit.Factor, 1) /
 				                 ?(Row.UnitSet.DefaultSaleUnit.Factor > 0, Row.UnitSet.DefaultSaleUnit.Factor, 1) /
-				                 ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), 2);
+				                 ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), GeneralFunctionsReusable.PricePrecisionForOneItem(Row.Product));
 				LineItemsPriceOnChangeAtServer(Row);
 			EndDo;
+			RecalculateTotalsAtServer();
 		EndIf;
 		
 	ElsIf DefaultSetting = "Company" Then
@@ -628,9 +661,10 @@ Procedure DefaultSettingOnChangeAtServer(DefaultSetting, RecalculateLineItems)
 				Row.PriceUnits = Round(GeneralFunctions.RetailPrice(Object.Date, Row.Product, Object.Company) *
 				                 ?(Row.Unit.Factor > 0, Row.Unit.Factor, 1) /
 				                 ?(Row.UnitSet.DefaultSaleUnit.Factor > 0, Row.UnitSet.DefaultSaleUnit.Factor, 1) /
-				                 ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), 2);
+				                 ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), GeneralFunctionsReusable.PricePrecisionForOneItem(Row.Product));
 				LineItemsPriceOnChangeAtServer(Row);
 			EndDo;
+			RecalculateTotalsAtServer();
 		EndIf;
 		
 	Else
@@ -733,7 +767,7 @@ Procedure LineItemsProductOnChangeAtServer(TableSectionRow)
 	TableSectionRow.Taxable            = ProductProperties.Taxable;
 	TableSectionRow.PriceUnits         = Round(GeneralFunctions.RetailPrice(Object.Date, TableSectionRow.Product, Object.Company) /
 	                                     // The price is returned for default sales unit factor.
-	                                     ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), 2);
+	                                     ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), GeneralFunctionsReusable.PricePrecisionForOneItem(TableSectionRow.Product));
 	
 	// Reset default values.
 	TableSectionRow.Location     = Object.Location;
@@ -776,8 +810,8 @@ Procedure LineItemsUnitOnChangeAtServer(TableSectionRow)
 	TableSectionRow.PriceUnits = Round(GeneralFunctions.RetailPrice(Object.Date, TableSectionRow.Product, Object.Company) *
 	                             ?(TableSectionRow.Unit.Factor > 0, TableSectionRow.Unit.Factor, 1) /
 	                             ?(TableSectionRow.UnitSet.DefaultSaleUnit.Factor > 0, TableSectionRow.UnitSet.DefaultSaleUnit.Factor, 1) /
-	                             ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), 2);
-	
+	                             ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), GeneralFunctionsReusable.PricePrecisionForOneItem(TableSectionRow.Product));
+								 
 	// Process settings changes.
 	LineItemsQuantityOnChangeAtServer(TableSectionRow);
 	
@@ -807,7 +841,7 @@ EndProcedure
 Procedure LineItemsQuantityOnChangeAtServer(TableSectionRow)
 	
 	// Calculate total by line.
-	TableSectionRow.LineTotal = Round(Round(TableSectionRow.QtyUnits, QuantityPrecision) * TableSectionRow.PriceUnits, 2);
+	TableSectionRow.LineTotal = Round(Round(TableSectionRow.QtyUnits, QuantityPrecision) * Round(TableSectionRow.PriceUnits, GeneralFunctionsReusable.PricePrecisionForOneItem(TableSectionRow.Product)), 2);
 	
 	// Process settings changes.
 	LineItemsLineTotalOnChangeAtServer(TableSectionRow);
@@ -837,6 +871,9 @@ EndProcedure
 &AtServer
 Procedure LineItemsPriceOnChangeAtServer(TableSectionRow)
 	
+	// Rounds price of product. 
+	TableSectionRow.PriceUnits = Round(TableSectionRow.PriceUnits, GeneralFunctionsReusable.PricePrecisionForOneItem(TableSectionRow.Product));
+	
 	// Calculate total by line.
 	TableSectionRow.LineTotal = Round(Round(TableSectionRow.QtyUnits, QuantityPrecision) * TableSectionRow.PriceUnits, 2);
 	
@@ -855,6 +892,10 @@ Procedure LineItemsLineTotalOnChange(Item)
 	// Request server operation.
 	LineItemsLineTotalOnChangeAtServer(TableSectionRow);
 	
+	// Back-step price calculation with totals priority (interactive change only).
+	TableSectionRow.PriceUnits = ?(TableSectionRow.QtyUnits > 0,
+	                             Round(TableSectionRow.LineTotal / Round(TableSectionRow.QtyUnits, QuantityPrecision), GeneralFunctionsReusable.PricePrecisionForOneItem(TableSectionRow.Product)), 0);
+		
 	// Load processed data back.
 	FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
 	
@@ -866,13 +907,9 @@ EndProcedure
 &AtServer
 Procedure LineItemsLineTotalOnChangeAtServer(TableSectionRow)
 	
-	// Back-step price calculation with totals priority.
-	TableSectionRow.PriceUnits = ?(TableSectionRow.QtyUnits > 0,
-	                             Round(TableSectionRow.LineTotal / Round(TableSectionRow.QtyUnits, QuantityPrecision), 2), 0);
-	
 	// Back-calculation of quantity in base units.
-	TableSectionRow.QtyUM      = Round(Round(TableSectionRow.QtyUnits, QuantityPrecision) *
-	                             ?(TableSectionRow.Unit.Factor > 0, TableSectionRow.Unit.Factor, 1), QuantityPrecision);
+	TableSectionRow.QtyUM = Round(Round(TableSectionRow.QtyUnits, QuantityPrecision) *
+	                        ?(TableSectionRow.Unit.Factor > 0, TableSectionRow.Unit.Factor, 1), QuantityPrecision);
 	
 	// Calculate taxes by line total.
 	LineItemsTaxableOnChangeAtServer(TableSectionRow);
@@ -1363,7 +1400,8 @@ Function GetInformationCurrentRow(Product, Location, Quantity, LineTotal, Curren
 	
 	//Cost
 	Cost = ?(LastCostRow <> Undefined, LastCostRow.Cost, 0);
-	Cost = "Cost " + Currency.Symbol + Format(?(ExchangeRate = 0, 0, Cost / ExchangeRate), "NFD=2; NZ=0.00"); 
+	PriceFormat = GeneralFunctionsReusable.PriceFormatForOneItem(Product);
+	Cost = "Cost " + Currency.Symbol + " " + Format(?(ExchangeRate = 0, 0, Cost / ExchangeRate), PriceFormat + "; NZ=0"); 
 	
 	//Margin
 	LineTotalLC = ?(LastCostRow <> Undefined, LastCostRow.Cost, 0) * Quantity; 
@@ -1371,7 +1409,7 @@ Function GetInformationCurrentRow(Product, Location, Quantity, LineTotal, Curren
 	
 	LineTotalP = LineTotal - (LineTotal * DiscountPercent / 100);	
 	
-	MarginSum = Currency.Symbol + Format(LineTotalP - LineTotalLC, "NFD=2; NZ=0.00"); 
+	MarginSum = Currency.Symbol + " " + Format(LineTotalP - LineTotalLC, "NFD=2; NZ=0.00"); 
 	
 	If LineTotalLC = 0 Then
 		Margin = "Margin 0.00% / " + MarginSum;
@@ -1400,7 +1438,7 @@ Function GetInformationCurrentRow(Product, Location, Quantity, LineTotal, Curren
 		
 	EndDo;
 	
-	MarginSum = Currency.Symbol + Format(LineTotalSum - LineTotalLCSum, "NFD=2; NZ=0.00"); 
+	MarginSum = Currency.Symbol + " " + Format(LineTotalSum - LineTotalLCSum, "NFD=2; NZ=0.00"); 
 	
 	If LineTotalLCSum = 0 Then
 		MarginTotal = "Total 0.00% / " + MarginSum;
@@ -1577,7 +1615,7 @@ Function GetInformationCurrentRow(Product, Location, Quantity, LineTotal, Curren
 	
 	BaseUnit =  GeneralFunctions.GetBaseUnit(Product.UnitSet).Code;
 	
-	Return Cost + " | " + Margin + " | " + MarginTotal + " | Item quantities in " + BaseUnit + " " + QuantityInformation;
+	Return Cost + " | " + Margin + " | " + MarginTotal + " | Qty in " + BaseUnit + " " + QuantityInformation;
 	
 EndFunction
 

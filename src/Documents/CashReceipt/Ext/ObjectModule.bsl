@@ -14,6 +14,17 @@ Procedure Posting(Cancel, PostingMode)
 		EndIf;
 	EndDo;
 	
+	If DepositType = "1" Then //Undeposited
+		RegisterRecords.UndepositedDocuments.Write = True;
+	
+		Record = RegisterRecords.UndepositedDocuments.AddReceipt();
+		Record.Period 	= Date;
+		Record.Recorder = Ref;
+		Record.Document = Ref;
+		Record.Amount 	= CashPayment;
+		Record.AmountRC = CashPayment;
+	EndIf;	
+	
 	RegisterRecords.OrderTransactions.Write = True;
 	If SalesOrder <> Documents.SalesOrder.EmptyRef() Then			
 		Record = RegisterRecords.OrderTransactions.Add();
@@ -59,7 +70,6 @@ Procedure Posting(Cancel, PostingMode)
 		// writing CashFlowData
 		
 		DocumentObject = DocumentLine.Document.GetObject(); 	 
-		ExchangeRate = GeneralFunctions.GetExchangeRate(Date, DocumentObject.Currency);
 
 		If TypeOf(DocumentObject.Ref) = Type("DocumentRef.SalesInvoice") Then
 			
@@ -164,25 +174,26 @@ Procedure Posting(Cancel, PostingMode)
 		Record = RegisterRecords.GeneralJournal.AddCredit();
 		Record.Period =   Date;
 		Record.Account =  DocumentObjectAccount;
-		Record.Currency = DocumentLine.Currency; 
+		Record.Currency = Currency;//DocumentLine.Currency; 
 		Record.Amount =   DocumentLine.Payment;
-		Record.AmountRC = DocumentLine.Payment * DocumentObject.ExchangeRate; 
-		ExchangeGainLoss = ExchangeGainLoss + (DocumentLine.Payment * DocumentObject.ExchangeRate - DocumentLine.Payment * TodayRate);
+		ExchangeDifference = (DocumentLine.Payment * ExchangeRate - DocumentLine.Payment * DocumentLine.Document.ExchangeRate);
+		Record.AmountRC = DocumentLine.Payment * ExchangeRate - ExchangeDifference; 
 		Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Company] =  Company;
 		Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Document] = DocumentObject.Ref;
 		
-		//RegisterRecords.OrderTransactions.Write = True;
-		//If TypeOf(DocumentObject) = Type("DocumentRef.CashReceipt") Then
-			//If SalesOrder <> Documents.SalesOrder.EmptyRef() Then			
-				//Record = RegisterRecords.OrderTransactions.Add();
-				//Record.RecordType = AccumulationRecordType.Receipt;
-				//Record.Period = Date;
-				//Record.Order = SalesOrder;
-				//Record.Amount = CashPayment;
-			//EndIf
-		//EndIf;
-
-		
+		If ExchangeDifference > 0 Then
+			Record = RegisterRecords.GeneralJournal.AddCredit();
+			Record.Account = ExchangeLossAccount;
+			Record.Period = Date;
+			Record.AmountRC = ExchangeDifference;
+						
+		ElsIf ExchangeDifference < 0 Then
+			Record = RegisterRecords.GeneralJournal.AddDebit();
+			Record.Account = ExchangeLossAccount;
+			Record.Period = Date;
+			Record.AmountRC = ExchangeDifference;
+		EndIf;
+	
 	EndDo;
 	
 	Credits = 0;
@@ -235,15 +246,25 @@ Procedure Posting(Cancel, PostingMode)
 		Record = RegisterRecords.GeneralJournal.AddDebit();
 		Record.Period =   Date;
 		Record.Account =  DocumentObjectAccount;
-		Record.Currency = CreditLine.Currency;
+		Record.Currency = Currency;
 		Record.Amount =   CreditLine.Payment;
-		Rate = GeneralFunctions.GetExchangeRate(Date,Company.DefaultCurrency);
-		Record.AmountRC = CreditLine.Payment * Rate;
+		ExchangeDifference = (CreditLine.Payment * ExchangeRate - CreditLine.Payment * CreditLine.Document.ExchangeRate);
+		Record.AmountRC = CreditLine.Payment * ExchangeRate - ExchangeDifference;
 		Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Company] = Company;
 		Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Document] = DocumentObject.Ref;
 		
-		Rate2 = GeneralFunctions.GetExchangeRate(CreditLine.Document.Date, Company.DefaultCurrency);
-		FXGainLoss = (CreditLine.Payment * Rate2) - (CreditLine.Payment * Rate);
+		If ExchangeDifference < 0 Then
+			Record = RegisterRecords.GeneralJournal.AddCredit();
+			Record.Account = ExchangeLossAccount;
+			Record.Period = Date;
+			Record.AmountRC = ExchangeDifference;
+						
+		ElsIf ExchangeDifference > 0 Then
+			Record = RegisterRecords.GeneralJournal.AddDebit();
+			Record.Account = ExchangeLossAccount;
+			Record.Period = Date;
+			Record.AmountRC = ExchangeDifference;
+		EndIf;
 		
 		RegisterRecords.OrderTransactions.Write = True;
 		If TypeOf(DocumentObject) = Type("DocumentRef.CashReceipt") Then
@@ -265,10 +286,8 @@ Procedure Posting(Cancel, PostingMode)
 	Rate = GeneralFunctions.GetExchangeRate(Date, CompanyCurrency);	
 	
 	PayTotal = 0;
-	BalanceFCY = 0;
 	For Each LineItem In LineItems Do
 				PayTotal =  PayTotal + LineItem.Payment;
-				BalanceFCY = BalanceFCY + LineItem.BalanceFCY;
 	EndDo;
 			
 	If PayTotal = 0 And UnappliedPayment = 0 Then
@@ -276,17 +295,7 @@ Procedure Posting(Cancel, PostingMode)
 		Cancel = True;
 		Return;
 	EndIf;
-		
-
-	If CompanyCurrency = DefaultCurrency Then
-		If PayTotal > (CashPayment + CreditTotal)  Then
-			Message("Payment is greater than (Set Payment + Credit)");
-			Cancel = True;
-		Return;
-		Endif;
-		
-	EndIf;
-	
+			
 	DocumentTotalRC = PayTotal*Rate;
 	DocumentTotal = PayTotal;	
 			
@@ -298,7 +307,7 @@ Procedure Posting(Cancel, PostingMode)
 				Record.Currency = GeneralFunctionsReusable.DefaultCurrency();				
 				Rate = GeneralFunctions.GetExchangeRate(Date, Currency);
 				Record.Amount =  Payments - Credits + UnappliedPayment;
-				Rate2 = GeneralFunctions.GetExchangeRate(Date, Company.DefaultCurrency);
+				Rate2 = ExchangeRate;
 				Record.AmountRC = (Payments*Rate2) + (UnappliedPayment*Rate2) - (Credits*Rate2);
 			
 			ElsIf DepositType = "2" Then 
@@ -308,7 +317,7 @@ Procedure Posting(Cancel, PostingMode)
 				Record.Currency = GeneralFunctionsReusable.DefaultCurrency();
 				Rate = GeneralFunctions.GetExchangeRate(Date, Currency);
 				Record.Amount =  (Payments + UnappliedPayment - Credits);
-				Rate2 = GeneralFunctions.GetExchangeRate(Date, Company.DefaultCurrency);
+				Rate2 = ExchangeRate;
 				Record.AmountRC = (Payments*Rate2) + (UnappliedPayment*Rate2) - (Credits*Rate2);
 
 			EndIf;
@@ -334,24 +343,19 @@ Procedure Posting(Cancel, PostingMode)
 			//Record.CashFlowSection = CurRowLineItems.Product.InventoryOrExpenseAccount.CashFlowSection;
 			Record.AmountRC = UnappliedPayment * Rate;
 			//Record.PaymentMethod = PaymentMethod;
-
-
 							
 			DefaultCurrency = GeneralFunctionsReusable.DefaultCurrency();
 			Record = RegisterRecords.GeneralJournal.AddCredit();
 			Record.Period =   Date;
 			Record.Account =  ARAccount;
 			Record.Currency = Company.DefaultCurrency;
-			Rate = GeneralFunctions.GetExchangeRate(Date,Company.DefaultCurrency);
-			Record.Amount =   UnappliedPayment;
+			Rate = ExchangeRate;
+			Record.Amount = UnappliedPayment;
 			Record.AmountRC = UnappliedPayment * Rate;
 			Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Company] = Company;
 			Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Document] = Ref;
 
 
-		
-		// Write and post unapplied payment in the same transaction.
-		//UnappliedPaymentCreditMemo.GetObject().Write(DocumentWriteMode.Posting, DocumentPostingMode.Regular);
 	EndIf;
 	
 	// Sales tax
@@ -374,28 +378,81 @@ Procedure Posting(Cancel, PostingMode)
 	// for both LineItems and Credit Memos
 	
 	Request = New Query("SELECT
-	                    |	CashReceiptCreditMemos.Document,
-	                    |	CashReceiptCreditMemos.Payment,
-	                    |	CashReceiptCreditMemos.BalanceFCY,
-	                    |	""CreditMemos"" AS TabularSection
-	                    |INTO CashReceiptDocuments
-	                    |FROM
-	                    |	Document.CashReceipt.CreditMemos AS CashReceiptCreditMemos
-	                    |WHERE
-	                    |	CashReceiptCreditMemos.Ref = &CurrentDocument
-	                    |
-	                    |UNION ALL
-	                    |
-	                    |SELECT
-	                    |	CashReceiptLineItems.Document,
-	                    |	CashReceiptLineItems.Payment,
-	                    |	CashReceiptLineItems.BalanceFCY,
-	                    |	""LineItems""
-	                    |FROM
-	                    |	Document.CashReceipt.LineItems AS CashReceiptLineItems
-	                    |WHERE
-	                    |	CashReceiptLineItems.Ref = &CurrentDocument
-	                    |;
+						|	GeneralJournalBalance.AmountBalance AS BalanceFCY,
+						|	GeneralJournalBalance.ExtDimension2.Ref AS Document1,
+						|	CashReceiptLineItems.Document AS Document,
+						|	CashReceiptLineItems.Payment,
+						|	CashReceiptLineItems.LineNumber,
+						|	""LineItems"" AS TabularSection
+						|INTO CashReceiptDocuments
+						|FROM
+						|	Document.CashReceipt.LineItems AS CashReceiptLineItems
+						|		LEFT JOIN InformationRegister.ExchangeRates.SliceLast(&Date, ) AS ExchangeRates
+						|		ON CashReceiptLineItems.Ref.Currency = ExchangeRates.Currency
+						|		LEFT JOIN AccountingRegister.GeneralJournal.Balance(
+						|				,
+						|				Account IN
+						|					(SELECT
+						|						Document.SalesInvoice.ARAccount
+						|					FROM
+						|						Document.SalesInvoice
+						|				
+						|					UNION
+						|				
+						|					SELECT
+						|						Document.PurchaseReturn.APAccount
+						|					FROM
+						|						Document.PurchaseReturn
+						|					WHERE
+						|						Document.PurchaseReturn.Company = &Company),
+						|				,
+						|				ExtDimension1 = &Company
+						|					AND (ExtDimension2 REFS Document.SalesInvoice
+						|						OR ExtDimension2 REFS Document.PurchaseReturn)) AS GeneralJournalBalance
+						|		ON CashReceiptLineItems.Document = GeneralJournalBalance.ExtDimension2
+						|WHERE
+						|	CashReceiptLineItems.Ref = &CurrentDocument
+						|
+						|UNION ALL
+						|
+						|SELECT
+						|	-GeneralJournalBalance.AmountBalance AS BalanceFCY2,
+						|	GeneralJournalBalance.ExtDimension2.Ref AS Document1,
+						|	CashReceiptCreditMemos.Document AS Document2,
+						|	CashReceiptCreditMemos.Payment,
+						|	CashReceiptCreditMemos.LineNumber,
+						|	""CreditMemos"" AS TabularSection
+						|FROM
+						|  Document.CashReceipt.CreditMemos As CashReceiptCreditMemos
+						|		LEFT JOIN InformationRegister.ExchangeRates.SliceLast(&Date, ) AS ExchangeRates
+						|		ON CashReceiptCreditMemos.Ref.Currency = ExchangeRates.Currency
+						|		LEFT JOIN AccountingRegister.GeneralJournal.Balance(
+						|			,
+						|			Account IN
+						|				(SELECT
+						|					Document.SalesReturn.ARAccount
+						|				FROM
+						|					Document.SalesReturn
+						|				WHERE
+						|					Document.SalesReturn.Company = &Company
+						|					AND Document.SalesReturn.ReturnType = VALUE(Enum.ReturnTypes.CreditMemo)
+						|			
+						|				UNION
+						|			
+						|				SELECT
+						|					Document.CashReceipt.ARAccount
+						|				FROM
+						|					Document.CashReceipt
+						|				WHERE
+						|					Document.CashReceipt.Company = &Company),
+						|			,
+						|			ExtDimension1 = &Company
+						|				AND (ExtDimension2 REFS Document.SalesReturn
+						|						AND ExtDimension2.ReturnType = VALUE(Enum.ReturnTypes.CreditMemo)
+						|					OR ExtDimension2 REFS Document.CashReceipt)) AS GeneralJournalBalance
+						|		ON CashReceiptCreditMemos.Document = GeneralJournalBalance.ExtDimension2
+						|WHERE
+						|	CashReceiptCreditMemos.Ref = &CurrentDocument;
 	                    |
 	                    |////////////////////////////////////////////////////////////////////////////////
 	                    |SELECT
@@ -496,6 +553,8 @@ Procedure Posting(Cancel, PostingMode)
 	                    |		ON AccruedSalesTax.TabularSection = TotalTaxPayableTable.TabularSection
 	                    |			AND AccruedSalesTax.Document = TotalTaxPayableTable.Document");
 	Request.SetParameter("CurrentDocument", ThisObject.Ref);
+	Request.SetParameter("Date",  ?(ValueIsFilled(ThisObject.Ref), ThisObject.Date, CurrentSessionDate()));			 
+	Request.SetParameter("Company", ThisObject.Company);
 	
 	CashBasedSalesTax = Request.Execute().Unload();
 	
@@ -588,20 +647,7 @@ Procedure Posting(Cancel, PostingMode)
 		NewRecord.TaxableSale		= TaxableSale;
 		NewRecord.TaxPayable		= TaxPayable;
 	EndDo;
-		
-	If ExchangeGainLoss < 0 Then
-		Record = RegisterRecords.GeneralJournal.AddCredit();
-		Record.Account = ExchangeLossAccount;
-		Record.Period = Date;
-		Record.AmountRC = -ExchangeGainLoss;
-					
-	ElsIf ExchangeGainLoss > 0 Then
-		Record = RegisterRecords.GeneralJournal.AddDebit();
-		Record.Account = ExchangeLossAccount;
-		Record.Period = Date;
-		Record.AmountRC = ExchangeGainLoss;
-	EndIf;
-	
+			
 	receipt_url = Constants.cash_receipts_webhook.Get();
 	
 	If NOT receipt_url = "" Then
@@ -622,25 +668,25 @@ Procedure Posting(Cancel, PostingMode)
 	
 	EndIf;
 	
-	email_receipt_webhook = Constants.receipt_webhook_email.Get();
-	
-	If NOT email_receipt_webhook = "" Then
-	//If true then			
-		WebhookMap2 = Webhooks.ReturnCashReceiptMap(Ref);
-		WebhookMap2.Insert("resource","cashreceipts");
-		If NewObject = True Then
-			WebhookMap2.Insert("action","create");
-		Else
-			WebhookMap2.Insert("action","update");
-		EndIf;
-		WebhookMap2.Insert("apisecretkey",Constants.APISecretKey.Get());
-		
-		WebhookParams2 = New Array();
-		WebhookParams2.Add(email_receipt_webhook);
-		WebhookParams2.Add(WebhookMap2);
-		LongActions.ExecuteInBackground("GeneralFunctions.EmailWebhook", WebhookParams2);
-		
-	EndIf;
+	//email_receipt_webhook = Constants.receipt_webhook_email.Get();
+	//
+	//If NOT email_receipt_webhook = "" Then
+	////If true then			
+	//	WebhookMap2 = Webhooks.ReturnCashReceiptMap(Ref);
+	//	WebhookMap2.Insert("resource","cashreceipts");
+	//	If NewObject = True Then
+	//		WebhookMap2.Insert("action","create");
+	//	Else
+	//		WebhookMap2.Insert("action","update");
+	//	EndIf;
+	//	WebhookMap2.Insert("apisecretkey",Constants.APISecretKey.Get());
+	//	
+	//	WebhookParams2 = New Array();
+	//	WebhookParams2.Add(email_receipt_webhook);
+	//	WebhookParams2.Add(WebhookMap2);
+	//	LongActions.ExecuteInBackground("GeneralFunctions.EmailWebhook", WebhookParams2);
+	//	
+	//EndIf;
 
 
 	
@@ -663,6 +709,29 @@ Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 		// Shift document time to the time of posting.
 		Date = CurrentSessionDate();
 	EndIf;
+	
+	//Check whether the document is deposited or not (for the undeposited type only)
+	If Posted Then
+		Request = New Query("SELECT
+		                    |	UndepositedDocuments.Amount,
+		                    |	UndepositedDocuments.AmountRC,
+		                    |	UndepositedDocuments.Recorder.Presentation
+		                    |FROM
+		                    |	AccumulationRegister.UndepositedDocuments AS UndepositedDocuments
+		                    |WHERE
+		                    |	UndepositedDocuments.Document = &CurrentDocument
+		                    |	AND UndepositedDocuments.RecordType = VALUE(AccumulationRecordType.Expense)");
+		Request.SetParameter("CurrentDocument", Ref);
+		Sel = Request.Execute().Select();
+		If Sel.Next() Then
+			If Sel.Amount <> CashPayment Then
+				CommonUseClientServer.MessageToUser("The document is deposited. Cash payment amount (" + Format(CashPayment, "NFD=2; NZ=") + ") differs from the deposited amount (" + Format(Sel.Amount, "NFD=2; NZ=") + "). Unpost the Deposit document " + Sel.RecorderPresentation + " first.", ThisObject,, "Object.CashPayment", Cancel); 
+			Else
+				CommonUseClientServer.MessageToUser("The document is deposited. Unpost the Deposit document " + Sel.RecorderPresentation + " first.", ThisObject,,, Cancel); 	
+			EndIf;
+		EndIf;
+	EndIf;
+
 	
 EndProcedure
 

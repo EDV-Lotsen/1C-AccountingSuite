@@ -3824,7 +3824,11 @@ Procedure EncodeJSONStructure(StructJSON, StrJSON, Level = 0,
 			EndIf;
 			
 		Else // As string.
-			StrJSON = StrJSON + """" + StrToJSONStr(Value) + """"; 
+			If TypeOf(Value) = Type("Array") Or TypeOf(Value) = Type("String") Then
+				StrJSON = StrJSON + """" + StrToJSONStr(Value) + """"; 
+			Else
+				StrJSON = StrJSON + """" + StrToJSONStr(String(Value)) + """"; 
+			EndIf;
 		EndIf;
 	EndDo;
 	

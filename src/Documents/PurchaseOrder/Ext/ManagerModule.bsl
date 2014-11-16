@@ -445,9 +445,10 @@ SheetTitle = "Purchase order";
 		EndIf;
 		LineTotal = SelectionLineItems.LineTotal;
 		TemplateArea.Parameters.Quantity = Format(SelectionLineItems.QtyUnits, QuantityFormat);
-		TemplateArea.Parameters.Price = Selection.Currency.Symbol + Format(SelectionLineItems.PriceUnits, "NFD=2; NZ=");
+		ProductPrecisionFormat = GeneralFunctionsReusable.PriceFormatForOneItem(SelectionLineItems.Product);
+		TemplateArea.Parameters.Price = Format(SelectionLineItems.PriceUnits, ProductPrecisionFormat + "; NZ=");
 		TemplateArea.Parameters.UM = SelectionLineItems.Unit.Code;
-		TemplateArea.Parameters.LineTotal = Selection.Currency.Symbol + Format(SelectionLineItems.LineTotal, "NFD=2; NZ=");		
+		TemplateArea.Parameters.LineTotal = Format(SelectionLineItems.LineTotal, "NFD=2; NZ=");		
 		Spreadsheet.Put(TemplateArea, SelectionLineItems.Level());
 				
 		If LineItemSwitch = False Then
@@ -560,8 +561,9 @@ SheetTitle = "Purchase order";
 
 	
 	TemplateArea = Template.GetArea("Area3|Area2");
-	TemplateArea.Parameters.Total = Selection.Currency.Symbol + Format(Selection.DocumentTotal, "NFD=2; NZ=");
-
+	TemplateArea.Parameters.Total = Format(Selection.DocumentTotal, "NFD=2; NZ=");
+	TemplateArea.Parameters.TotalLabel = "TOTAL " + Selection.Currency.Description + ":";
+	
 	Spreadsheet.Join(TemplateArea);
 		
 	Row = Template.GetArea("EmptyRow");

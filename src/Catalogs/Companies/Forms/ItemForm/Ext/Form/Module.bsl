@@ -4,20 +4,13 @@
 // 
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
-	If Constants.SalesTaxCharging.Get() = False OR Object.Customer <> True Then
-		Items.Taxable.Visible = False;
-		Items.ResaleNO.Visible = False;
-		Items.SalesTaxRate.Visible = False;
-	EndIf;
-	
-	If Object.Taxable = True Then
-		Items.SalesTaxRate.Enabled = True;
-		//Object.SalesTaxRate = Constants.SalesTaxDefault.Get();
-		Items.ResaleNO.Enabled = True;
+	If Constants.SalesTaxCharging.Get() = True AND Object.Customer = True Then
+		Items.TaxTab.Visible = True;
 	Else
-		Items.SalesTaxRate.Enabled = False;
-		Items.ResaleNO.Enabled = False;
+		Items.TaxTab.Visible = False;
 	EndIf;
+
+	ApplyTaxAttributesPresentation(ThisForm);
 	
 	If GeneralFunctionsReusable.DisplayAPICodesSetting() = False Then
 		Items.api_code.Visible = False;
@@ -283,17 +276,7 @@ EndProcedure
 
 &AtServer
 Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
-	
-	////  create account in zoho
-	//If Constants.zoho_auth_token.Get() <> "" Then
-	//	If Object.NewObject = True Then
-	//		ThisAction = "create";
-	//	Else
-	//		ThisAction = "update";
-	//	EndIf;
-	//	zoho_ThisAccount(ThisAction);
-	//EndIf;
-	
+		
 	Query = New Query("SELECT
 	                  |	Addresses.Ref
 	                  |FROM
@@ -311,12 +294,7 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 		AddressLine.DefaultBilling = True;
 		AddressLine.Write();
 	EndIf;
-	
-	////create zoho syncing
-	//If constants.zoho_auth_token.Get() <> "" Then
-	//	addPrimaryToZoho(AddressLine);
-	//EndIf;
-	
+		
 	// Update visibility of flags
 	Items.Customer.Enabled = Not Object.Customer;
 	Items.Vendor.Enabled = Not Object.Vendor;
@@ -374,24 +352,14 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 	
 	EndIf;
 	
-	email_companies_webhook = Constants.companies_webhook_email.Get();
-	
-	If NOT email_companies_webhook = "" Then
-	//If true then			
-		WebhookMap2 = GeneralFunctions.ReturnCompanyObjectMap(Object.Ref);
-		WebhookMap2.Insert("resource","companies");
+	//  create account in zoho 
+	If Constants.zoho_auth_token.Get() <> "" AND Object.Customer = True Then
 		If Object.NewObject = True Then
-			WebhookMap2.Insert("action","create");
+			ThisAction = "create";
 		Else
-			WebhookMap2.Insert("action","update");
+			ThisAction = "update";
 		EndIf;
-		WebhookMap2.Insert("apisecretkey",Constants.APISecretKey.Get());
-		
-		WebhookParams2 = New Array();
-		WebhookParams2.Add(email_companies_webhook);
-		WebhookParams2.Add(WebhookMap2);
-		LongActions.ExecuteInBackground("GeneralFunctions.EmailWebhook", WebhookParams2);
-		
+		zoho_Functions.zoho_ThisAccount(ThisAction, Object.Ref);
 	EndIf;
 		
 EndProcedure
@@ -403,6 +371,7 @@ Function GetAPISecretKey()
 	Return Constants.APISecretKey.Get();
 	
 EndFunction
+
 
 &AtClient
 Procedure SalesTransactions(Command)
@@ -466,23 +435,25 @@ EndProcedure
 Procedure CustomerOnChangeAtServer()
 	
 	If Constants.SalesTaxCharging.Get() = True AND Object.Customer = True Then
-		Items.Taxable.Visible = True;
-		Items.SalesTaxRate.Visible = True;
-		Items.ResaleNO.Visible = True;
-		Items.SalesTaxRate.Enabled = False;
-		Items.ResaleNO.Enabled = False;
+		Items.TaxTab.Visible = True;
 	Else
-		Items.Taxable.Visible = False;
-		Items.SalesTaxRate.Visible = False;
-		Items.ResaleNO.Visible = False;
+		Items.TaxTab.Visible = False;
 	EndIf;
-	
-	If Constants.SalesTaxMarkNewCustomersTaxable.Get() = True Then
-		Object.Taxable = True;
-		Items.SalesTaxRate.Enabled = True;
-		Items.ResaleNO.Enabled = True;
-		Object.SalesTaxRate = Constants.SalesTaxDefault.Get();
+
+	If Object.Customer Then
+		If Constants.SalesTaxMarkNewCustomersTaxable.Get() = True Then
+			Object.Taxable 		= True;
+			Object.SalesTaxRate = Constants.SalesTaxDefault.Get();
+		EndIf;
+		If GeneralFunctions.FunctionalOptionValue("AvataxEnabled") Then
+			Object.UseAvatax 	= True;
+		EndIf;
+	Else
+		Object.Taxable 		= False;
+		Object.SalesTaxRate = Catalogs.SalesTaxRates.EmptyRef();
+		Object.UseAvatax	= False;
 	EndIf;
+	ApplyTaxAttributesPresentation(ThisForm);
 	
 EndProcedure
 
@@ -491,21 +462,58 @@ EndProcedure
 Procedure TaxableOnChange(Item)
 	
 	TaxableOnChangeAtServer();
-	
-	If Object.Taxable = True Then
-		Items.SalesTaxRate.Enabled = True;
-		Items.ResaleNO.Enabled = True;
-	Else
-		Items.SalesTaxRate.Enabled = False;
-		Items.ResaleNO.Enabled = False;
-	EndIf;	
-	
+		
 EndProcedure
-
 
 &AtServer
 Procedure TaxableOnChangeAtServer()
-	// Insert handler contents.
+	
+	If Object.Taxable Then
+		Object.SalesTaxRate = Constants.SalesTaxDefault.Get();
+	Else
+		Object.SalesTaxRate = Catalogs.SalesTaxRates.EmptyRef();
+	EndIf;
+	
+	ApplyTaxAttributesPresentation(ThisForm);
+	
+EndProcedure
+
+&AtClientAtServerNoContext
+Procedure ApplyTaxAttributesPresentation(ThisForm)
+	
+	Object 	= ThisForm.Object;
+	Items	= ThisForm.Items;
+		
+	If Object.Taxable = True Then
+		Items.SalesTaxRate.Enabled = True;
+	Else
+		Items.SalesTaxRate.Enabled = False;
+	EndIf;	
+	
+	If Object.Taxable Or Object.UseAvatax Then
+		Items.ResaleNO.Enabled = True;
+	Else
+		Items.ResaleNO.Enabled = False;
+	EndIf;
+	
+	If GeneralFunctionsReusable.FunctionalOptionValue("AvataxEnabled") Then
+		If Object.UseAvatax Then
+			Items.AvataxCustomerUsageType.Enabled 	= True;
+			Items.BusinessIdentificationNo.Enabled 	= True;
+			Items.Taxable.Enabled		= False;
+			Items.SalesTaxRate.Enabled 	= False;
+		Else
+			Items.AvataxCustomerUsageType.Enabled 	= False;
+			Items.BusinessIdentificationNo.Enabled 	= False;
+			Items.Taxable.Enabled		= True;
+			Items.SalesTaxRate.Enabled 	= True;
+		EndIf;
+	Else  //Avatax disabled
+		Items.VATGroup.Visible 	= False;
+		Items.Taxable.Enabled		= True;
+		Items.SalesTaxRate.Enabled 	= True;
+	EndIf;
+	
 EndProcedure
 
 &AtClient
@@ -523,3 +531,10 @@ Function GetDocumentOfTransaction()
 	Return Items.Transactions.CurrentRow.Document;	
 	
 EndFunction
+
+&AtClient
+Procedure UseAvataxOnChange(Item)
+	
+	ApplyTaxAttributesPresentation(ThisForm);
+	
+EndProcedure

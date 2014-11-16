@@ -77,41 +77,67 @@
 					<ChildItems>
 						<Table name="LineItems" id="9">
 							<Representation>List</Representation>
-							<CommandBarLocation>None</CommandBarLocation>
+							<CommandBarLocation>Top</CommandBarLocation>
+							<ChangeRowSet>false</ChangeRowSet>
+							<ChangeRowOrder>false</ChangeRowOrder>
 							<AutoInsertNewRow>true</AutoInsertNewRow>
 							<EnableStartDrag>true</EnableStartDrag>
 							<EnableDrag>true</EnableDrag>
 							<DataPath>Object.LineItems</DataPath>
+							<CommandSet>
+								<ExcludedCommand>Copy</ExcludedCommand>
+								<ExcludedCommand>SortListAsc</ExcludedCommand>
+								<ExcludedCommand>MoveUp</ExcludedCommand>
+								<ExcludedCommand>CancelSearch</ExcludedCommand>
+								<ExcludedCommand>OutputList</ExcludedCommand>
+								<ExcludedCommand>SelectAll</ExcludedCommand>
+								<ExcludedCommand>SortListDesc</ExcludedCommand>
+								<ExcludedCommand>CopyToClipboard</ExcludedCommand>
+								<ExcludedCommand>Delete</ExcludedCommand>
+								<ExcludedCommand>EndEdit</ExcludedCommand>
+								<ExcludedCommand>Add</ExcludedCommand>
+								<ExcludedCommand>Change</ExcludedCommand>
+								<ExcludedCommand>Find</ExcludedCommand>
+								<ExcludedCommand>MoveDown</ExcludedCommand>
+							</CommandSet>
 							<SearchStringLocation>None</SearchStringLocation>
 							<ViewStatusLocation>None</ViewStatusLocation>
 							<SearchControlLocation>None</SearchControlLocation>
 							<RowFilter xsi:nil="true"/>
 							<ContextMenu name="LineItemsContextMenu" id="10"/>
-							<AutoCommandBar name="LineItemsCommandBar" id="11"/>
+							<AutoCommandBar name="LineItemsCommandBar" id="11">
+								<ChildItems>
+									<Button name="LineItemsRefreshInvoices" id="105">
+										<Type>CommandBarButton</Type>
+										<CommandName>Form.Command.RefreshInvoices</CommandName>
+										<ExtendedTooltip name="LineItemsRefreshInvoicesExtendedTooltip" id="106"/>
+									</Button>
+								</ChildItems>
+							</AutoCommandBar>
 							<ExtendedTooltip name="LineItemsExtendedTooltip" id="66"/>
-							<SearchStringAddition name="LineItemsSearchString" id="105">
+							<SearchStringAddition name="LineItemsSearchString" id="107">
 								<AdditionSource>
 									<Item>LineItems</Item>
 									<Type>SearchStringRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="LineItemsSearchStringContextMenu" id="106"/>
-								<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="107"/>
+								<ContextMenu name="LineItemsSearchStringContextMenu" id="108"/>
+								<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="109"/>
 							</SearchStringAddition>
-							<ViewStatusAddition name="LineItemsViewStatus" id="108">
+							<ViewStatusAddition name="LineItemsViewStatus" id="110">
 								<AdditionSource>
 									<Item>LineItems</Item>
 									<Type>ViewStatusRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="LineItemsViewStatusContextMenu" id="109"/>
-								<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="110"/>
+								<ContextMenu name="LineItemsViewStatusContextMenu" id="111"/>
+								<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="112"/>
 							</ViewStatusAddition>
-							<SearchControlAddition name="LineItemsSearchControl" id="111">
+							<SearchControlAddition name="LineItemsSearchControl" id="113">
 								<AdditionSource>
 									<Item>LineItems</Item>
 									<Type>SearchControl</Type>
 								</AdditionSource>
-								<ContextMenu name="LineItemsSearchControlContextMenu" id="112"/>
-								<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="113"/>
+								<ContextMenu name="LineItemsSearchControlContextMenu" id="114"/>
+								<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="115"/>
 							</SearchControlAddition>
 							<Events>
 								<Event name="BeforeAddRow">LineItemsBeforeAddRow</Event>
@@ -197,29 +223,29 @@
 							<ContextMenu name="AccountsContextMenu" id="45"/>
 							<AutoCommandBar name="AccountsCommandBar" id="46"/>
 							<ExtendedTooltip name="AccountsExtendedTooltip" id="74"/>
-							<SearchStringAddition name="AccountsSearchString" id="114">
+							<SearchStringAddition name="AccountsSearchString" id="116">
 								<AdditionSource>
 									<Item>Accounts</Item>
 									<Type>SearchStringRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="AccountsSearchStringContextMenu" id="115"/>
-								<ExtendedTooltip name="AccountsSearchStringExtendedTooltip" id="116"/>
+								<ContextMenu name="AccountsSearchStringContextMenu" id="117"/>
+								<ExtendedTooltip name="AccountsSearchStringExtendedTooltip" id="118"/>
 							</SearchStringAddition>
-							<ViewStatusAddition name="AccountsViewStatus" id="117">
+							<ViewStatusAddition name="AccountsViewStatus" id="119">
 								<AdditionSource>
 									<Item>Accounts</Item>
 									<Type>ViewStatusRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="AccountsViewStatusContextMenu" id="118"/>
-								<ExtendedTooltip name="AccountsViewStatusExtendedTooltip" id="119"/>
+								<ContextMenu name="AccountsViewStatusContextMenu" id="120"/>
+								<ExtendedTooltip name="AccountsViewStatusExtendedTooltip" id="121"/>
 							</ViewStatusAddition>
-							<SearchControlAddition name="AccountsSearchControl" id="120">
+							<SearchControlAddition name="AccountsSearchControl" id="122">
 								<AdditionSource>
 									<Item>Accounts</Item>
 									<Type>SearchControl</Type>
 								</AdditionSource>
-								<ContextMenu name="AccountsSearchControlContextMenu" id="121"/>
-								<ExtendedTooltip name="AccountsSearchControlExtendedTooltip" id="122"/>
+								<ContextMenu name="AccountsSearchControlContextMenu" id="123"/>
+								<ExtendedTooltip name="AccountsSearchControlExtendedTooltip" id="124"/>
 							</SearchControlAddition>
 							<Events>
 								<Event name="OnChange">AccountsOnChange</Event>
@@ -327,6 +353,28 @@
 			</UseAlways>
 		</Attribute>
 	</Attributes>
+	<Commands>
+		<Command name="RefreshInvoices" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Refresh invoices</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Refresh invoices</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Picture>
+				<xr:Ref>StdPicture.Refresh</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
+			<Action>RefreshInvoices</Action>
+			<Representation>TextPicture</Representation>
+		</Command>
+	</Commands>
 	<CommandInterface>
 		<NavigationPanel>
 			<Item>

@@ -22,7 +22,6 @@
    |	CashReceipt.DocumentTotal,
    |	CashReceipt.CashPayment,
    |	CashReceipt.UnappliedPayment,
-   |	CashReceipt.UnappliedPaymentCreditMemo,
    |	CashReceipt.RefNum,
    |	CashReceipt.Memo,
    |	CashReceipt.DepositType,
@@ -38,10 +37,6 @@
    |	CashReceipt.StripeCreated,
    |	CashReceipt.StripeCardType,
    |	CashReceipt.StripeLast4,
-   |	CashReceipt.AppliedCredit,
-   |	CashReceipt.CreditTotal,
-   |	CashReceipt.BalanceTotal,
-   |	CashReceipt.BalChange,
    |	CashReceipt.EmailTo,
    |	CashReceipt.EmailNote,
    |	CashReceipt.EmailCC,
@@ -52,19 +47,13 @@
    |		Ref,
    |		LineNumber,
    |		Document,
-   |		Payment,
-   |		Balance,
-   |		BalanceFCY,
-   |		Currency
+   |		Payment
    |	),
    |	CashReceipt.LineItems.(
    |		Ref,
    |		LineNumber,
    |		Document,
-   |		Payment,
-   |		Balance,
-   |		BalanceFCY,
-   |		Currency
+   |		Payment
    |	),
    |	GeneralJournalBalance.AmountRCBalance AS Balance
    |FROM
@@ -172,11 +161,9 @@
 	
 	TemplateArea.Parameters.Date = Selection.Date;
     TemplateArea.Parameters.Number = Selection.Number;
-	//TemplateArea.Parameters.SalesOrder = String(Selection.SalesOrder);
-	//TemplateArea.Parameters.CreditsApplied = Selection.Currency.Symbol + Format(TotalCredit, "NFD=2; NZ=");
-	//TemplateArea.Parameters.CreditsUnapplied = Selection.Currency.Symbol + Format(Selection.UnappliedPayment, "NFD=2; NZ=");
-	TemplateArea.Parameters.TotalPaidAmount = Selection.Currency.Symbol + Format(Selection.CashPayment, "NFD=2; NZ=");
-    If Selection.StripeID <> "" Then
+	TemplateArea.Parameters.TotalPaidAmount = Format(Selection.CashPayment, "NFD=2; NZ=");
+	TemplateArea.Parameters.AmountReceivedLabel = "Amount Received " + Selection.Currency.Description + ":";
+	If Selection.StripeID <> "" Then
     	TemplateArea.Parameters.RefNum = Selection.StripeID;
     Else
     	TemplateArea.Parameters.RefNum = Selection.RefNum;
@@ -303,13 +290,11 @@
 	While SelectionLineItems.Next() Do
 				 
 		TemplateArea.Parameters.Fill(SelectionLineItems);
-		TemplateArea.Parameters.DocumentTotal = SelectionLineItems.Currency.Symbol + Format(SelectionLineItems.Document.DocumentTotal, "NFD=2; NZ=");
-		TemplateArea.Parameters.PreviousBalance = SelectionLineItems.Currency.Symbol + Format(SelectionLineItems.Balance, "NFD=2; NZ=");
+		TemplateArea.Parameters.DocumentTotal = Format(SelectionLineItems.Document.DocumentTotal, "NFD=2; NZ=");
 		
 		LineTotalSum = LineTotalSum + SelectionLineItems.Payment;
 		
-		TemplateArea.Parameters.AmountPaid = SelectionLineItems.Currency.Symbol + Format(SelectionLineItems.Payment, "NFD=2; NZ=");
-		TemplateArea.Parameters.NewBalance = SelectionLineItems.Currency.Symbol + Format(SelectionLineItems.Balance - SelectionLineItems.Payment, "NFD=2; NZ=");
+		TemplateArea.Parameters.AmountPaid = Format(SelectionLineItems.Payment, "NFD=2; NZ=");
 		Spreadsheet.Put(TemplateArea, SelectionLineItems.Level());
 				
 		If LineItemSwitch = False Then
@@ -331,16 +316,16 @@
     Spreadsheet.Put(TemplateArea);
      
     TemplateArea = Template.GetArea("Area3|Area2");
-    TemplateArea.Parameters.Total = Selection.Currency.Symbol + Format(LineTotalSum, "NFD=2; NZ=");
+    TemplateArea.Parameters.Total = Format(LineTotalSum, "NFD=2; NZ=");
 	
 	If LineTotalSum - Selection.CashPayment > 0 Then
-		TemplateArea.Parameters.CreditsApplied = Selection.Currency.Symbol + Format(LineTotalSum - Selection.CashPayment, "NFD=2; NZ=");
+		TemplateArea.Parameters.CreditsApplied = Format(LineTotalSum - Selection.CashPayment, "NFD=2; NZ=");
 	Else
-		TemplateArea.Parameters.CreditsApplied = Selection.Currency.Symbol + Format(0, "NFD=2; NZ=");
+		TemplateArea.Parameters.CreditsApplied = Format(0, "NFD=2; NZ=");
 	EndIf;
 	
 		
-	TemplateArea.Parameters.CreditsUnapplied = Selection.Currency.Symbol + Format(Selection.UnappliedPayment, "NFD=2; NZ=");
+	TemplateArea.Parameters.CreditsUnapplied = Format(Selection.UnappliedPayment, "NFD=2; NZ=");
     
     Spreadsheet.Join(TemplateArea);
     

@@ -307,8 +307,9 @@ Function PrintSO(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
 		LineTotal = SelectionLineItems.LineTotal;
 		TemplateArea.Parameters.UM = SelectionLineItems.Unit.Code;
 		//TemplateArea.Parameters.Quantity = Format(SelectionLineItems.QtyUnits, QuantityFormat)+ " " + SelectionLineItems.Unit;
-		TemplateArea.Parameters.Price = Selection.Currency.Symbol + Format(SelectionLineItems.PriceUnits, "NFD=2; NZ=");
-		TemplateArea.Parameters.LineTotal = Selection.Currency.Symbol + Format(SelectionLineItems.LineTotal, "NFD=2; NZ=");
+		ProductPrecisionFormat = GeneralFunctionsReusable.PriceFormatForOneItem(SelectionLineItems.Product);
+		TemplateArea.Parameters.Price     = Format(SelectionLineItems.PriceUnits, ProductPrecisionFormat + "; NZ=");
+		TemplateArea.Parameters.LineTotal = Format(SelectionLineItems.LineTotal, "NFD=2; NZ=");
 		Spreadsheet.Put(TemplateArea, SelectionLineItems.Level());
 				
 		If LineItemSwitch = False Then
@@ -436,12 +437,12 @@ Function PrintSO(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
 
 	
 	TemplateArea = Template.GetArea("Area3|Area2");
-	TemplateArea.Parameters.LineSubtotal = Selection.Currency.Symbol + Format(Selection.LineSubtotal, "NFD=2; NZ=");
-	TemplateArea.Parameters.Discount = "("+ Selection.Currency.Symbol + Format(Selection.Discount, "NFD=2; NZ=") + ")";
-	TemplateArea.Parameters.Subtotal = Selection.Currency.Symbol + Format(Selection.Subtotal, "NFD=2; NZ=");
-	TemplateArea.Parameters.Shipping = Selection.Currency.Symbol + Format(Selection.Shipping, "NFD=2; NZ=");
-	TemplateArea.Parameters.SalesTax = Selection.Currency.Symbol + Format(Selection.SalesTax, "NFD=2; NZ=");
-	TemplateArea.Parameters.Total = Selection.Currency.Symbol + Format(Selection.DocumentTotal, "NFD=2; NZ=");
+	TemplateArea.Parameters.LineSubtotal = Format(Selection.LineSubtotal, "NFD=2; NZ=");
+	TemplateArea.Parameters.Discount = "("+ Format(Selection.Discount, "NFD=2; NZ=") + ")";
+	TemplateArea.Parameters.Subtotal = Format(Selection.Subtotal, "NFD=2; NZ=");
+	TemplateArea.Parameters.Shipping = Format(Selection.Shipping, "NFD=2; NZ=");
+	TemplateArea.Parameters.SalesTax = Format(Selection.SalesTax, "NFD=2; NZ=");
+	TemplateArea.Parameters.Total = Format(Selection.DocumentTotal, "NFD=2; NZ=");
 
 	TestData.Insert("Total",TemplateArea.Parameters.Total); // for unit testing
 	TestData.Insert("Currency", Selection.Currency.Symbol); // for unit testing
@@ -563,7 +564,8 @@ Function PrintSI(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
    |		PriceUnits,
    |		LineTotal,
    |		Project,
-   |        DeliveryDateActual
+   |		DeliveryDateActual,
+   |		Class
    |	),
    |	SalesInvoice.Terms,
    |	SalesInvoice.DueDate,
@@ -583,7 +585,8 @@ Function PrintSI(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
    |	SalesInvoice.FOB,
    |	SalesInvoice.DropshipCompany,
    |	SalesInvoice.DropshipShipTo,
-   |	SalesInvoice.DropshipRefNum
+   |	SalesInvoice.DropshipRefNum,
+   |	SalesInvoice.LocationActual
    |FROM
    |	Document.SalesInvoice AS SalesInvoice
    |		LEFT JOIN AccountingRegister.GeneralJournal.Balance AS GeneralJournalBalance
@@ -761,18 +764,22 @@ Function PrintSI(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
 	EndIf;
 		
 	SelectionLineItems = Selection.LineItems.Select();
-	
+	ShowClass = Constants.SIShowClassCol.Get();
 	ShowSVC = Constants.SIShowSVCCol.Get();
 	If ShowSVC = True Then
 		TemplateArea = Template.GetArea("LineItemsHeaderService");
 		Spreadsheet.Put(TemplateArea);
 		TemplateArea = Template.GetArea("LineItems3Service");
+	Elsif ShowClass Then
+		TemplateArea = Template.GetArea("LineItemsHeaderLot");
+		Spreadsheet.Put(TemplateArea);
+		TemplateArea = Template.GetArea("LineItems5Lot");	
 	Else
 		TemplateArea = Template.GetArea("LineItemsHeader");
 		Spreadsheet.Put(TemplateArea);
 		TemplateArea = Template.GetArea("LineItems");
 	EndIf;
-	
+
 	LineTotalSum = 0;
 	LineItemSwitch = False;
 	CurrentLineItemIndex = 0;
@@ -801,17 +808,21 @@ Function PrintSI(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
 		LineTotal = SelectionLineItems.LineTotal;
 		TemplateArea.Parameters.UM = SelectionLineItems.Unit.Code;
 		//TemplateArea.Parameters.Quantity  = Format(SelectionLineItems.QtyUnits, QuantityFormat)+ " " + SelectionLineItems.Unit;
-		TemplateArea.Parameters.Price     = Selection.Currency.Symbol + Format(SelectionLineItems.PriceUnits, "NFD=2; NZ=");
-		TemplateArea.Parameters.LineTotal = Selection.Currency.Symbol + Format(SelectionLineItems.LineTotal, "NFD=2; NZ=");
+		ProductPrecisionFormat = GeneralFunctionsReusable.PriceFormatForOneItem(SelectionLineItems.Product);
+		TemplateArea.Parameters.Price     = Format(SelectionLineItems.PriceUnits, ProductPrecisionFormat + "; NZ=");
+		TemplateArea.Parameters.LineTotal = Format(SelectionLineItems.LineTotal, "NFD=2; NZ=");
 		If ShowSVC = True Then
 			TemplateArea.Parameters.DeliveryDateActual = Format(SelectionLineItems.DeliveryDateActual,"DLF=D;");
 		EndIf;
-		
+
 		Spreadsheet.Put(TemplateArea, SelectionLineItems.Level());
 		
 		If LineItemSwitch = False Then
 			If ShowSVC = True Then
 				TemplateArea = Template.GetArea("LineItems4Service");
+				
+			Elsif ShowClass Then
+				TemplateArea = Template.GetArea("LineItems6Lot");
 			Else
 				TemplateArea = Template.GetArea("LineItems2");
 			EndIf;
@@ -819,6 +830,9 @@ Function PrintSI(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
 		Else
 			If ShowSVC = True Then
 				TemplateArea = Template.GetArea("LineItems3Service");
+				
+			Elsif ShowClass Then
+				TemplateArea = Template.GetArea("LineItems5Lot");
 			Else
 				TemplateArea = Template.GetArea("LineItems");
 			EndIf;
@@ -936,15 +950,23 @@ Function PrintSI(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
 
 	
 	TemplateArea = Template.GetArea("Area3|Area2");
-	TemplateArea.Parameters.LineSubtotal = Selection.Currency.Symbol + Format(Selection.LineSubtotal, "NFD=2; NZ=");
-	TemplateArea.Parameters.Discount = "(" + Selection.Currency.Symbol + Format(Selection.Discount, "NFD=2; NZ=") + ")";
-	TemplateArea.Parameters.Subtotal = Selection.Currency.Symbol + Format(Selection.Subtotal, "NFD=2; NZ=");
-	TemplateArea.Parameters.Shipping = Selection.Currency.Symbol + Format(Selection.Shipping, "NFD=2; NZ=");
-	TemplateArea.Parameters.SalesTax = Selection.Currency.Symbol + Format(Selection.SalesTax, "NFD=2; NZ=");
-	TemplateArea.Parameters.Total = Selection.Currency.Symbol + Format(Selection.DocumentTotal, "NFD=2; NZ=");
+	TemplateArea.Parameters.LineSubtotal = Format(Selection.LineSubtotal, "NFD=2; NZ=");
+	TemplateArea.Parameters.Discount = "(" + Format(Selection.Discount, "NFD=2; NZ=") + ")";
+	TemplateArea.Parameters.Subtotal = Format(Selection.Subtotal, "NFD=2; NZ=");
+	TemplateArea.Parameters.Shipping = Format(Selection.Shipping, "NFD=2; NZ=");
+	If Selection.LocationActual.Country <> Catalogs.Countries.FindByCode("US") AND Selection.LocationActual.Country <> Catalogs.Countries.EmptyRef() AND Selection.Ref.UseAvatax = True Then
+		TemplateArea.Parameters.SalesTaxTitle = "VAT (" + Selection.Ref.SalesTaxAcrossAgencies[0].Rate + "%)";
+		TemplateArea.Parameters.SalesTax = Format(Selection.Ref.SalesTaxAcrossAgencies[0].Amount, "NFD=2; NZ=");
+	Else
+		TemplateArea.Parameters.SalesTaxTitle = "Sales Tax:";
+		TemplateArea.Parameters.SalesTax = Format(Selection.SalesTax, "NFD=2; NZ=");
+	EndIf;
+	TemplateArea.Parameters.Total = Format(Selection.DocumentTotal, "NFD=2; NZ=");
+	TemplateArea.Parameters.NetTotalTitle = "Net Total " + Selection.Currency.Description + ": ";
+	TemplateArea.Parameters.BalanceDueTitle = "Balance Due " + Selection.Currency.Description + ": ";
 	NonNullBalance = 0;
 	If Selection.Balance <> NULL Then NonNullBalance = Selection.Balance; EndIf;
-	TemplateArea.Parameters.Balance = Selection.Currency.Symbol + Format(NonNullBalance, "NFD=2; NZ=");
+	TemplateArea.Parameters.Balance = Format(NonNullBalance, "NFD=2; NZ=");
 
 	TestData.Insert("Currency",Selection.Currency.Symbol); // for unit testing
 	TestData.Insert("LineSubtotal",TemplateArea.Parameters.LineSubtotal);

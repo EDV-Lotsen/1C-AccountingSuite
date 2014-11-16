@@ -90,7 +90,6 @@ Function PrepareDataStructuresForPosting(DocumentRef, AdditionalProperties, Regi
 	
 	// Set optional accounting flags.
 	OrdersPosting    = AdditionalProperties.Orders.Count() > 0;
-	InventoryPosting = True; // Post always.
 	
 	// Create list of posting tables (according to the list of registers).
 	TablesList = New Structure;
@@ -110,12 +109,22 @@ Function PrepareDataStructuresForPosting(DocumentRef, AdditionalProperties, Regi
 		             Query_OrdersStatuses(TablesList) +
 		             Query_OrdersDispatched(TablesList);
 	EndIf;
-	If InventoryPosting Then
-		Query.Text = Query.Text +
-		             Query_InventoryJournal_LineItems(TablesList) +
-		             Query_InventoryJournal(TablesList) +
-		             Query_ItemLastCosts(TablesList);
-	EndIf;
+	Query.Text = Query.Text +
+	             Query_InventoryJournal_LineItems(TablesList) +
+	             Query_InventoryJournal(TablesList) +
+	             Query_GeneralJournal_LineItems(TablesList) +
+	             Query_GeneralJournal_Accounts_InvOrExp(TablesList) +
+	             Query_GeneralJournal(TablesList) +
+	             Query_CashFlowData_Accounts(TablesList) +
+	             Query_CashFlowData_Accounts_InvOrExp(TablesList) +
+	             Query_CashFlowData(TablesList) +
+	             Query_ProjectData_Accounts(TablesList) +
+	             Query_ProjectData_Accounts_InvOrExp(TablesList) +
+	             Query_ProjectData(TablesList) +
+	             Query_ClassData_Accounts(TablesList) +
+	             Query_ClassData_Accounts_InvOrExp(TablesList) +
+	             Query_ClassData(TablesList) +
+	             Query_ItemLastCosts(TablesList);
 	
 	//------------------------------------------------------------------------------
 	// 3. Execute query and fill data structures.
@@ -398,161 +407,6 @@ EndFunction
 
 #EndRegion
 
-////////////////////////////////////////////////////////////////////////////////
-#Region COMMANDS_HANDLERS
-
-#If Server Or ThickClientOrdinaryApplication Or ExternalConnection Then
-
-// Handler of standard print command.
-//
-// Parameters:
-//  Spreadsheet  - SpreadsheetDocument - Output spreadsheet.
-//  SheetTitle   - String      - Spreadsheet title.
-//  DocumentRef  - DocumentRef - Reference to document to be printed.
-//               - Array       - Array of the document references to be printed in the same media.
-//  TemplateName - String      - Name of replacing template for using within custom or predefined templates.
-//               - Array       - Array of individual template names for each document reference.
-//               - Undefined   - If not specified, then standard template will be used.
-//
-// Returns:
-//  Spreadsheet  - Filled print form.
-//  Title        - Filled spreadsheet title.
-//
-Procedure Print(Spreadsheet, SheetTitle, DocumentRef, TemplateName = Undefined) Export
-	
-	//------------------------------------------------------------------------------
-	// 1. Filling of parameters.
-	
-	// Common filling of parameters.
-	PrintingTables                  = New Structure;
-	DocumentParameters              = New Structure("Ref, Metadata, TemplateName");
-	DocumentParameters.Ref          = DocumentRef;
-	DocumentParameters.Metadata     = Metadata.Documents.PurchaseInvoice;
-	DocumentParameters.TemplateName = TemplateName;
-	
-	//------------------------------------------------------------------------------
-	// 2. Collect document data, available for printing, and fill printing structure.
-	PrepareDataStructuresForPrinting(DocumentRef, DocumentParameters, PrintingTables);
-	
-	//------------------------------------------------------------------------------
-	// 3. Fill output spreadsheet using the template and requested document data.
-	
-	// Define common template for the document.
-	CommonTemplate       = DocumentPrinting.GetDocumentTemplate(DocumentParameters, PrintingTables);
-	LogoPicture          = DocumentPrinting.GetDocumentLogo(DocumentParameters, PrintingTables);
-	SheetTitle           = DocumentPrinting.GetDocumentTitle(DocumentParameters);
-	LastUsedTemplateName = Undefined;
-	
-	// Prepare the output.
-	Spreadsheet.Clear();
-	
-	// Go thru references and fill out the spreadsheet by each document.
-	For Each DocumentAttributes In PrintingTables.Table_Printing_Document_Attributes Do
-		
-		//------------------------------------------------------------------------------
-		// 3.1. Define template for the document.
-		
-		// Set the document template.
-		If (DocumentParameters.TemplateName = Undefined)
-		Or TypeOf(DocumentParameters.TemplateName) = Type("String") Then
-			// Assign the common template for all documents.
-			Template = CommonTemplate;
-			
-		ElsIf TypeOf(DocumentParameters.TemplateName) = Type("Array") Then
-			// Use an individual template for each document.
-			IndividualTemplateName = DocumentPrinting.GetIndividualTemplateName(DocumentRef, DocumentAttributes.Ref, DocumentParameters);
-			If IndividualTemplateName = Undefined Then
-				Template = CommonTemplate;
-				LastUsedTemplateName = Undefined;
-			ElsIf IndividualTemplateName <> LastUsedTemplateName Then
-				Template = DocumentPrinting.GetDocumentTemplate(DocumentParameters, PrintingTables, IndividualTemplateName);
-				LastUsedTemplateName = IndividualTemplateName;
-			EndIf;
-		EndIf;
-		
-		//------------------------------------------------------------------------------
-		// 3.2. Output document data to spreadsheet using selected template.
-		
-		// Document output.
-		If Template <> Undefined Then
-			
-			// Put logo into the template.
-			DocumentPrinting.FillLogoInDocumentTemplate(Template, LogoPicture);
-			
-			
-			// -> CODE REVIEW
-			Try
-				FooterLogo = GeneralFunctions.GetFooter1();
-				Footer1Pic = New Picture(FooterLogo);
-				FooterLogo2 = GeneralFunctions.GetFooter2();
-				Footer2Pic = New Picture(FooterLogo2);
-				FooterLogo3 = GeneralFunctions.GetFooter3();
-				Footer3Pic = New Picture(FooterLogo3);
-			Except
-			EndTry;
-			// <- CODE REVIEW
-			
-			
-			// Fill document header.
-			TemplateArea = Template.GetArea("Header");
-			TemplateArea.Parameters.Fill(DocumentAttributes);
-			TemplateArea.Parameters.Fill(PrintingTables.Table_OurCompany_Addresses_BillingAddress[0]);
-			TemplateArea.Parameters.Fill(PrintingTables.Table_Company_Addresses_BillingAddress.Find(DocumentAttributes.Ref, "Ref"));
-			
-			// Output the header to the sheet.
-			Spreadsheet.Put(TemplateArea);
-			
-			// Output the line items header to the sheet.
-			TemplateArea = Template.GetArea("LineItemsHeader");
-			Spreadsheet.Put(TemplateArea);
-			
-			// Output line items of current document.
-			TemplateArea = Template.GetArea("LineItems");
-			LineItems = PrintingTables.Table_Printing_Document_LineItems.FindRows(New Structure("Ref", DocumentAttributes.Ref));
-			For Each Row In LineItems Do
-				TemplateArea.Parameters.Fill(Row);
-				Spreadsheet.Put(TemplateArea, 1);
-			EndDo;
-			
-			// Output document total.
-			TemplateArea = Template.GetArea("Total");
-			TemplateArea.Parameters.DocumentTotal = DocumentAttributes.DocumentTotal;
-			Spreadsheet.Put(TemplateArea);
-			
-			
-			// -> CODE REVIEW
-			Try
-				DocumentPrinting.FillPictureInDocumentTemplate(Template, Footer1Pic, "footer1");
-				DocumentPrinting.FillPictureInDocumentTemplate(Template, Footer2Pic, "footer2");
-				DocumentPrinting.FillPictureInDocumentTemplate(Template, Footer3Pic, "footer3");
-			Except
-			EndTry;
-			
-			Row = Template.GetArea("SpaceRow");
-			Footer = Template.GetArea("Footer");
-			RowsToCheck = New Array();
-			RowsToCheck.Add(Row);
-			RowsToCheck.Add(Footer);
-			
-			While Spreadsheet.CheckPut(RowsToCheck) Do
-				SpreadSheet.Put(Row);
-				
-				RowsToCheck.Clear();
-				RowsToCheck.Add(Row);
-				RowsToCheck.Add(Footer);
-			EndDo;
-			
-			Spreadsheet.Put(Footer);
-			// <- CODE REVIEW
-			
-		EndIf;
-	EndDo;
-	
-EndProcedure
-
-#EndIf
-
-#EndRegion
 
 ////////////////////////////////////////////////////////////////////////////////
 #Region PRIVATE_IMPLEMENTATION
@@ -830,9 +684,9 @@ Function Query_InventoryJournal(TablesList)
 	// ------------------------------------------------------
 	// Resources
 	|	LineItems_FIFO.QuantityRequested      AS Quantity,
-	|	CAST( // Format(LineTotal * ExchangeRate, ""ND=15; NFD=2"")
+	|	CAST( // Format(LineTotal * ExchangeRate, ""ND=17; NFD=2"")
 	|		LineItems_FIFO.AmountRequested * PurchaseInvoice.ExchangeRate
-	|		AS NUMBER (15, 2))                AS Amount
+	|		AS NUMBER (17, 2))                AS Amount
 	// ------------------------------------------------------
 	// Attributes
 	// ------------------------------------------------------
@@ -895,9 +749,9 @@ Function Query_InventoryJournal(TablesList)
 	// ------------------------------------------------------
 	// Resources
 	|	0                                     AS Quantity,
-	|	CAST( // Format(LineTotal * ExchangeRate, ""ND=15; NFD=2"")
+	|	CAST( // Format(LineTotal * ExchangeRate, ""ND=17; NFD=2"")
 	|		LineItems_WAve.AmountRequested * PurchaseInvoice.ExchangeRate
-	|		AS NUMBER (15, 2))                AS Amount
+	|		AS NUMBER (17, 2))                AS Amount
 	// ------------------------------------------------------
 	// Attributes
 	// ------------------------------------------------------
@@ -910,6 +764,535 @@ Function Query_InventoryJournal(TablesList)
 	|	AND LineItems_WAve.Type     = VALUE(Enum.InventoryCosting.WeightedAverage)
 	|	AND LineItems_WAve.Location = VALUE(Catalog.Locations.EmptyRef)
 	|	AND LineItems_WAve.QuantityRequested > 0";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_GeneralJournal_LineItems(TablesList)
+	
+	// Add GeneralJournal requested items table to document structure.
+	TablesList.Insert("Table_GeneralJournal_LineItems", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT
+	// ------------------------------------------------------
+	// Dimensions
+	|	LineItems.Product.Type                AS Type,
+	|	LineItems.Product.COGSAccount         AS COGSAccount,
+	|	LineItems.Product.InventoryOrExpenseAccount AS InvOrExpAccount,
+	|	LineItems.Class                       AS Class,
+	|	LineItems.Project                     AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	LineItems.LineTotal                   AS Amount
+	// ------------------------------------------------------
+	|INTO
+	|	Table_GeneralJournal_LineItems
+	|FROM
+	|	Document.PurchaseInvoice.LineItems AS LineItems
+	|WHERE
+	|	LineItems.Ref = &Ref
+	|
+	|UNION ALL
+	|
+	|SELECT
+	// ------------------------------------------------------
+	// Dimensions
+	|	VALUE(Enum.InventoryTypes.EmptyRef)   AS Type,
+	|	VALUE(ChartOfAccounts.ChartOfAccounts.EmptyRef) AS COGSAccount,
+	|	Accounts.Account                      AS InvOrExpAccount,
+	|	Accounts.Class                        AS Class,
+	|	Accounts.Project                      AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	Accounts.Amount                       AS Amount
+	// ------------------------------------------------------
+	|FROM
+	|	Document.PurchaseInvoice.Accounts AS Accounts
+	|WHERE
+	|	Accounts.Ref = &Ref";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_GeneralJournal_Accounts_InvOrExp(TablesList)
+	
+	// Add GeneralJournal inventory or expenses accounts table to document structure.
+	TablesList.Insert("Table_GeneralJournal_Accounts_InvOrExp", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // InvOrExp accounts selection
+	// ------------------------------------------------------
+	// Dimensions
+	|	Accounts.InvOrExpAccount              AS InvOrExpAccount,
+	// ------------------------------------------------------
+	// Resources
+	|	SUM(Accounts.Amount)                  AS Amount
+	// ------------------------------------------------------
+	|INTO
+	|	Table_GeneralJournal_Accounts_InvOrExp
+	|FROM
+	|	Table_GeneralJournal_LineItems AS Accounts
+	|GROUP BY
+	|	Accounts.InvOrExpAccount";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_GeneralJournal(TablesList)
+	
+	// Add GeneralJournal table to document structure.
+	TablesList.Insert("Table_GeneralJournal", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // Dr: Inventory
+	// ------------------------------------------------------
+	// Standard attributes
+	|	PurchaseInvoice.Ref                   AS Recorder,
+	|	PurchaseInvoice.Date                  AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccountingRecordType.Debit)     AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	InvOrExp.InvOrExpAccount              AS Account,
+	|	VALUE(ChartOfCharacteristicTypes.Dimensions.EmptyRef)
+	|	                                      AS ExtDimensionType1,
+	|	NULL                                  AS ExtDimension1,
+	|	VALUE(ChartOfCharacteristicTypes.Dimensions.EmptyRef)
+	|	                                      AS ExtDimensionType2,
+	|	NULL                                  AS ExtDimension2,
+	// ------------------------------------------------------
+	// Dimensions
+	|	NULL                                  AS Currency,
+	// ------------------------------------------------------
+	// Resources
+	|	NULL                                  AS Amount,
+	|	CAST( // Format(Amount * ExchangeRate, ""ND=17; NFD=2"")
+	|		InvOrExp.Amount *
+	|		CASE WHEN PurchaseInvoice.ExchangeRate > 0
+	|			 THEN PurchaseInvoice.ExchangeRate
+	|			 ELSE 1 END
+	|		AS NUMBER (17, 2))                AS AmountRC,
+	// ------------------------------------------------------
+	// Attributes
+	|	NULL                                  AS Memo
+	// ------------------------------------------------------
+	|FROM
+	|	Table_GeneralJournal_Accounts_InvOrExp AS InvOrExp
+	|	LEFT JOIN Document.PurchaseInvoice AS PurchaseInvoice
+	|		ON True
+	|WHERE
+	|	PurchaseInvoice.Ref = &Ref
+	|	AND // Amount > 0
+	|		InvOrExp.Amount > 0
+	|
+	|UNION ALL
+	|
+	|SELECT // Cr: Expences
+	// ------------------------------------------------------
+	// Standard attributes
+	|	PurchaseInvoice.Ref                   AS Recorder,
+	|	PurchaseInvoice.Date                  AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccountingRecordType.Credit)    AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	InvOrExp.InvOrExpAccount              AS Account,
+	|	VALUE(ChartOfCharacteristicTypes.Dimensions.EmptyRef)
+	|	                                      AS ExtDimensionType1,
+	|	NULL                                  AS ExtDimension1,
+	|	VALUE(ChartOfCharacteristicTypes.Dimensions.EmptyRef)
+	|	                                      AS ExtDimensionType2,
+	|	NULL                                  AS ExtDimension2,
+	// ------------------------------------------------------
+	// Dimensions
+	|	NULL                                  AS Currency,
+	// ------------------------------------------------------
+	// Resources
+	|	NULL                                  AS Amount,
+	|	CAST( // Format(Amount * ExchangeRate, ""ND=17; NFD=2"")
+	|		-InvOrExp.Amount *
+	|		CASE WHEN PurchaseInvoice.ExchangeRate > 0
+	|			 THEN PurchaseInvoice.ExchangeRate
+	|			 ELSE 1 END
+	|		AS NUMBER (17, 2))                AS AmountRC,
+	// ------------------------------------------------------
+	// Attributes
+	|	NULL                                  AS Memo
+	// ------------------------------------------------------
+	|FROM
+	|	Table_GeneralJournal_Accounts_InvOrExp AS InvOrExp
+	|	LEFT JOIN Document.PurchaseInvoice AS PurchaseInvoice
+	|		ON True
+	|WHERE
+	|	PurchaseInvoice.Ref = &Ref
+	|	AND // Amount > 0
+	|		-InvOrExp.Amount > 0
+	|
+	|UNION ALL
+	|
+	|SELECT // Cr: Accounts payable
+	// ------------------------------------------------------
+	// Standard attributes
+	|	PurchaseInvoice.Ref                   AS Recorder,
+	|	PurchaseInvoice.Date                  AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccountingRecordType.Credit)    AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	PurchaseInvoice.APAccount             AS Account,
+	|	VALUE(ChartOfCharacteristicTypes.Dimensions.Company)
+	|	                                      AS ExtDimensionType1,
+	|	PurchaseInvoice.Company               AS ExtDimension1,
+	|	VALUE(ChartOfCharacteristicTypes.Dimensions.Document)
+	|	                                      AS ExtDimensionType2,
+	|	PurchaseInvoice.Ref                   AS ExtDimension2,
+	// ------------------------------------------------------
+	// Dimensions
+	|	PurchaseInvoice.Currency              AS Currency,
+	// ------------------------------------------------------
+	// Resources
+	|	PurchaseInvoice.DocumentTotal         AS Amount,
+	|	PurchaseInvoice.DocumentTotalRC       AS AmountRC,
+	// ------------------------------------------------------
+	// Attributes
+	|	Null                                  AS Memo
+	// ------------------------------------------------------
+	|FROM
+	|	Document.PurchaseInvoice AS PurchaseInvoice
+	|WHERE
+	|	PurchaseInvoice.Ref = &Ref
+	|	AND // Amount > 0
+	|		(PurchaseInvoice.DocumentTotal > 0
+	|	  OR PurchaseInvoice.DocumentTotalRC > 0)";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_CashFlowData_Accounts(TablesList)
+	
+	// Add CashFlowData inventory or expenses accounts table to document structure.
+	TablesList.Insert("Table_CashFlowData_Accounts", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // InvOrExp accounts selection
+	// ------------------------------------------------------
+	// Dimensions
+	|	CASE WHEN Accounts.Type = VALUE(Enum.InventoryTypes.Inventory)
+	|	     THEN Accounts.COGSAccount
+	|	     ELSE Accounts.InvOrExpAccount
+	|	END                                   AS InvOrExpAccount,
+	// ------------------------------------------------------
+	// Resources
+	|	Accounts.Amount                       AS Amount
+	// ------------------------------------------------------
+	|INTO
+	|	Table_CashFlowData_Accounts
+	|FROM
+	|	Table_GeneralJournal_LineItems AS Accounts";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_CashFlowData_Accounts_InvOrExp(TablesList)
+	
+	// Add CashFlowData inventory or expenses accounts table to document structure.
+	TablesList.Insert("Table_CashFlowData_Accounts_InvOrExp", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // InvOrExp accounts selection
+	// ------------------------------------------------------
+	// Dimensions
+	|	Accounts.InvOrExpAccount              AS InvOrExpAccount,
+	// ------------------------------------------------------
+	// Resources
+	|	SUM(Accounts.Amount)                  AS Amount
+	// ------------------------------------------------------
+	|INTO
+	|	Table_CashFlowData_Accounts_InvOrExp
+	|FROM
+	|	Table_CashFlowData_Accounts AS Accounts
+	|GROUP BY
+	|	Accounts.InvOrExpAccount";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_CashFlowData(TablesList)
+	
+	// Add CashFlowData table to document structure.
+	TablesList.Insert("Table_CashFlowData", TablesList.Count());
+	
+	// Collect cash flow data.
+	QueryText =
+	"SELECT // Rec: Inventory and Expenses
+	// ------------------------------------------------------
+	// Standard attributes
+	|	PurchaseInvoice.Ref                   AS Recorder,
+	|	PurchaseInvoice.Date                  AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccumulationRecordType.Receipt) AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Dimensions
+	|	InvOrExp.InvOrExpAccount              AS Account,
+	|	PurchaseInvoice.Company               AS Company,
+	|	PurchaseInvoice.Ref                   AS Document,
+	|	NULL                                  AS SalesPerson,
+	// ------------------------------------------------------
+	// Resources
+	|	CAST( // Format(Amount * ExchangeRate, ""ND=17; NFD=2"")
+	|		InvOrExp.Amount *
+	|		CASE WHEN PurchaseInvoice.ExchangeRate > 0
+	|			 THEN PurchaseInvoice.ExchangeRate
+	|			 ELSE 1 END
+	|		AS NUMBER (17, 2))                AS AmountRC,
+	// ------------------------------------------------------
+	// Attributes
+	|	NULL                                  AS PaymentMethod
+	// ------------------------------------------------------
+	|FROM
+	|	Table_CashFlowData_Accounts_InvOrExp AS InvOrExp
+	|	LEFT JOIN Document.PurchaseInvoice AS PurchaseInvoice
+	|		ON True
+	|WHERE
+	|	PurchaseInvoice.Ref = &Ref
+	|	AND // Amount <> 0
+	|		InvOrExp.Amount <> 0";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_ProjectData_Accounts(TablesList)
+	
+	// Add ProjectData inventory or expenses accounts table to document structure.
+	TablesList.Insert("Table_ProjectData_Accounts", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // InvOrExp accounts selection
+	// ------------------------------------------------------
+	// Dimensions
+	|	Accounts.InvOrExpAccount              AS InvOrExpAccount,
+	|	Accounts.Project                      AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	Accounts.Amount                       AS Amount
+	// ------------------------------------------------------
+	|INTO
+	|	Table_ProjectData_Accounts
+	|FROM
+	|	Table_GeneralJournal_LineItems AS Accounts
+	|WHERE
+	|	Accounts.Type <> VALUE(Enum.InventoryTypes.Inventory)
+	|	AND (Accounts.InvOrExpAccount.AccountType = VALUE(Enum.AccountTypes.Expense) OR
+	|		 Accounts.InvOrExpAccount.AccountType = VALUE(Enum.AccountTypes.OtherExpense) OR
+	|		 Accounts.InvOrExpAccount.AccountType = VALUE(Enum.AccountTypes.CostOfSales) OR
+	|		 Accounts.InvOrExpAccount.AccountType = VALUE(Enum.AccountTypes.Income) OR
+	|		 Accounts.InvOrExpAccount.AccountType = VALUE(Enum.AccountTypes.OtherIncome) OR
+	|		 Accounts.InvOrExpAccount.AccountType = VALUE(Enum.AccountTypes.IncomeTaxExpense))";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_ProjectData_Accounts_InvOrExp(TablesList)
+	
+	// Add ProjectData inventory or expenses accounts table to document structure.
+	TablesList.Insert("Table_ProjectData_Accounts_InvOrExp", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // InvOrExp accounts selection
+	// ------------------------------------------------------
+	// Dimensions
+	|	Accounts.InvOrExpAccount              AS InvOrExpAccount,
+	|	Accounts.Project                      AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	SUM(Accounts.Amount)                  AS Amount
+	// ------------------------------------------------------
+	|INTO
+	|	Table_ProjectData_Accounts_InvOrExp
+	|FROM
+	|	Table_ProjectData_Accounts AS Accounts
+	|GROUP BY
+	|	Accounts.InvOrExpAccount,
+	|	Accounts.Project";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_ProjectData(TablesList)
+	
+	// Add ProjectData table to document structure.
+	TablesList.Insert("Table_ProjectData", TablesList.Count());
+	
+	// Collect project data.
+	QueryText =
+	"SELECT // Exp: Inventory and Expenses
+	// ------------------------------------------------------
+	// Standard attributes
+	|	PurchaseInvoice.Ref                   AS Recorder,
+	|	PurchaseInvoice.Date                  AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccumulationRecordType.Expense) AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Dimensions
+	|	InvOrExp.InvOrExpAccount              AS Account,
+	|	InvOrExp.Project                      AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	CAST( // Format(Amount * ExchangeRate, ""ND=17; NFD=2"")
+	|		InvOrExp.Amount *
+	|		CASE WHEN PurchaseInvoice.ExchangeRate > 0
+	|			 THEN PurchaseInvoice.ExchangeRate
+	|			 ELSE 1 END
+	|		AS NUMBER (17, 2))                AS Amount
+	// ------------------------------------------------------
+	// Attributes
+	// ------------------------------------------------------
+	|FROM
+	|	Table_ProjectData_Accounts_InvOrExp AS InvOrExp
+	|	LEFT JOIN Document.PurchaseInvoice AS PurchaseInvoice
+	|		ON True
+	|WHERE
+	|	PurchaseInvoice.Ref = &Ref
+	|	AND // Amount <> 0
+	|		InvOrExp.Amount <> 0";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_ClassData_Accounts(TablesList)
+	
+	// Add ClassData inventory or expenses accounts table to document structure.
+	TablesList.Insert("Table_ClassData_Accounts", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // InvOrExp accounts selection
+	// ------------------------------------------------------
+	// Dimensions
+	|	Accounts.InvOrExpAccount              AS InvOrExpAccount,
+	|	Accounts.Class                        AS Class,
+	// ------------------------------------------------------
+	// Resources
+	|	Accounts.Amount                       AS Amount
+	// ------------------------------------------------------
+	|INTO
+	|	Table_ClassData_Accounts
+	|FROM
+	|	Table_GeneralJournal_LineItems AS Accounts
+	|WHERE
+	|	Accounts.Type <> VALUE(Enum.InventoryTypes.Inventory)
+	|	AND (Accounts.InvOrExpAccount.AccountType = VALUE(Enum.AccountTypes.Expense) OR
+	|		 Accounts.InvOrExpAccount.AccountType = VALUE(Enum.AccountTypes.OtherExpense) OR
+	|		 Accounts.InvOrExpAccount.AccountType = VALUE(Enum.AccountTypes.CostOfSales) OR
+	|		 Accounts.InvOrExpAccount.AccountType = VALUE(Enum.AccountTypes.Income) OR
+	|		 Accounts.InvOrExpAccount.AccountType = VALUE(Enum.AccountTypes.OtherIncome) OR
+	|		 Accounts.InvOrExpAccount.AccountType = VALUE(Enum.AccountTypes.IncomeTaxExpense))";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_ClassData_Accounts_InvOrExp(TablesList)
+	
+	// Add ClassData inventory or expenses accounts table to document structure.
+	TablesList.Insert("Table_ClassData_Accounts_InvOrExp", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // InvOrExp accounts selection
+	// ------------------------------------------------------
+	// Dimensions
+	|	Accounts.InvOrExpAccount              AS InvOrExpAccount,
+	|	Accounts.Class                        AS Class,
+	// ------------------------------------------------------
+	// Resources
+	|	SUM(Accounts.Amount)                  AS Amount
+	// ------------------------------------------------------
+	|INTO
+	|	Table_ClassData_Accounts_InvOrExp
+	|FROM
+	|	Table_ClassData_Accounts AS Accounts
+	|GROUP BY
+	|	Accounts.InvOrExpAccount,
+	|	Accounts.Class";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_ClassData(TablesList)
+	
+	// Add ClassData table to document structure.
+	TablesList.Insert("Table_ClassData", TablesList.Count());
+	
+	// Collect class data.
+	QueryText =
+	"SELECT // Exp: Inventory and Expenses
+	// ------------------------------------------------------
+	// Standard attributes
+	|	PurchaseInvoice.Ref                   AS Recorder,
+	|	PurchaseInvoice.Date                  AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccumulationRecordType.Expense) AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Dimensions
+	|	InvOrExp.InvOrExpAccount              AS Account,
+	|	InvOrExp.Class                        AS Class,
+	// ------------------------------------------------------
+	// Resources
+	|	CAST( // Format(Amount * ExchangeRate, ""ND=17; NFD=2"")
+	|		InvOrExp.Amount *
+	|		CASE WHEN PurchaseInvoice.ExchangeRate > 0
+	|			 THEN PurchaseInvoice.ExchangeRate
+	|			 ELSE 1 END
+	|		AS NUMBER (17, 2))                AS Amount
+	// ------------------------------------------------------
+	// Attributes
+	// ------------------------------------------------------
+	|FROM
+	|	Table_ClassData_Accounts_InvOrExp AS InvOrExp
+	|	LEFT JOIN Document.PurchaseInvoice AS PurchaseInvoice
+	|		ON True
+	|WHERE
+	|	PurchaseInvoice.Ref = &Ref
+	|	AND // Amount <> 0
+	|		InvOrExp.Amount <> 0";
 	
 	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
 	
@@ -935,15 +1318,37 @@ Function Query_ItemLastCosts(TablesList)
 	|	LineItems.Product AS Product,
 	// ------------------------------------------------------
 	// Resources
-	|	AVG(CAST(LineItems.PriceUnits * CASE
-	|				WHEN LineItems.Ref.ExchangeRate > 0
-	|					THEN LineItems.Ref.ExchangeRate
-	|				ELSE 1
-	|			END / CASE
-	|				WHEN LineItems.Unit.Factor > 0
-	|					THEN LineItems.Unit.Factor
-	|				ELSE 1
-	|			END AS NUMBER(15, 2))) AS Cost
+	|	AVG(CASE
+	|			WHEN LineItems.Product.PricePrecision = 3
+	|				THEN CAST(LineItems.PriceUnits * CASE
+	|							WHEN LineItems.Ref.ExchangeRate > 0
+	|								THEN LineItems.Ref.ExchangeRate
+	|							ELSE 1
+	|						END / CASE
+	|							WHEN LineItems.Unit.Factor > 0
+	|								THEN LineItems.Unit.Factor
+	|							ELSE 1
+	|						END AS NUMBER(17, 3))
+	|			WHEN LineItems.Product.PricePrecision = 4
+	|				THEN CAST(LineItems.PriceUnits * CASE
+	|							WHEN LineItems.Ref.ExchangeRate > 0
+	|								THEN LineItems.Ref.ExchangeRate
+	|							ELSE 1
+	|						END / CASE
+	|							WHEN LineItems.Unit.Factor > 0
+	|								THEN LineItems.Unit.Factor
+	|							ELSE 1
+	|						END AS NUMBER(17, 4))
+	|			ELSE CAST(LineItems.PriceUnits * CASE
+	|						WHEN LineItems.Ref.ExchangeRate > 0
+	|							THEN LineItems.Ref.ExchangeRate
+	|						ELSE 1
+	|					END / CASE
+	|						WHEN LineItems.Unit.Factor > 0
+	|							THEN LineItems.Unit.Factor
+	|						ELSE 1
+	|					END AS NUMBER(17, 2))
+	|		END) AS Cost
 	// ------------------------------------------------------
 	// Attributes
 	// ------------------------------------------------------
@@ -951,15 +1356,37 @@ Function Query_ItemLastCosts(TablesList)
 	|	Document.PurchaseInvoice.LineItems AS LineItems
 	|WHERE
 	|	LineItems.Ref = &Ref
-	|	AND (CAST(LineItems.PriceUnits * CASE
-	|				WHEN LineItems.Ref.ExchangeRate > 0
-	|					THEN LineItems.Ref.ExchangeRate
-	|				ELSE 1
-	|			END / CASE
-	|				WHEN LineItems.Unit.Factor > 0
-	|					THEN LineItems.Unit.Factor
-	|				ELSE 1
-	|			END AS NUMBER(15, 2))) > 0
+	|	AND (CASE
+	|			WHEN LineItems.Product.PricePrecision = 3
+	|				THEN CAST(LineItems.PriceUnits * CASE
+	|							WHEN LineItems.Ref.ExchangeRate > 0
+	|								THEN LineItems.Ref.ExchangeRate
+	|							ELSE 1
+	|						END / CASE
+	|							WHEN LineItems.Unit.Factor > 0
+	|								THEN LineItems.Unit.Factor
+	|							ELSE 1
+	|						END AS NUMBER(17, 3))
+	|			WHEN LineItems.Product.PricePrecision = 4
+	|				THEN CAST(LineItems.PriceUnits * CASE
+	|							WHEN LineItems.Ref.ExchangeRate > 0
+	|								THEN LineItems.Ref.ExchangeRate
+	|							ELSE 1
+	|						END / CASE
+	|							WHEN LineItems.Unit.Factor > 0
+	|								THEN LineItems.Unit.Factor
+	|							ELSE 1
+	|						END AS NUMBER(17, 4))
+	|			ELSE CAST(LineItems.PriceUnits * CASE
+	|						WHEN LineItems.Ref.ExchangeRate > 0
+	|							THEN LineItems.Ref.ExchangeRate
+	|						ELSE 1
+	|					END / CASE
+	|						WHEN LineItems.Unit.Factor > 0
+	|							THEN LineItems.Unit.Factor
+	|						ELSE 1
+	|					END AS NUMBER(17, 2))
+	|		END) > 0
 	|
 	|GROUP BY
 	|	LineItems.Product,
@@ -1422,8 +1849,20 @@ Function Query_Filling_Document_PurchaseOrder_LineItems(TablesList)
 		|	PurchaseOrderLineItems.UnitSet             AS UnitSet,
 		|	PurchaseOrderLineItems.Unit                AS Unit,
 		//|	PurchaseOrderLineItems.UM                  AS UM,
-		|	PurchaseOrderLineItems.PriceUnits          AS PriceUnits,
-		|	PurchaseOrderLineItems.PriceUnits          AS OrderPriceUnits,
+		|	CASE
+		|		WHEN PurchaseOrderLineItems.Product.PricePrecision = 3
+		|			THEN CAST(PurchaseOrderLineItems.PriceUnits AS NUMBER(17, 3))
+		|		WHEN PurchaseOrderLineItems.Product.PricePrecision = 4
+		|			THEN CAST(PurchaseOrderLineItems.PriceUnits AS NUMBER(17, 4))
+		|		ELSE CAST(PurchaseOrderLineItems.PriceUnits AS NUMBER(17, 2))
+		|	END                                        AS PriceUnits,
+		|	CASE
+		|		WHEN PurchaseOrderLineItems.Product.PricePrecision = 3
+		|			THEN CAST(PurchaseOrderLineItems.PriceUnits AS NUMBER(17, 3))
+		|		WHEN PurchaseOrderLineItems.Product.PricePrecision = 4
+		|			THEN CAST(PurchaseOrderLineItems.PriceUnits AS NUMBER(17, 4))
+		|		ELSE CAST(PurchaseOrderLineItems.PriceUnits AS NUMBER(17, 2))
+		|	END                                        AS OrderPriceUnits,
 		|	
 		|	// QtyUnits
 		|	CASE
@@ -1455,7 +1894,7 @@ Function Query_Filling_Document_PurchaseOrder_LineItems(TablesList)
 		|		AS NUMBER (15, {QuantityPrecision}))   AS QtyUM,
 		|	
 		|	// LineTotal
-		|	CAST( // Format(Quantity * Price, ""ND=15; NFD=2"")
+		|	CAST( // Format(Quantity * Price, ""ND=17; NFD=2"")
 		|		CASE
 		|			WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Open)
 		|				THEN ISNULL(OrdersDispatched.Quantity, PurchaseOrderLineItems.QtyUnits)
@@ -1464,8 +1903,13 @@ Function Query_Filling_Document_PurchaseOrder_LineItems(TablesList)
 		|			WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Closed)
 		|				THEN ISNULL(OrdersDispatched.Backorder, 0)
 		|			ELSE 0
-		|		END * PurchaseOrderLineItems.PriceUnits
-		|		AS NUMBER (15, 2))                     AS LineTotal,
+		|		END * CASE
+		|			WHEN PurchaseOrderLineItems.Product.PricePrecision = 3
+		|				THEN CAST(PurchaseOrderLineItems.PriceUnits AS NUMBER(17, 3))
+		|			WHEN PurchaseOrderLineItems.Product.PricePrecision = 4
+		|				THEN CAST(PurchaseOrderLineItems.PriceUnits AS NUMBER(17, 4))
+		|			ELSE CAST(PurchaseOrderLineItems.PriceUnits AS NUMBER(17, 2))
+		|		END AS NUMBER (17, 2))                 AS LineTotal,
 		|	
 		|	PurchaseOrderLineItems.Ref                 AS Order,
 		|	VALUE(Document.ItemReceipt.EmptyRef)       AS ItemReceipt,
@@ -1517,10 +1961,10 @@ Function Query_Filling_Document_PurchaseOrder_Totals(TablesList)
 		|	// Total(LineTotal)
 		|	SUM(PurchaseOrderLineItems.LineTotal)   AS DocumentTotal,
 		|
-		|	CAST( // Format(DocumentTotal * ExchangeRate, ""ND=15; NFD=2"")
+		|	CAST( // Format(DocumentTotal * ExchangeRate, ""ND=17; NFD=2"")
 		|		SUM(PurchaseOrderLineItems.LineTotal) * // Total(LineTotal)
 		|		PurchaseOrder.ExchangeRate
-		|		AS NUMBER (15, 2))                  AS DocumentTotalRC
+		|		AS NUMBER (17, 2))                  AS DocumentTotalRC
 		|
 		|INTO
 		|	Table_Document_PurchaseOrder_Totals

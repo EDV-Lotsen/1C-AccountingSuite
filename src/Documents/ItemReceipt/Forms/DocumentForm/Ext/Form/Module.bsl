@@ -209,7 +209,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	//EndIf;
 	
 	If Object.Location.IsEmpty() Then
-		Object.Location = Catalogs.Locations.MainWarehouse;
+		Object.Location = GeneralFunctions.GetDefaultLocation();
 	EndIf;
 	
 	If Object.Currency.IsEmpty() Then

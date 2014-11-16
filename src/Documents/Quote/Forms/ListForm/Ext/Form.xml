@@ -80,29 +80,29 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="6"/>
-			<SearchStringAddition name="ListSearchString" id="46">
+			<SearchStringAddition name="ListSearchString" id="49">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="47"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="48"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="50"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="51"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="49">
+			<ViewStatusAddition name="ListViewStatus" id="52">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="50"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="51"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="53"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="54"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="52">
+			<SearchControlAddition name="ListSearchControl" id="55">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="53"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="54"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="56"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="57"/>
 			</SearchControlAddition>
 			<ChildItems>
 				<LabelField name="Date" id="7">
@@ -118,7 +118,7 @@
 					<Title>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Exp. deliv.</v8:content>
+							<v8:content>Promise date</v8:content>
 						</v8:item>
 					</Title>
 					<HorizontalAlign>Right</HorizontalAlign>
@@ -207,6 +207,12 @@
 					<ContextMenu name="EmailDateContextMenu" id="44"/>
 					<ExtendedTooltip name="EmailDateExtendedTooltip" id="45"/>
 				</LabelField>
+				<CheckBoxField name="Zoho" id="46">
+					<DataPath>List.Zoho</DataPath>
+					<CheckBoxType>Auto</CheckBoxType>
+					<ContextMenu name="ZohoContextMenu" id="47"/>
+					<ExtendedTooltip name="ZohoExtendedTooltip" id="48"/>
+				</CheckBoxField>
 			</ChildItems>
 		</Table>
 	</ChildItems>
@@ -239,13 +245,20 @@
 	DocumentQuote.DropshipCompany,
 	DocumentQuote.DocumentTotal,
 	DocumentQuote.DocumentTotalRC,
-	LastEmails.Date AS EmailDate
+	LastEmails.Date AS EmailDate,
+	CASE 
+		WHEN zoho_QuoteCodeMap.zoho_id &lt;&gt; ""
+			THEN TRUE
+		ELSE FALSE
+	END AS Zoho
 FROM
-	Document.Quote AS DocumentQuote
-		LEFT JOIN InformationRegister.DocumentJournalOfCompanies AS DocumentJournalOfCompanies
-		ON DocumentQuote.Ref = DocumentJournalOfCompanies.Document.BaseDocument
-		LEFT JOIN InformationRegister.DocumentLastEmail AS LastEmails
-		ON (LastEmails.Document = DocumentQuote.Ref)</QueryText>
+	Catalog.zoho_QuoteCodeMap AS zoho_QuoteCodeMap
+		RIGHT JOIN Document.Quote AS DocumentQuote
+			LEFT JOIN InformationRegister.DocumentJournalOfCompanies AS DocumentJournalOfCompanies
+			ON DocumentQuote.Ref = DocumentJournalOfCompanies.Document.BaseDocument
+			LEFT JOIN InformationRegister.DocumentLastEmail AS LastEmails
+			ON (LastEmails.Document = DocumentQuote.Ref)
+		ON zoho_QuoteCodeMap.quote_ref = DocumentQuote.Ref</QueryText>
 				<MainTable>Document.Quote</MainTable>
 				<ListSettings>
 					<dcsset:filter>
@@ -305,6 +318,42 @@ FROM
 				</ListSettings>
 			</Settings>
 		</Attribute>
+		<ConditionalAppearance>
+			<dcsset:item>
+				<dcsset:selection>
+					<dcsset:item>
+						<dcsset:field>ExpirationDate</dcsset:field>
+					</dcsset:item>
+				</dcsset:selection>
+				<dcsset:filter>
+					<dcsset:item xsi:type="dcsset:FilterItemGroup">
+						<dcsset:groupType>AndGroup</dcsset:groupType>
+						<dcsset:item xsi:type="dcsset:FilterItemComparison">
+							<dcsset:left xsi:type="dcscor:Field">List.ExpirationDate</dcsset:left>
+							<dcsset:comparisonType>Less</dcsset:comparisonType>
+							<dcsset:right xsi:type="v8:StandardBeginningDate">
+								<v8:variant xsi:type="v8:StandardBeginningDateVariant">BeginningOfThisDay</v8:variant>
+							</dcsset:right>
+						</dcsset:item>
+						<dcsset:item xsi:type="dcsset:FilterItemComparison">
+							<dcsset:left xsi:type="dcscor:Field">List.Status</dcsset:left>
+							<dcsset:comparisonType>Equal</dcsset:comparisonType>
+							<dcsset:right xsi:type="xs:string">Open</dcsset:right>
+						</dcsset:item>
+					</dcsset:item>
+				</dcsset:filter>
+				<dcsset:appearance>
+					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+						<dcscor:parameter>TextColor</dcscor:parameter>
+						<dcscor:value xsi:type="v8ui:Color">web:Red</dcscor:value>
+					</dcscor:item>
+					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+						<dcscor:parameter>Font</dcscor:parameter>
+						<dcscor:value xsi:type="v8ui:Font" ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
+					</dcscor:item>
+				</dcsset:appearance>
+			</dcsset:item>
+		</ConditionalAppearance>
 	</Attributes>
 	<Commands>
 		<Command name="CancelQuote" id="1">

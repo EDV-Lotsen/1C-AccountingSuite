@@ -62,6 +62,13 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	Items.LineItemsBackorder.EditFormat = QuantityFormat;
 	Items.LineItemsBackorder.Format     = QuantityFormat;
 	
+	// Update prices presentation.
+	PriceFormat = GeneralFunctionsReusable.DefaultPriceFormat();
+	Items.LineItemsPrice.EditFormat      = PriceFormat;
+	Items.LineItemsPrice.Format          = PriceFormat;
+	Items.LineItemsOrderPrice.EditFormat = PriceFormat;
+	Items.LineItemsOrderPrice.Format     = PriceFormat;
+	
 	// Update visibility of controls depending on functional options.
 	If Not GeneralFunctionsReusable.FunctionalOptionValue("MultiCurrency") Then
 		Items.FCYGroup.Visible    = False;
@@ -582,9 +589,10 @@ Procedure DefaultSettingOnChangeAtServer(DefaultSetting, RecalculateLineItems)
 			For Each Row In Object.LineItems Do
 				Row.PriceUnits = Round(GeneralFunctions.ProductLastCost(Row.Product, PointInTime) *
 				                 ?(Row.Unit.Factor > 0, Row.Unit.Factor, 1) /
-				                 ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), 2);
+				                 ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), GeneralFunctionsReusable.PricePrecisionForOneItem(Row.Product));
 				LineItemsPriceOnChangeAtServer(Row);
 			EndDo;
+			RecalculateTotalsAtServer();
 		EndIf;
 		
 	Else
@@ -692,8 +700,8 @@ Procedure LineItemsProductOnChangeAtServer(TableSectionRow)
 	//TableSectionRow.UM                 = UnitSetProperties.UM;
 	TableSectionRow.PriceUnits         = Round(GeneralFunctions.ProductLastCost(TableSectionRow.Product, PointInTime) *
 	                                     ?(TableSectionRow.Unit.Factor > 0, TableSectionRow.Unit.Factor, 1) /
-	                                     ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), 2);
-	
+	                                     ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), GeneralFunctionsReusable.PricePrecisionForOneItem(TableSectionRow.Product));
+										 
 	// Reset default values.
 	FillPropertyValues(TableSectionRow, Object, "LocationActual, DeliveryDateActual, Project, Class");
 	
@@ -740,8 +748,8 @@ Procedure LineItemsUnitOnChangeAtServer(TableSectionRow)
 	// Calculate new unit price.
 	TableSectionRow.PriceUnits = Round(GeneralFunctions.ProductLastCost(TableSectionRow.Product, PointInTime) *
 	                             ?(TableSectionRow.Unit.Factor > 0, TableSectionRow.Unit.Factor, 1) /
-	                             ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), 2);
-	
+	                             ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), GeneralFunctionsReusable.PricePrecisionForOneItem(TableSectionRow.Product));
+								 
 	// Process settings changes.
 	LineItemsQuantityOnChangeAtServer(TableSectionRow);
 	
@@ -787,7 +795,7 @@ Procedure LineItemsQuantityOnChangeAtServer(TableSectionRow)
 	//EndIf;
 	
 	// Calculate total by line.
-	TableSectionRow.LineTotal = Round(Round(TableSectionRow.QtyUnits, QuantityPrecision) * TableSectionRow.PriceUnits, 2);
+	TableSectionRow.LineTotal = Round(Round(TableSectionRow.QtyUnits, QuantityPrecision) * Round(TableSectionRow.PriceUnits, GeneralFunctionsReusable.PricePrecisionForOneItem(TableSectionRow.Product)), 2);
 	
 	// Process settings changes.
 	LineItemsLineTotalOnChangeAtServer(TableSectionRow);
@@ -815,6 +823,9 @@ EndProcedure
 &AtServer
 Procedure LineItemsPriceOnChangeAtServer(TableSectionRow)
 	
+	// Rounds price of product. 
+	TableSectionRow.PriceUnits = Round(TableSectionRow.PriceUnits, GeneralFunctionsReusable.PricePrecisionForOneItem(TableSectionRow.Product));
+	
 	// Calculate total by line.
 	TableSectionRow.LineTotal = Round(Round(TableSectionRow.QtyUnits, QuantityPrecision) * TableSectionRow.PriceUnits, 2);
 	
@@ -833,6 +844,10 @@ Procedure LineItemsLineTotalOnChange(Item)
 	// Request server operation.
 	LineItemsLineTotalOnChangeAtServer(TableSectionRow);
 	
+	// Back-step price calculation with totals priority (interactive change only).
+	TableSectionRow.PriceUnits = ?(Round(TableSectionRow.QtyUnits, QuantityPrecision) > 0,
+	                               Round(TableSectionRow.LineTotal / Round(TableSectionRow.QtyUnits, QuantityPrecision), GeneralFunctionsReusable.PricePrecisionForOneItem(TableSectionRow.Product)), 0);
+								   
 	// Load processed data back.
 	FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
 	
@@ -843,10 +858,6 @@ EndProcedure
 
 &AtServer
 Procedure LineItemsLineTotalOnChangeAtServer(TableSectionRow)
-	
-	// Back-step price calculation with totals priority.
-	TableSectionRow.PriceUnits = ?(Round(TableSectionRow.QtyUnits, QuantityPrecision) > 0,
-	                               Round(TableSectionRow.LineTotal / Round(TableSectionRow.QtyUnits, QuantityPrecision), 2), 0);
 	
 	// Back-calculation of quantity in base units.
 	TableSectionRow.QtyUM      = Round(Round(TableSectionRow.QtyUnits, QuantityPrecision) *

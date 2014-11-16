@@ -120,6 +120,9 @@
 			</EditFormat>
 			<ContextMenu name="PriceContextMenu" id="8"/>
 			<ExtendedTooltip name="PriceExtendedTooltip" id="19"/>
+			<Events>
+				<Event name="OnChange">PriceOnChange</Event>
+			</Events>
 		</InputField>
 		<InputField name="Cost" id="11">
 			<DataPath>Record.Cost</DataPath>
@@ -137,6 +140,9 @@
 			</EditFormat>
 			<ContextMenu name="CostContextMenu" id="12"/>
 			<ExtendedTooltip name="CostExtendedTooltip" id="20"/>
+			<Events>
+				<Event name="OnChange">CostOnChange</Event>
+			</Events>
 		</InputField>
 	</ChildItems>
 	<Attributes>
@@ -156,6 +162,17 @@
 			</Title>
 			<Type>
 				<v8:Type>xs:boolean</v8:Type>
+			</Type>
+		</Attribute>
+		<Attribute name="Product" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Product</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>cfg:CatalogRef.Products</v8:Type>
 			</Type>
 		</Attribute>
 	</Attributes>

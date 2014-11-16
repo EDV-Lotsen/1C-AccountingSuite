@@ -18,7 +18,7 @@ EndProcedure
 Procedure LineItemsQuantityOnChange(Item)
 	
 	TabularPartRow = Items.LineItems.CurrentData;
-	TabularPartRow.LineTotal = TabularPartRow.Quantity * TabularPartRow.Price;
+	TabularPartRow.LineTotal = TabularPartRow.Quantity * Round(TabularPartRow.Price, GeneralFunctionsReusable.PricePrecisionForOneItem(TabularPartRow.Product));
 	Object.DocumentTotalRC = Object.LineItems.Total("LineTotal");
 
 EndProcedure
@@ -37,7 +37,12 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	QuantityFormat    = GeneralFunctionsReusable.DefaultQuantityFormat();
 	Items.LineItemsQuantity.EditFormat = QuantityFormat;
 	Items.LineItemsQuantity.Format     = QuantityFormat;
-
+	
+	// Update prices presentation.
+	PriceFormat = GeneralFunctionsReusable.DefaultPriceFormat();
+	Items.LineItemsPrice.EditFormat  = PriceFormat;
+	Items.LineItemsPrice.Format      = PriceFormat;
+	
 EndProcedure
 
 

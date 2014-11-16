@@ -4,6 +4,7 @@
 	<AutoCommandBar name="FormCommandBar" id="-1"/>
 	<Events>
 		<Event name="BeforeClose">BeforeClose</Event>
+		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
 	</Events>
 	<ChildItems>
 		<Table name="List" id="1">
@@ -36,29 +37,29 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="38"/>
-			<SearchStringAddition name="ListSearchString" id="62">
+			<SearchStringAddition name="ListSearchString" id="80">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="63"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="64"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="81"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="82"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="65">
+			<ViewStatusAddition name="ListViewStatus" id="83">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="66"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="67"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="84"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="85"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="68">
+			<SearchControlAddition name="ListSearchControl" id="86">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="69"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="70"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="87"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="88"/>
 			</SearchControlAddition>
 			<ChildItems>
 				<LabelField name="Owner" id="59">
@@ -165,6 +166,37 @@
 					<ContextMenu name="DefaultShippingContextMenu" id="33"/>
 					<ExtendedTooltip name="DefaultShippingExtendedTooltip" id="55"/>
 				</CheckBoxField>
+				<LabelField name="CF1String" id="62">
+					<DataPath>List.CF1String</DataPath>
+					<ContextMenu name="CF1StringContextMenu" id="63"/>
+					<ExtendedTooltip name="CF1StringExtendedTooltip" id="64"/>
+				</LabelField>
+				<LabelField name="CF2String" id="65">
+					<DataPath>List.CF2String</DataPath>
+					<ContextMenu name="CF2StringContextMenu" id="66"/>
+					<ExtendedTooltip name="CF2StringExtendedTooltip" id="67"/>
+				</LabelField>
+				<LabelField name="CF3String" id="68">
+					<DataPath>List.CF3String</DataPath>
+					<ContextMenu name="CF3StringContextMenu" id="69"/>
+					<ExtendedTooltip name="CF3StringExtendedTooltip" id="70"/>
+				</LabelField>
+				<LabelField name="CF4String" id="71">
+					<DataPath>List.CF4String</DataPath>
+					<ContextMenu name="CF4StringContextMenu" id="72"/>
+					<ExtendedTooltip name="CF4StringExtendedTooltip" id="73"/>
+				</LabelField>
+				<LabelField name="CF5String" id="74">
+					<DataPath>List.CF5String</DataPath>
+					<ContextMenu name="CF5StringContextMenu" id="75"/>
+					<ExtendedTooltip name="CF5StringExtendedTooltip" id="76"/>
+				</LabelField>
+				<CheckBoxField name="Zoho" id="77">
+					<DataPath>List.Zoho</DataPath>
+					<CheckBoxType>Auto</CheckBoxType>
+					<ContextMenu name="ZohoContextMenu" id="78"/>
+					<ExtendedTooltip name="ZohoExtendedTooltip" id="79"/>
+				</CheckBoxField>
 			</ChildItems>
 		</Table>
 	</ChildItems>
@@ -175,8 +207,54 @@
 			</Type>
 			<MainAttribute>true</MainAttribute>
 			<Settings xsi:type="DynamicList">
-				<ManualQuery>false</ManualQuery>
+				<ManualQuery>true</ManualQuery>
 				<DynamicDataRead>true</DynamicDataRead>
+				<QueryText>SELECT
+	CatalogAddresses.Ref,
+	CatalogAddresses.DeletionMark,
+	CatalogAddresses.Owner,
+	CatalogAddresses.Code,
+	CatalogAddresses.Description,
+	CatalogAddresses.FirstName,
+	CatalogAddresses.MiddleName,
+	CatalogAddresses.LastName,
+	CatalogAddresses.Phone,
+	CatalogAddresses.Cell,
+	CatalogAddresses.Fax,
+	CatalogAddresses.Email,
+	CatalogAddresses.AddressLine1,
+	CatalogAddresses.AddressLine2,
+	CatalogAddresses.AddressLine3,
+	CatalogAddresses.City,
+	CatalogAddresses.State,
+	CatalogAddresses.Country,
+	CatalogAddresses.ZIP,
+	CatalogAddresses.DefaultBilling,
+	CatalogAddresses.DefaultShipping,
+	CatalogAddresses.RemitTo,
+	CatalogAddresses.Notes,
+	CatalogAddresses.Salutation,
+	CatalogAddresses.Suffix,
+	CatalogAddresses.CF1String,
+	CatalogAddresses.CF2String,
+	CatalogAddresses.CF3String,
+	CatalogAddresses.CF4String,
+	CatalogAddresses.CF5String,
+	CatalogAddresses.JobTitle,
+	CatalogAddresses.SalesPerson,
+	CatalogAddresses.NewObject,
+	CatalogAddresses.AddressValidated,
+	CatalogAddresses.Predefined,
+	CatalogAddresses.PredefinedDataName,
+	CASE 
+		WHEN zoho_contactCodeMap.zoho_id &lt;&gt; ""
+			THEN TRUE
+		ELSE FALSE
+	END AS Zoho
+FROM
+	Catalog.zoho_contactCodeMap AS zoho_contactCodeMap
+		RIGHT JOIN Catalog.Addresses AS CatalogAddresses
+		ON zoho_contactCodeMap.address_ref = CatalogAddresses.Ref</QueryText>
 				<MainTable>Catalog.Addresses</MainTable>
 				<ListSettings>
 					<dcsset:filter>

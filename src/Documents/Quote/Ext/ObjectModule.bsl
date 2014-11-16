@@ -10,6 +10,14 @@
 
 Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 	
+	If NewObject = True Then
+		NewObject = False;
+	Else
+		If Ref = Documents.Quote.EmptyRef() Then
+			NewObject = True;
+		EndIf;
+	EndIf;
+	
 	// Document date adjustment patch (tunes the date of drafts like for the new documents).
 	If  WriteMode = DocumentWriteMode.Posting And Not Posted // Posting of new or draft (saved but unposted) document.
 	And BegOfDay(Date) = BegOfDay(CurrentSessionDate()) Then // Operational posting (by the current date).
@@ -45,7 +53,7 @@ Procedure Filling(FillingData, StandardProcessing)
 		// Filling of the new created document with default values.
 		Currency         = Constants.DefaultCurrency.Get();
 		ExchangeRate     = GeneralFunctions.GetExchangeRate(Date, Currency);
-		Location         = Catalogs.Locations.MainWarehouse;
+		Location         = GeneralFunctions.GetDefaultLocation();
 		
 	Else
 		// Generate on the base of another document.

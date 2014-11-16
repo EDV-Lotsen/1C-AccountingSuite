@@ -14,6 +14,7 @@
 		</ChildItems>
 	</AutoCommandBar>
 	<Events>
+		<Event name="AfterWriteAtServer">AfterWriteAtServer</Event>
 		<Event name="NotificationProcessing">NotificationProcessing</Event>
 		<Event name="OnOpen">OnOpen</Event>
 		<Event name="BeforeWrite">BeforeWrite</Event>
@@ -188,7 +189,22 @@
 											<ContextMenu name="NumberContextMenu" id="2"/>
 											<ExtendedTooltip name="NumberExtendedTooltip" id="101"/>
 										</InputField>
-										<InputField name="ParentDocument" id="30">
+										<InputField name="SalesPerson" id="303">
+											<DataPath>Object.SalesPerson</DataPath>
+											<Width>15</Width>
+											<HorizontalStretch>false</HorizontalStretch>
+											<ContextMenu name="SalesPersonContextMenu" id="304"/>
+											<ExtendedTooltip name="SalesPersonExtendedTooltip" id="305"/>
+										</InputField>
+									</ChildItems>
+								</UsualGroup>
+								<UsualGroup name="RightColumn1" id="301">
+									<Group>Horizontal</Group>
+									<Representation>None</Representation>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="RightColumn1ExtendedTooltip" id="302"/>
+									<ChildItems>
+										<LabelField name="ParentDocument" id="30">
 											<DataPath>Object.ParentDocument</DataPath>
 											<ReadOnly>true</ReadOnly>
 											<ToolTip>
@@ -197,12 +213,10 @@
 													<v8:content>read only, auto-filled if a Credit Memo is created based on a Sales Invoice</v8:content>
 												</v8:item>
 											</ToolTip>
-											<ToolTipRepresentation>Button</ToolTipRepresentation>
-											<Width>15</Width>
-											<HorizontalStretch>false</HorizontalStretch>
+											<Hiperlink>true</Hiperlink>
 											<ContextMenu name="ParentDocumentContextMenu" id="31"/>
 											<ExtendedTooltip name="ParentDocumentExtendedTooltip" id="115"/>
-										</InputField>
+										</LabelField>
 									</ChildItems>
 								</UsualGroup>
 							</ChildItems>
@@ -235,6 +249,13 @@
 									<ContextMenu name="LocationContextMenu" id="49"/>
 									<ExtendedTooltip name="LocationExtendedTooltip" id="114"/>
 								</InputField>
+								<InputField name="ShipFrom" id="361">
+									<DataPath>Object.ShipFrom</DataPath>
+									<Width>15</Width>
+									<HorizontalStretch>false</HorizontalStretch>
+									<ContextMenu name="ShipFromContextMenu" id="362"/>
+									<ExtendedTooltip name="ShipFromExtendedTooltip" id="363"/>
+								</InputField>
 							</ChildItems>
 						</Page>
 						<Page name="Additional" id="148">
@@ -250,7 +271,6 @@
 									<v8:content>Additional</v8:content>
 								</v8:item>
 							</ToolTip>
-							<Group>Horizontal</Group>
 							<ExtendedTooltip name="AdditionalExtendedTooltip" id="149"/>
 							<ChildItems>
 								<InputField name="ARAccount" id="85">
@@ -260,6 +280,17 @@
 									<ContextMenu name="ARAccountContextMenu" id="86"/>
 									<ExtendedTooltip name="ARAccountExtendedTooltip" id="108"/>
 								</InputField>
+								<Button name="AuditLogRecord" id="299">
+									<Type>UsualButton</Type>
+									<CommandName>Form.Command.AuditLogRecord</CommandName>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Audit Log Records</v8:content>
+										</v8:item>
+									</Title>
+									<ExtendedTooltip name="AuditLogRecordExtendedTooltip" id="300"/>
+								</Button>
 							</ChildItems>
 						</Page>
 						<Page name="Currency2" id="288">
@@ -482,125 +513,384 @@
 							<Group>Horizontal</Group>
 							<ExtendedTooltip name="TaxTabExtendedTooltip" id="190"/>
 							<ChildItems>
-								<UsualGroup name="SalesTaxSettingsGroup" id="191">
+								<RadioButtonField name="TaxEngine" id="306">
+									<DataPath>TaxEngine</DataPath>
+									<TitleLocation>None</TitleLocation>
+									<RadioButtonType>Tumbler</RadioButtonType>
+									<ColumnsCount>1</ColumnsCount>
+									<ChoiceList>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>Use ACSuite</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:decimal">1</Value>
+											</xr:Value>
+										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>Use AvaTax</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:decimal">2</Value>
+											</xr:Value>
+										</xr:Item>
+									</ChoiceList>
+									<Font ref="style:NormalTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
+									<ContextMenu name="TaxEngineContextMenu" id="307"/>
+									<ExtendedTooltip name="TaxEngineExtendedTooltip" id="308"/>
+									<Events>
+										<Event name="OnChange">TaxEngineOnChange</Event>
+									</Events>
+								</RadioButtonField>
+								<Pages name="TaxParametersPages" id="309">
 									<Title>
 										<v8:item>
 											<v8:lang>en</v8:lang>
-											<v8:content>Sales tax settings group</v8:content>
+											<v8:content>Tax parameters pages</v8:content>
 										</v8:item>
 									</Title>
 									<ToolTip>
 										<v8:item>
 											<v8:lang>en</v8:lang>
-											<v8:content>Sales tax settings group</v8:content>
+											<v8:content>Tax parameters pages</v8:content>
 										</v8:item>
 									</ToolTip>
-									<Group>Vertical</Group>
-									<ShowTitle>false</ShowTitle>
-									<ExtendedTooltip name="SalesTaxSettingsGroupExtendedTooltip" id="192"/>
+									<PagesRepresentation>None</PagesRepresentation>
+									<ExtendedTooltip name="TaxParametersPagesExtendedTooltip" id="310"/>
 									<ChildItems>
-										<InputField name="SalesTaxRate" id="193">
-											<DataPath>SalesTaxRate</DataPath>
-											<Width>30</Width>
-											<HorizontalStretch>false</HorizontalStretch>
-											<ListChoiceMode>true</ListChoiceMode>
-											<ContextMenu name="SalesTaxRateContextMenu" id="194"/>
-											<ExtendedTooltip name="SalesTaxRateExtendedTooltip" id="195"/>
-											<Events>
-												<Event name="OnChange">SalesTaxRateOnChange</Event>
-											</Events>
-										</InputField>
-										<CheckBoxField name="DiscountIsTaxable" id="196">
-											<DataPath>Object.DiscountIsTaxable</DataPath>
-											<CheckBoxType>Auto</CheckBoxType>
-											<ContextMenu name="DiscountIsTaxableContextMenu" id="197"/>
-											<ExtendedTooltip name="DiscountIsTaxableExtendedTooltip" id="198"/>
-											<Events>
-												<Event name="OnChange">DiscountIsTaxableOnChange</Event>
-											</Events>
-										</CheckBoxField>
-									</ChildItems>
-								</UsualGroup>
-								<Table name="SalesTaxAcrossAgencies" id="199">
-									<TitleLocation>Left</TitleLocation>
-									<CommandBarLocation>None</CommandBarLocation>
-									<ReadOnly>true</ReadOnly>
-									<ChangeRowSet>false</ChangeRowSet>
-									<ChangeRowOrder>false</ChangeRowOrder>
-									<Height>2</Height>
-									<AutoInsertNewRow>true</AutoInsertNewRow>
-									<HorizontalStretch>false</HorizontalStretch>
-									<EnableStartDrag>true</EnableStartDrag>
-									<EnableDrag>true</EnableDrag>
-									<DataPath>Object.SalesTaxAcrossAgencies</DataPath>
-									<BorderColor>style:FormBackColor</BorderColor>
-									<Title>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Tax components</v8:content>
-										</v8:item>
-									</Title>
-									<SearchStringLocation>None</SearchStringLocation>
-									<ViewStatusLocation>None</ViewStatusLocation>
-									<SearchControlLocation>None</SearchControlLocation>
-									<RowFilter xsi:nil="true"/>
-									<ContextMenu name="SalesTaxAcrossAgenciesContextMenu" id="200"/>
-									<AutoCommandBar name="SalesTaxAcrossAgenciesCommandBar" id="201"/>
-									<ExtendedTooltip name="SalesTaxAcrossAgenciesExtendedTooltip" id="202"/>
-									<SearchStringAddition name="SalesTaxAcrossAgenciesSearchString" id="293">
-										<AdditionSource>
-											<Item>SalesTaxAcrossAgencies</Item>
-											<Type>SearchStringRepresentation</Type>
-										</AdditionSource>
-										<ContextMenu name="SalesTaxAcrossAgenciesSearchStringContextMenu" id="294"/>
-										<ExtendedTooltip name="SalesTaxAcrossAgenciesSearchStringExtendedTooltip" id="295"/>
-									</SearchStringAddition>
-									<ViewStatusAddition name="SalesTaxAcrossAgenciesViewStatus" id="296">
-										<AdditionSource>
-											<Item>SalesTaxAcrossAgencies</Item>
-											<Type>ViewStatusRepresentation</Type>
-										</AdditionSource>
-										<ContextMenu name="SalesTaxAcrossAgenciesViewStatusContextMenu" id="297"/>
-										<ExtendedTooltip name="SalesTaxAcrossAgenciesViewStatusExtendedTooltip" id="298"/>
-									</ViewStatusAddition>
-									<SearchControlAddition name="SalesTaxAcrossAgenciesSearchControl" id="299">
-										<AdditionSource>
-											<Item>SalesTaxAcrossAgencies</Item>
-											<Type>SearchControl</Type>
-										</AdditionSource>
-										<ContextMenu name="SalesTaxAcrossAgenciesSearchControlContextMenu" id="300"/>
-										<ExtendedTooltip name="SalesTaxAcrossAgenciesSearchControlExtendedTooltip" id="301"/>
-									</SearchControlAddition>
-									<ChildItems>
-										<InputField name="SalesTaxAcrossAgenciesSalesTaxComponent" id="206">
-											<DataPath>Object.SalesTaxAcrossAgencies.SalesTaxComponent</DataPath>
-											<EditMode>EnterOnInput</EditMode>
-											<Width>15</Width>
-											<ContextMenu name="SalesTaxAcrossAgenciesSalesTaxComponentContextMenu" id="207"/>
-											<ExtendedTooltip name="SalesTaxAcrossAgenciesSalesTaxComponentExtendedTooltip" id="208"/>
-										</InputField>
-										<InputField name="SalesTaxAcrossAgenciesRate" id="209">
-											<DataPath>Object.SalesTaxAcrossAgencies.Rate</DataPath>
+										<Page name="TaxParametersInACS" id="311">
 											<Title>
 												<v8:item>
 													<v8:lang>en</v8:lang>
-													<v8:content>Rate, %</v8:content>
+													<v8:content>Tax parameters in ACS</v8:content>
 												</v8:item>
 											</Title>
-											<EditMode>EnterOnInput</EditMode>
-											<Width>7</Width>
-											<ContextMenu name="SalesTaxAcrossAgenciesRateContextMenu" id="210"/>
-											<ExtendedTooltip name="SalesTaxAcrossAgenciesRateExtendedTooltip" id="211"/>
-										</InputField>
-										<InputField name="SalesTaxAcrossAgenciesAmount" id="212">
-											<DataPath>Object.SalesTaxAcrossAgencies.Amount</DataPath>
-											<EditMode>EnterOnInput</EditMode>
-											<Width>10</Width>
-											<ContextMenu name="SalesTaxAcrossAgenciesAmountContextMenu" id="213"/>
-											<ExtendedTooltip name="SalesTaxAcrossAgenciesAmountExtendedTooltip" id="214"/>
-										</InputField>
+											<ToolTip>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Tax parameters in ACS</v8:content>
+												</v8:item>
+											</ToolTip>
+											<Group>Horizontal</Group>
+											<ShowTitle>false</ShowTitle>
+											<ExtendedTooltip name="TaxParametersInACSExtendedTooltip" id="312"/>
+											<ChildItems>
+												<UsualGroup name="SalesTaxSettingsGroup" id="191">
+													<Title>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Sales tax settings group</v8:content>
+														</v8:item>
+													</Title>
+													<ToolTip>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Sales tax settings group</v8:content>
+														</v8:item>
+													</ToolTip>
+													<Group>Vertical</Group>
+													<ShowTitle>false</ShowTitle>
+													<ExtendedTooltip name="SalesTaxSettingsGroupExtendedTooltip" id="192"/>
+													<ChildItems>
+														<InputField name="SalesTaxRate" id="193">
+															<DataPath>SalesTaxRate</DataPath>
+															<Width>17</Width>
+															<HorizontalStretch>false</HorizontalStretch>
+															<ListChoiceMode>true</ListChoiceMode>
+															<ContextMenu name="SalesTaxRateContextMenu" id="194"/>
+															<ExtendedTooltip name="SalesTaxRateExtendedTooltip" id="195"/>
+															<Events>
+																<Event name="OnChange">SalesTaxRateOnChange</Event>
+															</Events>
+														</InputField>
+														<CheckBoxField name="DiscountIsTaxable" id="196">
+															<DataPath>Object.DiscountIsTaxable</DataPath>
+															<Visible>false</Visible>
+															<CheckBoxType>Auto</CheckBoxType>
+															<ContextMenu name="DiscountIsTaxableContextMenu" id="197"/>
+															<ExtendedTooltip name="DiscountIsTaxableExtendedTooltip" id="198"/>
+															<Events>
+																<Event name="OnChange">DiscountIsTaxableOnChange</Event>
+															</Events>
+														</CheckBoxField>
+														<InputField name="DiscountTaxability" id="355">
+															<DataPath>Object.DiscountTaxability</DataPath>
+															<Width>17</Width>
+															<HorizontalStretch>false</HorizontalStretch>
+															<ContextMenu name="DiscountTaxabilityContextMenu" id="356"/>
+															<ExtendedTooltip name="DiscountTaxabilityExtendedTooltip" id="357"/>
+															<Events>
+																<Event name="OnChange">DiscountTaxabilityOnChange</Event>
+															</Events>
+														</InputField>
+													</ChildItems>
+												</UsualGroup>
+												<LabelDecoration name="TaxComponentsTitleACS" id="358">
+													<HorizontalStretch>false</HorizontalStretch>
+													<Title formatted="false">
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Tax components:</v8:content>
+														</v8:item>
+													</Title>
+													<ContextMenu name="TaxComponentsTitleACSContextMenu" id="359"/>
+													<ExtendedTooltip name="TaxComponentsTitleACSExtendedTooltip" id="360"/>
+												</LabelDecoration>
+												<Table name="SalesTaxAcrossAgencies" id="199">
+													<CommandBarLocation>None</CommandBarLocation>
+													<ReadOnly>true</ReadOnly>
+													<ChangeRowSet>false</ChangeRowSet>
+													<ChangeRowOrder>false</ChangeRowOrder>
+													<Width>35</Width>
+													<Height>2</Height>
+													<AutoInsertNewRow>true</AutoInsertNewRow>
+													<HorizontalStretch>false</HorizontalStretch>
+													<EnableStartDrag>true</EnableStartDrag>
+													<EnableDrag>true</EnableDrag>
+													<DataPath>Object.SalesTaxAcrossAgencies</DataPath>
+													<BorderColor>style:FormBackColor</BorderColor>
+													<Title>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Tax components</v8:content>
+														</v8:item>
+													</Title>
+													<SearchStringLocation>None</SearchStringLocation>
+													<ViewStatusLocation>None</ViewStatusLocation>
+													<SearchControlLocation>None</SearchControlLocation>
+													<RowFilter xsi:nil="true"/>
+													<ContextMenu name="SalesTaxAcrossAgenciesContextMenu" id="200"/>
+													<AutoCommandBar name="SalesTaxAcrossAgenciesCommandBar" id="201"/>
+													<ExtendedTooltip name="SalesTaxAcrossAgenciesExtendedTooltip" id="202"/>
+													<SearchStringAddition name="SalesTaxAcrossAgenciesSearchString" id="367">
+														<AdditionSource>
+															<Item>SalesTaxAcrossAgencies</Item>
+															<Type>SearchStringRepresentation</Type>
+														</AdditionSource>
+														<ContextMenu name="SalesTaxAcrossAgenciesSearchStringContextMenu" id="368"/>
+														<ExtendedTooltip name="SalesTaxAcrossAgenciesSearchStringExtendedTooltip" id="369"/>
+													</SearchStringAddition>
+													<ViewStatusAddition name="SalesTaxAcrossAgenciesViewStatus" id="370">
+														<AdditionSource>
+															<Item>SalesTaxAcrossAgencies</Item>
+															<Type>ViewStatusRepresentation</Type>
+														</AdditionSource>
+														<ContextMenu name="SalesTaxAcrossAgenciesViewStatusContextMenu" id="371"/>
+														<ExtendedTooltip name="SalesTaxAcrossAgenciesViewStatusExtendedTooltip" id="372"/>
+													</ViewStatusAddition>
+													<SearchControlAddition name="SalesTaxAcrossAgenciesSearchControl" id="373">
+														<AdditionSource>
+															<Item>SalesTaxAcrossAgencies</Item>
+															<Type>SearchControl</Type>
+														</AdditionSource>
+														<ContextMenu name="SalesTaxAcrossAgenciesSearchControlContextMenu" id="374"/>
+														<ExtendedTooltip name="SalesTaxAcrossAgenciesSearchControlExtendedTooltip" id="375"/>
+													</SearchControlAddition>
+													<ChildItems>
+														<InputField name="SalesTaxAcrossAgenciesSalesTaxComponent" id="206">
+															<DataPath>Object.SalesTaxAcrossAgencies.SalesTaxComponent</DataPath>
+															<EditMode>EnterOnInput</EditMode>
+															<Width>15</Width>
+															<ContextMenu name="SalesTaxAcrossAgenciesSalesTaxComponentContextMenu" id="207"/>
+															<ExtendedTooltip name="SalesTaxAcrossAgenciesSalesTaxComponentExtendedTooltip" id="208"/>
+														</InputField>
+														<InputField name="SalesTaxAcrossAgenciesRate" id="209">
+															<DataPath>Object.SalesTaxAcrossAgencies.Rate</DataPath>
+															<Title>
+																<v8:item>
+																	<v8:lang>en</v8:lang>
+																	<v8:content>Rate, %</v8:content>
+																</v8:item>
+															</Title>
+															<EditMode>EnterOnInput</EditMode>
+															<Width>7</Width>
+															<ContextMenu name="SalesTaxAcrossAgenciesRateContextMenu" id="210"/>
+															<ExtendedTooltip name="SalesTaxAcrossAgenciesRateExtendedTooltip" id="211"/>
+														</InputField>
+														<InputField name="SalesTaxAcrossAgenciesAmount" id="212">
+															<DataPath>Object.SalesTaxAcrossAgencies.Amount</DataPath>
+															<EditMode>EnterOnInput</EditMode>
+															<Width>10</Width>
+															<ContextMenu name="SalesTaxAcrossAgenciesAmountContextMenu" id="213"/>
+															<ExtendedTooltip name="SalesTaxAcrossAgenciesAmountExtendedTooltip" id="214"/>
+														</InputField>
+													</ChildItems>
+												</Table>
+											</ChildItems>
+										</Page>
+										<Page name="TaxParametersInAvaTax" id="313">
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Tax parameters in ava tax</v8:content>
+												</v8:item>
+											</Title>
+											<ToolTip>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Tax parameters in ava tax</v8:content>
+												</v8:item>
+											</ToolTip>
+											<Group>Horizontal</Group>
+											<ExtendedTooltip name="TaxParametersInAvaTaxExtendedTooltip" id="314"/>
+											<ChildItems>
+												<UsualGroup name="TaxCodesGroup" id="315">
+													<Title>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Tax codes group</v8:content>
+														</v8:item>
+													</Title>
+													<ToolTip>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Tax codes group</v8:content>
+														</v8:item>
+													</ToolTip>
+													<Group>Vertical</Group>
+													<ShowTitle>false</ShowTitle>
+													<ExtendedTooltip name="TaxCodesGroupExtendedTooltip" id="316"/>
+													<ChildItems>
+														<InputField name="AvataxShippingTaxCode" id="317">
+															<DataPath>Object.AvataxShippingTaxCode</DataPath>
+															<Width>17</Width>
+															<ContextMenu name="AvataxShippingTaxCodeContextMenu" id="318"/>
+															<ExtendedTooltip name="AvataxShippingTaxCodeExtendedTooltip" id="319"/>
+														</InputField>
+														<InputField name="DiscountTaxability1" id="323">
+															<DataPath>Object.DiscountTaxability</DataPath>
+															<Width>17</Width>
+															<HorizontalStretch>false</HorizontalStretch>
+															<ContextMenu name="DiscountTaxability1ContextMenu" id="324"/>
+															<ExtendedTooltip name="DiscountTaxability1ExtendedTooltip" id="325"/>
+															<Events>
+																<Event name="OnChange">DiscountTaxabilityOnChange</Event>
+															</Events>
+														</InputField>
+													</ChildItems>
+												</UsualGroup>
+												<UsualGroup name="AvaTaxComponentsTitleGroup" id="326">
+													<Title>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Ava tax components title group</v8:content>
+														</v8:item>
+													</Title>
+													<ToolTip>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Ava tax components title group</v8:content>
+														</v8:item>
+													</ToolTip>
+													<Group>Vertical</Group>
+													<ShowTitle>false</ShowTitle>
+													<ExtendedTooltip name="AvaTaxComponentsTitleGroupExtendedTooltip" id="327"/>
+													<ChildItems>
+														<LabelDecoration name="TaxComponentsTitle" id="328">
+															<HorizontalStretch>false</HorizontalStretch>
+															<Title formatted="false">
+																<v8:item>
+																	<v8:lang>en</v8:lang>
+																	<v8:content>Tax components:</v8:content>
+																</v8:item>
+															</Title>
+															<ContextMenu name="TaxComponentsTitleContextMenu" id="329"/>
+															<ExtendedTooltip name="TaxComponentsTitleExtendedTooltip" id="330"/>
+														</LabelDecoration>
+														<Button name="AvaTaxDetails" id="331">
+															<Type>Hyperlink</Type>
+															<CommandName>Form.Command.AvaTaxDetails</CommandName>
+															<ExtendedTooltip name="AvaTaxDetailsExtendedTooltip" id="332"/>
+														</Button>
+													</ChildItems>
+												</UsualGroup>
+												<Table name="TaxAcrossAgencies" id="333">
+													<CommandBarLocation>None</CommandBarLocation>
+													<ReadOnly>true</ReadOnly>
+													<Width>35</Width>
+													<Height>2</Height>
+													<AutoInsertNewRow>true</AutoInsertNewRow>
+													<HorizontalStretch>false</HorizontalStretch>
+													<EnableStartDrag>true</EnableStartDrag>
+													<EnableDrag>true</EnableDrag>
+													<DataPath>Object.SalesTaxAcrossAgencies</DataPath>
+													<BorderColor>style:FormBackColor</BorderColor>
+													<Title>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Tax components</v8:content>
+														</v8:item>
+													</Title>
+													<SearchStringLocation>None</SearchStringLocation>
+													<ViewStatusLocation>None</ViewStatusLocation>
+													<SearchControlLocation>None</SearchControlLocation>
+													<RowFilter xsi:nil="true"/>
+													<ContextMenu name="TaxAcrossAgenciesContextMenu" id="334"/>
+													<AutoCommandBar name="TaxAcrossAgenciesCommandBar" id="335"/>
+													<ExtendedTooltip name="TaxAcrossAgenciesExtendedTooltip" id="336"/>
+													<SearchStringAddition name="TaxAcrossAgenciesSearchString" id="376">
+														<AdditionSource>
+															<Item>TaxAcrossAgencies</Item>
+															<Type>SearchStringRepresentation</Type>
+														</AdditionSource>
+														<ContextMenu name="TaxAcrossAgenciesSearchStringContextMenu" id="377"/>
+														<ExtendedTooltip name="TaxAcrossAgenciesSearchStringExtendedTooltip" id="378"/>
+													</SearchStringAddition>
+													<ViewStatusAddition name="TaxAcrossAgenciesViewStatus" id="379">
+														<AdditionSource>
+															<Item>TaxAcrossAgencies</Item>
+															<Type>ViewStatusRepresentation</Type>
+														</AdditionSource>
+														<ContextMenu name="TaxAcrossAgenciesViewStatusContextMenu" id="380"/>
+														<ExtendedTooltip name="TaxAcrossAgenciesViewStatusExtendedTooltip" id="381"/>
+													</ViewStatusAddition>
+													<SearchControlAddition name="TaxAcrossAgenciesSearchControl" id="382">
+														<AdditionSource>
+															<Item>TaxAcrossAgencies</Item>
+															<Type>SearchControl</Type>
+														</AdditionSource>
+														<ContextMenu name="TaxAcrossAgenciesSearchControlContextMenu" id="383"/>
+														<ExtendedTooltip name="TaxAcrossAgenciesSearchControlExtendedTooltip" id="384"/>
+													</SearchControlAddition>
+													<ChildItems>
+														<InputField name="TaxAcrossAgenciesAvataxTaxComponent" id="349">
+															<DataPath>Object.SalesTaxAcrossAgencies.AvataxTaxComponent</DataPath>
+															<EditMode>EnterOnInput</EditMode>
+															<Width>15</Width>
+															<ContextMenu name="TaxAcrossAgenciesAvataxTaxComponentContextMenu" id="350"/>
+															<ExtendedTooltip name="TaxAcrossAgenciesAvataxTaxComponentExtendedTooltip" id="351"/>
+														</InputField>
+														<InputField name="TaxAcrossAgenciesRate" id="343">
+															<DataPath>Object.SalesTaxAcrossAgencies.Rate</DataPath>
+															<EditMode>EnterOnInput</EditMode>
+															<Width>7</Width>
+															<ContextMenu name="TaxAcrossAgenciesRateContextMenu" id="344"/>
+															<ExtendedTooltip name="TaxAcrossAgenciesRateExtendedTooltip" id="345"/>
+														</InputField>
+														<InputField name="TaxAcrossAgenciesAmount" id="346">
+															<DataPath>Object.SalesTaxAcrossAgencies.Amount</DataPath>
+															<EditMode>EnterOnInput</EditMode>
+															<Width>10</Width>
+															<ContextMenu name="TaxAcrossAgenciesAmountContextMenu" id="347"/>
+															<ExtendedTooltip name="TaxAcrossAgenciesAmountExtendedTooltip" id="348"/>
+														</InputField>
+													</ChildItems>
+												</Table>
+											</ChildItems>
+										</Page>
 									</ChildItems>
-								</Table>
+								</Pages>
 							</ChildItems>
 						</Page>
 					</ChildItems>
@@ -637,32 +927,33 @@
 					<ContextMenu name="LineItemsContextMenu" id="6"/>
 					<AutoCommandBar name="LineItemsCommandBar" id="7"/>
 					<ExtendedTooltip name="LineItemsExtendedTooltip" id="117"/>
-					<SearchStringAddition name="LineItemsSearchString" id="302">
+					<SearchStringAddition name="LineItemsSearchString" id="385">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>SearchStringRepresentation</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsSearchStringContextMenu" id="303"/>
-						<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="304"/>
+						<ContextMenu name="LineItemsSearchStringContextMenu" id="386"/>
+						<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="387"/>
 					</SearchStringAddition>
-					<ViewStatusAddition name="LineItemsViewStatus" id="305">
+					<ViewStatusAddition name="LineItemsViewStatus" id="388">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>ViewStatusRepresentation</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsViewStatusContextMenu" id="306"/>
-						<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="307"/>
+						<ContextMenu name="LineItemsViewStatusContextMenu" id="389"/>
+						<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="390"/>
 					</ViewStatusAddition>
-					<SearchControlAddition name="LineItemsSearchControl" id="308">
+					<SearchControlAddition name="LineItemsSearchControl" id="391">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>SearchControl</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsSearchControlContextMenu" id="309"/>
-						<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="310"/>
+						<ContextMenu name="LineItemsSearchControlContextMenu" id="392"/>
+						<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="393"/>
 					</SearchControlAddition>
 					<Events>
-						<Event name="AfterDeleteRow">LineItemsAfterDeleteRow</Event>
+						<Event name="OnEditEnd">LineItemsOnEditEnd</Event>
+						<Event name="OnChange">LineItemsOnChange</Event>
 					</Events>
 					<ChildItems>
 						<LabelField name="LineItemsLineNumber" id="8">
@@ -767,6 +1058,18 @@
 							</ToolTip>
 							<EditMode>EnterOnInput</EditMode>
 							<Width>8</Width>
+							<Format>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>NFD=2</v8:content>
+								</v8:item>
+							</Format>
+							<EditFormat>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>NFD=2</v8:content>
+								</v8:item>
+							</EditFormat>
 							<ContextMenu name="LineItemsPriceContextMenu" id="13"/>
 							<ExtendedTooltip name="LineItemsPriceExtendedTooltip" id="122"/>
 							<Events>
@@ -799,6 +1102,67 @@
 								<Event name="OnChange">LineItemsTaxableOnChange</Event>
 							</Events>
 						</CheckBoxField>
+						<CheckBoxField name="LineItemsDiscountIsTaxable" id="364">
+							<DataPath>Object.LineItems.DiscountIsTaxable</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>DT</v8:content>
+								</v8:item>
+							</Title>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Discount is taxable</v8:content>
+								</v8:item>
+							</ToolTip>
+							<EditMode>EnterOnInput</EditMode>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="LineItemsDiscountIsTaxableContextMenu" id="365"/>
+							<ExtendedTooltip name="LineItemsDiscountIsTaxableExtendedTooltip" id="366"/>
+							<Events>
+								<Event name="OnChange">LineItemsDiscountIsTaxableOnChange</Event>
+							</Events>
+						</CheckBoxField>
+						<InputField name="LineItemsAvataxTaxCode" id="352">
+							<DataPath>Object.LineItems.AvataxTaxCode</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="LineItemsAvataxTaxCodeContextMenu" id="353"/>
+							<ExtendedTooltip name="LineItemsAvataxTaxCodeExtendedTooltip" id="354"/>
+						</InputField>
+						<InputField name="LineItemsProject" id="293">
+							<DataPath>Object.LineItems.Project</DataPath>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Actual project</v8:content>
+								</v8:item>
+							</ToolTip>
+							<EditMode>EnterOnInput</EditMode>
+							<Width>15</Width>
+							<ChoiceParameterLinks>
+								<xr:Link>
+									<xr:Name>Filter.Customer</xr:Name>
+									<xr:DataPath xsi:type="xs:string">Object.Company</xr:DataPath>
+									<xr:ValueChange>Clear</xr:ValueChange>
+								</xr:Link>
+							</ChoiceParameterLinks>
+							<ContextMenu name="LineItemsProjectContextMenu" id="294"/>
+							<ExtendedTooltip name="LineItemsProjectExtendedTooltip" id="295"/>
+						</InputField>
+						<InputField name="LineItemsClass" id="296">
+							<DataPath>Object.LineItems.Class</DataPath>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Actual class</v8:content>
+								</v8:item>
+							</ToolTip>
+							<EditMode>EnterOnInput</EditMode>
+							<Width>15</Width>
+							<ContextMenu name="LineItemsClassContextMenu" id="297"/>
+							<ExtendedTooltip name="LineItemsClassExtendedTooltip" id="298"/>
+						</InputField>
 					</ChildItems>
 				</Table>
 			</ChildItems>
@@ -846,7 +1210,7 @@
 					<ExtendedTooltip name="TotalsColumn1ExtendedTooltip" id="219"/>
 					<ChildItems>
 						<LabelDecoration name="SalesTaxPercentDecoration" id="215">
-							<Width>18</Width>
+							<Width>15</Width>
 							<TextColor>style:ColorInformationLabel</TextColor>
 							<Title formatted="false">
 								<v8:item>
@@ -882,12 +1246,12 @@
 								<InputField name="LineSubtotalRC" id="183">
 									<DataPath>Object.LineSubtotal</DataPath>
 									<ReadOnly>true</ReadOnly>
-									<Width>10</Width>
+									<Width>11</Width>
 									<ContextMenu name="LineSubtotalRCContextMenu" id="184"/>
 									<ExtendedTooltip name="LineSubtotalRCExtendedTooltip" id="185"/>
 								</InputField>
 								<LabelDecoration name="SubtotalCurrency" id="240">
-									<Width>4</Width>
+									<Width>2</Width>
 									<ContextMenu name="SubtotalCurrencyContextMenu" id="241"/>
 									<ExtendedTooltip name="SubtotalCurrencyExtendedTooltip" id="242"/>
 								</LabelDecoration>
@@ -979,7 +1343,7 @@
 							<ChildItems>
 								<InputField name="Discount" id="258">
 									<DataPath>Object.Discount</DataPath>
-									<Width>10</Width>
+									<Width>11</Width>
 									<ContextMenu name="DiscountContextMenu" id="259"/>
 									<ExtendedTooltip name="DiscountExtendedTooltip" id="260"/>
 									<Events>
@@ -987,102 +1351,9 @@
 									</Events>
 								</InputField>
 								<LabelDecoration name="DiscountCurrency" id="264">
-									<Width>3</Width>
+									<Width>2</Width>
 									<ContextMenu name="DiscountCurrencyContextMenu" id="265"/>
 									<ExtendedTooltip name="DiscountCurrencyExtendedTooltip" id="266"/>
-								</LabelDecoration>
-							</ChildItems>
-						</UsualGroup>
-					</ChildItems>
-				</UsualGroup>
-				<UsualGroup name="TotalsColumn3" id="222">
-					<Title>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Totals column3</v8:content>
-						</v8:item>
-					</Title>
-					<ToolTip>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Totals column3</v8:content>
-						</v8:item>
-					</ToolTip>
-					<Group>Vertical</Group>
-					<ShowTitle>false</ShowTitle>
-					<ExtendedTooltip name="TotalsColumn3ExtendedTooltip" id="223"/>
-					<ChildItems>
-						<UsualGroup name="TotalTaxableSubtotalGroup" id="238">
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Total taxable subtotal group</v8:content>
-								</v8:item>
-							</Title>
-							<ToolTip>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Total taxable subtotal group</v8:content>
-								</v8:item>
-							</ToolTip>
-							<Width>20</Width>
-							<Group>Horizontal</Group>
-							<ShowTitle>false</ShowTitle>
-							<ExtendedTooltip name="TotalTaxableSubtotalGroupExtendedTooltip" id="239"/>
-							<ChildItems>
-								<InputField name="TaxableSubtotal" id="224">
-									<DataPath>Object.TaxableSubtotal</DataPath>
-									<ReadOnly>true</ReadOnly>
-									<Title>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Tax base</v8:content>
-										</v8:item>
-									</Title>
-									<Width>10</Width>
-									<ContextMenu name="TaxableSubtotalContextMenu" id="225"/>
-									<ExtendedTooltip name="TaxableSubtotalExtendedTooltip" id="226"/>
-								</InputField>
-								<LabelDecoration name="TaxableSubtotalCurrency" id="243">
-									<Width>2</Width>
-									<ContextMenu name="TaxableSubtotalCurrencyContextMenu" id="244"/>
-									<ExtendedTooltip name="TaxableSubtotalCurrencyExtendedTooltip" id="245"/>
-								</LabelDecoration>
-							</ChildItems>
-						</UsualGroup>
-						<UsualGroup name="TotalSalesTaxGroup" id="236">
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Total sales tax group</v8:content>
-								</v8:item>
-							</Title>
-							<ToolTip>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Total sales tax group</v8:content>
-								</v8:item>
-							</ToolTip>
-							<Width>20</Width>
-							<Group>Horizontal</Group>
-							<ShowTitle>false</ShowTitle>
-							<BackColor>web:Gainsboro</BackColor>
-							<ExtendedTooltip name="TotalSalesTaxGroupExtendedTooltip" id="237"/>
-							<ChildItems>
-								<InputField name="SalesTax" id="20">
-									<DataPath>Object.SalesTaxRC</DataPath>
-									<ReadOnly>true</ReadOnly>
-									<Width>10</Width>
-									<ContextMenu name="SalesTaxContextMenu" id="21"/>
-									<ExtendedTooltip name="SalesTaxExtendedTooltip" id="133"/>
-									<Events>
-										<Event name="OnChange">SalesTaxOnChange</Event>
-									</Events>
-								</InputField>
-								<LabelDecoration name="SalesTaxCurrency" id="246">
-									<Width>3</Width>
-									<ContextMenu name="SalesTaxCurrencyContextMenu" id="247"/>
-									<ExtendedTooltip name="SalesTaxCurrencyExtendedTooltip" id="248"/>
 								</LabelDecoration>
 							</ChildItems>
 						</UsualGroup>
@@ -1149,7 +1420,7 @@
 								<InputField name="Shipping" id="276">
 									<DataPath>Object.Shipping</DataPath>
 									<TitleLocation>None</TitleLocation>
-									<Width>10</Width>
+									<Width>11</Width>
 									<ContextMenu name="ShippingContextMenu" id="277"/>
 									<ExtendedTooltip name="ShippingExtendedTooltip" id="278"/>
 									<Events>
@@ -1157,9 +1428,102 @@
 									</Events>
 								</InputField>
 								<LabelDecoration name="ShippingCurrency" id="279">
-									<Width>3</Width>
+									<Width>2</Width>
 									<ContextMenu name="ShippingCurrencyContextMenu" id="280"/>
 									<ExtendedTooltip name="ShippingCurrencyExtendedTooltip" id="281"/>
+								</LabelDecoration>
+							</ChildItems>
+						</UsualGroup>
+					</ChildItems>
+				</UsualGroup>
+				<UsualGroup name="TotalsColumn3" id="222">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Totals column3</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Totals column3</v8:content>
+						</v8:item>
+					</ToolTip>
+					<Group>Vertical</Group>
+					<ShowTitle>false</ShowTitle>
+					<ExtendedTooltip name="TotalsColumn3ExtendedTooltip" id="223"/>
+					<ChildItems>
+						<UsualGroup name="TotalTaxableSubtotalGroup" id="238">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Total taxable subtotal group</v8:content>
+								</v8:item>
+							</Title>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Total taxable subtotal group</v8:content>
+								</v8:item>
+							</ToolTip>
+							<Width>20</Width>
+							<Group>Horizontal</Group>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="TotalTaxableSubtotalGroupExtendedTooltip" id="239"/>
+							<ChildItems>
+								<InputField name="TaxableSubtotal" id="224">
+									<DataPath>Object.TaxableSubtotal</DataPath>
+									<ReadOnly>true</ReadOnly>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Tax base</v8:content>
+										</v8:item>
+									</Title>
+									<Width>12</Width>
+									<ContextMenu name="TaxableSubtotalContextMenu" id="225"/>
+									<ExtendedTooltip name="TaxableSubtotalExtendedTooltip" id="226"/>
+								</InputField>
+								<LabelDecoration name="TaxableSubtotalCurrency" id="243">
+									<Width>2</Width>
+									<ContextMenu name="TaxableSubtotalCurrencyContextMenu" id="244"/>
+									<ExtendedTooltip name="TaxableSubtotalCurrencyExtendedTooltip" id="245"/>
+								</LabelDecoration>
+							</ChildItems>
+						</UsualGroup>
+						<UsualGroup name="TotalSalesTaxGroup" id="236">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Total sales tax group</v8:content>
+								</v8:item>
+							</Title>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Total sales tax group</v8:content>
+								</v8:item>
+							</ToolTip>
+							<Width>20</Width>
+							<Group>Horizontal</Group>
+							<ShowTitle>false</ShowTitle>
+							<BackColor>web:Gainsboro</BackColor>
+							<ExtendedTooltip name="TotalSalesTaxGroupExtendedTooltip" id="237"/>
+							<ChildItems>
+								<InputField name="SalesTax" id="20">
+									<DataPath>Object.SalesTax</DataPath>
+									<ReadOnly>true</ReadOnly>
+									<Width>11</Width>
+									<ContextMenu name="SalesTaxContextMenu" id="21"/>
+									<ExtendedTooltip name="SalesTaxExtendedTooltip" id="133"/>
+									<Events>
+										<Event name="OnChange">SalesTaxOnChange</Event>
+									</Events>
+								</InputField>
+								<LabelDecoration name="SalesTaxCurrency" id="246">
+									<Width>2</Width>
+									<ContextMenu name="SalesTaxCurrencyContextMenu" id="247"/>
+									<ExtendedTooltip name="SalesTaxCurrencyExtendedTooltip" id="248"/>
 								</LabelDecoration>
 							</ChildItems>
 						</UsualGroup>
@@ -1332,6 +1696,22 @@
 				</v8:NumberQualifiers>
 			</Type>
 		</Attribute>
+		<Attribute name="TaxEngine" id="5">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Tax engine</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:decimal</v8:Type>
+				<v8:NumberQualifiers>
+					<v8:Digits>10</v8:Digits>
+					<v8:FractionDigits>0</v8:FractionDigits>
+					<v8:AllowedSign>Any</v8:AllowedSign>
+				</v8:NumberQualifiers>
+			</Type>
+		</Attribute>
 	</Attributes>
 	<Commands>
 		<Command name="SendEmail" id="1">
@@ -1348,6 +1728,40 @@
 				</v8:item>
 			</ToolTip>
 			<Action>SendEmail</Action>
+		</Command>
+		<Command name="AuditLogRecord" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Audit log record</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Audit log record</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>AuditLogRecord</Action>
+		</Command>
+		<Command name="AvaTaxDetails" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>View details</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Ava tax details</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Picture>
+				<xr:Ref>CommonPicture.Avalara</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
+			<Action>AvaTax</Action>
 		</Command>
 	</Commands>
 	<CommandInterface>
@@ -1401,6 +1815,16 @@
 				<Command>0:3fd20a9a-9061-43df-8723-bbf7e5e02a79</Command>
 				<Type>Auto</Type>
 				<DefaultVisible>false</DefaultVisible>
+			</Item>
+			<Item>
+				<Command>CommonCommand.SendEmail</Command>
+				<Type>Auto</Type>
+				<CommandGroup>FormCommandBarImportant</CommandGroup>
+				<Index>1</Index>
+				<DefaultVisible>false</DefaultVisible>
+				<Visible>
+					<xr:Common>false</xr:Common>
+				</Visible>
 			</Item>
 		</CommandBar>
 	</CommandInterface>

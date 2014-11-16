@@ -11,10 +11,6 @@
 			<field>Billable</field>
 		</field>
 		<field xsi:type="DataSetFieldField">
-			<dataPath>Billed</dataPath>
-			<field>Billed</field>
-		</field>
-		<field xsi:type="DataSetFieldField">
 			<dataPath>Class</dataPath>
 			<field>Class</field>
 		</field>
@@ -35,20 +31,12 @@
 			<field>DateFrom</field>
 		</field>
 		<field xsi:type="DataSetFieldField">
-			<dataPath>DateTo</dataPath>
-			<field>DateTo</field>
-		</field>
-		<field xsi:type="DataSetFieldField">
 			<dataPath>DeletionMark</dataPath>
 			<field>DeletionMark</field>
 		</field>
 		<field xsi:type="DataSetFieldField">
 			<dataPath>InvoiceSent</dataPath>
 			<field>InvoiceSent</field>
-		</field>
-		<field xsi:type="DataSetFieldField">
-			<dataPath>LogType</dataPath>
-			<field>LogType</field>
 		</field>
 		<field xsi:type="DataSetFieldField">
 			<dataPath>Memo</dataPath>
@@ -98,6 +86,14 @@
 			<dataPath>User</dataPath>
 			<field>User</field>
 		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>InvoiceDate</dataPath>
+			<field>InvoiceDate</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>InvoiceStatus</dataPath>
+			<field>InvoiceStatus</field>
+		</field>
 		<dataSource>DataSource1</dataSource>
 		<query>SELECT
 	TimeTrack.Ref,
@@ -114,14 +110,13 @@
 	TimeTrack.User,
 	TimeTrack.Memo,
 	TimeTrack.DateFrom,
-	TimeTrack.DateTo,
-	TimeTrack.Billed,
-	TimeTrack.LogType,
 	TimeTrack.Billable,
 	TimeTrack.InvoiceSent,
 	TimeTrack.SalesInvoice,
 	TimeTrack.Class,
 	TimeTrack.SalesOrder,
+	TimeTrack.InvoiceDate,
+	TimeTrack.InvoiceStatus,
 	TimeTrack.Presentation,
 	TimeTrack.PointInTime
 FROM
@@ -134,9 +129,6 @@ FROM
 			<dcsset:selection>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Billable</dcsset:field>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>Billed</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Class</dcsset:field>
@@ -154,16 +146,16 @@ FROM
 					<dcsset:field>DateFrom</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>DateTo</dcsset:field>
+					<dcsset:field>DeletionMark</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>DeletionMark</dcsset:field>
+					<dcsset:field>InvoiceDate</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>InvoiceSent</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>LogType</dcsset:field>
+					<dcsset:field>InvoiceStatus</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Memo</dcsset:field>

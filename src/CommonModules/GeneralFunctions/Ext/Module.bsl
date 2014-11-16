@@ -7,12 +7,66 @@ Function GetCFOTodayConstant() Export
 	Return Constants.CFOToday.Get();
 EndFunction
 
+// Check that email address is valid for email.
+Function EmailCheck(StringToCheck) Export
+	
+	StringLen = StrLen(StringToCheck);
+	counter = 0;
+	
+	Digits = new Array();
+	For i = 1 to StringLen Do	
+		Digits.Add(Mid(StringToCheck,i,1));
+
+	EndDo;
+	
+	While counter < StringLen Do
+		CurrentChar = CharCode(Digits[counter]);
+		If ValidCharCheck(CurrentChar) = False Then
+			 Return False;
+		EndIf;			
+		counter = counter + 1;
+	EndDo;
+
+	
+	Template = ".+@.+\..+";
+	RegExp = New COMObject("VBScript.RegExp");
+	RegExp.MultiLine = False;
+	RegExp.Global = True;
+	RegExp.IgnoreCase = True;
+	RegExp.Pattern = Template;
+	If RegExp.Test(StringToCheck) Then
+	     Return True;
+	Else
+	     Return False;
+	EndIf;
+	 
+EndFunction
+
+// Check that Char is within valid character ranges
+Function ValidCharCheck(CharValue)
+	
+	If CharValue >= 64 AND CharValue <= 90 Then
+		Return True;
+	Elsif CharValue >= 97 AND CharValue <= 122 Then
+		Return True;
+	Elsif CharValue >= 48 AND CharValue <= 57 Then
+		Return True;
+	Elsif CharValue = 46 OR CharValue = 33 OR CharValue = 42 OR CharValue = 43 OR CharValue = 45 OR CharValue = 47 OR CharValue = 61 OR CharValue = 63 Then
+		Return True;
+	Elsif CharValue >=94 AND CharValue <= 96 Then
+		Return True;
+	Elsif CharValue >= 123 AND CharValue <= 126 Then
+		Return True;
+	Else
+		Return False;
+	EndIf;
+	
+EndFunction
+
 
 Function Increment(NumberToInc) Export
 	
-	//Last = Constants.SalesInvoiceLastNumber.Get();
 	Last = NumberToInc;
-	//Last = "AAAAA";
 	LastCount = StrLen(Last);
 	Digits = new Array();
 	For i = 1 to LastCount Do	
@@ -155,7 +209,9 @@ Procedure ObjectBeforeDelete(Source, Cancel) Export
 	EndIf;
 	
 	If ReferencedObjects.Count() = 0 Then
-		AuditLog.AuditLogDeleteBeforeDelete(SourceObj,False);
+		If GeneralFunctionsReusable.DisableAuditLogValue() = False Then
+			AuditLog.AuditLogDeleteBeforeDelete(SourceObj,False);
+		EndIf;
 	Else
 		MessageText = "Linked objects found: ";
 		For Each Ref In ReferencedObjects Do
@@ -197,19 +253,20 @@ EndFunction
 
 
 Function ReturnSaleOrderMap(NewOrder) Export
-	
 	OrderData = New Map();
-	//OrderData.Insert("sales_order_code", NewOrder.Code);
 	OrderData.Insert("api_code", String(NewOrder.Ref.UUID()));
 	OrderData.Insert("customer_api_code", String(NewOrder.Company.Ref.UUID()));
-	//OrderData.Insert("description", NewOrder.Ref.Description);
 	OrderData.Insert("ship_to_api_code",String(NewOrder.ShipTo.Ref.UUID()));
 	OrderData.Insert("bill_to_api_code",String(NewOrder.BillTo.Ref.UUID()));
 	OrderData.Insert("ship_to_address_id",String(NewOrder.ShipTo.Description));
+	OrderData.Insert("ship_to_salutation", String(NewOrder.ShipTo.Salutation));
 	OrderData.Insert("ship_to_first_name",String(NewOrder.ShipTo.FirstName));
 	OrderData.Insert("ship_to_middle_name",String(NewOrder.ShipTo.MiddleName));
+	OrderData.Insert("ship_to_last_name", String(NewOrder.ShipTo.LastName));
+	OrderData.Insert("ship_to_suffix",String(NewOrder.ShipTo.Suffix));
 	OrderData.Insert("ship_to_address_line1",String(NewOrder.ShipTo.AddressLine1));
 	OrderData.Insert("ship_to_address_line2",String(NewOrder.ShipTo.AddressLine2));
+	OrderData.Insert("ship_to_address_line3",String(NewOrder.ShipTo.AddressLine3));
 	OrderData.Insert("ship_to_city",String(NewOrder.ShipTo.City));
 	OrderData.Insert("ship_to_state",String(NewOrder.ShipTo.State));
 	OrderData.Insert("ship_to_zip",String(NewOrder.ShipTo.ZIP));
@@ -217,14 +274,18 @@ Function ReturnSaleOrderMap(NewOrder) Export
 	OrderData.Insert("ship_to_phone",String(NewOrder.ShipTo.Phone));
 	OrderData.Insert("ship_to_cell",String(NewOrder.ShipTo.Cell));
 	OrderData.Insert("ship_to_email",String(NewOrder.ShipTo.Email));
-	//OrderData.Insert("ship_to_sales_tax_code",String(NewOrder.ShipTo.SalesTaxCode));
+	OrderData.Insert("ship_to_fax",String(NewOrder.ShipTo.Fax));
 	OrderData.Insert("ship_to_notes",String(NewOrder.ShipTo.Notes));
 	
 	OrderData.Insert("bill_to_address_id",String(NewOrder.BillTo.Description));
+	OrderData.Insert("bill_to_salutation", String(NewOrder.BillTo.Salutation));
 	OrderData.Insert("bill_to_first_name",String(NewOrder.BillTo.FirstName));
 	OrderData.Insert("bill_to_middle_name",String(NewOrder.BillTo.MiddleName));
+	OrderData.Insert("bill_to_last_name", String(NewOrder.BillTo.LastName));
+	OrderData.Insert("bill_to_suffix",String(NewOrder.BillTo.Suffix));
 	OrderData.Insert("bill_to_address_line1",String(NewOrder.BillTo.AddressLine1));
 	OrderData.Insert("bill_to_address_line2",String(NewOrder.BillTo.AddressLine2));
+	OrderData.Insert("bill_to_address_line3",String(NewOrder.BillTo.AddressLine3));
 	OrderData.Insert("bill_to_city",String(NewOrder.BillTo.City));
 	OrderData.Insert("bill_to_state",String(NewOrder.BillTo.State));
 	OrderData.Insert("bill_to_zip",String(NewOrder.BillTo.ZIP));
@@ -232,68 +293,40 @@ Function ReturnSaleOrderMap(NewOrder) Export
 	OrderData.Insert("bill_to_phone",String(NewOrder.BillTo.Phone));
 	OrderData.Insert("bill_to_cell",String(NewOrder.BillTo.Cell));
 	OrderData.Insert("bill_to_email",String(NewOrder.BillTo.Email));
-//	OrderData.Insert("bill_to_sales_tax_code",String(NewOrder.BillTo.SalesTaxCode));
+	OrderData.Insert("bill_to_fax",String(NewOrder.BillTo.Fax));
 	OrderData.Insert("bill_to_notes",String(NewOrder.BillTo.Notes));
 
 
-
-	
-	OrderData.Insert("company", string(NewOrder.Company));
-	//OrderData.Insert("company_code", NewOrder.CompanyCode);
-	//OrderData.Insert("billTo", NewOrder.BillTo);
-	//OrderData.Insert("confirmTo", NewOrder.ConfirmTo);
+	OrderData.Insert("company", string(NewOrder.Company));	
 	OrderData.Insert("so_number",NewOrder.Number);
 	OrderData.Insert("date",NewOrder.Date);
 	OrderData.Insert("ref_num", NewOrder.RefNum);
-	//OrderData.Insert("currency", string(NewOrder.Currency));
-	//OrderData.Insert("exchangeRate", NewOrder.ExchangeRate);
-	//OrderData.Insert("priceIncludesVAT", NewOrder.PriceIncludesVAT);
-	//OrderData.Insert("location", string(NewOrder.Location));
-	//OrderData.Insert("deliveryDate", NewOrder.deliverydate);
-	//OrderData.Insert("project", string(NewOrder.project));
-	//OrderData.Insert("class", string(NewOrder.Class));
+	OrderData.Insert("promise_date", NewOrder.deliverydate);	
 	OrderData.Insert("memo", NewOrder.Memo);
-	OrderData.Insert("sales_tax_total", NewOrder.SalesTaxRC);
-	//OrderData.Insert("DocumentTotal", NewOrder.DocumentTotal);
-	OrderData.Insert("doc_total", NewOrder.DocumentTotalRC);
+	OrderData.Insert("sales_tax_total", NewOrder.SalesTax);	
+	OrderData.Insert("doc_total", NewOrder.DocumentTotal);
 	OrderData.Insert("cf1_string",NewOrder.CF1String);
-	//OrderData.Insert("VATTotal", NewOrder.VATTotal);
-	//OrderData.Insert("VATTotalRC", NewOrder.VATTotalRC);
-	//OrderData.Insert("SalesPerson", string(NewOrder.SalesPerson));
 	
 	//include custom field
 	
 	OrderData2 = New Array();
 	
 	For Each LineItem in NewOrder.LineItems Do
-			
-			OrderData3 = New Map();
-			OrderData3.Insert("api_code",String(LineItem.Product.Ref.UUID()));
-			OrderData3.Insert("Product",LineItem.Product.Code);
-			//OrderData3.Insert("ProductDescription",LineItem.ProductDescription);
-			OrderData3.Insert("quantity",LineItem.Quantity);
-			//OrderData3.Insert("UM",LineItem.UM);
-			OrderData3.Insert("price",LineItem.Price);
-			//OrderData3.Insert("taxable_type",string(LineItem.SalesTaxType));
-			//OrderData3.Insert("taxable_amount",LineItem.TaxableAmount);
-			OrderData3.Insert("line_total",LineItem.LineTotal);
-			//OrderData3.Insert("VATCode",LineItem.VATCode);
-			//OrderData3.Insert("VAT",LineItem.VAT);
-			//OrderData3.Insert("Location",string(LineItem.Location));
-			//OrderData3.Insert("DeliveryDate",LineItem.DeliveryDate);
-			//OrderData3.Insert("Project",string(LineItem.Project));
-			//OrderData3.Insert("Class",string(LineItem.Class));
-			OrderData2.Add(OrderData3);
-
 		
+		OrderData3 = New Map();
+		OrderData3.Insert("api_code",String(LineItem.Product.Ref.UUID()));
+		OrderData3.Insert("Product",LineItem.Product.Code);
+		OrderData3.Insert("quantity",LineItem.QtyUnits);
+		OrderData3.Insert("unit_of_measure",LineItem.UM);
+		OrderData3.Insert("price",LineItem.PriceUnits);
+		OrderData3.Insert("line_total",LineItem.LineTotal);
+		OrderData2.Add(OrderData3);
+	
 	EndDo;
 		
 	OrderData.Insert("line_items",OrderData2);	
-
-
 	
 	Return OrderData;
-
 EndFunction
 
 
@@ -837,31 +870,28 @@ EndFunction
 
 
 Function ReturnProductObjectMap(NewProduct) Export
-	
 	ProductData = New Map();
 	ProductData.Insert("item_code", NewProduct.Code);
 	ProductData.Insert("api_code", String(NewProduct.Ref.UUID()));
 	ProductData.Insert("item_description", NewProduct.Description);
+	
 	If NewProduct.Type = Enums.InventoryTypes.Inventory Then
 		ProductData.Insert("item_type", "product");
+		If NewProduct.CostingMethod = Enums.InventoryCosting.FIFO Then
+			ProductData.Insert("costing_method", "fifo");
+		ElsIf NewProduct.CostingMethod = Enums.InventoryCosting.WeightedAverage Then
+			ProductData.Insert("costing_method", "weighted_average");	
+		EndIf;
 	ElsIf NewProduct.Type = Enums.InventoryTypes.NonInventory Then
 		ProductData.Insert("item_type", "service");	
-	EndIf;
-	If NewProduct.CostingMethod = Enums.InventoryCosting.FIFO Then
-		ProductData.Insert("costing_method", "fifo");
-	ElsIf NewProduct.CostingMethod = Enums.InventoryCosting.WeightedAverage Then
-		ProductData.Insert("costing_method", "weighted_average");	
 	EndIf;
 	ProductData.Insert("inventory_or_expense_account", NewProduct.InventoryOrExpenseAccount.Code);
 	ProductData.Insert("income_account", NewProduct.IncomeAccount.Code);
 	ProductData.Insert("cogs_account", NewProduct.COGSAccount.Code);
-	//ProductData.Insert("unit_of_measure", NewProduct.UM.Description);
 	ProductData.Insert("category", NewProduct.Category.Description);
-	Try
-		ProductData.Insert("item_price",GeneralFunctions.RetailPrice(CurrentDate(),NewProduct,Catalogs.Companies.EmptyRef()));
-	Except
-		ProductData.Insert("item_price",0);
-	EndTry;
+	ProductData.Insert("item_price", NewProduct.Price);
+	ProductData.Insert("unit_of_measure", string(NewProduct.UnitSet));
+	ProductData.Insert("taxable", NewProduct.Taxable);
 	
 	Query = New Query;
 	Query.Text = "SELECT
@@ -889,15 +919,12 @@ Function ReturnProductObjectMap(NewProduct) Export
 			ProductData3 = New Map();
 			ProductData3.Insert("description",PriceLevelItem.PriceLevelDescription);
 			ProductData3.Insert("price",PriceLevelItem.Price);	
-			//ProductData3.Insert("period", Format(PriceLevelItem.Period,"DF=dd.MM.yyyy"));
-			//ProductData2.Insert("pricelevel_" + Count,ProductData3);
 			ProductData2.Add(ProductData3);
 			Count = Count + 1;
 		EndDo;
 	EndIf;
 	
 	ProductData.Insert("price_levels",ProductData2);
-
 
 	ProductData.Insert("cf1_string", NewProduct.CF1String);
 	ProductData.Insert("cf1_num", NewProduct.CF1Num);	
@@ -911,7 +938,6 @@ Function ReturnProductObjectMap(NewProduct) Export
 	ProductData.Insert("cf5_num", NewProduct.CF5Num);
 			
 	Return ProductData;	
-	
 EndFunction
 
 Function ReturnCompanyObjectMap(NewCompany) Export
@@ -934,6 +960,7 @@ Function ReturnCompanyObjectMap(NewCompany) Export
 	
 	CompanyData.Insert("website", NewCompany.Website);
 	CompanyData.Insert("price_level", string(NewCompany.PriceLevel));
+	CompanyData.Insert("sales_person", string(NewCompany.SalesPerson));
 	CompanyData.Insert("notes", NewCompany.Notes);
 	CompanyData.Insert("cf1_string", NewCompany.CF1String);
 	CompanyData.Insert("cf1_num", NewCompany.CF1Num);
@@ -957,7 +984,13 @@ Function ReturnCompanyObjectMap(NewCompany) Export
 	balanceQuery.SetParameter("companyref", NewCompany.Ref);
 	resultBalance = balanceQuery.Execute().Unload();
 	
-	CompanyData.Insert("balance",resultBalance[0].AmountRCBalance);
+	If resultBalance[0].AmountRCBalance = null Then
+		balanceamount = 0;
+	else
+		balanceamount = resultBalance[0].AmountRCBalance;
+	EndIf;
+	
+	CompanyData.Insert("balance", balanceamount);
 	
 	QueryText = "SELECT
 				|	Addresses.Ref
@@ -979,11 +1012,14 @@ Function ReturnCompanyObjectMap(NewCompany) Export
 			CompanyData3.Insert("address_code",string(AddressItem.Ref.Code));
 			CompanyData3.Insert("api_code",string(AddressItem.Ref.UUID()));
 			CompanyData3.Insert("address_id",AddressItem.Ref.Description);	
+			CompanyData3.Insert("salutation",AddressItem.Ref.Salutation);
 			CompanyData3.Insert("first_name",AddressItem.Ref.FirstName);
 			CompanyData3.Insert("middle_name",AddressItem.Ref.MiddleName);
 			CompanyData3.Insert("last_name",AddressItem.Ref.LastName);
+			CompanyData3.Insert("suffix",AddressItem.Ref.Suffix);
 			CompanyData3.Insert("address_line1",AddressItem.Ref.AddressLine1);
 			CompanyData3.Insert("address_line2",AddressItem.Ref.AddressLine2);
+			CompanyData3.Insert("address_line3",AddressItem.Ref.AddressLine3);
 			CompanyData3.Insert("city",AddressItem.Ref.City);
 			CompanyData3.Insert("state",string(AddressItem.Ref.state));
 			CompanyData3.Insert("zip",AddressItem.Ref.ZIP);
@@ -991,8 +1027,11 @@ Function ReturnCompanyObjectMap(NewCompany) Export
 			CompanyData3.Insert("phone",AddressItem.Ref.Phone);
 			CompanyData3.Insert("cell",AddressItem.Ref.Cell);
 			CompanyData3.Insert("email",AddressItem.Ref.Email);
-			//CompanyData3.Insert("sales_tax_code",AddressItem.Ref.SalesTaxCode);
+			CompanyData3.Insert("fax",AddressItem.Ref.Fax);
+			CompanyData3.Insert("job_title",AddressItem.Ref.JobTitle);
 			CompanyData3.Insert("notes",AddressItem.Ref.Notes);
+			CompanyData3.Insert("sales_person",AddressItem.Ref.SalesPerson);
+			
 			If AddressItem.Ref.DefaultShipping = True Then
 				CompanyData3.Insert("default_shipping","true");
 			Else
@@ -1096,9 +1135,39 @@ Procedure CreateItemCSV(Date, Date2, ItemDataSet) Export
 	
 EndProcedure
 
+Procedure CreateCheckCSV(ItemDataSet) Export
+	
+	
+	For Each DataLine In ItemDataSet Do
+				
+		
+		NewCheck = Documents.Check.CreateDocument();
+		NewCheck.Date = DataLine.CheckDate;
+		NewCheck.Number = DataLine.CheckNumber;
+		NewCheck.BankAccount = DataLine.CheckBankAccount;
+		NewCheck.Memo = DataLine.CheckMemo;
+		NewCheck.Company = DataLine.CheckVendor;
+		NewCheck.DocumentTotalRC = DataLine.CheckLineAmount;
+		NewCheck.DocumentTotal = DataLine.CheckLineAmount;
+		NewCheck.ExchangeRate = 1;
+		NewCheck.PaymentMethod = Catalogs.PaymentMethods.DebitCard;
+		NewLine = NewCheck.LineItems.Add();
+		NewLine.Account = DataLine.CheckLineAccount;
+		//NewLine.AccountDescription = DataLine.CheckLineAccount.Description;
+		NewLine.Amount = DataLine.CheckLineAmount;
+		NewLine.Memo = DataLine.CheckLineMemo;
+		NewCheck.Write();
+
+		
+	EndDo;
+
+	
+EndProcedure
+
+
 Procedure CreateCustomerVendorCSV(ItemDataSet) Export
 	
-		// add transactions 1-500
+	// add transactions 1-500
 	
 	For Each DataLine In ItemDataSet Do
 		
@@ -1256,7 +1325,7 @@ Procedure CreateCustomerVendorCSV(ItemDataSet) Export
 		AddressLine.Write();
 				
 	EndDo;
-	
+
 EndProcedure
 
 
@@ -1717,8 +1786,23 @@ Function GetFooterPO(imagename) Export
 	
 EndFunction
 
-
-
+Function GetDefaultLocation() Export
+	
+	Query = New Query("SELECT
+					  |	Locations.Ref
+					  |FROM
+					  |	Catalog.Locations AS Locations
+					  |WHERE
+					  |	Locations.Default = &Default");
+	Query.SetParameter("Default", True);
+	QueryResult = Query.Execute();
+	If QueryResult.IsEmpty() Then
+		Return Catalogs.Locations.MainWarehouse.Ref;
+	EndIf;
+	Dataset = QueryResult.Unload();
+	Return Dataset[0][0];
+	
+EndFunction
 
 // Selects item's price from a price-list.
 //
@@ -1799,32 +1883,32 @@ Function RetailPrice(ActualDate, Product, Customer) Export
 	
 EndFunction
 
-// Marks the document (cash receipt, cash sale) as "deposited" (included) by a deposit document.
-//
-// Parameters:
-// DocumentLine - document Ref for which the procedure sets the "deposited" attribute.
-//
-Procedure WriteDepositData(DocumentLine) Export
-	
-	Document = DocumentLine.GetObject();
-	Document.Deposited = True;
-	Document.Write();
+//// Marks the document (cash receipt, cash sale) as "deposited" (included) by a deposit document.
+////
+//// Parameters:
+//// DocumentLine - document Ref for which the procedure sets the "deposited" attribute.
+////
+//Procedure WriteDepositData(DocumentLine) Export
+//	
+//	Document = DocumentLine.GetObject();
+//	Document.Deposited = True;
+//	Document.Write();
 
-EndProcedure
+//EndProcedure
 
-// Clears the "deposited" (included) by a deposit document value from the document (cash receipt,
-// cash sale)
-//
-// Parameters:
-// DocumentLine - document Ref for which the procedure sets the "deposited" attribute.
-//
-Procedure ClearDepositData(DocumentLine) Export
-	
-	Document = DocumentLine.GetObject();
-	Document.Deposited = False;
-	Document.Write();
+//// Clears the "deposited" (included) by a deposit document value from the document (cash receipt,
+//// cash sale)
+////
+//// Parameters:
+//// DocumentLine - document Ref for which the procedure sets the "deposited" attribute.
+////
+//Procedure ClearDepositData(DocumentLine) Export
+//	
+//	Document = DocumentLine.GetObject();
+//	Document.Deposited = False;
+//	Document.Write();
 
-EndProcedure
+//EndProcedure
 
 // Determines a currency of a line item document.
 // Used in invoice payment and cash receipt documents to calculate exchange rate for each line item.
@@ -2556,6 +2640,71 @@ Procedure AddBankTransactionCategoriesAndAccounts() Export
 	
 EndProcedure
 
+//Procedure finds a vacant code for a new g/l account in the passed interval
+//Algorithm:
+// First it tries to increment the maximum code of g/l accounts with the given account type by 10
+// if the result value exceeds CodeEnd then it tries to find any vacant code in the passed interval
+// if no vacant code is found then empty string is returned
+//Parameters:
+// CodeStart - string - the start code of an interval in the string format
+// CodeEnd - String - the end code of an interval in the string format
+// AccountType - EnumRef.AccountType - account type of the new g/l account
+//Returns:
+// String - the new vacant code. If not found then empty string
+//
+Function FindVacantCode(CodeStart, CodeEnd, AccountType) Export
+	Request = New Query("SELECT
+	                    |	ChartOfAccounts.Code,
+	                    |	ChartOfAccounts.AccountType,
+	                    |	ChartOfAccounts.Order
+	                    |FROM
+	                    |	ChartOfAccounts.ChartOfAccounts AS ChartOfAccounts
+	                    |WHERE
+	                    |	ChartOfAccounts.Code >= &CodeStart
+	                    |	AND ChartOfAccounts.Code <= &CodeEnd
+	                    |
+	                    |ORDER BY
+	                    |	ChartOfAccounts.Code DESC");
+	Request.SetParameter("CodeStart", CodeStart);
+	Request.SetParameter("CodeEnd", CodeEnd);
+	FoundAccounts = Request.Execute().Unload();
+	FoundAccountsOfType = FoundAccounts.FindRows(New Structure("AccountType", AccountType));
+	NewCode = CodeStart;
+	If FoundAccountsOfType.Count() > 0 Then
+		For Each AccountOfType In FoundAccountsOfType Do
+			Try
+				If Format(Number(TrimAll(AccountOfType.Code)), "NFD=; NG=0") = TrimAll(AccountOfType.Code) Then //Found digital code
+					NewCode = Format(Number(TrimAll(AccountOfType.Code)) + 10 ,"NFD=; NG=0");
+					If NewCode > CodeEnd Then
+						NewCode = CodeStart;
+					EndIf;
+					Break;
+				EndIf;
+			Except
+			EndTry;
+		EndDo;
+	EndIf;
+	//Check if the new code is vacant
+	ExistingAccounts = FoundAccounts.FindRows(New Structure("Code", NewCode));
+	If ExistingAccounts.Count() = 0 Then
+		return NewCode;
+	EndIf;
+	//If the new code is already in use
+	//Start searching the vacant one from the very beginning
+	CodeStartDigital = Number(CodeStart);
+	CodeEndDigital = Number(CodeEnd);
+	NewCode = "";
+	For DigitalCode = CodeStartDigital To CodeEndDigital Do
+		CurrentCode = Format(DigitalCode,"NFD=; NG=0");
+		ExistingAccounts = FoundAccounts.FindRows(New Structure("Code", CurrentCode));
+		If ExistingAccounts.Count() = 0 Then
+			NewCode = CurrentCode;
+			Break;
+		EndIf;
+	EndDo;
+	return NewCode;
+EndFunction
+
 // Procedure fills empty IB.
 //
 Procedure FirstLaunch() Export
@@ -2691,7 +2840,7 @@ Procedure FirstLaunch() Export
 		NewAccount.Code = "5000";
 		NewAccount.Order = "5000";
 		NewAccount.Description = "Cost of goods sold";
-		NewAccount.AccountType = Enums.AccountTypes.Expense;
+		NewAccount.AccountType = Enums.AccountTypes.CostOfSales;
 		//NewAccount.Currency = Catalogs.Currencies.USD;
 		//NewAccount.CashFlowSection = Enums.CashFlowSections.Operating;
 		NewAccount.Write();			
@@ -4400,6 +4549,13 @@ NewCountry.Write();
 		Constants.CF4CType.Set("None");
 		Constants.CF5CType.Set("None");
 		
+		Constants.CF1AType.Set("None");
+		Constants.CF2AType.Set("None");
+		Constants.CF3AType.Set("None");
+		Constants.CF4AType.Set("None");
+		Constants.CF5AType.Set("None");
+
+		
 		Constants.SIFoot1Type.Set(Enums.TextOrImage.None);
 		Constants.SIFoot2Type.Set(Enums.TextOrImage.None);
 		Constants.SIFoot3Type.Set(Enums.TextOrImage.None);
@@ -4474,10 +4630,6 @@ Procedure UpdateInfobase() Export
 				AccountObject.DeletionMark = False;
 				AccountObject.Write();
 			EndDo;
-			
-			//Update UM
-			UpdateUnitsOfMeasure();
-			
 			Constants.CurrentConfigurationVersion.Set(TrimAll(ConfigurationVersion));
 			
 			WriteLogEvent(
@@ -4499,6 +4651,158 @@ Procedure UpdateInfobase() Export
 			,
 			,
 			"Updating to the version ""1.1.40.01"". During the update an error occured: " + ErrorDescription);
+
+			return;
+		EndTry;
+		CommitTransaction();
+	EndIf;
+	If UpdateRequiredForVersion(ConfigurationVersion, CurrentVersion, "1.1.41.01") Then
+		
+		BeginTransaction(DataLockControlMode.Managed);
+	
+		Try
+		// Create new managed data lock.
+		DataLock = New DataLock;
+	
+		// Set data lock parameters.
+		LockItem = DataLock.Add("AccumulationRegister.UndepositedDocuments");
+		LockItem.Mode = DataLockMode.Exclusive;
+		// Set lock on the object.
+		DataLock.Lock();
+
+		//Post CashSale and CashReceipt documents
+		Request = New Query("SELECT
+		                    |	CashSale.Ref,
+		                    |	CashSale.DocumentTotal AS Amount,
+		                    |	CashSale.DocumentTotalRC AS AmountRC,
+		                    |	CashSale.Date
+		                    |FROM
+		                    |	Document.CashSale AS CashSale
+		                    |WHERE
+		                    |	CashSale.DepositType = ""1""
+		                    |	AND CashSale.DeletionMark = FALSE
+		                    |	AND CashSale.Posted = TRUE
+		                    |
+		                    |UNION ALL
+		                    |
+		                    |SELECT
+		                    |	CashReceipt.Ref,
+		                    |	CashReceipt.CashPayment,
+		                    |	CashReceipt.CashPayment,
+		                    |	CashReceipt.Date
+		                    |FROM
+		                    |	Document.CashReceipt AS CashReceipt
+		                    |WHERE
+		                    |	CashReceipt.DepositType = ""1""
+		                    |	AND CashReceipt.DeletionMark = FALSE
+		                    |	AND CashReceipt.Posted = TRUE");
+		Sel = Request.Execute().Select();
+	
+		While Sel.Next() Do
+			UndepositedDocuments = AccumulationRegisters.UndepositedDocuments.CreateRecordSet();
+		
+			UndepositedDocuments.Filter.Recorder.Set(Sel.Ref, TRUE);
+			Record = UndepositedDocuments.AddReceipt();
+			Record.Period 	= Sel.Date;
+			Record.Recorder = Sel.Ref;
+			Record.Document = Sel.Ref;
+			Record.Amount 	= Sel.Amount;
+			Record.AmountRC = Sel.AmountRC;
+		
+			UndepositedDocuments.Write(TRUE);
+		EndDo;
+	
+		//Post Deposit documents
+		RequestDeposits = New Query("SELECT
+		                            |	DepositLineItems.Ref AS Ref,
+		                            |	DepositLineItems.Document,
+		                            |	DepositLineItems.DocumentTotal AS Amount,
+		                            |	DepositLineItems.DocumentTotalRC AS AmountRC,
+		                            |	DepositLineItems.Ref.Date
+		                            |FROM
+		                            |	Document.Deposit.LineItems AS DepositLineItems
+		                            |WHERE
+		                            |	DepositLineItems.Ref.DeletionMark = FALSE
+		                            |	AND DepositLineItems.Ref.Posted = TRUE
+		                            |	AND DepositLineItems.Payment = TRUE
+		                            |TOTALS BY
+		                            |	Ref");
+		Sel = RequestDeposits.Execute().Select(QueryResultIteration.ByGroups);
+	
+		While Sel.Next() Do
+			UndepositedDocuments = AccumulationRegisters.UndepositedDocuments.CreateRecordSet();
+			UndepositedDocuments.Filter.Recorder.Set(Sel.Ref, TRUE);
+			
+			UndepositedSel = Sel.Select(QueryResultIteration.Linear);
+			
+			While UndepositedSel.Next() Do
+				Record = UndepositedDocuments.AddExpense();
+				Record.Period 	= Sel.Date;
+				Record.Recorder = Sel.Ref;
+				Record.Document = UndepositedSel.Document;
+				Record.Amount 	= UndepositedSel.Amount;
+				Record.AmountRC = UndepositedSel.AmountRC;
+			EndDo;
+		
+			UndepositedDocuments.Write(TRUE);
+		EndDo;
+		
+		Constants.CurrentConfigurationVersion.Set(TrimAll(ConfigurationVersion));
+		
+		CommitTransaction();	
+		WriteLogEvent(
+			InfobaseUpdateEvent(),
+			EventLogLevel.Information,
+			,
+			,
+			"Updating to the version ""1.1.41.01"". Updating the Undeposited documents mechanism succeeded.");
+
+		Except
+		ErrorDescription = ErrorDescription();
+		If TransactionActive() Then
+			RollbackTransaction();
+		EndIf;
+			
+		WriteLogEvent(
+			InfobaseUpdateEvent(),
+			EventLogLevel.Error,
+			,
+			,
+			"Updating to the version ""1.1.41.01"". Updating the Undeposited documents mechanism failed. During the update an error occured: " + ErrorDescription);
+
+		EndTry;
+		
+	EndIf;
+
+	If UpdateRequiredForVersion(ConfigurationVersion, CurrentVersion, "1.1.42.01") Then
+		Try
+			BeginTransaction(DataLockControlMode.Managed);
+			
+			//Fill Avatax catalogs with predefined items
+			AvaTaxServer.FillTaxCodeGroups();
+			AvaTaxServer.FillCustomerUsageTypes();
+			
+			Constants.CurrentConfigurationVersion.Set(TrimAll(ConfigurationVersion));
+			
+			WriteLogEvent(
+			InfobaseUpdateEvent(),
+			EventLogLevel.Information,
+			,
+			,
+			"Updating to the version ""1.1.42.01"" succeeded.");
+
+		Except
+			ErrorDescription = ErrorDescription();
+			If TransactionActive() Then
+				RollbackTransaction();
+			EndIf;
+			
+			WriteLogEvent(
+			InfobaseUpdateEvent(),
+			EventLogLevel.Error,
+			,
+			,
+			"Updating to the version ""1.1.42.01"". During the update an error occured: " + ErrorDescription);
 
 			return;
 		EndTry;
@@ -4549,185 +4853,6 @@ EndFunction
 Function InfobaseUpdateEvent()
 	return "Infobase.UpdatingInfobase";
 EndFunction
-
-#Region Updating_UnitsOfMeasure
-
-Procedure UpdateUnitsOfMeasure()
-	
-	//----------------------------------------------------------------------------------------------------
-	PeriodClosingDate = Constants.PeriodClosingDate.Get();
-	Constants.PeriodClosingDate.Set('00010101');
-	
-	// 1. Create UoM Sets and Units.
-	UnitsMap = New Map;
-	
-	UMSelection = Catalogs.UM.Select();
-	
-	While UMSelection.Next() Do
-		
-		// 1.1 Create UoM Set.
-		NewUoMSet = Catalogs.UnitSets.CreateItem();
-		NewUoMSet.Description = UMSelection.Description;
-		NewUoMSet.Write();
-		
-		// 1.2 Create Unit.
-		NewUnit = Catalogs.Units.CreateItem();
-		NewUnit.Owner       = NewUoMSet.Ref;                                                                 // Set name
-		NewUnit.Code        = ?(ValueIsFilled(UMSelection.Code), UMSelection.Code, UMSelection.Description); // Abbreviation
-		NewUnit.Description = UMSelection.Description;                                                       // Unit name
-		NewUnit.BaseUnit    = True;                                                                          // Base ref of set
-		NewUnit.Factor      = 1;
-		NewUnit.Write();
-		
-		NewUoMSet.DefaultReportUnit   = NewUnit.Ref;
-		NewUoMSet.DefaultSaleUnit     = NewUnit.Ref;
-		NewUoMSet.DefaultPurchaseUnit = NewUnit.Ref;
-		NewUoMSet.Write();
-		
-		If UMSelection.Ref = Catalogs.UM.each Then
-			Constants.DefaultUoMSet.Set(NewUoMSet.Ref);
-		EndIf;
-		
-		UnitsMap.Insert(UMSelection.Ref, NewUnit.Ref); 	
-		
-	EndDo;
-	
-	// 2. Set default UoM Set for all items.
-	ProductsSelection = Catalogs.Products.Select();
-	
-	DefaultUoMSet = Constants.DefaultUoMSet.Get();
-	While ProductsSelection.Next() Do
-		
-		ProductObj = ProductsSelection.GetObject();
-		
-		UoMSet = UnitsMap.Get(ProductObj.UM);
-		ProductObj.UnitSet = ?(UoMSet = Undefined, DefaultUoMSet, UoMSet.Owner);
-		ProductObj.Write();
-		
-	EndDo;
-	
-	// 3.
-	For Each Doc In Metadata.Documents Do
-		
-		NameDoc = Doc.Name;
-		
-		For Each DocTS In Doc.TabularSections Do
-			
-			NameDocTS = DocTS.Name;
-			
-			For Each DocTS_A In DocTS.Attributes Do
-				
-				NameDocTS_A = DocTS_A.Name;
-				
-				// 3.1 Change value Unit and UoM Set for all needed documents. 
-				If DocTS_A.Type = New TypeDescription("CatalogRef.Units") Then
-					
-					ChangeValueUnitAttribute(NameDoc, NameDocTS, NameDocTS_A, UnitsMap);
-					
-				EndIf;
-				
-			EndDo;
-			
-		EndDo;
-		
-	EndDo;
-	
-	// 4. Change rows accumulation register "Orders dispatched".
-	ChangeUnitAR("OrdersDispatched", "PurchaseInvoice");
-	
-	// 5. Change rows accumulation register "Orders registered".
-	ChangeUnitAR("OrdersRegistered", "SalesInvoice");
-		
-	Constants.PeriodClosingDate.Set(PeriodClosingDate);
-	//----------------------------------------------------------------------------------------------------
-	
-EndProcedure
-
-Procedure ChangeValueUnitAttribute(NameDoc, NameDocTS, NameDocTS_A, UnitsMap)
-	
-	DocSelection = Documents[NameDoc].Select();
-	
-	While DocSelection.Next() Do
-		
-		DocObj = DocSelection.GetObject();
-		
-		For Each LineTS In DocObj[NameDocTS] Do
-			
-			LineTS[NameDocTS_A]        = UnitsMap.Get(LineTS.UM); 
-			LineTS.UnitSet             = LineTS[NameDocTS_A].Owner; 
-			
-			LineTS.UM                  = Catalogs.UM.each;
-			
-			LineTS.QtyUnits            = LineTS.QtyUM;
-			LineTS.PriceUnits          = LineTS.PriceUM;
-			
-			If NameDoc = "PurchaseInvoice" Then 
-				LineTS.OrderPriceUnits = LineTS.OrderPriceUM;
-			EndIf;
-		
-		EndDo;
-		
-		DocObj.Write();
-		
-	EndDo;
-	
-EndProcedure
-
-Procedure ChangeUnitAR(Register, DocCancellation)
-	
-	Query = New Query;
-	Query.Text = 
-		"SELECT
-		|	AR.Recorder AS Recorder
-		|FROM
-		|	AccumulationRegister." + Register + " AS AR
-		|
-		|GROUP BY
-		|	AR.Recorder";
-
-	QueryResult = Query.Execute();
-
-	SelectionDetailRecords = QueryResult.Select();
-
-	While SelectionDetailRecords.Next() Do
-		
-		Recorder = SelectionDetailRecords.Recorder;
-		
-		RecordSet =  AccumulationRegisters[Register].CreateRecordSet();
-		RecordSet.Filter.Recorder.Set(Recorder);
-		RecordSet.Read();
-		
-		VT = RecordSet.Unload(); 
-		
-		For Each LineVT In VT Do
-			
-			FilterParameters = New Structure;
-			FilterParameters.Insert("Product",      LineVT.Product); 
-			FilterParameters.Insert("Location",     LineVT.Location);
-			FilterParameters.Insert("DeliveryDate", LineVT.DeliveryDate);
-			FilterParameters.Insert("Project",      LineVT.Project);
-			FilterParameters.Insert("Class",        LineVT.Class);
-			
-			If TypeOf(Recorder) = Type("DocumentRef." + DocCancellation) Then
-				FilterParameters.Insert("Order",    LineVT.Order);
-			EndIf;
-			
-			FoundLines = Recorder.LineItems.FindRows(FilterParameters);
-			
-			For Each Line In FoundLines Do
-				LineVT.Unit = Line.Unit;	
-			EndDo;
-			
-		EndDo;
-		
-		RecordSet.Load(VT);
-		RecordSet.Write(True);
-		
-	EndDo;
-	
-EndProcedure
-
-#EndRegion
 
 #EndRegion
 
@@ -5032,6 +5157,19 @@ Procedure DocumentJournalOfCompaniesOnWrite(Source, Cancel) Export
 		LineVT.Total          = Source.DocumentTotalRC;
 		LineVT.Memo           = Source.Memo;
 		
+		//16.	
+	ElsIf SourceType = Type("DocumentRef.ItemReceipt") Then
+		
+		LineVT = VT.Add();
+		LineVT.Company        = Source.Company; 
+		LineVT.Document       = Source.Ref; 
+		LineVT.Line           = 1;
+		LineVT.DocumentStatus = GetDocumentStatus(Source.Ref);
+		LineVT.Date           = Source.Date;
+		LineVT.DueDate        = Source.DueDate;
+		LineVT.Total          = Source.DocumentTotalRC;
+		LineVT.Memo           = Source.Memo;
+		
 	EndIf;
 	
 	If Not Cancel Then
@@ -5315,3 +5453,289 @@ Function GetBaseUnit(UnitSet) Export
 EndFunction
 
 #EndRegion
+
+#Region Margin_Manager
+
+Function GetMarginInformation(Product, Location, Quantity, LineTotal, Currency, ExchangeRate, DiscountPercent, Val LineItems) Export 
+	
+	QuantityFormat    = GeneralFunctionsReusable.DefaultQuantityFormat();
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	Cost        = "";
+	Margin      = "";
+	MarginTotal = "";
+
+	Query = New Query;
+	Query.Text = "SELECT
+	             |	ItemLastCostsSliceLast.Product,
+	             |	ItemLastCostsSliceLast.Cost
+	             |FROM
+	             |	InformationRegister.ItemLastCosts.SliceLast(, Product IN (&Products)) AS ItemLastCostsSliceLast";
+
+	Query.SetParameter("Products", LineItems.UnloadColumn("Product"));
+	ItemLastCosts = Query.Execute().Unload();
+	
+	LastCostRow = ItemLastCosts.Find(Product, "Product");
+	
+	//Cost
+	Cost = ?(LastCostRow <> Undefined, LastCostRow.Cost, 0);
+	PriceFormat = GeneralFunctionsReusable.PriceFormatForOneItem(Product);
+	Cost = "Cost " + Currency.Symbol + " " + Format(?(ExchangeRate = 0, 0, Cost / ExchangeRate), PriceFormat + "; NZ=0"); 
+	
+	//Margin
+	LineTotalLC = ?(LastCostRow <> Undefined, LastCostRow.Cost, 0) * Quantity; 
+	LineTotalLC = ?(ExchangeRate = 0, 0, LineTotalLC / ExchangeRate);
+	
+	LineTotalP = LineTotal - (LineTotal * DiscountPercent / 100);	
+	
+	MarginSum = Currency.Symbol + " " + Format(LineTotalP - LineTotalLC, "NFD=2; NZ=0.00"); 
+	
+	If LineTotalLC = 0 Then
+		Margin = "Margin 0.00% / " + MarginSum;
+	Else
+		Margin = "Margin " + Format((LineTotalP / LineTotalLC) * 100 - 100, "NFD=2; NZ=0.00") + "% / " + MarginSum;
+	EndIf;
+	
+	//MarginTotal
+	LineTotalLCSum = 0;
+	LineTotalSum   = 0;
+	
+	For Each Item In LineItems Do
+		
+		LastCostRow = ItemLastCosts.Find(Item.Product, "Product");
+		
+		//LineTotalLCSum
+		LineTotalLC = ?(LastCostRow <> Undefined, LastCostRow.Cost, 0) * Item.QtyUM; 
+		LineTotalLC = ?(ExchangeRate = 0, 0, LineTotalLC / ExchangeRate);
+		
+		LineTotalLCSum = LineTotalLCSum + LineTotalLC;
+		
+		//LineTotalSum
+		LineTotalP = Item.LineTotal - (Item.LineTotal * DiscountPercent / 100);	
+		
+		LineTotalSum = LineTotalSum + LineTotalP;
+		
+	EndDo;
+	
+	MarginSum = Currency.Symbol + " " + Format(LineTotalSum - LineTotalLCSum, "NFD=2; NZ=0.00"); 
+	
+	If LineTotalLCSum = 0 Then
+		MarginTotal = "Total 0.00% / " + MarginSum;
+	Else
+		MarginTotal = "Total " + Format((LineTotalSum / LineTotalLCSum) * 100 - 100, "NFD=2; NZ=0.00") + "% / " + MarginSum;
+	EndIf;
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	Query = New Query;
+	
+	Query.SetParameter("Ref", Product);
+	Query.SetParameter("Type", Product.Type);
+	Query.SetParameter("Location", Location);
+	
+	Query.Text = "SELECT
+	             |	OrdersDispatchedBalance.Company AS Company,
+	             |	OrdersDispatchedBalance.Order AS Order,
+	             |	OrdersDispatchedBalance.Product AS Product,
+	             |	OrdersDispatchedBalance.Location,
+	             |	OrdersDispatchedBalance.Unit AS Unit,
+	             |	CASE
+	             |		WHEN &Type = VALUE(Enum.InventoryTypes.Inventory)
+	             |			THEN CASE
+	             |					WHEN OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.ReceivedBalance > 0
+	             |						THEN (OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.ReceivedBalance) * OrdersDispatchedBalance.Unit.Factor
+	             |					ELSE 0
+	             |				END
+	             |		WHEN &Type = VALUE(Enum.InventoryTypes.NonInventory)
+	             |			THEN CASE
+	             |					WHEN OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.InvoicedBalance > 0
+	             |						THEN (OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.InvoicedBalance) * OrdersDispatchedBalance.Unit.Factor
+	             |					ELSE 0
+	             |				END
+	             |		ELSE 0
+	             |	END AS QtyOnPO,
+	             |	0 AS QtyOnSO,
+	             |	0 AS QtyOnHand
+	             |INTO Table_OrdersDispatched_OrdersRegistered_InventoryJournal
+	             |FROM
+	             |	AccumulationRegister.OrdersDispatched.Balance(
+	             |			,
+	             |			Product = &Ref
+	             |				AND Location = &Location) AS OrdersDispatchedBalance
+	             |		LEFT JOIN InformationRegister.OrdersStatuses.SliceLast AS OrdersStatusesSliceLast
+	             |		ON OrdersDispatchedBalance.Order = OrdersStatusesSliceLast.Order
+	             |			AND (OrdersStatusesSliceLast.Status = VALUE(Enum.OrderStatuses.Open)
+	             |				OR OrdersStatusesSliceLast.Status = VALUE(Enum.OrderStatuses.Backordered))
+	             |
+	             |UNION ALL
+	             |
+	             |SELECT
+	             |	OrdersRegisteredBalance.Company,
+	             |	OrdersRegisteredBalance.Order,
+	             |	OrdersRegisteredBalance.Product,
+	             |	OrdersRegisteredBalance.Location,
+	             |	OrdersRegisteredBalance.Unit,
+	             |	0,
+	             |	CASE
+	             |		WHEN &Type = VALUE(Enum.InventoryTypes.Inventory)
+	             |			THEN CASE
+	             |					WHEN OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.ShippedBalance > 0
+	             |						THEN (OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.ShippedBalance) * OrdersRegisteredBalance.Unit.Factor
+	             |					ELSE 0
+	             |				END
+	             |		WHEN &Type = VALUE(Enum.InventoryTypes.NonInventory)
+	             |			THEN CASE
+	             |					WHEN OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.InvoicedBalance > 0
+	             |						THEN (OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.InvoicedBalance) * OrdersRegisteredBalance.Unit.Factor
+	             |					ELSE 0
+	             |				END
+	             |		ELSE 0
+	             |	END,
+	             |	0
+	             |FROM
+	             |	AccumulationRegister.OrdersRegistered.Balance(
+	             |			,
+	             |			Product = &Ref
+	             |				AND Location = &Location) AS OrdersRegisteredBalance
+	             |		LEFT JOIN InformationRegister.OrdersStatuses.SliceLast AS OrdersStatusesSliceLast
+	             |		ON OrdersRegisteredBalance.Order = OrdersStatusesSliceLast.Order
+	             |			AND (OrdersStatusesSliceLast.Status = VALUE(Enum.OrderStatuses.Open)
+	             |				OR OrdersStatusesSliceLast.Status = VALUE(Enum.OrderStatuses.Backordered))
+	             |
+	             |UNION ALL
+	             |
+	             |SELECT
+	             |	NULL,
+	             |	NULL,
+	             |	InventoryJournalBalance.Product,
+	             |	InventoryJournalBalance.Location,
+	             |	NULL,
+	             |	0,
+	             |	0,
+	             |	CASE
+	             |		WHEN &Type = VALUE(Enum.InventoryTypes.Inventory)
+	             |			THEN InventoryJournalBalance.QuantityBalance
+	             |		WHEN &Type = VALUE(Enum.InventoryTypes.NonInventory)
+	             |			THEN 0
+	             |		ELSE 0
+	             |	END
+	             |FROM
+	             |	AccumulationRegister.InventoryJournal.Balance(
+	             |			,
+	             |			Product = &Ref
+	             |				AND Location = &Location) AS InventoryJournalBalance
+	             |;
+	             |
+	             |////////////////////////////////////////////////////////////////////////////////
+	             |SELECT
+	             |	TableBalances.Product AS Product,
+	             |	TableBalances.Location,
+	             |	SUM(ISNULL(TableBalances.QtyOnPO, 0)) AS QtyOnPO,
+	             |	SUM(ISNULL(TableBalances.QtyOnSO, 0)) AS QtyOnSO,
+	             |	SUM(ISNULL(TableBalances.QtyOnHand, 0)) AS QtyOnHand,
+	             |	CASE
+	             |		WHEN &Type = VALUE(Enum.InventoryTypes.Inventory)
+	             |			THEN SUM(ISNULL(TableBalances.QtyOnHand, 0)) + SUM(ISNULL(TableBalances.QtyOnPO, 0)) - SUM(ISNULL(TableBalances.QtyOnSO, 0))
+	             |		WHEN &Type = VALUE(Enum.InventoryTypes.NonInventory)
+	             |			THEN 0
+	             |		ELSE 0
+	             |	END AS QtyAvailableToPromise
+	             |INTO TotalTable
+	             |FROM
+	             |	Table_OrdersDispatched_OrdersRegistered_InventoryJournal AS TableBalances
+	             |
+	             |GROUP BY
+	             |	TableBalances.Product,
+	             |	TableBalances.Location
+	             |;
+	             |
+	             |////////////////////////////////////////////////////////////////////////////////
+	             |SELECT
+	             |	TotalTable.Product,
+	             |	TotalTable.Location,
+	             |	TotalTable.QtyOnPO,
+	             |	TotalTable.QtyOnSO,
+	             |	TotalTable.QtyOnHand,
+	             |	TotalTable.QtyAvailableToPromise
+	             |FROM
+	             |	TotalTable AS TotalTable
+	             |WHERE
+	             |	(TotalTable.QtyOnPO <> 0
+	             |			OR TotalTable.QtyOnSO <> 0
+	             |			OR TotalTable.QtyOnHand <> 0
+	             |			OR TotalTable.QtyAvailableToPromise <> 0)";
+	
+	
+	SelectionDetailRecords = Query.Execute().Select();
+	
+	OnPO   = Format(0, QuantityFormat);
+	OnSO   = Format(0, QuantityFormat);
+	OnHand = Format(0, QuantityFormat);
+	ATP    = Format(0, QuantityFormat);
+	
+	While SelectionDetailRecords.Next() Do
+		
+		OnPO   = Format(SelectionDetailRecords.QtyOnPO, QuantityFormat);
+		OnSO   = Format(SelectionDetailRecords.QtyOnSO, QuantityFormat);
+		OnHand = Format(SelectionDetailRecords.QtyOnHand, QuantityFormat);
+		ATP    = Format(SelectionDetailRecords.QtyAvailableToPromise, QuantityFormat);
+		
+	EndDo;
+	
+	If Product.Type = Enums.InventoryTypes.Inventory Then
+		QuantityInformation = "On PO: " + OnPO + " On SO: " + OnSO + " On hand: " + OnHand + " ATP: " + ATP;
+	Else
+		QuantityInformation = "On PO: " + OnPO + " On SO: " + OnSO;
+	EndIf;
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	BaseUnit =  GeneralFunctions.GetBaseUnit(Product.UnitSet).Code;
+	
+	Return Cost + " | " + Margin + " | " + MarginTotal + " | " + Location + " | Qty in " + BaseUnit + " " + QuantityInformation;
+	
+EndFunction
+
+#EndRegion
+
+Function ShowAddressDecoration(AddressRef) Export
+	
+	addressline1 = AddressRef.AddressLine1;
+	If AddressRef.AddressLine1 <> "" AND (AddressRef.AddressLine2 <> "" OR AddressRef.AddressLine3 <> "") Then
+		addressline1 = addressline1 + ", ";
+	EndIf;
+	addressline2 = AddressRef.AddressLine2;
+	If AddressRef.AddressLine2 <> "" AND AddressRef.AddressLine3 <> "" Then
+		addressline2 = addressline2 + ", ";
+	EndIf;
+	addressline3 = AddressRef.AddressLine3;
+	//If AddressRef.AddressLine3 <> "" Then
+	//	addressline3 = addressline3;
+	//EndIf;
+	city = AddressRef.City;
+	If AddressRef.City <> "" AND (String(AddressRef.State.Code) <> "" OR AddressRef.ZIP <> "") Then
+		city = city + ", ";
+	EndIf;
+	state = String(AddressRef.State.Code);
+	If String(AddressRef.State.Code) <> "" Then
+		state = state + "  ";
+	EndIf;
+	zip = AddressRef.ZIP;
+	If AddressRef.ZIP <> "" Then
+		zip = zip + Chars.LF;
+	EndIf;
+	country = String(AddressRef.Country.Description);
+	If String(AddressRef.Country.Description) <> "" Then
+		country = country;
+	EndIf;
+	
+	If addressline1 <> "" OR addressline2 <> "" OR addressline3 <> "" Then 	
+		Return addressline1 + addressline2 + addressline3 + Chars.LF + city + state + zip + country;
+	Else
+		Return city + state + zip + country;
+	EndIf;
+	
+EndFunction
+

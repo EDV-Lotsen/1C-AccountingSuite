@@ -126,42 +126,133 @@
 			<dataPath>vendor_description</dataPath>
 			<field>vendor_description</field>
 		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Assembly</dataPath>
+			<field>Assembly</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>LineNumber</dataPath>
+			<field>LineNumber</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>LineTotal</dataPath>
+			<field>LineTotal</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Price</dataPath>
+			<field>Price</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>PricePrecision</dataPath>
+			<field>PricePrecision</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>PriceUnits</dataPath>
+			<field>PriceUnits</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Product</dataPath>
+			<field>Product</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>ProductDescription</dataPath>
+			<field>ProductDescription</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>QtyUnits</dataPath>
+			<field>QtyUnits</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Ref1</dataPath>
+			<field>Ref1</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Ref1</v8:content>
+				</v8:item>
+			</title>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Unit</dataPath>
+			<field>Unit</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>UnitSet</dataPath>
+			<field>UnitSet</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>UnitSet1</dataPath>
+			<field>UnitSet1</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Unit set1</v8:content>
+				</v8:item>
+			</title>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>WasteAccount</dataPath>
+			<field>WasteAccount</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>WastePercent</dataPath>
+			<field>WastePercent</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>WasteQtyUnits</dataPath>
+			<field>WasteQtyUnits</field>
+		</field>
 		<dataSource>DataSource1</dataSource>
 		<query>SELECT
-	Products.Ref,
-	Products.DataVersion,
-	Products.DeletionMark,
-	Products.Code,
-	Products.Description,
-	Products.CostingMethod,
-	Products.Type,
-	Products.InventoryOrExpenseAccount,
-	Products.IncomeAccount,
-	Products.COGSAccount,
-	//Products.UnitSet.UM,
-	Products.DefaultLocation,
-	Products.PreferredVendor,
-	Products.CF1String,
-	Products.CF2String,
-	Products.CF3String,
-	Products.CF4String,
-	Products.CF5String,
-	Products.CF1Num,
-	Products.CF2Num,
-	Products.CF3Num,
-	Products.CF4Num,
-	Products.CF5Num,
-	Products.Category,
-	Products.NewObject,
-	Products.UPC,
-	Products.vendor_code,
-	Products.vendor_description,
-	Products.Taxable,
-	Products.Predefined,
-	Products.PredefinedDataName,
-	Products.Presentation
+	ProductsLineItems.Ref,
+	ProductsLineItems.LineNumber,
+	ProductsLineItems.Product,
+	ProductsLineItems.ProductDescription,
+	ProductsLineItems.UnitSet,
+	ProductsLineItems.QtyUnits,
+	ProductsLineItems.Unit,
+	ProductsLineItems.PriceUnits,
+	ProductsLineItems.LineTotal,
+	ProductsLineItems.WastePercent,
+	ProductsLineItems.WasteQtyUnits,
+	ProductsLineItems.Ref.Ref AS Ref1,
+	ProductsLineItems.Ref.DataVersion,
+	ProductsLineItems.Ref.DeletionMark,
+	ProductsLineItems.Ref.Code,
+	ProductsLineItems.Ref.Description,
+	ProductsLineItems.Ref.Type,
+	ProductsLineItems.Ref.Assembly,
+	ProductsLineItems.Ref.CostingMethod,
+	ProductsLineItems.Ref.InventoryOrExpenseAccount,
+	ProductsLineItems.Ref.IncomeAccount,
+	ProductsLineItems.Ref.COGSAccount,
+	ProductsLineItems.Ref.UnitSet AS UnitSet1,
+	ProductsLineItems.Ref.DefaultLocation,
+	ProductsLineItems.Ref.PreferredVendor,
+	ProductsLineItems.Ref.CF1String,
+	ProductsLineItems.Ref.CF2String,
+	ProductsLineItems.Ref.CF3String,
+	ProductsLineItems.Ref.CF4String,
+	ProductsLineItems.Ref.CF5String,
+	ProductsLineItems.Ref.CF1Num,
+	ProductsLineItems.Ref.CF2Num,
+	ProductsLineItems.Ref.CF3Num,
+	ProductsLineItems.Ref.CF4Num,
+	ProductsLineItems.Ref.CF5Num,
+	ProductsLineItems.Ref.Category,
+	ProductsLineItems.Ref.NewObject,
+	ProductsLineItems.Ref.UPC,
+	ProductsLineItems.Ref.vendor_code,
+	ProductsLineItems.Ref.vendor_description,
+	ProductsLineItems.Ref.Taxable,
+	ProductsLineItems.Ref.Price,
+	ProductsLineItems.Ref.WasteAccount,
+	ProductsLineItems.Ref.PricePrecision,
+	ProductsLineItems.Ref.Predefined,
+	ProductsLineItems.Ref.PredefinedDataName,
+	ProductsLineItems.Ref.Presentation
 FROM
-	Catalog.Products AS Products</query>
+	Catalog.Products.LineItems AS ProductsLineItems</query>
 	</dataSet>
 	<settingsVariant>
 		<dcsset:name>Default</dcsset:name>
@@ -169,7 +260,34 @@ FROM
 		<dcsset:settings xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows">
 			<dcsset:selection>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>ProductDescription</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Product</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>LineNumber</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>LineTotal</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>PriceUnits</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>QtyUnits</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Ref1</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Ref</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>InventoryOrExpenseAccount</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Assembly</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Category</dcsset:field>
@@ -205,10 +323,10 @@ FROM
 					<dcsset:field>CF5String</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>Code</dcsset:field>
+					<dcsset:field>vendor_code</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>vendor_code</dcsset:field>
+					<dcsset:field>Code</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>COGSAccount</dcsset:field>
@@ -232,9 +350,6 @@ FROM
 					<dcsset:field>vendor_description</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>IncomeAccount</dcsset:field>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>NewObject</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
@@ -247,7 +362,13 @@ FROM
 					<dcsset:field>PreferredVendor</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>Ref</dcsset:field>
+					<dcsset:field>Price</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>PricePrecision</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>IncomeAccount</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Taxable</dcsset:field>
@@ -257,6 +378,24 @@ FROM
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>UPC</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>WasteAccount</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>UnitSet</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Unit</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>UnitSet1</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>WastePercent</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>WasteQtyUnits</dcsset:field>
 				</dcsset:item>
 			</dcsset:selection>
 			<dcsset:item xsi:type="dcsset:StructureItemGroup">

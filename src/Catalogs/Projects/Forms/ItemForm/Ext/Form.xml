@@ -31,42 +31,51 @@
 			<ContextMenu name="CustomerContextMenu" id="8"/>
 			<ExtendedTooltip name="CustomerExtendedTooltip" id="9"/>
 		</InputField>
-		<Pages name="Group1" id="35">
-			<ExtendedTooltip name="Group1ExtendedTooltip" id="36"/>
-			<ChildItems>
-				<Page name="Page1" id="37">
-					<Visible>false</Visible>
-					<Title>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Milestones</v8:content>
-						</v8:item>
-					</Title>
-					<ToolTip>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Page1</v8:content>
-						</v8:item>
-					</ToolTip>
-					<ExtendedTooltip name="Page1ExtendedTooltip" id="38"/>
-				</Page>
-				<Page name="Page2" id="39">
-					<Title>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Transactions</v8:content>
-						</v8:item>
-					</Title>
-					<ToolTip>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Page2</v8:content>
-						</v8:item>
-					</ToolTip>
-					<ExtendedTooltip name="Page2ExtendedTooltip" id="40"/>
-				</Page>
-			</ChildItems>
-		</Pages>
+		<InputField name="ReceiptsBudget" id="10">
+			<DataPath>Object.ReceiptsBudget</DataPath>
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Income (bdgt)</v8:content>
+				</v8:item>
+			</Title>
+			<Width>20</Width>
+			<HorizontalStretch>false</HorizontalStretch>
+			<ContextMenu name="ReceiptsBudgetContextMenu" id="11"/>
+			<ExtendedTooltip name="ReceiptsBudgetExtendedTooltip" id="12"/>
+		</InputField>
+		<InputField name="ExpenseBudget" id="13">
+			<DataPath>Object.ExpenseBudget</DataPath>
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Expense (bdgt)</v8:content>
+				</v8:item>
+			</Title>
+			<Width>20</Width>
+			<HorizontalStretch>false</HorizontalStretch>
+			<ContextMenu name="ExpenseBudgetContextMenu" id="14"/>
+			<ExtendedTooltip name="ExpenseBudgetExtendedTooltip" id="15"/>
+		</InputField>
+		<InputField name="ProfitBudget" id="19">
+			<DataPath>ProfitBudget</DataPath>
+			<Visible>false</Visible>
+			<ContextMenu name="ProfitBudgetContextMenu" id="20"/>
+			<ExtendedTooltip name="ProfitBudgetExtendedTooltip" id="21"/>
+		</InputField>
+		<InputField name="HoursBudget" id="16">
+			<DataPath>Object.HoursBudget</DataPath>
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Hours (bdgt)</v8:content>
+				</v8:item>
+			</Title>
+			<Width>20</Width>
+			<HorizontalStretch>false</HorizontalStretch>
+			<ContextMenu name="HoursBudgetContextMenu" id="17"/>
+			<ExtendedTooltip name="HoursBudgetExtendedTooltip" id="18"/>
+		</InputField>
 	</ChildItems>
 	<Attributes>
 		<Attribute name="Object" id="1">
@@ -75,6 +84,22 @@
 			</Type>
 			<MainAttribute>true</MainAttribute>
 			<SavedData>true</SavedData>
+		</Attribute>
+		<Attribute name="ProfitBudget" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Profit budget</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:decimal</v8:Type>
+				<v8:NumberQualifiers>
+					<v8:Digits>15</v8:Digits>
+					<v8:FractionDigits>2</v8:FractionDigits>
+					<v8:AllowedSign>Any</v8:AllowedSign>
+				</v8:NumberQualifiers>
+			</Type>
 		</Attribute>
 	</Attributes>
 </Form>

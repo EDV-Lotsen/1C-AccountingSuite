@@ -10,9 +10,24 @@
 	<ChildItems>
 		<UsualGroup name="Group5" id="28">
 			<Group>Vertical</Group>
-			<ShowTitle>false</ShowTitle>
 			<ExtendedTooltip name="Group5ExtendedTooltip" id="29"/>
 			<ChildItems>
+				<UsualGroup name="Group4" id="23">
+					<Width>9</Width>
+					<Group>Horizontal</Group>
+					<ShowTitle>false</ShowTitle>
+					<ExtendedTooltip name="Group4ExtendedTooltip" id="24"/>
+					<ChildItems>
+						<PictureDecoration name="Decoration1" id="25">
+							<Picture>
+								<xr:Ref>CommonPicture.CFOToday</xr:Ref>
+								<xr:LoadTransparent>true</xr:LoadTransparent>
+							</Picture>
+							<ContextMenu name="Decoration1ContextMenu" id="26"/>
+							<ExtendedTooltip name="Decoration1ExtendedTooltip" id="27"/>
+						</PictureDecoration>
+					</ChildItems>
+				</UsualGroup>
 				<UsualGroup name="Group2" id="13">
 					<Group>Horizontal</Group>
 					<ShowTitle>false</ShowTitle>

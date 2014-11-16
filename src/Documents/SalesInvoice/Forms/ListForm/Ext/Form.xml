@@ -63,29 +63,29 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="30"/>
-			<SearchStringAddition name="ListSearchString" id="59">
+			<SearchStringAddition name="ListSearchString" id="62">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="60"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="61"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="63"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="64"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="62">
+			<ViewStatusAddition name="ListViewStatus" id="65">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="63"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="64"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="66"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="67"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="65">
+			<SearchControlAddition name="ListSearchControl" id="68">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="66"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="67"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="69"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="70"/>
 			</SearchControlAddition>
 			<ChildItems>
 				<LabelField name="Date" id="20">
@@ -300,6 +300,12 @@ Reference number</v8:content>
 					<ContextMenu name="EmailDateContextMenu" id="57"/>
 					<ExtendedTooltip name="EmailDateExtendedTooltip" id="58"/>
 				</LabelField>
+				<CheckBoxField name="Zoho" id="59">
+					<DataPath>List.Zoho</DataPath>
+					<CheckBoxType>Auto</CheckBoxType>
+					<ContextMenu name="ZohoContextMenu" id="60"/>
+					<ExtendedTooltip name="ZohoExtendedTooltip" id="61"/>
+				</CheckBoxField>
 			</ChildItems>
 		</Table>
 	</ChildItems>
@@ -369,15 +375,22 @@ Reference number</v8:content>
 			THEN VALUE(Enum.InvoiceStatuses.Overpaid)
 		ELSE VALUE(Enum.InvoiceStatuses.NoCharge)
 	END AS InvoiceStatus,
-	LastEmails.Date AS EmailDate
+	LastEmails.Date AS EmailDate,
+	CASE 
+		WHEN zoho_SICodeMap.zoho_id &lt;&gt; ""
+			THEN TRUE
+		ELSE FALSE
+	END AS Zoho
 FROM
-	Document.SalesInvoice AS DocumentSalesInvoice
-		LEFT JOIN AccountingRegister.GeneralJournal.Balance(, , , ExtDimension2 REFS Document.SalesInvoice) AS GeneralJournalBalance
-		ON (GeneralJournalBalance.Account = DocumentSalesInvoice.ARAccount)
-			AND (GeneralJournalBalance.ExtDimension1 = DocumentSalesInvoice.Company)
-			AND (GeneralJournalBalance.ExtDimension2 = DocumentSalesInvoice.Ref)
-		LEFT JOIN InformationRegister.DocumentLastEmail AS LastEmails
-		ON (LastEmails.Document = DocumentSalesInvoice.Ref)</QueryText>
+	Catalog.zoho_SICodeMap AS zoho_SICodeMap
+		RIGHT JOIN Document.SalesInvoice AS DocumentSalesInvoice
+			LEFT JOIN AccountingRegister.GeneralJournal.Balance(, , , ExtDimension2 REFS Document.SalesInvoice) AS GeneralJournalBalance
+			ON (GeneralJournalBalance.Account = DocumentSalesInvoice.ARAccount)
+				AND (GeneralJournalBalance.ExtDimension1 = DocumentSalesInvoice.Company)
+				AND (GeneralJournalBalance.ExtDimension2 = DocumentSalesInvoice.Ref)
+			LEFT JOIN InformationRegister.DocumentLastEmail AS LastEmails
+			ON (LastEmails.Document = DocumentSalesInvoice.Ref)
+		ON zoho_SICodeMap.invoice_ref = DocumentSalesInvoice.Ref</QueryText>
 				<MainTable>Document.SalesInvoice</MainTable>
 				<ListSettings>
 					<dcsset:filter>

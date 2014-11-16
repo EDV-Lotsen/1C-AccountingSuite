@@ -205,6 +205,8 @@ END</presentationExpression>
 	CASE
 		WHEN CashFlowDataTurnovers.Recorder REFS Document.InvoicePayment
 				OR CashFlowDataTurnovers.Recorder REFS Document.CashReceipt
+				OR CashFlowDataTurnovers.Recorder REFS Document.Deposit
+					AND CashFlowDataTurnovers.AmountRCExpense &lt;&gt; 0
 				OR CashFlowDataTurnovers.Recorder REFS Document.Check
 					AND CashFlowDataTurnovers.AmountRCExpense &lt;&gt; 0
 				OR CashFlowDataTurnovers.Recorder REFS Document.CashSale
@@ -227,7 +229,6 @@ FROM
 			,
 			Auto,
 			Account.AccountType IN (VALUE(Enum.AccountTypes.Income), VALUE(Enum.AccountTypes.CostOfSales), VALUE(Enum.AccountTypes.Expense), VALUE(Enum.AccountTypes.OtherExpense), VALUE(Enum.AccountTypes.OtherIncome), VALUE(Enum.AccountTypes.IncomeTaxExpense))
-					
 				OR Account = VALUE(ChartOfAccounts.ChartOfAccounts.EmptyRef)) AS CashFlowDataTurnovers
 WHERE
 	NOT CashFlowDataTurnovers.Recorder REFS Document.PurchaseInvoice
@@ -8456,7 +8457,7 @@ END</dcsat:expression>
 		</dcsset:settings>
 	</settingsVariant>
 	<settingsVariant>
-		<dcsset:name>Daily</dcsset:name>
+		<dcsset:name>Days</dcsset:name>
 		<dcsset:presentation xsi:type="v8:LocalStringType">
 			<v8:item>
 				<v8:lang>en</v8:lang>

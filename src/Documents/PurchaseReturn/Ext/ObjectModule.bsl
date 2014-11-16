@@ -51,7 +51,7 @@ Procedure Filling(FillingData, StandardProcessing)
 		// Filling of the new created document with default values.
 		Currency         = Constants.DefaultCurrency.Get();
 		ExchangeRate     = GeneralFunctions.GetExchangeRate(Date, Currency);
-		Location         = Catalogs.Locations.MainWarehouse;
+		Location         = GeneralFunctions.GetDefaultLocation();
 		
 	Else
 		// Generate on the base of purchase invoice document.

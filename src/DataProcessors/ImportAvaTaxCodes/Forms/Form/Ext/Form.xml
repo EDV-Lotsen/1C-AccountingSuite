@@ -1,0 +1,246 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<AutoCommandBar name="FormCommandBar" id="-1">
+		<Autofill>false</Autofill>
+		<ChildItems>
+			<Button name="FormClearCatalog" id="32">
+				<Type>CommandBarButton</Type>
+				<CommandName>Form.Command.ClearCatalog</CommandName>
+				<ExtendedTooltip name="FormClearCatalogExtendedTooltip" id="33"/>
+			</Button>
+			<Button name="ReadTaxCodes" id="1">
+				<Type>CommandBarButton</Type>
+				<CommandName>Form.Command.ReadTaxCodes</CommandName>
+				<Title>
+					<v8:item>
+						<v8:lang>en</v8:lang>
+						<v8:content>Read tax codes</v8:content>
+					</v8:item>
+				</Title>
+				<ExtendedTooltip name="ReadTaxCodesExtendedTooltip" id="2"/>
+			</Button>
+			<Button name="FormWriteTaxCodesToDB" id="22">
+				<Type>CommandBarButton</Type>
+				<CommandName>Form.Command.WriteTaxCodesToDB</CommandName>
+				<Title>
+					<v8:item>
+						<v8:lang>en</v8:lang>
+						<v8:content>Write tax codes to DB</v8:content>
+					</v8:item>
+				</Title>
+				<ExtendedTooltip name="FormWriteTaxCodesToDBExtendedTooltip" id="23"/>
+			</Button>
+		</ChildItems>
+	</AutoCommandBar>
+	<Events>
+		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+	</Events>
+	<ChildItems>
+		<UsualGroup name="TitleGroup" id="30">
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Title group</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Group>Horizontal</Group>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="TitleGroupExtendedTooltip" id="31"/>
+			<ChildItems>
+				<InputField name="FirstRow" id="6">
+					<DataPath>Object.FirstRow</DataPath>
+					<ContextMenu name="FirstRowContextMenu" id="7"/>
+					<ExtendedTooltip name="FirstRowExtendedTooltip" id="8"/>
+				</InputField>
+			</ChildItems>
+		</UsualGroup>
+		<Table name="TaxCodesTree" id="9">
+			<Representation>Tree</Representation>
+			<CommandBarLocation>None</CommandBarLocation>
+			<AutoInsertNewRow>true</AutoInsertNewRow>
+			<EnableStartDrag>true</EnableStartDrag>
+			<EnableDrag>true</EnableDrag>
+			<DataPath>TaxCodesTree</DataPath>
+			<SearchStringLocation>None</SearchStringLocation>
+			<ViewStatusLocation>None</ViewStatusLocation>
+			<SearchControlLocation>None</SearchControlLocation>
+			<ContextMenu name="TaxCodesTreeContextMenu" id="10"/>
+			<AutoCommandBar name="TaxCodesTreeCommandBar" id="11"/>
+			<ExtendedTooltip name="TaxCodesTreeExtendedTooltip" id="12"/>
+			<SearchStringAddition name="TaxCodesTreeSearchString" id="34">
+				<AdditionSource>
+					<Item>TaxCodesTree</Item>
+					<Type>SearchStringRepresentation</Type>
+				</AdditionSource>
+				<ContextMenu name="TaxCodesTreeSearchStringContextMenu" id="35"/>
+				<ExtendedTooltip name="TaxCodesTreeSearchStringExtendedTooltip" id="36"/>
+			</SearchStringAddition>
+			<ViewStatusAddition name="TaxCodesTreeViewStatus" id="37">
+				<AdditionSource>
+					<Item>TaxCodesTree</Item>
+					<Type>ViewStatusRepresentation</Type>
+				</AdditionSource>
+				<ContextMenu name="TaxCodesTreeViewStatusContextMenu" id="38"/>
+				<ExtendedTooltip name="TaxCodesTreeViewStatusExtendedTooltip" id="39"/>
+			</ViewStatusAddition>
+			<SearchControlAddition name="TaxCodesTreeSearchControl" id="40">
+				<AdditionSource>
+					<Item>TaxCodesTree</Item>
+					<Type>SearchControl</Type>
+				</AdditionSource>
+				<ContextMenu name="TaxCodesTreeSearchControlContextMenu" id="41"/>
+				<ExtendedTooltip name="TaxCodesTreeSearchControlExtendedTooltip" id="42"/>
+			</SearchControlAddition>
+			<ChildItems>
+				<InputField name="TaxCodesTreeTaxCode" id="13">
+					<DataPath>TaxCodesTree.TaxCode</DataPath>
+					<EditMode>EnterOnInput</EditMode>
+					<ContextMenu name="TaxCodesTreeTaxCodeContextMenu" id="14"/>
+					<ExtendedTooltip name="TaxCodesTreeTaxCodeExtendedTooltip" id="15"/>
+				</InputField>
+				<InputField name="TaxCodesTreeDescription" id="16">
+					<DataPath>TaxCodesTree.Description</DataPath>
+					<EditMode>EnterOnInput</EditMode>
+					<ContextMenu name="TaxCodesTreeDescriptionContextMenu" id="17"/>
+					<ExtendedTooltip name="TaxCodesTreeDescriptionExtendedTooltip" id="18"/>
+				</InputField>
+				<InputField name="TaxCodesTreeAdditionalInformation" id="19">
+					<DataPath>TaxCodesTree.AdditionalInformation</DataPath>
+					<EditMode>EnterOnInput</EditMode>
+					<ContextMenu name="TaxCodesTreeAdditionalInformationContextMenu" id="20"/>
+					<ExtendedTooltip name="TaxCodesTreeAdditionalInformationExtendedTooltip" id="21"/>
+				</InputField>
+				<InputField name="TaxCodesTreeTaxCodeRef" id="24">
+					<DataPath>TaxCodesTree.TaxCodeRef</DataPath>
+					<EditMode>EnterOnInput</EditMode>
+					<ContextMenu name="TaxCodesTreeTaxCodeRefContextMenu" id="25"/>
+					<ExtendedTooltip name="TaxCodesTreeTaxCodeRefExtendedTooltip" id="26"/>
+				</InputField>
+			</ChildItems>
+		</Table>
+	</ChildItems>
+	<Attributes>
+		<Attribute name="Object" id="1">
+			<Type>
+				<v8:Type>cfg:DataProcessorObject.ImportAvaTaxCodes</v8:Type>
+			</Type>
+			<MainAttribute>true</MainAttribute>
+		</Attribute>
+		<Attribute name="TaxCodesTree" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Tax codes tree</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>v8:ValueTree</v8:Type>
+			</Type>
+			<Columns>
+				<Column name="TaxCode" id="1">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Tax code</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:string</v8:Type>
+						<v8:StringQualifiers>
+							<v8:Length>10</v8:Length>
+							<v8:AllowedLength>Variable</v8:AllowedLength>
+						</v8:StringQualifiers>
+					</Type>
+				</Column>
+				<Column name="Description" id="2">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Description</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:string</v8:Type>
+						<v8:StringQualifiers>
+							<v8:Length>200</v8:Length>
+							<v8:AllowedLength>Variable</v8:AllowedLength>
+						</v8:StringQualifiers>
+					</Type>
+				</Column>
+				<Column name="AdditionalInformation" id="3">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Additional information</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:string</v8:Type>
+						<v8:StringQualifiers>
+							<v8:Length>0</v8:Length>
+							<v8:AllowedLength>Variable</v8:AllowedLength>
+						</v8:StringQualifiers>
+					</Type>
+				</Column>
+				<Column name="TaxCodeRef" id="4">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Tax code ref</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>cfg:CatalogRef.TaxCodesPredefined</v8:Type>
+					</Type>
+				</Column>
+			</Columns>
+		</Attribute>
+	</Attributes>
+	<Commands>
+		<Command name="ReadTaxCodes" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Read tax codes</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Read tax codes</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>ReadTaxCodes</Action>
+		</Command>
+		<Command name="WriteTaxCodesToDB" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Write tax codes to DB</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Write tax codes to DB</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>WriteTaxCodesToDB</Action>
+		</Command>
+		<Command name="ClearCatalog" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Clear catalog (TaxCodesPredefined)</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Clear catalog</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>ClearCatalogAtClient</Action>
+		</Command>
+	</Commands>
+</Form>

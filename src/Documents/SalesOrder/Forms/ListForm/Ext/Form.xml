@@ -63,29 +63,29 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="20"/>
-			<SearchStringAddition name="ListSearchString" id="45">
+			<SearchStringAddition name="ListSearchString" id="48">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="46"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="47"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="49"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="50"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="48">
+			<ViewStatusAddition name="ListViewStatus" id="51">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="49"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="50"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="52"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="53"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="51">
+			<SearchControlAddition name="ListSearchControl" id="54">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="52"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="53"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="55"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="56"/>
 			</SearchControlAddition>
 			<ChildItems>
 				<LabelField name="Date" id="4">
@@ -249,6 +249,12 @@ Reference number</v8:content>
 					<ContextMenu name="EmailDateContextMenu" id="43"/>
 					<ExtendedTooltip name="EmailDateExtendedTooltip" id="44"/>
 				</LabelField>
+				<CheckBoxField name="Zoho" id="45">
+					<DataPath>List.Zoho</DataPath>
+					<CheckBoxType>Auto</CheckBoxType>
+					<ContextMenu name="ZohoContextMenu" id="46"/>
+					<ExtendedTooltip name="ZohoExtendedTooltip" id="47"/>
+				</CheckBoxField>
 			</ChildItems>
 		</Table>
 	</ChildItems>
@@ -303,15 +309,23 @@ Reference number</v8:content>
 		ELSE OrdersStatuses.Status
 	END AS OrderStatus,
 	OrderTransactionsBalance.AmountBalance,
-	LastEmails.Date AS EmailDate
+	LastEmails.Date AS EmailDate,
+	CASE 
+		WHEN zoho_SOCodeMap.zoho_id &lt;&gt; ""
+			THEN TRUE
+		ELSE FALSE
+	END AS Zoho
+	
 FROM
-	Document.SalesOrder AS DocumentSalesOrder
-		LEFT JOIN InformationRegister.OrdersStatuses.SliceLast AS OrdersStatuses
-		ON DocumentSalesOrder.Ref = OrdersStatuses.Order
-		LEFT JOIN AccumulationRegister.OrderTransactions.Balance AS OrderTransactionsBalance
-		ON (OrderTransactionsBalance.Order = DocumentSalesOrder.Ref)
-		LEFT JOIN InformationRegister.DocumentLastEmail AS LastEmails
-		ON (LastEmails.Document = DocumentSalesOrder.Ref)</QueryText>
+	Catalog.zoho_SOCodeMap AS zoho_SOCodeMap
+		RIGHT JOIN Document.SalesOrder AS DocumentSalesOrder
+			LEFT JOIN InformationRegister.OrdersStatuses.SliceLast AS OrdersStatuses
+			ON DocumentSalesOrder.Ref = OrdersStatuses.Order
+			LEFT JOIN AccumulationRegister.OrderTransactions.Balance AS OrderTransactionsBalance
+			ON (OrderTransactionsBalance.Order = DocumentSalesOrder.Ref)
+			LEFT JOIN InformationRegister.DocumentLastEmail AS LastEmails
+			ON (LastEmails.Document = DocumentSalesOrder.Ref)
+		ON zoho_SOCodeMap.salesorder_ref = DocumentSalesOrder.Ref</QueryText>
 				<MainTable>Document.SalesOrder</MainTable>
 				<ListSettings>
 					<dcsset:filter>
@@ -422,7 +436,7 @@ FROM
 				<DefaultVisible>false</DefaultVisible>
 			</Item>
 			<Item>
-				<Command>Document.SalesOrder.Command.PrintSalesQuote</Command>
+				<Command>0:ffccaf86-aeca-4e5a-bd95-851c513f2266</Command>
 				<Type>Auto</Type>
 				<CommandGroup>CommandGroup.Print</CommandGroup>
 				<Index>2</Index>
@@ -457,7 +471,7 @@ FROM
 				</Visible>
 			</Item>
 			<Item>
-				<Command>Document.SalesOrder.Command.SendEmail</Command>
+				<Command>0:db11ee52-45d0-4de3-a333-4f8d10dcb15b</Command>
 				<Type>Auto</Type>
 				<CommandGroup>FormCommandBarImportant</CommandGroup>
 				<Visible>

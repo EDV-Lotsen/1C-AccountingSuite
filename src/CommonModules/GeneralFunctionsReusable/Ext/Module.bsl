@@ -4,6 +4,13 @@
 // REUSABLE IN A SESSION TO MINIMIZE SERVER CALLS
 // 
 
+Function DisableAuditLogValue() Export
+	
+	Return Constants.DisableAuditLog.Get();
+	
+EndFunction
+
+
 Function DisplayAPICodesSetting() Export
 	
 	Return Constants.display_api_codes.Get();
@@ -262,3 +269,76 @@ Function DefaultAmountFormat() Export
 	Return "NFD=2; NZ=";
 	
 EndFunction
+
+// Returns typical format string for price.
+//
+// Returns:
+// String - Format string for price.
+//
+Function DefaultPriceFormat() Export
+	
+	// Define format string.
+	Return "NFD=" + DefaultPricePrecision();
+	
+EndFunction
+
+// Returns typical precision for price.
+//
+// Returns:
+// Number - Price precision.
+//
+Function DefaultPricePrecision() Export
+	
+	// Define price precision.
+	PricePrecision = 2;
+	
+	If Constants.UsePricePrecision.Get() Then
+		
+		Precision = Constants.PricePrecision.Get(); 
+		
+		If Precision > 2 Then 
+			PricePrecision = Precision;	
+		EndIf;
+		
+	EndIf;
+	
+	Return Format(PricePrecision, "NFD=0; NZ=0; NG=0");
+	
+EndFunction
+
+// Returns typical format string for price item.
+//
+// Parameter:
+// Item - .
+//
+// Returns:
+// String - Format string for price.
+//
+Function PriceFormatForOneItem(Item) Export
+	
+	// Define format string.
+	Return "NFD=" + PricePrecisionForOneItem(Item);
+	
+EndFunction
+
+// Returns typical precision for price item.
+//
+// Parameter:
+// Item - .
+//
+// Returns:
+// Number - Price precision.
+//
+Function PricePrecisionForOneItem(Item) Export
+	
+	// Define price precision.
+	PricePrecision = 2;
+	
+	If Item.PricePrecision > 2 Then
+		PricePrecision = Item.PricePrecision; 	
+	EndIf;
+	
+	Return Format(PricePrecision, "NFD=0; NZ=0; NG=0");
+	
+EndFunction
+

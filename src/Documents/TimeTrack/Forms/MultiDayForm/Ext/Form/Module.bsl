@@ -11,6 +11,11 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Object.User =  Catalogs.UserList.FindByDescription(GeneralFunctions.GetUserName());
 	Endif;
 	Object.Billable = True;
+	
+	// Update prices presentation.
+	PriceFormat = GeneralFunctionsReusable.DefaultPriceFormat();
+	Items.ObjectPrice.EditFormat  = PriceFormat;
+	Items.ObjectPrice.Format      = PriceFormat;	
 
 EndProcedure
 
@@ -25,6 +30,8 @@ EndProcedure
 Procedure ObjectTaskOnChangeAtServer()
 	
 	Object.Price = GeneralFunctions.RetailPrice(CurrentDate(),Object.Task,Object.Company);
+	
+	Object.Price = Round(Object.Price, GeneralFunctionsReusable.PricePrecisionForOneItem(Object.Task));
 
 EndProcedure
 
@@ -48,7 +55,7 @@ Procedure CreateEntriesAtServer()
 		NewTimeEntry.Project = Object.Project;
 		NewTimeEntry.Class = Object.Class;
 		NewTimeEntry.Task = Object.Task;
-		NewTimeEntry.Price = Object.Price;
+		NewTimeEntry.Price = Round(Object.Price, GeneralFunctionsReusable.PricePrecisionForOneItem(Object.Task));
 		NewTimeEntry.Billable = Object.Billable;
 		NewTimeEntry.DateFrom = Line.Date;
 		NewTimeEntry.TimeComplete = Line.Hours;
@@ -64,4 +71,11 @@ Procedure CreateEntriesAtServer()
 		
 	EndDo;
 				
+EndProcedure
+
+&AtClient
+Procedure ObjectPriceOnChange(Item)
+	
+	Object.Price = Round(Object.Price, GeneralFunctionsReusable.PricePrecisionForOneItem(Object.Task));
+	
 EndProcedure

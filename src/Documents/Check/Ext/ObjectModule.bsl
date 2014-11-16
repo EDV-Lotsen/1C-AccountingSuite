@@ -128,8 +128,11 @@ Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 				PhysicalCheckNum = Number;
 					
 			Else
-				Message("Check number already exists for this bank account");
-				Cancel = True;
+				If Constants.DisableAuditLog.Get() = True Then
+				Else
+					Message("Check number already exists for this bank account");
+					Cancel = True;
+				EndIf;
 			EndIf;
 		Endif;
 		

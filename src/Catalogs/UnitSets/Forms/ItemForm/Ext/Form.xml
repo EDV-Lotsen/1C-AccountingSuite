@@ -236,22 +236,8 @@
 				<v8:Type>cfg:DynamicList</v8:Type>
 			</Type>
 			<Settings xsi:type="DynamicList">
-				<ManualQuery>true</ManualQuery>
+				<ManualQuery>false</ManualQuery>
 				<DynamicDataRead>true</DynamicDataRead>
-				<QueryText>SELECT
-	CatalogUnits.Ref,
-	CatalogUnits.DeletionMark,
-	CatalogUnits.Owner,
-	CatalogUnits.Code,
-	CatalogUnits.Description,
-	CatalogUnits.BaseUnit,
-	CatalogUnits.Factor,
-	CatalogUnits.Predefined,
-	CatalogUnits.PredefinedDataName
-FROM
-	Catalog.Units AS CatalogUnits
-WHERE
-	CatalogUnits.Owner &lt;&gt; VALUE(Catalog.UnitSets.EmptyRef)</QueryText>
 				<MainTable>Catalog.Units</MainTable>
 				<ListSettings>
 					<dcsset:filter>

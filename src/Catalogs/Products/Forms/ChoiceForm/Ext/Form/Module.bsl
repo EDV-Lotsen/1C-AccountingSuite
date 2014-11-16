@@ -97,5 +97,9 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	Items.QtyOnSO.Format               = QuantityFormat; 
 	Items.QtyOnHand.Format             = QuantityFormat; 
 	Items.QtyAvailableToPromise.Format = QuantityFormat; 
+	
+	// Update prices presentation.
+	PriceFormat = GeneralFunctionsReusable.DefaultPriceFormat();
+	Items.Price.Format = PriceFormat;
 
 EndProcedure

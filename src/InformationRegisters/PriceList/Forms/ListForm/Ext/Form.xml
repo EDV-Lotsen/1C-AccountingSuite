@@ -29,6 +29,9 @@
 			</Button>
 		</ChildItems>
 	</AutoCommandBar>
+	<Events>
+		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+	</Events>
 	<ChildItems>
 		<Table name="List" id="1">
 			<Representation>List</Representation>
@@ -126,11 +129,23 @@
 					<DataPath>List.Price</DataPath>
 					<Width>10</Width>
 					<HorizontalStretch>false</HorizontalStretch>
+					<Format>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>NFD=2</v8:content>
+						</v8:item>
+					</Format>
 					<ContextMenu name="PriceContextMenu" id="11"/>
 					<ExtendedTooltip name="PriceExtendedTooltip" id="36"/>
 				</LabelField>
 				<LabelField name="Cost" id="26">
 					<DataPath>List.Cost</DataPath>
+					<Format>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>NFD=2</v8:content>
+						</v8:item>
+					</Format>
 					<ContextMenu name="CostContextMenu" id="27"/>
 					<ExtendedTooltip name="CostExtendedTooltip" id="37"/>
 				</LabelField>

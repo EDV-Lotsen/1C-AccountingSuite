@@ -326,6 +326,26 @@
 			<dataPath>OwnerTaxable</dataPath>
 			<field>OwnerTaxable</field>
 		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>AddressValidated</dataPath>
+			<field>AddressValidated</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>NewObject</dataPath>
+			<field>NewObject</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>OwnerAvataxCustomerUsageType</dataPath>
+			<field>OwnerAvataxCustomerUsageType</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>OwnerBusinessIdentificationNo</dataPath>
+			<field>OwnerBusinessIdentificationNo</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>OwnerUseAvatax</dataPath>
+			<field>OwnerUseAvatax</field>
+		</field>
 		<dataSource>DataSource1</dataSource>
 		<query>SELECT
 	Addresses.Ref,
@@ -361,6 +381,8 @@
 	Addresses.CF5String,
 	Addresses.JobTitle,
 	Addresses.SalesPerson,
+	Addresses.NewObject,
+	Addresses.AddressValidated,
 	Addresses.Predefined,
 	Addresses.PredefinedDataName,
 	Addresses.Presentation,
@@ -407,6 +429,9 @@
 	Addresses.Owner.Taxable,
 	Addresses.Owner.SalesTaxRate,
 	Addresses.Owner.ResaleNO,
+	Addresses.Owner.UseAvatax,
+	Addresses.Owner.AvataxCustomerUsageType,
+	Addresses.Owner.BusinessIdentificationNo,
 	Addresses.Owner.Predefined,
 	Addresses.Owner.PredefinedDataName,
 	Addresses.Owner.Presentation
@@ -429,6 +454,9 @@ FROM
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>AddressLine3</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>AddressValidated</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Cell</dcsset:field>
@@ -488,6 +516,9 @@ FROM
 					<dcsset:field>MiddleName</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>NewObject</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Notes</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
@@ -504,6 +535,9 @@ FROM
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Ownerbitcoin_address</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>OwnerBusinessIdentificationNo</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>OwnerCF1Num</dcsset:field>
@@ -542,6 +576,9 @@ FROM
 					<dcsset:field>OwnerCustomer</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>OwnerAvataxCustomerUsageType</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>OwnerDataVersion</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
@@ -567,9 +604,6 @@ FROM
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>OwnerFullName</dcsset:field>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>OwnerIncomeAccount</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Ownerlast4</dcsset:field>
@@ -599,6 +633,9 @@ FROM
 					<dcsset:field>OwnerResaleNO</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>OwnerIncomeAccount</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>OwnerSalesPerson</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
@@ -621,6 +658,9 @@ FROM
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Ownertype</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>OwnerUseAvatax</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>OwnerVendor</dcsset:field>

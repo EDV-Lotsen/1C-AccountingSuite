@@ -20,6 +20,11 @@
 				</Title>
 				<ExtendedTooltip name="FormOutputListExtendedTooltip" id="74"/>
 			</Button>
+			<Button name="FormRunInventoryItemQuickReport" id="81">
+				<Type>CommandBarButton</Type>
+				<CommandName>Form.Command.RunInventoryItemQuickReport</CommandName>
+				<ExtendedTooltip name="FormRunInventoryItemQuickReportExtendedTooltip" id="82"/>
+			</Button>
 			<Button name="FormRefresh" id="71">
 				<Type>CommandBarButton</Type>
 				<Representation>Picture</Representation>
@@ -63,29 +68,29 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="33"/>
-			<SearchStringAddition name="ListSearchString" id="81">
+			<SearchStringAddition name="ListSearchString" id="86">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="82"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="83"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="87"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="88"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="84">
+			<ViewStatusAddition name="ListViewStatus" id="89">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="85"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="86"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="90"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="91"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="87">
+			<SearchControlAddition name="ListSearchControl" id="92">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="88"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="89"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="93"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="94"/>
 			</SearchControlAddition>
 			<ChildItems>
 				<LabelField name="Code" id="17">
@@ -96,7 +101,6 @@
 				</LabelField>
 				<LabelField name="Description" id="4">
 					<DataPath>List.Description</DataPath>
-					<DefaultItem>true</DefaultItem>
 					<Width>30</Width>
 					<ContextMenu name="DescriptionContextMenu" id="5"/>
 					<ExtendedTooltip name="DescriptionExtendedTooltip" id="35"/>
@@ -109,6 +113,12 @@
 				</LabelField>
 				<LabelField name="Price" id="75">
 					<DataPath>List.Price</DataPath>
+					<Format>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>NFD=2</v8:content>
+						</v8:item>
+					</Format>
 					<ContextMenu name="PriceContextMenu" id="76"/>
 					<ExtendedTooltip name="PriceExtendedTooltip" id="77"/>
 				</LabelField>
@@ -249,6 +259,12 @@
 					<ContextMenu name="CF5NumContextMenu" id="54"/>
 					<ExtendedTooltip name="CF5NumExtendedTooltip" id="55"/>
 				</LabelField>
+				<CheckBoxField name="Zoho" id="83">
+					<DataPath>List.Zoho</DataPath>
+					<CheckBoxType>Auto</CheckBoxType>
+					<ContextMenu name="ZohoContextMenu" id="84"/>
+					<ExtendedTooltip name="ZohoExtendedTooltip" id="85"/>
+				</CheckBoxField>
 			</ChildItems>
 		</Table>
 	</ChildItems>
@@ -299,84 +315,91 @@
 		WHEN CatalogProducts.Type = VALUE(Enum.InventoryTypes.NonInventory)
 			THEN 0
 		ELSE 0
-	END AS QtyAvailableToPromise
+	END AS QtyAvailableToPromise,
+	CASE 
+		WHEN zoho_productCodeMap.zoho_id &lt;&gt; ""
+			THEN TRUE
+		ELSE FALSE
+	END AS Zoho
 FROM
-	Catalog.Products AS CatalogProducts
-		LEFT JOIN (SELECT
-			ISNULL(OrdersRegisteredBalance.Product, TT_QtyOnHandAndQtyOnPO.Product) AS Product,
-			SUM(CASE
-					WHEN OrdersRegisteredBalance.Product.Type = VALUE(Enum.InventoryTypes.Inventory)
-						THEN CASE
-								WHEN OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.ShippedBalance &gt; 0
-									THEN (OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.ShippedBalance) * OrdersRegisteredBalance.Unit.Factor
+	Catalog.zoho_productCodeMap AS zoho_productCodeMap
+		RIGHT JOIN Catalog.Products AS CatalogProducts
+			LEFT JOIN (SELECT
+				ISNULL(OrdersRegisteredBalance.Product, TT_QtyOnHandAndQtyOnPO.Product) AS Product,
+				SUM(CASE
+						WHEN OrdersRegisteredBalance.Product.Type = VALUE(Enum.InventoryTypes.Inventory)
+							THEN CASE
+									WHEN OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.ShippedBalance &gt; 0
+										THEN (OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.ShippedBalance) * OrdersRegisteredBalance.Unit.Factor
+									ELSE 0
+								END
+						WHEN OrdersRegisteredBalance.Product.Type = VALUE(Enum.InventoryTypes.NonInventory)
+							THEN CASE
+									WHEN OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.InvoicedBalance &gt; 0
+										THEN (OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.InvoicedBalance) * OrdersRegisteredBalance.Unit.Factor
+									ELSE 0
+								END
+						ELSE 0
+					END) AS QtyOnSO,
+				ISNULL(TT_QtyOnHandAndQtyOnPO.QtyOnPO, 0) AS QtyOnPO,
+				ISNULL(TT_QtyOnHandAndQtyOnPO.QtyOnHand, 0) AS QtyOnHand
+			FROM
+				AccumulationRegister.OrdersRegistered.Balance AS OrdersRegisteredBalance
+					LEFT JOIN InformationRegister.OrdersStatuses.SliceLast AS OrdersStatusesSliceLast
+					ON OrdersRegisteredBalance.Order = OrdersStatusesSliceLast.Order
+						AND (OrdersStatusesSliceLast.Status = VALUE(Enum.OrderStatuses.Open)
+							OR OrdersStatusesSliceLast.Status = VALUE(Enum.OrderStatuses.Backordered))
+					FULL JOIN (SELECT
+						ISNULL(OrdersDispatchedBalance.Product, TT_QtyOnHand.Product) AS Product,
+						SUM(CASE
+								WHEN OrdersDispatchedBalance.Product.Type = VALUE(Enum.InventoryTypes.Inventory)
+									THEN CASE
+											WHEN OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.ReceivedBalance &gt; 0
+												THEN (OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.ReceivedBalance) * OrdersDispatchedBalance.Unit.Factor
+											ELSE 0
+										END
+								WHEN OrdersDispatchedBalance.Product.Type = VALUE(Enum.InventoryTypes.NonInventory)
+									THEN CASE
+											WHEN OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.InvoicedBalance &gt; 0
+												THEN (OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.InvoicedBalance) * OrdersDispatchedBalance.Unit.Factor
+											ELSE 0
+										END
 								ELSE 0
-							END
-					WHEN OrdersRegisteredBalance.Product.Type = VALUE(Enum.InventoryTypes.NonInventory)
-						THEN CASE
-								WHEN OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.InvoicedBalance &gt; 0
-									THEN (OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.InvoicedBalance) * OrdersRegisteredBalance.Unit.Factor
-								ELSE 0
-							END
-					ELSE 0
-				END) AS QtyOnSO,
-			ISNULL(TT_QtyOnHandAndQtyOnPO.QtyOnPO, 0) AS QtyOnPO,
-			ISNULL(TT_QtyOnHandAndQtyOnPO.QtyOnHand, 0) AS QtyOnHand
-		FROM
-			AccumulationRegister.OrdersRegistered.Balance AS OrdersRegisteredBalance
-				LEFT JOIN InformationRegister.OrdersStatuses.SliceLast AS OrdersStatusesSliceLast
-				ON OrdersRegisteredBalance.Order = OrdersStatusesSliceLast.Order
-					AND (OrdersStatusesSliceLast.Status = VALUE(Enum.OrderStatuses.Open)
-						OR OrdersStatusesSliceLast.Status = VALUE(Enum.OrderStatuses.Backordered))
-				FULL JOIN (SELECT
-					ISNULL(OrdersDispatchedBalance.Product, TT_QtyOnHand.Product) AS Product,
-					SUM(CASE
-							WHEN OrdersDispatchedBalance.Product.Type = VALUE(Enum.InventoryTypes.Inventory)
-								THEN CASE
-										WHEN OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.ReceivedBalance &gt; 0
-											THEN (OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.ReceivedBalance) * OrdersDispatchedBalance.Unit.Factor
-										ELSE 0
-									END
-							WHEN OrdersDispatchedBalance.Product.Type = VALUE(Enum.InventoryTypes.NonInventory)
-								THEN CASE
-										WHEN OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.InvoicedBalance &gt; 0
-											THEN (OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.InvoicedBalance) * OrdersDispatchedBalance.Unit.Factor
-										ELSE 0
-									END
-							ELSE 0
-						END) AS QtyOnPO,
-					ISNULL(TT_QtyOnHand.QtyOnHand, 0) AS QtyOnHand
-				FROM
-					AccumulationRegister.OrdersDispatched.Balance AS OrdersDispatchedBalance
-						LEFT JOIN InformationRegister.OrdersStatuses.SliceLast AS OrdersStatusesSliceLast
-						ON OrdersDispatchedBalance.Order = OrdersStatusesSliceLast.Order
-							AND (OrdersStatusesSliceLast.Status = VALUE(Enum.OrderStatuses.Open)
-								OR OrdersStatusesSliceLast.Status = VALUE(Enum.OrderStatuses.Backordered))
-						FULL JOIN (SELECT
-							InventoryJournalBalance.Product AS Product,
-							CASE
-								WHEN InventoryJournalBalance.Product.Type = VALUE(Enum.InventoryTypes.Inventory)
-									THEN InventoryJournalBalance.QuantityBalance
-								WHEN InventoryJournalBalance.Product.Type = VALUE(Enum.InventoryTypes.NonInventory)
-									THEN 0
-								ELSE 0
-							END AS QtyOnHand
-						FROM
-							AccumulationRegister.InventoryJournal.Balance(, ) AS InventoryJournalBalance) AS TT_QtyOnHand
-						ON OrdersDispatchedBalance.Product = TT_QtyOnHand.Product
-				
-				GROUP BY
-					ISNULL(OrdersDispatchedBalance.Product, TT_QtyOnHand.Product),
-					ISNULL(TT_QtyOnHand.QtyOnHand, 0)) AS TT_QtyOnHandAndQtyOnPO
-				ON OrdersRegisteredBalance.Product = TT_QtyOnHandAndQtyOnPO.Product
-		
-		GROUP BY
-			ISNULL(OrdersRegisteredBalance.Product, TT_QtyOnHandAndQtyOnPO.Product),
-			ISNULL(TT_QtyOnHandAndQtyOnPO.QtyOnPO, 0),
-			ISNULL(TT_QtyOnHandAndQtyOnPO.QtyOnHand, 0)) AS TT
-		ON CatalogProducts.Ref = TT.Product
-		LEFT JOIN Catalog.Units AS Units
-		ON CatalogProducts.UnitSet = Units.Owner
-			AND (Units.BaseUnit = TRUE)</QueryText>
+							END) AS QtyOnPO,
+						ISNULL(TT_QtyOnHand.QtyOnHand, 0) AS QtyOnHand
+					FROM
+						AccumulationRegister.OrdersDispatched.Balance AS OrdersDispatchedBalance
+							LEFT JOIN InformationRegister.OrdersStatuses.SliceLast AS OrdersStatusesSliceLast
+							ON OrdersDispatchedBalance.Order = OrdersStatusesSliceLast.Order
+								AND (OrdersStatusesSliceLast.Status = VALUE(Enum.OrderStatuses.Open)
+									OR OrdersStatusesSliceLast.Status = VALUE(Enum.OrderStatuses.Backordered))
+							FULL JOIN (SELECT
+								InventoryJournalBalance.Product AS Product,
+								CASE
+									WHEN InventoryJournalBalance.Product.Type = VALUE(Enum.InventoryTypes.Inventory)
+										THEN InventoryJournalBalance.QuantityBalance
+									WHEN InventoryJournalBalance.Product.Type = VALUE(Enum.InventoryTypes.NonInventory)
+										THEN 0
+									ELSE 0
+								END AS QtyOnHand
+							FROM
+								AccumulationRegister.InventoryJournal.Balance(, ) AS InventoryJournalBalance) AS TT_QtyOnHand
+							ON OrdersDispatchedBalance.Product = TT_QtyOnHand.Product
+					
+					GROUP BY
+						ISNULL(OrdersDispatchedBalance.Product, TT_QtyOnHand.Product),
+						ISNULL(TT_QtyOnHand.QtyOnHand, 0)) AS TT_QtyOnHandAndQtyOnPO
+					ON OrdersRegisteredBalance.Product = TT_QtyOnHandAndQtyOnPO.Product
+			
+			GROUP BY
+				ISNULL(OrdersRegisteredBalance.Product, TT_QtyOnHandAndQtyOnPO.Product),
+				ISNULL(TT_QtyOnHandAndQtyOnPO.QtyOnPO, 0),
+				ISNULL(TT_QtyOnHandAndQtyOnPO.QtyOnHand, 0)) AS TT
+			ON CatalogProducts.Ref = TT.Product
+			LEFT JOIN Catalog.Units AS Units
+			ON CatalogProducts.UnitSet = Units.Owner
+				AND (Units.BaseUnit = TRUE)
+		ON zoho_productCodeMap.product_ref = CatalogProducts.Ref</QueryText>
 				<MainTable>Catalog.Products</MainTable>
 				<ListSettings>
 					<dcsset:filter>
@@ -397,4 +420,21 @@ FROM
 			</Settings>
 		</Attribute>
 	</Attributes>
+	<Commands>
+		<Command name="RunInventoryItemQuickReport" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Quick report</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Run inventory item quick report</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>RunInventoryItemQuickReport</Action>
+		</Command>
+	</Commands>
 </Form>

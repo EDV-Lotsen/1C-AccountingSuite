@@ -12,14 +12,23 @@
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
-	If Not Constants.ServiceDB.Get() Then
+	If (Not Constants.ServiceDB.Get()) And (Not Parameters.PerformAddAccount) Then
 		Cancel = True;
 		return;
+	EndIf;
+	
+	//When working in the non-serviceDB then allow adding only offline accounts 
+	If Parameters.PerformAddAccount And (Not Constants.ServiceDB.Get()) Then
+		Items.OnlineAccount.ReadOnly = True;
+		OnlineAccount = "Offline";
+		Items.AccountDescription.Visible 	= True;
+		Items.BankDetails.Visible			= False;
+	Else
+		OnlineAccount = "Online";
 	EndIf;
 
 	BankAccounts.Parameters.SetParameterValue("Bank", Catalogs.Banks.EmptyRef());
 	Items.ProgressGroup.Visible = False;
-	OnlineAccount = "Online";
 	CurrentBankAccount = Parameters.RefreshAccount;
 	PerformRefreshingAccount = Parameters.PerformRefreshingAccount;
 	UploadTransactionsFrom = Parameters.UploadTransactionsFrom;
@@ -386,60 +395,6 @@ Function GetAvailableListOfAccounts(CurrentAccountType = Undefined, CurrentBankA
 EndFunction
 
 &AtServerNoContext
-Function FindVacantCode(CodeStart, CodeEnd, AccountType)
-	Request = New Query("SELECT
-	                    |	ChartOfAccounts.Code,
-	                    |	ChartOfAccounts.AccountType,
-	                    |	ChartOfAccounts.Order
-	                    |FROM
-	                    |	ChartOfAccounts.ChartOfAccounts AS ChartOfAccounts
-	                    |WHERE
-	                    |	ChartOfAccounts.Code >= &CodeStart
-	                    |	AND ChartOfAccounts.Code <= &CodeEnd
-	                    |
-	                    |ORDER BY
-	                    |	ChartOfAccounts.Code DESC");
-	Request.SetParameter("CodeStart", CodeStart);
-	Request.SetParameter("CodeEnd", CodeEnd);
-	FoundAccounts = Request.Execute().Unload();
-	FoundAccountsOfType = FoundAccounts.FindRows(New Structure("AccountType", AccountType));
-	NewCode = CodeStart;
-	If FoundAccountsOfType.Count() > 0 Then
-		For Each AccountOfType In FoundAccountsOfType Do
-			Try
-				If Format(Number(TrimAll(AccountOfType.Code)), "NFD=; NG=0") = TrimAll(AccountOfType.Code) Then //Found digital code
-					NewCode = Format(Number(TrimAll(AccountOfType.Code)) + 10 ,"NFD=; NG=0");
-					If NewCode > CodeEnd Then
-						NewCode = CodeStart;
-					EndIf;
-					Break;
-				EndIf;
-			Except
-			EndTry;
-		EndDo;
-	EndIf;
-	//Check if the new code is vacant
-	ExistingAccounts = FoundAccounts.FindRows(New Structure("Code", NewCode));
-	If ExistingAccounts.Count() = 0 Then
-		return NewCode;
-	EndIf;
-	//If the new code is already in use
-	//Start searching the vacant one from the very beginning
-	CodeStartDigital = Number(CodeStart);
-	CodeEndDigital = Number(CodeEnd);
-	NewCode = "";
-	For DigitalCode = CodeStartDigital To CodeEndDigital Do
-		CurrentCode = Format(DigitalCode,"NFD=; NG=0");
-		ExistingAccounts = FoundAccounts.FindRows(New Structure("Code", CurrentCode));
-		If ExistingAccounts.Count() = 0 Then
-			NewCode = CurrentCode;
-			Break;
-		EndIf;
-	EndDo;
-	return NewCode;
-EndFunction
-
-&AtServerNoContext
 Function AssignAccountTypeAtServer(Val CurrentBankAccount, Val BankAccountType, Val Connect = True, Val SetAsDefault = False)
 	ReturnStructure = New Structure("ReturnValue, ErrorMessage", True, "");
 	If (CurrentBankAccount.AccountingAccount = BankAccountType) And (ValueIsFilled(CurrentBankAccount.AccountingAccount)) Then
@@ -465,12 +420,12 @@ Function AssignAccountTypeAtServer(Val CurrentBankAccount, Val BankAccountType, 
 					NewGLAccount.AccountType = Enums.AccountTypes.Bank;
 					StartCode = "1000";
 					EndCode = "2000";
-					NewCode = FindVacantCode(StartCode, EndCode, Enums.AccountTypes.Bank);
+					NewCode = GeneralFunctions.FindVacantCode(StartCode, EndCode, Enums.AccountTypes.Bank);
 				Else
 					NewGLAccount.AccountType = Enums.AccountTypes.OtherCurrentLiability;
 					StartCode = "2100";
 					EndCode = "3000";
-					NewCode = FindVacantCode(StartCode, EndCode, Enums.AccountTypes.OtherCurrentLiability);
+					NewCode = GeneralFunctions.FindVacantCode(StartCode, EndCode, Enums.AccountTypes.OtherCurrentLiability);
 				EndIf;
 				If Not ValueIsFilled(NewCode) Then
 					UM = GetUserMessages(True);
@@ -539,12 +494,11 @@ Function AssignAccountTypeAtServer(Val CurrentBankAccount, Val BankAccountType, 
 EndFunction
 
 &AtServerNoContext
-Function CreateNewOfflineBankAccount(Bank, Description, AccountType)
+Function CreateNewOfflineBankAccount(Bank, Description)
 	
 	NewAccount = Catalogs.BankAccounts.CreateItem();
 	NewAccount.Owner = Bank;
 	NewAccount.Description = Description;
-	NewAccount.AccountType = AccountType;
 	NewAccount.Write();
 	return NewAccount.Ref;
 	
@@ -588,10 +542,8 @@ EndProcedure
 Procedure OnlineAccountOnChange(Item)
 	If OnlineAccount = "Online" Then
 		Items.AccountDescription.Visible = False;
-		Items.AccountType.Visible = False;
 	ElsIf OnlineAccount = "Offline" Then
 		Items.AccountDescription.Visible = True;
-		Items.AccountType.Visible = True;
 	EndIf;
 EndProcedure
 
@@ -630,7 +582,7 @@ Procedure AddAccounts(Command)
 		
 	ElsIf OnlineAccount = "Offline" Then //Creating "manual" bank account just in database
 		
-		CurrentBankAccount = CreateNewOfflineBankAccount(Bank, AccountDescription, AccountType);
+		CurrentBankAccount = CreateNewOfflineBankAccount(Bank, AccountDescription);
 		
 		AccountForDeletionIfCancelled = CurrentBankAccount;
 		

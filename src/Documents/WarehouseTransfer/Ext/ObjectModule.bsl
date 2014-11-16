@@ -49,7 +49,7 @@ Procedure Filling(FillingData, StandardProcessing)
 	// Filling new document or filling on the base of another document.
 	If FillingData = Undefined Then
 		// Filling of the new created document with default values.
-		LocationFrom = Catalogs.Locations.MainWarehouse;
+		LocationFrom = GeneralFunctions.GetDefaultLocation();
 		
 	Else
 		// Generate on the base of some document.

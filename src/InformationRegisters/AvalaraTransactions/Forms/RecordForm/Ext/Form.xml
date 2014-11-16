@@ -1,0 +1,204 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<WindowOpeningMode>LockOwnerWindow</WindowOpeningMode>
+	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<Events>
+		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+	</Events>
+	<ChildItems>
+		<InputField name="ObjectRef" id="1">
+			<DataPath>Record.ObjectRef</DataPath>
+			<ReadOnly>true</ReadOnly>
+			<ContextMenu name="ObjectRefContextMenu" id="2"/>
+			<ExtendedTooltip name="ObjectRefExtendedTooltip" id="3"/>
+		</InputField>
+		<UsualGroup name="TransactionIDDateGroup" id="25">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Transaction IDDate group</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Transaction IDDate group</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Group>Horizontal</Group>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="TransactionIDDateGroupExtendedTooltip" id="26"/>
+			<ChildItems>
+				<LabelField name="TransactionID" id="7">
+					<DataPath>Record.TransactionID</DataPath>
+					<ContextMenu name="TransactionIDContextMenu" id="8"/>
+					<ExtendedTooltip name="TransactionIDExtendedTooltip" id="9"/>
+				</LabelField>
+				<InputField name="Date" id="4">
+					<DataPath>Record.Date</DataPath>
+					<ReadOnly>true</ReadOnly>
+					<ContextMenu name="DateContextMenu" id="5"/>
+					<ExtendedTooltip name="DateExtendedTooltip" id="6"/>
+				</InputField>
+			</ChildItems>
+		</UsualGroup>
+		<UsualGroup name="RequestTypeResultCodeGroup" id="27">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Request type result code group</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Request type result code group</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Group>Horizontal</Group>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="RequestTypeResultCodeGroupExtendedTooltip" id="28"/>
+			<ChildItems>
+				<InputField name="RequestType" id="10">
+					<DataPath>Record.RequestType</DataPath>
+					<ReadOnly>true</ReadOnly>
+					<ContextMenu name="RequestTypeContextMenu" id="11"/>
+					<ExtendedTooltip name="RequestTypeExtendedTooltip" id="12"/>
+				</InputField>
+				<InputField name="ResultCode" id="16">
+					<DataPath>Record.ResultCode</DataPath>
+					<ReadOnly>true</ReadOnly>
+					<ContextMenu name="ResultCodeContextMenu" id="17"/>
+					<ExtendedTooltip name="ResultCodeExtendedTooltip" id="18"/>
+				</InputField>
+			</ChildItems>
+		</UsualGroup>
+		<Pages name="RequestBodies" id="34">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Request bodies</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Request bodies</v8:content>
+				</v8:item>
+			</ToolTip>
+			<ExtendedTooltip name="RequestBodiesExtendedTooltip" id="35"/>
+			<ChildItems>
+				<Page name="ResultBodyPage" id="36">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Result body</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Result body page</v8:content>
+						</v8:item>
+					</ToolTip>
+					<ExtendedTooltip name="ResultBodyPageExtendedTooltip" id="37"/>
+					<ChildItems>
+						<InputField name="ResultBody" id="13">
+							<DataPath>Record.ResultBody</DataPath>
+							<ReadOnly>true</ReadOnly>
+							<TitleLocation>None</TitleLocation>
+							<MultiLine>true</MultiLine>
+							<ContextMenu name="ResultBodyContextMenu" id="14"/>
+							<ExtendedTooltip name="ResultBodyExtendedTooltip" id="15"/>
+						</InputField>
+					</ChildItems>
+				</Page>
+				<Page name="RequestBodyPage" id="38">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Request body</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Request body page</v8:content>
+						</v8:item>
+					</ToolTip>
+					<ExtendedTooltip name="RequestBodyPageExtendedTooltip" id="39"/>
+					<ChildItems>
+						<InputField name="RequestBody" id="40">
+							<DataPath>RequestBody</DataPath>
+							<TitleLocation>None</TitleLocation>
+							<MultiLine>true</MultiLine>
+							<ContextMenu name="RequestBodyContextMenu" id="41"/>
+							<ExtendedTooltip name="RequestBodyExtendedTooltip" id="42"/>
+						</InputField>
+					</ChildItems>
+				</Page>
+			</ChildItems>
+		</Pages>
+		<InputField name="ErrorMessage" id="22">
+			<DataPath>Record.ErrorMessage</DataPath>
+			<TitleLocation>Top</TitleLocation>
+			<MultiLine>true</MultiLine>
+			<ContextMenu name="ErrorMessageContextMenu" id="23"/>
+			<ExtendedTooltip name="ErrorMessageExtendedTooltip" id="24"/>
+		</InputField>
+		<UsualGroup name="TransactionIDTimeSpentGroup" id="32">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Transaction IDTime spent group</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Transaction IDTime spent group</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Group>Horizontal</Group>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="TransactionIDTimeSpentGroupExtendedTooltip" id="33"/>
+			<ChildItems>
+				<InputField name="AvataxTransactionID" id="19">
+					<DataPath>Record.AvataxTransactionID</DataPath>
+					<ReadOnly>true</ReadOnly>
+					<ContextMenu name="AvataxTransactionIDContextMenu" id="20"/>
+					<ExtendedTooltip name="AvataxTransactionIDExtendedTooltip" id="21"/>
+				</InputField>
+				<InputField name="TimeSpent" id="29">
+					<DataPath>Record.TimeSpent</DataPath>
+					<ContextMenu name="TimeSpentContextMenu" id="30"/>
+					<ExtendedTooltip name="TimeSpentExtendedTooltip" id="31"/>
+				</InputField>
+			</ChildItems>
+		</UsualGroup>
+	</ChildItems>
+	<Attributes>
+		<Attribute name="Record" id="1">
+			<Type>
+				<v8:Type>cfg:InformationRegisterRecordManager.AvalaraTransactions</v8:Type>
+			</Type>
+			<MainAttribute>true</MainAttribute>
+			<SavedData>true</SavedData>
+		</Attribute>
+		<Attribute name="RequestBody" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Request body</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+	</Attributes>
+</Form>

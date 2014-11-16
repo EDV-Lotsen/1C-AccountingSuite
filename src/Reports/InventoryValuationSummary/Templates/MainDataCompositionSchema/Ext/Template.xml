@@ -182,7 +182,13 @@ SELECT
 	CASE
 		WHEN InventoryJournalBalance.QuantityBalance &lt;= 0
 			THEN 0
-		ELSE CAST(InventoryJournalBalance.AmountBalance / InventoryJournalBalance.QuantityBalance AS NUMBER(15, 2))
+		ELSE CASE
+				WHEN InventoryJournalBalance.Product.PricePrecision = 3
+					THEN CAST(InventoryJournalBalance.AmountBalance / InventoryJournalBalance.QuantityBalance AS NUMBER(17, 3))
+				WHEN InventoryJournalBalance.Product.PricePrecision = 4
+					THEN CAST(InventoryJournalBalance.AmountBalance / InventoryJournalBalance.QuantityBalance AS NUMBER(17, 4))
+				ELSE CAST(InventoryJournalBalance.AmountBalance / InventoryJournalBalance.QuantityBalance AS NUMBER(17, 2))
+			END
 	END AS AverageCost
 INTO AverageCost
 FROM
@@ -195,7 +201,13 @@ SELECT
 	CASE
 		WHEN InventoryJournalBalance.QuantityBalance &lt;= 0
 			THEN 0
-		ELSE CAST(InventoryJournalBalance.AmountBalance / InventoryJournalBalance.QuantityBalance AS NUMBER(15, 2))
+		ELSE CASE
+				WHEN InventoryJournalBalance.Product.PricePrecision = 3
+					THEN CAST(InventoryJournalBalance.AmountBalance / InventoryJournalBalance.QuantityBalance AS NUMBER(17, 3))
+				WHEN InventoryJournalBalance.Product.PricePrecision = 4
+					THEN CAST(InventoryJournalBalance.AmountBalance / InventoryJournalBalance.QuantityBalance AS NUMBER(17, 4))
+				ELSE CAST(InventoryJournalBalance.AmountBalance / InventoryJournalBalance.QuantityBalance AS NUMBER(17, 2))
+			END
 	END AS Cost,
 	InventoryJournalBalance.Layer AS Layer
 INTO FIFOCostTT

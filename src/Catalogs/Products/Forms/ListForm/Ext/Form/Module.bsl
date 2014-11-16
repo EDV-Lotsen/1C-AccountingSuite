@@ -98,4 +98,66 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	Items.QtyOnHand.Format             = QuantityFormat; 
 	Items.QtyAvailableToPromise.Format = QuantityFormat; 
 	
+	// Update prices presentation.
+	PriceFormat = GeneralFunctionsReusable.DefaultPriceFormat();
+	Items.Price.Format = PriceFormat;
+	
 EndProcedure
+
+&AtClient
+Procedure RunInventoryItemQuickReport(Command)
+	
+	ParametersStructure = New Structure;
+	ParametersStructure.Insert("GenerateOnOpen", True); 
+	ReportForm = GetForm("Report.InventoryItemQuickReport.Form.ReportForm", ParametersStructure,, True);
+	
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	ReportFormSettings = ReportForm.Report.SettingsComposer.Settings;
+	
+	PeriodSettingID   = ReportFormSettings.DataParameters.Items.Find("Period").UserSettingID;
+	LocationSettingID = ReportFormSettings.DataParameters.Items.Find("Location").UserSettingID;
+	ItemSettingID     = ReportFormSettings.DataParameters.Items.Find("Item").UserSettingID;
+	
+	UserSettings = ReportForm.Report.SettingsComposer.UserSettings.Items;
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	//Period
+	SessionDate = GetDate();
+	UserSettings.Find(PeriodSettingID).Value = New StandardPeriod(BegOfMonth(SessionDate), EndOfMonth(SessionDate));
+	UserSettings.Find(PeriodSettingID).Use = True;
+	
+	//Location
+	UserSettings.Find(LocationSettingID).Value = PredefinedValue("Catalog.Locations.EmptyRef");
+	UserSettings.Find(LocationSettingID).Use = False;
+	
+	//Item
+	UserSettings.Find(ItemSettingID).Value = Items.List.CurrentRow;
+	UserSettings.Find(ItemSettingID).Use = True;
+	
+	ReturnStructure = ProcessDetailsAtServer(ReportForm.Report, ReportForm.Result, ReportForm.DetailsData, ReportForm.UUID);
+	ReportForm.Result = ReturnStructure.Result;
+	ReportForm.DetailsData = ReturnStructure.DetailsData;
+	
+	ReportForm.Open();
+	
+EndProcedure
+
+&AtServerNoContext
+Function ProcessDetailsAtServer(Val ReportRF, Val ResultRF, Val DetailsDataRF, Val UUID_RF)
+	
+	ReportObject = FormDataToValue(ReportRF, Type("ReportObject.InventoryItemQuickReport"));
+	ResultRF.Clear();                                                                              
+	ReportObject.ComposeResult(ResultRF, DetailsDataRF);                                  
+	Address = PutToTempStorage(DetailsDataRF, UUID_RF); 
+	
+	Return New Structure("Result, DetailsData", ResultRF, Address);       
+	
+EndFunction
+
+&AtServerNoContext
+Function GetDate()
+	
+	Return CurrentSessionDate();
+	
+EndFunction
+

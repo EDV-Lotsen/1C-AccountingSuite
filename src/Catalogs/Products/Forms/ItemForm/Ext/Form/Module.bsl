@@ -4,6 +4,38 @@
 //
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
+	//------------------------------------------------------------------------------
+	// 1. Form attributes initialization.
+	
+	// Set LineItems editing flag.
+	IsNewRow     = False;
+	
+	//------------------------------------------------------------------------------
+	// 2. Calculate values of form object attributes.
+	
+	//------------------------------------------------------------------------------
+	// 3. Set custom controls presentation.
+	
+	// Update quantities presentation.
+	QuantityPrecision = GeneralFunctionsReusable.DefaultQuantityPrecision();
+	QuantityFormat    = GeneralFunctionsReusable.DefaultQuantityFormat();
+	Items.LineItemsQuantity.EditFormat      = QuantityFormat;
+	Items.LineItemsQuantity.Format          = QuantityFormat;
+	Items.LineItemsWasteQtyUnits.EditFormat = QuantityFormat;
+	Items.LineItemsWasteQtyUnits.Format     = QuantityFormat;
+	
+	// Update prices presentation in LineItems.
+	PriceFormat = GeneralFunctionsReusable.DefaultPriceFormat();
+	Items.LineItemsPrice.EditFormat  = PriceFormat;
+	Items.LineItemsPrice.Format      = PriceFormat;
+	
+	// Show/hide assembly part.
+	Items.Assembly.Visible = Object.Assembly;
+	
+	// Update prices presentation.
+	UpdatePricesPresentation();
+
+	// -> CODE REVIEW
 	If Constants.SalesTaxCharging.Get() = False Then
 		Items.Taxable.Visible = False;
 		Taxable = False;
@@ -247,51 +279,10 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 	Items.CostAndQuantity.ChildItems.Right.ChildItems.QtyAvailableToPromise.Visible = IsInventoryType;
 	//Items.CostAndQuantity.ChildItems.Right.ChildItems.InventorySiteInfo.Visible = IsInventoryType;
 	
+	// Update prices presentation.
+	UpdatePricesPresentation();
+	
 	//AddPriceList();
-	
-	//companies_webhook = Constants.items_webhook.Get();
-	
-	//If NOT companies_webhook = "" Then
-	//	
-	//	//double_slash = Find(companies_webhook, "//");
-	//	
-	//	//companies_webhook = Right(companies_webhook,StrLen(companies_webhook) - double_slash - 1);
-	//	
-	//	//first_slash = Find(companies_webhook, "/");
-	//	//webhook_address = Left(companies_webhook,first_slash - 1);
-	//	//webhook_resource = Right(companies_webhook,StrLen(companies_webhook) - first_slash + 1); 		
-	//	
-	//	WebhookMap = GeneralFunctions.ReturnProductObjectMap(Object.Ref);
-	//	WebhookMap.Insert("resource","items");
-	//	If object.NewObject = True Then
-	//		WebhookMap.Insert("action","create");
-	//	Else
-	//		WebhookMap.Insert("action","update");
-	//	EndIf;
-	//	WebhookMap.Insert("apisecretkey",Constants.APISecretKey.Get());
-	//	WebhookParams = New Array();
-	//	WebhookParams.Add(Constants.items_webhook.Get());
-	//	WebhookParams.Add(WebhookMap);
-	//	LongActions.ExecuteInBackground("GeneralFunctions.SendWebhook", WebhookParams);
-
-	//
-	//EndIf;
-	
-	// Insert handler code.
-	
-	//HeadersMap = New Map();
-	//HeadersMap.Insert("Authorization", "Basic " + ServiceParameters.BigCommerceAuth());
-	//
-	//HTTPRequest = New HTTPRequest("products/78.json", HeadersMap);
-	////HTTPRequest.SetBodyFromString("product=" + ThisObject.Description,TextEncoding.ANSI);
-	//
-	//SSLConnection = New OpenSSLSecureConnection();
-	//
-	//HTTPConnection = New HTTPConnection("store-dshn8.mybigcommerce.com/api/v2/",,,,,,SSLConnection);
-	//Result = HTTPConnection.Get(HTTPRequest);
-	//ResponseBody = Result.GetBodyAsString(TextEncoding.UTF8);
-	//			
-	//Message("Sent /bigcomproduct request");
 	
 	// zapier webhooks
 	
@@ -329,39 +320,15 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 		EndDo;						
 	EndIf;
 	
-		//WebhookMap = GeneralFunctions.ReturnProductObjectMap(Object.Ref);
-		//WebhookMap.Insert("resource","items");
-		//If object.NewObject = True Then
-		//	WebhookMap.Insert("action","create");
-		//Else
-		//	WebhookMap.Insert("action","update");
-		//EndIf;
-		//WebhookMap.Insert("apisecretkey",Constants.APISecretKey.Get());
-		//WebhookParams = New Array();
-		//WebhookParams.Add(Constants.items_webhook.Get());
-		//WebhookParams.Add(WebhookMap);
-		//LongActions.ExecuteInBackground("GeneralFunctions.SendWebhook", WebhookParams);
-		//
-		//Headers = New Map();
-		//Headers.Insert("Content-Type", "application/json");   
-		//
-		//HTTPRequest = New HTTPRequest("/webhook_test",Headers);
-		//HTTPRequest.SetBodyFromString(InternetConnectionClientServer.EncodeJSON(WebhookParams));
-		//
-		//SSLConnection = New OpenSSLSecureConnection();
-		//
-		//HTTPConnection = New HTTPConnection("pay.accountingsuite.com",,,,,,SSLConnection);
-		//Result = HTTPConnection.Post(HTTPRequest);
-		
-		//  create item in zoho
-		If Constants.zoho_auth_token.Get() <> "" Then
-			If Object.NewObject = True Then
-				ThisAction = "create";
-			Else
-				ThisAction = "update";
-			EndIf;
-			zoho_Functions.zoho_ThisItem(ThisAction,Object.Ref);
+	//  create item in zoho
+	If Constants.zoho_auth_token.Get() <> "" Then
+		If Object.NewObject = True Then
+			ThisAction = "create";
+		Else
+			ThisAction = "update";
 		EndIf;
+		zoho_Functions.zoho_ThisItem(ThisAction,Object.Ref);
+	EndIf;
 	
 EndProcedure
 
@@ -413,8 +380,17 @@ Procedure FillLastAverageAccountingCost()
 		QTItemAverageCost = "
 			|// Average cost, based on all availble stock
 			|SELECT
-			|	CASE WHEN InventoryJournalBalance.QuantityBalance <= 0 THEN 0
-			|		 ELSE CAST(InventoryJournalBalance.AmountBalance / InventoryJournalBalance.QuantityBalance AS Number(15, 2)) END AS Cost
+			|	CASE
+			|		WHEN InventoryJournalBalance.QuantityBalance <= 0
+			|			THEN 0
+			|		ELSE CASE
+			|				WHEN InventoryJournalBalance.Product.PricePrecision = 3
+			|					THEN CAST(InventoryJournalBalance.AmountBalance / InventoryJournalBalance.QuantityBalance AS NUMBER(17, 3))
+			|				WHEN InventoryJournalBalance.Product.PricePrecision = 4
+			|					THEN CAST(InventoryJournalBalance.AmountBalance / InventoryJournalBalance.QuantityBalance AS NUMBER(17, 4))
+			|				ELSE CAST(InventoryJournalBalance.AmountBalance / InventoryJournalBalance.QuantityBalance AS NUMBER(17, 2))
+			|			END
+			|	END AS Cost
 			|INTO
 			|	AverageCost
 			|FROM
@@ -428,8 +404,17 @@ Procedure FillLastAverageAccountingCost()
 		QTItemAccountingFirstLastCost = "
 			|// Current accounting cost => First / Last lot item cost
 			|SELECT TOP 1
-			|	CASE WHEN InventoryJournalBalance.QuantityBalance <= 0 THEN 0
-			|		 ELSE CAST(InventoryJournalBalance.AmountBalance / InventoryJournalBalance.QuantityBalance AS Number(15, 2)) END AS Cost,
+			|	CASE
+			|		WHEN InventoryJournalBalance.QuantityBalance <= 0
+			|			THEN 0
+			|		ELSE CASE
+			|				WHEN InventoryJournalBalance.Product.PricePrecision = 3
+			|					THEN CAST(InventoryJournalBalance.AmountBalance / InventoryJournalBalance.QuantityBalance AS NUMBER(17, 3))
+			|				WHEN InventoryJournalBalance.Product.PricePrecision = 4
+			|					THEN CAST(InventoryJournalBalance.AmountBalance / InventoryJournalBalance.QuantityBalance AS NUMBER(17, 4))
+			|				ELSE CAST(InventoryJournalBalance.AmountBalance / InventoryJournalBalance.QuantityBalance AS NUMBER(17, 2))
+			|			END
+			|	END AS Cost,
 			|	InventoryJournalBalance.Layer AS Layer
 			|INTO
 			|	AccountingCost
@@ -757,12 +742,6 @@ Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 		
 EndProcedure
 
-//&AtClient
-//Procedure BeforeWrite(Cancel, WriteParameters)
-//	
-//	WriteAPICode();				
-//EndProcedure
-
 &AtServer
 Procedure AddPriceList()
 	
@@ -872,17 +851,447 @@ Function SetBaseUnit()
 	
 EndFunction
 
-//&AtServer
-//Procedure WriteAPICode()
-//	
-//	If Object.Ref = Catalogs.Products.EmptyRef() Then
-//		Object.api_code = GeneralFunctions.NextProductNumber();
-//	EndIf;
+&AtClient
+Procedure IsAssemblyOnChange(Item)
+	
+	// Switch on assembly status.
+	If Not Object.Assembly And Object.LineItems.Count() > 0 Then
+		
+		// Request user confirmation on clearing the assembly.
+		QuestionText  = NStr("en = 'Clear assembly contents?'");
+		QuestionTitle = NStr("en = 'Clear assembly'");
+		ChoiceProcessing = New NotifyDescription("IsAssemblyOnChangeChoiceProcessing", ThisForm);
+		ShowQueryBox(ChoiceProcessing, QuestionText, QuestionDialogMode.OKCancel,, DialogReturnCode.Cancel, QuestionTitle);
+		
+	Else
+		// Show/hide assembly part.
+		Items.Assembly.Visible = Object.Assembly;
+	EndIf;
+	
+EndProcedure
 
-//	
-//EndProcedure
+&AtClient
+Procedure IsAssemblyOnChangeChoiceProcessing(ChoiceResult, ChoiceParameters) Export
+	
+	// Process user choice.
+	If ChoiceResult = DialogReturnCode.OK Then
+		// Clear line items.
+		Object.LineItems.Clear();
+		Items.Assembly.Visible = False;
+		
+	Else
+		// Restore previously entered setting.
+		Object.Assembly = True;
+	EndIf;
+	
+EndProcedure
 
+&AtClient
+Procedure PricePrecisionOnChange(Item)
+	
+	If Object.PricePrecision = 0 Or Object.PricePrecision = 1 Then
+		Object.PricePrecision = 2;
+	EndIf;
+	
+	PricePrecision = GetInfPricePrecision(Object.Ref);
+	
+	If Object.PricePrecision < PricePrecision.Item Then
+		
+		Object.PricePrecision = PricePrecision.Item;
+		
+		Message = New UserMessage();
+		Message.Text = NStr("en = 'The new value of ""Price field decimals"" must be greater than or equal to the current value!'");
+		Message.Field = "Object.PricePrecision";
+		Message.Message();
+		
+	EndIf;
+	
+	If Object.PricePrecision > PricePrecision.Constant Then
+		
+		Object.PricePrecision = PricePrecision.Constant;
+		
+		Message = New UserMessage();
+		Text = StringFunctionsClientServer.SubstituteParametersInString(
+			   NStr("en = 'The new value of ""Price field decimals"" must be less than or equal to %1.'"), PricePrecision.Constant);
+		Message.Text = Text;
+		Message.Field = "Object.PricePrecision";
+		Message.Message();
+		
+	EndIf;
+	
+EndProcedure
 
+////////////////////////////////////////////////////////////////////////////////
+#Region TABULAR_SECTION_EVENTS_HANDLERS
 
+//------------------------------------------------------------------------------
+// Tabular section LineItems event handlers.
 
+&AtClient
+Procedure LineItemsOnChange(Item)
+	
+	// Row was just added and became edited.
+	If IsNewRow Then
+		
+		// Clear used flag.
+		IsNewRow = False;
+		
+		// Fill new row with default values (reserved).
+		ObjectData  = New Structure("");
+		FillPropertyValues(ObjectData, Object);
+		For Each ObjectField In ObjectData Do
+			If Not ValueIsFilled(Item.CurrentData[ObjectField.Key]) Then
+				Item.CurrentData[ObjectField.Key] = ObjectField.Value;
+			EndIf;
+		EndDo;
+		
+		// Clear order data on duplicate row (reserved).
+		ClearFields  = New Structure("");
+		For Each ClearField In ClearFields Do
+			If Not ValueIsFilled(Item.CurrentData[ObjectField.Key]) Then
+				Item.CurrentData[ObjectField.Key] = Undefined;
+			EndIf;
+		EndDo;
+		
+		// Refresh totals cache.
+		RecalculateTotals();
+	EndIf;
+	
+EndProcedure
 
+&AtClient
+Procedure LineItemsBeforeAddRow(Item, Cancel, Clone, Parent, Folder)
+	
+	// Set new row flag.
+	If Not Cancel Then
+		IsNewRow = True;
+	EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure LineItemsOnEditEnd(Item, NewRow, CancelEdit)
+	
+	// Recalculation common item totals.
+	RecalculateTotals();
+	
+EndProcedure
+
+&AtClient
+Procedure LineItemsAfterDeleteRow(Item)
+	
+	// Recalculation common item totals.
+	RecalculateTotals();
+	
+EndProcedure
+
+//------------------------------------------------------------------------------
+// Tabular section LineItems columns controls event handlers.
+
+&AtClient
+Procedure LineItemsProductOnChange(Item)
+	Var MessageText;
+	
+	// Fill line data for editing.
+	TableSectionRow = GetLineItemsRowStructure();
+	FillPropertyValues(TableSectionRow, Items.LineItems.CurrentData);
+	
+	// Check added item.
+	If LineItemsProductCheckItem(TableSectionRow, MessageText) Then
+		// Item was checked successfully and all server filling accomplished.
+		
+		// Load processed data back.
+		FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
+		
+		// Refresh totals cache.
+		RecalculateTotals();
+	Else
+		// Inform user about wrong item.
+		CommonUseClientServer.MessageToUser(MessageText, Object, "Object.LineItems["+Format(TableSectionRow.LineNumber-1, "NG=")+"].Product");
+		
+		// Clear selected item.
+		Items.LineItems.CurrentData.Product = Undefined;
+	EndIf;
+	
+EndProcedure
+
+&AtServer
+Function LineItemsProductCheckItem(TableSectionRow, MessageText)
+	
+	// Check possibility of adding assembly to the items list.
+	If TableSectionRow.Product.Assembly Then
+		// Check whether it is item itself.
+		If TableSectionRow.Product = Object.Ref Then
+			MessageText = StringFunctionsClientServer.SubstituteParametersInString(
+			              NStr("en = 'Cannot add the assembly %1 to its own contents.'"),
+			              TableSectionRow.Product.Description);
+			Return False;
+		EndIf;
+		
+		// Check possible parent of current item.
+		Child = Catalogs.Products.ItemIsParentAssembly(TableSectionRow.Product, Object.Ref);
+		If Child <> Undefined Then
+			// Assembly already added to the another subassembly.
+			MessageText = StringFunctionsClientServer.SubstituteParametersInString(
+			              NStr("en = 'Cannot add the assembly %1 to the contents of %2 because %3 already added to %1.'"),
+			              TableSectionRow.Product.Description, Object.Description, Child.Description);
+			Return False;
+		EndIf;
+	EndIf;
+	
+	// Request server operation.
+	LineItemsProductOnChangeAtServer(TableSectionRow);
+	
+	// Operation successfully completed.
+	Return True;
+	
+EndFunction
+
+&AtServer
+Procedure LineItemsProductOnChangeAtServer(TableSectionRow)
+	
+	// Request product properties.
+	ProductProperties = CommonUse.GetAttributeValues(TableSectionRow.Product, New Structure("Description, UnitSet"));
+	TableSectionRow.ProductDescription = ProductProperties.Description;
+	TableSectionRow.UnitSet            = ProductProperties.UnitSet;
+	TableSectionRow.Unit               = ProductProperties.UnitSet.DefaultPurchaseUnit;
+	TableSectionRow.PriceUnits         = Round(GeneralFunctions.ProductLastCost(TableSectionRow.Product) *
+	                                     ?(TableSectionRow.Unit.Factor > 0, TableSectionRow.Unit.Factor, 1), GeneralFunctionsReusable.PricePrecisionForOneItem(TableSectionRow.Product));
+										 
+	// Assign default quantities.
+	TableSectionRow.QtyUnits      = 0;
+	TableSectionRow.WastePercent  = 0;
+	TableSectionRow.WasteQtyUnits = 0;
+	
+	// Calculate totals by line.
+	TableSectionRow.LineTotal     = 0;
+	
+EndProcedure
+
+&AtClient
+Procedure LineItemsUnitOnChange(Item)
+	
+	// Fill line data for editing.
+	TableSectionRow = GetLineItemsRowStructure();
+	FillPropertyValues(TableSectionRow, Items.LineItems.CurrentData);
+	
+	// Request server operation.
+	LineItemsUnitOnChangeAtServer(TableSectionRow);
+	
+	// Load processed data back.
+	FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
+	
+	// Refresh totals cache.
+	RecalculateTotals();
+	
+EndProcedure
+
+&AtServer
+Procedure LineItemsUnitOnChangeAtServer(TableSectionRow)
+	
+	// Calculate new unit price.
+	TableSectionRow.PriceUnits = Round(GeneralFunctions.ProductLastCost(TableSectionRow.Product) *
+	                             ?(TableSectionRow.Unit.Factor > 0, TableSectionRow.Unit.Factor, 1), GeneralFunctionsReusable.PricePrecisionForOneItem(TableSectionRow.Product));
+	
+	// Process settings changes.
+	LineItemsQuantityOnChangeAtServer(TableSectionRow);
+	
+EndProcedure
+
+&AtClient
+Procedure LineItemsQuantityOnChange(Item)
+	
+	// Fill line data for editing.
+	TableSectionRow = GetLineItemsRowStructure();
+	FillPropertyValues(TableSectionRow, Items.LineItems.CurrentData);
+	
+	// Request server operation.
+	LineItemsQuantityOnChangeAtServer(TableSectionRow);
+	
+	// Load processed data back.
+	FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
+	
+	// Refresh totals cache.
+	RecalculateTotals();
+	
+EndProcedure
+
+&AtServer
+Procedure LineItemsQuantityOnChangeAtServer(TableSectionRow)
+	
+	// Calculate total by line.
+	TableSectionRow.LineTotal = Round(Round(TableSectionRow.QtyUnits, QuantityPrecision) * Round(TableSectionRow.PriceUnits, GeneralFunctionsReusable.PricePrecisionForOneItem(TableSectionRow.Product)), 2);
+	
+	// Process settings changes.
+	LineItemsLineTotalOnChangeAtServer(TableSectionRow);
+	
+EndProcedure
+
+&AtClient
+Procedure LineItemsPriceOnChange(Item)
+	
+	// Fill line data for editing.
+	TableSectionRow = GetLineItemsRowStructure();
+	FillPropertyValues(TableSectionRow, Items.LineItems.CurrentData);
+	
+	// Request server operation.
+	LineItemsPriceOnChangeAtServer(TableSectionRow);
+	
+	// Load processed data back.
+	FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
+	
+	// Refresh totals cache.
+	RecalculateTotals();
+	
+EndProcedure
+
+&AtServer
+Procedure LineItemsPriceOnChangeAtServer(TableSectionRow)
+	
+	// Rounds price of product. 
+	TableSectionRow.PriceUnits = Round(TableSectionRow.PriceUnits, GeneralFunctionsReusable.PricePrecisionForOneItem(TableSectionRow.Product));
+	
+	// Calculate total by line.
+	TableSectionRow.LineTotal = Round(Round(TableSectionRow.QtyUnits, QuantityPrecision) * TableSectionRow.PriceUnits, 2);
+	
+	// Process settings changes.
+	LineItemsLineTotalOnChangeAtServer(TableSectionRow);
+	
+EndProcedure
+
+&AtClient
+Procedure LineItemsLineTotalOnChange(Item)
+	
+	// Fill line data for editing.
+	TableSectionRow = GetLineItemsRowStructure();
+	FillPropertyValues(TableSectionRow, Items.LineItems.CurrentData);
+	
+	// Request server operation.
+	LineItemsLineTotalOnChangeAtServer(TableSectionRow);
+	
+	// Back-step price calculation with totals priority.
+	TableSectionRow.PriceUnits = ?(TableSectionRow.QtyUnits > 0,
+	                             Round(TableSectionRow.LineTotal / Round(TableSectionRow.QtyUnits, QuantityPrecision), GeneralFunctionsReusable.PricePrecisionForOneItem(TableSectionRow.Product)), 0);
+	
+	// Load processed data back.
+	FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
+	
+	// Refresh totals cache.
+	RecalculateTotals();
+	
+EndProcedure
+
+&AtServer
+Procedure LineItemsLineTotalOnChangeAtServer(TableSectionRow)
+	
+	// Reserved for future use.
+	
+EndProcedure
+
+&AtClient
+Procedure LineItemsWastePercentOnChange(Item)
+	
+	// Fill line data for editing.
+	TableSectionRow = GetLineItemsRowStructure();
+	FillPropertyValues(TableSectionRow, Items.LineItems.CurrentData);
+	
+	// Request server operation.
+	LineItemsWastePercentOnChangeAtServer(TableSectionRow);
+	
+	// Load processed data back.
+	FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
+	
+	// Refresh totals cache.
+	RecalculateTotals();
+	
+EndProcedure
+
+&AtServer
+Procedure LineItemsWastePercentOnChangeAtServer(TableSectionRow)
+	
+	// Calculate waste qty by line.
+	TableSectionRow.WasteQtyUnits = Round(Round(TableSectionRow.QtyUnits, QuantityPrecision) * TableSectionRow.WastePercent / 100, QuantityPrecision);
+	
+EndProcedure
+
+&AtClient
+Procedure LineItemsWasteQtyUnitsOnChange(Item)
+	
+	// Fill line data for editing.
+	TableSectionRow = GetLineItemsRowStructure();
+	FillPropertyValues(TableSectionRow, Items.LineItems.CurrentData);
+	
+	// Request server operation.
+	LineItemsWasteQtyUnitsOnChangeAtServer(TableSectionRow);
+	
+	// Load processed data back.
+	FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
+	
+	// Refresh totals cache.
+	RecalculateTotals();
+	
+EndProcedure
+
+&AtServer
+Procedure LineItemsWasteQtyUnitsOnChangeAtServer(TableSectionRow)
+	
+	// Calculate total by line.
+	If TableSectionRow.WasteQtyUnits <= TableSectionRow.QtyUnits Then
+		TableSectionRow.WastePercent = ?(Round(TableSectionRow.QtyUnits, QuantityPrecision) > 0,
+		                                 Round(TableSectionRow.WasteQtyUnits * 100 / Round(TableSectionRow.QtyUnits, QuantityPrecision), QuantityPrecision),
+		                                 0);
+	Else
+		TableSectionRow.WasteQtyUnits = TableSectionRow.QtyUnits;
+		TableSectionRow.WastePercent  = 100;
+	EndIf;
+	
+EndProcedure
+
+#EndRegion
+
+////////////////////////////////////////////////////////////////////////////////
+#Region PRIVATE_IMPLEMENTATION
+
+//------------------------------------------------------------------------------
+// Calculate totals and fill object attributes.
+
+&AtClient
+Procedure RecalculateTotals()
+	
+	// Assign totals to the object fields.
+	// Reserved for future use.
+	
+EndProcedure
+
+//------------------------------------------------------------------------------
+// Replacemant for metadata properties on client.
+
+&AtClient
+// Returns fields structure of LineItems form control.
+Function GetLineItemsRowStructure()
+	
+	// Define control row fields.
+	Return New Structure("LineNumber, Product, ProductDescription, UnitSet, QtyUnits, Unit, PriceUnits, LineTotal, WastePercent, WasteQtyUnits");
+	
+EndFunction
+
+&AtServerNoContext 
+Function GetInfPricePrecision(Item)
+	
+	Return New Structure("Constant, Item", Constants.PricePrecision.Get(), Item.PricePrecision);
+	
+EndFunction
+
+// Update prices presentation.
+&AtServer
+Procedure UpdatePricesPresentation()
+	
+	PriceFormat = GeneralFunctionsReusable.PriceFormatForOneItem(Object.Ref);
+	Items.Price1.EditFormat          = PriceFormat;
+	Items.LastCost.EditFormat        = PriceFormat;
+	Items.AverageCost.EditFormat     = PriceFormat;
+	Items.AccountingCost.EditFormat  = PriceFormat;
+	
+EndProcedure
+
+#EndRegion

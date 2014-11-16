@@ -20,7 +20,7 @@ Function CalculateSalesTax(TaxableSubtotal, SalesTaxRate, CurrentAgenciesRates =
 		Request = New Query("SELECT
 		                    |	SalesTaxRates.Agency,
 		                    |	SalesTaxRates.Rate AS Rate,
-		                    |	CAST(0 AS NUMBER(15, 2)) AS Amount,
+		                    |	CAST(0 AS NUMBER(17, 2)) AS Amount,
 		                    |	SalesTaxRates.Ref AS SalesTaxRate,
 		                    |	SalesTaxRates.SalesTaxComponent
 		                    |FROM
@@ -62,7 +62,7 @@ Function GetCurrentAgenciesRates(SalesTaxRate) Export
 	Request = New Query("SELECT
 	                    |	SalesTaxRates.Agency,
 	                    |	SalesTaxRates.Rate AS Rate,
-	                    |	CAST(0 AS NUMBER(15, 2)) AS Amount,
+	                    |	CAST(0 AS NUMBER(17, 2)) AS Amount,
 	                    |	SalesTaxRates.Ref AS SalesTaxRate,
 	                    |	SalesTaxRates.SalesTaxComponent
 	                    |FROM

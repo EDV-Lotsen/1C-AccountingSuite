@@ -145,10 +145,6 @@
 			</title>
 		</field>
 		<field xsi:type="DataSetFieldField">
-			<dataPath>UM</dataPath>
-			<field>UM</field>
-		</field>
-		<field xsi:type="DataSetFieldField">
 			<dataPath>CompanyAddress</dataPath>
 			<field>CompanyAddress</field>
 		</field>
@@ -184,14 +180,44 @@
 			<dataPath>PriceUnits</dataPath>
 			<field>PriceUnits</field>
 		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>BaseDocument</dataPath>
+			<field>BaseDocument</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>EmailNote</dataPath>
+			<field>EmailNote</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>EmailTo</dataPath>
+			<field>EmailTo</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>LastEmail</dataPath>
+			<field>LastEmail</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>QtyUnits</dataPath>
+			<field>QtyUnits</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Unit</dataPath>
+			<field>Unit</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>UnitSet</dataPath>
+			<field>UnitSet</field>
+		</field>
 		<dataSource>DataSource1</dataSource>
 		<query>SELECT
 	PurchaseOrderLineItems.Ref,
 	PurchaseOrderLineItems.LineNumber,
 	PurchaseOrderLineItems.Product,
 	PurchaseOrderLineItems.ProductDescription,
+	PurchaseOrderLineItems.UnitSet,
+	PurchaseOrderLineItems.QtyUnits,
+	PurchaseOrderLineItems.Unit,
 	PurchaseOrderLineItems.QtyUM,
-	PurchaseOrderLineItems.Unit.code AS UM,
 	PurchaseOrderLineItems.PriceUnits,
 	PurchaseOrderLineItems.LineTotal,
 	PurchaseOrderLineItems.Location,
@@ -222,6 +248,10 @@
 	PurchaseOrderLineItems.Ref.ManualAdjustment,
 	PurchaseOrderLineItems.Ref.DocumentTotal,
 	PurchaseOrderLineItems.Ref.DocumentTotalRC,
+	PurchaseOrderLineItems.Ref.BaseDocument,
+	PurchaseOrderLineItems.Ref.EmailNote,
+	PurchaseOrderLineItems.Ref.LastEmail,
+	PurchaseOrderLineItems.Ref.EmailTo,
 	PurchaseOrderLineItems.Ref.Presentation,
 	PurchaseOrderLineItems.Ref.PointInTime
 FROM
@@ -248,13 +278,7 @@ FROM
 					<dcsset:field>DeliveryDate</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>Product</dcsset:field>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>LineNumber</dcsset:field>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>LineTotal</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Location</dcsset:field>
@@ -263,10 +287,22 @@ FROM
 					<dcsset:field>Location1</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>PriceUnits</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Product</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Project</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Project1</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>QtyUnits</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>QtyUM</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Ref1</dcsset:field>
@@ -275,7 +311,7 @@ FROM
 					<dcsset:field>Ref</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>DropshipBillTo</dcsset:field>
+					<dcsset:field>BaseDocument</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>DropshipCompany</dcsset:field>
@@ -302,7 +338,16 @@ FROM
 					<dcsset:field>DropshipRefNum</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>EmailNote</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>EmailTo</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>ExchangeRate</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>LastEmail</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>ManualAdjustment</dcsset:field>
@@ -329,13 +374,22 @@ FROM
 					<dcsset:field>DropshipShipTo</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>DocumentTotalRC</dcsset:field>
+					<dcsset:field>DropshipBillTo</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>DocumentTotal</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>UM</dcsset:field>
+					<dcsset:field>DocumentTotalRC</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>LineTotal</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>UnitSet</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Unit</dcsset:field>
 				</dcsset:item>
 			</dcsset:selection>
 			<dcsset:item xsi:type="dcsset:StructureItemGroup">

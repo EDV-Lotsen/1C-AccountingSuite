@@ -36,12 +36,11 @@
 	</AutoCommandBar>
 	<ChildItems>
 		<Table name="List" id="1">
-			<Representation>List</Representation>
+			<Representation>Tree</Representation>
 			<CommandBarLocation>None</CommandBarLocation>
 			<SkipOnInput>false</SkipOnInput>
 			<DefaultItem>true</DefaultItem>
 			<UseAlternationRowColor>true</UseAlternationRowColor>
-			<InitialTreeView>ExpandTopLevel</InitialTreeView>
 			<EnableStartDrag>true</EnableStartDrag>
 			<EnableDrag>true</EnableDrag>
 			<DataPath>List</DataPath>
@@ -67,29 +66,29 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="10"/>
-			<SearchStringAddition name="ListSearchString" id="26">
+			<SearchStringAddition name="ListSearchString" id="32">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="27"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="28"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="33"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="34"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="29">
+			<ViewStatusAddition name="ListViewStatus" id="35">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="30"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="31"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="36"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="37"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="32">
+			<SearchControlAddition name="ListSearchControl" id="38">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="33"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="34"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="39"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="40"/>
 			</SearchControlAddition>
 			<ChildItems>
 				<LabelField name="Code" id="4">
@@ -107,6 +106,17 @@
 					<DataPath>List.AccountType</DataPath>
 					<ContextMenu name="AccountTypeContextMenu" id="9"/>
 					<ExtendedTooltip name="AccountTypeExtendedTooltip" id="13"/>
+				</LabelField>
+				<CheckBoxField name="CreditCard" id="29">
+					<DataPath>List.CreditCard</DataPath>
+					<CheckBoxType>Auto</CheckBoxType>
+					<ContextMenu name="CreditCardContextMenu" id="30"/>
+					<ExtendedTooltip name="CreditCardExtendedTooltip" id="31"/>
+				</CheckBoxField>
+				<LabelField name="ReclassAccount" id="26">
+					<DataPath>List.ReclassAccount</DataPath>
+					<ContextMenu name="ReclassAccountContextMenu" id="27"/>
+					<ExtendedTooltip name="ReclassAccountExtendedTooltip" id="28"/>
 				</LabelField>
 				<InputField name="Balance" id="17">
 					<DataPath>List.Balance</DataPath>
@@ -143,42 +153,54 @@
 				<ManualQuery>true</ManualQuery>
 				<DynamicDataRead>true</DynamicDataRead>
 				<QueryText>SELECT
-	ChartOfAccountsChartOfAccounts.Ref AS Ref,
-	ChartOfAccountsChartOfAccounts.Code AS Code,
-	ChartOfAccountsChartOfAccounts.Description AS Description,
-	ChartOfAccountsChartOfAccounts.AccountType AS AccountType,
-	SUM(CASE
-			WHEN GeneralJournalBalance.AmountRCBalance IS NULL 
-				THEN 0
-			WHEN ChartOfAccountsChartOfAccounts.AccountType = VALUE(Enum.AccountTypes.AccountsPayable)
-					OR ChartOfAccountsChartOfAccounts.AccountType = VALUE(Enum.AccountTypes.OtherCurrentLiability)
-					OR ChartOfAccountsChartOfAccounts.AccountType = VALUE(Enum.AccountTypes.LongTermLiability)
-					OR ChartOfAccountsChartOfAccounts.AccountType = VALUE(Enum.AccountTypes.Equity)
-					OR ChartOfAccountsChartOfAccounts.AccountType = VALUE(Enum.AccountTypes.Income)
-					OR ChartOfAccountsChartOfAccounts.AccountType = VALUE(Enum.AccountTypes.OtherIncome)
-				THEN -GeneralJournalBalance.AmountRCBalance
-			ELSE GeneralJournalBalance.AmountRCBalance
-		END) AS Balance,
-	ChartOfAccountsChartOfAccounts.Category1099 AS Category1099
+	ChartOfAccounts.Ref AS Ref,
+	ChartOfAccounts.Code AS Code,
+	ChartOfAccounts.ReclassAccount AS ReclassAccount,
+	ChartOfAccounts.CreditCard AS CreditCard,
+	ChartOfAccounts.Description AS Description,
+	ChartOfAccounts.AccountType AS AccountType,
+	NewChartOfAccounts.Balance AS Balance,
+	ChartOfAccounts.Category1099 AS Category1099
 FROM
-	ChartOfAccounts.ChartOfAccounts AS ChartOfAccountsChartOfAccounts
+	ChartOfAccounts.ChartOfAccounts AS ChartOfAccounts
 		LEFT JOIN (SELECT
-			ChartOfAccounts.Ref AS Ref,
-			ISNULL(HierarchyChartOfAccounts.Route, "") AS Route
+			ChartOfAccountsChartOfAccounts.Ref AS Ref,
+			ChartOfAccountsChartOfAccounts.Code AS Code,
+			ChartOfAccountsChartOfAccounts.Description AS Description,
+			ChartOfAccountsChartOfAccounts.AccountType AS AccountType,
+			SUM(CASE
+					WHEN GeneralJournalBalance.AmountRCBalance IS NULL 
+						THEN 0
+					WHEN ChartOfAccountsChartOfAccounts.AccountType = VALUE(Enum.AccountTypes.AccountsPayable)
+							OR ChartOfAccountsChartOfAccounts.AccountType = VALUE(Enum.AccountTypes.OtherCurrentLiability)
+							OR ChartOfAccountsChartOfAccounts.AccountType = VALUE(Enum.AccountTypes.LongTermLiability)
+							OR ChartOfAccountsChartOfAccounts.AccountType = VALUE(Enum.AccountTypes.Equity)
+							OR ChartOfAccountsChartOfAccounts.AccountType = VALUE(Enum.AccountTypes.Income)
+							OR ChartOfAccountsChartOfAccounts.AccountType = VALUE(Enum.AccountTypes.OtherIncome)
+						THEN -GeneralJournalBalance.AmountRCBalance
+					ELSE GeneralJournalBalance.AmountRCBalance
+				END) AS Balance,
+			ChartOfAccountsChartOfAccounts.Category1099 AS Category1099
 		FROM
-			ChartOfAccounts.ChartOfAccounts AS ChartOfAccounts
-				LEFT JOIN InformationRegister.HierarchyChartOfAccounts AS HierarchyChartOfAccounts
-				ON ChartOfAccounts.Ref = HierarchyChartOfAccounts.Account) AS NestedSelect
-			LEFT JOIN AccountingRegister.GeneralJournal.Balance AS GeneralJournalBalance
-			ON NestedSelect.Ref = GeneralJournalBalance.Account
-		ON (NestedSelect.Route LIKE "%/" + ChartOfAccountsChartOfAccounts.Code + "/%")
-
-GROUP BY
-	ChartOfAccountsChartOfAccounts.Ref,
-	ChartOfAccountsChartOfAccounts.Code,
-	ChartOfAccountsChartOfAccounts.Description,
-	ChartOfAccountsChartOfAccounts.AccountType,
-	ChartOfAccountsChartOfAccounts.Category1099</QueryText>
+			ChartOfAccounts.ChartOfAccounts AS ChartOfAccountsChartOfAccounts
+				LEFT JOIN (SELECT
+					ChartOfAccounts.Ref AS Ref,
+					ISNULL(HierarchyChartOfAccounts.Route, "") AS Route
+				FROM
+					ChartOfAccounts.ChartOfAccounts AS ChartOfAccounts
+						LEFT JOIN InformationRegister.HierarchyChartOfAccounts AS HierarchyChartOfAccounts
+						ON ChartOfAccounts.Ref = HierarchyChartOfAccounts.Account) AS NestedSelect
+					LEFT JOIN AccountingRegister.GeneralJournal.Balance AS GeneralJournalBalance
+					ON NestedSelect.Ref = GeneralJournalBalance.Account
+				ON (NestedSelect.Route LIKE "%/" + ChartOfAccountsChartOfAccounts.Code + "/%")
+		
+		GROUP BY
+			ChartOfAccountsChartOfAccounts.Ref,
+			ChartOfAccountsChartOfAccounts.Code,
+			ChartOfAccountsChartOfAccounts.Description,
+			ChartOfAccountsChartOfAccounts.AccountType,
+			ChartOfAccountsChartOfAccounts.Category1099) AS NewChartOfAccounts
+		ON ChartOfAccounts.Ref = NewChartOfAccounts.Ref</QueryText>
 				<MainTable>ChartOfAccounts.ChartOfAccounts</MainTable>
 				<ListSettings>
 					<dcsset:filter>

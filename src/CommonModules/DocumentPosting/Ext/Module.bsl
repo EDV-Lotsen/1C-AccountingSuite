@@ -576,6 +576,56 @@ Procedure CheckRecordsetChangesOnWrite(Recorder, AdditionalProperties, Cancel) E
 	
 EndProcedure
 
+// Compares a debit part with a credit ones of document register records on write recordset.
+// Used on document posting to deteremine required balance check of register.
+//
+// Parameters:
+//  Recorder             - DocumentRef - Recorder placing register records into recordset.
+//  AdditionalProperties - Structure   - Additional recordset parameters containing required attributes and tables.
+//
+// Returns:
+//  Boolean - True: Transaction is balanced; False: Transaction is unbalanced.
+//
+Function IsTransactionBalanced(Recorder, AdditionalProperties) Export
+	
+	Query = New Query;
+	Query.SetParameter("Recorder", Recorder);
+	Query.TempTablesManager = AdditionalProperties.Posting.StructTempTablesManager.TempTablesManager;
+	
+	// 1. Create a query for all of register records, accumulating debit and credit records.
+	Query.Text = 
+	"SELECT
+	|	Recorder                          AS Ref,
+	|	CASE WHEN Table.RecordType = VALUE(AccountingRecordType.Debit)
+	|		 THEN Table.AmountRC
+	|		 ELSE 0 END                   AS AmountDr,
+	|	CASE WHEN Table.RecordType = VALUE(AccountingRecordType.Credit)
+	|		 THEN Table.AmountRC
+	|		 ELSE 0 END                   AS AmountCr
+	|INTO
+	|	AccountingRegister_GeneralJournal_Check
+	|FROM
+	|	AccountingRegister.GeneralJournal AS Table
+	|WHERE
+	|	Table.Recorder = &Recorder;
+	|
+	|SELECT
+	|	Table.Ref                         AS Ref
+	|FROM
+	|	AccountingRegister_GeneralJournal_Check AS Table
+	|GROUP BY
+	|	Table.Ref
+	|HAVING
+	|	SUM(Table.AmountDr) <> SUM(Table.AmountCr);
+	|
+	|DROP
+	|	AccountingRegister_GeneralJournal_Check";
+	
+	// 2. Complete and execute query.
+	Return Query.Execute().IsEmpty();
+	
+EndFunction
+
 //------------------------------------------------------------------------------
 // Check registers balances
 
@@ -587,317 +637,330 @@ EndProcedure
 //  Cancel               - Boolean   - Flag of transaction cancel.
 //
 Procedure CheckPostingResults(AdditionalProperties, RegisterRecords, Cancel) Export
-	Var BalanceCheck, CheckBalances, CheckMessages;
+	Var GeneralJournalBalance, BalanceCheck, CheckBalances, CheckMessages;
 	
-	// Skip check if no balance registers are present.
-	If Not AdditionalProperties.Posting.Property("BalanceCheck", BalanceCheck)
-	   Or BalanceCheck.Count() = 0 Then
-		Return;
-	EndIf;
+	// Perform check for accumulation balance registers.
+	If  AdditionalProperties.Posting.Property("BalanceCheck", BalanceCheck)
+	And BalanceCheck.Count() > 0 Then
 	
-	// 0. Create query to temporary tables having differences in postings.
-	Query        = New Query;
-	QueryText    = "";
-	QueryTables  = AdditionalProperties.Posting.StructTempTablesManager;
-	CheckList    = New Array;
-	
-	// 1. Create a query for register balances, which document can affect changing it's postings.
-	For Each QueryTable In QueryTables Do
+		// Create query to temporary tables having differences in postings.
+		Query        = New Query;
+		QueryText    = "";
+		QueryTables  = AdditionalProperties.Posting.StructTempTablesManager;
+		CheckList    = New Array;
 		
-		// 1.1.Skip service data, tables having no changes, incomplete balances check specification.
-		TableName       = QueryTable.Key;
-		TableHasChanges = QueryTable.Value;
-		
-		// Skip TempTablesManager itself and tables having no changes.
-		If (TableName = "TempTablesManager") Or (Not TableHasChanges) Then
-			Continue;
-		EndIf;
-		
-		// Define register for balance check by table name.
-		CheckRegister = StrReplace(TableName,     "RegisterRecords_", ""); // Table name has following format:
-		CheckRegister = StrReplace(CheckRegister, "_Diff",            ""); // RegisterRecords_{Register}_Diff
-		
-		// Skip checking if resources for balance checking are not defined.
-		If    Not BalanceCheck[CheckRegister].Property("CheckBalances", CheckBalances)
-		   Or Not BalanceCheck[CheckRegister].Property("CheckMessages", CheckMessages)
-		   Or CheckBalances.Count() <> CheckMessages.Count()
-		   Or CheckBalances.Count() = 0
-		Then
-			Continue;
-		EndIf;
-		
-		// 1.2. Add changed register in checklist.
-		CheckList.Add(CheckRegister);
-		
-		// 1.3. Request register structure from metadata.
-		RegisterMetadata = RegisterRecords[CheckRegister].AdditionalProperties.Metadata;
-		
-		// 1.4. Create query template for balnces of selected register.
-		QueryText = QueryText + // Primary check for actual balances.
-		"SELECT
-		|	{Selection}
-		|INTO
-		|	RegisterBalance_{Register}
-		|FROM
-		|	AccumulationRegister.{Register}.Balance(,
-		|		{Filter}) AS Balances
-		|WHERE
-		|	{Condition}";
-		
-		// Additional check of in-time balances for new document posted by back-date or a document that already saved.
-		If Not IsNew(AdditionalProperties) Or BegOfDay(AdditionalProperties.Date) < BegOfDay(CurrentSessionDate()) Then
-			QueryText = QueryText + "
-			|
-			|UNION
-			|
-			|SELECT
+		// 1. Create a query for register balances, which document can affect changing it's postings.
+		For Each QueryTable In QueryTables Do
+			
+			// 1.1.Skip service data, tables having no changes, incomplete balances check specification.
+			TableName       = QueryTable.Key;
+			TableHasChanges = QueryTable.Value;
+			
+			// Skip TempTablesManager itself and tables having no changes.
+			If (TableName = "TempTablesManager") Or (Not TableHasChanges) Then
+				Continue;
+			EndIf;
+			
+			// Define register for balance check by table name.
+			CheckRegister = StrReplace(TableName,     "RegisterRecords_", ""); // Table name has following format:
+			CheckRegister = StrReplace(CheckRegister, "_Diff",            ""); // RegisterRecords_{Register}_Diff
+			
+			// Skip checking if resources for balance checking are not defined.
+			If    Not BalanceCheck[CheckRegister].Property("CheckBalances", CheckBalances)
+			   Or Not BalanceCheck[CheckRegister].Property("CheckMessages", CheckMessages)
+			   Or CheckBalances.Count() <> CheckMessages.Count()
+			   Or CheckBalances.Count() = 0
+			Then
+				Continue;
+			EndIf;
+			
+			// 1.2. Add changed register in checklist.
+			CheckList.Add(CheckRegister);
+			
+			// 1.3. Request register structure from metadata.
+			RegisterMetadata = RegisterRecords[CheckRegister].AdditionalProperties.Metadata;
+			
+			// 1.4. Create query template for balnces of selected register.
+			QueryText = QueryText + // Primary check for actual balances.
+			"SELECT
 			|	{Selection}
+			|INTO
+			|	RegisterBalance_{Register}
 			|FROM
-			|	AccumulationRegister.{Register}.Balance(&PointInTime,
+			|	AccumulationRegister.{Register}.Balance(,
 			|		{Filter}) AS Balances
 			|WHERE
 			|	{Condition}";
-		EndIf;
-		
-		// 1.5. Add to query dimensions and resources of register.
-		SelectionText = "";
-		For Each Dimension In RegisterMetadata.Dimensions Do
-			DimensionText = StrReplace("Balances.{Dimension} AS {Dimension}", "{Dimension}", Dimension.Name);
-			SelectionText = ?(IsBlankString(SelectionText), DimensionText, SelectionText+",
-				|	"+DimensionText);
-		EndDo;
-		For Each Resource In RegisterMetadata.Resources Do
-			ResourceText  = StrReplace("Balances.{Resource}Balance AS {Resource}", "{Resource}", Resource.Name);
-			SelectionText = ?(IsBlankString(SelectionText), ResourceText, SelectionText+",
-				|	"+ResourceText);
-		EndDo;
-		QueryText = StrReplace(QueryText, "{Selection}", SelectionText);
-		
-		// 1.6. Complete Filter by differences found during posting.
-		FilterText =
-				"({Selection}) IN
-		|			({NestedQuery})";
-		
-		// Add dimensions of register to balances filter.
-		SelectionText = "";
-		For Each Dimension In RegisterMetadata.Dimensions Do
-			DimensionText = Dimension.Name;
-			SelectionText = ?(IsBlankString(SelectionText), DimensionText, SelectionText+", "+DimensionText);
-		EndDo;
-		FilterText = StrReplace(FilterText, "{Selection}", SelectionText);
-		
-		// Add nested query to differences table in temporary tables manager.
-		NestedQuery = 
-					"SELECT
-		|				{Selection}
-		|			FROM
-		|				RegisterRecords_{Register}_Diff AS TableDiff";
-		
-		// Add to query dimensions of register.
-		SelectionText = "";
-		For Each Dimension In RegisterMetadata.Dimensions Do
-			DimensionText = StrReplace("TableDiff.{Dimension}", "{Dimension}", Dimension.Name);
-			SelectionText = ?(IsBlankString(SelectionText), DimensionText, SelectionText+",
-				|				"+DimensionText);
-		EndDo;
-		NestedQuery = StrReplace(NestedQuery, "{Selection}",   SelectionText);
-		FilterText  = StrReplace(FilterText,  "{NestedQuery}", NestedQuery);
-		QueryText   = StrReplace(QueryText,   "{Filter}",      FilterText);
-		
-		// 1.7. Complete Where clause.
-		SelectionText = "";
-		For Each CheckBalance In CheckBalances Do
-			ResourceCheck = StringFunctionsClientServer.SplitStringIntoSubstringArray(CheckBalance);
-			ResourceText  = StrReplace("{Resource} {Sign} {Value}", "{Resource}", ResourceCheck[0]);
-			ResourceText  = StrReplace(ResourceText, "{Sign}", ResourceCheck[1]);
-			ResourceText  = StrReplace(ResourceText, "{Value}", ResourceCheck[2]);
-			ResourceText  = StrReplace(ResourceText, "{Table}", "Balances");
-			ResourceText  = StrReplace(ResourceText, "{Balance}", "Balance");
-			SelectionText = ?(IsBlankString(SelectionText), ResourceText, SelectionText+"
-				|	OR "+ResourceText);
-		EndDo;
-		QueryText = StrReplace(QueryText, "{Condition}", SelectionText);
-		
-		// 1.8. Combine query text for a selected register.
-		QueryText = StrReplace(QueryText, "{Register}",  CheckRegister);
-		
-		// 1.9. Add delimiter to a query.
-		QueryText = QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
-	EndDo;
-	
-	// 2. Skip check if no changes in balance registers are found.
-	If CheckList.Count() = 0 Then
-		Return;
-	EndIf;
-	
-	// 3.1. Set query parameters.
-	If IsNew(AdditionalProperties) And BegOfDay(AdditionalProperties.Date) < BegOfDay(CurrentSessionDate()) Then
-		// New document posted in back-date.
-		Query.SetParameter("PointInTime", New Boundary(EndOfDay(AdditionalProperties.Date), BoundaryType.Including));
-	ElsIf Not IsNew(AdditionalProperties) Then
-		// Document was already saved.
-		Query.SetParameter("PointInTime",
-			New Boundary(New PointInTime(AdditionalProperties.Date, AdditionalProperties.Ref), BoundaryType.Including));
-	EndIf;
-	
-	// 3.2. Execute batch query.
-	Query.TempTablesManager = QueryTables.TempTablesManager;
-	Query.Text  = QueryText;
-	QueryResult = Query.ExecuteBatch();
-	
-	// 4. Create messages for user about insufficient balances.
-	MessageTemplate   = "";
-	MessageParams     = New Structure;
-	ParamsFormat      = New Structure;
-	QuantityFormat    = GeneralFunctionsReusable.DefaultQuantityFormat();
-	QuantityTypeDescr = New TypeDescription("Number", New NumberQualifiers(15, 4));
-	AmountFormat      = GeneralFunctionsReusable.DefaultAmountFormat();
-	AmountTypeDescr   = New TypeDescription("Number", New NumberQualifiers(15, 2));
-	SubQuery          = Undefined;
-	Errors            = 0;
-	I = -1;
-	For Each Result In QueryResult Do
-		I = I + 1;
-		
-		// 4.1. Skip empty tables (positive balanced registers).
-		Selection = Result.Select();
-		If Not Selection.Next() Or Selection.Count = 0 Then
-			Continue;
-		EndIf;
-		
-		// 4.2. Error found - create individual massages for each register.
-		CheckRegister    = CheckList[I];
-		RegisterMetadata = RegisterRecords[CheckRegister].AdditionalProperties.Metadata;
-		
-		// 4.3. Create value table with unique combination of register dimension
-		//     (to reduce count of possible errors about the same dimensions).
-		SearchRec = New Structure;
-		ReportedCombinations = New ValueTable;
-		For Each Dimension In RegisterMetadata.Dimensions Do
-			ReportedCombinations.Columns.Add(Dimension.Name);
-		EndDo;
-		
-		// 4.4. Create new query for detection, which trigger alarmed.
-		If SubQuery = Undefined Then
-			SubQuery = New Query;
-			SubQuery.TempTablesManager = QueryTables.TempTablesManager;
-		EndIf;
-		
-		// 4.5. Request data from temporary table.
-		QueryText =
-		"SELECT
-		|	*
-		|FROM
-		|	RegisterBalance_{Register} AS Table
-		|WHERE
-		|	{Condition}";
-		
-		// 4.6. Test each condition and create individual message.
-		J = -1;
-		For Each CheckBalance In CheckBalances Do
-			J = J + 1;
 			
-			// 4.6.1. Select condition to check from list of conditions.
-			ResourceCheck  = StringFunctionsClientServer.SplitStringIntoSubstringArray(CheckBalance);
-			ResourceText   = StrReplace("{Resource} {Sign} {Value}", "{Resource}", ResourceCheck[0]);
-			ResourceText   = StrReplace(ResourceText, "{Sign}", ResourceCheck[1]);
-			ResourceText   = StrReplace(ResourceText, "{Value}", ResourceCheck[2]);
-			ResourceText   = StrReplace(ResourceText, "{Table}", "Table");
-			ResourceText   = StrReplace(ResourceText, "{Balance}", "");
-			
-			// 4.6.2. Create subquery based on query template.
-			SubQueryText   = StrReplace(QueryText,    "{Condition}", ResourceText);
-			SubQueryText   = StrReplace(SubQueryText, "{Register}",  CheckRegister);
-			
-			// 4.6.3. Execute query to a temporary table and fill appropriate message with correct data.
-			SubQuery.Text  = SubQueryText;
-			SubQueryResult = SubQuery.Execute();
-			
-			// 4.6.4. Skip unused conditions.
-			If SubQueryResult.IsEmpty() Then
-				Continue;
+			// Additional check of in-time balances for new document posted by back-date or a document that already saved.
+			If Not IsNew(AdditionalProperties) Or BegOfDay(AdditionalProperties.Date) < BegOfDay(CurrentSessionDate()) Then
+				QueryText = QueryText + "
+				|
+				|UNION
+				|
+				|SELECT
+				|	{Selection}
+				|FROM
+				|	AccumulationRegister.{Register}.Balance(&PointInTime,
+				|		{Filter}) AS Balances
+				|WHERE
+				|	{Condition}";
 			EndIf;
-			Selection = SubQueryResult.Select();
 			
-			// 4.6.5. Get formatted message template.
-			MessageTemplate = CheckMessages[J];
-			MessageParams.Clear();
-			ParamsFormat.Clear();
-			
-			// 4.6.6. Cycle through found errors and fill appropriate messages.
-			While Selection.Next() Do
-				
-				// 4.6.6.1. Skip already reported errors (by dimensions combinations).
-				For Each Dimension In RegisterMetadata.Dimensions Do
-					SearchRec.Insert(Dimension.Name, Selection[Dimension.Name]);
-				EndDo;
-				If ReportedCombinations.FindRows(SearchRec).Count() > 0 Then
-					// Skip message.
-					Continue;
-				Else
-					// Add combination to cache.
-					ReportedCombination = ReportedCombinations.Add();
-					FillPropertyValues(ReportedCombination, SearchRec);
-				EndIf;
-				
-				// 4.6.6.2. Create message text.
-				For Each Dimension In RegisterMetadata.Dimensions Do
-					
-					// Skip unused presentations.
-					If Find(MessageTemplate, "{"+Dimension.Name+"}") = 0 Then Continue; EndIf;
-					
-					// Convert value to it's presentation.
-					Value = Selection[Dimension.Name];
-					If TypeOf(Value) = Type("CatalogRef.Companies") Then
-						Presentation = TrimAll(Value.Code) + " " + TrimAll(Value.Description);
-						
-					ElsIf TypeOf(Value) = Type("CatalogRef.Products") Then
-						Presentation = TrimAll(Value.Code) + " " + TrimAll(Value.Description);
-						
-					Else
-						Presentation = TrimAll(Value);
-					EndIf;
-					
-					// Add parameters for message filling.
-					MessageParams.Insert(Dimension.Name, Presentation);
-				EndDo;
-				
-				For Each Resource In RegisterMetadata.Resources Do
-					
-					// Skip unused presentations.
-					If Find(MessageTemplate, "{"+Resource.Name+"}") + Find(MessageTemplate, "{-"+Resource.Name+"}") = 0 Then Continue; EndIf;
-					
-					// Add parameters for message filling.
-					MessageParams.Insert(Resource.Name, Selection[Resource.Name]);
-					
-					// Apply special formatting to resources.
-					If Resource.Type = QuantityTypeDescr Then
-						ParamsFormat.Insert(Resource.Name, QuantityFormat);
-					ElsIf Resource.Type = AmountTypeDescr Then
-						ParamsFormat.Insert(Resource.Name, AmountFormat);
-					EndIf;
-				EndDo;
-				
-				// Fill pattern with parameters.
-				MessageText = StringFunctionsClientServer.SubstituteParametersInStringByName(MessageTemplate, MessageParams, ParamsFormat);
-				
-				// 4.6.6.3. Transfer message to user.
-				Errors = Errors + 1;
-				If Errors <= 10 Then // There is no need to inform user more then 10 times.
-					CommonUseClientServer.MessageToUser(MessageText, AdditionalProperties.Ref,,, Cancel);
-				EndIf;
+			// 1.5. Add to query dimensions and resources of register.
+			SelectionText = "";
+			For Each Dimension In RegisterMetadata.Dimensions Do
+				DimensionText = StrReplace("Balances.{Dimension} AS {Dimension}", "{Dimension}", Dimension.Name);
+				SelectionText = ?(IsBlankString(SelectionText), DimensionText, SelectionText+",
+					|	"+DimensionText);
 			EndDo;
+			For Each Resource In RegisterMetadata.Resources Do
+				ResourceText  = StrReplace("Balances.{Resource}Balance AS {Resource}", "{Resource}", Resource.Name);
+				SelectionText = ?(IsBlankString(SelectionText), ResourceText, SelectionText+",
+					|	"+ResourceText);
+			EndDo;
+			QueryText = StrReplace(QueryText, "{Selection}", SelectionText);
+			
+			// 1.6. Complete Filter by differences found during posting.
+			FilterText =
+					"({Selection}) IN
+			|			({NestedQuery})";
+			
+			// Add dimensions of register to balances filter.
+			SelectionText = "";
+			For Each Dimension In RegisterMetadata.Dimensions Do
+				DimensionText = Dimension.Name;
+				SelectionText = ?(IsBlankString(SelectionText), DimensionText, SelectionText+", "+DimensionText);
+			EndDo;
+			FilterText = StrReplace(FilterText, "{Selection}", SelectionText);
+			
+			// Add nested query to differences table in temporary tables manager.
+			NestedQuery = 
+						"SELECT
+			|				{Selection}
+			|			FROM
+			|				RegisterRecords_{Register}_Diff AS TableDiff";
+			
+			// Add to query dimensions of register.
+			SelectionText = "";
+			For Each Dimension In RegisterMetadata.Dimensions Do
+				DimensionText = StrReplace("TableDiff.{Dimension}", "{Dimension}", Dimension.Name);
+				SelectionText = ?(IsBlankString(SelectionText), DimensionText, SelectionText+",
+					|				"+DimensionText);
+			EndDo;
+			NestedQuery = StrReplace(NestedQuery, "{Selection}",   SelectionText);
+			FilterText  = StrReplace(FilterText,  "{NestedQuery}", NestedQuery);
+			QueryText   = StrReplace(QueryText,   "{Filter}",      FilterText);
+			
+			// 1.7. Complete Where clause.
+			SelectionText = "";
+			For Each CheckBalance In CheckBalances Do
+				ResourceCheck = StringFunctionsClientServer.SplitStringIntoSubstringArray(CheckBalance);
+				ResourceText  = StrReplace("{Resource} {Sign} {Value}", "{Resource}", ResourceCheck[0]);
+				ResourceText  = StrReplace(ResourceText, "{Sign}", ResourceCheck[1]);
+				ResourceText  = StrReplace(ResourceText, "{Value}", ResourceCheck[2]);
+				ResourceText  = StrReplace(ResourceText, "{Table}", "Balances");
+				ResourceText  = StrReplace(ResourceText, "{Balance}", "Balance");
+				SelectionText = ?(IsBlankString(SelectionText), ResourceText, SelectionText+"
+					|	OR "+ResourceText);
+			EndDo;
+			QueryText = StrReplace(QueryText, "{Condition}", SelectionText);
+			
+			// 1.8. Combine query text for a selected register.
+			QueryText = StrReplace(QueryText, "{Register}",  CheckRegister);
+			
+			// 1.9. Add delimiter to a query.
+			QueryText = QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
 		EndDo;
-	EndDo;
-	
-	// 4.6.7. Inform user about remaining errors.
-	If Errors > 10 Then
-		MessageText = NStr("en = 'There are also %1 error(s) found'");
-		MessageText = StringFunctionsClientServer.SubstituteParametersInString(MessageText, Format(Errors-10, "NFD=0; NG=0"));
-		CommonUseClientServer.MessageToUser(MessageText, AdditionalProperties.Ref,,, Cancel);
+		
+		// 2. Skip check if no changes in balance registers are found.
+		If CheckList.Count() > 0 Then
+			
+			// 3.1. Set query parameters.
+			If IsNew(AdditionalProperties) And BegOfDay(AdditionalProperties.Date) < BegOfDay(CurrentSessionDate()) Then
+				// New document posted in back-date.
+				Query.SetParameter("PointInTime", New Boundary(EndOfDay(AdditionalProperties.Date), BoundaryType.Including));
+			ElsIf Not IsNew(AdditionalProperties) Then
+				// Document was already saved.
+				Query.SetParameter("PointInTime",
+					New Boundary(New PointInTime(AdditionalProperties.Date, AdditionalProperties.Ref), BoundaryType.Including));
+			EndIf;
+			
+			// 3.2. Execute batch query.
+			Query.TempTablesManager = QueryTables.TempTablesManager;
+			Query.Text  = QueryText;
+			QueryResult = Query.ExecuteBatch();
+			
+			// 4. Create messages for user about insufficient balances.
+			MessageTemplate   = "";
+			MessageParams     = New Structure;
+			ParamsFormat      = New Structure;
+			QuantityFormat    = GeneralFunctionsReusable.DefaultQuantityFormat();
+			QuantityTypeDescr = New TypeDescription("Number", New NumberQualifiers(15, 4));
+			AmountFormat      = GeneralFunctionsReusable.DefaultAmountFormat();
+			AmountTypeDescr   = New TypeDescription("Number", New NumberQualifiers(17, 2));
+			SubQuery          = Undefined;
+			Errors            = 0;
+			I = -1;
+			For Each Result In QueryResult Do
+				I = I + 1;
+				
+				// 4.1. Skip empty tables (positive balanced registers).
+				Selection = Result.Select();
+				If Not Selection.Next() Or Selection.Count = 0 Then
+					Continue;
+				EndIf;
+				
+				// 4.2. Error found - create individual massages for each register.
+				CheckRegister    = CheckList[I];
+				RegisterMetadata = RegisterRecords[CheckRegister].AdditionalProperties.Metadata;
+				
+				// 4.3. Create value table with unique combination of register dimension
+				//     (to reduce count of possible errors about the same dimensions).
+				SearchRec = New Structure;
+				ReportedCombinations = New ValueTable;
+				For Each Dimension In RegisterMetadata.Dimensions Do
+					ReportedCombinations.Columns.Add(Dimension.Name);
+				EndDo;
+				
+				// 4.4. Create new query for detection, which trigger alarmed.
+				If SubQuery = Undefined Then
+					SubQuery = New Query;
+					SubQuery.TempTablesManager = QueryTables.TempTablesManager;
+				EndIf;
+				
+				// 4.5. Request data from temporary table.
+				QueryText =
+				"SELECT
+				|	*
+				|FROM
+				|	RegisterBalance_{Register} AS Table
+				|WHERE
+				|	{Condition}";
+				
+				// 4.6. Test each condition and create individual message.
+				J = -1;
+				For Each CheckBalance In CheckBalances Do
+					J = J + 1;
+					
+					// 4.6.1. Select condition to check from list of conditions.
+					ResourceCheck  = StringFunctionsClientServer.SplitStringIntoSubstringArray(CheckBalance);
+					ResourceText   = StrReplace("{Resource} {Sign} {Value}", "{Resource}", ResourceCheck[0]);
+					ResourceText   = StrReplace(ResourceText, "{Sign}", ResourceCheck[1]);
+					ResourceText   = StrReplace(ResourceText, "{Value}", ResourceCheck[2]);
+					ResourceText   = StrReplace(ResourceText, "{Table}", "Table");
+					ResourceText   = StrReplace(ResourceText, "{Balance}", "");
+					
+					// 4.6.2. Create subquery based on query template.
+					SubQueryText   = StrReplace(QueryText,    "{Condition}", ResourceText);
+					SubQueryText   = StrReplace(SubQueryText, "{Register}",  CheckRegister);
+					
+					// 4.6.3. Execute query to a temporary table and fill appropriate message with correct data.
+					SubQuery.Text  = SubQueryText;
+					SubQueryResult = SubQuery.Execute();
+					
+					// 4.6.4. Skip unused conditions.
+					If SubQueryResult.IsEmpty() Then
+						Continue;
+					EndIf;
+					Selection = SubQueryResult.Select();
+					
+					// 4.6.5. Get formatted message template.
+					MessageTemplate = CheckMessages[J];
+					MessageParams.Clear();
+					ParamsFormat.Clear();
+					
+					// 4.6.6. Cycle through found errors and fill appropriate messages.
+					While Selection.Next() Do
+						
+						// 4.6.6.1. Skip already reported errors (by dimensions combinations).
+						For Each Dimension In RegisterMetadata.Dimensions Do
+							SearchRec.Insert(Dimension.Name, Selection[Dimension.Name]);
+						EndDo;
+						If ReportedCombinations.FindRows(SearchRec).Count() > 0 Then
+							// Skip message.
+							Continue;
+						Else
+							// Add combination to cache.
+							ReportedCombination = ReportedCombinations.Add();
+							FillPropertyValues(ReportedCombination, SearchRec);
+						EndIf;
+						
+						// 4.6.6.2. Create message text.
+						For Each Dimension In RegisterMetadata.Dimensions Do
+							
+							// Skip unused presentations.
+							If Find(MessageTemplate, "{"+Dimension.Name+"}") = 0 Then Continue; EndIf;
+							
+							// Convert value to it's presentation.
+							Value = Selection[Dimension.Name];
+							If TypeOf(Value) = Type("CatalogRef.Companies") Then
+								Presentation = TrimAll(Value.Code) + " " + TrimAll(Value.Description);
+								
+							ElsIf TypeOf(Value) = Type("CatalogRef.Products") Then
+								Presentation = TrimAll(Value.Code) + " " + TrimAll(Value.Description);
+								
+							Else
+								Presentation = TrimAll(Value);
+							EndIf;
+							
+							// Add parameters for message filling.
+							MessageParams.Insert(Dimension.Name, Presentation);
+						EndDo;
+						
+						For Each Resource In RegisterMetadata.Resources Do
+							
+							// Skip unused presentations.
+							If Find(MessageTemplate, "{"+Resource.Name+"}") + Find(MessageTemplate, "{-"+Resource.Name+"}") = 0 Then Continue; EndIf;
+							
+							// Add parameters for message filling.
+							MessageParams.Insert(Resource.Name, Selection[Resource.Name]);
+							
+							// Apply special formatting to resources.
+							If Resource.Type = QuantityTypeDescr Then
+								ParamsFormat.Insert(Resource.Name, QuantityFormat);
+							ElsIf Resource.Type = AmountTypeDescr Then
+								ParamsFormat.Insert(Resource.Name, AmountFormat);
+							EndIf;
+						EndDo;
+						
+						// Fill pattern with parameters.
+						MessageText = StringFunctionsClientServer.SubstituteParametersInStringByName(MessageTemplate, MessageParams, ParamsFormat);
+						
+						// 4.6.6.3. Transfer message to user.
+						Errors = Errors + 1;
+						If Errors <= 10 Then // There is no need to inform user more then 10 times.
+							CommonUseClientServer.MessageToUser(MessageText, AdditionalProperties.Ref,,, Cancel);
+						EndIf;
+					EndDo;
+				EndDo;
+			EndDo;
+			
+			// 4.6.7. Inform user about remaining errors.
+			If Errors > 10 Then
+				MessageText = NStr("en = 'There are also %1 error(s) found'");
+				MessageText = StringFunctionsClientServer.SubstituteParametersInString(MessageText, Format(Errors-10, "NFD=0; NG=0"));
+				CommonUseClientServer.MessageToUser(MessageText, AdditionalProperties.Ref,,, Cancel);
+			EndIf;
+		EndIf;
 	EndIf;
 	
-	// 5. Create message about common status of operation.
+	// Perform accounting register transaction balance check.
+	If  AdditionalProperties.Posting.PostingTables.Property("Table_GeneralJournal", GeneralJournalBalance)
+	And GeneralJournalBalance.Count() > 0 Then
+		
+		// Check balance of transactions.
+		TransactionBalanced = IsTransactionBalanced(AdditionalProperties.Ref, AdditionalProperties);
+		If Not TransactionBalanced Then
+			
+			// Generate error message.
+			MessageText = NStr("en = 'The document %1 cannot be posted, because it''s transaction is unbalanced.'");
+			MessageText = StringFunctionsClientServer.SubstituteParametersInString(MessageText, AdditionalProperties.Ref);
+			CommonUseClientServer.MessageToUser(MessageText, AdditionalProperties.Ref,,, Cancel);
+		EndIf;
+	EndIf;
+	
+	// Create message about common status of operation.
 	If Cancel Then
 		If AdditionalProperties.Posting.WriteMode = DocumentWriteMode.Posting Then
 			MessageText = NStr("en = 'Posting aborted'");

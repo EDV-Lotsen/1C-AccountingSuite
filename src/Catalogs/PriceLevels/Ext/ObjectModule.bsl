@@ -5,5 +5,4 @@ Procedure BeforeWrite(Cancel)
 	Else
 		NewObject = False;
 	EndIf;
-
 EndProcedure

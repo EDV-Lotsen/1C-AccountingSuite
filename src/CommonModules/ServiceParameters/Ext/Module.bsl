@@ -25,24 +25,28 @@ EndFunction
 Function SendGridUserName() Export
 	
 	Return Constants.MailProfUser.Get();
+	//Return "";
 	
 EndFunction
 
 Function SendGridPassword() Export
 		
 	Return Constants.MailProfPass.Get();
+	//Return "";
 	
 EndFunction
 
 Function SMTPServer() Export
 	
 	Return Constants.MailProfAddress.Get();
+	//Return "";
 	
 EndFunction
 
 Function SMTPUseSSL() Export
 	
 	Return Constants.MailProfSSL.Get();
+	//Return True;
 	
 EndFunction
 
@@ -54,6 +58,7 @@ EndFunction
 
 Function AvalaraAuth() Export
 		
+	//Return "Basic MTEwMDA1MjI2NToyMkY2RUUwOTQ3NzVFNjUy";
 	Return "";
 	
 EndFunction

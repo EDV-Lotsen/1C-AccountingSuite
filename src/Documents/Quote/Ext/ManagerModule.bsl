@@ -343,8 +343,9 @@ Procedure Print(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
 			LineTotal = SelectionLineItems.LineTotal;
 			TemplateArea.Parameters.Unit = SelectionLineItems.Unit.Code;
 			//TemplateArea.Parameters.Quantity = Format(SelectionLineItems.QtyUnits, QuantityFormat)+ " " + SelectionLineItems.Unit;
-			TemplateArea.Parameters.Price = CurrencySymbol + Format(SelectionLineItems.PriceUnits, "NFD=2; NZ=");
-			TemplateArea.Parameters.LineTotal = CurrencySymbol + Format(SelectionLineItems.LineTotal, "NFD=2; NZ=");
+			ProductPrecisionFormat = GeneralFunctionsReusable.PriceFormatForOneItem(SelectionLineItems.Product);
+			TemplateArea.Parameters.Price     = Selection.Currency.Symbol + Format(SelectionLineItems.PriceUnits, ProductPrecisionFormat + "; NZ=");
+			TemplateArea.Parameters.LineTotal = Format(SelectionLineItems.LineTotal, "NFD=2; NZ=");
 			Spreadsheet.Put(TemplateArea, SelectionLineItems.Level());
 			
 			If LineItemSwitch = False Then
@@ -365,12 +366,12 @@ Procedure Print(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
 		Spreadsheet.Put(TemplateArea);
 		
 		TemplateArea = Template.GetArea("Area3|Area2");
-		TemplateArea.Parameters.LineSubtotal = CurrencySymbol + Format(Selection.LineSubtotal, "NFD=2; NZ=");
-		TemplateArea.Parameters.Discount = "(" + CurrencySymbol + Format(Selection.Discount, "NFD=2; NZ=") + ")";
-		TemplateArea.Parameters.Subtotal = CurrencySymbol + Format(Selection.Subtotal, "NFD=2; NZ=");
-		TemplateArea.Parameters.Shipping = CurrencySymbol + Format(Selection.Shipping, "NFD=2; NZ=");
-		TemplateArea.Parameters.SalesTax = CurrencySymbol + Format(Selection.SalesTax, "NFD=2; NZ=");
-		TemplateArea.Parameters.Total = CurrencySymbol + Format(Selection.DocumentTotal, "NFD=2; NZ=");
+		TemplateArea.Parameters.LineSubtotal = Format(Selection.LineSubtotal, "NFD=2; NZ=");
+		TemplateArea.Parameters.Discount = "(" + Format(Selection.Discount, "NFD=2; NZ=") + ")";
+		TemplateArea.Parameters.Subtotal = Format(Selection.Subtotal, "NFD=2; NZ=");
+		TemplateArea.Parameters.Shipping = Format(Selection.Shipping, "NFD=2; NZ=");
+		TemplateArea.Parameters.SalesTax = Format(Selection.SalesTax, "NFD=2; NZ=");
+		TemplateArea.Parameters.Total = Format(Selection.DocumentTotal, "NFD=2; NZ=");
 		
 		Spreadsheet.Join(TemplateArea);
 		

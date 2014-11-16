@@ -8,6 +8,9 @@
 //
 Procedure ReconciledDocumentBeforeWrite(Source, Cancel, WriteMode, PostingMode) Export
 	// allow posting if key fields has not been changed
+	If GeneralFunctionsReusable.DisableAuditLogValue() = True Then
+		return;
+	EndIf;
 	If Source.DataExchange.Load Then
 		return;
 	EndIf;

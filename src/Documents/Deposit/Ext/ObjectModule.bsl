@@ -1,12 +1,84 @@
-﻿// The procedure posts deposit transactions
+﻿
+// The procedure posts deposit transactions
 //
 Procedure Posting(Cancel, Mode)
 	
-	For Each DocumentLine in LineItems Do
+	//For Each DocumentLine in LineItems Do
+	//	
+	//	GeneralFunctions.WriteDepositData(DocumentLine.Document);
+	//	
+	//EndDo;	
+	
+	//Clear register records
+	For Each RecordSet In RegisterRecords Do
+		RecordSet.Read();
+		If RecordSet.Count() > 0 Then
+			RecordSet.Write = True;
+			RecordSet.Clear();
+			RecordSet.Write();
+		EndIf;
+	EndDo;
+
+	//Check whether the amount of payment equals to the amount of the document
+	// Create new managed data lock.
+	DataLock = New DataLock;
+	
+	// Set data lock parameters.
+	LockItem = DataLock.Add("AccumulationRegister.UndepositedDocuments");
+	LockItem.Mode = DataLockMode.Exclusive;
+	LockItem.DataSource = LineItems;
+	LockItem.UseFromDataSource("Document", "Document"); 		
+	// Set lock on the object.
+	DataLock.Lock();
+	
+	Request = New Query("SELECT
+	                    |	DepositLineItems.Document AS PaidDocument,
+	                    |	DepositLineItems.Document.Presentation,
+	                    |	DepositLineItems.LineNumber,
+	                    |	DepositLineItems.DocumentTotal AS Payment,
+	                    |	DepositLineItems.Payment AS PaymentFlag,
+	                    |	UndepositedDocumentsBalance.Document,
+	                    |	ISNULL(UndepositedDocumentsBalance.AmountBalance, 0) AS AmountBalance
+	                    |FROM
+	                    |	Document.Deposit.LineItems AS DepositLineItems
+	                    |		LEFT JOIN AccumulationRegister.UndepositedDocuments.Balance(
+	                    |				,
+	                    |				Document IN
+	                    |					(SELECT
+	                    |						Doc.Document
+	                    |					FROM
+	                    |						Document.Deposit.LineItems AS Doc
+	                    |					WHERE
+	                    |						Doc.Ref = &CurrentDocument)) AS UndepositedDocumentsBalance
+	                    |		ON DepositLineItems.Document = UndepositedDocumentsBalance.Document
+	                    |WHERE
+	                    |	ISNULL(UndepositedDocumentsBalance.AmountBalance, 0) <> DepositLineItems.DocumentTotalRC
+	                    |	AND DepositLineItems.Payment = TRUE
+	                    |	AND DepositLineItems.Ref = &CurrentDocument");
+	Request.SetParameter("CurrentDocument", Ref);
+	Res = Request.Execute();
+	If Not Res.IsEmpty() Then
+		Sel = Res.Select();
+		While Sel.Next() Do
+			CommonUseClientServer.MessageToUser("Amount to pay (" + Format(Sel.AmountBalance, "NFD=2; NZ=") + ") for the document " + Sel.DocumentPresentation + 
+			" does not match the payment amount (" + Format(Sel.Payment, "NFD=2; NZ=") + ")", ThisObject,, "Object.LineItems[" + Format(Sel.LineNumber-1, "NFD=; NZ=") + "].DocumentTotalRC", Cancel); 
+		EndDo;
 		
-		GeneralFunctions.WriteDepositData(DocumentLine.Document);
+	Else //Mark paid documents as Deposited
 		
-	EndDo;	
+		RegisterRecords.UndepositedDocuments.Write = True;
+		
+		For Each DocumentLine in LineItems Do
+		
+			Record = RegisterRecords.UndepositedDocuments.AddExpense();
+			Record.Period 	= Date;
+			Record.Recorder = Ref;
+			Record.Document = DocumentLine.Document;
+			Record.Amount 	= DocumentLine.DocumentTotal;
+			Record.AmountRC	= DocumentLine.DocumentTotalRC;
+			
+		EndDo;			
+	EndIf;
 	
 	RegisterRecords.GeneralJournal.Write = True;
 	
@@ -26,6 +98,8 @@ Procedure Posting(Cancel, Mode)
 	
 	RegisterRecords.ProjectData.Write = True;	
 	RegisterRecords.ClassData.Write = True;
+	RegisterRecords.CashFlowData.Write = True;
+	
 	For Each AccountLine in Accounts Do
 		If AccountLine.Amount > 0 Then
 			Record = RegisterRecords.GeneralJournal.AddCredit();
@@ -53,6 +127,28 @@ Procedure Posting(Cancel, Mode)
 		Record.Account = AccountLine.Account;
 		Record.Class = AccountLine.Class;
 		Record.Amount = AccountLine.Amount;
+		
+		//----------------------------------------------------------------------
+		// Writing CashFlowData
+		
+		Record = RegisterRecords.CashFlowData.Add();
+		Record.RecordType  = AccumulationRecordType.Expense;
+		Record.Period      = Date;
+		Record.Company     = AccountLine.Company;
+		Record.Document    = Ref;
+		Record.Account     = AccountLine.Account;
+		Record.AmountRC    = -AccountLine.Amount;
+		
+		Record = RegisterRecords.CashFlowData.Add();
+		Record.RecordType  = AccumulationRecordType.Receipt;
+		Record.Period      = Date;
+		Record.Company     = AccountLine.Company;
+		Record.Document    = Ref;
+		Record.Account     = AccountLine.Account;
+		Record.AmountRC    = -AccountLine.Amount;
+		
+		//----------------------------------------------------------------------
+
 
 	EndDo;
 	
@@ -73,15 +169,15 @@ Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 		Date = CurrentSessionDate();
 	EndIf;
 	
-	If Posted Then
-		
-		For Each DocumentLine in LineItems Do
-			
-			GeneralFunctions.ClearDepositData(DocumentLine.Document);
-			
-		EndDo;
-		
-	EndIf;
+	//If Posted Then
+	//	
+	//	For Each DocumentLine in LineItems Do
+	//		
+	//		GeneralFunctions.ClearDepositData(DocumentLine.Document);
+	//		
+	//	EndDo;
+	//	
+	//EndIf;
 	
 EndProcedure
 

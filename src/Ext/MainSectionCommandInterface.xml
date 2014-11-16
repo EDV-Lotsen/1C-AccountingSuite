@@ -30,7 +30,6 @@
 				<xr:Value name="Role.ProjectsView">false</xr:Value>
 				<xr:Value name="Role.TimeTrackFull">false</xr:Value>
 				<xr:Value name="Role.TimeTrackView">false</xr:Value>
-				<xr:Value name="Role.НастройкаИОценкаПроизводительности">false</xr:Value>
 			</Visibility>
 		</Command>
 		<Command name="CommonCommand.LaunchSettings">
@@ -56,11 +55,6 @@
 		<Command name="DataProcessor.DataImport.Command.DataImport">
 			<Visibility>
 				<xr:Common>true</xr:Common>
-			</Visibility>
-		</Command>
-		<Command name="DataProcessor.DataExport.Command.DataExport">
-			<Visibility>
-				<xr:Common>false</xr:Common>
 			</Visibility>
 		</Command>
 		<Command name="Report.ARAging.StandardCommand.Open">
@@ -94,11 +88,6 @@
 			</Visibility>
 		</Command>
 		<Command name="Report.BudgetPlanActual.StandardCommand.Open">
-			<Visibility>
-				<xr:Common>false</xr:Common>
-			</Visibility>
-		</Command>
-		<Command name="DataProcessor.DownloadedTransactions.StandardCommand.Open">
 			<Visibility>
 				<xr:Common>false</xr:Common>
 			</Visibility>
@@ -137,10 +126,6 @@
 			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
 			<Placement>Manual</Placement>
 		</Command>
-		<Command name="DataProcessor.DataExport.Command.DataExport">
-			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
-			<Placement>Manual</Placement>
-		</Command>
 		<Command name="Report.ARAging.StandardCommand.Open">
 			<CommandGroup>ActionsPanelReports</CommandGroup>
 			<Placement>Manual</Placement>
@@ -169,10 +154,6 @@
 			<CommandGroup>ActionsPanelReports</CommandGroup>
 			<Placement>Manual</Placement>
 		</Command>
-		<Command name="DataProcessor.DownloadedTransactions.StandardCommand.Open">
-			<CommandGroup>ActionsPanelTools</CommandGroup>
-			<Placement>Manual</Placement>
-		</Command>
 	</CommandsPlacement>
 	<CommandsOrder>
 		<Command name="Catalog.Companies.StandardCommand.OpenList">
@@ -197,9 +178,6 @@
 			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
 		</Command>
 		<Command name="DataProcessor.DataImport.Command.DataImport">
-			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
-		</Command>
-		<Command name="DataProcessor.DataExport.Command.DataExport">
 			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
 		</Command>
 		<Command name="Report.ARAging.StandardCommand.Open">

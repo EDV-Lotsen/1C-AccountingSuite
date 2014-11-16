@@ -1,0 +1,3 @@
+﻿
+Procedure OnWrite(Cancel)
+EndProcedure

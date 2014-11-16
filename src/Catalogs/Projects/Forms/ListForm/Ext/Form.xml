@@ -82,29 +82,29 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="6"/>
-			<SearchStringAddition name="ListSearchString" id="33">
+			<SearchStringAddition name="ListSearchString" id="42">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="34"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="35"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="43"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="44"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="36">
+			<ViewStatusAddition name="ListViewStatus" id="45">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="37"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="38"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="46"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="47"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="39">
+			<SearchControlAddition name="ListSearchControl" id="48">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="40"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="41"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="49"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="50"/>
 			</SearchControlAddition>
 			<ChildItems>
 				<LabelField name="Customer" id="10">
@@ -122,15 +122,49 @@
 					<ContextMenu name="DescriptionContextMenu" id="8"/>
 					<ExtendedTooltip name="DescriptionExtendedTooltip" id="9"/>
 				</LabelField>
+				<LabelField name="ReceiptsBudget" id="39">
+					<DataPath>List.ReceiptsBudget</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Income (bdgt)</v8:content>
+						</v8:item>
+					</Title>
+					<ContextMenu name="ReceiptsBudgetContextMenu" id="40"/>
+					<ExtendedTooltip name="ReceiptsBudgetExtendedTooltip" id="41"/>
+				</LabelField>
 				<LabelField name="AmountReceipt" id="19">
 					<DataPath>List.AmountReceipt</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Income</v8:content>
+						</v8:item>
+					</Title>
 					<Width>20</Width>
 					<HorizontalStretch>false</HorizontalStretch>
 					<ContextMenu name="AmountReceiptContextMenu" id="20"/>
 					<ExtendedTooltip name="AmountReceiptExtendedTooltip" id="21"/>
 				</LabelField>
+				<LabelField name="ExpenseBudget" id="33">
+					<DataPath>List.ExpenseBudget</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Expense (bdgt)</v8:content>
+						</v8:item>
+					</Title>
+					<ContextMenu name="ExpenseBudgetContextMenu" id="34"/>
+					<ExtendedTooltip name="ExpenseBudgetExtendedTooltip" id="35"/>
+				</LabelField>
 				<LabelField name="AmountExpense" id="13">
 					<DataPath>List.AmountExpense</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Expense</v8:content>
+						</v8:item>
+					</Title>
 					<Width>20</Width>
 					<HorizontalStretch>false</HorizontalStretch>
 					<ContextMenu name="AmountExpenseContextMenu" id="14"/>
@@ -141,7 +175,7 @@
 					<Title>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Amount Profit</v8:content>
+							<v8:content>Profit</v8:content>
 						</v8:item>
 					</Title>
 					<Width>20</Width>
@@ -149,12 +183,23 @@
 					<ContextMenu name="AmountTurnoverContextMenu" id="17"/>
 					<ExtendedTooltip name="AmountTurnoverExtendedTooltip" id="18"/>
 				</LabelField>
+				<LabelField name="HoursBudget" id="36">
+					<DataPath>List.HoursBudget</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Hours (bdgt)</v8:content>
+						</v8:item>
+					</Title>
+					<ContextMenu name="HoursBudgetContextMenu" id="37"/>
+					<ExtendedTooltip name="HoursBudgetExtendedTooltip" id="38"/>
+				</LabelField>
 				<LabelField name="Hours" id="22">
 					<DataPath>List.Hours</DataPath>
 					<Title>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Hours Logged</v8:content>
+							<v8:content>Hours</v8:content>
 						</v8:item>
 					</Title>
 					<Width>20</Width>
@@ -179,7 +224,9 @@
 	CatalogProjects.DeletionMark,
 	CatalogProjects.Description,
 	CatalogProjects.Customer,
-	CatalogProjects.Internal,
+	CatalogProjects.ReceiptsBudget,
+	CatalogProjects.ExpenseBudget,
+	CatalogProjects.HoursBudget,
 	CatalogProjects.Predefined,
 	CatalogProjects.PredefinedDataName,
 	ProjectDataTurnovers.AmountTurnover,

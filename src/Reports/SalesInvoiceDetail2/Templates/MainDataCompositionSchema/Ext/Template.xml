@@ -91,10 +91,6 @@
 			<field>Memo</field>
 		</field>
 		<field xsi:type="DataSetFieldField">
-			<dataPath>NewObject</dataPath>
-			<field>NewObject</field>
-		</field>
-		<field xsi:type="DataSetFieldField">
 			<dataPath>Number</dataPath>
 			<field>Number</field>
 		</field>
@@ -273,10 +269,6 @@
 			<field>TaxableAmount</field>
 		</field>
 		<field xsi:type="DataSetFieldField">
-			<dataPath>UM</dataPath>
-			<field>UM</field>
-		</field>
-		<field xsi:type="DataSetFieldField">
 			<dataPath>URL</dataPath>
 			<field>URL</field>
 		</field>
@@ -324,14 +316,52 @@
 			<dataPath>PriceUnits</dataPath>
 			<field>PriceUnits</field>
 		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>AvataxDiscountTaxCode</dataPath>
+			<field>AvataxDiscountTaxCode</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>AvataxShippingTaxCode</dataPath>
+			<field>AvataxShippingTaxCode</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>AvataxTaxCode</dataPath>
+			<field>AvataxTaxCode</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>BaseDocument</dataPath>
+			<field>BaseDocument</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>LineID</dataPath>
+			<field>LineID</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>QtyUnits</dataPath>
+			<field>QtyUnits</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Unit</dataPath>
+			<field>Unit</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>UnitSet</dataPath>
+			<field>UnitSet</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>UseAvatax</dataPath>
+			<field>UseAvatax</field>
+		</field>
 		<dataSource>DataSource1</dataSource>
 		<query>SELECT
 	SalesInvoiceLineItems.Ref,
 	SalesInvoiceLineItems.LineNumber,
 	SalesInvoiceLineItems.Product,
 	SalesInvoiceLineItems.ProductDescription,
+	SalesInvoiceLineItems.UnitSet,
+	SalesInvoiceLineItems.QtyUnits,
+	SalesInvoiceLineItems.Unit,
 	SalesInvoiceLineItems.QtyUM,
-	SalesInvoiceLineItems.Unit.Code As UM,
 	SalesInvoiceLineItems.PriceUnits,
 	SalesInvoiceLineItems.LineTotal,
 	SalesInvoiceLineItems.Taxable,
@@ -343,6 +373,8 @@
 	SalesInvoiceLineItems.DeliveryDateActual,
 	SalesInvoiceLineItems.Project,
 	SalesInvoiceLineItems.Class,
+	SalesInvoiceLineItems.LineID,
+	SalesInvoiceLineItems.AvataxTaxCode,
 	SalesInvoiceLineItems.Ref.Ref AS Ref1,
 	SalesInvoiceLineItems.Ref.DataVersion,
 	SalesInvoiceLineItems.Ref.DeletionMark,
@@ -382,7 +414,6 @@
 	SalesInvoiceLineItems.Ref.DocumentTotal,
 	SalesInvoiceLineItems.Ref.DocumentTotalRC,
 	SalesInvoiceLineItems.Ref.______Review______,
-	SalesInvoiceLineItems.Ref.NewObject,
 	SalesInvoiceLineItems.Ref.CF1String,
 	SalesInvoiceLineItems.Ref.EmailTo,
 	SalesInvoiceLineItems.Ref.EmailCC,
@@ -397,6 +428,10 @@
 	SalesInvoiceLineItems.Ref.SalesTaxRate,
 	SalesInvoiceLineItems.Ref.DiscountIsTaxable,
 	SalesInvoiceLineItems.Ref.TaxableSubtotal,
+	SalesInvoiceLineItems.Ref.BaseDocument,
+	SalesInvoiceLineItems.Ref.UseAvatax,
+	SalesInvoiceLineItems.Ref.AvataxShippingTaxCode,
+	SalesInvoiceLineItems.Ref.AvataxDiscountTaxCode,
 	SalesInvoiceLineItems.Ref.Presentation,
 	SalesInvoiceLineItems.Ref.PointInTime
 FROM
@@ -429,13 +464,10 @@ FROM
 					<dcsset:field>ProductDescription</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>Product</dcsset:field>
+					<dcsset:field>LineID</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>LineNumber</dcsset:field>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>LineTotal</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Location</dcsset:field>
@@ -444,10 +476,22 @@ FROM
 					<dcsset:field>LocationActual1</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>PriceUnits</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Product</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Project</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Project1</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>QtyUM</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>QtyUnits</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Ref1</dcsset:field>
@@ -457,6 +501,9 @@ FROM
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>ARAccount</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>BaseDocument</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>BillTo</dcsset:field>
@@ -471,10 +518,10 @@ FROM
 					<dcsset:field>______Review______</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>Company</dcsset:field>
+					<dcsset:field>DropshipCompany</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>DropshipCompany</dcsset:field>
+					<dcsset:field>Company</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>DropshipConfirmTo</dcsset:field>
@@ -499,6 +546,9 @@ FROM
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>DiscountIsTaxable</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>AvataxDiscountTaxCode</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>DropshipRefNum</dcsset:field>
@@ -540,9 +590,6 @@ FROM
 					<dcsset:field>Memo</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>NewObject</dcsset:field>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Paid</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
@@ -567,22 +614,25 @@ FROM
 					<dcsset:field>SalesPerson</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>SalesTaxRC</dcsset:field>
+					<dcsset:field>SalesTax</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>SalesTax</dcsset:field>
+					<dcsset:field>SalesTaxRC</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>SalesTaxRate</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>DropshipShipTo</dcsset:field>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>ShipTo</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>DropshipShipTo</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Shipping</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>AvataxShippingTaxCode</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>SubTotal</dcsset:field>
@@ -594,10 +644,10 @@ FROM
 					<dcsset:field>Terms</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>DocumentTotalRC</dcsset:field>
+					<dcsset:field>DocumentTotal</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>DocumentTotal</dcsset:field>
+					<dcsset:field>DocumentTotalRC</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>TrackingNumber</dcsset:field>
@@ -606,7 +656,13 @@ FROM
 					<dcsset:field>URL</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>UseAvatax</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Order</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>AvataxTaxCode</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Taxable</dcsset:field>
@@ -615,7 +671,13 @@ FROM
 					<dcsset:field>TaxableAmount</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>UM</dcsset:field>
+					<dcsset:field>LineTotal</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>UnitSet</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Unit</dcsset:field>
 				</dcsset:item>
 			</dcsset:selection>
 			<dcsset:item xsi:type="dcsset:StructureItemGroup">

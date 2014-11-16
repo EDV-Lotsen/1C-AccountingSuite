@@ -14,46 +14,6 @@ EndProcedure
 
 Procedure OnWrite(Cancel)
 	
-	//companies_url = Constants.companies_webhook.Get();
-	//
-	//If NOT companies_url = "" Then
-	//	
-	//	WebhookMap = GeneralFunctions.ReturnCompanyObjectMap(Ref);
-	//	WebhookMap.Insert("resource","companies");
-	//	If NewObject = True Then
-	//		WebhookMap.Insert("action","create");
-	//	Else
-	//		WebhookMap.Insert("action","update");
-	//	EndIf;
-	//	WebhookMap.Insert("apisecretkey",Constants.APISecretKey.Get());
-	//	
-	//	WebhookParams = New Array();
-	//	WebhookParams.Add(companies_url);
-	//	WebhookParams.Add(WebhookMap);
-	//	LongActions.ExecuteInBackground("GeneralFunctions.SendWebhook", WebhookParams);
-	//
-	//EndIf;
-	//
-	//email_companies_webhook = Constants.companies_webhook_email.Get();
-	//
-	//If NOT email_companies_webhook = "" Then
-	////If true then			
-	//	WebhookMap2 = GeneralFunctions.ReturnCompanyObjectMap(Ref);
-	//	WebhookMap2.Insert("resource","companies");
-	//	If NewObject = True Then
-	//		WebhookMap2.Insert("action","create");
-	//	Else
-	//		WebhookMap2.Insert("action","update");
-	//	EndIf;
-	//	WebhookMap2.Insert("apisecretkey",Constants.APISecretKey.Get());
-	//	
-	//	WebhookParams2 = New Array();
-	//	WebhookParams2.Add(email_companies_webhook);
-	//	WebhookParams2.Add(WebhookMap2);
-	//	LongActions.ExecuteInBackground("GeneralFunctions.EmailWebhook", WebhookParams2);
-	//	
-	//EndIf;
-	
 	// zapier webhooks
 	
 	Query = New Query("SELECT

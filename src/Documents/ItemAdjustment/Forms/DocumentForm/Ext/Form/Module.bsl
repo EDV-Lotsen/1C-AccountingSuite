@@ -119,6 +119,17 @@ EndProcedure
 &AtClient
 Procedure ProductOnChange(Item)
 	
+	// Request server operation.
+	ProductOnChangeAtServer();
+	
+EndProcedure
+
+&AtServer
+Procedure ProductOnChangeAtServer()
+	
+	// Fill account by the item COGS account by default.
+	Object.IncomeExpenseAccount = Object.Product.COGSAccount;
+	
 	// Recalculate item balances.
 	FillItemBalance();
 	

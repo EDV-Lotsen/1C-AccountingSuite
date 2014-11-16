@@ -74,29 +74,29 @@
 						<Autofill>false</Autofill>
 					</AutoCommandBar>
 					<ExtendedTooltip name="ListExtendedTooltip" id="16"/>
-					<SearchStringAddition name="ListSearchString" id="246">
+					<SearchStringAddition name="ListSearchString" id="249">
 						<AdditionSource>
 							<Item>List</Item>
 							<Type>SearchStringRepresentation</Type>
 						</AdditionSource>
-						<ContextMenu name="ListSearchStringContextMenu" id="247"/>
-						<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="248"/>
+						<ContextMenu name="ListSearchStringContextMenu" id="250"/>
+						<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="251"/>
 					</SearchStringAddition>
-					<ViewStatusAddition name="ListViewStatus" id="249">
+					<ViewStatusAddition name="ListViewStatus" id="252">
 						<AdditionSource>
 							<Item>List</Item>
 							<Type>ViewStatusRepresentation</Type>
 						</AdditionSource>
-						<ContextMenu name="ListViewStatusContextMenu" id="250"/>
-						<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="251"/>
+						<ContextMenu name="ListViewStatusContextMenu" id="253"/>
+						<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="254"/>
 					</ViewStatusAddition>
-					<SearchControlAddition name="ListSearchControl" id="252">
+					<SearchControlAddition name="ListSearchControl" id="255">
 						<AdditionSource>
 							<Item>List</Item>
 							<Type>SearchControl</Type>
 						</AdditionSource>
-						<ContextMenu name="ListSearchControlContextMenu" id="253"/>
-						<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="254"/>
+						<ContextMenu name="ListSearchControlContextMenu" id="256"/>
+						<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="257"/>
 					</SearchControlAddition>
 					<Events>
 						<Event name="OnActivateRow">ContractorsOnActivateRow</Event>
@@ -216,6 +216,12 @@
 							<ContextMenu name="CF5NumContextMenu" id="101"/>
 							<ExtendedTooltip name="CF5NumExtendedTooltip" id="102"/>
 						</LabelField>
+						<CheckBoxField name="Zoho" id="246">
+							<DataPath>List.Zoho</DataPath>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="ZohoContextMenu" id="247"/>
+							<ExtendedTooltip name="ZohoExtendedTooltip" id="248"/>
+						</CheckBoxField>
 					</ChildItems>
 				</Table>
 			</ChildItems>
@@ -353,29 +359,29 @@
 						<Autofill>false</Autofill>
 					</AutoCommandBar>
 					<ExtendedTooltip name="TransactionsExtendedTooltip" id="28"/>
-					<SearchStringAddition name="TransactionsSearchString" id="255">
+					<SearchStringAddition name="TransactionsSearchString" id="258">
 						<AdditionSource>
 							<Item>Transactions</Item>
 							<Type>SearchStringRepresentation</Type>
 						</AdditionSource>
-						<ContextMenu name="TransactionsSearchStringContextMenu" id="256"/>
-						<ExtendedTooltip name="TransactionsSearchStringExtendedTooltip" id="257"/>
+						<ContextMenu name="TransactionsSearchStringContextMenu" id="259"/>
+						<ExtendedTooltip name="TransactionsSearchStringExtendedTooltip" id="260"/>
 					</SearchStringAddition>
-					<ViewStatusAddition name="TransactionsViewStatus" id="258">
+					<ViewStatusAddition name="TransactionsViewStatus" id="261">
 						<AdditionSource>
 							<Item>Transactions</Item>
 							<Type>ViewStatusRepresentation</Type>
 						</AdditionSource>
-						<ContextMenu name="TransactionsViewStatusContextMenu" id="259"/>
-						<ExtendedTooltip name="TransactionsViewStatusExtendedTooltip" id="260"/>
+						<ContextMenu name="TransactionsViewStatusContextMenu" id="262"/>
+						<ExtendedTooltip name="TransactionsViewStatusExtendedTooltip" id="263"/>
 					</ViewStatusAddition>
-					<SearchControlAddition name="TransactionsSearchControl" id="261">
+					<SearchControlAddition name="TransactionsSearchControl" id="264">
 						<AdditionSource>
 							<Item>Transactions</Item>
 							<Type>SearchControl</Type>
 						</AdditionSource>
-						<ContextMenu name="TransactionsSearchControlContextMenu" id="262"/>
-						<ExtendedTooltip name="TransactionsSearchControlExtendedTooltip" id="263"/>
+						<ContextMenu name="TransactionsSearchControlContextMenu" id="265"/>
+						<ExtendedTooltip name="TransactionsSearchControlExtendedTooltip" id="266"/>
 					</SearchControlAddition>
 					<Events>
 						<Event name="Selection">TransactionsSelection</Event>
@@ -552,11 +558,18 @@
 			THEN "Vend"
 		ELSE ""
 	END AS CV,
-	ISNULL(GeneralJournalBalance.AmountRCBalance, 0) AS AmountRCBalance
+	ISNULL(GeneralJournalBalance.AmountRCBalance, 0) AS AmountRCBalance,
+	CASE 
+		WHEN zoho_accountCodeMap.zoho_id &lt;&gt; ""
+			THEN TRUE
+		ELSE FALSE
+	END AS Zoho
 FROM
-	Catalog.Companies AS CatalogCompanies
-		LEFT JOIN AccountingRegister.GeneralJournal.Balance AS GeneralJournalBalance
-		ON (GeneralJournalBalance.ExtDimension1 = CatalogCompanies.Ref)</QueryText>
+	Catalog.zoho_accountCodeMap AS zoho_accountCodeMap
+		RIGHT JOIN Catalog.Companies AS CatalogCompanies
+			LEFT JOIN AccountingRegister.GeneralJournal.Balance AS GeneralJournalBalance
+			ON (GeneralJournalBalance.ExtDimension1 = CatalogCompanies.Ref)
+		ON zoho_accountCodeMap.company_ref = CatalogCompanies.Ref</QueryText>
 				<MainTable>Catalog.Companies</MainTable>
 				<ListSettings>
 					<dcsset:filter>
@@ -669,146 +682,6 @@ WHERE
 				</ListSettings>
 			</Settings>
 		</Attribute>
-		<ConditionalAppearance>
-			<dcsset:item>
-				<dcsset:selection>
-					<dcsset:item>
-						<dcsset:field>AmountRCBalance</dcsset:field>
-					</dcsset:item>
-				</dcsset:selection>
-				<dcsset:filter>
-					<dcsset:item xsi:type="dcsset:FilterItemComparison">
-						<dcsset:left xsi:type="dcscor:Field">List.AmountRCBalance</dcsset:left>
-						<dcsset:comparisonType>Equal</dcsset:comparisonType>
-						<dcsset:right xsi:type="xs:decimal">0</dcsset:right>
-					</dcsset:item>
-				</dcsset:filter>
-				<dcsset:appearance>
-					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-						<dcscor:parameter>TextColor</dcscor:parameter>
-						<dcscor:value xsi:type="v8ui:Color">web:LightGray</dcscor:value>
-					</dcscor:item>
-				</dcsset:appearance>
-			</dcsset:item>
-			<dcsset:item>
-				<dcsset:selection>
-					<dcsset:item>
-						<dcsset:field>TransactionsBalance</dcsset:field>
-					</dcsset:item>
-				</dcsset:selection>
-				<dcsset:filter>
-					<dcsset:item xsi:type="dcsset:FilterItemComparison">
-						<dcsset:left xsi:type="dcscor:Field">Transactions.Balance</dcsset:left>
-						<dcsset:comparisonType>Equal</dcsset:comparisonType>
-						<dcsset:right xsi:type="xs:decimal">0</dcsset:right>
-					</dcsset:item>
-				</dcsset:filter>
-				<dcsset:appearance>
-					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-						<dcscor:parameter>TextColor</dcscor:parameter>
-						<dcscor:value xsi:type="v8ui:Color">web:LightGray</dcscor:value>
-					</dcscor:item>
-				</dcsset:appearance>
-			</dcsset:item>
-			<dcsset:item>
-				<dcsset:selection>
-					<dcsset:item>
-						<dcsset:field>TransactionsRCBalance</dcsset:field>
-					</dcsset:item>
-				</dcsset:selection>
-				<dcsset:filter>
-					<dcsset:item xsi:type="dcsset:FilterItemComparison">
-						<dcsset:left xsi:type="dcscor:Field">Transactions.RCBalance</dcsset:left>
-						<dcsset:comparisonType>Equal</dcsset:comparisonType>
-						<dcsset:right xsi:type="xs:decimal">0</dcsset:right>
-					</dcsset:item>
-				</dcsset:filter>
-				<dcsset:appearance>
-					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-						<dcscor:parameter>TextColor</dcscor:parameter>
-						<dcscor:value xsi:type="v8ui:Color">web:LightGray</dcscor:value>
-					</dcscor:item>
-				</dcsset:appearance>
-			</dcsset:item>
-			<dcsset:item>
-				<dcsset:selection>
-					<dcsset:item>
-						<dcsset:field>Description</dcsset:field>
-					</dcsset:item>
-					<dcsset:item>
-						<dcsset:field>CV</dcsset:field>
-					</dcsset:item>
-					<dcsset:item>
-						<dcsset:field>Code</dcsset:field>
-					</dcsset:item>
-				</dcsset:selection>
-				<dcsset:filter>
-					<dcsset:item xsi:type="dcsset:FilterItemComparison">
-						<dcsset:left xsi:type="dcscor:Field">List.CV</dcsset:left>
-						<dcsset:comparisonType>Equal</dcsset:comparisonType>
-						<dcsset:right xsi:type="xs:string">Cust</dcsset:right>
-					</dcsset:item>
-				</dcsset:filter>
-				<dcsset:appearance>
-					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-						<dcscor:parameter>TextColor</dcscor:parameter>
-						<dcscor:value xsi:type="v8ui:Color">web:Green</dcscor:value>
-					</dcscor:item>
-				</dcsset:appearance>
-			</dcsset:item>
-			<dcsset:item>
-				<dcsset:selection>
-					<dcsset:item>
-						<dcsset:field>Description</dcsset:field>
-					</dcsset:item>
-					<dcsset:item>
-						<dcsset:field>CV</dcsset:field>
-					</dcsset:item>
-					<dcsset:item>
-						<dcsset:field>Code</dcsset:field>
-					</dcsset:item>
-				</dcsset:selection>
-				<dcsset:filter>
-					<dcsset:item xsi:type="dcsset:FilterItemComparison">
-						<dcsset:left xsi:type="dcscor:Field">List.CV</dcsset:left>
-						<dcsset:comparisonType>Equal</dcsset:comparisonType>
-						<dcsset:right xsi:type="xs:string">Vend</dcsset:right>
-					</dcsset:item>
-				</dcsset:filter>
-				<dcsset:appearance>
-					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-						<dcscor:parameter>TextColor</dcscor:parameter>
-						<dcscor:value xsi:type="v8ui:Color">web:Brown</dcscor:value>
-					</dcscor:item>
-				</dcsset:appearance>
-			</dcsset:item>
-			<dcsset:item>
-				<dcsset:selection>
-					<dcsset:item>
-						<dcsset:field>Description</dcsset:field>
-					</dcsset:item>
-					<dcsset:item>
-						<dcsset:field>CV</dcsset:field>
-					</dcsset:item>
-					<dcsset:item>
-						<dcsset:field>Code</dcsset:field>
-					</dcsset:item>
-				</dcsset:selection>
-				<dcsset:filter>
-					<dcsset:item xsi:type="dcsset:FilterItemComparison">
-						<dcsset:left xsi:type="dcscor:Field">List.CV</dcsset:left>
-						<dcsset:comparisonType>Equal</dcsset:comparisonType>
-						<dcsset:right xsi:type="xs:string">C/V</dcsset:right>
-					</dcsset:item>
-				</dcsset:filter>
-				<dcsset:appearance>
-					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-						<dcscor:parameter>TextColor</dcscor:parameter>
-						<dcscor:value xsi:type="v8ui:Color">web:Blue</dcscor:value>
-					</dcscor:item>
-				</dcsset:appearance>
-			</dcsset:item>
-		</ConditionalAppearance>
 	</Attributes>
 	<Commands>
 		<Command name="CommandCreate" id="1">

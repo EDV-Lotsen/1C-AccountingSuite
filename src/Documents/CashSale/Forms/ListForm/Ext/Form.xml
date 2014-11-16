@@ -165,11 +165,16 @@
 	DocumentCashSale.RefNum,
 	DocumentCashSale.Memo,
 	CASE
-		WHEN DocumentCashSale.DepositType = "1" 
+		WHEN DocumentCashSale.DepositType = "1"
 			THEN "Undeposited"
 		ELSE "Bank Acct."
 	END AS DepositT,
-	DocumentCashSale.Deposited,
+	CASE
+		WHEN UndepositedDocumentsBalance.Document IS NULL 
+				AND DocumentCashSale.Posted
+			THEN TRUE
+		ELSE FALSE
+	END AS Deposited,
 	DocumentCashSale.Currency,
 	DocumentCashSale.ExchangeRate,
 	DocumentCashSale.DocumentTotalRC,
@@ -184,10 +189,27 @@
 	DocumentCashSale.StripeCreated,
 	DocumentCashSale.StripeCardType,
 	DocumentCashSale.StripeLast4,
-	DocumentCashSale.LineItems,
+	DocumentCashSale.LineItems.(
+		Ref,
+		LineNumber,
+		Product,
+		ProductDescription,
+		UnitSet,
+		QtyUnits,
+		Unit,
+		QtyUM,
+		PriceUnits,
+		LineTotal,
+		Project,
+		Taxable,
+		TaxableAmount,
+		Class
+	),
 	DocumentCashSale.PointInTime
 FROM
-	Document.CashSale AS DocumentCashSale</QueryText>
+	Document.CashSale AS DocumentCashSale
+		LEFT JOIN AccumulationRegister.UndepositedDocuments.Balance AS UndepositedDocumentsBalance
+		ON DocumentCashSale.Ref = UndepositedDocumentsBalance.Document</QueryText>
 				<MainTable>Document.CashSale</MainTable>
 				<ListSettings>
 					<dcsset:filter>

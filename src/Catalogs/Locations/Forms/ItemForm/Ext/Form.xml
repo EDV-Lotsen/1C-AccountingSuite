@@ -5,6 +5,7 @@
 	<UseForFoldersAndItems>Items</UseForFoldersAndItems>
 	<AutoCommandBar name="FormCommandBar" id="-1"/>
 	<Events>
+		<Event name="OnReadAtServer">OnReadAtServer</Event>
 		<Event name="BeforeWriteAtServer">BeforeWriteAtServer</Event>
 	</Events>
 	<ChildItems>
@@ -14,52 +15,277 @@
 			<ContextMenu name="CodeContextMenu" id="2"/>
 			<ExtendedTooltip name="CodeExtendedTooltip" id="5"/>
 		</InputField>
+		<CheckBoxField name="Default" id="31">
+			<DataPath>Object.Default</DataPath>
+			<CheckBoxType>Auto</CheckBoxType>
+			<ContextMenu name="DefaultContextMenu" id="32"/>
+			<ExtendedTooltip name="DefaultExtendedTooltip" id="33"/>
+		</CheckBoxField>
 		<InputField name="Description" id="3">
 			<DataPath>Object.Description</DataPath>
 			<EditMode>EnterOnInput</EditMode>
 			<ContextMenu name="DescriptionContextMenu" id="4"/>
 			<ExtendedTooltip name="DescriptionExtendedTooltip" id="6"/>
 		</InputField>
-		<InputField name="AddressLine1" id="7">
-			<DataPath>Object.AddressLine1</DataPath>
-			<ContextMenu name="AddressLine1ContextMenu" id="8"/>
-			<ExtendedTooltip name="AddressLine1ExtendedTooltip" id="9"/>
-		</InputField>
-		<InputField name="AddressLine2" id="10">
-			<DataPath>Object.AddressLine2</DataPath>
-			<ContextMenu name="AddressLine2ContextMenu" id="11"/>
-			<ExtendedTooltip name="AddressLine2ExtendedTooltip" id="12"/>
-		</InputField>
-		<InputField name="AddressLine3" id="13">
-			<DataPath>Object.AddressLine3</DataPath>
-			<ContextMenu name="AddressLine3ContextMenu" id="14"/>
-			<ExtendedTooltip name="AddressLine3ExtendedTooltip" id="15"/>
-		</InputField>
-		<InputField name="City" id="16">
-			<DataPath>Object.City</DataPath>
-			<ContextMenu name="CityContextMenu" id="17"/>
-			<ExtendedTooltip name="CityExtendedTooltip" id="18"/>
-		</InputField>
-		<InputField name="State" id="19">
-			<DataPath>Object.State</DataPath>
-			<ContextMenu name="StateContextMenu" id="20"/>
-			<ExtendedTooltip name="StateExtendedTooltip" id="21"/>
-		</InputField>
-		<InputField name="Country" id="22">
-			<DataPath>Object.Country</DataPath>
-			<ContextMenu name="CountryContextMenu" id="23"/>
-			<ExtendedTooltip name="CountryExtendedTooltip" id="24"/>
-		</InputField>
-		<InputField name="ZIP" id="25">
-			<DataPath>Object.ZIP</DataPath>
-			<ContextMenu name="ZIPContextMenu" id="26"/>
-			<ExtendedTooltip name="ZIPExtendedTooltip" id="27"/>
-		</InputField>
 		<InputField name="Notes" id="28">
 			<DataPath>Object.Notes</DataPath>
 			<ContextMenu name="NotesContextMenu" id="29"/>
 			<ExtendedTooltip name="NotesExtendedTooltip" id="30"/>
 		</InputField>
+		<UsualGroup name="AddressGroup" id="34">
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Address group</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Group>Horizontal</Group>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="AddressGroupExtendedTooltip" id="35"/>
+			<ChildItems>
+				<UsualGroup name="Address" id="36">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Address</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Address</v8:content>
+						</v8:item>
+					</ToolTip>
+					<Group>Vertical</Group>
+					<ShowTitle>false</ShowTitle>
+					<ExtendedTooltip name="AddressExtendedTooltip" id="37"/>
+					<ChildItems>
+						<InputField name="AddressLine1" id="7">
+							<DataPath>Object.AddressLine1</DataPath>
+							<ContextMenu name="AddressLine1ContextMenu" id="8"/>
+							<ExtendedTooltip name="AddressLine1ExtendedTooltip" id="9"/>
+						</InputField>
+						<InputField name="AddressLine2" id="10">
+							<DataPath>Object.AddressLine2</DataPath>
+							<ContextMenu name="AddressLine2ContextMenu" id="11"/>
+							<ExtendedTooltip name="AddressLine2ExtendedTooltip" id="12"/>
+						</InputField>
+						<InputField name="AddressLine3" id="13">
+							<DataPath>Object.AddressLine3</DataPath>
+							<ContextMenu name="AddressLine3ContextMenu" id="14"/>
+							<ExtendedTooltip name="AddressLine3ExtendedTooltip" id="15"/>
+						</InputField>
+						<InputField name="City" id="16">
+							<DataPath>Object.City</DataPath>
+							<ContextMenu name="CityContextMenu" id="17"/>
+							<ExtendedTooltip name="CityExtendedTooltip" id="18"/>
+						</InputField>
+						<InputField name="State" id="19">
+							<DataPath>Object.State</DataPath>
+							<ContextMenu name="StateContextMenu" id="20"/>
+							<ExtendedTooltip name="StateExtendedTooltip" id="21"/>
+						</InputField>
+						<InputField name="ZIP" id="25">
+							<DataPath>Object.ZIP</DataPath>
+							<ContextMenu name="ZIPContextMenu" id="26"/>
+							<ExtendedTooltip name="ZIPExtendedTooltip" id="27"/>
+						</InputField>
+						<InputField name="Country" id="22">
+							<DataPath>Object.Country</DataPath>
+							<ContextMenu name="CountryContextMenu" id="23"/>
+							<ExtendedTooltip name="CountryExtendedTooltip" id="24"/>
+							<Events>
+								<Event name="OnChange">CountryOnChange</Event>
+							</Events>
+						</InputField>
+					</ChildItems>
+				</UsualGroup>
+				<UsualGroup name="AddressValidation" id="38">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Address validation</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Address validation</v8:content>
+						</v8:item>
+					</ToolTip>
+					<Group>Vertical</Group>
+					<ShowTitle>false</ShowTitle>
+					<BackColor>web:WhiteSmoke</BackColor>
+					<ExtendedTooltip name="AddressValidationExtendedTooltip" id="39"/>
+					<ChildItems>
+						<LabelDecoration name="AvataxAddressValidationCaption" id="40">
+							<HorizontalStretch>true</HorizontalStretch>
+							<Font ref="style:SmallTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
+							<Title formatted="false">
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>AvaTax Address Validation</v8:content>
+								</v8:item>
+							</Title>
+							<Border width="1">
+								<v8ui:style xsi:type="v8ui:ControlBorderType">Underline</v8ui:style>
+							</Border>
+							<ContextMenu name="AvataxAddressValidationCaptionContextMenu" id="41"/>
+							<ExtendedTooltip name="AvataxAddressValidationCaptionExtendedTooltip" id="42"/>
+						</LabelDecoration>
+						<LabelDecoration name="Decoration2" id="43">
+							<Height>1</Height>
+							<VerticalStretch>false</VerticalStretch>
+							<ContextMenu name="Decoration2ContextMenu" id="44"/>
+							<ExtendedTooltip name="Decoration2ExtendedTooltip" id="45"/>
+						</LabelDecoration>
+						<UsualGroup name="ValidationStatus" id="46">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Validation status</v8:content>
+								</v8:item>
+							</Title>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Validation status</v8:content>
+								</v8:item>
+							</ToolTip>
+							<Group>Horizontal</Group>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="ValidationStatusExtendedTooltip" id="47"/>
+							<ChildItems>
+								<PictureDecoration name="StatusPicture" id="48">
+									<Width>4</Width>
+									<Height>3</Height>
+									<Title formatted="false">
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Status picture</v8:content>
+										</v8:item>
+									</Title>
+									<Picture>
+										<xr:Ref>CommonPicture.TaskComplete</xr:Ref>
+										<xr:LoadTransparent>true</xr:LoadTransparent>
+									</Picture>
+									<ContextMenu name="StatusPictureContextMenu" id="49"/>
+									<ExtendedTooltip name="StatusPictureExtendedTooltip" id="50"/>
+								</PictureDecoration>
+								<UsualGroup name="StatusTextGroup" id="51">
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Status text group</v8:content>
+										</v8:item>
+									</Title>
+									<ToolTip>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Status text group</v8:content>
+										</v8:item>
+									</ToolTip>
+									<Group>Vertical</Group>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="StatusTextGroupExtendedTooltip" id="52"/>
+									<ChildItems>
+										<LabelDecoration name="Decoration1" id="53">
+											<ContextMenu name="Decoration1ContextMenu" id="54"/>
+											<ExtendedTooltip name="Decoration1ExtendedTooltip" id="55"/>
+										</LabelDecoration>
+										<LabelDecoration name="StatusText" id="56">
+											<Width>12</Width>
+											<HorizontalStretch>false</HorizontalStretch>
+											<TextColor>style:ColorGroupLabel</TextColor>
+											<Font ref="style:NormalTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
+											<Title formatted="false">
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Address validated</v8:content>
+												</v8:item>
+											</Title>
+											<BorderColor>style:ColorGroupLabel</BorderColor>
+											<Border width="1">
+												<v8ui:style xsi:type="v8ui:ControlBorderType">Underline</v8ui:style>
+											</Border>
+											<ContextMenu name="StatusTextContextMenu" id="57"/>
+											<ExtendedTooltip name="StatusTextExtendedTooltip" id="58"/>
+										</LabelDecoration>
+									</ChildItems>
+								</UsualGroup>
+							</ChildItems>
+						</UsualGroup>
+						<UsualGroup name="EditAddressGroup" id="59">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Edit address group</v8:content>
+								</v8:item>
+							</Title>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Edit address group</v8:content>
+								</v8:item>
+							</ToolTip>
+							<Group>Horizontal</Group>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="EditAddressGroupExtendedTooltip" id="60"/>
+							<ChildItems>
+								<LabelDecoration name="Decoration3" id="61">
+									<Height>1</Height>
+									<VerticalStretch>false</VerticalStretch>
+									<ContextMenu name="Decoration3ContextMenu" id="62"/>
+									<ExtendedTooltip name="Decoration3ExtendedTooltip" id="63"/>
+								</LabelDecoration>
+							</ChildItems>
+						</UsualGroup>
+						<UsualGroup name="ValidateButtonGroup" id="64">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Validate button group</v8:content>
+								</v8:item>
+							</Title>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Validate button group</v8:content>
+								</v8:item>
+							</ToolTip>
+							<Group>Horizontal</Group>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="ValidateButtonGroupExtendedTooltip" id="65"/>
+							<ChildItems>
+								<LabelDecoration name="Decoration4" id="66">
+									<ContextMenu name="Decoration4ContextMenu" id="67"/>
+									<ExtendedTooltip name="Decoration4ExtendedTooltip" id="68"/>
+								</LabelDecoration>
+								<Button name="AvataxEditAddress" id="69">
+									<Type>Hyperlink</Type>
+									<Visible>false</Visible>
+									<CommandName>Form.Command.AvataxEditAddress</CommandName>
+									<Font ref="style:NormalTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Edit address</v8:content>
+										</v8:item>
+									</Title>
+									<ExtendedTooltip name="AvataxEditAddressExtendedTooltip" id="70"/>
+								</Button>
+								<Button name="AvataxValidateAddress" id="71">
+									<Type>UsualButton</Type>
+									<CommandName>Form.Command.AvataxValidateAddress</CommandName>
+									<Font ref="style:NormalTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
+									<ExtendedTooltip name="AvataxValidateAddressExtendedTooltip" id="72"/>
+								</Button>
+							</ChildItems>
+						</UsualGroup>
+					</ChildItems>
+				</UsualGroup>
+			</ChildItems>
+		</UsualGroup>
 	</ChildItems>
 	<Attributes>
 		<Attribute name="Object" id="1">
@@ -70,4 +296,41 @@
 			<SavedData>true</SavedData>
 		</Attribute>
 	</Attributes>
+	<Commands>
+		<Command name="AvataxEditAddress" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Edit address</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Avatax edit address</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>AvataxEditAddress</Action>
+		</Command>
+		<Command name="AvataxValidateAddress" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Validate</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Validate address at Avatax</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Picture>
+				<xr:Ref>StdPicture.CheckSyntax</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
+			<Action>AvataxValidateAddress</Action>
+			<Representation>TextPicture</Representation>
+		</Command>
+	</Commands>
 </Form>

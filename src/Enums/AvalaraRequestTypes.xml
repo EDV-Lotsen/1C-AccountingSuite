@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<MetaDataObject xmlns="http://v8.1c.ru/8.3/MDClasses" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:cmi="http://v8.1c.ru/8.2/managed-application/cmi" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xen="http://v8.1c.ru/8.3/xcf/enums" xmlns:xpr="http://v8.1c.ru/8.3/xcf/predef" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<Enum uuid="8dcc97b3-43a3-4f41-8517-b8955f02b10d">
+		<InternalInfo>
+			<xr:GeneratedType name="EnumRef.AvalaraRequestTypes" category="Ref">
+				<xr:TypeId>addddec9-96e5-4668-8243-112969d5b677</xr:TypeId>
+				<xr:ValueId>daa57e2f-e27f-48d1-a879-a78eab6627e4</xr:ValueId>
+			</xr:GeneratedType>
+			<xr:GeneratedType name="EnumManager.AvalaraRequestTypes" category="Manager">
+				<xr:TypeId>1c1e2c5c-755d-4542-b2fd-87705a3f93f5</xr:TypeId>
+				<xr:ValueId>aafd1fc8-2da3-4c68-9a0e-a2d4f87ddd0a</xr:ValueId>
+			</xr:GeneratedType>
+			<xr:GeneratedType name="EnumList.AvalaraRequestTypes" category="List">
+				<xr:TypeId>fbfff3aa-26da-4415-a63c-8997cafeb9f4</xr:TypeId>
+				<xr:ValueId>9f7a3c41-85c4-4a0a-a216-a475cbfd55a0</xr:ValueId>
+			</xr:GeneratedType>
+		</InternalInfo>
+		<Properties>
+			<Name>AvalaraRequestTypes</Name>
+			<Synonym>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Avalara request types</v8:content>
+				</v8:item>
+			</Synonym>
+			<Comment/>
+			<UseStandardCommands>false</UseStandardCommands>
+			<Characteristics/>
+			<QuickChoice>true</QuickChoice>
+			<ChoiceMode>BothWays</ChoiceMode>
+			<DefaultListForm/>
+			<DefaultChoiceForm/>
+			<AuxiliaryListForm/>
+			<AuxiliaryChoiceForm/>
+			<ListPresentation/>
+			<ExtendedListPresentation/>
+			<Explanation/>
+			<ChoiceHistoryOnInput>Auto</ChoiceHistoryOnInput>
+		</Properties>
+		<ChildObjects>
+			<EnumValue uuid="e6204edf-8661-470c-ab82-91b8badaccc9">
+				<Properties>
+					<Name>ConnectionTest</Name>
+					<Synonym>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Connection test</v8:content>
+						</v8:item>
+					</Synonym>
+					<Comment/>
+				</Properties>
+			</EnumValue>
+			<EnumValue uuid="43e8af50-e8db-4aff-92a1-98cd9a15321a">
+				<Properties>
+					<Name>AddressValidation</Name>
+					<Synonym>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Address validation</v8:content>
+						</v8:item>
+					</Synonym>
+					<Comment/>
+				</Properties>
+			</EnumValue>
+			<EnumValue uuid="fce1f9dd-6692-417c-b671-a94b2e5d6122">
+				<Properties>
+					<Name>TaxCalculation</Name>
+					<Synonym>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Tax calculation</v8:content>
+						</v8:item>
+					</Synonym>
+					<Comment/>
+				</Properties>
+			</EnumValue>
+			<EnumValue uuid="71db131c-f678-4564-a083-3d7feb8f3f42">
+				<Properties>
+					<Name>CancelTax</Name>
+					<Synonym>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Cancel tax</v8:content>
+						</v8:item>
+					</Synonym>
+					<Comment>Voiding or Deleting documents at AvaTax</Comment>
+				</Properties>
+			</EnumValue>
+		</ChildObjects>
+	</Enum>
+</MetaDataObject>

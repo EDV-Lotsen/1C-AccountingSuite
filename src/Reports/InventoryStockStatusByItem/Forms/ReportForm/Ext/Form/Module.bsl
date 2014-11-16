@@ -133,7 +133,7 @@ EndProcedure
 Procedure ModifiedStatePresentation()
 	
 	Items.Result.StatePresentation.Visible = True;
-	Items.Result.StatePresentation.Text = "Report not generated. Click ""Create Report"" to obtain a report.";
+	Items.Result.StatePresentation.Text = "Report not generated. Click ""Run report"" to obtain a report.";
 	Items.Result.StatePresentation.AdditionalShowMode = AdditionalShowMode.Irrelevance;
 	
 EndProcedure
@@ -150,6 +150,10 @@ EndProcedure
 &AtClient
 Procedure PeriodStartDateOnChange(Item)
 	
+	If PeriodStartDate > PeriodEndDate Then
+		PeriodStartDate = PeriodEndDate; 	
+	EndIf;
+	
 	PeriodVariant = GeneralFunctions.GetCustomVariantName();
 	GeneralFunctions.ChangePeriodIntoUserSettings(ThisForm.Report.SettingsComposer, PeriodStartDate, PeriodEndDate);
 	ModifiedStatePresentation();
@@ -158,6 +162,10 @@ EndProcedure
 
 &AtClient
 Procedure PeriodEndDateOnChange(Item)
+	
+	If PeriodStartDate > PeriodEndDate Then
+		PeriodStartDate = PeriodEndDate; 	
+	EndIf;
 	
 	PeriodVariant = GeneralFunctions.GetCustomVariantName();
 	GeneralFunctions.ChangePeriodIntoUserSettings(ThisForm.Report.SettingsComposer, PeriodStartDate, PeriodEndDate);

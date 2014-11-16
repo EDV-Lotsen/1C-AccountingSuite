@@ -308,6 +308,10 @@ FROM
 	AccountingRegister.GeneralJournal.BalanceAndTurnovers({(DATEADD(&amp;BeginOfPeriod, YEAR, -1))}, {(&amp;EndOfPeriod)}, Year, , , , ) AS YearsOpeningBalance
 {WHERE
 	YearsOpeningBalance.Account.*}
+
+INDEX BY
+	DayPeriod,
+	Account
 ;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -333,6 +337,10 @@ FROM
 	AccountingRegister.GeneralJournal.BalanceAndTurnovers({(&amp;BeginOfPeriod)}, {(&amp;EndOfPeriod)}, Auto, , , , ) AS GeneralJournalBalanceAndTurnovers
 {WHERE
 	GeneralJournalBalanceAndTurnovers.Account.*}
+
+INDEX BY
+	DayPeriod,
+	Account
 ;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -362,8 +370,8 @@ FROM
 
 ////////////////////////////////////////////////////////////////////////////////
 SELECT
-	GeneralJournalSummaryA.Account,
-	GeneralJournalSummaryA.DayPeriod,
+	GeneralJournalSummaryA.Account AS Account,
+	GeneralJournalSummaryA.DayPeriod AS DayPeriod,
 	GeneralJournalSummaryA.WeekPeriod,
 	GeneralJournalSummaryA.MonthPeriod,
 	GeneralJournalSummaryA.QuarterPeriod,
@@ -379,6 +387,10 @@ GROUP BY
 	GeneralJournalSummaryA.YearPeriod,
 	GeneralJournalSummaryA.MonthPeriod,
 	GeneralJournalSummaryA.WeekPeriod
+
+INDEX BY
+	DayPeriod,
+	Account
 ;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -408,10 +420,30 @@ GROUP BY
 	GeneralJournalSummaryB.YearPeriod,
 	GeneralJournalSummaryB.MonthPeriod,
 	GeneralJournalSummaryB.WeekPeriod
+
+INDEX BY
+	Account,
+	DayPeriodYears,
+	DayPeriodGeneralJournal
 ;
 
 ////////////////////////////////////////////////////////////////////////////////
 SELECT
+	CASE
+		WHEN GeneralJournalSummaryC.Account.AccountType IN (VALUE(Enum.AccountTypes.Bank), VALUE(Enum.AccountTypes.Inventory), VALUE(Enum.AccountTypes.AccountsReceivable), VALUE(Enum.AccountTypes.OtherCurrentAsset))
+			THEN "Current Assets"
+		WHEN GeneralJournalSummaryC.Account.AccountType IN (VALUE(Enum.AccountTypes.FixedAsset), VALUE(Enum.AccountTypes.AccumulatedDepreciation), VALUE(Enum.AccountTypes.OtherNoncurrentAsset))
+			THEN "Noncurrent Assets"
+		WHEN GeneralJournalSummaryC.Account.AccountType IN (VALUE(Enum.AccountTypes.AccountsPayable), VALUE(Enum.AccountTypes.OtherCurrentLiability))
+			THEN "Current Liabilities"
+		WHEN GeneralJournalSummaryC.Account.AccountType IN (VALUE(Enum.AccountTypes.LongTermLiability))
+			THEN "Long Term Liabilities"
+		WHEN GeneralJournalSummaryC.Account.AccountType IN (VALUE(Enum.AccountTypes.Equity))
+			THEN "Stockholder Equity"
+		WHEN GeneralJournalSummaryC.Account.AccountType IN (VALUE(Enum.AccountTypes.Income), VALUE(Enum.AccountTypes.CostOfSales), VALUE(Enum.AccountTypes.Expense), VALUE(Enum.AccountTypes.OtherIncome), VALUE(Enum.AccountTypes.OtherExpense), VALUE(Enum.AccountTypes.IncomeTaxExpense))
+			THEN "Stockholder Equity"
+		ELSE NULL
+	END AS Section,
 	GeneralJournalSummaryC.Account AS Account,
 	GeneralJournalSummaryC.DayPeriod AS DayPeriod,
 	GeneralJournalSummaryC.WeekPeriod,
@@ -447,6 +479,9 @@ FROM
 {WHERE
 	(GeneralJournalSummaryC.YearPeriod &lt;= &amp;EndOfPeriod
 			OR GeneralJournalSummaryC.YearPeriod = DATETIME(3999, 1, 1))}
+
+INDEX BY
+	Section
 ;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -486,7 +521,7 @@ SELECT
 ;
 
 ////////////////////////////////////////////////////////////////////////////////
-SELECT ALLOWED
+SELECT
 	SystemTitle.Value AS OurCompany,
 	BalanceSections.Division,
 	BalanceSections.Section,
@@ -503,26 +538,53 @@ SELECT ALLOWED
 	GeneralJournalSummary.AmountRCTurnover AS AmountRCTurnover,
 	GeneralJournalSummary.YearOpeningBalance,
 	GeneralJournalSummary.YearClosingBalance
+INTO GeneralJournalTotal
 FROM
 	BalanceSections AS BalanceSections
 		LEFT JOIN Constant.SystemTitle AS SystemTitle
 		ON (TRUE)
 		LEFT JOIN GeneralJournalSummary AS GeneralJournalSummary
-		ON (CASE
-				WHEN GeneralJournalSummary.Account.AccountType IN (VALUE(Enum.AccountTypes.Bank), VALUE(Enum.AccountTypes.Inventory), VALUE(Enum.AccountTypes.AccountsReceivable), VALUE(Enum.AccountTypes.OtherCurrentAsset))
-					THEN "Current Assets"
-				WHEN GeneralJournalSummary.Account.AccountType IN (VALUE(Enum.AccountTypes.FixedAsset), VALUE(Enum.AccountTypes.AccumulatedDepreciation), VALUE(Enum.AccountTypes.OtherNoncurrentAsset))
-					THEN "Noncurrent Assets"
-				WHEN GeneralJournalSummary.Account.AccountType IN (VALUE(Enum.AccountTypes.AccountsPayable), VALUE(Enum.AccountTypes.OtherCurrentLiability))
-					THEN "Current Liabilities"
-				WHEN GeneralJournalSummary.Account.AccountType IN (VALUE(Enum.AccountTypes.LongTermLiability))
-					THEN "Long Term Liabilities"
-				WHEN GeneralJournalSummary.Account.AccountType IN (VALUE(Enum.AccountTypes.Equity))
-					THEN "Stockholder Equity"
-				WHEN GeneralJournalSummary.Account.AccountType IN (VALUE(Enum.AccountTypes.Income), VALUE(Enum.AccountTypes.CostOfSales), VALUE(Enum.AccountTypes.Expense), VALUE(Enum.AccountTypes.OtherIncome), VALUE(Enum.AccountTypes.OtherExpense), VALUE(Enum.AccountTypes.IncomeTaxExpense))
-					THEN "Stockholder Equity"
-				ELSE NULL
-			END = BalanceSections.Section)</query>
+		ON (GeneralJournalSummary.Section = BalanceSections.Section)
+;
+
+////////////////////////////////////////////////////////////////////////////////
+SELECT ALLOWED
+	GeneralJournalTotal.OurCompany,
+	GeneralJournalTotal.Division,
+	GeneralJournalTotal.Section,
+	GeneralJournalTotal.SectionOrder,
+	GeneralJournalTotal.AccountType,
+	GeneralJournalTotal.Account,
+	GeneralJournalTotal.DayPeriod,
+	GeneralJournalTotal.WeekPeriod,
+	GeneralJournalTotal.MonthPeriod,
+	GeneralJournalTotal.QuarterPeriod,
+	GeneralJournalTotal.YearPeriod,
+	GeneralJournalTotal.AmountRCBalance,
+	GeneralJournalTotal.AmountRCOpeningBalance,
+	GeneralJournalTotal.AmountRCTurnover,
+	GeneralJournalTotal.YearOpeningBalance,
+	GeneralJournalTotal.YearClosingBalance
+FROM
+	GeneralJournalTotal AS GeneralJournalTotal
+
+GROUP BY
+	GeneralJournalTotal.OurCompany,
+	GeneralJournalTotal.Division,
+	GeneralJournalTotal.Section,
+	GeneralJournalTotal.SectionOrder,
+	GeneralJournalTotal.AccountType,
+	GeneralJournalTotal.Account,
+	GeneralJournalTotal.DayPeriod,
+	GeneralJournalTotal.WeekPeriod,
+	GeneralJournalTotal.MonthPeriod,
+	GeneralJournalTotal.QuarterPeriod,
+	GeneralJournalTotal.YearPeriod,
+	GeneralJournalTotal.AmountRCBalance,
+	GeneralJournalTotal.AmountRCOpeningBalance,
+	GeneralJournalTotal.AmountRCTurnover,
+	GeneralJournalTotal.YearOpeningBalance,
+	GeneralJournalTotal.YearClosingBalance</query>
 	</dataSet>
 	<totalField>
 		<dataPath>AmountRCBalance</dataPath>

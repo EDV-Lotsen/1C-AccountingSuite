@@ -347,11 +347,11 @@ Function Query_InventoryJournal(TablesList)
 	|		ELSE CASE
 	|			WHEN Balance_FIFO.Quantity + LineItems_FIFO.QuantityRequested - Balance_FIFO.QuantityCumulative > 0
 	|			// The layer written off partially.
-	|			THEN CAST ( // Format(Amount * QuantityExpense / Quantity, ""ND=15; NFD=2"")
+	|			THEN CAST ( // Format(Amount * QuantityExpense / Quantity, ""ND=17; NFD=2"")
 	|				 Balance_FIFO.Amount * 
 	|				(Balance_FIFO.Quantity + LineItems_FIFO.QuantityRequested - Balance_FIFO.QuantityCumulative) /
 	|				 Balance_FIFO.Quantity
-	|				 AS NUMBER (15, 2))
+	|				 AS NUMBER (17, 2))
 	|			// The layer is not requested and left off.
 	|			ELSE 0
 	|		END
@@ -422,11 +422,11 @@ Function Query_InventoryJournal(TablesList)
 	|		ELSE CASE
 	|			WHEN Balance_FIFO.Quantity + LineItems_FIFO.QuantityRequested - Balance_FIFO.QuantityCumulative > 0
 	|			// The layer written off partially.
-	|			THEN CAST ( // Format(Amount * QuantityExpense / Quantity, ""ND=15; NFD=2"")
+	|			THEN CAST ( // Format(Amount * QuantityExpense / Quantity, ""ND=17; NFD=2"")
 	|				 Balance_FIFO.Amount * 
 	|				(Balance_FIFO.Quantity + LineItems_FIFO.QuantityRequested - Balance_FIFO.QuantityCumulative) /
 	|				 Balance_FIFO.Quantity
-	|				 AS NUMBER (15, 2))
+	|				 AS NUMBER (17, 2))
 	|			// The layer is not requested and left off.
 	|			ELSE 0
 	|		END

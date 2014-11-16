@@ -61,8 +61,9 @@
 			OrderData3 = New Map();
 			OrderData3.Insert("api_code",String(LineItem.Product.Ref.UUID()));
 			OrderData3.Insert("Product",LineItem.Product.Code);
-			OrderData3.Insert("quantity",LineItem.QtyUM);
+			OrderData3.Insert("quantity",LineItem.QtyUnits);
 			OrderData3.Insert("price",LineItem.PriceUnits);
+			OrderData3.Insert("UoM",LineItem.Unit);
 			OrderData3.Insert("line_total",LineItem.LineTotal);
 			
 			OrderData2.Add(OrderData3);
@@ -141,8 +142,9 @@ Function ReturnSalesInvoiceMap(NewOrder) Export
 			OrderData3 = New Map();
 			OrderData3.Insert("api_code",String(LineItem.Product.Ref.UUID()));
 			OrderData3.Insert("Product",LineItem.Product.Code);
-			OrderData3.Insert("quantity",LineItem.QtyUM);
+			OrderData3.Insert("quantity",LineItem.QtyUnits);
 			OrderData3.Insert("price",LineItem.PriceUnits);
+			OrderData3.Insert("UoM",LineItem.Unit);
 			OrderData3.Insert("line_total",LineItem.LineTotal);
 			OrderData2.Add(OrderData3);
 
@@ -262,9 +264,9 @@ Function ReturnCashReceiptMap(NewOrder) Export
 	//		//OrderData3.Insert("DeliveryDate",LineItem.DeliveryDate);
 	//		//OrderData3.Insert("Project",string(LineItem.Project));
 	//		//OrderData3.Insert("Class",string(LineItem.Class));
-			OrderData3.Insert("payment", LineItem.Payment);
-			OrderData3.Insert("balance", LineItem.Balance);
-			OrderData3.Insert("balance_fcy", LineItem.BalanceFCY);
+			//OrderData3.Insert("payment", LineItem.Payment);
+			//OrderData3.Insert("balance", LineItem.Balance);
+			//OrderData3.Insert("balance_fcy", LineItem.BalanceFCY);
 			
 			OrderData2.Add(OrderData3);
 	
@@ -298,8 +300,8 @@ Function ReturnCashReceiptMap(NewOrder) Export
 	//		//OrderData3.Insert("Project",string(LineItem.Project));
 	//		//OrderData3.Insert("Class",string(LineItem.Class));
 			OrderCM2.Insert("payment", CreditMemo.Payment);
-			OrderCM2.Insert("balance", CreditMemo.Balance);
-			OrderCM2.Insert("balance_fcy", CreditMemo.BalanceFCY);
+			//OrderCM2.Insert("balance", CreditMemo.Balance);
+			//OrderCM2.Insert("balance_fcy", CreditMemo.BalanceFCY);
 			
 			OrderCM.Add(OrderCM2);
 	
@@ -331,7 +333,7 @@ Function ReturnSalesReturnMap(NewOrder) Export
 	OrderData.Insert("email_note", NewOrder.EmailNote);
 	OrderData.Insert("memo", NewOrder.Memo);
 	OrderData.Insert("line_subtotal", NewOrder.LineSubtotal);
-	OrderData.Insert("sales_tax", NewOrder.SalesTaxRC);
+	OrderData.Insert("sales_tax", NewOrder.SalesTax);
 	OrderData.Insert("doc_total", NewOrder.DocumentTotalRC);
 	
 	
@@ -344,8 +346,9 @@ Function ReturnSalesReturnMap(NewOrder) Export
 			OrderData3.Insert("api_code", String(LineItem.Product.Ref.UUID()));
 			OrderData3.Insert("item", LineItem.Product.Code);
 			OrderData3.Insert("product_description", LineItem.ProductDescription);
-			OrderData3.Insert("quantity",LineItem.QtyUM);
+			OrderData3.Insert("quantity",LineItem.QtyUnits);
 			OrderData3.Insert("price",LineItem.PriceUnits);
+			OrderData3.Insert("UoM",LineItem.Unit);
 			OrderData3.Insert("line_total",LineItem.LineTotal);
 			
 			OrderData2.Add(OrderData3);
@@ -385,10 +388,9 @@ Function ReturnPurchaseReturnMap(NewOrder) Export
 			OrderData3.Insert("api_code", String(LineItem.Product.Ref.UUID()));
 			OrderData3.Insert("item", LineItem.Product.Code);
 			OrderData3.Insert("product_description", LineItem.ProductDescription);
-			OrderData3.Insert("quantity",LineItem.QtyUM);
+			OrderData3.Insert("quantity",LineItem.QtyUnits);
 			OrderData3.Insert("price",LineItem.PriceUnits);			
-			
-			
+			OrderData3.Insert("UoM",LineItem.Unit);
 			OrderData3.Insert("line_total",LineItem.LineTotal);
 			
 			OrderData2.Add(OrderData3);
@@ -445,8 +447,9 @@ Function ReturnPurchaseInvoiceMap(NewOrder) Export
 			OrderData3.Insert("api_code", String(LineItem.Product.Ref.UUID()));
 			OrderData3.Insert("item", LineItem.Product.Code);
 			OrderData3.Insert("product_description", LineItem.ProductDescription);
-			OrderData3.Insert("quantity",LineItem.QtyUM);
+			OrderData3.Insert("quantity",LineItem.QtyUnits);
 			OrderData3.Insert("price",LineItem.PriceUnits);
+			OrderData3.Insert("UoM",LineItem.Unit);
 			OrderData3.Insert("line_total",LineItem.LineTotal);
 			                 
 			OrderData3.Insert("order_price",LineItem.OrderPriceUnits);
@@ -855,7 +858,7 @@ Function ReturnPurchaseOrderMap(NewOrder) Export
 			OrderData3.Insert("api_code",String(LineItem.Product.Ref.UUID()));
 			OrderData3.Insert("item",LineItem.Product.Code);
 			OrderData3.Insert("item_description",LineItem.ProductDescription);
-			OrderData3.Insert("quantity",LineItem.Quantity);
+			OrderData3.Insert("quantity",lineitem.QtyUnits);
 			//OrderData3.Insert("unit_of_measure",String(LineItem.UM));
 			OrderData3.Insert("price",LineItem.Price);
 			OrderData3.Insert("line_total",LineItem.LineTotal);
@@ -918,3 +921,83 @@ Function ReturnBankReconMapNew(NewOrder) Export
 	
 	Return OrderData;
 EndFunction
+
+#If Server Or ThickClientOrdinaryApplication Or ExternalConnection Then
+
+Procedure ObjectDelete(Source, Cancel) Export
+	
+	// Prepare a structure for the document data.
+	SourceData = New Map();
+	
+	// Case by types of objects causing the event.
+	If TypeOf(Source) = Type("DocumentObject.SalesInvoice") Then
+		
+		// Send webhook on the connected API.
+		SendWebhook(Source, SourceData, Constants.sales_invoices_webhook.Get(),
+		            "salesinvoices", "delete", "GeneralFunctions.SendWebhook");
+		
+	ElsIf TypeOf(Source) = Type("DocumentObject.CashSale") Then
+		
+		// Send webhook on the connected API.
+		SendWebhook(Source, SourceData, Constants.cash_sales_webhook.Get(),
+		            "cashsales", "delete", "GeneralFunctions.SendWebhook");
+		
+	Else
+		// All other types of objects.
+	EndIf;
+	
+	
+EndProcedure
+
+Procedure ObjectWrite(Source, Cancel, PostingMode) Export
+	
+	// Case by types of objects causing the event.
+	If TypeOf(Source) = Type("DocumentObject.SalesInvoice") Then
+		
+		// Request data structure for the sales invoice.
+		SourceData = ReturnSalesInvoiceMap(Source.Ref);
+		
+		// Send webhook on the connected API.
+		SendWebhook(Source, SourceData, Constants.sales_invoices_webhook.Get(),
+		            "salesinvoices", ?(Source.AdditionalProperties.IsNew, "create", "update"),
+		            "GeneralFunctions.SendWebhook");
+		
+	ElsIf TypeOf(Source) = Type("DocumentObject.CashSale") Then
+		
+		// Request data structure for the sales invoice.
+		SourceData = ReturnCashSaleMap(Source.Ref);
+		
+		// Send webhook on the connected API.
+		SendWebhook(Source, SourceData, Constants.cash_sales_webhook.Get(),
+		            "cashsales", ?(Source.AdditionalProperties.IsNew, "create", "update"),
+		            "GeneralFunctions.SendWebhook");		
+	Else
+		// All other types of objects.
+	EndIf;
+	
+EndProcedure
+
+Procedure SendWebhook(Source, Data, Url, Resource, Action, Handler)
+	
+	// Check passed data.
+	If Not IsBlankString(Url) Then
+		
+		// Finetune webhook params.
+		If Data = Undefined Then Data = New Map(); EndIf;
+		Data.Insert("apisecretkey", Constants.APISecretKey.Get());
+		Data.Insert("resource",     Resource);
+		Data.Insert("action",       Action);
+		Data.Insert("api_code",     String(Source.Ref.UUID()));
+		
+		// Create function call parameters.
+		Params = New Array();
+		Params.Add(Url);
+		Params.Add(Data);
+		
+		// Call handler in a background.
+		LongActions.ExecuteInBackground(Handler, Params);
+	EndIf;
+	
+EndProcedure
+
+#EndIf

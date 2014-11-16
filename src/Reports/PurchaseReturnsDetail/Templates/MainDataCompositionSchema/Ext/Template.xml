@@ -124,16 +124,26 @@
 			<dataPath>Unit</dataPath>
 			<field>Unit</field>
 		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>QtyUM</dataPath>
+			<field>QtyUM</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>UnitSet</dataPath>
+			<field>UnitSet</field>
+		</field>
 		<dataSource>DataSource1</dataSource>
 		<query>SELECT
 	PurchaseReturnLineItems.Ref,
 	PurchaseReturnLineItems.LineNumber,
 	PurchaseReturnLineItems.Product,
+	PurchaseReturnLineItems.ProductDescription,
+	PurchaseReturnLineItems.UnitSet,
 	PurchaseReturnLineItems.QtyUnits,
 	PurchaseReturnLineItems.Unit,
+	PurchaseReturnLineItems.QtyUM,
 	PurchaseReturnLineItems.PriceUnits,
 	PurchaseReturnLineItems.LineTotal,
-	PurchaseReturnLineItems.ProductDescription,
 	PurchaseReturnLineItems.Ref.Ref AS Ref1,
 	PurchaseReturnLineItems.Ref.DataVersion,
 	PurchaseReturnLineItems.Ref.DeletionMark,
@@ -167,22 +177,19 @@ FROM
 					<dcsset:field>ProductDescription</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>Product</dcsset:field>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>QtyUnits</dcsset:field>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>Unit</dcsset:field>
+					<dcsset:field>LineNumber</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>PriceUnits</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>LineNumber</dcsset:field>
+					<dcsset:field>Product</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>LineTotal</dcsset:field>
+					<dcsset:field>QtyUM</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>QtyUnits</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Ref1</dcsset:field>
@@ -246,6 +253,15 @@ FROM
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>ReturnType</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>LineTotal</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>UnitSet</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Unit</dcsset:field>
 				</dcsset:item>
 			</dcsset:selection>
 			<dcsset:item xsi:type="dcsset:StructureItemGroup">

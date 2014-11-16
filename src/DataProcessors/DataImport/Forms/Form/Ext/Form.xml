@@ -179,7 +179,7 @@
 												<Presentation>
 													<v8:item>
 														<v8:lang>en</v8:lang>
-														<v8:content>Products</v8:content>
+														<v8:content>Items</v8:content>
 													</v8:item>
 												</Presentation>
 												<Value xsi:type="xs:string">Items</Value>
@@ -231,10 +231,36 @@
 												<Presentation>
 													<v8:item>
 														<v8:lang>en</v8:lang>
+														<v8:content>Journal entries</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">Journal entries</Value>
+											</xr:Value>
+										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
 														<v8:content>Expensify</v8:content>
 													</v8:item>
 												</Presentation>
 												<Value xsi:type="xs:string">Expensify</Value>
+											</xr:Value>
+										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>Classes</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">Classes</Value>
 											</xr:Value>
 										</xr:Item>
 									</ChoiceList>
@@ -465,29 +491,29 @@
 									<ContextMenu name="AttributesContextMenu" id="8"/>
 									<AutoCommandBar name="AttributesCommandBar" id="9"/>
 									<ExtendedTooltip name="AttributesExtendedTooltip" id="276"/>
-									<SearchStringAddition name="AttributesSearchString" id="734">
+									<SearchStringAddition name="AttributesSearchString" id="761">
 										<AdditionSource>
 											<Item>Attributes</Item>
 											<Type>SearchStringRepresentation</Type>
 										</AdditionSource>
-										<ContextMenu name="AttributesSearchStringContextMenu" id="735"/>
-										<ExtendedTooltip name="AttributesSearchStringExtendedTooltip" id="736"/>
+										<ContextMenu name="AttributesSearchStringContextMenu" id="762"/>
+										<ExtendedTooltip name="AttributesSearchStringExtendedTooltip" id="763"/>
 									</SearchStringAddition>
-									<ViewStatusAddition name="AttributesViewStatus" id="737">
+									<ViewStatusAddition name="AttributesViewStatus" id="764">
 										<AdditionSource>
 											<Item>Attributes</Item>
 											<Type>ViewStatusRepresentation</Type>
 										</AdditionSource>
-										<ContextMenu name="AttributesViewStatusContextMenu" id="738"/>
-										<ExtendedTooltip name="AttributesViewStatusExtendedTooltip" id="739"/>
+										<ContextMenu name="AttributesViewStatusContextMenu" id="765"/>
+										<ExtendedTooltip name="AttributesViewStatusExtendedTooltip" id="766"/>
 									</ViewStatusAddition>
-									<SearchControlAddition name="AttributesSearchControl" id="740">
+									<SearchControlAddition name="AttributesSearchControl" id="767">
 										<AdditionSource>
 											<Item>Attributes</Item>
 											<Type>SearchControl</Type>
 										</AdditionSource>
-										<ContextMenu name="AttributesSearchControlContextMenu" id="741"/>
-										<ExtendedTooltip name="AttributesSearchControlExtendedTooltip" id="742"/>
+										<ContextMenu name="AttributesSearchControlContextMenu" id="768"/>
+										<ExtendedTooltip name="AttributesSearchControlExtendedTooltip" id="769"/>
 									</SearchControlAddition>
 									<ChildItems>
 										<InputField name="AttributesAttributeName" id="10">
@@ -660,29 +686,29 @@
 								</ChildItems>
 							</AutoCommandBar>
 							<ExtendedTooltip name="DataListExtendedTooltip" id="289"/>
-							<SearchStringAddition name="DataListSearchString" id="743">
+							<SearchStringAddition name="DataListSearchString" id="770">
 								<AdditionSource>
 									<Item>DataList</Item>
 									<Type>SearchStringRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="DataListSearchStringContextMenu" id="744"/>
-								<ExtendedTooltip name="DataListSearchStringExtendedTooltip" id="745"/>
+								<ContextMenu name="DataListSearchStringContextMenu" id="771"/>
+								<ExtendedTooltip name="DataListSearchStringExtendedTooltip" id="772"/>
 							</SearchStringAddition>
-							<ViewStatusAddition name="DataListViewStatus" id="746">
+							<ViewStatusAddition name="DataListViewStatus" id="773">
 								<AdditionSource>
 									<Item>DataList</Item>
 									<Type>ViewStatusRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="DataListViewStatusContextMenu" id="747"/>
-								<ExtendedTooltip name="DataListViewStatusExtendedTooltip" id="748"/>
+								<ContextMenu name="DataListViewStatusContextMenu" id="774"/>
+								<ExtendedTooltip name="DataListViewStatusExtendedTooltip" id="775"/>
 							</ViewStatusAddition>
-							<SearchControlAddition name="DataListSearchControl" id="749">
+							<SearchControlAddition name="DataListSearchControl" id="776">
 								<AdditionSource>
 									<Item>DataList</Item>
 									<Type>SearchControl</Type>
 								</AdditionSource>
-								<ContextMenu name="DataListSearchControlContextMenu" id="750"/>
-								<ExtendedTooltip name="DataListSearchControlExtendedTooltip" id="751"/>
+								<ContextMenu name="DataListSearchControlContextMenu" id="777"/>
+								<ExtendedTooltip name="DataListSearchControlExtendedTooltip" id="778"/>
 							</SearchControlAddition>
 							<ChildItems>
 								<LabelField name="DataListLineNumber" id="116">
@@ -1092,24 +1118,6 @@
 									<ContextMenu name="DataListAddressCF5StringContextMenu" id="680"/>
 									<ExtendedTooltip name="DataListAddressCF5StringExtendedTooltip" id="681"/>
 								</InputField>
-								<InputField name="DataListBalancesAccount" id="211">
-									<DataPath>Object.DataList.BalancesAccount</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListBalancesAccountContextMenu" id="212"/>
-									<ExtendedTooltip name="DataListBalancesAccountExtendedTooltip" id="313"/>
-								</InputField>
-								<InputField name="DataListBalancesDebit" id="207">
-									<DataPath>Object.DataList.BalancesDebit</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListBalancesDebitContextMenu" id="208"/>
-									<ExtendedTooltip name="DataListBalancesDebitExtendedTooltip" id="314"/>
-								</InputField>
-								<InputField name="DataListBalancesCredit" id="209">
-									<DataPath>Object.DataList.BalancesCredit</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListBalancesCreditContextMenu" id="210"/>
-									<ExtendedTooltip name="DataListBalancesCreditExtendedTooltip" id="315"/>
-								</InputField>
 								<InputField name="DataListProductType" id="217">
 									<DataPath>Object.DataList.ProductType</DataPath>
 									<EditMode>EnterOnInput</EditMode>
@@ -1308,135 +1316,111 @@
 								</InputField>
 								<InputField name="DataListCheckDate" id="346">
 									<DataPath>Object.DataList.CheckDate</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Date</v8:content>
+										</v8:item>
+									</Title>
 									<EditMode>EnterOnInput</EditMode>
 									<ContextMenu name="DataListCheckDateContextMenu" id="347"/>
 									<ExtendedTooltip name="DataListCheckDateExtendedTooltip" id="348"/>
 								</InputField>
 								<InputField name="DataListCheckNumber" id="349">
 									<DataPath>Object.DataList.CheckNumber</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Number</v8:content>
+										</v8:item>
+									</Title>
 									<EditMode>EnterOnInput</EditMode>
 									<ContextMenu name="DataListCheckNumberContextMenu" id="350"/>
 									<ExtendedTooltip name="DataListCheckNumberExtendedTooltip" id="351"/>
 								</InputField>
 								<InputField name="DataListCheckBankAccount" id="352">
 									<DataPath>Object.DataList.CheckBankAccount</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Bank acc.</v8:content>
+										</v8:item>
+									</Title>
 									<EditMode>EnterOnInput</EditMode>
 									<ContextMenu name="DataListCheckBankAccountContextMenu" id="353"/>
 									<ExtendedTooltip name="DataListCheckBankAccountExtendedTooltip" id="354"/>
 								</InputField>
 								<InputField name="DataListCheckVendor" id="355">
 									<DataPath>Object.DataList.CheckVendor</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Vendor</v8:content>
+										</v8:item>
+									</Title>
 									<EditMode>EnterOnInput</EditMode>
 									<ContextMenu name="DataListCheckVendorContextMenu" id="356"/>
 									<ExtendedTooltip name="DataListCheckVendorExtendedTooltip" id="357"/>
 								</InputField>
 								<InputField name="DataListCheckMemo" id="358">
 									<DataPath>Object.DataList.CheckMemo</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Memo</v8:content>
+										</v8:item>
+									</Title>
 									<EditMode>EnterOnInput</EditMode>
 									<ContextMenu name="DataListCheckMemoContextMenu" id="359"/>
 									<ExtendedTooltip name="DataListCheckMemoExtendedTooltip" id="360"/>
 								</InputField>
 								<InputField name="DataListCheckLineAccount" id="361">
 									<DataPath>Object.DataList.CheckLineAccount</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Line account</v8:content>
+										</v8:item>
+									</Title>
 									<EditMode>EnterOnInput</EditMode>
 									<ContextMenu name="DataListCheckLineAccountContextMenu" id="362"/>
 									<ExtendedTooltip name="DataListCheckLineAccountExtendedTooltip" id="363"/>
 								</InputField>
 								<InputField name="DataListCheckLineMemo" id="364">
 									<DataPath>Object.DataList.CheckLineMemo</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Line memo</v8:content>
+										</v8:item>
+									</Title>
 									<EditMode>EnterOnInput</EditMode>
 									<ContextMenu name="DataListCheckLineMemoContextMenu" id="365"/>
 									<ExtendedTooltip name="DataListCheckLineMemoExtendedTooltip" id="366"/>
 								</InputField>
 								<InputField name="DataListCheckLineAmount" id="367">
 									<DataPath>Object.DataList.CheckLineAmount</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Line amount</v8:content>
+										</v8:item>
+									</Title>
 									<EditMode>EnterOnInput</EditMode>
 									<ContextMenu name="DataListCheckLineAmountContextMenu" id="368"/>
 									<ExtendedTooltip name="DataListCheckLineAmountExtendedTooltip" id="369"/>
 								</InputField>
-								<InputField name="DataListSIHeaderMemo" id="517">
-									<DataPath>Object.DataList.SIHeaderMemo</DataPath>
+								<InputField name="DataListCheckLineClass" id="740">
+									<DataPath>Object.DataList.CheckLineClass</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Line class</v8:content>
+										</v8:item>
+									</Title>
 									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListSIHeaderMemoContextMenu" id="518"/>
-									<ExtendedTooltip name="DataListSIHeaderMemoExtendedTooltip" id="519"/>
-								</InputField>
-								<InputField name="DataListSIHeaderDate" id="370">
-									<DataPath>Object.DataList.SIHeaderDate</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListSIHeaderDateContextMenu" id="371"/>
-									<ExtendedTooltip name="DataListSIHeaderDateExtendedTooltip" id="372"/>
-								</InputField>
-								<InputField name="DataListSIHeaderNumber" id="373">
-									<DataPath>Object.DataList.SIHeaderNumber</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListSIHeaderNumberContextMenu" id="374"/>
-									<ExtendedTooltip name="DataListSIHeaderNumberExtendedTooltip" id="375"/>
-								</InputField>
-								<InputField name="DataListSIHeaderPO" id="376">
-									<DataPath>Object.DataList.SIHeaderPO</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListSIHeaderPOContextMenu" id="377"/>
-									<ExtendedTooltip name="DataListSIHeaderPOExtendedTooltip" id="378"/>
-								</InputField>
-								<InputField name="DataListSIHeaderCustomer" id="379">
-									<DataPath>Object.DataList.SIHeaderCustomer</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListSIHeaderCustomerContextMenu" id="380"/>
-									<ExtendedTooltip name="DataListSIHeaderCustomerExtendedTooltip" id="381"/>
-								</InputField>
-								<InputField name="DataListSIHeaderTerms" id="382">
-									<DataPath>Object.DataList.SIHeaderTerms</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListSIHeaderTermsContextMenu" id="383"/>
-									<ExtendedTooltip name="DataListSIHeaderTermsExtendedTooltip" id="384"/>
-								</InputField>
-								<InputField name="DataListSIHeaderDueDate" id="385">
-									<DataPath>Object.DataList.SIHeaderDueDate</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListSIHeaderDueDateContextMenu" id="386"/>
-									<ExtendedTooltip name="DataListSIHeaderDueDateExtendedTooltip" id="387"/>
-								</InputField>
-								<InputField name="DataListSIHeaderAmount" id="388">
-									<DataPath>Object.DataList.SIHeaderAmount</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListSIHeaderAmountContextMenu" id="389"/>
-									<ExtendedTooltip name="DataListSIHeaderAmountExtendedTooltip" id="390"/>
-								</InputField>
-								<InputField name="DataListAPDate" id="391">
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListAPDateContextMenu" id="392"/>
-									<ExtendedTooltip name="DataListAPDateExtendedTooltip" id="393"/>
-								</InputField>
-								<InputField name="DataListAPNumber" id="394">
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListAPNumberContextMenu" id="395"/>
-									<ExtendedTooltip name="DataListAPNumberExtendedTooltip" id="396"/>
-								</InputField>
-								<InputField name="DataListAPVendor" id="397">
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListAPVendorContextMenu" id="398"/>
-									<ExtendedTooltip name="DataListAPVendorExtendedTooltip" id="399"/>
-								</InputField>
-								<InputField name="DataListAPTerms" id="400">
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListAPTermsContextMenu" id="401"/>
-									<ExtendedTooltip name="DataListAPTermsExtendedTooltip" id="402"/>
-								</InputField>
-								<InputField name="DataListAPDueDate" id="403">
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListAPDueDateContextMenu" id="404"/>
-									<ExtendedTooltip name="DataListAPDueDateExtendedTooltip" id="405"/>
-								</InputField>
-								<InputField name="DataListAPOpenBalance" id="406">
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListAPOpenBalanceContextMenu" id="407"/>
-									<ExtendedTooltip name="DataListAPOpenBalanceExtendedTooltip" id="408"/>
-								</InputField>
-								<InputField name="DataListGJHeaderNumber" id="409">
-									<DataPath>Object.DataList.GJHeaderNumber</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListGJHeaderNumberContextMenu" id="410"/>
-									<ExtendedTooltip name="DataListGJHeaderNumberExtendedTooltip" id="411"/>
+									<ContextMenu name="DataListCheckLineClassContextMenu" id="741"/>
+									<ExtendedTooltip name="DataListCheckLineClassExtendedTooltip" id="742"/>
 								</InputField>
 								<InputField name="DataListGJHeaderDate" id="412">
 									<DataPath>Object.DataList.GJHeaderDate</DataPath>
@@ -1450,173 +1434,65 @@
 									<ContextMenu name="DataListGJHeaderMemoContextMenu" id="416"/>
 									<ExtendedTooltip name="DataListGJHeaderMemoExtendedTooltip" id="417"/>
 								</InputField>
+								<InputField name="DataListGJHeaderRowNumber" id="743">
+									<DataPath>Object.DataList.GJHeaderRowNumber</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="DataListGJHeaderRowNumberContextMenu" id="744"/>
+									<ExtendedTooltip name="DataListGJHeaderRowNumberExtendedTooltip" id="745"/>
+								</InputField>
+								<InputField name="DataListGJHeaderType" id="746">
+									<DataPath>Object.DataList.GJHeaderType</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="DataListGJHeaderTypeContextMenu" id="747"/>
+									<ExtendedTooltip name="DataListGJHeaderTypeExtendedTooltip" id="748"/>
+								</InputField>
+								<InputField name="DataListGJHeaderAccount" id="749">
+									<DataPath>Object.DataList.GJHeaderAccount</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Line account</v8:content>
+										</v8:item>
+									</Title>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="DataListGJHeaderAccountContextMenu" id="750"/>
+									<ExtendedTooltip name="DataListGJHeaderAccountExtendedTooltip" id="751"/>
+								</InputField>
 								<InputField name="DataListGJHeaderAmount" id="418">
 									<DataPath>Object.DataList.GJHeaderAmount</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Line amount</v8:content>
+										</v8:item>
+									</Title>
 									<EditMode>EnterOnInput</EditMode>
 									<ContextMenu name="DataListGJHeaderAmountContextMenu" id="419"/>
 									<ExtendedTooltip name="DataListGJHeaderAmountExtendedTooltip" id="420"/>
 								</InputField>
-								<InputField name="DataListGJHeaderARorAP" id="421">
-									<DataPath>Object.DataList.GJHeaderARorAP</DataPath>
+								<InputField name="DataListGJHeaderClass" id="752">
+									<DataPath>Object.DataList.GJHeaderClass</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Line class</v8:content>
+										</v8:item>
+									</Title>
 									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListGJHeaderARorAPContextMenu" id="422"/>
-									<ExtendedTooltip name="DataListGJHeaderARorAPExtendedTooltip" id="423"/>
+									<ContextMenu name="DataListGJHeaderClassContextMenu" id="753"/>
+									<ExtendedTooltip name="DataListGJHeaderClassExtendedTooltip" id="754"/>
 								</InputField>
-								<InputField name="DataListGJDetailHeader" id="424">
-									<DataPath>Object.DataList.GJDetailHeader</DataPath>
+								<InputField name="DataListGJHeaderLineMemo" id="755">
+									<DataPath>Object.DataList.GJHeaderLineMemo</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Line memo</v8:content>
+										</v8:item>
+									</Title>
 									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListGJDetailHeaderContextMenu" id="425"/>
-									<ExtendedTooltip name="DataListGJDetailHeaderExtendedTooltip" id="426"/>
-								</InputField>
-								<InputField name="DataListGJDetailAccount" id="427">
-									<DataPath>Object.DataList.GJDetailAccount</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListGJDetailAccountContextMenu" id="428"/>
-									<ExtendedTooltip name="DataListGJDetailAccountExtendedTooltip" id="429"/>
-								</InputField>
-								<InputField name="DataListGJDetailDr" id="430">
-									<DataPath>Object.DataList.GJDetailDr</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListGJDetailDrContextMenu" id="431"/>
-									<ExtendedTooltip name="DataListGJDetailDrExtendedTooltip" id="432"/>
-								</InputField>
-								<InputField name="DataListGJDetailCr" id="433">
-									<DataPath>Object.DataList.GJDetailCr</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListGJDetailCrContextMenu" id="434"/>
-									<ExtendedTooltip name="DataListGJDetailCrExtendedTooltip" id="435"/>
-								</InputField>
-								<InputField name="DataListGJDetailMemo" id="436">
-									<DataPath>Object.DataList.GJDetailMemo</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListGJDetailMemoContextMenu" id="437"/>
-									<ExtendedTooltip name="DataListGJDetailMemoExtendedTooltip" id="438"/>
-								</InputField>
-								<InputField name="DataListGJDetailCompany" id="439">
-									<DataPath>Object.DataList.GJDetailCompany</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListGJDetailCompanyContextMenu" id="440"/>
-									<ExtendedTooltip name="DataListGJDetailCompanyExtendedTooltip" id="441"/>
-								</InputField>
-								<InputField name="DataListSIDetailHeader" id="442">
-									<DataPath>Object.DataList.SIDetailHeader</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListSIDetailHeaderContextMenu" id="443"/>
-									<ExtendedTooltip name="DataListSIDetailHeaderExtendedTooltip" id="444"/>
-								</InputField>
-								<InputField name="DataListSIDetailProduct" id="445">
-									<DataPath>Object.DataList.SIDetailProduct</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListSIDetailProductContextMenu" id="446"/>
-									<ExtendedTooltip name="DataListSIDetailProductExtendedTooltip" id="447"/>
-								</InputField>
-								<InputField name="DataListSIDetailQty" id="448">
-									<DataPath>Object.DataList.SIDetailQty</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListSIDetailQtyContextMenu" id="449"/>
-									<ExtendedTooltip name="DataListSIDetailQtyExtendedTooltip" id="450"/>
-								</InputField>
-								<InputField name="DataListSIDetailPrice" id="451">
-									<DataPath>Object.DataList.SIDetailPrice</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListSIDetailPriceContextMenu" id="452"/>
-									<ExtendedTooltip name="DataListSIDetailPriceExtendedTooltip" id="453"/>
-								</InputField>
-								<InputField name="DataListPIHeaderNumber" id="454">
-									<DataPath>Object.DataList.PIHeaderNumber</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListPIHeaderNumberContextMenu" id="455"/>
-									<ExtendedTooltip name="DataListPIHeaderNumberExtendedTooltip" id="456"/>
-								</InputField>
-								<InputField name="DataListPIHeaderDate" id="457">
-									<DataPath>Object.DataList.PIHeaderDate</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListPIHeaderDateContextMenu" id="458"/>
-									<ExtendedTooltip name="DataListPIHeaderDateExtendedTooltip" id="459"/>
-								</InputField>
-								<InputField name="DataListPIHeaderVendor" id="460">
-									<DataPath>Object.DataList.PIHeaderVendor</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListPIHeaderVendorContextMenu" id="461"/>
-									<ExtendedTooltip name="DataListPIHeaderVendorExtendedTooltip" id="462"/>
-								</InputField>
-								<InputField name="DataListPIHeaderDueDate" id="463">
-									<DataPath>Object.DataList.PIHeaderDueDate</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListPIHeaderDueDateContextMenu" id="464"/>
-									<ExtendedTooltip name="DataListPIHeaderDueDateExtendedTooltip" id="465"/>
-								</InputField>
-								<InputField name="DataListPIHeaderTerms" id="466">
-									<DataPath>Object.DataList.PIHeaderTerms</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListPIHeaderTermsContextMenu" id="467"/>
-									<ExtendedTooltip name="DataListPIHeaderTermsExtendedTooltip" id="468"/>
-								</InputField>
-								<InputField name="DataListPIHeaderMemo" id="469">
-									<DataPath>Object.DataList.PIHeaderMemo</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListPIHeaderMemoContextMenu" id="470"/>
-									<ExtendedTooltip name="DataListPIHeaderMemoExtendedTooltip" id="471"/>
-								</InputField>
-								<InputField name="DataListPIHeaderAmount" id="472">
-									<DataPath>Object.DataList.PIHeaderAmount</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListPIHeaderAmountContextMenu" id="473"/>
-									<ExtendedTooltip name="DataListPIHeaderAmountExtendedTooltip" id="474"/>
-								</InputField>
-								<InputField name="DataListPIDetailHeader" id="475">
-									<DataPath>Object.DataList.PIDetailHeader</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListPIDetailHeaderContextMenu" id="476"/>
-									<ExtendedTooltip name="DataListPIDetailHeaderExtendedTooltip" id="477"/>
-								</InputField>
-								<InputField name="DataListPIDetailAccount" id="478">
-									<DataPath>Object.DataList.PIDetailAccount</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListPIDetailAccountContextMenu" id="479"/>
-									<ExtendedTooltip name="DataListPIDetailAccountExtendedTooltip" id="480"/>
-								</InputField>
-								<InputField name="DataListPIDetailAmount" id="481">
-									<DataPath>Object.DataList.PIDetailAmount</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListPIDetailAmountContextMenu" id="482"/>
-									<ExtendedTooltip name="DataListPIDetailAmountExtendedTooltip" id="483"/>
-								</InputField>
-								<InputField name="DataListPIDetailMemo" id="484">
-									<DataPath>Object.DataList.PIDetailMemo</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListPIDetailMemoContextMenu" id="485"/>
-									<ExtendedTooltip name="DataListPIDetailMemoExtendedTooltip" id="486"/>
-								</InputField>
-								<InputField name="DataListIPHeaderNumber" id="487">
-									<DataPath>Object.DataList.IPHeaderNumber</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListIPHeaderNumberContextMenu" id="488"/>
-									<ExtendedTooltip name="DataListIPHeaderNumberExtendedTooltip" id="489"/>
-								</InputField>
-								<InputField name="DataListIPHeaderDate" id="490">
-									<DataPath>Object.DataList.IPHeaderDate</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListIPHeaderDateContextMenu" id="491"/>
-									<ExtendedTooltip name="DataListIPHeaderDateExtendedTooltip" id="492"/>
-								</InputField>
-								<InputField name="DataListIPHeaderVendor" id="493">
-									<DataPath>Object.DataList.IPHeaderVendor</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListIPHeaderVendorContextMenu" id="494"/>
-									<ExtendedTooltip name="DataListIPHeaderVendorExtendedTooltip" id="495"/>
-								</InputField>
-								<InputField name="DataListIPHeaderMemo" id="496">
-									<DataPath>Object.DataList.IPHeaderMemo</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListIPHeaderMemoContextMenu" id="497"/>
-									<ExtendedTooltip name="DataListIPHeaderMemoExtendedTooltip" id="498"/>
-								</InputField>
-								<InputField name="DataListIPHeaderAmount" id="499">
-									<DataPath>Object.DataList.IPHeaderAmount</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListIPHeaderAmountContextMenu" id="500"/>
-									<ExtendedTooltip name="DataListIPHeaderAmountExtendedTooltip" id="501"/>
+									<ContextMenu name="DataListGJHeaderLineMemoContextMenu" id="756"/>
+									<ExtendedTooltip name="DataListGJHeaderLineMemoExtendedTooltip" id="757"/>
 								</InputField>
 								<InputField name="DataListExpensifyAccount" id="529">
 									<DataPath>Object.DataList.ExpensifyAccount</DataPath>
@@ -1686,11 +1562,41 @@
 									<ContextMenu name="DataListDepositLineAmountContextMenu" id="729"/>
 									<ExtendedTooltip name="DataListDepositLineAmountExtendedTooltip" id="730"/>
 								</InputField>
+								<InputField name="DataListDepositLineClass" id="758">
+									<DataPath>Object.DataList.DepositLineClass</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Line class</v8:content>
+										</v8:item>
+									</Title>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="DataListDepositLineClassContextMenu" id="759"/>
+									<ExtendedTooltip name="DataListDepositLineClassExtendedTooltip" id="760"/>
+								</InputField>
 								<InputField name="DataListDepositLineMemo" id="731">
 									<DataPath>Object.DataList.DepositLineMemo</DataPath>
 									<EditMode>EnterOnInput</EditMode>
 									<ContextMenu name="DataListDepositLineMemoContextMenu" id="732"/>
 									<ExtendedTooltip name="DataListDepositLineMemoExtendedTooltip" id="733"/>
+								</InputField>
+								<InputField name="DataListClassName" id="734">
+									<DataPath>Object.DataList.ClassName</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Name</v8:content>
+										</v8:item>
+									</Title>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="DataListClassNameContextMenu" id="735"/>
+									<ExtendedTooltip name="DataListClassNameExtendedTooltip" id="736"/>
+								</InputField>
+								<InputField name="DataListSubClassOf" id="737">
+									<DataPath>Object.DataList.SubClassOf</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="DataListSubClassOfContextMenu" id="738"/>
+									<ExtendedTooltip name="DataListSubClassOfExtendedTooltip" id="739"/>
 								</InputField>
 							</ChildItems>
 						</Table>

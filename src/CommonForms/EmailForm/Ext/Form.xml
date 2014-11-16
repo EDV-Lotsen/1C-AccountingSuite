@@ -237,6 +237,7 @@
 				<v8:Type>cfg:DocumentRef.CashSale</v8:Type>
 				<v8:Type>cfg:DocumentRef.SalesReturn</v8:Type>
 				<v8:Type>cfg:DocumentRef.Quote</v8:Type>
+				<v8:Type>cfg:DocumentRef.Statement</v8:Type>
 				<v8:Type>cfg:DocumentRef.CashReceipt</v8:Type>
 				<v8:Type>cfg:DocumentRef.PurchaseOrder</v8:Type>
 				<v8:Type>cfg:DocumentRef.SalesInvoice</v8:Type>
@@ -293,6 +294,17 @@
 					<v8:Length>0</v8:Length>
 					<v8:AllowedLength>Variable</v8:AllowedLength>
 				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="ValidEmails" id="9">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Valid emails</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
 			</Type>
 		</Attribute>
 	</Attributes>

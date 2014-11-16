@@ -121,14 +121,12 @@
 				<dcscom:periodNumber>2</dcscom:periodNumber>
 				<dcscom:periodType>Additional</dcscom:periodType>
 				<dcscom:ignoreNullValues>true</dcscom:ignoreNullValues>
+				<dcscom:required>true</dcscom:required>
 			</role>
 		</field>
 		<field xsi:type="DataSetFieldField">
 			<dataPath>SalesPerson</dataPath>
 			<field>SalesPerson</field>
-			<role>
-				<dcscom:dimension>true</dcscom:dimension>
-			</role>
 			<presentationExpression>CASE
 	WHEN SalesPerson = VALUE(Catalog.SalesPeople.EmptyRef)
 		THEN "Unmarked"
@@ -163,7 +161,7 @@ END</presentationExpression>
 		<dataSource>DataSource1</dataSource>
 		<query>SELECT ALLOWED
 	SystemTitle.Value AS OurCompany,
-	CashFlowDataTurnovers.SalesPerson AS SalesPerson,
+	ISNULL(CashFlowDataTurnovers.Document.SalesPerson, VALUE(Catalog.SalesPeople.EmptyRef)) AS SalesPerson,
 	CashFlowDataTurnovers.LineNumber AS LineNumber,
 	CashFlowDataTurnovers.Recorder AS Recorder,
 	CashFlowDataTurnovers.DayPeriod AS DayPeriod,
@@ -186,13 +184,14 @@ FROM
 			,
 			,
 			Auto,
-			Account.AccountType IN (VALUE(Enum.AccountTypes.Income), VALUE(Enum.AccountTypes.OtherIncome))
-				
-				OR Account = VALUE(ChartOfAccounts.ChartOfAccounts.EmptyRef)) AS CashFlowDataTurnovers
+			(Document REFS Document.SalesInvoice
+				OR Document REFS Document.CashSale
+				OR Document REFS Document.SalesReturn)
+				AND Account.AccountType &lt;&gt; VALUE(Enum.AccountTypes.OtherCurrentLiability)) AS CashFlowDataTurnovers
 		LEFT JOIN Constant.SystemTitle AS SystemTitle
 		ON (TRUE)
 WHERE
-	CashFlowDataTurnovers.Recorder REFS Document.CashReceipt
+	CashFlowDataTurnovers.AmountRCReceipt &lt;&gt; 0
 {WHERE
 	CashFlowDataTurnovers.SalesPerson AS SalesPerson,
 	CashFlowDataTurnovers.LineNumber AS LineNumber,
@@ -533,6 +532,12 @@ WHERE
 					<dcsset:comparisonType>Equal</dcsset:comparisonType>
 					<dcsset:viewMode>Normal</dcsset:viewMode>
 					<dcsset:userSettingID>d7140134-32f1-4f71-8285-748f748897d4</dcsset:userSettingID>
+					<dcsset:userSettingPresentation xsi:type="v8:LocalStringType">
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Sales person</v8:content>
+						</v8:item>
+					</dcsset:userSettingPresentation>
 				</dcsset:item>
 			</dcsset:filter>
 			<dcsset:dataParameters>

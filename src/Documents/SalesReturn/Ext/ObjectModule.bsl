@@ -22,8 +22,8 @@ Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 	Or WriteMode = DocumentWriteMode.UndoPosting Then
 		
 		// Common filling of parameters.
-		DocumentParameters = New Structure("Ref, Date, IsNew,   Posted, ManualAdjustment, Metadata",
-		                                    Ref, Date, IsNew(), Posted, ManualAdjustment, Metadata());
+		DocumentParameters = New Structure("Ref, Date, IsNew,   Posted, ManualAdjustment, Metadata  , ReturnType",
+		                                    Ref, Date, IsNew(), Posted, ManualAdjustment, Metadata(), ReturnType);
 		DocumentPosting.PrepareDataStructuresBeforeWrite(AdditionalProperties, DocumentParameters, Cancel, WriteMode, PostingMode);
 	EndIf;
 	
@@ -33,12 +33,14 @@ Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 		// Precheck of document data, calculation of temporary data, required for document posting.
 		If (Not ManualAdjustment) Then
 			DocumentParameters = New Structure("Ref, PointInTime,   Company, Location, LineItems",
-			                                    Ref, PointInTime(), Company, Location, LineItems.Unload(, "Product, Unit, QtyUM"));
+			                                    Ref, PointInTime(), Company, Location, LineItems.Unload(, "Product, Unit, QtyUM, Project, Class"));
 			Documents.SalesReturn.PrepareDataBeforeWrite(AdditionalProperties, DocumentParameters, Cancel);
 		EndIf;
 		
 	EndIf;
 	
+	AvaTaxServer.AvataxDocumentBeforeWrite(ThisObject, Cancel);
+		
 EndProcedure
 
 Procedure Filling(FillingData, StandardProcessing)
@@ -51,38 +53,46 @@ Procedure Filling(FillingData, StandardProcessing)
 		// Filling of the new created document with default values.
 		Currency         = Constants.DefaultCurrency.Get();
 		ExchangeRate     = GeneralFunctions.GetExchangeRate(Date, Currency);
-		Location         = Catalogs.Locations.MainWarehouse;
+		Location         = GeneralFunctions.GetDefaultLocation();
 		
 	Else
 		// Generate on the base of sales invoice document.
 		If (TypeOf(FillingData) = Type("DocumentRef.SalesInvoice")) Then
 			
 			// -> CODE REVIEW
-			ParentDocument    = FillingData.Ref;
-			Company           = FillingData.Company;
-			DocumentTotal     = FillingData.DocumentTotal;
-			DocumentTotalRC   = FillingData.DocumentTotalRC;
-			SalesTaxRC        = FillingData.SalesTaxRC;
-			Currency          = FillingData.Currency;
-			ExchangeRate      = FillingData.ExchangeRate;
-			ARAccount         = FillingData.ARAccount;
-			Location          = FillingData.LocationActual;
-			ARAccount         = FillingData.ARAccount;
-			LineSubtotalRC    = FillingData.LineSubtotal;
-			SalesTaxRate      = FillingData.SalesTaxRate;
-			DiscountPercent   = FillingData.DiscountPercent;
-			Discount          = FillingData.Discount;
-			DiscountIsTaxable = FillingData.DiscountIsTaxable;
+			ParentDocument    		= FillingData.Ref;
+			Company          		= FillingData.Company;
+			DocumentTotal     		= FillingData.DocumentTotal;
+			DocumentTotalRC   		= FillingData.DocumentTotalRC;
+			SalesTax        		= FillingData.SalesTax;
+			Currency          		= FillingData.Currency;
+			ExchangeRate      		= FillingData.ExchangeRate;
+			ARAccount         		= FillingData.ARAccount;
+			Location          		= FillingData.LocationActual;
+			ARAccount         		= FillingData.ARAccount;
+			LineSubtotalRC    		= FillingData.LineSubtotal;
+			SalesTaxRate      		= FillingData.SalesTaxRate;
+			DiscountPercent   		= FillingData.DiscountPercent;
+			Discount          		= FillingData.Discount;
+			DiscountIsTaxable 		= FillingData.DiscountIsTaxable;
+			SalesPerson       		= FillingData.SalesPerson;
+			UseAvatax		  		= FillingData.UseAvatax;
+			AvataxShippingTaxCode 	= FillingData.AvataxShippingTaxCode;
+			DiscountTaxability		= FillingData.DiscountTaxability;
+			ShipFrom				= FillingData.ShipTo;
+			Shipping 				= FillingData.Shipping;
 			
 			For Each CurRowLineItems In FillingData.LineItems Do
 				NewRow = LineItems.Add();
 				FillPropertyValues(NewRow, CurRowLineItems);
 			EndDo;
 			
-			For Each SalesTaxAA In FillingData.SalesTaxAcrossAgencies Do
-				NewSTAA = SalesTaxAcrossAgencies.Add();
-				FillPropertyValues(NewSTAA, SalesTaxAA);
-			EndDo;
+			If Not UseAvatax Then
+				For Each SalesTaxAA In FillingData.SalesTaxAcrossAgencies Do
+					NewSTAA = SalesTaxAcrossAgencies.Add();
+					FillPropertyValues(NewSTAA, SalesTaxAA);
+				EndDo;
+			EndIf;
 			// <- CODE REVIEW
 			
 		EndIf;
@@ -98,8 +108,6 @@ Procedure OnCopy(CopiedObject)
 EndProcedure
 
 Procedure Posting(Cancel, Mode)
-	
-	RegisterRecords.CashFlowData.Write = True;
 	
 	// 1. Common postings clearing / reactivate manual ajusted postings.
 	DocumentPosting.PrepareRecordSetsForPosting(AdditionalProperties, RegisterRecords);
@@ -127,237 +135,51 @@ Procedure Posting(Cancel, Mode)
 	// 8. Clear used temporary document data.
 	DocumentPosting.ClearDataStructuresAfterPosting(AdditionalProperties);
 	
-	
-	// -> CODE REVIEW
-		
-	// Create a value table for posting amounts.
-	PostingDatasetIncome = New ValueTable();
-	PostingDatasetIncome.Columns.Add("IncomeAccount");
-	PostingDatasetIncome.Columns.Add("AmountRC");
-	
-	PostingDatasetCOGS = New ValueTable();
-	PostingDatasetCOGS.Columns.Add("COGSAccount");
-	PostingDatasetCOGS.Columns.Add("AmountRC");
-	
-	PostingDatasetInvOrExp = New ValueTable();
-	PostingDatasetInvOrExp.Columns.Add("InvOrExpAccount");
-	PostingDatasetInvOrExp.Columns.Add("AmountRC");
-	
-	// Request actual time point.
-	PointInTime = PointInTime();
-	
-	For Each CurRowLineItems In LineItems Do
-		
-		If Ref.ReturnType = Enums.ReturnTypes.Refund Then
-			RegisterRecords.CashFlowData.Write = True;
-			Record = RegisterRecords.CashFlowData.Add();
-			Record.RecordType = AccumulationRecordType.Expense;
-			Record.Period = Date;
-			Record.Company = Company;
-			Record.Document = Ref;
-			Record.Account = CurRowLineItems.Product.IncomeAccount;
-			//Record.Account = CurRowLineItems.Product.InventoryOrExpenseAccount;
-			//Record.CashFlowSection = CurRowLineItems.Product.InventoryOrExpenseAccount.CashFlowSection;
-			Record.AmountRC = CurRowLineItems.LineTotal * ExchangeRate * -1;
-			//Record.PaymentMethod = PaymentMethod;
-		EndIf;
-		
-		If CurRowLineItems.Product.Type = Enums.InventoryTypes.Inventory Then
-			
-			// Inventory journal update and costing procedure.
-			
-			LastCost = 0;
-			
-			If CurRowLineItems.Product.CostingMethod = Enums.InventoryCosting.WeightedAverage Then
-				
-				Query = New Query("SELECT
-				                  |	InventoryJournalBalance.QuantityBalance AS QuantityBalance,
-				                  |	InventoryJournalBalance.AmountBalance   AS AmountBalance
-				                  |FROM
-				                  |	AccumulationRegister.InventoryJournal.Balance(&PointInTime, Product = &Product) AS InventoryJournalBalance");
-				Query.SetParameter("PointInTime", PointInTime);
-				Query.SetParameter("Product", CurRowLineItems.Product);
-				QueryResult = Query.Execute().Unload();
-				If  QueryResult.Count() > 0
-				And (Not QueryResult[0].QuantityBalance = Null)
-				And (Not QueryResult[0].AmountBalance = Null)
-				And QueryResult[0].QuantityBalance > 0
-				Then
-					LastCost = QueryResult[0].AmountBalance / QueryResult[0].QuantityBalance;
-				EndIf;
-			EndIf;
-			
-			If CurRowLineItems.Product.CostingMethod = Enums.InventoryCosting.FIFO Then
-				
-				Query = New Query("SELECT
-				                  |	InventoryJournalBalance.QuantityBalance,
-				                  |	InventoryJournalBalance.AmountBalance,
-				                  |	InventoryJournalBalance.Layer,
-				                  |	InventoryJournalBalance.Layer.Date AS LayerDate
-				                  |FROM
-				                  |	AccumulationRegister.InventoryJournal.Balance(&PointInTime, Product = &Product AND Location = &Location) AS InventoryJournalBalance
-				                  |ORDER BY
-				                  |	LayerDate ASC");
-				Query.SetParameter("PointInTime", PointInTime);
-				Query.SetParameter("Product", CurRowLineItems.Product);
-				Query.SetParameter("Location", Location);
-				Selection = Query.Execute().Unload();
-				
-				Try
-					LastCost = Selection[0].AmountBalance / Selection[0].QuantityBalance; 
-				Except
-				EndTry;
-				
-			EndIf;
-			
-			// Adding to posting datasets.
-			PostingLineCOGS = PostingDatasetCOGS.Add();
-			PostingLineCOGS.COGSAccount = CurRowLineItems.Product.COGSAccount;
-			PostingLineCOGS.AmountRC = CurRowLineItems.QtyUM * LastCost;
-			
-			PostingLineInvOrExp = PostingDatasetInvOrExp.Add();
-			PostingLineInvOrExp.InvOrExpAccount = CurRowLineItems.Product.InventoryOrExpenseAccount;
-			PostingLineInvOrExp.AmountRC = CurRowLineItems.QtyUM * LastCost;
-			
-		EndIf;
-		
-		PostingLineIncome = PostingDatasetIncome.Add();
-		PostingLineIncome.IncomeAccount = CurRowLineItems.Product.IncomeAccount;
-		PostingLineIncome.AmountRC = CurRowLineItems.LineTotal * ExchangeRate;
-		
-	EndDo;
-	
-	// GL posting
-	
-	RegisterRecords.GeneralJournal.Write = True;
-	
-	Record = RegisterRecords.GeneralJournal.AddCredit();
-	Record.Account = ARAccount;
-	Record.Period = Date;
-	Record.Currency = Currency;
-	Record.Amount = DocumentTotal;
-	Record.AmountRC = DocumentTotal * ExchangeRate;
-	Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Company] = Company;
-	Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Document] = Ref;
-	
-	PostingDatasetIncome.GroupBy("IncomeAccount", "AmountRC");
-	NoOfPostingRows = PostingDatasetIncome.Count();
-	For i = 0 To NoOfPostingRows - 1 Do
-		Record = RegisterRecords.GeneralJournal.AddDebit();
-		Record.Account = PostingDatasetIncome[i][0];
-		Record.Period = Date;
-		Record.AmountRC = PostingDatasetIncome[i][1];
-	EndDo;
-
-	PostingDatasetCOGS.GroupBy("COGSAccount", "AmountRC");
-	NoOfPostingRows = PostingDatasetCOGS.Count();
-	For i = 0 To NoOfPostingRows - 1 Do
-		Record = RegisterRecords.GeneralJournal.AddCredit();
-		Record.Account = PostingDatasetCOGS[i][0];
-		Record.Period = Date;
-		Record.AmountRC = PostingDatasetCOGS[i][1];
-	EndDo;
-
-	PostingDatasetInvOrExp.GroupBy("InvOrExpAccount", "AmountRC");
-	NoOfPostingRows = PostingDatasetInvOrExp.Count();
-	For i = 0 To NoOfPostingRows - 1 Do
-		Record = RegisterRecords.GeneralJournal.AddDebit();
-		Record.Account = PostingDatasetInvOrExp[i][0];
-		Record.Period = Date;
-		Record.AmountRC = PostingDatasetInvOrExp[i][1];
-	EndDo;
-	
-	Record = RegisterRecords.GeneralJournal.AddDebit();
-	Record.Account = Constants.TaxPayableAccount.Get();
-	Record.Period = Date;
-	Record.AmountRC = SalesTaxRC * ExchangeRate;
-	
-	If Discount <> 0 Then
-		Record = RegisterRecords.GeneralJournal.AddCredit();
-		DiscountsAccount = Constants.DiscountsAccount.Get();
-		If DiscountsAccount = ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
-			Record.Account = Constants.ExpenseAccount.Get();
-		Else
-			Record.Account = DiscountsAccount;
-		EndIf;
-		Record.Period = Date;
-		Record.AmountRC = Discount * -1 * ExchangeRate;
-		
-		If Ref.ReturnType = Enums.ReturnTypes.Refund Then
-			RegisterRecords.CashFlowData.Write = True;
-			Record = RegisterRecords.CashFlowData.Add();
-			Record.RecordType = AccumulationRecordType.Expense;
-			Record.Period = Date;
-			Record.Company = Company;
-			Record.Document = Ref;
-			If DiscountsAccount = ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
-				Record.Account = Constants.ExpenseAccount.Get();
-			Else
-				Record.Account = DiscountsAccount;
-			EndIf;
-			Record.AmountRC = (Discount * -1 * ExchangeRate);
-		EndIf;
-	EndIf;
-		
-	If Shipping <> 0 Then
-		Record = RegisterRecords.GeneralJournal.AddDebit();
-		ShippingExpenseAccount = Constants.ShippingExpenseAccount.Get();
-		If ShippingExpenseAccount = ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
-			Record.Account = Constants.IncomeAccount.Get();
-		Else
-			Record.Account = ShippingExpenseAccount;
-		EndIf;
-		Record.Period = Date;
-		Record.AmountRC = Shipping * ExchangeRate;
-		
-		If Ref.ReturnType = Enums.ReturnTypes.Refund Then
-			RegisterRecords.CashFlowData.Write = True;
-			Record = RegisterRecords.CashFlowData.Add();
-			Record.RecordType = AccumulationRecordType.Expense;
-			Record.Period = Date;
-			Record.Company = Company;
-			Record.Document = Ref;
-			ShippingExpenseAccount = Constants.ShippingExpenseAccount.Get();
-			If ShippingExpenseAccount = ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
-				Record.Account = Constants.IncomeAccount.Get();
-			Else
-				Record.Account = ShippingExpenseAccount;
-			EndIf;
-			Record.AmountRC = Shipping * ExchangeRate * -1;
-		EndIf;
-
-	EndIf;
-	
-	// <- CODE REVIEW
-	
 EndProcedure
 
 Procedure UndoPosting(Cancel)	
 	
-	// 1. Common posting clearing / deactivate manual ajusted postings
+	// 1. Common posting clearing / deactivate manual ajusted postings.
 	DocumentPosting.PrepareRecordSetsForPostingClearing(AdditionalProperties, RegisterRecords);
 	
-	// 2. Skip manually adjusted documents
+	// 2. Skip manually adjusted documents.
 	If ManualAdjustment Then
 		Return;
 	EndIf;
 	
-	// 3. Create structures with document data to pass it on the server
+	// 3. Create structures with document data to pass it on the server.
 	DocumentPosting.PrepareDataStructuresBeforePosting(AdditionalProperties);
 	
-	// 4. Collect document data, required for posing clearing, and fill created structure 
+	// 4. Collect document data, required for posing clearing, and fill created structure. 
 	Documents.SalesReturn.PrepareDataStructuresForPostingClearing(Ref, AdditionalProperties, RegisterRecords);
 	
-	// 5. Write document postings to register
+	// 5. Write document postings to register.
 	DocumentPosting.WriteRecordSets(AdditionalProperties, RegisterRecords);
 	
-	// 6. Check register blanaces according to document's changes
+	// 6. Check register blanaces according to document's changes.
 	DocumentPosting.CheckPostingResults(AdditionalProperties, RegisterRecords, Cancel);
 	
-	// 7. Clear used temporary document data
+	// 7. Clear used temporary document data.
 	DocumentPosting.ClearDataStructuresAfterPosting(AdditionalProperties);
+		
+EndProcedure
+
+Procedure FillCheckProcessing(Cancel, CheckedAttributes)
 	
+	If Not UseAvatax Then
+		FoundShipFrom = CheckedAttributes.Find("ShipFrom");
+		If FoundShipFrom <> Undefined Then
+			CheckedAttributes.Delete(FoundShipFrom);
+		EndIf;
+	EndIf;
+
+EndProcedure
+
+Procedure BeforeDelete(Cancel)
 	
+	//Avatax. Delete the document at Avatax prior to actual deletion
+	AvaTaxServer.AvataxDocumentBeforeDelete(ThisObject, Cancel, "ReturnInvoice");
+
 EndProcedure
 
 #EndIf

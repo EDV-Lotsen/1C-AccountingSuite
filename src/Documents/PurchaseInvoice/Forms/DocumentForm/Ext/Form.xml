@@ -1001,6 +1001,18 @@
 											</ToolTip>
 											<EditMode>EnterOnInput</EditMode>
 											<Width>10</Width>
+											<Format>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>NFD=2</v8:content>
+												</v8:item>
+											</Format>
+											<EditFormat>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>NFD=2</v8:content>
+												</v8:item>
+											</EditFormat>
 											<ContextMenu name="LineItemsOrderPriceContextMenu" id="310"/>
 											<ExtendedTooltip name="LineItemsOrderPriceExtendedTooltip" id="311"/>
 										</InputField>
@@ -1020,6 +1032,18 @@
 											</ToolTip>
 											<EditMode>EnterOnInput</EditMode>
 											<Width>10</Width>
+											<Format>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>NFD=2</v8:content>
+												</v8:item>
+											</Format>
+											<EditFormat>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>NFD=2</v8:content>
+												</v8:item>
+											</EditFormat>
 											<ContextMenu name="LineItemsPriceContextMenu" id="313"/>
 											<ExtendedTooltip name="LineItemsPriceExtendedTooltip" id="314"/>
 											<Events>
@@ -1648,7 +1672,7 @@
 				<DefaultVisible>false</DefaultVisible>
 			</Item>
 			<Item>
-				<Command>Document.PurchaseInvoice.Command.Print</Command>
+				<Command>0:5d974ea0-c9ea-41ea-b529-c220d6d9d257</Command>
 				<Type>Auto</Type>
 				<CommandGroup>FormCommandBarImportant</CommandGroup>
 				<DefaultVisible>false</DefaultVisible>

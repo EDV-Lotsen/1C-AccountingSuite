@@ -197,6 +197,37 @@
 		</right>
 	</object>
 	<object>
+		<name>Catalog.TaxCodes</name>
+		<right>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeletePredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveSetDeletionMarkPredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMarkPredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarkedPredefinedData</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
 		<name>Catalog.USTaxCategories1099</name>
 		<right>
 			<name>InteractiveDelete</name>
@@ -275,41 +306,16 @@
 		</right>
 	</object>
 	<object>
-		<name>Catalog.UM</name>
+		<name>InformationRegister.AvalaraTransactions.Dimension.RequestType</name>
 		<right>
-			<name>InteractiveDelete</name>
+			<name>Edit</name>
 			<value>false</value>
 		</right>
+	</object>
+	<object>
+		<name>InformationRegister.AvalaraTransactions.Resource.TimeSpent</name>
 		<right>
-			<name>InteractiveSetDeletionMark</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractiveClearDeletionMark</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractiveDeleteMarked</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InputByString</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractiveDeletePredefinedData</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractiveSetDeletionMarkPredefinedData</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractiveClearDeletionMarkPredefinedData</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractiveDeleteMarkedPredefinedData</name>
+			<name>Edit</name>
 			<value>false</value>
 		</right>
 	</object>
@@ -439,7 +445,60 @@
 		</right>
 	</object>
 	<object>
-		<name>Constant.BankAccount</name>
+		<name>InformationRegister.AvalaraTransactions.Dimension.ObjectRef</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>InformationRegister.AvalaraTransactions.Dimension.TransactionID</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>InformationRegister.AvalaraTransactions.Resource.ResultCode</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>InformationRegister.AvalaraTransactions</name>
+		<right>
+			<name>Update</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>InformationRegister.AvalaraTransactions.StandardAttribute.Active</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>InformationRegister.AvalaraTransactions.StandardAttribute.LineNumber</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>InformationRegister.AvalaraTransactions.StandardAttribute.Recorder</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>InformationRegister.AvalaraTransactions.StandardAttribute.Period</name>
 		<right>
 			<name>Edit</name>
 			<value>false</value>
@@ -652,14 +711,132 @@
 		</right>
 	</object>
 	<object>
-		<name>Document.PurchaseInvoice.Command.Print</name>
+		<name>InformationRegister.AvataxDetails.Resource.Status</name>
 		<right>
-			<name>View</name>
+			<name>Edit</name>
 			<value>false</value>
 		</right>
 	</object>
 	<object>
-		<name>Constant.ExchangeGain</name>
+		<name>Catalog.TaxCodesPredefined</name>
+		<right>
+			<name>Insert</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Update</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Delete</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveInsert</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDelete</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeletePredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveSetDeletionMarkPredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMarkPredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarkedPredefinedData</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.TaxCodesPredefined.StandardAttribute.PredefinedDataName</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.TaxCodesPredefined.StandardAttribute.Predefined</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.TaxCodesPredefined.StandardAttribute.Ref</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.TaxCodesPredefined.StandardAttribute.DeletionMark</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.TaxCodesPredefined.StandardAttribute.IsFolder</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.TaxCodesPredefined.StandardAttribute.Owner</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.TaxCodesPredefined.StandardAttribute.Parent</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.TaxCodesPredefined.StandardAttribute.Description</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.TaxCodesPredefined.StandardAttribute.Code</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>InformationRegister.AvalaraTransactions.Dimension.Date</name>
 		<right>
 			<name>Edit</name>
 			<value>false</value>
@@ -983,6 +1160,13 @@
 		</right>
 	</object>
 	<object>
+		<name>InformationRegister.AvataxDetails.Resource.TaxDetails</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
 		<name>Catalog.ZapierWebhooks</name>
 		<right>
 			<name>InteractiveDelete</name>
@@ -1215,7 +1399,7 @@
 		</right>
 	</object>
 	<object>
-		<name>Constant.BankInterestEarnedAccount</name>
+		<name>Catalog.TaxCodesPredefined.Attribute.AdditionalInformation</name>
 		<right>
 			<name>Edit</name>
 			<value>false</value>
@@ -1281,17 +1465,6 @@
 		</right>
 		<right>
 			<name>InteractiveDeleteMarked</name>
-			<value>false</value>
-		</right>
-	</object>
-	<object>
-		<name>DataProcessor.DeleteMarkedObjects</name>
-		<right>
-			<name>Use</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>View</name>
 			<value>false</value>
 		</right>
 	</object>
@@ -1506,6 +1679,13 @@
 		</right>
 	</object>
 	<object>
+		<name>InformationRegister.AvataxDetails.Dimension.ObjectRef</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
 		<name>Catalog.SalesTaxComponents</name>
 		<right>
 			<name>Insert</name>
@@ -1714,6 +1894,13 @@
 	</object>
 	<object>
 		<name>Constant.Phone</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>InformationRegister.AvalaraTransactions.Resource.Messages</name>
 		<right>
 			<name>Edit</name>
 			<value>false</value>
@@ -2049,6 +2236,76 @@
 		</right>
 	</object>
 	<object>
+		<name>InformationRegister.AvataxDetails</name>
+		<right>
+			<name>Update</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>InformationRegister.AvataxDetails.StandardAttribute.Active</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>InformationRegister.AvataxDetails.StandardAttribute.LineNumber</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>InformationRegister.AvataxDetails.StandardAttribute.Recorder</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>InformationRegister.AvataxDetails.StandardAttribute.Period</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Catalog.AvataxCustomerUsageTypes</name>
+		<right>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeletePredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveSetDeletionMarkPredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMarkPredefinedData</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarkedPredefinedData</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
 		<name>Constant.bigcom_apipath</name>
 		<right>
 			<name>Edit</name>
@@ -2110,6 +2367,20 @@
 		</right>
 		<right>
 			<name>InteractiveDeleteMarkedPredefinedData</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>InformationRegister.AvalaraTransactions.Resource.ErrorMessage</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>InformationRegister.AvataxDetails.Resource.TimeStamp</name>
+		<right>
+			<name>Edit</name>
 			<value>false</value>
 		</right>
 	</object>
@@ -2388,6 +2659,13 @@
 		</right>
 	</object>
 	<object>
+		<name>InformationRegister.AvalaraTransactions.Resource.ResultBody</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
 		<name>Catalog.Locations</name>
 		<right>
 			<name>InteractiveDelete</name>
@@ -2508,6 +2786,20 @@
 		</right>
 	</object>
 	<object>
+		<name>InformationRegister.AvataxDetails.Resource.AvataxDocCode</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>InformationRegister.AvalaraTransactions.Resource.RequestParameters</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
 		<name>Constant.bigcom_user</name>
 		<right>
 			<name>Edit</name>
@@ -2576,16 +2868,16 @@
 		</right>
 	</object>
 	<object>
-		<name>Subsystem.StandardSubsystems.Subsystem.BaseFunctionality</name>
+		<name>InformationRegister.AvalaraTransactions.Resource.AvataxTransactionID</name>
 		<right>
-			<name>View</name>
+			<name>Edit</name>
 			<value>false</value>
 		</right>
 	</object>
 	<object>
-		<name>Constant.BankServiceChargeAccount</name>
+		<name>Subsystem.StandardSubsystems.Subsystem.BaseFunctionality</name>
 		<right>
-			<name>Edit</name>
+			<name>View</name>
 			<value>false</value>
 		</right>
 	</object>
@@ -2621,6 +2913,13 @@
 		</right>
 		<right>
 			<name>InteractiveDeleteMarkedPredefinedData</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>InformationRegister.AvataxDetails.Resource.TransactionID</name>
+		<right>
+			<name>Edit</name>
 			<value>false</value>
 		</right>
 	</object>

@@ -6,12 +6,12 @@
 			<Synonym>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Bank (create...)</v8:content>
+					<v8:content>Bank</v8:content>
 				</v8:item>
 			</Synonym>
 			<Comment/>
 			<IncludeHelpInContents>false</IncludeHelpInContents>
-			<IncludeInCommandInterface>false</IncludeInCommandInterface>
+			<IncludeInCommandInterface>true</IncludeInCommandInterface>
 			<Explanation/>
 			<Picture>
 				<xr:Ref>CommonPicture.Banking</xr:Ref>
@@ -19,11 +19,15 @@
 			</Picture>
 			<Content>
 				<xr:Item xsi:type="xr:MDObjectRef">Document.InvoicePayment</xr:Item>
-				<xr:Item xsi:type="xr:MDObjectRef">InformationRegister.TransactionReconciliation</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">DataProcessor.DownloadedTransactions</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">Catalog.Banks</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">Catalog.BankAccounts</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">DataProcessor.YodleeBankAccountsManagement</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Document.BankReconciliation</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Document.BankTransfer</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Document.Deposit</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">DataProcessor.BankRegister</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">baf62e39-7a7d-4c42-aefd-b0f8526dd533</xr:Item>
 			</Content>
 		</Properties>
 		<ChildObjects/>

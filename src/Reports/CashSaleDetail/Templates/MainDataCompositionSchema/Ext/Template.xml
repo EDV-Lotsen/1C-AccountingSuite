@@ -91,10 +91,6 @@
 			<field>Memo</field>
 		</field>
 		<field xsi:type="DataSetFieldField">
-			<dataPath>NewObject</dataPath>
-			<field>NewObject</field>
-		</field>
-		<field xsi:type="DataSetFieldField">
 			<dataPath>Number</dataPath>
 			<field>Number</field>
 		</field>
@@ -246,19 +242,34 @@
 			<dataPath>Unit</dataPath>
 			<field>Unit</field>
 		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Class</dataPath>
+			<field>Class</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>QtyUM</dataPath>
+			<field>QtyUM</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>UnitSet</dataPath>
+			<field>UnitSet</field>
+		</field>
 		<dataSource>DataSource1</dataSource>
 		<query>SELECT
 	CashSaleLineItems.Ref,
 	CashSaleLineItems.LineNumber,
 	CashSaleLineItems.Product,
 	CashSaleLineItems.ProductDescription,
+	CashSaleLineItems.UnitSet,
 	CashSaleLineItems.QtyUnits,
 	CashSaleLineItems.Unit,
+	CashSaleLineItems.QtyUM,
 	CashSaleLineItems.PriceUnits,
 	CashSaleLineItems.LineTotal,
 	CashSaleLineItems.Project,
 	CashSaleLineItems.Taxable,
 	CashSaleLineItems.TaxableAmount,
+	CashSaleLineItems.Class,
 	CashSaleLineItems.Ref.Ref AS Ref1,
 	CashSaleLineItems.Ref.DataVersion,
 	CashSaleLineItems.Ref.DeletionMark,
@@ -283,7 +294,6 @@
 	CashSaleLineItems.Ref.StripeCreated,
 	CashSaleLineItems.Ref.StripeCardType,
 	CashSaleLineItems.Ref.StripeLast4,
-	CashSaleLineItems.Ref.NewObject,
 	CashSaleLineItems.Ref.EmailTo,
 	CashSaleLineItems.Ref.EmailNote,
 	CashSaleLineItems.Ref.EmailCC,
@@ -315,31 +325,31 @@ FROM
 		<dcsset:settings xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows">
 			<dcsset:selection>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Class</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>ProductDescription</dcsset:field>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>Product</dcsset:field>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>QtyUnits</dcsset:field>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>Unit</dcsset:field>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>PriceUnits</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>LineNumber</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>LineTotal</dcsset:field>
+					<dcsset:field>PriceUnits</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Product</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Project</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Project1</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>QtyUnits</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>QtyUM</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Ref1</dcsset:field>
@@ -367,9 +377,6 @@ FROM
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>DataVersion</dcsset:field>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>StripeCreated</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Date</dcsset:field>
@@ -426,9 +433,6 @@ FROM
 					<dcsset:field>StripeCardName</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>NewObject</dcsset:field>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>PointInTime</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
@@ -468,6 +472,9 @@ FROM
 					<dcsset:field>TaxableSubtotal</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>StripeCreated</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>DocumentTotalRC</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
@@ -484,6 +491,15 @@ FROM
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>TaxableAmount</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>LineTotal</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>UnitSet</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Unit</dcsset:field>
 				</dcsset:item>
 			</dcsset:selection>
 			<dcsset:item xsi:type="dcsset:StructureItemGroup">

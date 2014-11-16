@@ -179,3 +179,12 @@ Function NumCheck(CheckValue)
 	Return False;
 		
 EndFunction
+
+&AtServer
+Procedure OnCreateAtServer(Cancel, StandardProcessing)
+	
+	// Update prices presentation.
+	PriceFormat = GeneralFunctionsReusable.DefaultPriceFormat();
+	Items.Price.Format      = PriceFormat;	
+	
+EndProcedure

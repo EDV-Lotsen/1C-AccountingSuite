@@ -149,29 +149,29 @@
 										</ChildItems>
 									</AutoCommandBar>
 									<ExtendedTooltip name="BankAccountsExtendedTooltip" id="20"/>
-									<SearchStringAddition name="BankAccountsSearchString" id="562">
+									<SearchStringAddition name="BankAccountsSearchString" id="570">
 										<AdditionSource>
 											<Item>BankAccounts</Item>
 											<Type>SearchStringRepresentation</Type>
 										</AdditionSource>
-										<ContextMenu name="BankAccountsSearchStringContextMenu" id="563"/>
-										<ExtendedTooltip name="BankAccountsSearchStringExtendedTooltip" id="564"/>
+										<ContextMenu name="BankAccountsSearchStringContextMenu" id="571"/>
+										<ExtendedTooltip name="BankAccountsSearchStringExtendedTooltip" id="572"/>
 									</SearchStringAddition>
-									<ViewStatusAddition name="BankAccountsViewStatus" id="565">
+									<ViewStatusAddition name="BankAccountsViewStatus" id="573">
 										<AdditionSource>
 											<Item>BankAccounts</Item>
 											<Type>ViewStatusRepresentation</Type>
 										</AdditionSource>
-										<ContextMenu name="BankAccountsViewStatusContextMenu" id="566"/>
-										<ExtendedTooltip name="BankAccountsViewStatusExtendedTooltip" id="567"/>
+										<ContextMenu name="BankAccountsViewStatusContextMenu" id="574"/>
+										<ExtendedTooltip name="BankAccountsViewStatusExtendedTooltip" id="575"/>
 									</ViewStatusAddition>
-									<SearchControlAddition name="BankAccountsSearchControl" id="568">
+									<SearchControlAddition name="BankAccountsSearchControl" id="576">
 										<AdditionSource>
 											<Item>BankAccounts</Item>
 											<Type>SearchControl</Type>
 										</AdditionSource>
-										<ContextMenu name="BankAccountsSearchControlContextMenu" id="569"/>
-										<ExtendedTooltip name="BankAccountsSearchControlExtendedTooltip" id="570"/>
+										<ContextMenu name="BankAccountsSearchControlContextMenu" id="577"/>
+										<ExtendedTooltip name="BankAccountsSearchControlExtendedTooltip" id="578"/>
 									</SearchControlAddition>
 									<ChildItems>
 										<CheckBoxField name="BankAccountsYodleeAccount" id="86">
@@ -297,58 +297,6 @@
 					</ToolTip>
 					<ExtendedTooltip name="AccountsAddPageExtendedTooltip" id="14"/>
 					<ChildItems>
-						<RadioButtonField name="OnlineAccount" id="336">
-							<DataPath>OnlineAccount</DataPath>
-							<Visible>false</Visible>
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Adding new</v8:content>
-								</v8:item>
-							</Title>
-							<TitleFont ref="style:NormalTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
-							<ToolTip>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Choose "Offline" if you plan to download transactions manually via CSV files</v8:content>
-								</v8:item>
-							</ToolTip>
-							<RadioButtonType>Tumbler</RadioButtonType>
-							<ChoiceList>
-								<xr:Item>
-									<xr:Presentation/>
-									<xr:CheckState>0</xr:CheckState>
-									<xr:Value xsi:type="FormChoiceListDesTimeValue">
-										<Presentation>
-											<v8:item>
-												<v8:lang>en</v8:lang>
-												<v8:content>Online account</v8:content>
-											</v8:item>
-										</Presentation>
-										<Value xsi:type="xs:string">Online</Value>
-									</xr:Value>
-								</xr:Item>
-								<xr:Item>
-									<xr:Presentation/>
-									<xr:CheckState>0</xr:CheckState>
-									<xr:Value xsi:type="FormChoiceListDesTimeValue">
-										<Presentation>
-											<v8:item>
-												<v8:lang>en</v8:lang>
-												<v8:content>Offline account</v8:content>
-											</v8:item>
-										</Presentation>
-										<Value xsi:type="xs:string">Offline</Value>
-									</xr:Value>
-								</xr:Item>
-							</ChoiceList>
-							<Font ref="style:NormalTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
-							<ContextMenu name="OnlineAccountContextMenu" id="337"/>
-							<ExtendedTooltip name="OnlineAccountExtendedTooltip" id="338"/>
-							<Events>
-								<Event name="OnChange">OnlineAccountOnChange</Event>
-							</Events>
-						</RadioButtonField>
 						<UsualGroup name="CaptionGroup" id="347">
 							<ToolTip>
 								<v8:item>
@@ -411,19 +359,6 @@
 											<Width>20</Width>
 											<ContextMenu name="AccountDescriptionContextMenu" id="342"/>
 											<ExtendedTooltip name="AccountDescriptionExtendedTooltip" id="343"/>
-										</InputField>
-										<InputField name="AccountType" id="344">
-											<DataPath>AccountType</DataPath>
-											<Visible>false</Visible>
-											<ToolTip>
-												<v8:item>
-													<v8:lang>en</v8:lang>
-													<v8:content>savings, checking, etc.</v8:content>
-												</v8:item>
-											</ToolTip>
-											<Width>20</Width>
-											<ContextMenu name="AccountTypeContextMenu" id="345"/>
-											<ExtendedTooltip name="AccountTypeExtendedTooltip" id="346"/>
 										</InputField>
 									</ChildItems>
 								</UsualGroup>
@@ -1103,6 +1038,87 @@
 								</LabelDecoration>
 							</ChildItems>
 						</UsualGroup>
+						<LabelDecoration name="EmptySpaceDecoration" id="562">
+							<VerticalStretch>true</VerticalStretch>
+							<ContextMenu name="EmptySpaceDecorationContextMenu" id="563"/>
+							<ExtendedTooltip name="EmptySpaceDecorationExtendedTooltip" id="564"/>
+						</LabelDecoration>
+						<UsualGroup name="AccountTypeGroup" id="565">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Account type group</v8:content>
+								</v8:item>
+							</Title>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Account type group</v8:content>
+								</v8:item>
+							</ToolTip>
+							<Group>Horizontal</Group>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="AccountTypeGroupExtendedTooltip" id="566"/>
+							<ChildItems>
+								<LabelDecoration name="Decoration31" id="567">
+									<HorizontalStretch>true</HorizontalStretch>
+									<ContextMenu name="Decoration31ContextMenu" id="568"/>
+									<ExtendedTooltip name="Decoration31ExtendedTooltip" id="569"/>
+								</LabelDecoration>
+								<RadioButtonField name="OnlineAccount" id="336">
+									<DataPath>OnlineAccount</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Adding new</v8:content>
+										</v8:item>
+									</Title>
+									<TitleFont ref="style:SmallTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
+									<ToolTip>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Choose "Offline" if you plan to download transactions manually via CSV files</v8:content>
+										</v8:item>
+									</ToolTip>
+									<RadioButtonType>Tumbler</RadioButtonType>
+									<ColumnsCount>1</ColumnsCount>
+									<ChoiceList>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>Online account</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">Online</Value>
+											</xr:Value>
+										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>Offline account</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">Offline</Value>
+											</xr:Value>
+										</xr:Item>
+									</ChoiceList>
+									<Font ref="style:SmallTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
+									<ContextMenu name="OnlineAccountContextMenu" id="337"/>
+									<ExtendedTooltip name="OnlineAccountExtendedTooltip" id="338"/>
+									<Events>
+										<Event name="OnChange">OnlineAccountOnChange</Event>
+									</Events>
+								</RadioButtonField>
+							</ChildItems>
+						</UsualGroup>
 					</ChildItems>
 				</Page>
 				<Page name="AccountAssignTypePage" id="210">
@@ -1204,29 +1220,29 @@
 													<ContextMenu name="AssigningAccountTypeContextMenu" id="297"/>
 													<AutoCommandBar name="AssigningAccountTypeCommandBar" id="298"/>
 													<ExtendedTooltip name="AssigningAccountTypeExtendedTooltip" id="299"/>
-													<SearchStringAddition name="AssigningAccountTypeSearchString" id="571">
+													<SearchStringAddition name="AssigningAccountTypeSearchString" id="579">
 														<AdditionSource>
 															<Item>AssigningAccountType</Item>
 															<Type>SearchStringRepresentation</Type>
 														</AdditionSource>
-														<ContextMenu name="AssigningAccountTypeSearchStringContextMenu" id="572"/>
-														<ExtendedTooltip name="AssigningAccountTypeSearchStringExtendedTooltip" id="573"/>
+														<ContextMenu name="AssigningAccountTypeSearchStringContextMenu" id="580"/>
+														<ExtendedTooltip name="AssigningAccountTypeSearchStringExtendedTooltip" id="581"/>
 													</SearchStringAddition>
-													<ViewStatusAddition name="AssigningAccountTypeViewStatus" id="574">
+													<ViewStatusAddition name="AssigningAccountTypeViewStatus" id="582">
 														<AdditionSource>
 															<Item>AssigningAccountType</Item>
 															<Type>ViewStatusRepresentation</Type>
 														</AdditionSource>
-														<ContextMenu name="AssigningAccountTypeViewStatusContextMenu" id="575"/>
-														<ExtendedTooltip name="AssigningAccountTypeViewStatusExtendedTooltip" id="576"/>
+														<ContextMenu name="AssigningAccountTypeViewStatusContextMenu" id="583"/>
+														<ExtendedTooltip name="AssigningAccountTypeViewStatusExtendedTooltip" id="584"/>
 													</ViewStatusAddition>
-													<SearchControlAddition name="AssigningAccountTypeSearchControl" id="577">
+													<SearchControlAddition name="AssigningAccountTypeSearchControl" id="585">
 														<AdditionSource>
 															<Item>AssigningAccountType</Item>
 															<Type>SearchControl</Type>
 														</AdditionSource>
-														<ContextMenu name="AssigningAccountTypeSearchControlContextMenu" id="578"/>
-														<ExtendedTooltip name="AssigningAccountTypeSearchControlExtendedTooltip" id="579"/>
+														<ContextMenu name="AssigningAccountTypeSearchControlContextMenu" id="586"/>
+														<ExtendedTooltip name="AssigningAccountTypeSearchControlExtendedTooltip" id="587"/>
 													</SearchControlAddition>
 													<Events>
 														<Event name="OnActivateRow">AssigningAccountTypeOnActivateRow</Event>
@@ -2390,21 +2406,6 @@ WHERE
 				<v8:Type>xs:string</v8:Type>
 				<v8:StringQualifiers>
 					<v8:Length>50</v8:Length>
-					<v8:AllowedLength>Variable</v8:AllowedLength>
-				</v8:StringQualifiers>
-			</Type>
-		</Attribute>
-		<Attribute name="AccountType" id="14">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Account type</v8:content>
-				</v8:item>
-			</Title>
-			<Type>
-				<v8:Type>xs:string</v8:Type>
-				<v8:StringQualifiers>
-					<v8:Length>20</v8:Length>
 					<v8:AllowedLength>Variable</v8:AllowedLength>
 				</v8:StringQualifiers>
 			</Type>

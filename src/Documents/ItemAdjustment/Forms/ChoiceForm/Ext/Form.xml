@@ -38,29 +38,29 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="14"/>
-			<SearchStringAddition name="ListSearchString" id="23">
+			<SearchStringAddition name="ListSearchString" id="26">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="24"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="25"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="27"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="28"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="26">
+			<ViewStatusAddition name="ListViewStatus" id="29">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="27"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="28"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="30"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="31"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="29">
+			<SearchControlAddition name="ListSearchControl" id="32">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="30"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="31"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="33"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="34"/>
 			</SearchControlAddition>
 			<ChildItems>
 				<LabelField name="Number" id="20">
@@ -109,6 +109,17 @@
 					</Format>
 					<ContextMenu name="AmountContextMenu" id="11"/>
 					<ExtendedTooltip name="AmountExtendedTooltip" id="19"/>
+				</LabelField>
+				<LabelField name="IncomeExpenseAccount" id="23">
+					<DataPath>List.IncomeExpenseAccount</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Account</v8:content>
+						</v8:item>
+					</Title>
+					<ContextMenu name="IncomeExpenseAccountContextMenu" id="24"/>
+					<ExtendedTooltip name="IncomeExpenseAccountExtendedTooltip" id="25"/>
 				</LabelField>
 			</ChildItems>
 		</Table>

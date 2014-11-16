@@ -62,32 +62,37 @@
 						<CommandName>Form.StandardCommand.Refresh</CommandName>
 						<ExtendedTooltip name="ListRefreshExtendedTooltip" id="38"/>
 					</Button>
+					<Button name="ListOpenDoc" id="39">
+						<Type>CommandBarButton</Type>
+						<CommandName>Form.Command.OpenDoc</CommandName>
+						<ExtendedTooltip name="ListOpenDocExtendedTooltip" id="40"/>
+					</Button>
 				</ChildItems>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="6"/>
-			<SearchStringAddition name="ListSearchString" id="39">
+			<SearchStringAddition name="ListSearchString" id="41">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="40"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="41"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="42"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="43"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="42">
+			<ViewStatusAddition name="ListViewStatus" id="44">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="43"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="44"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="45"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="46"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="45">
+			<SearchControlAddition name="ListSearchControl" id="47">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="46"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="47"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="48"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="49"/>
 			</SearchControlAddition>
 			<ChildItems>
 				<LabelField name="Period" id="7">
@@ -181,4 +186,21 @@
 			</Settings>
 		</Attribute>
 	</Attributes>
+	<Commands>
+		<Command name="OpenDoc" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Open Document</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Open selected document</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>OpenDoc</Action>
+		</Command>
+	</Commands>
 </Form>

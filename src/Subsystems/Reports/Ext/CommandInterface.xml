@@ -21,6 +21,21 @@
 				<xr:Common>true</xr:Common>
 			</Visibility>
 		</Command>
+		<Command name="Report.IncomeStatementSalesPersonDetail.StandardCommand.Open">
+			<Visibility>
+				<xr:Common>true</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="Report.IncomeStatementSalesPersonAccrualBasis.StandardCommand.Open">
+			<Visibility>
+				<xr:Common>true</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="Report.IncomeStatementSalesPersonAccrualBasisDetail.StandardCommand.Open">
+			<Visibility>
+				<xr:Common>true</xr:Common>
+			</Visibility>
+		</Command>
 		<Command name="Report.SalesByItemSummary.StandardCommand.Open">
 			<Visibility>
 				<xr:Common>true</xr:Common>
@@ -156,9 +171,14 @@
 				<xr:Common>true</xr:Common>
 			</Visibility>
 		</Command>
-		<Command name="Report.УниверсальныйОтчетПоМетаданным.StandardCommand.Open">
+		<Command name="Report.CashFlows.StandardCommand.Open">
 			<Visibility>
-				<xr:Common>false</xr:Common>
+				<xr:Common>true</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="Report.UniversalReport.StandardCommand.Open">
+			<Visibility>
+				<xr:Common>true</xr:Common>
 			</Visibility>
 		</Command>
 	</CommandsVisibility>
@@ -179,6 +199,18 @@
 			<CommandGroup>CommandGroup.Sales</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
+		<Command name="Report.IncomeStatementSalesPersonDetail.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Sales</CommandGroup>
+			<Placement>Auto</Placement>
+		</Command>
+		<Command name="Report.IncomeStatementSalesPersonAccrualBasis.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Sales</CommandGroup>
+			<Placement>Auto</Placement>
+		</Command>
+		<Command name="Report.IncomeStatementSalesPersonAccrualBasisDetail.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Sales</CommandGroup>
+			<Placement>Auto</Placement>
+		</Command>
 		<Command name="Report.SalesByItemSummary.StandardCommand.Open">
 			<CommandGroup>CommandGroup.Sales</CommandGroup>
 			<Placement>Auto</Placement>
@@ -287,7 +319,11 @@
 			<CommandGroup>CommandGroup.Accounting</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
-		<Command name="Report.УниверсальныйОтчетПоМетаданным.StandardCommand.Open">
+		<Command name="Report.CashFlows.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Accounting</CommandGroup>
+			<Placement>Auto</Placement>
+		</Command>
+		<Command name="Report.UniversalReport.StandardCommand.Open">
 			<CommandGroup>CommandGroup.Accounting</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
@@ -305,6 +341,15 @@
 		<Command name="Report.IncomeStatementSalesPerson.StandardCommand.Open">
 			<CommandGroup>CommandGroup.Sales</CommandGroup>
 		</Command>
+		<Command name="Report.IncomeStatementSalesPersonDetail.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Sales</CommandGroup>
+		</Command>
+		<Command name="Report.IncomeStatementSalesPersonAccrualBasis.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Sales</CommandGroup>
+		</Command>
+		<Command name="Report.IncomeStatementSalesPersonAccrualBasisDetail.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Sales</CommandGroup>
+		</Command>
 		<Command name="Report.SalesByItemSummary.StandardCommand.Open">
 			<CommandGroup>CommandGroup.Sales</CommandGroup>
 		</Command>
@@ -386,7 +431,10 @@
 		<Command name="Report.StatementOfCashFlows.StandardCommand.Open">
 			<CommandGroup>CommandGroup.Accounting</CommandGroup>
 		</Command>
-		<Command name="Report.УниверсальныйОтчетПоМетаданным.StandardCommand.Open">
+		<Command name="Report.CashFlows.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Accounting</CommandGroup>
+		</Command>
+		<Command name="Report.UniversalReport.StandardCommand.Open">
 			<CommandGroup>CommandGroup.Accounting</CommandGroup>
 		</Command>
 	</CommandsOrder>

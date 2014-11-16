@@ -11,12 +11,12 @@ Procedure FillDocumentList(Company)
 	
 	Query = New Query;
 	Query.Text = "SELECT
-	             |	GeneralJournalBalance.AmountBalance AS BalanceFCY,
+	             |	GeneralJournalBalance.AmountBalance AS BalanceFCY2,
 				 |	GeneralJournalBalance.AmountBalance * ISNULL(ExchangeRates.Rate, 1) AS Balance,
 				 |  ISNULL(ExchangeRates.Rate, 1) AS ExchangeRate,
 				 |	0 AS Payment,
 				 |	GeneralJournalBalance.ExtDimension2.Ref AS Document,
-				 |	GeneralJournalBalance.ExtDimension2.Ref.Currency Currency
+				 |	GeneralJournalBalance.ExtDimension2.Ref.Currency Currency2
 				 |FROM
 				 |  // Get due rests from accounting balance
 	             |	AccountingRegister.GeneralJournal.Balance (,
@@ -36,15 +36,27 @@ Procedure FillDocumentList(Company)
 				 |  GeneralJournalBalance.ExtDimension2.Date";
 				 
 	Query.SetParameter("Date",    Object.Date);			 
-	//Query.SetParameter("Date",    ?(ValueIsFilled(Object.Ref), Object.Date, CurrentSessionDate()));
 	Query.SetParameter("Company", Company);
 	
+	NonCurrencyMatch = 0;
 	ResultSelection = Query.Execute().Select();
 	While ResultSelection.Next() Do
-		LineItems = Object.LineItems.Add();
-		FillPropertyValues(LineItems, ResultSelection);
+		//Display only if currency of lineitem matches company currency
+		If ResultSelection.Currency2 = Company.DefaultCurrency Then
+			LineItems = Object.LineItems.Add();
+			FillPropertyValues(LineItems, ResultSelection);
+		Else
+			NonCurrencyMatch = NonCurrencyMatch + 1;
+		EndIf;
+		//Otherwise - here - we'll keep track of undisplayed lineitems here (pending)
 	EndDo;
 	
+	If NonCurrencyMatch = 1 Then
+		  Message(String(NonCurrencyMatch) + " invoice is not shown due to non-matching currency"); 
+	ElsIf NonCurrencyMatch > 0 Then
+		  Message(String(NonCurrencyMatch) + " invoices were not shown due to non-matching currency"); 
+	EndIf;
+
 EndProcedure
 
 &AtServer
@@ -57,7 +69,7 @@ Procedure FillCreditMemos(Company)
 	
 	Query = New Query;
 	Query.Text = "SELECT
-				 |	-GeneralJournalBalance.AmountBalance AS BalanceFCY,
+				 |	-GeneralJournalBalance.AmountBalance AS BalanceFCY2,
 				 |	-GeneralJournalBalance.AmountBalance * ISNULL(ExchangeRates.Rate, 1) AS Balance,
 				 |  ISNULL(ExchangeRates.Rate, 1) AS ExchangeRate,
 				 |	0 AS Payment,
@@ -87,216 +99,26 @@ Procedure FillCreditMemos(Company)
 	Query.SetParameter("Date",    ?(ValueIsFilled(Object.Ref), Object.Date, CurrentSessionDate()));
 	Query.SetParameter("Company", Company);
 	
+	NonCurrencyMatch = 0;
 	ResultSelection = Query.Execute().Select();
 	While ResultSelection.Next() Do
-		LineItems = Object.CreditMemos.Add();
-		FillPropertyValues(LineItems, ResultSelection);
+		//Display only if currency of lineitem matches company currency
+		If ResultSelection.Currency = Company.DefaultCurrency Then
+			LineItems = Object.CreditMemos.Add();
+			FillPropertyValues(LineItems, ResultSelection);
+		Else
+			NonCurrencyMatch = NonCurrencyMatch + 1;
+		EndIf;
+		//Otherwise - here - we'll keep track of undisplayed lineitems here (pending)
 	EndDo;
 	
+	If NonCurrencyMatch = 1 Then
+		  Message(String(NonCurrencyMatch) + " credit was not shown due to non-matching currency"); 
+	ElsIf NonCurrencyMatch > 0 Then
+		  Message(String(NonCurrencyMatch) + " credits were not shown due to non-matching currency"); 
+	EndIf;
+	
 EndProcedure
-
-//&AtServer
-// The procedure applies all of the amounts of credit memos
-// to the amounts of sales invoices / purchase returns.
-//
-//Procedure DistributeCreditMemos(RecalculateCreditMemoPayments = True)
-//	
-//	DefaultCurrency = GeneralFunctionsReusable.DefaultCurrency();
-//	LineItem = Undefined;
-//	CurrentInvoice = 0;
-//	CurrentBalanceRC = 0;
-//	CurrentBalance = 0;
-//	CurrentCurrency = Undefined;
-//	CurrentRate = 0;
-//	
-//	// Fill maximum possible netting amount
-//	For Each LineItemCM In Object.CreditMemos Do
-//		// Get credit memo amount for distribution
-//		If RecalculateCreditMemoPayments Then
-//			CMMxPayment = LineItemCM.BalanceFCY;  // Max available payment value for credit memo - document total
-//			CMAmount    = LineItemCM.BalanceFCY;
-//			CMAmountRC  = LineItemCM.Balance;
-//		Else
-//			CMMxPayment = LineItemCM.Payment; // Max available payment value for credit memo - defined by user
-//			CMAmount    = LineItemCM.Payment;
-//			CMAmountRC  = ?(LineItemCM.Currency = DefaultCurrency, LineItemCM.Payment,
-//						  ?(LineItemCM.Payment = LineItemCM.BalanceFCY, LineItemCM.Balance, Round(LineItemCM.Payment * LineItemCM.ExchangeRate, 2)));
-//		EndIf;
-//		CMCurrency = LineItemCM.Currency;
-//		CMRate	   = LineItemCM.ExchangeRate;
-//		// Clear payment value (will be renewed within calculation)
-//		LineItemCM.Payment = 0;
-//		
-//		// Cycle through invoices until there is something do distribute
-//		While CMAmountRC > 0 Do
-//			
-//			// Find next invoice to close
-//			If CurrentBalanceRC = 0 Then
-//				If CurrentInvoice = Object.LineItems.Count() Then
-//					// All due already distributed
-//					Break;
-//				Else
-//					// Get new invoice
-//					CurrentInvoice = CurrentInvoice +1;
-//					LineItem       = Object.LineItems.Get(CurrentInvoice-1);
-//					CurrentBalance     = LineItem.BalanceFCY;
-//					CurrentBalanceRC   = LineItem.Balance;
-//					CurrentCurrency= LineItem.Currency;
-//					CurrentRate    = LineItem.ExchangeRate;
-//					// Clear payment value (will be renewed within calculation)
-//					LineItem.Payment = 0;
-//				EndIf;
-//			EndIf;
-//			
-//			// Find possible amount to close
-//			If ?(CMCurrency = CurrentCurrency, CMAmount > CurrentBalance, CMAmountRC > CurrentBalanceRC) Then
-//				
-//				// Claculate CM payment and rest of a due
-//				If CMCurrency = CurrentCurrency Then
-//					CMPayment = CurrentBalance;
-//				Else f
-//					CMPayment = Round(CMAmount * CurrentBalanceRC / CMAmountRC, 2);
-//				EndIf;
-//				
-//				// Save new payment to credit memo
-//				LineItemCM.Payment = LineItemCM.Payment + CMPayment;
-//				If Not LineItemCM.Check Then LineItemCM.Check = True; EndIf;
-//				// Recalculate rest of CM due
-//				CMAmount   = ?(CMPayment > CMAmount, 0, CMAmount - CMPayment);
-//				CMAmountRC = ?(CMAmount > 0,            CMAmountRC - Round(CMPayment * CMRate, 2), 0);
-//				
-//				// Close an invoice/return DueFCY -> Payment
-//				LineItem.Payment = LineItem.BalanceFCY;
-//				// Clear rest of a due
-//				CurrentBalance = 0;
-//				CurrentBalanceRC = 0;
-//				
-//			Else // ?(CMCurrency = CurrentCurrency, CMAmount <= CurrentDue, CMAmountRC <= CurrentDueRC)
-//				
-//				// Claculate CM payment and rest of a due
-//				If CurrentCurrency = CMCurrency Then
-//					CurrentPayment = CMAmount;
-//				Else
-//					CurrentPayment = Round(CurrentBalance * CMAmountRC / CurrentBalanceRC, 2);
-//				EndIf;
-//				
-//				// Save new payment to invoice/return
-//				LineItem.Payment = LineItem.Payment + CurrentPayment;
-//				// Recalculate rest of a invoice/return due
-//				CurrentBalance   = ?(CurrentPayment > CurrentBalance, 0, CurrentBalance - CurrentPayment);
-//				CurrentBalanceRC = ?(CurrentBalance > 0,                 CurrentBalanceRC - Round(CurrentPayment * CurrentRate, 2), 0);
-//				
-//				// Close the credit memo CMMxPayment(DueFCY or User defined) -> Payment
-//				LineItemCM.Payment = CMMxPayment;
-//				If Not LineItemCM.Check Then LineItemCM.Check = True; EndIf;
-//				// Clear rest of CM due
-//				CMAmount   = 0;
-//				CMAmountRC = 0;
-//			EndIf;	
-//		EndDo;
-//				
-//	EndDo;
-//	
-//	// Clear rest invoice/return lines
-//	For i = CurrentInvoice To Object.LineItems.Count()-1 Do
-//		Object.LineItems[i].Payment = 0;
-//	EndDo;
-//	
-//EndProcedure
-
-//&AtServer
-// The procedure applies the amount paid by the customer to rest of invoices
-// to the amounts of sales invoices / purchase returns.
-//
-//Procedure DistributeCashPayment()
-//	
-//	DefaultCurrency = GeneralFunctionsReusable.DefaultCurrency();
-//	LineItem = Undefined;
-//	CurrentInvoice = 0;
-//	CurrentBalanceRC = 0;
-//	CurrentBalance = 0;
-//	CurrentCurrency = Undefined;
-//	CurrentRate = 0;
-//	
-//	// Fill/distribute paid amount on the rest of invoices
-//	MxPayment = Object.CashPayment;
-//	Amount    = MxPayment;
-//	Rate      = ?(Object.Currency = DefaultCurrency, 1,                  GeneralFunctions.GetExchangeRate(Object.Date, Object.Currency));
-//	AmountRC  = ?(Object.Currency = DefaultCurrency, Object.CashPayment, Round(Object.CashPayment * Rate, 2));
-//	
-//	// Cycle through invoices until there is something do distribute
-//	While AmountRC > 0 Do
-//		
-//		// Find next invoice to close
-//		If CurrentBalanceRC = 0 Then
-//			If CurrentInvoice = Object.LineItems.Count() Then
-//				// All due already distributed
-//				Break;
-//			Else
-//				// Get new invoice
-//				CurrentInvoice   = CurrentInvoice +1;
-//				LineItem         = Object.LineItems.Get(CurrentInvoice-1);
-//				CurrentBalance   = LineItem.BalanceFCY;
-//				CurrentBalanceRC = LineItem.Balance;
-//				CurrentCurrency  = LineItem.Currency;
-//				CurrentRate      = LineItem.ExchangeRate;
-//				If Object.CreditMemos.Count() > 0 Then
-//					CurrentPaid  = LineItem.Payment;
-//				Else // Credit memos are not applied.
-//					CurrentPaid  = 0;
-//				EndIf;
-//			EndIf;
-//		EndIf;
-//		
-//		// Find possible amount to close
-//		If ?(Object.Currency = CurrentCurrency, Amount > (CurrentBalance-CurrentPaid), Amount > (Round(Amount * CurrentBalanceRC / AmountRC, 2) - CurrentPaid)) Then
-//			
-//			// Claculate payment and rest of a due
-//			If Object.Currency = CurrentCurrency Then
-//				Payment = CurrentBalance - CurrentPaid;
-//			Else
-//				Payment = Round(Amount * CurrentBalanceRC / AmountRC, 2) - CurrentPaid;
-//			EndIf;
-//			
-//			// Recalculate rest of CM due
-//			Amount   = ?(Payment > Amount, 0, Amount - Payment);
-//			AmountRC = ?(Amount > 0,          AmountRC - Round(Payment * Rate, 2), 0);
-//			
-//			// Close an invoice/return DueFCY -> Payment
-//			LineItem.Payment = LineItem.BalanceFCY;
-//			// Clear rest of a due
-//			CurrentBalance = 0;
-//			CurrentBalanceRC = 0;
-//			
-//		Else // ?(Currency = CurrentCurrency, Amount <= CurrentDue-CurrentPaid, AmountRC <= Round(Amount * CurrentDueRC / AmountRC, 2) - CurrentPaid
-//			
-//			// Claculate payment and rest of a due
-//			If CurrentCurrency = Object.Currency Then
-//				CurrentPayment = Amount;
-//			Else
-//				CurrentPayment = Round(CurrentBalance * AmountRC / CurrentBalanceRC, 2);
-//			EndIf;
-//			
-//			// Save new payment to invoice/return
-//			LineItem.Payment = CurrentPaid + CurrentPayment;
-//			// Recalculate rest of a invoice/return due
-//			CurrentBalance   = ?(CurrentPayment > CurrentBalance, 0, CurrentBalance - CurrentPayment);
-//			CurrentBalanceRC = ?(CurrentBalance > 0,                 CurrentBalanceRC - Round(CurrentPayment * CurrentRate, 2), 0);
-//			
-//			// Clear rest of payment
-//			Amount   = 0;
-//			AmountRC = 0;
-//		EndIf;	
-//	EndDo;
-//	
-//	// Remove the rest of cash payment while in automatic distribution
-//	If Amount > 0 Then
-//		Object.UnappliedPayment = Amount;
-//		// Beta: Currently will not be used: unapplied payment will be used instead.
-//		// Object.CashPayment = MxPayment - Amount;
-//	EndIf;
-//	
-//EndProcedure
 
 &AtClient
 // CompanyOnChange UI event handler. The procedure repopulates line items
@@ -304,34 +126,24 @@ EndProcedure
 //
 Procedure CompanyOnChange(Item)
 	
-	//Object.CompanyCode = CommonUse.GetAttributeValue(Object.Company, "Code");
+	Object.Currency = CommonUse.GetAttributeValue(Object.Company, "DefaultCurrency");
 	
 	EmailSet();
+	
+	// Set form exchange rate to company's latest
+	UpdateExchangeRate();
+	
 	// Fill in current receivables
 	FillDocumentList(Object.Company);
 	// Fill in credit memos
 	FillCreditMemos(Object.Company);
-	// Distribute credit memos on receivables
-	//DistributeCreditMemos();
-	// Distribute paid amount on receivables
-	//DistributeCashPayment();
-	
-	// Update totals
-	//LineItemsPaymentOnChange(Items.LineItemsPayment);
-	
-	//Object.BalChange = 0;	
-	//For Each LineItem In Object.LineItems Do
-	//		//CreditTotal =  CreditTotal + LineItemCM.Payment;
-	//		Object.BalChange = Object.BalChange + LineItem.Balance;
-	//EndDo;
-	RemainingBalance();
-	
-	Object.BalanceTotal = Object.BalChange;
-	
+		
 	If Object.LineItems.Count() > 0 Then
 		Items.PayAllDoc.Visible = true;
+		Items.SpaceFill.Visible = true;
 	Else
 		Items.PayAllDoc.Visible = false;
+		Items.SpaceFill.Visible = false;
 	Endif;
 
 	CompanyOnChangeAtServer();
@@ -348,51 +160,23 @@ Procedure CompanyOnChangeAtServer()
 	EndIf;
 EndProcedure
 
-
-&AtClient
-Procedure RemainingBalance()
-
-	Object.BalChange = 0;	
-	For Each LineItem In Object.LineItems Do
-			//CreditTotal =  CreditTotal + LineItemCM.Payment;
-			Object.BalChange = Object.BalChange + LineItem.Balance - LineItem.Payment;
-	EndDo;
-		
-		
-
-EndProcedure
-
 &AtClient
 Procedure UnappliedCalc()
-	
-	DefaultCurrency = GeneralFunctionsReusable.DefaultCurrency();
-	CompanyCurrency = CompanyCurrency();
-	
+		
 	TotalPay = 0;
-	BalTotal = 0;
+	// Keep track of total lineitem payments
 	For Each LineItem In Object.LineItems Do
-
 			TotalPay = TotalPay + LineItem.Payment;
-			BalTotal = BalTotal + LineItem.Balance;
 	EndDo;
 		
 	CredTotal = 0;
 	For Each LineItem In Object.CreditMemos Do
-
 			CredTotal = CredTotal + LineItem.Payment;
 	EndDo;	
 	
-	If CompanyCurrency = DefaultCurrency Then
-			Object.UnappliedPayment = (Object.CashPayment + CredTotal) - TotalPay;
-
-		Else
-			Rate = GeneralFunctions.GetExchangeRate(Object.Date, CompanyCurrency);
-			CashDistribute = Object.CashPayment/Rate;
-			Object.UnappliedPayment = (CashDistribute + CredTotal) - TotalPay; 
-	Endif;
-
-	
-	//Object.UnappliedPayment = (Object.CashPayment + CredTotal) - TotalPay; 
+	// Unapplied payment amount is equal to the total cash payment + the total credits applied
+	// - the amount paid in lineitems (which can include cash payments and credit payments)
+	Object.UnappliedPayment = (Object.CashPayment + CredTotal) - TotalPay;
 	
 EndProcedure
 
@@ -403,99 +187,78 @@ EndFunction
 
 &AtClient
 Procedure CashPaymentOnChange(Item)
-	DefaultCurrency = GeneralFunctionsReusable.DefaultCurrency();
-	// Distribute paid amount on receivables
-	//DistributeCashPayment();
 	
-	// Update totals
-	//LineItemsPaymentOnChange(Items.LineItemsPayment);
+	// Marks that CashPayment was the first field to have applied a payment
 	PayRef = True;
+
+	CashDistribute = Object.CashPayment;
 	
-	If ManualCheck = False Then
+	// Sum total of current credit payments
+	CreditTotal = 0;	
+	For Each LineItemCM In Object.CreditMemos Do
+			CreditTotal = CreditTotal + LineItemCM.Payment;
+	EndDo;
+
+	// Keep track of surplus credit to be applied
+	CreditOverFlow = CreditTotal;
 
 	
-	    CompanyCurrency = CompanyCurrency();
-		CurrencyMatch = True;
+	For Each LineItem In Object.LineItems Do
 		
-		If CompanyCurrency = DefaultCurrency Then
-			CashDistribute = Object.CashPayment;
-			CurrencyMatch = True;
-		Else
-			Rate = GeneralFunctions.GetExchangeRate(Object.Date, CompanyCurrency);
-			CashDistribute = Object.CashPayment/Rate;
-			CurrencyMatch = False;
+		LineItem.Payment = 0;
+		Balance = LineItem.BalanceFCY2;
 			
-		Endif;
-				
-		
-		CreditTotal = 0;	
-		For Each LineItemCM In Object.CreditMemos Do
-				//CreditTotal =  CreditTotal + LineItemCM.Payment;
-				CreditTotal = CreditTotal + LineItemCM.Payment;
-		EndDo;
-
-		CreditOverFlow = CreditTotal;
-
-		
-			For Each LineItem In Object.LineItems Do
-				
-				LineItem.Payment = 0;
-				Balance = 0;
-				If CurrencyMatch = False Then
-					Balance = LineItem.BalanceFCY;
-				Else
-					Balance = LineItem.Balance;
-				Endif;
-					
-				While CreditOverFlow > 0 And LineItem.Payment < Balance Do
-					AmountToPay = Balance - LineItem.Payment;
-					If AmountToPay >= CreditOverFlow Then
-						LineItem.Payment = LineItem.Payment + CreditOverFlow;
-						CreditOverFlow = 0;
-						LineItem.Check = true;
-					Else
-						LineItem.Payment = LineItem.Payment + AmountToPay;
-						CreditOverFlow=  CreditOverFlow - AmountToPay;
-						LineItem.Check = true;
-					Endif;
-				EndDo;
-			EndDo;
-		
-		
-			For Each LineItem In Object.LineItems Do
-				
-				Balance = 0;
-				If CurrencyMatch = False Then
-					Balance = LineItem.BalanceFCY;
-				Else
-					Balance = LineItem.Balance;
-				Endif;
-
-				While CashDistribute > 0 And LineItem.Payment < Balance Do
-					AmountToPay = Balance - LineItem.Payment;
-					If AmountToPay >= CashDistribute Then
-						LineItem.Payment = LineItem.Payment + CashDistribute;
-						CashDistribute = 0;
-						LineItem.Check = true;
-					Else
-						LineItem.Payment = LineItem.Payment + AmountToPay;
-						CashDistribute=  CashDistribute - AmountToPay;
-						LineItem.Check = true;
-					Endif;
-				EndDo;
-			EndDo;
-			
-			If CashDistribute > 0 Then
-				Object.UnappliedPayment = CashDistribute;
-				UnappliedCalc();
-			Elsif CashDistribute <= 0 And Object.CreditTotal <= 0 Then
-				Object.UnappliedPayment = 0;
+		// If there is leftover credit to be applied, and there is still an amount to be paid for
+		// a lineitem's balance, then apply the credit from CreditOverFlow
+		While CreditOverFlow > 0 And LineItem.Payment < Balance Do
+			AmountToPay = Balance - LineItem.Payment;
+			If AmountToPay >= CreditOverFlow Then
+				LineItem.Payment = LineItem.Payment + CreditOverFlow;
+				CreditOverFlow = 0;
+				LineItem.Check = true;
+			Else
+				LineItem.Payment = LineItem.Payment + AmountToPay;
+				CreditOverFlow=  CreditOverFlow - AmountToPay;
+				LineItem.Check = true;
 			Endif;
-			
-			//Endif;
-		
-	Endif;
+		EndDo;
+	EndDo;
 
+	// Now that we have applied all of the credit, we now apply the cash payment amount
+	For Each LineItem In Object.LineItems Do
+		
+		Balance = LineItem.BalanceFCY2;
+		// If there is still cash left in CashDistribute to be applied, and there is still an amount to be paid 
+		// for a lineitem's balance, apply cash from CashDistribute
+		While CashDistribute > 0 And LineItem.Payment < Balance Do
+			AmountToPay = Balance - LineItem.Payment;
+			If AmountToPay >= CashDistribute Then
+				LineItem.Payment = LineItem.Payment + CashDistribute;
+				CashDistribute = 0;
+				LineItem.Check = true;
+			Else
+				LineItem.Payment = LineItem.Payment + AmountToPay;
+				CashDistribute=  CashDistribute - AmountToPay;
+				LineItem.Check = true;
+			Endif;
+		EndDo;
+		
+		If LineItem.Payment = 0 Then
+			LineItem.Check = False;
+		EndIf;
+	EndDo;
+	
+	// If there is leftover cash after applying cashpaymment to line items, the rest goes into
+	// Unapplied payments
+	If CashDistribute > 0 Then
+		Object.UnappliedPayment = CashDistribute;
+		UnappliedCalc();
+	Elsif CashDistribute <= 0 And CreditTotal <= 0 Then
+		Object.UnappliedPayment = 0;
+	Endif;
+	
+	AdditionalPaymentCall();
+					
 EndProcedure
 
 &AtClient
@@ -506,125 +269,63 @@ EndProcedure
 Procedure LineItemsPaymentOnChange(Item)
 	
 	DefaultCurrency = GeneralFunctionsReusable.DefaultCurrency();
-	//
-	//// Update document totals
-	//DocumentTotalRC = 0;
-	//For Each Row In Object.LineItems Do
-	//	If Row.Currency = DefaultCurrency Then
-	//		DocumentTotalRC = DocumentTotalRC + Row.Payment;
-	//	Else
-	//		DocumentTotalRC = DocumentTotalRC + Round(Row.Payment * Row.ExchangeRate, 2);
-	//	EndIf;
-	//EndDo;
-	//Object.DocumentTotal = Object.LineItems.Total("Payment");
-	//Object.DocumentTotalRC = DocumentTotalRC;
-	//Object.UnappliedPayment = Max(Object.CashPayment - DocumentTotalRC, 0);
-	If ManualCheck = False Then 
-	
-		If Items.LineItems.CurrentData.Check = False Then
-			Items.LineItems.CurrentData.Check = True;
-		Endif;
-
 		
-		TabularPartRow = Items.LineItems.CurrentData;
-		
-		
-		If TabularPartRow.Currency = DefaultCurrency Then
-			If TabularPartRow.Payment > TabularPartRow.Balance Then
-				TabularPartRow.Payment = TabularPartRow.Balance;
-			Endif;
-			
-		Elsif TabularPartRow.Payment > TabularPartRow.BalanceFCY Then
-			  TabularPartRow.Payment = TabularPartRow.BalanceFCY;
-		Endif;
-		
-		If TabularPartRow.Payment = 0 Then
-			TabularPartRow.Check = False;
-		Endif;
-		
-		PayTotal = 0;
-		CreditTotal = 0;
-		Object.BalChange = Object.BalanceTotal;
-		
-		For Each LineItem In Object.LineItems Do
-			
-				If LineItem.Currency = DefaultCurrency Then
-					PayTotal =  PayTotal + LineItem.Payment;
-					CreditTotal = CreditTotal + LineItem.CreditApplied;
-				Else
-					LineExchangeRate = GeneralFunctions.GetExchangeRate(Object.Date, LineItem.Currency);
-					PayTotal =  PayTotal + LineItem.Payment * LineExchangeRate;
-
-					//PayTotal =  PayTotal + LineItem.Payment * LineItem.ExchangeRate;
-					//CreditTotal = CreditTotal + LineItem.CreditApplied;
-				Endif;
-				
-		EndDo;
-				
-		//Object.UnappliedPayment = Object.CashPayment - PayTotal;
-				
-		//Object.DocumentTotalRC = Object.CashPayment;
-		Object.DocumentTotal = Object.CashPayment;
-		CreditTotal = 0;
-		For Each LineItemCM In Object.CreditMemos Do
-				CreditTotal =  CreditTotal + LineItemCM.Payment;
-				//Object.AppliedCredit = CreditTotal + LineItemCM.Payment;
-		EndDo;
-		PaymentTotal = Object.DocumentTotalRC;
-		NumberOfLines = Object.LineItems.Count() - 1;
-		While NumberOfLines >=0 Do
-			
-			PaymentTotal = PaymentTotal + Object.LineItems[NumberOfLines].Payment;		
-			NumberOfLines = NumberOfLines - 1;
-			
-		EndDo;
-				
-		If PayRef = False Then
-			Object.CashPayment = PayTotal - CreditTotal;
-		Endif;
-
-		UnAppliedCalc();
-
-
-	
+	If Items.LineItems.CurrentData.Check = False Then
+		Items.LineItems.CurrentData.Check = True;
 	Endif;
+
+	
+	TabularPartRow = Items.LineItems.CurrentData;
+				
+	// Limit the payment to at most the BalanceFCY amount
+	If TabularPartRow.Payment > TabularPartRow.BalanceFCY2 Then
+		  TabularPartRow.Payment = TabularPartRow.BalanceFCY2;
+	Endif;
+	
+	// If payment is none, uncheck the lineitem
+	If TabularPartRow.Payment = 0 Then
+		TabularPartRow.Check = False;
+	Endif;
+	
+	PayTotal = 0;
+	CreditTotal = 0;	
+	For Each LineItem In Object.LineItems Do		
+				PayTotal =  PayTotal + LineItem.Payment;
+				CreditTotal = CreditTotal + LineItem.CreditApplied;		
+	EndDo;
+				
+	CreditTotal = 0;
+	For Each LineItemCM In Object.CreditMemos Do
+			CreditTotal =  CreditTotal + LineItemCM.Payment;
+	EndDo;
+			
+	AdditionalPaymentCall();
 			
 EndProcedure
 
 &AtClient
+// Used to recalculate the CashPayment value and DocumentTotal values when there is a change in the document
 Procedure AdditionalPaymentCall()
 
 	DefaultCurrency = GeneralFunctionsReusable.DefaultCurrency();
 
-	PayTotal = 0;
-	BalanceTotal = 0;
-	
+	PayTotal = 0;	
 	For Each LineItem In Object.LineItems Do
-		If LineItem.Currency = DefaultCurrency Then
-			PayTotal =  PayTotal + LineItem.Payment;
-		Else
-			PayTotal =  PayTotal + LineItem.Payment * LineItem.ExchangeRate;
-			//PayTotal =  PayTotal + LineItem.Payment; //alan fix
-		Endif;
-			
-			
+			PayTotal =  PayTotal + LineItem.Payment;			
 	EndDo;
-			
-	//Object.UnappliedPayment = Object.CashPayment - PayTotal;
-			
-	//Object.DocumentTotalRC = Object.CashPayment;
-	Object.DocumentTotal = Object.CashPayment;
+	
 	CreditTotal = 0;
 	For Each LineItemCM In Object.CreditMemos Do
 			CreditTotal =  CreditTotal + LineItemCM.Payment;
-			//Object.AppliedCredit = CreditTotal + LineItemCM.Payment;
 	EndDo;
 	
-	//UnAppliedCalc();
-	
+	// CashPayment amount is equal to the difference of applied payments - the credits applied
 	If PayRef = False Then
 		Object.CashPayment = PayTotal - CreditTotal;
 	Endif;
+	
+	Object.DocumentTotalRC = Object.CashPayment * Object.ExchangeRate;
+	Object.DocumentTotal = Object.CashPayment;
 
 	UnAppliedCalc();
 	
@@ -658,23 +359,7 @@ Procedure BeforeWrite(Cancel, WriteParameters)
 		CommonUseClient.ShowCustomMessageBox(ThisForm, "Bank reconciliation", "The transaction you are editing has been reconciled. Saving your changes could put you out of balance the next time you try to reconcile. 
 		|To modify it you should exclude it from the Bank rec. document.", PredefinedValue("Enum.MessageStatus.Warning"));
 	EndIf;
-	
- //   If Object.CreditTotal > 0 or Object.UnappliedPayment > 0 Then
- //   	
- //   	Mode = QuestionDialogMode.YesNo;
- //   	Answer = DoQueryBox(StringFunctionsClientServer.SubstituteParametersInString(
- //   			NStr("en='Total Payment: %1 %5, Cash Payment: %2 %6, Credit Used: %3 %5, Unapplied Payment %4 %5. /n Is This Correct?'"),PayTotal,Object.CashPayment,Object.CreditTotal,Object.UnappliedPayment,CompanyCurrency,DefaultCurrency), Mode, 0);
- //   	If Answer = DialogReturnCode.No Then
- //  			 Return;
- //   	EndIf;
- //
 
- //   	//ShowMessageBox(Undefined, StringFunctionsClientServer.SubstituteParametersInString(
- //   	//		NStr("en='Total Payment: %1 %5, Cash Payment: %2 %6, Credit Used: %3 %5, Unapplied Payment %4 %5'"),PayTotal,Object.CashPayment,Object.CreditTotal,Object.UnappliedPayment,CompanyCurrency,DefaultCurrency));
- //   Endif;
-
-
-	
 	NumberOfLines = Object.LineItems.Count() - 1;
 	While NumberOfLines >=0 Do
 		
@@ -697,37 +382,6 @@ Procedure BeforeWrite(Cancel, WriteParameters)
 		
 	EndDo;
 	
-	//Object.Currency = Object.LineItems[0].Currency;
-	//NumberOfRows = Object.LineItems.Count() - 1;
-	//While NumberOfRows >= 0 Do
-	//	
-	//	If NOT Object.LineItems[NumberOfRows].Currency = Object.Currency Then
-	//		Message("All documents in the line items need to have the same currency");
-	//		Cancel = True;
-	//		Return;
-	//	EndIf;
-	//	
-	//	NumberOfRows = NumberOfRows - 1;
-	//EndDo;
-	
-	// Request user confirmation on credit memo creation.
-	//If Not BeforeWriteChoiceProcessed = True Then
-	//	
-	//	If  Object.UnappliedPayment > 0 And Object.UnappliedPaymentCreditMemo.IsEmpty() Then
-	//		ChoiceProcessing = New NotifyDescription("BeforeWriteChoiceProcessing", ThisForm, WriteParameters);
-	//		QuestionTitle    = "Unaplied payment found.";
-	//		QuestionText     = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = 'You have an unaplied payment %1.
-	//						   |Create a credit memo for the unapplied amount?'"), Format(Object.UnappliedPayment, "NFD=2"));
-	//		ShowQueryBox(ChoiceProcessing, QuestionText, QuestionDialogMode.OKCancel,,DialogReturnCode.OK, QuestionTitle);
-	//		Cancel = True;
-	//		Return;
-	//	EndIf;
-	//	
-	//Else
-	//	// Clear used confirmation flag.
-	//	BeforeWriteChoiceProcessed = Undefined;
-	//EndIf;
-	
 EndProcedure
 
 &AtServer
@@ -739,29 +393,12 @@ Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
 		CurrentObject.AdditionalProperties.Insert("PermitWrite", PermitWrite);	
 	EndIf;
 	
-	//If Object.Ref.IsEmpty() Then
-	//
-	//	MatchVal = Increment(Constants.CashReceiptLastNumber.Get());
-	//	If Object.Number = MatchVal Then
-	//		Constants.CashReceiptLastNumber.Set(MatchVal);
-	//	Else
-	//		If Increment(Object.Number) = "" Then
-	//		Else
-	//			If StrLen(Increment(Object.Number)) > 20 Then
-	//				 Constants.CashReceiptLastNumber.Set("");
-	//			Else
-	//				Constants.CashReceiptLastNumber.Set(Increment(Object.Number));
-	//			Endif;
-
-	//		Endif;
-	//	Endif;
-	//Endif;
-	//
-	//If Object.Number = "" Then
-	//	Message("Cash Receipt Number is empty");
-	//	Cancel = True;
-	//Endif;
-
+	LineItemArray = New Array();
+	For Each LineItem In Object.LineItems Do
+		LineItemArray.Add(LineItem.BalanceFCY2);	
+	EndDo;
+	CurrentObject.AdditionalProperties.Insert("LineItems", LineItemArray);
+	
 EndProcedure
 
 &AtClient
@@ -806,14 +443,6 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		ProcessNewCashReceipt(Parameters.SalesInvoice);
 	EndIf;
 	
-	//ConstantCashReceipt = Constants.CashReceiptLastNumber.Get();
-	//If Object.Ref.IsEmpty() Then		
-	//	
-	//	Object.Number = Constants.CashReceiptLastNumber.Get();
-	//Endif;
-
-	//Title = "Receipt " + Object.Number + " " + Format(Object.Date, "DLF=D");
-	
 	Items.Company.Title = GeneralFunctionsReusable.GetCustomerName();
 	Items.UnappliedPayment.ReadOnly = True;
 	
@@ -822,12 +451,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	Else // 1, Null, ""
 		Items.BankAccount.ReadOnly = True;
 	EndIf;
-	
-	//If Object.BankAccount.IsEmpty() Then
-	//	Object.BankAccount = Constants.BankAccount.Get();
-	//Else
-	//EndIf;
-	
+		
 	If Object.BankAccount.IsEmpty() Then
 		If Object.DepositType = "2" Then
 			Object.BankAccount = Constants.BankAccount.Get();
@@ -844,7 +468,9 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
 	If GeneralFunctionsReusable.FunctionalOptionValue("MultiCurrency") Then	
 		Items.CreditMemosPayment.Title = "Payment FCY";	
-		Items.LineItemsPayment.Title = "Payment FCY";	
+		Items.LineItemsPayment.Title = "Payment FCY";
+		Items.CreditMemosBalanceFCY.Title = "Balance FCY";
+		Items.LineItemsBalanceFCY.Title = "Balance FCY";
 	EndIf;
 	
 	// Set checks for credit memos
@@ -859,42 +485,19 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
 	// Update elements status.
 	//Items.FormChargeWithStripe.Enabled = IsBlankString(Object.StripeID);
-	
-	// Check credit memo applied.
-	//If Not Object.UnappliedPaymentCreditMemo.IsEmpty() Then
-	//	ReadOnly = True;
-	//EndIf;
-	
+		
 	If Object.Ref.IsEmpty() Then
 		Object.EmailNote = Constants.CashReceiptFooter.Get();
 	EndIf;
 	
+	// Update lineitem balances.
+	UpdateLineItemBalances();
+
 EndProcedure
 
 &AtClient
-Procedure OnOpen(Cancel)
-	
-	//If Not Object.UnappliedPaymentCreditMemo.IsEmpty() Then
-	//	Message(NStr("en = 'The object has posted unapllied payment.
-	//					   |Document modification is not allowed.'"));
-	//EndIf;
-
-	Object.BalChange = 0;	
-	For Each LineItem In Object.LineItems Do
-			//CreditTotal =  CreditTotal + LineItemCM.Payment;
-			Object.BalChange = Object.BalChange + LineItem.Balance;
-	EndDo;
-
-	Object.BalanceTotal = Object.BalChange;
-	
-	//If GeneralFunctionsReusable.FunctionalOptionValue("MultiCurrency") Then
-	//	Items.PaidAmount.ReadOnly = True;
-	//Else
-	//	Items.PaidAmount.ReadOnly = False;
-	//EndIf;
-	
-	AttachIdleHandler("AfterOpen", 0.1, True);
-	
+Procedure OnOpen(Cancel)		
+	AttachIdleHandler("AfterOpen", 0.1, True);	
 EndProcedure
 
 &AtClient
@@ -932,20 +535,8 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 	
 EndProcedure
 
-//&AtClient
-//// Disables editing of the Bank Account field if the deposit type is Undeposited Funds
-////
-//Procedure DepositTypeOnChange(Item)
-//	
-//	If Object.DepositType = "2" Then
-//		Items.BankAccount.ReadOnly = False;
-//	Else // 1, Null, ""
-//		Items.BankAccount.ReadOnly = True;
-//	EndIf;
-//	
-//EndProcedure
-
 &AtClient
+// Fills credit payment amount to match the credit balance of lineitem
 Procedure CheckOnChange(Item)
 	
 	PayTotal = 0;
@@ -956,30 +547,30 @@ Procedure CheckOnChange(Item)
 	// Fill/clear payment value
 	If Items.CreditMemos.CurrentData.Check Then
 		
-		If Items.CreditMemos.CurrentData.Currency = DefaultCurrency Then
+		If Items.CreditMemos.CurrentData.Currency2 = DefaultCurrency Then
 			
 			For Each LineItem In Object.LineItems Do
-				BalTotal = BalTotal + LineItem.Balance;
+				BalTotal = BalTotal + LineItem.BalanceFCY2;
 				PayTotal = PayTotal + LineItem.Payment;
 			EndDo;
 
 		
-			If Items.CreditMemos.CurrentData.Balance > (BalTotal - PayTotal) And PayRef = True Then
+			If Items.CreditMemos.CurrentData.BalanceFCY2 > (BalTotal - PayTotal) And PayRef = True Then
 				Items.CreditMemos.CurrentData.Payment = BalTotal - PayTotal;
 			Else
-				Items.CreditMemos.CurrentData.Payment = Items.CreditMemos.CurrentData.Balance;
+				Items.CreditMemos.CurrentData.Payment = Items.CreditMemos.CurrentData.BalanceFCY2;
 			Endif;
 		Else
 			
 			For Each LineItem In Object.LineItems Do
-				BalTotal = BalTotal + LineItem.BalanceFCY;
+				BalTotal = BalTotal + LineItem.BalanceFCY2;
 				PayTotal = PayTotal + LineItem.Payment;
 			EndDo;
 
-			If Items.CreditMemos.CurrentData.BalanceFCY > (BalTotal - PayTotal) And PayRef = True Then
+			If Items.CreditMemos.CurrentData.BalanceFCY2 > (BalTotal - PayTotal) And PayRef = True Then
 				Items.CreditMemos.CurrentData.Payment = BalTotal - PayTotal;
 			Else
-				Items.CreditMemos.CurrentData.Payment = Items.CreditMemos.CurrentData.BalanceFCY;
+				Items.CreditMemos.CurrentData.Payment = Items.CreditMemos.CurrentData.BalanceFCY2;
 			Endif;
 		Endif;
 
@@ -994,18 +585,14 @@ Procedure CheckOnChange(Item)
 		
 	EndIf;
 	
-	
-	If ManualCheck = False Then
-		
-		AdditionalCreditPay();
-	
-	Endif;
+	AdditionalCreditPay();
 	
 	// Invoke inherited payment change event
 	//CreditMemosPaymentOnChange(Item)
 EndProcedure
 
 &AtClient
+// Fills payment amount for lineitem based on lineitem balance
 Procedure Check2OnChange(Item)
 
 	DefaultCurrency = GeneralFunctionsReusable.DefaultCurrency();
@@ -1016,120 +603,75 @@ Procedure Check2OnChange(Item)
 	EndDo;
 	
 	If Items.LineItems.CurrentData.Check Then
-		If Items.LineItems.CurrentData.Balance > (Object.CashPayment - PayTotal) and PayRef = True Then
-				Items.LineItems.CurrentData.Payment = Object.CashPayment - PayTotal;
+		If Object.UnappliedPayment >= Items.LineItems.CurrentData.Payment Then
+			Object.UnappliedPayment = Object.UnappliedPayment - Items.LineItems.CurrentData.Payment;
+		EndIf;
+		Items.LineItems.CurrentData.Payment = Items.LineItems.CurrentData.BalanceFCY2;
+		If PayRef = False Then
+			Object.CashPayment = Object.CashPayment + Items.LineItems.CurrentData.Payment;
 		Else
-			If Items.LineItems.CurrentData.ExchangeRate = DefaultCurrency Then	
-				Items.LineItems.CurrentData.Payment = Items.LineItems.CurrentData.Balance;
-			Else
-				Items.LineItems.CurrentData.Payment = Items.LineItems.CurrentData.BalanceFCY;
-			Endif;
-			
-		Endif;
-	Else	
+			PayRef = False;
+		EndIf;
+	Else
+		If Object.UnappliedPayment < Object.CashPayment Then
+			Object.UnappliedPayment = Object.UnappliedPayment + Items.LineItems.CurrentData.Payment;
+		EndIf;
 		Items.LineItems.CurrentData.Payment = 0;
 	EndIf;
-		
-	If ManualCheck = False Then 
+			
+	AdditionalPaymentCall();
 	
-		RemainingBalance();
-		
-		AdditionalPaymentCall();
-	
-	Endif;
-	// Invoke inherited payment change event
-	//CreditMemosPaymentOnChange(Item)
 EndProcedure
 
 
 &AtClient
 Procedure CreditMemosPaymentOnChange(Item)
-	
-	// Limit payment value to credit memo amount
-	//If Items.CreditMemos.CurrentData.Payment > Items.CreditMemos.CurrentData.BalanceFCY Then
-	//	Items.CreditMemos.CurrentData.Payment = Items.CreditMemos.CurrentData.BalanceFCY;
-	//EndIf;
-	
-	// Recalculate invoice/return's payment value
-	//DistributeCreditMemos(False);
-	
-	// Update cash payment distribution
-	//DistributeCashPayment();
-	
-	// Update totals
-	//LineItemsPaymentOnChange(Items.LineItemsPayment);
-	
+		
 	DefaultCurrency = GeneralFunctionsReusable.DefaultCurrency();
+			
+	If Items.CreditMemos.CurrentData.Payment > Items.CreditMemos.CurrentData.BalanceFCY2 Then
+		Items.CreditMemos.CurrentData.Payment = Items.CreditMemos.CurrentData.BalanceFCY2;
+	Endif;
 	
-	If ManualCheck = False Then 
-		
-		If Items.CreditMemos.CurrentData.Currency = DefaultCurrency Then
-			If Items.CreditMemos.CurrentData.Payment > Items.CreditMemos.CurrentData.Balance Then
-				Items.CreditMemos.CurrentData.Payment = Items.CreditMemos.CurrentData.Balance;	
-			Endif;
-		Elsif Items.CreditMemos.CurrentData.Payment > Items.CreditMemos.CurrentData.BalanceFCY Then
-			Items.CreditMemos.CurrentData.Payment = Items.CreditMemos.CurrentData.BalanceFCY;
-		Endif;
-		
-		PayTotal = 0;
-		BalTotal = 0;
-		For Each LineItem In Object.LineItems Do
-			If Items.CreditMemos.CurrentData.Currency = DefaultCurrency Then
-				BalTotal = BalTotal + LineItem.Balance;
-			Else
-				BalTotal = BalTotal + LineItem.BalanceFCY;
-			Endif;
-				PayTotal = PayTotal + LineItem.Payment;
-		EndDo;
-		
-		If Items.CreditMemos.CurrentData.Payment > (BalTotal - PayTotal) Then
-			Items.CreditMemos.CurrentData.Payment = BalTotal - PayTotal;
-			
-		Endif;
-
-
-		
-		If Items.CreditMemos.CurrentData.Check = False Then
-			Items.CreditMemos.CurrentData.Check = True;
-		Endif;
-		
-		TabularPartRow = Items.CreditMemos.CurrentData;
-		
-		CreditTotal = 0;	
-		For Each LineItemCM In Object.CreditMemos Do
-				//CreditTotal =  CreditTotal + LineItemCM.Payment;
-				CreditTotal = CreditTotal + LineItemCM.Payment;
-		EndDo;
-			
-		
-		Object.CreditTotal = CreditTotal;
-		Object.AppliedCredit = Object.CreditTotal;
-					
-		//CreditOverFlow = CreditTotal - PayTotal;
-
-		//If Items.CreditMemos.CurrentData.Check Then
-		//
-		//	For Each LineItem In Object.LineItems Do
-		//		
-		//		While CreditOverFlow > 0 And LineItem.Payment < LineItem.Balance Do
-		//			AmountToPay = LineItem.Balance - LineItem.Payment;
-		//			If AmountToPay >= CreditOverFlow Then
-		//				LineItem.Payment = LineItem.Payment + CreditOverFlow;
-		//				CreditOverFlow = 0;
-		//				LineItem.Check = true;
-		//			Else
-		//				LineItem.Payment = LineItem.Payment + AmountToPay;
-		//				CreditOverFlow=  CreditOverFlow - AmountToPay;
-		//				LineItem.Check = true;
-		//			Endif;
-		//		EndDo;
-		//	EndDo;
-		//	
-		//Endif;
-		
-		AdditionalCreditPay();
+	//Credit Memo Line Item Change
+	CreditPayment = Object.CreditMemos.Total("Payment");
+	If CreditPayment > CreditTotal Then
+		  CreditAppliedPositive = CreditPayment - CreditTotal;
+	Else
+		  CreditAppliedNegative = CreditTotal - CreditPayment;
+	EndIf; 
+	  
+	If Items.CreditMemos.CurrentData.Payment Then
+		Items.CreditMemos.CurrentData.Check = False;
+	Endif;   
+	
+	PayTotal = 0;
+	BalTotal = 0;
+	For Each LineItem In Object.LineItems Do
+			BalTotal = BalTotal + LineItem.BalanceFCY2;
+			PayTotal = PayTotal + LineItem.Payment;
+	EndDo;
+	
+	If Items.CreditMemos.CurrentData.Payment > (BalTotal - PayTotal) Then
+		Items.CreditMemos.CurrentData.Payment = BalTotal - PayTotal;
 		
 	Endif;
+	
+	If Items.CreditMemos.CurrentData.Check = False Then
+		Items.CreditMemos.CurrentData.Check = True;
+	Endif;
+	
+	TabularPartRow = Items.CreditMemos.CurrentData;
+	
+	CreditTotal = 0;	
+	For Each LineItemCM In Object.CreditMemos Do
+			CreditTotal = CreditTotal + LineItemCM.Payment;
+	EndDo;
+		
+	AppliedCredit = CreditTotal;
+	
+	AdditionalCreditPay();
+		
 
 EndProcedure
 
@@ -1138,13 +680,10 @@ Procedure AdditionalCreditPay()
 	
 	CreditTotal = 0;	
 	For Each LineItemCM In Object.CreditMemos Do
-			//CreditTotal =  CreditTotal + LineItemCM.Payment;
 			CreditTotal = CreditTotal + LineItemCM.Payment;
 	EndDo;
 		
-	
-	Object.CreditTotal = CreditTotal;
-	Object.AppliedCredit = Object.CreditTotal;
+	AppliedCredit = CreditTotal;
 		
 	// subtract total credit amount from cashpayment
 	PayTotal = 0;
@@ -1156,15 +695,58 @@ Procedure AdditionalCreditPay()
 	DefaultCurrency = GeneralFunctionsReusable.DefaultCurrency();	
 	
 	CreditOverFlow = Items.CreditMemos.CurrentData.Payment;//CreditTotal;
-
+		
+	//Applies the credit amount to line items. Applies from top line items down, depending if a line item is full
+	// and there is a leftover amount from the selected credit.
 	If Items.CreditMemos.CurrentData.Check Then
 	
-		For Each LineItem In Object.LineItems Do
+		If CreditAppliedPositive > 0 Then
+		
+			For Each LineItem In Object.LineItems Do
+								
+				While CreditAppliedPositive > 0 And LineItem.Payment < LineItem.BalanceFCY2 Do
+					AmountToPay = LineItem.BalanceFCY2 - LineItem.Payment;
+					If AmountToPay >= CreditAppliedPositive Then
+						LineItem.Payment = LineItem.Payment + CreditAppliedPositive;
+						CreditAppliedPositive = 0;
+						LineItem.Check = true;
+					Else
+						LineItem.Payment = LineItem.Payment + AmountToPay;
+						CreditAppliedPositive =  CreditAppliedPositive - AmountToPay;
+						LineItem.Check = true;
+					Endif;
+				EndDo;
+					
+			EndDo;
 			
-			If Items.CreditMemos.CurrentData.Currency = DefaultCurrency Then
+		ElsIf CreditAppliedNegative > 0 Then
+			
+			For Each LineItem In Object.LineItems Do
+								
+				While CreditAppliedNegative > 0 And LineItem.Payment > 0 Do
+					If LineItem.Payment >= CreditAppliedNegative Then
+						LineItem.Payment = LineItem.Payment - CreditAppliedNegative;
+						CreditAppliedNegative = 0;
+						If LineItem.Payment = 0 Then
+							LineItem.Check = false;
+						Else
+							LineItem.Check = true;
+						EndIf;
 
-				While CreditOverFlow > 0 And LineItem.Payment < LineItem.Balance Do
-					AmountToPay = LineItem.Balance - LineItem.Payment;
+					Else
+						LineItem.Payment = LineItem.Payment - CreditAppliedNegative;
+						CreditOverFlow =  CreditOverFlow - CreditAppliedNegative;
+						LineItem.Check = true;
+					Endif;
+				EndDo;
+					
+			EndDo;
+			
+		Else
+			 For Each LineItem In Object.LineItems Do
+								
+				While CreditOverFlow > 0 And LineItem.Payment < LineItem.BalanceFCY2 Do
+					AmountToPay = LineItem.BalanceFCY2 - LineItem.Payment;
 					If AmountToPay >= CreditOverFlow Then
 						LineItem.Payment = LineItem.Payment + CreditOverFlow;
 						CreditOverFlow = 0;
@@ -1175,52 +757,16 @@ Procedure AdditionalCreditPay()
 						LineItem.Check = true;
 					Endif;
 				EndDo;
-			Else
-				
-				While CreditOverFlow > 0 And LineItem.Payment < LineItem.BalanceFCY Do
-					AmountToPay = LineItem.BalanceFCY - LineItem.Payment;
-					If AmountToPay >= CreditOverFlow Then
-						LineItem.Payment = LineItem.Payment + CreditOverFlow;
-						CreditOverFlow = 0;
-						LineItem.Check = true;
-					Else
-						LineItem.Payment = LineItem.Payment + AmountToPay;
-						CreditOverFlow=  CreditOverFlow - AmountToPay;
-						LineItem.Check = true;
-					Endif;
-				EndDo;
-			Endif;
-				
-		EndDo;
+					
+			EndDo;
+
+		EndIf;
 		
 	Endif;
 	
-	Object.AppliedCredit = CreditOverFlow;
+	AppliedCredit = CreditOverFlow;
 	UnappliedCalc();
 	
-EndProcedure
-
-&AtClient
-Procedure CreditMemosAppliedOnChange(Item)
-	
-	CreditTotal = 0;
-	TabularPartRow = Items.LineItems.CurrentData;
-	
-	For Each LineItem In Object.LineItems Do
-			CreditTotal =  CreditTotal + LineItem.CreditApplied;
-	EndDo;
-	TempVal =  Object.AppliedCredit - CreditTotal;
-	
-	If CreditTotal > Object.AppliedCredit Then
-		Message("Paying with more credit than applied");
-		
-	Elsif TabularPartRow.CreditApplied > TabularPartRow.Balance Then
-		Message("Credit exceeds invoice balance");		
-	Else
-		 Object.AppliedCredit = Object.CreditTotal - CreditTotal;
-	Endif;
-	
-
 EndProcedure
 
 &AtServer
@@ -1231,17 +777,6 @@ Function SessionTenant()
 EndFunction
 
 &AtClient
-Procedure ManualCheckOnChange(Item)
-	// Insert handler contents.
-	If ManualCheck = False Then
-		items.UnappliedPayment.ReadOnly = True;
-	Else
-		items.UnappliedPayment.ReadOnly = False;
-	Endif;
-	
-EndProcedure
-
-&AtClient
 Procedure SendEmail(Command)
 	If Object.Ref.IsEmpty() OR IsPosted() = False Then
 		Message("An email cannot be sent until the cash receipt is posted");
@@ -1249,8 +784,6 @@ Procedure SendEmail(Command)
 		FormParameters = New Structure("Ref",Object.Ref );
 		OpenForm("CommonForm.EmailForm", FormParameters,,,,,, FormWindowOpeningMode.LockOwnerWindow);	
 	EndIf;
-
-	//SendEmailAtServer();
 EndProcedure
 
 &AtServer
@@ -1260,182 +793,6 @@ EndFunction
 
 &AtServer
 Procedure SendEmailAtServer()
-	//
-	//If Object.Ref.IsEmpty() Then
-	//	Message("An email cannot be sent until the invoice is posted or written");
-	//Else
-	//	
-	//If Object.EmailTo <> "" Then
-	//	
-	//// 	//imagelogo = Base64String(GeneralFunctions.GetLogo());
-	// 	If constants.logoURL.Get() = "" Then
-	//		 imagelogo = "http://www.accountingsuite.com/images/logo-a.png";
-	// 	else
-	//		 imagelogo = Constants.logoURL.Get();  
-	// 	Endif;
-	// 	
-	//	
-	//	
-	//	datastring = "";
-	//	TotalAmount = 0;
-	//	TotalCredits = 0;
-	//	For Each DocumentLine in Object.LineItems Do
-	//		
-	//		DocObj = DocumentLine.Document.Ref.GetObject();
-	//		
-	//		TotalAmount = TotalAmount + DocumentLine.Payment;
-	//		datastring = datastring + "<TR height=""20""><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.Document.Ref +  "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">$" + Format(DocObj.DocumentTotalRC,"NFD=2; NZ=") + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">$" + Format(DocumentLine.Balance,"NFD=2; NZ=") + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">$" + Format(DOcumentLine.Payment,"NFD=2; NZ=") + "</TD></TR>";
-
-	//	EndDo;
-	//	
-	//	For Each CreditLine in Object.CreditMemos Do
-	//		
-	//		TotalCredits = TotalCredits + CreditLine.Payment;
-
-	// 	EndDo;
-
-	//		 
-	//	MailProfil = New InternetMailProfile; 
-	//	
-	//	MailProfil.SMTPServerAddress = ServiceParameters.SMTPServer();
-	//	//MailProfil.SMTPServerAddress = Constants.MailProfAddress.Get();
-	//	MailProfil.SMTPUseSSL = ServiceParameters.SMTPUseSSL();
-	//	//MailProfil.SMTPUseSSL = Constants.MailProfSSL.Get();
-	//	MailProfil.SMTPPort = 465;  
-	//	
-	//	MailProfil.Timeout = 180; 
-	//	
-	//	
-	//	MailProfil.SMTPPassword = ServiceParameters.SendGridPassword();
-	// 	  
-	//	MailProfil.SMTPUser = ServiceParameters.SendGridUserName();	    
-	//	
-	//	send = New InternetMailMessage; 
-	//	//send.To.Add(object.shipto.Email);
-	//	//send.To.Add(object.EmailTo);
-	//	If Object.EmailTo <> "" Then
-	//		EAddresses = StringFunctionsClientServer.SplitStringIntoSubstringArray(Object.EmailTo, ",");
-	//		For Each EmailAddress in EAddresses Do
-	//			send.To.Add(EmailAddress);
-	//		EndDo;
-	//	Endif;
-	//	
-	//	If Object.EmailCC <> "" Then
-	//		EAddresses = StringFunctionsClientServer.SplitStringIntoSubstringArray(Object.EmailCC, ",");
-	//		For Each EmailAddress in EAddresses Do
-	//			send.CC.Add(EmailAddress);
-	//		EndDo;
-	//	Endif;
-	//	
-	//	
-	//	send.From.Address = Constants.Email.Get();
-	//	send.From.DisplayName = Constants.SystemTitle.Get();
-	//	send.Subject = Constants.SystemTitle.Get() + " - Cash Receipt " + Object.Number + " from " + Format(Object.Date,"DLF=D") + " - $" + Format(Object.DocumentTotalRC,"NFD=2; NZ=");
-	//	
-	//	FormatHTML = FormAttributeToValue("Object").GetTemplate("TemplateTest").GetText();
-	// 	  
-	// 	 
-	//	If Object.StripeID <> "" Then
-	//		FormatHTML2 = StrReplace(FormatHTML,"Receipt No.","Stripe ID");
-	//		FormatHTML2 = StrReplace(FormatHTML2,"object.number",object.StripeID);
-	//		FormatHTML2 = StrReplace(FormatHTML2,"<td align=""right""  id=""param1""></td>","<td align=""right"" style=""font-size: 12px;"">Payment Information: </td>");
-	//		FormatHTML2 = StrReplace(FormatHTML2,"<td align=""right""  id=""param3""></td>","<td align=""right"">Last 4 Digits: " + Object.StripeLast4 + "</td>");
-	//		FormatHTML2 = StrReplace(FormatHTML2,"<td align=""right""  id=""param2""></td>","<td align=""right""> Method: " + Object.StripeCardType + "</td>");
-	//		
-	//	Else
-	//		FormatHTML2 = StrReplace(FormatHTML,"object.number",object.RefNum);
-	//	Endif;
-	// 	 FormatHTML2 = StrReplace(FormatHTML2,"imagelogo",imagelogo);
-	// 	  FormatHTML2 = StrReplace(FormatHTML2,"object.date",Format(object.Date,"DLF=D"));
-	// 	  //BillTo
-	// 	  FormatHTML2 = StrReplace(FormatHTML2,"object.company",object.Company);
-
-	//	  Query = New Query("SELECT
-	//					  |	Addresses.FirstName,
-	//					  |	Addresses.MiddleName,
-	//					  |	Addresses.LastName,
-	//					  |	Addresses.Phone,
-	//					  |	Addresses.Fax,
-	//					  |	Addresses.Email,
-	//					  |	Addresses.AddressLine1,
-	//					  |	Addresses.AddressLine2,
-	//					  |	Addresses.City,
-	//					  |	Addresses.State.Code AS State,
-	//					  |	Addresses.Country,
-	//					  |	Addresses.ZIP,
-	//					  |	Addresses.RemitTo
-	//					  |FROM
-	//					  |	Catalog.Addresses AS Addresses
-	//					  |WHERE
-	//					  |	Addresses.Owner = &Company
-	//					  |	AND Addresses.DefaultBilling = TRUE");
-	//	Query.SetParameter("Company", object.company);
-	//		QueryResult = Query.Execute();	
-	//	Dataset = QueryResult.Unload();
-
-	//	  
-	//	  
-	//	  FormatHTML2 = StrReplace(FormatHTML2,"object.shipto1",Dataset[0].AddressLine1);
-	// 	  FormatHTML2 = StrReplace(FormatHTML2,"object.shipto2",Dataset[0].AddressLine2);
-	// 	 CityStateZip = Dataset[0].City + Dataset[0].State + Dataset[0].ZIP;
-	// 	 
-	// 	 If CityStateZip = "" Then
-	// 	 	FormatHTML2 = StrReplace(FormatHTML2,"object.city object.state object.zip","");
-	// 	 Else
-	// 	  	FormatHTML2 = StrReplace(FormatHTML2,"object.city object.state object.zip",Dataset[0].City + ", " + Dataset[0].State + " " + Dataset[0].ZIP);
-	// 	 Endif;
-	// 	  FormatHTML2 = StrReplace(FormatHTML2,"object.country",Dataset[0].Country);
-	// 	  //lineitems
-	// 	  FormatHTML2 = StrReplace(FormatHTML2,"lineitems",datastring);
-	//	
-	// 	  //User's company info
-	// 	  FormatHTML2 = StrReplace(FormatHTML2,"mycompany",Constants.SystemTitle.Get()); 
-	// 	  FormatHTML2 = StrReplace(FormatHTML2,"myaddress1",Constants.AddressLine1.Get());
-	// 	  FormatHTML2 = StrReplace(FormatHTML2,"myaddress2",Constants.AddressLine2.Get());
-	// 	  FormatHTML2 = StrReplace(FormatHTML2,"mycity mystate myzip",Constants.City.Get() + ", " + Constants.State.Get() + " " + Constants.ZIP.Get());
-	// 	  FormatHTML2 = StrReplace(FormatHTML2,"myphone",Constants.Phone.Get());
-	// 	  FormatHTML2 = StrReplace(FormatHTML2,"myemail",Constants.Email.Get());
-	// 	  
-	// 	  FormatHTML2 = StrReplace(FormatHTML2,"object.total",Format(TotalAmount,"NFD=2; NZ="));
-	//	  FormatHTML2 = StrReplace(FormatHTML2,"object.totpayment",Format(Object.CashPayment,"NFD=2; NZ="));
-	//	  
-	//   If Object.UnappliedPayment = 0 Then
-	// 	   FormatHTML2 = StrReplace(FormatHTML2,"object.unapplied","0.00");
-	//   Else
-	//  		 FormatHTML2 = StrReplace(FormatHTML2,"object.unapplied",Format(Object.UnappliedPayment,"NFD=2; NZ="));
-	//   Endif;
-	//	  
-	//   If TotalCredits = 0 Then
-	// 	   FormatHTML2 = StrReplace(FormatHTML2,"object.credits","0.00");
-	//   Else
-	//  		 FormatHTML2 = StrReplace(FormatHTML2,"object.credits",Format(TotalCredits,"NFD=2; NZ="));
-	//   Endif;
-
-	//   //Note
-	//   FormatHTML2 = StrReplace(FormatHTML2,"object.note",Object.EmailNote);
-	//  
-	//	send.Texts.Add(FormatHTML2,InternetMailTextType.HTML);
-	//		
-	//	Posta = New InternetMail; 
-	//	Posta.Logon(MailProfil); 
-	//	Posta.Send(send); 
-	//	Posta.Logoff();
-	//	
-	//	Message("Cash receipt email has been sent");
-	//	
-	//	//DocObject = object.ref.GetObject();
-	//	//DocObject.EmailTo = Object.EmailTo;
-	//	//DocObject.LastEmail = "Last email on " + Format(CurrentDate(),"DLF=DT") + " to " + Object.EmailTo;
-	//	//DocObject.Write(DocumentWriteMode.Posting);
-	//	SentEmail = True;
-
-	//	Else
-	// 		 Message("The recipient email has not been specified");
-	//	Endif;
-	// 	
-	// Endif;
-	
-	
 EndProcedure
 
 &AtServer
@@ -1488,112 +845,18 @@ Procedure OnCloseAtServer()
 EndProcedure
 
 &AtClient
-Procedure CheckAll(Command)
-	
-	
-	//test4 = items.LineItems;
-	////items.check2 = true;
-	//
-	//For Each LineItem In Object.LineItems Do
-	//	  LineItem.Check = True;
-	//	 test =  items.LineItems.CurrentData;
-	//	 test6 = 6;
-	//EndDo;
-
-EndProcedure
-
-
-&AtServer
-Function Increment(NumberToInc)
-	
-	//Last = Constants.SalesInvoiceLastNumber.Get();
-	Last = NumberToInc;
-	//Last = "AAAAA";
-	LastCount = StrLen(Last);
-	Digits = new Array();
-	For i = 1 to LastCount Do	
-		Digits.Add(Mid(Last,i,1));
-
-	EndDo;
-	
-	NumPos = 9999;
-	lengthcount = 0;
-	firstnum = false;
-	j = 0;
-	While j < LastCount Do
-		If NumCheck(Digits[LastCount - 1 - j]) Then
-			if firstnum = false then //first number encountered, remember position
-				firstnum = true;
-				NumPos = LastCount - 1 - j;
-				lengthcount = lengthcount + 1;
-			Else
-				If firstnum = true Then
-					If NumCheck(Digits[LastCount - j]) Then //if the previous char is a number
-						lengthcount = lengthcount + 1;  //next numbers, add to length.
-					Else
-						break;
-					Endif;
-				Endif;
-			Endif;
-						
-		Endif;
-		j = j + 1;
-	EndDo;
-	
-	NewString = "";
-	
-	If lengthcount > 0 Then //if there are numbers in the string
-		changenumber = Mid(Last,(NumPos - lengthcount + 2),lengthcount);
-		NumVal = Number(changenumber);
-		NumVal = NumVal + 1;
-		StringVal = String(NumVal);
-		StringVal = StrReplace(StringVal,",","");
-		
-		StringValLen = StrLen(StringVal);
-		changenumberlen = StrLen(changenumber);
-		LeadingZeros = Left(changenumber,(changenumberlen - StringValLen));
-
-		LeftSide = Left(Last,(NumPos - lengthcount + 1));
-		RightSide = Right(Last,(LastCount - NumPos - 1));
-		NewString = LeftSide + LeadingZeros + StringVal + RightSide; //left side + incremented number + right side
-		
-	Endif;
-	
-	Next = NewString;
-
-	return NewString;
-	
-EndFunction
-
-&AtServer
-Function NumCheck(CheckValue)
-	 
-	For i = 0 to  9 Do
-		If CheckValue = String(i) Then
-			Return True;
-		Endif;
-	EndDo;
-		
-	Return False;
-		
-EndFunction
-
-&AtClient
+// When the Select All button is pressed, checks all lineitem payments and fills them based on the balance
 Procedure PayAllDoc(Command)
 	
 	Total = 0;
 	For Each LineItem In Object.LineItems Do
-		test = LineItem;
-		//Items.LineItems.CurrentData.Check = True;
 		LineItem.Check = True;
-		LineItem.Payment = LineItem.Balance;
-		//LineItemsCheckOnChange(Items.LineItems.CurrentData.Check);
+		LineItem.Payment = LineItem.BalanceFCY2;
 		Total = Total + LineItem.Payment;
 
 	EndDo;
-	
-	Object.CashPayment = Total;
-
+		
+	AdditionalPaymentCall();
 	
 EndProcedure
 
@@ -1618,15 +881,16 @@ Procedure ProcessNewCashReceipt(SalesInvoice)
 	
 	Object.Company = SalesInvoice.Company;
 	Object.Date = CurrentDate();
+	UpdateExchangeRate();
 	EmailSet();
 	FillDocumentList(Object.Company);
 	For Each Doc In Object.LineItems Do
 		If Doc.Document = SalesInvoice Then
-			Doc.Payment = Doc.Balance;
+			Doc.Payment = Doc.BalanceFCY2;
 			//Doc.Payment = Doc.BalanceFCY; //alan fix
-			Object.CashPayment = Doc.Balance;
-			Object.DocumentTotal = Doc.Balance;
-			Object.DocumentTotalRC = Doc.BalanceFCY;
+			Object.CashPayment = Doc.BalanceFCY2;
+			Object.DocumentTotal = Doc.BalanceFCY2;
+			Object.DocumentTotalRC = Doc.BalanceFCY2 * Object.ExchangeRate;
 		EndIf;
 	EndDo;
 	FillCreditMemos(Object.Company);
@@ -1652,4 +916,135 @@ Procedure DepositTypeOnChangeAtServer()
 		Items.BankAccount.ReadOnly = True;
 	EndIf;
 EndProcedure
+
+
+&AtClient
+Procedure ExchangeRateOnChange(Item)
+	UpdateExchangeRate();	
+	// Update CashPayment, DocumentTotal, and Unapplied values
+	AdditionalPaymentCall();
+EndProcedure
+
+&AtServer
+// Updates exchange rate based on set exchange rate
+// LineItem reporting balance is set based on exchange rate
+Procedure UpdateExchangeRate()
+	If Object.ExchangeRate = 0 Then
+		Object.ExchangeRate = GeneralFunctions.GetExchangeRate(Object.Date, CompanyCurrency());
+	EndIf;
+EndProcedure
+
+&AtServer
+Procedure UpdateLineItemBalances()
+	
+	Query = New Query;
+	Query.Text = "SELECT
+	             |	GeneralJournalBalance.AmountBalance AS BalanceFCY2,
+	             |	GeneralJournalBalance.ExtDimension2.Ref AS Document,
+	             |	CashReceiptLineItems.Document AS Document1,
+	             |	CashReceiptLineItems.LineNumber,
+	             |	""LineItems"" AS TabularSection
+	             |FROM
+	             |	Document.CashReceipt.LineItems AS CashReceiptLineItems
+	             |		LEFT JOIN InformationRegister.ExchangeRates.SliceLast(&Date, ) AS ExchangeRates
+	             |		ON CashReceiptLineItems.Ref.Currency = ExchangeRates.Currency
+	             |		LEFT JOIN AccountingRegister.GeneralJournal.Balance(
+	             |				,
+	             |				Account IN
+	             |					(SELECT
+	             |						Document.SalesInvoice.ARAccount
+	             |					FROM
+	             |						Document.SalesInvoice
+	             |				
+	             |					UNION
+	             |				
+	             |					SELECT
+	             |						Document.PurchaseReturn.APAccount
+	             |					FROM
+	             |						Document.PurchaseReturn
+	             |					WHERE
+	             |						Document.PurchaseReturn.Company = &Company),
+	             |				,
+	             |				ExtDimension1 = &Company
+	             |					AND (ExtDimension2 REFS Document.SalesInvoice
+	             |						OR ExtDimension2 REFS Document.PurchaseReturn)) AS GeneralJournalBalance
+	             |		ON CashReceiptLineItems.Document = GeneralJournalBalance.ExtDimension2
+	             |WHERE
+	             |	CashReceiptLineItems.Ref = &Ref
+				 |
+				 |UNION ALL
+				 |
+				 |SELECT
+				 |	-GeneralJournalBalance.AmountBalance AS BalanceFCY2,
+				 |	GeneralJournalBalance.ExtDimension2.Ref AS Document,
+				 |	CashReceiptCreditMemos.Document AS Document1,
+				 |	CashReceiptCreditMemos.LineNumber,
+				 |	""CreditMemos"" AS TabularSection
+				 |FROM
+				 |  Document.CashReceipt.CreditMemos As CashReceiptCreditMemos
+				 |		LEFT JOIN InformationRegister.ExchangeRates.SliceLast(&Date, ) AS ExchangeRates
+				 |		ON CashReceiptCreditMemos.Ref.Currency = ExchangeRates.Currency
+				 |		LEFT JOIN AccountingRegister.GeneralJournal.Balance(
+				 |			,
+				 |			Account IN
+				 |				(SELECT
+				 |					Document.SalesReturn.ARAccount
+				 |				FROM
+				 |					Document.SalesReturn
+				 |				WHERE
+				 |					Document.SalesReturn.Company = &Company
+				 |					AND Document.SalesReturn.ReturnType = VALUE(Enum.ReturnTypes.CreditMemo)
+				 |			
+				 |				UNION
+				 |			
+				 |				SELECT
+				 |					Document.CashReceipt.ARAccount
+				 |				FROM
+				 |					Document.CashReceipt
+				 |				WHERE
+				 |					Document.CashReceipt.Company = &Company),
+				 |			,
+				 |			ExtDimension1 = &Company
+				 |				AND (ExtDimension2 REFS Document.SalesReturn
+				 |						AND ExtDimension2.ReturnType = VALUE(Enum.ReturnTypes.CreditMemo)
+				 |					OR ExtDimension2 REFS Document.CashReceipt)) AS GeneralJournalBalance
+				 |		ON CashReceiptCreditMemos.Document = GeneralJournalBalance.ExtDimension2
+	             |WHERE
+	             |	CashReceiptCreditMemos.Ref = &Ref";
+				 
+	Query.SetParameter("Date",  ?(ValueIsFilled(Object.Ref), Object.Date, CurrentSessionDate()));			 
+	Query.SetParameter("Company", Object.Company);
+	Query.SetParameter("Ref", Object.Ref);
+	ResultQuery = Query.Execute().Unload();
+	
+	
+	For Each LineRow In Object.LineItems Do
+		FoundRows = ResultQuery.FindRows(New Structure("TabularSection, LineNumber", "LineItems", LineRow.LineNumber));
+		If FoundRows.Count()>0 Then
+			LineRow.BalanceFCY2 = FoundRows[0].BalanceFCY2;
+		EndIf;
+
+	EndDo;
+	
+	For Each CreditRow In Object.CreditMemos Do
+		FoundRows = ResultQuery.FindRows(New Structure("TabularSection, LineNumber", "CreditMemos", CreditRow.LineNumber));
+		If FoundRows.Count()>0 Then
+				CreditRow.BalanceFCY2 = FoundRows[0].BalanceFCY2;
+		EndIf;
+	EndDo;
+	
+EndProcedure
+
+&AtClient
+Procedure AuditLogRecord(Command)
+	
+	FormParameters = New Structure();	
+	FltrParameters = New Structure();
+	FltrParameters.Insert("DocUUID", String(Object.Ref.UUID()));
+	FormParameters.Insert("Filter", FltrParameters);
+	OpenForm("CommonForm.AuditLogList",FormParameters, Object.Ref);
+	
+
+EndProcedure
+
 

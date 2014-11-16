@@ -71,8 +71,17 @@
 		<InputField name="ObjectPrice" id="26">
 			<DataPath>Object.Price</DataPath>
 			<HorizontalStretch>false</HorizontalStretch>
+			<EditFormat>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>NFD=2</v8:content>
+				</v8:item>
+			</EditFormat>
 			<ContextMenu name="ObjectPriceContextMenu" id="27"/>
 			<ExtendedTooltip name="ObjectPriceExtendedTooltip" id="28"/>
+			<Events>
+				<Event name="OnChange">ObjectPriceOnChange</Event>
+			</Events>
 		</InputField>
 		<CheckBoxField name="ObjectBillable" id="31">
 			<DataPath>Object.Billable</DataPath>
@@ -253,7 +262,7 @@
 				<v8:Type>xs:decimal</v8:Type>
 				<v8:NumberQualifiers>
 					<v8:Digits>10</v8:Digits>
-					<v8:FractionDigits>0</v8:FractionDigits>
+					<v8:FractionDigits>2</v8:FractionDigits>
 					<v8:AllowedSign>Any</v8:AllowedSign>
 				</v8:NumberQualifiers>
 			</Type>

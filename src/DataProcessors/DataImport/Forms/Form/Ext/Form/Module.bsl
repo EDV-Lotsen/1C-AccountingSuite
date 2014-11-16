@@ -1,44 +1,185 @@
-﻿&AtClient
-Procedure FileStartPath(Item, ДанныеВыбора, StandardProcessing)
+﻿&AtServer
+Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
-	FileSelectionDialogue = Новый ДиалогВыбораФайла(РежимДиалогаВыбораФайла.Открытие);
-	
-	FileSelectionDialogue.Фильтр                      = НСтр("en='CSV file (*.csv)|*.csv'");
-	FileSelectionDialogue.Заголовок                   = Заголовок;
-	FileSelectionDialogue.ПредварительныйПросмотр     = Ложь;
-	FileSelectionDialogue.Расширение                  = "csv";
-	FileSelectionDialogue.ИндексФильтра               = 0;
-	FileSelectionDialogue.ПолноеИмяФайла              = Item.ТекстРедактирования;
-	FileSelectionDialogue.ПроверятьСуществованиеФайла = Ложь;
-	
-	Если FileSelectionDialogue.Выбрать() Тогда
-		FilePath = FileSelectionDialogue.ПолноеИмяФайла;
-	КонецЕсли;
+	ActionType = Parameters.ActionType;
+	FillAttributes();
+	Date = CurrentDate();
+	Date2 = CurrentDate();
+	//IncomeAccount = Constants.IncomeAccount.Get();
+	//ExpenseAccount = Constants.ExpenseAccount.Get();	
 	
 EndProcedure
+
+&AtClient
+Procedure GreetingNext(Command)
+	
+	Notify = New NotifyDescription("FileUpload",ThisForm);
+
+	BeginPutFile(Notify, "", "*.csv", True, ThisForm.UUID);
+	
+	Если Attributes.Количество() = 0 Тогда
+		FillAttributes();
+	КонецЕсли;
+	
+	Items.MappingGroup.Заголовок = FilePath;
+	//ReadSourceFile(); // move to FileUpload
+	
+	
+EndProcedure
+
+
+&AtClient
+Procedure FileUpload(Result, Address, SelectedFileName, AdditionalParameters) Export
+	
+	If (Find(SelectedFileName, ".csv") = 0) And (Find(SelectedFileName, ".txt") = 0) Then
+		ShowMessageBox(, "Please upload a valid CSV file (.csv, .txt)");
+		return;
+	EndIf;
+	If ValueIsFilled(Address) Then
+		ReadSourceFile(Address);
+		//UploadTransactionsAtServer(Address);
+	EndIf;
+	
+EndProcedure
+
+&AtServer
+Procedure ReadSourceFile(TempStorageAddress)
+	
+	BinaryData = GetFromTempStorage(TempStorageAddress);
+	TempFileName = GetTempFileName("csv");
+	BinaryData.Write(TempFileName);
+	
+	SourceText.Прочитать(TempFileName);
+	RowCount = SourceText.LineCount();
+	
+	Если RowCount < 1 Тогда
+		ТекстСообщения = НСтр("en = 'The file has no data!'");
+		Message(ТекстСообщения);
+		//УправлениеНебольшойФирмойСервер.СообщитьОбОшибке(, ТекстСообщения);
+		Возврат;
+	КонецЕсли;
+	
+	SourceAddress = Неопределено;
+	
+	SourceAddress = FillAttributesAtServer(RowCount);
+	
+	Если НЕ ЗначениеЗаполнено(SourceAddress) Тогда
+		Возврат;
+	КонецЕсли;
+	
+	FillSourceView();
+	Items.LoadSteps.ТекущаяСтраница = Items.LoadSteps.ПодчиненныеЭлементы.Mapping;
+
+EndProcedure
+
+
+
+&AtClient
+Procedure FileStartPath(Item, ДанныеВыбора, StandardProcessing)
+	
+	//FileSelectionDialogue = Новый ДиалогВыбораФайла(РежимДиалогаВыбораФайла.Открытие);
+	//
+	//FileSelectionDialogue.Фильтр                      = НСтр("en='CSV file (*.csv)|*.csv'");
+	//FileSelectionDialogue.Заголовок                   = Заголовок;
+	//FileSelectionDialogue.ПредварительныйПросмотр     = Ложь;
+	//FileSelectionDialogue.Расширение                  = "csv";
+	//FileSelectionDialogue.ИндексФильтра               = 0;
+	//FileSelectionDialogue.ПолноеИмяФайла              = Item.ТекстРедактирования;
+	//FileSelectionDialogue.ПроверятьСуществованиеФайла = Ложь;
+	//
+	//Если FileSelectionDialogue.Выбрать() Тогда
+	//	FilePath = FileSelectionDialogue.ПолноеИмяФайла;
+	//КонецЕсли;
+	
+	//Notify = New NotifyDescription("FileUpload",ThisForm);
+
+	//BeginPutFile(Notify, "", "*.csv", True, ThisForm.UUID);
+	
+	
+EndProcedure
+
+
+&AtServer
+Procedure UploadTransactionsAtServer(TempStorageAddress)
+	BinaryData = GetFromTempStorage(TempStorageAddress);
+	TempFileName = GetTempFileName("csv");
+	BinaryData.Write(TempFileName);
+	
+	Try
+		SourceText.Read(TempFileName);
+	Except
+		TextMessage = NStr("en = 'Can not read the file.'");
+		CommonUseClientServer.MessageToUser(TextMessage);
+		Return;
+	EndTry;
+
+	LineCountTotal = SourceText.LineCount();
+	
+	For LineNumber = 1 To LineCountTotal Do
+		
+		//CurrentLine 	= SourceText.GetLine(LineNumber);
+		//ValuesArray 	= StringFunctionsClientServer.SplitStringIntoSubstringArray(CurrentLine, ",");
+		//ColumnsCount 	= ValuesArray.Count();
+		//
+		//If ColumnsCount < 1 Or ColumnsCount > 3 Then
+		//	Continue;
+		//EndIf;
+		//
+		////Convert date
+		//TransactionDate = '00010101';
+		//DateParts = StringFunctionsClientServer.SplitStringIntoSubstringArray(ValuesArray[0], "/");
+		//If DateParts.Count() = 3 then
+		//	Try
+		//		TransactionDate 	= Date(DateParts[2], DateParts[0], DateParts[1]);
+		//	Except
+		//	EndTry;				
+		//EndIf;
+		//If (Not ValueIsFilled(TransactionDate)) OR (TransactionDate < Object.ProcessingPeriod.StartDate) OR (TransactionDate > Object.ProcessingPeriod.EndDate) Then
+		//	TextMessage = "The following bank transaction: " + Format(TransactionDate, "DLF=D") + "; " + ValuesArray[1] + "; " + ValuesArray[2] + " does not belong to the processing period";
+		//	CommonUseClientServer.MessageToUser(TextMessage);
+		//	Continue;
+		//EndIf;
+		//NewRow = Object.BankTransactionsUnaccepted.Add();
+		//NewRow.TransactionDate 	= TransactionDate;
+		//NewRow.Description 		= ValuesArray[1];
+		//NewRow.Amount 			= ValuesArray[2];
+		//NewRow.BankAccount 		= AccountInBank;
+		//NewRow.Hide 			= "Hide";
+		//
+		////Try to match an uploaded transaction with an existing document
+		//DocumentFound = FindAnExistingDocument(NewRow.Description, NewRow.Amount, Object.BankAccount);
+		//If DocumentFound <> Undefined Then
+		//	NewRow.Document 		= DocumentFound;
+		//EndIf;
+		//NewRow.AssigningOption 	= GetAssigningOption(NewRow.Document, String(DocumentFound));
+		//
+		////Record new item to the database
+		//RecordTransactionToTheDatabaseAtServer(NewRow);
+		
+	EndDo;
+	
+	//Object.BankTransactionsUnaccepted.Sort("TransactionDate DESC, Description, Company, Category, TransactionID");
+	
+EndProcedure
+
+
 
 &AtServer
 Procedure FillAttributes()
 
 	ThisCofA = ActionType = "Chart of accounts";
 	ThisCustomers = ActionType = "CustomersVendors";
-	ThisBalances = ActionType = "Account balances";	
 	ThisProducts = ActionType = "Items";
 	ThisChecks = ActionType = "Checks";
 	ThisDeposits = ActionType = "Deposits";
-	ThisGJHeaders = ActionType = "GJ entries (header)";
-	ThisGJDetails = ActionType = "GJ entries (detail)";
-	ThisSIDetails = ActionType = "Sales invoices (detail)";
-	ThisSIHeaders = ActionType = "Sales invoices (header)";
-	ThisPIHeaders = ActionType = "Purchase invoices (header)";
-	ThisPIDetails = ActionType = "Purchase invoices (detail)";
-	ThisIPHeaders = ActionType = "Invoice payments / Checks (header)";
+	ThisGJ = ActionType = "Journal entries";
 	ThisExpensify = ActionType = "Expensify";
+	ThisClasses = ActionType = "Classes";
 		
 	//Items.ARBegBal.Visible = ThisSIHeaders;
 	//Items.CreditMemo.Visible = ThisSIHeaders OR ThisSIDetails;
 	                     
-	Items.Date.Visible = ThisBalances OR ThisProducts OR ThisExpensify;
+	Items.Date.Visible = ThisProducts OR ThisExpensify;
 	Items.Date2.Visible = ThisProducts;
 	If ThisProducts Then
 		Items.Date.Title = "Price list date";
@@ -56,53 +197,16 @@ Procedure FillAttributes()
 	Items.DataListExpensifyAccount.Visible = ThisExpensify;
 	Items.DataListExpensifyAmount.Visible = ThisExpensify;
 	Items.DataListExpensifyMemo.Visible = ThisExpensify;
-	
-	Items.DataListIPHeaderNumber.Visible = ThisIPHeaders;
-	Items.DataListIPHeaderDate.Visible = ThisIPHeaders;
-	Items.DataListIPHeaderVendor.Visible = ThisIPHeaders;
-	Items.DataListIPHeaderMemo.Visible = ThisIPHeaders;
-	Items.DataListIPHeaderAmount.Visible = ThisIPHeaders;
-	
-	Items.DataListPIDetailHeader.Visible = ThisPIDetails;
-	Items.DataListPIDetailAccount.Visible = ThisPIDetails;
-	Items.DataListPIDetailAmount.Visible = ThisPIDetails;
-	Items.DataListPIDetailMemo.Visible = ThisPIDetails;
-	
-	Items.DataListPIHeaderNumber.Visible = ThisPIHeaders;
-	Items.DataListPIHeaderDate.Visible = ThisPIHeaders;
-	Items.DataListPIHeaderVendor.Visible = ThisPIHeaders;
-	Items.DataListPIHeaderDueDate.Visible = ThisPIHeaders;
-	Items.DataListPIHeaderTerms.Visible = ThisPIHeaders;
-	Items.DataListPIHeaderMemo.Visible = ThisPIHeaders;
-	Items.DataListPIHeaderAmount.Visible = ThisPIHeaders;
-	
-	Items.DataListSIDetailHeader.Visible = ThisSIDetails;
-	Items.DataListSIDetailPrice.Visible = ThisSIDetails;
-	Items.DataListSIDetailProduct.Visible = ThisSIDetails;
-	Items.DataListSIDetailQty.Visible = ThisSIDetails;
+			
+	Items.DataListGJHeaderDate.Visible = ThisGJ;
+	Items.DataListGJHeaderMemo.Visible = ThisGJ;
+	Items.DataListGJHeaderRowNumber.Visible = ThisGJ;
+	Items.DataListGJHeaderType.Visible = ThisGJ;
+	Items.DataListGJHeaderAccount.Visible = ThisGJ;
+	Items.DataListGJHeaderAmount.Visible = ThisGJ;
+	Items.DataListGJHeaderClass.Visible = ThisGJ;
+	Items.DataListGJHeaderLineMemo.Visible = ThisGJ;
 		
-	Items.DataListGJHeaderNumber.Visible = ThisGJHeaders;
-	Items.DataListGJHeaderDate.Visible = ThisGJHeaders;
-	Items.DataListGJHeaderAmount.Visible = ThisGJHeaders;
-	Items.DataListGJHeaderMemo.Visible = ThisGJHeaders;
-	Items.DataListGJHeaderARorAP.Visible = ThisGJHeaders;
-	
-	Items.DataListGJDetailHeader.Visible = ThisGJDetails;
-	Items.DataListGJDetailAccount.Visible = ThisGJDetails;
-	Items.DataListGJDetailDr.Visible = ThisGJDetails;
-	Items.DataListGJDetailCr.Visible = ThisGJDetails;
-	Items.DataListGJDetailMemo.Visible = ThisGJDetails;
-	Items.DataListGJDetailCompany.Visible = ThisGJDetails; 
-	
-	Items.DataListSIHeaderDate.Visible = ThisSIHeaders;
-	Items.DataListSIHeaderNumber.Visible = ThisSIHeaders;
-	Items.DataListSIHeaderPO.Visible = ThisSIHeaders;
-	Items.DataListSIHeaderCustomer.Visible = ThisSIHeaders;
-	Items.DataListSIHeaderTerms.Visible = ThisSIHeaders;
-	Items.DataListSIHeaderDueDate.Visible = ThisSIHeaders;
-	Items.DataListSIHeaderAmount.Visible = ThisSIHeaders;
-	Items.DataListSIHeaderMemo.Visible = ThisSIHeaders;
-	
 	Items.DataListCheckBankAccount.Visible = ThisChecks;
 	Items.DataListCheckDate.Visible = ThisChecks;
 	Items.DataListCheckLineAccount.Visible = ThisChecks;
@@ -111,24 +215,14 @@ Procedure FillAttributes()
 	Items.DataListCheckMemo.Visible = ThisChecks;
 	Items.DataListCheckNumber.Visible = ThisChecks;
 	Items.DataListCheckVendor.Visible = ThisChecks;
+	Items.DataListCheckLineClass.Visible = ThisChecks;
 
 	Items.DataListCofACode.Visible = ThisCofA;
 	Items.DataListCofADescription.Visible = ThisCofA;
 	Items.DataListCofAType.Visible = ThisCofA;
 	Items.DataListCofAUpdate.Visible = ThisCofA;
 	Items.DataListCofASubaccountOf.Visible = ThisCofA;
-	
-	Items.DataListBalancesAccount.Visible = ThisBalances;
-	Items.DataListBalancesDebit.Visible = ThisBalances; 
-	Items.DataListBalancesCredit.Visible = ThisBalances;
-	
-	//Items.MapToTemplateCV.Visible = ThisCustomers;
-	//Items.UnmapCV.Visible = ThisCustomers;
-	//Items.IncomeAccount.Visible = ThisCustomers;
-	//Items.ARAccount.Visible = ThisCustomers;
-	//Items.ExpenseAccount.Visible = ThisCustomers;
-	//Items.APAccount.Visible = ThisCustomers;
-	
+		
 	Items.DataListCustomerVendorTaxID.Visible = ThisCustomers;
 	Items.DataListDefaultBillingAddress.Visible = ThisCustomers;
 	Items.DataListDefaultShippingAddress.Visible = ThisCustomers;
@@ -211,7 +305,11 @@ Procedure FillAttributes()
 	Items.DataListDepositLineCompany.Visible = ThisDeposits;
 	Items.DataListDepositLineAccount.Visible = ThisDeposits;
 	Items.DataListDepositLineAmount.Visible = ThisDeposits;
+	Items.DataListDepositLineClass.Visible = ThisDeposits;
 	Items.DataListDepositLineMemo.Visible = ThisDeposits;
+	
+	Items.DataListClassName.Visible = ThisClasses;
+	Items.DataListSubClassOf.Visible = ThisClasses;
 
 	//Items.DataListProductPreferredVendor.Visible = ThisProducts;
 	
@@ -241,9 +339,21 @@ Procedure FillAttributes()
 		NewLine = Attributes.Add();
 		NewLine.AttributeName = "Line amount [num]";
 		NewLine.Required = True;
+		
+		NewLine = Attributes.Add();
+		NewLine.AttributeName = "Line class [ref]";
 
 	    NewLine = Attributes.Add();
-		NewLine.AttributeName = "Line memo [char]";	
+		NewLine.AttributeName = "Line memo [char]";
+		
+	ElsIf ThisClasses Then
+		
+		NewLine = Attributes.Add();
+		NewLine.AttributeName = "Name [char(25)]";
+		NewLine.Required = True;
+		
+		NewLine = Attributes.Add();
+		NewLine.AttributeName = "Subclass of [ref]";		
 	
 	ElsIf ThisCofA Then
 		
@@ -278,165 +388,38 @@ Procedure FillAttributes()
 
 	    NewLine = Attributes.Add();
 		NewLine.AttributeName = "Memo [char(100)]";
+						
+	ElsIf ThisGJ Then
 		
-	ElsIf ThisIPHeaders Then
-		
-		NewLine = Attributes.Add();
-		NewLine.AttributeName = "Number [char(20)]";
-		NewLine.Required = True;
-		
-		NewLine = Attributes.Add();
-		NewLine.AttributeName = "Date [char yyyymmdd]";
-		NewLine.Required = True;
-
-		NewLine = Attributes.Add();
-		NewLine.AttributeName = "Vendor [ref]";
-		NewLine.Required = True;
-	
-		NewLine = Attributes.Add();
-		NewLine.AttributeName = "Memo [char]";
-	
-		NewLine = Attributes.Add();
-		NewLine.AttributeName = "Amount [num]";
-		NewLine.Required = True;
-		
-	ElsIf ThisPIDetails Then
-		
-		NewLine = Attributes.Add();
-		NewLine.AttributeName = "Invoice [ref]";
-		NewLine.Required = True;
-
-		NewLine = Attributes.Add();
-		NewLine.AttributeName = "Account [ref]";
-		NewLine.Required = True;
-
-		NewLine = Attributes.Add();
-		NewLine.AttributeName = "Amount [num]";
-		NewLine.Required = True;
-
-		NewLine = Attributes.Add();
-		NewLine.AttributeName = "Memo [char(100)]";
-				
-	ElsIf ThisPIHeaders Then
-		
-		NewLine = Attributes.Add();
-		NewLine.AttributeName = "Number [char(20)]";
-		NewLine.Required = True;
-		
-		NewLine = Attributes.Add();
-		NewLine.AttributeName = "Date [char yyyymmdd]";
-		NewLine.Required = True;
-		
-		NewLine = Attributes.Add();
-		NewLine.AttributeName = "Vendor [ref]";
-		NewLine.Required = True;
-
-		NewLine = Attributes.Add();
-		NewLine.AttributeName = "Due date [char yyyymmdd]";
-		NewLine.Required = True;
-
-		NewLine = Attributes.Add();
-		NewLine.AttributeName = "Terms [ref]";
-		NewLine.Required = True;
-
-		NewLine = Attributes.Add();
-		NewLine.AttributeName = "Memo [char]";
-
-		NewLine = Attributes.Add();
-		NewLine.AttributeName = "Amount [num]";
-		NewLine.Required = True;
-				
-	ElsIf ThisGJHeaders Then
-		
-		NewLine = Attributes.Add();
-		NewLine.AttributeName = "Number [char(6)]";
-
 		NewLine = Attributes.Add();
 		NewLine.AttributeName = "Date [date]";
 		NewLine.Required = True;
 		
 		NewLine = Attributes.Add();
-		NewLine.AttributeName = "Amount [num]";
-		NewLine.Required = True;
-
-		NewLine = Attributes.Add();
 		NewLine.AttributeName = "Memo [char]";
 
 		NewLine = Attributes.Add();
-		NewLine.AttributeName = "AR or AP [char]";
-		
-	ElsIf ThisGJDetails Then
-		
-		NewLine = Attributes.Add();
-		NewLine.AttributeName = "Header number [ref]";
+		NewLine.AttributeName = "Row # [num]";
 		NewLine.Required = True;
 		
 		NewLine = Attributes.Add();
-		NewLine.AttributeName = "Account [ref]";
+		NewLine.AttributeName = "Debit or Credit";
 		NewLine.Required = True;
 		
 		NewLine = Attributes.Add();
-		NewLine.AttributeName = "Dr [num]";
+		NewLine.AttributeName = "Line account [ref]";
+		NewLine.Required = True;
 		
 		NewLine = Attributes.Add();
-		NewLine.AttributeName = "Cr [num]";
+		NewLine.AttributeName = "Line amount [num]";
+		NewLine.Required = True;
+		
+		NewLine = Attributes.Add();
+		NewLine.AttributeName = "Line class [ref]";
 
 		NewLine = Attributes.Add();
-		NewLine.AttributeName = "Memo [char]";
-
-		NewLine = Attributes.Add();
-		NewLine.AttributeName = "Customer / Vendor [char]";
-		
-	ElsIf ThisSIHeaders Then
-		
-		NewLine = Attributes.Add();
-		NewLine.AttributeName = "Invoice date [date]";
-		NewLine.Required = True;
-
-		NewLine = Attributes.Add();
-		NewLine.AttributeName = "Invoice number [char(6)]";
-		NewLine.Required = True;
-
-		NewLine = Attributes.Add();
-		NewLine.AttributeName = "P.O. num [char(15)]";
-
-		NewLine = Attributes.Add();
-		NewLine.AttributeName = "Customer [ref]";
-		NewLine.Required = True;
-		
-		NewLine = Attributes.Add();
-		NewLine.AttributeName = "Terms [ref]";
-		NewLine.Required = True;
-
-		NewLine = Attributes.Add();
-		NewLine.AttributeName = "Due date [date]";
-		NewLine.Required = True;
-
-		NewLine = Attributes.Add();
-		NewLine.AttributeName = "Amount [num]";
-		NewLine.Required = True;
-		
-		NewLine = Attributes.Add();
-		NewLine.AttributeName = "Memo [char]";
-		
-	ElsIf ThisSIDetails Then
-		
-		NewLine = Attributes.Add();
-		NewLine.AttributeName = "Invoice number [ref]";
-		NewLine.Required = True;
-		
-		NewLine = Attributes.Add();
-		NewLine.AttributeName = "Item [ref]";
-		NewLine.Required = True;
-		
-		NewLine = Attributes.Add();
-		NewLine.AttributeName = "Qty [num]";
-		NewLine.Required = True;
-		
-		NewLine = Attributes.Add();
-		NewLine.AttributeName = "Price [num]";
-		NewLine.Required = True;
-		
+		NewLine.AttributeName = "Line memo [char]";
+						
 	ElsIf ThisChecks Then
 			
 		NewLine = Attributes.Add();
@@ -467,7 +450,10 @@ Procedure FillAttributes()
 		NewLine.AttributeName = "Line amount [num]";
 		NewLine.Required = True;
 		
-	ИначеЕсли ThisCustomers Тогда
+		NewLine = Attributes.Add();
+		NewLine.AttributeName = "Line class [ref]";
+		
+	ElsIf ThisCustomers Then
 		
 		// company header
 		
@@ -635,22 +621,8 @@ Procedure FillAttributes()
 		NewLine.AttributeName = "Address CF5 string [char(200)]";
 
 		// end address
-		
-	ИначеЕсли ThisBalances Тогда	
-		
-		NewLine = Attributes.Add();
-		NewLine.AttributeName = "Account code [ref]";
-		NewLine.Required = True;
-		
-		NewLine = Attributes.Add();
-		NewLine.AttributeName = "Debit [num]";
-		NewLine.Required = True;
-		
-		NewLine = Attributes.Add();
-		NewLine.AttributeName = "Credit [num]";
-		NewLine.Required = True;
-		
-	ИначеЕсли ThisProducts Тогда
+				
+	ElsIf ThisProducts Then
 		
 		NewLine = Attributes.Add();
 		NewLine.AttributeName = "Product OR Service";
@@ -764,47 +736,6 @@ Function FillAttributesAtServer(RowCount)
 	
 EndFunction
 
-&AtClient
-Procedure ReadSourceFile()
-	
-	Файл = СокрЛП(FilePath);
-	
-	Если НЕ ПодключитьРасширениеРаботыСФайлами() Тогда
-		Файл = "";
-	Иначе
-		ФайлЗагр = Новый Файл(Файл);
-		Если ФайлЗагр.Существует() = Ложь Тогда
-			ТекстСообщения = НСтр("en = 'File %Файл% does not exist!'");
-			ТекстСообщения = СтрЗаменить(ТекстСообщения, "%Файл%", Файл);
-			Message(ТекстСообщения);
-			//УправлениеНебольшойФирмойСервер.СообщитьОбОшибке(, ТекстСообщения);
-			Возврат;
-		КонецЕсли;
-		Попытка
-			SourceText.Прочитать(Файл);
-		Исключение
-			ТекстСообщения = НСтр("en = 'Can not read the file.'");
-			Message(ТекстСообщения);
-			//УправлениеНебольшойФирмойСервер.СообщитьОбОшибке(, ТекстСообщения);
-			Возврат;
-		КонецПопытки;
-	КонецЕсли;
-	
-	SourceText.Прочитать(Файл);
-	RowCount = SourceText.LineCount();
-	
-	Если RowCount < 1 Тогда
-		ТекстСообщения = НСтр("en = 'The file has no data!'");
-		Message(ТекстСообщения);
-		//УправлениеНебольшойФирмойСервер.СообщитьОбОшибке(, ТекстСообщения);
-		Возврат;
-	КонецЕсли;
-	
-	SourceAddress = Неопределено;
-	
-	SourceAddress = FillAttributesAtServer(RowCount);
-	
-EndProcedure
 
 &AtServer
 Procedure FillSourceView()
@@ -938,39 +869,24 @@ Procedure FillLoadTable()
 				AccountCode = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
 				NewLine.CofAUpdate = ChartsOfAccounts.ChartOfAccounts.FindByCode(AccountCode);
 			КонецЕсли;
-						
-		ElsIf ActionType = "Invoice payments / Checks (header)" Then
+			
+		ElsIf ActionType = "Classes" Then
 			
 			NewLine = ТаблицаЗагрузки.Add();
 			NewLine.LoadFlag = True;
 			
-			ColumnNumber = FindAttributeColumnNumber("Number [char(20)]");
-			If ColumnNumber <> Undefined Then
-				NewLine.IPHeaderNumber = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
-			EndIf;
-
-			ColumnNumber = FindAttributeColumnNumber("Date [char yyyymmdd]");
-			If ColumnNumber <> Undefined Then
-				IPDate = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
-				NewLine.IPHeaderDate = Date(IPDate);
-			EndIf;
-
-			ColumnNumber = FindAttributeColumnNumber("Vendor [ref]");
-			If ColumnNumber <> Undefined Then
-				IPVendor = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
-				NewLine.IPHeaderVendor = Catalogs.Companies.FindByDescription(IPVendor);
-			EndIf;
-
-			ColumnNumber = FindAttributeColumnNumber("Memo [char]");
-			If ColumnNumber <> Undefined Then
-				NewLine.IPHeaderMemo = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
-			EndIf;
-
-			ColumnNumber = FindAttributeColumnNumber("Amount [num]");
-			If ColumnNumber <> Undefined Then
-				NewLine.IPHeaderAmount = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
-			EndIf;
+			ColumnNumber = FindAttributeColumnNumber("Name [char(25)]");
+			Если ColumnNumber <> Undefined Тогда
+				test = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
+				NewLine.ClassName = test; // СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
+			КонецЕсли;
 			
+			ColumnNumber = FindAttributeColumnNumber("Subclass of [ref]");
+			Если ColumnNumber <> Undefined Тогда
+				ParentClassName = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
+				NewLine.SubClassOf = Catalogs.Classes.FindByDescription(ParentClassName);
+			КонецЕсли;		
+									
 		ElsIf ActionType = "Expensify" Then
 			
 			NewLine = ТаблицаЗагрузки.Add();
@@ -1006,278 +922,76 @@ Procedure FillLoadTable()
 			ColumnNumber = FindAttributeColumnNumber("Memo [char(100)]");
 			If ColumnNumber <> Undefined Then
 				NewLine.ExpensifyMemo = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
-			EndIf;
-		
-		ElsIf ActionType = "Purchase invoices (detail)" Then
+			EndIf;							
 			
-			NewLine = ТаблицаЗагрузки.Add();
-			NewLine.LoadFlag = True;
-			
-			ColumnNumber = FindAttributeColumnNumber("Invoice [ref]");
-			If ColumnNumber <> Undefined Then
-				TrxNumber = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
-				NewLine.PIDetailHeader = Documents.PurchaseInvoice.FindByNumber(TrxNumber);
-			EndIf;
-
-			ColumnNumber = FindAttributeColumnNumber("Account [ref]");
-			If ColumnNumber <> Undefined Then
-				TrxAccount = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
-				NewLine.PIDetailAccount = ChartsOfAccounts.ChartOfAccounts.FindByCode(TrxAccount);
-			EndIf;
-
-			ColumnNumber = FindAttributeColumnNumber("Amount [num]");
-			If ColumnNumber <> Undefined Then
-				NewLine.PIDetailAmount = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
-			EndIf;
-
-			ColumnNumber = FindAttributeColumnNumber("Memo [char(100)]");
-			If ColumnNumber <> Undefined Then
-				NewLine.PIDetailMemo = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
-			EndIf;
-			
-		ElsIf ActionType = "Purchase invoices (header)" Then	
-			
-			NewLine = ТаблицаЗагрузки.Add();
-			NewLine.LoadFlag = True;
-
-	        ColumnNumber = FindAttributeColumnNumber("Number [char(20)]");
-			If ColumnNumber <> Undefined Then
-				NewLine.PIHeaderNumber = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
-			EndIf;
-
-			ColumnNumber = FindAttributeColumnNumber("Date [char yyyymmdd]");
-			If ColumnNumber <> Undefined Then
-				PIDate = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
-				NewLine.PIHeaderDate = Date(PIDate);
-			EndIf;
-
-			ColumnNumber = FindAttributeColumnNumber("Vendor [ref]");
-			If ColumnNumber <> Undefined Then
-				PIVendor = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
-				NewLine.PIHeaderVendor = Catalogs.Companies.FindByDescription(PIVendor);
-			EndIf;
-
-			ColumnNumber = FindAttributeColumnNumber("Due date [char yyyymmdd]");
-			If ColumnNumber <> Undefined Then
-				PIDueDate = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
-				NewLine.PIHeaderDueDate = Date(PIDate);
-			EndIf;
-
-			ColumnNumber = FindAttributeColumnNumber("Terms [ref]");
-			If ColumnNumber <> Undefined Then
-				TermsString = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
-				NewLine.PIHeaderTerms = Catalogs.PaymentTerms.FindByDescription(TermsString);
-			EndIf;
-
-			ColumnNumber = FindAttributeColumnNumber("Memo [char]");
-			If ColumnNumber <> Undefined Then
-				NewLine.PIHeaderMemo = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
-			EndIf;
-
-			ColumnNumber = FindAttributeColumnNumber("Amount [num]");
-			If ColumnNumber <> Undefined Then
-				NewLine.PIHeaderAmount = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
-			EndIf;
-							
-			
-		ElsIf ActionType = "GJ entries (header)" Then
+		ElsIf ActionType = "Journal entries" Then
 		
 			NewLine = ТаблицаЗагрузки.Add();
 			NewLine.LoadFlag = True;
-
-			ColumnNumber = FindAttributeColumnNumber("Number [char(6)]");
-			If ColumnNumber <> Undefined Then
-				TrxNumber = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
-				If NOT TrxNumber = "" Then
-					NewLine.GJHeaderNumber = TrxNumber;
-				EndIf;
-			EndIf;
-
+			
 			ColumnNumber = FindAttributeColumnNumber("Date [date]");
-			If ColumnNumber <> Undefined Then
-				TrxDate = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
-				NewLine.GJHeaderDate = Date(TrxDate);
-			EndIf;
+			Если ColumnNumber <> Undefined Тогда
+				CheckDateString = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
+				
+				TransactionDate = '00010101';
+				DateParts = StringFunctionsClientServer.SplitStringIntoSubstringArray(CheckDateString, "/",,"""");
+				If DateParts.Count() = 3 then
+					Try
+						TransactionDate 	= Date(DateParts[2], DateParts[0], DatePArts[1]);
+					Except
+					EndTry;				
+				EndIf;
+				
+				NewLine.GJHeaderDate = TransactionDate;
+			КонецЕсли;
 			
-			ColumnNumber = FindAttributeColumnNumber("Amount [num]");
-			If ColumnNumber <> Undefined Then
-				NewLine.GJHeaderAmount = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
-			EndIf;
-
 			ColumnNumber = FindAttributeColumnNumber("Memo [char]");
 			If ColumnNumber <> Undefined Then
 				NewLine.GJHeaderMemo = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
 			EndIf;
-
-			ColumnNumber = FindAttributeColumnNumber("AR or AP [char]");
+			
+			ColumnNumber = FindAttributeColumnNumber("Row # [num]");
 			If ColumnNumber <> Undefined Then
-				TrxType = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
-				If TrxType = "AR" Then
-					NewLine.GJHeaderARorAP = Enums.GJEntryType.AR;
-				ElsIf TrxType = "AP" Then
-					NewLine.GJHeaderARorAP = Enums.GJEntryType.AP;
+				NewLine.GJHeaderRowNumber = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
+			EndIf;
+			
+			ColumnNumber = FindAttributeColumnNumber("Debit or Credit");
+			If ColumnNumber <> Undefined Then
+				NewLine.GJHeaderType = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
+			EndIf;
+			
+			ColumnNumber = FindAttributeColumnNumber("Line account [ref]");
+			Если ColumnNumber <> Undefined Тогда
+				AccountString = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
+				AccountByCode = ChartsOfAccounts.ChartOfAccounts.FindByCode(AccountString);
+				AccountByDescription = ChartsOfAccounts.ChartOfAccounts.FindByDescription(AccountString);
+				If AccountByCode = ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
+					NewLine.GJHeaderAccount = AccountByDescription;
+				Else
+					NewLine.GJHeaderAccount = AccountByCode;
 				EndIf;
-			EndIf;
+			КонецЕсли;
 			
-		ElsIf ActionType = "GJ entries (detail)" Then
-			
-			NewLine = ТаблицаЗагрузки.Add();
-			NewLine.LoadFlag = True;
-
-			ColumnNumber = FindAttributeColumnNumber("Header number [ref]");
-			If ColumnNumber <> Undefined Then
-				TrxNumber = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
-				NewLine.GJDetailHeader = Documents.GeneralJournalEntry.FindByNumber(TrxNumber);
-			EndIf;
-	
-			ColumnNumber = FindAttributeColumnNumber("Account [ref]");
-			If ColumnNumber <> Undefined Then
-				TrxAccount = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
-				NewLine.GJDetailAccount = ChartsOfAccounts.ChartOfAccounts.FindByCode(TrxAccount);
-			EndIf;
-			
-			ColumnNumber = FindAttributeColumnNumber("Dr [num]");
-			If ColumnNumber <> Undefined Then
-				NewLine.GJDetailDr = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
-			EndIf;
-
-			ColumnNumber = FindAttributeColumnNumber("Cr [num]");
-			If ColumnNumber <> Undefined Then
-				NewLine.GJDetailCr = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
-			EndIf;
-			
-			ColumnNumber = FindAttributeColumnNumber("Memo [char]");
-			If ColumnNumber <> Undefined Then
-				NewLine.GJDetailMemo = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
-			EndIf;
-
-			ColumnNumber = FindAttributeColumnNumber("Customer / Vendor [char]");
-			If ColumnNumber <> Undefined Then
-				TrxCompany = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
-				If NOT TrxCompany = "" Then
-					CompanyID = Catalogs.Companies.FindByDescription(TrxCompany);
-					If NOT CompanyID = Undefined Then
-						NewLine.GJDetailCompany = CompanyID;
-					EndIf;
+			ColumnNumber = FindAttributeColumnNumber("Line amount [num]");
+			Если ColumnNumber <> Undefined Тогда
+				LineAmount = Number(СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]));
+				If LineAmount < 0 Then
+					LineAmount = LineAmount * -1
 				EndIf;
-			EndIf;
+				NewLine.GJHeaderAmount = LineAmount;
+			КонецЕсли;	
 			
-		ElsIf ActionType = "Sales invoices (header)" Then
+			ColumnNumber = FindAttributeColumnNumber("Line class [ref]");
+			Если ColumnNumber <> Undefined Тогда
+				LineClassString = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
+				NewLine.GJHeaderClass = Catalogs.Classes.FindByDescription(LineClassString);
+			КонецЕсли;
 			
-			NewLine = ТаблицаЗагрузки.Add();
-			NewLine.LoadFlag = True;
-
-			ColumnNumber = FindAttributeColumnNumber("Invoice date [date]");
-			If ColumnNumber <> Undefined Then
-				InvoiceDateString = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
-				
-				TransactionDate = '00010101';
-				DateParts = StringFunctionsClientServer.SplitStringIntoSubstringArray(InvoiceDateString, "/",,"""");
-				If DateParts.Count() = 3 then
-					Try
-						TransactionDate 	= Date(DateParts[2], DateParts[0], DatePArts[1]);
-					Except
-					EndTry;				
-				EndIf;
-
-				
-				NewLine.SIHeaderDate = TransactionDate;
-			EndIf;
-			
-			ColumnNumber = FindAttributeColumnNumber("Invoice number [char(6)]");
-			If ColumnNumber <> Undefined Then
-				InvoiceNumber = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
-				NewLine.SIHeaderNumber = InvoiceNumber;
-			EndIf;
-			
-			ColumnNumber = FindAttributeColumnNumber("Memo [char]");
-			If ColumnNumber <> Undefined Then
-				NewLine.SIHeaderMemo = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
-			EndIf;
-
-			ColumnNumber = FindAttributeColumnNumber("P.O. num [char(15)]");
-			If ColumnNumber <> Undefined Then
-				ARPONum = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
-				NewLine.SIHeaderPO = ARPONum;
-			EndIf;
-			
-			ColumnNumber = FindAttributeColumnNumber("Customer [ref]");
-			If ColumnNumber <> Undefined Then
-				CustomerString = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
-				NewLine.SIHeaderCustomer = Catalogs.Companies.FindByDescription(CustomerString);
-			EndIf;
-
-			ColumnNumber = FindAttributeColumnNumber("Terms [ref]");
-			If ColumnNumber <> Undefined Then
-				TermsString = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
-				NewLine.SIHeaderTerms = Catalogs.PaymentTerms.FindByDescription(TermsString);
-			EndIf;
-
-			ColumnNumber = FindAttributeColumnNumber("Due date [date]");
-			If ColumnNumber <> Undefined Then
-				ARDueDateString = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
-				
-				TransactionDate = '00010101';
-				DateParts = StringFunctionsClientServer.SplitStringIntoSubstringArray(ARDueDateString, "/",,"""");
-				If DateParts.Count() = 3 then
-					Try
-						TransactionDate 	= Date(DateParts[2], DateParts[0], DatePArts[1]);
-					Except
-					EndTry;				
-				EndIf;
-			
-				NewLine.SIHeaderDueDate = TransactionDate;
-			EndIf;
-
-			ColumnNumber = FindAttributeColumnNumber("Amount [num]");
-			If ColumnNumber <> Undefined Then
-				OpenBalance = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
-				NewLine.SIHeaderAmount = OpenBalance;
-			EndIf;
-			
-		ElsIf ActionType = "Sales invoices (detail)" Then	
-			
-			//ColumnNumber = FindAttributeColumnNumber("Invoice number [ref]");
-			//If ColumnNumber <> Undefined Then
-			//	TrxNumber = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
-			//	If CreditMemo = True Then
-			//		InvoiceID = Documents.SalesReturn.FindByNumber(TrxNumber);	
-			//	Else
-			//		InvoiceID = Documents.SalesInvoice.FindByNumber(TrxNumber);
-			//	EndIf;
-			//EndIf;
-			//				
-			//If InvoiceID <> Documents.SalesReturn.EmptyRef() AND InvoiceID.Posted = False Then  // custom - delete
-			//	
-			//	NewLine = ТаблицаЗагрузки.Add();
-			//	NewLine.LoadFlag = True;
-
-			//	NewLine.SIDetailHeader = InvoiceID;
-			//	
-			//	//НомерКолонки = FindAttributeColumnNumber("Invoice number [ref]");
-			//	//If НомерКолонки <> Undefined Then
-			//	//	TrxNumber = СокрЛП(Source[СчетчикСтрок][НомерКолонки - 1]);
-			//	//	NewLine.SIDetailHeader = Documents.SalesInvoice.FindByNumber(TrxNumber);
-			//	//EndIf;
-
-			//	ColumnNumber = FindAttributeColumnNumber("Item [ref]");
-			//	If ColumnNumber <> Undefined Then
-			//		ItemCode = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
-			//		NewLine.SIDetailProduct = Catalogs.Products.FindByCode(ItemCode);
-			//	EndIf;
-
-			//	ColumnNumber = FindAttributeColumnNumber("Qty [num]");
-			//	If ColumnNumber <> Undefined Then
-			//		NewLine.SIDetailQty = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
-			//	EndIf;
-
-			//	ColumnNumber = FindAttributeColumnNumber("Price [num]");
-			//	If ColumnNumber <> Undefined Then
-			//		NewLine.SIDetailPrice = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
-			//	EndIf;
-			//	
-			//EndIf;
-				
+			ColumnNumber = FindAttributeColumnNumber("Line memo [char]");
+			Если ColumnNumber <> Undefined Тогда
+				NewLine.GJHeaderLineMemo = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
+			КонецЕсли;
+										
 		ElsIf ActionType = "Checks" Then
 			
 			NewLine = ТаблицаЗагрузки.Add();
@@ -1307,13 +1021,25 @@ Procedure FillLoadTable()
 			ColumnNumber = FindAttributeColumnNumber("Bank account [ref]");
 			Если ColumnNumber <> Undefined Тогда
 				BankAccountString = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
-				NewLine.CheckBankAccount = ChartsOfAccounts.ChartOfAccounts.FindByCode(BankAccountString);
+				AccountByCode = ChartsOfAccounts.ChartOfAccounts.FindByCode(BankAccountString);
+				AccountByDescription = ChartsOfAccounts.ChartOfAccounts.FindByDescription(BankAccountString);
+				If AccountByCode = ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
+					NewLine.CheckBankAccount = AccountByDescription;
+				Else
+					NewLine.CheckBankAccount = AccountByCode;
+				EndIf;
 			КонецЕсли;
 
 			ColumnNumber = FindAttributeColumnNumber("Vendor [ref]");
 			Если ColumnNumber <> Undefined Тогда
 				VendorString = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
-				NewLine.CheckVendor = Catalogs.Companies.FindByCode(VendorString);
+				VendorByCode = Catalogs.Companies.FindByCode(VendorString);
+				VendorByDescription = Catalogs.Companies.FindByDescription(VendorString);
+				If VendorByCode = Catalogs.Companies.EmptyRef() Then
+					NewLine.CheckVendor = VendorByDescription;
+				Else
+					NewLine.CheckVendor = VendorByCode;
+				EndIf;
 			КонецЕсли;
 			
 			ColumnNumber = FindAttributeColumnNumber("Check memo [char]");
@@ -1324,7 +1050,13 @@ Procedure FillLoadTable()
 			ColumnNumber = FindAttributeColumnNumber("Line account [ref]");
 			Если ColumnNumber <> Undefined Тогда
 				LineAccountString = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
-				NewLine.CheckLineAccount = ChartsOfAccounts.ChartOfAccounts.FindByCode(LineAccountString);
+				AccountByCode = ChartsOfAccounts.ChartOfAccounts.FindByCode(LineAccountString);
+				AccountByDescription = ChartsOfAccounts.ChartOfAccounts.FindByDescription(LineAccountString);
+				If AccountByCode = ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then				
+					NewLine.CheckLineAccount = AccountByDescription;
+				Else
+					NewLine.CheckLineAccount = AccountByCode;
+				EndIf;
 			КонецЕсли;
 
 			ColumnNumber = FindAttributeColumnNumber("Line memo [char]");
@@ -1336,6 +1068,13 @@ Procedure FillLoadTable()
 			Если ColumnNumber <> Undefined Тогда
 				NewLine.CheckLineAmount = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
 			КонецЕсли;
+			
+			ColumnNumber = FindAttributeColumnNumber("Line class [ref]");
+			Если ColumnNumber <> Undefined Тогда
+				LineClassString = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
+				NewLine.CheckLineClass = Catalogs.Classes.FindByDescription(LineClassString);
+			КонецЕсли;
+
 			
 		ElsIf ActionType = "Deposits" Then
 			
@@ -1361,8 +1100,15 @@ Procedure FillLoadTable()
 			ColumnNumber = FindAttributeColumnNumber("Bank account [ref]");
 			Если ColumnNumber <> Undefined Тогда
 				BankAccountString = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
-				NewLine.DepositBankAccount = ChartsOfAccounts.ChartOfAccounts.FindByCode(BankAccountString);
+				AccountByCode = ChartsOfAccounts.ChartOfAccounts.FindByCode(BankAccountString);
+				AccountByDescription = ChartsOfAccounts.ChartOfAccounts.FindByDescription(BankAccountString);
+				If AccountByCode = ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
+					NewLine.DepositBankAccount = AccountByDescription;
+				Else
+					NewLine.DepositBankAccount = AccountByCode;
+				EndIf;
 			КонецЕсли;
+			
 
 			ColumnNumber = FindAttributeColumnNumber("Deposit memo [char]");
 			Если ColumnNumber <> Undefined Тогда
@@ -1372,19 +1118,32 @@ Procedure FillLoadTable()
 			ColumnNumber = FindAttributeColumnNumber("Line company [ref]");
 			Если ColumnNumber <> Undefined Тогда
 				CompanyString = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
-				NewLine.DepositLineCompany = Catalogs.Companies.FindByCode(CompanyString);
+				NewLine.DepositLineCompany = Catalogs.Companies.FindByDescription(CompanyString);
 			КонецЕсли;
 					
 			ColumnNumber = FindAttributeColumnNumber("Line account [ref]");
 			Если ColumnNumber <> Undefined Тогда
 				LineAccountString = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
-				NewLine.DepositLineAccount = ChartsOfAccounts.ChartOfAccounts.FindByCode(LineAccountString);
+				AccountByCode = ChartsOfAccounts.ChartOfAccounts.FindByCode(LineAccountString);
+				AccountByDescription = ChartsOfAccounts.ChartOfAccounts.FindByDescription(LineAccountString);
+				If AccountByCode = ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
+					NewLine.DepositLineAccount = AccountByDescription;
+				Else
+					NewLine.DepositLineAccount = AccountByCode;
+				EndIf;
 			КонецЕсли;
 
 			ColumnNumber = FindAttributeColumnNumber("Line amount [num]");
 			Если ColumnNumber <> Undefined Тогда
 				NewLine.DepositLineAmount = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
 			КонецЕсли;
+			
+			ColumnNumber = FindAttributeColumnNumber("Line class [ref]");
+			Если ColumnNumber <> Undefined Тогда
+				LineClassString = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
+				NewLine.DepositLineClass = Catalogs.Classes.FindByDescription(LineClassString);
+			КонецЕсли;
+
 			
 			ColumnNumber = FindAttributeColumnNumber("Line memo [char]");
 			Если ColumnNumber <> Undefined Тогда
@@ -1711,38 +1470,7 @@ Procedure FillLoadTable()
 			КонецЕсли;
 						
 		// end shipping address
-			
-		ElsIf ActionType = "Account balances" Then
-			
-			NewLine = ТаблицаЗагрузки.Add();
-			NewLine.LoadFlag = True;
-			
-			ColumnNumber = FindAttributeColumnNumber("Debit [num]");
-			Если ColumnNumber <> Undefined Тогда
-				DebitString = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
-				If DebitString = "" Then
-					NewLine.BalancesDebit = 0;				
-				Else
-					NewLine.BalancesDebit = Number(DebitString);
-				EndIf;
-			КонецЕсли;
-			
-			ColumnNumber = FindAttributeColumnNumber("Credit [num]");
-			Если ColumnNumber <> Undefined Тогда
-				CreditString = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
-				If CreditString = "" Then
-					NewLine.BalancesCredit = 0;				
-				Else
-					NewLine.BalancesCredit = Number(CreditString);
-				EndIf;
-			КонецЕсли;
-			
-			ColumnNumber = FindAttributeColumnNumber("Account code [ref]");
-			Если ColumnNumber <> Undefined Тогда
-				AccountString = СокрЛП(Source[СчетчикСтрок][ColumnNumber - 1]);
-				NewLine.BalancesAccount = ChartsOfAccounts.ChartOfAccounts.FindByCode(AccountString);
-			КонецЕсли;
-			
+						
 		ElsIf ActionType = "Items" Then
 			
 			NewLine = ТаблицаЗагрузки.Add();
@@ -1941,37 +1669,7 @@ Procedure LoadData(Cancel)
 	Если Cancel Тогда
 		Возврат;
 	КонецЕсли;
-	
-	If ActionType = "Account balances" Then	
 		
-		//TotalDebit = 0;
-		//
-		//NewGJE = Documents.GeneralJournalEntry.CreateDocument();
-		//NewGJE.Date = Date;
-		//NewGJE.Currency = GeneralFunctionsReusable.DefaultCurrency();
-		//NewGJE.ExchangeRate = 1;
-		//
-		//Для каждого DataLine Из Object.DataList Цикл
-		//	
-		//	NewLine = NewGJE.LineItems.Add();
-		//	
-		//	NewLine.Account = DataLine.BalancesAccount;
-		//	NewLine.AccountDescription = DataLine.BalancesAccount.Description;
-		//	If DataLine.BalancesDebit = 0 Then
-		//		NewLine.AmountCr = DataLine.BalancesCredit;
-		//		TotalDebit = TotalDebit + NewLine.AmountDr;
-		//	ElsIf DataLine.BalancesCredit = 0 Then
-		//		NewLine.AmountDr = DataLine.BalancesDebit;
-		//	EndIf;
-		//
-		//КонецЦикла;
-		//
-		//NewGJE.DocumentTotal = TotalDebit;
-		//NewGJE.DocumentTotalRC = TotalDebit;
-		//NewGJE.Write(DocumentWriteMode.Posting);
-		
-	EndIf;
-	
 	If ActionType = "Expensify" Then
 		
 		TotalAmount = 0;
@@ -2092,7 +1790,7 @@ Procedure LoadData(Cancel)
 		For Each DataLine In Object.DataList Do
 			If DataLine.LoadFlag = True Then
 				ItemLine = New Structure("CheckDate, CheckNumber, CheckBankAccount, CheckMemo, CheckVendor, CheckLineAmount, " + 
-				"CheckLineAccount, CheckLineAmount, CheckLineMemo");
+				"CheckLineAccount, CheckLineAmount, CheckLineMemo, CheckLineClass");
 				FillPropertyValues(ItemLine, DataLine);
 				ItemDataSet.Add(ItemLine);
 			Else
@@ -2112,7 +1810,7 @@ Procedure LoadData(Cancel)
 		For Each DataLine In Object.DataList Do
 			If DataLine.LoadFlag = True Then
 				ItemLine = New Structure("DepositDate, DepositBankAccount, DepositMemo, " + 
-				"DepositLineCompany, DepositLineAccount, DepositLineAmount, DepositLineMemo");
+				"DepositLineCompany, DepositLineAccount, DepositLineAmount, DepositLineClass, DepositLineMemo");
 				FillPropertyValues(ItemLine, DataLine);
 				ItemDataSet.Add(ItemLine);
 			Else
@@ -2128,6 +1826,8 @@ Procedure LoadData(Cancel)
 
 	
 	
+	//GJEntryPreviousRow = 0;
+	GJFirstRow = True;
 	Для каждого DataLine Из Object.DataList Цикл
 		
 		Если НЕ DataLine.LoadFlag Тогда
@@ -2184,191 +1884,88 @@ Procedure LoadData(Cancel)
 				
 			EndIf;
 			
-		ElsIf ActionType = "Invoice payments / Checks (header)" Then
+		ElsIf ActionType = "Classes" Then
 			
-			//NewIP = Documents.InvoicePayment.CreateDocument();
-			//
-			//NewIP.Company = DataLine.IPHeaderVendor;
-			////NewIP.CompanyCode = DataLine.IPHeaderVendor.Code;
-			//NewIP.DocumentTotal = DataLine.IPHeaderAmount;
-			//NewIP.DocumentTotalRC = DataLine.IPHeaderAmount;
-			//NewIP.BankAccount = Constants.BankAccount.Get();
-			//NewIP.Currency = GeneralFunctionsReusable.DefaultCurrency();
-			//NewIP.PaymentMethod = Catalogs.PaymentMethods.Visa;
-			//NewIP.Number = DataLine.IPHeaderNumber;
-			//NewIP.Date = DataLine.IPHeaderDate;
-			//NewIP.Memo = DataLine.IPHeaderMemo;
-			//
-			//NewIP.Write();
+			NewClass = Catalogs.Classes.CreateItem();
+			NewClass.Description = DataLine.ClassName;
+			If DataLine.SubClassOf <> Catalogs.Classes.EmptyRef() Then
+				NewClass.Parent = DataLine.SubClassOf;
+			EndIf;
+			NewClass.Write();
+							
+		ElsIf ActionType = "Journal entries" Then
 			
-		ElsIf ActionType = "Purchase invoices (detail)" Then
-			
-			//InvoiceDoc = Dataline.PIDetailHeader.GetObject();
-			//
-			//NewLine = InvoiceDoc.Accounts.Add();
-			//NewLine.Account = DataLine.PIDetailAccount;
-			//NewLine.Amount = DataLine.PIDetailAmount;
-			//NewLine.Memo = DataLine.PIDetailMemo;
-			//NewLine.AccountDescription = NewLine.Account.Description;
-			//
-			//InvoiceDoc.Write();
-			
-		ElsIf ActionType = "Purchase invoices (header)" Then
-			
-			//NewPI = Documents.PurchaseInvoice.CreateDocument();
-			//
-			//NewPI.Company = Dataline.PIHeaderVendor;
-			////NewPI.CompanyCode = Dataline.PIHeaderVendor.Code;
-			//NewPI.DocumentTotal = Dataline.PIHeaderAmount;
-			//NewPI.DocumentTotalRC = Dataline.PIHeaderAmount;
-			//NewPI.Currency = GeneralFunctionsReusable.DefaultCurrency();
-			//NewPI.ExchangeRate = 1;
-			//NewPI.Location = Catalogs.Locations.MainWarehouse;
-			//NewPI.DueDate = Dataline.PIHeaderDueDate;
-			//NewPI.Terms = Dataline.PIHeaderTerms;
-			//NewPI.Memo = Dataline.PIHeaderMemo;
-			//NewPI.APAccount = NewPI.Currency.DefaultAPAccount;
-			//NewPI.Number = Dataline.PIHeaderNumber;
-			//NewPI.Date = Dataline.PIHeaderDate;
-			//
-			//NewPI.Write();
+			If DataLine.GJHeaderRowNumber = 1 AND GJFirstRow = True Then
 				
-		ElsIf ActionType = "GJ entries (header)" Then
-			
-			NewGJ = Documents.GeneralJournalEntry.CreateDocument();
-			If NOT DataLine.GJHeaderNumber = "" Then
-				NewGJ.Number = DataLine.GJHeaderNumber;
-			EndIf;
-			NewGJ.Date = DataLine.GJHeaderDate;
-			NewGJ.DueDate = DataLine.GJHeaderDate;
-			NewGJ.DocumentTotalRC = DataLine.GJHeaderAmount;
-			NewGJ.DocumentTotal = DataLine.GJHeaderAmount;
-			NewGJ.Currency = GeneralFunctionsReusable.DefaultCurrency();
-			NewGJ.ExchangeRate = 1;
-			NewGJ.Memo = DataLine.GJHeaderMemo;
-			If NOT DataLine.GJHeaderARorAP = Undefined Then
-				NewGJ.ARorAP = DataLine.GJHeaderARorAP
-			EndIf;
-			NewGJ.Write();
-			
-		ElsIf ActionType = "GJ entries (detail)" Then
-			
-			GJEntry = DataLine.GJDetailHeader.GetObject();
-			NewLine = GJEntry.LineItems.Add();
-			NewLine.Account = DataLine.GJDetailAccount;
-			NewLine.AccountDescription = DataLine.GJDetailAccount.Description;
-			NewLine.AmountDr = DataLine.GJDetailDr;
-			NewLine.AmountCr = DataLine.GJDetailCr;
-			NewLine.Memo = DataLine.GJDetailMemo;
-			If NOT DataLine.GJDetailCompany = Undefined Then
-				NewLine.Company = DataLine.GJDetailCompany;
-			EndIf;
-			GJEntry.Write();
-			
-		ElsIf ActionType = "Sales invoices (header)" Then
-			
-			//If CreditMemo = True Then
-			//	
-			//	NewInvoice = Documents.SalesReturn.CreateDocument();
-			//	NewInvoice.Number = DataLine.SIHeaderNumber;
-			//	NewInvoice.Date = DataLine.SIHeaderDate;
-			//	NewInvoice.Company = DataLine.SIHeaderCustomer;
-			//	//NewInvoice.CompanyCode = DataLine.SIHeaderCustomer.Code;
-			//	NewInvoice.DocumentTotal = DataLine.SIHeaderAmount;
-			//	NewInvoice.Currency = Constants.DefaultCurrency.Get();
-			//	NewInvoice.ExchangeRate = 1;
-			//	NewInvoice.DocumentTotalRC = DataLine.SIHeaderAmount;
-			//	NewInvoice.Location = Catalogs.Locations.MainWarehouse;
-			//	NewInvoice.DueDate = DataLine.SIHeaderDueDate;
-			//	//NewInvoice.Terms = DataLine.SIHeaderTerms;
-			//	NewInvoice.Memo = DataLine.SIHeaderMemo;
-			//	NewInvoice.ARAccount = ARAccount;
-			//	NewInvoice.RefNum = DataLine.SIHeaderPO;
-			//	NewInvoice.Write();
-			//
-			//Else
-			//
-			//	If ARBegBal = True Then
-			//	
-			//		NewInvoice = Documents.SalesInvoice.CreateDocument();
-			//		NewInvoice.Number = DataLine.SIHeaderNumber;
-			//		NewInvoice.Date = DataLine.SIHeaderDate;
-			//		NewInvoice.Company = DataLine.SIHeaderCustomer;
-			//		//NewInvoice.CompanyCode = DataLine.SIHeaderCustomer.Code;
-			//		NewInvoice.DocumentTotal = DataLine.SIHeaderAmount;
-			//		NewInvoice.Currency = Constants.DefaultCurrency.Get();
-			//		NewInvoice.ExchangeRate = 1;
-			//		NewInvoice.DocumentTotalRC = DataLine.SIHeaderAmount;
-			//		NewInvoice.Location = Catalogs.Locations.MainWarehouse;
-			//		NewInvoice.DueDate = DataLine.SIHeaderDueDate;
-			//		NewInvoice.Terms = DataLine.SIHeaderTerms;
-			//		NewInvoice.Memo = "imported beg. balances";
-			//		NewInvoice.ARAccount = ARAccount;
-			//		NewInvoice.RefNum = DataLine.SIHeaderPO;
-			//		NewInvoice.BegBal = True;
-			//		NewInvoice.Write(DocumentWriteMode.Posting);
-			//		
-			//	Else
-			//		
-			//		NewInvoice = Documents.SalesInvoice.CreateDocument();
-			//		NewInvoice.Number = DataLine.SIHeaderNumber;
-			//		NewInvoice.Date = DataLine.SIHeaderDate;
-			//		NewInvoice.Company = DataLine.SIHeaderCustomer;
-			//		//NewInvoice.CompanyCode = DataLine.SIHeaderCustomer.Code;
-			//		NewInvoice.DocumentTotal = DataLine.SIHeaderAmount;
-			//		NewInvoice.Currency = Constants.DefaultCurrency.Get();
-			//		NewInvoice.ExchangeRate = 1;
-			//		NewInvoice.DocumentTotalRC = DataLine.SIHeaderAmount;
-			//		NewInvoice.Location = Catalogs.Locations.MainWarehouse;
-			//		NewInvoice.DueDate = DataLine.SIHeaderDueDate;
-			//		NewInvoice.Terms = DataLine.SIHeaderTerms;
-			//		NewInvoice.Memo = DataLine.SIHeaderMemo;
-			//		NewInvoice.ARAccount = ARAccount;
-			//		NewInvoice.RefNum = DataLine.SIHeaderPO;
-			//		NewInvoice.Write();
-			//		
-			//	EndIf;
-			//	
-			//EndIf;
-			
-		ElsIf ActionType = "Sales invoices (detail)" Then
-			
-			//InvoiceDoc = Dataline.SIDetailHeader.GetObject();
-			//NewLine = InvoiceDoc.LineItems.Add();
-			//NewLine.Product = DataLine.SIDetailProduct;
-			//NewLine.ProductDescription = DataLine.SIDetailProduct.Description;
-			//NewLine.Price = DataLine.SIDetailPrice;
-			//NewLine.Quantity = DataLine.SIDetailQty;
-			//NewLine.LineTotal = DataLine.SIDetailPrice * DataLine.SIDetailQty; 
-			////NewLine.SalesTaxType = US_FL.GetSalesTaxType(DataLine.SIDetailProduct);
-			////NewLine.TaxableAmount = 0;
-			//NewLine.VATCode = CommonUse.GetAttributeValue(DataLine.SIDetailProduct, "SalesVATCode");
-			//NewLine.VAT = 0;
-			//
-			//InvoiceDoc.Write();
-	
-		//ElsIf ActionType = "Checks" Then
-			
-			//NewCheck = Documents.Check.CreateDocument();
-			//NewCheck.Date = DataLine.CheckDate;
-			//NewCheck.Number = DataLine.CheckNumber;
-			//NewCheck.BankAccount = DataLine.CheckBankAccount;
-			//NewCheck.Memo = DataLine.CheckMemo;
-			//NewCheck.Company = DataLine.CheckVendor;
-			//NewCheck.DocumentTotalRC = DataLine.CheckLineAmount;
-			//NewCheck.DocumentTotal = DataLine.CheckLineAmount;
-			//NewCheck.ExchangeRate = 1;
-			//NewLine = NewCheck.LineItems.Add();
-			//NewLine.Account = DataLine.CheckLineAccount;
-			//NewLine.AccountDescription = DataLine.CheckLineAccount.Description;
-			//NewLine.Amount = DataLine.CheckLineAmount;
-			//NewLine.Memo = DataLine.CheckLineMemo;
-			//NewCheck.Write();
-			
-			
+				GJFirstRow = False;
+				
+				NewGJ = Documents.GeneralJournalEntry.CreateDocument();
+				NewGJ.Date = DataLine.GJHeaderDate;
+				NewGJ.Memo = DataLine.GJHeaderMemo;
+				
+				NewGJLine = NewGJ.LineItems.Add();
+				NewGJLine.Account = DataLine.GJHeaderAccount;
+				NewGJLine.Memo = DataLine.GJHeaderLineMemo;
+				NewGJLine.Class = DataLine.GJHeaderClass;
+				If DataLine.GJHeaderType = "Debit" Then
+					NewGJLine.AmountDr = DataLine.GJHeaderAmount;
+				Else
+					NewGJLine.AmountCr = DataLine.GJHeaderAmount;
+				EndIf;
+				
+			ElsIf DataLine.GJHeaderRowNumber = 1 AND GJFirstRow = False Then
+				
+				DocTotal = NewGJ.LineItems.Total("AmountDr");
+				NewGJ.DocumentTotalRC = DocTotal;
+				NewGJ.DocumentTotal = DocTotal;
+				NewGJ.Currency = GeneralFunctionsReusable.DefaultCurrency();
+				NewGJ.ExchangeRate = 1;
+				NewGJ.Write();
+				
+				NewGJ = Documents.GeneralJournalEntry.CreateDocument();
+				NewGJ.Date = DataLine.GJHeaderDate;
+				NewGJ.Memo = DataLine.GJHeaderMemo;
+				
+				NewGJLine = NewGJ.LineItems.Add();
+				NewGJLine.Account = DataLine.GJHeaderAccount;
+				NewGJLine.Memo = DataLine.GJHeaderLineMemo;
+				NewGJLine.Class = DataLine.GJHeaderClass;
+				If DataLine.GJHeaderType = "Debit" Then
+					NewGJLine.AmountDr = DataLine.GJHeaderAmount;
+				Else
+					NewGJLine.AmountCr = DataLine.GJHeaderAmount;
+				EndIf;
+
+				
+			ElsIf DataLine.GJHeaderRowNumber <> 1 Then
+				
+				NewGJLine = NewGJ.LineItems.Add();
+				NewGJLine.Account = DataLine.GJHeaderAccount;
+				NewGJLine.Memo = DataLine.GJHeaderLineMemo;
+				NewGJLine.Class = DataLine.GJHeaderClass;
+				If DataLine.GJHeaderType = "Debit" Then
+					NewGJLine.AmountDr = DataLine.GJHeaderAmount;
+				Else
+					NewGJLine.AmountCr = DataLine.GJHeaderAmount;
+				EndIf;
+
+			EndIf;	
+						
 		EndIf;
 	
 	КонецЦикла;
+	
+	If GJFirstRow = False Then
+		
+		DocTotal = NewGJ.LineItems.Total("AmountDr");
+		NewGJ.DocumentTotalRC = DocTotal;
+		NewGJ.DocumentTotal = DocTotal;
+		NewGJ.Currency = GeneralFunctionsReusable.DefaultCurrency();
+		NewGJ.ExchangeRate = 1;
+		NewGJ.Write();
+
+	EndIf;
+
 	
 	Если Cancel Тогда
 		Сообщить("There were errors during importing. The import will not be performed.");
@@ -2389,31 +1986,6 @@ Procedure ActionTypeOnChange(Item)
 	
 EndProcedure
 
-&AtClient
-Procedure GreetingNext(Command)
-	
-	Если ПодключитьРасширениеРаботыСФайлами() И
-	  НЕ ЗначениеЗаполнено(FilePath) Тогда
-		ТекстСообщения = НСтр("en='Select the file!';de='Datei auswählen'");
-		ShowMessageBox(,ТекстСообщения);
-		Возврат;
-	КонецЕсли;
-	
-	Если Attributes.Количество() = 0 Тогда
-		FillAttributes();
-	КонецЕсли;
-	
-	Items.MappingGroup.Заголовок = FilePath;
-	ReadSourceFile();
-	
-	Если НЕ ЗначениеЗаполнено(SourceAddress) Тогда
-		Возврат;
-	КонецЕсли;
-	
-	FillSourceView();
-	Items.LoadSteps.ТекущаяСтраница = Items.LoadSteps.ПодчиненныеЭлементы.Mapping;
-	
-EndProcedure
 
 &AtClient
 Procedure MappingBack(Command)
@@ -2502,30 +2074,22 @@ Procedure RefClick(Элемент)
 		
 	ElsIf ActionType = "Chart of accounts" Then		
 		OpenForm("ChartOfAccounts.ChartOfAccounts.ListForm");
-		
-	ElsIf ActionType = "Account balances" Then
-		OpenForm("Document.GeneralJournalEntry.ListForm");
-		
+				
 	ElsIf ActionType = "Items" Then
 		OpenForm("Catalog.Products.ListForm");
-		
-	ElsIf ActionType = "Sales invoices (header)" OR ActionType = "Sales invoices (detail)" Then
-		OpenForm("Document.SalesInvoice.ListForm");
-		
-	ElsIf ActionType = "GJ entries (header)" Then
+				
+	ElsIf ActionType = "Journal entries" Then
 		OpenForm("Document.GeneralJournalEntry.ListForm");
-		
-	ElsIf ActionType = "GJ entries (detail)" Then
-		OpenForm("Document.GeneralJournalEntry.ListForm");
-		
+				
 	ElsIf ActionType = "Checks" Then
 		OpenForm("Document.Check.ListForm");
 		
-	ElsIf ActionType =  "Purchase invoices (header)" OR ActionType = "Purchase invoices (detail)" OR ActionType = "Expensify" Then
-		OpenForm("Document.PurchaseInvoice.ListForm");
+	ElsIf ActionType = "Deposits" Then
+		OpenForm("Document.Deposit.ListForm");
+				
+	ElsIf ActionType = "Classes" Then
+		OpenForm("Catalog.Classes.ListForm");
 		
-	ElsIf ActionType = "Invoice payments / Checks (header)" OR ActionType = "Invoice payments / Checks (detail)" Then
-		OpenForm("Document.InvoicePayment.ListForm");
 	EndIf;
 	
 EndProcedure
@@ -2537,17 +2101,6 @@ Procedure Finish(Command)
 	
 EndProcedure
 
-&AtServer
-Procedure OnCreateAtServer(Cancel, StandardProcessing)
-	
-	ActionType = Parameters.ActionType;
-	FillAttributes();
-	Date = CurrentDate();
-	Date2 = CurrentDate();
-	//IncomeAccount = Constants.IncomeAccount.Get();
-	//ExpenseAccount = Constants.ExpenseAccount.Get();	
-	
-EndProcedure
 
 &AtClient
 Procedure OnOpen(Cancel)
@@ -2560,31 +2113,6 @@ Procedure OnOpen(Cancel)
 		//Items.ПредупреждениеВыгрузка.Видимость = Ложь;
 	КонецЕсли;
 	
-EndProcedure
-
-&AtClient
-Procedure MapToTemplateCV(Command)
-	FormData = ThisForm.Attributes;
-	NumOfColumns = FormData.Count();
-	For i = 0 to NumOfColumns - 1 Do
-		
-		FormData[i].ColumnNumber = i + 1; 
-		
-	EndDo
-EndProcedure
-
-
-&AtClient
-Procedure UnmapCV(Command)
-	
-	FormData = ThisForm.Attributes;
-	NumOfColumns = FormData.Count();
-	For i = 0 to NumOfColumns - 1 Do
-		
-		FormData[i].ColumnNumber = 0; 
-		
-	EndDo
-
 EndProcedure
 
 Procedure CreateCheckCSV(ItemDataSet) Export
@@ -2608,6 +2136,7 @@ Procedure CreateCheckCSV(ItemDataSet) Export
 		//NewLine.AccountDescription = DataLine.CheckLineAccount.Description;
 		NewLine.Amount = DataLine.CheckLineAmount;
 		NewLine.Memo = DataLine.CheckLineMemo;
+		NewLine.Class = DataLine.CheckLineClass;
 		NewCheck.Write();
 
 		
@@ -2632,10 +2161,16 @@ Procedure CreateDepositCSV(ItemDataSet) Export
 		NewLine = NewDeposit.Accounts.Add();
 		NewLine.Company = DataLine.DepositLineCompany;
 		NewLine.Account = DataLine.DepositLineAccount;
+		NewLine.Class = DataLine.DepositLineClass;
 		//NewLine.AccountDescription = DataLine.CheckLineAccount.Description;
 		NewLine.Amount = DataLine.DepositLineAmount;
 		NewLine.Memo = DataLine.DepositLineMemo;
-		NewDeposit.Write();
+		//NewDeposit.DataExchange.Load = True;
+		//Try
+			NewDeposit.Write(DocumentWriteMode.Posting);
+		//Except
+			//NewDeposit.Write();
+		//EndTry
 		
 	EndDo;
 	

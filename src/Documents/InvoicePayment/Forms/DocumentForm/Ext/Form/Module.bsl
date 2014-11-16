@@ -374,18 +374,14 @@ EndFunction
 &AtClient
 Procedure PayAll(Command)
 	
-	Total = 0;
 	For Each LineItem In Object.LineItems Do
-		test = LineItem;
-		//Items.LineItems.CurrentData.Check = True;
 		LineItem.Check = True;
-		LineItem.Payment = LineItem.Balance;
-		//LineItemsCheckOnChange(Items.LineItems.CurrentData.Check);
-		Total = Total + LineItem.Payment;
-
+		LineItem.Payment = LineItem.BalanceFCY;
 	EndDo;
 	
-	Object.DocumentTotalRC = Total;
+	//Object.DocumentTotalRC = Total;
+	TotalRevision();
+
 	
 EndProcedure
 
@@ -394,8 +390,8 @@ EndProcedure
 Procedure LineItemsCheckOnChange(Item)
 	
 	If Items.LineItems.CurrentData.Check Then
-		Items.LineItems.CurrentData.Payment = Items.LineItems.CurrentData.Balance;
-	Else
+			Items.LineItems.CurrentData.Payment = Items.LineItems.CurrentData.BalanceFCY;
+	Else                           
 		Items.LineItems.CurrentData.Payment = 0;
 	
 	Endif;
@@ -406,16 +402,13 @@ EndProcedure
 
 &AtServer
 Procedure TotalRevision()
-	
-	Total = 0;
-	For Each LineItem In Object.LineItems Do
-		
-	Total = Total + LineItem.Payment;	
-		
-	EndDo;
-	
-	Object.DocumentTotalRC = Total;
-	
+	Test = GeneralFunctions.GetExchangeRate(CurrentSessionDate(),Object.Currency);
+	Object.DocumentTotal =  Object.LineItems.Total("Payment");
+	If Constants.MultiCurrency.Get() = False Then
+		Object.DocumentTotalRC =  Object.LineItems.Total("Payment");
+	Else
+		Object.DocumentTotalRC =  Object.LineItems.Total("Payment") * Test;
+	EndIf;
 EndProcedure
 
 &AtServer

@@ -72,8 +72,8 @@
 												</v8:item>
 											</ToolTip>
 											<EditMode>EnterOnInput</EditMode>
-											<Width>15</Width>
-											<HorizontalStretch>true</HorizontalStretch>
+											<Width>25</Width>
+											<HorizontalStretch>false</HorizontalStretch>
 											<Font ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont" scale="120"/>
 											<ContextMenu name="CompanyContextMenu" id="6"/>
 											<ExtendedTooltip name="CompanyExtendedTooltip" id="109"/>
@@ -95,8 +95,8 @@
 													<v8:content>Vendor address</v8:content>
 												</v8:item>
 											</ToolTip>
-											<Width>15</Width>
-											<HorizontalStretch>true</HorizontalStretch>
+											<Width>25</Width>
+											<HorizontalStretch>false</HorizontalStretch>
 											<ContextMenu name="CompanyAddressContextMenu" id="246"/>
 											<ExtendedTooltip name="CompanyAddressExtendedTooltip" id="247"/>
 										</InputField>
@@ -125,7 +125,7 @@ Destination location</v8:content>
 												</v8:item>
 											</ToolTip>
 											<Width>15</Width>
-											<HorizontalStretch>true</HorizontalStretch>
+											<HorizontalStretch>false</HorizontalStretch>
 											<Font ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont" scale="120"/>
 											<ContextMenu name="LocationContextMenu" id="37"/>
 											<ExtendedTooltip name="LocationExtendedTooltip" id="111"/>
@@ -141,6 +141,8 @@ Destination location</v8:content>
 													<v8:content>SO</v8:content>
 												</v8:item>
 											</Title>
+											<Width>15</Width>
+											<HorizontalStretch>false</HorizontalStretch>
 											<Hiperlink>true</Hiperlink>
 											<ContextMenu name="BaseDocumentContextMenu" id="304"/>
 											<ExtendedTooltip name="BaseDocumentExtendedTooltip" id="305"/>
@@ -170,7 +172,7 @@ Destination location</v8:content>
 													</ToolTip>
 													<HorizontalAlign>Right</HorizontalAlign>
 													<EditMode>EnterOnInput</EditMode>
-													<Width>10</Width>
+													<Width>15</Width>
 													<HorizontalStretch>false</HorizontalStretch>
 													<Font ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont" scale="120"/>
 													<ContextMenu name="DateContextMenu" id="4"/>
@@ -189,7 +191,7 @@ Destination location</v8:content>
 														</v8:item>
 													</ToolTip>
 													<EditMode>EnterOnInput</EditMode>
-													<Width>9</Width>
+													<Width>15</Width>
 													<HorizontalStretch>false</HorizontalStretch>
 													<Font ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont" scale="120"/>
 													<ContextMenu name="NumberContextMenu" id="2"/>
@@ -208,7 +210,7 @@ Destination location</v8:content>
 													<Title>
 														<v8:item>
 															<v8:lang>en</v8:lang>
-															<v8:content>Exp. deliv.</v8:content>
+															<v8:content>Delivery date</v8:content>
 														</v8:item>
 													</Title>
 													<ToolTip>
@@ -218,7 +220,7 @@ Destination location</v8:content>
 														</v8:item>
 													</ToolTip>
 													<HorizontalAlign>Right</HorizontalAlign>
-													<Width>10</Width>
+													<Width>15</Width>
 													<HorizontalStretch>false</HorizontalStretch>
 													<ContextMenu name="DeliveryDateContextMenu" id="139"/>
 													<ExtendedTooltip name="DeliveryDateExtendedTooltip" id="140"/>
@@ -235,7 +237,7 @@ Destination location</v8:content>
 															<v8:content>Purchase order status</v8:content>
 														</v8:item>
 													</ToolTip>
-													<Width>10</Width>
+													<Width>15</Width>
 													<HorizontalStretch>false</HorizontalStretch>
 													<ContextMenu name="OrderStatusPresentationContextMenu" id="88"/>
 													<ExtendedTooltip name="OrderStatusPresentationExtendedTooltip" id="104"/>
@@ -734,7 +736,7 @@ Reference number</v8:content>
 									<Title>
 										<v8:item>
 											<v8:lang>en</v8:lang>
-											<v8:content>Price</v8:content>
+											<v8:content>Cost</v8:content>
 										</v8:item>
 									</Title>
 									<ToolTip>
@@ -745,6 +747,18 @@ Reference number</v8:content>
 									</ToolTip>
 									<EditMode>EnterOnInput</EditMode>
 									<Width>10</Width>
+									<Format>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>NFD=2</v8:content>
+										</v8:item>
+									</Format>
+									<EditFormat>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>NFD=2</v8:content>
+										</v8:item>
+									</EditFormat>
 									<ContextMenu name="LineItemsPriceContextMenu" id="17"/>
 									<ExtendedTooltip name="LineItemsPriceExtendedTooltip" id="119"/>
 									<Events>
@@ -791,7 +805,7 @@ Reference number</v8:content>
 									<Title>
 										<v8:item>
 											<v8:lang>en</v8:lang>
-											<v8:content>Exp. delivery</v8:content>
+											<v8:content>Delivery date</v8:content>
 										</v8:item>
 									</Title>
 									<ToolTip>

@@ -28,6 +28,8 @@ Procedure BeforeDelete(Cancel)
 	
 	EndIf;
 	
+	AvaTaxServer.AvataxDocumentBeforeDelete(ThisObject, Cancel, "SalesOrder");
+	
 EndProcedure
 // <- CODE REVIEW
 
@@ -93,7 +95,7 @@ Procedure Filling(FillingData, StandardProcessing)
 		// Filling of the new created document with default values.
 		Currency         = Constants.DefaultCurrency.Get();
 		ExchangeRate     = GeneralFunctions.GetExchangeRate(Date, Currency);
-		Location         = Catalogs.Locations.MainWarehouse;
+		Location         = GeneralFunctions.GetDefaultLocation();
 		
 	Else
 		
@@ -220,29 +222,7 @@ Procedure Posting(Cancel, PostingMode)
 		LongActions.ExecuteInBackground("GeneralFunctions.SendWebhook", WebhookParams);
 		
 	EndIf;
-	
-	email_so_webhook = Constants.so_webhook_email.Get();
-	
-	If NOT email_so_webhook = "" Then
 		
-		WebhookMap2 = GeneralFunctions.ReturnSaleOrderMap(Ref);
-		WebhookMap2.Insert("resource","salesorders");
-		If NewObject = True Then
-			WebhookMap2.Insert("action","create");
-		Else
-			WebhookMap2.Insert("action","update");
-		EndIf;
-		WebhookMap2.Insert("apisecretkey",Constants.APISecretKey.Get());
-		
-		WebhookParams2 = New Array();
-		WebhookParams2.Add(email_so_webhook);
-		WebhookParams2.Add(WebhookMap2);
-		LongActions.ExecuteInBackground("GeneralFunctions.EmailWebhook", WebhookParams2);
-		
-	EndIf;
-	
-	
-	
 EndProcedure
 
 Procedure UndoPosting(Cancel)

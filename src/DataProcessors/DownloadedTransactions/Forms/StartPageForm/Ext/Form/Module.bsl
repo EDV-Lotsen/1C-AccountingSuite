@@ -83,6 +83,7 @@ EndProcedure
 Procedure AvailableBankAccountsSelection(Item, SelectedRow, Field, StandardProcessing)
 	SelectedBankAccount = Items.AvailableBankAccounts.CurrentData.BankAccount;
 	OpenForm("DataProcessor.DownloadedTransactions.Form", New Structure("BankAccount", SelectedBankAccount));
+	Notify("StartPageForm_SelectedBankAccount", SelectedBankAccount);
 EndProcedure
 
 #EndRegion

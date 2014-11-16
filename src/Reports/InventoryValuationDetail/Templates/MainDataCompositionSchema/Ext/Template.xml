@@ -178,12 +178,18 @@
 	CASE
 		WHEN InventoryJournalBalanceAndTurnovers.QuantityClosingBalance &lt;= 0
 			THEN 0
-		ELSE CAST(InventoryJournalBalanceAndTurnovers.AmountClosingBalance / InventoryJournalBalanceAndTurnovers.QuantityClosingBalance AS NUMBER(15, 2))
+		ELSE CASE
+				WHEN InventoryJournalBalanceAndTurnovers.Product.PricePrecision = 3
+					THEN CAST(InventoryJournalBalanceAndTurnovers.AmountClosingBalance / InventoryJournalBalanceAndTurnovers.QuantityClosingBalance AS NUMBER(17, 3))
+				WHEN InventoryJournalBalanceAndTurnovers.Product.PricePrecision = 4
+					THEN CAST(InventoryJournalBalanceAndTurnovers.AmountClosingBalance / InventoryJournalBalanceAndTurnovers.QuantityClosingBalance AS NUMBER(17, 4))
+				ELSE CAST(InventoryJournalBalanceAndTurnovers.AmountClosingBalance / InventoryJournalBalanceAndTurnovers.QuantityClosingBalance AS NUMBER(17, 2))
+			END
 	END AS AvgCost,
 	InventoryJournalBalanceAndTurnovers.QuantityClosingBalance * CASE
 		WHEN InventoryJournalBalanceAndTurnovers.QuantityClosingBalance &lt;= 0
 			THEN 0
-		ELSE CAST(InventoryJournalBalanceAndTurnovers.AmountClosingBalance / InventoryJournalBalanceAndTurnovers.QuantityClosingBalance AS NUMBER(15, 2))
+		ELSE CAST(InventoryJournalBalanceAndTurnovers.AmountClosingBalance / InventoryJournalBalanceAndTurnovers.QuantityClosingBalance AS NUMBER(17, 2))
 	END AS AssetValue
 INTO InventoryJournalBalanceAndTurnovers
 FROM

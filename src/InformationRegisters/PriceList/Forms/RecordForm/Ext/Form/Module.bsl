@@ -20,6 +20,15 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Items.PriceLevel.Visible = False;
 	EndIf;
 	
+	Product = Record.Product;
+	
+	// Update prices presentation.
+	PriceFormat = GeneralFunctionsReusable.DefaultPriceFormat();
+	Items.Price.EditFormat = PriceFormat;
+	Items.Price.Format     = PriceFormat;
+	Items.Cost.EditFormat  = PriceFormat;
+	Items.Cost.Format      = PriceFormat;
+	
 EndProcedure
 
 &AtClient
@@ -28,23 +37,23 @@ Procedure PriceTypeOnChange(Item)
 	If Record.PriceType = "Item" Then
 		
 		Items.Product.Visible = True;
-		Items.Product.MarkIncomplete = True;		
+		Items.Product.MarkIncomplete = ?(Product = ProductEmptyRef(), True, False);		
 		Items.ProductCategory.Visible = False;
 		Items.PriceLevel.Visible = False;
 		
-		Record.Product = ProductEmptyRef();
+		Record.Product = Product;
 		Record.ProductCategory = ProductCategoryEmptyRef();
 		Record.PriceLevel = PriceLevelEmptyRef();
 		
 	ElsIf Record.PriceType = "ItemPriceLevel" Then
 		
 		Items.Product.Visible = True;
-		Items.Product.MarkIncomplete = True;
+		Items.Product.MarkIncomplete = ?(Product = ProductEmptyRef(), True, False);
 		Items.ProductCategory.Visible = False;
 		Items.PriceLevel.Visible = True;
 		Items.PriceLevel.MarkIncomplete = True;
 		
-		Record.Product = ProductEmptyRef();
+		Record.Product = Product;
 		Record.ProductCategory = ProductCategoryEmptyRef();
 		Record.PriceLevel = PriceLevelEmptyRef();
 
@@ -72,24 +81,26 @@ Procedure PriceTypeOnChange(Item)
 		Record.PriceLevel = PriceLevelEmptyRef();
 		
 	EndIf;
- 		
+	
+	UpdatePrices();
+
 EndProcedure
 
-&AtServer
+&AtServerNoContext
 Function ProductEmptyRef()
 	
 	Return Catalogs.Products.EmptyRef();
 	
 EndFunction
 
-&AtServer
+&AtServerNoContext 
 Function ProductCategoryEmptyRef()
 	
 	Return Catalogs.ProductCategories.EmptyRef();
 	
 EndFunction
 
-&AtServer
+&AtServerNoContext 
 Function PriceLevelEmptyRef()
 	
 	Return Catalogs.PriceLevels.EmptyRef();
@@ -162,6 +173,10 @@ Procedure ProductOnChange(Item)
 		Items.Product.MarkIncomplete = False;
 	EndIf;
 	
+	Product = Record.Product; 
+	
+	UpdatePrices();
+
 EndProcedure
 
 &AtClient
@@ -222,60 +237,36 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 	
 	EndIf;
 	
-	If Constants.zoho_auth_token.Get() <> "" Then
-		zohoUpdatePricebook();
+	If Constants.zoho_auth_token.Get() <> "" AND Record.PriceType = "ItemPriceLevel" Then
+		zoho_Functions.zoho_UpdatePricebook(Record.PriceLevel.Ref,Record.Product.Ref, Record.Price);
 	EndIf;
 
 EndProcedure
 
-Procedure zohoUpdatePricebook()
-	If Record.PriceType = "ItemPriceLevel" Then
-		// using http request so no need for https:// anymore
-		PathDef = "crm.zoho.com/crm/private/xml/PriceBooks/";
-		
-		idQuery = new Query("SELECT
-							|	zoho_pricebookCodeMap.zoho_id
-							|FROM
-							|	Catalog.zoho_pricebookCodeMap AS zoho_pricebookCodeMap
-							|WHERE
-							|	zoho_pricebookCodeMap.acs_api_code = &acs_api_code");
-					   
-		idQuery.SetParameter("acs_api_code", string(Record.PriceLevel.Ref.UUID()));
-		queryResult = idQuery.Execute();
-		queryResultobj = queryResult.Unload();
-		
-		zohoID = queryResultobj[0].zoho_id;
-		
-		itemQuery = new Query("SELECT
-							|	zoho_productCodeMap.zoho_id
-							|FROM
-							|	Catalog.zoho_productCodeMap AS zoho_productCodeMap
-							|WHERE
-							|	zoho_productCodeMap.acs_api_code = &acs_api_code");
-					   
-		itemQuery.SetParameter("acs_api_code", string(Record.Product.Ref.UUID()));
-		queryResult = itemQuery.Execute();
-		queryResultobj = queryResult.Unload();
-		productID = queryResultobj[0].zoho_id;
-						
-		ProductXML = "<Products>"
-				+ "<row no=""1"">"
-				+ "<FL val=""PRODUCTID"">" + productID + "</FL>"
-				+ "<FL val=""list_price"">" + StrReplace(String(Record.Price),",","") + "</FL>"
-				+ "</row>"
-				+ "</Products>";
-
-		AuthHeader = "authtoken=" + Constants.zoho_auth_token.Get() + "&scope=crmapi" + "&id=" + zohoID
-						+ "&relatedModule=Products";
-			
-		URLstring = PathDef + "updateRelatedRecords?" + AuthHeader + "&xmlData=" + ProductXML;
-		
-		HeadersMap = New Map();			
-		HTTPRequest = New HTTPRequest("", HeadersMap);	
-		SSLConnection = New OpenSSLSecureConnection();
-		HTTPConnection = New HTTPConnection(URLstring,,,,,,SSLConnection);
-		Result = HTTPConnection.Post(HTTPRequest);
+&AtClient
+Procedure PriceOnChange(Item)
 	
+	If ValueIsFilled(Record.Product) Then
+		Record.Price = Round(Record.Price, GeneralFunctionsReusable.PricePrecisionForOneItem(Record.Product));
+	EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure CostOnChange(Item)
+	
+	If ValueIsFilled(Record.Product) Then
+		Record.Cost = Round(Record.Cost, GeneralFunctionsReusable.PricePrecisionForOneItem(Record.Product));
+	EndIf;
+	
+EndProcedure
+
+&AtServer
+Procedure UpdatePrices()
+	
+	If ValueIsFilled(Record.Product) Then
+		Record.Price = Round(Record.Price, GeneralFunctionsReusable.PricePrecisionForOneItem(Record.Product));
+		Record.Cost = Round(Record.Cost, GeneralFunctionsReusable.PricePrecisionForOneItem(Record.Product));
 	EndIf;
 	
 EndProcedure

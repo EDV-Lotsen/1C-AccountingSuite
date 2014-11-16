@@ -113,17 +113,40 @@ Function PrepareDataStructuresForPosting(DocumentRef, AdditionalProperties, Regi
 	
 	// Query for document's tables.
 	Query.Text   = "";
+
 	If InventoryPosting Then
 		Query.Text = Query.Text +
 		             Query_InventoryJournal_LineItems(TablesList) +
 		             Query_InventoryJournal_Balance_Quantity(TablesList) +
-		             Query_InventoryJournal(TablesList);
+		             Query_InventoryJournal(TablesList) +
+	        	     Query_GeneralJournal_LineItems(TablesList) +
+	         	     Query_GeneralJournal_Accounts_Income(TablesList) +
+	            	 Query_GeneralJournal_Accounts_COGS_Quantity(TablesList) +
+	                 Query_GeneralJournal_Accounts_COGS_Amount(TablesList) +
+	                 Query_GeneralJournal_Accounts_COGS(TablesList) +
+	                 Query_GeneralJournal_Accounts_InvOrExp_Quantity(TablesList) +
+	                 Query_GeneralJournal_Accounts_InvOrExp_Amount(TablesList) +
+	                 Query_GeneralJournal_Accounts_InvOrExp(TablesList) +
+				     Query_GeneralJournal(TablesList) +
+	         	     Query_ProjectData_Accounts_Income(TablesList) +
+	                 Query_ProjectData_Accounts_COGS_Quantity(TablesList) +
+	                 Query_ProjectData_Accounts_COGS_Amount(TablesList) +
+	                 Query_ProjectData_Accounts_COGS(TablesList) +
+	                 Query_ProjectData(TablesList)+
+	         	     Query_ClassData_Accounts_Income(TablesList) +
+	                 Query_ClassData_Accounts_COGS_Quantity(TablesList) +
+	                 Query_ClassData_Accounts_COGS_Amount(TablesList) +
+	                 Query_ClassData_Accounts_COGS(TablesList) +
+	                 Query_ClassData(TablesList) +
+					 Query_CashFlowData(TablesList);
+				 
 	EndIf;
+				 
 	If SalesTaxPosting Then
 		Query.Text = Query.Text +
 		             Query_SalesTaxOwed(TablesList);
 	EndIf;
-	
+				 
 	//------------------------------------------------------------------------------
 	// 3. Execute query and fill data structures.
 	
@@ -211,7 +234,7 @@ Procedure Print(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
    |	SalesReturn.Posted,
    |	SalesReturn.Company,
    |	SalesReturn.ReturnType,
-   |	SalesReturn.SalesTaxRC,
+   |	SalesReturn.SalesTax,
    |	SalesReturn.DocumentTotal,
    |	SalesReturn.ParentDocument,
    |	SalesReturn.Currency,
@@ -444,9 +467,10 @@ Procedure Print(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
 		EndTry;
 		LineTotal = SelectionLineItems.LineTotal;
 		TemplateArea.Parameters.Quantity = Format(SelectionLineItems.QtyUnits);
-		TemplateArea.Parameters.Price = Selection.Currency.Symbol + Format(SelectionLineItems.PriceUnits, "NFD=2; NZ=");
+		ProductPrecisionFormat = GeneralFunctionsReusable.PriceFormatForOneItem(SelectionLineItems.Product);
+		TemplateArea.Parameters.Price     = Format(SelectionLineItems.PriceUnits, ProductPrecisionFormat + "; NZ=");
 		TemplateArea.Parameters.UM = SelectionLineItems.Unit.Code;
-		TemplateArea.Parameters.LineTotal = Selection.Currency.Symbol + Format(SelectionLineItems.LineTotal, "NFD=2; NZ=");
+		TemplateArea.Parameters.LineTotal = Format(SelectionLineItems.LineTotal, "NFD=2; NZ=");
 		Spreadsheet.Put(TemplateArea, SelectionLineItems.Level());
 				
 		If LineItemSwitch = False Then
@@ -468,12 +492,13 @@ Procedure Print(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
     Spreadsheet.Put(TemplateArea);
      
     TemplateArea = Template.GetArea("Area3|Area2");
-	TemplateArea.Parameters.LineSubtotal = Selection.Currency.Symbol + Format(Selection.LineSubtotal, "NFD=2; NZ=");
-	TemplateArea.Parameters.Discount = "("+ Selection.Currency.Symbol + Format(Selection.Discount, "NFD=2; NZ=") + ")";
-	TemplateArea.Parameters.Subtotal = Selection.Currency.Symbol + Format(Selection.Subtotal, "NFD=2; NZ=");
-	TemplateArea.Parameters.Shipping = Selection.Currency.Symbol + Format(Selection.Shipping, "NFD=2; NZ=");
-	TemplateArea.Parameters.SalesTax = Selection.Currency.Symbol + Format(Selection.SalesTaxRC, "NFD=2; NZ=");
-	TemplateArea.Parameters.Total = Selection.Currency.Symbol + Format(Selection.DocumentTotal, "NFD=2; NZ=");
+	TemplateArea.Parameters.LineSubtotal = Format(Selection.LineSubtotal, "NFD=2; NZ=");
+	TemplateArea.Parameters.Discount = "("+ Format(Selection.Discount, "NFD=2; NZ=") + ")";
+	TemplateArea.Parameters.Subtotal = Format(Selection.Subtotal, "NFD=2; NZ=");
+	TemplateArea.Parameters.Shipping = Format(Selection.Shipping, "NFD=2; NZ=");
+	TemplateArea.Parameters.SalesTax = Format(Selection.SalesTax, "NFD=2; NZ=");
+	TemplateArea.Parameters.NetTotalTitle = "Net Total " + Selection.Currency.Description + ": ";
+	TemplateArea.Parameters.Total = Format(Selection.DocumentTotal, "NFD=2; NZ=");
 
 	Spreadsheet.Join(TemplateArea);
     
@@ -695,9 +720,9 @@ Function Query_InventoryJournal(TablesList)
 	// ------------------------------------------------------
 	// Resources
 	|	LineItems_FIFO.QuantityRequested      AS Quantity,
-	|	CAST ( // Format(LastCost * QuantityRequested, ""ND=15; NFD=2"")
+	|	CAST ( // Format(LastCost * QuantityRequested, ""ND=17; NFD=2"")
 	|		 ItemLastCosts.Cost * LineItems_FIFO.QuantityRequested
-	|		 AS NUMBER (15, 2))               AS Amount
+	|		 AS NUMBER (17, 2))               AS Amount
 	// ------------------------------------------------------
 	// Attributes
 	// ------------------------------------------------------
@@ -765,12 +790,12 @@ Function Query_InventoryJournal(TablesList)
 	|	CASE
 	|		WHEN ISNULL(Balance_WAve.Quantity, 0) > 0
 	|		// The balance is still active.
-	|		THEN CAST ( // Format(Amount * QuantityReceipt / Quantity, ""ND=15; NFD=2"")
+	|		THEN CAST ( // Format(Amount * QuantityReceipt / Quantity, ""ND=17; NFD=2"")
 	|			 ISNULL(Balance_WAve.Amount, 0) * LineItems_WAve.QuantityRequested / Balance_WAve.Quantity
-	|			 AS NUMBER (15, 2))
-	|		ELSE CAST ( // Format(LastCost * QuantityRequested, ""ND=15; NFD=2"")
+	|			 AS NUMBER (17, 2))
+	|		ELSE CAST ( // Format(LastCost * QuantityRequested, ""ND=17; NFD=2"")
 	|			 ItemLastCosts.Cost * LineItems_WAve.QuantityRequested
-	|			 AS NUMBER (15, 2))
+	|			 AS NUMBER (17, 2))
 	|	END                                   AS Amount
 	// ------------------------------------------------------
 	// Attributes
@@ -792,13 +817,1225 @@ Function Query_InventoryJournal(TablesList)
 	|	CASE
 	|		WHEN ISNULL(Balance_WAve.Quantity, 0) > 0
 	|		// The balance is still active.
-	|		THEN CAST ( // Format(Amount * QuantityReceipt / Quantity, ""ND=15; NFD=2"")
+	|		THEN CAST ( // Format(Amount * QuantityReceipt / Quantity, ""ND=17; NFD=2"")
 	|			 ISNULL(Balance_WAve.Amount, 0) * LineItems_WAve.QuantityRequested / Balance_WAve.Quantity
-	|			 AS NUMBER (15, 2))
-	|		ELSE CAST ( // Format(LastCost * QuantityRequested, ""ND=15; NFD=2"")
+	|			 AS NUMBER (17, 2))
+	|		ELSE CAST ( // Format(LastCost * QuantityRequested, ""ND=17; NFD=2"")
 	|			 ItemLastCosts.Cost * LineItems_WAve.QuantityRequested
-	|			 AS NUMBER (15, 2))
+	|			 AS NUMBER (17, 2))
 	|	END > 0";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_GeneralJournal_LineItems(TablesList)
+	
+	// Add GeneralJournal requested items table to document structure.
+	TablesList.Insert("Table_GeneralJournal_LineItems", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT
+	// ------------------------------------------------------
+	// Dimensions
+	|	LineItems.Product.CostingMethod       AS Type,
+	|	LineItems.Product                     AS Product,
+	|	LineItems.Ref.Location                AS Location,
+	|	LineItems.Project                     AS Project,
+	|	LineItems.Class                       AS Class,
+	|	LineItems.Product.IncomeAccount       AS IncomeAccount,
+	|	LineItems.Product.COGSAccount         AS COGSAccount,
+	|	LineItems.Product.InventoryOrExpenseAccount AS InvOrExpAccount,
+	// ------------------------------------------------------
+	// Resources
+	|	LineItems.QtyUM                       AS Quantity,
+	|	LineItems.LineTotal                   AS Amount
+	// ------------------------------------------------------
+	|INTO
+	|	Table_GeneralJournal_LineItems
+	|FROM
+	|	Document.SalesReturn.LineItems AS LineItems
+	|WHERE
+	|	LineItems.Ref = &Ref";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_GeneralJournal_Accounts_Income(TablesList)
+	
+	// Add GeneralJournal income accounts table to document structure.
+	TablesList.Insert("Table_GeneralJournal_Accounts_Income", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // Income accounts selection
+	// ------------------------------------------------------
+	// Dimensions
+	|	Accounts.IncomeAccount                AS IncomeAccount,
+	// ------------------------------------------------------
+	// Resources
+	|	SUM(Accounts.Amount)                  AS Amount
+	// ------------------------------------------------------
+	|INTO
+	|	Table_GeneralJournal_Accounts_Income
+	|FROM
+	|	Table_GeneralJournal_LineItems AS Accounts
+	|GROUP BY
+	|	Accounts.IncomeAccount";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_GeneralJournal_Accounts_COGS_Quantity(TablesList)
+	
+	// Add GeneralJournal COGS accounts table to document structure.
+	TablesList.Insert("Table_GeneralJournal_Accounts_COGS_Quantity", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // COGS accounts selection
+	// ------------------------------------------------------
+	// Dimensions
+	|	Accounts.COGSAccount                  AS COGSAccount,
+	|	Accounts.Product                      AS Product,
+	|	Accounts.Type                         AS Type,
+	// ------------------------------------------------------
+	// Resources
+	|	SUM(Accounts.Quantity)                AS QuantityRequested
+	// ------------------------------------------------------
+	|INTO
+	|	Table_GeneralJournal_Accounts_COGS_Quantity
+	|FROM
+	|	Table_GeneralJournal_LineItems AS Accounts
+	|WHERE
+    |   Accounts.Product.Type = VALUE(Enum.InventoryTypes.Inventory)
+	|GROUP BY
+	|	Accounts.COGSAccount,
+	|	Accounts.Product,
+	|	Accounts.Type";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_GeneralJournal_Accounts_COGS_Amount(TablesList)
+	
+	// Add GeneralJournal COGS accounts table to document structure.
+	TablesList.Insert("Table_GeneralJournal_Accounts_COGS_Amount", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // FIFO
+	// ------------------------------------------------------
+	// Dimensions
+	|	Accounts_FIFO.COGSAccount             AS COGSAccount,
+	// ------------------------------------------------------
+	// Resources
+	|	CAST ( // Format(LastCost * QuantityRequested, ""ND=17; NFD=2"")
+	|		 ItemLastCosts.Cost * Accounts_FIFO.QuantityRequested
+	|		 AS NUMBER (17, 2))               AS Amount
+	// ------------------------------------------------------
+	|INTO
+	|	Table_GeneralJournal_Accounts_COGS_Amount
+	|FROM
+	|	Table_GeneralJournal_Accounts_COGS_Quantity AS Accounts_FIFO
+	|	LEFT JOIN Table_ItemLastCosts_SliceLast AS ItemLastCosts
+	|		ON  ItemLastCosts.Product = Accounts_FIFO.Product
+	|WHERE
+	|	Accounts_FIFO.Type = VALUE(Enum.InventoryCosting.FIFO)
+	|	AND Accounts_FIFO.QuantityRequested > 0
+	|
+	|UNION ALL
+	|
+	|SELECT // WeightedAverage
+	// ------------------------------------------------------
+	// Dimensions
+	|	Account_WAve.COGSAccount              AS Accounts,
+	// ------------------------------------------------------
+	// Resources
+	|	CASE
+	|		WHEN ISNULL(Balance_WAve.Quantity, 0) > 0
+	|		// The balance is still active.
+	|		THEN CAST ( // Format(Amount * QuantityReceipt / Quantity, ""ND=17; NFD=2"")
+	|			 ISNULL(Balance_WAve.Amount, 0) * Account_WAve.QuantityRequested / Balance_WAve.Quantity
+	|			 AS NUMBER (17, 2))
+	|		ELSE CAST ( // Format(LastCost * QuantityRequested, ""ND=17; NFD=2"")
+	|			 ItemLastCosts.Cost * Account_WAve.QuantityRequested
+	|			 AS NUMBER (17, 2))
+	|	END                                   AS Amount
+	// ------------------------------------------------------
+	// Attributes
+	// ------------------------------------------------------
+	|FROM
+	|	Table_GeneralJournal_Accounts_COGS_Quantity AS Account_WAve
+	|	LEFT JOIN Table_InventoryJournal_Balance_Quantity AS Balance_WAve
+	|		ON  Balance_WAve.Product  = Account_WAve.Product
+	|		AND Balance_WAve.Location = VALUE(Catalog.Locations.EmptyRef)
+	|	LEFT JOIN Table_ItemLastCosts_SliceLast AS ItemLastCosts
+	|		ON  ItemLastCosts.Product = Account_WAve.Product
+	|WHERE
+	|	Account_WAve.Type = VALUE(Enum.InventoryCosting.WeightedAverage)
+	|	AND // Amount > 0
+	|	CASE
+	|		WHEN ISNULL(Balance_WAve.Quantity, 0) > 0
+	|		// The balance is still active.
+	|		THEN CAST ( // Format(Amount * QuantityReceipt / Quantity, ""ND=17; NFD=2"")
+	|			 ISNULL(Balance_WAve.Amount, 0) * Account_WAve.QuantityRequested / Balance_WAve.Quantity
+	|			 AS NUMBER (17, 2))
+	|		ELSE CAST ( // Format(LastCost * QuantityRequested, ""ND=17; NFD=2"")
+	|			 ItemLastCosts.Cost * Account_WAve.QuantityRequested
+	|			 AS NUMBER (17, 2))
+	|	END > 0";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_GeneralJournal_Accounts_COGS(TablesList)
+	
+	// Add GeneralJournal COGS accounts table to document structure.
+	TablesList.Insert("Table_GeneralJournal_Accounts_COGS", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // COGS accounts selection
+	// ------------------------------------------------------
+	// Dimensions
+	|	Accounts.COGSAccount                  AS COGSAccount,
+	// ------------------------------------------------------
+	// Resources
+	|	SUM(Accounts.Amount)                  AS Amount
+	// ------------------------------------------------------
+	|INTO
+	|	Table_GeneralJournal_Accounts_COGS
+	|FROM
+	|	Table_GeneralJournal_Accounts_COGS_Amount AS Accounts
+	|GROUP BY
+	|	Accounts.COGSAccount";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_GeneralJournal_Accounts_InvOrExp_Quantity(TablesList)
+	
+	// Add GeneralJournal InvOrExp accounts table to document structure.
+	TablesList.Insert("Table_GeneralJournal_Accounts_InvOrExp_Quantity", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // InvOrExp accounts selection
+	// ------------------------------------------------------
+	// Dimensions
+	|	Accounts.InvOrExpAccount              AS InvOrExpAccount,
+	|	Accounts.Product                      AS Product,
+	|	Accounts.Type                         AS Type,
+	// ------------------------------------------------------
+	// Resources
+	|	SUM(Accounts.Quantity)                AS QuantityRequested
+	// ------------------------------------------------------
+	|INTO
+	|	Table_GeneralJournal_Accounts_InvOrExp_Quantity
+	|FROM
+	|	Table_GeneralJournal_LineItems AS Accounts
+	|WHERE
+    |   Accounts.Product.Type = VALUE(Enum.InventoryTypes.Inventory)
+	|GROUP BY
+	|	Accounts.InvOrExpAccount,
+	|	Accounts.Product,
+	|	Accounts.Type";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_GeneralJournal_Accounts_InvOrExp_Amount(TablesList)
+	
+	// Add GeneralJournal InvOrExp accounts table to document structure.
+	TablesList.Insert("Table_GeneralJournal_Accounts_InvOrExp_Amount", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // FIFO
+	// ------------------------------------------------------
+	// Dimensions
+	|	Accounts_FIFO.InvOrExpAccount         AS InvOrExpAccount,
+	// ------------------------------------------------------
+	// Resources
+	|	CAST ( // Format(LastCost * QuantityRequested, ""ND=17; NFD=2"")
+	|		 ItemLastCosts.Cost * Accounts_FIFO.QuantityRequested
+	|		 AS NUMBER (17, 2))               AS Amount
+	// ------------------------------------------------------
+	|INTO
+	|	Table_GeneralJournal_Accounts_InvOrExp_Amount
+	|FROM
+	|	Table_GeneralJournal_Accounts_InvOrExp_Quantity AS Accounts_FIFO
+	|	LEFT JOIN Table_ItemLastCosts_SliceLast AS ItemLastCosts
+	|		ON  ItemLastCosts.Product = Accounts_FIFO.Product
+	|WHERE
+	|	Accounts_FIFO.Type = VALUE(Enum.InventoryCosting.FIFO)
+	|	AND Accounts_FIFO.QuantityRequested > 0
+	|
+	|UNION ALL
+	|
+	|SELECT // WeightedAverage
+	// ------------------------------------------------------
+	// Dimensions
+	|	Account_WAve.InvOrExpAccount          AS Accounts,
+	// ------------------------------------------------------
+	// Resources
+	|	CASE
+	|		WHEN ISNULL(Balance_WAve.Quantity, 0) > 0
+	|		// The balance is still active.
+	|		THEN CAST ( // Format(Amount * QuantityReceipt / Quantity, ""ND=17; NFD=2"")
+	|			 ISNULL(Balance_WAve.Amount, 0) * Account_WAve.QuantityRequested / Balance_WAve.Quantity
+	|			 AS NUMBER (17, 2))
+	|		ELSE CAST ( // Format(LastCost * QuantityRequested, ""ND=17; NFD=2"")
+	|			 ItemLastCosts.Cost * Account_WAve.QuantityRequested
+	|			 AS NUMBER (17, 2))
+	|	END                                   AS Amount
+	// ------------------------------------------------------
+	// Attributes
+	// ------------------------------------------------------
+	|FROM
+	|	Table_GeneralJournal_Accounts_InvOrExp_Quantity AS Account_WAve
+	|	LEFT JOIN Table_InventoryJournal_Balance_Quantity AS Balance_WAve
+	|		ON  Balance_WAve.Product  = Account_WAve.Product
+	|		AND Balance_WAve.Location = VALUE(Catalog.Locations.EmptyRef)
+	|	LEFT JOIN Table_ItemLastCosts_SliceLast AS ItemLastCosts
+	|		ON  ItemLastCosts.Product = Account_WAve.Product
+	|WHERE
+	|	Account_WAve.Type = VALUE(Enum.InventoryCosting.WeightedAverage)
+	|	AND // Amount > 0
+	|	CASE
+	|		WHEN ISNULL(Balance_WAve.Quantity, 0) > 0
+	|		// The balance is still active.
+	|		THEN CAST ( // Format(Amount * QuantityReceipt / Quantity, ""ND=17; NFD=2"")
+	|			 ISNULL(Balance_WAve.Amount, 0) * Account_WAve.QuantityRequested / Balance_WAve.Quantity
+	|			 AS NUMBER (17, 2))
+	|		ELSE CAST ( // Format(LastCost * QuantityRequested, ""ND=17; NFD=2"")
+	|			 ItemLastCosts.Cost * Account_WAve.QuantityRequested
+	|			 AS NUMBER (17, 2))
+	|	END > 0";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_GeneralJournal_Accounts_InvOrExp(TablesList)
+	
+	// Add GeneralJournal InvOrExp accounts table to document structure.
+	TablesList.Insert("Table_GeneralJournal_Accounts_InvOrExp", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // InvOrExp accounts selection
+	// ------------------------------------------------------
+	// Dimensions
+	|	Accounts.InvOrExpAccount              AS InvOrExpAccount,
+	// ------------------------------------------------------
+	// Resources
+	|	SUM(Accounts.Amount)                  AS Amount
+	// ------------------------------------------------------
+	|INTO
+	|	Table_GeneralJournal_Accounts_InvOrExp
+	|FROM
+	|	Table_GeneralJournal_Accounts_InvOrExp_Amount AS Accounts
+	|GROUP BY
+	|	Accounts.InvOrExpAccount";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_GeneralJournal(TablesList)
+	
+	// Add GeneralJournal table to document structure.
+	TablesList.Insert("Table_GeneralJournal", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // Cr: Accounts receivable
+	// ------------------------------------------------------
+	// Standard attributes
+	|	SalesReturn.Ref                       AS Recorder,
+	|	SalesReturn.Date                      AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccountingRecordType.Credit)    AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	SalesReturn.ARAccount                 AS Account,
+	|	VALUE(ChartOfCharacteristicTypes.Dimensions.Company)
+	|	                                      AS ExtDimensionType1,
+	|	SalesReturn.Company                   AS ExtDimension1,
+	|	VALUE(ChartOfCharacteristicTypes.Dimensions.Document)
+	|	                                      AS ExtDimensionType2,
+	|	SalesReturn.Ref                       AS ExtDimension2,
+	// ------------------------------------------------------
+	// Dimensions
+	|	SalesReturn.Currency                  AS Currency,
+	// ------------------------------------------------------
+	// Resources
+	|	SalesReturn.DocumentTotal             AS Amount,
+	|	SalesReturn.DocumentTotalRC           AS AmountRC,
+	// ------------------------------------------------------
+	// Attributes
+	|	Null                                  AS Memo
+	// ------------------------------------------------------
+	|FROM
+	|	Document.SalesReturn AS SalesReturn
+	|WHERE
+	|	SalesReturn.Ref = &Ref
+	|	AND // Amount > 0
+	|		(SalesReturn.DocumentTotal > 0
+	|	  OR SalesReturn.DocumentTotalRC > 0)
+	|
+	|UNION ALL
+	|
+	|SELECT // Cr: Discount
+	// ------------------------------------------------------
+	// Standard attributes
+	|	SalesReturn.Ref                       AS Recorder,
+	|	SalesReturn.Date                      AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccountingRecordType.Credit)    AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	CASE
+	|		WHEN ISNULL(Constants.DiscountsAccount, VALUE(ChartOfAccounts.ChartOfAccounts.EmptyRef)) = VALUE(ChartOfAccounts.ChartOfAccounts.EmptyRef)
+	|		THEN Constants.ExpenseAccount     // Default expense account
+	|		ELSE Constants.DiscountsAccount   // Default discount account
+	|	END                                   AS Account,
+	|	VALUE(ChartOfCharacteristicTypes.Dimensions.EmptyRef)
+	|	                                      AS ExtDimensionType1,
+	|	NULL                                  AS ExtDimension1,
+	|	VALUE(ChartOfCharacteristicTypes.Dimensions.EmptyRef)
+	|	                                      AS ExtDimensionType2,
+	|	NULL                                  AS ExtDimension2,
+	// ------------------------------------------------------
+	// Dimensions
+	|	NULL                                  AS Currency,
+	// ------------------------------------------------------
+	// Resources
+	|	NULL                                  AS Amount,
+	|	CAST( // Format(-Discount * ExchangeRate, ""ND=17; NFD=2"")
+	|		-SalesReturn.Discount *
+	|		 CASE WHEN SalesReturn.ExchangeRate > 0
+	|			  THEN SalesReturn.ExchangeRate
+	|			  ELSE 1 END
+	|		 AS NUMBER (17, 2))               AS AmountRC,
+	// ------------------------------------------------------
+	// Attributes
+	|	NULL                                  AS Memo
+	// ------------------------------------------------------
+	|FROM
+	|	Document.SalesReturn AS SalesReturn
+	|	LEFT JOIN Constants AS Constants
+	|		ON True
+	|WHERE
+	|	SalesReturn.Ref = &Ref
+	|	AND // Discount > 0
+	|		-SalesReturn.Discount > 0
+	|
+	|UNION ALL
+	|
+	|SELECT // Dr: Shipping
+	// ------------------------------------------------------
+	// Standard attributes
+	|	SalesReturn.Ref                       AS Recorder,
+	|	SalesReturn.Date                      AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccountingRecordType.Debit)     AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	CASE
+	|		WHEN ISNULL(Constants.ShippingExpenseAccount, VALUE(ChartOfAccounts.ChartOfAccounts.EmptyRef)) = VALUE(ChartOfAccounts.ChartOfAccounts.EmptyRef)
+	|		THEN Constants.IncomeAccount           // Default income account
+	|		ELSE Constants.ShippingExpenseAccount  // Default shipping expense account
+	|	END                                   AS Account,
+	|	VALUE(ChartOfCharacteristicTypes.Dimensions.EmptyRef)
+	|	                                      AS ExtDimensionType1,
+	|	NULL                                  AS ExtDimension1,
+	|	VALUE(ChartOfCharacteristicTypes.Dimensions.EmptyRef)
+	|	                                      AS ExtDimensionType2,
+	|	NULL                                  AS ExtDimension2,
+	// ------------------------------------------------------
+	// Dimensions
+	|	NULL                                  AS Currency,
+	// ------------------------------------------------------
+	// Resources
+	|	NULL                                  AS Amount,
+	|	CAST( // Format(Shipping * ExchangeRate, ""ND=17; NFD=2"")
+	|		SalesReturn.Shipping *
+	|		CASE WHEN SalesReturn.ExchangeRate > 0
+	|			 THEN SalesReturn.ExchangeRate
+	|			 ELSE 1 END
+	|		AS NUMBER (17, 2))                AS AmountRC,
+	// ------------------------------------------------------
+	// Attributes
+	|	NULL                                  AS Memo
+	// ------------------------------------------------------
+	|FROM
+	|	Document.SalesReturn AS SalesReturn
+	|	LEFT JOIN Constants AS Constants
+	|		ON True
+	|WHERE
+	|	SalesReturn.Ref = &Ref
+	|	AND // Shipping > 0
+	|		SalesReturn.Shipping > 0
+	|
+	|UNION ALL
+	|
+	|SELECT // Dr: Sales tax
+	// ------------------------------------------------------
+	// Standard attributes
+	|	SalesReturn.Ref                       AS Recorder,
+	|	SalesReturn.Date                      AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccountingRecordType.Debit)     AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	CASE
+	|		WHEN ISNULL(Constants.TaxPayableAccount, VALUE(ChartOfAccounts.ChartOfAccounts.EmptyRef)) = VALUE(ChartOfAccounts.ChartOfAccounts.EmptyRef)
+	|		THEN Constants.IncomeAccount      // Default income account
+	|		ELSE Constants.TaxPayableAccount  // Default tax payable account
+	|	END                                   AS Account,
+	|	VALUE(ChartOfCharacteristicTypes.Dimensions.EmptyRef)
+	|	                                      AS ExtDimensionType1,
+	|	NULL                                  AS ExtDimension1,
+	|	VALUE(ChartOfCharacteristicTypes.Dimensions.EmptyRef)
+	|	                                      AS ExtDimensionType2,
+	|	NULL                                  AS ExtDimension2,
+	// ------------------------------------------------------
+	// Dimensions
+	|	NULL                                  AS Currency,
+	// ------------------------------------------------------
+	// Resources
+	|	NULL                                  AS Amount,
+	|	CAST( // Format(SalesTax * ExchangeRate, ""ND=17; NFD=2"")
+	|		SalesReturn.SalesTax *
+	|		CASE WHEN SalesReturn.ExchangeRate > 0
+	|			 THEN SalesReturn.ExchangeRate
+	|			 ELSE 1 END
+	|		AS NUMBER (17, 2))                AS AmountRC,
+	// ------------------------------------------------------
+	// Attributes
+	|	NULL                                  AS Memo
+	// ------------------------------------------------------
+	|FROM
+	|	Document.SalesReturn AS SalesReturn
+	|	LEFT JOIN Constants AS Constants
+	|		ON True
+	|WHERE
+	|	SalesReturn.Ref = &Ref
+	|	AND // SalesTax > 0
+	|		SalesReturn.SalesTax > 0
+	|
+	|UNION ALL
+	|
+	|SELECT // Dr: Income
+	// ------------------------------------------------------
+	// Standard attributes
+	|	SalesReturn.Ref                       AS Recorder,
+	|	SalesReturn.Date                      AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccountingRecordType.Debit)     AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	Income.IncomeAccount                  AS Account,
+	|	VALUE(ChartOfCharacteristicTypes.Dimensions.EmptyRef)
+	|	                                      AS ExtDimensionType1,
+	|	NULL                                  AS ExtDimension1,
+	|	VALUE(ChartOfCharacteristicTypes.Dimensions.EmptyRef)
+	|	                                      AS ExtDimensionType2,
+	|	NULL                                  AS ExtDimension2,
+	// ------------------------------------------------------
+	// Dimensions
+	|	NULL                                  AS Currency,
+	// ------------------------------------------------------
+	// Resources
+	|	NULL                                  AS Amount,
+	|	CAST( // Format(Amount * ExchangeRate, ""ND=17; NFD=2"")
+	|		Income.Amount *
+	|		CASE WHEN SalesReturn.ExchangeRate > 0
+	|			 THEN SalesReturn.ExchangeRate
+	|			 ELSE 1 END
+	|		AS NUMBER (17, 2))                AS AmountRC,
+	// ------------------------------------------------------
+	// Attributes
+	|	NULL                                  AS Memo
+	// ------------------------------------------------------
+	|FROM
+	|	Table_GeneralJournal_Accounts_Income AS Income
+	|	LEFT JOIN Document.SalesReturn AS SalesReturn
+	|		ON True
+	|WHERE
+	|	SalesReturn.Ref = &Ref
+	|	AND // Amount > 0
+	|		Income.Amount > 0
+	|
+	|UNION ALL
+	|
+	|SELECT // Cr: COGS
+	// ------------------------------------------------------
+	// Standard attributes
+	|	SalesReturn.Ref                       AS Recorder,
+	|	SalesReturn.Date                      AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccountingRecordType.Credit)    AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	COGS.COGSAccount                      AS Account,
+	|	VALUE(ChartOfCharacteristicTypes.Dimensions.EmptyRef)
+	|	                                      AS ExtDimensionType1,
+	|	NULL                                  AS ExtDimension1,
+	|	VALUE(ChartOfCharacteristicTypes.Dimensions.EmptyRef)
+	|	                                      AS ExtDimensionType2,
+	|	NULL                                  AS ExtDimension2,
+	// ------------------------------------------------------
+	// Dimensions
+	|	NULL                                  AS Currency,
+	// ------------------------------------------------------
+	// Resources
+	|	NULL                                  AS Amount,
+	|	COGS.Amount                           AS AmountRC,
+	// ------------------------------------------------------
+	// Attributes
+	|	NULL                                  AS Memo
+	// ------------------------------------------------------
+	|FROM
+	|	Table_GeneralJournal_Accounts_COGS AS COGS
+	|	LEFT JOIN Document.SalesReturn AS SalesReturn
+	|		ON True
+	|WHERE
+	|	SalesReturn.Ref = &Ref
+	|	AND // Amount > 0
+	|		COGS.Amount > 0
+	|
+	|UNION ALL
+	|
+	|SELECT // Dr: Inventory or Expences accounts
+	// ------------------------------------------------------
+	// Standard attributes
+	|	SalesReturn.Ref                       AS Recorder,
+	|	SalesReturn.Date                      AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccountingRecordType.Debit)     AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	InvOrExp.InvOrExpAccount              AS Account,
+	|	VALUE(ChartOfCharacteristicTypes.Dimensions.EmptyRef)
+	|	                                      AS ExtDimensionType1,
+	|	NULL                                  AS ExtDimension1,
+	|	VALUE(ChartOfCharacteristicTypes.Dimensions.EmptyRef)
+	|	                                      AS ExtDimensionType2,
+	|	NULL                                  AS ExtDimension2,
+	// ------------------------------------------------------
+	// Dimensions
+	|	NULL                                  AS Currency,
+	// ------------------------------------------------------
+	// Resources
+	|	NULL                                  AS Amount,
+	|	InvOrExp.Amount                       AS AmountRC,
+	// ------------------------------------------------------
+	// Attributes
+	|	NULL                                  AS Memo
+	// ------------------------------------------------------
+	|FROM
+	|	Table_GeneralJournal_Accounts_InvOrExp AS InvOrExp
+	|	LEFT JOIN Document.SalesReturn AS SalesReturn
+	|		ON True
+	|WHERE
+	|	SalesReturn.Ref = &Ref
+	|	AND // Amount > 0
+	|		InvOrExp.Amount > 0";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_ProjectData_Accounts_Income(TablesList)
+	
+	// Add ProjectData income accounts table to document structure.
+	TablesList.Insert("Table_ProjectData_Accounts_Income", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // Income accounts selection
+	// ------------------------------------------------------
+	// Dimensions
+	|	Accounts.IncomeAccount                AS IncomeAccount,
+	|	Accounts.Project                      AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	SUM(Accounts.Amount)                  AS Amount
+	// ------------------------------------------------------
+	|INTO
+	|	Table_ProjectData_Accounts_Income
+	|FROM
+	|	Table_GeneralJournal_LineItems AS Accounts
+	|GROUP BY
+	|	Accounts.IncomeAccount,
+	|	Accounts.Project";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_ProjectData_Accounts_COGS_Quantity(TablesList)
+	
+	// Add ProjectData COGS accounts table to document structure.
+	TablesList.Insert("Table_ProjectData_Accounts_COGS_Quantity", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // COGS accounts selection
+	// ------------------------------------------------------
+	// Dimensions
+	|	Accounts.COGSAccount                  AS COGSAccount,
+	|	Accounts.Project                      AS Project,
+	|	Accounts.Product                      AS Product,
+	|	Accounts.Location                     AS Location,
+	|	Accounts.Type                         AS Type,
+	// ------------------------------------------------------
+	// Resources
+	|	SUM(Accounts.Quantity)                AS QuantityRequested
+	// ------------------------------------------------------
+	|INTO
+	|	Table_ProjectData_Accounts_COGS_Quantity
+	|FROM
+	|	Table_GeneralJournal_LineItems AS Accounts
+	|GROUP BY
+	|	Accounts.COGSAccount,
+	|	Accounts.Project,
+	|	Accounts.Product,
+	|	Accounts.Location,
+	|	Accounts.Type";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_ProjectData_Accounts_COGS_Amount(TablesList)
+	
+	// Add ProjectData COGS accounts table to document structure.
+	TablesList.Insert("Table_ProjectData_Accounts_COGS_Amount", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // FIFO
+	// ------------------------------------------------------
+	// Dimensions
+	|	Accounts_FIFO.COGSAccount             AS COGSAccount,
+	|   Accounts_FIFO.Project                 AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	CAST ( // Format(LastCost * QuantityRequested, ""ND=17; NFD=2"")
+	|		 ItemLastCosts.Cost * Accounts_FIFO.QuantityRequested
+	|		 AS NUMBER (17, 2))               AS Amount
+	// ------------------------------------------------------
+	|INTO
+	|	Table_ProjectData_Accounts_COGS_Amount
+	|FROM
+	|	Table_ProjectData_Accounts_COGS_Quantity AS Accounts_FIFO
+	|	LEFT JOIN Table_ItemLastCosts_SliceLast AS ItemLastCosts
+	|		ON  ItemLastCosts.Product = Accounts_FIFO.Product
+	|WHERE
+	|	Accounts_FIFO.Type = VALUE(Enum.InventoryCosting.FIFO)
+	|	AND Accounts_FIFO.QuantityRequested > 0
+	|
+	|UNION ALL
+	|
+	|SELECT // WeightedAverage
+	// ------------------------------------------------------
+	// Dimensions
+	|	Account_WAve.COGSAccount              AS Accounts,
+	|   Account_WAve.Project                  AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	CASE
+	|		WHEN ISNULL(Balance_WAve.Quantity, 0) > 0
+	|		// The balance is still active.
+	|		THEN CAST ( // Format(Amount * QuantityReceipt / Quantity, ""ND=17; NFD=2"")
+	|			 ISNULL(Balance_WAve.Amount, 0) * Account_WAve.QuantityRequested / Balance_WAve.Quantity
+	|			 AS NUMBER (17, 2))
+	|		ELSE CAST ( // Format(LastCost * QuantityRequested, ""ND=17; NFD=2"")
+	|			 ItemLastCosts.Cost * Account_WAve.QuantityRequested
+	|			 AS NUMBER (17, 2))
+	|	END                                   AS Amount
+	// ------------------------------------------------------
+	// Attributes
+	// ------------------------------------------------------
+	|FROM
+	|	Table_ProjectData_Accounts_COGS_Quantity AS Account_WAve
+	|	LEFT JOIN Table_InventoryJournal_Balance_Quantity AS Balance_WAve
+	|		ON  Balance_WAve.Product  = Account_WAve.Product
+	|		AND Balance_WAve.Location = VALUE(Catalog.Locations.EmptyRef)
+	|	LEFT JOIN Table_ItemLastCosts_SliceLast AS ItemLastCosts
+	|		ON  ItemLastCosts.Product = Account_WAve.Product
+	|WHERE
+	|	Account_WAve.Type = VALUE(Enum.InventoryCosting.WeightedAverage)
+	|	AND // Amount > 0
+	|	CASE
+	|		WHEN ISNULL(Balance_WAve.Quantity, 0) > 0
+	|		// The balance is still active.
+	|		THEN CAST ( // Format(Amount * QuantityReceipt / Quantity, ""ND=17; NFD=2"")
+	|			 ISNULL(Balance_WAve.Amount, 0) * Account_WAve.QuantityRequested / Balance_WAve.Quantity
+	|			 AS NUMBER (17, 2))
+	|		ELSE CAST ( // Format(LastCost * QuantityRequested, ""ND=17; NFD=2"")
+	|			 ItemLastCosts.Cost * Account_WAve.QuantityRequested
+	|			 AS NUMBER (17, 2))
+	|	END > 0";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_ProjectData_Accounts_COGS(TablesList)
+	
+	// Add ProjectData COGS accounts table to document structure.
+	TablesList.Insert("Table_ProjectData_Accounts_COGS", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // COGS accounts selection
+	// ------------------------------------------------------
+	// Dimensions
+	|	Accounts.COGSAccount                  AS COGSAccount,
+	|	Accounts.Project                      AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	SUM(Accounts.Amount)                  AS Amount
+	// ------------------------------------------------------
+	|INTO
+	|	Table_ProjectData_Accounts_COGS
+	|FROM
+	|	Table_ProjectData_Accounts_COGS_Amount AS Accounts
+	|GROUP BY
+	|	Accounts.COGSAccount,
+	|	Accounts.Project";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_ProjectData(TablesList)
+	
+	// Add ProjectData table to document structure.
+	TablesList.Insert("Table_ProjectData", TablesList.Count());
+	
+	// Collect project data.
+	QueryText =
+	"SELECT // Rec: Income
+	// ------------------------------------------------------
+	// Standard attributes
+	|	SalesReturn.Ref                       AS Recorder,
+	|	SalesReturn.Date                      AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccumulationRecordType.Receipt) AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Dimensions
+	|	Income.IncomeAccount                  AS Account,
+	|	Income.Project                        AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	CAST( // Format(Amount * ExchangeRate, ""ND=17; NFD=2"")
+	|       -1 *
+	|		Income.Amount *
+	|		CASE WHEN SalesReturn.ExchangeRate > 0
+	|			 THEN SalesReturn.ExchangeRate
+	|			 ELSE 1 END
+	|		AS NUMBER (17, 2))                AS Amount
+	// ------------------------------------------------------
+	// Attributes
+	// ------------------------------------------------------
+	|FROM
+	|	Table_ProjectData_Accounts_Income AS Income
+	|	LEFT JOIN Document.SalesReturn AS SalesReturn
+	|		ON True
+	|WHERE
+	|	SalesReturn.Ref = &Ref
+	|	AND // Amount > 0
+	|		Income.Amount > 0
+	|
+	|UNION ALL
+	|
+	|SELECT // Rec: Discount
+	// ------------------------------------------------------
+	// Standard attributes
+	|	SalesReturn.Ref                       AS Recorder,
+	|	SalesReturn.Date                      AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccumulationRecordType.Receipt) AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Dimensions
+	|	Income.IncomeAccount                  AS Account,
+	|	Income.Project                        AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	CAST( // Format(Discount * IncomeByProject / IncomeTotal * ExchangeRate, ""ND=17; NFD=2"")
+	|       -1 *
+	|		CASE WHEN SalesReturn.LineSubtotal > 0
+	|			 THEN SalesReturn.Discount * Income.Amount / SalesReturn.LineSubtotal
+	|			 ELSE 0 END *
+	|		CASE WHEN SalesReturn.ExchangeRate > 0
+	|			 THEN SalesReturn.ExchangeRate
+	|			 ELSE 1 END
+	|		AS NUMBER (17, 2))                AS Amount
+	// ------------------------------------------------------
+	// Attributes
+	// ------------------------------------------------------
+	|FROM
+	|	Table_ProjectData_Accounts_Income AS Income
+	|	LEFT JOIN Document.SalesReturn AS SalesReturn
+	|		ON True
+	|WHERE
+	|	SalesReturn.Ref = &Ref
+	|	AND // Discount > 0
+	|		-1 *
+	|		CASE WHEN SalesReturn.LineSubtotal > 0
+	|			 THEN SalesReturn.Discount * Income.Amount / SalesReturn.LineSubtotal
+	|			 ELSE 0 END > 0
+	|
+	|UNION ALL
+	|
+	|SELECT // Exp: COGS
+	// ------------------------------------------------------
+	// Standard attributes
+	|	SalesReturn.Ref                       AS Recorder,
+	|	SalesReturn.Date                      AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccumulationRecordType.Expense) AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Dimensions
+	|	COGS.COGSAccount                      AS Account,
+	|	COGS.Project                          AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|   -1 *
+	|	COGS.Amount                           AS Amount
+	// ------------------------------------------------------
+	// Attributes
+	// ------------------------------------------------------
+	|FROM
+	|	Table_ProjectData_Accounts_COGS AS COGS
+	|	LEFT JOIN Document.SalesReturn AS SalesReturn
+	|		ON True
+	|WHERE
+	|	SalesReturn.Ref = &Ref
+	|	AND // Amount > 0
+	|		COGS.Amount > 0";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_ClassData_Accounts_Income(TablesList)
+	
+	// Add ClassData income accounts table to document structure.
+	TablesList.Insert("Table_ClassData_Accounts_Income", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // Income accounts selection
+	// ------------------------------------------------------
+	// Dimensions
+	|	Accounts.IncomeAccount                AS IncomeAccount,
+	|	Accounts.Class                        AS Class,
+	// ------------------------------------------------------
+	// Resources
+	|	SUM(Accounts.Amount)                  AS Amount
+	// ------------------------------------------------------
+	|INTO
+	|	Table_ClassData_Accounts_Income
+	|FROM
+	|	Table_GeneralJournal_LineItems AS Accounts
+	|GROUP BY
+	|	Accounts.IncomeAccount,
+	|	Accounts.Class";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_ClassData_Accounts_COGS_Quantity(TablesList)
+	
+	// Add ClassData COGS accounts table to document structure.
+	TablesList.Insert("Table_ClassData_Accounts_COGS_Quantity", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // COGS accounts selection
+	// ------------------------------------------------------
+	// Dimensions
+	|	Accounts.COGSAccount                  AS COGSAccount,
+	|	Accounts.Class                        AS Class,
+	|	Accounts.Product                      AS Product,
+	|	Accounts.Location                     AS Location,
+	|	Accounts.Type                         AS Type,
+	// ------------------------------------------------------
+	// Resources
+	|	SUM(Accounts.Quantity)                AS QuantityRequested
+	// ------------------------------------------------------
+	|INTO
+	|	Table_ClassData_Accounts_COGS_Quantity
+	|FROM
+	|	Table_GeneralJournal_LineItems AS Accounts
+	|GROUP BY
+	|	Accounts.COGSAccount,
+	|	Accounts.Class,
+	|	Accounts.Product,
+	|	Accounts.Location,
+	|	Accounts.Type";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_ClassData_Accounts_COGS_Amount(TablesList)
+	
+	// Add ClassData COGS accounts table to document structure.
+	TablesList.Insert("Table_ClassData_Accounts_COGS_Amount", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // FIFO
+	// ------------------------------------------------------
+	// Dimensions
+	|	Accounts_FIFO.COGSAccount             AS COGSAccount,
+	|   Accounts_FIFO.Class                   AS Class,
+	// ------------------------------------------------------
+	// Resources
+	|	CAST ( // Format(LastCost * QuantityRequested, ""ND=17; NFD=2"")
+	|		 ItemLastCosts.Cost * Accounts_FIFO.QuantityRequested
+	|		 AS NUMBER (17, 2))               AS Amount
+	// ------------------------------------------------------
+	|INTO
+	|	Table_ClassData_Accounts_COGS_Amount
+	|FROM
+	|	Table_ClassData_Accounts_COGS_Quantity AS Accounts_FIFO
+	|	LEFT JOIN Table_ItemLastCosts_SliceLast AS ItemLastCosts
+	|		ON  ItemLastCosts.Product = Accounts_FIFO.Product
+	|WHERE
+	|	Accounts_FIFO.Type = VALUE(Enum.InventoryCosting.FIFO)
+	|	AND Accounts_FIFO.QuantityRequested > 0
+	|
+	|UNION ALL
+	|
+	|SELECT // WeightedAverage
+	// ------------------------------------------------------
+	// Dimensions
+	|	Account_WAve.COGSAccount              AS Accounts,
+	|   Account_WAve.Class                    AS Class,
+	// ------------------------------------------------------
+	// Resources
+	|	CASE
+	|		WHEN ISNULL(Balance_WAve.Quantity, 0) > 0
+	|		// The balance is still active.
+	|		THEN CAST ( // Format(Amount * QuantityReceipt / Quantity, ""ND=17; NFD=2"")
+	|			 ISNULL(Balance_WAve.Amount, 0) * Account_WAve.QuantityRequested / Balance_WAve.Quantity
+	|			 AS NUMBER (17, 2))
+	|		ELSE CAST ( // Format(LastCost * QuantityRequested, ""ND=17; NFD=2"")
+	|			 ItemLastCosts.Cost * Account_WAve.QuantityRequested
+	|			 AS NUMBER (17, 2))
+	|	END                                   AS Amount
+	// ------------------------------------------------------
+	// Attributes
+	// ------------------------------------------------------
+	|FROM
+	|	Table_ClassData_Accounts_COGS_Quantity AS Account_WAve
+	|	LEFT JOIN Table_InventoryJournal_Balance_Quantity AS Balance_WAve
+	|		ON  Balance_WAve.Product  = Account_WAve.Product
+	|		AND Balance_WAve.Location = VALUE(Catalog.Locations.EmptyRef)
+	|	LEFT JOIN Table_ItemLastCosts_SliceLast AS ItemLastCosts
+	|		ON  ItemLastCosts.Product = Account_WAve.Product
+	|WHERE
+	|	Account_WAve.Type = VALUE(Enum.InventoryCosting.WeightedAverage)
+	|	AND // Amount > 0
+	|	CASE
+	|		WHEN ISNULL(Balance_WAve.Quantity, 0) > 0
+	|		// The balance is still active.
+	|		THEN CAST ( // Format(Amount * QuantityReceipt / Quantity, ""ND=17; NFD=2"")
+	|			 ISNULL(Balance_WAve.Amount, 0) * Account_WAve.QuantityRequested / Balance_WAve.Quantity
+	|			 AS NUMBER (17, 2))
+	|		ELSE CAST ( // Format(LastCost * QuantityRequested, ""ND=17; NFD=2"")
+	|			 ItemLastCosts.Cost * Account_WAve.QuantityRequested
+	|			 AS NUMBER (17, 2))
+	|	END > 0";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_ClassData_Accounts_COGS(TablesList)
+	
+	// Add ClassData COGS accounts table to document structure.
+	TablesList.Insert("Table_ClassData_Accounts_COGS", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // COGS accounts selection
+	// ------------------------------------------------------
+	// Dimensions
+	|	Accounts.COGSAccount                  AS COGSAccount,
+	|	Accounts.Class                        AS Class,
+	// ------------------------------------------------------
+	// Resources
+	|	SUM(Accounts.Amount)                  AS Amount
+	// ------------------------------------------------------
+	|INTO
+	|	Table_ClassData_Accounts_COGS
+	|FROM
+	|	Table_ClassData_Accounts_COGS_Amount AS Accounts
+	|GROUP BY
+	|	Accounts.COGSAccount,
+	|	Accounts.Class";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_ClassData(TablesList)
+	
+	// Add ClassData table to document structure.
+	TablesList.Insert("Table_ClassData", TablesList.Count());
+	
+	// Collect Class data.
+	QueryText =
+	"SELECT // Rec: Income
+	// ------------------------------------------------------
+	// Standard attributes
+	|	SalesReturn.Ref                       AS Recorder,
+	|	SalesReturn.Date                      AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccumulationRecordType.Receipt) AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Dimensions
+	|	Income.IncomeAccount                  AS Account,
+	|	Income.Class                          AS Class,
+	// ------------------------------------------------------
+	// Resources
+	|	CAST( // Format(Amount * ExchangeRate, ""ND=17; NFD=2"")
+	|       -1 *
+	|		Income.Amount *
+	|		CASE WHEN SalesReturn.ExchangeRate > 0
+	|			 THEN SalesReturn.ExchangeRate
+	|			 ELSE 1 END
+	|		AS NUMBER (17, 2))                AS Amount
+	// ------------------------------------------------------
+	// Attributes
+	// ------------------------------------------------------
+	|FROM
+	|	Table_ClassData_Accounts_Income AS Income
+	|	LEFT JOIN Document.SalesReturn AS SalesReturn
+	|		ON True
+	|WHERE
+	|	SalesReturn.Ref = &Ref
+	|	AND // Amount > 0
+	|		Income.Amount > 0
+	|
+	|UNION ALL
+	|
+	|SELECT // Rec: Discount
+	// ------------------------------------------------------
+	// Standard attributes
+	|	SalesReturn.Ref                       AS Recorder,
+	|	SalesReturn.Date                      AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccumulationRecordType.Receipt) AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Dimensions
+	|	Income.IncomeAccount                  AS Account,
+	|	Income.Class                          AS Class,
+	// ------------------------------------------------------
+	// Resources
+	|	CAST( // Format(Discount * IncomeByClass / IncomeTotal * ExchangeRate, ""ND=17; NFD=2"")
+	|       -1 *
+	|		CASE WHEN SalesReturn.LineSubtotal > 0
+	|			 THEN SalesReturn.Discount * Income.Amount / SalesReturn.LineSubtotal
+	|			 ELSE 0 END *
+	|		CASE WHEN SalesReturn.ExchangeRate > 0
+	|			 THEN SalesReturn.ExchangeRate
+	|			 ELSE 1 END
+	|		AS NUMBER (17, 2))                AS Amount
+	// ------------------------------------------------------
+	// Attributes
+	// ------------------------------------------------------
+	|FROM
+	|	Table_ClassData_Accounts_Income AS Income
+	|	LEFT JOIN Document.SalesReturn AS SalesReturn
+	|		ON True
+	|WHERE
+	|	SalesReturn.Ref = &Ref
+	|	AND // Discount > 0
+	|		-1 *
+	|		CASE WHEN SalesReturn.LineSubtotal > 0
+	|			 THEN SalesReturn.Discount * Income.Amount / SalesReturn.LineSubtotal
+	|			 ELSE 0 END > 0
+	|
+	|UNION ALL
+	|
+	|SELECT // Exp: COGS
+	// ------------------------------------------------------
+	// Standard attributes
+	|	SalesReturn.Ref                       AS Recorder,
+	|	SalesReturn.Date                      AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccumulationRecordType.Expense) AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Dimensions
+	|	COGS.COGSAccount                      AS Account,
+	|	COGS.Class                            AS Class,
+	// ------------------------------------------------------
+	// Resources
+	|   -1 *
+	|	COGS.Amount                           AS Amount
+	// ------------------------------------------------------
+	// Attributes
+	// ------------------------------------------------------
+	|FROM
+	|	Table_ClassData_Accounts_COGS AS COGS
+	|	LEFT JOIN Document.SalesReturn AS SalesReturn
+	|		ON True
+	|WHERE
+	|	SalesReturn.Ref = &Ref
+	|	AND // Amount > 0
+	|		COGS.Amount > 0";
 	
 	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
 	
@@ -911,6 +2148,212 @@ Function Query_ItemLastCosts_SliceLast(TablesList)
 	
 EndFunction
 
+// Query for Sales Tax.
+Function Query_SalesTaxOwed(TablesList)
+	// Add SalesTaxOwed table to document structure.
+	TablesList.Insert("Table_SalesTaxOwed", TablesList.Count());
+	
+	// Collect sales tax data.
+	QueryText =
+	"SELECT
+	|	SalesReturn.Ref AS Recorder,
+	|	SalesReturn.Ref.Date AS Period,
+	|	0 AS LineNumber,
+	|	VALUE(AccumulationRecordType.Receipt) AS RecordType,
+	|	TRUE AS Active,
+	|	AccountingMethod.Ref AS ChargeType,
+	|	SalesReturn.Agency AS Agency,
+	|	SalesReturn.Rate AS TaxRate,
+	|	SalesReturn.SalesTaxComponent AS SalesTaxComponent,
+	|	-1 * (SalesReturn.Ref.DocumentTotalRC - SalesReturn.Ref.SalesTax) AS GrossSale,
+	|	-1 * SalesReturn.Ref.TaxableSubtotal AS TaxableSale,
+	|	-1 * SalesReturn.Amount AS TaxPayable
+	|FROM
+	|	Document.SalesReturn.SalesTaxAcrossAgencies AS SalesReturn
+	|		LEFT JOIN Enum.AccountingMethod AS AccountingMethod
+	|		ON (CASE
+	|				WHEN SalesReturn.Ref.ReturnType = VALUE(Enum.ReturnTypes.CreditMemo)
+	|					THEN AccountingMethod.Ref = VALUE(Enum.AccountingMethod.Accrual)
+	|				ELSE TRUE
+	|			END)
+	|WHERE
+	|	SalesReturn.Ref = &Ref
+	|	AND SalesReturn.Ref.UseAvatax = FALSE";
+		
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+		
+EndFunction
+
+// Query for document data.
+Function Query_CashFlowData(TablesList)
+	
+	// Add CashFlowData table to document structure.
+	TablesList.Insert("Table_CashFlowData", TablesList.Count());
+	
+	// Collect cash flow data.
+	QueryText =
+	"SELECT // Exp: Income
+	// ------------------------------------------------------
+	// Standard attributes
+	|	SalesReturn.Ref                        AS Recorder,
+	|	SalesReturn.Date                       AS Period,
+	|	0                                      AS LineNumber,
+	|	VALUE(AccumulationRecordType.Expense)  AS RecordType,
+	|	True                                   AS Active,
+	// ------------------------------------------------------
+	// Dimensions
+	|	Income.IncomeAccount                   AS Account,
+	|	SalesReturn.Company                    AS Company,
+	|	SalesReturn.Ref                        AS Document,
+	|	SalesReturn.SalesPerson                AS SalesPerson,
+	// ------------------------------------------------------
+	// Resources
+	|	CAST( // Format(Amount * ExchangeRate, ""ND=17; NFD=2"")
+	|		-Income.Amount *
+	|		CASE WHEN SalesReturn.ExchangeRate > 0
+	|			 THEN SalesReturn.ExchangeRate
+	|			 ELSE 1 END
+	|		AS NUMBER (17, 2))                 AS AmountRC,
+	// ------------------------------------------------------
+	// Attributes
+	|	NULL                                   AS PaymentMethod
+	// ------------------------------------------------------
+	|FROM
+	|	Table_GeneralJournal_Accounts_Income AS Income
+	|	LEFT JOIN Document.SalesReturn AS SalesReturn
+	|		ON True
+	|WHERE
+	|	SalesReturn.Ref = &Ref
+	|	AND // Amount > 0
+	|		Income.Amount > 0
+	|
+	|UNION ALL
+	|
+	|SELECT // Exp: Discount
+	// ------------------------------------------------------
+	// Standard attributes
+	|	SalesReturn.Ref                        AS Recorder,
+	|	SalesReturn.Date                       AS Period,
+	|	0                                      AS LineNumber,
+	|	VALUE(AccumulationRecordType.Expense)  AS RecordType,
+	|	True                                   AS Active,
+	// ------------------------------------------------------
+	// Dimensions
+	|	CASE
+	|		WHEN ISNULL(Constants.DiscountsAccount, VALUE(ChartOfAccounts.ChartOfAccounts.EmptyRef)) = VALUE(ChartOfAccounts.ChartOfAccounts.EmptyRef)
+	|		THEN Constants.ExpenseAccount     // Default expense account
+	|		ELSE Constants.DiscountsAccount   // Default discount account
+	|	END                                    AS Account,
+	|	SalesReturn.Company                    AS Company,
+	|	SalesReturn.Ref                        AS Document,
+	|	SalesReturn.SalesPerson                AS SalesPerson,
+	// ------------------------------------------------------
+	// Resources
+	|	CAST( // Format(Discount * ExchangeRate, ""ND=17; NFD=2"")
+	|		-SalesReturn.Discount *
+	|		CASE WHEN SalesReturn.ExchangeRate > 0
+	|			 THEN SalesReturn.ExchangeRate
+	|			 ELSE 1 END
+	|		AS NUMBER (17, 2))                 AS AmountRC,
+	// ------------------------------------------------------
+	// Attributes
+	|	NULL                                   AS PaymentMethod
+	// ------------------------------------------------------
+	|FROM
+	|	Document.SalesReturn AS SalesReturn
+	|	LEFT JOIN Constants AS Constants
+	|		ON True
+	|WHERE
+	|	SalesReturn.Ref = &Ref
+	|	AND // Discount > 0
+	|		-SalesReturn.Discount > 0
+	|
+	|UNION ALL
+	|
+	|SELECT // Exp: Shipping
+	// ------------------------------------------------------
+	// Standard attributes
+	|	SalesReturn.Ref                        AS Recorder,
+	|	SalesReturn.Date                       AS Period,
+	|	0                                      AS LineNumber,
+	|	VALUE(AccumulationRecordType.Expense)  AS RecordType,
+	|	True                                   AS Active,
+	// ------------------------------------------------------
+	// Dimensions
+	|	CASE
+	|		WHEN ISNULL(Constants.ShippingExpenseAccount, VALUE(ChartOfAccounts.ChartOfAccounts.EmptyRef)) = VALUE(ChartOfAccounts.ChartOfAccounts.EmptyRef)
+	|		THEN Constants.IncomeAccount           // Default income account
+	|		ELSE Constants.ShippingExpenseAccount  // Default shipping expense account
+	|	END                                    AS Account,
+	|	SalesReturn.Company                    AS Company,
+	|	SalesReturn.Ref                        AS Document,
+	|	SalesReturn.SalesPerson                AS SalesPerson,
+	// ------------------------------------------------------
+	// Resources
+	|	CAST( // Format(Shipping * ExchangeRate, ""ND=17; NFD=2"")
+	|		-SalesReturn.Shipping *
+	|		CASE WHEN SalesReturn.ExchangeRate > 0
+	|			 THEN SalesReturn.ExchangeRate
+	|			 ELSE 1 END
+	|		AS NUMBER (17, 2))                 AS AmountRC,
+	// ------------------------------------------------------
+	// Attributes
+	|	NULL                                   AS PaymentMethod
+	// ------------------------------------------------------
+	|FROM
+	|	Document.SalesReturn AS SalesReturn
+	|	LEFT JOIN Constants AS Constants
+	|		ON True
+	|WHERE
+	|	SalesReturn.Ref = &Ref
+	|	AND // Shipping > 0
+	|		SalesReturn.Shipping > 0
+	|
+	|UNION ALL
+	|
+	|SELECT // Exp: Sales tax
+	// ------------------------------------------------------
+	// Standard attributes
+	|	SalesReturn.Ref                        AS Recorder,
+	|	SalesReturn.Date                       AS Period,
+	|	0                                      AS LineNumber,
+	|	VALUE(AccumulationRecordType.Expense)  AS RecordType,
+	|	True                                   AS Active,
+	// ------------------------------------------------------
+	// Dimensions
+	|	CASE
+	|		WHEN ISNULL(Constants.TaxPayableAccount, VALUE(ChartOfAccounts.ChartOfAccounts.EmptyRef)) = VALUE(ChartOfAccounts.ChartOfAccounts.EmptyRef)
+	|		THEN Constants.IncomeAccount      // Default income account
+	|		ELSE Constants.TaxPayableAccount  // Default tax payable account
+	|	END                                    AS Account,
+	|	SalesReturn.Company                    AS Company,
+	|	SalesReturn.Ref                        AS Document,
+	|	SalesReturn.SalesPerson                AS SalesPerson,
+	// ------------------------------------------------------
+	// Resources
+	|	CAST( // Format(SalesTax * ExchangeRate, ""ND=17; NFD=2"")
+	|		-SalesReturn.SalesTax *
+	|		CASE WHEN SalesReturn.ExchangeRate > 0
+	|			 THEN SalesReturn.ExchangeRate
+	|			 ELSE 1 END
+	|		AS NUMBER (17, 2))                 AS AmountRC,
+	// ------------------------------------------------------
+	// Attributes
+	|	NULL                                   AS PaymentMethod
+	// ------------------------------------------------------
+	|FROM
+	|	Document.SalesReturn AS SalesReturn
+	|	LEFT JOIN Constants AS Constants
+	|		ON True
+	|WHERE
+	|	SalesReturn.Ref = &Ref
+	|	AND // SalesTax > 0
+	|		SalesReturn.SalesTax > 0";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
 // Put structure of registers, which balance should be checked during posting.
 Procedure FillRegistersCheckList(AdditionalProperties, RegisterRecords)
 	
@@ -963,41 +2406,6 @@ Procedure FillRegistersCheckList(AdditionalProperties, RegisterRecords)
 	
 EndProcedure
 
-//Query for Sales Tax
-Function Query_SalesTaxOwed(TablesList)
-	// Add SalesTaxOwed table to document structure.
-	TablesList.Insert("Table_SalesTaxOwed", TablesList.Count());
-	
-	// Collect sales tax data.
-	QueryText =
-	"SELECT
-	|	SalesReturn.Ref AS Recorder,
-	|	SalesReturn.Ref.Date AS Period,
-	|	0 AS LineNumber,
-	|	VALUE(AccumulationRecordType.Receipt) AS RecordType,
-	|	TRUE AS Active,
-	|	AccountingMethod.Ref AS ChargeType,
-	|	SalesReturn.Agency AS Agency,
-	|	SalesReturn.Rate AS TaxRate,
-	|	SalesReturn.SalesTaxComponent AS SalesTaxComponent,
-	|	-1 * (SalesReturn.Ref.DocumentTotalRC - SalesReturn.Ref.SalesTaxRC) AS GrossSale,
-	|	-1 * SalesReturn.Ref.TaxableSubtotal AS TaxableSale,
-	|	-1 * SalesReturn.Amount AS TaxPayable
-	|FROM
-	|	Document.SalesReturn.SalesTaxAcrossAgencies AS SalesReturn
-	|		LEFT JOIN Enum.AccountingMethod AS AccountingMethod
-	|		ON (CASE
-	|				WHEN SalesReturn.Ref.ReturnType = VALUE(Enum.ReturnTypes.CreditMemo)
-	|					THEN AccountingMethod.Ref = VALUE(Enum.AccountingMethod.Accrual)
-	|				ELSE TRUE
-	|			END)
-	|WHERE
-	|	SalesReturn.Ref = &Ref";
-		
-	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
-		
-EndFunction
-
 //Query for Sales Tax in the General Journal
 //Function Query_SalesTax_GeneralJournal(TablesList)
 //	// Add GeneralJournal table to document structure.
@@ -1018,7 +2426,7 @@ EndFunction
 //	// Dimensions
 //	// ------------------------------------------------------
 //	// Resources
-//	|	-1 * SalesReturn.SalesTaxRC AS AmountRC
+//	|	-1 * SalesReturn.SalesTax AS AmountRC
 //	// ------------------------------------------------------
 //	// Attributes
 //	// ------------------------------------------------------

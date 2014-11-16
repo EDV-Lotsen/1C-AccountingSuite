@@ -1,4 +1,5 @@
-﻿Procedure PrintCheck(Spreadsheet, Ref) Export
+﻿
+Procedure PrintCheck(Spreadsheet, Ref) Export
 
 	Template = Documents.Check.GetTemplate("PrintCheck");
 	Query = New Query;
@@ -38,7 +39,7 @@
 		|WHERE
 		|	Addresses.Owner = &Owner
 		|	AND Addresses.DefaultBilling = &True";
-		Query.Parameters.Insert("Owner", Ref.Company);
+		Query.Parameters.Insert("Owner", Selection.Company);
 		Query.Parameters.Insert("True", True);
 		BillAddr = Query.Execute().Unload();
 		If BillAddr.Count() > 0 Then
@@ -106,7 +107,6 @@
 	
 
 EndProcedure
-
 
 &AtServer
 Procedure Test()

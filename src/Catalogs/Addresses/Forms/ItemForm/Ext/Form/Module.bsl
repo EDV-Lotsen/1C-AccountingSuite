@@ -1,6 +1,72 @@
 ﻿
+////////////////////////////////////////////////////////////////////////////////
+#Region EVENTS_HANDLERS
+
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
+	
+	If GeneralFunctionsReusable.DisplayAPICodesSetting() = False Then
+		Items.api_code.Visible = False;
+	EndIf;
+	
+	If NOT Object.Ref.IsEmpty() Then
+		api_code = String(Object.Ref.UUID());
+	EndIf;
+	
+	// custom fields
+	
+	CF1AType = Constants.CF1AType.Get();
+	CF2AType = Constants.CF2AType.Get();
+	CF3AType = Constants.CF3AType.Get();
+	CF4AType = Constants.CF4AType.Get();
+	CF5AType = Constants.CF5AType.Get();
+	
+	If CF1AType = "None" Then
+		Items.CF1String.Visible = False;
+	ElsIf CF1AType = "String" Then
+		Items.CF1String.Visible = True;
+		Items.CF1String.Title = Constants.CF1AName.Get();
+	ElsIf CF1AType = "" Then
+		Items.CF1String.Visible = False;
+	EndIf;
+	
+	If CF2AType = "None" Then
+		Items.CF2String.Visible = False;
+	ElsIf CF2AType = "String" Then
+		Items.CF2String.Visible = True;
+		Items.CF2String.Title = Constants.CF2AName.Get();
+	ElsIf CF2AType = "" Then
+		Items.CF2String.Visible = False;
+	EndIf;
+
+	If CF3AType = "None" Then
+		Items.CF3String.Visible = False;
+	ElsIf CF3AType = "String" Then
+		Items.CF3String.Visible = True;
+		Items.CF3String.Title = Constants.CF3AName.Get();
+	ElsIf CF3AType = "" Then
+		Items.CF3String.Visible = False;
+	EndIf;
+
+	If CF4AType = "None" Then
+		Items.CF4String.Visible = False;
+	ElsIf CF4AType = "String" Then
+		Items.CF4String.Visible = True;
+		Items.CF4String.Title = Constants.CF4AName.Get();
+	ElsIf CF4AType = "" Then
+		Items.CF4String.Visible = False;
+	EndIf;
+
+	If CF5AType = "None" Then
+		Items.CF5String.Visible = False;
+	ElsIf CF5AType = "String" Then
+		Items.CF5String.Visible = True;
+		Items.CF5String.Title = Constants.CF5AName.Get();
+	ElsIf CF5AType = "" Then
+		Items.CF5String.Visible = False;
+	EndIf;
+
+	// end custom fields
 	
 	If NOT Object.Ref = Catalogs.Addresses.EmptyRef() Then
 		Items.Owner.ReadOnly = True;
@@ -12,39 +78,117 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	Else
 		Items.RemitTo.Visible = False;
 	EndIf;
-	
-	CF1AName = Constants.CF1AName.Get();
-	If CF1AName <> "" Then
-		Items.CF1String.Title = CF1AName;
-	EndIf;
-	
-	CF2AName = Constants.CF2AName.Get();
-	If CF2AName <> "" Then
-		Items.CF2String.Title = CF2AName;
-	EndIf;
+		
+EndProcedure
 
-	CF3AName = Constants.CF3AName.Get();
-	If CF3AName <> "" Then
-		Items.CF3String.Title = CF3AName;
-	EndIf;
-
+&AtServer
+Procedure OnReadAtServer(CurrentObject)
 	
-	CF4AName = Constants.CF4AName.Get();
-	If CF4AName <> "" Then
-		Items.CF4String.Title = CF4AName;
-	EndIf;
+	ApplyAddressValidationStatus();
 
-	CF5AName = Constants.CF5AName.Get();
-	If CF5AName <> "" Then
-		Items.CF5String.Title = CF5AName;
+EndProcedure
+
+&AtServer
+Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
+	
+	If NOT Object.Ref = Catalogs.Addresses.EmptyRef() Then
+		Items.Owner.ReadOnly = True;
+	EndIf;
+	
+	//  create account in zoho and contact
+	If Constants.zoho_auth_token.Get() <> "" AND Object.Owner.Customer = True Then				
+		If Object.DefaultBilling = False AND Object.DefaultShipping = False Then
+			If Object.NewObject = True Then
+				ThisAction = "create";
+			Else
+				ThisAction = "update";
+			EndIf;                            
+			zoho_Functions.ZohoThisContact(ThisAction, Object.Ref);
+		Else
+			If Object.DefaultBilling = True Then
+				zoho_Functions.SetZohoDefaultBilling(Object.Ref);
+			EndIf;
+			If Object.DefaultShipping = True Then
+				zoho_Functions.SetZohoDefaultShipping(Object.Ref);
+			EndIf;
+		EndIf;
 	EndIf;
 	
 EndProcedure
 
 &AtClient
-Procedure DefaultBillingOnChange(Item)
-	DefaultBillingOnChangeAtServer();
+Procedure BeforeWrite(Cancel, WriteParameters)
+	
+	If NOT GeneralFunctions.EmailCheck(Object.Email) AND Object.Email <> "" Then
+		 Message("The current email format is invalid");
+		 Cancel = True;
+	EndIf;
+
 EndProcedure
+
+&AtClient
+Procedure ProcessUserResponseOnAddressValidation(Result, Parameters) Export
+	
+	If (TypeOf(Result) = Type("Structure")) Then
+		FillValidatedAddressAtServer(Result.ValidatedAddress);
+	ElsIf (TypeOf(Result) = Type("DialogReturnCode")) Then //Cancel
+	EndIf;
+	
+EndProcedure
+
+#EndRegion
+
+////////////////////////////////////////////////////////////////////////////////
+#Region CONTROLS_EVENTS_HANDLERS
+
+&AtClient
+Procedure DefaultBillingOnChange(Item)
+	
+	DefaultBillingOnChangeAtServer();
+	
+EndProcedure
+
+&AtClient
+Procedure DefaultShippingOnChange(Item)
+	
+	DefaultShippingOnChangeAtServer();
+	
+EndProcedure
+
+&AtClient
+Procedure CountryOnChange(Item)
+	
+	ApplyAddressValidationStatus();
+	
+EndProcedure
+
+#EndRegion
+
+////////////////////////////////////////////////////////////////////////////////
+#Region COMMANDS_HANDLERS
+
+&AtClient
+Procedure AvataxValidateAddress(Command)
+	
+	OriginalAddress = New Structure("AddressLine1, AddressLine2, AddressLine3, City, State, Country, ZIP");
+	FillPropertyValues(OriginalAddress, Object);
+	Params = New Structure("OriginalAddress, AddressRef", OriginalAddress, Object.Ref);
+	Notify = New NotifyDescription("ProcessUserResponseOnAddressValidation", ThisObject);
+	OpenForm("Catalog.Addresses.Form.AddressValidation", Params, ThisForm,,,, Notify, FormWindowOpeningMode.LockOwnerWindow); 
+	
+EndProcedure
+
+&AtClient
+Procedure AvataxEditAddress(Command)
+	
+	AvataxEditAddressAtServer();
+	
+EndProcedure
+
+#EndRegion
+
+////////////////////////////////////////////////////////////////////////////////
+#Region PRIVATE_IMPLEMENTATION
 
 &AtServer
 Procedure DefaultBillingOnChangeAtServer()
@@ -65,11 +209,6 @@ Procedure DefaultBillingOnChangeAtServer()
 	  object.DefaultBilling = False;
   EndIf;
   
-EndProcedure
-
-&AtClient
-Procedure DefaultShippingOnChange(Item)
-	DefaultShippingOnChangeAtServer();
 EndProcedure
 
 &AtServer
@@ -95,276 +234,115 @@ Procedure DefaultShippingOnChangeAtServer()
 EndProcedure
 
 &AtServer
-Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
+Procedure FillValidatedAddressAtServer(ValidatedAddress)
 	
-	If NOT Object.Ref = Catalogs.Addresses.EmptyRef() Then
-		Items.Owner.ReadOnly = True;
+	FillPropertyValues(Object, ValidatedAddress);
+	//Find Region and Country
+	Request = New Query("SELECT
+	                    |	Countries.Ref,
+	                    |	""Country"" AS PartType
+	                    |FROM
+	                    |	Catalog.Countries AS Countries
+	                    |WHERE
+	                    |	Countries.Code = &CountryCode
+	                    |	AND Countries.DeletionMark = FALSE
+	                    |
+	                    |UNION ALL
+	                    |
+	                    |SELECT
+	                    |	States.Ref,
+	                    |	""Region""
+	                    |FROM
+	                    |	Catalog.States AS States
+	                    |WHERE
+	                    |	States.Code = &RegionCode
+	                    //|	AND States.Country.Code = &CountryCode
+	                    |	AND States.DeletionMark = FALSE");
+	Request.SetParameter("CountryCode", ValidatedAddress.CountryCode);
+	Request.SetParameter("RegionCode", ValidatedAddress.RegionCode);
+	Tab = Request.Execute().Unload();
+	FoundCountryRows = Tab.FindRows(New Structure("PartType", "Country"));
+	If FoundCountryRows.Count() > 0 Then
+		Object.Country 	= FoundCountryRows[0].Ref; 
+	ElsIf ValueIsFilled(ValidatedAddress.CountryCode) Then
+		//Should create new country (though, normally it should not occur)
+		NewCountry = Catalogs.Countries.CreateItem();
+		NewCountry.Description 	= ValidatedAddress.CountryCode;
+		NewCountry.Code			= ValidatedAddress.CountryCode;
+		NewCountry.Write();
+		Object.Country = NewCountry.Ref;
+	Else
+		Object.Country = Catalogs.Countries.EmptyRef();
 	EndIf;
+	FoundRegionRows = Tab.FindRows(New Structure("PartType", "Region"));
+	If FoundRegionRows.Count() > 0 Then
+		Object.State 	= FoundRegionRows[0].Ref;
+	ElsIf ValueIsFilled(ValidatedAddress.RegionCode) Then
+		//Should create new region to use in the address
+		NewRegion = Catalogs.States.CreateItem();
+		NewRegion.Description 	= ValidatedAddress.RegionCode;
+		NewRegion.Code			= ValidatedAddress.RegionCode;
+		NewRegion.Country		= Object.Country;
+		NewRegion.Write();
+		Object.State			= NewRegion.Ref;
+	Else
+		Object.State			= Catalogs.States.EmptyRef();
+	EndIf;
+	Object.AddressValidated = True;
+	ThisForm.Modified = True;
+	ApplyAddressValidationStatus();
 	
-	////  create account in zoho and contact
-	//If Constants.zoho_auth_token.Get() <> "" Then
-	//	If Object.NewObject = True Then
-	//		ThisAction = "create";
-	//	Else
-	//		ThisAction = "update";
-	//	EndIf;
-	//	ZohoThisContact(ThisAction);
-	//	If Object.DefaultBilling = True Then		
-	//		SetZohoDefaultBilling();	
-	//	EndIf;
-	//	If Object.DefaultShipping = True Then		
-	//		SetZohoDefaultShipping();	
-	//	EndIf;
-	//EndIf;
-
 EndProcedure
 
+&AtServer
+Procedure ApplyAddressValidationStatus()
+	
+	AvataxEnabled = Constants.AvataxEnabled.Get();
+	AddressValidationForCountryEnabled = AvaTaxServer.AddressValidationForCountryEnabled(Object.Country);
+	AddressValidationDisabled = Constants.AvataxDisableAddressValidation.Get();
+	If AvataxEnabled And AddressValidationForCountryEnabled Then
+		If Not Items.AddressValidation.Visible Then
+			Items.AddressValidation.Visible = True;
+		EndIf;
+		If Object.AddressValidated Then
+			Items.StatusPicture.Picture = PictureLib.TaskComplete;
+			Items.StatusText.Title		= "Address validated";
+			Items.StatusText.TextColor	= StyleColors.ColorGroupLabel;
+			Items.StatusText.BorderColor = Items.StatusText.TextColor;
+			Items.Address.ReadOnly		= True;
+			Items.Decoration4.Visible 	= False;
+			Items.AvataxEditAddress.Visible	= True;
+		Else //Address not validated
+			Items.StatusPicture.Picture = PictureLib.Questionnaire;
+			Items.StatusText.Title		= "Not validated";
+			Items.StatusText.TextColor	= StyleColors.ColorSecondaryLabel;
+			Items.StatusText.BorderColor = Items.StatusText.TextColor;
+			Items.Address.ReadOnly		= False;
+			Items.Decoration4.Visible 	= True;
+			Items.AvataxEditAddress.Visible	= False;
+		EndIf;
+		If Not AddressValidationDisabled Then
+			Items.AvataxValidateAddress.Visible = True;
+		Else
+			Items.AvataxValidateAddress.Visible = False;
+		EndIf;
+	Else
+		Items.AddressValidation.Visible = False;
+		Items.Address.ReadOnly			= False;
+	EndIf;
+	
+EndProcedure
 
-//Procedure SetZohoDefaultBilling()
-//	
-//	idQuery = new Query("SELECT
-//							|	zoho_accountCodeMap.zoho_id
-//							|FROM
-//							|	Catalog.zoho_accountCodeMap AS zoho_accountCodeMap
-//							|WHERE
-//							|	zoho_accountCodeMap.acs_api_code = &acs_api_code");
-//					   
-//	idQuery.SetParameter("acs_api_code", string(Object.Owner.Ref.UUID()));
-//	queryResult = idQuery.Execute();
-//	If NOT queryResult.IsEmpty() Then
-//		queryResultobj = queryResult.Unload();
-//		zohoID = queryResultobj[0].zoho_id;
-//	
-//		PathDef = "crm.zoho.com/crm/private/xml/Accounts/";
-//		billstreet = Object.AddressLine1;
-//		If Object.AddressLine2 <> "" Then
-//			billstreet = billstreet + ", " + Object.AddressLine2;
-//		EndIf;
-//		If Object.AddressLine3 <> "" Then
-//			billstreet = billstreet + ", " + Object.AddressLine3;
-//		EndIf;
-//		AccountXML = "<Accounts>"
-//			+ "<row no=""1"">"
-//			+ "<FL val=""Billing Street"">" + billstreet + "</FL>"
-//			+ "<FL val=""Billing City"">" + Object.City + "</FL>"
-//			+ "<FL val=""Billing State"">" + String(Object.State) + "</FL>"
-//			+ "<FL val=""Billing Code"">" + Object.ZIP + "</FL>"
-//			+ "<FL val=""Billing Country"">" + String(Object.Country) + "</FL>"
-//			+ "<FL val=""Fax"">" + Object.Fax + "</FL>"
-//			+ "<FL val=""Phone"">" + Object.Phone + "</FL>"
-//			+ "</row>"
-//			+ "</Accounts>";
+&AtServer
+Procedure AvataxEditAddressAtServer()
+	
+	Object.AddressValidated = False;
+	ThisForm.Modified		= True;
+	ApplyAddressValidationStatus();
+	
+EndProcedure
 
-//		AuthHeader = "authtoken=" + Constants.zoho_auth_token.Get() + "&scope=crmapi" + "&id=" + zohoID;
-//			
-//		URLstring = PathDef + "updateRecords?" + AuthHeader + "&xmlData=" + AccountXML;
-//		
-//		HeadersMap = New Map();			
-//		HTTPRequest = New HTTPRequest("", HeadersMap);	
-//		SSLConnection = New OpenSSLSecureConnection();
-//		HTTPConnection = New HTTPConnection(URLstring,,,,,,SSLConnection);
-//		Result = HTTPConnection.Post(HTTPRequest);
-//	EndIf;
-//	
-//EndProcedure
-
-//Procedure SetZohoDefaultShipping()
-//	
-//	idQuery = new Query("SELECT
-//							|	zoho_accountCodeMap.zoho_id
-//							|FROM
-//							|	Catalog.zoho_accountCodeMap AS zoho_accountCodeMap
-//							|WHERE
-//							|	zoho_accountCodeMap.acs_api_code = &acs_api_code");
-//					   
-//	idQuery.SetParameter("acs_api_code", string(Object.Owner.Ref.UUID()));
-//	queryResult = idQuery.Execute();
-//	If NOT queryResult.IsEmpty() Then
-//		queryResultobj = queryResult.Unload();
-//		zohoID = queryResultobj[0].zoho_id;
-//	
-//		PathDef = "crm.zoho.com/crm/private/xml/Accounts/";
-//		shipstreet = Object.AddressLine1;
-//		If Object.AddressLine2 <> "" Then
-//			shipstreet = shipstreet + ", " + Object.AddressLine2;
-//		EndIf;
-//		If Object.AddressLine3 <> "" Then
-//			shipstreet = shipstreet + ", " + Object.AddressLine3;
-//		EndIf;
-//		AccountXML = "<Accounts>"
-//			+ "<row no=""1"">"
-//			+ "<FL val=""Shipping Street"">" + shipstreet + "</FL>"
-//			+ "<FL val=""Shipping City"">" + Object.City + "</FL>"
-//			+ "<FL val=""Shipping State"">" + String(Object.State) + "</FL>"
-//			+ "<FL val=""Shipping Code"">" + Object.ZIP + "</FL>"
-//			+ "<FL val=""Shipping Country"">" + String(Object.Country) + "</FL>"
-//			+ "</row>"
-//			+ "</Accounts>";
-
-//		AuthHeader = "authtoken=" + Constants.zoho_auth_token.Get() + "&scope=crmapi" + "&id=" + zohoID;
-//			
-//		URLstring = PathDef + "updateRecords?" + AuthHeader + "&xmlData=" + AccountXML;
-//		
-//		HeadersMap = New Map();			
-//		HTTPRequest = New HTTPRequest("", HeadersMap);	
-//		SSLConnection = New OpenSSLSecureConnection();
-//		HTTPConnection = New HTTPConnection(URLstring,,,,,,SSLConnection);
-//		Result = HTTPConnection.Post(HTTPRequest);
-//	EndIf;
-//	
-//	EndProcedure
-
-//Procedure ZohoThisContact(action)
-//	PathDef = "https://crm.zoho.com/crm/private/json/Contacts/";
-//	
-//	If action = "create" Then
-//		
-//		strStreet = Object.AddressLine1;
-//		If Object.AddressLine2 <> "" Then
-//			strStreet = strStreet + ", " + Object.AddressLine2;
-//		EndIf;
-//		If Object.AddressLine3 <> "" Then
-//			strStreet = strStreet + ", " + Object.AddressLine3;
-//		EndIf;
-//		
-//		//zoho requires a last name for contacts
-//		If Object.LastName = "" Then
-//			strLastName = Object.Description;
-//		Else
-//			strLastName = Object.LastName;
-//		EndIf;
-//		
-//		idQuery = new Query("SELECT
-//							|	zoho_accountCodeMap.zoho_id
-//							|FROM
-//							|	Catalog.zoho_accountCodeMap AS zoho_accountCodeMap
-//							|WHERE
-//							|	zoho_accountCodeMap.acs_api_code = &acs_api_code");
-//					   
-//		idQuery.SetParameter("acs_api_code", string(Object.Owner.Ref.UUID()));
-//		queryResult = idQuery.Execute().Unload();
-//			
-//		ContactXML = "<Contacts>"
-//				+ "<row no=""1"">"
-//				+ "<FL val=""Salutation"">" + Object.Salutation + "</FL>"
-//				+ "<FL val=""First Name"">" + Object.FirstName + "</FL>"
-//				+ "<FL val=""Last Name"">" + strLastName + "</FL>"
-//				+ "<FL val=""Description"">" + Object.Notes + "</FL>"
-//				+ "<FL val=""Email"">" + Object.Email + "</FL>"
-//				+ "<FL val=""Fax"">" + Object.Fax + "</FL>"
-//				+ "<FL val=""Mobile"">" + Object.Cell + "</FL>"
-//				+ "<FL val=""Phone"">" + Object.Phone + "</FL>"
-//				+ "<FL val=""Title"">" + Object.JobTitle + "</FL>"
-//				+ "<FL val=""Department"">" + Object.CF1String + "</FL>" //ferguson department
-//				+ "<FL val=""Mailing Street"">" + strStreet + "</FL>"
-//				+ "<FL val=""Mailing City"">" + Object.City + "</FL>"
-//				+ "<FL val=""Mailing State"">" + String(Object.State) + "</FL>"
-//				+ "<FL val=""Mailing Zip"">" + Object.Zip + "</FL>"
-//				+ "<FL val=""Mailing Country"">" + String(Object.Country) + "</FL>"
-//				+ "<FL val=""ACCOUNTID"">" + queryResult[0].zoho_id + "</FL>"
-//				+ "</row>"
-//				+ "</Contacts>";
-//				
-//		AuthHeader = "authtoken=" + Constants.zoho_auth_token.Get() +"&scope=crmapi&";
-//		
-//		URLstring = PathDef + "insertRecords?" + AuthHeader + "xmlData=" + ContactXML;
-//		
-//		ConnectionSettings = New Structure;
-//		Connection = InternetConnectionClientServer.CreateConnection(URLstring, ConnectionSettings).Result;
-//		ResultBody = InternetConnectionClientServer.SendRequest(Connection, "Post", ConnectionSettings).Result;
-//		ResultBodyJSON = InternetConnectionClientServer.DecodeJSON(ResultBody);
-//			
-//		newRecord = Catalogs.zoho_contactCodeMap.CreateItem();
-//		newRecord.acs_api_code = Object.Ref.UUID();
-//		newRecord.zoho_id = ResultBodyJSON.response.result.recorddetail.FL[0].content;
-//		newRecord.Write();
-//		
-//	EndIf;
-//	
-//	If action = "update" Then //AND Object.Description <> "Primary" Then
-//		
-//		// using http request so no need for https:// anymore
-//		PathDef = "crm.zoho.com/crm/private/xml/Contacts/";
-//		
-//		strStreet = Object.AddressLine1;
-//		If Object.AddressLine2 <> "" Then
-//			strStreet = strStreet + ", " + Object.AddressLine2;
-//		EndIf;
-//		If Object.AddressLine3 <> "" Then
-//			strStreet = strStreet + ", " + Object.AddressLine3;
-//		EndIf;
-
-//		If Object.LastName = "" Then
-//			strLastName = Object.Description;
-//		Else
-//			strLastName = Object.LastName;
-//		EndIf;
-//		
-//		idQuery = new Query("SELECT
-//							|	zoho_contactCodeMap.zoho_id
-//							|FROM
-//							|	Catalog.zoho_contactCodeMap AS zoho_contactCodeMap
-//							|WHERE
-//							|	zoho_contactCodeMap.acs_api_code = &acs_api_code");
-//					   
-//		idQuery.SetParameter("acs_api_code", string(Object.Ref.UUID()));
-//		queryResult = idQuery.Execute();
-//		queryResultobj = queryResult.Unload();
-//					
-//		zohoID = queryResultobj[0].zoho_id;
-//		
-//		idQuery = new Query("SELECT
-//							|	zoho_accountCodeMap.zoho_id
-//							|FROM
-//							|	Catalog.zoho_accountCodeMap AS zoho_accountCodeMap
-//							|WHERE
-//							|	zoho_accountCodeMap.acs_api_code = &acs_api_code");
-//					   
-//		idQuery.SetParameter("acs_api_code", string(Object.Owner.Ref.UUID()));
-//		queryResult = idQuery.Execute().Unload();
-//					
-//		ContactXML = "<Contacts>"
-//				+ "<row no=""1"">"
-//				+ "<FL val=""Salutation"">" + Object.Salutation + "</FL>"
-//				+ "<FL val=""First Name"">" + Object.FirstName + "</FL>"
-//				+ "<FL val=""Last Name"">" + strLastName + "</FL>"
-//				+ "<FL val=""Description"">" + Object.Notes + "</FL>"
-//				+ "<FL val=""Email"">" + Object.Email + "</FL>"
-//				+ "<FL val=""Fax"">" + Object.Fax + "</FL>"
-//				+ "<FL val=""Mobile"">" + Object.Cell + "</FL>"
-//				+ "<FL val=""Phone"">" + Object.Phone + "</FL>"
-//				+ "<FL val=""Title"">" + Object.JobTitle + "</FL>"
-//				+ "<FL val=""Department"">" + Object.CF1String + "</FL>" //ferguson department
-//				+ "<FL val=""Mailing Street"">" + strStreet + "</FL>"
-//				+ "<FL val=""Mailing City"">" + Object.City + "</FL>"
-//				+ "<FL val=""Mailing State"">" + String(Object.State) + "</FL>"
-//				+ "<FL val=""Mailing Zip"">" + Object.Zip + "</FL>"
-//				+ "<FL val=""Mailing Country"">" + String(Object.Country) + "</FL>"
-//				+ "<FL val=""ACCOUNTID"">" + queryResult[0].zoho_id + "</FL>"
-//				+ "</row>"
-//				+ "</Contacts>";
-
-//		AuthHeader = "authtoken=" + Constants.zoho_auth_token.Get() + "&scope=crmapi" + "&id=" + zohoID;
-//			
-//		URLstring = PathDef + "updateRecords?" + AuthHeader + "&xmlData=" + ContactXML;
-//		
-//		HeadersMap = New Map();			
-//		HTTPRequest = New HTTPRequest("", HeadersMap);	
-//		SSLConnection = New OpenSSLSecureConnection();
-//		HTTPConnection = New HTTPConnection(URLstring,,,,,,SSLConnection);
-//		Result = HTTPConnection.Post(HTTPRequest);		
-//				
-//			//ConnectionSettings = New Structure;
-//			//Connection = InternetConnectionClientServer.CreateConnection(URLstring, ConnectionSettings).Result;
-//			//ResultBody = InternetConnectionClientServer.SendRequest(Connection, "Post", ConnectionSettings).Result;
-//			//ResultBodyJSON = InternetConnectionClientServer.DecodeJSON(ResultBody);
-//				
-//			//RunApp(URLstring);
-//		//EndIf;
-//				
-//	EndIf; 	
-//EndProcedure
-
+#EndRegion
 
 
 

@@ -13,23 +13,17 @@
 		<Event name="FillCheckProcessingAtServer">FillCheckProcessingAtServer</Event>
 	</Events>
 	<ChildItems>
-		<InputField name="Code" id="93">
-			<DataPath>Object.Code</DataPath>
-			<Visible>false</Visible>
-			<ContextMenu name="CodeContextMenu" id="94"/>
-			<ExtendedTooltip name="CodeExtendedTooltip" id="152"/>
-		</InputField>
 		<InputField name="Description" id="3">
 			<DataPath>Object.Description</DataPath>
 			<Title>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Company name</v8:content>
+					<v8:content>Company</v8:content>
 				</v8:item>
 			</Title>
 			<EditMode>EnterOnInput</EditMode>
-			<Width>20</Width>
-			<HorizontalStretch>false</HorizontalStretch>
+			<Width>25</Width>
+			<HorizontalStretch>true</HorizontalStretch>
 			<ContextMenu name="DescriptionContextMenu" id="4"/>
 			<ExtendedTooltip name="DescriptionExtendedTooltip" id="153"/>
 		</InputField>
@@ -70,6 +64,11 @@
 						<Event name="OnChange">VendorOnChange</Event>
 					</Events>
 				</CheckBoxField>
+				<InputField name="Code" id="93">
+					<DataPath>Object.Code</DataPath>
+					<ContextMenu name="CodeContextMenu" id="94"/>
+					<ExtendedTooltip name="CodeExtendedTooltip" id="152"/>
+				</InputField>
 			</ChildItems>
 		</UsualGroup>
 		<Pages name="Group1" id="15">
@@ -77,7 +76,6 @@
 			<ExtendedTooltip name="Group1ExtendedTooltip" id="159"/>
 			<ChildItems>
 				<Page name="GroupTransactions" id="367">
-					<Visible>false</Visible>
 					<Title>
 						<v8:item>
 							<v8:lang>en</v8:lang>
@@ -97,15 +95,10 @@
 								<xr:LoadTransparent>true</xr:LoadTransparent>
 							</RowsPicture>
 							<CommandSet>
-								<ExcludedCommand>Copy</ExcludedCommand>
-								<ExcludedCommand>Create</ExcludedCommand>
 								<ExcludedCommand>LoadDynamicListSettings</ExcludedCommand>
 								<ExcludedCommand>DynamicListStandardSettings</ExcludedCommand>
-								<ExcludedCommand>CopyToClipboard</ExcludedCommand>
 								<ExcludedCommand>Choose</ExcludedCommand>
-								<ExcludedCommand>Delete</ExcludedCommand>
 								<ExcludedCommand>SaveDynamicListSettings</ExcludedCommand>
-								<ExcludedCommand>Change</ExcludedCommand>
 							</CommandSet>
 							<SearchStringLocation>None</SearchStringLocation>
 							<ViewStatusLocation>None</ViewStatusLocation>
@@ -156,29 +149,29 @@
 								<Autofill>false</Autofill>
 							</AutoCommandBar>
 							<ExtendedTooltip name="TransactionsExtendedTooltip" id="372"/>
-							<SearchStringAddition name="TransactionsSearchString" id="437">
+							<SearchStringAddition name="TransactionsSearchString" id="461">
 								<AdditionSource>
 									<Item>Transactions</Item>
 									<Type>SearchStringRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="TransactionsSearchStringContextMenu" id="438"/>
-								<ExtendedTooltip name="TransactionsSearchStringExtendedTooltip" id="439"/>
+								<ContextMenu name="TransactionsSearchStringContextMenu" id="462"/>
+								<ExtendedTooltip name="TransactionsSearchStringExtendedTooltip" id="463"/>
 							</SearchStringAddition>
-							<ViewStatusAddition name="TransactionsViewStatus" id="440">
+							<ViewStatusAddition name="TransactionsViewStatus" id="464">
 								<AdditionSource>
 									<Item>Transactions</Item>
 									<Type>ViewStatusRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="TransactionsViewStatusContextMenu" id="441"/>
-								<ExtendedTooltip name="TransactionsViewStatusExtendedTooltip" id="442"/>
+								<ContextMenu name="TransactionsViewStatusContextMenu" id="465"/>
+								<ExtendedTooltip name="TransactionsViewStatusExtendedTooltip" id="466"/>
 							</ViewStatusAddition>
-							<SearchControlAddition name="TransactionsSearchControl" id="443">
+							<SearchControlAddition name="TransactionsSearchControl" id="467">
 								<AdditionSource>
 									<Item>Transactions</Item>
 									<Type>SearchControl</Type>
 								</AdditionSource>
-								<ContextMenu name="TransactionsSearchControlContextMenu" id="444"/>
-								<ExtendedTooltip name="TransactionsSearchControlExtendedTooltip" id="445"/>
+								<ContextMenu name="TransactionsSearchControlContextMenu" id="468"/>
+								<ExtendedTooltip name="TransactionsSearchControlExtendedTooltip" id="469"/>
 							</SearchControlAddition>
 							<Events>
 								<Event name="Selection">TransactionsSelection</Event>
@@ -510,29 +503,29 @@
 							<ContextMenu name="ProjectTableContextMenu" id="231"/>
 							<AutoCommandBar name="ProjectTableCommandBar" id="232"/>
 							<ExtendedTooltip name="ProjectTableExtendedTooltip" id="233"/>
-							<SearchStringAddition name="ProjectTableSearchString" id="446">
+							<SearchStringAddition name="ProjectTableSearchString" id="470">
 								<AdditionSource>
 									<Item>ProjectTable</Item>
 									<Type>SearchStringRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="ProjectTableSearchStringContextMenu" id="447"/>
-								<ExtendedTooltip name="ProjectTableSearchStringExtendedTooltip" id="448"/>
+								<ContextMenu name="ProjectTableSearchStringContextMenu" id="471"/>
+								<ExtendedTooltip name="ProjectTableSearchStringExtendedTooltip" id="472"/>
 							</SearchStringAddition>
-							<ViewStatusAddition name="ProjectTableViewStatus" id="449">
+							<ViewStatusAddition name="ProjectTableViewStatus" id="473">
 								<AdditionSource>
 									<Item>ProjectTable</Item>
 									<Type>ViewStatusRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="ProjectTableViewStatusContextMenu" id="450"/>
-								<ExtendedTooltip name="ProjectTableViewStatusExtendedTooltip" id="451"/>
+								<ContextMenu name="ProjectTableViewStatusContextMenu" id="474"/>
+								<ExtendedTooltip name="ProjectTableViewStatusExtendedTooltip" id="475"/>
 							</ViewStatusAddition>
-							<SearchControlAddition name="ProjectTableSearchControl" id="452">
+							<SearchControlAddition name="ProjectTableSearchControl" id="476">
 								<AdditionSource>
 									<Item>ProjectTable</Item>
 									<Type>SearchControl</Type>
 								</AdditionSource>
-								<ContextMenu name="ProjectTableSearchControlContextMenu" id="453"/>
-								<ExtendedTooltip name="ProjectTableSearchControlExtendedTooltip" id="454"/>
+								<ContextMenu name="ProjectTableSearchControlContextMenu" id="477"/>
+								<ExtendedTooltip name="ProjectTableSearchControlExtendedTooltip" id="478"/>
 							</SearchControlAddition>
 							<ChildItems>
 								<LabelField name="ProjectTableRef" id="263">
@@ -657,7 +650,7 @@
 					<Title>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Sales Tax</v8:content>
+							<v8:content>Taxes</v8:content>
 						</v8:item>
 					</Title>
 					<ToolTip>
@@ -668,25 +661,115 @@
 					</ToolTip>
 					<ExtendedTooltip name="TaxTabExtendedTooltip" id="357"/>
 					<ChildItems>
-						<CheckBoxField name="Taxable" id="358">
-							<DataPath>Object.Taxable</DataPath>
+						<LabelDecoration name="DefaultSalesTaxSettings" id="448">
+							<HorizontalStretch>true</HorizontalStretch>
+							<Font ref="style:SmallTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
+							<Title formatted="false">
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Default settings</v8:content>
+								</v8:item>
+							</Title>
+							<Border width="1">
+								<v8ui:style xsi:type="v8ui:ControlBorderType">Underline</v8ui:style>
+							</Border>
+							<ContextMenu name="DefaultSalesTaxSettingsContextMenu" id="449"/>
+							<ExtendedTooltip name="DefaultSalesTaxSettingsExtendedTooltip" id="450"/>
+						</LabelDecoration>
+						<UsualGroup name="SalesTaxDefaultsGroup" id="446">
 							<Title>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Customer is taxable</v8:content>
+									<v8:content>Sales tax defaults group</v8:content>
 								</v8:item>
 							</Title>
-							<CheckBoxType>Auto</CheckBoxType>
-							<ContextMenu name="TaxableContextMenu" id="359"/>
-							<ExtendedTooltip name="TaxableExtendedTooltip" id="360"/>
-							<Events>
-								<Event name="OnChange">TaxableOnChange</Event>
-							</Events>
-						</CheckBoxField>
-						<InputField name="SalesTaxRate" id="361">
-							<DataPath>Object.SalesTaxRate</DataPath>
-							<ContextMenu name="SalesTaxRateContextMenu" id="362"/>
-							<ExtendedTooltip name="SalesTaxRateExtendedTooltip" id="363"/>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Sales tax defaults group</v8:content>
+								</v8:item>
+							</ToolTip>
+							<Group>Horizontal</Group>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="SalesTaxDefaultsGroupExtendedTooltip" id="447"/>
+							<ChildItems>
+								<UsualGroup name="TaxableAvataxGroup" id="451">
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Taxable avatax group</v8:content>
+										</v8:item>
+									</Title>
+									<ToolTip>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Taxable avatax group</v8:content>
+										</v8:item>
+									</ToolTip>
+									<Group>Vertical</Group>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="TaxableAvataxGroupExtendedTooltip" id="452"/>
+									<ChildItems>
+										<CheckBoxField name="Taxable" id="358">
+											<DataPath>Object.Taxable</DataPath>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Customer is taxable</v8:content>
+												</v8:item>
+											</Title>
+											<CheckBoxType>Auto</CheckBoxType>
+											<ContextMenu name="TaxableContextMenu" id="359"/>
+											<ExtendedTooltip name="TaxableExtendedTooltip" id="360"/>
+											<Events>
+												<Event name="OnChange">TaxableOnChange</Event>
+											</Events>
+										</CheckBoxField>
+										<CheckBoxField name="UseAvatax" id="437">
+											<DataPath>Object.UseAvatax</DataPath>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Use AvaTax</v8:content>
+												</v8:item>
+											</Title>
+											<CheckBoxType>Auto</CheckBoxType>
+											<ContextMenu name="UseAvataxContextMenu" id="438"/>
+											<ExtendedTooltip name="UseAvataxExtendedTooltip" id="439"/>
+											<Events>
+												<Event name="OnChange">UseAvataxOnChange</Event>
+											</Events>
+										</CheckBoxField>
+									</ChildItems>
+								</UsualGroup>
+								<InputField name="SalesTaxRate" id="361">
+									<DataPath>Object.SalesTaxRate</DataPath>
+									<ContextMenu name="SalesTaxRateContextMenu" id="362"/>
+									<ExtendedTooltip name="SalesTaxRateExtendedTooltip" id="363"/>
+								</InputField>
+							</ChildItems>
+						</UsualGroup>
+						<LabelDecoration name="TaxExemptDecoration" id="443">
+							<HorizontalStretch>true</HorizontalStretch>
+							<Font ref="style:SmallTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
+							<Title formatted="false">
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Tax exempt</v8:content>
+								</v8:item>
+							</Title>
+							<Border width="1">
+								<v8ui:style xsi:type="v8ui:ControlBorderType">Underline</v8ui:style>
+							</Border>
+							<ContextMenu name="TaxExemptDecorationContextMenu" id="444"/>
+							<ExtendedTooltip name="TaxExemptDecorationExtendedTooltip" id="445"/>
+						</LabelDecoration>
+						<InputField name="AvataxCustomerUsageType" id="440">
+							<DataPath>Object.AvataxCustomerUsageType</DataPath>
+							<QuickChoice>true</QuickChoice>
+							<ChoiceHistoryOnInput>DontUse</ChoiceHistoryOnInput>
+							<ContextMenu name="AvataxCustomerUsageTypeContextMenu" id="441"/>
+							<ExtendedTooltip name="AvataxCustomerUsageTypeExtendedTooltip" id="442"/>
 						</InputField>
 						<InputField name="ResaleNO" id="364">
 							<DataPath>Object.ResaleNO</DataPath>
@@ -696,9 +779,49 @@
 									<v8:content>Tax resale #</v8:content>
 								</v8:item>
 							</Title>
+							<Width>25</Width>
 							<ContextMenu name="ResaleNOContextMenu" id="365"/>
 							<ExtendedTooltip name="ResaleNOExtendedTooltip" id="366"/>
 						</InputField>
+						<UsualGroup name="VATGroup" id="459">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>VATGroup</v8:content>
+								</v8:item>
+							</Title>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>VATGroup</v8:content>
+								</v8:item>
+							</ToolTip>
+							<Group>Vertical</Group>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="VATGroupExtendedTooltip" id="460"/>
+							<ChildItems>
+								<LabelDecoration name="VAT" id="456">
+									<HorizontalStretch>true</HorizontalStretch>
+									<Font ref="style:SmallTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
+									<Title formatted="false">
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>VAT</v8:content>
+										</v8:item>
+									</Title>
+									<Border width="1">
+										<v8ui:style xsi:type="v8ui:ControlBorderType">Underline</v8ui:style>
+									</Border>
+									<ContextMenu name="VATContextMenu" id="457"/>
+									<ExtendedTooltip name="VATExtendedTooltip" id="458"/>
+								</LabelDecoration>
+								<InputField name="BusinessIdentificationNo" id="453">
+									<DataPath>Object.BusinessIdentificationNo</DataPath>
+									<ContextMenu name="BusinessIdentificationNoContextMenu" id="454"/>
+									<ExtendedTooltip name="BusinessIdentificationNoExtendedTooltip" id="455"/>
+								</InputField>
+							</ChildItems>
+						</UsualGroup>
 					</ChildItems>
 				</Page>
 			</ChildItems>
@@ -789,7 +912,7 @@ WHERE
 			</Type>
 			<Settings xsi:type="DynamicList">
 				<ManualQuery>true</ManualQuery>
-				<DynamicDataRead>true</DynamicDataRead>
+				<DynamicDataRead>false</DynamicDataRead>
 				<QueryText>SELECT
 	DocumentJournalOfCompanies.Total,
 	DocumentJournalOfCompanies.Company,
@@ -828,6 +951,8 @@ WHERE
 			THEN "SO"
 		WHEN DocumentJournalOfCompanies.Document REFS Document.Quote
 			THEN "Quote"
+		//WHEN DocumentJournalOfCompanies.Document REFS Document.ItemReceipt
+		//	THEN "Item receipt"
 		ELSE ""
 	END AS DocumentType,
 	DocumentJournalOfCompanies.Document.Number AS DocNumber,
@@ -838,7 +963,6 @@ FROM
 		ON DocumentJournalOfCompanies.Document = GeneralJournalBalance.ExtDimension2
 WHERE
 	DocumentJournalOfCompanies.Company = &amp;Company</QueryText>
-				<MainTable>InformationRegister.DocumentJournalOfCompanies</MainTable>
 				<ListSettings>
 					<dcsset:filter>
 						<dcsset:item xsi:type="dcsset:FilterItemComparison">

@@ -110,6 +110,18 @@
 			<dataPath>Class</dataPath>
 			<field>Class</field>
 		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Project</dataPath>
+			<field>Project</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>VoidedEntry</dataPath>
+			<field>VoidedEntry</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>VoidingEntry</dataPath>
+			<field>VoidingEntry</field>
+		</field>
 		<dataSource>DataSource1</dataSource>
 		<query>SELECT
 	GeneralJournalEntryLineItems.Ref,
@@ -120,6 +132,8 @@
 	GeneralJournalEntryLineItems.Memo,
 	GeneralJournalEntryLineItems.Company,
 	GeneralJournalEntryLineItems.Class,
+	GeneralJournalEntryLineItems.Project,
+	GeneralJournalEntryLineItems.VoidedEntry,
 	GeneralJournalEntryLineItems.Ref.Ref AS Ref1,
 	GeneralJournalEntryLineItems.Ref.DataVersion,
 	GeneralJournalEntryLineItems.Ref.DeletionMark,
@@ -134,6 +148,7 @@
 	GeneralJournalEntryLineItems.Ref.DueDate,
 	GeneralJournalEntryLineItems.Ref.ARorAP,
 	GeneralJournalEntryLineItems.Ref.Adjusting,
+	GeneralJournalEntryLineItems.Ref.VoidingEntry,
 	GeneralJournalEntryLineItems.Ref.Presentation,
 	GeneralJournalEntryLineItems.Ref.PointInTime
 FROM
@@ -145,19 +160,19 @@ FROM
 		<dcsset:settings xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows">
 			<dcsset:selection>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>Account</dcsset:field>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>AmountCr</dcsset:field>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>AmountDr</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Account</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Class</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Company</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>AmountCr</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>LineNumber</dcsset:field>
@@ -167,6 +182,9 @@ FROM
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Memo1</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Project</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>Ref1</dcsset:field>
@@ -212,6 +230,12 @@ FROM
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>DocumentTotal</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>VoidingEntry</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>VoidedEntry</dcsset:field>
 				</dcsset:item>
 			</dcsset:selection>
 			<dcsset:item xsi:type="dcsset:StructureItemGroup">

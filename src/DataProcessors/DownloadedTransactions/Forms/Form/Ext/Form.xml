@@ -323,7 +323,7 @@
 										<xr:Value name="Role.ProjectsView">false</xr:Value>
 										<xr:Value name="Role.TimeTrackFull">false</xr:Value>
 										<xr:Value name="Role.TimeTrackView">false</xr:Value>
-										<xr:Value name="Role.НастройкаИОценкаПроизводительности">false</xr:Value>
+										<xr:Value name="acfa1919-07ce-4464-8552-6b104e284dca">false</xr:Value>
 									</UserVisible>
 									<Width>15</Width>
 									<CommandName>Form.Command.AddAccount</CommandName>
@@ -599,29 +599,29 @@
 										<Autofill>false</Autofill>
 									</AutoCommandBar>
 									<ExtendedTooltip name="BankTransactionsUnacceptedExtendedTooltip" id="4"/>
-									<SearchStringAddition name="BankTransactionsUnacceptedSearchString" id="352">
+									<SearchStringAddition name="BankTransactionsUnacceptedSearchString" id="354">
 										<AdditionSource>
 											<Item>BankTransactionsUnaccepted</Item>
 											<Type>SearchStringRepresentation</Type>
 										</AdditionSource>
-										<ContextMenu name="BankTransactionsUnacceptedSearchStringContextMenu" id="353"/>
-										<ExtendedTooltip name="BankTransactionsUnacceptedSearchStringExtendedTooltip" id="354"/>
+										<ContextMenu name="BankTransactionsUnacceptedSearchStringContextMenu" id="355"/>
+										<ExtendedTooltip name="BankTransactionsUnacceptedSearchStringExtendedTooltip" id="356"/>
 									</SearchStringAddition>
-									<ViewStatusAddition name="BankTransactionsUnacceptedViewStatus" id="355">
+									<ViewStatusAddition name="BankTransactionsUnacceptedViewStatus" id="357">
 										<AdditionSource>
 											<Item>BankTransactionsUnaccepted</Item>
 											<Type>ViewStatusRepresentation</Type>
 										</AdditionSource>
-										<ContextMenu name="BankTransactionsUnacceptedViewStatusContextMenu" id="356"/>
-										<ExtendedTooltip name="BankTransactionsUnacceptedViewStatusExtendedTooltip" id="357"/>
+										<ContextMenu name="BankTransactionsUnacceptedViewStatusContextMenu" id="358"/>
+										<ExtendedTooltip name="BankTransactionsUnacceptedViewStatusExtendedTooltip" id="359"/>
 									</ViewStatusAddition>
-									<SearchControlAddition name="BankTransactionsUnacceptedSearchControl" id="358">
+									<SearchControlAddition name="BankTransactionsUnacceptedSearchControl" id="360">
 										<AdditionSource>
 											<Item>BankTransactionsUnaccepted</Item>
 											<Type>SearchControl</Type>
 										</AdditionSource>
-										<ContextMenu name="BankTransactionsUnacceptedSearchControlContextMenu" id="359"/>
-										<ExtendedTooltip name="BankTransactionsUnacceptedSearchControlExtendedTooltip" id="360"/>
+										<ContextMenu name="BankTransactionsUnacceptedSearchControlContextMenu" id="361"/>
+										<ExtendedTooltip name="BankTransactionsUnacceptedSearchControlExtendedTooltip" id="362"/>
 									</SearchControlAddition>
 									<Events>
 										<Event name="Selection">BankTransactionsUnacceptedSelection</Event>
@@ -981,6 +981,7 @@
 								<Table name="BankTransactionsAccepted" id="35">
 									<ChangeRowSet>false</ChangeRowSet>
 									<ChangeRowOrder>false</ChangeRowOrder>
+									<SelectionMode>SingleRow</SelectionMode>
 									<AutoInsertNewRow>true</AutoInsertNewRow>
 									<EnableStartDrag>true</EnableStartDrag>
 									<EnableDrag>true</EnableDrag>
@@ -989,7 +990,15 @@
 									<ViewStatusLocation>None</ViewStatusLocation>
 									<SearchControlLocation>None</SearchControlLocation>
 									<RowFilter xsi:nil="true"/>
-									<ContextMenu name="BankTransactionsAcceptedContextMenu" id="36"/>
+									<ContextMenu name="BankTransactionsAcceptedContextMenu" id="36">
+										<ChildItems>
+											<Button name="BankTransactionsAcceptedContextMenuUndoTransaction" id="352">
+												<Type>CommandBarButton</Type>
+												<CommandName>Form.Command.UndoTransaction</CommandName>
+												<ExtendedTooltip name="BankTransactionsAcceptedContextMenuUndoTransactionExtendedTooltip" id="353"/>
+											</Button>
+										</ChildItems>
+									</ContextMenu>
 									<AutoCommandBar name="BankTransactionsAcceptedCommandBar" id="37">
 										<Autofill>false</Autofill>
 										<ChildItems>
@@ -1001,29 +1010,29 @@
 										</ChildItems>
 									</AutoCommandBar>
 									<ExtendedTooltip name="BankTransactionsAcceptedExtendedTooltip" id="38"/>
-									<SearchStringAddition name="BankTransactionsAcceptedSearchString" id="361">
+									<SearchStringAddition name="BankTransactionsAcceptedSearchString" id="363">
 										<AdditionSource>
 											<Item>BankTransactionsAccepted</Item>
 											<Type>SearchStringRepresentation</Type>
 										</AdditionSource>
-										<ContextMenu name="BankTransactionsAcceptedSearchStringContextMenu" id="362"/>
-										<ExtendedTooltip name="BankTransactionsAcceptedSearchStringExtendedTooltip" id="363"/>
+										<ContextMenu name="BankTransactionsAcceptedSearchStringContextMenu" id="364"/>
+										<ExtendedTooltip name="BankTransactionsAcceptedSearchStringExtendedTooltip" id="365"/>
 									</SearchStringAddition>
-									<ViewStatusAddition name="BankTransactionsAcceptedViewStatus" id="364">
+									<ViewStatusAddition name="BankTransactionsAcceptedViewStatus" id="366">
 										<AdditionSource>
 											<Item>BankTransactionsAccepted</Item>
 											<Type>ViewStatusRepresentation</Type>
 										</AdditionSource>
-										<ContextMenu name="BankTransactionsAcceptedViewStatusContextMenu" id="365"/>
-										<ExtendedTooltip name="BankTransactionsAcceptedViewStatusExtendedTooltip" id="366"/>
+										<ContextMenu name="BankTransactionsAcceptedViewStatusContextMenu" id="367"/>
+										<ExtendedTooltip name="BankTransactionsAcceptedViewStatusExtendedTooltip" id="368"/>
 									</ViewStatusAddition>
-									<SearchControlAddition name="BankTransactionsAcceptedSearchControl" id="367">
+									<SearchControlAddition name="BankTransactionsAcceptedSearchControl" id="369">
 										<AdditionSource>
 											<Item>BankTransactionsAccepted</Item>
 											<Type>SearchControl</Type>
 										</AdditionSource>
-										<ContextMenu name="BankTransactionsAcceptedSearchControlContextMenu" id="368"/>
-										<ExtendedTooltip name="BankTransactionsAcceptedSearchControlExtendedTooltip" id="369"/>
+										<ContextMenu name="BankTransactionsAcceptedSearchControlContextMenu" id="370"/>
+										<ExtendedTooltip name="BankTransactionsAcceptedSearchControlExtendedTooltip" id="371"/>
 									</SearchControlAddition>
 									<ChildItems>
 										<LabelField name="BankTransactionsAcceptedLineNumber" id="39">
@@ -1036,6 +1045,7 @@
 										</LabelField>
 										<CheckBoxField name="BankTransactionsAcceptedUnaccept" id="90">
 											<DataPath>Object.BankTransactionsAccepted.Unaccept</DataPath>
+											<Visible>false</Visible>
 											<EditMode>EnterOnInput</EditMode>
 											<CheckBoxType>Auto</CheckBoxType>
 											<ContextMenu name="BankTransactionsAcceptedUnacceptContextMenu" id="91"/>
@@ -1387,9 +1397,6 @@
 			<Type>
 				<v8:Type>cfg:CatalogRef.BankAccounts</v8:Type>
 			</Type>
-			<Save>
-				<Field>AccountInBank</Field>
-			</Save>
 		</Attribute>
 		<Attribute name="YodleeAccount" id="5">
 			<Title>

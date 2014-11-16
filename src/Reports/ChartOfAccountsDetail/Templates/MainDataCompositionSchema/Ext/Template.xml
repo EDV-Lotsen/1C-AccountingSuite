@@ -38,30 +38,6 @@
 			<dataPath>Description</dataPath>
 			<field>Description</field>
 		</field>
-		<field xsi:type="DataSetFieldNestedDataSet">
-			<dataPath>ExtDimensionTypes</dataPath>
-			<field>ExtDimensionTypes</field>
-		</field>
-		<field xsi:type="DataSetFieldField">
-			<dataPath>ExtDimensionTypes.ExtDimensionType</dataPath>
-			<field>ExtDimensionTypes.ExtDimensionType</field>
-		</field>
-		<field xsi:type="DataSetFieldField">
-			<dataPath>ExtDimensionTypes.LineNumber</dataPath>
-			<field>ExtDimensionTypes.LineNumber</field>
-		</field>
-		<field xsi:type="DataSetFieldField">
-			<dataPath>ExtDimensionTypes.Predefined</dataPath>
-			<field>ExtDimensionTypes.Predefined</field>
-		</field>
-		<field xsi:type="DataSetFieldField">
-			<dataPath>ExtDimensionTypes.Ref</dataPath>
-			<field>ExtDimensionTypes.Ref</field>
-		</field>
-		<field xsi:type="DataSetFieldField">
-			<dataPath>ExtDimensionTypes.TurnoversOnly</dataPath>
-			<field>ExtDimensionTypes.TurnoversOnly</field>
-		</field>
 		<field xsi:type="DataSetFieldField">
 			<dataPath>Memo</dataPath>
 			<field>Memo</field>
@@ -110,13 +86,6 @@
 	ChartOfAccounts.Currency,
 	ChartOfAccounts.CashFlowSection,
 	ChartOfAccounts.Memo,
-	ChartOfAccounts.ExtDimensionTypes.(
-		Ref,
-		LineNumber,
-		ExtDimensionType,
-		Predefined,
-		TurnoversOnly
-	),
 	ChartOfAccounts.Presentation,
 	ChartOfAccounts.Predefined,
 	ChartOfAccounts.PredefinedDataName
@@ -137,69 +106,44 @@ FROM
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>CashFlowSection</dcsset:field>
 				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:SelectedItemFolder">
-					<dcsset:field>ExtDimensionTypes</dcsset:field>
-					<dcsset:item xsi:type="dcsset:SelectedItemField">
-						<dcsset:field>ExtDimensionTypes.ExtDimensionType</dcsset:field>
-					</dcsset:item>
-					<dcsset:item xsi:type="dcsset:SelectedItemField">
-						<dcsset:field>ExtDimensionTypes.LineNumber</dcsset:field>
-					</dcsset:item>
-					<dcsset:item xsi:type="dcsset:SelectedItemField">
-						<dcsset:field>ExtDimensionTypes.Predefined</dcsset:field>
-					</dcsset:item>
-					<dcsset:item xsi:type="dcsset:SelectedItemField">
-						<dcsset:field>ExtDimensionTypes.Ref</dcsset:field>
-					</dcsset:item>
-					<dcsset:item xsi:type="dcsset:SelectedItemField">
-						<dcsset:field>ExtDimensionTypes.TurnoversOnly</dcsset:field>
-					</dcsset:item>
-					<dcsset:item xsi:type="dcsset:SelectedItemField">
-						<dcsset:field>Code</dcsset:field>
-					</dcsset:item>
-					<dcsset:item xsi:type="dcsset:SelectedItemField">
-						<dcsset:field>Currency</dcsset:field>
-					</dcsset:item>
-					<dcsset:item xsi:type="dcsset:SelectedItemField">
-						<dcsset:field>DataVersion</dcsset:field>
-					</dcsset:item>
-					<dcsset:item xsi:type="dcsset:SelectedItemField">
-						<dcsset:field>DeletionMark</dcsset:field>
-					</dcsset:item>
-					<dcsset:item xsi:type="dcsset:SelectedItemField">
-						<dcsset:field>Memo</dcsset:field>
-					</dcsset:item>
-					<dcsset:item xsi:type="dcsset:SelectedItemField">
-						<dcsset:field>Description</dcsset:field>
-					</dcsset:item>
-					<dcsset:item xsi:type="dcsset:SelectedItemField">
-						<dcsset:field>Noncash</dcsset:field>
-					</dcsset:item>
-					<dcsset:item xsi:type="dcsset:SelectedItemField">
-						<dcsset:field>OffBalance</dcsset:field>
-					</dcsset:item>
-					<dcsset:item xsi:type="dcsset:SelectedItemField">
-						<dcsset:field>Order</dcsset:field>
-					</dcsset:item>
-					<dcsset:item xsi:type="dcsset:SelectedItemField">
-						<dcsset:field>OtherComprehensiveIncome</dcsset:field>
-					</dcsset:item>
-					<dcsset:item xsi:type="dcsset:SelectedItemField">
-						<dcsset:field>Parent</dcsset:field>
-					</dcsset:item>
-					<dcsset:item xsi:type="dcsset:SelectedItemField">
-						<dcsset:field>Predefined</dcsset:field>
-					</dcsset:item>
-					<dcsset:item xsi:type="dcsset:SelectedItemField">
-						<dcsset:field>PredefinedDataName</dcsset:field>
-					</dcsset:item>
-					<dcsset:item xsi:type="dcsset:SelectedItemField">
-						<dcsset:field>Ref</dcsset:field>
-					</dcsset:item>
-					<dcsset:item xsi:type="dcsset:SelectedItemField">
-						<dcsset:field>Type</dcsset:field>
-					</dcsset:item>
-					<dcsset:placement>Auto</dcsset:placement>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Code</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Currency</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>DataVersion</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>DeletionMark</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Memo</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Description</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>OffBalance</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Order</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Parent</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Predefined</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>PredefinedDataName</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Ref</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Type</dcsset:field>
 				</dcsset:item>
 			</dcsset:selection>
 			<dcsset:item xsi:type="dcsset:StructureItemGroup">

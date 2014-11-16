@@ -4,11 +4,28 @@
 	<VerticalScroll>useIfNecessary</VerticalScroll>
 	<AutoCommandBar name="FormCommandPanel" id="-1"/>
 	<Events>
+		<Event name="AfterWrite">AfterWrite</Event>
 		<Event name="AfterWriteAtServer">AfterWriteAtServer</Event>
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+		<Event name="BeforeWriteAtServer">BeforeWriteAtServer</Event>
 		<Event name="FillCheckProcessingAtServer">FillCheckProcessingAtServer</Event>
 	</Events>
 	<ChildItems>
+		<InputField name="AccountType" id="5">
+			<DataPath>Object.AccountType</DataPath>
+			<EditMode>EnterOnInput</EditMode>
+			<ContextMenu name="AccountTypeContextMenu" id="6"/>
+			<ExtendedTooltip name="AccountTypeExtendedTooltip" id="25"/>
+			<Events>
+				<Event name="OnChange">AccountTypeOnChange</Event>
+			</Events>
+		</InputField>
+		<InputField name="Description" id="3">
+			<DataPath>Object.Description</DataPath>
+			<EditMode>EnterOnInput</EditMode>
+			<ContextMenu name="DescriptionContextMenu" id="4"/>
+			<ExtendedTooltip name="DescriptionExtendedTooltip" id="24"/>
+		</InputField>
 		<InputField name="Code" id="1">
 			<DataPath>Object.Code</DataPath>
 			<EditMode>EnterOnInput</EditMode>
@@ -18,20 +35,22 @@
 				<Event name="OnChange">CodeOnChange</Event>
 			</Events>
 		</InputField>
-		<InputField name="Description" id="3">
-			<DataPath>Object.Description</DataPath>
-			<EditMode>EnterOnInput</EditMode>
-			<ContextMenu name="DescriptionContextMenu" id="4"/>
-			<ExtendedTooltip name="DescriptionExtendedTooltip" id="24"/>
+		<CheckBoxField name="CreditCard" id="36">
+			<DataPath>Object.CreditCard</DataPath>
+			<CheckBoxType>Auto</CheckBoxType>
+			<ContextMenu name="CreditCardContextMenu" id="37"/>
+			<ExtendedTooltip name="CreditCardExtendedTooltip" id="38"/>
+		</CheckBoxField>
+		<InputField name="ReclassAccount" id="39">
+			<DataPath>Object.ReclassAccount</DataPath>
+			<ContextMenu name="ReclassAccountContextMenu" id="40"/>
+			<ExtendedTooltip name="ReclassAccountExtendedTooltip" id="41"/>
 		</InputField>
-		<InputField name="AccountType" id="5">
-			<DataPath>Object.AccountType</DataPath>
-			<EditMode>EnterOnInput</EditMode>
-			<ContextMenu name="AccountTypeContextMenu" id="6"/>
-			<ExtendedTooltip name="AccountTypeExtendedTooltip" id="25"/>
-			<Events>
-				<Event name="OnChange">AccountTypeOnChange</Event>
-			</Events>
+		<InputField name="Parent" id="33">
+			<DataPath>Object.Parent</DataPath>
+			<ReadOnly>true</ReadOnly>
+			<ContextMenu name="ParentContextMenu" id="34"/>
+			<ExtendedTooltip name="ParentExtendedTooltip" id="35"/>
 		</InputField>
 		<InputField name="Currency" id="13">
 			<DataPath>Object.Currency</DataPath>

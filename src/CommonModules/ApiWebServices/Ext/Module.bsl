@@ -31,24 +31,14 @@
 		NewCompany = Catalogs.Companies.CreateItem();
 	
 		NewCompany.Description = ParsedJSON.company_name;
-		
-		Try companyCode = ParsedJSON.company_code Except companyCode = Undefined EndTry;
-		If NOT companyCode = Undefined Then
-			errorMessage = New Map();
-			strMessage = " [company_code] : Cannot manually specify this. Accounting Suite automatically generates it ";
-			errorMessage.Insert("message", strMessage);
-			errorMessage.Insert("status", "error"); 
-			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
-			return errorJSON;
-		EndIf;
-		
-		Try companyType = ParsedJSON.company_type Except companyType = Undefined EndTry;
-		If NOT companyType = Undefined Then
+				
+		Try companyType = StrReplace(Lower(ParsedJSON.company_type), " ", ""); Except companyType = Undefined EndTry;
+		If (NOT companyType = Undefined) AND (NOT companyType = "") Then
 			If companyType = "customer" Then
 				NewCompany.Customer = True;
 			ElsIf companyType = "vendor" Then
 				NewCompany.Vendor = True;
-			ElsIf companyType = "customer+vendor" Then
+			ElsIf companyType = "customer+vendor" OR companyType = "vendor+customer" Then
 				NewCompany.Customer = True;
 				NewCompany.Vendor = True;
 			Else
@@ -59,13 +49,7 @@
 				errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
 				return errorJSON;
 			EndIf;
-		Else
-			//errorMessage = New Map();
-			//strMessage = " [company_type] : This is a required field ";
-			//errorMessage.Insert("message", strMessage);
-			//errorMessage.Insert("status", "error"); 
-			//errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
-			//return errorJSON; 
+		Else 
 			NewCompany.Customer = True;
 		EndIf;
 				
@@ -73,32 +57,57 @@
 		NewCompany.Terms = Catalogs.PaymentTerms.Net30;
 		
 		Try NewCompany.Website = ParsedJSON.website; Except EndTry;
-		//Try NewCompany.PriceLevel = ParsedJSON.price_level; Except EndTry;
 		Try NewCompany.Notes  = ParsedJSON.notes; Except EndTry;
 		
 		Try pl = ParsedJSON.price_level Except pl = Undefined EndTry;
-		If NOT pl = Undefined Then
-			plQuery = New Query("SELECT
+		If (NOT pl = Undefined) AND (NOT pl = "") Then
+			plQuery = new Query("SELECT
 			                    |	PriceLevels.Ref
 			                    |FROM
 			                    |	Catalog.PriceLevels AS PriceLevels
 			                    |WHERE
-			                    |	PriceLevels.Description = &plCode");
-			plQuery.SetParameter("plCode", pl );
-			plQueryResult = plQuery.Execute();
-			If plQueryResult.IsEmpty() Then
-				errorMessage = New Map();
-				strMessage = " [price_level] : This does not exist. You must create the price level first. ";
-				errorMessage.Insert("message", strMessage);
-				errorMessage.Insert("status", "error"); 
-				errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
-				return errorJSON;
+			                    |	PriceLevels.Description = &Description");
+							   
+			plQuery.SetParameter("Description", pl);
+			plResult = plQuery.Execute();
+			If plResult.IsEmpty() Then
+				// pricelevel is new
+				Newpl = Catalogs.PriceLevels.CreateItem();
+				Newpl.Description = pl;
+				Newpl.Write();
+				NewCompany.PriceLevel = Newpl.Ref;
+			Else
+				//pricelevel exists
+				pricelevel = plResult.Unload();
+				NewCompany.PriceLevel = pricelevel[0].Ref;
 			EndIf;
-			pl_result = plQueryResult.Unload();
-			NewCompany.PriceLevel = pl_result[0].Ref;
+		EndIf;
+		
+		//salesperson
+		Try sp = ParsedJSON.sales_person Except  sp = Undefined EndTry;
+		If (NOT sp = Undefined) AND (NOT sp = "") Then
+			spQuery = new Query("SELECT
+			                    |	SalesPeople.Ref
+			                    |FROM
+			                    |	Catalog.SalesPeople AS SalesPeople
+			                    |WHERE
+			                    |	SalesPeople.Description = &Description");
+							   
+			spQuery.SetParameter("Description", sp);
+			spResult = spQuery.Execute();
+			If spResult.IsEmpty() Then
+				// salesperson is new
+				Newsp = Catalogs.SalesPeople.CreateItem();
+				Newsp.Description = sp;
+				Newsp.Write();
+				NewCompany.SalesPerson = Newsp.Ref;
+			Else
+				//salesperosn exists
+				salesperson = spResult.Unload();
+				NewCompany.SalesPerson = salesperson[0].Ref;
+			EndIf;
 		EndIf;
 
-		
 		Try NewCompany.CF1String = ParsedJSON.cf1_string; Except EndTry;
 		Try NewCompany.CF2String = ParsedJSON.cf2_string; Except EndTry;
 		Try NewCompany.CF3String = ParsedJSON.cf3_string; Except EndTry;
@@ -111,7 +120,7 @@
 		Try NewCompany.CF5Num = ParsedJSON.cf5_num; Except EndTry;
 		
 		Try
-		
+		    // check address stuff before writing
 			DataAddresses = ParsedJSON.lines.addresses;
 			
 			ArrayLines = DataAddresses.Count();
@@ -132,46 +141,21 @@
 					EndIf;
 				Except
 				EndTry;
-				
-				Try
-					If i > 0 Then
-						For j = 0 to i-1 Do
-							If DataAddresses[i].default_billing = TRUE AND DataAddresses[j].default_billing = TRUE Then
-								errorMessage = New Map();
-								strMessage = " [default_billing(" + (i+1) +  ")] : Cannot have multiple addresses be set to default billing.";
-								errorMessage.Insert("message", strMessage);
-								errorMessage.Insert("status", "error"); 
-								errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
-								return errorJSON;
-							EndIf;
-						EndDo;
-					EndIf;
-				Except
-				EndTry;	
-				
-				Try
-					If i > 0 Then
-						For j = 0 to i-1 Do
-							If DataAddresses[i].default_shipping = TRUE AND DataAddresses[j].default_shipping = TRUE Then
-								errorMessage = New Map();
-								strMessage = " [default_shipping(" + (i+1) +  ")] : Cannot have multiple addresses be set to default shipping.";
-								errorMessage.Insert("message", strMessage);
-								errorMessage.Insert("status", "error"); 
-								errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
-								return errorJSON;
-							EndIf;
-						EndDo;
-					EndIf;
-				Except
-				EndTry;
-				
+							
 			EndDo;
 			
 		Except
+			NewCompany.Write();
+			// add primary address cus no address specified
+			AddressLine = Catalogs.Addresses.CreateItem();
+			AddressLine.Owner = NewCompany.Ref;
+			AddressLine.DefaultBilling = True;
+			AddressLine.DefaultShipping = True;
+			AddressLine.Description = "Primary";
+			AddressLine.Write();
+			Return InternetConnectionClientServer.EncodeJSON(GeneralFunctions.ReturnCompanyObjectMap(NewCompany));
 		EndTry;
 		
-		NewCompany.Write();
-	
 	Else
 		
 		CompanyData = New Map();
@@ -186,19 +170,29 @@
 	EndIf;
 	
 	Try
-	
+	    NewCompany.Write();
 		DataAddresses = ParsedJSON.lines.addresses;
 		
 		ArrayLines = DataAddresses.Count();
 		For i = 0 To ArrayLines -1 Do
 			
 			AddressLine = Catalogs.Addresses.CreateItem();
-			AddressLine.Owner = NewCompany.Ref;
 
-			Try
+			If DataAddresses[i].address_id <> "" AND DataAddresses[i].address_id <> Undefined Then
 				AddressLine.Description = DataAddresses[i].address_id;
+			Else
+				errorMessage = New Map();
+				strMessage = " [address_id(" + (i+1) +  ")] : Address ID is a required field ";
+				errorMessage.Insert("message", strMessage);
+				errorMessage.Insert("status", "error"); 
+				errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+				return errorJSON;
+			EndIf;
+			
+			//salutation
+			Try
+				AddressLine.Salutation = DataAddresses[i].salutation;
 			Except
-				AddressLine.Description = "Primary";
 			EndTry;
 			
 			Try
@@ -218,12 +212,60 @@
 				AddressLine.LastName = LastName;
 			Except
 			EndTry;
+			
+			// suffix
+			Try
+				AddressLine.Suffix = DataAddresses[i].suffix;
+			Except
+			EndTry;
 				
 			Try
 				Phone = DataAddresses[i].phone;
 				AddressLine.Phone = Phone;
 			Except
 			EndTry;
+			
+			Try
+				AddressLine.Cell = DataAddresses[i].cell;
+			Except
+			EndTry;
+			Try
+				AddressLine.Fax = DataAddresses[i].fax;
+			Except
+			EndTry;
+			Try
+				AddressLine.JobTitle = DataAddresses[i].job_title;
+			Except
+			EndTry;
+			Try
+				AddressLine.Notes = DataAddresses[i].notes;
+			Except
+			EndTry;
+			
+			//salesperson
+			Try sp = DataAddresses[i].sales_person Except  sp = Undefined EndTry;
+			If (NOT sp = Undefined) AND (NOT sp = "") Then
+				spQuery = new Query("SELECT
+				                    |	SalesPeople.Ref
+				                    |FROM
+				                    |	Catalog.SalesPeople AS SalesPeople
+				                    |WHERE
+				                    |	SalesPeople.Description = &Description");
+								   
+				spQuery.SetParameter("Description", sp);
+				spResult = spQuery.Execute();
+				If spResult.IsEmpty() Then
+					// salesperson is new
+					Newsp = Catalogs.SalesPeople.CreateItem();
+					Newsp.Description = sp;
+					Newsp.Write();
+					AddressLine.SalesPerson = Newsp.Ref;
+				Else
+					//salesperosn exists
+					salesperson = spResult.Unload();
+					AddressLine.SalesPerson = salesperson[0].Ref;
+				EndIf;
+			EndIf;
 			
 			Try
 				Email = DataAddresses[i].email;
@@ -244,6 +286,12 @@
 			EndTry;
 			
 			Try
+				AddressLine3 = DataAddresses[i].address_line3;
+				AddressLine.AddressLine3 = AddressLine3;
+			Except
+			EndTry;
+			
+			Try
 				City = DataAddresses[i].city;
 				AddressLine.City = City;
 			Except
@@ -251,14 +299,24 @@
 
 			Try
 				State = DataAddresses[i].state;
-				AddressLine.State = Catalogs.States.FindByCode(State);
+				AddressLine.State = Catalogs.States.FindByCode(Upper(State));
 			Except
+				Try
+					State = DataAddresses[i].state;
+					AddressLine.State = Catalogs.States.FindByDescription(Title(State));
+				Except
+				EndTry;
 			EndTry;
 			
 			Try
 				Country = DataAddresses[i].country;
-				AddressLine.Country = Catalogs.Countries.FindByCode(Country);
+				AddressLine.Country = Catalogs.Countries.FindByCode(Upper(Country));
 			Except
+				Try
+					Country = DataAddresses[i].country;
+					AddressLine.Country = Catalogs.Countries.FindByDescription(Title(Country));
+				Except
+				EndTry;
 			EndTry;
 			
 			Try
@@ -266,71 +324,83 @@
 				AddressLine.ZIP = ZIP;
 			Except
 			EndTry;
+			
 			Try
 				If i = 0 Then
 					AddressLine.DefaultBilling = True;
 				Else
-					Try DefaultBilling = DataAddresses[i].default_billing; 
-					AddressLine.DefaultBilling = DefaultBilling; Except EndTry;
+					Try DefaultBilling = DataAddresses[i].default_billing;  
+					Except 
+						DefaultBilling = False;
+					EndTry;
 					If DefaultBilling = True Then
 						addrQuery = New Query("SELECT
 						                      |	Addresses.Ref
 						                      |FROM
 						                      |	Catalog.Addresses AS Addresses
 						                      |WHERE
-						                      |	Addresses.Owner = &Ref");
+						                      |	Addresses.Owner = &Ref
+						                      |	AND Addresses.DefaultBilling = TRUE");
 						addrQuery.SetParameter("Ref", NewCompany.Ref);
-						allAddr = addrQuery.Execute().Unload();
-						For each addr in allAddr Do
-							addrObj = addr.Ref.GetObject();
+						results = addrQuery.Execute();
+						Dataset = results.Unload();
+						For i = 0 to Dataset.Count()-1 Do
+							addrRef = Dataset[i].Ref;
+							addrObj = addrRef.GetObject();
 							addrObj.DefaultBilling = False;
-							addrObj.Write();
+							addrObj.Write();	
 						EndDo;
 					EndIf;
+					AddressLine.DefaultBilling = DefaultBilling;
 				EndIf;
+				
 			Except
-			EndTry;	
+			EndTry;
 			
 			Try
 				If i = 0 Then
-					AddressLine.DefaultShipping = True;
+					AddressLine.Defaultshipping = True;
 				Else
-					Try DefaultShipping = DataAddresses[i].default_shipping; 
-					AddressLine.DefaultShipping = DefaultShipping; Except EndTry;
-					If DefaultShipping = True Then
+					Try Defaultshipping = DataAddresses[i].default_shipping;  
+					Except 
+						Defaultshipping = False;	
+					EndTry;
+					If Defaultshipping = True Then
 						addrQuery = New Query("SELECT
 						                      |	Addresses.Ref
 						                      |FROM
 						                      |	Catalog.Addresses AS Addresses
 						                      |WHERE
-						                      |	Addresses.Owner = &Ref");
+						                      |	Addresses.Owner = &Ref
+						                      |	AND Addresses.DefaultShipping = TRUE");
 						addrQuery.SetParameter("Ref", NewCompany.Ref);
-						allAddr = addrQuery.Execute().Unload();
-						For each addr in allAddr Do
-							addrObj = addr.Ref.GetObject();
+						results = addrQuery.Execute();
+						Dataset = results.Unload();
+						For i = 0 to Dataset.Count()-1 Do
+							addrRef = Dataset[i].Ref;
+							addrObj = addrRef.GetObject();
 							addrObj.DefaultShipping = False;
-							addrObj.Write();
+							addrObj.Write();	
 						EndDo;
 					EndIf;
-				EndIf;
-				
+					AddressLine.DefaultShipping = DefaultShipping;
+				EndIf;	
 			Except
 			EndTry;
-						
+			
+			AddressLine.Owner = NewCompany.Ref;			
 			AddressLine.Write();
 			
 		EndDo;
 
 	Except
-		
+		    NewCompany.Write();
 			AddressLine = Catalogs.Addresses.CreateItem();
 			AddressLine.Owner = NewCompany.Ref;
 			AddressLine.DefaultBilling = True;
 			AddressLine.DefaultShipping = True;
 			AddressLine.Description = "Primary";
-			AddressLine.Write();
-
-		
+			AddressLine.Write();	
 	EndTry;
 			
 	Return InternetConnectionClientServer.EncodeJSON(GeneralFunctions.ReturnCompanyObjectMap(NewCompany));
@@ -341,7 +411,7 @@ EndFunction
 Function inoutCompaniesUpdate(jsonin, object_code) Export
 	
 	CompanyCodeJSON = InternetConnectionClientServer.DecodeJSON(object_code);
-	//api_code = CompanyCodeJSON.object_code;
+	
 	Try api_code = CompanyCodeJSON.object_code Except api_code = Undefined EndTry;
 	If api_code = Undefined OR api_code = "" Then
 		errorMessage = New Map();
@@ -354,8 +424,6 @@ Function inoutCompaniesUpdate(jsonin, object_code) Export
 	
 	ParsedJSON = InternetConnectionClientServer.DecodeJSON(jsonin);
 	
-	//UpdatedCompany = Catalogs.Companies.FindByCode(CompanyCode);
-	//UpdatedCompany = Catalogs.Companies.GetRef(New UUID(api_code));
 	Try	
 		UpdatedCompany = Catalogs.Companies.getref(New UUID(api_code));
 	Except
@@ -385,18 +453,7 @@ Function inoutCompaniesUpdate(jsonin, object_code) Export
 	EndIf;
 		
 	UpdatedCompanyObj = UpdatedCompany.GetObject();
-	
-	Try companyCode = ParsedJSON.company_code Except companyCode = Undefined EndTry;
-		If NOT companyCode = Undefined Then
-			errorMessage = New Map();
-			strMessage = " [company_code] : Cannot manually specify this. Accounting Suite automatically generates it ";
-			errorMessage.Insert("message", strMessage);
-			errorMessage.Insert("status", "error"); 
-			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
-			return errorJSON;
-		EndIf;
 		
-	////////////////////////////////////
 	Try
         companyName = ParsedJSON.company_name;
 		Query = New Query("SELECT
@@ -422,11 +479,9 @@ Function inoutCompaniesUpdate(jsonin, object_code) Export
 		EndIf;
 	Except
 	EndTry;
-	/////////////////
 	
-	//////////////
 	Try
-		companyType = ParsedJSON.company_type;
+		companyType = strReplace(lower(ParsedJSON.company_type), " ", "");
 	Except
 		companyType = Undefined;
 	EndTry;
@@ -439,34 +494,60 @@ Function inoutCompaniesUpdate(jsonin, object_code) Export
 		ElsIf companyType = "customer" AND UpdatedCompanyObj.Vendor = TRUE Then
 			UpdatedCompanyObj.Customer = TRUE;
 		Else
-			//CompanyData = New Map();
-			//CompanyData.Insert("message", " [company_type] : This cannot be changed once the company is created. Only allowed to add a type");
-			//CompanyData.Insert("status", "error");
-			//jsonout = InternetConnectionClientServer.EncodeJSON(CompanyData);
-			//return jsonout;
+	
 		EndIf;
 	EndIf;
-	//////////////////	
 	
 	Try UpdatedCompanyObj.Website = ParsedJSON.website; Except EndTry;
 	
-	Try 
-		PriceLevel = catalogs.PriceLevels.FindByDescription(ParsedJSON.price_level);
-	Except 
-	EndTry;
-	Try 
-	If NOT PriceLevel.isEmpty() Then
-		UpdatedCompanyObj.PriceLevel = PriceLevel;
-	Else
-		errorMessage = New Map();
-		strMessage = " [price_level] : The price level does not exist. Must create it first. ";
-		errorMessage.Insert("message", strMessage);
-		errorMessage.Insert("status", "error"); 
-		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
-		return errorJSON;
+	Try pl = ParsedJSON.price_level Except pl = Undefined EndTry;
+	If (NOT pl = Undefined) AND (NOT pl = "") Then
+		plQuery = new Query("SELECT
+		                    |	PriceLevels.Ref
+		                    |FROM
+		                    |	Catalog.PriceLevels AS PriceLevels
+		                    |WHERE
+		                    |	PriceLevels.Description = &Description");
+						   
+		plQuery.SetParameter("Description", pl);
+		plResult = plQuery.Execute();
+		If plResult.IsEmpty() Then
+			// pricelevel is new
+			Newpl = Catalogs.PriceLevels.CreateItem();
+			Newpl.Description = pl;
+			Newpl.Write();
+			UpdatedCompanyObj.PriceLevel = Newpl.Ref;
+		Else
+			//pricelevel exists
+			pricelevel = plResult.Unload();
+			UpdatedCompanyObj.PriceLevel = pricelevel[0].Ref;
+		EndIf;               
 	EndIf;
-	Except
-	Endtry;
+	
+	//salesperson
+	Try sp = ParsedJSON.sales_person Except  sp = Undefined EndTry;
+	If (NOT sp = Undefined) AND (NOT sp = "") Then
+		spQuery = new Query("SELECT
+		                    |	SalesPeople.Ref
+		                    |FROM
+		                    |	Catalog.SalesPeople AS SalesPeople
+		                    |WHERE
+		                    |	SalesPeople.Description = &Description");
+						   
+		spQuery.SetParameter("Description", sp);
+		spResult = spQuery.Execute();
+		If spResult.IsEmpty() Then
+			// salesperson is new
+			Newsp = Catalogs.SalesPeople.CreateItem();
+			Newsp.Description = sp;
+			Newsp.Write();
+			UpdatedCompanyObj.SalesPerson = Newsp.Ref;
+		Else
+			//salesperosn exists
+			salesperson = spResult.Unload();
+			UpdatedCompanyObj.SalesPerson = salesperson[0].Ref;
+		EndIf;
+	EndIf;
 	
 	//should check if its num or string, maybe disallow writing to both for same CF
 	Try UpdatedCompanyObj.Notes = ParsedJSON.notes; Except EndTry;
@@ -495,38 +576,6 @@ Function inoutCompaniesUpdate(jsonin, object_code) Export
 							If DataAddresses[j].address_id = DataAddresses[i].address_id Then
 								errorMessage = New Map();
 								strMessage = " [address_id(" + (i+1) +  ")] : Address ID must be unique. Cannot enter identical address IDs. ";
-								errorMessage.Insert("message", strMessage);
-								errorMessage.Insert("status", "error"); 
-								errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
-								return errorJSON;
-							EndIf;
-						EndDo;
-					EndIf;
-				Except
-				EndTry;
-				
-				Try
-					If i > 0 Then
-						For j = 0 to i-1 Do
-							If DataAddresses[i].default_billing = TRUE AND DataAddresses[j].default_billing = TRUE Then
-								errorMessage = New Map();
-								strMessage = " [default_billing(" + (i+1) +  ")] : Cannot have multiple addresses be set to default billing.";
-								errorMessage.Insert("message", strMessage);
-								errorMessage.Insert("status", "error"); 
-								errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
-								return errorJSON;
-							EndIf;
-						EndDo;
-					EndIf;
-				Except
-				EndTry;	
-				
-				Try
-					If i > 0 Then
-						For j = 0 to i-1 Do
-							If DataAddresses[i].default_shipping = TRUE AND DataAddresses[j].default_shipping = TRUE Then
-								errorMessage = New Map();
-								strMessage = " [default_shipping(" + (i+1) +  ")] : Cannot have multiple addresses be set to default shipping.";
 								errorMessage.Insert("message", strMessage);
 								errorMessage.Insert("status", "error"); 
 								errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -583,83 +632,121 @@ Function inoutCompaniesUpdate(jsonin, object_code) Export
 	
 						EndTry;
 						
+						Try AddrObj.Salutation = Address.Salutation; Except EndTry;
 						Try AddrObj.FirstName = Address.first_name; Except EndTry;
 						Try AddrObj.MiddleName = Address.middle_name; Except EndTry;
 						Try AddrObj.LastName = Address.last_name; Except EndTry;
+						Try AddrObj.Suffix = Address.suffix; Except EndTry;
+
 						Try AddrObj.AddressLine1 = Address.address_line1; Except EndTry;
 						Try AddrObj.AddressLine2 = Address.address_line2; Except EndTry;
+						Try AddrObj.AddressLine3 = Address.address_line3; Except EndTry;
+
 						Try AddrObj.City = Address.city; Except EndTry;
-						Try 
-							AddrState = Catalogs.States.FindByDescription(Address.state);
-							AddrObj.State = AddrState; 
-						Except 
+						Try
+							State = Address.state;
+							AddrObj.State = Catalogs.States.FindByCode(Upper(State));
+						Except
+							Try
+								State = Address.state;
+								AddrObj.State = Catalogs.States.FindByDescription(Title(State));
+							Except
+							EndTry;
+						EndTry;
+						
+						Try
+							Country = Address.country;
+							AddrObj.Country = Catalogs.Countries.FindByCode(Upper(Country));
+						Except
+							Try
+								Country = Address.country;
+								AddrObj.Country = Catalogs.Countries.FindByDescription(Title(Country));
+							Except
+							EndTry;
 						EndTry;
 						Try AddrObj.ZIP = Address.zip; Except EndTry;
-						Try 
-							AddrCountry = Catalogs.Countries.FindByDescription(Address.country);
-							AddrObj.Country = AddrCountry; 
-						Except 
-						EndTry;
+						
 						Try AddrObj.Phone = Address.phone; Except EndTry;
 						Try AddrObj.Cell = Address.cell; Except EndTry;
 						Try AddrObj.Email = Address.email; Except EndTry;
-						Try 
-							AddrSaleTaxCode = Catalogs.SalesTaxCodes.FindByDescription(Address.sales_tax_code);
-							AddrObj.Phone = AddrSaleTaxCode; 
-						Except 
-						EndTry;
+						Try AddrObj.Fax = Address.fax; Except EndTry;
+						Try AddrObj.JobTitle = Address.job_title; Except EndTry;
+						
+						//salesperson
+						Try sp = Address.sales_person Except  sp = Undefined EndTry;
+						If (NOT sp = Undefined) AND (NOT sp = "") Then
+							spQuery = new Query("SELECT
+							                    |	SalesPeople.Ref
+							                    |FROM
+							                    |	Catalog.SalesPeople AS SalesPeople
+							                    |WHERE
+							                    |	SalesPeople.Description = &Description");
+											   
+							spQuery.SetParameter("Description", sp);
+							spResult = spQuery.Execute();
+							If spResult.IsEmpty() Then
+								// salesperson is new
+								Newsp = Catalogs.SalesPeople.CreateItem();
+								Newsp.Description = sp;
+								Newsp.Write();
+								AddrObj.SalesPerson = Newsp.Ref;
+							Else
+								//salesperosn exists
+								salesperson = spResult.Unload();
+								AddrObj.SalesPerson = salesperson[0].Ref;
+							EndIf;
+						EndIf;
+						
 						Try AddrObj.Notes = Address.notes; Except EndTry;
 						
-						Try
-								Try DefaultBilling = Address.default_billing; 
-								AddrObj.DefaultBilling = DefaultBilling; Except EndTry;
-								If DefaultBilling = True Then
-									addrQuery = New Query("SELECT
-									                      |	Addresses.Ref
-									                      |FROM
-									                      |	Catalog.Addresses AS Addresses
-									                      |WHERE
-									                      |	Addresses.Owner = &Ref
-									                      |	AND Addresses.Description <> &Description");
-									addrQuery.SetParameter("Ref", UpdatedCompanyObj.Ref);
-									CurAddress = Catalogs.Addresses.GetRef(aac);
-									thisAddr = CurAddress.GetObject();
-									addrQuery.SetParameter("Description", thisAddr.Description);
-									allAddr = addrQuery.Execute().Unload();
-									For each addr in allAddr Do
-										oldAddr = addr.Ref.GetObject();
-										oldAddr.DefaultBilling = False;
-										oldAddr.Write();
-									EndDo;
-								EndIf;
-						Except
+						Try DefaultBilling = Address.default_billing;  
+						Except 
+							DefaultBilling = Undefined;
 						EndTry;
-						
-						Try
-							Try DefaultShipping = Address.default_shipping; 
-								AddrObj.DefaultShipping = DefaultShipping; Except EndTry;
-								If DefaultShipping = True Then
-									addrQuery = New Query("SELECT
-									                      |	Addresses.Ref
-									                      |FROM
-									                      |	Catalog.Addresses AS Addresses
-									                      |WHERE
-									                      |	Addresses.Owner = &Ref
-									                      |	AND Addresses.Description <> &Description");
-									addrQuery.SetParameter("Ref", UpdatedCompanyObj.Ref);
-									CurAddress = Catalogs.Addresses.GetRef(aac);
-									thisAddr = CurAddress.GetObject();
-									addrQuery.SetParameter("Description", thisAddr.Description);
-									allAddr = addrQuery.Execute().Unload();
-									For each addr in allAddr Do
-										oldAddr = addr.Ref.GetObject();
-										oldAddr.DefaultShipping = False;
-										oldAddr.Write();
-									EndDo;
-								EndIf;
-						Except
+						If DefaultBilling = True Then
+							addrQuery = New Query("SELECT
+							                      |	Addresses.Ref
+							                      |FROM
+							                      |	Catalog.Addresses AS Addresses
+							                      |WHERE
+							                      |	Addresses.Owner = &Ref
+							                      |	AND Addresses.DefaultBilling = TRUE");
+							addrQuery.SetParameter("Ref", UpdatedCompanyObj.Ref);
+							results = addrQuery.Execute();
+							Dataset = results.Unload();
+							For i = 0 to Dataset.Count()-1 Do
+								addrRef = Dataset[i].Ref;
+								addrObj1 = addrRef.GetObject();
+								addrObj1.DefaultBilling = False;
+								addrObj1.Write();	
+							EndDo; 
+							AddrObj.DefaultBilling = DefaultBilling;
+						EndIf;
+								
+						Try Defaultshipping = Address.default_shipping;  
+						Except 
+							Defaultshipping = Undefined;	
 						EndTry;
-
+						If Defaultshipping = True Then
+							addrQuery = New Query("SELECT
+							                      |	Addresses.Ref
+							                      |FROM
+							                      |	Catalog.Addresses AS Addresses
+							                      |WHERE
+							                      |	Addresses.Owner = &Ref
+							                      |	AND Addresses.DefaultShipping = TRUE");
+							addrQuery.SetParameter("Ref", UpdatedCompanyObj.Ref);
+							results = addrQuery.Execute();
+							Dataset = results.Unload();
+							For i = 0 to Dataset.Count()-1 Do
+								addrRef = Dataset[i].Ref;
+								addrObj1 = addrRef.GetObject();
+								addrObj1.DefaultShipping = False;
+								addrObj1.Write();	
+							EndDo;
+							AddrObj.DefaultShipping = DefaultShipping;
+						EndIf;
+				
 						AddrObj.Write();
 					Else
 						errorMessage = New Map();
@@ -687,94 +774,138 @@ Function inoutCompaniesUpdate(jsonin, object_code) Export
 							return errorJSON;
 						EndTry;
 						
+						
+						Try AddrObj.Salutation = Address.salutation; Except EndTry;
+						Try AddrObj.Suffix = Address.suffix; Except EndTry;
+						
 						Try AddrObj.FirstName = Address.first_name; Except EndTry;
 						Try AddrObj.MiddleName = Address.middle_name; Except EndTry;
 						Try AddrObj.LastName = Address.last_name; Except EndTry;
 						Try AddrObj.AddressLine1 = Address.address_line1; Except EndTry;
 						Try AddrObj.AddressLine2 = Address.address_line2; Except EndTry;
+						Try AddrObj.AddressLine3 = Address.address_line3; Except EndTry;
+
 						Try AddrObj.City = Address.city; Except EndTry;
-						Try 
-							AddrState = Catalogs.States.FindByDescription(Address.state);
-							AddrObj.State = AddrState; 
-						Except 
-						EndTry;
+						
 						Try AddrObj.ZIP = Address.zip; Except EndTry;
-						Try 
-							AddrCountry = Catalogs.Countries.FindByDescription(Address.country);
-							AddrObj.Country = AddrCountry; 
-						Except 
+						
+						Try
+							State = Address.state;
+							AddrObj.State = Catalogs.States.FindByCode(Upper(State));
+						Except
+							Try
+								State = Address.state;
+								AddrObj.State = Catalogs.States.FindByDescription(Title(State));
+							Except
+							EndTry;
+						EndTry;
+						
+						Try
+							Country = Address.country;
+							AddrObj.Country = Catalogs.Countries.FindByCode(Upper(Country));
+						Except
+							Try
+								Country = Address.country;
+								AddrObj.Country = Catalogs.Countries.FindByDescription(Title(Country));
+							Except
+							EndTry;
 						EndTry;
 						Try AddrObj.Phone = Address.phone; Except EndTry;
+						Try AddrObj.Fax = Address.fax; Except EndTry;
 						Try AddrObj.Cell = Address.cell; Except EndTry;
 						Try AddrObj.Email = Address.email; Except EndTry;
-						Try 
-							AddrSaleTaxCode = Catalogs.SalesTaxCodes.FindByDescription(Address.sales_tax_code);
-							AddrObj.Phone = AddrSaleTaxCode; 
-						Except 
-						EndTry;
+						Try AddrObj.JobTitle = Address.job_title; Except EndTry;
 						Try AddrObj.Notes = Address.notes; Except EndTry;
 						
+						//salesperson
+						Try sp = Address.sales_person Except  sp = Undefined EndTry;
+						If (NOT sp = Undefined) AND (NOT sp = "") Then
+							spQuery = new Query("SELECT
+							                    |	SalesPeople.Ref
+							                    |FROM
+							                    |	Catalog.SalesPeople AS SalesPeople
+							                    |WHERE
+							                    |	SalesPeople.Description = &Description");
+											   
+							spQuery.SetParameter("Description", sp);
+							spResult = spQuery.Execute();
+							If spResult.IsEmpty() Then
+								// salesperson is new
+								Newsp = Catalogs.SalesPeople.CreateItem();
+								Newsp.Description = sp;
+								Newsp.Write();
+								AddrObj.SalesPerson = Newsp.Ref;
+							Else
+								//salesperosn exists
+								salesperson = spResult.Unload();
+								AddrObj.SalesPerson = salesperson[0].Ref;
+							EndIf;
+						EndIf;
 						
-						Try
-								Try DefaultBilling = Address.default_billing; 
-								AddrObj.DefaultBilling = DefaultBilling; Except EndTry;
-								If DefaultBilling = True Then
-									addrQuery = New Query("SELECT
-									                      |	Addresses.Ref
-									                      |FROM
-									                      |	Catalog.Addresses AS Addresses
-									                      |WHERE
-									                      |	Addresses.Owner = &Ref");
-									addrQuery.SetParameter("Ref", UpdatedCompanyObj.Ref);
-									allAddr = addrQuery.Execute().Unload();
-									For each addr in allAddr Do
-										oldAddr = addr.Ref.GetObject();
-										oldAddr.DefaultBilling = False;
-										oldAddr.Write();
-									EndDo;
-								EndIf;
-						Except
+						Try DefaultBilling = Address.default_billing;  
+						Except 
+							DefaultBilling = Undefined;
 						EndTry;
-						
-						Try
-							Try DefaultShipping = Address.default_shipping; 
-								AddrObj.DefaultShipping = DefaultShipping; Except EndTry;
-								If DefaultShipping = True Then
-									addrQuery = New Query("SELECT
-									                      |	Addresses.Ref
-									                      |FROM
-									                      |	Catalog.Addresses AS Addresses
-									                      |WHERE
-									                      |	Addresses.Owner = &Ref");
-									addrQuery.SetParameter("Ref", UpdatedCompanyObj.Ref);
-									allAddr = addrQuery.Execute().Unload();
-									For each addr in allAddr Do
-										oldAddr = addr.Ref.GetObject();
-										oldAddr.DefaultShipping = False;
-										oldAddr.Write();
-									EndDo;
-								EndIf;
-						Except
+						If DefaultBilling = True Then
+							addrQuery = New Query("SELECT
+							                      |	Addresses.Ref
+							                      |FROM
+							                      |	Catalog.Addresses AS Addresses
+							                      |WHERE
+							                      |	Addresses.Owner = &Ref
+							                      |	AND Addresses.DefaultBilling = TRUE");
+							addrQuery.SetParameter("Ref", UpdatedCompanyObj.Ref);
+							results = addrQuery.Execute();
+							Dataset = results.Unload();
+							For i = 0 to Dataset.Count()-1 Do
+								addrRef = Dataset[i].Ref;
+								addrObj1 = addrRef.GetObject();
+								addrObj1.DefaultBilling = False;
+								addrObj1.Write();	
+							EndDo; 
+							AddrObj.DefaultBilling = DefaultBilling;
+						EndIf;
+								
+						Try Defaultshipping = Address.default_shipping;  
+						Except 
+							Defaultshipping = Undefined;	
 						EndTry;
-
+						If Defaultshipping = True Then
+							addrQuery = New Query("SELECT
+							                      |	Addresses.Ref
+							                      |FROM
+							                      |	Catalog.Addresses AS Addresses
+							                      |WHERE
+							                      |	Addresses.Owner = &Ref
+							                      |	AND Addresses.DefaultShipping = TRUE");
+							addrQuery.SetParameter("Ref", UpdatedCompanyObj.Ref);
+							results = addrQuery.Execute();
+							Dataset = results.Unload();
+							For i = 0 to Dataset.Count()-1 Do
+								addrRef = Dataset[i].Ref;
+								addrObj1 = addrRef.GetObject();
+								addrObj1.DefaultShipping = False;
+								addrObj1.Write();	
+							EndDo;
+							AddrObj.DefaultShipping = DefaultShipping;
+						EndIf;
 												
-
 						AddrObj.Write();
 					Except
-							errorMessage = New Map();
-							strMessage = " [address.address_id] : The address id already exists. It must be unique. ";
-							errorMessage.Insert("message", strMessage);
-							errorMessage.Insert("status", "error"); 
-							errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
-							return errorJSON;
+						errorMessage = New Map();
+						strMessage = " [address.address_id] : The address id already exists. It must be unique. ";
+						errorMessage.Insert("message", strMessage);
+						errorMessage.Insert("status", "error"); 
+						errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+						return errorJSON;
 						
 					EndTry;
 					
 				EndIf;
 				
-				EndDo;
+			EndDo;
 
-			EndIf;
+		EndIf;
 	
 	Except
 		Try
@@ -787,30 +918,18 @@ Function inoutCompaniesUpdate(jsonin, object_code) Export
 			return errorJSON;
 		EndIf;
 		Except; EndTry;
-	EndTry;
-
-	 //UpdatedCompanyObj.Write();
-
-	//Output = New Map();
-	//Output.Insert("status", "success");
+	EndTry;	
 	
-	
-	
-	
-	//jsonout = InternetConnectionClientServer.EncodeJSON(Output);
 	jsonout = InternetConnectionClientServer.EncodeJSON(GeneralFunctions.ReturnCompanyObjectMap(UpdatedCompanyObj));
 
-	
 	Return jsonout;
-
 
 EndFunction  
 
 Function inoutCompaniesGet(jsonin) Export
 
 	ParsedJSON = InternetConnectionClientServer.DecodeJSON(jsonin);
-	
-	//Company = Catalogs.Companies.FindByCode(ParsedJSON.object_code);
+
 	Try
 		Company = Catalogs.Companies.GetRef(New UUID(ParsedJSON.object_code));
 	Except
@@ -838,77 +957,11 @@ Function inoutCompaniesGet(jsonin) Export
 			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
 			return errorJSON;
 	EndIf;
-	
-	//Query = New Query("SELECT
-	//				  | Addresses.Ref,
-	//				  |	Addresses.Description,
-	//				  |	Addresses.FirstName,
-	//				  |	Addresses.LastName,
-	//				  |	Addresses.Defau,
-	//				  |	Addresses.DefaultShipping,
-	//				  |	Addresses.Code,
-	//				  |	Addresses.MiddleName,
-	//				  |	Addresses.Phone,
-	//				  |	Addresses.Email,
-	//				  |	Addresses.AddressLine1,
-	//				  |	Addresses.AddressLine2,
-	//				  |	Addresses.City,
-	//				  |	Addresses.State,
-	//				  |	Addresses.Country,
-	//				  |	Addresses.ZIP
-	//				  |FROM
-	//				  |	Catalog.Addresses AS Addresses
-	//				  |WHERE
-	//				  |	Addresses.Owner = &Company");
-	//Query.SetParameter("Company", Company);
-	//Result = Query.Execute().Select();
-	//
-	//Addresses = New Array();
-	//
-	//While Result.Next() Do
-	//	
-	//	Address = New Map();
-	//	Address.Insert("api_code", String(Result.Ref.UUID()));
-	//	Address.Insert("address_id", Result.Description);
-	//	Address.Insert("address_code", Result.Code);
-	//	Address.Insert("first_name", Result.FirstName);
-	//	Address.Insert("middle_name", Result.MiddleName);
-	//	Address.Insert("last_name", Result.LastName);
-	//	Address.Insert("phone", Result.Phone);
-	//	Address.Insert("email", Result.Email);
-	//	Address.Insert("address_line1", Result.AddressLine1);
-	//	Address.Insert("address_line2", Result.AddressLine2);
-	//	Address.Insert("city", Result.City);
-	//	Address.Insert("zip", Result.ZIP);
-	//	Address.Insert("state", Result.State.Code);
-	//	Address.Insert("country", Result.Country.Description);
-	//	Address.Insert("default_billing", Result.DefaultBilling);
-	//	Address.Insert("default_shipping", Result.DefaultShipping);
-	//	
-	//	Addresses.Add(Address);
-	//	
-	//EndDo;
-	//
-	//DataAddresses = New Map();
-	//DataAddresses.Insert("addresses", Addresses);
-	//
-	//CompanyData = New Map();
-	//CompanyData.Insert("api_code", String(Company.Ref.UUID()));
-	//CompanyData.Insert("company_name", Company.Description);
-	//CompanyData.Insert("company_code", Company.Code);
-	//CompanyData.Insert("company_type", "customer");
-	//CompanyData.Insert("lines", DataAddresses);
-	
-	//jsonout = InternetConnectionClientServer.EncodeJSON(CompanyData);
-	
-	//Return jsonout;
-	
+		
 	companyObj = Company.GetObject(); 
 	jsonout = InternetConnectionClientServer.EncodeJSON(GeneralFunctions.ReturnCompanyObjectMap(companyObj));
 
 	Return jsonout;
-
-
 
 EndFunction  
 
@@ -917,8 +970,7 @@ Function inoutCompaniesDelete(jsonin) Export
 	ParsedJSON = InternetConnectionClientServer.DecodeJSON(jsonin);
 
 	api_code = ParsedJSON.object_code;
-	
-	//Company = Catalogs.Companies.FindByCode(CompanyCode);
+
 	Company = Catalogs.Companies.GetRef(New UUID(api_code));
 	
 	CompanyObj = Company.GetObject();
@@ -941,16 +993,9 @@ Function inoutCompaniesDelete(jsonin) Export
 	
 	Output = New Map();	
 	
-	//Try
-	//	CompanyObj.Write();
-		Output.Insert("status", "success");
-		//Output.Insert("company_name", company_name);
-		strMessage = company_name + " has been deleted.";
-		Output.Insert("message", strMessage);
-	//Except
-	//	//ErrorMessage = DetailErrorDescription(ErrorInfo());
-	//	Output.Insert("error", "company can not be deleted");
-	//EndTry;
+	Output.Insert("status", "success");
+	strMessage = company_name + " has been deleted.";
+	Output.Insert("message", strMessage);
 	
 	jsonout = InternetConnectionClientServer.EncodeJSON(Output);
 	
@@ -958,119 +1003,199 @@ Function inoutCompaniesDelete(jsonin) Export
 
 EndFunction
 
-Function inoutCompaniesListAll(jsonin) Export
-		
-	ParsedJSON = InternetConnectionClientServer.DecodeJSON(jsonin);
+Function inoutCompaniesListAll(jsonin, limit, start_after, end_before) Export
 	
-	Query = New Query("SELECT
-	                  |	Companies.Ref
-	                  |FROM
-	                  |	Catalog.Companies AS Companies
-	                  |
-	                  |ORDER BY
-	                  |	Companies.Description");
-	                  //|WHERE
-	                  //|	Companies.Customer = TRUE");
-	Result = Query.Execute().Select();
-	Result_array = Query.Execute().Unload();
+	Try limit = Number(limit);
+	Except
+		limit = 10; //default
+	EndTry;
 	
-	Companies = New Array();
-	
-	Try 
-		count = ParsedJSON.limit;
-		If count > 100 Then count = 100; EndIf;
-	Except count = 10; EndTry;
-	
-	Try offset = ParsedJSON.start_from;
-		offsetNum = 0;
-		start = 0;
-		While Result.Next() Do
-			If string(offset) = string(Result.Ref.UUID()) Then
-				start = offsetNum+1;
-				break;
-			Else
-				offsetNum = offsetNum +1;
-			EndIf;
-		EndDo;	
-			
-	Except offset = undefined; start = 0; EndTry;
-	
-	Try last = ParsedJSON.end_before;
-		offsetNum = 0;
-		start = 0;
-		While Result.Next() Do
-			If string(last) = string(Result.Ref.UUID()) Then
-				start = offsetNum-1;
-				break;
-			Else
-				offsetNum = offsetNum +1;
-			EndIf;
-		EndDo;	
-			
-	Except last = undefined; start = 0; EndTry;
-	
-	If last <> undefined AND offset <> undefined Then
+	If limit < 1 Then 
 		errorMessage = New Map();
-		strMessage = "Cannot have both start_after and end_before.";
+		strMessage = "[limit] : Cannot have a value less than 1";
 		errorMessage.Insert("message", strMessage);
 		errorMessage.Insert("status", "error"); 
 		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
 		return errorJSON;
 	EndIf;
 	
-	numRecords = 0;
-	Try
+	If start_after <> "undefined" AND end_before <> "undefined" Then
 		
-		If last <> undefined Then
-			If start-count < 0 Then
-				i = 0;
-			Else
-				i = start-count;
+		errorMessage = New Map();
+		strMessage = "Please choose only one, start_after or end_before.";
+		errorMessage.Insert("message", strMessage);
+		errorMessage.Insert("status", "error"); 
+		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+		return errorJSON;
+		
+	ElsIf start_after <> "undefined" AND end_before = "undefined" Then
+		
+		Try
+			Company = Catalogs.Companies.GetRef(New UUID(start_after));
+		Except
+			errorMessage = New Map();
+			strMessage = "[start_after] : The company does not exist. Double check that the api_code is correct. ";
+			errorMessage.Insert("message", strMessage);
+			errorMessage.Insert("status", "error"); 
+			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+			return errorJSON;
+		EndTry;
+		
+		ParsedJSON = InternetConnectionClientServer.DecodeJSON(jsonin);
+		Query = New Query("SELECT
+	                  |	Companies.Ref
+	                  |FROM
+	                  |	Catalog.Companies AS Companies
+	                  |
+	                  |ORDER BY
+	                  |	Companies.Description");
+					  
+		Result = Query.Execute().Select();
+		Result_array = Query.Execute().Unload();
+		
+		Companies = New Array();
+		
+		i = 0;
+		j = 0;
+		While i < Result.Count() Do
+			If Result_array[i].Ref = Company.Ref Then
+				j = i+1;
+				break;
 			EndIf;
-			While i < start Do
-				Companies.Add(GeneralFunctions.ReturnCompanyObjectMap(Result_array[i].Ref));
-				numRecords = numRecords+1;
-				i = i + 1;
-			EndDo;
-			has_more = true;
+			i = i + 1;
+		EndDo;
+		
+		limit = limit + j;
+		numRecords = 0;
+		While j < limit AND j < Result.Count() Do
+			Companies.Add(GeneralFunctions.ReturnCompanyObjectMap(Result_array[j].Ref));
+			numRecords = numRecords+1;
+			j = j + 1;
+		EndDo;
+		
+		If j+1 < Result.Count() Then 
+			has_more = TRUE;
 		Else
-			
-			If count >= Result.Count() Then
-				For i=start to Result.Count()-1 Do
-					numRecords = numRecords+1;
-					Companies.Add(GeneralFunctions.ReturnCompanyObjectMap(Result_array[i].Ref));
-				EndDo;
-				has_more = false;
-			Else
-				For i=start to start+count-1 Do
-					numRecords = numRecords+1;
-					Companies.Add(GeneralFunctions.ReturnCompanyObjectMap(Result_array[i].Ref));
-				EndDo;
-				has_more = true;
-			EndIf;
-			
+			has_more = FALSE;
 		EndIf;
-			
-	Except
 		
-		//While Result.Next() Do
-		//	
-		//	Companies.Add(GeneralFunctions.ReturnCompanyObjectMap(Result.Ref));
-		//
-		//EndDo;
-		has_more = false;
+		CompanyList = New Map();
+		CompanyList.Insert("companies", Companies);
+		CompanyList.Insert("more_records", has_more);
+		CompanyList.Insert("num_records_listed",numRecords);
+		CompanyList.Insert("total_num_records", Result.Count());
 		
-	EndTry;
+		jsonout = InternetConnectionClientServer.EncodeJSON(CompanyList);
 		
-	CompanyList = New Map();
-	CompanyList.Insert("companies", Companies);
-	CompanyList.Insert("has_more", has_more);
-	CompanyList.Insert("numOfRecords",numRecords);
-	
-	jsonout = InternetConnectionClientServer.EncodeJSON(CompanyList);
-	
-	Return jsonout;
-
+		Return jsonout;
+		
+	ElsIf start_after = "undefined" AND end_before <> "undefined" Then
+		
+		Try
+			Company = Catalogs.Companies.GetRef(New UUID(end_before));
+		Except
+			errorMessage = New Map();
+			strMessage = "[end_before] : The company does not exist. Double check that the api_code is correct. ";
+			errorMessage.Insert("message", strMessage);
+			errorMessage.Insert("status", "error"); 
+			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+			return errorJSON;
+		EndTry;
+		
+		ParsedJSON = InternetConnectionClientServer.DecodeJSON(jsonin);
+		Query = New Query("SELECT
+	                  |	Companies.Ref
+	                  |FROM
+	                  |	Catalog.Companies AS Companies
+	                  |
+	                  |ORDER BY
+	                  |	Companies.Description");
+					  
+		Result = Query.Execute().Select();
+		Result_array = Query.Execute().Unload();
+		
+		Companies = New Array();
+		
+		i = 0;
+		j = 0;
+		While i < Result.Count() Do
+			If Result_array[i].Ref = Company.Ref Then
+				j = i;
+				break;
+			EndIf;
+			i = i + 1;
+		EndDo;
+		
+		start = j - limit;
+		If start < 0 Then
+			start = 0;
+		EndIf;
+		
+		numRecords = 0;
+		While start < j AND start < Result.Count() Do
+			Companies.Add(GeneralFunctions.ReturnCompanyObjectMap(Result_array[start].Ref));
+			numRecords = numRecords+1;
+			start = start + 1;
+		EndDo;
+		
+		If start+1 < Result.Count() Then 
+			has_more = TRUE;
+		Else
+			has_more = FALSE;
+		EndIf;
+		
+		CompanyList = New Map();
+		CompanyList.Insert("companies", Companies);
+		CompanyList.Insert("more_records", has_more);
+		CompanyList.Insert("num_records_listed",numRecords);
+		CompanyList.Insert("total_num_records", Result.Count());
+		
+		jsonout = InternetConnectionClientServer.EncodeJSON(CompanyList);
+		
+		Return jsonout;
+		
+	Else
+		// both undefined, just print with limit
+		ParsedJSON = InternetConnectionClientServer.DecodeJSON(jsonin);
+		Query = New Query("SELECT
+	                  |	Companies.Ref
+	                  |FROM
+	                  |	Catalog.Companies AS Companies
+	                  |
+	                  |ORDER BY
+	                  |	Companies.Description");
+					  
+		Result = Query.Execute().Select();
+		Result_array = Query.Execute().Unload();
+		
+		Companies = New Array();
+		
+		i = 0;
+		numRecords = 0;
+		While i < limit AND i < Result.Count() Do
+			Companies.Add(GeneralFunctions.ReturnCompanyObjectMap(Result_array[i].Ref));
+			numRecords = numRecords+1;
+			i = i + 1;
+		EndDo;
+		
+		If numRecords < Result.Count() Then 
+			has_more = TRUE;
+		Else
+			has_more = FALSE;
+		EndIf;
+		
+		CompanyList = New Map();
+		CompanyList.Insert("companies", Companies);
+		CompanyList.Insert("more_records", has_more);
+		CompanyList.Insert("num_records_listed",numRecords);
+		CompanyList.Insert("total_num_records", Result.Count());
+		
+		jsonout = InternetConnectionClientServer.EncodeJSON(CompanyList);
+		
+		Return jsonout;
+		
+	EndIf;
+		
 EndFunction
 
 
@@ -1117,9 +1242,7 @@ Function inoutItemsCreate(jsonin) Export
 		NewProduct = Catalogs.Products.CreateItem();
 		
 		NewProduct.Code = ParsedJSON.item_code;
-		
-		//NewProduct.Description = ParsedJSON.item_description;
-		
+				
 		Try desc = ParsedJSON.item_description Except desc = Undefined EndTry;
 		If desc = Undefined Then
 			errorMessage = New Map();
@@ -1130,101 +1253,80 @@ Function inoutItemsCreate(jsonin) Export
 			return errorJSON;
 		EndIf;
 		NewProduct.Description = desc;
-		
-		//Try
-		//	If ParsedJSON.item_type = "product" Then
-		//		NewProduct.Type = Enums.InventoryTypes.Inventory;
-		//		NewProduct.CostingMethod = Enums.InventoryCosting.WeightedAverage;
-		//		NewProduct.InventoryOrExpenseAccount = Constants.InventoryAccount.Get();
-		//	ElsIf ParsedJSON.item_type = "service" Then
-		//		NewProduct.Type = Enums.InventoryTypes.NonInventory;
-		//		NewProduct.InventoryOrExpenseAccount = Constants.ExpenseAccount.Get();
-		//	Else
-		//		NewProduct.Type = Enums.InventoryTypes.NonInventory;
-		//		NewProduct.InventoryOrExpenseAccount = Constants.ExpenseAccount.Get();
-		//	EndIf;
-		//Except
-		//	NewProduct.Type = Enums.InventoryTypes.NonInventory;
-		//EndTry;
-		
-		Try itemType = ParsedJSON.item_type Except itemType = Undefined EndTry;
-		If itemType = "product" Then
+				                            
+		Try itemType = Lower(ParsedJSON.item_type); Except itemType = Undefined EndTry;
+		If itemType = "service" Then
+			NewProduct.Type = Enums.InventoryTypes.NonInventory;
+			NewProduct.InventoryOrExpenseAccount = Constants.ExpenseAccount.Get();
+			NewProduct.IncomeAccount = Constants.IncomeAccount.Get();
+		Else 
+			//defaults to product
 			NewProduct.Type = Enums.InventoryTypes.Inventory;
 			NewProduct.CostingMethod = Enums.InventoryCosting.WeightedAverage;
 			NewProduct.InventoryOrExpenseAccount = Constants.InventoryAccount.Get();
-		ElsIf itemType = "service" Then
-			NewProduct.Type = Enums.InventoryTypes.NonInventory;
-			NewProduct.InventoryOrExpenseAccount = Constants.ExpenseAccount.Get();
-		Else
-			//errorMessage = New Map();
-			//strMessage = " [item_type] : This is a required field. Must be either product or service ";
-			//errorMessage.Insert("message", strMessage);
-			//errorMessage.Insert("status", "error"); 
-			//errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
-			//return errorJSON;
-			
-			//defaults to service
-			NewProduct.Type = Enums.InventoryTypes.NonInventory;
-			NewProduct.InventoryOrExpenseAccount = Constants.ExpenseAccount.Get();
+			NewProduct.IncomeAccount = Constants.IncomeAccount.Get();
+			NewProduct.COGSAccount = Constants.COGSAccount.Get();
 		EndIf;
-		
-		NewProduct.IncomeAccount = Constants.IncomeAccount.Get();
-		
-		
-		Try
-			If ParsedJSON.item_type = "product" Then
-				NewProduct.COGSAccount = Constants.COGSAccount.Get();
+				
+		Try itemCategory = ParsedJSON.item_category; Except itemCategory = "" EndTry;
+		If itemCategory <> "" Then
+			itemRef = Catalogs.ProductCategories.FindByDescription(itemCategory);
+			If itemRef.Ref <> Catalogs.ProductCategories.EmptyRef() Then
+				// already exists
+				NewProduct.Category = itemRef.Ref;
 			Else
+				// create a new one
+				newCat = Catalogs.ProductCategories.CreateItem();
+				newCat.Description = itemCategory;
+				newCat.Write();
+				NewProduct.Category = newCat.Ref;
 			EndIf;
-		Except
-		EndTry;
-		//NewProduct.PurchaseVATCode = Constants.DefaultPurchaseVAT.Get();
-		//NewProduct.SalesVATCode = Constants.DefaultSalesVAT.Get();
-		//NewProduct.api_code = GeneralFunctions.NextProductNumber();
-		
-		Try itemCategory = ParsedJSON.item_category Except itemCategory = Undefined EndTry;
-		If NOT itemCategory = Undefined Then
-			cQuery = New Query("SELECT
-			                   |	ProductCategories.Ref
-			                   |FROM
-			                   |	Catalog.ProductCategories AS ProductCategories
-			                   |WHERE
-			                   |	ProductCategories.Description = &cat");
-			cQuery.SetParameter("cat", itemCategory );
-			cQueryResult = cQuery.Execute();
-			If cQueryResult.IsEmpty() Then
-				errorMessage = New Map();
-				strMessage = " [item_category] : The category does not exist. You must create the item category first. ";
-				errorMessage.Insert("message", strMessage);
-				errorMessage.Insert("status", "error"); 
-				errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
-				return errorJSON;
-			EndIf;
-			cat_result = cQueryResult.Unload();
-			NewProduct.Category = cat_result[0].Ref;
 		EndIf;
+
 		
-		//Try uom = ParsedJSON.unit_of_measure Except uom = Undefined EndTry;
-		//If NOT uom = Undefined Then
-		//	uomQuery = New Query("SELECT
-		//						 |	UM.Ref
-		//						 |FROM
-		//						 |	Catalog.UM AS UM
-		//						 |WHERE
-		//						 |	UM.Description = &uomCode");
-		//	uomQuery.SetParameter("uomCode", uom );
-		//	uomQueryResult = uomQuery.Execute();
-		//	If uomQueryResult.IsEmpty() Then
-		//		errorMessage = New Map();
-		//		strMessage = " [unit_of_measure] : This does not exist. You must create the unit of measure first. ";
-		//		errorMessage.Insert("message", strMessage);
-		//		errorMessage.Insert("status", "error"); 
-		//		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
-		//		return errorJSON;
-		//	EndIf;
-		//	uom_result = uomQueryResult.Unload();
-		//	NewProduct.UM = uom_result[0].Ref;
-		//EndIf;
+		Try UoM = ParsedJSON.unit_of_measure; Except UoM = "" EndTry;
+		If UoM <> "" Then
+			UoMRef = Catalogs.UnitSets.FindByDescription(UoM);
+			If UoMRef.Ref <> Catalogs.UnitSets.EmptyRef() Then
+				// already exists
+				NewProduct.UnitSet = UoMRef.Ref;
+			Else
+				// create a new one
+				newUoM = Catalogs.UnitSets.CreateItem();
+				newUoM.Description = UoM;
+				newUoM.Write();
+				NewProduct.UnitSet = newUoM.Ref;
+				newUnit = Catalogs.Units.CreateItem();
+				newUnit.Owner       = newUoM.Ref;   // Set name
+				newUnit.Code        = Left(UoM,1);// Abbreviation
+				newUnit.Description = UoM;        // Unit name
+				newUnit.BaseUnit    = True;                // Base ref of set
+				newUnit.Factor      = 1;
+				newUnit.Write();
+				newUoM.DefaultReportUnit = newUnit.Ref;
+				If  newUoM.DefaultSaleUnit.IsEmpty() Then
+					newUoM.DefaultSaleUnit = newUnit.Ref;
+				EndIf;
+				If  newUoM.DefaultPurchaseUnit.IsEmpty() Then
+					newUoM.DefaultPurchaseUnit = newUnit.Ref;
+				EndIf;
+				newUoM.Write();
+				
+			EndIf;
+		Else
+			NewProduct.UnitSet = Constants.DefaultUoMSet.Get();
+		EndIf;
+		 
+		Try 
+			NewProduct.Taxable = boolean(ParsedJSON.taxable); 
+		Except 
+			NewProduct.Taxable = Constants.SalesTaxMarkNewProductsTaxable.Get(); 
+		EndTry;
+		
+		Try 
+			NewProduct.Price = Number(ParsedJSON.item_price); 
+		Except	 
+		EndTry;
 		
 		Try NewProduct.CF1String = ParsedJSON.cf1_string; Except EndTry;
 		Try NewProduct.CF2String = ParsedJSON.cf2_string; Except EndTry;
@@ -1239,60 +1341,30 @@ Function inoutItemsCreate(jsonin) Export
 
 
 		NewProduct.Write();
-			
-		///
 		
 		ProductData = GeneralFunctions.ReturnProductObjectMap(NewProduct);
 			
-		//ProductData = New Map();
-		//ProductData.Insert("item_code", NewProduct.Code);
-		//ProductData.Insert("api_code", String(NewProduct.Ref.UUID()));
-		//ProductData.Insert("item_description", NewProduct.Description);
-		//If NewProduct.Type = Enums.InventoryTypes.Inventory Then
-		//	ProductData.Insert("item_type", "product");
-		//ElsIf NewProduct.Type = Enums.InventoryTypes.NonInventory Then
-		//	ProductData.Insert("item_type", "service");	
-		//EndIf;
-		
 		jsonout = InternetConnectionClientServer.EncodeJSON(ProductData);
 		
 	Else
 		
 		ProductData = New Map();
-		//ProductData.Insert("Error", "Item code is not unique");
 		ProductData.Insert("message", " [item_code] : The item already exists. Not a unique item code.");
 		ProductData.Insert("status", "error");
 
 		existingItem = QueryResult.Unload();
   		ProductData.Insert("api_code", String(existingItem[0].Ref.UUID()));
 
-		
 		jsonout = InternetConnectionClientServer.EncodeJSON(ProductData);
 		
 	EndIf;
 	
-	Return jsonout;
-	
+	Return jsonout;	
 EndFunction
 
 Function inoutItemsUpdate(jsonin, object_code) Export
 	
-	//
-	//ProductCodeJSON = InternetConnectionClientServer.DecodeJSON(object_code);
-	//api_code = ProductCodeJSON.object_code;
-	////ProductCode = Number(ProductCode);
-	//
-	//ParsedJSON = InternetConnectionClientServer.DecodeJSON(jsonin);
-	//
-	//UpdatedProduct = Catalogs.Products.getref(New UUID(api_code));
-	//UpdatedProductObj = UpdatedProduct.GetObject();
-	//UpdatedProductObj.Code = ParsedJSON.item_code;
-	//UpdatedProductObj.Description = ParsedJSON.item_description;
-	//UpdatedProductObj.Write();
-	
 	ProductCodeJSON = InternetConnectionClientServer.DecodeJSON(object_code);
-	//api_code = ProductCodeJSON.object_code;
-	//ProductCode = Number(ProductCode);
 	
 	Try api_code = ProductCodeJSON.object_code Except api_code = Undefined EndTry;
 	If api_code = Undefined OR api_code = "" Then
@@ -1363,62 +1435,62 @@ Function inoutItemsUpdate(jsonin, object_code) Export
 	
 	Try UpdatedProductObj.Description = ParsedJSON.item_description; Except EndTry;
 	
-	//Try UpdatedProductObj.Category = ParsedJSON.item_category; Except EndTry;
-	Try itemCategory = ParsedJSON.item_category Except itemCategory = Undefined EndTry;
-	If NOT itemCategory = Undefined Then
-		cQuery = New Query("SELECT
-		                   |	ProductCategories.Ref
-		                   |FROM
-		                   |	Catalog.ProductCategories AS ProductCategories
-		                   |WHERE
-		                   |	ProductCategories.Description = &cat");
-		cQuery.SetParameter("cat", itemCategory );
-		cQueryResult = cQuery.Execute();
-		If cQueryResult.IsEmpty() Then
-			errorMessage = New Map();
-			strMessage = " [item_category] : The category does not exist. You must create the item category first. ";
-			errorMessage.Insert("message", strMessage);
-			errorMessage.Insert("status", "error"); 
-			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
-			return errorJSON;
+	Try itemCategory = ParsedJSON.item_category; Except itemCategory = "" EndTry;
+	If itemCategory <> "" Then
+		itemRef = Catalogs.ProductCategories.FindByDescription(itemCategory);
+		If itemRef.Ref <> Catalogs.ProductCategories.EmptyRef() Then
+			UpdatedProductObj.Category = itemRef.Ref;
+		Else
+			newCat = Catalogs.ProductCategories.CreateItem();
+			newCat.Description = itemCategory;
+			newCat.Write();
+			UpdatedProductObj.Category = newCat.Ref;
 		EndIf;
-		cat_result = cQueryResult.Unload();
-		UpdatedProductObj.Category = cat_result[0].Ref;
 	EndIf;
-	
-	//Try UpdatedProductObj.UM = ParsedJSON.unit_of_measure; Except EndTry;
-	//Try uom = ParsedJSON.unit_of_measure Except uom = Undefined EndTry;
-	//If NOT uom = Undefined Then
-	//	uomQuery = New Query("SELECT
-	//						 |	UM.Ref
-	//						 |FROM
-	//						 |	Catalog.UM AS UM
-	//						 |WHERE
-	//						 |	UM.Description = &uomCode");
-	//	uomQuery.SetParameter("uomCode", uom );
-	//	uomQueryResult = uomQuery.Execute();
-	//	If uomQueryResult.IsEmpty() Then
-	//		errorMessage = New Map();
-	//		strMessage = " [unit_of_measure] : This does not exist. You must create the unit of measure first. ";
-	//		errorMessage.Insert("message", strMessage);
-	//		errorMessage.Insert("status", "error"); 
-	//		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
-	//		return errorJSON;
-	//	EndIf;
-	//	uom_result = uomQueryResult.Unload();
-	//	UpdatedProductObj.UM = uom_result[0].Ref;
-	//EndIf;
-	
-	Try checkItemType = ParsedJSON.item_type; Except checkItemType = Undefined EndTry;
-	If NOT checkItemType = Undefined Then
-		errorMessage = New Map();
-		strMessage = " [item_type] : Cannot change the item type ";
-		errorMessage.Insert("message", strMessage);
-		errorMessage.Insert("status", "error"); 
-		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
-		return errorJSON;
+		
+	Try UoM = ParsedJSON.unit_of_measure; Except UoM = "" EndTry;
+	If UoM <> "" Then
+		UoMRef = Catalogs.UnitSets.FindByDescription(UoM);
+		If UoMRef.Ref <> Catalogs.UnitSets.EmptyRef() Then
+			UpdatedProductObj.UnitSet = UoMRef.Ref;
+		Else
+			newUoM = Catalogs.UnitSets.CreateItem();
+			newUoM.Description = UoM;
+			newUoM.Write();
+			UpdatedProductObj.UnitSet = newUoM.Ref;
+			newUnit = Catalogs.Units.CreateItem();
+			newUnit.Owner       = newUoM.Ref;   // Set name
+			newUnit.Code        = Left(UoM,1);// Abbreviation
+			newUnit.Description = UoM;        // Unit name
+			newUnit.BaseUnit    = True;                // Base ref of set
+			newUnit.Factor      = 1;
+			newUnit.Write();
+			newUoM.DefaultReportUnit = newUnit.Ref;
+			If  newUoM.DefaultSaleUnit.IsEmpty() Then
+				newUoM.DefaultSaleUnit = newUnit.Ref;
+			EndIf;
+			If  newUoM.DefaultPurchaseUnit.IsEmpty() Then
+				newUoM.DefaultPurchaseUnit = newUnit.Ref;
+			EndIf;
+			newUoM.Write();
+
+		EndIf;
+	Else
+		//UpdatedProductObj.UnitSet = Constants.DefaultUoMSet.Get();
+		//dont update
 	EndIf;
+	 
+	Try 
+		UpdatedProductObj.Taxable = boolean(ParsedJSON.taxable); 
+	Except 
+		UpdatedProductObj.Taxable = Constants.SalesTaxMarkNewProductsTaxable.Get(); 
+	EndTry;
 	
+	Try 
+		UpdatedProductObj.Price = Number(ParsedJSON.item_price); 
+	Except	 
+	EndTry;
+
 	Try UpdatedProductObj.CF1String = ParsedJSON.cf1_string; Except EndTry;
 	Try UpdatedProductObj.CF2String = ParsedJSON.cf2_string; Except EndTry;
 	Try UpdatedProductObj.CF3String = ParsedJSON.cf3_string; Except EndTry;
@@ -1433,16 +1505,10 @@ Function inoutItemsUpdate(jsonin, object_code) Export
 		
 	UpdatedProductObj.Write();
 	
-	//////////////////////////////////////////////
-	//Output = New Map();
-	//Output.Insert("status", "success");
-	
 	ProductData = GeneralFunctions.ReturnProductObjectMap(UpdatedProductObj);
 	jsonout = InternetConnectionClientServer.EncodeJSON(ProductData);
 	
 	Return jsonout;
-	/////////////////////////////////////////////////
-
 
 EndFunction
 
@@ -1451,9 +1517,6 @@ Function inoutItemsGet(jsonin) Export
 	ParsedJSON = InternetConnectionClientServer.DecodeJSON(jsonin);
 	
 	api_code = ParsedJSON.object_code;
-	//Object_code = Number(Object_code);
-	//Product = Catalogs.Products.FindByAttribute("api_code", Object_code);
-	//Product = Catalogs.Products.GetRef(New UUID(api_code));
 	
 	Try	
 		Product = Catalogs.Products.GetRef(New UUID(api_code));
@@ -1481,25 +1544,11 @@ Function inoutItemsGet(jsonin) Export
 			errorMessage.Insert("status", "error"); 
 			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
 			return errorJSON;
-	EndIf;
-		
-	//ProductData = New Map();
-	//ProductData.Insert("api_code", String(Product.Ref.UUID()));
-	//ProductData.Insert("item_code", Product.Code);
-	//ProductData.Insert("item_description", Product.Description);
-	//If Product.Type = Enums.InventoryTypes.Inventory Then
-	//	ProductData.Insert("item_type", "product");
-	//ElsIf Product.Type = Enums.InventoryTypes.NonInventory Then
-	//	ProductData.Insert("item_type", "service");	
-	//EndIf;
+	EndIf;	
 	
-	
-	
-	//jsonout = InternetConnectionClientServer.EncodeJSON(ProductData);
 	jsonout = InternetConnectionClientServer.EncodeJSON(GeneralFunctions.ReturnProductObjectMap(Product));
 	
 	Return jsonout;
-
 
 EndFunction
 
@@ -1507,7 +1556,6 @@ Function inoutItemsDelete(jsonin) Export
 	
 	ParsedJSON = InternetConnectionClientServer.DecodeJSON(jsonin);
 	api_code = ParsedJSON.object_code;
-	//ProductCode = Number(ProductCode);
 	
 	Product = Catalogs.Products.GetRef(New UUID(api_code));
 	
@@ -1528,16 +1576,10 @@ Function inoutItemsDelete(jsonin) Export
 	SetPrivilegedMode(False);
 	
 	Output = New Map();	
-	
-	//Try
-	//	ProductObj.Write();
-		Output.Insert("status", "success");
-		strMessage = ic + " has been deleted.";
-		Output.Insert("message", strMessage);
-	//Except
-		//ErrorMessage = DetailErrorDescription(ErrorInfo());
-		//Output.Insert("error", "item can not be deleted");
-	//EndTry;
+
+	Output.Insert("status", "success");
+	strMessage = ic + " has been deleted.";
+	Output.Insert("message", strMessage);
 	
 	jsonout = InternetConnectionClientServer.EncodeJSON(Output);
 	
@@ -1545,114 +1587,207 @@ Function inoutItemsDelete(jsonin) Export
 
 EndFunction
 
-Function inoutItemsListAll(jsonin) Export
-	
-	ParsedJSON = InternetConnectionClientServer.DecodeJSON(jsonin);
+Function inoutItemsListAll(jsonin, limit, start_after, end_before) Export
 		
-	Query = New Query("SELECT
-	                  |	Products.Ref,
-	                  |	Products.Code AS Code,
-	                  |	Products.Description,
-	                  |	Products.Type
-	                  |FROM
-	                  |	Catalog.Products AS Products
-	                  |
-	                  |ORDER BY
-	                  |	Code");
-	Result = Query.Execute().Select();
-	Result_array = Query.Execute().Unload();
+	Try limit = Number(limit);
+	Except
+		limit = 10; //default
+	EndTry;
 	
-	Products = New Array();
-	
-	Try 
-		count = ParsedJSON.limit;
-		If count > 100 Then count = 100; EndIf;
-	Except count = 10; EndTry;
-	
-	Try offset = ParsedJSON.start_after;
-		offsetNum = 0;
-		start = 0;
-		While Result.Next() Do
-			If string(offset) = string(Result.Ref.UUID()) Then
-				start = offsetNum+1;
-				break;
-			Else
-				offsetNum = offsetNum +1;
-			EndIf;
-		EndDo;	
-			
-	Except offset = undefined; start = 0; EndTry;
-	
-	Try last = ParsedJSON.end_before;
-		offsetNum = 0;
-		start = 0;
-		While Result.Next() Do
-			If string(last) = string(Result.Ref.UUID()) Then
-				start = offsetNum;
-				break;
-			Else
-				offsetNum = offsetNum +1;
-			EndIf;
-		EndDo;	
-			
-	Except last = undefined; start = 0; EndTry;
-	
-	If last <> undefined AND offset <> undefined Then
+	If limit < 1 Then 
 		errorMessage = New Map();
-		strMessage = "Cannot have both start_after and end_before.";
+		strMessage = "[limit] : Cannot have a value less than 1";
 		errorMessage.Insert("message", strMessage);
 		errorMessage.Insert("status", "error"); 
 		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
 		return errorJSON;
 	EndIf;
 	
-	numRecords = 0;
-	Try
-		If last <> undefined Then
-			If start-count < 0 Then
-				i = 0;
-			Else
-				i = start-count;
+	If start_after <> "undefined" AND end_before <> "undefined" Then
+		
+		errorMessage = New Map();
+		strMessage = "Please choose only one, start_after or end_before.";
+		errorMessage.Insert("message", strMessage);
+		errorMessage.Insert("status", "error"); 
+		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+		return errorJSON;
+		
+	ElsIf start_after <> "undefined" AND end_before = "undefined" Then
+		
+		Try
+			Product = Catalogs.Products.GetRef(New UUID(start_after));
+		Except
+			errorMessage = New Map();
+			strMessage = "[start_after] : The item does not exist. Double check that the api_code is correct. ";
+			errorMessage.Insert("message", strMessage);
+			errorMessage.Insert("status", "error"); 
+			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+			return errorJSON;
+		EndTry;
+		
+		ParsedJSON = InternetConnectionClientServer.DecodeJSON(jsonin);
+		Query = New Query("SELECT
+					  |	Products.Ref,
+					  |	Products.Code AS Code,
+					  |	Products.Description,
+					  |	Products.Type
+					  |FROM
+					  |	Catalog.Products AS Products
+					  |
+					  |ORDER BY
+					  |	Code");
+					  
+		Result = Query.Execute().Select();
+		Result_array = Query.Execute().Unload();
+		
+		Products = New Array();
+		
+		i = 0;
+		j = 0;
+		While i < Result.Count() Do
+			If Result_array[i].Ref = Product.Ref Then
+				j = i+1;
+				break;
 			EndIf;
-			While i < start Do
-				Products.Add(GeneralFunctions.ReturnProductObjectMap(Result_array[i].Ref));
-				numRecords = numRecords+1;
-				i = i + 1;
-			EndDo;
-			has_more = true;
+			i = i + 1;
+		EndDo;
+		
+		limit = limit + j;
+		numRecords = 0;
+		While j < limit AND j < Result.Count() Do
+			Products.Add(GeneralFunctions.ReturnProductObjectMap(Result_array[j].Ref));
+			numRecords = numRecords+1;
+			j = j + 1;
+		EndDo;
+		
+		If j+1 < Result.Count() Then 
+			has_more = TRUE;
 		Else
-			
-			If count >= Result.Count() Then
-				For i=start to Result.Count()-1 Do
-					numRecords = numRecords+1;
-					Products.Add(GeneralFunctions.ReturnProductObjectMap(Result_array[i].Ref));
-				EndDo;
-				has_more = false;
-			Else
-				For i=start to start+count-1 Do
-					numRecords = numRecords+1;
-					Products.Add(GeneralFunctions.ReturnProductObjectMap(Result_array[i].Ref));
-				EndDo;
-				has_more = true;
-			EndIf;
-			
+			has_more = FALSE;
 		EndIf;
-
-			
-	Except
-
-		has_more = false;
 		
-	EndTry;
+		ProductList = New Map();
+		ProductList.Insert("items", Products);
+		ProductList.Insert("more_records", has_more);
+		ProductList.Insert("num_records_listed",numRecords);
+		ProductList.Insert("total_num_records", Result.Count());
 		
-	ProductList = New Map();
-	ProductList.Insert("items", Products);
-	ProductList.Insert("has_more", has_more);
-	ProductList.Insert("numOfRecords",numRecords);
-	
-	jsonout = InternetConnectionClientServer.EncodeJSON(ProductList);
-	
-	Return jsonout;
+		jsonout = InternetConnectionClientServer.EncodeJSON(ProductList);
+		
+		Return jsonout;
+		
+	ElsIf start_after = "undefined" AND end_before <> "undefined" Then
+		
+		Try
+			Product = Catalogs.Products.GetRef(New UUID(end_before));
+		Except
+			errorMessage = New Map();
+			strMessage = "[end_before] : The item does not exist. Double check that the api_code is correct. ";
+			errorMessage.Insert("message", strMessage);
+			errorMessage.Insert("status", "error"); 
+			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+			return errorJSON;
+		EndTry;
+		
+		ParsedJSON = InternetConnectionClientServer.DecodeJSON(jsonin);
+		Query = New Query("SELECT
+					  |	Products.Ref,
+					  |	Products.Code AS Code,
+					  |	Products.Description,
+					  |	Products.Type
+					  |FROM
+					  |	Catalog.Products AS Products
+					  |
+					  |ORDER BY
+					  |	Code");
+					  
+		Result = Query.Execute().Select();
+		Result_array = Query.Execute().Unload();
+		
+		Products = New Array();
+		
+		i = 0;
+		j = 0;
+		While i < Result.Count() Do
+			If Result_array[i].Ref = Product.Ref Then
+				j = i;
+				break;
+			EndIf;
+			i = i + 1;
+		EndDo;
+		
+		start = j - limit;
+		If start < 0 Then
+			start = 0;
+		EndIf;
+		
+		numRecords = 0;
+		While start < j AND start < Result.Count() Do
+			Products.Add(GeneralFunctions.ReturnProductObjectMap(Result_array[start].Ref));
+			numRecords = numRecords+1;
+			start = start + 1;
+		EndDo;
+		
+		If start+1 < Result.Count() Then 
+			has_more = TRUE;
+		Else
+			has_more = FALSE;
+		EndIf;
+		
+		ProductList = New Map();
+		ProductList.Insert("items", Products);
+		ProductList.Insert("more_records", has_more);
+		ProductList.Insert("num_records_listed",numRecords);
+		ProductList.Insert("total_num_records", Result.Count());
+		
+		jsonout = InternetConnectionClientServer.EncodeJSON(ProductList);
+		
+		Return jsonout;
+		
+	Else
+		// both undefined, just print with limit
+		ParsedJSON = InternetConnectionClientServer.DecodeJSON(jsonin);
+		Query = New Query("SELECT
+					  |	Products.Ref,
+					  |	Products.Code AS Code,
+					  |	Products.Description,
+					  |	Products.Type
+					  |FROM
+					  |	Catalog.Products AS Products
+					  |
+					  |ORDER BY
+					  |	Code");
+					  
+		Result = Query.Execute().Select();
+		Result_array = Query.Execute().Unload();
+		
+		Products = New Array();
+		
+		i = 0;
+		numRecords = 0;
+		While i < limit AND i < Result.Count() Do
+			Products.Add(GeneralFunctions.ReturnProductObjectMap(Result_array[i].Ref));
+			numRecords = numRecords+1;
+			i = i + 1;
+		EndDo;
+		
+		If numRecords < Result.Count() Then 
+			has_more = TRUE;
+		Else
+			has_more = FALSE;
+		EndIf;
+		
+		ProductList = New Map();
+		ProductList.Insert("items", Products);
+		ProductList.Insert("more_records", has_more);
+		ProductList.Insert("num_records_listed",numRecords);
+		ProductList.Insert("total_num_records", Result.Count());
+		
+		jsonout = InternetConnectionClientServer.EncodeJSON(ProductList);
+		
+		Return jsonout;
+		
+	EndIf;
 
 EndFunction
 
@@ -1697,7 +1832,7 @@ Function inoutCashSalesCreate(jsonin) Export
 	NewCashSale.Currency = Constants.DefaultCurrency.Get();
 	NewCashSale.BankAccount = Constants.BankAccount.Get();
 	NewCashSale.ExchangeRate = 1;
-	NewCashSale.Location = Catalogs.Locations.MainWarehouse;
+	NewCashSale.Location = GeneralFunctions.GetDefaultLocation();
 	
 	Try NewCashSale.LineSubtotal = ParsedJSON.line_subtotal; Except EndTry;
 	Try NewCashSale.Discount = ParsedJSON.discount; Except EndTry;
@@ -1719,8 +1854,8 @@ Function inoutCashSalesCreate(jsonin) Export
 		//NewLine.VATCode = CommonUse.GetAttributeValue(Product, "SalesVATCode");
 		//NewLine.VAT = 0;
 		
-		NewLine.Price = DataLineItems[i].price;
-		NewLine.Quantity = DataLineItems[i].quantity;
+		NewLine.PriceUnits = DataLineItems[i].price;
+		NewLine.QtyUnits = DataLineItems[i].quantity;
 		//Try NewLine.Taxable = DataLineItems[i].taxable; Except EndTry;
 		// get taxable from JSON
 		//Try
@@ -1778,8 +1913,8 @@ Function inoutCashSalesCreate(jsonin) Export
 
 	Query = New Query("SELECT
 	                  |	CashSaleLineItems.Product,
-	                  |	CashSaleLineItems.Price,
-	                  |	CashSaleLineItems.Quantity,
+	                  |	CashSaleLineItems.PriceUnits,
+	                  |	CashSaleLineItems.QtyUnits,
 	                  |	CashSaleLineItems.LineTotal
 	                  |FROM
 	                  |	Document.CashSale.LineItems AS CashSaleLineItems
@@ -1796,8 +1931,8 @@ Function inoutCashSalesCreate(jsonin) Export
 		LineItem.Insert("api_code", String(Result.Product.Ref.UUID()));
 		LineItem.Insert("item_code", Result.Product.Code);
 		LineItem.Insert("item_description", Result.Product.Description);
-		LineItem.Insert("price", Result.Price);
-		LineItem.Insert("quantity", Result.Quantity);
+		LineItem.Insert("price", Result.PriceUnits);
+		LineItem.Insert("quantity", Result.QtyUnits);
 		//LineItem.Insert("taxable_amount", Result.TaxableAmount);
 		LineItem.Insert("line_total", Result.LineTotal);
 		//LineItem.Insert("taxable", Result.Taxable);
@@ -1872,7 +2007,7 @@ Function inoutCashSalesUpdate(jsonin, object_code) Export
 	UpdatedCashSaleObj.Currency = Constants.DefaultCurrency.Get();
 	UpdatedCashSaleObj.BankAccount = Constants.BankAccount.Get();
 	UpdatedCashSaleObj.ExchangeRate = 1;
-	UpdatedCashSaleObj.Location = Catalogs.Locations.MainWarehouse;
+	UpdatedCashSaleObj.Location = GeneralFunctions.GetDefaultLocation();
 	
 	Try UpdatedCashSaleObj.LineSubtotal = ParsedJSON.line_subtotal; Except EndTry;
 	Try UpdatedCashSaleObj.Discount = ParsedJSON.discount; Except EndTry;
@@ -1895,8 +2030,8 @@ Function inoutCashSalesUpdate(jsonin, object_code) Export
 		//NewLine.VATCode = CommonUse.GetAttributeValue(Product, "SalesVATCode");
 		//NewLine.VAT = 0;
 		
-		NewLine.Price = DataLineItems[i].price;
-		NewLine.Quantity = DataLineItems[i].quantity;
+		NewLine.PriceUnits = DataLineItems[i].price;
+		NewLine.QtyUnits = DataLineItems[i].quantity;
 		//Try NewLine.Taxable = DataLineItems[i].taxable; Except EndTry;
 		// get taxable from JSON
 		//Try
@@ -1954,8 +2089,8 @@ Function inoutCashSalesUpdate(jsonin, object_code) Export
 
 	Query = New Query("SELECT
 	                  |	CashSaleLineItems.Product,
-	                  |	CashSaleLineItems.Price,
-	                  |	CashSaleLineItems.Quantity,
+	                  |	CashSaleLineItems.PriceUnits,
+	                  |	CashSaleLineItems.QtyUnits,
 	                  |	CashSaleLineItems.LineTotal
 	                  |FROM
 	                  |	Document.CashSale.LineItems AS CashSaleLineItems
@@ -1972,8 +2107,8 @@ Function inoutCashSalesUpdate(jsonin, object_code) Export
 		LineItem.Insert("api_code", String(Result.Product.Ref.UUID()));
 		LineItem.Insert("item_code", Result.Product.Code);
 		LineItem.Insert("item_description", Result.Product.Description);
-		LineItem.Insert("price", Result.Price);
-		LineItem.Insert("quantity", Result.Quantity);
+		LineItem.Insert("price", Result.PriceUnits);
+		LineItem.Insert("quantity", Result.QtyUnits);
 		//LineItem.Insert("taxable_amount", Result.TaxableAmount);
 		LineItem.Insert("line_total", Result.LineTotal);
 		//LineItem.Insert("taxable", Result.Taxable);
@@ -2057,8 +2192,8 @@ Function inoutCashSalesGet(jsonin) Export
 
 	Query = New Query("SELECT
 	                  |	CashSaleLineItems.Product,
-	                  |	CashSaleLineItems.Price,
-	                  |	CashSaleLineItems.Quantity,
+	                  |	CashSaleLineItems.PriceUnits,
+	                  |	CashSaleLineItems.QtyUnits,
 	                  |	CashSaleLineItems.LineTotal
 	                  |FROM
 	                  |	Document.CashSale.LineItems AS CashSaleLineItems
@@ -2075,8 +2210,8 @@ Function inoutCashSalesGet(jsonin) Export
 		LineItem.Insert("item_code", Result.Product.Code);
 		LineItem.Insert("api_code", String(Result.Product.Ref.UUID()));
 		LineItem.Insert("item_description", Result.Product.Description);
-		LineItem.Insert("price", Result.Price);
-		LineItem.Insert("quantity", Result.Quantity);
+		LineItem.Insert("price", Result.PriceUnits);
+		LineItem.Insert("quantity", Result.QtyUnits);
 		//LineItem.Insert("taxable_amount", Result.TaxableAmount);
 		LineItem.Insert("line_total", Result.LineTotal);
 		//LineItem.Insert("taxable", Result.Taxable);
@@ -2299,7 +2434,7 @@ Function inoutInvoicesCreate(jsonin) Export
 	NewInvoice.ARAccount = DefaultCurrency.DefaultARAccount;
 	//NewCashSale.BankAccount = Constants.BankAccount.Get();
 	NewInvoice.ExchangeRate = 1;
-	NewInvoice.LocationActual = Catalogs.Locations.MainWarehouse;
+	NewInvoice.LocationActual = GeneralFunctions.GetDefaultLocation();
 	
 	Try NewInvoice.LineSubtotal = ParsedJSON.line_subtotal; Except EndTry;
 	Try NewInvoice.Discount = ParsedJSON.discount; Except EndTry;
@@ -2320,8 +2455,8 @@ Function inoutInvoicesCreate(jsonin) Export
 		//NewLine.VATCode = CommonUse.GetAttributeValue(Product, "SalesVATCode");
 		//NewLine.VAT = 0;
 		
-		NewLine.Price = DataLineItems[i].price;
-		NewLine.Quantity = DataLineItems[i].quantity;
+		NewLine.PriceUnits = DataLineItems[i].price;
+		NewLine.QtyUnits = DataLineItems[i].quantity;
 		//Try NewLine.Taxable = DataLineItems[i].taxable; Except EndTry;
 		// get taxable from JSON
 		//Try
@@ -2377,8 +2512,8 @@ Function inoutInvoicesCreate(jsonin) Export
 
 	Query = New Query("SELECT
 	                  |	InvoiceLineItems.Product,
-	                  |	InvoiceLineItems.Price,
-	                  |	InvoiceLineItems.Quantity,
+	                  |	InvoiceLineItems.PriceUnits,
+	                  |	InvoiceLineItems.QtyUnits,
 	                  |	InvoiceLineItems.LineTotal
 	                  |FROM
 	                  |	Document.SalesInvoice.LineItems AS InvoiceLineItems
@@ -2395,8 +2530,8 @@ Function inoutInvoicesCreate(jsonin) Export
 		LineItem.Insert("item_code", Result.Product.Code);
 		LineItem.Insert("api_code", String(Result.Product.Ref.UUID()));
 		LineItem.Insert("item_description", Result.Product.Description);
-		LineItem.Insert("price", Result.Price);
-		LineItem.Insert("quantity", Result.Quantity);
+		LineItem.Insert("price", Result.PriceUnits);
+		LineItem.Insert("quantity", Result.QtyUnits);
 		//LineItem.Insert("taxable_amount", Result.TaxableAmount);
 		LineItem.Insert("line_total", Result.LineTotal);
 		//LineItem.Insert("taxable", Result.Taxable);
@@ -2473,7 +2608,7 @@ Function inoutInvoicesUpdate(jsonin, object_code) Export
 	NewInvoice.ARAccount = DefaultCurrency.DefaultARAccount;
 	//NewCashSale.BankAccount = Constants.BankAccount.Get();
 	NewInvoice.ExchangeRate = 1;
-	NewInvoice.LocationActual = Catalogs.Locations.MainWarehouse;
+	NewInvoice.LocationActual = GeneralFunctions.GetDefaultLocation();
 	Try NewInvoice.LineSubtotal = ParsedJSON.line_subtotal; Except EndTry;
 	Try NewInvoice.Discount = ParsedJSON.discount; Except EndTry;
 	Try NewInvoice.DiscountPercent = ParsedJSON.discount_percent; Except EndTry;
@@ -2494,8 +2629,8 @@ Function inoutInvoicesUpdate(jsonin, object_code) Export
 		//NewLine.VATCode = CommonUse.GetAttributeValue(Product, "SalesVATCode");
 		//NewLine.VAT = 0;
 		
-		NewLine.Price = DataLineItems[i].price;
-		NewLine.Quantity = DataLineItems[i].quantity;
+		NewLine.PriceUnits = DataLineItems[i].price;
+		NewLine.QtyUnits = DataLineItems[i].quantity;
 		//Try NewLine.Taxable = DataLineItems[i].taxable; Except EndTry;
 		// get taxable from JSON
 		//Try
@@ -2551,8 +2686,8 @@ Function inoutInvoicesUpdate(jsonin, object_code) Export
 
 	Query = New Query("SELECT
 	                  |	InvoiceLineItems.Product,
-	                  |	InvoiceLineItems.Price,
-	                  |	InvoiceLineItems.Quantity,
+	                  |	InvoiceLineItems.PriceUnits,
+	                  |	InvoiceLineItems.QtyUnits,
 	                  |	InvoiceLineItems.LineTotal
 	                  |FROM
 	                  |	Document.SalesInvoice.LineItems AS InvoiceLineItems
@@ -2569,8 +2704,8 @@ Function inoutInvoicesUpdate(jsonin, object_code) Export
 		LineItem.Insert("item_code", Result.Product.Code);
 		LineItem.Insert("api_code", String(Result.Product.Ref.UUID()));
 		LineItem.Insert("item_description", Result.Product.Description);
-		LineItem.Insert("price", Result.Price);
-		LineItem.Insert("quantity", Result.Quantity);
+		LineItem.Insert("price", Result.PriceUnits);
+		LineItem.Insert("quantity", Result.QtyUnits);
 		//LineItem.Insert("taxable_amount", Result.TaxableAmount);
 		LineItem.Insert("line_total", Result.LineTotal);
 		//LineItem.Insert("taxable", Result.Taxable);
@@ -2653,8 +2788,8 @@ Function inoutInvoicesGet(jsonin) Export
 
 	Query = New Query("SELECT
 	                  |	InvoiceLineItems.Product,
-	                  |	InvoiceLineItems.Price,
-	                  |	InvoiceLineItems.Quantity,
+	                  |	InvoiceLineItems.PriceUnits,
+	                  |	InvoiceLineItems.QtyUnits,
 	                  |	InvoiceLineItems.LineTotal
 	                  |FROM
 	                  |	Document.SalesInvoice.LineItems AS InvoiceLineItems
@@ -2671,8 +2806,8 @@ Function inoutInvoicesGet(jsonin) Export
 		LineItem.Insert("item_code", Result.Product.Code);
 		LineItem.Insert("api_code", String(Result.Product.Ref.UUID()));
 		LineItem.Insert("item_description", Result.Product.Description);
-		LineItem.Insert("price", Result.Price);
-		LineItem.Insert("quantity", Result.Quantity);
+		LineItem.Insert("price", Result.PriceUnits);
+		LineItem.Insert("quantity", Result.QtyUnits);
 		//LineItem.Insert("taxable", Result.Taxable);
 		//LineItem.Insert("taxable_amount", Result.TaxableAmount);
 		LineItem.Insert("line_total", Result.LineTotal);
@@ -2857,8 +2992,7 @@ Function inoutSalesOrdersCreate(jsonin) Export
 	ParsedJSON = InternetConnectionClientServer.DecodeJSON(jsonin);
 		
 	NewSO = Documents.SalesOrder.CreateDocument();
-	//customer_api_code = ParsedJSON.customer_api_code;
-	//NewSO.Company = Catalogs.Companies.GetRef(New UUID(customer_api_code));
+	
 	Try customer_api_code = ParsedJSON.customer_api_code Except customer_api_code = Undefined EndTry;
 	If NOT customer_api_code = Undefined Then
 		
@@ -2866,7 +3000,7 @@ Function inoutSalesOrdersCreate(jsonin) Export
 		cust = Catalogs.Companies.GetRef(New UUID(customer_api_code));
 		Except
 			errorMessage = New Map();
-			strMessage = " [customer_api_code] : The customer does not exist ";
+			strMessage = "[customer_api_code] : The customer does not exist";
 			errorMessage.Insert("message", strMessage);
 			errorMessage.Insert("status", "error"); 
 			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -2884,7 +3018,7 @@ Function inoutSalesOrdersCreate(jsonin) Export
 		custResult = custQuery.Execute();
 		If custResult.IsEmpty() Then
 			errorMessage = New Map();
-			strMessage = " [customer_api_code] : The customer does not exist ";
+			strMessage = "[customer_api_code] : The customer does not exist";
 			errorMessage.Insert("status", "error"); 
 			errorMessage.Insert("message", strMessage);
 			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -2893,325 +3027,75 @@ Function inoutSalesOrdersCreate(jsonin) Export
 		NewSO.Company = cust;
 	Else
 		errorMessage = New Map();
-		strMessage = " [customer_api_code] : This field is required ";
+		strMessage = "[customer_api_code] : This field is required";
 		errorMessage.Insert("status", "error"); 
 		errorMessage.Insert("message", strMessage);
 		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
 		return errorJSON;
 		
-		//customer_api_code = ParsedJSON.customer_api_code;
-		//NewSO.Company = Catalogs.Companies.GetRef(New UUID(customer_api_code));
-
 	EndIf;
-	// SHIP TO ADDRESS SECTION
 	
-	//Try ship_to_api_code = ParsedJSON.ship_to_api_code Except ship_to_api_code = Undefined EndTry;
-	//If NOT ship_to_api_code = Undefined Then
-	//	// todo - check if address belongs to company
-	//	NewSO.ShipTo = Catalogs.Addresses.GetRef(New UUID(ship_to_api_code));
-	Try ship_to_api_code = ParsedJSON.ship_to_api_code Except ship_to_api_code = Undefined EndTry;
-	If NOT ship_to_api_code = Undefined Then
-	 
-		//NewSO.ShipTo = Catalogs.Addresses.GetRef(New UUID(ship_to_api_code));
-
-		Try addr = Catalogs.Addresses.GetRef(New UUID(ship_to_api_code)) Except addr = Undefined EndTry;
-		
-		newQuery = New Query("SELECT
-		                     |	Addresses.Ref
-		                     |FROM
-		                     |	Catalog.Addresses AS Addresses
-		                     |WHERE
-		                     |	Addresses.Owner = &Customer
-		                     |	AND Addresses.Ref = &addrCode");
-							 
-		newQuery.SetParameter("Customer", NewSO.Company);
-		newQuery.SetParameter("addrCode", addr);
-		addrResult = newQuery.Execute();
-		If addrResult.IsEmpty() Then
-			errorMessage = New Map();
-			strMessage = " [ship_to_api_code] : Shipping Address does not belong to the Company ";
-			errorMessage.Insert("status", "error"); 
-			errorMessage.Insert("message", strMessage);
-			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+	tempSO = handleDocumentAddresses(ParsedJSON, NewSO, "create");
+	Try
+		If tempSO.Get("status") = "error" Then
+			errorJSON = InternetConnectionClientServer.EncodeJSON(tempSO);
 			return errorJSON;
 		EndIf;
-		NewSO.ShipTO = addr;
-		
-	Else
-		
-		Query = New Query("SELECT
-		                  |	Addresses.Ref
-		                  |FROM
-		                  |	Catalog.Addresses AS Addresses
-		                  |WHERE
-		                  |	Addresses.Owner = &Customer
-		                  |	AND Addresses.AddressLine1 = &AddressLine1
-		                  |	AND Addresses.AddressLine2 = &AddressLine2
-		                  |	AND Addresses.City = &City
-		                  |	AND Addresses.State = &State
-		                  |	AND Addresses.ZIP = &ZIP
-		                  |	AND Addresses.Country = &Country");
-		Query.SetParameter("Customer", NewSO.Company);
-		
-		Try ship_to_address_line1 = ParsedJSON.ship_to_address_line1 Except ship_to_address_line1 = Undefined EndTry;
-		If NOT ship_to_address_line1 = Undefined Then
-			Query.SetParameter("AddressLine1", ship_to_address_line1);
-		Else
-			Query.SetParameter("AddressLine1", "");
-		EndIf;
-		
-		Try ship_to_address_line2 = ParsedJSON.ship_to_address_line2 Except ship_to_address_line2 = Undefined EndTry;
-		If NOT ship_to_address_line2 = Undefined Then
-			Query.SetParameter("AddressLine2", ship_to_address_line2);
-		Else
-			Query.SetParameter("AddressLine2", "");
-		EndIf;
-		
-		Try ship_to_city = ParsedJSON.ship_to_city Except ship_to_city = Undefined EndTry;
-		If NOT ship_to_city = Undefined Then
-			Query.SetParameter("City", ship_to_city);
-		Else
-			Query.SetParameter("City", "");
-		EndIf;
-		
-		Try ship_to_zip = ParsedJSON.ship_to_zip Except ship_to_zip = Undefined EndTry;
-		If NOT ship_to_zip = Undefined Then
-			Query.SetParameter("ZIP", ship_to_zip);
-		Else
-			Query.SetParameter("ZIP", "");
-		EndIf;
-		
-		Try ship_to_state = ParsedJSON.ship_to_state Except ship_to_state = Undefined EndTry;
-		If NOT ship_to_state = Undefined Then
-			Query.SetParameter("State", Catalogs.States.FindByCode(ship_to_state));
-		Else
-			Query.SetParameter("State", Catalogs.States.EmptyRef());
-		EndIf;
-		
-		Try ship_to_country = ParsedJSON.ship_to_country Except ship_to_country = Undefined EndTry;
-		If NOT ship_to_country = Undefined Then
-			Query.SetParameter("Country", Catalogs.Countries.FindByCode(ship_to_country));
-		Else
-			Query.SetParameter("Country", Catalogs.Countries.EmptyRef());
-		EndIf;
-		
-		QueryResult = Query.Execute();
-		
-		If QueryResult.IsEmpty() Then
-			// create new address		
-			AddressLine = Catalogs.Addresses.CreateItem();
-			AddressLine.Owner = NewSO.Company;
-
-			Try
-				AddressLine.Description = ParsedJSON.ship_to_address_id;
-			Except
-				// generate "ShipTo_" + five random characters address ID
-
-				PasswordLength = 5;
-				SymbolString = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"; //62
-				RandomChars5 = "";
-				RNG = New RandomNumberGenerator;	
-				For i = 0 to PasswordLength-1 Do
-					RN = RNG.RandomNumber(1, 62);
-					RandomChars5 = RandomChars5 + Mid(SymbolString,RN,1);
-				EndDo;
-
-				AddressLine.Description = "ShipTo_" + RandomChars5;
-			EndTry;
-			
-			Try	AddressLine.FirstName = ParsedJSON.ship_to_first_name; Except EndTry;			
-			Try AddressLine.MiddleName = ParsedJSON.ship_to_middle_name; Except EndTry;			
-			Try AddressLine.LastName = ParsedJSON.ship_to_last_name; Except EndTry;				
-			Try AddressLine.Phone = ParsedJSON.ship_to_phone; Except EndTry;			
-			Try AddressLine.Cell = ParsedJSON.ship_to_cell; Except EndTry;			
-			Try AddressLine.Email = ParsedJSON.ship_to_email; Except EndTry;			
-			Try AddressLine.AddressLine1 = ParsedJSON.ship_to_address_line1; Except EndTry;			
-			Try	AddressLine.AddressLine2 = ParsedJSON.ship_to_address_line2; Except EndTry;			
-			Try	AddressLine.City = ParsedJSON.ship_to_city; Except EndTry;
-			Try AddressLine.State = Catalogs.States.FindByCode(ParsedJSON.ship_to_state); Except EndTry;			
-			Try AddressLine.Country = Catalogs.Countries.FindByCode(ParsedJSON.ship_to_country); Except EndTry;			
-			Try AddressLine.ZIP = ParsedJSON.ship_to_zip; Except EndTry;
-			Try	AddressLine.Notes = ParsedJSON.ship_to_notes; Except EndTry;			
-			Try AddressLine.SalesTaxCode = Catalogs.SalesTaxCodes.FindByCode(ParsedJSON.ship_to_sales_tax_code); Except EndTry;			
-			
-			AddressLine.Write();
-			NewSO.ShipTo = AddressLine.Ref;
-			
-		Else
-			// select first address in the dataset
-			Dataset = QueryResult.Unload();
-			NewSO.ShipTo = Dataset[0].Ref; 
-		EndIf
-
-	EndIf;
+	Except
+	EndTry;
 	
-	// BILL TO ADDRESS SECTION
-	
-	Try bill_to_api_code = ParsedJSON.bill_to_api_code Except bill_to_api_code = Undefined EndTry;
-	If NOT bill_to_api_code = Undefined Then
-		// todo - check if address belongs to company
-		//NewSO.BillTo = Catalogs.Addresses.GetRef(New UUID(bill_to_api_code));
-		Try addrBill = Catalogs.Addresses.GetRef(New UUID(bill_to_api_code)) Except addrBill = Undefined EndTry;
+	NewSO = tempSO;
 		
-		newQuery = New Query("SELECT
-		                     |	Addresses.Ref
-		                     |FROM
-		                     |	Catalog.Addresses AS Addresses
-		                     |WHERE
-		                     |	Addresses.Owner = &Customer
-		                     |	AND Addresses.Ref = &addrCode");
-							 
-		newQuery.SetParameter("Customer", NewSO.Company);
-		newQuery.SetParameter("addrCode", addrBill);
-		billResult = newQuery.Execute();
-		If billResult.IsEmpty() Then
-			errorMessage = New Map();
-			strMessage = " [bill_to_api_code] : Billing Address does not belong to the Company " ;
-			errorMessage.Insert("status", "error");
-			errorMessage.Insert("message", strMessage );
-			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
-			return errorJSON;
-		EndIf;
-		NewSO.BillTo = addrBill;
-		
-	Else
-		
-		Query = New Query("SELECT
-		                  |	Addresses.Ref
-		                  |FROM
-		                  |	Catalog.Addresses AS Addresses
-		                  |WHERE
-		                  |	Addresses.Owner = &Customer
-		                  |	AND Addresses.AddressLine1 = &AddressLine1
-		                  |	AND Addresses.AddressLine2 = &AddressLine2
-		                  |	AND Addresses.City = &City
-		                  |	AND Addresses.State = &State
-		                  |	AND Addresses.ZIP = &ZIP
-		                  |	AND Addresses.Country = &Country");
-		Query.SetParameter("Customer", NewSO.Company);
-		
-		Try bill_to_address_line1 = ParsedJSON.bill_to_address_line1 Except bill_to_address_line1 = Undefined EndTry;
-		If NOT bill_to_address_line1 = Undefined Then
-			Query.SetParameter("AddressLine1", bill_to_address_line1);
-		Else
-			Query.SetParameter("AddressLine1", "");
-		EndIf;
-		
-		Try bill_to_address_line2 = ParsedJSON.bill_to_address_line2 Except bill_to_address_line2 = Undefined EndTry;
-		If NOT bill_to_address_line2 = Undefined Then
-			Query.SetParameter("AddressLine2", bill_to_address_line2);
-		Else
-			Query.SetParameter("AddressLine2", "");
-		EndIf;
-		
-		Try bill_to_city = ParsedJSON.bill_to_city Except bill_to_city = Undefined EndTry;
-		If NOT bill_to_city = Undefined Then
-			Query.SetParameter("City", bill_to_city);
-		Else
-			Query.SetParameter("City", "");
-		EndIf;
-		
-		Try bill_to_zip = ParsedJSON.bill_to_zip Except bill_to_zip = Undefined EndTry;
-		If NOT bill_to_zip = Undefined Then
-			Query.SetParameter("ZIP", bill_to_zip);
-		Else
-			Query.SetParameter("ZIP", "");
-		EndIf;
-		
-		Try bill_to_state = ParsedJSON.bill_to_state Except bill_to_state = Undefined EndTry;
-		If NOT bill_to_state = Undefined Then
-			Query.SetParameter("State", Catalogs.States.FindByCode(bill_to_state));
-		Else
-			Query.SetParameter("State", Catalogs.States.EmptyRef());
-		EndIf;
-		
-		Try bill_to_country = ParsedJSON.bill_to_country Except bill_to_country = Undefined EndTry;
-		If NOT bill_to_country = Undefined Then
-			Query.SetParameter("Country", Catalogs.Countries.FindByCode(bill_to_country));
-		Else
-			Query.SetParameter("Country", Catalogs.Countries.EmptyRef());
-		EndIf;
-		
-		QueryResult = Query.Execute();
-		
-		If QueryResult.IsEmpty() Then
-			// create new address		
-			AddressLine = Catalogs.Addresses.CreateItem();
-			AddressLine.Owner = NewSO.Company;
+	Numerator = Catalogs.DocumentNumbering.SalesOrder;
+	NextNumber = GeneralFunctions.Increment(Numerator.Number);
 
-			Try
-				AddressLine.Description = ParsedJSON.bill_to_address_id;
-			Except
-				// generate "BillTo_" + five random characters address ID
-
-				PasswordLength = 5;
-				SymbolString = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"; //62
-				RandomChars5 = "";
-				RNG = New RandomNumberGenerator;	
-				For i = 0 to PasswordLength-1 Do
-					RN = RNG.RandomNumber(1, 62);
-					RandomChars5 = RandomChars5 + Mid(SymbolString,RN,1);
-				EndDo;
-
-				AddressLine.Description = "BillTo_" + RandomChars5;
-			EndTry;
-			
-			Try	AddressLine.FirstName = ParsedJSON.bill_to_first_name; Except EndTry;			
-			Try AddressLine.MiddleName = ParsedJSON.bill_to_middle_name; Except EndTry;			
-			Try AddressLine.LastName = ParsedJSON.bill_to_last_name; Except EndTry;				
-			Try AddressLine.Phone = ParsedJSON.bill_to_phone; Except EndTry;			
-			Try AddressLine.Cell = ParsedJSON.bill_to_cell; Except EndTry;			
-			Try AddressLine.Email = ParsedJSON.bill_to_email; Except EndTry;			
-			Try AddressLine.AddressLine1 = ParsedJSON.bill_to_address_line1; Except EndTry;			
-			Try	AddressLine.AddressLine2 = ParsedJSON.bill_to_address_line2; Except EndTry;			
-			Try	AddressLine.City = ParsedJSON.bill_to_city; Except EndTry;
-			Try AddressLine.State = Catalogs.States.FindByCode(ParsedJSON.bill_to_state); Except EndTry;			
-			Try AddressLine.Country = Catalogs.Countries.FindByCode(ParsedJSON.bill_to_country); Except EndTry;			
-			Try AddressLine.ZIP = ParsedJSON.bill_to_zip; Except EndTry;
-			Try	AddressLine.Notes = ParsedJSON.bill_to_notes; Except EndTry;			
-			Try AddressLine.SalesTaxCode = Catalogs.SalesTaxCodes.FindByCode(ParsedJSON.bill_to_sales_tax_code); Except EndTry;			
-			
-			AddressLine.Write();
-			NewSO.BillTo = AddressLine.Ref;
-			
-		Else
-			// select first address in the dataset
-			Dataset = QueryResult.Unload();
-			NewSO.BillTo = Dataset[0].Ref;
-		EndIf
-
-	EndIf;
-	
-	// END BILL TO ADDRESS SECTION
+	While Documents.SalesOrder.FindByNumber(NextNumber) <> Documents.SalesOrder.EmptyRef() And NextNumber <> "" Do
+		ObjectNumerator = Numerator.GetObject();
+		ObjectNumerator.Number = NextNumber;
+		ObjectNumerator.Write();
+		
+		NextNumber = GeneralFunctions.Increment(NextNumber);
+	EndDo;
+	NewSO.Number = NextNumber;
 	
 	Try date = ParsedJSON.date Except date = Undefined EndTry;
 	If date = Undefined Then
-		errorMessage = New Map();
-		strMessage = " [date] : This field is required ";
-		errorMessage.Insert("message", strMessage);
-		errorMessage.Insert("status", "error"); 
-		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
-		return errorJSON;
-	EndIf;
-	NewSO.Date = "01/22/2013"; // creating a failed date
-	wrongDate = NewSO.Date;
-	NewSO.Date = ParsedJSON.date;
-	If NewSO.Date = wrongDate Then
-		errorMessage = New Map();
-		strMessage = " [date] : Date must be in the format of YYYY-MM-DD ";
-		errorMessage.Insert("message", strMessage);
-		errorMessage.Insert("status", "error"); 
-		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
-		return errorJSON;
+		//use current date
+		NewSO.Date = CurrentSessionDate(); 
+		
+	Else
+		NewSO.Date = "01/22/2013"; // creating a failed date
+		wrongDate = NewSO.Date;
+		NewSO.Date = ParsedJSON.date;
+		If NewSO.Date = wrongDate Then
+			errorMessage = New Map();
+			strMessage = " [date] : Date must be in the format of YYYY-MM-DD ";
+			errorMessage.Insert("message", strMessage);
+			errorMessage.Insert("status", "error"); 
+			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+			return errorJSON;
+		EndIf;
+		
+		NewSO.Date = ParsedJSON.date;
 	EndIf;
 	
-	NewSO.Date = ParsedJSON.date;
-	//NewSO.DueDate = ParsedJSON.due_date;
-	//NewSO.Terms = Catalogs.PaymentTerms.DueOnReceipt;
+	Try promise_date = ParsedJSON.promise_date Except promise_date = Undefined EndTry;
+	If promise_date <> Undefined Then
+		NewSO.DeliveryDate = "01/22/2013"; // creating a failed date
+		wrongDate = NewSO.DeliveryDate;
+		NewSO.DeliveryDate = ParsedJSON.promise_date;
+		If NewSO.DeliveryDate = wrongDate Then
+			errorMessage = New Map();
+			strMessage = " [promise_date] : Date must be in the format of YYYY-MM-DD ";
+			errorMessage.Insert("message", strMessage);
+			errorMessage.Insert("status", "error"); 
+			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+			return errorJSON;
+		EndIf;
+		
+		NewSO.DeliveryDate = ParsedJSON.promise_date;
+	EndIf;
 	
-	//PaymentMethod = ParsedJSON.Get("payment_method");
-	// support all payment methods
-	//NewCashSale.PaymentMethod = Catalogs.PaymentMethods.Cash;
 	Try
 		NewSO.RefNum = ParsedJSON.ref_num;
 	Except
@@ -3223,249 +3107,34 @@ Function inoutSalesOrdersCreate(jsonin) Export
 	EndTry;	
 	
 	Try
+		NewSO.Memo = ParsedJSON.int_memo;
+	Except
+	EndTry;
+	Try
 		NewSO.Memo = ParsedJSON.memo;
 	Except
 	EndTry;
-	// tax rate - calculate from address?
+	
 	Try
-		SalesTax = ParsedJSON.sales_tax_total; 
-		NewSO.SalesTaxRC = ParsedJSON.sales_tax_total;		
+		NewSO.EmailNote = ParsedJSON.ext_memo;
 	Except
-		NewSO.SalesTaxRC = 0;
 	EndTry;
-	
-	Try doc_total = ParsedJSON.doc_total Except doc_total = Undefined EndTry;
-	If doc_total = Undefined Then
-		errorMessage = New Map();
-		strMessage = " [doc_total] : This field is required " ;
-		errorMessage.Insert("status", "error");
-		errorMessage.Insert("message", strMessage );
-		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
-		return errorJSON;
-	EndIf;
-	NewSO.DocumentTotal = doc_total;
-	NewSO.DocumentTotalRC = doc_total;
-	
-	//NewCashSale.DepositType = "2";
-	DefaultCurrency = Constants.DefaultCurrency.Get();
-	NewSO.Currency = DefaultCurrency;
-	//NewSO.ARAccount = DefaultCurrency.DefaultARAccount;
-	//NewCashSale.BankAccount = Constants.BankAccount.Get();
+	NewSO.Currency = NewSO.Company.DefaultCurrency;
 	NewSO.ExchangeRate = 1;
 	NewSO.Location = Catalogs.Locations.MainWarehouse;
 	
-	Try NewSO.LineSubtotal = ParsedJSON.line_subtotal; Except EndTry;
-	Try NewSO.Discount = ParsedJSON.discount; Except EndTry;
-	Try NewSO.DiscountPercent = ParsedJSON.discount_percent; Except EndTry;
-	Try NewSO.SubTotal = ParsedJSON.subtotal; Except EndTry;
-	Try NewSO.Shipping = ParsedJSON.shipping; Except EndTry;
-	
-	//DataLineItems = ParsedJSON.lines.line_items;
-	
-	Try DataLineItems = ParsedJSON.lines.line_items Except DataLineItems = Undefined EndTry;
-	If DataLineItems = Undefined Then
-		errorMessage = New Map();
-		strMessage = " [lines] : Must enter at least one line with correct line items " ;
-		errorMessage.Insert("status", "error");
-		errorMessage.Insert("message", strMessage );
-		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
-		return errorJSON;
-	EndIf;
-	
-	doc_total_test = 0;
-	
-	LineItemsRows = DataLineItems.Count();
-	For i = 0 To LineItemsRows -1 Do
-		
-		NewLine = NewSO.LineItems.Add();
-		
-		//Product = Catalogs.Products.GetRef(New UUID(DataLineItems[i].api_code));
-		//NewLine.Product = Product;
-		
-		Try Product = Catalogs.Products.GetRef(New UUID(DataLineItems[i].api_code)) Except Product = Undefined EndTry;
-			Try apiCode = DataLineItems[i].api_code Except apiCode = Undefined EndTry;
-		If NOT Product = Undefined Or NOT apiCode = Undefined Then
-		    itemsQuery = New Query("SELECT
-		                         	|	Products.Ref
-		                         	|FROM
-								 	|	Catalog.Products AS Products
-			                     	|WHERE
-			                     	|	Products.Ref = &items");
-			itemsQuery.SetParameter("items", Product);
-			itemsResult = itemsQuery.Execute();
-			If itemsResult.IsEmpty() Then
-				errorMessage = New Map();
-				strMessage = " [line_items(" + string(i+1) + ").api_code] : Item does not exist" ;
-				errorMessage.Insert("status", "error");
-				errorMessage.Insert("message", strMessage );
-				errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
-				return errorJSON;
-			EndIf;	
-			NewLine.Product = Product;
-		Else
-			errorMessage = New Map();
-			strMessage = " [line_items(" + string(i+1) + ").api_code] : Item code is missing. This is a required field for lines " ;
-			errorMessage.Insert("status", "error");
-			errorMessage.Insert("message", strMessage );
-			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+	tempSO = handleDocumentTotals(ParsedJSON, NewSO);
+	Try
+		If tempSO.Get("status") = "error" Then
+			errorJSON = InternetConnectionClientServer.EncodeJSON(tempSO);
 			return errorJSON;
 		EndIf;
+	Except
+	EndTry;
+	NewSO = tempSO;
 		
-		NewLine.ProductDescription = Product.Description;
-		//NewLine.VATCode = CommonUse.GetAttributeValue(Product, "SalesVATCode");
-		//NewLine.VAT = 0;
-		
-		//NewLine.Price = DataLineItems[i].price;
-		Try price = DataLineItems[i].price Except price = Undefined EndTry;
-		If NOT price = Undefined Then
-			NewLine.Price = price;
-		Else
-			errorMessage = New Map();
-			strMessage = " [line_items(" + string(i+1) + ").price] : This is a required field for lines " ;
-			errorMessage.Insert("status", "error");
-			errorMessage.Insert("message", strMessage );
-			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
-			return errorJSON;
-		EndIf;
-		
-		//NewLine.Quantity = DataLineItems[i].quantity;
-		Try quantity = DataLineItems[i].quantity Except quantity = Undefined EndTry;
-		If NOT quantity = Undefined Then
-			NewLine.Quantity = quantity;
-		Else
-			errorMessage = New Map();
-			strMessage = " [line_items(" + string(i+1) + ").quantity] : This is a required field for lines " ;
-			errorMessage.Insert("status", "error");
-			errorMessage.Insert("message", strMessage );
-			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
-			return errorJSON;
-		EndIf;
-		
-		//Try NewLine.Taxable = DataLineItems[i].taxable Except EndTry;
-		
-		// get taxable from JSON
-		//Try
-		//	TaxableType = DataLineItems[i].taxable_type;
-		//	If TaxableType = "taxable" Then
-		//		NewLine.SalesTaxType = Enums.SalesTaxTypes.Taxable;
-		//	ElsIf TaxableType = "non-taxable" Then
-		//		NewLine.SalesTaxType = Enums.SalesTaxTypes.NonTaxable;
-		//	Else
-		//		NewLine.SalesTaxType = Enums.SalesTaxTypes.NonTaxable;
-		//	EndIf;
-		//Except
-		//	NewLine.SalesTaxType = Enums.SalesTaxTypes.NonTaxable;	
-		//EndTry;
-		
-		//NewLine.LineTotal = DataLineItems[i].line_total;
-		Try linetotal = DataLineItems[i].line_total Except linetotal = Undefined EndTry;
-		If NOT quantity = Undefined Then
-			NewLine.LineTotal = linetotal;
-		Else
-			errorMessage = New Map();
-			strMessage = " [line_items(" + string(i+1) + ").line_total] : This is a required field for lines " ;
-			errorMessage.Insert("status", "error");
-			errorMessage.Insert("message", strMessage );
-			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
-			return errorJSON;
-		EndIf;
-		
-		If NewLine.LineTotal <> (NewLine.Quantity * NewLine.Price) Then
-			errorMessage = New Map();
-			strMessage = " [line_items(" + string(i+1) + ").line_total] : Line item's total does not match quantity * price " ;
-			errorMessage.Insert("status", "error");
-			errorMessage.Insert("message", strMessage );
-			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
-			return errorJSON;
-		EndIf;
-		
-		doc_total_test = doc_total_test + NewLine.LineTotal;
-		
-		//Try
-		//	TaxableAmount = DataLineItems[i].taxable_amount;
-		//	NewLine.TaxableAmount = TaxableAmount				
-		//Except
-		//	NewLine.TaxableAmount = 0;
-		//EndTry;
-				
-	EndDo;
-	
-	// leaving out this test because of the added discounts and shipping attributes
-	//If doc_total_test <> NewSO.DocumentTotal Then
-	//	errorMessage = New Map();
-	//	strMessage = " [doc_total] : The document total and sum of lineitem totals are not equal " ;
-	//	errorMessage.Insert("status", "error");
-	//	errorMessage.Insert("message", strMessage );
-	//	errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
-	//	return errorJSON;
-	//EndIf;
-	
 	NewSO.Write(DocumentWriteMode.Posting);
-	
-	///
-	
-	
-	//SOData = New Map();
-	//SOData.Insert("api_code", String(NewSO.Ref.UUID()));
-	//SOData.Insert("customer_api_code", String(NewSO.Company.Ref.UUID()));
-	//SOData.Insert("customer_name", NewSO.Company.Description);
-	//SOData.Insert("customer_code", NewSO.Company.Code);
-	//SOData.Insert("ship_to_api_code", String(NewSO.ShipTo.Ref.UUID()));
-	////SOData.Insert("ship_to_address_code", NewSO.ShipTo.Code);
-	//SOData.Insert("ship_to_address_id", NewSO.ShipTo.Description);
-	//// date - convert into the same format as input
-	//SOData.Insert("so_number", NewSO.Number);
-	//SOData.Insert("cf1_string", NewSO.CF1String);
-	//// payment method - same as input
-	////CashSaleData.Insert("payment_method", NewInvoice.PaymentMethod.Description);
-	//SOData.Insert("date", NewSO.Date);
-	////SOData.Insert("due_date", NewSO.DueDate);
-	//SOData.Insert("ref_num", NewSO.RefNum);
-	//SOData.Insert("memo", NewSO.Memo);
-	//SOData.Insert("sales_tax_total", NewSO.SalesTax);
-	//SOData.Insert("doc_total", NewSO.DocumentTotalRC);
-
-	//Query = New Query("SELECT
-	//				  |	SOLineItems.Product,
-	//				  |	SOLineItems.Price,
-	//				  |	SOLineItems.Quantity,
-	//				  |	SOLineItems.LineTotal,
-	//				  |	SOLineItems.SalesTaxType,
-	//				  |	SOLineItems.TaxableAmount
-	//				  |FROM
-	//				  |	Document.SalesOrder.LineItems AS SOLineItems
-	//				  |WHERE
-	//				  |	SOLineItems.Ref = &SO");
-	//Query.SetParameter("SO", NewSO.Ref);
-	//Result = Query.Execute().Select();
-	//
-	//LineItems = New Array();
-	//
-	//While Result.Next() Do
-	//	
-	//	LineItem = New Map();
-	//	LineItem.Insert("item_code", Result.Product.Code);
-	//	LineItem.Insert("api_code", String(Result.Product.Ref.UUID()));
-	//	LineItem.Insert("item_description", Result.Product.Description);
-	//	LineItem.Insert("price", Result.Price);
-	//	LineItem.Insert("quantity", Result.Quantity);
-	//	LineItem.Insert("taxable_amount", Result.TaxableAmount);
-	//	LineItem.Insert("line_total", Result.LineTotal);
-	//	If Result.SalesTaxType = Enums.SalesTaxTypes.Taxable Then
-	//		LineItem.Insert("taxable_type", "taxable");
-	//	ElsIf Result.SalesTaxType = Enums.SalesTaxTypes.NonTaxable Then
-	//		LineItem.Insert("taxable_type", "non-taxable");
-	//	EndIf;
-	//	LineItems.Add(LineItem);
-	//	
-	//EndDo;
-	//
-	//LineItemsData = New Map();
-	//LineItemsData.Insert("line_items", LineItems);
-	//
-	//SOData.Insert("lines", LineItemsData);
-	
-	
+		
 	jsonout = InternetConnectionClientServer.EncodeJSON(GeneralFunctions.ReturnSaleOrderMap(NewSO.Ref));
 	
 	Return jsonout;
@@ -3475,7 +3144,6 @@ EndFunction
 Function inoutSalesOrdersUpdate(jsonin, object_code) Export
 	
 	SONumberJSON = InternetConnectionClientServer.DecodeJSON(object_code);
-	//api_code = SONumberJSON.object_code;
 		
 	Try api_code = SONumberJSON.object_code Except api_code = Undefined EndTry;
 	If api_code = Undefined  OR api_code = "" Then
@@ -3497,8 +3165,6 @@ Function inoutSalesOrdersUpdate(jsonin, object_code) Export
 		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
 		return errorJSON;
 	EndTry;
-
-		
 	
 	SOQuery = New Query("SELECT
 	                    |	SalesOrder.Ref
@@ -3517,12 +3183,8 @@ Function inoutSalesOrdersUpdate(jsonin, object_code) Export
 			return errorJSON;
 	EndIf;
 
-
-	
 	NewSO = XSO.GetObject();
 	NewSO.LineItems.Clear();
-	
-	//
 	
 	ParsedJSON = InternetConnectionClientServer.DecodeJSON(jsonin);
 	
@@ -3533,7 +3195,7 @@ Function inoutSalesOrdersUpdate(jsonin, object_code) Export
 		cust = Catalogs.Companies.GetRef(New UUID(customer_api_code));
 		Except
 			errorMessage = New Map();
-			strMessage = " [customer_api_code] : The customer does not exist ";
+			strMessage = "[customer_api_code] : The customer does not exist";
 			errorMessage.Insert("message", strMessage);
 			errorMessage.Insert("status", "error"); 
 			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -3551,347 +3213,61 @@ Function inoutSalesOrdersUpdate(jsonin, object_code) Export
 		custResult = custQuery.Execute();
 		If custResult.IsEmpty() Then
 			errorMessage = New Map();
-			strMessage = " [customer_api_code] : The customer does not exist ";
+			strMessage = "[customer_api_code] : The customer does not exist";
 			errorMessage.Insert("status", "error"); 
 			errorMessage.Insert("message", strMessage);
 			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
 			return errorJSON;
 		EndIf;					 
 		NewSO.Company = cust;
-	Else
-		errorMessage = New Map();
-		strMessage = " [customer_api_code] : This field is required ";
-		errorMessage.Insert("status", "error"); 
-		errorMessage.Insert("message", strMessage);
-		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
-		return errorJSON;
-		
-		//customer_api_code = ParsedJSON.customer_api_code;
-		//NewSO.Company = Catalogs.Companies.GetRef(New UUID(customer_api_code));
 
 	EndIf;
-		
-	////NewSO = Documents.SalesOrder.CreateDocument();
-	//customer_api_code = ParsedJSON.customer_api_code;
-	//NewSO.Company = Catalogs.Companies.GetRef(New UUID(customer_api_code));
 	
-	// SHIP TO ADDRESS SECTION
-	
-	//Try ship_to_api_code = ParsedJSON.ship_to_api_code Except ship_to_api_code = Undefined EndTry;
-	//If NOT ship_to_api_code = Undefined Then
-	//	// todo - check if address belongs to company
-	//	NewSO.ShipTo = Catalogs.Addresses.GetRef(New UUID(ship_to_api_code));
-	//Else
-	
-	Try ship_to_api_code = ParsedJSON.ship_to_api_code Except ship_to_api_code = Undefined EndTry;
-	If NOT ship_to_api_code = Undefined Then
-	 
-		//NewSO.ShipTo = Catalogs.Addresses.GetRef(New UUID(ship_to_api_code));
-
-		Try addr = Catalogs.Addresses.GetRef(New UUID(ship_to_api_code)) Except addr = Undefined EndTry;
-		
-		newQuery = New Query("SELECT
-		                     |	Addresses.Ref
-		                     |FROM
-		                     |	Catalog.Addresses AS Addresses
-		                     |WHERE
-		                     |	Addresses.Owner = &Customer
-		                     |	AND Addresses.Ref = &addrCode");
-							 
-		newQuery.SetParameter("Customer", NewSO.Company);
-		newQuery.SetParameter("addrCode", addr);
-		addrResult = newQuery.Execute();
-		If addrResult.IsEmpty() Then
-			errorMessage = New Map();
-			strMessage = " [ship_to_api_code] : Shipping Address does not belong to the Company ";
-			errorMessage.Insert("status", "error"); 
-			errorMessage.Insert("message", strMessage);
-			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+	tempSO = handleDocumentAddresses(ParsedJSON, NewSO, "update");
+	Try
+		If tempSO.Get("status") = "error" Then
+			errorJSON = InternetConnectionClientServer.EncodeJSON(tempSO);
 			return errorJSON;
 		EndIf;
-		NewSO.ShipTO = addr;
-		
-	Else
-		
-		Query = New Query("SELECT
-		                  |	Addresses.Ref
-		                  |FROM
-		                  |	Catalog.Addresses AS Addresses
-		                  |WHERE
-		                  |	Addresses.Owner = &Customer
-		                  |	AND Addresses.AddressLine1 = &AddressLine1
-		                  |	AND Addresses.AddressLine2 = &AddressLine2
-		                  |	AND Addresses.City = &City
-		                  |	AND Addresses.State = &State
-		                  |	AND Addresses.ZIP = &ZIP
-		                  |	AND Addresses.Country = &Country");
-		Query.SetParameter("Customer", NewSO.Company);
-		
-		Try ship_to_address_line1 = ParsedJSON.ship_to_address_line1 Except ship_to_address_line1 = Undefined EndTry;
-		If NOT ship_to_address_line1 = Undefined Then
-			Query.SetParameter("AddressLine1", ship_to_address_line1);
-		Else
-			Query.SetParameter("AddressLine1", "");
-		EndIf;
-		
-		Try ship_to_address_line2 = ParsedJSON.ship_to_address_line2 Except ship_to_address_line2 = Undefined EndTry;
-		If NOT ship_to_address_line2 = Undefined Then
-			Query.SetParameter("AddressLine2", ship_to_address_line2);
-		Else
-			Query.SetParameter("AddressLine2", "");
-		EndIf;
-		
-		Try ship_to_city = ParsedJSON.ship_to_city Except ship_to_city = Undefined EndTry;
-		If NOT ship_to_city = Undefined Then
-			Query.SetParameter("City", ship_to_city);
-		Else
-			Query.SetParameter("City", "");
-		EndIf;
-		
-		Try ship_to_zip = ParsedJSON.ship_to_zip Except ship_to_zip = Undefined EndTry;
-		If NOT ship_to_zip = Undefined Then
-			Query.SetParameter("ZIP", ship_to_zip);
-		Else
-			Query.SetParameter("ZIP", "");
-		EndIf;
-		
-		Try ship_to_state = ParsedJSON.ship_to_state Except ship_to_state = Undefined EndTry;
-		If NOT ship_to_state = Undefined Then
-			Query.SetParameter("State", Catalogs.States.FindByCode(ship_to_state));
-		Else
-			Query.SetParameter("State", Catalogs.States.EmptyRef());
-		EndIf;
-		
-		Try ship_to_country = ParsedJSON.ship_to_country Except ship_to_country = Undefined EndTry;
-		If NOT ship_to_country = Undefined Then
-			Query.SetParameter("Country", Catalogs.Countries.FindByCode(ship_to_country));
-		Else
-			Query.SetParameter("Country", Catalogs.Countries.EmptyRef());
-		EndIf;
-		
-		QueryResult = Query.Execute();
-		
-		If QueryResult.IsEmpty() Then
-			// create new address		
-			AddressLine = Catalogs.Addresses.CreateItem();
-			AddressLine.Owner = NewSO.Company;
-
-			Try
-				AddressLine.Description = ParsedJSON.ship_to_address_id;
-			Except
-				// generate "ShipTo_" + five random characters address ID
-
-				PasswordLength = 5;
-				SymbolString = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"; //62
-				RandomChars5 = "";
-				RNG = New RandomNumberGenerator;	
-				For i = 0 to PasswordLength-1 Do
-					RN = RNG.RandomNumber(1, 62);
-					RandomChars5 = RandomChars5 + Mid(SymbolString,RN,1);
-				EndDo;
-
-				AddressLine.Description = "ShipTo_" + RandomChars5;
-			EndTry;
-			
-			Try	AddressLine.FirstName = ParsedJSON.ship_to_first_name; Except EndTry;			
-			Try AddressLine.MiddleName = ParsedJSON.ship_to_middle_name; Except EndTry;			
-			Try AddressLine.LastName = ParsedJSON.ship_to_last_name; Except EndTry;				
-			Try AddressLine.Phone = ParsedJSON.ship_to_phone; Except EndTry;			
-			Try AddressLine.Cell = ParsedJSON.ship_to_cell; Except EndTry;			
-			Try AddressLine.Email = ParsedJSON.ship_to_email; Except EndTry;			
-			Try AddressLine.AddressLine1 = ParsedJSON.ship_to_address_line1; Except EndTry;			
-			Try	AddressLine.AddressLine2 = ParsedJSON.ship_to_address_line2; Except EndTry;			
-			Try	AddressLine.City = ParsedJSON.ship_to_city; Except EndTry;
-			Try AddressLine.State = Catalogs.States.FindByCode(ParsedJSON.ship_to_state); Except EndTry;			
-			Try AddressLine.Country = Catalogs.Countries.FindByCode(ParsedJSON.ship_to_country); Except EndTry;			
-			Try AddressLine.ZIP = ParsedJSON.ship_to_zip; Except EndTry;
-			Try	AddressLine.Notes = ParsedJSON.ship_to_notes; Except EndTry;			
-			Try AddressLine.SalesTaxCode = Catalogs.SalesTaxCodes.FindByCode(ParsedJSON.ship_to_sales_tax_code); Except EndTry;			
-			
-			AddressLine.Write();
-			NewSO.ShipTo = AddressLine.Ref;
-			
-		Else
-			// select first address in the dataset
-			Dataset = QueryResult.Unload();
-			NewSO.ShipTo = Dataset[0].Ref; 
-		EndIf
-
-	EndIf;
+	Except
+	EndTry;
 	
-	// BILL TO ADDRESS SECTION
-	
-	//Try bill_to_api_code = ParsedJSON.bill_to_api_code Except bill_to_api_code = Undefined EndTry;
-	//If NOT bill_to_api_code = Undefined Then
-	//	// todo - check if address belongs to company
-	//	NewSO.BillTo = Catalogs.Addresses.GetRef(New UUID(bill_to_api_code));
-	//Else
-	
-	Try bill_to_api_code = ParsedJSON.bill_to_api_code Except bill_to_api_code = Undefined EndTry;
-	If NOT bill_to_api_code = Undefined Then
-
-		Try addrBill = Catalogs.Addresses.GetRef(New UUID(bill_to_api_code)) Except addrBill = Undefined EndTry;
-		
-		newQuery = New Query("SELECT
-		                     |	Addresses.Ref
-		                     |FROM
-		                     |	Catalog.Addresses AS Addresses
-		                     |WHERE
-		                     |	Addresses.Owner = &Customer
-		                     |	AND Addresses.Ref = &addrCode");
-							 
-		newQuery.SetParameter("Customer", NewSO.Company);
-		newQuery.SetParameter("addrCode", addrBill);
-		billResult = newQuery.Execute();
-		If billResult.IsEmpty() Then
-			errorMessage = New Map();
-			strMessage = " [bill_to_api_code] : Billing Address does not belong to the Company " ;
-			errorMessage.Insert("status", "error");
-			errorMessage.Insert("message", strMessage );
-			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
-			return errorJSON;
-		EndIf;
-		NewSO.BillTo = addrBill;
-		
-	Else
-		
-		Query = New Query("SELECT
-		                  |	Addresses.Ref
-		                  |FROM
-		                  |	Catalog.Addresses AS Addresses
-		                  |WHERE
-		                  |	Addresses.Owner = &Customer
-		                  |	AND Addresses.AddressLine1 = &AddressLine1
-		                  |	AND Addresses.AddressLine2 = &AddressLine2
-		                  |	AND Addresses.City = &City
-		                  |	AND Addresses.State = &State
-		                  |	AND Addresses.ZIP = &ZIP
-		                  |	AND Addresses.Country = &Country");
-		Query.SetParameter("Customer", NewSO.Company);
-		
-		Try bill_to_address_line1 = ParsedJSON.bill_to_address_line1 Except bill_to_address_line1 = Undefined EndTry;
-		If NOT bill_to_address_line1 = Undefined Then
-			Query.SetParameter("AddressLine1", bill_to_address_line1);
-		Else
-			Query.SetParameter("AddressLine1", "");
-		EndIf;
-		
-		Try bill_to_address_line2 = ParsedJSON.bill_to_address_line2 Except bill_to_address_line2 = Undefined EndTry;
-		If NOT bill_to_address_line2 = Undefined Then
-			Query.SetParameter("AddressLine2", bill_to_address_line2);
-		Else
-			Query.SetParameter("AddressLine2", "");
-		EndIf;
-		
-		Try bill_to_city = ParsedJSON.bill_to_city Except bill_to_city = Undefined EndTry;
-		If NOT bill_to_city = Undefined Then
-			Query.SetParameter("City", bill_to_city);
-		Else
-			Query.SetParameter("City", "");
-		EndIf;
-		
-		Try bill_to_zip = ParsedJSON.bill_to_zip Except bill_to_zip = Undefined EndTry;
-		If NOT bill_to_zip = Undefined Then
-			Query.SetParameter("ZIP", bill_to_zip);
-		Else
-			Query.SetParameter("ZIP", "");
-		EndIf;
-		
-		Try bill_to_state = ParsedJSON.bill_to_state Except bill_to_state = Undefined EndTry;
-		If NOT bill_to_state = Undefined Then
-			Query.SetParameter("State", Catalogs.States.FindByCode(bill_to_state));
-		Else
-			Query.SetParameter("State", Catalogs.States.EmptyRef());
-		EndIf;
-		
-		Try bill_to_country = ParsedJSON.bill_to_country Except bill_to_country = Undefined EndTry;
-		If NOT bill_to_country = Undefined Then
-			Query.SetParameter("Country", Catalogs.Countries.FindByCode(bill_to_country));
-		Else
-			Query.SetParameter("Country", Catalogs.Countries.EmptyRef());
-		EndIf;
-		
-		QueryResult = Query.Execute();
-		
-		If QueryResult.IsEmpty() Then
-			// create new address		
-			AddressLine = Catalogs.Addresses.CreateItem();
-			AddressLine.Owner = NewSO.Company;
-
-			Try
-				AddressLine.Description = ParsedJSON.bill_to_address_id;
-			Except
-				// generate "BillTo_" + five random characters address ID
-
-				PasswordLength = 5;
-				SymbolString = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"; //62
-				RandomChars5 = "";
-				RNG = New RandomNumberGenerator;	
-				For i = 0 to PasswordLength-1 Do
-					RN = RNG.RandomNumber(1, 62);
-					RandomChars5 = RandomChars5 + Mid(SymbolString,RN,1);
-				EndDo;
-
-				AddressLine.Description = "BillTo_" + RandomChars5;
-			EndTry;
+	NewSO = tempSO;
 			
-			Try	AddressLine.FirstName = ParsedJSON.bill_to_first_name; Except EndTry;			
-			Try AddressLine.MiddleName = ParsedJSON.bill_to_middle_name; Except EndTry;			
-			Try AddressLine.LastName = ParsedJSON.bill_to_last_name; Except EndTry;				
-			Try AddressLine.Phone = ParsedJSON.bill_to_phone; Except EndTry;			
-			Try AddressLine.Cell = ParsedJSON.bill_to_cell; Except EndTry;			
-			Try AddressLine.Email = ParsedJSON.bill_to_email; Except EndTry;			
-			Try AddressLine.AddressLine1 = ParsedJSON.bill_to_address_line1; Except EndTry;			
-			Try	AddressLine.AddressLine2 = ParsedJSON.bill_to_address_line2; Except EndTry;			
-			Try	AddressLine.City = ParsedJSON.bill_to_city; Except EndTry;
-			Try AddressLine.State = Catalogs.States.FindByCode(ParsedJSON.bill_to_state); Except EndTry;			
-			Try AddressLine.Country = Catalogs.Countries.FindByCode(ParsedJSON.bill_to_country); Except EndTry;			
-			Try AddressLine.ZIP = ParsedJSON.bill_to_zip; Except EndTry;
-			Try	AddressLine.Notes = ParsedJSON.bill_to_notes; Except EndTry;			
-			Try AddressLine.SalesTaxCode = Catalogs.SalesTaxCodes.FindByCode(ParsedJSON.bill_to_sales_tax_code); Except EndTry;			
-			
-			AddressLine.Write();
-			NewSO.BillTo = AddressLine.Ref;
-			
-		Else
-			// select first address in the dataset
-			Dataset = QueryResult.Unload();
-			NewSO.BillTo = Dataset[0].Ref;
-		EndIf
-
-	EndIf;
-	
-	// END BILL TO ADDRESS SECTION
-	
 	Try date = ParsedJSON.date Except date = Undefined EndTry;
-	If date = Undefined Then
-		errorMessage = New Map();
-		strMessage = " [date] : This field is required ";
-		errorMessage.Insert("message", strMessage);
-		errorMessage.Insert("status", "error"); 
-		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
-		return errorJSON;
-	EndIf;
-	NewSO.Date = "01/22/2013"; // creating a failed date
-	wrongDate = NewSO.Date;
-	NewSO.Date = ParsedJSON.date;
-	If NewSO.Date = wrongDate Then
-		errorMessage = New Map();
-		strMessage = " [date] : Date must be in the format of YYYY-MM-DD ";
-		errorMessage.Insert("message", strMessage);
-		errorMessage.Insert("status", "error"); 
-		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
-		return errorJSON;
+	If NOT date = Undefined Then
+		NewSO.Date = "01/22/2013"; // creating a failed date
+		wrongDate = NewSO.Date;
+		NewSO.Date = ParsedJSON.date;
+		If NewSO.Date = wrongDate Then
+			errorMessage = New Map();
+			strMessage = " [date] : Date must be in the format of YYYY-MM-DD ";
+			errorMessage.Insert("message", strMessage);
+			errorMessage.Insert("status", "error"); 
+			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+			return errorJSON;
+		EndIf;
+		
+		NewSO.Date = ParsedJSON.date;
 	EndIf;
 	
+	Try promise_date = ParsedJSON.promise_date Except promise_date = Undefined EndTry;
+	If promise_date <> Undefined Then
+		NewSO.DeliveryDate = "01/22/2013"; // creating a failed date
+		wrongDate = NewSO.DeliveryDate;
+		NewSO.DeliveryDate = ParsedJSON.promise_date;
+		If NewSO.DeliveryDate = wrongDate Then
+			errorMessage = New Map();
+			strMessage = " [promise_date] : Date must be in the format of YYYY-MM-DD ";
+			errorMessage.Insert("message", strMessage);
+			errorMessage.Insert("status", "error"); 
+			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+			return errorJSON;
+		EndIf;
+		
+		NewSO.DeliveryDate = ParsedJSON.promise_date;
+	EndIf;
 	
-	NewSO.Date = ParsedJSON.date;
-	//NewSO.DueDate = ParsedJSON.due_date;
-	//NewSO.Terms = Catalogs.PaymentTerms.DueOnReceipt;
-	
-	//PaymentMethod = ParsedJSON.Get("payment_method");
-	// support all payment methods
-	//NewCashSale.PaymentMethod = Catalogs.PaymentMethods.Cash;
 	Try
 		NewSO.RefNum = ParsedJSON.ref_num;
 	Except
@@ -3903,260 +3279,34 @@ Function inoutSalesOrdersUpdate(jsonin, object_code) Export
 	EndTry;	
 	
 	Try
+		NewSO.Memo = ParsedJSON.int_memo;
+	Except
+	EndTry;
+	Try
 		NewSO.Memo = ParsedJSON.memo;
 	Except
 	EndTry;
-	// tax rate - calculate from address?
+	
 	Try
-		SalesTax = ParsedJSON.sales_tax_total; 
-		NewSO.SalesTaxRC = ParsedJSON.sales_tax_total;		
+		NewSO.EmailNote = ParsedJSON.ext_memo;
 	Except
-		NewSO.SalesTaxRC = 0;
 	EndTry;
 	
-	Try doc_total = ParsedJSON.doc_total Except doc_total = Undefined EndTry;
-	If doc_total = Undefined Then
-		errorMessage = New Map();
-		strMessage = " [doc_total] : This field is required " ;
-		errorMessage.Insert("status", "error");
-		errorMessage.Insert("message", strMessage );
-		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
-		return errorJSON;
-	EndIf;			
-	NewSO.DocumentTotal = doc_total;
-	NewSO.DocumentTotalRC = doc_total;
-	
-	//NewSO.DocumentTotal = ParsedJSON.doc_total;
-	//NewSO.DocumentTotalRC = ParsedJSON.doc_total;
-	
-	//NewCashSale.DepositType = "2";
-	DefaultCurrency = Constants.DefaultCurrency.Get();
-	NewSO.Currency = DefaultCurrency;
-	//NewSO.ARAccount = DefaultCurrency.DefaultARAccount;
-	//NewCashSale.BankAccount = Constants.BankAccount.Get();
-	NewSO.ExchangeRate = 1;
-	NewSO.Location = Catalogs.Locations.MainWarehouse;
-	
-	Try NewSO.LineSubtotalRC = ParsedJSON.line_subtotal; Except EndTry;
-	Try NewSO.DiscountRC = ParsedJSON.discount; Except EndTry;
-	Try NewSO.DiscountPercent = ParsedJSON.discount_percent; Except EndTry;
-	Try NewSO.SubTotalRC = ParsedJSON.subtotal; Except EndTry;
-	Try NewSO.ShippingRC = ParsedJSON.shipping; Except EndTry;
-	
-	//DataLineItems = ParsedJSON.lines.line_items;
-	
-	Try DataLineItems = ParsedJSON.lines.line_items Except DataLineItems = Undefined EndTry;
-	If DataLineItems = Undefined Then
-		errorMessage = New Map();
-		strMessage = " [lines] : Must enter at least one line with correct line items " ;
-		errorMessage.Insert("status", "error");
-		errorMessage.Insert("message", strMessage );
-		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
-		return errorJSON;
-	EndIf;
-
-	
-	doc_total_test = 0;
-	
-	LineItemsRows = DataLineItems.Count();
-	For i = 0 To LineItemsRows -1 Do
-		
-		NewLine = NewSO.LineItems.Add();
-		
-		//Product = Catalogs.Products.GetRef(New UUID(DataLineItems[i].api_code));
-		//NewLine.Product = Product;
-		
-		Try Product = Catalogs.Products.GetRef(New UUID(DataLineItems[i].api_code)) Except Product = Undefined EndTry;
-			Try apiCode = DataLineItems[i].api_code Except apiCode = Undefined EndTry;
-		If NOT Product = Undefined Or NOT apiCode = Undefined Then
-		    itemsQuery = New Query("SELECT
-		                         	|	Products.Ref
-		                         	|FROM
-								 	|	Catalog.Products AS Products
-			                     	|WHERE
-			                     	|	Products.Ref = &items");
-			itemsQuery.SetParameter("items", Product);
-			itemsResult = itemsQuery.Execute();
-			If itemsResult.IsEmpty() Then
-				errorMessage = New Map();
-				strMessage = " [line_items(" + string(i+1) + ").api_code] : Item does not exist" ;
-				errorMessage.Insert("status", "error");
-				errorMessage.Insert("message", strMessage );
-				errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
-				return errorJSON;
-			EndIf;	
-			NewLine.Product = Product;
-		Else
-			errorMessage = New Map();
-			strMessage = " [line_items(" + string(i+1) + ").api_code] : Item code is missing. This is a required field for lines " ;
-			errorMessage.Insert("status", "error");
-			errorMessage.Insert("message", strMessage );
-			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+	tempSO = handleDocumentTotals(ParsedJSON, NewSO);
+	Try
+		If tempSO.Get("status") = "error" Then
+			errorJSON = InternetConnectionClientServer.EncodeJSON(tempSO);
 			return errorJSON;
 		EndIf;
-
-		NewLine.ProductDescription = Product.Description;
-		//NewLine.VATCode = CommonUse.GetAttributeValue(Product, "SalesVATCode");
-		//NewLine.VAT = 0;
+	Except
+	EndTry;
+	NewSO = tempSO;
 		
-		//NewLine.Price = DataLineItems[i].price;
-		Try price = DataLineItems[i].price Except price = Undefined EndTry;
-		If NOT price = Undefined Then
-			NewLine.Price = price;
-		Else
-			errorMessage = New Map();
-			strMessage = " [line_items(" + string(i+1) + ").price] : This is a required field for lines " ;
-			errorMessage.Insert("status", "error");
-			errorMessage.Insert("message", strMessage );
-			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
-			return errorJSON;
-		EndIf;
-
-
-		
-		//NewLine.Quantity = DataLineItems[i].quantity;
-		Try quantity = DataLineItems[i].quantity Except quantity = Undefined EndTry;
-		If NOT quantity = Undefined Then
-			NewLine.Quantity = quantity;
-		Else
-			errorMessage = New Map();
-			strMessage = " [line_items(" + string(i+1) + ").quantity] : This is a required field for lines " ;
-			errorMessage.Insert("status", "error");
-			errorMessage.Insert("message", strMessage );
-			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
-			return errorJSON;
-		EndIf;
-		
-		// get taxable from JSON
-		//Try
-		//	TaxableType = DataLineItems[i].taxable_type;
-		//	If TaxableType = "taxable" Then
-		//		NewLine.SalesTaxType = Enums.SalesTaxTypes.Taxable;
-		//	ElsIf TaxableType = "non-taxable" Then
-		//		NewLine.SalesTaxType = Enums.SalesTaxTypes.NonTaxable;
-		//	Else
-		//		NewLine.SalesTaxType = Enums.SalesTaxTypes.NonTaxable;
-		//	EndIf;
-		//Except
-		//	NewLine.SalesTaxType = Enums.SalesTaxTypes.NonTaxable;	
-		//EndTry;
-		
-		//NewLine.LineTotal = DataLineItems[i].line_total;
-		Try linetotal = DataLineItems[i].line_total Except linetotal = Undefined EndTry;
-		If NOT quantity = Undefined Then
-			NewLine.LineTotal = linetotal;
-		Else
-			errorMessage = New Map();
-			strMessage = " [line_items(" + string(i+1) + ").line_total] : This is a required field for lines " ;
-			errorMessage.Insert("status", "error");
-			errorMessage.Insert("message", strMessage );
-			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
-			return errorJSON;
-		EndIf;
-		
-		If NewLine.LineTotal <> (NewLine.Quantity * NewLine.Price) Then
-			errorMessage = New Map();
-			strMessage = " [line_items(" + string(i+1) + ").line_total] : Line item's total does not match quantity * price " ;
-			errorMessage.Insert("status", "error");
-			errorMessage.Insert("message", strMessage );
-			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
-			return errorJSON;
-		EndIf;
-
-
-		
-		
-		doc_total_test = doc_total_test + NewLine.LineTotal;
-		
-		//Try
-		//	TaxableAmount = DataLineItems[i].taxable_amount;
-		//	NewLine.TaxableAmount = TaxableAmount				
-		//Except
-		//	NewLine.TaxableAmount = 0;
-		//EndTry;
-				
-	EndDo;
-	
-	If doc_total_test <> NewSO.DocumentTotal Then
-		errorMessage = New Map();
-		strMessage = " [doc_total] : The document total and sum of lineitem totals are not equal " ;
-		errorMessage.Insert("status", "error");
-		errorMessage.Insert("message", strMessage );
-		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
-		return errorJSON;
-	EndIf;
-
-	
 	NewSO.Write(DocumentWriteMode.Posting);
-	
-	///
-	
-	
-	//SOData = New Map();
-	//SOData.Insert("api_code", String(NewSO.Ref.UUID()));
-	//SOData.Insert("customer_api_code", String(NewSO.Company.Ref.UUID()));
-	//SOData.Insert("customer_name", NewSO.Company.Description);
-	//SOData.Insert("customer_code", NewSO.Company.Code);
-	//SOData.Insert("ship_to_api_code", String(NewSO.ShipTo.Ref.UUID()));
-	////SOData.Insert("ship_to_address_code", NewSO.ShipTo.Code);
-	//SOData.Insert("ship_to_address_id", NewSO.ShipTo.Description);
-	//// date - convert into the same format as input
-	//SOData.Insert("so_number", NewSO.Number);
-	//SOData.Insert("cf1_string", NewSO.CF1String);
-	//// payment method - same as input
-	////CashSaleData.Insert("payment_method", NewInvoice.PaymentMethod.Description);
-	//SOData.Insert("date", NewSO.Date);
-	////SOData.Insert("due_date", NewSO.DueDate);
-	//SOData.Insert("ref_num", NewSO.RefNum);
-	//SOData.Insert("memo", NewSO.Memo);
-	//SOData.Insert("sales_tax_total", NewSO.SalesTax);
-	//SOData.Insert("doc_total", NewSO.DocumentTotalRC);
-
-	//Query = New Query("SELECT
-	//				  |	SOLineItems.Product,
-	//				  |	SOLineItems.Price,
-	//				  |	SOLineItems.Quantity,
-	//				  |	SOLineItems.LineTotal,
-	//				  |	SOLineItems.SalesTaxType,
-	//				  |	SOLineItems.TaxableAmount
-	//				  |FROM
-	//				  |	Document.SalesOrder.LineItems AS SOLineItems
-	//				  |WHERE
-	//				  |	SOLineItems.Ref = &SO");
-	//Query.SetParameter("SO", NewSO.Ref);
-	//Result = Query.Execute().Select();
-	//
-	//LineItems = New Array();
-	//
-	//While Result.Next() Do
-	//	
-	//	LineItem = New Map();
-	//	LineItem.Insert("item_code", Result.Product.Code);
-	//	LineItem.Insert("api_code", String(Result.Product.Ref.UUID()));
-	//	LineItem.Insert("item_description", Result.Product.Description);
-	//	LineItem.Insert("price", Result.Price);
-	//	LineItem.Insert("quantity", Result.Quantity);
-	//	LineItem.Insert("taxable_amount", Result.TaxableAmount);
-	//	LineItem.Insert("line_total", Result.LineTotal);
-	//	If Result.SalesTaxType = Enums.SalesTaxTypes.Taxable Then
-	//		LineItem.Insert("taxable_type", "taxable");
-	//	ElsIf Result.SalesTaxType = Enums.SalesTaxTypes.NonTaxable Then
-	//		LineItem.Insert("taxable_type", "non-taxable");
-	//	EndIf;
-	//	LineItems.Add(LineItem);
-	//	
-	//EndDo;
-	//
-	//LineItemsData = New Map();
-	//LineItemsData.Insert("line_items", LineItems);
-	//
-	//SOData.Insert("lines", LineItemsData);
-
-	
+		
 	jsonout = InternetConnectionClientServer.EncodeJSON(GeneralFunctions.ReturnSaleOrderMap(NewSO.Ref));
 	
-	Return jsonout;
-	
+	Return jsonout;	
 
 EndFunction
 
@@ -4240,111 +3390,199 @@ Function inoutSalesOrdersDelete(jsonin) Export
 	Return jsonout;	
 EndFunction
 
-Function inoutSalesOrdersListAll(jsonin) Export
+Function inoutSalesOrdersListAll(jsonin, limit, start_after, end_before) Export
 	
-	ParsedJSON = InternetConnectionClientServer.DecodeJSON(jsonin);
-		
-	Query = New Query("SELECT
-	                  |	SalesOrder.Ref
-	                  |FROM
-	                  |	Document.SalesOrder AS SalesOrder
-	                  |
-	                  |ORDER BY
-	                  |	SalesOrder.Date");
-					  
-	Result = Query.Execute().Select();
-
-	Result_array = Query.Execute().Unload();
+	Try limit = Number(limit);
+	Except
+		limit = 10; //default
+	EndTry;
 	
-	SO = New Array();
-	
-	Try 
-		count = ParsedJSON.limit;
-		If count > 100 Then count = 100; EndIf;
-	Except count = 10; EndTry;
-	
-	Try offset = ParsedJSON.start_from;
-		offsetNum = 0;
-		start = 0;
-		While Result.Next() Do
-			If string(offset) = string(Result.Ref.UUID()) Then
-				start = offsetNum+1;
-				break;
-			Else
-				offsetNum = offsetNum +1;
-			EndIf;
-		EndDo;	
-			
-	Except offset = undefined; start = 0; EndTry;
-	
-	Try last = ParsedJSON.end_before;
-		offsetNum = 0;
-		start = 0;
-		While Result.Next() Do
-			If string(last) = string(Result.Ref.UUID()) Then
-				start = offsetNum-1;
-				break;
-			Else
-				offsetNum = offsetNum +1;
-			EndIf;
-		EndDo;	
-			
-	Except last = undefined; start = 0; EndTry;
-	
-	If last <> undefined AND offset <> undefined Then
+	If limit < 1 Then 
 		errorMessage = New Map();
-		strMessage = "Cannot have both start_after and end_before.";
+		strMessage = "[limit] : Cannot have a value less than 1";
 		errorMessage.Insert("message", strMessage);
 		errorMessage.Insert("status", "error"); 
 		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
 		return errorJSON;
 	EndIf;
 	
-	numRecords = 0;
-	Try
+	If start_after <> "undefined" AND end_before <> "undefined" Then
 		
-		If last <> undefined Then
-			If start-count < 0 Then
-				i = 0;
-			Else
-				i = start-count;
+		errorMessage = New Map();
+		strMessage = "Please choose only one, start_after or end_before.";
+		errorMessage.Insert("message", strMessage);
+		errorMessage.Insert("status", "error"); 
+		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+		return errorJSON;
+		
+	ElsIf start_after <> "undefined" AND end_before = "undefined" Then
+		
+		Try
+			SalesOrder = Documents.SalesOrder.GetRef(New UUID(start_after));
+		Except
+			errorMessage = New Map();
+			strMessage = "[start_after] : The item does not exist. Double check that the api_code is correct. ";
+			errorMessage.Insert("message", strMessage);
+			errorMessage.Insert("status", "error"); 
+			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+			return errorJSON;
+		EndTry;
+		
+		ParsedJSON = InternetConnectionClientServer.DecodeJSON(jsonin);
+		Query =  New Query("SELECT
+					  |	SalesOrder.Ref
+					  |FROM
+					  |	Document.SalesOrder AS SalesOrder
+					  |
+					  |ORDER BY
+					  |	SalesOrder.Date");
+					  
+		Result = Query.Execute().Select();
+		Result_array = Query.Execute().Unload();
+		
+		SalesOrders = New Array();
+		
+		i = 0;
+		j = 0;
+		While i < Result.Count() Do
+			If Result_array[i].Ref = SalesOrder.Ref Then
+				j = i+1;
+				break;
 			EndIf;
-			While i < start Do
-				SO.Add(GeneralFunctions.ReturnSaleOrderMap(Result_array[i].Ref));
-				numRecords = numRecords+1;
-				i = i + 1;
-			EndDo;
-			has_more = true;
+			i = i + 1;
+		EndDo;
+		
+		limit = limit + j;
+		numRecords = 0;
+		While j < limit AND j < Result.Count() Do
+			SalesOrders.Add(GeneralFunctions.ReturnSaleOrderMap(Result_array[j].Ref));
+			numRecords = numRecords+1;
+			j = j + 1;
+		EndDo;
+		
+		If j+1 < Result.Count() Then 
+			has_more = TRUE;
 		Else
-			If count >= Result.Count() Then
-				For i=start to Result.Count()-1 Do
-					numRecords = numRecords+1;
-					SO.Add(GeneralFunctions.ReturnSaleOrderMap(Result_array[i].Ref));
-				EndDo;
-				has_more = false;
-			Else
-				For i=start to start+count-1 Do
-					numRecords = numRecords+1;
-					SO.Add(GeneralFunctions.ReturnSaleOrderMap(Result_array[i].Ref));
-				EndDo;
-				has_more = true;
-			EndIf;
+			has_more = FALSE;
 		EndIf;
-			
-	Except
-
-		has_more = false;
 		
-	EndTry;
+		SOList = New Map();
+		SOList.Insert("items", SalesOrders);
+		SOList.Insert("more_records", has_more);
+		SOList.Insert("num_records_listed",numRecords);
+		SOList.Insert("total_num_records", Result.Count());
+		
+		jsonout = InternetConnectionClientServer.EncodeJSON(SOList);
+		
+		Return jsonout;
+		
+	ElsIf start_after = "undefined" AND end_before <> "undefined" Then
+		
+		Try
+			SalesOrder = Documents.SalesOrder.GetRef(New UUID(end_before));
+		Except
+			errorMessage = New Map();
+			strMessage = "[end_before] : The item does not exist. Double check that the api_code is correct. ";
+			errorMessage.Insert("message", strMessage);
+			errorMessage.Insert("status", "error"); 
+			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+			return errorJSON;
+		EndTry;
+		
+		ParsedJSON = InternetConnectionClientServer.DecodeJSON(jsonin);
+		Query = New Query("SELECT
+					  |	SalesOrder.Ref
+					  |FROM
+					  |	Document.SalesOrder AS SalesOrder
+					  |
+					  |ORDER BY
+					  |	SalesOrder.Date");
+					  
+		Result = Query.Execute().Select();
+		Result_array = Query.Execute().Unload();
+		
+		SalesOrders = New Array();
+		
+		i = 0;
+		j = 0;
+		While i < Result.Count() Do
+			If Result_array[i].Ref = SalesOrder.Ref Then
+				j = i;
+				break;
+			EndIf;
+			i = i + 1;
+		EndDo;
+		
+		start = j - limit;
+		If start < 0 Then
+			start = 0;
+		EndIf;
+		
+		numRecords = 0;
+		While start < j AND start < Result.Count() Do
+			SalesOrders.Add(GeneralFunctions.ReturnSaleOrderMap(Result_array[start].Ref));
+			numRecords = numRecords+1;
+			start = start + 1;
+		EndDo;
+		
+		If start+1 < Result.Count() Then 
+			has_more = TRUE;
+		Else
+			has_more = FALSE;
+		EndIf;
+		
+		SOList = New Map();
+		SOList.Insert("items", SalesOrders);
+		SOList.Insert("more_records", has_more);
+		SOList.Insert("num_records_listed",numRecords);
+		SOList.Insert("total_num_records", Result.Count());
+		
+		jsonout = InternetConnectionClientServer.EncodeJSON(SOList);
+		
+		Return jsonout;
+		
+	Else
+		// both undefined, just print with limit
+		ParsedJSON = InternetConnectionClientServer.DecodeJSON(jsonin);
+		Query = New Query("SELECT
+					  |	SalesOrder.Ref
+					  |FROM
+					  |	Document.SalesOrder AS SalesOrder
+					  |
+					  |ORDER BY
+					  |	SalesOrder.Date");;
+					  
+		Result = Query.Execute().Select();
+		Result_array = Query.Execute().Unload();
+		
+		SalesOrders = New Array();
+		
+		i = 0;
+		numRecords = 0;
+		While i < limit AND i < Result.Count() Do
+			SalesOrders.Add(GeneralFunctions.ReturnSaleOrderMap(Result_array[i].Ref));
+			numRecords = numRecords+1;
+			i = i + 1;
+		EndDo;
+		
+		If numRecords < Result.Count() Then 
+			has_more = TRUE;
+		Else
+			has_more = FALSE;
+		EndIf;
+		
+		SOList = New Map();
+		SOList.Insert("items", SalesOrders);
+		SOList.Insert("more_records", has_more);
+		SOList.Insert("num_records_listed",numRecords);
+		SOList.Insert("total_num_records", Result.Count());
+		
+		jsonout = InternetConnectionClientServer.EncodeJSON(SoList);
+		
+		Return jsonout;
+		
+	EndIf;
 	
-	soList = New Map();
-	soList.Insert("Sales Orders", SO);
-	soList.Insert("has_more", has_more);
-	soList.Insert("numOfRecords",numRecords);
-	
-	jsonout = InternetConnectionClientServer.EncodeJSON(soList);
-	
-	Return jsonout;
 EndFunction
 
 
@@ -4754,7 +3992,7 @@ Function inoutPurchaseOrdersCreate(jsonin) Export
 				
 		Try price = DataLineItems[i].price Except price = Undefined EndTry;
 		If NOT price = Undefined Then
-			NewLine.Price = price;
+			NewLine.PriceUnits = price;
 		Else
 			errorMessage = New Map();
 			strMessage = " [line_items(" + string(i+1) + ").price] : This is a required field for lines " ;
@@ -4766,7 +4004,7 @@ Function inoutPurchaseOrdersCreate(jsonin) Export
 		
 		Try quantity = DataLineItems[i].quantity Except quantity = Undefined EndTry;
 		If NOT quantity = Undefined Then
-			NewLine.Quantity = quantity;
+			NewLine.QtyUnits = quantity;
 		Else
 			errorMessage = New Map();
 			strMessage = " [line_items(" + string(i+1) + ").quantity] : This is a required field for lines " ;
@@ -4788,7 +4026,7 @@ Function inoutPurchaseOrdersCreate(jsonin) Export
 			return errorJSON;
 		EndIf;
 		
-		If NewLine.LineTotal <> (NewLine.Quantity * NewLine.Price) Then
+		If NewLine.LineTotal <> (NewLine.QtyUnits * NewLine.PriceUnits) Then
 			errorMessage = New Map();
 			strMessage = " [line_items(" + string(i+1) + ").line_total] : Line item's total does not match quantity * price " ;
 			errorMessage.Insert("status", "error");
@@ -4799,7 +4037,7 @@ Function inoutPurchaseOrdersCreate(jsonin) Export
 		
 		doc_total_test = doc_total_test + NewLine.LineTotal;
 		
-		Try NewLine.Location = Catalogs.Locations.MainWarehouse; Except EndTry;
+		Try NewLine.Location = GeneralFunctions.GetDefaultLocation(); Except EndTry;
 		
 		//Try 
 		//	um = DataLineItems[i].unit_of_measure;
@@ -5054,3 +4292,321 @@ Function inoutCashReceiptCreate(jsonin) Export
 	
 EndFunction
 
+
+Function handleDocumentAddresses(ParsedJSON, DocRef, status) Export
+	// SHIP TO ADDRESS SECTION
+	Try ship_to_api_code = ParsedJSON.ship_to_api_code Except ship_to_api_code = "" EndTry;
+	Try ship_to_address_id = ParsedJSON.ship_to_address_id Except ship_to_address_id = "" EndTry;
+	
+	If ship_to_api_code <> "" Then
+	    // load given address apicode 
+		Try addr = Catalogs.Addresses.GetRef(New UUID(ship_to_api_code)) Except addr = Undefined EndTry;
+		
+		newQuery = New Query("SELECT
+		                     |	Addresses.Ref
+		                     |FROM
+		                     |	Catalog.Addresses AS Addresses
+		                     |WHERE
+		                     |	Addresses.Owner = &Customer
+		                     |	AND Addresses.Ref = &addrCode");
+							 
+		newQuery.SetParameter("Customer", DocRef.Company);
+		newQuery.SetParameter("addrCode", addr);
+		addrResult = newQuery.Execute();
+		If addrResult.IsEmpty() Then
+			errorMessage = New Map();
+			strMessage = "[ship_to_api_code] : Shipping Address does not belong to the Company";
+			errorMessage.Insert("status", "error"); 
+			errorMessage.Insert("message", strMessage);
+			//errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+			return errorMessage;
+		EndIf;
+		DocRef.ShipTo = addr;
+		
+	ElsIf ship_to_address_id <> "" Then
+		// create addr from given fields
+		AddressLine = Catalogs.Addresses.CreateItem();
+		AddressLine.Owner = DocRef.Company;
+		AddressLine.Description = ship_to_address_id;
+		Try	AddressLine.Salutation = ParsedJSON.ship_to_salutation; Except EndTry;
+		Try	AddressLine.FirstName = ParsedJSON.ship_to_first_name; Except EndTry;			
+		Try AddressLine.MiddleName = ParsedJSON.ship_to_middle_name; Except EndTry;			
+		Try AddressLine.LastName = ParsedJSON.ship_to_last_name; Except EndTry;	
+		Try	AddressLine.Suffix = ParsedJSON.ship_to_suffix; Except EndTry;
+		Try AddressLine.Phone = ParsedJSON.ship_to_phone; Except EndTry;			
+		Try AddressLine.Cell = ParsedJSON.ship_to_cell; Except EndTry;
+		Try	AddressLine.Fax = ParsedJSON.ship_to_fax; Except EndTry;
+		Try AddressLine.Email = ParsedJSON.ship_to_email; Except EndTry;			
+		Try AddressLine.AddressLine1 = ParsedJSON.ship_to_address_line1; Except EndTry;			
+		Try	AddressLine.AddressLine2 = ParsedJSON.ship_to_address_line2; Except EndTry;
+		Try	AddressLine.AddressLine3 = ParsedJSON.ship_to_address_line3; Except EndTry;
+		Try	AddressLine.City = ParsedJSON.ship_to_city; Except EndTry;
+		Try 
+			statecode = Catalogs.States.FindByCode(Upper(ParsedJSON.ship_to_state));
+			statedesc = Catalogs.States.FindByDescription(Title(ParsedJSON.ship_to_state));
+			If statedesc <> Catalogs.States.EmptyRef() Then
+				AddressLine.State = statedesc;
+			Else
+				AddressLine.State = statecode;
+			EndIf;		
+		Except 
+		EndTry;
+		
+		Try 
+			countrycode = Catalogs.Countries.FindByCode(Upper(ParsedJSON.ship_to_country));
+			countrydesc = Catalogs.Countries.FindByDescription(Title(ParsedJSON.ship_to_country));
+			If countrydesc <> Catalogs.States.EmptyRef() Then
+				AddressLine.Country = countrydesc;
+			Else
+				AddressLine.Country = countrycode;
+			EndIf;
+		Except 
+		EndTry;			
+		Try AddressLine.ZIP = ParsedJSON.ship_to_zip; Except EndTry;
+		AddressLine.Write();
+		DocRef.ShipTo = AddressLine.Ref;
+		
+	Else
+		If status = "create" Then
+			//load default shipping
+			Try 
+				newQuery = New Query("SELECT
+				                     |	Addresses.Ref
+				                     |FROM
+				                     |	Catalog.Addresses AS Addresses
+				                     |WHERE
+				                     |	Addresses.Owner = &Customer
+				                     |	AND Addresses.DefaultShipping = TRUE");
+									 
+				newQuery.SetParameter("Customer", DocRef.Company);
+				addrResult = newQuery.Execute().Unload();
+				
+				DocRef.ShipTo = addrResult[0].Ref;
+			Except
+				//no default shipping just leave blank?
+			EndTry;
+		EndIf;
+		
+	EndIf;
+	
+	
+	// BILL TO ADDRESS SECTION
+	Try bill_to_api_code = ParsedJSON.bill_to_api_code Except bill_to_api_code = "" EndTry;
+	Try bill_to_address_id = ParsedJSON.bill_to_address_id Except bill_to_address_id = "" EndTry;
+	
+	If bill_to_api_code <> "" Then
+	 
+		Try addr = Catalogs.Addresses.GetRef(New UUID(bill_to_api_code)) Except addr = Undefined EndTry;
+		
+		newQuery = New Query("SELECT
+		                     |	Addresses.Ref
+		                     |FROM
+		                     |	Catalog.Addresses AS Addresses
+		                     |WHERE
+		                     |	Addresses.Owner = &Customer
+		                     |	AND Addresses.Ref = &addrCode");
+							 
+		newQuery.SetParameter("Customer", DocRef.Company);
+		newQuery.SetParameter("addrCode", addr);
+		addrResult = newQuery.Execute();
+		If addrResult.IsEmpty() Then
+			errorMessage = New Map();
+			strMessage = "[bill_to_api_code] : Billing Address does not belong to the Company";
+			errorMessage.Insert("status", "error"); 
+			errorMessage.Insert("message", strMessage);
+			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+			return errorJSON;
+		EndIf;
+		DocRef.BillTo = addr;
+		
+	ElsIf bill_to_address_id <> "" Then
+		// create addr from given fields
+		AddressLine = Catalogs.Addresses.CreateItem();
+		AddressLine.Owner = DocRef.Company;
+		AddressLine.Description = bill_to_address_id;
+		Try	AddressLine.Salutation = ParsedJSON.bill_to_salutation; Except EndTry;
+		Try	AddressLine.FirstName = ParsedJSON.bill_to_first_name; Except EndTry;			
+		Try AddressLine.MiddleName = ParsedJSON.bill_to_middle_name; Except EndTry;			
+		Try AddressLine.LastName = ParsedJSON.bill_to_last_name; Except EndTry;	
+		Try	AddressLine.Suffix = ParsedJSON.bill_to_suffix; Except EndTry;
+		Try AddressLine.Phone = ParsedJSON.bill_to_phone; Except EndTry;			
+		Try AddressLine.Cell = ParsedJSON.bill_to_cell; Except EndTry;
+		Try	AddressLine.Fax = ParsedJSON.bill_to_fax; Except EndTry;
+		Try AddressLine.Email = ParsedJSON.bill_to_email; Except EndTry;			
+		Try AddressLine.AddressLine1 = ParsedJSON.bill_to_address_line1; Except EndTry;			
+		Try	AddressLine.AddressLine2 = ParsedJSON.bill_to_address_line2; Except EndTry;
+		Try	AddressLine.AddressLine3 = ParsedJSON.bill_to_address_line3; Except EndTry;
+		Try	AddressLine.City = ParsedJSON.bill_to_city; Except EndTry;
+		Try 
+			statecode = Catalogs.States.FindByCode(Upper(ParsedJSON.bill_to_state));
+			statedesc = Catalogs.States.FindByDescription(Title(ParsedJSON.bill_to_state));
+			If statedesc <> Catalogs.States.EmptyRef() Then
+				AddressLine.State = statedesc;
+			Else
+				AddressLine.State = statecode;
+			EndIf;		
+		Except 
+		EndTry;
+		
+		Try 
+			countrycode = Catalogs.Countries.FindByCode(Upper(ParsedJSON.bill_to_country));
+			countrydesc = Catalogs.Countries.FindByDescription(Title(ParsedJSON.bill_to_country));
+			If countrydesc <> Catalogs.States.EmptyRef() Then
+				AddressLine.Country = countrydesc;
+			Else
+				AddressLine.Country = countrycode;
+			EndIf;
+		Except 
+		EndTry;			
+		Try AddressLine.ZIP = ParsedJSON.bill_to_zip; Except EndTry;
+		AddressLine.Write();
+		DocRef.BillTo = AddressLine.Ref;
+		
+	Else
+		If status = "create" Then
+			//load default Billing
+			Try 
+				newQuery = New Query("SELECT
+				                     |	Addresses.Ref
+				                     |FROM
+				                     |	Catalog.Addresses AS Addresses
+				                     |WHERE
+				                     |	Addresses.Owner = &Customer
+				                     |	AND Addresses.DefaultBilling = TRUE");
+									 
+				newQuery.SetParameter("Customer", DocRef.Company);
+				addrResult = newQuery.Execute().Unload();
+				
+				DocRef.billTo = addrResult[0].Ref;
+			Except
+				//no default Billing just leave blank?
+			EndTry;
+		EndIf;
+		
+	EndIf;
+	
+	Return DocRef;
+	
+EndFunction
+
+Function handleDocumentTotals(ParsedJSON, DocRef) Export
+	
+	Try DataLineItems = ParsedJSON.lines.line_items Except DataLineItems = Undefined EndTry;
+	If DataLineItems = Undefined Then
+		errorMessage = New Map();
+		strMessage = "[lines] : Must enter at least one line with correct line items" ;
+		errorMessage.Insert("status", "error");
+		errorMessage.Insert("message", strMessage );
+		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+		return errorJSON;
+	EndIf;
+	
+	linesubtotal = 0;
+	LineItemsRows = DataLineItems.Count();
+	For i = 0 To LineItemsRows -1 Do
+		
+		NewLine = DocRef.LineItems.Add();
+			
+		Try Product = Catalogs.Products.GetRef(New UUID(DataLineItems[i].api_code)) Except Product = Undefined EndTry;
+		Try apiCode = DataLineItems[i].api_code Except apiCode = Undefined EndTry;
+		If NOT Product = Undefined Or NOT apiCode = Undefined Then
+		    itemsQuery = New Query("SELECT
+		                         	|	Products.Ref
+		                         	|FROM
+								 	|	Catalog.Products AS Products
+			                     	|WHERE
+			                     	|	Products.Ref = &items");
+			itemsQuery.SetParameter("items", Product);
+			itemsResult = itemsQuery.Execute();
+			If itemsResult.IsEmpty() Then
+				errorMessage = New Map();
+				strMessage = "[line_items(" + string(i+1) + ").api_code] : Item does not exist" ;
+				errorMessage.Insert("status", "error");
+				errorMessage.Insert("message", strMessage );
+				errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+				return errorJSON;
+			EndIf;	
+			NewLine.Product = Product;
+		Else
+			errorMessage = New Map();
+			strMessage = " [line_items(" + string(i+1) + ").api_code] : Item code is missing. This is a required field for lines " ;
+			errorMessage.Insert("status", "error");
+			errorMessage.Insert("message", strMessage );
+			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+			return errorJSON;
+		EndIf;
+		
+		NewLine.ProductDescription = NewLine.Product.Description;
+	
+		Try price = DataLineItems[i].price Except price = Undefined EndTry;
+		If NOT price = Undefined Then
+			NewLine.PriceUnits = number(price);
+		Else
+			errorMessage = New Map();
+			strMessage = " [line_items(" + string(i+1) + ").price] : This is a required field for lines " ;
+			errorMessage.Insert("status", "error");
+			errorMessage.Insert("message", strMessage );
+			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+			return errorJSON;
+		EndIf;
+		
+		//NewLine.Quantity = DataLineItems[i].quantity;
+		Try quantity = DataLineItems[i].quantity Except quantity = Undefined EndTry;
+		If NOT quantity = Undefined Then
+			NewLine.QtyUnits = number(quantity);
+		Else
+			
+			errorMessage = New Map();
+			strMessage = " [line_items(" + string(i+1) + ").quantity] : This is a required field for lines " ;
+			errorMessage.Insert("status", "error");
+			errorMessage.Insert("message", strMessage );
+			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+			return errorJSON;
+			
+		EndIf;
+		
+		Try linetotal = DataLineItems[i].line_total Except linetotal = Undefined EndTry;
+		If NOT quantity = Undefined Then
+			NewLine.LineTotal = linetotal;
+		Else
+			//errorMessage = New Map();
+			//strMessage = " [line_items(" + string(i+1) + ").line_total] : This is a required field for lines " ;
+			//errorMessage.Insert("status", "error");
+			//errorMessage.Insert("message", strMessage );
+			//errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+			//return errorJSON;
+			NewLine.LineTotal = NewLine.QtyUnits * NewLine.PriceUnits;
+		EndIf;
+		linesubtotal = linesubtotal + NewLine.LineTotal;
+		NewLine.Unit = NewLine.Product.UnitSet.DefaultSaleUnit;
+		Try
+			If Number(ParsedJSON.SalesTax) > 0 Then
+				NewLine.Taxable = True;
+			EndIf;
+		Except
+		EndTry;
+				
+	EndDo;
+	
+	DocRef.LineSubtotal = linesubtotal;
+	Try
+		DocRef.Discount = - Round(Number(ParsedJSON.discount),2);
+		DocRef.DiscountPercent = Round(-1 * 100 * DocRef.Discount / DocRef.LineSubtotal, 2); 
+	Except
+	EndTry;
+	Try 
+		DocRef.DiscountPercent = Round(Number(ParsedJSON.discount_percent),2);
+		DocRef.Discount = Round(-1 * DocRef.LineSubtotal * DocRef.DiscountPercent/100, 2);
+	Except
+	EndTry;
+	Try DocRef.Shipping = ParsedJSON.shipping; Except EndTry;
+	Try DocRef.SalesTax = ParsedJSON.sales_tax_total; Except EndTry;
+	Try 
+		DocRef.DocumentTotal = ParsedJSON.doc_total; 
+	Except 
+		DocRef.DocumentTotal = DocRef.LineSubtotal + DocRef.Shipping + DocRef.SalesTax;
+	EndTry;
+	
+	Return DocRef;
+	
+EndFunction

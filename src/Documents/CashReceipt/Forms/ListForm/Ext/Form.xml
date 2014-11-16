@@ -41,6 +41,7 @@
 			<CommandBarLocation>None</CommandBarLocation>
 			<DefaultItem>true</DefaultItem>
 			<UseAlternationRowColor>true</UseAlternationRowColor>
+			<InitialListView>Beginning</InitialListView>
 			<InitialTreeView>ExpandTopLevel</InitialTreeView>
 			<EnableStartDrag>true</EnableStartDrag>
 			<DataPath>List</DataPath>
@@ -100,6 +101,7 @@
 				</LabelField>
 				<LabelField name="Number" id="6">
 					<DataPath>List.Number</DataPath>
+					<Width>7</Width>
 					<ContextMenu name="NumberContextMenu" id="7"/>
 					<ExtendedTooltip name="NumberExtendedTooltip" id="26"/>
 				</LabelField>
@@ -121,6 +123,7 @@
 				</LabelField>
 				<CheckBoxField name="Deposited" id="34">
 					<DataPath>List.Deposited</DataPath>
+					<Visible>false</Visible>
 					<CheckBoxType>Auto</CheckBoxType>
 					<ContextMenu name="DepositedContextMenu" id="35"/>
 					<ExtendedTooltip name="DepositedExtendedTooltip" id="36"/>
@@ -225,15 +228,26 @@
 	DocumentCashReceipt.DocumentTotal,
 	DocumentCashReceipt.CashPayment,
 	DocumentCashReceipt.UnappliedPayment,
-	DocumentCashReceipt.UnappliedPaymentCreditMemo,
 	DocumentCashReceipt.RefNum,
 	DocumentCashReceipt.Memo,
 	CASE
-		WHEN DocumentCashReceipt.DepositType = "1"
-			THEN "Undeposited"
-		ELSE "Bank Acct."
+		WHEN ISNULL(UndepositedDocumentsBalance.AmountBalance, 0) = 0
+				AND DocumentCashReceipt.Posted
+			THEN CASE
+					WHEN DocumentCashReceipt.DepositType = "1"
+						THEN "Deposited"
+					ELSE "Bank Acct."
+				END
+		WHEN ISNULL(UndepositedDocumentsBalance.AmountBalance, 0) &lt; 0
+			THEN "Deposited repeatedly"
+		ELSE "Undeposited"
 	END AS DepositT,
-	DocumentCashReceipt.Deposited,
+	CASE
+		WHEN ISNULL(UndepositedDocumentsBalance.AmountBalance, 0) &lt;= 0
+				AND DocumentCashReceipt.Posted
+			THEN TRUE
+		ELSE FALSE
+	END AS Deposited,
 	DocumentCashReceipt.DocumentTotalRC,
 	DocumentCashReceipt.PaymentMethod,
 	DocumentCashReceipt.BankAccount,
@@ -245,27 +259,17 @@
 	DocumentCashReceipt.StripeCreated,
 	DocumentCashReceipt.StripeCardType,
 	DocumentCashReceipt.StripeLast4,
-	DocumentCashReceipt.AppliedCredit,
-	DocumentCashReceipt.CreditTotal,
-	DocumentCashReceipt.BalanceTotal,
-	DocumentCashReceipt.BalChange,
 	DocumentCashReceipt.CreditMemos.(
 		Ref,
 		LineNumber,
 		Document,
-		Payment,
-		Balance,
-		BalanceFCY,
-		Currency
+		Payment
 	),
 	DocumentCashReceipt.LineItems.(
 		Ref,
 		LineNumber,
 		Document,
-		Payment,
-		Balance,
-		BalanceFCY,
-		Currency
+		Payment
 	),
 	DocumentCashReceipt.PointInTime,
 	ISNULL(GeneralJournalBalance.AmountBalance * -1, 0) AS Balance,
@@ -278,7 +282,9 @@ FROM
 			AND (GeneralJournalBalance.ExtDimension1 = DocumentCashReceipt.Company)
 			AND (GeneralJournalBalance.ExtDimension2 = DocumentCashReceipt.Ref)
 		LEFT JOIN InformationRegister.DocumentLastEmail AS LastEmails
-		ON (LastEmails.Document = DocumentCashReceipt.Ref)</QueryText>
+		ON (LastEmails.Document = DocumentCashReceipt.Ref)
+		LEFT JOIN AccumulationRegister.UndepositedDocuments.Balance AS UndepositedDocumentsBalance
+		ON DocumentCashReceipt.Ref = UndepositedDocumentsBalance.Document</QueryText>
 				<MainTable>Document.CashReceipt</MainTable>
 				<ListSettings>
 					<dcsset:filter>
@@ -286,6 +292,10 @@ FROM
 						<dcsset:userSettingID>dfcece9d-5077-440b-b6b3-45a5cb4538eb</dcsset:userSettingID>
 					</dcsset:filter>
 					<dcsset:order>
+						<dcsset:item xsi:type="dcsset:OrderItemField">
+							<dcsset:field>Date</dcsset:field>
+							<dcsset:orderType>Desc</dcsset:orderType>
+						</dcsset:item>
 						<dcsset:viewMode>Normal</dcsset:viewMode>
 						<dcsset:userSettingID>88619765-ccb3-46c6-ac52-38e9c992ebd4</dcsset:userSettingID>
 					</dcsset:order>

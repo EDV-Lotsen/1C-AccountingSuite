@@ -47,7 +47,7 @@ Procedure Filling(FillingData, StandardProcessing)
 		// Filling of the new created document with default values.
 		Currency         = Constants.DefaultCurrency.Get();
 		ExchangeRate     = GeneralFunctions.GetExchangeRate(Date, Currency);
-		Location         = Catalogs.Locations.MainWarehouse;
+		Location         = GeneralFunctions.GetDefaultLocation();
 		
 	Else
 		
@@ -97,10 +97,8 @@ Procedure Filling(FillingData, StandardProcessing)
 				//
 				NewLine.PriceUnits         = Round(GeneralFunctions.ProductLastCost(NewLine.Product) *
 				                             ?(NewLine.Unit.Factor > 0, NewLine.Unit.Factor, 1) /
-				                             ?(FillingData.ExchangeRate > 0, FillingData.ExchangeRate, 1), 2);
-				NewLine.LineTotal          = Round(Round(NewLine.QtyUnits, QuantityPrecision) * NewLine.PriceUnits, 2);
-				NewLine.PriceUnits         = ?(Round(NewLine.QtyUnits, QuantityPrecision) > 0,
-				                             Round(NewLine.LineTotal / Round(NewLine.QtyUnits, QuantityPrecision), 2), 0);
+				                             ?(FillingData.ExchangeRate > 0, FillingData.ExchangeRate, 1), GeneralFunctionsReusable.PricePrecisionForOneItem(NewLine.Product));
+				NewLine.LineTotal          = Round(Round(NewLine.QtyUnits, QuantityPrecision) * Round(NewLine.PriceUnits, GeneralFunctionsReusable.PricePrecisionForOneItem(NewLine.Product)), 2);
 				NewLine.Location           = Line.Location;
 				NewLine.DeliveryDate       = Line.DeliveryDate;
 				NewLine.Project            = Line.Project;

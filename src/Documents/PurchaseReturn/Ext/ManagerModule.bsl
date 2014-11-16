@@ -437,11 +437,11 @@ Function Query_InventoryJournal(TablesList)
 	|		ELSE CASE
 	|			WHEN Balance_FIFO.Quantity + LineItems_FIFO.QuantityRequested - Balance_FIFO.QuantityCumulative > 0
 	|			// The layer written off partially.
-	|			THEN CAST ( // Format(Amount * QuantityExpense / Quantity, ""ND=15; NFD=2"")
+	|			THEN CAST ( // Format(Amount * QuantityExpense / Quantity, ""ND=17; NFD=2"")
 	|				 Balance_FIFO.Amount * 
 	|				(Balance_FIFO.Quantity + LineItems_FIFO.QuantityRequested - Balance_FIFO.QuantityCumulative) /
 	|				 Balance_FIFO.Quantity
-	|				 AS NUMBER (15, 2))
+	|				 AS NUMBER (17, 2))
 	|			// The layer is not requested and left off.
 	|			ELSE 0
 	|		END
@@ -576,9 +576,9 @@ Function Query_InventoryJournal(TablesList)
 	|		// The product written off completely.
 	|		THEN ISNULL(Balance_WAve.Amount, 0)
 	|		// The product written off partially.
-	|		ELSE CAST ( // Format(Amount / QuantityExpense / Quantity, ""ND=15; NFD=2"")
+	|		ELSE CAST ( // Format(Amount / QuantityExpense / Quantity, ""ND=17; NFD=2"")
 	|			 Balance_WAve.Amount * LineItems_WAve.QuantityRequested / Balance_WAve.Quantity
-	|			 AS NUMBER (15, 2))
+	|			 AS NUMBER (17, 2))
 	|	END                                   AS Amount
 	// ------------------------------------------------------
 	// Attributes
@@ -600,9 +600,9 @@ Function Query_InventoryJournal(TablesList)
 	|		// The product written off completely.
 	|		THEN ISNULL(Balance_WAve.Amount, 0)
 	|		// The product written off partially.
-	|		ELSE CAST ( // Format(Amount / QuantityExpense / Quantity, ""ND=15; NFD=2"")
+	|		ELSE CAST ( // Format(Amount / QuantityExpense / Quantity, ""ND=17; NFD=2"")
 	|			 Balance_WAve.Amount * LineItems_WAve.QuantityRequested / Balance_WAve.Quantity
-	|			 AS NUMBER (15, 2))
+	|			 AS NUMBER (17, 2))
 	|	END > 0";
 	
 	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();

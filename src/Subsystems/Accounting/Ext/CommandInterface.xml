@@ -18,16 +18,26 @@
 				<xr:Value name="Role.ReportOnly">false</xr:Value>
 			</Visibility>
 		</Command>
-		<Command name="0:ff21c5f0-686e-4236-baf1-9301c91253eb">
-			<Visibility>
-				<xr:Common>false</xr:Common>
-			</Visibility>
-		</Command>
 		<Command name="Document.Budget.StandardCommand.OpenList">
 			<Visibility>
 				<xr:Common>true</xr:Common>
 				<xr:Value name="Role.ListUser">false</xr:Value>
 				<xr:Value name="Role.ReportOnly">false</xr:Value>
+			</Visibility>
+		</Command>
+		<Command name="Document.Deposit.StandardCommand.OpenList">
+			<Visibility>
+				<xr:Common>false</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="Document.BankTransfer.StandardCommand.OpenList">
+			<Visibility>
+				<xr:Common>false</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="Document.BankReconciliation.StandardCommand.OpenList">
+			<Visibility>
+				<xr:Common>false</xr:Common>
 			</Visibility>
 		</Command>
 		<Command name="Catalog.Classes.StandardCommand.OpenList">
@@ -80,10 +90,6 @@
 			<CommandGroup>NavigationPanelImportant</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
-		<Command name="0:ff21c5f0-686e-4236-baf1-9301c91253eb">
-			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
-			<Placement>Auto</Placement>
-		</Command>
 		<Command name="Document.ItemAdjustment.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
 			<Placement>Auto</Placement>
@@ -107,9 +113,6 @@
 		<Command name="AccountingRegister.GeneralJournal.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelImportant</CommandGroup>
 		</Command>
-		<Command name="0:ff21c5f0-686e-4236-baf1-9301c91253eb">
-			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
-		</Command>
 		<Command name="Document.Budget.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
 		</Command>
@@ -129,6 +132,9 @@
 			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
 		</Command>
 		<Command name="InformationRegister.AuditLog.StandardCommand.OpenList">
+			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
+		</Command>
+		<Command name="AccumulationRegister.UndepositedDocuments.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
 		</Command>
 		<Command name="Document.ItemAdjustment.StandardCommand.OpenList">

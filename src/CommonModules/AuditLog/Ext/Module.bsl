@@ -58,30 +58,30 @@ Procedure AuditLogDeleteBeforeDelete(Source, Cancel) Export
 			
 		If CommonUse.IsCatalog(SourceObj.Metadata()) Then
 		
-			If TypeOf(SourceObj) = Type("CatalogObject.Products") OR TypeOf(SourceObj) = Type("CatalogObject.Companies") Then
+			//If TypeOf(SourceObj) = Type("CatalogObject.Products") OR TypeOf(SourceObj) = Type("CatalogObject.Companies") Then
 
-				Reg = InformationRegisters.AuditLog.CreateRecordManager();
-				Reg.Period = CurrentDate();
-				Reg.User = InfobaseUsers.CurrentUser();
-				Reg.ObjUUID = String(SourceObj.Ref.UUID());
-				Reg.Action = "Delete";
-				Reg.ObjectName = String(SourceObj);
-				Reg.Reference = CatalogType(SourceObj);
-				//Reg.DateCreated = SourceObj.Date;
+			//	Reg = InformationRegisters.AuditLog.CreateRecordManager();
+			//	Reg.Period = CurrentDate();
+			//	Reg.User = InfobaseUsers.CurrentUser();
+			//	Reg.ObjUUID = String(SourceObj.Ref.UUID());
+			//	Reg.Action = "Delete";
+			//	Reg.ObjectName = String(SourceObj);
+			//	Reg.Reference = CatalogType(SourceObj);
+			//	//Reg.DateCreated = SourceObj.Date;
 
-				
-				If TypeOf(SourceObj) = Type("CatalogObject.Products") Then
-					Reg.DataJSON = InternetConnectionClientServer.EncodeJSON(GeneralFunctions.ReturnProductObjectMap(SourceObj));
-				
-				ElsIf TypeOf(SourceObj) = Type("CatalogObject.Companies") Then
-					Reg.DataJSON = InternetConnectionClientServer.EncodeJSON(GeneralFunctions.ReturnCompanyObjectMap(SourceObj));
-				Else
-				EndIf;
+			//	
+			//	If TypeOf(SourceObj) = Type("CatalogObject.Products") Then
+			//		Reg.DataJSON = InternetConnectionClientServer.EncodeJSON(GeneralFunctions.ReturnProductObjectMap(SourceObj));
+			//	
+			//	ElsIf TypeOf(SourceObj) = Type("CatalogObject.Companies") Then
+			//		Reg.DataJSON = InternetConnectionClientServer.EncodeJSON(GeneralFunctions.ReturnCompanyObjectMap(SourceObj));
+			//	Else
+			//	EndIf;
 
-				
-				Reg.Write();
-				
-			EndIf;
+			//	
+			//	Reg.Write();
+			//	
+			//EndIf;
 			
 		Else
 
@@ -123,6 +123,11 @@ Procedure AuditLogDeleteBeforeDelete(Source, Cancel) Export
 EndProcedure
 	
 Procedure AuditLogDocumentOnWrite(Source, Cancel, WriteMode, PostingMode) Export
+	
+	If GeneralFunctionsReusable.DisableAuditLogValue() = True Then
+		return;
+	EndIf;
+
 	
 	SourceObj = Source;
 	//If SourceObj.NewObject = True Then

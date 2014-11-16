@@ -576,6 +576,101 @@
 						</UsualGroup>
 					</ChildItems>
 				</Page>
+				<Page name="CSV" id="143">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>CSV</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>CSV</v8:content>
+						</v8:item>
+					</ToolTip>
+					<ExtendedTooltip name="CSVExtendedTooltip" id="144"/>
+					<ChildItems>
+						<CheckBoxField name="CSV_HasHeaderRow" id="167">
+							<DataPath>Object.CSV_HasHeaderRow</DataPath>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="CSV_HasHeaderRowContextMenu" id="168"/>
+							<ExtendedTooltip name="CSV_HasHeaderRowExtendedTooltip" id="169"/>
+						</CheckBoxField>
+						<InputField name="DateColumn" id="145">
+							<DataPath>Object.CSV_DateColumn</DataPath>
+							<ContextMenu name="DateColumnContextMenu" id="146"/>
+							<ExtendedTooltip name="DateColumnExtendedTooltip" id="147"/>
+						</InputField>
+						<InputField name="DescriptionColumn" id="148">
+							<DataPath>Object.CSV_DescriptionColumn</DataPath>
+							<ContextMenu name="DescriptionColumnContextMenu" id="149"/>
+							<ExtendedTooltip name="DescriptionColumnExtendedTooltip" id="150"/>
+						</InputField>
+						<UsualGroup name="MoneyIn" id="163">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Money in</v8:content>
+								</v8:item>
+							</Title>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Money in</v8:content>
+								</v8:item>
+							</ToolTip>
+							<Group>Horizontal</Group>
+							<Representation>None</Representation>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="MoneyInExtendedTooltip" id="164"/>
+							<ChildItems>
+								<InputField name="MoneyInColumn" id="151">
+									<DataPath>Object.CSV_MoneyInColumn</DataPath>
+									<ContextMenu name="MoneyInColumnContextMenu" id="152"/>
+									<ExtendedTooltip name="MoneyInColumnExtendedTooltip" id="153"/>
+								</InputField>
+								<CheckBoxField name="MoneyInColumnChangeSymbol" id="154">
+									<DataPath>Object.CSV_MoneyInColumnChangeSymbol</DataPath>
+									<CheckBoxType>Auto</CheckBoxType>
+									<ContextMenu name="MoneyInColumnChangeSymbolContextMenu" id="155"/>
+									<ExtendedTooltip name="MoneyInColumnChangeSymbolExtendedTooltip" id="156"/>
+								</CheckBoxField>
+							</ChildItems>
+						</UsualGroup>
+						<UsualGroup name="MoneyOut" id="165">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Money out</v8:content>
+								</v8:item>
+							</Title>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Money out</v8:content>
+								</v8:item>
+							</ToolTip>
+							<Group>Horizontal</Group>
+							<Representation>None</Representation>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="MoneyOutExtendedTooltip" id="166"/>
+							<ChildItems>
+								<InputField name="MoneyOutColumn" id="157">
+									<DataPath>Object.CSV_MoneyOutColumn</DataPath>
+									<ContextMenu name="MoneyOutColumnContextMenu" id="158"/>
+									<ExtendedTooltip name="MoneyOutColumnExtendedTooltip" id="159"/>
+								</InputField>
+								<CheckBoxField name="MoneyOutColumnChangeSymbol" id="160">
+									<DataPath>Object.CSV_MoneyOutColumnChangeSymbol</DataPath>
+									<CheckBoxType>Auto</CheckBoxType>
+									<ContextMenu name="MoneyOutColumnChangeSymbolContextMenu" id="161"/>
+									<ExtendedTooltip name="MoneyOutColumnChangeSymbolExtendedTooltip" id="162"/>
+								</CheckBoxField>
+							</ChildItems>
+						</UsualGroup>
+					</ChildItems>
+				</Page>
 			</ChildItems>
 		</Pages>
 	</ChildItems>

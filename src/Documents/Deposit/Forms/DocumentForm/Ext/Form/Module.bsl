@@ -1,9 +1,5 @@
-﻿
-&AtClient
-Procedure LineItemsBeforeDeleteRow(Item, Cancel)
-	Cancel = True;
-	Return;
-EndProcedure
+﻿////////////////////////////////////////////////////////////////////////////////
+#Region EVENTS_HANDLERS
 
 &AtServer
 // Selects cash receipts and cash sales to be deposited and fills in the document's
@@ -18,15 +14,6 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		
 	EndIf;
 	
-	//ConstantDeposit = Constants.DepositLastNumber.Get();
-	//If Object.Ref.IsEmpty() Then		
-	//	
-	//	Object.Number = Constants.DepositLastNumber.Get();
-	//Endif;
-
-	
-	//Title = "Deposit " + Object.Number + " " + Format(Object.Date, "DLF=D");
-	
 	If Object.BankAccount.IsEmpty() Then
 		Object.BankAccount = Constants.BankAccount.Get();
 	Else
@@ -34,80 +21,44 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		
 	If Object.Ref.IsEmpty() Then
 			
-		Query = New Query;
-		// KZUZIK - changed NULL to 0 in CashSale.CashPayment
-		Query.Text = "SELECT
-		             |	CashReceipt.Ref AS Ref,
-		             |	CashReceipt.Currency,
-		             |	CashReceipt.CashPayment,
-		             |	CashReceipt.DocumentTotal,
-		             |	CashReceipt.DocumentTotalRC AS DocumentTotalRC,
-		             |	CashReceipt.Date AS Date,
-					 |  CashReceipt.Company AS Customer
-		             |FROM
-		             |	Document.CashReceipt AS CashReceipt
-		             |WHERE
-		             |	CashReceipt.DepositType = &Undeposited
-		             |	AND CashReceipt.Deposited = &InDeposits
-		             |
-		             |UNION ALL
-		             |
-		             |SELECT
-		             |	CashSale.Ref,
-		             |	CashSale.Currency,
-		             |	0,                                    
-		             |	CashSale.DocumentTotal,
-		             |	CashSale.DocumentTotalRC,
-		             |	CashSale.Date,
-					 |  CashSale.Company
-		             |FROM
-		             |	Document.CashSale AS CashSale
-		             |WHERE
-		             |	CashSale.DepositType = &Undeposited
-		             |	AND CashSale.Deposited = &InDeposits
-		             |
-		             |ORDER BY
-		             |	Date";
-
-		Query.SetParameter("Undeposited", "1");
-		Query.SetParameter("InDeposits", False);
-
-		
-		Result = Query.Execute().Select();
-		
-		While Result.Next() Do
-
-			//Changed
-			//DataLine = Object.LineItems.Add();
-			
-			If Result.CashPayment > 0 Then // if there is a credit memo in a cash receipt
-				DataLine = Object.LineItems.Add();
-				DataLine.Document = Result.Ref;
-				DataLine.Customer = Result.Customer;
-				DataLine.Currency = Result.Currency;
-				DataLine.DocumentTotal = Result.CashPayment;
-				DataLine.DocumentTotalRC = Result.CashPayment;
-				DataLine.Payment = False;
-				
-			Else
-				//Modification by Bernard
-				If TypeOf(Result.Ref) <> Type("DocumentRef.CashReceipt") Then
-				    DataLine = Object.LineItems.Add();
-					DataLine.Document = Result.Ref;
-					DataLine.Customer = Result.Customer;
-					DataLine.Currency = Result.Currency;
-					DataLine.DocumentTotal = Result.DocumentTotal;
-					DataLine.DocumentTotalRC = Result.DocumentTotalRC;
-					DataLine.Payment = False;
-					
-				Endif;
-				
-			EndIf;
-				
-		EndDo;
+		RefreshInvoicesAtServer();
 		
 	EndIf;
 	
+EndProcedure
+
+&AtServer
+Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)		
+	
+	//Period closing
+	If PeriodClosingServerCall.DocumentPeriodIsClosed(CurrentObject.Ref, CurrentObject.Date) Then
+		PermitWrite = PeriodClosingServerCall.DocumentWritePermitted(WriteParameters);
+		CurrentObject.AdditionalProperties.Insert("PermitWrite", PermitWrite);	
+	EndIf;
+
+	//If Object.Ref.IsEmpty() Then
+	//
+	//	MatchVal = Increment(Constants.DepositLastNumber.Get());
+	//	If Object.Number = MatchVal Then
+	//		Constants.DepositLastNumber.Set(MatchVal);
+	//	Else
+	//		If Increment(Object.Number) = "" Then
+	//		Else
+	//			If StrLen(Increment(Object.Number)) > 20 Then
+	//				 Constants.DepositLastNumber.Set("");
+	//			Else
+	//				Constants.DepositLastNumber.Set(Increment(Object.Number));
+	//			Endif;
+
+	//		Endif;
+	//	Endif;
+	//Endif;
+	//
+	//If Object.Number = "" Then
+	//	Message("Deposit Number is empty");
+	//	Cancel = True;
+	//Endif;
+
 EndProcedure
 
 &AtClient
@@ -186,6 +137,70 @@ Procedure BeforeWrite(Cancel, WriteParameters)
 EndProcedure
 
 &AtClient
+Procedure OnOpen(Cancel)
+	
+	AttachIdleHandler("AfterOpen", 0.1, True);
+	
+EndProcedure
+
+&AtClient
+Procedure AfterOpen()
+	
+	ThisForm.Activate();
+	
+	If ThisForm.IsInputAvailable() Then
+		///////////////////////////////////////////////
+		DetachIdleHandler("AfterOpen");
+		
+		If  Object.Ref.IsEmpty() Then
+			AccountsOnChange(Items.Accounts);	
+		EndIf;	
+		///////////////////////////////////////////////
+	Else
+		AttachIdleHandler("AfterOpen", 0.1, True);
+	EndIf;		
+	
+EndProcedure
+
+&AtServer
+Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
+	
+	HasBankAccounts = False;
+	
+	For Each CurRowLineItems In Object.Accounts Do
+		
+		If CurRowLineItems.Account.AccountType = Enums.AccountTypes.Bank Then
+			
+			HasBankAccounts = True;
+			
+		EndIf;
+				
+	EndDo;	
+	
+	If HasBankAccounts Then
+		
+		Message = New UserMessage();
+		Message.Text=NStr("en='Deposit document can not be used for bank transfers. Use the Bank Transfer document instead.'");
+		Message.Message();
+		Cancel = True;
+		Return;
+		
+	EndIf;
+	
+EndProcedure
+
+#EndRegion
+
+////////////////////////////////////////////////////////////////////////////////
+#Region CONTROLS_EVENTS_HANDLERS
+
+&AtClient
+Procedure LineItemsBeforeDeleteRow(Item, Cancel)
+	Cancel = True;
+	Return;
+EndProcedure
+
+&AtClient
 // Calculates document total
 // 
 Procedure LineItemsPaymentOnChange(Item)
@@ -230,32 +245,10 @@ Procedure AccountsAmountOnChange(Item)
 	Object.DocumentTotalRC = Object.TotalDepositsRC + Object.Accounts.Total("Amount");
 EndProcedure
 
-&AtServer
-Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
-	
-	HasBankAccounts = False;
-	
-	For Each CurRowLineItems In Object.Accounts Do
-		
-		If CurRowLineItems.Account.AccountType = Enums.AccountTypes.Bank Then
-			
-			HasBankAccounts = True;
-			
-		EndIf;
-				
-	EndDo;	
-	
-	If HasBankAccounts Then
-		
-		Message = New UserMessage();
-		Message.Text=NStr("en='Deposit document can not be used for bank transfers. Use the Bank Transfer document instead.'");
-		Message.Message();
-		Cancel = True;
-		Return;
-		
-	EndIf;
-	
-EndProcedure
+#EndRegion
+
+////////////////////////////////////////////////////////////////////////////////
+#Region PRIVATE_IMPLEMENTATION
 
 &AtServer
 Function Increment(NumberToInc)
@@ -332,40 +325,6 @@ Function NumCheck(CheckValue)
 		
 EndFunction
 
-&AtServer
-Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)		
-	
-	//Period closing
-	If PeriodClosingServerCall.DocumentPeriodIsClosed(CurrentObject.Ref, CurrentObject.Date) Then
-		PermitWrite = PeriodClosingServerCall.DocumentWritePermitted(WriteParameters);
-		CurrentObject.AdditionalProperties.Insert("PermitWrite", PermitWrite);	
-	EndIf;
-
-	//If Object.Ref.IsEmpty() Then
-	//
-	//	MatchVal = Increment(Constants.DepositLastNumber.Get());
-	//	If Object.Number = MatchVal Then
-	//		Constants.DepositLastNumber.Set(MatchVal);
-	//	Else
-	//		If Increment(Object.Number) = "" Then
-	//		Else
-	//			If StrLen(Increment(Object.Number)) > 20 Then
-	//				 Constants.DepositLastNumber.Set("");
-	//			Else
-	//				Constants.DepositLastNumber.Set(Increment(Object.Number));
-	//			Endif;
-
-	//		Endif;
-	//	Endif;
-	//Endif;
-	//
-	//If Object.Number = "" Then
-	//	Message("Deposit Number is empty");
-	//	Cancel = True;
-	//Endif;
-
-EndProcedure
-
 &AtClient
 Procedure ProcessUserResponseOnDocumentPeriodClosed(Result, Parameters) Export
 	If (TypeOf(Result) = Type("String")) Then //Inserted password
@@ -382,29 +341,80 @@ Procedure ProcessUserResponseOnDocumentPeriodClosed(Result, Parameters) Export
 EndProcedure
 
 &AtClient
-Procedure OnOpen(Cancel)
-	
-	AttachIdleHandler("AfterOpen", 0.1, True);
-	
+Procedure RefreshInvoices(Command)
+	RefreshInvoicesAtServer();
 EndProcedure
 
-&AtClient
-Procedure AfterOpen()
+&AtServer
+Procedure RefreshInvoicesAtServer()
 	
-	ThisForm.Activate();
-	
-	If ThisForm.IsInputAvailable() Then
-		///////////////////////////////////////////////
-		DetachIdleHandler("AfterOpen");
+	Request = New Query();
+	Request.Text = "SELECT
+	               |	DocumentLines.Document,
+	               |	DocumentLines.Payment
+	               |INTO DocumentLines
+	               |FROM
+	               |	&DocumentLines AS DocumentLines
+	               |;
+	               |
+	               |////////////////////////////////////////////////////////////////////////////////
+	               |SELECT
+	               |	UndepositedDocumentsBalance.Document,
+	               |	UndepositedDocumentsBalance.Document.Currency,
+	               |	UndepositedDocumentsBalance.Document.Date,
+	               |	UndepositedDocumentsBalance.Document.Company AS Customer,
+	               |	UndepositedDocumentsBalance.AmountBalance AS DocumentTotal,
+	               |	UndepositedDocumentsBalance.AmountRCBalance AS DocumentTotalRC,
+	               |	FALSE AS Payment
+	               |INTO AvailableDocuments
+	               |FROM
+	               |	AccumulationRegister.UndepositedDocuments.Balance AS UndepositedDocumentsBalance
+	               |WHERE
+	               |	UndepositedDocumentsBalance.AmountBalance > 0
+	               |
+	               |UNION ALL
+	               |
+	               |SELECT
+	               |	UndepositedDocuments.Document,
+	               |	UndepositedDocuments.Document.Currency,
+	               |	UndepositedDocuments.Document.Date,
+	               |	UndepositedDocuments.Document.Company,
+	               |	SUM(UndepositedDocuments.Amount),
+	               |	SUM(UndepositedDocuments.AmountRC),
+	               |	MAX(TRUE)
+	               |FROM
+	               |	AccumulationRegister.UndepositedDocuments AS UndepositedDocuments
+	               |WHERE
+	               |	UndepositedDocuments.Recorder = &ThisDocument
+	               |
+	               |GROUP BY
+	               |	UndepositedDocuments.Document,
+	               |	UndepositedDocuments.Document.Currency,
+	               |	UndepositedDocuments.Document.Date,
+	               |	UndepositedDocuments.Document.Company
+	               |;
+	               |
+	               |////////////////////////////////////////////////////////////////////////////////
+	               |SELECT
+	               |	AvailableDocuments.Document,
+	               |	AvailableDocuments.DocumentCurrency,
+	               |	AvailableDocuments.DocumentDate AS DocumentDate,
+	               |	AvailableDocuments.Customer,
+	               |	AvailableDocuments.DocumentTotal,
+	               |	AvailableDocuments.DocumentTotalRC,
+	               |	ISNULL(DocumentLines.Payment, AvailableDocuments.Payment) AS Payment
+	               |FROM
+	               |	AvailableDocuments AS AvailableDocuments
+	               |		LEFT JOIN DocumentLines AS DocumentLines
+	               |		ON AvailableDocuments.Document = DocumentLines.Document
+	               |
+	               |ORDER BY
+	               |	DocumentDate";
+				   
+	Request.SetParameter("DocumentLines", Object.LineItems.Unload(, "Document, Payment"));
+	Request.SetParameter("ThisDocument", Object.Ref);
+	Object.LineItems.Load(Request.Execute().Unload());
 		
-		If  Object.Ref.IsEmpty() Then
-			AccountsOnChange(Items.Accounts);	
-		EndIf;	
-		///////////////////////////////////////////////
-	Else
-		AttachIdleHandler("AfterOpen", 0.1, True);
-	EndIf;		
-	
 EndProcedure
 
-
+#EndRegion

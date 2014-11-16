@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
-	<AutoCommandBar name="" id="-1"/>
+	<AutoCommandBar name="FormCommandBar" id="-1"/>
 	<ChildItems>
 		<UsualGroup name="ListSettingsComposerUserSettings" id="1">
 			<Title>
@@ -45,29 +45,29 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="6"/>
-			<SearchStringAddition name="ListSearchString" id="10">
+			<SearchStringAddition name="ListSearchString" id="13">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="11"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="12"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="14"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="15"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="13">
+			<ViewStatusAddition name="ListViewStatus" id="16">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="14"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="15"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="17"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="18"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="16">
+			<SearchControlAddition name="ListSearchControl" id="19">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="17"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="18"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="20"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="21"/>
 			</SearchControlAddition>
 			<ChildItems>
 				<LabelField name="Description" id="7">
@@ -76,6 +76,12 @@
 					<ContextMenu name="DescriptionContextMenu" id="8"/>
 					<ExtendedTooltip name="DescriptionExtendedTooltip" id="9"/>
 				</LabelField>
+				<CheckBoxField name="Zoho" id="10">
+					<DataPath>List.Zoho</DataPath>
+					<CheckBoxType>Auto</CheckBoxType>
+					<ContextMenu name="ZohoContextMenu" id="11"/>
+					<ExtendedTooltip name="ZohoExtendedTooltip" id="12"/>
+				</CheckBoxField>
 			</ChildItems>
 		</Table>
 	</ChildItems>
@@ -86,8 +92,24 @@
 			</Type>
 			<MainAttribute>true</MainAttribute>
 			<Settings xsi:type="DynamicList">
-				<ManualQuery>false</ManualQuery>
+				<ManualQuery>true</ManualQuery>
 				<DynamicDataRead>true</DynamicDataRead>
+				<QueryText>SELECT
+	CatalogPriceLevels.Ref,
+	CatalogPriceLevels.DeletionMark,
+	CatalogPriceLevels.Description,
+	CatalogPriceLevels.NewObject,
+	CatalogPriceLevels.Predefined,
+	CatalogPriceLevels.PredefinedDataName,
+	CASE 
+		WHEN zoho_pricebookCodeMap.zoho_id &lt;&gt; ""
+			THEN TRUE
+		ELSE FALSE
+	END AS Zoho
+FROM
+	Catalog.zoho_pricebookCodeMap AS zoho_pricebookCodeMap
+		RIGHT JOIN Catalog.PriceLevels AS CatalogPriceLevels
+		ON zoho_pricebookCodeMap.pricelevel_ref = CatalogPriceLevels.Ref</QueryText>
 				<MainTable>Catalog.PriceLevels</MainTable>
 				<ListSettings>
 					<dcsset:filter>

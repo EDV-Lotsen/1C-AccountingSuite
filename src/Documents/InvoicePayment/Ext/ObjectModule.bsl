@@ -209,7 +209,7 @@ Procedure FillDocumentList(BaseDocument)
 			DataLine.Currency = Result.Ref.Currency;
 			Dataline.BalanceFCY = Result.AmountBalance;
 			Dataline.Balance = Result.AmountRCBalance;
-			DataLine.Payment = 0;
+			DataLine.Payment = Result.AmountBalance;
 			
 		EndIf;
 		

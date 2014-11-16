@@ -12,6 +12,7 @@
 	</Events>
 	<ChildItems>
 		<InputField name="Code" id="1">
+			<DataPath>1/-2</DataPath>
 			<Visible>false</Visible>
 			<EditMode>EnterOnInput</EditMode>
 			<ContextMenu name="CodeContextMenu" id="2"/>
@@ -28,22 +29,52 @@
 			<ContextMenu name="SymbolContextMenu" id="6"/>
 			<ExtendedTooltip name="SymbolExtendedTooltip" id="24"/>
 		</InputField>
-		<InputField name="DefaultARAccount" id="7">
-			<DataPath>Object.DefaultARAccount</DataPath>
+		<UsualGroup name="Group1" id="11">
 			<Visible>false</Visible>
-			<ReadOnly>true</ReadOnly>
-			<HorizontalStretch>false</HorizontalStretch>
-			<ContextMenu name="DefaultARAccountContextMenu" id="8"/>
-			<ExtendedTooltip name="DefaultARAccountExtendedTooltip" id="26"/>
-		</InputField>
-		<InputField name="DefaultAPAccount" id="9">
-			<DataPath>Object.DefaultAPAccount</DataPath>
+			<Group>Horizontal</Group>
+			<Representation>None</Representation>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="Group1ExtendedTooltip" id="25"/>
+			<ChildItems>
+				<InputField name="DefaultARAccount" id="7">
+					<DataPath>Object.DefaultARAccount</DataPath>
+					<ReadOnly>true</ReadOnly>
+					<HorizontalStretch>false</HorizontalStretch>
+					<ContextMenu name="DefaultARAccountContextMenu" id="8"/>
+					<ExtendedTooltip name="DefaultARAccountExtendedTooltip" id="26"/>
+					<Events>
+						<Event name="OnChange">DefaultARAccountOnChange</Event>
+					</Events>
+				</InputField>
+				<LabelDecoration name="ARAccountLabel" id="13">
+					<ContextMenu name="ARAccountLabelContextMenu" id="14"/>
+					<ExtendedTooltip name="ARAccountLabelExtendedTooltip" id="27"/>
+				</LabelDecoration>
+			</ChildItems>
+		</UsualGroup>
+		<UsualGroup name="Group2" id="12">
 			<Visible>false</Visible>
-			<ReadOnly>true</ReadOnly>
-			<HorizontalStretch>false</HorizontalStretch>
-			<ContextMenu name="DefaultAPAccountContextMenu" id="10"/>
-			<ExtendedTooltip name="DefaultAPAccountExtendedTooltip" id="29"/>
-		</InputField>
+			<Group>Horizontal</Group>
+			<Representation>None</Representation>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="Group2ExtendedTooltip" id="28"/>
+			<ChildItems>
+				<InputField name="DefaultAPAccount" id="9">
+					<DataPath>Object.DefaultAPAccount</DataPath>
+					<ReadOnly>true</ReadOnly>
+					<HorizontalStretch>false</HorizontalStretch>
+					<ContextMenu name="DefaultAPAccountContextMenu" id="10"/>
+					<ExtendedTooltip name="DefaultAPAccountExtendedTooltip" id="29"/>
+					<Events>
+						<Event name="OnChange">DefaultAPAccountOnChange</Event>
+					</Events>
+				</InputField>
+				<LabelDecoration name="APAccountLabel" id="15">
+					<ContextMenu name="APAccountLabelContextMenu" id="16"/>
+					<ExtendedTooltip name="APAccountLabelExtendedTooltip" id="30"/>
+				</LabelDecoration>
+			</ChildItems>
+		</UsualGroup>
 	</ChildItems>
 	<Attributes>
 		<Attribute name="Object" id="1">

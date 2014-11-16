@@ -5,10 +5,10 @@
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
 	If Constants.DisplayExtendedAccountInfo.Get() = True Then
-		Items.PagesGroup.Visible = True;
+		Items.Online.Visible = True;
 		Items.FormMergeTransactions.Visible = True;
 	Else
-		Items.PagesGroup.Visible = False;
+		Items.Online.Visible = False;
 		Items.FormMergeTransactions.Visible = False;
 	EndIf;
 	
@@ -109,7 +109,7 @@ EndProcedure
 
 &AtServerNoContext
 Function RemoveAccountAtServer(Item)
-	If Not Constants.ServiceDB.Get() Then
+	If (Not Constants.ServiceDB.Get()) And (Item.YodleeAccount) Then //For online accounts
 		return New Structure("returnValue, Status", False, "Bank accounts removal is available only in the Service DB");
 	EndIf;
 	return Yodlee.RemoveYodleeBankAccountAtServer(Item);

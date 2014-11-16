@@ -39,7 +39,7 @@ Procedure LineItemsProductOnChangeAtServer(TableSectionRow)
 	TableSectionRow.Taxable            = ProductProperties.Taxable;
 	TableSectionRow.PriceUnits         = Round(GeneralFunctions.RetailPrice(Object.Date, TableSectionRow.Product, Object.Company) /
 	                                     // The price is returned for default sales unit factor.
-	                                     ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), 2);
+	                                     ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), GeneralFunctionsReusable.PricePrecisionForOneItem(TableSectionRow.Product));
 	
 	// Reset default values.
 	TableSectionRow.Project            = Object.Project;
@@ -280,6 +280,9 @@ EndProcedure
 &AtServer
 Procedure LineItemsPriceOnChangeAtServer(TableSectionRow)
 	
+	// Rounds price of product. 
+	TableSectionRow.PriceUnits = Round(TableSectionRow.PriceUnits, GeneralFunctionsReusable.PricePrecisionForOneItem(TableSectionRow.Product));
+	
 	// Calculate total by line.
 	TableSectionRow.LineTotal = Round(Round(TableSectionRow.QtyUnits, QuantityPrecision) * TableSectionRow.PriceUnits, 2);
 	
@@ -354,7 +357,7 @@ EndProcedure
 Procedure LineItemsQuantityOnChangeAtServer(TableSectionRow)
 	
 	// Calculate total by line.
-	TableSectionRow.LineTotal = Round(Round(TableSectionRow.QtyUnits, QuantityPrecision) * TableSectionRow.PriceUnits, 2);
+	TableSectionRow.LineTotal = Round(Round(TableSectionRow.QtyUnits, QuantityPrecision) * Round(TableSectionRow.PriceUnits, GeneralFunctionsReusable.PricePrecisionForOneItem(TableSectionRow.Product)), 2);
 	
 	// Process settings changes.
 	LineItemsLineTotalOnChangeAtServer(TableSectionRow);
@@ -384,6 +387,11 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	QuantityFormat    = GeneralFunctionsReusable.DefaultQuantityFormat();
 	Items.LineItemsQuantity.EditFormat = QuantityFormat;
 	Items.LineItemsQuantity.Format     = QuantityFormat;
+	
+	// Update prices presentation.
+	PriceFormat = GeneralFunctionsReusable.DefaultPriceFormat();
+	Items.LineItemsPrice.EditFormat  = PriceFormat;
+	Items.LineItemsPrice.Format      = PriceFormat;
 	
 	Items.Company.Title = GeneralFunctionsReusable.GetCustomerName();
 	
@@ -450,7 +458,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	//If GeneralFunctionsReusable.FunctionalOptionValue("MultiLocation") Then
 	//Else
 		If Object.Location.IsEmpty() Then
-			Object.Location = Catalogs.Locations.MainWarehouse;
+			Object.Location = GeneralFunctions.GetDefaultLocation();
 		EndIf;
 	//EndIf;
 
@@ -501,6 +509,7 @@ Function SessionTenant()
 	Return SessionParameters.TenantValue;
 	
 EndFunction
+
 
 &AtClient
 Procedure LineItemsBeforeAddRow(Item, Cancel, Clone, Parent, Folder)
@@ -553,7 +562,7 @@ Procedure SendEmailAtServer()
 		For Each DocumentLine in Object.LineItems Do
 			
 			TotalAmount = TotalAmount + DocumentLine.LineTotal;
-			datastring = datastring + "<TR height=""20""><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.Product +  "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.ProductDescription + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.Project + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.QtyUnits + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.PriceUnits + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.LineTotal + "</TD></TR>";
+			datastring = datastring + "<TR height=""20""><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.Product +  "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.ProductDescription + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.Project + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.QtyUnits + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + Round(DocumentLine.PriceUnits, GeneralFunctionsReusable.PricePrecisionForOneItem(DocumentLine.Product)) + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.LineTotal + "</TD></TR>";
 
 		EndDo;
 		
@@ -1038,6 +1047,10 @@ Procedure LineItemsLineTotalOnChange(Item)
 	// Request server operation.
 	LineItemsLineTotalOnChangeAtServer(TableSectionRow);
 	
+	// Back-step price calculation with totals priority (interactive change only).
+	TableSectionRow.PriceUnits = ?(TableSectionRow.QtyUnits > 0,
+	                             Round(TableSectionRow.LineTotal / Round(TableSectionRow.QtyUnits, QuantityPrecision), GeneralFunctionsReusable.PricePrecisionForOneItem(TableSectionRow.Product)), 0);
+								 
 	// Load processed data back.
 	FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
 
@@ -1047,10 +1060,6 @@ EndProcedure
 
 &AtServer
 Procedure LineItemsLineTotalOnChangeAtServer(TableSectionRow)
-	
-	// Back-step price calculation with totals priority.
-	TableSectionRow.PriceUnits = ?(TableSectionRow.QtyUnits > 0,
-	                             Round(TableSectionRow.LineTotal / Round(TableSectionRow.QtyUnits, QuantityPrecision), 2), 0);
 	
 	// Back-calculation of quantity in base units.
 	TableSectionRow.QtyUM      = Round(Round(TableSectionRow.QtyUnits, QuantityPrecision) *
@@ -1155,7 +1164,7 @@ Procedure LineItemsUnitOnChangeAtServer(TableSectionRow)
 	TableSectionRow.PriceUnits = Round(GeneralFunctions.RetailPrice(Object.Date, TableSectionRow.Product, Object.Company) *
 	                             ?(TableSectionRow.Unit.Factor > 0, TableSectionRow.Unit.Factor, 1) /
 	                             ?(TableSectionRow.UnitSet.DefaultSaleUnit.Factor > 0, TableSectionRow.UnitSet.DefaultSaleUnit.Factor, 1) /
-	                             ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), 2);
+	                             ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), GeneralFunctionsReusable.PricePrecisionForOneItem(TableSectionRow.Product));
 								 
 	// Process settings changes.
 	LineItemsQuantityOnChangeAtServer(TableSectionRow);

@@ -13,8 +13,10 @@ EndProcedure
 
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
-	
+		
 	old_key = Constants.APISecretKey.Get();
+	OldCompanyName = Constants.SystemTitle.Get();
+	OldZohoAuthToken = ConstantsSet.zoho_auth_token;
 	
 	BinaryLogo = GeneralFunctions.GetLogo();
 	TempStorageAddress = PutToTempStorage(BinaryLogo,UUID);
@@ -53,12 +55,16 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Items.APISecretKey.ReadOnly = True;		
 	EndIf;
 		
-	If Constants.MultiCurrency.Get() = True Then
+	If Constants.MultiCurrency.Get() Then
 		Items.MultiCurrency.ReadOnly = True;
 	EndIf;
 	
-	If Constants.MultiLocation.Get() = True Then
+	If Constants.MultiLocation.Get() Then
 		Items.MultiLocation.ReadOnly = True;
+	EndIf;
+	
+	If Constants.UsePricePrecision.Get() Then
+		Items.UsePricePrecision.ReadOnly = True;
 	EndIf;
 	
 	Items.DefaultCurrency.ReadOnly = True;
@@ -66,10 +72,20 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	//Sales tax
 	ChargingSalesTax = ?(ConstantsSet.SalesTaxCharging, 1, 2);
 	If ConstantsSet.SalesTaxCharging Then
-		Items.SalesTaxDefaults.Enabled = True;
+		Items.SalesTaxSettingsGroup.Enabled = True;
 	Else
-		Items.SalesTaxDefaults.Enabled = False;
+		Items.SalesTaxSettingsGroup.Enabled = False;
 	EndIf;
+	SalesTaxEngine = ?(ConstantsSet.AvataxEnabled, 1, 2); 
+	If SalesTaxEngine = 1 Then
+		Items.SalesTaxBySources.PagesRepresentation = FormPagesRepresentation.TabsOnTop;
+		Items.ByAvaTaxPage.Visible = True;
+	ElsIf SalesTaxEngine = 2 Then
+		Items.SalesTaxBySources.PagesRepresentation = FormPagesRepresentation.None;
+		Items.ByAvaTaxPage.Visible = False;
+		Items.SalesTaxBySources.CurrentPage = Items.ByAccountingSuitePage;
+	EndIf;
+
 EndProcedure
 
 &AtServer
@@ -144,9 +160,28 @@ EndProcedure
 &AtClient
 Procedure FileUpload(a,b,c,d) Export
 	
-	PlaceImageFile(b);
+	If ImageFormatCheck(c) Then	
+		PlaceImageFile(b);
+	Else
+		Message("Please upload a valid image type(.jpg, .jpeg, .png, .gif)");
+	EndIf;
 	
 EndProcedure
+
+// Checks if image is a valid image type
+&AtClient
+Function ImageFormatCheck(Filename)
+	
+	If StrOccurenceCount((Right(Filename, 5)),".jpg") <> 0 
+		OR StrOccurenceCount((Right(Filename, 5)),".jpeg") <> 0
+		OR StrOccurenceCount((Right(Filename, 5)),".png") <> 0
+		OR StrOccurenceCount((Right(Filename, 5)),".gif") <> 0 Then
+		Return True;
+	EndIf;
+	
+	Return False;
+
+EndFunction
 
 &AtServer
 Procedure PlaceImageFile(TempStorageName)
@@ -190,6 +225,7 @@ Procedure PlaceImageFile(TempStorageName)
   	
 EndProcedure
 
+ 
 &AtServer
 Function GetAPISecretKeyF()
 	
@@ -225,7 +261,9 @@ Procedure OnOpen(Cancel)
 		Items.Common.ChildItems.Logo.ChildItems.UploadLogo.Enabled = true;
 		//Items.Common.ChildItems.Integrations.ChildItems.Stripe.ChildItems.StripeConnect.Enabled = true;
 
-	 Endif;
+	Endif;
+	
+	SetEnabledPricePrecision();
 	
 EndProcedure
 
@@ -240,6 +278,39 @@ Function SettingAccessCheck()
 	Endif
 EndFunction
 
+
+//&AtClient
+//Procedure VerifyEmail(Command)
+//	VerifyEmailAtServer();
+//EndProcedure
+
+
+//&AtServer
+//Procedure VerifyEmailAtServer()
+//		HeadersMap = New Map();
+//	
+//		HTTPRequest = New HTTPRequest("/ses_email_verify",HeadersMap);
+//		HTTPRequest.SetBodyFromString(Constants.Email.Get(),TextEncoding.ANSI);
+
+//	
+//		SSLConnection = New OpenSSLSecureConnection();
+//	
+//		HTTPConnection = New HTTPConnection("intacs.accountingsuite.com",,,,,,SSLConnection);
+//		Result = HTTPConnection.Post(HTTPRequest);
+//		
+//		Message("You will receive a verification email to " + Constants.Email.Get());
+
+//EndProcedure
+
+
+&AtClient
+Procedure DwollaConnect(Command)
+	
+	statestring = GetAPISecretKeyF();	
+	GoToURL("https://www.dwolla.com/oauth/v2/authenticate?client_id=" + ServiceParameters.DwollaClientID() + "&response_type=code&redirect_uri=https://pay.accountingsuite.com/dwolla_oauth?state=" + GetTenantValue() + "&scope=send%7Ctransactions%7Cfunding%7Cbalance");
+	
+EndProcedure
+
 &AtServer
 Function GetTenantValue()
 	
@@ -251,15 +322,22 @@ EndFunction
 &AtServer
 Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 	
-	If Constants.MultiCurrency.Get() = True Then
+	If Constants.MultiCurrency.Get() Then
 		Items.MultiCurrency.ReadOnly = True;
 	EndIf;
 	
-	If Constants.MultiLocation.Get() = True Then
+	If Constants.MultiLocation.Get() Then
 		Items.MultiLocation.ReadOnly = True;
 	EndIf;
 	
+	If Constants.UsePricePrecision.Get() Then
+		Items.UsePricePrecision.ReadOnly = True;
+	EndIf;
+	
 	Constants.Email.Set(Constants.CurrentUserEmail.Get().Description);
+	
+	If OldCompanyName <> Constants.SystemTitle.Get() Then 		
+	EndIf;
 	
 EndProcedure
 
@@ -308,6 +386,29 @@ Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 			MessOnError.Message();
 		EndIf;
 	EndIf;
+	
+	 If OldZohoAuthToken <> ConstantsSet.zoho_auth_token AND ConstantsSet.zoho_auth_token <> "" Then
+		PathDef = "crm.zoho.com/crm/private/json/Leads/";
+				
+		AuthHeader = "authtoken=" + ConstantsSet.zoho_auth_token + "&scope=crmapi";
+			
+		URLstring = PathDef + "getMyRecords?" + AuthHeader;
+		
+		HeadersMap = New Map();			
+		HTTPRequest = New HTTPRequest("", HeadersMap);	
+		SSLConnection = New OpenSSLSecureConnection();
+		HTTPConnection = New HTTPConnection(URLstring,,,,,,SSLConnection);
+		Result = HTTPConnection.Post(HTTPRequest);
+		ResultBody = Result.GetBodyAsString();
+		ResultBodyJSON = InternetConnectionClientServer.DecodeJSON(ResultBody);
+		Try errorCode = ResultBodyJSON.response.error.code Except errorCode = Undefined EndTry;
+		If errorCode = "4834" Then
+			Cancel = True;
+			Message = New UserMessage();
+			Message.Text = "The Zoho Authentication Token is invalid. Please enter a valid token or delete the code.";
+			Message.Message();
+		EndIf;
+	EndIf;
 
 EndProcedure
 
@@ -325,9 +426,12 @@ EndProcedure
 Procedure ChargingSalesTaxOnChange(Item)
 	ConstantsSet.SalesTaxCharging = ?(ChargingSalesTax = 1, True, False);
 	If ConstantsSet.SalesTaxCharging Then
-		Items.SalesTaxDefaults.Enabled = True;
+		Items.SalesTaxSettingsGroup.Enabled = True;
 	Else
-		Items.SalesTaxDefaults.Enabled = False;
+		Items.SalesTaxSettingsGroup.Enabled = False;
+		ConstantsSet.AvataxEnabled = False;
+		SalesTaxEngine = 2; //Avatax disabled
+		SalesTaxEngineOnChange(Undefined);
 	EndIf;
 EndProcedure
 
@@ -411,13 +515,6 @@ Procedure Classes(Command)
 	OpenForm("Catalog.Classes.ListForm", , , , , );
 EndProcedure
 
-&AtServer
-Procedure DwollaDisconnectServer();
-	
-	Constants.dwolla_access_token.Set("");
-	Message("Your Dwolla account has been disconnected from AccountingSuite");
-	
-EndProcedure
 
 &AtClient
 Procedure OpenSalesOrder(Command)
@@ -489,8 +586,124 @@ Procedure FillClosingDate(Command)
 	EndDo;
 EndProcedure
 
+&AtClient
+Procedure SalesTaxEngineOnChange(Item)
+	ConstantsSet.AvataxEnabled = ?(SalesTaxEngine = 1, TRUE, FALSE);
+	If SalesTaxEngine = 1 Then
+		Items.SalesTaxBySources.PagesRepresentation = FormPagesRepresentation.TabsOnTop;
+		Items.ByAvaTaxPage.Visible = True;
+		If NOT ValueIsFilled(ConstantsSet.AvataxServiceURL) Then
+			If Modified Then
+				ConstantsSet.AvataxServiceURL = "https://avatax.avalara.net/";
+			Else
+				ConstantsSet.AvataxServiceURL = "https://avatax.avalara.net/";
+				Modified = False;
+			EndIf;
+		EndIf;
+	ElsIf SalesTaxEngine = 2 Then
+		Items.SalesTaxBySources.PagesRepresentation = FormPagesRepresentation.None;
+		Items.ByAvaTaxPage.Visible = False;
+		Items.SalesTaxBySources.CurrentPage = Items.ByAccountingSuitePage;
+	EndIf;
+EndProcedure
 
+&AtClient
+Procedure AvataxTestConnection(Command)
+	
+	//Testing can be done after the modifications are written
+	//If ThisForm.Modified Then
+	//	Notify = New NotifyDescription("TestConnectionAfterWrite", ThisForm); 
+	//	ShowQueryBox(Notify, "Data has been changed. To proceed you need to save changes. Save?", QuestionDialogMode.OKCancel);
+	//Else
+		AvataxTestConnectionAtClient();
+	//EndIf;		
+	
+EndProcedure
+	
+//&AtClient
+//Procedure TestConnectionAfterWrite(Result, Parameters) Export
+//	
+//	If Result <> DialogReturnCode.OK Then
+//		return;
+//	EndIf;
+//	If Write() Then
+//		AvataxTestConnectionAtClient();
+//	EndIf;
+//	
+//EndProcedure
 
+&AtClient
+Procedure AvataxTestConnectionAtClient()
+	
+	DecodedResult = AvataxTestConnectionAtServer();
+	If DecodedResult.Successful Then
+		CommonUseClient.ShowCustomMessageBox(ThisForm, "AvaTax connection test", "Connection tested successfully!", PredefinedValue("Enum.MessageStatus.Information"));
+	Else
+		CommonUseClient.ShowCustomMessageBox(ThisForm, "AvaTax connection test", "Configuration validation failed! " + DecodedResult.ErrorMessage, PredefinedValue("Enum.MessageStatus.Warning"));
+	EndIf;
+	
+EndProcedure
+
+&AtServer
+Function AvataxTestConnectionAtServer()
+	
+	// Set request parameters.
+	RequestParameters = New Structure;
+	RequestParameters.Insert("saleamount", 10);
+	
+	DecodedResultBody = AvaTaxServer.SendRequestToAvalara(Enums.AvalaraRequestTypes.ConnectionTest, RequestParameters, Undefined, New Structure("AvataxServiceURL, AvataxAuthorizationString", ConstantsSet.AvataxServiceURL, ConstantsSet.AvataxAuthorizationString));
+	return DecodedResultBody;
+	
+EndFunction
+
+&AtClient
+Procedure AvataxAdminConsoleClick(Item)
+	GotoURL(Item.Title);
+EndProcedure
+
+&AtClient
+Procedure AvataxLicenseKeyOnChange(Item)
+	GenerateAvataxAuthorizationString();
+EndProcedure
+
+&AtClient
+Procedure AvataxAccountNumberOnChange(Item)
+	GenerateAvataxAuthorizationString();
+EndProcedure
+
+&AtServer
+Procedure GenerateAvataxAuthorizationString()
+	TextDoc = New TextDocument();
+	TextDoc.SetText(TrimAll(ConstantsSet.AvataxAccountNumber) + ":" + TrimAll(ConstantsSet.AvataxLicenseKey));
+	TempFN = GetTempFileName(".txt");
+	TextDoc.Write(TempFN, TextEncoding.UTF8);
+	Binary = New BinaryData(TempFN);
+	// Convert binary data to Base64 string.
+	Base64 = Base64String(Binary);
+	Base64 = Right(Base64, StrLen(Base64)-4);
+	
+	ConstantsSet.AvataxAuthorizationString = "Basic " + Base64;
+	
+	DeleteFiles(TempFN);               
+EndProcedure
+
+&AtClient
+Procedure QtyPrecisionOnChange(Item)
+	
+	QtyPrecision = GetConstant("QtyPrecision");
+	
+	If ConstantsSet.QtyPrecision < QtyPrecision Then
+		
+		ConstantsSet.QtyPrecision = QtyPrecision;
+		
+		Message = New UserMessage();
+		Message.Text = NStr("en = 'The new value of ""Quantity field decimals"" must be greater than or equal to the current value!'");
+		Message.Field = "ConstantsSet.QtyPrecision";
+		Message.Message();
+		
+	EndIf;
+	
+EndProcedure
 
 //&AtServer
 //Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
@@ -505,7 +718,93 @@ EndProcedure
 //	EmailChange = True;
 //EndProcedure
 
+&AtClient
+Procedure UsePricePrecisionOnChange(Item)
+	
+	ConstantsSet.PricePrecision = 2;	
+	
+	Message(NStr("en = 'After enabling the ""Use price precision"" feature can not be disabled!'"), MessageStatus.Important);
+	
+	SetEnabledPricePrecision();
+
+EndProcedure
+
+&AtClient
+Procedure SetEnabledPricePrecision()
+	
+	If ConstantsSet.UsePricePrecision Then
+		Items.PricePrecision.Visible = True;
+	Else
+		Items.PricePrecision.Visible = False;
+	EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure PricePrecisionOnChange(Item)
+	
+	PricePrecision = GetConstant("PricePrecision");
+	
+	If ConstantsSet.PricePrecision < PricePrecision Then
+		
+		ConstantsSet.PricePrecision = PricePrecision;
+		
+		Message = New UserMessage();
+		Message.Text = NStr("en = 'The new value of ""Price field decimals"" must be greater than or equal to the current value!'");
+		Message.Field = "ConstantsSet.PricePrecision";
+		Message.Message();
+		
+	EndIf;
+	
+EndProcedure
+
+&AtServerNoContext
+Function GetConstant(ConstantName)
+	Return Constants[ConstantName].Get();
+EndFunction
+
+&AtClient
+Procedure zoho_pricebookmapping(Command)
+	OpenForm("Catalog.zoho_pricebookCodeMap.ListForm" );
+EndProcedure
 
 
+&AtClient
+Procedure zoho_accountmapping(Command)
+	OpenForm("Catalog.zoho_accountCodeMap.ListForm" );	
+EndProcedure
 
+
+&AtClient
+Procedure zoho_contactmapping(Command)
+	OpenForm("Catalog.zoho_contactCodeMap.ListForm" );	
+EndProcedure
+
+
+&AtClient
+Procedure zoho_so_mapping(Command)
+	OpenForm("Catalog.zoho_SOCodeMap.ListForm");
+EndProcedure
+
+
+&AtClient
+Procedure zoho_quote_map(Command)
+	OpenForm("Catalog.zoho_QuoteCodeMap.ListForm");
+EndProcedure
+
+
+&AtClient
+Procedure zoho_si_mapping(Command)
+	OpenForm("Catalog.zoho_SICodeMap.ListForm");
+EndProcedure
+
+&AtServer
+Function GetStripeCustID()
+	   Return Constants.StripeSubCustID.Get();
+   EndFunction
+   
+&AtServer
+Function SubscribeVersion()
+	   Return Constants.VersionNumber.Get();
+EndFunction
 

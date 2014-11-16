@@ -51,6 +51,7 @@
 							<ExtendedTooltip name="MainExtendedTooltip" id="98"/>
 							<ChildItems>
 								<LabelDecoration name="Decoration1" id="220">
+									<Visible>false</Visible>
 									<HorizontalStretch>true</HorizontalStretch>
 									<Title formatted="false">
 										<v8:item>
@@ -227,6 +228,7 @@
 									<ExtendedTooltip name="BankTransactionInfoExtendedTooltip" id="168"/>
 									<ChildItems>
 										<LabelDecoration name="BankTransactionDescriptionDecoration" id="169">
+											<Visible>false</Visible>
 											<HorizontalStretch>true</HorizontalStretch>
 											<Title formatted="false">
 												<v8:item>
@@ -275,9 +277,26 @@
 													<ShowTitle>false</ShowTitle>
 													<ExtendedTooltip name="InfoGroup2ExtendedTooltip" id="181"/>
 													<ChildItems>
+														<LabelDecoration name="Decoration2" id="223">
+															<Font ref="sys:DefaultGUIFont" bold="false" italic="true" underline="false" strikeout="false" kind="WindowsFont"/>
+															<Title formatted="false">
+																<v8:item>
+																	<v8:lang>en</v8:lang>
+																	<v8:content>Cloud banking:</v8:content>
+																</v8:item>
+															</Title>
+															<ContextMenu name="Decoration2ContextMenu" id="224"/>
+															<ExtendedTooltip name="Decoration2ExtendedTooltip" id="225"/>
+														</LabelDecoration>
 														<LabelField name="CurrentBankTransactionDate" id="174">
 															<DataPath>CurrentBankTransactionDate</DataPath>
 															<Width>10</Width>
+															<Format>
+																<v8:item>
+																	<v8:lang>en</v8:lang>
+																	<v8:content>DLF=D; DE=-</v8:content>
+																</v8:item>
+															</Format>
 															<Font ref="style:NormalTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
 															<ContextMenu name="CurrentBankTransactionDateContextMenu" id="175"/>
 															<ExtendedTooltip name="CurrentBankTransactionDateExtendedTooltip" id="176"/>
@@ -412,29 +431,29 @@
 				<HorizontalAlign>Right</HorizontalAlign>
 			</AutoCommandBar>
 			<ExtendedTooltip name="LineItemsExtendedTooltip" id="83"/>
-			<SearchStringAddition name="LineItemsSearchString" id="223">
+			<SearchStringAddition name="LineItemsSearchString" id="226">
 				<AdditionSource>
 					<Item>LineItems</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="LineItemsSearchStringContextMenu" id="224"/>
-				<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="225"/>
+				<ContextMenu name="LineItemsSearchStringContextMenu" id="227"/>
+				<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="228"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="LineItemsViewStatus" id="226">
+			<ViewStatusAddition name="LineItemsViewStatus" id="229">
 				<AdditionSource>
 					<Item>LineItems</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="LineItemsViewStatusContextMenu" id="227"/>
-				<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="228"/>
+				<ContextMenu name="LineItemsViewStatusContextMenu" id="230"/>
+				<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="231"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="LineItemsSearchControl" id="229">
+			<SearchControlAddition name="LineItemsSearchControl" id="232">
 				<AdditionSource>
 					<Item>LineItems</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="LineItemsSearchControlContextMenu" id="230"/>
-				<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="231"/>
+				<ContextMenu name="LineItemsSearchControlContextMenu" id="233"/>
+				<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="234"/>
 			</SearchControlAddition>
 			<Events>
 				<Event name="BeforeAddRow">LineItemsBeforeAddRow</Event>
@@ -631,7 +650,7 @@
 			<Type>
 				<v8:Type>xs:decimal</v8:Type>
 				<v8:NumberQualifiers>
-					<v8:Digits>15</v8:Digits>
+					<v8:Digits>17</v8:Digits>
 					<v8:FractionDigits>2</v8:FractionDigits>
 					<v8:AllowedSign>Any</v8:AllowedSign>
 				</v8:NumberQualifiers>
@@ -702,7 +721,7 @@
 					<Type>
 						<v8:Type>xs:decimal</v8:Type>
 						<v8:NumberQualifiers>
-							<v8:Digits>15</v8:Digits>
+							<v8:Digits>17</v8:Digits>
 							<v8:FractionDigits>2</v8:FractionDigits>
 							<v8:AllowedSign>Any</v8:AllowedSign>
 						</v8:NumberQualifiers>
@@ -743,7 +762,7 @@
 					<Type>
 						<v8:Type>xs:decimal</v8:Type>
 						<v8:NumberQualifiers>
-							<v8:Digits>15</v8:Digits>
+							<v8:Digits>17</v8:Digits>
 							<v8:FractionDigits>2</v8:FractionDigits>
 							<v8:AllowedSign>Any</v8:AllowedSign>
 						</v8:NumberQualifiers>
@@ -759,7 +778,7 @@
 					<Type>
 						<v8:Type>xs:decimal</v8:Type>
 						<v8:NumberQualifiers>
-							<v8:Digits>15</v8:Digits>
+							<v8:Digits>17</v8:Digits>
 							<v8:FractionDigits>2</v8:FractionDigits>
 							<v8:AllowedSign>Any</v8:AllowedSign>
 						</v8:NumberQualifiers>
@@ -815,7 +834,7 @@
 					<Type>
 						<v8:Type>xs:decimal</v8:Type>
 						<v8:NumberQualifiers>
-							<v8:Digits>15</v8:Digits>
+							<v8:Digits>17</v8:Digits>
 							<v8:FractionDigits>2</v8:FractionDigits>
 							<v8:AllowedSign>Any</v8:AllowedSign>
 						</v8:NumberQualifiers>
@@ -889,7 +908,11 @@
 			<Item>
 				<Command>AccumulationRegister.BankReconciliation.StandardCommand.OpenByRecorder</Command>
 				<Type>Auto</Type>
+				<CommandGroup>FormNavigationPanelGoTo</CommandGroup>
 				<DefaultVisible>false</DefaultVisible>
+				<Visible>
+					<xr:Common>false</xr:Common>
+				</Visible>
 			</Item>
 		</NavigationPanel>
 	</CommandInterface>

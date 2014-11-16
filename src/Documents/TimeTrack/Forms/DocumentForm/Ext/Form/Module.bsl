@@ -21,6 +21,11 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Object.Billable = True;
 	EndIf;
 	
+	// Update prices presentation.
+	PriceFormat = GeneralFunctionsReusable.DefaultPriceFormat();
+	Items.Price.EditFormat  = PriceFormat;
+	Items.Price.Format      = PriceFormat;	
+	
 EndProcedure
 
 &AtClient
@@ -33,6 +38,9 @@ EndProcedure
 Procedure TaskOnChangeAtServer()
 	
 	Object.Price = GeneralFunctions.RetailPrice(CurrentDate(),Object.Task,Object.Company);
+	
+	Object.Price = Round(Object.Price, GeneralFunctionsReusable.PricePrecisionForOneItem(Object.Task));
+	
 EndProcedure
 
 &AtClient
@@ -70,7 +78,10 @@ Procedure ObjChanged()
 	//	Message("You are changing data in an entry that has a linked invoice. Note that changes here are not carried over to the linked invoice and may cause inconsistency.");
 	//Endif;
 	
+	Object.Price = Round(Object.Price, GeneralFunctionsReusable.PricePrecisionForOneItem(Object.Task));
+	
 	Changed = True;
+	
 EndProcedure
 
 
