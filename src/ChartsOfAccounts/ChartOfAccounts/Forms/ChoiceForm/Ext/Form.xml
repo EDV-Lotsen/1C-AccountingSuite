@@ -3,6 +3,9 @@
 	<WindowOpeningMode>LockOwnerWindow</WindowOpeningMode>
 	<VerticalScroll>useIfNecessary</VerticalScroll>
 	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<Events>
+		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+	</Events>
 	<ChildItems>
 		<Table name="List" id="1">
 			<Representation>List</Representation>

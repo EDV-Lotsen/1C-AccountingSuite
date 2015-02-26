@@ -1,0 +1,219 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<VerticalScroll>useIfNecessary</VerticalScroll>
+	<AutoTime>CurrentOrLast</AutoTime>
+	<UsePostingMode>Auto</UsePostingMode>
+	<RepostOnWrite>true</RepostOnWrite>
+	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<Events>
+		<Event name="AfterWriteAtServer">AfterWriteAtServer</Event>
+		<Event name="BeforeWrite">BeforeWrite</Event>
+		<Event name="BeforeWriteAtServer">BeforeWriteAtServer</Event>
+		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+	</Events>
+	<ChildItems>
+		<InputField name="Date" id="9">
+			<DataPath>Object.Date</DataPath>
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>  Date</v8:content>
+				</v8:item>
+			</Title>
+			<HorizontalAlign>Right</HorizontalAlign>
+			<Width>15</Width>
+			<ContextMenu name="DateContextMenu" id="10"/>
+			<ExtendedTooltip name="DateExtendedTooltip" id="13"/>
+			<Events>
+				<Event name="OnChange">DateOnChange</Event>
+			</Events>
+		</InputField>
+		<InputField name="Product" id="1">
+			<DataPath>Object.Product</DataPath>
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>  Item</v8:content>
+				</v8:item>
+			</Title>
+			<EditMode>EnterOnInput</EditMode>
+			<ChoiceParameters>
+				<app:item name="Filter.Type">
+					<app:value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation/>
+						<Value xsi:type="xr:DesignTimeRef">Enum.InventoryTypes.EnumValue.Inventory</Value>
+					</app:value>
+				</app:item>
+				<app:item name="Filter.HasLotsSerialNumbers">
+					<app:value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation/>
+						<Value xsi:type="xs:boolean">true</Value>
+					</app:value>
+				</app:item>
+				<app:item name="Filter.UseLots">
+					<app:value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation/>
+						<Value xsi:type="xs:decimal">1</Value>
+					</app:value>
+				</app:item>
+			</ChoiceParameters>
+			<ContextMenu name="ProductContextMenu" id="2"/>
+			<ExtendedTooltip name="ProductExtendedTooltip" id="11"/>
+			<Events>
+				<Event name="OnChange">ProductOnChange</Event>
+			</Events>
+		</InputField>
+		<UsualGroup name="SerialNumbersOnHand" id="30">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Serial numbers on hand</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Serial numbers on hand</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Group>Vertical</Group>
+			<ExtendedTooltip name="SerialNumbersOnHandExtendedTooltip" id="31"/>
+			<ChildItems>
+				<Table name="SerialNumbers" id="14">
+					<AutoInsertNewRow>true</AutoInsertNewRow>
+					<EnableStartDrag>true</EnableStartDrag>
+					<EnableDrag>true</EnableDrag>
+					<DataPath>Object.SerialNumbers</DataPath>
+					<SearchStringLocation>None</SearchStringLocation>
+					<ViewStatusLocation>None</ViewStatusLocation>
+					<SearchControlLocation>None</SearchControlLocation>
+					<RowFilter xsi:nil="true"/>
+					<ContextMenu name="SerialNumbersContextMenu" id="15"/>
+					<AutoCommandBar name="SerialNumbersCommandBar" id="16"/>
+					<ExtendedTooltip name="SerialNumbersExtendedTooltip" id="17"/>
+					<SearchStringAddition name="SerialNumbersSearchString" id="32">
+						<AdditionSource>
+							<Item>SerialNumbers</Item>
+							<Type>SearchStringRepresentation</Type>
+						</AdditionSource>
+						<ContextMenu name="SerialNumbersSearchStringContextMenu" id="33"/>
+						<ExtendedTooltip name="SerialNumbersSearchStringExtendedTooltip" id="34"/>
+					</SearchStringAddition>
+					<ViewStatusAddition name="SerialNumbersViewStatus" id="35">
+						<AdditionSource>
+							<Item>SerialNumbers</Item>
+							<Type>ViewStatusRepresentation</Type>
+						</AdditionSource>
+						<ContextMenu name="SerialNumbersViewStatusContextMenu" id="36"/>
+						<ExtendedTooltip name="SerialNumbersViewStatusExtendedTooltip" id="37"/>
+					</ViewStatusAddition>
+					<SearchControlAddition name="SerialNumbersSearchControl" id="38">
+						<AdditionSource>
+							<Item>SerialNumbers</Item>
+							<Type>SearchControl</Type>
+						</AdditionSource>
+						<ContextMenu name="SerialNumbersSearchControlContextMenu" id="39"/>
+						<ExtendedTooltip name="SerialNumbersSearchControlExtendedTooltip" id="40"/>
+					</SearchControlAddition>
+					<ChildItems>
+						<LabelField name="SerialNumbersLineNumber" id="18">
+							<DataPath>Object.SerialNumbers.LineNumber</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<Width>2</Width>
+							<ContextMenu name="SerialNumbersLineNumberContextMenu" id="19"/>
+							<ExtendedTooltip name="SerialNumbersLineNumberExtendedTooltip" id="20"/>
+						</LabelField>
+						<InputField name="SerialNumbersSerialNumber" id="21">
+							<DataPath>Object.SerialNumbers.SerialNumber</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="SerialNumbersSerialNumberContextMenu" id="22"/>
+							<ExtendedTooltip name="SerialNumbersSerialNumberExtendedTooltip" id="23"/>
+						</InputField>
+						<CheckBoxField name="SerialNumbersOld" id="24">
+							<DataPath>Object.SerialNumbers.Old</DataPath>
+							<ReadOnly>true</ReadOnly>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Old</v8:content>
+								</v8:item>
+							</Title>
+							<EditMode>EnterOnInput</EditMode>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="SerialNumbersOldContextMenu" id="25"/>
+							<ExtendedTooltip name="SerialNumbersOldExtendedTooltip" id="26"/>
+						</CheckBoxField>
+						<CheckBoxField name="SerialNumbersNew" id="27">
+							<DataPath>Object.SerialNumbers.OnHand</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>New</v8:content>
+								</v8:item>
+							</Title>
+							<EditMode>EnterOnInput</EditMode>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="SerialNumbersNewContextMenu" id="28"/>
+							<ExtendedTooltip name="SerialNumbersNewExtendedTooltip" id="29"/>
+						</CheckBoxField>
+					</ChildItems>
+				</Table>
+			</ChildItems>
+		</UsualGroup>
+	</ChildItems>
+	<Attributes>
+		<Attribute name="Object" id="1">
+			<Type>
+				<v8:Type>cfg:DocumentObject.SerialNumbersAdjustment</v8:Type>
+			</Type>
+			<MainAttribute>true</MainAttribute>
+			<SavedData>true</SavedData>
+			<UseAlways>
+				<Field>Object.RegisterRecords</Field>
+			</UseAlways>
+			<Columns>
+				<AdditionalColumns table="Object.SerialNumbers">
+					<Column name="Old" id="1">
+						<Title>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>Old</v8:content>
+							</v8:item>
+						</Title>
+						<Type>
+							<v8:Type>xs:boolean</v8:Type>
+						</Type>
+					</Column>
+				</AdditionalColumns>
+			</Columns>
+		</Attribute>
+		<Attribute name="PointInTime" id="5">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Point in time</v8:content>
+				</v8:item>
+			</Title>
+			<Type/>
+		</Attribute>
+	</Attributes>
+	<CommandInterface>
+		<NavigationPanel>
+			<Item>
+				<Command>AccumulationRegister.InventoryJournal.StandardCommand.OpenByRecorder</Command>
+				<Type>Auto</Type>
+				<DefaultVisible>false</DefaultVisible>
+			</Item>
+			<Item>
+				<Command>AccountingRegister.GeneralJournal.StandardCommand.OpenByRecorder</Command>
+				<Type>Auto</Type>
+				<DefaultVisible>false</DefaultVisible>
+			</Item>
+			<Item>
+				<Command>AccumulationRegister.Lots.StandardCommand.OpenByRecorder</Command>
+				<Type>Auto</Type>
+				<DefaultVisible>false</DefaultVisible>
+			</Item>
+		</NavigationPanel>
+	</CommandInterface>
+</Form>

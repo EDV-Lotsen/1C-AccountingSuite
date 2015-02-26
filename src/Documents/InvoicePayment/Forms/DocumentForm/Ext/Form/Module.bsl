@@ -101,6 +101,30 @@ Procedure BeforeWrite(Cancel, WriteParameters)
 		EndIf;
 	EndIf;
 	
+	//Check number shouldn't be duplicated normally. 
+	//Check its uniqueness and if not ask use to allow duplication (if applicable) 
+	If Object.PaymentMethod = PredefinedValue("Catalog.PaymentMethods.Check") Then
+		CheckNumberResult = CommonUseServerCall.CheckNumberAllowed(Object.Number, Object.Ref, Object.BankAccount);
+		If CheckNumberResult.DuplicatesFound Then
+			If Not CheckNumberResult.Allow Then
+				Cancel = True;
+				CommonUseClientServer.MessageToUser("Check number already exists for this bank account", Object, "Object.Number");
+			Else
+				If WriteParameters.Property("AllowCheckNumber") Then
+					If Not WriteParameters.AllowCheckNumber Then
+						Cancel = True;
+					EndIf;
+				Else
+					Notify = New NotifyDescription("ProcessUserResponseOnCheckNumberDuplicated", ThisObject, WriteParameters);
+					ShowQueryBox(Notify, "Check number already exists for this bank account. Continue?", QuestionDialogMode.YesNo);
+					Cancel = True;
+				EndIf;
+			EndIf;
+		Else
+			WriteParameters.Insert("AllowCheckNumber", True);
+		EndIf;
+	EndIf;
+	
 	// preventing posting if already included in a bank rec
 	If ReconciledDocumentsServerCall.RequiresExcludingFromBankReconciliation(Object.Ref, -1*Object.DocumentTotalRC, Object.Date, Object.BankAccount, WriteParameters.WriteMode) Then
 		Cancel = True;
@@ -278,20 +302,34 @@ Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
 		CurrentObject.AdditionalProperties.Insert("PermitWrite", PermitWrite);	
 	EndIf;
 	
-	If WriteParameters.WriteMode = DocumentWriteMode.Posting Then
-		
-		If Object.PaymentMethod = Catalogs.PaymentMethods.Check Then
+	If Object.PaymentMethod = Catalogs.PaymentMethods.Check Then
 			
-			If ExistCheck(Object.Number) = False Then
-		
-				CurrentObject.PhysicalCheckNum = CurrentObject.Number;
-			Else
-				Message("Check number already exists for this bank account");
-				Cancel = True;
-			EndIf;
+		If WriteParameters.AllowCheckNumber = True Then
+	
+			CurrentObject.PhysicalCheckNum = CurrentObject.Number;
+			CurrentObject.AdditionalProperties.Insert("AllowCheckNumber", True);	
+			
+		Else
+			Message("Check number already exists for this bank account");
+			Cancel = True;
+		EndIf;
 
-		Endif;
-	EndIf;
+	Endif;
+
+	//If WriteParameters.WriteMode = DocumentWriteMode.Posting Then
+	//	
+	//	If Object.PaymentMethod = Catalogs.PaymentMethods.Check Then
+	//		
+	//		If CheckNumberAllowed(Object.Number) = True Then
+	//	
+	//			CurrentObject.PhysicalCheckNum = CurrentObject.Number;
+	//		Else
+	//			Message("Check number already exists for this bank account");
+	//			Cancel = True;
+	//		EndIf;
+
+	//	Endif;
+	//EndIf;
 
 	
 
@@ -355,6 +393,7 @@ Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 
 
 EndProcedure
+
 
 &AtServer
 Function DwollaAccessToken()
@@ -435,6 +474,20 @@ Procedure ProcessUserResponseOnDocumentPeriodClosed(Result, Parameters) Export
 EndProcedure
 
 &AtClient
+Procedure ProcessUserResponseOnCheckNumberDuplicated(Result, Parameters) Export
+	
+	If Result = DialogReturnCode.Yes Then
+		Parameters.Insert("AllowCheckNumber", True);
+		Write(Parameters);
+	Else
+		Parameters.Insert("AllowCheckNumber", False);
+		Write(Parameters);
+	EndIf;
+	
+EndProcedure
+
+
+&AtClient
 Procedure PayWithBitcoin(Command)
 		coinbase_api_key = coinbase_api_key();
 	
@@ -506,54 +559,6 @@ Function coinbase_api_key()
 	
 EndFunction
 
-Function ExistCheck(Num)
-	
-	Try
-	    CheckNum = Number(Object.Number);
-		Query = New Query("SELECT
-		                  |	Check.PhysicalCheckNum AS Number,
-		                  |	Check.Ref
-		                  |FROM
-		                  |	Document.Check AS Check
-		                  |WHERE
-		                  |	Check.BankAccount = &BankAccount
-		                  |	AND Check.PaymentMethod = VALUE(Catalog.PaymentMethods.Check)
-		                  |	AND Check.PhysicalCheckNum = &CheckNum
-		                  |
-		                  |UNION ALL
-		                  |
-		                  |SELECT
-		                  |	InvoicePayment.PhysicalCheckNum,
-		                  |	InvoicePayment.Ref
-		                  |FROM
-		                  |	Document.InvoicePayment AS InvoicePayment
-		                  |WHERE
-		                  |	InvoicePayment.BankAccount = &BankAccount
-		                  |	AND InvoicePayment.PaymentMethod = VALUE(Catalog.PaymentMethods.Check)
-		                  |	AND InvoicePayment.PhysicalCheckNum = &CheckNum
-		                  |
-		                  |ORDER BY
-		                  |	Number DESC");
-		Query.SetParameter("BankAccount", Object.BankAccount);
-		Query.SetParameter("CheckNum", CheckNum);
-		//Query.SetParameter("Number", Object.Number);
-		QueryResult = Query.Execute().Unload();
-		If QueryResult.Count() = 0 Then
-			Return False;
-		ElsIf QueryResult.Count() = 1 And QueryResult[0].Ref = Object.Ref Then
-			Return False;
-		Else	
-
-			Return True;
-		EndIf;
-	Except
-		Return False
-	EndTry;
-		
-	
-EndFunction
-
-
 &AtClient
 Procedure BankAccountOnChange(Item)
 	
@@ -596,6 +601,18 @@ Procedure NotificationProcessing(EventName, Parameter, Source)
 		CheckVoid();
 		
 	EndIf;
+
+EndProcedure
+
+&AtClient
+Procedure AuditLogRecord(Command)
+	
+	FormParameters = New Structure();	
+	FltrParameters = New Structure();
+	FltrParameters.Insert("DocUUID", String(Object.Ref.UUID()));
+	FormParameters.Insert("Filter", FltrParameters);
+	OpenForm("CommonForm.AuditLogList",FormParameters, Object.Ref);
+	
 
 EndProcedure
 

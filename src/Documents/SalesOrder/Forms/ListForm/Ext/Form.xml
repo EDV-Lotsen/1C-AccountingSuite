@@ -42,9 +42,6 @@
 			<EnableStartDrag>true</EnableStartDrag>
 			<DataPath>List</DataPath>
 			<RowPictureDataPath>List.DefaultPicture</RowPictureDataPath>
-			<SearchStringLocation>None</SearchStringLocation>
-			<ViewStatusLocation>None</ViewStatusLocation>
-			<SearchControlLocation>None</SearchControlLocation>
 			<AutoRefresh>false</AutoRefresh>
 			<AutoRefreshPeriod>60</AutoRefreshPeriod>
 			<Period>
@@ -63,31 +60,75 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="20"/>
-			<SearchStringAddition name="ListSearchString" id="48">
+			<SearchStringAddition name="ListSearchString" id="54">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="49"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="50"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="55"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="56"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="51">
+			<ViewStatusAddition name="ListViewStatus" id="57">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="52"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="53"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="58"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="59"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="54">
+			<SearchControlAddition name="ListSearchControl" id="60">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="55"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="56"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="61"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="62"/>
 			</SearchControlAddition>
 			<ChildItems>
+				<PictureField name="Shipped" id="48">
+					<DataPath>List.Shipped</DataPath>
+					<TitleLocation>None</TitleLocation>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Shipped status</v8:content>
+						</v8:item>
+					</ToolTip>
+					<HeaderPicture>
+						<xr:Ref>CommonPicture.ForReceived</xr:Ref>
+						<xr:LoadTransparent>true</xr:LoadTransparent>
+					</HeaderPicture>
+					<Width>2</Width>
+					<HorizontalStretch>false</HorizontalStretch>
+					<ValuesPicture>
+						<xr:Ref>CommonPicture.StatusOfOrder</xr:Ref>
+						<xr:LoadTransparent>true</xr:LoadTransparent>
+					</ValuesPicture>
+					<ContextMenu name="ShippedContextMenu" id="49"/>
+					<ExtendedTooltip name="ShippedExtendedTooltip" id="50"/>
+				</PictureField>
+				<PictureField name="Invoiced" id="51">
+					<DataPath>List.Invoiced</DataPath>
+					<TitleLocation>None</TitleLocation>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Invoiced status</v8:content>
+						</v8:item>
+					</ToolTip>
+					<HeaderPicture>
+						<xr:Ref>CommonPicture.ForInvoiced</xr:Ref>
+						<xr:LoadTransparent>true</xr:LoadTransparent>
+					</HeaderPicture>
+					<Width>2</Width>
+					<HorizontalStretch>false</HorizontalStretch>
+					<ValuesPicture>
+						<xr:Ref>CommonPicture.StatusOfOrder</xr:Ref>
+						<xr:LoadTransparent>true</xr:LoadTransparent>
+					</ValuesPicture>
+					<ContextMenu name="InvoicedContextMenu" id="52"/>
+					<ExtendedTooltip name="InvoicedExtendedTooltip" id="53"/>
+				</PictureField>
 				<LabelField name="Date" id="4">
 					<DataPath>List.Date</DataPath>
 					<DefaultItem>true</DefaultItem>
@@ -310,22 +351,147 @@ Reference number</v8:content>
 	END AS OrderStatus,
 	OrderTransactionsBalance.AmountBalance,
 	LastEmails.Date AS EmailDate,
-	CASE 
+	CASE
 		WHEN zoho_SOCodeMap.zoho_id &lt;&gt; ""
 			THEN TRUE
 		ELSE FALSE
-	END AS Zoho
-	
+	END AS Zoho,
+	CASE
+		WHEN DocumentSalesOrder.Posted = FALSE
+				OR DocumentSalesOrder.DeletionMark = TRUE
+			THEN 7
+		WHEN OrdersRegisteredBalance.UnShipped = TRUE
+				AND OrdersRegisteredBalance.PartiallyShipped = FALSE
+				AND OrdersRegisteredBalance.Shipped = FALSE
+			THEN CASE
+					WHEN OrdersRegisteredBalance.DeliveryDate &gt;= &amp;CurrentDateSession
+						THEN 2
+					ELSE 6
+				END
+		WHEN OrdersRegisteredBalance.Shipped = TRUE
+				AND OrdersRegisteredBalance.UnShipped = FALSE
+				AND OrdersRegisteredBalance.PartiallyShipped = FALSE
+			THEN 0
+		ELSE CASE
+				WHEN OrdersRegisteredBalance.DeliveryDate &gt;= &amp;CurrentDateSession
+					THEN 1
+				ELSE 5
+			END
+	END AS Shipped,
+	CASE
+		WHEN DocumentSalesOrder.Posted = FALSE
+				OR DocumentSalesOrder.DeletionMark = TRUE
+			THEN 7
+		WHEN OrdersRegisteredBalance.UnInvoiced = TRUE
+				AND OrdersRegisteredBalance.PartiallyInvoiced = FALSE
+				AND OrdersRegisteredBalance.Invoiced = FALSE
+			THEN CASE
+					WHEN OrdersRegisteredBalance.DeliveryDate &gt;= &amp;CurrentDateSession
+						THEN 4
+					ELSE 4
+				END
+		WHEN OrdersRegisteredBalance.Invoiced = TRUE
+				AND OrdersRegisteredBalance.UnInvoiced = FALSE
+				AND OrdersRegisteredBalance.PartiallyInvoiced = FALSE
+			THEN 8
+		ELSE CASE
+				WHEN OrdersRegisteredBalance.DeliveryDate &gt;= &amp;CurrentDateSession
+					THEN 3
+				ELSE 3
+			END
+	END AS Invoiced
 FROM
-	Catalog.zoho_SOCodeMap AS zoho_SOCodeMap
-		RIGHT JOIN Document.SalesOrder AS DocumentSalesOrder
-			LEFT JOIN InformationRegister.OrdersStatuses.SliceLast AS OrdersStatuses
-			ON DocumentSalesOrder.Ref = OrdersStatuses.Order
-			LEFT JOIN AccumulationRegister.OrderTransactions.Balance AS OrderTransactionsBalance
-			ON (OrderTransactionsBalance.Order = DocumentSalesOrder.Ref)
-			LEFT JOIN InformationRegister.DocumentLastEmail AS LastEmails
-			ON (LastEmails.Document = DocumentSalesOrder.Ref)
-		ON zoho_SOCodeMap.salesorder_ref = DocumentSalesOrder.Ref</QueryText>
+	Document.SalesOrder AS DocumentSalesOrder
+		LEFT JOIN Catalog.zoho_SOCodeMap AS zoho_SOCodeMap
+		ON (zoho_SOCodeMap.salesorder_ref = DocumentSalesOrder.Ref)
+		LEFT JOIN InformationRegister.OrdersStatuses.SliceLast AS OrdersStatuses
+		ON DocumentSalesOrder.Ref = OrdersStatuses.Order
+		LEFT JOIN AccumulationRegister.OrderTransactions.Balance AS OrderTransactionsBalance
+		ON (OrderTransactionsBalance.Order = DocumentSalesOrder.Ref)
+		LEFT JOIN InformationRegister.DocumentLastEmail AS LastEmails
+		ON (LastEmails.Document = DocumentSalesOrder.Ref)
+		LEFT JOIN (SELECT
+			OrdersRegistered.Order AS Order,
+			MIN(OrdersRegistered.DeliveryDate) AS DeliveryDate,
+			MAX(OrdersRegistered.UnShipped) AS UnShipped,
+			MAX(OrdersRegistered.PartiallyShipped) AS PartiallyShipped,
+			MAX(OrdersRegistered.Shipped) AS Shipped,
+			MAX(OrdersRegistered.UnInvoiced) AS UnInvoiced,
+			MAX(OrdersRegistered.PartiallyInvoiced) AS PartiallyInvoiced,
+			MAX(OrdersRegistered.Invoiced) AS Invoiced
+		FROM
+			(SELECT
+				OrdersRegisteredBalance.Company AS Company,
+				OrdersRegisteredBalance.Order AS Order,
+				OrdersRegisteredBalance.Product AS Product,
+				OrdersRegisteredBalance.Unit AS Unit,
+				OrdersRegisteredBalance.Location AS Location,
+				OrdersRegisteredBalance.DeliveryDate AS DeliveryDate,
+				OrdersRegisteredBalance.Project AS Project,
+				OrdersRegisteredBalance.Class AS Class,
+				CASE
+					WHEN OrdersRegisteredBalance.Product.Type = VALUE(Enum.InventoryTypes.Inventory)
+						THEN CASE
+								WHEN OrdersRegisteredBalance.ShippedBalance = 0
+									THEN TRUE
+								ELSE FALSE
+							END
+					ELSE CASE
+							WHEN OrdersRegisteredBalance.InvoicedBalance = 0
+								THEN TRUE
+							ELSE FALSE
+						END
+				END AS UnShipped,
+				CASE
+					WHEN OrdersRegisteredBalance.Product.Type = VALUE(Enum.InventoryTypes.Inventory)
+						THEN CASE
+								WHEN OrdersRegisteredBalance.QuantityBalance &lt;&gt; OrdersRegisteredBalance.ShippedBalance
+										AND OrdersRegisteredBalance.ShippedBalance &lt;&gt; 0
+									THEN TRUE
+								ELSE FALSE
+							END
+					ELSE CASE
+							WHEN OrdersRegisteredBalance.QuantityBalance &lt;&gt; OrdersRegisteredBalance.InvoicedBalance
+									AND OrdersRegisteredBalance.InvoicedBalance &lt;&gt; 0
+								THEN TRUE
+							ELSE FALSE
+						END
+				END AS PartiallyShipped,
+				CASE
+					WHEN OrdersRegisteredBalance.Product.Type = VALUE(Enum.InventoryTypes.Inventory)
+						THEN CASE
+								WHEN OrdersRegisteredBalance.QuantityBalance = OrdersRegisteredBalance.ShippedBalance
+									THEN TRUE
+								ELSE FALSE
+							END
+					ELSE CASE
+							WHEN OrdersRegisteredBalance.QuantityBalance = OrdersRegisteredBalance.InvoicedBalance
+								THEN TRUE
+							ELSE FALSE
+						END
+				END AS Shipped,
+				CASE
+					WHEN OrdersRegisteredBalance.InvoicedBalance = 0
+						THEN TRUE
+					ELSE FALSE
+				END AS UnInvoiced,
+				CASE
+					WHEN OrdersRegisteredBalance.QuantityBalance &lt;&gt; OrdersRegisteredBalance.InvoicedBalance
+							AND OrdersRegisteredBalance.InvoicedBalance &lt;&gt; 0
+						THEN TRUE
+					ELSE FALSE
+				END AS PartiallyInvoiced,
+				CASE
+					WHEN OrdersRegisteredBalance.QuantityBalance = OrdersRegisteredBalance.InvoicedBalance
+						THEN TRUE
+					ELSE FALSE
+				END AS Invoiced
+			FROM
+				AccumulationRegister.OrdersRegistered.Balance AS OrdersRegisteredBalance) AS OrdersRegistered
+		
+		GROUP BY
+			OrdersRegistered.Order) AS OrdersRegisteredBalance
+		ON DocumentSalesOrder.Ref = OrdersRegisteredBalance.Order</QueryText>
 				<MainTable>Document.SalesOrder</MainTable>
 				<ListSettings>
 					<dcsset:filter>
@@ -474,6 +640,24 @@ FROM
 				<Command>0:db11ee52-45d0-4de3-a333-4f8d10dcb15b</Command>
 				<Type>Auto</Type>
 				<CommandGroup>FormCommandBarImportant</CommandGroup>
+				<Visible>
+					<xr:Common>false</xr:Common>
+				</Visible>
+			</Item>
+			<Item>
+				<Command>Document.Shipment.StandardCommand.CreateBasedOn</Command>
+				<Type>Auto</Type>
+				<CommandGroup>FormCommandBarCreateBasedOn</CommandGroup>
+				<Index>1</Index>
+				<Visible>
+					<xr:Common>false</xr:Common>
+				</Visible>
+			</Item>
+			<Item>
+				<Command>Document.PurchaseOrder.StandardCommand.CreateBasedOn</Command>
+				<Type>Auto</Type>
+				<CommandGroup>FormCommandBarCreateBasedOn</CommandGroup>
+				<Index>2</Index>
 				<Visible>
 					<xr:Common>false</xr:Common>
 				</Visible>

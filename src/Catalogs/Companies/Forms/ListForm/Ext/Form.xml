@@ -21,6 +21,18 @@
 				</Title>
 				<ExtendedTooltip name="FormOutputListExtendedTooltip" id="232"/>
 			</Button>
+			<Button name="FormExportVendors" id="289">
+				<Type>CommandBarButton</Type>
+				<Visible>false</Visible>
+				<CommandName>Form.Command.ExportVendors</CommandName>
+				<ExtendedTooltip name="FormExportVendorsExtendedTooltip" id="290"/>
+			</Button>
+			<Button name="FormImportVendors" id="291">
+				<Type>CommandBarButton</Type>
+				<Visible>false</Visible>
+				<CommandName>Form.Command.ImportVendors</CommandName>
+				<ExtendedTooltip name="FormImportVendorsExtendedTooltip" id="292"/>
+			</Button>
 		</ChildItems>
 	</AutoCommandBar>
 	<Events>
@@ -44,6 +56,38 @@
 			<ShowTitle>false</ShowTitle>
 			<ExtendedTooltip name="Group1ExtendedTooltip" id="52"/>
 			<ChildItems>
+				<UsualGroup name="Group4" id="267">
+					<Group>Horizontal</Group>
+					<Representation>None</Representation>
+					<ShowTitle>false</ShowTitle>
+					<ExtendedTooltip name="Group4ExtendedTooltip" id="268"/>
+					<ChildItems>
+						<SearchStringAddition name="Addition1" id="269">
+							<AdditionSource>
+								<Item>List</Item>
+								<Type>SearchStringRepresentation</Type>
+							</AdditionSource>
+							<ContextMenu name="Addition1ContextMenu" id="270"/>
+							<ExtendedTooltip name="Addition1ExtendedTooltip" id="271"/>
+						</SearchStringAddition>
+						<SearchControlAddition name="Addition2" id="272">
+							<AdditionSource>
+								<Item>List</Item>
+								<Type>SearchControl</Type>
+							</AdditionSource>
+							<ContextMenu name="Addition2ContextMenu" id="273"/>
+							<ExtendedTooltip name="Addition2ExtendedTooltip" id="274"/>
+						</SearchControlAddition>
+					</ChildItems>
+				</UsualGroup>
+				<ViewStatusAddition name="Addition3" id="275">
+					<AdditionSource>
+						<Item>List</Item>
+						<Type>ViewStatusRepresentation</Type>
+					</AdditionSource>
+					<ContextMenu name="Addition3ContextMenu" id="276"/>
+					<ExtendedTooltip name="Addition3ExtendedTooltip" id="277"/>
+				</ViewStatusAddition>
 				<Table name="List" id="1">
 					<Representation>List</Representation>
 					<CommandBarLocation>None</CommandBarLocation>
@@ -254,16 +298,6 @@
 							<CommandName>Form.Command.CommandCreate</CommandName>
 							<ExtendedTooltip name="TransactionsCommandCreateExtendedTooltip" id="224"/>
 						</Button>
-						<Button name="TransactionsFind" id="115">
-							<Type>UsualButton</Type>
-							<CommandName>Form.Item.Transactions.StandardCommand.Find</CommandName>
-							<ExtendedTooltip name="TransactionsFindExtendedTooltip" id="116"/>
-						</Button>
-						<Button name="TransactionsCancelSearch" id="117">
-							<Type>UsualButton</Type>
-							<CommandName>Form.Item.Transactions.StandardCommand.CancelSearch</CommandName>
-							<ExtendedTooltip name="TransactionsCancelSearchExtendedTooltip" id="118"/>
-						</Button>
 						<Button name="TransactionsOutputList" id="153">
 							<Type>UsualButton</Type>
 							<Representation>PictureAndText</Representation>
@@ -289,6 +323,38 @@
 						</Button>
 					</ChildItems>
 				</UsualGroup>
+				<UsualGroup name="Group5" id="278">
+					<Group>Horizontal</Group>
+					<Representation>None</Representation>
+					<ShowTitle>false</ShowTitle>
+					<ExtendedTooltip name="Group5ExtendedTooltip" id="279"/>
+					<ChildItems>
+						<SearchStringAddition name="Addition4" id="280">
+							<AdditionSource>
+								<Item>Transactions</Item>
+								<Type>SearchStringRepresentation</Type>
+							</AdditionSource>
+							<ContextMenu name="Addition4ContextMenu" id="281"/>
+							<ExtendedTooltip name="Addition4ExtendedTooltip" id="282"/>
+						</SearchStringAddition>
+						<SearchControlAddition name="Addition5" id="283">
+							<AdditionSource>
+								<Item>Transactions</Item>
+								<Type>SearchControl</Type>
+							</AdditionSource>
+							<ContextMenu name="Addition5ContextMenu" id="284"/>
+							<ExtendedTooltip name="Addition5ExtendedTooltip" id="285"/>
+						</SearchControlAddition>
+					</ChildItems>
+				</UsualGroup>
+				<ViewStatusAddition name="Addition6" id="286">
+					<AdditionSource>
+						<Item>Transactions</Item>
+						<Type>ViewStatusRepresentation</Type>
+					</AdditionSource>
+					<ContextMenu name="Addition6ContextMenu" id="287"/>
+					<ExtendedTooltip name="Addition6ExtendedTooltip" id="288"/>
+				</ViewStatusAddition>
 				<Table name="Transactions" id="25">
 					<ChangeRowSet>false</ChangeRowSet>
 					<ChangeRowOrder>false</ChangeRowOrder>
@@ -602,7 +668,7 @@ FROM
 			<Settings xsi:type="DynamicList">
 				<ManualQuery>true</ManualQuery>
 				<DynamicDataRead>true</DynamicDataRead>
-				<QueryText>SELECT
+				<QueryText>SELECT ALLOWED
 	DocumentJournalOfCompanies.Total,
 	DocumentJournalOfCompanies.Memo,
 	DocumentJournalOfCompanies.Company,
@@ -642,6 +708,10 @@ FROM
 			THEN "SO"
 		WHEN DocumentJournalOfCompanies.Document REFS Document.Quote
 			THEN "Quote"
+		WHEN DocumentJournalOfCompanies.Document REFS Document.ItemReceipt
+			THEN "Item receipt"
+		WHEN DocumentJournalOfCompanies.Document REFS Document.Shipment
+			THEN "Shipment"
 		ELSE ""
 	END AS DocumentType,
 	ISNULL(GeneralJournalBalance.AmountBalance, 0) AS Balance,
@@ -718,6 +788,36 @@ WHERE
 			</Picture>
 			<Action>Refresh</Action>
 			<Representation>Picture</Representation>
+		</Command>
+		<Command name="ExportVendors" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Export Vendors</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Export vendors</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>ExportVendors</Action>
+		</Command>
+		<Command name="ImportVendors" id="4">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Import Vendors</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Import vendors</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>ImportVendors</Action>
 		</Command>
 	</Commands>
 </Form>

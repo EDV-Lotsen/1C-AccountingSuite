@@ -31,45 +31,6 @@
 			<ShowTitle>false</ShowTitle>
 			<ExtendedTooltip name="MenuBarExtendedTooltip" id="18"/>
 			<ChildItems>
-				<InputField name="PeriodVariant" id="37">
-					<DataPath>PeriodVariant</DataPath>
-					<Width>10</Width>
-					<HorizontalStretch>false</HorizontalStretch>
-					<ListChoiceMode>true</ListChoiceMode>
-					<TextEdit>false</TextEdit>
-					<ContextMenu name="PeriodVariantContextMenu" id="38"/>
-					<ExtendedTooltip name="PeriodVariantExtendedTooltip" id="39"/>
-					<Events>
-						<Event name="OnChange">PeriodVariantOnChange</Event>
-					</Events>
-				</InputField>
-				<InputField name="PeriodStartDate" id="40">
-					<DataPath>PeriodStartDate</DataPath>
-					<Visible>false</Visible>
-					<Width>9</Width>
-					<HorizontalStretch>false</HorizontalStretch>
-					<ContextMenu name="PeriodStartDateContextMenu" id="41"/>
-					<ExtendedTooltip name="PeriodStartDateExtendedTooltip" id="42"/>
-					<Events>
-						<Event name="OnChange">PeriodStartDateOnChange</Event>
-					</Events>
-				</InputField>
-				<InputField name="PeriodEndDate" id="43">
-					<DataPath>PeriodEndDate</DataPath>
-					<Title>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Date</v8:content>
-						</v8:item>
-					</Title>
-					<Width>9</Width>
-					<HorizontalStretch>false</HorizontalStretch>
-					<ContextMenu name="PeriodEndDateContextMenu" id="44"/>
-					<ExtendedTooltip name="PeriodEndDateExtendedTooltip" id="45"/>
-					<Events>
-						<Event name="OnChange">PeriodEndDateOnChange</Event>
-					</Events>
-				</InputField>
 				<InputField name="Variant" id="19">
 					<DataPath>Variant</DataPath>
 					<Title>
@@ -115,6 +76,45 @@
 					<ExtendedTooltip name="VariantExtendedTooltip" id="21"/>
 					<Events>
 						<Event name="OnChange">VariantOnChange</Event>
+					</Events>
+				</InputField>
+				<InputField name="PeriodVariant" id="37">
+					<DataPath>PeriodVariant</DataPath>
+					<Width>10</Width>
+					<HorizontalStretch>false</HorizontalStretch>
+					<ListChoiceMode>true</ListChoiceMode>
+					<TextEdit>false</TextEdit>
+					<ContextMenu name="PeriodVariantContextMenu" id="38"/>
+					<ExtendedTooltip name="PeriodVariantExtendedTooltip" id="39"/>
+					<Events>
+						<Event name="OnChange">PeriodVariantOnChange</Event>
+					</Events>
+				</InputField>
+				<InputField name="PeriodStartDate" id="40">
+					<DataPath>PeriodStartDate</DataPath>
+					<Visible>false</Visible>
+					<Width>9</Width>
+					<HorizontalStretch>false</HorizontalStretch>
+					<ContextMenu name="PeriodStartDateContextMenu" id="41"/>
+					<ExtendedTooltip name="PeriodStartDateExtendedTooltip" id="42"/>
+					<Events>
+						<Event name="OnChange">PeriodStartDateOnChange</Event>
+					</Events>
+				</InputField>
+				<InputField name="PeriodEndDate" id="43">
+					<DataPath>PeriodEndDate</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Date</v8:content>
+						</v8:item>
+					</Title>
+					<Width>9</Width>
+					<HorizontalStretch>false</HorizontalStretch>
+					<ContextMenu name="PeriodEndDateContextMenu" id="44"/>
+					<ExtendedTooltip name="PeriodEndDateExtendedTooltip" id="45"/>
+					<Events>
+						<Event name="OnChange">PeriodEndDateOnChange</Event>
 					</Events>
 				</InputField>
 				<Button name="FormReportSettings" id="35">

@@ -13,6 +13,11 @@
 				<xr:Value name="Role.ListUser">false</xr:Value>
 			</Visibility>
 		</Command>
+		<Command name="DataProcessor.BankRegister.Command.BankRegister">
+			<Visibility>
+				<xr:Common>false</xr:Common>
+			</Visibility>
+		</Command>
 		<Command name="Document.Deposit.StandardCommand.OpenList">
 			<Visibility>
 				<xr:Common>true</xr:Common>
@@ -28,7 +33,7 @@
 				<xr:Common>true</xr:Common>
 			</Visibility>
 		</Command>
-		<Command name="0:9b1adefc-7bdc-48d8-9d5b-f073de4af0bd">
+		<Command name="DataProcessor.DownloadedTransactions.StandardCommand.Open">
 			<Visibility>
 				<xr:Common>false</xr:Common>
 				<xr:Value name="Role.ListUser">false</xr:Value>
@@ -48,6 +53,11 @@
 			</Visibility>
 		</Command>
 		<Command name="DataProcessor.BankRegister.StandardCommand.Open">
+			<Visibility>
+				<xr:Common>false</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="0:965acdfa-9eb3-4406-9bf4-3d11803f8d0b">
 			<Visibility>
 				<xr:Common>false</xr:Common>
 			</Visibility>
@@ -78,8 +88,14 @@
 		<Command name="DataProcessor.DownloadedTransactions.Command.DownloadedTransactions">
 			<CommandGroup>NavigationPanelImportant</CommandGroup>
 		</Command>
-		<Command name="DataProcessor.BankRegister.Command.QuickEntry">
+		<Command name="DataProcessor.BankRegister.Command.BankRegister">
 			<CommandGroup>NavigationPanelImportant</CommandGroup>
+		</Command>
+		<Command name="0:98f9d8aa-3fcc-4333-9bd8-6d9f6bbd7dfa">
+			<CommandGroup>NavigationPanelImportant</CommandGroup>
+		</Command>
+		<Command name="Document.Check.StandardCommand.OpenList">
+			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
 		</Command>
 		<Command name="Document.Deposit.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelSeeAlso</CommandGroup>
@@ -102,7 +118,10 @@
 		<Command name="Document.BankReconciliation.StandardCommand.Create">
 			<CommandGroup>ActionsPanelCreate</CommandGroup>
 		</Command>
-		<Command name="0:9b1adefc-7bdc-48d8-9d5b-f073de4af0bd">
+		<Command name="Document.Check.StandardCommand.Create">
+			<CommandGroup>ActionsPanelCreate</CommandGroup>
+		</Command>
+		<Command name="DataProcessor.DownloadedTransactions.StandardCommand.Open">
 			<CommandGroup>ActionsPanelTools</CommandGroup>
 		</Command>
 		<Command name="DataProcessor.YodleeBankAccountsManagement.Command.ManageYodleeBankAccounts">
@@ -112,6 +131,9 @@
 			<CommandGroup>ActionsPanelTools</CommandGroup>
 		</Command>
 		<Command name="DataProcessor.BankRegister.StandardCommand.Open">
+			<CommandGroup>ActionsPanelTools</CommandGroup>
+		</Command>
+		<Command name="0:965acdfa-9eb3-4406-9bf4-3d11803f8d0b">
 			<CommandGroup>ActionsPanelTools</CommandGroup>
 		</Command>
 	</CommandsOrder>

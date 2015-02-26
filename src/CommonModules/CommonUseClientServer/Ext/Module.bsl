@@ -71,20 +71,20 @@ Procedure MessageToUser(
 	Message.Text = MessageToUserText;
 	Message.Field = Field;
 	
-	 
 	IsObject = False;
-	#If Not (ThinClient Or WebClient) Then
-		If DataKey <> Undefined Then
+	If DataKey <> Undefined Then
+		#If Not (ThinClient Or WebClient) Then
 			If XMLTypeOf(DataKey) <> Undefined Then
 				ValueTypeString = XMLTypeOf(DataKey).TypeName;
 				If Find(ValueTypeString, "Object.") > 0 Then
 					IsObject = True;
 				EndIf;
-			ElsIf TypeOf(DataKey) = Type("FormDataStructure") Then
-					IsObject = True;
 			EndIf;
+		#EndIf
+		If TypeOf(DataKey) = Type("FormDataStructure") Then
+			IsObject = True;
 		EndIf;
-	#EndIf
+	EndIf;
 	
 	If DataKey <> Undefined Then
 		If IsObject Then
@@ -97,11 +97,10 @@ Procedure MessageToUser(
 	If Not IsBlankString(DataPath) Then
 		Message.DataPath = DataPath;
 	EndIf;
-		
+	
 	Message.Message();
 	
 	Cancel = True;
-
 	
 EndProcedure
 

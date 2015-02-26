@@ -13,6 +13,12 @@
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
+	If Constants.DisplayOrderIndicators.Get() = False Then
+		Items.Received.Visible = False;
+		Items.Invoiced.Visible = False;
+	EndIf;
+
+	
 	// Set proper company field presentation.
 	VendorName   = GeneralFunctionsReusable.GetVendorName();
 	CustomerName = GeneralFunctionsReusable.GetCustomerName();
@@ -20,6 +26,9 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	Items.Company.ToolTip         = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = '%1 name'"), VendorName);
 	Items.DropshipCompany.Title   = CustomerName;
 	Items.DropshipCompany.ToolTip = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = '%1 name'"), CustomerName);
+	
+	// Set parameters of List.
+	List.Parameters.SetParameterValue("CurrentDateSession", BegOfDay(CurrentSessionDate()));
 	
 EndProcedure
 

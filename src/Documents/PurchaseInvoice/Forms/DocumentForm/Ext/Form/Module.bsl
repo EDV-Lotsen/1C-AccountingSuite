@@ -69,6 +69,18 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	Items.LineItemsOrderPrice.EditFormat = PriceFormat;
 	Items.LineItemsOrderPrice.Format     = PriceFormat;
 	
+	// Set lots and serial numbers visibility.
+	Items.LineItemsLot.Visible           = False;
+	Items.LineItemsSerialNumbers.Visible = False;
+	For Each Row In Object.LineItems Do
+		// Make lots & serial numbers columns visible.
+		LotsSerialNumbers.UpdateLotsSerialNumbersVisibility(Row.Product, Items, 0, Row.UseLotsSerials);
+		// Fill lot owner.
+		LotsSerialNumbers.FillLotOwner(Row.Product, Row.LotOwner);
+		// Load serial numbers.
+		LotsSerialNumbers.FillSerialNumbers(Object.SerialNumbers, Row.Product, 0, Row.LineID, Row.SerialNumbers);
+	EndDo;
+	
 	// Update visibility of controls depending on functional options.
 	If Not GeneralFunctionsReusable.FunctionalOptionValue("MultiCurrency") Then
 		Items.FCYGroup.Visible    = False;
@@ -254,6 +266,24 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 	// Request and fill ordered items from database.
 	FillBackorderQuantityAtServer();
 	
+	// Refill lots and serial numbers values.
+	For Each Row In Object.LineItems Do
+		// Update lots & serials visibility and availability.
+		LotsSerialNumbers.UpdateLotsSerialNumbersVisibility(Row.Product, Items, 0, Row.UseLotsSerials);
+		// Fill lot owner.
+		LotsSerialNumbers.FillLotOwner(Row.Product, Row.LotOwner);
+		// Load serial numbers.
+		LotsSerialNumbers.FillSerialNumbers(Object.SerialNumbers, Row.Product, 0, Row.LineID, Row.SerialNumbers);
+	EndDo;
+	
+EndProcedure
+
+&AtClient
+Procedure AfterWrite(WriteParameters)
+	//Close the form if the command is "Post and close"
+	If WriteParameters.Property("CloseAfterWrite") Then
+		Close();
+	EndIf;
 EndProcedure
 
 &AtClient
@@ -358,23 +388,13 @@ Procedure CompanyOnChangeOrdersSelection(Item)
 		
 		// Define form parameters.
 		FormParameters = New Structure();
-		FormParameters.Insert("ChoiceMode",     True);
-		FormParameters.Insert("MultipleChoice", True);
-		
-		// Define order statuses array.
-		OrderStatuses  = New Array;
-		OrderStatuses.Add(PredefinedValue("Enum.OrderStatuses.Open"));
-		OrderStatuses.Add(PredefinedValue("Enum.OrderStatuses.Backordered"));
-		
-		// Define list filter.
-		FltrParameters = New Structure();
-		FltrParameters.Insert("Company",     Object.Company); 
-		FltrParameters.Insert("OrderStatus", OrderStatuses);
-		FormParameters.Insert("Filter",      FltrParameters);
+		FormParameters.Insert("Company", Object.Company);
+		FormParameters.Insert("UseItemReceipt", True);
 		
 		// Open orders selection form.
 		NotifyDescription = New NotifyDescription("CompanyOnChangeOrdersSelectionChoiceProcessing", ThisForm);
-		OpenForm("Document.PurchaseOrder.ChoiceForm", FormParameters, Item,,,, NotifyDescription);
+		OpenForm("CommonForm.ChoiceFormPO_IR", FormParameters, Item,,,, NotifyDescription);
+		
 	EndIf;
 	
 EndProcedure
@@ -618,6 +638,9 @@ Procedure LineItemsOnChange(Item)
 		// Clear used flag.
 		IsNewRow = False;
 		
+		// Assign new ID to the new line.
+		Item.CurrentData.LineID = New UUID();
+		
 		// Fill new row with default values.
 		ObjectData  = New Structure("LocationActual, DeliveryDateActual, Project, Class");
 		FillPropertyValues(ObjectData, Object);
@@ -648,6 +671,20 @@ Procedure LineItemsBeforeAddRow(Item, Cancel, Clone, Parent, Folder)
 	If Not Cancel Then
 		IsNewRow = True;
 	EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure LineItemsBeforeDeleteRow(Item, Cancel)
+	
+	// Get current serial numbers list.
+	TableSectionRow  = Items.LineItems.CurrentData;
+	SerialNumbersTbl = Object.SerialNumbers.FindRows(New Structure("LineItemsLineID", TableSectionRow.LineID));
+	
+	// Delete existing numbers.
+	For Each Row In SerialNumbersTbl Do
+		Object.SerialNumbers.Delete(Row);
+	EndDo;
 	
 EndProcedure
 
@@ -692,16 +729,25 @@ EndProcedure
 Procedure LineItemsProductOnChangeAtServer(TableSectionRow)
 	
 	// Request product properties.
-	ProductProperties = CommonUse.GetAttributeValues(TableSectionRow.Product,   New Structure("Description, UnitSet"));
+	ProductProperties = CommonUse.GetAttributeValues(TableSectionRow.Product,   New Structure("Ref, Description, UnitSet, HasLotsSerialNumbers, UseLots, UseLotsType, Characteristic, UseSerialNumbersOnGoodsReception"));
 	UnitSetProperties = CommonUse.GetAttributeValues(ProductProperties.UnitSet, New Structure("DefaultPurchaseUnit"));
 	TableSectionRow.ProductDescription = ProductProperties.Description;
 	TableSectionRow.UnitSet            = ProductProperties.UnitSet;
 	TableSectionRow.Unit               = UnitSetProperties.DefaultPurchaseUnit;
-	//TableSectionRow.UM                 = UnitSetProperties.UM;
 	TableSectionRow.PriceUnits         = Round(GeneralFunctions.ProductLastCost(TableSectionRow.Product, PointInTime) *
 	                                     ?(TableSectionRow.Unit.Factor > 0, TableSectionRow.Unit.Factor, 1) /
 	                                     ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), GeneralFunctionsReusable.PricePrecisionForOneItem(TableSectionRow.Product));
-										 
+	
+	// Make lots & serial numbers columns visible.
+	LotsSerialNumbers.UpdateLotsSerialNumbersVisibility(ProductProperties, Items, 0, TableSectionRow.UseLotsSerials);
+	
+	// Fill lot owner.
+	LotsSerialNumbers.FillLotOwner(ProductProperties, TableSectionRow.LotOwner);
+	
+	// Clear serial numbers.
+	TableSectionRow.SerialNumbers = "";
+	LineItemsSerialNumbersOnChangeAtServer(TableSectionRow);
+	
 	// Reset default values.
 	FillPropertyValues(TableSectionRow, Object, "LocationActual, DeliveryDateActual, Project, Class");
 	
@@ -721,6 +767,91 @@ Procedure LineItemsProductOnChangeAtServer(TableSectionRow)
 	
 	// Calculate totals by line.
 	TableSectionRow.LineTotal = 0;
+	
+EndProcedure
+
+&AtClient
+Procedure LineItemsSerialNumbersOnChange(Item)
+	
+	// Fill line data for editing.
+	TableSectionRow = GetLineItemsRowStructure();
+	FillPropertyValues(TableSectionRow, Items.LineItems.CurrentData);
+	
+	// Request server operation.
+	LineItemsSerialNumbersOnChangeAtServer(TableSectionRow);
+	
+	// Load processed data back.
+	FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
+	
+	// Refresh totals cache.
+	RecalculateTotals();
+	
+EndProcedure
+
+&AtServer
+Procedure LineItemsSerialNumbersOnChangeAtServer(TableSectionRow)
+	
+	// Get current serial numbers list.
+	SerialNumbersTbl = Object.SerialNumbers.FindRows(New Structure("LineItemsLineID", TableSectionRow.LineID));
+	
+	// Delete existing numbers.
+	For Each Row In SerialNumbersTbl Do
+		Object.SerialNumbers.Delete(Row);
+	EndDo;
+	
+	// Add new numbers.
+	SerialNumbersArr = LotsSerialNumbersClientServer.GetSerialNumbersArrayFromStr(TableSectionRow.SerialNumbers);
+	For Each SerialNumber In SerialNumbersArr Do
+		Row = Object.SerialNumbers.Add();
+		Row.LineItemsLineID = TableSectionRow.LineID;
+		Row.SerialNumber    = SerialNumber;
+	EndDo;
+	
+	// Process settings changes.
+	LineItemsQuantityOnChangeAtServer(TableSectionRow);
+	
+EndProcedure
+
+&AtClient
+Procedure LineItemsSerialNumbersTextEditEnd(Item, Text, ChoiceData, Parameters, StandardProcessing)
+	
+	// Get current row.
+	Row = Items.LineItems.CurrentData;
+	
+	// Decode array of serial numbers from entered string.
+	SerialNumbers = LotsSerialNumbersClientServer.GetSerialNumbersArrayFromStr(Text);
+	
+	// Refill serial numbers by the standard formatting.
+	If SerialNumbers.Count() > 0 Then
+		Row.SerialNumbers = StringFunctionsClientServer.GetStringFromSubstringArray(SerialNumbers, ", ");
+		Row.QtyUnits = SerialNumbers.Count();
+	Else
+		Row.QtyUnits = 1;
+	EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure LineItemsSerialNumbersStartChoice(Item, ChoiceData, StandardProcessing)
+	
+	// Fill current serial numbers in a table and open an editor form.
+	Notify         = New NotifyDescription("LineItemsSerialNumbersChoiceProcessing", ThisObject);
+	FormParameters = New Structure("SerialNumbers", Item.EditText);
+	OpenForm("CommonForm.SerialNumbers", FormParameters, ThisForm,,,, Notify, FormWindowOpeningMode.LockOwnerWindow);
+	
+EndProcedure
+
+&AtClient
+Procedure LineItemsSerialNumbersChoiceProcessing(Result, Parameters) Export
+	
+	// Process choice result.
+	If TypeOf(Result) = Type("String") Then
+		// Process serial numbers string change.
+		LineItemsSerialNumbersTextEditEnd(Items.LineItemsSerialNumbers, Result,,,);
+		
+		// Process serial numbers change.
+		LineItemsSerialNumbersOnChange(Items.LineItemsSerialNumbers);
+	EndIf;
 	
 EndProcedure
 
@@ -886,8 +1017,14 @@ Procedure AccountsOnChange(Item)
 			EndIf;
 		EndDo;
 		
+		// ++ MisA Copied from "Check" 11/19/2014
+		ExpenseAccount = GetExpenseAccount(Object.Company);
+		Item.CurrentData.Account = ExpenseAccount;
+		// -- MisA Copied from "Check" 11/19/2014
+		
 		// Refresh totals cache.
 		RecalculateTotals();
+		
 	EndIf;
 	
 EndProcedure
@@ -1004,28 +1141,52 @@ EndProcedure
 &AtClient
 Procedure PostAndClose(Command)
 	
-	If Write(New Structure("WriteMode", DocumentWriteMode.Posting)) Then Close() EndIf;
+	Try
+		Write(New Structure("WriteMode, CloseAfterWrite", DocumentWriteMode.Posting, True));
+	Except
+		MessageText = BriefErrorDescription(ErrorInfo());
+		ShowMessageBox(, MessageText);
+	EndTry;
 	
 EndProcedure
 
 &AtClient
 Procedure Save(Command)
 	
-	Write();
+	Try
+		Write();
+	Except
+		MessageText = BriefErrorDescription(ErrorInfo());
+		ShowMessageBox(, MessageText);
+	EndTry;
 	
 EndProcedure
 
 &AtClient
 Procedure Post(Command)
 	
-	Write(New Structure("WriteMode", DocumentWriteMode.Posting));
+	Try
+		Write(New Structure("WriteMode", DocumentWriteMode.Posting));
+	Except
+		MessageText = BriefErrorDescription(ErrorInfo());
+		ShowMessageBox(, MessageText);
+	EndTry;
 	
 EndProcedure
 
 &AtClient
 Procedure ClearPosting(Command)
 	
-	Write(New Structure("WriteMode", DocumentWriteMode.UndoPosting));
+	If Object.Posted Then
+		
+		Try
+			Write(New Structure("WriteMode", DocumentWriteMode.UndoPosting));
+		Except
+			MessageText = BriefErrorDescription(ErrorInfo());
+			ShowMessageBox(, MessageText);
+		EndTry;
+		
+	EndIf;
 	
 EndProcedure
 
@@ -1242,26 +1403,50 @@ Procedure FillCompanyHasNonClosedOrders()
 	
 	QueryText = 
 		"SELECT TOP 1
-		|	PurchaseOrder.Ref
+		|	OrdersDispatchedBalance.Company,
+		|	OrdersDispatchedBalance.Order,
+		|	OrdersDispatchedBalance.Product,
+		|	OrdersDispatchedBalance.Unit,
+		|	OrdersDispatchedBalance.Location,
+		|	OrdersDispatchedBalance.DeliveryDate,
+		|	OrdersDispatchedBalance.Project,
+		|	OrdersDispatchedBalance.Class
 		|FROM
-		|	Document.PurchaseOrder AS PurchaseOrder
-		|	LEFT JOIN InformationRegister.OrdersStatuses.SliceLast AS OrdersStatuses
-		|		ON PurchaseOrder.Ref = OrdersStatuses.Order
+		|	AccumulationRegister.OrdersDispatched.Balance(
+		|			,
+		|			Company = &Company
+		|				AND Order.UseIR = FALSE) AS OrdersDispatchedBalance
 		|WHERE
-		|	PurchaseOrder.Company = &Company
-		|AND
-		|	CASE
-		|		WHEN PurchaseOrder.DeletionMark THEN
-		|			 VALUE(Enum.OrderStatuses.Deleted)
-		|		WHEN NOT PurchaseOrder.Posted THEN
-		|			 VALUE(Enum.OrderStatuses.Draft)
-		|		WHEN OrdersStatuses.Status IS NULL THEN
-		|			 VALUE(Enum.OrderStatuses.Open)
-		|		WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.EmptyRef) THEN
-		|			 VALUE(Enum.OrderStatuses.Open)
-		|		ELSE
-		|			 OrdersStatuses.Status
-		|	END IN (VALUE(Enum.OrderStatuses.Open), VALUE(Enum.OrderStatuses.Backordered))";
+		|	OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.ReceivedBalance > 0
+		|
+		|UNION
+		|
+		|SELECT TOP 1
+		|	NULL,
+		|	ItemReceipt.Ref,
+		|	NULL,
+		|	NULL,
+		|	NULL,
+		|	NULL,
+		|	NULL,
+		|	NULL
+		|FROM
+		|	Document.ItemReceipt AS ItemReceipt
+		|		LEFT JOIN InformationRegister.OrdersStatuses.SliceLast AS OrdersStatuses
+		|		ON ItemReceipt.Ref = OrdersStatuses.Order
+		|WHERE
+		|	ItemReceipt.Company = &Company
+		|	AND CASE
+		|			WHEN ItemReceipt.DeletionMark
+		|				THEN VALUE(Enum.OrderStatuses.Deleted)
+		|			WHEN NOT ItemReceipt.Posted
+		|				THEN VALUE(Enum.OrderStatuses.Draft)
+		|			WHEN OrdersStatuses.Status IS NULL 
+		|				THEN VALUE(Enum.OrderStatuses.Open)
+		|			WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.EmptyRef)
+		|				THEN VALUE(Enum.OrderStatuses.Open)
+		|			ELSE OrdersStatuses.Status
+		|		END IN (VALUE(Enum.OrderStatuses.Open), VALUE(Enum.OrderStatuses.Backordered))";
 	Query.Text  = QueryText;
 	
 	// Assign true if there are open or backordered orders
@@ -1284,6 +1469,16 @@ Function FillDocumentWithSelectedOrders(SelectedOrders)
 		// Return filled object to form
 		ValueToFormAttribute(DocObject, "Object");
 		
+		// Update serial numbers visibility basing on filled items.
+		For Each Row In Object.LineItems Do
+			// Make lots & serial numbers columns visible.
+			LotsSerialNumbers.UpdateLotsSerialNumbersVisibility(Row.Product, Items, 0, Row.UseLotsSerials);
+			// Fill lot owner.
+			LotsSerialNumbers.FillLotOwner(Row.Product, Row.LotOwner);
+			// Load serial numbers.
+			LotsSerialNumbers.FillSerialNumbers(Object.SerialNumbers, Row.Product, 0, Row.LineID, Row.SerialNumbers);
+		EndDo;
+		
 		// Return filling success
 		Return True;
 	Else
@@ -1293,6 +1488,7 @@ Function FillDocumentWithSelectedOrders(SelectedOrders)
 		And (Not Object.LineItems[0].Order.Company = Object.Company) Then
 			// Clear existing dataset
 			Object.LineItems.Clear();
+			Object.SerialNumbers.Clear();
 		EndIf;
 		
 		// Return fail (selection cancelled)
@@ -1300,6 +1496,16 @@ Function FillDocumentWithSelectedOrders(SelectedOrders)
 	EndIf;
 	
 EndFunction
+
+//++ MisA 11/19/2014 Copy from doc.form.Check
+// getting expence account
+&AtServer
+Function GetExpenseAccount(Vendor)
+	
+	Return Vendor.ExpenseAccount;
+	
+EndFunction
+//-- Misa 11/19/2014
 
 //------------------------------------------------------------------------------
 // Calculate totals and fill object attributes.
@@ -1339,7 +1545,7 @@ EndProcedure
 Function GetLineItemsRowStructure()
 	
 	// Define control row fields.
-	Return New Structure("LineNumber, Product, ProductDescription, UnitSet, QtyUnits, Unit, QtyUM, UM, Ordered, Backorder, Received, Invoiced, OrderPriceUnits, PriceUnits, LineTotal, Order, ItemReceipt, Location, LocationActual, DeliveryDate, DeliveryDateActual, Project, Class");
+	Return New Structure("LineNumber, LineID, Product, ProductDescription, UseLotsSerials, LotOwner, Lot, SerialNumbers, UnitSet, QtyUnits, Unit, QtyUM, Ordered, Backorder, Received, Invoiced, OrderPriceUnits, PriceUnits, LineTotal, Order, ItemReceipt, Location, LocationActual, DeliveryDate, DeliveryDateActual, Project, Class");
 	
 EndFunction
 
@@ -1422,6 +1628,17 @@ Procedure UpdateInformationBillPayments()
 		EndIf;
 		
 	EndDo;
+	
+EndProcedure
+
+&AtClient
+Procedure AuditLogRecord(Command)
+	
+	FormParameters = New Structure();	
+	FltrParameters = New Structure();
+	FltrParameters.Insert("DocUUID", String(Object.Ref.UUID()));
+	FormParameters.Insert("Filter", FltrParameters);
+	OpenForm("CommonForm.AuditLogList",FormParameters, Object.Ref);
 	
 EndProcedure
 

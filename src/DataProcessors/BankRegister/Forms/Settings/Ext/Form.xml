@@ -143,6 +143,17 @@
 			<ShowTitle>false</ShowTitle>
 			<ExtendedTooltip name="Group1ExtendedTooltip" id="14"/>
 			<ChildItems>
+				<LabelDecoration name="DecorationBegBal" id="54">
+					<Font ref="style:SmallTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
+					<Title formatted="false">
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Beg Balance</v8:content>
+						</v8:item>
+					</Title>
+					<ContextMenu name="DecorationBegBalContextMenu" id="55"/>
+					<ExtendedTooltip name="DecorationBegBalExtendedTooltip" id="56"/>
+				</LabelDecoration>
 				<CheckBoxField name="EditBegBal" id="24">
 					<DataPath>EditBegBal</DataPath>
 					<ToolTip>
@@ -155,6 +166,32 @@
 					<ContextMenu name="EditBegBalContextMenu" id="25"/>
 					<ExtendedTooltip name="EditBegBalExtendedTooltip" id="26"/>
 				</CheckBoxField>
+				<CheckBoxField name="UseBankReconciliationForBegBal" id="48">
+					<DataPath>UseBankReconciliationForBegBal</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Fill Beg Bal from Bank Reconcilliation</v8:content>
+						</v8:item>
+					</Title>
+					<CheckBoxType>Auto</CheckBoxType>
+					<ContextMenu name="UseBankReconciliationForBegBalContextMenu" id="49"/>
+					<ExtendedTooltip name="UseBankReconciliationForBegBalExtendedTooltip" id="50"/>
+					<Events>
+						<Event name="OnChange">UseBankReconciliationForBegBalOnChange</Event>
+					</Events>
+				</CheckBoxField>
+				<LabelDecoration name="DecorationJournalEntry" id="57">
+					<Font ref="style:SmallTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
+					<Title formatted="false">
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Journal Entry</v8:content>
+						</v8:item>
+					</Title>
+					<ContextMenu name="DecorationJournalEntryContextMenu" id="58"/>
+					<ExtendedTooltip name="DecorationJournalEntryExtendedTooltip" id="59"/>
+				</LabelDecoration>
 				<CheckBoxField name="DoNotUseJournalEntry" id="27">
 					<DataPath>DoNotUseJournalEntry</DataPath>
 					<ToolTip>
@@ -179,20 +216,22 @@
 					<ContextMenu name="DoNotUseAdjustingJournalEntryContextMenu" id="31"/>
 					<ExtendedTooltip name="DoNotUseAdjustingJournalEntryExtendedTooltip" id="32"/>
 				</CheckBoxField>
-				<CheckBoxField name="UseBankReconciliationForBegBal" id="48">
-					<DataPath>UseBankReconciliationForBegBal</DataPath>
-					<Title>
+				<LabelDecoration name="DecorationNumberEditMode" id="60">
+					<Font ref="style:SmallTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
+					<Title formatted="false">
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Fill Beg Bal from Bank Reconcilliation</v8:content>
+							<v8:content>Editing Mode</v8:content>
 						</v8:item>
 					</Title>
+					<ContextMenu name="DecorationNumberEditModeContextMenu" id="61"/>
+					<ExtendedTooltip name="DecorationNumberEditModeExtendedTooltip" id="62"/>
+				</LabelDecoration>
+				<CheckBoxField name="EditNumbersWithoutDecimalPoint" id="51">
+					<DataPath>EditNumbersWithoutDecimalPoint</DataPath>
 					<CheckBoxType>Auto</CheckBoxType>
-					<ContextMenu name="UseBankReconciliationForBegBalContextMenu" id="49"/>
-					<ExtendedTooltip name="UseBankReconciliationForBegBalExtendedTooltip" id="50"/>
-					<Events>
-						<Event name="OnChange">UseBankReconciliationForBegBalOnChange</Event>
-					</Events>
+					<ContextMenu name="EditNumbersWithoutDecimalPointContextMenu" id="52"/>
+					<ExtendedTooltip name="EditNumbersWithoutDecimalPointExtendedTooltip" id="53"/>
 				</CheckBoxField>
 			</ChildItems>
 		</UsualGroup>
@@ -312,6 +351,28 @@
 				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Use bank reconciliation for Beg Bal</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
+			</Type>
+		</Attribute>
+		<Attribute name="EditNumbersWithoutDecimalPoint" id="11">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Edit numbers without decimal point</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
+			</Type>
+		</Attribute>
+		<Attribute name="PeriodChanged" id="12">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Period changed</v8:content>
 				</v8:item>
 			</Title>
 			<Type>

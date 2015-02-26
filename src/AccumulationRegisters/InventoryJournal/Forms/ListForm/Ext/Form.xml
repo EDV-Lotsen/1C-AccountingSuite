@@ -36,71 +36,98 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="20"/>
-			<SearchStringAddition name="ListSearchString" id="29">
+			<SearchStringAddition name="ListSearchString" id="32">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="30"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="31"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="33"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="34"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="32">
+			<ViewStatusAddition name="ListViewStatus" id="35">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="33"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="34"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="36"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="37"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="35">
+			<SearchControlAddition name="ListSearchControl" id="38">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="36"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="37"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="39"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="40"/>
 			</SearchControlAddition>
 			<ChildItems>
 				<LabelField name="Period" id="4">
 					<DataPath>List.Period</DataPath>
 					<DefaultItem>true</DefaultItem>
+					<Width>10</Width>
+					<HorizontalStretch>true</HorizontalStretch>
 					<ContextMenu name="PeriodContextMenu" id="5"/>
 					<ExtendedTooltip name="PeriodExtendedTooltip" id="21"/>
 				</LabelField>
-				<LabelField name="Recorder" id="6">
-					<DataPath>List.Recorder</DataPath>
-					<ContextMenu name="RecorderContextMenu" id="7"/>
-					<ExtendedTooltip name="RecorderExtendedTooltip" id="22"/>
-				</LabelField>
 				<LabelField name="LineNumber" id="8">
 					<DataPath>List.LineNumber</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>#</v8:content>
+						</v8:item>
+					</Title>
+					<Width>4</Width>
 					<ContextMenu name="LineNumberContextMenu" id="9"/>
 					<ExtendedTooltip name="LineNumberExtendedTooltip" id="23"/>
 				</LabelField>
 				<LabelField name="Product" id="10">
 					<DataPath>List.Product</DataPath>
+					<Width>10</Width>
 					<ContextMenu name="ProductContextMenu" id="11"/>
 					<ExtendedTooltip name="ProductExtendedTooltip" id="24"/>
 				</LabelField>
+				<LabelField name="ProductDescription" id="29">
+					<DataPath>List.Product.Description</DataPath>
+					<Width>20</Width>
+					<ContextMenu name="ProductDescriptionContextMenu" id="30"/>
+					<ExtendedTooltip name="ProductDescriptionExtendedTooltip" id="31"/>
+				</LabelField>
 				<LabelField name="Location" id="12">
 					<DataPath>List.Location</DataPath>
+					<Width>20</Width>
 					<ContextMenu name="LocationContextMenu" id="13"/>
 					<ExtendedTooltip name="LocationExtendedTooltip" id="25"/>
 				</LabelField>
 				<LabelField name="Layer" id="14">
 					<DataPath>List.Layer</DataPath>
+					<Width>20</Width>
 					<ContextMenu name="LayerContextMenu" id="15"/>
 					<ExtendedTooltip name="LayerExtendedTooltip" id="26"/>
 				</LabelField>
 				<LabelField name="Quantity" id="16">
 					<DataPath>List.Quantity</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Qty</v8:content>
+						</v8:item>
+					</Title>
+					<Width>10</Width>
 					<ContextMenu name="QuantityContextMenu" id="17"/>
 					<ExtendedTooltip name="QuantityExtendedTooltip" id="27"/>
 				</LabelField>
 				<LabelField name="Amount" id="18">
 					<DataPath>List.Amount</DataPath>
+					<Width>10</Width>
 					<ContextMenu name="AmountContextMenu" id="19"/>
 					<ExtendedTooltip name="AmountExtendedTooltip" id="28"/>
+				</LabelField>
+				<LabelField name="Recorder" id="6">
+					<DataPath>List.Recorder</DataPath>
+					<Width>20</Width>
+					<ContextMenu name="RecorderContextMenu" id="7"/>
+					<ExtendedTooltip name="RecorderExtendedTooltip" id="22"/>
 				</LabelField>
 			</ChildItems>
 		</Table>

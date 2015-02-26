@@ -55,7 +55,7 @@ EndFunction
 
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
-			
+	
 	DocumentRef = Parameters.Ref;
 	DocObject = DocumentRef.GetObject();
 	DocumentType = "";

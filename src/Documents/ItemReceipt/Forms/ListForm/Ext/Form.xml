@@ -15,9 +15,6 @@
 			<EnableStartDrag>true</EnableStartDrag>
 			<DataPath>List</DataPath>
 			<RowPictureDataPath>List.DefaultPicture</RowPictureDataPath>
-			<SearchStringLocation>None</SearchStringLocation>
-			<ViewStatusLocation>None</ViewStatusLocation>
-			<SearchControlLocation>None</SearchControlLocation>
 			<AutoRefresh>false</AutoRefresh>
 			<AutoRefreshPeriod>60</AutoRefreshPeriod>
 			<Period>
@@ -36,29 +33,29 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="28"/>
-			<SearchStringAddition name="ListSearchString" id="37">
+			<SearchStringAddition name="ListSearchString" id="40">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="38"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="39"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="41"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="42"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="40">
+			<ViewStatusAddition name="ListViewStatus" id="43">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="41"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="42"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="44"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="45"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="43">
+			<SearchControlAddition name="ListSearchControl" id="46">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="44"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="45"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="47"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="48"/>
 			</SearchControlAddition>
 			<ChildItems>
 				<LabelField name="Date" id="20">
@@ -66,6 +63,25 @@
 					<HorizontalAlign>Right</HorizontalAlign>
 					<ContextMenu name="DateContextMenu" id="21"/>
 					<ExtendedTooltip name="DateExtendedTooltip" id="29"/>
+				</LabelField>
+				<LabelField name="OrderStatus" id="37">
+					<DataPath>List.OrderStatus</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Status</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Item receipt status</v8:content>
+						</v8:item>
+					</ToolTip>
+					<Width>10</Width>
+					<HorizontalStretch>false</HorizontalStretch>
+					<ContextMenu name="OrderStatusContextMenu" id="38"/>
+					<ExtendedTooltip name="OrderStatusExtendedTooltip" id="39"/>
 				</LabelField>
 				<LabelField name="Number" id="22">
 					<DataPath>List.Number</DataPath>
@@ -99,10 +115,22 @@
 	DocumentItemReceipt.Number,
 	DocumentItemReceipt.Date,
 	DocumentItemReceipt.Company,
-	DocumentItemReceipt.Location
+	DocumentItemReceipt.Location,
+	CASE
+		WHEN DocumentItemReceipt.DeletionMark
+			THEN VALUE(Enum.OrderStatuses.Deleted)
+		WHEN NOT DocumentItemReceipt.Posted
+			THEN VALUE(Enum.OrderStatuses.Draft)
+		WHEN OrdersStatuses.Status IS NULL 
+			THEN VALUE(Enum.OrderStatuses.Open)
+		WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.EmptyRef)
+			THEN VALUE(Enum.OrderStatuses.Open)
+		ELSE OrdersStatuses.Status
+	END AS OrderStatus
 FROM
 	Document.ItemReceipt AS DocumentItemReceipt
-</QueryText>
+		LEFT JOIN InformationRegister.OrdersStatuses.SliceLast AS OrdersStatuses
+		ON DocumentItemReceipt.Ref = OrdersStatuses.Order</QueryText>
 				<MainTable>Document.ItemReceipt</MainTable>
 				<ListSettings>
 					<dcsset:filter>
@@ -114,6 +142,88 @@ FROM
 						<dcsset:userSettingID>88619765-ccb3-46c6-ac52-38e9c992ebd4</dcsset:userSettingID>
 					</dcsset:order>
 					<dcsset:conditionalAppearance>
+						<dcsset:item>
+							<dcsset:selection>
+								<dcsset:item>
+									<dcsset:field>OrderStatus</dcsset:field>
+								</dcsset:item>
+							</dcsset:selection>
+							<dcsset:filter>
+								<dcsset:item xsi:type="dcsset:FilterItemComparison">
+									<dcsset:left xsi:type="dcscor:Field">OrderStatus</dcsset:left>
+									<dcsset:comparisonType>InList</dcsset:comparisonType>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.OrderStatuses.Deleted</dcsset:right>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.OrderStatuses.Draft</dcsset:right>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.OrderStatuses.New</dcsset:right>
+								</dcsset:item>
+							</dcsset:filter>
+							<dcsset:appearance>
+								<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+									<dcscor:parameter>TextColor</dcscor:parameter>
+									<dcscor:value xsi:type="v8ui:Color">web:DarkGray</dcscor:value>
+								</dcscor:item>
+							</dcsset:appearance>
+						</dcsset:item>
+						<dcsset:item>
+							<dcsset:selection>
+								<dcsset:item>
+									<dcsset:field>OrderStatus</dcsset:field>
+								</dcsset:item>
+							</dcsset:selection>
+							<dcsset:filter>
+								<dcsset:item xsi:type="dcsset:FilterItemComparison">
+									<dcsset:left xsi:type="dcscor:Field">OrderStatus</dcsset:left>
+									<dcsset:comparisonType>Equal</dcsset:comparisonType>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.OrderStatuses.Closed</dcsset:right>
+								</dcsset:item>
+							</dcsset:filter>
+							<dcsset:appearance>
+								<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+									<dcscor:parameter>TextColor</dcscor:parameter>
+									<dcscor:value xsi:type="v8ui:Color">web:DarkGreen</dcscor:value>
+								</dcscor:item>
+							</dcsset:appearance>
+						</dcsset:item>
+						<dcsset:item>
+							<dcsset:selection>
+								<dcsset:item>
+									<dcsset:field>OrderStatus</dcsset:field>
+								</dcsset:item>
+							</dcsset:selection>
+							<dcsset:filter>
+								<dcsset:item xsi:type="dcsset:FilterItemComparison">
+									<dcsset:left xsi:type="dcscor:Field">OrderStatus</dcsset:left>
+									<dcsset:comparisonType>Equal</dcsset:comparisonType>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.OrderStatuses.Backordered</dcsset:right>
+								</dcsset:item>
+							</dcsset:filter>
+							<dcsset:appearance>
+								<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+									<dcscor:parameter>TextColor</dcscor:parameter>
+									<dcscor:value xsi:type="v8ui:Color">web:DarkGoldenRod</dcscor:value>
+								</dcscor:item>
+							</dcsset:appearance>
+						</dcsset:item>
+						<dcsset:item>
+							<dcsset:selection>
+								<dcsset:item>
+									<dcsset:field>OrderStatus</dcsset:field>
+								</dcsset:item>
+							</dcsset:selection>
+							<dcsset:filter>
+								<dcsset:item xsi:type="dcsset:FilterItemComparison">
+									<dcsset:left xsi:type="dcscor:Field">OrderStatus</dcsset:left>
+									<dcsset:comparisonType>Equal</dcsset:comparisonType>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.OrderStatuses.Open</dcsset:right>
+								</dcsset:item>
+							</dcsset:filter>
+							<dcsset:appearance>
+								<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+									<dcscor:parameter>TextColor</dcscor:parameter>
+									<dcscor:value xsi:type="v8ui:Color">web:DarkRed</dcscor:value>
+								</dcscor:item>
+							</dcsset:appearance>
+						</dcsset:item>
 						<dcsset:viewMode>Normal</dcsset:viewMode>
 						<dcsset:userSettingID>b75fecce-942b-4aed-abc9-e6a02e460fb3</dcsset:userSettingID>
 					</dcsset:conditionalAppearance>

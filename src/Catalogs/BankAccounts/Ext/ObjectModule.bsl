@@ -1,5 +1,6 @@
 ﻿
 Procedure BeforeWrite(Cancel)
+	
 	//Check for duplicate usage of the same accounting account
 	If ValueIsFilled(ThisObject.AccountingAccount) Then
 		DL = New DataLock();
@@ -23,10 +24,23 @@ Procedure BeforeWrite(Cancel)
 			Message.Message();
 		EndIf;
 	EndIf;
+	
+	If CSV_Separator = " " Then
+		CSV_Separator = ","
+	EndIf;
+	
 EndProcedure
 
 Procedure BeforeDelete(Cancel)
 	
+	//Check if bank account is linked to G/L account
+	If ValueIsFilled(AccountingAccount) Then
+		AccountingAccountObject = AccountingAccount.GetObject();
+		If AccountingAccountObject <> Undefined Then
+			Cancel = True;
+			CommonUseClientServer.MessageToUser("Bank account is linked to G/L account " + String(AccountingAccount));
+		EndIf;
+	EndIf;
 	//Delete records in registers
 	//BankTransactions
 	BTRecordset = InformationRegisters.BankTransactions.CreateRecordSet();

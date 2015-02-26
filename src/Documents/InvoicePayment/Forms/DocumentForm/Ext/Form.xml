@@ -283,6 +283,34 @@
 								</UsualGroup>
 							</ChildItems>
 						</Page>
+						<Page name="Accounting" id="142">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Accounting</v8:content>
+								</v8:item>
+							</Title>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Accounting</v8:content>
+								</v8:item>
+							</ToolTip>
+							<ExtendedTooltip name="AccountingExtendedTooltip" id="143"/>
+							<ChildItems>
+								<Button name="AuditLogRecord" id="144">
+									<Type>UsualButton</Type>
+									<CommandName>Form.Command.AuditLogRecord</CommandName>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Audit Logs Records</v8:content>
+										</v8:item>
+									</Title>
+									<ExtendedTooltip name="AuditLogRecordExtendedTooltip" id="145"/>
+								</Button>
+							</ChildItems>
+						</Page>
 					</ChildItems>
 				</Pages>
 			</ChildItems>
@@ -328,29 +356,29 @@
 					<ContextMenu name="LineItemsContextMenu" id="52"/>
 					<AutoCommandBar name="LineItemsCommandBar" id="53"/>
 					<ExtendedTooltip name="LineItemsExtendedTooltip" id="87"/>
-					<SearchStringAddition name="LineItemsSearchString" id="142">
+					<SearchStringAddition name="LineItemsSearchString" id="146">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>SearchStringRepresentation</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsSearchStringContextMenu" id="143"/>
-						<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="144"/>
+						<ContextMenu name="LineItemsSearchStringContextMenu" id="147"/>
+						<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="148"/>
 					</SearchStringAddition>
-					<ViewStatusAddition name="LineItemsViewStatus" id="145">
+					<ViewStatusAddition name="LineItemsViewStatus" id="149">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>ViewStatusRepresentation</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsViewStatusContextMenu" id="146"/>
-						<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="147"/>
+						<ContextMenu name="LineItemsViewStatusContextMenu" id="150"/>
+						<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="151"/>
 					</ViewStatusAddition>
-					<SearchControlAddition name="LineItemsSearchControl" id="148">
+					<SearchControlAddition name="LineItemsSearchControl" id="152">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>SearchControl</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsSearchControlContextMenu" id="149"/>
-						<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="150"/>
+						<ContextMenu name="LineItemsSearchControlContextMenu" id="153"/>
+						<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="154"/>
 					</SearchControlAddition>
 					<ChildItems>
 						<LabelField name="LineItemsLineNumber" id="54">
@@ -538,6 +566,21 @@
 		</Attribute>
 	</Attributes>
 	<Commands>
+		<Command name="PayWithDwolla" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Pay with Dwolla</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Pay with dwolla</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>PayWithDwolla</Action>
+		</Command>
 		<Command name="PayAll" id="2">
 			<Title>
 				<v8:item>
@@ -582,6 +625,21 @@
 				</v8:item>
 			</ToolTip>
 			<Action>MarkAsVoid</Action>
+		</Command>
+		<Command name="AuditLogRecord" id="5">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Audit log record</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Audit log record</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>AuditLogRecord</Action>
 		</Command>
 	</Commands>
 	<CommandInterface>

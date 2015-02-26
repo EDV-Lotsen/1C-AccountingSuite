@@ -1,0 +1,158 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<WindowOpeningMode>LockOwnerWindow</WindowOpeningMode>
+	<UseForFoldersAndItems>Items</UseForFoldersAndItems>
+	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<Events>
+		<Event name="AfterWriteAtServer">AfterWriteAtServer</Event>
+		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+		<Event name="BeforeWriteAtServer">BeforeWriteAtServer</Event>
+	</Events>
+	<ChildItems>
+		<UsualGroup name="CodeDescription" id="7">
+			<Group>Horizontal</Group>
+			<Representation>None</Representation>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="CodeDescriptionExtendedTooltip" id="8"/>
+			<ChildItems>
+				<InputField name="Description" id="4">
+					<DataPath>Object.Description</DataPath>
+					<EditMode>EnterOnInput</EditMode>
+					<Width>25</Width>
+					<ContextMenu name="DescriptionContextMenu" id="5"/>
+					<ExtendedTooltip name="DescriptionExtendedTooltip" id="6"/>
+				</InputField>
+				<InputField name="Code" id="1">
+					<DataPath>Object.Code</DataPath>
+					<EditMode>EnterOnInput</EditMode>
+					<Width>3</Width>
+					<ContextMenu name="CodeContextMenu" id="2"/>
+					<ExtendedTooltip name="CodeExtendedTooltip" id="3"/>
+				</InputField>
+			</ChildItems>
+		</UsualGroup>
+		<UsualGroup name="OwnedLots" id="9">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Values</v8:content>
+				</v8:item>
+			</Title>
+			<Group>Vertical</Group>
+			<ExtendedTooltip name="OwnedLotsExtendedTooltip" id="10"/>
+			<ChildItems>
+				<Table name="LotsList" id="11">
+					<Representation>List</Representation>
+					<UseAlternationRowColor>true</UseAlternationRowColor>
+					<EnableStartDrag>true</EnableStartDrag>
+					<DataPath>Lots</DataPath>
+					<RowPictureDataPath>Lots.DefaultPicture</RowPictureDataPath>
+					<SearchStringLocation>None</SearchStringLocation>
+					<ViewStatusLocation>None</ViewStatusLocation>
+					<SearchControlLocation>None</SearchControlLocation>
+					<AutoRefresh>false</AutoRefresh>
+					<AutoRefreshPeriod>60</AutoRefreshPeriod>
+					<Period>
+						<v8:variant xsi:type="v8:StandardPeriodVariant">Custom</v8:variant>
+						<v8:startDate>0001-01-01T00:00:00</v8:startDate>
+						<v8:endDate>0001-01-01T00:00:00</v8:endDate>
+					</Period>
+					<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
+					<RestoreCurrentRow>false</RestoreCurrentRow>
+					<TopLevelParent xsi:nil="true"/>
+					<ShowRoot>true</ShowRoot>
+					<AllowRootChoice>false</AllowRootChoice>
+					<UpdateOnDataChange>Auto</UpdateOnDataChange>
+					<ContextMenu name="LotsListContextMenu" id="12"/>
+					<AutoCommandBar name="LotsListCommandBar" id="13"/>
+					<ExtendedTooltip name="LotsListExtendedTooltip" id="14"/>
+					<SearchStringAddition name="LotsListSearchString" id="18">
+						<AdditionSource>
+							<Item>LotsList</Item>
+							<Type>SearchStringRepresentation</Type>
+						</AdditionSource>
+						<ContextMenu name="LotsListSearchStringContextMenu" id="19"/>
+						<ExtendedTooltip name="LotsListSearchStringExtendedTooltip" id="20"/>
+					</SearchStringAddition>
+					<ViewStatusAddition name="LotsListViewStatus" id="21">
+						<AdditionSource>
+							<Item>LotsList</Item>
+							<Type>ViewStatusRepresentation</Type>
+						</AdditionSource>
+						<ContextMenu name="LotsListViewStatusContextMenu" id="22"/>
+						<ExtendedTooltip name="LotsListViewStatusExtendedTooltip" id="23"/>
+					</ViewStatusAddition>
+					<SearchControlAddition name="LotsListSearchControl" id="24">
+						<AdditionSource>
+							<Item>LotsList</Item>
+							<Type>SearchControl</Type>
+						</AdditionSource>
+						<ContextMenu name="LotsListSearchControlContextMenu" id="25"/>
+						<ExtendedTooltip name="LotsListSearchControlExtendedTooltip" id="26"/>
+					</SearchControlAddition>
+					<ChildItems>
+						<LabelField name="LotsListCode" id="15">
+							<DataPath>Lots.Code</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Value</v8:content>
+								</v8:item>
+							</Title>
+							<Width>20</Width>
+							<ContextMenu name="LotsListCodeContextMenu" id="16"/>
+							<ExtendedTooltip name="LotsListCodeExtendedTooltip" id="17"/>
+						</LabelField>
+					</ChildItems>
+				</Table>
+			</ChildItems>
+		</UsualGroup>
+	</ChildItems>
+	<Attributes>
+		<Attribute name="Object" id="1">
+			<Type>
+				<v8:Type>cfg:CatalogObject.Characteristics</v8:Type>
+			</Type>
+			<MainAttribute>true</MainAttribute>
+			<SavedData>true</SavedData>
+		</Attribute>
+		<Attribute name="Lots" id="2">
+			<Type>
+				<v8:Type>cfg:DynamicList</v8:Type>
+			</Type>
+			<Settings xsi:type="DynamicList">
+				<ManualQuery>false</ManualQuery>
+				<DynamicDataRead>true</DynamicDataRead>
+				<MainTable>Catalog.Lots</MainTable>
+				<ListSettings>
+					<dcsset:filter>
+						<dcsset:viewMode>Normal</dcsset:viewMode>
+						<dcsset:userSettingID>dfcece9d-5077-440b-b6b3-45a5cb4538eb</dcsset:userSettingID>
+					</dcsset:filter>
+					<dcsset:order>
+						<dcsset:viewMode>Normal</dcsset:viewMode>
+						<dcsset:userSettingID>88619765-ccb3-46c6-ac52-38e9c992ebd4</dcsset:userSettingID>
+					</dcsset:order>
+					<dcsset:conditionalAppearance>
+						<dcsset:viewMode>Normal</dcsset:viewMode>
+						<dcsset:userSettingID>b75fecce-942b-4aed-abc9-e6a02e460fb3</dcsset:userSettingID>
+					</dcsset:conditionalAppearance>
+					<dcsset:itemsViewMode>Normal</dcsset:itemsViewMode>
+					<dcsset:itemsUserSettingID>911b6018-f537-43e8-a417-da56b22f9aec</dcsset:itemsUserSettingID>
+				</ListSettings>
+			</Settings>
+		</Attribute>
+	</Attributes>
+	<CommandInterface>
+		<NavigationPanel>
+			<Item>
+				<Command>Catalog.Lots.StandardCommand.OpenByValue</Command>
+				<Type>Auto</Type>
+				<DefaultVisible>false</DefaultVisible>
+				<Visible>
+					<xr:Common>false</xr:Common>
+				</Visible>
+			</Item>
+		</NavigationPanel>
+	</CommandInterface>
+</Form>

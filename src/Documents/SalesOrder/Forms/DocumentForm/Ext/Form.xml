@@ -73,6 +73,12 @@
 											<DataPath>Object.Ref</DataPath>
 											<ExtendedTooltip name="DocumentSalesInvoiceCreateBasedOnExtendedTooltip" id="493"/>
 										</Button>
+										<Button name="DocumentShipmentCreateBasedOn" id="676">
+											<Type>CommandBarButton</Type>
+											<CommandName>Document.Shipment.StandardCommand.CreateBasedOn</CommandName>
+											<DataPath>Object.Ref</DataPath>
+											<ExtendedTooltip name="DocumentShipmentCreateBasedOnExtendedTooltip" id="677"/>
+										</Button>
 									</ChildItems>
 								</Popup>
 								<Popup name="GroupPrint" id="494">
@@ -393,6 +399,15 @@ Reference number</v8:content>
 													<ContextMenu name="NumberContextMenu" id="2"/>
 													<ExtendedTooltip name="NumberExtendedTooltip" id="102"/>
 												</InputField>
+												<CheckBoxField name="UseShipment" id="678">
+													<DataPath>Object.UseShipment</DataPath>
+													<CheckBoxType>Auto</CheckBoxType>
+													<ContextMenu name="UseShipmentContextMenu" id="679"/>
+													<ExtendedTooltip name="UseShipmentExtendedTooltip" id="680"/>
+													<Events>
+														<Event name="OnChange">UseShipmentOnChange</Event>
+													</Events>
+												</CheckBoxField>
 											</ChildItems>
 										</UsualGroup>
 										<UsualGroup name="DeliveryDateStatus" id="176">
@@ -1075,29 +1090,29 @@ Reference number</v8:content>
 													<ContextMenu name="SalesTaxAcrossAgenciesContextMenu" id="577"/>
 													<AutoCommandBar name="SalesTaxAcrossAgenciesCommandBar" id="578"/>
 													<ExtendedTooltip name="SalesTaxAcrossAgenciesExtendedTooltip" id="579"/>
-													<SearchStringAddition name="SalesTaxAcrossAgenciesSearchString" id="679">
+													<SearchStringAddition name="SalesTaxAcrossAgenciesSearchString" id="692">
 														<AdditionSource>
 															<Item>SalesTaxAcrossAgencies</Item>
 															<Type>SearchStringRepresentation</Type>
 														</AdditionSource>
-														<ContextMenu name="SalesTaxAcrossAgenciesSearchStringContextMenu" id="680"/>
-														<ExtendedTooltip name="SalesTaxAcrossAgenciesSearchStringExtendedTooltip" id="681"/>
+														<ContextMenu name="SalesTaxAcrossAgenciesSearchStringContextMenu" id="693"/>
+														<ExtendedTooltip name="SalesTaxAcrossAgenciesSearchStringExtendedTooltip" id="694"/>
 													</SearchStringAddition>
-													<ViewStatusAddition name="SalesTaxAcrossAgenciesViewStatus" id="682">
+													<ViewStatusAddition name="SalesTaxAcrossAgenciesViewStatus" id="695">
 														<AdditionSource>
 															<Item>SalesTaxAcrossAgencies</Item>
 															<Type>ViewStatusRepresentation</Type>
 														</AdditionSource>
-														<ContextMenu name="SalesTaxAcrossAgenciesViewStatusContextMenu" id="683"/>
-														<ExtendedTooltip name="SalesTaxAcrossAgenciesViewStatusExtendedTooltip" id="684"/>
+														<ContextMenu name="SalesTaxAcrossAgenciesViewStatusContextMenu" id="696"/>
+														<ExtendedTooltip name="SalesTaxAcrossAgenciesViewStatusExtendedTooltip" id="697"/>
 													</ViewStatusAddition>
-													<SearchControlAddition name="SalesTaxAcrossAgenciesSearchControl" id="685">
+													<SearchControlAddition name="SalesTaxAcrossAgenciesSearchControl" id="698">
 														<AdditionSource>
 															<Item>SalesTaxAcrossAgencies</Item>
 															<Type>SearchControl</Type>
 														</AdditionSource>
-														<ContextMenu name="SalesTaxAcrossAgenciesSearchControlContextMenu" id="686"/>
-														<ExtendedTooltip name="SalesTaxAcrossAgenciesSearchControlExtendedTooltip" id="687"/>
+														<ContextMenu name="SalesTaxAcrossAgenciesSearchControlContextMenu" id="699"/>
+														<ExtendedTooltip name="SalesTaxAcrossAgenciesSearchControlExtendedTooltip" id="700"/>
 													</SearchControlAddition>
 													<ChildItems>
 														<InputField name="SalesTaxAcrossAgenciesSalesTaxComponent" id="637">
@@ -1235,29 +1250,29 @@ Reference number</v8:content>
 													<ContextMenu name="TaxAcrossAgenciesContextMenu" id="610"/>
 													<AutoCommandBar name="TaxAcrossAgenciesCommandBar" id="611"/>
 													<ExtendedTooltip name="TaxAcrossAgenciesExtendedTooltip" id="612"/>
-													<SearchStringAddition name="TaxAcrossAgenciesSearchString" id="688">
+													<SearchStringAddition name="TaxAcrossAgenciesSearchString" id="701">
 														<AdditionSource>
 															<Item>TaxAcrossAgencies</Item>
 															<Type>SearchStringRepresentation</Type>
 														</AdditionSource>
-														<ContextMenu name="TaxAcrossAgenciesSearchStringContextMenu" id="689"/>
-														<ExtendedTooltip name="TaxAcrossAgenciesSearchStringExtendedTooltip" id="690"/>
+														<ContextMenu name="TaxAcrossAgenciesSearchStringContextMenu" id="702"/>
+														<ExtendedTooltip name="TaxAcrossAgenciesSearchStringExtendedTooltip" id="703"/>
 													</SearchStringAddition>
-													<ViewStatusAddition name="TaxAcrossAgenciesViewStatus" id="691">
+													<ViewStatusAddition name="TaxAcrossAgenciesViewStatus" id="704">
 														<AdditionSource>
 															<Item>TaxAcrossAgencies</Item>
 															<Type>ViewStatusRepresentation</Type>
 														</AdditionSource>
-														<ContextMenu name="TaxAcrossAgenciesViewStatusContextMenu" id="692"/>
-														<ExtendedTooltip name="TaxAcrossAgenciesViewStatusExtendedTooltip" id="693"/>
+														<ContextMenu name="TaxAcrossAgenciesViewStatusContextMenu" id="705"/>
+														<ExtendedTooltip name="TaxAcrossAgenciesViewStatusExtendedTooltip" id="706"/>
 													</ViewStatusAddition>
-													<SearchControlAddition name="TaxAcrossAgenciesSearchControl" id="694">
+													<SearchControlAddition name="TaxAcrossAgenciesSearchControl" id="707">
 														<AdditionSource>
 															<Item>TaxAcrossAgencies</Item>
 															<Type>SearchControl</Type>
 														</AdditionSource>
-														<ContextMenu name="TaxAcrossAgenciesSearchControlContextMenu" id="695"/>
-														<ExtendedTooltip name="TaxAcrossAgenciesSearchControlExtendedTooltip" id="696"/>
+														<ContextMenu name="TaxAcrossAgenciesSearchControlContextMenu" id="708"/>
+														<ExtendedTooltip name="TaxAcrossAgenciesSearchControlExtendedTooltip" id="709"/>
 													</SearchControlAddition>
 													<ChildItems>
 														<InputField name="TaxAcrossAgenciesAvataxTaxComponent" id="658">
@@ -1360,29 +1375,29 @@ Reference number</v8:content>
 							<ContextMenu name="LineItemsContextMenu" id="12"/>
 							<AutoCommandBar name="LineItemsCommandBar" id="13"/>
 							<ExtendedTooltip name="LineItemsExtendedTooltip" id="116"/>
-							<SearchStringAddition name="LineItemsSearchString" id="697">
+							<SearchStringAddition name="LineItemsSearchString" id="710">
 								<AdditionSource>
 									<Item>LineItems</Item>
 									<Type>SearchStringRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="LineItemsSearchStringContextMenu" id="698"/>
-								<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="699"/>
+								<ContextMenu name="LineItemsSearchStringContextMenu" id="711"/>
+								<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="712"/>
 							</SearchStringAddition>
-							<ViewStatusAddition name="LineItemsViewStatus" id="700">
+							<ViewStatusAddition name="LineItemsViewStatus" id="713">
 								<AdditionSource>
 									<Item>LineItems</Item>
 									<Type>ViewStatusRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="LineItemsViewStatusContextMenu" id="701"/>
-								<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="702"/>
+								<ContextMenu name="LineItemsViewStatusContextMenu" id="714"/>
+								<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="715"/>
 							</ViewStatusAddition>
-							<SearchControlAddition name="LineItemsSearchControl" id="703">
+							<SearchControlAddition name="LineItemsSearchControl" id="716">
 								<AdditionSource>
 									<Item>LineItems</Item>
 									<Type>SearchControl</Type>
 								</AdditionSource>
-								<ContextMenu name="LineItemsSearchControlContextMenu" id="704"/>
-								<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="705"/>
+								<ContextMenu name="LineItemsSearchControlContextMenu" id="717"/>
+								<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="718"/>
 							</SearchControlAddition>
 							<Events>
 								<Event name="OnEditEnd">LineItemsOnEditEnd</Event>
@@ -1421,6 +1436,20 @@ Reference number</v8:content>
 									<Width>20</Width>
 									<ContextMenu name="LineItemsProductDescriptionContextMenu" id="60"/>
 									<ExtendedTooltip name="LineItemsProductDescriptionExtendedTooltip" id="119"/>
+								</InputField>
+								<InputField name="LineItemsLot" id="681">
+									<DataPath>Object.LineItems.Lot</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<Width>20</Width>
+									<ChoiceParameterLinks>
+										<xr:Link>
+											<xr:Name>Filter.Owner</xr:Name>
+											<xr:DataPath xsi:type="xs:string">Items.LineItems.CurrentData.LotOwner</xr:DataPath>
+											<xr:ValueChange>Clear</xr:ValueChange>
+										</xr:Link>
+									</ChoiceParameterLinks>
+									<ContextMenu name="LineItemsLotContextMenu" id="682"/>
+									<ExtendedTooltip name="LineItemsLotExtendedTooltip" id="683"/>
 								</InputField>
 								<InputField name="LineItemsQuantity" id="468">
 									<DataPath>Object.LineItems.QtyUnits</DataPath>
@@ -1831,13 +1860,25 @@ Reference number</v8:content>
 							<ShowTitle>false</ShowTitle>
 							<ExtendedTooltip name="Group3ExtendedTooltip" id="439"/>
 							<ChildItems>
-								<UsualGroup name="DiscountPercentGroup" id="346">
+								<UsualGroup name="DiscountPercentGroup" id="684">
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Discount percent group</v8:content>
+										</v8:item>
+									</Title>
+									<ToolTip>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Discount percent group</v8:content>
+										</v8:item>
+									</ToolTip>
 									<Group>Horizontal</Group>
 									<Representation>None</Representation>
 									<ShowTitle>false</ShowTitle>
-									<ExtendedTooltip name="DiscountPercentGroupExtendedTooltip" id="347"/>
+									<ExtendedTooltip name="DiscountPercentGroupExtendedTooltip" id="685"/>
 									<ChildItems>
-										<InputField name="DiscountType" id="676">
+										<InputField name="DiscountType" id="686">
 											<DataPath>Object.DiscountType</DataPath>
 											<Title>
 												<v8:item>
@@ -1850,13 +1891,13 @@ Reference number</v8:content>
 											<DropListButton>true</DropListButton>
 											<QuickChoice>true</QuickChoice>
 											<DropListWidth>4</DropListWidth>
-											<ContextMenu name="DiscountTypeContextMenu" id="677"/>
-											<ExtendedTooltip name="DiscountTypeExtendedTooltip" id="678"/>
+											<ContextMenu name="DiscountTypeContextMenu" id="687"/>
+											<ExtendedTooltip name="DiscountTypeExtendedTooltip" id="688"/>
 											<Events>
 												<Event name="OnChange">DiscountTypeOnChange</Event>
 											</Events>
 										</InputField>
-										<InputField name="DiscountPercent" id="311">
+										<InputField name="DiscountPercent" id="689">
 											<DataPath>Object.DiscountPercent</DataPath>
 											<Title>
 												<v8:item>
@@ -1867,8 +1908,8 @@ Reference number</v8:content>
 											<TitleLocation>None</TitleLocation>
 											<Width>6</Width>
 											<HorizontalStretch>false</HorizontalStretch>
-											<ContextMenu name="DiscountPercentContextMenu" id="312"/>
-											<ExtendedTooltip name="DiscountPercentExtendedTooltip" id="313"/>
+											<ContextMenu name="DiscountPercentContextMenu" id="690"/>
+											<ExtendedTooltip name="DiscountPercentExtendedTooltip" id="691"/>
 											<Events>
 												<Event name="OnChange">DiscountPercentOnChange</Event>
 											</Events>
@@ -2009,7 +2050,6 @@ Reference number</v8:content>
 								</v8:item>
 							</ToolTip>
 							<Width>18</Width>
-							<HorizontalStretch>false</HorizontalStretch>
 							<Group>Vertical</Group>
 							<Representation>None</Representation>
 							<ShowTitle>false</ShowTitle>
@@ -2280,6 +2320,36 @@ Reference number</v8:content>
 							</v8:NumberQualifiers>
 						</Type>
 					</Column>
+					<Column name="LotOwner" id="4">
+						<Title>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>Lot owner</v8:content>
+							</v8:item>
+						</Title>
+						<Type>
+							<v8:Type>cfg:CatalogRef.Products</v8:Type>
+							<v8:Type>cfg:CatalogRef.Characteristics</v8:Type>
+						</Type>
+					</Column>
+					<Column name="UseLotsSerials" id="5">
+						<Title>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>Use lots or serials editing for current row.
+0 - Editing of lot / serial number is not allowed,
+1 - Editing of lots is allowed, 2 - Editing of serials is allowed.</v8:content>
+							</v8:item>
+						</Title>
+						<Type>
+							<v8:Type>xs:decimal</v8:Type>
+							<v8:NumberQualifiers>
+								<v8:Digits>1</v8:Digits>
+								<v8:FractionDigits>0</v8:FractionDigits>
+								<v8:AllowedSign>Nonnegative</v8:AllowedSign>
+							</v8:NumberQualifiers>
+						</Type>
+					</Column>
 				</AdditionalColumns>
 			</Columns>
 		</Attribute>
@@ -2478,6 +2548,48 @@ Reference number</v8:content>
 			</Type>
 			<SavedData>true</SavedData>
 		</Attribute>
+		<ConditionalAppearance>
+			<dcsset:item>
+				<dcsset:selection>
+					<dcsset:item>
+						<dcsset:field>LineItemsLot</dcsset:field>
+					</dcsset:item>
+				</dcsset:selection>
+				<dcsset:filter>
+					<dcsset:item xsi:type="dcsset:FilterItemComparison">
+						<dcsset:left xsi:type="dcscor:Field">Object.LineItems.UseLotsSerials</dcsset:left>
+						<dcsset:comparisonType>Equal</dcsset:comparisonType>
+						<dcsset:right xsi:type="xs:decimal">1</dcsset:right>
+					</dcsset:item>
+				</dcsset:filter>
+				<dcsset:appearance>
+					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+						<dcscor:parameter>ReadOnly</dcscor:parameter>
+						<dcscor:value xsi:type="xs:boolean">false</dcscor:value>
+					</dcscor:item>
+				</dcsset:appearance>
+			</dcsset:item>
+			<dcsset:item>
+				<dcsset:selection>
+					<dcsset:item>
+						<dcsset:field>LineItemsLot</dcsset:field>
+					</dcsset:item>
+				</dcsset:selection>
+				<dcsset:filter>
+					<dcsset:item xsi:type="dcsset:FilterItemComparison">
+						<dcsset:left xsi:type="dcscor:Field">Object.LineItems.UseLotsSerials</dcsset:left>
+						<dcsset:comparisonType>NotEqual</dcsset:comparisonType>
+						<dcsset:right xsi:type="xs:decimal">1</dcsset:right>
+					</dcsset:item>
+				</dcsset:filter>
+				<dcsset:appearance>
+					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+						<dcscor:parameter>ReadOnly</dcscor:parameter>
+						<dcscor:value xsi:type="xs:boolean">true</dcscor:value>
+					</dcscor:item>
+				</dcsset:appearance>
+			</dcsset:item>
+		</ConditionalAppearance>
 	</Attributes>
 	<Commands>
 		<Command name="Transactions" id="1">
@@ -2710,6 +2822,16 @@ Reference number</v8:content>
 				<Type>Auto</Type>
 				<CommandGroup>FormCommandBarImportant</CommandGroup>
 				<Index>1</Index>
+				<DefaultVisible>false</DefaultVisible>
+				<Visible>
+					<xr:Common>false</xr:Common>
+				</Visible>
+			</Item>
+			<Item>
+				<Command>Document.Shipment.StandardCommand.CreateBasedOn</Command>
+				<Type>Auto</Type>
+				<CommandGroup>FormCommandBarCreateBasedOn</CommandGroup>
+				<Index>2</Index>
 				<DefaultVisible>false</DefaultVisible>
 				<Visible>
 					<xr:Common>false</xr:Common>

@@ -62,6 +62,14 @@
 			<DataPath>Object.Task</DataPath>
 			<HorizontalStretch>false</HorizontalStretch>
 			<OpenButton>false</OpenButton>
+			<ChoiceParameters>
+				<app:item name="Filter.Type">
+					<app:value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation/>
+						<Value xsi:type="xr:DesignTimeRef">Enum.InventoryTypes.EnumValue.NonInventory</Value>
+					</app:value>
+				</app:item>
+			</ChoiceParameters>
 			<ContextMenu name="ObjectTaskContextMenu" id="11"/>
 			<ExtendedTooltip name="ObjectTaskExtendedTooltip" id="12"/>
 			<Events>

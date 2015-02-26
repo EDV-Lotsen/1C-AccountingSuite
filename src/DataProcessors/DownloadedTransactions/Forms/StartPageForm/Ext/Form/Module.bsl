@@ -5,6 +5,16 @@ Var FormActivated;
 
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
+	
+	//CurUser = InfoBaseUsers.FindByName(SessionParameters.ACSUser);
+	//If CurUser.Roles.Contains(Metadata.Roles.BankAccounting) = True Then
+	//	Items.CFOToday.Visible = True;
+	//	Items.Navigation.Visible = False;
+	//Else
+	//	Items.CFOToday.Visible = False;
+	//	Items.Navigation.Visible = True;
+	//EndIf;
+	
 	CurrentBankAccountDescription = "Cloud banking";
 	Diagram.ChartType = ChartType.Column;
 	If Day(CurrentSessionDate()) < 5 Then
@@ -81,9 +91,51 @@ EndProcedure
 
 &AtClient
 Procedure AvailableBankAccountsSelection(Item, SelectedRow, Field, StandardProcessing)
-	SelectedBankAccount = Items.AvailableBankAccounts.CurrentData.BankAccount;
-	OpenForm("DataProcessor.DownloadedTransactions.Form", New Structure("BankAccount", SelectedBankAccount));
-	Notify("StartPageForm_SelectedBankAccount", SelectedBankAccount);
+	
+	If ValueIsFilled(Items.AvailableBankAccounts.CurrentData.AccountingAccount) Then
+		SelectedBankAccount = Items.AvailableBankAccounts.CurrentData.BankAccount;
+		OpenForm("DataProcessor.DownloadedTransactions.Form", New Structure("BankAccount", SelectedBankAccount));
+		Notify("StartPageForm_SelectedBankAccount", SelectedBankAccount);
+	Else
+		Notify = New NotifyDescription("AssignAccountingAccountOrNot", ThisObject, new Structure("BankAccount", Items.AvailableBankAccounts.CurrentData.BankAccount));
+		Message = "The selected bank account is not associated with a General Ledger account.
+		|Do you wish to assign a G/L account now?"; 
+		CommonUseClient.ShowCustomQueryBox(Notify, Message, QuestionDialogMode.YesNoCancel, 0, DialogReturnCode.Cancel, "Cloud Banking");
+	EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure AssignAccountingAccountOrNot(Result, Parameters) Export
+	
+	If Result = DialogReturnCode.Yes Then
+		Notify = New NotifyDescription("OnComplete_AssignAccountingAccount", ThisObject);
+		Params = New Structure("PerformAssignAccount, RefreshAccount", True, Parameters.BankAccount);
+		OpenForm("DataProcessor.YodleeBankAccountsManagement.Form.Form", Params, ThisForm,,,, Notify, FormWindowOpeningMode.LockOwnerWindow);
+	EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure OnComplete_AssignAccountingAccount(ClosureResult, AdditionalParameters) Export
+	
+	If ClosureResult <> Undefined Then //Successfully added account
+		If TypeOf(ClosureResult) = Type("Array") Then
+			If ClosureResult.Count() > 0 Then
+				AssignedItem = ClosureResult[0];
+				If TypeOf(AssignedItem) = Type("CatalogRef.BankAccounts") Then
+					RefreshAvailableAccounts(AssignedItem);
+				EndIf;
+			EndIf;
+		EndIf;
+	EndIf;
+
+	If ValueIsFilled(Items.AvailableBankAccounts.CurrentData.AccountingAccount) Then
+		SelectedBankAccount = Items.AvailableBankAccounts.CurrentData.BankAccount;
+		OpenForm("DataProcessor.DownloadedTransactions.Form", New Structure("BankAccount", SelectedBankAccount));
+		Notify("StartPageForm_SelectedBankAccount", SelectedBankAccount);
+	EndIf;
+	
 EndProcedure
 
 #EndRegion
@@ -111,7 +163,7 @@ EndProcedure
 
 &AtClient
 Procedure ChartOfAccounts(Command)
-	OpenForm("ChartOfAccounts.ChartOfAccounts.Form.AccountForm");
+	OpenForm("ChartOfAccounts.ChartOfAccounts.Form.ListForm");
 EndProcedure
 
 &AtClient
@@ -204,7 +256,8 @@ Procedure FillAvailableAccounts()
 	                    |	ISNULL(CountOfTransactions.TransactionsCount, 0) AS UnacceptedTransactionsCount,
 	                    |	ISNULL(GLBalance.AmountBalance, 0) AS GLBalanceNumber,
 	                    |	""Bank balance"" AS BankBalanceCaption,
-	                    |	""In AccountingSuite"" AS GLBalanceCaption
+	                    |	""In AccountingSuite"" AS GLBalanceCaption,
+	                    |	AvailableAccounts.AccountingAccount
 	                    |FROM
 	                    |	AvailableAccounts AS AvailableAccounts
 	                    |		LEFT JOIN GLBalance AS GLBalance
@@ -374,7 +427,8 @@ Procedure RefreshAvailableAccounts(BankAccount = Undefined)
 	                    |	ISNULL(CountOfTransactions.TransactionsCount, 0) AS UnacceptedTransactionsCount,
 	                    |	ISNULL(GLBalance.AmountBalance, 0) AS GLBalanceNumber,
 	                    |	""Bank balance"" AS BankBalanceCaption,
-	                    |	""In AccountingSuite"" AS GLBalanceCaption
+	                    |	""In AccountingSuite"" AS GLBalanceCaption,
+	                    |	AvailableAccounts.AccountingAccount
 	                    |FROM
 	                    |	AvailableAccounts AS AvailableAccounts
 	                    |		LEFT JOIN GLBalance AS GLBalance
@@ -623,6 +677,41 @@ EndProcedure
 &AtClient
 Procedure UpdateAvailableAccounts() Export
 	RefreshAvailableAccounts();
+EndProcedure
+
+&AtClient
+Procedure QuickEntry(Command)
+	OpenForm("DataProcessor.BankRegisterCFOToday.Form.Form");
+EndProcedure
+
+&AtClient
+Procedure BankRec(Command)
+	OpenForm("Document.BankReconciliation.Form.ListForm");
+EndProcedure
+
+&AtClient
+Procedure CustomerVendorCentral(Command)
+	OpenForm("Catalog.Companies.Form.ListForm");
+EndProcedure
+
+&AtClient
+Procedure CloudBanking(Command)
+	OpenForm("DataProcessor.DownloadedTransactions.Form.Form");
+EndProcedure
+
+&AtClient
+Procedure JournalEntries(Command)
+	OpenForm("Document.GeneralJournalEntry.Form.ListForm");
+EndProcedure
+
+&AtClient
+Procedure Checks(Command)
+	OpenForm("Document.Check.Form.ListForm");
+EndProcedure
+
+&AtClient
+Procedure Deposits(Command)
+	OpenForm("Document.Deposit.Form.ListForm");
 EndProcedure
 
 #EndRegion

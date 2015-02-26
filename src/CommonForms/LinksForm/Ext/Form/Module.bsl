@@ -45,3 +45,8 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Items.Group4.Visible = False;
 	EndIf;
 EndProcedure
+
+&AtClient
+Procedure SignOut(Command)
+	Exit(False,False);
+EndProcedure

@@ -100,7 +100,9 @@ Function PrepareDataStructuresForPosting(DocumentRef, AdditionalProperties, Regi
 	// 2. Prepare query text.
 	
 	// Query for document's tables.
-	Query.Text = Query_InventoryJournal_LineItems(TablesList) +
+	Query.Text = Query_Lots(TablesList) +
+	             Query_SerialNumbers(TablesList) +
+	             Query_InventoryJournal_LineItems(TablesList) +
 	             Query_InventoryJournal_Balance_Quantity(TablesList) +
 	             Query_InventoryJournal_Balance_FIFO(TablesList) +
 	             Query_InventoryJournal(TablesList) +
@@ -698,24 +700,89 @@ EndProcedure
 //------------------------------------------------------------------------------
 // Document posting
 
-// Query for balances data.
-Function Query_ExchangeRates_SliceLast(TablesList)
+// Query for document data.
+Function Query_Lots(TablesList)
 	
-	// Add ExchangeRates - SliceLast table to balances structure.
-	TablesList.Insert("Table_ExchangeRates_SliceLast", TablesList.Count());
+	// Add Lots table to document structure.
+	TablesList.Insert("Table_Lots", TablesList.Count());
 	
-	// Collect exchange rates slice last.
+	// Collect lots data.
 	QueryText =
-	"SELECT // FIFO
+	"SELECT
+	// ------------------------------------------------------
+	// Standard attributes
+	|	LineItems.Ref                         AS Recorder,
+	|	LineItems.Ref.Date                    AS Period,
+	|	LineItems.LineNumber                  AS LineNumber,
+	|	VALUE(AccumulationRecordType.Expense) AS RecordType,
+	|	True                                  AS Active,
 	// ------------------------------------------------------
 	// Dimensions
-	|	ExchangeRates.Currency                   AS Currency,
+	|	LineItems.Product                     AS Product,
+	|	LineItems.Ref.Location                AS Location,
+	|	LineItems.Lot                         AS Lot,
 	// ------------------------------------------------------
 	// Resources
-	|	ExchangeRates.Rate                       AS Rate
+	|	LineItems.QtyUM                       AS Quantity
+	// ------------------------------------------------------
+	// Attributes
 	// ------------------------------------------------------
 	|FROM
-	|	InformationRegister.ExchangeRates.SliceLast(&PointInTime) AS ExchangeRates";
+	|	Document.CashSale.LineItems AS LineItems
+	|WHERE
+	|	    LineItems.Ref = &Ref
+	|	AND LineItems.Product        <> VALUE(Catalog.Products.EmptyRef)
+	|	AND LineItems.Product.HasLotsSerialNumbers
+	|	AND LineItems.Product.UseLots = 0
+	|	AND LineItems.Ref.Location   <> VALUE(Catalog.Locations.EmptyRef)
+	|	AND LineItems.Lot            <> VALUE(Catalog.Lots.EmptyRef)
+	|ORDER BY
+	|	LineItems.LineNumber";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_SerialNumbers(TablesList)
+	
+	// Add SerialNumbers table to document structure.
+	TablesList.Insert("Table_SerialNumbers", TablesList.Count());
+	
+	// Collect serial numbers data.
+	QueryText =
+	"SELECT
+	// ------------------------------------------------------
+	// Standard attributes
+	|	SerialNumbers.Ref                     AS Recorder,
+	|	SerialNumbers.Ref.Date                AS Period,
+	|	SerialNumbers.LineNumber              AS LineNumber,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Dimensions
+	|	ISNULL(LineItems.Product, VALUE(Catalog.Products.EmptyRef))
+	|	                                      AS Product,
+	|	SerialNumbers.SerialNumber            AS SerialNumber,
+	// ------------------------------------------------------
+	// Resources
+	|	False                                 AS OnHand
+	// ------------------------------------------------------
+	// Attributes
+	// ------------------------------------------------------
+	|FROM
+	|	Document.CashSale.SerialNumbers AS SerialNumbers
+	|	LEFT JOIN Document.CashSale.LineItems AS LineItems
+	|		ON  LineItems.Ref         = SerialNumbers.Ref
+	|		AND LineItems.LineID      = SerialNumbers.LineItemsLineID
+	|WHERE
+	|	    SerialNumbers.Ref = &Ref
+	|	AND SerialNumbers.SerialNumber <> """"
+	|	AND ISNULL(LineItems.Product, VALUE(Catalog.Products.EmptyRef)) <> VALUE(Catalog.Products.EmptyRef)
+	|	AND ISNULL(LineItems.Product.HasLotsSerialNumbers, False)
+	|	AND ISNULL(LineItems.Product.UseLots, -1) = 1
+	|	AND ISNULL(LineItems.Product.UseSerialNumbersOnShipment, False)
+	|ORDER BY
+	|	SerialNumbers.LineNumber";
 	
 	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
 	
@@ -1222,6 +1289,29 @@ Function Query_InventoryJournal_Balance(TablesList)
 	|		(Product) IN
 	|		(SELECT DISTINCT Product FROM Table_InventoryJournal_Lock WHERE Product.CostingMethod = VALUE(Enum.InventoryCosting.WeightedAverage)))
 	|		                                     AS InventoryJournalBalance";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for balances data.
+Function Query_ExchangeRates_SliceLast(TablesList)
+	
+	// Add ExchangeRates - SliceLast table to balances structure.
+	TablesList.Insert("Table_ExchangeRates_SliceLast", TablesList.Count());
+	
+	// Collect exchange rates slice last.
+	QueryText =
+	"SELECT
+	// ------------------------------------------------------
+	// Dimensions
+	|	ExchangeRates.Currency                   AS Currency,
+	// ------------------------------------------------------
+	// Resources
+	|	ExchangeRates.Rate                       AS Rate
+	// ------------------------------------------------------
+	|FROM
+	|	InformationRegister.ExchangeRates.SliceLast(&PointInTime) AS ExchangeRates";
 	
 	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
 	
@@ -3053,6 +3143,8 @@ Procedure FillRegistersCheckList(AdditionalProperties, RegisterRecords)
 	// Fill structure depending on document write mode.
 	If AdditionalProperties.Posting.WriteMode = DocumentWriteMode.Posting Then
 		
+		// InventoryJournal
+		
 		// Add resources for check changes in recordset.
 		CheckPostings = New Array;
 		CheckPostings.Add("{Table}.Quantity{Posting}, <, 0"); // Check decreasing quantity.
@@ -3068,6 +3160,24 @@ Procedure FillRegistersCheckList(AdditionalProperties, RegisterRecords)
 		
 		// Add register to check it's recordset changes and balances during posting.
 		BalanceCheck.Insert("InventoryJournal", New Structure("CheckPostings, CheckBalances, CheckMessages", CheckPostings, CheckBalances, CheckMessages));
+		
+		// Lots
+		
+		// Add resources for check changes in recordset.
+		CheckPostings = New Array;
+		CheckPostings.Add("{Table}.Quantity{Posting}, <, 0"); // Check decreasing quantity.
+		
+		// Add resources for check register balances.
+		CheckBalances = New Array;
+		CheckBalances.Add("{Table}.Quantity{Balance}, <, 0"); // Check negative lots balance.
+		
+		// Add messages for different error situations.
+		CheckMessages = New Array;
+		CheckMessages.Add(NStr("en = '{Product}?{Lot}:
+		                             |There is an insufficient balance of {-Quantity} at the {Location}.|Lot = "", lot {Lot}""'"));
+		
+		// Add register to check it's recordset changes and balances during posting.
+		BalanceCheck.Insert("Lots", New Structure("CheckPostings, CheckBalances, CheckMessages", CheckPostings, CheckBalances, CheckMessages));
 		
 	ElsIf AdditionalProperties.Posting.WriteMode = DocumentWriteMode.UndoPosting Then
 		

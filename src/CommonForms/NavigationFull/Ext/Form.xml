@@ -7,6 +7,7 @@
 	<AutoCommandBar name="FormCommandBar" id="-1"/>
 	<Events>
 		<Event name="OnOpen">OnOpen</Event>
+		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
 	</Events>
 	<ChildItems>
 		<UsualGroup name="Navigation1" id="1">
@@ -70,6 +71,8 @@
 							<ExtendedTooltip name="SalesExtendedTooltip" id="102"/>
 							<ChildItems>
 								<PictureDecoration name="SalesPicture" id="5">
+									<Width>7</Width>
+									<Height>3</Height>
 									<SkipOnInput>true</SkipOnInput>
 									<Title formatted="false">
 										<v8:item>
@@ -212,6 +215,8 @@
 							<ExtendedTooltip name="PurchasingExtendedTooltip" id="108"/>
 							<ChildItems>
 								<PictureDecoration name="PurchasingPicture" id="21">
+									<Width>7</Width>
+									<Height>3</Height>
 									<SkipOnInput>true</SkipOnInput>
 									<Title formatted="false">
 										<v8:item>
@@ -494,6 +499,8 @@
 							<ExtendedTooltip name="AccountingExtendedTooltip" id="121"/>
 							<ChildItems>
 								<PictureDecoration name="AccountingPicture" id="55">
+									<Width>7</Width>
+									<Height>3</Height>
 									<SkipOnInput>true</SkipOnInput>
 									<Title formatted="false">
 										<v8:item>
@@ -585,7 +592,6 @@
 					<ExtendedTooltip name="Group8ExtendedTooltip" id="215"/>
 					<ChildItems>
 						<UsualGroup name="Lists" id="71">
-							<Visible>false</Visible>
 							<UserVisible>
 								<xr:Common>true</xr:Common>
 								<xr:Value name="Role.SalesFull">false</xr:Value>
@@ -621,6 +627,8 @@
 							<ExtendedTooltip name="ListsExtendedTooltip" id="128"/>
 							<ChildItems>
 								<PictureDecoration name="ListsPicture" id="73">
+									<Width>7</Width>
+									<Height>3</Height>
 									<SkipOnInput>true</SkipOnInput>
 									<Title formatted="false">
 										<v8:item>
@@ -658,7 +666,7 @@
 											<Title formatted="false">
 												<v8:item>
 													<v8:lang>en</v8:lang>
-													<v8:content>Lists</v8:content>
+													<v8:content>Bank Accounting Online</v8:content>
 												</v8:item>
 											</Title>
 											<ContextMenu name="ListsTitleContextMenu" id="79"/>
@@ -686,15 +694,15 @@
 													<ShowTitle>false</ShowTitle>
 													<ExtendedTooltip name="ListsLeftExtendedTooltip" id="199"/>
 													<ChildItems>
-														<Button name="Company" id="202">
+														<Button name="ProcessMonth" id="218">
 															<Type>Hyperlink</Type>
-															<CommandName>Form.Command.Company</CommandName>
-															<ExtendedTooltip name="CompanyExtendedTooltip" id="203"/>
+															<CommandName>Form.Command.ProcessMonth</CommandName>
+															<ExtendedTooltip name="ProcessMonthExtendedTooltip" id="219"/>
 														</Button>
-														<Button name="UserList" id="206">
+														<Button name="GJEntry1" id="222">
 															<Type>Hyperlink</Type>
-															<CommandName>Form.Command.UserList</CommandName>
-															<ExtendedTooltip name="UserListExtendedTooltip" id="207"/>
+															<CommandName>Form.Command.GJEntry</CommandName>
+															<ExtendedTooltip name="GJEntry1ExtendedTooltip" id="223"/>
 														</Button>
 													</ChildItems>
 												</UsualGroup>
@@ -715,10 +723,15 @@
 													<ShowTitle>false</ShowTitle>
 													<ExtendedTooltip name="ListsRightExtendedTooltip" id="201"/>
 													<ChildItems>
-														<Button name="Product" id="204">
+														<Button name="Company" id="220">
 															<Type>Hyperlink</Type>
-															<CommandName>Form.Command.Product</CommandName>
-															<ExtendedTooltip name="ProductExtendedTooltip" id="205"/>
+															<CommandName>Form.Command.Company</CommandName>
+															<ExtendedTooltip name="CompanyExtendedTooltip" id="221"/>
+														</Button>
+														<Button name="ChartOfAccounts1" id="224">
+															<Type>Hyperlink</Type>
+															<CommandName>Form.Command.ChartOfAccounts</CommandName>
+															<ExtendedTooltip name="ChartOfAccounts1ExtendedTooltip" id="225"/>
 														</Button>
 													</ChildItems>
 												</UsualGroup>
@@ -1004,6 +1017,21 @@
 				</v8:item>
 			</ToolTip>
 			<Action>ItemAdjustment</Action>
+		</Command>
+		<Command name="ProcessMonth" id="19">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Process month</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Process month</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>ProcessMonth</Action>
 		</Command>
 	</Commands>
 </Form>

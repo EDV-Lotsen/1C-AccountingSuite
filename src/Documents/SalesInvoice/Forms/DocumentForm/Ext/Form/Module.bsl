@@ -29,6 +29,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		OpenOrdersSelectionForm = True; 
 	EndIf;
 
+	Items.DwollaRequest.Enabled = Object.DwollaTrxID = 0;
 	
 	//------------------------------------------------------------------------------
 	// 1. Form attributes initialization.
@@ -41,6 +42,8 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	LocationActual       = Object.LocationActual;
 	Project              = Object.Project;
 	Class                = Object.Class;
+	Date                 = Object.Date;
+	Company              = Object.Company;
 	
 	//------------------------------------------------------------------------------
 	// 2. Calculate values of form object attributes.
@@ -58,9 +61,6 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	CustomerName                    = GeneralFunctionsReusable.GetCustomerName();
 	Items.Company.Title             = CustomerName;
 	Items.Company.ToolTip           = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = '%1 name'"),             CustomerName);
-	//Items.RefNum.Title              = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = '%1 P.O. / Ref. #'"),    CustomerName);
-	//Items.RefNum.ToolTip            = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = '%1 purchase order number /
-	//																									  |Reference number'"),    CustomerName);
 	Items.ShipTo.ToolTip            = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = '%1 shipping address'"), CustomerName);
 	Items.BillTo.ToolTip            = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = '%1 billing address'"),  CustomerName);
 	Items.ConfirmTo.ToolTip         = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = '%1 confirm address'"),  CustomerName);
@@ -90,6 +90,18 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	Items.LineItemsPrice.EditFormat  = PriceFormat;
 	Items.LineItemsPrice.Format      = PriceFormat;
 	
+	// Set lots and serial numbers visibility.
+	Items.LineItemsLot.Visible           = False;
+	Items.LineItemsSerialNumbers.Visible = False;
+	For Each Row In Object.LineItems Do
+		// Make lots & serial numbers columns visible.
+		LotsSerialNumbers.UpdateLotsSerialNumbersVisibility(Row.Product, Items, 1, Row.UseLotsSerials);
+		// Fill lot owner.
+		LotsSerialNumbers.FillLotOwner(Row.Product, Row.LotOwner);
+		// Load serial numbers.
+		LotsSerialNumbers.FillSerialNumbers(Object.SerialNumbers, Row.Product, 1, Row.LineID, Row.SerialNumbers);
+	EndDo;
+	
 	// Request tax rate for US sales tax calcualation.
 	If GeneralFunctionsReusable.FunctionalOptionValue("SalesTaxCharging") Then
 		If Object.Ref.IsEmpty() And (Not ValueIsFilled(Object.DiscountTaxability)) Then
@@ -106,9 +118,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 				Items.SalesTaxRate.ChoiceList.Add(TaxRateItem.Value, TaxRateItem.Presentation);
 			EndDo;
 			If Object.Ref.IsEmpty() Then
-				If Not ValueIsFilled(Parameters.Basis) Then
-					Object.DiscountTaxability = Enums.DiscountTaxability.NonTaxable;
-				Else //If filled on the basis of Sales Order
+				If ValueIsFilled(Parameters.Basis) Then //If filled on the basis of Sales Order
 					RecalculateTotals(Object);
 				EndIf;
 				//If filled on the basis of Sales Order set current value
@@ -322,6 +332,23 @@ EndProcedure
 &AtServer
 Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
 	
+	If Object.Discount <> 0 AND
+		Constants.DiscountsAccount.Get() = ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
+			Message = New UserMessage();
+			Message.Text=NStr("en='Indicate a default discount account in Settings / Posting accounts. Saving cancelled.'");
+			Message.Message();
+			Cancel = True;
+	EndIf;
+	
+	If Object.Shipping <> 0 AND
+		Constants.ShippingExpenseAccount.Get() = ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
+			Message = New UserMessage();
+			Message.Text=NStr("en='Indicate a default shipping account in Settings / Posting accounts. Saving cancelled.'");
+			Message.Message();
+			Cancel = True;
+	EndIf;
+
+	
 	// -> CODE REVIEW
 	// Check empty bill.
 	If Object.LineItems.Count() = 0 Then
@@ -408,6 +435,16 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 	
 	// Request and fill ordered items from database.
 	FillBackorderQuantityAtServer();
+	
+	// Refill lots and serial numbers values.
+	For Each Row In Object.LineItems Do
+		// Update lots & serials visibility and availability.
+		LotsSerialNumbers.UpdateLotsSerialNumbersVisibility(Row.Product, Items, 1, Row.UseLotsSerials);
+		// Fill lot owner.
+		LotsSerialNumbers.FillLotOwner(Row.Product, Row.LotOwner);
+		// Load serial numbers.
+		LotsSerialNumbers.FillSerialNumbers(Object.SerialNumbers, Row.Product, 1, Row.LineID, Row.SerialNumbers);
+	EndDo;
 	
 	// Update Time Entries that reference this Sales Invoice.
 	UpdateTimeEntries();
@@ -563,23 +600,13 @@ Procedure CompanyOnChangeOrdersSelection(Item)
 		
 		// Define form parameters.
 		FormParameters = New Structure();
-		FormParameters.Insert("ChoiceMode",     True);
-		FormParameters.Insert("MultipleChoice", True);
-		
-		// Define order statuses array.
-		OrderStatuses  = New Array;
-		OrderStatuses.Add(PredefinedValue("Enum.OrderStatuses.Open"));
-		OrderStatuses.Add(PredefinedValue("Enum.OrderStatuses.Backordered"));
-		
-		// Define list filter.
-		FltrParameters = New Structure();
-		FltrParameters.Insert("Company",     Object.Company); 
-		FltrParameters.Insert("OrderStatus", OrderStatuses);
-		FormParameters.Insert("Filter",      FltrParameters);
+		FormParameters.Insert("Company", Object.Company);
+		FormParameters.Insert("UseShipment", True);
 		
 		// Open orders selection form.
 		NotifyDescription = New NotifyDescription("CompanyOnChangeOrdersSelectionChoiceProcessing", ThisForm);
-		OpenForm("Document.SalesOrder.ChoiceForm", FormParameters, Item,,,, NotifyDescription);
+		OpenForm("CommonForm.ChoiceFormSO_Shipment", FormParameters, Item,,,, NotifyDescription);
+		
 	EndIf;
 	
 EndProcedure
@@ -756,7 +783,10 @@ Procedure DiscountPercentOnChange(Item)
 	
 	// Fill line data for editing.
 	TableSectionRow = GetLineItemsRowStructure();
-	FillPropertyValues(TableSectionRow, Items.LineItems.CurrentData);
+	LineItemsCurrentData = Items.LineItems.CurrentData;
+	If LineItemsCurrentData <> Undefined Then
+		FillPropertyValues(TableSectionRow, LineItemsCurrentData);
+	EndIf;
 	
 	// Request server operation.
 	DiscountPercentOnChangeAtServer(TableSectionRow);
@@ -778,7 +808,10 @@ Procedure DiscountOnChange(Item)
 	
 	// Fill line data for editing.
 	TableSectionRow = GetLineItemsRowStructure();
-	FillPropertyValues(TableSectionRow, Items.LineItems.CurrentData);
+	LineItemsCurrentData = Items.LineItems.CurrentData;
+	If LineItemsCurrentData <> Undefined Then
+		FillPropertyValues(TableSectionRow, LineItemsCurrentData);
+	EndIf;
 	
 	// Request server operation.
 	DiscountOnChangeAtServer(TableSectionRow);
@@ -958,6 +991,9 @@ Procedure LineItemsOnChange(Item)
 		// Clear used flag.
 		IsNewRow = False;
 		
+		// Assign new ID to the new line.
+		Item.CurrentData.LineID = New UUID();
+		
 		// Fill new row with default values.
 		ObjectData  = New Structure("LocationActual, DeliveryDateActual, Project, Class");
 		FillPropertyValues(ObjectData, Object);
@@ -975,8 +1011,6 @@ Procedure LineItemsOnChange(Item)
 			EndIf;
 		EndDo;
 		
-		Item.CurrentData.LineID = New UUID();
-		
 		// Refresh totals cache.
 		RecalculateTotals(Object);
 	EndIf;
@@ -986,11 +1020,16 @@ EndProcedure
 &AtClient
 Procedure LineItemsOnActivateRow(Item)
 	
-	// Fill line data for editing.
-	TableSectionRow = GetLineItemsRowStructure();
-	FillPropertyValues(TableSectionRow, Items.LineItems.CurrentData);
-	
-	UpdateInformationCurrentRow(TableSectionRow);
+	LineItemsCurrentData = Items.LineItems.CurrentData;
+	If LineItemsCurrentData <> Undefined Then
+		
+		// Fill line data for editing.
+		TableSectionRow = GetLineItemsRowStructure();
+		FillPropertyValues(TableSectionRow, LineItemsCurrentData);
+		
+		UpdateInformationCurrentRow(TableSectionRow);
+		
+	EndIf;
 	
 EndProcedure
 
@@ -1001,7 +1040,21 @@ Procedure LineItemsBeforeAddRow(Item, Cancel, Clone, Parent, Folder)
 	If Not Cancel Then
 		IsNewRow = True;
 	EndIf;
-		
+	
+EndProcedure
+
+&AtClient
+Procedure LineItemsBeforeDeleteRow(Item, Cancel)
+	
+	// Get current serial numbers list.
+	TableSectionRow  = Items.LineItems.CurrentData;
+	SerialNumbersTbl = Object.SerialNumbers.FindRows(New Structure("LineItemsLineID", TableSectionRow.LineID));
+	
+	// Delete existing numbers.
+	For Each Row In SerialNumbersTbl Do
+		Object.SerialNumbers.Delete(Row);
+	EndDo;
+	
 EndProcedure
 
 &AtClient
@@ -1045,21 +1098,31 @@ EndProcedure
 Procedure LineItemsProductOnChangeAtServer(TableSectionRow)
 	
 	// Request product properties.
-	ProductProperties = CommonUse.GetAttributeValues(TableSectionRow.Product,   New Structure("Description, UnitSet, Taxable, TaxCode, DiscountIsTaxable"));
+	ProductProperties = CommonUse.GetAttributeValues(TableSectionRow.Product,   New Structure("Ref, Description, UnitSet, HasLotsSerialNumbers, UseLots, UseLotsType, Characteristic, UseSerialNumbersOnShipment, Taxable, TaxCode, DiscountIsTaxable"));
 	UnitSetProperties = CommonUse.GetAttributeValues(ProductProperties.UnitSet, New Structure("DefaultSaleUnit"));
-	TableSectionRow.ProductDescription 	= ProductProperties.Description;
-	TableSectionRow.UnitSet           	= ProductProperties.UnitSet;
-	TableSectionRow.Unit               	= UnitSetProperties.DefaultSaleUnit;
-	//TableSectionRow.UM                 = UnitSetProperties.UM;
-	TableSectionRow.Taxable            	= ProductProperties.Taxable;
-	TableSectionRow.DiscountIsTaxable	= ProductProperties.DiscountIsTaxable;
+	TableSectionRow.ProductDescription  = ProductProperties.Description;
+	TableSectionRow.UnitSet             = ProductProperties.UnitSet;
+	TableSectionRow.Unit                = UnitSetProperties.DefaultSaleUnit;
+	//TableSectionRow.UM                = UnitSetProperties.UM;
+	TableSectionRow.Taxable             = ProductProperties.Taxable;
+	TableSectionRow.DiscountIsTaxable   = ProductProperties.DiscountIsTaxable;
 	If Object.UseAvatax Then
-		TableSectionRow.AvataxTaxCode 	= ProductProperties.TaxCode;
+		TableSectionRow.AvataxTaxCode   = ProductProperties.TaxCode;
 	EndIf;
-	TableSectionRow.PriceUnits         	= Round(GeneralFunctions.RetailPrice(Object.Date, TableSectionRow.Product, Object.Company) /
+	TableSectionRow.PriceUnits          = Round(GeneralFunctions.RetailPrice(Object.Date, TableSectionRow.Product, Object.Company) /
 	                                     // The price is returned for default sales unit factor.
 	                                     ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), GeneralFunctionsReusable.PricePrecisionForOneItem(TableSectionRow.Product));
-										 
+	
+	// Make lots & serial numbers columns visible.
+	LotsSerialNumbers.UpdateLotsSerialNumbersVisibility(ProductProperties, Items, 1, TableSectionRow.UseLotsSerials);
+	
+	// Fill lot owner.
+	LotsSerialNumbers.FillLotOwner(ProductProperties, TableSectionRow.LotOwner);
+	
+	// Clear serial numbers.
+	TableSectionRow.SerialNumbers = "";
+	LineItemsSerialNumbersOnChangeAtServer(TableSectionRow);
+	
 	// Clear up order data.
 	TableSectionRow.Order              = Documents.SalesOrder.EmptyRef();
 	TableSectionRow.DeliveryDate       = '00010101';
@@ -1084,6 +1147,91 @@ Procedure LineItemsProductOnChangeAtServer(TableSectionRow)
 	TableSectionRow.TaxableAmount 	= 0;
 	
 	UpdateInformationCurrentRow(TableSectionRow);
+	
+EndProcedure
+
+&AtClient
+Procedure LineItemsSerialNumbersOnChange(Item)
+	
+	// Fill line data for editing.
+	TableSectionRow = GetLineItemsRowStructure();
+	FillPropertyValues(TableSectionRow, Items.LineItems.CurrentData);
+	
+	// Request server operation.
+	LineItemsSerialNumbersOnChangeAtServer(TableSectionRow);
+	
+	// Load processed data back.
+	FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
+	
+	// Refresh totals cache.
+	RecalculateTotals(Object);
+	
+EndProcedure
+
+&AtServer
+Procedure LineItemsSerialNumbersOnChangeAtServer(TableSectionRow)
+	
+	// Get current serial numbers list.
+	SerialNumbersTbl = Object.SerialNumbers.FindRows(New Structure("LineItemsLineID", TableSectionRow.LineID));
+	
+	// Delete existing numbers.
+	For Each Row In SerialNumbersTbl Do
+		Object.SerialNumbers.Delete(Row);
+	EndDo;
+	
+	// Add new numbers.
+	SerialNumbersArr = LotsSerialNumbersClientServer.GetSerialNumbersArrayFromStr(TableSectionRow.SerialNumbers);
+	For Each SerialNumber In SerialNumbersArr Do
+		Row = Object.SerialNumbers.Add();
+		Row.LineItemsLineID = TableSectionRow.LineID;
+		Row.SerialNumber    = SerialNumber;
+	EndDo;
+	
+	// Process settings changes.
+	LineItemsQuantityOnChangeAtServer(TableSectionRow);
+	
+EndProcedure
+
+&AtClient
+Procedure LineItemsSerialNumbersTextEditEnd(Item, Text, ChoiceData, Parameters, StandardProcessing)
+	
+	// Get current row.
+	Row = Items.LineItems.CurrentData;
+	
+	// Decode array of serial numbers from entered string.
+	SerialNumbers = LotsSerialNumbersClientServer.GetSerialNumbersArrayFromStr(Text);
+	
+	// Refill serial numbers by the standard formatting.
+	If SerialNumbers.Count() > 0 Then
+		Row.SerialNumbers = StringFunctionsClientServer.GetStringFromSubstringArray(SerialNumbers, ", ");
+		Row.QtyUnits = SerialNumbers.Count();
+	Else
+		Row.QtyUnits = 1;
+	EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure LineItemsSerialNumbersStartChoice(Item, ChoiceData, StandardProcessing)
+	
+	// Fill current serial numbers in a table and open an editor form.
+	Notify         = New NotifyDescription("LineItemsSerialNumbersChoiceProcessing", ThisObject);
+	FormParameters = New Structure("SerialNumbers", Item.EditText);
+	OpenForm("CommonForm.SerialNumbers", FormParameters, ThisForm,,,, Notify, FormWindowOpeningMode.LockOwnerWindow);
+	
+EndProcedure
+
+&AtClient
+Procedure LineItemsSerialNumbersChoiceProcessing(Result, Parameters) Export
+	
+	// Process choice result.
+	If TypeOf(Result) = Type("String") Then
+		// Process serial numbers string change.
+		LineItemsSerialNumbersTextEditEnd(Items.LineItemsSerialNumbers, Result,,,);
+		
+		// Process serial numbers change.
+		LineItemsSerialNumbersOnChange(Items.LineItemsSerialNumbers);
+	EndIf;
 	
 EndProcedure
 
@@ -1274,11 +1422,16 @@ EndProcedure
 &AtClient
 Procedure LineItemsLocationActualOnChange(Item)
 	
-	// Fill line data for editing.
-	TableSectionRow = GetLineItemsRowStructure();
-	FillPropertyValues(TableSectionRow, Items.LineItems.CurrentData);
-	
-	UpdateInformationCurrentRow(TableSectionRow);
+	LineItemsCurrentData = Items.LineItems.CurrentData;
+	If LineItemsCurrentData <> Undefined Then
+		
+		// Fill line data for editing.
+		TableSectionRow = GetLineItemsRowStructure();
+		FillPropertyValues(TableSectionRow, LineItemsCurrentData);
+		
+		UpdateInformationCurrentRow(TableSectionRow);
+		
+	EndIf;
 	
 EndProcedure
 
@@ -1382,7 +1535,12 @@ Procedure PostAndClose(Command)
 	
 	//PerformanceMeasurementClientServer.StartTimeMeasurement("Sales Invoice Post and Close");
 	
-	If Write(New Structure("WriteMode, CloseAfterWrite", DocumentWriteMode.Posting, True)) Then Close() EndIf;
+	Try
+		Write(New Structure("WriteMode, CloseAfterWrite", DocumentWriteMode.Posting, True));
+	Except
+		MessageText = BriefErrorDescription(ErrorInfo());
+		ShowMessageBox(, MessageText);
+	EndTry;
 	
 EndProcedure
 
@@ -1391,7 +1549,12 @@ Procedure Save(Command)
 	
 	//PerformanceMeasurementClientServer.StartTimeMeasurement("Sales Invoice Save");
 	
-	Write();
+	Try
+		Write();
+	Except
+		MessageText = BriefErrorDescription(ErrorInfo());
+		ShowMessageBox(, MessageText);
+	EndTry;
 	
 EndProcedure
 
@@ -1400,14 +1563,28 @@ Procedure Post(Command)
 	
 	//PerformanceMeasurementClientServer.StartTimeMeasurement("Sales Invoice Post");
 	
-	Write(New Structure("WriteMode", DocumentWriteMode.Posting));
+	Try
+		Write(New Structure("WriteMode", DocumentWriteMode.Posting));
+	Except
+		MessageText = BriefErrorDescription(ErrorInfo());
+		ShowMessageBox(, MessageText);
+	EndTry;
 	
 EndProcedure
 
 &AtClient
 Procedure ClearPosting(Command)
 	
-	Write(New Structure("WriteMode", DocumentWriteMode.UndoPosting));
+	If Object.Posted Then
+		
+		Try
+			Write(New Structure("WriteMode", DocumentWriteMode.UndoPosting));
+		Except
+			MessageText = BriefErrorDescription(ErrorInfo());
+			ShowMessageBox(, MessageText);
+		EndTry;
+		
+	EndIf;
 	
 EndProcedure
 
@@ -1634,28 +1811,52 @@ Procedure FillCompanyHasNonClosedOrders()
 	Query = New Query;
 	Query.SetParameter("Company", Object.Company);
 	
-	QueryText = 
-		"SELECT
-		|	SalesOrder.Ref
+	QueryText =
+		"SELECT TOP 1
+		|	OrdersRegisteredBalance.Company,
+		|	OrdersRegisteredBalance.Order,
+		|	OrdersRegisteredBalance.Product,
+		|	OrdersRegisteredBalance.Unit,
+		|	OrdersRegisteredBalance.Location,
+		|	OrdersRegisteredBalance.DeliveryDate,
+		|	OrdersRegisteredBalance.Project,
+		|	OrdersRegisteredBalance.Class
 		|FROM
-		|	Document.SalesOrder AS SalesOrder
-		|	LEFT JOIN InformationRegister.OrdersStatuses.SliceLast AS OrdersStatuses
-		|		ON SalesOrder.Ref = OrdersStatuses.Order
+		|	AccumulationRegister.OrdersRegistered.Balance(
+		|			,
+		|			Company = &Company
+		|				AND Order.UseShipment = FALSE) AS OrdersRegisteredBalance
 		|WHERE
-		|	SalesOrder.Company = &Company
-		|AND
-		|	CASE
-		|		WHEN SalesOrder.DeletionMark THEN
-		|			 VALUE(Enum.OrderStatuses.Deleted)
-		|		WHEN NOT SalesOrder.Posted THEN
-		|			 VALUE(Enum.OrderStatuses.Draft)
-		|		WHEN OrdersStatuses.Status IS NULL THEN
-		|			 VALUE(Enum.OrderStatuses.Open)
-		|		WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.EmptyRef) THEN
-		|			 VALUE(Enum.OrderStatuses.Open)
-		|		ELSE
-		|			 OrdersStatuses.Status
-		|	END IN (VALUE(Enum.OrderStatuses.Open), VALUE(Enum.OrderStatuses.Backordered))";
+		|	OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.ShippedBalance > 0
+		|
+		|UNION
+		|
+		|SELECT TOP 1
+		|	NULL,
+		|	Shipment.Ref,
+		|	NULL,
+		|	NULL,
+		|	NULL,
+		|	NULL,
+		|	NULL,
+		|	NULL
+		|FROM
+		|	Document.Shipment AS Shipment
+		|		LEFT JOIN InformationRegister.OrdersStatuses.SliceLast AS OrdersStatuses
+		|		ON Shipment.Ref = OrdersStatuses.Order
+		|WHERE
+		|	Shipment.Company = &Company
+		|	AND CASE
+		|			WHEN Shipment.DeletionMark
+		|				THEN VALUE(Enum.OrderStatuses.Deleted)
+		|			WHEN NOT Shipment.Posted
+		|				THEN VALUE(Enum.OrderStatuses.Draft)
+		|			WHEN OrdersStatuses.Status IS NULL 
+		|				THEN VALUE(Enum.OrderStatuses.Open)
+		|			WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.EmptyRef)
+		|				THEN VALUE(Enum.OrderStatuses.Open)
+		|			ELSE OrdersStatuses.Status
+		|		END IN (VALUE(Enum.OrderStatuses.Open), VALUE(Enum.OrderStatuses.Backordered))";
 	Query.Text  = QueryText;
 	
 	// Assign true if there are open or backordered orders
@@ -1678,6 +1879,16 @@ Function FillDocumentWithSelectedOrders(SelectedOrders)
 		// Return filled object to form
 		ValueToFormAttribute(DocObject, "Object");
 		
+		// Update serial numbers visibility basing on filled items.
+		For Each Row In Object.LineItems Do
+			// Make lots & serial numbers columns visible.
+			LotsSerialNumbers.UpdateLotsSerialNumbersVisibility(Row.Product, Items, 1, Row.UseLotsSerials);
+			// Fill lot owner.
+			LotsSerialNumbers.FillLotOwner(Row.Product, Row.LotOwner);
+			// Load serial numbers.
+			LotsSerialNumbers.FillSerialNumbers(Object.SerialNumbers, Row.Product, 1, Row.LineID, Row.SerialNumbers);
+		EndDo;
+		
 		// -> CODE REVIEW
 		PrePayCheck(SelectedOrders);
 		// <- CODE REVIEW
@@ -1695,6 +1906,7 @@ Function FillDocumentWithSelectedOrders(SelectedOrders)
 		And (Not Object.LineItems[0].Order.Company = Object.Company) Then
 			// Clear existing dataset
 			Object.LineItems.Clear();
+			Object.SerialNumbers.Clear();
 		EndIf;
 		
 		// Return fail (selection cancelled)
@@ -1944,7 +2156,7 @@ EndProcedure
 Function GetLineItemsRowStructure()
 	
 	// Define control row fields.
-	Return New Structure("LineNumber, Product, ProductDescription, UnitSet, QtyUnits, Unit, QtyUM, UM, Ordered, Backorder, Shipped, Invoiced, PriceUnits, LineTotal, Taxable, TaxableAmount, Order, Location, LocationActual, DeliveryDate, DeliveryDateActual, Project, Class, AvataxTaxCode, DiscountIsTaxable");
+	Return New Structure("LineNumber, LineID, Product, ProductDescription, UseLotsSerials, LotOwner, Lot, SerialNumbers, UnitSet, QtyUnits, Unit, QtyUM, UM, Ordered, Backorder, Shipped, Invoiced, PriceUnits, LineTotal, Taxable, TaxableAmount, Order, Shipment, Location, LocationActual, DeliveryDate, DeliveryDateActual, Project, Class, AvataxTaxCode, DiscountIsTaxable");
 	
 EndFunction
 
@@ -2407,5 +2619,129 @@ Procedure SetVisibilityByDiscount(ThisForm)
 	EndIf;
 	
 EndProcedure
+
+&AtClient
+Procedure DwollaRequest(Command)
+	
+	DAT = DwollaAccessToken();
+	
+	If IsBlankString(DAT) Then
+		Message(NStr("en = 'Please connect to Dwolla in Settings > Integrations.'"));
+		Return;
+	EndIf;
+	
+	// Check document saved.
+	If Object.Ref.IsEmpty() Or Modified Then
+		Message(NStr("en = 'The document is not saved. Please save the document first.'"));
+		Return;
+	EndIf;
+	
+	// Check DwollaID
+	DwollaID = CommonUse.GetAttributeValue(Object.Company, "DwollaID");
+	If IsBlankString(DwollaID) Then
+		Message(NStr("en = 'Enter a Dwolla e-mail or ID on the customer card.'"));
+		Return;
+	Else
+		AtSign = Find(DwollaID,"@");
+		If AtSign = 0 Then
+			IsEmail = False;
+		Else
+			IsEmail = True;
+		EndIf;
+	EndIf;
+	
+	If IsEmail Then
+							
+		DwollaData = New Map();
+		DwollaData.Insert("sourceId", DwollaID);
+		DwollaData.Insert("oauth_token", DAT);
+		DwollaData.Insert("amount", Format(Object.DocumentTotalRC,"NG=0"));
+		DwollaData.Insert("sourceType", "Email");
+		DwollaData.Insert("notes", "Invoice " + Object.Number + " from " + Format(Object.Date,"DLF=D"));
+		
+		DataJSON = InternetConnectionClientServer.EncodeJSON(DwollaData);
+			
+	Else
+		
+		DwollaData = New Map();
+		DwollaData.Insert("sourceId", DwollaID);
+		DwollaData.Insert("oauth_token", DAT);
+		DwollaData.Insert("amount", Format(Object.DocumentTotalRC,"NG=0"));
+		DwollaData.Insert("notes", "Invoice " + Object.Number + " from " + Format(Object.Date,"DLF=D"));
+				
+		DataJSON = InternetConnectionClientServer.EncodeJSON(DwollaData);
+	
+	EndIf;
+
+			
+	//ResultBodyJSON = DwollaCharge(DataJSON);
+	ResultBodyJSON = DwollaRequestServer(DataJSON);
+	
+	If ResultBodyJSON.Success AND ResultBodyJSON.Message = "Success" Then
+		Object.DwollaTrxID = ResultBodyJSON.Response; //Format(ResultBodyJSON.Response, "NG=0");
+		Message(NStr("en = 'Request was successfully sent. Please save the document.'"));
+		Modified = True;
+		
+		UpdateMongo(Object.DwollaTrxID);
+		
+	Else
+		Message(ResultBodyJSON.Message);
+	EndIf;
+	
+	Items.DwollaRequest.Enabled = Object.DwollaTrxID = 0;
+
+EndProcedure
+
+&AtServer
+Procedure UpdateMongo(DwollaTrxID)
+	
+		HeadersMap = New Map();
+		HeadersMap.Insert("Content-Type", "application/json");
+		
+		HTTPRequest = New HTTPRequest("/api/1/clusters/rs-ds039921/databases/dataset1cproduction/collections/dwollarequests?apiKey=" + ServiceParameters.MongoAPIKey(), HeadersMap);
+		
+		RequestBodyMap = New Map();
+				
+		RequestBodyMap.Insert("DwollaRequest", DwollaTrxID);
+		RequestBodyMap.Insert("tenant", SessionParameters.TenantValue);
+		RequestBodyMap.Insert("UUID", Object.Ref.UUID());
+		RequestBodyMap.Insert("apisecretkey", Constants.APISecretKey.Get());
+		
+		RequestBodyString = InternetConnectionClientServer.EncodeJSON(RequestBodyMap);
+		
+		HTTPRequest.SetBodyFromString(RequestBodyString,TextEncoding.ANSI); // ,TextEncoding.ANSI
+		
+		SSLConnection = New OpenSSLSecureConnection();
+		
+		HTTPConnection = New HTTPConnection("api.mongolab.com",,,,,,SSLConnection);
+		Result = HTTPConnection.Post(HTTPRequest);
+		ResponseBody = Result.GetBodyAsString(TextEncoding.UTF8);
+
+	
+EndProcedure
+
+&AtServer
+Function DwollaRequestServer(DataJSON)
+	
+	HeadersMap = New Map();
+	HeadersMap.Insert("Content-Type", "application/json");		
+	ConnectionSettings = New Structure;
+	Connection = InternetConnectionClientServer.CreateConnection( "https://www.dwolla.com/oauth/rest/requests/", ConnectionSettings).Result;
+	ResultBody = InternetConnectionClientServer.SendRequest(Connection, "Post", ConnectionSettings, HeadersMap, DataJSON).Result;
+	
+	ResultBodyJSON = InternetConnectionClientServer.DecodeJSON(ResultBody);
+	
+	Return ResultBodyJSON;
+	
+EndFunction
+
+
+&AtServer
+Function DwollaAccessToken()
+	
+	Return Constants.dwolla_access_token.Get();	
+	
+EndFunction
+
 
 #EndRegion

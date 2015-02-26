@@ -366,6 +366,22 @@ Procedure ClassOnChange(Item)
 	
 EndProcedure
 
+&AtClient
+Procedure UseIROnChange(Item)
+
+	If (Not Object.Ref.IsEmpty()) AND (DocumentUsed(Object.Ref)) Then
+		
+		Object.UseIR = Not Object.UseIR; 
+		
+		UM = New UserMessage;
+		UM.Text = NStr("en = 'You cannot change the attribute ""Use Item receipt"" because this document is used in other documents!'");
+		UM.Field = "Object.UseIR";
+		UM.Message();
+		
+	EndIf;
+	
+EndProcedure
+
 //------------------------------------------------------------------------------
 // Utils for request user confirmation and propagate header settings to line items.
 
@@ -939,6 +955,43 @@ Function GetLineItemsRowStructure()
 	
 EndFunction
 
+&AtServerNoContext
+Function DocumentUsed(Ref)
+
+	Query = New Query;
+	Query.Text = 
+		"SELECT
+		|	ItemReceiptLineItems.Ref
+		|INTO TemporaryTable
+		|FROM
+		|	Document.ItemReceipt.LineItems AS ItemReceiptLineItems
+		|WHERE
+		|	ItemReceiptLineItems.Order = &Order
+		|
+		|UNION ALL
+		|
+		|SELECT
+		|	PurchaseInvoiceLineItems.Ref
+		|FROM
+		|	Document.PurchaseInvoice.LineItems AS PurchaseInvoiceLineItems
+		|WHERE
+		|	PurchaseInvoiceLineItems.Order = &Order
+		|;
+		|
+		|////////////////////////////////////////////////////////////////////////////////
+		|SELECT
+		|	TemporaryTable.Ref
+		|FROM
+		|	TemporaryTable AS TemporaryTable
+		|
+		|GROUP BY
+		|	TemporaryTable.Ref";
+		
+	Query.SetParameter("Order", Ref); 
+
+	Return Not Query.Execute().IsEmpty();
+	
+EndFunction
 
 
 // -> CODE REVIEW

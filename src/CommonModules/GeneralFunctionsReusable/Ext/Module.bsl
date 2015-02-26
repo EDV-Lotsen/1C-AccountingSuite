@@ -4,12 +4,18 @@
 // REUSABLE IN A SESSION TO MINIMIZE SERVER CALLS
 // 
 
-Function DisableAuditLogValue() Export
+Function GetRemainingDays() Export 
 	
-	Return Constants.DisableAuditLog.Get();
+	Query = New Query;
+    Query.Text = "SELECT
+                 |  DATEDIFF(&CurrentDate, FreeTrial30.Value, DAY) AS DateDiff
+                 |FROM
+                 |  Constant.FreeTrial30 AS FreeTrial30";
+    Query.Parameters.Insert("CurrentDate", CurrentSessionDate());
+    QueryResult = Query.Execute().Unload();
+    Return QueryResult[0].DateDiff;
 	
 EndFunction
-
 
 Function DisplayAPICodesSetting() Export
 	
@@ -234,6 +240,12 @@ Function CashFlowFinancingSection() Export
 	
 EndFunction
 
+Function DisableAuditLogValue() Export
+	
+	Return Constants.DisableAuditLog.Get();
+	
+EndFunction
+
 // Returns typical format string for quantities.
 //
 // Returns:
@@ -342,3 +354,154 @@ Function PricePrecisionForOneItem(Item) Export
 	
 EndFunction
 
+//++ MisA 11/14/2014 ... 11/17/2014
+
+// Return list of types, allowed for change to.
+// Param 
+//   SourceType - account type, mainly in reference
+// Return
+//   List of allowed for changes types 
+Function GetAcceptableAccountTypesForChange (SourceType) Export
+	
+	// hot fix - use mapping table
+	// beter to use register or smthg similar to easy maintaining
+		
+	MainTableOfAcceptableTypes = New ValueTable;
+	TypeArray = New Array;
+	TypeArray.Add(Type("EnumRef.AccountTypes"));
+	AccountTypesDescription = New TypeDescription(TypeArray);
+	MainTableOfAcceptableTypes.Columns.Add("Source",AccountTypesDescription);
+	MainTableOfAcceptableTypes.Columns.Add("Acceptable",AccountTypesDescription);
+	
+	// Expense <-> Other Expense <-> Cosr of sales
+	
+	NewRow = MainTableOfAcceptableTypes.Add();
+	NewRow.Source =  Enums.AccountTypes.CostOfSales;
+	NewRow.Acceptable =  Enums.AccountTypes.OtherExpense;
+	
+	NewRow = MainTableOfAcceptableTypes.Add();
+	NewRow.Source =  Enums.AccountTypes.CostOfSales;
+	NewRow.Acceptable =  Enums.AccountTypes.Expense;
+	
+	NewRow = MainTableOfAcceptableTypes.Add();
+	NewRow.Source =  Enums.AccountTypes.Expense;
+	NewRow.Acceptable =  Enums.AccountTypes.OtherExpense;
+	
+	NewRow = MainTableOfAcceptableTypes.Add();
+	NewRow.Source =  Enums.AccountTypes.Expense;
+	NewRow.Acceptable =  Enums.AccountTypes.CostOfSales;
+	
+	NewRow = MainTableOfAcceptableTypes.Add();
+	NewRow.Source =  Enums.AccountTypes.OtherExpense;
+	NewRow.Acceptable =  Enums.AccountTypes.Expense;
+	
+	NewRow = MainTableOfAcceptableTypes.Add();
+	NewRow.Source =  Enums.AccountTypes.OtherExpense;
+	NewRow.Acceptable =  Enums.AccountTypes.CostOfSales;
+		
+	
+	// FixedAsset <-> OtherCurrentAsset <-> AccumulatedDepreciation
+	
+	NewRow = MainTableOfAcceptableTypes.Add();
+	NewRow.Source =  Enums.AccountTypes.FixedAsset;
+	NewRow.Acceptable =  Enums.AccountTypes.OtherCurrentAsset;
+	
+	NewRow = MainTableOfAcceptableTypes.Add();
+	NewRow.Source =  Enums.AccountTypes.FixedAsset;
+	NewRow.Acceptable =  Enums.AccountTypes.AccumulatedDepreciation;
+	
+	NewRow = MainTableOfAcceptableTypes.Add();
+	NewRow.Source =  Enums.AccountTypes.AccumulatedDepreciation;
+	NewRow.Acceptable =  Enums.AccountTypes.OtherCurrentAsset;
+	
+	NewRow = MainTableOfAcceptableTypes.Add();
+	NewRow.Source =  Enums.AccountTypes.AccumulatedDepreciation;
+	NewRow.Acceptable =  Enums.AccountTypes.FixedAsset;
+	
+	NewRow = MainTableOfAcceptableTypes.Add();
+	NewRow.Source =  Enums.AccountTypes.OtherCurrentAsset;
+	NewRow.Acceptable =  Enums.AccountTypes.AccumulatedDepreciation;
+	
+	NewRow = MainTableOfAcceptableTypes.Add();
+	NewRow.Source =  Enums.AccountTypes.OtherCurrentAsset;
+	NewRow.Acceptable =  Enums.AccountTypes.FixedAsset;
+	
+	// Income <-> Other Income
+	
+	NewRow = MainTableOfAcceptableTypes.Add();
+	NewRow.Source =  Enums.AccountTypes.Income;
+	NewRow.Acceptable =  Enums.AccountTypes.OtherIncome;
+	
+	NewRow = MainTableOfAcceptableTypes.Add();
+	NewRow.Source =  Enums.AccountTypes.OtherIncome;
+	NewRow.Acceptable =  Enums.AccountTypes.Income;
+	
+	// OtherCurrentAsset -> Bank
+	
+	NewRow = MainTableOfAcceptableTypes.Add();
+	NewRow.Source =  Enums.AccountTypes.OtherCurrentAsset;
+	NewRow.Acceptable =  Enums.AccountTypes.Bank;
+	
+	NewRow = MainTableOfAcceptableTypes.Add();
+	NewRow.Source =  Enums.AccountTypes.FixedAsset;
+	NewRow.Acceptable =  Enums.AccountTypes.Bank;
+	
+	NewRow = MainTableOfAcceptableTypes.Add();
+	NewRow.Source =  Enums.AccountTypes.AccumulatedDepreciation;
+	NewRow.Acceptable =  Enums.AccountTypes.Bank;
+	
+	
+	//// In case if will make adjustable matching list - just change source from table to other source.
+	Query = New Query;
+	Query.TempTablesManager =  New TempTablesManager;
+	Query.SetParameter("SourceTable", MainTableOfAcceptableTypes);
+	Query.SetParameter("SourceType", SourceType);
+		
+	Query.Text =
+	"SELECT ALLOWED 
+	|	SourceTable.Source,
+	|	SourceTable.Acceptable
+	|INTO 
+	|	MatchingTable
+	|FROM  
+	|	&SourceTable as SourceTable
+	|INDEX BY  
+	|	SourceTable.Source
+	|;
+	|////////////////////////////////////////////////////////////////////////////////
+	|SELECT
+	|	MatchingTable.Acceptable
+	|FROM
+	|	MatchingTable as MatchingTable
+	|WHERE
+	|		MatchingTable.source = &SourceType
+	|;
+	|////////////////////////////////////////////////////////////////////////////////
+	|DROP MatchingTable;
+	|";
+	
+	Result = Query.Execute().Unload().UnloadColumn("Acceptable");
+	Result.Add(SourceType);
+	
+	Return Result;
+	
+EndFunction
+
+// Return wheather acount type is currency related, like "Bank" etc.
+// Param 
+//   SourceType - account type, mainly in reference
+// Return
+//   true or false 
+Function CurrencyUsedAccountType(SourceType) Export
+	
+	If SourceType = Enums.AccountTypes.Bank 
+		 or SourceType = Enums.AccountTypes.AccountsPayable
+		 or SourceType = Enums.AccountTypes.AccountsReceivable  Then 
+		Return True;
+	Else
+		Return False
+	EndIf;		
+	
+EndFunction
+
+//-- MisA 11/14/2014 ... 11/17/2014

@@ -47,7 +47,7 @@
 				<xr:Item xsi:type="xr:MDObjectRef">Role.FullAccess</xr:Item>
 			</DefaultRoles>
 			<Vendor>1C Company</Vendor>
-			<Version>1.1.42.03</Version>
+			<Version>1.1.43.01</Version>
 			<UpdateCatalogAddress/>
 			<IncludeHelpInContents>false</IncludeHelpInContents>
 			<UseManagedFormInOrdinaryApplication>true</UseManagedFormInOrdinaryApplication>
@@ -140,7 +140,7 @@
 			<ModalityUseMode>DontUse</ModalityUseMode>
 			<SynchronousPlatformExtensionAndAddInCallUseMode>Use</SynchronousPlatformExtensionAndAddInCallUseMode>
 			<InterfaceCompatibilityMode>Taxi</InterfaceCompatibilityMode>
-			<CompatibilityMode>Version8_3_4</CompatibilityMode>
+			<CompatibilityMode>Version8_3_5</CompatibilityMode>
 			<DefaultConstantsForm/>
 		</Properties>
 		<ChildObjects>
@@ -227,6 +227,10 @@
 			<CommonPicture>CFOToday</CommonPicture>
 			<CommonPicture>Avalara</CommonPicture>
 			<CommonPicture>SubscribeButton</CommonPicture>
+			<CommonPicture>StatusOfOrder</CommonPicture>
+			<CommonPicture>ForReceived</CommonPicture>
+			<CommonPicture>ForInvoiced</CommonPicture>
+			<CommonPicture>InsertLine</CommonPicture>
 			<SessionParameter>TenantValue</SessionParameter>
 			<SessionParameter>TenantUse</SessionParameter>
 			<SessionParameter>ACSUser</SessionParameter>
@@ -252,6 +256,8 @@
 			<Role>ProjectsView</Role>
 			<Role>TimeTrackFull</Role>
 			<Role>TimeTrackView</Role>
+			<Role>ShipmentFull</Role>
+			<Role>ItemReceiptFull</Role>
 			<CommonTemplate>Template</CommonTemplate>
 			<CommonTemplate>GeneralAreasStandardReport</CommonTemplate>
 			<CommonModule>CommonUse</CommonModule>
@@ -267,6 +273,8 @@
 			<CommonModule>LongActions</CommonModule>
 			<CommonModule>LongActionsClient</CommonModule>
 			<CommonModule>LongActionsClientReusable</CommonModule>
+			<CommonModule>LotsSerialNumbers</CommonModule>
+			<CommonModule>LotsSerialNumbersClientServer</CommonModule>
 			<CommonModule>PeriodClosingServerCall</CommonModule>
 			<CommonModule>PrintTemplates</CommonModule>
 			<CommonModule>RrecurringDocuments</CommonModule>
@@ -284,22 +292,16 @@
 			<CommonModule>AuditLog</CommonModule>
 			<CommonModule>SalesTax</CommonModule>
 			<CommonModule>SalesTaxClient</CommonModule>
-			<CommonModule>StrClientServer</CommonModule>
-			<CommonModule>CommonUseNew</CommonModule>
-			<CommonModule>CommonUseCSNew</CommonModule>
-			<CommonModule>UniversalReportServer</CommonModule>
-			<CommonModule>UniversalReportServerCall</CommonModule>
-			<CommonModule>UniversalReportClientServer</CommonModule>
-			<CommonModule>UniversalReportClient</CommonModule>
 			<CommonModule>EmailHandling</CommonModule>
 			<CommonModule>_UnitTestsPrintForms</CommonModule>
 			<CommonModule>PrintFormFunctions</CommonModule>
 			<CommonModule>AvaTaxServer</CommonModule>
 			<CommonModule>zoho_Functions</CommonModule>
-			<CommonModule>ApiStripeProtectedRequestor</CommonModule>
-			<CommonModule>ApiStripeProtectedServerCall</CommonModule>
+			<CommonModule>NotificationsServerFullRights</CommonModule>
 			<CommonModule>AvaTaxClient</CommonModule>
 			<CommonModule>AvaTaxServerCall</CommonModule>
+			<CommonModule>CashReceiptMethods</CommonModule>
+			<CommonModule>_UnitTestsCashReceipt</CommonModule>
 			<XDTOPackage>ApdexExport</XDTOPackage>
 			<WebService>companiespost</WebService>
 			<WebService>companiesget</WebService>
@@ -330,9 +332,8 @@
 			<WebService>salesordersdeletecode</WebService>
 			<WebService>salesordersgetcode</WebService>
 			<WebService>purchaseorderspost</WebService>
-			<WebService>addcard</WebService>
-			<WebService>paynew</WebService>
 			<WebService>zoho_integration</WebService>
+			<WebService>vendors1099</WebService>
 			<EventSubscription>ObjectDelete</EventSubscription>
 			<EventSubscription>ClosedPeriodDeletionProtection</EventSubscription>
 			<EventSubscription>ClosedPeriodBeforeWrite</EventSubscription>
@@ -348,6 +349,8 @@
 			<ScheduledJob>RecurringDocuments</ScheduledJob>
 			<ScheduledJob>YodleeUpdateBanks</ScheduledJob>
 			<ScheduledJob>YodleeRefreshTransactions</ScheduledJob>
+			<ScheduledJob>CheckReorderQty</ScheduledJob>
+			<ScheduledJob>UpdateExchangeRate</ScheduledJob>
 			<FunctionalOption>MultiCurrency</FunctionalOption>
 			<FunctionalOption>MultiLocation</FunctionalOption>
 			<FunctionalOption>ItemActivityReport</FunctionalOption>
@@ -355,7 +358,12 @@
 			<FunctionalOption>AvataxEnabled</FunctionalOption>
 			<FunctionalOption>PricePrecision</FunctionalOption>
 			<FunctionalOption>CFOToday</FunctionalOption>
+			<FunctionalOption>EnhancedInventoryReceiving</FunctionalOption>
+			<FunctionalOption>EnhancedInventoryShipping</FunctionalOption>
+			<FunctionalOption>Assembly</FunctionalOption>
+			<FunctionalOption>Lots</FunctionalOption>
 			<DefinedType>RecurringDocuments</DefinedType>
+			<DefinedType>SerialNumber</DefinedType>
 			<CommonCommand>LaunchSettings</CommonCommand>
 			<CommonCommand>SendEmail</CommonCommand>
 			<CommandGroup>Reports</CommandGroup>
@@ -610,13 +618,38 @@
 			<Constant>AddCCToGlobalCheck</Constant>
 			<Constant>SIShowClassCol</Constant>
 			<Constant>DisableAuditLog</Constant>
-			<Constant>StripeSubCustID</Constant>
 			<Constant>OCLAccount</Constant>
+			<Constant>EnhancedInventoryShipping</Constant>
 			<Constant>EnhancedInventoryReceiving</Constant>
+			<Constant>StripeSubCustID</Constant>
+			<Constant>ShipmentShowPhone2</Constant>
+			<Constant>EnableAssembly</Constant>
+			<Constant>EnableLots</Constant>
+			<Constant>ShipmentShowEmail</Constant>
+			<Constant>ShipmentShowWebsite</Constant>
+			<Constant>ShipmentShowFax</Constant>
+			<Constant>ShipmentShowCountry</Constant>
+			<Constant>ShipmentShowFullName</Constant>
+			<Constant>ShipmentShowShipTo</Constant>
+			<Constant>ShipmentShowSVCCol</Constant>
+			<Constant>ShipmentShowClassCol</Constant>
+			<Constant>ShipmentFoot1Type</Constant>
+			<Constant>ShipmentFoot2Type</Constant>
+			<Constant>ShipmentFoot3Type</Constant>
+			<Constant>ShipmentFooterTextLeft</Constant>
+			<Constant>ShipmentFooterTextCenter</Constant>
+			<Constant>ShipmentFooterTextRight</Constant>
+			<Constant>AllowDuplicateCheckNumbers</Constant>
+			<Constant>DisplayOrderIndicators</Constant>
+			<Constant>SIShowDiscountCol</Constant>
+			<Constant>StateTaxID</Constant>
+			<Constant>FirstMonthOfFiscalYear</Constant>
+			<Constant>CFO_ProcessingMonth</Constant>
 			<CommonForm>GeneralSettings</CommonForm>
 			<CommonForm>LongAction</CommonForm>
 			<CommonForm>NavigationFull</CommonForm>
 			<CommonForm>LinksForm</CommonForm>
+			<CommonForm>Subscribe</CommonForm>
 			<CommonForm>MessageBox</CommonForm>
 			<CommonForm>ClosedPeriodNotification</CommonForm>
 			<CommonForm>Settings</CommonForm>
@@ -624,13 +657,14 @@
 			<CommonForm>BillPayList</CommonForm>
 			<CommonForm>EmailForm</CommonForm>
 			<CommonForm>MultiEmail</CommonForm>
-			<CommonForm>ВопросОбУстановкеРасширенияРаботыСФайлами</CommonForm>
-			<CommonForm>ChoiceFormAvailableField</CommonForm>
-			<CommonForm>ChoiceStandardPeriod</CommonForm>
 			<CommonForm>TimeTrackToInvoiceForm</CommonForm>
 			<CommonForm>VoidDateForm</CommonForm>
 			<CommonForm>InvoicePayList</CommonForm>
 			<CommonForm>AuditLogList</CommonForm>
+			<CommonForm>ChoiceFormPO_IR</CommonForm>
+			<CommonForm>ChoiceFormSO_Shipment</CommonForm>
+			<CommonForm>SerialNumbers</CommonForm>
+			<CommonForm>LinksFormHTML</CommonForm>
 			<Catalog>Addresses</Catalog>
 			<Catalog>BankAccounts</Catalog>
 			<Catalog>Banks</Catalog>
@@ -649,6 +683,8 @@
 			<Catalog>Products</Catalog>
 			<Catalog>UnitSets</Catalog>
 			<Catalog>Units</Catalog>
+			<Catalog>Characteristics</Catalog>
+			<Catalog>Lots</Catalog>
 			<Catalog>Projects</Catalog>
 			<Catalog>States</Catalog>
 			<Catalog>UserList</Catalog>
@@ -679,11 +715,14 @@
 			<Document>Deposit</Document>
 			<Document>GeneralJournalEntry</Document>
 			<Document>ItemAdjustment</Document>
+			<Document>LotsAdjustment</Document>
+			<Document>SerialNumbersAdjustment</Document>
 			<Document>InvoicePayment</Document>
 			<Document>ItemReceipt</Document>
 			<Document>PurchaseInvoice</Document>
 			<Document>PurchaseOrder</Document>
 			<Document>PurchaseReturn</Document>
+			<Document>Shipment</Document>
 			<Document>SalesInvoice</Document>
 			<Document>SalesOrder</Document>
 			<Document>SalesReturn</Document>
@@ -711,13 +750,16 @@
 			<Enum>YodleeContainerTypes</Enum>
 			<Enum>TextOrImage</Enum>
 			<Enum>AccountingMethod</Enum>
-			<Enum>УровниПроизводительности</Enum>
 			<Enum>AvailableReportPeriods</Enum>
 			<Enum>VoidingTypes</Enum>
 			<Enum>AvalaraRequestTypes</Enum>
 			<Enum>TimeTrackStatus</Enum>
 			<Enum>AvataxStatus</Enum>
 			<Enum>DiscountTaxability</Enum>
+			<Enum>Reports</Enum>
+			<Enum>PartsReport</Enum>
+			<Enum>ProjectStatus</Enum>
+			<Enum>ProjectType</Enum>
 			<Enum>DiscountType</Enum>
 			<Report>APAging</Report>
 			<Report>ARAging</Report>
@@ -772,28 +814,24 @@
 			<Report>ProfitAndLossByClass</Report>
 			<Report>ProfitAndLossByProject</Report>
 			<Report>TimeTrackingDetailReport</Report>
-			<Report>UniversalReport</Report>
 			<Report>StatementOfCashFlows</Report>
 			<Report>SalesByItemSummary</Report>
 			<Report>SalesByItemDetail</Report>
 			<Report>PurchasesByItemSummary</Report>
 			<Report>PurchasesByItemDetail</Report>
-			<Report>CashFlows</Report>
 			<DataProcessor>DataImport</DataProcessor>
 			<DataProcessor>DownloadedTransactions</DataProcessor>
 			<DataProcessor>YodleeBankAccountsManagement</DataProcessor>
-			<DataProcessor>Testing</DataProcessor>
 			<DataProcessor>_UnitTestRunner</DataProcessor>
-			<DataProcessor>ActiveUserList</DataProcessor>
 			<DataProcessor>InventorySiteInfo</DataProcessor>
 			<DataProcessor>GenerateStatements</DataProcessor>
 			<DataProcessor>PrintFormSetup</DataProcessor>
 			<DataProcessor>_UnitTestPrintFormRunner</DataProcessor>
-			<DataProcessor>InitialDemobasePopulation</DataProcessor>
 			<DataProcessor>TimeTrackStatusConvert</DataProcessor>
 			<DataProcessor>ImportAvaTaxCodes</DataProcessor>
-			<DataProcessor>Reclass</DataProcessor>
 			<DataProcessor>BankRegister</DataProcessor>
+			<DataProcessor>BankReconciliation</DataProcessor>
+			<DataProcessor>ImportFromADP</DataProcessor>
 			<InformationRegister>BankTransactions</InformationRegister>
 			<InformationRegister>CustomPrintForms</InformationRegister>
 			<InformationRegister>ExchangeRates</InformationRegister>
@@ -801,6 +839,7 @@
 			<InformationRegister>Notifications</InformationRegister>
 			<InformationRegister>OrdersStatuses</InformationRegister>
 			<InformationRegister>PriceList</InformationRegister>
+			<InformationRegister>SerialNumbers</InformationRegister>
 			<InformationRegister>RecurringDocuments</InformationRegister>
 			<InformationRegister>TestRegister</InformationRegister>
 			<InformationRegister>_UnitTestLog</InformationRegister>
@@ -815,7 +854,9 @@
 			<InformationRegister>PeriodClosingByModule</InformationRegister>
 			<InformationRegister>AvalaraTransactions</InformationRegister>
 			<InformationRegister>AvataxDetails</InformationRegister>
+			<InformationRegister>HeadersAndFooters</InformationRegister>
 			<AccumulationRegister>InventoryJournal</AccumulationRegister>
+			<AccumulationRegister>Lots</AccumulationRegister>
 			<AccumulationRegister>OrdersDispatched</AccumulationRegister>
 			<AccumulationRegister>OrdersRegistered</AccumulationRegister>
 			<AccumulationRegister>ProjectData</AccumulationRegister>

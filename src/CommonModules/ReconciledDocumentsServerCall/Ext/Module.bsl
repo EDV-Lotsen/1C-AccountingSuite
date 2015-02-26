@@ -8,13 +8,40 @@
 //
 Procedure ReconciledDocumentBeforeWrite(Source, Cancel, WriteMode, PostingMode) Export
 	// allow posting if key fields has not been changed
-	If GeneralFunctionsReusable.DisableAuditLogValue() = True Then
-		return;
-	EndIf;
 	If Source.DataExchange.Load Then
 		return;
 	EndIf;
+	
 	DocumentName = Source.Metadata().Name;
+	
+	//If IsInRole("BankAccounting") Then
+	//	If Source.AdditionalProperties.Property("CFO_ProcessMonth_AllowWrite") Then
+	//		return;
+	//	EndIf;
+	//	If DocumentName = "BankReconciliation" Then
+	//		If Source.Ref.IsEmpty() Then
+	//			MessageText = NStr("en='Bank Reconciliation document is not intended to be created by a user. Document is not written.'");
+	//		Else
+	//			MessageText = String(Source.Ref) + ": " + NStr("en='This document is not intended to be changed by a user. Document is not written.'");
+	//		EndIf;
+	//		CommonUseClientServer.MessageToUser(MessageText,,,,Cancel);  
+	//	Else //For all other document types
+	//		//If TransactionIsAccepted(Source.Ref) Then
+	//		If Source.Ref.IsEmpty() Then
+	//			MessageText = NStr("en='" + Source.Metadata().Synonym + " document is intended to be changed from the Process Month interface. Document is not written.'");
+	//		Else
+	//			MessageText = String(Source.Ref) + ": " + NStr("en='This document is intended to be changed from the Process Month interface. Document is not written.'");
+	//		EndIf;
+	//		CommonUseClientServer.MessageToUser(MessageText,,,,Cancel);  
+	//		//EndIf;
+	//	EndIf;
+	//EndIf;
+	
+	//Do not check Bank Reconciliation document
+	If DocumentName = "BankReconciliation" Then
+		return;
+	EndIf;
+	
 	If DocumentName = "BankTransfer" Then
 		Amount = Source.Amount;
 		Date = Source.Date;

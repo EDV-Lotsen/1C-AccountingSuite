@@ -4,7 +4,21 @@
 	<AutoTime>CurrentOrLast</AutoTime>
 	<UsePostingMode>Auto</UsePostingMode>
 	<RepostOnWrite>true</RepostOnWrite>
-	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<AutoCommandBar name="FormCommandBar" id="-1">
+		<ChildItems>
+			<ButtonGroup name="Group1" id="31">
+				<ExtendedTooltip name="Group1ExtendedTooltip" id="32"/>
+				<ChildItems>
+					<Button name="FormViewBankTransaction" id="29">
+						<Type>CommandBarButton</Type>
+						<CommandName>Form.Command.ViewBankTransaction</CommandName>
+						<BackColor>style:ColorInformationLabel</BackColor>
+						<ExtendedTooltip name="FormViewBankTransactionExtendedTooltip" id="30"/>
+					</Button>
+				</ChildItems>
+			</ButtonGroup>
+		</ChildItems>
+	</AutoCommandBar>
 	<Events>
 		<Event name="BeforeWrite">BeforeWrite</Event>
 		<Event name="BeforeWriteAtServer">BeforeWriteAtServer</Event>
@@ -69,6 +83,23 @@
 			</UseAlways>
 		</Attribute>
 	</Attributes>
+	<Commands>
+		<Command name="ViewBankTransaction" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>View bank transaction</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>View bank transaction</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>ViewBankTransaction</Action>
+		</Command>
+	</Commands>
 	<CommandInterface>
 		<NavigationPanel>
 			<Item>

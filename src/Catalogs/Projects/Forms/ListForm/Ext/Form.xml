@@ -82,29 +82,29 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="6"/>
-			<SearchStringAddition name="ListSearchString" id="42">
+			<SearchStringAddition name="ListSearchString" id="48">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="43"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="44"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="49"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="50"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="45">
+			<ViewStatusAddition name="ListViewStatus" id="51">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="46"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="47"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="52"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="53"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="48">
+			<SearchControlAddition name="ListSearchControl" id="54">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="49"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="50"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="55"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="56"/>
 			</SearchControlAddition>
 			<ChildItems>
 				<LabelField name="Customer" id="10">
@@ -122,7 +122,17 @@
 					<ContextMenu name="DescriptionContextMenu" id="8"/>
 					<ExtendedTooltip name="DescriptionExtendedTooltip" id="9"/>
 				</LabelField>
-				<LabelField name="ReceiptsBudget" id="39">
+				<LabelField name="Type" id="45">
+					<DataPath>List.Type</DataPath>
+					<ContextMenu name="TypeContextMenu" id="46"/>
+					<ExtendedTooltip name="TypeExtendedTooltip" id="47"/>
+				</LabelField>
+				<LabelField name="Status" id="42">
+					<DataPath>List.Status</DataPath>
+					<ContextMenu name="StatusContextMenu" id="43"/>
+					<ExtendedTooltip name="StatusExtendedTooltip" id="44"/>
+				</LabelField>
+				<LabelField name="ReceiptsBudget" id="33">
 					<DataPath>List.ReceiptsBudget</DataPath>
 					<Title>
 						<v8:item>
@@ -130,8 +140,8 @@
 							<v8:content>Income (bdgt)</v8:content>
 						</v8:item>
 					</Title>
-					<ContextMenu name="ReceiptsBudgetContextMenu" id="40"/>
-					<ExtendedTooltip name="ReceiptsBudgetExtendedTooltip" id="41"/>
+					<ContextMenu name="ReceiptsBudgetContextMenu" id="34"/>
+					<ExtendedTooltip name="ReceiptsBudgetExtendedTooltip" id="35"/>
 				</LabelField>
 				<LabelField name="AmountReceipt" id="19">
 					<DataPath>List.AmountReceipt</DataPath>
@@ -146,7 +156,7 @@
 					<ContextMenu name="AmountReceiptContextMenu" id="20"/>
 					<ExtendedTooltip name="AmountReceiptExtendedTooltip" id="21"/>
 				</LabelField>
-				<LabelField name="ExpenseBudget" id="33">
+				<LabelField name="ExpenseBudget" id="39">
 					<DataPath>List.ExpenseBudget</DataPath>
 					<Title>
 						<v8:item>
@@ -154,8 +164,8 @@
 							<v8:content>Expense (bdgt)</v8:content>
 						</v8:item>
 					</Title>
-					<ContextMenu name="ExpenseBudgetContextMenu" id="34"/>
-					<ExtendedTooltip name="ExpenseBudgetExtendedTooltip" id="35"/>
+					<ContextMenu name="ExpenseBudgetContextMenu" id="40"/>
+					<ExtendedTooltip name="ExpenseBudgetExtendedTooltip" id="41"/>
 				</LabelField>
 				<LabelField name="AmountExpense" id="13">
 					<DataPath>List.AmountExpense</DataPath>
@@ -228,6 +238,8 @@
 	CatalogProjects.ExpenseBudget,
 	CatalogProjects.HoursBudget,
 	CatalogProjects.Predefined,
+	CatalogProjects.Status,
+	CatalogProjects.Type,
 	CatalogProjects.PredefinedDataName,
 	ProjectDataTurnovers.AmountTurnover,
 	ProjectDataTurnovers.AmountReceipt,

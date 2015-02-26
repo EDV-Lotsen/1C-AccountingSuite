@@ -179,4 +179,71 @@ Procedure Posting(Cancel, Mode)
 
 EndProcedure
 
+Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
+	
+	If DataExchange.Load Then
+		return;
+	EndIf;
+	
+	//Shouldn't allow creating multiple bank reconciliation documents for the same account in the same period
+	//Apply data lock
+	DataLocks = New DataLock;
+
+	// Set data lock parameters.
+	LockItem = DataLocks.Add("Document.BankReconciliation");
+	LockItem.Mode = DataLockMode.Exclusive;
+	DataLocks.Lock();
+	
+	Request = new Query("SELECT
+	                    |	BankReconciliation.Ref
+	                    |FROM
+	                    |	Document.BankReconciliation AS BankReconciliation
+	                    |WHERE
+	                    |	BankReconciliation.Date >= BEGINOFPERIOD(&Date, MONTH)
+	                    |	AND BankReconciliation.Date <= ENDOFPERIOD(&Date, MONTH)
+	                    |	AND BankReconciliation.BankAccount = &BankAccount
+	                    |	AND BankReconciliation.Ref <> &Ref");
+	Request.SetParameter("BankAccount", BankAccount);
+	Request.SetParameter("Date", Date);
+	Request.SetParameter("Ref", Ref);
+	Res = Request.Execute();
+	If Not Res.IsEmpty() Then
+		Cancel = True;
+		MessageText = NStr("en = 'Document can not be written. Another bank reconciliation document is found in the database for the bank account: " + String(BankAccount) + " and period: " + Format(Date, "DF='MMMM, yyyy'") + ".'");
+		CommonUseClientServer.MessageToUser(MessageText);
+	EndIf;
+
+EndProcedure
+
+Procedure BeforeDelete(Cancel)
+	
+	//Allow deletion only if there are no documents in Process Month for the period
+	//If IsInRole("BankAccounting") Then
+	//	Request = New Query("SELECT ALLOWED
+	//	                    |	GeneralJournalBalanceAndTurnovers.Recorder AS Recorder,
+	//	                    |	GeneralJournalBalanceAndTurnovers.Period AS Period,
+	//	                    |	GeneralJournalBalanceAndTurnovers.AmountRCClosingBalance,
+	//	                    |	GeneralJournalBalanceAndTurnovers.Recorder.PointInTime AS RecorderPointInTime,
+	//	                    |	GeneralJournalBalanceAndTurnovers.AmountRCOpeningBalance
+	//	                    |FROM
+	//	                    |	AccountingRegister.GeneralJournal.BalanceAndTurnovers(&DateStart, &DateEnd, Recorder, , Account = &Account, , ) AS GeneralJournalBalanceAndTurnovers
+	//	                    |WHERE
+	//	                    |	NOT GeneralJournalBalanceAndTurnovers.Recorder IS NULL 
+	//	                    |	AND GeneralJournalBalanceAndTurnovers.Recorder <> UNDEFINED
+	//	                    |	AND NOT GeneralJournalBalanceAndTurnovers.Recorder REFS Document.GeneralJournalEntry");
+	//	DateStart 	= BegOfMonth(Date);
+	//	DateEnd		= EndOfMonth(Date);
+	//	Request.SetParameter("Account", BankAccount);
+	//	Request.SetParameter("DateStart", New Boundary(DateStart, BoundaryType.Including));
+	//	Request.SetParameter("DateEnd", New Boundary(EndOfDay(DateEnd), BoundaryType.Including));
+	//	Res = Request.Execute();
+	//	If Not Res.IsEmpty() Then
+	//		Cancel = True;
+	//		MessageText = NStr("en='" + String(Ref) + ": document is not empty and is used in Process Month. Document deletion cancelled.'");
+	//		CommonUseClientServer.MessageToUser(MessageText);
+	//	EndIf;
+	//EndIf;
+	
+EndProcedure
+
 

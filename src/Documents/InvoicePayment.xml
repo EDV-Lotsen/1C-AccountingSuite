@@ -423,7 +423,14 @@
 					<FillChecking>ShowError</FillChecking>
 					<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
 					<ChoiceParameterLinks/>
-					<ChoiceParameters/>
+					<ChoiceParameters>
+						<app:item name="Filter.AccountType">
+							<app:value xsi:type="v8:FixedArray">
+								<v8:Value xsi:type="xr:DesignTimeRef">Enum.AccountTypes.EnumValue.Bank</v8:Value>
+								<v8:Value xsi:type="xr:DesignTimeRef">Enum.AccountTypes.EnumValue.OtherCurrentLiability</v8:Value>
+							</app:value>
+						</app:item>
+					</ChoiceParameters>
 					<QuickChoice>Auto</QuickChoice>
 					<CreateOnInput>Auto</CreateOnInput>
 					<ChoiceForm/>
@@ -522,7 +529,7 @@
 					<Type>
 						<v8:Type>xs:decimal</v8:Type>
 						<v8:NumberQualifiers>
-							<v8:Digits>5</v8:Digits>
+							<v8:Digits>8</v8:Digits>
 							<v8:FractionDigits>0</v8:FractionDigits>
 							<v8:AllowedSign>Any</v8:AllowedSign>
 						</v8:NumberQualifiers>

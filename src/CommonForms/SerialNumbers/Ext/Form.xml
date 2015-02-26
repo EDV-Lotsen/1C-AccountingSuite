@@ -1,0 +1,180 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<AutoCommandBar name="FormCommandBar" id="-1">
+		<ChildItems>
+			<Button name="FormWriteAndClose" id="32">
+				<Type>CommandBarButton</Type>
+				<DefaultButton>true</DefaultButton>
+				<CommandName>Form.Command.WriteAndClose</CommandName>
+				<Title>
+					<v8:item>
+						<v8:lang>en</v8:lang>
+						<v8:content>Save and close</v8:content>
+					</v8:item>
+				</Title>
+				<ExtendedTooltip name="FormWriteAndCloseExtendedTooltip" id="33"/>
+			</Button>
+			<Button name="FormClose" id="38">
+				<Type>CommandBarButton</Type>
+				<CommandName>Form.Command.Close</CommandName>
+				<ExtendedTooltip name="FormCloseExtendedTooltip" id="39"/>
+			</Button>
+		</ChildItems>
+	</AutoCommandBar>
+	<Events>
+		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+	</Events>
+	<ChildItems>
+		<UsualGroup name="GroupSerialNumbers" id="17">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Serial numbers</v8:content>
+				</v8:item>
+			</Title>
+			<Group>Vertical</Group>
+			<ExtendedTooltip name="GroupSerialNumbersExtendedTooltip" id="18"/>
+			<ChildItems>
+				<CommandBar name="SerialNumbersCommandBarCustom" id="42">
+					<ExtendedTooltip name="SerialNumbersCommandBarCustomExtendedTooltip" id="43"/>
+					<ChildItems>
+						<ButtonGroup name="SerialNumbersCommandBarButtons" id="44">
+							<CommandSource>Item.SerialNumbers</CommandSource>
+							<ExtendedTooltip name="SerialNumbersCommandBarButtonsExtendedTooltip" id="45"/>
+						</ButtonGroup>
+					</ChildItems>
+				</CommandBar>
+				<Table name="SerialNumbers" id="1">
+					<Representation>List</Representation>
+					<DefaultItem>true</DefaultItem>
+					<AutoInsertNewRow>true</AutoInsertNewRow>
+					<EnableStartDrag>true</EnableStartDrag>
+					<EnableDrag>true</EnableDrag>
+					<DataPath>SerialNumbers</DataPath>
+					<SearchStringLocation>None</SearchStringLocation>
+					<ViewStatusLocation>None</ViewStatusLocation>
+					<SearchControlLocation>None</SearchControlLocation>
+					<RowFilter xsi:nil="true"/>
+					<ContextMenu name="SerialNumbersContextMenu" id="2"/>
+					<AutoCommandBar name="SerialNumbersCommandBar" id="3">
+						<Autofill>false</Autofill>
+					</AutoCommandBar>
+					<ExtendedTooltip name="SerialNumbersExtendedTooltip" id="4"/>
+					<SearchStringAddition name="SerialNumbersSearchString" id="46">
+						<AdditionSource>
+							<Item>SerialNumbers</Item>
+							<Type>SearchStringRepresentation</Type>
+						</AdditionSource>
+						<ContextMenu name="SerialNumbersSearchStringContextMenu" id="47"/>
+						<ExtendedTooltip name="SerialNumbersSearchStringExtendedTooltip" id="48"/>
+					</SearchStringAddition>
+					<ViewStatusAddition name="SerialNumbersViewStatus" id="49">
+						<AdditionSource>
+							<Item>SerialNumbers</Item>
+							<Type>ViewStatusRepresentation</Type>
+						</AdditionSource>
+						<ContextMenu name="SerialNumbersViewStatusContextMenu" id="50"/>
+						<ExtendedTooltip name="SerialNumbersViewStatusExtendedTooltip" id="51"/>
+					</ViewStatusAddition>
+					<SearchControlAddition name="SerialNumbersSearchControl" id="52">
+						<AdditionSource>
+							<Item>SerialNumbers</Item>
+							<Type>SearchControl</Type>
+						</AdditionSource>
+						<ContextMenu name="SerialNumbersSearchControlContextMenu" id="53"/>
+						<ExtendedTooltip name="SerialNumbersSearchControlExtendedTooltip" id="54"/>
+					</SearchControlAddition>
+					<Events>
+						<Event name="BeforeAddRow">SerialNumbersBeforeAddRow</Event>
+					</Events>
+					<ChildItems>
+						<InputField name="SerialNumbersSerialNumber" id="8">
+							<DataPath>SerialNumbers.SerialNumber</DataPath>
+							<Width>20</Width>
+							<Height>1</Height>
+							<Wrap>false</Wrap>
+							<MultiLine>true</MultiLine>
+							<ContextMenu name="SerialNumbersSerialNumberContextMenu" id="9"/>
+							<ExtendedTooltip name="SerialNumbersSerialNumberExtendedTooltip" id="10"/>
+							<Events>
+								<Event name="TextEditEnd">SerialNumbersSerialNumberTextEditEnd</Event>
+							</Events>
+						</InputField>
+					</ChildItems>
+				</Table>
+			</ChildItems>
+		</UsualGroup>
+	</ChildItems>
+	<Attributes>
+		<Attribute name="SerialNumbers" id="4">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Serial numbers</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>v8:ValueTable</v8:Type>
+			</Type>
+			<Columns>
+				<Column name="SerialNumber" id="3">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Serial #</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:string</v8:Type>
+						<v8:StringQualifiers>
+							<v8:Length>0</v8:Length>
+							<v8:AllowedLength>Variable</v8:AllowedLength>
+						</v8:StringQualifiers>
+					</Type>
+				</Column>
+			</Columns>
+		</Attribute>
+	</Attributes>
+	<Commands>
+		<Command name="WriteAndClose" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Save and close</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Save object and close form</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Picture>
+				<xr:Ref>StdPicture.WriteAndClose</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
+			<Action>FormWriteAndClose</Action>
+			<Representation>Text</Representation>
+		</Command>
+		<Command name="Close" id="4">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Close</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Close form</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Picture>
+				<xr:Ref>StdPicture.Close</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
+			<Action>FormClose</Action>
+			<Representation>Text</Representation>
+		</Command>
+	</Commands>
+</Form>

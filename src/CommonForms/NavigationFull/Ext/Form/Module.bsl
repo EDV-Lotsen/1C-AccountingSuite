@@ -55,7 +55,7 @@ EndProcedure
 
 &AtClient
 Procedure ChartOfAccounts(Command)
-	OpenForm("ChartOfAccounts.ChartOfAccounts.Form.AccountForm");
+	OpenForm("ChartOfAccounts.ChartOfAccounts.Form.ListForm");
 EndProcedure
 
 &AtClient
@@ -87,5 +87,22 @@ EndProcedure
 Procedure OnOpen(Cancel)
 	
 EndProcedure
+
+&AtServer
+Procedure OnCreateAtServer(Cancel, StandardProcessing)
+	
+		Items.Group6.Visible = True;
+		Items.Group7.Visible = True;
+		Items.group8.Visible = False;
+
+
+EndProcedure
+
+&AtClient
+Procedure ProcessMonth(Command)
+	OpenForm("DataProcessor.BankRegisterCFOToday.Form.Form");
+EndProcedure
+
+
 
 

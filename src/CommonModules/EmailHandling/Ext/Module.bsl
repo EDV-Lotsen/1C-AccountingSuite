@@ -11,7 +11,7 @@ Procedure SendEmail(DocumentRef,EmailTo,CCTo,Subject,Body) Export
 	CurObject = DocumentRef.GetObject();
 	
 	If EmailTo <> "" Then
-		If TypeOf(CurObject) = Type("DocumentObject.SalesInvoice") AND CurObject.PayHTML = "" Then
+		If TypeOf(CurObject) = Type("DocumentObject.SalesInvoice") AND CurObject.PayHTML = "" AND CurObject.DwollaTrxID = 0 Then
 			
 			//Find if sales invoice was already sent to be paid
 			HeadersMap = New Map();	
@@ -20,7 +20,7 @@ Procedure SendEmail(DocumentRef,EmailTo,CCTo,Subject,Body) Export
 			
 			SSLConnection = New OpenSSLSecureConnection();
 			FindExistingInvoice = SessionParameters.TenantValue + " Invoice " + CurObject.Number + " from " + Format(CurObject.Date,"DLF=D");
-			HTTPConnection = New HTTPConnection("api.mongolab.com/api/1/databases/dataset1c/collections/pay?q={""data_description"": '" + FindExistingInvoice + "'}&apiKey=" + ServiceParameters.MongoAPIKey(),,,,,,SSLConnection);
+			HTTPConnection = New HTTPConnection("api.mongolab.com/api/1/clusters/rs-ds039921/databases/dataset1cproduction/collections/pay?q={""data_description"": '" + FindExistingInvoice + "'}&apiKey=" + ServiceParameters.MongoAPIKey(),,,,,,SSLConnection);
 			Result = HTTPConnection.Get(HTTPRequest);
 			ResponseBody = Result.GetBodyAsString(TextEncoding.UTF8);
 			ReformatedResponse = StrReplace(ResponseBody,"$","");
@@ -32,7 +32,7 @@ Procedure SendEmail(DocumentRef,EmailTo,CCTo,Subject,Body) Export
 				HeadersMap = New Map();			
 				HTTPRequest = New HTTPRequest("", HeadersMap);	
 				SSLConnection = New OpenSSLSecureConnection();
-				HTTPConnection = New HTTPConnection("api.mongolab.com/api/1/databases/dataset1c/collections/pay/" + InvoiceToReplace + "?apiKey=" + ServiceParameters.MongoAPIKey(),,,,,,SSLConnection);
+				HTTPConnection = New HTTPConnection("api.mongolab.com/api/1/clusters/rs-ds039921/databases/dataset1cproduction/collections/pay/" + InvoiceToReplace + "?apiKey=" + ServiceParameters.MongoAPIKey(),,,,,,SSLConnection);
 				Result = HTTPConnection.Delete(HTTPRequest);
 				ResponseBody = Result.GetBodyAsString(TextEncoding.UTF8);
 				ReformatedResponse = StrReplace(ResponseBody,"$","");
@@ -44,7 +44,7 @@ Procedure SendEmail(DocumentRef,EmailTo,CCTo,Subject,Body) Export
 			HeadersMap = New Map();
 			HeadersMap.Insert("Content-Type", "application/json");
 			
-			HTTPRequest = New HTTPRequest("/api/1/databases/dataset1c/collections/pay?apiKey=" + ServiceParameters.MongoAPIKey(), HeadersMap);
+			HTTPRequest = New HTTPRequest("/api/1/clusters/rs-ds039921/databases/dataset1cproduction/collections/pay?apiKey=" + ServiceParameters.MongoAPIKey(), HeadersMap);
 			
 			RequestBodyMap = New Map();
 			
@@ -98,9 +98,15 @@ Procedure SendEmail(DocumentRef,EmailTo,CCTo,Subject,Body) Export
 			CurObject.PayHTML = "https://pay.accountingsuite.com/invoice?token=" + RandomString20;
 			
 			HeadersMap = New Map();
-			HeadersMap.Insert("Content-Type", "application/json");
+			HeadersMap.Insert("Content-Type", "application/json");		
+		EndIf;
+		
+		If TypeOf(CurObject) = Type("DocumentObject.SalesInvoice") AND CurObject.PayHTML = "" AND NOT CurObject.DwollaTrxID = 0 Then
 			
-		EndIf;		 
+			CurObject.PayHTML = "https://www.dwolla.com/in/transaction.aspx?r=" + Format(CurObject.DwollaTrxID,"NG = 0");
+			
+		EndIf;
+		
 		
 		MailProfil = New InternetMailProfile; 
 		

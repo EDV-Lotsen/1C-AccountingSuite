@@ -3,19 +3,39 @@
 	<WindowOpeningMode>LockOwnerWindow</WindowOpeningMode>
 	<AutoCommandBar name="FormCommandBar" id="-1">
 		<ChildItems>
-			<Button name="FormCheck" id="226">
+			<Button name="FormExecute" id="226">
 				<Type>CommandBarButton</Type>
+				<Visible>false</Visible>
 				<CommandName>Form.Command.Execute</CommandName>
-				<ExtendedTooltip name="FormCheckExtendedTooltip" id="227"/>
+				<Title>
+					<v8:item>
+						<v8:lang>en</v8:lang>
+						<v8:content>Test run</v8:content>
+					</v8:item>
+				</Title>
+				<ExtendedTooltip name="FormExecuteExtendedTooltip" id="227"/>
 			</Button>
 		</ChildItems>
 	</AutoCommandBar>
 	<Events>
+		<Event name="AfterWrite">AfterWrite</Event>
+		<Event name="AfterWriteAtServer">AfterWriteAtServer</Event>
 		<Event name="BeforeWrite">BeforeWrite</Event>
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
 		<Event name="BeforeWriteAtServer">BeforeWriteAtServer</Event>
+		<Event name="OnClose">OnClose</Event>
 	</Events>
 	<ChildItems>
+		<InputField name="RecurringDocument" id="250">
+			<DataPath>Record.RecurringDocument</DataPath>
+			<ChoiceButtonRepresentation>ShowInInputField</ChoiceButtonRepresentation>
+			<AutoMarkIncomplete>true</AutoMarkIncomplete>
+			<ContextMenu name="RecurringDocumentContextMenu" id="251"/>
+			<ExtendedTooltip name="RecurringDocumentExtendedTooltip" id="252"/>
+			<Events>
+				<Event name="OnChange">RecurringDocumentOnChange</Event>
+			</Events>
+		</InputField>
 		<InputField name="SchedulePresentation" id="223">
 			<DataPath>SchedulePresentation</DataPath>
 			<ReadOnly>true</ReadOnly>
@@ -28,46 +48,87 @@
 			<ContextMenu name="SchedulePresentationContextMenu" id="224"/>
 			<ExtendedTooltip name="SchedulePresentationExtendedTooltip" id="225"/>
 		</InputField>
-		<UsualGroup name="Group3" id="244">
+		<UsualGroup name="ScheduleParameters" id="253">
 			<Visible>false</Visible>
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Schedule parameters</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Schedule parameters</v8:content>
+				</v8:item>
+			</ToolTip>
 			<Group>Horizontal</Group>
 			<Representation>None</Representation>
 			<ShowTitle>false</ShowTitle>
-			<ExtendedTooltip name="Group3ExtendedTooltip" id="245"/>
+			<ExtendedTooltip name="ScheduleParametersExtendedTooltip" id="254"/>
 			<ChildItems>
-				<UsualGroup name="Group1" id="240">
+				<UsualGroup name="ScheduleDates" id="255">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Schedule dates</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Schedule dates</v8:content>
+						</v8:item>
+					</ToolTip>
 					<Group>Vertical</Group>
 					<Representation>None</Representation>
 					<ShowTitle>false</ShowTitle>
-					<ExtendedTooltip name="Group1ExtendedTooltip" id="241"/>
+					<ExtendedTooltip name="ScheduleDatesExtendedTooltip" id="256"/>
 					<ChildItems>
-						<InputField name="EventDate" id="231">
-							<DataPath>Record.EventDate</DataPath>
-							<ContextMenu name="EventDateContextMenu" id="232"/>
-							<ExtendedTooltip name="EventDateExtendedTooltip" id="233"/>
-						</InputField>
-						<InputField name="ScheduledDate" id="228">
+						<InputField name="ScheduledDate" id="259">
 							<DataPath>Record.ScheduledDate</DataPath>
-							<ContextMenu name="ScheduledDateContextMenu" id="229"/>
-							<ExtendedTooltip name="ScheduledDateExtendedTooltip" id="230"/>
+							<ContextMenu name="ScheduledDateContextMenu" id="260"/>
+							<ExtendedTooltip name="ScheduledDateExtendedTooltip" id="261"/>
+						</InputField>
+						<InputField name="EventDate" id="262">
+							<DataPath>Record.EventDate</DataPath>
+							<ContextMenu name="EventDateContextMenu" id="263"/>
+							<ExtendedTooltip name="EventDateExtendedTooltip" id="264"/>
+						</InputField>
+						<InputField name="CompletedUpTo" id="265">
+							<DataPath>Record.CompletedUpTo</DataPath>
+							<ContextMenu name="CompletedUpToContextMenu" id="266"/>
+							<ExtendedTooltip name="CompletedUpToExtendedTooltip" id="267"/>
 						</InputField>
 					</ChildItems>
 				</UsualGroup>
-				<UsualGroup name="Group2" id="242">
+				<UsualGroup name="ScheduleOccurrences" id="257">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Schedule occurrences</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Schedule occurrences</v8:content>
+						</v8:item>
+					</ToolTip>
 					<Group>Vertical</Group>
 					<Representation>None</Representation>
 					<ShowTitle>false</ShowTitle>
-					<ExtendedTooltip name="Group2ExtendedTooltip" id="243"/>
+					<ExtendedTooltip name="ScheduleOccurrencesExtendedTooltip" id="258"/>
 					<ChildItems>
-						<InputField name="LastExecutionDate" id="234">
+						<InputField name="LastExecutionDate" id="268">
 							<DataPath>Record.LastExecutionDate</DataPath>
-							<ContextMenu name="LastExecutionDateContextMenu" id="235"/>
-							<ExtendedTooltip name="LastExecutionDateExtendedTooltip" id="236"/>
+							<ContextMenu name="LastExecutionDateContextMenu" id="269"/>
+							<ExtendedTooltip name="LastExecutionDateExtendedTooltip" id="270"/>
 						</InputField>
-						<InputField name="OccurrencesCount" id="237">
+						<InputField name="OccurrencesCount" id="271">
 							<DataPath>Record.OccurrencesCount</DataPath>
-							<ContextMenu name="OccurrencesCountContextMenu" id="238"/>
-							<ExtendedTooltip name="OccurrencesCountExtendedTooltip" id="239"/>
+							<ContextMenu name="OccurrencesCountContextMenu" id="272"/>
+							<ExtendedTooltip name="OccurrencesCountExtendedTooltip" id="273"/>
 						</InputField>
 					</ChildItems>
 				</UsualGroup>
@@ -2467,6 +2528,17 @@ The template will be available in recurring templates list.</v8:content>
 				<v8:DateQualifiers>
 					<v8:DateFractions>Date</v8:DateFractions>
 				</v8:DateQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="FormUpdated" id="24">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Form updated</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
 			</Type>
 		</Attribute>
 	</Attributes>

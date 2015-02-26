@@ -3,7 +3,7 @@
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
-	FillPropertyValues(ThisForm, ThisForm.Parameters, "HideBalances, DoNotUseJournalEntry, DoNotUseAdjustingJournalEntry, EditBegBal, DateStart, DateEnd, AccountInBank, BankAccount, UseBankReconciliationForBegBal");
+	FillPropertyValues(ThisForm, ThisForm.Parameters, "HideBalances, DoNotUseJournalEntry, DoNotUseAdjustingJournalEntry, EditBegBal, DateStart, DateEnd, AccountInBank, BankAccount, UseBankReconciliationForBegBal, EditNumbersWithoutDecimalPoint");
 	If Not (ValueIsFilled(DateStart) And ValueIsFilled(DateEnd)) Then
 		DateStart 	= BegOfMonth(CurrentSessionDate());
 		DateEnd 	= EndOfMonth(CurrentSessionDate());
@@ -17,6 +17,9 @@ EndProcedure
 Procedure ChoiceProcessing(SelectedValue, ChoiceSource)
 	
 	If TypeOf(SelectedValue) = Type("Structure") Then
+		If (SelectedValue.BeginOfPeriod <> DateStart) Or (SelectedValue.EndOfPeriod <> DateEnd) Then
+			PeriodChanged = True;
+		EndIf;
 		DateStart 	= SelectedValue.BeginOfPeriod;
 		DateEnd		= SelectedValue.EndOfPeriod;
 	EndIf;
@@ -29,8 +32,8 @@ EndProcedure
 Procedure OKCommand(Command)
 	
 	StandardProcessing = False;
-	ReturnStructure = New Structure("HideBalances, DoNotUseJournalEntry, DoNotUseAdjustingJournalEntry, EditBegBal, DateStart, DateEnd, AccountInBank, BankAccount, UseBankReconciliationForBegBal");
-	FillPropertyValues(ReturnStructure, ThisForm, "HideBalances, DoNotUseJournalEntry, DoNotUseAdjustingJournalEntry, EditBegBal, DateStart, DateEnd, AccountInBank, BankAccount, UseBankReconciliationForBegBal");
+	ReturnStructure = New Structure("HideBalances, DoNotUseJournalEntry, DoNotUseAdjustingJournalEntry, EditBegBal, DateStart, DateEnd, AccountInBank, BankAccount, UseBankReconciliationForBegBal, EditNumbersWithoutDecimalPoint, PeriodChanged");
+	FillPropertyValues(ReturnStructure, ThisForm, "HideBalances, DoNotUseJournalEntry, DoNotUseAdjustingJournalEntry, EditBegBal, DateStart, DateEnd, AccountInBank, BankAccount, UseBankReconciliationForBegBal, EditNumbersWithoutDecimalPoint, PeriodChanged");
 	Close(ReturnStructure);
 
 EndProcedure

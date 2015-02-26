@@ -145,6 +145,16 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		SalesTaxRate = taxResult[0].ref;
 	EndIf;
 	
+	If Object.BillTo <> Catalogs.Addresses.EmptyRef() AND Object.ShipTo <> Catalogs.Addresses.EmptyRef()  Then
+		Items.DecorationShipTo.Visible = True;
+		Items.DecorationBillTo.Visible = True;
+		Items.DecorationBillTo.Title = GeneralFunctions.ShowAddressDecoration(Object.BillTo);
+		Items.DecorationShipTo.Title = GeneralFunctions.ShowAddressDecoration(Object.ShipTo);
+	Else
+		Items.DecorationShipTo.Visible = False;
+		Items.DecorationBillTo.Visible = False;
+	EndIf;
+	
 EndProcedure
 
 &AtClient
@@ -356,6 +366,11 @@ Procedure CompanyOnChangeAtServer()
 	Items.SalesTaxPercentDecoration.Title = SalesTaxRateText;
 	RecalculateTotalsAtServer();
 	
+	Items.DecorationBillTo.Visible = True;
+	Items.DecorationShipTo.Visible = True;
+	Items.DecorationShipTo.Title = GeneralFunctions.ShowAddressDecoration(Object.ShipTo);
+	Items.DecorationBillTo.Title = GeneralFunctions.ShowAddressDecoration(Object.BillTo);
+	
 EndProcedure
 
 &AtClient
@@ -377,6 +392,8 @@ EndProcedure
 &AtClient
 Procedure ShipToOnChange(Item)
 	
+	Items.DecorationShipTo.Visible = True;
+	Items.DecorationShipTo.Title = GeneralFunctions.ShowAddressDecoration(Object.ShipTo);
 	// Request server operation.
 	ShipToOnChangeAtServer();
 	
@@ -466,15 +483,20 @@ EndProcedure
 &AtClient
 Procedure DiscountPercentOnChange(Item)
 	
-	// Request server operation.
-	DiscountPercentOnChangeAtServer();
+	// Fill line data for editing.
+	TableSectionRow = GetLineItemsRowStructure();
+	LineItemsCurrentData = Items.LineItems.CurrentData;
+	If LineItemsCurrentData <> Undefined Then
+		FillPropertyValues(TableSectionRow, LineItemsCurrentData);
+	EndIf;
 	
-	UpdateInformationCurrentRow();
+	// Request server operation.
+	DiscountPercentOnChangeAtServer(TableSectionRow);
 	
 EndProcedure
 
 &AtServer
-Procedure DiscountPercentOnChangeAtServer()
+Procedure DiscountPercentOnChangeAtServer(TableSectionRow)
 	
 	// Recalculate discount value by it's percent.
 	Object.Discount = Round(-1 * Object.LineSubtotal * Object.DiscountPercent/100, 2);
@@ -482,20 +504,27 @@ Procedure DiscountPercentOnChangeAtServer()
 	// Recalculate totals with new discount.
 	RecalculateTotalsAtServer();
 	
+	UpdateInformationCurrentRow(TableSectionRow);
+		
 EndProcedure
 
 &AtClient
 Procedure DiscountOnChange(Item)
 	
-	// Request server operation.
-	DiscountOnChangeAtServer();
+	// Fill line data for editing.
+	TableSectionRow = GetLineItemsRowStructure();
+	LineItemsCurrentData = Items.LineItems.CurrentData;
+	If LineItemsCurrentData <> Undefined Then
+		FillPropertyValues(TableSectionRow, LineItemsCurrentData);
+	EndIf;
 	
-	UpdateInformationCurrentRow();
+	// Request server operation.
+	DiscountOnChangeAtServer(TableSectionRow);
 	
 EndProcedure
 
 &AtServer
-Procedure DiscountOnChangeAtServer()
+Procedure DiscountOnChangeAtServer(TableSectionRow)
 	
 	// Discount can not override the total.
 	If Object.Discount < -Object.LineSubtotal Then
@@ -509,6 +538,8 @@ Procedure DiscountOnChangeAtServer()
 	
 	// Recalculate totals with new discount.
 	RecalculateTotalsAtServer();
+	
+	UpdateInformationCurrentRow(TableSectionRow);
 	
 EndProcedure
 
@@ -706,6 +737,22 @@ Procedure LineItemsOnChange(Item)
 EndProcedure
 
 &AtClient
+Procedure LineItemsOnActivateRow(Item)
+	
+	LineItemsCurrentData = Items.LineItems.CurrentData;
+	If LineItemsCurrentData <> Undefined Then
+		
+		// Fill line data for editing.
+		TableSectionRow = GetLineItemsRowStructure();
+		FillPropertyValues(TableSectionRow, LineItemsCurrentData);
+		
+		UpdateInformationCurrentRow(TableSectionRow);
+		
+	EndIf;
+	
+EndProcedure
+
+&AtClient
 Procedure LineItemsBeforeAddRow(Item, Cancel, Clone, Parent, Folder)
 	
 	// Set new row flag.
@@ -750,8 +797,6 @@ Procedure LineItemsProductOnChange(Item)
 	// Refresh totals cache.
 	RecalculateTotals();
 	
-	UpdateInformationCurrentRow();
-	
 EndProcedure
 
 &AtServer
@@ -782,6 +827,8 @@ Procedure LineItemsProductOnChangeAtServer(TableSectionRow)
 	// Calculate totals by line.
 	TableSectionRow.LineTotal     = 0;
 	TableSectionRow.TaxableAmount = 0;
+		
+	UpdateInformationCurrentRow(TableSectionRow);
 	
 EndProcedure
 
@@ -833,8 +880,6 @@ Procedure LineItemsQuantityOnChange(Item)
 	// Refresh totals cache.
 	RecalculateTotals();
 	
-	UpdateInformationCurrentRow();
-	
 EndProcedure
 
 &AtServer
@@ -863,9 +908,7 @@ Procedure LineItemsPriceOnChange(Item)
 	
 	// Refresh totals cache.
 	RecalculateTotals();
-	
-	UpdateInformationCurrentRow();
-	
+		
 EndProcedure
 
 &AtServer
@@ -939,6 +982,8 @@ Procedure LineItemsTaxableOnChangeAtServer(TableSectionRow)
 	
 	// Calculate sales tax by line total.
 	TableSectionRow.TaxableAmount = ?(TableSectionRow.Taxable, TableSectionRow.LineTotal, 0);
+		
+	UpdateInformationCurrentRow(TableSectionRow);
 	
 EndProcedure
 
@@ -1013,16 +1058,18 @@ Procedure ShowSalesTaxRate()
 EndProcedure
 
 &AtClient
-Procedure LineItemsOnActivateRow(Item)
-	
-	UpdateInformationCurrentRow();
-	
-EndProcedure
-
-&AtClient
 Procedure LineItemsLocationOnChange(Item)
 	
-	UpdateInformationCurrentRow();
+	LineItemsCurrentData = Items.LineItems.CurrentData;
+	If LineItemsCurrentData <> Undefined Then
+		
+		// Fill line data for editing.
+		TableSectionRow = GetLineItemsRowStructure();
+		FillPropertyValues(TableSectionRow, LineItemsCurrentData);
+		
+		UpdateInformationCurrentRow(TableSectionRow);
+		
+	EndIf;
 	
 EndProcedure
 
@@ -1355,269 +1402,35 @@ Procedure GenerateDoc(DocumentType)
 	
 EndProcedure
 
-&AtClient
-Procedure UpdateInformationCurrentRow()
+&AtServer
+Procedure UpdateInformationCurrentRow(CurrentRow)
 	
 	InformationCurrentRow = "";
 	
-	CurrentRow = Items.LineItems.CurrentData;
-	
-	If CurrentRow <> Undefined Then
+	If CurrentRow.Product <> Undefined And CurrentRow.Product <> PredefinedValue("Catalog.Products.EmptyRef") Then
 		
-		If CurrentRow.Product <> PredefinedValue("Catalog.Products.EmptyRef") Then
-			
-			InformationCurrentRow = GetInformationCurrentRow(CurrentRow.Product, CurrentRow.Location, CurrentRow.QtyUM, CurrentRow.LineTotal,
-																Object.Currency, Object.ExchangeRate, Object.DiscountPercent, Object.LineItems); 
-			InformationCurrentRow = "" + InformationCurrentRow;
-			
-		EndIf;
+		LineItems = Object.LineItems.Unload(, "LineNumber, Product, QtyUM, LineTotal");
+		
+		LineItem = LineItems.Find(CurrentRow.LineNumber, "LineNumber");
+		LineItem.Product   = CurrentRow.Product;
+		LineItem.QtyUM     = CurrentRow.QtyUM;
+		LineItem.LineTotal = CurrentRow.LineTotal;
+		
+		InformationCurrentRow = GeneralFunctions.GetMarginInformation(CurrentRow.Product, CurrentRow.Location, CurrentRow.QtyUM, CurrentRow.LineTotal,
+																	  Object.Currency, Object.ExchangeRate, Object.DiscountPercent, LineItems); 
+		InformationCurrentRow = "" + InformationCurrentRow;
 		
 	EndIf;
 	
 EndProcedure
 
-&AtServerNoContext
-Function GetInformationCurrentRow(Product, Location, Quantity, LineTotal, Currency, ExchangeRate, DiscountPercent, Val LineItems) 
+&AtClient
+Procedure BillToOnChange(Item)
 	
-	QuantityFormat    = GeneralFunctionsReusable.DefaultQuantityFormat();
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	Cost        = "";
-	Margin      = "";
-	MarginTotal = "";
-
-	Query = New Query;
-	Query.Text = "SELECT
-	             |	ItemLastCostsSliceLast.Product,
-	             |	ItemLastCostsSliceLast.Cost
-	             |FROM
-	             |	InformationRegister.ItemLastCosts.SliceLast(, Product IN (&Products)) AS ItemLastCostsSliceLast";
-
-	Query.SetParameter("Products", LineItems.Unload(, "Product"));
-	ItemLastCosts = Query.Execute().Unload();
+	Items.DecorationBillTo.Visible = True;
+	Items.DecorationBillTo.Title = GeneralFunctions.ShowAddressDecoration(Object.BillTo);
 	
-	LastCostRow = ItemLastCosts.Find(Product, "Product");
-	
-	//Cost
-	Cost = ?(LastCostRow <> Undefined, LastCostRow.Cost, 0);
-	PriceFormat = GeneralFunctionsReusable.PriceFormatForOneItem(Product);
-	Cost = "Cost " + Currency.Symbol + " " + Format(?(ExchangeRate = 0, 0, Cost / ExchangeRate), PriceFormat + "; NZ=0"); 
-	
-	//Margin
-	LineTotalLC = ?(LastCostRow <> Undefined, LastCostRow.Cost, 0) * Quantity; 
-	LineTotalLC = ?(ExchangeRate = 0, 0, LineTotalLC / ExchangeRate);
-	
-	LineTotalP = LineTotal - (LineTotal * DiscountPercent / 100);	
-	
-	MarginSum = Currency.Symbol + " " + Format(LineTotalP - LineTotalLC, "NFD=2; NZ=0.00"); 
-	
-	If LineTotalLC = 0 Then
-		Margin = "Margin 0.00% / " + MarginSum;
-	Else
-		Margin = "Margin " + Format((LineTotalP / LineTotalLC) * 100 - 100, "NFD=2; NZ=0.00") + "% / " + MarginSum;
-	EndIf;
-	
-	//MarginTotal
-	LineTotalLCSum = 0;
-	LineTotalSum   = 0;
-	
-	For Each Item In LineItems Do
-		
-		LastCostRow = ItemLastCosts.Find(Item.Product, "Product");
-		
-		//LineTotalLCSum
-		LineTotalLC = ?(LastCostRow <> Undefined, LastCostRow.Cost, 0) * Item.QtyUM; 
-		LineTotalLC = ?(ExchangeRate = 0, 0, LineTotalLC / ExchangeRate);
-		
-		LineTotalLCSum = LineTotalLCSum + LineTotalLC;
-		
-		//LineTotalSum
-		LineTotalP = Item.LineTotal - (Item.LineTotal * DiscountPercent / 100);	
-		
-		LineTotalSum = LineTotalSum + LineTotalP;
-		
-	EndDo;
-	
-	MarginSum = Currency.Symbol + " " + Format(LineTotalSum - LineTotalLCSum, "NFD=2; NZ=0.00"); 
-	
-	If LineTotalLCSum = 0 Then
-		MarginTotal = "Total 0.00% / " + MarginSum;
-	Else
-		MarginTotal = "Total " + Format((LineTotalSum / LineTotalLCSum) * 100 - 100, "NFD=2; NZ=0.00") + "% / " + MarginSum;
-	EndIf;
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	Query = New Query;
-	
-	Query.SetParameter("Ref", Product);
-	Query.SetParameter("Type", Product.Type);
-	Query.SetParameter("Location", Location);
-	
-	Query.Text = "SELECT
-	             |	OrdersDispatchedBalance.Company AS Company,
-	             |	OrdersDispatchedBalance.Order AS Order,
-	             |	OrdersDispatchedBalance.Product AS Product,
-	             |	OrdersDispatchedBalance.Location,
-	             |	OrdersDispatchedBalance.Unit AS Unit,
-	             |	CASE
-	             |		WHEN &Type = VALUE(Enum.InventoryTypes.Inventory)
-	             |			THEN CASE
-	             |					WHEN OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.ReceivedBalance > 0
-	             |						THEN (OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.ReceivedBalance) * OrdersDispatchedBalance.Unit.Factor
-	             |					ELSE 0
-	             |				END
-	             |		WHEN &Type = VALUE(Enum.InventoryTypes.NonInventory)
-	             |			THEN CASE
-	             |					WHEN OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.InvoicedBalance > 0
-	             |						THEN (OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.InvoicedBalance) * OrdersDispatchedBalance.Unit.Factor
-	             |					ELSE 0
-	             |				END
-	             |		ELSE 0
-	             |	END AS QtyOnPO,
-	             |	0 AS QtyOnSO,
-	             |	0 AS QtyOnHand
-	             |INTO Table_OrdersDispatched_OrdersRegistered_InventoryJournal
-	             |FROM
-	             |	AccumulationRegister.OrdersDispatched.Balance(
-	             |			,
-	             |			Product = &Ref
-	             |				AND Location = &Location) AS OrdersDispatchedBalance
-	             |		LEFT JOIN InformationRegister.OrdersStatuses.SliceLast AS OrdersStatusesSliceLast
-	             |		ON OrdersDispatchedBalance.Order = OrdersStatusesSliceLast.Order
-	             |			AND (OrdersStatusesSliceLast.Status = VALUE(Enum.OrderStatuses.Open)
-	             |				OR OrdersStatusesSliceLast.Status = VALUE(Enum.OrderStatuses.Backordered))
-	             |
-	             |UNION ALL
-	             |
-	             |SELECT
-	             |	OrdersRegisteredBalance.Company,
-	             |	OrdersRegisteredBalance.Order,
-	             |	OrdersRegisteredBalance.Product,
-	             |	OrdersRegisteredBalance.Location,
-	             |	OrdersRegisteredBalance.Unit,
-	             |	0,
-	             |	CASE
-	             |		WHEN &Type = VALUE(Enum.InventoryTypes.Inventory)
-	             |			THEN CASE
-	             |					WHEN OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.ShippedBalance > 0
-	             |						THEN (OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.ShippedBalance) * OrdersRegisteredBalance.Unit.Factor
-	             |					ELSE 0
-	             |				END
-	             |		WHEN &Type = VALUE(Enum.InventoryTypes.NonInventory)
-	             |			THEN CASE
-	             |					WHEN OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.InvoicedBalance > 0
-	             |						THEN (OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.InvoicedBalance) * OrdersRegisteredBalance.Unit.Factor
-	             |					ELSE 0
-	             |				END
-	             |		ELSE 0
-	             |	END,
-	             |	0
-	             |FROM
-	             |	AccumulationRegister.OrdersRegistered.Balance(
-	             |			,
-	             |			Product = &Ref
-	             |				AND Location = &Location) AS OrdersRegisteredBalance
-	             |		LEFT JOIN InformationRegister.OrdersStatuses.SliceLast AS OrdersStatusesSliceLast
-	             |		ON OrdersRegisteredBalance.Order = OrdersStatusesSliceLast.Order
-	             |			AND (OrdersStatusesSliceLast.Status = VALUE(Enum.OrderStatuses.Open)
-	             |				OR OrdersStatusesSliceLast.Status = VALUE(Enum.OrderStatuses.Backordered))
-	             |
-	             |UNION ALL
-	             |
-	             |SELECT
-	             |	NULL,
-	             |	NULL,
-	             |	InventoryJournalBalance.Product,
-	             |	InventoryJournalBalance.Location,
-	             |	NULL,
-	             |	0,
-	             |	0,
-	             |	CASE
-	             |		WHEN &Type = VALUE(Enum.InventoryTypes.Inventory)
-	             |			THEN InventoryJournalBalance.QuantityBalance
-	             |		WHEN &Type = VALUE(Enum.InventoryTypes.NonInventory)
-	             |			THEN 0
-	             |		ELSE 0
-	             |	END
-	             |FROM
-	             |	AccumulationRegister.InventoryJournal.Balance(
-	             |			,
-	             |			Product = &Ref
-	             |				AND Location = &Location) AS InventoryJournalBalance
-	             |;
-	             |
-	             |////////////////////////////////////////////////////////////////////////////////
-	             |SELECT
-	             |	TableBalances.Product AS Product,
-	             |	TableBalances.Location,
-	             |	SUM(ISNULL(TableBalances.QtyOnPO, 0)) AS QtyOnPO,
-	             |	SUM(ISNULL(TableBalances.QtyOnSO, 0)) AS QtyOnSO,
-	             |	SUM(ISNULL(TableBalances.QtyOnHand, 0)) AS QtyOnHand,
-	             |	CASE
-	             |		WHEN &Type = VALUE(Enum.InventoryTypes.Inventory)
-	             |			THEN SUM(ISNULL(TableBalances.QtyOnHand, 0)) + SUM(ISNULL(TableBalances.QtyOnPO, 0)) - SUM(ISNULL(TableBalances.QtyOnSO, 0))
-	             |		WHEN &Type = VALUE(Enum.InventoryTypes.NonInventory)
-	             |			THEN 0
-	             |		ELSE 0
-	             |	END AS QtyAvailableToPromise
-	             |INTO TotalTable
-	             |FROM
-	             |	Table_OrdersDispatched_OrdersRegistered_InventoryJournal AS TableBalances
-	             |
-	             |GROUP BY
-	             |	TableBalances.Product,
-	             |	TableBalances.Location
-	             |;
-	             |
-	             |////////////////////////////////////////////////////////////////////////////////
-	             |SELECT
-	             |	TotalTable.Product,
-	             |	TotalTable.Location,
-	             |	TotalTable.QtyOnPO,
-	             |	TotalTable.QtyOnSO,
-	             |	TotalTable.QtyOnHand,
-	             |	TotalTable.QtyAvailableToPromise
-	             |FROM
-	             |	TotalTable AS TotalTable
-	             |WHERE
-	             |	(TotalTable.QtyOnPO <> 0
-	             |			OR TotalTable.QtyOnSO <> 0
-	             |			OR TotalTable.QtyOnHand <> 0
-	             |			OR TotalTable.QtyAvailableToPromise <> 0)";
-	
-	
-	SelectionDetailRecords = Query.Execute().Select();
-	
-	OnPO   = Format(0, QuantityFormat);
-	OnSO   = Format(0, QuantityFormat);
-	OnHand = Format(0, QuantityFormat);
-	ATP    = Format(0, QuantityFormat);
-	
-	While SelectionDetailRecords.Next() Do
-		
-		OnPO   = Format(SelectionDetailRecords.QtyOnPO, QuantityFormat);
-		OnSO   = Format(SelectionDetailRecords.QtyOnSO, QuantityFormat);
-		OnHand = Format(SelectionDetailRecords.QtyOnHand, QuantityFormat);
-		ATP    = Format(SelectionDetailRecords.QtyAvailableToPromise, QuantityFormat);
-		
-	EndDo;
-	
-	If Product.Type = Enums.InventoryTypes.Inventory Then
-		QuantityInformation = "On PO: " + OnPO + " On SO: " + OnSO + " On hand: " + OnHand + " ATP: " + ATP;
-	Else
-		QuantityInformation = "On PO: " + OnPO + " On SO: " + OnSO;
-	EndIf;
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	
-	BaseUnit =  GeneralFunctions.GetBaseUnit(Product.UnitSet).Code;
-	
-	Return Cost + " | " + Margin + " | " + MarginTotal + " | Qty in " + BaseUnit + " " + QuantityInformation;
-	
-EndFunction
+EndProcedure
 
 #EndRegion
 

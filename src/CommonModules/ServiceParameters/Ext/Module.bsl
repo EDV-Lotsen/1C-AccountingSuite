@@ -58,7 +58,6 @@ EndFunction
 
 Function AvalaraAuth() Export
 		
-	//Return "Basic MTEwMDA1MjI2NToyMkY2RUUwOTQ3NzVFNjUy";
 	Return "";
 	
 EndFunction

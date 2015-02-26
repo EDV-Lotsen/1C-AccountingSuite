@@ -282,6 +282,74 @@
 								</InputField>
 							</ChildItems>
 						</Page>
+						<Page name="URLTab" id="156">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>URL</v8:content>
+								</v8:item>
+							</Title>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>URLTab</v8:content>
+								</v8:item>
+							</ToolTip>
+							<Group>Horizontal</Group>
+							<ExtendedTooltip name="URLTabExtendedTooltip" id="157"/>
+							<ChildItems>
+								<InputField name="URL" id="158">
+									<DataPath>Object.URL</DataPath>
+									<InputHint>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>For example, https://docs.google.com/.../file_name</v8:content>
+										</v8:item>
+									</InputHint>
+									<ContextMenu name="URLContextMenu" id="159"/>
+									<ExtendedTooltip name="URLExtendedTooltip" id="160"/>
+								</InputField>
+								<Button name="OpenURL" id="161">
+									<Type>UsualButton</Type>
+									<CommandName>Form.Command.OpenURL</CommandName>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Open</v8:content>
+										</v8:item>
+									</Title>
+									<ExtendedTooltip name="OpenURLExtendedTooltip" id="162"/>
+								</Button>
+							</ChildItems>
+						</Page>
+						<Page name="Accounting" id="152">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Accounting</v8:content>
+								</v8:item>
+							</Title>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Accounting</v8:content>
+								</v8:item>
+							</ToolTip>
+							<ExtendedTooltip name="AccountingExtendedTooltip" id="153"/>
+							<ChildItems>
+								<Button name="AuditLogRecord" id="154">
+									<Type>UsualButton</Type>
+									<CommandName>Form.Command.AuditLogRecord</CommandName>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Audit Log Records</v8:content>
+										</v8:item>
+									</Title>
+									<ExtendedTooltip name="AuditLogRecordExtendedTooltip" id="155"/>
+								</Button>
+							</ChildItems>
+						</Page>
 					</ChildItems>
 				</Pages>
 			</ChildItems>
@@ -316,29 +384,29 @@
 					<ContextMenu name="LineItemsContextMenu" id="6"/>
 					<AutoCommandBar name="LineItemsCommandBar" id="7"/>
 					<ExtendedTooltip name="LineItemsExtendedTooltip" id="117"/>
-					<SearchStringAddition name="LineItemsSearchString" id="152">
+					<SearchStringAddition name="LineItemsSearchString" id="163">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>SearchStringRepresentation</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsSearchStringContextMenu" id="153"/>
-						<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="154"/>
+						<ContextMenu name="LineItemsSearchStringContextMenu" id="164"/>
+						<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="165"/>
 					</SearchStringAddition>
-					<ViewStatusAddition name="LineItemsViewStatus" id="155">
+					<ViewStatusAddition name="LineItemsViewStatus" id="166">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>ViewStatusRepresentation</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsViewStatusContextMenu" id="156"/>
-						<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="157"/>
+						<ContextMenu name="LineItemsViewStatusContextMenu" id="167"/>
+						<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="168"/>
 					</ViewStatusAddition>
-					<SearchControlAddition name="LineItemsSearchControl" id="158">
+					<SearchControlAddition name="LineItemsSearchControl" id="169">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>SearchControl</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsSearchControlContextMenu" id="159"/>
-						<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="160"/>
+						<ContextMenu name="LineItemsSearchControlContextMenu" id="170"/>
+						<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="171"/>
 					</SearchControlAddition>
 					<Events>
 						<Event name="AfterDeleteRow">LineItemsAfterDeleteRow</Event>
@@ -639,6 +707,38 @@
 			<Type/>
 		</Attribute>
 	</Attributes>
+	<Commands>
+		<Command name="AuditLogRecord" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Audit log record</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Audit log record</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>AuditLogRecord</Action>
+		</Command>
+		<Command name="OpenURL" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Open URL</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Open URL</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>OpenURL</Action>
+		</Command>
+	</Commands>
 	<CommandInterface>
 		<NavigationPanel>
 			<Item>

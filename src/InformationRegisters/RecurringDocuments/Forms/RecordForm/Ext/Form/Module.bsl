@@ -25,12 +25,15 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	Parameters.Property("FromDate", FromDate);
 	
 	// Read schedule parameters.
-	ScheduleParameters = InformationRegisters.RecurringDocuments.GetSchedule(Record.RecurringDocument);
+	ScheduleParameters = InformationRegisters.RecurringDocuments.GetSchedule(Record.RecurringDocument, Record.LineID);
 	
 	// Load schedule parameters to the form attributes.
 	FillPropertyValues(ThisForm, ScheduleParameters);
 	
-	// Update current pages.
+	// Assign the default month interval (for newly created records).
+	If Record.LineID = 0 Then Interval = 3 EndIf;
+	
+	// Update pages settings.
 	Items.SelectActionPages.CurrentPage = Items.SelectActionPages.ChildItems[Action-1];
 	Items.SelectIntervalPages.CurrentPage = Items.SelectIntervalPages.ChildItems[Interval-1];
 	
@@ -40,10 +43,48 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	MonthTypeOnChangeAtServer();
 	StopTypeOnChangeAtServer();
 	
+	// Update form elements presentation.
+	Items.FormExecute.Enabled = Not Modified;
+	Items.RecurringDocument.Visible = Not ValueIsFilled(Record.RecurringDocument);
+	
+EndProcedure
+
+&AtClient
+Procedure OnClose()
+	
+	// Process server operations.
+	OnCloseAtServer();
+	
+EndProcedure
+
+&AtServer
+Procedure OnCloseAtServer()
+	
+	// Define date constants.
+	EmptyDate   = '00010101';
+	CurrentDate = BegOfDay(CurrentDate());
+	
+	// If document should to be created - do process scheduled actions.
+	If    FormUpdated = True       // The data in the schedule are changed before close.
+	And  (Record.EventDate         > EmptyDate And Record.EventDate         <= CurrentDate)
+	And  (Record.ScheduledDate     > EmptyDate And Record.ScheduledDate     >= CurrentDate)
+	And ((Record.CompletedUpTo     > EmptyDate And Record.CompletedUpTo     <  CurrentDate) Or (Record.CompletedUpTo     = EmptyDate))
+	And ((Record.LastExecutionDate > EmptyDate And Record.LastExecutionDate <  CurrentDate) Or (Record.LastExecutionDate = EmptyDate))
+	Then  InformationRegisters.RecurringDocuments.ProcessCurrentScheduledActions(CurrentDate(), Record.RecurringDocument);
+	EndIf;
+	
 EndProcedure
 
 &AtClient
 Procedure BeforeWrite(Cancel, WriteParameters)
+	
+	// Check recurring document filling.
+	If Not ValueIsFilled(Record.RecurringDocument) Then
+		Cancel = True;
+		ShowMessageBox(Undefined, NStr("en = 'The schedule can not be saved without the recurring document specified.
+		                                     |Select the recurring document.'"),, NStr("en = 'Error writing the recurring template'"));
+		Return;
+	EndIf;
 	
 	// Check days in advance / remind before
 	
@@ -93,6 +134,25 @@ Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
 	// Push schedule parameters from the form attributes to the value storage.
 	CurrentObject.Schedule = InformationRegisters.RecurringDocuments.PutToSchedule(ThisForm);
 	
+	// Assign the new record ID (for newly created records).
+	If CurrentObject.LineID = 0 Then CurrentObject.LineID = InformationRegisters.RecurringDocuments.GetNewNumber(CurrentObject.RecurringDocument) EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure AfterWrite(WriteParameters)
+	
+	// Update form elements presentation.
+	Items.FormExecute.Enabled = Not Modified;
+	
+EndProcedure
+
+&AtServer
+Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
+	
+	// Set data updated flag for run of updated schedule on closing.
+	FormUpdated = True;
+	
 EndProcedure
 
 #EndRegion
@@ -102,6 +162,14 @@ EndProcedure
 
 //------------------------------------------------------------------------------
 // Form items events processing
+
+&AtClient
+Procedure RecurringDocumentOnChange(Item)
+	
+	// Update recurring document presentation.
+	RecurringDocumentOnChangeAtServer();
+	
+EndProcedure
 
 &AtClient
 Procedure SelectActionPagesOnCurrentPageChange(Item, CurrentPage)
@@ -263,6 +331,17 @@ EndProcedure
 
 //------------------------------------------------------------------------------
 // Object fields presentation processing
+
+&AtServer
+Procedure RecurringDocumentOnChangeAtServer()
+	
+	// Update schedule presentation.
+	SchedulePresentationUpdate();
+	
+	// Update scheduled date.
+	ScheduledDateUpdate();
+	
+EndProcedure
 
 &AtServer
 Procedure ActionOnChangeAtServer()
@@ -510,11 +589,50 @@ Procedure StopAfterOnChangeAtServer()
 	
 EndProcedure
 
+#EndRegion
+
+////////////////////////////////////////////////////////////////////////////////
+#Region TABULAR_SECTION_EVENTS_HANDLERS
+
+#EndRegion
+
+////////////////////////////////////////////////////////////////////////////////
+#Region COMMANDS_HANDLERS
+
+&AtClient
+Procedure ExecuteAction(Command)
+	
+	// Execute current action.
+	If ExecuteActionAtServer() Then
+		ShowMessageBox(Undefined, NStr("en = 'The action executed successfully.'"));
+	Else
+		ShowMessageBox(Undefined, NStr("en = 'The action execution is failed.'"));
+	EndIf;
+	
+EndProcedure
+
+&AtServer
+Function ExecuteActionAtServer()
+	
+	// Execute current action for the specified recurring document.
+	Return InformationRegisters.RecurringDocuments.ProcessCurrentScheduledActions(
+		CurrentDate(), Record.RecurringDocument);
+	
+EndFunction
+
+#EndRegion
+
+////////////////////////////////////////////////////////////////////////////////
+#Region PRIVATE_IMPLEMENTATION
+
 &AtServer
 Procedure SchedulePresentationUpdate()
 	
 	// Update schedule presentation basing on the schedule options.
 	SchedulePresentation = "{ActionPresentation}{IntervalPresentation}{RangePresentation}.";
+	
+	// Update recurring document presentation.
+	RecurringDocument = ?(ValueIsFilled(Record.RecurringDocument), Record.RecurringDocument, "...");
 	
 	// Action parameters.
 	If Action                        = 1 Then // Generate.
@@ -536,7 +654,7 @@ Procedure SchedulePresentationUpdate()
 		
 		// Format action string.
 		ActionPresentation = StringFunctionsClientServer.SubstituteParametersInString(
-		                     ActionPresentation, Record.RecurringDocument, AdvanceStr);
+		                     ActionPresentation, RecurringDocument, AdvanceStr);
 		
 	ElsIf Action                     = 2 Then // Remind.
 		
@@ -553,13 +671,13 @@ Procedure SchedulePresentationUpdate()
 		
 		// Format action string.
 		ActionPresentation = StringFunctionsClientServer.SubstituteParametersInString(
-		                     ActionPresentation, Record.RecurringDocument, BeforeStr);
+		                     ActionPresentation, RecurringDocument, BeforeStr);
 		
 	ElsIf Action                     = 3 Then // Save.
 		
 		// Format action string.
 		ActionPresentation = StringFunctionsClientServer.SubstituteParametersInString(
-		                     NStr("en = 'Save %1 as a template'"), Record.RecurringDocument);
+		                     NStr("en = 'Save %1 as a template'"), RecurringDocument);
 	EndIf;
 	
 	// Interval & range parameters.
@@ -673,6 +791,8 @@ Procedure SchedulePresentationUpdate()
 		Record.SchedulePresentation = SchedulePresentation;
 		// Set record modification flag.
 		Modified = True;
+		// Update form elements presentation.
+		Items.FormExecute.Enabled = Not Modified;
 	EndIf;
 	
 EndProcedure
@@ -681,14 +801,12 @@ EndProcedure
 Procedure ScheduledDateUpdate()
 	
 	// Copy the record data to the local variables (preventing occasional changing).
+	EmptyDate         = '00010101';
+	CurrentDate       = BegOfDay(CurrentDate());
 	EventDate         = Record.EventDate;
 	LastExecutionDate = Record.LastExecutionDate;
+	CompletedUpTo     = Record.CompletedUpTo;
 	OccurrencesCount  = Record.OccurrencesCount;
-	EventDate         = Record.EventDate;
-	EmptyDate         = '00010101';
-	
-	// Generate the schedule date and the nearest event date.
-	ScheduledDate = InformationRegisters.RecurringDocuments.CalculateScheduledDate(FromDate, ThisForm, LastExecutionDate, OccurrencesCount, EventDate);
 	
 	// Update user visible schedule presentation with latest occurance.
 	If LastExecutionDate > EmptyDate Then
@@ -696,6 +814,16 @@ Procedure ScheduledDateUpdate()
 		                       StringFunctionsClientServer.SubstituteParametersInString(
 		                       NStr("en = 'The action was executed %1 time(s). Latest occurrence on: %2.'"), OccurrencesCount, Format(LastExecutionDate, "DLF=D"));
 	EndIf;
+	
+	// Update the start date for schedule.
+	If ValueIsFilled(Record.RecurringDocument) And CompletedUpTo > EmptyDate Then
+		CompletedUpTo = ?(BegOfDay(Record.RecurringDocument.Date) > CompletedUpTo, BegOfDay(Record.RecurringDocument.Date), CompletedUpTo);
+	Else
+		CompletedUpTo = ?(ValueIsFilled(Record.RecurringDocument), BegOfDay(Record.RecurringDocument.Date), CompletedUpTo);
+	EndIf;
+	
+	// Generate the schedule date and the nearest event date.
+	ScheduledDate = InformationRegisters.RecurringDocuments.CalculateScheduledDate(FromDate, ThisForm, LastExecutionDate, CompletedUpTo, OccurrencesCount, EventDate);
 	
 	// Update user visible schedule presentation with nearest date information.
 	If ScheduledDate > EmptyDate Then
@@ -705,7 +833,7 @@ Procedure ScheduledDateUpdate()
 		If EventDate > EmptyDate And EventDate < ScheduledDate Then
 			SchedulePresentation = SchedulePresentation + 
 			                       StringFunctionsClientServer.SubstituteParametersInString(
-			                       NStr("en = ' The action will occur on: %1.'"), Format(EventDate, "DLF=D"));
+			                       NStr("en = ' The action will occur on: %1.'"), Format(?(EventDate > CurrentDate, EventDate, CurrentDate), "DLF=D"));
 		EndIf;
 	EndIf;
 	
@@ -716,44 +844,10 @@ Procedure ScheduledDateUpdate()
 		Record.EventDate = EventDate;
 		// Set record modification flag.
 		Modified = True;
+		// Update form elements presentation.
+		Items.FormExecute.Enabled = Not Modified;
 	EndIf;
 	
 EndProcedure
-
-#EndRegion
-
-////////////////////////////////////////////////////////////////////////////////
-#Region TABULAR_SECTION_EVENTS_HANDLERS
-
-#EndRegion
-
-////////////////////////////////////////////////////////////////////////////////
-#Region COMMANDS_HANDLERS
-
-&AtClient
-Procedure ExecuteAction(Command)
-	
-	// Execute current action.
-	If ExecuteActionAtServer() Then
-		ShowMessageBox(Undefined, NStr("en = 'The action executed successfully.'"));
-	Else
-		ShowMessageBox(Undefined, NStr("en = 'The action execution is failed.'"));
-	EndIf;
-	
-EndProcedure
-
-&AtServer
-Function ExecuteActionAtServer()
-	
-	// Execute current action for the specified recurring document.
-	Return InformationRegisters.RecurringDocuments.ProcessCurrentScheduledActions(
-		CurrentDate(), Record.RecurringDocument);
-	
-EndFunction
-
-#EndRegion
-
-////////////////////////////////////////////////////////////////////////////////
-#Region PRIVATE_IMPLEMENTATION
 
 #EndRegion

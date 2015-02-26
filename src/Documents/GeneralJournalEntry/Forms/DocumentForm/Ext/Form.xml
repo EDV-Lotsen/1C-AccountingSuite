@@ -11,6 +11,24 @@
 				<CommandName>Form.Command.ReverseCommand</CommandName>
 				<ExtendedTooltip name="ReverseButtonExtendedTooltip" id="74"/>
 			</Button>
+			<Button name="FormAccountingRegisterGeneralJournalOpenByRecorder" id="98">
+				<Type>CommandBarButton</Type>
+				<CommandName>AccountingRegister.GeneralJournal.StandardCommand.OpenByRecorder</CommandName>
+				<DataPath>Object.Ref</DataPath>
+				<ExtendedTooltip name="FormAccountingRegisterGeneralJournalOpenByRecorderExtendedTooltip" id="99"/>
+			</Button>
+			<Button name="FormInformationRegisterRecurringDocumentsOpenByValueRecurringDocument" id="100">
+				<Type>CommandBarButton</Type>
+				<CommandName>InformationRegister.RecurringDocuments.StandardCommand.OpenByValue.RecurringDocument</CommandName>
+				<DataPath>Object.Ref</DataPath>
+				<Title>
+					<v8:item>
+						<v8:lang>en</v8:lang>
+						<v8:content>Recurring</v8:content>
+					</v8:item>
+				</Title>
+				<ExtendedTooltip name="FormInformationRegisterRecurringDocumentsOpenByValueRecurringDocumentExtendedTooltip" id="101"/>
+			</Button>
 		</ChildItems>
 	</AutoCommandBar>
 	<Events>
@@ -377,7 +395,12 @@
 			<Item>
 				<Command>AccountingRegister.GeneralJournal.StandardCommand.OpenByRecorder</Command>
 				<Type>Auto</Type>
+				<CommandGroup>FormNavigationPanelGoTo</CommandGroup>
+				<Index>2</Index>
 				<DefaultVisible>false</DefaultVisible>
+				<Visible>
+					<xr:Common>false</xr:Common>
+				</Visible>
 			</Item>
 			<Item>
 				<Command>InformationRegister.DocumentJournalOfCompanies.StandardCommand.OpenByValue.Document</Command>
@@ -391,7 +414,42 @@
 			<Item>
 				<Command>AccumulationRegister.BankReconciliation.StandardCommand.OpenByRecorder</Command>
 				<Type>Auto</Type>
+				<CommandGroup>FormNavigationPanelGoTo</CommandGroup>
+				<Index>1</Index>
 				<DefaultVisible>false</DefaultVisible>
+				<Visible>
+					<xr:Common>false</xr:Common>
+				</Visible>
+			</Item>
+			<Item>
+				<Command>AccumulationRegister.ClassData.StandardCommand.OpenByRecorder</Command>
+				<Type>Auto</Type>
+				<CommandGroup>FormNavigationPanelGoTo</CommandGroup>
+				<Index>3</Index>
+				<DefaultVisible>false</DefaultVisible>
+				<Visible>
+					<xr:Common>false</xr:Common>
+				</Visible>
+			</Item>
+			<Item>
+				<Command>AccumulationRegister.ProjectData.StandardCommand.OpenByRecorder</Command>
+				<Type>Auto</Type>
+				<CommandGroup>FormNavigationPanelGoTo</CommandGroup>
+				<Index>4</Index>
+				<DefaultVisible>false</DefaultVisible>
+				<Visible>
+					<xr:Common>false</xr:Common>
+				</Visible>
+			</Item>
+			<Item>
+				<Command>InformationRegister.RecurringDocuments.StandardCommand.OpenByValue.RecurringDocument</Command>
+				<Type>Auto</Type>
+				<CommandGroup>FormNavigationPanelGoTo</CommandGroup>
+				<Index>5</Index>
+				<DefaultVisible>false</DefaultVisible>
+				<Visible>
+					<xr:Common>false</xr:Common>
+				</Visible>
 			</Item>
 		</NavigationPanel>
 	</CommandInterface>

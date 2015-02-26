@@ -754,9 +754,13 @@ Procedure FillRegistersCheckList(AdditionalProperties, RegisterRecords)
 		                             |Order quantity {Quantity} is lower then received quantity {Received}'")); // Over-shipping balance.
 		CheckMessages.Add(NStr("en = '{Product}:
 		                             |Order quantity {Quantity} is lower then invoiced quantity {Invoiced}'")); // Over-invoiced balance.
+									 
+		// Add excluded dimensions.
+		ExcludedDimensions = New Array;
+		ExcludedDimensions.Add("ItemReceipt");
 		
 		// Add register to check it's recordset changes and balances during posting.
-		BalanceCheck.Insert("OrdersDispatched", New Structure("CheckPostings, CheckBalances, CheckMessages", CheckPostings, CheckBalances, CheckMessages));
+		BalanceCheck.Insert("OrdersDispatched", New Structure("CheckPostings, CheckBalances, CheckMessages, ExcludedDimensions", CheckPostings, CheckBalances, CheckMessages, ExcludedDimensions));
 		
 	ElsIf AdditionalProperties.Posting.WriteMode = DocumentWriteMode.UndoPosting Then
 		
@@ -775,9 +779,13 @@ Procedure FillRegistersCheckList(AdditionalProperties, RegisterRecords)
 		                             |{Received} items already received'")); // Over-shipping balance.
 		CheckMessages.Add(NStr("en = '{Product}:
 		                             |{Invoiced} items already invoiced'")); // Over-invoiced balance.
+									 
+		// Add excluded dimensions.
+		ExcludedDimensions = New Array;
+		ExcludedDimensions.Add("ItemReceipt");
 		
 		// Add registers to check it's recordset changes and balances during undo posting.
-		BalanceCheck.Insert("OrdersDispatched", New Structure("CheckPostings, CheckBalances, CheckMessages", CheckPostings, CheckBalances, CheckMessages));
+		BalanceCheck.Insert("OrdersDispatched", New Structure("CheckPostings, CheckBalances, CheckMessages, ExcludedDimensions", CheckPostings, CheckBalances, CheckMessages, ExcludedDimensions));
 		
 	EndIf;
 	

@@ -2,6 +2,14 @@
 &AtServer
 Procedure OnWriteAtServer(Cancel, CurrentObject, WriteParameters)
 	
+	CheckAllUsersDisabled(Cancel);
+	If Constants.VersionNumber.Get() = 3 Then
+		CheckNumberOfAllowedUsers(Cancel);
+		If Cancel = True Then
+			Return;
+		EndIf;
+	EndIf;
+	
 	//If Constants.ServiceDB.Get() = True Then
 	
 		SetPrivilegedMode(True);
@@ -12,89 +20,100 @@ Procedure OnWriteAtServer(Cancel, CurrentObject, WriteParameters)
 			//NewUser.Name = Object.Description + Right(SessionParameters.TenantValue,7);
 			NewUser.Name = Object.Description;
 			NewUser.FullName = Object.Description;
-			NewUser.Password = Password;
 			NewUser.StandardAuthentication = True;
 			//RNG = New RandomNumberGenerator(255);	
-			//NewUser.Password = RNG.RandomNumber(0, 10000);
+			NewUser.Password = Password;
 			//NewUser.Roles.Add(Metadata.Roles.FullAccess1);
-			           
-			If Object.AdminAccess = True Then
-				NewUser.Roles.Add(MetaData.Roles.FullAccess1);
+			
+			If IsBankAccountingOnline() = True Then
+				 NewUser.Roles.Add(MetaData.Roles.BankAccounting);			
 			Else
 				
-				NewUser.Roles.Add(MetaData.Roles.ListUser);
+				If Object.AdminAccess = True Then
+					NewUser.Roles.Add(MetaData.Roles.FullAccess1);
+				Else
+					
+					NewUser.Roles.Add(MetaData.Roles.ListUser);
 
-				If Object.Sales = "Full" Then
-					NewUser.Roles.Add(Metadata.Roles.SalesFull);
-				Endif;
-			
-				If Object.Sales = "View" Then
-					NewUser.Roles.Add(Metadata.Roles.SalesView);
-				Endif;
-			
-				If Object.Purchasing = "Full" Then
-					NewUser.Roles.Add(Metadata.Roles.PurchasingFull);
-				Endif;
-			
-				If Object.Purchasing = "View" Then
-					NewUser.Roles.Add(Metadata.Roles.PurchasingView);
-				Endif;
-			
-				If Object.Warehouse = "Full" Then
-					NewUser.Roles.Add(Metadata.Roles.WarehouseFull);
-				Endif;
-			
-				If Object.Warehouse = "View" Then
-					NewUser.Roles.Add(Metadata.Roles.WarehouseView);
-				Endif;
-			
-				If Object.BankReceive = "Full" Then
-					NewUser.Roles.Add(Metadata.Roles.BankReceiveFull);
-				Endif;
-			
-				If Object.BankReceive = "View" Then
-					NewUser.Roles.Add(Metadata.Roles.BankReceiveView);
-				Endif;
-			
-				If Object.BankSend = "Full" Then
-					NewUser.Roles.Add(Metadata.Roles.BankSendFull);
-				Endif;
-			
-				If Object.BankSend = "View" Then
-					NewUser.Roles.Add(Metadata.Roles.BankSendView);
-				Endif;
-			
-				If Object.Accounting = "Full" Then
-					NewUser.Roles.Add(Metadata.Roles.AccountingFull);
-				Endif;
-			
-				If Object.Accounting = "View" Then
-					NewUser.Roles.Add(Metadata.Roles.AccountingView);
-				Endif;
-									
-				If Object.Projects = "Full" Then
-					NewUser.Roles.Add(Metadata.Roles.ProjectsFull);
-				Endif;
-			
-				If Object.Projects = "View" Then
-					NewUser.Roles.Add(Metadata.Roles.ProjectsView);
-				Endif;
+					If Object.Sales = "Full" Then
+						NewUser.Roles.Add(Metadata.Roles.SalesFull);
+					Endif;
 				
-				If Object.TimeTrack = "Full" Then
-					NewUser.Roles.Add(Metadata.Roles.TimeTrackFull);
-				Endif;
-			
-				If Object.TimeTrack = "View" Then
-					NewUser.Roles.Add(Metadata.Roles.TimeTrackView);
-				Endif;
+					If Object.Sales = "View" Then
+						NewUser.Roles.Add(Metadata.Roles.SalesView);
+					Endif;
+				
+					If Object.Purchasing = "Full" Then
+						NewUser.Roles.Add(Metadata.Roles.PurchasingFull);
+					Endif;
+				
+					If Object.Purchasing = "View" Then
+						NewUser.Roles.Add(Metadata.Roles.PurchasingView);
+					Endif;
+				
+					If Object.Warehouse = "Full" Then
+						NewUser.Roles.Add(Metadata.Roles.WarehouseFull);
+					Endif;
+				
+					If Object.Warehouse = "View" Then
+						NewUser.Roles.Add(Metadata.Roles.WarehouseView);
+					Endif;
+				
+					If Object.BankReceive = "Full" Then
+						NewUser.Roles.Add(Metadata.Roles.BankReceiveFull);
+					Endif;
+				
+					If Object.BankReceive = "View" Then
+						NewUser.Roles.Add(Metadata.Roles.BankReceiveView);
+					Endif;
+				
+					If Object.BankSend = "Full" Then
+						NewUser.Roles.Add(Metadata.Roles.BankSendFull);
+					Endif;
+				
+					If Object.BankSend = "View" Then
+						NewUser.Roles.Add(Metadata.Roles.BankSendView);
+					Endif;
+				
+					If Object.Accounting = "Full" Then
+						NewUser.Roles.Add(Metadata.Roles.AccountingFull);
+					Endif;
+				
+					If Object.Accounting = "View" Then
+						NewUser.Roles.Add(Metadata.Roles.AccountingView);
+					Endif;
+										
+					If Object.Projects = "Full" Then
+						NewUser.Roles.Add(Metadata.Roles.ProjectsFull);
+					Endif;
+				
+					If Object.Projects = "View" Then
+						NewUser.Roles.Add(Metadata.Roles.ProjectsView);
+					Endif;
+					
+					If Object.TimeTrack = "Full" Then
+						NewUser.Roles.Add(Metadata.Roles.TimeTrackFull);
+					Endif;
+				
+					If Object.TimeTrack = "View" Then
+						NewUser.Roles.Add(Metadata.Roles.TimeTrackView);
+					Endif;
+					
+					If Object.ItemReceipt = "Full" Then
+						NewUser.Roles.Add(Metadata.Roles.ItemReceiptFull);
+					EndIf;
+					
+					If Object.Shipment = "Full" Then
+						NewUser.Roles.Add(Metadata.Roles.ShipmentFull);
+					EndIf;
 
-
-			
-				If Object.ReportsOnly = True Then
-					NewUser.Roles.Add(Metadata.Roles.ReportOnly);
-				Endif;
-			
-			Endif;
+					If Object.ReportsOnly = True Then
+						NewUser.Roles.Add(Metadata.Roles.ReportOnly);
+					Endif;
+				
+				EndIf;
+				
+			EndIf;
 
 			NewUser.ShowInList = False;
 
@@ -105,6 +124,10 @@ Procedure OnWriteAtServer(Cancel, CurrentObject, WriteParameters)
 			
 		 ExistingUser = InfobaseUsers.FindByName(Object.Description);
 		 ExistingUser.Roles.Clear();
+		 
+	 	If IsBankAccountingOnline() = True Then
+			 ExistingUser.Roles.Add(MetaData.Roles.BankAccounting);			
+		Else
 		 
 		    If Object.AdminAccess = True Then
 		    	ExistingUser.Roles.Add(MetaData.Roles.FullAccess1);
@@ -176,16 +199,25 @@ Procedure OnWriteAtServer(Cancel, CurrentObject, WriteParameters)
 					ExistingUser.Roles.Add(Metadata.Roles.TimeTrackView);
 				Endif;
 
+				If Object.ItemReceipt = "Full" Then
+					NewUser.Roles.Add(Metadata.Roles.ItemReceiptFull);
+				EndIf;
+				
+				If Object.Shipment = "Full" Then
+					NewUser.Roles.Add(Metadata.Roles.ShipmentFull);
+				EndIf;
 				
 				If Object.ReportsOnly = True Then
 					ExistingUser.Roles.Add(Metadata.Roles.ReportOnly);
 				Endif;
 
 		    	
-		    Endif;
+			Endif;
 			
-			ExistingUser.Password = Password;
-			ExistingUser.Write();
+		EndIf;
+			
+		ExistingUser.Password = Password;
+		ExistingUser.Write();
 				
 		EndIf;
 		
@@ -248,6 +280,15 @@ EndProcedure
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
+	If NOT FullAccessCheck() Then
+		If IsBankAccountingOnline() = False Then
+			Items.Disabled.ReadOnly = True;
+			Items.Disabled.Visible = False;
+		Else
+		EndIf;
+
+	EndIf;
+	
 	If NOT Object.Ref.IsEmpty() Then
 		
 		Items.Description.ReadOnly = True;
@@ -263,43 +304,74 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 
 EndProcedure
 
+&AtServer
+Function IsBankAccountingOnline()
+	
+	If Constants.VersionNumber.Get() = 3 Then
+		Return True
+	Else
+		Return False
+	EndIf;
+	
+EndFunction
+
 &AtClient
 Procedure OnOpen(Cancel)
 	
-	If Object.Ref.IsEmpty() Then
-		Object.Sales = "Full";       // Full
-		Object.Purchasing = "Full";
-		Object.Warehouse = "Full";
-		Object.BankReceive = "Full";
-		Object.BankSend = "Full";
-		Object.Accounting = "Full";
-		Object.Projects = "Full";
-		Object.TimeTrack = "Full";
-		Object.ReportsOnly = False;
-	Else
-		Items.Verified.Visible = True;
-		AdminBox(Object);
-		ReportBox(Object);
-		If FullAccessCheck() = False Then
-			
-			Items.Name.ReadOnly = True;
-			Items.Description.ReadOnly = True;
-			Items.Ttile.ReadOnly = True;
-			Items.Phone.ReadOnly = True;
-			Items.AdminAccess.ReadOnly = True;
-			Items.Sales.ReadOnly = True;
-			Items.Purchasing.ReadOnly = True;
-			Items.Warehouse.ReadOnly = True;
-			Items.BankReceive.ReadOnly = True;
-			Items.BankSend.ReadOnly = True;
-			Items.Accounting.ReadOnly = True;
-			Items.Projects.ReadOnly = True;
-			Items.TimeTrack.ReadOnly = True;
-			Items.ReportsOnly.ReadOnly = True;
-
-		Endif;
-
+	If IsBankAccountingOnline() = True Then
 		
+		Items.AdminAccess.Visible = False;
+		Items.ReportsOnly.Visible = False;
+		Items.Sales.Visible = False;
+		Items.Purchasing.Visible = False;
+		Items.Warehouse.Visible = False;
+		Items.BankReceive.Visible = False;
+		Items.BankSend.Visible = False;
+		Items.Accounting.Visible = False;
+		Items.Projects.Visible = False;
+		Items.TimeTrack.Visible = False;
+		Items.ItemReceipt.Visible = False;
+		Items.Shipment.Visible = False;
+		
+	Else
+	
+		If Object.Ref.IsEmpty() Then
+			Object.Sales = "Full";       // Full
+			Object.Purchasing = "Full";
+			Object.Warehouse = "Full";
+			Object.BankReceive = "Full";
+			Object.BankSend = "Full";
+			Object.Accounting = "Full";
+			Object.Projects = "Full";
+			Object.TimeTrack = "Full";
+			Object.ItemReceipt = "Full";
+			Object.Shipment = "Full";
+			Object.ReportsOnly = False;
+		Else
+			Items.Verified.Visible = True;
+			AdminBox(Object);
+			ReportBox(Object);
+			If FullAccessCheck() = False Then
+				
+				Items.Name.ReadOnly = True;
+				Items.Description.ReadOnly = True;
+				Items.Ttile.ReadOnly = True;
+				Items.Phone.ReadOnly = True;
+				Items.AdminAccess.ReadOnly = True;
+				Items.Sales.ReadOnly = True;
+				Items.Purchasing.ReadOnly = True;
+				Items.Warehouse.ReadOnly = True;
+				Items.BankReceive.ReadOnly = True;
+				Items.BankSend.ReadOnly = True;
+				Items.Accounting.ReadOnly = True;
+				Items.Projects.ReadOnly = True;
+				Items.TimeTrack.ReadOnly = True;
+				Items.ReportsOnly.ReadOnly = True;
+				Items.Shipment.ReadOnly = True;
+				Items.ItemReceipt.ReadOnly = True;
+
+			Endif;
+		EndIf;
 	EndIf;
 	 
 	 
@@ -332,6 +404,10 @@ Procedure AdminBox(Object)
 		Items.Projects.ReadOnly = True;
 		Object.TimeTrack = "Full";
 		Items.TimeTrack.ReadOnly = True;
+		Object.ItemReceipt = "Full";
+		Items.ItemReceipt.ReadOnly = True;
+		Object.Shipment = "Full";
+		Items.Shipment.ReadOnly = True;
 		Object.ReportsOnly = false;
 		Items.ReportsOnly.ReadOnly = True;
 		
@@ -349,6 +425,8 @@ Procedure AdminBox(Object)
 		Items.Projects.ReadOnly = false;
 		Items.TimeTrack.ReadOnly = false;
 		Items.ReportsOnly.ReadOnly = false;
+		Items.Shipment.ReadOnly = false;
+		Items.ItemReceipt.ReadOnly = false;
 	Endif;
 
 EndProcedure
@@ -380,6 +458,10 @@ Procedure ReportBox(Object)
 		Items.Accounting.ReadOnly = True;
 		Object.Projects = "None";
 		Items.Projects.ReadOnly = True;
+		Object.ItemReceipt = "None";
+		Items.ItemReceipt.ReadOnly = True;
+		Object.Shipment = "None";
+		Items.Shipment.ReadOnly = True;
 		Object.TimeTrack = "None";
 		Items.TimeTrack.ReadOnly = True;
 
@@ -398,7 +480,49 @@ Procedure ReportBox(Object)
 		Items.Accounting.ReadOnly = false;
 		Items.Projects.ReadOnly = false;
 		Items.TimeTrack.ReadOnly = false;
+		Items.ItemReceipt.ReadOnly = false;
+		Items.Shipment.ReadOnly = false;
 		Endif;
 	Endif;
 
+EndProcedure
+
+&AtServer
+Procedure CheckNumberOfAllowedUsers(Cancel) 
+	If Object.Disabled = False Then
+		Query = New Query("SELECT
+		                  |	UserList.Ref
+		                  |FROM
+		                  |	Catalog.UserList AS UserList
+		                  |WHERE
+		                  |	UserList.Disabled = &Disabled
+		                  |	AND NOT UserList.Description LIKE &Description");
+		Query.SetParameter("Disabled", False);
+		Query.SetParameter("Description", "%@accountingsuite.com");
+		QueryResult = Query.Execute();
+		Dataset = QueryResult.Unload();
+		If Dataset.Count() > 2 Then
+			Object.Disabled = True;
+			Message("Number of active users exceeded. Must disable a different user before enabling this one.");
+			Cancel = True;
+		EndIf;			
+	EndIf;
+		
+EndProcedure
+
+Procedure CheckAllUsersDisabled(Cancel)
+	Query = New Query("SELECT
+		                  |	UserList.Ref
+		                  |FROM
+		                  |	Catalog.UserList AS UserList
+		                  |WHERE
+		                  |	UserList.Disabled = &Disabled");
+		Query.SetParameter("Disabled", False);
+		QueryResult = Query.Execute();
+		Dataset = QueryResult.Unload();
+		If Dataset.Count() <= 0 Then
+			Object.Disabled = False;
+			Message("Cannot disable all users. There will be no access to this database.");
+			Cancel = True;
+		EndIf;
 EndProcedure

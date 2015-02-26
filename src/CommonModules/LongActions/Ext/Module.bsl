@@ -33,6 +33,11 @@ Function ExecuteActionInBackground(Val FormID, Val ExportProcedureName,
 	
 	StorageAddress = PutToTempStorage(Undefined, FormID);
 	
+	Result = New Structure;
+	Result.Insert("StorageAddress" , StorageAddress);
+	Result.Insert("JobCompleted" , False);
+	Result.Insert("JobID",Undefined);
+	
 	If Not ValueIsFilled(JobDescription) Then
 		JobDescription = ExportProcedureName;
 	EndIf;
@@ -48,7 +53,8 @@ Function ExecuteActionInBackground(Val FormID, Val ExportProcedureName,
 	
 	JobParameters = New Array;
 	JobParameters.Add(ExportProcedureName);
-	JobParameters.Add(ExportProcedureParameters);
+	//JobParameters.Add(ExportProcedureParameters);
+	JobParameters.Add(Parameters);
 	JobParameters.Add(Undefined); // Data area, where job must be executed
 	
 	If GetClientConnectionSpeed() = ClientConnectionSpeed.Low Then
@@ -63,11 +69,8 @@ Function ExecuteActionInBackground(Val FormID, Val ExportProcedureName,
 	Except
 		// There is no need to process an exception. Mostly the exception was raised by the timeout.
 	EndTry;
-	
-	Result = New Structure;
-	Result.Insert("StorageAddress" , StorageAddress);
-	Result.Insert("JobCompleted" , JobCompleted(Job.UUID));
-	Result.Insert("JobID", Job.UUID);
+	Result.JobCompleted = JobCompleted(Job.UUID);
+	Result.JobID = Job.UUID;
 	
 	If UseAdditionalTemporaryStorage Then
 		Result.Insert("StorageAddressAdd", StorageAddressAdd);
@@ -187,7 +190,7 @@ Function JobCompleted(Val JobID) Export
 	
 	If ShowFullErrorText Then
 		ErrorText = BriefErrorDescription(GetErrorInfo(Job.ErrorInfo));
-		Raise(ErrorText);
+		Raise ErrorText;
 		
 	ElsIf ActionNotExecuted Then
 		Raise(NStr("en = 'This job cannot be executed. 
@@ -196,12 +199,81 @@ Function JobCompleted(Val JobID) Export
 	
 EndFunction
 
+// Writes in messages information about job running state
+// Further possible to read this information by function GetActionProgress()
+//
+// Parameters:
+//  Progress - Number  - percentage of execution.
+//  Text - String -  Additional info about job state.
+//  AdditionalParameters - Any additional info for Client must be simple (must be serialized to XML string) 
+//
+Procedure InformActionProgres(Val Progress = Undefined, Val Text = Undefined, Val AdditionalParameters = Undefined) Export 
+	
+	ReturningValue = New Structure;
+	If Progress <> Undefined Then 
+		ReturningValue.Insert("Progress", Progress);
+	EndIf;
+	If Text <> Undefined Then
+		ReturningValue.Insert("Text", Text);
+	EndIf;
+	If AdditionalParameters <> Undefined Then
+		ReturningValue.Insert("AdditionalParameters", AdditionalParameters);
+	EndIf;
+	
+	ResultText = CommonUse.ValueToXMLString(ReturningValue);
+	Text = "{CommonSubsystems.LongActions}" + ResultText;
+	CommonUseClientServer.MessageToUser(Text);
+	
+	GetUserMessages(True); // Удаление предыдущих сообщений.
+	
+EndProcedure
+
+//Gets Background job by Job ID, and reads running status through job messages
+// Return:
+//   Structure - Background job execution status.
+//       Names and values according mapping in procedure "InformActionProgres()"
+Function GetActionProgress(Val JobUID) Export 
+	
+	Var Result;
+	
+	CurrentJob = LongActions.FindJobByID(JobUID);
+	If CurrentJob = Undefined Then 
+		Return CurrentJob;
+	EndIf;
+	
+	MessagesArray = CurrentJob.GetUserMessages(True);
+	If MessagesArray = Undefined Then
+		Return Result;
+	EndIf;;
+	
+	Quantity = MessagesArray.Count();
+	
+	For Counter = 1 To Quantity Do
+		CoutBack = Quantity - Counter;
+		CurMessage = MessagesArray[CoutBack];
+		
+		If Left(CurMessage.Text, 1) = "{" Then
+			Position = Find(CurMessage.Text, "}");
+			If Position > 2 Then
+				IDCodeUnit = Mid(CurMessage.Text, 2, Position - 2);
+				If IDCodeUnit = "CommonSubsystems.LongActions" Then
+					ResultText = Mid(CurMessage.Text, Position + 1);
+					Result = CommonUse.ValueFromXMLString(ResultText);
+					Break;
+				EndIf;;
+			EndIf;
+		EndIf;
+	EndDo;
+	
+	Return Result;
+EndFunction
+
 #EndRegion
 
 ////////////////////////////////////////////////////////////////////////////////
 #Region PRIVATE_IMPLEMENTATION
 
-Function FindJobByID(Val JobID)
+Function FindJobByID(Val JobID) Export
 	
 	Job = BackgroundJobs.FindByUUID(JobID);
 	
@@ -211,14 +283,16 @@ EndFunction
 
 Function GetErrorInfo(ErrorInfo)
 	
-	If TypeOf(ErrorInfo) = Type("ErrorInfo") Then
-		While TypeOf(ErrorInfo.Cause) = Type("ErrorInfo") Do
-			ErrorInfo = ErrorInfo.Cause;
-		EndDo;
+	Result = ErrorInfo;
+	If ErrorInfo.Cause <> Undefined Then
+		If ErrorInfo.Cause <> Undefined Then		
+			Result = GetErrorInfo(ErrorInfo.Cause);
+		EndIf;
 	EndIf;
 	
-	Return ErrorInfo;
+	Return Result;
 	
 EndFunction
+
 
 #EndRegion

@@ -300,27 +300,6 @@
 												<Event name="OnChange">ShipToOnChange</Event>
 											</Events>
 										</InputField>
-										<InputField name="BillTo" id="54">
-											<DataPath>Object.BillTo</DataPath>
-											<ToolTip>
-												<v8:item>
-													<v8:lang>en</v8:lang>
-													<v8:content>Customer billing address</v8:content>
-												</v8:item>
-											</ToolTip>
-											<Width>15</Width>
-											<HorizontalStretch>false</HorizontalStretch>
-											<ContextMenu name="BillToContextMenu" id="55"/>
-											<ExtendedTooltip name="BillToExtendedTooltip" id="56"/>
-										</InputField>
-									</ChildItems>
-								</UsualGroup>
-								<UsualGroup name="AddressesRightColumn" id="57">
-									<Group>Vertical</Group>
-									<Representation>None</Representation>
-									<ShowTitle>false</ShowTitle>
-									<ExtendedTooltip name="AddressesRightColumnExtendedTooltip" id="58"/>
-									<ChildItems>
 										<InputField name="ConfirmTo" id="59">
 											<DataPath>Object.ConfirmTo</DataPath>
 											<ToolTip>
@@ -333,6 +312,41 @@
 											<HorizontalStretch>false</HorizontalStretch>
 											<ContextMenu name="ConfirmToContextMenu" id="60"/>
 											<ExtendedTooltip name="ConfirmToExtendedTooltip" id="61"/>
+										</InputField>
+									</ChildItems>
+								</UsualGroup>
+								<LabelDecoration name="DecorationShipTo" id="326">
+									<Font ref="sys:DefaultGUIFont" kind="WindowsFont"/>
+									<Title formatted="false">
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>**</v8:content>
+										</v8:item>
+									</Title>
+									<ContextMenu name="DecorationShipToContextMenu" id="327"/>
+									<ExtendedTooltip name="DecorationShipToExtendedTooltip" id="328"/>
+								</LabelDecoration>
+								<UsualGroup name="AddressesRightColumn" id="57">
+									<Group>Vertical</Group>
+									<Representation>None</Representation>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="AddressesRightColumnExtendedTooltip" id="58"/>
+									<ChildItems>
+										<InputField name="BillTo" id="54">
+											<DataPath>Object.BillTo</DataPath>
+											<ToolTip>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Customer billing address</v8:content>
+												</v8:item>
+											</ToolTip>
+											<Width>15</Width>
+											<HorizontalStretch>false</HorizontalStretch>
+											<ContextMenu name="BillToContextMenu" id="55"/>
+											<ExtendedTooltip name="BillToExtendedTooltip" id="56"/>
+											<Events>
+												<Event name="OnChange">BillToOnChange</Event>
+											</Events>
 										</InputField>
 										<InputField name="SalesPerson" id="62">
 											<DataPath>Object.SalesPerson</DataPath>
@@ -349,6 +363,17 @@
 										</InputField>
 									</ChildItems>
 								</UsualGroup>
+								<LabelDecoration name="DecorationBillTo" id="329">
+									<Font ref="sys:DefaultGUIFont" kind="WindowsFont"/>
+									<Title formatted="false">
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>**</v8:content>
+										</v8:item>
+									</Title>
+									<ContextMenu name="DecorationBillToContextMenu" id="330"/>
+									<ExtendedTooltip name="DecorationBillToExtendedTooltip" id="331"/>
+								</LabelDecoration>
 							</ChildItems>
 						</Page>
 						<Page name="ShippingGroup" id="65">
@@ -713,29 +738,29 @@ Reference number</v8:content>
 									<ContextMenu name="SalesTaxAcrossAgenciesContextMenu" id="125"/>
 									<AutoCommandBar name="SalesTaxAcrossAgenciesCommandBar" id="126"/>
 									<ExtendedTooltip name="SalesTaxAcrossAgenciesExtendedTooltip" id="127"/>
-									<SearchStringAddition name="SalesTaxAcrossAgenciesSearchString" id="326">
+									<SearchStringAddition name="SalesTaxAcrossAgenciesSearchString" id="332">
 										<AdditionSource>
 											<Item>SalesTaxAcrossAgencies</Item>
 											<Type>SearchStringRepresentation</Type>
 										</AdditionSource>
-										<ContextMenu name="SalesTaxAcrossAgenciesSearchStringContextMenu" id="327"/>
-										<ExtendedTooltip name="SalesTaxAcrossAgenciesSearchStringExtendedTooltip" id="328"/>
+										<ContextMenu name="SalesTaxAcrossAgenciesSearchStringContextMenu" id="333"/>
+										<ExtendedTooltip name="SalesTaxAcrossAgenciesSearchStringExtendedTooltip" id="334"/>
 									</SearchStringAddition>
-									<ViewStatusAddition name="SalesTaxAcrossAgenciesViewStatus" id="329">
+									<ViewStatusAddition name="SalesTaxAcrossAgenciesViewStatus" id="335">
 										<AdditionSource>
 											<Item>SalesTaxAcrossAgencies</Item>
 											<Type>ViewStatusRepresentation</Type>
 										</AdditionSource>
-										<ContextMenu name="SalesTaxAcrossAgenciesViewStatusContextMenu" id="330"/>
-										<ExtendedTooltip name="SalesTaxAcrossAgenciesViewStatusExtendedTooltip" id="331"/>
+										<ContextMenu name="SalesTaxAcrossAgenciesViewStatusContextMenu" id="336"/>
+										<ExtendedTooltip name="SalesTaxAcrossAgenciesViewStatusExtendedTooltip" id="337"/>
 									</ViewStatusAddition>
-									<SearchControlAddition name="SalesTaxAcrossAgenciesSearchControl" id="332">
+									<SearchControlAddition name="SalesTaxAcrossAgenciesSearchControl" id="338">
 										<AdditionSource>
 											<Item>SalesTaxAcrossAgencies</Item>
 											<Type>SearchControl</Type>
 										</AdditionSource>
-										<ContextMenu name="SalesTaxAcrossAgenciesSearchControlContextMenu" id="333"/>
-										<ExtendedTooltip name="SalesTaxAcrossAgenciesSearchControlExtendedTooltip" id="334"/>
+										<ContextMenu name="SalesTaxAcrossAgenciesSearchControlContextMenu" id="339"/>
+										<ExtendedTooltip name="SalesTaxAcrossAgenciesSearchControlExtendedTooltip" id="340"/>
 									</SearchControlAddition>
 									<ChildItems>
 										<InputField name="SalesTaxAcrossAgenciesSalesTaxComponent" id="143">
@@ -844,29 +869,29 @@ Reference number</v8:content>
 							<ContextMenu name="LineItemsContextMenu" id="149"/>
 							<AutoCommandBar name="LineItemsCommandBar" id="150"/>
 							<ExtendedTooltip name="LineItemsExtendedTooltip" id="151"/>
-							<SearchStringAddition name="LineItemsSearchString" id="335">
+							<SearchStringAddition name="LineItemsSearchString" id="341">
 								<AdditionSource>
 									<Item>LineItems</Item>
 									<Type>SearchStringRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="LineItemsSearchStringContextMenu" id="336"/>
-								<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="337"/>
+								<ContextMenu name="LineItemsSearchStringContextMenu" id="342"/>
+								<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="343"/>
 							</SearchStringAddition>
-							<ViewStatusAddition name="LineItemsViewStatus" id="338">
+							<ViewStatusAddition name="LineItemsViewStatus" id="344">
 								<AdditionSource>
 									<Item>LineItems</Item>
 									<Type>ViewStatusRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="LineItemsViewStatusContextMenu" id="339"/>
-								<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="340"/>
+								<ContextMenu name="LineItemsViewStatusContextMenu" id="345"/>
+								<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="346"/>
 							</ViewStatusAddition>
-							<SearchControlAddition name="LineItemsSearchControl" id="341">
+							<SearchControlAddition name="LineItemsSearchControl" id="347">
 								<AdditionSource>
 									<Item>LineItems</Item>
 									<Type>SearchControl</Type>
 								</AdditionSource>
-								<ContextMenu name="LineItemsSearchControlContextMenu" id="342"/>
-								<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="343"/>
+								<ContextMenu name="LineItemsSearchControlContextMenu" id="348"/>
+								<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="349"/>
 							</SearchControlAddition>
 							<Events>
 								<Event name="OnEditEnd">LineItemsOnEditEnd</Event>

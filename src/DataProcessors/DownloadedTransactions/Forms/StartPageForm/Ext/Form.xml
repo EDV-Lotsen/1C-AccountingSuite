@@ -9,7 +9,142 @@
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
 	</Events>
 	<ChildItems>
+		<UsualGroup name="CFOToday" id="267">
+			<Visible>false</Visible>
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>CFOToday</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>CFOToday</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Group>Horizontal</Group>
+			<ExtendedTooltip name="CFOTodayExtendedTooltip" id="268"/>
+			<ChildItems>
+				<PictureDecoration name="Decoration7" id="269">
+					<Width>7</Width>
+					<Height>3</Height>
+					<Picture>
+						<xr:Ref>CommonPicture.Accounting32</xr:Ref>
+						<xr:LoadTransparent>true</xr:LoadTransparent>
+					</Picture>
+					<ContextMenu name="Decoration7ContextMenu" id="270"/>
+					<ExtendedTooltip name="Decoration7ExtendedTooltip" id="271"/>
+				</PictureDecoration>
+				<UsualGroup name="CreateTrx" id="272">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Create...</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Create trx</v8:content>
+						</v8:item>
+					</ToolTip>
+					<Group>Horizontal</Group>
+					<ShowTitle>false</ShowTitle>
+					<ExtendedTooltip name="CreateTrxExtendedTooltip" id="273"/>
+					<ChildItems>
+						<UsualGroup name="Group14" id="274">
+							<Group>Vertical</Group>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="Group14ExtendedTooltip" id="275"/>
+							<ChildItems>
+								<Button name="QuickEntry" id="278">
+									<Type>Hyperlink</Type>
+									<CommandName>Form.Command.QuickEntry</CommandName>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Process month</v8:content>
+										</v8:item>
+									</Title>
+									<ExtendedTooltip name="QuickEntryExtendedTooltip" id="279"/>
+								</Button>
+								<Button name="BankRec" id="280">
+									<Type>Hyperlink</Type>
+									<CommandName>Form.Command.BankRec</CommandName>
+									<ExtendedTooltip name="BankRecExtendedTooltip" id="281"/>
+								</Button>
+							</ChildItems>
+						</UsualGroup>
+						<UsualGroup name="Group15" id="276">
+							<Group>Vertical</Group>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="Group15ExtendedTooltip" id="277"/>
+							<ChildItems>
+								<Button name="ChartOfAccounts1" id="282">
+									<Type>Hyperlink</Type>
+									<CommandName>Form.Command.ChartOfAccounts</CommandName>
+									<ExtendedTooltip name="ChartOfAccounts1ExtendedTooltip" id="283"/>
+								</Button>
+								<Button name="CustomerVendorCentral" id="288">
+									<Type>Hyperlink</Type>
+									<CommandName>Form.Command.CustomerVendorCentral</CommandName>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Customer/Vendor Central</v8:content>
+										</v8:item>
+									</Title>
+									<ExtendedTooltip name="CustomerVendorCentralExtendedTooltip" id="289"/>
+								</Button>
+							</ChildItems>
+						</UsualGroup>
+						<UsualGroup name="Group17" id="292">
+							<Group>Vertical</Group>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="Group17ExtendedTooltip" id="293"/>
+							<ChildItems>
+								<Button name="CloudBanking" id="294">
+									<Type>Hyperlink</Type>
+									<CommandName>Form.Command.CloudBanking</CommandName>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Cloud Banking</v8:content>
+										</v8:item>
+									</Title>
+									<ExtendedTooltip name="CloudBankingExtendedTooltip" id="295"/>
+								</Button>
+								<Button name="JournalEntries" id="296">
+									<Type>Hyperlink</Type>
+									<CommandName>Form.Command.JournalEntries</CommandName>
+									<ExtendedTooltip name="JournalEntriesExtendedTooltip" id="297"/>
+								</Button>
+							</ChildItems>
+						</UsualGroup>
+						<UsualGroup name="Group16" id="286">
+							<Group>Vertical</Group>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="Group16ExtendedTooltip" id="287"/>
+							<ChildItems>
+								<Button name="Checks" id="284">
+									<Type>Hyperlink</Type>
+									<CommandName>Form.Command.Checks</CommandName>
+									<ExtendedTooltip name="ChecksExtendedTooltip" id="285"/>
+								</Button>
+								<Button name="Deposits" id="290">
+									<Type>Hyperlink</Type>
+									<CommandName>Form.Command.Deposits</CommandName>
+									<ExtendedTooltip name="DepositsExtendedTooltip" id="291"/>
+								</Button>
+							</ChildItems>
+						</UsualGroup>
+					</ChildItems>
+				</UsualGroup>
+			</ChildItems>
+		</UsualGroup>
 		<UsualGroup name="Navigation" id="102">
+			<Visible>false</Visible>
 			<Title>
 				<v8:item>
 					<v8:lang>en</v8:lang>
@@ -382,7 +517,7 @@
 										</v8:item>
 									</Title>
 									<Picture>
-										<xr:Ref>CommonPicture.Accounting32</xr:Ref>
+										<xr:Ref>CommonPicture.Banking</xr:Ref>
 										<xr:LoadTransparent>false</xr:LoadTransparent>
 									</Picture>
 									<ContextMenu name="BankPictureContextMenu" id="159"/>
@@ -441,7 +576,7 @@
 													<ChildItems>
 														<Button name="Check" id="170">
 															<Type>Hyperlink</Type>
-															<CommandName>12:409b9a53-7f7e-4178-86c1-33176c7c7a7a</CommandName>
+															<CommandName>Form.Command.BankRec</CommandName>
 															<Title>
 																<v8:item>
 																	<v8:lang>en</v8:lang>
@@ -452,7 +587,7 @@
 														</Button>
 														<Button name="Deposit" id="172">
 															<Type>Hyperlink</Type>
-															<CommandName>11:409b9a53-7f7e-4178-86c1-33176c7c7a7a</CommandName>
+															<CommandName>Form.Command.QuickEntry</CommandName>
 															<ExtendedTooltip name="DepositExtendedTooltip" id="173"/>
 														</Button>
 													</ChildItems>
@@ -695,7 +830,7 @@
 													<ChildItems>
 														<Button name="Company" id="208">
 															<Type>Hyperlink</Type>
-															<CommandName>16:409b9a53-7f7e-4178-86c1-33176c7c7a7a</CommandName>
+															<CommandName>Form.Command.CloudBanking</CommandName>
 															<ExtendedTooltip name="CompanyExtendedTooltip" id="209"/>
 														</Button>
 														<Button name="UserList" id="210">
@@ -724,7 +859,7 @@
 													<ChildItems>
 														<Button name="Product" id="214">
 															<Type>Hyperlink</Type>
-															<CommandName>17:409b9a53-7f7e-4178-86c1-33176c7c7a7a</CommandName>
+															<CommandName>Form.Command.JournalEntries</CommandName>
 															<ExtendedTooltip name="ProductExtendedTooltip" id="215"/>
 														</Button>
 													</ChildItems>
@@ -1155,29 +1290,29 @@
 											<ContextMenu name="AvailableBankAccountsContextMenu" id="49"/>
 											<AutoCommandBar name="AvailableBankAccountsCommandBar" id="50"/>
 											<ExtendedTooltip name="AvailableBankAccountsExtendedTooltip" id="51"/>
-											<SearchStringAddition name="AvailableBankAccountsSearchString" id="267">
+											<SearchStringAddition name="AvailableBankAccountsSearchString" id="298">
 												<AdditionSource>
 													<Item>AvailableBankAccounts</Item>
 													<Type>SearchStringRepresentation</Type>
 												</AdditionSource>
-												<ContextMenu name="AvailableBankAccountsSearchStringContextMenu" id="268"/>
-												<ExtendedTooltip name="AvailableBankAccountsSearchStringExtendedTooltip" id="269"/>
+												<ContextMenu name="AvailableBankAccountsSearchStringContextMenu" id="299"/>
+												<ExtendedTooltip name="AvailableBankAccountsSearchStringExtendedTooltip" id="300"/>
 											</SearchStringAddition>
-											<ViewStatusAddition name="AvailableBankAccountsViewStatus" id="270">
+											<ViewStatusAddition name="AvailableBankAccountsViewStatus" id="301">
 												<AdditionSource>
 													<Item>AvailableBankAccounts</Item>
 													<Type>ViewStatusRepresentation</Type>
 												</AdditionSource>
-												<ContextMenu name="AvailableBankAccountsViewStatusContextMenu" id="271"/>
-												<ExtendedTooltip name="AvailableBankAccountsViewStatusExtendedTooltip" id="272"/>
+												<ContextMenu name="AvailableBankAccountsViewStatusContextMenu" id="302"/>
+												<ExtendedTooltip name="AvailableBankAccountsViewStatusExtendedTooltip" id="303"/>
 											</ViewStatusAddition>
-											<SearchControlAddition name="AvailableBankAccountsSearchControl" id="273">
+											<SearchControlAddition name="AvailableBankAccountsSearchControl" id="304">
 												<AdditionSource>
 													<Item>AvailableBankAccounts</Item>
 													<Type>SearchControl</Type>
 												</AdditionSource>
-												<ContextMenu name="AvailableBankAccountsSearchControlContextMenu" id="274"/>
-												<ExtendedTooltip name="AvailableBankAccountsSearchControlExtendedTooltip" id="275"/>
+												<ContextMenu name="AvailableBankAccountsSearchControlContextMenu" id="305"/>
+												<ExtendedTooltip name="AvailableBankAccountsSearchControlExtendedTooltip" id="306"/>
 											</SearchControlAddition>
 											<Events>
 												<Event name="Selection">AvailableBankAccountsSelection</Event>
@@ -1528,6 +1663,17 @@
 						</v8:StringQualifiers>
 					</Type>
 				</Column>
+				<Column name="AccountingAccount" id="9">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Accounting account</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>cfg:ChartOfAccountsRef.ChartOfAccounts</v8:Type>
+					</Type>
+				</Column>
 			</Columns>
 		</Attribute>
 		<Attribute name="CurrentBankAccountDescription" id="3">
@@ -1711,6 +1857,111 @@
 				</v8:item>
 			</ToolTip>
 			<Action>ChartOfAccounts</Action>
+		</Command>
+		<Command name="QuickEntry" id="11">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Quick entry</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Quick entry</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>QuickEntry</Action>
+		</Command>
+		<Command name="BankRec" id="12">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Bank recs</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Bank rec</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>BankRec</Action>
+		</Command>
+		<Command name="Checks" id="13">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Checks</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Checks</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>Checks</Action>
+		</Command>
+		<Command name="CustomerVendorCentral" id="14">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Customer vendor central</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Customer vendor central</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>CustomerVendorCentral</Action>
+		</Command>
+		<Command name="Deposits" id="15">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Deposits</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Deposits</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>Deposits</Action>
+		</Command>
+		<Command name="CloudBanking" id="16">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Cloud banking</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Cloud banking</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>CloudBanking</Action>
+		</Command>
+		<Command name="JournalEntries" id="17">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Journal entries</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Journal entries</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>JournalEntries</Action>
 		</Command>
 	</Commands>
 </Form>

@@ -22,8 +22,6 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		EndIf;
 	EndIf;
 	
-	SetVisibilityByDiscount(ThisForm);
-	
 	If Parameters.Property("Company") And Parameters.Company.Customer And Object.Ref.IsEmpty() Then
 		Object.Company = Parameters.Company;
 		AutoCompanyOnChange = True;
@@ -59,9 +57,6 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	CustomerName                    = GeneralFunctionsReusable.GetCustomerName();
 	Items.Company.Title             = CustomerName;
 	Items.Company.ToolTip           = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = '%1 name'"),             CustomerName);
-	//Items.RefNum.Title              = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = '%1 P.O. / Ref. #'"),    CustomerName);
-	//Items.RefNum.ToolTip            = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = '%1 purchase order number /
-	//																									  |Reference number'"),    CustomerName);
 	Items.ShipTo.ToolTip            = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = '%1 shipping address'"), CustomerName);
 	Items.BillTo.ToolTip            = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = '%1 billing address'"),  CustomerName);
 	Items.ConfirmTo.ToolTip         = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = '%1 confirm address'"),  CustomerName);
@@ -89,6 +84,15 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	Items.LineItemsPrice.EditFormat  = PriceFormat;
 	Items.LineItemsPrice.Format      = PriceFormat;
 	
+	// Set lots and serial numbers visibility.
+	Items.LineItemsLot.Visible           = False;
+	For Each Row In Object.LineItems Do
+		// Make lots column visible.
+		LotsSerialNumbers.UpdateLotsSerialNumbersVisibility(Row.Product, Items, 1, Row.UseLotsSerials);
+		// Fill lot owner.
+		LotsSerialNumbers.FillLotOwner(Row.Product, Row.LotOwner);
+	EndDo;
+	
 	// Request tax rate for US sales tax calcualation.
 	If GeneralFunctionsReusable.FunctionalOptionValue("SalesTaxCharging") Then
 		If Object.Ref.IsEmpty() And (Not ValueIsFilled(Object.DiscountTaxability)) Then
@@ -105,9 +109,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 				Items.SalesTaxRate.ChoiceList.Add(TaxRateItem.Value, TaxRateItem.Presentation);
 			EndDo;
 			If Object.Ref.IsEmpty() Then
-				If Not ValueIsFilled(Parameters.Basis) Then
-					Object.DiscountTaxability = Enums.DiscountTaxability.NonTaxable;
-				Else //If filled on the basis of Sales Order
+				If ValueIsFilled(Parameters.Basis) Then //If filled on the basis of Quote
 					RecalculateTotals(Object);
 				EndIf;
 				//If filled on the basis of Sales Order set current value
@@ -198,6 +200,32 @@ EndProcedure
 
 // -> CODE REVIEW
 &AtClient
+Procedure OnOpen(Cancel)
+	
+	AttachIdleHandler("AfterOpen", 0.1, True);
+	
+EndProcedure
+
+&AtClient
+Procedure AfterOpen()
+	
+	ThisForm.Activate();
+	
+	If ThisForm.IsInputAvailable() Then
+		///////////////////////////////////////////////
+		DetachIdleHandler("AfterOpen");
+		
+		If AutoCompanyOnChange Then
+			CompanyOnChange(Items.Company);
+		EndIf;
+		///////////////////////////////////////////////
+	Else
+		AttachIdleHandler("AfterOpen", 0.1, True);
+	EndIf;
+	
+EndProcedure
+
+&AtClient
 Procedure BeforeWrite(Cancel, WriteParameters)
 	
 	//Closing period
@@ -260,6 +288,15 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 	
 	// Request and fill ordered items from database.
 	FillBackorderQuantityAtServer();
+	
+	// Refill lots and serial numbers values.
+	For Each Row In Object.LineItems Do
+		// Make lots column visible.
+		LotsSerialNumbers.UpdateLotsSerialNumbersVisibility(Row.Product, Items, 1, Row.UseLotsSerials);
+		// Fill lot owner.
+		LotsSerialNumbers.FillLotOwner(Row.Product, Row.LotOwner);
+	EndDo;
+	
 	
 	If Constants.zoho_auth_token.Get() <> "" Then
 		If Object.NewObject = True Then
@@ -330,7 +367,6 @@ EndProcedure
 &AtClient
 Procedure CompanyOnChange(Item)
 	
-	CompanyOnChangeAtServer();	
 	// Ask user about updating the setting and update the line items accordingly.
 	CommonDefaultSettingOnChange(Item, "price");
 	
@@ -378,6 +414,22 @@ Procedure CompanyOnChangeAtServer()
 	Items.DecorationShipTo.Title = GeneralFunctions.ShowAddressDecoration(Object.ShipTo);
 	Items.DecorationBillTo.Title = GeneralFunctions.ShowAddressDecoration(Object.BillTo);
 		
+EndProcedure
+
+&AtClient
+Procedure UseShipmentOnChange(Item)
+	
+	If (Not Object.Ref.IsEmpty()) AND (DocumentUsed(Object.Ref)) Then
+		
+		Object.UseShipment = Not Object.UseShipment; 
+		
+		UM = New UserMessage;
+		UM.Text = NStr("en = 'You cannot change the attribute ""Use Shipment"" because this document is used in other documents!'");
+		UM.Field = "Object.UseShipment";
+		UM.Message();
+		
+	EndIf;
+	
 EndProcedure
 
 &AtClient
@@ -439,7 +491,6 @@ Procedure CurrencyOnChangeAtServer()
 	Items.ShippingCurrency.Title     = ForeignCurrencySymbol;
 	Items.SalesTaxCurrency.Title     = ForeignCurrencySymbol;
 	Items.FCYCurrency.Title          = ForeignCurrencySymbol;
-	//Items.RCCurrency.Title           = DefaultCurrencySymbol;
 	Items.TaxableSubtotalCurrency.Title = ForeignCurrencySymbol;
 	
 	// Request currency default settings.
@@ -503,7 +554,10 @@ Procedure DiscountPercentOnChange(Item)
 	
 	// Fill line data for editing.
 	TableSectionRow = GetLineItemsRowStructure();
-	FillPropertyValues(TableSectionRow, Items.LineItems.CurrentData);
+	LineItemsCurrentData = Items.LineItems.CurrentData;
+	If LineItemsCurrentData <> Undefined Then
+		FillPropertyValues(TableSectionRow, LineItemsCurrentData);
+	EndIf;
 	
 	// Request server operation.
 	DiscountPercentOnChangeAtServer(TableSectionRow);
@@ -528,7 +582,10 @@ Procedure DiscountOnChange(Item)
 	
 	// Fill line data for editing.
 	TableSectionRow = GetLineItemsRowStructure();
-	FillPropertyValues(TableSectionRow, Items.LineItems.CurrentData);
+	LineItemsCurrentData = Items.LineItems.CurrentData;
+	If LineItemsCurrentData <> Undefined Then
+		FillPropertyValues(TableSectionRow, LineItemsCurrentData);
+	EndIf;
 	
 	// Request server operation.
 	DiscountOnChangeAtServer(TableSectionRow);
@@ -708,6 +765,9 @@ Procedure LineItemsOnChange(Item)
 		// Clear used flag.
 		IsNewRow = False;
 		
+		// Assign new ID to the new line.
+		Item.CurrentData.LineID = New UUID();
+		
 		// Fill new row with default values.
 		ObjectData  = New Structure("Location, DeliveryDate, Project, Class");
 		FillPropertyValues(ObjectData, Object);
@@ -726,11 +786,16 @@ EndProcedure
 &AtClient
 Procedure LineItemsOnActivateRow(Item)
 	
-	// Fill line data for editing.
-	TableSectionRow = GetLineItemsRowStructure();
-	FillPropertyValues(TableSectionRow, Items.LineItems.CurrentData);
-	
-	UpdateInformationCurrentRow(TableSectionRow);
+	LineItemsCurrentData = Items.LineItems.CurrentData;
+	If LineItemsCurrentData <> Undefined Then
+		
+		// Fill line data for editing.
+		TableSectionRow = GetLineItemsRowStructure();
+		FillPropertyValues(TableSectionRow, LineItemsCurrentData);
+		
+		UpdateInformationCurrentRow(TableSectionRow);
+		
+	EndIf;
 	
 EndProcedure
 
@@ -785,21 +850,26 @@ EndProcedure
 Procedure LineItemsProductOnChangeAtServer(TableSectionRow)
 	
 	// Request product properties.
-	ProductProperties = CommonUse.GetAttributeValues(TableSectionRow.Product,   New Structure("Description, UnitSet, Taxable, TaxCode, DiscountIsTaxable"));
+	ProductProperties = CommonUse.GetAttributeValues(TableSectionRow.Product,   New Structure("Ref, Description, UnitSet, HasLotsSerialNumbers, UseLots, UseLotsType, Characteristic, UseSerialNumbersOnShipment, Taxable, TaxCode, DiscountIsTaxable"));
 	UnitSetProperties = CommonUse.GetAttributeValues(ProductProperties.UnitSet, New Structure("DefaultSaleUnit"));
 	TableSectionRow.ProductDescription = ProductProperties.Description;
 	TableSectionRow.UnitSet            = ProductProperties.UnitSet;
 	TableSectionRow.Unit               = UnitSetProperties.DefaultSaleUnit;
-	//TableSectionRow.UM                 = UnitSetProperties.UM;
 	TableSectionRow.Taxable            = ProductProperties.Taxable;
-	TableSectionRow.DiscountIsTaxable	= ProductProperties.DiscountIsTaxable;
+	TableSectionRow.DiscountIsTaxable  = ProductProperties.DiscountIsTaxable;
 	If Object.UseAvatax Then
-		TableSectionRow.AvataxTaxCode 	= ProductProperties.TaxCode;
+		TableSectionRow.AvataxTaxCode  = ProductProperties.TaxCode;
 	EndIf;
 	TableSectionRow.PriceUnits         = Round(GeneralFunctions.RetailPrice(Object.Date, TableSectionRow.Product, Object.Company) /
 	                                     // The price is returned for default sales unit factor.
 	                                     ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), GeneralFunctionsReusable.PricePrecisionForOneItem(TableSectionRow.Product));
-										 
+	
+	// Make lots column visible.
+	LotsSerialNumbers.UpdateLotsSerialNumbersVisibility(ProductProperties, Items, 1, TableSectionRow.UseLotsSerials);
+	
+	// Fill lot owner.
+	LotsSerialNumbers.FillLotOwner(ProductProperties, TableSectionRow.LotOwner);
+	
 	// Reset default values.
 	TableSectionRow.Location     = Object.Location;
 	TableSectionRow.DeliveryDate = Object.DeliveryDate;
@@ -847,7 +917,7 @@ Procedure LineItemsUnitOnChangeAtServer(TableSectionRow)
 	                             ?(TableSectionRow.Unit.Factor > 0, TableSectionRow.Unit.Factor, 1) /
 	                             ?(TableSectionRow.UnitSet.DefaultSaleUnit.Factor > 0, TableSectionRow.UnitSet.DefaultSaleUnit.Factor, 1) /
 	                             ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), GeneralFunctionsReusable.PricePrecisionForOneItem(TableSectionRow.Product));
-								 
+	
 	// Process settings changes.
 	LineItemsQuantityOnChangeAtServer(TableSectionRow);
 	
@@ -945,7 +1015,7 @@ Procedure LineItemsLineTotalOnChange(Item)
 	// Back-step price calculation with totals priority (interactive change only).
 	TableSectionRow.PriceUnits = ?(TableSectionRow.QtyUnits > 0,
 	                             Round(TableSectionRow.LineTotal / Round(TableSectionRow.QtyUnits, QuantityPrecision), GeneralFunctionsReusable.PricePrecisionForOneItem(TableSectionRow.Product)), 0);
-								 
+	
 	// Load processed data back.
 	FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
 	
@@ -1005,11 +1075,16 @@ EndProcedure
 &AtClient
 Procedure LineItemsLocationOnChange(Item)
 	
-	// Fill line data for editing.
-	TableSectionRow = GetLineItemsRowStructure();
-	FillPropertyValues(TableSectionRow, Items.LineItems.CurrentData);
-	
-	UpdateInformationCurrentRow(TableSectionRow);
+	LineItemsCurrentData = Items.LineItems.CurrentData;
+	If LineItemsCurrentData <> Undefined Then
+		
+		// Fill line data for editing.
+		TableSectionRow = GetLineItemsRowStructure();
+		FillPropertyValues(TableSectionRow, LineItemsCurrentData);
+		
+		UpdateInformationCurrentRow(TableSectionRow);
+		
+	EndIf;
 	
 EndProcedure
 
@@ -1037,28 +1112,52 @@ EndProcedure
 &AtClient
 Procedure PostAndClose(Command)
 	
-	If Write(New Structure("WriteMode, CloseAfterWrite", DocumentWriteMode.Posting, True)) Then Close() EndIf;
+	Try
+		Write(New Structure("WriteMode, CloseAfterWrite", DocumentWriteMode.Posting, True));
+	Except
+		MessageText = BriefErrorDescription(ErrorInfo());
+		ShowMessageBox(, MessageText);
+	EndTry;
 	
 EndProcedure
 
 &AtClient
 Procedure Save(Command)
 	
-	Write();
+	Try
+		Write();
+	Except
+		MessageText = BriefErrorDescription(ErrorInfo());
+		ShowMessageBox(, MessageText);
+	EndTry;
 	
 EndProcedure
 
 &AtClient
 Procedure Post(Command)
 	
-	Write(New Structure("WriteMode", DocumentWriteMode.Posting));
+	Try
+		Write(New Structure("WriteMode", DocumentWriteMode.Posting));
+	Except
+		MessageText = BriefErrorDescription(ErrorInfo());
+		ShowMessageBox(, MessageText);
+	EndTry;
 	
 EndProcedure
 
 &AtClient
 Procedure ClearPosting(Command)
 	
-	Write(New Structure("WriteMode", DocumentWriteMode.UndoPosting));
+	If Object.Posted Then
+		
+		Try
+			Write(New Structure("WriteMode", DocumentWriteMode.UndoPosting));
+		Except
+			MessageText = BriefErrorDescription(ErrorInfo());
+			ShowMessageBox(, MessageText);
+		EndTry;
+		
+	EndIf;
 	
 EndProcedure
 
@@ -1353,7 +1452,7 @@ Procedure RecalculateTotals(Object)
 	If Object.DiscountType <> PredefinedValue("Enum.DiscountType.FixedAmount") Then
 		Object.Discount		= Discount;
 	Else
-		Object.DiscountPercent = Round(-1 * 100 * Object.Discount / Object.LineSubtotal, 2);
+		Object.DiscountPercent = ?(Object.LineSubtotal <> 0, Round(-1 * 100 * Object.Discount / Object.LineSubtotal, 2), 0);
 	EndIf;
 	If Object.Discount < -Object.LineSubtotal Then
 		Object.Discount = -Object.LineSubtotal;
@@ -1420,9 +1519,12 @@ EndProcedure
 Function GetLineItemsRowStructure()
 	
 	// Define control row fields.
-	Return New Structure("LineNumber, Product, ProductDescription, UnitSet, QtyUnits, Unit, QtyUM, UM, Backorder, PriceUnits, LineTotal, Taxable, TaxableAmount, Location, DeliveryDate, Project, Class, Shipped, Invoiced, AvataxTaxCode, DiscountIsTaxable");
+	Return New Structure("LineNumber, LineID, Product, ProductDescription, UseLotsSerials, LotOwner, Lot, UnitSet, QtyUnits, Unit, QtyUM, UM, Backorder, Shipped, Invoiced, PriceUnits, LineTotal, Taxable, TaxableAmount, Location, DeliveryDate, Project, Class, AvataxTaxCode, DiscountIsTaxable");
 	
 EndFunction
+
+//------------------------------------------------------------------------------
+// New unsorted functions.
 
 &AtClient
 Procedure DiscountIsTaxableOnChange(Item)
@@ -1433,32 +1535,6 @@ EndProcedure
 &AtServer
 Procedure DiscountIsTaxableOnChangeAtServer()
 	// Insert handler contents.
-EndProcedure
-
-&AtClient
-Procedure OnOpen(Cancel)
-	
-	AttachIdleHandler("AfterOpen", 0.1, True);	
-	
-EndProcedure
-
-&AtClient
-Procedure AfterOpen()
-	
-	ThisForm.Activate();
-	
-	If ThisForm.IsInputAvailable() Then
-		///////////////////////////////////////////////
-		DetachIdleHandler("AfterOpen");
-		
-		If AutoCompanyOnChange Then
-			CompanyOnChange(Items.Company);	
-		EndIf;	
-		///////////////////////////////////////////////
-	Else
-		AttachIdleHandler("AfterOpen", 0.1, True);	
-	EndIf;		
-	
 EndProcedure
 
 &AtClient
@@ -1719,5 +1795,43 @@ Procedure SetVisibilityByDiscount(ThisForm)
 	EndIf;
 	
 EndProcedure
+
+&AtServerNoContext
+Function DocumentUsed(Ref)
+
+	Query = New Query;
+	Query.Text = 
+		"SELECT
+		|	ShipmentLineItems.Ref
+		|INTO TemporaryTable
+		|FROM
+		|	Document.Shipment.LineItems AS ShipmentLineItems
+		|WHERE
+		|	ShipmentLineItems.Order = &Order
+		|
+		|UNION ALL
+		|
+		|SELECT
+		|	SalesInvoiceLineItems.Ref
+		|FROM
+		|	Document.SalesInvoice.LineItems AS SalesInvoiceLineItems
+		|WHERE
+		|	SalesInvoiceLineItems.Order = &Order
+		|;
+		|
+		|////////////////////////////////////////////////////////////////////////////////
+		|SELECT
+		|	TemporaryTable.Ref
+		|FROM
+		|	TemporaryTable AS TemporaryTable
+		|
+		|GROUP BY
+		|	TemporaryTable.Ref";
+		
+	Query.SetParameter("Order", Ref); 
+
+	Return Not Query.Execute().IsEmpty();
+	
+EndFunction
 
 #EndRegion

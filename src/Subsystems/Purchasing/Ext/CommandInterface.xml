@@ -6,6 +6,11 @@
 				<xr:Common>true</xr:Common>
 			</Visibility>
 		</Command>
+		<Command name="Document.ItemReceipt.StandardCommand.OpenList">
+			<Visibility>
+				<xr:Common>true</xr:Common>
+			</Visibility>
+		</Command>
 		<Command name="Document.PurchaseInvoice.StandardCommand.OpenList">
 			<Visibility>
 				<xr:Common>true</xr:Common>
@@ -21,14 +26,13 @@
 				<xr:Common>true</xr:Common>
 			</Visibility>
 		</Command>
-		<Command name="Document.ItemReceipt.StandardCommand.OpenList">
-			<Visibility>
-				<xr:Common>false</xr:Common>
-			</Visibility>
-		</Command>
 	</CommandsVisibility>
 	<CommandsPlacement>
 		<Command name="Document.PurchaseOrder.StandardCommand.OpenList">
+			<CommandGroup>NavigationPanelImportant</CommandGroup>
+			<Placement>Auto</Placement>
+		</Command>
+		<Command name="Document.ItemReceipt.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelImportant</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
@@ -49,6 +53,9 @@
 		<Command name="Document.PurchaseOrder.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelImportant</CommandGroup>
 		</Command>
+		<Command name="Document.ItemReceipt.StandardCommand.OpenList">
+			<CommandGroup>NavigationPanelImportant</CommandGroup>
+		</Command>
 		<Command name="Document.PurchaseInvoice.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelImportant</CommandGroup>
 		</Command>
@@ -62,9 +69,6 @@
 			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
 		</Command>
 		<Command name="Enum.OrderStatuses.StandardCommand.OpenList">
-			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
-		</Command>
-		<Command name="Document.ItemReceipt.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
 		</Command>
 		<Command name="Document.PurchaseOrder.StandardCommand.Create">

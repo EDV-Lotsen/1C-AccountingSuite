@@ -8,6 +8,11 @@
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
 	</Events>
 	<ChildItems>
+		<Button name="SignOut" id="30">
+			<Type>Hyperlink</Type>
+			<CommandName>Form.Command.SignOut</CommandName>
+			<ExtendedTooltip name="SignOutExtendedTooltip" id="31"/>
+		</Button>
 		<UsualGroup name="Group5" id="28">
 			<Group>Vertical</Group>
 			<ExtendedTooltip name="Group5ExtendedTooltip" id="29"/>
@@ -181,6 +186,21 @@
 				</v8:item>
 			</ToolTip>
 			<Action>ProductDemoForAccountants</Action>
+		</Command>
+		<Command name="SignOut" id="7">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Sign out</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Sign out</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>SignOut</Action>
 		</Command>
 	</Commands>
 </Form>

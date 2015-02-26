@@ -308,11 +308,12 @@
 							<ExtendedTooltip name="CaptionGroupExtendedTooltip" id="348"/>
 							<ChildItems>
 								<LabelDecoration name="Декорация1" id="4">
-									<Font ref="sys:DefaultGUIFont" height="10" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
+									<TextColor>style:ColorSecondaryLabel</TextColor>
+									<Font ref="style:LargeTextFont" kind="StyleItem"/>
 									<Title formatted="false">
 										<v8:item>
 											<v8:lang>en</v8:lang>
-											<v8:content>Please, refresh a newly added accounts.</v8:content>
+											<v8:content>Search</v8:content>
 										</v8:item>
 										<v8:item>
 											<v8:lang>ru</v8:lang>
@@ -370,6 +371,12 @@
 										<xr:Ref>StdPicture.BusinessProcessStart</xr:Ref>
 										<xr:LoadTransparent>true</xr:LoadTransparent>
 									</Picture>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Proceed</v8:content>
+										</v8:item>
+									</Title>
 									<ExtendedTooltip name="AddAccountsExtendedTooltip" id="10"/>
 								</Button>
 								<Button name="GotoRefreshPage" id="77">
@@ -421,7 +428,7 @@
 											<Title formatted="false">
 												<v8:item>
 													<v8:lang>en</v8:lang>
-													<v8:content>Or choose from these popular banks</v8:content>
+													<v8:content>or choose from these popular banks</v8:content>
 												</v8:item>
 											</Title>
 											<Border width="1">
@@ -1317,6 +1324,7 @@
 														</InputField>
 														<InputField name="AssigningAccountTypeType" id="312">
 															<DataPath>AssigningAccountType.Type</DataPath>
+															<Visible>false</Visible>
 															<ReadOnly>true</ReadOnly>
 															<EditMode>EnterOnInput</EditMode>
 															<Width>10</Width>
@@ -1345,9 +1353,10 @@
 																	<Title>
 																		<v8:item>
 																			<v8:lang>en</v8:lang>
-																			<v8:content>G/L account, Mark as default</v8:content>
+																			<v8:content>G/L account</v8:content>
 																		</v8:item>
 																	</Title>
+																	<HorizontalAlign>Left</HorizontalAlign>
 																	<EditMode>EnterOnInput</EditMode>
 																	<Width>25</Width>
 																	<DropListButton>true</DropListButton>
@@ -1362,6 +1371,7 @@
 																</InputField>
 																<CheckBoxField name="AssigningAccountTypeSetDefault" id="557">
 																	<DataPath>AssigningAccountType.SetDefault</DataPath>
+																	<Visible>false</Visible>
 																	<ToolTip>
 																		<v8:item>
 																			<v8:lang>en</v8:lang>
@@ -2243,6 +2253,12 @@ WHERE
 					</Title>
 					<Type>
 						<v8:Type>cfg:ChartOfAccountsRef.ChartOfAccounts</v8:Type>
+						<v8:Type>xs:decimal</v8:Type>
+						<v8:NumberQualifiers>
+							<v8:Digits>10</v8:Digits>
+							<v8:FractionDigits>0</v8:FractionDigits>
+							<v8:AllowedSign>Any</v8:AllowedSign>
+						</v8:NumberQualifiers>
 					</Type>
 				</Column>
 				<Column name="CurrentBalance" id="4">
@@ -2835,6 +2851,11 @@ WHERE
 			</Type>
 		</Parameter>
 		<Parameter name="PerformEditAccount">
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
+			</Type>
+		</Parameter>
+		<Parameter name="PerformAssignAccount">
 			<Type>
 				<v8:Type>xs:boolean</v8:Type>
 			</Type>

@@ -81,7 +81,9 @@ Procedure FillCheckProcessing(Cancel, CheckedAttributes)
 	
 	
 	// Check doubles in items (to be sure of proper orders placement).
-	GeneralFunctions.CheckDoubleItems(Ref, LineItems, "Product, Unit, Location, DeliveryDate, Project, Class, LineNumber",, Cancel);
+	//If Not SessionParameters.TenantValue = "1101092" Then // Locked for the tenant "1101092"
+		GeneralFunctions.CheckDoubleItems(Ref, LineItems, "Product, Unit, Location, DeliveryDate, Project, Class, LineNumber",, Cancel);
+	//EndIf;
 	
 EndProcedure
 
@@ -96,7 +98,8 @@ Procedure Filling(FillingData, StandardProcessing)
 		Currency         = Constants.DefaultCurrency.Get();
 		ExchangeRate     = GeneralFunctions.GetExchangeRate(Date, Currency);
 		Location         = GeneralFunctions.GetDefaultLocation();
-		
+		UseShipment      = Constants.EnhancedInventoryShipping.Get();
+
 	Else
 		
 		If TypeOf(FillingData) = Type("DocumentRef.Quote") Then

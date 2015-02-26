@@ -263,6 +263,149 @@
 												<Value xsi:type="xs:string">Classes</Value>
 											</xr:Value>
 										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>Payment terms</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">PaymentTerms</Value>
+											</xr:Value>
+										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>Price levels</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">PriceLevels</Value>
+											</xr:Value>
+										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>Purchase orders</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">PurchaseOrders</Value>
+											</xr:Value>
+										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>Sales rep</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">SalesRep</Value>
+											</xr:Value>
+										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>Bills</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">Bills</Value>
+											</xr:Value>
+										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>Item receipts</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">ItemReceipts</Value>
+											</xr:Value>
+										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>Bill Payments</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">BillPayments</Value>
+											</xr:Value>
+										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>Sales Invoice</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">SalesInvoice</Value>
+											</xr:Value>
+										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>Sales order</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">SalesOrder</Value>
+											</xr:Value>
+										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>Cash receipt</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">CashReceipt</Value>
+											</xr:Value>
+										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>Credit memo</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">CreditMemo</Value>
+											</xr:Value>
+										</xr:Item>
 									</ChoiceList>
 									<ChoiceListButton>true</ChoiceListButton>
 									<ContextMenu name="ActionTypeContextMenu" id="41"/>
@@ -415,15 +558,32 @@
 							<ChildItems>
 								<Button name="MapToTemplateCV" id="688">
 									<Type>UsualButton</Type>
-									<Visible>false</Visible>
 									<CommandName>Form.Command.MapToTemplateCV</CommandName>
+									<Picture>
+										<xr:Ref>StdPicture.SettingsStorage</xr:Ref>
+										<xr:LoadTransparent>true</xr:LoadTransparent>
+									</Picture>
 									<ExtendedTooltip name="MapToTemplateCVExtendedTooltip" id="689"/>
 								</Button>
-								<Button name="UnmapCV" id="690">
+								<Button name="SaveToDisk" id="690">
 									<Type>UsualButton</Type>
-									<Visible>false</Visible>
-									<CommandName>Form.Command.UnmapCV</CommandName>
-									<ExtendedTooltip name="UnmapCVExtendedTooltip" id="691"/>
+									<Representation>Picture</Representation>
+									<CommandName>Form.Command.SaveToDisk</CommandName>
+									<Picture>
+										<xr:Ref>StdPicture.Write</xr:Ref>
+										<xr:LoadTransparent>true</xr:LoadTransparent>
+									</Picture>
+									<ExtendedTooltip name="SaveToDiskExtendedTooltip" id="691"/>
+								</Button>
+								<Button name="LoadFromDisk" id="782">
+									<Type>UsualButton</Type>
+									<Representation>Picture</Representation>
+									<CommandName>Form.Command.LoadFromDisk</CommandName>
+									<Picture>
+										<xr:Ref>StdPicture.OpenFile</xr:Ref>
+										<xr:LoadTransparent>true</xr:LoadTransparent>
+									</Picture>
+									<ExtendedTooltip name="LoadFromDiskExtendedTooltip" id="783"/>
 								</Button>
 								<InputField name="Date" id="199">
 									<DataPath>Date</DataPath>
@@ -491,29 +651,29 @@
 									<ContextMenu name="AttributesContextMenu" id="8"/>
 									<AutoCommandBar name="AttributesCommandBar" id="9"/>
 									<ExtendedTooltip name="AttributesExtendedTooltip" id="276"/>
-									<SearchStringAddition name="AttributesSearchString" id="761">
+									<SearchStringAddition name="AttributesSearchString" id="790">
 										<AdditionSource>
 											<Item>Attributes</Item>
 											<Type>SearchStringRepresentation</Type>
 										</AdditionSource>
-										<ContextMenu name="AttributesSearchStringContextMenu" id="762"/>
-										<ExtendedTooltip name="AttributesSearchStringExtendedTooltip" id="763"/>
+										<ContextMenu name="AttributesSearchStringContextMenu" id="791"/>
+										<ExtendedTooltip name="AttributesSearchStringExtendedTooltip" id="792"/>
 									</SearchStringAddition>
-									<ViewStatusAddition name="AttributesViewStatus" id="764">
+									<ViewStatusAddition name="AttributesViewStatus" id="793">
 										<AdditionSource>
 											<Item>Attributes</Item>
 											<Type>ViewStatusRepresentation</Type>
 										</AdditionSource>
-										<ContextMenu name="AttributesViewStatusContextMenu" id="765"/>
-										<ExtendedTooltip name="AttributesViewStatusExtendedTooltip" id="766"/>
+										<ContextMenu name="AttributesViewStatusContextMenu" id="794"/>
+										<ExtendedTooltip name="AttributesViewStatusExtendedTooltip" id="795"/>
 									</ViewStatusAddition>
-									<SearchControlAddition name="AttributesSearchControl" id="767">
+									<SearchControlAddition name="AttributesSearchControl" id="796">
 										<AdditionSource>
 											<Item>Attributes</Item>
 											<Type>SearchControl</Type>
 										</AdditionSource>
-										<ContextMenu name="AttributesSearchControlContextMenu" id="768"/>
-										<ExtendedTooltip name="AttributesSearchControlExtendedTooltip" id="769"/>
+										<ContextMenu name="AttributesSearchControlContextMenu" id="797"/>
+										<ExtendedTooltip name="AttributesSearchControlExtendedTooltip" id="798"/>
 									</SearchControlAddition>
 									<ChildItems>
 										<InputField name="AttributesAttributeName" id="10">
@@ -686,29 +846,29 @@
 								</ChildItems>
 							</AutoCommandBar>
 							<ExtendedTooltip name="DataListExtendedTooltip" id="289"/>
-							<SearchStringAddition name="DataListSearchString" id="770">
+							<SearchStringAddition name="DataListSearchString" id="799">
 								<AdditionSource>
 									<Item>DataList</Item>
 									<Type>SearchStringRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="DataListSearchStringContextMenu" id="771"/>
-								<ExtendedTooltip name="DataListSearchStringExtendedTooltip" id="772"/>
+								<ContextMenu name="DataListSearchStringContextMenu" id="800"/>
+								<ExtendedTooltip name="DataListSearchStringExtendedTooltip" id="801"/>
 							</SearchStringAddition>
-							<ViewStatusAddition name="DataListViewStatus" id="773">
+							<ViewStatusAddition name="DataListViewStatus" id="802">
 								<AdditionSource>
 									<Item>DataList</Item>
 									<Type>ViewStatusRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="DataListViewStatusContextMenu" id="774"/>
-								<ExtendedTooltip name="DataListViewStatusExtendedTooltip" id="775"/>
+								<ContextMenu name="DataListViewStatusContextMenu" id="803"/>
+								<ExtendedTooltip name="DataListViewStatusExtendedTooltip" id="804"/>
 							</ViewStatusAddition>
-							<SearchControlAddition name="DataListSearchControl" id="776">
+							<SearchControlAddition name="DataListSearchControl" id="805">
 								<AdditionSource>
 									<Item>DataList</Item>
 									<Type>SearchControl</Type>
 								</AdditionSource>
-								<ContextMenu name="DataListSearchControlContextMenu" id="777"/>
-								<ExtendedTooltip name="DataListSearchControlExtendedTooltip" id="778"/>
+								<ContextMenu name="DataListSearchControlContextMenu" id="806"/>
+								<ExtendedTooltip name="DataListSearchControlExtendedTooltip" id="807"/>
 							</SearchControlAddition>
 							<ChildItems>
 								<LabelField name="DataListLineNumber" id="116">
@@ -769,11 +929,23 @@
 									<ContextMenu name="DataListCustomerTypeContextMenu" id="641"/>
 									<ExtendedTooltip name="DataListCustomerTypeExtendedTooltip" id="642"/>
 								</InputField>
+								<InputField name="DataListCoACashFlowSection" id="814">
+									<DataPath>Object.DataList.CoACashFlowSection</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="DataListCoACashFlowSectionContextMenu" id="815"/>
+									<ExtendedTooltip name="DataListCoACashFlowSectionExtendedTooltip" id="816"/>
+								</InputField>
 								<InputField name="DataListCofAUpdate" id="159">
 									<DataPath>Object.DataList.CofAUpdate</DataPath>
 									<EditMode>EnterOnInput</EditMode>
 									<ContextMenu name="DataListCofAUpdateContextMenu" id="160"/>
 									<ExtendedTooltip name="DataListCofAUpdateExtendedTooltip" id="295"/>
+								</InputField>
+								<InputField name="DataListCofAMemo" id="817">
+									<DataPath>Object.DataList.CofAMemo</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="DataListCofAMemoContextMenu" id="818"/>
+									<ExtendedTooltip name="DataListCofAMemoExtendedTooltip" id="819"/>
 								</InputField>
 								<InputField name="DataListCustomerCode" id="695">
 									<DataPath>Object.DataList.CustomerCode</DataPath>
@@ -853,6 +1025,12 @@
 									<EditMode>EnterOnInput</EditMode>
 									<ContextMenu name="DataListCustomerPriceLevelContextMenu" id="665"/>
 									<ExtendedTooltip name="DataListCustomerPriceLevelExtendedTooltip" id="666"/>
+								</InputField>
+								<InputField name="DataListCustomerEmployee" id="779">
+									<DataPath>Object.DataList.CustomerEmployee</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="DataListCustomerEmployeeContextMenu" id="780"/>
+									<ExtendedTooltip name="DataListCustomerEmployeeExtendedTooltip" id="781"/>
 								</InputField>
 								<InputField name="DataListCustomerAddressID" id="193">
 									<DataPath>Object.DataList.CustomerAddressID</DataPath>
@@ -967,6 +1145,48 @@
 									<EditMode>EnterOnInput</EditMode>
 									<ContextMenu name="DataListCustomerAddressNotesContextMenu" id="629"/>
 									<ExtendedTooltip name="DataListCustomerAddressNotesExtendedTooltip" id="630"/>
+								</InputField>
+								<InputField name="DataListCustomerShippingAddressLine1" id="823">
+									<DataPath>Object.DataList.CustomerShippingAddressLine1</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="DataListCustomerShippingAddressLine1ContextMenu" id="824"/>
+									<ExtendedTooltip name="DataListCustomerShippingAddressLine1ExtendedTooltip" id="825"/>
+								</InputField>
+								<InputField name="DataListCustomerShippingAddressLine2" id="826">
+									<DataPath>Object.DataList.CustomerShippingAddressLine2</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="DataListCustomerShippingAddressLine2ContextMenu" id="827"/>
+									<ExtendedTooltip name="DataListCustomerShippingAddressLine2ExtendedTooltip" id="828"/>
+								</InputField>
+								<InputField name="DataListCustomerShippingAddressLine3" id="829">
+									<DataPath>Object.DataList.CustomerShippingAddressLine3</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="DataListCustomerShippingAddressLine3ContextMenu" id="830"/>
+									<ExtendedTooltip name="DataListCustomerShippingAddressLine3ExtendedTooltip" id="831"/>
+								</InputField>
+								<InputField name="DataListCustomerShippingCity" id="832">
+									<DataPath>Object.DataList.CustomerShippingCity</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="DataListCustomerShippingCityContextMenu" id="833"/>
+									<ExtendedTooltip name="DataListCustomerShippingCityExtendedTooltip" id="834"/>
+								</InputField>
+								<InputField name="DataListCustomerShippingState" id="835">
+									<DataPath>Object.DataList.CustomerShippingState</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="DataListCustomerShippingStateContextMenu" id="836"/>
+									<ExtendedTooltip name="DataListCustomerShippingStateExtendedTooltip" id="837"/>
+								</InputField>
+								<InputField name="DataListCustomerShippingCountry" id="838">
+									<DataPath>Object.DataList.CustomerShippingCountry</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="DataListCustomerShippingCountryContextMenu" id="839"/>
+									<ExtendedTooltip name="DataListCustomerShippingCountryExtendedTooltip" id="840"/>
+								</InputField>
+								<InputField name="DataListCustomerShippingZIP" id="841">
+									<DataPath>Object.DataList.CustomerShippingZIP</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="DataListCustomerShippingZIPContextMenu" id="842"/>
+									<ExtendedTooltip name="DataListCustomerShippingZIPExtendedTooltip" id="843"/>
 								</InputField>
 								<InputField name="DataListAddressSalesPerson" id="655">
 									<DataPath>Object.DataList.AddressSalesPerson</DataPath>
@@ -1136,6 +1356,12 @@
 									<ContextMenu name="DataListProductDescriptionContextMenu" id="216"/>
 									<ExtendedTooltip name="DataListProductDescriptionExtendedTooltip" id="318"/>
 								</InputField>
+								<InputField name="DataListPurchaseDescription" id="787">
+									<DataPath>Object.DataList.PurchaseDescription</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="DataListPurchaseDescriptionContextMenu" id="788"/>
+									<ExtendedTooltip name="DataListPurchaseDescriptionExtendedTooltip" id="789"/>
+								</InputField>
 								<InputField name="DataListProductIncomeAcct" id="219">
 									<DataPath>Object.DataList.ProductIncomeAcct</DataPath>
 									<EditMode>EnterOnInput</EditMode>
@@ -1159,6 +1385,12 @@
 									<EditMode>EnterOnInput</EditMode>
 									<ContextMenu name="DataListProductPriceContextMenu" id="226"/>
 									<ExtendedTooltip name="DataListProductPriceExtendedTooltip" id="322"/>
+								</InputField>
+								<InputField name="DataListProductCost" id="784">
+									<DataPath>Object.DataList.ProductCost</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="DataListProductCostContextMenu" id="785"/>
+									<ExtendedTooltip name="DataListProductCostExtendedTooltip" id="786"/>
 								</InputField>
 								<InputField name="DataListProductPreferredVendor" id="229">
 									<EditMode>EnterOnInput</EditMode>
@@ -1187,6 +1419,18 @@
 									<EditMode>EnterOnInput</EditMode>
 									<ContextMenu name="DataListProductValueContextMenu" id="234"/>
 									<ExtendedTooltip name="DataListProductValueExtendedTooltip" id="325"/>
+								</InputField>
+								<InputField name="DataListProductTaxable" id="820">
+									<DataPath>Object.DataList.ProductTaxable</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Taxable</v8:content>
+										</v8:item>
+									</Title>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="DataListProductTaxableContextMenu" id="821"/>
+									<ExtendedTooltip name="DataListProductTaxableExtendedTooltip" id="822"/>
 								</InputField>
 								<InputField name="DataListProductCF1String" id="235">
 									<DataPath>Object.DataList.ProductCF1String</DataPath>
@@ -1313,6 +1557,30 @@
 									<EditMode>EnterOnInput</EditMode>
 									<ContextMenu name="DataListProductCF5NumContextMenu" id="626"/>
 									<ExtendedTooltip name="DataListProductCF5NumExtendedTooltip" id="627"/>
+								</InputField>
+								<InputField name="DataListProductParent" id="776">
+									<DataPath>Object.DataList.ProductParent</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="DataListProductParentContextMenu" id="777"/>
+									<ExtendedTooltip name="DataListProductParentExtendedTooltip" id="778"/>
+								</InputField>
+								<InputField name="DataListProductVendorCode" id="811">
+									<DataPath>Object.DataList.ProductVendorCode</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="DataListProductVendorCodeContextMenu" id="812"/>
+									<ExtendedTooltip name="DataListProductVendorCodeExtendedTooltip" id="813"/>
+								</InputField>
+								<InputField name="DataListProductPreferedVendor" id="808">
+									<DataPath>Object.DataList.ProductPreferedVendor</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="DataListProductPreferedVendorContextMenu" id="809"/>
+									<ExtendedTooltip name="DataListProductPreferedVendorExtendedTooltip" id="810"/>
+								</InputField>
+								<InputField name="DataListProductUpdate" id="773">
+									<DataPath>Object.DataList.ProductUpdate</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="DataListProductUpdateContextMenu" id="774"/>
+									<ExtendedTooltip name="DataListProductUpdateExtendedTooltip" id="775"/>
 								</InputField>
 								<InputField name="DataListCheckDate" id="346">
 									<DataPath>Object.DataList.CheckDate</DataPath>
@@ -1598,6 +1866,84 @@
 									<ContextMenu name="DataListSubClassOfContextMenu" id="738"/>
 									<ExtendedTooltip name="DataListSubClassOfExtendedTooltip" id="739"/>
 								</InputField>
+								<InputField name="DataListPTermsName" id="853">
+									<DataPath>Object.DataList.PTermsName</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="DataListPTermsNameContextMenu" id="854"/>
+									<ExtendedTooltip name="DataListPTermsNameExtendedTooltip" id="855"/>
+								</InputField>
+								<InputField name="DataListPTermsDays" id="850">
+									<DataPath>Object.DataList.PTermsDays</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="DataListPTermsDaysContextMenu" id="851"/>
+									<ExtendedTooltip name="DataListPTermsDaysExtendedTooltip" id="852"/>
+								</InputField>
+								<InputField name="DataListPTermsDiscountDays" id="847">
+									<DataPath>Object.DataList.PTermsDiscountDays</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="DataListPTermsDiscountDaysContextMenu" id="848"/>
+									<ExtendedTooltip name="DataListPTermsDiscountDaysExtendedTooltip" id="849"/>
+								</InputField>
+								<InputField name="DataListPTermsDiscountPercent" id="844">
+									<DataPath>Object.DataList.PTermsDiscountPercent</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="DataListPTermsDiscountPercentContextMenu" id="845"/>
+									<ExtendedTooltip name="DataListPTermsDiscountPercentExtendedTooltip" id="846"/>
+								</InputField>
+								<InputField name="DataListField1" id="862">
+									<DataPath>Object.DataList.CustomField1</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="DataListField1ContextMenu" id="863"/>
+									<ExtendedTooltip name="DataListField1ExtendedTooltip" id="864"/>
+								</InputField>
+								<InputField name="DataListField2" id="865">
+									<DataPath>Object.DataList.CustomField2</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="DataListField2ContextMenu" id="866"/>
+									<ExtendedTooltip name="DataListField2ExtendedTooltip" id="867"/>
+								</InputField>
+								<InputField name="DataListField3" id="868">
+									<DataPath>Object.DataList.CustomField3</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="DataListField3ContextMenu" id="869"/>
+									<ExtendedTooltip name="DataListField3ExtendedTooltip" id="870"/>
+								</InputField>
+								<InputField name="DataListField4" id="859">
+									<DataPath>Object.DataList.CustomField4</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="DataListField4ContextMenu" id="860"/>
+									<ExtendedTooltip name="DataListField4ExtendedTooltip" id="861"/>
+								</InputField>
+								<InputField name="DataListField5" id="856">
+									<DataPath>Object.DataList.CustomField5</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="DataListField5ContextMenu" id="857"/>
+									<ExtendedTooltip name="DataListField5ExtendedTooltip" id="858"/>
+								</InputField>
+								<InputField name="DataListField6" id="871">
+									<DataPath>Object.DataList.CustomField6</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="DataListField6ContextMenu" id="872"/>
+									<ExtendedTooltip name="DataListField6ExtendedTooltip" id="873"/>
+								</InputField>
+								<InputField name="DataListField7" id="874">
+									<DataPath>Object.DataList.CustomField7</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="DataListField7ContextMenu" id="875"/>
+									<ExtendedTooltip name="DataListField7ExtendedTooltip" id="876"/>
+								</InputField>
+								<InputField name="DataListField8" id="877">
+									<DataPath>Object.DataList.CustomField8</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="DataListField8ContextMenu" id="878"/>
+									<ExtendedTooltip name="DataListField8ExtendedTooltip" id="879"/>
+								</InputField>
+								<InputField name="DataListField9" id="880">
+									<DataPath>Object.DataList.CustomField9</DataPath>
+									<EditMode>EnterOnInput</EditMode>
+									<ContextMenu name="DataListField9ContextMenu" id="881"/>
+									<ExtendedTooltip name="DataListField9ExtendedTooltip" id="882"/>
+								</InputField>
 							</ChildItems>
 						</Table>
 						<UsualGroup name="CreationFooter" id="64">
@@ -1678,7 +2024,6 @@
 							<v8:content>Finish</v8:content>
 						</v8:item>
 					</ToolTip>
-					<VerticalStretch>true</VerticalStretch>
 					<ExtendedTooltip name="FinishExtendedTooltip" id="336"/>
 					<ChildItems>
 						<UsualGroup name="Group6" id="85">
@@ -1731,24 +2076,70 @@
 								</LabelDecoration>
 							</ChildItems>
 						</UsualGroup>
-						<UsualGroup name="Group1" id="72">
+						<UsualGroup name="LoadStatus" id="72">
 							<ToolTip>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Group1</v8:content>
+									<v8:content>Load status</v8:content>
 								</v8:item>
 							</ToolTip>
-							<VerticalStretch>true</VerticalStretch>
-							<Group>Vertical</Group>
+							<Group>Horizontal</Group>
 							<Representation>None</Representation>
-							<ExtendedTooltip name="Group1ExtendedTooltip" id="341"/>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="LoadStatusExtendedTooltip" id="341"/>
 							<ChildItems>
-								<LabelDecoration name="Label12" id="73">
-									<HorizontalStretch>true</HorizontalStretch>
-									<VerticalStretch>true</VerticalStretch>
-									<ContextMenu name="Label12ContextMenu" id="74"/>
-									<ExtendedTooltip name="Label12ExtendedTooltip" id="342"/>
-								</LabelDecoration>
+								<PictureDecoration name="ActionInProgress" id="761">
+									<Width>4</Width>
+									<Height>2</Height>
+									<HorizontalStretch>false</HorizontalStretch>
+									<VerticalStretch>false</VerticalStretch>
+									<Title formatted="false">
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Action in progress</v8:content>
+										</v8:item>
+									</Title>
+									<PictureSize>AutoSize</PictureSize>
+									<Picture>
+										<xr:Ref>CommonPicture.LongAction32</xr:Ref>
+										<xr:LoadTransparent>true</xr:LoadTransparent>
+									</Picture>
+									<ContextMenu name="ActionInProgressContextMenu" id="762"/>
+									<ExtendedTooltip name="ActionInProgressExtendedTooltip" id="763"/>
+								</PictureDecoration>
+								<PictureDecoration name="ActionFinished" id="770">
+									<Width>4</Width>
+									<Height>2</Height>
+									<HorizontalStretch>false</HorizontalStretch>
+									<VerticalStretch>false</VerticalStretch>
+									<Title formatted="false">
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Action finished</v8:content>
+										</v8:item>
+									</Title>
+									<PictureSize>AutoSize</PictureSize>
+									<Picture>
+										<xr:Ref>CommonPicture.Information32</xr:Ref>
+										<xr:LoadTransparent>true</xr:LoadTransparent>
+									</Picture>
+									<ContextMenu name="ActionFinishedContextMenu" id="771"/>
+									<ExtendedTooltip name="ActionFinishedExtendedTooltip" id="772"/>
+								</PictureDecoration>
+								<LabelField name="LoadingStatusText" id="767">
+									<DataPath>LoadingStatusText</DataPath>
+									<TitleLocation>None</TitleLocation>
+									<HorizontalStretch>false</HorizontalStretch>
+									<VerticalStretch>false</VerticalStretch>
+									<ContextMenu name="LoadingStatusTextContextMenu" id="768"/>
+									<ExtendedTooltip name="LoadingStatusTextExtendedTooltip" id="769"/>
+								</LabelField>
+								<ProgressBarField name="LoadingIndicator" id="764">
+									<DataPath>LoadingIndicator</DataPath>
+									<TitleLocation>None</TitleLocation>
+									<ContextMenu name="LoadingIndicatorContextMenu" id="765"/>
+									<ExtendedTooltip name="LoadingIndicatorExtendedTooltip" id="766"/>
+								</ProgressBarField>
 							</ChildItems>
 						</UsualGroup>
 						<UsualGroup name="Group2" id="75">
@@ -2008,6 +2399,105 @@
 				</v8:StringQualifiers>
 			</Type>
 		</Attribute>
+		<Attribute name="LoadingIndicator" id="6">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content> Indicator</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:decimal</v8:Type>
+				<v8:NumberQualifiers>
+					<v8:Digits>3</v8:Digits>
+					<v8:FractionDigits>0</v8:FractionDigits>
+					<v8:AllowedSign>Any</v8:AllowedSign>
+				</v8:NumberQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="LongActionSettings" id="9">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Long action settings</v8:content>
+				</v8:item>
+			</Title>
+			<Type/>
+		</Attribute>
+		<Attribute name="LoadingStatusText" id="10">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Loading status text</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="CustomFieldMap" id="12">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Custom field map</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>v8:ValueTable</v8:Type>
+			</Type>
+			<Columns>
+				<Column name="Order" id="1">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Order</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:decimal</v8:Type>
+						<v8:NumberQualifiers>
+							<v8:Digits>10</v8:Digits>
+							<v8:FractionDigits>0</v8:FractionDigits>
+							<v8:AllowedSign>Any</v8:AllowedSign>
+						</v8:NumberQualifiers>
+					</Type>
+				</Column>
+				<Column name="AttributeName" id="2">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Attribute name</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:string</v8:Type>
+						<v8:StringQualifiers>
+							<v8:Length>0</v8:Length>
+							<v8:AllowedLength>Variable</v8:AllowedLength>
+						</v8:StringQualifiers>
+					</Type>
+				</Column>
+				<Column name="ColumnName" id="3">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Column name</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:string</v8:Type>
+						<v8:StringQualifiers>
+							<v8:Length>0</v8:Length>
+							<v8:AllowedLength>Variable</v8:AllowedLength>
+						</v8:StringQualifiers>
+					</Type>
+				</Column>
+			</Columns>
+		</Attribute>
 		<ConditionalAppearance>
 			<dcsset:item>
 				<dcsset:selection>
@@ -2228,31 +2718,51 @@
 			<Title>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Map to template</v8:content>
+					<v8:content>Save Mapping</v8:content>
 				</v8:item>
 			</Title>
 			<ToolTip>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Map to template CV</v8:content>
+					<v8:content>Save map settings to base</v8:content>
 				</v8:item>
 			</ToolTip>
+			<Picture>
+				<xr:Ref>StdPicture.SaveReportSettings</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
 			<Action>MapToTemplateCV</Action>
+			<Representation>Picture</Representation>
 		</Command>
-		<Command name="UnmapCV" id="10">
+		<Command name="SaveToDisk" id="10">
 			<Title>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Unmap</v8:content>
+					<v8:content>To disk</v8:content>
 				</v8:item>
 			</Title>
 			<ToolTip>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Unmap CV</v8:content>
+					<v8:content>Save settings to disk</v8:content>
 				</v8:item>
 			</ToolTip>
-			<Action>UnmapCV</Action>
+			<Action>SaveToDisk</Action>
+		</Command>
+		<Command name="LoadFromDisk" id="11">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Load settings</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Load settings from disk</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>LoadFromDisk</Action>
 		</Command>
 	</Commands>
 	<Parameters>

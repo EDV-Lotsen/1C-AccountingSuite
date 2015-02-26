@@ -39,29 +39,29 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="6"/>
-			<SearchStringAddition name="ListSearchString" id="11">
+			<SearchStringAddition name="ListSearchString" id="17">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="12"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="13"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="18"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="19"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="14">
+			<ViewStatusAddition name="ListViewStatus" id="20">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="15"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="16"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="21"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="22"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="17">
+			<SearchControlAddition name="ListSearchControl" id="23">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="18"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="19"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="24"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="25"/>
 			</SearchControlAddition>
 			<Events>
 				<Event name="ChoiceProcessing">ListChoiceProcessing</Event>
@@ -86,6 +86,16 @@
 					<ContextMenu name="CompanyContextMenu" id="9"/>
 					<ExtendedTooltip name="CompanyExtendedTooltip" id="10"/>
 				</InputField>
+				<LabelField name="Type" id="11">
+					<DataPath>List.Type</DataPath>
+					<ContextMenu name="TypeContextMenu" id="12"/>
+					<ExtendedTooltip name="TypeExtendedTooltip" id="13"/>
+				</LabelField>
+				<LabelField name="Status" id="14">
+					<DataPath>List.Status</DataPath>
+					<ContextMenu name="StatusContextMenu" id="15"/>
+					<ExtendedTooltip name="StatusExtendedTooltip" id="16"/>
+				</LabelField>
 			</ChildItems>
 		</Table>
 	</ChildItems>

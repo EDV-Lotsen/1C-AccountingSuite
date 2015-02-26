@@ -28,3 +28,24 @@ Procedure ShowCustomMessageBox(FormOwner, Title = "", Message, MessageStatus = U
 	ArrayOfMessages.Add("    " + Message);
 	ShowMessageBox(, New FormattedString(ArrayOfMessages),,Title);
 EndProcedure
+
+// Shows custom query box to the user
+//
+// Parameters:
+//  Notify - Type : NotifyDescription - procedure, that will process the results of user choice
+//  Title - String - title of the message box
+//  Message - String - message text
+//
+Procedure ShowCustomQueryBox(Notify, Message, DialogMode, Timeout, DefaultButton, Title = "") Export
+	
+	ArrayOfMessages = New Array();
+	ArrayOfMessages.Add(PictureLib.Question32);
+	ArrayOfMessages.Add("    " + Message);
+	FormedString = New FormattedString(ArrayOfMessages);
+	ShowQueryBox(Notify, FormedString, DialogMode, Timeout, DefaultButton, Title);
+	
+EndProcedure
+
+Procedure CloseApp(Parameter1) Export
+	Exit(False, False);
+EndProcedure

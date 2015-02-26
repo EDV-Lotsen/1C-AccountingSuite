@@ -71,7 +71,7 @@
 									<Title>
 										<v8:item>
 											<v8:lang>en</v8:lang>
-											<v8:content>Show Mobile</v8:content>
+											<v8:content>Mobile</v8:content>
 										</v8:item>
 									</Title>
 									<CheckBoxType>Auto</CheckBoxType>
@@ -83,7 +83,7 @@
 									<Title>
 										<v8:item>
 											<v8:lang>en</v8:lang>
-											<v8:content>Show Email</v8:content>
+											<v8:content>Email</v8:content>
 										</v8:item>
 									</Title>
 									<CheckBoxType>Auto</CheckBoxType>
@@ -95,7 +95,7 @@
 									<Title>
 										<v8:item>
 											<v8:lang>en</v8:lang>
-											<v8:content>Show Website</v8:content>
+											<v8:content>Website</v8:content>
 										</v8:item>
 									</Title>
 									<CheckBoxType>Auto</CheckBoxType>
@@ -107,7 +107,7 @@
 									<Title>
 										<v8:item>
 											<v8:lang>en</v8:lang>
-											<v8:content>Show Federal Tax ID</v8:content>
+											<v8:content>Federal Tax ID</v8:content>
 										</v8:item>
 									</Title>
 									<CheckBoxType>Auto</CheckBoxType>
@@ -119,7 +119,7 @@
 									<Title>
 										<v8:item>
 											<v8:lang>en</v8:lang>
-											<v8:content>Show Fax</v8:content>
+											<v8:content>Fax</v8:content>
 										</v8:item>
 									</Title>
 									<CheckBoxType>Auto</CheckBoxType>
@@ -129,12 +129,6 @@
 							</ChildItems>
 						</UsualGroup>
 						<UsualGroup name="SecondRow" id="910">
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Second row</v8:content>
-								</v8:item>
-							</Title>
 							<ToolTip>
 								<v8:item>
 									<v8:lang>en</v8:lang>
@@ -142,6 +136,7 @@
 								</v8:item>
 							</ToolTip>
 							<Group>Horizontal</Group>
+							<Representation>None</Representation>
 							<ShowTitle>false</ShowTitle>
 							<ExtendedTooltip name="SecondRowExtendedTooltip" id="911"/>
 							<ChildItems>
@@ -150,7 +145,7 @@
 									<Title>
 										<v8:item>
 											<v8:lang>en</v8:lang>
-											<v8:content>Show Country in Address</v8:content>
+											<v8:content>Country in Address</v8:content>
 										</v8:item>
 									</Title>
 									<CheckBoxType>Auto</CheckBoxType>
@@ -162,7 +157,7 @@
 									<Title>
 										<v8:item>
 											<v8:lang>en</v8:lang>
-											<v8:content>Show Contact Name in Address</v8:content>
+											<v8:content>Contact Name in Address</v8:content>
 										</v8:item>
 									</Title>
 									<CheckBoxType>Auto</CheckBoxType>
@@ -174,24 +169,65 @@
 									<Title>
 										<v8:item>
 											<v8:lang>en</v8:lang>
-											<v8:content>Always show Ship To Address</v8:content>
+											<v8:content>Ship To Address</v8:content>
 										</v8:item>
 									</Title>
 									<CheckBoxType>Auto</CheckBoxType>
 									<ContextMenu name="SIShowShipToContextMenu" id="916"/>
 									<ExtendedTooltip name="SIShowShipToExtendedTooltip" id="917"/>
 								</CheckBoxField>
+							</ChildItems>
+						</UsualGroup>
+						<UsualGroup name="ThirdRow" id="924">
+							<Group>Horizontal</Group>
+							<Representation>None</Representation>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="ThirdRowExtendedTooltip" id="925"/>
+							<ChildItems>
 								<CheckBoxField name="SIShowSVC" id="918">
 									<DataPath>ConstantsSet.SIShowSVCCol</DataPath>
 									<Title>
 										<v8:item>
 											<v8:lang>en</v8:lang>
-											<v8:content>Show Service Date Column</v8:content>
+											<v8:content>Service Date Column</v8:content>
 										</v8:item>
 									</Title>
 									<CheckBoxType>Auto</CheckBoxType>
 									<ContextMenu name="SIShowSVCContextMenu" id="919"/>
 									<ExtendedTooltip name="SIShowSVCExtendedTooltip" id="920"/>
+									<Events>
+										<Event name="OnChange">SIShowSVCOnChange</Event>
+									</Events>
+								</CheckBoxField>
+								<CheckBoxField name="SIShowClassCol" id="921">
+									<DataPath>ConstantsSet.SIShowClassCol</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Lot Column</v8:content>
+										</v8:item>
+									</Title>
+									<CheckBoxType>Auto</CheckBoxType>
+									<ContextMenu name="SIShowClassColContextMenu" id="922"/>
+									<ExtendedTooltip name="SIShowClassColExtendedTooltip" id="923"/>
+									<Events>
+										<Event name="OnChange">SIShowClassColOnChange</Event>
+									</Events>
+								</CheckBoxField>
+								<CheckBoxField name="SIShowDiscountCol" id="926">
+									<DataPath>ConstantsSet.SIShowDiscountCol</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Discount Column</v8:content>
+										</v8:item>
+									</Title>
+									<CheckBoxType>Auto</CheckBoxType>
+									<ContextMenu name="SIShowDiscountColContextMenu" id="927"/>
+									<ExtendedTooltip name="SIShowDiscountColExtendedTooltip" id="928"/>
+									<Events>
+										<Event name="OnChange">SIShowDiscountColOnChange</Event>
+									</Events>
 								</CheckBoxField>
 							</ChildItems>
 						</UsualGroup>
@@ -643,6 +679,9 @@
 			<MainAttribute>true</MainAttribute>
 			<SavedData>true</SavedData>
 			<UseAlways>
+				<Field>ConstantsSet.ShipmentFoot3Type.Ref</Field>
+				<Field>ConstantsSet.ShipmentFoot2Type.Ref</Field>
+				<Field>ConstantsSet.ShipmentFoot1Type.Ref</Field>
 				<Field>ConstantsSet.SalesTaxCharging</Field>
 				<Field>ConstantsSet.SOFoot3Type.Ref</Field>
 				<Field>ConstantsSet.SOFoot2Type.Ref</Field>

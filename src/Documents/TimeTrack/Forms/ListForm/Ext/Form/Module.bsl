@@ -188,3 +188,8 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	Items.Price.Format      = PriceFormat;	
 	
 EndProcedure
+
+&AtClient
+Procedure MultiEntry(Command)
+	OpenForm("Document.TimeTrack.Form.MultiDayForm");
+EndProcedure

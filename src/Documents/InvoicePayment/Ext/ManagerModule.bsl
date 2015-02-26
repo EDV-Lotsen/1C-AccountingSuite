@@ -198,7 +198,7 @@
 	InvoiceCount = 0;
 	 While SelectionLineItems.Next() Do
 	 			 
-	 	FormattedDate = Format(SelectionLineItems.Document.Date, "DF=""dd/MM/yyyy""");		                    
+	 	FormattedDate = Format(SelectionLineItems.Document.Date, "DF=""MM/dd/yyyy""");		                    
 	 	//TemplateBills.Parameters.InvoiceDate = SelectionLineItems.Document.Date;
 	 	TemplateBills.Parameters.InvoiceDate = FormattedDate;
 

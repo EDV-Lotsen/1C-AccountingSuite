@@ -3075,6 +3075,226 @@ EndFunction
 
 #EndRegion
 
+////////////////////////////////////////////////////////////////////////////////
+#Region CSV
+
+Function CSV_GetValueTable(CSV_Text, SeparatorChar) Export
+	
+	If SeparatorChar = " " Then
+		Separator = ",";
+	Else
+		Separator = SeparatorChar;
+	EndIf;
+	
+	NumberCharacters = StrLen(CSV_Text);
+	
+	UseDoubleQuotes  = False;
+	
+	VT = New ValueTable;
+	CountColumns = 0;
+	FirstRow     = True;
+	Row          = New Array;
+	ValueField   = "";
+	
+	//1.
+	For a = 1 To NumberCharacters Do
+		
+		CurrentCharacter = Mid(CSV_Text, a, 1);
+		
+		If (Not UseDoubleQuotes) And (CurrentCharacter = Chars.LF Or CurrentCharacter = Chars.CR) Then
+			
+			Row.Add(CSV_ChangeValue(ValueField));
+			ValueField = "";
+			
+			//-------------------------------------------------------------
+			If FirstRow Then
+				CountColumns = Row.Count();
+				For b = 1 To CountColumns Do
+					VT.Columns.Add("_" + b, New TypeDescription("String"));
+				EndDo;
+				
+				FirstRow = False;
+			EndIf;
+			//-------------------------------------------------------------
+			
+			//-------------------------------------------------------------
+			RowVT = VT.Add();
+			For c = 1 To  CountColumns Do
+				RowVT["_" + c] = Row[c - 1];
+			EndDo;
+			
+			Row = New Array;
+			//-------------------------------------------------------------
+			
+		ElsIf (Not UseDoubleQuotes) And CurrentCharacter = Separator Then
+			
+			Row.Add(CSV_ChangeValue(ValueField));
+			ValueField = "";
+			
+		Else
+			
+			ValueField = ValueField + CurrentCharacter;
+			
+			If CurrentCharacter = """" Then
+				UseDoubleQuotes = Not UseDoubleQuotes;	
+			EndIf;
+			
+		EndIf;
+		
+	EndDo;
+	
+	//2.
+	If ValueField <> "" Or Row.Count() <> 0 Then 
+		
+		Row.Add(CSV_ChangeValue(ValueField));
+		ValueField = "";
+		
+		//-------------------------------------------------------------
+		If FirstRow Then
+			CountColumns = Row.Count();
+			For d = 1 To CountColumns Do
+				VT.Columns.Add("_" + d, New TypeDescription("String"));
+			EndDo;
+			
+			FirstRow = False;
+		EndIf;
+		//-------------------------------------------------------------
+		
+		//-------------------------------------------------------------
+		RowVT = VT.Add();
+		For f = 1 To  CountColumns Do
+			RowVT["_" + f] = Row[f - 1];
+		EndDo;
+		
+		Row = New Array;
+		//-------------------------------------------------------------
+		
+	EndIf;
+	
+	Return VT;
+	
+EndFunction
+
+Function CSV_ChangeValue(ValueField) Export
+	
+	OpenQuotes  = Left(ValueField, 1)  = """";
+	CloseQuotes = Right(ValueField, 1) = """";
+	
+	If OpenQuotes And CloseQuotes Then
+		ValueField = Mid(ValueField, 2, StrLen(ValueField) - 2); 
+	EndIf;
+	
+	ValueField = StrReplace(ValueField, """""", """");
+	
+	Return ValueField;
+	
+EndFunction
+
+Function CSV_GetNumber(StringNumber) Export
+	
+	NewNumber  = "";
+	Multiplier = 1;
+	
+	If Left(StringNumber, 1) = "(" And Right(StringNumber, 1) = ")" Then
+		Multiplier = -1;
+	EndIf;
+	
+	NumberCharacters = StrLen(StringNumber);
+	CurrentCharacter = "";
+	
+	For a = 1 To NumberCharacters Do
+		
+		CurrentCharacter = Mid(StringNumber, a, 1);
+		
+		If Find("0123456789.", CurrentCharacter) > 0 Then
+			NewNumber = NewNumber + CurrentCharacter;
+		ElsIf Find("-", CurrentCharacter) > 0 Then
+			Multiplier = -1;
+		EndIf;
+		
+	EndDo;
+	
+	Return ?(NewNumber = "", 0, Number(NewNumber) * Multiplier);
+	
+EndFunction
+
+Function CSV_CheckBankAccountSettings(BankAccount, NumberColumns) Export
+	
+	NoErrors = True;
+	
+	If BankAccount.CSV_DateColumn = 0 Or BankAccount.CSV_DateColumn > NumberColumns Then
+		MessageText = NStr("en = 'Check the ""Date column #"" settings!
+                            |The value must not be zero or greater than %1.'");
+		MessageText = StringFunctionsClientServer.SubstituteParametersInString(MessageText, NumberColumns);
+		CommonUseClientServer.MessageToUser(MessageText);
+		
+		NoErrors = False;
+	EndIf;
+	
+	If BankAccount.CSV_DescriptionColumn = 0 Or BankAccount.CSV_DescriptionColumn > NumberColumns Then
+		MessageText = NStr("en = 'Check the ""Description column #"" settings!
+                            |The value must not be zero or greater than %1.'");
+		MessageText = StringFunctionsClientServer.SubstituteParametersInString(MessageText, NumberColumns);
+		CommonUseClientServer.MessageToUser(MessageText);
+		
+		NoErrors = False;
+	EndIf;
+	
+	If BankAccount.CSV_MoneyInColumn = 0 Or BankAccount.CSV_MoneyInColumn > NumberColumns Then
+		MessageText = NStr("en = 'Check the ""Money in column #"" settings!
+                            |The value must not be zero or greater than %1.'");
+		MessageText = StringFunctionsClientServer.SubstituteParametersInString(MessageText, NumberColumns);
+		CommonUseClientServer.MessageToUser(MessageText);
+		
+		NoErrors = False;
+	EndIf;
+	
+	If BankAccount.CSV_MoneyOutColumn = 0 Or BankAccount.CSV_MoneyOutColumn > NumberColumns Then
+		MessageText = NStr("en = 'Check the ""Money out column #"" settings!
+                            |The value must not be zero or greater than %1.'");
+		MessageText = StringFunctionsClientServer.SubstituteParametersInString(MessageText, NumberColumns);
+		CommonUseClientServer.MessageToUser(MessageText);
+		
+		NoErrors = False;
+	EndIf;
+	
+	If BankAccount.CSV_CheckNumberColumn > NumberColumns Then
+		MessageText = NStr("en = 'Check the ""Check number column #"" settings!
+                            |The value must not be greater than %1.'");
+		MessageText = StringFunctionsClientServer.SubstituteParametersInString(MessageText, NumberColumns);
+		CommonUseClientServer.MessageToUser(MessageText);
+		
+		NoErrors = False;
+	EndIf;
+	
+	Return NoErrors;
+	
+EndFunction
+
+Function CSV_GetYear(Year) Export
+	
+	Try
+		NumberYear = Number(Year);
+	Except
+		NumberYear = 0;
+	EndTry;
+	
+	If StrLen(Year) = 2 Then
+		If NumberYear > 50 Then
+			Year = "19" + Year;
+		Else
+			Year = "20" + Year;
+		EndIf;
+	Elsif StrLen(Year) = 1 Then
+		Year = "200" + Year;	
+	EndIf;
+	
+	Return Year;	
+	
+EndFunction
+
+#EndRegion
+
 #EndRegion
 
 ////////////////////////////////////////////////////////////////////////////////

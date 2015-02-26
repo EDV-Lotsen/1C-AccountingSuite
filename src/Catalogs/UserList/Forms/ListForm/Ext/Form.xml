@@ -68,29 +68,29 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="6"/>
-			<SearchStringAddition name="ListSearchString" id="15">
+			<SearchStringAddition name="ListSearchString" id="21">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="16"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="17"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="22"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="23"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="18">
+			<ViewStatusAddition name="ListViewStatus" id="24">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="19"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="20"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="25"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="26"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="21">
+			<SearchControlAddition name="ListSearchControl" id="27">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="22"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="23"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="28"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="29"/>
 			</SearchControlAddition>
 			<Events>
 				<Event name="BeforeDeleteRow">ListBeforeDeleteRow</Event>
@@ -109,6 +109,29 @@
 					<ContextMenu name="NameContextMenu" id="9"/>
 					<ExtendedTooltip name="NameExtendedTooltip" id="10"/>
 				</LabelField>
+				<LabelField name="LastName" id="15">
+					<DataPath>List.LastName</DataPath>
+					<ContextMenu name="LastNameContextMenu" id="16"/>
+					<ExtendedTooltip name="LastNameExtendedTooltip" id="17"/>
+				</LabelField>
+				<CheckBoxField name="Verified" id="18">
+					<DataPath>List.Verified</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Accepted</v8:content>
+						</v8:item>
+					</Title>
+					<CheckBoxType>Auto</CheckBoxType>
+					<ContextMenu name="VerifiedContextMenu" id="19"/>
+					<ExtendedTooltip name="VerifiedExtendedTooltip" id="20"/>
+				</CheckBoxField>
+				<CheckBoxField name="Disabled" id="30">
+					<DataPath>List.Disabled</DataPath>
+					<CheckBoxType>Auto</CheckBoxType>
+					<ContextMenu name="DisabledContextMenu" id="31"/>
+					<ExtendedTooltip name="DisabledExtendedTooltip" id="32"/>
+				</CheckBoxField>
 			</ChildItems>
 		</Table>
 	</ChildItems>

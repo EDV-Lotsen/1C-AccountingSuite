@@ -48,7 +48,7 @@ Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 		// Precheck of document data, calculation of temporary data, required for document posting.
 		If (Not ManualAdjustment) Then
 			DocumentParameters = New Structure("Ref, PointInTime,   Company, LineItems",
-			                                    Ref, PointInTime(), Company, LineItems.Unload(, "Order, Product, Unit, Location, LocationActual, DeliveryDate, Project, Class, QtyUM"));
+			                                    Ref, PointInTime(), Company, LineItems.Unload(, "Order, Shipment, Product, Unit, Location, LocationActual, DeliveryDate, Project, Class, QtyUM"));
 			Documents.SalesInvoice.PrepareDataBeforeWrite(AdditionalProperties, DocumentParameters, Cancel);
 		EndIf;
 				
@@ -72,12 +72,19 @@ Procedure FillCheckProcessing(Cancel, CheckedAttributes)
 	EndIf;
 	// <- CODE REVIEW
 	
+	// Check proper filling of lots.
+	LotsSerialNumbers.CheckLotsFilling(Ref, LineItems, Cancel);
+	
+	// Check proper filling of serial numbers.
+	LotsSerialNumbers.CheckSerialNumbersFilling(Ref, PointInTime(), LineItems, SerialNumbers, 1, "Shipment", Cancel);
 	
 	// Create items filter by non-empty orders.
 	FilledOrders = GeneralFunctions.InvertCollectionFilter(LineItems, LineItems.FindRows(New Structure("Order", Documents.SalesOrder.EmptyRef())));
 	
 	// Check doubles in items (to be sure of proper orders placement).
-	GeneralFunctions.CheckDoubleItems(Ref, LineItems, "Product, Unit, Order, Location, DeliveryDate, Project, Class, LineNumber", FilledOrders, Cancel);
+	//If Not SessionParameters.TenantValue = "1101092" Then // Locked for the tenant "1101092"
+		GeneralFunctions.CheckDoubleItems(Ref, LineItems, "Product, Unit, Order, Shipment, Location, DeliveryDate, Project, Class, LineNumber", FilledOrders, Cancel);
+	//EndIf;
 	
 	// Check proper closing of order items by the invoice items.
 	If Not Cancel Then
@@ -147,14 +154,21 @@ Procedure Filling(FillingData, StandardProcessing)
 		
 		// 0. Custom check of sales order for interactive generate of sales invoice on the base of sales order.
 		If (TypeOf(FillingData) = Type("DocumentRef.SalesOrder"))
-		And Not Documents.SalesInvoice.CheckStatusOfSalesOrder(Ref, FillingData) Then
+		And ((Not Documents.SalesInvoice.CheckStatusOfSalesOrder(Ref, FillingData)) Or (Documents.SalesInvoice.CheckUseShipmentOfSalesOrder(Ref, FillingData))) Then
 			Cancel = True;
 			Return;
 		EndIf;
-				
+		
+		// 0. Custom check of shipment for interactive generate of sales invoice on the base of shipment.
+		If (TypeOf(FillingData) = Type("DocumentRef.Shipment"))
+		And (Not Documents.SalesInvoice.CheckStatusOfShipment(Ref, FillingData)) Then
+			Cancel = True;
+			Return;
+		EndIf;
+		
 		// 1. Common filling of parameters.
 		DocumentParameters = New Structure("Ref, Date, Metadata",
-											Ref, ?(ValueIsFilled(Date), Date, CurrentSessionDate()), Metadata());
+		                                    Ref, ?(ValueIsFilled(Date), Date, CurrentSessionDate()), Metadata());
 		DocumentFilling.PrepareDataStructuresBeforeFilling(AdditionalProperties, DocumentParameters, FillingData, Cancel);
 		
 		// 2. Cancel filling on failed data.
@@ -187,6 +201,13 @@ Procedure Filling(FillingData, StandardProcessing)
 		// 6. Clear used temporary document data.
 		DocumentFilling.ClearDataStructuresAfterFilling(AdditionalProperties);
 		
+		// 7 Custom filling of UUIDs.
+		EmptyUUID = New UUID("00000000-0000-0000-0000-000000000000");
+		For Each Row In LineItems Do
+			If Row.LineID = EmptyUUID Then
+				Row.LineID = New UUID();
+			EndIf;
+		EndDo;
 	EndIf;
 	
 EndProcedure
@@ -194,6 +215,8 @@ EndProcedure
 Procedure OnCopy(CopiedObject)
 	
 	If ThisObject.IsNew() Then ThisObject.SetNewNumber(); EndIf;
+	
+	DwollaTrxID = 0;
 	
 	// Clear manual adjustment attribute.
 	ManualAdjustment = False;

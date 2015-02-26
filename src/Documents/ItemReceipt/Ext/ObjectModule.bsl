@@ -20,155 +20,67 @@ Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 	// Save document parameters before posting the document.
 	If WriteMode = DocumentWriteMode.Posting
 	Or WriteMode = DocumentWriteMode.UndoPosting Then
+	
+		// Save custom document parameters.
+		Orders = LineItems.UnloadColumn("Order");
+		GeneralFunctions.NormalizeArray(Orders);
 		
 		// Common filling of parameters.
-		DocumentParameters = New Structure("Ref, Date, IsNew,   Posted, ManualAdjustment, Metadata",
-		                                    Ref, Date, IsNew(), Posted, ManualAdjustment, Metadata());
+		DocumentParameters = New Structure("Ref, Date, IsNew,   Posted, ManualAdjustment, Metadata,   Orders",
+		                                    Ref, Date, IsNew(), Posted, ManualAdjustment, Metadata(), Orders);
 		DocumentPosting.PrepareDataStructuresBeforeWrite(AdditionalProperties, DocumentParameters, Cancel, WriteMode, PostingMode);
-		
 	EndIf;
 	
-EndProcedure
-
-Procedure Posting(Cancel, PostingMode)
-	
-	// 1. Common postings clearing / reactivate manual ajusted postings.
-	DocumentPosting.PrepareRecordSetsForPosting(AdditionalProperties, RegisterRecords);
-	
-	// 2. Skip manually adjusted documents.
-	If ManualAdjustment Then
-		Return;
-	EndIf;
-	
-	// 3. Create structures with document data to pass it on the server.
-	DocumentPosting.PrepareDataStructuresBeforePosting(AdditionalProperties);
-	
-	// 4. Collect document data, available for posing, and fill created structure.
-	Documents.ItemReceipt.PrepareDataStructuresForPosting(Ref, AdditionalProperties, RegisterRecords);
-	
-	// 5. Fill register records with document's postings.
-	DocumentPosting.FillRecordSets(AdditionalProperties, RegisterRecords, Cancel);
-	
-	// 6. Write document postings to register.
-	DocumentPosting.WriteRecordSets(AdditionalProperties, RegisterRecords);
-	
-	// 7. Check register blanaces according to document's changes.
-	DocumentPosting.CheckPostingResults(AdditionalProperties, RegisterRecords, Cancel);
-	
-	// 8. Clear used temporary document data.
-	DocumentPosting.ClearDataStructuresAfterPosting(AdditionalProperties);
-	
-	
-	// -> CODE REVIEW
-	
-	// Fill in the account posting value table with amounts.
-	PostingDataset = New ValueTable();
-	PostingDataset.Columns.Add("Account");
-	PostingDataset.Columns.Add("AmountRC");
-	
-	CalculateByPlannedCosting = False;
-	PurchaseLiabilityAccount  = ChartsOfAccounts.ChartOfAccounts.EmptyRef(); // Constants.PurchaseLiabilityAccount.Get();
-	CostVarianceAccount       = ChartsOfAccounts.ChartOfAccounts.EmptyRef(); // Constants.CostVarianceAccount.Get();
-	
-	For Each CurRowLineItems in LineItems Do
-		// Detect inventory item in table part.
-		IsInventoryPosting = (Not CurRowLineItems.Product.IsEmpty()) And (CurRowLineItems.Product.Type = Enums.InventoryTypes.Inventory);
+	// Precheck of register balances to complete filling of document posting.
+	If WriteMode = DocumentWriteMode.Posting Then
 		
-		PostingLine = PostingDataset.Add();
-		If CalculateByPlannedCosting And IsInventoryPosting Then
-			//PostingLine.Account = AccruedPurchasesAccount;
-		Else
-			PostingLine.Account = CurRowLineItems.Product.InventoryOrExpenseAccount;
+		// Precheck of document data, calculation of temporary data, required for document posting.
+		If (Not ManualAdjustment) Then
+			DocumentParameters = New Structure("Ref, PointInTime,   Company, LineItems",
+			                                    Ref, PointInTime(), Company, LineItems.Unload(, "Order, Product, Unit, LocationOrder, Location, DeliveryDateOrder, Project, Class, QtyUM"));
+			Documents.ItemReceipt.PrepareDataBeforeWrite(AdditionalProperties, DocumentParameters, Cancel);
 		EndIf;
-		PostingLine.AmountRC = CurRowLineItems.LineTotal * ExchangeRate;
-	EndDo;
-	
-	PostingDataset.GroupBy("Account", "AmountRC");
-	
-	NoOfPostingRows = PostingDataset.Count();
-	
-	// GL posting.
-	RegisterRecords.GeneralJournal.Write = True;
-	
-	For i = 0 To NoOfPostingRows - 1 Do
 		
-		If PostingDataset[i][1] > 0 Then // Dr: Amount > 0
-			Record = RegisterRecords.GeneralJournal.AddDebit();
-			Record.Account = PostingDataset[i][0];
-			Record.Period = Date;
-			Record.AmountRC = PostingDataset[i][1];
-			
-		ElsIf PostingDataset[i][1] < 0 Then // Cr: Amount < 0
-			Record = RegisterRecords.GeneralJournal.AddCredit();
-			Record.Account = PostingDataset[i][0];
-			Record.Period = Date;
-			Record.AmountRC = -PostingDataset[i][1];
-			
-		EndIf;
-	EndDo;
-	
-	Record = RegisterRecords.GeneralJournal.AddCredit();
-	Record.Account = PurchaseLiabilityAccount;
-	Record.Period = Date;
-	Record.Amount = DocumentTotal;
-	Record.Currency = Currency;
-	Record.AmountRC = DocumentTotal * ExchangeRate;
-	
-	RegisterRecords.ProjectData.Write = True;
-	For Each CurRowLineItems In LineItems Do
-		Record = RegisterRecords.ProjectData.Add();
-		Record.RecordType = AccumulationRecordType.Expense;
-		Record.Period = Date;
-		Record.Project = CurRowLineItems.Project;
-		Record.Amount = CurRowLineItems.LineTotal;
-	EndDo;
-	// <- CODE REVIEW
-	
-EndProcedure
-
-Procedure UndoPosting(Cancel)
-	
-	// 1. Common posting clearing / deactivate manual ajusted postings.
-	DocumentPosting.PrepareRecordSetsForPostingClearing(AdditionalProperties, RegisterRecords);
-	
-	// 2. Skip manually adjusted documents.
-	If ManualAdjustment Then
-		Return;
 	EndIf;
 	
-	// 3. Create structures with document data to pass it on the server.
-	DocumentPosting.PrepareDataStructuresBeforePosting(AdditionalProperties);
-	
-	// 4. Collect document data, required for posing clearing, and fill created structure.
-	Documents.ItemReceipt.PrepareDataStructuresForPostingClearing(Ref, AdditionalProperties, RegisterRecords);
-	
-	// 5. Write document postings to register.
-	DocumentPosting.WriteRecordSets(AdditionalProperties, RegisterRecords);
-	
-	// 6. Check register blanaces according to document's changes.
-	DocumentPosting.CheckPostingResults(AdditionalProperties, RegisterRecords, Cancel);
-	
-	// 7. Clear used temporary document data.
-	DocumentPosting.ClearDataStructuresAfterPosting(AdditionalProperties);
-	
 EndProcedure
 
-Procedure OnCopy(CopiedObject)
+Procedure FillCheckProcessing(Cancel, CheckedAttributes)
 	
-	// Clear manual adjustment attribute.
-	ManualAdjustment = False;
+	// Check proper filling of lots.
+	LotsSerialNumbers.CheckLotsFilling(Ref, LineItems, Cancel);
+	
+	// Check proper filling of serial numbers.
+	LotsSerialNumbers.CheckSerialNumbersFilling(Ref, PointInTime(), LineItems, SerialNumbers, 0, "", Cancel);
+	
+	// Check doubles in items (to be sure of proper orders placement).
+	//If Not SessionParameters.TenantValue = "1101092" Then // Locked for the tenant "1101092"
+		GeneralFunctions.CheckDoubleItems(Ref, LineItems, "Product, Unit, Order, LocationOrder, DeliveryDateOrder, Project, Class, LineNumber",, Cancel);
+	//EndIf;
+	
+	// Check proper closing of order items by the item receipt items.
+	If Not Cancel Then
+		Documents.ItemReceipt.CheckOrderQuantity(Ref, Date, Company, LineItems, Cancel);
+	EndIf;
 	
 EndProcedure
 
 Procedure Filling(FillingData, StandardProcessing)
-	Var TabularSectionData; Cancel = False;
 	
-	// Filling on the base of other referenced object.
-	If FillingData <> Undefined Then
+	// Filling new document or filling on the base of another document.
+	If FillingData = Undefined Then
+		// Filling of the new created document with default values.
+		Currency         = Constants.DefaultCurrency.Get();
+		ExchangeRate     = GeneralFunctions.GetExchangeRate(Date, Currency);
+		Location         = GeneralFunctions.GetDefaultLocation();
+		
+	Else
+		// Generate on the base of Purchase order & Item receipt.
+		Cancel = False; TabularSectionData = Undefined;
 		
 		// 0. Custom check of purchase order for interactive generate of items receipt on the base of purchase order.
 		If (TypeOf(FillingData) = Type("DocumentRef.PurchaseOrder"))
-		And Not Documents.ItemReceipt.CheckStatusOfPurchaseOrder(Ref, FillingData) Then
+		And ((Not Documents.ItemReceipt.CheckStatusOfPurchaseOrder(Ref, FillingData)) Or (Not Documents.ItemReceipt.CheckUseItemReceiptOfPurchaseOrder(Ref, FillingData))) Then
 			Cancel = True;
 			Return;
 		EndIf;
@@ -207,14 +119,76 @@ Procedure Filling(FillingData, StandardProcessing)
 		
 		// 6. Clear used temporary document data.
 		DocumentFilling.ClearDataStructuresAfterFilling(AdditionalProperties);
+		
+		// 7 Custom filling of UUIDs.
+		For Each Row In LineItems Do
+			Row.LineID = New UUID();
+		EndDo;
 	EndIf;
 	
 EndProcedure
 
-Procedure FillCheckProcessing(Cancel, CheckedAttributes)
+Procedure OnCopy(CopiedObject)
 	
-	// Check doubles in items (to be sure of proper orders placement).
-	GeneralFunctions.CheckDoubleItems(Ref, LineItems, "Project, Order, Product, LineNumber",, Cancel);
+	// Clear manual adjustment attribute.
+	ManualAdjustment = False;
+	
+EndProcedure
+
+Procedure Posting(Cancel, PostingMode)
+	
+	// 1. Common postings clearing / reactivate manual ajusted postings.
+	DocumentPosting.PrepareRecordSetsForPosting(AdditionalProperties, RegisterRecords);
+	
+	// 2. Skip manually adjusted documents.
+	If ManualAdjustment Then
+		Return;
+	EndIf;
+	
+	// 3. Create structures with document data to pass it on the server.
+	DocumentPosting.PrepareDataStructuresBeforePosting(AdditionalProperties);
+	
+	// 4. Collect document data, available for posing, and fill created structure.
+	Documents.ItemReceipt.PrepareDataStructuresForPosting(Ref, AdditionalProperties, RegisterRecords);
+	
+	// 5. Fill register records with document's postings.
+	DocumentPosting.FillRecordSets(AdditionalProperties, RegisterRecords, Cancel);
+	
+	// 6. Write document postings to register.
+	DocumentPosting.WriteRecordSets(AdditionalProperties, RegisterRecords);
+	
+	// 7. Check register blanaces according to document's changes.
+	DocumentPosting.CheckPostingResults(AdditionalProperties, RegisterRecords, Cancel);
+	
+	// 8. Clear used temporary document data.
+	DocumentPosting.ClearDataStructuresAfterPosting(AdditionalProperties);
+	
+EndProcedure
+
+Procedure UndoPosting(Cancel)
+	
+	// 1. Common posting clearing / deactivate manual ajusted postings.
+	DocumentPosting.PrepareRecordSetsForPostingClearing(AdditionalProperties, RegisterRecords);
+	
+	// 2. Skip manually adjusted documents.
+	If ManualAdjustment Then
+		Return;
+	EndIf;
+	
+	// 3. Create structures with document data to pass it on the server.
+	DocumentPosting.PrepareDataStructuresBeforePosting(AdditionalProperties);
+	
+	// 4. Collect document data, required for posing clearing, and fill created structure.
+	Documents.ItemReceipt.PrepareDataStructuresForPostingClearing(Ref, AdditionalProperties, RegisterRecords);
+	
+	// 5. Write document postings to register.
+	DocumentPosting.WriteRecordSets(AdditionalProperties, RegisterRecords);
+	
+	// 6. Check register blanaces according to document's changes.
+	DocumentPosting.CheckPostingResults(AdditionalProperties, RegisterRecords, Cancel);
+	
+	// 7. Clear used temporary document data.
+	DocumentPosting.ClearDataStructuresAfterPosting(AdditionalProperties);
 	
 EndProcedure
 

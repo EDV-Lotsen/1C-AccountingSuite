@@ -266,8 +266,130 @@
 				</dcscor:item>
 			</appearance>
 		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>RetainedEarningsAccount</dataPath>
+			<field>RetainedEarningsAccount</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Retained earnings account</v8:content>
+				</v8:item>
+			</title>
+			<attributeUseRestriction>
+				<field>true</field>
+				<group>true</group>
+			</attributeUseRestriction>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>RetainedEarnings</dataPath>
+			<field>RetainedEarnings</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Retained earnings</v8:content>
+				</v8:item>
+			</title>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>RetainedEarningsOpeningBalance</dataPath>
+			<field>RetainedEarningsOpeningBalance</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Retained earnings opening balance</v8:content>
+				</v8:item>
+			</title>
+			<role>
+				<dcscom:balance>true</dcscom:balance>
+				<dcscom:balanceGroupName>RE</dcscom:balanceGroupName>
+				<dcscom:balanceType>OpeningBalance</dcscom:balanceType>
+				<dcscom:accountField>Account</dcscom:accountField>
+			</role>
+			<appearance>
+				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+					<dcscor:parameter>Format</dcscor:parameter>
+					<dcscor:value xsi:type="xs:string">NFD=2; NZ=0.00; NG=3,0</dcscor:value>
+				</dcscor:item>
+			</appearance>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>RetainedEarningsClosingBalance</dataPath>
+			<field>RetainedEarningsClosingBalance</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Retained earnings closing balance</v8:content>
+				</v8:item>
+			</title>
+			<role>
+				<dcscom:balance>true</dcscom:balance>
+				<dcscom:balanceGroupName>RE</dcscom:balanceGroupName>
+				<dcscom:balanceType>ClosingBalance</dcscom:balanceType>
+				<dcscom:accountField>Account</dcscom:accountField>
+			</role>
+			<appearance>
+				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+					<dcscor:parameter>Format</dcscor:parameter>
+					<dcscor:value xsi:type="xs:string">NFD=2; NZ=0.00; NG=3,0</dcscor:value>
+				</dcscor:item>
+			</appearance>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>RetainedEarningsYearClosingBalance</dataPath>
+			<field>RetainedEarningsYearClosingBalance</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Retained earnings year closing balance</v8:content>
+				</v8:item>
+			</title>
+			<role>
+				<dcscom:balance>true</dcscom:balance>
+				<dcscom:balanceGroupName>RE_Year</dcscom:balanceGroupName>
+				<dcscom:balanceType>ClosingBalance</dcscom:balanceType>
+				<dcscom:accountField>Account</dcscom:accountField>
+			</role>
+			<appearance>
+				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+					<dcscor:parameter>Format</dcscor:parameter>
+					<dcscor:value xsi:type="xs:string">NFD=2; NZ=0.00; NG=3,0</dcscor:value>
+				</dcscor:item>
+			</appearance>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>RetainedEarningsYearOpeningBalance</dataPath>
+			<field>RetainedEarningsYearOpeningBalance</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Retained earnings year opening balance</v8:content>
+				</v8:item>
+			</title>
+			<role>
+				<dcscom:balance>true</dcscom:balance>
+				<dcscom:balanceGroupName>RE_Year</dcscom:balanceGroupName>
+				<dcscom:balanceType>OpeningBalance</dcscom:balanceType>
+				<dcscom:accountField>Account</dcscom:accountField>
+			</role>
+			<appearance>
+				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+					<dcscor:parameter>Format</dcscor:parameter>
+					<dcscor:value xsi:type="xs:string">NFD=2; NZ=0.00; NG=3,0</dcscor:value>
+				</dcscor:item>
+			</appearance>
+		</field>
 		<dataSource>DataSource1</dataSource>
-		<query>SELECT
+		<query>SELECT TOP 1
+	ChartOfAccounts.Ref AS Account
+INTO RetainedEarningsAccount
+FROM
+	ChartOfAccounts.ChartOfAccounts AS ChartOfAccounts
+WHERE
+	ChartOfAccounts.RetainedEarnings = TRUE
+;
+
+////////////////////////////////////////////////////////////////////////////////
+SELECT
 	YearsOpeningBalance.Account AS Account,
 	CASE
 		WHEN YearsOpeningBalance.Period = DATETIME(3999, 1, 1)
@@ -537,7 +659,29 @@ SELECT
 	GeneralJournalSummary.AmountRCOpeningBalance AS AmountRCOpeningBalance,
 	GeneralJournalSummary.AmountRCTurnover AS AmountRCTurnover,
 	GeneralJournalSummary.YearOpeningBalance,
-	GeneralJournalSummary.YearClosingBalance
+	GeneralJournalSummary.YearClosingBalance,
+	GeneralJournalSummary.Account.RetainedEarnings AS RetainedEarnings,
+	RetainedEarningsAccount.Account AS RetainedEarningsAccount,
+	CASE
+		WHEN GeneralJournalSummary.Account.RetainedEarnings
+			THEN GeneralJournalSummary.AmountRCOpeningBalance
+		ELSE 0
+	END AS RetainedEarningsOpeningBalance,
+	CASE
+		WHEN GeneralJournalSummary.Account.RetainedEarnings
+			THEN GeneralJournalSummary.AmountRCClosingBalance
+		ELSE 0
+	END AS RetainedEarningsClosingBalance,
+	CASE
+		WHEN NOT GeneralJournalSummary.Account.RetainedEarnings
+			THEN GeneralJournalSummary.YearOpeningBalance
+		ELSE 0
+	END AS RetainedEarningsYearOpeningBalance,
+	CASE
+		WHEN NOT GeneralJournalSummary.Account.RetainedEarnings
+			THEN GeneralJournalSummary.YearClosingBalance
+		ELSE 0
+	END AS RetainedEarningsYearClosingBalance
 INTO GeneralJournalTotal
 FROM
 	BalanceSections AS BalanceSections
@@ -545,6 +689,8 @@ FROM
 		ON (TRUE)
 		LEFT JOIN GeneralJournalSummary AS GeneralJournalSummary
 		ON (GeneralJournalSummary.Section = BalanceSections.Section)
+		LEFT JOIN RetainedEarningsAccount AS RetainedEarningsAccount
+		ON (TRUE)
 ;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -564,7 +710,13 @@ SELECT ALLOWED
 	GeneralJournalTotal.AmountRCOpeningBalance,
 	GeneralJournalTotal.AmountRCTurnover,
 	GeneralJournalTotal.YearOpeningBalance,
-	GeneralJournalTotal.YearClosingBalance
+	GeneralJournalTotal.YearClosingBalance,
+	GeneralJournalTotal.RetainedEarnings,
+	GeneralJournalTotal.RetainedEarningsAccount,
+	GeneralJournalTotal.RetainedEarningsOpeningBalance,
+	GeneralJournalTotal.RetainedEarningsClosingBalance,
+	GeneralJournalTotal.RetainedEarningsYearOpeningBalance,
+	GeneralJournalTotal.RetainedEarningsYearClosingBalance
 FROM
 	GeneralJournalTotal AS GeneralJournalTotal
 
@@ -584,7 +736,13 @@ GROUP BY
 	GeneralJournalTotal.AmountRCOpeningBalance,
 	GeneralJournalTotal.AmountRCTurnover,
 	GeneralJournalTotal.YearOpeningBalance,
-	GeneralJournalTotal.YearClosingBalance</query>
+	GeneralJournalTotal.YearClosingBalance,
+	GeneralJournalTotal.RetainedEarnings,
+	GeneralJournalTotal.RetainedEarningsAccount,
+	GeneralJournalTotal.RetainedEarningsOpeningBalance,
+	GeneralJournalTotal.RetainedEarningsClosingBalance,
+	GeneralJournalTotal.RetainedEarningsYearOpeningBalance,
+	GeneralJournalTotal.RetainedEarningsYearClosingBalance</query>
 	</dataSet>
 	<totalField>
 		<dataPath>AmountRCBalance</dataPath>
@@ -605,6 +763,22 @@ GROUP BY
 	<totalField>
 		<dataPath>YearOpeningBalance</dataPath>
 		<expression>Sum(YearOpeningBalance)</expression>
+	</totalField>
+	<totalField>
+		<dataPath>RetainedEarningsOpeningBalance</dataPath>
+		<expression>Sum(RetainedEarningsOpeningBalance)</expression>
+	</totalField>
+	<totalField>
+		<dataPath>RetainedEarningsClosingBalance</dataPath>
+		<expression>Sum(RetainedEarningsClosingBalance)</expression>
+	</totalField>
+	<totalField>
+		<dataPath>RetainedEarningsYearOpeningBalance</dataPath>
+		<expression>Sum(RetainedEarningsYearOpeningBalance)</expression>
+	</totalField>
+	<totalField>
+		<dataPath>RetainedEarningsYearClosingBalance</dataPath>
+		<expression>Sum(RetainedEarningsYearClosingBalance)</expression>
 	</totalField>
 	<parameter>
 		<name>BeginOfPeriod</name>
@@ -1695,57 +1869,6 @@ END</dcsat:expression>
 						<dcsat:value xsi:type="v8:LocalStringType">
 							<v8:item>
 								<v8:lang>en</v8:lang>
-								<v8:content> 		Retained Earnings</v8:content>
-							</v8:item>
-						</dcsat:value>
-					</dcsat:item>
-					<dcsat:appearance>
-						<dcscor:item>
-							<dcscor:parameter>Indent</dcscor:parameter>
-							<dcscor:value xsi:type="xs:decimal">1</dcscor:value>
-						</dcscor:item>
-						<dcscor:item>
-							<dcscor:parameter>HorizontalAlign</dcscor:parameter>
-							<dcscor:value xsi:type="v8ui:HorizontalAlign">Left</dcscor:value>
-						</dcscor:item>
-						<dcscor:item>
-							<dcscor:parameter>MinimumWidth</dcscor:parameter>
-							<dcscor:value xsi:type="xs:decimal">45</dcscor:value>
-						</dcscor:item>
-						<dcscor:item>
-							<dcscor:parameter>MaximumWidth</dcscor:parameter>
-							<dcscor:value xsi:type="xs:decimal">45</dcscor:value>
-						</dcscor:item>
-						<dcscor:item>
-							<dcscor:parameter>Details</dcscor:parameter>
-							<dcscor:value xsi:type="dcscor:Parameter">Detail</dcscor:value>
-						</dcscor:item>
-					</dcsat:appearance>
-				</dcsat:tableCell>
-				<dcsat:tableCell>
-					<dcsat:item xsi:type="dcsat:Field">
-						<dcsat:value xsi:type="dcscor:Parameter">YearClosingBalance</dcsat:value>
-						<dcsat:appearance>
-							<dcscor:item>
-								<dcscor:parameter>Format</dcscor:parameter>
-								<dcscor:value xsi:type="xs:string">NFD=2; NZ=0.00; NG=3,0</dcscor:value>
-							</dcscor:item>
-						</dcsat:appearance>
-					</dcsat:item>
-					<dcsat:appearance>
-						<dcscor:item>
-							<dcscor:parameter>HorizontalAlign</dcscor:parameter>
-							<dcscor:value xsi:type="v8ui:HorizontalAlign">Right</dcscor:value>
-						</dcscor:item>
-					</dcsat:appearance>
-				</dcsat:tableCell>
-			</dcsat:item>
-			<dcsat:item xsi:type="dcsat:TableRow">
-				<dcsat:tableCell>
-					<dcsat:item xsi:type="dcsat:Field">
-						<dcsat:value xsi:type="v8:LocalStringType">
-							<v8:item>
-								<v8:lang>en</v8:lang>
 								<v8:content> 		Net Income</v8:content>
 							</v8:item>
 						</dcsat:value>
@@ -1803,10 +1926,6 @@ END</dcsat:expression>
 				<dcsat:expression>True</dcsat:expression>
 			</dcsat:fieldExpression>
 			<dcsat:mainAction>DrillDown</dcsat:mainAction>
-		</parameter>
-		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
-			<dcsat:name>YearClosingBalance</dcsat:name>
-			<dcsat:expression>-YearClosingBalance</dcsat:expression>
 		</parameter>
 		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
 			<dcsat:name>NetIncome</dcsat:name>
@@ -2918,40 +3037,6 @@ END</dcsat:expression>
 						<dcsat:value xsi:type="v8:LocalStringType">
 							<v8:item>
 								<v8:lang>en</v8:lang>
-								<v8:content> 		Retained Earnings</v8:content>
-							</v8:item>
-						</dcsat:value>
-					</dcsat:item>
-					<dcsat:appearance>
-						<dcscor:item>
-							<dcscor:parameter>Indent</dcscor:parameter>
-							<dcscor:value xsi:type="xs:decimal">1</dcscor:value>
-						</dcscor:item>
-						<dcscor:item>
-							<dcscor:parameter>HorizontalAlign</dcscor:parameter>
-							<dcscor:value xsi:type="v8ui:HorizontalAlign">Left</dcscor:value>
-						</dcscor:item>
-						<dcscor:item>
-							<dcscor:parameter>MinimumWidth</dcscor:parameter>
-							<dcscor:value xsi:type="xs:decimal">45</dcscor:value>
-						</dcscor:item>
-						<dcscor:item>
-							<dcscor:parameter>MaximumWidth</dcscor:parameter>
-							<dcscor:value xsi:type="xs:decimal">45</dcscor:value>
-						</dcscor:item>
-						<dcscor:item>
-							<dcscor:parameter>Details</dcscor:parameter>
-							<dcscor:value xsi:type="dcscor:Parameter">Detail</dcscor:value>
-						</dcscor:item>
-					</dcsat:appearance>
-				</dcsat:tableCell>
-			</dcsat:item>
-			<dcsat:item xsi:type="dcsat:TableRow">
-				<dcsat:tableCell>
-					<dcsat:item xsi:type="dcsat:Field">
-						<dcsat:value xsi:type="v8:LocalStringType">
-							<v8:item>
-								<v8:lang>en</v8:lang>
 								<v8:content> 		Net Income</v8:content>
 							</v8:item>
 						</dcsat:value>
@@ -3895,68 +3980,6 @@ END</dcsat:expression>
 		</parameter>
 	</template>
 	<template>
-		<name>Template60</name>
-		<template xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:AreaTemplate">
-			<dcsat:item xsi:type="dcsat:TableRow">
-				<dcsat:tableCell>
-					<dcsat:item xsi:type="dcsat:Field">
-						<dcsat:value xsi:type="dcscor:Parameter">YearClosingBalance</dcsat:value>
-						<dcsat:appearance>
-							<dcscor:item>
-								<dcscor:parameter>Format</dcscor:parameter>
-								<dcscor:value xsi:type="xs:string">NFD=2; NZ=0.00; NG=3,0</dcscor:value>
-							</dcscor:item>
-						</dcsat:appearance>
-					</dcsat:item>
-					<dcsat:appearance>
-						<dcscor:item>
-							<dcscor:parameter>HorizontalAlign</dcscor:parameter>
-							<dcscor:value xsi:type="v8ui:HorizontalAlign">Right</dcscor:value>
-						</dcscor:item>
-					</dcsat:appearance>
-				</dcsat:tableCell>
-			</dcsat:item>
-			<dcsat:item xsi:type="dcsat:TableRow">
-				<dcsat:tableCell>
-					<dcsat:item xsi:type="dcsat:Field">
-						<dcsat:value xsi:type="dcscor:Parameter">NetIncome</dcsat:value>
-						<dcsat:appearance>
-							<dcscor:item>
-								<dcscor:parameter>Format</dcscor:parameter>
-								<dcscor:value xsi:type="xs:string">NFD=2; NZ=0.00; NG=3,0</dcscor:value>
-							</dcscor:item>
-						</dcsat:appearance>
-					</dcsat:item>
-					<dcsat:appearance>
-						<dcscor:item>
-							<dcscor:parameter>HorizontalAlign</dcscor:parameter>
-							<dcscor:value xsi:type="v8ui:HorizontalAlign">Right</dcscor:value>
-						</dcscor:item>
-						<dcscor:item>
-							<dcscor:parameter>Details</dcscor:parameter>
-							<dcscor:value xsi:type="dcscor:Parameter">Detalis</dcscor:value>
-						</dcscor:item>
-					</dcsat:appearance>
-				</dcsat:tableCell>
-			</dcsat:item>
-		</template>
-		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
-			<dcsat:name>YearClosingBalance</dcsat:name>
-			<dcsat:expression>-ISNULL(YearClosingBalance, 0)</dcsat:expression>
-		</parameter>
-		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
-			<dcsat:name>NetIncome</dcsat:name>
-			<dcsat:expression>(-ISNULL(AmountRCOpeningBalance, 0)) + (-ISNULL(AmountRCTurnover, 0)) - (-ISNULL(YearClosingBalance, 0))</dcsat:expression>
-		</parameter>
-		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:DetailsAreaTemplateParameter">
-			<dcsat:name>Detalis</dcsat:name>
-			<dcsat:fieldExpression>
-				<dcsat:field>NetIncome</dcsat:field>
-				<dcsat:expression>True</dcsat:expression>
-			</dcsat:fieldExpression>
-		</parameter>
-	</template>
-	<template>
 		<name>Template61</name>
 		<template xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:AreaTemplate">
 			<dcsat:item xsi:type="dcsat:TableRow">
@@ -4127,6 +4150,192 @@ END</dcsat:expression>
 		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
 			<dcsat:name>DataParameters.PeriodPresentation</dcsat:name>
 			<dcsat:expression>DataParameters.PeriodPresentation</dcsat:expression>
+		</parameter>
+	</template>
+	<template>
+		<name>Template63</name>
+		<template xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:AreaTemplate">
+			<dcsat:item xsi:type="dcsat:TableRow">
+				<dcsat:tableCell>
+					<dcsat:item xsi:type="dcsat:Field">
+						<dcsat:value xsi:type="v8:LocalStringType">
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content> 		</v8:content>
+							</v8:item>
+						</dcsat:value>
+					</dcsat:item>
+					<dcsat:item xsi:type="dcsat:Field">
+						<dcsat:value xsi:type="dcscor:Parameter">RetainedEarningsAccount</dcsat:value>
+					</dcsat:item>
+					<dcsat:appearance>
+						<dcscor:item>
+							<dcscor:parameter>Indent</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">1</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>HorizontalAlign</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:HorizontalAlign">Left</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MinimumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">45</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MaximumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">45</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>Details</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:Parameter">Detail</dcscor:value>
+						</dcscor:item>
+					</dcsat:appearance>
+				</dcsat:tableCell>
+				<dcsat:tableCell>
+					<dcsat:item xsi:type="dcsat:Field">
+						<dcsat:value xsi:type="dcscor:Parameter">RetainedEarnings</dcsat:value>
+						<dcsat:appearance>
+							<dcscor:item>
+								<dcscor:parameter>Format</dcscor:parameter>
+								<dcscor:value xsi:type="xs:string">NFD=2; NZ=0.00; NG=3,0</dcscor:value>
+							</dcscor:item>
+						</dcsat:appearance>
+					</dcsat:item>
+					<dcsat:appearance>
+						<dcscor:item>
+							<dcscor:parameter>HorizontalAlign</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:HorizontalAlign">Right</dcscor:value>
+						</dcscor:item>
+					</dcsat:appearance>
+				</dcsat:tableCell>
+			</dcsat:item>
+		</template>
+		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:DetailsAreaTemplateParameter">
+			<dcsat:name>Detail</dcsat:name>
+		</parameter>
+		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
+			<dcsat:name>RetainedEarnings</dcsat:name>
+			<dcsat:expression>(-ISNULL(RetainedEarningsYearClosingBalance, 0)) + (-ISNULL(RetainedEarningsClosingBalance, 0))</dcsat:expression>
+		</parameter>
+		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
+			<dcsat:name>RetainedEarningsAccount</dcsat:name>
+			<dcsat:expression>ISNULL(Presentation(RetainedEarningsAccount), "Retained Earnings")</dcsat:expression>
+		</parameter>
+	</template>
+	<template>
+		<name>Template64</name>
+		<template xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:AreaTemplate">
+			<dcsat:item xsi:type="dcsat:TableRow">
+				<dcsat:tableCell>
+					<dcsat:item xsi:type="dcsat:Field">
+						<dcsat:value xsi:type="v8:LocalStringType">
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content> 		</v8:content>
+							</v8:item>
+						</dcsat:value>
+					</dcsat:item>
+					<dcsat:item xsi:type="dcsat:Field">
+						<dcsat:value xsi:type="dcscor:Parameter">RetainedEarningsAccount</dcsat:value>
+					</dcsat:item>
+					<dcsat:appearance>
+						<dcscor:item>
+							<dcscor:parameter>Indent</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">1</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>HorizontalAlign</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:HorizontalAlign">Left</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MinimumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">45</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MaximumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">45</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>Details</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:Parameter">Detail</dcscor:value>
+						</dcscor:item>
+					</dcsat:appearance>
+				</dcsat:tableCell>
+			</dcsat:item>
+		</template>
+		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:DetailsAreaTemplateParameter">
+			<dcsat:name>Detail</dcsat:name>
+		</parameter>
+		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
+			<dcsat:name>RetainedEarningsAccount</dcsat:name>
+			<dcsat:expression>ISNULL(Presentation(RetainedEarningsAccount), "Retained Earnings")</dcsat:expression>
+		</parameter>
+	</template>
+	<template>
+		<name>Template65</name>
+		<template xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:AreaTemplate">
+			<dcsat:item xsi:type="dcsat:TableRow">
+				<dcsat:tableCell>
+					<dcsat:item xsi:type="dcsat:Field">
+						<dcsat:value xsi:type="dcscor:Parameter">NetIncome</dcsat:value>
+						<dcsat:appearance>
+							<dcscor:item>
+								<dcscor:parameter>Format</dcscor:parameter>
+								<dcscor:value xsi:type="xs:string">NFD=2; NZ=0.00; NG=3,0</dcscor:value>
+							</dcscor:item>
+						</dcsat:appearance>
+					</dcsat:item>
+					<dcsat:appearance>
+						<dcscor:item>
+							<dcscor:parameter>HorizontalAlign</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:HorizontalAlign">Right</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>Details</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:Parameter">Detalis</dcscor:value>
+						</dcscor:item>
+					</dcsat:appearance>
+				</dcsat:tableCell>
+			</dcsat:item>
+		</template>
+		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
+			<dcsat:name>NetIncome</dcsat:name>
+			<dcsat:expression>(-ISNULL(AmountRCOpeningBalance, 0)) + (-ISNULL(AmountRCTurnover, 0)) - (-ISNULL(YearClosingBalance, 0))</dcsat:expression>
+		</parameter>
+		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:DetailsAreaTemplateParameter">
+			<dcsat:name>Detalis</dcsat:name>
+			<dcsat:fieldExpression>
+				<dcsat:field>NetIncome</dcsat:field>
+				<dcsat:expression>True</dcsat:expression>
+			</dcsat:fieldExpression>
+		</parameter>
+	</template>
+	<template>
+		<name>Template60</name>
+		<template xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:AreaTemplate">
+			<dcsat:item xsi:type="dcsat:TableRow">
+				<dcsat:tableCell>
+					<dcsat:item xsi:type="dcsat:Field">
+						<dcsat:value xsi:type="dcscor:Parameter">RetainedEarnings</dcsat:value>
+						<dcsat:appearance>
+							<dcscor:item>
+								<dcscor:parameter>Format</dcscor:parameter>
+								<dcscor:value xsi:type="xs:string">NFD=2; NZ=0.00; NG=3,0</dcscor:value>
+							</dcscor:item>
+						</dcsat:appearance>
+					</dcsat:item>
+					<dcsat:appearance>
+						<dcscor:item>
+							<dcscor:parameter>HorizontalAlign</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:HorizontalAlign">Right</dcscor:value>
+						</dcscor:item>
+					</dcsat:appearance>
+				</dcsat:tableCell>
+			</dcsat:item>
+		</template>
+		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
+			<dcsat:name>RetainedEarnings</dcsat:name>
+			<dcsat:expression>(-ISNULL(RetainedEarningsYearClosingBalance, 0)) + (-ISNULL(RetainedEarningsClosingBalance, 0))</dcsat:expression>
 		</parameter>
 	</template>
 	<groupTemplate>
@@ -4374,6 +4583,16 @@ END</dcsat:expression>
 		<templateType>Header</templateType>
 		<template>Template61</template>
 	</groupTemplate>
+	<groupTemplate>
+		<groupName>RetainedEarningsList</groupName>
+		<templateType>Header</templateType>
+		<template>Template63</template>
+	</groupTemplate>
+	<groupTemplate>
+		<groupName>RetainedEarnings</groupName>
+		<templateType>Header</templateType>
+		<template>Template64</template>
+	</groupTemplate>
 	<groupHeaderTemplate>
 		<groupName>Header</groupName>
 		<templateType>Header</templateType>
@@ -4454,7 +4673,7 @@ END</dcsat:expression>
 		<templateType1>Header</templateType1>
 		<groupName2>YearPeriod</groupName2>
 		<templateType2>Header</templateType2>
-		<template>Template60</template>
+		<template>Template65</template>
 	</totalFieldsTemplate>
 	<totalFieldsTemplate>
 		<groupName1>Assets</groupName1>
@@ -4531,7 +4750,7 @@ END</dcsat:expression>
 		<templateType1>Header</templateType1>
 		<groupName2>QuarterPeriod</groupName2>
 		<templateType2>Header</templateType2>
-		<template>Template60</template>
+		<template>Template65</template>
 	</totalFieldsTemplate>
 	<totalFieldsTemplate>
 		<groupName1>Assets</groupName1>
@@ -4608,7 +4827,7 @@ END</dcsat:expression>
 		<templateType1>Header</templateType1>
 		<groupName2>MonthPeriod</groupName2>
 		<templateType2>Header</templateType2>
-		<template>Template60</template>
+		<template>Template65</template>
 	</totalFieldsTemplate>
 	<totalFieldsTemplate>
 		<groupName1>Assets</groupName1>
@@ -4685,7 +4904,7 @@ END</dcsat:expression>
 		<templateType1>Header</templateType1>
 		<groupName2>WeekPeriod</groupName2>
 		<templateType2>Header</templateType2>
-		<template>Template60</template>
+		<template>Template65</template>
 	</totalFieldsTemplate>
 	<totalFieldsTemplate>
 		<groupName1>Assets</groupName1>
@@ -4762,637 +4981,672 @@ END</dcsat:expression>
 		<templateType1>Header</templateType1>
 		<groupName2>DayPeriod</groupName2>
 		<templateType2>Header</templateType2>
+		<template>Template65</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>Division</groupField1>
+		<templateType1>Header</templateType1>
+		<groupField2>YearPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template57</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>Section</groupField1>
+		<templateType1>Header</templateType1>
+		<groupField2>YearPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template57</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>AccountType</groupField1>
+		<templateType1>Header</templateType1>
+		<groupField2>YearPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template57</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>Account</groupField1>
+		<templateType1>Header</templateType1>
+		<groupField2>YearPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template57</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>YearPeriod</groupField1>
+		<templateType1>Header</templateType1>
+		<groupField2>YearPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template57</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>QuarterPeriod</groupField1>
+		<templateType1>Header</templateType1>
+		<groupField2>YearPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template57</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>MonthPeriod</groupField1>
+		<templateType1>Header</templateType1>
+		<groupField2>YearPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template57</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>WeekPeriod</groupField1>
+		<templateType1>Header</templateType1>
+		<groupField2>YearPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template57</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>DayPeriod</groupField1>
+		<templateType1>Header</templateType1>
+		<groupField2>YearPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template57</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>Division</groupField1>
+		<templateType1>OverallFooter</templateType1>
+		<groupField2>YearPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template59</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>Section</groupField1>
+		<templateType1>OverallFooter</templateType1>
+		<groupField2>YearPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template59</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>AccountType</groupField1>
+		<templateType1>OverallFooter</templateType1>
+		<groupField2>YearPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template59</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>Account</groupField1>
+		<templateType1>OverallFooter</templateType1>
+		<groupField2>YearPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template59</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>YearPeriod</groupField1>
+		<templateType1>OverallFooter</templateType1>
+		<groupField2>YearPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template59</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>QuarterPeriod</groupField1>
+		<templateType1>OverallFooter</templateType1>
+		<groupField2>YearPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template59</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>MonthPeriod</groupField1>
+		<templateType1>OverallFooter</templateType1>
+		<groupField2>YearPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template59</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>WeekPeriod</groupField1>
+		<templateType1>OverallFooter</templateType1>
+		<groupField2>YearPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template59</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>DayPeriod</groupField1>
+		<templateType1>OverallFooter</templateType1>
+		<groupField2>YearPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template59</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>Division</groupField1>
+		<templateType1>Header</templateType1>
+		<groupField2>QuarterPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template57</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>Section</groupField1>
+		<templateType1>Header</templateType1>
+		<groupField2>QuarterPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template57</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>AccountType</groupField1>
+		<templateType1>Header</templateType1>
+		<groupField2>QuarterPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template57</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>Account</groupField1>
+		<templateType1>Header</templateType1>
+		<groupField2>QuarterPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template57</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>YearPeriod</groupField1>
+		<templateType1>Header</templateType1>
+		<groupField2>QuarterPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template57</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>QuarterPeriod</groupField1>
+		<templateType1>Header</templateType1>
+		<groupField2>QuarterPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template57</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>MonthPeriod</groupField1>
+		<templateType1>Header</templateType1>
+		<groupField2>QuarterPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template57</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>WeekPeriod</groupField1>
+		<templateType1>Header</templateType1>
+		<groupField2>QuarterPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template57</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>DayPeriod</groupField1>
+		<templateType1>Header</templateType1>
+		<groupField2>QuarterPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template57</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>Division</groupField1>
+		<templateType1>OverallFooter</templateType1>
+		<groupField2>QuarterPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template59</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>Section</groupField1>
+		<templateType1>OverallFooter</templateType1>
+		<groupField2>QuarterPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template59</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>AccountType</groupField1>
+		<templateType1>OverallFooter</templateType1>
+		<groupField2>QuarterPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template59</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>Account</groupField1>
+		<templateType1>OverallFooter</templateType1>
+		<groupField2>QuarterPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template59</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>YearPeriod</groupField1>
+		<templateType1>OverallFooter</templateType1>
+		<groupField2>QuarterPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template59</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>QuarterPeriod</groupField1>
+		<templateType1>OverallFooter</templateType1>
+		<groupField2>QuarterPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template59</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>MonthPeriod</groupField1>
+		<templateType1>OverallFooter</templateType1>
+		<groupField2>QuarterPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template59</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>WeekPeriod</groupField1>
+		<templateType1>OverallFooter</templateType1>
+		<groupField2>QuarterPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template59</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>DayPeriod</groupField1>
+		<templateType1>OverallFooter</templateType1>
+		<groupField2>QuarterPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template59</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>Division</groupField1>
+		<templateType1>Header</templateType1>
+		<groupField2>MonthPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template57</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>Section</groupField1>
+		<templateType1>Header</templateType1>
+		<groupField2>MonthPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template57</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>AccountType</groupField1>
+		<templateType1>Header</templateType1>
+		<groupField2>MonthPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template57</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>Account</groupField1>
+		<templateType1>Header</templateType1>
+		<groupField2>MonthPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template57</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>YearPeriod</groupField1>
+		<templateType1>Header</templateType1>
+		<groupField2>MonthPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template57</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>QuarterPeriod</groupField1>
+		<templateType1>Header</templateType1>
+		<groupField2>MonthPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template57</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>MonthPeriod</groupField1>
+		<templateType1>Header</templateType1>
+		<groupField2>MonthPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template57</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>WeekPeriod</groupField1>
+		<templateType1>Header</templateType1>
+		<groupField2>MonthPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template57</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>DayPeriod</groupField1>
+		<templateType1>Header</templateType1>
+		<groupField2>MonthPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template57</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>Division</groupField1>
+		<templateType1>OverallFooter</templateType1>
+		<groupField2>MonthPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template59</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>Section</groupField1>
+		<templateType1>OverallFooter</templateType1>
+		<groupField2>MonthPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template59</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>AccountType</groupField1>
+		<templateType1>OverallFooter</templateType1>
+		<groupField2>MonthPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template59</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>Account</groupField1>
+		<templateType1>OverallFooter</templateType1>
+		<groupField2>MonthPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template59</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>YearPeriod</groupField1>
+		<templateType1>OverallFooter</templateType1>
+		<groupField2>MonthPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template59</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>QuarterPeriod</groupField1>
+		<templateType1>OverallFooter</templateType1>
+		<groupField2>MonthPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template59</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>MonthPeriod</groupField1>
+		<templateType1>OverallFooter</templateType1>
+		<groupField2>MonthPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template59</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>WeekPeriod</groupField1>
+		<templateType1>OverallFooter</templateType1>
+		<groupField2>MonthPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template59</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>DayPeriod</groupField1>
+		<templateType1>OverallFooter</templateType1>
+		<groupField2>MonthPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template59</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>Division</groupField1>
+		<templateType1>Header</templateType1>
+		<groupField2>WeekPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template57</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>Section</groupField1>
+		<templateType1>Header</templateType1>
+		<groupField2>WeekPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template57</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>AccountType</groupField1>
+		<templateType1>Header</templateType1>
+		<groupField2>WeekPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template57</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>Account</groupField1>
+		<templateType1>Header</templateType1>
+		<groupField2>WeekPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template57</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>YearPeriod</groupField1>
+		<templateType1>Header</templateType1>
+		<groupField2>WeekPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template57</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>QuarterPeriod</groupField1>
+		<templateType1>Header</templateType1>
+		<groupField2>WeekPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template57</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>MonthPeriod</groupField1>
+		<templateType1>Header</templateType1>
+		<groupField2>WeekPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template57</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>WeekPeriod</groupField1>
+		<templateType1>Header</templateType1>
+		<groupField2>WeekPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template57</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>DayPeriod</groupField1>
+		<templateType1>Header</templateType1>
+		<groupField2>WeekPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template57</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>Division</groupField1>
+		<templateType1>OverallFooter</templateType1>
+		<groupField2>WeekPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template59</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>Section</groupField1>
+		<templateType1>OverallFooter</templateType1>
+		<groupField2>WeekPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template59</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>AccountType</groupField1>
+		<templateType1>OverallFooter</templateType1>
+		<groupField2>WeekPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template59</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>Account</groupField1>
+		<templateType1>OverallFooter</templateType1>
+		<groupField2>WeekPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template59</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>YearPeriod</groupField1>
+		<templateType1>OverallFooter</templateType1>
+		<groupField2>WeekPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template59</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>QuarterPeriod</groupField1>
+		<templateType1>OverallFooter</templateType1>
+		<groupField2>WeekPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template59</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>MonthPeriod</groupField1>
+		<templateType1>OverallFooter</templateType1>
+		<groupField2>WeekPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template59</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>WeekPeriod</groupField1>
+		<templateType1>OverallFooter</templateType1>
+		<groupField2>WeekPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template59</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>DayPeriod</groupField1>
+		<templateType1>OverallFooter</templateType1>
+		<groupField2>WeekPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template59</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>Division</groupField1>
+		<templateType1>Header</templateType1>
+		<groupField2>DayPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template57</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>Section</groupField1>
+		<templateType1>Header</templateType1>
+		<groupField2>DayPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template57</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>AccountType</groupField1>
+		<templateType1>Header</templateType1>
+		<groupField2>DayPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template57</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>Account</groupField1>
+		<templateType1>Header</templateType1>
+		<groupField2>DayPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template57</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>YearPeriod</groupField1>
+		<templateType1>Header</templateType1>
+		<groupField2>DayPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template57</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>QuarterPeriod</groupField1>
+		<templateType1>Header</templateType1>
+		<groupField2>DayPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template57</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>MonthPeriod</groupField1>
+		<templateType1>Header</templateType1>
+		<groupField2>DayPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template57</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>WeekPeriod</groupField1>
+		<templateType1>Header</templateType1>
+		<groupField2>DayPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template57</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>DayPeriod</groupField1>
+		<templateType1>Header</templateType1>
+		<groupField2>DayPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template57</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>Division</groupField1>
+		<templateType1>OverallFooter</templateType1>
+		<groupField2>DayPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template59</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>Section</groupField1>
+		<templateType1>OverallFooter</templateType1>
+		<groupField2>DayPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template59</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>AccountType</groupField1>
+		<templateType1>OverallFooter</templateType1>
+		<groupField2>DayPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template59</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>Account</groupField1>
+		<templateType1>OverallFooter</templateType1>
+		<groupField2>DayPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template59</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>YearPeriod</groupField1>
+		<templateType1>OverallFooter</templateType1>
+		<groupField2>DayPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template59</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>QuarterPeriod</groupField1>
+		<templateType1>OverallFooter</templateType1>
+		<groupField2>DayPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template59</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>MonthPeriod</groupField1>
+		<templateType1>OverallFooter</templateType1>
+		<groupField2>DayPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template59</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>WeekPeriod</groupField1>
+		<templateType1>OverallFooter</templateType1>
+		<groupField2>DayPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template59</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupField1>DayPeriod</groupField1>
+		<templateType1>OverallFooter</templateType1>
+		<groupField2>DayPeriod</groupField2>
+		<templateType2>Header</templateType2>
+		<template>Template59</template>
+	</totalFieldsTemplate>
+	<totalFieldsTemplate>
+		<groupName1>RetainedEarnings</groupName1>
+		<templateType1>Header</templateType1>
+		<groupName2>YearPeriod</groupName2>
+		<templateType2>Header</templateType2>
 		<template>Template60</template>
 	</totalFieldsTemplate>
 	<totalFieldsTemplate>
-		<groupField1>Division</groupField1>
+		<groupName1>RetainedEarnings</groupName1>
 		<templateType1>Header</templateType1>
-		<groupField2>YearPeriod</groupField2>
+		<groupName2>QuarterPeriod</groupName2>
 		<templateType2>Header</templateType2>
-		<template>Template57</template>
+		<template>Template60</template>
 	</totalFieldsTemplate>
 	<totalFieldsTemplate>
-		<groupField1>Section</groupField1>
+		<groupName1>RetainedEarnings</groupName1>
 		<templateType1>Header</templateType1>
-		<groupField2>YearPeriod</groupField2>
+		<groupName2>MonthPeriod</groupName2>
 		<templateType2>Header</templateType2>
-		<template>Template57</template>
+		<template>Template60</template>
 	</totalFieldsTemplate>
 	<totalFieldsTemplate>
-		<groupField1>AccountType</groupField1>
+		<groupName1>RetainedEarnings</groupName1>
 		<templateType1>Header</templateType1>
-		<groupField2>YearPeriod</groupField2>
+		<groupName2>WeekPeriod</groupName2>
 		<templateType2>Header</templateType2>
-		<template>Template57</template>
+		<template>Template60</template>
 	</totalFieldsTemplate>
 	<totalFieldsTemplate>
-		<groupField1>Account</groupField1>
+		<groupName1>RetainedEarnings</groupName1>
 		<templateType1>Header</templateType1>
-		<groupField2>YearPeriod</groupField2>
+		<groupName2>DayPeriod</groupName2>
 		<templateType2>Header</templateType2>
-		<template>Template57</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>YearPeriod</groupField1>
-		<templateType1>Header</templateType1>
-		<groupField2>YearPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template57</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>QuarterPeriod</groupField1>
-		<templateType1>Header</templateType1>
-		<groupField2>YearPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template57</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>MonthPeriod</groupField1>
-		<templateType1>Header</templateType1>
-		<groupField2>YearPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template57</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>WeekPeriod</groupField1>
-		<templateType1>Header</templateType1>
-		<groupField2>YearPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template57</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>DayPeriod</groupField1>
-		<templateType1>Header</templateType1>
-		<groupField2>YearPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template57</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>Division</groupField1>
-		<templateType1>OverallFooter</templateType1>
-		<groupField2>YearPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template59</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>Section</groupField1>
-		<templateType1>OverallFooter</templateType1>
-		<groupField2>YearPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template59</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>AccountType</groupField1>
-		<templateType1>OverallFooter</templateType1>
-		<groupField2>YearPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template59</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>Account</groupField1>
-		<templateType1>OverallFooter</templateType1>
-		<groupField2>YearPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template59</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>YearPeriod</groupField1>
-		<templateType1>OverallFooter</templateType1>
-		<groupField2>YearPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template59</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>QuarterPeriod</groupField1>
-		<templateType1>OverallFooter</templateType1>
-		<groupField2>YearPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template59</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>MonthPeriod</groupField1>
-		<templateType1>OverallFooter</templateType1>
-		<groupField2>YearPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template59</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>WeekPeriod</groupField1>
-		<templateType1>OverallFooter</templateType1>
-		<groupField2>YearPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template59</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>DayPeriod</groupField1>
-		<templateType1>OverallFooter</templateType1>
-		<groupField2>YearPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template59</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>Division</groupField1>
-		<templateType1>Header</templateType1>
-		<groupField2>QuarterPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template57</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>Section</groupField1>
-		<templateType1>Header</templateType1>
-		<groupField2>QuarterPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template57</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>AccountType</groupField1>
-		<templateType1>Header</templateType1>
-		<groupField2>QuarterPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template57</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>Account</groupField1>
-		<templateType1>Header</templateType1>
-		<groupField2>QuarterPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template57</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>YearPeriod</groupField1>
-		<templateType1>Header</templateType1>
-		<groupField2>QuarterPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template57</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>QuarterPeriod</groupField1>
-		<templateType1>Header</templateType1>
-		<groupField2>QuarterPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template57</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>MonthPeriod</groupField1>
-		<templateType1>Header</templateType1>
-		<groupField2>QuarterPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template57</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>WeekPeriod</groupField1>
-		<templateType1>Header</templateType1>
-		<groupField2>QuarterPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template57</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>DayPeriod</groupField1>
-		<templateType1>Header</templateType1>
-		<groupField2>QuarterPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template57</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>Division</groupField1>
-		<templateType1>OverallFooter</templateType1>
-		<groupField2>QuarterPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template59</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>Section</groupField1>
-		<templateType1>OverallFooter</templateType1>
-		<groupField2>QuarterPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template59</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>AccountType</groupField1>
-		<templateType1>OverallFooter</templateType1>
-		<groupField2>QuarterPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template59</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>Account</groupField1>
-		<templateType1>OverallFooter</templateType1>
-		<groupField2>QuarterPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template59</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>YearPeriod</groupField1>
-		<templateType1>OverallFooter</templateType1>
-		<groupField2>QuarterPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template59</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>QuarterPeriod</groupField1>
-		<templateType1>OverallFooter</templateType1>
-		<groupField2>QuarterPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template59</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>MonthPeriod</groupField1>
-		<templateType1>OverallFooter</templateType1>
-		<groupField2>QuarterPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template59</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>WeekPeriod</groupField1>
-		<templateType1>OverallFooter</templateType1>
-		<groupField2>QuarterPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template59</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>DayPeriod</groupField1>
-		<templateType1>OverallFooter</templateType1>
-		<groupField2>QuarterPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template59</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>Division</groupField1>
-		<templateType1>Header</templateType1>
-		<groupField2>MonthPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template57</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>Section</groupField1>
-		<templateType1>Header</templateType1>
-		<groupField2>MonthPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template57</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>AccountType</groupField1>
-		<templateType1>Header</templateType1>
-		<groupField2>MonthPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template57</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>Account</groupField1>
-		<templateType1>Header</templateType1>
-		<groupField2>MonthPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template57</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>YearPeriod</groupField1>
-		<templateType1>Header</templateType1>
-		<groupField2>MonthPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template57</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>QuarterPeriod</groupField1>
-		<templateType1>Header</templateType1>
-		<groupField2>MonthPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template57</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>MonthPeriod</groupField1>
-		<templateType1>Header</templateType1>
-		<groupField2>MonthPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template57</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>WeekPeriod</groupField1>
-		<templateType1>Header</templateType1>
-		<groupField2>MonthPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template57</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>DayPeriod</groupField1>
-		<templateType1>Header</templateType1>
-		<groupField2>MonthPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template57</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>Division</groupField1>
-		<templateType1>OverallFooter</templateType1>
-		<groupField2>MonthPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template59</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>Section</groupField1>
-		<templateType1>OverallFooter</templateType1>
-		<groupField2>MonthPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template59</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>AccountType</groupField1>
-		<templateType1>OverallFooter</templateType1>
-		<groupField2>MonthPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template59</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>Account</groupField1>
-		<templateType1>OverallFooter</templateType1>
-		<groupField2>MonthPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template59</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>YearPeriod</groupField1>
-		<templateType1>OverallFooter</templateType1>
-		<groupField2>MonthPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template59</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>QuarterPeriod</groupField1>
-		<templateType1>OverallFooter</templateType1>
-		<groupField2>MonthPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template59</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>MonthPeriod</groupField1>
-		<templateType1>OverallFooter</templateType1>
-		<groupField2>MonthPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template59</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>WeekPeriod</groupField1>
-		<templateType1>OverallFooter</templateType1>
-		<groupField2>MonthPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template59</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>DayPeriod</groupField1>
-		<templateType1>OverallFooter</templateType1>
-		<groupField2>MonthPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template59</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>Division</groupField1>
-		<templateType1>Header</templateType1>
-		<groupField2>WeekPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template57</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>Section</groupField1>
-		<templateType1>Header</templateType1>
-		<groupField2>WeekPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template57</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>AccountType</groupField1>
-		<templateType1>Header</templateType1>
-		<groupField2>WeekPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template57</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>Account</groupField1>
-		<templateType1>Header</templateType1>
-		<groupField2>WeekPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template57</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>YearPeriod</groupField1>
-		<templateType1>Header</templateType1>
-		<groupField2>WeekPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template57</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>QuarterPeriod</groupField1>
-		<templateType1>Header</templateType1>
-		<groupField2>WeekPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template57</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>MonthPeriod</groupField1>
-		<templateType1>Header</templateType1>
-		<groupField2>WeekPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template57</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>WeekPeriod</groupField1>
-		<templateType1>Header</templateType1>
-		<groupField2>WeekPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template57</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>DayPeriod</groupField1>
-		<templateType1>Header</templateType1>
-		<groupField2>WeekPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template57</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>Division</groupField1>
-		<templateType1>OverallFooter</templateType1>
-		<groupField2>WeekPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template59</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>Section</groupField1>
-		<templateType1>OverallFooter</templateType1>
-		<groupField2>WeekPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template59</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>AccountType</groupField1>
-		<templateType1>OverallFooter</templateType1>
-		<groupField2>WeekPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template59</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>Account</groupField1>
-		<templateType1>OverallFooter</templateType1>
-		<groupField2>WeekPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template59</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>YearPeriod</groupField1>
-		<templateType1>OverallFooter</templateType1>
-		<groupField2>WeekPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template59</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>QuarterPeriod</groupField1>
-		<templateType1>OverallFooter</templateType1>
-		<groupField2>WeekPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template59</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>MonthPeriod</groupField1>
-		<templateType1>OverallFooter</templateType1>
-		<groupField2>WeekPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template59</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>WeekPeriod</groupField1>
-		<templateType1>OverallFooter</templateType1>
-		<groupField2>WeekPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template59</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>DayPeriod</groupField1>
-		<templateType1>OverallFooter</templateType1>
-		<groupField2>WeekPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template59</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>Division</groupField1>
-		<templateType1>Header</templateType1>
-		<groupField2>DayPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template57</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>Section</groupField1>
-		<templateType1>Header</templateType1>
-		<groupField2>DayPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template57</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>AccountType</groupField1>
-		<templateType1>Header</templateType1>
-		<groupField2>DayPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template57</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>Account</groupField1>
-		<templateType1>Header</templateType1>
-		<groupField2>DayPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template57</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>YearPeriod</groupField1>
-		<templateType1>Header</templateType1>
-		<groupField2>DayPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template57</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>QuarterPeriod</groupField1>
-		<templateType1>Header</templateType1>
-		<groupField2>DayPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template57</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>MonthPeriod</groupField1>
-		<templateType1>Header</templateType1>
-		<groupField2>DayPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template57</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>WeekPeriod</groupField1>
-		<templateType1>Header</templateType1>
-		<groupField2>DayPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template57</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>DayPeriod</groupField1>
-		<templateType1>Header</templateType1>
-		<groupField2>DayPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template57</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>Division</groupField1>
-		<templateType1>OverallFooter</templateType1>
-		<groupField2>DayPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template59</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>Section</groupField1>
-		<templateType1>OverallFooter</templateType1>
-		<groupField2>DayPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template59</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>AccountType</groupField1>
-		<templateType1>OverallFooter</templateType1>
-		<groupField2>DayPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template59</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>Account</groupField1>
-		<templateType1>OverallFooter</templateType1>
-		<groupField2>DayPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template59</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>YearPeriod</groupField1>
-		<templateType1>OverallFooter</templateType1>
-		<groupField2>DayPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template59</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>QuarterPeriod</groupField1>
-		<templateType1>OverallFooter</templateType1>
-		<groupField2>DayPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template59</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>MonthPeriod</groupField1>
-		<templateType1>OverallFooter</templateType1>
-		<groupField2>DayPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template59</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>WeekPeriod</groupField1>
-		<templateType1>OverallFooter</templateType1>
-		<groupField2>DayPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template59</template>
-	</totalFieldsTemplate>
-	<totalFieldsTemplate>
-		<groupField1>DayPeriod</groupField1>
-		<templateType1>OverallFooter</templateType1>
-		<groupField2>DayPeriod</groupField2>
-		<templateType2>Header</templateType2>
-		<template>Template59</template>
+		<template>Template60</template>
 	</totalFieldsTemplate>
 	<settingsVariant>
 		<dcsset:name>Total</dcsset:name>
@@ -5932,6 +6186,63 @@ END</dcsat:expression>
 								<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
 								<dcsset:comparisonType>Equal</dcsset:comparisonType>
 								<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Equity</dcsset:right>
+							</dcsset:item>
+							<dcsset:item xsi:type="dcsset:FilterItemComparison">
+								<dcsset:left xsi:type="dcscor:Field">RetainedEarnings</dcsset:left>
+								<dcsset:comparisonType>Equal</dcsset:comparisonType>
+								<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
+							</dcsset:item>
+						</dcsset:filter>
+						<dcsset:order>
+							<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
+						</dcsset:order>
+						<dcsset:selection>
+							<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+						</dcsset:selection>
+						<dcsset:outputParameters>
+							<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+								<dcscor:parameter>FilterOutput</dcscor:parameter>
+								<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
+							</dcscor:item>
+						</dcsset:outputParameters>
+					</dcsset:item>
+					<dcsset:item xsi:type="dcsset:StructureItemGroup">
+						<dcsset:name>RetainedEarningsList</dcsset:name>
+						<dcsset:groupItems>
+							<dcsset:item xsi:type="dcsset:GroupItemField">
+								<dcsset:field>RetainedEarningsAccount</dcsset:field>
+								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+							</dcsset:item>
+						</dcsset:groupItems>
+						<dcsset:filter>
+							<dcsset:item xsi:type="dcsset:FilterItemGroup">
+								<dcsset:groupType>OrGroup</dcsset:groupType>
+								<dcsset:item xsi:type="dcsset:FilterItemComparison">
+									<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
+									<dcsset:comparisonType>InList</dcsset:comparisonType>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Income</dcsset:right>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.CostOfSales</dcsset:right>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Expense</dcsset:right>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherIncome</dcsset:right>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherExpense</dcsset:right>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.IncomeTaxExpense</dcsset:right>
+								</dcsset:item>
+								<dcsset:item xsi:type="dcsset:FilterItemGroup">
+									<dcsset:groupType>AndGroup</dcsset:groupType>
+									<dcsset:item xsi:type="dcsset:FilterItemComparison">
+										<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
+										<dcsset:comparisonType>Equal</dcsset:comparisonType>
+										<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Equity</dcsset:right>
+									</dcsset:item>
+									<dcsset:item xsi:type="dcsset:FilterItemComparison">
+										<dcsset:left xsi:type="dcscor:Field">RetainedEarnings</dcsset:left>
+										<dcsset:comparisonType>Equal</dcsset:comparisonType>
+										<dcsset:right xsi:type="xs:boolean">true</dcsset:right>
+									</dcsset:item>
+								</dcsset:item>
 							</dcsset:item>
 						</dcsset:filter>
 						<dcsset:order>
@@ -6587,6 +6898,63 @@ END</dcsat:expression>
 								<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
 								<dcsset:comparisonType>Equal</dcsset:comparisonType>
 								<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Equity</dcsset:right>
+							</dcsset:item>
+							<dcsset:item xsi:type="dcsset:FilterItemComparison">
+								<dcsset:left xsi:type="dcscor:Field">RetainedEarnings</dcsset:left>
+								<dcsset:comparisonType>Equal</dcsset:comparisonType>
+								<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
+							</dcsset:item>
+						</dcsset:filter>
+						<dcsset:order>
+							<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
+						</dcsset:order>
+						<dcsset:selection>
+							<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+						</dcsset:selection>
+						<dcsset:outputParameters>
+							<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+								<dcscor:parameter>FilterOutput</dcscor:parameter>
+								<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
+							</dcscor:item>
+						</dcsset:outputParameters>
+					</dcsset:item>
+					<dcsset:item>
+						<dcsset:name>RetainedEarnings</dcsset:name>
+						<dcsset:groupItems>
+							<dcsset:item xsi:type="dcsset:GroupItemField">
+								<dcsset:field>RetainedEarningsAccount</dcsset:field>
+								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+							</dcsset:item>
+						</dcsset:groupItems>
+						<dcsset:filter>
+							<dcsset:item xsi:type="dcsset:FilterItemGroup">
+								<dcsset:groupType>OrGroup</dcsset:groupType>
+								<dcsset:item xsi:type="dcsset:FilterItemComparison">
+									<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
+									<dcsset:comparisonType>InList</dcsset:comparisonType>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Income</dcsset:right>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.CostOfSales</dcsset:right>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Expense</dcsset:right>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherIncome</dcsset:right>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherExpense</dcsset:right>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.IncomeTaxExpense</dcsset:right>
+								</dcsset:item>
+								<dcsset:item xsi:type="dcsset:FilterItemGroup">
+									<dcsset:groupType>AndGroup</dcsset:groupType>
+									<dcsset:item xsi:type="dcsset:FilterItemComparison">
+										<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
+										<dcsset:comparisonType>Equal</dcsset:comparisonType>
+										<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Equity</dcsset:right>
+									</dcsset:item>
+									<dcsset:item xsi:type="dcsset:FilterItemComparison">
+										<dcsset:left xsi:type="dcscor:Field">RetainedEarnings</dcsset:left>
+										<dcsset:comparisonType>Equal</dcsset:comparisonType>
+										<dcsset:right xsi:type="xs:boolean">true</dcsset:right>
+									</dcsset:item>
+								</dcsset:item>
 							</dcsset:item>
 						</dcsset:filter>
 						<dcsset:order>
@@ -7265,6 +7633,63 @@ END</dcsat:expression>
 								<dcsset:comparisonType>Equal</dcsset:comparisonType>
 								<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Equity</dcsset:right>
 							</dcsset:item>
+							<dcsset:item xsi:type="dcsset:FilterItemComparison">
+								<dcsset:left xsi:type="dcscor:Field">RetainedEarnings</dcsset:left>
+								<dcsset:comparisonType>Equal</dcsset:comparisonType>
+								<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
+							</dcsset:item>
+						</dcsset:filter>
+						<dcsset:order>
+							<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
+						</dcsset:order>
+						<dcsset:selection>
+							<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+						</dcsset:selection>
+						<dcsset:outputParameters>
+							<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+								<dcscor:parameter>FilterOutput</dcscor:parameter>
+								<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
+							</dcscor:item>
+						</dcsset:outputParameters>
+					</dcsset:item>
+					<dcsset:item>
+						<dcsset:name>RetainedEarnings</dcsset:name>
+						<dcsset:groupItems>
+							<dcsset:item xsi:type="dcsset:GroupItemField">
+								<dcsset:field>RetainedEarningsAccount</dcsset:field>
+								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+							</dcsset:item>
+						</dcsset:groupItems>
+						<dcsset:filter>
+							<dcsset:item xsi:type="dcsset:FilterItemGroup">
+								<dcsset:groupType>OrGroup</dcsset:groupType>
+								<dcsset:item xsi:type="dcsset:FilterItemComparison">
+									<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
+									<dcsset:comparisonType>InList</dcsset:comparisonType>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Income</dcsset:right>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.CostOfSales</dcsset:right>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Expense</dcsset:right>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherIncome</dcsset:right>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherExpense</dcsset:right>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.IncomeTaxExpense</dcsset:right>
+								</dcsset:item>
+								<dcsset:item xsi:type="dcsset:FilterItemGroup">
+									<dcsset:groupType>AndGroup</dcsset:groupType>
+									<dcsset:item xsi:type="dcsset:FilterItemComparison">
+										<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
+										<dcsset:comparisonType>Equal</dcsset:comparisonType>
+										<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Equity</dcsset:right>
+									</dcsset:item>
+									<dcsset:item xsi:type="dcsset:FilterItemComparison">
+										<dcsset:left xsi:type="dcscor:Field">RetainedEarnings</dcsset:left>
+										<dcsset:comparisonType>Equal</dcsset:comparisonType>
+										<dcsset:right xsi:type="xs:boolean">true</dcsset:right>
+									</dcsset:item>
+								</dcsset:item>
+							</dcsset:item>
 						</dcsset:filter>
 						<dcsset:order>
 							<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
@@ -7941,6 +8366,63 @@ END</dcsat:expression>
 								<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
 								<dcsset:comparisonType>Equal</dcsset:comparisonType>
 								<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Equity</dcsset:right>
+							</dcsset:item>
+							<dcsset:item xsi:type="dcsset:FilterItemComparison">
+								<dcsset:left xsi:type="dcscor:Field">RetainedEarnings</dcsset:left>
+								<dcsset:comparisonType>Equal</dcsset:comparisonType>
+								<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
+							</dcsset:item>
+						</dcsset:filter>
+						<dcsset:order>
+							<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
+						</dcsset:order>
+						<dcsset:selection>
+							<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+						</dcsset:selection>
+						<dcsset:outputParameters>
+							<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+								<dcscor:parameter>FilterOutput</dcscor:parameter>
+								<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
+							</dcscor:item>
+						</dcsset:outputParameters>
+					</dcsset:item>
+					<dcsset:item>
+						<dcsset:name>RetainedEarnings</dcsset:name>
+						<dcsset:groupItems>
+							<dcsset:item xsi:type="dcsset:GroupItemField">
+								<dcsset:field>RetainedEarningsAccount</dcsset:field>
+								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+							</dcsset:item>
+						</dcsset:groupItems>
+						<dcsset:filter>
+							<dcsset:item xsi:type="dcsset:FilterItemGroup">
+								<dcsset:groupType>OrGroup</dcsset:groupType>
+								<dcsset:item xsi:type="dcsset:FilterItemComparison">
+									<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
+									<dcsset:comparisonType>InList</dcsset:comparisonType>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Income</dcsset:right>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.CostOfSales</dcsset:right>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Expense</dcsset:right>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherIncome</dcsset:right>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherExpense</dcsset:right>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.IncomeTaxExpense</dcsset:right>
+								</dcsset:item>
+								<dcsset:item xsi:type="dcsset:FilterItemGroup">
+									<dcsset:groupType>AndGroup</dcsset:groupType>
+									<dcsset:item xsi:type="dcsset:FilterItemComparison">
+										<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
+										<dcsset:comparisonType>Equal</dcsset:comparisonType>
+										<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Equity</dcsset:right>
+									</dcsset:item>
+									<dcsset:item xsi:type="dcsset:FilterItemComparison">
+										<dcsset:left xsi:type="dcscor:Field">RetainedEarnings</dcsset:left>
+										<dcsset:comparisonType>Equal</dcsset:comparisonType>
+										<dcsset:right xsi:type="xs:boolean">true</dcsset:right>
+									</dcsset:item>
+								</dcsset:item>
 							</dcsset:item>
 						</dcsset:filter>
 						<dcsset:order>
@@ -8619,6 +9101,63 @@ END</dcsat:expression>
 								<dcsset:comparisonType>Equal</dcsset:comparisonType>
 								<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Equity</dcsset:right>
 							</dcsset:item>
+							<dcsset:item xsi:type="dcsset:FilterItemComparison">
+								<dcsset:left xsi:type="dcscor:Field">RetainedEarnings</dcsset:left>
+								<dcsset:comparisonType>Equal</dcsset:comparisonType>
+								<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
+							</dcsset:item>
+						</dcsset:filter>
+						<dcsset:order>
+							<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
+						</dcsset:order>
+						<dcsset:selection>
+							<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+						</dcsset:selection>
+						<dcsset:outputParameters>
+							<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+								<dcscor:parameter>FilterOutput</dcscor:parameter>
+								<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
+							</dcscor:item>
+						</dcsset:outputParameters>
+					</dcsset:item>
+					<dcsset:item>
+						<dcsset:name>RetainedEarnings</dcsset:name>
+						<dcsset:groupItems>
+							<dcsset:item xsi:type="dcsset:GroupItemField">
+								<dcsset:field>RetainedEarningsAccount</dcsset:field>
+								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+							</dcsset:item>
+						</dcsset:groupItems>
+						<dcsset:filter>
+							<dcsset:item xsi:type="dcsset:FilterItemGroup">
+								<dcsset:groupType>OrGroup</dcsset:groupType>
+								<dcsset:item xsi:type="dcsset:FilterItemComparison">
+									<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
+									<dcsset:comparisonType>InList</dcsset:comparisonType>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Income</dcsset:right>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.CostOfSales</dcsset:right>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Expense</dcsset:right>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherIncome</dcsset:right>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherExpense</dcsset:right>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.IncomeTaxExpense</dcsset:right>
+								</dcsset:item>
+								<dcsset:item xsi:type="dcsset:FilterItemGroup">
+									<dcsset:groupType>AndGroup</dcsset:groupType>
+									<dcsset:item xsi:type="dcsset:FilterItemComparison">
+										<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
+										<dcsset:comparisonType>Equal</dcsset:comparisonType>
+										<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Equity</dcsset:right>
+									</dcsset:item>
+									<dcsset:item xsi:type="dcsset:FilterItemComparison">
+										<dcsset:left xsi:type="dcscor:Field">RetainedEarnings</dcsset:left>
+										<dcsset:comparisonType>Equal</dcsset:comparisonType>
+										<dcsset:right xsi:type="xs:boolean">true</dcsset:right>
+									</dcsset:item>
+								</dcsset:item>
+							</dcsset:item>
 						</dcsset:filter>
 						<dcsset:order>
 							<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
@@ -9295,6 +9834,63 @@ END</dcsat:expression>
 								<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
 								<dcsset:comparisonType>Equal</dcsset:comparisonType>
 								<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Equity</dcsset:right>
+							</dcsset:item>
+							<dcsset:item xsi:type="dcsset:FilterItemComparison">
+								<dcsset:left xsi:type="dcscor:Field">RetainedEarnings</dcsset:left>
+								<dcsset:comparisonType>Equal</dcsset:comparisonType>
+								<dcsset:right xsi:type="xs:boolean">false</dcsset:right>
+							</dcsset:item>
+						</dcsset:filter>
+						<dcsset:order>
+							<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
+						</dcsset:order>
+						<dcsset:selection>
+							<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+						</dcsset:selection>
+						<dcsset:outputParameters>
+							<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+								<dcscor:parameter>FilterOutput</dcscor:parameter>
+								<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
+							</dcscor:item>
+						</dcsset:outputParameters>
+					</dcsset:item>
+					<dcsset:item>
+						<dcsset:name>RetainedEarnings</dcsset:name>
+						<dcsset:groupItems>
+							<dcsset:item xsi:type="dcsset:GroupItemField">
+								<dcsset:field>RetainedEarningsAccount</dcsset:field>
+								<dcsset:groupType>Items</dcsset:groupType>
+								<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+								<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+								<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+							</dcsset:item>
+						</dcsset:groupItems>
+						<dcsset:filter>
+							<dcsset:item xsi:type="dcsset:FilterItemGroup">
+								<dcsset:groupType>OrGroup</dcsset:groupType>
+								<dcsset:item xsi:type="dcsset:FilterItemComparison">
+									<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
+									<dcsset:comparisonType>InList</dcsset:comparisonType>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Income</dcsset:right>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.CostOfSales</dcsset:right>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Expense</dcsset:right>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherIncome</dcsset:right>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.OtherExpense</dcsset:right>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.IncomeTaxExpense</dcsset:right>
+								</dcsset:item>
+								<dcsset:item xsi:type="dcsset:FilterItemGroup">
+									<dcsset:groupType>AndGroup</dcsset:groupType>
+									<dcsset:item xsi:type="dcsset:FilterItemComparison">
+										<dcsset:left xsi:type="dcscor:Field">AccountType</dcsset:left>
+										<dcsset:comparisonType>Equal</dcsset:comparisonType>
+										<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.AccountTypes.Equity</dcsset:right>
+									</dcsset:item>
+									<dcsset:item xsi:type="dcsset:FilterItemComparison">
+										<dcsset:left xsi:type="dcscor:Field">RetainedEarnings</dcsset:left>
+										<dcsset:comparisonType>Equal</dcsset:comparisonType>
+										<dcsset:right xsi:type="xs:boolean">true</dcsset:right>
+									</dcsset:item>
+								</dcsset:item>
 							</dcsset:item>
 						</dcsset:filter>
 						<dcsset:order>

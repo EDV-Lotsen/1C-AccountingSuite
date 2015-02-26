@@ -2,8 +2,100 @@
 <Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
 	<AutoCommandBar name="FormCommandBar" id="-1"/>
 	<Events>
+		<Event name="OnOpen">OnOpen</Event>
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+		<Event name="OnClose">OnClose</Event>
 	</Events>
+	<ChildItems>
+		<Button name="FormTimerControl" id="4">
+			<Type>UsualButton</Type>
+			<CommandName>Form.Command.TimerControl</CommandName>
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Start/Stop</v8:content>
+				</v8:item>
+			</Title>
+			<ExtendedTooltip name="FormTimerControlExtendedTooltip" id="5"/>
+		</Button>
+		<LabelField name="TimerCounter" id="1">
+			<DataPath>TimerCounter</DataPath>
+			<ContextMenu name="TimerCounterContextMenu" id="2"/>
+			<ExtendedTooltip name="TimerCounterExtendedTooltip" id="3"/>
+		</LabelField>
+		<UsualGroup name="Group1" id="15">
+			<Group>Horizontal</Group>
+			<Representation>None</Representation>
+			<ShowTitle>false</ShowTitle>
+			<BackColor>#2F2F2F</BackColor>
+			<ExtendedTooltip name="Group1ExtendedTooltip" id="16"/>
+			<ChildItems>
+				<LabelField name="Hours" id="6">
+					<DataPath>Hours</DataPath>
+					<TitleLocation>None</TitleLocation>
+					<HorizontalAlign>Center</HorizontalAlign>
+					<Width>3</Width>
+					<HorizontalStretch>false</HorizontalStretch>
+					<Format>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>ND=2; NZ=; NLZ=</v8:content>
+						</v8:item>
+					</Format>
+					<TextColor>#C0C0C0</TextColor>
+					<Font ref="sys:DefaultGUIFont" height="18" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
+					<ContextMenu name="HoursContextMenu" id="7"/>
+					<ExtendedTooltip name="HoursExtendedTooltip" id="8"/>
+				</LabelField>
+				<LabelField name="Minutes" id="9">
+					<DataPath>Minutes</DataPath>
+					<TitleLocation>None</TitleLocation>
+					<HorizontalAlign>Center</HorizontalAlign>
+					<Width>3</Width>
+					<HorizontalStretch>false</HorizontalStretch>
+					<Format>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>ND=2; NZ=; NLZ=</v8:content>
+						</v8:item>
+					</Format>
+					<TextColor>#C0C0C0</TextColor>
+					<Font ref="sys:DefaultGUIFont" height="18" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
+					<ContextMenu name="MinutesContextMenu" id="10"/>
+					<ExtendedTooltip name="MinutesExtendedTooltip" id="11"/>
+				</LabelField>
+				<LabelField name="Seconds" id="12">
+					<DataPath>Seconds</DataPath>
+					<TitleLocation>None</TitleLocation>
+					<HorizontalAlign>Center</HorizontalAlign>
+					<Width>3</Width>
+					<HorizontalStretch>false</HorizontalStretch>
+					<Format>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>ND=2; NZ=; NLZ=</v8:content>
+						</v8:item>
+					</Format>
+					<TextColor>#C0C0C0</TextColor>
+					<Font ref="sys:DefaultGUIFont" height="18" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
+					<ContextMenu name="SecondsContextMenu" id="13"/>
+					<ExtendedTooltip name="SecondsExtendedTooltip" id="14"/>
+				</LabelField>
+			</ChildItems>
+		</UsualGroup>
+		<InputField name="TimeTrackOutput" id="17">
+			<DataPath>TimeTrackOutput</DataPath>
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Converted Output</v8:content>
+				</v8:item>
+			</Title>
+			<TitleLocation>Top</TitleLocation>
+			<ContextMenu name="TimeTrackOutputContextMenu" id="18"/>
+			<ExtendedTooltip name="TimeTrackOutputExtendedTooltip" id="19"/>
+		</InputField>
+	</ChildItems>
 	<Attributes>
 		<Attribute name="Object" id="1">
 			<Type>
@@ -11,5 +103,112 @@
 			</Type>
 			<MainAttribute>true</MainAttribute>
 		</Attribute>
+		<Attribute name="TimerCounter" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Timer counter</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="TimerStart" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Timer start</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
+			</Type>
+		</Attribute>
+		<Attribute name="Hours" id="4">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Hours</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:decimal</v8:Type>
+				<v8:NumberQualifiers>
+					<v8:Digits>10</v8:Digits>
+					<v8:FractionDigits>0</v8:FractionDigits>
+					<v8:AllowedSign>Any</v8:AllowedSign>
+				</v8:NumberQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="Minutes" id="5">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Minutes</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:decimal</v8:Type>
+				<v8:NumberQualifiers>
+					<v8:Digits>10</v8:Digits>
+					<v8:FractionDigits>0</v8:FractionDigits>
+					<v8:AllowedSign>Any</v8:AllowedSign>
+				</v8:NumberQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="Seconds" id="6">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Seconds</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:decimal</v8:Type>
+				<v8:NumberQualifiers>
+					<v8:Digits>10</v8:Digits>
+					<v8:FractionDigits>0</v8:FractionDigits>
+					<v8:AllowedSign>Any</v8:AllowedSign>
+				</v8:NumberQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="TimeTrackOutput" id="7">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Time track output</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:decimal</v8:Type>
+				<v8:NumberQualifiers>
+					<v8:Digits>10</v8:Digits>
+					<v8:FractionDigits>2</v8:FractionDigits>
+					<v8:AllowedSign>Any</v8:AllowedSign>
+				</v8:NumberQualifiers>
+			</Type>
+		</Attribute>
 	</Attributes>
+	<Commands>
+		<Command name="TimerControl" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Timer control</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Timer control</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>TimerControl</Action>
+		</Command>
+	</Commands>
 </Form>

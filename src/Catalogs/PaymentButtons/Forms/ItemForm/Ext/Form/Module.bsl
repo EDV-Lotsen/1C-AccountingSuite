@@ -7,7 +7,7 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 		HeadersMap = New Map();
 		HeadersMap.Insert("Content-Type", "application/json");
 		
-		HTTPRequest = New HTTPRequest("/api/1/databases/dataset1c/collections/pay?apiKey=" + ServiceParameters.MongoAPIKey(), HeadersMap);
+		HTTPRequest = New HTTPRequest("/api/1/clusters/rs-ds039921/databases/dataset1cproduction/collections/pay?apiKey=" + ServiceParameters.MongoAPIKey(), HeadersMap);
 		
 		RequestBodyMap = New Map();
 		

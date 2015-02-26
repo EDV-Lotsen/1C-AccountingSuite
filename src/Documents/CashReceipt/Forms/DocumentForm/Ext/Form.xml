@@ -25,6 +25,7 @@
 	<Events>
 		<Event name="AfterWrite">AfterWrite</Event>
 		<Event name="AfterWriteAtServer">AfterWriteAtServer</Event>
+		<Event name="OnReadAtServer">OnReadAtServer</Event>
 		<Event name="OnOpen">OnOpen</Event>
 		<Event name="BeforeWrite">BeforeWrite</Event>
 		<Event name="BeforeWriteAtServer">BeforeWriteAtServer</Event>
@@ -93,7 +94,7 @@
 										<InputField name="Company" id="5">
 											<DataPath>Object.Company</DataPath>
 											<EditMode>EnterOnInput</EditMode>
-											<Width>15</Width>
+											<Width>20</Width>
 											<HorizontalStretch>false</HorizontalStretch>
 											<ContextMenu name="CompanyContextMenu" id="6"/>
 											<ExtendedTooltip name="CompanyExtendedTooltip" id="113"/>
@@ -109,6 +110,7 @@
 													<v8:content>Type</v8:content>
 												</v8:item>
 											</Title>
+											<TitleLocation>None</TitleLocation>
 											<EditMode>EnterOnInput</EditMode>
 											<RadioButtonType>RadioButtons</RadioButtonType>
 											<ChoiceList>
@@ -145,14 +147,6 @@
 												<Event name="OnChange">DepositTypeOnChange</Event>
 											</Events>
 										</RadioButtonField>
-										<InputField name="ExchangeRate" id="239">
-											<DataPath>Object.ExchangeRate</DataPath>
-											<ContextMenu name="ExchangeRateContextMenu" id="240"/>
-											<ExtendedTooltip name="ExchangeRateExtendedTooltip" id="241"/>
-											<Events>
-												<Event name="OnChange">ExchangeRateOnChange</Event>
-											</Events>
-										</InputField>
 									</ChildItems>
 								</UsualGroup>
 								<UsualGroup name="MiddleColumn" id="49">
@@ -194,6 +188,9 @@
 											<HorizontalStretch>false</HorizontalStretch>
 											<ContextMenu name="BankAccountContextMenu" id="60"/>
 											<ExtendedTooltip name="BankAccountExtendedTooltip" id="105"/>
+											<Events>
+												<Event name="StartChoice">BankAccountStartChoice</Event>
+											</Events>
 										</InputField>
 									</ChildItems>
 								</UsualGroup>
@@ -500,6 +497,38 @@
 								</UsualGroup>
 							</ChildItems>
 						</Page>
+						<Page name="CurrencyGroup" id="249">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Currency</v8:content>
+								</v8:item>
+							</Title>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Currency group</v8:content>
+								</v8:item>
+							</ToolTip>
+							<Group>Horizontal</Group>
+							<ExtendedTooltip name="CurrencyGroupExtendedTooltip" id="250"/>
+							<ChildItems>
+								<InputField name="ExchangeRate" id="239">
+									<DataPath>Object.ExchangeRate</DataPath>
+									<ContextMenu name="ExchangeRateContextMenu" id="240"/>
+									<ExtendedTooltip name="ExchangeRateExtendedTooltip" id="241"/>
+									<Events>
+										<Event name="OnChange">ExchangeRateOnChange</Event>
+									</Events>
+								</InputField>
+								<InputField name="Currency" id="251">
+									<DataPath>Object.Currency</DataPath>
+									<ReadOnly>true</ReadOnly>
+									<ContextMenu name="CurrencyContextMenu" id="252"/>
+									<ExtendedTooltip name="CurrencyExtendedTooltip" id="253"/>
+								</InputField>
+							</ChildItems>
+						</Page>
 						<Page name="Accounting" id="234">
 							<Title>
 								<v8:item>
@@ -513,26 +542,71 @@
 									<v8:content>Accounting</v8:content>
 								</v8:item>
 							</ToolTip>
+							<Group>Horizontal</Group>
 							<ExtendedTooltip name="AccountingExtendedTooltip" id="235"/>
 							<ChildItems>
-								<InputField name="ARAccount" id="157">
-									<DataPath>Object.ARAccount</DataPath>
-									<Width>15</Width>
-									<HorizontalStretch>false</HorizontalStretch>
-									<ContextMenu name="ARAccountContextMenu" id="158"/>
-									<ExtendedTooltip name="ARAccountExtendedTooltip" id="159"/>
-								</InputField>
-								<Button name="AuditLogRecord" id="247">
-									<Type>UsualButton</Type>
-									<CommandName>Form.Command.AuditLogRecord</CommandName>
+								<UsualGroup name="Right" id="272">
 									<Title>
 										<v8:item>
 											<v8:lang>en</v8:lang>
-											<v8:content>Audit Log Records</v8:content>
+											<v8:content>Right</v8:content>
 										</v8:item>
 									</Title>
-									<ExtendedTooltip name="AuditLogRecordExtendedTooltip" id="248"/>
-								</Button>
+									<ToolTip>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Right</v8:content>
+										</v8:item>
+									</ToolTip>
+									<Group>Vertical</Group>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="RightExtendedTooltip" id="273"/>
+									<ChildItems>
+										<InputField name="ARAccount" id="157">
+											<DataPath>Object.ARAccount</DataPath>
+											<Width>15</Width>
+											<HorizontalStretch>false</HorizontalStretch>
+											<ContextMenu name="ARAccountContextMenu" id="158"/>
+											<ExtendedTooltip name="ARAccountExtendedTooltip" id="159"/>
+										</InputField>
+										<Button name="AuditLogRecord" id="247">
+											<Type>UsualButton</Type>
+											<CommandName>Form.Command.AuditLogRecord</CommandName>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Audit Log Records</v8:content>
+												</v8:item>
+											</Title>
+											<ExtendedTooltip name="AuditLogRecordExtendedTooltip" id="248"/>
+										</Button>
+									</ChildItems>
+								</UsualGroup>
+								<UsualGroup name="Left" id="274">
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Left</v8:content>
+										</v8:item>
+									</Title>
+									<ToolTip>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Left</v8:content>
+										</v8:item>
+									</ToolTip>
+									<Group>Vertical</Group>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="LeftExtendedTooltip" id="275"/>
+									<ChildItems>
+										<Button name="AccountingRegisterGeneralJournalOpenByRecorder" id="276">
+											<Type>UsualButton</Type>
+											<CommandName>AccountingRegister.GeneralJournal.StandardCommand.OpenByRecorder</CommandName>
+											<DataPath>Object.Ref</DataPath>
+											<ExtendedTooltip name="AccountingRegisterGeneralJournalOpenByRecorderExtendedTooltip" id="277"/>
+										</Button>
+									</ChildItems>
+								</UsualGroup>
 							</ChildItems>
 						</Page>
 						<Page name="ExternalMemo" id="232">
@@ -655,29 +729,29 @@
 									<ContextMenu name="LineItemsContextMenu" id="36"/>
 									<AutoCommandBar name="LineItemsCommandBar" id="37"/>
 									<ExtendedTooltip name="LineItemsExtendedTooltip" id="127"/>
-									<SearchStringAddition name="LineItemsSearchString" id="249">
+									<SearchStringAddition name="LineItemsSearchString" id="254">
 										<AdditionSource>
 											<Item>LineItems</Item>
 											<Type>SearchStringRepresentation</Type>
 										</AdditionSource>
-										<ContextMenu name="LineItemsSearchStringContextMenu" id="250"/>
-										<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="251"/>
+										<ContextMenu name="LineItemsSearchStringContextMenu" id="255"/>
+										<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="256"/>
 									</SearchStringAddition>
-									<ViewStatusAddition name="LineItemsViewStatus" id="252">
+									<ViewStatusAddition name="LineItemsViewStatus" id="257">
 										<AdditionSource>
 											<Item>LineItems</Item>
 											<Type>ViewStatusRepresentation</Type>
 										</AdditionSource>
-										<ContextMenu name="LineItemsViewStatusContextMenu" id="253"/>
-										<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="254"/>
+										<ContextMenu name="LineItemsViewStatusContextMenu" id="258"/>
+										<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="259"/>
 									</ViewStatusAddition>
-									<SearchControlAddition name="LineItemsSearchControl" id="255">
+									<SearchControlAddition name="LineItemsSearchControl" id="260">
 										<AdditionSource>
 											<Item>LineItems</Item>
 											<Type>SearchControl</Type>
 										</AdditionSource>
-										<ContextMenu name="LineItemsSearchControlContextMenu" id="256"/>
-										<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="257"/>
+										<ContextMenu name="LineItemsSearchControlContextMenu" id="261"/>
+										<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="262"/>
 									</SearchControlAddition>
 									<ChildItems>
 										<LabelField name="LineItemsLineNumber" id="38">
@@ -802,29 +876,29 @@
 									<ContextMenu name="CreditMemosContextMenu" id="76"/>
 									<AutoCommandBar name="CreditMemosCommandBar" id="77"/>
 									<ExtendedTooltip name="CreditMemosExtendedTooltip" id="117"/>
-									<SearchStringAddition name="CreditMemosSearchString" id="258">
+									<SearchStringAddition name="CreditMemosSearchString" id="263">
 										<AdditionSource>
 											<Item>CreditMemos</Item>
 											<Type>SearchStringRepresentation</Type>
 										</AdditionSource>
-										<ContextMenu name="CreditMemosSearchStringContextMenu" id="259"/>
-										<ExtendedTooltip name="CreditMemosSearchStringExtendedTooltip" id="260"/>
+										<ContextMenu name="CreditMemosSearchStringContextMenu" id="264"/>
+										<ExtendedTooltip name="CreditMemosSearchStringExtendedTooltip" id="265"/>
 									</SearchStringAddition>
-									<ViewStatusAddition name="CreditMemosViewStatus" id="261">
+									<ViewStatusAddition name="CreditMemosViewStatus" id="266">
 										<AdditionSource>
 											<Item>CreditMemos</Item>
 											<Type>ViewStatusRepresentation</Type>
 										</AdditionSource>
-										<ContextMenu name="CreditMemosViewStatusContextMenu" id="262"/>
-										<ExtendedTooltip name="CreditMemosViewStatusExtendedTooltip" id="263"/>
+										<ContextMenu name="CreditMemosViewStatusContextMenu" id="267"/>
+										<ExtendedTooltip name="CreditMemosViewStatusExtendedTooltip" id="268"/>
 									</ViewStatusAddition>
-									<SearchControlAddition name="CreditMemosSearchControl" id="264">
+									<SearchControlAddition name="CreditMemosSearchControl" id="269">
 										<AdditionSource>
 											<Item>CreditMemos</Item>
 											<Type>SearchControl</Type>
 										</AdditionSource>
-										<ContextMenu name="CreditMemosSearchControlContextMenu" id="265"/>
-										<ExtendedTooltip name="CreditMemosSearchControlExtendedTooltip" id="266"/>
+										<ContextMenu name="CreditMemosSearchControlContextMenu" id="270"/>
+										<ExtendedTooltip name="CreditMemosSearchControlExtendedTooltip" id="271"/>
 									</SearchControlAddition>
 									<ChildItems>
 										<LabelField name="CreditMemosLineNumber" id="78">
@@ -1241,6 +1315,21 @@
 		</Attribute>
 	</Attributes>
 	<Commands>
+		<Command name="ChargeWithStripe" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Charge with stripe</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Charge with stripe</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>ChargeWithStripe</Action>
+		</Command>
 		<Command name="SendEmail" id="2">
 			<Title>
 				<v8:item>
@@ -1311,7 +1400,12 @@
 			<Item>
 				<Command>AccountingRegister.GeneralJournal.StandardCommand.OpenByRecorder</Command>
 				<Type>Auto</Type>
+				<CommandGroup>FormNavigationPanelGoTo</CommandGroup>
+				<Index>2</Index>
 				<DefaultVisible>false</DefaultVisible>
+				<Visible>
+					<xr:Common>false</xr:Common>
+				</Visible>
 			</Item>
 			<Item>
 				<Command>0</Command>
@@ -1321,11 +1415,17 @@
 			<Item>
 				<Command>AccumulationRegister.BankReconciliation.StandardCommand.OpenByRecorder</Command>
 				<Type>Auto</Type>
+				<CommandGroup>FormNavigationPanelGoTo</CommandGroup>
 				<DefaultVisible>false</DefaultVisible>
+				<Visible>
+					<xr:Common>false</xr:Common>
+				</Visible>
 			</Item>
 			<Item>
 				<Command>InformationRegister.DocumentJournalOfCompanies.StandardCommand.OpenByValue.Document</Command>
 				<Type>Auto</Type>
+				<CommandGroup>FormNavigationPanelGoTo</CommandGroup>
+				<Index>1</Index>
 				<DefaultVisible>false</DefaultVisible>
 				<Visible>
 					<xr:Common>false</xr:Common>

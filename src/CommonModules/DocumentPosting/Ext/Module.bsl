@@ -637,7 +637,7 @@ EndFunction
 //  Cancel               - Boolean   - Flag of transaction cancel.
 //
 Procedure CheckPostingResults(AdditionalProperties, RegisterRecords, Cancel) Export
-	Var GeneralJournalBalance, BalanceCheck, CheckBalances, CheckMessages;
+	Var GeneralJournalBalance, BalanceCheck, CheckBalances, CheckMessages, ExcludedDimensions;
 	
 	// Perform check for accumulation balance registers.
 	If  AdditionalProperties.Posting.Property("BalanceCheck", BalanceCheck)
@@ -672,6 +672,11 @@ Procedure CheckPostingResults(AdditionalProperties, RegisterRecords, Cancel) Exp
 			   Or CheckBalances.Count() = 0
 			Then
 				Continue;
+			EndIf;
+			
+			// Filling excluded dimensions.
+			If Not BalanceCheck[CheckRegister].Property("ExcludedDimensions", ExcludedDimensions) Then
+				ExcludedDimensions = New Array;
 			EndIf;
 			
 			// 1.2. Add changed register in checklist.
@@ -710,6 +715,10 @@ Procedure CheckPostingResults(AdditionalProperties, RegisterRecords, Cancel) Exp
 			// 1.5. Add to query dimensions and resources of register.
 			SelectionText = "";
 			For Each Dimension In RegisterMetadata.Dimensions Do
+				If ExcludedDimensions.Find(Dimension.Name) <> Undefined Then
+					Continue;
+				EndIf;
+				
 				DimensionText = StrReplace("Balances.{Dimension} AS {Dimension}", "{Dimension}", Dimension.Name);
 				SelectionText = ?(IsBlankString(SelectionText), DimensionText, SelectionText+",
 					|	"+DimensionText);
@@ -729,6 +738,10 @@ Procedure CheckPostingResults(AdditionalProperties, RegisterRecords, Cancel) Exp
 			// Add dimensions of register to balances filter.
 			SelectionText = "";
 			For Each Dimension In RegisterMetadata.Dimensions Do
+				If ExcludedDimensions.Find(Dimension.Name) <> Undefined Then
+					Continue;
+				EndIf;
+				
 				DimensionText = Dimension.Name;
 				SelectionText = ?(IsBlankString(SelectionText), DimensionText, SelectionText+", "+DimensionText);
 			EndDo;
@@ -744,6 +757,10 @@ Procedure CheckPostingResults(AdditionalProperties, RegisterRecords, Cancel) Exp
 			// Add to query dimensions of register.
 			SelectionText = "";
 			For Each Dimension In RegisterMetadata.Dimensions Do
+				If ExcludedDimensions.Find(Dimension.Name) <> Undefined Then
+					Continue;
+				EndIf;
+				
 				DimensionText = StrReplace("TableDiff.{Dimension}", "{Dimension}", Dimension.Name);
 				SelectionText = ?(IsBlankString(SelectionText), DimensionText, SelectionText+",
 					|				"+DimensionText);
@@ -814,12 +831,23 @@ Procedure CheckPostingResults(AdditionalProperties, RegisterRecords, Cancel) Exp
 				// 4.2. Error found - create individual massages for each register.
 				CheckRegister    = CheckList[I];
 				RegisterMetadata = RegisterRecords[CheckRegister].AdditionalProperties.Metadata;
+				CheckBalances    = BalanceCheck[CheckRegister].CheckBalances;
+				CheckMessages    = BalanceCheck[CheckRegister].CheckMessages;
+				
+				// Filling excluded dimensions.
+				If Not BalanceCheck[CheckRegister].Property("ExcludedDimensions", ExcludedDimensions) Then
+					ExcludedDimensions = New Array;
+				EndIf;
 				
 				// 4.3. Create value table with unique combination of register dimension
 				//     (to reduce count of possible errors about the same dimensions).
 				SearchRec = New Structure;
 				ReportedCombinations = New ValueTable;
 				For Each Dimension In RegisterMetadata.Dimensions Do
+					If ExcludedDimensions.Find(Dimension.Name) <> Undefined Then
+						Continue;
+					EndIf;
+					
 					ReportedCombinations.Columns.Add(Dimension.Name);
 				EndDo;
 				
@@ -867,6 +895,7 @@ Procedure CheckPostingResults(AdditionalProperties, RegisterRecords, Cancel) Exp
 					
 					// 4.6.5. Get formatted message template.
 					MessageTemplate = CheckMessages[J];
+					RegisterSynonym = RegisterMetadata.Synonym;
 					MessageParams.Clear();
 					ParamsFormat.Clear();
 					
@@ -875,6 +904,10 @@ Procedure CheckPostingResults(AdditionalProperties, RegisterRecords, Cancel) Exp
 						
 						// 4.6.6.1. Skip already reported errors (by dimensions combinations).
 						For Each Dimension In RegisterMetadata.Dimensions Do
+							If ExcludedDimensions.Find(Dimension.Name) <> Undefined Then
+								Continue;
+							EndIf;
+							
 							SearchRec.Insert(Dimension.Name, Selection[Dimension.Name]);
 						EndDo;
 						If ReportedCombinations.FindRows(SearchRec).Count() > 0 Then
@@ -888,6 +921,9 @@ Procedure CheckPostingResults(AdditionalProperties, RegisterRecords, Cancel) Exp
 						
 						// 4.6.6.2. Create message text.
 						For Each Dimension In RegisterMetadata.Dimensions Do
+							If ExcludedDimensions.Find(Dimension.Name) <> Undefined Then
+								Continue;
+							EndIf;
 							
 							// Skip unused presentations.
 							If Find(MessageTemplate, "{"+Dimension.Name+"}") = 0 Then Continue; EndIf;
@@ -926,6 +962,9 @@ Procedure CheckPostingResults(AdditionalProperties, RegisterRecords, Cancel) Exp
 						
 						// Fill pattern with parameters.
 						MessageText = StringFunctionsClientServer.SubstituteParametersInStringByName(MessageTemplate, MessageParams, ParamsFormat);
+						
+						// Add source register name.
+						MessageText = RegisterSynonym + ": " + MessageText;
 						
 						// 4.6.6.3. Transfer message to user.
 						Errors = Errors + 1;

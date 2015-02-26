@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<AutoTitle>false</AutoTitle>
+	<Customizable>false</Customizable>
+	<CommandBarLocation>None</CommandBarLocation>
+	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<Events>
+		<Event name="NotificationProcessing">NotificationProcessing</Event>
+		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+	</Events>
+	<Attributes>
+		<Attribute name="Attribute1" id="1">
+			<Type>
+				<v8:Type>cfg:ConstantsSet</v8:Type>
+			</Type>
+			<UseAlways>
+				<Field>Attribute1.ShipmentFoot3Type.Ref</Field>
+				<Field>Attribute1.ShipmentFoot2Type.Ref</Field>
+				<Field>Attribute1.ShipmentFoot1Type.Ref</Field>
+				<Field>Attribute1.SOFoot3Type.Ref</Field>
+				<Field>Attribute1.SOFoot2Type.Ref</Field>
+				<Field>Attribute1.SOFoot1Type.Ref</Field>
+				<Field>Attribute1.SIFoot3Type.Ref</Field>
+				<Field>Attribute1.SIFoot2Type.Ref</Field>
+				<Field>Attribute1.SIFoot1Type.Ref</Field>
+				<Field>Attribute1.QuoteFoot3Type.Ref</Field>
+				<Field>Attribute1.QuoteFoot2Type.Ref</Field>
+				<Field>Attribute1.QuoteFoot1Type.Ref</Field>
+				<Field>Attribute1.PeriodClosingOption.Ref</Field>
+				<Field>Attribute1.POFoot3Type.Ref</Field>
+				<Field>Attribute1.POFoot2Type.Ref</Field>
+				<Field>Attribute1.POFoot1Type.Ref</Field>
+				<Field>Attribute1.CSFoot3Type.Ref</Field>
+				<Field>Attribute1.CSFoot2Type.Ref</Field>
+				<Field>Attribute1.CSFoot1Type.Ref</Field>
+				<Field>Attribute1.CRFoot3Type.Ref</Field>
+				<Field>Attribute1.CRFoot2Type.Ref</Field>
+				<Field>Attribute1.CRFoot1Type.Ref</Field>
+				<Field>Attribute1.CMFoot3Type.Ref</Field>
+				<Field>Attribute1.CMFoot2Type.Ref</Field>
+				<Field>Attribute1.CMFoot1Type.Ref</Field>
+			</UseAlways>
+		</Attribute>
+	</Attributes>
+</Form>

@@ -37,7 +37,7 @@ Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 		// Precheck of document data, calculation of temporary data, required for document posting.
 		If (Not ManualAdjustment) Then
 			DocumentParameters = New Structure("Ref, PointInTime,   Company, LineItems",
-			                                    Ref, PointInTime(), Company, LineItems.Unload(, "Order, Product, Unit, Location, LocationActual, DeliveryDate, Project, Class, QtyUM"));
+			                                    Ref, PointInTime(), Company, LineItems.Unload(, "Order, ItemReceipt, Product, Unit, Location, LocationActual, DeliveryDate, Project, Class, QtyUM"));
 			Documents.PurchaseInvoice.PrepareDataBeforeWrite(AdditionalProperties, DocumentParameters, Cancel);
 		EndIf;
 		
@@ -47,11 +47,19 @@ EndProcedure
 
 Procedure FillCheckProcessing(Cancel, CheckedAttributes)
 	
+	// Check proper filling of lots.
+	LotsSerialNumbers.CheckLotsFilling(Ref, LineItems, Cancel);
+	
+	// Check proper filling of serial numbers.
+	LotsSerialNumbers.CheckSerialNumbersFilling(Ref, PointInTime(), LineItems, SerialNumbers, 0, "ItemReceipt", Cancel);
+	
 	// Create items filter by non-empty orders.
 	FilledOrders = GeneralFunctions.InvertCollectionFilter(LineItems, LineItems.FindRows(New Structure("Order", Documents.PurchaseOrder.EmptyRef())));
 	
 	// Check doubles in items (to be sure of proper orders placement).
-	GeneralFunctions.CheckDoubleItems(Ref, LineItems, "Product, Unit, Order, Location, DeliveryDate, Project, Class, LineNumber", FilledOrders, Cancel);
+	//If Not SessionParameters.TenantValue = "1101092" Then // Locked for the tenant "1101092"
+		GeneralFunctions.CheckDoubleItems(Ref, LineItems, "Product, Unit, Order, ItemReceipt, Location, DeliveryDate, Project, Class, LineNumber", FilledOrders, Cancel);
+	//EndIf;
 	
 	// Check proper closing of order items by the invoice items.
 	If Not Cancel Then
@@ -76,7 +84,14 @@ Procedure Filling(FillingData, StandardProcessing)
 		
 		// 0. Custom check of purchase order for interactive generate of purchase invoice on the base of purchase order.
 		If (TypeOf(FillingData) = Type("DocumentRef.PurchaseOrder"))
-		And Not Documents.PurchaseInvoice.CheckStatusOfPurchaseOrder(Ref, FillingData) Then
+		And ((Not Documents.PurchaseInvoice.CheckStatusOfPurchaseOrder(Ref, FillingData)) Or (Documents.PurchaseInvoice.CheckUseItemReceiptOfPurchaseOrder(Ref, FillingData))) Then
+			Cancel = True;
+			Return;
+		EndIf;
+		
+		// 0. Custom check of item receipt for interactive generate of purchase invoice on the base of item receipt.
+		If (TypeOf(FillingData) = Type("DocumentRef.ItemReceipt"))
+		And (Not Documents.PurchaseInvoice.CheckStatusOfItemReceipt(Ref, FillingData)) Then
 			Cancel = True;
 			Return;
 		EndIf;
@@ -116,6 +131,13 @@ Procedure Filling(FillingData, StandardProcessing)
 		// 6. Clear used temporary document data.
 		DocumentFilling.ClearDataStructuresAfterFilling(AdditionalProperties);
 		
+		// 7 Custom filling of UUIDs.
+		EmptyUUID = New UUID("00000000-0000-0000-0000-000000000000");
+		For Each Row In LineItems Do
+			If Row.LineID = EmptyUUID Then
+				Row.LineID = New UUID();
+			EndIf;
+		EndDo;
 	EndIf;
 	
 EndProcedure

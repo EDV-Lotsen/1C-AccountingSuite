@@ -96,4 +96,59 @@ Function GetValueByDefault(Setting, Default = Undefined, User = Undefined) Expor
 	
 EndFunction
 
+Function CheckNumberAllowed(Num, Ref, BankAccount) Export
+	
+	Try
+		CheckNum = Number(Num);
+	Except
+		Return New Structure("DuplicatesFound, Allow", False, True);
+	EndTry;
+	
+	If (CheckNum < 100) Or (CheckNum > 99999999) Then
+		Return New Structure("DuplicatesFound, Allow", False, True);
+	EndIf;
+
+	Query = New Query("SELECT TOP 1
+	                  |	ChecksWithNumber.Number,
+	                  |	ChecksWithNumber.Ref,
+	                  |	AllowDuplicateCheckNumbers.Value AS AllowDuplicateCheckNumbers
+	                  |FROM
+	                  |	(SELECT
+	                  |		Check.PhysicalCheckNum AS Number,
+	                  |		Check.Ref AS Ref
+	                  |	FROM
+	                  |		Document.Check AS Check
+	                  |	WHERE
+	                  |		Check.BankAccount = &BankAccount
+	                  |		AND Check.PaymentMethod = VALUE(Catalog.PaymentMethods.Check)
+	                  |		AND Check.PhysicalCheckNum = &CheckNum
+	                  |	
+	                  |	UNION ALL
+	                  |	
+	                  |	SELECT
+	                  |		InvoicePayment.PhysicalCheckNum,
+	                  |		InvoicePayment.Ref
+	                  |	FROM
+	                  |		Document.InvoicePayment AS InvoicePayment
+	                  |	WHERE
+	                  |		InvoicePayment.BankAccount = &BankAccount
+	                  |		AND InvoicePayment.PaymentMethod = VALUE(Catalog.PaymentMethods.Check)
+	                  |		AND InvoicePayment.PhysicalCheckNum = &CheckNum) AS ChecksWithNumber,
+	                  |	Constant.AllowDuplicateCheckNumbers AS AllowDuplicateCheckNumbers
+	                  |WHERE
+	                  |	ChecksWithNumber.Ref <> &CurrentRef");
+	Query.SetParameter("BankAccount", BankAccount);
+	Query.SetParameter("CheckNum", CheckNum);
+	Query.SetParameter("CurrentRef", Ref);
+	QueryResult = Query.Execute();
+	If QueryResult.IsEmpty() Then
+		Return New Structure("DuplicatesFound, Allow", False, True);
+	Else	
+		Res = QueryResult.Select();
+		Res.Next();
+		Return New Structure("DuplicatesFound, Allow", True, Res.AllowDuplicateCheckNumbers);
+	EndIf;		
+	
+EndFunction
+
 #EndRegion

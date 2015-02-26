@@ -100,6 +100,15 @@
 											<ContextMenu name="CompanyAddressContextMenu" id="246"/>
 											<ExtendedTooltip name="CompanyAddressExtendedTooltip" id="247"/>
 										</InputField>
+										<CheckBoxField name="UseIR" id="306">
+											<DataPath>Object.UseIR</DataPath>
+											<CheckBoxType>Auto</CheckBoxType>
+											<ContextMenu name="UseIRContextMenu" id="307"/>
+											<ExtendedTooltip name="UseIRExtendedTooltip" id="308"/>
+											<Events>
+												<Event name="OnChange">UseIROnChange</Event>
+											</Events>
+										</CheckBoxField>
 									</ChildItems>
 								</UsualGroup>
 								<UsualGroup name="MainMiddleColumn" id="45">
@@ -155,95 +164,87 @@ Destination location</v8:content>
 									<ShowTitle>false</ShowTitle>
 									<ExtendedTooltip name="MainRightColumnExtendedTooltip" id="108"/>
 									<ChildItems>
-										<UsualGroup name="DateNumber" id="199">
-											<Group>Horizontal</Group>
-											<Representation>None</Representation>
-											<ShowTitle>false</ShowTitle>
-											<ExtendedTooltip name="DateNumberExtendedTooltip" id="200"/>
-											<ChildItems>
-												<InputField name="Date" id="3">
-													<DataPath>Object.Date</DataPath>
-													<TitleFont ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont" scale="120"/>
-													<ToolTip>
-														<v8:item>
-															<v8:lang>en</v8:lang>
-															<v8:content>Purchase order date</v8:content>
-														</v8:item>
-													</ToolTip>
-													<HorizontalAlign>Right</HorizontalAlign>
-													<EditMode>EnterOnInput</EditMode>
-													<Width>15</Width>
-													<HorizontalStretch>false</HorizontalStretch>
-													<Font ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont" scale="120"/>
-													<ContextMenu name="DateContextMenu" id="4"/>
-													<ExtendedTooltip name="DateExtendedTooltip" id="106"/>
-													<Events>
-														<Event name="OnChange">DateOnChange</Event>
-													</Events>
-												</InputField>
-												<InputField name="Number" id="1">
-													<DataPath>Object.Number</DataPath>
-													<TitleFont ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont" scale="120"/>
-													<ToolTip>
-														<v8:item>
-															<v8:lang>en</v8:lang>
-															<v8:content>Purchase order number</v8:content>
-														</v8:item>
-													</ToolTip>
-													<EditMode>EnterOnInput</EditMode>
-													<Width>15</Width>
-													<HorizontalStretch>false</HorizontalStretch>
-													<Font ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont" scale="120"/>
-													<ContextMenu name="NumberContextMenu" id="2"/>
-													<ExtendedTooltip name="NumberExtendedTooltip" id="102"/>
-												</InputField>
-											</ChildItems>
-										</UsualGroup>
-										<UsualGroup name="DeliveryDateStatus" id="201">
-											<Group>Horizontal</Group>
-											<Representation>None</Representation>
-											<ShowTitle>false</ShowTitle>
-											<ExtendedTooltip name="DeliveryDateStatusExtendedTooltip" id="202"/>
-											<ChildItems>
-												<InputField name="DeliveryDate" id="138">
-													<DataPath>Object.DeliveryDate</DataPath>
-													<Title>
-														<v8:item>
-															<v8:lang>en</v8:lang>
-															<v8:content>Delivery date</v8:content>
-														</v8:item>
-													</Title>
-													<ToolTip>
-														<v8:item>
-															<v8:lang>en</v8:lang>
-															<v8:content>Expected delivery date</v8:content>
-														</v8:item>
-													</ToolTip>
-													<HorizontalAlign>Right</HorizontalAlign>
-													<Width>15</Width>
-													<HorizontalStretch>false</HorizontalStretch>
-													<ContextMenu name="DeliveryDateContextMenu" id="139"/>
-													<ExtendedTooltip name="DeliveryDateExtendedTooltip" id="140"/>
-													<Events>
-														<Event name="OnChange">DeliveryDateOnChange</Event>
-													</Events>
-												</InputField>
-												<LabelField name="OrderStatusPresentation" id="87">
-													<DataPath>OrderStatusPresentation</DataPath>
-													<ReadOnly>true</ReadOnly>
-													<ToolTip>
-														<v8:item>
-															<v8:lang>en</v8:lang>
-															<v8:content>Purchase order status</v8:content>
-														</v8:item>
-													</ToolTip>
-													<Width>15</Width>
-													<HorizontalStretch>false</HorizontalStretch>
-													<ContextMenu name="OrderStatusPresentationContextMenu" id="88"/>
-													<ExtendedTooltip name="OrderStatusPresentationExtendedTooltip" id="104"/>
-												</LabelField>
-											</ChildItems>
-										</UsualGroup>
+										<InputField name="Date" id="3">
+											<DataPath>Object.Date</DataPath>
+											<TitleFont ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont" scale="120"/>
+											<ToolTip>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Purchase order date</v8:content>
+												</v8:item>
+											</ToolTip>
+											<HorizontalAlign>Right</HorizontalAlign>
+											<EditMode>EnterOnInput</EditMode>
+											<Width>15</Width>
+											<HorizontalStretch>false</HorizontalStretch>
+											<Font ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont" scale="120"/>
+											<ContextMenu name="DateContextMenu" id="4"/>
+											<ExtendedTooltip name="DateExtendedTooltip" id="106"/>
+											<Events>
+												<Event name="OnChange">DateOnChange</Event>
+											</Events>
+										</InputField>
+										<InputField name="Number" id="1">
+											<DataPath>Object.Number</DataPath>
+											<TitleFont ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont" scale="120"/>
+											<ToolTip>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Purchase order number</v8:content>
+												</v8:item>
+											</ToolTip>
+											<EditMode>EnterOnInput</EditMode>
+											<Width>15</Width>
+											<HorizontalStretch>false</HorizontalStretch>
+											<Font ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont" scale="120"/>
+											<ContextMenu name="NumberContextMenu" id="2"/>
+											<ExtendedTooltip name="NumberExtendedTooltip" id="102"/>
+										</InputField>
+									</ChildItems>
+								</UsualGroup>
+								<UsualGroup name="DeliveryDateStatus" id="201">
+									<Group>Vertical</Group>
+									<Representation>None</Representation>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="DeliveryDateStatusExtendedTooltip" id="202"/>
+									<ChildItems>
+										<InputField name="DeliveryDate" id="138">
+											<DataPath>Object.DeliveryDate</DataPath>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Delivery date</v8:content>
+												</v8:item>
+											</Title>
+											<ToolTip>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Expected delivery date</v8:content>
+												</v8:item>
+											</ToolTip>
+											<HorizontalAlign>Right</HorizontalAlign>
+											<Width>15</Width>
+											<HorizontalStretch>false</HorizontalStretch>
+											<ContextMenu name="DeliveryDateContextMenu" id="139"/>
+											<ExtendedTooltip name="DeliveryDateExtendedTooltip" id="140"/>
+											<Events>
+												<Event name="OnChange">DeliveryDateOnChange</Event>
+											</Events>
+										</InputField>
+										<LabelField name="OrderStatusPresentation" id="87">
+											<DataPath>OrderStatusPresentation</DataPath>
+											<ReadOnly>true</ReadOnly>
+											<ToolTip>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Purchase order status</v8:content>
+												</v8:item>
+											</ToolTip>
+											<Width>15</Width>
+											<HorizontalStretch>false</HorizontalStretch>
+											<ContextMenu name="OrderStatusPresentationContextMenu" id="88"/>
+											<ExtendedTooltip name="OrderStatusPresentationExtendedTooltip" id="104"/>
+										</LabelField>
 									</ChildItems>
 								</UsualGroup>
 							</ChildItems>
@@ -298,12 +299,6 @@ Destination location</v8:content>
 									<v8:content>Currency</v8:content>
 								</v8:item>
 							</Title>
-							<ToolTip>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Currency2</v8:content>
-								</v8:item>
-							</ToolTip>
 							<ExtendedTooltip name="Currency2ExtendedTooltip" id="302"/>
 							<ChildItems>
 								<InputField name="Currency" id="28">
@@ -542,7 +537,7 @@ Reference number</v8:content>
 									<ToolTip>
 										<v8:item>
 											<v8:lang>en</v8:lang>
-											<v8:content>Sales order notes</v8:content>
+											<v8:content>Purchase order notes</v8:content>
 										</v8:item>
 									</ToolTip>
 									<Height>2</Height>
@@ -588,29 +583,29 @@ Reference number</v8:content>
 							<ContextMenu name="LineItemsContextMenu" id="10"/>
 							<AutoCommandBar name="LineItemsCommandBar" id="11"/>
 							<ExtendedTooltip name="LineItemsExtendedTooltip" id="113"/>
-							<SearchStringAddition name="LineItemsSearchString" id="306">
+							<SearchStringAddition name="LineItemsSearchString" id="309">
 								<AdditionSource>
 									<Item>LineItems</Item>
 									<Type>SearchStringRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="LineItemsSearchStringContextMenu" id="307"/>
-								<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="308"/>
+								<ContextMenu name="LineItemsSearchStringContextMenu" id="310"/>
+								<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="311"/>
 							</SearchStringAddition>
-							<ViewStatusAddition name="LineItemsViewStatus" id="309">
+							<ViewStatusAddition name="LineItemsViewStatus" id="312">
 								<AdditionSource>
 									<Item>LineItems</Item>
 									<Type>ViewStatusRepresentation</Type>
 								</AdditionSource>
-								<ContextMenu name="LineItemsViewStatusContextMenu" id="310"/>
-								<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="311"/>
+								<ContextMenu name="LineItemsViewStatusContextMenu" id="313"/>
+								<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="314"/>
 							</ViewStatusAddition>
-							<SearchControlAddition name="LineItemsSearchControl" id="312">
+							<SearchControlAddition name="LineItemsSearchControl" id="315">
 								<AdditionSource>
 									<Item>LineItems</Item>
 									<Type>SearchControl</Type>
 								</AdditionSource>
-								<ContextMenu name="LineItemsSearchControlContextMenu" id="313"/>
-								<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="314"/>
+								<ContextMenu name="LineItemsSearchControlContextMenu" id="316"/>
+								<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="317"/>
 							</SearchControlAddition>
 							<Events>
 								<Event name="OnEditEnd">LineItemsOnEditEnd</Event>

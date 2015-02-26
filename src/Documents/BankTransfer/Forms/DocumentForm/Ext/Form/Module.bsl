@@ -173,4 +173,10 @@ Procedure ProcessUserResponseOnDocumentPeriodClosed(Result, Parameters) Export
 	EndIf;	
 EndProcedure
 
+&AtClient
+Procedure ViewBankTransaction(Command)
+	Params = New Structure("Document", Object.Ref);
+	OpenForm("DataProcessor.DownloadedTransactions.Form.BankTransactionDescription", Params, ThisForm,,,,, FormWindowOpeningMode.LockOwnerWindow);
+EndProcedure
+
 

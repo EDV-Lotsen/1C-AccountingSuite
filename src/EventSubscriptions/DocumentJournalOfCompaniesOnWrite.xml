@@ -13,8 +13,10 @@
 			<Source>
 				<v8:Type>cfg:DocumentObject.Deposit</v8:Type>
 				<v8:Type>cfg:DocumentObject.Statement</v8:Type>
+				<v8:Type>cfg:DocumentObject.Shipment</v8:Type>
 				<v8:Type>cfg:DocumentObject.PurchaseOrder</v8:Type>
 				<v8:Type>cfg:DocumentObject.SalesOrder</v8:Type>
+				<v8:Type>cfg:DocumentObject.ItemReceipt</v8:Type>
 				<v8:Type>cfg:DocumentObject.GeneralJournalEntry</v8:Type>
 				<v8:Type>cfg:DocumentObject.CashSale</v8:Type>
 				<v8:Type>cfg:DocumentObject.Check</v8:Type>
@@ -28,7 +30,7 @@
 				<v8:Type>cfg:DocumentObject.Quote</v8:Type>
 			</Source>
 			<Event>OnWrite</Event>
-			<Handler>CommonModule.GeneralFunctions.DocumentJournalOfCompaniesOnWrite</Handler>
+			<Handler>CommonModule.NotificationsServerFullRights.DocumentJournalOfCompaniesOnWrite</Handler>
 		</Properties>
 	</EventSubscription>
 </MetaDataObject>

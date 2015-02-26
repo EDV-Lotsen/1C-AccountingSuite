@@ -18,11 +18,12 @@
 //
 // Parameters:
 //  DocumentRef - DefinedType.RecurringDocuments.Ref - Reference for reading from the database.
+//  RecordID    - UUID                               - ID of selected document schedule.
 //
 // Returns:
 //  Structure - Schedule parameters unpacked from the value storage.
 //
-Function GetSchedule(DocumentRef) Export
+Function GetSchedule(DocumentRef, RecordID) Export
 	
 	// Get settings in priveleged mode.
 	SetPrivilegedMode(True);
@@ -36,6 +37,7 @@ Function GetSchedule(DocumentRef) Export
 	// Get register record associated with document.
 	RecordManager = InformationRegisters.RecurringDocuments.CreateRecordManager();
 	RecordManager.RecurringDocument = DocumentRef;
+	RecordManager.LineID            = RecordID;
 	RecordManager.Read();
 	
 	// Load saved schedule from value storage.
@@ -134,6 +136,46 @@ Function PutToSchedule(ScheduleParameters) Export
 EndFunction
 
 //------------------------------------------------------------------------------
+// Schedule identification functions
+
+// Generate a sequential record number for the passed document.
+//
+// Parameters:
+//  DocumentRef - DefinedType.RecurringDocuments.Ref - Reference for generation of new sequential number.
+//
+// Returns:
+//  Number - New sequential number.
+//
+Function GetNewNumber(DocumentRef) Export
+	
+	// Prepare a query text for requesting last existing LineID.
+	QueryText =
+	"SELECT TOP 1
+	|	RecurringDocuments.LineID
+	|FROM
+	|	InformationRegister.RecurringDocuments AS RecurringDocuments
+	|WHERE
+	|	RecurringDocuments.RecurringDocument = &Ref
+	|ORDER BY
+	|	RecurringDocuments.LineID Desc";
+	
+	// Create a new query.
+	Query = New Query;
+	Query.Text = QueryText;
+	Query.SetParameter("Ref", DocumentRef);
+	QueryResult = Query.Execute();
+	
+	// Calculate sequential number.
+	If QueryResult.IsEmpty() Then
+		Return 1; // The first line.
+	Else
+		Return QueryResult.Unload()[0].LineID + 1; // Next number.
+	EndIf;
+	
+	
+EndFunction
+
+//------------------------------------------------------------------------------
 // Schedule operations functions
 
 // Calculates next sceduled date for the passed schedule.
@@ -142,13 +184,14 @@ EndFunction
 //  FromDate          - Date      - Date, the schedule date calculated for, usually the current date.
 //  FromSchedule      - Structure - Schedule parameters, as defined in GetDefaultSchedule() function
 //  LastExecutionDate - Date      - Date of the last execution of the scheduled action.
+//  CompletedUpTo     - Date      - The date till which the task fully completed (the closing date).
 //  OccurrencesCount  - Number    - Positive count of event occurrences.
+//  EventDate         - Date      - (Returned) Date when event occurrs before the action date comes.
 //
 // Returns:
 //  Date      - Next scheduled date for the passed FromDate.
-//  EventDate - Date when event occurrs before the action date comes.
 //
-Function CalculateScheduledDate(FromDate, FromSchedule, LastExecutionDate, OccurrencesCount, EventDate = '00010101') Export
+Function CalculateScheduledDate(FromDate, FromSchedule, LastExecutionDate, CompletedUpTo, OccurrencesCount, EventDate = '00010101') Export
 	
 	// Get default schedule (structure compatibility protection)
 	Schedule = GetDefaultSchedule();
@@ -174,17 +217,18 @@ Function CalculateScheduledDate(FromDate, FromSchedule, LastExecutionDate, Occur
 		// 1. Define actual start and stop dates.
 		
 		// 1.1. Define starting date.
-		If    FromDate = EmptyDate And Schedule.StartDate = EmptyDate Then
-			// Both start dates are empty.
-			If LastExecutionDate = EmptyDate Then // Last execution was not accomplished.
-				StartDate = CurrentDate;          // Start schedule from the current moment.
-			Else // Task was already executed. Use a last execution date with appropriate advance.
-				StartDate = LastExecutionDate + (CurrentDate - CurrentEventDate);
-			EndIf;
-				
-		ElsIf FromDate > Schedule.StartDate Then
+		If    FromDate = EmptyDate And Schedule.StartDate = EmptyDate And CompletedUpTo = EmptyDate Then
+			// Start schedule from the current moment.
+			StartDate = CurrentDate;
+			
+		ElsIf CompletedUpTo >= FromDate And CompletedUpTo >= Schedule.StartDate Then
+			// Completion is the last possible date.
+			StartDate = CompletedUpTo;
+			
+		ElsIf FromDate >= CompletedUpTo And FromDate >= Schedule.StartDate Then
 			// Use passed moment.
 			StartDate = BegOfDay(FromDate);
+			
 		Else
 			// Use scedule date.
 			StartDate = Schedule.StartDate;
@@ -192,7 +236,7 @@ Function CalculateScheduledDate(FromDate, FromSchedule, LastExecutionDate, Occur
 		
 		// 1.2. Define stopping date.
 		If Schedule.StopType = 1 Then      // Stop after date.
-			// CHeck stopping date.
+			// Check stopping date.
 			If Schedule.StopDate = EmptyDate Then // Non-stop.
 				// Don't assign stop limitation.
 				StopDate = EmptyDate;      // Don't limit the stop date.
@@ -205,24 +249,24 @@ Function CalculateScheduledDate(FromDate, FromSchedule, LastExecutionDate, Occur
 				Return EmptyDate;
 			EndIf;
 			
-		ElsIf Schedule.StopType = 2 Then // Stop after number of tries.
+		ElsIf Schedule.StopType = 2 Then   // Stop after number of tries.
 			// Check number of tries.
 			If OccurrencesCount < Schedule.StopAfter Then
 				// OK, proceed to define next scheduled date.
-				StopDate = EmptyDate; // Don't limit the stop date.
+				StopDate = EmptyDate;      // Don't limit the stop date.
 				
 			Else // OccurrencesCount >= StopAfter
 				 // All tries are used.
 				Return EmptyDate;
 			EndIf;
 			
-		ElsIf Schedule.StopType = 3 Then // Proceed continuosly.
+		ElsIf Schedule.StopType = 3 Then   // Proceed continuosly.
 			// Don't assign stop limitation.
-			StopDate = EmptyDate; // Don't limit the stop date.
+			StopDate = EmptyDate;          // Don't limit the stop date.
 			
 		Else
 			// Don't assign stop limitation.
-			StopDate = EmptyDate; // Don't limit the stop date.
+			StopDate = EmptyDate;          // Don't limit the stop date.
 		EndIf;
 		
 		// 2. Define next possible chronological date according to interval settings.
@@ -230,78 +274,70 @@ Function CalculateScheduledDate(FromDate, FromSchedule, LastExecutionDate, Occur
 		// 2.1. Daily.
 		If Schedule.Interval = 1 Then
 			
-			// Check starting date
+			// Check starting day.
 			If StartDate <= CurrentDate Then // Start date is in the past or present.
 				
 				// Calculate expected occurencies count.
 				Occurencies = (CurrentDate - StartDate) / DayTime / Schedule.Days;
-				If Occurencies > Int(Occurencies) Then // Scheduled for the day in the future.
+				If Occurencies > Int(Occurencies) Then
 					
-					// Ignore execution of last scheduled event (!)
+					// Scheduled for the day in the future.
 					ScheduledDate = StartDate + (Int(Occurencies) + 1) * Schedule.Days * DayTime;
-					
-				Else // The event is scheduled for today.
-					
-					// Is event already occured from previous event date till today?
-					If LastExecutionDate >= CurrentEventDate And LastExecutionDate <= CurrentDate Then
-						
-						// Event already occured, calculate the new occurrence.
-						ScheduledDate = CurrentDate + Schedule.Days * DayTime;
-					Else
-						
-						// Event is not occured today for some reason.
-						ScheduledDate = CurrentDate;
-					EndIf;
+				Else
+					// The event is scheduled for today.
+					ScheduledDate = CurrentDate;
 				EndIf;
 				
 			Else // Start date is in the future.
 				
-				// The first occurrence is a start date.
+				// The first ocurrence is a start date.
 				ScheduledDate = StartDate;
 			EndIf;
+			
+			// Calcualate nearest scheduled date for current period or for next period.
+			While (ScheduledDate < CurrentDate)
+			   Or (CompletedUpTo >= ScheduledDate Or LastExecutionDate >= ScheduledDate) Do
+				
+				// Calculate the next day for event.
+				ScheduledDate = ScheduledDate + Schedule.Days * DayTime;
+			EndDo;
 			
 		// 2.2. Weekly.
 		ElsIf Schedule.Interval = 2 Then
 			
-			// 2.2.1. Calculate the shift of first occurence in days.
-			If WeekDay(StartDate) <= Schedule.WeeksDay Then
-				// The start occurred within the same week.
-				WeekShift = Schedule.WeeksDay - WeekDay(StartDate);
-			Else
-				// The start moved to the next week.
-				WeekShift = 7 - (WeekDay(StartDate) - Schedule.WeeksDay);
-			EndIf;
-			
-			// 2.2.2. Calculate the scheduled date taking week shift in the account.
-			ActualStartDate = StartDate + WeekShift * DayTime;
-			If ActualStartDate <= CurrentDate Then // Start date is in the past or present.
+			// Check starting week.
+			If (StartDate <= CurrentDate) Then // Start date is in the past or present.
 				
-				// Calculate expected occurencies count.
-				Occurencies = (CurrentDate - ActualStartDate) / WeekTime / Schedule.Weeks;
+				// Calculate current dates difference in weeks.
+				WeekDiff = (CurrentDate - StartDate) / DayTime / 7;
+				Occurencies = WeekDiff / Schedule.Weeks;
 				If Occurencies > Int(Occurencies) Then // Scheduled for the week in the future.
 					
-					// Ignore execution of last scheduled event (!)
-					ScheduledDate = ActualStartDate + (Int(Occurencies) + 1) * Schedule.Weeks * WeekTime;
+					// Scheduled for the day in the future.
+					ScheduledWeek = BegOfWeek(StartDate) + (Int(Occurencies) + 1) * Schedule.Weeks * WeekTime;
 					
-				Else // The event is scheduled for today.
+				Else // The event is scheduled for current week.
 					
-					// Is event already occured from previous event date till today?
-					If LastExecutionDate >= CurrentEventDate And LastExecutionDate <= CurrentDate Then
-						
-						// Event already occured, calculate the new occurrence.
-						ScheduledDate = CurrentDate + Schedule.Weeks * WeekTime;
-					Else
-						
-						// Event is not occured today for some reason.
-						ScheduledDate = CurrentDate;
-					EndIf;
+					// Calculate begin of the current week.
+					ScheduledWeek = BegOfWeek(CurrentDate);
 				EndIf;
 				
 			Else // Start date is in the future.
 				
-				// The first occurrence is a start date.
-				ScheduledDate = ActualStartDate;
+				// The first ocurrence is a start date.
+				ScheduledWeek = BegOfWeek(StartDate);
 			EndIf;
+			
+			// Calcualate nearest scheduled date for current period or for next period.
+			While (ScheduledDate < CurrentDate)
+			   Or (BegOfWeek(CompletedUpTo) >= BegOfWeek(ScheduledDate) Or BegOfWeek(LastExecutionDate) >= BegOfWeek(ScheduledDate)) Do
+				
+				// The specified Xth day of the scheduled week.
+				ScheduledDate = ScheduledWeek + (Schedule.WeeksDay - 1) * DayTime;
+				
+				// Calculate the next week for event.
+				ScheduledWeek = ScheduledWeek + Schedule.Weeks * WeekTime;
+			EndDo;
 			
 		// 2.3. Monthly.
 		ElsIf Schedule.Interval = 3 Then
@@ -309,41 +345,16 @@ Function CalculateScheduledDate(FromDate, FromSchedule, LastExecutionDate, Occur
 			// 2.3.1. Calculate schedule date by the day of month.
 			If Schedule.MonthType = 1 Then
 				
-				// 2.3.1.1. Calculate the first month of schedule anf first start day.
-				
-				// Define possible start month.
-				StartMonth = BegOfMonth(StartDate);
-				
-				// Calcualate actual start date for start month or for next to start month.
-				ActualStartDate = EmptyDate;
-				While ActualStartDate < StartDate Do
-					
-					// Calculate start date for start month.
-					If Schedule.MonthsDay = 29 Then
-						// Last day of the start month.
-						ActualStartDate = BegOfDay(EndOfMonth(StartMonth));
-					Else
-						// The specified Xth day of the start month.
-						ActualStartDate = StartMonth + (Schedule.MonthsDay - 1) * DayTime;
-					EndIf;
-				
-					// Adjust start month according to the start date.
-					If ActualStartDate < StartDate Then
-						// Schedule started on the next month.
-						StartMonth = AddMonth(StartMonth, 1);
-					EndIf;
-				EndDo;
-				
-				// 2.3.1.2. Calculate the current month and date.
-				If ActualStartDate <= CurrentDate Then // Start date is in the past or present.
+				// Check starting month.
+				If (StartDate <= CurrentDate) Then // Start date is in the past or present.
 					
 					// Calculate current dates difference in months.
-					MonthDiff = (Year(CurrentDate) - Year(StartMonth)) * 12 + (Month(CurrentDate) - Month(StartMonth));
+					MonthDiff = (Year(CurrentDate) - Year(StartDate)) * 12 + (Month(CurrentDate) - Month(StartDate));
 					Occurencies = MonthDiff / Schedule.Months;
 					If Occurencies > Int(Occurencies) Then // Scheduled for the month in the future.
 						
-						// Ignore execution of last scheduled event (!)
-						ScheduledMonth = AddMonth(StartMonth, (Int(Occurencies) + 1) * Schedule.Months);
+						// Scheduled for the day in the future.
+						ScheduledMonth = AddMonth(BegOfMonth(StartDate), (Int(Occurencies) + 1) * Schedule.Months);
 						
 					Else // The event is scheduled for current month.
 						
@@ -351,144 +362,90 @@ Function CalculateScheduledDate(FromDate, FromSchedule, LastExecutionDate, Occur
 						ScheduledMonth = BegOfMonth(CurrentDate);
 					EndIf;
 					
-					// Calcualate scheduled date for current month or for next month.
-					While (ScheduledDate < CurrentDate)
-					   Or (ScheduledDate = CurrentDate And LastExecutionDate >= CurrentEventDate And LastExecutionDate <= CurrentDate) Do
-						
-						// Calculate scheduled date for the scheduled month.
-						If Schedule.MonthsDay = 29 Then
-							// Last day of the scheduled month.
-							ScheduledDate = BegOfDay(EndOfMonth(ScheduledMonth));
-						Else
-							// The specified Xth day of the scheduled month.
-							ScheduledDate = ScheduledMonth + (Schedule.MonthsDay - 1) * DayTime;
-						EndIf;
-					
-						// Adjust scheduled month according to the scheduled date.
-						If (ScheduledDate < CurrentDate) // The scheduled date is too old.
-						Or (ScheduledDate = CurrentDate And LastExecutionDate >= CurrentEventDate And LastExecutionDate <= CurrentDate) // Event already occured from previous event date till today.
-						Then
-							// Event occurs on the next month.
-							ScheduledMonth = AddMonth(ScheduledMonth, Schedule.Months);
-						EndIf;
-					EndDo;
-					
 				Else // Start date is in the future.
 					
-					// The first occurrence is a start date.
-					ScheduledDate = ActualStartDate;
+					// The first ocurrence is a start date.
+					ScheduledMonth = BegOfMonth(StartDate);
 				EndIf;
+				
+				// Calcualate nearest scheduled date for current period or for next period.
+				While (ScheduledDate < CurrentDate)
+				   Or (BegOfMonth(CompletedUpTo) >= BegOfMonth(ScheduledDate) Or BegOfMonth(LastExecutionDate) >= BegOfMonth(ScheduledDate)) Do
+					
+					// Calculate scheduled date for the scheduled month.
+					If Schedule.MonthsDay = 29 Then
+						// Last day of the scheduled month.
+						ScheduledDate = BegOfDay(EndOfMonth(ScheduledMonth));
+					Else
+						// The specified Xth day of the scheduled month.
+						ScheduledDate = ScheduledMonth + (Schedule.MonthsDay - 1) * DayTime;
+					EndIf;
+					
+					// Calculate the next month for event.
+					ScheduledMonth = AddMonth(ScheduledMonth, Schedule.Months);
+				EndDo;
 				
 			// 2.3.2. Calculate schedule date by the day of week of month.
 			ElsIf Schedule.MonthType = 2 Then
 				
-				// 2.3.2.1. Calculate the first month of schedule anf first start day.
-				
-				// Define possible start month.
-				StartMonth = BegOfMonth(StartDate);
-				
-				// Calcualate actual start date for start month or for next to start month.
-				ActualStartDate = EmptyDate;
-				While ActualStartDate < StartDate Do
+				// Check starting month.
+				If (StartDate <= CurrentDate) Then // Start date is in the past or present.
 					
-					// Calculate scheduled week day for start month.
+					// Calculate current dates difference in months.
+					MonthDiff = (Year(CurrentDate) - Year(StartDate)) * 12 + (Month(CurrentDate) - Month(StartDate));
+					Occurencies = MonthDiff / Schedule.Months;
+					If Occurencies > Int(Occurencies) Then // Scheduled for the month in the future.
+						
+						// Scheduled for the day in the future.
+						ScheduledMonth = AddMonth(BegOfMonth(StartDate), (Int(Occurencies) + 1) * Schedule.Months);
+						
+					Else // The event is scheduled for current month.
+						
+						// Calculate begin of the current month.
+						ScheduledMonth = BegOfMonth(CurrentDate);
+					EndIf;
+					
+				Else // Start date is in the future.
+					
+					// The first ocurrence is a start date.
+					ScheduledMonth = BegOfMonth(StartDate);
+				EndIf;
+				
+				// Calcualate nearest scheduled date for current period or for next period.
+				While (ScheduledDate < CurrentDate)
+				   Or (BegOfMonth(CompletedUpTo) >= BegOfMonth(ScheduledDate) Or BegOfMonth(LastExecutionDate) >= BegOfMonth(ScheduledDate)) Do
+					
+					// Calculate scheduled week day for current month.
 					If Schedule.MonthsWeek = 5 Then // Last week day in a month.
 						
 						// Calculate last week day.
-						LastMonthDate = BegOfDay(EndOfMonth(StartMonth));
+						LastMonthDate = BegOfDay(EndOfMonth(ScheduledMonth));
 						LastWeekDay   = WeekDay(LastMonthDate);
 						
-						// Calculate start date basing on chronological week day in a month.
+						// Calculate scheduled date basing on chronological week day in a month.
 						If Schedule.MonthsWeekDay > LastWeekDay Then
-							ActualStartDate = LastMonthDate - (7 - (Schedule.MonthsWeekDay - LastWeekDay)) * DayTime;
+							ScheduledDate = LastMonthDate - (7 - (Schedule.MonthsWeekDay - LastWeekDay)) * DayTime;
 						Else
-							ActualStartDate = LastMonthDate - (LastWeekDay - Schedule.MonthsWeekDay) * DayTime;
+							ScheduledDate = LastMonthDate - (LastWeekDay - Schedule.MonthsWeekDay) * DayTime;
 						EndIf;
 						
 					Else // Calculate Xth week day from the begin.
 						
 						// Calculate first week day.
-						FirstMonthDate = StartMonth;
+						FirstMonthDate = ScheduledMonth;
 						FirstWeekDay   = WeekDay(FirstMonthDate);
 						
-						// Calculate start date basing on chronological week day in a month.
+						// Calculate scheduled date basing on chronological week day in a month.
 						If Schedule.MonthsWeekDay >= FirstWeekDay Then
-							ActualStartDate = FirstMonthDate + (Schedule.MonthsWeekDay - FirstWeekDay) * DayTime + (Schedule.MonthsWeek - 1) * WeekTime;
+							ScheduledDate = FirstMonthDate + (Schedule.MonthsWeekDay - FirstWeekDay) * DayTime + (Schedule.MonthsWeek - 1) * WeekTime;
 						Else
-							ActualStartDate = FirstMonthDate + (7 - (FirstWeekDay - Schedule.MonthsWeekDay)) * DayTime + (Schedule.MonthsWeek - 1) * WeekTime;
+							ScheduledDate = FirstMonthDate + (7 - (FirstWeekDay - Schedule.MonthsWeekDay)) * DayTime + (Schedule.MonthsWeek - 1) * WeekTime;
 						EndIf;
 					EndIf;
 					
-					// Adjust start month according to the start date.
-					If ActualStartDate < StartDate Then
-						// Schedule started on the next month.
-						StartMonth = AddMonth(StartMonth, 1);
-					EndIf;
+					// Calculate the next month for event.
+					ScheduledMonth = AddMonth(ScheduledMonth, Schedule.Months);
 				EndDo;
-				
-				// 2.3.2.2. Calculate the current month and date.
-				If ActualStartDate <= CurrentDate Then // Start date is in the past or present.
-					
-					// Calculate current dates difference in months.
-					MonthDiff = (Year(CurrentDate) - Year(StartMonth)) * 12 + (Month(CurrentDate) - Month(StartMonth));
-					Occurencies = MonthDiff / Schedule.Months;
-					If Occurencies > Int(Occurencies) Then // Scheduled for the month in the future.
-						
-						// Ignore execution of last scheduled event (!)
-						ScheduledMonth = AddMonth(StartMonth, (Int(Occurencies) + 1) * Schedule.Months);
-						
-					Else // The event is scheduled for current month.
-						
-						// Calculate begin of the current month.
-						ScheduledMonth = BegOfMonth(CurrentDate);
-					EndIf;
-					
-					// Calcualate scheduled date for current month or for next month.
-					While (ScheduledDate < CurrentDate)
-					   Or (ScheduledDate = CurrentDate And LastExecutionDate >= CurrentEventDate And LastExecutionDate <= CurrentDate) Do
-						
-						// Calculate scheduled week day for current month.
-						If Schedule.MonthsWeek = 5 Then // Last week day in a month.
-							
-							// Calculate last week day.
-							LastMonthDate = BegOfDay(EndOfMonth(ScheduledMonth));
-							LastWeekDay   = WeekDay(LastMonthDate);
-							
-							// Calculate scheduled date basing on chronological week day in a month.
-							If Schedule.MonthsWeekDay > LastWeekDay Then
-								ScheduledDate = LastMonthDate - (7 - (Schedule.MonthsWeekDay - LastWeekDay)) * DayTime;
-							Else
-								ScheduledDate = LastMonthDate - (LastWeekDay - Schedule.MonthsWeekDay) * DayTime;
-							EndIf;
-							
-						Else // Calculate Xth week day from the begin.
-							
-							// Calculate first week day.
-							FirstMonthDate = ScheduledMonth;
-							FirstWeekDay   = WeekDay(FirstMonthDate);
-							
-							// Calculate scheduled date basing on chronological week day in a month.
-							If Schedule.MonthsWeekDay >= FirstWeekDay Then
-								ScheduledDate = FirstMonthDate + (Schedule.MonthsWeekDay - FirstWeekDay) * DayTime + (Schedule.MonthsWeek - 1) * WeekTime;
-							Else
-								ScheduledDate = FirstMonthDate + (7 - (FirstWeekDay - Schedule.MonthsWeekDay)) * DayTime + (Schedule.MonthsWeek - 1) * WeekTime;
-							EndIf;
-						EndIf;
-						
-						// Adjust scheduled month according to the scheduled date.
-						If (ScheduledDate < CurrentDate)  // The scheduled date is too old.
-						Or (ScheduledDate = CurrentDate And LastExecutionDate >= CurrentEventDate And LastExecutionDate <= CurrentDate) // Event already occured from previous event date till today.
-						Then
-							// Event occurs on the next month.
-							ScheduledMonth = AddMonth(ScheduledMonth, Schedule.Months);
-						EndIf;
-					EndDo;
-					
-				Else // Start date is in the future.
-					
-					// The first occurrence is a start date.
-					ScheduledDate = ActualStartDate;
-				EndIf;
 				
 			Else // Type of month start date is not defined.
 				Return EmptyDate;
@@ -497,70 +454,48 @@ Function CalculateScheduledDate(FromDate, FromSchedule, LastExecutionDate, Occur
 		// 2.4. Yearly.
 		ElsIf Schedule.Interval = 4 Then
 			
-			// 2.4.1. Calculate the first year of schedule anf first start day.
-			
-			// Define possible start year.
-			StartYear = BegOfYear(StartDate);
-			
-			// Calcualate actual start date for start year or for next to start year.
-			ActualStartDate = EmptyDate;
-			While ActualStartDate < StartDate Do
+			// Check starting year.
+			If (StartDate <= CurrentDate) Then // Start date is in the past or present.
 				
-				// Calculate start month for the specified year.
-				StartMonth = AddMonth(StartYear, Schedule.YearsMonth - 1);
-				
-				// Calculate start date for start month.
-				If Schedule.YearsMonthDay = 29 Then
-					// Last day of the start month.
-					ActualStartDate = BegOfDay(EndOfMonth(StartMonth));
-				Else
-					// The specified Xth day of the start month.
-					ActualStartDate = StartMonth + (Schedule.YearsMonthDay - 1) * DayTime;
+				// Calculate current dates difference in years.
+				YearDiff = Year(CurrentDate) - Year(StartDate);
+				Occurencies = YearDiff;
+				If Occurencies > Int(Occurencies) Then // Scheduled for the year in the future.
+					
+					// Scheduled for the day in the future.
+					ScheduledYear = AddMonth(BegOfYear(StartDate), (Int(Occurencies) + 1) * 12);
+					
+				Else // The event is scheduled for current year.
+					
+					// Calculate begin of the current year.
+					ScheduledYear = BegOfYear(CurrentDate);
 				EndIf;
-			
-				// Adjust start year according to the start date.
-				If ActualStartDate < StartDate Then
-					// Schedule started on the next year.
-					StartYear = AddMonth(StartYear, 12);
-				EndIf;
-			EndDo;
-			
-			// 2.4.2. Calculate the current month and date.
-			If ActualStartDate <= CurrentDate Then // Start date is in the past or present.
-				
-				// Calculate begin of the current year.
-				ScheduledYear = BegOfYear(CurrentDate);
-				
-				// Calcualate scheduled date for current year or for next year.
-				While (ScheduledDate < CurrentDate)
-				   Or (ScheduledDate = CurrentDate And LastExecutionDate >= CurrentEventDate And LastExecutionDate <= CurrentDate) Do
-					
-					// Calculate scheduled month for the specified year.
-					ScheduledMonth = AddMonth(ScheduledYear, Schedule.YearsMonth - 1);
-					
-					// Calculate scheduled date for scheduled month.
-					If Schedule.YearsMonthDay = 29 Then
-						// Last day of the scheduled month.
-						ScheduledDate = BegOfDay(EndOfMonth(ScheduledMonth));
-					Else
-						// The specified Xth day of the scheduled month.
-						ScheduledDate = ScheduledMonth + (Schedule.YearsMonthDay - 1) * DayTime;
-					EndIf;
-					
-					// Adjust scheduled month according to the scheduled date.
-					If (ScheduledDate < CurrentDate) // The scheduled date is too old.
-					Or (ScheduledDate = CurrentDate And LastExecutionDate >= CurrentEventDate And LastExecutionDate <= CurrentDate) // Event already occured from previous event date till today.
-					Then
-						// Event occurs on the next year.
-						ScheduledYear = AddMonth(ScheduledYear, 12);
-					EndIf;
-				EndDo;
 				
 			Else // Start date is in the future.
 				
-				// The first occurrence is a start date.
-				ScheduledDate = ActualStartDate;
+				// The first ocurrence is a start date.
+				ScheduledYear = BegOfYear(StartDate);
 			EndIf;
+			
+			// Calcualate nearest scheduled date for current period or for next period.
+			While (ScheduledDate < CurrentDate)
+			   Or (BegOfYear(CompletedUpTo) >= BegOfYear(ScheduledDate) Or BegOfYear(LastExecutionDate) >= BegOfYear(ScheduledDate)) Do
+				
+				// Calculate scheduled month for the scheduled year.
+				ScheduledMonth = AddMonth(ScheduledYear, Schedule.YearsMonth - 1);
+				
+				// Calculate scheduled date for scheduled month.
+				If Schedule.YearsMonthDay = 29 Then
+					// Last day of the scheduled month.
+					ScheduledDate = BegOfDay(EndOfMonth(ScheduledMonth));
+				Else
+					// The specified Xth day of the scheduled month.
+					ScheduledDate = ScheduledMonth + (Schedule.YearsMonthDay - 1) * DayTime;
+				EndIf;
+				
+				// Calculate the next year for event.
+				ScheduledYear = AddMonth(ScheduledYear, 12);
+			EndDo;
 			
 		Else // Interval is not defined.
 			Return EmptyDate;
@@ -629,9 +564,12 @@ Function ProcessCurrentScheduledActions(CurrentEventDate, SelectedDocument = Und
 	SourceQuery = 
 		"SELECT
 		|	RecurringDocuments.RecurringDocument,
+		|	RecurringDocuments.LineID,
 		|	RecurringDocuments.Schedule,
 		|	RecurringDocuments.SchedulePresentation,
 		|	RecurringDocuments.ScheduledDate,
+		|	RecurringDocuments.EventDate,
+		|	RecurringDocuments.CompletedUpTo,
 		|	RecurringDocuments.LastExecutionDate,
 		|	RecurringDocuments.OccurrencesCount
 		|FROM
@@ -642,9 +580,10 @@ Function ProcessCurrentScheduledActions(CurrentEventDate, SelectedDocument = Und
 	// Add proper condition to a query.
 	If SelectedDocument = Undefined Then // Process all documents in a range EventDate <= CurrentDate <= ScheduledDate
 		QueryText = StrReplace(SourceQuery, "{Condition}",
-		"	 (RecurringDocuments.EventDate         > &EmptyDate AND RecurringDocuments.EventDate         <= &CurrentDate)
-		|AND (RecurringDocuments.ScheduledDate     > &EmptyDate AND RecurringDocuments.ScheduledDate     >= &CurrentDate)
-		|AND (RecurringDocuments.LastExecutionDate > &EmptyDate AND RecurringDocuments.LastExecutionDate <  RecurringDocuments.EventDate)");
+		"     (RecurringDocuments.EventDate         > &EmptyDate AND RecurringDocuments.EventDate         <= &CurrentDate)
+		|AND  (RecurringDocuments.ScheduledDate     > &EmptyDate AND RecurringDocuments.ScheduledDate     >= &CurrentDate)
+		|AND ((RecurringDocuments.CompletedUpTo     > &EmptyDate AND RecurringDocuments.CompletedUpTo     <  &CurrentDate) OR (RecurringDocuments.CompletedUpTo     = &EmptyDate))
+		|AND ((RecurringDocuments.LastExecutionDate > &EmptyDate AND RecurringDocuments.LastExecutionDate <  &CurrentDate) OR (RecurringDocuments.LastExecutionDate = &EmptyDate))");
 	Else // Process the selected document only independent of the nearest schedule date.
 		QueryText = StrReplace(SourceQuery, "{Condition}",
 		"	RecurringDocuments.RecurringDocument = &SelectedDocument");
@@ -664,8 +603,12 @@ Function ProcessCurrentScheduledActions(CurrentEventDate, SelectedDocument = Und
 			// Update the database in transaction.
 			BeginTransaction(DataLockControlMode.Managed);
 			
+			// Create a list of documents to be locked.
+			LockDocuments = QueryResult.Unload().Copy(,"RecurringDocument");
+			LockDocuments.GroupBy("RecurringDocument");
+			
 			// Lock the register records preventing reading old schedule data.
-			DocumentPosting.LockDataSourceBeforeWrite("InformationRegister.RecurringDocuments", QueryResult.Unload().Copy(,"RecurringDocument"), DataLockMode.Exclusive);
+			DocumentPosting.LockDataSourceBeforeWrite("InformationRegister.RecurringDocuments", LockDocuments, DataLockMode.Exclusive);
 			
 			// Get record manager.
 			RecordManager = InformationRegisters.RecurringDocuments.CreateRecordManager();
@@ -682,23 +625,18 @@ Function ProcessCurrentScheduledActions(CurrentEventDate, SelectedDocument = Und
 					
 					// Update schedule data.
 					RecordManager.RecurringDocument    = Selection.RecurringDocument;
+					RecordManager.LineID               = Selection.LineID;
 					RecordManager.Schedule             = Selection.Schedule;
 					RecordManager.SchedulePresentation = Selection.SchedulePresentation;
 					
 					// Calculate next schedule date.
-					If CurrentDate = Selection.ScheduledDate Then // EventDate = ScheduleDate.
-						// The schedule fully processed - calculate the new schedule date.
-						RecordManager.ScheduledDate = CalculateScheduledDate(CurrentDate, ScheduleStructure, CurrentDate, Selection.OccurrencesCount + 1, NextEventDate);
-						RecordManager.EventDate     = NextEventDate;
-					Else
-						// The schedule date is in the future, save the current settings.
-						RecordManager.ScheduledDate = Selection.ScheduledDate;
-						RecordManager.EventDate     = CurrentDate; // CurrentDate = EventDate.
-					EndIf;
+					RecordManager.ScheduledDate        = CalculateScheduledDate(EmptyDate, ScheduleStructure, CurrentDate, Selection.ScheduledDate, Selection.OccurrencesCount + 1, NextEventDate);
+					RecordManager.EventDate            = NextEventDate;
+					RecordManager.CompletedUpTo        = ?(RecordManager.ScheduledDate > EmptyDate, Selection.ScheduledDate, EmptyDate); // Lock current schedule date (do no track the schedule till the completed date).
 					
-					// Update the last evant occurrence.
-					RecordManager.LastExecutionDate = Selection.ScheduledDate;
-					RecordManager.OccurrencesCount  = Selection.OccurrencesCount + 1;
+					// Update the last event occurrence.
+					RecordManager.LastExecutionDate    = CurrentDate;
+					RecordManager.OccurrencesCount     = Selection.OccurrencesCount + 1;
 					RecordManager.Write(True);
 					
 				Else // There are some errors while processing the action.
@@ -722,8 +660,7 @@ Function ProcessCurrentScheduledActions(CurrentEventDate, SelectedDocument = Und
 	If SelectedDocument = Undefined Then
 		// Add another condition to a query.
 		QueryText = StrReplace(SourceQuery, "{Condition}",
-		"	(RecurringDocuments.EventDate     > &EmptyDate AND RecurringDocuments.EventDate < &CurrentDate)
-		|OR (RecurringDocuments.ScheduledDate > &EmptyDate AND RecurringDocuments.ScheduledDate <= &CurrentDate)");
+		"	(RecurringDocuments.ScheduledDate > &EmptyDate AND RecurringDocuments.ScheduledDate < &CurrentDate)");
 		Query.Text = QueryText;
 		
 		// Process outdated recurring documents.
@@ -734,8 +671,12 @@ Function ProcessCurrentScheduledActions(CurrentEventDate, SelectedDocument = Und
 				// Update the database in transaction.
 				BeginTransaction(DataLockControlMode.Managed);
 				
+				// Create a list of documents to be locked.
+				LockDocuments = QueryResult.Unload().Copy(,"RecurringDocument");
+				LockDocuments.GroupBy("RecurringDocument");
+				
 				// Lock the register records preventing reading old schedule data.
-				DocumentPosting.LockDataSourceBeforeWrite("InformationRegister.RecurringDocuments", QueryResult.Unload().Copy(,"RecurringDocument"), DataLockMode.Exclusive);
+				DocumentPosting.LockDataSourceBeforeWrite("InformationRegister.RecurringDocuments", LockDocuments, DataLockMode.Exclusive);
 				
 				// Get record manager.
 				RecordManager = InformationRegisters.RecurringDocuments.CreateRecordManager();
@@ -744,16 +685,24 @@ Function ProcessCurrentScheduledActions(CurrentEventDate, SelectedDocument = Und
 				Selection = QueryResult.Select();
 				While Selection.Next() Do
 					
+					// Get schedule details.
+					ScheduleStructure = Selection.Schedule.Get();
+					
 					// Update schedule data.
 					RecordManager.RecurringDocument    = Selection.RecurringDocument;
+					RecordManager.LineID               = Selection.LineID;
 					RecordManager.Schedule             = Selection.Schedule;
 					RecordManager.SchedulePresentation = Selection.SchedulePresentation;
 					
-					// Calculate next schedule date.
-					RecordManager.ScheduledDate        = CalculateScheduledDate(CurrentDate, Selection.Schedule.Get(), Selection.LastExecutionDate, Selection.OccurrencesCount, NextEventDate);
-					RecordManager.EventDate            = NextEventDate;
+					// Calculate completance date.
+					CompletedUpTo = ?(BegOfDay(Selection.RecurringDocument.Date) > Selection.CompletedUpTo, BegOfDay(Selection.RecurringDocument.Date), Selection.CompletedUpTo);
 					
-					// Update the last evant occurrence (it was not changed).
+					// Calculate next schedule date.
+					RecordManager.ScheduledDate        = CalculateScheduledDate(EmptyDate, ScheduleStructure, Selection.LastExecutionDate, CompletedUpTo, Selection.OccurrencesCount, NextEventDate);
+					RecordManager.EventDate            = NextEventDate;
+					RecordManager.CompletedUpTo        = Selection.CompletedUpTo;
+					
+					// Update the last event occurrence.
 					RecordManager.LastExecutionDate    = Selection.LastExecutionDate;
 					RecordManager.OccurrencesCount     = Selection.OccurrencesCount;
 					RecordManager.Write(True);
@@ -780,14 +729,15 @@ EndFunction
 // Executes the planned action.
 //
 // Parameters:
-//  RecurringDocument - Document.Ref - Date, the actions are calculated for, usually the current server date.
-//  FromSchedule      - Date         - Date, the actions are calculated for, usually the current server date.
-//  ScheduledDate     - Date         - Date, the actions are calculated for, usually the current server date.
+//  RecurringDocument        - Document.Ref - Source document which will be copied/notified during the action.
+//  FromSchedule             - Structure    - Scedule describing new document/notification cration mode.
+//  ScheduledDate            - Date         - Date by which the new document will be created, usually the current server date.
+//  NotificationPresentation - String       - Notification message which will be presented in notification.
 //
 // Returns:
 //  Boolean - The succesion of scheduled actions processing.
 //
-Function ExecuteScheduledAction(RecurringDocument, FromSchedule, ScheduledDate, SchedulePresentation) Export
+Function ExecuteScheduledAction(RecurringDocument, FromSchedule, ScheduledDate, NotificationPresentation) Export
 	
 	// Define function variables.
 	SuccessfullyCompleted = True;
@@ -821,7 +771,7 @@ Function ExecuteScheduledAction(RecurringDocument, FromSchedule, ScheduledDate, 
 			Notification.Period      = ScheduledDate;
 			Notification.Subject     = StringFunctionsClientServer.SubstituteParametersInString(
 			                           NStr("en = 'Generate a copy of %1.'"), RecurringDocument);
-			Notification.Description = SchedulePresentation;
+			Notification.Description = NotificationPresentation;
 			Notification.Object      = RecurringDocument;
 			Notification.Write(False);
 		Except

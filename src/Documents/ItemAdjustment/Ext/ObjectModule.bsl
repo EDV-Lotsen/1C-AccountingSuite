@@ -52,6 +52,12 @@ Procedure Filling(FillingData, StandardProcessing)
 		// Filling of the new created document with default values.
 		Location = GeneralFunctions.GetDefaultLocation();
 		
+	ElsIf TypeOf(FillingData) = Type("CatalogRef.Products") Then 
+		
+		Product              = FillingData;
+		Location             = GeneralFunctions.GetDefaultLocation();
+		IncomeExpenseAccount = FillingData.COGSAccount;
+		
 	Else
 		// Generate on the base of another document.
 	EndIf;

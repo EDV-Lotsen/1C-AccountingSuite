@@ -263,6 +263,21 @@
 				</InputField>
 			</ChildItems>
 		</UsualGroup>
+		<InputField name="Memo" id="61">
+			<DataPath>Object.Memo</DataPath>
+			<TitleLocation>None</TitleLocation>
+			<Height>2</Height>
+			<VerticalStretch>false</VerticalStretch>
+			<MultiLine>true</MultiLine>
+			<InputHint>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Memo</v8:content>
+				</v8:item>
+			</InputHint>
+			<ContextMenu name="MemoContextMenu" id="62"/>
+			<ExtendedTooltip name="MemoExtendedTooltip" id="63"/>
+		</InputField>
 	</ChildItems>
 	<Attributes>
 		<Attribute name="Object" id="1">
@@ -423,6 +438,15 @@
 					<v8:AllowedSign>Any</v8:AllowedSign>
 				</v8:NumberQualifiers>
 			</Type>
+		</Attribute>
+		<Attribute name="PointInTime" id="8">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Point in time</v8:content>
+				</v8:item>
+			</Title>
+			<Type/>
 		</Attribute>
 	</Attributes>
 	<CommandInterface>

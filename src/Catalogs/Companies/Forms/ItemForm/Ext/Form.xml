@@ -34,12 +34,6 @@
 			<ContextMenu name="StripeTokenContextMenu" id="136"/>
 			<ExtendedTooltip name="StripeTokenExtendedTooltip" id="154"/>
 		</InputField>
-		<Button name="SalesTransactions" id="209">
-			<Type>UsualButton</Type>
-			<Visible>false</Visible>
-			<CommandName>Form.Command.SalesTransactions</CommandName>
-			<ExtendedTooltip name="SalesTransactionsExtendedTooltip" id="210"/>
-		</Button>
 		<UsualGroup name="Group2" id="42">
 			<Group>Horizontal</Group>
 			<Representation>StrongSeparation</Representation>
@@ -64,6 +58,12 @@
 						<Event name="OnChange">VendorOnChange</Event>
 					</Events>
 				</CheckBoxField>
+				<CheckBoxField name="Employee" id="482">
+					<DataPath>Object.Employee</DataPath>
+					<CheckBoxType>Auto</CheckBoxType>
+					<ContextMenu name="EmployeeContextMenu" id="483"/>
+					<ExtendedTooltip name="EmployeeExtendedTooltip" id="484"/>
+				</CheckBoxField>
 				<InputField name="Code" id="93">
 					<DataPath>Object.Code</DataPath>
 					<ContextMenu name="CodeContextMenu" id="94"/>
@@ -72,6 +72,10 @@
 			</ChildItems>
 		</UsualGroup>
 		<Pages name="Group1" id="15">
+			<UserVisible>
+				<xr:Common>true</xr:Common>
+				<xr:Value name="Role.ShipmentFull">false</xr:Value>
+			</UserVisible>
 			<Width>50</Width>
 			<ExtendedTooltip name="Group1ExtendedTooltip" id="159"/>
 			<ChildItems>
@@ -95,10 +99,15 @@
 								<xr:LoadTransparent>true</xr:LoadTransparent>
 							</RowsPicture>
 							<CommandSet>
+								<ExcludedCommand>Copy</ExcludedCommand>
+								<ExcludedCommand>Create</ExcludedCommand>
 								<ExcludedCommand>LoadDynamicListSettings</ExcludedCommand>
 								<ExcludedCommand>DynamicListStandardSettings</ExcludedCommand>
+								<ExcludedCommand>CopyToClipboard</ExcludedCommand>
 								<ExcludedCommand>Choose</ExcludedCommand>
+								<ExcludedCommand>Delete</ExcludedCommand>
 								<ExcludedCommand>SaveDynamicListSettings</ExcludedCommand>
+								<ExcludedCommand>Change</ExcludedCommand>
 							</CommandSet>
 							<SearchStringLocation>None</SearchStringLocation>
 							<ViewStatusLocation>None</ViewStatusLocation>
@@ -395,6 +404,11 @@
 							<DataPath>Object.bitcoin_address</DataPath>
 							<ContextMenu name="bitcoin_addressContextMenu" id="338"/>
 							<ExtendedTooltip name="bitcoin_addressExtendedTooltip" id="339"/>
+						</InputField>
+						<InputField name="ImportMatch" id="479">
+							<DataPath>Object.ImportMatch</DataPath>
+							<ContextMenu name="ImportMatchContextMenu" id="480"/>
+							<ExtendedTooltip name="ImportMatchExtendedTooltip" id="481"/>
 						</InputField>
 					</ChildItems>
 				</Page>
@@ -912,8 +926,8 @@ WHERE
 			</Type>
 			<Settings xsi:type="DynamicList">
 				<ManualQuery>true</ManualQuery>
-				<DynamicDataRead>false</DynamicDataRead>
-				<QueryText>SELECT
+				<DynamicDataRead>true</DynamicDataRead>
+				<QueryText>SELECT ALLOWED
 	DocumentJournalOfCompanies.Total,
 	DocumentJournalOfCompanies.Company,
 	DocumentJournalOfCompanies.DueDate,
@@ -925,34 +939,34 @@ WHERE
 			THEN "Journal entry"
 		WHEN DocumentJournalOfCompanies.Document REFS Document.Deposit
 			THEN "Deposit"
-		WHEN DocumentJournalOfCompanies.Document REFS Document.CashSale 
+		WHEN DocumentJournalOfCompanies.Document REFS Document.CashSale
 			THEN "Cash sale"
-		WHEN DocumentJournalOfCompanies.Document REFS Document.SalesReturn   
+		WHEN DocumentJournalOfCompanies.Document REFS Document.SalesReturn
 			THEN "Credit memo"
-		WHEN DocumentJournalOfCompanies.Document REFS Document.Check 
+		WHEN DocumentJournalOfCompanies.Document REFS Document.Check
 			THEN "Payment"
-		WHEN DocumentJournalOfCompanies.Document REFS Document.PurchaseInvoice 
+		WHEN DocumentJournalOfCompanies.Document REFS Document.PurchaseInvoice
 			THEN "Bill"
-		WHEN DocumentJournalOfCompanies.Document REFS Document.TimeTrack 
+		WHEN DocumentJournalOfCompanies.Document REFS Document.TimeTrack
 			THEN "Time tracking"
-		WHEN DocumentJournalOfCompanies.Document REFS Document.Statement 
+		WHEN DocumentJournalOfCompanies.Document REFS Document.Statement
 			THEN "Statement"
-		WHEN DocumentJournalOfCompanies.Document REFS Document.CashReceipt 
+		WHEN DocumentJournalOfCompanies.Document REFS Document.CashReceipt
 			THEN "Cash receipt"
-		WHEN DocumentJournalOfCompanies.Document REFS Document.PurchaseOrder 
+		WHEN DocumentJournalOfCompanies.Document REFS Document.PurchaseOrder
 			THEN "PO"
-		WHEN DocumentJournalOfCompanies.Document REFS Document.InvoicePayment 
+		WHEN DocumentJournalOfCompanies.Document REFS Document.InvoicePayment
 			THEN "Bill payment"
-		WHEN DocumentJournalOfCompanies.Document REFS Document.SalesInvoice 
+		WHEN DocumentJournalOfCompanies.Document REFS Document.SalesInvoice
 			THEN "Sales invoice"
-		WHEN DocumentJournalOfCompanies.Document REFS Document.PurchaseReturn 
+		WHEN DocumentJournalOfCompanies.Document REFS Document.PurchaseReturn
 			THEN "Purchase return"
-		WHEN DocumentJournalOfCompanies.Document REFS Document.SalesOrder 
+		WHEN DocumentJournalOfCompanies.Document REFS Document.SalesOrder
 			THEN "SO"
 		WHEN DocumentJournalOfCompanies.Document REFS Document.Quote
 			THEN "Quote"
-		//WHEN DocumentJournalOfCompanies.Document REFS Document.ItemReceipt
-		//	THEN "Item receipt"
+		WHEN DocumentJournalOfCompanies.Document REFS Document.ItemReceipt
+			THEN "Item receipt"
 		ELSE ""
 	END AS DocumentType,
 	DocumentJournalOfCompanies.Document.Number AS DocNumber,
@@ -963,6 +977,7 @@ FROM
 		ON DocumentJournalOfCompanies.Document = GeneralJournalBalance.ExtDimension2
 WHERE
 	DocumentJournalOfCompanies.Company = &amp;Company</QueryText>
+				<MainTable>InformationRegister.DocumentJournalOfCompanies</MainTable>
 				<ListSettings>
 					<dcsset:filter>
 						<dcsset:item xsi:type="dcsset:FilterItemComparison">
@@ -992,8 +1007,38 @@ WHERE
 				</ListSettings>
 			</Settings>
 		</Attribute>
+		<Attribute name="FirstNumber" id="6">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>First number</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>20</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
 	</Attributes>
 	<Commands>
+		<Command name="RegisterCard" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Register card in Stripe</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Register card</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>RegisterCard</Action>
+		</Command>
 		<Command name="Projects" id="3">
 			<Title>
 				<v8:item>
@@ -1009,20 +1054,20 @@ WHERE
 			</ToolTip>
 			<Action>Projects</Action>
 		</Command>
-		<Command name="SalesTransactions" id="4">
+		<Command name="DeleteCard" id="2">
 			<Title>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Sales transactions</v8:content>
+					<v8:content>Delete card from Stripe</v8:content>
 				</v8:item>
 			</Title>
 			<ToolTip>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Sales transactions</v8:content>
+					<v8:content>Delete card</v8:content>
 				</v8:item>
 			</ToolTip>
-			<Action>SalesTransactions</Action>
+			<Action>DeleteCard</Action>
 		</Command>
 	</Commands>
 	<CommandInterface>

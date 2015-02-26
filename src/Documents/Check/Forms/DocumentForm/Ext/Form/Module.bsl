@@ -13,8 +13,8 @@ Procedure BankAccountOnChange(Item)
 	Items.ExchangeRate.Title = GeneralFunctionsReusable.DefaultCurrencySymbol() + "/1" + CommonUse.GetAttributeValue(AccountCurrency, "Symbol");
 	
 	//Items.ExchangeRate.Title = GeneralFunctionsReusable.DefaultCurrencySymbol() + "/1" + CommonUse.GetAttributeValue(Object.Currency, "Symbol");
-	Items.FCYCurrency.Title = CommonUse.GetAttributeValue(AccountCurrency, "Symbol");
-    Items.RCCurrency.Title = GeneralFunctionsReusable.DefaultCurrencySymbol(); 
+	//Items.FCYCurrency.Title = CommonUse.GetAttributeValue(AccountCurrency, "Symbol");
+    //Items.RCCurrency.Title = GeneralFunctionsReusable.DefaultCurrencySymbol(); 
 	
 	If Object.PaymentMethod = CheckPaymentMethod() Then
 		ChoiceProcessing = New NotifyDescription("UpdateBankCheck", ThisForm);
@@ -57,9 +57,9 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	//Items.FCYCurrency.Title = CommonUse.GetAttributeValue(AccountCurrency, "Symbol");
     //Items.RCCurrency.Title = GeneralFunctionsReusable.DefaultCurrencySymbol();
 	
-	If NOT GeneralFunctionsReusable.FunctionalOptionValue("MultiCurrency") Then
-		Items.FCYCurrency.Visible = False;
-	EndIf;
+	//If NOT GeneralFunctionsReusable.FunctionalOptionValue("MultiCurrency") Then
+	//	Items.FCYCurrency.Visible = False;
+	//EndIf;
 	
 	//Disable voiding if document is not posted
 	If Object.Ref.Posted = False Then
@@ -114,7 +114,7 @@ EndProcedure
 
 &AtServer
 Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
-	
+	                        
 If Object.PaymentMethod.IsEmpty() Then
 		Cancel = True;
 		Message = New UserMessage();
@@ -282,6 +282,20 @@ Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
 		CurrentObject.AdditionalProperties.Insert("PermitWrite", PermitWrite);	
 	EndIf;
 	
+	If Object.PaymentMethod = Catalogs.PaymentMethods.Check Then
+			
+		If WriteParameters.AllowCheckNumber = True Then
+	
+			CurrentObject.PhysicalCheckNum = CurrentObject.Number;
+			CurrentObject.AdditionalProperties.Insert("AllowCheckNumber", True);	
+			
+		Else
+			Message("Check number already exists for this bank account");
+			Cancel = True;
+		EndIf;
+
+	Endif;
+	
 EndProcedure
 
 &AtClient
@@ -382,6 +396,30 @@ Procedure BeforeWrite(Cancel, WriteParameters)
 		EndIf;
 	EndIf;
 	
+	//Check number shouldn't be duplicated normally. 
+	//Check its uniqueness and if not ask use to allow duplication (if applicable) 
+	If Object.PaymentMethod = PredefinedValue("Catalog.PaymentMethods.Check") Then
+		CheckNumberResult = CommonUseServerCall.CheckNumberAllowed(Object.Number, Object.Ref, Object.BankAccount);
+		If CheckNumberResult.DuplicatesFound Then
+			If Not CheckNumberResult.Allow Then
+				Cancel = True;
+				CommonUseClientServer.MessageToUser("Check number already exists for this bank account", Object, "Object.Number");
+			Else
+				If WriteParameters.Property("AllowCheckNumber") Then
+					If Not WriteParameters.AllowCheckNumber Then
+						Cancel = True;
+					EndIf;
+				Else
+					Notify = New NotifyDescription("ProcessUserResponseOnCheckNumberDuplicated", ThisObject, WriteParameters);
+					ShowQueryBox(Notify, "Check number already exists for this bank account. Continue?", QuestionDialogMode.YesNo);
+					Cancel = True;
+				EndIf;
+			EndIf;
+		Else
+			WriteParameters.Insert("AllowCheckNumber", True);
+		EndIf;
+	EndIf;
+	
 	// preventing posting if already included in a bank rec
 	If ReconciledDocumentsServerCall.RequiresExcludingFromBankReconciliation(Object.Ref, -1*Object.DocumentTotalRC, Object.Date, Object.BankAccount, WriteParameters.WriteMode) Then
 		Cancel = True;
@@ -407,6 +445,18 @@ Procedure ProcessUserResponseOnDocumentPeriodClosed(Result, Parameters) Export
 	EndIf;	
 EndProcedure
 
+&AtClient
+Procedure ProcessUserResponseOnCheckNumberDuplicated(Result, Parameters) Export
+	
+	If Result = DialogReturnCode.Yes Then
+		Parameters.Insert("AllowCheckNumber", True);
+		Write(Parameters);
+	Else
+		Parameters.Insert("AllowCheckNumber", False);
+		Write(Parameters);
+	EndIf;
+	
+EndProcedure
 
 &AtClient
 Procedure PayWithBitcoin(Command)
@@ -536,6 +586,17 @@ Procedure NotificationProcessing(EventName, Parameter, Source)
 		
 	EndIf;
 
+EndProcedure
+
+&AtClient
+Procedure AuditLogRecord(Command)
+	
+	FormParameters = New Structure();	
+	FltrParameters = New Structure();
+	FltrParameters.Insert("DocUUID", String(Object.Ref.UUID()));
+	FormParameters.Insert("Filter", FltrParameters);
+	OpenForm("CommonForm.AuditLogList",FormParameters, Object.Ref);
+	
 EndProcedure
 
 

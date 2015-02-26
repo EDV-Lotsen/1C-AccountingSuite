@@ -230,6 +230,14 @@ Procedure YodleeUpdateBankAccounts(YodleeMain = Undefined, DeleteUninitializedAc
 
 				EndDo;
 			Else
+				//If uninitialized account is disconnected then we need for a service request to Yodlee, but do not need to create 
+				//bank account item
+				Disconnected = DisconnectedAccounts.FindRows(New Structure("ItemID, ItemAccountID", ItemSummary.itemID, 0));
+				If Disconnected.Count() > 0 Then
+					i = i + 1;
+					Continue;
+				EndIf;
+
 				//Find an existing account
 				AccountQuery = New Query("SELECT
 				                         |	BankAccounts.Ref
@@ -326,7 +334,7 @@ Procedure YodleeUpdateBankAccounts(YodleeMain = Undefined, DeleteUninitializedAc
 	EndTry;
 EndProcedure
 
-Function RemoveBankAccountAtServer(Item) Export
+Function RemoveBankAccountAtServer(Item, RemoveFromYodlee = True) Export
 	ReturnStruct = New Structure("ReturnValue, Status, CountDeleted, DeletedAccounts", true, "", 0, New Array());
 	//Check if an item is not deleted
 	AccObject = Item.GetObject();
@@ -357,15 +365,36 @@ Function RemoveBankAccountAtServer(Item) Export
 			ReturnStruct.Insert("DeletedAccounts", DeletedAccounts);
 			ReturnStruct.Insert("Status", "Account " + ItemDescription + " was successfully deleted");
 		Else
-			ReturnStruct = Yodlee.RemoveItem(ItemID);
-			//Remove records from DisconnectedBankAccounts register
-			RecordSet = InformationRegisters.DisconnectedBankAccounts.CreateRecordSet();
-			ItemIDFilter = RecordSet.Filter.ItemID;
-			ItemIDFilter.Use = True;
-			ItemIDFilter.ComparisonType = ComparisonType.Equal;
-			ItemIDFilter.Value = Item.ItemID;
-			RecordSet.Write(True);
-			
+			If RemoveFromYodlee Then
+				ReturnStruct = Yodlee.RemoveItem(ItemID);
+				//Remove records from DisconnectedBankAccounts register
+				RecordSet = InformationRegisters.DisconnectedBankAccounts.CreateRecordSet();
+				ItemIDFilter = RecordSet.Filter.ItemID;
+				ItemIDFilter.Use = True;
+				ItemIDFilter.ComparisonType = ComparisonType.Equal;
+				ItemIDFilter.Value = Item.ItemID;
+				RecordSet.Write(True);
+
+			Else
+				ServiceID = Item.Owner.ServiceID;
+				WriteLogEvent("Yodlee.UninitializedBankAccount", EventLogLevel.Error,,, "ItemID: " + String(ItemID) + ". " + "Yodlee failed to provide online access to the bank account of the bank with the Service ID:" + String(ServiceID));	
+				//Reflect this in Register
+				RecordSet = InformationRegisters.DisconnectedBankAccounts.CreateRecordSet();
+				ItemIDFilter = RecordSet.Filter.ItemID;
+				ItemAccountIDFilter = RecordSet.Filter.ItemAccountID;
+				ItemIDFilter.Use = True;
+				ItemIDFilter.ComparisonType = ComparisonType.Equal;
+				ItemIDFilter.Value = ItemID;
+				ItemAccountIDFilter.Use = True;
+				ItemAccountIDFilter.ComparisonType = ComparisonType.Equal;
+				ItemAccountIDFilter.Value = 0;
+				NewRecord = RecordSet.Add();
+				NewRecord.Active =  True;
+				NewRecord.ItemID = ItemID;
+				NewRecord.ItemAccountID = 0;
+				RecordSet.Write(True);
+			EndIf;
+					
 			If (ReturnStruct.ReturnValue) OR (Find(ReturnStruct.Status, "InvalidItemExceptionFaultMessage")) Then
 				//Mark bank account as non-Yodlee
 				AccRequest = New Query("SELECT
@@ -802,12 +831,13 @@ Function ViewTransactions(BankAccount, TransactionsFromDate = Undefined, Transac
 				NewTran.YodleeTransactionID	= YodleeTran.viewKey.transactionId;
 					
 				NewTran.PostDate 		= YodleeTran.postDate;
-				NewTRan.Price 			= YodleeTran.price.amount;
+				NewTran.Price 			= YodleeTran.price.amount;
 				NewTran.Quantity 		= YodleeTran.quantity;
 				NewTran.RunningBalance	= YodleeTran.runningBalance;
 				NewTran.CurrencyCode	= YodleeTran.amount.currencyCode;
 				NewTran.CategoryID	 	= YodleeTran.category.categoryId;
 				NewTran.Type 			= YodleeTran.transactionBaseType;
+				NewTran.CheckNumber 	= YodleeTran.CheckNumber.checkNumber;
 					
 				//NewTran.Status			= YodleeTran.status.description;				
 			EndDo;
@@ -858,7 +888,7 @@ Function ViewTransactions(BankAccount, TransactionsFromDate = Undefined, Transac
 								FillPropertyValues(FoundTransaction[0], TranPerDate, "CategoryID, PostDate, Price, Quantity, RunningBalance, Type");
 							EndIf;
 						Else
-							FillPropertyValues(FoundTransaction[0], TranPerDate, "BankAccount, TransactionDate, Description, Amount, CategoryID, PostDate, Price, Quantity, RunningBalance, CurrencyCode, Type");
+							FillPropertyValues(FoundTransaction[0], TranPerDate, "BankAccount, TransactionDate, Description, Amount, CategoryID, PostDate, Price, Quantity, RunningBalance, CurrencyCode, Type, CheckNumber");
 						EndIf;
 					Else
 						NewTRSRow = ValueTable_TRS.Add();
@@ -1803,7 +1833,8 @@ Procedure DeleteUninitializedAccounts(BankAccountToDelete = Undefined)
 			
 			EmptyBA_Request = New Query("SELECT DISTINCT
 			                            |	UninitializedBA.Ref,
-			                            |	UninitializedBA.ItemID
+			                            |	UninitializedBA.ItemID,
+			                            |	UninitializedBA.Ref.Owner.ServiceID AS ServiceID
 			                            |FROM
 			                            |	(SELECT
 			                            |		BankAccounts.Ref AS Ref,
@@ -1828,7 +1859,27 @@ Procedure DeleteUninitializedAccounts(BankAccountToDelete = Undefined)
 			EmptyBA_Result = EmptyBA_Request.Execute().Select();
 			While EmptyBA_Result.Next() Do
 				//Remove from Yodlee server
-				RemoveItem(EmptyBA_Result.ItemID);
+				//Do not remove uninitialized account at Yodlee to use it further in a service request
+				//RemoveItem(EmptyBA_Result.ItemID);
+				ItemID 		= EmptyBA_Result.ItemID;
+				ServiceID 	= EmptyBA_Result.ServiceID;
+				WriteLogEvent("Yodlee.UninitializedBankAccount", EventLogLevel.Error,,, "ItemID: " + String(ItemID) + ". " + "Yodlee failed to provide online access to the bank account of the bank with the Service ID:" + String(ServiceID));	
+				//Reflect this in Register
+				RecordSet = InformationRegisters.DisconnectedBankAccounts.CreateRecordSet();
+				ItemIDFilter = RecordSet.Filter.ItemID;
+				ItemAccountIDFilter = RecordSet.Filter.ItemAccountID;
+				ItemIDFilter.Use = True;
+				ItemIDFilter.ComparisonType = ComparisonType.Equal;
+				ItemIDFilter.Value = ItemID;
+				ItemAccountIDFilter.Use = True;
+				ItemAccountIDFilter.ComparisonType = ComparisonType.Equal;
+				ItemAccountIDFilter.Value = 0;
+				NewRecord = RecordSet.Add();
+				NewRecord.Active =  True;
+				NewRecord.ItemID = ItemID;
+				NewRecord.ItemAccountID = 0;
+				RecordSet.Write(True);
+
 				BA_Object = EmptyBA_Result.Ref.GetObject();
 				BA_Object.Delete();
 			EndDo;			

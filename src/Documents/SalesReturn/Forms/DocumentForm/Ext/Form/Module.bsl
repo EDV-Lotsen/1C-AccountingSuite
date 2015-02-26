@@ -153,6 +153,23 @@ EndProcedure
 &AtServer
 Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
 	
+	If Object.Discount <> 0 AND
+		Constants.DiscountsAccount.Get() = ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
+			Message = New UserMessage();
+			Message.Text=NStr("en='Indicate a default discount account in Settings / Posting accounts. Saving cancelled.'");
+			Message.Message();
+			Cancel = True;
+	EndIf;
+	
+	If Object.Shipping <> 0 AND
+		Constants.ShippingExpenseAccount.Get() = ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
+			Message = New UserMessage();
+			Message.Text=NStr("en='Indicate a default shipping account in Settings / Posting accounts. Saving cancelled.'");
+			Message.Message();
+			Cancel = True;
+	EndIf;
+
+	
 	//Period closing
 	If PeriodClosingServerCall.DocumentPeriodIsClosed(CurrentObject.Ref, CurrentObject.Date) Then
 		PermitWrite = PeriodClosingServerCall.DocumentWritePermitted(WriteParameters);

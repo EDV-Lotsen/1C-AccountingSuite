@@ -1,0 +1,361 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<WindowOpeningMode>LockOwnerWindow</WindowOpeningMode>
+	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<Events>
+		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+	</Events>
+	<ChildItems>
+		<Table name="List" id="1">
+			<Representation>List</Representation>
+			<CommandBarLocation>None</CommandBarLocation>
+			<DefaultItem>true</DefaultItem>
+			<Width>80</Width>
+			<ChoiceMode>true</ChoiceMode>
+			<MultipleChoice>true</MultipleChoice>
+			<UseAlternationRowColor>true</UseAlternationRowColor>
+			<EnableStartDrag>true</EnableStartDrag>
+			<DataPath>List</DataPath>
+			<RowPictureDataPath>List.DefaultPicture</RowPictureDataPath>
+			<SearchStringLocation>None</SearchStringLocation>
+			<ViewStatusLocation>None</ViewStatusLocation>
+			<SearchControlLocation>None</SearchControlLocation>
+			<AutoRefresh>false</AutoRefresh>
+			<AutoRefreshPeriod>60</AutoRefreshPeriod>
+			<Period>
+				<v8:variant xsi:type="v8:StandardPeriodVariant">Custom</v8:variant>
+				<v8:startDate>0001-01-01T00:00:00</v8:startDate>
+				<v8:endDate>0001-01-01T00:00:00</v8:endDate>
+			</Period>
+			<ChoiceFoldersAndItems>Items</ChoiceFoldersAndItems>
+			<RestoreCurrentRow>false</RestoreCurrentRow>
+			<TopLevelParent xsi:nil="true"/>
+			<ShowRoot>true</ShowRoot>
+			<AllowRootChoice>false</AllowRootChoice>
+			<UpdateOnDataChange>Auto</UpdateOnDataChange>
+			<ContextMenu name="ListContextMenu" id="2"/>
+			<AutoCommandBar name="ListCommandBar" id="3">
+				<Autofill>false</Autofill>
+			</AutoCommandBar>
+			<ExtendedTooltip name="ListExtendedTooltip" id="4"/>
+			<SearchStringAddition name="ListSearchString" id="32">
+				<AdditionSource>
+					<Item>List</Item>
+					<Type>SearchStringRepresentation</Type>
+				</AdditionSource>
+				<ContextMenu name="ListSearchStringContextMenu" id="33"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="34"/>
+			</SearchStringAddition>
+			<ViewStatusAddition name="ListViewStatus" id="35">
+				<AdditionSource>
+					<Item>List</Item>
+					<Type>ViewStatusRepresentation</Type>
+				</AdditionSource>
+				<ContextMenu name="ListViewStatusContextMenu" id="36"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="37"/>
+			</ViewStatusAddition>
+			<SearchControlAddition name="ListSearchControl" id="38">
+				<AdditionSource>
+					<Item>List</Item>
+					<Type>SearchControl</Type>
+				</AdditionSource>
+				<ContextMenu name="ListSearchControlContextMenu" id="39"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="40"/>
+			</SearchControlAddition>
+			<Events>
+				<Event name="ValueChoice">ListValueChoice</Event>
+			</Events>
+			<ChildItems>
+				<LabelField name="Ref" id="29">
+					<DataPath>List.Ref</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Document</v8:content>
+						</v8:item>
+					</Title>
+					<Width>20</Width>
+					<ContextMenu name="RefContextMenu" id="30"/>
+					<ExtendedTooltip name="RefExtendedTooltip" id="31"/>
+				</LabelField>
+				<LabelField name="DeliveryDate" id="11">
+					<DataPath>List.DeliveryDate</DataPath>
+					<HorizontalAlign>Right</HorizontalAlign>
+					<Width>10</Width>
+					<ContextMenu name="DeliveryDateContextMenu" id="12"/>
+					<ExtendedTooltip name="DeliveryDateExtendedTooltip" id="13"/>
+				</LabelField>
+				<LabelField name="Status" id="26">
+					<DataPath>List.Status</DataPath>
+					<Width>10</Width>
+					<ContextMenu name="StatusContextMenu" id="27"/>
+					<ExtendedTooltip name="StatusExtendedTooltip" id="28"/>
+				</LabelField>
+				<LabelField name="DocumentTotal" id="14">
+					<DataPath>List.DocumentTotal</DataPath>
+					<ContextMenu name="DocumentTotalContextMenu" id="15"/>
+					<ExtendedTooltip name="DocumentTotalExtendedTooltip" id="16"/>
+				</LabelField>
+				<LabelField name="DocumentTotalRC" id="17">
+					<DataPath>List.DocumentTotalRC</DataPath>
+					<ContextMenu name="DocumentTotalRCContextMenu" id="18"/>
+					<ExtendedTooltip name="DocumentTotalRCExtendedTooltip" id="19"/>
+				</LabelField>
+			</ChildItems>
+		</Table>
+	</ChildItems>
+	<Attributes>
+		<Attribute name="List" id="1">
+			<Type>
+				<v8:Type>cfg:DynamicList</v8:Type>
+			</Type>
+			<MainAttribute>true</MainAttribute>
+			<UseAlways>
+				<Field>List.Company</Field>
+			</UseAlways>
+			<Settings xsi:type="DynamicList">
+				<ManualQuery>true</ManualQuery>
+				<DynamicDataRead>false</DynamicDataRead>
+				<QueryText>SELECT
+	PurchaseOrders.Company,
+	PurchaseOrders.Ref,
+	PurchaseOrders.DeliveryDate,
+	PurchaseOrders.DocumentTotal,
+	PurchaseOrders.DocumentTotalRC,
+	CASE
+		WHEN PurchaseOrders.DeletionMark
+			THEN VALUE(Enum.OrderStatuses.Deleted)
+		WHEN NOT PurchaseOrders.Posted
+			THEN VALUE(Enum.OrderStatuses.Draft)
+		WHEN OrdersStatuses.Status IS NULL 
+			THEN VALUE(Enum.OrderStatuses.Open)
+		WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.EmptyRef)
+			THEN VALUE(Enum.OrderStatuses.Open)
+		ELSE OrdersStatuses.Status
+	END AS Status
+FROM
+	(SELECT
+		OrdersDispatched.Company AS Company,
+		OrdersDispatched.PO AS Ref,
+		OrdersDispatched.PO.DeliveryDate AS DeliveryDate,
+		OrdersDispatched.PO.DocumentTotal AS DocumentTotal,
+		OrdersDispatched.PO.DocumentTotalRC AS DocumentTotalRC,
+		OrdersDispatched.PO.DeletionMark AS DeletionMark,
+		OrdersDispatched.PO.Posted AS Posted,
+		MAX(OrdersDispatched.UnInvoiced) AS UnInvoiced
+	FROM
+		(SELECT
+			OrdersDispatchedBalance.Company AS Company,
+			OrdersDispatchedBalance.Order AS PO,
+			OrdersDispatchedBalance.Product AS Product,
+			OrdersDispatchedBalance.Unit AS Unit,
+			OrdersDispatchedBalance.Location AS Location,
+			OrdersDispatchedBalance.DeliveryDate AS DeliveryDate,
+			OrdersDispatchedBalance.Project AS Project,
+			OrdersDispatchedBalance.Class AS Class,
+			CASE
+				WHEN &amp;UseItemReceipt = TRUE
+						AND OrdersDispatchedBalance.QuantityBalance &gt; OrdersDispatchedBalance.InvoicedBalance
+					THEN TRUE
+				WHEN &amp;UseItemReceipt = FALSE
+						AND OrdersDispatchedBalance.QuantityBalance &gt; OrdersDispatchedBalance.ReceivedIRBalance
+					THEN TRUE
+				ELSE FALSE
+			END AS UnInvoiced
+		FROM
+			AccumulationRegister.OrdersDispatched.Balance(
+					,
+					Company = &amp;Company
+						AND Order.UseIR &lt;&gt; &amp;UseItemReceipt) AS OrdersDispatchedBalance) AS OrdersDispatched
+	
+	GROUP BY
+		OrdersDispatched.Company,
+		OrdersDispatched.PO,
+		OrdersDispatched.PO.DeliveryDate,
+		OrdersDispatched.PO.DocumentTotal,
+		OrdersDispatched.PO.DocumentTotalRC,
+		OrdersDispatched.PO.DeletionMark,
+		OrdersDispatched.PO.Posted) AS PurchaseOrders
+		LEFT JOIN InformationRegister.OrdersStatuses.SliceLast AS OrdersStatuses
+		ON PurchaseOrders.Ref = OrdersStatuses.Order
+WHERE
+	PurchaseOrders.UnInvoiced = TRUE
+
+UNION ALL
+
+SELECT
+	ItemReceipts.Company,
+	ItemReceipts.Ref,
+	ItemReceipts.DeliveryDate,
+	ItemReceipts.DocumentTotal,
+	ItemReceipts.DocumentTotalRC,
+	CASE
+		WHEN ItemReceipts.DeletionMark
+			THEN VALUE(Enum.OrderStatuses.Deleted)
+		WHEN NOT ItemReceipts.Posted
+			THEN VALUE(Enum.OrderStatuses.Draft)
+		WHEN OrdersStatuses.Status IS NULL 
+			THEN VALUE(Enum.OrderStatuses.Open)
+		WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.EmptyRef)
+			THEN VALUE(Enum.OrderStatuses.Open)
+		ELSE OrdersStatuses.Status
+	END
+FROM
+	(SELECT
+		OrdersDispatched.Company AS Company,
+		OrdersDispatched.IR AS Ref,
+		OrdersDispatched.IR.DeliveryDate AS DeliveryDate,
+		OrdersDispatched.IR.DocumentTotal AS DocumentTotal,
+		OrdersDispatched.IR.DocumentTotalRC AS DocumentTotalRC,
+		OrdersDispatched.IR.DeletionMark AS DeletionMark,
+		OrdersDispatched.IR.Posted AS Posted,
+		MAX(OrdersDispatched.UnInvoiced) AS UnInvoiced
+	FROM
+		(SELECT
+			OrdersDispatchedBalance.Company AS Company,
+			OrdersDispatchedBalance.ItemReceipt AS IR,
+			OrdersDispatchedBalance.Product AS Product,
+			OrdersDispatchedBalance.Unit AS Unit,
+			OrdersDispatchedBalance.Location AS Location,
+			OrdersDispatchedBalance.DeliveryDate AS DeliveryDate,
+			OrdersDispatchedBalance.Project AS Project,
+			OrdersDispatchedBalance.Class AS Class,
+			CASE
+				WHEN OrdersDispatchedBalance.ReceivedIRBalance &gt; OrdersDispatchedBalance.InvoicedBalance
+					THEN TRUE
+				ELSE FALSE
+			END AS UnInvoiced
+		FROM
+			AccumulationRegister.OrdersDispatched.Balance(
+					,
+					&amp;UseItemReceipt
+						AND Company = &amp;Company
+						AND ItemReceipt &lt;&gt; VALUE(Document.ItemReceipt.EmptyRef)) AS OrdersDispatchedBalance) AS OrdersDispatched
+	
+	GROUP BY
+		OrdersDispatched.Company,
+		OrdersDispatched.IR,
+		OrdersDispatched.IR.DeliveryDate,
+		OrdersDispatched.IR.DocumentTotal,
+		OrdersDispatched.IR.DocumentTotalRC,
+		OrdersDispatched.IR.DeletionMark,
+		OrdersDispatched.IR.Posted) AS ItemReceipts
+		LEFT JOIN InformationRegister.OrdersStatuses.SliceLast AS OrdersStatuses
+		ON ItemReceipts.Ref = OrdersStatuses.Order
+WHERE
+	ItemReceipts.UnInvoiced = TRUE</QueryText>
+				<AutoSaveUserSettings>false</AutoSaveUserSettings>
+				<ListSettings>
+					<dcsset:filter>
+						<dcsset:viewMode>Normal</dcsset:viewMode>
+						<dcsset:userSettingID>dfcece9d-5077-440b-b6b3-45a5cb4538eb</dcsset:userSettingID>
+					</dcsset:filter>
+					<dcsset:order>
+						<dcsset:viewMode>Normal</dcsset:viewMode>
+						<dcsset:userSettingID>88619765-ccb3-46c6-ac52-38e9c992ebd4</dcsset:userSettingID>
+					</dcsset:order>
+					<dcsset:conditionalAppearance>
+						<dcsset:item>
+							<dcsset:selection>
+								<dcsset:item>
+									<dcsset:field>Status</dcsset:field>
+								</dcsset:item>
+							</dcsset:selection>
+							<dcsset:filter>
+								<dcsset:item xsi:type="dcsset:FilterItemComparison">
+									<dcsset:left xsi:type="dcscor:Field">Status</dcsset:left>
+									<dcsset:comparisonType>InList</dcsset:comparisonType>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.OrderStatuses.Deleted</dcsset:right>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.OrderStatuses.Draft</dcsset:right>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.OrderStatuses.New</dcsset:right>
+								</dcsset:item>
+							</dcsset:filter>
+							<dcsset:appearance>
+								<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+									<dcscor:parameter>TextColor</dcscor:parameter>
+									<dcscor:value xsi:type="v8ui:Color">web:DarkGray</dcscor:value>
+								</dcscor:item>
+							</dcsset:appearance>
+						</dcsset:item>
+						<dcsset:item>
+							<dcsset:selection>
+								<dcsset:item>
+									<dcsset:field>Status</dcsset:field>
+								</dcsset:item>
+							</dcsset:selection>
+							<dcsset:filter>
+								<dcsset:item xsi:type="dcsset:FilterItemComparison">
+									<dcsset:left xsi:type="dcscor:Field">Status</dcsset:left>
+									<dcsset:comparisonType>Equal</dcsset:comparisonType>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.OrderStatuses.Closed</dcsset:right>
+								</dcsset:item>
+							</dcsset:filter>
+							<dcsset:appearance>
+								<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+									<dcscor:parameter>TextColor</dcscor:parameter>
+									<dcscor:value xsi:type="v8ui:Color">web:DarkGreen</dcscor:value>
+								</dcscor:item>
+							</dcsset:appearance>
+						</dcsset:item>
+						<dcsset:item>
+							<dcsset:selection>
+								<dcsset:item>
+									<dcsset:field>Status</dcsset:field>
+								</dcsset:item>
+							</dcsset:selection>
+							<dcsset:filter>
+								<dcsset:item xsi:type="dcsset:FilterItemComparison">
+									<dcsset:left xsi:type="dcscor:Field">Status</dcsset:left>
+									<dcsset:comparisonType>Equal</dcsset:comparisonType>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.OrderStatuses.Backordered</dcsset:right>
+								</dcsset:item>
+							</dcsset:filter>
+							<dcsset:appearance>
+								<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+									<dcscor:parameter>TextColor</dcscor:parameter>
+									<dcscor:value xsi:type="v8ui:Color">web:DarkGoldenRod</dcscor:value>
+								</dcscor:item>
+							</dcsset:appearance>
+						</dcsset:item>
+						<dcsset:item>
+							<dcsset:selection>
+								<dcsset:item>
+									<dcsset:field>Status</dcsset:field>
+								</dcsset:item>
+							</dcsset:selection>
+							<dcsset:filter>
+								<dcsset:item xsi:type="dcsset:FilterItemComparison">
+									<dcsset:left xsi:type="dcscor:Field">Status</dcsset:left>
+									<dcsset:comparisonType>Equal</dcsset:comparisonType>
+									<dcsset:right xsi:type="dcscor:DesignTimeValue">Enum.OrderStatuses.Open</dcsset:right>
+								</dcsset:item>
+							</dcsset:filter>
+							<dcsset:appearance>
+								<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+									<dcscor:parameter>TextColor</dcscor:parameter>
+									<dcscor:value xsi:type="v8ui:Color">web:DarkRed</dcscor:value>
+								</dcscor:item>
+							</dcsset:appearance>
+						</dcsset:item>
+						<dcsset:viewMode>Normal</dcsset:viewMode>
+						<dcsset:userSettingID>b75fecce-942b-4aed-abc9-e6a02e460fb3</dcsset:userSettingID>
+					</dcsset:conditionalAppearance>
+					<dcsset:itemsViewMode>Normal</dcsset:itemsViewMode>
+					<dcsset:itemsUserSettingID>911b6018-f537-43e8-a417-da56b22f9aec</dcsset:itemsUserSettingID>
+				</ListSettings>
+			</Settings>
+		</Attribute>
+	</Attributes>
+	<Parameters>
+		<Parameter name="Company">
+			<Type>
+				<v8:Type>cfg:CatalogRef.Companies</v8:Type>
+			</Type>
+		</Parameter>
+		<Parameter name="UseItemReceipt">
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
+			</Type>
+		</Parameter>
+	</Parameters>
+</Form>

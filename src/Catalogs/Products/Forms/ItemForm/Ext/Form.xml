@@ -19,6 +19,12 @@
 			<ChildItems>
 				<InputField name="Code" id="56">
 					<DataPath>Object.Code</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>         Code</v8:content>
+						</v8:item>
+					</Title>
 					<Width>20</Width>
 					<HorizontalStretch>false</HorizontalStretch>
 					<ContextMenu name="CodeContextMenu" id="57"/>
@@ -26,8 +32,14 @@
 				</InputField>
 				<InputField name="Type" id="13">
 					<DataPath>Object.Type</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>       Type</v8:content>
+						</v8:item>
+					</Title>
 					<EditMode>EnterOnInput</EditMode>
-					<Width>23</Width>
+					<Width>20</Width>
 					<HorizontalStretch>false</HorizontalStretch>
 					<ContextMenu name="TypeContextMenu" id="14"/>
 					<ExtendedTooltip name="TypeExtendedTooltip" id="99"/>
@@ -40,7 +52,7 @@
 		<InputField name="ItemID" id="3">
 			<DataPath>Object.Description</DataPath>
 			<EditMode>EnterOnInput</EditMode>
-			<Width>45</Width>
+			<Width>49</Width>
 			<HorizontalStretch>false</HorizontalStretch>
 			<ContextMenu name="ItemIDContextMenu" id="4"/>
 			<ExtendedTooltip name="ItemIDExtendedTooltip" id="98"/>
@@ -52,6 +64,19 @@
 			<ChildItems>
 				<InputField name="Price1" id="191">
 					<DataPath>Object.Price</DataPath>
+					<UserVisible>
+						<xr:Common>true</xr:Common>
+						<xr:Value name="Role.ShipmentFull">false</xr:Value>
+						<xr:Value name="Role.ItemReceiptFull">false</xr:Value>
+					</UserVisible>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>         Price</v8:content>
+						</v8:item>
+					</Title>
+					<Width>15</Width>
+					<HorizontalStretch>false</HorizontalStretch>
 					<EditFormat>
 						<v8:item>
 							<v8:lang>en</v8:lang>
@@ -61,8 +86,28 @@
 					<ContextMenu name="Price1ContextMenu" id="192"/>
 					<ExtendedTooltip name="Price1ExtendedTooltip" id="193"/>
 				</InputField>
+				<InputField name="Cost" id="480">
+					<DataPath>Object.Cost</DataPath>
+					<Width>15</Width>
+					<HorizontalStretch>false</HorizontalStretch>
+					<EditFormat>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>NFD=2</v8:content>
+						</v8:item>
+					</EditFormat>
+					<ContextMenu name="CostContextMenu" id="481"/>
+					<ExtendedTooltip name="CostExtendedTooltip" id="482"/>
+				</InputField>
 				<InputField name="ProductCategory" id="95">
 					<DataPath>Object.Category</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>  Category</v8:content>
+						</v8:item>
+					</Title>
+					<Width>15</Width>
 					<HorizontalStretch>false</HorizontalStretch>
 					<QuickChoice>true</QuickChoice>
 					<ContextMenu name="ProductCategoryContextMenu" id="96"/>
@@ -75,22 +120,125 @@
 			<ShowTitle>false</ShowTitle>
 			<ExtendedTooltip name="Group4ExtendedTooltip" id="260"/>
 			<ChildItems>
-				<CheckBoxField name="Taxable" id="163">
-					<DataPath>Object.Taxable</DataPath>
-					<CheckBoxType>Auto</CheckBoxType>
-					<ContextMenu name="TaxableContextMenu" id="164"/>
-					<ExtendedTooltip name="TaxableExtendedTooltip" id="165"/>
-				</CheckBoxField>
-				<CheckBoxField name="IsAssembly" id="249">
-					<DataPath>Object.Assembly</DataPath>
-					<Visible>false</Visible>
-					<CheckBoxType>Auto</CheckBoxType>
-					<ContextMenu name="IsAssemblyContextMenu" id="250"/>
-					<ExtendedTooltip name="IsAssemblyExtendedTooltip" id="251"/>
-					<Events>
-						<Event name="OnChange">IsAssemblyOnChange</Event>
-					</Events>
-				</CheckBoxField>
+				<UsualGroup name="Group5" id="308">
+					<Group>Vertical</Group>
+					<ShowTitle>false</ShowTitle>
+					<ExtendedTooltip name="Group5ExtendedTooltip" id="309"/>
+					<ChildItems>
+						<CheckBoxField name="IsAssembly" id="249">
+							<DataPath>Object.Assembly</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>  Assembly</v8:content>
+								</v8:item>
+							</Title>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="IsAssemblyContextMenu" id="250"/>
+							<ExtendedTooltip name="IsAssemblyExtendedTooltip" id="251"/>
+							<Events>
+								<Event name="OnChange">IsAssemblyOnChange</Event>
+							</Events>
+						</CheckBoxField>
+						<CheckBoxField name="Taxable" id="163">
+							<DataPath>Object.Taxable</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>     Taxable</v8:content>
+								</v8:item>
+							</Title>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="TaxableContextMenu" id="164"/>
+							<ExtendedTooltip name="TaxableExtendedTooltip" id="165"/>
+						</CheckBoxField>
+					</ChildItems>
+				</UsualGroup>
+				<UsualGroup name="Group6" id="310">
+					<Group>Vertical</Group>
+					<ShowTitle>false</ShowTitle>
+					<ExtendedTooltip name="Group6ExtendedTooltip" id="311"/>
+					<ChildItems>
+						<CheckBoxField name="HasResiduals" id="264">
+							<DataPath>Object.HasResiduals</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>has Residuals</v8:content>
+								</v8:item>
+							</Title>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="HasResidualsContextMenu" id="265"/>
+							<ExtendedTooltip name="HasResidualsExtendedTooltip" id="266"/>
+							<Events>
+								<Event name="OnChange">HasResidualsOnChange</Event>
+							</Events>
+						</CheckBoxField>
+						<CheckBoxField name="DiscountIsTaxable" id="305">
+							<DataPath>Object.DiscountIsTaxable</DataPath>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="DiscountIsTaxableContextMenu" id="306"/>
+							<ExtendedTooltip name="DiscountIsTaxableExtendedTooltip" id="307"/>
+						</CheckBoxField>
+					</ChildItems>
+				</UsualGroup>
+				<UsualGroup name="Group7" id="330">
+					<Group>Vertical</Group>
+					<ShowTitle>false</ShowTitle>
+					<ExtendedTooltip name="Group7ExtendedTooltip" id="331"/>
+					<ChildItems>
+						<UsualGroup name="Group8" id="428">
+							<Group>Horizontal</Group>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="Group8ExtendedTooltip" id="429"/>
+							<ChildItems>
+								<CheckBoxField name="HasServices" id="327">
+									<DataPath>Object.HasServices</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>has Services</v8:content>
+										</v8:item>
+									</Title>
+									<CheckBoxType>Auto</CheckBoxType>
+									<ContextMenu name="HasServicesContextMenu" id="328"/>
+									<ExtendedTooltip name="HasServicesExtendedTooltip" id="329"/>
+									<Events>
+										<Event name="OnChange">HasServicesOnChange</Event>
+									</Events>
+								</CheckBoxField>
+								<CheckBoxField name="HasLotsSerialNumbers" id="430">
+									<DataPath>Object.HasLotsSerialNumbers</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>has Lots / SN</v8:content>
+										</v8:item>
+									</Title>
+									<CheckBoxType>Auto</CheckBoxType>
+									<ContextMenu name="HasLotsSerialNumbersContextMenu" id="431"/>
+									<ExtendedTooltip name="HasLotsSerialNumbersExtendedTooltip" id="432"/>
+									<Events>
+										<Event name="OnChange">HasLotsSerialNumbersOnChange</Event>
+									</Events>
+								</CheckBoxField>
+							</ChildItems>
+						</UsualGroup>
+						<InputField name="TaxCode" id="302">
+							<DataPath>Object.TaxCode</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>      Tax code</v8:content>
+								</v8:item>
+							</Title>
+							<Width>20</Width>
+							<HorizontalStretch>false</HorizontalStretch>
+							<ContextMenu name="TaxCodeContextMenu" id="303"/>
+							<ExtendedTooltip name="TaxCodeExtendedTooltip" id="304"/>
+						</InputField>
+					</ChildItems>
+				</UsualGroup>
 			</ChildItems>
 		</UsualGroup>
 		<InputField name="DefaultLocation" id="77">
@@ -138,37 +286,61 @@
 							<ChildItems>
 								<InputField name="LastCost" id="58">
 									<DataPath>LastCost</DataPath>
+									<UserVisible>
+										<xr:Common>true</xr:Common>
+										<xr:Value name="Role.ShipmentFull">false</xr:Value>
+										<xr:Value name="Role.ItemReceiptFull">false</xr:Value>
+									</UserVisible>
+									<Enabled>false</Enabled>
 									<ReadOnly>true</ReadOnly>
+									<TitleTextColor>#000000</TitleTextColor>
 									<EditFormat>
 										<v8:item>
 											<v8:lang>en</v8:lang>
 											<v8:content>NFD=2</v8:content>
 										</v8:item>
 									</EditFormat>
+									<TextColor>#000000</TextColor>
 									<ContextMenu name="LastCostContextMenu" id="59"/>
 									<ExtendedTooltip name="LastCostExtendedTooltip" id="127"/>
 								</InputField>
 								<InputField name="AverageCost" id="60">
 									<DataPath>AverageCost</DataPath>
+									<UserVisible>
+										<xr:Common>true</xr:Common>
+										<xr:Value name="Role.ShipmentFull">false</xr:Value>
+										<xr:Value name="Role.ItemReceiptFull">false</xr:Value>
+									</UserVisible>
+									<Enabled>false</Enabled>
 									<ReadOnly>true</ReadOnly>
+									<TitleTextColor>#000000</TitleTextColor>
 									<EditFormat>
 										<v8:item>
 											<v8:lang>en</v8:lang>
 											<v8:content>NFD=2</v8:content>
 										</v8:item>
 									</EditFormat>
+									<TextColor>#000000</TextColor>
 									<ContextMenu name="AverageCostContextMenu" id="61"/>
 									<ExtendedTooltip name="AverageCostExtendedTooltip" id="128"/>
 								</InputField>
 								<InputField name="AccountingCost" id="62">
 									<DataPath>AccountingCost</DataPath>
+									<UserVisible>
+										<xr:Common>true</xr:Common>
+										<xr:Value name="Role.ShipmentFull">false</xr:Value>
+										<xr:Value name="Role.ItemReceiptFull">false</xr:Value>
+									</UserVisible>
+									<Enabled>false</Enabled>
 									<ReadOnly>true</ReadOnly>
+									<TitleTextColor>#000000</TitleTextColor>
 									<EditFormat>
 										<v8:item>
 											<v8:lang>en</v8:lang>
 											<v8:content>NFD=2</v8:content>
 										</v8:item>
 									</EditFormat>
+									<TextColor>#000000</TextColor>
 									<ContextMenu name="AccountingCostContextMenu" id="63"/>
 									<ExtendedTooltip name="AccountingCostExtendedTooltip" id="129"/>
 								</InputField>
@@ -193,25 +365,37 @@
 							<ChildItems>
 								<InputField name="QtyOnPO" id="67">
 									<DataPath>QtyOnPO</DataPath>
+									<Enabled>false</Enabled>
 									<ReadOnly>true</ReadOnly>
+									<TitleTextColor>#000000</TitleTextColor>
+									<TextColor>#000000</TextColor>
 									<ContextMenu name="QtyOnPOContextMenu" id="68"/>
 									<ExtendedTooltip name="QtyOnPOExtendedTooltip" id="131"/>
 								</InputField>
 								<InputField name="QtyOnSO" id="71">
 									<DataPath>QtyOnSO</DataPath>
+									<Enabled>false</Enabled>
 									<ReadOnly>true</ReadOnly>
+									<TitleTextColor>#000000</TitleTextColor>
+									<TextColor>#000000</TextColor>
 									<ContextMenu name="QtyOnSOContextMenu" id="72"/>
 									<ExtendedTooltip name="QtyOnSOExtendedTooltip" id="132"/>
 								</InputField>
 								<InputField name="QtyOnHand" id="73">
 									<DataPath>QtyOnHand</DataPath>
+									<Enabled>false</Enabled>
 									<ReadOnly>true</ReadOnly>
+									<TitleTextColor>#000000</TitleTextColor>
+									<TextColor>#000000</TextColor>
 									<ContextMenu name="QtyOnHandContextMenu" id="74"/>
 									<ExtendedTooltip name="QtyOnHandExtendedTooltip" id="133"/>
 								</InputField>
 								<InputField name="QtyAvailableToPromise" id="69">
 									<DataPath>QtyAvailableToPromise</DataPath>
+									<Enabled>false</Enabled>
 									<ReadOnly>true</ReadOnly>
+									<TitleTextColor>#000000</TitleTextColor>
+									<TextColor>#000000</TextColor>
 									<ContextMenu name="QtyAvailableToPromiseContextMenu" id="70"/>
 									<ExtendedTooltip name="QtyAvailableToPromiseExtendedTooltip" id="134"/>
 								</InputField>
@@ -230,30 +414,62 @@
 					<ChildItems>
 						<InputField name="CostingMethod" id="11">
 							<DataPath>Object.CostingMethod</DataPath>
+							<UserVisible>
+								<xr:Common>true</xr:Common>
+								<xr:Value name="Role.ShipmentFull">false</xr:Value>
+								<xr:Value name="Role.ItemReceiptFull">false</xr:Value>
+							</UserVisible>
 							<EditMode>EnterOnInput</EditMode>
 							<ContextMenu name="CostingMethodContextMenu" id="12"/>
 							<ExtendedTooltip name="CostingMethodExtendedTooltip" id="113"/>
 						</InputField>
 						<InputField name="InventoryOrExpenseAccount" id="37">
 							<DataPath>Object.InventoryOrExpenseAccount</DataPath>
+							<UserVisible>
+								<xr:Common>true</xr:Common>
+								<xr:Value name="Role.ShipmentFull">false</xr:Value>
+								<xr:Value name="Role.ItemReceiptFull">false</xr:Value>
+							</UserVisible>
 							<HorizontalStretch>false</HorizontalStretch>
 							<ContextMenu name="InventoryOrExpenseAccountContextMenu" id="38"/>
 							<ExtendedTooltip name="InventoryOrExpenseAccountExtendedTooltip" id="115"/>
 						</InputField>
 						<InputField name="IncomeAccount" id="39">
 							<DataPath>Object.IncomeAccount</DataPath>
+							<UserVisible>
+								<xr:Common>true</xr:Common>
+								<xr:Value name="Role.ShipmentFull">false</xr:Value>
+								<xr:Value name="Role.ItemReceiptFull">false</xr:Value>
+							</UserVisible>
 							<HorizontalStretch>false</HorizontalStretch>
 							<ContextMenu name="IncomeAccountContextMenu" id="40"/>
 							<ExtendedTooltip name="IncomeAccountExtendedTooltip" id="118"/>
 						</InputField>
 						<InputField name="COGSAccount" id="41">
 							<DataPath>Object.COGSAccount</DataPath>
+							<UserVisible>
+								<xr:Common>true</xr:Common>
+								<xr:Value name="Role.ShipmentFull">false</xr:Value>
+								<xr:Value name="Role.ItemReceiptFull">false</xr:Value>
+							</UserVisible>
 							<HorizontalStretch>false</HorizontalStretch>
 							<ContextMenu name="COGSAccountContextMenu" id="42"/>
 							<ExtendedTooltip name="COGSAccountExtendedTooltip" id="121"/>
 						</InputField>
+						<InputField name="ReorderQty" id="261">
+							<DataPath>Object.ReorderQty</DataPath>
+							<Width>14</Width>
+							<HorizontalStretch>false</HorizontalStretch>
+							<ContextMenu name="ReorderQtyContextMenu" id="262"/>
+							<ExtendedTooltip name="ReorderQtyExtendedTooltip" id="263"/>
+						</InputField>
 						<InputField name="PricePrecision" id="252">
 							<DataPath>Object.PricePrecision</DataPath>
+							<UserVisible>
+								<xr:Common>true</xr:Common>
+								<xr:Value name="Role.ShipmentFull">false</xr:Value>
+								<xr:Value name="Role.ItemReceiptFull">false</xr:Value>
+							</UserVisible>
 							<Width>5</Width>
 							<SpinButton>true</SpinButton>
 							<ContextMenu name="PricePrecisionContextMenu" id="253"/>
@@ -300,6 +516,87 @@
 						</InputField>
 					</ChildItems>
 				</Page>
+				<Page name="Units" id="170">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>UoM</v8:content>
+						</v8:item>
+					</Title>
+					<Group>Horizontal</Group>
+					<ExtendedTooltip name="UnitsExtendedTooltip" id="171"/>
+					<ChildItems>
+						<UsualGroup name="UnitsLeft" id="172">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Item units</v8:content>
+								</v8:item>
+							</Title>
+							<HorizontalStretch>true</HorizontalStretch>
+							<Group>Vertical</Group>
+							<Representation>StrongSeparation</Representation>
+							<ExtendedTooltip name="UnitsLeftExtendedTooltip" id="173"/>
+							<ChildItems>
+								<InputField name="UnitSet" id="188">
+									<DataPath>Object.UnitSet</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>UoM set</v8:content>
+										</v8:item>
+									</Title>
+									<Width>10</Width>
+									<ContextMenu name="UnitSetContextMenu" id="189"/>
+									<ExtendedTooltip name="UnitSetExtendedTooltip" id="190"/>
+									<Events>
+										<Event name="OnChange">UnitSetOnChange</Event>
+									</Events>
+								</InputField>
+								<InputField name="BaseUnit" id="194">
+									<DataPath>BaseUnit</DataPath>
+									<ReadOnly>true</ReadOnly>
+									<Width>10</Width>
+									<ContextMenu name="BaseUnitContextMenu" id="195"/>
+									<ExtendedTooltip name="BaseUnitExtendedTooltip" id="196"/>
+								</InputField>
+							</ChildItems>
+						</UsualGroup>
+						<UsualGroup name="UnitsRight" id="174">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Related units</v8:content>
+								</v8:item>
+							</Title>
+							<HorizontalStretch>true</HorizontalStretch>
+							<Group>Vertical</Group>
+							<Representation>StrongSeparation</Representation>
+							<ExtendedTooltip name="UnitsRightExtendedTooltip" id="175"/>
+							<ChildItems>
+								<InputField name="DefaultReportUnit" id="182">
+									<DataPath>Object.UnitSet.DefaultReportUnit</DataPath>
+									<Visible>false</Visible>
+									<Width>10</Width>
+									<ContextMenu name="DefaultReportUnitContextMenu" id="183"/>
+									<ExtendedTooltip name="DefaultReportUnitExtendedTooltip" id="184"/>
+								</InputField>
+								<InputField name="DefaultSaleUnit" id="179">
+									<DataPath>Object.UnitSet.DefaultSaleUnit</DataPath>
+									<Width>10</Width>
+									<ContextMenu name="DefaultSaleUnitContextMenu" id="180"/>
+									<ExtendedTooltip name="DefaultSaleUnitExtendedTooltip" id="181"/>
+								</InputField>
+								<InputField name="DefaultPurchaseUnit" id="176">
+									<DataPath>Object.UnitSet.DefaultPurchaseUnit</DataPath>
+									<Width>10</Width>
+									<ContextMenu name="DefaultPurchaseUnitContextMenu" id="177"/>
+									<ExtendedTooltip name="DefaultPurchaseUnitExtendedTooltip" id="178"/>
+								</InputField>
+							</ChildItems>
+						</UsualGroup>
+					</ChildItems>
+				</Page>
 				<Page name="Assembly" id="197">
 					<Title>
 						<v8:item>
@@ -333,29 +630,29 @@
 									<ContextMenu name="LineItemsContextMenu" id="200"/>
 									<AutoCommandBar name="LineItemsCommandBar" id="201"/>
 									<ExtendedTooltip name="LineItemsExtendedTooltip" id="202"/>
-									<SearchStringAddition name="LineItemsSearchString" id="261">
+									<SearchStringAddition name="LineItemsSearchString" id="410">
 										<AdditionSource>
 											<Item>LineItems</Item>
 											<Type>SearchStringRepresentation</Type>
 										</AdditionSource>
-										<ContextMenu name="LineItemsSearchStringContextMenu" id="262"/>
-										<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="263"/>
+										<ContextMenu name="LineItemsSearchStringContextMenu" id="411"/>
+										<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="412"/>
 									</SearchStringAddition>
-									<ViewStatusAddition name="LineItemsViewStatus" id="264">
+									<ViewStatusAddition name="LineItemsViewStatus" id="413">
 										<AdditionSource>
 											<Item>LineItems</Item>
 											<Type>ViewStatusRepresentation</Type>
 										</AdditionSource>
-										<ContextMenu name="LineItemsViewStatusContextMenu" id="265"/>
-										<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="266"/>
+										<ContextMenu name="LineItemsViewStatusContextMenu" id="414"/>
+										<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="415"/>
 									</ViewStatusAddition>
-									<SearchControlAddition name="LineItemsSearchControl" id="267">
+									<SearchControlAddition name="LineItemsSearchControl" id="416">
 										<AdditionSource>
 											<Item>LineItems</Item>
 											<Type>SearchControl</Type>
 										</AdditionSource>
-										<ContextMenu name="LineItemsSearchControlContextMenu" id="268"/>
-										<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="269"/>
+										<ContextMenu name="LineItemsSearchControlContextMenu" id="417"/>
+										<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="418"/>
 									</SearchControlAddition>
 									<Events>
 										<Event name="OnEditEnd">LineItemsOnEditEnd</Event>
@@ -422,7 +719,7 @@
 												<Event name="OnChange">LineItemsQuantityOnChange</Event>
 											</Events>
 										</InputField>
-										<InputField name="LineItemsUM" id="224">
+										<InputField name="LineItemsUnit" id="224">
 											<DataPath>Object.LineItems.Unit</DataPath>
 											<Title>
 												<v8:item>
@@ -438,8 +735,8 @@
 											</ToolTip>
 											<EditMode>EnterOnInput</EditMode>
 											<Width>8</Width>
-											<ContextMenu name="LineItemsUMContextMenu" id="225"/>
-											<ExtendedTooltip name="LineItemsUMExtendedTooltip" id="226"/>
+											<ContextMenu name="LineItemsUnitContextMenu" id="225"/>
+											<ExtendedTooltip name="LineItemsUnitExtendedTooltip" id="226"/>
 											<Events>
 												<Event name="OnChange">LineItemsUnitOnChange</Event>
 											</Events>
@@ -543,8 +840,40 @@
 											<ContextMenu name="LineItemsWasteQtyUnitsContextMenu" id="244"/>
 											<ExtendedTooltip name="LineItemsWasteQtyUnitsExtendedTooltip" id="245"/>
 											<Events>
-												<Event name="OnChange">LineItemsWasteQtyUnitsOnChange</Event>
+												<Event name="OnChange">LineItemsWasteQuantityOnChange</Event>
 											</Events>
+										</InputField>
+										<InputField name="LineItemsWasteTotal" id="299">
+											<DataPath>Object.LineItems.WasteTotal</DataPath>
+											<ReadOnly>true</ReadOnly>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Waste cost</v8:content>
+												</v8:item>
+											</Title>
+											<ToolTip>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Waste cost for item unit</v8:content>
+												</v8:item>
+											</ToolTip>
+											<EditMode>EnterOnInput</EditMode>
+											<Width>10</Width>
+											<Format>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>NFD=2</v8:content>
+												</v8:item>
+											</Format>
+											<EditFormat>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>NFD=2</v8:content>
+												</v8:item>
+											</EditFormat>
+											<ContextMenu name="LineItemsWasteTotalContextMenu" id="300"/>
+											<ExtendedTooltip name="LineItemsWasteTotalExtendedTooltip" id="301"/>
 										</InputField>
 									</ChildItems>
 								</Table>
@@ -576,83 +905,837 @@
 						</UsualGroup>
 					</ChildItems>
 				</Page>
-				<Page name="Units" id="170">
+				<Page name="Residuals" id="267">
 					<Title>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>UoM</v8:content>
+							<v8:content>Residuals</v8:content>
 						</v8:item>
 					</Title>
-					<Group>Horizontal</Group>
-					<ExtendedTooltip name="UnitsExtendedTooltip" id="171"/>
+					<ExtendedTooltip name="ResidualsExtendedTooltip" id="268"/>
 					<ChildItems>
-						<UsualGroup name="UnitsLeft" id="172">
+						<UsualGroup name="ContentsResiduals" id="269">
 							<Title>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Item units</v8:content>
+									<v8:content>Contents</v8:content>
 								</v8:item>
 							</Title>
-							<HorizontalStretch>true</HorizontalStretch>
 							<Group>Vertical</Group>
-							<Representation>StrongSeparation</Representation>
-							<ExtendedTooltip name="UnitsLeftExtendedTooltip" id="173"/>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="ContentsResidualsExtendedTooltip" id="270"/>
 							<ChildItems>
-								<InputField name="UnitSet" id="188">
-									<DataPath>Object.UnitSet</DataPath>
+								<Table name="ResidualsItems" id="271">
+									<Representation>List</Representation>
+									<AutoInsertNewRow>true</AutoInsertNewRow>
+									<EnableStartDrag>true</EnableStartDrag>
+									<EnableDrag>true</EnableDrag>
+									<DataPath>Object.Residuals</DataPath>
+									<SearchStringLocation>None</SearchStringLocation>
+									<ViewStatusLocation>None</ViewStatusLocation>
+									<SearchControlLocation>None</SearchControlLocation>
+									<RowFilter xsi:nil="true"/>
+									<ContextMenu name="ResidualsItemsContextMenu" id="272"/>
+									<AutoCommandBar name="ResidualsItemsCommandBar" id="273"/>
+									<ExtendedTooltip name="ResidualsItemsExtendedTooltip" id="274"/>
+									<SearchStringAddition name="ResidualsItemsSearchString" id="419">
+										<AdditionSource>
+											<Item>ResidualsItems</Item>
+											<Type>SearchStringRepresentation</Type>
+										</AdditionSource>
+										<ContextMenu name="ResidualsItemsSearchStringContextMenu" id="420"/>
+										<ExtendedTooltip name="ResidualsItemsSearchStringExtendedTooltip" id="421"/>
+									</SearchStringAddition>
+									<ViewStatusAddition name="ResidualsItemsViewStatus" id="422">
+										<AdditionSource>
+											<Item>ResidualsItems</Item>
+											<Type>ViewStatusRepresentation</Type>
+										</AdditionSource>
+										<ContextMenu name="ResidualsItemsViewStatusContextMenu" id="423"/>
+										<ExtendedTooltip name="ResidualsItemsViewStatusExtendedTooltip" id="424"/>
+									</ViewStatusAddition>
+									<SearchControlAddition name="ResidualsItemsSearchControl" id="425">
+										<AdditionSource>
+											<Item>ResidualsItems</Item>
+											<Type>SearchControl</Type>
+										</AdditionSource>
+										<ContextMenu name="ResidualsItemsSearchControlContextMenu" id="426"/>
+										<ExtendedTooltip name="ResidualsItemsSearchControlExtendedTooltip" id="427"/>
+									</SearchControlAddition>
+									<Events>
+										<Event name="OnEditEnd">ResidualsOnEditEnd</Event>
+										<Event name="BeforeAddRow">ResidualsBeforeAddRow</Event>
+										<Event name="AfterDeleteRow">ResidualsAfterDeleteRow</Event>
+										<Event name="OnChange">ResidualsOnChange</Event>
+									</Events>
+									<ChildItems>
+										<LabelField name="ResidualsItemsLineNumber" id="275">
+											<DataPath>Object.Residuals.LineNumber</DataPath>
+											<EditMode>EnterOnInput</EditMode>
+											<Width>3</Width>
+											<ContextMenu name="ResidualsItemsLineNumberContextMenu" id="276"/>
+											<ExtendedTooltip name="ResidualsItemsLineNumberExtendedTooltip" id="277"/>
+										</LabelField>
+										<InputField name="ResidualsItemsProduct" id="278">
+											<DataPath>Object.Residuals.Product</DataPath>
+											<EditMode>EnterOnInput</EditMode>
+											<Width>10</Width>
+											<ContextMenu name="ResidualsItemsProductContextMenu" id="279"/>
+											<ExtendedTooltip name="ResidualsItemsProductExtendedTooltip" id="280"/>
+											<Events>
+												<Event name="OnChange">ResidualsProductOnChange</Event>
+											</Events>
+										</InputField>
+										<InputField name="ResidualsItemsProductDescription" id="281">
+											<DataPath>Object.Residuals.ProductDescription</DataPath>
+											<EditMode>EnterOnInput</EditMode>
+											<Width>20</Width>
+											<ContextMenu name="ResidualsItemsProductDescriptionContextMenu" id="282"/>
+											<ExtendedTooltip name="ResidualsItemsProductDescriptionExtendedTooltip" id="283"/>
+										</InputField>
+										<InputField name="ResidualsItemsQuantity" id="287">
+											<DataPath>Object.Residuals.QtyUnits</DataPath>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Qty</v8:content>
+												</v8:item>
+											</Title>
+											<ToolTip>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Quantity in item units</v8:content>
+												</v8:item>
+											</ToolTip>
+											<EditMode>EnterOnInput</EditMode>
+											<Width>8</Width>
+											<Format>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>NFD=0; NZ=0</v8:content>
+												</v8:item>
+											</Format>
+											<EditFormat>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>NFD=0; NZ=0</v8:content>
+												</v8:item>
+											</EditFormat>
+											<ContextMenu name="ResidualsItemsQuantityContextMenu" id="288"/>
+											<ExtendedTooltip name="ResidualsItemsQuantityExtendedTooltip" id="289"/>
+											<Events>
+												<Event name="OnChange">ResidualsQuantityOnChange</Event>
+											</Events>
+										</InputField>
+										<InputField name="ResidualsItemsUnit" id="290">
+											<DataPath>Object.Residuals.Unit</DataPath>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>UoM</v8:content>
+												</v8:item>
+											</Title>
+											<ToolTip>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Item unit</v8:content>
+												</v8:item>
+											</ToolTip>
+											<EditMode>EnterOnInput</EditMode>
+											<Width>8</Width>
+											<ContextMenu name="ResidualsItemsUnitContextMenu" id="291"/>
+											<ExtendedTooltip name="ResidualsItemsUnitExtendedTooltip" id="292"/>
+											<Events>
+												<Event name="OnChange">ResidualsUnitOnChange</Event>
+											</Events>
+										</InputField>
+										<InputField name="ResidualsItemsPercent" id="312">
+											<DataPath>Object.Residuals.Percent</DataPath>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Cost %</v8:content>
+												</v8:item>
+											</Title>
+											<ToolTip>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Percent of residuals cost in finished assembly</v8:content>
+												</v8:item>
+											</ToolTip>
+											<EditMode>EnterOnInput</EditMode>
+											<Width>8</Width>
+											<ContextMenu name="ResidualsItemsPercentContextMenu" id="313"/>
+											<ExtendedTooltip name="ResidualsItemsPercentExtendedTooltip" id="314"/>
+											<Events>
+												<Event name="OnChange">ResidualsPercentOnChange</Event>
+											</Events>
+										</InputField>
+										<InputField name="ResidualsItemsPrice" id="293">
+											<DataPath>Object.Residuals.PriceUnits</DataPath>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Cost</v8:content>
+												</v8:item>
+											</Title>
+											<ToolTip>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Price for item unit</v8:content>
+												</v8:item>
+											</ToolTip>
+											<EditMode>EnterOnInput</EditMode>
+											<Width>10</Width>
+											<Format>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>NFD=2</v8:content>
+												</v8:item>
+											</Format>
+											<EditFormat>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>NFD=2</v8:content>
+												</v8:item>
+											</EditFormat>
+											<ContextMenu name="ResidualsItemsPriceContextMenu" id="294"/>
+											<ExtendedTooltip name="ResidualsItemsPriceExtendedTooltip" id="295"/>
+											<Events>
+												<Event name="OnChange">ResidualsPriceOnChange</Event>
+											</Events>
+										</InputField>
+										<InputField name="ResidualsItemsLineTotal" id="296">
+											<DataPath>Object.Residuals.LineTotal</DataPath>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Total</v8:content>
+												</v8:item>
+											</Title>
+											<ToolTip>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Line total</v8:content>
+												</v8:item>
+											</ToolTip>
+											<EditMode>EnterOnInput</EditMode>
+											<Width>10</Width>
+											<ContextMenu name="ResidualsItemsLineTotalContextMenu" id="297"/>
+											<ExtendedTooltip name="ResidualsItemsLineTotalExtendedTooltip" id="298"/>
+											<Events>
+												<Event name="OnChange">ResidualsLineTotalOnChange</Event>
+											</Events>
+										</InputField>
+									</ChildItems>
+								</Table>
+							</ChildItems>
+						</UsualGroup>
+					</ChildItems>
+				</Page>
+				<Page name="Services" id="433">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Services</v8:content>
+						</v8:item>
+					</Title>
+					<ExtendedTooltip name="ServicesExtendedTooltip" id="434"/>
+					<ChildItems>
+						<UsualGroup name="ContentsServices" id="435">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Contents</v8:content>
+								</v8:item>
+							</Title>
+							<Group>Vertical</Group>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="ContentsServicesExtendedTooltip" id="436"/>
+							<ChildItems>
+								<Table name="ServicesItems" id="437">
+									<Representation>List</Representation>
+									<AutoInsertNewRow>true</AutoInsertNewRow>
+									<EnableStartDrag>true</EnableStartDrag>
+									<EnableDrag>true</EnableDrag>
+									<DataPath>Object.Services</DataPath>
+									<SearchStringLocation>None</SearchStringLocation>
+									<ViewStatusLocation>None</ViewStatusLocation>
+									<SearchControlLocation>None</SearchControlLocation>
+									<RowFilter xsi:nil="true"/>
+									<ContextMenu name="ServicesItemsContextMenu" id="438"/>
+									<AutoCommandBar name="ServicesItemsCommandBar" id="439"/>
+									<ExtendedTooltip name="ServicesItemsExtendedTooltip" id="440"/>
+									<SearchStringAddition name="ServicesItemsSearchString" id="441">
+										<AdditionSource>
+											<Item>ServicesItems</Item>
+											<Type>SearchStringRepresentation</Type>
+										</AdditionSource>
+										<ContextMenu name="ServicesItemsSearchStringContextMenu" id="444"/>
+										<ExtendedTooltip name="ServicesItemsSearchStringExtendedTooltip" id="445"/>
+									</SearchStringAddition>
+									<ViewStatusAddition name="ServicesItemsViewStatus" id="446">
+										<AdditionSource>
+											<Item>ServicesItems</Item>
+											<Type>ViewStatusRepresentation</Type>
+										</AdditionSource>
+										<ContextMenu name="ServicesItemsViewStatusContextMenu" id="449"/>
+										<ExtendedTooltip name="ServicesItemsViewStatusExtendedTooltip" id="450"/>
+									</ViewStatusAddition>
+									<SearchControlAddition name="ServicesItemsSearchControl" id="451">
+										<AdditionSource>
+											<Item>ServicesItems</Item>
+											<Type>SearchControl</Type>
+										</AdditionSource>
+										<ContextMenu name="ServicesItemsSearchControlContextMenu" id="454"/>
+										<ExtendedTooltip name="ServicesItemsSearchControlExtendedTooltip" id="455"/>
+									</SearchControlAddition>
+									<Events>
+										<Event name="OnEditEnd">ServicesOnEditEnd</Event>
+										<Event name="BeforeAddRow">ServicesBeforeAddRow</Event>
+										<Event name="AfterDeleteRow">ServicesAfterDeleteRow</Event>
+										<Event name="OnChange">ServicesOnChange</Event>
+									</Events>
+									<ChildItems>
+										<LabelField name="ServicesItemsLineNumber" id="456">
+											<DataPath>Object.Services.LineNumber</DataPath>
+											<EditMode>EnterOnInput</EditMode>
+											<Width>3</Width>
+											<ContextMenu name="ServicesItemsLineNumberContextMenu" id="457"/>
+											<ExtendedTooltip name="ServicesItemsLineNumberExtendedTooltip" id="458"/>
+										</LabelField>
+										<InputField name="ServicesItemsProduct" id="459">
+											<DataPath>Object.Services.Product</DataPath>
+											<EditMode>EnterOnInput</EditMode>
+											<Width>10</Width>
+											<ContextMenu name="ServicesItemsProductContextMenu" id="460"/>
+											<ExtendedTooltip name="ServicesItemsProductExtendedTooltip" id="461"/>
+											<Events>
+												<Event name="OnChange">ServicesProductOnChange</Event>
+											</Events>
+										</InputField>
+										<InputField name="ServicesItemsProductDescription" id="462">
+											<DataPath>Object.Services.ProductDescription</DataPath>
+											<EditMode>EnterOnInput</EditMode>
+											<Width>20</Width>
+											<ContextMenu name="ServicesItemsProductDescriptionContextMenu" id="463"/>
+											<ExtendedTooltip name="ServicesItemsProductDescriptionExtendedTooltip" id="464"/>
+										</InputField>
+										<InputField name="ServicesItemsQuantity" id="468">
+											<DataPath>Object.Services.QtyUnits</DataPath>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Qty</v8:content>
+												</v8:item>
+											</Title>
+											<EditMode>EnterOnInput</EditMode>
+											<Width>8</Width>
+											<Format>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>NFD=0; NZ=0</v8:content>
+												</v8:item>
+											</Format>
+											<EditFormat>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>NFD=0; NZ=0</v8:content>
+												</v8:item>
+											</EditFormat>
+											<ContextMenu name="ServicesItemsQuantityContextMenu" id="469"/>
+											<ExtendedTooltip name="ServicesItemsQuantityExtendedTooltip" id="470"/>
+											<Events>
+												<Event name="OnChange">ServicesQuantityOnChange</Event>
+											</Events>
+										</InputField>
+										<InputField name="ServicesItemsUnit" id="471">
+											<DataPath>Object.Services.Unit</DataPath>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>UoM</v8:content>
+												</v8:item>
+											</Title>
+											<ToolTip>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Item unit</v8:content>
+												</v8:item>
+											</ToolTip>
+											<EditMode>EnterOnInput</EditMode>
+											<Width>8</Width>
+											<ContextMenu name="ServicesItemsUnitContextMenu" id="472"/>
+											<ExtendedTooltip name="ServicesItemsUnitExtendedTooltip" id="473"/>
+											<Events>
+												<Event name="OnChange">ServicesUnitOnChange</Event>
+											</Events>
+										</InputField>
+										<InputField name="ServicesItemsPrice" id="474">
+											<DataPath>Object.Services.PriceUnits</DataPath>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Cost</v8:content>
+												</v8:item>
+											</Title>
+											<ToolTip>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Price for item unit</v8:content>
+												</v8:item>
+											</ToolTip>
+											<EditMode>EnterOnInput</EditMode>
+											<Width>10</Width>
+											<Format>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>NFD=2</v8:content>
+												</v8:item>
+											</Format>
+											<EditFormat>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>NFD=2</v8:content>
+												</v8:item>
+											</EditFormat>
+											<ContextMenu name="ServicesItemsPriceContextMenu" id="475"/>
+											<ExtendedTooltip name="ServicesItemsPriceExtendedTooltip" id="476"/>
+											<Events>
+												<Event name="OnChange">ServicesPriceOnChange</Event>
+											</Events>
+										</InputField>
+										<InputField name="ServicesItemsLineTotal" id="477">
+											<DataPath>Object.Services.LineTotal</DataPath>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Total</v8:content>
+												</v8:item>
+											</Title>
+											<ToolTip>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Line total</v8:content>
+												</v8:item>
+											</ToolTip>
+											<EditMode>EnterOnInput</EditMode>
+											<Width>10</Width>
+											<ContextMenu name="ServicesItemsLineTotalContextMenu" id="478"/>
+											<ExtendedTooltip name="ServicesItemsLineTotalExtendedTooltip" id="479"/>
+											<Events>
+												<Event name="OnChange">ServicesLineTotalOnChange</Event>
+											</Events>
+										</InputField>
+									</ChildItems>
+								</Table>
+							</ChildItems>
+						</UsualGroup>
+					</ChildItems>
+				</Page>
+				<Page name="Lots" id="315">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Lots / Serial numbers</v8:content>
+						</v8:item>
+					</Title>
+					<ExtendedTooltip name="LotsExtendedTooltip" id="316"/>
+					<ChildItems>
+						<RadioButtonField name="UseLots" id="339">
+							<DataPath>Object.UseLots</DataPath>
+							<RadioButtonType>RadioButtons</RadioButtonType>
+							<ChoiceList>
+								<xr:Item>
+									<xr:Presentation/>
+									<xr:CheckState>0</xr:CheckState>
+									<xr:Value xsi:type="FormChoiceListDesTimeValue">
+										<Presentation>
+											<v8:item>
+												<v8:lang>en</v8:lang>
+												<v8:content>use Lots numbers</v8:content>
+											</v8:item>
+										</Presentation>
+										<Value xsi:type="xs:decimal">0</Value>
+									</xr:Value>
+								</xr:Item>
+								<xr:Item>
+									<xr:Presentation/>
+									<xr:CheckState>0</xr:CheckState>
+									<xr:Value xsi:type="FormChoiceListDesTimeValue">
+										<Presentation>
+											<v8:item>
+												<v8:lang>en</v8:lang>
+												<v8:content>use Serial numbers</v8:content>
+											</v8:item>
+										</Presentation>
+										<Value xsi:type="xs:decimal">1</Value>
+									</xr:Value>
+								</xr:Item>
+							</ChoiceList>
+							<ContextMenu name="UseLotsContextMenu" id="340"/>
+							<ExtendedTooltip name="UseLotsExtendedTooltip" id="341"/>
+							<Events>
+								<Event name="OnChange">UseLotsOnChange</Event>
+							</Events>
+						</RadioButtonField>
+						<UsualGroup name="LotsSettings" id="342">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Lots settings</v8:content>
+								</v8:item>
+							</Title>
+							<Group>Horizontal</Group>
+							<Representation>None</Representation>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="LotsSettingsExtendedTooltip" id="343"/>
+							<ChildItems>
+								<UsualGroup name="LotsLeft" id="332">
 									<Title>
 										<v8:item>
 											<v8:lang>en</v8:lang>
-											<v8:content>UoM set</v8:content>
+											<v8:content>Lots numbers</v8:content>
 										</v8:item>
 									</Title>
-									<Width>10</Width>
-									<ContextMenu name="UnitSetContextMenu" id="189"/>
-									<ExtendedTooltip name="UnitSetExtendedTooltip" id="190"/>
-									<Events>
-										<Event name="OnChange">UnitSetOnChange</Event>
-									</Events>
-								</InputField>
-								<InputField name="BaseUnit" id="194">
-									<DataPath>BaseUnit</DataPath>
-									<ReadOnly>true</ReadOnly>
-									<Width>10</Width>
-									<ContextMenu name="BaseUnitContextMenu" id="195"/>
-									<ExtendedTooltip name="BaseUnitExtendedTooltip" id="196"/>
-								</InputField>
-							</ChildItems>
-						</UsualGroup>
-						<UsualGroup name="UnitsRight" id="174">
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Related units</v8:content>
-								</v8:item>
-							</Title>
-							<HorizontalStretch>true</HorizontalStretch>
-							<Group>Vertical</Group>
-							<Representation>StrongSeparation</Representation>
-							<ExtendedTooltip name="UnitsRightExtendedTooltip" id="175"/>
-							<ChildItems>
-								<InputField name="DefaultReportUnit" id="182">
-									<DataPath>Object.UnitSet.DefaultReportUnit</DataPath>
-									<Visible>false</Visible>
-									<Width>10</Width>
-									<ContextMenu name="DefaultReportUnitContextMenu" id="183"/>
-									<ExtendedTooltip name="DefaultReportUnitExtendedTooltip" id="184"/>
-								</InputField>
-								<InputField name="DefaultSaleUnit" id="179">
-									<DataPath>Object.UnitSet.DefaultSaleUnit</DataPath>
-									<Width>10</Width>
-									<ContextMenu name="DefaultSaleUnitContextMenu" id="180"/>
-									<ExtendedTooltip name="DefaultSaleUnitExtendedTooltip" id="181"/>
-								</InputField>
-								<InputField name="DefaultPurchaseUnit" id="176">
-									<DataPath>Object.UnitSet.DefaultPurchaseUnit</DataPath>
-									<Width>10</Width>
-									<ContextMenu name="DefaultPurchaseUnitContextMenu" id="177"/>
-									<ExtendedTooltip name="DefaultPurchaseUnitExtendedTooltip" id="178"/>
-								</InputField>
+									<Group>Vertical</Group>
+									<Representation>StrongSeparation</Representation>
+									<ExtendedTooltip name="LotsLeftExtendedTooltip" id="333"/>
+									<ChildItems>
+										<Button name="OpenLots" id="404">
+											<Type>UsualButton</Type>
+											<CommandName>Form.Command.OpenLots</CommandName>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>      Lots      </v8:content>
+												</v8:item>
+											</Title>
+											<ExtendedTooltip name="OpenLotsExtendedTooltip" id="405"/>
+										</Button>
+										<UsualGroup name="LotsType" id="374">
+											<Group>Vertical</Group>
+											<Representation>None</Representation>
+											<ShowTitle>false</ShowTitle>
+											<ExtendedTooltip name="LotsTypeExtendedTooltip" id="375"/>
+											<ChildItems>
+												<RadioButtonField name="UseLotsType" id="371">
+													<DataPath>Object.UseLotsType</DataPath>
+													<RadioButtonType>Auto</RadioButtonType>
+													<ChoiceList>
+														<xr:Item>
+															<xr:Presentation/>
+															<xr:CheckState>0</xr:CheckState>
+															<xr:Value xsi:type="FormChoiceListDesTimeValue">
+																<Presentation>
+																	<v8:item>
+																		<v8:lang>en</v8:lang>
+																		<v8:content>Vendor code</v8:content>
+																	</v8:item>
+																</Presentation>
+																<Value xsi:type="xs:decimal">0</Value>
+															</xr:Value>
+														</xr:Item>
+														<xr:Item>
+															<xr:Presentation/>
+															<xr:CheckState>0</xr:CheckState>
+															<xr:Value xsi:type="FormChoiceListDesTimeValue">
+																<Presentation>
+																	<v8:item>
+																		<v8:lang>en</v8:lang>
+																		<v8:content>Characteristic</v8:content>
+																	</v8:item>
+																</Presentation>
+																<Value xsi:type="xs:decimal">1</Value>
+															</xr:Value>
+														</xr:Item>
+														<xr:Item>
+															<xr:Presentation/>
+															<xr:CheckState>0</xr:CheckState>
+															<xr:Value xsi:type="FormChoiceListDesTimeValue">
+																<Presentation>
+																	<v8:item>
+																		<v8:lang>en</v8:lang>
+																		<v8:content>Expiration</v8:content>
+																	</v8:item>
+																</Presentation>
+																<Value xsi:type="xs:decimal">2</Value>
+															</xr:Value>
+														</xr:Item>
+													</ChoiceList>
+													<ContextMenu name="UseLotsTypeContextMenu" id="372"/>
+													<ExtendedTooltip name="UseLotsTypeExtendedTooltip" id="373"/>
+													<Events>
+														<Event name="OnChange">UseLotsTypeOnChange</Event>
+													</Events>
+												</RadioButtonField>
+											</ChildItems>
+										</UsualGroup>
+										<Pages name="LotsProperties" id="395">
+											<PagesRepresentation>None</PagesRepresentation>
+											<ExtendedTooltip name="LotsPropertiesExtendedTooltip" id="396"/>
+											<ChildItems>
+												<Page name="LotsVendorCode" id="397">
+													<Title>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Vendor code</v8:content>
+														</v8:item>
+													</Title>
+													<ExtendedTooltip name="LotsVendorCodeExtendedTooltip" id="398"/>
+													<ChildItems>
+														<LabelDecoration name="Empty" id="399">
+															<ContextMenu name="EmptyContextMenu" id="400"/>
+															<ExtendedTooltip name="EmptyExtendedTooltip" id="401"/>
+														</LabelDecoration>
+													</ChildItems>
+												</Page>
+												<Page name="LotsCharacteristics" id="402">
+													<Title>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Characteristics</v8:content>
+														</v8:item>
+													</Title>
+													<Group>Horizontal</Group>
+													<ExtendedTooltip name="LotsCharacteristicsExtendedTooltip" id="403"/>
+													<ChildItems>
+														<InputField name="Characteristic" id="352">
+															<DataPath>Object.Characteristic</DataPath>
+															<QuickChoice>true</QuickChoice>
+															<ContextMenu name="CharacteristicContextMenu" id="353"/>
+															<ExtendedTooltip name="CharacteristicExtendedTooltip" id="354"/>
+														</InputField>
+													</ChildItems>
+												</Page>
+												<Page name="LotsExpiration" id="376">
+													<Title>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Expiration date</v8:content>
+														</v8:item>
+													</Title>
+													<ExtendedTooltip name="LotsExpirationExtendedTooltip" id="377"/>
+													<ChildItems>
+														<RadioButtonField name="UseLotsByExpiration" id="381">
+															<DataPath>Object.UseLotsByExpiration</DataPath>
+															<Title>
+																<v8:item>
+																	<v8:lang>en</v8:lang>
+																	<v8:content>  Lot date</v8:content>
+																</v8:item>
+															</Title>
+															<RadioButtonType>RadioButtons</RadioButtonType>
+															<ChoiceList>
+																<xr:Item>
+																	<xr:Presentation/>
+																	<xr:CheckState>0</xr:CheckState>
+																	<xr:Value xsi:type="FormChoiceListDesTimeValue">
+																		<Presentation>
+																			<v8:item>
+																				<v8:lang>en</v8:lang>
+																				<v8:content>Expiration</v8:content>
+																			</v8:item>
+																		</Presentation>
+																		<Value xsi:type="xs:decimal">0</Value>
+																	</xr:Value>
+																</xr:Item>
+																<xr:Item>
+																	<xr:Presentation/>
+																	<xr:CheckState>0</xr:CheckState>
+																	<xr:Value xsi:type="FormChoiceListDesTimeValue">
+																		<Presentation>
+																			<v8:item>
+																				<v8:lang>en</v8:lang>
+																				<v8:content>Production</v8:content>
+																			</v8:item>
+																		</Presentation>
+																		<Value xsi:type="xs:decimal">1</Value>
+																	</xr:Value>
+																</xr:Item>
+															</ChoiceList>
+															<ContextMenu name="UseLotsByExpirationContextMenu" id="382"/>
+															<ExtendedTooltip name="UseLotsByExpirationExtendedTooltip" id="383"/>
+															<Events>
+																<Event name="OnChange">UseLotsByExpirationOnChange</Event>
+															</Events>
+														</RadioButtonField>
+														<UsualGroup name="LotsShelfLife" id="384">
+															<Group>Horizontal</Group>
+															<Representation>None</Representation>
+															<ShowTitle>false</ShowTitle>
+															<ExtendedTooltip name="LotsShelfLifeExtendedTooltip" id="385"/>
+															<ChildItems>
+																<InputField name="ShelfLife" id="386">
+																	<DataPath>Object.ShelfLife</DataPath>
+																	<Title>
+																		<v8:item>
+																			<v8:lang>en</v8:lang>
+																			<v8:content>  Shelf life</v8:content>
+																		</v8:item>
+																	</Title>
+																	<Width>6</Width>
+																	<SpinButton>true</SpinButton>
+																	<ContextMenu name="ShelfLifeContextMenu" id="387"/>
+																	<ExtendedTooltip name="ShelfLifeExtendedTooltip" id="388"/>
+																</InputField>
+																<InputField name="ShelfLifeUnit" id="389">
+																	<DataPath>Object.ShelfLifeUnit</DataPath>
+																	<TitleLocation>None</TitleLocation>
+																	<HorizontalAlign>Left</HorizontalAlign>
+																	<Width>16</Width>
+																	<ListChoiceMode>true</ListChoiceMode>
+																	<ChoiceList>
+																		<xr:Item>
+																			<xr:Presentation/>
+																			<xr:CheckState>0</xr:CheckState>
+																			<xr:Value xsi:type="FormChoiceListDesTimeValue">
+																				<Presentation>
+																					<v8:item>
+																						<v8:lang>en</v8:lang>
+																						<v8:content>days</v8:content>
+																					</v8:item>
+																				</Presentation>
+																				<Value xsi:type="xs:decimal">0</Value>
+																			</xr:Value>
+																		</xr:Item>
+																		<xr:Item>
+																			<xr:Presentation/>
+																			<xr:CheckState>0</xr:CheckState>
+																			<xr:Value xsi:type="FormChoiceListDesTimeValue">
+																				<Presentation>
+																					<v8:item>
+																						<v8:lang>en</v8:lang>
+																						<v8:content>months</v8:content>
+																					</v8:item>
+																				</Presentation>
+																				<Value xsi:type="xs:decimal">1</Value>
+																			</xr:Value>
+																		</xr:Item>
+																		<xr:Item>
+																			<xr:Presentation/>
+																			<xr:CheckState>0</xr:CheckState>
+																			<xr:Value xsi:type="FormChoiceListDesTimeValue">
+																				<Presentation>
+																					<v8:item>
+																						<v8:lang>en</v8:lang>
+																						<v8:content>years</v8:content>
+																					</v8:item>
+																				</Presentation>
+																				<Value xsi:type="xs:decimal">2</Value>
+																			</xr:Value>
+																		</xr:Item>
+																	</ChoiceList>
+																	<ContextMenu name="ShelfLifeUnitContextMenu" id="390"/>
+																	<ExtendedTooltip name="ShelfLifeUnitExtendedTooltip" id="391"/>
+																</InputField>
+															</ChildItems>
+														</UsualGroup>
+													</ChildItems>
+												</Page>
+											</ChildItems>
+										</Pages>
+									</ChildItems>
+								</UsualGroup>
+								<UsualGroup name="LotsRight" id="334">
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Serial numbers</v8:content>
+										</v8:item>
+									</Title>
+									<HorizontalStretch>true</HorizontalStretch>
+									<Group>Vertical</Group>
+									<Representation>StrongSeparation</Representation>
+									<ExtendedTooltip name="LotsRightExtendedTooltip" id="335"/>
+									<ChildItems>
+										<Button name="OpenSerialNumbers" id="406">
+											<Type>UsualButton</Type>
+											<CommandName>Form.Command.OpenSerialNumbers</CommandName>
+											<ExtendedTooltip name="OpenSerialNumbersExtendedTooltip" id="407"/>
+										</Button>
+										<UsualGroup name="SerialNumbersSettings" id="408">
+											<Group>Horizontal</Group>
+											<Representation>None</Representation>
+											<ShowTitle>false</ShowTitle>
+											<ExtendedTooltip name="SerialNumbersSettingsExtendedTooltip" id="409"/>
+											<ChildItems>
+												<UsualGroup name="SerialNumbersLeft" id="361">
+													<Width>22</Width>
+													<Group>Vertical</Group>
+													<Representation>None</Representation>
+													<ShowTitle>false</ShowTitle>
+													<ExtendedTooltip name="SerialNumbersLeftExtendedTooltip" id="362"/>
+													<ChildItems>
+														<CheckBoxField name="UseSerialNumbersOnShipment" id="355">
+															<DataPath>Object.UseSerialNumbersOnShipment</DataPath>
+															<Title>
+																<v8:item>
+																	<v8:lang>en</v8:lang>
+																	<v8:content>Use SN on shipment</v8:content>
+																</v8:item>
+															</Title>
+															<CheckBoxType>Auto</CheckBoxType>
+															<ContextMenu name="UseSerialNumbersOnShipmentContextMenu" id="356"/>
+															<ExtendedTooltip name="UseSerialNumbersOnShipmentExtendedTooltip" id="357"/>
+															<Events>
+																<Event name="OnChange">UseSerialNumbersOnShipmentOnChange</Event>
+															</Events>
+														</CheckBoxField>
+														<CheckBoxField name="UseSerialNumbersOnGoodsReception" id="358">
+															<DataPath>Object.UseSerialNumbersOnGoodsReception</DataPath>
+															<Title>
+																<v8:item>
+																	<v8:lang>en</v8:lang>
+																	<v8:content>Use SN on goods receipt</v8:content>
+																</v8:item>
+															</Title>
+															<CheckBoxType>Auto</CheckBoxType>
+															<ContextMenu name="UseSerialNumbersOnGoodsReceptionContextMenu" id="359"/>
+															<ExtendedTooltip name="UseSerialNumbersOnGoodsReceptionExtendedTooltip" id="360"/>
+															<Events>
+																<Event name="OnChange">UseSerialNumbersOnGoodsReceptionOnChange</Event>
+															</Events>
+														</CheckBoxField>
+													</ChildItems>
+												</UsualGroup>
+												<UsualGroup name="SerialNumbersRight" id="363">
+													<Width>29</Width>
+													<Group>Vertical</Group>
+													<Representation>None</Representation>
+													<ShowTitle>false</ShowTitle>
+													<ExtendedTooltip name="SerialNumbersRightExtendedTooltip" id="364"/>
+													<ChildItems>
+														<CheckBoxField name="UseSerialNumbersCheckReception" id="365">
+															<DataPath>Object.UseSerialNumbersCheckReception</DataPath>
+															<Title>
+																<v8:item>
+																	<v8:lang>en</v8:lang>
+																	<v8:content>Check SN reception on shipment</v8:content>
+																</v8:item>
+															</Title>
+															<CheckBoxType>Auto</CheckBoxType>
+															<ContextMenu name="UseSerialNumbersCheckReceptionContextMenu" id="366"/>
+															<ExtendedTooltip name="UseSerialNumbersCheckReceptionExtendedTooltip" id="367"/>
+														</CheckBoxField>
+														<CheckBoxField name="UseSerialNumbersCheckUniqueness" id="368">
+															<DataPath>Object.UseSerialNumbersCheckUniqueness</DataPath>
+															<Title>
+																<v8:item>
+																	<v8:lang>en</v8:lang>
+																	<v8:content>Check SN uniqueness on receipt</v8:content>
+																</v8:item>
+															</Title>
+															<CheckBoxType>Auto</CheckBoxType>
+															<ContextMenu name="UseSerialNumbersCheckUniquenessContextMenu" id="369"/>
+															<ExtendedTooltip name="UseSerialNumbersCheckUniquenessExtendedTooltip" id="370"/>
+														</CheckBoxField>
+													</ChildItems>
+												</UsualGroup>
+											</ChildItems>
+										</UsualGroup>
+									</ChildItems>
+								</UsualGroup>
 							</ChildItems>
 						</UsualGroup>
 					</ChildItems>
@@ -953,6 +2036,30 @@
 				</v8:item>
 			</ToolTip>
 			<Action>InventorySiteInfo</Action>
+		</Command>
+		<Command name="OpenLots" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Lots</v8:content>
+				</v8:item>
+			</Title>
+			<Action>OpenLots</Action>
+		</Command>
+		<Command name="OpenSerialNumbers" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Serial numbers</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Open serial numbers</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>OpenSerialNumbers</Action>
 		</Command>
 	</Commands>
 	<CommandInterface>

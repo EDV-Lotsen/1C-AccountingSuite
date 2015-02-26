@@ -21,49 +21,11 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		
 		// Hide the document column and actions from the view.
 		Items.RecurringDocument.Visible = False;
-		Items.FormStartScheduledActions.Title = "Execute";
 		
-		// Get register record associated with document.
-		RecordManager = InformationRegisters.RecurringDocuments.CreateRecordManager();
-		RecordManager.RecurringDocument = RecurringDocument;
-		RecordManager.Read();
+		// Lock test running of the scedule.
+		//Items.FormStartScheduledActions.Title = "Test run";
+		Items.FormStartScheduledActions.Visible = False;
 		
-		// It is unpossible to create new schedule templates to the same document.
-		If RecordManager.Selected() Then
-			Items.List.ChangeRowSet = False;
-		EndIf;
-		
-	// Opened classic list.
-	Else
-		// The recurring document cannot be selected from the schedule list.
-		Items.List.ChangeRowSet = False;
-	EndIf;
-	
-EndProcedure
-
-&AtClient
-Procedure ListNewWriteProcessing(NewObject, Source, StandardProcessing)
-	
-	// Process the creating of new schedule.
-	ListNewWriteProcessingAtServer();
-	
-EndProcedure
-
-&AtServer
-Procedure ListNewWriteProcessingAtServer()
-	
-	// If linked record saved - close some list features.
-	If (Not RecurringDocument = Undefined) And (Not RecurringDocument.IsEmpty()) Then
-		
-		// Get register record associated with document.
-		RecordManager = InformationRegisters.RecurringDocuments.CreateRecordManager();
-		RecordManager.RecurringDocument = RecurringDocument;
-		RecordManager.Read();
-		
-		// It is unpossible to create new schedule templates to the same document.
-		If RecordManager.Selected() Then
-			Items.List.ChangeRowSet = False;
-		EndIf;
 	EndIf;
 	
 EndProcedure

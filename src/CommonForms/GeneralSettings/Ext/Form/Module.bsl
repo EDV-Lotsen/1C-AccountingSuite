@@ -7,12 +7,33 @@ EndProcedure
 
 &AtClient
 Procedure MultiCurrencyOnChange(Item)
+	
 	Message("After enabling the multi-currency feature can not be disabled.");
+	SetEnabledExchangeLoss();
+
 	//RefreshInterface();
 EndProcedure
 
+&AtClient
+Procedure SetEnabledExchangeLoss()
+	
+	If ConstantsSet.MultiCurrency Then
+		Items.ExchangeLoss.Visible = True;
+	Else
+		Items.ExchangeLoss.Visible = False;
+	EndIf;
+	
+EndProcedure
+
+
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
+	
+	IsInternalUser = Find(SessionParameters.ACSUser,"@accountingsuite.com");
+	If IsInternalUser = 0 Then
+		Items.DataImport.Visible = False;
+	EndIf;
+	
 		
 	old_key = Constants.APISecretKey.Get();
 	OldCompanyName = Constants.SystemTitle.Get();
@@ -63,6 +84,14 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Items.MultiLocation.ReadOnly = True;
 	EndIf;
 	
+	If Constants.EnhancedInventoryShipping.Get() Then
+		Items.EnhancedInventoryShipping.ReadOnly = True;
+	EndIf;
+	
+	If Constants.EnhancedInventoryReceiving.Get() Then
+		Items.EnhancedInventoryReceiving.ReadOnly = True;
+	EndIf;
+		
 	If Constants.UsePricePrecision.Get() Then
 		Items.UsePricePrecision.ReadOnly = True;
 	EndIf;
@@ -85,6 +114,48 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Items.ByAvaTaxPage.Visible = False;
 		Items.SalesTaxBySources.CurrentPage = Items.ByAccountingSuitePage;
 	EndIf;
+	
+	//If IsInRole("BankAccounting") Then 
+	//	// Cont Info 				// Leave
+	//	// Lists 					// Leave
+	//	// Features					// Part. Hide
+	//	For Each ItemL In Items.GeneralSettings.ChildItems Do 
+	//		ItemL.Visible = False;
+	//	EndDo;
+	//	Items.CheckHorizontalAdj.Visible = True;
+	//	Items.CheckVerticalAdj.Visible = True;
+	//	Items.show_yodlee_upload_period.Visible = True;
+	//	Items.DisplayExtendedAccountInfo.Visible = True;
+	//	Items.Group28.Visible = True;
+	//	Items.SetCompactUIMode.Visible = True;
+	//	Items.SetStandardUIMode.Visible = True;
+	//	Items.AllowDuplicateCheckNumbers.Visible = True;
+	//	Items.FirstMonthOfFiscalYear.Visible = True;
+	//	Items.CFO_ProcessingMonth.Visible = True;
+
+	//	
+	//	// Post Accnts				// Leave
+	//	// Closing books			// Part. Hide
+	//	Items.PeriodClosingByModule.Visible = False;
+	//	
+	//	// Sales Tax				// Hide
+	//	Items.SalesTax.Visible = False;
+	//	// Custom Fields			// Hide
+	//	Items.CompanyCustomFields.Visible = False;
+	//	// adres custom Fields		// Hide
+	//	Items.AddressCustomFields.Visible = False;
+	//	// Items custom Fields		// Hide
+	//	Items.ItemCustomFields.Visible = False;
+	//	
+	//	// Logo						// Leave
+	//	// Integration				// Hide
+	//	Items.Integrations.Visible = False;
+	//	// Development				// Hide
+	//	Items.Development.Visible = False;
+	//	// Print form setup			// Hide
+	//	Items.SetupPrintForms.Visible = False;
+	//	
+	//EndIf;	
 
 EndProcedure
 
@@ -226,12 +297,16 @@ Procedure PlaceImageFile(TempStorageName)
 EndProcedure
 
  
+
+
 &AtServer
 Function GetAPISecretKeyF()
 	
 	Return Constants.APISecretKey.Get();
 	
 EndFunction
+
+
 
 
 &AtClient
@@ -264,6 +339,9 @@ Procedure OnOpen(Cancel)
 	Endif;
 	
 	SetEnabledPricePrecision();
+	SetEnabledOCLAccount();
+	SetEnabledTaxPayableAccount();
+	SetEnabledExchangeLoss();
 	
 EndProcedure
 
@@ -277,39 +355,6 @@ Function SettingAccessCheck()
 		Return false;
 	Endif
 EndFunction
-
-
-//&AtClient
-//Procedure VerifyEmail(Command)
-//	VerifyEmailAtServer();
-//EndProcedure
-
-
-//&AtServer
-//Procedure VerifyEmailAtServer()
-//		HeadersMap = New Map();
-//	
-//		HTTPRequest = New HTTPRequest("/ses_email_verify",HeadersMap);
-//		HTTPRequest.SetBodyFromString(Constants.Email.Get(),TextEncoding.ANSI);
-
-//	
-//		SSLConnection = New OpenSSLSecureConnection();
-//	
-//		HTTPConnection = New HTTPConnection("intacs.accountingsuite.com",,,,,,SSLConnection);
-//		Result = HTTPConnection.Post(HTTPRequest);
-//		
-//		Message("You will receive a verification email to " + Constants.Email.Get());
-
-//EndProcedure
-
-
-&AtClient
-Procedure DwollaConnect(Command)
-	
-	statestring = GetAPISecretKeyF();	
-	GoToURL("https://www.dwolla.com/oauth/v2/authenticate?client_id=" + ServiceParameters.DwollaClientID() + "&response_type=code&redirect_uri=https://pay.accountingsuite.com/dwolla_oauth?state=" + GetTenantValue() + "&scope=send%7Ctransactions%7Cfunding%7Cbalance");
-	
-EndProcedure
 
 &AtServer
 Function GetTenantValue()
@@ -330,15 +375,20 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 		Items.MultiLocation.ReadOnly = True;
 	EndIf;
 	
+	If Constants.EnhancedInventoryShipping.Get() Then
+		Items.EnhancedInventoryShipping.ReadOnly = True;
+	EndIf;
+	
+	If Constants.EnhancedInventoryReceiving.Get() Then
+		Items.EnhancedInventoryReceiving.ReadOnly = True;
+	EndIf;
+	
 	If Constants.UsePricePrecision.Get() Then
 		Items.UsePricePrecision.ReadOnly = True;
 	EndIf;
 	
 	Constants.Email.Set(Constants.CurrentUserEmail.Get().Description);
-	
-	If OldCompanyName <> Constants.SystemTitle.Get() Then 		
-	EndIf;
-	
+		
 EndProcedure
 
 &AtClient
@@ -387,7 +437,46 @@ Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 		EndIf;
 	EndIf;
 	
-	 If OldZohoAuthToken <> ConstantsSet.zoho_auth_token AND ConstantsSet.zoho_auth_token <> "" Then
+	If ConstantsSet.EnhancedInventoryReceiving And ConstantsSet.OCLAccount = ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
+		
+		Cancel = True;
+		
+		Message = New UserMessage();
+		Message.Text = NStr("en = 'Field ""OCL account"" is empty'");
+		Message.Field = "ConstantsSet.OCLAccount";
+		Message.DataPath = "ConstantsSet";
+		Message.SetData(ConstantsSet);
+		Message.Message();
+		
+	EndIf;
+	
+	If ConstantsSet.SalesTaxCharging And ConstantsSet.TaxPayableAccount = ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
+		
+		Cancel = True;
+		
+		Message = New UserMessage();
+		Message.Text = NStr("en = 'Field ""Tax payable"" is empty'");
+		Message.Field = "ConstantsSet.TaxPayableAccount";
+		Message.DataPath = "ConstantsSet";
+		Message.SetData(ConstantsSet);
+		Message.Message();
+		
+	EndIf;
+	
+	If ConstantsSet.MultiCurrency And ConstantsSet.ExchangeLoss = ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
+		
+		Cancel = True;
+		
+		Message = New UserMessage();
+		Message.Text = NStr("en = 'Field ""Exchange gain or loss"" is empty'");
+		Message.Field = "ConstantsSet.ExchangeLoss";
+		Message.DataPath = "ConstantsSet";
+		Message.SetData(ConstantsSet);
+		Message.Message();
+		
+	EndIf;
+	
+	If OldZohoAuthToken <> ConstantsSet.zoho_auth_token AND ConstantsSet.zoho_auth_token <> "" Then
 		PathDef = "crm.zoho.com/crm/private/json/Leads/";
 				
 		AuthHeader = "authtoken=" + ConstantsSet.zoho_auth_token + "&scope=crmapi";
@@ -424,6 +513,7 @@ EndProcedure
 
 &AtClient
 Procedure ChargingSalesTaxOnChange(Item)
+	
 	ConstantsSet.SalesTaxCharging = ?(ChargingSalesTax = 1, True, False);
 	If ConstantsSet.SalesTaxCharging Then
 		Items.SalesTaxSettingsGroup.Enabled = True;
@@ -433,6 +523,20 @@ Procedure ChargingSalesTaxOnChange(Item)
 		SalesTaxEngine = 2; //Avatax disabled
 		SalesTaxEngineOnChange(Undefined);
 	EndIf;
+	
+	SetEnabledTaxPayableAccount();
+
+EndProcedure
+
+&AtClient
+Procedure SetEnabledTaxPayableAccount()
+	
+	If ConstantsSet.SalesTaxCharging Then
+		Items.TaxPayableAccount.Visible = True;
+	Else
+		Items.TaxPayableAccount.Visible = False;
+	EndIf;
+	
 EndProcedure
 
 &AtClient
@@ -522,6 +626,11 @@ Procedure OpenSalesOrder(Command)
 EndProcedure
 
 &AtClient
+Procedure OpenShipment(Command)
+	OpenForm("DataProcessor.PrintFormSetup.Form.ShipmentFormSetup" );
+EndProcedure
+
+&AtClient
 Procedure OpenInvoice(Command)
 	OpenForm("DataProcessor.PrintFormSetup.Form.SIFormSetup" );
 EndProcedure
@@ -530,6 +639,12 @@ EndProcedure
 Procedure OpenPO(Command)
 	OpenForm("DataProcessor.PrintFormSetup.Form.POFormSetup" );
 EndProcedure
+
+&AtClient
+Procedure OpenHeadersAndFooters(Command)
+	OpenForm("InformationRegister.HeadersAndFooters.ListForm" );
+EndProcedure
+
 
 &AtClient
 Procedure OpenCashReceipt(Command)
@@ -720,7 +835,7 @@ EndProcedure
 
 &AtClient
 Procedure UsePricePrecisionOnChange(Item)
-	
+		
 	ConstantsSet.PricePrecision = 2;	
 	
 	Message(NStr("en = 'After enabling the ""Use price precision"" feature can not be disabled!'"), MessageStatus.Important);
@@ -782,29 +897,124 @@ EndProcedure
 
 
 &AtClient
-Procedure zoho_so_mapping(Command)
-	OpenForm("Catalog.zoho_SOCodeMap.ListForm");
+Procedure OnClose()
+	//DetachIdleHandler("UpdateStripeFields");
 EndProcedure
 
 
 &AtClient
-Procedure zoho_quote_map(Command)
-	OpenForm("Catalog.zoho_QuoteCodeMap.ListForm");
+Procedure zoho_quotemapping(Command)
+	OpenForm("Catalog.zoho_QuoteCodeMap.ListForm" );
 EndProcedure
 
 
 &AtClient
-Procedure zoho_si_mapping(Command)
-	OpenForm("Catalog.zoho_SICodeMap.ListForm");
+Procedure zoho_salesordermapping(Command)
+	OpenForm("Catalog.zoho_SOCodeMap.ListForm" );
 EndProcedure
 
-&AtServer
-Function GetStripeCustID()
-	   Return Constants.StripeSubCustID.Get();
-   EndFunction
+&AtClient
+Procedure EnhancedInventoryShippingOnChange(Item)
+	
+	Message(NStr("en = 'After enabling the Enhanced Inventory Shipping feature can not be disabled!'"), MessageStatus.Important);
+	
+EndProcedure
+
+&AtClient
+Procedure EnhancedInventoryReceivingOnChange(Item)
+	
+	Message(NStr("en = 'After enabling the Enhanced Inventory Receiving feature can not be disabled!'"), MessageStatus.Important);
+	
+	SetEnabledOCLAccount();
+	
+EndProcedure
+
+&AtClient
+Procedure SetEnabledOCLAccount()
+	
+	If ConstantsSet.EnhancedInventoryReceiving Then
+		Items.OCLAccount.Visible = True;
+	Else
+		Items.OCLAccount.Visible = False;
+	EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure zoho_invoicemapping(Command)
+	OpenForm("Catalog.zoho_SICodeMap.ListForm" );
+EndProcedure
+
    
 &AtServer
 Function SubscribeVersion()
 	   Return Constants.VersionNumber.Get();
 EndFunction
+   
+
+
+&AtClient
+Procedure SetCompactUIMode(Command)
+	Message("Restart the application for the change to take effect");
+	SetCompactModeAtServer();
+EndProcedure
+
+&AtServer
+Procedure SetCompactModeAtServer()
+	
+		UIMode = ClientApplicationFormScaleVariant.Compact; 
+		User = InfobaseUsers.CurrentUser();
+	    
+	    If Not User = Undefined Then
+	        
+	        Setting = SystemSettingsStorage.Load("Common/ClientSettings", "",, User.Name);
+			
+			If Not TypeOf(Setting) = Type("ClientSettings") Then
+	            Setting = New ClientSettings;
+	        EndIf;
+	        
+	        Setting.ClientApplicationFormScaleVariant = UIMode;
+	        SystemSettingsStorage.Save("Common/ClientSettings", "", Setting,, User.Name);
+	        
+	    EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure SetStandardUIMode(Command)
+	Message("Restart the application for the change to take effect");
+	SetStandardModeAtServer();
+EndProcedure
+
+&AtServer
+Procedure SetStandardModeAtServer()
+	
+		UIMode = ClientApplicationFormScaleVariant.Normal; 
+		User = InfobaseUsers.CurrentUser();
+	    
+	    If Not User = Undefined Then
+	        
+	        Setting = SystemSettingsStorage.Load("Common/ClientSettings", "",, User.Name);
+			
+			If Not TypeOf(Setting) = Type("ClientSettings") Then
+	            Setting = New ClientSettings;
+	        EndIf;
+	        
+	        Setting.ClientApplicationFormScaleVariant = UIMode;
+	        SystemSettingsStorage.Save("Common/ClientSettings", "", Setting,, User.Name);
+	        
+	    EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure CFO_ProcessingMonthOnChange(Item)
+	ConstantsSet.CFO_ProcessingMonth = EndOfMonth(ConstantsSet.CFO_ProcessingMonth);	
+EndProcedure
+
+
+&AtClient
+Procedure DataImport(Command)
+	OpenForm("DataProcessor.DataImport.Form.Form");
+EndProcedure
 

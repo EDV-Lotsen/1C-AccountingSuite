@@ -4,6 +4,12 @@
 // 
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
+	//--//
+	If Object.Ref.IsEmpty() Then
+		FirstNumber = Object.Code;
+	EndIf;
+	//--//
+	
 	If Constants.SalesTaxCharging.Get() = True AND Object.Customer = True Then
 		Items.TaxTab.Visible = True;
 	Else
@@ -155,8 +161,10 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
 	If Object.Vendor = True Then
 		Items.Group1099.Visible = True;
+		Items.Employee.Visible = True;
 	Else
 		Items.Group1099.Visible = False;
+		Items.Employee.Visible = False
 	EndIf;
 	
 	//If Object.Ref = Catalogs.Companies.OurCompany Then
@@ -276,6 +284,20 @@ EndProcedure
 
 &AtServer
 Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
+	
+	//--//
+	If FirstNumber <> "" Then
+		
+		Numerator = Catalogs.DocumentNumbering.Companies.GetObject();
+		NextNumber = GeneralFunctions.Increment(Numerator.Number);
+		If FirstNumber = NextNumber And NextNumber = Object.Code Then
+			Numerator.Number = FirstNumber;
+			Numerator.Write();
+		EndIf;
+		
+		FirstNumber = "";
+	EndIf;
+	//--//
 		
 	Query = New Query("SELECT
 	                  |	Addresses.Ref
@@ -374,17 +396,6 @@ EndFunction
 
 
 &AtClient
-Procedure SalesTransactions(Command)
-	
-	// setting composer values
-	// fixed filter 
-	CompanyFilter = Новый Структура("Company", Object.Ref);
-	FormParameters = Новый Структура("Отбор, СформироватьПриОткрытии, КомпоновщикНастроекПользовательскиеНастройки.Видимость",CompanyFilter,True,False);
-	OpenForm("Report.SalesTransactionDetail.ObjectForm",FormParameters,,,,,,FormWindowOpeningMode.LockWholeInterface);
-EndProcedure
-
-
-&AtClient
 Procedure Projects(Command)
 	FormParameters = New Structure();
 	
@@ -418,8 +429,10 @@ Procedure VendorOnChange(Item)
 	
 	If Object.Vendor = True Then
 		Items.Group1099.Visible = True;
+		Items.Employee.Visible = True;
 	Else
 		Items.Group1099.Visible = False;
+		Items.Employee.Visible = False;
 	EndIf;
 	
 EndProcedure

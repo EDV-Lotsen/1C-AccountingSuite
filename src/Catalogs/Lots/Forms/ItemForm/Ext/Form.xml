@@ -1,0 +1,126 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<WindowOpeningMode>LockOwnerWindow</WindowOpeningMode>
+	<UseForFoldersAndItems>Items</UseForFoldersAndItems>
+	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<Events>
+		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+		<Event name="BeforeWriteAtServer">BeforeWriteAtServer</Event>
+	</Events>
+	<ChildItems>
+		<Pages name="UseLotsType" id="10">
+			<PagesRepresentation>None</PagesRepresentation>
+			<ExtendedTooltip name="UseLotsTypeExtendedTooltip" id="11"/>
+			<ChildItems>
+				<Page name="ValueType" id="12">
+					<ExtendedTooltip name="ValueTypeExtendedTooltip" id="13"/>
+					<ChildItems>
+						<InputField name="Owner" id="4">
+							<DataPath>Object.Owner</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Item</v8:content>
+								</v8:item>
+							</Title>
+							<EditMode>EnterOnInput</EditMode>
+							<ChoiceParameters>
+								<app:item name="Filter.HasLotsSerialNumbers">
+									<app:value xsi:type="FormChoiceListDesTimeValue">
+										<Presentation/>
+										<Value xsi:type="xs:boolean">true</Value>
+									</app:value>
+								</app:item>
+								<app:item name="Filter.UseLots">
+									<app:value xsi:type="FormChoiceListDesTimeValue">
+										<Presentation/>
+										<Value xsi:type="xs:decimal">0</Value>
+									</app:value>
+								</app:item>
+							</ChoiceParameters>
+							<ContextMenu name="OwnerContextMenu" id="5"/>
+							<ExtendedTooltip name="OwnerExtendedTooltip" id="6"/>
+							<Events>
+								<Event name="OnChange">OwnerOnChange</Event>
+							</Events>
+						</InputField>
+						<InputField name="Code" id="1">
+							<DataPath>Object.Code</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Lot No</v8:content>
+								</v8:item>
+							</Title>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="CodeContextMenu" id="2"/>
+							<ExtendedTooltip name="CodeExtendedTooltip" id="3"/>
+						</InputField>
+					</ChildItems>
+				</Page>
+				<Page name="DateType" id="14">
+					<ExtendedTooltip name="DateTypeExtendedTooltip" id="15"/>
+					<ChildItems>
+						<InputField name="OwnerDate" id="16">
+							<DataPath>Object.Owner</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Item</v8:content>
+								</v8:item>
+							</Title>
+							<EditMode>EnterOnInput</EditMode>
+							<ChoiceParameters>
+								<app:item name="Filter.HasLotsSerialNumbers">
+									<app:value xsi:type="FormChoiceListDesTimeValue">
+										<Presentation/>
+										<Value xsi:type="xs:boolean">true</Value>
+									</app:value>
+								</app:item>
+								<app:item name="Filter.UseLots">
+									<app:value xsi:type="FormChoiceListDesTimeValue">
+										<Presentation/>
+										<Value xsi:type="xs:decimal">0</Value>
+									</app:value>
+								</app:item>
+							</ChoiceParameters>
+							<ContextMenu name="OwnerDateContextMenu" id="17"/>
+							<ExtendedTooltip name="OwnerDateExtendedTooltip" id="18"/>
+							<Events>
+								<Event name="OnChange">OwnerOnChange</Event>
+							</Events>
+						</InputField>
+						<InputField name="CodeDate" id="7">
+							<DataPath>CodeDate</DataPath>
+							<ContextMenu name="CodeDateContextMenu" id="8"/>
+							<ExtendedTooltip name="CodeDateExtendedTooltip" id="9"/>
+						</InputField>
+					</ChildItems>
+				</Page>
+			</ChildItems>
+		</Pages>
+	</ChildItems>
+	<Attributes>
+		<Attribute name="Object" id="1">
+			<Type>
+				<v8:Type>cfg:CatalogObject.Lots</v8:Type>
+			</Type>
+			<MainAttribute>true</MainAttribute>
+			<SavedData>true</SavedData>
+		</Attribute>
+		<Attribute name="CodeDate" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Expiration date</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:dateTime</v8:Type>
+				<v8:DateQualifiers>
+					<v8:DateFractions>Date</v8:DateFractions>
+				</v8:DateQualifiers>
+			</Type>
+		</Attribute>
+	</Attributes>
+</Form>

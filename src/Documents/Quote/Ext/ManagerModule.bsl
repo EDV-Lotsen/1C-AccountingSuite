@@ -344,7 +344,7 @@ Procedure Print(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
 			TemplateArea.Parameters.Unit = SelectionLineItems.Unit.Code;
 			//TemplateArea.Parameters.Quantity = Format(SelectionLineItems.QtyUnits, QuantityFormat)+ " " + SelectionLineItems.Unit;
 			ProductPrecisionFormat = GeneralFunctionsReusable.PriceFormatForOneItem(SelectionLineItems.Product);
-			TemplateArea.Parameters.Price     = Selection.Currency.Symbol + Format(SelectionLineItems.PriceUnits, ProductPrecisionFormat + "; NZ=");
+			TemplateArea.Parameters.Price     = Format(SelectionLineItems.PriceUnits, ProductPrecisionFormat + "; NZ=");
 			TemplateArea.Parameters.LineTotal = Format(SelectionLineItems.LineTotal, "NFD=2; NZ=");
 			Spreadsheet.Put(TemplateArea, SelectionLineItems.Level());
 			
@@ -371,6 +371,7 @@ Procedure Print(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
 		TemplateArea.Parameters.Subtotal = Format(Selection.Subtotal, "NFD=2; NZ=");
 		TemplateArea.Parameters.Shipping = Format(Selection.Shipping, "NFD=2; NZ=");
 		TemplateArea.Parameters.SalesTax = Format(Selection.SalesTax, "NFD=2; NZ=");
+		TemplateArea.Parameters.NetTotalTitle = "Net Total " + Selection.Currency.Description + ": ";
 		TemplateArea.Parameters.Total = Format(Selection.DocumentTotal, "NFD=2; NZ=");
 		
 		Spreadsheet.Join(TemplateArea);

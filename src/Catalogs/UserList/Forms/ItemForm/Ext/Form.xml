@@ -15,6 +15,18 @@
 		<Event name="FillCheckProcessingAtServer">FillCheckProcessingAtServer</Event>
 	</Events>
 	<ChildItems>
+		<CheckBoxField name="Disabled" id="82">
+			<DataPath>Object.Disabled</DataPath>
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Disable user</v8:content>
+				</v8:item>
+			</Title>
+			<CheckBoxType>Auto</CheckBoxType>
+			<ContextMenu name="DisabledContextMenu" id="83"/>
+			<ExtendedTooltip name="DisabledExtendedTooltip" id="84"/>
+		</CheckBoxField>
 		<InputField name="Description" id="1">
 			<DataPath>Object.Description</DataPath>
 			<Title>
@@ -27,16 +39,20 @@
 			<ContextMenu name="DescriptionContextMenu" id="2"/>
 			<ExtendedTooltip name="DescriptionExtendedTooltip" id="3"/>
 		</InputField>
-		<InputField name="Password" id="73">
+		<InputField name="Password" id="85">
 			<DataPath>Password</DataPath>
-			<PasswordMode>true</PasswordMode>
-			<ContextMenu name="PasswordContextMenu" id="74"/>
-			<ExtendedTooltip name="PasswordExtendedTooltip" id="75"/>
+			<ContextMenu name="PasswordContextMenu" id="86"/>
+			<ExtendedTooltip name="PasswordExtendedTooltip" id="87"/>
 		</InputField>
 		<InputField name="Name" id="31">
 			<DataPath>Object.Name</DataPath>
 			<ContextMenu name="NameContextMenu" id="32"/>
 			<ExtendedTooltip name="NameExtendedTooltip" id="33"/>
+		</InputField>
+		<InputField name="LastName" id="73">
+			<DataPath>Object.LastName</DataPath>
+			<ContextMenu name="LastNameContextMenu" id="74"/>
+			<ExtendedTooltip name="LastNameExtendedTooltip" id="75"/>
 		</InputField>
 		<InputField name="Ttile" id="34">
 			<DataPath>Object.Title</DataPath>
@@ -466,6 +482,74 @@
 			</ChoiceList>
 			<ContextMenu name="TimeTrackContextMenu" id="68"/>
 			<ExtendedTooltip name="TimeTrackExtendedTooltip" id="69"/>
+		</RadioButtonField>
+		<RadioButtonField name="ItemReceipt" id="76">
+			<DataPath>Object.ItemReceipt</DataPath>
+			<RadioButtonType>Auto</RadioButtonType>
+			<ChoiceList>
+				<xr:Item>
+					<xr:Presentation/>
+					<xr:CheckState>0</xr:CheckState>
+					<xr:Value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>Full Access</v8:content>
+							</v8:item>
+						</Presentation>
+						<Value xsi:type="xs:string">Full</Value>
+					</xr:Value>
+				</xr:Item>
+				<xr:Item>
+					<xr:Presentation/>
+					<xr:CheckState>0</xr:CheckState>
+					<xr:Value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>No Rights</v8:content>
+							</v8:item>
+						</Presentation>
+						<Value xsi:type="xs:string">None</Value>
+					</xr:Value>
+				</xr:Item>
+			</ChoiceList>
+			<ContextMenu name="ItemReceiptContextMenu" id="77"/>
+			<ExtendedTooltip name="ItemReceiptExtendedTooltip" id="78"/>
+		</RadioButtonField>
+		<RadioButtonField name="Shipment" id="79">
+			<DataPath>Object.Shipment</DataPath>
+			<RadioButtonType>Auto</RadioButtonType>
+			<ChoiceList>
+				<xr:Item>
+					<xr:Presentation/>
+					<xr:CheckState>0</xr:CheckState>
+					<xr:Value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>Full Access</v8:content>
+							</v8:item>
+						</Presentation>
+						<Value xsi:type="xs:string">Full</Value>
+					</xr:Value>
+				</xr:Item>
+				<xr:Item>
+					<xr:Presentation/>
+					<xr:CheckState>0</xr:CheckState>
+					<xr:Value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>No Rights</v8:content>
+							</v8:item>
+						</Presentation>
+						<Value xsi:type="xs:string">None</Value>
+					</xr:Value>
+				</xr:Item>
+			</ChoiceList>
+			<ContextMenu name="ShipmentContextMenu" id="80"/>
+			<ExtendedTooltip name="ShipmentExtendedTooltip" id="81"/>
 		</RadioButtonField>
 		<CheckBoxField name="Verified" id="70">
 			<DataPath>Object.Verified</DataPath>

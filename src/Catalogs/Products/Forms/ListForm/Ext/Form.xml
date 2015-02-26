@@ -47,9 +47,6 @@
 			<EnableStartDrag>true</EnableStartDrag>
 			<DataPath>List</DataPath>
 			<RowPictureDataPath>List.DefaultPicture</RowPictureDataPath>
-			<SearchStringLocation>None</SearchStringLocation>
-			<ViewStatusLocation>None</ViewStatusLocation>
-			<SearchControlLocation>None</SearchControlLocation>
 			<AutoRefresh>false</AutoRefresh>
 			<AutoRefreshPeriod>60</AutoRefreshPeriod>
 			<Period>
@@ -101,6 +98,7 @@
 				</LabelField>
 				<LabelField name="Description" id="4">
 					<DataPath>List.Description</DataPath>
+					<DefaultItem>true</DefaultItem>
 					<Width>30</Width>
 					<ContextMenu name="DescriptionContextMenu" id="5"/>
 					<ExtendedTooltip name="DescriptionExtendedTooltip" id="35"/>
@@ -111,8 +109,19 @@
 					<ContextMenu name="TypeContextMenu" id="13"/>
 					<ExtendedTooltip name="TypeExtendedTooltip" id="36"/>
 				</LabelField>
+				<CheckBoxField name="Assembly" id="95">
+					<DataPath>List.Assembly</DataPath>
+					<CheckBoxType>Auto</CheckBoxType>
+					<ContextMenu name="AssemblyContextMenu" id="96"/>
+					<ExtendedTooltip name="AssemblyExtendedTooltip" id="97"/>
+				</CheckBoxField>
 				<LabelField name="Price" id="75">
 					<DataPath>List.Price</DataPath>
+					<UserVisible>
+						<xr:Common>true</xr:Common>
+						<xr:Value name="Role.ShipmentFull">false</xr:Value>
+						<xr:Value name="Role.ItemReceiptFull">false</xr:Value>
+					</UserVisible>
 					<Format>
 						<v8:item>
 							<v8:lang>en</v8:lang>
@@ -306,6 +315,36 @@
 	CatalogProducts.NewObject,
 	CatalogProducts.Predefined,
 	CatalogProducts.PredefinedDataName,
+	CatalogProducts.Assembly,
+	CatalogProducts.HasResiduals,
+	CatalogProducts.HasLotsSerialNumbers,
+	CatalogProducts.UseLots,
+	CatalogProducts.UseLotsType,
+	CatalogProducts.Characteristic,
+	CatalogProducts.UseLotsByExpiration,
+	CatalogProducts.ShelfLife,
+	CatalogProducts.ShelfLifeUnit,
+	CatalogProducts.UseSerialNumbersOnShipment,
+	CatalogProducts.UseSerialNumbersOnGoodsReception,
+	CatalogProducts.UseSerialNumbersCheckReception,
+	CatalogProducts.UseSerialNumbersCheckUniqueness,
+	CatalogProducts.CostingMethod AS CostingMethod1,
+	CatalogProducts.InventoryOrExpenseAccount AS InventoryOrExpenseAccount1,
+	CatalogProducts.IncomeAccount AS IncomeAccount1,
+	CatalogProducts.COGSAccount AS COGSAccount1,
+	CatalogProducts.UnitSet AS UnitSet1,
+	CatalogProducts.DefaultLocation AS DefaultLocation1,
+	CatalogProducts.PreferredVendor AS PreferredVendor1,
+	CatalogProducts.Category AS Category1,
+	CatalogProducts.UPC,
+	CatalogProducts.vendor_code,
+	CatalogProducts.vendor_description,
+	CatalogProducts.Taxable,
+	CatalogProducts.Price AS Price1,
+	CatalogProducts.WasteAccount,
+	CatalogProducts.PricePrecision,
+	CatalogProducts.TaxCode,
+	CatalogProducts.DiscountIsTaxable,
 	ISNULL(TT.QtyOnSO, 0) AS QtyOnSO,
 	ISNULL(TT.QtyOnPO, 0) AS QtyOnPO,
 	ISNULL(TT.QtyOnHand, 0) AS QtyOnHand,

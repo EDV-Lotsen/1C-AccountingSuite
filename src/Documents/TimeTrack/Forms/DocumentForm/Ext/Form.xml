@@ -14,172 +14,435 @@
 		<Event name="FillCheckProcessingAtServer">FillCheckProcessingAtServer</Event>
 	</Events>
 	<ChildItems>
-		<LabelDecoration name="Decoration1" id="68">
-			<ContextMenu name="Decoration1ContextMenu" id="69"/>
-			<ExtendedTooltip name="Decoration1ExtendedTooltip" id="70"/>
-		</LabelDecoration>
-		<InputField name="User" id="22">
-			<DataPath>Object.User</DataPath>
+		<UsualGroup name="MainGroup" id="92">
 			<Title>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>User</v8:content>
+					<v8:content>Main group</v8:content>
 				</v8:item>
 			</Title>
-			<Width>24</Width>
-			<HorizontalStretch>false</HorizontalStretch>
-			<OpenButton>false</OpenButton>
-			<ContextMenu name="UserContextMenu" id="23"/>
-			<ExtendedTooltip name="UserExtendedTooltip" id="24"/>
-			<Events>
-				<Event name="OnChange">ObjChanged</Event>
-			</Events>
-		</InputField>
-		<InputField name="Company" id="7">
-			<DataPath>Object.Company</DataPath>
-			<Title>
+			<ToolTip>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Customer</v8:content>
+					<v8:content>Main group</v8:content>
 				</v8:item>
-			</Title>
-			<EditMode>EnterOnInput</EditMode>
-			<HorizontalStretch>false</HorizontalStretch>
-			<OpenButton>false</OpenButton>
-			<ContextMenu name="CompanyContextMenu" id="8"/>
-			<ExtendedTooltip name="CompanyExtendedTooltip" id="9"/>
-			<Events>
-				<Event name="OnChange">ObjChanged</Event>
-			</Events>
-		</InputField>
-		<InputField name="Project" id="10">
-			<DataPath>Object.Project</DataPath>
-			<EditMode>EnterOnInput</EditMode>
-			<HorizontalStretch>false</HorizontalStretch>
-			<OpenButton>false</OpenButton>
-			<ChoiceParameterLinks>
-				<xr:Link>
-					<xr:Name>Filter.Customer</xr:Name>
-					<xr:DataPath xsi:type="xs:string">Object.Company</xr:DataPath>
-					<xr:ValueChange>Clear</xr:ValueChange>
-				</xr:Link>
-			</ChoiceParameterLinks>
-			<ContextMenu name="ProjectContextMenu" id="11"/>
-			<ExtendedTooltip name="ProjectExtendedTooltip" id="12"/>
-			<Events>
-				<Event name="OnChange">ObjChanged</Event>
-			</Events>
-		</InputField>
-		<InputField name="Class" id="79">
-			<DataPath>Object.Class</DataPath>
-			<HorizontalStretch>false</HorizontalStretch>
-			<OpenButton>false</OpenButton>
-			<ContextMenu name="ClassContextMenu" id="80"/>
-			<ExtendedTooltip name="ClassExtendedTooltip" id="81"/>
-		</InputField>
-		<InputField name="Task" id="13">
-			<DataPath>Object.Task</DataPath>
-			<EditMode>EnterOnInput</EditMode>
-			<HorizontalStretch>false</HorizontalStretch>
-			<OpenButton>false</OpenButton>
-			<ChoiceParameters>
-				<app:item name="Filter.Type">
-					<app:value xsi:type="FormChoiceListDesTimeValue">
-						<Presentation/>
-						<Value xsi:type="xr:DesignTimeRef">Enum.InventoryTypes.EnumValue.NonInventory</Value>
-					</app:value>
-				</app:item>
-			</ChoiceParameters>
-			<ContextMenu name="TaskContextMenu" id="14"/>
-			<ExtendedTooltip name="TaskExtendedTooltip" id="15"/>
-			<Events>
-				<Event name="OnChange">TaskOnChange</Event>
-			</Events>
-		</InputField>
-		<InputField name="Price" id="16">
-			<DataPath>Object.Price</DataPath>
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Hourly Rate</v8:content>
-				</v8:item>
-			</Title>
-			<EditMode>EnterOnInput</EditMode>
-			<EditFormat>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>NFD=2</v8:content>
-				</v8:item>
-			</EditFormat>
-			<ContextMenu name="PriceContextMenu" id="17"/>
-			<ExtendedTooltip name="PriceExtendedTooltip" id="18"/>
-			<Events>
-				<Event name="OnChange">ObjChanged</Event>
-			</Events>
-		</InputField>
-		<InputField name="TimeComplete" id="19">
-			<DataPath>Object.TimeComplete</DataPath>
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Hours</v8:content>
-				</v8:item>
-			</Title>
-			<EditMode>EnterOnInput</EditMode>
-			<ContextMenu name="TimeCompleteContextMenu" id="20"/>
-			<ExtendedTooltip name="TimeCompleteExtendedTooltip" id="21"/>
-			<Events>
-				<Event name="OnChange">ObjChanged</Event>
-			</Events>
-		</InputField>
-		<CheckBoxField name="Billable" id="62">
-			<DataPath>Object.Billable</DataPath>
-			<CheckBoxType>Auto</CheckBoxType>
-			<ContextMenu name="BillableContextMenu" id="63"/>
-			<ExtendedTooltip name="BillableExtendedTooltip" id="64"/>
-			<Events>
-				<Event name="OnChange">ObjChanged</Event>
-			</Events>
-		</CheckBoxField>
-		<UsualGroup name="Group1" id="34">
+			</ToolTip>
 			<Group>Horizontal</Group>
-			<Representation>None</Representation>
 			<ShowTitle>false</ShowTitle>
-			<ExtendedTooltip name="Group1ExtendedTooltip" id="35"/>
+			<ExtendedTooltip name="MainGroupExtendedTooltip" id="93"/>
 			<ChildItems>
-				<InputField name="DateFrom" id="28">
-					<DataPath>Object.DateFrom</DataPath>
+				<UsualGroup name="MainSection" id="88">
 					<Title>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Date</v8:content>
+							<v8:content>Main section</v8:content>
 						</v8:item>
 					</Title>
-					<ContextMenu name="DateFromContextMenu" id="29"/>
-					<ExtendedTooltip name="DateFromExtendedTooltip" id="30"/>
-					<Events>
-						<Event name="OnChange">ObjChanged</Event>
-					</Events>
-				</InputField>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Main section</v8:content>
+						</v8:item>
+					</ToolTip>
+					<Group>Vertical</Group>
+					<ShowTitle>false</ShowTitle>
+					<ExtendedTooltip name="MainSectionExtendedTooltip" id="89"/>
+					<ChildItems>
+						<LabelDecoration name="Decoration1" id="68">
+							<ContextMenu name="Decoration1ContextMenu" id="69"/>
+							<ExtendedTooltip name="Decoration1ExtendedTooltip" id="70"/>
+						</LabelDecoration>
+						<InputField name="User" id="22">
+							<DataPath>Object.User</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>User</v8:content>
+								</v8:item>
+							</Title>
+							<Width>24</Width>
+							<HorizontalStretch>false</HorizontalStretch>
+							<OpenButton>false</OpenButton>
+							<ContextMenu name="UserContextMenu" id="23"/>
+							<ExtendedTooltip name="UserExtendedTooltip" id="24"/>
+							<Events>
+								<Event name="OnChange">ObjChanged</Event>
+							</Events>
+						</InputField>
+						<InputField name="Company" id="7">
+							<DataPath>Object.Company</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Customer</v8:content>
+								</v8:item>
+							</Title>
+							<EditMode>EnterOnInput</EditMode>
+							<HorizontalStretch>false</HorizontalStretch>
+							<OpenButton>false</OpenButton>
+							<ContextMenu name="CompanyContextMenu" id="8"/>
+							<ExtendedTooltip name="CompanyExtendedTooltip" id="9"/>
+							<Events>
+								<Event name="OnChange">ObjChanged</Event>
+							</Events>
+						</InputField>
+						<InputField name="Project" id="10">
+							<DataPath>Object.Project</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<HorizontalStretch>false</HorizontalStretch>
+							<OpenButton>false</OpenButton>
+							<ChoiceParameterLinks>
+								<xr:Link>
+									<xr:Name>Filter.Customer</xr:Name>
+									<xr:DataPath xsi:type="xs:string">Object.Company</xr:DataPath>
+									<xr:ValueChange>Clear</xr:ValueChange>
+								</xr:Link>
+							</ChoiceParameterLinks>
+							<ContextMenu name="ProjectContextMenu" id="11"/>
+							<ExtendedTooltip name="ProjectExtendedTooltip" id="12"/>
+							<Events>
+								<Event name="OnChange">ObjChanged</Event>
+							</Events>
+						</InputField>
+						<InputField name="Class" id="79">
+							<DataPath>Object.Class</DataPath>
+							<HorizontalStretch>false</HorizontalStretch>
+							<OpenButton>false</OpenButton>
+							<ContextMenu name="ClassContextMenu" id="80"/>
+							<ExtendedTooltip name="ClassExtendedTooltip" id="81"/>
+						</InputField>
+						<InputField name="Task" id="13">
+							<DataPath>Object.Task</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<HorizontalStretch>false</HorizontalStretch>
+							<OpenButton>false</OpenButton>
+							<ChoiceParameters>
+								<app:item name="Filter.Type">
+									<app:value xsi:type="FormChoiceListDesTimeValue">
+										<Presentation/>
+										<Value xsi:type="xr:DesignTimeRef">Enum.InventoryTypes.EnumValue.NonInventory</Value>
+									</app:value>
+								</app:item>
+							</ChoiceParameters>
+							<ContextMenu name="TaskContextMenu" id="14"/>
+							<ExtendedTooltip name="TaskExtendedTooltip" id="15"/>
+							<Events>
+								<Event name="OnChange">TaskOnChange</Event>
+							</Events>
+						</InputField>
+						<InputField name="Price" id="16">
+							<DataPath>Object.Price</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Hourly Rate</v8:content>
+								</v8:item>
+							</Title>
+							<EditMode>EnterOnInput</EditMode>
+							<EditFormat>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>NFD=2</v8:content>
+								</v8:item>
+							</EditFormat>
+							<ContextMenu name="PriceContextMenu" id="17"/>
+							<ExtendedTooltip name="PriceExtendedTooltip" id="18"/>
+							<Events>
+								<Event name="OnChange">ObjChanged</Event>
+							</Events>
+						</InputField>
+						<InputField name="DateFrom" id="28">
+							<DataPath>Object.DateFrom</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Date</v8:content>
+								</v8:item>
+							</Title>
+							<ContextMenu name="DateFromContextMenu" id="29"/>
+							<ExtendedTooltip name="DateFromExtendedTooltip" id="30"/>
+							<Events>
+								<Event name="OnChange">ObjChanged</Event>
+							</Events>
+						</InputField>
+						<CheckBoxField name="Billable" id="62">
+							<DataPath>Object.Billable</DataPath>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="BillableContextMenu" id="63"/>
+							<ExtendedTooltip name="BillableExtendedTooltip" id="64"/>
+							<Events>
+								<Event name="OnChange">ObjChanged</Event>
+							</Events>
+						</CheckBoxField>
+					</ChildItems>
+				</UsualGroup>
+				<UsualGroup name="Group4" id="129">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Group4</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Group4</v8:content>
+						</v8:item>
+					</ToolTip>
+					<Group>Vertical</Group>
+					<Representation>None</Representation>
+					<ShowTitle>false</ShowTitle>
+					<ExtendedTooltip name="Group4ExtendedTooltip" id="130"/>
+					<ChildItems>
+						<UsualGroup name="TimerSection" id="125">
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Timer section</v8:content>
+								</v8:item>
+							</ToolTip>
+							<Group>Vertical</Group>
+							<ExtendedTooltip name="TimerSectionExtendedTooltip" id="126"/>
+							<ChildItems>
+								<UsualGroup name="TimerGroup" id="107">
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Timer group</v8:content>
+										</v8:item>
+									</Title>
+									<ToolTip>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Timer group</v8:content>
+										</v8:item>
+									</ToolTip>
+									<Group>Vertical</Group>
+									<Representation>None</Representation>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="TimerGroupExtendedTooltip" id="108"/>
+									<ChildItems>
+										<UsualGroup name="TimerControls" id="109">
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Timer controls</v8:content>
+												</v8:item>
+											</Title>
+											<ToolTip>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Timer controls</v8:content>
+												</v8:item>
+											</ToolTip>
+											<Group>Horizontal</Group>
+											<Representation>None</Representation>
+											<ShowTitle>false</ShowTitle>
+											<ExtendedTooltip name="TimerControlsExtendedTooltip" id="110"/>
+											<ChildItems>
+												<UsualGroup name="Group1" id="127">
+													<Group>Vertical</Group>
+													<ExtendedTooltip name="Group1ExtendedTooltip" id="128"/>
+												</UsualGroup>
+												<LabelDecoration name="Decoration5" id="119">
+													<Width>10</Width>
+													<ContextMenu name="Decoration5ContextMenu" id="120"/>
+													<ExtendedTooltip name="Decoration5ExtendedTooltip" id="121"/>
+												</LabelDecoration>
+												<Button name="TimerStartStop" id="94">
+													<Type>UsualButton</Type>
+													<Width>8</Width>
+													<CommandName>Form.Command.TimerStartStop</CommandName>
+													<Title>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Start/Stop</v8:content>
+														</v8:item>
+													</Title>
+													<ExtendedTooltip name="TimerStartStopExtendedTooltip" id="95"/>
+												</Button>
+												<Button name="TimerReset" id="111">
+													<Type>UsualButton</Type>
+													<Width>8</Width>
+													<CommandName>Form.Command.TimerReset</CommandName>
+													<Title>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Reset</v8:content>
+														</v8:item>
+													</Title>
+													<ExtendedTooltip name="TimerResetExtendedTooltip" id="112"/>
+												</Button>
+											</ChildItems>
+										</UsualGroup>
+										<UsualGroup name="TimerDisplay" id="96">
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Timer display</v8:content>
+												</v8:item>
+											</Title>
+											<ToolTip>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Timer display</v8:content>
+												</v8:item>
+											</ToolTip>
+											<Group>Horizontal</Group>
+											<Representation>None</Representation>
+											<ShowTitle>false</ShowTitle>
+											<ExtendedTooltip name="TimerDisplayExtendedTooltip" id="97"/>
+											<ChildItems>
+												<LabelDecoration name="Decoration6" id="122">
+													<Width>11</Width>
+													<ContextMenu name="Decoration6ContextMenu" id="123"/>
+													<ExtendedTooltip name="Decoration6ExtendedTooltip" id="124"/>
+												</LabelDecoration>
+												<LabelField name="Hours" id="98">
+													<DataPath>Hours</DataPath>
+													<TitleLocation>None</TitleLocation>
+													<Width>3</Width>
+													<HorizontalStretch>false</HorizontalStretch>
+													<Format>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>ND=2; NZ=; NLZ=</v8:content>
+														</v8:item>
+													</Format>
+													<TextColor>#C0C0C0</TextColor>
+													<Font ref="sys:DefaultGUIFont" height="18" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
+													<ContextMenu name="HoursContextMenu" id="99"/>
+													<ExtendedTooltip name="HoursExtendedTooltip" id="100"/>
+												</LabelField>
+												<LabelDecoration name="Decoration3" id="113">
+													<TextColor>#C0C0C0</TextColor>
+													<Font ref="sys:DefaultGUIFont" faceName="Arial" height="18" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
+													<Title formatted="false">
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>:</v8:content>
+														</v8:item>
+													</Title>
+													<ContextMenu name="Decoration3ContextMenu" id="114"/>
+													<ExtendedTooltip name="Decoration3ExtendedTooltip" id="115"/>
+												</LabelDecoration>
+												<LabelField name="Minutes" id="101">
+													<DataPath>Minutes</DataPath>
+													<TitleLocation>None</TitleLocation>
+													<Width>3</Width>
+													<HorizontalStretch>false</HorizontalStretch>
+													<Format>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>ND=2; NZ=; NLZ=</v8:content>
+														</v8:item>
+													</Format>
+													<TextColor>#C0C0C0</TextColor>
+													<Font ref="sys:DefaultGUIFont" height="18" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
+													<ContextMenu name="MinutesContextMenu" id="102"/>
+													<ExtendedTooltip name="MinutesExtendedTooltip" id="103"/>
+												</LabelField>
+												<LabelDecoration name="Decoration4" id="116">
+													<TextColor>#C0C0C0</TextColor>
+													<Font ref="sys:DefaultGUIFont" faceName="Arial" height="18" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
+													<Title formatted="false">
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>:</v8:content>
+														</v8:item>
+													</Title>
+													<ContextMenu name="Decoration4ContextMenu" id="117"/>
+													<ExtendedTooltip name="Decoration4ExtendedTooltip" id="118"/>
+												</LabelDecoration>
+												<LabelField name="Seconds" id="104">
+													<DataPath>Seconds</DataPath>
+													<TitleLocation>None</TitleLocation>
+													<Width>3</Width>
+													<HorizontalStretch>false</HorizontalStretch>
+													<Format>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>ND=2; NZ=; NLZ=</v8:content>
+														</v8:item>
+													</Format>
+													<TextColor>#C0C0C0</TextColor>
+													<Font ref="sys:DefaultGUIFont" height="18" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
+													<ContextMenu name="SecondsContextMenu" id="105"/>
+													<ExtendedTooltip name="SecondsExtendedTooltip" id="106"/>
+												</LabelField>
+											</ChildItems>
+										</UsualGroup>
+									</ChildItems>
+								</UsualGroup>
+								<UsualGroup name="Group5" id="131">
+									<Group>Horizontal</Group>
+									<Representation>None</Representation>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="Group5ExtendedTooltip" id="132"/>
+									<ChildItems>
+										<LabelDecoration name="Decoration7" id="133">
+											<Width>5</Width>
+											<ContextMenu name="Decoration7ContextMenu" id="134"/>
+											<ExtendedTooltip name="Decoration7ExtendedTooltip" id="135"/>
+										</LabelDecoration>
+										<InputField name="TimeComplete" id="19">
+											<DataPath>Object.TimeComplete</DataPath>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Hours</v8:content>
+												</v8:item>
+											</Title>
+											<EditMode>EnterOnInput</EditMode>
+											<ContextMenu name="TimeCompleteContextMenu" id="20"/>
+											<ExtendedTooltip name="TimeCompleteExtendedTooltip" id="21"/>
+											<Events>
+												<Event name="OnChange">ObjChanged</Event>
+											</Events>
+										</InputField>
+									</ChildItems>
+								</UsualGroup>
+								<LabelDecoration name="Decoration9" id="141">
+									<Height>1</Height>
+									<ContextMenu name="Decoration9ContextMenu" id="142"/>
+									<ExtendedTooltip name="Decoration9ExtendedTooltip" id="143"/>
+								</LabelDecoration>
+								<UsualGroup name="Group6" id="136">
+									<Group>Horizontal</Group>
+									<Representation>None</Representation>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="Group6ExtendedTooltip" id="137"/>
+									<ChildItems>
+										<LabelDecoration name="Decoration8" id="138">
+											<Width>5</Width>
+											<ContextMenu name="Decoration8ContextMenu" id="139"/>
+											<ExtendedTooltip name="Decoration8ExtendedTooltip" id="140"/>
+										</LabelDecoration>
+										<InputField name="Memo" id="25">
+											<DataPath>Object.Memo</DataPath>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Description</v8:content>
+												</v8:item>
+											</Title>
+											<HorizontalStretch>false</HorizontalStretch>
+											<VerticalStretch>false</VerticalStretch>
+											<MultiLine>true</MultiLine>
+											<ContextMenu name="MemoContextMenu" id="26"/>
+											<ExtendedTooltip name="MemoExtendedTooltip" id="27"/>
+											<Events>
+												<Event name="OnChange">ObjChanged</Event>
+											</Events>
+										</InputField>
+									</ChildItems>
+								</UsualGroup>
+							</ChildItems>
+						</UsualGroup>
+					</ChildItems>
+				</UsualGroup>
 			</ChildItems>
 		</UsualGroup>
-		<InputField name="Memo" id="25">
-			<DataPath>Object.Memo</DataPath>
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Description</v8:content>
-				</v8:item>
-			</Title>
-			<HorizontalStretch>false</HorizontalStretch>
-			<VerticalStretch>false</VerticalStretch>
-			<MultiLine>true</MultiLine>
-			<ContextMenu name="MemoContextMenu" id="26"/>
-			<ExtendedTooltip name="MemoExtendedTooltip" id="27"/>
-			<Events>
-				<Event name="OnChange">ObjChanged</Event>
-			</Events>
-		</InputField>
 		<LabelDecoration name="Decoration2" id="71">
 			<TextColor>#339966</TextColor>
 			<Title formatted="false">
@@ -292,6 +555,65 @@
 				<v8:Type>xs:boolean</v8:Type>
 			</Type>
 		</Attribute>
+		<Attribute name="Hours" id="4">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Hours</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:decimal</v8:Type>
+				<v8:NumberQualifiers>
+					<v8:Digits>10</v8:Digits>
+					<v8:FractionDigits>0</v8:FractionDigits>
+					<v8:AllowedSign>Any</v8:AllowedSign>
+				</v8:NumberQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="Minutes" id="5">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Minutes</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:decimal</v8:Type>
+				<v8:NumberQualifiers>
+					<v8:Digits>10</v8:Digits>
+					<v8:FractionDigits>0</v8:FractionDigits>
+					<v8:AllowedSign>Any</v8:AllowedSign>
+				</v8:NumberQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="Seconds" id="6">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Seconds</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:decimal</v8:Type>
+				<v8:NumberQualifiers>
+					<v8:Digits>10</v8:Digits>
+					<v8:FractionDigits>0</v8:FractionDigits>
+					<v8:AllowedSign>Any</v8:AllowedSign>
+				</v8:NumberQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="TimerStart" id="7">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Timer start</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
+			</Type>
+		</Attribute>
 	</Attributes>
 	<Commands>
 		<Command name="LinkSalesOrder" id="1">
@@ -339,6 +661,36 @@
 			</ToolTip>
 			<Action>UnlinkSalesInvoice</Action>
 		</Command>
+		<Command name="TimerStartStop" id="4">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Timer start stop</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Timer start stop</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>TimerStartStop</Action>
+		</Command>
+		<Command name="TimerReset" id="5">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Timer reset</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Timer reset</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>TimerReset</Action>
+		</Command>
 	</Commands>
 	<CommandInterface>
 		<NavigationPanel>
@@ -354,7 +706,7 @@
 		</NavigationPanel>
 		<CommandBar>
 			<Item>
-				<Command>Document.TimeTrack.Command.MultiDate</Command>
+				<Command>0:c12566a3-68d5-402c-a645-d985051deeac</Command>
 				<Type>Auto</Type>
 				<CommandGroup>FormCommandBarImportant</CommandGroup>
 				<DefaultVisible>false</DefaultVisible>

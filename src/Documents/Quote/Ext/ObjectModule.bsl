@@ -9,7 +9,7 @@
 #If Server Or ThickClientOrdinaryApplication Or ExternalConnection Then
 
 Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
-	
+		
 	If NewObject = True Then
 		NewObject = False;
 	Else
@@ -39,7 +39,9 @@ Procedure FillCheckProcessing(Cancel, CheckedAttributes)
 	EndIf;
 	
 	// Check doubles in items (to be sure of proper orders placement).
-	GeneralFunctions.CheckDoubleItems(Ref, LineItems, "Product, Unit, Location, DeliveryDate, Project, Class, LineNumber",, Cancel);
+	//If Not SessionParameters.TenantValue = "1101092" Then // Locked for the tenant "1101092"
+		GeneralFunctions.CheckDoubleItems(Ref, LineItems, "Product, Unit, Location, DeliveryDate, Project, Class, LineNumber",, Cancel);
+	//EndIf;
 	
 EndProcedure
 

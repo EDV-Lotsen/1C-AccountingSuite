@@ -74,7 +74,7 @@ Procedure Posting(Cancel, PostingMode)
 		Record.Account = CurRowLineItems.Account;
 		//Record.CashFlowSection = CurRowLineItems.Account.CashFlowSection;
 		Record.AmountRC = CurRowLineItems.Amount * ExchangeRate;
-		//Record.PaymentMethod = PaymentMethod;
+		Record.PaymentMethod = PaymentMethod;
 	EndDo;
 	
 EndProcedure
@@ -95,95 +95,128 @@ Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 		Date = CurrentSessionDate();
 	EndIf;
 	
-	If WriteMode = DocumentWriteMode.Posting Then
-		
-		If PaymentMethod = Catalogs.PaymentMethods.Check Then
-			
-			If ExistCheck(Number) = False Then
-				
-				//	StrNextNum = StrReplace(String(GeneralFunctions.LastCheckNumber(BankAccount)+ 1),",","");
-				//	test = Ref.IsEmpty();
-				//	If PhysicalCheckNum = 0 And Number = StrNextNum Then
-				//	
-				//		LastNumber = GeneralFunctions.LastCheckNumber(BankAccount);
-				//		
-				//		LastNumberString = "";
-				//		If LastNumber < 10000 Then
-				//			LastNumberString = Left(String(LastNumber+1),1) + Right(String(LastNumber+1),3)
-				//		Else
-				//			LastNumberString = Left(String(LastNumber+1),2) + Right(String(LastNumber+1),3)
-				//		EndIf;
-				//		
-				//		Number = LastNumberString;
-				//		PhysicalCheckNum = LastNumber + 1;
-				//					
-				//	Else
-				//		Try
-				//			PhysicalCheckNum = Number(Number);
-				//		Except
-				//		EndTry;
-				//
-				//	EndIf;
-				
-				PhysicalCheckNum = Number;
-					
-			Else
-				If Constants.DisableAuditLog.Get() = True Then
-				Else
+	If PaymentMethod = Catalogs.PaymentMethods.Check Then
+		PhysicalCheckNum = Number;
+		If ThisObject.AdditionalProperties.Property("AllowCheckNumber") Then
+			If Not ThisObject.AdditionalProperties.AllowCheckNumber Then
+				Cancel = True;
+				//If Constants.DisableAuditLog.Get() = False Then
+					//Cancel = True;
 					Message("Check number already exists for this bank account");
-					Cancel = True;
-				EndIf;
+				//EndIf;			
 			EndIf;
-		Endif;
-		
+		Else
+			CheckNumberResult = CommonUseServerCall.CheckNumberAllowed(ThisObject.Number, ThisObject.Ref, ThisObject.BankAccount);
+			If CheckNumberResult.DuplicatesFound Then
+				If Not CheckNumberResult.Allow Then
+					Cancel = True;
+					//If Constants.DisableAuditLog.Get() = False Then
+						//Cancel = True;
+						Message("Check number already exists for this bank account");
+					//EndIf;								
+				Else
+					Cancel = True;
+					//If Constants.DisableAuditLog.Get() = False Then
+						//Cancel = True;
+						Message("Check number already exists for this bank account. Perform the operation interactively!");
+					//EndIf;								
+				EndIf;			
+			Endif;
+		EndIf;		
 	EndIf;
 	
 EndProcedure
 
-Function ExistCheck(Num)
-	
-	Try
-	    CheckNum = Number(Number);
-		Query = New Query("SELECT
-		                  |	Check.PhysicalCheckNum AS Number,
-		                  |	Check.Ref
-		                  |FROM
-		                  |	Document.Check AS Check
-		                  |WHERE
-		                  |	Check.BankAccount = &BankAccount
-		                  |	AND Check.PaymentMethod = VALUE(Catalog.PaymentMethods.Check)
-		                  |	AND Check.PhysicalCheckNum = &CheckNum
-		                  |
-		                  |UNION ALL
-		                  |
-		                  |SELECT
-		                  |	InvoicePayment.PhysicalCheckNum,
-		                  |	InvoicePayment.Ref
-		                  |FROM
-		                  |	Document.InvoicePayment AS InvoicePayment
-		                  |WHERE
-		                  |	InvoicePayment.BankAccount = &BankAccount
-		                  |	AND InvoicePayment.PaymentMethod = VALUE(Catalog.PaymentMethods.Check)
-		                  |	AND InvoicePayment.PhysicalCheckNum = &CheckNum
-		                  |
-		                  |ORDER BY
-		                  |	Number DESC");
-		Query.SetParameter("BankAccount", BankAccount);
-		Query.SetParameter("CheckNum", CheckNum);
-		//Query.SetParameter("Number", Object.Number);
-		QueryResult = Query.Execute().Unload();
-		If QueryResult.Count() = 0 Then
-			Return False;
-		ElsIf QueryResult.Count() = 1 And QueryResult[0].Ref = Ref Then
-			Return False;
-		Else	
+//Function CheckNumberAllowed(Num)
+//	
+//	Try
+//		CheckNum = Number(Number);
+//	Except
+//		Return True;
+//	EndTry;
 
-			Return True;
-		EndIf;
-	Except
-		Return False
-	EndTry;
-		
-	
-EndFunction
+//	AllowDuplicateCheckNumbers = Constants.AllowDuplicateCheckNumbers.Get();
+//	If AllowDuplicateCheckNumbers Then
+//		return True;
+//	EndIf;
+//	Query = New Query("SELECT TOP 1
+//	                  |	ChecksWithNumber.Number,
+//	                  |	ChecksWithNumber.Ref
+//	                  |FROM
+//	                  |	(SELECT
+//	                  |		Check.PhysicalCheckNum AS Number,
+//	                  |		Check.Ref AS Ref
+//	                  |	FROM
+//	                  |		Document.Check AS Check
+//	                  |	WHERE
+//	                  |		Check.BankAccount = &BankAccount
+//	                  |		AND Check.PaymentMethod = VALUE(Catalog.PaymentMethods.Check)
+//	                  |		AND Check.PhysicalCheckNum = &CheckNum
+//	                  |	
+//	                  |	UNION ALL
+//	                  |	
+//	                  |	SELECT
+//	                  |		InvoicePayment.PhysicalCheckNum,
+//	                  |		InvoicePayment.Ref
+//	                  |	FROM
+//	                  |		Document.InvoicePayment AS InvoicePayment
+//	                  |	WHERE
+//	                  |		InvoicePayment.BankAccount = &BankAccount
+//	                  |		AND InvoicePayment.PaymentMethod = VALUE(Catalog.PaymentMethods.Check)
+//	                  |		AND InvoicePayment.PhysicalCheckNum = &CheckNum) AS ChecksWithNumber
+//	                  |WHERE
+//	                  |	ChecksWithNumber.Ref <> &CurrentRef");
+//	Query.SetParameter("BankAccount", BankAccount);
+//	Query.SetParameter("CheckNum", CheckNum);
+//	Query.SetParameter("CurrentRef", Ref);
+//	QueryResult = Query.Execute();
+//	If QueryResult.IsEmpty() Then
+//		Return True;
+//	Else	
+//		Return False;
+//	EndIf;
+//	//Try
+//	//	CheckNum = Number(Number);
+//	//	Query = New Query("SELECT
+//	//					  |	Check.PhysicalCheckNum AS Number,
+//	//					  |	Check.Ref
+//	//					  |FROM
+//	//					  |	Document.Check AS Check
+//	//					  |WHERE
+//	//					  |	Check.BankAccount = &BankAccount
+//	//					  |	AND Check.PaymentMethod = VALUE(Catalog.PaymentMethods.Check)
+//	//					  |	AND Check.PhysicalCheckNum = &CheckNum
+//	//					  |
+//	//					  |UNION ALL
+//	//					  |
+//	//					  |SELECT
+//	//					  |	InvoicePayment.PhysicalCheckNum,
+//	//					  |	InvoicePayment.Ref
+//	//					  |FROM
+//	//					  |	Document.InvoicePayment AS InvoicePayment
+//	//					  |WHERE
+//	//					  |	InvoicePayment.BankAccount = &BankAccount
+//	//					  |	AND InvoicePayment.PaymentMethod = VALUE(Catalog.PaymentMethods.Check)
+//	//					  |	AND InvoicePayment.PhysicalCheckNum = &CheckNum
+//	//					  |
+//	//					  |ORDER BY
+//	//					  |	Number DESC");
+//	//	Query.SetParameter("BankAccount", BankAccount);
+//	//	Query.SetParameter("CheckNum", CheckNum);
+//	//	//Query.SetParameter("Number", Object.Number);
+//	//	QueryResult = Query.Execute().Unload();
+//	//	If QueryResult.Count() = 0 Then
+//	//		Return False;
+//	//	ElsIf QueryResult.Count() = 1 And QueryResult[0].Ref = Ref Then
+//	//		Return False;
+//	//	Else	
+
+//	//		Return True;
+//	//	EndIf;
+//	//Except
+//	//	Return False
+//	//EndTry;
+//		
+//	
+//EndFunction
 

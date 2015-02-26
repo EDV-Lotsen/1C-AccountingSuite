@@ -4,6 +4,28 @@
 	<setForAttributesByDefault>true</setForAttributesByDefault>
 	<independentRightsOfChildObjects>false</independentRightsOfChildObjects>
 	<object>
+		<name>Document.Assembly.TabularSection.LineItems.Attribute.QtyUnits</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Document.Assembly.TabularSection.Residuals.Attribute.QtyItem</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
 		<name>Subsystem.StandardSubsystems</name>
 		<right>
 			<name>View</name>
@@ -12,6 +34,17 @@
 	</object>
 	<object>
 		<name>Catalog.SalesTaxRates.Attribute.SalesTaxComponent</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Document.Assembly.TabularSection.LineItems.Attribute.Unit</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
 		<right>
 			<name>Edit</name>
 			<value>false</value>
@@ -103,7 +136,36 @@
 		</right>
 	</object>
 	<object>
+		<name>Document.Assembly.TabularSection.Residuals</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
 		<name>Document.InvoicePayment.Command.PrintCheck</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Document.Assembly.TabularSection.LineItems.Attribute.Project</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>CommonForm.Subscribe</name>
 		<right>
 			<name>View</name>
 			<value>false</value>
@@ -129,6 +191,28 @@
 	</object>
 	<object>
 		<name>Catalog.SalesTaxRates.Attribute.Rate</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Document.Assembly.TabularSection.LineItems.Attribute.WasteTotal</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Document.Assembly.TabularSection.LineItems.Attribute.LineTotal</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
 		<right>
 			<name>Edit</name>
 			<value>false</value>
@@ -253,69 +337,13 @@
 		</right>
 	</object>
 	<object>
-		<name>Catalog.USTaxCategories1099</name>
-		<right>
-			<name>Read</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Insert</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Update</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>Delete</name>
-			<value>false</value>
-		</right>
+		<name>Document.Assembly.TabularSection.Residuals.Attribute.UnitSet</name>
 		<right>
 			<name>View</name>
 			<value>false</value>
 		</right>
 		<right>
-			<name>InteractiveInsert</name>
-			<value>false</value>
-		</right>
-		<right>
 			<name>Edit</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractiveDelete</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractiveSetDeletionMark</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractiveClearDeletionMark</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractiveDeleteMarked</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InputByString</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractiveDeletePredefinedData</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractiveSetDeletionMarkPredefinedData</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractiveClearDeletionMarkPredefinedData</name>
-			<value>false</value>
-		</right>
-		<right>
-			<name>InteractiveDeleteMarkedPredefinedData</name>
 			<value>false</value>
 		</right>
 	</object>
@@ -350,6 +378,17 @@
 		</right>
 		<right>
 			<name>TotalsControl</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Document.Assembly.TabularSection.LineItems.Attribute.UnitSet</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
 			<value>false</value>
 		</right>
 	</object>
@@ -441,6 +480,17 @@
 		</right>
 	</object>
 	<object>
+		<name>Document.Assembly.TabularSection.Residuals.Attribute.Product</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
 		<name>Subsystem.StripeAPI</name>
 		<right>
 			<name>View</name>
@@ -462,6 +512,17 @@
 		</right>
 	</object>
 	<object>
+		<name>Document.Assembly.Attribute.Product</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
 		<name>Report.APAging</name>
 		<right>
 			<name>Use</name>
@@ -469,6 +530,17 @@
 		</right>
 		<right>
 			<name>View</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Document.Assembly.TabularSection.Residuals.Attribute.Percent</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
 			<value>false</value>
 		</right>
 	</object>
@@ -601,6 +673,17 @@
 	</object>
 	<object>
 		<name>InformationRegister.AvalaraTransactions.Resource.ResultCode</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Document.Assembly.TabularSection.Residuals.Attribute.QtyUM</name>
 		<right>
 			<name>View</name>
 			<value>false</value>
@@ -763,6 +846,17 @@
 		</right>
 		<right>
 			<name>InputByString</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Document.Assembly.TabularSection.LineItems.Attribute.Location</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
 			<value>false</value>
 		</right>
 	</object>
@@ -973,6 +1067,39 @@
 		</right>
 	</object>
 	<object>
+		<name>Document.Assembly.Attribute.QtyUnits</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Document.Assembly.Attribute.ManualAdjustment</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Document.Assembly.Attribute.Location</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
 		<name>Catalog.TaxCodesPredefined</name>
 		<right>
 			<name>Insert</name>
@@ -1091,6 +1218,28 @@
 		</right>
 	</object>
 	<object>
+		<name>Document.Assembly.Attribute.Unit</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Document.Assembly.Attribute.UnitSet</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
 		<name>InformationRegister.AvalaraTransactions.Dimension.Date</name>
 		<right>
 			<name>View</name>
@@ -1113,9 +1262,31 @@
 		</right>
 	</object>
 	<object>
+		<name>Document.Assembly.TabularSection.LineItems.Attribute.WasteQtyUnits</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
 		<name>CommonForm.LongAction</name>
 		<right>
 			<name>View</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Document.Assembly.TabularSection.LineItems.Attribute.Product</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
 			<value>false</value>
 		</right>
 	</object>
@@ -1474,6 +1645,17 @@
 		</right>
 	</object>
 	<object>
+		<name>Document.Assembly.Attribute.Memo</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
 		<name>Document.SalesOrder</name>
 		<right>
 			<name>InteractiveDelete</name>
@@ -1488,7 +1670,29 @@
 		</right>
 	</object>
 	<object>
+		<name>Document.Assembly.TabularSection.LineItems.Attribute.Class</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
 		<name>Catalog.TaxCodesPredefined.Attribute.AdditionalInformation</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Document.Assembly.Attribute.WasteAccount</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
 		<right>
 			<name>Edit</name>
 			<value>false</value>
@@ -1654,6 +1858,17 @@
 		<name>Subsystem.Lists</name>
 		<right>
 			<name>View</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Document.Assembly.TabularSection.Residuals.Attribute.ProductDescription</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
 			<value>false</value>
 		</right>
 	</object>
@@ -1976,6 +2191,28 @@
 		</right>
 	</object>
 	<object>
+		<name>Document.Assembly.Attribute.Class</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Document.Assembly.TabularSection.Residuals.Attribute.Unit</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
 		<name>Report.CheckRegister</name>
 		<right>
 			<name>Use</name>
@@ -1987,7 +2224,29 @@
 		</right>
 	</object>
 	<object>
+		<name>Document.Assembly.TabularSection.LineItems.Attribute.WastePercent</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
 		<name>InformationRegister.AvalaraTransactions.Resource.Messages</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Document.Assembly.Attribute.Project</name>
 		<right>
 			<name>View</name>
 			<value>false</value>
@@ -2091,9 +2350,31 @@
 		</right>
 	</object>
 	<object>
+		<name>Document.Assembly.TabularSection.LineItems.Attribute.QtyUM</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
 		<name>DataProcessor.DownloadedTransactions.Command.DownloadedTransactions</name>
 		<right>
 			<name>View</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Document.Assembly.TabularSection.LineItems.Attribute.PriceUnits</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
 			<value>false</value>
 		</right>
 	</object>
@@ -2226,6 +2507,28 @@
 		</right>
 	</object>
 	<object>
+		<name>Document.Assembly.TabularSection.Residuals.Attribute.QtyUnits</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Document.Assembly.TabularSection.LineItems</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
 		<name>Document.Deposit</name>
 		<right>
 			<name>Read</name>
@@ -2302,6 +2605,28 @@
 	</object>
 	<object>
 		<name>Catalog.SalesTaxRates.Attribute.Agency</name>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Document.Assembly.TabularSection.Residuals.Attribute.Location</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Document.Assembly.Attribute.LineSubtotal</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
 		<right>
 			<name>Edit</name>
 			<value>false</value>
@@ -2496,6 +2821,17 @@
 		</right>
 	</object>
 	<object>
+		<name>Document.Assembly.Attribute.WasteSubtotal</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
 		<name>Report.ARAging</name>
 		<right>
 			<name>Use</name>
@@ -2503,6 +2839,17 @@
 		</right>
 		<right>
 			<name>View</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Document.Assembly.TabularSection.Residuals.Attribute.LineTotal</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
 			<value>false</value>
 		</right>
 	</object>
@@ -2611,6 +2958,17 @@
 		</right>
 	</object>
 	<object>
+		<name>Document.Assembly.Attribute.QtyUM</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
 		<name>InformationRegister.OrdersStatuses</name>
 		<right>
 			<name>Read</name>
@@ -2630,6 +2988,17 @@
 		</right>
 		<right>
 			<name>TotalsControl</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Document.Assembly.TabularSection.LineItems.Attribute.QtyItem</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
 			<value>false</value>
 		</right>
 	</object>
@@ -2705,6 +3074,17 @@
 		</right>
 		<right>
 			<name>InputByString</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Document.Assembly.Attribute.DocumentTotal</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
 			<value>false</value>
 		</right>
 	</object>
@@ -3023,6 +3403,17 @@
 		</right>
 	</object>
 	<object>
+		<name>Document.Assembly.TabularSection.LineItems.Attribute.ProductDescription</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
 		<name>InformationRegister.AvalaraTransactions.Resource.RequestParameters</name>
 		<right>
 			<name>View</name>
@@ -3057,6 +3448,17 @@
 		</right>
 	</object>
 	<object>
+		<name>Document.Assembly.TabularSection.LineItems.Attribute.WasteQtyUM</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
 		<name>Catalog.SalesTaxComponents.Attribute.Rate</name>
 		<right>
 			<name>Edit</name>
@@ -3074,6 +3476,17 @@
 		<name>CommonForm.GeneralSettings</name>
 		<right>
 			<name>View</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Document.Assembly.TabularSection.Residuals.Attribute.PriceUnits</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
 			<value>false</value>
 		</right>
 	</object>
@@ -3110,6 +3523,136 @@
 		</right>
 	</object>
 	<object>
+		<name>Document.Assembly</name>
+		<right>
+			<name>Read</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Insert</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Update</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Delete</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Posting</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>UndoPosting</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveInsert</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDelete</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveSetDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveClearDeletionMark</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveDeleteMarked</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractivePosting</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractivePostingRegular</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveUndoPosting</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InteractiveChangeOfPosted</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>InputByString</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Document.Assembly.StandardAttribute.Posted</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Document.Assembly.StandardAttribute.Ref</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Document.Assembly.StandardAttribute.DeletionMark</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Document.Assembly.StandardAttribute.Date</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Document.Assembly.StandardAttribute.Number</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
 		<name>AccumulationRegister.OrdersDispatched</name>
 		<right>
 			<name>Read</name>
@@ -3129,6 +3672,17 @@
 		</right>
 		<right>
 			<name>TotalsControl</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Document.Assembly.Attribute.ProductDescription</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
 			<value>false</value>
 		</right>
 	</object>
@@ -3214,6 +3768,17 @@
 		<name>Document.CashReceipt</name>
 		<right>
 			<name>InteractiveDelete</name>
+			<value>false</value>
+		</right>
+	</object>
+	<object>
+		<name>Document.Assembly.Attribute.ResidualsSubtotal</name>
+		<right>
+			<name>View</name>
+			<value>false</value>
+		</right>
+		<right>
+			<name>Edit</name>
 			<value>false</value>
 		</right>
 	</object>

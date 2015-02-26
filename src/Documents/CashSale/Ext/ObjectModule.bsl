@@ -64,10 +64,32 @@ Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 	
 EndProcedure
 
+Procedure FillCheckProcessing(Cancel, CheckedAttributes)
+	
+	// -> CODE REVIEW
+	If Discount > 0 Then
+		// ??? !!!
+		Message = New UserMessage();
+		Message.Text=NStr("en='A discount should be a negative number'");
+		//Message.Field = "Object.Description";
+		Message.Message();
+		Cancel = True;
+		Return;
+	EndIf;
+	// <- CODE REVIEW
+	
+	// Check proper filling of lots.
+	LotsSerialNumbers.CheckLotsFilling(Ref, LineItems, Cancel);
+	
+	// Check proper filling of serial numbers.
+	LotsSerialNumbers.CheckSerialNumbersFilling(Ref, PointInTime(), LineItems, SerialNumbers, 1, "", Cancel);
+	
+EndProcedure
+
 Procedure Filling(FillingData, StandardProcessing)
 	
 	// Forced assign the new document number.
-	If ThisObject.IsNew() Then ThisObject.SetNewNumber(); EndIf;
+	If ThisObject.IsNew() And Not ValueIsFilled(ThisObject.Number) Then ThisObject.SetNewNumber(); EndIf;
 	
 	// Filling new document or filling on the base of another document.
 	If FillingData = Undefined Then
@@ -85,12 +107,14 @@ EndProcedure
 
 Procedure OnCopy(CopiedObject)
 	
+	If ThisObject.IsNew() Then ThisObject.SetNewNumber(); EndIf;
+	
 	// Clear manual adjustment attribute.
 	ManualAdjustment = False;
 	
 EndProcedure
 
-Procedure Posting(Cancel, Mode)
+Procedure Posting(Cancel, PostingMode)
 	
 	// 1. Common postings clearing / reactivate manual ajusted postings.
 	DocumentPosting.PrepareRecordSetsForPosting(AdditionalProperties, RegisterRecords);

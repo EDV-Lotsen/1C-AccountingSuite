@@ -16,6 +16,9 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	//------------------------------------------------------------------------------
 	// 1. Form attributes initialization.
 	
+	// Define point in time for requesting the balances.
+	PointInTime = GeneralFunctions.GetDocumentPointInTime(Object);
+	
 	//------------------------------------------------------------------------------
 	// 2. Calculate values of form object attributes.
 	
@@ -98,6 +101,9 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 	//------------------------------------------------------------------------------
 	// Recalculate values of form object attributes.
 	
+	// Define point in time for requesting the balances.
+	PointInTime = GeneralFunctions.GetDocumentPointInTime(Object);
+	
 	// Request and fill item balance.
 	FillItemBalance();
 	
@@ -110,6 +116,17 @@ EndProcedure
 
 &AtClient
 Procedure DateOnChange(Item)
+	
+	// Request server operation.
+	DateOnChangeAtServer();
+	
+EndProcedure
+
+&AtServer
+Procedure DateOnChangeAtServer()
+	
+	// Define point in time for requesting the balances.
+	PointInTime = GeneralFunctions.GetDocumentPointInTime(Object);
 	
 	// Recalculate item balances.
 	FillItemBalance();
@@ -217,7 +234,7 @@ Procedure FillItemBalance()
 		|	InventoryJournalBalance.QuantityBalance AS Quantity,
 		|	InventoryJournalBalance.AmountBalance   AS Amount
 		|FROM
-		|	AccumulationRegister.InventoryJournal.Balance({PointInTime}, {Condition}) AS InventoryJournalBalance
+		|	AccumulationRegister.InventoryJournal.Balance(&PointInTime, {Condition}) AS InventoryJournalBalance
 		|{Order}";
 	Condition = ""; Dimension = ""; Order = "";
 	If Not Object.Product.IsEmpty() Then
@@ -242,20 +259,13 @@ Procedure FillItemBalance()
 		EndIf;
 	EndIf;
 	QueryText = StringFunctionsClientServer.SubstituteParametersInStringByName(QueryText, New Structure("Dimension, Condition, Order", Dimension, Condition, Order));
-	QueryText = StrReplace(QueryText, "{PointInTime}", ?(ValueIsFilled(Object.Ref) Or (BegOfDay(Object.Date) < BegOfDay(CurrentSessionDate())), "&PointInTime", ""));
 	
 	// Execute the query.
 	Query = New Query;
 	Query.Text = QueryText;
 	Query.SetParameter("Product",     Object.Product);
 	Query.SetParameter("Location",    Object.Location);
-	If ValueIsFilled(Object.Ref) And (Object.Ref.PointInTime().Date = Object.Date) Then
-		Query.SetParameter("PointInTime", New Boundary(New PointInTime(Object.Date, Object.Ref), BoundaryType.Excluding));
-	ElsIf ValueIsFilled(Object.Ref) And (Object.Ref.PointInTime().Date <> Object.Date) Then
-		Query.SetParameter("PointInTime", New Boundary(New PointInTime(Object.Date, Object.Ref), BoundaryType.Including));
-	ElsIf Not ValueIsFilled(Object.Ref) And BegOfDay(Object.Date) < BegOfDay(CurrentSessionDate()) Then
-		Query.SetParameter("PointInTime", New Boundary(EndOfDay(Object.Date), BoundaryType.Including));
-	EndIf;
+	Query.SetParameter("PointInTime", PointInTime);
 	ItemBalances.Load(Query.Execute().Unload());
 	
 	// Fill available layers.

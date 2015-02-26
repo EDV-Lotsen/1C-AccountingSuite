@@ -2,6 +2,17 @@
 <Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
 	<AutoCommandBar name="FormCommandBar" id="-1">
 		<ChildItems>
+			<Button name="MultiEntryNew" id="61">
+				<Type>CommandBarButton</Type>
+				<CommandName>Form.Command.MultiEntry</CommandName>
+				<Title>
+					<v8:item>
+						<v8:lang>en</v8:lang>
+						<v8:content>Multi-Entry</v8:content>
+					</v8:item>
+				</Title>
+				<ExtendedTooltip name="MultiEntryNewExtendedTooltip" id="62"/>
+			</Button>
 			<Button name="GenerateInvoice" id="25">
 				<Type>CommandBarButton</Type>
 				<CommandName>Form.Command.GenInvoice</CommandName>
@@ -66,9 +77,6 @@
 			<EnableStartDrag>true</EnableStartDrag>
 			<DataPath>List</DataPath>
 			<RowPictureDataPath>List.DefaultPicture</RowPictureDataPath>
-			<SearchStringLocation>None</SearchStringLocation>
-			<ViewStatusLocation>None</ViewStatusLocation>
-			<SearchControlLocation>None</SearchControlLocation>
 			<AutoRefresh>false</AutoRefresh>
 			<AutoRefreshPeriod>60</AutoRefreshPeriod>
 			<Period>
@@ -88,29 +96,29 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="6"/>
-			<SearchStringAddition name="ListSearchString" id="61">
+			<SearchStringAddition name="ListSearchString" id="63">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="62"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="63"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="64"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="65"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="64">
+			<ViewStatusAddition name="ListViewStatus" id="66">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="65"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="66"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="67"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="68"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="67">
+			<SearchControlAddition name="ListSearchControl" id="69">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="68"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="69"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="70"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="71"/>
 			</SearchControlAddition>
 			<ChildItems>
 				<LabelField name="InvoiceStatus" id="58">
@@ -272,6 +280,7 @@ FROM
 				<ListSettings>
 					<dcsset:filter>
 						<dcsset:item xsi:type="dcsset:FilterItemComparison">
+							<dcsset:use>false</dcsset:use>
 							<dcsset:left xsi:type="dcscor:Field">InvoiceStatus</dcsset:left>
 							<dcsset:comparisonType>Equal</dcsset:comparisonType>
 							<dcsset:userSettingID>7e3ffeb5-df03-4622-a30b-c59e5f1ab16e</dcsset:userSettingID>
@@ -344,5 +353,33 @@ FROM
 			</ToolTip>
 			<Action>RefreshItems</Action>
 		</Command>
+		<Command name="MultiEntry" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Multi entry</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Multi entry</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>MultiEntry</Action>
+		</Command>
 	</Commands>
+	<CommandInterface>
+		<CommandBar>
+			<Item>
+				<Command>0:c12566a3-68d5-402c-a645-d985051deeac</Command>
+				<Type>Auto</Type>
+				<CommandGroup>FormCommandBarImportant</CommandGroup>
+				<DefaultVisible>false</DefaultVisible>
+				<Visible>
+					<xr:Common>false</xr:Common>
+				</Visible>
+			</Item>
+		</CommandBar>
+	</CommandInterface>
 </Form>

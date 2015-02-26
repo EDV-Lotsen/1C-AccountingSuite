@@ -54,6 +54,26 @@ EndProcedure
 
 Procedure BeforeDelete(Cancel)
 	
+	//Clear Bank Transaction Categorization
+	SetPrivilegedMode(True);
+	Request = New Query("SELECT
+	                    |	BankTransactionCategorization.TransactionID
+	                    |FROM
+	                    |	InformationRegister.BankTransactionCategorization AS BankTransactionCategorization
+	                    |WHERE
+	                    |	BankTransactionCategorization.Customer = &Customer
+	                    |
+	                    |GROUP BY
+	                    |	BankTransactionCategorization.TransactionID");
+	Request.SetParameter("Customer", Ref);
+	IdsTable = Request.Execute().Unload();
+	For Each IDRow In IdsTable Do
+		BTCRecordset = InformationRegisters.BankTransactionCategorization.CreateRecordSet();
+		BTCRecordset.Filter.TransactionID.Set(IDRow.TransactionID);
+		BTCRecordset.Write(True);
+	EndDo;
+	SetPrivilegedMode(False);
+	
 	companies_webhook = Constants.companies_webhook.Get();
 	
 	If NOT companies_webhook = "" Then
@@ -81,3 +101,33 @@ Procedure BeforeDelete(Cancel)
 
 EndProcedure
 
+Procedure Filling(FillingData, FillingText, StandardProcessing)
+	
+	If ThisObject.IsNew() And Not ValueIsFilled(ThisObject.Code) Then ThisObject.SetNewCode(); EndIf;
+	
+EndProcedure
+
+Procedure OnCopy(CopiedObject)
+	
+	If ThisObject.IsNew() Then ThisObject.SetNewCode(); EndIf;
+	
+EndProcedure
+
+Procedure OnSetNewCode(StandardProcessing, Prefix)
+	
+	StandardProcessing = False;
+	
+	Numerator = Catalogs.DocumentNumbering.Companies;
+	NextNumber = GeneralFunctions.Increment(Numerator.Number);
+	
+	While Catalogs.Companies.FindByCode(NextNumber) <> Catalogs.Companies.EmptyRef() And NextNumber <> "" Do
+		ObjectNumerator = Numerator.GetObject();
+		ObjectNumerator.Number = NextNumber;
+		ObjectNumerator.Write();
+		
+		NextNumber = GeneralFunctions.Increment(NextNumber);
+	EndDo;
+	
+	ThisObject.Code = NextNumber; 
+	
+EndProcedure

@@ -12,6 +12,11 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	PeriodVariant = GeneralFunctions.GetDefaultPeriodVariant();
 	GeneralFunctions.ChangeDatesByPeriod(PeriodVariant, PeriodStartDate, PeriodEndDate);
 	
+	//If IsInRole("BankAccounting") Then
+	//	Items.Variant.ChoiceList.Delete(Items.Variant.ChoiceList.FindByValue("Customers"));
+	//	Items.Variant.ChoiceList.Delete(Items.Variant.ChoiceList.FindByValue("Vendors"));
+	//EndIf;
+		
 	OpeningReportForm = True;
 			
 EndProcedure
@@ -125,8 +130,18 @@ EndProcedure
 &AtClient
 Procedure VariantOnChange(Item)
 	
+	//
+	CurrentPeriodStartDate = PeriodStartDate; 
+	CurrentPeriodEndDate   = PeriodEndDate;
+	CurrentPeriodVariant   = PeriodVariant;
+	
 	CurrentVariantDescription = Variant;
 	SetCurrentVariant(CurrentVariantDescription);
+	
+	PeriodStartDate = CurrentPeriodStartDate; 
+	PeriodEndDate   = CurrentPeriodEndDate;
+	PeriodVariant   = CurrentPeriodVariant;
+	GeneralFunctions.ChangePeriodIntoUserSettings(ThisForm.Report.SettingsComposer, PeriodStartDate, PeriodEndDate);
 	
 	ModifiedStatePresentation();
 		

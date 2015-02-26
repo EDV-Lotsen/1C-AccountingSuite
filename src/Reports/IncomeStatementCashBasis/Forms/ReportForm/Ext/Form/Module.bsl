@@ -125,8 +125,18 @@ EndProcedure
 &AtClient
 Procedure VariantOnChange(Item)
 	
+	//
+	CurrentPeriodStartDate = PeriodStartDate; 
+	CurrentPeriodEndDate   = PeriodEndDate;
+	CurrentPeriodVariant   = PeriodVariant;
+	
 	CurrentVariantDescription = Variant;
 	SetCurrentVariant(CurrentVariantDescription);
+	
+	PeriodStartDate = CurrentPeriodStartDate; 
+	PeriodEndDate   = CurrentPeriodEndDate;
+	PeriodVariant   = CurrentPeriodVariant;
+	GeneralFunctions.ChangePeriodIntoUserSettings(ThisForm.Report.SettingsComposer, PeriodStartDate, PeriodEndDate);
 	
 	ModifiedStatePresentation();
 		

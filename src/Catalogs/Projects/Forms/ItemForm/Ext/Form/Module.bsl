@@ -12,9 +12,15 @@ EndProcedure
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
+	// If customer filling value is defined, set the customer field
+	Try
+		Object.Customer = Parameters.FillingValues.Customer;
+	Except
+		// A customer was not defined from a previous form
+	EndTry;
 	If Object.Customer = Catalogs.Companies.EmptyRef() Then
 	Else	
-		items.Customer.ReadOnly = True;
+		Items.Customer.ReadOnly = True;
 	Endif;
 
 EndProcedure

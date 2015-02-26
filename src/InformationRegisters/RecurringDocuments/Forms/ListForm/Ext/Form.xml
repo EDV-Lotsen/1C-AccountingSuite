@@ -57,33 +57,30 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="6"/>
-			<SearchStringAddition name="ListSearchString" id="24">
+			<SearchStringAddition name="ListSearchString" id="30">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="25"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="26"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="31"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="32"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="27">
+			<ViewStatusAddition name="ListViewStatus" id="33">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="28"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="29"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="34"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="35"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="30">
+			<SearchControlAddition name="ListSearchControl" id="36">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="31"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="32"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="37"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="38"/>
 			</SearchControlAddition>
-			<Events>
-				<Event name="NewWriteProcessing">ListNewWriteProcessing</Event>
-			</Events>
 			<ChildItems>
 				<LabelField name="RecurringDocument" id="7">
 					<DataPath>List.RecurringDocument</DataPath>
@@ -113,6 +110,18 @@
 					<ContextMenu name="LastExecutionDateContextMenu" id="20"/>
 					<ExtendedTooltip name="LastExecutionDateExtendedTooltip" id="21"/>
 				</LabelField>
+				<LabelField name="CompletedUpTo" id="27">
+					<DataPath>List.CompletedUpTo</DataPath>
+					<Width>13</Width>
+					<ContextMenu name="CompletedUpToContextMenu" id="28"/>
+					<ExtendedTooltip name="CompletedUpToExtendedTooltip" id="29"/>
+				</LabelField>
+				<InputField name="EventDate" id="24">
+					<DataPath>List.EventDate</DataPath>
+					<Width>13</Width>
+					<ContextMenu name="EventDateContextMenu" id="25"/>
+					<ExtendedTooltip name="EventDateExtendedTooltip" id="26"/>
+				</InputField>
 				<LabelField name="ScheduledDate" id="13">
 					<DataPath>List.ScheduledDate</DataPath>
 					<DefaultItem>true</DefaultItem>

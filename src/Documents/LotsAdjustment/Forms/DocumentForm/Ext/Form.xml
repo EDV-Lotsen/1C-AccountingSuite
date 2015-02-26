@@ -1,0 +1,304 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<VerticalScroll>useIfNecessary</VerticalScroll>
+	<AutoTime>CurrentOrLast</AutoTime>
+	<UsePostingMode>Auto</UsePostingMode>
+	<RepostOnWrite>true</RepostOnWrite>
+	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<Events>
+		<Event name="AfterWriteAtServer">AfterWriteAtServer</Event>
+		<Event name="BeforeWrite">BeforeWrite</Event>
+		<Event name="BeforeWriteAtServer">BeforeWriteAtServer</Event>
+		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+	</Events>
+	<ChildItems>
+		<InputField name="Date" id="9">
+			<DataPath>Object.Date</DataPath>
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>  Date</v8:content>
+				</v8:item>
+			</Title>
+			<HorizontalAlign>Right</HorizontalAlign>
+			<Width>15</Width>
+			<ContextMenu name="DateContextMenu" id="10"/>
+			<ExtendedTooltip name="DateExtendedTooltip" id="13"/>
+			<Events>
+				<Event name="OnChange">DateOnChange</Event>
+			</Events>
+		</InputField>
+		<InputField name="Product" id="1">
+			<DataPath>Object.Product</DataPath>
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>  Item</v8:content>
+				</v8:item>
+			</Title>
+			<EditMode>EnterOnInput</EditMode>
+			<ChoiceParameters>
+				<app:item name="Filter.Type">
+					<app:value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation/>
+						<Value xsi:type="xr:DesignTimeRef">Enum.InventoryTypes.EnumValue.Inventory</Value>
+					</app:value>
+				</app:item>
+				<app:item name="Filter.HasLotsSerialNumbers">
+					<app:value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation/>
+						<Value xsi:type="xs:boolean">true</Value>
+					</app:value>
+				</app:item>
+				<app:item name="Filter.UseLots">
+					<app:value xsi:type="FormChoiceListDesTimeValue">
+						<Presentation/>
+						<Value xsi:type="xs:decimal">0</Value>
+					</app:value>
+				</app:item>
+			</ChoiceParameters>
+			<ContextMenu name="ProductContextMenu" id="2"/>
+			<ExtendedTooltip name="ProductExtendedTooltip" id="11"/>
+			<Events>
+				<Event name="OnChange">ProductOnChange</Event>
+			</Events>
+		</InputField>
+		<InputField name="Location" id="3">
+			<DataPath>Object.Location</DataPath>
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>  Location</v8:content>
+				</v8:item>
+			</Title>
+			<EditMode>EnterOnInput</EditMode>
+			<ContextMenu name="LocationContextMenu" id="4"/>
+			<ExtendedTooltip name="LocationExtendedTooltip" id="12"/>
+			<Events>
+				<Event name="OnChange">LocationOnChange</Event>
+			</Events>
+		</InputField>
+		<InputField name="Lot" id="25">
+			<DataPath>Object.Lot</DataPath>
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>  Lot</v8:content>
+				</v8:item>
+			</Title>
+			<ChoiceParameterLinks>
+				<xr:Link>
+					<xr:Name>Filter.Owner</xr:Name>
+					<xr:DataPath xsi:type="xs:string">LotOwner</xr:DataPath>
+					<xr:ValueChange>Clear</xr:ValueChange>
+				</xr:Link>
+			</ChoiceParameterLinks>
+			<ContextMenu name="LotContextMenu" id="26"/>
+			<ExtendedTooltip name="LotExtendedTooltip" id="27"/>
+			<Events>
+				<Event name="OnChange">LotOnChange</Event>
+			</Events>
+		</InputField>
+		<UsualGroup name="LabelRow" id="38">
+			<Group>Horizontal</Group>
+			<Representation>None</Representation>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="LabelRowExtendedTooltip" id="39"/>
+			<ChildItems>
+				<LabelDecoration name="Margin" id="40">
+					<Width>6</Width>
+					<ContextMenu name="MarginContextMenu" id="41"/>
+					<ExtendedTooltip name="MarginExtendedTooltip" id="42"/>
+				</LabelDecoration>
+				<LabelDecoration name="Before" id="43">
+					<Width>13</Width>
+					<Title formatted="false">
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Current</v8:content>
+						</v8:item>
+					</Title>
+					<HorizontalAlign>Center</HorizontalAlign>
+					<ContextMenu name="BeforeContextMenu" id="44"/>
+					<ExtendedTooltip name="BeforeExtendedTooltip" id="45"/>
+				</LabelDecoration>
+				<LabelDecoration name="Adjustment" id="46">
+					<Width>13</Width>
+					<Title formatted="false">
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Adjustment</v8:content>
+						</v8:item>
+					</Title>
+					<HorizontalAlign>Center</HorizontalAlign>
+					<ContextMenu name="AdjustmentContextMenu" id="47"/>
+					<ExtendedTooltip name="AdjustmentExtendedTooltip" id="48"/>
+				</LabelDecoration>
+				<LabelDecoration name="After" id="49">
+					<Width>13</Width>
+					<Title formatted="false">
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>New</v8:content>
+						</v8:item>
+					</Title>
+					<HorizontalAlign>Center</HorizontalAlign>
+					<ContextMenu name="AfterContextMenu" id="50"/>
+					<ExtendedTooltip name="AfterExtendedTooltip" id="51"/>
+				</LabelDecoration>
+			</ChildItems>
+		</UsualGroup>
+		<UsualGroup name="QuantityRow" id="28">
+			<Group>Horizontal</Group>
+			<Representation>None</Representation>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="QuantityRowExtendedTooltip" id="29"/>
+			<ChildItems>
+				<LabelDecoration name="QuantityLabel" id="52">
+					<Width>6</Width>
+					<Title formatted="false">
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content> Quantity:</v8:content>
+						</v8:item>
+					</Title>
+					<ContextMenu name="QuantityLabelContextMenu" id="53"/>
+					<ExtendedTooltip name="QuantityLabelExtendedTooltip" id="54"/>
+				</LabelDecoration>
+				<InputField name="QuantityBefore" id="22">
+					<DataPath>QuantityBefore</DataPath>
+					<ReadOnly>true</ReadOnly>
+					<SkipOnInput>true</SkipOnInput>
+					<TitleLocation>None</TitleLocation>
+					<Width>12</Width>
+					<ChoiceButton>true</ChoiceButton>
+					<EditFormat>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>NFD=4; NZ=</v8:content>
+						</v8:item>
+					</EditFormat>
+					<ContextMenu name="QuantityBeforeContextMenu" id="23"/>
+					<ExtendedTooltip name="QuantityBeforeExtendedTooltip" id="24"/>
+				</InputField>
+				<InputField name="Quantity" id="5">
+					<DataPath>Object.Quantity</DataPath>
+					<TitleLocation>None</TitleLocation>
+					<EditMode>EnterOnInput</EditMode>
+					<Width>12</Width>
+					<EditFormat>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>NFD=4; NZ=</v8:content>
+						</v8:item>
+					</EditFormat>
+					<ContextMenu name="QuantityContextMenu" id="6"/>
+					<ExtendedTooltip name="QuantityExtendedTooltip" id="14"/>
+					<Events>
+						<Event name="OnChange">QuantityOnChange</Event>
+					</Events>
+				</InputField>
+				<InputField name="QuantityAfter" id="19">
+					<DataPath>QuantityAfter</DataPath>
+					<TitleLocation>None</TitleLocation>
+					<Width>12</Width>
+					<EditFormat>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>NFD=4; NZ=</v8:content>
+						</v8:item>
+					</EditFormat>
+					<ContextMenu name="QuantityAfterContextMenu" id="20"/>
+					<ExtendedTooltip name="QuantityAfterExtendedTooltip" id="21"/>
+					<Events>
+						<Event name="OnChange">QuantityAfterOnChange</Event>
+					</Events>
+				</InputField>
+			</ChildItems>
+		</UsualGroup>
+	</ChildItems>
+	<Attributes>
+		<Attribute name="Object" id="1">
+			<Type>
+				<v8:Type>cfg:DocumentObject.LotsAdjustment</v8:Type>
+			</Type>
+			<MainAttribute>true</MainAttribute>
+			<SavedData>true</SavedData>
+			<UseAlways>
+				<Field>Object.RegisterRecords</Field>
+			</UseAlways>
+		</Attribute>
+		<Attribute name="QuantityBefore" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Quantity before</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:decimal</v8:Type>
+				<v8:NumberQualifiers>
+					<v8:Digits>15</v8:Digits>
+					<v8:FractionDigits>4</v8:FractionDigits>
+					<v8:AllowedSign>Any</v8:AllowedSign>
+				</v8:NumberQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="QuantityAfter" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Quantity after</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:decimal</v8:Type>
+				<v8:NumberQualifiers>
+					<v8:Digits>15</v8:Digits>
+					<v8:FractionDigits>4</v8:FractionDigits>
+					<v8:AllowedSign>Any</v8:AllowedSign>
+				</v8:NumberQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="LotOwner" id="4">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Lot owner</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>cfg:CatalogRef.Products</v8:Type>
+				<v8:Type>cfg:CatalogRef.Characteristics</v8:Type>
+			</Type>
+		</Attribute>
+		<Attribute name="PointInTime" id="5">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Point in time</v8:content>
+				</v8:item>
+			</Title>
+			<Type/>
+		</Attribute>
+	</Attributes>
+	<CommandInterface>
+		<NavigationPanel>
+			<Item>
+				<Command>AccumulationRegister.InventoryJournal.StandardCommand.OpenByRecorder</Command>
+				<Type>Auto</Type>
+				<DefaultVisible>false</DefaultVisible>
+			</Item>
+			<Item>
+				<Command>AccountingRegister.GeneralJournal.StandardCommand.OpenByRecorder</Command>
+				<Type>Auto</Type>
+				<DefaultVisible>false</DefaultVisible>
+			</Item>
+			<Item>
+				<Command>AccumulationRegister.Lots.StandardCommand.OpenByRecorder</Command>
+				<Type>Auto</Type>
+				<DefaultVisible>false</DefaultVisible>
+			</Item>
+		</NavigationPanel>
+	</CommandInterface>
+</Form>

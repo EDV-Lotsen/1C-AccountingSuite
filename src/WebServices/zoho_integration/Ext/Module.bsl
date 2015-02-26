@@ -325,12 +325,24 @@ Function zoho_account(jsonin)
 		Return "Fail: No account_name";
 	EndTry;
 	Try
-		If ParsedJSON.account_number <> "" AND ParsedJSON.acount_number <> "0" Then
+		If ParsedJSON.account_number <> "" AND ParsedJSON.account_number <> "0" Then
 			NewCompany.Code = ParsedJSON.account_number;
+		Else
+			Numerator = Catalogs.DocumentNumbering.Companies.GetObject();
+			NextNumber = GeneralFunctions.Increment(Numerator.Number);
+			NewCompany.Code = NextNumber;
+			Numerator.Number = NextNumber;
+			Numerator.Write();
 		EndIf;
 		//autogenerate the numbering if not passed
 	Except
 		//autogenerate the numbering
+		Numerator = Catalogs.DocumentNumbering.Companies.GetObject();
+		NextNumber = GeneralFunctions.Increment(Numerator.Number);
+		NewCompany.Code = NextNumber;
+		Numerator.Number = NextNumber;
+		Numerator.Write();
+		
 	EndTry;
 	
 	NewCompany.Customer = True;   // only gets called when its a customer

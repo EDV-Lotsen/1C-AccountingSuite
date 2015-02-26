@@ -1,26 +1,27 @@
 ﻿
 Procedure OnStart()
 	
-		STitle = GeneralFunctions.GetSystemTitle();
-		CurrentUser = GeneralFunctions.GetUserName();
-		
-		If GeneralFunctions.GetCFOTodayConstant() = True Then
-			AppName = "CFOToday"
-		Else
-			AppName = "AccountingSuite"
-		EndIf;
-		
-		AppTitle = "";
-		If STitle = "" Then
-			AppTitle = CurrentUser + " / " + AppName + " ";
-		Else
-			AppTitle = STitle + " / " + CurrentUser + " / " + AppName + " ";
-		EndIf;
-		
-		SetApplicationCaption(AppTitle);
+	CurrentUser = GeneralFunctions.GetUserName();
 	
-		GeneralFunctions.FirstLaunch();
+	STitle = GeneralFunctions.GetSystemTitle();
 	
-EndProcedure
+	AppName = "AccountingSuite";
+	
+	AppTitle = "";
+	If STitle = "" Then
+		AppTitle = CurrentUser + " / " + AppName + " ";
+	Else
+		AppTitle = STitle + " / " + CurrentUser + " / " + AppName + " ";
+	EndIf;
+	
+	SetApplicationCaption(AppTitle);
 
+	GeneralFunctions.FirstLaunch();
+	GeneralFunctions.CheckConnectionAtServer();
+	
+	If GeneralFunctions.IsUserDisabled(CurrentUser) Then
+		ShowMessageBox(New NotifyDescription("CloseApp", CommonUseClient, False), NStr("en = 'Your user access to the database is locked!'"));
+	EndIf;
+		
+EndProcedure
 

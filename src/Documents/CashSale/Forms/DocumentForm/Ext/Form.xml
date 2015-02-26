@@ -7,22 +7,9 @@
 	<AutoTime>CurrentOrLast</AutoTime>
 	<UsePostingMode>Auto</UsePostingMode>
 	<RepostOnWrite>true</RepostOnWrite>
-	<AutoCommandBar name="FormCommandPanel" id="-1">
-		<ChildItems>
-			<Button name="FormSendEmail" id="225">
-				<Type>CommandBarButton</Type>
-				<CommandName>Form.Command.SendEmail</CommandName>
-				<Title>
-					<v8:item>
-						<v8:lang>en</v8:lang>
-						<v8:content>Email Cash Sale</v8:content>
-					</v8:item>
-				</Title>
-				<ExtendedTooltip name="FormSendEmailExtendedTooltip" id="226"/>
-			</Button>
-		</ChildItems>
-	</AutoCommandBar>
+	<AutoCommandBar name="FormCommandPanel" id="-1"/>
 	<Events>
+		<Event name="AfterWriteAtServer">AfterWriteAtServer</Event>
 		<Event name="NotificationProcessing">NotificationProcessing</Event>
 		<Event name="OnOpen">OnOpen</Event>
 		<Event name="BeforeWrite">BeforeWrite</Event>
@@ -88,7 +75,7 @@
 									<ChildItems>
 										<InputField name="Company" id="22">
 											<DataPath>Object.Company</DataPath>
-											<Width>15</Width>
+											<Width>20</Width>
 											<HorizontalStretch>false</HorizontalStretch>
 											<ContextMenu name="CompanyContextMenu" id="23"/>
 											<ExtendedTooltip name="CompanyExtendedTooltip" id="118"/>
@@ -98,6 +85,7 @@
 										</InputField>
 										<RadioButtonField name="DepositType" id="33">
 											<DataPath>Object.DepositType</DataPath>
+											<TitleLocation>None</TitleLocation>
 											<RadioButtonType>RadioButtons</RadioButtonType>
 											<ChoiceList>
 												<xr:Item>
@@ -277,6 +265,9 @@
 									<HorizontalStretch>false</HorizontalStretch>
 									<ContextMenu name="LocationContextMenu" id="48"/>
 									<ExtendedTooltip name="LocationExtendedTooltip" id="120"/>
+									<Events>
+										<Event name="OnChange">LocationOnChange</Event>
+									</Events>
 								</InputField>
 							</ChildItems>
 						</Page>
@@ -293,6 +284,7 @@
 									<v8:content>Addresses</v8:content>
 								</v8:item>
 							</ToolTip>
+							<Group>Horizontal</Group>
 							<ExtendedTooltip name="AddressesExtendedTooltip" id="354"/>
 							<ChildItems>
 								<InputField name="ShipTo" id="89">
@@ -301,14 +293,42 @@
 									<HorizontalStretch>false</HorizontalStretch>
 									<ContextMenu name="ShipToContextMenu" id="90"/>
 									<ExtendedTooltip name="ShipToExtendedTooltip" id="113"/>
+									<Events>
+										<Event name="OnChange">ShipToOnChange</Event>
+									</Events>
 								</InputField>
+								<LabelDecoration name="DecorationShipTo" id="381">
+									<Font ref="sys:DefaultGUIFont" kind="WindowsFont"/>
+									<Title formatted="false">
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>**</v8:content>
+										</v8:item>
+									</Title>
+									<ContextMenu name="DecorationShipToContextMenu" id="382"/>
+									<ExtendedTooltip name="DecorationShipToExtendedTooltip" id="383"/>
+								</LabelDecoration>
 								<InputField name="BillTo" id="244">
 									<DataPath>Object.BillTo</DataPath>
 									<Width>15</Width>
 									<HorizontalStretch>false</HorizontalStretch>
 									<ContextMenu name="BillToContextMenu" id="245"/>
 									<ExtendedTooltip name="BillToExtendedTooltip" id="246"/>
+									<Events>
+										<Event name="OnChange">BillToOnChange</Event>
+									</Events>
 								</InputField>
+								<LabelDecoration name="DecorationBillTo" id="384">
+									<Font ref="sys:DefaultGUIFont" kind="WindowsFont"/>
+									<Title formatted="false">
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>**</v8:content>
+										</v8:item>
+									</Title>
+									<ContextMenu name="DecorationBillToContextMenu" id="385"/>
+									<ExtendedTooltip name="DecorationBillToExtendedTooltip" id="386"/>
+								</LabelDecoration>
 							</ChildItems>
 						</Page>
 						<Page name="Additional" id="154">
@@ -565,6 +585,9 @@
 									<HorizontalStretch>false</HorizontalStretch>
 									<ContextMenu name="ExchangeRateContextMenu" id="42"/>
 									<ExtendedTooltip name="ExchangeRateExtendedTooltip" id="112"/>
+									<Events>
+										<Event name="OnChange">ExchangeRateOnChange</Event>
+									</Events>
 								</InputField>
 							</ChildItems>
 						</Page>
@@ -699,29 +722,29 @@
 									<ContextMenu name="SalesTaxAcrossAgenciesContextMenu" id="285"/>
 									<AutoCommandBar name="SalesTaxAcrossAgenciesCommandBar" id="286"/>
 									<ExtendedTooltip name="SalesTaxAcrossAgenciesExtendedTooltip" id="287"/>
-									<SearchStringAddition name="SalesTaxAcrossAgenciesSearchString" id="364">
+									<SearchStringAddition name="SalesTaxAcrossAgenciesSearchString" id="393">
 										<AdditionSource>
 											<Item>SalesTaxAcrossAgencies</Item>
 											<Type>SearchStringRepresentation</Type>
 										</AdditionSource>
-										<ContextMenu name="SalesTaxAcrossAgenciesSearchStringContextMenu" id="365"/>
-										<ExtendedTooltip name="SalesTaxAcrossAgenciesSearchStringExtendedTooltip" id="366"/>
+										<ContextMenu name="SalesTaxAcrossAgenciesSearchStringContextMenu" id="394"/>
+										<ExtendedTooltip name="SalesTaxAcrossAgenciesSearchStringExtendedTooltip" id="395"/>
 									</SearchStringAddition>
-									<ViewStatusAddition name="SalesTaxAcrossAgenciesViewStatus" id="367">
+									<ViewStatusAddition name="SalesTaxAcrossAgenciesViewStatus" id="396">
 										<AdditionSource>
 											<Item>SalesTaxAcrossAgencies</Item>
 											<Type>ViewStatusRepresentation</Type>
 										</AdditionSource>
-										<ContextMenu name="SalesTaxAcrossAgenciesViewStatusContextMenu" id="368"/>
-										<ExtendedTooltip name="SalesTaxAcrossAgenciesViewStatusExtendedTooltip" id="369"/>
+										<ContextMenu name="SalesTaxAcrossAgenciesViewStatusContextMenu" id="397"/>
+										<ExtendedTooltip name="SalesTaxAcrossAgenciesViewStatusExtendedTooltip" id="398"/>
 									</ViewStatusAddition>
-									<SearchControlAddition name="SalesTaxAcrossAgenciesSearchControl" id="370">
+									<SearchControlAddition name="SalesTaxAcrossAgenciesSearchControl" id="399">
 										<AdditionSource>
 											<Item>SalesTaxAcrossAgencies</Item>
 											<Type>SearchControl</Type>
 										</AdditionSource>
-										<ContextMenu name="SalesTaxAcrossAgenciesSearchControlContextMenu" id="371"/>
-										<ExtendedTooltip name="SalesTaxAcrossAgenciesSearchControlExtendedTooltip" id="372"/>
+										<ContextMenu name="SalesTaxAcrossAgenciesSearchControlContextMenu" id="400"/>
+										<ExtendedTooltip name="SalesTaxAcrossAgenciesSearchControlExtendedTooltip" id="401"/>
 									</SearchControlAddition>
 									<ChildItems>
 										<InputField name="SalesTaxAcrossAgenciesSalesTaxComponent" id="291">
@@ -755,6 +778,34 @@
 								</Table>
 							</ChildItems>
 						</Page>
+						<Page name="Accounting" id="364">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Accounting</v8:content>
+								</v8:item>
+							</Title>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Accounting</v8:content>
+								</v8:item>
+							</ToolTip>
+							<ExtendedTooltip name="AccountingExtendedTooltip" id="365"/>
+							<ChildItems>
+								<Button name="AuditLogRecord" id="366">
+									<Type>UsualButton</Type>
+									<CommandName>Form.Command.AuditLogRecord</CommandName>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Audit Log Records</v8:content>
+										</v8:item>
+									</Title>
+									<ExtendedTooltip name="AuditLogRecordExtendedTooltip" id="367"/>
+								</Button>
+							</ChildItems>
+						</Page>
 					</ChildItems>
 				</Pages>
 			</ChildItems>
@@ -776,12 +827,55 @@
 			<ShowTitle>false</ShowTitle>
 			<ExtendedTooltip name="LineItemSectionExtendedTooltip" id="123"/>
 			<ChildItems>
+				<UsualGroup name="CommandBarLineItems" id="368">
+					<Group>Horizontal</Group>
+					<Representation>None</Representation>
+					<ShowTitle>false</ShowTitle>
+					<ExtendedTooltip name="CommandBarLineItemsExtendedTooltip" id="369"/>
+					<ChildItems>
+						<CommandBar name="CommandBarLineItems1" id="370">
+							<HorizontalStretch>false</HorizontalStretch>
+							<ExtendedTooltip name="CommandBarLineItems1ExtendedTooltip" id="371"/>
+							<ChildItems>
+								<Button name="AddLine" id="372">
+									<Type>CommandBarButton</Type>
+									<CommandName>Form.Command.AddLine</CommandName>
+									<ExtendedTooltip name="AddLineExtendedTooltip" id="373"/>
+								</Button>
+							</ChildItems>
+						</CommandBar>
+						<LabelField name="InformationCurrentRow" id="374">
+							<DataPath>InformationCurrentRow</DataPath>
+							<TitleLocation>None</TitleLocation>
+							<BackColor>web:AntiqueWhite</BackColor>
+							<ContextMenu name="InformationCurrentRowContextMenu" id="375"/>
+							<ExtendedTooltip name="InformationCurrentRowExtendedTooltip" id="376"/>
+						</LabelField>
+						<CommandBar name="CommandBarLineItems2" id="377">
+							<HorizontalStretch>false</HorizontalStretch>
+							<CommandSource>Item.LineItems</CommandSource>
+							<ExtendedTooltip name="CommandBarLineItems2ExtendedTooltip" id="378"/>
+							<ChildItems>
+								<Button name="AddLine1" id="379">
+									<Type>CommandBarButton</Type>
+									<OnlyInAllActions>false</OnlyInAllActions>
+									<CommandName>Form.Command.AddLine</CommandName>
+									<ExtendedTooltip name="AddLine1ExtendedTooltip" id="380"/>
+								</Button>
+							</ChildItems>
+						</CommandBar>
+					</ChildItems>
+				</UsualGroup>
 				<Table name="LineItems" id="5">
+					<CommandBarLocation>None</CommandBarLocation>
 					<SkipOnInput>false</SkipOnInput>
 					<AutoInsertNewRow>true</AutoInsertNewRow>
 					<EnableStartDrag>true</EnableStartDrag>
 					<EnableDrag>true</EnableDrag>
 					<DataPath>Object.LineItems</DataPath>
+					<CommandSet>
+						<ExcludedCommand>Add</ExcludedCommand>
+					</CommandSet>
 					<SearchStringLocation>None</SearchStringLocation>
 					<ViewStatusLocation>None</ViewStatusLocation>
 					<SearchControlLocation>None</SearchControlLocation>
@@ -789,32 +883,35 @@
 					<ContextMenu name="LineItemsContextMenu" id="6"/>
 					<AutoCommandBar name="LineItemsCommandBar" id="7"/>
 					<ExtendedTooltip name="LineItemsExtendedTooltip" id="124"/>
-					<SearchStringAddition name="LineItemsSearchString" id="373">
+					<SearchStringAddition name="LineItemsSearchString" id="402">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>SearchStringRepresentation</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsSearchStringContextMenu" id="374"/>
-						<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="375"/>
+						<ContextMenu name="LineItemsSearchStringContextMenu" id="403"/>
+						<ExtendedTooltip name="LineItemsSearchStringExtendedTooltip" id="404"/>
 					</SearchStringAddition>
-					<ViewStatusAddition name="LineItemsViewStatus" id="376">
+					<ViewStatusAddition name="LineItemsViewStatus" id="405">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>ViewStatusRepresentation</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsViewStatusContextMenu" id="377"/>
-						<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="378"/>
+						<ContextMenu name="LineItemsViewStatusContextMenu" id="406"/>
+						<ExtendedTooltip name="LineItemsViewStatusExtendedTooltip" id="407"/>
 					</ViewStatusAddition>
-					<SearchControlAddition name="LineItemsSearchControl" id="379">
+					<SearchControlAddition name="LineItemsSearchControl" id="408">
 						<AdditionSource>
 							<Item>LineItems</Item>
 							<Type>SearchControl</Type>
 						</AdditionSource>
-						<ContextMenu name="LineItemsSearchControlContextMenu" id="380"/>
-						<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="381"/>
+						<ContextMenu name="LineItemsSearchControlContextMenu" id="409"/>
+						<ExtendedTooltip name="LineItemsSearchControlExtendedTooltip" id="410"/>
 					</SearchControlAddition>
 					<Events>
+						<Event name="OnEditEnd">LineItemsOnEditEnd</Event>
 						<Event name="BeforeAddRow">LineItemsBeforeAddRow</Event>
+						<Event name="BeforeDeleteRow">LineItemsBeforeDeleteRow</Event>
+						<Event name="OnActivateRow">LineItemsOnActivateRow</Event>
 						<Event name="AfterDeleteRow">LineItemsAfterDeleteRow</Event>
 						<Event name="OnChange">LineItemsOnChange</Event>
 					</Events>
@@ -848,6 +945,35 @@
 							<Width>20</Width>
 							<ContextMenu name="LineItemsProductDescriptionContextMenu" id="57"/>
 							<ExtendedTooltip name="LineItemsProductDescriptionExtendedTooltip" id="127"/>
+						</InputField>
+						<InputField name="LineItemsLot" id="387">
+							<DataPath>Object.LineItems.Lot</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<Width>20</Width>
+							<ChoiceParameterLinks>
+								<xr:Link>
+									<xr:Name>Filter.Owner</xr:Name>
+									<xr:DataPath xsi:type="xs:string">Items.LineItems.CurrentData.LotOwner</xr:DataPath>
+									<xr:ValueChange>Clear</xr:ValueChange>
+								</xr:Link>
+							</ChoiceParameterLinks>
+							<ContextMenu name="LineItemsLotContextMenu" id="388"/>
+							<ExtendedTooltip name="LineItemsLotExtendedTooltip" id="389"/>
+						</InputField>
+						<InputField name="LineItemsSerialNumbers" id="390">
+							<DataPath>Object.LineItems.SerialNumbers</DataPath>
+							<Width>20</Width>
+							<Height>1</Height>
+							<Wrap>false</Wrap>
+							<MultiLine>true</MultiLine>
+							<ChoiceButton>true</ChoiceButton>
+							<ContextMenu name="LineItemsSerialNumbersContextMenu" id="391"/>
+							<ExtendedTooltip name="LineItemsSerialNumbersExtendedTooltip" id="392"/>
+							<Events>
+								<Event name="OnChange">LineItemsSerialNumbersOnChange</Event>
+								<Event name="StartChoice">LineItemsSerialNumbersStartChoice</Event>
+								<Event name="TextEditEnd">LineItemsSerialNumbersTextEditEnd</Event>
+							</Events>
 						</InputField>
 						<InputField name="LineItemsTaxableAmount" id="310">
 							<DataPath>Object.LineItems.TaxableAmount</DataPath>
@@ -986,6 +1112,13 @@
 						<InputField name="LineItemsProject" id="95">
 							<DataPath>Object.LineItems.Project</DataPath>
 							<EditMode>EnterOnInput</EditMode>
+							<ChoiceParameterLinks>
+								<xr:Link>
+									<xr:Name>Filter.Customer</xr:Name>
+									<xr:DataPath xsi:type="xs:string">Object.Company</xr:DataPath>
+									<xr:ValueChange>Clear</xr:ValueChange>
+								</xr:Link>
+							</ChoiceParameterLinks>
 							<ContextMenu name="LineItemsProjectContextMenu" id="96"/>
 							<ExtendedTooltip name="LineItemsProjectExtendedTooltip" id="134"/>
 						</InputField>
@@ -1385,12 +1518,61 @@
 			<UseAlways>
 				<Field>Object.RegisterRecords</Field>
 			</UseAlways>
+			<Columns>
+				<AdditionalColumns table="Object.LineItems">
+					<Column name="LotOwner" id="1">
+						<Title>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>Lot owner</v8:content>
+							</v8:item>
+						</Title>
+						<Type>
+							<v8:Type>cfg:CatalogRef.Products</v8:Type>
+							<v8:Type>cfg:CatalogRef.Characteristics</v8:Type>
+						</Type>
+					</Column>
+					<Column name="SerialNumbers" id="2">
+						<Title>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>Serial #</v8:content>
+							</v8:item>
+						</Title>
+						<Type>
+							<v8:Type>xs:string</v8:Type>
+							<v8:StringQualifiers>
+								<v8:Length>0</v8:Length>
+								<v8:AllowedLength>Variable</v8:AllowedLength>
+							</v8:StringQualifiers>
+						</Type>
+					</Column>
+					<Column name="UseLotsSerials" id="3">
+						<Title>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>Use lots or serials editing for current row.
+0 - Editing of lot / serial number is not allowed,
+1 - Editing of lots is allowed, 2 - Editing of serials is allowed.</v8:content>
+							</v8:item>
+						</Title>
+						<Type>
+							<v8:Type>xs:decimal</v8:Type>
+							<v8:NumberQualifiers>
+								<v8:Digits>1</v8:Digits>
+								<v8:FractionDigits>0</v8:FractionDigits>
+								<v8:AllowedSign>Nonnegative</v8:AllowedSign>
+							</v8:NumberQualifiers>
+						</Type>
+					</Column>
+				</AdditionalColumns>
+			</Columns>
 		</Attribute>
-		<Attribute name="NewRow" id="2">
+		<Attribute name="IsNewRow" id="2">
 			<Title>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>New row</v8:content>
+					<v8:content>Is new row</v8:content>
 				</v8:item>
 			</Title>
 			<Type>
@@ -1442,22 +1624,253 @@
 				</v8:NumberQualifiers>
 			</Type>
 		</Attribute>
-	</Attributes>
-	<Commands>
-		<Command name="SendEmail" id="2">
+		<Attribute name="InformationCurrentRow" id="6">
 			<Title>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Send email</v8:content>
+					<v8:content>Current row</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="Date" id="7">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Date</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:dateTime</v8:Type>
+				<v8:DateQualifiers>
+					<v8:DateFractions>DateTime</v8:DateFractions>
+				</v8:DateQualifiers>
+			</Type>
+		</Attribute>
+		<ConditionalAppearance>
+			<dcsset:item>
+				<dcsset:selection>
+					<dcsset:item>
+						<dcsset:field>LineItemsLot</dcsset:field>
+					</dcsset:item>
+					<dcsset:item>
+						<dcsset:field>LineItemsSerialNumbers</dcsset:field>
+					</dcsset:item>
+				</dcsset:selection>
+				<dcsset:filter>
+					<dcsset:item xsi:type="dcsset:FilterItemComparison">
+						<dcsset:left xsi:type="dcscor:Field">Object.LineItems.UseLotsSerials</dcsset:left>
+						<dcsset:comparisonType>Equal</dcsset:comparisonType>
+						<dcsset:right xsi:type="xs:decimal">0</dcsset:right>
+					</dcsset:item>
+				</dcsset:filter>
+				<dcsset:appearance>
+					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+						<dcscor:parameter>MarkIncomplete</dcscor:parameter>
+						<dcscor:value xsi:type="xs:boolean">false</dcscor:value>
+					</dcscor:item>
+					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+						<dcscor:parameter>ReadOnly</dcscor:parameter>
+						<dcscor:value xsi:type="xs:boolean">true</dcscor:value>
+					</dcscor:item>
+				</dcsset:appearance>
+			</dcsset:item>
+			<dcsset:item>
+				<dcsset:selection>
+					<dcsset:item>
+						<dcsset:field>LineItemsLot</dcsset:field>
+					</dcsset:item>
+				</dcsset:selection>
+				<dcsset:filter>
+					<dcsset:item xsi:type="dcsset:FilterItemComparison">
+						<dcsset:left xsi:type="dcscor:Field">Object.LineItems.UseLotsSerials</dcsset:left>
+						<dcsset:comparisonType>Equal</dcsset:comparisonType>
+						<dcsset:right xsi:type="xs:decimal">1</dcsset:right>
+					</dcsset:item>
+				</dcsset:filter>
+				<dcsset:appearance>
+					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+						<dcscor:parameter>ReadOnly</dcscor:parameter>
+						<dcscor:value xsi:type="xs:boolean">false</dcscor:value>
+					</dcscor:item>
+				</dcsset:appearance>
+			</dcsset:item>
+			<dcsset:item>
+				<dcsset:selection>
+					<dcsset:item>
+						<dcsset:field>LineItemsLot</dcsset:field>
+					</dcsset:item>
+				</dcsset:selection>
+				<dcsset:filter>
+					<dcsset:item xsi:type="dcsset:FilterItemGroup">
+						<dcsset:groupType>AndGroup</dcsset:groupType>
+						<dcsset:item xsi:type="dcsset:FilterItemComparison">
+							<dcsset:left xsi:type="dcscor:Field">Object.LineItems.UseLotsSerials</dcsset:left>
+							<dcsset:comparisonType>Equal</dcsset:comparisonType>
+							<dcsset:right xsi:type="xs:decimal">1</dcsset:right>
+						</dcsset:item>
+						<dcsset:item xsi:type="dcsset:FilterItemComparison">
+							<dcsset:left xsi:type="dcscor:Field">Object.LineItems.Lot</dcsset:left>
+							<dcsset:comparisonType>Equal</dcsset:comparisonType>
+							<dcsset:right xsi:type="dcscor:DesignTimeValue">Catalog.Lots.EmptyRef</dcsset:right>
+						</dcsset:item>
+					</dcsset:item>
+				</dcsset:filter>
+				<dcsset:appearance>
+					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+						<dcscor:parameter>MarkIncomplete</dcscor:parameter>
+						<dcscor:value xsi:type="xs:boolean">true</dcscor:value>
+					</dcscor:item>
+				</dcsset:appearance>
+			</dcsset:item>
+			<dcsset:item>
+				<dcsset:selection>
+					<dcsset:item>
+						<dcsset:field>LineItemsSerialNumbers</dcsset:field>
+					</dcsset:item>
+				</dcsset:selection>
+				<dcsset:filter>
+					<dcsset:item xsi:type="dcsset:FilterItemComparison">
+						<dcsset:left xsi:type="dcscor:Field">Object.LineItems.UseLotsSerials</dcsset:left>
+						<dcsset:comparisonType>Equal</dcsset:comparisonType>
+						<dcsset:right xsi:type="xs:decimal">1</dcsset:right>
+					</dcsset:item>
+				</dcsset:filter>
+				<dcsset:appearance>
+					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+						<dcscor:parameter>MarkIncomplete</dcscor:parameter>
+						<dcscor:value xsi:type="xs:boolean">false</dcscor:value>
+					</dcscor:item>
+					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+						<dcscor:parameter>ReadOnly</dcscor:parameter>
+						<dcscor:value xsi:type="xs:boolean">true</dcscor:value>
+					</dcscor:item>
+				</dcsset:appearance>
+			</dcsset:item>
+			<dcsset:item>
+				<dcsset:selection>
+					<dcsset:item>
+						<dcsset:field>LineItemsSerialNumbers</dcsset:field>
+					</dcsset:item>
+				</dcsset:selection>
+				<dcsset:filter>
+					<dcsset:item xsi:type="dcsset:FilterItemComparison">
+						<dcsset:left xsi:type="dcscor:Field">Object.LineItems.UseLotsSerials</dcsset:left>
+						<dcsset:comparisonType>Equal</dcsset:comparisonType>
+						<dcsset:right xsi:type="xs:decimal">2</dcsset:right>
+					</dcsset:item>
+				</dcsset:filter>
+				<dcsset:appearance>
+					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+						<dcscor:parameter>ReadOnly</dcscor:parameter>
+						<dcscor:value xsi:type="xs:boolean">false</dcscor:value>
+					</dcscor:item>
+				</dcsset:appearance>
+			</dcsset:item>
+			<dcsset:item>
+				<dcsset:selection>
+					<dcsset:item>
+						<dcsset:field>LineItemsSerialNumbers</dcsset:field>
+					</dcsset:item>
+				</dcsset:selection>
+				<dcsset:filter>
+					<dcsset:item xsi:type="dcsset:FilterItemGroup">
+						<dcsset:groupType>AndGroup</dcsset:groupType>
+						<dcsset:item xsi:type="dcsset:FilterItemComparison">
+							<dcsset:left xsi:type="dcscor:Field">Object.LineItems.UseLotsSerials</dcsset:left>
+							<dcsset:comparisonType>Equal</dcsset:comparisonType>
+							<dcsset:right xsi:type="xs:decimal">2</dcsset:right>
+						</dcsset:item>
+						<dcsset:item xsi:type="dcsset:FilterItemComparison">
+							<dcsset:left xsi:type="dcscor:Field">Object.LineItems.SerialNumbers</dcsset:left>
+							<dcsset:comparisonType>Equal</dcsset:comparisonType>
+							<dcsset:right xsi:type="xs:string"/>
+						</dcsset:item>
+					</dcsset:item>
+				</dcsset:filter>
+				<dcsset:appearance>
+					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+						<dcscor:parameter>MarkIncomplete</dcscor:parameter>
+						<dcscor:value xsi:type="xs:boolean">true</dcscor:value>
+					</dcscor:item>
+				</dcsset:appearance>
+			</dcsset:item>
+			<dcsset:item>
+				<dcsset:selection>
+					<dcsset:item>
+						<dcsset:field>LineItemsLot</dcsset:field>
+					</dcsset:item>
+				</dcsset:selection>
+				<dcsset:filter>
+					<dcsset:item xsi:type="dcsset:FilterItemComparison">
+						<dcsset:left xsi:type="dcscor:Field">Object.LineItems.UseLotsSerials</dcsset:left>
+						<dcsset:comparisonType>Equal</dcsset:comparisonType>
+						<dcsset:right xsi:type="xs:decimal">2</dcsset:right>
+					</dcsset:item>
+				</dcsset:filter>
+				<dcsset:appearance>
+					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+						<dcscor:parameter>MarkIncomplete</dcscor:parameter>
+						<dcscor:value xsi:type="xs:boolean">false</dcscor:value>
+					</dcscor:item>
+					<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+						<dcscor:parameter>ReadOnly</dcscor:parameter>
+						<dcscor:value xsi:type="xs:boolean">true</dcscor:value>
+					</dcscor:item>
+				</dcsset:appearance>
+			</dcsset:item>
+		</ConditionalAppearance>
+	</Attributes>
+	<Commands>
+		<Command name="ChargeWithStripe" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Charge with Stripe</v8:content>
 				</v8:item>
 			</Title>
 			<ToolTip>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Send email</v8:content>
+					<v8:content>Charge with stripe</v8:content>
 				</v8:item>
 			</ToolTip>
-			<Action>SendEmail</Action>
+			<Action>ChargeWithStripe</Action>
+		</Command>
+		<Command name="AuditLogRecord" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Audit log record</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Audit log record</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>AuditLogRecord</Action>
+		</Command>
+		<Command name="AddLine" id="4">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Add</v8:content>
+				</v8:item>
+			</Title>
+			<Picture>
+				<xr:Ref>StdPicture.CreateListItem</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
+			<Action>AddLine</Action>
+			<Representation>Text</Representation>
 		</Command>
 	</Commands>
 	<CommandInterface>

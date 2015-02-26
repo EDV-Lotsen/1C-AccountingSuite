@@ -438,10 +438,11 @@ Function PrintSO(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
 	
 	TemplateArea = Template.GetArea("Area3|Area2");
 	TemplateArea.Parameters.LineSubtotal = Format(Selection.LineSubtotal, "NFD=2; NZ=");
-	TemplateArea.Parameters.Discount = "("+ Format(Selection.Discount, "NFD=2; NZ=") + ")";
+	TemplateArea.Parameters.Discount = Format(Selection.Discount, "NFD=2; NZ=");
 	TemplateArea.Parameters.Subtotal = Format(Selection.Subtotal, "NFD=2; NZ=");
 	TemplateArea.Parameters.Shipping = Format(Selection.Shipping, "NFD=2; NZ=");
 	TemplateArea.Parameters.SalesTax = Format(Selection.SalesTax, "NFD=2; NZ=");
+	TemplateArea.Parameters.NetTotalTitle =  "Net Total " + Selection.Currency.Description + ": ";
 	TemplateArea.Parameters.Total = Format(Selection.DocumentTotal, "NFD=2; NZ=");
 
 	TestData.Insert("Total",TemplateArea.Parameters.Total); // for unit testing
@@ -562,10 +563,12 @@ Function PrintSI(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
    |		Unit,
    |		QtyUM,
    |		PriceUnits,
+   |        Product.Price AS StandardPrice,
    |		LineTotal,
    |		Project,
+   |		Class,
    |		DeliveryDateActual,
-   |		Class
+   |		Lot
    |	),
    |	SalesInvoice.Terms,
    |	SalesInvoice.DueDate,
@@ -586,7 +589,17 @@ Function PrintSI(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
    |	SalesInvoice.DropshipCompany,
    |	SalesInvoice.DropshipShipTo,
    |	SalesInvoice.DropshipRefNum,
-   |	SalesInvoice.LocationActual
+   |	SalesInvoice.LocationActual,
+   |	SalesInvoice.SalesTaxAcrossAgencies.(
+   |		Ref,
+   |		LineNumber,
+   |		Agency,
+   |		Rate,
+   |		Amount,
+   |		SalesTaxRate,
+   |		SalesTaxComponent,
+   |		AvataxTaxComponent
+   |	)
    |FROM
    |	Document.SalesInvoice AS SalesInvoice
    |		LEFT JOIN AccountingRegister.GeneralJournal.Balance AS GeneralJournalBalance
@@ -764,16 +777,21 @@ Function PrintSI(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
 	EndIf;
 		
 	SelectionLineItems = Selection.LineItems.Select();
-	ShowClass = Constants.SIShowClassCol.Get();
-	ShowSVC = Constants.SIShowSVCCol.Get();
+	ShowClass    = Constants.SIShowClassCol.Get();
+	ShowSVC      = Constants.SIShowSVCCol.Get();
+	ShowDiscount = Constants.SIShowDiscountCol.Get();
 	If ShowSVC = True Then
 		TemplateArea = Template.GetArea("LineItemsHeaderService");
 		Spreadsheet.Put(TemplateArea);
 		TemplateArea = Template.GetArea("LineItems3Service");
-	Elsif ShowClass Then
+	ElsIf ShowClass Then
 		TemplateArea = Template.GetArea("LineItemsHeaderLot");
 		Spreadsheet.Put(TemplateArea);
 		TemplateArea = Template.GetArea("LineItems5Lot");	
+	ElsIf ShowDiscount Then
+		TemplateArea = Template.GetArea("LineItemsHeaderDiscount");
+		Spreadsheet.Put(TemplateArea);
+		TemplateArea = Template.GetArea("LineItems7Discount");	
 	Else
 		TemplateArea = Template.GetArea("LineItemsHeader");
 		Spreadsheet.Put(TemplateArea);
@@ -811,28 +829,33 @@ Function PrintSI(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
 		ProductPrecisionFormat = GeneralFunctionsReusable.PriceFormatForOneItem(SelectionLineItems.Product);
 		TemplateArea.Parameters.Price     = Format(SelectionLineItems.PriceUnits, ProductPrecisionFormat + "; NZ=");
 		TemplateArea.Parameters.LineTotal = Format(SelectionLineItems.LineTotal, "NFD=2; NZ=");
-		If ShowSVC = True Then
+		If ShowSVC Then
 			TemplateArea.Parameters.DeliveryDateActual = Format(SelectionLineItems.DeliveryDateActual,"DLF=D;");
+		ElsIf ShowDiscount Then
+			TemplateArea.Parameters.StandardPrice = Format(SelectionLineItems.StandardPrice, ProductPrecisionFormat + "; NZ=");
+			TemplateArea.Parameters.Discount      = Format(?(SelectionLineItems.StandardPrice <> 0, (((SelectionLineItems.PriceUnits / SelectionLineItems.StandardPrice) * 100) - 100) * -1 , 0), "NFD=2; NZ=0.00") + " %";
 		EndIf;
 
 		Spreadsheet.Put(TemplateArea, SelectionLineItems.Level());
 		
 		If LineItemSwitch = False Then
-			If ShowSVC = True Then
-				TemplateArea = Template.GetArea("LineItems4Service");
-				
-			Elsif ShowClass Then
+			If ShowSVC Then
+				TemplateArea = Template.GetArea("LineItems4Service");	
+			ElsIf ShowClass Then
 				TemplateArea = Template.GetArea("LineItems6Lot");
+			ElsIf ShowDiscount Then
+				TemplateArea = Template.GetArea("LineItems8Discount");
 			Else
 				TemplateArea = Template.GetArea("LineItems2");
 			EndIf;
 			LineItemSwitch = True;
 		Else
-			If ShowSVC = True Then
-				TemplateArea = Template.GetArea("LineItems3Service");
-				
-			Elsif ShowClass Then
+			If ShowSVC Then
+				TemplateArea = Template.GetArea("LineItems3Service");	
+			ElsIf ShowClass Then
 				TemplateArea = Template.GetArea("LineItems5Lot");
+			ElsIf ShowDiscount Then
+				TemplateArea = Template.GetArea("LineItems7Discount");
 			Else
 				TemplateArea = Template.GetArea("LineItems");
 			EndIf;
@@ -944,10 +967,9 @@ Function PrintSI(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
 		Spreadsheet.Put(Row);
 	EndIf;
 	
-	TemplateArea = Template.GetArea("Area3|Area1");					
+	TemplateArea = Template.GetArea("Area3|Area1");	
 	TemplateArea.Parameters.TermAndCond = Selection.Ref.EmailNote;
 	Spreadsheet.Put(TemplateArea);
-
 	
 	TemplateArea = Template.GetArea("Area3|Area2");
 	TemplateArea.Parameters.LineSubtotal = Format(Selection.LineSubtotal, "NFD=2; NZ=");
@@ -962,8 +984,10 @@ Function PrintSI(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
 		TemplateArea.Parameters.SalesTax = Format(Selection.SalesTax, "NFD=2; NZ=");
 	EndIf;
 	TemplateArea.Parameters.Total = Format(Selection.DocumentTotal, "NFD=2; NZ=");
+	// change here if need to disable showing currency if multi-currency isn't enabled
 	TemplateArea.Parameters.NetTotalTitle = "Net Total " + Selection.Currency.Description + ": ";
 	TemplateArea.Parameters.BalanceDueTitle = "Balance Due " + Selection.Currency.Description + ": ";
+	// end change here
 	NonNullBalance = 0;
 	If Selection.Balance <> NULL Then NonNullBalance = Selection.Balance; EndIf;
 	TemplateArea.Parameters.Balance = Format(NonNullBalance, "NFD=2; NZ=");
@@ -976,25 +1000,38 @@ Function PrintSI(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
 	Row = Template.GetArea("EmptyRow");
 	Footer = Template.GetArea("FooterField");
 	Compensator = Template.GetArea("Compensator");
+	SIFooter1 = Constants.SIFoot1Type.Get();
+	SIFooter2 = Constants.SIFoot2Type.Get();
+	SIFooter3 = Constants.SIFoot3Type.Get();
+	SIFooterNone = Enums.TextOrImage.None;
+	
+	PrintSIFooter =  Not ((SIFooter1 = SIFooterNone) And (SIFooter2 = SIFooterNone) And (SIFooter3 = SIFooterNone));
+	
 	RowsToCheck = New Array();
 	RowsToCheck.Add(Row);
-	RowsToCheck.Add(Footer);
+	If PrintSIFooter Then 
+		RowsToCheck.Add(Footer);
+	EndIf;
 	RowsToCheck.Add(Row);	
 	
 	While Spreadsheet.CheckPut(RowsToCheck) = False Do
-		 Spreadsheet.Put(Row);
-	   	 RowsToCheck.Clear();
-	  	 RowsToCheck.Add(Footer);
-		 RowsToCheck.Add(Row);
+		Spreadsheet.Put(Row);
+	   	RowsToCheck.Clear();
+	  	If PrintSIFooter Then 
+			RowsToCheck.Add(Footer);
+		EndIf;
+		RowsToCheck.Add(Row);
 	EndDo;
 	 
 	While Spreadsheet.CheckPut(RowsToCheck) Do
-		 Spreadsheet.Put(Row);
-	   	 RowsToCheck.Clear();
-	  	 RowsToCheck.Add(Footer);
-		 RowsToCheck.Add(Row);
-		 RowsToCheck.Add(Row);
-		 RowsToCheck.Add(Row);
+		Spreadsheet.Put(Row);
+	   	RowsToCheck.Clear();
+	  	If PrintSIFooter Then 
+			RowsToCheck.Add(Footer);
+		EndIf;
+		RowsToCheck.Add(Row);
+		RowsToCheck.Add(Row);
+		RowsToCheck.Add(Row);
 
 	EndDo;
 
@@ -1046,5 +1083,463 @@ Function PrintSI(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
    EndDo;
    
    Return TestData;
+		
+EndFunction
+
+Function PrintShipment(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
+	
+	SheetTitle = "Shipment";
+	CustomTemplate = GeneralFunctions.GetCustomTemplate("Document.Shipment", SheetTitle);
+	
+	If CustomTemplate = Undefined Then
+		Template = Documents.Shipment.GetTemplate("ShipmentPrintForm");
+	Else
+		Template = CustomTemplate;
+	EndIf;
+	
+	// Quering necessary data.
+	Query = New Query();
+	Query.Text = "SELECT
+	             |	Shipment.Ref,
+	             |	Shipment.Company,
+	             |	Shipment.Date,
+	             |	Shipment.Number,
+	             |	Shipment.ShipTo,
+	             |	Shipment.LineItems.(
+	             |		Product,
+	             |		ProductDescription,
+	             |		LineItems.Order.RefNum AS PO,
+	             |		QtyUnits,
+	             |		Unit,
+	             |		QtyUM,
+	             |		Project,
+	             |		DeliveryDateActual,
+	             |		Lot
+	             |	),
+	             |	Shipment.Terms,
+	             |	Shipment.BillTo,
+	             |	Shipment.Posted,
+	             |	Shipment.RefNum,
+	             |	Shipment.TrackingNumber,
+	             |	Shipment.Carrier,
+	             |	Shipment.SalesPerson,
+	             |	Shipment.FOB,
+	             |	Shipment.DropshipCompany,
+	             |	Shipment.DropshipShipTo,
+	             |	Shipment.DropshipRefNum,
+	             |	Shipment.LocationActual
+	             |FROM
+	             |	Document.Shipment AS Shipment
+	             |WHERE
+	             |	Shipment.Ref IN(&Ref)";
+				
+	Query.SetParameter("Ref", Ref);
+	Selection = Query.Execute().Select();
+   
+   Spreadsheet.Clear();
+
+   While Selection.Next() Do
+	   
+	BinaryLogo = GeneralFunctions.GetLogo();
+	LogoPicture = New Picture(BinaryLogo);
+	DocumentPrinting.FillLogoInDocumentTemplate(Template, LogoPicture); 
+	
+	Try
+		FooterLogo = GeneralFunctions.GetFooterPO("ShipmentFooter1");
+		Footer1Pic = New Picture(FooterLogo);
+		FooterLogo2 = GeneralFunctions.GetFooterPO("ShipmentFooter2");
+		Footer2Pic = New Picture(FooterLogo2);
+		FooterLogo3 = GeneralFunctions.GetFooterPO("ShipmentFooter3");
+		Footer3Pic = New Picture(FooterLogo3);
+	Except
+	EndTry;
+	
+	//Add footer with page count	
+	Template.Footer.Enabled = True;
+	Template.Footer.RightText = "Page [&PageNumber] of [&PagesTotal]";
+   
+	TemplateArea = Template.GetArea("Header");
+	  		
+	UsBill = PrintTemplates.ContactInfoDatasetUs();
+	If Selection.DropshipShipTo <> Catalogs.Addresses.EmptyRef() Then
+		ThemShip = PrintTemplates.ContactInfoDataset(Selection.DropshipCompany, "ThemShip", Selection.DropshipShipTo);
+	Else
+		ThemShip = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemShip", Selection.ShipTo);
+	EndIf;
+	
+	ThemBill = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemBill", Selection.BillTo);
+	
+	TemplateArea.Parameters.Fill(UsBill);
+	TemplateArea.Parameters.Fill(ThemShip);
+	TemplateArea.Parameters.Fill(ThemBill);
+		
+	If Constants.ShipmentShowFullName.Get() = True Then
+		TemplateArea.Parameters.ThemFullName = ThemBill.ThemBillSalutation + " " + ThemBill.ThemBillFirstName + " " + ThemBill.ThemBillLastName + Chars.LF;
+		TemplateArea.Parameters.ThemShipFullName = ThemShip.ThemShipSalutation + " " + ThemShip.ThemShipFirstName + " " + ThemShip.ThemShipLastName + Chars.LF;
+	EndIf;
+	
+	If Constants.ShipmentShowCountry.Get() = False Then
+		TemplateArea.Parameters.ThemBillCountry = "";
+		TemplateArea.Parameters.ThemShipCountry = "";
+	EndIf;
+	
+	TemplateArea.Parameters.Date = Selection.Date;
+	TemplateArea.Parameters.Number = Selection.Number;
+	
+	If Selection.DropshipShipTo <> Catalogs.Addresses.EmptyRef() Then
+		TemplateArea.Parameters.RefNum = Selection.DropShipRefNum;	
+	Else 
+		TemplateArea.Parameters.RefNum = Selection.RefNum;
+	EndIf;
+	
+	TemplateArea.Parameters.Carrier = Selection.Carrier;
+	TemplateArea.Parameters.TrackingNumber = Selection.TrackingNumber;
+	
+	//UsBill filling
+	If TemplateArea.Parameters.UsBillLine1 <> "" Then
+		TemplateArea.Parameters.UsBillLine1 = TemplateArea.Parameters.UsBillLine1 + Chars.LF; 
+	EndIf;
+
+	If TemplateArea.Parameters.UsBillLine2 <> "" Then
+		TemplateArea.Parameters.UsBillLine2 = TemplateArea.Parameters.UsBillLine2 + Chars.LF; 
+	EndIf;
+	
+	If TemplateArea.Parameters.UsBillCityStateZIP <> "" Then
+		TemplateArea.Parameters.UsBillCityStateZIP = TemplateArea.Parameters.UsBillCityStateZIP + Chars.LF; 
+	EndIf;
+	
+	If TemplateArea.Parameters.UsBillPhone <> "" Then
+		TemplateArea.Parameters.UsBillPhone = TemplateArea.Parameters.UsBillPhone + Chars.LF; 
+	EndIf;
+	
+	If TemplateArea.Parameters.UsBillEmail <> "" AND Constants.ShipmentShowEmail.Get() = False Then
+		TemplateArea.Parameters.UsBillEmail = ""; 
+	EndIf;
+		
+	
+	//ThemBill filling
+	If TemplateArea.Parameters.ThemBillLine1 <> "" Then
+		TemplateArea.Parameters.ThemBillLine1 = TemplateArea.Parameters.ThemBillLine1 + Chars.LF; 
+	EndIf;
+
+	If TemplateArea.Parameters.ThemBillLine2 <> "" Then
+		TemplateArea.Parameters.ThemBillLine2 = TemplateArea.Parameters.ThemBillLine2 + Chars.LF; 
+	EndIf;
+	
+	If TemplateArea.Parameters.ThemBillLine3 <> "" Then
+		TemplateArea.Parameters.ThemBillLine3 = TemplateArea.Parameters.ThemBillLine3 + Chars.LF; 
+	EndIf;
+	
+	If TemplateArea.Parameters.ThemBillCityStateZIP <> "" Then
+		TemplateArea.Parameters.ThemBillCityStateZIP = TemplateArea.Parameters.ThemBillCityStateZIP + Chars.LF; 
+	EndIf;
+
+	
+	//ThemShip filling
+	If TemplateArea.Parameters.ThemShipLine1 <> "" Then
+		TemplateArea.Parameters.ThemShipLine1 = TemplateArea.Parameters.ThemShipLine1 + Chars.LF; 
+	EndIf;
+
+	If TemplateArea.Parameters.ThemShipLine2 <> "" Then
+		TemplateArea.Parameters.ThemShipLine2 = TemplateArea.Parameters.ThemShipLine2 + Chars.LF; 
+	EndIf;
+	
+	If TemplateArea.Parameters.ThemShipLine3 <> "" Then
+		TemplateArea.Parameters.ThemShipLine3 = TemplateArea.Parameters.ThemShipLine3 + Chars.LF; 
+	EndIf;
+	
+	If TemplateArea.Parameters.ThemShipCityStateZIP <> "" Then
+		TemplateArea.Parameters.ThemShipCityStateZIP = TemplateArea.Parameters.ThemShipCityStateZIP + Chars.LF; 
+	EndIf;
+
+	Spreadsheet.Put(TemplateArea);
+	 	 
+	If Constants.ShipmentShowPhone2.Get() = False Then
+		Direction = SpreadsheetDocumentShiftType.Vertical;
+		Area = Spreadsheet.Area("MobileArea");
+		Spreadsheet.DeleteArea(Area, Direction);
+		Spreadsheet.InsertArea(Spreadsheet.Area("R10"), Spreadsheet.Area("R10"), 
+        SpreadsheetDocumentShiftType.Vertical);
+	EndIf;
+	
+	If Constants.ShipmentShowWebsite.Get() = False Then
+		Direction = SpreadsheetDocumentShiftType.Vertical;
+		Area = Spreadsheet.Area("WebsiteArea");
+		Spreadsheet.DeleteArea(Area, Direction);
+		Spreadsheet.InsertArea(Spreadsheet.Area("R10"), Spreadsheet.Area("R10"), 
+		SpreadsheetDocumentShiftType.Vertical);
+
+	EndIf;
+	
+	If Constants.ShipmentShowFax.Get() = False Then
+		Direction = SpreadsheetDocumentShiftType.Vertical;
+		Area = Spreadsheet.Area("FaxArea");
+		Spreadsheet.DeleteArea(Area, Direction);
+		Spreadsheet.InsertArea(Spreadsheet.Area("R10"), Spreadsheet.Area("R10"), 
+		SpreadsheetDocumentShiftType.Vertical);
+
+	EndIf;
+	
+	SelectionLineItems = Selection.LineItems.Select();
+	ShowClass = Constants.ShipmentShowClassCol.Get();
+	ShowSVC = Constants.ShipmentShowSVCCol.Get();
+	If ShowSVC = True Then
+		TemplateArea = Template.GetArea("LineItemsHeaderService");
+		Spreadsheet.Put(TemplateArea);
+		TemplateArea = Template.GetArea("LineItems3Service");
+	ElsIf ShowClass Then
+		TemplateArea = Template.GetArea("LineItemsHeaderLot");
+		Spreadsheet.Put(TemplateArea);
+		TemplateArea = Template.GetArea("LineItems5Lot");	
+	Else
+		TemplateArea = Template.GetArea("LineItemsHeader");
+		Spreadsheet.Put(TemplateArea);
+		TemplateArea = Template.GetArea("LineItems");
+	EndIf;
+
+	LineItemSwitch = False;
+	CurrentLineItemIndex = 0;
+	QuantityFormat = GeneralFunctionsReusable.DefaultQuantityFormat();
+	OnlyServiceItems = True;
+	
+	While SelectionLineItems.Next() Do
+				 
+		CurrentLineItemIndex = CurrentLineItemIndex + 1;
+		
+		TemplateArea.Parameters.Fill(SelectionLineItems);
+		CompanyName = Selection.Company.Description;
+		CompanyNameLen = StrLen(CompanyName);
+		Try
+			 If NOT SelectionLineItems.Project = "" Then
+				ProjectLen = StrLen(SelectionLineItems.Project);
+			 	TemplateArea.Parameters.Project = Right(SelectionLineItems.Project, ProjectLen - CompanyNameLen - 2);
+			EndIf;
+		Except
+		EndTry;
+		
+		If SelectionLineItems.Product.Type = Enums.InventoryTypes.Inventory Then
+			OnlyServiceItems = False;
+		EndIf;
+		
+		TemplateArea.Parameters.UM = SelectionLineItems.Unit.Code;
+		ProductPrecisionFormat = GeneralFunctionsReusable.PriceFormatForOneItem(SelectionLineItems.Product);
+		If ShowSVC = True Then
+			TemplateArea.Parameters.DeliveryDateActual = Format(SelectionLineItems.DeliveryDateActual,"DLF=D;");
+		EndIf;
+
+		Spreadsheet.Put(TemplateArea, SelectionLineItems.Level());
+		
+		If LineItemSwitch = False Then
+			If ShowSVC = True Then
+				TemplateArea = Template.GetArea("LineItems4Service");	
+			Elsif ShowClass Then
+				TemplateArea = Template.GetArea("LineItems6Lot");
+			Else
+				TemplateArea = Template.GetArea("LineItems2");
+			EndIf;
+			LineItemSwitch = True;
+		Else
+			If ShowSVC = True Then
+				TemplateArea = Template.GetArea("LineItems3Service");
+			Elsif ShowClass Then
+				TemplateArea = Template.GetArea("LineItems5Lot");
+			Else
+				TemplateArea = Template.GetArea("LineItems");
+			EndIf;
+			LineItemSwitch = False;
+		EndIf;
+		
+		// If can't fit next line, place header		
+		Footer = Template.GetArea("Area3");
+		RowsToCheck = New Array();
+		RowsToCheck.Add(TemplateArea);
+		DividerArea = Template.GetArea("DividerArea");
+		RowsToCheck.Add(DividerArea);
+		RowsToCheck.Add(Footer);
+		
+		If Spreadsheet.CheckPut(RowsToCheck) = False Then
+			
+			// Add divider and footer to bottom, break to next page, add header.
+			Row = Template.GetArea("EmptyRow");
+			Spreadsheet.Put(Row);
+			
+			DividerArea = Template.GetArea("DividerArea");
+			Spreadsheet.Put(DividerArea);
+
+			If Constants.ShipmentFoot1Type.Get()= Enums.TextOrImage.Image Then	
+				DocumentPrinting.FillPictureInDocumentTemplate(Template, Footer1Pic, "footer1");
+				TemplateArea2 = Template.GetArea("FooterField|FooterSection1");	
+				Spreadsheet.Put(TemplateArea2);
+			Elsif Constants.ShipmentFoot1Type.Get() = Enums.TextOrImage.Text Then
+				TemplateArea2 = Template.GetArea("TextField|FooterSection1");
+				TemplateArea2.Parameters.FooterTextLeft = Constants.ShipmentFooterTextLeft.Get();
+				Spreadsheet.Put(TemplateArea2);
+			EndIf;
+		
+			If Constants.ShipmentFoot2Type.Get()= Enums.TextOrImage.Image Then
+				DocumentPrinting.FillPictureInDocumentTemplate(Template, Footer2Pic, "footer2");
+				TemplateArea2 = Template.GetArea("FooterField|FooterSection2");	
+				Spreadsheet.Join(TemplateArea2);
+			
+			Elsif Constants.ShipmentFoot2Type.Get() = Enums.TextOrImage.Text Then
+				TemplateArea2 = Template.GetArea("TextField|FooterSection2");
+				TemplateArea2.Parameters.FooterTextCenter = Constants.ShipmentFooterTextCenter.Get();
+				Spreadsheet.Join(TemplateArea2);
+			EndIf;
+		
+			If Constants.ShipmentFoot3Type.Get()= Enums.TextOrImage.Image Then
+					DocumentPrinting.FillPictureInDocumentTemplate(Template, Footer3Pic, "footer3");
+					TemplateArea2 = Template.GetArea("FooterField|FooterSection3");	
+					Spreadsheet.Join(TemplateArea2);
+			Elsif Constants.ShipmentFoot3Type.Get() = Enums.TextOrImage.Text Then
+					TemplateArea2 = Template.GetArea("TextField|FooterSection3");
+					TemplateArea2.Parameters.FooterTextRight = Constants.ShipmentFooterTextRight.Get();
+					Spreadsheet.Join(TemplateArea2);
+			EndIf;	
+			
+			Spreadsheet.PutHorizontalPageBreak();
+			Header =  Spreadsheet.GetArea("TopHeader");
+			
+			LineItemsHeader = Template.GetArea("LineItemsHeader");
+			EmptySpace = Template.GetArea("EmptyRow");
+			Spreadsheet.Put(Header);
+			Spreadsheet.Put(EmptySpace);
+			If CurrentLineItemIndex < SelectionLineItems.Count() Then
+				Spreadsheet.Put(LineItemsHeader);
+			EndIf;
+		EndIf;
+		 
+	EndDo;
+	
+	// If line items are all service, remove shipTo	
+	If Constants.ShipmentShowShipTo.Get() = False And OnlyServiceItems = True Then
+		Direction = SpreadsheetDocumentShiftType.Horizontal;
+		Area = Spreadsheet.Area("PreAddrArea");
+		Spreadsheet.DeleteArea(Area, Direction);	
+		
+		Area = Spreadsheet.Area("ShipToArea");
+		Spreadsheet.DeleteArea(Area, Direction);
+	EndIf;
+	
+	TemplateArea = Template.GetArea("EmptySpace");
+	Spreadsheet.Put(TemplateArea);
+
+	 
+	Row = Template.GetArea("EmptyRow");
+	DetailArea = Template.GetArea("Area3");
+	Compensator = Template.GetArea("Compensator");
+	RowsToCheck = New Array();
+	RowsToCheck.Add(Row);
+	RowsToCheck.Add(DetailArea);
+	
+	
+	// If Area3 does not fit, print to next page and add preceding header
+	
+	AddHeader = False;
+	If Spreadsheet.CheckPut(DetailArea) = False Then
+		AddHeader = True;
+	EndIf;
+		
+	While Spreadsheet.CheckPut(RowsToCheck) = False Do
+		 Spreadsheet.Put(Row);
+	   	 RowsToCheck.Clear();
+	  	 RowsToCheck.Add(DetailArea);
+		 RowsToCheck.Add(Row);
+	EndDo;
+		
+	If AddHeader = True Then
+		HeaderArea = Spreadsheet.GetArea("TopHeader");
+		Spreadsheet.Put(HeaderArea);
+		Spreadsheet.Put(Row);
+	EndIf;
+	
+	TemplateArea = Template.GetArea("Area3");	
+	//TemplateArea.Parameters.TermAndCond = Selection.Ref.EmailNote;
+	Spreadsheet.Put(TemplateArea);
+		
+	Row = Template.GetArea("EmptyRow");
+	Footer = Template.GetArea("FooterField");
+	Compensator = Template.GetArea("Compensator");
+	SIFooter1 = Constants.ShipmentFoot1Type.Get();
+	SIFooter2 = Constants.ShipmentFoot2Type.Get();
+	SIFooter3 = Constants.ShipmentFoot3Type.Get();
+	SIFooterNone = Enums.TextOrImage.None;
+	
+	PrintSIFooter =  Not ((SIFooter1 = SIFooterNone) And (SIFooter2 = SIFooterNone) And (SIFooter3 = SIFooterNone));
+	
+	RowsToCheck = New Array();
+	RowsToCheck.Add(Row);
+	If PrintSIFooter Then 
+		RowsToCheck.Add(Footer);
+	EndIf;
+	RowsToCheck.Add(Row);	
+	
+	While Spreadsheet.CheckPut(RowsToCheck) = False Do
+		Spreadsheet.Put(Row);
+	   	RowsToCheck.Clear();
+	  	If PrintSIFooter Then 
+			RowsToCheck.Add(Footer);
+		EndIf;
+		RowsToCheck.Add(Row);
+	EndDo;
+	 
+	While Spreadsheet.CheckPut(RowsToCheck) Do
+		Spreadsheet.Put(Row);
+	   	RowsToCheck.Clear();
+	  	If PrintSIFooter Then 
+			RowsToCheck.Add(Footer);
+		EndIf;
+		RowsToCheck.Add(Row);
+		RowsToCheck.Add(Row);
+		RowsToCheck.Add(Row);
+
+	EndDo;
+
+
+	TemplateArea = Template.GetArea("DividerArea");
+	Spreadsheet.Put(TemplateArea);
+	
+	// Final footer 
+	
+	If Constants.ShipmentFoot1Type.Get()= Enums.TextOrImage.Image Then	
+			DocumentPrinting.FillPictureInDocumentTemplate(Template, Footer1Pic, "footer1");
+			TemplateArea = Template.GetArea("FooterField|FooterSection1");	
+			Spreadsheet.Put(TemplateArea);
+	Elsif Constants.ShipmentFoot1Type.Get() = Enums.TextOrImage.Text Then
+			TemplateArea = Template.GetArea("TextField|FooterSection1");
+			TemplateArea.Parameters.FooterTextLeft = Constants.ShipmentFooterTextLeft.Get();
+			Spreadsheet.Put(TemplateArea);
+	EndIf;
+		
+	If Constants.ShipmentFoot2Type.Get()= Enums.TextOrImage.Image Then
+			DocumentPrinting.FillPictureInDocumentTemplate(Template, Footer2Pic, "footer2");
+			TemplateArea = Template.GetArea("FooterField|FooterSection2");	
+			Spreadsheet.Join(TemplateArea);
+			
+	Elsif Constants.ShipmentFoot2Type.Get() = Enums.TextOrImage.Text Then
+			TemplateArea = Template.GetArea("TextField|FooterSection2");
+			TemplateArea.Parameters.FooterTextCenter = Constants.ShipmentFooterTextCenter.Get();
+			Spreadsheet.Join(TemplateArea);
+	EndIf;
+		
+	If Constants.ShipmentFoot3Type.Get()= Enums.TextOrImage.Image Then
+			DocumentPrinting.FillPictureInDocumentTemplate(Template, Footer3Pic, "footer3");
+			TemplateArea = Template.GetArea("FooterField|FooterSection3");	
+			Spreadsheet.Join(TemplateArea);
+	Elsif Constants.ShipmentFoot3Type.Get() = Enums.TextOrImage.Text Then
+			TemplateArea = Template.GetArea("TextField|FooterSection3");
+			TemplateArea.Parameters.FooterTextRight = Constants.ShipmentFooterTextRight.Get();
+			Spreadsheet.Join(TemplateArea);
+	EndIf;	
+	
+	Spreadsheet.PutHorizontalPageBreak();
+	Spreadsheet.FitToPage  = True;
+	
+	// Remove footer information if only a page.
+	If Spreadsheet.PageCount() = 1 Then
+		Spreadsheet.Footer.Enabled = False;
+	EndIf;
+
+   EndDo;
 		
 EndFunction

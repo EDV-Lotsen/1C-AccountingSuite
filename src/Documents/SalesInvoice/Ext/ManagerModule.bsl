@@ -77,7 +77,8 @@ Function PrepareDataBeforeWrite(AdditionalProperties, DocumentParameters, Cancel
 	Query.Text = "";
 	If OrdersPosting Then
 		Query.Text = Query.Text +
-		             Query_OrdersRegistered_Balance(BalancesList);
+		             Query_OrdersRegistered_Balance(BalancesList) +
+					 Query_OrdersRegisteredShipment_Balance(BalancesList);
 	EndIf;
 	Query.Text = Query.Text +
 	             Query_InventoryJournal_Balance(BalancesList);
@@ -125,44 +126,46 @@ Function PrepareDataStructuresForPosting(DocumentRef, AdditionalProperties, Regi
 	// 2. Prepare query text.
 	
 	// Query for document's tables.
-	Query.Text   = "";
+	Query.Text = "";
 	If OrdersPosting Then
 		Query.Text = Query.Text +
-		             Query_OrdersStatuses(TablesList) +
-		             Query_OrdersRegistered(TablesList);
+					 Query_OrdersStatuses(TablesList) +
+					 Query_OrdersRegistered(TablesList);
 	EndIf;
 	Query.Text = Query.Text +
-	             Query_InventoryJournal_LineItems(TablesList) +
-	             Query_InventoryJournal_Balance_Quantity(TablesList) +
-	             Query_InventoryJournal_Balance_FIFO(TablesList) +
-	             Query_InventoryJournal(TablesList) +
-	             Query_GeneralJournal_ProductCost(TablesList) +
-	             Query_GeneralJournal_ProductCost_Total(TablesList) +
-	             Query_GeneralJournal_LineItems(TablesList) +
-	             Query_GeneralJournal_Accounts_Income(TablesList) +
-	             Query_GeneralJournal_Accounts_COGS_Quantity(TablesList) +
-	             Query_GeneralJournal_Accounts_COGS_Amount(TablesList) +
-	             Query_GeneralJournal_Accounts_COGS(TablesList) +
-	             Query_GeneralJournal_Accounts_InvOrExp_Quantity(TablesList) +
-	             Query_GeneralJournal_Accounts_InvOrExp_Amount(TablesList) +
-	             Query_GeneralJournal_Accounts_InvOrExp(TablesList) +
-	             Query_GeneralJournal(TablesList) +
-	             Query_CashFlowData(TablesList) +
-	             Query_ProjectData_Accounts_Income(TablesList) +
-	             Query_ProjectData_Accounts_COGS_Quantity(TablesList) +
-	             Query_ProjectData_Accounts_COGS_Amount(TablesList) +
-	             Query_ProjectData_Accounts_COGS(TablesList) +
-	             Query_ProjectData(TablesList) +
-	             Query_ClassData_Accounts_Income(TablesList) +
-	             Query_ClassData_Accounts_COGS_Quantity(TablesList) +
-	             Query_ClassData_Accounts_COGS_Amount(TablesList) +
-	             Query_ClassData_Accounts_COGS(TablesList) +
-	             Query_ClassData(TablesList) +
-	             Query_OrderTransactions(TablesList);
+				 Query_Lots(TablesList) +
+				 Query_SerialNumbers(TablesList) +
+				 Query_InventoryJournal_LineItems(TablesList) +
+				 Query_InventoryJournal_Balance_Quantity(TablesList) +
+				 Query_InventoryJournal_Balance_FIFO(TablesList) +
+				 Query_InventoryJournal(TablesList) +
+				 Query_GeneralJournal_ProductCost(TablesList) +
+				 Query_GeneralJournal_ProductCost_Total(TablesList) +
+				 Query_GeneralJournal_LineItems(TablesList) +
+				 Query_GeneralJournal_Accounts_Income(TablesList) +
+				 Query_GeneralJournal_Accounts_COGS_Quantity(TablesList) +
+				 Query_GeneralJournal_Accounts_COGS_Amount(TablesList) +
+				 Query_GeneralJournal_Accounts_COGS(TablesList) +
+				 Query_GeneralJournal_Accounts_InvOrExp_Quantity(TablesList) +
+				 Query_GeneralJournal_Accounts_InvOrExp_Amount(TablesList) +
+				 Query_GeneralJournal_Accounts_InvOrExp(TablesList) +
+				 Query_GeneralJournal(TablesList) +
+				 Query_CashFlowData(TablesList) +
+				 Query_ProjectData_Accounts_Income(TablesList) +
+				 Query_ProjectData_Accounts_COGS_Quantity(TablesList) +
+				 Query_ProjectData_Accounts_COGS_Amount(TablesList) +
+				 Query_ProjectData_Accounts_COGS(TablesList) +
+				 Query_ProjectData(TablesList) +
+				 Query_ClassData_Accounts_Income(TablesList) +
+				 Query_ClassData_Accounts_COGS_Quantity(TablesList) +
+				 Query_ClassData_Accounts_COGS_Amount(TablesList) +
+				 Query_ClassData_Accounts_COGS(TablesList) +
+				 Query_ClassData(TablesList) +
+				 Query_OrderTransactions(TablesList);
 				 
 	If SalesTaxPosting Then
 		Query.Text = Query.Text +
-		             Query_SalesTaxOwed(TablesList);
+					 Query_SalesTaxOwed(TablesList);
 	EndIf;
 
 	//------------------------------------------------------------------------------
@@ -228,7 +231,7 @@ Procedure CheckOrderQuantity(DocumentRef, DocumentDate, Company, LineItems, Filt
 	Query.SetParameter("Date", DocumentDate);
 	
 	// 2. Fill out the line items table.
-	InvoiceLineItems = LineItems.Unload(Filter, "LineNumber, Order, Product, Unit, Location, DeliveryDate, Project, Class, QtyUnits");
+	InvoiceLineItems = LineItems.Unload(Filter, "LineNumber, Order, Shipment, Product, Unit, Location, DeliveryDate, Project, Class, QtyUnits");
 	InvoiceLineItems.Columns.Insert(1, "Company", New TypeDescription("CatalogRef.Companies"), "", 20);
 	InvoiceLineItems.FillValues(Company, "Company");
 	DocumentPosting.PutTemporaryTable(InvoiceLineItems, "InvoiceLineItems", Query.TempTablesManager);
@@ -238,15 +241,21 @@ Procedure CheckOrderQuantity(DocumentRef, DocumentDate, Company, LineItems, Filt
 		|SELECT
 		|	LineItems.LineNumber          AS LineNumber,
 		|	LineItems.Order               AS Order,
+		|	LineItems.Shipment            AS Shipment,
 		|	LineItems.Product.Code        AS ProductCode,
 		|	LineItems.Product.Description AS ProductDescription,
-		|	OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.InvoicedBalance - LineItems.QtyUnits AS UninvoicedQuantity
+		|	CASE 
+		|       WHEN LineItems.Shipment <> VALUE(Document.Shipment.EmptyRef) 
+		|		    THEN OrdersRegisteredBalance.ShippedShipmentBalance - OrdersRegisteredBalance.InvoicedBalance - LineItems.QtyUnits 
+		|		ELSE OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.InvoicedBalance - LineItems.QtyUnits
+		|   END                           AS UninvoicedQuantity	
 		|FROM
 		|	InvoiceLineItems AS LineItems
-		|	LEFT JOIN AccumulationRegister.OrdersRegistered.Balance(&Date, (Company, Order, Product, Unit, Location, DeliveryDate, Project, Class)
-		|		   IN (SELECT Company, Order, Product, Unit, Location, DeliveryDate, Project, Class FROM InvoiceLineItems)) AS OrdersRegisteredBalance
+		|	LEFT JOIN AccumulationRegister.OrdersRegistered.Balance(&Date, (Company, Order, Shipment, Product, Unit, Location, DeliveryDate, Project, Class)
+		|		      IN (SELECT Company, Order, Shipment, Product, Unit, Location, DeliveryDate, Project, Class FROM InvoiceLineItems)) AS OrdersRegisteredBalance
 		|		ON  LineItems.Company      = OrdersRegisteredBalance.Company
 		|		AND LineItems.Order        = OrdersRegisteredBalance.Order
+		|		AND LineItems.Shipment     = OrdersRegisteredBalance.Shipment
 		|		AND LineItems.Product      = OrdersRegisteredBalance.Product
 		|		AND LineItems.Unit         = OrdersRegisteredBalance.Unit
 		|		AND LineItems.Location     = OrdersRegisteredBalance.Location
@@ -264,7 +273,7 @@ Procedure CheckOrderQuantity(DocumentRef, DocumentDate, Company, LineItems, Filt
 			If ErrorsCount <= 10 Then
 				MessageText = MessageText + ?(Not IsBlankString(MessageText), Chars.LF, "") +
 				                            StringFunctionsClientServer.SubstituteParametersInString(
-				                            NStr("en = 'The product %1 in line %2 was not declared in %3.'"), TrimAll(Row.ProductCode) + " " + TrimAll(Row.ProductDescription), Row.LineNumber, Row.Order);
+				                            NStr("en = 'The product %1 in line %2 was not declared in %3.'"), TrimAll(Row.ProductCode) + " " + TrimAll(Row.ProductDescription), Row.LineNumber, ?(ValueIsFilled(Row.Shipment), Row.Shipment, Row.Order));
 			EndIf;
 			
 		ElsIf Row.UninvoicedQuantity < 0 Then
@@ -272,7 +281,7 @@ Procedure CheckOrderQuantity(DocumentRef, DocumentDate, Company, LineItems, Filt
 			If ErrorsCount <= 10 Then
 				MessageText = MessageText + ?(Not IsBlankString(MessageText), Chars.LF, "") +
 				                            StringFunctionsClientServer.SubstituteParametersInString(
-				                            NStr("en = 'The invoiced quantity of product %1 in line %2 exceeds ordered quantity in %3.'"), TrimAll(Row.ProductCode) + " " + TrimAll(Row.ProductDescription), Row.LineNumber, Row.Order);
+				                            NStr("en = 'The invoiced quantity of product %1 in line %2 exceeds ordered quantity in %3.'"), TrimAll(Row.ProductCode) + " " + TrimAll(Row.ProductDescription), Row.LineNumber, ?(ValueIsFilled(Row.Shipment), Row.Shipment, Row.Order));
 			EndIf;
 		EndIf;
 	EndDo;
@@ -315,7 +324,18 @@ Function PrepareDataStructuresForFilling(DocumentRef, AdditionalProperties) Expo
 			             Query_Filling_Document_SalesOrder_OrdersStatuses(TablesList) +
 			             Query_Filling_Document_SalesOrder_OrdersRegistered(TablesList) +
 			             Query_Filling_Document_SalesOrder_LineItems(TablesList) +
+			             Query_Filling_Document_SalesOrder_SerialNumbers(TablesList) +
 			             Query_Filling_Document_SalesOrder_Totals(TablesList);
+						 
+		ElsIf FillingData.Key = "Document_Shipment" Then 
+			Query.Text = Query.Text +
+						 Query_Filling_Document_Shipment_Attributes(TablesList) +
+						 Query_Filling_Document_Shipment_CommonTotals(TablesList) +
+						 Query_Filling_Document_Shipment_OrdersStatuses(TablesList) +
+						 Query_Filling_Document_Shipment_OrdersRegistered(TablesList) +
+						 Query_Filling_Document_Shipment_LineItems(TablesList) +
+						 Query_Filling_Document_Shipment_SerialNumbers(TablesList) +
+						 Query_Filling_Document_Shipment_Totals(TablesList);
 			
 		Else // Next filling source.
 		EndIf;
@@ -326,7 +346,8 @@ Function PrepareDataStructuresForFilling(DocumentRef, AdditionalProperties) Expo
 	// Add combining query.
 	Query.Text = Query.Text +
 	             Query_Filling_Attributes(TablesList) +
-	             Query_Filling_LineItems(TablesList);
+	             Query_Filling_LineItems(TablesList) +
+	             Query_Filling_SerialNumbers(TablesList);
 	
 	// Add check query.
 	Query.Text = Query.Text +
@@ -393,6 +414,69 @@ Function CheckStatusOfSalesOrder(DocumentRef, FillingRef) Export
 		                                                                       Lower(Metadata.FindByType(TypeOf(FillingRef)).Presentation())); 
 		CommonUseClientServer.MessageToUser(MessageText, FillingRef);
 	EndIf;
+	
+	Return StatusOK;
+	
+EndFunction
+
+// Check status of passed shipment by ref.
+// Returns True if status passed for invoice filling.
+Function CheckStatusOfShipment(DocumentRef, FillingRef) Export
+	
+	// Create new query.
+	Query = New Query;
+	Query.SetParameter("Ref", FillingRef);
+	
+	QueryText = 
+		"SELECT
+		|	CASE
+		|		WHEN Shipment.DeletionMark THEN
+		|			 VALUE(Enum.OrderStatuses.Deleted)
+		|		WHEN NOT Shipment.Posted THEN
+		|			 VALUE(Enum.OrderStatuses.Draft)
+		|		WHEN OrdersStatuses.Status IS NULL THEN
+		|			 VALUE(Enum.OrderStatuses.Open)
+		|		WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.EmptyRef) THEN
+		|			 VALUE(Enum.OrderStatuses.Open)
+		|		ELSE
+		|			 OrdersStatuses.Status
+		|	END AS Status
+		|FROM
+		|	Document.Shipment AS Shipment
+		|	LEFT JOIN InformationRegister.OrdersStatuses.SliceLast AS OrdersStatuses
+		|		ON Shipment.Ref = OrdersStatuses.Order
+		|WHERE
+		|	Shipment.Ref = &Ref";
+	Query.Text  = QueryText;
+	OrderStatus = Query.Execute().Unload()[0].Status;
+	
+	StatusOK = (OrderStatus = Enums.OrderStatuses.Open) Or (OrderStatus = Enums.OrderStatuses.Backordered);
+	If Not StatusOK Then
+		MessageText = NStr("en = 'Failed to generate the %1 on the base of %2 %3.'");
+		MessageText = StringFunctionsClientServer.SubstituteParametersInString(MessageText,
+		                                                                       Lower(Metadata.FindByType(TypeOf(DocumentRef)).Presentation()),
+		                                                                       Lower(OrderStatus),
+		                                                                       Lower(Metadata.FindByType(TypeOf(FillingRef)).Presentation())); 
+		CommonUseClientServer.MessageToUser(MessageText, FillingRef);
+	EndIf;
+	
+	Return StatusOK;
+	
+EndFunction
+
+// Check "Use Shipment" of passed sales order by ref. 
+Function CheckUseShipmentOfSalesOrder(DocumentRef, FillingRef) Export
+	
+	StatusOK = FillingRef.UseShipment;
+	
+	If StatusOK Then
+		MessageText = NStr("en = 'Failed to generate the %1 because %2 use Shipment.'");
+		MessageText = StringFunctionsClientServer.SubstituteParametersInString(MessageText,
+		                                                                       Lower(Metadata.FindByType(TypeOf(DocumentRef)).Presentation()),
+		                                                                       Lower(Metadata.FindByType(TypeOf(FillingRef)).Presentation())); 
+		CommonUseClientServer.MessageToUser(MessageText, FillingRef);
+	EndIf;
+	
 	Return StatusOK;
 	
 EndFunction
@@ -422,8 +506,15 @@ Procedure PrintPackingList(Spreadsheet, SheetTitle, Ref, TemplateName = Undefine
 	SheetTitle = "Packing list";
 	CustomTemplate = GeneralFunctions.GetCustomTemplate("Document.SalesInvoice", SheetTitle);
 	
+	//++ Misa, 11/17/2014 ACS 1486
+	SplitQuantinyField = False;
+	//-- Misa 11/17/2014 ACS 1486
+	
 	If CustomTemplate = Undefined Then
 		Template = Documents.SalesInvoice.GetTemplate("PF_MXL_PackingList");
+		//++ Misa, 11/17/2014 ACS 1486
+		SplitQuantinyField = True;
+		//-- Misa 11/17/2014 ACS 1486
 	Else
 		Template = CustomTemplate;
 	EndIf;
@@ -532,25 +623,35 @@ Procedure PrintPackingList(Spreadsheet, SheetTitle, Ref, TemplateName = Undefine
 	Except
 	EndTry;
 	 
-	 Spreadsheet.Put(TemplateArea);
+	Spreadsheet.Put(TemplateArea);
 
-	 TemplateArea = Template.GetArea("LineItemsHeader");
-	 Spreadsheet.Put(TemplateArea);
-	 
-	 SelectionLineItems = Selection.LineItems.Select();
-	 TemplateArea = Template.GetArea("LineItems");
-	 LineTotalSum = 0;
-	 QuantityFormat = GeneralFunctionsReusable.DefaultQuantityFormat();
-	 While SelectionLineItems.Next() Do
-		 
-		 TemplateArea.Parameters.Fill(SelectionLineItems);
-		 TemplateArea.Parameters.Quantity  = Format(SelectionLineItems.QtyUnits, QuantityFormat)+ " " + SelectionLineItems.Unit;
-		 //TemplateArea.Parameters.PO = SelectionLineItems.PO;
-		 //LineTotal = SelectionLineItems.LineTotal;
-		 //LineTotalSum = LineTotalSum + LineTotal;
-		 Spreadsheet.Put(TemplateArea, SelectionLineItems.Level());
-		 
-	 EndDo;
+	TemplateArea = Template.GetArea("LineItemsHeader");
+	Spreadsheet.Put(TemplateArea);
+	
+	SelectionLineItems = Selection.LineItems.Select();
+	TemplateArea = Template.GetArea("LineItems");
+	LineTotalSum = 0;
+	QuantityFormat = GeneralFunctionsReusable.DefaultQuantityFormat();
+	While SelectionLineItems.Next() Do
+		
+		TemplateArea.Parameters.Fill(SelectionLineItems);
+		
+		//++ MisA 11/17/2014 ACS 1486
+		//TemplateArea.Parameters.Quantity  = Format(SelectionLineItems.QtyUnits, QuantityFormat)+ " " + SelectionLineItems.Unit;
+		If SplitQuantinyField Then 
+			TemplateArea.Parameters.Quantity  = Format(SelectionLineItems.QtyUnits, QuantityFormat);
+			TemplateArea.Parameters.Unit  = SelectionLineItems.Unit;
+		Else
+			TemplateArea.Parameters.Quantity  = Format(SelectionLineItems.QtyUnits, QuantityFormat)+ " " + SelectionLineItems.Unit;
+		EndIf;	
+		//-- MisA 11/17/2014 ACS 1486
+		
+		//TemplateArea.Parameters.PO = SelectionLineItems.PO;
+		//LineTotal = SelectionLineItems.LineTotal;
+		//LineTotalSum = LineTotalSum + LineTotal;
+		Spreadsheet.Put(TemplateArea, SelectionLineItems.Level());
+		
+	EndDo;
 	 
 	Spreadsheet.PutHorizontalPageBreak();
 	Spreadsheet.FitToPage  = True;
@@ -617,8 +718,15 @@ Procedure PrintPackingListDropship(Spreadsheet, SheetTitle, Ref, TemplateName = 
 	SheetTitle = "Packing list (dropship)";
 	CustomTemplate = GeneralFunctions.GetCustomTemplate("Document.SalesInvoice", SheetTitle);
 	
+	//++ Misa, 11/17/2014 ACS 1486
+	SplitQuantinyField = False;
+	//-- Misa 11/17/2014 ACS 1486
+	
 	If CustomTemplate = Undefined Then
 		Template = Documents.SalesInvoice.GetTemplate("PF_MXL_PackingListDropship");
+		//++ Misa, 11/17/2014 ACS 1486
+		SplitQuantinyField = True;
+		//-- Misa 11/17/2014 ACS 1486
 	Else
 		Template = CustomTemplate;
 	EndIf;
@@ -712,27 +820,36 @@ Procedure PrintPackingListDropship(Spreadsheet, SheetTitle, Ref, TemplateName = 
 	Except
 	EndTry;
 	 
-	 Spreadsheet.Put(TemplateArea);
-
-	 TemplateArea = Template.GetArea("LineItemsHeader");
-	 Spreadsheet.Put(TemplateArea);
-	 
-	 SelectionLineItems = Selection.LineItems.Select();
-	 TemplateArea = Template.GetArea("LineItems");
-	 LineTotalSum = 0;
-	 QuantityFormat = GeneralFunctionsReusable.DefaultQuantityFormat();
-	 While SelectionLineItems.Next() Do
-		 
-		 TemplateArea.Parameters.Fill(SelectionLineItems);
-		 TemplateArea.Parameters.Quantity  = Format(SelectionLineItems.QtyUnits, QuantityFormat)+ " " + SelectionLineItems.Unit;
-		 Spreadsheet.Put(TemplateArea, SelectionLineItems.Level());
-		 
-	 EndDo;
+	 	
+	Spreadsheet.Put(TemplateArea);
+	
+	TemplateArea = Template.GetArea("LineItemsHeader");
+	Spreadsheet.Put(TemplateArea);
+	
+	SelectionLineItems = Selection.LineItems.Select();
+	TemplateArea = Template.GetArea("LineItems");
+	LineTotalSum = 0;
+	QuantityFormat = GeneralFunctionsReusable.DefaultQuantityFormat();
+	While SelectionLineItems.Next() Do
+		
+		TemplateArea.Parameters.Fill(SelectionLineItems);
+		//++ MisA 11/17/2014 ACS 1486
+		//TemplateArea.Parameters.Quantity  = Format(SelectionLineItems.QtyUnits, QuantityFormat)+ " " + SelectionLineItems.Unit;
+		If SplitQuantinyField Then 
+			TemplateArea.Parameters.Quantity  = Format(SelectionLineItems.QtyUnits, QuantityFormat);
+			TemplateArea.Parameters.Unit  = SelectionLineItems.Unit;
+		Else
+			TemplateArea.Parameters.Quantity  = Format(SelectionLineItems.QtyUnits, QuantityFormat)+ " " + SelectionLineItems.Unit;
+		EndIf;	
+		//-- MisA 11/17/2014 ACS 1486
+		Spreadsheet.Put(TemplateArea, SelectionLineItems.Level());
+		
+	EndDo;
 	 
 	Spreadsheet.PutHorizontalPageBreak();
     Spreadsheet.FitToPage  = True;
 
-   EndDo;
+	EndDo;
    
    
 EndProcedure
@@ -767,7 +884,11 @@ Function Query_OrdersStatuses(TablesList)
 	|	True                                  AS Active,
 	// ------------------------------------------------------
 	// Dimensions
-	|	LineItems.Order                       AS Order,
+	|	CASE
+	|       WHEN LineItems.Shipment <> VALUE(Document.Shipment.EmptyRef)
+	|			THEN LineItems.Shipment
+	|		ELSE LineItems.Order 
+	|	END                                   AS Order,
 	// ------------------------------------------------------
 	// Resources
 	|	VALUE(Enum.OrderStatuses.Backordered) AS Status
@@ -780,7 +901,7 @@ Function Query_OrdersStatuses(TablesList)
 	|	LineItems.Ref = &Ref
 	|	AND LineItems.Order <> VALUE(Document.SalesOrder.EmptyRef)
 	|ORDER BY
-	|	LineItems.Order.Date";
+	|	Order";
 	
 	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
 	
@@ -806,6 +927,7 @@ Function Query_OrdersRegistered(TablesList)
 	// Dimensions
 	|	LineItems.Ref.Company                 AS Company,
 	|	LineItems.Order                       AS Order,
+	|	LineItems.Shipment                    AS Shipment,
 	|	LineItems.Product                     AS Product,
 	|	LineItems.Unit                        AS Unit,
 	|	LineItems.Location                    AS Location,
@@ -815,7 +937,9 @@ Function Query_OrdersRegistered(TablesList)
 	// ------------------------------------------------------
 	// Resources
 	|	0                                     AS Quantity,
-	|	CASE WHEN LineItems.Product.Type = VALUE(Enum.InventoryTypes.Inventory)
+	|	CASE WHEN LineItems.Shipment <> VALUE(Document.Shipment.EmptyRef)
+	|        THEN 0
+	|	     WHEN LineItems.Product.Type = VALUE(Enum.InventoryTypes.Inventory)
 	|	     THEN CASE WHEN LineItems.QtyUnits - 
 	|	                    CASE WHEN OrdersRegisteredBalance.Shipped - OrdersRegisteredBalance.Invoiced > 0
 	|	                         THEN OrdersRegisteredBalance.Shipped - OrdersRegisteredBalance.Invoiced
@@ -826,6 +950,7 @@ Function Query_OrdersRegistered(TablesList)
 	|	                         ELSE 0 END
 	|	               ELSE 0 END
 	|	     ELSE 0 END                       AS Shipped,
+	|	0                                     AS ShippedShipment,
 	|	LineItems.QtyUnits                    AS Invoiced
 	// ------------------------------------------------------
 	// Attributes
@@ -835,6 +960,7 @@ Function Query_OrdersRegistered(TablesList)
 	|	LEFT JOIN Table_OrdersRegistered_Balance AS OrdersRegisteredBalance
 	|		ON  OrdersRegisteredBalance.Company      = LineItems.Ref.Company
 	|		AND OrdersRegisteredBalance.Order        = LineItems.Order
+	|		AND OrdersRegisteredBalance.Shipment     = LineItems.Shipment
 	|		AND OrdersRegisteredBalance.Product      = LineItems.Product
 	|		AND OrdersRegisteredBalance.Unit         = LineItems.Unit
 	|		AND OrdersRegisteredBalance.Location     = LineItems.Location
@@ -887,25 +1013,155 @@ Function Query_OrdersRegistered_Balance(TablesList)
 	"SELECT
 	// ------------------------------------------------------
 	// Dimensions
-	|	OrdersRegisteredBalance.Company          AS Company,
-	|	OrdersRegisteredBalance.Order            AS Order,
-	|	OrdersRegisteredBalance.Product          AS Product,
-	|	OrdersRegisteredBalance.Unit             AS Unit,
-	|	OrdersRegisteredBalance.Location         AS Location,
-	|	OrdersRegisteredBalance.DeliveryDate     AS DeliveryDate,
-	|	OrdersRegisteredBalance.Project          AS Project,
-	|	OrdersRegisteredBalance.Class            AS Class,
+	|	OrdersRegisteredBalance.Company         		 AS Company,
+	|	OrdersRegisteredBalance.Order           		 AS Order,
+	|	OrdersRegisteredBalance.Shipment        		 AS Shipment,
+	|	OrdersRegisteredBalance.Product         		 AS Product,
+	|	OrdersRegisteredBalance.Unit            		 AS Unit,
+	|	OrdersRegisteredBalance.Location        		 AS Location,
+	|	OrdersRegisteredBalance.DeliveryDate    		 AS DeliveryDate,
+	|	OrdersRegisteredBalance.Project         		 AS Project,
+	|	OrdersRegisteredBalance.Class           		 AS Class,
 	// ------------------------------------------------------
 	// Resources
-	|	OrdersRegisteredBalance.QuantityBalance  AS Quantity,
-	|	OrdersRegisteredBalance.ShippedBalance   AS Shipped,
-	|	OrdersRegisteredBalance.InvoicedBalance  AS Invoiced
+	|	OrdersRegisteredBalance.QuantityBalance 		 AS Quantity,
+	|	OrdersRegisteredBalance.ShippedBalance   		 AS Shipped,
+	|	OrdersRegisteredBalance.ShippedShipmentBalance   AS ShippedShipment,
+	|	OrdersRegisteredBalance.InvoicedBalance 		 AS Invoiced
 	// ------------------------------------------------------
 	|FROM
 	|	AccumulationRegister.OrdersRegistered.Balance(&PointInTime,
 	|		(Company, Order) IN
 	|		(SELECT DISTINCT &Company, LineItems.Order // Requred for proper order closing
 	|		 FROM Table_LineItems AS LineItems)) AS OrdersRegisteredBalance";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for balances data.
+Function Query_OrdersRegisteredShipment_Balance(TablesList)
+	
+	// Add OrdersRegisteredShipment - Balances table to balances structure.
+	TablesList.Insert("Table_OrdersRegisteredShipment_Balance", TablesList.Count());
+	
+	// Collect orders dispatched balances.
+	QueryText =
+	"SELECT
+	// ------------------------------------------------------
+	// Dimensions
+	|	OrdersRegisteredBalance.Company            		AS Company,
+	|	VALUE(Document.SalesOrder.EmptyRef)        		AS Order,
+	|	OrdersRegisteredBalance.Shipment           		AS Shipment,
+	|	OrdersRegisteredBalance.Product            		AS Product,
+	|	OrdersRegisteredBalance.Unit              	 	AS Unit,
+	|	OrdersRegisteredBalance.Location           		AS Location,
+	|	OrdersRegisteredBalance.DeliveryDate       		AS DeliveryDate,
+	|	OrdersRegisteredBalance.Project            		AS Project,
+	|	OrdersRegisteredBalance.Class              		AS Class,
+	// ------------------------------------------------------
+	// Resources
+	|	OrdersRegisteredBalance.QuantityBalance    		AS Quantity,
+	|	OrdersRegisteredBalance.ShippedBalance    		AS Shipped,
+	|	OrdersRegisteredBalance.ShippedShipmentBalance  AS ShippedShipment,
+	|	OrdersRegisteredBalance.InvoicedBalance    		AS Invoiced
+	// ------------------------------------------------------
+	|FROM
+	|	AccumulationRegister.OrdersRegistered.Balance(&PointInTime,
+    |       (Company, Shipment) IN
+	|		(SELECT DISTINCT &Company, LineItems.Shipment // Requred for proper item Receipt closing
+	|		 FROM Table_LineItems AS LineItems
+	|        WHERE LineItems.Shipment <> VALUE(Document.Shipment.EmptyRef))) AS OrdersRegisteredBalance";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_Lots(TablesList)
+	
+	// Add Lots table to document structure.
+	TablesList.Insert("Table_Lots", TablesList.Count());
+	
+	// Collect lots data.
+	QueryText =
+	"SELECT
+	// ------------------------------------------------------
+	// Standard attributes
+	|	LineItems.Ref                         AS Recorder,
+	|	LineItems.Ref.Date                    AS Period,
+	|	LineItems.LineNumber                  AS LineNumber,
+	|	VALUE(AccumulationRecordType.Expense) AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Dimensions
+	|	LineItems.Product                     AS Product,
+	|	LineItems.LocationActual              AS Location,
+	|	LineItems.Lot                         AS Lot,
+	// ------------------------------------------------------
+	// Resources
+	|	LineItems.QtyUM                       AS Quantity
+	// ------------------------------------------------------
+	// Attributes
+	// ------------------------------------------------------
+	|FROM
+	|	Document.SalesInvoice.LineItems AS LineItems
+	|WHERE
+	|	    LineItems.Ref = &Ref
+	|	AND LineItems.Product        <> VALUE(Catalog.Products.EmptyRef)
+	|	AND LineItems.Product.HasLotsSerialNumbers
+	|	AND LineItems.Product.UseLots = 0
+	|	AND LineItems.LocationActual <> VALUE(Catalog.Locations.EmptyRef)
+	|	AND LineItems.Lot            <> VALUE(Catalog.Lots.EmptyRef)
+	|	AND LineItems.Shipment        = VALUE(Document.Shipment.EmptyRef)
+	|ORDER BY
+	|	LineItems.LineNumber";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_SerialNumbers(TablesList)
+	
+	// Add SerialNumbers table to document structure.
+	TablesList.Insert("Table_SerialNumbers", TablesList.Count());
+	
+	// Collect serial numbers data.
+	QueryText =
+	"SELECT
+	// ------------------------------------------------------
+	// Standard attributes
+	|	SerialNumbers.Ref                     AS Recorder,
+	|	SerialNumbers.Ref.Date                AS Period,
+	|	SerialNumbers.LineNumber              AS LineNumber,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Dimensions
+	|	ISNULL(LineItems.Product, VALUE(Catalog.Products.EmptyRef))
+	|	                                      AS Product,
+	|	SerialNumbers.SerialNumber            AS SerialNumber,
+	// ------------------------------------------------------
+	// Resources
+	|	False                                 AS OnHand
+	// ------------------------------------------------------
+	// Attributes
+	// ------------------------------------------------------
+	|FROM
+	|	Document.SalesInvoice.SerialNumbers AS SerialNumbers
+	|	LEFT JOIN Document.SalesInvoice.LineItems AS LineItems
+	|		ON  LineItems.Ref         = SerialNumbers.Ref
+	|		AND LineItems.LineID      = SerialNumbers.LineItemsLineID
+	|		AND LineItems.Shipment    = VALUE(Document.Shipment.EmptyRef)
+	|WHERE
+	|	    SerialNumbers.Ref = &Ref
+	|	AND SerialNumbers.SerialNumber <> """"
+	|	AND ISNULL(LineItems.Product, VALUE(Catalog.Products.EmptyRef)) <> VALUE(Catalog.Products.EmptyRef)
+	|	AND ISNULL(LineItems.Product.HasLotsSerialNumbers, False)
+	|	AND ISNULL(LineItems.Product.UseLots, -1) = 1
+	|	AND ISNULL(LineItems.Product.UseSerialNumbersOnShipment, False)
+	|ORDER BY
+	|	SerialNumbers.LineNumber";
 	
 	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
 	
@@ -935,6 +1191,7 @@ Function Query_InventoryJournal_LineItems(TablesList)
 	|	Document.SalesInvoice.LineItems AS LineItems
 	|WHERE
 	|	    LineItems.Ref                   = &Ref
+	|   AND LineItems.Shipment              = VALUE(Document.Shipment.EmptyRef)
 	|	AND LineItems.Product.Type          = VALUE(Enum.InventoryTypes.Inventory)
 	|	AND LineItems.Product.CostingMethod = VALUE(Enum.InventoryCosting.FIFO)
 	|GROUP BY
@@ -958,6 +1215,7 @@ Function Query_InventoryJournal_LineItems(TablesList)
 	|	Document.SalesInvoice.LineItems AS LineItems
 	|WHERE
 	|	    LineItems.Ref                   = &Ref
+	|   AND LineItems.Shipment              = VALUE(Document.Shipment.EmptyRef)
 	|	AND LineItems.Product.Type          = VALUE(Enum.InventoryTypes.Inventory)
 	|	AND LineItems.Product.CostingMethod = VALUE(Enum.InventoryCosting.WeightedAverage)
 	|GROUP BY
@@ -981,6 +1239,7 @@ Function Query_InventoryJournal_LineItems(TablesList)
 	|	Document.SalesInvoice.LineItems AS LineItems
 	|WHERE
 	|	    LineItems.Ref                   = &Ref
+	|   AND LineItems.Shipment              = VALUE(Document.Shipment.EmptyRef)
 	|	AND LineItems.Product.Type          = VALUE(Enum.InventoryTypes.Inventory)
 	|	AND LineItems.Product.CostingMethod = VALUE(Enum.InventoryCosting.WeightedAverage)
 	|GROUP BY
@@ -1555,18 +1814,22 @@ Function Query_GeneralJournal_LineItems(TablesList)
 	"SELECT
 	// ------------------------------------------------------
 	// Dimensions
-	|	LineItems.Product.CostingMethod       AS Type,
-	|	LineItems.Product                     AS Product,
-	|	LineItems.LocationActual              AS Location,
-	|	LineItems.Product.IncomeAccount       AS IncomeAccount,
-	|	LineItems.Product.COGSAccount         AS COGSAccount,
+	|	LineItems.Product.CostingMethod       		AS Type,
+	|	LineItems.Product                     		AS Product,
+	|	LineItems.LocationActual             		AS Location,
+	|	LineItems.Product.IncomeAccount       		AS IncomeAccount,
+	|	LineItems.Product.COGSAccount         		AS COGSAccount,
 	|	LineItems.Product.InventoryOrExpenseAccount AS InvOrExpAccount,
-	|	LineItems.Class                       AS Class,
-	|	LineItems.Project                     AS Project,
+	|	LineItems.Class                       		AS Class,
+	|	LineItems.Project                     		AS Project,
+	|	CASE WHEN LineItems.Shipment <> VALUE(Document.Shipment.EmptyRef)
+	|        THEN TRUE
+	|        ELSE FALSE END                         AS HasShipment,
+	|			
 	// ------------------------------------------------------
 	// Resources
-	|	LineItems.QtyUM                       AS Quantity,
-	|	LineItems.LineTotal                   AS Amount
+	|	LineItems.QtyUM                       		AS Quantity,
+	|	LineItems.LineTotal                   		AS Amount
 	// ------------------------------------------------------
 	|INTO
 	|	Table_GeneralJournal_LineItems
@@ -1629,6 +1892,8 @@ Function Query_GeneralJournal_Accounts_COGS_Quantity(TablesList)
 	|	Table_GeneralJournal_Accounts_COGS_Quantity
 	|FROM
 	|	Table_GeneralJournal_LineItems AS Accounts
+	|WHERE
+	|	Accounts.HasShipment = FALSE
 	|GROUP BY
 	|	Accounts.COGSAccount,
 	|	Accounts.Product,
@@ -1753,6 +2018,8 @@ Function Query_GeneralJournal_Accounts_InvOrExp_Quantity(TablesList)
 	|	Table_GeneralJournal_Accounts_InvOrExp_Quantity
 	|FROM
 	|	Table_GeneralJournal_LineItems AS Accounts
+	|WHERE
+	|	Accounts.HasShipment = FALSE
 	|GROUP BY
 	|	Accounts.InvOrExpAccount,
 	|	Accounts.Product,
@@ -2391,6 +2658,8 @@ Function Query_ProjectData_Accounts_COGS_Quantity(TablesList)
 	|	Table_ProjectData_Accounts_COGS_Quantity
 	|FROM
 	|	Table_GeneralJournal_LineItems AS Accounts
+	|WHERE
+	|	Accounts.HasShipment = FALSE
 	|GROUP BY
 	|	Accounts.COGSAccount,
 	|	Accounts.Project,
@@ -2662,6 +2931,8 @@ Function Query_ClassData_Accounts_COGS_Quantity(TablesList)
 	|	Table_ClassData_Accounts_COGS_Quantity
 	|FROM
 	|	Table_GeneralJournal_LineItems AS Accounts
+	|WHERE
+	|	Accounts.HasShipment = FALSE
 	|GROUP BY
 	|	Accounts.COGSAccount,
 	|	Accounts.Class,
@@ -2989,6 +3260,8 @@ Procedure FillRegistersCheckList(AdditionalProperties, RegisterRecords)
 	// Fill structure depending on document write mode.
 	If AdditionalProperties.Posting.WriteMode = DocumentWriteMode.Posting Then
 		
+		// InventoryJournal
+		
 		// Add resources for check changes in recordset.
 		CheckPostings = New Array;
 		CheckPostings.Add("{Table}.Quantity{Posting}, <, 0"); // Check decreasing quantity.
@@ -3004,6 +3277,24 @@ Procedure FillRegistersCheckList(AdditionalProperties, RegisterRecords)
 		
 		// Add register to check it's recordset changes and balances during posting.
 		BalanceCheck.Insert("InventoryJournal", New Structure("CheckPostings, CheckBalances, CheckMessages", CheckPostings, CheckBalances, CheckMessages));
+		
+		// Lots
+		
+		// Add resources for check changes in recordset.
+		CheckPostings = New Array;
+		CheckPostings.Add("{Table}.Quantity{Posting}, <, 0"); // Check decreasing quantity.
+		
+		// Add resources for check register balances.
+		CheckBalances = New Array;
+		CheckBalances.Add("{Table}.Quantity{Balance}, <, 0"); // Check negative lots balance.
+		
+		// Add messages for different error situations.
+		CheckMessages = New Array;
+		CheckMessages.Add(NStr("en = '{Product}?{Lot}:
+		                             |There is an insufficient balance of {-Quantity} at the {Location}.|Lot = "", lot {Lot}""'"));
+		
+		// Add register to check it's recordset changes and balances during posting.
+		BalanceCheck.Insert("Lots", New Structure("CheckPostings, CheckBalances, CheckMessages", CheckPostings, CheckBalances, CheckMessages));
 		
 	ElsIf AdditionalProperties.Posting.WriteMode = DocumentWriteMode.UndoPosting Then
 		
@@ -3049,6 +3340,7 @@ Procedure CheckCloseParentOrders(DocumentRef, AdditionalProperties, TempTablesMa
 	// Dimensions
 	|	OrdersRegisteredBalance.Company          AS Company,
 	|	OrdersRegisteredBalance.Order            AS Order,
+	|	VALUE(Document.Shipment.EmptyRef)        AS Shipment,
 	|	OrdersRegisteredBalance.Product          AS Product,
 	|	OrdersRegisteredBalance.Unit             AS Unit,
 	|	OrdersRegisteredBalance.Location         AS Location,
@@ -3059,13 +3351,14 @@ Procedure CheckCloseParentOrders(DocumentRef, AdditionalProperties, TempTablesMa
 	// Resources
 	|	OrdersRegisteredBalance.Quantity         AS Quantity,
 	|	OrdersRegisteredBalance.Shipped          AS Shipped,
+	|	OrdersRegisteredBalance.ShippedShipment  AS ShippedShipment,
 	|	OrdersRegisteredBalance.Invoiced         AS Invoiced
 	// ------------------------------------------------------
 	|INTO
 	|	OrdersRegistered_Balance_And_Postings
 	|FROM
 	|	Table_OrdersRegistered_Balance AS OrdersRegisteredBalance
-	|	// (Company, Order) IN (SELECT Company, Order FROM Table_LineItems)
+	|	// (Company, Order) IN (SELECT DISTINCT &Company, LineItems.Order FROM Table_LineItems AS LineItems)
 	|
 	|UNION ALL
 	|
@@ -3074,6 +3367,7 @@ Procedure CheckCloseParentOrders(DocumentRef, AdditionalProperties, TempTablesMa
 	// Dimensions
 	|	OrdersRegistered.Company,
 	|	OrdersRegistered.Order,
+	|	VALUE(Document.Shipment.EmptyRef),
 	|	OrdersRegistered.Product,
 	|	OrdersRegistered.Unit,
 	|	OrdersRegistered.Location,
@@ -3084,11 +3378,64 @@ Procedure CheckCloseParentOrders(DocumentRef, AdditionalProperties, TempTablesMa
 	// Resources
 	|	OrdersRegistered.Quantity,
 	|	OrdersRegistered.Shipped,
+	|	OrdersRegistered.ShippedShipment,
 	|	OrdersRegistered.Invoiced
 	// ------------------------------------------------------
 	|FROM
 	|	Table_OrdersRegistered AS OrdersRegistered
 	|	// Table_LineItems WHERE LineItems.Ref = &Ref AND Order <> EmptyRef()
+	|
+	|UNION ALL
+	|
+	|SELECT
+	// ------------------------------------------------------
+	// Dimensions
+	|	OrdersRegisteredShipment_Balance.Company         AS Company,
+	|	OrdersRegisteredShipment_Balance.Order           AS Order,
+	|	OrdersRegisteredShipment_Balance.Shipment        AS Shipment,
+	|	OrdersRegisteredShipment_Balance.Product         AS Product,
+	|	OrdersRegisteredShipment_Balance.Unit            AS Unit,
+	|	OrdersRegisteredShipment_Balance.Location        AS Location,
+	|	OrdersRegisteredShipment_Balance.DeliveryDate    AS DeliveryDate,
+	|	OrdersRegisteredShipment_Balance.Project         AS Project,
+	|	OrdersRegisteredShipment_Balance.Class           AS Class,
+	// ------------------------------------------------------
+	// Resources
+	|	OrdersRegisteredShipment_Balance.Quantity        AS Quantity,
+	|	OrdersRegisteredShipment_Balance.Shipped         AS Shipped,
+	|	OrdersRegisteredShipment_Balance.ShippedShipment AS ShippedShipment,
+	|	OrdersRegisteredShipment_Balance.Invoiced        AS Invoiced
+	// ------------------------------------------------------
+	|FROM
+	|	Table_OrdersRegisteredShipment_Balance AS OrdersRegisteredShipment_Balance
+    |   // (Company, Shipment) IN (SELECT DISTINCT &Company, LineItems.Shipment FROM Table_LineItems AS LineItems WHERE LineItems.Shipment <> VALUE(Document.Shipment.EmptyRef))
+	|
+	|UNION ALL
+	|
+	|SELECT
+	// ------------------------------------------------------
+	// Dimensions
+	|	OrdersRegisteredShipment.Company,
+	|	VALUE(Document.SalesOrder.EmptyRef),
+	|	OrdersRegisteredShipment.Shipment,
+	|	OrdersRegisteredShipment.Product,
+	|	OrdersRegisteredShipment.Unit,
+	|	OrdersRegisteredShipment.Location,
+	|	OrdersRegisteredShipment.DeliveryDate,
+	|	OrdersRegisteredShipment.Project,
+	|	OrdersRegisteredShipment.Class,
+	// ------------------------------------------------------
+	// Resources
+	|	OrdersRegisteredShipment.Quantity,
+	|	OrdersRegisteredShipment.Shipped,
+	|	OrdersRegisteredShipment.ShippedShipment,
+	|	OrdersRegisteredShipment.Invoiced
+	// ------------------------------------------------------
+	|FROM
+	|	Table_OrdersRegistered AS OrdersRegisteredShipment
+	|	// Table_LineItems WHERE LineItems.Ref = &Ref AND Order <> EmptyRef()
+	|WHERE
+	|	OrdersRegisteredShipment.Shipment <> VALUE(Document.Shipment.EmptyRef)
 	|";
 	QueryText   = QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
 	QueryTables = QueryTables + 1;
@@ -3098,20 +3445,22 @@ Procedure CheckCloseParentOrders(DocumentRef, AdditionalProperties, TempTablesMa
 	"SELECT
 	// ------------------------------------------------------
 	// Dimensions
-	|	OrdersRegisteredBalance.Company          AS Company,
-	|	OrdersRegisteredBalance.Order            AS Order,
-	|	OrdersRegisteredBalance.Product          AS Product,
-	|	OrdersRegisteredBalance.Product.Type     AS Type,
-	|	OrdersRegisteredBalance.Unit             AS Unit,
-	|	OrdersRegisteredBalance.Location         AS Location,
-	|	OrdersRegisteredBalance.DeliveryDate     AS DeliveryDate,
-	|	OrdersRegisteredBalance.Project          AS Project,
-	|	OrdersRegisteredBalance.Class            AS Class,
+	|	OrdersRegisteredBalance.Company              AS Company,
+	|	OrdersRegisteredBalance.Order                AS Order,
+	|	OrdersRegisteredBalance.Shipment             AS Shipment,
+	|	OrdersRegisteredBalance.Product              AS Product,
+	|	OrdersRegisteredBalance.Product.Type         AS Type,
+	|	OrdersRegisteredBalance.Unit                 AS Unit,
+	|	OrdersRegisteredBalance.Location             AS Location,
+	|	OrdersRegisteredBalance.DeliveryDate         AS DeliveryDate,
+	|	OrdersRegisteredBalance.Project              AS Project,
+	|	OrdersRegisteredBalance.Class                AS Class,
 	// ------------------------------------------------------
 	// Resources
-	|	SUM(OrdersRegisteredBalance.Quantity)    AS Quantity,
-	|	SUM(OrdersRegisteredBalance.Shipped)     AS Shipped,
-	|	SUM(OrdersRegisteredBalance.Invoiced)    AS Invoiced
+	|	SUM(OrdersRegisteredBalance.Quantity)        AS Quantity,
+	|	SUM(OrdersRegisteredBalance.Shipped)         AS Shipped,
+	|	SUM(OrdersRegisteredBalance.ShippedShipment) AS ShippedShipment,
+	|	SUM(OrdersRegisteredBalance.Invoiced)        AS Invoiced
 	// ------------------------------------------------------
 	|INTO
 	|	OrdersRegistered_Balance_AfterWrite
@@ -3120,6 +3469,7 @@ Procedure CheckCloseParentOrders(DocumentRef, AdditionalProperties, TempTablesMa
 	|GROUP BY
 	|	OrdersRegisteredBalance.Company,
 	|	OrdersRegisteredBalance.Order,
+	|	OrdersRegisteredBalance.Shipment,
 	|	OrdersRegisteredBalance.Product,
 	|	OrdersRegisteredBalance.Product.Type,
 	|	OrdersRegisteredBalance.Unit,
@@ -3130,13 +3480,14 @@ Procedure CheckCloseParentOrders(DocumentRef, AdditionalProperties, TempTablesMa
 	QueryText   = QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
 	QueryTables = QueryTables + 1;
 	
-	// Calculate unshipped and uninvoiced items.
+	// Calculate unshipped and(or) uninvoiced items.
 	QueryText = QueryText +
 	"SELECT
 	// ------------------------------------------------------
 	// Dimensions
 	|	OrdersRegisteredBalance.Company          AS Company,
 	|	OrdersRegisteredBalance.Order            AS Order,
+	|	OrdersRegisteredBalance.Shipment         AS Shipment,
 	|	OrdersRegisteredBalance.Product          AS Product,
 	|	OrdersRegisteredBalance.Unit             AS Unit,
 	|	OrdersRegisteredBalance.Location         AS Location,
@@ -3145,11 +3496,15 @@ Procedure CheckCloseParentOrders(DocumentRef, AdditionalProperties, TempTablesMa
 	|	OrdersRegisteredBalance.Class            AS Class,
 	// ------------------------------------------------------
 	// Resources
-	|	CASE WHEN OrdersRegisteredBalance.Type = VALUE(Enum.InventoryTypes.Inventory)
+	|	CASE WHEN OrdersRegisteredBalance.Shipment <> VALUE(Document.Shipment.EmptyRef)
+	|		 THEN 0
+	|		 WHEN OrdersRegisteredBalance.Type = VALUE(Enum.InventoryTypes.Inventory)
 	|	     THEN OrdersRegisteredBalance.Quantity - OrdersRegisteredBalance.Shipped
 	|	     ELSE 0 END                          AS UnShipped,
-	|	CASE WHEN OrdersRegisteredBalance.Type = VALUE(Enum.InventoryTypes.Inventory)
-	|	     THEN OrdersRegisteredBalance.Shipped  - OrdersRegisteredBalance.Invoiced
+	|	CASE WHEN OrdersRegisteredBalance.Shipment <> VALUE(Document.Shipment.EmptyRef)
+	|        THEN OrdersRegisteredBalance.ShippedShipment - OrdersRegisteredBalance.Invoiced
+	|        WHEN OrdersRegisteredBalance.Type = VALUE(Enum.InventoryTypes.Inventory)
+	|	     THEN OrdersRegisteredBalance.Shipped - OrdersRegisteredBalance.Invoiced
 	|	     WHEN OrdersRegisteredBalance.Type = VALUE(Enum.InventoryTypes.NonInventory)
 	|	     THEN OrdersRegisteredBalance.Quantity - OrdersRegisteredBalance.Invoiced
 	|	     ELSE 0 END                          AS UnInvoiced
@@ -3157,25 +3512,18 @@ Procedure CheckCloseParentOrders(DocumentRef, AdditionalProperties, TempTablesMa
 	|INTO
 	|	OrdersRegistered_Balance_Unclosed
 	|FROM
-	|	OrdersRegistered_Balance_AfterWrite AS OrdersRegisteredBalance
-	|WHERE
-	|	CASE WHEN OrdersRegisteredBalance.Type = VALUE(Enum.InventoryTypes.Inventory)
-	|	     THEN OrdersRegisteredBalance.Quantity - OrdersRegisteredBalance.Shipped
-	|	     ELSE 0 END > 0
-	|OR CASE WHEN OrdersRegisteredBalance.Type = VALUE(Enum.InventoryTypes.Inventory)
-	|	     THEN OrdersRegisteredBalance.Shipped  - OrdersRegisteredBalance.Invoiced
-	|	     WHEN OrdersRegisteredBalance.Type = VALUE(Enum.InventoryTypes.NonInventory)
-	|	     THEN OrdersRegisteredBalance.Quantity - OrdersRegisteredBalance.Invoiced
-	|	     ELSE 0 END > 0";
+	|	OrdersRegistered_Balance_AfterWrite AS OrdersRegisteredBalance";
+	
 	QueryText   = QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
 	QueryTables = QueryTables + 1;
 	
-	// Determine orders having unclosed items in balance.
+	// Calculate unclosed.
 	QueryText = QueryText +
 	"SELECT
 	// ------------------------------------------------------
 	// Dimensions
 	|	OrdersRegisteredBalance.Order            AS Order,
+	|	OrdersRegisteredBalance.Shipment         AS Shipment,
 	|	SUM(OrdersRegisteredBalance.UnShipped
 	|	  + OrdersRegisteredBalance.UnInvoiced)  AS Unclosed
 	// ------------------------------------------------------
@@ -3184,22 +3532,21 @@ Procedure CheckCloseParentOrders(DocumentRef, AdditionalProperties, TempTablesMa
 	|FROM
 	|	OrdersRegistered_Balance_Unclosed AS OrdersRegisteredBalance
 	|GROUP BY
-	|	OrdersRegisteredBalance.Order";
+	|	OrdersRegisteredBalance.Order,
+	|	OrdersRegisteredBalance.Shipment";
 	QueryText   = QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
 	QueryTables = QueryTables + 1;
 	
 	// Calculate closed orders (those in invoice, which don't have unclosed items in theirs balance).
 	QueryText = QueryText +
 	"SELECT DISTINCT
-	|	OrdersRegistered.Order AS Order
+	|	OrdersRegisteredBalanceUnclosed.Order       AS Order,
+	|	OrdersRegisteredBalanceUnclosed.Shipment    AS Shipment
 	|FROM
-	|	Table_OrdersRegistered AS OrdersRegistered
-	|	// Table_LineItems WHERE LineItems.Ref = &Ref AND Order <> EmptyRef()
-	|	LEFT JOIN OrdersRegistered_Balance_Orders_Unclosed AS OrdersRegisteredBalanceUnclosed
-	|		  ON  OrdersRegisteredBalanceUnclosed.Order = OrdersRegistered.Order
+	|	OrdersRegistered_Balance_Orders_Unclosed AS OrdersRegisteredBalanceUnclosed
 	|WHERE
 	|	// No unclosed items
-	|	ISNULL(OrdersRegisteredBalanceUnclosed.Unclosed, 0) = 0";
+	|	OrdersRegisteredBalanceUnclosed.Unclosed = 0";
 	QueryText   = QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
 	QueryTables = QueryTables + 1;
 	
@@ -3241,9 +3588,19 @@ Procedure CheckCloseParentOrders(DocumentRef, AdditionalProperties, TempTablesMa
 		Selection = QueryResult[QueryTables].Select();
 		While Selection.Next() Do
 			
+			Order = ?(ValueIsFilled(Selection.Shipment), Selection.Shipment, Selection.Order);
+			
 			// Set OrderStatus -> Closed.
-			Row = Table_OrdersStatuses.Find(Selection.Order, "Order");
-			If Not Row = Undefined Then
+			Row = Table_OrdersStatuses.Find(Order, "Order");
+			If Row = Undefined Then
+				NewRow = Table_OrdersStatuses.Add();
+				NewRow.Recorder   = AdditionalProperties.Ref;
+				NewRow.Period     = AdditionalProperties.Date;
+				NewRow.LineNumber = 1;
+				NewRow.Active     = True;
+				NewRow.Order      = Order;
+				NewRow.Status     = Enums.OrderStatuses.Closed;
+			Else
 				Row.Status = Enums.OrderStatuses.Closed;
 			EndIf;
 		EndDo;
@@ -3263,45 +3620,108 @@ Function Query_Filling_Document_SalesOrder_Attributes(TablesList)
 	// Collect attributes data.
 	QueryText =
 		"SELECT
-		|	SalesOrder.Ref AS FillingData,
-		|	SalesOrder.Company AS Company,
-		|	SalesOrder.ShipTo AS ShipTo,
-		|	SalesOrder.BillTo AS BillTo,
-		|	SalesOrder.ConfirmTo AS ConfirmTo,
-		|	SalesOrder.RefNum AS RefNum,
-		|	SalesOrder.DropshipCompany AS DropshipCompany,
-		|	SalesOrder.DropshipShipTo AS DropshipShipTo,
-		|	SalesOrder.DropshipConfirmTo AS DropshipConfirmTo,
-		|	SalesOrder.DropshipRefNum AS DropshipRefNum,
-		|	SalesOrder.SalesPerson AS SalesPerson,
-		|	SalesOrder.Currency AS Currency,
-		|	SalesOrder.ExchangeRate AS ExchangeRate,
-		|	ISNULL(SalesOrder.Currency.DefaultARAccount, VALUE(ChartOfAccounts.ChartOfAccounts.EmptyRef)) AS ARAccount,
+		|	SalesOrder.Ref 								AS FillingData,
+		|	SalesOrder.Company 							AS Company,
+		|	SalesOrder.ShipTo 							AS ShipTo,
+		|	SalesOrder.BillTo 							AS BillTo,
+		|	SalesOrder.ConfirmTo 						AS ConfirmTo,
+		|	SalesOrder.RefNum 							AS RefNum,
+		|	SalesOrder.DropshipCompany 					AS DropshipCompany,
+		|	SalesOrder.DropshipShipTo 					AS DropshipShipTo,
+		|	SalesOrder.DropshipConfirmTo	 			AS DropshipConfirmTo,
+		|	SalesOrder.DropshipRefNum 					AS DropshipRefNum,
+		|	SalesOrder.SalesPerson 						AS SalesPerson,
+		|	SalesOrder.Currency 						AS Currency,
+		|	SalesOrder.ExchangeRate 					AS ExchangeRate,
+		|	ISNULL(SalesOrder.Currency.DefaultARAccount, VALUE(ChartOfAccounts.ChartOfAccounts.EmptyRef))
+		|												AS ARAccount,
 		|	CASE
 		|		WHEN SalesOrder.Company.Terms.Days IS NULL 
 		|			THEN DATEADD(&Date, DAY, 14)
 		|		WHEN SalesOrder.Company.Terms.Days = 0
 		|			THEN DATEADD(&Date, DAY, 14)
 		|		ELSE DATEADD(&Date, DAY, SalesOrder.Company.Terms.Days)
-		|	END AS DueDate,
-		|	SalesOrder.Location AS LocationActual,
-		|	SalesOrder.DeliveryDate AS DeliveryDateActual,
-		|	SalesOrder.Project AS Project,
-		|	SalesOrder.Class AS Class,
-		|	ISNULL(SalesOrder.Company.Terms, VALUE(Catalog.PaymentTerms.EmptyRef)) AS Terms,
-		|	SalesOrder.DiscountPercent AS DiscountPercent,
-		|	SalesOrder.Shipping AS Shipping,
-		|	SalesOrder.SalesTaxRate,
-		|	SalesOrder.DiscountIsTaxable,
-		|	SalesOrder.UseAvatax,
-		|	SalesOrder.AvataxShippingTaxCode,
-		|	SalesOrder.DiscountTaxability,
-		|	SalesOrder.DiscountType
+		|	END 										AS DueDate,
+		|	SalesOrder.Location 						AS LocationActual,
+		|	SalesOrder.DeliveryDate 					AS DeliveryDateActual,
+		|	SalesOrder.Project 							AS Project,
+		|	SalesOrder.Class 							AS Class,
+		|	ISNULL(SalesOrder.Company.Terms, VALUE(Catalog.PaymentTerms.EmptyRef))
+		|												AS Terms,
+		|	SalesOrder.DiscountPercent                	AS DiscountPercent,
+		|	SalesOrder.Shipping                       	AS Shipping,
+		|	NULL 							  			AS FOB,
+		|	NULL 						  				AS Carrier,
+		|	NULL 				  						AS TrackingNumber,
+		|	SalesOrder.SalesTaxRate  					AS SalesTaxRate,
+		|	SalesOrder.DiscountIsTaxable 				AS DiscountIsTaxable,
+		|	SalesOrder.UseAvatax 						AS UseAvatax,
+		|	SalesOrder.AvataxShippingTaxCode 			AS AvataxShippingTaxCode,
+		|	SalesOrder.DiscountTaxability 				AS DiscountTaxability,
+		|	SalesOrder.DiscountType						AS DiscountType,
+		|	SalesOrder.Discount							AS Discount
 		|INTO Table_Document_SalesOrder_Attributes
 		|FROM
 		|	Document.SalesOrder AS SalesOrder
 		|WHERE
 		|	SalesOrder.Ref IN(&FillingData_Document_SalesOrder)";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document filling.
+Function Query_Filling_Document_Shipment_Attributes(TablesList)
+	
+	// Add Attributes table to document structure.
+	TablesList.Insert("Table_Document_Shipment_Attributes", TablesList.Count());
+	
+	// Collect attributes data.
+	QueryText =
+		"SELECT
+		|	Shipment.Ref                              AS FillingData,
+		|	Shipment.Company                          AS Company,
+		|	Shipment.ShipTo                           AS ShipTo,
+		|	Shipment.BillTo                           AS BillTo,
+		|	Shipment.ConfirmTo                        AS ConfirmTo,
+		|	Shipment.RefNum                           AS RefNum,
+		|	Shipment.DropshipCompany                  AS DropshipCompany,
+		|	Shipment.DropshipShipTo                   AS DropshipShipTo,
+		|	Shipment.DropshipConfirmTo				  AS DropshipConfirmTo,
+		|	Shipment.DropshipRefNum 				  AS DropshipRefNum,
+		|	Shipment.SalesPerson 				 	  AS SalesPerson,
+		|	Shipment.Currency 					 	  AS Currency,
+		|	Shipment.ExchangeRate				 	  AS ExchangeRate,
+		|	ISNULL(Shipment.Currency.DefaultARAccount, VALUE(ChartOfAccounts.ChartOfAccounts.EmptyRef))
+		|											  AS ARAccount,
+		|	CASE
+		|		WHEN Shipment.Company.Terms.Days IS NULL 
+		|			THEN DATEADD(&Date, DAY, 14)
+		|		WHEN Shipment.Company.Terms.Days = 0
+		|			THEN DATEADD(&Date, DAY, 14)
+		|		ELSE DATEADD(&Date, DAY, Shipment.Company.Terms.Days)
+		|	END 									  AS DueDate,
+		|	Shipment.LocationActual 				  AS LocationActual,
+		|	Shipment.DeliveryDateActual			 	  AS DeliveryDateActual,
+		|	Shipment.Project 						  AS Project,
+		|	Shipment.Class 							  AS Class,
+		|	ISNULL(Shipment.Company.Terms, VALUE(Catalog.PaymentTerms.EmptyRef))
+		|											  AS Terms,
+		|	Shipment.DiscountPercent 				  AS DiscountPercent,
+		|	Shipment.Shipping 						  AS Shipping,
+		|	Shipment.FOB 							  AS FOB,
+		|	Shipment.Carrier 						  AS Carrier,
+		|	Shipment.TrackingNumber 				  AS TrackingNumber,
+		|	Shipment.SalesTaxRate 					  AS SalesTaxRate,
+		|	Shipment.DiscountIsTaxable 				  AS DiscountIsTaxable,
+		|	Shipment.UseAvatax 						  AS UseAvatax,
+		|	Shipment.AvataxShippingTaxCode 			  AS AvataxShippingTaxCode,
+		|	Shipment.DiscountTaxability 			  AS DiscountTaxability
+		|INTO Table_Document_Shipment_Attributes
+		|FROM
+		|	Document.Shipment AS Shipment
+		|WHERE
+		|	Shipment.Ref IN(&FillingData_Document_Shipment)";
 	
 	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
 	
@@ -3347,6 +3767,45 @@ Function Query_Filling_Document_SalesOrder_CommonTotals(TablesList)
 EndFunction
 
 // Query for document filling.
+Function Query_Filling_Document_Shipment_CommonTotals(TablesList)
+	
+	// Add Totals table to document structure.
+	TablesList.Insert("Table_Document_Shipment_CommonTotals", TablesList.Count());
+	
+	// Collect totals data.
+	QueryText =
+		"SELECT
+		// Totals of document
+		|	ShipmentLineItems.Ref                 AS FillingData,
+		|	
+		|	// Total of taxable amount
+		|	SUM(CASE
+		|			WHEN ShipmentLineItems.Taxable = True THEN
+		|				ShipmentLineItems.TaxableAmount +
+		|				CASE // Discount
+		|					WHEN ShipmentLineItems.Ref.LineSubtotal > 0 THEN
+		|						ShipmentLineItems.Ref.Discount *
+		|						ShipmentLineItems.LineTotal /
+		|						ShipmentLineItems.Ref.LineSubtotal
+		|					ELSE 0
+		|				END
+		|			ELSE 0
+		|		END)                                AS TaxableAmount
+		|	
+		|INTO
+		|	Table_Document_Shipment_CommonTotals
+		|FROM
+		|	Document.Shipment.LineItems AS ShipmentLineItems
+		|WHERE
+		|	ShipmentLineItems.Ref IN (&FillingData_Document_Shipment)
+		|GROUP BY
+		|	ShipmentLineItems.Ref";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document filling.
 Function Query_Filling_Document_SalesOrder_OrdersStatuses(TablesList)
 	
 	// Add OrdersStatuses table to document structure.
@@ -3381,6 +3840,46 @@ Function Query_Filling_Document_SalesOrder_OrdersStatuses(TablesList)
 		|		ON SalesOrder.Ref = OrdersStatuses.Order
 		|WHERE
 		|	SalesOrder.Ref IN (&FillingData_Document_SalesOrder)";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document filling.
+Function Query_Filling_Document_Shipment_OrdersStatuses(TablesList)
+	
+	// Add OrdersStatuses table to document structure.
+	TablesList.Insert("Table_Document_Shipment_OrdersStatuses", TablesList.Count());
+	
+	// Collect orders statuses data.
+	QueryText =
+		"SELECT
+		// ------------------------------------------------------
+		// Dimensions
+		|	Shipment.Ref                          AS Order,
+		// ------------------------------------------------------
+		// Resources
+		|	CASE
+		|		WHEN Shipment.DeletionMark THEN
+		|			 VALUE(Enum.OrderStatuses.Deleted)
+		|		WHEN NOT Shipment.Posted THEN
+		|			 VALUE(Enum.OrderStatuses.Draft)
+		|		WHEN OrdersStatuses.Status IS NULL THEN
+		|			 VALUE(Enum.OrderStatuses.Open)
+		|		WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.EmptyRef) THEN
+		|			 VALUE(Enum.OrderStatuses.Open)
+		|		ELSE
+		|			 OrdersStatuses.Status
+		|	END                                     AS Status
+		// ------------------------------------------------------
+		|INTO
+		|	Table_Document_Shipment_OrdersStatuses
+		|FROM
+		|	Document.Shipment AS Shipment
+		|		LEFT JOIN InformationRegister.OrdersStatuses.SliceLast(, Order IN (&FillingData_Document_Shipment)) AS OrdersStatuses
+		|		ON Shipment.Ref = OrdersStatuses.Order
+		|WHERE
+		|	Shipment.Ref IN (&FillingData_Document_Shipment)";
 	
 	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
 	
@@ -3454,6 +3953,67 @@ Function Query_Filling_Document_SalesOrder_OrdersRegistered(TablesList)
 EndFunction
 
 // Query for document filling.
+Function Query_Filling_Document_Shipment_OrdersRegistered(TablesList)
+	
+	// Add OrdersRegistered table to document structure.
+	TablesList.Insert("Table_Document_Shipment_OrdersRegistered", TablesList.Count());
+	
+	// Collect orders items data.
+	QueryText =
+		"SELECT
+		// ------------------------------------------------------
+		// Dimensions
+		|	OrdersRegisteredBalance.Company          		AS Company,
+		|	OrdersRegisteredBalance.Order            		AS Order,
+		|	OrdersRegisteredBalance.Shipment         		AS Shipment,
+		|	OrdersRegisteredBalance.Product          		AS Product,
+		|	OrdersRegisteredBalance.Unit             		AS Unit,
+		|	OrdersRegisteredBalance.Location         		AS Location,
+		|	OrdersRegisteredBalance.DeliveryDate     		AS DeliveryDate,
+		|	OrdersRegisteredBalance.Project          		AS Project,
+		|	OrdersRegisteredBalance.Class            		AS Class,
+		// ------------------------------------------------------
+		// Resources
+		|	OrdersRegisteredBalance.ShippedShipmentBalance  AS Quantity,
+		|	CASE
+		|		WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Open)        THEN 0
+		|		WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Backordered) THEN
+		|			 CASE                                                                                                   
+		|			      WHEN OrdersRegisteredBalance.ShippedShipmentBalance > OrdersRegisteredBalance.InvoicedBalance          
+		|				  THEN OrdersRegisteredBalance.ShippedShipmentBalance - OrdersRegisteredBalance.InvoicedBalance          
+		|			      ELSE 0 
+		|            END                                                                                                    
+		|		WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Closed)      THEN 0
+		|		ELSE 0
+		|	END                                             AS Backorder
+		// ------------------------------------------------------
+		|INTO
+		|	Table_Document_Shipment_OrdersRegistered
+		|FROM
+		|	AccumulationRegister.OrdersRegistered.Balance(,
+		|		(Company, Order, Shipment, Product, Unit, Location, DeliveryDate, Project, Class) IN
+		|			(SELECT
+		|				ShipmentLineItems.Ref.Company,
+		|				ShipmentLineItems.Order,
+		|				ShipmentLineItems.Ref,
+		|				ShipmentLineItems.Product,
+		|				ShipmentLineItems.Unit,
+		|				ShipmentLineItems.Location,
+		|				ShipmentLineItems.DeliveryDate,
+		|				ShipmentLineItems.Project,
+		|				ShipmentLineItems.Class
+		|			FROM
+		|				Document.Shipment.LineItems AS ShipmentLineItems
+		|			WHERE
+		|				ShipmentLineItems.Ref IN (&FillingData_Document_Shipment))) AS OrdersRegisteredBalance
+		|	LEFT JOIN Table_Document_Shipment_OrdersStatuses AS OrdersStatuses
+		|		ON OrdersRegisteredBalance.Shipment = OrdersStatuses.Order";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document filling.
 Function Query_Filling_Document_SalesOrder_LineItems(TablesList)
 	
 	// Add LineItems table to document structure.
@@ -3463,19 +4023,13 @@ Function Query_Filling_Document_SalesOrder_LineItems(TablesList)
 	QueryText =
 		"SELECT
 		|	SalesOrderLineItems.Ref                 AS FillingData,
+		|	NULL                                    AS LineID,
 		|	SalesOrderLineItems.Product             AS Product,
 		|	SalesOrderLineItems.ProductDescription  AS ProductDescription,
+		|	NULL                                    AS Lot,
 		|	SalesOrderLineItems.UnitSet             AS UnitSet,
 		|	SalesOrderLineItems.Unit                AS Unit,
-		//|	SalesOrderLineItems.UM                  AS UM,
-		|	CASE
-		|		WHEN SalesOrderLineItems.Product.PricePrecision = 3
-		|			THEN CAST(SalesOrderLineItems.PriceUnits AS NUMBER(17, 3))
-		|		WHEN SalesOrderLineItems.Product.PricePrecision = 4
-		|			THEN CAST(SalesOrderLineItems.PriceUnits AS NUMBER(17, 4))
-		|		ELSE CAST(SalesOrderLineItems.PriceUnits AS NUMBER(17, 2))
-		|	END          							AS PriceUnits,
-		|	
+		|
 		|	// QtyUnits
 		|	CASE
 		|		WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Open)
@@ -3504,6 +4058,15 @@ Function Query_Filling_Document_SalesOrder_LineItems(TablesList)
 		|			ELSE 1
 		|		END
 		|		AS NUMBER (15, {QuantityPrecision})) AS QtyUM,
+		|	
+		|	// PriceUnits
+		|	CASE
+		|		WHEN SalesOrderLineItems.Product.PricePrecision = 3
+		|			THEN CAST(SalesOrderLineItems.PriceUnits AS NUMBER(17, 3))
+		|		WHEN SalesOrderLineItems.Product.PricePrecision = 4
+		|			THEN CAST(SalesOrderLineItems.PriceUnits AS NUMBER(17, 4))
+		|		ELSE CAST(SalesOrderLineItems.PriceUnits AS NUMBER(17, 2))
+		|	END                                     AS PriceUnits,
 		|	
 		|	// LineTotal
 		|	CAST( // Format(Quantity * Price, ""ND=17; NFD=2"")
@@ -3629,6 +4192,7 @@ Function Query_Filling_Document_SalesOrder_LineItems(TablesList)
 		|		AS NUMBER (17, 2))                  AS SalesTax,
 		|	
 		|	SalesOrderLineItems.Ref                 AS Order,
+		|	VALUE(Document.Shipment.EmptyRef)       AS Shipment,
 		|	SalesOrderLineItems.Location            AS Location,
 		|	SalesOrderLineItems.Location            AS LocationActual,
 		|	SalesOrderLineItems.DeliveryDate        AS DeliveryDate,
@@ -3636,7 +4200,7 @@ Function Query_Filling_Document_SalesOrder_LineItems(TablesList)
 		|	SalesOrderLineItems.Project             AS Project,
 		|	SalesOrderLineItems.Class               AS Class,
 		|	SalesOrderLineItems.Ref.Company         AS Company,
-		|	SalesOrderLineItems.AvataxTaxCode   AS AvataxTaxCode,
+		|	SalesOrderLineItems.AvataxTaxCode       AS AvataxTaxCode,
 		|	SalesOrderLineItems.DiscountIsTaxable   AS DiscountIsTaxable
 		|INTO
 		|	Table_Document_SalesOrder_LineItems
@@ -3660,6 +4224,272 @@ Function Query_Filling_Document_SalesOrder_LineItems(TablesList)
 		
 	// Update query rounding using quantity precision.
 	QueryText = StrReplace(QueryText, "{QuantityPrecision}", GeneralFunctionsReusable.DefaultQuantityPrecision());
+	
+	// Return text of query
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document filling.
+Function Query_Filling_Document_Shipment_LineItems(TablesList)
+	
+	// Add LineItems table to document structure.
+	TablesList.Insert("Table_Document_Shipment_LineItems", TablesList.Count());
+	
+	// Collect line items data.
+	QueryText =
+		"SELECT
+		|	ShipmentLineItems.Ref                   AS FillingData,
+		|	ShipmentLineItems.LineID                AS LineID,
+		|	ShipmentLineItems.Product               AS Product,
+		|	ShipmentLineItems.ProductDescription    AS ProductDescription,
+		|	ShipmentLineItems.Lot                   AS Lot,
+		|	ShipmentLineItems.UnitSet               AS UnitSet,
+		|	ShipmentLineItems.Unit                  AS Unit,
+		|	
+		|	// QtyUnits
+		|	CASE
+		|		WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Open)
+		|			THEN ISNULL(OrdersRegistered.Quantity, ShipmentLineItems.QtyUnits)
+		|		WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Backordered)
+		|			THEN ISNULL(OrdersRegistered.Backorder, ShipmentLineItems.QtyUnits)
+		|		WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Closed)
+		|			THEN ISNULL(OrdersRegistered.Backorder, 0)
+		|		ELSE 0
+		|	END                                     AS QtyUnits,
+		|	
+		|	// QtyUM
+		|	CAST( // Format(Quantity * Unit.Factor, ""ND=15; NFD={4}"")
+		|		CASE
+		|			WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Open)
+		|				THEN ISNULL(OrdersRegistered.Quantity, ShipmentLineItems.QtyUnits)
+		|			WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Backordered)
+		|				THEN ISNULL(OrdersRegistered.Backorder, ShipmentLineItems.QtyUnits)
+		|			WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Closed)
+		|				THEN ISNULL(OrdersRegistered.Backorder, 0)
+		|			ELSE 0
+		|		END * 
+		|		CASE
+		|			WHEN ShipmentLineItems.Unit.Factor > 0
+		|				THEN ShipmentLineItems.Unit.Factor
+		|			ELSE 1
+		|		END
+		|		AS NUMBER (15, {QuantityPrecision})) AS QtyUM,
+		|	
+		|	// PriceUnits
+		|	CASE
+		|		WHEN ShipmentLineItems.Product.PricePrecision = 3
+		|			THEN CAST(ShipmentLineItems.PriceUnits AS NUMBER(17, 3))
+		|		WHEN ShipmentLineItems.Product.PricePrecision = 4
+		|			THEN CAST(ShipmentLineItems.PriceUnits AS NUMBER(17, 4))
+		|		ELSE CAST(ShipmentLineItems.PriceUnits AS NUMBER(17, 2))
+		|	END                                      AS PriceUnits,
+		|	
+		|	// LineTotal
+		|	CAST( // Format(Quantity * Price, ""ND=17; NFD=2"")
+		|		CASE
+		|			WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Open)
+		|				THEN ISNULL(OrdersRegistered.Quantity, ShipmentLineItems.QtyUnits)
+		|			WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Backordered)
+		|				THEN ISNULL(OrdersRegistered.Backorder, ShipmentLineItems.QtyUnits)
+		|			WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Closed)
+		|				THEN ISNULL(OrdersRegistered.Backorder, 0)
+		|			ELSE 0
+		|		END * CASE
+		|			WHEN ShipmentLineItems.Product.PricePrecision = 3
+		|				THEN CAST(ShipmentLineItems.PriceUnits AS NUMBER(17, 3))
+		|			WHEN ShipmentLineItems.Product.PricePrecision = 4
+		|				THEN CAST(ShipmentLineItems.PriceUnits AS NUMBER(17, 4))
+		|			ELSE CAST(ShipmentLineItems.PriceUnits AS NUMBER(17, 2))
+		|		END
+		|		AS NUMBER (17, 2))                  AS LineTotal,
+		|	
+		|	// Discount
+		|	CAST( // Format(Discount * LineTotal / Subtotal, ""ND=17; NFD=2"")
+		|		CASE
+		|			WHEN ShipmentLineItems.Ref.LineSubtotal > 0 THEN
+		|				ShipmentLineItems.Ref.Discount *
+		|				CASE // LineTotal = Quantity * Price
+		|					WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Open)
+		|						THEN ISNULL(OrdersRegistered.Quantity, ShipmentLineItems.QtyUnits)
+		|					WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Backordered)
+		|						THEN ISNULL(OrdersRegistered.Backorder, ShipmentLineItems.QtyUnits)
+		|					WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Closed)
+		|						THEN ISNULL(OrdersRegistered.Backorder, 0)
+		|					ELSE 0
+		|				END * CASE
+		|					WHEN ShipmentLineItems.Product.PricePrecision = 3
+		|						THEN CAST(ShipmentLineItems.PriceUnits AS NUMBER(17, 3))
+		|					WHEN ShipmentLineItems.Product.PricePrecision = 4
+		|						THEN CAST(ShipmentLineItems.PriceUnits AS NUMBER(17, 4))
+		|					ELSE CAST(ShipmentLineItems.PriceUnits AS NUMBER(17, 2))
+		|				END /
+		|				ShipmentLineItems.Ref.LineSubtotal
+		|			ELSE 0
+		|		END
+		|		AS NUMBER (17, 2))                  AS Discount,
+		|	
+		|	// Taxable flag
+		|	ShipmentLineItems.Taxable               AS Taxable,
+		|	
+		|	// Taxable amount
+		|	CAST( // Format(?(Taxable, LineTotal, 0), ""ND=17; NFD=2"")
+		|		CASE
+		|			WHEN ShipmentLineItems.Taxable = True THEN
+		|				CASE // Quantity * Price
+		|					WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Open)
+		|						THEN ISNULL(OrdersRegistered.Quantity, ShipmentLineItems.QtyUnits)
+		|					WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Backordered)
+		|						THEN ISNULL(OrdersRegistered.Backorder, ShipmentLineItems.QtyUnits)
+		|					WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Closed)
+		|						THEN ISNULL(OrdersRegistered.Backorder, 0)
+		|					ELSE 0
+		|				END * CASE
+		|					WHEN ShipmentLineItems.Product.PricePrecision = 3
+		|						THEN CAST(ShipmentLineItems.PriceUnits AS NUMBER(17, 3))
+		|					WHEN ShipmentLineItems.Product.PricePrecision = 4
+		|						THEN CAST(ShipmentLineItems.PriceUnits AS NUMBER(17, 4))
+		|					ELSE CAST(ShipmentLineItems.PriceUnits AS NUMBER(17, 2))
+		|				END
+		|			ELSE 0
+		|		END
+		|		AS NUMBER (17, 2))                  AS TaxableAmount,
+		|	
+		|	// Tax amount
+		|	CAST( // Format(TaxableAmount * TaxRate, ""ND=17; NFD=2"")
+		|		// Taxable amount
+		|		CASE
+		|			WHEN ShipmentLineItems.Taxable = True THEN
+		|				CASE // LineTotal
+		|					WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Open)
+		|						THEN ISNULL(OrdersRegistered.Quantity, ShipmentLineItems.QtyUnits)
+		|					WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Backordered)
+		|						THEN ISNULL(OrdersRegistered.Backorder, ShipmentLineItems.QtyUnits)
+		|					WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Closed)
+		|						THEN ISNULL(OrdersRegistered.Backorder, 0)
+		|					ELSE 0
+		|				END * CASE
+		|					WHEN ShipmentLineItems.Product.PricePrecision = 3
+		|						THEN CAST(ShipmentLineItems.PriceUnits AS NUMBER(17, 3))
+		|					WHEN ShipmentLineItems.Product.PricePrecision = 4
+		|						THEN CAST(ShipmentLineItems.PriceUnits AS NUMBER(17, 4))
+		|					ELSE CAST(ShipmentLineItems.PriceUnits AS NUMBER(17, 2))
+		|				END
+		|				+
+		|				CASE // Discount
+		|					WHEN ShipmentLineItems.Ref.LineSubtotal > 0 THEN
+		|						ShipmentLineItems.Ref.Discount *
+		|						CASE // LineTotal = Quantity * Price
+		|							WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Open)
+		|								THEN ISNULL(OrdersRegistered.Quantity, ShipmentLineItems.QtyUnits)
+		|							WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Backordered)
+		|								THEN ISNULL(OrdersRegistered.Backorder, ShipmentLineItems.QtyUnits)
+		|							WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Closed)
+		|								THEN ISNULL(OrdersRegistered.Backorder, 0)
+		|							ELSE 0
+		|						END * CASE
+		|							WHEN ShipmentLineItems.Product.PricePrecision = 3
+		|								THEN CAST(ShipmentLineItems.PriceUnits AS NUMBER(17, 3))
+		|							WHEN ShipmentLineItems.Product.PricePrecision = 4
+		|								THEN CAST(ShipmentLineItems.PriceUnits AS NUMBER(17, 4))
+		|							ELSE CAST(ShipmentLineItems.PriceUnits AS NUMBER(17, 2))
+		|						END /
+		|						ShipmentLineItems.Ref.LineSubtotal
+		|					ELSE 0
+		|				END
+		|			ELSE 0
+		|		END *
+		|		// Tax rate
+		|		CASE
+		|			WHEN CommonTotals.TaxableAmount > 0 THEN
+		|				ShipmentLineItems.Ref.SalesTax /
+		|				CommonTotals.TaxableAmount
+		|			ELSE 0
+		|		END
+		|		AS NUMBER (17, 2))                  AS SalesTax,
+		|	
+		|	ShipmentLineItems.Order                 AS Order,
+		|	ShipmentLineItems.Ref                   AS Shipment,
+		|	ShipmentLineItems.Location              AS Location,
+		|	ShipmentLineItems.LocationActual        AS LocationActual,
+		|	ShipmentLineItems.DeliveryDate          AS DeliveryDate,
+		|	ShipmentLineItems.DeliveryDateActual    AS DeliveryDateActual,
+		|	ShipmentLineItems.Project               AS Project,
+		|	ShipmentLineItems.Class                 AS Class,
+		|	ShipmentLineItems.Ref.Company           AS Company,
+		|	ShipmentLineItems.AvataxTaxCode         AS AvataxTaxCode,
+		|	ShipmentLineItems.DiscountIsTaxable     AS DiscountIsTaxable
+		|INTO
+		|	Table_Document_Shipment_LineItems
+		|FROM
+		|	Document.Shipment.LineItems AS ShipmentLineItems
+		|	LEFT JOIN Table_Document_Shipment_CommonTotals AS CommonTotals
+		|		ON CommonTotals.FillingData = ShipmentLineItems.Ref
+		|	LEFT JOIN Table_Document_Shipment_OrdersRegistered AS OrdersRegistered
+		|		ON  OrdersRegistered.Company      = ShipmentLineItems.Ref.Company
+		|		AND OrdersRegistered.Order        = ShipmentLineItems.Order
+		|		AND OrdersRegistered.Shipment     = ShipmentLineItems.Ref
+		|		AND OrdersRegistered.Product      = ShipmentLineItems.Product
+		|		AND OrdersRegistered.Unit         = ShipmentLineItems.Unit
+		|		AND OrdersRegistered.Location     = ShipmentLineItems.Location
+		|		AND OrdersRegistered.DeliveryDate = ShipmentLineItems.DeliveryDate
+		|		AND OrdersRegistered.Project      = ShipmentLineItems.Project
+		|		AND OrdersRegistered.Class        = ShipmentLineItems.Class
+		|	LEFT JOIN Table_Document_Shipment_OrdersStatuses AS OrdersStatuses
+		|		ON OrdersStatuses.Order = ShipmentLineItems.Ref
+		|WHERE
+		|	ShipmentLineItems.Ref IN (&FillingData_Document_Shipment)";
+		
+	// Update query rounding using quantity precision.
+	QueryText = StrReplace(QueryText, "{QuantityPrecision}", GeneralFunctionsReusable.DefaultQuantityPrecision());
+	
+	// Return text of query
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document filling.
+Function Query_Filling_Document_SalesOrder_SerialNumbers(TablesList)
+	
+	// Add SerialNumbers table to document structure.
+	TablesList.Insert("Table_Document_SalesOrder_SerialNumbers", TablesList.Count());
+	
+	// Collect line items data.
+	QueryText =
+		"SELECT
+		|	SalesOrderSerialNumbers.Ref                AS FillingData,
+		|	NULL                                       AS LineItemsLineID,
+		|	""""                                       AS SerialNumber
+		|INTO
+		|	Table_Document_SalesOrder_SerialNumbers
+		|FROM
+		|	Document.SalesOrder AS SalesOrderSerialNumbers
+		|WHERE
+		|	SalesOrderSerialNumbers.Ref IN (&FillingData_Document_SalesOrder)";
+	
+	// Return text of query
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document filling.
+Function Query_Filling_Document_Shipment_SerialNumbers(TablesList)
+	
+	// Add SerialNumbers table to document structure.
+	TablesList.Insert("Table_Document_Shipment_SerialNumbers", TablesList.Count());
+	
+	// Collect line items data.
+	QueryText =
+		"SELECT
+		|	ShipmentSerialNumbers.Ref                  AS FillingData,
+		|	ShipmentSerialNumbers.LineItemsLineID      AS LineItemsLineID,
+		|	ShipmentSerialNumbers.SerialNumber         AS SerialNumber
+		|INTO
+		|	Table_Document_Shipment_SerialNumbers
+		|FROM
+		|	Document.Shipment.SerialNumbers AS ShipmentSerialNumbers
+		|WHERE
+		|	ShipmentSerialNumbers.Ref IN (&FillingData_Document_Shipment)";
 	
 	// Return text of query
 	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
@@ -3712,6 +4542,51 @@ Function Query_Filling_Document_SalesOrder_Totals(TablesList)
 EndFunction
 
 // Query for document filling.
+Function Query_Filling_Document_Shipment_Totals(TablesList)
+	
+	// Add Totals table to document structure.
+	TablesList.Insert("Table_Document_Shipment_Totals", TablesList.Count());
+	
+	// Collect totals data.
+	QueryText =
+		"SELECT
+		// Totals of document
+		|	ShipmentLineItems.FillingData         AS FillingData,
+		|	
+		|	// Total(LineTotal)
+		|	SUM(ShipmentLineItems.LineTotal)      AS LineSubtotal,
+		|	
+		|	// Total(Discount)
+		|	SUM(ShipmentLineItems.Discount)       AS Discount,
+		|	
+		|	// Total(LineTotal) + Total(Discount)
+		|	SUM(ShipmentLineItems.LineTotal) +
+		|	SUM(ShipmentLineItems.Discount)       AS SubTotal,
+		|	
+		|	// Total(SalesTax)
+		|	SUM(ShipmentLineItems.SalesTax)       AS SalesTax,
+		|	
+		|	// Format(SalesTax * ExchangeRate, ""ND=17; NFD=2"")
+		|	CAST( // Format(SalesTax * ExchangeRate, ""ND=17; NFD=2"")
+		|		SUM(ShipmentLineItems.SalesTax) *
+		|		Shipment_.ExchangeRate
+		|		AS NUMBER (17, 2))                  AS SalesTaxRC
+		|	
+		|INTO
+		|	Table_Document_Shipment_Totals
+		|FROM
+		|	Table_Document_Shipment_LineItems AS ShipmentLineItems
+		|	LEFT JOIN Table_Document_Shipment_Attributes AS Shipment_
+		|		ON Shipment_.FillingData = ShipmentLineItems.FillingData
+		|GROUP BY
+		|	ShipmentLineItems.FillingData,
+		|	Shipment_.ExchangeRate";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document filling.
 Function Query_Filling_Attributes(TablesList)
 	
 	// Add Attributes table to document structure.
@@ -3719,6 +4594,8 @@ Function Query_Filling_Attributes(TablesList)
 	
 	// Fill data from attributes and totals.
 	QueryText = "";
+	
+	// Fill from sales orders.
 	If TablesList.Property("Table_Document_SalesOrder_Attributes") Then
 		QueryText = QueryText + ?(Not IsBlankString(QueryText),
 		"
@@ -3752,9 +4629,16 @@ Function Query_Filling_Attributes(TablesList)
 		|	Document_SalesOrder_Attributes.Terms,
 		|	Document_SalesOrder_Totals.LineSubtotal,
 		|	Document_SalesOrder_Attributes.DiscountPercent,
-		|	Document_SalesOrder_Totals.Discount,
+		|   CASE
+		|	WHEN Document_SalesOrder_Attributes.DiscountType = VALUE(Enum.DiscountType.FixedAmount)
+		|		THEN Document_SalesOrder_Attributes.Discount
+		|		ELSE Document_SalesOrder_Totals.Discount
+		|	END AS Discount,
 		|	Document_SalesOrder_Totals.SubTotal,
 		|	Document_SalesOrder_Attributes.Shipping,
+		|	Document_SalesOrder_Attributes.FOB,
+		|	Document_SalesOrder_Attributes.Carrier,
+		|	Document_SalesOrder_Attributes.TrackingNumber,
 		|	Document_SalesOrder_Totals.SalesTax,
 		|	Document_SalesOrder_Totals.SalesTaxRC,
 		|	Document_SalesOrder_Attributes.SalesTaxRate,
@@ -3768,6 +4652,68 @@ Function Query_Filling_Attributes(TablesList)
 		|	Table_Document_SalesOrder_Attributes AS Document_SalesOrder_Attributes
 		|	LEFT JOIN Table_Document_SalesOrder_Totals AS Document_SalesOrder_Totals
 		|		ON Document_SalesOrder_Totals.FillingData = Document_SalesOrder_Attributes.FillingData";
+		
+		// Add selection to a query
+		QueryText = QueryText + StrReplace(SelectionText, "{Into}",
+		?(IsBlankString(QueryText), 
+		"INTO
+		|	Table_Attributes",
+		""));
+		
+	EndIf;
+	
+	// Fill from shipment.
+	If TablesList.Property("Table_Document_Shipment_Attributes") Then
+		QueryText = QueryText + ?(Not IsBlankString(QueryText),
+		"
+		|
+		|UNION ALL
+		|
+		|",
+		"");
+		
+		SelectionText =
+		"SELECT
+		|	Document_Shipment_Attributes.FillingData,
+		|	Document_Shipment_Attributes.Company,
+		|	Document_Shipment_Attributes.ShipTo,
+		|	Document_Shipment_Attributes.BillTo,
+		|	Document_Shipment_Attributes.ConfirmTo,
+		|	Document_Shipment_Attributes.RefNum,
+		|	Document_Shipment_Attributes.DropshipCompany,
+		|	Document_Shipment_Attributes.DropshipShipTo,
+		|	Document_Shipment_Attributes.DropshipConfirmTo,
+		|	Document_Shipment_Attributes.DropshipRefNum,
+		|	Document_Shipment_Attributes.SalesPerson,
+		|	Document_Shipment_Attributes.Currency,
+		|	Document_Shipment_Attributes.ExchangeRate,
+		|	Document_Shipment_Attributes.ARAccount,
+		|	Document_Shipment_Attributes.DueDate,
+		|	Document_Shipment_Attributes.LocationActual,
+		|	Document_Shipment_Attributes.DeliveryDateActual,
+		|	Document_Shipment_Attributes.Project,
+		|	Document_Shipment_Attributes.Class,
+		|	Document_Shipment_Attributes.Terms,
+		|	Document_Shipment_Totals.LineSubtotal,
+		|	Document_Shipment_Attributes.DiscountPercent,
+		|	Document_Shipment_Totals.Discount,
+		|	Document_Shipment_Totals.SubTotal,
+		|	Document_Shipment_Attributes.Shipping,
+		|	Document_Shipment_Attributes.FOB,
+		|	Document_Shipment_Attributes.Carrier,
+		|	Document_Shipment_Attributes.TrackingNumber,
+		|	Document_Shipment_Totals.SalesTax,
+		|	Document_Shipment_Totals.SalesTaxRC,
+		|	Document_Shipment_Attributes.SalesTaxRate,
+		|	Document_Shipment_Attributes.DiscountIsTaxable,
+		|	Document_Shipment_Attributes.UseAvatax,
+		|	Document_Shipment_Attributes.AvataxShippingTaxCode,
+		|	Document_Shipment_Attributes.DiscountTaxability
+		|{Into}
+		|FROM
+		|	Table_Document_Shipment_Attributes AS Document_Shipment_Attributes
+		|	LEFT JOIN Table_Document_Shipment_Totals AS Document_Shipment_Totals
+		|		ON Document_Shipment_Totals.FillingData = Document_Shipment_Attributes.FillingData";
 		
 		// Add selection to a query
 		QueryText = QueryText + StrReplace(SelectionText, "{Into}",
@@ -3793,6 +4739,8 @@ Function Query_Filling_LineItems(TablesList)
 	
 	// Fill data from attributes and totals.
 	QueryText = "";
+	
+	// Fill from sales orders.
 	If TablesList.Property("Table_Document_SalesOrder_LineItems") Then
 		QueryText = QueryText + ?(Not IsBlankString(QueryText), 
 		"
@@ -3805,18 +4753,20 @@ Function Query_Filling_LineItems(TablesList)
 		SelectionText =
 		"SELECT
 		|	Document_SalesOrder_LineItems.FillingData,
+		|	Document_SalesOrder_LineItems.LineID,
 		|	Document_SalesOrder_LineItems.Product,
 		|	Document_SalesOrder_LineItems.ProductDescription,
+		|	Document_SalesOrder_LineItems.Lot,
 		|	Document_SalesOrder_LineItems.UnitSet,
 		|	Document_SalesOrder_LineItems.QtyUnits,
 		|	Document_SalesOrder_LineItems.Unit,
 		|	Document_SalesOrder_LineItems.QtyUM,
-		//|	Document_SalesOrder_LineItems.UM,
 		|	Document_SalesOrder_LineItems.PriceUnits,
 		|	Document_SalesOrder_LineItems.LineTotal,
 		|	Document_SalesOrder_LineItems.Taxable,
 		|	Document_SalesOrder_LineItems.TaxableAmount,
 		|	Document_SalesOrder_LineItems.Order,
+		|	Document_SalesOrder_LineItems.Shipment,
 		|	Document_SalesOrder_LineItems.Location,
 		|	Document_SalesOrder_LineItems.LocationActual,
 		|	Document_SalesOrder_LineItems.DeliveryDate,
@@ -3840,8 +4790,134 @@ Function Query_Filling_LineItems(TablesList)
 		
 	EndIf;
 	
+	// Fill from shipment.
+	If TablesList.Property("Table_Document_Shipment_LineItems") Then
+		QueryText = QueryText + ?(Not IsBlankString(QueryText), 
+		"
+		|
+		|UNION ALL
+		|
+		|",
+		"");
+		
+		SelectionText =
+		"SELECT
+		|	Document_Shipment_LineItems.FillingData,
+		|	Document_Shipment_LineItems.LineID,
+		|	Document_Shipment_LineItems.Product,
+		|	Document_Shipment_LineItems.ProductDescription,
+		|	Document_Shipment_LineItems.Lot,
+		|	Document_Shipment_LineItems.UnitSet,
+		|	Document_Shipment_LineItems.QtyUnits,
+		|	Document_Shipment_LineItems.Unit,
+		|	Document_Shipment_LineItems.QtyUM,
+		|	Document_Shipment_LineItems.PriceUnits,
+		|	Document_Shipment_LineItems.LineTotal,
+		|	Document_Shipment_LineItems.Taxable,
+		|	Document_Shipment_LineItems.TaxableAmount,
+		|	Document_Shipment_LineItems.Order,
+		|	Document_Shipment_LineItems.Shipment,
+		|	Document_Shipment_LineItems.Location,
+		|	Document_Shipment_LineItems.LocationActual,
+		|	Document_Shipment_LineItems.DeliveryDate,
+		|	Document_Shipment_LineItems.DeliveryDateActual,
+		|	Document_Shipment_LineItems.Project,
+		|	Document_Shipment_LineItems.Class,
+		|	Document_Shipment_LineItems.AvataxTaxCode,
+		|	Document_Shipment_LineItems.DiscountIsTaxable
+		|{Into}
+		|FROM
+		|	Table_Document_Shipment_LineItems AS Document_Shipment_LineItems
+		|WHERE
+		|	Document_Shipment_LineItems.QtyUnits > 0";
+		
+		// Add selection to a query
+		QueryText = QueryText + StrReplace(SelectionText, "{Into}",
+		?(IsBlankString(QueryText), 
+		"INTO
+		|	Table_LineItems",
+		""));
+		
+	EndIf;
+	
 	// Fill data from next source
 	// --------------------------
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document filling.
+Function Query_Filling_SerialNumbers(TablesList)
+	
+	// Add LineItems table to document structure.
+	TablesList.Insert("Table_SerialNumbers", TablesList.Count());
+	
+	// Fill data from attributes and totals.
+	QueryText = "";
+	
+	// Fill from purchase orders.
+	If TablesList.Property("Table_Document_SalesOrder_SerialNumbers") Then
+		QueryText = QueryText + ?(Not IsBlankString(QueryText), 
+		"
+		|
+		|UNION ALL
+		|
+		|",
+		"");
+		
+		SelectionText =
+		"SELECT
+		|	Document_SalesOrder_SerialNumbers.FillingData,
+		|	Document_SalesOrder_SerialNumbers.LineItemsLineID,
+		|	Document_SalesOrder_SerialNumbers.SerialNumber
+		|{Into}
+		|FROM
+		|	Table_Document_SalesOrder_SerialNumbers AS Document_SalesOrder_SerialNumbers
+		|WHERE
+		|	Document_SalesOrder_SerialNumbers.SerialNumber <> """"";
+		
+		// Add selection to a query.
+		QueryText = QueryText + StrReplace(SelectionText, "{Into}",
+		?(IsBlankString(QueryText), 
+		"INTO
+		|	Table_SerialNumbers",
+		""));
+		
+	EndIf;
+		
+	// Fill from item receipt.
+	If TablesList.Property("Table_Document_Shipment_SerialNumbers") Then
+		QueryText = QueryText + ?(Not IsBlankString(QueryText), 
+		"
+		|
+		|UNION ALL
+		|
+		|",
+		"");
+		
+		SelectionText =
+		"SELECT
+		|	Document_Shipment_SerialNumbers.FillingData,
+		|	Document_Shipment_SerialNumbers.LineItemsLineID,
+		|	Document_Shipment_SerialNumbers.SerialNumber
+		|{Into}
+		|FROM
+		|	Table_Document_Shipment_SerialNumbers AS Document_Shipment_SerialNumbers
+		|WHERE
+		|	Document_Shipment_SerialNumbers.SerialNumber <> """"";
+		
+		// Add selection to a query.
+		QueryText = QueryText + StrReplace(SelectionText, "{Into}",
+		?(IsBlankString(QueryText), 
+		"INTO
+		|	Table_SerialNumbers",
+		""));
+		
+	EndIf;
+	
+	// Fill data from next source.
+	// ---------------------------
 	
 	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
 	
@@ -3856,40 +4932,76 @@ Function Query_Filling_SalesTaxAcrossAgencies(TablesList)
 	// Fill data from attributes and totals.
 	QueryText = "";
 	
-	//QueryText = "SELECT TOP 1
-	//			|	Table_Check.SalesTaxRate
-	//			|INTO CurrentSalesTaxRate
-	//			|FROM
-	//			|	Table_Check AS Table_Check
-	//			|;
-	//			|
-	//			|////////////////////////////////////////////////////////////////////////////////
-	//			|SELECT
-	//			|	SalesTaxRates.Agency,
-	//			|	SalesTaxRates.Rate AS Rate,
-	//			|	0 AS Amount
-	//			|INTO Table_SalesTaxAcrossAgencies
-	//			|FROM
-	//			|	CurrentSalesTaxRate AS CurrentSalesTaxRate
-	//			|		INNER JOIN Catalog.SalesTaxRates AS SalesTaxRates
-	//			|		ON (CurrentSalesTaxRate.SalesTaxRate = SalesTaxRates.Ref
-	//			|				OR CurrentSalesTaxRate.SalesTaxRate = SalesTaxRates.Parent)
-	//			|			AND (SalesTaxRates.CombinedTaxRate = FALSE)";
+	// Fill from sales orders.
+	If TablesList.Property("Table_Document_SalesOrder_Attributes") Then
+		QueryText = QueryText + ?(Not IsBlankString(QueryText), 
+		"
+		|
+		|UNION ALL
+		|
+		|",
+		"");
+		
+		SelectionText =
+		"SELECT
+	    |	SalesOrderSalesTaxAcrossAgencies.Agency,
+	    |	SalesOrderSalesTaxAcrossAgencies.Rate,
+	    |	SalesOrderSalesTaxAcrossAgencies.Amount,
+	    |	SalesOrderSalesTaxAcrossAgencies.SalesTaxRate,
+	    |	SalesOrderSalesTaxAcrossAgencies.SalesTaxComponent,
+	    |	SalesOrderSalesTaxAcrossAgencies.AvataxTaxComponent
+		|{Into}
+	    |FROM
+	    |	Document.SalesOrder.SalesTaxAcrossAgencies AS SalesOrderSalesTaxAcrossAgencies
+	    |WHERE
+	    |	SalesOrderSalesTaxAcrossAgencies.Ref IN(&FillingData_Document_SalesOrder)";
+		
+		// Add selection to a query.
+		QueryText = QueryText + StrReplace(SelectionText, "{Into}",
+		?(IsBlankString(QueryText), 
+		"INTO
+		|	Table_SalesTaxAcrossAgencies",
+		""));
+		
+	EndIf;
 	
-	QueryText = "SELECT
-	            |	SalesOrderSalesTaxAcrossAgencies.Agency,
-	            |	SalesOrderSalesTaxAcrossAgencies.Rate,
-	            |	SalesOrderSalesTaxAcrossAgencies.Amount,
-	            |	SalesOrderSalesTaxAcrossAgencies.SalesTaxRate,
-	            |	SalesOrderSalesTaxAcrossAgencies.SalesTaxComponent,
-	            |	SalesOrderSalesTaxAcrossAgencies.AvataxTaxComponent
-	            |INTO Table_SalesTaxAcrossAgencies
-	            |FROM
-	            |	Document.SalesOrder.SalesTaxAcrossAgencies AS SalesOrderSalesTaxAcrossAgencies
-	            |WHERE
-	            |	SalesOrderSalesTaxAcrossAgencies.Ref IN(&FillingData_Document_SalesOrder)";
+	// Fill from shipment.
+	If TablesList.Property("Table_Document_Shipment_Attributes") Then
+		QueryText = QueryText + ?(Not IsBlankString(QueryText), 
+		"
+		|
+		|UNION ALL
+		|
+		|",
+		"");
+		
+		SelectionText =
+		"SELECT
+	    |	ShipmentSalesTaxAcrossAgencies.Agency,
+	    |	ShipmentSalesTaxAcrossAgencies.Rate,
+	    |	ShipmentSalesTaxAcrossAgencies.Amount,
+	    |	ShipmentSalesTaxAcrossAgencies.SalesTaxRate,
+	    |	ShipmentSalesTaxAcrossAgencies.SalesTaxComponent,
+	    |	ShipmentSalesTaxAcrossAgencies.AvataxTaxComponent
+		|{Into}
+	    |FROM
+	    |	Document.Shipment.SalesTaxAcrossAgencies AS ShipmentSalesTaxAcrossAgencies
+	    |WHERE
+	    |	ShipmentSalesTaxAcrossAgencies.Ref IN(&FillingData_Document_Shipment)";
+		
+		// Add selection to a query.
+		QueryText = QueryText + StrReplace(SelectionText, "{Into}",
+		?(IsBlankString(QueryText), 
+		"INTO
+		|	Table_SalesTaxAcrossAgencies",
+		""));
+		
+	EndIf;
 	
-	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	// Fill data from next source.
+	// ---------------------------
+	
+	Return QueryText //+ DocumentPosting.GetDelimeterOfBatchQuery();
 	
 EndFunction
 
@@ -4002,7 +5114,6 @@ Function Query_Filling_Check(TablesList, CheckAttributes)
 	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
 	
 EndFunction
-
 
 //------------------------------------------------------------------------------
 // Document printing

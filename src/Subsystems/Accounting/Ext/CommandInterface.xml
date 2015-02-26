@@ -25,21 +25,6 @@
 				<xr:Value name="Role.ReportOnly">false</xr:Value>
 			</Visibility>
 		</Command>
-		<Command name="Document.Deposit.StandardCommand.OpenList">
-			<Visibility>
-				<xr:Common>false</xr:Common>
-			</Visibility>
-		</Command>
-		<Command name="Document.BankTransfer.StandardCommand.OpenList">
-			<Visibility>
-				<xr:Common>false</xr:Common>
-			</Visibility>
-		</Command>
-		<Command name="Document.BankReconciliation.StandardCommand.OpenList">
-			<Visibility>
-				<xr:Common>false</xr:Common>
-			</Visibility>
-		</Command>
 		<Command name="Catalog.Classes.StandardCommand.OpenList">
 			<Visibility>
 				<xr:Common>false</xr:Common>
@@ -116,15 +101,6 @@
 		<Command name="Document.Budget.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
 		</Command>
-		<Command name="Document.Deposit.StandardCommand.OpenList">
-			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
-		</Command>
-		<Command name="Document.BankTransfer.StandardCommand.OpenList">
-			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
-		</Command>
-		<Command name="Document.BankReconciliation.StandardCommand.OpenList">
-			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
-		</Command>
 		<Command name="Catalog.Classes.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
 		</Command>
@@ -167,19 +143,10 @@
 		<Command name="Catalog.ExpensifyCategories.StandardCommand.Create">
 			<CommandGroup>ActionsPanelCreate</CommandGroup>
 		</Command>
-		<Command name="Document.Deposit.StandardCommand.Create">
-			<CommandGroup>ActionsPanelCreate</CommandGroup>
-		</Command>
-		<Command name="Document.BankTransfer.StandardCommand.Create">
-			<CommandGroup>ActionsPanelCreate</CommandGroup>
-		</Command>
 		<Command name="Catalog.Classes.StandardCommand.Create">
 			<CommandGroup>ActionsPanelCreate</CommandGroup>
 		</Command>
 		<Command name="InformationRegister.AuditLog.StandardCommand.Create">
-			<CommandGroup>ActionsPanelCreate</CommandGroup>
-		</Command>
-		<Command name="Document.BankReconciliation.StandardCommand.Create">
 			<CommandGroup>ActionsPanelCreate</CommandGroup>
 		</Command>
 	</CommandsOrder>

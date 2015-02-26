@@ -2,6 +2,21 @@
 // THIS MODULE CONTAINS GENERAL PURPOSE FUNCTIONS AND PROCEDURES
 // 
 
+Function IsUserDisabled(UserName) Export
+	
+	User = Catalogs.UserList.FindByDescription(UserName);
+	If ValueIsFilled(User) AND User.Disabled Then
+		Return True
+	Else
+		Return False
+	EndIf;
+	
+EndFunction
+
+
+Procedure UpdateExchangeRate() Export
+EndProcedure
+
 &AtServer
 Function GetCFOTodayConstant() Export
 	Return Constants.CFOToday.Get();
@@ -209,9 +224,9 @@ Procedure ObjectBeforeDelete(Source, Cancel) Export
 	EndIf;
 	
 	If ReferencedObjects.Count() = 0 Then
-		If GeneralFunctionsReusable.DisableAuditLogValue() = False Then
+		//If GeneralFunctionsReusable.DisableAuditLogValue() = False Then
 			AuditLog.AuditLogDeleteBeforeDelete(SourceObj,False);
-		EndIf;
+		//EndIf;
 	Else
 		MessageText = "Linked objects found: ";
 		For Each Ref In ReferencedObjects Do
@@ -1063,72 +1078,91 @@ Procedure CreateItemCSV(Date, Date2, ItemDataSet) Export
 	
 	
 	// add transactions 1-500
-	
+	Counter = 0;
+	Counter10 = 0;
+	MaxCount = ItemDataSet.count();
 	For Each DataLine In ItemDataSet Do
-				
-		NewProduct = Catalogs.Products.CreateItem();
-		NewProduct.Type = DataLine.ProductType;
-		NewProduct.Code = DataLine.ProductCode;
-		NewProduct.Description = DataLine.ProductDescription;
-		NewProduct.IncomeAccount = DataLine.ProductIncomeAcct;
-		NewProduct.InventoryOrExpenseAccount = DataLine.ProductInvOrExpenseAcct;
-		NewProduct.COGSAccount = DataLine.ProductCOGSAcct;
-		//NewProduct.PurchaseVATCode = Constants.DefaultPurchaseVAT.Get();
-		//NewProduct.SalesVATCode = Constants.DefaultSalesVAT.Get();
-		//NewProduct.api_code = GeneralFunctions.NextProductNumber();
-		NewProduct.Category = DataLine.ProductCategory;
-		//NewProduct.UM = DataLine.ProductUoM;
 		
-		If DataLine.ProductCF1String <> "" Then 
-			NewProduct.CF1String = DataLine.ProductCF1String;
-		EndIf;
-		NewProduct.CF1Num = DataLine.ProductCF1Num;
+		Counter = Counter + 1;
+		Progress = Int((Counter/MaxCount)*10); // 10ки процентов
+		If Counter10 <> Progress then
+			Counter10 = Progress;
+			LongActions.InformActionProgres(Counter10*10,"Current progress: "+(Counter10*10) +"%");
+		EndIf;	
 		
-		If DataLine.ProductCF2String <> "" Then 
-			NewProduct.CF2String = DataLine.ProductCF2String;
-		EndIf;
-		NewProduct.CF2Num = DataLine.ProductCF2Num;
-		
-		If DataLine.ProductCF3String <> "" Then 
-			NewProduct.CF3String = DataLine.ProductCF3String;
-		EndIf;
-		NewProduct.CF3Num = DataLine.ProductCF3Num;
-		
-		If DataLine.ProductCF4String <> "" Then 
-			NewProduct.CF4String = DataLine.ProductCF4String;
-		EndIf;
-		NewProduct.CF4Num = DataLine.ProductCF4Num;
-		
-		If DataLine.ProductCF5String <> "" Then 
-			NewProduct.CF5String = DataLine.ProductCF5String;
-		EndIf;
-		NewProduct.CF5Num = DataLine.ProductCF5Num;
+		Try
+			NewProduct = Catalogs.Products.CreateItem();
+			NewProduct.Type = DataLine.ProductType;
+			NewProduct.Code = DataLine.ProductCode;
+			NewProduct.Description = DataLine.ProductDescription;
+			NewProduct.IncomeAccount = DataLine.ProductIncomeAcct;
+			NewProduct.InventoryOrExpenseAccount = DataLine.ProductInvOrExpenseAcct;
+			NewProduct.COGSAccount = DataLine.ProductCOGSAcct;
+			//NewProduct.PurchaseVATCode = Constants.DefaultPurchaseVAT.Get();
+			//NewProduct.SalesVATCode = Constants.DefaultSalesVAT.Get();
+			//NewProduct.api_code = GeneralFunctions.NextProductNumber();
+			NewProduct.Category = DataLine.ProductCategory;
+			NewProduct.UnitSet = Constants.DefaultUoMSet.Get();
+			
+			If DataLine.ProductCF1String <> "" Then 
+				NewProduct.CF1String = DataLine.ProductCF1String;
+			EndIf;
+			NewProduct.CF1Num = DataLine.ProductCF1Num;
+			
+			If DataLine.ProductCF2String <> "" Then 
+				NewProduct.CF2String = DataLine.ProductCF2String;
+			EndIf;
+			NewProduct.CF2Num = DataLine.ProductCF2Num;
+			
+			If DataLine.ProductCF3String <> "" Then 
+				NewProduct.CF3String = DataLine.ProductCF3String;
+			EndIf;
+			NewProduct.CF3Num = DataLine.ProductCF3Num;
+			
+			If DataLine.ProductCF4String <> "" Then 
+				NewProduct.CF4String = DataLine.ProductCF4String;
+			EndIf;
+			NewProduct.CF4Num = DataLine.ProductCF4Num;
+			
+			If DataLine.ProductCF5String <> "" Then 
+				NewProduct.CF5String = DataLine.ProductCF5String;
+			EndIf;
+			NewProduct.CF5Num = DataLine.ProductCF5Num;
+			
+			If NewProduct.Type = Enums.InventoryTypes.Inventory Then
+				NewProduct.CostingMethod = Enums.InventoryCosting.WeightedAverage;
+			EndIf;
+			
+			NewProduct.Price = DataLine.ProductPrice;
+			
+			NewProduct.Write();		
+			
+			//If DataLine.ProductPrice <> 0 Then
+			//	RecordSet = InformationRegisters.PriceList.CreateRecordSet();
+			//	RecordSet.Filter.Product.Set(NewProduct.Ref);
+			//	RecordSet.Filter.Period.Set(Date);
+			//	NewRecord = RecordSet.Add();
+			//	NewRecord.Period = Date;
+			//	NewRecord.Product = NewProduct.Ref;
+			//	NewRecord.Price = DataLine.ProductPrice;
+			//	RecordSet.Write();
+			//EndIf;
+			
+			If DataLine.ProductQty <> 0 Then
+				IBB = Documents.ItemAdjustment.CreateDocument();
+				IBB.Product = NewProduct.Ref;
+				IBB.Location = Catalogs.Locations.MainWarehouse;
+				IBB.Quantity = DataLine.ProductQty;
+				IBB.Value = Dataline.ProductValue;
+				IBB.Date = Date2;
+				IBB.Write(DocumentWriteMode.Posting);
+			EndIf;
+			
+		Except
+			ErrorText = "Document Line: "+Counter+ Chars.LF+ ErrorDescription();
+			Raise ErrorText;
+		EndTry;
 
-		If NewProduct.Type = Enums.InventoryTypes.Inventory Then
-			NewProduct.CostingMethod = Enums.InventoryCosting.WeightedAverage;
-		EndIf;
-		NewProduct.Write();
-		
-		If DataLine.ProductPrice <> 0 Then
-			RecordSet = InformationRegisters.PriceList.CreateRecordSet();
-			RecordSet.Filter.Product.Set(NewProduct.Ref);
-			RecordSet.Filter.Period.Set(Date);
-			NewRecord = RecordSet.Add();
-			NewRecord.Period = Date;
-			NewRecord.Product = NewProduct.Ref;
-			NewRecord.Price = DataLine.ProductPrice;
-			RecordSet.Write();
-		EndIf;
-		
-		If DataLine.ProductQty <> 0 Then
-			IBB = Documents.ItemAdjustment.CreateDocument();
-			IBB.Product = NewProduct.Ref;
-			IBB.Location = Catalogs.Locations.MainWarehouse;
-			IBB.Quantity = DataLine.ProductQty;
-			IBB.Value = Dataline.ProductValue;
-			IBB.Date = Date2;
-			IBB.Write(DocumentWriteMode.Posting);
-		EndIf;
 		
 	EndDo;
 
@@ -1169,7 +1203,23 @@ Procedure CreateCustomerVendorCSV(ItemDataSet) Export
 	
 	// add transactions 1-500
 	
+	// add transactions 1-500
+	Counter = 0;
+	Counter10 = 0;
+	MaxCount = ItemDataSet.count();
 	For Each DataLine In ItemDataSet Do
+		
+		Counter = Counter + 1;
+		Progress = Int((Counter/MaxCount)*10); // 10ки процентов
+		If Counter10 <> Progress then
+			Counter10 = Progress;
+			LongActions.InformActionProgres(Counter10*10,"Current progress: "+(Counter10*10) +"%");
+		EndIf;	
+		
+		Try
+
+	
+	//For Each DataLine In ItemDataSet Do
 		
 		CreatingNewCompany = False;
 		CompanyFound = Catalogs.Companies.FindByDescription(DataLine.CustomerDescription);
@@ -1178,10 +1228,16 @@ Procedure CreateCustomerVendorCSV(ItemDataSet) Export
 			
 			NewCompany = Catalogs.Companies.CreateItem();
 			
-			If DataLine.CustomerCode <> "" Then
+			If DataLine.CustomerCode = "" Then
+				Numerator = Catalogs.DocumentNumbering.Companies.GetObject();
+				NextNumber = GeneralFunctions.Increment(Numerator.Number);
+				Numerator.Number = NextNumber;
+				Numerator.Write();
+				NewCompany.Code = NextNumber;
+			Else
 				NewCompany.Code = DataLine.CustomerCode
 			EndIf;
-	
+					
 			NewCompany.Description = DataLine.CustomerDescription;
 			NewCompany.FullName = DataLine.CustomerFullName;
 			
@@ -1323,8 +1379,14 @@ Procedure CreateCustomerVendorCSV(ItemDataSet) Export
 		AddressLine.CF5String = DataLine.AddressCF5String;
 
 		AddressLine.Write();
+		
+		Except
+			ErrorText = "Document Line: "+Counter+ Chars.LF+ ErrorDescription();
+			Raise ErrorText;
+		EndTry;
 				
 	EndDo;
+	
 
 EndProcedure
 
@@ -2174,11 +2236,50 @@ Function ProductLastCost(Product, Period = Undefined) Export
 	QueryResult = Query.Execute();
 	
 	If QueryResult.IsEmpty() Then
-		Return 0;
+		Return Product.Cost;
 	Else
 		Dataset = QueryResult.Unload();
 		Return Dataset[0][0];
 	EndIf;
+	
+EndFunction
+
+// Returns boundary for requesting registers' balances.
+//
+// Parameters:
+//  Object - DocumentObject - Object requesting it's point in time.
+//
+// Returns:
+//  Boundary, Undefined - actual boundary for requesting the balances.
+//
+Function GetDocumentPointInTime(Object) Export
+	
+	// Actual (operational) point.
+	PointInTime = Undefined;
+	
+	// Define point in time for requesting the balances.
+	If Object.Ref.IsEmpty() Then
+		// The new document.
+		If ValueIsFilled(Object.Date) And BegOfDay(Object.Date) < BegOfDay(CurrentSessionDate()) Then
+			// New document in back-date.
+			PointInTime = New Boundary(EndOfDay(Object.Date), BoundaryType.Including);
+		Else
+			// New actual document.
+			PointInTime = Undefined;
+		EndIf;
+	Else
+		// Document was already saved (but date can actually be changed).
+		If Object.Ref.PointInTime().Date = Object.Date Then
+			// The document date is preserved.
+			PointInTime = New Boundary(New PointInTime(Object.Date, Object.Ref), BoundaryType.Excluding);
+		Else
+			// The document date was changed.
+			PointInTime = New Boundary(New PointInTime(Object.Date, Object.Ref), BoundaryType.Including);
+		EndIf;
+	EndIf;
+	
+	// Return claculated boundary.
+	Return PointInTime;
 	
 EndFunction
 
@@ -2733,6 +2834,18 @@ Procedure FirstLaunch() Export
 		Numerator.Number = 999;
 		Numerator.Write();
 	
+		Numerator = Catalogs.DocumentNumbering.Shipment.GetObject();
+		Numerator.Number = 999;
+		Numerator.Write();
+		
+		Numerator = Catalogs.DocumentNumbering.Companies.GetObject();
+		Numerator.Number = 999;
+		Numerator.Write();
+		
+		Numerator = Catalogs.DocumentNumbering.Deposit.GetObject();
+		Numerator.Number = 999;
+		Numerator.Write();
+		
 		// Adding account types to predefined accounts and
 		// assigning default posting accounts.
 		
@@ -2846,23 +2959,23 @@ Procedure FirstLaunch() Export
 		NewAccount.Write();			
 		Constants.COGSAccount.Set(NewAccount.Ref);
 				
-		NewAccount = ChartsOfAccounts.ChartOfAccounts.CreateAccount();
-		NewAccount.Code = "3000";
-		NewAccount.Order = "3000";
-		NewAccount.Description = "Equity";
-		NewAccount.AccountType = Enums.AccountTypes.Equity;
-		//NewAccount.Currency = Catalogs.Currencies.USD;
-		NewAccount.CashFlowSection = Enums.CashFlowSections.Financing;
-		NewAccount.Write();			
+		//NewAccount = ChartsOfAccounts.ChartOfAccounts.CreateAccount();
+		//NewAccount.Code = "3000";
+		//NewAccount.Order = "3000";
+		//NewAccount.Description = "Equity";
+		//NewAccount.AccountType = Enums.AccountTypes.Equity;
+		////NewAccount.Currency = Catalogs.Currencies.USD;
+		//NewAccount.CashFlowSection = Enums.CashFlowSections.Financing;
+		//NewAccount.Write();			
 				
-		NewAccount = ChartsOfAccounts.ChartOfAccounts.CreateAccount();
-		NewAccount.Code = "3100";
-		NewAccount.Order = "3100";
-		NewAccount.Description = "Retained Earnings";
-		NewAccount.AccountType = Enums.AccountTypes.Equity;
-		//NewAccount.Currency = Catalogs.Currencies.USD;
-		NewAccount.CashFlowSection = Enums.CashFlowSections.Financing;
-		NewAccount.Write();	
+		//NewAccount = ChartsOfAccounts.ChartOfAccounts.CreateAccount();
+		//NewAccount.Code = "3100";
+		//NewAccount.Order = "3100";
+		//NewAccount.Description = "Retained Earnings";
+		//NewAccount.AccountType = Enums.AccountTypes.Equity;
+		////NewAccount.Currency = Catalogs.Currencies.USD;
+		//NewAccount.CashFlowSection = Enums.CashFlowSections.Financing;
+		//NewAccount.Write();	
 		
 		//NewAccount = ChartsOfAccounts.ChartOfAccounts.CreateAccount();
 		//NewAccount.Code = "8200";
@@ -4584,6 +4697,10 @@ NewCountry.Write();
 		Constants.DefaultUoMSet.Set(DefaultUoMSet.Ref);
 		//
 		
+		//Set first month of fiscal year
+		Constants.FirstMonthOfFiscalYear.Set(1);
+
+		
 		// mt_change	
 		
 	//Adding Yodlee transaction categories and respective business accounts 
@@ -4603,8 +4720,9 @@ EndProcedure // FirstLaunch()
 //
 Procedure UpdateInfobase() Export
 	SetPrivilegedMode(True);
-	CurrentVersion = Constants.CurrentConfigurationVersion.Get();
-	ConfigurationVersion = Metadata.Version;
+	CurrentVersion 			= Constants.CurrentConfigurationVersion.Get();
+	ConfigurationVersion 	= Metadata.Version;
+	IsCFOToday				= Constants.CFOToday.Get();
 	If Not InfobaseUpdateNeeded(CurrentVersion, ConfigurationVersion) Then
 		return;
 	EndIf;
@@ -4808,6 +4926,76 @@ Procedure UpdateInfobase() Export
 		EndTry;
 		CommitTransaction();
 	EndIf;
+	
+	If UpdateRequiredForVersion(ConfigurationVersion, CurrentVersion, "1.1.43.01") Then
+		Try
+			If IsCFOToday Then
+						
+				Request = New Query("SELECT
+				                    |	BankReconciliation.Ref,
+				                    |	BankReconciliation.Date AS Date,
+				                    |	BankReconciliation.BankAccount,
+				                    |	BankReconciliation.BeginningBalance,
+				                    |	BankReconciliation.EndingBalance,
+				                    |	BankReconciliation.payments,
+				                    |	BankReconciliation.deposits,
+				                    |	BankAccounts.Ref AS AccountInBank
+				                    |FROM
+				                    |	Document.BankReconciliation AS BankReconciliation
+				                    |		LEFT JOIN Catalog.BankAccounts AS BankAccounts
+				                    |		ON BankReconciliation.BankAccount = BankAccounts.AccountingAccount
+				                    |
+				                    |ORDER BY
+				                    |	Date");
+				Res = Request.Execute();
+				If Not Res.IsEmpty() Then
+					Sel = Res.Select();
+					While Sel.Next() Do
+						PaymentsDeposits = GetEnteredPaymentsDeposits(Sel.Date, Sel.BankAccount, Sel.AccountInBank);
+						ReconciliationObject = Sel.Ref.GetObject();
+						ReconciliationObject.EndingBalance = Sel.BeginningBalance + Sel.payments - Sel.deposits;
+						ReconciliationObject.Difference = ReconciliationObject.EndingBalance - (Sel.BeginningBalance + PaymentsDeposits.Deposits - PaymentsDeposits.Payments);
+						ReconciliationObject.DataExchange.Load = True;
+						ReconciliationObject.AdditionalProperties.Insert("CFO_ProcessMonth_AllowWrite", True);
+						//If an error occurs, don't stop processing other documents
+						Try
+							ReconciliationObject.Write(DocumentWriteMode.Write);
+						Except
+							WriteLogEvent(
+							InfobaseUpdateEvent(),
+							EventLogLevel.Information,
+							,
+							,
+							ErrorDescription());
+						EndTry;
+					EndDo;
+				EndIf;
+				
+			EndIf;
+			
+			Constants.CurrentConfigurationVersion.Set(TrimAll(ConfigurationVersion));
+			
+			WriteLogEvent(
+			InfobaseUpdateEvent(),
+			EventLogLevel.Information,
+			,
+			,
+			"Updating to the version ""1.1.43.01"" succeeded.");
+
+		Except
+			ErrorDescription = ErrorDescription();
+						
+			WriteLogEvent(
+			InfobaseUpdateEvent(),
+			EventLogLevel.Error,
+			,
+			,
+			"Updating to the version ""1.1.43.01"". During the update an error occured: " + ErrorDescription);
+
+			return;
+		EndTry;
+	EndIf;
+
 EndProcedure
 
 Function InfobaseUpdateNeeded(Val CurrentVersion, Val ConfigurationVersion)
@@ -4852,6 +5040,155 @@ EndFunction
 
 Function InfobaseUpdateEvent()
 	return "Infobase.UpdatingInfobase";
+EndFunction
+
+#EndRegion
+
+#Region Updating_Infobase_Version_OtherFunctions
+
+Function GetEnteredPaymentsDeposits(Date, BankAccount, AccountInBank)
+	
+	Request = New Query();
+		Request.Text = "SELECT ALLOWED
+		               |	GeneralJournalBalanceAndTurnovers.Recorder AS Recorder,
+		               |	GeneralJournalBalanceAndTurnovers.Period AS Period,
+		               |	GeneralJournalBalanceAndTurnovers.AmountRCClosingBalance,
+		               |	GeneralJournalBalanceAndTurnovers.Recorder.PointInTime AS RecorderPointInTime,
+		               |	GeneralJournalBalanceAndTurnovers.AmountRCOpeningBalance
+		               |INTO Recorders
+		               |FROM
+		               |	AccountingRegister.GeneralJournal.BalanceAndTurnovers(&DateStart, &DateEnd, Recorder, , Account = &Account, , ) AS GeneralJournalBalanceAndTurnovers
+		               |WHERE
+		               |	CASE
+		               |			WHEN &RecordersListIsSet = TRUE
+		               |				THEN GeneralJournalBalanceAndTurnovers.Recorder IN (&RecordersList)
+		               |			ELSE TRUE
+		               |		END
+		               |
+		               |INDEX BY
+		               |	Recorder
+		               |;
+		               |
+		               |////////////////////////////////////////////////////////////////////////////////
+		               |SELECT ALLOWED
+		               |	Recorders.Recorder AS Recorder,
+		               |	Recorders.Period,
+		               |	MAX(ClassData.Class) AS Class,
+		               |	MAX(ProjectData.Project) AS Project,
+		               |	Recorders.AmountRCClosingBalance,
+		               |	Recorders.RecorderPointInTime
+		               |INTO RecordersWithClassesAndProjects
+		               |FROM
+		               |	Recorders AS Recorders
+		               |		LEFT JOIN AccumulationRegister.ClassData AS ClassData
+		               |		ON Recorders.Recorder = ClassData.Recorder
+		               |		LEFT JOIN AccumulationRegister.ProjectData AS ProjectData
+		               |		ON Recorders.Recorder = ProjectData.Recorder
+		               |WHERE
+		               |	NOT Recorders.Recorder IS NULL 
+		               |	AND Recorders.Recorder <> UNDEFINED
+		               |	AND NOT Recorders.Recorder REFS Document.GeneralJournalEntry
+		               |
+		               |GROUP BY
+		               |	Recorders.Recorder,
+		               |	Recorders.Period,
+		               |	Recorders.AmountRCClosingBalance,
+		               |	Recorders.RecorderPointInTime
+		               |
+		               |INDEX BY
+		               |	Recorder
+		               |;
+		               |
+		               |////////////////////////////////////////////////////////////////////////////////
+		               |SELECT ALLOWED
+		               |	GeneralJournal.Recorder AS Document,
+		               |	VALUETYPE(GeneralJournal.Recorder) AS OperationType,
+		               |	GeneralJournal.Recorder.Presentation AS DocumentPresentation,
+		               |	GeneralJournal.Period AS Period,
+		               |	ISNULL(GeneralJournal.Recorder.Company, BankTransactions.Company) AS Company,
+		               |	CASE
+		               |		WHEN GeneralJournal.RecordType = VALUE(AccountingRecordType.Debit)
+		               |			THEN GeneralJournal.AmountRC
+		               |		ELSE 0
+		               |	END AS Deposit,
+		               |	CASE
+		               |		WHEN GeneralJournal.RecordType = VALUE(AccountingRecordType.Credit)
+		               |			THEN GeneralJournal.AmountRC
+		               |		ELSE 0
+		               |	END AS Payment,
+		               |	ISNULL(GeneralJournal1.Account, BankTransactions.Category) AS Category,
+		               |	GeneralJournal.Recorder.Memo AS Memo,
+		               |	ISNULL(RecordersWithClassesAndProjects.Class, BankTransactions.Class) AS Field1,
+		               |	ISNULL(RecordersWithClassesAndProjects.Project, BankTransactions.Project) AS Field2,
+		               |	TRUE AS HasDocument,
+		               |	BankTransactions.ID AS TransactionID,
+		               |	CASE
+		               |		WHEN ISNULL(BankTransactions.Accepted, FALSE)
+		               |			THEN ""C""
+		               |		ELSE """"
+		               |	END AS Cleared,
+		               |	CASE
+		               |		WHEN ISNULL(BankReconciliationBalance.AmountBalance, 0) = 0
+		               |			THEN ""R""
+		               |		ELSE """"
+		               |	END AS Reconciled,
+		               |	RecordersWithClassesAndProjects.AmountRCClosingBalance AS AmountClosingBalance,
+		               |	RecordersWithClassesAndProjects.RecorderPointInTime,
+		               |	CASE
+		               |		WHEN GeneralJournal.Recorder REFS Document.Check
+		               |				OR GeneralJournal.Recorder REFS Document.Deposit
+		               |			THEN GeneralJournal.Recorder.Number
+		               |		ELSE """"
+		               |	END AS RefNumber,
+		               |	CASE
+		               |		WHEN GeneralJournal.Recorder.Company IS NULL 
+		               |			THEN BankTransactions.Company.Code
+		               |		ELSE GeneralJournal.Recorder.Company.Code
+		               |	END AS CompanyCode,
+		               |	BankTransactions.OrderID AS Sequence,
+		               |	GeneralJournal.Recorder.gh_date AS gh_date
+		               |FROM
+		               |	RecordersWithClassesAndProjects AS RecordersWithClassesAndProjects
+		               |		LEFT JOIN AccountingRegister.GeneralJournal AS GeneralJournal
+		               |			LEFT JOIN AccountingRegister.GeneralJournal AS GeneralJournal1
+		               |			ON GeneralJournal.Recorder = GeneralJournal1.Recorder
+		               |				AND GeneralJournal.Account <> GeneralJournal1.Account
+		               |				AND (GeneralJournal.AmountRC = GeneralJournal1.AmountRC
+		               |					OR GeneralJournal.AmountRC = -1 * GeneralJournal1.AmountRC)
+		               |		ON RecordersWithClassesAndProjects.Recorder = GeneralJournal.Recorder
+		               |			AND (GeneralJournal.Account = &Account)
+		               |		LEFT JOIN InformationRegister.BankTransactions AS BankTransactions
+		               |		ON RecordersWithClassesAndProjects.Recorder = BankTransactions.Document
+		               |			AND (BankTransactions.BankAccount = &AccountInBank)
+		               |		LEFT JOIN AccumulationRegister.BankReconciliation.Balance(
+		               |				,
+		               |				Document IN
+		               |					(SELECT
+		               |						Recorders.Recorder
+		               |					FROM
+		               |						Recorders AS Recorders)) AS BankReconciliationBalance
+		               |		ON RecordersWithClassesAndProjects.Recorder = BankReconciliationBalance.Document
+		               |			AND (BankReconciliationBalance.Account = &Account)
+		               |
+		               |ORDER BY
+		               |	Period,
+		               |	Sequence";
+					   
+					   
+	DateStart 	= BegOfMonth(Date);
+	DateEnd 	= EndOfMonth(Date);
+	Request.SetParameter("Account", BankAccount);
+	Request.SetParameter("AccountInBank", AccountInBank);
+	Request.SetParameter("DateStart", New Boundary(DateStart, BoundaryType.Including));
+	Request.SetParameter("DateEnd", New Boundary(EndOfDay(DateEnd), BoundaryType.Including));
+	Request.SetParameter("RecordersList", Undefined); 
+	Request.SetParameter("RecordersListIsSet", False);
+
+	BankTransactions	= Request.Execute().Unload();
+	DepositsEntered 	= BankTransactions.Total("Deposit");
+	PaymentsEntered		= BankTransactions.Total("Payment");
+	return New Structure("Deposits, Payments", DepositsEntered, PaymentsEntered);
+		
 EndFunction
 
 #EndRegion
@@ -4926,333 +5263,55 @@ Procedure SetNumbering() Export
 			Numerator.Write();
 		EndIf;	
 		
+		If Catalogs.DocumentNumbering.Quote.Number = "" Then
+			Numerator = Catalogs.DocumentNumbering.Quote.GetObject();
+			Numerator.Number = "999";
+			Numerator.Write();
+		EndIf;	
+		
+		If Catalogs.DocumentNumbering.Shipment.Number = "" Then
+			Numerator = Catalogs.DocumentNumbering.Shipment.GetObject();
+			Numerator.Number = "999";
+			Numerator.Write();
+		EndIf;
+		
+		If Catalogs.DocumentNumbering.Deposit.Number = "" Then
+			Numerator = Catalogs.DocumentNumbering.Deposit.GetObject();
+			Numerator.Number = "999";
+			Numerator.Write();
+		EndIf;
+		
 		Constants.set_numbering.Set(True);
 		
 	EndIf;
 	
 EndProcedure 
 
-#Region Updating_InformationRegister_DocumentJournalOfCompanies
-
-Procedure DocumentJournalOfCompaniesOnWrite(Source, Cancel) Export
-	
-	If Cancel Then Return; EndIf;
-	
-	SourceType = TypeOf(Source.Ref);
-	
-	RecordSet = InformationRegisters.DocumentJournalOfCompanies.CreateRecordSet();	
-	RecordSet.Filter.Document.Set(Source.Ref);
-	
-	VT = RecordSet.Unload();
-	VT.Clear();
-	
-	//1.
-	If SourceType = Type("DocumentRef.SalesInvoice") Then
-		
-		LineVT = VT.Add();
-		LineVT.Company        = Source.Company; 
-		LineVT.Document       = Source.Ref; 
-		LineVT.Line           = 1;
-		LineVT.DocumentStatus = GetDocumentStatus(Source.Ref);
-		LineVT.Date           = Source.Date;
-		LineVT.DueDate        = Source.DueDate;
-		LineVT.Total          = Source.DocumentTotalRC;
-		LineVT.Memo           = Source.Memo;
-		
-		//2.	
-	ElsIf SourceType = Type("DocumentRef.SalesOrder") Then
-		
-		LineVT = VT.Add();
-		LineVT.Company        = Source.Company; 
-		LineVT.Document       = Source.Ref; 
-		LineVT.Line           = 1;
-		LineVT.DocumentStatus = GetDocumentStatus(Source.Ref);
-		LineVT.Date           = Source.Date;
-		LineVT.DueDate        = Source.DeliveryDate;
-		LineVT.Total          = Source.DocumentTotalRC;
-		LineVT.Memo           = Source.Memo;
-		
-		//3.	
-	ElsIf SourceType = Type("DocumentRef.SalesReturn") Then
-		
-		LineVT = VT.Add();
-		LineVT.Company        = Source.Company; 
-		LineVT.Document       = Source.Ref; 
-		LineVT.Line           = 1;
-		LineVT.DocumentStatus = GetDocumentStatus(Source.Ref);
-		LineVT.Date           = Source.Date;
-		LineVT.DueDate        = Source.DueDate;
-		LineVT.Total          = Source.DocumentTotalRC;
-		LineVT.Memo           = Source.Memo;
-		
-		//4.	
-	ElsIf SourceType = Type("DocumentRef.PurchaseReturn") Then
-		
-		LineVT = VT.Add();
-		LineVT.Company        = Source.Company; 
-		LineVT.Document       = Source.Ref; 
-		LineVT.Line           = 1;
-		LineVT.DocumentStatus = GetDocumentStatus(Source.Ref);
-		LineVT.Date           = Source.Date;
-		LineVT.DueDate        = Source.DueDate;
-		LineVT.Total          = Source.DocumentTotalRC;
-		LineVT.Memo           = Source.Memo;
-		
-		//5.	
-	ElsIf SourceType = Type("DocumentRef.PurchaseOrder") Then
-		
-		LineVT = VT.Add();
-		LineVT.Company        = Source.Company; 
-		LineVT.Document       = Source.Ref; 
-		LineVT.Line           = 1;
-		LineVT.DocumentStatus = GetDocumentStatus(Source.Ref);
-		LineVT.Date           = Source.Date;
-		LineVT.DueDate        = Source.DeliveryDate;
-		LineVT.Total          = Source.DocumentTotalRC;
-		LineVT.Memo           = Source.Memo;
-		
-		//6.	
-	ElsIf SourceType = Type("DocumentRef.PurchaseInvoice") Then
-		
-		LineVT = VT.Add();
-		LineVT.Company        = Source.Company; 
-		LineVT.Document       = Source.Ref; 
-		LineVT.Line           = 1;
-		LineVT.DocumentStatus = GetDocumentStatus(Source.Ref);
-		LineVT.Date           = Source.Date;
-		LineVT.DueDate        = Source.DueDate;
-		LineVT.Total          = Source.DocumentTotalRC;
-		LineVT.Memo           = Source.Memo;
-		
-		//7.	
-	ElsIf SourceType = Type("DocumentRef.InvoicePayment") Then
-		
-		LineVT = VT.Add();
-		LineVT.Company        = Source.Company; 
-		LineVT.Document       = Source.Ref; 
-		LineVT.Line           = 1;
-		LineVT.DocumentStatus = GetDocumentStatus(Source.Ref);
-		LineVT.Date           = Source.Date;
-		//LineVT.DueDate        = Source.DueDate;
-		LineVT.Total          = Source.DocumentTotalRC;
-		LineVT.Memo           = Source.Memo;
-		
-		//8.	
-	ElsIf SourceType = Type("DocumentRef.Check") Then
-		
-		LineVT = VT.Add();
-		LineVT.Company        = Source.Company; 
-		LineVT.Document       = Source.Ref; 
-		LineVT.Line           = 1;
-		LineVT.DocumentStatus = GetDocumentStatus(Source.Ref);
-		LineVT.Date           = Source.Date;
-		//LineVT.DueDate        = Source.DueDate;
-		LineVT.Total          = Source.DocumentTotalRC;
-		LineVT.Memo           = Source.Memo;
-		
-		//9.	
-	ElsIf SourceType = Type("DocumentRef.CashSale") Then
-		
-		LineVT = VT.Add();
-		LineVT.Company        = Source.Company; 
-		LineVT.Document       = Source.Ref; 
-		LineVT.Line           = 1;
-		LineVT.DocumentStatus = GetDocumentStatus(Source.Ref);
-		LineVT.Date           = Source.Date;
-		//LineVT.DueDate        = Source.DueDate;
-		LineVT.Total          = Source.DocumentTotalRC;
-		LineVT.Memo           = Source.Memo;
-		
-		//10.	
-	ElsIf SourceType = Type("DocumentRef.CashReceipt") Then
-		
-		LineVT = VT.Add();
-		LineVT.Company        = Source.Company; 
-		LineVT.Document       = Source.Ref; 
-		LineVT.Line           = 1;
-		LineVT.DocumentStatus = GetDocumentStatus(Source.Ref);
-		LineVT.Date           = Source.Date;
-		//LineVT.DueDate        = Source.DueDate;
-		LineVT.Total          = Source.CashPayment;
-		LineVT.Memo           = Source.Memo;
-		
-		//11.	
-	ElsIf SourceType = Type("DocumentRef.Deposit") Then
-		
-		LineNumber = 0;
-		
-		For Each SourceLine In Source.Accounts Do
-			
-			LineNumber = LineNumber + 1;
-			
-			LineVT = VT.Add();
-			LineVT.Company        = SourceLine.Company; 
-			LineVT.Document       = Source.Ref; 
-			LineVT.Line           = LineNumber;
-			LineVT.DocumentStatus = GetDocumentStatus(Source.Ref);
-			LineVT.Date           = Source.Date;
-			//LineVT.DueDate        = SourceLine.DueDate;
-			LineVT.Total          = SourceLine.Amount;
-			LineVT.Memo           = SourceLine.Memo;
-			
-		EndDo;
-		
-		//12.	
-	ElsIf SourceType = Type("DocumentRef.GeneralJournalEntry") Then
-		
-		LineNumber = 0;
-		
-		For Each SourceLine In Source.LineItems Do
-			
-			LineNumber = LineNumber + 1;
-			
-			LineVT = VT.Add();
-			LineVT.Company        = SourceLine.Company; 
-			LineVT.Document       = Source.Ref; 
-			LineVT.Line           = LineNumber;
-			LineVT.DocumentStatus = GetDocumentStatus(Source.Ref);
-			LineVT.Date           = Source.Date;
-			LineVT.DueDate        = Source.DueDate;
-			LineVT.Total          = ?(SourceLine.AmountDr = 0, SourceLine.AmountCr, SourceLine.AmountDr);
-			LineVT.Memo           = SourceLine.Memo;
-			
-		EndDo;
-		
-		//13.	
-	ElsIf SourceType = Type("DocumentRef.TimeTrack") Then
-		
-		LineVT = VT.Add();
-		LineVT.Company        = Source.Company; 
-		LineVT.Document       = Source.Ref; 
-		LineVT.Line           = 1;
-		LineVT.DocumentStatus = GetDocumentStatus(Source.Ref);
-		LineVT.Date           = Source.Date;
-		//LineVT.DueDate        = Source.DueDate;
-		LineVT.Total          = Source.Price * Source.TimeComplete;
-		LineVT.Memo           = Source.Memo;
-		
-		//14.	
-	ElsIf SourceType = Type("DocumentRef.Statement") Then
-		
-		LineVT = VT.Add();
-		LineVT.Company        = Source.Company; 
-		LineVT.Document       = Source.Ref; 
-		LineVT.Line           = 1;
-		LineVT.DocumentStatus = GetDocumentStatus(Source.Ref);
-		LineVT.Date           = Source.Date;
-		//LineVT.DueDate        = Source.DueDate;
-		//LineVT.Total          = Source.Price * Source.TimeComplete;
-		//LineVT.Memo           = Source.Memo;
-		
-		//15.	
-	ElsIf SourceType = Type("DocumentRef.Quote") Then
-		
-		LineVT = VT.Add();
-		LineVT.Company        = Source.Company; 
-		LineVT.Document       = Source.Ref; 
-		LineVT.Line           = 1;
-		LineVT.DocumentStatus = GetDocumentStatus(Source.Ref);
-		LineVT.Date           = Source.Date;
-		//LineVT.DueDate        = Source.DueDate;
-		LineVT.Total          = Source.DocumentTotalRC;
-		LineVT.Memo           = Source.Memo;
-		
-		//16.	
-	ElsIf SourceType = Type("DocumentRef.ItemReceipt") Then
-		
-		LineVT = VT.Add();
-		LineVT.Company        = Source.Company; 
-		LineVT.Document       = Source.Ref; 
-		LineVT.Line           = 1;
-		LineVT.DocumentStatus = GetDocumentStatus(Source.Ref);
-		LineVT.Date           = Source.Date;
-		LineVT.DueDate        = Source.DueDate;
-		LineVT.Total          = Source.DocumentTotalRC;
-		LineVT.Memo           = Source.Memo;
-		
-	EndIf;
-	
-	If Not Cancel Then
-		
-		RecordSet.Load(VT);
-		RecordSet.Write();
-		
-	EndIf;
-	
-EndProcedure
-
-Function GetDocumentStatus(DocumentRef)
-	
-	DocumentStatus = 0;	
-	
-	If Not DocumentRef.Posted And Not DocumentRef.DeletionMark Then
-		DocumentStatus = 0;
-	ElsIf DocumentRef.Posted And Not DocumentRef.DeletionMark Then
-		DocumentStatus = 1;
-	ElsIf Not DocumentRef.Posted And DocumentRef.DeletionMark Then
-		DocumentStatus = 2;
-	ElsIf DocumentRef.Posted AND DocumentRef.DeletionMark Then
-		DocumentStatus = 4;
-	EndIf;
-		
-	Return DocumentStatus;
-	
-EndFunction
-
-Procedure UpdatingDocumentJournalOfCompanies() Export
-	
-	RecordSet = InformationRegisters.DocumentJournalOfCompanies.CreateRecordSet();
-	RecordSet.Read();
-	
-	If RecordSet.Count() = 0 Then
-		FillDocumentJournalOfCompanies("SalesInvoice");
-		FillDocumentJournalOfCompanies("SalesOrder");
-		FillDocumentJournalOfCompanies("SalesReturn");
-		FillDocumentJournalOfCompanies("PurchaseReturn");
-		FillDocumentJournalOfCompanies("PurchaseOrder");
-		FillDocumentJournalOfCompanies("PurchaseInvoice");
-		FillDocumentJournalOfCompanies("InvoicePayment");
-		FillDocumentJournalOfCompanies("Check");
-		FillDocumentJournalOfCompanies("CashSale");
-		FillDocumentJournalOfCompanies("CashReceipt");
-		FillDocumentJournalOfCompanies("Deposit");
-		FillDocumentJournalOfCompanies("GeneralJournalEntry");
-		FillDocumentJournalOfCompanies("TimeTrack");
-	EndIf;
-	
-EndProcedure
-
-Procedure FillDocumentJournalOfCompanies(DocName)
-	
-	DocumentSelection = Documents[DocName].Select();
-	
-	While DocumentSelection.Next() Do
-		
-		GeneralFunctions.DocumentJournalOfCompaniesOnWrite(DocumentSelection.Ref, False);
-		
-	EndDo;
-	
-EndProcedure
-
-#EndRegion
-
 #Region Period_Manager
 
 Function GetCustomizedPeriodsList() Export
+	
+	AnotherFiscalYear = ?(Constants.FirstMonthOfFiscalYear.Get() <= 1, False, True);
 	
 	Array = New Array;
 	
 	Array.Add("All Dates"); 
 	Array.Add("Custom"); 
 	Array.Add("Today"); 
+	
 	//Array.Add("Yesterday"); 
 	Array.Add("This Week"); 
 	//Array.Add("This Week-to-date"); 
 	Array.Add("This Month"); 
 	//Array.Add("This Month-to-date"); 
 	Array.Add("This Quarter"); 
-	//Array.Add("This Quarter-to-date"); 
-	Array.Add("This Year"); 
+	//Array.Add("This Quarter-to-date");
+	If AnotherFiscalYear Then
+		Array.Add("This Fiscal Year"); 
+		Array.Add("This Calendar Year"); 
+	Else
+		Array.Add("This Year"); 
+	EndIf;
 	//Array.Add("This Year-to-date"); 
 	//Array.Add("Last Week"); 
 	//Array.Add("Last Week-to-date"); 
@@ -5260,7 +5319,12 @@ Function GetCustomizedPeriodsList() Export
 	//Array.Add("Last Month-to-date"); 
 	Array.Add("Last Quarter"); 
 	//Array.Add("Last Quarter-to-date"); 
-	Array.Add("Last Year"); 
+	If AnotherFiscalYear Then
+		Array.Add("Last Fiscal Year"); 
+		Array.Add("Last Calendar Year"); 
+	Else
+		Array.Add("Last Year"); 
+	EndIf;
 	//Array.Add("Last Year-to-date");
 	
 	Return Array;
@@ -5269,7 +5333,14 @@ EndFunction
 
 Function GetDefaultPeriodVariant() Export 
 	
-	Return "This Year";
+	AnotherFiscalYear = ?(Constants.FirstMonthOfFiscalYear.Get() <= 1, False, True);
+	
+	If AnotherFiscalYear Then
+		Return "This Fiscal Year";
+	Else
+		Return "This Year";
+	EndIf;
+	
 	
 EndFunction
 
@@ -5281,12 +5352,14 @@ EndFunction
 
 Procedure ChangeDatesByPeriod(PeriodVariant, PeriodStartDate, PeriodEndDate) Export
 	
-	CurrentDate = CurrentSessionDate();
-	DayIntoSeconds = 86400;
+	CurrentDate            = CurrentSessionDate();
+	DayIntoSeconds         = 86400;
+	FirstMonthOfFiscalYear = Constants.FirstMonthOfFiscalYear.Get();
+	FirstMonthOfFiscalYear = ?(FirstMonthOfFiscalYear = 0, 1, FirstMonthOfFiscalYear);
 	
 	If PeriodVariant = "All Dates" Or PeriodVariant = "" Then 
-		PeriodStartDate = '00010101';
-		PeriodEndDate = '00010101';
+		PeriodStartDate = '19900101';
+		PeriodEndDate = '20291231';
 	ElsIf PeriodVariant = "Today" Then
 		PeriodStartDate = CurrentDate;
 		PeriodEndDate = CurrentDate;
@@ -5312,7 +5385,17 @@ Procedure ChangeDatesByPeriod(PeriodVariant, PeriodStartDate, PeriodEndDate) Exp
 	ElsIf PeriodVariant = "This Quarter-to-date" Then
 		PeriodStartDate = BegOfQuarter(CurrentDate);
 		PeriodEndDate = CurrentDate;
-	ElsIf PeriodVariant = "This Year" Then
+	ElsIf PeriodVariant = "This Fiscal Year" Then
+		
+		If Month(CurrentDate) >= FirstMonthOfFiscalYear Then
+			PeriodStartDate = Date(Year(CurrentDate), FirstMonthOfFiscalYear, 1);
+			PeriodEndDate = EndOfMonth(AddMonth(PeriodStartDate, 11));
+		Else
+			PeriodStartDate = Date(Year(CurrentDate) - 1, FirstMonthOfFiscalYear, 1);
+			PeriodEndDate = EndOfMonth(AddMonth(PeriodStartDate, 11));
+		EndIf;
+		
+	ElsIf PeriodVariant = "This Year" Or PeriodVariant = "This Calendar Year" Then
 		PeriodStartDate = BegOfYear(CurrentDate);
 		PeriodEndDate = EndOfYear(CurrentDate);
 	ElsIf PeriodVariant = "This Year-to-date" Then
@@ -5337,7 +5420,17 @@ Procedure ChangeDatesByPeriod(PeriodVariant, PeriodStartDate, PeriodEndDate) Exp
 	ElsIf PeriodVariant = "Last Quarter-to-date" Then
 		PeriodStartDate = BegOfQuarter(AddMonth(CurrentDate, -3));
 		PeriodEndDate = AddMonth(CurrentDate, -3);
-	ElsIf PeriodVariant = "Last Year" Then
+	ElsIf PeriodVariant = "Last Fiscal Year" Then
+		
+		If Month(CurrentDate) >= FirstMonthOfFiscalYear Then
+			PeriodStartDate = Date(Year(CurrentDate) - 1, FirstMonthOfFiscalYear, 1);
+			PeriodEndDate = EndOfMonth(AddMonth(PeriodStartDate, 11));
+		Else
+			PeriodStartDate = Date(Year(CurrentDate) - 2, FirstMonthOfFiscalYear, 1);
+			PeriodEndDate = EndOfMonth(AddMonth(PeriodStartDate, 11));
+		EndIf;
+		
+	ElsIf PeriodVariant = "Last Year" Or PeriodVariant = "Last Calendar Year" Then
 		PeriodStartDate = BegOfYear(AddMonth(CurrentDate, -12));
 		PeriodEndDate = EndOfYear(AddMonth(CurrentDate, -12));
 	ElsIf PeriodVariant = "Last Year-to-date" Then
@@ -5391,33 +5484,6 @@ Function GetExcelFile(FileName, SpreadsheetDocument) Export
 	
 	Return Structure;	
 
-EndFunction
-
-Function GetFileName(SpreadsheetDocument)
-	
-	TemporaryFileName = GetTempFileName(".xlsx");
-	
-	SpreadsheetDocument.Write(TemporaryFileName, SpreadsheetDocumentFileType.XLSX);
-	
-	Try
-		COMExcel = New COMObject("Excel.Application"); 
-		Doc = COMExcel.Application.Workbooks.Open(TemporaryFileName); 
-		
-		Doc.Windows(1).DisplayWorkbookTabs = True;
-		Doc.Windows(1).TabRatio = 0.5;
-		COMExcel.ReferenceStyle = 1;
-		
-		Doc.Save();
-		Doc.Close();
-	Except
-	EndTry;
-	
-	BinaryData = New BinaryData(TemporaryFileName);
-	
-	DeleteFiles(TemporaryFileName);
-	
-	Return PutToTempStorage(BinaryData);
-	
 EndFunction
 
 Function GetCorrectSystemTitle()
@@ -5739,3 +5805,43 @@ Function ShowAddressDecoration(AddressRef) Export
 	
 EndFunction
 
+#Region User_and_Role_Management 
+
+// Function to determine is user in Role, 
+// Parameter: Role name
+// If Yes, then return True
+// Used for checking on client 
+Function IsCurrentUserInRole(RoleName) Export 
+	
+	Return IsInRole(RoleName);
+		
+EndFunction
+
+Function GetFileName(SpreadsheetDocument)
+	
+	TemporaryFileName = GetTempFileName(".xlsx");
+	
+	SpreadsheetDocument.Write(TemporaryFileName, SpreadsheetDocumentFileType.XLSX);
+	
+	Try
+		COMExcel = New COMObject("Excel.Application"); 
+		Doc = COMExcel.Application.Workbooks.Open(TemporaryFileName); 
+		
+		Doc.Windows(1).DisplayWorkbookTabs = True;
+		Doc.Windows(1).TabRatio = 0.5;
+		COMExcel.ReferenceStyle = 1;
+		
+		Doc.Save();
+		Doc.Close();
+	Except
+	EndTry;
+	
+	BinaryData = New BinaryData(TemporaryFileName);
+	
+	DeleteFiles(TemporaryFileName);
+	
+	Return PutToTempStorage(BinaryData);
+	
+EndFunction
+
+#EndRegion

@@ -22,12 +22,23 @@ EndProcedure
 &AtClient
 Procedure VariantOnChange(Item)
 	
+	//
+	CurrentPeriodStartDate = PeriodStartDate; 
+	CurrentPeriodEndDate   = PeriodEndDate;
+	CurrentPeriodVariant   = PeriodVariant;
+	
 	CurrentVariantDescription = Variant;
 	SetCurrentVariant(CurrentVariantDescription);
+	
+	PeriodStartDate = CurrentPeriodStartDate; 
+	PeriodEndDate   = CurrentPeriodEndDate;
+	PeriodVariant   = CurrentPeriodVariant;
+	GeneralFunctions.ChangePeriodIntoUserSettings(ThisForm.Report.SettingsComposer, PeriodStartDate, PeriodEndDate);
 	
 	ModifiedStatePresentation();
 		
 EndProcedure
+
 
 &AtServer
 Procedure ModifiedStatePresentation()
@@ -52,7 +63,7 @@ EndProcedure
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
 	Items.PeriodVariant.ChoiceList.LoadValues(GeneralFunctions.GetCustomizedPeriodsList());
-	PeriodVariant = GeneralFunctions.GetDefaultPeriodVariant();
+	PeriodVariant = "Today";
 	GeneralFunctions.ChangeDatesByPeriod(PeriodVariant, PeriodStartDate, PeriodEndDate);
 	
 	OpeningReportForm = True;

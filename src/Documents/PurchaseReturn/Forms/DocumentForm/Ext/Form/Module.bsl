@@ -463,3 +463,19 @@ Procedure UpdatePointInTime()
 	EndIf;
 	
 EndProcedure
+
+&AtClient
+Procedure AuditLogRecord(Command)
+	
+	FormParameters = New Structure();	
+	FltrParameters = New Structure();
+	FltrParameters.Insert("DocUUID", String(Object.Ref.UUID()));
+	FormParameters.Insert("Filter", FltrParameters);
+	OpenForm("CommonForm.AuditLogList",FormParameters, Object.Ref);
+
+EndProcedure
+
+&AtClient
+Procedure OpenURL(Command)
+	GotoURL(Object.URL);
+EndProcedure

@@ -216,3 +216,27 @@ Procedure PlaceImageFile3(TempStorageName)
 	EndIf;
 	  	
 EndProcedure
+
+&AtClient
+Procedure SIShowSVCOnChange(Item)
+	If ConstantsSet.SIShowSVCCol Then 
+		ConstantsSet.SIShowClassCol    = False;
+		ConstantsSet.SIShowDiscountCol = False;
+	EndIf;;
+EndProcedure
+
+&AtClient
+Procedure SIShowClassColOnChange(Item)
+	If ConstantsSet.SIShowClassCol Then 
+		ConstantsSet.SIShowSVCCol      = False;
+		ConstantsSet.SIShowDiscountCol = False;
+	EndIf;
+EndProcedure
+
+&AtClient
+Procedure SIShowDiscountColOnChange(Item)
+	If ConstantsSet.SIShowDiscountCol Then 
+		ConstantsSet.SIShowClassCol = False;
+		ConstantsSet.SIShowSVCCol   = False;
+	EndIf;
+EndProcedure

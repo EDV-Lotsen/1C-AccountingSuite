@@ -11,6 +11,11 @@
 				<xr:Common>true</xr:Common>
 			</Visibility>
 		</Command>
+		<Command name="Document.Shipment.StandardCommand.OpenList">
+			<Visibility>
+				<xr:Common>true</xr:Common>
+			</Visibility>
+		</Command>
 		<Command name="Document.SalesInvoice.StandardCommand.OpenList">
 			<Visibility>
 				<xr:Common>true</xr:Common>
@@ -58,6 +63,10 @@
 			<CommandGroup>NavigationPanelImportant</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
+		<Command name="Document.Shipment.StandardCommand.OpenList">
+			<CommandGroup>NavigationPanelImportant</CommandGroup>
+			<Placement>Auto</Placement>
+		</Command>
 		<Command name="Document.SalesInvoice.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelImportant</CommandGroup>
 			<Placement>Auto</Placement>
@@ -92,6 +101,9 @@
 			<CommandGroup>NavigationPanelImportant</CommandGroup>
 		</Command>
 		<Command name="Document.SalesOrder.StandardCommand.OpenList">
+			<CommandGroup>NavigationPanelImportant</CommandGroup>
+		</Command>
+		<Command name="Document.Shipment.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelImportant</CommandGroup>
 		</Command>
 		<Command name="Document.SalesInvoice.StandardCommand.OpenList">
@@ -149,6 +161,9 @@
 			<CommandGroup>ActionsPanelCreate</CommandGroup>
 		</Command>
 		<Command name="Document.Quote.StandardCommand.Create">
+			<CommandGroup>ActionsPanelCreate</CommandGroup>
+		</Command>
+		<Command name="Document.Shipment.StandardCommand.Create">
 			<CommandGroup>ActionsPanelCreate</CommandGroup>
 		</Command>
 	</CommandsOrder>

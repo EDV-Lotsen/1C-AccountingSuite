@@ -96,11 +96,12 @@ Procedure Posting(Cancel, Mode)
 		Record.AmountRC = TotalDepositsRC;
 	EndIf;
 	
-	RegisterRecords.ProjectData.Write = True;	
-	RegisterRecords.ClassData.Write = True;
+	RegisterRecords.ProjectData.Write  = True;	
+	RegisterRecords.ClassData.Write    = True;
 	RegisterRecords.CashFlowData.Write = True;
 	
 	For Each AccountLine in Accounts Do
+		
 		If AccountLine.Amount > 0 Then
 			Record = RegisterRecords.GeneralJournal.AddCredit();
 			Record.Account = AccountLine.Account;
@@ -149,7 +150,6 @@ Procedure Posting(Cancel, Mode)
 		
 		//----------------------------------------------------------------------
 
-
 	EndDo;
 	
 	// Writing bank reconciliation data
@@ -179,6 +179,39 @@ Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 	//	
 	//EndIf;
 	
+EndProcedure
+
+Procedure Filling(FillingData, StandardProcessing)
+	
+	// Forced assign the new document number.
+	If ThisObject.IsNew() And Not ValueIsFilled(ThisObject.Number) Then ThisObject.SetNewNumber(); EndIf;
+	
+EndProcedure
+
+Procedure OnCopy(CopiedObject)
+	
+	If ThisObject.IsNew() Then ThisObject.SetNewNumber(); EndIf;
+	
+EndProcedure
+
+
+Procedure OnSetNewNumber(StandardProcessing, Prefix)
+	
+	StandardProcessing = False;
+	
+	Numerator = Catalogs.DocumentNumbering.Deposit;
+	NextNumber = GeneralFunctions.Increment(Numerator.Number);
+	
+	While Documents.Deposit.FindByNumber(NextNumber) <> Documents.Deposit.EmptyRef() And NextNumber <> "" Do
+		ObjectNumerator = Numerator.GetObject();
+		ObjectNumerator.Number = NextNumber;
+		ObjectNumerator.Write();
+		
+		NextNumber = GeneralFunctions.Increment(NextNumber);
+	EndDo;
+	
+	ThisObject.Number = NextNumber; 
+
 EndProcedure
 
 

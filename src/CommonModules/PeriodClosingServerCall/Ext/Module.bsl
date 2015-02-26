@@ -124,9 +124,9 @@ EndFunction
 // Event subscribtion handler. Prevents document deletion in closed period
 Procedure ClosedPeriodDeletionProtectionBeforeDelete(Source, Cancel) Export
 	//Period closing
-	If GeneralFunctionsReusable.DisableAuditLogValue() = True Then
-		return;
-	EndIf;
+	//If GeneralFunctionsReusable.DisableAuditLogValue() = True Then
+		//return;
+	//EndIf;
 	If Source.DataExchange.Load Then
 		return;
 	EndIf;
@@ -140,9 +140,9 @@ EndProcedure
 // Event subscribtion handler. Prevents changes to the document in closed period
 Procedure ClosedPeriodBeforeWriteBeforeWrite(Source, Cancel, WriteMode, PostingMode) Export
 	//Period closing
-	If GeneralFunctionsReusable.DisableAuditLogValue() = True Then
-		return;
-	EndIf;
+	//If GeneralFunctionsReusable.DisableAuditLogValue() = True Then
+		//return;
+	//EndIf;
 	If Source.DataExchange.Load Then
 		return;
 	EndIf;

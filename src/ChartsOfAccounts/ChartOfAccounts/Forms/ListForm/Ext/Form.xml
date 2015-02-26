@@ -10,6 +10,7 @@
 			</Button>
 			<Button name="FormOutputList" id="24">
 				<Type>CommandBarButton</Type>
+				<Visible>false</Visible>
 				<Representation>PictureAndText</Representation>
 				<OnlyInAllActions>true</OnlyInAllActions>
 				<CommandName>Form.StandardCommand.OutputList</CommandName>
@@ -24,6 +25,16 @@
 					</v8:item>
 				</Title>
 				<ExtendedTooltip name="FormOutputListExtendedTooltip" id="25"/>
+			</Button>
+			<Button name="FormExportChartOfAccounts" id="47">
+				<Type>CommandBarButton</Type>
+				<CommandName>Form.Command.ExportChartOfAccounts</CommandName>
+				<ExtendedTooltip name="FormExportChartOfAccountsExtendedTooltip" id="48"/>
+			</Button>
+			<Button name="FormImportChartOfAccounts" id="49">
+				<Type>CommandBarButton</Type>
+				<CommandName>Form.Command.ImportChartOfAccounts</CommandName>
+				<ExtendedTooltip name="FormImportChartOfAccountsExtendedTooltip" id="50"/>
 			</Button>
 			<Button name="FormRefresh" id="22">
 				<Type>CommandBarButton</Type>
@@ -45,9 +56,6 @@
 			<EnableDrag>true</EnableDrag>
 			<DataPath>List</DataPath>
 			<RowPictureDataPath>List.DefaultPicture</RowPictureDataPath>
-			<SearchStringLocation>None</SearchStringLocation>
-			<ViewStatusLocation>None</ViewStatusLocation>
-			<SearchControlLocation>None</SearchControlLocation>
 			<AutoRefresh>false</AutoRefresh>
 			<AutoRefreshPeriod>60</AutoRefreshPeriod>
 			<Period>
@@ -113,10 +121,10 @@
 					<ContextMenu name="CreditCardContextMenu" id="30"/>
 					<ExtendedTooltip name="CreditCardExtendedTooltip" id="31"/>
 				</CheckBoxField>
-				<LabelField name="ReclassAccount" id="26">
-					<DataPath>List.ReclassAccount</DataPath>
-					<ContextMenu name="ReclassAccountContextMenu" id="27"/>
-					<ExtendedTooltip name="ReclassAccountExtendedTooltip" id="28"/>
+				<LabelField name="Reclass" id="26">
+					<DataPath>List.Reclass</DataPath>
+					<ContextMenu name="ReclassContextMenu" id="27"/>
+					<ExtendedTooltip name="ReclassExtendedTooltip" id="28"/>
 				</LabelField>
 				<InputField name="Balance" id="17">
 					<DataPath>List.Balance</DataPath>
@@ -140,6 +148,22 @@
 					<ContextMenu name="Category1099ContextMenu" id="15"/>
 					<ExtendedTooltip name="Category1099ExtendedTooltip" id="16"/>
 				</LabelField>
+				<LabelField name="RT" id="44">
+					<DataPath>List.RT</DataPath>
+					<ContextMenu name="RTContextMenu" id="45"/>
+					<ExtendedTooltip name="RTExtendedTooltip" id="46"/>
+				</LabelField>
+				<LabelField name="TotLev" id="41">
+					<DataPath>List.TotLev</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Tot</v8:content>
+						</v8:item>
+					</Title>
+					<ContextMenu name="TotLevContextMenu" id="42"/>
+					<ExtendedTooltip name="TotLevExtendedTooltip" id="43"/>
+				</LabelField>
 			</ChildItems>
 		</Table>
 	</ChildItems>
@@ -155,12 +179,14 @@
 				<QueryText>SELECT
 	ChartOfAccounts.Ref AS Ref,
 	ChartOfAccounts.Code AS Code,
-	ChartOfAccounts.ReclassAccount AS ReclassAccount,
+	ChartOfAccounts.ReclassAccount AS Reclass,
 	ChartOfAccounts.CreditCard AS CreditCard,
 	ChartOfAccounts.Description AS Description,
 	ChartOfAccounts.AccountType AS AccountType,
 	NewChartOfAccounts.Balance AS Balance,
-	ChartOfAccounts.Category1099 AS Category1099
+	ChartOfAccounts.Category1099 AS Category1099,
+	ChartOfAccounts.gc_totlev AS TotLev,
+	ChartOfAccounts.gc_rectype AS RT
 FROM
 	ChartOfAccounts.ChartOfAccounts AS ChartOfAccounts
 		LEFT JOIN (SELECT
@@ -236,6 +262,36 @@ FROM
 				</v8:item>
 			</ToolTip>
 			<Action>GeneralLedger</Action>
+		</Command>
+		<Command name="ImportChartOfAccounts" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Import chart of accounts</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Import chart of accounts</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>ImportChartOfAccounts</Action>
+		</Command>
+		<Command name="ExportChartOfAccounts" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Export chart of accounts</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Export chart of accounts</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>ExportChartOfAccounts</Action>
 		</Command>
 	</Commands>
 </Form>

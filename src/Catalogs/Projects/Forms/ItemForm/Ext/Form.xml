@@ -5,7 +5,7 @@
 	<UseForFoldersAndItems>Items</UseForFoldersAndItems>
 	<AutoCommandBar name="FormCommandBar" id="-1"/>
 	<Events>
-		<Event name="OnOpen">OnOpen</Event>
+		<Event name="NewWriteProcessing">NewWriteProcessing</Event>
 		<Event name="BeforeWrite">BeforeWrite</Event>
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
 		<Event name="BeforeWriteAtServer">BeforeWriteAtServer</Event>
@@ -31,51 +31,91 @@
 			<ContextMenu name="CustomerContextMenu" id="8"/>
 			<ExtendedTooltip name="CustomerExtendedTooltip" id="9"/>
 		</InputField>
-		<InputField name="ReceiptsBudget" id="10">
-			<DataPath>Object.ReceiptsBudget</DataPath>
+		<InputField name="Type" id="27">
+			<DataPath>Object.Type</DataPath>
+			<Width>20</Width>
+			<HorizontalStretch>false</HorizontalStretch>
+			<ContextMenu name="TypeContextMenu" id="28"/>
+			<ExtendedTooltip name="TypeExtendedTooltip" id="29"/>
+		</InputField>
+		<InputField name="Status" id="24">
+			<DataPath>Object.Status</DataPath>
+			<Width>20</Width>
+			<HorizontalStretch>false</HorizontalStretch>
+			<ContextMenu name="StatusContextMenu" id="25"/>
+			<ExtendedTooltip name="StatusExtendedTooltip" id="26"/>
+		</InputField>
+		<UsualGroup name="Budgets" id="22">
 			<Title>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Income (bdgt)</v8:content>
+					<v8:content>Budgets</v8:content>
 				</v8:item>
 			</Title>
-			<Width>20</Width>
-			<HorizontalStretch>false</HorizontalStretch>
-			<ContextMenu name="ReceiptsBudgetContextMenu" id="11"/>
-			<ExtendedTooltip name="ReceiptsBudgetExtendedTooltip" id="12"/>
-		</InputField>
-		<InputField name="ExpenseBudget" id="13">
-			<DataPath>Object.ExpenseBudget</DataPath>
-			<Title>
+			<ToolTip>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Expense (bdgt)</v8:content>
+					<v8:content>Budgets</v8:content>
 				</v8:item>
-			</Title>
-			<Width>20</Width>
-			<HorizontalStretch>false</HorizontalStretch>
-			<ContextMenu name="ExpenseBudgetContextMenu" id="14"/>
-			<ExtendedTooltip name="ExpenseBudgetExtendedTooltip" id="15"/>
-		</InputField>
-		<InputField name="ProfitBudget" id="19">
-			<DataPath>ProfitBudget</DataPath>
-			<Visible>false</Visible>
-			<ContextMenu name="ProfitBudgetContextMenu" id="20"/>
-			<ExtendedTooltip name="ProfitBudgetExtendedTooltip" id="21"/>
-		</InputField>
-		<InputField name="HoursBudget" id="16">
-			<DataPath>Object.HoursBudget</DataPath>
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Hours (bdgt)</v8:content>
-				</v8:item>
-			</Title>
-			<Width>20</Width>
-			<HorizontalStretch>false</HorizontalStretch>
-			<ContextMenu name="HoursBudgetContextMenu" id="17"/>
-			<ExtendedTooltip name="HoursBudgetExtendedTooltip" id="18"/>
-		</InputField>
+			</ToolTip>
+			<Group>Vertical</Group>
+			<Representation>None</Representation>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="BudgetsExtendedTooltip" id="23"/>
+			<ChildItems>
+				<InputField name="ReceiptsBudget" id="10">
+					<DataPath>Object.ReceiptsBudget</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Income (bdgt)</v8:content>
+						</v8:item>
+					</Title>
+					<Width>20</Width>
+					<HorizontalStretch>false</HorizontalStretch>
+					<ContextMenu name="ReceiptsBudgetContextMenu" id="11"/>
+					<ExtendedTooltip name="ReceiptsBudgetExtendedTooltip" id="12"/>
+				</InputField>
+				<InputField name="ExpenseBudget" id="13">
+					<DataPath>Object.ExpenseBudget</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Expense (bdgt)</v8:content>
+						</v8:item>
+					</Title>
+					<Width>20</Width>
+					<HorizontalStretch>false</HorizontalStretch>
+					<ContextMenu name="ExpenseBudgetContextMenu" id="14"/>
+					<ExtendedTooltip name="ExpenseBudgetExtendedTooltip" id="15"/>
+				</InputField>
+				<InputField name="ProfitBudget" id="19">
+					<DataPath>ProfitBudget</DataPath>
+					<Visible>false</Visible>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Profit Budget</v8:content>
+						</v8:item>
+					</Title>
+					<ContextMenu name="ProfitBudgetContextMenu" id="20"/>
+					<ExtendedTooltip name="ProfitBudgetExtendedTooltip" id="21"/>
+				</InputField>
+				<InputField name="HoursBudget" id="16">
+					<DataPath>Object.HoursBudget</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Hours (bdgt)</v8:content>
+						</v8:item>
+					</Title>
+					<Width>20</Width>
+					<HorizontalStretch>false</HorizontalStretch>
+					<ContextMenu name="HoursBudgetContextMenu" id="17"/>
+					<ExtendedTooltip name="HoursBudgetExtendedTooltip" id="18"/>
+				</InputField>
+			</ChildItems>
+		</UsualGroup>
 	</ChildItems>
 	<Attributes>
 		<Attribute name="Object" id="1">

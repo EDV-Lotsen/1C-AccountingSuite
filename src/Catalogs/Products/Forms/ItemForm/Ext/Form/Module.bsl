@@ -4,6 +4,19 @@
 //
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
+	If Constants.ExpenseAccount.Get() = ChartsOfAccounts.ChartOfAccounts.EmptyRef() OR
+		Constants.IncomeAccount.Get() = ChartsOfAccounts.ChartOfAccounts.EmptyRef() OR
+		Constants.COGSAccount.Get() = ChartsOfAccounts.ChartOfAccounts.EmptyRef() OR
+		Constants.InventoryAccount.Get() = ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
+		
+		Message = New UserMessage();
+		Message.Text=NStr("en='Indicate default Income, Expense, Inventory, COGS accounts in Setup / Posting accounts'");
+		Message.Message();
+		
+	Else
+	EndIf;
+
+	
 	//------------------------------------------------------------------------------
 	// 1. Form attributes initialization.
 	
@@ -19,10 +32,25 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	// Update quantities presentation.
 	QuantityPrecision = GeneralFunctionsReusable.DefaultQuantityPrecision();
 	QuantityFormat    = GeneralFunctionsReusable.DefaultQuantityFormat();
+	
 	Items.LineItemsQuantity.EditFormat      = QuantityFormat;
 	Items.LineItemsQuantity.Format          = QuantityFormat;
 	Items.LineItemsWasteQtyUnits.EditFormat = QuantityFormat;
 	Items.LineItemsWasteQtyUnits.Format     = QuantityFormat;
+	Items.ResidualsItemsQuantity.EditFormat = QuantityFormat;
+	Items.ResidualsItemsQuantity.Format     = QuantityFormat;
+	
+	Items.QtyOnPO.Format                    = QuantityFormat; 
+	Items.QtyOnPO.EditFormat                = QuantityFormat; 
+	Items.QtyOnSO.Format                    = QuantityFormat; 
+	Items.QtyOnSO.EditFormat                = QuantityFormat; 
+	Items.QtyOnHand.Format                  = QuantityFormat; 
+	Items.QtyOnHand.EditFormat              = QuantityFormat; 
+	Items.QtyAvailableToPromise.Format      = QuantityFormat; 
+	Items.QtyAvailableToPromise.EditFormat  = QuantityFormat; 
+	
+	Items.ReorderQty.Format                 = QuantityFormat; 
+	Items.ReorderQty.EditFormat             = QuantityFormat; 
 	
 	// Update prices presentation in LineItems.
 	PriceFormat = GeneralFunctionsReusable.DefaultPriceFormat();
@@ -30,11 +58,63 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	Items.LineItemsPrice.Format      = PriceFormat;
 	
 	// Show/hide assembly part.
-	Items.Assembly.Visible = Object.Assembly;
+	Items.Assembly.Visible     = Object.Assembly;
+	Items.Residuals.Visible    = Object.HasResiduals;
+	Items.HasResiduals.Enabled = Object.Assembly;
+	Items.Services.Visible     = Object.HasServices;
+	Items.HasServices.Enabled  = Object.Assembly;
+	
+	// Show/hide lots/serial numbers purt.
+	Items.Lots.Visible          = Object.HasLotsSerialNumbers;
+	If Object.UseLots = 1 Then    // use Serial numbers.
+		Items.LotsLeft.Enabled  = False; // Lots
+		Items.LotsRight.Enabled = True;  // Serials
+	Else                          // use Lots numbers.
+		Items.LotsLeft.Enabled  = True;  // Lots
+		Items.LotsRight.Enabled = False; // Serials
+	EndIf;
+	Items.LotsProperties.CurrentPage = Items.LotsProperties.ChildItems[Object.UseLotsType];
+	Items.LotsShelfLife.Enabled = Boolean(Object.UseLotsByExpiration);
+	
+	// Update serial numbers options availability.
+	Items.UseSerialNumbersCheckReception.Enabled  = Object.UseSerialNumbersOnGoodsReception And Object.UseSerialNumbersOnShipment;
+	Items.UseSerialNumbersCheckUniqueness.Enabled = Object.UseSerialNumbersOnGoodsReception;
+	
+	// Update open lists buttons.
+	If Object.Ref.IsEmpty() Then
+		Items.OpenLots.Enabled = False;
+		Items.OpenSerialNumbers.Enabled = False;
+	EndIf;
+	
+	// Define inventory items type.
+	IsInventoryType = GeneralFunctions.InventoryType(Object.Type);
+	
+	// Lock inventory type change.
+	Items.Type.Enabled = (Not Object.Assembly) And (Not Object.HasLotsSerialNumbers);
+	
+	// Lock assembly items for service items.
+	If Not IsInventoryType Then
+		// Lock assembly switchers.
+		Items.IsAssembly.Enabled           = False;
+		Items.HasResiduals.Enabled         = False;
+		Items.HasServices.Enabled          = False;
+	EndIf;
+	
+	// Lock possible lots/serial numbers settings change.
+	If (Not IsInventoryType)                                          // Service items.
+	Or (Not Object.Ref.IsEmpty() And HasDescendants(Object.Ref)) Then // Saved inventory items having lots & serials.
+		Items.HasLotsSerialNumbers.Enabled = False;
+		Items.UseLots.Enabled              = False;
+		Items.UseLotsType.Enabled          = False;
+		Items.Characteristic.Enabled       = False;
+		Items.UseLotsByExpiration.Enabled  = False;
+		Items.ShelfLife.Enabled            = False;
+		Items.ShelfLifeUnit.Enabled        = False;
+	EndIf;
 	
 	// Update prices presentation.
 	UpdatePricesPresentation();
-
+	
 	// -> CODE REVIEW
 	If Constants.SalesTaxCharging.Get() = False Then
 		Items.Taxable.Visible = False;
@@ -228,20 +308,12 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Items.CostAndQuantity.ChildItems.Right.ChildItems.QtyOnHand.Visible = IsInventoryType;
 		Items.CostAndQuantity.ChildItems.Right.ChildItems.QtyAvailableToPromise.Visible = IsInventoryType;
 		//Items.CostAndQuantity.ChildItems.Right.ChildItems.InventorySiteInfo.Visible = IsInventoryType;
+		Items.ReorderQty.Visible = IsInventoryType; 
 	Else
 		// New item: hide indicators
 		Items.CostAndQuantity.Visible = False;
+		Items.ReorderQty.Visible      = False;
 	EndIf;
-	
-	QuantityFormat = GeneralFunctionsReusable.DefaultQuantityFormat();
-	Items.QtyOnPO.Format                   = QuantityFormat; 
-	Items.QtyOnPO.EditFormat               = QuantityFormat; 
-	Items.QtyOnSO.Format                   = QuantityFormat; 
-	Items.QtyOnSO.EditFormat               = QuantityFormat; 
-	Items.QtyOnHand.Format                 = QuantityFormat; 
-	Items.QtyOnHand.EditFormat             = QuantityFormat; 
-	Items.QtyAvailableToPromise.Format     = QuantityFormat; 
-	Items.QtyAvailableToPromise.EditFormat = QuantityFormat; 
 	
 	SetBaseUnit();
 
@@ -278,6 +350,36 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 	Items.CostAndQuantity.ChildItems.Right.ChildItems.QtyOnHand.Visible = IsInventoryType;
 	Items.CostAndQuantity.ChildItems.Right.ChildItems.QtyAvailableToPromise.Visible = IsInventoryType;
 	//Items.CostAndQuantity.ChildItems.Right.ChildItems.InventorySiteInfo.Visible = IsInventoryType;
+	
+	// Update open lists buttons.
+	Items.OpenLots.Enabled = True;
+	Items.OpenSerialNumbers.Enabled = True;
+	
+	// Define inventory items type.
+	IsInventoryType = GeneralFunctions.InventoryType(Object.Type);
+	
+	// Lock inventory type change.
+	Items.Type.Enabled = (Not Object.Assembly) And (Not Object.HasLotsSerialNumbers);
+	
+	// Lock assembly items for service items.
+	If Not IsInventoryType Then
+		// Lock assembly switchers.
+		Items.IsAssembly.Enabled           = False;
+		Items.HasResiduals.Enabled         = False;
+		Items.HasServices.Enabled          = False;
+	EndIf;
+	
+	// Lock possible lots/serial numbers settings change.
+	If (Not IsInventoryType)                                          // Service items.
+	Or (Not Object.Ref.IsEmpty() And HasDescendants(Object.Ref)) Then // Saved inventory items having lots & serials.
+		Items.HasLotsSerialNumbers.Enabled = False;
+		Items.UseLots.Enabled              = False;
+		Items.UseLotsType.Enabled          = False;
+		Items.Characteristic.Enabled       = False;
+		Items.UseLotsByExpiration.Enabled  = False;
+		Items.ShelfLife.Enabled            = False;
+		Items.ShelfLifeUnit.Enabled        = False;
+	EndIf;
 	
 	// Update prices presentation.
 	UpdatePricesPresentation();
@@ -630,7 +732,19 @@ Procedure TypeOnChange(Item)
 	
 	NewItemType = Object.Type;
 	
-	If GeneralFunctions.InventoryType(NewItemType) AND Object.Ref.IsEmpty() Then
+	// Define inventory items type.
+	IsInventoryType = GeneralFunctions.InventoryType(NewItemType); 
+	
+	// Lock assembly items for service items.
+	Items.IsAssembly.Enabled   = IsInventoryType;
+	Items.HasResiduals.Enabled = Object.Assembly;
+	Items.HasServices.Enabled  = Object.Assembly;
+	
+	// Lock possible lots/serial numbers settings change.
+	LockLotsSerials = (Not IsInventoryType) Or (Not Object.Ref.IsEmpty() And HasDescendants(Object.Ref));
+	Items.HasLotsSerialNumbers.Enabled = Not LockLotsSerials;
+	
+	If IsInventoryType AND Object.Ref.IsEmpty() Then
 		
 		Items.CostingMethod.Visible = True;
 		Object.CostingMethod = GeneralFunctionsReusable.WeightedAverage();
@@ -651,7 +765,7 @@ Procedure TypeOnChange(Item)
 		
 	EndIf;
 	
-	If (NOT GeneralFunctions.InventoryType(NewItemType)) AND Object.Ref.IsEmpty() Then
+	If (NOT IsInventoryType) AND Object.Ref.IsEmpty() Then
 		
 		Items.CostingMethod.Visible = False;
 		Items.DefaultLocation.ReadOnly = True;
@@ -668,8 +782,6 @@ Procedure TypeOnChange(Item)
 		Object.Taxable = False;
 		
 	EndIf;
-
-
 		
 	If NOT Object.Ref.IsEmpty() Then
 		
@@ -683,10 +795,10 @@ Procedure TypeOnChange(Item)
 		
 		Object.InventoryOrExpenseAccount = GeneralFunctions.GetEmptyAcct();
 		Items.InventoryAcctLabel.Title = "";
-
-
+		
 	EndIf;
 	
+	Items.ReorderQty.Visible = IsInventoryType;
 		
 EndProcedure
 
@@ -848,6 +960,7 @@ Function SetBaseUnit()
 	
 	BaseUnit = GeneralFunctions.GetBaseUnit(Object.UnitSet); 
 	Items.Right.Title = "Item quantities in " + BaseUnit.Code;
+	Items.ReorderQty.Title = "Reorder point in " + BaseUnit.Code; 
 	
 EndFunction
 
@@ -855,17 +968,30 @@ EndFunction
 Procedure IsAssemblyOnChange(Item)
 	
 	// Switch on assembly status.
-	If Not Object.Assembly And Object.LineItems.Count() > 0 Then
+	If Not Object.Assembly And (Object.LineItems.Count() > 0 Or Object.Residuals.Count() > 0 Or Object.Services.Count() > 0) Then
 		
-		// Request user confirmation on clearing the assembly.
-		QuestionText  = NStr("en = 'Clear assembly contents?'");
+		// Request user confirmation on clearing the assembly contents.
+		QuestionText  = NStr("en = 'Clear assembly, residuals and services contents?'");
 		QuestionTitle = NStr("en = 'Clear assembly'");
 		ChoiceProcessing = New NotifyDescription("IsAssemblyOnChangeChoiceProcessing", ThisForm);
 		ShowQueryBox(ChoiceProcessing, QuestionText, QuestionDialogMode.OKCancel,, DialogReturnCode.Cancel, QuestionTitle);
 		
 	Else
-		// Show/hide assembly part.
-		Items.Assembly.Visible = Object.Assembly;
+		// Lock inventory type change.
+		Items.Type.Enabled         = (Not Object.Assembly) And (Not Object.HasLotsSerialNumbers);
+		
+		// Update residuals.
+		Object.HasResiduals        = Object.Assembly And Object.HasResiduals;
+		Items.HasResiduals.Enabled = Object.Assembly;
+		
+		// Update services.
+		Object.HasServices         = Object.Assembly And Object.HasServices;
+		Items.HasServices.Enabled  = Object.Assembly;
+		
+		// Show/hide assembly, residuals and services part.
+		Items.Assembly.Visible     = Object.Assembly;
+		Items.Residuals.Visible    = Object.HasResiduals;
+		Items.Services.Visible     = Object.HasServices;
 	EndIf;
 	
 EndProcedure
@@ -875,13 +1001,209 @@ Procedure IsAssemblyOnChangeChoiceProcessing(ChoiceResult, ChoiceParameters) Exp
 	
 	// Process user choice.
 	If ChoiceResult = DialogReturnCode.OK Then
-		// Clear line items.
+		// Clear line items, residuals and services.
 		Object.LineItems.Clear();
-		Items.Assembly.Visible = False;
+		Object.Residuals.Clear();
+		Object.Services.Clear();
 		
+		// Lock inventory type change.
+		Items.Type.Enabled         = (Not Object.Assembly) And (Not Object.HasLotsSerialNumbers);
+		
+		// Show/hide assembly, residuals and services part.
+		Items.Assembly.Visible     = False;
+		Items.Residuals.Visible    = False;
+		Items.Services.Visible     = False;
+		
+		// Disable residuals.
+		Object.HasResiduals        = False;
+		Items.HasResiduals.Enabled = False;
+		
+		// Disable services.
+		Object.HasServices         = False;
+		Items.HasServices.Enabled  = False;
 	Else
 		// Restore previously entered setting.
 		Object.Assembly = True;
+	EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure HasResidualsOnChange(Item)
+	
+	// Switch on assembly status.
+	If Not Object.HasResiduals And Object.Residuals.Count() > 0 Then
+		
+		// Request user confirmation on clearing the residuals contents.
+		QuestionText  = NStr("en = 'Clear residuals contents?'");
+		QuestionTitle = NStr("en = 'Clear residuals'");
+		ChoiceProcessing = New NotifyDescription("HasResidualsOnChangeChoiceProcessing", ThisForm);
+		ShowQueryBox(ChoiceProcessing, QuestionText, QuestionDialogMode.OKCancel,, DialogReturnCode.Cancel, QuestionTitle);
+		
+	Else
+		// Show/hide assembly part.
+		Items.Residuals.Visible = Object.HasResiduals;
+	EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure HasResidualsOnChangeChoiceProcessing(ChoiceResult, ChoiceParameters) Export
+	
+	// Process user choice.
+	If ChoiceResult = DialogReturnCode.OK Then
+		// Clear line items.
+		Object.Residuals.Clear();
+		Items.Residuals.Visible = False;
+		
+	Else
+		// Restore previously entered setting.
+		Object.HasResiduals = True;
+	EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure HasServicesOnChange(Item)
+	
+	// Switch on assembly status.
+	If Not Object.HasServices And Object.Services.Count() > 0 Then
+		
+		// Request user confirmation on clearing the services contents.
+		QuestionText  = NStr("en = 'Clear services contents?'");
+		QuestionTitle = NStr("en = 'Clear services'");
+		ChoiceProcessing = New NotifyDescription("HasServicesOnChangeChoiceProcessing", ThisForm);
+		ShowQueryBox(ChoiceProcessing, QuestionText, QuestionDialogMode.OKCancel,, DialogReturnCode.Cancel, QuestionTitle);
+		
+	Else
+		// Show/hide assembly part.
+		Items.Services.Visible = Object.HasServices;
+	EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure HasServicesOnChangeChoiceProcessing(ChoiceResult, ChoiceParameters) Export
+	
+	// Process user choice.
+	If ChoiceResult = DialogReturnCode.OK Then
+		// Clear line items.
+		Object.Services.Clear();
+		Items.Services.Visible = False;
+		
+	Else
+		// Restore previously entered setting.
+		Object.HasServices = True;
+	EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure HasLotsSerialNumbersOnChange(Item)
+	
+	// Lock inventory type change.
+	Items.Type.Enabled = (Not Object.Assembly) And (Not Object.HasLotsSerialNumbers);
+	
+	// Switch on lots / serial numbers status.
+	If Not Object.HasLotsSerialNumbers And Not Object.Ref.IsEmpty() And HasDescendants(Object.Ref) Then
+		// Return values back.
+		Object.HasLotsSerialNumbers = True;
+		
+		// Update lots controls accessibility.
+		If Not Object.Ref.IsEmpty() And HasDescendants(Object.Ref) Then // There are owned lots / serial numbers.
+			// Lock possible lots/serial numbers settings change.
+			Items.HasLotsSerialNumbers.Enabled = False;
+			Items.UseLots.Enabled              = False;
+			Items.UseLotsType.Enabled          = False;
+			Items.Characteristic.Enabled       = False;
+			Items.UseLotsByExpiration.Enabled  = False;
+			Items.ShelfLife.Enabled            = False;
+			Items.ShelfLifeUnit.Enabled        = False;
+		EndIf;
+		
+	Else
+		// Show/hide serial numbers part.
+		Items.Lots.Visible = Object.HasLotsSerialNumbers;
+	EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure UseLotsOnChange(Item)
+	
+	// Switch on lots / serial numbers status.
+	If Not Object.Ref.IsEmpty() And HasDescendants(Object.Ref) Then
+		// Return values back.
+		Object.UseLots = 1 - Object.UseLots; // Negate value.
+		
+		// Update lots controls accessibility.
+		If Not Object.Ref.IsEmpty() And HasDescendants(Object.Ref) Then // There are owned lots / serial numbers.
+			// Lock possible lots/serial numbers settings change.
+			Items.HasLotsSerialNumbers.Enabled = False;
+			Items.UseLots.Enabled              = False;
+			Items.UseLotsType.Enabled          = False;
+			Items.Characteristic.Enabled       = False;
+			Items.UseLotsByExpiration.Enabled  = False;
+			Items.ShelfLife.Enabled            = False;
+			Items.ShelfLifeUnit.Enabled        = False;
+		EndIf;
+		
+	Else
+		// Change lots/serials status.
+		If Object.UseLots = 1 Then // use Serial numbers.
+			Items.LotsLeft.Enabled  = False; // Lots
+			Items.LotsRight.Enabled = True;  // Serials
+		Else                       // use Lots numbers.
+			Items.LotsLeft.Enabled  = True;  // Lots
+			Items.LotsRight.Enabled = False; // Serials
+		EndIf;
+	EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure UseLotsTypeOnChange(Item)
+	
+	// Set current settings page by lots type.
+	Items.LotsProperties.CurrentPage = Items.LotsProperties.ChildItems[Object.UseLotsType];
+	
+EndProcedure
+
+&AtClient
+Procedure UseLotsByExpirationOnChange(Item)
+	
+	// Update shelf life settings.
+	Items.LotsShelfLife.Enabled = Boolean(Object.UseLotsByExpiration);
+	
+EndProcedure
+
+&AtClient
+Procedure UseSerialNumbersOnShipmentOnChange(Item)
+	
+	// Update reception check status.
+	CheckReceptionAvailable = Object.UseSerialNumbersOnGoodsReception And Object.UseSerialNumbersOnShipment;
+	Items.UseSerialNumbersCheckReception.Enabled = CheckReceptionAvailable;
+	If Not CheckReceptionAvailable Then
+		Object.UseSerialNumbersCheckReception = False;
+	EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure UseSerialNumbersOnGoodsReceptionOnChange(Item)
+	
+	// Update reception check status.
+	CheckReceptionAvailable = Object.UseSerialNumbersOnGoodsReception And Object.UseSerialNumbersOnShipment;
+	Items.UseSerialNumbersCheckReception.Enabled = CheckReceptionAvailable;
+	If Not CheckReceptionAvailable Then
+		Object.UseSerialNumbersCheckReception = False;
+	EndIf;
+	
+	// Update uniqueness check status.
+	CheckUniquenessAvailable = Object.UseSerialNumbersOnGoodsReception;
+	Items.UseSerialNumbersCheckUniqueness.Enabled = CheckUniquenessAvailable;
+	If Not CheckUniquenessAvailable Then
+		Object.UseSerialNumbersCheckUniqueness = False;
 	EndIf;
 	
 EndProcedure
@@ -921,6 +1243,79 @@ Procedure PricePrecisionOnChange(Item)
 	
 EndProcedure
 
+
+////////////////////////////////////////////////////////////////////////////////
+#Region COMMANDS_HANDLERS
+
+&AtClient
+Procedure OpenLots(Command)
+	
+	// Open lots list.
+	If (Not Object.Ref.IsEmpty()) Then
+		
+		// Get lots owner.
+		LotsOwner = ?(Object.UseLotsType = 1, Object.Characteristic, Object.Ref);
+		
+		// Define form parameters.
+		FormParameters = New Structure();
+		
+		// Define list filter.
+		FltrParameters = New Structure();
+		FltrParameters.Insert("Product", Object.Ref);
+		FltrParameters.Insert("Owner",   LotsOwner);
+		FormParameters.Insert("Filter",  FltrParameters);
+		
+		// Define notification on close child form.
+		NotifyDescription = New NotifyDescription("LotsSerialNumbersChoiceProcessing", ThisForm);
+		
+		// Open orders selection form.
+		OpenForm("Catalog.Lots.Form.LotsForm", FormParameters, ThisForm,,,, NotifyDescription, FormWindowOpeningMode.LockOwnerWindow);
+	EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure OpenSerialNumbers(Command)
+	
+	// Open serial numbers list.
+	If (Not Object.Ref.IsEmpty()) Then
+		
+		// Define form parameters.
+		FormParameters = New Structure();
+		
+		// Define list filter.
+		FltrParameters = New Structure();
+		FltrParameters.Insert("Product", Object.Ref);
+		FormParameters.Insert("Filter",  FltrParameters);
+		
+		// Define notification on close child form.
+		NotifyDescription = New NotifyDescription("LotsSerialNumbersChoiceProcessing", ThisForm);
+		
+		// Open orders selection form.
+		OpenForm("InformationRegister.SerialNumbers.Form.SliceLast", FormParameters, ThisForm,,,, NotifyDescription, FormWindowOpeningMode.LockOwnerWindow);
+	EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure LotsSerialNumbersChoiceProcessing(Result, Parameters) Export
+	
+	// Check possible descendant items.
+	If HasDescendants(Object.Ref) Then
+		// Lock possible lots/serial numbers settings change.
+		Items.HasLotsSerialNumbers.Enabled = False;
+		Items.UseLots.Enabled              = False;
+		Items.UseLotsType.Enabled          = False;
+		Items.Characteristic.Enabled       = False;
+		Items.UseLotsByExpiration.Enabled  = False;
+		Items.ShelfLife.Enabled            = False;
+		Items.ShelfLifeUnit.Enabled        = False;
+	EndIf;
+	
+EndProcedure
+
+#EndRegion
+
 ////////////////////////////////////////////////////////////////////////////////
 #Region TABULAR_SECTION_EVENTS_HANDLERS
 
@@ -954,7 +1349,7 @@ Procedure LineItemsOnChange(Item)
 		EndDo;
 		
 		// Refresh totals cache.
-		RecalculateTotals();
+		RecalculateResidualsAndTotals();
 	EndIf;
 	
 EndProcedure
@@ -973,7 +1368,7 @@ EndProcedure
 Procedure LineItemsOnEditEnd(Item, NewRow, CancelEdit)
 	
 	// Recalculation common item totals.
-	RecalculateTotals();
+	RecalculateResidualsAndTotals();
 	
 EndProcedure
 
@@ -981,12 +1376,134 @@ EndProcedure
 Procedure LineItemsAfterDeleteRow(Item)
 	
 	// Recalculation common item totals.
+	RecalculateResidualsAndTotals();
+	
+EndProcedure
+
+//------------------------------------------------------------------------------
+// Tabular section Residuals event handlers.
+
+&AtClient
+Procedure ResidualsOnChange(Item)
+	
+	// Row was just added and became edited.
+	If IsNewRow Then
+		
+		// Clear used flag.
+		IsNewRow = False;
+		
+		// Fill new row with default values (reserved).
+		ObjectData  = New Structure("");
+		FillPropertyValues(ObjectData, Object);
+		For Each ObjectField In ObjectData Do
+			If Not ValueIsFilled(Item.CurrentData[ObjectField.Key]) Then
+				Item.CurrentData[ObjectField.Key] = ObjectField.Value;
+			EndIf;
+		EndDo;
+		
+		// Clear order data on duplicate row (reserved).
+		ClearFields  = New Structure("");
+		For Each ClearField In ClearFields Do
+			If Not ValueIsFilled(Item.CurrentData[ObjectField.Key]) Then
+				Item.CurrentData[ObjectField.Key] = Undefined;
+			EndIf;
+		EndDo;
+		
+		// Refresh totals cache.
+		RecalculateTotals();
+	EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure ResidualsBeforeAddRow(Item, Cancel, Clone, Parent, Folder)
+	
+	// Set new row flag.
+	If Not Cancel Then
+		IsNewRow = True;
+	EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure ResidualsOnEditEnd(Item, NewRow, CancelEdit)
+	
+	// Recalculation common item totals.
+	RecalculateTotals();
+	
+EndProcedure
+
+&AtClient
+Procedure ResidualsAfterDeleteRow(Item)
+	
+	// Recalculation common item totals.
 	RecalculateTotals();
 	
 EndProcedure
 
 //------------------------------------------------------------------------------
-// Tabular section LineItems columns controls event handlers.
+// Tabular section Services event handlers.
+
+&AtClient
+Procedure ServicesOnChange(Item)
+	
+	// Row was just added and became edited.
+	If IsNewRow Then
+		
+		// Clear used flag.
+		IsNewRow = False;
+		
+		// Fill new row with default values (reserved).
+		ObjectData  = New Structure("");
+		FillPropertyValues(ObjectData, Object);
+		For Each ObjectField In ObjectData Do
+			If Not ValueIsFilled(Item.CurrentData[ObjectField.Key]) Then
+				Item.CurrentData[ObjectField.Key] = ObjectField.Value;
+			EndIf;
+		EndDo;
+		
+		// Clear order data on duplicate row (reserved).
+		ClearFields  = New Structure("");
+		For Each ClearField In ClearFields Do
+			If Not ValueIsFilled(Item.CurrentData[ObjectField.Key]) Then
+				Item.CurrentData[ObjectField.Key] = Undefined;
+			EndIf;
+		EndDo;
+		
+		// Refresh totals cache.
+		RecalculateTotals();
+	EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure ServicesBeforeAddRow(Item, Cancel, Clone, Parent, Folder)
+	
+	// Set new row flag.
+	If Not Cancel Then
+		IsNewRow = True;
+	EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure ServicesOnEditEnd(Item, NewRow, CancelEdit)
+	
+	// Recalculation common item totals.
+	RecalculateTotals();
+	
+EndProcedure
+
+&AtClient
+Procedure ServicesAfterDeleteRow(Item)
+	
+	// Recalculation common item totals.
+	RecalculateTotals();
+	
+EndProcedure
+
+//------------------------------------------------------------------------------
+// Tabular sections LineItems and Residuals columns controls event handlers.
 
 &AtClient
 Procedure LineItemsProductOnChange(Item)
@@ -997,14 +1514,14 @@ Procedure LineItemsProductOnChange(Item)
 	FillPropertyValues(TableSectionRow, Items.LineItems.CurrentData);
 	
 	// Check added item.
-	If LineItemsProductCheckItem(TableSectionRow, MessageText) Then
+	If CommonProductCheckItem(TableSectionRow, MessageText) Then
 		// Item was checked successfully and all server filling accomplished.
 		
 		// Load processed data back.
 		FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
 		
 		// Refresh totals cache.
-		RecalculateTotals();
+		RecalculateResidualsAndTotals();
 	Else
 		// Inform user about wrong item.
 		CommonUseClientServer.MessageToUser(MessageText, Object, "Object.LineItems["+Format(TableSectionRow.LineNumber-1, "NG=")+"].Product");
@@ -1015,8 +1532,62 @@ Procedure LineItemsProductOnChange(Item)
 	
 EndProcedure
 
+&AtClient
+Procedure ResidualsProductOnChange(Item)
+	Var MessageText;
+	
+	// Fill line data for editing.
+	TableSectionRow = GetResidualsRowStructure();
+	FillPropertyValues(TableSectionRow, Items.ResidualsItems.CurrentData);
+	
+	// Check added item.
+	If CommonProductCheckItem(TableSectionRow, MessageText) Then
+		// Item was checked successfully and all server filling accomplished.
+		
+		// Load processed data back.
+		FillPropertyValues(Items.ResidualsItems.CurrentData, TableSectionRow);
+		
+		// Refresh totals cache.
+		RecalculateTotals();
+	Else
+		// Inform user about wrong item.
+		CommonUseClientServer.MessageToUser(MessageText, Object, "Object.Residuals["+Format(TableSectionRow.LineNumber-1, "NG=")+"].Product");
+		
+		// Clear selected item.
+		Items.ResidualsItems.CurrentData.Product = Undefined;
+	EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure ServicesProductOnChange(Item)
+	Var MessageText;
+	
+	// Fill line data for editing.
+	TableSectionRow = GetServicesRowStructure();
+	FillPropertyValues(TableSectionRow, Items.ServicesItems.CurrentData);
+	
+	// Check added item.
+	If CommonProductCheckItem(TableSectionRow, MessageText) Then
+		// Item was checked successfully and all server filling accomplished.
+		
+		// Load processed data back.
+		FillPropertyValues(Items.ServicesItems.CurrentData, TableSectionRow);
+		
+		// Refresh totals cache.
+		RecalculateTotals();
+	Else
+		// Inform user about wrong item.
+		CommonUseClientServer.MessageToUser(MessageText, Object, "Object.Services["+Format(TableSectionRow.LineNumber-1, "NG=")+"].Product");
+		
+		// Clear selected item.
+		Items.ServicesItems.CurrentData.Product = Undefined;
+	EndIf;
+	
+EndProcedure
+
 &AtServer
-Function LineItemsProductCheckItem(TableSectionRow, MessageText)
+Function CommonProductCheckItem(TableSectionRow, MessageText)
 	
 	// Check possibility of adding assembly to the items list.
 	If TableSectionRow.Product.Assembly Then
@@ -1040,7 +1611,7 @@ Function LineItemsProductCheckItem(TableSectionRow, MessageText)
 	EndIf;
 	
 	// Request server operation.
-	LineItemsProductOnChangeAtServer(TableSectionRow);
+	CommonProductOnChangeAtServer(TableSectionRow);
 	
 	// Operation successfully completed.
 	Return True;
@@ -1048,7 +1619,7 @@ Function LineItemsProductCheckItem(TableSectionRow, MessageText)
 EndFunction
 
 &AtServer
-Procedure LineItemsProductOnChangeAtServer(TableSectionRow)
+Procedure CommonProductOnChangeAtServer(TableSectionRow)
 	
 	// Request product properties.
 	ProductProperties = CommonUse.GetAttributeValues(TableSectionRow.Product, New Structure("Description, UnitSet"));
@@ -1056,15 +1627,26 @@ Procedure LineItemsProductOnChangeAtServer(TableSectionRow)
 	TableSectionRow.UnitSet            = ProductProperties.UnitSet;
 	TableSectionRow.Unit               = ProductProperties.UnitSet.DefaultPurchaseUnit;
 	TableSectionRow.PriceUnits         = Round(GeneralFunctions.ProductLastCost(TableSectionRow.Product) *
-	                                     ?(TableSectionRow.Unit.Factor > 0, TableSectionRow.Unit.Factor, 1), GeneralFunctionsReusable.PricePrecisionForOneItem(TableSectionRow.Product));
-										 
+	                                     ?(TableSectionRow.Unit.Factor > 0, TableSectionRow.Unit.Factor, 1),
+	                                     GeneralFunctionsReusable.PricePrecisionForOneItem(TableSectionRow.Product));
+	
 	// Assign default quantities.
 	TableSectionRow.QtyUnits      = 0;
-	TableSectionRow.WastePercent  = 0;
-	TableSectionRow.WasteQtyUnits = 0;
 	
 	// Calculate totals by line.
 	TableSectionRow.LineTotal     = 0;
+	
+	// Fill optional wastes.
+	If TableSectionRow.Property("WastePercent") Then
+		TableSectionRow.WastePercent  = 0;
+		TableSectionRow.WasteQtyUnits = 0;
+		TableSectionRow.WasteTotal    = 0;
+	EndIf;
+	
+	// Fill optional residuals.
+	If TableSectionRow.Property("Percent") Then
+		TableSectionRow.Percent = 0;
+	EndIf;
 	
 EndProcedure
 
@@ -1076,10 +1658,46 @@ Procedure LineItemsUnitOnChange(Item)
 	FillPropertyValues(TableSectionRow, Items.LineItems.CurrentData);
 	
 	// Request server operation.
-	LineItemsUnitOnChangeAtServer(TableSectionRow);
+	CommonUnitOnChangeAtServer(TableSectionRow);
 	
 	// Load processed data back.
 	FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
+	
+	// Refresh totals cache.
+	RecalculateResidualsAndTotals();
+	
+EndProcedure
+
+&AtClient
+Procedure ResidualsUnitOnChange(Item)
+	
+	// Fill line data for editing.
+	TableSectionRow = GetResidualsRowStructure();
+	FillPropertyValues(TableSectionRow, Items.ResidualsItems.CurrentData);
+	
+	// Request server operation.
+	CommonUnitOnChangeAtServer(TableSectionRow);
+	
+	// Load processed data back.
+	FillPropertyValues(Items.ResidualsItems.CurrentData, TableSectionRow);
+	
+	// Refresh totals cache.
+	RecalculateTotals();
+	
+EndProcedure
+
+&AtClient
+Procedure ServicesUnitOnChange(Item)
+	
+	// Fill line data for editing.
+	TableSectionRow = GetServicesRowStructure();
+	FillPropertyValues(TableSectionRow, Items.ServicesItems.CurrentData);
+	
+	// Request server operation.
+	CommonUnitOnChangeAtServer(TableSectionRow);
+	
+	// Load processed data back.
+	FillPropertyValues(Items.ServicesItems.CurrentData, TableSectionRow);
 	
 	// Refresh totals cache.
 	RecalculateTotals();
@@ -1087,14 +1705,28 @@ Procedure LineItemsUnitOnChange(Item)
 EndProcedure
 
 &AtServer
-Procedure LineItemsUnitOnChangeAtServer(TableSectionRow)
+Procedure CommonUnitOnChangeAtServer(TableSectionRow)
 	
 	// Calculate new unit price.
-	TableSectionRow.PriceUnits = Round(GeneralFunctions.ProductLastCost(TableSectionRow.Product) *
-	                             ?(TableSectionRow.Unit.Factor > 0, TableSectionRow.Unit.Factor, 1), GeneralFunctionsReusable.PricePrecisionForOneItem(TableSectionRow.Product));
+	If TableSectionRow.Property("Percent") Then
+		// Residuals
+		If Object.LineItems.Total("LineTotal") <= Object.LineItems.Total("WasteTotal") Then
+			TableSectionRow.Percent    = 0;
+			TableSectionRow.PriceUnits = 0;
+		Else
+			TableSectionRow.PriceUnits = Round(GeneralFunctions.ProductLastCost(TableSectionRow.Product) *
+			                             ?(TableSectionRow.Unit.Factor > 0, TableSectionRow.Unit.Factor, 1),
+			                             GeneralFunctionsReusable.PricePrecisionForOneItem(TableSectionRow.Product));
+		EndIf;
+	Else
+		// LineItems
+		TableSectionRow.PriceUnits = Round(GeneralFunctions.ProductLastCost(TableSectionRow.Product) *
+		                             ?(TableSectionRow.Unit.Factor > 0, TableSectionRow.Unit.Factor, 1),
+		                             GeneralFunctionsReusable.PricePrecisionForOneItem(TableSectionRow.Product));
+	EndIf;
 	
 	// Process settings changes.
-	LineItemsQuantityOnChangeAtServer(TableSectionRow);
+	CommonQuantityOnChangeAtServer(TableSectionRow);
 	
 EndProcedure
 
@@ -1106,10 +1738,46 @@ Procedure LineItemsQuantityOnChange(Item)
 	FillPropertyValues(TableSectionRow, Items.LineItems.CurrentData);
 	
 	// Request server operation.
-	LineItemsQuantityOnChangeAtServer(TableSectionRow);
+	CommonQuantityOnChangeAtServer(TableSectionRow);
 	
 	// Load processed data back.
 	FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
+	
+	// Refresh totals cache.
+	RecalculateResidualsAndTotals();
+	
+EndProcedure
+
+&AtClient
+Procedure ResidualsQuantityOnChange(Item)
+	
+	// Fill line data for editing.
+	TableSectionRow = GetResidualsRowStructure();
+	FillPropertyValues(TableSectionRow, Items.ResidualsItems.CurrentData);
+	
+	// Request server operation.
+	CommonQuantityOnChangeAtServer(TableSectionRow);
+	
+	// Load processed data back.
+	FillPropertyValues(Items.ResidualsItems.CurrentData, TableSectionRow);
+	
+	// Refresh totals cache.
+	RecalculateTotals();
+	
+EndProcedure
+
+&AtClient
+Procedure ServicesQuantityOnChange(Item)
+	
+	// Fill line data for editing.
+	TableSectionRow = GetServicesRowStructure();
+	FillPropertyValues(TableSectionRow, Items.ServicesItems.CurrentData);
+	
+	// Request server operation.
+	CommonQuantityOnChangeAtServer(TableSectionRow);
+	
+	// Load processed data back.
+	FillPropertyValues(Items.ServicesItems.CurrentData, TableSectionRow);
 	
 	// Refresh totals cache.
 	RecalculateTotals();
@@ -1117,13 +1785,15 @@ Procedure LineItemsQuantityOnChange(Item)
 EndProcedure
 
 &AtServer
-Procedure LineItemsQuantityOnChangeAtServer(TableSectionRow)
+Procedure CommonQuantityOnChangeAtServer(TableSectionRow)
 	
 	// Calculate total by line.
-	TableSectionRow.LineTotal = Round(Round(TableSectionRow.QtyUnits, QuantityPrecision) * Round(TableSectionRow.PriceUnits, GeneralFunctionsReusable.PricePrecisionForOneItem(TableSectionRow.Product)), 2);
+	TableSectionRow.LineTotal = Round(Round(TableSectionRow.QtyUnits, QuantityPrecision) *
+	                            Round(TableSectionRow.PriceUnits,
+	                            GeneralFunctionsReusable.PricePrecisionForOneItem(TableSectionRow.Product)), 2);
 	
 	// Process settings changes.
-	LineItemsLineTotalOnChangeAtServer(TableSectionRow);
+	CommonLineTotalOnChangeAtServer(TableSectionRow);
 	
 EndProcedure
 
@@ -1135,10 +1805,46 @@ Procedure LineItemsPriceOnChange(Item)
 	FillPropertyValues(TableSectionRow, Items.LineItems.CurrentData);
 	
 	// Request server operation.
-	LineItemsPriceOnChangeAtServer(TableSectionRow);
+	CommonPriceOnChangeAtServer(TableSectionRow);
 	
 	// Load processed data back.
 	FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
+	
+	// Refresh totals cache.
+	RecalculateResidualsAndTotals();
+	
+EndProcedure
+
+&AtClient
+Procedure ResidualsPriceOnChange(Item)
+	
+	// Fill line data for editing.
+	TableSectionRow = GetResidualsRowStructure();
+	FillPropertyValues(TableSectionRow, Items.ResidualsItems.CurrentData);
+	
+	// Request server operation.
+	CommonPriceOnChangeAtServer(TableSectionRow);
+	
+	// Load processed data back.
+	FillPropertyValues(Items.ResidualsItems.CurrentData, TableSectionRow);
+	
+	// Refresh totals cache.
+	RecalculateTotals();
+	
+EndProcedure
+
+&AtClient
+Procedure ServicesPriceOnChange(Item)
+	
+	// Fill line data for editing.
+	TableSectionRow = GetServicesRowStructure();
+	FillPropertyValues(TableSectionRow, Items.ServicesItems.CurrentData);
+	
+	// Request server operation.
+	CommonPriceOnChangeAtServer(TableSectionRow);
+	
+	// Load processed data back.
+	FillPropertyValues(Items.ServicesItems.CurrentData, TableSectionRow);
 	
 	// Refresh totals cache.
 	RecalculateTotals();
@@ -1146,16 +1852,17 @@ Procedure LineItemsPriceOnChange(Item)
 EndProcedure
 
 &AtServer
-Procedure LineItemsPriceOnChangeAtServer(TableSectionRow)
+Procedure CommonPriceOnChangeAtServer(TableSectionRow)
 	
-	// Rounds price of product. 
+	// Rounds price of product.
 	TableSectionRow.PriceUnits = Round(TableSectionRow.PriceUnits, GeneralFunctionsReusable.PricePrecisionForOneItem(TableSectionRow.Product));
 	
 	// Calculate total by line.
-	TableSectionRow.LineTotal = Round(Round(TableSectionRow.QtyUnits, QuantityPrecision) * TableSectionRow.PriceUnits, 2);
+	TableSectionRow.LineTotal  = Round(Round(TableSectionRow.QtyUnits, QuantityPrecision) *
+	                             TableSectionRow.PriceUnits, 2);
 	
 	// Process settings changes.
-	LineItemsLineTotalOnChangeAtServer(TableSectionRow);
+	CommonLineTotalOnChangeAtServer(TableSectionRow);
 	
 EndProcedure
 
@@ -1167,14 +1874,61 @@ Procedure LineItemsLineTotalOnChange(Item)
 	FillPropertyValues(TableSectionRow, Items.LineItems.CurrentData);
 	
 	// Request server operation.
-	LineItemsLineTotalOnChangeAtServer(TableSectionRow);
+	CommonLineTotalOnChangeAtServer(TableSectionRow);
 	
-	// Back-step price calculation with totals priority.
-	TableSectionRow.PriceUnits = ?(TableSectionRow.QtyUnits > 0,
-	                             Round(TableSectionRow.LineTotal / Round(TableSectionRow.QtyUnits, QuantityPrecision), GeneralFunctionsReusable.PricePrecisionForOneItem(TableSectionRow.Product)), 0);
+	// Back-step price calculation with totals priority (interactive change only).
+	TableSectionRow.PriceUnits = ?(Round(TableSectionRow.QtyUnits, QuantityPrecision) > 0,
+	                             Round(TableSectionRow.LineTotal / Round(TableSectionRow.QtyUnits, QuantityPrecision),
+	                             GeneralFunctionsReusable.PricePrecisionForOneItem(TableSectionRow.Product)), 0);
 	
 	// Load processed data back.
 	FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
+	
+	// Refresh totals cache.
+	RecalculateResidualsAndTotals();
+	
+EndProcedure
+
+&AtClient
+Procedure ResidualsLineTotalOnChange(Item)
+	
+	// Fill line data for editing.
+	TableSectionRow = GetResidualsRowStructure();
+	FillPropertyValues(TableSectionRow, Items.ResidualsItems.CurrentData);
+	
+	// Request server operation.
+	CommonLineTotalOnChangeAtServer(TableSectionRow);
+	
+	// Back-step price calculation with totals priority (interactive change only).
+	TableSectionRow.PriceUnits = ?(Round(TableSectionRow.QtyUnits, QuantityPrecision) > 0,
+	                               Round(TableSectionRow.LineTotal / Round(TableSectionRow.QtyUnits, QuantityPrecision),
+	                               GeneralFunctionsReusable.PricePrecisionForOneItem(TableSectionRow.Product)), 0);
+	
+	// Load processed data back.
+	FillPropertyValues(Items.ResidualsItems.CurrentData, TableSectionRow);
+	
+	// Refresh totals cache.
+	RecalculateTotals();
+	
+EndProcedure
+
+&AtClient
+Procedure ServicesLineTotalOnChange(Item)
+	
+	// Fill line data for editing.
+	TableSectionRow = GetServicesRowStructure();
+	FillPropertyValues(TableSectionRow, Items.ServicesItems.CurrentData);
+	
+	// Request server operation.
+	CommonLineTotalOnChangeAtServer(TableSectionRow);
+	
+	// Back-step price calculation with totals priority (interactive change only).
+	TableSectionRow.PriceUnits = ?(Round(TableSectionRow.QtyUnits, QuantityPrecision) > 0,
+	                               Round(TableSectionRow.LineTotal / Round(TableSectionRow.QtyUnits, QuantityPrecision),
+	                               GeneralFunctionsReusable.PricePrecisionForOneItem(TableSectionRow.Product)), 0);
+	
+	// Load processed data back.
+	FillPropertyValues(Items.ServicesItems.CurrentData, TableSectionRow);
 	
 	// Refresh totals cache.
 	RecalculateTotals();
@@ -1182,9 +1936,25 @@ Procedure LineItemsLineTotalOnChange(Item)
 EndProcedure
 
 &AtServer
-Procedure LineItemsLineTotalOnChangeAtServer(TableSectionRow)
+Procedure CommonLineTotalOnChangeAtServer(TableSectionRow)
 	
-	// Reserved for future use.
+	// Calculation of residuals percent.
+	If TableSectionRow.Property("Percent") Then
+		TableSectionRow.Percent = ?((Object.LineItems.Total("LineTotal") - Object.LineItems.Total("WasteTotal")) > 0,
+		                             Round(TableSectionRow.LineTotal * 100 /
+		                            (Object.LineItems.Total("LineTotal") - Object.LineItems.Total("WasteTotal")), 2), 0);
+		
+		// Update total cost if residuals took 0% of final assembly cost.
+		If TableSectionRow.Percent = 0 Then
+			TableSectionRow.PriceUnits = 0;
+			TableSectionRow.LineTotal  = 0;
+		EndIf;
+	EndIf;
+	
+	// Process settings changes.
+	If TableSectionRow.Property("WastePercent") Then
+		LineItemsWastePercentOnChangeAtServer(TableSectionRow);
+	EndIf;
 	
 EndProcedure
 
@@ -1202,7 +1972,7 @@ Procedure LineItemsWastePercentOnChange(Item)
 	FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
 	
 	// Refresh totals cache.
-	RecalculateTotals();
+	RecalculateResidualsAndTotals();
 	
 EndProcedure
 
@@ -1210,40 +1980,83 @@ EndProcedure
 Procedure LineItemsWastePercentOnChangeAtServer(TableSectionRow)
 	
 	// Calculate waste qty by line.
-	TableSectionRow.WasteQtyUnits = Round(Round(TableSectionRow.QtyUnits, QuantityPrecision) * TableSectionRow.WastePercent / 100, QuantityPrecision);
+	TableSectionRow.WasteQtyUnits = Round(Round(TableSectionRow.QtyUnits, QuantityPrecision) *
+	                                TableSectionRow.WastePercent / 100, QuantityPrecision);
+	
+	// Process settings changes.
+	LineItemsWasteQuantityOnChangeAtServer(TableSectionRow);
 	
 EndProcedure
 
 &AtClient
-Procedure LineItemsWasteQtyUnitsOnChange(Item)
+Procedure ResidualsPercentOnChange(Item)
 	
 	// Fill line data for editing.
-	TableSectionRow = GetLineItemsRowStructure();
-	FillPropertyValues(TableSectionRow, Items.LineItems.CurrentData);
+	TableSectionRow = GetResidualsRowStructure();
+	FillPropertyValues(TableSectionRow, Items.ResidualsItems.CurrentData);
 	
-	// Request server operation.
-	LineItemsWasteQtyUnitsOnChangeAtServer(TableSectionRow);
+	// Drop residuals percent if assembly cost is zero.
+	If Object.LineItems.Total("LineTotal") <= Object.LineItems.Total("WasteTotal") Then
+		TableSectionRow.Percent = 0;
+	EndIf;
+	
+	// Back calculation of product cost and total.
+	TableSectionRow.LineTotal  = ?(Round(TableSectionRow.QtyUnits, QuantityPrecision) > 0,
+	                               Round((Object.LineItems.Total("LineTotal") - Object.LineItems.Total("WasteTotal")) *
+	                                     TableSectionRow.Percent / 100, 2), 0);
+	TableSectionRow.PriceUnits = ?(Round(TableSectionRow.QtyUnits, QuantityPrecision) > 0,
+	                               Round(TableSectionRow.LineTotal / Round(TableSectionRow.QtyUnits, QuantityPrecision),
+	                               GeneralFunctionsReusable.PricePrecisionForOneItem(TableSectionRow.Product)), 0);
 	
 	// Load processed data back.
-	FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
+	FillPropertyValues(Items.ResidualsItems.CurrentData, TableSectionRow);
 	
 	// Refresh totals cache.
 	RecalculateTotals();
 	
 EndProcedure
 
-&AtServer
-Procedure LineItemsWasteQtyUnitsOnChangeAtServer(TableSectionRow)
+&AtClient
+Procedure LineItemsWasteQuantityOnChange(Item)
 	
-	// Calculate total by line.
-	If TableSectionRow.WasteQtyUnits <= TableSectionRow.QtyUnits Then
-		TableSectionRow.WastePercent = ?(Round(TableSectionRow.QtyUnits, QuantityPrecision) > 0,
-		                                 Round(TableSectionRow.WasteQtyUnits * 100 / Round(TableSectionRow.QtyUnits, QuantityPrecision), QuantityPrecision),
-		                                 0);
+	// Fill line data for editing.
+	TableSectionRow = GetLineItemsRowStructure();
+	FillPropertyValues(TableSectionRow, Items.LineItems.CurrentData);
+	
+	// Back-step percent calculation with quantity priority (interactive change only).
+	If TableSectionRow.QtyUnits = 0 Then
+		// Base quantity is zeroed.
+		TableSectionRow.WasteQtyUnits = 0;
+		TableSectionRow.WastePercent  = 0;
+		
+	ElsIf TableSectionRow.WasteQtyUnits < TableSectionRow.QtyUnits Then
+		// Normal percent calculation.
+		TableSectionRow.WastePercent =  Round(TableSectionRow.WasteQtyUnits * 100 /
+		                                Round(TableSectionRow.QtyUnits, QuantityPrecision), QuantityPrecision);
 	Else
+		// Wastes are 100%.
 		TableSectionRow.WasteQtyUnits = TableSectionRow.QtyUnits;
 		TableSectionRow.WastePercent  = 100;
 	EndIf;
+	
+	// Request server operation.
+	LineItemsWasteQuantityOnChangeAtServer(TableSectionRow);
+	
+	// Load processed data back.
+	FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
+	
+	// Refresh totals cache.
+	RecalculateResidualsAndTotals();
+	
+EndProcedure
+
+&AtServer
+Procedure LineItemsWasteQuantityOnChangeAtServer(TableSectionRow)
+	
+	// Calculate waste total by line.
+	TableSectionRow.WasteTotal = Round(Round(TableSectionRow.WasteQtyUnits, QuantityPrecision) *
+	                             Round(TableSectionRow.PriceUnits,
+	                             GeneralFunctionsReusable.PricePrecisionForOneItem(TableSectionRow.Product)), 2);
 	
 EndProcedure
 
@@ -1256,10 +2069,33 @@ EndProcedure
 // Calculate totals and fill object attributes.
 
 &AtClient
+// The procedure recalculates the document's totals.
 Procedure RecalculateTotals()
 	
 	// Assign totals to the object fields.
 	// Reserved for future use.
+	
+EndProcedure
+
+&AtClient
+// The procedure recalculates the document's totals.
+Procedure RecalculateResidualsAndTotals()
+	
+	// Calculate document totals.
+	LineSubtotal  = Object.LineItems.Total("LineTotal");
+	WasteSubtotal = Object.LineItems.Total("WasteTotal");
+	
+	// Recalculate residuals cost basing on changed assembly cost.
+	For Each Row In Object.Residuals Do
+		If LineSubtotal <= WasteSubtotal Then
+			Row.Percent    = 0;
+		EndIf;
+		Row.LineTotal  = ?(Round(Row.QtyUnits, QuantityPrecision) > 0,
+		                   Round((LineSubtotal - WasteSubtotal) * Row.Percent / 100, 2), 0);
+		Row.PriceUnits = ?(Round(Row.QtyUnits, QuantityPrecision) > 0,
+		                   Round(Row.LineTotal / Round(Row.QtyUnits, QuantityPrecision),
+		                   GeneralFunctionsReusable.PricePrecisionForOneItem(Row.Product)), 0);
+	EndDo;
 	
 EndProcedure
 
@@ -1271,19 +2107,37 @@ EndProcedure
 Function GetLineItemsRowStructure()
 	
 	// Define control row fields.
-	Return New Structure("LineNumber, Product, ProductDescription, UnitSet, QtyUnits, Unit, PriceUnits, LineTotal, WastePercent, WasteQtyUnits");
+	Return New Structure("LineNumber, Product, ProductDescription, UnitSet, QtyUnits, Unit, PriceUnits, LineTotal, WastePercent, WasteQtyUnits, WasteTotal");
 	
 EndFunction
 
-&AtServerNoContext 
+&AtClient
+// Returns fields structure of Residuals form control.
+Function GetResidualsRowStructure()
+	
+	// Define control row fields.
+	Return New Structure("LineNumber, Product, ProductDescription, UnitSet, QtyUnits, Unit, Percent, PriceUnits, LineTotal");
+	
+EndFunction
+
+&AtClient
+// Returns fields structure of Services form control.
+Function GetServicesRowStructure()
+	
+	// Define control row fields.
+	Return New Structure("LineNumber, Product, ProductDescription, UnitSet, QtyUnits, Unit, PriceUnits, LineTotal");
+	
+EndFunction
+
+&AtServerNoContext
 Function GetInfPricePrecision(Item)
 	
 	Return New Structure("Constant, Item", Constants.PricePrecision.Get(), Item.PricePrecision);
 	
 EndFunction
 
-// Update prices presentation.
 &AtServer
+// Update prices presentation.
 Procedure UpdatePricesPresentation()
 	
 	PriceFormat = GeneralFunctionsReusable.PriceFormatForOneItem(Object.Ref);
@@ -1293,5 +2147,55 @@ Procedure UpdatePricesPresentation()
 	Items.AccountingCost.EditFormat  = PriceFormat;
 	
 EndProcedure
+
+&AtServerNoContext
+// Request owned lots/serial numbers presence.
+Function HasDescendants(Ref)
+	
+	// Select lots and serial numbers of current item.
+	QueryText = "
+	|SELECT
+	|	CASE WHEN Products.UseLotsType = 1
+	|		 THEN Products.Characteristic
+	|		 ELSE Products.Ref
+	|	END AS Ref
+	|INTO
+	|	LotsOwner
+	|FROM
+	|	Catalog.Products AS Products
+	|WHERE
+	|	 Products.Ref = &Ref           // Current item
+	|AND Products.HasLotsSerialNumbers // Use Lots or Serial numbers
+	|AND Products.UseLots = 0;         // Use Lots
+	|////////////////////////////////////////////////////////////////////////////
+	|
+	|SELECT TOP 1
+	|	Lots.Ref AS LotSerialNumber
+	|FROM
+	|	Catalog.Lots AS Lots
+	|	INNER JOIN LotsOwner AS LotsOwner
+	|		ON Lots.Owner = LotsOwner.Ref
+	|
+	|UNION ALL
+	|
+	|SELECT TOP 1
+	|	SerialNumbers.SerialNumber AS LotSerialNumber
+	|FROM
+	|	InformationRegister.SerialNumbers AS SerialNumbers
+	|WHERE
+	|	 SerialNumbers.Product = &Ref               // Current item
+	|AND SerialNumbers.Product.HasLotsSerialNumbers // Use Lots or Serial numbers
+	|AND SerialNumbers.Product.UseLots = 1          // Use Serial mumbers";
+	
+	// Create the data query.
+	Query = New Query;
+	Query.TempTablesManager = New TempTablesManager;
+	Query.Text = QueryText;
+	Query.SetParameter("Ref", Ref);
+	
+	// If found at least one owned item, then item has descendants.
+	Return Not Query.ExecuteBatch()[1].IsEmpty();
+	
+EndFunction
 
 #EndRegion

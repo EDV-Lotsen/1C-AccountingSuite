@@ -11,6 +11,11 @@
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
+	//If IsInRole("BankAccounting") Then
+	//	Cancel = True;
+	//	return;
+	//EndIf;
+	
 	If Object.Ref.IsEmpty() Then
 		Object.BankAccount = Constants.BankAccount.Get();
 		Object.Date = CurrentDate();
@@ -132,7 +137,28 @@ Procedure OnReadAtServer(CurrentObject)
 	                  |			END)
 	                  |
 	                  |ORDER BY
-	                  |	UnreconciledTransactions.Date");
+	                  |	UnreconciledTransactions.Date
+	                  |;
+	                  |
+	                  |////////////////////////////////////////////////////////////////////////////////
+	                  |SELECT ALLOWED
+	                  |	BankReconciliation.BeginningBalance,
+	                  |	BankReconciliation.payments,
+	                  |	BankReconciliation.deposits,
+	                  |	BankReconciliation.EndingBalance
+	                  |FROM
+	                  |	(SELECT
+	                  |		MAX(BankReconciliation.Date) AS Date
+	                  |	FROM
+	                  |		Document.BankReconciliation AS BankReconciliation
+	                  |	WHERE
+	                  |		BankReconciliation.BankAccount = &BankAccount
+	                  |		AND BankReconciliation.Posted = TRUE
+	                  |		AND BankReconciliation.Date < BEGINOFPERIOD(&EndOfStatementDate, MONTH)) AS LatestReconcilliation
+	                  |		INNER JOIN Document.BankReconciliation AS BankReconciliation
+	                  |		ON LatestReconcilliation.Date = BankReconciliation.Date
+	                  |			AND (BankReconciliation.BankAccount = &BankAccount)
+	                  |			AND (BankReconciliation.Posted)");
 					  
 	Query.SetParameter("Ref", Object.Ref);
 	Query.SetParameter("BoundaryEndOfStatementDate", New Boundary(EndOfDay(Object.Date), BoundaryType.Including));
@@ -140,8 +166,16 @@ Procedure OnReadAtServer(CurrentObject)
 	Query.SetParameter("BankAccount", Object.BankAccount);
 	Query.SetParameter("ThisDocument", Object.Ref);
 	
-	VTResult = Query.Execute().Unload();	
+	BatchResult = Query.ExecuteBatch();
+	VTResult = BatchResult[2].Unload();	
 	LineItems.Load(VTResult);
+	
+	BankBalancesPreviousPeriod = BatchResult[3].Unload();
+	If BankBalancesPreviousPeriod.Count() > 0 Then
+		If BankBalancesPreviousPeriod[0].EndingBalance <> Object.BeginningBalance Then
+			CommonUseClientServer.MessageToUser("Beginning Balance doesn't equal Ending Balance (" + Format(BankBalancesPreviousPeriod[0].EndingBalance, "NFD=2; NZ=") + ") of the prior period", Object, "Object.BeginningBalance");
+		EndIf;
+	EndIf;
 
 	//Calculate cleared amount
 	Object.ClearedAmount = 0;

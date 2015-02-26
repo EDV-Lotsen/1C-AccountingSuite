@@ -1,4 +1,508 @@
-﻿Function inoutCompaniesCreate(jsonin) Export
+﻿Function inoutVendor1099(jsonin) Export
+	
+	ParsedJSON = InternetConnectionClientServer.DecodeJSON(jsonin);
+	Try 
+		mode = Number(ParsedJSON.mode);
+	Except
+		mode = 1;
+	EndTry;
+	
+	If mode <> 1 AND mode <> 2 AND mode <> 3 Then  //1 - 1099 vendors that meet threshold
+		mode = 1;               				 //2 - 1099 below threshold
+	EndIf;										//3 - Non-1099 vendors
+ 	
+	Try 
+		year = Number(ParsedJSON.year);
+	Except
+		errorMessage = New Map();
+		strMessage = "[tax_year] : please enter a year";
+		errorMessage.Insert("message", strMessage);
+		errorMessage.Insert("status", "error"); 
+		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+		return errorJSON;
+	EndTry;
+	
+	If year = 2013 Then
+		start = '20130101';
+		end = '20131231';
+	Elsif year = 2014 Then
+		start = '20140101';
+		end = '20141231';
+	Else
+		errorMessage = New Map();
+		strMessage = "[tax_year] : out of accepted range";
+		errorMessage.Insert("message", strMessage);
+		errorMessage.Insert("status", "error"); 
+		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+		return errorJSON;
+	EndIf;
+	
+	ReportMap = New Map();
+	ReportMap.Insert("report", "Vendors 1099");
+		
+	VendorList = New Query("SELECT
+	                      |	Categories.Ref AS Ref,
+	                      |	Categories.Threshold AS Threshold,
+	                      |	CASE
+	                      |		WHEN Categories.AmountSign
+	                      |			THEN -1
+	                      |		ELSE 1
+	                      |	END AS AmountSign
+	                      |INTO Categories
+	                      |FROM
+	                      |	Catalog.USTaxCategories1099 AS Categories
+	                      |;
+	                      |
+	                      |////////////////////////////////////////////////////////////////////////////////
+	                      |SELECT
+	                      |	CashFlowData.Account.Category1099 AS Category,
+	                      |	CashFlowData.Company AS Vendor,
+	                      |	Categories.Threshold AS Threshold,
+	                      |	SUM(Categories.AmountSign * CashFlowData.AmountRC) AS Turnover
+	                      |INTO Turnovers
+	                      |FROM
+	                      |	AccumulationRegister.CashFlowData AS CashFlowData
+	                      |		LEFT JOIN Categories AS Categories
+	                      |		ON CashFlowData.Account.Category1099 = Categories.Ref
+	                      |WHERE
+	                      |	CashFlowData.Period >= &BeginOfPeriod
+	                      |	AND CashFlowData.Period <= &EndOfPeriod
+	                      |	AND NOT CashFlowData.Account.Category1099 = VALUE(Catalog.USTaxCategories1099.EmptyRef)
+	                      |	AND CashFlowData.RecordType = VALUE(AccumulationRecordType.Expense)
+	                      |	AND CashFlowData.PaymentMethod.ExcludeFrom1099 = FALSE
+	                      |
+	                      |GROUP BY
+	                      |	CashFlowData.Account.Category1099,
+	                      |	CashFlowData.Company,
+	                      |	Categories.Threshold
+	                      |;
+	                      |
+	                      |////////////////////////////////////////////////////////////////////////////////
+	                      |SELECT
+	                      |	Turnovers.Vendor AS Vendor,
+	                      |	MAX(Turnovers.Turnover - Turnovers.Threshold) AS ThresholdOvercome
+	                      |INTO VendorStatuses
+	                      |FROM
+	                      |	Turnovers AS Turnovers
+	                      |
+	                      |GROUP BY
+	                      |	Turnovers.Vendor
+	                      |;
+	                      |
+	                      |////////////////////////////////////////////////////////////////////////////////
+	                      |SELECT
+	                      |	CashFlowData.Account.Category1099 AS Category,
+	                      |	CashFlowData.Company AS Vendor,
+	                      |	CashFlowData.Document AS Document,
+	                      |	CashFlowData.PaymentMethod.ExcludeFrom1099 AS PaymentExcluded,
+	                      |	CASE
+	                      |		WHEN Turnovers.Turnover - Turnovers.Threshold IS NULL 
+	                      |			THEN FALSE
+	                      |		WHEN Turnovers.Turnover - Turnovers.Threshold >= 0
+	                      |			THEN TRUE
+	                      |		ELSE FALSE
+	                      |	END AS ExceedsThreshold,
+	                      |	Categories.AmountSign * CashFlowData.AmountRC AS Amount
+	                      |INTO Amounts
+	                      |FROM
+	                      |	AccumulationRegister.CashFlowData AS CashFlowData
+	                      |		LEFT JOIN VendorStatuses AS VendorStatuses
+	                      |		ON (VendorStatuses.Vendor = CashFlowData.Company)
+	                      |		LEFT JOIN Turnovers AS Turnovers
+	                      |		ON (Turnovers.Category = CashFlowData.Account.Category1099)
+	                      |			AND (Turnovers.Vendor = CashFlowData.Company)
+	                      |		LEFT JOIN Categories AS Categories
+	                      |		ON (Categories.Ref = CashFlowData.Account.Category1099)
+	                      |WHERE
+	                      |	CashFlowData.Period >= &BeginOfPeriod
+	                      |	AND CashFlowData.Period <= &EndOfPeriod
+	                      |	AND NOT CashFlowData.Account.Category1099 = VALUE(Catalog.USTaxCategories1099.EmptyRef)
+	                      |	AND CashFlowData.RecordType = VALUE(AccumulationRecordType.Expense)
+	                      |	AND CASE
+	                      |			WHEN NOT CashFlowData.Company.Vendor1099
+	                      |				THEN 3
+	                      |			WHEN VendorStatuses.ThresholdOvercome >= 0
+	                      |				THEN 1
+	                      |			ELSE 2
+	                      |		END = &Mode
+	                      |;
+	                      |
+	                      |////////////////////////////////////////////////////////////////////////////////
+	                      |SELECT
+	                      |	TRUE AS PaymentExcluded
+	                      |INTO PaymentStatuses
+	                      |
+	                      |UNION ALL
+	                      |
+	                      |SELECT
+	                      |	FALSE
+	                      |;
+	                      |
+	                      |////////////////////////////////////////////////////////////////////////////////
+	                      |SELECT DISTINCT
+	                      |	Vendors.Ref AS Ref,
+	                      |	Vendors.Description AS Name,
+	                      |	Vendors.FederalIDType AS FederalIdType,
+	                      |	Vendors.FederalIDType.Order + 1 AS FederalIdTypeNo,
+	                      |	Vendors.USTaxID AS FederalIdNo,
+	                      |	Vendors.FullName AS FullName,
+	                      |	Addresses.AddressLine1 + CASE
+	                      |		WHEN Addresses.AddressLine2 = """"
+	                      |			THEN """"
+	                      |		ELSE "", "" + Addresses.AddressLine2
+	                      |	END + CASE
+	                      |		WHEN Addresses.AddressLine3 = """"
+	                      |			THEN """"
+	                      |		ELSE "", "" + Addresses.AddressLine3
+	                      |	END AS Address,
+	                      |	Addresses.City AS City,
+	                      |	Addresses.State AS State,
+	                      |	Addresses.State.Code AS StateCode,
+	                      |	Addresses.ZIP AS Zip,
+	                      |	Addresses.Email AS Email
+	                      |INTO Vendors
+	                      |FROM
+	                      |	Amounts AS Amounts
+	                      |		LEFT JOIN Catalog.Companies AS Vendors
+	                      |		ON (Vendors.Ref = Amounts.Vendor)
+	                      |		LEFT JOIN Catalog.Addresses AS Addresses
+	                      |		ON (Addresses.Owner = Vendors.Ref)
+	                      |			AND (Addresses.DefaultBilling)
+	                      |;
+	                      |
+	                      |////////////////////////////////////////////////////////////////////////////////
+	                      |SELECT DISTINCT
+	                      |	Vendors.Ref AS Vendor
+	                      |{SELECT
+	                      |	Amounts.Category.*,
+	                      |	Vendor.*,
+	                      |	Amounts.Document.*,
+	                      |	Amounts.Amount}
+	                      |FROM
+	                      |	Catalog.USTaxCategories1099 AS Boxes
+	                      |		LEFT JOIN PaymentStatuses AS PaymentStatuses
+	                      |		ON (TRUE)
+	                      |		LEFT JOIN Amounts AS Amounts
+	                      |		ON (Amounts.Category = Boxes.Ref)
+	                      |			AND (Amounts.PaymentExcluded = PaymentStatuses.PaymentExcluded)
+	                      |		LEFT JOIN Vendors AS Vendors
+	                      |		ON (Vendors.Ref = Amounts.Vendor)
+	                      |WHERE
+	                      |	Vendors.Ref <> &Ref
+	                      |{WHERE
+	                      |	Boxes.Ref.* AS Category,
+	                      |	Amounts.Vendor.* AS Vendor,
+	                      |	Amounts.Document.* AS Document,
+	                      |	Amounts.Amount AS Amount}");
+						  					  	
+	VendorList.SetParameter("BeginOfPeriod", start);
+	VendorList.SetParameter("EndOfPeriod", end );
+	VendorList.SetParameter("Mode", mode);
+	VendorList.SetParameter("Ref",Catalogs.Companies.EmptyRef()); 
+	VendorResults = VendorList.Execute().Unload();
+	
+	DataMap = New Map();
+	DataMap.Insert("tax_year", year);
+	If mode = 1 Then
+		modestring = "1099 vendors that meet threshold";
+	ElsIf mode = 2 Then
+		modestring = "1099 below threshold";
+	ElsIf mode = 3 Then
+		modestring = "Non-1099 vendors";
+	Else
+		modestring = "nomode";
+	EndIf;
+	
+	DataMap.Insert("show", modestring);
+	
+	VendorArray = New Array();
+	
+	OverallTotal = 0;
+	
+	For each vendor in VendorResults Do
+		
+		VendorRef = vendor.Vendor;
+		VendorMap = New Map();
+		VendorMap.Insert("vendor", String(VendorRef));
+		VendorMap.Insert("federal_id_type",String(VendorRef.FederalIDType));
+		VendorMap.Insert("federal_id_num", VendorRef.USTaxID);
+		VendorMap.Insert("secondary_name",VendorRef.FullName);
+		AddrQuery = New Query("SELECT
+		                      |	Addresses.Ref
+		                      |FROM
+		                      |	Catalog.Addresses AS Addresses
+		                      |WHERE
+		                      |	Addresses.Owner = &Owner
+		                      |	AND Addresses.DefaultBilling = TRUE");
+		AddrQuery.SetParameter("Owner", VendorRef);
+		AddrResult = AddrQuery.Execute().Unload();
+		
+		VendorMap.Insert("address", AddrResult[0].Ref.AddressLine1);
+		VendorMap.Insert("city", AddrResult[0].Ref.City);
+		VendorMap.Insert("state", AddrResult[0].Ref.State);
+		VendorMap.Insert("zip", AddrResult[0].Ref.ZIP);
+		VendorMap.Insert("email", AddrResult[0].Ref.Email);
+		
+		BoxList = New Query("SELECT
+		                    |	Categories.Ref AS Ref,
+		                    |	Categories.Threshold AS Threshold,
+		                    |	CASE
+		                    |		WHEN Categories.AmountSign
+		                    |			THEN -1
+		                    |		ELSE 1
+		                    |	END AS AmountSign
+		                    |INTO Categories
+		                    |FROM
+		                    |	Catalog.USTaxCategories1099 AS Categories
+		                    |;
+		                    |
+		                    |////////////////////////////////////////////////////////////////////////////////
+		                    |SELECT
+		                    |	CashFlowData.Account.Category1099 AS Category,
+		                    |	CashFlowData.Company AS Vendor,
+		                    |	Categories.Threshold AS Threshold,
+		                    |	SUM(Categories.AmountSign * CashFlowData.AmountRC) AS Turnover
+		                    |INTO Turnovers
+		                    |FROM
+		                    |	AccumulationRegister.CashFlowData AS CashFlowData
+		                    |		LEFT JOIN Categories AS Categories
+		                    |		ON CashFlowData.Account.Category1099 = Categories.Ref
+		                    |WHERE
+		                    |	CashFlowData.Period >= &BeginOfPeriod
+		                    |	AND CashFlowData.Period <= &EndOfPeriod
+		                    |	AND NOT CashFlowData.Account.Category1099 = VALUE(Catalog.USTaxCategories1099.EmptyRef)
+		                    |	AND CashFlowData.RecordType = VALUE(AccumulationRecordType.Expense)
+		                    |	AND CashFlowData.PaymentMethod.ExcludeFrom1099 = FALSE
+		                    |
+		                    |GROUP BY
+		                    |	CashFlowData.Account.Category1099,
+		                    |	CashFlowData.Company,
+		                    |	Categories.Threshold
+		                    |;
+		                    |
+		                    |////////////////////////////////////////////////////////////////////////////////
+		                    |SELECT
+		                    |	Turnovers.Vendor AS Vendor,
+		                    |	MAX(Turnovers.Turnover - Turnovers.Threshold) AS ThresholdOvercome
+		                    |INTO VendorStatuses
+		                    |FROM
+		                    |	Turnovers AS Turnovers
+		                    |
+		                    |GROUP BY
+		                    |	Turnovers.Vendor
+		                    |;
+		                    |
+		                    |////////////////////////////////////////////////////////////////////////////////
+		                    |SELECT
+		                    |	CashFlowData.Account.Category1099 AS Category,
+		                    |	CashFlowData.Company AS Vendor,
+		                    |	CashFlowData.Document AS Document,
+		                    |	CashFlowData.PaymentMethod.ExcludeFrom1099 AS PaymentExcluded,
+		                    |	CASE
+		                    |		WHEN Turnovers.Turnover - Turnovers.Threshold IS NULL 
+		                    |			THEN FALSE
+		                    |		WHEN Turnovers.Turnover - Turnovers.Threshold >= 0
+		                    |			THEN TRUE
+		                    |		ELSE FALSE
+		                    |	END AS ExceedsThreshold,
+		                    |	Categories.AmountSign * CashFlowData.AmountRC AS Amount
+		                    |INTO Amounts
+		                    |FROM
+		                    |	AccumulationRegister.CashFlowData AS CashFlowData
+		                    |		LEFT JOIN VendorStatuses AS VendorStatuses
+		                    |		ON (VendorStatuses.Vendor = CashFlowData.Company)
+		                    |		LEFT JOIN Turnovers AS Turnovers
+		                    |		ON (Turnovers.Category = CashFlowData.Account.Category1099)
+		                    |			AND (Turnovers.Vendor = CashFlowData.Company)
+		                    |		LEFT JOIN Categories AS Categories
+		                    |		ON (Categories.Ref = CashFlowData.Account.Category1099)
+		                    |WHERE
+		                    |	CashFlowData.Period >= &BeginOfPeriod
+		                    |	AND CashFlowData.Period <= &EndOfPeriod
+		                    |	AND NOT CashFlowData.Account.Category1099 = VALUE(Catalog.USTaxCategories1099.EmptyRef)
+		                    |	AND CashFlowData.RecordType = VALUE(AccumulationRecordType.Expense)
+		                    |	AND CASE
+		                    |			WHEN NOT CashFlowData.Company.Vendor1099
+		                    |				THEN 3
+		                    |			WHEN VendorStatuses.ThresholdOvercome >= 0
+		                    |				THEN 1
+		                    |			ELSE 2
+		                    |		END = &Mode
+		                    |;
+		                    |
+		                    |////////////////////////////////////////////////////////////////////////////////
+		                    |SELECT
+		                    |	TRUE AS PaymentExcluded
+		                    |INTO PaymentStatuses
+		                    |
+		                    |UNION ALL
+		                    |
+		                    |SELECT
+		                    |	FALSE
+		                    |;
+		                    |
+		                    |////////////////////////////////////////////////////////////////////////////////
+		                    |SELECT DISTINCT
+		                    |	Vendors.Ref AS Ref,
+		                    |	Vendors.Description AS Name,
+		                    |	Vendors.FederalIDType AS FederalIdType,
+		                    |	Vendors.FederalIDType.Order + 1 AS FederalIdTypeNo,
+		                    |	Vendors.USTaxID AS FederalIdNo,
+		                    |	Vendors.FullName AS FullName,
+		                    |	Addresses.AddressLine1 + CASE
+		                    |		WHEN Addresses.AddressLine2 = """"
+		                    |			THEN """"
+		                    |		ELSE "", "" + Addresses.AddressLine2
+		                    |	END + CASE
+		                    |		WHEN Addresses.AddressLine3 = """"
+		                    |			THEN """"
+		                    |		ELSE "", "" + Addresses.AddressLine3
+		                    |	END AS Address,
+		                    |	Addresses.City AS City,
+		                    |	Addresses.State AS State,
+		                    |	Addresses.State.Code AS StateCode,
+		                    |	Addresses.ZIP AS Zip,
+		                    |	Addresses.Email AS Email
+		                    |INTO Vendors
+		                    |FROM
+		                    |	Amounts AS Amounts
+		                    |		LEFT JOIN Catalog.Companies AS Vendors
+		                    |		ON (Vendors.Ref = Amounts.Vendor)
+		                    |		LEFT JOIN Catalog.Addresses AS Addresses
+		                    |		ON (Addresses.Owner = Vendors.Ref)
+		                    |			AND (Addresses.DefaultBilling)
+		                    |;
+		                    |
+		                    |////////////////////////////////////////////////////////////////////////////////
+		                    |SELECT
+		                    |	Boxes.Ref AS Category,
+		                    |	Boxes.Code AS BoxNum,
+		                    |	Boxes.Threshold AS Threshold,
+		                    |	PaymentStatuses.PaymentExcluded AS PaymentExcluded,
+		                    |	Vendors.Ref AS Vendor,
+		                    |	Vendors.Name AS VendorName,
+		                    |	Vendors.FederalIdType AS VendorFederalIdType,
+		                    |	Vendors.FederalIdTypeNo AS VendorFederalIdTypeNo,
+		                    |	Vendors.FederalIdNo AS VendorFederalIdNo,
+		                    |	Vendors.FullName AS VendorFullName,
+		                    |	Vendors.Address AS VendorAddress,
+		                    |	Vendors.City AS VendorCity,
+		                    |	Vendors.State AS VendorState,
+		                    |	Vendors.StateCode AS VendorStateCode,
+		                    |	Vendors.Zip AS VendorZip,
+		                    |	Vendors.Email AS VendorEmail,
+		                    |	Amounts.Document AS Document,
+		                    |	Amounts.ExceedsThreshold AS ExceedsThreshold,
+		                    |	Amounts.Amount AS Amount
+		                    |{SELECT
+		                    |	Category.*,
+		                    |	Vendor.*,
+		                    |	Document.*,
+		                    |	Amount}
+		                    |FROM
+		                    |	Catalog.USTaxCategories1099 AS Boxes
+		                    |		LEFT JOIN PaymentStatuses AS PaymentStatuses
+		                    |		ON (TRUE)
+		                    |		LEFT JOIN Amounts AS Amounts
+		                    |		ON (Amounts.Category = Boxes.Ref)
+		                    |			AND (Amounts.PaymentExcluded = PaymentStatuses.PaymentExcluded)
+		                    |		LEFT JOIN Vendors AS Vendors
+		                    |		ON (Vendors.Ref = Amounts.Vendor)
+		                    |WHERE
+		                    |	Vendors.Ref = &Ref
+		                    |{WHERE
+		                    |	Boxes.Ref.* AS Category,
+		                    |	Amounts.Vendor.* AS Vendor,
+		                    |	Amounts.Document.* AS Document,
+		                    |	Amounts.Amount AS Amount}");
+						  					  	
+		BoxList.SetParameter("BeginOfPeriod", start);
+		BoxList.SetParameter("EndOfPeriod", end );
+		BoxList.SetParameter("Mode", mode);
+		BoxList.SetParameter("Ref",VendorRef);
+		BoxList.SetParameter("Ref2", Catalogs.Companies.EmptyRef());
+		BoxResult = BoxList.Execute().Unload();
+		
+		BoxesArray = New Array;
+		VendorTotal = 0;
+		For i = 1 to 14 Do
+			If i <> 11 AND i <> 12 Then
+				Box1Map = New Map;
+				amount = 0;
+				For each box in BoxResult Do
+					If box.BoxNum = i Then
+						amount = amount + box.Amount;
+					EndIf;
+				EndDo;
+				Box1Map.Insert("amount", amount);
+				VendorTotal = VendorTotal + amount;
+				
+				If i = 1 OR i = 3 OR i = 6 OR i = 7 OR i = 10 OR i = 14 Then
+					threshold_amount = 600;
+				ElsIf i = 8 OR i = 2 Then
+					threshold_amount = 10;
+				ElsIf i = 9 Then
+					threshold_amount = 5000;
+				Else
+					threshold_amount = 0;
+				EndIf;
+				 
+				Box1Map.Insert("threshold", threshold_amount);
+				Box1Map.Insert("box_num", i );
+				BoxesArray.Add(Box1Map);
+			EndIf;
+			
+		EndDo;
+		VendorMap.Insert("total", VendorTotal);
+		OverallTotal = OverallTotal + VendorTotal;
+		
+		VendorMap.Insert("boxes", BoxesArray);
+
+		VendorArray.Add(VendorMap);
+		
+	EndDo;
+	
+	DataMap.Insert("overall_total", OverallTotal);
+	
+	TotalArray = New Array();
+	Try
+		For j = 0 to BoxesArray.Count()-1 Do
+			BoxTotalMap = New Map();
+			BoxTotal = 0;
+			boxtotal_num = 0;
+			For each vndr in VendorArray Do
+				boxes_array = vndr.Get("boxes");
+				boxtotal_num = boxes_array[j].Get("box_num");
+				thisBox = boxes_array[j].Get("amount");
+				BoxTotal = BoxTotal + thisBox;
+			EndDo;
+			BoxTotalMap.Insert("box_num",boxtotal_num);
+			BoxTotalMap.Insert("total", BoxTotal);
+			TotalArray.Add(BoxTotalMap);
+		EndDo;
+	Except
+		errorMessage = New Map();
+		strMessage = "no data with these parameters";
+		errorMessage.Insert("message", strMessage);
+		errorMessage.Insert("status", "error"); 
+		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+		return errorJSON;
+	EndTry;
+	
+	DataMap.Insert("box_totals", TotalArray);
+	
+	DataMap.Insert("vendors", VendorArray);
+	
+	ReportMap.Insert("data", DataMap);
+	
+	FinalJSON = InternetConnectionClientServer.EncodeJSON(ReportMap);
+	
+	Return FinalJSON;	
+	
+EndFunction
+	
+
+Function inoutCompaniesCreate(jsonin) Export
 		
 	ParsedJSON = InternetConnectionClientServer.DecodeJSON(jsonin);
 	

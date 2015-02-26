@@ -42,9 +42,6 @@
 			<EnableStartDrag>true</EnableStartDrag>
 			<DataPath>List</DataPath>
 			<RowPictureDataPath>List.DefaultPicture</RowPictureDataPath>
-			<SearchStringLocation>None</SearchStringLocation>
-			<ViewStatusLocation>None</ViewStatusLocation>
-			<SearchControlLocation>None</SearchControlLocation>
 			<AutoRefresh>false</AutoRefresh>
 			<AutoRefreshPeriod>60</AutoRefreshPeriod>
 			<Period>
@@ -63,31 +60,75 @@
 				<Autofill>false</Autofill>
 			</AutoCommandBar>
 			<ExtendedTooltip name="ListExtendedTooltip" id="18"/>
-			<SearchStringAddition name="ListSearchString" id="39">
+			<SearchStringAddition name="ListSearchString" id="45">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchStringRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchStringContextMenu" id="40"/>
-				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="41"/>
+				<ContextMenu name="ListSearchStringContextMenu" id="46"/>
+				<ExtendedTooltip name="ListSearchStringExtendedTooltip" id="47"/>
 			</SearchStringAddition>
-			<ViewStatusAddition name="ListViewStatus" id="42">
+			<ViewStatusAddition name="ListViewStatus" id="48">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>ViewStatusRepresentation</Type>
 				</AdditionSource>
-				<ContextMenu name="ListViewStatusContextMenu" id="43"/>
-				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="44"/>
+				<ContextMenu name="ListViewStatusContextMenu" id="49"/>
+				<ExtendedTooltip name="ListViewStatusExtendedTooltip" id="50"/>
 			</ViewStatusAddition>
-			<SearchControlAddition name="ListSearchControl" id="45">
+			<SearchControlAddition name="ListSearchControl" id="51">
 				<AdditionSource>
 					<Item>List</Item>
 					<Type>SearchControl</Type>
 				</AdditionSource>
-				<ContextMenu name="ListSearchControlContextMenu" id="46"/>
-				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="47"/>
+				<ContextMenu name="ListSearchControlContextMenu" id="52"/>
+				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="53"/>
 			</SearchControlAddition>
 			<ChildItems>
+				<PictureField name="Received" id="39">
+					<DataPath>List.Received</DataPath>
+					<TitleLocation>None</TitleLocation>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Received status</v8:content>
+						</v8:item>
+					</ToolTip>
+					<HeaderPicture>
+						<xr:Ref>CommonPicture.ForReceived</xr:Ref>
+						<xr:LoadTransparent>true</xr:LoadTransparent>
+					</HeaderPicture>
+					<Width>2</Width>
+					<HorizontalStretch>false</HorizontalStretch>
+					<ValuesPicture>
+						<xr:Ref>CommonPicture.StatusOfOrder</xr:Ref>
+						<xr:LoadTransparent>true</xr:LoadTransparent>
+					</ValuesPicture>
+					<ContextMenu name="ReceivedContextMenu" id="40"/>
+					<ExtendedTooltip name="ReceivedExtendedTooltip" id="41"/>
+				</PictureField>
+				<PictureField name="Invoiced" id="42">
+					<DataPath>List.Invoiced</DataPath>
+					<TitleLocation>None</TitleLocation>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Invoiced status</v8:content>
+						</v8:item>
+					</ToolTip>
+					<HeaderPicture>
+						<xr:Ref>CommonPicture.ForInvoiced</xr:Ref>
+						<xr:LoadTransparent>true</xr:LoadTransparent>
+					</HeaderPicture>
+					<Width>2</Width>
+					<HorizontalStretch>false</HorizontalStretch>
+					<ValuesPicture>
+						<xr:Ref>CommonPicture.StatusOfOrder</xr:Ref>
+						<xr:LoadTransparent>true</xr:LoadTransparent>
+					</ValuesPicture>
+					<ContextMenu name="InvoicedContextMenu" id="43"/>
+					<ExtendedTooltip name="InvoicedExtendedTooltip" id="44"/>
+				</PictureField>
 				<LabelField name="Date" id="4">
 					<DataPath>List.Date</DataPath>
 					<DefaultItem>true</DefaultItem>
@@ -267,13 +308,139 @@
 			THEN VALUE(Enum.OrderStatuses.Open)
 		ELSE OrdersStatuses.Status
 	END AS OrderStatus,
-	LastEmails.Date AS EmailDate
+	LastEmails.Date AS EmailDate,
+	CASE
+		WHEN DocumentPurchaseOrder.Posted = FALSE
+				OR DocumentPurchaseOrder.DeletionMark = TRUE
+			THEN 7
+		WHEN OrdersDispatchedBalance.UnReceived = TRUE
+				AND OrdersDispatchedBalance.PartiallyReceived = FALSE
+				AND OrdersDispatchedBalance.Received = FALSE
+			THEN CASE
+					WHEN OrdersDispatchedBalance.DeliveryDate &gt;= &amp;CurrentDateSession
+						THEN 2
+					ELSE 6
+				END
+		WHEN OrdersDispatchedBalance.Received = TRUE
+				AND OrdersDispatchedBalance.UnReceived = FALSE
+				AND OrdersDispatchedBalance.PartiallyReceived = FALSE
+			THEN 0
+		ELSE CASE
+				WHEN OrdersDispatchedBalance.DeliveryDate &gt;= &amp;CurrentDateSession
+					THEN 1
+				ELSE 5
+			END
+	END AS Received,
+	CASE
+		WHEN DocumentPurchaseOrder.Posted = FALSE
+				OR DocumentPurchaseOrder.DeletionMark = TRUE
+			THEN 7
+		WHEN OrdersDispatchedBalance.UnInvoiced = TRUE
+				AND OrdersDispatchedBalance.PartiallyInvoiced = FALSE
+				AND OrdersDispatchedBalance.Invoiced = FALSE
+			THEN CASE
+					WHEN OrdersDispatchedBalance.DeliveryDate &gt;= &amp;CurrentDateSession
+						THEN 4
+					ELSE 4
+				END
+		WHEN OrdersDispatchedBalance.Invoiced = TRUE
+				AND OrdersDispatchedBalance.UnInvoiced = FALSE
+				AND OrdersDispatchedBalance.PartiallyInvoiced = FALSE
+			THEN 8
+		ELSE CASE
+				WHEN OrdersDispatchedBalance.DeliveryDate &gt;= &amp;CurrentDateSession
+					THEN 3
+				ELSE 3
+			END
+	END AS Invoiced
 FROM
 	Document.PurchaseOrder AS DocumentPurchaseOrder
 		LEFT JOIN InformationRegister.OrdersStatuses.SliceLast AS OrdersStatuses
 		ON DocumentPurchaseOrder.Ref = OrdersStatuses.Order
 		LEFT JOIN InformationRegister.DocumentLastEmail AS LastEmails
-		ON (LastEmails.Document = DocumentPurchaseOrder.Ref)</QueryText>
+		ON (LastEmails.Document = DocumentPurchaseOrder.Ref)
+		LEFT JOIN (SELECT
+			OrdersDispatched.Order AS Order,
+			MIN(OrdersDispatched.DeliveryDate) AS DeliveryDate,
+			MAX(OrdersDispatched.UnReceived) AS UnReceived,
+			MAX(OrdersDispatched.PartiallyReceived) AS PartiallyReceived,
+			MAX(OrdersDispatched.Received) AS Received,
+			MAX(OrdersDispatched.UnInvoiced) AS UnInvoiced,
+			MAX(OrdersDispatched.PartiallyInvoiced) AS PartiallyInvoiced,
+			MAX(OrdersDispatched.Invoiced) AS Invoiced
+		FROM
+			(SELECT
+				OrdersDispatchedBalance.Company AS Company,
+				OrdersDispatchedBalance.Order AS Order,
+				OrdersDispatchedBalance.Product AS Product,
+				OrdersDispatchedBalance.Unit AS Unit,
+				OrdersDispatchedBalance.Location AS Location,
+				OrdersDispatchedBalance.DeliveryDate AS DeliveryDate,
+				OrdersDispatchedBalance.Project AS Project,
+				OrdersDispatchedBalance.Class AS Class,
+				CASE
+					WHEN OrdersDispatchedBalance.Product.Type = VALUE(Enum.InventoryTypes.Inventory)
+						THEN CASE
+								WHEN OrdersDispatchedBalance.ReceivedBalance = 0
+									THEN TRUE
+								ELSE FALSE
+							END
+					ELSE CASE
+							WHEN OrdersDispatchedBalance.InvoicedBalance = 0
+								THEN TRUE
+							ELSE FALSE
+						END
+				END AS UnReceived,
+				CASE
+					WHEN OrdersDispatchedBalance.Product.Type = VALUE(Enum.InventoryTypes.Inventory)
+						THEN CASE
+								WHEN OrdersDispatchedBalance.QuantityBalance &lt;&gt; OrdersDispatchedBalance.ReceivedBalance
+										AND OrdersDispatchedBalance.ReceivedBalance &lt;&gt; 0
+									THEN TRUE
+								ELSE FALSE
+							END
+					ELSE CASE
+							WHEN OrdersDispatchedBalance.QuantityBalance &lt;&gt; OrdersDispatchedBalance.InvoicedBalance
+									AND OrdersDispatchedBalance.InvoicedBalance &lt;&gt; 0
+								THEN TRUE
+							ELSE FALSE
+						END
+				END AS PartiallyReceived,
+				CASE
+					WHEN OrdersDispatchedBalance.Product.Type = VALUE(Enum.InventoryTypes.Inventory)
+						THEN CASE
+								WHEN OrdersDispatchedBalance.QuantityBalance = OrdersDispatchedBalance.ReceivedBalance
+									THEN TRUE
+								ELSE FALSE
+							END
+					ELSE CASE
+							WHEN OrdersDispatchedBalance.QuantityBalance = OrdersDispatchedBalance.InvoicedBalance
+								THEN TRUE
+							ELSE FALSE
+						END
+				END AS Received,
+				CASE
+					WHEN OrdersDispatchedBalance.InvoicedBalance = 0
+						THEN TRUE
+					ELSE FALSE
+				END AS UnInvoiced,
+				CASE
+					WHEN OrdersDispatchedBalance.QuantityBalance &lt;&gt; OrdersDispatchedBalance.InvoicedBalance
+							AND OrdersDispatchedBalance.InvoicedBalance &lt;&gt; 0
+						THEN TRUE
+					ELSE FALSE
+				END AS PartiallyInvoiced,
+				CASE
+					WHEN OrdersDispatchedBalance.QuantityBalance = OrdersDispatchedBalance.InvoicedBalance
+						THEN TRUE
+					ELSE FALSE
+				END AS Invoiced
+			FROM
+				AccumulationRegister.OrdersDispatched.Balance AS OrdersDispatchedBalance) AS OrdersDispatched
+		
+		GROUP BY
+			OrdersDispatched.Order) AS OrdersDispatchedBalance
+		ON DocumentPurchaseOrder.Ref = OrdersDispatchedBalance.Order</QueryText>
 				<MainTable>Document.PurchaseOrder</MainTable>
 				<ListSettings>
 					<dcsset:filter>

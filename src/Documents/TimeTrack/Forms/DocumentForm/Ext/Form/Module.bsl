@@ -1,7 +1,7 @@
 ﻿
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
-	
+	  
 	If Parameters.Property("Company") And Parameters.Company.Customer Then
 		Object.Company = Parameters.Company;
 	EndIf;
@@ -293,6 +293,68 @@ Procedure UnlinkSalesInvoiceAtServer()
 	Modified = True;
 	
 EndProcedure
+
+&AtClient
+Procedure TimerStartStop(Command)
+	
+	If NOT TimerStart Then
+		Items.TimerStartStop.Title = "Pause";
+		AttachIdleHandler("Timer",1);
+		TimerStart = True;
+	Else
+		Items.TimerStartStop.Title = "Start";
+		DetachIdleHandler("Timer");
+		TimerStart = False;
+		Object.TimeComplete = Hours + (Minutes/100);
+	EndIf;
+
+EndProcedure
+
+&AtClient
+Procedure Timer()
+	
+	MinuteInc = False;
+	HourInc = False;
+	If Minutes = 59  AND Seconds = 59 Then
+		Minutes = 0;
+		Hours = Hours + 1;
+		HourInc = True;
+	EndIf;
+	
+	If Seconds = 59 Then
+		Seconds = 0;
+		If NOT HourInc Then
+			Minutes = Minutes + 1;
+		EndIf;
+		MinuteInc = True;
+	EndIf;
+
+	
+	If MinuteInc OR HourInc Then
+	Else
+		Seconds = Seconds + 1;
+	EndIf;
+
+	If MinuteInc Then
+		MinuteInc = False;
+	EndIf;
+	If HourInc Then
+		HourInc = False;
+	EndIf;
+EndProcedure
+
+&AtClient
+Procedure TimerReset(Command)
+	
+	DetachIdleHandler("Timer");
+	Hours = 0;
+	Minutes = 0;
+	Seconds = 0;
+	Object.TimeComplete = 0;
+	TimerStart = False;
+
+EndProcedure
+
 
 
 

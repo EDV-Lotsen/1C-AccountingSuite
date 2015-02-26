@@ -85,7 +85,7 @@ Procedure AuditLogDeleteBeforeDelete(Source, Cancel) Export
 			
 		Else
 
-			If TypeOf(SourceObj) <> Type("DocumentObject.PurchaseOrder") AND TypeOf(SourceObj) <> Type("DocumentObject.SalesOrder") //AND TypeOf(SourceObj) <> Type("DocumentObject.ItemAdjustment")
+			If TypeOf(SourceObj) <> Type("DocumentObject.PurchaseOrder") AND TypeOf(SourceObj) <> Type("DocumentObject.SalesOrder") AND TypeOf(SourceObj) <> Type("DocumentObject.LotsAdjustment") AND TypeOf(SourceObj) <> Type("DocumentObject.SerialNumbersAdjustment")
 				AND TypeOf(SourceObj) <> Type("DocumentObject.TimeTrack") AND TypeOf(SourceObj) <> Type("DocumentObject.WarehouseTransfer") AND TypeOf(SourceObj) <> Type("DocumentObject.Budget") AND TypeOf(SourceObj) <> Type("ChartOfAccountsObject.ChartOfAccounts") Then
 
 			   
@@ -100,6 +100,7 @@ Procedure AuditLogDeleteBeforeDelete(Source, Cancel) Export
 					Reg.Amount = SourceObj.Amount;
 				ElsIf TypeOf(SourceObj) = Type("DocumentObject.BankReconciliation") Then
 				ElsIf TypeOf(SourceObj) = Type("DocumentObject.Statement") Then
+				ElsIf TypeOf(SourceObj) = Type("DocumentObject.Assembly") Then
 				Else
 					Reg.Amount = SourceObj.DocumentTotalRC;
 				EndIf;
@@ -124,11 +125,10 @@ EndProcedure
 	
 Procedure AuditLogDocumentOnWrite(Source, Cancel, WriteMode, PostingMode) Export
 	
-	If GeneralFunctionsReusable.DisableAuditLogValue() = True Then
-		return;
-	EndIf;
+	//If GeneralFunctionsReusable.DisableAuditLogValue() = True Then
+		//return;
+	//EndIf;
 
-	
 	SourceObj = Source;
 	//If SourceObj.NewObject = True Then
 	If TypeOf(SourceObj) <> Type("DocumentObject.PurchaseOrder") AND TypeOf(SourceObj) <> Type("DocumentObject.SalesOrder") //AND TypeOf(SourceObj) <> Type("DocumentObject.ItemAdjustment")

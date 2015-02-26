@@ -235,7 +235,7 @@ Else
 					
 					SSLConnection = New OpenSSLSecureConnection();
 					FindExistingInvoice = SessionParameters.TenantValue + " Invoice " + CurObject.Number + " from " + Format(CurObject.Date,"DLF=D");
-					HTTPConnection = New HTTPConnection("api.mongolab.com/api/1/databases/dataset1c/collections/pay?q={""data_description"": '" + FindExistingInvoice + "'}&apiKey=" + ServiceParameters.MongoAPIKey(),,,,,,SSLConnection);
+					HTTPConnection = New HTTPConnection("api.mongolab.com/api/1/clusters/rs-ds039921/databases/dataset1cproduction/collections/pay?q={""data_description"": '" + FindExistingInvoice + "'}&apiKey=" + ServiceParameters.MongoAPIKey(),,,,,,SSLConnection);
 					Result = HTTPConnection.Get(HTTPRequest);
 					ResponseBody = Result.GetBodyAsString(TextEncoding.UTF8);
 					ReformatedResponse = StrReplace(ResponseBody,"$","");
@@ -247,7 +247,7 @@ Else
 						HeadersMap = New Map();			
 						HTTPRequest = New HTTPRequest("", HeadersMap);	
 						SSLConnection = New OpenSSLSecureConnection();
-						HTTPConnection = New HTTPConnection("api.mongolab.com/api/1/databases/dataset1c/collections/pay/" + InvoiceToReplace + "?apiKey=" + ServiceParameters.MongoAPIKey(),,,,,,SSLConnection);
+						HTTPConnection = New HTTPConnection("api.mongolab.com/api/1/clusters/rs-ds039921/databases/dataset1cproduction/collections/pay/" + InvoiceToReplace + "?apiKey=" + ServiceParameters.MongoAPIKey(),,,,,,SSLConnection);
 						Result = HTTPConnection.Delete(HTTPRequest);
 						ResponseBody = Result.GetBodyAsString(TextEncoding.UTF8);
 						ReformatedResponse = StrReplace(ResponseBody,"$","");
@@ -259,7 +259,7 @@ Else
 					HeadersMap = New Map();
 					HeadersMap.Insert("Content-Type", "application/json");
 					
-					HTTPRequest = New HTTPRequest("/api/1/databases/dataset1c/collections/pay?apiKey=" + ServiceParameters.MongoAPIKey(), HeadersMap);
+					HTTPRequest = New HTTPRequest("/api/1/clusters/rs-ds039921/databases/dataset1cproduction/collections/pay?apiKey=" + ServiceParameters.MongoAPIKey(), HeadersMap);
 					
 					RequestBodyMap = New Map();
 					
