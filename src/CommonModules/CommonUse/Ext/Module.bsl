@@ -3295,6 +3295,44 @@ EndFunction
 
 #EndRegion
 
+#Region LONG_ACTION
+
+// Used to execute long action as background job.
+//
+// Parameters:
+//  KeyParameters  - Structure - Parameters initialization:
+//   - Type       - String - A unique name of long action,
+//   - Parameter1 - Arbitrary - Additional parameter.
+//  StorageAddress - String - Address in temporary storage where result will be placed.
+//
+// Returns:
+//  Background call:
+//   Undefined  - Returned always.
+//   Result will be placed in temporary storage at StorageAddress,
+//
+Function DoLongAction(KeyParameters, StorageAddress) Export
+	
+	Array = New Array;
+	
+	If KeyParameters.Type = "RepostSubordinateDocumentsOfSalesInvoice" Then
+		RepostSubordinateDocumentsOfSalesInvoice(KeyParameters.DocumentRef, Array);
+	ElsIf KeyParameters.Type = "RepostSubordinateDocumentsOfPurchaseInvoice" Then
+		RepostSubordinateDocumentsOfPurchaseInvoice(KeyParameters.DocumentRef, Array);
+	ElsIf KeyParameters.Type = "RepostSubordinateDocumentsOfSalesReturn" Then
+		RepostSubordinateDocumentsOfSalesReturn(KeyParameters.DocumentRef, Array);
+	ElsIf KeyParameters.Type = "RepostSubordinateDocumentsOfCashReceipt" Then
+		RepostSubordinateDocumentsOfCashReceipt(KeyParameters.DocumentRef, Array);
+	ElsIf KeyParameters.Type = "RepostSubordinateDocumentsOfPurchaseReturn" Then
+		RepostSubordinateDocumentsOfPurchaseReturn(KeyParameters.DocumentRef, Array);
+	EndIf;
+	
+	// Put result in temporary storage.
+	Return PutToTempStorage(Array, StorageAddress);
+	
+EndFunction
+
+#EndRegion
+
 #EndRegion
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -3328,6 +3366,227 @@ Procedure NewMetadataObjectCollectionRow(Name, Synonym, Picture, ObjectPicture, 
 	NewRow.Synonym = Synonym;
 	NewRow.Picture = Picture;
 	NewRow.ObjectPicture = ObjectPicture;
+	
+EndProcedure
+
+Procedure RepostSubordinateDocumentsOfSalesInvoice(DocumentRef, Array)
+	
+	Query = New Query;
+	Query.Text = 
+		"SELECT DISTINCT
+		|	CashReceiptLineItems.Ref AS DocumentRef
+		|FROM
+		|	Document.CashReceipt.LineItems AS CashReceiptLineItems
+		|WHERE
+		|	CashReceiptLineItems.Document = &DocumentRef
+		|	AND CashReceiptLineItems.Ref.Posted = TRUE
+		|	AND CashReceiptLineItems.Ref.DeletionMark = FALSE";
+	
+	Query.SetParameter("DocumentRef", DocumentRef);
+	
+	QueryResult = Query.Execute();
+	
+	SelectionDetailRecords = QueryResult.Select();
+	
+	While SelectionDetailRecords.Next() Do
+		
+		Try
+			DocumentObject = SelectionDetailRecords.DocumentRef.GetObject();
+			DocumentObject.Write(DocumentWriteMode.Posting);
+			
+			//
+			MessageText = NStr("en = '%1 has posted.'");
+			MessageText = StringFunctionsClientServer.SubstituteParametersInString(MessageText, SelectionDetailRecords.DocumentRef);
+			
+			Array.Add(MessageText);
+		Except
+			//
+			MessageText = NStr("en = 'Failed to posting a document %1!'");
+			MessageText = StringFunctionsClientServer.SubstituteParametersInString(MessageText, SelectionDetailRecords.DocumentRef);
+			
+			Array.Add(MessageText);
+		EndTry;
+		
+	EndDo;
+	
+EndProcedure
+
+Procedure RepostSubordinateDocumentsOfPurchaseInvoice(DocumentRef, Array)
+	
+	Query = New Query;
+	Query.Text = 
+		"SELECT DISTINCT
+		|	InvoicePaymentLineItems.Ref AS DocumentRef
+		|FROM
+		|	Document.InvoicePayment.LineItems AS InvoicePaymentLineItems
+		|WHERE
+		|	InvoicePaymentLineItems.Document = &DocumentRef
+		|	AND InvoicePaymentLineItems.Ref.Posted = TRUE
+		|	AND InvoicePaymentLineItems.Ref.DeletionMark = FALSE";
+	
+	Query.SetParameter("DocumentRef", DocumentRef);
+	
+	QueryResult = Query.Execute();
+	
+	SelectionDetailRecords = QueryResult.Select();
+	
+	While SelectionDetailRecords.Next() Do
+		
+		Try
+			DocumentObject = SelectionDetailRecords.DocumentRef.GetObject();
+			DocumentObject.Write(DocumentWriteMode.Posting);
+			
+			//
+			MessageText = NStr("en = '%1 has posted.'");
+			MessageText = StringFunctionsClientServer.SubstituteParametersInString(MessageText, SelectionDetailRecords.DocumentRef);
+			
+			Array.Add(MessageText);
+		Except
+			//
+			MessageText = NStr("en = 'Failed to posting a document %1!'");
+			MessageText = StringFunctionsClientServer.SubstituteParametersInString(MessageText, SelectionDetailRecords.DocumentRef);
+			
+			Array.Add(MessageText);
+		EndTry;
+		
+	EndDo;
+	
+EndProcedure
+
+Procedure RepostSubordinateDocumentsOfSalesReturn(DocumentRef, Array)
+	
+	Query = New Query;
+	Query.Text = 
+		"SELECT DISTINCT
+		|	InvoicePaymentLineItems.Ref AS DocumentRef
+		|FROM
+		|	Document.InvoicePayment.LineItems AS InvoicePaymentLineItems
+		|WHERE
+		|	InvoicePaymentLineItems.Document = &DocumentRef
+		|	AND InvoicePaymentLineItems.Ref.Posted = TRUE
+		|	AND InvoicePaymentLineItems.Ref.DeletionMark = FALSE
+		|
+		|UNION
+		|
+		|SELECT DISTINCT
+		|	CashReceiptCreditMemos.Ref
+		|FROM
+		|	Document.CashReceipt.CreditMemos AS CashReceiptCreditMemos
+		|WHERE
+		|	CashReceiptCreditMemos.Document = &DocumentRef
+		|	AND CashReceiptCreditMemos.Ref.Posted = TRUE
+		|	AND CashReceiptCreditMemos.Ref.DeletionMark = FALSE";
+	
+	Query.SetParameter("DocumentRef", DocumentRef);
+	
+	QueryResult = Query.Execute();
+	
+	SelectionDetailRecords = QueryResult.Select();
+	
+	While SelectionDetailRecords.Next() Do
+		
+		Try
+			DocumentObject = SelectionDetailRecords.DocumentRef.GetObject();
+			DocumentObject.Write(DocumentWriteMode.Posting);
+			
+			//
+			MessageText = NStr("en = '%1 has posted.'");
+			MessageText = StringFunctionsClientServer.SubstituteParametersInString(MessageText, SelectionDetailRecords.DocumentRef);
+			
+			Array.Add(MessageText);
+		Except
+			//
+			MessageText = NStr("en = 'Failed to posting a document %1!'");
+			MessageText = StringFunctionsClientServer.SubstituteParametersInString(MessageText, SelectionDetailRecords.DocumentRef);
+			
+			Array.Add(MessageText);
+		EndTry;
+		
+	EndDo;
+	
+EndProcedure
+
+Procedure RepostSubordinateDocumentsOfCashReceipt(DocumentRef, Array)
+	
+	Query = New Query;
+	Query.Text = 
+		"SELECT DISTINCT
+		|	CashReceiptCreditMemos.Ref AS DocumentRef
+		|FROM
+		|	Document.CashReceipt.CreditMemos AS CashReceiptCreditMemos
+		|WHERE
+		|	CashReceiptCreditMemos.Document = &DocumentRef
+		|	AND CashReceiptCreditMemos.Ref.Posted = TRUE
+		|	AND CashReceiptCreditMemos.Ref.DeletionMark = FALSE";
+	
+	Query.SetParameter("DocumentRef", DocumentRef);
+	
+	QueryResult = Query.Execute();
+	
+	SelectionDetailRecords = QueryResult.Select();
+	
+	While SelectionDetailRecords.Next() Do
+		
+		Try
+			DocumentObject = SelectionDetailRecords.DocumentRef.GetObject();
+			DocumentObject.Write(DocumentWriteMode.Posting);
+			
+			//
+			MessageText = NStr("en = '%1 has posted.'");
+			MessageText = StringFunctionsClientServer.SubstituteParametersInString(MessageText, SelectionDetailRecords.DocumentRef);
+			
+			Array.Add(MessageText);
+		Except
+			//
+			MessageText = NStr("en = 'Failed to posting a document %1!'");
+			MessageText = StringFunctionsClientServer.SubstituteParametersInString(MessageText, SelectionDetailRecords.DocumentRef);
+			
+			Array.Add(MessageText);
+		EndTry;
+		
+	EndDo;
+	
+EndProcedure
+
+Procedure RepostSubordinateDocumentsOfPurchaseReturn(DocumentRef, Array)
+	
+	Query = New Query;
+	Query.Text = 
+		"SELECT DISTINCT
+		|	CashReceiptLineItems.Ref AS DocumentRef
+		|FROM
+		|	Document.CashReceipt.LineItems AS CashReceiptLineItems
+		|WHERE
+		|	CashReceiptLineItems.Document = &DocumentRef
+		|	AND CashReceiptLineItems.Ref.Posted = TRUE
+		|	AND CashReceiptLineItems.Ref.DeletionMark = FALSE";
+	
+	Query.SetParameter("DocumentRef", DocumentRef);
+	
+	QueryResult = Query.Execute();
+	
+	SelectionDetailRecords = QueryResult.Select();
+	
+	While SelectionDetailRecords.Next() Do
+		
+		Try
+			DocumentObject = SelectionDetailRecords.DocumentRef.GetObject();
+			DocumentObject.Write(DocumentWriteMode.Posting);
+			
+			//
+			MessageText = NStr("en = '%1 has posted.'");
+			MessageText = StringFunctionsClientServer.SubstituteParametersInString(MessageText, SelectionDetailRecords.DocumentRef);
+			
+			Array.Add(MessageText);
+		Except
+			//
+			MessageText = NStr("en = 'Failed to posting a document %1!'");
+			MessageText = StringFunctionsClientServer.SubstituteParametersInString(MessageText, SelectionDetailRecords.DocumentRef);
+			
+			Array.Add(MessageText);
+		EndTry;
+		
+	EndDo;
 	
 EndProcedure
 

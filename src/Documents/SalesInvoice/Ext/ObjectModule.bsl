@@ -8,6 +8,13 @@
 
 #If Server Or ThickClientOrdinaryApplication Or ExternalConnection Then
 
+Procedure BeforeDelete(Cancel)
+	
+	//Avatax. Delete the document at Avatax prior to actual deletion
+	AvaTaxServer.AvataxDocumentBeforeDelete(ThisObject, Cancel, "SalesInvoice");
+	
+EndProcedure
+
 Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 	
 	// -> CODE REVIEW
@@ -302,13 +309,6 @@ Procedure UndoPosting(Cancel)
 	
 	// 7. Clear used temporary document data.
 	DocumentPosting.ClearDataStructuresAfterPosting(AdditionalProperties);
-	
-EndProcedure
-
-Procedure BeforeDelete(Cancel)
-	
-	//Avatax. Delete the document at Avatax prior to actual deletion
-	AvaTaxServer.AvataxDocumentBeforeDelete(ThisObject, Cancel, "SalesInvoice");
 	
 EndProcedure
 

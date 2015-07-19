@@ -61,17 +61,35 @@
 							</Title>
 							<ExtendedTooltip name="CreateExtendedTooltip" id="11"/>
 						</Button>
-						<Button name="Excel" id="12">
+						<Button name="GetExcel" id="12">
 							<Type>CommandBarButton</Type>
+							<Visible>false</Visible>
 							<OnlyInAllActions>true</OnlyInAllActions>
-							<CommandName>Form.Command.Excel</CommandName>
+							<CommandName>Form.Command.GetExcel</CommandName>
 							<Title>
 								<v8:item>
 									<v8:lang>en</v8:lang>
 									<v8:content>Export to Excel</v8:content>
 								</v8:item>
 							</Title>
-							<ExtendedTooltip name="ExcelExtendedTooltip" id="13"/>
+							<ExtendedTooltip name="GetExcelExtendedTooltip" id="13"/>
+						</Button>
+						<Button name="GetCSV" id="14">
+							<Type>CommandBarButton</Type>
+							<Visible>false</Visible>
+							<CommandName>Form.Command.GetCSV</CommandName>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Export to track1099.com CSV file</v8:content>
+								</v8:item>
+							</Title>
+							<ExtendedTooltip name="GetCSVExtendedTooltip" id="15"/>
+						</Button>
+						<Button name="FormPrint" id="16">
+							<Type>CommandBarButton</Type>
+							<CommandName>Form.Command.Print</CommandName>
+							<ExtendedTooltip name="FormPrintExtendedTooltip" id="17"/>
 						</Button>
 					</ChildItems>
 				</CommandBar>
@@ -134,20 +152,43 @@
 			</Picture>
 			<Action>Create</Action>
 		</Command>
-		<Command name="Excel" id="2">
+		<Command name="GetExcel" id="2">
 			<Title>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Excel</v8:content>
+					<v8:content>Get excel file</v8:content>
+				</v8:item>
+			</Title>
+			<Action>GetExcel</Action>
+		</Command>
+		<Command name="GetCSV" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Get CSV</v8:content>
+				</v8:item>
+			</Title>
+			<Action>GetCSV</Action>
+		</Command>
+		<Command name="Print" id="4">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Print</v8:content>
 				</v8:item>
 			</Title>
 			<ToolTip>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Excel</v8:content>
+					<v8:content>Print</v8:content>
 				</v8:item>
 			</ToolTip>
-			<Action>Excel</Action>
+			<Picture>
+				<xr:Ref>StdPicture.Print</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
+			<Action>Print</Action>
+			<Representation>Picture</Representation>
 		</Command>
 	</Commands>
 </Form>

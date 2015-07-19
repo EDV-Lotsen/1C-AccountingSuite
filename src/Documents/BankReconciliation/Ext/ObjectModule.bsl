@@ -218,31 +218,31 @@ EndProcedure
 Procedure BeforeDelete(Cancel)
 	
 	//Allow deletion only if there are no documents in Process Month for the period
-	//If IsInRole("BankAccounting") Then
-	//	Request = New Query("SELECT ALLOWED
-	//	                    |	GeneralJournalBalanceAndTurnovers.Recorder AS Recorder,
-	//	                    |	GeneralJournalBalanceAndTurnovers.Period AS Period,
-	//	                    |	GeneralJournalBalanceAndTurnovers.AmountRCClosingBalance,
-	//	                    |	GeneralJournalBalanceAndTurnovers.Recorder.PointInTime AS RecorderPointInTime,
-	//	                    |	GeneralJournalBalanceAndTurnovers.AmountRCOpeningBalance
-	//	                    |FROM
-	//	                    |	AccountingRegister.GeneralJournal.BalanceAndTurnovers(&DateStart, &DateEnd, Recorder, , Account = &Account, , ) AS GeneralJournalBalanceAndTurnovers
-	//	                    |WHERE
-	//	                    |	NOT GeneralJournalBalanceAndTurnovers.Recorder IS NULL 
-	//	                    |	AND GeneralJournalBalanceAndTurnovers.Recorder <> UNDEFINED
-	//	                    |	AND NOT GeneralJournalBalanceAndTurnovers.Recorder REFS Document.GeneralJournalEntry");
-	//	DateStart 	= BegOfMonth(Date);
-	//	DateEnd		= EndOfMonth(Date);
-	//	Request.SetParameter("Account", BankAccount);
-	//	Request.SetParameter("DateStart", New Boundary(DateStart, BoundaryType.Including));
-	//	Request.SetParameter("DateEnd", New Boundary(EndOfDay(DateEnd), BoundaryType.Including));
-	//	Res = Request.Execute();
-	//	If Not Res.IsEmpty() Then
-	//		Cancel = True;
-	//		MessageText = NStr("en='" + String(Ref) + ": document is not empty and is used in Process Month. Document deletion cancelled.'");
-	//		CommonUseClientServer.MessageToUser(MessageText);
-	//	EndIf;
-	//EndIf;
+	If IsInRole("BankAccounting") Then
+		Request = New Query("SELECT ALLOWED
+		                    |	GeneralJournalBalanceAndTurnovers.Recorder AS Recorder,
+		                    |	GeneralJournalBalanceAndTurnovers.Period AS Period,
+		                    |	GeneralJournalBalanceAndTurnovers.AmountRCClosingBalance,
+		                    |	GeneralJournalBalanceAndTurnovers.Recorder.PointInTime AS RecorderPointInTime,
+		                    |	GeneralJournalBalanceAndTurnovers.AmountRCOpeningBalance
+		                    |FROM
+		                    |	AccountingRegister.GeneralJournal.BalanceAndTurnovers(&DateStart, &DateEnd, Recorder, , Account = &Account, , ) AS GeneralJournalBalanceAndTurnovers
+		                    |WHERE
+		                    |	NOT GeneralJournalBalanceAndTurnovers.Recorder IS NULL 
+		                    |	AND GeneralJournalBalanceAndTurnovers.Recorder <> UNDEFINED
+		                    |	AND NOT GeneralJournalBalanceAndTurnovers.Recorder REFS Document.GeneralJournalEntry");
+		DateStart 	= BegOfMonth(Date);
+		DateEnd		= EndOfMonth(Date);
+		Request.SetParameter("Account", BankAccount);
+		Request.SetParameter("DateStart", New Boundary(DateStart, BoundaryType.Including));
+		Request.SetParameter("DateEnd", New Boundary(EndOfDay(DateEnd), BoundaryType.Including));
+		Res = Request.Execute();
+		If Not Res.IsEmpty() Then
+			Cancel = True;
+			MessageText = NStr("en='" + String(Ref) + ": document is not empty and is used in Process Month. Document deletion cancelled.'");
+			CommonUseClientServer.MessageToUser(MessageText);
+		EndIf;
+	EndIf;
 	
 EndProcedure
 

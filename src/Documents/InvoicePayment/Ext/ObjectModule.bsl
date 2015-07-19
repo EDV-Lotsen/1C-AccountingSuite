@@ -139,8 +139,15 @@ Procedure Posting(Cancel, Mode)
 			EndIf;
 			
 			//Sales tax
-			SumDoc = SumDoc + DocumentObject.SalesTaxRC;
-			CurrentPaymentRC = ?(SumDoc = DocObjTotal, BalancePaymentRC, Round((DocumentObject.SalesTaxRC * DocumentLine.Payment / DocObjTotal) * ExchangeRate, 2));
+			SalesTaxRC = 0;
+			If TypeOf(DocumentObject) = Type("DocumentObject.SalesReturn") Then
+				SalesTaxRC = Round(DocumentObject.SalesTax * DocumentObject.ExchangeRate, 2);
+			Else
+				SalesTaxRC = DocumentObject.SalesTaxRC
+			EndIf;
+			
+			SumDoc = SumDoc + SalesTaxRC;
+			CurrentPaymentRC = ?(SumDoc = DocObjTotal, BalancePaymentRC, Round((SalesTaxRC * DocumentLine.Payment / DocObjTotal) * ExchangeRate, 2));
 			BalancePaymentRC = BalancePaymentRC - CurrentPaymentRC;
 			
 			If CurrentPaymentRC <> 0 Then 

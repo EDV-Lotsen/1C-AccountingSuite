@@ -9,6 +9,7 @@
 	</Events>
 	<ChildItems>
 		<UsualGroup name="Group6" id="38">
+			<Visible>false</Visible>
 			<Group>Horizontal</Group>
 			<Representation>None</Representation>
 			<ShowTitle>false</ShowTitle>
@@ -32,22 +33,6 @@
 			<ShowTitle>false</ShowTitle>
 			<ExtendedTooltip name="Group5ExtendedTooltip" id="29"/>
 			<ChildItems>
-				<UsualGroup name="Group4" id="23">
-					<Width>9</Width>
-					<Group>Horizontal</Group>
-					<ShowTitle>false</ShowTitle>
-					<ExtendedTooltip name="Group4ExtendedTooltip" id="24"/>
-					<ChildItems>
-						<PictureDecoration name="Decoration1" id="25">
-							<Picture>
-								<xr:Ref>CommonPicture.CFOToday</xr:Ref>
-								<xr:LoadTransparent>true</xr:LoadTransparent>
-							</Picture>
-							<ContextMenu name="Decoration1ContextMenu" id="26"/>
-							<ExtendedTooltip name="Decoration1ExtendedTooltip" id="27"/>
-						</PictureDecoration>
-					</ChildItems>
-				</UsualGroup>
 				<UsualGroup name="Group2" id="13">
 					<Group>Horizontal</Group>
 					<ShowTitle>false</ShowTitle>
@@ -89,6 +74,38 @@
 				</UsualGroup>
 			</ChildItems>
 		</UsualGroup>
+		<LabelDecoration name="Decoration3" id="50">
+			<Visible>false</Visible>
+			<Font ref="style:SmallTextFont" kind="StyleItem"/>
+			<Title formatted="false">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>If you would like to change your plan, contact sales@accountingsuite.com.</v8:content>
+				</v8:item>
+			</Title>
+			<ContextMenu name="Decoration3ContextMenu" id="51"/>
+			<ExtendedTooltip name="Decoration3ExtendedTooltip" id="52"/>
+		</LabelDecoration>
+		<LabelDecoration name="TimeLeftLabel" id="53">
+			<ContextMenu name="TimeLeftLabelContextMenu" id="54"/>
+			<ExtendedTooltip name="TimeLeftLabelExtendedTooltip" id="55"/>
+		</LabelDecoration>
+		<HTMLDocumentField name="Field1" id="33">
+			<DataPath>HyperlinkFields</DataPath>
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Test</v8:content>
+				</v8:item>
+			</Title>
+			<TitleLocation>None</TitleLocation>
+			<TitleHeight>2</TitleHeight>
+			<Width>22</Width>
+			<Height>5</Height>
+			<BorderColor>#FFFFFF</BorderColor>
+			<ContextMenu name="Field1ContextMenu" id="34"/>
+			<ExtendedTooltip name="Field1ExtendedTooltip" id="35"/>
+		</HTMLDocumentField>
 	</ChildItems>
 	<Attributes>
 		<Attribute name="HyperlinkFields" id="1">
@@ -152,66 +169,6 @@
 				</v8:item>
 			</ToolTip>
 			<Action>SignOut</Action>
-		</Command>
-		<Command name="Entrepreneur" id="4">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Entrepreneur ($15 /month)</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Entrepreneur</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Action>Entrepreneur</Action>
-		</Command>
-		<Command name="SmallBusiness" id="5">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Small business ($29 /month)</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Small business</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Action>SmallBusiness</Action>
-		</Command>
-		<Command name="Premium" id="6">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Premium ($49 /month)</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Premium</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Action>Premium</Action>
-		</Command>
-		<Command name="SubscribeButton" id="7">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Subscribe button</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Subscribe button</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Action>SubscribeButton</Action>
 		</Command>
 	</Commands>
 </Form>

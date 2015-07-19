@@ -450,6 +450,13 @@ Function GetAcceptableAccountTypesForChange (SourceType) Export
 	NewRow.Source =  Enums.AccountTypes.AccumulatedDepreciation;
 	NewRow.Acceptable =  Enums.AccountTypes.Bank;
 	
+	// Bank -> OtherCurrentAsset (only fof BOA role)
+	If IsInRole("BankAccounting") Then 
+		NewRow = MainTableOfAcceptableTypes.Add();
+		NewRow.Source =  Enums.AccountTypes.Bank;
+		NewRow.Acceptable =  Enums.AccountTypes.OtherCurrentAsset;
+	EndIf;
+	
 	
 	//// In case if will make adjustable matching list - just change source from table to other source.
 	Query = New Query;

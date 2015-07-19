@@ -6,8 +6,10 @@ Var EditingNewRow, Sorting, SkippingTableFieldsForChecks;
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
+	Object.ShowClassColumn = True;
+		
 	ApplyConditionalAppearance();
-	SetBalancesVisibility(ThisForm, Object.HideBalances);
+	SetColumnsVisibility(ThisForm, Object.ShowClassColumn);
 	
 EndProcedure
 
@@ -15,21 +17,13 @@ EndProcedure
 Procedure OnLoadDataFromSettingsAtServer(Settings)
 	
 	If ValueIsFilled(Object.DateStart) And ValueIsFilled(Object.DateEnd) And ValueIsFilled(Object.BankAccount) Then
+		BankAccountOnChangeAtServer();
 		FillBankTransactions();
-		SetBalancesVisibility(ThisForm, Object.HideBalances);
+		SetColumnsVisibility(ThisForm, Object.ShowClassColumn);
 	EndIf;
 	
-	If Object.EditBegBal Then 
-		Items.BalanceStart.Visible = False;
-		Items.BalanceStartEdit.Visible = True;
-	Else
-		Items.BalanceStart.Visible = True;
-		Items.BalanceStartEdit.Visible = False;
-	EndIf;
-
 	EndOfDateEnd = EndOfDay(Object.DateEnd);
 	PeriodPresentation = PeriodPresentation(Object.DateStart, EndOfDateEnd);
-	ApplyEditingMode();
 	
 EndProcedure
 
@@ -61,10 +55,6 @@ EndProcedure
 Procedure ChoiceProcessing(SelectedValue, ChoiceSource)
 	
 	If TypeOf(SelectedValue) = Type("Structure") Then
-		If (SelectedValue.BeginOfPeriod <> Object.DateStart) Or (SelectedValue.EndOfPeriod <> Object.DateEnd) Then
-			Object.DepositsTotal = 0;
-			Object.PaymentsTotal = 0;
-		EndIf;
 		Object.DateStart 	= SelectedValue.BeginOfPeriod;
 		Object.DateEnd		= SelectedValue.EndOfPeriod;
 	EndIf;
@@ -107,7 +97,7 @@ EndProcedure
 Procedure Settings(Command)
 	
 	Notify = New NotifyDescription("ProcessSettingsChange", ThisObject);
-	FormParameters = New Structure("HideBalances, DoNotUseJournalEntry, DoNotUseAdjustingJournalEntry, EditBegBal, DateStart, DateEnd, AccountInBank, BankAccount, UseBankReconciliationForBegBal, EditNumbersWithoutDecimalPoint");
+	FormParameters = New Structure("DateStart, DateEnd, AccountInBank, BankAccount, ShowClassColumn");
 	FillPropertyValues(FormParameters, Object);
 	OpenForm("DataProcessor.BankRegister.Form.Settings", FormParameters, ThisForm,,,, Notify, FormWindowOpeningMode.LockOwnerWindow);
 				
@@ -117,17 +107,31 @@ EndProcedure
 Procedure ProcessSettingsChange(Result, Parameters) Export
 	
 	If TypeOf(Result) = Type("Structure") Then
-		FillPropertyValues(Object, Result, "HideBalances, DoNotUseJournalEntry, DoNotUseAdjustingJournalEntry, EditBegBal, DateStart, DateEnd, AccountInBank, BankAccount, UseBankReconciliationForBegBal, EditNumbersWithoutDecimalPoint");
-		If Result.PeriodChanged Then
-			Object.DepositsTotal = 0;
-			Object.PaymentsTotal = 0;
-		EndIf;
+		FillPropertyValues(Object, Result, "DateStart, DateEnd, AccountInBank, BankAccount, ShowClassColumn");
 	Else
 		return;
 	EndIf;
 	
 	ProcessSettingsChangeAtServer();
 		
+EndProcedure
+
+&AtClient
+Procedure SortListAsc(Command)
+	
+	Sorting = True;
+	SortListAscAtServer();
+	Sorting = False;
+
+EndProcedure
+
+&AtClient
+Procedure SortListDesc(Command)
+	
+	Sorting = True;
+	SortListDescAtServer();
+	Sorting = False;
+
 EndProcedure
 
 #ENDREGION
@@ -138,13 +142,13 @@ EndProcedure
 Procedure BankAccountOnChange(Item)
 	
 	BankAccountOnChangeAtServer();
+	FillBankTransactions();
 	
 EndProcedure
 
 &AtClient
 Procedure BankTransactionsDepositOnChange(Item)
 	
-	ApplyNumberEditMode(Object, Items.BankTransactions.CurrentData.Deposit);
 	CurrentData = Items.BankTransactions.CurrentData;
 	If CurrentData.Deposit <> 0 Then
 		CurrentData.Payment = 0;
@@ -156,7 +160,6 @@ EndProcedure
 &AtClient
 Procedure BankTransactionsPaymentOnChange(Item)
 	
-	ApplyNumberEditMode(Object, Items.BankTransactions.CurrentData.Payment);
 	CurrentData = Items.BankTransactions.CurrentData;
 	If CurrentData.Payment <> 0 Then
 		CurrentData.Deposit = 0;
@@ -181,7 +184,7 @@ EndProcedure
 &AtClient
 Procedure BankTransactionsSelection(Item, SelectedRow, Field, StandardProcessing)
 	
-	If Field = Items.BankTransactionsDocument Then
+	If Field = Items.BankTransactionsOperationType Then
 		If ValueIsFilled(Items.BankTransactions.CurrentData.Document) Then
 			ShowValue(,Items.BankTransactions.CurrentData.Document);
 		EndIf;
@@ -205,15 +208,27 @@ Procedure BankTransactionsOnStartEdit(Item, NewRow, Clone)
 	
 	EditingNewRow = NewRow;
 	If Clone Then
-		NewRow						= Items.BankTransactions.CurrentData;
-		NewRow.Document 			= Undefined;
-		NewRow.OperationType 		= "";
-		NewRow.RefNumber 			= "";
-		NewRow.HasDocument 			= Undefined;
-		NewRow.AmountClosingBalance = 0;
-		NewRow.Cleared 				= "";
-		NewRow.Reconciled 			= "";
-		NewRow.TransactionID        = New UUID("00000000-0000-0000-0000-000000000000");
+		Item.CurrentData.Document 				= Undefined;
+		Item.CurrentData.OperationType 			= "";
+		Item.CurrentData.RefNumber 				= "";
+		Item.CurrentData.HasDocument 			= False;
+		Item.CurrentData.AmountClosingBalance 	= 0;
+		Item.CurrentData.Cleared 				= False;
+		Item.CurrentData.Reconciled 			= False;
+		Item.CurrentData.TransactionID        	= New UUID("00000000-0000-0000-0000-000000000000");
+		If Item.CurrentData.ClassSplit Then
+			Item.CurrentData.Class = PredefinedValue("Catalog.Classes.EmptyRef");
+			Item.CurrentData.ClassSplit = False;
+		EndIf;
+		If Item.CurrentData.CompanySplit Then
+			Item.CurrentData.Company = PredefinedValue("Catalog.Companies.EmptyRef");
+			Item.CurrentData.CompanySplit = False;
+		EndIf;
+		If Item.CurrentData.CategorySplit Then
+			Item.CurrentData.Category = PredefinedValue("ChartOfAccounts.ChartOfAccounts.EmptyRef");
+			Item.CurrentData.CategorySplit = False;
+		EndIf;
+		Item.CurrentData.DocumentSplit = False;
 	EndIf;
 	
 EndProcedure
@@ -313,6 +328,10 @@ EndProcedure
 &AtClient
 Procedure BankTransactionsBeforeAddRow(Item, Cancel, Clone, Parent, Folder, Parameter)
 	
+	If Clone Then
+		Cancel = True;
+		return;
+	EndIf;
 	//Allow only one line to be in the entry mode at a time
 	Transactions = Object.BankTransactions.FindRows(New Structure("HasDocument", False));
 	If Transactions.Count() > 0 Then
@@ -321,7 +340,7 @@ Procedure BankTransactionsBeforeAddRow(Item, Cancel, Clone, Parent, Folder, Para
 	Else
 		EditingNewRow = True;
 	EndIf;
-	
+		
 EndProcedure
 
 &AtClient
@@ -339,7 +358,7 @@ Procedure BankTransactionsCompanyOnChange(Item)
 	
 	//Implement editing mode for entering checks: after filling a customer, move to payment amount cell
 	If EditingNewRow Then
-		If (Object.EditingMode = 1) Or ((CustomerAttributes.Vendor = True) And (CustomerAttributes.Customer = False)) Then //Checks
+		If (CustomerAttributes.Vendor = True) And (CustomerAttributes.Customer = False) Then //Checks
 			If ValueIsFilled(Items.BankTransactions.CurrentData.Category) Then
 				SkippingTableFieldsForChecks 			= True;
 				Items.BankTransactionsCategory.ReadOnly = True;
@@ -352,19 +371,17 @@ Procedure BankTransactionsCompanyOnChange(Item)
 EndProcedure
 
 &AtClient
-Procedure EditingModeOnChange(Item)
-	
-	ApplyEditingMode();
-	
-EndProcedure
-
-&AtClient
 Procedure BankTransactionsOnActivateRow(Item)
 	
 	If EditingNewRow = Undefined Then
 		EditingNewRow = False;
 	EndIf;
 	If EditingNewRow Then
+		
+		If Items.BankTransactions.CurrentData = Undefined Then
+			return;
+		EndIf;
+		
 		If (Not ValueIsFilled(Items.BankTransactions.CurrentData.Period)) 
 			Or (Not ValueIsFilled(Items.BankTransactions.CurrentData.RefNumber)) Then
 			LastRow = GetLastRow();
@@ -407,22 +424,6 @@ Procedure BankTransactionsOnActivateCell(Item)
 EndProcedure
 
 &AtClient
-Procedure DepositsTotalOnChange(Item)
-	
-	ApplyNumberEditMode(Object, Object.DepositsTotal);
-	Object.DepositsDifference 	= Object.DepositsTotal - Object.DepositsEntered;
-	
-EndProcedure
-
-&AtClient
-Procedure PaymentsTotalOnChange(Item)
-	
-	ApplyNumberEditMode(Object, Object.PaymentsTotal);
-	Object.PaymentsDifference	= Object.PaymentsTotal - Object.PaymentsEntered;
-	
-EndProcedure
-
-&AtClient
 Procedure ChoosePeriod(Command)
 	
 	FormParameters = New Structure("BeginOfPeriod, EndOfPeriod", Object.DateStart, Object.DateEnd);
@@ -433,7 +434,6 @@ EndProcedure
 &AtClient
 Procedure BalanceStartEditOnChange(Item)
 	
-	ApplyNumberEditMode(Object, Object.BalanceStart);
 	Object.BalanceEnd		= Object.BalanceStart + Object.DepositsEntered - Object.PaymentsEntered;
 	
 EndProcedure
@@ -462,6 +462,17 @@ Procedure ProcessUserResponseOnRefNumberDuplicated(Result, Parameters) Export
 	
 EndProcedure
 
+&AtClient
+Function GetLastRow()
+	
+	If Object.BankTransactions.Count() > 1 Then
+		return Object.BankTransactions[Object.BankTransactions.Count()-2];
+	Else
+		return Undefined;
+	EndIf;
+	
+EndFunction
+
 #ENDREGION
 
 #REGION FORM_SERVER_FUNCTIONS
@@ -470,171 +481,109 @@ EndProcedure
 Procedure BankAccountOnChangeAtServer()
 	
 	//Find the corresponding account in bank
-	Object.BankAccount = Object.AccountInBank.AccountingAccount;
-	If Not ValueIsFilled(Object.BankAccount) Then
-		CommonUseClientServer.MessageToUser("Please, assign ACS account to the bank account. Bank account form -> Assigned to", Object, "AccountInBank");
-		return;
+	Object.AccountInBank = Catalogs.BankAccounts.EmptyRef();
+	Request = New Query("SELECT
+	                    |	BankAccounts.Ref
+	                    |FROM
+	                    |	Catalog.BankAccounts AS BankAccounts
+	                    |WHERE
+	                    |	BankAccounts.AccountingAccount = &AccountingAccount");
+	Request.SetParameter("AccountingAccount", Object.BankAccount);
+	Res = Request.Execute();
+	If Not Res.IsEmpty() Then
+		Sel = Res.Select();
+		Sel.Next();
+		Object.AccountInBank = Sel.Ref;
+	Else //Bank account not found. Need to create the new one
+		BeginTransaction(DataLockControlMode.Managed);
+		Block = New DataLock();
+		LockItem = Block.Add("Catalog.BankAccounts");
+		LockItem.Mode = DataLockMode.Exclusive;
+		Block.Lock();
+		Request = New Query("SELECT
+		                    |	BankAccounts.Ref
+		                    |FROM
+		                    |	Catalog.BankAccounts AS BankAccounts
+		                    |WHERE
+		                    |	BankAccounts.AccountingAccount = &AccountingAccount");
+		Request.SetParameter("AccountingAccount", Object.BankAccount);
+		Res = Request.Execute();
+		If Res.IsEmpty() Then
+			Bank = Catalogs.Banks.EmptyRef();
+			//Select Offline bank
+			//Try to find the Offline bank, if not found then create the new one
+			Request = New Query("SELECT
+			                    |	Banks.Ref
+			                    |FROM
+			                    |	Catalog.Banks AS Banks
+			                    |WHERE
+			                    |	Banks.Code = ""000000000""");
+			Res = Request.Execute();
+			If Res.IsEmpty() Then
+				SetPrivilegedMode(True);
+				OfflineBank = Catalogs.Banks.CreateItem();
+				OfflineBank.Code 		= "000000000";
+				OfflineBank.Description = "Offline bank";
+				OfflineBank.Write();
+				SetPrivilegedMode(False);
+				Bank = OfflineBank.Ref;
+			Else
+				Sel = Res.Select();
+				Sel.Next();
+				Bank = Sel.Ref;
+			EndIf;
+			NewAccount = Catalogs.BankAccounts.CreateItem();
+			NewAccount.Owner = Bank;
+			NewAccount.Description = Object.BankAccount.Description;
+			NewAccount.AccountingAccount = Object.BankAccount;
+			NewAccount.Write();
+			Object.AccountInBank = NewAccount.Ref;
+		Else
+			Sel = Res.Select();
+			Sel.Next();
+			Object.AccountInBank = Sel.Ref;
+		EndIf;	
+		CommitTransaction();
 	EndIf;
-	FillBankTransactions();
 		
 EndProcedure
 
 &AtServer
 Procedure FillBankTransactions(RecordersList = Undefined)
 	
-	If Not (Object.DoNotUseJournalEntry Or Object.DoNotUseAdjustingJournalEntry Or Object.UseBankReconciliationForBegBal Or RecordersList <> Undefined) Then
-		
-		Request = New Query("SELECT ALLOWED
-		                    |	GeneralJournalBalanceAndTurnovers.Recorder AS Recorder,
-		                    |	GeneralJournalBalanceAndTurnovers.Period AS Period,
-		                    |	GeneralJournalBalanceAndTurnovers.AmountRCClosingBalance,
-		                    |	GeneralJournalBalanceAndTurnovers.Recorder.PointInTime AS RecorderPointInTime,
-		                    |	GeneralJournalBalanceAndTurnovers.AmountRCOpeningBalance
-		                    |INTO Recorders
-		                    |FROM
-		                    |	AccountingRegister.GeneralJournal.BalanceAndTurnovers(&DateStart, &DateEnd, Recorder, , Account = &Account, , ) AS GeneralJournalBalanceAndTurnovers
-		                    |WHERE
-		                    |	CASE
-		                    |			WHEN &RecordersListIsSet = TRUE
-		                    |				THEN GeneralJournalBalanceAndTurnovers.Recorder IN (&RecordersList)
-		                    |			ELSE TRUE
-		                    |		END
-		                    |
-		                    |INDEX BY
-		                    |	Recorder
-		                    |;
-		                    |
-		                    |////////////////////////////////////////////////////////////////////////////////
-		                    |SELECT ALLOWED
-		                    |	Recorders.Recorder AS Recorder,
-		                    |	Recorders.Period,
-		                    |	MAX(ClassData.Class) AS Class,
-		                    |	MAX(ProjectData.Project) AS Project,
-		                    |	Recorders.AmountRCClosingBalance,
-		                    |	Recorders.RecorderPointInTime
-		                    |INTO RecordersWithClassesAndProjects
-		                    |FROM
-		                    |	Recorders AS Recorders
-		                    |		LEFT JOIN AccumulationRegister.ClassData AS ClassData
-		                    |		ON Recorders.Recorder = ClassData.Recorder
-		                    |		LEFT JOIN AccumulationRegister.ProjectData AS ProjectData
-		                    |		ON Recorders.Recorder = ProjectData.Recorder
-		                    |WHERE
-		                    |	NOT Recorders.Recorder IS NULL 
-		                    |	AND Recorders.Recorder <> UNDEFINED
-		                    |
-		                    |GROUP BY
-		                    |	Recorders.Recorder,
-		                    |	Recorders.Period,
-		                    |	Recorders.AmountRCClosingBalance,
-		                    |	Recorders.RecorderPointInTime
-		                    |
-		                    |INDEX BY
-		                    |	Recorder
-		                    |;
-		                    |
-		                    |////////////////////////////////////////////////////////////////////////////////
-		                    |SELECT ALLOWED
-		                    |	GeneralJournal.Recorder AS Document,
-		                    |	VALUETYPE(GeneralJournal.Recorder) AS OperationType,
-		                    |	GeneralJournal.Period AS Period,
-		                    |	ISNULL(GeneralJournal.Recorder.Company, BankTransactions.Company) AS Company,
-		                    |	CASE
-		                    |		WHEN GeneralJournal.RecordType = VALUE(AccountingRecordType.Debit)
-		                    |			THEN GeneralJournal.AmountRC
-		                    |		ELSE 0
-		                    |	END AS Deposit,
-		                    |	CASE
-		                    |		WHEN GeneralJournal.RecordType = VALUE(AccountingRecordType.Credit)
-		                    |			THEN GeneralJournal.AmountRC
-		                    |		ELSE 0
-		                    |	END AS Payment,
-		                    |	ISNULL(GeneralJournal1.Account, BankTransactions.Category) AS Category,
-		                    |	GeneralJournal.Recorder.Memo AS Memo,
-		                    |	ISNULL(RecordersWithClassesAndProjects.Class, BankTransactions.Class) AS Field1,
-		                    |	ISNULL(RecordersWithClassesAndProjects.Project, BankTransactions.Project) AS Field2,
-		                    |	TRUE AS HasDocument,
-		                    |	BankTransactions.ID AS TransactionID,
-		                    |	CASE
-		                    |		WHEN ISNULL(BankTransactions.Accepted, FALSE)
-		                    |			THEN ""C""
-		                    |		ELSE """"
-		                    |	END AS Cleared,
-		                    |	CASE
-		                    |		WHEN ISNULL(BankReconciliationBalance.AmountBalance, 0) = 0
-		                    |			THEN ""R""
-		                    |		ELSE """"
-		                    |	END AS Reconciled,
-		                    |	RecordersWithClassesAndProjects.AmountRCClosingBalance AS AmountClosingBalance,
-		                    |	RecordersWithClassesAndProjects.RecorderPointInTime,
-		                    |	CASE
-		                    |		WHEN GeneralJournal.Recorder REFS Document.Check
-		                    |			THEN GeneralJournal.Recorder.Number
-		                    |		ELSE """"
-		                    |	END AS RefNumber,
-		                    |	CASE
-		                    |		WHEN GeneralJournal.Recorder.Company IS NULL 
-		                    |			THEN BankTransactions.Company.Code
-		                    |		ELSE GeneralJournal.Recorder.Company.Code
-		                    |	END AS CompanyCode
-		                    |FROM
-		                    |	RecordersWithClassesAndProjects AS RecordersWithClassesAndProjects
-		                    |		LEFT JOIN AccountingRegister.GeneralJournal AS GeneralJournal
-		                    |			LEFT JOIN AccountingRegister.GeneralJournal AS GeneralJournal1
-		                    |			ON GeneralJournal.Recorder = GeneralJournal1.Recorder
-		                    |				AND GeneralJournal.Account <> GeneralJournal1.Account
-		                    |				AND (GeneralJournal.AmountRC = GeneralJournal1.AmountRC
-		                    |					OR GeneralJournal.AmountRC = -1 * GeneralJournal1.AmountRC)
-		                    |		ON RecordersWithClassesAndProjects.Recorder = GeneralJournal.Recorder
-		                    |			AND (GeneralJournal.Account = &Account)
-		                    |		LEFT JOIN InformationRegister.BankTransactions AS BankTransactions
-		                    |		ON RecordersWithClassesAndProjects.Recorder = BankTransactions.Document
-		                    |			AND (BankTransactions.BankAccount = &AccountInBank)
-		                    |		LEFT JOIN AccumulationRegister.BankReconciliation.Balance(
-		                    |				,
-		                    |				Document IN
-		                    |					(SELECT
-		                    |						Recorders.Recorder
-		                    |					FROM
-		                    |						Recorders AS Recorders)) AS BankReconciliationBalance
-		                    |		ON RecordersWithClassesAndProjects.Recorder = BankReconciliationBalance.Document
-		                    |			AND (BankReconciliationBalance.Account = &Account)
-		                    |
-		                    |ORDER BY
-		                    |	RecordersWithClassesAndProjects.RecorderPointInTime
-		                    |;
-		                    |
-		                    |////////////////////////////////////////////////////////////////////////////////
-		                    |SELECT TOP 1
-		                    |	Recorders.AmountRCOpeningBalance AS AmountOpeningBalance
-		                    |FROM
-		                    |	Recorders AS Recorders
-		                    |WHERE
-		                    |	&RecordersListIsSet = FALSE
-		                    |
-		                    |ORDER BY
-		                    |	Recorders.Period,
-		                    |	Recorders.Recorder.PointInTime
-							|;
-							|");
-	Else
-		
 		Request = New Query();
 		Request.Text = "SELECT ALLOWED
 		               |	GeneralJournalBalanceAndTurnovers.Recorder AS Recorder,
 		               |	GeneralJournalBalanceAndTurnovers.Period AS Period,
 		               |	GeneralJournalBalanceAndTurnovers.AmountRCClosingBalance,
 		               |	GeneralJournalBalanceAndTurnovers.Recorder.PointInTime AS RecorderPointInTime,
-		               |	GeneralJournalBalanceAndTurnovers.AmountRCOpeningBalance
+		               |	GeneralJournalBalanceAndTurnovers.AmountRCOpeningBalance,
+		               |	COUNT(DISTINCT GeneralJournalTurnovers.Account) AS GLAccountCount,
+		               |	MAX(GeneralJournalTurnovers.Account) AS GLAccount,
+		               |	GeneralJournalBalanceAndTurnovers.AmountRCTurnoverDr AS Debit,
+		               |	GeneralJournalBalanceAndTurnovers.AmountRCTurnoverCr AS Credit
 		               |INTO Recorders
 		               |FROM
 		               |	AccountingRegister.GeneralJournal.BalanceAndTurnovers(&DateStart, &DateEnd, Recorder, , Account = &Account, , ) AS GeneralJournalBalanceAndTurnovers
+		               |		FULL JOIN AccountingRegister.GeneralJournal.Turnovers(&DateStart, &DateEnd, Recorder, Account <> &Account, , ) AS GeneralJournalTurnovers
+		               |		ON GeneralJournalBalanceAndTurnovers.Recorder = GeneralJournalTurnovers.Recorder
+		               |			AND (GeneralJournalBalanceAndTurnovers.AmountRCTurnover = GeneralJournalTurnovers.AmountRCTurnover
+		               |				OR GeneralJournalBalanceAndTurnovers.AmountRCTurnover = -1 * GeneralJournalTurnovers.AmountRCTurnover)
 		               |WHERE
 		               |	CASE
 		               |			WHEN &RecordersListIsSet = TRUE
 		               |				THEN GeneralJournalBalanceAndTurnovers.Recorder IN (&RecordersList)
 		               |			ELSE TRUE
 		               |		END
+		               |
+		               |GROUP BY
+		               |	GeneralJournalBalanceAndTurnovers.Recorder,
+		               |	GeneralJournalBalanceAndTurnovers.Period,
+		               |	GeneralJournalBalanceAndTurnovers.AmountRCClosingBalance,
+		               |	GeneralJournalBalanceAndTurnovers.Recorder.PointInTime,
+		               |	GeneralJournalBalanceAndTurnovers.AmountRCOpeningBalance,
+		               |	GeneralJournalBalanceAndTurnovers.AmountRCTurnoverDr,
+		               |	GeneralJournalBalanceAndTurnovers.AmountRCTurnoverCr
 		               |
 		               |INDEX BY
 		               |	Recorder
@@ -646,8 +595,17 @@ Procedure FillBankTransactions(RecordersList = Undefined)
 		               |	Recorders.Period,
 		               |	MAX(ClassData.Class) AS Class,
 		               |	MAX(ProjectData.Project) AS Project,
+		               |	Recorders.AmountRCOpeningBalance,
 		               |	Recorders.AmountRCClosingBalance,
-		               |	Recorders.RecorderPointInTime
+		               |	Recorders.RecorderPointInTime,
+		               |	COUNT(DISTINCT ClassData.Class) AS ClassesCount,
+		               |	COUNT(DISTINCT ProjectData.Project) AS ProjectsCount,
+		               |	MAX(CashFlowData.Company) AS Company,
+		               |	COUNT(DISTINCT CashFlowData.Company) AS CompanyCount,
+		               |	Recorders.GLAccountCount,
+		               |	Recorders.GLAccount,
+		               |	Recorders.Debit,
+		               |	Recorders.Credit
 		               |INTO RecordersWithClassesAndProjects
 		               |FROM
 		               |	Recorders AS Recorders
@@ -655,23 +613,22 @@ Procedure FillBankTransactions(RecordersList = Undefined)
 		               |		ON Recorders.Recorder = ClassData.Recorder
 		               |		LEFT JOIN AccumulationRegister.ProjectData AS ProjectData
 		               |		ON Recorders.Recorder = ProjectData.Recorder
+		               |		LEFT JOIN AccumulationRegister.CashFlowData AS CashFlowData
+		               |		ON Recorders.Recorder = CashFlowData.Recorder
 		               |WHERE
 		               |	NOT Recorders.Recorder IS NULL 
 		               |	AND Recorders.Recorder <> UNDEFINED
-		               |	AND CASE
-		               |			WHEN Recorders.Recorder REFS Document.GeneralJournalEntry
-		               |				THEN Recorders.Recorder.Adjusting = TRUE
-		               |							AND &DoNotUseAdjustingJournalEntry = FALSE
-		               |						OR Recorders.Recorder.Adjusting = FALSE
-		               |							AND &DoNotUseJournalEntry = FALSE
-		               |			ELSE TRUE
-		               |		END
 		               |
 		               |GROUP BY
 		               |	Recorders.Recorder,
 		               |	Recorders.Period,
 		               |	Recorders.AmountRCClosingBalance,
-		               |	Recorders.RecorderPointInTime
+		               |	Recorders.RecorderPointInTime,
+		               |	Recorders.GLAccountCount,
+		               |	Recorders.GLAccount,
+		               |	Recorders.Debit,
+		               |	Recorders.Credit,
+		               |	Recorders.AmountRCOpeningBalance
 		               |
 		               |INDEX BY
 		               |	Recorder
@@ -679,58 +636,59 @@ Procedure FillBankTransactions(RecordersList = Undefined)
 		               |
 		               |////////////////////////////////////////////////////////////////////////////////
 		               |SELECT ALLOWED
-		               |	GeneralJournal.Recorder AS Document,
-		               |	VALUETYPE(GeneralJournal.Recorder) AS OperationType,
-		               |	GeneralJournal.Period AS Period,
-		               |	ISNULL(GeneralJournal.Recorder.Company, BankTransactions.Company) AS Company,
-		               |	CASE
-		               |		WHEN GeneralJournal.RecordType = VALUE(AccountingRecordType.Debit)
-		               |			THEN GeneralJournal.AmountRC
-		               |		ELSE 0
-		               |	END AS Deposit,
-		               |	CASE
-		               |		WHEN GeneralJournal.RecordType = VALUE(AccountingRecordType.Credit)
-		               |			THEN GeneralJournal.AmountRC
-		               |		ELSE 0
-		               |	END AS Payment,
-		               |	ISNULL(GeneralJournal1.Account, BankTransactions.Category) AS Category,
-		               |	GeneralJournal.Recorder.Memo AS Memo,
-		               |	ISNULL(RecordersWithClassesAndProjects.Class, BankTransactions.Class) AS Field1,
-		               |	ISNULL(RecordersWithClassesAndProjects.Project, BankTransactions.Project) AS Field2,
+		               |	RecordersWithClassesAndProjects.Recorder AS Document,
+		               |	VALUETYPE(RecordersWithClassesAndProjects.Recorder) AS OperationType,
+		               |	RecordersWithClassesAndProjects.Period AS Period,
+		               |	RecordersWithClassesAndProjects.Company AS Company,
+		               |	RecordersWithClassesAndProjects.Debit AS Deposit,
+		               |	RecordersWithClassesAndProjects.Credit AS Payment,
+		               |	RecordersWithClassesAndProjects.GLAccount AS Category,
+		               |	RecordersWithClassesAndProjects.Recorder.Memo AS Memo,
+		               |	RecordersWithClassesAndProjects.Class AS Class,
+		               |	RecordersWithClassesAndProjects.Project AS Field2,
 		               |	TRUE AS HasDocument,
 		               |	BankTransactions.ID AS TransactionID,
 		               |	CASE
-		               |		WHEN ISNULL(BankTransactions.Accepted, FALSE)
-		               |			THEN ""C""
-		               |		ELSE """"
-		               |	END AS Cleared,
+		               |		WHEN ISNULL(BankReconciliationBalance.AmountBalance, 0) = 0
+		               |			THEN TRUE
+		               |		ELSE FALSE
+		               |	END AS Reconciled,
 		               |	CASE
 		               |		WHEN ISNULL(BankReconciliationBalance.AmountBalance, 0) = 0
 		               |			THEN ""R""
+		               |		WHEN ISNULL(BankTransactions.Accepted, FALSE)
+		               |			THEN ""C""
 		               |		ELSE """"
-		               |	END AS Reconciled,
+		               |	END AS TransactionStatus,
+		               |	RecordersWithClassesAndProjects.AmountRCOpeningBalance AS AmountOpeningBalance,
 		               |	RecordersWithClassesAndProjects.AmountRCClosingBalance AS AmountClosingBalance,
 		               |	RecordersWithClassesAndProjects.RecorderPointInTime,
+		               |	RecordersWithClassesAndProjects.Recorder.Number AS RefNumber,
+		               |	RecordersWithClassesAndProjects.Company.Code AS CompanyCode,
 		               |	CASE
-		               |		WHEN GeneralJournal.Recorder REFS Document.Check
-		               |			THEN GeneralJournal.Recorder.Number
-		               |		ELSE """"
-		               |	END AS RefNumber,
+		               |		WHEN RecordersWithClassesAndProjects.ClassesCount > 1
+		               |			THEN TRUE
+		               |		ELSE FALSE
+		               |	END AS ClassSplit,
 		               |	CASE
-		               |		WHEN GeneralJournal.Recorder.Company IS NULL 
-		               |			THEN BankTransactions.Company.Code
-		               |		ELSE GeneralJournal.Recorder.Company.Code
-		               |	END AS CompanyCode
+		               |		WHEN RecordersWithClassesAndProjects.GLAccountCount <> 1
+		               |			THEN TRUE
+		               |		ELSE FALSE
+		               |	END AS CategorySplit,
+		               |	CASE
+		               |		WHEN RecordersWithClassesAndProjects.CompanyCount > 1
+		               |			THEN TRUE
+		               |		ELSE FALSE
+		               |	END AS CompanySplit,
+		               |	CASE
+		               |		WHEN RecordersWithClassesAndProjects.ClassesCount > 1
+		               |				OR RecordersWithClassesAndProjects.GLAccountCount <> 1
+		               |				OR RecordersWithClassesAndProjects.CompanyCount > 1
+		               |			THEN TRUE
+		               |		ELSE FALSE
+		               |	END AS DocumentSplit
 		               |FROM
 		               |	RecordersWithClassesAndProjects AS RecordersWithClassesAndProjects
-		               |		LEFT JOIN AccountingRegister.GeneralJournal AS GeneralJournal
-		               |			LEFT JOIN AccountingRegister.GeneralJournal AS GeneralJournal1
-		               |			ON GeneralJournal.Recorder = GeneralJournal1.Recorder
-		               |				AND GeneralJournal.Account <> GeneralJournal1.Account
-		               |				AND (GeneralJournal.AmountRC = GeneralJournal1.AmountRC
-		               |					OR GeneralJournal.AmountRC = -1 * GeneralJournal1.AmountRC)
-		               |		ON RecordersWithClassesAndProjects.Recorder = GeneralJournal.Recorder
-		               |			AND (GeneralJournal.Account = &Account)
 		               |		LEFT JOIN InformationRegister.BankTransactions AS BankTransactions
 		               |		ON RecordersWithClassesAndProjects.Recorder = BankTransactions.Document
 		               |			AND (BankTransactions.BankAccount = &AccountInBank)
@@ -746,69 +704,19 @@ Procedure FillBankTransactions(RecordersList = Undefined)
 		               |
 		               |ORDER BY
 		               |	RecordersWithClassesAndProjects.RecorderPointInTime
-					   |;
-					   |";
-	If Not Object.UseBankReconciliationForBegBal Then 
-		Request.Text = Request.Text + "SELECT TOP 1
-		                              |	Recorders.AmountRCOpeningBalance AS AmountOpeningBalance
-		                              |FROM
-		                              |	Recorders AS Recorders
-		                              |WHERE
-		                              |	&RecordersListIsSet = FALSE
-		                              |
-		                              |ORDER BY
-		                              |	Recorders.Period,
-		                              |	Recorders.Recorder.PointInTime
-		                              |;
-		                              |
-		                              |////////////////////////////////////////////////////////////////////////////////
-		                              |SELECT ALLOWED
-		                              |	ISNULL(JETurnovers.AmountTurnover, 0) AS AmountTurnover
-		                              |FROM
-		                              |	(SELECT
-		                              |		SUM(GeneralJournalBalanceAndTurnovers.AmountRCTurnover) AS AmountTurnover
-		                              |	FROM
-		                              |		AccountingRegister.GeneralJournal.BalanceAndTurnovers(, &BeforeDateStart, Recorder, , Account = &Account, , ) AS GeneralJournalBalanceAndTurnovers
-		                              |	WHERE
-		                              |		CASE
-		                              |				WHEN GeneralJournalBalanceAndTurnovers.Recorder REFS Document.GeneralJournalEntry
-		                              |					THEN GeneralJournalBalanceAndTurnovers.Recorder.Adjusting = TRUE
-		                              |								AND &DoNotUseAdjustingJournalEntry = TRUE
-		                              |							OR GeneralJournalBalanceAndTurnovers.Recorder.Adjusting = FALSE
-		                              |								AND &DoNotUseJournalEntry = TRUE
-		                              |				ELSE FALSE
-		                              |			END) AS JETurnovers
-		                              |";
-	Else
-		Request.Text = Request.Text + "////////////////////////////////////////////////////////////////////////////////
-									  |	SELECT ALLOWED
-		                              |	BankReconciliation.EndingBalance AS ReconcilliationEndingBalance
-		                              |FROM
-		                              |	(SELECT
-		                              |		MAX(BankReconciliation.Date) AS Date
-		                              |	FROM
-		                              |		Document.BankReconciliation AS BankReconciliation
-		                              |	WHERE
-		                              |		BankReconciliation.BankAccount = &Account
-		                              |		AND BankReconciliation.Posted = TRUE
-		                              |		AND BankReconciliation.Date < &BankRegisterDateStart) AS LatestReconcilliation
-		                              |		INNER JOIN Document.BankReconciliation AS BankReconciliation
-		                              |		ON LatestReconcilliation.Date = BankReconciliation.Date
-		                              |			AND (BankReconciliation.BankAccount = &Account)
-		                              |			AND (BankReconciliation.Posted)
-		                              |";
-					   
-		Request.SetParameter("BankRegisterDateStart", Object.DateStart);					   
-	EndIf;
-		Request.SetParameter("DoNotUseAdjustingJournalEntry", Object.DoNotUseAdjustingJournalEntry);
-		Request.SetParameter("DoNotUseJournalEntry", Object.DoNotUseJournalEntry);
-		If ValueIsFilled(Object.DateStart) Then
-			Request.SetParameter("BeforeDateStart", New Boundary(Object.DateStart, BoundaryType.Excluding));
-		Else
-			Request.SetParameter("BeforeDateStart", New Boundary('00010102', BoundaryType.Excluding));
-		EndIf;
-	EndIf;						
-						
+		               |;
+		               |
+		               |////////////////////////////////////////////////////////////////////////////////
+		               |SELECT TOP 1
+		               |	Recorders.AmountRCOpeningBalance AS AmountOpeningBalance
+		               |FROM
+		               |	Recorders AS Recorders
+		               |WHERE
+		               |	Recorders.Recorder = UNDEFINED
+		               |
+		               |ORDER BY
+		               |	Recorders.Period";
+								
 	Request.SetParameter("Account", Object.BankAccount);
 	Request.SetParameter("AccountInBank", Object.AccountInBank);
 	Request.SetParameter("DateStart", New Boundary(Object.DateStart, BoundaryType.Including));
@@ -818,31 +726,18 @@ Procedure FillBankTransactions(RecordersList = Undefined)
 	If RecordersList = Undefined Then
 		BatchResult			= Request.ExecuteBatch();
 		BankTransactions 	= BatchResult[2].Unload();
+		BalanceStartTable	= BatchResult[3].Unload();
 				
 		Object.BankTransactions.Load(BankTransactions);
 				
-		If Not Object.UseBankReconciliationForBegBal Then
-			BankBalances		= BatchResult[3].Unload();
-		    If BankBalances.Count() > 0 Then
-				Object.BalanceStart = BankBalances[0].AmountOpeningBalance;
-				If Object.DoNotUseJournalEntry Or Object.DoNotUseAdjustingJournalEntry Then
-					JETurnovers		= BatchResult[4].Unload();
-					If JETurnovers.Count() > 0 Then
-						Object.BalanceStart = Object.BalanceStart - JETurnovers[0].AmountTurnover;
-					EndIf;
-				EndIf;
-			Else
-				Object.BalanceStart = 0;
-			EndIf;
+		If BankTransactions.Count() > 0 Then
+			Object.BalanceStart = BankTransactions[0].AmountOpeningBalance;
+		ElsIf BalanceStartTable.Count() > 0 Then
+			Object.BalanceStart = BalanceStartTable[0].AmountOpeningBalance;
 		Else
-			BankBalances 		= BatchResult[3].Unload(); 
-			If BankBalances.Count() > 0 Then
-				Object.BalanceStart = BankBalances[0].ReconcilliationEndingBalance;
-			Else
-				Object.BalanceStart = 0;
-			EndIf;
+			Object.BalanceStart = 0;
 		EndIf;
-		
+				
 		//Fix the current order in the Sequence column
 		index = 1;
 		For Each BankTransaction In Object.BankTransactions Do
@@ -874,8 +769,6 @@ Procedure FillBankTransactions(RecordersList = Undefined)
 	//Recalculating totals
 	Object.DepositsEntered 	= Object.BankTransactions.Total("Deposit");
 	Object.PaymentsEntered	= Object.BankTransactions.Total("Payment");
-	Object.DepositsDifference	= Object.DepositsTotal - Object.DepositsEntered;
-	Object.PaymentsDifference	= Object.PaymentsTotal - Object.PaymentsEntered;
 	Object.BalanceEnd		= Object.BalanceStart + Object.DepositsEntered - Object.PaymentsEntered;
 	
 EndProcedure
@@ -898,6 +791,22 @@ Procedure CreateTransactionsAtServer(RowID = Undefined)
 	BTRecordset = InformationRegisters.BankTransactions.CreateRecordSet();
 	While i < Transactions.Count() Do
 		Tran = Transactions[i];
+		
+		//Fill the latest date for the document to keep the current order
+		LastDate = Tran.Period;
+		If Not ValueIsFilled(Tran.Document) Then
+			BegOfPeriod = BegOfDay(Tran.Period);
+			EndOfPeriod = EndOfDay(Tran.Period);
+			For Each TranItem In CurrentTransactions Do
+				If TranItem.Period >= BegOfPeriod And TranItem.Period <= EndOfPeriod And TranItem.Period > LastDate Then
+					LastDate = TranItem.Period;
+				EndIf;
+			EndDo;
+			If LastDate < EndOfPeriod Then
+				LastDate = LastDate + 1;
+			EndIf;
+			Tran.Period = LastDate;
+		EndIf;
 		
 		//Perform filling check
 		If (Tran.Payment = 0 And Tran.Deposit = 0) Or (Not ValueIsFilled(Tran.Category)) Or (Not ValueIsFilled(Tran.Period)) Then
@@ -924,28 +833,39 @@ Procedure CreateTransactionsAtServer(RowID = Undefined)
 		UpdatedRecorders.Add(Tran.Document);
 		
 		//Add (save) current row to a information register
-		BTRecordset.Clear();
-		BTRecordSet.Filter.Reset();
-		If NOT ValueIsFilled(Tran.TransactionID) then
-			Tran.TransactionID = New UUID();
+		If ValueIsFilled(Tran.TransactionStatus) Then //If Cleared
+			
+			BTRecordset.Clear();
+			BTRecordSet.Filter.Reset();
+			If NOT ValueIsFilled(Tran.TransactionID) then
+				Tran.TransactionID = New UUID();
+			EndIf;
+			BTRecordset.Filter.ID.Set(Tran.TransactionID);
+			BTRecordset.Write(True);
+			
+			BTRecordset.Clear();
+			BTRecordset.Filter.TransactionDate.Set(Tran.Period);
+			BTRecordset.Filter.BankAccount.Set(Object.AccountInBank);
+			BTRecordset.Filter.Company.Set(Tran.Company);
+			BTRecordset.Filter.ID.Set(Tran.TransactionID);
+			NewRecord = BTRecordset.Add();
+			FillPropertyValues(NewRecord, Tran);
+			NewRecord.TransactionDate = Tran.Period;
+			NewRecord.BankAccount 	= Object.AccountInBank;
+			NewRecord.Description	= Tran.Memo;
+			NewRecord.Amount 		= ?(Tran.Deposit > 0, Tran.Deposit, -1*Tran.Payment);
+			NewRecord.Accepted 		= True;
+			NewRecord.ID			= Tran.TransactionID;
+			BTRecordset.Write(True);
+			
+		ElsIf ValueIsFilled(Tran.TransactionID) Then // if a user cleared status then remove bank transaction
+			
+			BTRecordset.Clear();
+			BTRecordSet.Filter.Reset();
+			BTRecordset.Filter.ID.Set(Tran.TransactionID);
+			BTRecordset.Write(True);
+			
 		EndIf;
-		BTRecordset.Filter.ID.Set(Tran.TransactionID);
-		BTRecordset.Write(True);
-		
-		BTRecordset.Clear();
-		BTRecordset.Filter.TransactionDate.Set(Tran.Period);
-		BTRecordset.Filter.BankAccount.Set(Object.AccountInBank);
-		BTRecordset.Filter.Company.Set(Tran.Company);
-		BTRecordset.Filter.ID.Set(Tran.TransactionID);
-		NewRecord = BTRecordset.Add();
-		FillPropertyValues(NewRecord, Tran);
-		NewRecord.TransactionDate = Tran.Period;
-		NewRecord.BankAccount 	= Object.AccountInBank;
-		NewRecord.Description	= Tran.Memo;
-		NewRecord.Amount 		= ?(Tran.Deposit > 0, Tran.Deposit, -1*Tran.Payment);
-		NewRecord.Accepted 		= True;
-		NewRecord.ID			= Tran.TransactionID;
-		BTRecordset.Write(True);
 		
 		i = i + 1;
 	EndDo;
@@ -1032,6 +952,9 @@ Function Create_DocumentDeposit(Tran)
 		NewDeposit 		= Documents.Deposit.CreateDocument();
 	EndIf;
 	NewDeposit.Date 			= Tran.Period;
+	If ValueIsFilled(Tran.RefNumber) Then
+		NewDeposit.Number = Tran.RefNumber;
+	EndIf;
 	NewDeposit.BankAccount 		= Object.BankAccount;
 	NewDeposit.Memo 			= Tran.Memo;
 	NewDeposit.DocumentTotal 	= Tran.Deposit;
@@ -1143,56 +1066,104 @@ Procedure ApplyConditionalAppearance()
 	
 	ElementCA.Appearance.SetParameterValue("Readonly", True); 
 	
-	//Ref Number can be used for Checks only
+	//For reconciled documents only readonly access
 	ElementCA = CA.Items.Add(); 
 	
-	FieldAppearance = ElementCA.Fields.Items.Add(); 
-	FieldAppearance.Field = New DataCompositionField("BankTransactionsRefNumber"); 
-	 FieldAppearance.Use = True; 
-
-	FilterElement = ElementCA.Filter.Items.Add(Type("DataCompositionFilterItem")); // current row filter 
-	FilterElement.LeftValue 		= New DataCompositionField("Object.BankTransactions.OperationType"); 
-	FilterElement.ComparisonType 	= DataCompositionComparisonType.NotEqual; 
-	FilterElement.RightValue 		= "Payment"; 
-	FilterElement.Use				= True;
+	AddDataCompositionFields(ElementCA, Items.BankTransactions.ChildItems);
 	
 	FilterElement = ElementCA.Filter.Items.Add(Type("DataCompositionFilterItem")); // current row filter 
-	FilterElement.LeftValue 		= New DataCompositionField("Object.BankTransactions.OperationType"); 
-	FilterElement.ComparisonType 	= DataCompositionComparisonType.NotEqual; 
-	FilterElement.RightValue 		= ""; 
+	FilterElement.LeftValue 		= New DataCompositionField("Object.BankTransactions.Reconciled"); 
+	FilterElement.ComparisonType 	= DataCompositionComparisonType.Equal; 
+	FilterElement.RightValue 		= True; 
 	FilterElement.Use				= True;
-			
+	
 	ElementCA.Appearance.SetParameterValue("Readonly", True); 
 	
-	//If PaymentsDifference <> 0 Then highlight in red color
+	//For reconciled documents display "R" in status column
 	ElementCA = CA.Items.Add(); 
 	
 	FieldAppearance = ElementCA.Fields.Items.Add(); 
-	FieldAppearance.Field = New DataCompositionField("PaymentsDifference"); 
+	FieldAppearance.Field = New DataCompositionField("BankTransactionsTransactionStatus"); 
  	FieldAppearance.Use = True; 
-
+	
 	FilterElement = ElementCA.Filter.Items.Add(Type("DataCompositionFilterItem")); // current row filter 
-	FilterElement.LeftValue 		= New DataCompositionField("Object.PaymentsDifference"); 
-	FilterElement.ComparisonType 	= DataCompositionComparisonType.NotEqual; 
-	FilterElement.RightValue 		= 0; 
+	FilterElement.LeftValue 		= New DataCompositionField("Object.BankTransactions.Reconciled"); 
+	FilterElement.ComparisonType 	= DataCompositionComparisonType.Equal; 
+	FilterElement.RightValue 		= True; 
 	FilterElement.Use				= True;
 	
-	ElementCA.Appearance.SetParameterValue("TextColor", WebColors.Red); 
+	DefaultFont = ElementCA.Appearance.FindParameterValue(New DataCompositionParameter("Font")).Value;
+	BoldFont	= New Font(DefaultFont,,,True,,,); //Bold font
+	ElementCA.Appearance.SetParameterValue("Font", BoldFont); 
+	ElementCA.Appearance.SetParameterValue("Text", "R"); 
 	
-	//If DepositsDifference <> 0 Then highlight in red color
+	//If several companies in one document display -SPLIT-
 	ElementCA = CA.Items.Add(); 
 	
 	FieldAppearance = ElementCA.Fields.Items.Add(); 
-	FieldAppearance.Field = New DataCompositionField("DepositsDifference"); 
+	FieldAppearance.Field = New DataCompositionField("BankTransactionsCompany"); 
  	FieldAppearance.Use = True; 
-
+	
 	FilterElement = ElementCA.Filter.Items.Add(Type("DataCompositionFilterItem")); // current row filter 
-	FilterElement.LeftValue 		= New DataCompositionField("Object.DepositsDifference"); 
-	FilterElement.ComparisonType 	= DataCompositionComparisonType.NotEqual; 
-	FilterElement.RightValue 		= 0; 
+	FilterElement.LeftValue 		= New DataCompositionField("Object.BankTransactions.CompanySplit"); 
+	FilterElement.ComparisonType 	= DataCompositionComparisonType.Equal; 
+	FilterElement.RightValue 		= True; 
 	FilterElement.Use				= True;
 	
-	ElementCA.Appearance.SetParameterValue("TextColor", WebColors.Red); 
+	DefaultFont = ElementCA.Appearance.FindParameterValue(New DataCompositionParameter("Font")).Value;
+	BoldFont	= New Font(DefaultFont,,,True,,,); //Bold font
+	ElementCA.Appearance.SetParameterValue("Font", BoldFont); 
+	ElementCA.Appearance.SetParameterValue("Text", "-Split-"); 
+	
+	//If several G/L accounts in one document display -SPLIT-
+	ElementCA = CA.Items.Add(); 
+	
+	FieldAppearance = ElementCA.Fields.Items.Add(); 
+	FieldAppearance.Field = New DataCompositionField("BankTransactionsCategory"); 
+ 	FieldAppearance.Use = True; 
+	
+	FilterElement = ElementCA.Filter.Items.Add(Type("DataCompositionFilterItem")); // current row filter 
+	FilterElement.LeftValue 		= New DataCompositionField("Object.BankTransactions.CategorySplit"); 
+	FilterElement.ComparisonType 	= DataCompositionComparisonType.Equal; 
+	FilterElement.RightValue 		= True; 
+	FilterElement.Use				= True;
+	
+	DefaultFont = ElementCA.Appearance.FindParameterValue(New DataCompositionParameter("Font")).Value;
+	BoldFont	= New Font(DefaultFont,,,True,,,); //Bold font
+	ElementCA.Appearance.SetParameterValue("Font", BoldFont); 
+	ElementCA.Appearance.SetParameterValue("Text", "-Split-"); 
+	ElementCA.Appearance.SetParameterValue("MarkIncomplete", False); 
+	
+	//If several Classes in one document display -SPLIT-
+	ElementCA = CA.Items.Add(); 
+	
+	FieldAppearance = ElementCA.Fields.Items.Add(); 
+	FieldAppearance.Field = New DataCompositionField("BankTransactionsClass"); 
+ 	FieldAppearance.Use = True; 
+	
+	FilterElement = ElementCA.Filter.Items.Add(Type("DataCompositionFilterItem")); // current row filter 
+	FilterElement.LeftValue 		= New DataCompositionField("Object.BankTransactions.ClassSplit"); 
+	FilterElement.ComparisonType 	= DataCompositionComparisonType.Equal; 
+	FilterElement.RightValue 		= True; 
+	FilterElement.Use				= True;
+	
+	DefaultFont = ElementCA.Appearance.FindParameterValue(New DataCompositionParameter("Font")).Value;
+	BoldFont	= New Font(DefaultFont,,,True,,,); //Bold font
+	ElementCA.Appearance.SetParameterValue("Font", BoldFont); 
+	ElementCA.Appearance.SetParameterValue("Text", "-Split-"); 
+	
+	//For reconciled documents only readonly access
+	ElementCA = CA.Items.Add(); 
+	
+	AddDataCompositionFields(ElementCA, Items.BankTransactions.ChildItems);
+	
+	FilterElement = ElementCA.Filter.Items.Add(Type("DataCompositionFilterItem")); // current row filter 
+	FilterElement.LeftValue 		= New DataCompositionField("Object.BankTransactions.DocumentSplit"); 
+	FilterElement.ComparisonType 	= DataCompositionComparisonType.Equal; 
+	FilterElement.RightValue 		= True; 
+	FilterElement.Use				= True;
+	
+	ElementCA.Appearance.SetParameterValue("Readonly", True); 
 	
 	//Display for a Company Code as well as Description
 	Request = New Query("SELECT ALLOWED
@@ -1221,6 +1192,12 @@ Procedure ApplyConditionalAppearance()
 		FilterElement.ComparisonType 	= DataCompositionComparisonType.NotEqual; 
 		FilterElement.RightValue 		= Catalogs.Companies.EmptyRef(); 
 		FilterElement.Use				= True;
+		
+		FilterElement = ElementCA.Filter.Items.Add(Type("DataCompositionFilterItem")); // current row filter 
+		FilterElement.LeftValue 		= New DataCompositionField("Object.BankTransactions.CompanySplit"); 
+		FilterElement.ComparisonType 	= DataCompositionComparisonType.Equal; 
+		FilterElement.RightValue 		= False; 
+		FilterElement.Use				= True;
 	
 		ElementCA.Appearance.SetParameterValue("Text", Company.Code + " " + Company.Description); 	
 		
@@ -1247,25 +1224,18 @@ Procedure AddDataCompositionFields(ElementCA, ChildItems, ExceptingFields = "")
 EndProcedure
 
 &AtClientAtServerNoContext
-Procedure SetBalancesVisibility(ThisForm, HideBalances)
+Procedure SetColumnsVisibility(ThisForm, ShowClassColumn)
 	
 	Items 	= ThisForm.Items;
-	Items.BankTransactionsAmountClosingBalance.Visible 	= Not HideBalances;
+	Items.BankTransactionsClass.Visible 	= ShowClassColumn;
 	
 EndProcedure
 
 &AtServer
 Procedure ProcessSettingsChangeAtServer()
 	
-	SetBalancesVisibility(ThisForm, Object.HideBalances);
+	SetColumnsVisibility(ThisForm, Object.ShowClassColumn);
 	
-	If Object.EditBegBal Then 
-		Items.BalanceStart.Visible = False;
-		Items.BalanceStartEdit.Visible = True;
-	Else
-		Items.BalanceStart.Visible = True;
-		Items.BalanceStartEdit.Visible = False;
-	EndIf;
 	EndOfDateEnd = EndOfDay(Object.DateEnd);
 	PeriodPresentation = PeriodPresentation(Object.DateStart, EndOfDateEnd);
 	
@@ -1273,86 +1243,38 @@ Procedure ProcessSettingsChangeAtServer()
 	
 EndProcedure
 
-&AtClient
-Procedure SortListAsc(Command)
+&AtServer
+Procedure SortListAscAtServer()
 	
-	Sorting = True;
 	If (Items.BankTransactions.CurrentItem.Name = "BankTransactionsPeriod") Then
 		Object.BankTransactions.Sort("Period Asc, Sequence Asc");
 	Else
 		Object.BankTransactions.Sort(StrReplace(Items.BankTransactions.CurrentItem.Name, "BankTransactions", "") + " ASC");
 	EndIf;
-	Sorting = False;
-	
+
+	For Each Item In Items.BankTransactionsGroup.ChildItems Do
+		Item.Title = StrReplace(Item.Title, "↑ ", "");
+		Item.Title = StrReplace(Item.Title, "↓ ", "");
+	EndDo;
+	Items.BankTransactions.CurrentItem.Title = "↑ " + Items.BankTransactions.CurrentItem.Title;
+
 EndProcedure
 
-&AtClient
-Procedure SortListDesc(Command)
+&AtServer
+Procedure SortListDescAtServer()
 	
-	Sorting = True;
 	If (Items.BankTransactions.CurrentItem.Name = "BankTransactionsPeriod") Then
 		Object.BankTransactions.Sort("Period Desc, Sequence Desc");
 	Else
 		Object.BankTransactions.Sort(StrReplace(Items.BankTransactions.CurrentItem.Name, "BankTransactions", "") + " DESC");
 	EndIf;
-	Sorting = False;
-
-EndProcedure
-
-&AtClientAtServerNoContext
-Procedure ApplyNumberEditMode(Object, EditValue)
-	
-	If Object.EditNumbersWithoutDecimalPoint Then
-		EditValue = EditValue/100;
-	EndIf;
+	For Each Item In Items.BankTransactionsGroup.ChildItems Do
+		Item.Title = StrReplace(Item.Title, "↑ ", "");
+		Item.Title = StrReplace(Item.Title, "↓ ", "");
+	EndDo;
+	Items.BankTransactions.CurrentItem.Title = "↓ " + Items.BankTransactions.CurrentItem.Title;
 	
 EndProcedure
-
-&AtServer
-Procedure ApplyEditingMode()
-	
-	If Object.EditingMode = 0 Then //Show all
-		Items.BankTransactions.RowFilter = Undefined;
-		Items.BankTransactionsDeposit.Visible = True;
-		Items.BankTransactionsPayment.Visible = True;
-	ElsIf Object.EditingMode = 1 Then //Checks
-		Items.BankTransactions.RowFilter = New FixedStructure("Deposit", 0);
-		Items.BankTransactionsDeposit.Visible = False;
-		Items.BankTransactionsPayment.Visible = True;
-	ElsIf Object.EditingMode = 2 Then //Deposits
-		Items.BankTransactions.RowFilter = New FixedStructure("Payment", 0);
-		Items.BankTransactionsPayment.Visible = False;
-		Items.BankTransactionsDeposit.Visible = True;
-	EndIf;
-		
-EndProcedure
-
-&AtClient
-Function GetLastRow()
-	
-	If Object.EditingMode = 0 Then //All
-		If Object.BankTransactions.Count() > 1 Then
-			return Object.BankTransactions[Object.BankTransactions.Count()-2];
-		Else
-			return Undefined;
-		EndIf;
-	ElsIf Object.EditingMode = 1 Then //Checks
-		FoundChecks = Object.BankTransactions.FindRows(New Structure("Deposit", 0));
-		If FoundChecks.Count() > 1 Then
-			return FoundChecks[FoundChecks.Count()-2];
-		Else
-			return Undefined;
-		EndIf;
-	ElsIf Object.EditingMode = 2 Then //Deposits
-		FoundDeposits = Object.BankTransactions.FindRows(New Structure("Payment", 0));
-		If FoundDeposits.Count() > 1 Then
-			return FoundDeposits[FoundDeposits.Count()-2];
-		Else
-			return Undefined;
-		EndIf;
-	EndIf;
-	
-EndFunction
 
 #ENDREGION
 
@@ -1428,6 +1350,9 @@ Procedure QIF_UploadTransactionsAtServer(TempStorageAddress)
 			NumberTransaction = NumberTransaction + 1;
 			NewTransaction    = False;
 			NewRow            = New Structure("TransactionDate, Amount, CheckNumber, Description", '00010101', 0, "", "");
+			DescriptionVT     = New ValueTable;
+			DescriptionVT.Columns.Add("Description", New TypeDescription("String"));
+			DescriptionVT.Columns.Add("Order", New TypeDescription("String"));
 		EndIf;
 		
 		//D
@@ -1462,14 +1387,41 @@ Procedure QIF_UploadTransactionsAtServer(TempStorageAddress)
 		
 		//P
 		If Left(CurrentLine, 1) = "P" Then
-			DataOfRow = Mid(CurrentLine, 2, StrLen(CurrentLine) - 1);
+			PreDescription = "";
+			PreDescription = Mid(CurrentLine, 2, StrLen(CurrentLine) - 1);
 			
-			NewRow.Description = DataOfRow;
+			NewRowDescriptionVT = DescriptionVT.Add();
+			NewRowDescriptionVT.Description = PreDescription; 
+			NewRowDescriptionVT.Order       = "A" + LeadingZeros(LineNumber, 6);
+		EndIf;
+		
+		//M
+		If Left(CurrentLine, 1) = "M" Then
+			PreDescription = "";
+			PreDescription = Mid(CurrentLine, 2, StrLen(CurrentLine) - 1);
+			
+			NewRowDescriptionVT = DescriptionVT.Add();
+			NewRowDescriptionVT.Description = PreDescription; 
+			NewRowDescriptionVT.Order       = "Z" + LeadingZeros(LineNumber, 6);
 		EndIf;
 		
 		//end ^
 		If Left(CurrentLine, 1) = "^" Then
+			//MEMO
+			CheckArray          = New Array;
+			PreviousDescription = "";
+			DescriptionVT.Sort("Order");
+			For Each CurrentDescriptionVT In DescriptionVT Do
+				
+				If CheckArray.Find(CurrentDescriptionVT.Description) = Undefined Then
+					CheckArray.Add(CurrentDescriptionVT.Description);	
+					
+					NewRow.Description = ?(NewRow.Description = "", CurrentDescriptionVT.Description, NewRow.Description + " " + CurrentDescriptionVT.Description); 	
+				EndIf; 
+				
+			EndDo;
 			
+			//
 			NewTransaction = True;
 			
 			RecordTransaction(NewRow, NumberTransaction, TableOfRules);
@@ -1500,8 +1452,39 @@ Procedure QBO_QFX_OFX_UploadTransactionsAtServer(TempStorageAddress)
 		CommonUseClientServer.MessageToUser(TextMessage);
 		Return;
 	EndTry;
+	
+	//--//
+	TemproraryText     = SourceText.GetText();
+	TemproraryText     = StrReplace(TemproraryText, "</STMTTRN>",       Chars.CR + "</STMTTRN>");
+	TemproraryText     = StrReplace(TemproraryText, "<BANKACCTTO>",     Chars.CR + "<BANKACCTTO>");
+	TemproraryText     = StrReplace(TemproraryText, "<CCACCTTO>",       Chars.CR + "<CCACCTTO>");
+	TemproraryText     = StrReplace(TemproraryText, "<CHECKNUM>",       Chars.CR + "<CHECKNUM>");
+	TemproraryText     = StrReplace(TemproraryText, "<CORRECTACTION>",  Chars.CR + "<CORRECTACTION>");
+	TemproraryText     = StrReplace(TemproraryText, "<CORRECTFITID>",   Chars.CR + "<CORRECTFITID>");
+	TemproraryText     = StrReplace(TemproraryText, "<CURRENCY>",       Chars.CR + "<CURRENCY>");
+	TemproraryText     = StrReplace(TemproraryText, "<DTAVAIL>",        Chars.CR + "<DTAVAIL>");
+	TemproraryText     = StrReplace(TemproraryText, "<DTPOSTED>",       Chars.CR + "<DTPOSTED>");
+	TemproraryText     = StrReplace(TemproraryText, "<DTUSER>",         Chars.CR + "<DTUSER>");
+	TemproraryText     = StrReplace(TemproraryText, "<EXTDNAME>",       Chars.CR + "<EXTDNAME>");
+	TemproraryText     = StrReplace(TemproraryText, "<FITID>",          Chars.CR + "<FITID>");
+	TemproraryText     = StrReplace(TemproraryText, "<IMAGEDATA>",      Chars.CR + "<IMAGEDATA>");
+	TemproraryText     = StrReplace(TemproraryText, "<INV401KSOURCE>",  Chars.CR + "<INV401KSOURCE>");
+	TemproraryText     = StrReplace(TemproraryText, "<MEMO>",           Chars.CR + "<MEMO>");
+	TemproraryText     = StrReplace(TemproraryText, "<MVNT.PAYEE>",     Chars.CR + "<MVNT.PAYEE>");
+	TemproraryText     = StrReplace(TemproraryText, "<NAME>",           Chars.CR + "<NAME>");
+	TemproraryText     = StrReplace(TemproraryText, "<ORIGCURRENCY>",   Chars.CR + "<ORIGCURRENCY>");
+	TemproraryText     = StrReplace(TemproraryText, "<PAYEE>",          Chars.CR + "<PAYEE>");
+	TemproraryText     = StrReplace(TemproraryText, "<PAYEEID>",        Chars.CR + "<PAYEEID>");
+	TemproraryText     = StrReplace(TemproraryText, "<REFNUM>",         Chars.CR + "<REFNUM>");
+	TemproraryText     = StrReplace(TemproraryText, "<SIC>",            Chars.CR + "<SIC>");
+	TemproraryText     = StrReplace(TemproraryText, "<SRVRTID>",        Chars.CR + "<SRVRTID>");
+	TemproraryText     = StrReplace(TemproraryText, "<STMTTRN>",        Chars.CR + "<STMTTRN>");
+	TemproraryText     = StrReplace(TemproraryText, "<TRNAMT>",         Chars.CR + "<TRNAMT>");
+	TemproraryText     = StrReplace(TemproraryText, "<TRNTYPE>",        Chars.CR + "<TRNTYPE>");
+	SourceText.SetText(TemproraryText); 
+	//--//
 
-	LineCountTotal = SourceText.LineCount();
+	LineCountTotal    = SourceText.LineCount();
 	
 	NewSTMTTRN        = False;
 	NumberTransaction = 0;
@@ -1520,6 +1503,7 @@ Procedure QBO_QFX_OFX_UploadTransactionsAtServer(TempStorageAddress)
 		
 		//<DTPOSTED>
 		If NewSTMTTRN And Find(CurrentLine, "<DTPOSTED>") > 0 Then
+			CurrentLine   = StrReplace(CurrentLine, "</DTPOSTED>", "");
 			StartPosition = Find(CurrentLine, "<DTPOSTED>") + 10;
 			Year  = Mid(CurrentLine, StartPosition, 4);
 			Month = Mid(CurrentLine, StartPosition + 4, 2);
@@ -1530,6 +1514,7 @@ Procedure QBO_QFX_OFX_UploadTransactionsAtServer(TempStorageAddress)
 		
 		//<TRNAMT>
 		If NewSTMTTRN And Find(CurrentLine, "<TRNAMT>") > 0 Then
+			CurrentLine   = StrReplace(CurrentLine, "</TRNAMT>", "");
 			StartPosition = Find(CurrentLine, "<TRNAMT>") + 8;
 			CountOfCharacters = StrLen(CurrentLine) - StartPosition + 1;
 			
@@ -1538,6 +1523,7 @@ Procedure QBO_QFX_OFX_UploadTransactionsAtServer(TempStorageAddress)
 		
 		//<CHECKNUM>
 		If NewSTMTTRN And Find(CurrentLine, "<CHECKNUM>") > 0 Then
+			CurrentLine   = StrReplace(CurrentLine, "</CHECKNUM>", "");
 			StartPosition = Find(CurrentLine, "<CHECKNUM>") + 10;
 			CountOfCharacters = StrLen(CurrentLine) - StartPosition + 1;
 			
@@ -1546,10 +1532,32 @@ Procedure QBO_QFX_OFX_UploadTransactionsAtServer(TempStorageAddress)
 		
 		//<NAME>
 		If NewSTMTTRN And Find(CurrentLine, "<NAME>") > 0 Then
+			CurrentLine   = StrReplace(CurrentLine, "</NAME>", "");
 			StartPosition = Find(CurrentLine, "<NAME>") + 6;
 			CountOfCharacters = StrLen(CurrentLine) - StartPosition + 1;
 			
-			NewRow.Description = Mid(CurrentLine, StartPosition, CountOfCharacters);
+			PreDescription = "";
+			PreDescription = Mid(CurrentLine, StartPosition, CountOfCharacters);
+			If NewRow.Description = "" Then
+				NewRow.Description = PreDescription;
+			ElsIf NewRow.Description <> PreDescription Then
+				NewRow.Description = NewRow.Description + " " + PreDescription;
+			EndIf;
+		EndIf;
+		
+		//<MEMO>
+		If NewSTMTTRN And Find(CurrentLine, "<MEMO>") > 0 Then
+			CurrentLine   = StrReplace(CurrentLine, "</MEMO>", "");
+			StartPosition = Find(CurrentLine, "<MEMO>") + 6;
+			CountOfCharacters = StrLen(CurrentLine) - StartPosition + 1;
+			
+			PreDescription = "";
+			PreDescription = Mid(CurrentLine, StartPosition, CountOfCharacters);
+			If NewRow.Description = "" Then
+				NewRow.Description = PreDescription;
+			ElsIf NewRow.Description <> PreDescription Then
+				NewRow.Description = NewRow.Description + " " + PreDescription;
+			EndIf;
 		EndIf;
 		
 		//</STMTTRN>
@@ -1677,7 +1685,7 @@ Procedure IIF_UploadTransactionsAtServer(TempStorageAddress)
 	
 	LineCountTotal = SourceText.LineCount();
 	
-	StructureOfTransaction = New Structure("DATE, AMOUNT, DOCNUM, NAME");
+	StructureOfTransaction = New Structure("DATE, AMOUNT, DOCNUM, NAME, MEMO");
 	HeaderFound            = False;
 	NumberTransaction      = 0;
 	
@@ -1693,13 +1701,15 @@ Procedure IIF_UploadTransactionsAtServer(TempStorageAddress)
 			For Each RowParts In HeaderParts Do
 				
 				If Find("DATE", RowParts) Then
-					StructureOfTransaction.Insert("DATE", HeaderParts.Find(RowParts));
+					StructureOfTransaction.Insert("DATE",   HeaderParts.Find(RowParts));
 				ElsIf Find("AMOUNT", RowParts) Then
 					StructureOfTransaction.Insert("AMOUNT", HeaderParts.Find(RowParts));
 				ElsIf Find("DOCNUM", RowParts) Then
 					StructureOfTransaction.Insert("DOCNUM", HeaderParts.Find(RowParts));
 				ElsIf Find("NAME", RowParts) Then
-					StructureOfTransaction.Insert("NAME", HeaderParts.Find(RowParts));
+					StructureOfTransaction.Insert("NAME",   HeaderParts.Find(RowParts));
+				ElsIf Find("MEMO", RowParts) Then
+					StructureOfTransaction.Insert("MEMO",   HeaderParts.Find(RowParts));
 				EndIf;
 				
 			EndDo;
@@ -1773,7 +1783,26 @@ Procedure IIF_UploadTransactionsAtServer(TempStorageAddress)
 			If StructureOfTransaction.NAME <> Undefined Then
 				DataOfRow = StructureOfLine[StructureOfTransaction.NAME];
 				
-				NewRow.Description = DataOfRow;
+				PreDescription = "";
+				PreDescription = DataOfRow;
+				If NewRow.Description = "" Then
+					NewRow.Description = PreDescription;
+				ElsIf NewRow.Description <> PreDescription Then
+					NewRow.Description = NewRow.Description + " " + PreDescription;
+				EndIf;
+			EndIf;
+			
+			//MEMO
+			If StructureOfTransaction.MEMO <> Undefined Then
+				DataOfRow = StructureOfLine[StructureOfTransaction.MEMO];
+				
+				PreDescription = "";
+				PreDescription = DataOfRow;
+				If NewRow.Description = "" Then
+					NewRow.Description = PreDescription;
+				ElsIf NewRow.Description <> PreDescription Then
+					NewRow.Description = NewRow.Description + " " + PreDescription;
+				EndIf;
 			EndIf;
 			
 			RecordTransaction(NewRow, NumberTransaction, TableOfRules);
@@ -1834,12 +1863,12 @@ Procedure RecordTransaction(NewRow, NumberTransaction, TableOfRules)
 		CheckNumberResult = CommonUseServerCall.CheckNumberAllowed(NewRow.CheckNumber, Undefined, Object.BankAccount);
 		If CheckNumberResult.DuplicatesFound Then
 			If Not CheckNumberResult.Allow Then
-				TextMessage = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = 'The bank transaction # %1 from %2 (%3 %4) does not upload because it''s has duplication check number %5!'"), NumberTransaction, Format(NewRow.TransactionDate, "DLF=D"), NewRow.Description, NewRow.Amount, NewRow.CheckNumber);
+				TextMessage = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = 'Check #%1 was not uploaded as that check number already exists in the system.  Enable duplicate check numbers in Settings --> Features.'"), NewRow.CheckNumber);
 				CommonUseClientServer.MessageToUser(TextMessage);
 				
 				Return;	
 			Else
-				TextMessage = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = 'The bank transaction # %1 from %2 (%3 %4) has duplication check number %5!'"), NumberTransaction, Format(NewRow.TransactionDate, "DLF=D"), NewRow.Description, NewRow.Amount, NewRow.CheckNumber);
+				TextMessage = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = 'Check #%1 was uploaded, but another transaction has the same check number.  Please check to ensure it is not a duplicate transaction.'"), NewRow.CheckNumber);
 				CommonUseClientServer.MessageToUser(TextMessage);
 			EndIf;
 		EndIf;
@@ -1914,6 +1943,107 @@ Function GetCompanyByMatch(SearchString, TableOfRules)
 	EndIf;
 	
 	Return FoundCompany; 
+	
+EndFunction
+
+&AtClient
+Procedure BankAccountStartChoice(Item, ChoiceData, StandardProcessing)
+	
+	StandardProcessing = False;
+	ChoiceData = new ValueList();
+	ChoiceData.LoadValues(FillBankAccountChoiceListAtServer());
+	
+EndProcedure
+
+&AtServerNoContext
+Function FillBankAccountChoiceListAtServer()
+	
+	Request = New Query("SELECT
+	                    |	ChartOfAccounts.Ref
+	                    |FROM
+	                    |	ChartOfAccounts.ChartOfAccounts AS ChartOfAccounts
+	                    |WHERE
+	                    |	(ChartOfAccounts.AccountType = VALUE(Enum.AccountTypes.Bank)
+	                    |			OR ChartOfAccounts.AccountType = VALUE(Enum.AccountTypes.OtherCurrentLiability)
+	                    |				AND ChartOfAccounts.CreditCard = TRUE)");
+	ResTable = Request.Execute().Unload();
+	return ResTable.UnloadColumn("Ref");
+	
+EndFunction
+
+&AtClient
+Procedure Reconcile(Command)
+	
+	If Not (ValueIsFilled(Object.DateStart) And ValueIsFilled(Object.DateEnd)) Then
+		ShowMessageBox(, "Please, choose the Period first!",, "Bank Register");
+		return;
+	EndIf;
+	
+	BankReconciliation = GetBankReconciliation(Object.BankAccount, Object.DateStart, Object.DateEnd);
+	Notify = New NotifyDescription("UpdateRegister", ThisObject);
+	If ValueIsFilled(BankReconciliation) Then
+		OpenForm("Document.BankReconciliation.ObjectForm", New Structure("Key", BankReconciliation),,,,, Notify);
+	Else
+		OpenForm("Document.BankReconciliation.ObjectForm", New Structure("BankAccount, StatementDate", Object.BankAccount, Object.DateEnd),,,,, Notify);
+	EndIf;
+	
+EndProcedure
+
+&AtServerNoContext
+Function GetBankReconciliation(BankAccount, DateStart, DateEnd)
+	
+	Request = New Query("SELECT
+	                    |	BankReconciliation.Ref
+	                    |FROM
+	                    |	(SELECT
+	                    |		MAX(BankReconciliation.Date) AS Date,
+	                    |		BankReconciliation.BankAccount AS BankAccount
+	                    |	FROM
+	                    |		Document.BankReconciliation AS BankReconciliation
+	                    |	WHERE
+	                    |		BankReconciliation.BankAccount = &BankAccount
+	                    |		AND BankReconciliation.Date >= &DateStart
+	                    |		AND BankReconciliation.Date <= &DateEnd
+	                    |		AND BankReconciliation.DeletionMark = FALSE
+	                    |	
+	                    |	GROUP BY
+	                    |		BankReconciliation.BankAccount) AS LastReconciliation
+	                    |		INNER JOIN Document.BankReconciliation AS BankReconciliation
+	                    |		ON LastReconciliation.BankAccount = BankReconciliation.BankAccount
+	                    |			AND LastReconciliation.Date = BankReconciliation.Date
+	                    |WHERE
+	                    |	BankReconciliation.DeletionMark = FALSE");
+	Request.SetParameter("BankAccount", BankAccount);
+	Request.SetParameter("DateStart", BegOfDay(DateStart));
+	Request.SetParameter("DateEnd", EndOfDay(DateEnd));
+	Res = Request.Execute();
+	If Not Res.IsEmpty() Then
+		Sel = Res.Select();
+		Sel.Next();
+		return Sel.Ref;
+	Else
+		return Documents.BankReconciliation.EmptyRef();
+	EndIf;
+	
+EndFunction
+
+&AtClient
+Procedure UpdateRegister(ClosureResult, AdditionalParameters) Export
+	
+	FillBankTransactions();
+	
+EndProcedure
+
+Function LeadingZeros(Number, NumberOfZeros)
+
+	StringNumber = String(Number);
+	ZerosNeeded = NumberOfZeros - StrLen(StringNumber);
+	NumberWithZeros = "";
+	For i = 1 to ZerosNeeded Do
+		NumberWithZeros = NumberWithZeros + "0";
+	EndDo;
+	
+	Return NumberWithZeros + StringNumber;
 	
 EndFunction
 

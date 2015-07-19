@@ -28,7 +28,7 @@
 			<ExtendedTooltip name="Group1ExtendedTooltip" id="78"/>
 			<ChildItems>
 				<InputField name="BankAccount" id="1">
-					<DataPath>Object.AccountInBank</DataPath>
+					<DataPath>Object.BankAccount</DataPath>
 					<Title>
 						<v8:item>
 							<v8:lang>en</v8:lang>
@@ -41,6 +41,7 @@
 					<ExtendedTooltip name="BankAccountExtendedTooltip" id="3"/>
 					<Events>
 						<Event name="OnChange">BankAccountOnChange</Event>
+						<Event name="StartChoice">BankAccountStartChoice</Event>
 					</Events>
 				</InputField>
 				<UsualGroup name="PeriodGroup" id="119">
@@ -129,7 +130,7 @@
 							<Type>CommandBarButton</Type>
 							<Representation>PictureAndText</Representation>
 							<OnlyInAllActions>true</OnlyInAllActions>
-							<CommandName>Form.Item.BankTransactions.StandardCommand.Copy</CommandName>
+							<CommandName>4:0ae4bea5-23be-42a7-b69e-97b11b29c453</CommandName>
 							<ExtendedTooltip name="ButtonCopyExtendedTooltip" id="84"/>
 						</Button>
 						<ButtonGroup name="Group7" id="216">
@@ -167,6 +168,7 @@
 								</Button>
 								<Button name="UploadTransactions" id="230">
 									<Type>CommandBarButton</Type>
+									<Visible>false</Visible>
 									<CommandName>Form.Command.UploadTransactions</CommandName>
 									<ExtendedTooltip name="UploadTransactionsExtendedTooltip" id="231"/>
 								</Button>
@@ -174,64 +176,11 @@
 						</ButtonGroup>
 					</ChildItems>
 				</CommandBar>
-				<RadioButtonField name="EditingMode" id="218">
-					<DataPath>Object.EditingMode</DataPath>
-					<Title>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Show</v8:content>
-						</v8:item>
-					</Title>
-					<TitleLocation>Left</TitleLocation>
-					<RadioButtonType>Tumbler</RadioButtonType>
-					<ChoiceList>
-						<xr:Item>
-							<xr:Presentation/>
-							<xr:CheckState>0</xr:CheckState>
-							<xr:Value xsi:type="FormChoiceListDesTimeValue">
-								<Presentation>
-									<v8:item>
-										<v8:lang>en</v8:lang>
-										<v8:content>DEPOSITS</v8:content>
-									</v8:item>
-								</Presentation>
-								<Value xsi:type="xs:decimal">2</Value>
-							</xr:Value>
-						</xr:Item>
-						<xr:Item>
-							<xr:Presentation/>
-							<xr:CheckState>0</xr:CheckState>
-							<xr:Value xsi:type="FormChoiceListDesTimeValue">
-								<Presentation>
-									<v8:item>
-										<v8:lang>en</v8:lang>
-										<v8:content>ALL</v8:content>
-									</v8:item>
-								</Presentation>
-								<Value xsi:type="xs:decimal">0</Value>
-							</xr:Value>
-						</xr:Item>
-						<xr:Item>
-							<xr:Presentation/>
-							<xr:CheckState>0</xr:CheckState>
-							<xr:Value xsi:type="FormChoiceListDesTimeValue">
-								<Presentation>
-									<v8:item>
-										<v8:lang>en</v8:lang>
-										<v8:content>CHECKS</v8:content>
-									</v8:item>
-								</Presentation>
-								<Value xsi:type="xs:decimal">1</Value>
-							</xr:Value>
-						</xr:Item>
-					</ChoiceList>
-					<Font ref="style:SmallTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
-					<ContextMenu name="EditingModeContextMenu" id="219"/>
-					<ExtendedTooltip name="EditingModeExtendedTooltip" id="220"/>
-					<Events>
-						<Event name="OnChange">EditingModeOnChange</Event>
-					</Events>
-				</RadioButtonField>
+				<Button name="Reconcile" id="243">
+					<Type>UsualButton</Type>
+					<CommandName>Form.Command.Reconcile</CommandName>
+					<ExtendedTooltip name="ReconcileExtendedTooltip" id="244"/>
+				</Button>
 				<CommandBar name="Group4" id="100">
 					<Width>21</Width>
 					<HorizontalStretch>false</HorizontalStretch>
@@ -249,7 +198,7 @@
 							<Type>CommandBarButton</Type>
 							<Representation>PictureAndText</Representation>
 							<OnlyInAllActions>false</OnlyInAllActions>
-							<CommandName>Form.Item.BankTransactions.StandardCommand.Copy</CommandName>
+							<CommandName>4:0ae4bea5-23be-42a7-b69e-97b11b29c453</CommandName>
 							<ExtendedTooltip name="ButtonCopy1ExtendedTooltip" id="105"/>
 						</Button>
 						<Button name="ButtonDelete" id="214">
@@ -277,6 +226,11 @@
 							<CommandName>Form.Item.BankTransactions.StandardCommand.OutputList</CommandName>
 							<ExtendedTooltip name="ButtonOutputList1ExtendedTooltip" id="111"/>
 						</Button>
+						<Button name="ChangeForm" id="253">
+							<Type>CommandBarButton</Type>
+							<CommandName>Form.StandardCommand.CustomizeForm</CommandName>
+							<ExtendedTooltip name="ChangeFormExtendedTooltip" id="254"/>
+						</Button>
 						<Button name="Settings" id="197">
 							<Type>CommandBarButton</Type>
 							<Representation>PictureAndText</Representation>
@@ -291,12 +245,16 @@
 		<Table name="BankTransactions" id="4">
 			<Representation>List</Representation>
 			<CommandBarLocation>None</CommandBarLocation>
-			<DefaultItem>true</DefaultItem>
 			<UseAlternationRowColor>true</UseAlternationRowColor>
 			<AutoInsertNewRow>true</AutoInsertNewRow>
 			<EnableStartDrag>true</EnableStartDrag>
 			<EnableDrag>true</EnableDrag>
 			<DataPath>Object.BankTransactions</DataPath>
+			<CommandSet>
+				<ExcludedCommand>Copy</ExcludedCommand>
+				<ExcludedCommand>MoveUp</ExcludedCommand>
+				<ExcludedCommand>MoveDown</ExcludedCommand>
+			</CommandSet>
 			<SearchStringLocation>None</SearchStringLocation>
 			<ViewStatusLocation>None</ViewStatusLocation>
 			<SearchControlLocation>None</SearchControlLocation>
@@ -366,6 +324,12 @@
 					<ChildItems>
 						<InputField name="BankTransactionsPeriod" id="35">
 							<DataPath>Object.BankTransactions.Period</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Date</v8:content>
+								</v8:item>
+							</Title>
 							<EditMode>EnterOnInput</EditMode>
 							<Width>8</Width>
 							<HorizontalStretch>false</HorizontalStretch>
@@ -374,6 +338,12 @@
 						</InputField>
 						<InputField name="BankTransactionsRefNumber" id="72">
 							<DataPath>Object.BankTransactions.RefNumber</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Ref #</v8:content>
+								</v8:item>
+							</Title>
 							<EditMode>EnterOnInput</EditMode>
 							<Width>15</Width>
 							<ContextMenu name="BankTransactionsRefNumberContextMenu" id="73"/>
@@ -384,6 +354,12 @@
 						</InputField>
 						<InputField name="BankTransactionsCompany" id="14">
 							<DataPath>Object.BankTransactions.Company</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Customer/Vendor</v8:content>
+								</v8:item>
+							</Title>
 							<EditMode>EnterOnInput</EditMode>
 							<InputHint>
 								<v8:item>
@@ -399,6 +375,12 @@
 						</InputField>
 						<InputField name="BankTransactionsCategory" id="23">
 							<DataPath>Object.BankTransactions.Category</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>G/L Account</v8:content>
+								</v8:item>
+							</Title>
 							<EditMode>EnterOnInput</EditMode>
 							<InputHint>
 								<v8:item>
@@ -411,6 +393,12 @@
 						</InputField>
 						<InputField name="BankTransactionsMemo" id="26">
 							<DataPath>Object.BankTransactions.Memo</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Memo</v8:content>
+								</v8:item>
+							</Title>
 							<EditMode>EnterOnInput</EditMode>
 							<Width>15</Width>
 							<InputHint>
@@ -422,18 +410,14 @@
 							<ContextMenu name="BankTransactionsMemoContextMenu" id="27"/>
 							<ExtendedTooltip name="BankTransactionsMemoExtendedTooltip" id="28"/>
 						</InputField>
-						<InputField name="BankTransactionsDeposit" id="17">
-							<DataPath>Object.BankTransactions.Deposit</DataPath>
-							<EditMode>EnterOnInput</EditMode>
-							<Width>11</Width>
-							<ContextMenu name="BankTransactionsDepositContextMenu" id="18"/>
-							<ExtendedTooltip name="BankTransactionsDepositExtendedTooltip" id="19"/>
-							<Events>
-								<Event name="OnChange">BankTransactionsDepositOnChange</Event>
-							</Events>
-						</InputField>
 						<InputField name="BankTransactionsPayment" id="20">
 							<DataPath>Object.BankTransactions.Payment</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Payment</v8:content>
+								</v8:item>
+							</Title>
 							<EditMode>EnterOnInput</EditMode>
 							<Width>11</Width>
 							<ContextMenu name="BankTransactionsPaymentContextMenu" id="21"/>
@@ -442,15 +426,89 @@
 								<Event name="OnChange">BankTransactionsPaymentOnChange</Event>
 							</Events>
 						</InputField>
-						<LabelField name="BankTransactionsDocument" id="56">
-							<DataPath>Object.BankTransactions.Document</DataPath>
+						<InputField name="BankTransactionsDeposit" id="17">
+							<DataPath>Object.BankTransactions.Deposit</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Deposit</v8:content>
+								</v8:item>
+							</Title>
+							<EditMode>EnterOnInput</EditMode>
+							<Width>11</Width>
+							<ContextMenu name="BankTransactionsDepositContextMenu" id="18"/>
+							<ExtendedTooltip name="BankTransactionsDepositExtendedTooltip" id="19"/>
+							<Events>
+								<Event name="OnChange">BankTransactionsDepositOnChange</Event>
+							</Events>
+						</InputField>
+						<InputField name="BankTransactionsClass" id="238">
+							<DataPath>Object.BankTransactions.Class</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Class</v8:content>
+								</v8:item>
+							</Title>
+							<EditMode>EnterOnInput</EditMode>
+							<ContextMenu name="BankTransactionsClassContextMenu" id="239"/>
+							<ExtendedTooltip name="BankTransactionsClassExtendedTooltip" id="240"/>
+						</InputField>
+						<LabelField name="BankTransactionsOperationType" id="235">
+							<DataPath>Object.BankTransactions.OperationType</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Document</v8:content>
+								</v8:item>
+							</Title>
 							<EditMode>EnterOnInput</EditMode>
 							<CellHyperlink>true</CellHyperlink>
-							<Width>15</Width>
-							<Hiperlink>true</Hiperlink>
-							<ContextMenu name="BankTransactionsDocumentContextMenu" id="57"/>
-							<ExtendedTooltip name="BankTransactionsDocumentExtendedTooltip" id="58"/>
+							<ContextMenu name="BankTransactionsOperationTypeContextMenu" id="236"/>
+							<ExtendedTooltip name="BankTransactionsOperationTypeExtendedTooltip" id="237"/>
 						</LabelField>
+						<InputField name="BankTransactionsTransactionStatus" id="232">
+							<DataPath>Object.BankTransactions.TransactionStatus</DataPath>
+							<ReadOnly>true</ReadOnly>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>C</v8:content>
+								</v8:item>
+							</Title>
+							<EditMode>EnterOnInput</EditMode>
+							<Width>3</Width>
+							<HorizontalStretch>false</HorizontalStretch>
+							<DropListButton>true</DropListButton>
+							<ListChoiceMode>true</ListChoiceMode>
+							<ChoiceList>
+								<xr:Item>
+									<xr:Presentation/>
+									<xr:CheckState>0</xr:CheckState>
+									<xr:Value xsi:type="FormChoiceListDesTimeValue">
+										<Presentation/>
+										<Value xsi:type="xs:string"/>
+									</xr:Value>
+								</xr:Item>
+								<xr:Item>
+									<xr:Presentation/>
+									<xr:CheckState>0</xr:CheckState>
+									<xr:Value xsi:type="FormChoiceListDesTimeValue">
+										<Presentation>
+											<v8:item>
+												<v8:lang>en</v8:lang>
+												<v8:content>C</v8:content>
+											</v8:item>
+										</Presentation>
+										<Value xsi:type="xs:string">1</Value>
+									</xr:Value>
+								</xr:Item>
+							</ChoiceList>
+							<ChoiceListHeight>3</ChoiceListHeight>
+							<DropListWidth>4</DropListWidth>
+							<ContextMenu name="BankTransactionsTransactionStatusContextMenu" id="233"/>
+							<ExtendedTooltip name="BankTransactionsTransactionStatusExtendedTooltip" id="234"/>
+						</InputField>
 						<InputField name="BankTransactionsAmountClosingBalance" id="69">
 							<DataPath>Object.BankTransactions.AmountClosingBalance</DataPath>
 							<ReadOnly>true</ReadOnly>
@@ -486,16 +544,45 @@
 			<ShowTitle>false</ShowTitle>
 			<ExtendedTooltip name="BottomGroupExtendedTooltip" id="179"/>
 			<ChildItems>
-				<UsualGroup name="Group3" id="112">
+				<UsualGroup name="Group3" id="245">
 					<Group>Vertical</Group>
 					<ShowTitle>false</ShowTitle>
-					<ExtendedTooltip name="Group3ExtendedTooltip" id="113"/>
+					<ExtendedTooltip name="Group3ExtendedTooltip" id="246"/>
 					<ChildItems>
-						<UsualGroup name="Group5" id="189">
-							<Group>Vertical</Group>
-							<ShowTitle>false</ShowTitle>
-							<ExtendedTooltip name="Group5ExtendedTooltip" id="190"/>
-						</UsualGroup>
+						<LabelDecoration name="HelpMessageDecoration" id="247">
+							<HorizontalStretch>true</HorizontalStretch>
+							<TextColor>style:ColorGroupLabel</TextColor>
+							<Font ref="style:NormalTextFont" height="12" kind="StyleItem"/>
+							<Title formatted="false">
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Control Tips</v8:content>
+								</v8:item>
+							</Title>
+							<HorizontalAlign>Center</HorizontalAlign>
+							<Border width="1">
+								<v8ui:style xsi:type="v8ui:ControlBorderType">Underline</v8ui:style>
+							</Border>
+							<ContextMenu name="HelpMessageDecorationContextMenu" id="248"/>
+							<ExtendedTooltip name="HelpMessageDecorationExtendedTooltip" id="249"/>
+						</LabelDecoration>
+						<LabelDecoration name="HelpMessage" id="250">
+							<Height>1</Height>
+							<HorizontalStretch>true</HorizontalStretch>
+							<VerticalStretch>false</VerticalStretch>
+							<Title formatted="true">
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>&lt;bgcolorstyle -13&gt;&lt;colorstyle 0:8876e8cf-8f45-4466-b583-8ef3c128be36&gt;• &lt;/&gt;&lt;/&gt;&lt;fontsize 10&gt;&lt;bgcolorstyle -13&gt;&lt;colorstyle 0:8876e8cf-8f45-4466-b583-8ef3c128be36&gt;Use &lt;/&gt;&lt;/&gt;&lt;/&gt;&lt;fontsize 10&gt;&lt;b&gt;&lt;bgcolorstyle -13&gt;&lt;colorstyle 0:8876e8cf-8f45-4466-b583-8ef3c128be36&gt;[E&lt;/&gt;&lt;/&gt;&lt;/&gt;&lt;/&gt;&lt;fontsize 10&gt;&lt;b&gt;&lt;bgcolorstyle -13&gt;&lt;colorstyle 0:8876e8cf-8f45-4466-b583-8ef3c128be36&gt;nter&lt;/&gt;&lt;/&gt;&lt;/&gt;&lt;/&gt;&lt;fontsize 10&gt;&lt;b&gt;&lt;bgcolorstyle -13&gt;&lt;colorstyle 0:8876e8cf-8f45-4466-b583-8ef3c128be36&gt;]&lt;/&gt;&lt;/&gt;&lt;/&gt;&lt;/&gt;&lt;fontsize 10&gt;&lt;b&gt;&lt;bgcolorstyle -13&gt;&lt;colorstyle 0:8876e8cf-8f45-4466-b583-8ef3c128be36&gt; &lt;/&gt;&lt;/&gt;&lt;/&gt;&lt;/&gt;&lt;fontsize 10&gt;&lt;bgcolorstyle -13&gt;&lt;colorstyle 0:8876e8cf-8f45-4466-b583-8ef3c128be36&gt;to navigate in transaction lines&lt;/&gt;&lt;/&gt;&lt;/&gt;</v8:content>
+								</v8:item>
+							</Title>
+							<BackColor>style:FieldAlternativeBackColor</BackColor>
+							<Border width="1">
+								<v8ui:style xsi:type="v8ui:ControlBorderType">Underline</v8ui:style>
+							</Border>
+							<ContextMenu name="HelpMessageContextMenu" id="251"/>
+							<ExtendedTooltip name="HelpMessageExtendedTooltip" id="252"/>
+						</LabelDecoration>
 					</ChildItems>
 				</UsualGroup>
 				<LabelDecoration name="EmptyDecoration" id="180">
@@ -567,80 +654,6 @@
 									<ContextMenu name="BalanceStartContextMenu" id="130"/>
 									<ExtendedTooltip name="BalanceStartExtendedTooltip" id="131"/>
 								</LabelField>
-								<InputField name="BalanceStartEdit" id="194">
-									<DataPath>Object.BalanceStart</DataPath>
-									<Visible>false</Visible>
-									<TitleLocation>None</TitleLocation>
-									<ContextMenu name="BalanceStartEditContextMenu" id="195"/>
-									<ExtendedTooltip name="BalanceStartEditExtendedTooltip" id="196"/>
-									<Events>
-										<Event name="OnChange">BalanceStartEditOnChange</Event>
-									</Events>
-								</InputField>
-							</ChildItems>
-						</UsualGroup>
-						<UsualGroup name="TotalGroup" id="132">
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Total group</v8:content>
-								</v8:item>
-							</Title>
-							<ToolTip>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Total group</v8:content>
-								</v8:item>
-							</ToolTip>
-							<Width>20</Width>
-							<Group>Vertical</Group>
-							<ShowTitle>false</ShowTitle>
-							<ExtendedTooltip name="TotalGroupExtendedTooltip" id="133"/>
-							<ChildItems>
-								<LabelDecoration name="TotalsDecoration" id="175">
-									<HorizontalStretch>true</HorizontalStretch>
-									<Title formatted="false">
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Totals:</v8:content>
-										</v8:item>
-									</Title>
-									<HorizontalAlign>Center</HorizontalAlign>
-									<ContextMenu name="TotalsDecorationContextMenu" id="176"/>
-									<ExtendedTooltip name="TotalsDecorationExtendedTooltip" id="177"/>
-								</LabelDecoration>
-								<InputField name="DepositsTotal" id="134">
-									<DataPath>Object.DepositsTotal</DataPath>
-									<Title>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Deposits</v8:content>
-										</v8:item>
-									</Title>
-									<Width>12</Width>
-									<BackColor>web:LightYellow</BackColor>
-									<ContextMenu name="DepositsTotalContextMenu" id="135"/>
-									<ExtendedTooltip name="DepositsTotalExtendedTooltip" id="136"/>
-									<Events>
-										<Event name="OnChange">DepositsTotalOnChange</Event>
-									</Events>
-								</InputField>
-								<InputField name="PaymentsTotal" id="137">
-									<DataPath>Object.PaymentsTotal</DataPath>
-									<Title>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Payments</v8:content>
-										</v8:item>
-									</Title>
-									<Width>12</Width>
-									<BackColor>web:AliceBlue</BackColor>
-									<ContextMenu name="PaymentsTotalContextMenu" id="138"/>
-									<ExtendedTooltip name="PaymentsTotalExtendedTooltip" id="139"/>
-									<Events>
-										<Event name="OnChange">PaymentsTotalOnChange</Event>
-									</Events>
-								</InputField>
 							</ChildItems>
 						</UsualGroup>
 						<UsualGroup name="EnteredGroup" id="140">
@@ -656,7 +669,7 @@
 									<v8:content>Entered group</v8:content>
 								</v8:item>
 							</ToolTip>
-							<Width>12</Width>
+							<Width>40</Width>
 							<HorizontalStretch>false</HorizontalStretch>
 							<Group>Vertical</Group>
 							<ShowTitle>false</ShowTitle>
@@ -674,41 +687,77 @@
 									<ContextMenu name="EnteredDecorationContextMenu" id="157"/>
 									<ExtendedTooltip name="EnteredDecorationExtendedTooltip" id="158"/>
 								</LabelDecoration>
-								<LabelField name="DepositsEntered" id="142">
-									<DataPath>Object.DepositsEntered</DataPath>
-									<TitleLocation>None</TitleLocation>
-									<Format>
+								<UsualGroup name="EnteredValues" id="241">
+									<Title>
 										<v8:item>
 											<v8:lang>en</v8:lang>
-											<v8:content>NFD=2; NGS=' '; NZ=; NG=3,0</v8:content>
+											<v8:content>Entered values</v8:content>
 										</v8:item>
-									</Format>
-									<Border width="1">
-										<v8ui:style xsi:type="v8ui:ControlBorderType">Single</v8ui:style>
-									</Border>
-									<BackColor>web:LightYellow</BackColor>
-									<ContextMenu name="DepositsEnteredContextMenu" id="143"/>
-									<ExtendedTooltip name="DepositsEnteredExtendedTooltip" id="144"/>
-								</LabelField>
-								<LabelField name="PaymentsEntered" id="145">
-									<DataPath>Object.PaymentsEntered</DataPath>
-									<TitleLocation>None</TitleLocation>
-									<Format>
+									</Title>
+									<ToolTip>
 										<v8:item>
 											<v8:lang>en</v8:lang>
-											<v8:content>NFD=2; NGS=' '; NZ=; NG=3,0</v8:content>
+											<v8:content>Entered values</v8:content>
 										</v8:item>
-									</Format>
-									<Border width="1">
-										<v8ui:style xsi:type="v8ui:ControlBorderType">Single</v8ui:style>
-									</Border>
-									<BackColor>web:AliceBlue</BackColor>
-									<ContextMenu name="PaymentsEnteredContextMenu" id="146"/>
-									<ExtendedTooltip name="PaymentsEnteredExtendedTooltip" id="147"/>
-								</LabelField>
+									</ToolTip>
+									<Group>Horizontal</Group>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="EnteredValuesExtendedTooltip" id="242"/>
+									<ChildItems>
+										<LabelField name="PaymentsEntered" id="145">
+											<DataPath>Object.PaymentsEntered</DataPath>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Payments</v8:content>
+												</v8:item>
+											</Title>
+											<TitleLocation>Left</TitleLocation>
+											<Width>12</Width>
+											<HorizontalStretch>false</HorizontalStretch>
+											<Format>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>NFD=2; NGS=' '; NZ=; NG=3,0</v8:content>
+												</v8:item>
+											</Format>
+											<Border width="1">
+												<v8ui:style xsi:type="v8ui:ControlBorderType">Single</v8ui:style>
+											</Border>
+											<BackColor>web:AliceBlue</BackColor>
+											<ContextMenu name="PaymentsEnteredContextMenu" id="146"/>
+											<ExtendedTooltip name="PaymentsEnteredExtendedTooltip" id="147"/>
+										</LabelField>
+										<LabelField name="DepositsEntered" id="142">
+											<DataPath>Object.DepositsEntered</DataPath>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Deposits</v8:content>
+												</v8:item>
+											</Title>
+											<TitleLocation>Left</TitleLocation>
+											<Width>12</Width>
+											<HorizontalStretch>false</HorizontalStretch>
+											<Format>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>NFD=2; NGS=' '; NZ=; NG=3,0</v8:content>
+												</v8:item>
+											</Format>
+											<Border width="1">
+												<v8ui:style xsi:type="v8ui:ControlBorderType">Single</v8ui:style>
+											</Border>
+											<BackColor>web:LightYellow</BackColor>
+											<ContextMenu name="DepositsEnteredContextMenu" id="143"/>
+											<ExtendedTooltip name="DepositsEnteredExtendedTooltip" id="144"/>
+										</LabelField>
+									</ChildItems>
+								</UsualGroup>
 							</ChildItems>
 						</UsualGroup>
 						<UsualGroup name="DifferenceGroup" id="148">
+							<Visible>false</Visible>
 							<Title>
 								<v8:item>
 									<v8:lang>en</v8:lang>
@@ -740,7 +789,6 @@
 									<ExtendedTooltip name="DifferenceDecorationExtendedTooltip" id="161"/>
 								</LabelDecoration>
 								<LabelField name="DepositsDifference" id="150">
-									<DataPath>Object.DepositsDifference</DataPath>
 									<TitleLocation>None</TitleLocation>
 									<Format>
 										<v8:item>
@@ -756,7 +804,6 @@
 									<ExtendedTooltip name="DepositsDifferenceExtendedTooltip" id="152"/>
 								</LabelField>
 								<LabelField name="PaymentsDifference" id="153">
-									<DataPath>Object.PaymentsDifference</DataPath>
 									<TitleLocation>None</TitleLocation>
 									<Format>
 										<v8:item>
@@ -834,17 +881,15 @@
 			</Type>
 			<MainAttribute>true</MainAttribute>
 			<Save>
-				<Field>Object.UseBankReconciliationForBegBal</Field>
-				<Field>Object.HideBalances</Field>
-				<Field>Object.EditingMode</Field>
-				<Field>Object.EditNumbersWithoutDecimalPoint</Field>
-				<Field>Object.EditBegBal</Field>
-				<Field>Object.DoNotUseJournalEntry</Field>
-				<Field>Object.DoNotUseAdjustingJournalEntry</Field>
+				<Field>Object.ShowClassColumn</Field>
 				<Field>Object.DateStart</Field>
 				<Field>Object.DateEnd</Field>
 				<Field>Object.BankAccount</Field>
 				<Field>Object.AccountInBank</Field>
+				<Field>1/0:fe7b5ae1-06eb-4251-8c3f-900e38a573b8</Field>
+				<Field>1/0:cc783ef0-befe-4d81-8066-fcbc9c6bf9df</Field>
+				<Field>1/0:c35fcd8b-8028-4d88-a569-4ced2ce1f245</Field>
+				<Field>1/0:9702f676-f007-47ba-a146-c0e768cc9c5a</Field>
 			</Save>
 		</Attribute>
 		<Attribute name="PeriodPresentation" id="2">
@@ -1002,7 +1047,12 @@
 					<v8:content>Choose period</v8:content>
 				</v8:item>
 			</ToolTip>
+			<Picture>
+				<xr:Ref>StdPicture.Today</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
 			<Action>ChoosePeriod</Action>
+			<Representation>Picture</Representation>
 		</Command>
 		<Command name="UploadTransactions" id="8">
 			<Title>
@@ -1023,6 +1073,26 @@
 			</Picture>
 			<Action>UploadTransactions</Action>
 			<Representation>Picture</Representation>
+		</Command>
+		<Command name="Reconcile" id="9">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Reconcile</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Reconcile</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Picture>
+				<xr:Ref>StdPicture.CheckSyntax</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
+			<Action>Reconcile</Action>
+			<Representation>TextPicture</Representation>
 		</Command>
 	</Commands>
 </Form>

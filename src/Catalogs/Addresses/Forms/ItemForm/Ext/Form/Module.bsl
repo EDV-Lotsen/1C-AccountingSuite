@@ -78,6 +78,10 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	Else
 		Items.RemitTo.Visible = False;
 	EndIf;
+	
+	If Object.Ref.IsEmpty() Then
+		ApplyAddressValidationStatus();
+	EndIf;
 		
 EndProcedure
 

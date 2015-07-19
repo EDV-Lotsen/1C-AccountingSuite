@@ -114,3 +114,15 @@ Procedure Excel(Command)
 	GetFile(Structure.Address, Structure.FileName, True); 
 
 EndProcedure
+
+&AtClient
+Procedure Print(Command)
+	PrintAtServer();
+	Result.Print(PrintDialogUseMode.Use);
+EndProcedure
+
+&AtServer
+Procedure PrintAtServer()
+	Result.PageSize = "Letter"; 
+	Result.FitToPage = True;
+EndProcedure

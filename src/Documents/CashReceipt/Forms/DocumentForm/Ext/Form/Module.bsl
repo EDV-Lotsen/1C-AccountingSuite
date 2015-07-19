@@ -195,6 +195,22 @@ EndProcedure
 //
 Procedure AfterWrite(WriteParameters)
 	
+	/////////
+	/////////
+	
+	// Request user to repost subordinate documents.
+	Structure = New Structure("Type, DocumentRef", "RepostSubordinateDocumentsOfCashReceipt", Object.Ref); 
+	KeyData = CommonUseClient.StartLongAction(NStr("en = 'Posting subordinate document(s)'"), Structure, ThisForm);
+	If WriteParameters.Property("CloseAfterWrite") Then
+		BackgroundJobParameters.Add(True);// [5]
+	Else
+		BackgroundJobParameters.Add(False);// [5]
+	EndIf;
+	CheckObtainedData(KeyData);
+	
+	/////////
+	/////////
+	
 	For Each DocumentLine in Object.LineItems Do
 				
 		RepresentDataChange(DocumentLine.Document, DataChangeType.Update);
@@ -486,6 +502,13 @@ Function SessionTenant()
 	
 EndFunction
 
+&AtServer
+Function GetInvoiceNumber(Ref)
+	Invoice = Ref.Lineitems[0].Document;
+	Return Invoice.Number;
+EndFunction
+
+
 &AtClient
 Procedure SendEmail(Command)
 	If Object.Ref.IsEmpty() OR IsPosted() = False Then
@@ -538,7 +561,12 @@ EndProcedure
 
 &AtClient
 Procedure OnClose()
+	
+	//Because value type of BackgroundJobParameters is Arbitrary
+	BackgroundJobParameters.Clear();
+	
 	OnCloseAtServer();
+	
 EndProcedure
 
 &AtServer
@@ -700,4 +728,53 @@ Procedure BankAccountStartChoiceAtServer(FormParameters)
 	//FormParameters.Insert("ChoiceMode",True);
 EndProcedure
 
+&AtClient
+Procedure CheckObtainedData(KeyData)
+	
+	// Check whether job finished.
+	If (TypeOf(KeyData) = Type("UUID")) Or (KeyData = Undefined) Then
+		// Job is now pending.
+	ElsIf TypeOf(KeyData) = Type("Array") Then 
+		// Show results.
+		
+		MessageText = "";
+		
+		For Each Row In KeyData Do
+			MessageText = MessageText + Row + Chars.LF;	
+		EndDo;
+		
+		If ValueIsFilled(MessageText) Then
+			ShowMessageBox(, MessageText);
+		EndIf;
+		
+		//
+		If BackgroundJobParameters[5].Value Then
+			Close();
+		EndIf;
+		
+	ElsIf TypeOf(KeyData) = Type("String") Then
+		// Error message.
+		
+		//
+		If BackgroundJobParameters[5].Value Then
+			Close();
+		EndIf;
+		
+	EndIf;
+	
+EndProcedure
+
+#Region LONG_ACTION
+
+// Attachable procedure, called as idle handler.
+&AtClient
+Procedure IdleHandlerLongAction() 
+	
+	// Process background job result.
+	KeyData = CommonUseClient.ResultProcessingLongAction(ThisForm);
+	CheckObtainedData(KeyData);
+	
+EndProcedure
+
+#EndRegion
 

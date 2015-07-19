@@ -1,0 +1,397 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<DataCompositionSchema xmlns="http://v8.1c.ru/8.1/data-composition-system/schema" xmlns:dcscom="http://v8.1c.ru/8.1/data-composition-system/common" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<dataSource>
+		<name>DataSource1</name>
+		<dataSourceType>Local</dataSourceType>
+	</dataSource>
+	<dataSet xsi:type="DataSetQuery">
+		<name>DataSet1</name>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>AvataxTaxCode</dataPath>
+			<field>AvataxTaxCode</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Billable</dataPath>
+			<field>Billable</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Class</dataPath>
+			<field>Class</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Company</dataPath>
+			<field>Company</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>DataVersion</dataPath>
+			<field>DataVersion</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Date</dataPath>
+			<field>Date</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>DateFrom</dataPath>
+			<field>DateFrom</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>DeletionMark</dataPath>
+			<field>DeletionMark</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>DeliveryDate</dataPath>
+			<field>DeliveryDate</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>DeliveryDateActual</dataPath>
+			<field>DeliveryDateActual</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>DiscountIsTaxable</dataPath>
+			<field>DiscountIsTaxable</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>InvoiceDate</dataPath>
+			<field>InvoiceDate</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>InvoiceSent</dataPath>
+			<field>InvoiceSent</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>InvoiceStatus</dataPath>
+			<field>InvoiceStatus</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>LineID</dataPath>
+			<field>LineID</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>LineNumber</dataPath>
+			<field>LineNumber</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Location</dataPath>
+			<field>Location</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>LocationActual</dataPath>
+			<field>LocationActual</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Number</dataPath>
+			<field>Number</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Order</dataPath>
+			<field>Order</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>PointInTime</dataPath>
+			<field>PointInTime</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Posted</dataPath>
+			<field>Posted</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Price</dataPath>
+			<field>Price</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>PriceUnits</dataPath>
+			<field>PriceUnits</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Product</dataPath>
+			<field>Product</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Project</dataPath>
+			<field>Project</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>QtyUM</dataPath>
+			<field>QtyUM</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>QtyUnits</dataPath>
+			<field>QtyUnits</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Ref</dataPath>
+			<field>Ref</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>SalesInvoice</dataPath>
+			<field>SalesInvoice</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>SalesOrder</dataPath>
+			<field>SalesOrder</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Task</dataPath>
+			<field>Task</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Taxable</dataPath>
+			<field>Taxable</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>TaxableAmount</dataPath>
+			<field>TaxableAmount</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>TimeComplete</dataPath>
+			<field>TimeComplete</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Unit</dataPath>
+			<field>Unit</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>UnitSet</dataPath>
+			<field>UnitSet</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>User</dataPath>
+			<field>User</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>ClassInvoice</dataPath>
+			<field>ClassInvoice</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Class invoice</v8:content>
+				</v8:item>
+			</title>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>InvoiceRef</dataPath>
+			<field>InvoiceRef</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Invoice ref</v8:content>
+				</v8:item>
+			</title>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>ProjectInvoice</dataPath>
+			<field>ProjectInvoice</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Project invoice</v8:content>
+				</v8:item>
+			</title>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>InvoiceNumber</dataPath>
+			<field>InvoiceNumber</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Invoice number</v8:content>
+				</v8:item>
+			</title>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>DescriptionInvoice</dataPath>
+			<field>DescriptionInvoice</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Description invoice</v8:content>
+				</v8:item>
+			</title>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>DescriptionTimeEntry</dataPath>
+			<field>DescriptionTimeEntry</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Description time entry</v8:content>
+				</v8:item>
+			</title>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Account</dataPath>
+			<field>Account</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Currency</dataPath>
+			<field>Currency</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>ExtDimension1</dataPath>
+			<field>ExtDimension1</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>ExtDimension2</dataPath>
+			<field>ExtDimension2</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>InvoiceBalance</dataPath>
+			<field>InvoiceBalance</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Invoice balance</v8:content>
+				</v8:item>
+			</title>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>SalesInvoiceDocumentTotalRC</dataPath>
+			<field>SalesInvoiceDocumentTotalRC</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>InvoiceAmount</dataPath>
+			<field>InvoiceAmount</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Invoice amount</v8:content>
+				</v8:item>
+			</title>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>LineAmount</dataPath>
+			<field>LineAmount</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Line amount</v8:content>
+				</v8:item>
+			</title>
+		</field>
+		<dataSource>DataSource1</dataSource>
+		<query>SELECT
+	TimeTrack.Ref,
+	TimeTrack.DataVersion,
+	TimeTrack.DeletionMark,
+	TimeTrack.Number,
+	TimeTrack.Date,
+	TimeTrack.Posted,
+	TimeTrack.Company,
+	TimeTrack.Project,
+	TimeTrack.Task,
+	TimeTrack.Price,
+	TimeTrack.TimeComplete,
+	TimeTrack.User,
+	TimeTrack.Memo AS DescriptionTimeEntry,
+	TimeTrack.DateFrom,
+	TimeTrack.Billable,
+	TimeTrack.InvoiceSent,
+	TimeTrack.SalesInvoice,
+	TimeTrack.SalesInvoice.DocumentTotalRC,
+	TimeTrack.Class,
+	TimeTrack.SalesOrder,
+	TimeTrack.InvoiceStatus,
+	TimeTrack.Presentation,
+	TimeTrack.PointInTime,
+	SalesInvoiceLineItems.Ref AS InvoiceRef,
+	SalesInvoiceLineItems.LineNumber,
+	SalesInvoiceLineItems.Product,
+	SalesInvoiceLineItems.ProductDescription AS DescriptionInvoice,
+	SalesInvoiceLineItems.UnitSet,
+	SalesInvoiceLineItems.QtyUnits,
+	SalesInvoiceLineItems.Unit,
+	SalesInvoiceLineItems.QtyUM,
+	SalesInvoiceLineItems.PriceUnits,
+	SalesInvoiceLineItems.LineTotal AS LineAmount,
+	SalesInvoiceLineItems.Taxable,
+	SalesInvoiceLineItems.TaxableAmount,
+	SalesInvoiceLineItems.Order,
+	SalesInvoiceLineItems.Location,
+	SalesInvoiceLineItems.LocationActual,
+	SalesInvoiceLineItems.DeliveryDate,
+	SalesInvoiceLineItems.DeliveryDateActual,
+	SalesInvoiceLineItems.Project AS ProjectInvoice,
+	SalesInvoiceLineItems.Class AS ClassInvoice,
+	SalesInvoiceLineItems.LineID,
+	SalesInvoiceLineItems.AvataxTaxCode,
+	SalesInvoiceLineItems.DiscountIsTaxable,
+	SalesInvoiceLineItems.Ref.Number AS InvoiceNumber,
+	SalesInvoiceLineItems.Ref.Date AS InvoiceDate,
+	ISNULL(GeneralJournalBalance.AmountRCBalance, 0) AS InvoiceBalance,
+	TimeTrack.SalesInvoice.DocumentTotal AS InvoiceAmount
+FROM
+	Document.TimeTrack AS TimeTrack
+		LEFT JOIN Document.SalesInvoice.LineItems AS SalesInvoiceLineItems
+		ON TimeTrack.SalesInvoice = SalesInvoiceLineItems.Ref
+		LEFT JOIN AccountingRegister.GeneralJournal.Balance(, , , ExtDimension2 REFS Document.SalesInvoice) AS GeneralJournalBalance
+		ON (GeneralJournalBalance.Account = TimeTrack.SalesInvoice.Ref.ARAccount)
+			AND (GeneralJournalBalance.ExtDimension1 = TimeTrack.SalesInvoice.Ref.Company)
+			AND (GeneralJournalBalance.ExtDimension2 = TimeTrack.SalesInvoice.Ref)</query>
+	</dataSet>
+	<parameter>
+		<name>Period</name>
+		<title xsi:type="v8:LocalStringType">
+			<v8:item>
+				<v8:lang>en</v8:lang>
+				<v8:content>Period</v8:content>
+			</v8:item>
+		</title>
+		<valueType>
+			<v8:Type>xs:dateTime</v8:Type>
+			<v8:DateQualifiers>
+				<v8:DateFractions>DateTime</v8:DateFractions>
+			</v8:DateQualifiers>
+		</valueType>
+		<value xsi:type="xs:dateTime">0001-01-01T00:00:00</value>
+		<useRestriction>false</useRestriction>
+	</parameter>
+	<settingsVariant>
+		<dcsset:name>Default</dcsset:name>
+		<dcsset:presentation xsi:type="xs:string">Default</dcsset:presentation>
+		<dcsset:settings xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows">
+			<dcsset:selection>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>InvoiceNumber</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>InvoiceDate</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Company</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>Product</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>DescriptionTimeEntry</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>DescriptionInvoice</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>User</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>LineAmount</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>InvoiceBalance</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>SalesInvoiceDocumentTotalRC</dcsset:field>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:SelectedItemField">
+					<dcsset:field>InvoiceAmount</dcsset:field>
+				</dcsset:item>
+			</dcsset:selection>
+			<dcsset:item xsi:type="dcsset:StructureItemGroup">
+				<dcsset:order>
+					<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
+				</dcsset:order>
+				<dcsset:selection>
+					<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+				</dcsset:selection>
+			</dcsset:item>
+		</dcsset:settings>
+	</settingsVariant>
+</DataCompositionSchema>

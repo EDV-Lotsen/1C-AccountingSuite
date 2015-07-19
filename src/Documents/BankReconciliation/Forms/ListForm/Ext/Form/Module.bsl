@@ -2,13 +2,13 @@
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
-	//If IsInRole("BankAccounting") Then
-	//	BankAccountingRole 			= True;
-	//Else
+	If IsInRole("BankAccounting") Then
+		BankAccountingRole 			= True;
+	Else
 		Items.deposits.Visible 	= False;
 		Items.payments.Visible 	= False;
 		BankAccountingRole 		= False;
-	//EndIf;
+	EndIf;
 	
 EndProcedure
 

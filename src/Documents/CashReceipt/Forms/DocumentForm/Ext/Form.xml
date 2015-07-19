@@ -1313,23 +1313,19 @@
 				</v8:NumberQualifiers>
 			</Type>
 		</Attribute>
-	</Attributes>
-	<Commands>
-		<Command name="ChargeWithStripe" id="1">
+		<Attribute name="BackgroundJobParameters" id="11">
 			<Title>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Charge with stripe</v8:content>
+					<v8:content>Background job parameters</v8:content>
 				</v8:item>
 			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Charge with stripe</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Action>ChargeWithStripe</Action>
-		</Command>
+			<Type>
+				<v8:Type>v8:ValueListType</v8:Type>
+			</Type>
+		</Attribute>
+	</Attributes>
+	<Commands>
 		<Command name="SendEmail" id="2">
 			<Title>
 				<v8:item>

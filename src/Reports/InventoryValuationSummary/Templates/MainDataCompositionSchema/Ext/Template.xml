@@ -189,7 +189,8 @@ SELECT
 					THEN CAST(InventoryJournalBalance.AmountBalance / InventoryJournalBalance.QuantityBalance AS NUMBER(17, 4))
 				ELSE CAST(InventoryJournalBalance.AmountBalance / InventoryJournalBalance.QuantityBalance AS NUMBER(17, 2))
 			END
-	END AS AverageCost
+	END AS AverageCost,
+	InventoryJournalBalance.AmountBalance AS AmountBalance
 INTO AverageCost
 FROM
 	AccumulationRegister.InventoryJournal.Balance({(&amp;EndOfPeriod)}, ) AS InventoryJournalBalance
@@ -255,7 +256,7 @@ SELECT
 		ELSE 0
 	END AS AccountingCost,
 	ISNULL(AverageCostTT.AverageCost, 0) AS AverageCost,
-	ISNULL(AverageCostTT.AverageCost, 0) * ISNULL(OnHandTT.OnHand, 0) AS AssetValue,
+	ISNULL(AverageCostTT.AmountBalance, 0) AS AssetValue,
 	ISNULL(LastCostTT.LastCost, 0) AS LastCost,
 	Products.Price AS SalePrice,
 	Products.Price * ISNULL(OnHandTT.OnHand, 0) AS RetailValue
@@ -497,6 +498,8 @@ FROM
 					</dcsset:appearance>
 					<dcsset:useInFieldsHeader>DontUse</dcsset:useInFieldsHeader>
 					<dcsset:useInHeader>DontUse</dcsset:useInHeader>
+					<dcsset:useInParameters>DontUse</dcsset:useInParameters>
+					<dcsset:useInFilter>DontUse</dcsset:useInFilter>
 				</dcsset:item>
 				<dcsset:item>
 					<dcsset:selection>
@@ -519,6 +522,8 @@ FROM
 					</dcsset:appearance>
 					<dcsset:useInFieldsHeader>DontUse</dcsset:useInFieldsHeader>
 					<dcsset:useInHeader>DontUse</dcsset:useInHeader>
+					<dcsset:useInParameters>DontUse</dcsset:useInParameters>
+					<dcsset:useInFilter>DontUse</dcsset:useInFilter>
 				</dcsset:item>
 				<dcsset:item>
 					<dcsset:selection>

@@ -7,6 +7,7 @@
 	<Events>
 		<Event name="OnReadAtServer">OnReadAtServer</Event>
 		<Event name="OnOpen">OnOpen</Event>
+		<Event name="BeforeClose">BeforeClose</Event>
 		<Event name="BeforeWrite">BeforeWrite</Event>
 		<Event name="BeforeWriteAtServer">BeforeWriteAtServer</Event>
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
@@ -309,13 +310,13 @@
 															<v8:content>ND=2; NZ=; NLZ=</v8:content>
 														</v8:item>
 													</Format>
-													<TextColor>#C0C0C0</TextColor>
+													<TextColor>#787878</TextColor>
 													<Font ref="sys:DefaultGUIFont" height="18" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
 													<ContextMenu name="HoursContextMenu" id="99"/>
 													<ExtendedTooltip name="HoursExtendedTooltip" id="100"/>
 												</LabelField>
 												<LabelDecoration name="Decoration3" id="113">
-													<TextColor>#C0C0C0</TextColor>
+													<TextColor>#787878</TextColor>
 													<Font ref="sys:DefaultGUIFont" faceName="Arial" height="18" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
 													<Title formatted="false">
 														<v8:item>
@@ -337,13 +338,13 @@
 															<v8:content>ND=2; NZ=; NLZ=</v8:content>
 														</v8:item>
 													</Format>
-													<TextColor>#C0C0C0</TextColor>
+													<TextColor>#787878</TextColor>
 													<Font ref="sys:DefaultGUIFont" height="18" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
 													<ContextMenu name="MinutesContextMenu" id="102"/>
 													<ExtendedTooltip name="MinutesExtendedTooltip" id="103"/>
 												</LabelField>
 												<LabelDecoration name="Decoration4" id="116">
-													<TextColor>#C0C0C0</TextColor>
+													<TextColor>#787878</TextColor>
 													<Font ref="sys:DefaultGUIFont" faceName="Arial" height="18" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
 													<Title formatted="false">
 														<v8:item>
@@ -365,7 +366,7 @@
 															<v8:content>ND=2; NZ=; NLZ=</v8:content>
 														</v8:item>
 													</Format>
-													<TextColor>#C0C0C0</TextColor>
+													<TextColor>#787878</TextColor>
 													<Font ref="sys:DefaultGUIFont" height="18" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
 													<ContextMenu name="SecondsContextMenu" id="105"/>
 													<ExtendedTooltip name="SecondsExtendedTooltip" id="106"/>
@@ -397,7 +398,7 @@
 											<ContextMenu name="TimeCompleteContextMenu" id="20"/>
 											<ExtendedTooltip name="TimeCompleteExtendedTooltip" id="21"/>
 											<Events>
-												<Event name="OnChange">ObjChanged</Event>
+												<Event name="OnChange">HoursOnChange</Event>
 											</Events>
 										</InputField>
 									</ChildItems>
@@ -612,6 +613,36 @@
 			</Title>
 			<Type>
 				<v8:Type>xs:boolean</v8:Type>
+			</Type>
+		</Attribute>
+		<Attribute name="StartTime" id="8">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Start time</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:dateTime</v8:Type>
+				<v8:DateQualifiers>
+					<v8:DateFractions>DateTime</v8:DateFractions>
+				</v8:DateQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="StoredTime" id="9">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Stored time</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:decimal</v8:Type>
+				<v8:NumberQualifiers>
+					<v8:Digits>10</v8:Digits>
+					<v8:FractionDigits>0</v8:FractionDigits>
+					<v8:AllowedSign>Any</v8:AllowedSign>
+				</v8:NumberQualifiers>
 			</Type>
 		</Attribute>
 	</Attributes>

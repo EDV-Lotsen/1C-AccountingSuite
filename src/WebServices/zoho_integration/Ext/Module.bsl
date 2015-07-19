@@ -380,6 +380,14 @@ Function zoho_account(jsonin)
 	newCompany.Terms = Catalogs.PaymentTerms.Net30;
 	newCompany.DefaultCurrency = Catalogs.Currencies.USD;
 	
+	If Constants.SalesTaxMarkNewCustomersTaxable.Get() = True Then
+		newCompany.Taxable 		= True;
+		newCompany.SalesTaxRate = Constants.SalesTaxDefault.Get();
+	EndIf;
+	If GeneralFunctions.FunctionalOptionValue("AvataxEnabled") Then
+		newCompany.UseAvatax 	= True;
+	EndIf;
+	
 	newCompany.Write();
 	
 	//create a record of the acs_apicode to zoho id mapping
@@ -1859,6 +1867,7 @@ Function zoho_salesorder(jsonin)
 			quoteQuery.SetParameter("zoho_id", SOData.Get("QUOTEID"));
 			quotecheck = quoteQuery.Execute().Unload();
 			NewSO.BaseDocument = quotecheck[0].quote_ref;
+			NewSO.Terms = NewSO.Company.Terms;
 		Except
 			// no quote
 		EndTry;
@@ -1867,6 +1876,8 @@ Function zoho_salesorder(jsonin)
 		Try NewSO.EmailNote = SOData.Get("Terms and Conditions"); Except Endtry;
 		Try NewSO.RefNum = SOData.Get("Purchase Order"); Except Endtry;
 		Try NewSO.DeliveryDate = Date(SOData.Get("Due Date")); Except Endtry;
+		NewSO.DiscountType = Enums.DiscountType.Percent;
+		NewSO.DiscountIsTaxable = True;
 		
 		NewSO.Date = CurrentSessionDate();
 		NewSO.Currency = GeneralFunctionsReusable.DefaultCurrency();
@@ -1905,6 +1916,8 @@ Function zoho_salesorder(jsonin)
 			newLineitem.QtyUnits = Number(lineitem.Get("Quantity")); // zoho quantity
 			//newLineitem.LineTotal =  Number(lineitem.Get("Total After Discount")); // zoho total ignoring tax
 			newLineitem.LineTotal =  newLineItem.PriceUnits * newLineitem.QtyUnits; // zoho total ignoring tax
+			newLineItem.UnitSet = newLineItem.Unit.Owner;
+			newLineitem.QtyUM = newLineitem.QtyUnits * newLineItem.Unit.Factor;
 
 			LineItemsTotal = LineItemsTotal + newLineitem.LineTotal;
 			TotalDiscount = TotalDiscount + Number(lineitem.Get("Discount")); // zoho line discount
@@ -2043,12 +2056,31 @@ Function zoho_salesorder(jsonin)
 			UpdatedSO.ShipTo = shipResult[0].Ref;
 		EndIf;
 		
-		UpdatedSO.Number = Right(SOData.Get("SO Number"),6); 
+		UpdatedSO.Number = Right(SOData.Get("SO Number"),6);
+		
+		Try
+			//check if created from a quote in acs
+			quoteQuery = new Query("SELECT
+			                       |	zoho_quoteCodeMap.quote_ref
+			                       |FROM
+			                       |	Catalog.zoho_QuoteCodeMap AS zoho_quoteCodeMap
+			                       |WHERE
+			                       |	zoho_quoteCodeMap.zoho_id = &zoho_id");
+						   
+			quoteQuery.SetParameter("zoho_id", SOData.Get("QUOTEID"));
+			quotecheck = quoteQuery.Execute().Unload();
+			UpdatedSO.BaseDocument = quotecheck[0].quote_ref;
+			UpdatedSO.Terms = UpdatedSO.Company.Terms;
+		Except
+			// no quote
+		EndTry;
 		
 		Try UpdatedSO.Memo = SOData.Get("Description"); Except Endtry;
 		Try UpdatedSO.EmailNote = SOData.Get("Terms and Conditions"); Except Endtry;
 		Try UpdatedSO.RefNum = SOData.Get("Purchase Order"); Except Endtry;
 		Try UpdatedSO.DeliveryDate = Date(SOData.Get("Due Date")); Except Endtry;
+		UpdatedSO.DiscountType = Enums.DiscountType.Percent;
+		UpdatedSO.DiscountIsTaxable = True;
 		
 		//get rid of line items before rewriting them
 		UpdatedSO.LineItems.Clear();
@@ -2085,6 +2117,8 @@ Function zoho_salesorder(jsonin)
 			newLineitem.QtyUnits = Number(lineitem.Get("Quantity")); // zoho quantity
 			//newLineitem.LineTotal =  Number(lineitem.Get("Net Total")); // zoho net total
 			newLineitem.LineTotal =  newLineItem.PriceUnits * newLineitem.QtyUnits; // zoho total ignoring tax
+			newLineItem.UnitSet = newLineItem.Unit.Owner;
+			newLineitem.QtyUM = newLineitem.QtyUnits * newLineItem.Unit.Factor;	
 			
 			LineItemsTotal = LineItemsTotal + newLineitem.LineTotal;
 			TotalDiscount = TotalDiscount + Number(lineitem.Get("Discount")); // zoho line discount
@@ -2234,6 +2268,9 @@ Function zoho_quote(jsonin)
 		Try NewQuote.Memo = QuoteData.Get("Description"); Except Endtry;
 		Try NewQuote.EmailNote = QuoteData.Get("Terms and Conditions"); Except Endtry;
 		Try NewQuote.ExpirationDate = Date(QuoteData.Get("Valid Till")); Except Endtry;
+		NewQuote.DiscountIsTaxable = True;
+		NewQuote.Terms = NewQuote.Company.Terms;
+		
 		
 		NewQuote.Date = CurrentSessionDate();
 		NewQuote.Currency = GeneralFunctionsReusable.DefaultCurrency();
@@ -2266,11 +2303,13 @@ Function zoho_quote(jsonin)
 			
 			newLineItem.ProductDescription = newLineItem.Product.Description;
 			newLineItem.Unit = newLineItem.Product.UnitSet.DefaultSaleUnit;
+			newLineItem.UnitSet = newLineItem.Unit.Owner; 
 			newLineItem.Location = NewQuote.Location;
 			newLineItem.DeliveryDate = NewQuote.DeliveryDate;
 			
 			newLineItem.PriceUnits = Number(lineitem.Get("List Price")); // zoho list price
 			newLineitem.QtyUnits = Number(lineitem.Get("Quantity")); // zoho quantity
+			newLineitem.QtyUM = newLineitem.QtyUnits * newLineItem.Unit.Factor;
 			newLineitem.LineTotal =  newLineItem.PriceUnits * newLineitem.QtyUnits; // zoho total ignoring tax
 
 			LineItemsTotal = LineItemsTotal + newLineitem.LineTotal;
@@ -2405,7 +2444,7 @@ Function zoho_quote(jsonin)
 									  |	Addresses.DefaultShipping = TRUE
 									  |	AND Addresses.Owner.Ref = &Ref");
 				   
-			shipQuery.SetParameter("Ref", NewQuote.Company.Ref);
+			shipQuery.SetParameter("Ref", UpdatedQuote.Company.Ref);
 			shipResult = shipQuery.Execute().Unload();
 			UpdatedQuote.ShipTo = shipResult[0].Ref;
 		EndIf; 
@@ -2415,6 +2454,8 @@ Function zoho_quote(jsonin)
 		Try UpdatedQuote.Memo = QuoteData.Get("Description"); Except Endtry;
 		Try UpdatedQuote.EmailNote = QuoteData.Get("Terms and Conditions"); Except Endtry;
 		Try UpdatedQuote.ExpirationDate = Date(QuoteData.Get("Valid Till")); Except Endtry;
+		UpdatedQuote.DiscountIsTaxable = True;
+		UpdatedQuote.Terms = UpdatedQuote.Company.Terms;
 		
 		//get rid of line items before rewriting them
 		UpdatedQuote.LineItems.Clear();
@@ -2450,7 +2491,8 @@ Function zoho_quote(jsonin)
 			newLineItem.PriceUnits = Number(lineitem.Get("List Price")); // zoho list price
 			newLineitem.QtyUnits = Number(lineitem.Get("Quantity")); // zoho quantity
 			newLineitem.LineTotal =  newLineItem.PriceUnits * newLineitem.QtyUnits; // zoho total ignoring tax
-			
+			newLineItem.UnitSet = newLineItem.Unit.Owner;
+			newLineitem.QtyUM = newLineitem.QtyUnits * newLineItem.Unit.Factor;			
 						
 			LineItemsTotal = LineItemsTotal + newLineitem.LineTotal;
 			TotalDiscount = TotalDiscount + Number(lineitem.Get("Discount")); // zoho line discount
@@ -2600,6 +2642,8 @@ Function zoho_salesinvoice(jsonin)
 		Try NewSI.EmailNote = SIData.Get("Terms and Conditions"); Except Endtry;
 		Try NewSI.RefNum = SIData.Get("Purchase Order"); Except Endtry;
 		Try NewSI.Date = Date(SIData.Get("Invoice Date")); Except Endtry;
+		NewSI.DiscountType = Enums.DiscountType.Percent;
+		NewSI.DiscountIsTaxable = True;
 		
 		NewSI.Date = CurrentSessionDate();
 		NewSI.Currency = GeneralFunctionsReusable.DefaultCurrency();
@@ -2637,6 +2681,7 @@ Function zoho_salesinvoice(jsonin)
 		LineItemsTotal = 0;
 		For Each lineitem in SIData.Get("Product Details") Do
 			newLineItem = NewSI.LineItems.Add();
+			newLineItem.LineID = New UUID();
 			
 			//get product
 			idQuery = new Query("SELECT
@@ -2664,6 +2709,8 @@ Function zoho_salesinvoice(jsonin)
 			newLineItem.PriceUnits = Number(lineitem.Get("List Price")); // zoho list price
 			newLineitem.QtyUnits = Number(lineitem.Get("Quantity")); // zoho quantity
 			newLineitem.LineTotal =  newLineItem.PriceUnits * newLineitem.QtyUnits; // zoho total ignoring tax
+			newLineItem.UnitSet = newLineItem.Unit.Owner;
+			newLineitem.QtyUM = newLineitem.QtyUnits * newLineItem.Unit.Factor;	
 
 			LineItemsTotal = LineItemsTotal + newLineitem.LineTotal;
 			TotalDiscount = TotalDiscount + Number(lineitem.Get("Discount")); // zoho line discount
@@ -2816,54 +2863,150 @@ Function zoho_salesinvoice(jsonin)
 		Try UpdatedSI.RefNum = SIData.Get("Purchase Order"); Except Endtry;
 		Try UpdatedSI.DeliveryDate = Date(SIData.Get("Due Date")); Except Endtry;
 		Try UpdatedSI.Date = Date(SIData.Get("Invoice Date")); Except Endtry;
+		UpdatedSI.DiscountType = Enums.DiscountType.Percent;
+		UpdatedSI.DiscountIsTaxable = True;
 		
-		//get rid of line items before rewriting them
-		UpdatedSI.LineItems.Clear();
+		PD = SIData.Get("Product Details");
+		If PD.Count() = UpdatedSI.LineItems.Count() Then
 		
-		TotalDiscount = 0;
-		TotalTax = 0;
-		taxablesubtotal = 0;
-		LineItemsTotal = 0;
-		For Each lineitem in SIData.Get("Product Details") Do
-			newLineItem = UpdatedSI.LineItems.Add();
-			
-			//get product
-			idQuery = new Query("SELECT
-			                    |	zoho_productCodeMap.product_ref
-			                    |FROM
-			                    |	Catalog.zoho_productCodeMap AS zoho_productCodeMap
-			                    |WHERE
-			                    |	zoho_productCodeMap.zoho_id = &zoho_id");
-						   
-			idQuery.SetParameter("zoho_id", lineitem.Get("Product Id")); // zoho product id
-			idProductResult = idQuery.Execute().Unload();
-			
-			Try newLineItem.Product = idProductResult[0].product_ref;
+			Try //check if created from a SO in acs
+				soQuery = new Query("SELECT
+				                    |	zoho_SOCodeMap.salesorder_ref
+				                    |FROM
+				                    |	Catalog.zoho_SOCodeMap AS zoho_SOCodeMap
+				                    |WHERE
+				                    |	zoho_SOCodeMap.zoho_id = &zoho_id");
+							   
+				soQuery.SetParameter("zoho_id", SIData.Get("SALESORDERID"));
+				socheck = soQuery.Execute().Unload();
+				SOlinkage = socheck[0].salesorder_ref;
 			Except
-				return "product id does not exist";
+				// no SO
+				SOlinkage = undefined;
+			EndTry;
+						
+			TotalDiscount = 0;
+			TotalTax = 0;
+			taxablesubtotal = 0;
+			LineItemsTotal = 0;
+			i = 0;
+			For Each lineitem in SIData.Get("Product Details") Do
+				newLineItem = UpdatedSI.LineItems.Get(i);
+				
+				//get product
+				idQuery = new Query("SELECT
+				                    |	zoho_productCodeMap.product_ref
+				                    |FROM
+				                    |	Catalog.zoho_productCodeMap AS zoho_productCodeMap
+				                    |WHERE
+				                    |	zoho_productCodeMap.zoho_id = &zoho_id");
+							   
+				idQuery.SetParameter("zoho_id", lineitem.Get("Product Id")); // zoho product id
+				idProductResult = idQuery.Execute().Unload();
+				
+				Try newLineItem.Product = idProductResult[0].product_ref;
+				Except
+					return "product id does not exist";
+				EndTry;
+				
+				newLineItem.Order = SOlinkage;
+				newLineItem.ProductDescription = newLineItem.Product.Description;
+				newLineItem.Unit = newLineItem.Product.UnitSet.DefaultSaleUnit;
+				newLineItem.LocationActual = UpdatedSI.LocationActual;
+				newLineItem.DeliveryDateActual = UpdatedSI.DeliveryDateActual;
+				
+				newLineItem.PriceUnits = Number(lineitem.Get("List Price")); // zoho list price
+				newLineitem.QtyUnits = Number(lineitem.Get("Quantity")); // zoho quantity
+				//newLineitem.LineTotal =  Number(lineitem.Get("Net Total")); // zoho net total
+				newLineitem.LineTotal =  newLineItem.PriceUnits * newLineitem.QtyUnits; // zoho total ignoring tax
+				newLineItem.UnitSet = newLineItem.Unit.Owner;
+				newLineitem.QtyUM = newLineitem.QtyUnits * newLineItem.Unit.Factor;	
+				
+				LineItemsTotal = LineItemsTotal + newLineitem.LineTotal;
+				TotalDiscount = TotalDiscount + Number(lineitem.Get("Discount")); // zoho line discount
+				If Number(lineitem.Get("Tax")) = 0 AND Number(SIData.Get("Tax")) = 0 Then
+					newLineitem.Taxable = False;
+				Else
+					newLineitem.Taxable = True;
+					TotalTax = TotalTax + Number(lineitem.Get("Tax")); // zoho line tax
+					taxablesubtotal = taxablesubtotal + newLineitem.LineTotal;
+				EndIf;
+				i = i + 1;
+				
+			EndDo;
+			
+		Else
+			
+			Try //check if created from a SO in acs
+				soQuery = new Query("SELECT
+				                    |	zoho_SOCodeMap.salesorder_ref
+				                    |FROM
+				                    |	Catalog.zoho_SOCodeMap AS zoho_SOCodeMap
+				                    |WHERE
+				                    |	zoho_SOCodeMap.zoho_id = &zoho_id");
+							   
+				soQuery.SetParameter("zoho_id", SIData.Get("SALESORDERID"));
+				socheck = soQuery.Execute().Unload();
+				SOlinkage = socheck[0].salesorder_ref;
+			Except
+				// no SO
+				SOlinkage = undefined;
 			EndTry;
 			
-			newLineItem.ProductDescription = newLineItem.Product.Description;
-			newLineItem.Unit = newLineItem.Product.UnitSet.DefaultSaleUnit;
-			newLineItem.LocationActual = UpdatedSI.LocationActual;
-			newLineItem.DeliveryDateActual = UpdatedSI.DeliveryDateActual;
+			//get rid of line items before rewriting them
+			UpdatedSI.LineItems.Clear();
 			
-			newLineItem.PriceUnits = Number(lineitem.Get("List Price")); // zoho list price
-			newLineitem.QtyUnits = Number(lineitem.Get("Quantity")); // zoho quantity
-			//newLineitem.LineTotal =  Number(lineitem.Get("Net Total")); // zoho net total
-			newLineitem.LineTotal =  newLineItem.PriceUnits * newLineitem.QtyUnits; // zoho total ignoring tax
+			TotalDiscount = 0;
+			TotalTax = 0;
+			taxablesubtotal = 0;
+			LineItemsTotal = 0;
+			For Each lineitem in SIData.Get("Product Details") Do
+				newLineItem = UpdatedSI.LineItems.Add();
+				newLineItem.LineID = New UUID();
+				
+				//get product
+				idQuery = new Query("SELECT
+				                    |	zoho_productCodeMap.product_ref
+				                    |FROM
+				                    |	Catalog.zoho_productCodeMap AS zoho_productCodeMap
+				                    |WHERE
+				                    |	zoho_productCodeMap.zoho_id = &zoho_id");
+							   
+				idQuery.SetParameter("zoho_id", lineitem.Get("Product Id")); // zoho product id
+				idProductResult = idQuery.Execute().Unload();
+				
+				Try newLineItem.Product = idProductResult[0].product_ref;
+				Except
+					return "product id does not exist";
+				EndTry;
+				
+				newLineItem.Order = SOlinkage;
+				newLineItem.ProductDescription = newLineItem.Product.Description;
+				newLineItem.Unit = newLineItem.Product.UnitSet.DefaultSaleUnit;
+				newLineItem.LocationActual = UpdatedSI.LocationActual;
+				newLineItem.DeliveryDateActual = UpdatedSI.DeliveryDateActual;
+				
+				newLineItem.PriceUnits = Number(lineitem.Get("List Price")); // zoho list price
+				newLineitem.QtyUnits = Number(lineitem.Get("Quantity")); // zoho quantity
+				//newLineitem.LineTotal =  Number(lineitem.Get("Net Total")); // zoho net total
+				newLineitem.LineTotal =  newLineItem.PriceUnits * newLineitem.QtyUnits; // zoho total ignoring tax
+				newLineItem.UnitSet = newLineItem.Unit.Owner;
+				newLineitem.QtyUM = newLineitem.QtyUnits * newLineItem.Unit.Factor;	
+				
+				LineItemsTotal = LineItemsTotal + newLineitem.LineTotal;
+				TotalDiscount = TotalDiscount + Number(lineitem.Get("Discount")); // zoho line discount
+				If Number(lineitem.Get("Tax")) = 0 AND Number(SIData.Get("Tax")) = 0 Then
+					newLineitem.Taxable = False;
+				Else
+					newLineitem.Taxable = True;
+					TotalTax = TotalTax + Number(lineitem.Get("Tax")); // zoho line tax
+					taxablesubtotal = taxablesubtotal + newLineitem.LineTotal;
+				EndIf;
+						
+			EndDo;
+		EndIf;
+		
 			
-			LineItemsTotal = LineItemsTotal + newLineitem.LineTotal;
-			TotalDiscount = TotalDiscount + Number(lineitem.Get("Discount")); // zoho line discount
-			If Number(lineitem.Get("Tax")) = 0 AND Number(SIData.Get("Tax")) = 0 Then
-				newLineitem.Taxable = False;
-			Else
-				newLineitem.Taxable = True;
-				TotalTax = TotalTax + Number(lineitem.Get("Tax")); // zoho line tax
-				taxablesubtotal = taxablesubtotal + newLineitem.LineTotal;
-			EndIf;
-			
-		EndDo;
 		UpdatedSI.LineSubtotal = LineItemsTotal;
 		UpdatedSI.Shipping = SIData.Get("Adjustment");
 		UpdatedSI.Discount = (- Number(TotalDiscount + SIData.Get("Discount"))); // zoho overall discount
@@ -2888,7 +3031,7 @@ Function zoho_salesinvoice(jsonin)
 		UpdatedSI.BillTo = billResult[0].Ref;
 		
 		UpdatedSI.Write(DocumentWriteMode.Posting);
-		
+			
 	EndIf;
 	
 	

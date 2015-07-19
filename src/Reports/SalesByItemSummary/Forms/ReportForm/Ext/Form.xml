@@ -62,6 +62,7 @@
 				</InputField>
 				<Button name="ReportSettings" id="34">
 					<Type>UsualButton</Type>
+					<Visible>false</Visible>
 					<OnlyInAllActions>true</OnlyInAllActions>
 					<CommandName>Form.StandardCommand.ReportSettings</CommandName>
 					<TextColor>#FFFFFF</TextColor>
@@ -96,6 +97,7 @@
 						</Button>
 						<Button name="Excel" id="36">
 							<Type>CommandBarButton</Type>
+							<Visible>false</Visible>
 							<OnlyInAllActions>true</OnlyInAllActions>
 							<CommandName>Form.Command.Excel</CommandName>
 							<Title>

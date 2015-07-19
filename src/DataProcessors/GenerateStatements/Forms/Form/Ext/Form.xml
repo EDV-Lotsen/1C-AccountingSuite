@@ -46,10 +46,10 @@
 					<Representation>StrongSeparation</Representation>
 					<ExtendedTooltip name="GroupCriteriaExtendedTooltip" id="10"/>
 					<ChildItems>
-						<InputField name="AmountRCBalance" id="11">
-							<DataPath>AmountRCBalance</DataPath>
-							<ContextMenu name="AmountRCBalanceContextMenu" id="12"/>
-							<ExtendedTooltip name="AmountRCBalanceExtendedTooltip" id="13"/>
+						<InputField name="AmountBalance" id="11">
+							<DataPath>AmountBalance</DataPath>
+							<ContextMenu name="AmountBalanceContextMenu" id="12"/>
+							<ExtendedTooltip name="AmountBalanceExtendedTooltip" id="13"/>
 						</InputField>
 					</ChildItems>
 				</UsualGroup>
@@ -148,8 +148,8 @@
 							<ContextMenu name="ListCompanyContextMenu" id="40"/>
 							<ExtendedTooltip name="ListCompanyExtendedTooltip" id="41"/>
 						</InputField>
-						<InputField name="ListAmountRCBalance" id="23">
-							<DataPath>List.AmountRCBalance</DataPath>
+						<InputField name="ListAmountBalance" id="23">
+							<DataPath>List.AmountBalance</DataPath>
 							<ReadOnly>true</ReadOnly>
 							<EditMode>EnterOnInput</EditMode>
 							<Format>
@@ -164,8 +164,30 @@
 									<v8:content>NFD=2; NZ=0.00</v8:content>
 								</v8:item>
 							</EditFormat>
-							<ContextMenu name="ListAmountRCBalanceContextMenu" id="24"/>
-							<ExtendedTooltip name="ListAmountRCBalanceExtendedTooltip" id="25"/>
+							<ContextMenu name="ListAmountBalanceContextMenu" id="24"/>
+							<ExtendedTooltip name="ListAmountBalanceExtendedTooltip" id="25"/>
+						</InputField>
+						<InputField name="ListCurrency" id="55">
+							<DataPath>List.Currency</DataPath>
+							<ReadOnly>true</ReadOnly>
+							<EditMode>EnterOnInput</EditMode>
+							<Width>7</Width>
+							<ContextMenu name="ListCurrencyContextMenu" id="56"/>
+							<ExtendedTooltip name="ListCurrencyExtendedTooltip" id="57"/>
+						</InputField>
+						<InputField name="ListAddress" id="58">
+							<DataPath>List.Address</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<Width>15</Width>
+							<ChoiceParameterLinks>
+								<xr:Link>
+									<xr:Name>Filter.Owner</xr:Name>
+									<xr:DataPath xsi:type="xs:string">Items.List.CurrentData.Company</xr:DataPath>
+									<xr:ValueChange>Clear</xr:ValueChange>
+								</xr:Link>
+							</ChoiceParameterLinks>
+							<ContextMenu name="ListAddressContextMenu" id="59"/>
+							<ExtendedTooltip name="ListAddressExtendedTooltip" id="60"/>
 						</InputField>
 					</ChildItems>
 				</Table>
@@ -214,7 +236,7 @@
 				</v8:DateQualifiers>
 			</Type>
 		</Attribute>
-		<Attribute name="AmountRCBalance" id="4">
+		<Attribute name="AmountBalance" id="4">
 			<Title>
 				<v8:item>
 					<v8:lang>en</v8:lang>
@@ -252,7 +274,7 @@
 						<v8:Type>cfg:CatalogRef.Companies</v8:Type>
 					</Type>
 				</Column>
-				<Column name="AmountRCBalance" id="2">
+				<Column name="AmountBalance" id="2">
 					<Title>
 						<v8:item>
 							<v8:lang>en</v8:lang>
@@ -271,6 +293,28 @@
 				<Column name="Choice" id="3">
 					<Type>
 						<v8:Type>xs:boolean</v8:Type>
+					</Type>
+				</Column>
+				<Column name="Currency" id="4">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Currency</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>cfg:CatalogRef.Currencies</v8:Type>
+					</Type>
+				</Column>
+				<Column name="Address" id="5">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Address</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>cfg:CatalogRef.Addresses</v8:Type>
 					</Type>
 				</Column>
 			</Columns>

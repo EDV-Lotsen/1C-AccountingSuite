@@ -10,6 +10,11 @@
 	<RepostOnWrite>true</RepostOnWrite>
 	<AutoCommandBar name="FormCommandBar" id="-1">
 		<ChildItems>
+			<Button name="FormPayWithDwolla" id="119">
+				<Type>CommandBarButton</Type>
+				<CommandName>Form.Command.PayWithDwolla</CommandName>
+				<ExtendedTooltip name="FormPayWithDwollaExtendedTooltip" id="120"/>
+			</Button>
 			<Button name="FormPayWithBitcoin" id="131">
 				<Type>CommandBarButton</Type>
 				<CommandName>Form.Command.PayWithBitcoin</CommandName>

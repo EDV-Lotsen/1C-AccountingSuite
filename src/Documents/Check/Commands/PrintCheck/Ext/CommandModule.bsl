@@ -9,7 +9,9 @@ Procedure CommandProcessing(CommandParameter, CommandExecuteParameters)
 	Spreadsheet.ReadOnly = False;
 	Spreadsheet.FitToPage = True;
 	Spreadsheet.ShowHeaders = False;
-	Spreadsheet.Show();
+	//Spreadsheet.Show();
+	FormParameters = New Structure("SpreadsheetDocument, TitleOfForm", Spreadsheet, NStr("en = 'Check'"));
+	OpenForm("CommonForm.PrintForm", FormParameters);
 	
 EndProcedure
 

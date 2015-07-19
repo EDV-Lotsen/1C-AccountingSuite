@@ -464,7 +464,6 @@
 					<ChildItems>
 						<CheckBoxField name="YodleeAccount" id="138">
 							<DataPath>Object.YodleeAccount</DataPath>
-							<ReadOnly>true</ReadOnly>
 							<CheckBoxType>Auto</CheckBoxType>
 							<ContextMenu name="YodleeAccountContextMenu" id="139"/>
 							<ExtendedTooltip name="YodleeAccountExtendedTooltip" id="140"/>
@@ -780,7 +779,7 @@
 					<Title>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Default accounts</v8:content>
+							<v8:content>Bank transactions</v8:content>
 						</v8:item>
 					</Title>
 					<ExtendedTooltip name="DefaultAccountsExtendedTooltip" id="185"/>
@@ -806,6 +805,11 @@
 							</Title>
 							<ContextMenu name="DefaultDepositAccountContextMenu" id="190"/>
 							<ExtendedTooltip name="DefaultDepositAccountExtendedTooltip" id="191"/>
+						</InputField>
+						<InputField name="UploadStartDate" id="192">
+							<DataPath>Object.UploadStartDate</DataPath>
+							<ContextMenu name="UploadStartDateContextMenu" id="193"/>
+							<ExtendedTooltip name="UploadStartDateExtendedTooltip" id="194"/>
 						</InputField>
 					</ChildItems>
 				</Page>

@@ -397,8 +397,34 @@
 								</Button>
 								<Button name="DataImport" id="1396">
 									<Type>Hyperlink</Type>
+									<Visible>false</Visible>
 									<CommandName>Form.Command.DataImport</CommandName>
 									<ExtendedTooltip name="DataImportExtendedTooltip" id="1397"/>
+								</Button>
+								<Button name="DataImportv2" id="1413">
+									<Type>Hyperlink</Type>
+									<CommandName>Form.Command.DataImportv2</CommandName>
+									<ExtendedTooltip name="DataImportv2ExtendedTooltip" id="1414"/>
+								</Button>
+								<Button name="Register" id="1431">
+									<Type>Hyperlink</Type>
+									<CommandName>Form.Command.Register</CommandName>
+									<ExtendedTooltip name="RegisterExtendedTooltip" id="1432"/>
+								</Button>
+								<Button name="Renumbering" id="1429">
+									<Type>Hyperlink</Type>
+									<CommandName>Form.Command.Renumbering</CommandName>
+									<ExtendedTooltip name="RenumberingExtendedTooltip" id="1430"/>
+								</Button>
+								<Button name="BalanceSheetNew" id="1433">
+									<Type>Hyperlink</Type>
+									<CommandName>Form.Command.BalanceSheetNew</CommandName>
+									<ExtendedTooltip name="BalanceSheetNewExtendedTooltip" id="1434"/>
+								</Button>
+								<Button name="SearchAndReplace" id="1435">
+									<Type>Hyperlink</Type>
+									<CommandName>Form.Command.SearchAndReplace</CommandName>
+									<ExtendedTooltip name="SearchAndReplaceExtendedTooltip" id="1436"/>
 								</Button>
 							</ChildItems>
 						</UsualGroup>
@@ -620,6 +646,12 @@
 						</CheckBoxField>
 						<CheckBoxField name="EnhancedInventoryShipping" id="1353">
 							<DataPath>ConstantsSet.EnhancedInventoryShipping</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Shipment</v8:content>
+								</v8:item>
+							</Title>
 							<CheckBoxType>Auto</CheckBoxType>
 							<ContextMenu name="EnhancedInventoryShippingContextMenu" id="1354"/>
 							<ExtendedTooltip name="EnhancedInventoryShippingExtendedTooltip" id="1355"/>
@@ -629,11 +661,47 @@
 						</CheckBoxField>
 						<CheckBoxField name="EnhancedInventoryReceiving" id="1345">
 							<DataPath>ConstantsSet.EnhancedInventoryReceiving</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Item Receipt</v8:content>
+								</v8:item>
+							</Title>
 							<CheckBoxType>Auto</CheckBoxType>
 							<ContextMenu name="EnhancedInventoryReceivingContextMenu" id="1346"/>
 							<ExtendedTooltip name="EnhancedInventoryReceivingExtendedTooltip" id="1347"/>
 							<Events>
 								<Event name="OnChange">EnhancedInventoryReceivingOnChange</Event>
+							</Events>
+						</CheckBoxField>
+						<CheckBoxField name="EnableAssembly" id="1419">
+							<DataPath>ConstantsSet.EnableAssembly</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Assembly</v8:content>
+								</v8:item>
+							</Title>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="EnableAssemblyContextMenu" id="1420"/>
+							<ExtendedTooltip name="EnableAssemblyExtendedTooltip" id="1421"/>
+							<Events>
+								<Event name="OnChange">EnableAssemblyOnChange</Event>
+							</Events>
+						</CheckBoxField>
+						<CheckBoxField name="EnableLots" id="1422">
+							<DataPath>ConstantsSet.EnableLots</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Lots and serial numbers</v8:content>
+								</v8:item>
+							</Title>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="EnableLotsContextMenu" id="1423"/>
+							<ExtendedTooltip name="EnableLotsExtendedTooltip" id="1424"/>
+							<Events>
+								<Event name="OnChange">EnableLotsOnChange</Event>
 							</Events>
 						</CheckBoxField>
 						<InputField name="DefaultCurrency" id="155">
@@ -3420,73 +3488,21 @@
 							</Title>
 							<ExtendedTooltip name="OpenPOExtendedTooltip" id="1165"/>
 						</Button>
+						<Button name="OpenStatement" id="1437">
+							<Type>Hyperlink</Type>
+							<CommandName>Form.Command.OpenStatement</CommandName>
+							<ExtendedTooltip name="OpenStatementExtendedTooltip" id="1438"/>
+						</Button>
+						<Button name="OpenAssembly" id="1425">
+							<Type>Hyperlink</Type>
+							<CommandName>Form.Command.OpenAssembly</CommandName>
+							<ExtendedTooltip name="OpenAssemblyExtendedTooltip" id="1426"/>
+						</Button>
 						<Button name="OpenHeadersAndFooters" id="1341">
 							<Type>Hyperlink</Type>
 							<CommandName>Form.Command.OpenHeadersAndFooters</CommandName>
 							<ExtendedTooltip name="OpenHeadersAndFootersExtendedTooltip" id="1342"/>
 						</Button>
-					</ChildItems>
-				</Page>
-				<Page name="EmailSettings" id="1401">
-					<Title>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Email settings</v8:content>
-						</v8:item>
-					</Title>
-					<ToolTip>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Email settings</v8:content>
-						</v8:item>
-					</ToolTip>
-					<ExtendedTooltip name="EmailSettingsExtendedTooltip" id="1402"/>
-					<ChildItems>
-						<InputField name="MailProfAddress" id="1403">
-							<DataPath>ConstantsSet.MailProfAddress</DataPath>
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Server</v8:content>
-								</v8:item>
-							</Title>
-							<ContextMenu name="MailProfAddressContextMenu" id="1404"/>
-							<ExtendedTooltip name="MailProfAddressExtendedTooltip" id="1405"/>
-						</InputField>
-						<InputField name="MailProfUser" id="1412">
-							<DataPath>ConstantsSet.MailProfUser</DataPath>
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>User</v8:content>
-								</v8:item>
-							</Title>
-							<ContextMenu name="MailProfUserContextMenu" id="1413"/>
-							<ExtendedTooltip name="MailProfUserExtendedTooltip" id="1414"/>
-						</InputField>
-						<InputField name="MailProfPass" id="1409">
-							<DataPath>ConstantsSet.MailProfPass</DataPath>
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Password</v8:content>
-								</v8:item>
-							</Title>
-							<ContextMenu name="MailProfPassContextMenu" id="1410"/>
-							<ExtendedTooltip name="MailProfPassExtendedTooltip" id="1411"/>
-						</InputField>
-						<CheckBoxField name="MailProfSSL" id="1406">
-							<DataPath>ConstantsSet.MailProfSSL</DataPath>
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Use SSL</v8:content>
-								</v8:item>
-							</Title>
-							<CheckBoxType>Auto</CheckBoxType>
-							<ContextMenu name="MailProfSSLContextMenu" id="1407"/>
-							<ExtendedTooltip name="MailProfSSLExtendedTooltip" id="1408"/>
-						</CheckBoxField>
 					</ChildItems>
 				</Page>
 			</ChildItems>
@@ -4349,6 +4365,111 @@
 				</v8:item>
 			</ToolTip>
 			<Action>DataImport</Action>
+		</Command>
+		<Command name="DataImportv2" id="45">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Data import v2</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Data importv2</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>DataImportv2</Action>
+		</Command>
+		<Command name="OpenAssembly" id="50">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Assembly</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Open Assembly</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>OpenAssembly</Action>
+		</Command>
+		<Command name="Renumbering" id="49">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Renumbering</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Renumbering</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>Renumbering</Action>
+		</Command>
+		<Command name="Register" id="51">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Register</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Register</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>Register</Action>
+		</Command>
+		<Command name="BalanceSheetNew" id="52">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Balance sheet new</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Balance sheet new</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>BalanceSheetNew</Action>
+		</Command>
+		<Command name="SearchAndReplace" id="53">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Search and replace</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Search and replace</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>SearchAndReplace</Action>
+		</Command>
+		<Command name="OpenStatement" id="54">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Statement</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Open Statement</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>OpenStatement</Action>
 		</Command>
 	</Commands>
 </Form>

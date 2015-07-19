@@ -340,20 +340,6 @@ Procedure URLOpen(Command)
 EndProcedure
 
 
-&AtServer
-Function DwollaAccessToken()
-	
-	Return Constants.dwolla_access_token.Get();	
-	
-EndFunction
-
-&AtServer
-Function DwollaFundingSource()
-	
-	Return Constants.dwolla_funding_source.Get();
-	
-EndFunction
-
 &AtClient
 Procedure NumberOnChange(Item)
 	NumberOnChangeAtServer();

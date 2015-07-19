@@ -1,4 +1,58 @@
-﻿
+﻿////////////////////////////////////////////////////////////////////////////////
+// Chart of accounts: List form
+//------------------------------------------------------------------------------
+// Available on:
+// - Client (managed application)
+// - Server
+//
+
+////////////////////////////////////////////////////////////////////////////////
+#Region EVENTS_HANDLERS
+
+&AtServer
+Procedure OnCreateAtServer(Cancel, StandardProcessing)
+	
+	TypeBalance = 1;
+	GetTrialBalance();
+	
+	//DisplayFooter = False;
+	//IsInternalUser1 = Find(SessionParameters.ACSUser,"@accountingsuite.com");
+	//If IsInternalUser1 <> 0 Then
+	//	DisplayFooter = True;	
+	//EndIf;
+	//Items.Footer.Visible = DisplayFooter;
+
+EndProcedure
+
+&AtClient
+Procedure OnOpen(Cancel)
+	
+	Items.List.Representation = TableRepresentation.List;
+	Items.List.InitialTreeView = InitialTreeView.NoExpand;
+
+EndProcedure
+
+#EndRegion
+
+////////////////////////////////////////////////////////////////////////////////
+#Region CONTROLS_EVENTS_HANDLERS
+
+&AtClient
+Procedure TypeBalanceOnChange(Item)
+	
+	If TypeBalance = 0 Then	
+		GetRegularBalance();
+	Else
+		GetTrialBalance();
+	EndIf;
+	
+EndProcedure
+
+#EndRegion
+
+////////////////////////////////////////////////////////////////////////////////
+#Region COMMANDS_HANDLERS
+
 &AtClient
 Procedure GeneralLedger(Command)
 	
@@ -50,19 +104,6 @@ Procedure GeneralLedger(Command)
 	
 EndProcedure
 
-&AtServer
-Function ProcessDetailsAtServer(Val ReportRF, Val ResultRF, Val DetailsDataRF, Val UUID_RF)
-	
-	ReportObject = FormDataToValue(ReportRF, Type("ReportObject.GeneralLedger"));
-	ResultRF.Clear();                                                                              
-	ReportObject.ComposeResult(ResultRF, DetailsDataRF);                                  
-	Address = PutToTempStorage(DetailsDataRF, UUID_RF); 
-	
-	Return New Structure("Result, DetailsData", ResultRF, Address);       
-	
-EndFunction
-
-
 &AtClient
 Procedure ImportChartOfAccounts(Command)
 	
@@ -70,7 +111,7 @@ Procedure ImportChartOfAccounts(Command)
 		
 		Notify = New NotifyDescription("ExcelFileUpload", ThisForm);
 		
-		BeginPutFile(Notify, "", "*.xls", True, ThisForm.UUID);
+		BeginPutFile(Notify, "", "*.acs", True, ThisForm.UUID);
 		
 	Else
 		
@@ -88,27 +129,35 @@ Procedure ExportChartOfAccounts(Command)
 	
 	Structure = GeneralFunctions.GetExcelFile("Chart of accounts", Spreadsheet);
 	
-	GetFile(Structure.Address, Structure.FileName, True); 
+	GetFile(Structure.Address, StrReplace(Structure.FileName, ".xlsx",".acs"), True); 
 	
 EndProcedure
 
+&AtClient
+Procedure RefreshList(Command)
+	
+	If TypeBalance = 0 Then	
+		GetRegularBalance();
+	Else
+		GetTrialBalance();
+	EndIf;
+	
+EndProcedure
+
+#EndRegion
 
 #Region EXCEL
 
 &AtClient
 Procedure ExcelFileUpload(Result, Address, SelectedFileName, AdditionalParameters) Export
 	
-	If (Find(SelectedFileName, ".xls") = 0)
-		And (Find(SelectedFileName, ".xlsx") = 0)
-		And (Find(SelectedFileName, ".XLS") = 0)
-		And (Find(SelectedFileName, ".XLSX") = 0)
-		Then
-		ShowMessageBox(, NStr("en = 'Please upload a valid Excel file (.xls, .xlsx)'"));
+	If Find(SelectedFileName, ".acs") = 0 Then
+		ShowMessageBox(, NStr("en = 'Please upload a valid ACS file (.acs)'"));
 		Return;
 	EndIf;
 	
 	If ValueIsFilled(Address) Then
-		ShowUserNotification(NStr("en = 'Reading file with  Microsoft Excel...'"));
+		ShowUserNotification(NStr("en = 'Reading file with  ACS...'"));
 		
 		Errors = False;
 		ImportData(Address, Errors);
@@ -346,6 +395,288 @@ EndFunction
 
 #EndRegion
 
+#Region BALANCE
+
+&AtServer
+Procedure GetRegularBalance()
+	
+	List.QueryText = "SELECT
+	                 |	ChartOfAccounts.Ref AS Ref,
+	                 |	ChartOfAccounts.Code AS Code,
+	                 |	ChartOfAccounts.Parent.Code AS Parent,
+	                 |	ChartOfAccounts.ReclassAccount AS Reclass,
+	                 |	ChartOfAccounts.CreditCard AS CreditCard,
+	                 |	ChartOfAccounts.Description AS Description,
+	                 |	ChartOfAccounts.AccountType AS AccountType,
+	                 |	NewChartOfAccounts.Balance AS Balance,
+	                 |	ChartOfAccounts.Category1099 AS Category1099,
+	                 |	ChartOfAccounts.gc_rectype AS gc_rectype,
+	                 |	ChartOfAccounts.gc_totlev AS gc_totlev
+	                 |FROM
+	                 |	ChartOfAccounts.ChartOfAccounts AS ChartOfAccounts
+	                 |		LEFT JOIN (SELECT
+	                 |			ChartOfAccountsChartOfAccounts.Ref AS Ref,
+	                 |			ChartOfAccountsChartOfAccounts.Code AS Code,
+	                 |			ChartOfAccountsChartOfAccounts.Description AS Description,
+	                 |			ChartOfAccountsChartOfAccounts.AccountType AS AccountType,
+	                 |			SUM(CASE
+	                 |					WHEN GeneralJournalBalance.AmountRCBalance IS NULL 
+	                 |						THEN 0
+	                 |					WHEN ChartOfAccountsChartOfAccounts.AccountType = VALUE(Enum.AccountTypes.AccountsPayable)
+	                 |							OR ChartOfAccountsChartOfAccounts.AccountType = VALUE(Enum.AccountTypes.OtherCurrentLiability)
+	                 |							OR ChartOfAccountsChartOfAccounts.AccountType = VALUE(Enum.AccountTypes.LongTermLiability)
+	                 |							OR ChartOfAccountsChartOfAccounts.AccountType = VALUE(Enum.AccountTypes.Equity)
+	                 |							OR ChartOfAccountsChartOfAccounts.AccountType = VALUE(Enum.AccountTypes.Income)
+	                 |							OR ChartOfAccountsChartOfAccounts.AccountType = VALUE(Enum.AccountTypes.OtherIncome)
+	                 |						THEN -GeneralJournalBalance.AmountRCBalance
+	                 |					ELSE GeneralJournalBalance.AmountRCBalance
+	                 |				END) AS Balance,
+	                 |			ChartOfAccountsChartOfAccounts.Category1099 AS Category1099
+	                 |		FROM
+	                 |			ChartOfAccounts.ChartOfAccounts AS ChartOfAccountsChartOfAccounts
+	                 |				LEFT JOIN (SELECT
+	                 |					ChartOfAccounts.Ref AS Ref,
+	                 |					ISNULL(HierarchyChartOfAccounts.Route, """") AS Route
+	                 |				FROM
+	                 |					ChartOfAccounts.ChartOfAccounts AS ChartOfAccounts
+	                 |						LEFT JOIN InformationRegister.HierarchyChartOfAccounts AS HierarchyChartOfAccounts
+	                 |						ON ChartOfAccounts.Ref = HierarchyChartOfAccounts.Account) AS NestedSelect
+	                 |					LEFT JOIN AccountingRegister.GeneralJournal.Balance AS GeneralJournalBalance
+	                 |					ON NestedSelect.Ref = GeneralJournalBalance.Account
+	                 |				ON (NestedSelect.Route LIKE ""%/"" + ChartOfAccountsChartOfAccounts.Code + ""/%"")
+	                 |		
+	                 |		GROUP BY
+	                 |			ChartOfAccountsChartOfAccounts.Ref,
+	                 |			ChartOfAccountsChartOfAccounts.Code,
+	                 |			ChartOfAccountsChartOfAccounts.Description,
+	                 |			ChartOfAccountsChartOfAccounts.AccountType,
+	                 |			ChartOfAccountsChartOfAccounts.Category1099) AS NewChartOfAccounts
+	                 |		ON ChartOfAccounts.Ref = NewChartOfAccounts.Ref";
+	
+EndProcedure
+
+&AtServer
+Procedure GetTrialBalance()
+	
+	//1.
+	VT = GetTableBalance();
+	
+	//2.
+	CaseText         = "";
+	NumbeOfParameter = 0;
+	
+	For Each LineVT In VT Do                                                           
+		
+		NumbeOfParameter = NumbeOfParameter + 1;
+		
+		CaseText = CaseText + "WHEN ChartOfAccounts.Ref = &Ref_" + NumbeOfParameter + " THEN &Balance_" + NumbeOfParameter + " ";
+		
+	EndDo;
+	
+	CaseText = ?(ValueIsFilled(CaseText), CaseText, "WHEN TRUE THEN 0");	
+	
+	//3.
+	List.QueryText = "SELECT
+	               |	ChartOfAccounts.Ref AS Ref,
+				   |	ChartOfAccounts.Code AS Code,
+				   |	ChartOfAccounts.Parent.Code AS Parent,
+				   |	ChartOfAccounts.ReclassAccount AS Reclass,
+				   |	ChartOfAccounts.CreditCard AS CreditCard,
+				   |	ChartOfAccounts.Description AS Description,
+				   |	ChartOfAccounts.AccountType AS AccountType,
+				   |	ChartOfAccounts.Category1099 AS Category1099,
+	               |	ChartOfAccounts.gc_rectype AS gc_rectype,
+	               |	ChartOfAccounts.gc_totlev AS gc_totlev,
+	               |	CASE
+	               |		" + CaseText + "
+	               |		ELSE 0
+	               |	END AS Balance
+	               |FROM
+	               |	ChartOfAccounts.ChartOfAccounts AS ChartOfAccounts";
+				   
+	//4.
+	NumbeOfParameter = 0;
+	
+	For Each LineVT In VT Do                                                           
+		
+		NumbeOfParameter = NumbeOfParameter + 1;
+		
+		List.Parameters.SetParameterValue("Ref_" + NumbeOfParameter, LineVT.Account);
+		List.Parameters.SetParameterValue("Balance_" + NumbeOfParameter, LineVT.Balance);
+	
+	EndDo;
+	
+EndProcedure
+
+&AtServerNoContext
+Function GetTableBalance();
+	
+	ValueTable = New ValueTable();
+	ValueTable.Columns.Add("Account");	
+	ValueTable.Columns.Add("Balance");	
+	
+	Query = New Query;
+	Query.Text = 
+		"SELECT TOP 1
+		|	ChartOfAccounts.Ref AS Account
+		|INTO RetainedEarningsAccount
+		|FROM
+		|	ChartOfAccounts.ChartOfAccounts AS ChartOfAccounts
+		|WHERE
+		|	ChartOfAccounts.RetainedEarnings = TRUE
+		|;
+		|
+		|////////////////////////////////////////////////////////////////////////////////
+		|SELECT
+		|	GeneralJournalBalancesAndTurnovers.Account AS Account,
+		|	GeneralJournalBalancesAndTurnovers.Account.AccountType AS AccountAccountType,
+		|	GeneralJournalBalancesAndTurnovers.AmountRCOpeningSplittedBalanceDr,
+		|	GeneralJournalBalancesAndTurnovers.AmountRCOpeningSplittedBalanceCr,
+		|	GeneralJournalBalancesAndTurnovers.AmountRCTurnoverDr,
+		|	GeneralJournalBalancesAndTurnovers.AmountRCTurnoverCr,
+		|	GeneralJournalBalancesAndTurnovers.AmountRCClosingSplittedBalanceDr,
+		|	GeneralJournalBalancesAndTurnovers.AmountRCClosingSplittedBalanceCr
+		|INTO BalancesAndTurnovers
+		|FROM
+		|	AccountingRegister.GeneralJournal.BalanceAndTurnovers(&BeginOfFiscalYear, &CurrentSessionDate, Auto, , , , ) AS GeneralJournalBalancesAndTurnovers
+		|
+		|INDEX BY
+		|	Account,
+		|	AccountAccountType
+		|;
+		|
+		|////////////////////////////////////////////////////////////////////////////////
+		|SELECT
+		|	RetainedEarningsAccount.Account AS Account,
+		|	BalancesAndTurnovers.AmountRCOpeningSplittedBalanceDr AS AmountRCOpeningSplittedBalanceDr,
+		|	BalancesAndTurnovers.AmountRCOpeningSplittedBalanceCr AS AmountRCOpeningSplittedBalanceCr,
+		|	0 AS AmountRCTurnoverDr,
+		|	0 AS AmountRCTurnoverCr,
+		|	BalancesAndTurnovers.AmountRCOpeningSplittedBalanceDr AS AmountRCClosingSplittedBalanceDr,
+		|	BalancesAndTurnovers.AmountRCOpeningSplittedBalanceCr AS AmountRCClosingSplittedBalanceCr
+		|INTO RetainedEarnings
+		|FROM
+		|	BalancesAndTurnovers AS BalancesAndTurnovers
+		|		LEFT JOIN RetainedEarningsAccount AS RetainedEarningsAccount
+		|		ON (TRUE)
+		|WHERE
+		|	BalancesAndTurnovers.AccountAccountType IN (VALUE(Enum.AccountTypes.Income), VALUE(Enum.AccountTypes.CostOfSales), VALUE(Enum.AccountTypes.Expense), VALUE(Enum.AccountTypes.OtherExpense), VALUE(Enum.AccountTypes.OtherIncome), VALUE(Enum.AccountTypes.IncomeTaxExpense))
+		|
+		|UNION ALL
+		|
+		|SELECT
+		|	RetainedEarningsAccount.Account,
+		|	BalancesAndTurnovers.AmountRCClosingSplittedBalanceDr,
+		|	BalancesAndTurnovers.AmountRCClosingSplittedBalanceCr,
+		|	0,
+		|	0,
+		|	BalancesAndTurnovers.AmountRCClosingSplittedBalanceDr,
+		|	BalancesAndTurnovers.AmountRCClosingSplittedBalanceCr
+		|FROM
+		|	BalancesAndTurnovers AS BalancesAndTurnovers
+		|		LEFT JOIN RetainedEarningsAccount AS RetainedEarningsAccount
+		|		ON (TRUE)
+		|WHERE
+		|	BalancesAndTurnovers.Account.RetainedEarnings
+		|;
+		|
+		|////////////////////////////////////////////////////////////////////////////////
+		|SELECT
+		|	RetainedEarnings.Account AS Account,
+		|	VALUE(Enum.AccountTypes.Equity) AS AccountType,
+		|	CASE
+		|		WHEN SUM(RetainedEarnings.AmountRCOpeningSplittedBalanceDr) - SUM(RetainedEarnings.AmountRCOpeningSplittedBalanceCr) > 0
+		|			THEN SUM(RetainedEarnings.AmountRCOpeningSplittedBalanceDr) - SUM(RetainedEarnings.AmountRCOpeningSplittedBalanceCr)
+		|		ELSE 0
+		|	END - CASE
+		|		WHEN SUM(RetainedEarnings.AmountRCOpeningSplittedBalanceDr) - SUM(RetainedEarnings.AmountRCOpeningSplittedBalanceCr) < 0
+		|			THEN -(SUM(RetainedEarnings.AmountRCOpeningSplittedBalanceDr) - SUM(RetainedEarnings.AmountRCOpeningSplittedBalanceCr))
+		|		ELSE 0
+		|	END AS Balance
+		|FROM
+		|	RetainedEarnings AS RetainedEarnings
+		|
+		|GROUP BY
+		|	RetainedEarnings.Account
+		|
+		|UNION ALL
+		|
+		|SELECT
+		|	BalancesAndTurnovers.Account,
+		|	BalancesAndTurnovers.AccountAccountType,
+		|	CASE
+		|		WHEN BalancesAndTurnovers.AccountAccountType IN (VALUE(Enum.AccountTypes.Income), VALUE(Enum.AccountTypes.CostOfSales), VALUE(Enum.AccountTypes.Expense), VALUE(Enum.AccountTypes.OtherExpense), VALUE(Enum.AccountTypes.OtherIncome), VALUE(Enum.AccountTypes.IncomeTaxExpense))
+		|			THEN BalancesAndTurnovers.AmountRCTurnoverDr
+		|		ELSE BalancesAndTurnovers.AmountRCClosingSplittedBalanceDr
+		|	END - CASE
+		|		WHEN BalancesAndTurnovers.AccountAccountType IN (VALUE(Enum.AccountTypes.Income), VALUE(Enum.AccountTypes.CostOfSales), VALUE(Enum.AccountTypes.Expense), VALUE(Enum.AccountTypes.OtherExpense), VALUE(Enum.AccountTypes.OtherIncome), VALUE(Enum.AccountTypes.IncomeTaxExpense))
+		|			THEN BalancesAndTurnovers.AmountRCTurnoverCr
+		|		ELSE BalancesAndTurnovers.AmountRCClosingSplittedBalanceCr
+		|	END
+		|FROM
+		|	BalancesAndTurnovers AS BalancesAndTurnovers
+		|WHERE
+		|	NOT BalancesAndTurnovers.Account.RetainedEarnings
+		|	AND CASE
+		|			WHEN BalancesAndTurnovers.AccountAccountType IN (VALUE(Enum.AccountTypes.Income), VALUE(Enum.AccountTypes.CostOfSales), VALUE(Enum.AccountTypes.Expense), VALUE(Enum.AccountTypes.OtherExpense), VALUE(Enum.AccountTypes.OtherIncome), VALUE(Enum.AccountTypes.IncomeTaxExpense))
+		|					AND BalancesAndTurnovers.AmountRCTurnoverDr = 0
+		|					AND BalancesAndTurnovers.AmountRCTurnoverCr = 0
+		|				THEN FALSE
+		|			ELSE TRUE
+		|		END
+		|TOTALS
+		|	SUM(Balance)
+		|BY
+		|	Account ONLY HIERARCHY";
+		
+	CurrentSessionDate = CurrentSessionDate();
+	Query.SetParameter("BeginOfFiscalYear" , GeneralFunctions.GetBeginOfFiscalYear(CurrentSessionDate));
+	Query.SetParameter("CurrentSessionDate" , CurrentSessionDate);
+	
+	ValueTree = Query.Execute().Unload(QueryResultIteration.ByGroupsWithHierarchy);
+	
+	RecursionRowOfTree(ValueTree.Rows, ValueTable);
+	
+	Return ValueTable;
+	
+EndFunction
+
+&AtServerNoContext
+Procedure RecursionRowOfTree(Rows, VT)
+	
+	For Each Row In Rows Do
+		
+		If VT.Find(Row.Account, "Account") = Undefined Then
+			
+			NewRow = VT.Add();
+			NewRow.Account = Row.Account;
+			NewRow.Balance = Row.Balance;
+			
+			RecursionRowOfTree(Row.Rows, VT);
+			
+		EndIf;
+		
+	EndDo;
+	
+EndProcedure
+
+#EndRegion
+
+////////////////////////////////////////////////////////////////////////////////
+#Region PRIVATE_IMPLEMENTATION
+
+&AtServer
+Function ProcessDetailsAtServer(Val ReportRF, Val ResultRF, Val DetailsDataRF, Val UUID_RF)
+	
+	ReportObject = FormDataToValue(ReportRF, Type("ReportObject.GeneralLedger"));
+	ResultRF.Clear();                                                                              
+	ReportObject.ComposeResult(ResultRF, DetailsDataRF);                                  
+	Address = PutToTempStorage(DetailsDataRF, UUID_RF); 
+	
+	Return New Structure("Result, DetailsData", ResultRF, Address);       
+	
+EndFunction
+
 &AtServerNoContext
 Function ListIsEmpty()
 	
@@ -362,3 +693,5 @@ Function ListIsEmpty()
 	EndIf;
 	
 EndFunction
+
+#EndRegion

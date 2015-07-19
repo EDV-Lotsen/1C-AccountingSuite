@@ -148,7 +148,8 @@
 													</Title>
 													<HorizontalAlign>Right</HorizontalAlign>
 													<EditMode>EnterOnInput</EditMode>
-													<Width>10</Width>
+													<Width>14</Width>
+													<HorizontalStretch>true</HorizontalStretch>
 													<EditFormat>
 														<v8:item>
 															<v8:lang>en</v8:lang>
@@ -179,6 +180,11 @@
 						</Page>
 					</ChildItems>
 				</Pages>
+				<LabelDecoration name="Decoration4" id="240">
+					<HorizontalStretch>true</HorizontalStretch>
+					<ContextMenu name="Decoration4ContextMenu" id="241"/>
+					<ExtendedTooltip name="Decoration4ExtendedTooltip" id="242"/>
+				</LabelDecoration>
 				<UsualGroup name="ToolbarGroup" id="129">
 					<Title>
 						<v8:item>
@@ -196,120 +202,126 @@
 					<ShowTitle>false</ShowTitle>
 					<ExtendedTooltip name="ToolbarGroupExtendedTooltip" id="130"/>
 					<ChildItems>
-						<Pages name="BankTransactionPanel" id="162">
+						<UsualGroup name="BankTransactionGroup" id="243">
 							<Title>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Bank transaction panel</v8:content>
+									<v8:content>Bank transaction group</v8:content>
 								</v8:item>
 							</Title>
 							<ToolTip>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Bank transaction panel</v8:content>
+									<v8:content>Bank transaction group</v8:content>
 								</v8:item>
 							</ToolTip>
-							<PagesRepresentation>None</PagesRepresentation>
-							<ExtendedTooltip name="BankTransactionPanelExtendedTooltip" id="163"/>
+							<Group>Horizontal</Group>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="BankTransactionGroupExtendedTooltip" id="244"/>
 							<ChildItems>
-								<Page name="BankTransactionInfo" id="167">
+								<LabelDecoration name="Decoration2" id="223">
+									<HorizontalStretch>false</HorizontalStretch>
+									<Font ref="style:NormalTextFont" kind="StyleItem"/>
+									<Title formatted="false">
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Cloud Banking:</v8:content>
+										</v8:item>
+									</Title>
+									<HorizontalAlign>Right</HorizontalAlign>
+									<ContextMenu name="Decoration2ContextMenu" id="224"/>
+									<ExtendedTooltip name="Decoration2ExtendedTooltip" id="225"/>
+								</LabelDecoration>
+								<UsualGroup name="InfoGroup1" id="172">
 									<Title>
 										<v8:item>
 											<v8:lang>en</v8:lang>
-											<v8:content>Bank transaction info</v8:content>
+											<v8:content>Info group1</v8:content>
 										</v8:item>
 									</Title>
 									<ToolTip>
 										<v8:item>
 											<v8:lang>en</v8:lang>
-											<v8:content>Bank transaction info</v8:content>
+											<v8:content>Info group1</v8:content>
 										</v8:item>
 									</ToolTip>
-									<ExtendedTooltip name="BankTransactionInfoExtendedTooltip" id="168"/>
+									<HorizontalStretch>true</HorizontalStretch>
+									<Group>Vertical</Group>
+									<ShowTitle>false</ShowTitle>
+									<BackColor>web:WhiteSmoke</BackColor>
+									<ExtendedTooltip name="InfoGroup1ExtendedTooltip" id="173"/>
 									<ChildItems>
-										<LabelDecoration name="BankTransactionDescriptionDecoration" id="169">
-											<Visible>false</Visible>
-											<HorizontalStretch>true</HorizontalStretch>
-											<Title formatted="false">
-												<v8:item>
-													<v8:lang>en</v8:lang>
-													<v8:content>Bank transaction description</v8:content>
-												</v8:item>
-											</Title>
-											<Border width="1">
-												<v8ui:style xsi:type="v8ui:ControlBorderType">Underline</v8ui:style>
-											</Border>
-											<ContextMenu name="BankTransactionDescriptionDecorationContextMenu" id="170"/>
-											<ExtendedTooltip name="BankTransactionDescriptionDecorationExtendedTooltip" id="171"/>
-										</LabelDecoration>
-										<UsualGroup name="InfoGroup1" id="172">
+										<UsualGroup name="InfoGroup2" id="180">
 											<Title>
 												<v8:item>
 													<v8:lang>en</v8:lang>
-													<v8:content>Info group1</v8:content>
+													<v8:content>Info group2</v8:content>
 												</v8:item>
 											</Title>
 											<ToolTip>
 												<v8:item>
 													<v8:lang>en</v8:lang>
-													<v8:content>Info group1</v8:content>
+													<v8:content>Info group2</v8:content>
 												</v8:item>
 											</ToolTip>
-											<Group>Vertical</Group>
+											<Group>Horizontal</Group>
 											<ShowTitle>false</ShowTitle>
-											<BackColor>web:WhiteSmoke</BackColor>
-											<ExtendedTooltip name="InfoGroup1ExtendedTooltip" id="173"/>
+											<ExtendedTooltip name="InfoGroup2ExtendedTooltip" id="181"/>
 											<ChildItems>
-												<UsualGroup name="InfoGroup2" id="180">
-													<Title>
+												<LabelField name="CurrentBankTransactionDate" id="174">
+													<DataPath>CurrentBankTransactionDate</DataPath>
+													<Width>10</Width>
+													<HorizontalStretch>false</HorizontalStretch>
+													<Format>
 														<v8:item>
 															<v8:lang>en</v8:lang>
-															<v8:content>Info group2</v8:content>
+															<v8:content>DLF=D; DE=-</v8:content>
 														</v8:item>
-													</Title>
-													<ToolTip>
-														<v8:item>
-															<v8:lang>en</v8:lang>
-															<v8:content>Info group2</v8:content>
-														</v8:item>
-													</ToolTip>
-													<Group>Horizontal</Group>
-													<ShowTitle>false</ShowTitle>
-													<ExtendedTooltip name="InfoGroup2ExtendedTooltip" id="181"/>
-													<ChildItems>
-														<LabelDecoration name="Decoration2" id="223">
-															<Font ref="sys:DefaultGUIFont" bold="false" italic="true" underline="false" strikeout="false" kind="WindowsFont"/>
-															<Title formatted="false">
-																<v8:item>
-																	<v8:lang>en</v8:lang>
-																	<v8:content>Cloud banking:</v8:content>
-																</v8:item>
-															</Title>
-															<ContextMenu name="Decoration2ContextMenu" id="224"/>
-															<ExtendedTooltip name="Decoration2ExtendedTooltip" id="225"/>
-														</LabelDecoration>
-														<LabelField name="CurrentBankTransactionDate" id="174">
-															<DataPath>CurrentBankTransactionDate</DataPath>
-															<Width>10</Width>
-															<Format>
-																<v8:item>
-																	<v8:lang>en</v8:lang>
-																	<v8:content>DLF=D; DE=-</v8:content>
-																</v8:item>
-															</Format>
-															<Font ref="style:NormalTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
-															<ContextMenu name="CurrentBankTransactionDateContextMenu" id="175"/>
-															<ExtendedTooltip name="CurrentBankTransactionDateExtendedTooltip" id="176"/>
-														</LabelField>
-														<LabelField name="CurrentBankTransactionAmount" id="177">
-															<DataPath>CurrentBankTransactionAmount</DataPath>
-															<Width>10</Width>
-															<Font ref="style:NormalTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
-															<ContextMenu name="CurrentBankTransactionAmountContextMenu" id="178"/>
-															<ExtendedTooltip name="CurrentBankTransactionAmountExtendedTooltip" id="179"/>
-														</LabelField>
-													</ChildItems>
-												</UsualGroup>
+													</Format>
+													<Border width="1">
+														<v8ui:style xsi:type="v8ui:ControlBorderType">Underline</v8ui:style>
+													</Border>
+													<Font ref="style:NormalTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
+													<ContextMenu name="CurrentBankTransactionDateContextMenu" id="175"/>
+													<ExtendedTooltip name="CurrentBankTransactionDateExtendedTooltip" id="176"/>
+												</LabelField>
+												<LabelField name="CurrentBankTransactionAmount" id="177">
+													<DataPath>CurrentBankTransactionAmount</DataPath>
+													<Width>10</Width>
+													<HorizontalStretch>false</HorizontalStretch>
+													<Border width="1">
+														<v8ui:style xsi:type="v8ui:ControlBorderType">Underline</v8ui:style>
+													</Border>
+													<Font ref="style:NormalTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
+													<ContextMenu name="CurrentBankTransactionAmountContextMenu" id="178"/>
+													<ExtendedTooltip name="CurrentBankTransactionAmountExtendedTooltip" id="179"/>
+												</LabelField>
+											</ChildItems>
+										</UsualGroup>
+										<UsualGroup name="InfoGroup3" id="235">
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Info group3</v8:content>
+												</v8:item>
+											</Title>
+											<ToolTip>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Info group3</v8:content>
+												</v8:item>
+											</ToolTip>
+											<Group>Horizontal</Group>
+											<ShowTitle>false</ShowTitle>
+											<ExtendedTooltip name="InfoGroup3ExtendedTooltip" id="236"/>
+											<ChildItems>
+												<LabelDecoration name="Decoration3" id="237">
+													<Visible>false</Visible>
+													<Width>10</Width>
+													<HorizontalStretch>false</HorizontalStretch>
+													<ContextMenu name="Decoration3ContextMenu" id="238"/>
+													<ExtendedTooltip name="Decoration3ExtendedTooltip" id="239"/>
+												</LabelDecoration>
 												<LabelField name="CurrentBankTransactionDescription" id="164">
 													<DataPath>CurrentBankTransactionDescription</DataPath>
 													<Title>
@@ -318,16 +330,19 @@
 															<v8:content>Description</v8:content>
 														</v8:item>
 													</Title>
-													<Font ref="style:NormalTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
+													<Border width="1">
+														<v8ui:style xsi:type="v8ui:ControlBorderType">Underline</v8ui:style>
+													</Border>
+													<Font ref="style:NormalTextFont" kind="StyleItem"/>
 													<ContextMenu name="CurrentBankTransactionDescriptionContextMenu" id="165"/>
 													<ExtendedTooltip name="CurrentBankTransactionDescriptionExtendedTooltip" id="166"/>
 												</LabelField>
 											</ChildItems>
 										</UsualGroup>
 									</ChildItems>
-								</Page>
+								</UsualGroup>
 							</ChildItems>
-						</Pages>
+						</UsualGroup>
 					</ChildItems>
 				</UsualGroup>
 			</ChildItems>
@@ -540,6 +555,7 @@
 				<CheckBoxField name="LineItemsCleared" id="197">
 					<DataPath>LineItems.Cleared</DataPath>
 					<EditMode>EnterOnInput</EditMode>
+					<ShowInFooter>false</ShowInFooter>
 					<FooterHorizontalAlign>Right</FooterHorizontalAlign>
 					<CheckBoxType>Auto</CheckBoxType>
 					<ContextMenu name="LineItemsClearedContextMenu" id="198"/>
@@ -897,6 +913,21 @@
 			<Action>RefreshList</Action>
 		</Command>
 	</Commands>
+	<Parameters>
+		<Parameter name="BankAccount">
+			<Type>
+				<v8:Type>cfg:ChartOfAccountsRef.ChartOfAccounts</v8:Type>
+			</Type>
+		</Parameter>
+		<Parameter name="StatementDate">
+			<Type>
+				<v8:Type>xs:dateTime</v8:Type>
+				<v8:DateQualifiers>
+					<v8:DateFractions>Date</v8:DateFractions>
+				</v8:DateQualifiers>
+			</Type>
+		</Parameter>
+	</Parameters>
 	<CommandInterface>
 		<NavigationPanel>
 			<Item>

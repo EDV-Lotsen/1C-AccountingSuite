@@ -19,16 +19,21 @@ EndProcedure
 
 &AtServer
 Procedure DeleteUser(userstring)
-		
+	
+	If Constants.ServiceDB.Get() = True Then
+	
 		//Insert handler contents.
 		 
 		SetPrivilegedMode(True);
 		 
+
 		theuser = InfoBaseUsers.FindByName(userstring);
 		
 		theuser.Delete();
 		
 		SetPrivilegedMode(False);
+		
+	EndIf;
 	
 EndProcedure
 

@@ -7,9 +7,11 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	BeginOfPeriod = BegOfMonth(AddMonth(CurrentDate, -1)); 
 	EndOfPeriod = EndOfMonth(AddMonth(CurrentDate, -1)); 
 	
-	AmountRCBalance = 0.01;
+	AmountBalance = 0.01;
 	
 	Items.Result.Visible = False;
+	
+	Items.ListCurrency.Visible = Constants.MultiCurrency.Get();
 	
 EndProcedure
 
@@ -29,17 +31,22 @@ Procedure ShowListAtServer()
 	Query.Text = "SELECT
 	             |	TRUE AS Choice,
 	             |	Companies.Ref AS Company,
-	             |	ISNULL(GeneralJournalBalance.AmountRCBalance, 0) AS AmountRCBalance
+	             |	ISNULL(GeneralJournalBalance.AmountBalance, 0) AS AmountBalance,
+	             |	GeneralJournalBalance.Currency AS Currency,
+	             |	Addresses.Ref AS Address
 	             |FROM
 	             |	Catalog.Companies AS Companies
 	             |		LEFT JOIN AccountingRegister.GeneralJournal.Balance(&EndOfPeriod, , , ExtDimension1.Customer = TRUE) AS GeneralJournalBalance
 	             |		ON Companies.Ref = GeneralJournalBalance.ExtDimension1
+	             |		LEFT JOIN Catalog.Addresses AS Addresses
+	             |		ON Companies.Ref = Addresses.Owner
+	             |			AND (Addresses.DefaultBilling)
 	             |WHERE
-	             |	ISNULL(GeneralJournalBalance.AmountRCBalance, 0) >= &AmountRCBalance
+	             |	ISNULL(GeneralJournalBalance.AmountBalance, 0) >= &AmountBalance
 	             |	AND Companies.Customer = TRUE";
 				 
-	Query.SetParameter("EndOfPeriod", EndOfDay(EndOfPeriod));
-	Query.SetParameter("AmountRCBalance", AmountRCBalance);
+	Query.SetParameter("EndOfPeriod", EndOfDay(EndOfPeriod) + 1);
+	Query.SetParameter("AmountBalance", AmountBalance);
 	
 	ValueToFormData(Query.Execute().Unload(), List);
 	
@@ -80,15 +87,15 @@ Procedure GenerateStatementsAtServer()
 	For Each Line In List Do
 		
 		If Line.Choice Then
-			
 			DocObject = Documents.Statement.CreateDocument();
 			
-			DocObject.Date = EndOfPeriod;
-			DocObject.BeginOfPeriod = BeginOfPeriod;
-			DocObject.Company = Line.Company;
+			DocObject.Date           = EndOfPeriod;
+			DocObject.BeginOfPeriod  = BeginOfPeriod;
+			DocObject.Company        = Line.Company;
+			DocObject.Currency       = Line.Currency;
+			DocObject.MailingAddress = Line.Address;
 			
 			DocObject.Write();
-			
 		EndIf;
 		
 	EndDo;

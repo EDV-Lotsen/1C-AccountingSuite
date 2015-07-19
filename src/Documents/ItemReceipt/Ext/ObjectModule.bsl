@@ -67,6 +67,9 @@ EndProcedure
 
 Procedure Filling(FillingData, StandardProcessing)
 	
+	// Forced assign the new document number.
+	If ThisObject.IsNew() And Not ValueIsFilled(ThisObject.Number) Then ThisObject.SetNewNumber(); EndIf;
+	
 	// Filling new document or filling on the base of another document.
 	If FillingData = Undefined Then
 		// Filling of the new created document with default values.
@@ -130,6 +133,8 @@ EndProcedure
 
 Procedure OnCopy(CopiedObject)
 	
+	If ThisObject.IsNew() Then ThisObject.SetNewNumber(); EndIf;
+	
 	// Clear manual adjustment attribute.
 	ManualAdjustment = False;
 	
@@ -190,6 +195,25 @@ Procedure UndoPosting(Cancel)
 	// 7. Clear used temporary document data.
 	DocumentPosting.ClearDataStructuresAfterPosting(AdditionalProperties);
 	
+EndProcedure
+
+Procedure OnSetNewNumber(StandardProcessing, Prefix)
+	
+	StandardProcessing = False;
+	
+	Numerator = Catalogs.DocumentNumbering.ItemReceipt;
+	NextNumber = GeneralFunctions.Increment(Numerator.Number);
+	
+	While Documents.ItemReceipt.FindByNumber(NextNumber) <> Documents.ItemReceipt.EmptyRef() And NextNumber <> "" Do
+		ObjectNumerator = Numerator.GetObject();
+		ObjectNumerator.Number = NextNumber;
+		ObjectNumerator.Write();
+		
+		NextNumber = GeneralFunctions.Increment(NextNumber);
+	EndDo;
+	
+	ThisObject.Number = NextNumber; 
+
 EndProcedure
 
 #EndIf

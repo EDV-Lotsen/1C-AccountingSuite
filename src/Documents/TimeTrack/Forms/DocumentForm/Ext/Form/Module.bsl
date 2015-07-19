@@ -25,6 +25,8 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	PriceFormat = GeneralFunctionsReusable.DefaultPriceFormat();
 	Items.Price.EditFormat  = PriceFormat;
 	Items.Price.Format      = PriceFormat;	
+	StoredTime = Object.TimeComplete*3600;
+	SplitDateFromSecondsServer(StoredTime);
 	
 EndProcedure
 
@@ -151,9 +153,23 @@ Procedure BeforeWrite(Cancel, WriteParameters)
 	EndIf;
 
 	
-	//If Changed = True And Object.SalesInvoice.IsEmpty() = False Then
-		//ShowMessageBox(,"New changes will not change " + Object.SalesInvoice + ". Generating a new invoice for this time entry will link the entry to a new invoice.",,"ChangedEntry"); 
-	//EndIf;
+	Items.TimerStartStop.Title = "Start";
+	Items.TimeComplete.ReadOnly = False;
+	DetachIdleHandler("Timer");
+	If TimerStart Then
+		TimerStart = False;
+		
+		CurDate = Undefined;
+		GetCurrentDate(CurDate);
+		
+		DifferenceInSec = CurDate - StartTime;
+		StoredTime = StoredTime + DifferenceInSec;
+		Hours = Int(StoredTime/3600);
+		DivResidue = StoredTime%3600;
+		Minutes = Int(DivResidue/60);
+		Seconds = DivResidue%60;
+		Object.TimeComplete = StoredTime/3600;
+	EndIf;	
 	
 EndProcedure
 
@@ -298,14 +314,28 @@ EndProcedure
 Procedure TimerStartStop(Command)
 	
 	If NOT TimerStart Then
+		GetCurrentDate(StartTime);
 		Items.TimerStartStop.Title = "Pause";
+		Items.TimeComplete.ReadOnly = True;
 		AttachIdleHandler("Timer",1);
 		TimerStart = True;
 	Else
+		Items.TimeComplete.ReadOnly = False;
 		Items.TimerStartStop.Title = "Start";
 		DetachIdleHandler("Timer");
 		TimerStart = False;
-		Object.TimeComplete = Hours + (Minutes/100);
+		//Object.TimeComplete = Hours + (Minutes/100);
+		
+		CurDate = Undefined;
+		GetCurrentDate(CurDate);
+		DifferenceInSec = CurDate - StartTime;
+		StoredTime = StoredTime + DifferenceInSec;
+		Hours = Int(StoredTime/3600);
+		DivResidue = StoredTime%3600;
+		Minutes = Int(DivResidue/60);
+		Seconds = DivResidue%60;
+		Object.TimeComplete = StoredTime/3600;
+		
 	EndIf;
 
 EndProcedure
@@ -313,46 +343,81 @@ EndProcedure
 &AtClient
 Procedure Timer()
 	
-	MinuteInc = False;
-	HourInc = False;
-	If Minutes = 59  AND Seconds = 59 Then
-		Minutes = 0;
-		Hours = Hours + 1;
-		HourInc = True;
-	EndIf;
+	//CurDate = Undefined;
+	//GetCurrentDate(CurDate);
+	//DifferenceInSec = CurDate - StartTime;
+	//LockalWorkTime = StoredTime + DifferenceInSec;
+	//Hours = Int(LockalWorkTime/3600);
+	//DivResidue = LockalWorkTime%3600;
+	//Minutes = Int(DivResidue/60);
+	//Seconds = DivResidue%60;
+	StopTimerAndFixThetimePosition();
 	
-	If Seconds = 59 Then
-		Seconds = 0;
-		If NOT HourInc Then
-			Minutes = Minutes + 1;
-		EndIf;
-		MinuteInc = True;
-	EndIf;
+EndProcedure
 
+&AtServer
+Procedure SplitDateFromSecondsServer(DateToSplit)
 	
-	If MinuteInc OR HourInc Then
-	Else
-		Seconds = Seconds + 1;
-	EndIf;
-
-	If MinuteInc Then
-		MinuteInc = False;
-	EndIf;
-	If HourInc Then
-		HourInc = False;
-	EndIf;
+	Hours = Int(DateToSplit/3600);
+	DivResidue = DateToSplit%3600;
+	Minutes = Int(DivResidue/60);
+	Seconds = DivResidue%60;
+	
 EndProcedure
 
 &AtClient
 Procedure TimerReset(Command)
 	
+	Items.TimeComplete.ReadOnly = False;
+	Items.TimerStartStop.Title = "Start";
 	DetachIdleHandler("Timer");
 	Hours = 0;
 	Minutes = 0;
 	Seconds = 0;
+	StoredTime = 0;
 	Object.TimeComplete = 0;
 	TimerStart = False;
 
+EndProcedure
+
+&AtServer
+Procedure GetCurrentDate(CurrentTimeStamp) Export 
+	CurrentTimeStamp = CurrentSessionDate();
+EndProcedure
+
+
+&AtServer
+Procedure StopTimerAndFixThetimePosition() Export 
+	
+	CurDate = Undefined;
+	GetCurrentDate(CurDate);
+	DifferenceInSec = CurDate - StartTime;
+	LocalWorkTime = StoredTime + DifferenceInSec;
+	SplitDateFromSecondsServer(LocalWorkTime);
+EndProcedure
+
+&AtClient
+Procedure HoursOnChange(Item)
+	
+	StoredTime = Object.TimeComplete*3600;
+	Hours = Int(StoredTime/3600);
+	DivResidue = StoredTime%3600;
+	Minutes = Int(DivResidue/60);
+	Seconds = DivResidue%60;
+	
+	ObjChanged();
+EndProcedure
+
+&AtClient
+Procedure BeforeClose(Cancel, StandardProcessing)
+	BeforeCloseAtServer();
+EndProcedure
+
+&AtServer
+Procedure BeforeCloseAtServer()
+	If TimerStart Then 
+		ThisObject.Modified = True;
+	EndIf;	
 EndProcedure
 
 

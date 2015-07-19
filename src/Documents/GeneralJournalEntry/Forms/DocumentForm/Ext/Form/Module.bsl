@@ -127,6 +127,10 @@ EndProcedure
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
+	If Object.Ref.IsEmpty() Then
+		FirstNumber = Object.Number;
+	EndIf;
+	
 	If Parameters.Property("Company") Then
 		
 		NewLine = Object.LineItems.Add();
@@ -456,6 +460,23 @@ Procedure Voided()
 	Else
 		Items.VoidInfo.Visible = False;
 	EndIf;
+EndProcedure
+
+&AtServer
+Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
+	
+	If FirstNumber <> "" Then
+		
+		Numerator = Catalogs.DocumentNumbering.JournalEntry.GetObject();
+		NextNumber = GeneralFunctions.Increment(Numerator.Number);
+		If FirstNumber = NextNumber And NextNumber = Object.Number Then
+			Numerator.Number = FirstNumber;
+			Numerator.Write();
+		EndIf;
+		
+		FirstNumber = "";
+	EndIf;
+	
 EndProcedure
 
 

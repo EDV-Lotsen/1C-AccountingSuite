@@ -46,9 +46,9 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Items.AccountsAddPage.Visible = False;
 		Items.AccountRefreshPage.Visible = True;
 		//Delete white spaces to the right and to the left
-		Items.RefreshLeftTab.Visible = False;
-		Items.RefreshRightTab.Visible = False;
-		Items.RefreshLowerTab.Visible = False;
+		//Items.RefreshLeftTab.Visible = False;
+		//Items.RefreshRightTab.Visible = False;
+		//Items.RefreshLowerTab.Visible = False;
 		Items.GotoAssigningPage.Visible = False;
 	EndIf;
 	If PerformAddAccount Then
@@ -58,15 +58,15 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Items.AccountsAddPage.Visible = True;
 		Items.AccountRefreshPage.Visible = True;
 		//Delete white spaces to the right and to the left
-		Items.AddLeftTab.Visible = False;
-		Items.AddRightTab.Visible = False;
+		//Items.AddLeftTab.Visible = False;
+		//Items.AddRightTab.Visible = False;
 		
 		Items.AssignLeftTab.Visible = False;
 		Items.AssignRightTab.Visible = False;
 		
-		Items.RefreshLeftTab.Visible = False;
-		Items.RefreshRightTab.Visible = False;
-		Items.RefreshLowerTab.Visible = False;
+		//Items.RefreshLeftTab.Visible = False;
+		//Items.RefreshRightTab.Visible = False;
+		//Items.RefreshLowerTab.Visible = False;
 		Items.GotoAssigningPage.Visible = False;
 		
 		//In the Demo mode adding new accounts is unavailable
@@ -86,9 +86,9 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Items.EditRightTab.Visible = False;
 		Items.EditLowerTab.Visible =  False;
 		//Refresh page. Delete white spaces to the right and to the left
-		Items.RefreshLeftTab.Visible = False;
-		Items.RefreshRightTab.Visible = False;
-		Items.RefreshLowerTab.Visible = False;
+		//Items.RefreshLeftTab.Visible = False;
+		//Items.RefreshRightTab.Visible = False;
+		//Items.RefreshLowerTab.Visible = False;
 		Items.GotoAssigningPage.Visible = False;
 	EndIf;
 	If PerformAssignAccount Then
@@ -281,17 +281,28 @@ EndFunction
 
 //Starts the refresh procedure on an account with ItemID
 &AtServerNoContext
-Procedure RefreshItemAtServer(ItemID, TempStorageAddress)
+Procedure RefreshItemAtServer(ItemID, TempStorageAddress, TransactionsFromDate, TransactionsToDate)
+	////Prepare data for background execution
+	//ProcParameters = New Array;
+	//ProcParameters.Add(ItemID);
+	//ProcParameters.Add(Undefined);
+	//ProcParameters.Add(Undefined);
+	//ProcParameters.Add(TempStorageAddress);
+	//
+	////Performing background operation
+	//JobTitle = NStr("en = 'Starting the refresh bank account process'");
+	//Job = BackgroundJobs.Execute("Yodlee.RefreshItem", ProcParameters, , JobTitle);
 	//Prepare data for background execution
 	ProcParameters = New Array;
- 	ProcParameters.Add(ItemID);
-	ProcParameters.Add(Undefined);
-	ProcParameters.Add(Undefined);
- 	ProcParameters.Add(TempStorageAddress);
+	ProcParameters.Add(ItemID);
+	ProcParameters.Add(TempStorageAddress);
+	ProcParameters.Add(TransactionsFromDate);
+	ProcParameters.Add(TransactionsToDate);
 	
 	//Performing background operation
 	JobTitle = NStr("en = 'Starting the refresh bank account process'");
-	Job = BackgroundJobs.Execute("Yodlee.RefreshItem", ProcParameters, , JobTitle);
+	Job = BackgroundJobs.Execute("YodleeREST.RefreshBankAccountWithSOAPOrREST", ProcParameters, , JobTitle);
+
 EndProcedure
 
 &AtServerNoContext
@@ -383,7 +394,8 @@ Function GetAccountsForAssigning(CurrentBankAccount)
 	                    |		WHEN BankAccount.Value = VALUE(ChartOfAccounts.ChartOfAccounts.EmptyRef)
 	                    |			THEN FALSE
 	                    |		ELSE TRUE
-	                    |	END AS DefaultBankAccountFilled
+	                    |	END AS DefaultBankAccountFilled,
+	                    |	BankAccounts.Owner.ContainerType AS ContainerType
 	                    |FROM
 	                    |	Catalog.BankAccounts AS BankAccounts,
 	                    |	Constant.BankAccount AS BankAccount
@@ -396,7 +408,7 @@ Function GetAccountsForAssigning(CurrentBankAccount)
 	Sel = Request.Execute().Select();
 	AvailableList = New Array();
 	While Sel.Next() Do
-		AvailableList.Add(New Structure("BankAccount, BankAccountDescription, Type, CurrentBalance, AccountType, Connect, DefaultBankAccountFilled"));
+		AvailableList.Add(New Structure("BankAccount, BankAccountDescription, Type, CurrentBalance, AccountType, Connect, DefaultBankAccountFilled, ContainerType"));
 		FillPropertyValues(AvailableList[AvailableList.Count()-1], Sel);
 	EndDo;
 	return AvailableList;
@@ -414,13 +426,16 @@ Function GetAvailableListOfAccounts(CurrentAccountType = Undefined, CurrentBankA
 	                    |		LEFT JOIN Catalog.BankAccounts AS BankAccounts
 	                    |		ON (BankAccounts.AccountingAccount = ChartOfAccounts.Ref)
 	                    |WHERE
-	                    |	BankAccounts.Ref IS NULL 
-	                    |	AND ChartOfAccounts.AccountType IN(&ListOfAvailableTypes)");
-	ListOfAvailableTypes = New ValueList();
-	ListOfAvailableTypes.Add(Enums.AccountTypes.Bank);
-	ListOfAvailableTypes.Add(Enums.AccountTypes.OtherCurrentAsset);
-	ListOfAvailableTypes.Add(Enums.AccountTypes.OtherCurrentLiability);
-	Request.SetParameter("ListOfAvailableTypes", ListOfAvailableTypes);
+	                    |	(BankAccounts.YodleeAccount = FALSE
+	                    |			OR BankAccounts.Ref IS NULL )
+	                    |	AND (ChartOfAccounts.AccountType = VALUE(Enum.AccountTypes.Bank)
+	                    |			OR ChartOfAccounts.AccountType = VALUE(Enum.AccountTypes.OtherCurrentLiability)
+	                    |				AND ChartOfAccounts.CreditCard = TRUE)");
+	//ListOfAvailableTypes = New ValueList();
+	//ListOfAvailableTypes.Add(Enums.AccountTypes.Bank);
+	//ListOfAvailableTypes.Add(Enums.AccountTypes.OtherCurrentAsset);
+	//ListOfAvailableTypes.Add(Enums.AccountTypes.OtherCurrentLiability);
+	//Request.SetParameter("ListOfAvailableTypes", ListOfAvailableTypes);
 	RequestRes = Request.Execute();
 	AvailableList = New ValueList();
 	If Not RequestRes.IsEmpty() Then
@@ -447,7 +462,7 @@ Function GetAvailableListOfAccounts(CurrentAccountType = Undefined, CurrentBankA
 EndFunction
 
 &AtServerNoContext
-Function AssignAccountTypeAtServer(Val CurrentBankAccount, Val BankAccountType, Val Connect = True, Val SetAsDefault = False)
+Function AssignAccountTypeAtServer(Val CurrentBankAccount, Val BankAccountType, Val Connect = True, Val SetAsDefault = False, Val ContainerType)
 	ReturnStructure = New Structure("ReturnValue, ErrorMessage", True, "");
 	If (CurrentBankAccount.AccountingAccount = BankAccountType) And (ValueIsFilled(CurrentBankAccount.AccountingAccount)) Then
 		ReturnStructure.ReturnValue = True;
@@ -468,7 +483,8 @@ Function AssignAccountTypeAtServer(Val CurrentBankAccount, Val BankAccountType, 
 			If (Not ValueIsFilled(BankAccountType)) Or (BankAccountType = 1) Then
 				NewGLAccount = ChartsOfAccounts.ChartOfAccounts.CreateAccount();
 				NewGLAccount.Description = CurrentBankAccount.Description;
-				If CurrentBankAccount.Owner.ContainerType = Enums.YodleeContainerTypes.Bank Then
+				//If CurrentBankAccount.Owner.ContainerType = Enums.YodleeContainerTypes.Bank Then
+				If ContainerType = Enums.YodleeContainerTypes.Bank Then
 					NewGLAccount.AccountType = Enums.AccountTypes.Bank;
 					NewGLAccount.Currency = GeneralFunctionsReusable.DefaultCurrency(); // KZ 11/19/14
 					StartCode = "1000";
@@ -494,11 +510,46 @@ Function AssignAccountTypeAtServer(Val CurrentBankAccount, Val BankAccountType, 
 				EndIf;
 				NewGLAccount.Code = NewCode;
 				NewGLAccount.Order = NewCode;
+				NewGLAccount.AdditionalProperties.Insert("DoNotCreateBankAccount", True);
 				NewGLAccount.Write();
 				BAObject.AccountingAccount = NewGLAccount.Ref;
 				ReturnStructure.Insert("NewGLAccount", NewGLAccount.Ref);
 			Else
-				BAObject.AccountingAccount = BankAccountType;
+				//Check if BankAccountType is already linked to an offline account
+				Request = New Query("SELECT ALLOWED
+				                    |	ChartOfAccounts.Ref,
+				                    |	BankAccounts.ItemID,
+				                    |	BankAccounts.ItemAccountID,
+				                    |	BankAccounts.Ref AS BankAccountRef
+				                    |FROM
+				                    |	ChartOfAccounts.ChartOfAccounts AS ChartOfAccounts
+				                    |		LEFT JOIN Catalog.BankAccounts AS BankAccounts
+				                    |		ON (BankAccounts.AccountingAccount = ChartOfAccounts.Ref)
+				                    |WHERE
+				                    |	ChartOfAccounts.Ref = &Ref");
+				Request.SetParameter("Ref", BankAccountType); 
+				ATDetails = Request.Execute().Unload();
+				If Not ValueIsFilled(ATDetails[0].BankAccountRef) Then
+					BAObject.AccountingAccount = BankAccountType;
+				Else
+					//When assigning to an offline account then set the UploadStartDate to the tomorrow date
+					UsedBAObject = ATDetails[0].BankAccountRef.GetObject();
+					FillPropertyValues(UsedBAObject, BAObject, "Owner, Description, ItemID, ItemAccountID, AccountType, CurrentBalance, AvailableBalance, LastUpdatedTimeUTC, 
+					|LastUpdateAttemptTimeUTC, NextUpdateTimeUTC, RefreshStatusCode, YodleeAccount, TransactionsRefreshTimeUTC, CreditCard_AmountDue, CreditCard_TotalCreditline, CreditCard_Type");
+					UsedBAObject.UploadStartDate = CurrentSessionDate() + 24*3600;
+					UsedBAObject.Write();
+					//Transfer bank transactions and delete BAObject
+					BTRecordSet = InformationRegisters.BankTransactions.CreateRecordSet();
+					BAFilter	= BTRecordSet.Filter.BankAccount;
+					BAFilter.Use = True;
+					BAFilter.ComparisonType = ComparisonType.Equal;
+					BAFilter.Value 	= BAObject.Ref;
+					BTRecordSet.Write();
+					BAObject.Delete();
+					//To use it in the latter algorithm
+					BAObject = UsedBAObject;
+					ReturnStructure.Insert("ModifiedBankAccount", UsedBAObject.Ref);
+				EndIf;
 			EndIf;
 			GetUserMessages(True);
 		Else
@@ -659,6 +710,7 @@ Procedure AddAccounts(Command)
 	
 		Items.AddingAccountProgress.Title = "Obtaining authorization fields from server...";
 		Items.BankDetails.Visible = False;
+		Items.AccountTypeGroup.Visible = False;
 		Items.ProgressGroup.Visible = True;
 		AttachIdleHandler("DispatchAddAccount", 0.1, True);
 		
@@ -757,7 +809,7 @@ Procedure AssignAccountType(Command)
 	FailReason = "";
 	i = 1;
 	For Each Str In AssigningAccountType Do
-		ReturnStructure = AssignAccountTypeAtServer(Str.BankAccount, Str.AccountType, Str.Connect, Str.SetDefault);
+		ReturnStructure = AssignAccountTypeAtServer(Str.BankAccount, Str.AccountType, Str.Connect, Str.SetDefault, Str.ContainerType);
 		If Not ReturnStructure.ReturnValue Then
 			CurrentFailReason = "Row #" + String(i) + ". Assigning failed. Reason: " + ReturnStructure.ErrorMessage + " Please, choose an account type once again.";
 			FailReason = FailReason + ?(StrLen(FailReason)>0, Chars.CR + Chars.LF, "") + CurrentFailReason;
@@ -770,6 +822,9 @@ Procedure AssignAccountType(Command)
 			Str.AssigningFailed = False;	
 			If (Not ValueIsFilled(Str.AccountType)) And (ReturnStructure.Property("NewGLAccount")) Then
 				Str.AccountType = ReturnStructure.NewGLAccount;
+			EndIf;
+			If ReturnStructure.Property("ModifiedBankAccount") Then
+				Str.BankAccount = ReturnStructure.ModifiedBankAccount;
 			EndIf;
 		EndIf;
 		i = i + 1;
@@ -844,6 +899,13 @@ Function CheckDataFill()
 			MessOnError.Text  = "Please, choose whether to create a new G/L account or map to an existing one";
 			MessOnError.Message();
 		EndIf;
+		If Not ValueIsFilled(CurAccount.ContainerType) Then
+			Result = False;
+			MessOnError = New UserMessage();
+			MessOnError.Field = "AssigningAccountType[" + String(i) + "]." + "ContainerType";
+			MessOnError.Text  = "Please, choose bank account type (bank or credit card)";
+			MessOnError.Message();
+		EndIf; 
 		//If Not ValueIsFilled(CurAccount.AccountType) Then
 		//	Result = False;
 		//	MessOnError = New UserMessage();
@@ -863,6 +925,7 @@ Procedure GetMFAFields(ProgrammaticElems, Params) Export
 		ShowMessageBox(,"Operation failed. Try to repeat the operation",,"Adding bank accounts");
 		Items.ProgressGroup.Visible = False;
 		Items.BankDetails.Visible = True;
+		Items.AccountTypeGroup.Visible = True;
 		return;
 	EndIf;
 	
@@ -886,6 +949,7 @@ Procedure DispatchAddAccount() Export
 	If TypeOf(Progress) <> Type("Structure") Then
 		Items.ProgressGroup.Visible = False;
 		Items.BankDetails.Visible = True;
+		Items.AccountTypeGroup.Visible = True;
 		ShowMessageBox(, "An error occured while adding an account",, "Adding bank account");
 		return;
 	EndIf;
@@ -904,6 +968,7 @@ Procedure DispatchAddAccount() Export
 			ShowMessageBox(,"Operation failed. Try to repeat the operation",,"Adding bank accounts");
 			Items.ProgressGroup.Visible = False;
 			Items.BankDetails.Visible = True;
+			Items.AccountTypeGroup.Visible = True;
 			return;
 		EndIf;
 		
@@ -920,6 +985,7 @@ Procedure DispatchAddAccount() Export
 			ShowCustomMessageBox(ThisForm, "Adding bank accounts","Operation failed. Try to repeat the operation", PredefinedValue("Enum.MessageStatus.Warning"));
 			Items.ProgressGroup.Visible = False;
 			Items.BankDetails.Visible = True;
+			Items.AccountTypeGroup.Visible = True;
 		EndIf;	
 	ElsIf Progress.Step = 3 Then
 		CurrentBankAccount = GetBankAccountByItemID(Params.NewItemID);
@@ -1001,7 +1067,15 @@ Procedure RefreshBankAccount(ItemID)
 	//Put progress description to temp storage
 	Progress = New Structure("Params, CurrentStatus, Step",, "Starting the refresh process...", 1);
 	TempStorageAddress = PutToTempStorage(Progress, ThisForm.UUID);
-	RefreshItemAtServer(ItemID, TempStorageAddress);
+	TransactionsFromDate 	= Undefined;
+	TransactionsToDate		= Undefined;
+	If ValueIsFilled(UploadTransactionsFrom) Then
+		TransactionsFromDate = UploadTransactionsFrom;
+	EndIf;
+	If ValueIsFilled(UploadTransactionsTo) Then
+		TransactionsToDate = UploadTransactionsTo;
+	EndIf;
+	RefreshItemAtServer(ItemID, TempStorageAddress, TransactionsFromDate, TransactionsToDate);
 	
 	//Show the ProgressGroup, Attach idle handler
 	
@@ -1161,6 +1235,7 @@ Procedure DispatchRefreshAccount() Export
 	EndIf;
 
 	FinishedRefresh = False;
+	
 	If Progress.Step = 1 Then //Starting the refresh
 		
 		If Not Params.ReturnValue Then

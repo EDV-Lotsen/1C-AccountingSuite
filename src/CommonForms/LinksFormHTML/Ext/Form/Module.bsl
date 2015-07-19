@@ -17,11 +17,7 @@ EndFunction
 
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
-	
-	If Constants.CFOToday.Get() = False Then
-		Items.Group4.Visible = False;
-	EndIf;
-	
+		
 	// Remove 1C Buttons
 	Items.Group1.Visible = False;
 	Items.Group3.Visible = False;
@@ -51,7 +47,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	|</tr>
 	|<tr valign=""top"">
 		|<td width=""40%"" height=""35px"">
-			|<span style=""white-space: nowrap; cursor: pointer;"" class=""staticTextHyper staticTextHyperBorder""><a href=""[OpenNew]"" target=""_blank"">Open new</a></span></td>
+			|<span style=""white-space: nowrap; cursor: pointer;"" class=""staticTextHyper staticTextHyperBorder""><a href=""[OpenNew]"" target=""_blank"">Multi-client access</a></span></td>
 		|<td width=""60%"" height=""35px"">
 			|<span style=""white-space: nowrap; cursor: pointer;"" class=""staticTextHyper staticTextHyperBorder""><a href=""[OnboardingWebinars]"" target=""_blank"">Onboarding webinars</a></span></td>	
 	|</tr>
@@ -64,11 +60,47 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 |</tbody></table></body>
 	|</html>";
 	
+	If Constants.CFOToday.Get() = True Then 
+		HTMLFieldCOde = "<html>
+	|<head>
+	|	<title></title>  
+	|</head>
+	|<body lang=""en-US"" dir=""ltr"">
+|<table width=""60%"" cellspacing=""0"">
+	|<tbody><tr valign=""top"">
+		|<td width=""40%"" height=""35px"">
+			|<span style=""white-space: nowrap; cursor: pointer;"" class=""staticTextHyper staticTextHyperBorder""><a href=""[Support]"" target=""_blank""><input type=""button"" value=""Support / Live Chat""></a><span><font face=""Arial"">
+		|</font></td>
+		|<td width=""60%"" height=""35px"">
+			|<span style=""white-space: nowrap; cursor: pointer;"" class=""staticTextHyper staticTextHyperBorder""><a href=""[UserGuide]"" target=""_blank""><input type=""button"" value=""User guide""></a></td>	
+	|</tr>
+	|<tr valign=""top"">
+		|<td width=""40%"" height=""35px"">
+			|<span style=""white-space: nowrap; cursor: pointer;"" class=""staticTextHyper staticTextHyperBorder""><a href=""[OpenNew]"" target=""_blank"">Multi-client access</a></span></td>
+		|<td width=""60%"" height=""35px"">
+			
+	|</tr>
+	|<tr valign=""top"">
+		|<td width=""40%"">
+			
+		|<td width=""60%"">
+			
+	|</tr>	
+|</tbody></table></body>
+	|</html>";
+
+	EndIf;	
+	
+	
 	HTMLFieldCode = StrReplace(HTMLFieldCode,"[Support]","http://help.accountingsuite.com");    
-	HTMLFieldCode = StrReplace(HTMLFieldCode,"[UserGuide]","http://userguide.accountingsuite.com");
+	If Constants.CFOToday.Get() Then
+		HTMLFieldCode = StrReplace(HTMLFieldCode,"[UserGuide]","http://userguide.cfotoday.com");
+	Else
+		HTMLFieldCode = StrReplace(HTMLFieldCode,"[UserGuide]","http://userguide.accountingsuite.com");
+	EndIf;
 	
 	If CFOTodayConstant() Then
-		HTMLFieldCode = StrReplace(HTMLFieldCode,"[OpenNew]","https://cfotoday.accountingsuite.com");
+		HTMLFieldCode = StrReplace(HTMLFieldCode,"[OpenNew]","https://login.accountingsuite.com");
 	Else
 		HTMLFieldCode = StrReplace(HTMLFieldCode,"[OpenNew]","https://login.accountingsuite.com");
 	EndIf;
@@ -77,14 +109,12 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	HTMLFieldCode = StrReplace(HTMLFieldCode,"[DemoForAccountants]","https://attendee.gotowebinar.com/rt/7437736924938618882");
 	HTMLFieldCode = StrReplace(HTMLFieldCode,"[OnboardingWebinars]","https://attendee.gotowebinar.com/rt/8808644308605056514");
 	HyperlinkFields = HTMLFieldCOde;
-	
-
 
 EndProcedure
 
 &AtClient
 Procedure SignOut(Command)
-	Exit(False, False);
+	Exit(True, False);
 EndProcedure
 
 
@@ -96,3 +126,21 @@ Function TenantV()
 	
 EndFunction
 
+
+&AtServer
+Function SubscribeVersion()
+	   Return Constants.VersionNumber.Get();
+EndFunction
+
+
+&AtServer
+Function GetNameAndEmail()
+	EmailStr = SessionParameters.ACSUser;
+	UserRef = Catalogs.UserList.FindByDescription(EmailStr);
+	FullName = UserRef.Name + " " + UserRef.LastName;
+	
+	InputParameters = New Structure();
+	InputParameters.Insert("email", EmailStr);
+	InputParameters.Insert("fullname", FullName);
+	Return InternetConnectionClientServer.EncodeQueryData(InputParameters);
+EndFunction

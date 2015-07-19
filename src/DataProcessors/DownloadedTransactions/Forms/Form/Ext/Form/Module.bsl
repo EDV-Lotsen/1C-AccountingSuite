@@ -26,6 +26,8 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	Object.ProcessingPeriod.Variant	=StandardPeriodVariant.Month;
 	Items.DecorationProcessingPeriod.Title = Format(Object.ProcessingPeriod.StartDate, "DLF=DD") + " - " + Format(Object.ProcessingPeriod.EndDate, "DLF=DD");
 	
+	BankAccountStartListChoiceAtServer();
+	
 	ApplyConditionalAppearance();
 	
 EndProcedure
@@ -1038,7 +1040,7 @@ Procedure UndoTransactionAtServer(TransactionID = Undefined)
 			TransactionIDs.Add(TransactionID);
 		Else
 			For Each TranID In TransactionID Do
-				TransactionIDs.Add(TranID.ID);
+				TransactionIDs.Add(TranID);
 			EndDo;
 		EndIf;
 		Request.SetParameter("TransactionIDs", TransactionIDs);
@@ -1517,6 +1519,8 @@ Function MatchChecks(Val AccountInBank, Val AccountingAccount, Val ArrayOfIDs)
 	                    |		INNER JOIN AvailableCheckDocuments AS AvailableCheckDocuments
 	                    |		ON (-1 * UnacceptedTransactionsWithoutDocuments.Amount = AvailableCheckDocuments.DocumentTotalRC)
 	                    |			AND (UnacceptedTransactionsWithoutDocuments.Amount < 0)
+	                    |			AND (AvailableCheckDocuments.Date < DATEADD(UnacceptedTransactionsWithoutDocuments.TransactionDate, DAY, 90))
+	                    |			AND (AvailableCheckDocuments.Date > DATEADD(UnacceptedTransactionsWithoutDocuments.TransactionDate, DAY, -90))
 	                    |
 	                    |UNION ALL
 	                    |
@@ -1533,6 +1537,8 @@ Function MatchChecks(Val AccountInBank, Val AccountingAccount, Val ArrayOfIDs)
 	                    |		INNER JOIN AvailableDepositDocuments AS AvailableDepositDocuments
 	                    |		ON UnacceptedTransactionsWithoutDocuments.Amount = AvailableDepositDocuments.DocumentTotalRC
 	                    |			AND (UnacceptedTransactionsWithoutDocuments.Amount > 0)
+	                    |			AND (AvailableDepositDocuments.Date < DATEADD(UnacceptedTransactionsWithoutDocuments.TransactionDate, DAY, 90))
+	                    |			AND (AvailableDepositDocuments.Date > DATEADD(UnacceptedTransactionsWithoutDocuments.TransactionDate, DAY, -90))
 	                    |;
 	                    |
 	                    |////////////////////////////////////////////////////////////////////////////////
@@ -1557,6 +1563,7 @@ Function MatchChecks(Val AccountInBank, Val AccountingAccount, Val ArrayOfIDs)
 	Res = Request.Execute();
 	
 	If Res.IsEmpty() Then
+		RollbackTransaction();
 		return New Array();
 	EndIf;
 	TransactionSelect = Res.Select(QueryResultIteration.ByGroups);
@@ -1698,6 +1705,7 @@ Function MatchDepositDocuments(Val AccountInBank, Val AccountingAccount, Val Arr
 	Res = Request.Execute();
 	
 	If Res.IsEmpty() Then
+		RollbackTransaction();
 		return New Array();
 	EndIf;
 	TransactionSelect = Res.Select(QueryResultIteration.ByGroups);
@@ -1853,6 +1861,7 @@ Function MatchCheckDocuments(Val AccountInBank, Val AccountingAccount, Val Array
 	Res = Request.Execute();
 	
 	If Res.IsEmpty() Then
+		RollbackTransaction();
 		return New Array();
 	EndIf;
 	TransactionSelect = Res.Select(QueryResultIteration.ByGroups);
@@ -2019,6 +2028,7 @@ Function MatchTransferDocuments(Val AccountInBank, Val AccountingAccount)
 	Res = Request.Execute();
 	
 	If Res.IsEmpty() Then
+		RollbackTransaction();
 		return New Array();
 	EndIf;
 	TransactionSelect = Res.Select(QueryResultIteration.ByGroups);
@@ -2175,7 +2185,12 @@ Procedure UndoTransaction(Command)
 	//	QueryText = "Current transaction will be unaccepted. Continue?";
 	//EndIf;
 	
-	SelectedTransactions = Items.AcceptedTransactions1.SelectedRows;
+	SelectedRows = Items.AcceptedTransactions1.SelectedRows;
+	SelectedTransactions = New Array();
+	For Each SelectedRow In SelectedRows Do
+		SelectedTransactions.Add(Items.AcceptedTransactions1.RowData(SelectedRow).ID);
+	EndDo;
+	
 	If SelectedTransactions.Count() > 1 Then
 		QueryText = "The selected transactions (" + String(SelectedTransactions.Count()) + " items) will be unaccepted. Continue?";
 	Else
@@ -2442,7 +2457,7 @@ Procedure AddAccount(Command)
 	
 	Notify = New NotifyDescription("OnComplete_AddAccount", ThisObject);
 	Params = New Structure("PerformAddAccount", True);
-	OpenForm("DataProcessor.YodleeBankAccountsManagement.Form.Form", Params, ThisForm,,,, Notify, FormWindowOpeningMode.LockOwnerWindow);
+	OpenForm("DataProcessor.YodleeAccountsManagement.Form.Form", Params, ThisForm,,,, Notify, FormWindowOpeningMode.LockOwnerWindow);
 
 EndProcedure
 
@@ -2719,7 +2734,7 @@ Procedure QIF_UploadTransactionsAtServer(TempStorageAddress)
 		If Left(CurrentLine, 1) = "P" Then
 			DataOfRow = Mid(CurrentLine, 2, StrLen(CurrentLine) - 1);
 			
-			NewRow.Description = DataOfRow;
+			NewRow.Description = ?(ValueIsFilled(NewRow.Description), NewRow.Description + " " + DataOfRow, DataOfRow);
 		EndIf;
 		
 		//end ^
@@ -2777,6 +2792,7 @@ Procedure QBO_QFX_OFX_UploadTransactionsAtServer(TempStorageAddress)
 		
 		//<DTPOSTED>
 		If NewSTMTTRN And Find(CurrentLine, "<DTPOSTED>") > 0 Then
+			CurrentLine   = StrReplace(CurrentLine, "</DTPOSTED>", "");
 			StartPosition = Find(CurrentLine, "<DTPOSTED>") + 10;
 			Year  = Mid(CurrentLine, StartPosition, 4);
 			Month = Mid(CurrentLine, StartPosition + 4, 2);
@@ -2787,6 +2803,7 @@ Procedure QBO_QFX_OFX_UploadTransactionsAtServer(TempStorageAddress)
 		
 		//<TRNAMT>
 		If NewSTMTTRN And Find(CurrentLine, "<TRNAMT>") > 0 Then
+			CurrentLine   = StrReplace(CurrentLine, "</TRNAMT>", "");
 			StartPosition = Find(CurrentLine, "<TRNAMT>") + 8;
 			CountOfCharacters = StrLen(CurrentLine) - StartPosition + 1;
 			
@@ -2795,6 +2812,7 @@ Procedure QBO_QFX_OFX_UploadTransactionsAtServer(TempStorageAddress)
 		
 		//<CHECKNUM>
 		If NewSTMTTRN And Find(CurrentLine, "<CHECKNUM>") > 0 Then
+			CurrentLine   = StrReplace(CurrentLine, "</CHECKNUM>", "");
 			StartPosition = Find(CurrentLine, "<CHECKNUM>") + 10;
 			CountOfCharacters = StrLen(CurrentLine) - StartPosition + 1;
 			
@@ -2803,6 +2821,7 @@ Procedure QBO_QFX_OFX_UploadTransactionsAtServer(TempStorageAddress)
 		
 		//<NAME>
 		If NewSTMTTRN And Find(CurrentLine, "<NAME>") > 0 Then
+			CurrentLine   = StrReplace(CurrentLine, "</NAME>", "");
 			StartPosition = Find(CurrentLine, "<NAME>") + 6;
 			CountOfCharacters = StrLen(CurrentLine) - StartPosition + 1;
 			
@@ -3337,14 +3356,17 @@ Procedure OnComplete_AddAccount(ClosureResult, AdditionalParameters) Export
 			i = 0;
 			While i < ClosureResult.Count() Do
 				NewAddedItem = ClosureResult[i];
-				If TypeOf(NewAddedItem) = Type("CatalogRef.BankAccounts") Then
+				If TypeOf(NewAddedItem) = Type("ChartOfAccountsRef.ChartOfAccounts") Then
 					If i = ClosureResult.Count()-1 Then
-						AccountInBank = NewAddedItem;
-						//BankAccountOnChange();
-						BankAccountOnChangeAtServer(True);
+						Object.BankAccount = NewAddedItem;
+						If Items.BankAccount.ChoiceList.FindByValue(NewAddedItem) = Undefined Then
+							Items.BankAccount.ChoiceList.Add(NewAddedItem);
+						EndIf;
+						BankAccountOnChangeAtServer();
 					EndIf;
-					i = i + 1;
+					//i = i + 1;                  // commented by Alan 05/18/15
 				EndIf;
+				i = i + 1;    // new Alan 05/18/15
 			EndDo;
 		EndIf;
 	EndIf;
@@ -3993,6 +4015,33 @@ Procedure OnComplete_AcceptTransactions(ClosureResult, AdditionalParameters) Exp
 			EndIf;
 		EndIf;
 	EndIf;
+	
+EndProcedure
+
+&AtServer
+Procedure BankAccountStartListChoiceAtServer()
+	
+	Request = New Query("SELECT
+	                    |	ChartOfAccounts.Ref
+	                    |FROM
+	                    |	ChartOfAccounts.ChartOfAccounts AS ChartOfAccounts
+	                    |WHERE
+	                    |	(ChartOfAccounts.AccountType = VALUE(Enum.AccountTypes.Bank)
+	                    |			OR ChartOfAccounts.AccountType = VALUE(Enum.AccountTypes.OtherCurrentLiability)
+	                    |				AND ChartOfAccounts.CreditCard = TRUE)");
+	Sel = Request.Execute().Select();
+	ChoiceList = Items.BankAccount.ChoiceList;
+	ChoiceList.Clear();
+	While Sel.Next() Do
+		ChoiceList.Add(Sel.Ref);
+	EndDo;
+	
+EndProcedure
+
+&AtClient
+Procedure BankAccountStartChoice(Item, ChoiceData, StandardProcessing)
+	
+	BankAccountStartListChoiceAtServer();
 	
 EndProcedure
 

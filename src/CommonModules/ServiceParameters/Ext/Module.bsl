@@ -10,6 +10,12 @@ Function DwollaClientID() Export
 	
 EndFunction
 
+Function DwollaClientSecret() Export
+	
+	Return "";
+	
+EndFunction
+
 Function ImgurClientID() Export
 	
 	Return "";
@@ -58,6 +64,24 @@ EndFunction
 
 Function AvalaraAuth() Export
 		
+	Return "";
+	
+EndFunction
+
+Function YodleeCobrandLogin() Export
+	
+	Return "";
+	
+EndFunction
+
+Function YodleeCobrandPassword() Export
+	
+	Return "";
+	
+EndFunction
+
+Function StripeSecretKey() Export
+	
 	Return "";
 	
 EndFunction

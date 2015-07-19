@@ -213,6 +213,11 @@ END</presentationExpression>
 					AND CashFlowDataTurnovers.AmountRCReceipt &lt;&gt; 0
 			THEN CashFlowDataTurnovers.AmountRCTurnover
 		WHEN CashFlowDataTurnovers.Recorder REFS Document.GeneralJournalEntry
+				AND CashFlowDataTurnovers.Recorder.VoidingEntry REFS Document.InvoicePayment
+				AND CashFlowDataTurnovers.Account.AccountType IN (VALUE(Enum.AccountTypes.Income), VALUE(Enum.AccountTypes.OtherIncome), VALUE(Enum.AccountTypes.CostOfSales), VALUE(Enum.AccountTypes.Expense), VALUE(Enum.AccountTypes.OtherExpense), VALUE(Enum.AccountTypes.IncomeTaxExpense))
+				AND CashFlowDataTurnovers.AmountRCReceipt &lt;&gt; 0
+			THEN CashFlowDataTurnovers.AmountRCTurnover
+		WHEN CashFlowDataTurnovers.Recorder REFS Document.GeneralJournalEntry
 				AND CashFlowDataTurnovers.Account.AccountType IN (VALUE(Enum.AccountTypes.Income), VALUE(Enum.AccountTypes.OtherIncome))
 				AND CashFlowDataTurnovers.AmountRCReceipt &lt;&gt; 0
 			THEN CashFlowDataTurnovers.AmountRCTurnover

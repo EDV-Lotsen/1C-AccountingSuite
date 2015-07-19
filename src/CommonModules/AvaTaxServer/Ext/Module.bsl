@@ -4,65 +4,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #Region PUBLIC_INTERFACE
 
-//Fills TaxCodes catalog with predefined groups
-//Need to be called within open transaction to apply data locks
-Procedure FillTaxCodeGroups() Export
-	
-	SetPrivilegedMode(True);
-	
-	//Lock TaxCodes catalog
-	DLock = New DataLock();
-	LockItem = DLock.Add("Catalog.TaxCodes");
-	LockItem.Mode = DataLockMode.Exclusive;
-	DLock.Lock();
-	
-	//Fills only empty catalog (until any folders are added)
-	Request = New Query("SELECT
-	                    |	1 AS Field1
-	                    |FROM
-	                    |	Catalog.TaxCodes AS TaxCodes
-	                    |WHERE
-	                    |	TaxCodes.IsFolder = TRUE");
-						
-	If Not Request.Execute().IsEmpty() Then
-		return;
-	EndIf;
-						
-	
-	NewFolder = Catalogs.TaxCodes.CreateFolder();
-	NewFolder.Code = "D0000000";
-	NewFolder.Description = "Digital goods";
-	NewFolder.AdditionalInformation = "Digital goods are generally viewed as downloadable items that are sold on websites or that are otherwise transferred electronically. Examples would include computer software, artwork, photographs, music, movies, zip files, e-books, PDFs and more.";
-	NewFolder.Write();
-	
-	NewFolder = Catalogs.TaxCodes.CreateFolder();
-	NewFolder.Code = "FR000000";
-	NewFolder.Description = "Freight";
-	NewFolder.AdditionalInformation = "Charges for delivery, shipping, or shipping and handling. These charges represent the cost of the transportation of product sold to the customer, and if applicable, any special charges for handling or preparing the product for shipping. These separately identified charges are paid to the seller of the goods and not to the shipping company.";
-	NewFolder.Write();
-	
-	NewFolder = Catalogs.TaxCodes.CreateFolder();
-	NewFolder.Code = "O0000000";
-	NewFolder.Description = "Other";
-	NewFolder.AdditionalInformation = "Other miscellaneous types charges that are not normally viewed as either the sale of tangible personal property or the performance of a service.";
-	NewFolder.Write();
-	
-	NewFolder = Catalogs.TaxCodes.CreateFolder();
-	NewFolder.Code = "P0000000";
-	NewFolder.Description = "Tangible Personal Property (TPP)";
-	NewFolder.AdditionalInformation = "Tangible personal property is generally deemed to be items, other than real property (i.e. land and buildings etc.), that are tangible in nature. The presumption of taxability is on all items of TPP unless specifically made non-taxable by individual state and/or local statutes. This system tax code can be used when no other specific system tax code is applicable or available. Additionally, this system tax code has a taxable default associated with it and consequently the user could use this code for any and all products that are known to be taxable and if they want to limit the number of system tax codes being used.";
-	NewFolder.Write();
-	
-	NewFolder = Catalogs.TaxCodes.CreateFolder();
-	NewFolder.Code = "S0000000";
-	NewFolder.Description = "Services";
-	NewFolder.AdditionalInformation = "The rendering of knowledge, expertise or labor towards a certain goal or objective.  For the majority of taxable jurisdictions, the sale of services, unlike the sale of tangible personal property, is not presumed to be taxable unless specifically made taxable by individual state and/or local statutes.";
-	NewFolder.Write();
-	
-	SetPrivilegedMode(False);
-	
-EndProcedure
-
 //Fills AvataxCustomerUsageTypes catalog with predefined items
 //Need to be called within open transaction to apply data locks
 Procedure FillCustomerUsageTypes() Export
@@ -969,6 +910,10 @@ EndProcedure
 
 Procedure AvataxDocumentBeforeWrite(Object, Cancel) Export
 	
+	If Object.DataExchange.Load Then
+		return;
+	EndIf;
+	
 	If Object.UseAvatax Then
 		If Constants.AvataxEnabled.Get() And (Not Constants.AvataxDisableTaxCalculation.Get()) Then
 			If Not (Object.AdditionalProperties.Property("CalculateTaxAtAvalara") Or Object.AdditionalProperties.Property("CancelAndCalculateTaxAtAvalara")) Then
@@ -1060,5 +1005,64 @@ Function AddAvataxCode(AvataxCode)
 	return NewItem.Ref;
 	
 EndFunction
+
+//Fills TaxCodes catalog with predefined groups
+//Need to be called within open transaction to apply data locks
+Procedure FillTaxCodeGroups() Export
+	
+	//SetPrivilegedMode(True);
+	//
+	////Lock TaxCodes catalog
+	//DLock = New DataLock();
+	//LockItem = DLock.Add("Catalog.TaxCodes");
+	//LockItem.Mode = DataLockMode.Exclusive;
+	//DLock.Lock();
+	//
+	////Fills only empty catalog (until any folders are added)
+	//Request = New Query("SELECT
+	//                    |	1 AS Field1
+	//                    |FROM
+	//                    |	Catalog.TaxCodes AS TaxCodes
+	//                    |WHERE
+	//                    |	TaxCodes.IsFolder = TRUE");
+	//					
+	//If Not Request.Execute().IsEmpty() Then
+	//	return;
+	//EndIf;
+	//					
+	//
+	//NewFolder = Catalogs.TaxCodes.CreateFolder();
+	//NewFolder.Code = "D0000000";
+	//NewFolder.Description = "Digital goods";
+	//NewFolder.AdditionalInformation = "Digital goods are generally viewed as downloadable items that are sold on websites or that are otherwise transferred electronically. Examples would include computer software, artwork, photographs, music, movies, zip files, e-books, PDFs and more.";
+	//NewFolder.Write();
+	//
+	//NewFolder = Catalogs.TaxCodes.CreateFolder();
+	//NewFolder.Code = "FR000000";
+	//NewFolder.Description = "Freight";
+	//NewFolder.AdditionalInformation = "Charges for delivery, shipping, or shipping and handling. These charges represent the cost of the transportation of product sold to the customer, and if applicable, any special charges for handling or preparing the product for shipping. These separately identified charges are paid to the seller of the goods and not to the shipping company.";
+	//NewFolder.Write();
+	//
+	//NewFolder = Catalogs.TaxCodes.CreateFolder();
+	//NewFolder.Code = "O0000000";
+	//NewFolder.Description = "Other";
+	//NewFolder.AdditionalInformation = "Other miscellaneous types charges that are not normally viewed as either the sale of tangible personal property or the performance of a service.";
+	//NewFolder.Write();
+	//
+	//NewFolder = Catalogs.TaxCodes.CreateFolder();
+	//NewFolder.Code = "P0000000";
+	//NewFolder.Description = "Tangible Personal Property (TPP)";
+	//NewFolder.AdditionalInformation = "Tangible personal property is generally deemed to be items, other than real property (i.e. land and buildings etc.), that are tangible in nature. The presumption of taxability is on all items of TPP unless specifically made non-taxable by individual state and/or local statutes. This system tax code can be used when no other specific system tax code is applicable or available. Additionally, this system tax code has a taxable default associated with it and consequently the user could use this code for any and all products that are known to be taxable and if they want to limit the number of system tax codes being used.";
+	//NewFolder.Write();
+	//
+	//NewFolder = Catalogs.TaxCodes.CreateFolder();
+	//NewFolder.Code = "S0000000";
+	//NewFolder.Description = "Services";
+	//NewFolder.AdditionalInformation = "The rendering of knowledge, expertise or labor towards a certain goal or objective.  For the majority of taxable jurisdictions, the sale of services, unlike the sale of tangible personal property, is not presumed to be taxable unless specifically made taxable by individual state and/or local statutes.";
+	//NewFolder.Write();
+	//
+	//SetPrivilegedMode(False);
+	
+EndProcedure
 
 #EndRegion

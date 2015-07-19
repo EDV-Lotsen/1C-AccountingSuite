@@ -8,6 +8,111 @@
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
 	</Events>
 	<ChildItems>
+		<Pages name="HeaderTabs" id="41">
+			<ExtendedTooltip name="HeaderTabsExtendedTooltip" id="42"/>
+			<ChildItems>
+				<Page name="Main" id="43">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Main</v8:content>
+						</v8:item>
+					</Title>
+					<HorizontalStretch>true</HorizontalStretch>
+					<Group>Horizontal</Group>
+					<ExtendedTooltip name="MainExtendedTooltip" id="44"/>
+					<ChildItems>
+						<UsualGroup name="Left" id="39">
+							<Group>Vertical</Group>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="LeftExtendedTooltip" id="40"/>
+							<ChildItems>
+								<InputField name="Company" id="25">
+									<DataPath>Object.Company</DataPath>
+									<Enabled>false</Enabled>
+									<ReadOnly>true</ReadOnly>
+									<TitleTextColor>#000000</TitleTextColor>
+									<HorizontalStretch>false</HorizontalStretch>
+									<OpenButton>false</OpenButton>
+									<TextColor>#000000</TextColor>
+									<ContextMenu name="CompanyContextMenu" id="26"/>
+									<ExtendedTooltip name="CompanyExtendedTooltip" id="27"/>
+								</InputField>
+								<InputField name="MailingAddress" id="28">
+									<DataPath>Object.MailingAddress</DataPath>
+									<HorizontalStretch>false</HorizontalStretch>
+									<ContextMenu name="MailingAddressContextMenu" id="29"/>
+									<ExtendedTooltip name="MailingAddressExtendedTooltip" id="30"/>
+									<Events>
+										<Event name="OnChange">MailingAddressOnChange</Event>
+									</Events>
+								</InputField>
+							</ChildItems>
+						</UsualGroup>
+						<UsualGroup name="Middle" id="45">
+							<Group>Vertical</Group>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="MiddleExtendedTooltip" id="46"/>
+							<ChildItems>
+								<InputField name="BeginOfPeriod" id="34">
+									<DataPath>Object.BeginOfPeriod</DataPath>
+									<Enabled>false</Enabled>
+									<ReadOnly>true</ReadOnly>
+									<TitleTextColor>#000000</TitleTextColor>
+									<Width>8</Width>
+									<HorizontalStretch>false</HorizontalStretch>
+									<EditFormat>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>DLF=D</v8:content>
+										</v8:item>
+									</EditFormat>
+									<TextColor>#000000</TextColor>
+									<ContextMenu name="BeginOfPeriodContextMenu" id="35"/>
+									<ExtendedTooltip name="BeginOfPeriodExtendedTooltip" id="36"/>
+								</InputField>
+								<InputField name="Currency" id="47">
+									<DataPath>Object.Currency</DataPath>
+									<Enabled>false</Enabled>
+									<ReadOnly>true</ReadOnly>
+									<TitleTextColor>#000000</TitleTextColor>
+									<Width>8</Width>
+									<HorizontalStretch>false</HorizontalStretch>
+									<OpenButton>false</OpenButton>
+									<TextColor>#000000</TextColor>
+									<ContextMenu name="CurrencyContextMenu" id="48"/>
+									<ExtendedTooltip name="CurrencyExtendedTooltip" id="49"/>
+								</InputField>
+							</ChildItems>
+						</UsualGroup>
+						<UsualGroup name="Right" id="37">
+							<Group>Vertical</Group>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="RightExtendedTooltip" id="38"/>
+							<ChildItems>
+								<InputField name="Date" id="31">
+									<DataPath>Object.Date</DataPath>
+									<Enabled>false</Enabled>
+									<ReadOnly>true</ReadOnly>
+									<TitleTextColor>#000000</TitleTextColor>
+									<Width>8</Width>
+									<HorizontalStretch>false</HorizontalStretch>
+									<EditFormat>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>DLF=D</v8:content>
+										</v8:item>
+									</EditFormat>
+									<TextColor>#000000</TextColor>
+									<ContextMenu name="DateContextMenu" id="32"/>
+									<ExtendedTooltip name="DateExtendedTooltip" id="33"/>
+								</InputField>
+							</ChildItems>
+						</UsualGroup>
+					</ChildItems>
+				</Page>
+			</ChildItems>
+		</Pages>
 		<SpreadSheetDocumentField name="Result" id="20">
 			<DataPath>Result</DataPath>
 			<TitleLocation>None</TitleLocation>
@@ -49,6 +154,7 @@
 				<Command>Document.Statement.Command.Print</Command>
 				<Type>Auto</Type>
 				<CommandGroup>FormCommandBarImportant</CommandGroup>
+				<DefaultVisible>false</DefaultVisible>
 				<Visible>
 					<xr:Common>false</xr:Common>
 				</Visible>

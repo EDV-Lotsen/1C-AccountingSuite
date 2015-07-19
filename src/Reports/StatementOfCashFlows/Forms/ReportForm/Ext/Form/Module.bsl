@@ -353,3 +353,15 @@ Procedure OnUpdateUserSettingSetAtServer(StandardProcessing)
 	EndIf;	
 		
 EndProcedure
+
+&AtClient
+Procedure Print(Command)
+	PrintAtServer();
+	Result.Print(PrintDialogUseMode.Use);
+EndProcedure
+
+&AtServer
+Procedure PrintAtServer()
+	Result.PageSize = "Letter"; 
+	Result.FitToPage = True;
+EndProcedure

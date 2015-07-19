@@ -137,8 +137,14 @@
   			
     UsBill = PrintTemplates.ContactInfoDatasetUs();
     
-    ThemBill = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemBill", SelectionAddr[0].Ref);
-    
+    //ThemBill = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemBill", SelectionAddr[0].Ref);
+	Try
+		ThemBill = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemBill", SelectionAddr[0].Ref);
+	Except
+		TempBilling = CreateTempBilling(Selection.Company);
+		ThemBill = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemBill", TempBilling);	
+	EndTry;
+	
     TemplateArea.Parameters.Fill(UsBill);
     //TemplateArea.Parameters.Fill(ThemShip);
     TemplateArea.Parameters.Fill(ThemBill);
@@ -158,8 +164,17 @@
 			TotalCredit = SelectionCreditMemos.Payment + TotalCredit;
 	EndDo;
     
-	
 	TemplateArea.Parameters.Date = Selection.Date;
+	If Selection.SalesOrder <> Documents.SalesOrder.EmptyRef() Then
+		SOStr = Selection.SalesOrder.Number + " from " + Format(Selection.SalesOrder.Date, "DLF=D");
+		TemplateArea.Parameters.SalesOrder = SOStr;
+		TemplateArea.Parameters.SalesOrderLabel = "Sales Order";
+	Else
+		TemplateArea.Parameters.SalesOrder = "";
+		TemplateArea.Parameters.SalesOrderLabel = "";
+		RightBorder = New Line(SpreadSheetDocumentCellLineType.None);
+		TemplateArea.Areas.SalesOrderLabel.RightBorder = RightBorder;		
+	EndIf; 
     TemplateArea.Parameters.Number = Selection.Number;
 	TemplateArea.Parameters.TotalPaidAmount = Format(Selection.CashPayment, "NFD=2; NZ=");
 	TemplateArea.Parameters.AmountReceivedLabel = "Amount Received " + Selection.Currency.Description + ":";
@@ -172,27 +187,27 @@
 		If Selection.StripeCardType = "Visa" Then
 			creditPicture = new Picture(Picturelib.visa_logo.GetBinaryData());
 			DocumentPrinting.FillPictureInDocumentTemplate(TemplateArea, creditPicture, "CCpic");
-			TemplateArea.Parameters.PayMethod = "**** **** **** " + Selection.StripeLast4;
+			TemplateArea.Parameters.PayMethod = "ending in " + Selection.StripeLast4;
 		ElsIf Selection.StripeCardType = "MasterCard" Then
 			creditPicture = new Picture(Picturelib.mastercard_logo.GetBinaryData());
 			DocumentPrinting.FillPictureInDocumentTemplate(TemplateArea, creditPicture, "CCpic");
-			TemplateArea.Parameters.PayMethod = "**** **** **** " + Selection.StripeLast4;
+			TemplateArea.Parameters.PayMethod = "ending in " + Selection.StripeLast4;
 		ElsIf Selection.StripeCardType = "American Express" Then
 			creditPicture = new Picture(Picturelib.amex_logo.GetBinaryData());
 			DocumentPrinting.FillPictureInDocumentTemplate(TemplateArea, creditPicture, "CCpic");
-			TemplateArea.Parameters.PayMethod = "**** ****** * " + Selection.StripeLast4;
+			TemplateArea.Parameters.PayMethod = "ending in " + Selection.StripeLast4;
 		ElsIf Selection.StripeCardType = "Discover" Then
 			creditPicture = new Picture(Picturelib.discover_logo.GetBinaryData());
 			DocumentPrinting.FillPictureInDocumentTemplate(TemplateArea, creditPicture, "CCpic");
-			TemplateArea.Parameters.PayMethod = "**** **** **** " + Selection.StripeLast4;
+			TemplateArea.Parameters.PayMethod = "ending in " + Selection.StripeLast4;
 		ElsIf Selection.StripeCardType = "JCB" Then
 			creditPicture = new Picture(Picturelib.jcb_logo.GetBinaryData());
 			DocumentPrinting.FillPictureInDocumentTemplate(TemplateArea, creditPicture, "CCpic");
-			TemplateArea.Parameters.PayMethod = "**** **** **** " + Selection.StripeLast4;
+			TemplateArea.Parameters.PayMethod = "ending in " + Selection.StripeLast4;
 		ElsIf Selection.StripeCardType = "Diners Club" Then
 			creditPicture = new Picture(Picturelib.dinersclub_logo.GetBinaryData());
 			DocumentPrinting.FillPictureInDocumentTemplate(TemplateArea, creditPicture, "CCpic");
-			TemplateArea.Parameters.PayMethod = "**** **** **" + Selection.StripeLast4;
+			TemplateArea.Parameters.PayMethod = "ending in " + Selection.StripeLast4;
 		Else
 		EndIf;		
 	Else
@@ -324,8 +339,18 @@
 		TemplateArea.Parameters.CreditsApplied = Format(0, "NFD=2; NZ=");
 	EndIf;
 	
+	If Selection.UnappliedPayment = 0 Then
 		
-	TemplateArea.Parameters.CreditsUnapplied = Format(Selection.UnappliedPayment, "NFD=2; NZ=");
+		TemplateArea.Parameters.CreditsUnapplied = "";
+		TemplateArea.Parameters.UnappliedCreditLabel = "";
+		
+	Else
+		
+		TemplateArea.Parameters.CreditsUnapplied = Format(Selection.UnappliedPayment, "NFD=2; NZ=");
+		TemplateArea.Parameters.UnappliedCreditLabel = "Unapplied Credits:";
+		
+	EndIf;
+	
     
     Spreadsheet.Join(TemplateArea);
     
@@ -398,3 +423,13 @@
    //Return SpreadsheetDocument;
 
 EndProcedure
+
+Function CreateTempBilling(CompanyRef)
+	newAddr = Catalogs.Addresses.CreateItem();
+	newAddr.Owner = CompanyRef;
+	newAddr.Description = "Default Billing";
+	newAddr.DefaultBilling = True;
+	newAddr.Write();
+	Message("Warning: There was no default billing address, so a new one was created. Please go to the address card and update any neccesasry information.");
+	Return newAddr.Ref;
+EndFunction

@@ -944,7 +944,7 @@ Try
 	                    |		ON (-1 * UnacceptedTransactionsWithoutDocuments.Amount = AvailableCheckDocuments.DocumentTotalRC)
 	                    |			AND (UnacceptedTransactionsWithoutDocuments.Amount < 0)
 						|			AND (AvailableCheckDocuments.Date < DATEADD(UnacceptedTransactionsWithoutDocuments.TransactionDate, DAY, 90))
-						|			AND (AvailableCheckDocuments.Date < DATEADD(UnacceptedTransactionsWithoutDocuments.TransactionDate, DAY, -90))
+						|			AND (AvailableCheckDocuments.Date > DATEADD(UnacceptedTransactionsWithoutDocuments.TransactionDate, DAY, -90))
 	                    |
 	                    |UNION ALL
 	                    |

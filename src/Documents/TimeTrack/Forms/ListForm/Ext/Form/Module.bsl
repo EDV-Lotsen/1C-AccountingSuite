@@ -1,105 +1,92 @@
 ﻿
 &AtClient
 Procedure GenInvoice(Command)
-	SelectedItem = Items.List.CurrentData;
 	
-	If SelectedItem <> Undefined Then
-		Valid = False;
-		Str = New Structure;
-		Valid = GenInvoiceAtServer(SelectedItem,Str,Valid);
-		OpenInvoiceDateForm(Str,Valid);	
+	If Items.List.SelectedRows.Count() > 0 Then 
+		Cancel = False;
+		QuantityMessageError = "";
+		Str = GenInvoiceAtServer(Cancel, QuantityMessageError);
+		
+		Params = New Structure;
+		Params.Insert("Str",Str);
+		Params.Insert("Cancel",Cancel);
+		If QuantityMessageError <> "" Then 
+			MsgNotify = New NotifyDescription("OpenInvoiceDateForm", ThisObject, Params);
+			ShowMessageBox(MsgNotify,QuantityMessageError);
+		Else 	
+			OpenInvoiceDateForm(Params);	
+		EndIf;	
 	Else
 		Message("There are no entries to generate an invoice");
 	EndIf;
 EndProcedure
 
 &AtClient
-Procedure OpenInvoiceDateForm(Str,Valid)
-		
-If Valid = True Then
-	TempAddress = PutToTempStorage(Str,ThisForm.UUID);
-	Notify = New NotifyDescription("OpenInvoice", ThisObject);
-	OpenForm("CommonForm.TimeTrackToInvoiceForm",,ThisForm,,,,Notify,FormWindowOpeningMode.LockOwnerWindow);
-EndIf;
+Procedure OpenInvoiceDateForm(Params) Export   
+	
+	Cancel = Params.Cancel;
+	Str = Params.Str;
+	
+	If Not Cancel Then
+		TempAddress = PutToTempStorage(Str,ThisForm.UUID);
+		Notify = New NotifyDescription("OpenInvoice", ThisObject);
+		OpenForm("CommonForm.TimeTrackToInvoiceForm",,ThisForm,,,,Notify,FormWindowOpeningMode.LockOwnerWindow);
+	EndIf;
 	
 EndProcedure
 
 &AtClient
 Procedure OpenInvoice(Parameter1,Parameter2) Export
 	
-NewStr = GetFromTempStorage(TempAddress);
-NewStr.Insert("InvoiceDate",Parameter1);
-If Parameter1 <> Undefined Then
-	OpenForm("Document.SalesInvoice.Form.DocumentForm",NewStr);	
-EndIf;
+	NewStr = GetFromTempStorage(TempAddress);
+	NewStr.Insert("InvoiceDate",Parameter1);
+	If Parameter1 <> Undefined Then
+		OpenForm("Document.SalesInvoice.Form.DocumentForm",NewStr);	
+	EndIf;
 	
 EndProcedure
+
 &AtServer
-Function GenInvoiceAtServer(SelectedItem,Str,Valid)
+Function GenInvoiceAtServer(Cancel, QuantityMessageError)
 	
-	RefObject = SelectedItem.Ref.GetObject();
+	ReturnStructure = New Structure;
+	ProcessedRows = Items.List.SelectedRows;
+	CurCompany = Undefined;
+	TimeTrackObjects = New Array;
 	
-	//If RefObject.SalesInvoice.IsEmpty() Then
-	//Else
-	//	Message("A selected document is currently linked to an existing invoice. The invoice will be unlinked and a new invoice will be created.");
-	//EndIf;
+	QtyPrecision = Constants.QtyPrecision.Get();
 	
-	rowcount = items.List.SelectedRows.Count();
-	rownum = 0;
-	DocBillable = True;
-	While rownum < rowcount Do
-		CheckRow = Items.List.SelectedRows.Get(rownum);
+	If QtyPrecision < 2 Then 
+		QuantityMessageError = "Quantity field decimals setttings is "+ QtyPrecision + ". Quantity of hours in Invoice will be rounded." + Chars.LF + "You can change Quantity precision in ""Settings"" -> ""Features"".";
+	EndIf;	
+	
+	
+	For Each CheckRow In ProcessedRows Do 
+		
+		If CurCompany = Undefined Then //Predefine company from 1st row
+			CurCompany = CheckRow.Company;
+		EndIf;	
+		
 		If CheckRow.InvoiceStatus = Enums.TimeTrackStatus.Unbillable  Then
-			DocBillable = False;			
+			Cancel = True;
+			Message("Either one or more of the selected documents are considered non-billable");
+			Return New Structure;
+		Else 
+			If CheckRow.Company <> CurCompany Then
+				Cancel = True;
+				Message("Selected item companies do not all match");
+				Return New Structure;
+			Endif;
+			TimeTrackObjects.Add(CheckRow);
 		Endif;
-			
-		rownum = rownum + 1;	
 	EndDo;
 	
+	ReturnStructure.insert("timetrackobjs",TimeTrackObjects);
+	Return ReturnStructure;
 	
-	If DocBillable = false Then
-		Message("Either one or more of the selected documents are considered non-billable");
-	Else
-		
-		TabularPartRow = SelectedItem;
-				
-		rowcount = items.List.SelectedRows.Count();
-		rownum = 0;
-		companymatch = true;
-		While rownum < rowcount Do
-			 CheckRow = Items.List.SelectedRows.Get(rownum);
-			 If CheckRow.Company <> TabularPartRow.Company Then
-			 	companymatch = false;			
-			Endif;
-			
-		rownum = rownum + 1;	
-		EndDo;
-		
-		
-		If companymatch = true Then
-			
-			rownum = 0;			
-			TObj = new Array;				
-			While rownum < rowcount Do
-				TabularPartRow = Items.List.SelectedRows.Get(rownum);
-				TObj.Add(TabularPartRow);
-			
-				rownum = rownum + 1;
-			EndDo;
-					
-			Str.insert("timetrackobjs",Tobj);
-			
-			Return True;
 	
-		
-		Else
-			Message("Selected item companies do not all match");
-		Endif;
-		
-	Endif;
-
-	                         	
 EndFunction
+
 &AtClient
 Procedure RefreshItems(Command)
 	Items.List.Refresh();
@@ -108,14 +95,12 @@ EndProcedure
 &AtServer
 Function Increment(NumberToInc)
 	
-	//Last = Constants.SalesInvoiceLastNumber.Get();
 	Last = NumberToInc;
-	//Last = "AAAAA";
 	LastCount = StrLen(Last);
 	Digits = new Array();
 	For i = 1 to LastCount Do	
 		Digits.Add(Mid(Last,i,1));
-
+		
 	EndDo;
 	
 	NumPos = 9999;
@@ -137,7 +122,7 @@ Function Increment(NumberToInc)
 					Endif;
 				Endif;
 			Endif;
-						
+			
 		Endif;
 		j = j + 1;
 	EndDo;
@@ -153,7 +138,7 @@ Function Increment(NumberToInc)
 		StringValLen = StrLen(StringVal);
 		changenumberlen = StrLen(changenumber);
 		LeadingZeros = Left(changenumber,(changenumberlen - StringValLen));
-
+		
 		StringVal = StrReplace(StringVal,",","");
 		LeftSide = Left(Last,(NumPos - lengthcount + 1));
 		RightSide = Right(Last,(LastCount - NumPos - 1));
@@ -162,22 +147,22 @@ Function Increment(NumberToInc)
 	Endif;
 	
 	Next = NewString;
-
+	
 	return NewString;
 	
 EndFunction
 
 &AtServer
 Function NumCheck(CheckValue)
-	 
+	
 	For i = 0 to  9 Do
 		If CheckValue = String(i) Then
 			Return True;
 		Endif;
 	EndDo;
-		
+	
 	Return False;
-		
+	
 EndFunction
 
 &AtServer

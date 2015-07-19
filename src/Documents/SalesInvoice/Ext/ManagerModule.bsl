@@ -2394,7 +2394,7 @@ Function Query_GeneralJournal(TablesList)
 	|
 	|UNION ALL
 	|
-	|SELECT // Cr: Inventory or Expences accounts
+	|SELECT // Cr: Inventory or Expenses accounts
 	// ------------------------------------------------------
 	// Standard attributes
 	|	SalesInvoice.Ref                      AS Recorder,
@@ -3620,46 +3620,45 @@ Function Query_Filling_Document_SalesOrder_Attributes(TablesList)
 	// Collect attributes data.
 	QueryText =
 		"SELECT
-		|	SalesOrder.Ref 								AS FillingData,
-		|	SalesOrder.Company 							AS Company,
-		|	SalesOrder.ShipTo 							AS ShipTo,
-		|	SalesOrder.BillTo 							AS BillTo,
-		|	SalesOrder.ConfirmTo 						AS ConfirmTo,
-		|	SalesOrder.RefNum 							AS RefNum,
-		|	SalesOrder.DropshipCompany 					AS DropshipCompany,
-		|	SalesOrder.DropshipShipTo 					AS DropshipShipTo,
-		|	SalesOrder.DropshipConfirmTo	 			AS DropshipConfirmTo,
-		|	SalesOrder.DropshipRefNum 					AS DropshipRefNum,
-		|	SalesOrder.SalesPerson 						AS SalesPerson,
-		|	SalesOrder.Currency 						AS Currency,
-		|	SalesOrder.ExchangeRate 					AS ExchangeRate,
-		|	ISNULL(SalesOrder.Currency.DefaultARAccount, VALUE(ChartOfAccounts.ChartOfAccounts.EmptyRef))
-		|												AS ARAccount,
+		|	SalesOrder.Ref AS FillingData,
+		|	SalesOrder.Company AS Company,
+		|	SalesOrder.ShipTo AS ShipTo,
+		|	SalesOrder.BillTo AS BillTo,
+		|	SalesOrder.ConfirmTo AS ConfirmTo,
+		|	SalesOrder.RefNum AS RefNum,
+		|	SalesOrder.DropshipCompany AS DropshipCompany,
+		|	SalesOrder.DropshipShipTo AS DropshipShipTo,
+		|	SalesOrder.DropshipConfirmTo AS DropshipConfirmTo,
+		|	SalesOrder.DropshipRefNum AS DropshipRefNum,
+		|	SalesOrder.SalesPerson AS SalesPerson,
+		|	SalesOrder.Currency AS Currency,
+		|	SalesOrder.ExchangeRate AS ExchangeRate,
+		|	ISNULL(SalesOrder.Currency.DefaultARAccount, VALUE(ChartOfAccounts.ChartOfAccounts.EmptyRef)) AS ARAccount,
 		|	CASE
 		|		WHEN SalesOrder.Company.Terms.Days IS NULL 
 		|			THEN DATEADD(&Date, DAY, 14)
 		|		WHEN SalesOrder.Company.Terms.Days = 0
 		|			THEN DATEADD(&Date, DAY, 14)
 		|		ELSE DATEADD(&Date, DAY, SalesOrder.Company.Terms.Days)
-		|	END 										AS DueDate,
-		|	SalesOrder.Location 						AS LocationActual,
-		|	SalesOrder.DeliveryDate 					AS DeliveryDateActual,
-		|	SalesOrder.Project 							AS Project,
-		|	SalesOrder.Class 							AS Class,
-		|	ISNULL(SalesOrder.Company.Terms, VALUE(Catalog.PaymentTerms.EmptyRef))
-		|												AS Terms,
-		|	SalesOrder.DiscountPercent                	AS DiscountPercent,
-		|	SalesOrder.Shipping                       	AS Shipping,
-		|	NULL 							  			AS FOB,
-		|	NULL 						  				AS Carrier,
-		|	NULL 				  						AS TrackingNumber,
-		|	SalesOrder.SalesTaxRate  					AS SalesTaxRate,
-		|	SalesOrder.DiscountIsTaxable 				AS DiscountIsTaxable,
-		|	SalesOrder.UseAvatax 						AS UseAvatax,
-		|	SalesOrder.AvataxShippingTaxCode 			AS AvataxShippingTaxCode,
-		|	SalesOrder.DiscountTaxability 				AS DiscountTaxability,
-		|	SalesOrder.DiscountType						AS DiscountType,
-		|	SalesOrder.Discount							AS Discount
+		|	END AS DueDate,
+		|	SalesOrder.Location AS LocationActual,
+		|	SalesOrder.DeliveryDate AS DeliveryDateActual,
+		|	SalesOrder.Project AS Project,
+		|	SalesOrder.Class AS Class,
+		|	ISNULL(SalesOrder.Company.Terms, VALUE(Catalog.PaymentTerms.EmptyRef)) AS Terms,
+		|	SalesOrder.DiscountPercent AS DiscountPercent,
+		|	SalesOrder.Shipping AS Shipping,
+		|	NULL AS FOB,
+		|	NULL AS Carrier,
+		|	NULL AS TrackingNumber,
+		|	SalesOrder.SalesTaxRate AS SalesTaxRate,
+		|	SalesOrder.DiscountIsTaxable AS DiscountIsTaxable,
+		|	SalesOrder.UseAvatax AS UseAvatax,
+		|	SalesOrder.AvataxShippingTaxCode AS AvataxShippingTaxCode,
+		|	SalesOrder.DiscountTaxability AS DiscountTaxability,
+		|	SalesOrder.DiscountType AS DiscountType,
+		|	SalesOrder.Discount AS Discount,
+		|	SalesOrder.Company.UseAvatax
 		|INTO Table_Document_SalesOrder_Attributes
 		|FROM
 		|	Document.SalesOrder AS SalesOrder
@@ -3679,44 +3678,43 @@ Function Query_Filling_Document_Shipment_Attributes(TablesList)
 	// Collect attributes data.
 	QueryText =
 		"SELECT
-		|	Shipment.Ref                              AS FillingData,
-		|	Shipment.Company                          AS Company,
-		|	Shipment.ShipTo                           AS ShipTo,
-		|	Shipment.BillTo                           AS BillTo,
-		|	Shipment.ConfirmTo                        AS ConfirmTo,
-		|	Shipment.RefNum                           AS RefNum,
-		|	Shipment.DropshipCompany                  AS DropshipCompany,
-		|	Shipment.DropshipShipTo                   AS DropshipShipTo,
-		|	Shipment.DropshipConfirmTo				  AS DropshipConfirmTo,
-		|	Shipment.DropshipRefNum 				  AS DropshipRefNum,
-		|	Shipment.SalesPerson 				 	  AS SalesPerson,
-		|	Shipment.Currency 					 	  AS Currency,
-		|	Shipment.ExchangeRate				 	  AS ExchangeRate,
-		|	ISNULL(Shipment.Currency.DefaultARAccount, VALUE(ChartOfAccounts.ChartOfAccounts.EmptyRef))
-		|											  AS ARAccount,
+		|	Shipment.Ref AS FillingData,
+		|	Shipment.Company AS Company,
+		|	Shipment.ShipTo AS ShipTo,
+		|	Shipment.BillTo AS BillTo,
+		|	Shipment.ConfirmTo AS ConfirmTo,
+		|	Shipment.RefNum AS RefNum,
+		|	Shipment.DropshipCompany AS DropshipCompany,
+		|	Shipment.DropshipShipTo AS DropshipShipTo,
+		|	Shipment.DropshipConfirmTo AS DropshipConfirmTo,
+		|	Shipment.DropshipRefNum AS DropshipRefNum,
+		|	Shipment.SalesPerson AS SalesPerson,
+		|	Shipment.Currency AS Currency,
+		|	Shipment.ExchangeRate AS ExchangeRate,
+		|	ISNULL(Shipment.Currency.DefaultARAccount, VALUE(ChartOfAccounts.ChartOfAccounts.EmptyRef)) AS ARAccount,
 		|	CASE
 		|		WHEN Shipment.Company.Terms.Days IS NULL 
 		|			THEN DATEADD(&Date, DAY, 14)
 		|		WHEN Shipment.Company.Terms.Days = 0
 		|			THEN DATEADD(&Date, DAY, 14)
 		|		ELSE DATEADD(&Date, DAY, Shipment.Company.Terms.Days)
-		|	END 									  AS DueDate,
-		|	Shipment.LocationActual 				  AS LocationActual,
-		|	Shipment.DeliveryDateActual			 	  AS DeliveryDateActual,
-		|	Shipment.Project 						  AS Project,
-		|	Shipment.Class 							  AS Class,
-		|	ISNULL(Shipment.Company.Terms, VALUE(Catalog.PaymentTerms.EmptyRef))
-		|											  AS Terms,
-		|	Shipment.DiscountPercent 				  AS DiscountPercent,
-		|	Shipment.Shipping 						  AS Shipping,
-		|	Shipment.FOB 							  AS FOB,
-		|	Shipment.Carrier 						  AS Carrier,
-		|	Shipment.TrackingNumber 				  AS TrackingNumber,
-		|	Shipment.SalesTaxRate 					  AS SalesTaxRate,
-		|	Shipment.DiscountIsTaxable 				  AS DiscountIsTaxable,
-		|	Shipment.UseAvatax 						  AS UseAvatax,
-		|	Shipment.AvataxShippingTaxCode 			  AS AvataxShippingTaxCode,
-		|	Shipment.DiscountTaxability 			  AS DiscountTaxability
+		|	END AS DueDate,
+		|	Shipment.LocationActual AS LocationActual,
+		|	Shipment.DeliveryDateActual AS DeliveryDateActual,
+		|	Shipment.Project AS Project,
+		|	Shipment.Class AS Class,
+		|	ISNULL(Shipment.Company.Terms, VALUE(Catalog.PaymentTerms.EmptyRef)) AS Terms,
+		|	Shipment.DiscountPercent AS DiscountPercent,
+		|	Shipment.Shipping AS Shipping,
+		|	Shipment.FOB AS FOB,
+		|	Shipment.Carrier AS Carrier,
+		|	Shipment.TrackingNumber AS TrackingNumber,
+		|	Shipment.SalesTaxRate AS SalesTaxRate,
+		|	Shipment.DiscountIsTaxable AS DiscountIsTaxable,
+		|	Shipment.UseAvatax AS UseAvatax,
+		|	Shipment.AvataxShippingTaxCode AS AvataxShippingTaxCode,
+		|	Shipment.DiscountTaxability AS DiscountTaxability,
+		|	Shipment.Company.UseAvatax
 		|INTO Table_Document_Shipment_Attributes
 		|FROM
 		|	Document.Shipment AS Shipment
@@ -4629,9 +4627,9 @@ Function Query_Filling_Attributes(TablesList)
 		|	Document_SalesOrder_Attributes.Terms,
 		|	Document_SalesOrder_Totals.LineSubtotal,
 		|	Document_SalesOrder_Attributes.DiscountPercent,
-		|   CASE
-		|	WHEN Document_SalesOrder_Attributes.DiscountType = VALUE(Enum.DiscountType.FixedAmount)
-		|		THEN Document_SalesOrder_Attributes.Discount
+		|	CASE
+		|		WHEN Document_SalesOrder_Attributes.DiscountType = VALUE(Enum.DiscountType.FixedAmount)
+		|			THEN Document_SalesOrder_Attributes.Discount
 		|		ELSE Document_SalesOrder_Totals.Discount
 		|	END AS Discount,
 		|	Document_SalesOrder_Totals.SubTotal,
@@ -4639,19 +4637,31 @@ Function Query_Filling_Attributes(TablesList)
 		|	Document_SalesOrder_Attributes.FOB,
 		|	Document_SalesOrder_Attributes.Carrier,
 		|	Document_SalesOrder_Attributes.TrackingNumber,
-		|	Document_SalesOrder_Totals.SalesTax,
-		|	Document_SalesOrder_Totals.SalesTaxRC,
+		|	CASE
+		|		WHEN Document_SalesOrder_Attributes.CompanyUseAvatax
+		|			THEN 0
+		|		ELSE Document_SalesOrder_Totals.SalesTax
+		|	END AS SalesTax,
+		|	CASE
+		|		WHEN Document_SalesOrder_Attributes.CompanyUseAvatax
+		|			THEN 0
+		|		ELSE Document_SalesOrder_Totals.SalesTaxRC
+		|	END AS SalesTaxRC,
 		|	Document_SalesOrder_Attributes.SalesTaxRate,
 		|	Document_SalesOrder_Attributes.DiscountIsTaxable,
-		|	Document_SalesOrder_Attributes.UseAvatax,
+		|	CASE
+		|		WHEN Document_SalesOrder_Attributes.CompanyUseAvatax
+		|			THEN TRUE
+		|		ELSE Document_SalesOrder_Attributes.UseAvatax
+		|	END AS UseAvatax,
 		|	Document_SalesOrder_Attributes.AvataxShippingTaxCode,
 		|	Document_SalesOrder_Attributes.DiscountTaxability,
 		|	Document_SalesOrder_Attributes.DiscountType
 		|{Into}
 		|FROM
 		|	Table_Document_SalesOrder_Attributes AS Document_SalesOrder_Attributes
-		|	LEFT JOIN Table_Document_SalesOrder_Totals AS Document_SalesOrder_Totals
-		|		ON Document_SalesOrder_Totals.FillingData = Document_SalesOrder_Attributes.FillingData";
+		|		LEFT JOIN Table_Document_SalesOrder_Totals AS Document_SalesOrder_Totals
+		|		ON (Document_SalesOrder_Totals.FillingData = Document_SalesOrder_Attributes.FillingData)";
 		
 		// Add selection to a query
 		QueryText = QueryText + StrReplace(SelectionText, "{Into}",
@@ -4702,11 +4712,23 @@ Function Query_Filling_Attributes(TablesList)
 		|	Document_Shipment_Attributes.FOB,
 		|	Document_Shipment_Attributes.Carrier,
 		|	Document_Shipment_Attributes.TrackingNumber,
-		|	Document_Shipment_Totals.SalesTax,
-		|	Document_Shipment_Totals.SalesTaxRC,
+		|	CASE
+		|		WHEN Document_Shipment_Attributes.CompanyUseAvatax
+		|			THEN 0
+		|		ELSE Document_Shipment_Totals.SalesTax
+		|	END AS SalesTax,
+		|	CASE
+		|		WHEN Document_Shipment_Attributes.CompanyUseAvatax
+		|			THEN 0
+		|		ELSE Document_Shipment_Totals.SalesTaxRC
+		|	END AS SalesTaxRC,
 		|	Document_Shipment_Attributes.SalesTaxRate,
 		|	Document_Shipment_Attributes.DiscountIsTaxable,
-		|	Document_Shipment_Attributes.UseAvatax,
+		|	CASE
+		|		WHEN Document_Shipment_Attributes.CompanyUseAvatax
+		|			THEN TRUE
+		|		ELSE Document_Shipment_Attributes.UseAvatax
+		|	END AS UseAvatax,
 		|	Document_Shipment_Attributes.AvataxShippingTaxCode,
 		|	Document_Shipment_Attributes.DiscountTaxability
 		|{Into}
@@ -4944,17 +4966,18 @@ Function Query_Filling_SalesTaxAcrossAgencies(TablesList)
 		
 		SelectionText =
 		"SELECT
-	    |	SalesOrderSalesTaxAcrossAgencies.Agency,
-	    |	SalesOrderSalesTaxAcrossAgencies.Rate,
-	    |	SalesOrderSalesTaxAcrossAgencies.Amount,
-	    |	SalesOrderSalesTaxAcrossAgencies.SalesTaxRate,
-	    |	SalesOrderSalesTaxAcrossAgencies.SalesTaxComponent,
-	    |	SalesOrderSalesTaxAcrossAgencies.AvataxTaxComponent
+		|	SalesOrderSalesTaxAcrossAgencies.Agency,
+		|	SalesOrderSalesTaxAcrossAgencies.Rate,
+		|	SalesOrderSalesTaxAcrossAgencies.Amount,
+		|	SalesOrderSalesTaxAcrossAgencies.SalesTaxRate,
+		|	SalesOrderSalesTaxAcrossAgencies.SalesTaxComponent,
+		|	SalesOrderSalesTaxAcrossAgencies.AvataxTaxComponent
 		|{Into}
-	    |FROM
-	    |	Document.SalesOrder.SalesTaxAcrossAgencies AS SalesOrderSalesTaxAcrossAgencies
-	    |WHERE
-	    |	SalesOrderSalesTaxAcrossAgencies.Ref IN(&FillingData_Document_SalesOrder)";
+		|FROM
+		|	Document.SalesOrder.SalesTaxAcrossAgencies AS SalesOrderSalesTaxAcrossAgencies
+		|WHERE
+		|	SalesOrderSalesTaxAcrossAgencies.Ref IN(&FillingData_Document_SalesOrder)
+		|	AND SalesOrderSalesTaxAcrossAgencies.Ref.Company.UseAvatax = FALSE";
 		
 		// Add selection to a query.
 		QueryText = QueryText + StrReplace(SelectionText, "{Into}",
@@ -4977,17 +5000,18 @@ Function Query_Filling_SalesTaxAcrossAgencies(TablesList)
 		
 		SelectionText =
 		"SELECT
-	    |	ShipmentSalesTaxAcrossAgencies.Agency,
-	    |	ShipmentSalesTaxAcrossAgencies.Rate,
-	    |	ShipmentSalesTaxAcrossAgencies.Amount,
-	    |	ShipmentSalesTaxAcrossAgencies.SalesTaxRate,
-	    |	ShipmentSalesTaxAcrossAgencies.SalesTaxComponent,
-	    |	ShipmentSalesTaxAcrossAgencies.AvataxTaxComponent
+		|	ShipmentSalesTaxAcrossAgencies.Agency,
+		|	ShipmentSalesTaxAcrossAgencies.Rate,
+		|	ShipmentSalesTaxAcrossAgencies.Amount,
+		|	ShipmentSalesTaxAcrossAgencies.SalesTaxRate,
+		|	ShipmentSalesTaxAcrossAgencies.SalesTaxComponent,
+		|	ShipmentSalesTaxAcrossAgencies.AvataxTaxComponent
 		|{Into}
-	    |FROM
-	    |	Document.Shipment.SalesTaxAcrossAgencies AS ShipmentSalesTaxAcrossAgencies
-	    |WHERE
-	    |	ShipmentSalesTaxAcrossAgencies.Ref IN(&FillingData_Document_Shipment)";
+		|FROM
+		|	Document.Shipment.SalesTaxAcrossAgencies AS ShipmentSalesTaxAcrossAgencies
+		|WHERE
+		|	ShipmentSalesTaxAcrossAgencies.Ref IN(&FillingData_Document_Shipment)
+		|	AND ShipmentSalesTaxAcrossAgencies.Ref.Company.UseAvatax = FALSE";
 		
 		// Add selection to a query.
 		QueryText = QueryText + StrReplace(SelectionText, "{Into}",

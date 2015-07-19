@@ -11,25 +11,27 @@
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
-	//If IsInRole("BankAccounting") Then
-	//	Cancel = True;
-	//	return;
-	//EndIf;
+	If IsInRole("BankAccounting") Then
+		Cancel = True;
+		return;
+	EndIf;
 	
 	If Object.Ref.IsEmpty() Then
-		Object.BankAccount = Constants.BankAccount.Get();
-		Object.Date = CurrentDate();
+		If ValueIsFilled(Parameters.BankAccount) then
+			Object.BankAccount = Parameters.BankAccount;
+		Else
+			Object.BankAccount = Constants.BankAccount.Get();
+		EndIf;
+		If ValueIsFilled(Parameters.StatementDate) Then
+			Object.Date = Parameters.StatementDate;
+		Else
+			Object.Date = CurrentDate();
+		EndIf;
 		
 		//Auto-fill beginning balance and available documents
 		Object.BeginningBalance = GetBeginningBalance(Object.BankAccount, Object.Date, Object.Ref);
 				
 		FillReconciliationSpec(Object.Date, Object.BankAccount);
-		//Calculate totals
-		Object.ClearedAmount = 0;
-		Object.ClearedBalance = Object.BeginningBalance + Object.ClearedAmount;	
-		Object.Difference = Object.EndingBalance - Object.ClearedBalance;
-	
-		Items.LineItemsCleared.FooterText = Format(Object.ClearedAmount, "NFD=2; NZ=");	
 	EndIf;
 		
 EndProcedure
@@ -100,7 +102,15 @@ Procedure OnReadAtServer(CurrentObject)
 	                  |	UnreconciledTransactions.Company,
 	                  |	UnreconciledTransactions.Number AS DocNumber,
 	                  |	UnreconciledTransactions.Amount AS TransactionAmount,
-	                  |	ISNULL(TabularSection.Cleared, UnreconciledTransactions.Cleared) AS Cleared,
+	                  |	CASE
+	                  |		WHEN TabularSection.Cleared IS NULL 
+	                  |			THEN CASE
+	                  |					WHEN ISNULL(BankTransactions.Accepted, FALSE)
+	                  |						THEN TRUE
+	                  |					ELSE UnreconciledTransactions.Cleared
+	                  |				END
+	                  |		ELSE TabularSection.Cleared
+	                  |	END AS Cleared,
 	                  |	CASE
 	                  |		WHEN UnreconciledTransactions.Amount > 0
 	                  |			THEN UnreconciledTransactions.Amount
@@ -291,7 +301,6 @@ EndProcedure
 // When a particular amount is cleared the procedure recalculates a cleared balance.
 //
 Procedure LineItemsClearedOnChange(Item)
-	
 	TabularPartRow = Items.LineItems.CurrentData;
 	If TabularPartRow.Cleared = True Then
 		RecalcClearedBalance(TabularPartRow.TransactionAmount);
@@ -463,7 +472,15 @@ Procedure FillReconciliationSpec(Date, BankAccount)
 	                  |	UnreconciledTransactions.Company,
 	                  |	UnreconciledTransactions.Number AS DocNumber,
 	                  |	UnreconciledTransactions.Amount AS TransactionAmount,
-	                  |	ISNULL(TabularSection.Cleared, UnreconciledTransactions.Cleared) AS Cleared,
+	                  |	CASE
+	                  |		WHEN TabularSection.Cleared IS NULL 
+	                  |			THEN CASE
+	                  |					WHEN ISNULL(BankTransactions.Accepted, FALSE)
+	                  |						THEN TRUE
+	                  |					ELSE UnreconciledTransactions.Cleared
+	                  |				END
+	                  |		ELSE TabularSection.Cleared
+	                  |	END AS Cleared,
 	                  |	CASE
 	                  |		WHEN UnreconciledTransactions.Amount > 0
 	                  |			THEN UnreconciledTransactions.Amount
@@ -540,7 +557,7 @@ Procedure RecalcClearedBalance(Amount)
 	Object.ClearedBalance = Object.BeginningBalance + Object.ClearedAmount;	
 	Object.Difference = Object.EndingBalance - Object.ClearedBalance;
 	
-	Items.LineItemsCleared.FooterText = Format(Object.ClearedAmount, "NFD=2; NZ=");	
+	//Items.LineItemsCleared.FooterText = Format(Object.ClearedAmount, "NFD=2; NZ=");	
 	
 EndProcedure
 

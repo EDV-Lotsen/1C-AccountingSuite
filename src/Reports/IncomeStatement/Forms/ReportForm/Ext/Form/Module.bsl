@@ -12,10 +12,10 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	PeriodVariant = GeneralFunctions.GetDefaultPeriodVariant();
 	GeneralFunctions.ChangeDatesByPeriod(PeriodVariant, PeriodStartDate, PeriodEndDate);
 	
-	//If IsInRole("BankAccounting") Then
-	//	Items.Variant.ChoiceList.Delete(Items.Variant.ChoiceList.FindByValue("Customers"));
-	//	Items.Variant.ChoiceList.Delete(Items.Variant.ChoiceList.FindByValue("Vendors"));
-	//EndIf;
+	If IsInRole("BankAccounting") Then
+		Items.Variant.ChoiceList.Delete(Items.Variant.ChoiceList.FindByValue("Customers"));
+		Items.Variant.ChoiceList.Delete(Items.Variant.ChoiceList.FindByValue("Vendors"));
+	EndIf;
 		
 	OpeningReportForm = True;
 			
@@ -212,4 +212,16 @@ Procedure OnUpdateUserSettingSetAtServer(StandardProcessing)
 		GeneralFunctions.ChangePeriodIntoReportForm(ThisForm.Report.SettingsComposer, PeriodVariant, PeriodStartDate, PeriodEndDate);
 	EndIf;	
 		
+EndProcedure
+
+&AtClient
+Procedure Print(Command)
+	PrintAtServer();
+	Result.Print(PrintDialogUseMode.Use);
+EndProcedure
+
+&AtServer
+Procedure PrintAtServer()
+	Result.PageSize = "Letter"; 
+	Result.FitToPage = True;
 EndProcedure

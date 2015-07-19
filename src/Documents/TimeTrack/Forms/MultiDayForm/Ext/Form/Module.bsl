@@ -7,6 +7,7 @@ EndProcedure
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
+	DataWasSaved = False;
 	If Object.User = Catalogs.UserList.EmptyRef() Then
 		Object.User =  Catalogs.UserList.FindByDescription(GeneralFunctions.GetUserName());
 	Endif;
@@ -70,6 +71,8 @@ Procedure CreateEntriesAtServer()
 		NewTimeEntry.Write(DocumentWriteMode.Posting);
 		
 	EndDo;
+	
+	DataWasSaved = True;
 				
 EndProcedure
 
@@ -78,4 +81,38 @@ Procedure ObjectPriceOnChange(Item)
 	
 	Object.Price = Round(Object.Price, GeneralFunctionsReusable.PricePrecisionForOneItem(Object.Task));
 	
+EndProcedure
+
+&AtClient
+Procedure BeforeClose(Cancel, StandardProcessing)
+	
+	Cancel = True;
+		
+	QueryNotification = New NotifyDescription("SaveDataOnClient", ThisForm);
+	QueryMessage = NStr("en = ""Data has been changed. Do you want to save changes?""; ru = ""Данные были изменены. Сохранить изменения?""");
+	If Not DataWasSaved and DaysAndHours.Count() > 0 Then 
+		ShowQueryBox(QueryNotification, QueryMessage, QuestionDialogMode.YesNoCancel); 
+	Else 	
+		Cancel = False;
+	EndIf;	
+EndProcedure
+
+&AtClient
+Procedure SaveDataOnClient(QueryResult, Parameters = Undefined) Export
+	//ResultYes = QueryResult = DialogReturnCode.Yes;
+	If QueryResult = DialogReturnCode.Yes Then 
+		CreateEntriesAtServer();
+		Cancel = False;
+		DataWasSaved = True;
+	ElsIf QueryResult = DialogReturnCode.Cancel Then 
+		Cancel = True;
+	Else 
+		Cancel = False;
+		DataWasSaved = True;
+	EndIf;	
+	
+	If Not Cancel Then 
+		Close();
+	EndIf;	
+		
 EndProcedure

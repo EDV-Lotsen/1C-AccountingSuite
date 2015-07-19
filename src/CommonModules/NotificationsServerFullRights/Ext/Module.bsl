@@ -122,6 +122,8 @@ Procedure DocumentJournalOfCompaniesOnWrite(Source, Cancel) Export
 		LineVT.Date           = Source.Date;
 		LineVT.DueDate        = Source.DueDate;
 		LineVT.Total          = Source.DocumentTotalRC;
+		LineVT.TotalFCY       = Source.DocumentTotal;
+		LineVT.Currency       = Source.Currency;
 		LineVT.Memo           = Source.Memo;
 		
 		//2.	
@@ -135,6 +137,8 @@ Procedure DocumentJournalOfCompaniesOnWrite(Source, Cancel) Export
 		LineVT.Date           = Source.Date;
 		LineVT.DueDate        = Source.DeliveryDate;
 		LineVT.Total          = Source.DocumentTotalRC;
+		LineVT.TotalFCY       = Source.DocumentTotal;
+		LineVT.Currency       = Source.Currency;
 		LineVT.Memo           = Source.Memo;
 		
 		//3.	
@@ -148,6 +152,8 @@ Procedure DocumentJournalOfCompaniesOnWrite(Source, Cancel) Export
 		LineVT.Date           = Source.Date;
 		LineVT.DueDate        = Source.DueDate;
 		LineVT.Total          = Source.DocumentTotalRC;
+		LineVT.TotalFCY       = Source.DocumentTotal;
+		LineVT.Currency       = Source.Currency;
 		LineVT.Memo           = Source.Memo;
 		
 		//4.	
@@ -161,6 +167,8 @@ Procedure DocumentJournalOfCompaniesOnWrite(Source, Cancel) Export
 		LineVT.Date           = Source.Date;
 		LineVT.DueDate        = Source.DueDate;
 		LineVT.Total          = Source.DocumentTotalRC;
+		LineVT.TotalFCY       = Source.DocumentTotal;
+		LineVT.Currency       = Source.Currency;
 		LineVT.Memo           = Source.Memo;
 		
 		//5.	
@@ -174,6 +182,8 @@ Procedure DocumentJournalOfCompaniesOnWrite(Source, Cancel) Export
 		LineVT.Date           = Source.Date;
 		LineVT.DueDate        = Source.DeliveryDate;
 		LineVT.Total          = Source.DocumentTotalRC;
+		LineVT.TotalFCY       = Source.DocumentTotal;
+		LineVT.Currency       = Source.Currency;
 		LineVT.Memo           = Source.Memo;
 		
 		//6.	
@@ -187,6 +197,8 @@ Procedure DocumentJournalOfCompaniesOnWrite(Source, Cancel) Export
 		LineVT.Date           = Source.Date;
 		LineVT.DueDate        = Source.DueDate;
 		LineVT.Total          = Source.DocumentTotalRC;
+		LineVT.TotalFCY       = Source.DocumentTotal;
+		LineVT.Currency       = Source.Currency;
 		LineVT.Memo           = Source.Memo;
 		
 		//7.	
@@ -200,6 +212,8 @@ Procedure DocumentJournalOfCompaniesOnWrite(Source, Cancel) Export
 		LineVT.Date           = Source.Date;
 		//LineVT.DueDate        = Source.DueDate;
 		LineVT.Total          = Source.DocumentTotalRC;
+		LineVT.TotalFCY       = Source.DocumentTotal;
+		LineVT.Currency       = Source.Currency;
 		LineVT.Memo           = Source.Memo;
 		
 		//8.	
@@ -213,6 +227,8 @@ Procedure DocumentJournalOfCompaniesOnWrite(Source, Cancel) Export
 		LineVT.Date           = Source.Date;
 		//LineVT.DueDate        = Source.DueDate;
 		LineVT.Total          = Source.DocumentTotalRC;
+		LineVT.TotalFCY       = Source.DocumentTotal;
+		LineVT.Currency       = Source.BankAccount.Currency;
 		LineVT.Memo           = Source.Memo;
 		
 		//9.	
@@ -226,6 +242,8 @@ Procedure DocumentJournalOfCompaniesOnWrite(Source, Cancel) Export
 		LineVT.Date           = Source.Date;
 		//LineVT.DueDate        = Source.DueDate;
 		LineVT.Total          = Source.DocumentTotalRC;
+		LineVT.TotalFCY       = Source.DocumentTotal;
+		LineVT.Currency       = Source.Currency;
 		LineVT.Memo           = Source.Memo;
 		
 		//10.	
@@ -238,7 +256,9 @@ Procedure DocumentJournalOfCompaniesOnWrite(Source, Cancel) Export
 		LineVT.DocumentStatus = GetDocumentStatus(Source.Ref);
 		LineVT.Date           = Source.Date;
 		//LineVT.DueDate        = Source.DueDate;
-		LineVT.Total          = Source.CashPayment;
+		LineVT.Total          = Source.CashPayment * Source.ExchangeRate;
+		LineVT.TotalFCY       = Source.CashPayment;
+		LineVT.Currency       = Source.Currency;
 		LineVT.Memo           = Source.Memo;
 		
 		//11.	
@@ -258,6 +278,8 @@ Procedure DocumentJournalOfCompaniesOnWrite(Source, Cancel) Export
 			LineVT.Date           = Source.Date;
 			//LineVT.DueDate        = SourceLine.DueDate;
 			LineVT.Total          = SourceLine.Amount;
+			LineVT.TotalFCY       = SourceLine.Amount;
+			LineVT.Currency       = Source.BankAccount.Currency;
 			LineVT.Memo           = SourceLine.Memo;
 			
 		EndDo;
@@ -278,7 +300,9 @@ Procedure DocumentJournalOfCompaniesOnWrite(Source, Cancel) Export
 			LineVT.DocumentStatus = GetDocumentStatus(Source.Ref);
 			LineVT.Date           = Source.Date;
 			LineVT.DueDate        = Source.DueDate;
-			LineVT.Total          = ?(SourceLine.AmountDr = 0, SourceLine.AmountCr, SourceLine.AmountDr);
+			LineVT.Total          = ?(SourceLine.AmountDr = 0, SourceLine.AmountCr, SourceLine.AmountDr) * Source.ExchangeRate;
+			LineVT.TotalFCY       = ?(SourceLine.AmountDr = 0, SourceLine.AmountCr, SourceLine.AmountDr);
+			LineVT.Currency       = Source.Currency;
 			LineVT.Memo           = SourceLine.Memo;
 			
 		EndDo;
@@ -294,6 +318,8 @@ Procedure DocumentJournalOfCompaniesOnWrite(Source, Cancel) Export
 		LineVT.Date           = Source.Date;
 		//LineVT.DueDate        = Source.DueDate;
 		LineVT.Total          = Source.Price * Source.TimeComplete;
+		LineVT.TotalFCY       = Source.Price * Source.TimeComplete;
+		LineVT.Currency       = Constants.DefaultCurrency.Get();
 		LineVT.Memo           = Source.Memo;
 		
 		//14.	
@@ -307,6 +333,8 @@ Procedure DocumentJournalOfCompaniesOnWrite(Source, Cancel) Export
 		LineVT.Date           = Source.Date;
 		//LineVT.DueDate        = Source.DueDate;
 		//LineVT.Total          = Source.Price * Source.TimeComplete;
+		//LineVT.TotalFCY       = Source.Price * Source.TimeComplete;
+		//LineVT.Currency       = Constants.DefaultCurrency.Get();
 		//LineVT.Memo           = Source.Memo;
 		
 		//15.	
@@ -320,6 +348,8 @@ Procedure DocumentJournalOfCompaniesOnWrite(Source, Cancel) Export
 		LineVT.Date           = Source.Date;
 		//LineVT.DueDate        = Source.DueDate;
 		LineVT.Total          = Source.DocumentTotalRC;
+		LineVT.TotalFCY       = Source.DocumentTotal;
+		LineVT.Currency       = Source.Currency;
 		LineVT.Memo           = Source.Memo;
 		
 		//16.	
@@ -333,6 +363,8 @@ Procedure DocumentJournalOfCompaniesOnWrite(Source, Cancel) Export
 		LineVT.Date           = Source.Date;
 		LineVT.DueDate        = Source.DueDate;
 		LineVT.Total          = Source.DocumentTotalRC;
+		LineVT.TotalFCY       = Source.DocumentTotal;
+		LineVT.Currency       = Source.Currency;
 		LineVT.Memo           = Source.Memo;
 		
 		//17.	
@@ -345,6 +377,8 @@ Procedure DocumentJournalOfCompaniesOnWrite(Source, Cancel) Export
 		LineVT.DocumentStatus = GetDocumentStatus(Source.Ref);
 		LineVT.Date           = Source.Date;
 		LineVT.Total          = Source.DocumentTotalRC;
+		LineVT.TotalFCY       = Source.DocumentTotal;
+		LineVT.Currency       = Source.Currency;
 		LineVT.Memo           = Source.Memo;
 		
 	EndIf;

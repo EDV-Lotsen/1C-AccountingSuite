@@ -1084,6 +1084,7 @@ EndProcedure
 //------------------------------------------------------------------------------
 // Stripe.
 
+
 &AtServer
 Function SessionTenant()
 	

@@ -15,6 +15,17 @@
 						<BackColor>style:ColorInformationLabel</BackColor>
 						<ExtendedTooltip name="FormViewBankTransactionExtendedTooltip" id="30"/>
 					</Button>
+					<Button name="FormAuditLogRecord" id="61">
+						<Type>CommandBarButton</Type>
+						<CommandName>Form.Command.AuditLogRecord</CommandName>
+						<Title>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>Audit Log Records</v8:content>
+							</v8:item>
+						</Title>
+						<ExtendedTooltip name="FormAuditLogRecordExtendedTooltip" id="62"/>
+					</Button>
 				</ChildItems>
 			</ButtonGroup>
 		</ChildItems>
@@ -48,6 +59,9 @@
 			<HorizontalStretch>false</HorizontalStretch>
 			<ContextMenu name="AccountFromContextMenu" id="6"/>
 			<ExtendedTooltip name="AccountFromExtendedTooltip" id="22"/>
+			<Events>
+				<Event name="OnChange">AccountFromOnChange</Event>
+			</Events>
 		</InputField>
 		<InputField name="AccountTo" id="7">
 			<DataPath>Object.AccountTo</DataPath>
@@ -55,14 +69,102 @@
 			<HorizontalStretch>false</HorizontalStretch>
 			<ContextMenu name="AccountToContextMenu" id="8"/>
 			<ExtendedTooltip name="AccountToExtendedTooltip" id="25"/>
+			<Events>
+				<Event name="OnChange">AccountToOnChange</Event>
+			</Events>
 		</InputField>
+		<LabelDecoration name="ImportantNotice" id="48">
+			<Visible>false</Visible>
+			<Width>36</Width>
+			<TextColor>#CE1200</TextColor>
+			<Title formatted="false">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Important notice</v8:content>
+				</v8:item>
+			</Title>
+			<ContextMenu name="ImportantNoticeContextMenu" id="49"/>
+			<ExtendedTooltip name="ImportantNoticeExtendedTooltip" id="50"/>
+		</LabelDecoration>
 		<InputField name="Amount" id="9">
 			<DataPath>Object.Amount</DataPath>
 			<Width>25</Width>
 			<HorizontalStretch>false</HorizontalStretch>
 			<ContextMenu name="AmountContextMenu" id="10"/>
 			<ExtendedTooltip name="AmountExtendedTooltip" id="27"/>
+			<Events>
+				<Event name="OnChange">AmountOnChange</Event>
+			</Events>
 		</InputField>
+		<UsualGroup name="MulticurrencyGroup" id="59">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Multicurrency group</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Multicurrency group</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Group>Vertical</Group>
+			<Representation>None</Representation>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="MulticurrencyGroupExtendedTooltip" id="60"/>
+			<ChildItems>
+				<UsualGroup name="Group2" id="43">
+					<Group>Horizontal</Group>
+					<Representation>None</Representation>
+					<ShowTitle>false</ShowTitle>
+					<ExtendedTooltip name="Group2ExtendedTooltip" id="44"/>
+					<ChildItems>
+						<InputField name="ExchangeRate" id="40">
+							<DataPath>Object.ExchangeRate</DataPath>
+							<HorizontalStretch>false</HorizontalStretch>
+							<ContextMenu name="ExchangeRateContextMenu" id="41"/>
+							<ExtendedTooltip name="ExchangeRateExtendedTooltip" id="42"/>
+							<Events>
+								<Event name="OnChange">ExchangeRateOnChange</Event>
+							</Events>
+						</InputField>
+						<LabelDecoration name="AmountToText" id="45">
+							<ContextMenu name="AmountToTextContextMenu" id="46"/>
+							<ExtendedTooltip name="AmountToTextExtendedTooltip" id="47"/>
+						</LabelDecoration>
+					</ChildItems>
+				</UsualGroup>
+				<UsualGroup name="Group3" id="54">
+					<Group>Horizontal</Group>
+					<Representation>None</Representation>
+					<ShowTitle>false</ShowTitle>
+					<ExtendedTooltip name="Group3ExtendedTooltip" id="55"/>
+					<ChildItems>
+						<InputField name="AmountTo" id="51">
+							<DataPath>Object.AmountTo</DataPath>
+							<ContextMenu name="AmountToContextMenu" id="52"/>
+							<ExtendedTooltip name="AmountToExtendedTooltip" id="53"/>
+						</InputField>
+						<CheckBoxField name="ManuallyEditedAmountTo" id="56">
+							<DataPath>Object.ManuallyEditedAmountTo</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Edit</v8:content>
+								</v8:item>
+							</Title>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="ManuallyEditedAmountToContextMenu" id="57"/>
+							<ExtendedTooltip name="ManuallyEditedAmountToExtendedTooltip" id="58"/>
+							<Events>
+								<Event name="OnChange">ManuallyEditedAmountToOnChange</Event>
+							</Events>
+						</CheckBoxField>
+					</ChildItems>
+				</UsualGroup>
+			</ChildItems>
+		</UsualGroup>
 		<InputField name="Memo" id="11">
 			<DataPath>Object.Memo</DataPath>
 			<Width>25</Width>
@@ -82,6 +184,22 @@
 				<Field>Object.RegisterRecords</Field>
 			</UseAlways>
 		</Attribute>
+		<Attribute name="AmountTo" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Amount to</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:decimal</v8:Type>
+				<v8:NumberQualifiers>
+					<v8:Digits>17</v8:Digits>
+					<v8:FractionDigits>2</v8:FractionDigits>
+					<v8:AllowedSign>Any</v8:AllowedSign>
+				</v8:NumberQualifiers>
+			</Type>
+		</Attribute>
 	</Attributes>
 	<Commands>
 		<Command name="ViewBankTransaction" id="1">
@@ -98,6 +216,21 @@
 				</v8:item>
 			</ToolTip>
 			<Action>ViewBankTransaction</Action>
+		</Command>
+		<Command name="AuditLogRecord" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Audit log record</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Audit log record</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>AuditLogRecord</Action>
 		</Command>
 	</Commands>
 	<CommandInterface>

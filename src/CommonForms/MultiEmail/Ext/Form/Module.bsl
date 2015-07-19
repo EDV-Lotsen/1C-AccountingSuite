@@ -29,8 +29,9 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 			NewRow.EmailTo = ?(ValueIsFilled(Document.ConfirmTo), ConfirmToEmail, ShipToEmail);
 		EndIf;
 
-		NewRow.Subject = Constants.SystemTitle.Get() + " - Invoice " + Document.Number + " from " + Format(Document.Date,"DLF=D") + " - $" + Format(Document.DocumentTotalRC,"NFD=2,NZ=0.00");
-
+		//NewRow.Subject = Constants.SystemTitle.Get() + " - Invoice " + Document.Number + " from " + Format(Document.Date,"DLF=D") + " - $" + Format(Document.DocumentTotalRC,"NFD=2,NZ=0.00");
+		NewRow.Subject = "Your Invoice from " + Constants.SystemTitle.Get() + "(#" + Document.Number + ")";
+		
 		ValueToFormData(TempVT,DocumentSelectedList);
 		
 		If TempCompanyHolder.Find(NewRow.Company) = Undefined Then
@@ -152,10 +153,10 @@ Else
 				FormatHTML = StrReplace(FormatHTML,"object.company",Constants.SystemTitle.Get());
 	  			   
 				
-				FormatHTML = StrReplace(FormatHTML,"Total: $object.balance","");
+				FormatHTML = StrReplace(FormatHTML,"Total: object.balance $$$","");
 				FormatHTML = StrReplace(FormatHTML,"Due: object.duedate","");
 				FormatHTML = StrReplace(FormatHTML,"<td align=""center"" valign=""middle"" class=""mcnButtonContent"" style=""font-family: Tahoma, Verdana, Segoe, sans-serif;font-size: 16px;padding: 15px;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"">", "<td> ");
-				FormatHTML = StrReplace(FormatHTML,"<a class=""mcnButton "" title=""Pay Invoice"" href=""payHTML"" target=""_self"" style=""font-weight: normal;letter-spacing: 1px;line-height: 100%;text-align: center;text-decoration: none;color: #FFFFFF;word-wrap: break-word;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;display: block;"">Pay Invoice</a>"," ");
+				FormatHTML = StrReplace(FormatHTML,"<a class=""mcnButton "" title=""Pay Invoice"" href=""payHTML"" target=""_self"" style=""font-weight: normal;letter-spacing: 1px;line-height: 100%;text-align: center;text-decoration: none;color: #000000;word-wrap: break-word;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;display: block;"">Pay Invoice</a>"," ");
 
 				FormatHTML = StrReplace(FormatHTML,"Invoice # object.number","Invoices from " + Constants.SystemTitle.Get());
 
@@ -343,11 +344,11 @@ Else
 				
 					If Constants.secret_temp.Get() = "" Then
 					  FormatHTML = StrReplace(FormatHTML,"<td align=""center"" valign=""middle"" class=""mcnButtonContent"" style=""font-family: Tahoma, Verdana, Segoe, sans-serif;font-size: 16px;padding: 15px;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"">", "<td> ");
-					  FormatHTML = StrReplace(FormatHTML,"<a class=""mcnButton "" title=""Pay Invoice"" href=""payHTML"" target=""_self"" style=""font-weight: normal;letter-spacing: 1px;line-height: 100%;text-align: center;text-decoration: none;color: #FFFFFF;word-wrap: break-word;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;display: block;"">Pay Invoice</a>"," ");
+					  FormatHTML = StrReplace(FormatHTML,"<a class=""mcnButton "" title=""Pay Invoice"" href=""payHTML"" target=""_self"" style=""font-weight: normal;letter-spacing: 1px;line-height: 100%;text-align: center;text-decoration: none;color: #000000;word-wrap: break-word;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;display: block;"">Pay Invoice</a>"," ");
 					Endif;			
 					
 					If CurObject.PayHTML = "" Then
-					FormatHTML = StrReplace(FormatHTML,"<td align=""center"" valign=""middle"" class=""mcnButtonContent"" style=""font-family: Tahoma, Verdana, Segoe, sans-serif;font-size: 16px;padding: 15px;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;""><a class=""mcnButton "" title=""Pay Invoice"" href=""payHTML"" target=""_self"" style=""font-weight: normal;letter-spacing: 1px;line-height: 100%;text-align: center;text-decoration: none;color: #FFFFFF;word-wrap: break-word;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;display: block;"">Pay Invoice</a></td>", " ");
+					FormatHTML = StrReplace(FormatHTML,"<td align=""center"" valign=""middle"" class=""mcnButtonContent"" style=""font-family: Tahoma, Verdana, Segoe, sans-serif;font-size: 16px;padding: 15px;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;""><a class=""mcnButton "" title=""Pay Invoice"" href=""payHTML"" target=""_self"" style=""font-weight: normal;letter-spacing: 1px;line-height: 100%;text-align: center;text-decoration: none;color: #000000;word-wrap: break-word;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;display: block;"">Pay Invoice</a></td>", " ");
 					Else
 					FormatHTML = StrReplace(FormatHTML,"payHTML",CurObject.PayHTML);
 					Endif;
@@ -402,10 +403,10 @@ Else
 					
 				  	EndDo;	
 						
-				  	FormatHTML = StrReplace(FormatHTML,"object.balance",Format(objectBalance,"NFD = 2"));
+				  	FormatHTML = StrReplace(FormatHTML,"object.balance",Format(objectBalance,"NFD=2; NZ=0"));
 					
 					//Update Currency Symbol
-					FormatHTML = StrReplace(FormatHTML,"$",CurObject.Ref.Currency.Symbol);
+					FormatHTML = StrReplace(FormatHTML,"$$$",CurObject.Ref.Currency.Description);
 					
 				EndIf;
 

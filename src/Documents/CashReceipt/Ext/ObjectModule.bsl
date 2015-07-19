@@ -180,7 +180,7 @@ Procedure Posting(Cancel, PostingMode)
 		Record.Account =  DocumentObjectAccount;
 		Record.Currency = Currency;//DocumentLine.Currency; 
 		Record.Amount =   DocumentLine.Payment;
-		ExchangeDifference = (DocumentLine.Payment * ExchangeRate - DocumentLine.Payment * DocumentLine.Document.ExchangeRate);
+		ExchangeDifference = Round(DocumentLine.Payment * ExchangeRate,2) - Round(DocumentLine.Payment * DocumentLine.Document.ExchangeRate,2);
 		Record.AmountRC = DocumentLine.Payment * ExchangeRate - ExchangeDifference; 
 		Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Company] =  Company;
 		Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Document] = DocumentObject.Ref;
@@ -195,7 +195,7 @@ Procedure Posting(Cancel, PostingMode)
 			Record = RegisterRecords.GeneralJournal.AddDebit();
 			Record.Account = ExchangeLossAccount;
 			Record.Period = Date;
-			Record.AmountRC = ExchangeDifference;
+			Record.AmountRC = - ExchangeDifference;
 		EndIf;
 	
 	EndDo;
@@ -217,7 +217,7 @@ Procedure Posting(Cancel, PostingMode)
 			//--------------------------------------------------------------------------------------------------------------------------
 			SumDoc           = 0;
 			DocObjTotal      = DocumentObject.DocumentTotal;
-			BalancePaymentRC = Round(DocumentLine.Payment * ExchangeRate, 2);
+			BalancePaymentRC = Round(CreditLine.Payment * ExchangeRate, 2);
 			
 			IncomeAccount          = Constants.IncomeAccount.Get();
 			ExpenseAccount         = Constants.ExpenseAccount.Get();
@@ -229,7 +229,7 @@ Procedure Posting(Cancel, PostingMode)
 			For Each Item In DocumentObject.LineItems Do
 				
 				SumDoc = SumDoc + Item.LineTotal;
-				CurrentPaymentRC = ?(SumDoc = DocObjTotal, BalancePaymentRC, Round((Item.LineTotal * DocumentLine.Payment / DocObjTotal) * ExchangeRate, 2));
+				CurrentPaymentRC = ?(SumDoc = DocObjTotal, BalancePaymentRC, Round((Item.LineTotal * CreditLine.Payment / DocObjTotal) * ExchangeRate, 2));
 				BalancePaymentRC = BalancePaymentRC - CurrentPaymentRC;
 				
 				If CurrentPaymentRC <> 0 Then 
@@ -247,7 +247,7 @@ Procedure Posting(Cancel, PostingMode)
 			
 			//Shipping
 			SumDoc = SumDoc + DocumentObject.Shipping;
-			CurrentPaymentRC = ?(SumDoc = DocObjTotal, BalancePaymentRC, Round((DocumentObject.Shipping * DocumentLine.Payment / DocObjTotal) * ExchangeRate, 2));
+			CurrentPaymentRC = ?(SumDoc = DocObjTotal, BalancePaymentRC, Round((DocumentObject.Shipping * CreditLine.Payment / DocObjTotal) * ExchangeRate, 2));
 			BalancePaymentRC = BalancePaymentRC - CurrentPaymentRC;
 			
 			If CurrentPaymentRC <> 0 Then 
@@ -263,7 +263,7 @@ Procedure Posting(Cancel, PostingMode)
 			
 			//Sales tax
 			SumDoc = SumDoc + DocumentObject.SalesTax;
-			CurrentPaymentRC = ?(SumDoc = DocObjTotal, BalancePaymentRC, Round((DocumentObject.SalesTax * DocumentLine.Payment / DocObjTotal) * ExchangeRate, 2));
+			CurrentPaymentRC = ?(SumDoc = DocObjTotal, BalancePaymentRC, Round((DocumentObject.SalesTax * CreditLine.Payment / DocObjTotal) * ExchangeRate, 2));
 			BalancePaymentRC = BalancePaymentRC - CurrentPaymentRC;
 			
 			If CurrentPaymentRC <> 0 Then 
@@ -279,7 +279,7 @@ Procedure Posting(Cancel, PostingMode)
 			
 			//Discount
 			SumDoc = SumDoc + DocumentObject.Discount;
-			CurrentPaymentRC = ?(SumDoc = DocObjTotal, BalancePaymentRC, Round((DocumentObject.Discount * DocumentLine.Payment / DocObjTotal) * ExchangeRate, 2));
+			CurrentPaymentRC = ?(SumDoc = DocObjTotal, BalancePaymentRC, Round((DocumentObject.Discount * CreditLine.Payment / DocObjTotal) * ExchangeRate, 2));
 			BalancePaymentRC = BalancePaymentRC - CurrentPaymentRC;
 			
 			If CurrentPaymentRC <> 0 Then 
@@ -319,7 +319,7 @@ Procedure Posting(Cancel, PostingMode)
 		Record.Account =  DocumentObjectAccount;
 		Record.Currency = Currency;
 		Record.Amount =   CreditLine.Payment;
-		ExchangeDifference = (CreditLine.Payment * ExchangeRate - CreditLine.Payment * CreditLine.Document.ExchangeRate);
+		ExchangeDifference = Round(CreditLine.Payment * ExchangeRate,2) - Round(CreditLine.Payment * CreditLine.Document.ExchangeRate,2);
 		Record.AmountRC = CreditLine.Payment * ExchangeRate - ExchangeDifference;
 		Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Company] = Company;
 		Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Document] = DocumentObject.Ref;
@@ -328,7 +328,7 @@ Procedure Posting(Cancel, PostingMode)
 			Record = RegisterRecords.GeneralJournal.AddCredit();
 			Record.Account = ExchangeLossAccount;
 			Record.Period = Date;
-			Record.AmountRC = ExchangeDifference;
+			Record.AmountRC = - ExchangeDifference;
 						
 		ElsIf ExchangeDifference > 0 Then
 			Record = RegisterRecords.GeneralJournal.AddDebit();
@@ -805,13 +805,28 @@ Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 	EndIf;
 	
 	//Check whether the document is deposited or not (for the undeposited type only)
+	
+	// Create new managed data lock.
+	DataLock = New DataLock;
+
+	// Set data lock parameters.
+	LockItem = DataLock.Add("AccumulationRegister.UndepositedDocuments");
+	LockItem.Mode = DataLockMode.Exclusive;
+	LockItem.SetValue("Document", Ref);
+	// Set lock on the object.
+	DataLock.Lock();
+
 	If Posted Then
 		Request = New Query("SELECT
 		                    |	UndepositedDocuments.Amount,
 		                    |	UndepositedDocuments.AmountRC,
-		                    |	UndepositedDocuments.Recorder.Presentation
+		                    |	UndepositedDocuments.Recorder.Presentation,
+		                    |	CashReceipt.Date,
+		                    |	CashReceipt.DepositType
 		                    |FROM
 		                    |	AccumulationRegister.UndepositedDocuments AS UndepositedDocuments
+		                    |		LEFT JOIN Document.CashReceipt AS CashReceipt
+		                    |		ON UndepositedDocuments.Document = CashReceipt.Ref
 		                    |WHERE
 		                    |	UndepositedDocuments.Document = &CurrentDocument
 		                    |	AND UndepositedDocuments.RecordType = VALUE(AccumulationRecordType.Expense)");
@@ -820,7 +835,7 @@ Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 		If Sel.Next() Then
 			If Sel.Amount <> CashPayment Then
 				CommonUseClientServer.MessageToUser("The document is deposited. Cash payment amount (" + Format(CashPayment, "NFD=2; NZ=") + ") differs from the deposited amount (" + Format(Sel.Amount, "NFD=2; NZ=") + "). Unpost the Deposit document " + Sel.RecorderPresentation + " first.", ThisObject,, "Object.CashPayment", Cancel); 
-			Else
+			ElsIf Sel.Date <> Date Or Sel.DepositType <> DepositType Then
 				CommonUseClientServer.MessageToUser("The document is deposited. Unpost the Deposit document " + Sel.RecorderPresentation + " first.", ThisObject,,, Cancel); 	
 			EndIf;
 		EndIf;

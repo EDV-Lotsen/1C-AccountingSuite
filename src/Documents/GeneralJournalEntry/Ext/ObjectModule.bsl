@@ -80,6 +80,52 @@ Procedure Posting(Cancel, Mode)
 
 		   
 		EndIf;
+		
+		//for Journal Entries that void Bill Payments
+		If CurRowLineItems.Account.AccountType = Enums.AccountTypes.AccountsPayable Then
+			If ValueIsFilled(VoidingEntry) Then
+				
+				//ExchangeRate = GeneralFunctions.GetExchangeRate(Date, DocumentObject.Currency);
+				ExchangeRate = 1;
+				
+				RegisterRecords.CashFlowData.Write = True;
+		
+				If TypeOf(CurRowLineItems.VoidedEntry) = Type("DocumentRef.PurchaseInvoice") Then
+					
+					For Each Acc In CurRowLineItems.VoidedEntry.Accounts Do
+						Record = RegisterRecords.CashFlowData.Add();
+						Record.RecordType = AccumulationRecordType.Receipt;
+						Record.Period = Date;
+						Record.Company = CurRowLineItems.VoidedEntry.Company;
+						Record.Document = CurRowLineItems.VoidedEntry;
+						Record.Account = Acc.Account;
+						//Record.CashFlowSection = Acc.Account.CashFlowSection;
+						Record.PaymentMethod = VoidingEntry.PaymentMethod;
+						Record.AmountRC = ((Acc.Amount * ExchangeRate) * CurRowLineItems.AmountCr)/CurRowLineItems.VoidedEntry.DocumentTotalRC;
+					EndDo;
+					
+					For Each Item In CurRowLineItems.VoidedEntry.LineItems Do
+						Record = RegisterRecords.CashFlowData.Add();
+						Record.RecordType = AccumulationRecordType.Receipt;
+						Record.Period = Date;
+						Record.Company = CurRowLineItems.VoidedEntry.Company;
+						Record.Document = CurRowLineItems.VoidedEntry;
+						Record.Account = Item.Product.InventoryOrExpenseAccount;
+						If Item.Product.Type = Enums.InventoryTypes.Inventory Then
+							Record.Account = Item.Product.COGSAccount;
+						Else
+							Record.Account = Item.Product.InventoryOrExpenseAccount;
+						EndIf;
+						//Record.CashFlowSection = Item.Product.InventoryOrExpenseAccount.CashFlowSection;
+						Record.PaymentMethod = VoidingEntry.PaymentMethod;
+						Record.AmountRC = ((Item.LineTotal * ExchangeRate) * CurRowLineItems.AmountCr)/CurRowLineItems.VoidedEntry.DocumentTotalRC;
+					EndDo;
+					
+				EndIf;
+
+			EndIf;
+			
+		EndIf;
 
 	EndDo;
 
@@ -321,6 +367,30 @@ Procedure Posting(Cancel, Mode)
 		
 	EndDo;
 	
+	
+	TotalDr = LineItems.Total("AmountDr");
+	TotalCr = LineItems.Total("AmountCr"); 
+	If TotalDr <> TotalCr Then
+		Message = New UserMessage();
+		Message.Text = NStr("en='Balance The Transaction'");
+		Message.Message();
+		Cancel = True;
+        Return;
+	//ElsIf Constants.MultiCurrency.Get() Then 
+	ElsIf (Not Currency.IsEmpty()) And (Currency <> Constants.DefaultCurrency.Get()) Then 	
+		DocumentPosting.FixUnbalancedRegister(ThisObject,Cancel,Constants.ExchangeLoss.Get());
+	Else 
+		CheckedValueTable = RegisterRecords.GeneralJournal.Unload();
+		UnbalancedAmount = 0;
+		If Not DocumentPosting.IsValueTableBalanced(CheckedValueTable, UnbalancedAmount) Then 
+			Cancel = True;
+			// Generate error message.
+			MessageText = NStr("en = 'The document %1 cannot be posted, because it''s transaction is unbalanced.'");
+			MessageText = StringFunctionsClientServer.SubstituteParametersInString(MessageText, Ref);
+			CommonUseClientServer.MessageToUser(MessageText, Ref,,, Cancel);
+		EndIf;		
+	EndIf;
+	
 	//Writing bank reconciliation data
 	LineItemsGroupped = LineItems.Unload(, "Account, AmountDr, AmountCr");
 	LineItemsGroupped.Columns.Add("AccountType", New TypeDescription("EnumRef.AccountTypes"));
@@ -334,6 +404,39 @@ Procedure Posting(Cancel, Mode)
 			ReconciledDocumentsServerCall.AddDocumentForReconciliation(RegisterRecords, Ref, BankRow.Account, Date, BankRow.AmountDr-BankRow.AmountCr);
 		EndIf;
 	EndDo;
+EndProcedure
+
+Procedure Filling(FillingData, StandardProcessing)
+	
+	// Forced assign the new document number.
+	If ThisObject.IsNew() And Not ValueIsFilled(ThisObject.Number) Then ThisObject.SetNewNumber(); EndIf;
+	
+EndProcedure
+
+Procedure OnCopy(CopiedObject)
+	
+	// Forced assign the new document number.
+	If ThisObject.IsNew() Then ThisObject.SetNewNumber(); EndIf;
+	
+EndProcedure
+
+Procedure OnSetNewNumber(StandardProcessing, Prefix)
+	
+	StandardProcessing = False;
+	
+	Numerator = Catalogs.DocumentNumbering.JournalEntry;
+	NextNumber = GeneralFunctions.Increment(Numerator.Number);
+	
+	While Documents.GeneralJournalEntry.FindByNumber(NextNumber) <> Documents.GeneralJournalEntry.EmptyRef() And NextNumber <> "" Do
+		ObjectNumerator = Numerator.GetObject();
+		ObjectNumerator.Number = NextNumber;
+		ObjectNumerator.Write();
+		
+		NextNumber = GeneralFunctions.Increment(NextNumber);
+	EndDo;
+	
+	ThisObject.Number = NextNumber; 
+
 EndProcedure
 
 #EndIf

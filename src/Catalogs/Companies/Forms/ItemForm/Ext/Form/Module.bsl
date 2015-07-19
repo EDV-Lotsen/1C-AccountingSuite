@@ -10,12 +10,13 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	EndIf;
 	//--//
 	
-	If Constants.SalesTaxCharging.Get() = True AND Object.Customer = True Then
-		Items.TaxTab.Visible = True;
-	Else
-		Items.TaxTab.Visible = False;
-	EndIf;
-
+	//If Constants.SalesTaxCharging.Get() = True AND Object.Customer = True Then
+	//	Items.TaxTab.Visible = True;
+	//Else
+	//	Items.TaxTab.Visible = False;
+	//EndIf;
+	VendorOnChangeItemsVisibilityAtServer();
+	CustomerOnChangeItemsVisibilityAtServer();
 	ApplyTaxAttributesPresentation(ThisForm);
 	
 	If GeneralFunctionsReusable.DisplayAPICodesSetting() = False Then
@@ -159,29 +160,10 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Items.Vendor.Enabled = False;
 	EndIf;
 	
-	If Object.Vendor = True Then
-		Items.Group1099.Visible = True;
-		Items.Employee.Visible = True;
-	Else
-		Items.Group1099.Visible = False;
-		Items.Employee.Visible = False
-	EndIf;
 	
-	//If Object.Ref = Catalogs.Companies.OurCompany Then
-	//	Items.Vendor1099.Visible = False;
-	//	Items.DefaultCurrency.Visible = False;
-	//	Items.SalesTaxCode.Visible = False;
-	//	Items.ExpenseAccount.Visible = False;
-	//	Items.ExpenseAcctLabel.Visible = False;
-	//	Items.IncomeAccount.Visible = False;
-	//	Items.IncomeAcctLabel.Visible = False;
-	//	Items.Group2.ReadOnly = True;
-	//	Items.Terms.Visible = False;
-	//EndIf;
 	
 	//Items.FormRegisterCard.Enabled = IsBlankString(Object.StripeToken);
 	//Items.FormDeleteCard.Enabled   = Not IsBlankString(Object.StripeID);
-	//Items.FormRegisterCustomer.Enabled = IsBlankString(Object.StripeID) And Not IsBlankString(Object.StripeToken);
 	
 	If Object.Ref.IsEmpty() Then
 		Transactions.Parameters.SetParameterValue("Company", Catalogs.Companies.EmptyRef());
@@ -394,6 +376,34 @@ Function GetAPISecretKey()
 	
 EndFunction
 
+&AtClient
+Procedure RegisterCard(Command)
+	
+	// Check element saved.
+	If Object.Ref.IsEmpty() Or Modified Then
+		ShowMessageBox(Undefined, NStr("en = 'Current item is not saved.
+                                       |Save customer first.'"));
+		Return;
+	EndIf;
+	
+	//K.Zuzik
+	statestring = GetAPISecretKey() + Object.Code;
+	GotoURL("https://addcard.accountingsuite.com/check?state=" + statestring);
+	Close();
+	
+EndProcedure
+
+
+&AtClient
+Procedure SalesTransactions(Command)
+	
+	// setting composer values
+	// fixed filter 
+	CompanyFilter = Новый Структура("Company", Object.Ref);
+	FormParameters = Новый Структура("Отбор, СформироватьПриОткрытии, КомпоновщикНастроекПользовательскиеНастройки.Видимость",CompanyFilter,True,False);
+	OpenForm("Report.SalesTransactionDetail.ObjectForm",FormParameters,,,,,,FormWindowOpeningMode.LockWholeInterface);
+EndProcedure
+
 
 &AtClient
 Procedure Projects(Command)
@@ -427,16 +437,26 @@ EndProcedure
 &AtClient
 Procedure VendorOnChange(Item)
 	
-	If Object.Vendor = True Then
-		Items.Group1099.Visible = True;
-		Items.Employee.Visible = True;
-	Else
-		Items.Group1099.Visible = False;
-		Items.Employee.Visible = False;
-	EndIf;
+	VendorOnChangeAtServer();
 	
 EndProcedure
 
+&AtServer
+Procedure VendorOnChangeAtServer()
+	VendorOnChangeItemsVisibilityAtServer();
+EndProcedure
+
+&AtServer
+Procedure VendorOnChangeItemsVisibilityAtServer()
+	//dedicated procedure for visibility to call on start
+	isVendor = Object.Vendor;
+	
+	Items.ExpenseAccount.Visible = isVendor;
+	Items.APAccount.Visible = isVendor;
+	Items.Group1099.Visible = isVendor;
+	Items.Employee.Visible = isVendor;
+	
+EndProcedure
 
 &AtClient
 Procedure CustomerOnChange(Item)
@@ -447,12 +467,8 @@ EndProcedure
 &AtServer
 Procedure CustomerOnChangeAtServer()
 	
-	If Constants.SalesTaxCharging.Get() = True AND Object.Customer = True Then
-		Items.TaxTab.Visible = True;
-	Else
-		Items.TaxTab.Visible = False;
-	EndIf;
-
+	CustomerOnChangeItemsVisibilityAtServer();
+	
 	If Object.Customer Then
 		If Constants.SalesTaxMarkNewCustomersTaxable.Get() = True Then
 			Object.Taxable 		= True;
@@ -470,6 +486,24 @@ Procedure CustomerOnChangeAtServer()
 	
 EndProcedure
 
+&AtServer
+Procedure CustomerOnChangeItemsVisibilityAtServer()
+	//dedicated procedure for visibility to call on start
+	If Constants.SalesTaxCharging.Get() = True AND Object.Customer = True Then
+		Items.TaxTab.Visible = True;
+	Else
+		Items.TaxTab.Visible = False;
+	EndIf;
+	
+	isCustomer = Object.Customer;
+	
+	Items.IncomeAccount.Visible = isCustomer;
+	Items.ARAccount.Visible = isCustomer;
+	Items.PriceLevel.Visible = isCustomer;
+	Items.SalesPerson.Visible = isCustomer;
+	//Items.CreditCard.Visible = isCustomer;
+	
+EndProcedure
 
 &AtClient
 Procedure TaxableOnChange(Item)

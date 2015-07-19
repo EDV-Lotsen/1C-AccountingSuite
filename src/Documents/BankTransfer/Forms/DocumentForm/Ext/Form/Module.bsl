@@ -1,5 +1,11 @@
 ﻿
 &AtServer
+Procedure OnCreateAtServer(Cancel, StandardProcessing)
+	MultiCurrencyVisibilitySetup();
+	ImportantNoticeVisibilityAtServer();
+EndProcedure
+
+&AtServer
 Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 
 	If Object.AccountFrom = Object.AccountTo Then
@@ -174,9 +180,160 @@ Procedure ProcessUserResponseOnDocumentPeriodClosed(Result, Parameters) Export
 EndProcedure
 
 &AtClient
+Procedure AmountOnChange(Item)
+	AmountOnChangeAtServer();
+EndProcedure
+
+&AtServer
+Procedure AmountOnChangeAtServer()
+	RecalculateAmountTo();
+EndProcedure
+
+&AtServer
+Procedure RecalculateAmountTo()
+	If GeneralFunctionsReusable.FunctionalOptionValue("MultiCurrency") Then	
+		If Object.ExchangeRate = 0 Then 
+			Object.ExchangeRate = 1;
+		EndIf;	
+		Object.AmountTo = Object.Amount * Object.ExchangeRate;
+	Else 
+		Object.AmountTo = Object.Amount;
+	EndIf;
+EndProcedure
+
+&AtServer
+Procedure RecalculateExchangeRate()
+	If GeneralFunctionsReusable.FunctionalOptionValue("MultiCurrency") Then	
+		AccountFromCurrency = Object.Currency;
+		AccountToCurrency = Object.AccountTo.Currency;
+		DefaultCurrency = GeneralFunctionsReusable.DefaultCurrency();
+		// Using Default currency to recalc rate
+		
+		If AccountFromCurrency = DefaultCurrency Then 
+			TodayRate = GeneralFunctions.GetExchangeRate(Object.Date, AccountToCurrency);
+			Object.ExchangeRate = 1/TodayRate;
+		ElsIf AccountToCurrency = AccountFromCurrency Then 
+			Object.ExchangeRate = 1;
+		Else // Need to calc cross-rate
+			TodayRateFrom = GeneralFunctions.GetExchangeRate(Object.Date, AccountFromCurrency);
+			TodayRateTo = GeneralFunctions.GetExchangeRate(Object.Date, AccountToCurrency);
+			CrossRate = (TodayRateFrom/TodayRateTo);
+			Object.ExchangeRate = CrossRate;
+		EndIf;
+	Else 
+		Object.ExchangeRate = 1;
+	EndIf;	
+EndProcedure
+
+&AtServer
+Procedure MultiCurrencyVisibilitySetup()
+	If GeneralFunctionsReusable.FunctionalOptionValue("MultiCurrency") Then	
+		Items.MulticurrencyGroup.Visible = True;
+		Items.Amount.Title = "Amount "+ Object.Currency.Description;
+		If Object.ManuallyEditedAmountTo Then 
+			Items.AmountTo.Enabled = True;
+		Else 
+			Items.AmountTo.Enabled = False;
+		EndIf;	
+	Else 
+		Items.MulticurrencyGroup.Visible = False;
+		Items.Amount.Title = "Amount";
+	EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure AccountFromOnChange(Item)
+	AccountFromOnChangeAtServer();
+EndProcedure
+
+&AtServer
+Procedure AccountFromOnChangeAtServer()
+	Object.Currency = Object.AccountFrom.Currency;
+	Items.Amount.Title = "Amount "+ Object.Currency.Description;
+	RecalculateExchangeRate();
+	ExchangeRateOnChangeAtServer();
+	ImportantNoticeVisibilityAtServer();
+EndProcedure
+
+&AtClient
+Procedure ExchangeRateOnChange(Item)
+	ExchangeRateOnChangeAtServer();
+EndProcedure
+
+&AtServer
+Procedure ExchangeRateOnChangeAtServer()
+	RecalculateAmountTo();
+EndProcedure
+
+&AtClient
+Procedure AccountToOnChange(Item)
+	AccountToOnChangeAtServer();
+EndProcedure
+
+&AtServer
+Procedure AccountToOnChangeAtServer()
+	RecalculateExchangeRate();
+	ExchangeRateOnChangeAtServer();
+	ImportantNoticeVisibilityAtServer();	
+EndProcedure
+
+&AtServer
+Procedure ImportantNoticeVisibilityAtServer()
+	If GeneralFunctionsReusable.FunctionalOptionValue("MultiCurrency") Then	
+		If Object.AccountFrom.IsEmpty() Or Object.AccountTo.IsEmpty() Then 
+			Items.ImportantNotice.Visible = False;
+		Else	
+			DefaultCurrency = GeneralFunctionsReusable.DefaultCurrency();
+			If 	Object.AccountFrom.Currency <> DefaultCurrency And Object.AccountTo.Currency <> DefaultCurrency Then 
+				
+				TodayDefaultRate = GeneralFunctions.GetExchangeRate(Object.Date, Object.Currency);
+				
+				Items.ImportantNotice.Visible = True;
+				Items.ImportantNotice.Title = 
+				"WARNING!!! Both accounts are not in default currency. " +Chars.LF + 
+				""+DefaultCurrency+" Amount in records will be: "+Object.Amount*TodayDefaultRate +Chars.LF +
+				"Default exchange rate: "+TodayDefaultRate;//+DefaultCurrency+" amount: " 
+				
+			Else 	
+				Items.ImportantNotice.Visible = False;
+			EndIf;	
+		EndIf;	
+	Else 
+		Items.ImportantNotice.Visible = False;
+	EndIf;
+EndProcedure
+
+&AtClient
+Procedure ManuallyEditedAmountToOnChange(Item)
+	ManuallyEditedAmountToOnChangeAtServer();
+EndProcedure
+
+&AtServer
+Procedure ManuallyEditedAmountToOnChangeAtServer()
+	RecalculateAmountTo();
+	MultiCurrencyVisibilitySetup();
+EndProcedure
+
+////////////////////////////////////////////////////////////////////////////////
+#Region COMMANDS_HANDLERS
+
+&AtClient
 Procedure ViewBankTransaction(Command)
 	Params = New Structure("Document", Object.Ref);
 	OpenForm("DataProcessor.DownloadedTransactions.Form.BankTransactionDescription", Params, ThisForm,,,,, FormWindowOpeningMode.LockOwnerWindow);
 EndProcedure
 
+&AtClient
+Procedure AuditLogRecord(Command)
+	
+	FormParameters = New Structure();	
+	FltrParameters = New Structure();
+	FltrParameters.Insert("DocUUID", String(Object.Ref.UUID()));
+	FormParameters.Insert("Filter", FltrParameters);
+	OpenForm("CommonForm.AuditLogList",FormParameters, Object.Ref);
+
+EndProcedure
+
+#EndRegion
 

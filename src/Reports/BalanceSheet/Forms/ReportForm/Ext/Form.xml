@@ -190,6 +190,7 @@
 						</Button>
 						<Button name="FormExcel" id="17">
 							<Type>CommandBarButton</Type>
+							<Visible>false</Visible>
 							<OnlyInAllActions>true</OnlyInAllActions>
 							<CommandName>Form.Command.Excel</CommandName>
 							<Title>
@@ -199,6 +200,11 @@
 								</v8:item>
 							</Title>
 							<ExtendedTooltip name="FormExcelExtendedTooltip" id="18"/>
+						</Button>
+						<Button name="FormPrint" id="37">
+							<Type>CommandBarButton</Type>
+							<CommandName>Form.Command.Print</CommandName>
+							<ExtendedTooltip name="FormPrintExtendedTooltip" id="38"/>
 						</Button>
 					</ChildItems>
 				</CommandBar>
@@ -346,6 +352,26 @@
 				</v8:item>
 			</ToolTip>
 			<Action>Create</Action>
+		</Command>
+		<Command name="Print" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Print</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Print</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Picture>
+				<xr:Ref>StdPicture.Print</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
+			<Action>Print</Action>
+			<Representation>Picture</Representation>
 		</Command>
 	</Commands>
 </Form>

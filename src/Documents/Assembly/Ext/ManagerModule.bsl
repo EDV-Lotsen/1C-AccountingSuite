@@ -199,6 +199,12 @@ EndFunction
 //------------------------------------------------------------------------------
 // Document printing
 
+Procedure Print(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
+	
+	PrintFormFunctions.PrintAssembly(Spreadsheet, SheetTitle, Ref, TemplateName); 
+	
+EndProcedure
+
 #EndIf
 
 #EndRegion

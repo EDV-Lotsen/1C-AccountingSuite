@@ -39,6 +39,9 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	Items.LineItemsWasteQtyUnits.Format     = QuantityFormat;
 	Items.ResidualsItemsQuantity.EditFormat = QuantityFormat;
 	Items.ResidualsItemsQuantity.Format     = QuantityFormat;
+	Items.ServicesItemsQuantity.EditFormat  = QuantityFormat;
+	Items.ServicesItemsQuantity.Format      = QuantityFormat;
+
 	
 	Items.QtyOnPO.Format                    = QuantityFormat; 
 	Items.QtyOnPO.EditFormat                = QuantityFormat; 
@@ -126,7 +129,13 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Items.CostingMethod.ReadOnly = True;
 	Else	
 		Object.UnitSet = Constants.DefaultUoMSet.Get();
+		//VerNum = Constants.VersionNumber.Get();
+		//If TrimAll(VerNum) = "6" Then 
+		//	Items.Type.ReadOnly = True;
+		//	Object.Type = Enums.InventoryTypes.NonInventory;
+		//Endif	
 	EndIf;
+	
 	
 	If GeneralFunctionsReusable.DisplayAPICodesSetting() = False Then
 		Items.api_code.Visible = False;

@@ -1045,11 +1045,6 @@
 								</LabelDecoration>
 							</ChildItems>
 						</UsualGroup>
-						<LabelDecoration name="EmptySpaceDecoration" id="562">
-							<VerticalStretch>true</VerticalStretch>
-							<ContextMenu name="EmptySpaceDecorationContextMenu" id="563"/>
-							<ExtendedTooltip name="EmptySpaceDecorationExtendedTooltip" id="564"/>
-						</LabelDecoration>
 						<UsualGroup name="AccountTypeGroup" id="565">
 							<Title>
 								<v8:item>
@@ -1063,67 +1058,91 @@
 									<v8:content>Account type group</v8:content>
 								</v8:item>
 							</ToolTip>
-							<Group>Horizontal</Group>
+							<Group>Vertical</Group>
 							<ShowTitle>false</ShowTitle>
 							<ExtendedTooltip name="AccountTypeGroupExtendedTooltip" id="566"/>
 							<ChildItems>
-								<LabelDecoration name="Decoration31" id="567">
-									<HorizontalStretch>true</HorizontalStretch>
-									<ContextMenu name="Decoration31ContextMenu" id="568"/>
-									<ExtendedTooltip name="Decoration31ExtendedTooltip" id="569"/>
+								<LabelDecoration name="EmptySpaceDecoration" id="562">
+									<VerticalStretch>true</VerticalStretch>
+									<ContextMenu name="EmptySpaceDecorationContextMenu" id="563"/>
+									<ExtendedTooltip name="EmptySpaceDecorationExtendedTooltip" id="564"/>
 								</LabelDecoration>
-								<RadioButtonField name="OnlineAccount" id="336">
-									<DataPath>OnlineAccount</DataPath>
+								<UsualGroup name="AccountTypeHorizontalGroup" id="588">
 									<Title>
 										<v8:item>
 											<v8:lang>en</v8:lang>
-											<v8:content>Adding new</v8:content>
+											<v8:content>Account type horizontal group</v8:content>
 										</v8:item>
 									</Title>
-									<TitleFont ref="style:SmallTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
 									<ToolTip>
 										<v8:item>
 											<v8:lang>en</v8:lang>
-											<v8:content>Choose "Offline" if you plan to download transactions manually via CSV files</v8:content>
+											<v8:content>Account type horizontal group</v8:content>
 										</v8:item>
 									</ToolTip>
-									<RadioButtonType>Tumbler</RadioButtonType>
-									<ColumnsCount>1</ColumnsCount>
-									<ChoiceList>
-										<xr:Item>
-											<xr:Presentation/>
-											<xr:CheckState>0</xr:CheckState>
-											<xr:Value xsi:type="FormChoiceListDesTimeValue">
-												<Presentation>
-													<v8:item>
-														<v8:lang>en</v8:lang>
-														<v8:content>Online account</v8:content>
-													</v8:item>
-												</Presentation>
-												<Value xsi:type="xs:string">Online</Value>
-											</xr:Value>
-										</xr:Item>
-										<xr:Item>
-											<xr:Presentation/>
-											<xr:CheckState>0</xr:CheckState>
-											<xr:Value xsi:type="FormChoiceListDesTimeValue">
-												<Presentation>
-													<v8:item>
-														<v8:lang>en</v8:lang>
-														<v8:content>Offline account</v8:content>
-													</v8:item>
-												</Presentation>
-												<Value xsi:type="xs:string">Offline</Value>
-											</xr:Value>
-										</xr:Item>
-									</ChoiceList>
-									<Font ref="style:SmallTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
-									<ContextMenu name="OnlineAccountContextMenu" id="337"/>
-									<ExtendedTooltip name="OnlineAccountExtendedTooltip" id="338"/>
-									<Events>
-										<Event name="OnChange">OnlineAccountOnChange</Event>
-									</Events>
-								</RadioButtonField>
+									<Group>Horizontal</Group>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="AccountTypeHorizontalGroupExtendedTooltip" id="589"/>
+									<ChildItems>
+										<LabelDecoration name="Decoration31" id="567">
+											<HorizontalStretch>true</HorizontalStretch>
+											<ContextMenu name="Decoration31ContextMenu" id="568"/>
+											<ExtendedTooltip name="Decoration31ExtendedTooltip" id="569"/>
+										</LabelDecoration>
+										<RadioButtonField name="OnlineAccount" id="336">
+											<DataPath>OnlineAccount</DataPath>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Adding new</v8:content>
+												</v8:item>
+											</Title>
+											<TitleFont ref="style:SmallTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
+											<ToolTip>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Choose "Offline" if you plan to download transactions manually via CSV files</v8:content>
+												</v8:item>
+											</ToolTip>
+											<RadioButtonType>Tumbler</RadioButtonType>
+											<ColumnsCount>1</ColumnsCount>
+											<ChoiceList>
+												<xr:Item>
+													<xr:Presentation/>
+													<xr:CheckState>0</xr:CheckState>
+													<xr:Value xsi:type="FormChoiceListDesTimeValue">
+														<Presentation>
+															<v8:item>
+																<v8:lang>en</v8:lang>
+																<v8:content>Online account</v8:content>
+															</v8:item>
+														</Presentation>
+														<Value xsi:type="xs:string">Online</Value>
+													</xr:Value>
+												</xr:Item>
+												<xr:Item>
+													<xr:Presentation/>
+													<xr:CheckState>0</xr:CheckState>
+													<xr:Value xsi:type="FormChoiceListDesTimeValue">
+														<Presentation>
+															<v8:item>
+																<v8:lang>en</v8:lang>
+																<v8:content>Offline account</v8:content>
+															</v8:item>
+														</Presentation>
+														<Value xsi:type="xs:string">Offline</Value>
+													</xr:Value>
+												</xr:Item>
+											</ChoiceList>
+											<Font ref="style:SmallTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
+											<ContextMenu name="OnlineAccountContextMenu" id="337"/>
+											<ExtendedTooltip name="OnlineAccountExtendedTooltip" id="338"/>
+											<Events>
+												<Event name="OnChange">OnlineAccountOnChange</Event>
+											</Events>
+										</RadioButtonField>
+									</ChildItems>
+								</UsualGroup>
 							</ChildItems>
 						</UsualGroup>
 					</ChildItems>
@@ -1322,6 +1341,13 @@
 															<ContextMenu name="AssigningAccountTypeCurrentBalanceContextMenu" id="310"/>
 															<ExtendedTooltip name="AssigningAccountTypeCurrentBalanceExtendedTooltip" id="311"/>
 														</InputField>
+														<InputField name="AssigningAccountTypeContainerType" id="590">
+															<DataPath>AssigningAccountType.ContainerType</DataPath>
+															<EditMode>EnterOnInput</EditMode>
+															<Width>12</Width>
+															<ContextMenu name="AssigningAccountTypeContainerTypeContextMenu" id="591"/>
+															<ExtendedTooltip name="AssigningAccountTypeContainerTypeExtendedTooltip" id="592"/>
+														</InputField>
 														<InputField name="AssigningAccountTypeType" id="312">
 															<DataPath>AssigningAccountType.Type</DataPath>
 															<Visible>false</Visible>
@@ -1361,7 +1387,7 @@
 																	<Width>25</Width>
 																	<DropListButton>true</DropListButton>
 																	<ClearButton>true</ClearButton>
-																	<CreateButton>true</CreateButton>
+																	<CreateButton>false</CreateButton>
 																	<ListChoiceMode>true</ListChoiceMode>
 																	<ContextMenu name="AssigningAccountTypeAccountTypeContextMenu" id="304"/>
 																	<ExtendedTooltip name="AssigningAccountTypeAccountTypeExtendedTooltip" id="305"/>
@@ -1457,7 +1483,7 @@
 															<Title>
 																<v8:item>
 																	<v8:lang>en</v8:lang>
-																	<v8:content>Connect</v8:content>
+																	<v8:content>Proceed</v8:content>
 																</v8:item>
 															</Title>
 															<ExtendedTooltip name="AssignAccountTypeExtendedTooltip" id="275"/>
@@ -1803,7 +1829,6 @@
 							</ChildItems>
 						</UsualGroup>
 						<LabelDecoration name="RefreshLowerTab" id="328">
-							<VerticalStretch>true</VerticalStretch>
 							<ContextMenu name="RefreshLowerTabContextMenu" id="329"/>
 							<ExtendedTooltip name="RefreshLowerTabExtendedTooltip" id="330"/>
 						</LabelDecoration>
@@ -2338,6 +2363,17 @@ WHERE
 					</Title>
 					<Type>
 						<v8:Type>xs:boolean</v8:Type>
+					</Type>
+				</Column>
+				<Column name="ContainerType" id="9">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Type</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>cfg:EnumRef.YodleeContainerTypes</v8:Type>
 					</Type>
 				</Column>
 			</Columns>

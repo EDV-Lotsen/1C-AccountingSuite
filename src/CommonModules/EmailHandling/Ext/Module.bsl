@@ -138,20 +138,21 @@ Procedure SendEmail(DocumentRef,EmailTo,CCTo,Subject,Body) Export
 		Endif;
 		
 		send.From.Address = Constants.Email.Get();
-		send.From.DisplayName = Constants.SystemTitle.Get();
+		SystemTitleStr = Constants.SystemTitle.Get();
+		send.From.DisplayName = SystemTitleStr;
 		send.Subject = Subject;
 		
 		If TypeOf(CurObject) = Type("DocumentObject.SalesInvoice") Then
 			
 			FormatHTML2 = StrReplace(Documents.SalesInvoice.GetTemplate("HTMLTest").GetText(),"object.terms",CurObject.Terms);
 			
-			If Constants.secret_temp.Get() = "" Then
+			If Constants.secret_temp.Get() = "" AND CurObject.DwollaTrxID = 0 Then
 				FormatHTML2 = StrReplace(FormatHTML2,"<td align=""center"" valign=""middle"" class=""mcnButtonContent"" style=""font-family: Tahoma, Verdana, Segoe, sans-serif;font-size: 16px;padding: 15px;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;"">", "<td> ");
-				FormatHTML2 = StrReplace(FormatHTML2,"<a class=""mcnButton "" title=""Pay Invoice"" href=""payHTML"" target=""_self"" style=""font-weight: normal;letter-spacing: 1px;line-height: 100%;text-align: center;text-decoration: none;color: #FFFFFF;word-wrap: break-word;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;display: block;"">Pay Invoice</a>"," ");
+				FormatHTML2 = StrReplace(FormatHTML2,"<a class=""mcnButton "" title=""Pay Invoice"" href=""payHTML"" target=""_self"" style=""font-weight: normal;letter-spacing: 1px;line-height: 100%;text-align: center;text-decoration: none;color: #000000;word-wrap: break-word;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;display: block;"">Pay Invoice</a>"," ");
 			Endif;
 			
 			If CurObject.PayHTML = "" Then
-				FormatHTML2 = StrReplace(FormatHTML2,"<td align=""center"" valign=""middle"" class=""mcnButtonContent"" style=""font-family: Tahoma, Verdana, Segoe, sans-serif;font-size: 16px;padding: 15px;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;""><a class=""mcnButton "" title=""Pay Invoice"" href=""payHTML"" target=""_self"" style=""font-weight: normal;letter-spacing: 1px;line-height: 100%;text-align: center;text-decoration: none;color: #FFFFFF;word-wrap: break-word;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;display: block;"">Pay Invoice</a></td>", " ");
+				FormatHTML2 = StrReplace(FormatHTML2,"<td align=""center"" valign=""middle"" class=""mcnButtonContent"" style=""font-family: Tahoma, Verdana, Segoe, sans-serif;font-size: 16px;padding: 15px;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;""><a class=""mcnButton "" title=""Pay Invoice"" href=""payHTML"" target=""_self"" style=""font-weight: normal;letter-spacing: 1px;line-height: 100%;text-align: center;text-decoration: none;color: #000000;word-wrap: break-word;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;display: block;"">Pay Invoice</a></td>", " ");
 			Else
 				FormatHTML2 = StrReplace(FormatHTML2,"payHTML",CurObject.PayHTML);
 			Endif;
@@ -160,7 +161,7 @@ Procedure SendEmail(DocumentRef,EmailTo,CCTo,Subject,Body) Export
 			FormatHTML2 = StrReplace(FormatHTML2,"object.duedate",Format(CurObject.DueDate,"DLF=D"));
 			FormatHTML2 = StrReplace(FormatHTML2,"object.number",CurObject.Number);
 			
-			FormatHTML2 = StrReplace(FormatHTML2,"object.company",CurObject.Company);
+			FormatHTML2 = StrReplace(FormatHTML2,"object.company",SystemTitleStr);
 			
 			FormatHTML2 = StrReplace(FormatHTML2,"object.total",Format(CurObject.DocumentTotal,"NFD=2"));
 			
@@ -211,7 +212,7 @@ Procedure SendEmail(DocumentRef,EmailTo,CCTo,Subject,Body) Export
 			FormatHTML2 = StrReplace(Documents.SalesOrder.GetTemplate("HTMLTest").GetText(),"object.terms",CurObject.Terms);
 			FormatHTML2 = StrReplace(FormatHTML2,"object.number",CurObject.Number);
 			FormatHTML2 = StrReplace(FormatHTML2,"object.date",Format(CurObject.Date,"DLF=D"));
-			FormatHTML2 = StrReplace(FormatHTML2,"object.company",CurObject.Company);
+			FormatHTML2 = StrReplace(FormatHTML2,"object.company",SystemTitleStr);
 			FormatHTML2 = StrReplace(FormatHTML2,"object.total",Format(CurObject.DocumentTotal,"NFD=2"));
 			
 		Elsif TypeOf(CurObject) = Type("DocumentObject.Quote") Then
@@ -219,7 +220,7 @@ Procedure SendEmail(DocumentRef,EmailTo,CCTo,Subject,Body) Export
 			FormatHTML2 = StrReplace(Documents.Quote.GetTemplate("QuoteEmailHTML").GetText(),"object.terms",CurObject.Terms);
 			FormatHTML2 = StrReplace(FormatHTML2,"object.number",CurObject.Number);
 			FormatHTML2 = StrReplace(FormatHTML2,"object.date",Format(CurObject.Date,"DLF=D"));
-			FormatHTML2 = StrReplace(FormatHTML2,"object.company",CurObject.Company);
+			FormatHTML2 = StrReplace(FormatHTML2,"object.company",SystemTitleStr);
 			FormatHTML2 = StrReplace(FormatHTML2,"object.total",Format(CurObject.DocumentTotal,"NFD=2"));
 			
 		Elsif TypeOf(CurObject) = Type("DocumentObject.CashReceipt") Then
@@ -227,7 +228,7 @@ Procedure SendEmail(DocumentRef,EmailTo,CCTo,Subject,Body) Export
 			FormatHTML2 = StrReplace(Documents.CashReceipt.GetTemplate("HTMLTest").GetText(),"object.terms","");//,"object.terms",CurObject.Terms);
 			FormatHTML2 = StrReplace(FormatHTML2,"object.number",CurObject.Number);
 			FormatHTML2 = StrReplace(FormatHTML2,"object.date",Format(CurObject.Date,"DLF=D"));
-			FormatHTML2 = StrReplace(FormatHTML2,"object.company",CurObject.Company);
+			FormatHTML2 = StrReplace(FormatHTML2,"object.company",SystemTitleStr);
 			FormatHTML2 = StrReplace(FormatHTML2,"object.total",Format(CurObject.CashPayment,"NFD=2"));
 			
 		Elsif TypeOf(CurObject) = Type("DocumentObject.PurchaseOrder") Then
@@ -235,14 +236,14 @@ Procedure SendEmail(DocumentRef,EmailTo,CCTo,Subject,Body) Export
 			FormatHTML2 = StrReplace(Documents.PurchaseOrder.GetTemplate("HTMLTest").GetText(),"object.terms","");
 			FormatHTML2 = StrReplace(FormatHTML2,"object.number",CurObject.Number);
 			FormatHTML2 = StrReplace(FormatHTML2,"object.date",Format(CurObject.Date,"DLF=D"));
-			FormatHTML2 = StrReplace(FormatHTML2,"object.company",CurObject.Company);
+			FormatHTML2 = StrReplace(FormatHTML2,"object.company",SystemTitleStr);
 			FormatHTML2 = StrReplace(FormatHTML2,"object.total",Format(CurObject.DocumentTotal,"NFD=2"));
 		Elsif TypeOf(CurObject) = Type("DocumentObject.SalesReturn") Then
 			
 			FormatHTML2 = StrReplace(Documents.SalesReturn.GetTemplate("HTMLTest").GetText(),"object.terms","");
 			FormatHTML2 = StrReplace(FormatHTML2,"object.number",CurObject.Number);
 			FormatHTML2 = StrReplace(FormatHTML2,"object.date",Format(CurObject.Date,"DLF=D"));
-			FormatHTML2 = StrReplace(FormatHTML2,"object.company",CurObject.Company);
+			FormatHTML2 = StrReplace(FormatHTML2,"object.company",SystemTitleStr);
 			FormatHTML2 = StrReplace(FormatHTML2,"object.total",Format(CurObject.DocumentTotal,"NFD=2"));
 			
 		Elsif TypeOf(CurObject) = Type("DocumentObject.CashSale") Then
@@ -250,15 +251,15 @@ Procedure SendEmail(DocumentRef,EmailTo,CCTo,Subject,Body) Export
 			FormatHTML2 = StrReplace(Documents.CashSale.GetTemplate("HTMLTest").GetText(),"object.terms","");
 			FormatHTML2 = StrReplace(FormatHTML2,"object.number",CurObject.Number);
 			FormatHTML2 = StrReplace(FormatHTML2,"object.date",Format(CurObject.Date,"DLF=D"));
-			FormatHTML2 = StrReplace(FormatHTML2,"object.company",CurObject.Company);
+			FormatHTML2 = StrReplace(FormatHTML2,"object.company",SystemTitleStr);
 			FormatHTML2 = StrReplace(FormatHTML2,"object.total",Format(CurObject.DocumentTotal,"NFD=2"));
 			
 		Elsif TypeOf(CurObject) = Type("DocumentObject.Statement") Then
 			
 			FormatHTML2 = StrReplace(Documents.Statement.GetTemplate("HTMLTest").GetText(),"object.terms","");
 			FormatHTML2 = StrReplace(FormatHTML2,"object.number",CurObject.Number);
-			FormatHTML2 = StrReplace(FormatHTML2,"object.date",Format(CurObject.Date,"DLF=D"));
-			FormatHTML2 = StrReplace(FormatHTML2,"object.company",CurObject.Company);
+			FormatHTML2 = StrReplace(FormatHTML2,"object.date",Format(CurObject.BeginOfPeriod,"DLF=D") + " - " + Format(CurObject.Date,"DLF=D"));
+			FormatHTML2 = StrReplace(FormatHTML2,"object.company",SystemTitleStr);
 			
 		Else
 			

@@ -112,6 +112,14 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
 EndProcedure
 
+&AtClient
+Procedure OnClose()
+	
+	//Because value type of BackgroundJobParameters is Arbitrary
+	BackgroundJobParameters.Clear();
+	
+EndProcedure
+
 // -> CODE REVIEW
 &AtClient
 Procedure BeforeWrite(Cancel, WriteParameters)
@@ -280,10 +288,22 @@ EndProcedure
 
 &AtClient
 Procedure AfterWrite(WriteParameters)
-	//Close the form if the command is "Post and close"
+	
+	// Request user to repost subordinate documents.
+	Structure = New Structure("Type, DocumentRef", "RepostSubordinateDocumentsOfPurchaseInvoice", Object.Ref); 
+	KeyData = CommonUseClient.StartLongAction(NStr("en = 'Posting subordinate document(s)'"), Structure, ThisForm);
 	If WriteParameters.Property("CloseAfterWrite") Then
-		Close();
+		BackgroundJobParameters.Add(True);// [5]
+	Else
+		BackgroundJobParameters.Add(False);// [5]
 	EndIf;
+	CheckObtainedData(KeyData);
+	
+	////Close the form if the command is "Post and close"
+	//If WriteParameters.Property("CloseAfterWrite") Then
+	//	Close();
+	//EndIf;
+	
 EndProcedure
 
 &AtClient
@@ -1641,5 +1661,55 @@ Procedure AuditLogRecord(Command)
 	OpenForm("CommonForm.AuditLogList",FormParameters, Object.Ref);
 	
 EndProcedure
+
+#Region LONG_ACTION
+
+// Attachable procedure, called as idle handler.
+&AtClient
+Procedure IdleHandlerLongAction() 
+	
+	// Process background job result.
+	KeyData = CommonUseClient.ResultProcessingLongAction(ThisForm);
+	CheckObtainedData(KeyData);
+	
+EndProcedure
+
+&AtClient
+Procedure CheckObtainedData(KeyData)
+	
+	// Check whether job finished.
+	If (TypeOf(KeyData) = Type("UUID")) Or (KeyData = Undefined) Then
+		// Job is now pending.
+	ElsIf TypeOf(KeyData) = Type("Array") Then 
+		// Show results.
+		
+		MessageText = "";
+		
+		For Each Row In KeyData Do
+			MessageText = MessageText + Row + Chars.LF;	
+		EndDo;
+		
+		If ValueIsFilled(MessageText) Then
+			ShowMessageBox(, MessageText);
+		EndIf;
+		
+		//
+		If BackgroundJobParameters[5].Value Then
+			Close();
+		EndIf;
+		
+	ElsIf TypeOf(KeyData) = Type("String") Then
+		// Error message.
+		
+		//
+		If BackgroundJobParameters[5].Value Then
+			Close();
+		EndIf;
+		
+	EndIf;
+	
+EndProcedure
+
+#EndRegion
 
 #EndRegion

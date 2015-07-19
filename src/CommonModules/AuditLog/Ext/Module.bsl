@@ -86,7 +86,7 @@ Procedure AuditLogDeleteBeforeDelete(Source, Cancel) Export
 		Else
 
 			If TypeOf(SourceObj) <> Type("DocumentObject.PurchaseOrder") AND TypeOf(SourceObj) <> Type("DocumentObject.SalesOrder") AND TypeOf(SourceObj) <> Type("DocumentObject.LotsAdjustment") AND TypeOf(SourceObj) <> Type("DocumentObject.SerialNumbersAdjustment")
-				AND TypeOf(SourceObj) <> Type("DocumentObject.TimeTrack") AND TypeOf(SourceObj) <> Type("DocumentObject.WarehouseTransfer") AND TypeOf(SourceObj) <> Type("DocumentObject.Budget") AND TypeOf(SourceObj) <> Type("ChartOfAccountsObject.ChartOfAccounts") Then
+				AND TypeOf(SourceObj) <> Type("DocumentObject.TimeTrack") AND TypeOf(SourceObj) <> Type("DocumentObject.WarehouseTransfer") AND TypeOf(SourceObj) <> Type("DocumentObject.Budget") AND TypeOf(SourceObj) <> Type("DocumentObject.SalesTaxPayment") AND TypeOf(SourceObj) <> Type("ChartOfAccountsObject.ChartOfAccounts") Then
 
 			   
 				Reg = InformationRegisters.AuditLog.CreateRecordManager();

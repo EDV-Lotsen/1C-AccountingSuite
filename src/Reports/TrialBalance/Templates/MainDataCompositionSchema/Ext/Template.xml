@@ -208,7 +208,7 @@ INTO BalancesAndTurnovers
 {SELECT
 	Account.*}
 FROM
-	AccountingRegister.GeneralJournal.BalanceAndTurnovers({(BEGINOFPERIOD(&amp;EndOfPeriod, YEAR))}, {(&amp;EndOfPeriod)}, Auto, , , , ) AS GeneralJournalBalancesAndTurnovers
+	AccountingRegister.GeneralJournal.BalanceAndTurnovers({(&amp;BeginOfFiscalYear)}, {(&amp;EndOfPeriod)}, Auto, , , , ) AS GeneralJournalBalancesAndTurnovers
 {WHERE
 	GeneralJournalBalancesAndTurnovers.Account.* AS Account}
 
@@ -447,6 +447,25 @@ END</expression>
 		<value xsi:type="xs:string"/>
 		<useRestriction>true</useRestriction>
 		<expression>ISNULL(Presentation(&amp;Period), "")</expression>
+		<availableAsField>false</availableAsField>
+	</parameter>
+	<parameter>
+		<name>BeginOfFiscalYear</name>
+		<title xsi:type="v8:LocalStringType">
+			<v8:item>
+				<v8:lang>en</v8:lang>
+				<v8:content>Begin of fiscal year</v8:content>
+			</v8:item>
+		</title>
+		<valueType>
+			<v8:Type>xs:dateTime</v8:Type>
+			<v8:DateQualifiers>
+				<v8:DateFractions>Date</v8:DateFractions>
+			</v8:DateQualifiers>
+		</valueType>
+		<value xsi:type="xs:dateTime">0001-01-01T00:00:00</value>
+		<useRestriction>true</useRestriction>
+		<expression>CASE WHEN MONTH(&amp;Period.EndDate) &gt;= Constants.FirstMonthOfFiscalYear.Get() THEN DATEADD(DATEADD(DATETIME(1, 1, 1), "MONTH",  Constants.FirstMonthOfFiscalYear.Get() - 1), "YEAR", YEAR(&amp;Period.EndDate) - 1) ELSE DATEADD(DATEADD(DATETIME(1, 1, 1), "MONTH",  Constants.FirstMonthOfFiscalYear.Get() - 1), "YEAR", YEAR(&amp;Period.EndDate) - 2) END</expression>
 		<availableAsField>false</availableAsField>
 	</parameter>
 	<template>
@@ -806,14 +825,6 @@ END</expression>
 					</dcsat:item>
 					<dcsat:appearance>
 						<dcscor:item>
-							<dcscor:parameter>TextColor</dcscor:parameter>
-							<dcscor:value xmlns:d8p1="http://v8.1c.ru/8.1/data/ui/colors/web" xsi:type="v8ui:Color">d8p1:Gray</dcscor:value>
-						</dcscor:item>
-						<dcscor:item>
-							<dcscor:parameter>Font</dcscor:parameter>
-							<dcscor:value xsi:type="v8ui:Font" faceName="Arial" height="8" bold="true" italic="false" underline="false" strikeout="false" kind="Absolute"/>
-						</dcscor:item>
-						<dcscor:item>
 							<dcscor:parameter>Details</dcscor:parameter>
 							<dcscor:value xsi:type="dcscor:Parameter">Detail</dcscor:value>
 						</dcscor:item>
@@ -830,14 +841,6 @@ END</expression>
 						</dcsat:appearance>
 					</dcsat:item>
 					<dcsat:appearance>
-						<dcscor:item>
-							<dcscor:parameter>TextColor</dcscor:parameter>
-							<dcscor:value xmlns:d8p1="http://v8.1c.ru/8.1/data/ui/colors/web" xsi:type="v8ui:Color">d8p1:Gray</dcscor:value>
-						</dcscor:item>
-						<dcscor:item>
-							<dcscor:parameter>Font</dcscor:parameter>
-							<dcscor:value xsi:type="v8ui:Font" faceName="Arial" height="8" bold="true" italic="false" underline="false" strikeout="false" kind="Absolute"/>
-						</dcscor:item>
 						<dcscor:item>
 							<dcscor:parameter>HorizontalAlign</dcscor:parameter>
 							<dcscor:value xsi:type="v8ui:HorizontalAlign">Right</dcscor:value>
@@ -863,14 +866,6 @@ END</expression>
 						</dcsat:appearance>
 					</dcsat:item>
 					<dcsat:appearance>
-						<dcscor:item>
-							<dcscor:parameter>TextColor</dcscor:parameter>
-							<dcscor:value xmlns:d8p1="http://v8.1c.ru/8.1/data/ui/colors/web" xsi:type="v8ui:Color">d8p1:Gray</dcscor:value>
-						</dcscor:item>
-						<dcscor:item>
-							<dcscor:parameter>Font</dcscor:parameter>
-							<dcscor:value xsi:type="v8ui:Font" faceName="Arial" height="8" bold="true" italic="false" underline="false" strikeout="false" kind="Absolute"/>
-						</dcscor:item>
 						<dcscor:item>
 							<dcscor:parameter>HorizontalAlign</dcscor:parameter>
 							<dcscor:value xsi:type="v8ui:HorizontalAlign">Right</dcscor:value>
@@ -995,7 +990,6 @@ END</dcsat:expression>
 						</dcscor:item>
 					</dcsat:appearance>
 				</dcsat:tableCell>
-				<dcsat:tableCell/>
 			</dcsat:item>
 		</template>
 		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">

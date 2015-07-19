@@ -103,9 +103,13 @@ Procedure PrintCheck(Spreadsheet, Ref) Export
 		Spreadsheet.Put(Header, Selection.Level());
 		
 		InsertPageBreak = True;
+		
+		//
+		Spreadsheet.PageSize = "Letter"; 
+		Spreadsheet.FitToPage = True;
+	
 	EndDo;
 	
-
 EndProcedure
 
 &AtServer

@@ -2,7 +2,8 @@
 Procedure OnStart()
 	
 	CurrentUser = GeneralFunctions.GetUserName();
-	
+			
+	//OpenForm("DataProcessor.ActiveUsers.Form.Form");
 	STitle = GeneralFunctions.GetSystemTitle();
 	
 	AppName = "AccountingSuite";
@@ -18,6 +19,10 @@ Procedure OnStart()
 
 	GeneralFunctions.FirstLaunch();
 	GeneralFunctions.CheckConnectionAtServer();
+	GeneralFunctions.UpdateInfobase();
+	//GeneralFunctions.FullAccessUpdateProc();
+	GeneralFunctions.UpdatingHierarchyChartOfAccounts();
+	//GeneralFunctions.SetNumbering();
 	
 	If GeneralFunctions.IsUserDisabled(CurrentUser) Then
 		ShowMessageBox(New NotifyDescription("CloseApp", CommonUseClient, False), NStr("en = 'Your user access to the database is locked!'"));

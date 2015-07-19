@@ -298,13 +298,15 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 	EndDo;
 	
 	
-	If Constants.zoho_auth_token.Get() <> "" Then
-		If Object.NewObject = True Then
-			ThisAction = "create";
-		Else
-			ThisAction = "update";
+	If Object.Posted Then
+		If Constants.zoho_auth_token.Get() <> "" Then
+			If Object.NewObject = True Then
+				ThisAction = "create";
+			Else
+				ThisAction = "update";
+			EndIf;
+			zoho_Functions.ZohoThisSO(ThisAction, Object.Ref);
 		EndIf;
-		zoho_Functions.ZohoThisSO(ThisAction, Object.Ref);
 	EndIf;
 	
 	//Avatax calculation

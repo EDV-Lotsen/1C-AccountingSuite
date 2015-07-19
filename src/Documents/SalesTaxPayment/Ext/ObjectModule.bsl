@@ -10,51 +10,51 @@ Procedure Posting(Cancel, PostingMode)
 		EndIf;
 	EndDo;
 
-	//General Journal postings
-	RegisterRecords.GeneralJournal.Write = True;
-	
-	TaxPayableAccount = Constants.TaxPayableAccount.Get();
-	
-	//Regular records
-	Record = RegisterRecords.GeneralJournal.AddDebit();
-	Record.Account = TaxPayableAccount;
-	Record.Period = Date;
-	Record.AmountRC = TotalPayment;
+	////General Journal postings
+	//RegisterRecords.GeneralJournal.Write = True;
+	//
+	//TaxPayableAccount = Constants.TaxPayableAccount.Get();
+	//
+	////Regular records
+	//Record = RegisterRecords.GeneralJournal.AddDebit();
+	//Record.Account = TaxPayableAccount;
+	//Record.Period = Date;
+	//Record.AmountRC = TotalPayment;
 
-	Record = RegisterRecords.GeneralJournal.AddCredit();
-	Record.Account = BankAccount;
-	Record.Period = Date;
-	Record.AmountRC = TotalPayment;
+	//Record = RegisterRecords.GeneralJournal.AddCredit();
+	//Record.Account = BankAccount;
+	//Record.Period = Date;
+	//Record.AmountRC = TotalPayment;
 	
-	//Adjustment records
-		
-	If MadeAdjustment = True Then
-		If AdjustmentAmount < 0 Then
-			
-			Record = RegisterRecords.GeneralJournal.AddDebit();
-			Record.Account = TaxPayableAccount;
-			Record.Period = Date;
-			Record.AmountRC = -1 * AdjustmentAmount;
+	////Adjustment records
+	//	
+	//If MadeAdjustment = True Then
+	//	If AdjustmentAmount < 0 Then
+	//		
+	//		Record = RegisterRecords.GeneralJournal.AddDebit();
+	//		Record.Account = TaxPayableAccount;
+	//		Record.Period = Date;
+	//		Record.AmountRC = -1 * AdjustmentAmount;
 
-			Record = RegisterRecords.GeneralJournal.AddCredit();
-			Record.Account = AdjustmentAccount;
-			Record.Period = Date;
-			Record.AmountRC = -1 * AdjustmentAmount;
-			
-		ElsIf AdjustmentAmount > 0 Then
-			
-			Record = RegisterRecords.GeneralJournal.AddDebit();
-			Record.Account = AdjustmentAccount;
-			Record.Period = Date;
-			Record.AmountRC = AdjustmentAmount;
+	//		Record = RegisterRecords.GeneralJournal.AddCredit();
+	//		Record.Account = AdjustmentAccount;
+	//		Record.Period = Date;
+	//		Record.AmountRC = -1 * AdjustmentAmount;
+	//		
+	//	ElsIf AdjustmentAmount > 0 Then
+	//		
+	//		Record = RegisterRecords.GeneralJournal.AddDebit();
+	//		Record.Account = AdjustmentAccount;
+	//		Record.Period = Date;
+	//		Record.AmountRC = AdjustmentAmount;
 
-			Record = RegisterRecords.GeneralJournal.AddCredit();
-			Record.Account = TaxPayableAccount;
-			Record.Period = Date;
-			Record.AmountRC = AdjustmentAmount;
-			
-		EndIf;
-	EndIf;
+	//		Record = RegisterRecords.GeneralJournal.AddCredit();
+	//		Record.Account = TaxPayableAccount;
+	//		Record.Period = Date;
+	//		Record.AmountRC = AdjustmentAmount;
+	//		
+	//	EndIf;
+	//EndIf;
 	
 	//Sales tax owed postings
 	RegisterRecords.SalesTaxOwed.Write = True;

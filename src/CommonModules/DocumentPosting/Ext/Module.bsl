@@ -626,6 +626,96 @@ Function IsTransactionBalanced(Recorder, AdditionalProperties) Export
 	
 EndFunction
 
+// Compares a debit and a credit parts of value table (without context).
+// Used on document posting to deteremine required balance check of register.
+// Parameters:
+// ValueTableToCompare - value table that needs to be checked
+//
+// Returns:
+//  Boolean - True: Transaction is balanced; False: Transaction is unbalanced.
+//
+Function IsValueTableBalanced(ValueTableToCompare,Difference = 0) Export
+	
+	Query = New Query;
+	Query.SetParameter("RecordSet", ValueTableToCompare);
+	Query.TempTablesManager = New TempTablesManager;
+	
+	Query.Text = 
+	"SELECT
+	|	Table.Recorder                    AS Ref,
+	|	CASE WHEN Table.RecordType = VALUE(AccountingRecordType.Debit)
+	|		 THEN Table.AmountRC
+	|		 ELSE 0 END                   AS AmountDr,
+	|	CASE WHEN Table.RecordType = VALUE(AccountingRecordType.Credit)
+	|		 THEN Table.AmountRC
+	|		 ELSE 0 END                   AS AmountCr
+	|INTO
+	|	AccountingRegister_GeneralJournal_Check
+	|FROM
+	|	&RecordSet AS Table
+	|;
+	|SELECT
+	|	SUM(Table.AmountDr) - SUM(Table.AmountCr) AS Difference,
+	|	Table.Ref                         AS Ref
+	|FROM
+	|	AccountingRegister_GeneralJournal_Check AS Table
+	|GROUP BY
+	|	Table.Ref
+	|HAVING
+	|	SUM(Table.AmountDr) <> SUM(Table.AmountCr);
+	|
+	|DROP
+	|	AccountingRegister_GeneralJournal_Check";
+	
+	// 2. Complete and execute query.
+	Result = Query.Execute();
+	If Result.IsEmpty() Then 
+		Difference = 0;
+		Return True
+	Else	
+		Detail = Result.Select();
+		If Detail.Next() Then 
+			Difference = Detail.Difference;
+		EndIf;	
+		Return False;
+	EndIf;	
+	
+EndFunction
+
+// Compares a debit and a credit parts Accounting register.
+// And put difference to selected account.
+// Parameters:
+//	RecorderObject - Recorder with non saved registerRecords
+//	Cancel 
+//	GainLossAccount
+//
+//
+Procedure FixUnbalancedRegister(RecorderObject, Cancel, GainLossAccount) Export
+	
+	CheckedValueTable = RecorderObject.RegisterRecords.GeneralJournal.Unload();
+	UnbalancedAmount = 0;
+	If Not IsValueTableBalanced(CheckedValueTable, UnbalancedAmount) Then 
+		WriteLogEvent("Unbalanced transaction correction",EventLogLevel.Information,RecorderObject.Metadata(),
+					RecorderObject.ref, "Unbalanced transaction error = "+UnbalancedAmount+" posted to account: "+GainLossAccount);
+		If UnbalancedAmount < 0 Then
+			Record = RecorderObject.RegisterRecords.GeneralJournal.AddDebit();
+			Record.Account = GainLossAccount;
+			Record.Period = RecorderObject.Date;
+			Record.Memo = "Rounding error correction";
+			Record.AmountRC = - UnbalancedAmount;
+			
+		ElsIf UnbalancedAmount > 0 Then
+			Record = RecorderObject.RegisterRecords.GeneralJournal.AddCredit();
+			Record.Account = GainLossAccount;
+			Record.Period = RecorderObject.Date;
+			Record.Memo = "Rounding error correction";
+			Record.AmountRC = UnbalancedAmount;
+		EndIf;
+	EndIf;		
+	
+EndProcedure
+
+
 //------------------------------------------------------------------------------
 // Check registers balances
 

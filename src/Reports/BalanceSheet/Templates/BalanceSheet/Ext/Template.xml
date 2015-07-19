@@ -378,6 +378,19 @@
 				</dcscor:item>
 			</appearance>
 		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>FiscalYear</dataPath>
+			<field>FiscalYear</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Fiscal year</v8:content>
+				</v8:item>
+			</title>
+			<role>
+				<dcscom:required>true</dcscom:required>
+			</role>
+		</field>
 		<dataSource>DataSource1</dataSource>
 		<query>SELECT TOP 1
 	ChartOfAccounts.Ref AS Account
@@ -391,59 +404,120 @@ WHERE
 ////////////////////////////////////////////////////////////////////////////////
 SELECT
 	YearsOpeningBalance.Account AS Account,
-	CASE
-		WHEN YearsOpeningBalance.Period = DATETIME(3999, 1, 1)
-			THEN DATETIME(3999, 11, 1)
-		ELSE BEGINOFPERIOD(DATEADD(YearsOpeningBalance.Period, YEAR, 1), DAY)
-	END AS DayPeriod,
-	CASE
-		WHEN YearsOpeningBalance.Period = DATETIME(3999, 1, 1)
-			THEN DATETIME(3999, 11, 1)
-		ELSE BEGINOFPERIOD(DATEADD(YearsOpeningBalance.Period, YEAR, 1), WEEK)
-	END AS WeekPeriod,
-	CASE
-		WHEN YearsOpeningBalance.Period = DATETIME(3999, 1, 1)
-			THEN DATETIME(3999, 11, 1)
-		ELSE BEGINOFPERIOD(DATEADD(YearsOpeningBalance.Period, YEAR, 1), MONTH)
-	END AS MonthPeriod,
-	CASE
-		WHEN YearsOpeningBalance.Period = DATETIME(3999, 1, 1)
-			THEN DATETIME(3999, 10, 1)
-		ELSE BEGINOFPERIOD(DATEADD(YearsOpeningBalance.Period, YEAR, 1), QUARTER)
-	END AS QuarterPeriod,
-	CASE
-		WHEN YearsOpeningBalance.Period = DATETIME(3999, 1, 1)
-			THEN DATETIME(3999, 1, 1)
-		ELSE BEGINOFPERIOD(DATEADD(YearsOpeningBalance.Period, YEAR, 1), YEAR)
-	END AS YearPeriod,
+	YearsOpeningBalance.Period AS YearPeriod,
+	DATEADD(YearsOpeningBalance.Period, MONTH, -&amp;IncrementMonth) AS FiscalPeriod,
+	YEAR(DATEADD(YearsOpeningBalance.Period, MONTH, -&amp;IncrementMonth)) AS FiscalYear,
 	YearsOpeningBalance.AmountRCOpeningBalance AS YearOpeningBalance,
 	YearsOpeningBalance.AmountRCClosingBalance AS YearClosingBalance
+INTO FiscalYearsBalanceA
+FROM
+	AccountingRegister.GeneralJournal.BalanceAndTurnovers({(DATEADD(&amp;BeginOfPeriod, MONTH, -12))}, {(&amp;EndOfPeriod)}, Month, , , , ) AS YearsOpeningBalance
+
+INDEX BY
+	Account,
+	FiscalPeriod
+;
+
+////////////////////////////////////////////////////////////////////////////////
+SELECT
+	FiscalYearsBalanceA.Account AS Account,
+	FiscalYearsBalanceA.FiscalYear,
+	MIN(FiscalYearsBalanceA.FiscalPeriod) AS BeginFiscalYear,
+	NULL AS EndFiscalYear
+INTO FiscalYearsBalanceB
+FROM
+	FiscalYearsBalanceA AS FiscalYearsBalanceA
+
+GROUP BY
+	FiscalYearsBalanceA.Account,
+	FiscalYearsBalanceA.FiscalYear
+
+UNION ALL
+
+SELECT
+	FiscalYearsBalanceA.Account,
+	FiscalYearsBalanceA.FiscalYear,
+	NULL,
+	MAX(FiscalYearsBalanceA.FiscalPeriod)
+FROM
+	FiscalYearsBalanceA AS FiscalYearsBalanceA
+
+GROUP BY
+	FiscalYearsBalanceA.Account,
+	FiscalYearsBalanceA.FiscalYear
+
+INDEX BY
+	Account
+;
+
+////////////////////////////////////////////////////////////////////////////////
+SELECT
+	FiscalYearsBalanceB.Account,
+	FiscalYearsBalanceB.FiscalYear,
+	MAX(DATEADD(BEGINOFPERIOD(FiscalYearsBalanceB.BeginFiscalYear, YEAR), MONTH, 12 + &amp;IncrementMonth)) AS BeginFiscalYear,
+	MAX(DATEADD(ENDOFPERIOD(FiscalYearsBalanceB.EndFiscalYear, YEAR), MONTH, 12 + &amp;IncrementMonth)) AS EndFiscalYear,
+	SUM(CASE
+			WHEN FiscalYearsBalanceB.EndFiscalYear IS NULL 
+				THEN FiscalYearsBalanceA.YearOpeningBalance
+			ELSE NULL
+		END) AS YearOpeningBalance,
+	SUM(CASE
+			WHEN FiscalYearsBalanceB.BeginFiscalYear IS NULL 
+				THEN FiscalYearsBalanceA.YearClosingBalance
+			ELSE NULL
+		END) AS YearClosingBalance
+INTO FiscalYearsBalanceC
+FROM
+	FiscalYearsBalanceB AS FiscalYearsBalanceB
+		INNER JOIN FiscalYearsBalanceA AS FiscalYearsBalanceA
+		ON FiscalYearsBalanceB.Account = FiscalYearsBalanceA.Account
+			AND (FiscalYearsBalanceB.BeginFiscalYear = FiscalYearsBalanceA.FiscalPeriod
+				OR FiscalYearsBalanceB.EndFiscalYear = FiscalYearsBalanceA.FiscalPeriod)
+
+GROUP BY
+	FiscalYearsBalanceB.Account,
+	FiscalYearsBalanceB.FiscalYear
+;
+
+////////////////////////////////////////////////////////////////////////////////
+SELECT
+	FiscalYearsBalanceC.Account AS Account,
+	FiscalYearsBalanceC.FiscalYear AS FiscalYear,
+	BEGINOFPERIOD(FiscalYearsBalanceC.BeginFiscalYear, DAY) AS DayPeriod,
+	BEGINOFPERIOD(FiscalYearsBalanceC.BeginFiscalYear, WEEK) AS WeekPeriod,
+	BEGINOFPERIOD(FiscalYearsBalanceC.BeginFiscalYear, MONTH) AS MonthPeriod,
+	BEGINOFPERIOD(FiscalYearsBalanceC.BeginFiscalYear, QUARTER) AS QuarterPeriod,
+	BEGINOFPERIOD(FiscalYearsBalanceC.BeginFiscalYear, YEAR) AS YearPeriod,
+	FiscalYearsBalanceC.YearOpeningBalance,
+	FiscalYearsBalanceC.YearClosingBalance
 INTO YearsOpeningBalance
 {SELECT
 	Account.*,
+	FiscalYear,
 	DayPeriod,
 	WeekPeriod,
 	MonthPeriod,
 	QuarterPeriod,
 	YearPeriod}
 FROM
-	AccountingRegister.GeneralJournal.BalanceAndTurnovers({(DATEADD(&amp;BeginOfPeriod, YEAR, -1))}, {(&amp;EndOfPeriod)}, Year, , , , ) AS YearsOpeningBalance
+	FiscalYearsBalanceC AS FiscalYearsBalanceC
 {WHERE
-	YearsOpeningBalance.Account.*}
+	FiscalYearsBalanceC.Account.*}
 
 INDEX BY
 	DayPeriod,
-	Account
+	FiscalYearsBalanceC.Account
 ;
 
 ////////////////////////////////////////////////////////////////////////////////
 SELECT
 	GeneralJournalBalanceAndTurnovers.Account AS Account,
+	YEAR(DATEADD(GeneralJournalBalanceAndTurnovers.DayPeriod, MONTH, -&amp;IncrementMonth)) - 1 AS FiscalYear,
 	GeneralJournalBalanceAndTurnovers.DayPeriod AS DayPeriod,
-	GeneralJournalBalanceAndTurnovers.WeekPeriod AS WeekPeriod,
-	GeneralJournalBalanceAndTurnovers.MonthPeriod AS MonthPeriod,
-	GeneralJournalBalanceAndTurnovers.QuarterPeriod AS QuarterPeriod,
-	GeneralJournalBalanceAndTurnovers.YearPeriod AS YearPeriod,
+	BEGINOFPERIOD(GeneralJournalBalanceAndTurnovers.DayPeriod, WEEK) AS WeekPeriod,
+	BEGINOFPERIOD(GeneralJournalBalanceAndTurnovers.DayPeriod, MONTH) AS MonthPeriod,
+	BEGINOFPERIOD(GeneralJournalBalanceAndTurnovers.DayPeriod, QUARTER) AS QuarterPeriod,
+	BEGINOFPERIOD(GeneralJournalBalanceAndTurnovers.DayPeriod, YEAR) AS YearPeriod,
 	GeneralJournalBalanceAndTurnovers.AmountRCOpeningBalance,
 	GeneralJournalBalanceAndTurnovers.AmountRCClosingBalance,
 	GeneralJournalBalanceAndTurnovers.AmountRCTurnover
@@ -468,6 +542,7 @@ INDEX BY
 ////////////////////////////////////////////////////////////////////////////////
 SELECT
 	YearsOpeningBalance.Account AS Account,
+	YearsOpeningBalance.FiscalYear AS FiscalYear,
 	YearsOpeningBalance.DayPeriod AS DayPeriod,
 	YearsOpeningBalance.WeekPeriod,
 	YearsOpeningBalance.MonthPeriod,
@@ -481,6 +556,7 @@ UNION ALL
 
 SELECT
 	GeneralJournalBalanceAndTurnovers.Account,
+	GeneralJournalBalanceAndTurnovers.FiscalYear,
 	GeneralJournalBalanceAndTurnovers.DayPeriod,
 	GeneralJournalBalanceAndTurnovers.WeekPeriod,
 	GeneralJournalBalanceAndTurnovers.MonthPeriod,
@@ -493,6 +569,7 @@ FROM
 ////////////////////////////////////////////////////////////////////////////////
 SELECT
 	GeneralJournalSummaryA.Account AS Account,
+	GeneralJournalSummaryA.FiscalYear AS FiscalYear,
 	GeneralJournalSummaryA.DayPeriod AS DayPeriod,
 	GeneralJournalSummaryA.WeekPeriod,
 	GeneralJournalSummaryA.MonthPeriod,
@@ -504,6 +581,7 @@ FROM
 
 GROUP BY
 	GeneralJournalSummaryA.Account,
+	GeneralJournalSummaryA.FiscalYear,
 	GeneralJournalSummaryA.DayPeriod,
 	GeneralJournalSummaryA.QuarterPeriod,
 	GeneralJournalSummaryA.YearPeriod,
@@ -518,6 +596,7 @@ INDEX BY
 ////////////////////////////////////////////////////////////////////////////////
 SELECT
 	GeneralJournalSummaryB.Account AS Account,
+	GeneralJournalSummaryB.FiscalYear AS FiscalYear,
 	GeneralJournalSummaryB.DayPeriod AS DayPeriod,
 	GeneralJournalSummaryB.WeekPeriod,
 	GeneralJournalSummaryB.MonthPeriod,
@@ -537,6 +616,7 @@ FROM
 
 GROUP BY
 	GeneralJournalSummaryB.Account,
+	GeneralJournalSummaryB.FiscalYear,
 	GeneralJournalSummaryB.DayPeriod,
 	GeneralJournalSummaryB.QuarterPeriod,
 	GeneralJournalSummaryB.YearPeriod,
@@ -567,6 +647,7 @@ SELECT
 		ELSE NULL
 	END AS Section,
 	GeneralJournalSummaryC.Account AS Account,
+	GeneralJournalSummaryC.FiscalYear AS FiscalYear,
 	GeneralJournalSummaryC.DayPeriod AS DayPeriod,
 	GeneralJournalSummaryC.WeekPeriod,
 	GeneralJournalSummaryC.MonthPeriod,
@@ -584,7 +665,7 @@ SELECT
 		ELSE NULL
 	END AS AmountRCTurnover,
 	CASE
-		WHEN GeneralJournalSummaryC.DayPeriod = YearsOpeningBalance.YearPeriod
+		WHEN GeneralJournalSummaryC.DayPeriod = YearsOpeningBalance.DayPeriod
 			THEN YearsOpeningBalance.YearOpeningBalance
 		ELSE YearsOpeningBalance.YearClosingBalance
 	END AS YearOpeningBalance,
@@ -650,6 +731,7 @@ SELECT
 	BalanceSections.SectionOrder,
 	GeneralJournalSummary.Account.AccountType AS AccountType,
 	GeneralJournalSummary.Account AS Account,
+	GeneralJournalSummary.FiscalYear AS FiscalYear,
 	GeneralJournalSummary.DayPeriod AS DayPeriod,
 	GeneralJournalSummary.WeekPeriod AS WeekPeriod,
 	GeneralJournalSummary.MonthPeriod AS MonthPeriod,
@@ -701,6 +783,7 @@ SELECT ALLOWED
 	GeneralJournalTotal.SectionOrder,
 	GeneralJournalTotal.AccountType,
 	GeneralJournalTotal.Account,
+	GeneralJournalTotal.FiscalYear,
 	GeneralJournalTotal.DayPeriod,
 	GeneralJournalTotal.WeekPeriod,
 	GeneralJournalTotal.MonthPeriod,
@@ -719,6 +802,8 @@ SELECT ALLOWED
 	GeneralJournalTotal.RetainedEarningsYearClosingBalance
 FROM
 	GeneralJournalTotal AS GeneralJournalTotal
+{WHERE
+	(GeneralJournalTotal.DayPeriod BETWEEN &amp;BeginOfPeriod AND &amp;EndOfPeriod)}
 
 GROUP BY
 	GeneralJournalTotal.OurCompany,
@@ -727,6 +812,7 @@ GROUP BY
 	GeneralJournalTotal.SectionOrder,
 	GeneralJournalTotal.AccountType,
 	GeneralJournalTotal.Account,
+	GeneralJournalTotal.FiscalYear,
 	GeneralJournalTotal.DayPeriod,
 	GeneralJournalTotal.WeekPeriod,
 	GeneralJournalTotal.MonthPeriod,
@@ -835,6 +921,7 @@ GROUP BY
 			<v8:endDate>0001-01-01T00:00:00</v8:endDate>
 		</value>
 		<useRestriction>false</useRestriction>
+		<use>Always</use>
 	</parameter>
 	<parameter>
 		<name>PeriodPresentation</name>
@@ -854,6 +941,27 @@ GROUP BY
 		<value xsi:type="xs:string"/>
 		<useRestriction>true</useRestriction>
 		<expression>ISNULL(Presentation(&amp;Period), "")</expression>
+		<availableAsField>false</availableAsField>
+	</parameter>
+	<parameter>
+		<name>IncrementMonth</name>
+		<title xsi:type="v8:LocalStringType">
+			<v8:item>
+				<v8:lang>en</v8:lang>
+				<v8:content>Increment month</v8:content>
+			</v8:item>
+		</title>
+		<valueType>
+			<v8:Type>xs:decimal</v8:Type>
+			<v8:NumberQualifiers>
+				<v8:Digits>0</v8:Digits>
+				<v8:FractionDigits>0</v8:FractionDigits>
+				<v8:AllowedSign>Any</v8:AllowedSign>
+			</v8:NumberQualifiers>
+		</valueType>
+		<value xsi:type="xs:decimal">0</value>
+		<useRestriction>true</useRestriction>
+		<expression> Constants.FirstMonthOfFiscalYear.Get() - 1</expression>
 		<availableAsField>false</availableAsField>
 	</parameter>
 	<template>

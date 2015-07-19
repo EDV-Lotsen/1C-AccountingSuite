@@ -1,4 +1,23 @@
-﻿Function ReturnCashSaleMap(NewOrder) Export
+﻿Function ReturnChartOfAccountMap(NewAccount) Export
+	AccountData = New Map();
+	AccountData.Insert("account_code", NewAccount.Code);
+	AccountData.Insert("api_code", String(NewAccount.Ref.UUID()));
+	AccountData.Insert("account_name", NewAccount.Description);
+	AccountData.Insert("account_type", NewAccount.AccountType);
+	
+	AccountData.Insert("1099_category", String(NewAccount.Category1099));
+	AccountData.Insert("currency", NewAccount.Currency.Description);
+	AccountData.Insert("cash_flow_section", String(NewAccount.CashFlowSection));
+	AccountData.Insert("memo", NewAccount.Memo);
+	AccountData.Insert("credit_card", NewAccount.CreditCard);
+	AccountData.Insert("reclass_account", String(NewAccount.ReclassAccount));
+	AccountData.Insert("rcl", NewAccount.RCL);
+	AccountData.Insert("credit_card", NewAccount.RetainedEarnings);
+		
+	Return AccountData;	
+EndFunction
+
+Function ReturnCashSaleMap(NewOrder) Export
 	
 	OrderData = New Map();
 	OrderData.Insert("api_code", String(NewOrder.Ref.UUID()));
@@ -405,8 +424,9 @@ EndFunction
 Function ReturnPurchaseInvoiceMap(NewOrder) Export
 	OrderData = New Map();
 	OrderData.Insert("api_code", String(NewOrder.Ref.UUID()));
-	OrderData.Insert("company_api_code", String(NewOrder.Company.Ref.UUID()));
-	OrderData.Insert("company", string(NewOrder.Company));
+	OrderData.Insert("vendor_api_code", String(NewOrder.Company.Ref.UUID()));
+	OrderData.Insert("vendor_name", string(NewOrder.Company));
+	OrderData.Insert("vendor_code", string(NewOrder.Company.Code));
 	OrderData.Insert("bill_number",NewOrder.Number);
 	OrderData.Insert("bill_date",NewOrder.Date);
 	OrderData.Insert("due_date",NewOrder.DueDate);

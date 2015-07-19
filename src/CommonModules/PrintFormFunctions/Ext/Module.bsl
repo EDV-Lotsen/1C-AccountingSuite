@@ -46,12 +46,12 @@ Function PrintSO(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
    |	SalesOrder.Discount,
    |	SalesOrder.SubTotal,
    |	SalesOrder.Shipping,
+   |	SalesOrder.UseAvatax,
    |	SalesOrder.SalesTax,
    |	SalesOrder.SalesTaxRC,
    |	SalesOrder.DocumentTotal,
    |	SalesOrder.DocumentTotalRC,
    |	SalesOrder.______Review______,
-   |	SalesOrder.NewObject,
    |	SalesOrder.CF1String,
    |	SalesOrder.EmailNote,
    |	SalesOrder.SalesTaxRate,
@@ -97,12 +97,15 @@ Function PrintSO(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
    |	GeneralJournalBalance.AmountRCBalanceDr,
    |	GeneralJournalBalance.AmountRCBalanceCr,
    |	GeneralJournalBalance.AmountRCSplittedBalanceDr,
-   |	GeneralJournalBalance.AmountRCSplittedBalanceCr
+   |	GeneralJournalBalance.AmountRCSplittedBalanceCr,
+   |	ISNULL(OrderTransactionsBalance.AmountBalance, 0) AS BalanceDue
    |FROM
    |	Document.SalesOrder AS SalesOrder
    |		LEFT JOIN AccountingRegister.GeneralJournal.Balance AS GeneralJournalBalance
    |		ON (GeneralJournalBalance.ExtDimension1 = SalesOrder.Company)
    |			AND (GeneralJournalBalance.ExtDimension2 = SalesOrder.Ref)
+   |		LEFT JOIN AccumulationRegister.OrderTransactions.Balance AS OrderTransactionsBalance
+   |		ON (OrderTransactionsBalance.Order = SalesOrder.Ref)
    |WHERE
    |	SalesOrder.Ref IN(&Ref)";
    Query.SetParameter("Ref", Ref);
@@ -153,8 +156,8 @@ Function PrintSO(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
 	TemplateArea.Parameters.SalesPerson = Selection.SalesPerson;
 			
 	If Constants.SOShowFullName.Get() = True Then
-		TemplateArea.Parameters.ThemFullName = ThemBill.ThemBillSalutation + " " + ThemBill.ThemBillFirstName + " " + ThemBill.ThemBillLastName;
-		TempFullName = ThemShip.ThemShipSalutation + " " + ThemShip.ThemShipFirstName + " " + ThemShip.ThemShipLastName;
+		TemplateArea.Parameters.ThemFullName = GetDescriptionContactPerson(ThemBill, "Bill");
+		TempFullName = GetDescriptionContactPerson(ThemShip, "Ship");
 		If TempFullName = TemplateArea.Parameters.ThemFullName Then
 			TemplateArea.Parameters.ThemShipFullName = "";
 		Else
@@ -437,13 +440,19 @@ Function PrintSO(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
 
 	
 	TemplateArea = Template.GetArea("Area3|Area2");
-	TemplateArea.Parameters.LineSubtotal = Format(Selection.LineSubtotal, "NFD=2; NZ=");
-	TemplateArea.Parameters.Discount = Format(Selection.Discount, "NFD=2; NZ=");
-	TemplateArea.Parameters.Subtotal = Format(Selection.Subtotal, "NFD=2; NZ=");
-	TemplateArea.Parameters.Shipping = Format(Selection.Shipping, "NFD=2; NZ=");
-	TemplateArea.Parameters.SalesTax = Format(Selection.SalesTax, "NFD=2; NZ=");
-	TemplateArea.Parameters.NetTotalTitle =  "Net Total " + Selection.Currency.Description + ": ";
-	TemplateArea.Parameters.Total = Format(Selection.DocumentTotal, "NFD=2; NZ=");
+	TemplateArea.Parameters.LineSubtotal  = Format(Selection.LineSubtotal, "NFD=2; NZ=");
+	TemplateArea.Parameters.Discount      = Format(Selection.Discount, "NFD=2; NZ=");
+	TemplateArea.Parameters.Subtotal      = Format(Selection.Subtotal, "NFD=2; NZ=");
+	TemplateArea.Parameters.Shipping      = Format(Selection.Shipping, "NFD=2; NZ=");
+	TemplateArea.Parameters.SalesTaxTitle = GetDescriptionSalesTax(Selection.Ref, Selection.UseAvatax);
+	TemplateArea.Parameters.SalesTax      = Format(Selection.SalesTax, "NFD=2; NZ=");
+	TemplateArea.Parameters.NetTotalTitle =  "Net Total " + Selection.Currency.Description + ":";
+	TemplateArea.Parameters.Total         = Format(Selection.DocumentTotal, "NFD=2; NZ=");
+	
+	If Constants.SOPrintBalance.Get() Then 
+		TemplateArea.Parameters.BalanceDueTitle = "Balance Due " + Selection.Currency.Description + ":";
+		TemplateArea.Parameters.BalanceDue      = Format(Selection.BalanceDue, "NFD=2; NZ=");
+	EndIf;
 
 	TestData.Insert("Total",TemplateArea.Parameters.Total); // for unit testing
 	TestData.Insert("Currency", Selection.Currency.Symbol); // for unit testing
@@ -557,13 +566,14 @@ Function PrintSI(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
    |	SalesInvoice.Currency,
    |	SalesInvoice.LineItems.(
    |		Product,
+   |		Product.Category AS Category,
    |		ProductDescription,
    |		LineItems.Order.RefNum AS PO,
    |		QtyUnits,
    |		Unit,
    |		QtyUM,
    |		PriceUnits,
-   |        Product.Price AS StandardPrice,
+   |		Product.Price AS StandardPrice,
    |		LineTotal,
    |		Project,
    |		Class,
@@ -575,11 +585,13 @@ Function PrintSI(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
    |	GeneralJournalBalance.AmountRCBalance AS BalanceRC,
    |	GeneralJournalBalance.AmountBalance AS Balance,
    |	SalesInvoice.BillTo,
+   |	SalesInvoice.ConfirmTo,
    |	SalesInvoice.Posted,
    |	SalesInvoice.LineSubtotal,
    |	SalesInvoice.Discount,
    |	SalesInvoice.SubTotal,
    |	SalesInvoice.Shipping,
+   |	SalesInvoice.UseAvatax,
    |	SalesInvoice.DocumentTotal AS DocumentTotal1,
    |	SalesInvoice.RefNum,
    |	SalesInvoice.TrackingNumber,
@@ -648,8 +660,8 @@ Function PrintSI(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
 	TemplateArea.Parameters.Fill(ThemBill);
 		
 	If Constants.SIShowFullName.Get() = True Then
-		TemplateArea.Parameters.ThemFullName = ThemBill.ThemBillSalutation + " " + ThemBill.ThemBillFirstName + " " + ThemBill.ThemBillLastName + Chars.LF;
-		TemplateArea.Parameters.ThemShipFullName = ThemShip.ThemShipSalutation + " " + ThemShip.ThemShipFirstName + " " + ThemShip.ThemShipLastName + Chars.LF;
+		TemplateArea.Parameters.ThemFullName = GetDescriptionContactPerson(ThemBill, "Bill") + Chars.LF;
+		TemplateArea.Parameters.ThemShipFullName = GetDescriptionContactPerson(ThemShip, "Ship") + Chars.LF;
 	EndIf;
 	
 	If Constants.SIShowCountry.Get() = False Then
@@ -672,7 +684,11 @@ Function PrintSI(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
 	TemplateArea.Parameters.TrackingNumber = Selection.TrackingNumber;
 	TemplateArea.Parameters.SalesPerson = Selection.SalesPerson;
 	TemplateArea.Parameters.FOB = Selection.FOB;
-	 Try
+	If ValueIsFilled(Selection.ConfirmTo) Then 
+		TemplateArea.Parameters.ConfirmTo = GetDescriptionContactPerson(PrintTemplates.ContactInfoDataset(Selection.Company, "ThemBill", Selection.ConfirmTo), "Bill");
+	EndIf;
+
+	Try
 	 	TemplateArea.Parameters.Terms = Selection.Terms;
 		TemplateArea.Parameters.DueDate = Selection.DueDate;
 	Except
@@ -830,7 +846,7 @@ Function PrintSI(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
 		TemplateArea.Parameters.Price     = Format(SelectionLineItems.PriceUnits, ProductPrecisionFormat + "; NZ=");
 		TemplateArea.Parameters.LineTotal = Format(SelectionLineItems.LineTotal, "NFD=2; NZ=");
 		If ShowSVC Then
-			TemplateArea.Parameters.DeliveryDateActual = Format(SelectionLineItems.DeliveryDateActual,"DLF=D;");
+			TemplateArea.Parameters.DeliveryDate = Format(SelectionLineItems.DeliveryDateActual,"DLF=D;");
 		ElsIf ShowDiscount Then
 			TemplateArea.Parameters.StandardPrice = Format(SelectionLineItems.StandardPrice, ProductPrecisionFormat + "; NZ=");
 			TemplateArea.Parameters.Discount      = Format(?(SelectionLineItems.StandardPrice <> 0, (((SelectionLineItems.PriceUnits / SelectionLineItems.StandardPrice) * 100) - 100) * -1 , 0), "NFD=2; NZ=0.00") + " %";
@@ -980,13 +996,13 @@ Function PrintSI(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
 		TemplateArea.Parameters.SalesTaxTitle = "VAT (" + Selection.Ref.SalesTaxAcrossAgencies[0].Rate + "%)";
 		TemplateArea.Parameters.SalesTax = Format(Selection.Ref.SalesTaxAcrossAgencies[0].Amount, "NFD=2; NZ=");
 	Else
-		TemplateArea.Parameters.SalesTaxTitle = "Sales Tax:";
+		TemplateArea.Parameters.SalesTaxTitle = GetDescriptionSalesTax(Selection.Ref, Selection.UseAvatax);
 		TemplateArea.Parameters.SalesTax = Format(Selection.SalesTax, "NFD=2; NZ=");
 	EndIf;
 	TemplateArea.Parameters.Total = Format(Selection.DocumentTotal, "NFD=2; NZ=");
 	// change here if need to disable showing currency if multi-currency isn't enabled
-	TemplateArea.Parameters.NetTotalTitle = "Net Total " + Selection.Currency.Description + ": ";
-	TemplateArea.Parameters.BalanceDueTitle = "Balance Due " + Selection.Currency.Description + ": ";
+	TemplateArea.Parameters.NetTotalTitle = "Net Total " + Selection.Currency.Description + ":";
+	TemplateArea.Parameters.BalanceDueTitle = "Balance Due " + Selection.Currency.Description + ":";
 	// end change here
 	NonNullBalance = 0;
 	If Selection.Balance <> NULL Then NonNullBalance = Selection.Balance; EndIf;
@@ -1174,8 +1190,8 @@ Function PrintShipment(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) E
 	TemplateArea.Parameters.Fill(ThemBill);
 		
 	If Constants.ShipmentShowFullName.Get() = True Then
-		TemplateArea.Parameters.ThemFullName = ThemBill.ThemBillSalutation + " " + ThemBill.ThemBillFirstName + " " + ThemBill.ThemBillLastName + Chars.LF;
-		TemplateArea.Parameters.ThemShipFullName = ThemShip.ThemShipSalutation + " " + ThemShip.ThemShipFirstName + " " + ThemShip.ThemShipLastName + Chars.LF;
+		TemplateArea.Parameters.ThemFullName = GetDescriptionContactPerson(ThemBill, "Bill") + Chars.LF;
+		TemplateArea.Parameters.ThemShipFullName = GetDescriptionContactPerson(ThemShip, "Ship") + Chars.LF;
 	EndIf;
 	
 	If Constants.ShipmentShowCountry.Get() = False Then
@@ -1542,4 +1558,460 @@ Function PrintShipment(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) E
 
    EndDo;
 		
+EndFunction
+
+Function PrintAssembly(Spreadsheet, SheetTitle, RefArray, TemplateName = Undefined) Export
+	
+	Spreadsheet.Clear();
+	SetPageSize(Spreadsheet);
+	
+	SheetTitle = "Assembly";
+	CustomTemplate = GeneralFunctions.GetCustomTemplate("Document.Assembly", SheetTitle);
+	
+	If CustomTemplate = Undefined Then
+		Template = Documents.Assembly.GetTemplate("AssemblyPrintForm");
+	Else
+		Template = CustomTemplate;
+	EndIf;
+		
+	TopHeader    = Template.GetArea("TopHeader");
+	MiddleHeader = Template.GetArea("MiddleHeader");
+	BottomHeader = Template.GetArea("BottomHeader");
+	Line         = Template.GetArea("Line");
+	LineGray     = Template.GetArea("LineGray");
+	LineForward  = Template.GetArea("LineForward");
+	Footer       = Template.GetArea("Footer");
+	BottomFooter = Template.GetArea("BottomFooter");
+	EmptyLine    = Template.GetArea("EmptyLine");
+	
+	QuantityFormat    = GeneralFunctionsReusable.DefaultQuantityFormat();
+	QuantityPrecision = GeneralFunctionsReusable.DefaultQuantityPrecision();
+	
+	SettingsPrintedForm = PrintFormFunctions.GetSettingsPrintedForm(Enums.PrintedForms.AssemblyMainForm);
+	
+	InsertPageBreak = False;
+	For Each Ref In RefArray Do
+		
+		If InsertPageBreak Then
+			Spreadsheet.PutHorizontalPageBreak();
+		EndIf;
+		
+		//***Quering necessary data***
+		Query = New Query();
+		Query.Text = "SELECT
+		             |	AssemblyLineItems.Ref,
+		             |	AssemblyLineItems.Product,
+		             |	AssemblyLineItems.ProductDescription,
+		             |	AssemblyLineItems.Lot,
+		             |	AssemblyLineItems.UnitSet,
+		             |	AssemblyLineItems.QtyItem,
+		             |	AssemblyLineItems.QtyUnits,
+		             |	AssemblyLineItems.Unit,
+		             |	AssemblyLineItems.QtyUM,
+		             |	AssemblyLineItems.PriceUnits,
+		             |	AssemblyLineItems.LineTotal,
+		             |	AssemblyLineItems.WastePercent,
+		             |	AssemblyLineItems.WasteQtyUnits,
+		             |	AssemblyLineItems.WasteQtyUM,
+		             |	AssemblyLineItems.WasteTotal,
+		             |	AssemblyLineItems.Location,
+		             |	AssemblyLineItems.Project,
+		             |	AssemblyLineItems.Class,
+		             |	ISNULL(InventoryJournalBalance.QuantityBalance, 0) AS QuantityBalance
+		             |FROM
+		             |	Document.Assembly.LineItems AS AssemblyLineItems
+		             |		LEFT JOIN AccumulationRegister.InventoryJournal.Balance AS InventoryJournalBalance
+		             |		ON AssemblyLineItems.Product = InventoryJournalBalance.Product
+		             |			AND AssemblyLineItems.Location = InventoryJournalBalance.Location
+		             |WHERE
+		             |	AssemblyLineItems.Ref = &Ref
+		             |
+		             |UNION ALL
+		             |
+		             |SELECT
+		             |	AssemblyServices.Ref,
+		             |	AssemblyServices.Product,
+		             |	AssemblyServices.ProductDescription,
+		             |	NULL,
+		             |	AssemblyServices.UnitSet,
+		             |	AssemblyServices.QtyItem,
+		             |	AssemblyServices.QtyUnits,
+		             |	AssemblyServices.Unit,
+		             |	AssemblyServices.QtyUM,
+		             |	AssemblyServices.PriceUnits,
+		             |	AssemblyServices.LineTotal,
+		             |	NULL,
+		             |	NULL,
+		             |	NULL,
+		             |	NULL,
+		             |	NULL,
+		             |	AssemblyServices.Project,
+		             |	AssemblyServices.Class,
+		             |	NULL
+		             |FROM
+		             |	Document.Assembly.Services AS AssemblyServices
+		             |WHERE
+		             |	AssemblyServices.Ref = &Ref";
+		
+		Query.SetParameter("Ref", Ref);
+		Selection = Query.Execute().Select();
+		//***End Quering necessary data***
+		
+		//***HEADER***
+		
+		//---------
+		//TopHeader
+		//---------
+		ParametersOfHeader = New Structure; 
+		ParametersOfHeader.Insert("Number", Ref.Number); 
+		ParametersOfHeader.Insert("Date", Ref.Date); 
+		
+		//Status
+		// Request assembly status.
+		AssemblyStatus = Enums.AssemblyStatuses.EmptyRef(); 
+		If (Not ValueIsFilled(Ref)) Or (Ref.DeletionMark) Or (Not Ref.Posted) Then
+			// The assembly has pending status.
+			AssemblyStatus = Enums.AssemblyStatuses.Pending;
+		Else
+			// The assembly has been completed.
+			AssemblyStatus = Enums.AssemblyStatuses.Completed;
+		EndIf;
+		
+		// Fill extended assembly status.
+		If Not ValueIsFilled(Ref) Then
+			ParametersOfHeader.Insert("Status", String(Enums.AssemblyStatuses.New));
+		ElsIf Ref.DeletionMark Then
+			ParametersOfHeader.Insert("Status", String(Enums.AssemblyStatuses.Deleted));
+		Else
+			ParametersOfHeader.Insert("Status", String(AssemblyStatus));
+		EndIf;
+		
+		TopHeader.Parameters.Fill(ParametersOfHeader);
+		
+		//Add logo
+		BinaryLogo = GeneralFunctions.GetLogo();
+		LogoPicture = New Picture(BinaryLogo);
+		DocumentPrinting.FillLogoInDocumentTemplate(TopHeader, LogoPicture); 
+				
+		UsBill   = PrintTemplates.ContactInfoDatasetUs();
+		
+		TopHeader.Parameters.Fill(UsBill);
+		
+		//UsBill filling
+		If TopHeader.Parameters.UsBillLine1 <> "" Then
+			TopHeader.Parameters.UsBillLine1 = TopHeader.Parameters.UsBillLine1 + Chars.LF; 
+		EndIf;
+		
+		If TopHeader.Parameters.UsBillLine2 <> "" Then
+			TopHeader.Parameters.UsBillLine2 = TopHeader.Parameters.UsBillLine2 + Chars.LF; 
+		EndIf;
+		
+		If TopHeader.Parameters.UsBillCityStateZIP <> "" Then
+			TopHeader.Parameters.UsBillCityStateZIP = TopHeader.Parameters.UsBillCityStateZIP + Chars.LF; 
+		EndIf;
+		
+		If TopHeader.Parameters.UsBillPhone <> "" Then
+			TopHeader.Parameters.UsBillPhone = TopHeader.Parameters.UsBillPhone + Chars.LF; 
+		EndIf;
+		
+		If Not SettingsPrintedForm.ShowEmail Then
+			TopHeader.Parameters.UsBillEmail = ""; 
+		EndIf;
+		
+		//UsInfo filling
+		If TopHeader.Parameters.UsBillCell <> "" And SettingsPrintedForm.ShowMobile Then
+			TopHeader.Parameters.UsBillCell      = TopHeader.Parameters.UsBillCell + Chars.LF;
+			TopHeader.Parameters.TitleUsBillCell = "Mobile:" + Chars.LF;
+		Else
+			TopHeader.Parameters.UsBillCell      = "";
+		EndIf;
+		
+		If TopHeader.Parameters.UsWebsite <> "" And SettingsPrintedForm.ShowWebsite Then
+			TopHeader.Parameters.UsWebsite      = TopHeader.Parameters.UsWebsite + Chars.LF;
+			TopHeader.Parameters.TitleUsWebsite = "Website:" + Chars.LF;
+		Else
+			TopHeader.Parameters.UsWebsite      = "";
+		EndIf;
+		
+		If TopHeader.Parameters.UsBillFax <> "" And SettingsPrintedForm.ShowFax Then
+			TopHeader.Parameters.UsBillFax      = TopHeader.Parameters.UsBillFax + Chars.LF;
+			TopHeader.Parameters.TitleUsBillFax = "Fax:" + Chars.LF;
+		Else
+			TopHeader.Parameters.UsBillFax      = "";
+		EndIf;
+		
+		If TopHeader.Parameters.UsBillFedTaxID <> "" And SettingsPrintedForm.ShowFederalTaxID Then
+			TopHeader.Parameters.TitleUsBillFedTaxID = "Federal Tax ID:";
+		Else
+			TopHeader.Parameters.UsBillFedTaxID      = "";
+		EndIf;
+		
+		//------------
+		//MiddleHeader
+		//------------
+		MiddleHeader.Parameters.Product            = Ref.Product;
+		MiddleHeader.Parameters.ProductDescription = Ref.ProductDescription;
+		MiddleHeader.Parameters.QtyUnits           = Format(Ref.QtyUnits, QuantityFormat);
+		MiddleHeader.Parameters.Unit               = Ref.Unit;
+		MiddleHeader.Parameters.Location           = Ref.Location;
+		
+		If Ref.Product.HasLotsSerialNumbers Then
+			If Ref.Product.UseLots = 0 Then
+				MiddleHeader.Parameters.LotTitle = "Lot:";
+				MiddleHeader.Parameters.Lot      = Ref.Lot;
+			ElsIf Ref.Product.UseLots = 1 Then
+				
+				SerialNumbersArray = New Array;
+				For Each CurrentRow In Ref.SerialNumbers Do
+					SerialNumbersArray.Add(CurrentRow.SerialNumber);
+				EndDo;
+				
+				MiddleHeader.Parameters.LotTitle = "Serial #:";
+				MiddleHeader.Parameters.Lot      = LotsSerialNumbersClientServer.FormatSerialNumbersStr(SerialNumbersArray);
+			EndIf;
+		EndIf;
+						
+		//------------
+		//BottomHeader
+		//------------
+		//BottomHeader.Parameters.Fill();
+		
+		//***END HEADER***
+		
+		//***Footer***
+		ParametersOfFooter = New Structure;
+		ParametersOfFooter.Insert("CurrentDate", Format(CurrentSessionDate(), "DF='dddd, MMM d, yyyy h:mm:ss tt'"));
+		
+		Footer.Parameters.Fill(ParametersOfFooter);
+		//***End Footer***
+		
+		//***BottomFooter***
+		If SettingsPrintedForm.FooterTypeLeft = Enums.TextOrImage.Text Then
+			BottomFooter.Parameters.FooterTextLeft   = SettingsPrintedForm.FooterTextLeft;
+		ElsIf SettingsPrintedForm.FooterTypeLeft = Enums.TextOrImage.Image Then 
+			FooterLeftLogo   = GeneralFunctions.GetFooterPO("AssemblyFooterLeft");
+			FooterLeftPic    = New Picture(FooterLeftLogo);
+			DocumentPrinting.FillPictureInDocumentTemplate(BottomFooter, FooterLeftPic, "FooterImageLeft"); 
+		Else
+			//	
+		EndIf;
+		
+		If SettingsPrintedForm.FooterTypeCenter = Enums.TextOrImage.Text Then
+			BottomFooter.Parameters.FooterTextCenter   = SettingsPrintedForm.FooterTextCenter;
+		ElsIf SettingsPrintedForm.FooterTypeCenter = Enums.TextOrImage.Image Then 
+			FooterCenterLogo   = GeneralFunctions.GetFooterPO("AssemblyFooterCenter");
+			FooterCenterPic    = New Picture(FooterCenterLogo);
+			DocumentPrinting.FillPictureInDocumentTemplate(BottomFooter, FooterCenterPic, "FooterImageCenter"); 
+		Else
+			//	
+		EndIf;
+		
+		If SettingsPrintedForm.FooterTypeRight = Enums.TextOrImage.Text Then
+			BottomFooter.Parameters.FooterTextRight   = SettingsPrintedForm.FooterTextRight;
+		ElsIf SettingsPrintedForm.FooterTypeRight = Enums.TextOrImage.Image Then 
+			FooterRightLogo   = GeneralFunctions.GetFooterPO("AssemblyFooterRight");
+			FooterRightPic    = New Picture(FooterRightLogo);
+			DocumentPrinting.FillPictureInDocumentTemplate(BottomFooter, FooterRightPic, "FooterImageRight"); 
+		Else
+			//	
+		EndIf;
+		//***End BottomFooter***
+		
+		////***Line***
+		LineIsGray      = False;
+		Array           = New Array;
+		
+		Spreadsheet.Put(TopHeader);
+		Spreadsheet.Put(MiddleHeader);
+		Spreadsheet.Put(BottomHeader);
+		
+		While Selection.Next() Do
+			
+			//
+			If Selection.Product.Type = Enums.InventoryTypes.Inventory Then
+				QtyOnHand = Round(Round(Selection.QuantityBalance, QuantityPrecision) * ?(Selection.Unit.Factor > 0, Selection.Unit.Factor, 1), QuantityPrecision);
+			Else
+				QtyOnHand = "";
+			EndIf;
+			
+			ParametersOfLine = New Structure;
+			ParametersOfLine.Insert("Product", Selection.Product);
+			ParametersOfLine.Insert("Sub", ?(Selection.Product.Assembly, "√", ""));
+			ParametersOfLine.Insert("ProductDescription", Selection.ProductDescription);
+			ParametersOfLine.Insert("Type", Selection.Product.Type); 
+			ParametersOfLine.Insert("QtyItem", Format(Selection.QtyItem, QuantityFormat)); 
+			ParametersOfLine.Insert("QtyUnits", Format(Selection.QtyUnits, QuantityFormat)); 		
+			ParametersOfLine.Insert("QtyOnHand", Format(QtyOnHand, QuantityFormat)); 
+			ParametersOfLine.Insert("Unit", Selection.Unit); 
+			ParametersOfLine.Insert("Location", Selection.Location); 
+			
+			//------------------------------------------------------
+			InputLine = Undefined;
+			
+			If LineIsGray Then 
+				LineGray.Parameters.Fill(ParametersOfLine);
+				InputLine = LineGray;
+			Else
+				Line.Parameters.Fill(ParametersOfLine);
+				InputLine = Line;
+			EndIf;
+			
+			Array.Clear();
+			Array.Add(InputLine);
+			Array.Add(BottomFooter);
+			
+			If Spreadsheet.CheckPut(Array) Then 
+				Spreadsheet.Put(InputLine);
+			Else
+				Spreadsheet.Put(BottomFooter);	
+				Spreadsheet.PutHorizontalPageBreak();
+				
+				Spreadsheet.Put(TopHeader);
+				Spreadsheet.Put(BottomHeader);
+				Spreadsheet.Put(InputLine);
+			EndIf;
+			
+			LineIsGray = ?(LineIsGray, False, True);
+			
+		EndDo;
+		//***End Line***
+		
+		//Footer
+		Array.Clear();
+		Array.Add(Footer);
+		Array.Add(BottomFooter);
+		
+		If Not Spreadsheet.CheckPut(Array) Then 
+			Spreadsheet.Put(BottomFooter);
+			Spreadsheet.PutHorizontalPageBreak();
+			
+			Spreadsheet.Put(TopHeader);
+			Spreadsheet.Put(Footer);
+			
+			//
+			Array.Clear();
+			Array.Add(EmptyLine);
+			Array.Add(BottomFooter);
+			
+			While Spreadsheet.CheckPut(Array) Do
+				Spreadsheet.Put(EmptyLine);	
+			EndDo;
+			Spreadsheet.Put(BottomFooter);
+		Else
+			Spreadsheet.Put(Footer);
+			
+			Array.Clear();
+			Array.Add(EmptyLine);
+			Array.Add(BottomFooter);
+			
+			While Spreadsheet.CheckPut(Array) Do
+				Spreadsheet.Put(EmptyLine);	
+			EndDo;
+			Spreadsheet.Put(BottomFooter);
+			
+		EndIf;
+		
+		InsertPageBreak = True;
+	EndDo;
+	
+	//Add footer with page count	
+	Spreadsheet.Header.Enabled       = True;
+	Spreadsheet.Header.StartPage     = 1;
+	Spreadsheet.Header.VerticalAlign = VerticalAlign.Bottom;	
+	Spreadsheet.Header.Font          = New Font(Spreadsheet.Header.Font, , , , True);
+	Spreadsheet.Header.RightText     = "Page [&PageNumber] of [&PagesTotal]";
+	
+EndFunction
+//
+Function GetSettingsPrintedForm(PrintedForm) Export
+	
+	SettingsPrintedForm = InformationRegisters.SettingsPrintedForms.Get(New Structure("PrintedForm", PrintedForm));	
+	
+	//SettingIsExists
+	Query = New Query;
+	Query.Text = "SELECT
+	             |	SettingsPrintedForms.PrintedForm
+	             |FROM
+	             |	InformationRegister.SettingsPrintedForms AS SettingsPrintedForms
+	             |WHERE
+	             |	SettingsPrintedForms.PrintedForm = &PrintedForm";
+	
+	Query.SetParameter("PrintedForm", PrintedForm);
+	
+	If Query.Execute().Select().Count() > 0 Then
+		SettingsPrintedForm.Insert("SettingIsExists", True);	
+	Else
+		SettingsPrintedForm.Insert("SettingIsExists", False);	
+	EndIf;
+	
+	Return SettingsPrintedForm;
+	
+EndFunction
+
+Function CorrectNameStr(Salutation, FirstName, LastName) Export
+	
+	If Salutation <> "" Then
+		Salutation = Salutation + " ";
+	EndIf;
+	If FirstName <> "" Then
+		FirstName = FirstName + " ";
+	EndIf;
+	Return Salutation + FirstName + LastName;
+		
+EndFunction
+
+//
+Procedure SetPageSize(Spreadsheet)
+	
+	//
+	Spreadsheet.PageSize     = "Letter";
+	
+	Spreadsheet.TopMargin    = 5;
+	Spreadsheet.LeftMargin   = 5;
+	Spreadsheet.RightMargin  = 5;
+	Spreadsheet.BottomMargin = 5;
+	
+	Spreadsheet.HeaderSize   = 5;
+	Spreadsheet.FooterSize   = 5;
+	
+	Spreadsheet.FitToPage    = True;
+	
+EndProcedure
+
+Function GetDescriptionContactPerson(Structure, Type)
+	
+	ContactPerson = "";
+	
+	If Type = "Bill" Then 
+		ContactPerson = TrimAll(Structure.ThemBillSalutation + " " + Structure.ThemBillFirstName + " " + Structure.ThemBillLastName); 
+	ElsIf Type = "Ship" Then
+		ContactPerson = TrimAll(Structure.ThemShipSalutation + " " + Structure.ThemShipFirstName + " " + Structure.ThemShipLastName); 
+	EndIf;
+	
+	Return ContactPerson;
+	
+EndFunction
+
+Function GetDescriptionSalesTax(DocRef, UseAvatax) Export
+	
+	If Not GeneralFunctionsReusable.FunctionalOptionValue("SalesTaxCharging") Then
+		Return "Sales Tax:";
+	EndIf;
+	
+	TaxRate = 0;
+	If Not UseAvatax Then
+		If DocRef.SalesTaxAcrossAgencies.Count() = 0 Then
+			SalesTaxRateAttr = CommonUse.GetAttributeValues(DocRef.SalesTaxRate, "Rate");
+			TaxRate = SalesTaxRateAttr.Rate;
+		Else
+			TaxRate = DocRef.SalesTaxAcrossAgencies.Total("Rate");
+		EndIf;
+	Else //When using Avatax some lines are taxable and others not
+		If DocRef.TaxableSubtotal <> 0 Then
+			TaxRate = Round(DocRef.SalesTax/DocRef.TaxableSubtotal, 4) * 100;
+		EndIf;
+	EndIf;
+	
+	Return "Sales Tax, " + Format(TaxRate, "NFD=2; NZ=") + "%:";
+	
 EndFunction

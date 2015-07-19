@@ -14,7 +14,7 @@
 		</Command>
 		<Command name="DataProcessor.DownloadedTransactions.Command.DownloadedTransactions">
 			<Visibility>
-				<xr:Common>true</xr:Common>
+				<xr:Common>false</xr:Common>
 				<xr:Value name="Role.SalesFull">false</xr:Value>
 				<xr:Value name="Role.SalesView">false</xr:Value>
 				<xr:Value name="Role.PurchasingFull">false</xr:Value>
@@ -31,7 +31,6 @@
 				<xr:Value name="Role.ProjectsView">false</xr:Value>
 				<xr:Value name="Role.TimeTrackFull">false</xr:Value>
 				<xr:Value name="Role.TimeTrackView">false</xr:Value>
-				<xr:Value name="acfa1919-07ce-4464-8552-6b104e284dca">false</xr:Value>
 			</Visibility>
 		</Command>
 		<Command name="CommonCommand.LaunchSettings">
@@ -52,11 +51,6 @@
 		<Command name="Catalog.UserList.StandardCommand.OpenList">
 			<Visibility>
 				<xr:Common>true</xr:Common>
-			</Visibility>
-		</Command>
-		<Command name="DataProcessor.DataImport.Command.DataImport">
-			<Visibility>
-				<xr:Common>false</xr:Common>
 			</Visibility>
 		</Command>
 		<Command name="Report.ARAging.StandardCommand.Open">
@@ -129,10 +123,6 @@
 			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
 			<Placement>Manual</Placement>
 		</Command>
-		<Command name="DataProcessor.DataImport.Command.DataImport">
-			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
-			<Placement>Manual</Placement>
-		</Command>
 		<Command name="Report.ARAging.StandardCommand.Open">
 			<CommandGroup>ActionsPanelReports</CommandGroup>
 			<Placement>Manual</Placement>
@@ -186,9 +176,6 @@
 			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
 		</Command>
 		<Command name="Catalog.UserList.StandardCommand.OpenList">
-			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
-		</Command>
-		<Command name="DataProcessor.DataImport.Command.DataImport">
 			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
 		</Command>
 		<Command name="Report.ARAging.StandardCommand.Open">

@@ -34,6 +34,12 @@
 			<ContextMenu name="StripeTokenContextMenu" id="136"/>
 			<ExtendedTooltip name="StripeTokenExtendedTooltip" id="154"/>
 		</InputField>
+		<Button name="SalesTransactions" id="209">
+			<Type>UsualButton</Type>
+			<Visible>false</Visible>
+			<CommandName>Form.Command.SalesTransactions</CommandName>
+			<ExtendedTooltip name="SalesTransactionsExtendedTooltip" id="210"/>
+		</Button>
 		<UsualGroup name="Group2" id="42">
 			<Group>Horizontal</Group>
 			<Representation>StrongSeparation</Representation>
@@ -75,6 +81,7 @@
 			<UserVisible>
 				<xr:Common>true</xr:Common>
 				<xr:Value name="Role.ShipmentFull">false</xr:Value>
+				<xr:Value name="Role.ItemReceiptFull">false</xr:Value>
 			</UserVisible>
 			<Width>50</Width>
 			<ExtendedTooltip name="Group1ExtendedTooltip" id="159"/>
@@ -1068,6 +1075,21 @@ WHERE
 				</v8:item>
 			</ToolTip>
 			<Action>DeleteCard</Action>
+		</Command>
+		<Command name="SalesTransactions" id="4">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Sales transactions</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Sales transactions</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>SalesTransactions</Action>
 		</Command>
 	</Commands>
 	<CommandInterface>

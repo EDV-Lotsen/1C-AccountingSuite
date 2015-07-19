@@ -14,11 +14,13 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	LTLType = GeneralFunctionsReusable.LongTermLiabilityAccountType();
 	EquityType = GeneralFunctionsReusable.EquityAccountType();
 
-	//If IsInRole("BankAccounting") Then
-		//Items.DefaultAccountsGroup.Visible = True;
-	//Else
-		Items.DefaultAccountsGroup.Visible = False;
-	//EndIf;
+	If IsInRole("BankAccounting") Then
+		Items.DefaultCheckAccount.Visible = True;
+		Items.DefaultDepositAccount.Visible = True;
+	Else
+		Items.DefaultCheckAccount.Visible = False;
+		Items.DefaultDepositAccount.Visible = False;
+	EndIf;
 
 	If NOT Object.Ref.IsEmpty() Then
 	
@@ -198,6 +200,11 @@ Procedure AccountTypeOnChangeAtServer()
 		AcctType = Object.AccountType;
 		If GeneralFunctionsReusable.CurrencyUsedAccountType(AcctType) And Object.Currency.IsEmpty() Then
 			Object.Currency = GeneralFunctionsReusable.DefaultCurrency();
+		ElsIf AcctType = Enums.AccountTypes.OtherCurrentAsset AND Object.Ref.AccountType = Enums.AccountTypes.Bank Then 
+			Object.Currency = Catalogs.Currencies.EmptyRef();
+			If Object.CashFlowSection.IsEmpty() Then 
+				Object.CashFlowSection = GeneralFunctionsReusable.CashFlowOperatingSection();
+			EndIf;	
 		EndIf;
 	//- MisA 11/14/2014
 	EndIf;
@@ -431,6 +438,14 @@ Procedure SetVisibility()
 	Else
 		Items.StatusCodeDescriptionDecoration.Visible = False;
 	EndIf;
+	
+	If Not ValueIsFilled(UploadStartDate) Then
+		Items.UploadStartDate.Visible = False;
+		Items.UploadStartDateDecoration.Visible = False;
+	Else
+		Items.UploadStartDate.Visible = True;
+		Items.UploadStartDateDecoration.Visible = True;
+	EndIf;
 
 	VisibilityRetainedEarnings();
 
@@ -457,7 +472,8 @@ Procedure GetBankAccountAttributes()
 		                     |	BankAccounts.LastUpdateAttemptTimeUTC,
 		                     |	BankAccounts.NextUpdateTimeUTC,
 		                     |	BankAccounts.RefreshStatusCode,
-		                     |	BankAccounts.YodleeAccount AS OnlineBankAccount
+		                     |	BankAccounts.YodleeAccount AS OnlineBankAccount,
+		                     |	BankAccounts.UploadStartDate
 		                     |FROM
 		                     |	Catalog.BankAccounts AS BankAccounts
 		                     |WHERE
@@ -468,7 +484,7 @@ Procedure GetBankAccountAttributes()
 			Sel = Res.Select();
 			Sel.Next();
 			AccountInBank = Sel.Ref;
-			FillPropertyValues(ThisForm, Sel, "CSV_HasHeaderRow, CSV_DateColumn, CSV_CheckNumberColumn, CSV_DescriptionColumn, CSV_MoneyInColumn, CSV_MoneyInColumnChangeSymbol, CSV_MoneyOutColumn, CSV_MoneyOutColumnChangeSymbol, CSV_Separator, DefaultCheckAccount, DefaultDepositAccount, OnlineBankAccount, RefreshStatusCode, LastUpdatedTimeUTC, LastUpdateAttemptTimeUTC, NextUpdateTimeUTC");
+			FillPropertyValues(ThisForm, Sel, "CSV_HasHeaderRow, CSV_DateColumn, CSV_CheckNumberColumn, CSV_DescriptionColumn, CSV_MoneyInColumn, CSV_MoneyInColumnChangeSymbol, CSV_MoneyOutColumn, CSV_MoneyOutColumnChangeSymbol, CSV_Separator, DefaultCheckAccount, DefaultDepositAccount, OnlineBankAccount, RefreshStatusCode, LastUpdatedTimeUTC, LastUpdateAttemptTimeUTC, NextUpdateTimeUTC, UploadStartDate");
 		Else
 			AccountInBank = Catalogs.BankAccounts.EmptyRef();
 		EndIf;
@@ -529,3 +545,35 @@ Procedure StatusCodeDescriptionDecorationClick(Item)
 	OpenForm("DataProcessor.DownloadedTransactions.Form.DetailedErrorMessage", New Structure("StatusCode", String(RefreshStatusCode)), ThisForm,,,,,FormWindowOpeningMode.LockOwnerWindow);
 	
 EndProcedure
+
+&AtClient
+Procedure EditSignInInfo(Command)
+	
+	If Not OnlineBankAccount Then
+		return;		
+	EndIf;
+	
+	Notify = New NotifyDescription("OnComplete_EditAccount", ThisObject);
+	Params = New Structure("PerformEditAccount, RefreshAccount", True, AccountInBank);
+	OpenForm("DataProcessor.YodleeBankAccountsManagement.Form.Form", Params, ThisForm,,,, Notify, FormWindowOpeningMode.LockOwnerWindow);
+
+EndProcedure
+
+#REGION OTHER_FUNCTIONS
+
+&AtClient
+Procedure OnComplete_EditAccount(ClosureResult, AdditionalParameters) Export
+	
+	OnComplete_EditAccountAtServer();
+		
+EndProcedure
+
+&AtServer
+Procedure OnComplete_EditAccountAtServer()
+	
+	Read();
+	SetVisibility();
+	
+EndProcedure
+
+#ENDREGION

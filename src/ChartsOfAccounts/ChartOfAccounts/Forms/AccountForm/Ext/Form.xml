@@ -319,33 +319,96 @@
 											<v8:content>Online account right column</v8:content>
 										</v8:item>
 									</ToolTip>
-									<Group>Horizontal</Group>
+									<Group>Vertical</Group>
 									<ShowTitle>false</ShowTitle>
 									<ExtendedTooltip name="OnlineAccountRightColumnExtendedTooltip" id="140"/>
 									<ChildItems>
-										<InputField name="RefreshStatusCode" id="134">
-											<DataPath>RefreshStatusCode</DataPath>
-											<Width>3</Width>
-											<ContextMenu name="RefreshStatusCodeContextMenu" id="135"/>
-											<ExtendedTooltip name="RefreshStatusCodeExtendedTooltip" id="136"/>
-										</InputField>
-										<LabelDecoration name="StatusCodeDescriptionDecoration" id="141">
-											<HorizontalStretch>true</HorizontalStretch>
-											<TextColor>style:SpecialTextColor</TextColor>
-											<Title formatted="false">
+										<UsualGroup name="OnlineAccountStatusCode" id="158">
+											<Title>
 												<v8:item>
 													<v8:lang>en</v8:lang>
-													<v8:content>Status code description</v8:content>
+													<v8:content>Online account status code</v8:content>
 												</v8:item>
 											</Title>
-											<Hyperlink>true</Hyperlink>
-											<HorizontalAlign>Center</HorizontalAlign>
-											<ContextMenu name="StatusCodeDescriptionDecorationContextMenu" id="142"/>
-											<ExtendedTooltip name="StatusCodeDescriptionDecorationExtendedTooltip" id="143"/>
-											<Events>
-												<Event name="Click">StatusCodeDescriptionDecorationClick</Event>
-											</Events>
+											<ToolTip>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Online account status code</v8:content>
+												</v8:item>
+											</ToolTip>
+											<Group>Horizontal</Group>
+											<ShowTitle>false</ShowTitle>
+											<ExtendedTooltip name="OnlineAccountStatusCodeExtendedTooltip" id="159"/>
+											<ChildItems>
+												<InputField name="RefreshStatusCode" id="134">
+													<DataPath>RefreshStatusCode</DataPath>
+													<Width>3</Width>
+													<ContextMenu name="RefreshStatusCodeContextMenu" id="135"/>
+													<ExtendedTooltip name="RefreshStatusCodeExtendedTooltip" id="136"/>
+												</InputField>
+												<LabelDecoration name="StatusCodeDescriptionDecoration" id="141">
+													<HorizontalStretch>true</HorizontalStretch>
+													<TextColor>style:SpecialTextColor</TextColor>
+													<Title formatted="false">
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Status code description</v8:content>
+														</v8:item>
+													</Title>
+													<Hyperlink>true</Hyperlink>
+													<HorizontalAlign>Center</HorizontalAlign>
+													<ContextMenu name="StatusCodeDescriptionDecorationContextMenu" id="142"/>
+													<ExtendedTooltip name="StatusCodeDescriptionDecorationExtendedTooltip" id="143"/>
+													<Events>
+														<Event name="Click">StatusCodeDescriptionDecorationClick</Event>
+													</Events>
+												</LabelDecoration>
+											</ChildItems>
+										</UsualGroup>
+										<LabelDecoration name="OnlineAccountDecoration2" id="165">
+											<HorizontalStretch>true</HorizontalStretch>
+											<Border width="1">
+												<v8ui:style xsi:type="v8ui:ControlBorderType">Overline</v8ui:style>
+											</Border>
+											<ContextMenu name="OnlineAccountDecoration2ContextMenu" id="166"/>
+											<ExtendedTooltip name="OnlineAccountDecoration2ExtendedTooltip" id="167"/>
 										</LabelDecoration>
+										<UsualGroup name="OnlineAccountActions" id="160">
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Online account actions</v8:content>
+												</v8:item>
+											</Title>
+											<ToolTip>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Online account actions</v8:content>
+												</v8:item>
+											</ToolTip>
+											<Group>Horizontal</Group>
+											<ShowTitle>false</ShowTitle>
+											<ExtendedTooltip name="OnlineAccountActionsExtendedTooltip" id="161"/>
+											<ChildItems>
+												<LabelDecoration name="OnlineAccountDecoration1" id="162">
+													<HorizontalStretch>true</HorizontalStretch>
+													<ContextMenu name="OnlineAccountDecoration1ContextMenu" id="163"/>
+													<ExtendedTooltip name="OnlineAccountDecoration1ExtendedTooltip" id="164"/>
+												</LabelDecoration>
+												<Button name="EditSignInInfo" id="156">
+													<Type>UsualButton</Type>
+													<CommandName>Form.Command.EditSignInInfo</CommandName>
+													<TextColor>style:FieldBackColor</TextColor>
+													<BackColor>style:ColorInformationLabel</BackColor>
+													<ExtendedTooltip name="EditSignInInfoExtendedTooltip" id="157"/>
+												</Button>
+												<LabelDecoration name="OnlineAccountDecoration3" id="168">
+													<HorizontalStretch>true</HorizontalStretch>
+													<ContextMenu name="OnlineAccountDecoration3ContextMenu" id="169"/>
+													<ExtendedTooltip name="OnlineAccountDecoration3ExtendedTooltip" id="170"/>
+												</LabelDecoration>
+											</ChildItems>
+										</UsualGroup>
 									</ChildItems>
 								</UsualGroup>
 							</ChildItems>
@@ -354,7 +417,7 @@
 							<Title>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Default accounts</v8:content>
+									<v8:content>Bank transactions</v8:content>
 								</v8:item>
 							</Title>
 							<ToolTip>
@@ -387,6 +450,43 @@
 									<ContextMenu name="DefaultDepositAccountContextMenu" id="119"/>
 									<ExtendedTooltip name="DefaultDepositAccountExtendedTooltip" id="120"/>
 								</InputField>
+								<UsualGroup name="UploadStartDateGroup" id="174">
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Upload start date group</v8:content>
+										</v8:item>
+									</Title>
+									<ToolTip>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Upload start date group</v8:content>
+										</v8:item>
+									</ToolTip>
+									<Group>Horizontal</Group>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="UploadStartDateGroupExtendedTooltip" id="175"/>
+									<ChildItems>
+										<InputField name="UploadStartDate" id="171">
+											<DataPath>UploadStartDate</DataPath>
+											<ReadOnly>true</ReadOnly>
+											<ContextMenu name="UploadStartDateContextMenu" id="172"/>
+											<ExtendedTooltip name="UploadStartDateExtendedTooltip" id="173"/>
+										</InputField>
+										<LabelDecoration name="UploadStartDateDecoration" id="176">
+											<TextColor>style:ColorInformationLabel</TextColor>
+											<Font ref="style:SmallTextFont" bold="false" italic="true" underline="false" strikeout="false" kind="StyleItem"/>
+											<Title formatted="false">
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>To change this date, please contact the support</v8:content>
+												</v8:item>
+											</Title>
+											<ContextMenu name="UploadStartDateDecorationContextMenu" id="177"/>
+											<ExtendedTooltip name="UploadStartDateDecorationExtendedTooltip" id="178"/>
+										</LabelDecoration>
+									</ChildItems>
+								</UsualGroup>
 							</ChildItems>
 						</Page>
 						<Page name="CSVPage" id="71">
@@ -934,7 +1034,43 @@
 				</v8:DateQualifiers>
 			</Type>
 		</Attribute>
+		<Attribute name="UploadStartDate" id="22">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Upload start date</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:dateTime</v8:Type>
+				<v8:DateQualifiers>
+					<v8:DateFractions>Date</v8:DateFractions>
+				</v8:DateQualifiers>
+			</Type>
+		</Attribute>
 	</Attributes>
+	<Commands>
+		<Command name="EditSignInInfo" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Edit sign-in info</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Edit sign in info</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Picture>
+				<xr:Ref>StdPicture.Properties</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
+			<Action>EditSignInInfo</Action>
+			<Representation>TextPicture</Representation>
+		</Command>
+	</Commands>
 	<CommandInterface>
 		<NavigationPanel>
 			<Item>

@@ -91,10 +91,16 @@ EndProcedure
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
+	CurUser = InfoBaseUsers.FindByName(SessionParameters.ACSUser);
+	If CurUser.Roles.Contains(Metadata.Roles.BankAccounting) = True Then
+		Items.Group6.Visible = False;
+		Items.Group7.Visible = False;
+		Items.group8.Visible = True;
+	Else
 		Items.Group6.Visible = True;
 		Items.Group7.Visible = True;
 		Items.group8.Visible = False;
-
+	EndIf;
 
 EndProcedure
 

@@ -287,6 +287,9 @@ EndProcedure
 &AtClient
 Procedure OnClose()
 	
+	//Because value type of BackgroundJobParameters is Arbitrary
+	BackgroundJobParameters.Clear();
+	
 	OnCloseAtServer();
 	
 EndProcedure
@@ -455,23 +458,37 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 	//Update tax rate
 	DisplaySalesTaxRate(ThisForm);
 	
-	If Constants.zoho_auth_token.Get() <> "" Then
-		If Object.NewObject = True Then
-			ThisAction = "create";
-		Else
-			ThisAction = "update";
+	If Object.Posted Then
+		If Constants.zoho_auth_token.Get() <> "" Then
+			If Object.NewObject = True Then
+				ThisAction = "create";
+			Else
+				ThisAction = "update";
+			EndIf;
+			zoho_Functions.ZohoThisInvoice(ThisAction, Object.Ref);
 		EndIf;
-		zoho_Functions.ZohoThisInvoice(ThisAction, Object.Ref);
 	EndIf;
 	
 EndProcedure
 
 &AtClient
 Procedure AfterWrite(WriteParameters)
-	//Close the form if the command is "Post and close"
+	
+	// Request user to repost subordinate documents.
+	Structure = New Structure("Type, DocumentRef", "RepostSubordinateDocumentsOfSalesInvoice", Object.Ref); 
+	KeyData = CommonUseClient.StartLongAction(NStr("en = 'Posting subordinate document(s)'"), Structure, ThisForm);
 	If WriteParameters.Property("CloseAfterWrite") Then
-		Close();
+		BackgroundJobParameters.Add(True);// [5]
+	Else
+		BackgroundJobParameters.Add(False);// [5]
 	EndIf;
+	CheckObtainedData(KeyData);
+	
+	////Close the form if the command is "Post and close"
+	//If WriteParameters.Property("CloseAfterWrite") Then
+	//	Close();
+	//EndIf;
+	
 EndProcedure
 
 &AtClient
@@ -2625,6 +2642,11 @@ Procedure DwollaRequest(Command)
 	
 	DAT = DwollaAccessToken();
 	
+	If DAT = "Error" Then
+		Message(NStr("en = 'Expired access token. Please Reconnect to Dwolla in Settings > Integrations.'"));
+		Return;
+	EndIf;
+	
 	If IsBlankString(DAT) Then
 		Message(NStr("en = 'Please connect to Dwolla in Settings > Integrations.'"));
 		Return;
@@ -2735,13 +2757,61 @@ Function DwollaRequestServer(DataJSON)
 	
 EndFunction
 
-
 &AtServer
 Function DwollaAccessToken()
 	
-	Return Constants.dwolla_access_token.Get();	
+	Return GeneralFunctions.GetDwollaAccessToken();
 	
 EndFunction
 
+#Region LONG_ACTION
+
+// Attachable procedure, called as idle handler.
+&AtClient
+Procedure IdleHandlerLongAction() 
+	
+	// Process background job result.
+	KeyData = CommonUseClient.ResultProcessingLongAction(ThisForm);
+	CheckObtainedData(KeyData);
+	
+EndProcedure
+
+&AtClient
+Procedure CheckObtainedData(KeyData)
+	
+	// Check whether job finished.
+	If (TypeOf(KeyData) = Type("UUID")) Or (KeyData = Undefined) Then
+		// Job is now pending.
+	ElsIf TypeOf(KeyData) = Type("Array") Then 
+		// Show results.
+		
+		MessageText = "";
+		
+		For Each Row In KeyData Do
+			MessageText = MessageText + Row + Chars.LF;	
+		EndDo;
+		
+		If ValueIsFilled(MessageText) Then
+			ShowMessageBox(, MessageText);
+		EndIf;
+		
+		//
+		If BackgroundJobParameters[5].Value Then
+			Close();
+		EndIf;
+		
+	ElsIf TypeOf(KeyData) = Type("String") Then
+		// Error message.
+		
+		//
+		If BackgroundJobParameters[5].Value Then
+			Close();
+		EndIf;
+		
+	EndIf;
+	
+EndProcedure
+
+#EndRegion
 
 #EndRegion

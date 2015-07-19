@@ -523,7 +523,7 @@ Function inoutCompaniesCreate(jsonin) Export
 		EndIf;
 	Except
 		errorMessage = New Map();
-		strMessage = " [company_name] : This is a required field ";
+		strMessage = "[company_name] : This is a required field ";
 		errorMessage.Insert("message", strMessage);
 		errorMessage.Insert("status", "error"); 
 		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -547,7 +547,7 @@ Function inoutCompaniesCreate(jsonin) Export
 				NewCompany.Vendor = True;
 			Else
 				errorMessage = New Map();
-				strMessage = " [company_type] : Please enter customer, vendor, or customer+vendor ";
+				strMessage = "[company_type] : Please enter customer, vendor, or customer+vendor ";
 				errorMessage.Insert("message", strMessage);
 				errorMessage.Insert("status", "error"); 
 				errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -635,7 +635,7 @@ Function inoutCompaniesCreate(jsonin) Export
 						For j = 0 to i-1 Do
 							If DataAddresses[j].address_id = DataAddresses[i].address_id Then
 								errorMessage = New Map();
-								strMessage = " [address_id(" + (i+1) +  ")] : Address ID must be unique. Cannot enter identical address IDs. ";
+								strMessage = "[address_id(" + (i+1) +  ")] : Address ID must be unique. Cannot enter identical address IDs. ";
 								errorMessage.Insert("message", strMessage);
 								errorMessage.Insert("status", "error"); 
 								errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -663,7 +663,7 @@ Function inoutCompaniesCreate(jsonin) Export
 	Else
 		
 		CompanyData = New Map();
-		CompanyData.Insert("message", " [company_name] : The company already exists");
+		CompanyData.Insert("message", "[company_name] : The company already exists");
 		CompanyData.Insert("status", "error");
 		existingCompany = QueryResult.Unload();
 		CompanyData.Insert("api_code", String(existingCompany[0].Ref.UUID()));
@@ -686,7 +686,7 @@ Function inoutCompaniesCreate(jsonin) Export
 				AddressLine.Description = DataAddresses[i].address_id;
 			Else
 				errorMessage = New Map();
-				strMessage = " [address_id(" + (i+1) +  ")] : Address ID is a required field ";
+				strMessage = "[address_id(" + (i+1) +  ")] : Address ID is a required field ";
 				errorMessage.Insert("message", strMessage);
 				errorMessage.Insert("status", "error"); 
 				errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -919,7 +919,7 @@ Function inoutCompaniesUpdate(jsonin, object_code) Export
 	Try api_code = CompanyCodeJSON.object_code Except api_code = Undefined EndTry;
 	If api_code = Undefined OR api_code = "" Then
 		errorMessage = New Map();
-		strMessage = " [api_code] : Missing the company ID# ";
+		strMessage = "[api_code] : Missing the company ID# ";
 		errorMessage.Insert("message", strMessage);
 		errorMessage.Insert("status", "error"); 
 		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -932,7 +932,7 @@ Function inoutCompaniesUpdate(jsonin, object_code) Export
 		UpdatedCompany = Catalogs.Companies.getref(New UUID(api_code));
 	Except
 		errorMessage = New Map();
-		strMessage = " [api_code] : The company does not exist. Double check that the ID# is correct. ";
+		strMessage = "[api_code] : The company does not exist. Double check that the ID# is correct. ";
 		errorMessage.Insert("message", strMessage);
 		errorMessage.Insert("status", "error"); 
 		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -949,7 +949,7 @@ Function inoutCompaniesUpdate(jsonin, object_code) Export
 	companyresult = companyQuery.Execute();
 	If companyresult.IsEmpty() Then
 			errorMessage = New Map();
-			strMessage = " [api_code] : The item does not exist. Double check that the ID# is correct. ";
+			strMessage = "[api_code] : The item does not exist. Double check that the ID# is correct. ";
 			errorMessage.Insert("message", strMessage);
 			errorMessage.Insert("status", "error"); 
 			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -973,7 +973,7 @@ Function inoutCompaniesUpdate(jsonin, object_code) Export
 			UpdatedCompanyObj.Description = companyName;
 		Else
 			CompanyData = New Map();
-			CompanyData.Insert("message", " [company_name] : The company already exists");
+			CompanyData.Insert("message", "[company_name] : The company already exists");
 			CompanyData.Insert("status", "error");
 			existingCompany = QueryResult.Unload();
 			CompanyData.Insert("api_code", String(existingCompany[0].Ref.UUID()));
@@ -1079,7 +1079,7 @@ Function inoutCompaniesUpdate(jsonin, object_code) Export
 						For j = 0 to i-1 Do
 							If DataAddresses[j].address_id = DataAddresses[i].address_id Then
 								errorMessage = New Map();
-								strMessage = " [address_id(" + (i+1) +  ")] : Address ID must be unique. Cannot enter identical address IDs. ";
+								strMessage = "[address_id(" + (i+1) +  ")] : Address ID must be unique. Cannot enter identical address IDs. ";
 								errorMessage.Insert("message", strMessage);
 								errorMessage.Insert("status", "error"); 
 								errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -1118,7 +1118,7 @@ Function inoutCompaniesUpdate(jsonin, object_code) Export
 						aQueryResult = aQuery.Execute();
 					Except 
 						errorMessage = New Map();
-						strMessage = " [address.api_code] : The address does not exist. ";
+						strMessage = "[address.api_code] : The address does not exist. ";
 						errorMessage.Insert("message", strMessage);
 						errorMessage.Insert("status", "error"); 
 						errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -1254,7 +1254,7 @@ Function inoutCompaniesUpdate(jsonin, object_code) Export
 						AddrObj.Write();
 					Else
 						errorMessage = New Map();
-						strMessage = " [address.api_code] : The address does not exist. ";
+						strMessage = "[address.api_code] : The address does not exist. ";
 						errorMessage.Insert("message", strMessage);
 						errorMessage.Insert("status", "error"); 
 						errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -1269,8 +1269,8 @@ Function inoutCompaniesUpdate(jsonin, object_code) Export
 						Try AddrObj.Description = Address.address_id; 
 						Except 
 							errorMessage = New Map();
-							strMessage = " [address.address_id] : This is required to create a new address. ";
-							strMessage2 = " [address.api_code] : This is required to update an existing address. ";
+							strMessage = "[address.address_id] : This is required to create a new address. ";
+							strMessage2 = "[address.api_code] : This is required to update an existing address. ";
 							errorMessage.Insert("message1", strMessage);
 							errorMessage.Insert("message2", strMessage2);
 							errorMessage.Insert("status", "error"); 
@@ -1397,7 +1397,7 @@ Function inoutCompaniesUpdate(jsonin, object_code) Export
 						AddrObj.Write();
 					Except
 						errorMessage = New Map();
-						strMessage = " [address.address_id] : The address id already exists. It must be unique. ";
+						strMessage = "[address.address_id] : The address id already exists. It must be unique. ";
 						errorMessage.Insert("message", strMessage);
 						errorMessage.Insert("status", "error"); 
 						errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -1415,7 +1415,7 @@ Function inoutCompaniesUpdate(jsonin, object_code) Export
 		Try
 		If ParsedJSON.lines.addresses.count() > 0 Then 	
 			errorMessage = New Map();
-			strMessage = " [address.address_id] : The address id already exists. It must be unique. ";
+			strMessage = "[address.address_id] : The address id already exists. It must be unique. ";
 			errorMessage.Insert("message", strMessage);
 			errorMessage.Insert("status", "error"); 
 			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -1438,7 +1438,7 @@ Function inoutCompaniesGet(jsonin) Export
 		Company = Catalogs.Companies.GetRef(New UUID(ParsedJSON.object_code));
 	Except
 		errorMessage = New Map();
-		strMessage = " [api_code] : The company does not exist. Double check that the ID# is correct. ";
+		strMessage = "[api_code] : The company does not exist. Double check that the ID# is correct. ";
 		errorMessage.Insert("message", strMessage);
 		errorMessage.Insert("status", "error"); 
 		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -1455,7 +1455,7 @@ Function inoutCompaniesGet(jsonin) Export
 	companyresult = companyQuery.Execute();
 	If companyresult.IsEmpty() Then
 			errorMessage = New Map();
-			strMessage = " [api_code] : The item does not exist. Double check that the ID# is correct. ";
+			strMessage = "[api_code] : The item does not exist. Double check that the ID# is correct. ";
 			errorMessage.Insert("message", strMessage);
 			errorMessage.Insert("status", "error"); 
 			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -1730,7 +1730,7 @@ Function inoutItemsCreate(jsonin) Export
 	Except
 		
 		errorMessage = New Map();
-		strMessage = " [item_code] : This is a required field ";
+		strMessage = "[item_code] : This is a required field ";
 		errorMessage.Insert("message", strMessage);
 		errorMessage.Insert("status", "error"); 
 		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -1750,7 +1750,7 @@ Function inoutItemsCreate(jsonin) Export
 		Try desc = ParsedJSON.item_description Except desc = Undefined EndTry;
 		If desc = Undefined Then
 			errorMessage = New Map();
-			strMessage = " [item_description] : This is a required field ";
+			strMessage = "[item_description] : This is a required field ";
 			errorMessage.Insert("message", strMessage);
 			errorMessage.Insert("status", "error"); 
 			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -1853,7 +1853,7 @@ Function inoutItemsCreate(jsonin) Export
 	Else
 		
 		ProductData = New Map();
-		ProductData.Insert("message", " [item_code] : The item already exists. Not a unique item code.");
+		ProductData.Insert("message", "[item_code] : The item already exists. Not a unique item code.");
 		ProductData.Insert("status", "error");
 
 		existingItem = QueryResult.Unload();
@@ -1873,7 +1873,7 @@ Function inoutItemsUpdate(jsonin, object_code) Export
 	Try api_code = ProductCodeJSON.object_code Except api_code = Undefined EndTry;
 	If api_code = Undefined OR api_code = "" Then
 		errorMessage = New Map();
-		strMessage = " [api_code] : Missing the item ID# ";
+		strMessage = "[api_code] : Missing the item ID# ";
 		errorMessage.Insert("message", strMessage);
 		errorMessage.Insert("status", "error"); 
 		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -1886,7 +1886,7 @@ Function inoutItemsUpdate(jsonin, object_code) Export
 		UpdatedProduct = Catalogs.Products.getref(New UUID(api_code));
 	Except
 		errorMessage = New Map();
-		strMessage = " [api_code] : The item does not exist. Double check that the ID# is correct. ";
+		strMessage = "[api_code] : The item does not exist. Double check that the ID# is correct. ";
 		errorMessage.Insert("message", strMessage);
 		errorMessage.Insert("status", "error"); 
 		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -1903,7 +1903,7 @@ Function inoutItemsUpdate(jsonin, object_code) Export
 	itemresult = itemQuery.Execute();
 	If itemresult.IsEmpty() Then
 			errorMessage = New Map();
-			strMessage = " [api_code] : The item does not exist. Double check that the ID# is correct. ";
+			strMessage = "[api_code] : The item does not exist. Double check that the ID# is correct. ";
 			errorMessage.Insert("message", strMessage);
 			errorMessage.Insert("status", "error"); 
 			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -1927,7 +1927,7 @@ Function inoutItemsUpdate(jsonin, object_code) Export
 			UpdatedProductObj.Code = itemCode; 
 		Else
 			ProductData = New Map();
-			ProductData.Insert("message", " [item_code] : The item already exists. Not a unique item code.");
+			ProductData.Insert("message", "[item_code] : The item already exists. Not a unique item code.");
 			ProductData.Insert("status", "error");
 			existingItem = QueryResult.Unload();
 	  		ProductData.Insert("api_code", String(existingItem[0].Ref.UUID()));
@@ -2026,7 +2026,7 @@ Function inoutItemsGet(jsonin) Export
 		Product = Catalogs.Products.GetRef(New UUID(api_code));
 	Except
 		errorMessage = New Map();
-		strMessage = " [api_code] : The item does not exist. Double check that the ID# is correct. ";
+		strMessage = "[api_code] : The item does not exist. Double check that the ID# is correct. ";
 		errorMessage.Insert("message", strMessage);
 		errorMessage.Insert("status", "error"); 
 		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -2043,7 +2043,7 @@ Function inoutItemsGet(jsonin) Export
 	itemresult = itemQuery.Execute();
 	If itemresult.IsEmpty() Then
 			errorMessage = New Map();
-			strMessage = " [api_code] : The item does not exist. Double check that the ID# is correct. ";
+			strMessage = "[api_code] : The item does not exist. Double check that the ID# is correct. ";
 			errorMessage.Insert("message", strMessage);
 			errorMessage.Insert("status", "error"); 
 			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -2645,7 +2645,7 @@ Function inoutCashSalesGet(jsonin) Export
 		CashSale = Documents.CashSale.GetRef(New UUID(api_code));
 	Except
 		errorMessage = New Map();
-		strMessage = " [api_code] : The cash sale does not exist. Double check that the ID# is correct. ";
+		strMessage = "[api_code] : The cash sale does not exist. Double check that the ID# is correct. ";
 		errorMessage.Insert("message", strMessage);
 		errorMessage.Insert("status", "error"); 
 		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -2662,7 +2662,7 @@ Function inoutCashSalesGet(jsonin) Export
 	SIresult = SIQuery.Execute();
 	If SIresult.IsEmpty() Then
 			errorMessage = New Map();
-			strMessage = " [api_code] : The sales order does not exist. Double check that the ID# is correct. ";
+			strMessage = "[api_code] : The sales order does not exist. Double check that the ID# is correct. ";
 			errorMessage.Insert("message", strMessage);
 			errorMessage.Insert("status", "error"); 
 			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -3243,7 +3243,7 @@ Function inoutInvoicesGet(jsonin) Export
 		NewInvoice = Documents.SalesInvoice.GetRef(New UUID(api_code));
 	Except
 		errorMessage = New Map();
-		strMessage = " [api_code] : The sales invoice does not exist. Double check that the ID# is correct. ";
+		strMessage = "[api_code] : The sales invoice does not exist. Double check that the ID# is correct. ";
 		errorMessage.Insert("message", strMessage);
 		errorMessage.Insert("status", "error"); 
 		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -3260,7 +3260,7 @@ Function inoutInvoicesGet(jsonin) Export
 	SIresult = SIQuery.Execute();
 	If SIresult.IsEmpty() Then
 			errorMessage = New Map();
-			strMessage = " [api_code] : The sales invoice does not exist. Double check that the ID# is correct. ";
+			strMessage = "[api_code] : The sales invoice does not exist. Double check that the ID# is correct. ";
 			errorMessage.Insert("message", strMessage);
 			errorMessage.Insert("status", "error"); 
 			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -3573,7 +3573,7 @@ Function inoutSalesOrdersCreate(jsonin) Export
 		NewSO.Date = ParsedJSON.date;
 		If NewSO.Date = wrongDate Then
 			errorMessage = New Map();
-			strMessage = " [date] : Date must be in the format of YYYY-MM-DD ";
+			strMessage = "[date] : Date must be in the format of YYYY-MM-DD ";
 			errorMessage.Insert("message", strMessage);
 			errorMessage.Insert("status", "error"); 
 			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -3590,7 +3590,7 @@ Function inoutSalesOrdersCreate(jsonin) Export
 		NewSO.DeliveryDate = ParsedJSON.promise_date;
 		If NewSO.DeliveryDate = wrongDate Then
 			errorMessage = New Map();
-			strMessage = " [promise_date] : Date must be in the format of YYYY-MM-DD ";
+			strMessage = "[promise_date] : Date must be in the format of YYYY-MM-DD ";
 			errorMessage.Insert("message", strMessage);
 			errorMessage.Insert("status", "error"); 
 			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -3652,7 +3652,7 @@ Function inoutSalesOrdersUpdate(jsonin, object_code) Export
 	Try api_code = SONumberJSON.object_code Except api_code = Undefined EndTry;
 	If api_code = Undefined  OR api_code = "" Then
 		errorMessage = New Map();
-		strMessage = " [api_code] : Missing sales order ID# ";
+		strMessage = "[api_code] : Missing sales order ID# ";
 		errorMessage.Insert("message", strMessage);
 		errorMessage.Insert("status", "error"); 
 		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -3663,7 +3663,7 @@ Function inoutSalesOrdersUpdate(jsonin, object_code) Export
 		XSO = Documents.SalesOrder.GetRef(New UUID(api_code));
 	Except
 		errorMessage = New Map();
-		strMessage = " [api_code] : The sales order does not exist. Double check that the ID# is correct. ";
+		strMessage = "[api_code] : The sales order does not exist. Double check that the ID# is correct. ";
 		errorMessage.Insert("message", strMessage);
 		errorMessage.Insert("status", "error"); 
 		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -3680,7 +3680,7 @@ Function inoutSalesOrdersUpdate(jsonin, object_code) Export
 	SOresult = SOQuery.Execute();
 	If SOresult.IsEmpty() Then
 			errorMessage = New Map();
-			strMessage = " [api_code] : The sales order does not exist. Double check that the ID# is correct. ";
+			strMessage = "[api_code] : The sales order does not exist. Double check that the ID# is correct. ";
 			errorMessage.Insert("message", strMessage);
 			errorMessage.Insert("status", "error"); 
 			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -3745,7 +3745,7 @@ Function inoutSalesOrdersUpdate(jsonin, object_code) Export
 		NewSO.Date = ParsedJSON.date;
 		If NewSO.Date = wrongDate Then
 			errorMessage = New Map();
-			strMessage = " [date] : Date must be in the format of YYYY-MM-DD ";
+			strMessage = "[date] : Date must be in the format of YYYY-MM-DD ";
 			errorMessage.Insert("message", strMessage);
 			errorMessage.Insert("status", "error"); 
 			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -3762,7 +3762,7 @@ Function inoutSalesOrdersUpdate(jsonin, object_code) Export
 		NewSO.DeliveryDate = ParsedJSON.promise_date;
 		If NewSO.DeliveryDate = wrongDate Then
 			errorMessage = New Map();
-			strMessage = " [promise_date] : Date must be in the format of YYYY-MM-DD ";
+			strMessage = "[promise_date] : Date must be in the format of YYYY-MM-DD ";
 			errorMessage.Insert("message", strMessage);
 			errorMessage.Insert("status", "error"); 
 			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -3822,7 +3822,7 @@ Function inoutSalesOrdersGet(jsonin) Export
 		SO = Documents.SalesOrder.GetRef(New UUID(api_code));
 	Except
 		errorMessage = New Map();
-		strMessage = " [api_code] : The sales order does not exist. Double check that the ID# is correct. ";
+		strMessage = "[api_code] : The sales order does not exist. Double check that the ID# is correct. ";
 		errorMessage.Insert("message", strMessage);
 		errorMessage.Insert("status", "error"); 
 		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -3839,7 +3839,7 @@ Function inoutSalesOrdersGet(jsonin) Export
 	SOresult = SOQuery.Execute();
 	If SOresult.IsEmpty() Then
 			errorMessage = New Map();
-			strMessage = " [api_code] : The sales order does not exist. Double check that the ID# is correct. ";
+			strMessage = "[api_code] : The sales order does not exist. Double check that the ID# is correct. ";
 			errorMessage.Insert("message", strMessage);
 			errorMessage.Insert("status", "error"); 
 			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -4157,7 +4157,7 @@ Function inoutPurchaseOrdersCreate(jsonin) Export
 		addrResult = newQuery.Execute();
 		If addrResult.IsEmpty() Then
 			errorMessage = New Map();
-			strMessage = " [address_api_code] : Purchase Address does not belong to the Company ";
+			strMessage = "[address_api_code] : Purchase Address does not belong to the Company ";
 			errorMessage.Insert("status", "error"); 
 			errorMessage.Insert("message", strMessage);
 			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -4329,7 +4329,7 @@ Function inoutPurchaseOrdersCreate(jsonin) Export
 		DropResult = newQuery.Execute();
 		If DropResult.IsEmpty() Then
 			errorMessage = New Map();
-			strMessage = " [ds_address_api_code] : Dropship Address does not belong to the Company " ;
+			strMessage = "[ds_address_api_code] : Dropship Address does not belong to the Company " ;
 			errorMessage.Insert("status", "error");
 			errorMessage.Insert("message", strMessage );
 			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -4342,7 +4342,7 @@ Function inoutPurchaseOrdersCreate(jsonin) Export
 	Try po_date = ParsedJSON.po_date Except po_date = Undefined EndTry;
 	If po_date = Undefined Then
 		errorMessage = New Map();
-		strMessage = " [po_date] : This field is required ";
+		strMessage = "[po_date] : This field is required ";
 		errorMessage.Insert("message", strMessage);
 		errorMessage.Insert("status", "error"); 
 		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -4353,7 +4353,7 @@ Function inoutPurchaseOrdersCreate(jsonin) Export
 	NewPO.Date = ParsedJSON.po_date;
 	If NewPO.Date = wrongDate Then
 		errorMessage = New Map();
-		strMessage = " [po_date] : Date must be in the format of YYYY-MM-DD ";
+		strMessage = "[po_date] : Date must be in the format of YYYY-MM-DD ";
 		errorMessage.Insert("message", strMessage);
 		errorMessage.Insert("status", "error"); 
 		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -4370,7 +4370,7 @@ Function inoutPurchaseOrdersCreate(jsonin) Export
 		NewPO.DeliveryDate = ParsedJSON.delivery_date;
 		If NewPO.DeliveryDate = wrongDate Then
 			errorMessage = New Map();
-			strMessage = " [delivery_date] : Date must be in the format of YYYY-MM-DD ";
+			strMessage = "[delivery_date] : Date must be in the format of YYYY-MM-DD ";
 			errorMessage.Insert("message", strMessage);
 			errorMessage.Insert("status", "error"); 
 			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -4389,7 +4389,7 @@ Function inoutPurchaseOrdersCreate(jsonin) Export
 	Try doc_total = ParsedJSON.doc_total Except doc_total = Undefined EndTry;
 	If doc_total = Undefined Then
 		errorMessage = New Map();
-		strMessage = " [doc_total] : This field is required " ;
+		strMessage = "[doc_total] : This field is required " ;
 		errorMessage.Insert("status", "error");
 		errorMessage.Insert("message", strMessage );
 		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -4449,7 +4449,7 @@ Function inoutPurchaseOrdersCreate(jsonin) Export
 	Try DataLineItems = ParsedJSON.lines.line_items Except DataLineItems = Undefined EndTry;
 	If DataLineItems = Undefined Then
 		errorMessage = New Map();
-		strMessage = " [lines] : Must enter at least one line with correct line items " ;
+		strMessage = "[lines] : Must enter at least one line with correct line items " ;
 		errorMessage.Insert("status", "error");
 		errorMessage.Insert("message", strMessage );
 		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -4476,7 +4476,7 @@ Function inoutPurchaseOrdersCreate(jsonin) Export
 			itemsResult = itemsQuery.Execute();
 			If itemsResult.IsEmpty() Then
 				errorMessage = New Map();
-				strMessage = " [line_items(" + string(i+1) + ").api_code] : Item does not exist" ;
+				strMessage = "[line_items(" + string(i+1) + ").api_code] : Item does not exist" ;
 				errorMessage.Insert("status", "error");
 				errorMessage.Insert("message", strMessage );
 				errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -4485,7 +4485,7 @@ Function inoutPurchaseOrdersCreate(jsonin) Export
 			NewLine.Product = Product;
 		Else
 			errorMessage = New Map();
-			strMessage = " [line_items(" + string(i+1) + ").api_code] : Item code is missing. This is a required field for lines " ;
+			strMessage = "[line_items(" + string(i+1) + ").api_code] : Item code is missing. This is a required field for lines " ;
 			errorMessage.Insert("status", "error");
 			errorMessage.Insert("message", strMessage );
 			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -4499,7 +4499,7 @@ Function inoutPurchaseOrdersCreate(jsonin) Export
 			NewLine.PriceUnits = price;
 		Else
 			errorMessage = New Map();
-			strMessage = " [line_items(" + string(i+1) + ").price] : This is a required field for lines " ;
+			strMessage = "[line_items(" + string(i+1) + ").price] : This is a required field for lines " ;
 			errorMessage.Insert("status", "error");
 			errorMessage.Insert("message", strMessage );
 			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -4511,7 +4511,7 @@ Function inoutPurchaseOrdersCreate(jsonin) Export
 			NewLine.QtyUnits = quantity;
 		Else
 			errorMessage = New Map();
-			strMessage = " [line_items(" + string(i+1) + ").quantity] : This is a required field for lines " ;
+			strMessage = "[line_items(" + string(i+1) + ").quantity] : This is a required field for lines " ;
 			errorMessage.Insert("status", "error");
 			errorMessage.Insert("message", strMessage );
 			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -4523,7 +4523,7 @@ Function inoutPurchaseOrdersCreate(jsonin) Export
 			NewLine.LineTotal = linetotal;
 		Else
 			errorMessage = New Map();
-			strMessage = " [line_items(" + string(i+1) + ").line_total] : This is a required field for lines " ;
+			strMessage = "[line_items(" + string(i+1) + ").line_total] : This is a required field for lines " ;
 			errorMessage.Insert("status", "error");
 			errorMessage.Insert("message", strMessage );
 			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -4532,7 +4532,7 @@ Function inoutPurchaseOrdersCreate(jsonin) Export
 		
 		If NewLine.LineTotal <> (NewLine.QtyUnits * NewLine.PriceUnits) Then
 			errorMessage = New Map();
-			strMessage = " [line_items(" + string(i+1) + ").line_total] : Line item's total does not match quantity * price " ;
+			strMessage = "[line_items(" + string(i+1) + ").line_total] : Line item's total does not match quantity * price " ;
 			errorMessage.Insert("status", "error");
 			errorMessage.Insert("message", strMessage );
 			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -4796,6 +4796,218 @@ Function inoutCashReceiptCreate(jsonin) Export
 	
 EndFunction
 
+Function inoutChartOfAccountsListAll(jsonin, limit, start_after, end_before) Export
+		
+	Try limit = Number(limit);
+	Except
+		limit = 10; //default
+	EndTry;
+	
+	If limit < 1 Then 
+		errorMessage = New Map();
+		strMessage = "[limit] : Cannot have a value less than 1";
+		errorMessage.Insert("message", strMessage);
+		errorMessage.Insert("status", "error"); 
+		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+		return errorJSON;
+	EndIf;
+	
+	If start_after <> "undefined" AND end_before <> "undefined" Then
+		
+		errorMessage = New Map();
+		strMessage = "Please choose only one, start_after or end_before.";
+		errorMessage.Insert("message", strMessage);
+		errorMessage.Insert("status", "error"); 
+		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+		return errorJSON;
+		
+	ElsIf start_after <> "undefined" AND end_before = "undefined" Then
+		
+		Try
+			COA = ChartsOfAccounts.ChartOfAccounts.GetRef(New UUID(start_after));
+			If COA = ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
+				errorMessage = New Map();
+				strMessage = "[start_after] : The account does not exist. Double check that the api_code is correct. ";
+				errorMessage.Insert("message", strMessage);
+				errorMessage.Insert("status", "error"); 
+				errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+				return errorJSON;
+			EndIf;
+		Except
+			errorMessage = New Map();
+			strMessage = "[start_after] : The account does not exist. Double check that the api_code is correct. ";
+			errorMessage.Insert("message", strMessage);
+			errorMessage.Insert("status", "error"); 
+			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+			return errorJSON;
+		EndTry;
+		
+		ParsedJSON = InternetConnectionClientServer.DecodeJSON(jsonin);
+		Query = New Query("SELECT
+		                  |	ChartOfAccounts.Ref
+		                  |FROM
+		                  |	ChartOfAccounts.ChartOfAccounts AS ChartOfAccounts
+		                  |
+		                  |ORDER BY
+		                  |	ChartOfAccounts.Code");
+					  
+		Result = Query.Execute().Select();
+		Result_array = Query.Execute().Unload();
+		
+		Accounts = New Array();
+		
+		i = 0;
+		j = 0;
+		While i < Result.Count() Do
+			If Result_array[i].Ref = COA.Ref Then
+				j = i+1;
+				break;
+			EndIf;
+			i = i + 1;
+		EndDo;
+		
+		limit = limit + j;
+		numRecords = 0;
+		While j < limit AND j < Result.Count() Do
+			Accounts.Add(Webhooks.ReturnChartOfAccountMap(Result_array[j].Ref));
+			numRecords = numRecords+1;
+			j = j + 1;
+		EndDo;
+		
+		If j+1 < Result.Count() Then 
+			has_more = TRUE;
+		Else
+			has_more = FALSE;
+		EndIf;
+		
+		AccountList = New Map();
+		AccountList.Insert("chart_of_accounts", Accounts);
+		AccountList.Insert("more_records", has_more);
+		AccountList.Insert("num_records_listed",numRecords);
+		AccountList.Insert("total_num_records", Result.Count());
+		
+		jsonout = InternetConnectionClientServer.EncodeJSON(AccountList);
+		
+		Return jsonout;
+		
+	ElsIf start_after = "undefined" AND end_before <> "undefined" Then
+		
+		Try
+			COA = ChartsOfAccounts.ChartOfAccounts.GetRef(New UUID(end_before));
+			If COA = ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
+				errorMessage = New Map();
+				strMessage = "[end_before] : The account does not exist. Double check that the api_code is correct. ";
+				errorMessage.Insert("message", strMessage);
+				errorMessage.Insert("status", "error"); 
+				errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+				return errorJSON;	
+			EndIf;
+			
+		Except
+			errorMessage = New Map();
+			strMessage = "[end_before] : The account does not exist. Double check that the api_code is correct. ";
+			errorMessage.Insert("message", strMessage);
+			errorMessage.Insert("status", "error"); 
+			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+			return errorJSON;
+		EndTry;
+		
+		ParsedJSON = InternetConnectionClientServer.DecodeJSON(jsonin);
+		Query = New Query("SELECT
+		                  |	ChartOfAccounts.Ref
+		                  |FROM
+		                  |	ChartOfAccounts.ChartOfAccounts AS ChartOfAccounts
+		                  |
+		                  |ORDER BY
+		                  |	ChartOfAccounts.Code");
+					  
+		Result = Query.Execute().Select();
+		Result_array = Query.Execute().Unload();
+		
+		Accounts = New Array();
+		
+		i = 0;
+		j = 0;
+		While i < Result.Count() Do
+			If Result_array[i].Ref = COA.Ref Then
+				j = i;
+				break;
+			EndIf;
+			i = i + 1;
+		EndDo;
+		
+		start = j - limit;
+		If start < 0 Then
+			start = 0;
+		EndIf;
+		
+		numRecords = 0;
+		While start < j AND start < Result.Count() Do
+			Accounts.Add(Webhooks.ReturnChartOfAccountMap(Result_array[start].Ref));
+			numRecords = numRecords+1;
+			start = start + 1;
+		EndDo;
+		
+		If start+1 < Result.Count() Then 
+			has_more = TRUE;
+		Else
+			has_more = FALSE;
+		EndIf;
+		
+		AccountList = New Map();
+		AccountList.Insert("charge_of_accounts", Accounts);
+		AccountList.Insert("more_records", has_more);
+		AccountList.Insert("num_records_listed",numRecords);
+		AccountList.Insert("total_num_records", Result.Count());
+		
+		jsonout = InternetConnectionClientServer.EncodeJSON(AccountList);
+		
+		Return jsonout;
+		
+	Else
+		// both undefined, just print with limit
+		ParsedJSON = InternetConnectionClientServer.DecodeJSON(jsonin);
+		Query = New Query("SELECT
+		                  |	ChartOfAccounts.Ref
+		                  |FROM
+		                  |	ChartOfAccounts.ChartOfAccounts AS ChartOfAccounts
+		                  |
+		                  |ORDER BY
+		                  |	ChartOfAccounts.Code");
+					  
+		Result = Query.Execute().Select();
+		Result_array = Query.Execute().Unload();
+		
+		Accounts = New Array();
+		
+		i = 0;
+		numRecords = 0;
+		While i < limit AND i < Result.Count() Do
+			Accounts.Add(Webhooks.ReturnChartOfAccountMap(Result_array[i].Ref));
+			numRecords = numRecords+1;
+			i = i + 1;
+		EndDo;
+		
+		If numRecords < Result.Count() Then 
+			has_more = TRUE;
+		Else
+			has_more = FALSE;
+		EndIf;
+		
+		AccountList = New Map();
+		AccountList.Insert("chart_of_accounts", Accounts);
+		AccountList.Insert("more_records", has_more);
+		AccountList.Insert("num_records_listed",numRecords);
+		AccountList.Insert("total_num_records", Result.Count());
+		
+		jsonout = InternetConnectionClientServer.EncodeJSON(AccountList);
+		
+		Return jsonout;
+		
+	EndIf;
+
+EndFunction
+
 
 Function handleDocumentAddresses(ParsedJSON, DocRef, status) Export
 	// SHIP TO ADDRESS SECTION
@@ -5033,7 +5245,7 @@ Function handleDocumentTotals(ParsedJSON, DocRef) Export
 			NewLine.Product = Product;
 		Else
 			errorMessage = New Map();
-			strMessage = " [line_items(" + string(i+1) + ").api_code] : Item code is missing. This is a required field for lines " ;
+			strMessage = "[line_items(" + string(i+1) + ").api_code] : Item code is missing. This is a required field for lines " ;
 			errorMessage.Insert("status", "error");
 			errorMessage.Insert("message", strMessage );
 			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -5047,7 +5259,7 @@ Function handleDocumentTotals(ParsedJSON, DocRef) Export
 			NewLine.PriceUnits = number(price);
 		Else
 			errorMessage = New Map();
-			strMessage = " [line_items(" + string(i+1) + ").price] : This is a required field for lines " ;
+			strMessage = "[line_items(" + string(i+1) + ").price] : This is a required field for lines " ;
 			errorMessage.Insert("status", "error");
 			errorMessage.Insert("message", strMessage );
 			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -5061,7 +5273,7 @@ Function handleDocumentTotals(ParsedJSON, DocRef) Export
 		Else
 			
 			errorMessage = New Map();
-			strMessage = " [line_items(" + string(i+1) + ").quantity] : This is a required field for lines " ;
+			strMessage = "[line_items(" + string(i+1) + ").quantity] : This is a required field for lines " ;
 			errorMessage.Insert("status", "error");
 			errorMessage.Insert("message", strMessage );
 			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -5074,7 +5286,7 @@ Function handleDocumentTotals(ParsedJSON, DocRef) Export
 			NewLine.LineTotal = linetotal;
 		Else
 			//errorMessage = New Map();
-			//strMessage = " [line_items(" + string(i+1) + ").line_total] : This is a required field for lines " ;
+			//strMessage = "[line_items(" + string(i+1) + ").line_total] : This is a required field for lines " ;
 			//errorMessage.Insert("status", "error");
 			//errorMessage.Insert("message", strMessage );
 			//errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
@@ -5112,5 +5324,194 @@ Function handleDocumentTotals(ParsedJSON, DocRef) Export
 	EndTry;
 	
 	Return DocRef;
+	
+EndFunction
+
+Function inoutBillsCreate(jsonin) Export
+		
+	ParsedJSON = InternetConnectionClientServer.DecodeJSON(jsonin);
+		
+	NewBill = Documents.PurchaseInvoice.CreateDocument();
+	
+	Try vendor_code = ParsedJSON.vendor_code Except vendor_code = Undefined EndTry;
+	Try vendor_name = ParsedJSON.vendor_name Except vendor_name = Undefined EndTry;
+	Try vendor_api_code = ParsedJSON.vendor_api_code Except vendor_api_code = Undefined EndTry;
+	
+	If vendor_code <> Undefined And vendor_name = Undefined And vendor_api_code = Undefined Then
+		NewBill.Company = Catalogs.Companies.FindByCode(vendor_code);
+		If NewBill.Company = Catalogs.Companies.EmptyRef() Then
+			errorMessage = New Map();
+			strMessage = "[vendor_code] : The vendor does not exist.";
+			errorMessage.Insert("message", strMessage);
+			errorMessage.Insert("status", "error"); 
+			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+			return errorJSON;
+		EndIf;
+			
+	ElsIf vendor_code = Undefined And vendor_name <> Undefined And vendor_api_code = Undefined Then
+		NewBill.Company = Catalogs.Companies.FindByDescription(vendor_name);
+		If NewBill.Company = Catalogs.Companies.EmptyRef() Then
+			errorMessage = New Map();
+			strMessage = "[vendor_name] : The vendor does not exist.";
+			errorMessage.Insert("message", strMessage);
+			errorMessage.Insert("status", "error"); 
+			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+			return errorJSON;
+		EndIf;
+	ElsIf vendor_code = Undefined And vendor_name = Undefined And vendor_api_code <> Undefined Then
+		Try
+			NewBill.Company = Catalogs.Companies.GetRef(New UUID(vendor_api_code));
+		Except
+			errorMessage = New Map();
+			strMessage = "[vendor_api_code] : The vendor does not exist.";
+			errorMessage.Insert("message", strMessage);
+			errorMessage.Insert("status", "error"); 
+			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+			return errorJSON;
+		EndTry;
+		
+		If NewBill.Company = Catalogs.Companies.EmptyRef() Then
+			errorMessage = New Map();
+			strMessage = "[vendor_api_code] : The vendor does not exist.";
+			errorMessage.Insert("message", strMessage);
+			errorMessage.Insert("status", "error"); 
+			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+			return errorJSON;
+		EndIf;
+		
+	Else
+		errorMessage = New Map();
+		strMessage = "Must enter exactly one of the following: vendor_code, vendor_name, or vendor_api_code.";
+		errorMessage.Insert("message", strMessage);
+		errorMessage.Insert("status", "error"); 
+		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+		return errorJSON;
+	EndIf;
+	
+	ShipQuery = New Query("SELECT
+	                      |	Addresses.Ref
+	                      |FROM
+	                      |	Catalog.Addresses AS Addresses
+	                      |WHERE
+	                      |	Addresses.Owner = &Owner
+	                      |	AND Addresses.DefaultShipping = TRUE");
+						  
+	ShipQuery.SetParameter("Owner", NewBill.Company);
+	QueryResult = ShipQuery.Execute();
+	If Not QueryResult.IsEmpty() Then
+		ShipResult = QueryResult.Unload();
+		NewBill.CompanyAddress = ShipResult[0].Ref;
+	EndIf;
+	
+	NewBill.Terms = NewBill.Company.Terms;
+	
+	If NewBill.Company.APAccount <> ChartsofAccounts.ChartOfAccounts.EmptyRef() Then
+		NewBill.APAccount = NewBill.Company.APAccount;
+	Else
+		DefaultCurrency = GeneralFunctionsReusable.DefaultCurrency();
+		NewBill.APAccount = DefaultCurrency.DefaultAPAccount;
+	EndIf;
+	
+	NewBill.Currency = Catalogs.Currencies.USD;
+	NewBill.ExchangeRate = 1;
+	
+	NewBill.Date = CurrentSessionDate();
+
+	EmptyDate = '00010101';
+	NewBill.DueDate = ?(Not NewBill.Terms.IsEmpty(), NewBill.Date + NewBill.Terms.Days * 60*60*24, EmptyDate);
+	NewBill.LocationActual = Catalogs.Locations.MainWarehouse;
+	
+	Try NewBill.Memo = ParsedJSON.memo; Except EndTry;
+	
+	Try 
+		BillChecker = Documents.PurchaseInvoice.FindByNumber(ParsedJSON.bill_number);
+		If BillChecker = Documents.PurchaseInvoice.EmptyRef() Then
+			NewBill.Number = ParsedJSON.bill_number;
+		Else
+			errorMessage = New Map();
+			strMessage = "[bill_number]: This number is not unique.";
+			errorMessage.Insert("message", strMessage);
+			errorMessage.Insert("status", "error"); 
+			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+			return errorJSON;
+		EndIf;			
+	Except 
+	
+	EndTry;
+		
+	Try DataLineItems = ParsedJSON.lines.expenses Except DataLineItems = Undefined EndTry;
+	If DataLineItems = Undefined Then
+		errorMessage = New Map();
+		strMessage = "[lines] : Must enter at least one line with correct expense information.";
+		errorMessage.Insert("status", "error");
+		errorMessage.Insert("message", strMessage );
+		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+		return errorJSON;
+	EndIf;
+	
+	Try
+		If DataLineItems.Count() < 1 Then
+			errorMessage = New Map();
+			strMessage = "[lines] : Must enter at least one line with correct expense information.";
+			errorMessage.Insert("status", "error");
+			errorMessage.Insert("message", strMessage );
+			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+			return errorJSON;	
+		EndIf;
+	Except
+		errorMessage = New Map();
+		strMessage = "[lines] : Must enter at least one line with correct expense information.";
+		errorMessage.Insert("status", "error");
+		errorMessage.Insert("message", strMessage );
+		errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+		return errorJSON;
+	EndTry;
+	
+	TotalAmount = 0;
+	For Each exp in DataLineItems Do
+		NewLine = NewBill.Accounts.Add();
+		Try 
+			NewLine.Amount = exp.amount;
+			TotalAmount = TotalAmount + NewLine.Amount; 	
+		Except 
+		EndTry;
+		Try NewLine.Memo = exp.memo; Except EndTry;
+		Try account_code = exp.account_code; Except account_code = Undefined EndTry;
+		Try account_name = exp.account_name; Except account_name = Undefined EndTry;
+		If account_code <> Undefined And account_name = Undefined Then
+			NewLine.Account = ChartsOfAccounts.ChartOfAccounts.FindByCode(account_code);
+			If NewLine.Account = ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
+				errorMessage = New Map();
+				strMessage = "[account_code] : The account code " + account_code + " does not exist.";
+				errorMessage.Insert("status", "error");
+				errorMessage.Insert("message", strMessage );
+				errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+				return errorJSON;	
+			EndIf;	
+		ElsIf account_code = Undefined And account_name <> Undefined Then
+			NewLine.Account = ChartsOfAccounts.ChartOfAccounts.FindByDescription(account_name);
+			If NewLine.Account = ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
+				errorMessage = New Map();
+				strMessage = "[account_name] : The account name " + account_name + " does not exist.";
+				errorMessage.Insert("status", "error");
+				errorMessage.Insert("message", strMessage );
+				errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+				return errorJSON;	
+			EndIf;
+		Else
+			errorMessage = New Map();
+			strMessage = "[account] : Must enter either account_name or account_code for each line.";
+			errorMessage.Insert("status", "error");
+			errorMessage.Insert("message", strMessage );
+			errorJSON = InternetConnectionClientServer.EncodeJSON(errorMessage);
+			return errorJSON;		
+		EndIf;	
+	EndDo;
+	NewBill.DocumentTotal   = TotalAmount;
+	NewBill.DocumentTotalRC = Round(NewBill.DocumentTotal * NewBill.ExchangeRate, 2); 
+	
+	NewBill.Write(DocumentWriteMode.Posting);
+	
+	Return InternetConnectionClientServer.EncodeJSON(Webhooks.ReturnPurchaseInvoiceMap(NewBill.Ref));	
 	
 EndFunction

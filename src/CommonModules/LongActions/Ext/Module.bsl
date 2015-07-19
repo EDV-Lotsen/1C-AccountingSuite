@@ -224,7 +224,7 @@ Procedure InformActionProgres(Val Progress = Undefined, Val Text = Undefined, Va
 	Text = "{CommonSubsystems.LongActions}" + ResultText;
 	CommonUseClientServer.MessageToUser(Text);
 	
-	GetUserMessages(True); // Удаление предыдущих сообщений.
+	GetUserMessages(Истина); // Удаление предыдущих сообщений.
 	
 EndProcedure
 
@@ -242,7 +242,7 @@ Function GetActionProgress(Val JobUID) Export
 	EndIf;
 	
 	MessagesArray = CurrentJob.GetUserMessages(True);
-	If MessagesArray = Undefined Then
+	If MessagesArray = Undefined Тогда
 		Return Result;
 	EndIf;;
 	

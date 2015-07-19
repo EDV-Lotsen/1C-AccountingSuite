@@ -241,7 +241,7 @@ Procedure ExportVendors(Command)
 	
 	Structure = GeneralFunctions.GetExcelFile("Vendors", Spreadsheet);
 	
-	GetFile(Structure.Address, Structure.FileName, True); 
+	GetFile(Structure.Address, StrReplace(Structure.FileName, ".xlsx",".acs"), True); 
 	
 EndProcedure
 
@@ -249,15 +249,11 @@ EndProcedure
 Procedure ImportVendors(Command)
 	
 	If ListIsEmpty() Then
-		
 		Notify = New NotifyDescription("ExcelFileUpload", ThisForm);
 		
-		BeginPutFile(Notify, "", "*.xls", True, ThisForm.UUID);
-			
+		BeginPutFile(Notify, "", "*.acs", True, ThisForm.UUID);
 	Else
-		
 		ShowMessageBox(,NStr("en = 'This function available for the empty list only!'"));
-		
 	EndIf;
 	
 EndProcedure
@@ -324,17 +320,13 @@ EndFunction
 &AtClient
 Procedure ExcelFileUpload(Result, Address, SelectedFileName, AdditionalParameters) Export
 	
-	If (Find(SelectedFileName, ".xls") = 0)
-		And (Find(SelectedFileName, ".xlsx") = 0)
-		And (Find(SelectedFileName, ".XLS") = 0)
-		And (Find(SelectedFileName, ".XLSX") = 0)
-		Then
-		ShowMessageBox(, NStr("en = 'Please upload a valid Excel file (.xls, .xlsx)'"));
+	If Find(SelectedFileName, ".acs") = 0 Then
+		ShowMessageBox(, NStr("en = 'Please upload a valid ACS file (.acs)'"));
 		Return;
 	EndIf;
 	
 	If ValueIsFilled(Address) Then
-		ShowUserNotification(NStr("en = 'Reading file with  Microsoft Excel...'"));
+		ShowUserNotification(NStr("en = 'Reading file with  ACS...'"));
 		
 		Errors = False;
 		ImportData(Address, Errors);
@@ -499,6 +491,26 @@ Procedure CreateVendors(VT, Errors)
 	Else
 		CommitTransaction();
 	EndIf;
+	
+	//Set last numbering for companies
+	Query = New Query;
+	Query.Text = 
+		"SELECT
+		|	MAX(Companies.Code) AS Code
+		|FROM
+		|	Catalog.Companies AS Companies";
+	
+	QueryResult = Query.Execute();
+	
+	SelectionDetailRecords = QueryResult.Select();
+	
+	While SelectionDetailRecords.Next() Do
+		
+		LastNumber = Catalogs.DocumentNumbering.Companies.GetObject();
+		LastNumber.Number = SelectionDetailRecords.Code;
+		LastNumber.Write();
+		
+	EndDo;
 	
 EndProcedure
 

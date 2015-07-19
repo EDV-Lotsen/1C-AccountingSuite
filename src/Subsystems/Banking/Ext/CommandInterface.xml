@@ -8,7 +8,7 @@
 		</Command>
 		<Command name="DataProcessor.DownloadedTransactions.Command.DownloadedTransactions">
 			<Visibility>
-				<xr:Common>true</xr:Common>
+				<xr:Common>false</xr:Common>
 				<xr:Value name="Role.ReportOnly">false</xr:Value>
 				<xr:Value name="Role.ListUser">false</xr:Value>
 			</Visibility>
@@ -57,11 +57,6 @@
 				<xr:Common>false</xr:Common>
 			</Visibility>
 		</Command>
-		<Command name="0:965acdfa-9eb3-4406-9bf4-3d11803f8d0b">
-			<Visibility>
-				<xr:Common>false</xr:Common>
-			</Visibility>
-		</Command>
 	</CommandsVisibility>
 	<CommandsPlacement>
 		<Command name="Document.InvoicePayment.StandardCommand.OpenList">
@@ -89,9 +84,6 @@
 			<CommandGroup>NavigationPanelImportant</CommandGroup>
 		</Command>
 		<Command name="DataProcessor.BankRegister.Command.BankRegister">
-			<CommandGroup>NavigationPanelImportant</CommandGroup>
-		</Command>
-		<Command name="0:98f9d8aa-3fcc-4333-9bd8-6d9f6bbd7dfa">
 			<CommandGroup>NavigationPanelImportant</CommandGroup>
 		</Command>
 		<Command name="Document.Check.StandardCommand.OpenList">
@@ -131,9 +123,6 @@
 			<CommandGroup>ActionsPanelTools</CommandGroup>
 		</Command>
 		<Command name="DataProcessor.BankRegister.StandardCommand.Open">
-			<CommandGroup>ActionsPanelTools</CommandGroup>
-		</Command>
-		<Command name="0:965acdfa-9eb3-4406-9bf4-3d11803f8d0b">
 			<CommandGroup>ActionsPanelTools</CommandGroup>
 		</Command>
 	</CommandsOrder>

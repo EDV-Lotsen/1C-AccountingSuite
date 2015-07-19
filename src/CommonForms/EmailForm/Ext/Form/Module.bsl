@@ -141,12 +141,14 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
 	EndIf;
 	
-	If TypeOf(DocObject) = Type("DocumentObject.CashReceipt") Then
-		Subject = Constants.SystemTitle.Get() + " - " + DocumentType + " " + Parameters.Ref.Number + " from " + Format(Parameters.Ref.Date,"DLF=D") + " - " + Parameters.Ref.Currency.Description + " " + Format(Parameters.Ref.CashPayment,"NFD=2");
+	If TypeOf(DocObject) = Type("DocumentObject.PurchaseOrder") Then
+		Subject = DocumentType + " from " + Constants.SystemTitle.Get() + " (#" +  Parameters.Ref.Number + ")" ;
 	ElsIf TypeOf(DocObject) = Type("DocumentObject.Statement") Then
-		Subject = Constants.SystemTitle.Get() + " - " + DocumentType + " " + Parameters.Ref.Number + " from " + Format(Parameters.Ref.Date,"DLF=D");
+		Subject = "Your " + DocumentType + " from " + Constants.SystemTitle.Get() + " (" + Format(Parameters.Ref.BeginOfPeriod,"DLF=D") + " - " + Format(Parameters.Ref.Date,"DLF=D") + ")";
+	ElsIf TypeOf(DocObject) = Type("DocumentObject.CashReceipt") Then
+		Subject = "Receipt for your payment to " + Constants.SystemTitle.Get();	
 	Else
-		Subject = Constants.SystemTitle.Get() + " - " + DocumentType + " " + Parameters.Ref.Number + " from " + Format(Parameters.Ref.Date,"DLF=D") + " - " + Parameters.Ref.Currency.Description + " " + Format(Parameters.Ref.DocumentTotal,"NFD=2");
+		Subject = "Your " + DocumentType + " from " + Constants.SystemTitle.Get() + " (#" +  Parameters.Ref.Number + ")" ;
 	EndIf;
 	
 	PreviewDisplay = SD;

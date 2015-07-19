@@ -1000,6 +1000,7 @@ Procedure ZohoThisSO(action, Ref) Export
 			Result = HTTPConnection.Post(HTTPRequest);
 		Else
 			// no sales order to update in zoho;
+			ZohoThisSO("create", Ref);
 			return;
 		EndIf;
 	EndIf;				
@@ -1739,6 +1740,7 @@ Procedure ZohoThisInvoice(action, Ref) Export
 			Result = HTTPConnection.Post(HTTPRequest);
 		Else
 			// no sales INVOICE to update in zoho;
+			ZohoThisInvoice("create", Ref);
 			return;
 		EndIf;
 	EndIf;		

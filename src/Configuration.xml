@@ -47,7 +47,7 @@
 				<xr:Item xsi:type="xr:MDObjectRef">Role.FullAccess</xr:Item>
 			</DefaultRoles>
 			<Vendor>1C Company</Vendor>
-			<Version>1.1.43.01</Version>
+			<Version>1.1.44.01</Version>
 			<UpdateCatalogAddress/>
 			<IncludeHelpInContents>false</IncludeHelpInContents>
 			<UseManagedFormInOrdinaryApplication>true</UseManagedFormInOrdinaryApplication>
@@ -140,7 +140,7 @@
 			<ModalityUseMode>DontUse</ModalityUseMode>
 			<SynchronousPlatformExtensionAndAddInCallUseMode>Use</SynchronousPlatformExtensionAndAddInCallUseMode>
 			<InterfaceCompatibilityMode>Taxi</InterfaceCompatibilityMode>
-			<CompatibilityMode>Version8_3_5</CompatibilityMode>
+			<CompatibilityMode>Version8_3_6</CompatibilityMode>
 			<DefaultConstantsForm/>
 		</Properties>
 		<ChildObjects>
@@ -256,6 +256,7 @@
 			<Role>ProjectsView</Role>
 			<Role>TimeTrackFull</Role>
 			<Role>TimeTrackView</Role>
+			<Role>BankAccounting</Role>
 			<Role>ShipmentFull</Role>
 			<Role>ItemReceiptFull</Role>
 			<CommonTemplate>Template</CommonTemplate>
@@ -301,39 +302,10 @@
 			<CommonModule>AvaTaxClient</CommonModule>
 			<CommonModule>AvaTaxServerCall</CommonModule>
 			<CommonModule>CashReceiptMethods</CommonModule>
+			<CommonModule>YodleeREST</CommonModule>
 			<CommonModule>_UnitTestsCashReceipt</CommonModule>
 			<XDTOPackage>ApdexExport</XDTOPackage>
-			<WebService>companiespost</WebService>
-			<WebService>companiesget</WebService>
-			<WebService>companiesputcode</WebService>
-			<WebService>companiesdeletecode</WebService>
-			<WebService>companiesgetcode</WebService>
-			<WebService>itemspost</WebService>
-			<WebService>itemsget</WebService>
-			<WebService>itemsputcode</WebService>
-			<WebService>itemsdeletecode</WebService>
-			<WebService>itemsgetcode</WebService>
-			<WebService>cashsalespost</WebService>
-			<WebService>cashsalesget</WebService>
-			<WebService>cashsalesputcode</WebService>
-			<WebService>cashsalesdeletecode</WebService>
-			<WebService>cashsalesgetcode</WebService>
-			<WebService>cashreceiptspost</WebService>
-			<WebService>bigcomproduct</WebService>
-			<WebService>bigcomorder</WebService>
-			<WebService>invoicespost</WebService>
-			<WebService>invoicesget</WebService>
-			<WebService>invoicesputcode</WebService>
-			<WebService>invoicesdeletecode</WebService>
-			<WebService>invoicesgetcode</WebService>
-			<WebService>salesorderspost</WebService>
-			<WebService>salesordersputcode</WebService>
-			<WebService>salesordersget</WebService>
-			<WebService>salesordersdeletecode</WebService>
-			<WebService>salesordersgetcode</WebService>
-			<WebService>purchaseorderspost</WebService>
 			<WebService>zoho_integration</WebService>
-			<WebService>vendors1099</WebService>
 			<EventSubscription>ObjectDelete</EventSubscription>
 			<EventSubscription>ClosedPeriodDeletionProtection</EventSubscription>
 			<EventSubscription>ClosedPeriodBeforeWrite</EventSubscription>
@@ -351,6 +323,7 @@
 			<ScheduledJob>YodleeRefreshTransactions</ScheduledJob>
 			<ScheduledJob>CheckReorderQty</ScheduledJob>
 			<ScheduledJob>UpdateExchangeRate</ScheduledJob>
+			<ScheduledJob>YodleeRefreshBankAccounts</ScheduledJob>
 			<FunctionalOption>MultiCurrency</FunctionalOption>
 			<FunctionalOption>MultiLocation</FunctionalOption>
 			<FunctionalOption>ItemActivityReport</FunctionalOption>
@@ -645,6 +618,20 @@
 			<Constant>StateTaxID</Constant>
 			<Constant>FirstMonthOfFiscalYear</Constant>
 			<Constant>CFO_ProcessingMonth</Constant>
+			<Constant>QBOAccessToken</Constant>
+			<Constant>QBOAccessTokenSecret</Constant>
+			<Constant>QBORealmID</Constant>
+			<Constant>CFOTodayCl_num</Constant>
+			<Constant>dwolla_refresh_token</Constant>
+			<Constant>YodleeCobSessionToken</Constant>
+			<Constant>YodleeUserSessionToken</Constant>
+			<Constant>StripeSendCR</Constant>
+			<Constant>MerchantAccountFees</Constant>
+			<Constant>StripeTransferDefaultBankAccount</Constant>
+			<Constant>DepositFromStripeTransfer</Constant>
+			<Constant>BAOReports</Constant>
+			<Constant>YodleeCreateDocuments</Constant>
+			<Constant>SOPrintBalance</Constant>
 			<CommonForm>GeneralSettings</CommonForm>
 			<CommonForm>LongAction</CommonForm>
 			<CommonForm>NavigationFull</CommonForm>
@@ -657,6 +644,9 @@
 			<CommonForm>BillPayList</CommonForm>
 			<CommonForm>EmailForm</CommonForm>
 			<CommonForm>MultiEmail</CommonForm>
+			<CommonForm>ВопросОбУстановкеРасширенияРаботыСФайлами</CommonForm>
+			<CommonForm>ChoiceFormAvailableField</CommonForm>
+			<CommonForm>ChoiceStandardPeriod</CommonForm>
 			<CommonForm>TimeTrackToInvoiceForm</CommonForm>
 			<CommonForm>VoidDateForm</CommonForm>
 			<CommonForm>InvoicePayList</CommonForm>
@@ -665,6 +655,7 @@
 			<CommonForm>ChoiceFormSO_Shipment</CommonForm>
 			<CommonForm>SerialNumbers</CommonForm>
 			<CommonForm>LinksFormHTML</CommonForm>
+			<CommonForm>PrintForm</CommonForm>
 			<Catalog>Addresses</Catalog>
 			<Catalog>BankAccounts</Catalog>
 			<Catalog>Banks</Catalog>
@@ -750,6 +741,7 @@
 			<Enum>YodleeContainerTypes</Enum>
 			<Enum>TextOrImage</Enum>
 			<Enum>AccountingMethod</Enum>
+			<Enum>УровниПроизводительности</Enum>
 			<Enum>AvailableReportPeriods</Enum>
 			<Enum>VoidingTypes</Enum>
 			<Enum>AvalaraRequestTypes</Enum>
@@ -761,6 +753,8 @@
 			<Enum>ProjectStatus</Enum>
 			<Enum>ProjectType</Enum>
 			<Enum>DiscountType</Enum>
+			<Enum>PrintedForms</Enum>
+			<Enum>EnvelopeSizes</Enum>
 			<Report>APAging</Report>
 			<Report>ARAging</Report>
 			<Report>BalanceSheet</Report>
@@ -769,12 +763,12 @@
 			<Report>GeneralLedger</Report>
 			<Report>IncomeStatement</Report>
 			<Report>TrialBalance</Report>
+			<Report>TrialBalanceExtended</Report>
 			<Report>Projects</Report>
 			<Report>ItemActivityReport</Report>
 			<Report>BudgetPlanActual</Report>
 			<Report>ARAgingDocument</Report>
 			<Report>APAgingDocument</Report>
-			<Report>Vendors1099</Report>
 			<Report>BankReconDetail</Report>
 			<Report>BankTransferDetail</Report>
 			<Report>BillPaymentDetail</Report>
@@ -798,6 +792,7 @@
 			<Report>BillDetail</Report>
 			<Report>PaymentDetail</Report>
 			<Report>PurchaseOrderDetail</Report>
+			<Report>Vendors1099</Report>
 			<Report>InventoryItemQuickReport</Report>
 			<Report>InventoryStockStatusByItem</Report>
 			<Report>InventoryValuationDetail</Report>
@@ -819,19 +814,31 @@
 			<Report>SalesByItemDetail</Report>
 			<Report>PurchasesByItemSummary</Report>
 			<Report>PurchasesByItemDetail</Report>
-			<DataProcessor>DataImport</DataProcessor>
+			<Report>TimeEntryInvoiceLines</Report>
+			<Report>BankAccountsBalanceReport</Report>
+			<Report>PurchasesByVendorDetail</Report>
+			<Report>SalesByCustomerDetail</Report>
+			<Report>BalanceSheetNew</Report>
 			<DataProcessor>DownloadedTransactions</DataProcessor>
 			<DataProcessor>YodleeBankAccountsManagement</DataProcessor>
+			<DataProcessor>Testing</DataProcessor>
 			<DataProcessor>_UnitTestRunner</DataProcessor>
+			<DataProcessor>ActiveUserList</DataProcessor>
 			<DataProcessor>InventorySiteInfo</DataProcessor>
 			<DataProcessor>GenerateStatements</DataProcessor>
 			<DataProcessor>PrintFormSetup</DataProcessor>
 			<DataProcessor>_UnitTestPrintFormRunner</DataProcessor>
+			<DataProcessor>InitialDemobasePopulation</DataProcessor>
 			<DataProcessor>TimeTrackStatusConvert</DataProcessor>
 			<DataProcessor>ImportAvaTaxCodes</DataProcessor>
 			<DataProcessor>BankRegister</DataProcessor>
 			<DataProcessor>BankReconciliation</DataProcessor>
 			<DataProcessor>ImportFromADP</DataProcessor>
+			<DataProcessor>YodleeAccountsManagement</DataProcessor>
+			<DataProcessor>DataImportV20</DataProcessor>
+			<DataProcessor>RenumberingUtility</DataProcessor>
+			<DataProcessor>ActiveUsers</DataProcessor>
+			<DataProcessor>SearchAndReplace</DataProcessor>
 			<InformationRegister>BankTransactions</InformationRegister>
 			<InformationRegister>CustomPrintForms</InformationRegister>
 			<InformationRegister>ExchangeRates</InformationRegister>
@@ -855,6 +862,7 @@
 			<InformationRegister>AvalaraTransactions</InformationRegister>
 			<InformationRegister>AvataxDetails</InformationRegister>
 			<InformationRegister>HeadersAndFooters</InformationRegister>
+			<InformationRegister>SettingsPrintedForms</InformationRegister>
 			<AccumulationRegister>InventoryJournal</AccumulationRegister>
 			<AccumulationRegister>Lots</AccumulationRegister>
 			<AccumulationRegister>OrdersDispatched</AccumulationRegister>

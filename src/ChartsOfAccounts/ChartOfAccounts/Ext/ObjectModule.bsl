@@ -13,8 +13,8 @@ Procedure OnWrite(Cancel)
 	EndIf;
 	
 	//For bank account types (bank, other current liability + credit card) create bank account
-	If AccountType = Enums.AccountTypes.Bank 
-		Or ((AccountType = Enums.AccountTypes.OtherCurrentLiability) And CreditCard) Then
+	If (AccountType = Enums.AccountTypes.Bank 
+		Or ((AccountType = Enums.AccountTypes.OtherCurrentLiability) And CreditCard)) And (Not AdditionalProperties.Property("DoNotCreateBankAccount")) Then
 		//Bank account not found. Need to create the new one
 		Block = New DataLock();
 		LockItem = Block.Add("Catalog.BankAccounts");
@@ -60,10 +60,6 @@ Procedure OnWrite(Cancel)
 		EndIf;	
 		
 	EndIf;
-	//If Not Parent.IsEmpty() And AccountType <> Parent.AccountType Then 
-	//	Message("The account type must be the same as the parent account",MessageStatus.Attention);
-	//	Cancel = True;
-	//EndIf;
 	
 EndProcedure
 
@@ -98,6 +94,27 @@ Procedure BeforeWrite(Cancel)
 		Message("The account type must be the same as the parent account",MessageStatus.Attention);
 		Cancel = True;
 		return;
+	EndIf;
+	
+	If Not Ref.IsEmpty() Then 
+		Query = New Query;
+		Query.Text = 
+		"SELECT
+		|	ChartOfAccounts.Ref
+		|FROM
+		|	ChartOfAccounts.ChartOfAccounts AS ChartOfAccounts
+		|WHERE
+		|	ChartOfAccounts.Parent = &Parent
+		|	AND ChartOfAccounts.AccountType <> &AccountType";
+		
+		Query.SetParameter("Parent", Ref);
+		Query.SetParameter("AccountType", AccountType);
+		QueryResult = Query.Execute();
+		If Not QueryResult.IsEmpty() Then 
+			Message("Account has subaccounts with account type differ from current Account type.",MessageStatus.Attention);
+			Cancel = True;
+			Return;
+		EndIf;
 	EndIf;
 
 	If AdditionalProperties.Property("IsNew") AND AdditionalProperties.Property("StartCode")

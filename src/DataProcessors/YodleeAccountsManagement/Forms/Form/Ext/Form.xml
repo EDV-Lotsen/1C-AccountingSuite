@@ -1,0 +1,1874 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<Title>
+		<v8:item>
+			<v8:lang>en</v8:lang>
+			<v8:content>Cloud Banking</v8:content>
+		</v8:item>
+	</Title>
+	<AutoTitle>false</AutoTitle>
+	<AutoCommandBar name="FormCommandBar" id="-1">
+		<Autofill>false</Autofill>
+	</AutoCommandBar>
+	<ChildItems>
+		<Pages name="Pages" id="163">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Pages</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Pages</v8:content>
+				</v8:item>
+			</ToolTip>
+			<PagesRepresentation>None</PagesRepresentation>
+			<ExtendedTooltip name="PagesExtendedTooltip" id="164"/>
+			<ChildItems>
+				<Page name="AccountsAddPage" id="1">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Accounts add page</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Accounts add page</v8:content>
+						</v8:item>
+					</ToolTip>
+					<ExtendedTooltip name="AccountsAddPageExtendedTooltip" id="2"/>
+					<ChildItems>
+						<UsualGroup name="SearchBankGroup" id="8">
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Search bank group</v8:content>
+								</v8:item>
+							</ToolTip>
+							<Group>Horizontal</Group>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="SearchBankGroupExtendedTooltip" id="9"/>
+							<ChildItems>
+								<UsualGroup name="Group14" id="10">
+									<Group>Vertical</Group>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="Group14ExtendedTooltip" id="11"/>
+									<ChildItems>
+										<InputField name="Bank" id="12">
+											<DataPath>Bank</DataPath>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Search Bank</v8:content>
+												</v8:item>
+											</Title>
+											<TitleTextColor>style:ColorSecondaryLabel</TitleTextColor>
+											<TitleFont ref="style:LargeTextFont" kind="StyleItem"/>
+											<TitleLocation>Top</TitleLocation>
+											<Width>48</Width>
+											<HorizontalStretch>true</HorizontalStretch>
+											<InputHint>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Examples: Wells Fargo, Bank of America</v8:content>
+												</v8:item>
+											</InputHint>
+											<ContextMenu name="BankContextMenu" id="13"/>
+											<ExtendedTooltip name="BankExtendedTooltip" id="14"/>
+											<Events>
+												<Event name="OnChange">BankOnChange</Event>
+											</Events>
+										</InputField>
+									</ChildItems>
+								</UsualGroup>
+								<LabelDecoration name="Decoration2" id="191">
+									<Width>2</Width>
+									<HorizontalStretch>true</HorizontalStretch>
+									<ContextMenu name="Decoration2ContextMenu" id="192"/>
+									<ExtendedTooltip name="Decoration2ExtendedTooltip" id="193"/>
+								</LabelDecoration>
+								<UsualGroup name="ProceedGroup" id="183">
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Proceed group</v8:content>
+										</v8:item>
+									</Title>
+									<ToolTip>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Proceed group</v8:content>
+										</v8:item>
+									</ToolTip>
+									<Group>Vertical</Group>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="ProceedGroupExtendedTooltip" id="184"/>
+									<ChildItems>
+										<LabelDecoration name="ProceedDecoration" id="185">
+											<HorizontalStretch>false</HorizontalStretch>
+											<VerticalStretch>false</VerticalStretch>
+											<ContextMenu name="ProceedDecorationContextMenu" id="186"/>
+											<ExtendedTooltip name="ProceedDecorationExtendedTooltip" id="187"/>
+										</LabelDecoration>
+										<Button name="AddAccounts" id="18">
+											<Type>UsualButton</Type>
+											<Representation>PictureAndText</Representation>
+											<Width>16</Width>
+											<CommandName>Form.Command.AddAccounts</CommandName>
+											<TextColor>style:FieldBackColor</TextColor>
+											<BackColor>style:ColorInformationLabel</BackColor>
+											<Picture>
+												<xr:Ref>StdPicture.GenerateReport</xr:Ref>
+												<xr:LoadTransparent>true</xr:LoadTransparent>
+											</Picture>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Proceed</v8:content>
+												</v8:item>
+											</Title>
+											<ExtendedTooltip name="AddAccountsExtendedTooltip" id="19"/>
+										</Button>
+										<Button name="CancelAccountAddition" id="349">
+											<Type>UsualButton</Type>
+											<Visible>false</Visible>
+											<Width>16</Width>
+											<CommandName>Form.Command.CancelAccountAddition</CommandName>
+											<ExtendedTooltip name="CancelAccountAdditionExtendedTooltip" id="350"/>
+										</Button>
+									</ChildItems>
+								</UsualGroup>
+							</ChildItems>
+						</UsualGroup>
+						<UsualGroup name="BankDetails" id="22">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Bank details</v8:content>
+								</v8:item>
+							</Title>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Bank details</v8:content>
+								</v8:item>
+							</ToolTip>
+							<Group>Horizontal</Group>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="BankDetailsExtendedTooltip" id="23"/>
+							<ChildItems>
+								<UsualGroup name="GroupOfPopularBanks" id="24">
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Group of popular banks</v8:content>
+										</v8:item>
+									</Title>
+									<ToolTip>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Group of popular banks</v8:content>
+										</v8:item>
+									</ToolTip>
+									<Group>Vertical</Group>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="GroupOfPopularBanksExtendedTooltip" id="25"/>
+									<ChildItems>
+										<LabelDecoration name="Decoration3" id="26">
+											<HorizontalStretch>true</HorizontalStretch>
+											<TextColor>style:ColorSecondaryLabel</TextColor>
+											<Font ref="style:LargeTextFont" kind="StyleItem"/>
+											<Title formatted="false">
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>or choose from these popular banks</v8:content>
+												</v8:item>
+											</Title>
+											<Border width="1">
+												<v8ui:style xsi:type="v8ui:ControlBorderType">Overline</v8ui:style>
+											</Border>
+											<ContextMenu name="Decoration3ContextMenu" id="27"/>
+											<ExtendedTooltip name="Decoration3ExtendedTooltip" id="28"/>
+										</LabelDecoration>
+										<UsualGroup name="GroupOfBanks" id="29">
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Group of banks</v8:content>
+												</v8:item>
+											</Title>
+											<ToolTip>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Group of banks</v8:content>
+												</v8:item>
+											</ToolTip>
+											<Group>Horizontal</Group>
+											<ShowTitle>false</ShowTitle>
+											<ExtendedTooltip name="GroupOfBanksExtendedTooltip" id="30"/>
+											<ChildItems>
+												<UsualGroup name="LeftGroup" id="31">
+													<Title>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Left group</v8:content>
+														</v8:item>
+													</Title>
+													<ToolTip>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Left group</v8:content>
+														</v8:item>
+													</ToolTip>
+													<Group>Horizontal</Group>
+													<ShowTitle>false</ShowTitle>
+													<ExtendedTooltip name="LeftGroupExtendedTooltip" id="32"/>
+													<ChildItems>
+														<UsualGroup name="LeftGroupNumbers" id="33">
+															<Title>
+																<v8:item>
+																	<v8:lang>en</v8:lang>
+																	<v8:content>Left group numbers</v8:content>
+																</v8:item>
+															</Title>
+															<ToolTip>
+																<v8:item>
+																	<v8:lang>en</v8:lang>
+																	<v8:content>Left group numbers</v8:content>
+																</v8:item>
+															</ToolTip>
+															<Group>Vertical</Group>
+															<ShowTitle>false</ShowTitle>
+															<ExtendedTooltip name="LeftGroupNumbersExtendedTooltip" id="34"/>
+															<ChildItems>
+																<LabelDecoration name="Decoration4" id="35">
+																	<Width>2</Width>
+																	<Title formatted="false">
+																		<v8:item>
+																			<v8:lang>en</v8:lang>
+																			<v8:content>1</v8:content>
+																		</v8:item>
+																	</Title>
+																	<HorizontalAlign>Right</HorizontalAlign>
+																	<ContextMenu name="Decoration4ContextMenu" id="36"/>
+																	<ExtendedTooltip name="Decoration4ExtendedTooltip" id="37"/>
+																</LabelDecoration>
+																<LabelDecoration name="Decoration5" id="38">
+																	<Width>2</Width>
+																	<Title formatted="false">
+																		<v8:item>
+																			<v8:lang>en</v8:lang>
+																			<v8:content>2</v8:content>
+																		</v8:item>
+																	</Title>
+																	<HorizontalAlign>Right</HorizontalAlign>
+																	<ContextMenu name="Decoration5ContextMenu" id="39"/>
+																	<ExtendedTooltip name="Decoration5ExtendedTooltip" id="40"/>
+																</LabelDecoration>
+																<LabelDecoration name="Decoration15" id="41">
+																	<Width>2</Width>
+																	<Title formatted="false">
+																		<v8:item>
+																			<v8:lang>en</v8:lang>
+																			<v8:content>3</v8:content>
+																		</v8:item>
+																	</Title>
+																	<HorizontalAlign>Right</HorizontalAlign>
+																	<ContextMenu name="Decoration15ContextMenu" id="42"/>
+																	<ExtendedTooltip name="Decoration15ExtendedTooltip" id="43"/>
+																</LabelDecoration>
+																<LabelDecoration name="Decoration17" id="44">
+																	<Width>2</Width>
+																	<Title formatted="false">
+																		<v8:item>
+																			<v8:lang>en</v8:lang>
+																			<v8:content>4</v8:content>
+																		</v8:item>
+																	</Title>
+																	<HorizontalAlign>Right</HorizontalAlign>
+																	<ContextMenu name="Decoration17ContextMenu" id="45"/>
+																	<ExtendedTooltip name="Decoration17ExtendedTooltip" id="46"/>
+																</LabelDecoration>
+																<LabelDecoration name="Decoration19" id="47">
+																	<Width>2</Width>
+																	<Title formatted="false">
+																		<v8:item>
+																			<v8:lang>en</v8:lang>
+																			<v8:content>5</v8:content>
+																		</v8:item>
+																	</Title>
+																	<HorizontalAlign>Right</HorizontalAlign>
+																	<ContextMenu name="Decoration19ContextMenu" id="48"/>
+																	<ExtendedTooltip name="Decoration19ExtendedTooltip" id="49"/>
+																</LabelDecoration>
+															</ChildItems>
+														</UsualGroup>
+														<UsualGroup name="LeftGroupBanks" id="50">
+															<Title>
+																<v8:item>
+																	<v8:lang>en</v8:lang>
+																	<v8:content>Left group banks</v8:content>
+																</v8:item>
+															</Title>
+															<ToolTip>
+																<v8:item>
+																	<v8:lang>en</v8:lang>
+																	<v8:content>Left group banks</v8:content>
+																</v8:item>
+															</ToolTip>
+															<Group>Vertical</Group>
+															<Representation>None</Representation>
+															<ShowTitle>false</ShowTitle>
+															<ExtendedTooltip name="LeftGroupBanksExtendedTooltip" id="51"/>
+															<ChildItems>
+																<Button name="ChooseWellsFargo" id="52">
+																	<Type>Hyperlink</Type>
+																	<Width>20</Width>
+																	<Height>1</Height>
+																	<CommandName>Form.Command.ChooseWellsFargo</CommandName>
+																	<TextColor>style:FormTextColor</TextColor>
+																	<Font ref="style:NormalTextFont" kind="StyleItem"/>
+																	<ExtendedTooltip name="ChooseWellsFargoExtendedTooltip" id="53"/>
+																</Button>
+																<Button name="ChooseBankOfAmerica" id="54">
+																	<Type>Hyperlink</Type>
+																	<Width>20</Width>
+																	<Height>1</Height>
+																	<CommandName>Form.Command.ChooseBankOfAmerica</CommandName>
+																	<TextColor>style:FormTextColor</TextColor>
+																	<Font ref="style:NormalTextFont" kind="StyleItem"/>
+																	<Title>
+																		<v8:item>
+																			<v8:lang>en</v8:lang>
+																			<v8:content>Bank of America</v8:content>
+																		</v8:item>
+																	</Title>
+																	<ExtendedTooltip name="ChooseBankOfAmericaExtendedTooltip" id="55"/>
+																</Button>
+																<Button name="ChooseChaseBank" id="56">
+																	<Type>Hyperlink</Type>
+																	<Width>20</Width>
+																	<Height>1</Height>
+																	<CommandName>Form.Command.ChooseChaseBank</CommandName>
+																	<TextColor>style:FormTextColor</TextColor>
+																	<Font ref="style:NormalTextFont" kind="StyleItem"/>
+																	<Title>
+																		<v8:item>
+																			<v8:lang>en</v8:lang>
+																			<v8:content>Chase Bank</v8:content>
+																		</v8:item>
+																	</Title>
+																	<ExtendedTooltip name="ChooseChaseBankExtendedTooltip" id="57"/>
+																</Button>
+																<Button name="ChooseAmericanExpressCreditCard" id="58">
+																	<Type>Hyperlink</Type>
+																	<Width>20</Width>
+																	<Height>1</Height>
+																	<CommandName>Form.Command.ChooseAmericanExpressCreditCard</CommandName>
+																	<TextColor>style:FormTextColor</TextColor>
+																	<Font ref="style:NormalTextFont" kind="StyleItem"/>
+																	<Title>
+																		<v8:item>
+																			<v8:lang>en</v8:lang>
+																			<v8:content>American Express Credit Card</v8:content>
+																		</v8:item>
+																	</Title>
+																	<ExtendedTooltip name="ChooseAmericanExpressCreditCardExtendedTooltip" id="59"/>
+																</Button>
+																<Button name="ChooseJPMorganChaseBank" id="60">
+																	<Type>Hyperlink</Type>
+																	<Width>20</Width>
+																	<Height>1</Height>
+																	<CommandName>Form.Command.ChooseJPMorganChaseBank</CommandName>
+																	<TextColor>style:FormTextColor</TextColor>
+																	<Font ref="style:NormalTextFont" kind="StyleItem"/>
+																	<ExtendedTooltip name="ChooseJPMorganChaseBankExtendedTooltip" id="61"/>
+																</Button>
+															</ChildItems>
+														</UsualGroup>
+													</ChildItems>
+												</UsualGroup>
+												<UsualGroup name="RightGroup" id="62">
+													<Title>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Right group</v8:content>
+														</v8:item>
+													</Title>
+													<ToolTip>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Right group</v8:content>
+														</v8:item>
+													</ToolTip>
+													<Group>Horizontal</Group>
+													<ShowTitle>false</ShowTitle>
+													<ExtendedTooltip name="RightGroupExtendedTooltip" id="63"/>
+													<ChildItems>
+														<UsualGroup name="RightGroupNumbers" id="64">
+															<Title>
+																<v8:item>
+																	<v8:lang>en</v8:lang>
+																	<v8:content>Right group numbers</v8:content>
+																</v8:item>
+															</Title>
+															<ToolTip>
+																<v8:item>
+																	<v8:lang>en</v8:lang>
+																	<v8:content>Left group numbers</v8:content>
+																</v8:item>
+															</ToolTip>
+															<Group>Vertical</Group>
+															<ShowTitle>false</ShowTitle>
+															<ExtendedTooltip name="RightGroupNumbersExtendedTooltip" id="65"/>
+															<ChildItems>
+																<LabelDecoration name="Decoration20" id="66">
+																	<Width>2</Width>
+																	<Title formatted="false">
+																		<v8:item>
+																			<v8:lang>en</v8:lang>
+																			<v8:content>6</v8:content>
+																		</v8:item>
+																	</Title>
+																	<HorizontalAlign>Right</HorizontalAlign>
+																	<ContextMenu name="Decoration20ContextMenu" id="67"/>
+																	<ExtendedTooltip name="Decoration20ExtendedTooltip" id="68"/>
+																</LabelDecoration>
+																<LabelDecoration name="Decoration21" id="69">
+																	<Width>2</Width>
+																	<Title formatted="false">
+																		<v8:item>
+																			<v8:lang>en</v8:lang>
+																			<v8:content>7</v8:content>
+																		</v8:item>
+																	</Title>
+																	<HorizontalAlign>Right</HorizontalAlign>
+																	<ContextMenu name="Decoration21ContextMenu" id="70"/>
+																	<ExtendedTooltip name="Decoration21ExtendedTooltip" id="71"/>
+																</LabelDecoration>
+																<LabelDecoration name="Decoration22" id="72">
+																	<Width>2</Width>
+																	<Title formatted="false">
+																		<v8:item>
+																			<v8:lang>en</v8:lang>
+																			<v8:content>8</v8:content>
+																		</v8:item>
+																	</Title>
+																	<HorizontalAlign>Right</HorizontalAlign>
+																	<ContextMenu name="Decoration22ContextMenu" id="73"/>
+																	<ExtendedTooltip name="Decoration22ExtendedTooltip" id="74"/>
+																</LabelDecoration>
+																<LabelDecoration name="Decoration23" id="75">
+																	<Width>2</Width>
+																	<Title formatted="false">
+																		<v8:item>
+																			<v8:lang>en</v8:lang>
+																			<v8:content>9</v8:content>
+																		</v8:item>
+																	</Title>
+																	<HorizontalAlign>Right</HorizontalAlign>
+																	<ContextMenu name="Decoration23ContextMenu" id="76"/>
+																	<ExtendedTooltip name="Decoration23ExtendedTooltip" id="77"/>
+																</LabelDecoration>
+																<LabelDecoration name="Decoration24" id="78">
+																	<Width>2</Width>
+																	<Title formatted="false">
+																		<v8:item>
+																			<v8:lang>en</v8:lang>
+																			<v8:content>10</v8:content>
+																		</v8:item>
+																	</Title>
+																	<HorizontalAlign>Right</HorizontalAlign>
+																	<ContextMenu name="Decoration24ContextMenu" id="79"/>
+																	<ExtendedTooltip name="Decoration24ExtendedTooltip" id="80"/>
+																</LabelDecoration>
+															</ChildItems>
+														</UsualGroup>
+														<UsualGroup name="RightGroupBanks" id="81">
+															<Title>
+																<v8:item>
+																	<v8:lang>en</v8:lang>
+																	<v8:content>Right group banks</v8:content>
+																</v8:item>
+															</Title>
+															<ToolTip>
+																<v8:item>
+																	<v8:lang>en</v8:lang>
+																	<v8:content>Left group banks</v8:content>
+																</v8:item>
+															</ToolTip>
+															<Group>Vertical</Group>
+															<Representation>None</Representation>
+															<ShowTitle>false</ShowTitle>
+															<ExtendedTooltip name="RightGroupBanksExtendedTooltip" id="82"/>
+															<ChildItems>
+																<Button name="ChoosePayPalBank" id="83">
+																	<Type>Hyperlink</Type>
+																	<Width>20</Width>
+																	<Height>1</Height>
+																	<CommandName>Form.Command.ChoosePayPalBank</CommandName>
+																	<TextColor>style:FormTextColor</TextColor>
+																	<Font ref="style:NormalTextFont" kind="StyleItem"/>
+																	<ExtendedTooltip name="ChoosePayPalBankExtendedTooltip" id="84"/>
+																</Button>
+																<Button name="ChooseUSBank" id="85">
+																	<Type>Hyperlink</Type>
+																	<Width>20</Width>
+																	<Height>1</Height>
+																	<CommandName>Form.Command.ChooseUSBank</CommandName>
+																	<TextColor>style:FormTextColor</TextColor>
+																	<Font ref="style:NormalTextFont" kind="StyleItem"/>
+																	<ExtendedTooltip name="ChooseUSBankExtendedTooltip" id="86"/>
+																</Button>
+																<Button name="ChooseCapitalOneCreditCard" id="87">
+																	<Type>Hyperlink</Type>
+																	<Width>20</Width>
+																	<Height>1</Height>
+																	<CommandName>Form.Command.ChooseCapitalOneCreditCard</CommandName>
+																	<TextColor>style:FormTextColor</TextColor>
+																	<Font ref="style:NormalTextFont" kind="StyleItem"/>
+																	<ExtendedTooltip name="ChooseCapitalOneCreditCardExtendedTooltip" id="88"/>
+																</Button>
+																<Button name="ChooseSunTrustBank" id="89">
+																	<Type>Hyperlink</Type>
+																	<Width>22</Width>
+																	<Height>1</Height>
+																	<CommandName>Form.Command.ChooseSunTrustBank</CommandName>
+																	<TextColor>style:FormTextColor</TextColor>
+																	<Font ref="style:NormalTextFont" kind="StyleItem"/>
+																	<ExtendedTooltip name="ChooseSunTrustBankExtendedTooltip" id="90"/>
+																</Button>
+																<Button name="ChoosePNCBank" id="91">
+																	<Type>Hyperlink</Type>
+																	<Width>20</Width>
+																	<Height>1</Height>
+																	<CommandName>Form.Command.ChoosePNCBank</CommandName>
+																	<TextColor>style:FormTextColor</TextColor>
+																	<Font ref="style:NormalTextFont" kind="StyleItem"/>
+																	<ExtendedTooltip name="ChoosePNCBankExtendedTooltip" id="92"/>
+																</Button>
+															</ChildItems>
+														</UsualGroup>
+													</ChildItems>
+												</UsualGroup>
+											</ChildItems>
+										</UsualGroup>
+									</ChildItems>
+								</UsualGroup>
+								<LabelDecoration name="Decoration1" id="188">
+									<HorizontalStretch>true</HorizontalStretch>
+									<ContextMenu name="Decoration1ContextMenu" id="189"/>
+									<ExtendedTooltip name="Decoration1ExtendedTooltip" id="190"/>
+								</LabelDecoration>
+								<UsualGroup name="ImageGroup" id="93">
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Image group</v8:content>
+										</v8:item>
+									</Title>
+									<ToolTip>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Image group</v8:content>
+										</v8:item>
+									</ToolTip>
+									<Width>16</Width>
+									<Group>Vertical</Group>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="ImageGroupExtendedTooltip" id="94"/>
+									<ChildItems>
+										<LabelDecoration name="Decoration18" id="95">
+											<Width>20</Width>
+											<HorizontalStretch>false</HorizontalStretch>
+											<TextColor>style:ColorSecondaryLabel</TextColor>
+											<Font ref="style:LargeTextFont" kind="StyleItem"/>
+											<Title formatted="false">
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Bank details</v8:content>
+												</v8:item>
+											</Title>
+											<HorizontalAlign>Center</HorizontalAlign>
+											<Border width="1">
+												<v8ui:style xsi:type="v8ui:ControlBorderType">Overline</v8ui:style>
+											</Border>
+											<ContextMenu name="Decoration18ContextMenu" id="96"/>
+											<ExtendedTooltip name="Decoration18ExtendedTooltip" id="97"/>
+										</LabelDecoration>
+										<PictureField name="LogoTypeAddress" id="98">
+											<DataPath>LogoTypeAddress</DataPath>
+											<TitleLocation>None</TitleLocation>
+											<Width>20</Width>
+											<Height>3</Height>
+											<HorizontalStretch>false</HorizontalStretch>
+											<VerticalStretch>false</VerticalStretch>
+											<PictureSize>Proportionally</PictureSize>
+											<Border width="1">
+												<v8ui:style xsi:type="v8ui:ControlBorderType">WithoutBorder</v8ui:style>
+											</Border>
+											<ContextMenu name="LogoTypeAddressContextMenu" id="99"/>
+											<ExtendedTooltip name="LogoTypeAddressExtendedTooltip" id="100"/>
+										</PictureField>
+										<LabelDecoration name="ServiceURL" id="101">
+											<Width>20</Width>
+											<Height>2</Height>
+											<HorizontalStretch>false</HorizontalStretch>
+											<VerticalStretch>false</VerticalStretch>
+											<Hyperlink>true</Hyperlink>
+											<VerticalAlign>Top</VerticalAlign>
+											<Border width="1">
+												<v8ui:style xsi:type="v8ui:ControlBorderType">Overline</v8ui:style>
+											</Border>
+											<ContextMenu name="ServiceURLContextMenu" id="102"/>
+											<ExtendedTooltip name="ServiceURLExtendedTooltip" id="103"/>
+											<Events>
+												<Event name="Click">ServiceURLClick</Event>
+											</Events>
+										</LabelDecoration>
+									</ChildItems>
+								</UsualGroup>
+							</ChildItems>
+						</UsualGroup>
+						<UsualGroup name="ProgressGroup" id="194">
+							<Visible>false</Visible>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Progress group</v8:content>
+								</v8:item>
+							</ToolTip>
+							<Group>Vertical</Group>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="ProgressGroupExtendedTooltip" id="195"/>
+							<ChildItems>
+								<LabelDecoration name="Decoration12" id="234">
+									<VerticalStretch>true</VerticalStretch>
+									<ContextMenu name="Decoration12ContextMenu" id="235"/>
+									<ExtendedTooltip name="Decoration12ExtendedTooltip" id="236"/>
+								</LabelDecoration>
+								<UsualGroup name="HorizontalProgressGroup" id="232">
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Horizontal progress group</v8:content>
+										</v8:item>
+									</Title>
+									<ToolTip>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Horizontal progress group</v8:content>
+										</v8:item>
+									</ToolTip>
+									<Group>Horizontal</Group>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="HorizontalProgressGroupExtendedTooltip" id="233"/>
+									<ChildItems>
+										<LabelDecoration name="AddLeftTab" id="196">
+											<Width>2</Width>
+											<HorizontalStretch>false</HorizontalStretch>
+											<VerticalStretch>false</VerticalStretch>
+											<ContextMenu name="AddLeftTabContextMenu" id="197"/>
+											<ExtendedTooltip name="AddLeftTabExtendedTooltip" id="198"/>
+										</LabelDecoration>
+										<UsualGroup name="Group4" id="199">
+											<Group>Vertical</Group>
+											<ShowTitle>false</ShowTitle>
+											<BackColor>#D7EBFF</BackColor>
+											<ExtendedTooltip name="Group4ExtendedTooltip" id="200"/>
+											<ChildItems>
+												<UsualGroup name="Group6" id="201">
+													<Group>Horizontal</Group>
+													<ShowTitle>false</ShowTitle>
+													<ExtendedTooltip name="Group6ExtendedTooltip" id="202"/>
+													<ChildItems>
+														<LabelDecoration name="Decoration6" id="203">
+															<Width>2</Width>
+															<Height>1</Height>
+															<HorizontalStretch>true</HorizontalStretch>
+															<ContextMenu name="Decoration6ContextMenu" id="204"/>
+															<ExtendedTooltip name="Decoration6ExtendedTooltip" id="205"/>
+														</LabelDecoration>
+														<LabelDecoration name="AddingAccountProgressCaption" id="206">
+															<Height>2</Height>
+															<TextColor>style:ColorSecondaryLabel</TextColor>
+															<Font ref="style:NormalTextFont" height="12" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
+															<Title formatted="false">
+																<v8:item>
+																	<v8:lang>en</v8:lang>
+																	<v8:content>Adding account</v8:content>
+																</v8:item>
+															</Title>
+															<ContextMenu name="AddingAccountProgressCaptionContextMenu" id="207"/>
+															<ExtendedTooltip name="AddingAccountProgressCaptionExtendedTooltip" id="208"/>
+														</LabelDecoration>
+														<LabelDecoration name="Decoration7" id="209">
+															<HorizontalStretch>true</HorizontalStretch>
+															<ContextMenu name="Decoration7ContextMenu" id="210"/>
+															<ExtendedTooltip name="Decoration7ExtendedTooltip" id="211"/>
+														</LabelDecoration>
+													</ChildItems>
+												</UsualGroup>
+												<UsualGroup name="Group5" id="212">
+													<Group>Horizontal</Group>
+													<ShowTitle>false</ShowTitle>
+													<ExtendedTooltip name="Group5ExtendedTooltip" id="213"/>
+													<ChildItems>
+														<LabelDecoration name="Decoration9" id="223">
+															<HorizontalStretch>true</HorizontalStretch>
+															<ContextMenu name="Decoration9ContextMenu" id="224"/>
+															<ExtendedTooltip name="Decoration9ExtendedTooltip" id="225"/>
+														</LabelDecoration>
+														<PictureDecoration name="Decoration8" id="214">
+															<Width>5</Width>
+															<Height>3</Height>
+															<VerticalStretch>false</VerticalStretch>
+															<Picture>
+																<xr:Ref>CommonPicture.LongAction48</xr:Ref>
+																<xr:LoadTransparent>false</xr:LoadTransparent>
+															</Picture>
+															<ContextMenu name="Decoration8ContextMenu" id="215"/>
+															<ExtendedTooltip name="Decoration8ExtendedTooltip" id="216"/>
+														</PictureDecoration>
+														<LabelDecoration name="Decoration14" id="351">
+															<Width>2</Width>
+															<HorizontalStretch>false</HorizontalStretch>
+															<ContextMenu name="Decoration14ContextMenu" id="352"/>
+															<ExtendedTooltip name="Decoration14ExtendedTooltip" id="353"/>
+														</LabelDecoration>
+														<LabelDecoration name="AddingAccountProgress" id="217">
+															<Height>3</Height>
+															<HorizontalStretch>true</HorizontalStretch>
+															<VerticalStretch>false</VerticalStretch>
+															<TextColor>style:ColorSecondaryLabel</TextColor>
+															<Font ref="sys:DefaultGUIFont" height="10" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
+															<Title formatted="false">
+																<v8:item>
+																	<v8:lang>en</v8:lang>
+																	<v8:content>Adding account...</v8:content>
+																</v8:item>
+															</Title>
+															<ContextMenu name="AddingAccountProgressContextMenu" id="218"/>
+															<ExtendedTooltip name="AddingAccountProgressExtendedTooltip" id="219"/>
+														</LabelDecoration>
+														<LabelDecoration name="Decoration10" id="226">
+															<HorizontalStretch>true</HorizontalStretch>
+															<ContextMenu name="Decoration10ContextMenu" id="227"/>
+															<ExtendedTooltip name="Decoration10ExtendedTooltip" id="228"/>
+														</LabelDecoration>
+													</ChildItems>
+												</UsualGroup>
+												<LabelDecoration name="Decoration11" id="229">
+													<HorizontalStretch>true</HorizontalStretch>
+													<ContextMenu name="Decoration11ContextMenu" id="230"/>
+													<ExtendedTooltip name="Decoration11ExtendedTooltip" id="231"/>
+												</LabelDecoration>
+											</ChildItems>
+										</UsualGroup>
+										<LabelDecoration name="AddRightTab" id="220">
+											<Width>2</Width>
+											<HorizontalStretch>false</HorizontalStretch>
+											<VerticalStretch>false</VerticalStretch>
+											<ContextMenu name="AddRightTabContextMenu" id="221"/>
+											<ExtendedTooltip name="AddRightTabExtendedTooltip" id="222"/>
+										</LabelDecoration>
+									</ChildItems>
+								</UsualGroup>
+							</ChildItems>
+						</UsualGroup>
+						<UsualGroup name="DemoConfigurationGroup" id="133">
+							<Visible>false</Visible>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Demo configuration group</v8:content>
+								</v8:item>
+							</Title>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Demo configuration group</v8:content>
+								</v8:item>
+							</ToolTip>
+							<Group>Vertical</Group>
+							<ShowTitle>false</ShowTitle>
+							<BackColor>web:WhiteSmoke</BackColor>
+							<ExtendedTooltip name="DemoConfigurationGroupExtendedTooltip" id="134"/>
+							<ChildItems>
+								<LabelDecoration name="Decoration26" id="135">
+									<HorizontalStretch>true</HorizontalStretch>
+									<BorderColor>style:SpecialTextColor</BorderColor>
+									<Border width="1">
+										<v8ui:style xsi:type="v8ui:ControlBorderType">Overline</v8ui:style>
+									</Border>
+									<ContextMenu name="Decoration26ContextMenu" id="136"/>
+									<ExtendedTooltip name="Decoration26ExtendedTooltip" id="137"/>
+								</LabelDecoration>
+								<UsualGroup name="DemoCaptionGroup" id="138">
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Demo caption group</v8:content>
+										</v8:item>
+									</Title>
+									<ToolTip>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Demo caption group</v8:content>
+										</v8:item>
+									</ToolTip>
+									<Group>Horizontal</Group>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="DemoCaptionGroupExtendedTooltip" id="139"/>
+									<ChildItems>
+										<LabelDecoration name="Decoration30" id="140">
+											<HorizontalStretch>true</HorizontalStretch>
+											<ContextMenu name="Decoration30ContextMenu" id="141"/>
+											<ExtendedTooltip name="Decoration30ExtendedTooltip" id="142"/>
+										</LabelDecoration>
+										<LabelDecoration name="Decoration28" id="143">
+											<TextColor>style:ColorSecondaryLabel</TextColor>
+											<Font ref="style:LargeTextFont" height="12" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
+											<Title formatted="false">
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>You are using the Demo. Adding online accounts is unavailable.</v8:content>
+												</v8:item>
+											</Title>
+											<BorderColor>style:SpecialTextColor</BorderColor>
+											<ContextMenu name="Decoration28ContextMenu" id="144"/>
+											<ExtendedTooltip name="Decoration28ExtendedTooltip" id="145"/>
+										</LabelDecoration>
+										<LabelDecoration name="Decoration29" id="146">
+											<HorizontalStretch>true</HorizontalStretch>
+											<ContextMenu name="Decoration29ContextMenu" id="147"/>
+											<ExtendedTooltip name="Decoration29ExtendedTooltip" id="148"/>
+										</LabelDecoration>
+									</ChildItems>
+								</UsualGroup>
+								<LabelDecoration name="Decoration27" id="149">
+									<HorizontalStretch>true</HorizontalStretch>
+									<BorderColor>style:SpecialTextColor</BorderColor>
+									<Border width="1">
+										<v8ui:style xsi:type="v8ui:ControlBorderType">Underline</v8ui:style>
+									</Border>
+									<ContextMenu name="Decoration27ContextMenu" id="150"/>
+									<ExtendedTooltip name="Decoration27ExtendedTooltip" id="151"/>
+								</LabelDecoration>
+							</ChildItems>
+						</UsualGroup>
+					</ChildItems>
+				</Page>
+				<Page name="AccountAssignTypePage" id="237">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Account assign type page</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Account assign type page</v8:content>
+						</v8:item>
+					</ToolTip>
+					<ExtendedTooltip name="AccountAssignTypePageExtendedTooltip" id="238"/>
+					<ChildItems>
+						<UsualGroup name="Group12" id="239">
+							<Group>Horizontal</Group>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="Group12ExtendedTooltip" id="240"/>
+							<ChildItems>
+								<LabelDecoration name="AssignLeftTab" id="241">
+									<Visible>false</Visible>
+									<HorizontalStretch>true</HorizontalStretch>
+									<ContextMenu name="AssignLeftTabContextMenu" id="242"/>
+									<ExtendedTooltip name="AssignLeftTabExtendedTooltip" id="243"/>
+								</LabelDecoration>
+								<UsualGroup name="Group13" id="244">
+									<Group>Vertical</Group>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="Group13ExtendedTooltip" id="245"/>
+									<ChildItems>
+										<UsualGroup name="AssignBankAccountGroup" id="246">
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Bank account group</v8:content>
+												</v8:item>
+											</Title>
+											<ToolTip>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Bank account group</v8:content>
+												</v8:item>
+											</ToolTip>
+											<Group>Vertical</Group>
+											<ShowTitle>false</ShowTitle>
+											<ExtendedTooltip name="AssignBankAccountGroupExtendedTooltip" id="247"/>
+											<ChildItems>
+												<LabelField name="AssignBankAccount" id="248">
+													<DataPath>Bank</DataPath>
+													<Title>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Bank account(s) in</v8:content>
+														</v8:item>
+													</Title>
+													<TitleFont ref="sys:DefaultGUIFont" height="10" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
+													<TextColor>style:FieldSelectionBackColor</TextColor>
+													<Font ref="sys:DefaultGUIFont" height="10" bold="true" italic="false" underline="true" strikeout="false" kind="WindowsFont"/>
+													<ContextMenu name="AssignBankAccountContextMenu" id="249"/>
+													<ExtendedTooltip name="AssignBankAccountExtendedTooltip" id="250"/>
+												</LabelField>
+											</ChildItems>
+										</UsualGroup>
+										<UsualGroup name="AssigningGroupVertical" id="251">
+											<ToolTip>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Assigning group vertical</v8:content>
+												</v8:item>
+											</ToolTip>
+											<Group>Vertical</Group>
+											<ShowTitle>false</ShowTitle>
+											<ExtendedTooltip name="AssigningGroupVerticalExtendedTooltip" id="252"/>
+											<ChildItems>
+												<LabelDecoration name="Decoration13" id="253">
+													<Font ref="style:NormalTextFont" height="9" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
+													<Title formatted="false">
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Select an AccountingSuite account for each online bank account you are connecting:</v8:content>
+														</v8:item>
+													</Title>
+													<ContextMenu name="Decoration13ContextMenu" id="254"/>
+													<ExtendedTooltip name="Decoration13ExtendedTooltip" id="255"/>
+												</LabelDecoration>
+												<Table name="AssigningAccountType" id="256">
+													<Representation>List</Representation>
+													<CommandBarLocation>None</CommandBarLocation>
+													<Height>4</Height>
+													<HeightInTableRows>1</HeightInTableRows>
+													<UseAlternationRowColor>true</UseAlternationRowColor>
+													<AutoInsertNewRow>true</AutoInsertNewRow>
+													<EnableStartDrag>true</EnableStartDrag>
+													<EnableDrag>true</EnableDrag>
+													<DataPath>AssigningAccountType</DataPath>
+													<SearchStringLocation>None</SearchStringLocation>
+													<ViewStatusLocation>None</ViewStatusLocation>
+													<SearchControlLocation>None</SearchControlLocation>
+													<RowFilter xsi:nil="true"/>
+													<ContextMenu name="AssigningAccountTypeContextMenu" id="257"/>
+													<AutoCommandBar name="AssigningAccountTypeCommandBar" id="258"/>
+													<ExtendedTooltip name="AssigningAccountTypeExtendedTooltip" id="259"/>
+													<SearchStringAddition name="AssigningAccountTypeSearchString" id="260">
+														<AdditionSource>
+															<Item>AssigningAccountType</Item>
+															<Type>SearchStringRepresentation</Type>
+														</AdditionSource>
+														<ContextMenu name="AssigningAccountTypeSearchStringContextMenu" id="263"/>
+														<ExtendedTooltip name="AssigningAccountTypeSearchStringExtendedTooltip" id="264"/>
+													</SearchStringAddition>
+													<ViewStatusAddition name="AssigningAccountTypeViewStatus" id="265">
+														<AdditionSource>
+															<Item>AssigningAccountType</Item>
+															<Type>ViewStatusRepresentation</Type>
+														</AdditionSource>
+														<ContextMenu name="AssigningAccountTypeViewStatusContextMenu" id="268"/>
+														<ExtendedTooltip name="AssigningAccountTypeViewStatusExtendedTooltip" id="269"/>
+													</ViewStatusAddition>
+													<SearchControlAddition name="AssigningAccountTypeSearchControl" id="270">
+														<AdditionSource>
+															<Item>AssigningAccountType</Item>
+															<Type>SearchControl</Type>
+														</AdditionSource>
+														<ContextMenu name="AssigningAccountTypeSearchControlContextMenu" id="273"/>
+														<ExtendedTooltip name="AssigningAccountTypeSearchControlExtendedTooltip" id="274"/>
+													</SearchControlAddition>
+													<Events>
+														<Event name="BeforeAddRow">AssigningAccountTypeBeforeAddRow</Event>
+														<Event name="OnActivateRow">AssigningAccountTypeOnActivateRow</Event>
+													</Events>
+													<ChildItems>
+														<ColumnGroup name="AssigningAccountTypeGroup1" id="338">
+															<ExtendedTooltip name="AssigningAccountTypeGroup1ExtendedTooltip" id="339"/>
+															<ChildItems>
+																<ColumnGroup name="AssigningAccountGroup1" id="275">
+																	<Title>
+																		<v8:item>
+																			<v8:lang>en</v8:lang>
+																			<v8:content>Assigning account group1</v8:content>
+																		</v8:item>
+																	</Title>
+																	<ToolTip>
+																		<v8:item>
+																			<v8:lang>en</v8:lang>
+																			<v8:content>Assigning account group1</v8:content>
+																		</v8:item>
+																	</ToolTip>
+																	<Group>Horizontal</Group>
+																	<ExtendedTooltip name="AssigningAccountGroup1ExtendedTooltip" id="276"/>
+																	<ChildItems>
+																		<CheckBoxField name="AssigningAccountTypeConnect" id="323">
+																			<DataPath>AssigningAccountType.Connect</DataPath>
+																			<EditMode>EnterOnInput</EditMode>
+																			<ShowInHeader>false</ShowInHeader>
+																			<ShowInFooter>false</ShowInFooter>
+																			<CheckBoxType>Auto</CheckBoxType>
+																			<ContextMenu name="AssigningAccountTypeConnectContextMenu" id="324"/>
+																			<ExtendedTooltip name="AssigningAccountTypeConnectExtendedTooltip" id="325"/>
+																		</CheckBoxField>
+																		<ColumnGroup name="AssigningAccountTypeGroup4" id="347">
+																			<ExtendedTooltip name="AssigningAccountTypeGroup4ExtendedTooltip" id="348"/>
+																			<ChildItems>
+																				<InputField name="AssigningAccountTypeBankAccount" id="326">
+																					<DataPath>AssigningAccountType.BankAccountDescription</DataPath>
+																					<ReadOnly>true</ReadOnly>
+																					<Title>
+																						<v8:item>
+																							<v8:lang>en</v8:lang>
+																							<v8:content>Bank account, Upload transactions since...</v8:content>
+																						</v8:item>
+																					</Title>
+																					<EditMode>EnterOnInput</EditMode>
+																					<Width>25</Width>
+																					<ContextMenu name="AssigningAccountTypeBankAccountContextMenu" id="327"/>
+																					<ExtendedTooltip name="AssigningAccountTypeBankAccountExtendedTooltip" id="328"/>
+																				</InputField>
+																				<InputField name="AssigningAccountTypeUploadStartDate" id="342">
+																					<DataPath>AssigningAccountType.UploadStartDate</DataPath>
+																					<Title>
+																						<v8:item>
+																							<v8:lang>en</v8:lang>
+																							<v8:content>Upload since</v8:content>
+																						</v8:item>
+																					</Title>
+																					<EditMode>EnterOnInput</EditMode>
+																					<ShowInHeader>false</ShowInHeader>
+																					<ShowInFooter>false</ShowInFooter>
+																					<ContextMenu name="AssigningAccountTypeUploadStartDateContextMenu" id="343"/>
+																					<ExtendedTooltip name="AssigningAccountTypeUploadStartDateExtendedTooltip" id="344"/>
+																					<Events>
+																						<Event name="OnChange">AssigningAccountTypeUploadStartDateOnChange</Event>
+																					</Events>
+																				</InputField>
+																			</ChildItems>
+																		</ColumnGroup>
+																	</ChildItems>
+																</ColumnGroup>
+															</ChildItems>
+														</ColumnGroup>
+														<ColumnGroup name="AssigningAccountTypeGroup2" id="340">
+															<ExtendedTooltip name="AssigningAccountTypeGroup2ExtendedTooltip" id="341"/>
+															<ChildItems>
+																<InputField name="AssigningAccountTypeCurrentBalance" id="329">
+																	<DataPath>AssigningAccountType.CurrentBalance</DataPath>
+																	<ReadOnly>true</ReadOnly>
+																	<Title>
+																		<v8:item>
+																			<v8:lang>en</v8:lang>
+																			<v8:content>Balance</v8:content>
+																		</v8:item>
+																	</Title>
+																	<EditMode>EnterOnInput</EditMode>
+																	<ShowInFooter>false</ShowInFooter>
+																	<Width>10</Width>
+																	<ContextMenu name="AssigningAccountTypeCurrentBalanceContextMenu" id="330"/>
+																	<ExtendedTooltip name="AssigningAccountTypeCurrentBalanceExtendedTooltip" id="331"/>
+																</InputField>
+															</ChildItems>
+														</ColumnGroup>
+														<ColumnGroup name="AssigningAccountTypeGroup3" id="345">
+															<ExtendedTooltip name="AssigningAccountTypeGroup3ExtendedTooltip" id="346"/>
+															<ChildItems>
+																<InputField name="AssigningAccountTypeAccountType" id="335">
+																	<DataPath>AssigningAccountType.AccountType</DataPath>
+																	<Title>
+																		<v8:item>
+																			<v8:lang>en</v8:lang>
+																			<v8:content>G/L account, Type</v8:content>
+																		</v8:item>
+																	</Title>
+																	<EditMode>EnterOnInput</EditMode>
+																	<Width>20</Width>
+																	<DropListButton>true</DropListButton>
+																	<ClearButton>true</ClearButton>
+																	<CreateButton>true</CreateButton>
+																	<ListChoiceMode>true</ListChoiceMode>
+																	<ContextMenu name="AssigningAccountTypeAccountTypeContextMenu" id="336"/>
+																	<ExtendedTooltip name="AssigningAccountTypeAccountTypeExtendedTooltip" id="337"/>
+																	<Events>
+																		<Event name="OnChange">AssigningAccountTypeAccountTypeOnChange</Event>
+																		<Event name="Creating">BankAccountTypeCreating</Event>
+																	</Events>
+																</InputField>
+																<InputField name="AssigningAccountTypeContainerType" id="332">
+																	<DataPath>AssigningAccountType.ContainerType</DataPath>
+																	<EditMode>EnterOnInput</EditMode>
+																	<ShowInHeader>false</ShowInHeader>
+																	<Width>12</Width>
+																	<ContextMenu name="AssigningAccountTypeContainerTypeContextMenu" id="333"/>
+																	<ExtendedTooltip name="AssigningAccountTypeContainerTypeExtendedTooltip" id="334"/>
+																</InputField>
+															</ChildItems>
+														</ColumnGroup>
+													</ChildItems>
+												</Table>
+												<UsualGroup name="AssigningGroup" id="308">
+													<ToolTip>
+														<v8:item>
+															<v8:lang>en</v8:lang>
+															<v8:content>Progress group</v8:content>
+														</v8:item>
+													</ToolTip>
+													<Group>Horizontal</Group>
+													<ShowTitle>false</ShowTitle>
+													<ExtendedTooltip name="AssigningGroupExtendedTooltip" id="309"/>
+													<ChildItems>
+														<LabelDecoration name="Decoration16" id="310">
+															<HorizontalStretch>true</HorizontalStretch>
+															<ContextMenu name="Decoration16ContextMenu" id="311"/>
+															<ExtendedTooltip name="Decoration16ExtendedTooltip" id="312"/>
+														</LabelDecoration>
+														<Button name="AssignAccountType" id="313">
+															<Type>UsualButton</Type>
+															<CommandName>Form.Command.AssignAccountType</CommandName>
+															<TextColor>style:FieldBackColor</TextColor>
+															<BackColor>style:ColorInformationLabel</BackColor>
+															<Title>
+																<v8:item>
+																	<v8:lang>en</v8:lang>
+																	<v8:content>Proceed</v8:content>
+																</v8:item>
+															</Title>
+															<ExtendedTooltip name="AssignAccountTypeExtendedTooltip" id="314"/>
+														</Button>
+														<Button name="CloseForm" id="315">
+															<Type>UsualButton</Type>
+															<CommandName>Form.Command.CloseForm</CommandName>
+															<Title>
+																<v8:item>
+																	<v8:lang>en</v8:lang>
+																	<v8:content>Cancel</v8:content>
+																</v8:item>
+															</Title>
+															<ExtendedTooltip name="CloseFormExtendedTooltip" id="316"/>
+														</Button>
+													</ChildItems>
+												</UsualGroup>
+												<LabelDecoration name="TooltipBackground" id="317">
+													<Visible>false</Visible>
+													<BackColor>style:ToolTipBackColor</BackColor>
+													<ContextMenu name="TooltipBackgroundContextMenu" id="318"/>
+													<ExtendedTooltip name="TooltipBackgroundExtendedTooltip" id="319"/>
+												</LabelDecoration>
+											</ChildItems>
+										</UsualGroup>
+									</ChildItems>
+								</UsualGroup>
+								<LabelDecoration name="AssignRightTab" id="320">
+									<Visible>false</Visible>
+									<HorizontalStretch>true</HorizontalStretch>
+									<ContextMenu name="AssignRightTabContextMenu" id="321"/>
+									<ExtendedTooltip name="AssignRightTabExtendedTooltip" id="322"/>
+								</LabelDecoration>
+							</ChildItems>
+						</UsualGroup>
+					</ChildItems>
+				</Page>
+			</ChildItems>
+		</Pages>
+		<LabelDecoration name="BasementDecoration" id="180">
+			<VerticalStretch>true</VerticalStretch>
+			<ContextMenu name="BasementDecorationContextMenu" id="181"/>
+			<ExtendedTooltip name="BasementDecorationExtendedTooltip" id="182"/>
+		</LabelDecoration>
+		<UsualGroup name="AddAccountBasement" id="165">
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Add account basement</v8:content>
+				</v8:item>
+			</ToolTip>
+			<HorizontalStretch>true</HorizontalStretch>
+			<Group>Horizontal</Group>
+			<ShowTitle>false</ShowTitle>
+			<BackColor>web:WhiteSmoke</BackColor>
+			<ExtendedTooltip name="AddAccountBasementExtendedTooltip" id="166"/>
+			<ChildItems>
+				<PictureDecoration name="SSLSign" id="167">
+					<Width>2</Width>
+					<Height>1</Height>
+					<Title formatted="false">
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>SSLSign</v8:content>
+						</v8:item>
+					</Title>
+					<Picture>
+						<xr:Ref>CommonPicture.SSLSign</xr:Ref>
+						<xr:LoadTransparent>true</xr:LoadTransparent>
+					</Picture>
+					<ContextMenu name="SSLSignContextMenu" id="168"/>
+					<ExtendedTooltip name="SSLSignExtendedTooltip" id="169"/>
+				</PictureDecoration>
+				<LabelDecoration name="SSLTitle" id="170">
+					<HorizontalStretch>true</HorizontalStretch>
+					<TextColor>style:ColorSecondaryLabel</TextColor>
+					<Title formatted="false">
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Bank-level encryption keeps your data safe</v8:content>
+						</v8:item>
+					</Title>
+					<ContextMenu name="SSLTitleContextMenu" id="171"/>
+					<ExtendedTooltip name="SSLTitleExtendedTooltip" id="172"/>
+				</LabelDecoration>
+			</ChildItems>
+		</UsualGroup>
+	</ChildItems>
+	<Attributes>
+		<Attribute name="Bank" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Bank</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>cfg:CatalogRef.Banks</v8:Type>
+			</Type>
+		</Attribute>
+		<Attribute name="LogoTypeAddress" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Logo type address</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="TempStorageAddress" id="4">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Temp storage address</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="CurrentItemID" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Current item ID</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:decimal</v8:Type>
+				<v8:NumberQualifiers>
+					<v8:Digits>20</v8:Digits>
+					<v8:FractionDigits>0</v8:FractionDigits>
+					<v8:AllowedSign>Any</v8:AllowedSign>
+				</v8:NumberQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="AssigningAccountType" id="5">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Assigning account type</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>v8:ValueTable</v8:Type>
+			</Type>
+			<Columns>
+				<Column name="BankAccount" id="1">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Bank account</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>cfg:CatalogRef.BankAccounts</v8:Type>
+					</Type>
+				</Column>
+				<Column name="AccountType" id="2">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Account type</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>cfg:ChartOfAccountsRef.ChartOfAccounts</v8:Type>
+						<v8:Type>xs:decimal</v8:Type>
+						<v8:NumberQualifiers>
+							<v8:Digits>10</v8:Digits>
+							<v8:FractionDigits>0</v8:FractionDigits>
+							<v8:AllowedSign>Any</v8:AllowedSign>
+						</v8:NumberQualifiers>
+					</Type>
+				</Column>
+				<Column name="CurrentBalance" id="4">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Current balance</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:decimal</v8:Type>
+						<v8:NumberQualifiers>
+							<v8:Digits>15</v8:Digits>
+							<v8:FractionDigits>2</v8:FractionDigits>
+							<v8:AllowedSign>Any</v8:AllowedSign>
+						</v8:NumberQualifiers>
+					</Type>
+				</Column>
+				<Column name="Type" id="5">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Type</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:string</v8:Type>
+						<v8:StringQualifiers>
+							<v8:Length>20</v8:Length>
+							<v8:AllowedLength>Variable</v8:AllowedLength>
+						</v8:StringQualifiers>
+					</Type>
+				</Column>
+				<Column name="AssigningFailed" id="3">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Assigning failed</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:boolean</v8:Type>
+					</Type>
+				</Column>
+				<Column name="BankAccountDescription" id="6">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Bank account description</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:string</v8:Type>
+						<v8:StringQualifiers>
+							<v8:Length>50</v8:Length>
+							<v8:AllowedLength>Variable</v8:AllowedLength>
+						</v8:StringQualifiers>
+					</Type>
+				</Column>
+				<Column name="Connect" id="7">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Connect</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:boolean</v8:Type>
+					</Type>
+				</Column>
+				<Column name="SetDefault" id="8">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Set default</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:boolean</v8:Type>
+					</Type>
+				</Column>
+				<Column name="ContainerType" id="9">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Type</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>cfg:EnumRef.YodleeContainerTypes</v8:Type>
+					</Type>
+				</Column>
+				<Column name="ItemID" id="10">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Item ID</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:decimal</v8:Type>
+						<v8:NumberQualifiers>
+							<v8:Digits>20</v8:Digits>
+							<v8:FractionDigits>0</v8:FractionDigits>
+							<v8:AllowedSign>Any</v8:AllowedSign>
+						</v8:NumberQualifiers>
+					</Type>
+				</Column>
+				<Column name="ItemAccountID" id="11">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Item account ID</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:decimal</v8:Type>
+						<v8:NumberQualifiers>
+							<v8:Digits>20</v8:Digits>
+							<v8:FractionDigits>0</v8:FractionDigits>
+							<v8:AllowedSign>Any</v8:AllowedSign>
+						</v8:NumberQualifiers>
+					</Type>
+				</Column>
+				<Column name="LastUpdatedTimeUTC" id="12">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Last updated time UTC</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:dateTime</v8:Type>
+						<v8:DateQualifiers>
+							<v8:DateFractions>DateTime</v8:DateFractions>
+						</v8:DateQualifiers>
+					</Type>
+				</Column>
+				<Column name="LastUpdateAttemptTimeUTC" id="13">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Last update attempt time UTC</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:dateTime</v8:Type>
+						<v8:DateQualifiers>
+							<v8:DateFractions>DateTime</v8:DateFractions>
+						</v8:DateQualifiers>
+					</Type>
+				</Column>
+				<Column name="NextUpdateTimeUTC" id="14">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Next update time UTC</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:dateTime</v8:Type>
+						<v8:DateQualifiers>
+							<v8:DateFractions>DateTime</v8:DateFractions>
+						</v8:DateQualifiers>
+					</Type>
+				</Column>
+				<Column name="RefreshStatusCode" id="15">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Refresh status code</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:decimal</v8:Type>
+						<v8:NumberQualifiers>
+							<v8:Digits>10</v8:Digits>
+							<v8:FractionDigits>0</v8:FractionDigits>
+							<v8:AllowedSign>Any</v8:AllowedSign>
+						</v8:NumberQualifiers>
+					</Type>
+				</Column>
+				<Column name="AvailableBalance" id="16">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Available balance</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:decimal</v8:Type>
+						<v8:NumberQualifiers>
+							<v8:Digits>15</v8:Digits>
+							<v8:FractionDigits>2</v8:FractionDigits>
+							<v8:AllowedSign>Any</v8:AllowedSign>
+						</v8:NumberQualifiers>
+					</Type>
+				</Column>
+				<Column name="CreditCard_AmountDue" id="17">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Credit card amount due</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:decimal</v8:Type>
+						<v8:NumberQualifiers>
+							<v8:Digits>15</v8:Digits>
+							<v8:FractionDigits>2</v8:FractionDigits>
+							<v8:AllowedSign>Any</v8:AllowedSign>
+						</v8:NumberQualifiers>
+					</Type>
+				</Column>
+				<Column name="CreditCard_TotalCreditline" id="18">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Credit card total creditline</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:decimal</v8:Type>
+						<v8:NumberQualifiers>
+							<v8:Digits>15</v8:Digits>
+							<v8:FractionDigits>2</v8:FractionDigits>
+							<v8:AllowedSign>Any</v8:AllowedSign>
+						</v8:NumberQualifiers>
+					</Type>
+				</Column>
+				<Column name="CreditCard_Type" id="19">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Credit card type</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:string</v8:Type>
+						<v8:StringQualifiers>
+							<v8:Length>20</v8:Length>
+							<v8:AllowedLength>Variable</v8:AllowedLength>
+						</v8:StringQualifiers>
+					</Type>
+				</Column>
+				<Column name="UploadStartDate" id="20">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Upload start date</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:dateTime</v8:Type>
+						<v8:DateQualifiers>
+							<v8:DateFractions>Date</v8:DateFractions>
+						</v8:DateQualifiers>
+					</Type>
+				</Column>
+				<Column name="IsCurrentRow" id="21">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Is current row</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:boolean</v8:Type>
+					</Type>
+				</Column>
+				<Column name="BankTransactions" id="22">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Bank transactions</v8:content>
+						</v8:item>
+					</Title>
+					<Type/>
+				</Column>
+				<AdditionalColumns table="AssigningAccountType.BankTransactions"/>
+			</Columns>
+		</Attribute>
+		<Attribute name="CurrentRowID" id="6">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Current row ID</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:decimal</v8:Type>
+				<v8:NumberQualifiers>
+					<v8:Digits>15</v8:Digits>
+					<v8:FractionDigits>0</v8:FractionDigits>
+					<v8:AllowedSign>Any</v8:AllowedSign>
+				</v8:NumberQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="UserCancelledAccountAddition" id="7">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>User cancelled account addition</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
+			</Type>
+		</Attribute>
+	</Attributes>
+	<Commands>
+		<Command name="ChooseAmericanExpressCreditCard" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Choose american express credit card</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Choose american express credit card</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>ChooseAmericanExpressCreditCard</Action>
+		</Command>
+		<Command name="ChooseBankOfAmerica" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Choose bank of america</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Choose bank of america</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>ChooseBankOfAmerica</Action>
+		</Command>
+		<Command name="ChooseCapitalOneCreditCard" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Capital One Credit Card</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Choose capital one credit card</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>ChooseCapitalOneCreditCard</Action>
+		</Command>
+		<Command name="ChooseChaseBank" id="4">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Choose chase bank</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Choose chase bank</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>ChooseChaseBank</Action>
+		</Command>
+		<Command name="ChooseJPMorganChaseBank" id="5">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>JP Morgan Chase Bank</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Choose JPMorgan chase bank</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>ChooseJPMorganChaseBank</Action>
+		</Command>
+		<Command name="ChoosePayPalBank" id="6">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>PayPal</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Choose pay pal bank</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>ChoosePayPalBank</Action>
+		</Command>
+		<Command name="ChoosePNCBank" id="7">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>PNC Bank</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Choose PNC Bank</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>ChoosePNCBank</Action>
+		</Command>
+		<Command name="ChooseSunTrustBank" id="8">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>SunTrust Bank (Business Banking)</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Choose sun trust bank</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>ChooseSunTrustBank</Action>
+		</Command>
+		<Command name="ChooseUSBank" id="9">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>U.S. Bank</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Choose US Bank</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>ChooseUSBank</Action>
+		</Command>
+		<Command name="ChooseWellsFargo" id="10">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Wells Fargo</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Choose wells fargo</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>ChooseWellsFargo</Action>
+		</Command>
+		<Command name="AddAccounts" id="11">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Add accounts</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Add accounts</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>AddAccounts</Action>
+		</Command>
+		<Command name="AssignAccountType" id="12">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Assign account types</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Assign account type</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Picture>
+				<xr:Ref>StdPicture.CheckSyntax</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
+			<Action>AssignAccountType</Action>
+			<Representation>TextPicture</Representation>
+		</Command>
+		<Command name="CloseForm" id="13">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Cancel</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Close form</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Picture>
+				<xr:Ref>StdPicture.Delete</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
+			<Action>CloseForm</Action>
+			<Representation>TextPicture</Representation>
+		</Command>
+		<Command name="CancelAccountAddition" id="14">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Cancel</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Cancel account addition</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Picture>
+				<xr:Ref>StdPicture.Delete</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
+			<Action>CancelAccountAddition</Action>
+			<Representation>TextPicture</Representation>
+		</Command>
+	</Commands>
+	<Parameters>
+		<Parameter name="PerformAddAccount">
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
+			</Type>
+		</Parameter>
+	</Parameters>
+</Form>

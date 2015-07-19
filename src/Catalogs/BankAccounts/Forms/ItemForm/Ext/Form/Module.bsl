@@ -282,7 +282,7 @@ Procedure QIF_UploadTransactionsAtServer(TempStorageAddress)
 		If Left(CurrentLine, 1) = "P" Then
 			DataOfRow = Mid(CurrentLine, 2, StrLen(CurrentLine) - 1);
 			
-			NewRow.Description = DataOfRow;
+			NewRow.Description = ?(ValueIsFilled(NewRow.Description), NewRow.Description + " " + DataOfRow, DataOfRow);
 		EndIf;
 		
 		//end ^
@@ -348,6 +348,7 @@ Procedure QBO_QFX_OFX_UploadTransactionsAtServer(TempStorageAddress)
 		
 		//<DTPOSTED>
 		If NewSTMTTRN And Find(CurrentLine, "<DTPOSTED>") > 0 Then
+			CurrentLine   = StrReplace(CurrentLine, "</DTPOSTED>", "");
 			StartPosition = Find(CurrentLine, "<DTPOSTED>") + 10;
 			Year  = Mid(CurrentLine, StartPosition, 4);
 			Month = Mid(CurrentLine, StartPosition + 4, 2);
@@ -358,6 +359,7 @@ Procedure QBO_QFX_OFX_UploadTransactionsAtServer(TempStorageAddress)
 		
 		//<TRNAMT>
 		If NewSTMTTRN And Find(CurrentLine, "<TRNAMT>") > 0 Then
+			CurrentLine   = StrReplace(CurrentLine, "</TRNAMT>", "");
 			StartPosition = Find(CurrentLine, "<TRNAMT>") + 8;
 			CountOfCharacters = StrLen(CurrentLine) - StartPosition + 1;
 			
@@ -366,6 +368,7 @@ Procedure QBO_QFX_OFX_UploadTransactionsAtServer(TempStorageAddress)
 		
 		//<CHECKNUM>
 		If NewSTMTTRN And Find(CurrentLine, "<CHECKNUM>") > 0 Then
+			CurrentLine   = StrReplace(CurrentLine, "</CHECKNUM>", "");
 			StartPosition = Find(CurrentLine, "<CHECKNUM>") + 10;
 			CountOfCharacters = StrLen(CurrentLine) - StartPosition + 1;
 			
@@ -374,6 +377,7 @@ Procedure QBO_QFX_OFX_UploadTransactionsAtServer(TempStorageAddress)
 		
 		//<NAME>
 		If NewSTMTTRN And Find(CurrentLine, "<NAME>") > 0 Then
+			CurrentLine   = StrReplace(CurrentLine, "</NAME>", "");
 			StartPosition = Find(CurrentLine, "<NAME>") + 6;
 			CountOfCharacters = StrLen(CurrentLine) - StartPosition + 1;
 			

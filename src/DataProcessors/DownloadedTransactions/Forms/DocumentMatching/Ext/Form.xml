@@ -15,6 +15,91 @@
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
 	</Events>
 	<ChildItems>
+		<UsualGroup name="CommandBarGroup" id="49">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Command bar group</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Command bar group</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Group>Horizontal</Group>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="CommandBarGroupExtendedTooltip" id="50"/>
+			<ChildItems>
+				<Button name="DocumentListButton1" id="29">
+					<Type>UsualButton</Type>
+					<CommandName>Form.Command.SelectCommand</CommandName>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Choose...</v8:content>
+						</v8:item>
+					</Title>
+					<ExtendedTooltip name="DocumentListButton1ExtendedTooltip" id="30"/>
+				</Button>
+				<CommandBar name="DocumentListGroup1" id="33">
+					<ExtendedTooltip name="DocumentListGroup1ExtendedTooltip" id="34"/>
+					<ChildItems>
+						<Button name="DocumentListButton2" id="31">
+							<Type>CommandBarButton</Type>
+							<Representation>PictureAndText</Representation>
+							<CommandName>Form.Item.DocumentList.StandardCommand.Find</CommandName>
+							<ExtendedTooltip name="DocumentListButton2ExtendedTooltip" id="32"/>
+						</Button>
+						<Button name="DocumentListButton3" id="35">
+							<Type>CommandBarButton</Type>
+							<Representation>PictureAndText</Representation>
+							<CommandName>Form.Item.DocumentList.StandardCommand.CancelSearch</CommandName>
+							<ExtendedTooltip name="DocumentListButton3ExtendedTooltip" id="36"/>
+						</Button>
+					</ChildItems>
+				</CommandBar>
+				<RadioButtonField name="DateFilter" id="51">
+					<DataPath>DateFilter</DataPath>
+					<RadioButtonType>Tumbler</RadioButtonType>
+					<ChoiceList>
+						<xr:Item>
+							<xr:Presentation/>
+							<xr:CheckState>0</xr:CheckState>
+							<xr:Value xsi:type="FormChoiceListDesTimeValue">
+								<Presentation>
+									<v8:item>
+										<v8:lang>en</v8:lang>
+										<v8:content>Enable</v8:content>
+									</v8:item>
+								</Presentation>
+								<Value xsi:type="xs:decimal">0</Value>
+							</xr:Value>
+						</xr:Item>
+						<xr:Item>
+							<xr:Presentation/>
+							<xr:CheckState>0</xr:CheckState>
+							<xr:Value xsi:type="FormChoiceListDesTimeValue">
+								<Presentation>
+									<v8:item>
+										<v8:lang>en</v8:lang>
+										<v8:content>Disable</v8:content>
+									</v8:item>
+								</Presentation>
+								<Value xsi:type="xs:decimal">1</Value>
+							</xr:Value>
+						</xr:Item>
+					</ChoiceList>
+					<Font ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
+					<ContextMenu name="DateFilterContextMenu" id="52"/>
+					<ExtendedTooltip name="DateFilterExtendedTooltip" id="53"/>
+					<Events>
+						<Event name="OnChange">DateFilterOnChange</Event>
+					</Events>
+				</RadioButtonField>
+			</ChildItems>
+		</UsualGroup>
 		<Table name="DocumentList" id="1">
 			<UseAlternationRowColor>true</UseAlternationRowColor>
 			<EnableStartDrag>true</EnableStartDrag>
@@ -39,36 +124,6 @@
 			<ContextMenu name="DocumentListContextMenu" id="2"/>
 			<AutoCommandBar name="DocumentListCommandBar" id="3">
 				<Autofill>false</Autofill>
-				<ChildItems>
-					<Button name="DocumentListButton1" id="29">
-						<Type>CommandBarButton</Type>
-						<CommandName>Form.Command.SelectCommand</CommandName>
-						<Title>
-							<v8:item>
-								<v8:lang>en</v8:lang>
-								<v8:content>Choose...</v8:content>
-							</v8:item>
-						</Title>
-						<ExtendedTooltip name="DocumentListButton1ExtendedTooltip" id="30"/>
-					</Button>
-					<ButtonGroup name="DocumentListGroup1" id="33">
-						<ExtendedTooltip name="DocumentListGroup1ExtendedTooltip" id="34"/>
-						<ChildItems>
-							<Button name="DocumentListButton2" id="31">
-								<Type>CommandBarButton</Type>
-								<Representation>PictureAndText</Representation>
-								<CommandName>Form.Item.DocumentList.StandardCommand.Find</CommandName>
-								<ExtendedTooltip name="DocumentListButton2ExtendedTooltip" id="32"/>
-							</Button>
-							<Button name="DocumentListButton3" id="35">
-								<Type>CommandBarButton</Type>
-								<Representation>PictureAndText</Representation>
-								<CommandName>Form.Item.DocumentList.StandardCommand.CancelSearch</CommandName>
-								<ExtendedTooltip name="DocumentListButton3ExtendedTooltip" id="36"/>
-							</Button>
-						</ChildItems>
-					</ButtonGroup>
-				</ChildItems>
 			</AutoCommandBar>
 			<ExtendedTooltip name="DocumentListExtendedTooltip" id="4"/>
 			<SearchStringAddition name="DocumentListSearchString" id="40">
@@ -194,7 +249,8 @@ FROM
 		ON DocumentJournalDocumentJournal1.Ref = BankTransactions.Document
 WHERE
 	DocumentJournalDocumentJournal1.Type IN(&amp;ListWithoutTransfersAndJE)
-	AND DocumentJournalDocumentJournal1.Date BETWEEN &amp;PeriodStart AND &amp;PeriodEnd
+	AND (DocumentJournalDocumentJournal1.Date BETWEEN &amp;PeriodStart AND &amp;PeriodEnd
+			OR NOT &amp;DateFilter)
 	AND DocumentJournalDocumentJournal1.Total = &amp;Amount
 	AND (BankTransactions.Document IS NULL 
 			OR BankTransactions.ID = &amp;TransactionID)
@@ -224,7 +280,8 @@ FROM
 				ON BankTransfer.Ref = BankTransactions.Document
 					AND (BankTransactions.BankAccount = &amp;AccountInBank)
 		WHERE
-			BankTransfer.Date BETWEEN &amp;PeriodStart AND &amp;PeriodEnd
+			(BankTransfer.Date BETWEEN &amp;PeriodStart AND &amp;PeriodEnd
+					OR NOT &amp;DateFilter)
 			AND CASE
 					WHEN &amp;IncomingPayment
 						THEN BankTransfer.AccountTo = &amp;BankAccount
@@ -309,8 +366,9 @@ FROM
 							Document.SalesInvoice AS SalesInvoice
 						WHERE
 							SalesInvoice.Posted = TRUE
-							AND SalesInvoice.Date &gt;= &amp;PeriodStart
-							AND SalesInvoice.Date &lt;= &amp;PeriodEnd)) AS GeneralJournalBalance
+							AND (SalesInvoice.Date &gt;= &amp;PeriodStart
+									AND SalesInvoice.Date &lt;= &amp;PeriodEnd
+								OR NOT &amp;DateFilter))) AS GeneralJournalBalance
 		WHERE
 			GeneralJournalBalance.AmountRCBalanceDr &gt;= &amp;Amount
 			AND &amp;IncomingPayment) AS NestedSelect
@@ -347,8 +405,9 @@ FROM
 							Document.PurchaseInvoice AS PurchaseInvoice
 						WHERE
 							PurchaseInvoice.Posted = TRUE
-							AND PurchaseInvoice.Date &gt;= &amp;PeriodStart
-							AND PurchaseInvoice.Date &lt;= &amp;PeriodEnd)) AS GeneralJournalBalance
+							AND (PurchaseInvoice.Date &gt;= &amp;PeriodStart
+									AND PurchaseInvoice.Date &lt;= &amp;PeriodEnd
+								OR NOT &amp;DateFilter))) AS GeneralJournalBalance
 		WHERE
 			GeneralJournalBalance.AmountRCBalanceCr &gt;= &amp;Amount
 			AND NOT &amp;IncomingPayment) AS NestedSelect
@@ -370,6 +429,36 @@ FROM
 					<dcsset:itemsUserSettingID>911b6018-f537-43e8-a417-da56b22f9aec</dcsset:itemsUserSettingID>
 				</ListSettings>
 			</Settings>
+		</Attribute>
+		<Attribute name="DateFilter" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Date filter</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:decimal</v8:Type>
+				<v8:NumberQualifiers>
+					<v8:Digits>1</v8:Digits>
+					<v8:FractionDigits>0</v8:FractionDigits>
+					<v8:AllowedSign>Nonnegative</v8:AllowedSign>
+				</v8:NumberQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="TransactionDate" id="4">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Transaction date</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:dateTime</v8:Type>
+				<v8:DateQualifiers>
+					<v8:DateFractions>Date</v8:DateFractions>
+				</v8:DateQualifiers>
+			</Type>
 		</Attribute>
 	</Attributes>
 	<Commands>

@@ -1,0 +1,563 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<VerticalScroll>useIfNecessary</VerticalScroll>
+	<AutoCommandBar name="ФормаКоманднаяПанель" id="-1">
+		<Autofill>false</Autofill>
+		<ChildItems>
+			<Button name="Settings" id="35">
+				<Type>CommandBarButton</Type>
+				<Representation>PictureAndText</Representation>
+				<CommandName>Form.Command.Settings</CommandName>
+				<Picture>
+					<xr:Abs>Picture.bmp</xr:Abs>
+					<xr:LoadTransparent>false</xr:LoadTransparent>
+				</Picture>
+				<ExtendedTooltip name="SettingsExtendedTooltip" id="36"/>
+			</Button>
+		</ChildItems>
+	</AutoCommandBar>
+	<Events>
+		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+	</Events>
+	<ChildItems>
+		<UsualGroup name="SettingsGroup" id="75">
+			<Visible>false</Visible>
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Settings group</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Settings group</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Group>Vertical</Group>
+			<Representation>None</Representation>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="SettingsGroupExtendedTooltip" id="76"/>
+			<ChildItems>
+				<CheckBoxField name="WriteControllOff" id="72">
+					<DataPath>Object.WriteControllOff</DataPath>
+					<CheckBoxType>Auto</CheckBoxType>
+					<ContextMenu name="WriteControllOffContextMenu" id="73"/>
+					<ExtendedTooltip name="WriteControllOffExtendedTooltip" id="74"/>
+				</CheckBoxField>
+				<CheckBoxField name="ExecuteInOneTransaction" id="69">
+					<DataPath>Object.ExecuteInOneTransaction</DataPath>
+					<CheckBoxType>Auto</CheckBoxType>
+					<ContextMenu name="ExecuteInOneTransactionContextMenu" id="70"/>
+					<ExtendedTooltip name="ExecuteInOneTransactionExtendedTooltip" id="71"/>
+				</CheckBoxField>
+			</ChildItems>
+		</UsualGroup>
+		<Table name="ValuesToReplace" id="8">
+			<Representation>List</Representation>
+			<AutoInsertNewRow>true</AutoInsertNewRow>
+			<EnableStartDrag>true</EnableStartDrag>
+			<EnableDrag>true</EnableDrag>
+			<DataPath>ValuesToReplace</DataPath>
+			<SearchStringLocation>None</SearchStringLocation>
+			<ViewStatusLocation>None</ViewStatusLocation>
+			<SearchControlLocation>None</SearchControlLocation>
+			<RowFilter xsi:nil="true"/>
+			<ContextMenu name="ValuesToReplaceContextMenu" id="9"/>
+			<AutoCommandBar name="ValuesToReplaceCommandBar" id="10">
+				<ChildItems>
+					<Button name="ValuesToReplaceFindRefs" id="26">
+						<Type>CommandBarButton</Type>
+						<CommandName>Form.Command.FindRefs</CommandName>
+						<ExtendedTooltip name="ValuesToReplaceFindRefsExtendedTooltip" id="37"/>
+					</Button>
+				</ChildItems>
+			</AutoCommandBar>
+			<ExtendedTooltip name="ValuesToReplaceExtendedTooltip" id="38"/>
+			<SearchStringAddition name="ValuesToReplaceSearchString" id="51">
+				<AdditionSource>
+					<Item>ValuesToReplace</Item>
+					<Type>SearchStringRepresentation</Type>
+				</AdditionSource>
+				<ContextMenu name="ValuesToReplaceSearchStringContextMenu" id="52"/>
+				<ExtendedTooltip name="ValuesToReplaceSearchStringExtendedTooltip" id="53"/>
+			</SearchStringAddition>
+			<ViewStatusAddition name="ValuesToReplaceViewStatus" id="54">
+				<AdditionSource>
+					<Item>ValuesToReplace</Item>
+					<Type>ViewStatusRepresentation</Type>
+				</AdditionSource>
+				<ContextMenu name="ValuesToReplaceViewStatusContextMenu" id="55"/>
+				<ExtendedTooltip name="ValuesToReplaceViewStatusExtendedTooltip" id="56"/>
+			</ViewStatusAddition>
+			<SearchControlAddition name="ValuesToReplaceSearchControl" id="57">
+				<AdditionSource>
+					<Item>ValuesToReplace</Item>
+					<Type>SearchControl</Type>
+				</AdditionSource>
+				<ContextMenu name="ValuesToReplaceSearchControlContextMenu" id="58"/>
+				<ExtendedTooltip name="ValuesToReplaceSearchControlExtendedTooltip" id="59"/>
+			</SearchControlAddition>
+			<Events>
+				<Event name="OnStartEdit">ЗаменяемыеЗначенияПриНачалеРедактирования</Event>
+			</Events>
+			<ChildItems>
+				<CheckBoxField name="ValuesToReplaceCheck" id="27">
+					<DataPath>ValuesToReplace.Check</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content> </v8:content>
+						</v8:item>
+					</Title>
+					<EditMode>EnterOnInput</EditMode>
+					<CheckBoxType>Auto</CheckBoxType>
+					<ContextMenu name="ValuesToReplaceCheckContextMenu" id="28"/>
+					<ExtendedTooltip name="ValuesToReplaceCheckExtendedTooltip" id="39"/>
+				</CheckBoxField>
+				<InputField name="ValuesToReplaceChangeFrom" id="11">
+					<DataPath>ValuesToReplace.ChangeFrom</DataPath>
+					<EditMode>EnterOnInput</EditMode>
+					<ContextMenu name="ValuesToReplaceChangeFromContextMenu" id="12"/>
+					<ExtendedTooltip name="ValuesToReplaceChangeFromExtendedTooltip" id="40"/>
+				</InputField>
+				<InputField name="ValuesToReplaceChangeTo" id="13">
+					<DataPath>ValuesToReplace.ChangeTo</DataPath>
+					<EditMode>EnterOnInput</EditMode>
+					<ContextMenu name="ValuesToReplaceChangeToContextMenu" id="14"/>
+					<ExtendedTooltip name="ValuesToReplaceChangeToExtendedTooltip" id="41"/>
+				</InputField>
+			</ChildItems>
+		</Table>
+		<Table name="FoundReferences" id="1">
+			<Representation>List</Representation>
+			<AutoInsertNewRow>true</AutoInsertNewRow>
+			<EnableStartDrag>true</EnableStartDrag>
+			<EnableDrag>true</EnableDrag>
+			<DataPath>Object.FoundReferences</DataPath>
+			<SearchStringLocation>None</SearchStringLocation>
+			<ViewStatusLocation>None</ViewStatusLocation>
+			<SearchControlLocation>None</SearchControlLocation>
+			<RowFilter xsi:nil="true"/>
+			<ContextMenu name="FoundReferencesContextMenu" id="2"/>
+			<AutoCommandBar name="FoundReferencesCommandBar" id="3">
+				<Autofill>false</Autofill>
+				<ChildItems>
+					<Button name="FoundReferencesCheckAll" id="23">
+						<Type>CommandBarButton</Type>
+						<CommandName>Form.Command.CheckAll</CommandName>
+						<ExtendedTooltip name="FoundReferencesCheckAllExtendedTooltip" id="42"/>
+					</Button>
+					<Button name="FoundReferencesUnCheckAll" id="24">
+						<Type>CommandBarButton</Type>
+						<CommandName>Form.Command.CheckNone</CommandName>
+						<ExtendedTooltip name="FoundReferencesUnCheckAllExtendedTooltip" id="43"/>
+					</Button>
+					<Button name="FoundReferencesExecuteMerge" id="25">
+						<Type>CommandBarButton</Type>
+						<DefaultButton>true</DefaultButton>
+						<CommandName>Form.Command.ExecuteReplace</CommandName>
+						<ExtendedTooltip name="FoundReferencesExecuteMergeExtendedTooltip" id="44"/>
+					</Button>
+				</ChildItems>
+			</AutoCommandBar>
+			<ExtendedTooltip name="FoundReferencesExtendedTooltip" id="45"/>
+			<SearchStringAddition name="FoundReferencesSearchString" id="60">
+				<AdditionSource>
+					<Item>FoundReferences</Item>
+					<Type>SearchStringRepresentation</Type>
+				</AdditionSource>
+				<ContextMenu name="FoundReferencesSearchStringContextMenu" id="61"/>
+				<ExtendedTooltip name="FoundReferencesSearchStringExtendedTooltip" id="62"/>
+			</SearchStringAddition>
+			<ViewStatusAddition name="FoundReferencesViewStatus" id="63">
+				<AdditionSource>
+					<Item>FoundReferences</Item>
+					<Type>ViewStatusRepresentation</Type>
+				</AdditionSource>
+				<ContextMenu name="FoundReferencesViewStatusContextMenu" id="64"/>
+				<ExtendedTooltip name="FoundReferencesViewStatusExtendedTooltip" id="65"/>
+			</ViewStatusAddition>
+			<SearchControlAddition name="FoundReferencesSearchControl" id="66">
+				<AdditionSource>
+					<Item>FoundReferences</Item>
+					<Type>SearchControl</Type>
+				</AdditionSource>
+				<ContextMenu name="FoundReferencesSearchControlContextMenu" id="67"/>
+				<ExtendedTooltip name="FoundReferencesSearchControlExtendedTooltip" id="68"/>
+			</SearchControlAddition>
+			<Events>
+				<Event name="Selection">НайденныеСсылкиВыбор</Event>
+			</Events>
+			<ChildItems>
+				<CheckBoxField name="FoundReferencesCheck" id="15">
+					<DataPath>Object.FoundReferences.Check</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content> </v8:content>
+						</v8:item>
+					</Title>
+					<EditMode>Directly</EditMode>
+					<FixingInTable>Left</FixingInTable>
+					<CheckBoxType>Auto</CheckBoxType>
+					<ContextMenu name="FoundReferencesCheckContextMenu" id="16"/>
+					<ExtendedTooltip name="FoundReferencesCheckExtendedTooltip" id="46"/>
+				</CheckBoxField>
+				<InputField name="FoundReferencesData" id="31">
+					<DataPath>Object.FoundReferences.Data</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>Объект, содержащий ссылки</v8:content>
+						</v8:item>
+					</Title>
+					<EditMode>EnterOnInput</EditMode>
+					<Width>40</Width>
+					<ContextMenu name="FoundReferencesDataContextMenu" id="32"/>
+					<ExtendedTooltip name="FoundReferencesDataExtendedTooltip" id="47"/>
+				</InputField>
+				<InputField name="FoundReferencesMetadataPresentaion" id="21">
+					<DataPath>Object.FoundReferences.MetadataPresentaion</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>Метаданные</v8:content>
+						</v8:item>
+					</Title>
+					<EditMode>EnterOnInput</EditMode>
+					<Width>20</Width>
+					<ContextMenu name="FoundReferencesMetadataPresentaionContextMenu" id="22"/>
+					<ExtendedTooltip name="FoundReferencesMetadataPresentaionExtendedTooltip" id="48"/>
+				</InputField>
+				<InputField name="FoundReferencesRef" id="29">
+					<DataPath>Object.FoundReferences.Ref</DataPath>
+					<EditMode>EnterOnInput</EditMode>
+					<Width>20</Width>
+					<ContextMenu name="FoundReferencesRefContextMenu" id="30"/>
+					<ExtendedTooltip name="FoundReferencesRefExtendedTooltip" id="49"/>
+				</InputField>
+				<InputField name="FoundReferencesInformationRegisterRecordKey" id="33">
+					<DataPath>Object.FoundReferences.InformationRegisterRecordKey</DataPath>
+					<Visible>false</Visible>
+					<EditMode>EnterOnInput</EditMode>
+					<ContextMenu name="FoundReferencesInformationRegisterRecordKeyContextMenu" id="34"/>
+					<ExtendedTooltip name="FoundReferencesInformationRegisterRecordKeyExtendedTooltip" id="50"/>
+				</InputField>
+			</ChildItems>
+		</Table>
+	</ChildItems>
+	<Attributes>
+		<Attribute name="Object" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Object</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>cfg:DataProcessorObject.SearchAndReplace</v8:Type>
+			</Type>
+			<MainAttribute>true</MainAttribute>
+			<Columns>
+				<AdditionalColumns table="Object.FoundReferences">
+					<Column name="Data" id="2">
+						<Title>
+							<v8:item>
+								<v8:lang>ru</v8:lang>
+								<v8:content>Данные</v8:content>
+							</v8:item>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>Data</v8:content>
+							</v8:item>
+						</Title>
+						<Type>
+							<v8:Type>xs:boolean</v8:Type>
+							<v8:Type>xs:string</v8:Type>
+							<v8:Type>xs:dateTime</v8:Type>
+							<v8:Type>xs:decimal</v8:Type>
+							<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
+							<v8:NumberQualifiers>
+								<v8:Digits>0</v8:Digits>
+								<v8:FractionDigits>0</v8:FractionDigits>
+								<v8:AllowedSign>Any</v8:AllowedSign>
+							</v8:NumberQualifiers>
+							<v8:StringQualifiers>
+								<v8:Length>0</v8:Length>
+								<v8:AllowedLength>Variable</v8:AllowedLength>
+							</v8:StringQualifiers>
+							<v8:DateQualifiers>
+								<v8:DateFractions>DateTime</v8:DateFractions>
+							</v8:DateQualifiers>
+						</Type>
+					</Column>
+					<Column name="MetadataPresentaion" id="3">
+						<Title>
+							<v8:item>
+								<v8:lang>ru</v8:lang>
+								<v8:content>Представление метаданных</v8:content>
+							</v8:item>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>Metadata presentaion</v8:content>
+							</v8:item>
+						</Title>
+						<Type>
+							<v8:Type>xs:string</v8:Type>
+							<v8:StringQualifiers>
+								<v8:Length>0</v8:Length>
+								<v8:AllowedLength>Variable</v8:AllowedLength>
+							</v8:StringQualifiers>
+						</Type>
+					</Column>
+					<Column name="Ref" id="5">
+						<Title>
+							<v8:item>
+								<v8:lang>ru</v8:lang>
+								<v8:content>Заменяемая ссылка</v8:content>
+							</v8:item>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>Ref</v8:content>
+							</v8:item>
+						</Title>
+						<Type>
+							<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
+						</Type>
+					</Column>
+					<Column name="Check" id="4">
+						<Title>
+							<v8:item>
+								<v8:lang>ru</v8:lang>
+								<v8:content>Включено</v8:content>
+							</v8:item>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>Check</v8:content>
+							</v8:item>
+						</Title>
+						<Type>
+							<v8:Type>xs:boolean</v8:Type>
+						</Type>
+					</Column>
+					<Column name="InformationRegisterRecordKey" id="1">
+						<Title>
+							<v8:item>
+								<v8:lang>ru</v8:lang>
+								<v8:content>Ключ записи регистра сведений</v8:content>
+							</v8:item>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>Information register record key</v8:content>
+							</v8:item>
+						</Title>
+						<Type>
+							<v8:Type>v8:ValueListType</v8:Type>
+						</Type>
+					</Column>
+				</AdditionalColumns>
+			</Columns>
+		</Attribute>
+		<Attribute name="ValuesToReplace" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Заменяемые значения</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Values to replace</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>v8:ValueTable</v8:Type>
+			</Type>
+			<Columns>
+				<Column name="ChangeFrom" id="1">
+					<Title>
+						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>Что заменять</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Change from</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>cfg:CatalogRef.Products</v8:Type>
+						<v8:Type>cfg:ChartOfAccountsRef.ChartOfAccounts</v8:Type>
+						<v8:Type>cfg:CatalogRef.Banks</v8:Type>
+						<v8:Type>cfg:CatalogRef.Companies</v8:Type>
+					</Type>
+				</Column>
+				<Column name="ChangeTo" id="2">
+					<Title>
+						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>На что заменять</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Change to</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>cfg:CatalogRef.Products</v8:Type>
+						<v8:Type>cfg:ChartOfAccountsRef.ChartOfAccounts</v8:Type>
+						<v8:Type>cfg:CatalogRef.Banks</v8:Type>
+						<v8:Type>cfg:CatalogRef.Companies</v8:Type>
+					</Type>
+				</Column>
+				<Column name="Check" id="3">
+					<Title>
+						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>Пометка</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Check</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:boolean</v8:Type>
+					</Type>
+				</Column>
+			</Columns>
+		</Attribute>
+	</Attributes>
+	<Commands>
+		<Command name="CheckAll" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Включить все</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Check all</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Включить все</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Check all</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Picture>
+				<xr:Ref>StdPicture.CheckAll</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
+			<Action>CheckAll</Action>
+			<Representation>Picture</Representation>
+		</Command>
+		<Command name="CheckNone" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Выключить все</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Check none</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Выключить все</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Check none</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Picture>
+				<xr:Ref>StdPicture.UncheckAll</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
+			<Action>CheckNone</Action>
+			<Representation>Picture</Representation>
+		</Command>
+		<Command name="ExecuteReplace" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Выполнить замену значений</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Execute replace</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Выполнить замену</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Execute replace</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Picture>
+				<xr:Ref>StdPicture.GenerateReport</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
+			<Action>ExecuteRepalce</Action>
+			<Representation>TextPicture</Representation>
+		</Command>
+		<Command name="FindRefs" id="4">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Найти ссылки</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Find references</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Найти ссылки</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Find refs</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>FindRefs</Action>
+		</Command>
+		<Command name="Settings" id="5">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Настройка</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Settings</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Настройка</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Settings</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>ShowSettings</Action>
+		</Command>
+	</Commands>
+</Form>

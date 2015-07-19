@@ -1,10 +1,21 @@
 ﻿
 &AtServer
 Procedure OnWriteAtServer(Cancel, CurrentObject, WriteParameters)
-	
 	CheckAllUsersDisabled(Cancel);
 	If Constants.VersionNumber.Get() = 3 Then
-		CheckNumberOfAllowedUsers(Cancel);
+		CheckNumberOfAllowedUsers(Cancel, 2);
+		If Cancel = True Then
+			Return;
+		EndIf;
+	EndIf;
+	If Constants.VersionNumber.Get() = 5 Then
+		CheckNumberOfAllowedUsers(Cancel, 10);
+		If Cancel = True Then
+			Return;
+		EndIf;
+	EndIf;
+	If Constants.VersionNumber.Get() = 6 Then
+		CheckNumberOfAllowedUsers(Cancel, 3);
 		If Cancel = True Then
 			Return;
 		EndIf;
@@ -32,51 +43,82 @@ Procedure OnWriteAtServer(Cancel, CurrentObject, WriteParameters)
 				If Object.AdminAccess = True Then
 					NewUser.Roles.Add(MetaData.Roles.FullAccess1);
 				Else
-					
-					NewUser.Roles.Add(MetaData.Roles.ListUser);
 
 					If Object.Sales = "Full" Then
 						NewUser.Roles.Add(Metadata.Roles.SalesFull);
+						If NOT NewUser.Roles.Contains(Metadata.Roles.ListUser) Then
+							NewUser.Roles.Add(MetaData.Roles.ListUser);	
+						EndIf;
 					Endif;
 				
 					If Object.Sales = "View" Then
 						NewUser.Roles.Add(Metadata.Roles.SalesView);
+						If NOT NewUser.Roles.Contains(Metadata.Roles.ListUser) Then
+							NewUser.Roles.Add(MetaData.Roles.ListUser);	
+						EndIf;
 					Endif;
 				
 					If Object.Purchasing = "Full" Then
 						NewUser.Roles.Add(Metadata.Roles.PurchasingFull);
+						If NOT NewUser.Roles.Contains(Metadata.Roles.ListUser) Then
+							NewUser.Roles.Add(MetaData.Roles.ListUser);	
+						EndIf;
 					Endif;
 				
 					If Object.Purchasing = "View" Then
 						NewUser.Roles.Add(Metadata.Roles.PurchasingView);
+						If NOT NewUser.Roles.Contains(Metadata.Roles.ListUser) Then
+							NewUser.Roles.Add(MetaData.Roles.ListUser);	
+						EndIf;
 					Endif;
 				
 					If Object.Warehouse = "Full" Then
 						NewUser.Roles.Add(Metadata.Roles.WarehouseFull);
+						If NOT NewUser.Roles.Contains(Metadata.Roles.ListUser) Then
+							NewUser.Roles.Add(MetaData.Roles.ListUser);	
+						EndIf;
 					Endif;
 				
 					If Object.Warehouse = "View" Then
 						NewUser.Roles.Add(Metadata.Roles.WarehouseView);
+						If NOT NewUser.Roles.Contains(Metadata.Roles.ListUser) Then
+							NewUser.Roles.Add(MetaData.Roles.ListUser);	
+						EndIf;
 					Endif;
 				
 					If Object.BankReceive = "Full" Then
 						NewUser.Roles.Add(Metadata.Roles.BankReceiveFull);
+						If NOT NewUser.Roles.Contains(Metadata.Roles.ListUser) Then
+							NewUser.Roles.Add(MetaData.Roles.ListUser);	
+						EndIf;
 					Endif;
 				
 					If Object.BankReceive = "View" Then
 						NewUser.Roles.Add(Metadata.Roles.BankReceiveView);
+						If NOT NewUser.Roles.Contains(Metadata.Roles.ListUser) Then
+							NewUser.Roles.Add(MetaData.Roles.ListUser);	
+						EndIf;
 					Endif;
 				
 					If Object.BankSend = "Full" Then
 						NewUser.Roles.Add(Metadata.Roles.BankSendFull);
+						If NOT NewUser.Roles.Contains(Metadata.Roles.ListUser) Then
+							NewUser.Roles.Add(MetaData.Roles.ListUser);	
+						EndIf;
 					Endif;
 				
 					If Object.BankSend = "View" Then
 						NewUser.Roles.Add(Metadata.Roles.BankSendView);
+						If NOT NewUser.Roles.Contains(Metadata.Roles.ListUser) Then
+							NewUser.Roles.Add(MetaData.Roles.ListUser);	
+						EndIf;
 					Endif;
 				
 					If Object.Accounting = "Full" Then
 						NewUser.Roles.Add(Metadata.Roles.AccountingFull);
+						If NOT NewUser.Roles.Contains(Metadata.Roles.ListUser) Then
+							NewUser.Roles.Add(MetaData.Roles.ListUser);	
+						EndIf;
 					Endif;
 				
 					If Object.Accounting = "View" Then
@@ -85,18 +127,30 @@ Procedure OnWriteAtServer(Cancel, CurrentObject, WriteParameters)
 										
 					If Object.Projects = "Full" Then
 						NewUser.Roles.Add(Metadata.Roles.ProjectsFull);
+						If NOT NewUser.Roles.Contains(Metadata.Roles.ListUser) Then
+							NewUser.Roles.Add(MetaData.Roles.ListUser);	
+						EndIf;
 					Endif;
 				
 					If Object.Projects = "View" Then
 						NewUser.Roles.Add(Metadata.Roles.ProjectsView);
+						If NOT NewUser.Roles.Contains(Metadata.Roles.ListUser) Then
+							NewUser.Roles.Add(MetaData.Roles.ListUser);	
+						EndIf;
 					Endif;
 					
 					If Object.TimeTrack = "Full" Then
 						NewUser.Roles.Add(Metadata.Roles.TimeTrackFull);
+						If NOT NewUser.Roles.Contains(Metadata.Roles.ListUser) Then
+							NewUser.Roles.Add(MetaData.Roles.ListUser);	
+						EndIf;
 					Endif;
 				
 					If Object.TimeTrack = "View" Then
 						NewUser.Roles.Add(Metadata.Roles.TimeTrackView);
+						If NOT NewUser.Roles.Contains(Metadata.Roles.ListUser) Then
+							NewUser.Roles.Add(MetaData.Roles.ListUser);	
+						EndIf;
 					Endif;
 					
 					If Object.ItemReceipt = "Full" Then
@@ -109,6 +163,9 @@ Procedure OnWriteAtServer(Cancel, CurrentObject, WriteParameters)
 
 					If Object.ReportsOnly = True Then
 						NewUser.Roles.Add(Metadata.Roles.ReportOnly);
+						//If NOT NewUser.Roles.Contains(Metadata.Roles.ListUser) Then
+							//NewUser.Roles.Add(MetaData.Roles.ListUser);	
+						//EndIf;
 					Endif;
 				
 				EndIf;
@@ -118,7 +175,15 @@ Procedure OnWriteAtServer(Cancel, CurrentObject, WriteParameters)
 			NewUser.ShowInList = False;
 
 			NewUser.Write();
-						
+			
+			If Object.Disabled = False Then
+			
+				// API call
+				
+				Object.EmailSent = True;
+				
+			EndIf;
+			
 		Else
 			
 			
@@ -132,83 +197,136 @@ Procedure OnWriteAtServer(Cancel, CurrentObject, WriteParameters)
 		    If Object.AdminAccess = True Then
 		    	ExistingUser.Roles.Add(MetaData.Roles.FullAccess1);
 		    Else
-		    	              
-		    	ExistingUser.Roles.Add(MetaData.Roles.ListUser);
 
 		    	If Object.Sales = "Full" Then
 		    		ExistingUser.Roles.Add(Metadata.Roles.SalesFull);
+					If NOT ExistingUser.Roles.Contains(Metadata.Roles.ListUser) Then
+						ExistingUser.Roles.Add(MetaData.Roles.ListUser);	
+					EndIf;
 		    	Endif;
 		    
 		    	If Object.Sales = "View" Then
 		    		ExistingUser.Roles.Add(Metadata.Roles.SalesView);
+					If NOT ExistingUser.Roles.Contains(Metadata.Roles.ListUser) Then
+						ExistingUser.Roles.Add(MetaData.Roles.ListUser);	
+					EndIf;
 		    	Endif;
 		    
 		    	If Object.Purchasing = "Full" Then
 		    		ExistingUser.Roles.Add(Metadata.Roles.PurchasingFull);
+					If NOT ExistingUser.Roles.Contains(Metadata.Roles.ListUser) Then
+						ExistingUser.Roles.Add(MetaData.Roles.ListUser);	
+					EndIf;
 		    	Endif;
 		    
 		    	If Object.Purchasing = "View" Then
 		    		ExistingUser.Roles.Add(Metadata.Roles.PurchasingView);
+					If NOT ExistingUser.Roles.Contains(Metadata.Roles.ListUser) Then
+						ExistingUser.Roles.Add(MetaData.Roles.ListUser);	
+					EndIf;
 		    	Endif;
 		    
 		    	If Object.Warehouse = "Full" Then
 		    		ExistingUser.Roles.Add(Metadata.Roles.WarehouseFull);
+					If NOT ExistingUser.Roles.Contains(Metadata.Roles.ListUser) Then
+						ExistingUser.Roles.Add(MetaData.Roles.ListUser);	
+					EndIf;
 		    	Endif;
 		    
 		    	If Object.Warehouse = "View" Then
 		    		ExistingUser.Roles.Add(Metadata.Roles.WarehouseView);
+					If NOT ExistingUser.Roles.Contains(Metadata.Roles.ListUser) Then
+						ExistingUser.Roles.Add(MetaData.Roles.ListUser);	
+					EndIf;
 		    	Endif;
 		    
 		    	If Object.BankReceive = "Full" Then
 		    		ExistingUser.Roles.Add(Metadata.Roles.BankReceiveFull);
+					If NOT ExistingUser.Roles.Contains(Metadata.Roles.ListUser) Then
+						ExistingUser.Roles.Add(MetaData.Roles.ListUser);	
+					EndIf;
 		    	Endif;
 		    
 		    	If Object.BankReceive = "View" Then
 		    		ExistingUser.Roles.Add(Metadata.Roles.BankReceiveView);
+					If NOT ExistingUser.Roles.Contains(Metadata.Roles.ListUser) Then
+						ExistingUser.Roles.Add(MetaData.Roles.ListUser);	
+					EndIf;
+
 		    	Endif;
 		    
 		    	If Object.BankSend = "Full" Then
 		    		ExistingUser.Roles.Add(Metadata.Roles.BankSendFull);
+					If NOT ExistingUser.Roles.Contains(Metadata.Roles.ListUser) Then
+						ExistingUser.Roles.Add(MetaData.Roles.ListUser);	
+					EndIf;
 		    	Endif;
 		    
 		    	If Object.BankSend = "View" Then
 		    		ExistingUser.Roles.Add(Metadata.Roles.BankSendView);
+					If NOT ExistingUser.Roles.Contains(Metadata.Roles.ListUser) Then
+						ExistingUser.Roles.Add(MetaData.Roles.ListUser);	
+					EndIf;
 		    	Endif;
 		    
 		    	If Object.Accounting = "Full" Then
 		    		ExistingUser.Roles.Add(Metadata.Roles.AccountingFull);
+					If NOT ExistingUser.Roles.Contains(Metadata.Roles.ListUser) Then
+						ExistingUser.Roles.Add(MetaData.Roles.ListUser);	
+					EndIf;
 		    	Endif;
 		    
 		    	If Object.Accounting = "View" Then
 		    		ExistingUser.Roles.Add(Metadata.Roles.AccountingView);
+					If NOT ExistingUser.Roles.Contains(Metadata.Roles.ListUser) Then
+						ExistingUser.Roles.Add(MetaData.Roles.ListUser);	
+					EndIf;
+
 				Endif;
 				
 				If Object.Projects = "Full" Then
 					ExistingUser.Roles.Add(Metadata.Roles.ProjectsFull);
+					If NOT ExistingUser.Roles.Contains(Metadata.Roles.ListUser) Then
+						ExistingUser.Roles.Add(MetaData.Roles.ListUser);	
+					EndIf;
+
 				Endif;
 			
 				If Object.Projects = "View" Then
 					ExistingUser.Roles.Add(Metadata.Roles.ProjectsView);
+					If NOT ExistingUser.Roles.Contains(Metadata.Roles.ListUser) Then
+						ExistingUser.Roles.Add(MetaData.Roles.ListUser);	
+					EndIf;
+
 				Endif;
 				
 				If Object.TimeTrack = "Full" Then
 					ExistingUser.Roles.Add(Metadata.Roles.TimeTrackFull);
+					If NOT ExistingUser.Roles.Contains(Metadata.Roles.ListUser) Then
+						ExistingUser.Roles.Add(MetaData.Roles.ListUser);	
+					EndIf;
 				Endif;
 			
 				If Object.TimeTrack = "View" Then
 					ExistingUser.Roles.Add(Metadata.Roles.TimeTrackView);
+					If NOT ExistingUser.Roles.Contains(Metadata.Roles.ListUser) Then
+						ExistingUser.Roles.Add(MetaData.Roles.ListUser);	
+					EndIf;
 				Endif;
 
 				If Object.ItemReceipt = "Full" Then
-					NewUser.Roles.Add(Metadata.Roles.ItemReceiptFull);
+					ExistingUser.Roles.Add(Metadata.Roles.ItemReceiptFull);
 				EndIf;
 				
 				If Object.Shipment = "Full" Then
-					NewUser.Roles.Add(Metadata.Roles.ShipmentFull);
+					ExistingUser.Roles.Add(Metadata.Roles.ShipmentFull);
 				EndIf;
 				
 				If Object.ReportsOnly = True Then
 					ExistingUser.Roles.Add(Metadata.Roles.ReportOnly);
+					//If NOT ExistingUser.Roles.Contains(Metadata.Roles.ListUser) Then
+						//ExistingUser.Roles.Add(MetaData.Roles.ListUser);	
+					//EndIf;
 				Endif;
 
 		    	
@@ -218,13 +336,22 @@ Procedure OnWriteAtServer(Cancel, CurrentObject, WriteParameters)
 			
 		ExistingUser.Password = Password;
 		ExistingUser.Write();
+			
+			If Object.Disabled = False AND Object.EmailSent = False Then
+				
+				If Not Object.Verified Then
+					// API call
+					
+					Object.EmailSent = True;
+				EndIf;
+				
+			EndIf;
 				
 		EndIf;
 		
 		SetPrivilegedMode(False);
 		
-	//EndIf;
-			
+	//EndIf;			
 EndProcedure
 
 &AtServer
@@ -488,7 +615,8 @@ Procedure ReportBox(Object)
 EndProcedure
 
 &AtServer
-Procedure CheckNumberOfAllowedUsers(Cancel) 
+Procedure CheckNumberOfAllowedUsers(Cancel, AllowedUserNum) 
+	
 	If Object.Disabled = False Then
 		Query = New Query("SELECT
 		                  |	UserList.Ref
@@ -501,7 +629,7 @@ Procedure CheckNumberOfAllowedUsers(Cancel)
 		Query.SetParameter("Description", "%@accountingsuite.com");
 		QueryResult = Query.Execute();
 		Dataset = QueryResult.Unload();
-		If Dataset.Count() > 2 Then
+		If Dataset.Count() > AllowedUserNum Then
 			Object.Disabled = True;
 			Message("Number of active users exceeded. Must disable a different user before enabling this one.");
 			Cancel = True;

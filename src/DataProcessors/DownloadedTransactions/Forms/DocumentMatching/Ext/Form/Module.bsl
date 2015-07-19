@@ -14,6 +14,7 @@ EndProcedure
 
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
+	TransactionDate = Parameters.TransactionDate;
 	DocumentList.Parameters.SetParameterValue("BankAccount", Parameters.BankAccount);
 	DocumentList.Parameters.SetParameterValue("AccountInBank", Parameters.AccountInBank);
 	DocumentList.Parameters.SetParameterValue("Amount", Parameters.Amount);
@@ -23,6 +24,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	DocumentList.Parameters.SetParameterValue("PeriodStart", AddMonth(Parameters.TransactionDate, -3));
 	DocumentList.Parameters.SetParameterValue("PeriodEnd", AddMonth(Parameters.TransactionDate, 3));
 	DocumentList.Parameters.SetParameterValue("TransactionID", Parameters.TransactionID);
+	DocumentList.Parameters.SetParameterValue("DateFilter", ?(DateFilter = 0, True, False));
 	ListWithoutTransfersAndJE = New Array();
 	DocumentExtD = New Array();
 	DocumentExtD.Add(ChartsOfCharacteristicTypes.Dimensions.Document);
@@ -34,4 +36,19 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	EndDo;
 	DocumentList.Parameters.SetParameterValue("ListWithoutTransfersAndJE", ListWithoutTransfersAndJE);
 	DocumentList.Parameters.SetParameterValue("DocumentExtD", DocumentExtD);
+EndProcedure
+
+&AtClient
+Procedure DateFilterOnChange(Item)
+	
+	DocumentList.Parameters.SetParameterValue("DateFilter", ?(DateFilter = 0, True, False));
+	If DateFilter = 0 Then //Enabled date filter
+		DocumentList.Parameters.SetParameterValue("PeriodStart", AddMonth(TransactionDate, -3));
+		DocumentList.Parameters.SetParameterValue("PeriodEnd", AddMonth(TransactionDate, 3));
+	Else
+		DocumentList.Parameters.SetParameterValue("PeriodStart", AddMonth(TransactionDate, -12));
+		DocumentList.Parameters.SetParameterValue("PeriodEnd", AddMonth(TransactionDate, 12));
+	EndIf;
+	Items.DocumentList.Refresh();
+	
 EndProcedure

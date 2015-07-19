@@ -13,6 +13,10 @@
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
+	If Object.Ref.IsEmpty() Then
+		FirstNumber = Object.Number;
+	EndIf;
+	
 	If Parameters.Property("Company") And Parameters.Company.Vendor And Object.Ref.IsEmpty() Then
 		Object.Company = Parameters.Company;
 		OpenOrdersSelectionForm = True; 
@@ -252,6 +256,18 @@ EndProcedure
 
 &AtServer
 Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
+	
+	If FirstNumber <> "" Then
+		
+		Numerator = Catalogs.DocumentNumbering.ItemReceipt.GetObject();
+		NextNumber = GeneralFunctions.Increment(Numerator.Number);
+		If FirstNumber = NextNumber And NextNumber = Object.Number Then
+			Numerator.Number = FirstNumber;
+			Numerator.Write();
+		EndIf;
+		
+		FirstNumber = "";
+	EndIf;
 	
 	// Update point in time for requesting the balances.
 	If Object.Ref.IsEmpty() Then

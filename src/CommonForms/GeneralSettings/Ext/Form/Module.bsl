@@ -18,9 +18,9 @@ EndProcedure
 Procedure SetEnabledExchangeLoss()
 	
 	If ConstantsSet.MultiCurrency Then
-		Items.ExchangeLoss.Visible = True;
+		//Items.ExchangeLoss.Visible = True;
 	Else
-		Items.ExchangeLoss.Visible = False;
+		//Items.ExchangeLoss.Visible = False;
 	EndIf;
 	
 EndProcedure
@@ -28,13 +28,7 @@ EndProcedure
 
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
-	
-	IsInternalUser = Find(SessionParameters.ACSUser,"@accountingsuite.com");
-	If IsInternalUser = 0 Then
-		Items.DataImport.Visible = False;
-	EndIf;
-	
-		
+			
 	old_key = Constants.APISecretKey.Get();
 	OldCompanyName = Constants.SystemTitle.Get();
 	OldZohoAuthToken = ConstantsSet.zoho_auth_token;
@@ -84,6 +78,14 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Items.MultiLocation.ReadOnly = True;
 	EndIf;
 	
+	If Constants.EnableAssembly.Get() Then
+		Items.EnableAssembly.ReadOnly = True;
+	EndIf;
+	
+	If Constants.EnableLots.Get() Then
+		Items.EnableLots.ReadOnly = True;
+	EndIf;
+	
 	If Constants.EnhancedInventoryShipping.Get() Then
 		Items.EnhancedInventoryShipping.ReadOnly = True;
 	EndIf;
@@ -115,47 +117,99 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Items.SalesTaxBySources.CurrentPage = Items.ByAccountingSuitePage;
 	EndIf;
 	
-	//If IsInRole("BankAccounting") Then 
-	//	// Cont Info 				// Leave
-	//	// Lists 					// Leave
-	//	// Features					// Part. Hide
-	//	For Each ItemL In Items.GeneralSettings.ChildItems Do 
-	//		ItemL.Visible = False;
-	//	EndDo;
-	//	Items.CheckHorizontalAdj.Visible = True;
-	//	Items.CheckVerticalAdj.Visible = True;
-	//	Items.show_yodlee_upload_period.Visible = True;
-	//	Items.DisplayExtendedAccountInfo.Visible = True;
-	//	Items.Group28.Visible = True;
-	//	Items.SetCompactUIMode.Visible = True;
-	//	Items.SetStandardUIMode.Visible = True;
-	//	Items.AllowDuplicateCheckNumbers.Visible = True;
-	//	Items.FirstMonthOfFiscalYear.Visible = True;
-	//	Items.CFO_ProcessingMonth.Visible = True;
+	If IsInRole("BankAccounting") Then 
+		
+		For Each ItemL In Items.Group26.ChildItems Do 
+			ItemL.Visible = False;
+		EndDo;
+		For Each ItemL In Items.Group27.ChildItems Do 
+			ItemL.Visible = False;
+		EndDo;
+		
+		Items.AddressesContacts.Visible = True;
+		Items.Countries.Visible = True;
+		Items.States.Visible = True;
+		Items.DocumentNumbering.Visible = True;
+		Items.ActiveUserList.Visible = True;
+		Items.AddYodleeAccount.Visible = True;
 
-	//	
-	//	// Post Accnts				// Leave
-	//	// Closing books			// Part. Hide
-	//	Items.PeriodClosingByModule.Visible = False;
-	//	
-	//	// Sales Tax				// Hide
-	//	Items.SalesTax.Visible = False;
-	//	// Custom Fields			// Hide
-	//	Items.CompanyCustomFields.Visible = False;
-	//	// adres custom Fields		// Hide
-	//	Items.AddressCustomFields.Visible = False;
-	//	// Items custom Fields		// Hide
-	//	Items.ItemCustomFields.Visible = False;
-	//	
-	//	// Logo						// Leave
-	//	// Integration				// Hide
-	//	Items.Integrations.Visible = False;
-	//	// Development				// Hide
-	//	Items.Development.Visible = False;
-	//	// Print form setup			// Hide
-	//	Items.SetupPrintForms.Visible = False;
-	//	
-	//EndIf;	
+		
+		
+		// Cont Info 				// Leave
+		// Lists 					// Leave
+		// Features					// Part. Hide
+		For Each ItemL In Items.GeneralSettings.ChildItems Do 
+			ItemL.Visible = False;
+		EndDo;
+		Items.CheckHorizontalAdj.Visible = True;
+		Items.CheckVerticalAdj.Visible = True;
+		//Items.show_yodlee_upload_period.Visible = True;
+		//Items.DisplayExtendedAccountInfo.Visible = True;
+		Items.Group28.Visible = True;
+		Items.SetCompactUIMode.Visible = True;
+		Items.SetStandardUIMode.Visible = True;
+		Items.AllowDuplicateCheckNumbers.Visible = True;
+		Items.FirstMonthOfFiscalYear.Visible = True;
+		Items.CFO_ProcessingMonth.Visible = True;
+
+		Items.PostingAccounts.Visible = False;
+		
+		// Post Accnts				// Leave
+		// Closing books			// Part. Hide
+		Items.PeriodClosingByModule.Visible = False;
+		
+		// Sales Tax				// Hide
+		Items.SalesTax.Visible = False;
+		// Custom Fields			// Hide
+		Items.CompanyCustomFields.Visible = False;
+		// adres custom Fields		// Hide
+		Items.AddressCustomFields.Visible = False;
+		// Items custom Fields		// Hide
+		Items.ItemCustomFields.Visible = False;
+		
+		// Logo						// Leave
+		// Integration				// Hide
+		Items.Integrations.Visible = False;
+		// Development				// Hide
+		Items.Development.Visible = False;
+		// Print form setup			// Hide
+		Items.SetupPrintForms.Visible = False;
+		
+	EndIf;
+	
+	DisplayDataImport = False;
+	IsInternalUser1 = Find(SessionParameters.ACSUser,"@accountingsuite.com");
+	If IsInternalUser1 <> 0 Then
+		DisplayDataImport = True;	
+	EndIf;
+	IsInternalUser2 = Find(SessionParameters.ACSUser,"bsingh@cfotoday.com");
+	If IsInternalUser2 <> 0 Then
+		DisplayDataImport = True;	
+	EndIf;
+	IsInternalUser3 = Find(SessionParameters.ACSUser,"bal@allurenailsupply.com");
+	If IsInternalUser3 <> 0 Then
+		DisplayDataImport = True;	
+	EndIf;
+	IsInternalUser4 = Find(SessionParameters.ACSUser,"rh@donatellodoors.com");
+	If IsInternalUser4 <> 0 Then
+		DisplayDataImport = True;	
+	EndIf;
+	IsInternalUser5 = Find(SessionParameters.ACSUser,"ajlam88@gmail.com");
+	If IsInternalUser5 <> 0 Then
+		DisplayDataImport = True;	
+	EndIf;
+	IsInternalUser6 = Find(SessionParameters.ACSUser,"marion@counter-communications.com");
+	If IsInternalUser6 <> 0 Then
+		DisplayDataImport = True;	
+	EndIf;
+	If IsInRole("BankAccounting") Then
+	Else
+		Items.DataImportv2.Visible = DisplayDataImport;
+		Items.Register.Visible = DisplayDataImport;
+		Items.Renumbering.Visible = DisplayDataImport;
+		Items.BalanceSheetNew.Visible = DisplayDataImport;
+		Items.SearchAndReplace.Visible = DisplayDataImport;
+	EndIf;
 
 EndProcedure
 
@@ -298,7 +352,6 @@ EndProcedure
 
  
 
-
 &AtServer
 Function GetAPISecretKeyF()
 	
@@ -355,6 +408,13 @@ Function SettingAccessCheck()
 		Return false;
 	Endif
 EndFunction
+
+
+//&AtClient
+//Procedure VerifyEmail(Command)
+//	VerifyEmailAtServer();
+//EndProcedure
+
 
 &AtServer
 Function GetTenantValue()
@@ -498,7 +558,7 @@ Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 			Message.Message();
 		EndIf;
 	EndIf;
-
+	
 EndProcedure
 
 &AtClient
@@ -532,9 +592,9 @@ EndProcedure
 Procedure SetEnabledTaxPayableAccount()
 	
 	If ConstantsSet.SalesTaxCharging Then
-		Items.TaxPayableAccount.Visible = True;
+		//Items.TaxPayableAccount.Visible = True;
 	Else
-		Items.TaxPayableAccount.Visible = False;
+		//Items.TaxPayableAccount.Visible = False;
 	EndIf;
 	
 EndProcedure
@@ -619,7 +679,6 @@ Procedure Classes(Command)
 	OpenForm("Catalog.Classes.ListForm", , , , , );
 EndProcedure
 
-
 &AtClient
 Procedure OpenSalesOrder(Command)
 	OpenForm("DataProcessor.PrintFormSetup.Form.SOFormSetup" );
@@ -639,6 +698,45 @@ EndProcedure
 Procedure OpenPO(Command)
 	OpenForm("DataProcessor.PrintFormSetup.Form.POFormSetup" );
 EndProcedure
+
+&AtClient
+Procedure OpenStatement(Command)
+	
+	OpenSettingsPrintedForm(PredefinedValue("Enum.PrintedForms.StatementMainForm"));	
+	
+EndProcedure
+
+&AtClient
+Procedure OpenAssembly(Command)
+	
+	OpenSettingsPrintedForm(PredefinedValue("Enum.PrintedForms.AssemblyMainForm"));	
+	
+EndProcedure
+
+&AtClient
+Procedure OpenSettingsPrintedForm(NameOfPrintedForm)
+	
+	If PrintFormFunctions.GetSettingsPrintedForm(NameOfPrintedForm).SettingIsExists Then
+		
+		KeyOfRecord = New Structure("PrintedForm", NameOfPrintedForm);
+		
+		Array = New Array();
+		Array.Add(KeyOfRecord);
+		
+		InformationRegisterRecordKey = New(Type("InformationRegisterRecordKey.SettingsPrintedForms"), Array);
+		
+		ParametersOfForm = New Structure("Key", InformationRegisterRecordKey); 
+		OpenForm("InformationRegister.SettingsPrintedForms.RecordForm", ParametersOfForm);
+		
+	Else
+		
+		ParametersOfForm = New Structure("PrintedForm", NameOfPrintedForm); 
+		OpenForm("InformationRegister.SettingsPrintedForms.RecordForm", ParametersOfForm);
+		
+	EndIf;
+	
+EndProcedure
+
 
 &AtClient
 Procedure OpenHeadersAndFooters(Command)
@@ -897,12 +995,6 @@ EndProcedure
 
 
 &AtClient
-Procedure OnClose()
-	//DetachIdleHandler("UpdateStripeFields");
-EndProcedure
-
-
-&AtClient
 Procedure zoho_quotemapping(Command)
 	OpenForm("Catalog.zoho_QuoteCodeMap.ListForm" );
 EndProcedure
@@ -916,14 +1008,14 @@ EndProcedure
 &AtClient
 Procedure EnhancedInventoryShippingOnChange(Item)
 	
-	Message(NStr("en = 'After enabling the Enhanced Inventory Shipping feature can not be disabled!'"), MessageStatus.Important);
+	Message(NStr("en = 'After enabling the Shipment feature can not be disabled!'"), MessageStatus.Important);
 	
 EndProcedure
 
 &AtClient
 Procedure EnhancedInventoryReceivingOnChange(Item)
 	
-	Message(NStr("en = 'After enabling the Enhanced Inventory Receiving feature can not be disabled!'"), MessageStatus.Important);
+	Message(NStr("en = 'After enabling the Item Receipt feature can not be disabled!'"), MessageStatus.Important);
 	
 	SetEnabledOCLAccount();
 	
@@ -951,7 +1043,6 @@ Function SubscribeVersion()
 	   Return Constants.VersionNumber.Get();
 EndFunction
    
-
 
 &AtClient
 Procedure SetCompactUIMode(Command)
@@ -1017,4 +1108,55 @@ EndProcedure
 Procedure DataImport(Command)
 	OpenForm("DataProcessor.DataImport.Form.Form");
 EndProcedure
+
+
+&AtClient
+Procedure DataImportv2(Command)
+	OpenForm("DataProcessor.DataImportV20.Form.Form");
+EndProcedure
+
+
+&AtClient
+Procedure EnableAssemblyOnChange(Item)
+	Message(NStr("en = 'After enabling the Assembly feature can not be disabled!'"), MessageStatus.Important);
+EndProcedure
+
+
+&AtClient
+Procedure EnableLotsOnChange(Item)
+	Message(NStr("en = 'After enabling the Lots and Serial Numbers feature can not be disabled!'"), MessageStatus.Important);
+EndProcedure
+
+
+&AtClient
+Procedure AddYodleeAccount(Command)
+	
+	Params = New Structure("PerformAddAccount", True);
+	OpenForm("DataProcessor.YodleeAccountsManagement.Form.Form", Params, ThisForm,,,,, FormWindowOpeningMode.LockOwnerWindow);
+	
+EndProcedure
+
+
+&AtClient
+Procedure Register(Command)
+	OpenForm("DataProcessor.BankRegister.Form.Form");
+EndProcedure
+
+
+&AtClient
+Procedure Renumbering(Command)
+	OpenForm("DataProcessor.RenumberingUtility.Form.Form");
+EndProcedure
+
+&AtClient
+Procedure BalanceSheetNew(Command)
+	OpenForm("Report.BalanceSheetNew.Form.ReportForm");
+EndProcedure
+
+&AtClient
+Procedure SearchAndReplace(Command)
+	OpenForm("DataProcessor.SearchAndReplace.Form.Form");
+EndProcedure
+
+
 

@@ -13,7 +13,7 @@ Procedure BeforeWrite(Cancel, Replacing)
 	//RemainingDays = GeneralFunctionsReusable.GetRemainingDays();
 	//If RemainingDays <= 0 AND Constants.SubStatus.Get() = "" AND Constants.VersionNumber.Get() < 3 Then
 	//	 Cancel = True;
-	//	 Message("Trial period has expired. You cannot enter new entries");
+	//	 Message("Trial period has expired, please click on the Pay Now button on the home screen to continue your subscription");
 	//EndIf;
 	
 	// Skip checking for loaded datasets or overwritten data.

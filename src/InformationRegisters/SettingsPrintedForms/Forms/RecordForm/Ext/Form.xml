@@ -1,0 +1,507 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<WindowOpeningMode>LockOwnerWindow</WindowOpeningMode>
+	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<Events>
+		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+	</Events>
+	<ChildItems>
+		<InputField name="PrintedForm" id="1">
+			<DataPath>Record.PrintedForm</DataPath>
+			<ReadOnly>true</ReadOnly>
+			<HorizontalStretch>false</HorizontalStretch>
+			<ContextMenu name="PrintedFormContextMenu" id="2"/>
+			<ExtendedTooltip name="PrintedFormExtendedTooltip" id="3"/>
+			<Events>
+				<Event name="OnChange">PrintedFormOnChange</Event>
+			</Events>
+		</InputField>
+		<InputField name="EnvelopeSize" id="107">
+			<DataPath>Record.EnvelopeSize</DataPath>
+			<HorizontalStretch>false</HorizontalStretch>
+			<ContextMenu name="EnvelopeSizeContextMenu" id="108"/>
+			<ExtendedTooltip name="EnvelopeSizeExtendedTooltip" id="109"/>
+		</InputField>
+		<UsualGroup name="Display" id="57">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Display</v8:content>
+				</v8:item>
+			</Title>
+			<TitleTextColor>#008000</TitleTextColor>
+			<Group>Vertical</Group>
+			<ExtendedTooltip name="DisplayExtendedTooltip" id="58"/>
+			<ChildItems>
+				<UsualGroup name="FirstRow" id="59">
+					<Group>Horizontal</Group>
+					<ShowTitle>false</ShowTitle>
+					<ExtendedTooltip name="FirstRowExtendedTooltip" id="60"/>
+					<ChildItems>
+						<CheckBoxField name="ShowEmail" id="68">
+							<DataPath>Record.ShowEmail</DataPath>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="ShowEmailContextMenu" id="69"/>
+							<ExtendedTooltip name="ShowEmailExtendedTooltip" id="70"/>
+						</CheckBoxField>
+						<CheckBoxField name="ShowMobile" id="65">
+							<DataPath>Record.ShowMobile</DataPath>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="ShowMobileContextMenu" id="66"/>
+							<ExtendedTooltip name="ShowMobileExtendedTooltip" id="67"/>
+						</CheckBoxField>
+						<CheckBoxField name="ShowWebsite" id="71">
+							<DataPath>Record.ShowWebsite</DataPath>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="ShowWebsiteContextMenu" id="72"/>
+							<ExtendedTooltip name="ShowWebsiteExtendedTooltip" id="73"/>
+						</CheckBoxField>
+						<CheckBoxField name="ShowFax" id="77">
+							<DataPath>Record.ShowFax</DataPath>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="ShowFaxContextMenu" id="78"/>
+							<ExtendedTooltip name="ShowFaxExtendedTooltip" id="79"/>
+						</CheckBoxField>
+						<CheckBoxField name="ShowFederalTaxID" id="74">
+							<DataPath>Record.ShowFederalTaxID</DataPath>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="ShowFederalTaxIDContextMenu" id="75"/>
+							<ExtendedTooltip name="ShowFederalTaxIDExtendedTooltip" id="76"/>
+						</CheckBoxField>
+					</ChildItems>
+				</UsualGroup>
+				<UsualGroup name="SecondRow" id="61">
+					<Group>Horizontal</Group>
+					<ShowTitle>false</ShowTitle>
+					<ExtendedTooltip name="SecondRowExtendedTooltip" id="62"/>
+					<ChildItems>
+						<CheckBoxField name="ShowContactName" id="83">
+							<DataPath>Record.ShowContactName</DataPath>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="ShowContactNameContextMenu" id="84"/>
+							<ExtendedTooltip name="ShowContactNameExtendedTooltip" id="85"/>
+						</CheckBoxField>
+						<CheckBoxField name="ShowCountry" id="80">
+							<DataPath>Record.ShowCountry</DataPath>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="ShowCountryContextMenu" id="81"/>
+							<ExtendedTooltip name="ShowCountryExtendedTooltip" id="82"/>
+						</CheckBoxField>
+						<CheckBoxField name="ShowShipTo" id="86">
+							<DataPath>Record.ShowShipTo</DataPath>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="ShowShipToContextMenu" id="87"/>
+							<ExtendedTooltip name="ShowShipToExtendedTooltip" id="88"/>
+						</CheckBoxField>
+					</ChildItems>
+				</UsualGroup>
+				<UsualGroup name="ThirdRow" id="63">
+					<Group>Horizontal</Group>
+					<ShowTitle>false</ShowTitle>
+					<ExtendedTooltip name="ThirdRowExtendedTooltip" id="64"/>
+					<ChildItems>
+						<CheckBoxField name="ShowDeliveryDateColumn" id="89">
+							<DataPath>Record.ShowDeliveryDateColumn</DataPath>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="ShowDeliveryDateColumnContextMenu" id="90"/>
+							<ExtendedTooltip name="ShowDeliveryDateColumnExtendedTooltip" id="91"/>
+							<Events>
+								<Event name="OnChange">ShowDeliveryDateColumnOnChange</Event>
+							</Events>
+						</CheckBoxField>
+						<CheckBoxField name="ShowLotColumn" id="92">
+							<DataPath>Record.ShowLotColumn</DataPath>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="ShowLotColumnContextMenu" id="93"/>
+							<ExtendedTooltip name="ShowLotColumnExtendedTooltip" id="94"/>
+							<Events>
+								<Event name="OnChange">ShowLotColumnOnChange</Event>
+							</Events>
+						</CheckBoxField>
+						<CheckBoxField name="ShowDiscountColumn" id="95">
+							<DataPath>Record.ShowDiscountColumn</DataPath>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="ShowDiscountColumnContextMenu" id="96"/>
+							<ExtendedTooltip name="ShowDiscountColumnExtendedTooltip" id="97"/>
+							<Events>
+								<Event name="OnChange">ShowDiscountColumnOnChange</Event>
+							</Events>
+						</CheckBoxField>
+					</ChildItems>
+				</UsualGroup>
+			</ChildItems>
+		</UsualGroup>
+		<LabelDecoration name="Decoration1" id="98">
+			<ContextMenu name="Decoration1ContextMenu" id="99"/>
+			<ExtendedTooltip name="Decoration1ExtendedTooltip" id="100"/>
+		</LabelDecoration>
+		<Pages name="FooterPage" id="4">
+			<ExtendedTooltip name="FooterPageExtendedTooltip" id="5"/>
+			<ChildItems>
+				<Page name="LeftPage" id="6">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Left Footer Column</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Left Footer Column</v8:content>
+						</v8:item>
+					</ToolTip>
+					<ExtendedTooltip name="LeftPageExtendedTooltip" id="7"/>
+					<ChildItems>
+						<RadioButtonField name="FooterTypeLeft" id="12">
+							<DataPath>Record.FooterTypeLeft</DataPath>
+							<TitleLocation>None</TitleLocation>
+							<RadioButtonType>RadioButtons</RadioButtonType>
+							<ChoiceList>
+								<xr:Item>
+									<xr:Presentation/>
+									<xr:CheckState>0</xr:CheckState>
+									<xr:Value xsi:type="FormChoiceListDesTimeValue">
+										<Presentation/>
+										<Value xsi:type="xr:DesignTimeRef">Enum.TextOrImage.EnumValue.Text</Value>
+									</xr:Value>
+								</xr:Item>
+								<xr:Item>
+									<xr:Presentation/>
+									<xr:CheckState>0</xr:CheckState>
+									<xr:Value xsi:type="FormChoiceListDesTimeValue">
+										<Presentation/>
+										<Value xsi:type="xr:DesignTimeRef">Enum.TextOrImage.EnumValue.Image</Value>
+									</xr:Value>
+								</xr:Item>
+								<xr:Item>
+									<xr:Presentation/>
+									<xr:CheckState>0</xr:CheckState>
+									<xr:Value xsi:type="FormChoiceListDesTimeValue">
+										<Presentation/>
+										<Value xsi:type="xr:DesignTimeRef">Enum.TextOrImage.EnumValue.None</Value>
+									</xr:Value>
+								</xr:Item>
+							</ChoiceList>
+							<ContextMenu name="FooterTypeLeftContextMenu" id="13"/>
+							<ExtendedTooltip name="FooterTypeLeftExtendedTooltip" id="14"/>
+						</RadioButtonField>
+						<UsualGroup name="FooterLeft" id="21">
+							<Group>Horizontal</Group>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="FooterLeftExtendedTooltip" id="22"/>
+							<ChildItems>
+								<InputField name="FooterTextLeft" id="27">
+									<DataPath>Record.FooterTextLeft</DataPath>
+									<Height>5</Height>
+									<HorizontalStretch>false</HorizontalStretch>
+									<VerticalStretch>false</VerticalStretch>
+									<ContextMenu name="FooterTextLeftContextMenu" id="28"/>
+									<ExtendedTooltip name="FooterTextLeftExtendedTooltip" id="29"/>
+								</InputField>
+								<UsualGroup name="FooterLeftR" id="36">
+									<Group>Vertical</Group>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="FooterLeftRExtendedTooltip" id="37"/>
+									<ChildItems>
+										<Button name="UploadLeftImage" id="42">
+											<Type>UsualButton</Type>
+											<CommandName>Form.Command.UploadLeftImage</CommandName>
+											<ExtendedTooltip name="UploadLeftImageExtendedTooltip" id="43"/>
+										</Button>
+										<PictureField name="FooterImageLeft" id="48">
+											<DataPath>FooterImageLeft</DataPath>
+											<TitleLocation>None</TitleLocation>
+											<Width>30</Width>
+											<HorizontalStretch>false</HorizontalStretch>
+											<VerticalStretch>false</VerticalStretch>
+											<ContextMenu name="FooterImageLeftContextMenu" id="49"/>
+											<ExtendedTooltip name="FooterImageLeftExtendedTooltip" id="50"/>
+										</PictureField>
+									</ChildItems>
+								</UsualGroup>
+							</ChildItems>
+						</UsualGroup>
+					</ChildItems>
+				</Page>
+				<Page name="CenterPage" id="8">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Center Footer Column</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Center Footer Column</v8:content>
+						</v8:item>
+					</ToolTip>
+					<ExtendedTooltip name="CenterPageExtendedTooltip" id="9"/>
+					<ChildItems>
+						<RadioButtonField name="FooterTypeCenter" id="15">
+							<DataPath>Record.FooterTypeCenter</DataPath>
+							<TitleLocation>None</TitleLocation>
+							<RadioButtonType>RadioButtons</RadioButtonType>
+							<ChoiceList>
+								<xr:Item>
+									<xr:Presentation/>
+									<xr:CheckState>0</xr:CheckState>
+									<xr:Value xsi:type="FormChoiceListDesTimeValue">
+										<Presentation/>
+										<Value xsi:type="xr:DesignTimeRef">Enum.TextOrImage.EnumValue.Text</Value>
+									</xr:Value>
+								</xr:Item>
+								<xr:Item>
+									<xr:Presentation/>
+									<xr:CheckState>0</xr:CheckState>
+									<xr:Value xsi:type="FormChoiceListDesTimeValue">
+										<Presentation/>
+										<Value xsi:type="xr:DesignTimeRef">Enum.TextOrImage.EnumValue.Image</Value>
+									</xr:Value>
+								</xr:Item>
+								<xr:Item>
+									<xr:Presentation/>
+									<xr:CheckState>0</xr:CheckState>
+									<xr:Value xsi:type="FormChoiceListDesTimeValue">
+										<Presentation/>
+										<Value xsi:type="xr:DesignTimeRef">Enum.TextOrImage.EnumValue.None</Value>
+									</xr:Value>
+								</xr:Item>
+							</ChoiceList>
+							<ContextMenu name="FooterTypeCenterContextMenu" id="16"/>
+							<ExtendedTooltip name="FooterTypeCenterExtendedTooltip" id="17"/>
+						</RadioButtonField>
+						<UsualGroup name="FooterCenter" id="23">
+							<Group>Horizontal</Group>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="FooterCenterExtendedTooltip" id="24"/>
+							<ChildItems>
+								<InputField name="FooterTextCenter" id="30">
+									<DataPath>Record.FooterTextCenter</DataPath>
+									<Height>5</Height>
+									<HorizontalStretch>false</HorizontalStretch>
+									<VerticalStretch>false</VerticalStretch>
+									<ContextMenu name="FooterTextCenterContextMenu" id="31"/>
+									<ExtendedTooltip name="FooterTextCenterExtendedTooltip" id="32"/>
+								</InputField>
+								<UsualGroup name="FooterCenterR" id="38">
+									<Group>Vertical</Group>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="FooterCenterRExtendedTooltip" id="39"/>
+									<ChildItems>
+										<Button name="UploadCenterImage" id="44">
+											<Type>UsualButton</Type>
+											<CommandName>Form.Command.UploadCenterImage</CommandName>
+											<ExtendedTooltip name="UploadCenterImageExtendedTooltip" id="45"/>
+										</Button>
+										<PictureField name="FooterImageCenter" id="51">
+											<DataPath>FooterImageCenter</DataPath>
+											<TitleLocation>None</TitleLocation>
+											<Width>30</Width>
+											<HorizontalStretch>false</HorizontalStretch>
+											<VerticalStretch>false</VerticalStretch>
+											<ContextMenu name="FooterImageCenterContextMenu" id="52"/>
+											<ExtendedTooltip name="FooterImageCenterExtendedTooltip" id="53"/>
+										</PictureField>
+									</ChildItems>
+								</UsualGroup>
+							</ChildItems>
+						</UsualGroup>
+					</ChildItems>
+				</Page>
+				<Page name="RightPage" id="10">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Right Footer Column</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Right Footer Column</v8:content>
+						</v8:item>
+					</ToolTip>
+					<ExtendedTooltip name="RightPageExtendedTooltip" id="11"/>
+					<ChildItems>
+						<RadioButtonField name="FooterTypeRight" id="18">
+							<DataPath>Record.FooterTypeRight</DataPath>
+							<TitleLocation>None</TitleLocation>
+							<RadioButtonType>RadioButtons</RadioButtonType>
+							<ChoiceList>
+								<xr:Item>
+									<xr:Presentation/>
+									<xr:CheckState>0</xr:CheckState>
+									<xr:Value xsi:type="FormChoiceListDesTimeValue">
+										<Presentation/>
+										<Value xsi:type="xr:DesignTimeRef">Enum.TextOrImage.EnumValue.Text</Value>
+									</xr:Value>
+								</xr:Item>
+								<xr:Item>
+									<xr:Presentation/>
+									<xr:CheckState>0</xr:CheckState>
+									<xr:Value xsi:type="FormChoiceListDesTimeValue">
+										<Presentation/>
+										<Value xsi:type="xr:DesignTimeRef">Enum.TextOrImage.EnumValue.Image</Value>
+									</xr:Value>
+								</xr:Item>
+								<xr:Item>
+									<xr:Presentation/>
+									<xr:CheckState>0</xr:CheckState>
+									<xr:Value xsi:type="FormChoiceListDesTimeValue">
+										<Presentation/>
+										<Value xsi:type="xr:DesignTimeRef">Enum.TextOrImage.EnumValue.None</Value>
+									</xr:Value>
+								</xr:Item>
+							</ChoiceList>
+							<ContextMenu name="FooterTypeRightContextMenu" id="19"/>
+							<ExtendedTooltip name="FooterTypeRightExtendedTooltip" id="20"/>
+						</RadioButtonField>
+						<UsualGroup name="FooterRight" id="25">
+							<Group>Horizontal</Group>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="FooterRightExtendedTooltip" id="26"/>
+							<ChildItems>
+								<InputField name="FooterTextRight" id="33">
+									<DataPath>Record.FooterTextRight</DataPath>
+									<Height>5</Height>
+									<HorizontalStretch>false</HorizontalStretch>
+									<VerticalStretch>false</VerticalStretch>
+									<ContextMenu name="FooterTextRightContextMenu" id="34"/>
+									<ExtendedTooltip name="FooterTextRightExtendedTooltip" id="35"/>
+								</InputField>
+								<UsualGroup name="FooterRightR" id="40">
+									<Group>Vertical</Group>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="FooterRightRExtendedTooltip" id="41"/>
+									<ChildItems>
+										<Button name="UploadRightImage" id="46">
+											<Type>UsualButton</Type>
+											<CommandName>Form.Command.UploadRightImage</CommandName>
+											<ExtendedTooltip name="UploadRightImageExtendedTooltip" id="47"/>
+										</Button>
+										<PictureField name="FooterImageRight" id="54">
+											<DataPath>FooterImageRight</DataPath>
+											<TitleLocation>None</TitleLocation>
+											<Width>30</Width>
+											<HorizontalStretch>false</HorizontalStretch>
+											<VerticalStretch>false</VerticalStretch>
+											<ContextMenu name="FooterImageRightContextMenu" id="55"/>
+											<ExtendedTooltip name="FooterImageRightExtendedTooltip" id="56"/>
+										</PictureField>
+									</ChildItems>
+								</UsualGroup>
+							</ChildItems>
+						</UsualGroup>
+					</ChildItems>
+				</Page>
+			</ChildItems>
+		</Pages>
+		<LabelDecoration name="Decoration2" id="101">
+			<ContextMenu name="Decoration2ContextMenu" id="102"/>
+			<ExtendedTooltip name="Decoration2ExtendedTooltip" id="103"/>
+		</LabelDecoration>
+		<InputField name="Note" id="104">
+			<DataPath>Record.Note</DataPath>
+			<TitleTextColor>#008000</TitleTextColor>
+			<TitleFont ref="sys:DefaultGUIFont" height="12" kind="WindowsFont"/>
+			<VerticalStretch>false</VerticalStretch>
+			<MultiLine>true</MultiLine>
+			<ContextMenu name="NoteContextMenu" id="105"/>
+			<ExtendedTooltip name="NoteExtendedTooltip" id="106"/>
+		</InputField>
+	</ChildItems>
+	<Attributes>
+		<Attribute name="Record" id="1">
+			<Type>
+				<v8:Type>cfg:InformationRegisterRecordManager.SettingsPrintedForms</v8:Type>
+			</Type>
+			<MainAttribute>true</MainAttribute>
+			<SavedData>true</SavedData>
+		</Attribute>
+		<Attribute name="FooterImageLeft" id="2">
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="FooterImageCenter" id="3">
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="FooterImageRight" id="4">
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="NameFooterImageCenter" id="5">
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="NameFooterImageLeft" id="6">
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="NameFooterImageRight" id="7">
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+	</Attributes>
+	<Commands>
+		<Command name="UploadLeftImage" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Upload Left Image</v8:content>
+				</v8:item>
+			</Title>
+			<Action>UploadLeftImage</Action>
+		</Command>
+		<Command name="UploadCenterImage" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Upload Center Image</v8:content>
+				</v8:item>
+			</Title>
+			<Action>UploadCenterImage</Action>
+		</Command>
+		<Command name="UploadRightImage" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Upload Right Image</v8:content>
+				</v8:item>
+			</Title>
+			<Action>UploadRightImage</Action>
+		</Command>
+	</Commands>
+</Form>

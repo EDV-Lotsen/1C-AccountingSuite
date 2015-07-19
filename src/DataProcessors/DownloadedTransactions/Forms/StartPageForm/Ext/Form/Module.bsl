@@ -122,10 +122,11 @@ Procedure OnComplete_AssignAccountingAccount(ClosureResult, AdditionalParameters
 	If ClosureResult <> Undefined Then //Successfully added account
 		If TypeOf(ClosureResult) = Type("Array") Then
 			If ClosureResult.Count() > 0 Then
-				AssignedItem = ClosureResult[0];
-				If TypeOf(AssignedItem) = Type("CatalogRef.BankAccounts") Then
-					RefreshAvailableAccounts(AssignedItem);
-				EndIf;
+				//AssignedItem = ClosureResult[0];
+				//If TypeOf(AssignedItem) = Type("CatalogRef.BankAccounts") Then
+				//	RefreshAvailableAccounts(AssignedItem);
+				//EndIf;
+				RefreshAvailableAccounts(Undefined);
 			EndIf;
 		EndIf;
 	EndIf;
@@ -146,7 +147,7 @@ EndProcedure
 Procedure AddAccount(Command)
 	Notify = New NotifyDescription("OnComplete_AddAccount", ThisObject);
 	Params = New Structure("PerformAddAccount", True);
-	OpenForm("DataProcessor.YodleeBankAccountsManagement.Form.Form", Params, ThisForm,,,, Notify, FormWindowOpeningMode.LockOwnerWindow);
+	OpenForm("DataProcessor.YodleeAccountsManagement.Form.Form", Params, ThisForm,,,, Notify, FormWindowOpeningMode.LockOwnerWindow);
 EndProcedure
 
 //------------------------Navigation Full Form--------------------------------
@@ -212,6 +213,7 @@ Procedure FillAvailableAccounts()
 	                    |	Catalog.BankAccounts AS BankAccounts
 	                    |WHERE
 	                    |	BankAccounts.DeletionMark = FALSE
+	                    |	AND BankAccounts.AccountingAccount <> VALUE(ChartOfAccounts.ChartOfAccounts.EmptyRef)
 	                    |;
 	                    |
 	                    |////////////////////////////////////////////////////////////////////////////////
@@ -383,6 +385,7 @@ Procedure RefreshAvailableAccounts(BankAccount = Undefined)
 	                    |	Catalog.BankAccounts AS BankAccounts
 	                    |WHERE
 	                    |	BankAccounts.DeletionMark = FALSE
+						|	AND BankAccounts.AccountingAccount <> VALUE(ChartOfAccounts.ChartOfAccounts.EmptyRef)
 	                    |;
 	                    |
 	                    |////////////////////////////////////////////////////////////////////////////////
@@ -665,8 +668,8 @@ Procedure OnComplete_AddAccount(ClosureResult, AdditionalParameters) Export
 		If TypeOf(ClosureResult) = Type("Array") Then
 			If ClosureResult.Count() > 0 Then
 				NewAddedItem = ClosureResult[0];
-				If TypeOf(NewAddedItem) = Type("CatalogRef.BankAccounts") Then
-					RefreshAvailableAccounts(NewAddedItem);
+				If TypeOf(NewAddedItem) = Type("ChartOfAccountsRef.ChartOfAccounts") Then
+					RefreshAvailableAccounts();
 				EndIf;
 			EndIf;
 		EndIf;
