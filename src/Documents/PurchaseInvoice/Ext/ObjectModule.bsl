@@ -47,6 +47,12 @@ EndProcedure
 
 Procedure FillCheckProcessing(Cancel, CheckedAttributes)
 	
+	// Check positive discounts.
+	If DocumentTotal < 0 Then
+		MessageText = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = 'Calculated document total: %1. Document total should be positive number.'"), Format(DocumentTotal, "NFD=2; NZ="));
+		CommonUseClientServer.MessageToUser(MessageText, Ref,,, Cancel);
+	EndIf;
+	
 	// Check proper filling of lots.
 	LotsSerialNumbers.CheckLotsFilling(Ref, LineItems, Cancel);
 	
@@ -57,9 +63,7 @@ Procedure FillCheckProcessing(Cancel, CheckedAttributes)
 	FilledOrders = GeneralFunctions.InvertCollectionFilter(LineItems, LineItems.FindRows(New Structure("Order", Documents.PurchaseOrder.EmptyRef())));
 	
 	// Check doubles in items (to be sure of proper orders placement).
-	//If Not SessionParameters.TenantValue = "1101092" Then // Locked for the tenant "1101092"
-		GeneralFunctions.CheckDoubleItems(Ref, LineItems, "Product, Unit, Order, ItemReceipt, Location, DeliveryDate, Project, Class, LineNumber", FilledOrders, Cancel);
-	//EndIf;
+	GeneralFunctions.CheckDoubleItems(Ref, LineItems, "Product, Unit, Order, ItemReceipt, Location, DeliveryDate, Project, Class, LineNumber", FilledOrders, Cancel);
 	
 	// Check proper closing of order items by the invoice items.
 	If Not Cancel Then

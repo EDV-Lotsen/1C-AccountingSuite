@@ -275,13 +275,23 @@
 			</role>
 			<presentationExpression>CASE WHEN SalesTaxComponentRate = TaxRate Then SalesTaxComponentDescription WHEN TaxRate = 0 Then "Payment" ELSE SalesTaxComponentDescription + " - Inactive " END</presentationExpression>
 		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Comment</dataPath>
+			<field>Comment</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Comment</v8:content>
+				</v8:item>
+			</title>
+		</field>
 		<dataSource>DataSource1</dataSource>
 		<query>SELECT
-	TaxTurnovers.MonthPeriod,
-	TaxTurnovers.QuarterPeriod,
-	TaxTurnovers.HalfYearPeriod,
-	TaxTurnovers.YearPeriod,
-	TaxTurnovers.ChargeType,
+	TaxTurnovers.MonthPeriod AS MonthPeriod,
+	TaxTurnovers.QuarterPeriod AS QuarterPeriod,
+	TaxTurnovers.HalfYearPeriod AS HalfYearPeriod,
+	TaxTurnovers.YearPeriod AS YearPeriod,
+	TaxTurnovers.ChargeType AS ChargeType,
 	TaxTurnovers.Agency,
 	TaxTurnovers.TaxRate,
 	TaxTurnovers.GrossSales AS GrossSales,
@@ -313,7 +323,8 @@
 	ISNULL(SalesTaxOwedDetails.ChargeDocument.Memo, TaxTurnovers.Recorder.Memo) AS Memo,
 	ISNULL(SalesTaxOwedDetails.TaxPayable, TaxTurnovers.TaxAmount) AS TaxAmountDetail,
 	ISNULL(SalesTaxOwedDetails.TaxableSale, TaxTurnovers.TaxableSales) AS TaxableAmountDetail,
-	TaxTurnovers.SalesTaxComponent AS TaxName
+	TaxTurnovers.SalesTaxComponent AS TaxName,
+	"" AS Comment
 FROM
 	(SELECT
 		SalesTaxOwedBalanceAndTurnovers.MonthPeriod AS MonthPeriod,
@@ -578,6 +589,12 @@ FROM
 				<dcscom:balanceGroupName>Group</dcscom:balanceGroupName>
 				<dcscom:balanceType>ClosingBalance</dcscom:balanceType>
 			</role>
+			<appearance>
+				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+					<dcscor:parameter>Format</dcscor:parameter>
+					<dcscor:value xsi:type="xs:string">NFD=2</dcscor:value>
+				</dcscor:item>
+			</appearance>
 		</field>
 		<field xsi:type="DataSetFieldField">
 			<dataPath>OpeningDetailedBalance</dataPath>
@@ -593,6 +610,12 @@ FROM
 				<dcscom:balanceGroupName>Group</dcscom:balanceGroupName>
 				<dcscom:balanceType>OpeningBalance</dcscom:balanceType>
 			</role>
+			<appearance>
+				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+					<dcscor:parameter>Format</dcscor:parameter>
+					<dcscor:value xsi:type="xs:string">NFD=2</dcscor:value>
+				</dcscor:item>
+			</appearance>
 		</field>
 		<dataSource>DataSource1</dataSource>
 		<query>SELECT
@@ -609,6 +632,418 @@ FROM
 	SalesTaxOwedBalanceAndTurnovers.TaxPayableClosingBalance AS DetailedBalance
 FROM
 	AccumulationRegister.SalesTaxOwed.BalanceAndTurnovers(, , Auto, , ) AS SalesTaxOwedBalanceAndTurnovers</query>
+	</dataSet>
+	<dataSet xsi:type="DataSetQuery">
+		<name>GrossSales</name>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>ExtDimension1</dataPath>
+			<field>ExtDimension1</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>ExtDimension2</dataPath>
+			<field>ExtDimension2</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Currency</dataPath>
+			<field>Currency</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Account</dataPath>
+			<field>Account</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>YearPeriod</dataPath>
+			<field>YearPeriod</field>
+			<role>
+				<dcscom:periodNumber>4</dcscom:periodNumber>
+				<dcscom:periodType>Additional</dcscom:periodType>
+			</role>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>HalfYearPeriod</dataPath>
+			<field>HalfYearPeriod</field>
+			<role>
+				<dcscom:periodNumber>3</dcscom:periodNumber>
+				<dcscom:periodType>Additional</dcscom:periodType>
+			</role>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>QuarterPeriod</dataPath>
+			<field>QuarterPeriod</field>
+			<role>
+				<dcscom:periodNumber>2</dcscom:periodNumber>
+				<dcscom:periodType>Additional</dcscom:periodType>
+			</role>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>ChargeType</dataPath>
+			<field>ChargeType</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Charge type</v8:content>
+				</v8:item>
+			</title>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>TotalGrossSales</dataPath>
+			<field>TotalGrossSales</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Gross sales*</v8:content>
+				</v8:item>
+			</title>
+			<appearance>
+				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+					<dcscor:parameter>Format</dcscor:parameter>
+					<dcscor:value xsi:type="xs:string">NFD=2</dcscor:value>
+				</dcscor:item>
+			</appearance>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>SalesPerson</dataPath>
+			<field>SalesPerson</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Document</dataPath>
+			<field>Document</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Company</dataPath>
+			<field>Company</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Agency</dataPath>
+			<field>Agency</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Agency</v8:content>
+				</v8:item>
+			</title>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>MonthPeriod</dataPath>
+			<field>MonthPeriod</field>
+			<role>
+				<dcscom:periodNumber>1</dcscom:periodNumber>
+				<dcscom:periodType>Additional</dcscom:periodType>
+			</role>
+			<appearance>
+				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+					<dcscor:parameter>Format</dcscor:parameter>
+					<dcscor:value xsi:type="xs:string">DF='MMMM yy'</dcscor:value>
+				</dcscor:item>
+			</appearance>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Class</dataPath>
+			<field>Class</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Project</dataPath>
+			<field>Project</field>
+		</field>
+		<dataSource>DataSource1</dataSource>
+		<query>SELECT ALLOWED
+	GrossSalesWithAgencies.MonthPeriod,
+	GrossSalesWithAgencies.QuarterPeriod,
+	GrossSalesWithAgencies.HalfYearPeriod,
+	GrossSalesWithAgencies.YearPeriod,
+	GrossSalesWithAgencies.ChargeType,
+	GrossSalesWithAgencies.Agency,
+	SUM(GrossSalesWithAgencies.TotalGrossSales) AS TotalGrossSales
+FROM
+	(SELECT
+		GeneralJournalTurnovers.MonthPeriod AS MonthPeriod,
+		GeneralJournalTurnovers.QuarterPeriod AS QuarterPeriod,
+		GeneralJournalTurnovers.HalfYearPeriod AS HalfYearPeriod,
+		GeneralJournalTurnovers.YearPeriod AS YearPeriod,
+		VALUE(Enum.AccountingMethod.Accrual) AS ChargeType,
+		-1 * GeneralJournalTurnovers.AmountRCTurnover AS TotalGrossSales,
+		SalesTaxAgencies.Ref AS Agency
+	FROM
+		AccountingRegister.GeneralJournal.Turnovers(, , Auto, Account.AccountType = VALUE(Enum.AccountTypes.Income), , ) AS GeneralJournalTurnovers,
+		Catalog.SalesTaxAgencies AS SalesTaxAgencies
+	
+	UNION ALL
+	
+	SELECT
+		CashFlowDataTurnovers.MonthPeriod,
+		CashFlowDataTurnovers.QuarterPeriod,
+		CashFlowDataTurnovers.HalfYearPeriod,
+		CashFlowDataTurnovers.YearPeriod,
+		VALUE(Enum.AccountingMethod.Cash),
+		CASE
+			WHEN NOT CashFlowDataTurnovers.Account IS NULL 
+				THEN -CashFlowDataTurnovers.AmountRCTurnover
+			ELSE 0
+		END,
+		SalesTaxAgencies.Ref
+	FROM
+		AccumulationRegister.CashFlowData.Turnovers(, , Auto, ) AS CashFlowDataTurnovers,
+		Catalog.SalesTaxAgencies AS SalesTaxAgencies
+	WHERE
+		CashFlowDataTurnovers.Account.AccountType = VALUE(Enum.AccountTypes.Income)) AS GrossSalesWithAgencies
+
+GROUP BY
+	GrossSalesWithAgencies.MonthPeriod,
+	GrossSalesWithAgencies.QuarterPeriod,
+	GrossSalesWithAgencies.HalfYearPeriod,
+	GrossSalesWithAgencies.YearPeriod,
+	GrossSalesWithAgencies.ChargeType,
+	GrossSalesWithAgencies.Agency</query>
+	</dataSet>
+	<dataSet xsi:type="DataSetQuery">
+		<name>TaxableSales</name>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>TaxRate</dataPath>
+			<field>TaxRate</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>SalesTaxComponent</dataPath>
+			<field>SalesTaxComponent</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Recorder</dataPath>
+			<field>Recorder</field>
+			<role>
+				<dcscom:periodNumber>1</dcscom:periodNumber>
+				<dcscom:periodType>Main</dcscom:periodType>
+			</role>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Agency</dataPath>
+			<field>Agency</field>
+			<role>
+				<dcscom:dimension>true</dcscom:dimension>
+			</role>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>ChargeType</dataPath>
+			<field>ChargeType</field>
+			<role>
+				<dcscom:dimension>true</dcscom:dimension>
+			</role>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>YearPeriod</dataPath>
+			<field>YearPeriod</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Year period</v8:content>
+				</v8:item>
+			</title>
+			<role>
+				<dcscom:periodNumber>5</dcscom:periodNumber>
+				<dcscom:periodType>Additional</dcscom:periodType>
+			</role>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>HalfYearPeriod</dataPath>
+			<field>HalfYearPeriod</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Half year period</v8:content>
+				</v8:item>
+			</title>
+			<role>
+				<dcscom:periodNumber>4</dcscom:periodNumber>
+				<dcscom:periodType>Additional</dcscom:periodType>
+			</role>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>MonthPeriod</dataPath>
+			<field>MonthPeriod</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Month period</v8:content>
+				</v8:item>
+			</title>
+			<role>
+				<dcscom:periodNumber>2</dcscom:periodNumber>
+				<dcscom:periodType>Additional</dcscom:periodType>
+			</role>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>QuarterPeriod</dataPath>
+			<field>QuarterPeriod</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Quarter period</v8:content>
+				</v8:item>
+			</title>
+			<role>
+				<dcscom:periodNumber>3</dcscom:periodNumber>
+				<dcscom:periodType>Additional</dcscom:periodType>
+			</role>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>TotalTaxableSales</dataPath>
+			<field>TotalTaxableSales</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Taxable sales</v8:content>
+				</v8:item>
+			</title>
+			<appearance>
+				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+					<dcscor:parameter>Format</dcscor:parameter>
+					<dcscor:value xsi:type="xs:string">NFD=2</dcscor:value>
+				</dcscor:item>
+			</appearance>
+		</field>
+		<dataSource>DataSource1</dataSource>
+		<query>SELECT DISTINCT
+	BEGINOFPERIOD(SalesTaxOwedTurnovers.Period, MONTH) AS MonthPeriod,
+	BEGINOFPERIOD(SalesTaxOwedTurnovers.Period, QUARTER) AS QuarterPeriod,
+	BEGINOFPERIOD(SalesTaxOwedTurnovers.Period, HALFYEAR) AS HalfYearPeriod,
+	BEGINOFPERIOD(SalesTaxOwedTurnovers.Period, YEAR) AS YearPeriod,
+	SalesTaxOwedTurnovers.ChargeType AS ChargeType,
+	SalesTaxOwedTurnovers.TaxableSaleReceipt AS TotalTaxableSales,
+	SalesTaxOwedTurnovers.Recorder AS Recorder,
+	SalesTaxOwedTurnovers.Agency AS Agency
+FROM
+	AccumulationRegister.SalesTaxOwed.Turnovers(, , Record, ) AS SalesTaxOwedTurnovers</query>
+	</dataSet>
+	<dataSet xsi:type="DataSetQuery">
+		<name>GrossSalesWithSalesTaxComponents</name>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>SalesPerson</dataPath>
+			<field>SalesPerson</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Currency</dataPath>
+			<field>Currency</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>ExtDimension2</dataPath>
+			<field>ExtDimension2</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Document</dataPath>
+			<field>Document</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>ExtDimension1</dataPath>
+			<field>ExtDimension1</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Account</dataPath>
+			<field>Account</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>ChargeType</dataPath>
+			<field>ChargeType</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Charge type</v8:content>
+				</v8:item>
+			</title>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Agency</dataPath>
+			<field>Agency</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Agency</v8:content>
+				</v8:item>
+			</title>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Company</dataPath>
+			<field>Company</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>SalesTaxComponent</dataPath>
+			<field>SalesTaxComponent</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Sales tax component</v8:content>
+				</v8:item>
+			</title>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>TotalGrossSalesPerSalesTaxComponent</dataPath>
+			<field>TotalGrossSalesPerSalesTaxComponent</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Total gross sales </v8:content>
+				</v8:item>
+			</title>
+			<appearance>
+				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+					<dcscor:parameter>Format</dcscor:parameter>
+					<dcscor:value xsi:type="xs:string">NFD=2</dcscor:value>
+				</dcscor:item>
+			</appearance>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Class</dataPath>
+			<field>Class</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Project</dataPath>
+			<field>Project</field>
+		</field>
+		<dataSource>DataSource1</dataSource>
+		<query>SELECT ALLOWED
+	GrossSalesWithAgencies.ChargeType,
+	GrossSalesWithAgencies.TotalGrossSales AS TotalGrossSalesPerSalesTaxComponent,
+	GrossSalesWithAgencies.Agency,
+	SalesTaxComponents.Ref AS SalesTaxComponent
+INTO GrossSalesWithSalesTaxComponents
+FROM
+	(SELECT
+		VALUE(Enum.AccountingMethod.Accrual) AS ChargeType,
+		-1 * GeneralJournalTurnovers.AmountRCTurnover AS TotalGrossSales,
+		SalesTaxAgencies.Ref AS Agency
+	FROM
+		AccountingRegister.GeneralJournal.Turnovers(, , Auto, Account.AccountType = VALUE(Enum.AccountTypes.Income), , ) AS GeneralJournalTurnovers,
+		Catalog.SalesTaxAgencies AS SalesTaxAgencies
+	
+	UNION ALL
+	
+	SELECT
+		VALUE(Enum.AccountingMethod.Cash),
+		CASE
+			WHEN NOT CashFlowDataTurnovers.Account IS NULL 
+				THEN -CashFlowDataTurnovers.AmountRCTurnover
+			ELSE 0
+		END,
+		SalesTaxAgencies.Ref
+	FROM
+		AccumulationRegister.CashFlowData.Turnovers(, , Auto, ) AS CashFlowDataTurnovers,
+		Catalog.SalesTaxAgencies AS SalesTaxAgencies
+	WHERE
+		CashFlowDataTurnovers.Account.AccountType = VALUE(Enum.AccountTypes.Income)) AS GrossSalesWithAgencies
+		INNER JOIN Catalog.SalesTaxComponents AS SalesTaxComponents
+		ON GrossSalesWithAgencies.Agency = SalesTaxComponents.Agency
+;
+
+////////////////////////////////////////////////////////////////////////////////
+SELECT
+	GrossSalesWithSalesTaxComponents.ChargeType,
+	SUM(GrossSalesWithSalesTaxComponents.TotalGrossSalesPerSalesTaxComponent) AS TotalGrossSalesPerSalesTaxComponent,
+	GrossSalesWithSalesTaxComponents.Agency,
+	GrossSalesWithSalesTaxComponents.SalesTaxComponent
+FROM
+	GrossSalesWithSalesTaxComponents AS GrossSalesWithSalesTaxComponents
+
+GROUP BY
+	GrossSalesWithSalesTaxComponents.ChargeType,
+	GrossSalesWithSalesTaxComponents.Agency,
+	GrossSalesWithSalesTaxComponents.SalesTaxComponent</query>
 	</dataSet>
 	<dataSetLink>
 		<sourceDataSet>DataSet1</sourceDataSet>
@@ -700,17 +1135,104 @@ FROM
 		<sourceExpression>Recorder</sourceExpression>
 		<destinationExpression>Recorder</destinationExpression>
 	</dataSetLink>
+	<dataSetLink>
+		<sourceDataSet>GrossSales</sourceDataSet>
+		<destinationDataSet>DataSet1</destinationDataSet>
+		<sourceExpression>ChargeType</sourceExpression>
+		<destinationExpression>ChargeType</destinationExpression>
+	</dataSetLink>
+	<dataSetLink>
+		<sourceDataSet>GrossSales</sourceDataSet>
+		<destinationDataSet>DataSet1</destinationDataSet>
+		<sourceExpression>MonthPeriod</sourceExpression>
+		<destinationExpression>MonthPeriod</destinationExpression>
+	</dataSetLink>
+	<dataSetLink>
+		<sourceDataSet>GrossSales</sourceDataSet>
+		<destinationDataSet>DataSet1</destinationDataSet>
+		<sourceExpression>QuarterPeriod</sourceExpression>
+		<destinationExpression>QuarterPeriod</destinationExpression>
+	</dataSetLink>
+	<dataSetLink>
+		<sourceDataSet>GrossSales</sourceDataSet>
+		<destinationDataSet>DataSet1</destinationDataSet>
+		<sourceExpression>HalfYearPeriod</sourceExpression>
+		<destinationExpression>HalfYearPeriod</destinationExpression>
+	</dataSetLink>
+	<dataSetLink>
+		<sourceDataSet>GrossSales</sourceDataSet>
+		<destinationDataSet>DataSet1</destinationDataSet>
+		<sourceExpression>YearPeriod</sourceExpression>
+		<destinationExpression>YearPeriod</destinationExpression>
+	</dataSetLink>
+	<dataSetLink>
+		<sourceDataSet>GrossSales</sourceDataSet>
+		<destinationDataSet>DataSet1</destinationDataSet>
+		<sourceExpression>Agency</sourceExpression>
+		<destinationExpression>Agency</destinationExpression>
+	</dataSetLink>
+	<dataSetLink>
+		<sourceDataSet>DataSet1</sourceDataSet>
+		<destinationDataSet>TaxableSales</destinationDataSet>
+		<sourceExpression>MonthPeriod</sourceExpression>
+		<destinationExpression>MonthPeriod</destinationExpression>
+	</dataSetLink>
+	<dataSetLink>
+		<sourceDataSet>DataSet1</sourceDataSet>
+		<destinationDataSet>TaxableSales</destinationDataSet>
+		<sourceExpression>QuarterPeriod</sourceExpression>
+		<destinationExpression>QuarterPeriod</destinationExpression>
+	</dataSetLink>
+	<dataSetLink>
+		<sourceDataSet>DataSet1</sourceDataSet>
+		<destinationDataSet>TaxableSales</destinationDataSet>
+		<sourceExpression>HalfYearPeriod</sourceExpression>
+		<destinationExpression>HalfYearPeriod</destinationExpression>
+	</dataSetLink>
+	<dataSetLink>
+		<sourceDataSet>DataSet1</sourceDataSet>
+		<destinationDataSet>TaxableSales</destinationDataSet>
+		<sourceExpression>YearPeriod</sourceExpression>
+		<destinationExpression>YearPeriod</destinationExpression>
+	</dataSetLink>
+	<dataSetLink>
+		<sourceDataSet>DataSet1</sourceDataSet>
+		<destinationDataSet>TaxableSales</destinationDataSet>
+		<sourceExpression>Agency</sourceExpression>
+		<destinationExpression>Agency</destinationExpression>
+	</dataSetLink>
+	<dataSetLink>
+		<sourceDataSet>DataSet1</sourceDataSet>
+		<destinationDataSet>TaxableSales</destinationDataSet>
+		<sourceExpression>ChargeType</sourceExpression>
+		<destinationExpression>ChargeType</destinationExpression>
+	</dataSetLink>
+	<dataSetLink>
+		<sourceDataSet>DataSet1</sourceDataSet>
+		<destinationDataSet>GrossSalesWithSalesTaxComponents</destinationDataSet>
+		<sourceExpression>ChargeType</sourceExpression>
+		<destinationExpression>ChargeType</destinationExpression>
+	</dataSetLink>
+	<dataSetLink>
+		<sourceDataSet>DataSet1</sourceDataSet>
+		<destinationDataSet>GrossSalesWithSalesTaxComponents</destinationDataSet>
+		<sourceExpression>Agency</sourceExpression>
+		<destinationExpression>Agency</destinationExpression>
+	</dataSetLink>
+	<dataSetLink>
+		<sourceDataSet>DataSet1</sourceDataSet>
+		<destinationDataSet>GrossSalesWithSalesTaxComponents</destinationDataSet>
+		<sourceExpression>SalesTaxComponent</sourceExpression>
+		<destinationExpression>SalesTaxComponent</destinationExpression>
+	</dataSetLink>
 	<totalField>
 		<dataPath>Adjustments</dataPath>
 		<expression>Sum(Adjustments)</expression>
 	</totalField>
 	<totalField>
-		<dataPath>GrossSales</dataPath>
-		<expression>Sum(GrossSales)</expression>
-	</totalField>
-	<totalField>
 		<dataPath>TaxableSales</dataPath>
 		<expression>Sum(TaxableSales)</expression>
+		<group>SalesTaxComponent</group>
 	</totalField>
 	<totalField>
 		<dataPath>TaxAmount</dataPath>
@@ -743,6 +1265,18 @@ FROM
 	<totalField>
 		<dataPath>TaxAmountDetail</dataPath>
 		<expression>Sum(TaxAmountDetail)</expression>
+	</totalField>
+	<totalField>
+		<dataPath>TotalTaxableSales</dataPath>
+		<expression>Sum(TotalTaxableSales)</expression>
+	</totalField>
+	<totalField>
+		<dataPath>TotalGrossSales</dataPath>
+		<expression>Sum(TotalGrossSales)</expression>
+	</totalField>
+	<totalField>
+		<dataPath>TotalGrossSalesPerSalesTaxComponent</dataPath>
+		<expression>Avg(TotalGrossSalesPerSalesTaxComponent)</expression>
 	</totalField>
 	<parameter>
 		<name>BeginOfPeriod</name>
@@ -800,6 +1334,46 @@ FROM
 		</value>
 		<useRestriction>false</useRestriction>
 	</parameter>
+	<template>
+		<name>Template1</name>
+		<template xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:AreaTemplate">
+			<dcsat:item xsi:type="dcsat:TableRow">
+				<dcsat:tableCell>
+					<dcsat:item xsi:type="dcsat:Field">
+						<dcsat:value xsi:type="v8:LocalStringType">
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>* Gross sales is the full amount of sales for the tax period, both taxable and non-taxable. It is not broken down by agency, so every agency shows the same gross sales amount for the same period.</v8:content>
+							</v8:item>
+						</dcsat:value>
+					</dcsat:item>
+					<dcsat:appearance>
+						<dcscor:item>
+							<dcscor:parameter>TextColor</dcscor:parameter>
+							<dcscor:value xmlns:d8p1="http://v8.1c.ru/8.1/data/ui/colors/web" xsi:type="v8ui:Color">d8p1:Gray</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>BorderColor</dcscor:parameter>
+							<dcscor:value xmlns:d8p1="http://v8.1c.ru/8.1/data/ui/style" xsi:type="v8ui:Color">d8p1:FieldBackColor</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>Font</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Font" faceName="Arial" height="8" bold="false" italic="true" underline="false" strikeout="false" kind="Absolute"/>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>Placement</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:DataCompositionTextPlacementType">Wrap</dcscor:value>
+						</dcscor:item>
+					</dcsat:appearance>
+				</dcsat:tableCell>
+			</dcsat:item>
+		</template>
+	</template>
+	<groupTemplate>
+		<groupField>Comment</groupField>
+		<templateType>Header</templateType>
+		<template>Template1</template>
+	</groupTemplate>
 	<settingsVariant>
 		<dcsset:name>Default</dcsset:name>
 		<dcsset:presentation xsi:type="v8:LocalStringType">
@@ -811,10 +1385,10 @@ FROM
 		<dcsset:settings xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows">
 			<dcsset:selection>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>GrossSales</dcsset:field>
+					<dcsset:field>TotalGrossSales</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>TaxableSales</dcsset:field>
+					<dcsset:field>TotalTaxableSales</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>TaxAmount</dcsset:field>
@@ -883,6 +1457,10 @@ FROM
 				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 					<dcscor:parameter>AppearanceTemplate</dcscor:parameter>
 					<dcscor:value xsi:type="xs:string">Main</dcscor:value>
+				</dcscor:item>
+				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+					<dcscor:parameter>VerticalOverallPlacement</dcscor:parameter>
+					<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">None</dcscor:value>
 				</dcscor:item>
 				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 					<dcscor:parameter>Title</dcscor:parameter>
@@ -915,7 +1493,7 @@ FROM
 						<dcsset:item xsi:type="dcsset:GroupItemField">
 							<dcsset:field>MonthPeriod</dcsset:field>
 							<dcsset:groupType>Items</dcsset:groupType>
-							<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+							<dcsset:periodAdditionType>Month</dcsset:periodAdditionType>
 							<dcsset:periodAdditionBegin xsi:type="dcscor:Field">DataParameters.Period</dcsset:periodAdditionBegin>
 							<dcsset:periodAdditionEnd xsi:type="dcscor:Field">DataParameters.Period</dcsset:periodAdditionEnd>
 						</dcsset:item>
@@ -946,6 +1524,23 @@ FROM
 					</dcsset:item>
 				</dcsset:item>
 			</dcsset:item>
+			<dcsset:item xsi:type="dcsset:StructureItemGroup">
+				<dcsset:groupItems>
+					<dcsset:item xsi:type="dcsset:GroupItemField">
+						<dcsset:field>Comment</dcsset:field>
+						<dcsset:groupType>Items</dcsset:groupType>
+						<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+						<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+						<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+					</dcsset:item>
+				</dcsset:groupItems>
+				<dcsset:order>
+					<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
+				</dcsset:order>
+				<dcsset:selection>
+					<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+				</dcsset:selection>
+			</dcsset:item>
 		</dcsset:settings>
 	</settingsVariant>
 	<settingsVariant>
@@ -959,10 +1554,10 @@ FROM
 		<dcsset:settings xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows">
 			<dcsset:selection>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>GrossSales</dcsset:field>
+					<dcsset:field>TotalGrossSales</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>TaxableSales</dcsset:field>
+					<dcsset:field>TotalTaxableSales</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>TaxAmount</dcsset:field>
@@ -1033,6 +1628,10 @@ FROM
 					<dcscor:value xsi:type="xs:string">Main</dcscor:value>
 				</dcscor:item>
 				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+					<dcscor:parameter>VerticalOverallPlacement</dcscor:parameter>
+					<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">None</dcscor:value>
+				</dcscor:item>
+				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 					<dcscor:parameter>Title</dcscor:parameter>
 					<dcscor:value xsi:type="v8:LocalStringType">
 						<v8:item>
@@ -1063,9 +1662,9 @@ FROM
 						<dcsset:item xsi:type="dcsset:GroupItemField">
 							<dcsset:field>QuarterPeriod</dcsset:field>
 							<dcsset:groupType>Items</dcsset:groupType>
-							<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
-							<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
-							<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+							<dcsset:periodAdditionType>Quarter</dcsset:periodAdditionType>
+							<dcsset:periodAdditionBegin xsi:type="dcscor:Field">DataParameters.Period</dcsset:periodAdditionBegin>
+							<dcsset:periodAdditionEnd xsi:type="dcscor:Field">DataParameters.Period</dcsset:periodAdditionEnd>
 						</dcsset:item>
 					</dcsset:groupItems>
 					<dcsset:order>
@@ -1094,6 +1693,23 @@ FROM
 					</dcsset:item>
 				</dcsset:item>
 			</dcsset:item>
+			<dcsset:item xsi:type="dcsset:StructureItemGroup">
+				<dcsset:groupItems>
+					<dcsset:item xsi:type="dcsset:GroupItemField">
+						<dcsset:field>Comment</dcsset:field>
+						<dcsset:groupType>Items</dcsset:groupType>
+						<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+						<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+						<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+					</dcsset:item>
+				</dcsset:groupItems>
+				<dcsset:order>
+					<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
+				</dcsset:order>
+				<dcsset:selection>
+					<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+				</dcsset:selection>
+			</dcsset:item>
 		</dcsset:settings>
 	</settingsVariant>
 	<settingsVariant>
@@ -1107,10 +1723,10 @@ FROM
 		<dcsset:settings xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows">
 			<dcsset:selection>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>GrossSales</dcsset:field>
+					<dcsset:field>TotalGrossSales</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>TaxableSales</dcsset:field>
+					<dcsset:field>TotalTaxableSales</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>TaxAmount</dcsset:field>
@@ -1176,6 +1792,10 @@ FROM
 				</dcsset:item>
 			</dcsset:order>
 			<dcsset:outputParameters>
+				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+					<dcscor:parameter>VerticalOverallPlacement</dcscor:parameter>
+					<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">None</dcscor:value>
+				</dcscor:item>
 				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 					<dcscor:parameter>Title</dcscor:parameter>
 					<dcscor:value xsi:type="v8:LocalStringType">
@@ -1207,9 +1827,9 @@ FROM
 						<dcsset:item xsi:type="dcsset:GroupItemField">
 							<dcsset:field>HalfYearPeriod</dcsset:field>
 							<dcsset:groupType>Items</dcsset:groupType>
-							<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
-							<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
-							<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+							<dcsset:periodAdditionType>HalfYear</dcsset:periodAdditionType>
+							<dcsset:periodAdditionBegin xsi:type="dcscor:Field">DataParameters.Period</dcsset:periodAdditionBegin>
+							<dcsset:periodAdditionEnd xsi:type="dcscor:Field">DataParameters.Period</dcsset:periodAdditionEnd>
 						</dcsset:item>
 					</dcsset:groupItems>
 					<dcsset:order>
@@ -1238,6 +1858,23 @@ FROM
 					</dcsset:item>
 				</dcsset:item>
 			</dcsset:item>
+			<dcsset:item xsi:type="dcsset:StructureItemGroup">
+				<dcsset:groupItems>
+					<dcsset:item xsi:type="dcsset:GroupItemField">
+						<dcsset:field>Comment</dcsset:field>
+						<dcsset:groupType>Items</dcsset:groupType>
+						<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+						<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+						<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+					</dcsset:item>
+				</dcsset:groupItems>
+				<dcsset:order>
+					<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
+				</dcsset:order>
+				<dcsset:selection>
+					<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+				</dcsset:selection>
+			</dcsset:item>
 		</dcsset:settings>
 	</settingsVariant>
 	<settingsVariant>
@@ -1251,10 +1888,10 @@ FROM
 		<dcsset:settings xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows">
 			<dcsset:selection>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>GrossSales</dcsset:field>
+					<dcsset:field>TotalGrossSales</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>TaxableSales</dcsset:field>
+					<dcsset:field>TotalTaxableSales</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>TaxAmount</dcsset:field>
@@ -1321,6 +1958,10 @@ FROM
 			</dcsset:order>
 			<dcsset:outputParameters>
 				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+					<dcscor:parameter>VerticalOverallPlacement</dcscor:parameter>
+					<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">None</dcscor:value>
+				</dcscor:item>
+				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 					<dcscor:parameter>Title</dcscor:parameter>
 					<dcscor:value xsi:type="v8:LocalStringType">
 						<v8:item>
@@ -1351,9 +1992,9 @@ FROM
 						<dcsset:item xsi:type="dcsset:GroupItemField">
 							<dcsset:field>YearPeriod</dcsset:field>
 							<dcsset:groupType>Items</dcsset:groupType>
-							<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
-							<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
-							<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+							<dcsset:periodAdditionType>Year</dcsset:periodAdditionType>
+							<dcsset:periodAdditionBegin xsi:type="dcscor:Field">DataParameters.Period</dcsset:periodAdditionBegin>
+							<dcsset:periodAdditionEnd xsi:type="dcscor:Field">DataParameters.Period</dcsset:periodAdditionEnd>
 						</dcsset:item>
 					</dcsset:groupItems>
 					<dcsset:order>
@@ -1382,6 +2023,23 @@ FROM
 					</dcsset:item>
 				</dcsset:item>
 			</dcsset:item>
+			<dcsset:item xsi:type="dcsset:StructureItemGroup">
+				<dcsset:groupItems>
+					<dcsset:item xsi:type="dcsset:GroupItemField">
+						<dcsset:field>Comment</dcsset:field>
+						<dcsset:groupType>Items</dcsset:groupType>
+						<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+						<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+						<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+					</dcsset:item>
+				</dcsset:groupItems>
+				<dcsset:order>
+					<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
+				</dcsset:order>
+				<dcsset:selection>
+					<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+				</dcsset:selection>
+			</dcsset:item>
 		</dcsset:settings>
 	</settingsVariant>
 	<settingsVariant>
@@ -1395,7 +2053,7 @@ FROM
 		<dcsset:settings xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows">
 			<dcsset:selection>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>GrossSales</dcsset:field>
+					<dcsset:field>TotalGrossSalesPerSalesTaxComponent</dcsset:field>
 				</dcsset:item>
 				<dcsset:item xsi:type="dcsset:SelectedItemField">
 					<dcsset:field>TaxableSales</dcsset:field>
@@ -1469,6 +2127,10 @@ FROM
 					<dcscor:value xsi:type="xs:string">Main</dcscor:value>
 				</dcscor:item>
 				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+					<dcscor:parameter>VerticalOverallPlacement</dcscor:parameter>
+					<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">None</dcscor:value>
+				</dcscor:item>
+				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 					<dcscor:parameter>Title</dcscor:parameter>
 					<dcscor:value xsi:type="v8:LocalStringType">
 						<v8:item>
@@ -1511,6 +2173,23 @@ FROM
 						<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
 					</dcsset:selection>
 				</dcsset:item>
+			</dcsset:item>
+			<dcsset:item xsi:type="dcsset:StructureItemGroup">
+				<dcsset:groupItems>
+					<dcsset:item xsi:type="dcsset:GroupItemField">
+						<dcsset:field>Comment</dcsset:field>
+						<dcsset:groupType>Items</dcsset:groupType>
+						<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+						<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+						<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+					</dcsset:item>
+				</dcsset:groupItems>
+				<dcsset:order>
+					<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
+				</dcsset:order>
+				<dcsset:selection>
+					<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+				</dcsset:selection>
 			</dcsset:item>
 		</dcsset:settings>
 	</settingsVariant>
@@ -1598,6 +2277,10 @@ FROM
 				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 					<dcscor:parameter>AppearanceTemplate</dcscor:parameter>
 					<dcscor:value xsi:type="xs:string">Main</dcscor:value>
+				</dcscor:item>
+				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+					<dcscor:parameter>VerticalOverallPlacement</dcscor:parameter>
+					<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">None</dcscor:value>
 				</dcscor:item>
 				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 					<dcscor:parameter>Title</dcscor:parameter>

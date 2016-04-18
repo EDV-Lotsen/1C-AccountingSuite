@@ -26,7 +26,8 @@ Procedure CommandProcessing(CommandParameter, CommandExecuteParameters)
 	Spreadsheet.FitToPage   = True;
 	Spreadsheet.ReadOnly    = False;
 	Spreadsheet.Protection  = False;
-	Spreadsheet.Show(NStr("en = 'Print preview'") + ?(Not IsBlankString(SpreadsheetTitle), ": " + SpreadsheetTitle, ""));
+	FormParameters = New Structure("SpreadsheetDocument, TitleOfForm, PrintFormID", Spreadsheet, SpreadsheetTitle, CommandParameter[0]);
+	OpenForm("CommonForm.PrintForm", FormParameters);
 	
 EndProcedure
 

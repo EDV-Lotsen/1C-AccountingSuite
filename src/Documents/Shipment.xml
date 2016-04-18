@@ -210,8 +210,10 @@
 			<RegisterRecordsWritingOnPost>WriteSelected</RegisterRecordsWritingOnPost>
 			<SequenceFilling>AutoFillOff</SequenceFilling>
 			<RegisterRecords>
+				<xr:Item xsi:type="xr:MDObjectRef">AccumulationRegister.CashFlowData</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">InformationRegister.SerialNumbers</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">AccumulationRegister.InventoryJournal</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">AccumulationRegister.GeneralJournalAnalyticsDimensions</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">AccumulationRegister.Lots</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">AccountingRegister.GeneralJournal</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">AccumulationRegister.OrdersRegistered</xr:Item>
@@ -1812,9 +1814,9 @@
 					<FullTextSearch>Use</FullTextSearch>
 				</Properties>
 			</Attribute>
-			<Form>DocumentForm</Form>
 			<Form>ListForm</Form>
 			<Form>ChoiceForm</Form>
+			<Form>DocumentForm</Form>
 			<TabularSection uuid="33231618-f6b1-4074-a414-a4d9390f49e1">
 				<InternalInfo>
 					<xr:GeneratedType name="DocumentTabularSection.Shipment.LineItems" category="TabularSection">
@@ -3106,13 +3108,14 @@
 				</ChildObjects>
 			</TabularSection>
 			<Template>ShipmentPrintForm</Template>
+			<Template>HTMLTest</Template>
 			<Command uuid="c1ad00be-85e5-4d9a-b642-5ca7abd5611a">
 				<Properties>
 					<Name>Print</Name>
 					<Synonym>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Shipment</v8:content>
+							<v8:content>Packing list</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>

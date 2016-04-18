@@ -53,16 +53,11 @@
 					</Button>
 				</ChildItems>
 			</Popup>
-			<Button name="FormSendEmail" id="297">
+			<Button name="FormCommonCommandAttachedFiles" id="350">
 				<Type>CommandBarButton</Type>
-				<CommandName>Form.Command.SendEmail</CommandName>
-				<Title>
-					<v8:item>
-						<v8:lang>en</v8:lang>
-						<v8:content>Email</v8:content>
-					</v8:item>
-				</Title>
-				<ExtendedTooltip name="FormSendEmailExtendedTooltip" id="298"/>
+				<CommandName>CommonCommand.AttachedFiles</CommandName>
+				<DataPath>Object.Ref</DataPath>
+				<ExtendedTooltip name="FormCommonCommandAttachedFilesExtendedTooltip" id="351"/>
 			</Button>
 		</ChildItems>
 	</AutoCommandBar>
@@ -512,7 +507,7 @@
 							<Title>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Print options</v8:content>
+									<v8:content>Dropship</v8:content>
 								</v8:item>
 							</Title>
 							<Group>Horizontal</Group>
@@ -967,6 +962,7 @@ Reference number</v8:content>
 								</InputField>
 								<InputField name="LineItemsUnit" id="164">
 									<DataPath>Object.LineItems.Unit</DataPath>
+									<SkipOnInput>true</SkipOnInput>
 									<Title>
 										<v8:item>
 											<v8:lang>en</v8:lang>
@@ -1667,21 +1663,6 @@ Reference number</v8:content>
 			</Title>
 			<Action>GenerateSO</Action>
 		</Command>
-		<Command name="SendEmail" id="5">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Email SO</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Send email</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Action>SendEmail</Action>
-		</Command>
 		<Command name="AddLine" id="6">
 			<Title>
 				<v8:item>
@@ -1749,7 +1730,7 @@ Reference number</v8:content>
 				</Visible>
 			</Item>
 			<Item>
-				<Command>CommonCommand.SendEmail</Command>
+				<Command>0:017ae4f6-356a-4e94-8663-9d23bcb4b365</Command>
 				<Type>Auto</Type>
 				<CommandGroup>FormCommandBarImportant</CommandGroup>
 				<Index>2</Index>

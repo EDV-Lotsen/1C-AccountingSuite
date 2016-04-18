@@ -13,22 +13,14 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	OCLType = GeneralFunctionsReusable.OtherCurrentLiabilityAccountType();
 	LTLType = GeneralFunctionsReusable.LongTermLiabilityAccountType();
 	EquityType = GeneralFunctionsReusable.EquityAccountType();
-
-	If IsInRole("BankAccounting") Then
-		Items.DefaultCheckAccount.Visible = True;
-		Items.DefaultDepositAccount.Visible = True;
-	Else
-		Items.DefaultCheckAccount.Visible = False;
-		Items.DefaultDepositAccount.Visible = False;
-	EndIf;
-
+	
 	If NOT Object.Ref.IsEmpty() Then
 	
 		AcctType = Object.AccountType;
 		If AcctType = InventoryType OR AcctType = ARType OR AcctType = OCAType OR AcctType = FAType OR AcctType = ADType
-			OR AcctType = ONCAType OR AcctType = APType OR AcctType = OCLType OR AcctType = LTLType OR AcctType = EquityType Then			
-				Items.CashFlowSection.Visible = True;			
-			Else								
+			OR AcctType = ONCAType OR AcctType = APType OR AcctType = OCLType OR AcctType = LTLType OR AcctType = EquityType Then
+				Items.CashFlowSection.Visible = True;
+			Else
 				Items.CashFlowSection.Visible = False;
 		EndIf;
 		
@@ -36,23 +28,14 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		AcceptableListTypes = GeneralFunctionsReusable.GetAcceptableAccountTypesForChange(Object.Ref.AccountType);
 		Items.AccountType.ListChoiceMode = True;
 		Items.AccountType.ChoiceList.LoadValues(AcceptableListTypes);
-	    //- MisA 11/14/2014
+		//- MisA 11/14/2014
 		
 		AcctType = Object.AccountType;
-		If AcctType = ARType OR AcctType = APType OR AcctType = BankType Then			
-				Items.Currency.Visible = True;			
-			Else								
+		If AcctType = ARType OR AcctType = APType OR AcctType = BankType Then
+				Items.Currency.Visible = True;
+			Else
 				Items.Currency.Visible = False;
 		EndIf;
-        ////++MisA 11/14/2014 Commented to allow user to change types.
-		//CurUser = InfoBaseUsers.FindByName(SessionParameters.ACSUser);
-		//If CurUser.Roles.Contains(Metadata.Roles.FullAccess) = True Then
-		//Else
-		//	Items.AccountType.ReadOnly = True;
-		//EndIf;
-		//Items.Currency.ReadOnly = True;
-		////--MisA 11/14/2014
-		
 	EndIf;
 
 	If Object.Ref.IsEmpty() Then
@@ -74,7 +57,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 			Items.Code.InputHint = "";
 			Items.Code.AutoMarkIncomplete = True;
 		EndIf;
-
+		
 	EndIf;
 	
 	SetVisibility();
@@ -90,12 +73,11 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 	If NOT Object.Ref.IsEmpty() Then
 		Items.AccountType.ReadOnly = True;
 		Items.Currency.ReadOnly = True;
-		GetBankAccountAttributes();
 		SetVisibility();
 	EndIf;
 		
 	If Object.AccountType = APType OR Object.AccountType = ARType Then
-			
+		
 		Account = Object.Ref;
 		AccountObject = Account.GetObject();
 		
@@ -103,16 +85,15 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 		If Dimension = Undefined Then	
 			NewType = AccountObject.ExtDimensionTypes.Insert(0);
 			NewType.ExtDimensionType = ChartsOfCharacteristicTypes.Dimensions.Company;
-		EndIf;	
+		EndIf;
 		
 		Dimension = AccountObject.ExtDimensionTypes.Find(ChartsOfCharacteristicTypes.Dimensions.Document, "ExtDimensionType");
 		If Dimension = Undefined Then
 			NewType = AccountObject.ExtDimensionTypes.Insert(1);
 			NewType.ExtDimensionType = ChartsOfCharacteristicTypes.Dimensions.Document;
-		EndIf;	
-			
-		AccountObject.Write();
+		EndIf;
 		
+		AccountObject.Write();
 	EndIf;
 	
 EndProcedure
@@ -121,7 +102,7 @@ EndProcedure
 Procedure AccountTypeOnChange(Item)
 	
 	AccountTypeOnChangeAtServer();
-		
+	
 EndProcedure
 
 &AtServer
@@ -144,16 +125,16 @@ Procedure AccountTypeOnChangeAtServer()
 		AcctType = Object.AccountType;
 		
 		If AcctType = BankType OR AcctType = ARType OR AcctType = APType Then
-			Items.Currency.Visible = True;                                                                        
+			Items.Currency.Visible = True;
 			Object.Currency = GeneralFunctionsReusable.DefaultCurrency();
 		Else
-			Items.Currency.Visible = False;			
+			Items.Currency.Visible = False;
 		EndIf;
 			
 		If AcctType = InventoryType OR AcctType = ARType OR AcctType = OCAType OR AcctType = FAType OR AcctType = ADType
-			OR AcctType = ONCAType OR AcctType = APType OR AcctType = OCLType OR AcctType = LTLType OR AcctType = EquityType Then			
-				Items.CashFlowSection.Visible = True;			
-			Else								
+			OR AcctType = ONCAType OR AcctType = APType OR AcctType = OCLType OR AcctType = LTLType OR AcctType = EquityType Then
+				Items.CashFlowSection.Visible = True;
+			Else
 				Items.CashFlowSection.Visible = False;
 		EndIf;
 			
@@ -163,12 +144,12 @@ Procedure AccountTypeOnChangeAtServer()
 		Else
 		EndIf;
 		
-		If AcctType = FAType Then			
+		If AcctType = FAType Then
 				Object.CashFlowSection = GeneralFunctionsReusable.CashFlowInvestingSection();
 		Else
 		EndIf;
 		
-		If AcctType = LTLType OR AcctType = EquityType Then			
+		If AcctType = LTLType OR AcctType = EquityType Then
 				Object.CashFlowSection = GeneralFunctionsReusable.CashFlowFinancingSection();
 		Else
 		EndIf;
@@ -207,8 +188,33 @@ Procedure AccountTypeOnChangeAtServer()
 			EndIf;	
 		EndIf;
 	//- MisA 11/14/2014
+	
+	// KZ 08/25/15
+	If AcctType = InventoryType OR AcctType = ARType OR AcctType = OCAType OR AcctType = FAType OR AcctType = ADType
+		OR AcctType = ONCAType OR AcctType = APType OR AcctType = OCLType OR AcctType = LTLType OR AcctType = EquityType Then			
+			Items.CashFlowSection.Visible = True;			
+		Else								
+			Items.CashFlowSection.Visible = False;
+		EndIf;
+		
+		If AcctType = InventoryType OR AcctType = ARType OR AcctType = OCAType OR AcctType = ADType
+			OR AcctType = ONCAType OR AcctType = APType OR AcctType = OCLType Then			
+				Object.CashFlowSection = GeneralFunctionsReusable.CashFlowOperatingSection();
+		Else
+		EndIf;
+		
+		If AcctType = FAType Then			
+				Object.CashFlowSection = GeneralFunctionsReusable.CashFlowInvestingSection();
+		Else
+		EndIf;
+		
+		If AcctType = LTLType OR AcctType = EquityType Then			
+				Object.CashFlowSection = GeneralFunctionsReusable.CashFlowFinancingSection();
+		Else
+		EndIf;
+		
 	EndIf;
-
+	
 	SetVisibility();
 	
 EndProcedure
@@ -283,9 +289,9 @@ Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 				Message.Message();
 				Return;	
 			EndIf;
-		Else								
+		Else
 	EndIf;
-		
+	
 	If Object.AccountType = Enums.AccountTypes.Equity And Object.RetainedEarnings Then
 		
 		RetainedEarningsAccount = ChartsOfAccounts.ChartOfAccounts.FindByAttribute("RetainedEarnings", True);
@@ -302,8 +308,7 @@ Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 		EndIf;
 		
 	EndIf;
-
-
+	
 EndProcedure
 
 &AtClient
@@ -315,7 +320,7 @@ EndProcedure
 
 &AtServer
 Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
-	//If CurrentObject.Ref.IsEmpty() AND ((Items.Code.InputHint = "<Auto>") OR (NOT ValueIsFilled(CurrentObject.Code))) Then
+	
 	If CurrentObject.Ref.IsEmpty() AND (NOT ValueIsFilled(CurrentObject.Code)) Then
 		AcctType = CurrentObject.AccountType;
 		If AcctType = Enums.AccountTypes.Bank Then
@@ -358,38 +363,41 @@ Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
 			StartCode = "5000";
 			EndCode = "6000";
 		ElsIf AcctType = Enums.AccountTypes.Expense Then
-			StartCode = "6000";
-			EndCode = "7000";
+			// Apply two intervals depending on parent account
+			ParentCode = CurrentObject.Parent.Code;
+			Try
+				NumericalCode = 0;
+				If Format(Number(TrimAll(ParentCode)), "NFD=; NG=0") = TrimAll(ParentCode) Then //Found digital code
+					NumericalCode = Number(TrimAll(ParentCode));
+				EndIf;
+				If NumericalCode >= 7000 Then
+					StartCode = "7000";
+					EndCode = "8000";
+				Else
+					StartCode = "6000";
+					EndCode = "7000";	
+				EndIf;
+			Except
+				StartCode = "6000";
+				EndCode = "7000";
+			EndTry
 		ElsIf AcctType = Enums.AccountTypes.OtherIncome Then
 			StartCode = "8000";
 			EndCode = "9000";	
 		ElsIf AcctType = Enums.AccountTypes.OtherExpense Then
 			StartCode = "9000";
-			EndCode = "10000";	
+			EndCode = "9999"; // if set 10000 then gitting new code will break.  Start/end codes must have the same digits count
 		ElsIf AcctType = Enums.AccountTypes.IncomeTaxExpense Then
 			StartCode = "9000";
-			EndCode = "10000";		
+			EndCode = "9999"; // if set 10000 then gitting new code will break.  Start/end codes must have the same digits count
 		Else
 			return;
-		EndIf;	
+		EndIf;
 	
 		CurrentObject.AdditionalProperties.Insert("IsNew", True);
 		CurrentObject.AdditionalProperties.Insert("StartCode", StartCode);
 		CurrentObject.AdditionalProperties.Insert("EndCode", EndCode);
 		CurrentObject.AdditionalProperties.Insert("AccountType", AcctType);
-	EndIf;
-EndProcedure
-
-&AtClient
-Procedure AfterWrite(WriteParameters)
-	If Not Object.Ref.IsEmpty() Then
-		Items.Code.TextColor = New Color();
-		
-		If OnlineBankAccount Then
-			LastUpdatedTime = ?(ValueIsFilled(LastUpdatedTimeUTC), ToLocalTime(LastUpdatedTimeUTC), LastUpdatedTimeUTC);
-			LastUpdateAttemptTime = ?(ValueIsFilled(LastUpdateAttemptTimeUTC), ToLocalTime(LastUpdateAttemptTimeUTC), LastUpdateAttemptTimeUTC);
-			NextUpdateTime = ?(ValueIsFilled(NextUpdateTimeUTC), ToLocalTime(NextUpdateTimeUTC), NextUpdateTimeUTC); 
-		EndIf;
 	EndIf;
 EndProcedure
 
@@ -405,21 +413,26 @@ Procedure VisibilityRetainedEarnings()
 EndProcedure
 
 &AtServer
-Procedure SetVisibility()
+Procedure VisibilityCategory1099()
 	
-	If Not ValueIsFilled(Object.Parent) Then
-		Items.Parent.Visible = False;
-	Else
-		Items.Parent.Visible = True;
+	Items.Category1099.Visible = False;
+	
+	If Object.AccountType = Enums.AccountTypes.Income
+		OR Object.AccountType = Enums.AccountTypes.OtherIncome 
+		OR Object.AccountType = Enums.AccountTypes.CostOfSales 
+		OR Object.AccountType = Enums.AccountTypes.Expense 
+		OR Object.AccountType = Enums.AccountTypes.OtherExpense 
+		OR Object.AccountType = Enums.AccountTypes.IncomeTaxExpense
+		Then
+		
+		Items.Category1099.Visible = True;
+		
 	EndIf;
 	
-	If ValueIsFilled(AccountInBank) Then
-		//Items.AccountInBank.Visible = True;
-		Items.BankAccountGroup.Visible = True;
-	Else
-		//Items.AccountInBank.Visible = False;
-		Items.BankAccountGroup.Visible = False;
-	EndIf;	
+EndProcedure
+
+&AtServer
+Procedure SetVisibility()
 	
 	If Object.AccountType = Enums.AccountTypes.OtherCurrentLiability Then
 		Items.CreditCard.Visible = True;
@@ -427,98 +440,9 @@ Procedure SetVisibility()
 		Items.CreditCard.Visible = False;
 	EndIf;
 	
-	If OnlineBankAccount Then
-		Items.OnlineAccountPage.Visible = True;
-	Else
-		Items.OnlineAccountPage.Visible = False;
-	EndIf;
-	
-	If RefreshStatusCode <> 0 Then
-		Items.StatusCodeDescriptionDecoration.Visible = True;
-	Else
-		Items.StatusCodeDescriptionDecoration.Visible = False;
-	EndIf;
-	
-	If Not ValueIsFilled(UploadStartDate) Then
-		Items.UploadStartDate.Visible = False;
-		Items.UploadStartDateDecoration.Visible = False;
-	Else
-		Items.UploadStartDate.Visible = True;
-		Items.UploadStartDateDecoration.Visible = True;
-	EndIf;
-
 	VisibilityRetainedEarnings();
-
-EndProcedure
-
-&AtServer
-Procedure GetBankAccountAttributes()
+	VisibilityCategory1099();
 	
-	If (Object.AccountType = Enums.AccountTypes.Bank) Or (Object.AccountType = Enums.AccountTypes.OtherCurrentLiability And Object.CreditCard) Then
-		Request  = new Query("SELECT ALLOWED
-		                     |	BankAccounts.Ref,
-		                     |	BankAccounts.CSV_HasHeaderRow,
-		                     |	BankAccounts.CSV_DateColumn,
-		                     |	BankAccounts.CSV_CheckNumberColumn,
-		                     |	BankAccounts.CSV_DescriptionColumn,
-		                     |	BankAccounts.CSV_MoneyInColumn,
-		                     |	BankAccounts.CSV_MoneyInColumnChangeSymbol,
-		                     |	BankAccounts.CSV_MoneyOutColumn,
-		                     |	BankAccounts.CSV_MoneyOutColumnChangeSymbol,
-		                     |	BankAccounts.CSV_Separator,
-		                     |	BankAccounts.DefaultCheckAccount,
-		                     |	BankAccounts.DefaultDepositAccount,
-		                     |	BankAccounts.LastUpdatedTimeUTC,
-		                     |	BankAccounts.LastUpdateAttemptTimeUTC,
-		                     |	BankAccounts.NextUpdateTimeUTC,
-		                     |	BankAccounts.RefreshStatusCode,
-		                     |	BankAccounts.YodleeAccount AS OnlineBankAccount,
-		                     |	BankAccounts.UploadStartDate
-		                     |FROM
-		                     |	Catalog.BankAccounts AS BankAccounts
-		                     |WHERE
-		                     |	BankAccounts.AccountingAccount = &AccountingAccount");
-		Request.SetParameter("AccountingAccount", Object.Ref);
-		Res = Request.Execute();
-		If Not Res.IsEmpty() Then
-			Sel = Res.Select();
-			Sel.Next();
-			AccountInBank = Sel.Ref;
-			FillPropertyValues(ThisForm, Sel, "CSV_HasHeaderRow, CSV_DateColumn, CSV_CheckNumberColumn, CSV_DescriptionColumn, CSV_MoneyInColumn, CSV_MoneyInColumnChangeSymbol, CSV_MoneyOutColumn, CSV_MoneyOutColumnChangeSymbol, CSV_Separator, DefaultCheckAccount, DefaultDepositAccount, OnlineBankAccount, RefreshStatusCode, LastUpdatedTimeUTC, LastUpdateAttemptTimeUTC, NextUpdateTimeUTC, UploadStartDate");
-		Else
-			AccountInBank = Catalogs.BankAccounts.EmptyRef();
-		EndIf;
-	EndIf;		
-
-EndProcedure
-
-&AtServer
-Procedure SaveBankAccountAttributes()
-	
-	If ValueIsFilled(AccountInBank) Then
-		AccountInBankObject = AccountInBank.GetObject();
-		FillPropertyValues(AccountInBankObject, ThisForm, "CSV_HasHeaderRow, CSV_DateColumn, CSV_CheckNumberColumn, CSV_DescriptionColumn, CSV_MoneyInColumn, CSV_MoneyInColumnChangeSymbol, CSV_MoneyOutColumn, CSV_MoneyOutColumnChangeSymbol, CSV_Separator, DefaultCheckAccount, DefaultDepositAccount");
-		AccountInBankObject.Write();
-	EndIf;
-	
-EndProcedure
-
-&AtServer
-Procedure OnWriteAtServer(Cancel, CurrentObject, WriteParameters)
-	
-	// For bank accounts write CSV attributes and default accounts
-	If (Object.AccountType = Enums.AccountTypes.Bank) Or (Object.AccountType = Enums.AccountTypes.OtherCurrentLiability And Object.CreditCard) Then
-		SaveBankAccountAttributes();
-	EndIf;
-	
-EndProcedure
-
-&AtServer
-Procedure OnReadAtServer(CurrentObject)
-	
-	//For bank type show link to an account in bank (Catalog.BankAccounts)
-	GetBankAccountAttributes();
-
 EndProcedure
 
 &AtClient
@@ -527,53 +451,3 @@ Procedure CreditCardOnChange(Item)
 	SetVisibility();
 	
 EndProcedure
-
-&AtClient
-Procedure OnOpen(Cancel)
-	
-	If OnlineBankAccount Then
-		LastUpdatedTime = ?(ValueIsFilled(LastUpdatedTimeUTC), ToLocalTime(LastUpdatedTimeUTC), LastUpdatedTimeUTC);
-		LastUpdateAttemptTime = ?(ValueIsFilled(LastUpdateAttemptTimeUTC), ToLocalTime(LastUpdateAttemptTimeUTC), LastUpdateAttemptTimeUTC);
-		NextUpdateTime = ?(ValueIsFilled(NextUpdateTimeUTC), ToLocalTime(NextUpdateTimeUTC), NextUpdateTimeUTC); 
-	EndIf;
-	
-EndProcedure
-
-&AtClient
-Procedure StatusCodeDescriptionDecorationClick(Item)
-	
-	OpenForm("DataProcessor.DownloadedTransactions.Form.DetailedErrorMessage", New Structure("StatusCode", String(RefreshStatusCode)), ThisForm,,,,,FormWindowOpeningMode.LockOwnerWindow);
-	
-EndProcedure
-
-&AtClient
-Procedure EditSignInInfo(Command)
-	
-	If Not OnlineBankAccount Then
-		return;		
-	EndIf;
-	
-	Notify = New NotifyDescription("OnComplete_EditAccount", ThisObject);
-	Params = New Structure("PerformEditAccount, RefreshAccount", True, AccountInBank);
-	OpenForm("DataProcessor.YodleeBankAccountsManagement.Form.Form", Params, ThisForm,,,, Notify, FormWindowOpeningMode.LockOwnerWindow);
-
-EndProcedure
-
-#REGION OTHER_FUNCTIONS
-
-&AtClient
-Procedure OnComplete_EditAccount(ClosureResult, AdditionalParameters) Export
-	
-	OnComplete_EditAccountAtServer();
-		
-EndProcedure
-
-&AtServer
-Procedure OnComplete_EditAccountAtServer()
-	
-	Read();
-	SetVisibility();
-	
-EndProcedure
-
-#ENDREGION

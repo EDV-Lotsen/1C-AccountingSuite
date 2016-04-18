@@ -247,6 +247,25 @@ Procedure UndoPosting(Cancel)
 	
 EndProcedure
 
+Procedure OnSetNewNumber(StandardProcessing, Prefix)
+	
+	StandardProcessing = False;
+	
+	Numerator = Catalogs.DocumentNumbering.Assembly;
+	NextNumber = GeneralFunctions.Increment(Numerator.Number);
+	
+	While Documents.Assembly.FindByNumber(NextNumber) <> Documents.Assembly.EmptyRef() And NextNumber <> "" Do
+		ObjectNumerator = Numerator.GetObject();
+		ObjectNumerator.Number = NextNumber;
+		ObjectNumerator.Write();
+		
+		NextNumber = GeneralFunctions.Increment(NextNumber);
+	EndDo;
+	
+	ThisObject.Number = NextNumber; 
+
+EndProcedure
+
 #EndIf
 
 #EndRegion

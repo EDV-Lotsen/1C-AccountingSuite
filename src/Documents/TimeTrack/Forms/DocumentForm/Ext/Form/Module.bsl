@@ -5,11 +5,9 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	If Parameters.Property("Company") And Parameters.Company.Customer Then
 		Object.Company = Parameters.Company;
 	EndIf;
-
 	
-	If Object.User = Catalogs.UserList.EmptyRef() Then
-		Object.User =  Catalogs.UserList.FindByDescription(GeneralFunctions.GetUserName());
-
+	If Not ValueIsFilled(Object.User) Then
+		Object.User = GeneralFunctions.GetUserName();
 	Endif;
 	
 	If Object.SalesOrder <> Documents.SalesOrder.EmptyRef() Then

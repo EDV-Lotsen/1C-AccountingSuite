@@ -39,14 +39,12 @@ Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 		
 	EndIf;
 	
-	AvaTaxServer.AvataxDocumentBeforeWrite(ThisObject, Cancel);
-		
 EndProcedure
 
 Procedure Filling(FillingData, StandardProcessing)
 	
 	// Forced assign the new document number.
-	If ThisObject.IsNew() Then ThisObject.SetNewNumber(); EndIf;
+	If ThisObject.IsNew() And Not ValueIsFilled(ThisObject.Number) Then ThisObject.SetNewNumber(); EndIf;
 	
 	// Filling new document or filling on the base of another document.
 	If FillingData = Undefined Then
@@ -101,6 +99,8 @@ Procedure Filling(FillingData, StandardProcessing)
 EndProcedure
 
 Procedure OnCopy(CopiedObject)
+	
+	If ThisObject.IsNew() Then ThisObject.SetNewNumber(); EndIf;
 	
 	// Clear manual adjustment attribute.
 	ManualAdjustment = False;
@@ -172,13 +172,32 @@ Procedure FillCheckProcessing(Cancel, CheckedAttributes)
 			CheckedAttributes.Delete(FoundShipFrom);
 		EndIf;
 	EndIf;
+	
+	// Check sales tax rate filling
+	If GeneralFunctionsReusable.FunctionalOptionValue("SalesTaxCharging") And Not UseAvatax Then
+		If Not ValueIsFilled(SalesTaxRate) Then
+			CommonUseClientServer.MessageToUser(NStr("en = 'Field ""Sales tax rate"" is empty'"), Ref, "SalesTaxRate",, Cancel);
+		EndIf;
+	EndIf;
 
 EndProcedure
 
-Procedure BeforeDelete(Cancel)
+Procedure OnSetNewNumber(StandardProcessing, Prefix)
 	
-	//Avatax. Delete the document at Avatax prior to actual deletion
-	AvaTaxServer.AvataxDocumentBeforeDelete(ThisObject, Cancel, "ReturnInvoice");
+	StandardProcessing = False;
+	
+	Numerator = Catalogs.DocumentNumbering.CreditMemo;
+	NextNumber = GeneralFunctions.Increment(Numerator.Number);
+	
+	While Documents.SalesReturn.FindByNumber(NextNumber) <> Documents.SalesReturn.EmptyRef() And NextNumber <> "" Do
+		ObjectNumerator = Numerator.GetObject();
+		ObjectNumerator.Number = NextNumber;
+		ObjectNumerator.Write();
+		
+		NextNumber = GeneralFunctions.Increment(NextNumber);
+	EndDo;
+	
+	ThisObject.Number = NextNumber; 
 
 EndProcedure
 

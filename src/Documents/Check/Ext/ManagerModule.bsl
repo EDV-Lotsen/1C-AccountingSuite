@@ -7,6 +7,7 @@ Procedure PrintCheck(Spreadsheet, Ref) Export
 	"SELECT
 	|	Check.Date,
 	|	Check.Company,
+	|	Check.RemitTo,
 	|	Check.DocumentTotalRC,
 	|	Check.Memo,
 	|	Check.BankAccount.Description AS BankAccount
@@ -30,23 +31,25 @@ Procedure PrintCheck(Spreadsheet, Ref) Export
 		Spreadsheet.TopMargin = 15 + Constants.CheckVerticalAdj.Get();
 		
 		//CounterpartyInfo = PrintTemplates.ContactInfo(Selection.Company);
-		Query = New Query;
-		Query.Text =
-		"SELECT
-		|	Addresses.Ref
-		|FROM
-		|	Catalog.Addresses AS Addresses
-		|WHERE
-		|	Addresses.Owner = &Owner
-		|	AND Addresses.DefaultBilling = &True";
-		Query.Parameters.Insert("Owner", Selection.Company);
-		Query.Parameters.Insert("True", True);
-		BillAddr = Query.Execute().Unload();
-		If BillAddr.Count() > 0 Then
-			ThemBill = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemBill", BillAddr[0].Ref);
-		Else
-			ThemBill = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemBill",Catalogs.Addresses.EmptyRef());
-		EndIf;
+		//Query = New Query;
+		//Query.Text =
+		//"SELECT
+		//|	Addresses.Ref
+		//|FROM
+		//|	Catalog.Addresses AS Addresses
+		//|WHERE
+		//|	Addresses.Owner = &Owner
+		//|	AND Addresses.DefaultBilling = &True";
+		//Query.Parameters.Insert("Owner", Selection.Company);
+		//Query.Parameters.Insert("True", True);
+		//BillAddr = Query.Execute().Unload();
+		//If BillAddr.Count() > 0 Then
+		//	ThemBill = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemBill", BillAddr[0].Ref);
+		//Else
+		//	ThemBill = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemBill",Catalogs.Addresses.EmptyRef());
+		//EndIf;
+		
+		ThemBill = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemBill", Selection.RemitTo);
 
 		//ThemBill = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemBill", Catalogs.Addresses.EmptyRef());
 		

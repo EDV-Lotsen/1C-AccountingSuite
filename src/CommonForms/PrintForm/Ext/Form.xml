@@ -16,10 +16,44 @@
 	</CommandSet>
 	<AutoCommandBar name="FormCommandBar" id="-1">
 		<ChildItems>
-			<Button name="FormPrint" id="4">
+			<ButtonGroup name="PrintGroup" id="10">
+				<Title>
+					<v8:item>
+						<v8:lang>en</v8:lang>
+						<v8:content>Print group</v8:content>
+					</v8:item>
+				</Title>
+				<ToolTip>
+					<v8:item>
+						<v8:lang>en</v8:lang>
+						<v8:content>Print group</v8:content>
+					</v8:item>
+				</ToolTip>
+				<ExtendedTooltip name="PrintGroupExtendedTooltip" id="11"/>
+				<ChildItems>
+					<Button name="FormPrint" id="4">
+						<Type>CommandBarButton</Type>
+						<Representation>PictureAndText</Representation>
+						<OnlyInAllActions>true</OnlyInAllActions>
+						<CommandName>Form.Item.SD.StandardCommand.Print</CommandName>
+						<ExtendedTooltip name="FormPrintExtendedTooltip" id="5"/>
+					</Button>
+					<Button name="FormCommonCommandPrintFormSettings" id="6">
+						<Type>CommandBarButton</Type>
+						<CommandName>CommonCommand.PrintFormSettings</CommandName>
+						<ExtendedTooltip name="FormCommonCommandPrintFormSettingsExtendedTooltip" id="7"/>
+					</Button>
+				</ChildItems>
+			</ButtonGroup>
+			<Button name="FormExcel" id="8">
 				<Type>CommandBarButton</Type>
-				<CommandName>Form.Command.Print</CommandName>
-				<ExtendedTooltip name="FormPrintExtendedTooltip" id="5"/>
+				<Representation>PictureAndText</Representation>
+				<CommandName>Form.Command.Excel</CommandName>
+				<Picture>
+					<xr:Ref>CommonPicture.Excel</xr:Ref>
+					<xr:LoadTransparent>true</xr:LoadTransparent>
+				</Picture>
+				<ExtendedTooltip name="FormExcelExtendedTooltip" id="9"/>
 			</Button>
 		</ChildItems>
 	</AutoCommandBar>
@@ -28,39 +62,71 @@
 	</Events>
 	<ChildItems>
 		<SpreadSheetDocumentField name="SD" id="1">
-			<DataPath>SpreadsheetDocument</DataPath>
+			<DataPath>Result</DataPath>
 			<TitleLocation>None</TitleLocation>
 			<ContextMenu name="SDContextMenu" id="2"/>
 			<ExtendedTooltip name="SDExtendedTooltip" id="3"/>
 		</SpreadSheetDocumentField>
 	</ChildItems>
 	<Attributes>
-		<Attribute name="SpreadsheetDocument" id="1">
+		<Attribute name="Result" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Result</v8:content>
+				</v8:item>
+			</Title>
 			<Type>
 				<v8:Type xmlns:mxl="http://v8.1c.ru/8.2/data/spreadsheet">mxl:SpreadsheetDocument</v8:Type>
 			</Type>
 		</Attribute>
-	</Attributes>
-	<Commands>
-		<Command name="Print" id="1">
+		<Attribute name="PrintFormID" id="2">
 			<Title>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Print</v8:content>
+					<v8:content>Print form ID</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>255</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+	</Attributes>
+	<Commands>
+		<Command name="Excel" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Export to Excel</v8:content>
 				</v8:item>
 			</Title>
 			<ToolTip>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Print</v8:content>
+					<v8:content>Excel</v8:content>
 				</v8:item>
 			</ToolTip>
-			<Picture>
-				<xr:Ref>StdPicture.Print</xr:Ref>
-				<xr:LoadTransparent>true</xr:LoadTransparent>
-			</Picture>
-			<Action>Print</Action>
-			<Representation>TextPicture</Representation>
+			<Action>Excel</Action>
 		</Command>
 	</Commands>
+	<Parameters>
+		<Parameter name="PrintFormID">
+			<Type>
+				<v8:TypeSet>cfg:DocumentRef</v8:TypeSet>
+			</Type>
+		</Parameter>
+		<Parameter name="TitleOfForm">
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Parameter>
+	</Parameters>
 </Form>

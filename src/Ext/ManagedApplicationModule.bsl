@@ -2,31 +2,25 @@
 Procedure OnStart()
 	
 	CurrentUser = GeneralFunctions.GetUserName();
-			
-	//OpenForm("DataProcessor.ActiveUsers.Form.Form");
-	STitle = GeneralFunctions.GetSystemTitle();
 	
-	AppName = "AccountingSuite";
-	
+	STitle = GeneralFunctionsReusable.GetSystemTitle();
+	AppName = "AccountingSuite 1C-DN Edition";
 	AppTitle = "";
 	If STitle = "" Then
 		AppTitle = CurrentUser + " / " + AppName + " ";
 	Else
 		AppTitle = STitle + " / " + CurrentUser + " / " + AppName + " ";
 	EndIf;
-	
 	SetApplicationCaption(AppTitle);
 
 	GeneralFunctions.FirstLaunch();
 	GeneralFunctions.CheckConnectionAtServer();
 	GeneralFunctions.UpdateInfobase();
-	//GeneralFunctions.FullAccessUpdateProc();
 	GeneralFunctions.UpdatingHierarchyChartOfAccounts();
-	//GeneralFunctions.SetNumbering();
+	RefreshInterface();
 	
-	If GeneralFunctions.IsUserDisabled(CurrentUser) Then
-		ShowMessageBox(New NotifyDescription("CloseApp", CommonUseClient, False), NStr("en = 'Your user access to the database is locked!'"));
+	If GeneralFunctions.GetSettingsPopUp() Then
+		OpenForm("CommonForm.GeneralSettings");
 	EndIf;
-		
+	
 EndProcedure
-

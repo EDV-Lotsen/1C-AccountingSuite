@@ -121,13 +121,43 @@
 					<ContextMenu name="CompanyContextMenu" id="17"/>
 					<ExtendedTooltip name="CompanyExtendedTooltip" id="28"/>
 				</LabelField>
+				<LabelField name="BalanceRC" id="57">
+					<DataPath>List.BalanceRC</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Balance</v8:content>
+						</v8:item>
+					</Title>
+					<Format>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>NFD=2</v8:content>
+						</v8:item>
+					</Format>
+					<ContextMenu name="BalanceRCContextMenu" id="58"/>
+					<ExtendedTooltip name="BalanceRCExtendedTooltip" id="59"/>
+				</LabelField>
+				<LabelField name="Payment" id="51">
+					<DataPath>List.Payment</DataPath>
+					<Format>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>NFD=2</v8:content>
+						</v8:item>
+					</Format>
+					<ContextMenu name="PaymentContextMenu" id="52"/>
+					<ExtendedTooltip name="PaymentExtendedTooltip" id="53"/>
+				</LabelField>
 				<LabelField name="DocumentTotal" id="14">
 					<DataPath>List.DocumentTotal</DataPath>
+					<Visible>false</Visible>
 					<ContextMenu name="DocumentTotalContextMenu" id="15"/>
 					<ExtendedTooltip name="DocumentTotalExtendedTooltip" id="30"/>
 				</LabelField>
 				<LabelField name="DocumentTotalRC" id="12">
 					<DataPath>List.DocumentTotalRC</DataPath>
+					<Visible>false</Visible>
 					<Format>
 						<v8:item>
 							<v8:lang>en</v8:lang>
@@ -171,6 +201,9 @@
 	DocumentInvoicePayment.PointInTime,
 	ChartOfAccounts.Description AS BankAccountName,
 	DocumentInvoicePayment.PaymentMethod,
+	DocumentInvoicePayment.CashPayment AS Payment,
+	ISNULL(GeneralJournalBalance.AmountBalance, 0) AS Balance,
+	ISNULL(GeneralJournalBalance.AmountRCBalance, 0) AS BalanceRC,
 	CASE
 		WHEN DocumentInvoicePayment.Ref = GeneralJournalEntry.VoidingEntry
 			THEN VALUE(Enum.VoidingTypes.VOID)
@@ -181,7 +214,11 @@ FROM
 		LEFT JOIN ChartOfAccounts.ChartOfAccounts AS ChartOfAccounts
 		ON DocumentInvoicePayment.BankAccount = ChartOfAccounts.Ref
 		LEFT JOIN Document.GeneralJournalEntry AS GeneralJournalEntry
-		ON (GeneralJournalEntry.VoidingEntry = DocumentInvoicePayment.Ref)</QueryText>
+		ON (GeneralJournalEntry.VoidingEntry = DocumentInvoicePayment.Ref)
+		LEFT JOIN AccountingRegister.GeneralJournal.Balance(, , , ExtDimension2 REFS Document.InvoicePayment) AS GeneralJournalBalance
+		ON TRUE //(GeneralJournalBalance.Account = DocumentInvoicePayment.APAccount)
+			AND (GeneralJournalBalance.ExtDimension1 = DocumentInvoicePayment.Company)
+			AND (GeneralJournalBalance.ExtDimension2 = DocumentInvoicePayment.Ref)</QueryText>
 				<MainTable>Document.InvoicePayment</MainTable>
 				<ListSettings>
 					<dcsset:filter>

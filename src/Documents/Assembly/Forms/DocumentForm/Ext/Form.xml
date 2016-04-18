@@ -3,7 +3,21 @@
 	<AutoTime>CurrentOrLast</AutoTime>
 	<UsePostingMode>Auto</UsePostingMode>
 	<RepostOnWrite>true</RepostOnWrite>
-	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<AutoCommandBar name="FormCommandBar" id="-1">
+		<ChildItems>
+			<Button name="FormAuditLogRecords" id="616">
+				<Type>CommandBarButton</Type>
+				<CommandName>Form.Command.AuditLogRecords</CommandName>
+				<ExtendedTooltip name="FormAuditLogRecordsExtendedTooltip" id="617"/>
+			</Button>
+			<Button name="FormCommonCommandAttachedFiles" id="618">
+				<Type>CommandBarButton</Type>
+				<CommandName>CommonCommand.AttachedFiles</CommandName>
+				<DataPath>Object.Ref</DataPath>
+				<ExtendedTooltip name="FormCommonCommandAttachedFilesExtendedTooltip" id="619"/>
+			</Button>
+		</ChildItems>
+	</AutoCommandBar>
 	<Events>
 		<Event name="AfterWriteAtServer">AfterWriteAtServer</Event>
 		<Event name="BeforeWrite">BeforeWrite</Event>
@@ -541,6 +555,7 @@
 										</InputField>
 										<InputField name="LineItemsUnit" id="47">
 											<DataPath>Object.LineItems.Unit</DataPath>
+											<SkipOnInput>true</SkipOnInput>
 											<Title>
 												<v8:item>
 													<v8:lang>en</v8:lang>
@@ -1659,7 +1674,39 @@
 				<v8:Type>v8ui:Color</v8:Type>
 			</Type>
 		</Attribute>
+		<Attribute name="FirstNumber" id="15">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>First number</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>20</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
 	</Attributes>
+	<Commands>
+		<Command name="AuditLogRecords" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Audit log records</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Audit log records</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>AuditLogRecords</Action>
+		</Command>
+	</Commands>
 	<CommandInterface>
 		<NavigationPanel>
 			<Item>
@@ -1690,5 +1737,15 @@
 				<DefaultVisible>false</DefaultVisible>
 			</Item>
 		</NavigationPanel>
+		<CommandBar>
+			<Item>
+				<Command>Document.Assembly.Command.Print</Command>
+				<Type>Auto</Type>
+				<CommandGroup>FormCommandBarImportant</CommandGroup>
+				<Visible>
+					<xr:Common>false</xr:Common>
+				</Visible>
+			</Item>
+		</CommandBar>
 	</CommandInterface>
 </Form>

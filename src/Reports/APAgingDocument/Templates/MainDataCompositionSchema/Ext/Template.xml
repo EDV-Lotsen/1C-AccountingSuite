@@ -287,6 +287,8 @@
 		WHEN GeneralJournalBalance.ExtDimension2 REFS Document.PurchaseReturn
 				OR GeneralJournalBalance.ExtDimension2 REFS Document.PurchaseInvoice
 			THEN GeneralJournalBalance.ExtDimension2.DocumentTotalRC
+		WHEN GeneralJournalBalance.ExtDimension2 REFS Document.InvoicePayment
+			THEN GeneralJournalBalance.ExtDimension2.UnappliedPayment	
 		ELSE 0
 	END AS FullAmount,
 	CASE
@@ -356,6 +358,12 @@ WHERE
 	(GeneralJournalBalance.ExtDimension2 REFS Document.PurchaseInvoice
 			OR GeneralJournalBalance.ExtDimension2 REFS Document.GeneralJournalEntry
 				AND GeneralJournalBalance.ExtDimension2.ARorAP = VALUE(Enum.GJEntryType.AP)
+			OR GeneralJournalBalance.ExtDimension2 REFS Document.Deposit
+				AND GeneralJournalBalance.Account.AccountType = VALUE(Enum.AccountTypes.AccountsPayable)		
+			OR GeneralJournalBalance.ExtDimension2 REFS Document.Check
+				AND GeneralJournalBalance.Account.AccountType = VALUE(Enum.AccountTypes.AccountsPayable)		
+			OR GeneralJournalBalance.ExtDimension2 REFS Document.InvoicePayment
+				AND GeneralJournalBalance.Account.AccountType = VALUE(Enum.AccountTypes.AccountsPayable)	
 			OR GeneralJournalBalance.ExtDimension2 REFS Document.PurchaseReturn)
 {WHERE
 	(GeneralJournalBalance.ExtDimension1 = &amp;Vendor)}</query>

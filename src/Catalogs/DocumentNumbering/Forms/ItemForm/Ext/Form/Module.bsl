@@ -11,4 +11,16 @@ Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 		
 	EndIf;
 	
+	If (Object.Ref = Catalogs.DocumentNumbering.Assembly
+		Or Object.Ref = Catalogs.DocumentNumbering.PurchaseReturn
+		Or Object.Ref = Catalogs.DocumentNumbering.CreditMemo)
+		And (StrLen(Object.Number)) > 6 Then
+		
+		MessageText = NStr("en = 'The number can''t be longer than 6 characters.'");
+		CommonUseClientServer.MessageToUser(MessageText, Object.Ref, "Object.Number");
+		
+		Cancel = True;
+		
+	EndIf;
+	
 EndProcedure

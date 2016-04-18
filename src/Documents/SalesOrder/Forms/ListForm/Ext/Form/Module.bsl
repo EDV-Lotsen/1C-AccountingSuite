@@ -28,6 +28,16 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	// Set parameters of List.
 	List.Parameters.SetParameterValue("CurrentDateSession", BegOfDay(CurrentSessionDate()));
 	
+	If Constants.UseSOPrepayment.Get() Then
+		Items.AmountBalance.Visible = False;
+		Items.Amount.Visible = True;
+		Items.AmountRC.Visible = True;
+	Else 	
+		Items.AmountBalance.Visible = True;
+		Items.Amount.Visible = False;
+		Items.AmountRC.Visible = False;
+	EndIf;	
+	
 EndProcedure
 
 #EndRegion

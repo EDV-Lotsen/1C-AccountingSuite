@@ -136,6 +136,20 @@ Function PrepareDataStructuresForPosting(DocumentRef, AdditionalProperties, Regi
 				 Query_GeneralJournal_Accounts_Residuals_InvOrExp(TablesList) +
 				 Query_GeneralJournal_Accounts_Services_InvOrExp(TablesList) +
 				 Query_GeneralJournal(TablesList) +
+				 //--//GJ++
+				 Query_GeneralJournalAnalyticsDimensions_Accounts_Materials_InvOrExp_Quantity(TablesList) +
+				 Query_GeneralJournalAnalyticsDimensions_Accounts_Materials_InvOrExp_Amount(TablesList) +
+				 Query_GeneralJournalAnalyticsDimensions_Accounts_Materials_InvOrExp(TablesList) +
+				 Query_GeneralJournalAnalyticsDimensions_Accounts_Materials_InvOrExp_Difference_Amount(TablesList) +
+				 Query_GeneralJournalAnalyticsDimensions_Accounts_Materials_InvOrExp_Difference(TablesList) +
+				 Query_GeneralJournalAnalyticsDimensions_Accounts_Services_InvOrExp(TablesList) +
+				 Query_GeneralJournalAnalyticsDimensions_Accounts_Services_InvOrExp_Difference_Amount(TablesList) +
+				 Query_GeneralJournalAnalyticsDimensions_Accounts_Services_InvOrExp_Difference(TablesList) +
+	             Query_GeneralJournalAnalyticsDimensions_Transactions(TablesList)+
+				 Query_GeneralJournalAnalyticsDimensions(TablesList)+
+				 //--//GJ--
+				 Query_CashFlowData(TablesList) +
+				 
 				 Query_ProjectData_Accounts_Wastes_Quantity(TablesList) +
 				 Query_ProjectData_Accounts_Wastes_Amount(TablesList) +
 				 Query_ProjectData_Accounts_Wastes(TablesList) +
@@ -2009,6 +2023,10 @@ Function Query_GeneralJournal_Materials(TablesList)
 	// Dimensions
 	|	LineItems.Product.CostingMethod       AS Type,
 	|	LineItems.Product                     AS Product,
+	//--//GJ++
+	|	LineItems.Class                       AS Class,
+	|	LineItems.Project                     AS Project,
+	//--//GJ--
 	|	LineItems.Location                    AS Location,
 	|	LineItems.Product.InventoryOrExpenseAccount AS InvOrExpAccount,
 	// ------------------------------------------------------
@@ -2598,6 +2616,635 @@ Function Query_GeneralJournal(TablesList)
 	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
 	
 EndFunction
+
+//--//GJ++
+
+// Query for document data.
+Function Query_GeneralJournalAnalyticsDimensions_Accounts_Materials_InvOrExp_Quantity(TablesList)
+	
+	// Add GeneralJournalAnalyticsDimensions InvOrExp accounts table to document structure.
+	TablesList.Insert("Table_GeneralJournalAnalyticsDimensions_Accounts_Materials_InvOrExp_Quantity", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // InvOrExp accounts selection
+	// ------------------------------------------------------
+	// Dimensions
+	|	Accounts.InvOrExpAccount              AS InvOrExpAccount,
+	|	Accounts.Product                      AS Product,
+	|	Accounts.Class                        AS Class,
+	|	Accounts.Project                      AS Project,
+	|	Accounts.Location                     AS Location,
+	|	Accounts.Type                         AS Type,
+	// ------------------------------------------------------
+	// Resources
+	|	SUM(Accounts.Quantity)                AS Quantity
+	// ------------------------------------------------------
+	|INTO
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_Materials_InvOrExp_Quantity
+	|FROM
+	|	Table_GeneralJournal_Materials AS Accounts
+	|GROUP BY
+	|	Accounts.InvOrExpAccount,
+	|	Accounts.Product,
+	|	Accounts.Class,
+	|	Accounts.Project,
+	|	Accounts.Location,
+	|	Accounts.Type";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_GeneralJournalAnalyticsDimensions_Accounts_Materials_InvOrExp_Amount(TablesList)
+	
+	// Add GeneralJournalAnalyticsDimensions InvOrExp accounts table to document structure.
+	TablesList.Insert("Table_GeneralJournalAnalyticsDimensions_Accounts_Materials_InvOrExp_Amount", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // FIFO
+	// ------------------------------------------------------
+	// Dimensions
+	|	Accounts.InvOrExpAccount              AS InvOrExpAccount,
+	|	Accounts.Class                        AS Class,
+	|	Accounts.Project                      AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	CASE
+	|		WHEN ISNULL(ProductCost.Quantity, 0) <= Accounts.Quantity
+	|		// The product written off completely.
+	|		THEN ISNULL(ProductCost.Amount, 0)
+	|		// The product written off partially.
+	|		ELSE CAST ( // Format(Amount / QuantityExpense / Quantity, ""ND=17; NFD=2"")
+	|			ProductCost.Amount * Accounts.Quantity / ProductCost.Quantity
+	|			AS NUMBER (17, 2))
+	|	END                                   AS Amount
+	// ------------------------------------------------------
+	|INTO
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_Materials_InvOrExp_Amount
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_Materials_InvOrExp_Quantity AS Accounts
+	|	LEFT JOIN Table_InventoryJournal_MaterialCost_Total AS ProductCost
+	|		ON  ProductCost.Product  = Accounts.Product
+	|		AND ProductCost.Location = Accounts.Location
+	|WHERE
+	|	Accounts.Type = VALUE(Enum.InventoryCosting.FIFO)
+	|
+	|UNION ALL
+	|
+	|SELECT // WeightedAverage
+	// ------------------------------------------------------
+	// Dimensions
+	|	Accounts.InvOrExpAccount              AS InvOrExpAccount,
+	|	Accounts.Class                        AS Class,
+	|	Accounts.Project                      AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	CASE
+	|		WHEN ISNULL(ProductCost.Quantity, 0) <= Accounts.Quantity
+	|		// The product written off completely.
+	|		THEN ISNULL(ProductCost.Amount, 0)
+	|		// The product written off partially.
+	|		ELSE CAST ( // Format(Amount / QuantityExpense / Quantity, ""ND=17; NFD=2"")
+	|			ProductCost.Amount * Accounts.Quantity / ProductCost.Quantity
+	|			AS NUMBER (17, 2))
+	|	END                                   AS Amount
+	// ------------------------------------------------------
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_Materials_InvOrExp_Quantity AS Accounts
+	|	LEFT JOIN Table_InventoryJournal_MaterialCost_Total AS ProductCost
+	|		ON  ProductCost.Product  = Accounts.Product
+	|		AND ProductCost.Location = VALUE(Catalog.Locations.EmptyRef)
+	|WHERE
+	|	Accounts.Type = VALUE(Enum.InventoryCosting.WeightedAverage)";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_GeneralJournalAnalyticsDimensions_Accounts_Materials_InvOrExp(TablesList)
+	
+	// Add GeneralJournalAnalyticsDimensions InvOrExp accounts table to document structure.
+	TablesList.Insert("Table_GeneralJournalAnalyticsDimensions_Accounts_Materials_InvOrExp", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // InvOrExp accounts selection
+	// ------------------------------------------------------
+	// Dimensions
+	|	Accounts.InvOrExpAccount              AS InvOrExpAccount,
+	|	Accounts.Class                        AS Class,
+	|	Accounts.Project                      AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	SUM(Accounts.Amount)                  AS Amount
+	// ------------------------------------------------------
+	|INTO
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_Materials_InvOrExp
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_Materials_InvOrExp_Amount AS Accounts
+	|GROUP BY
+	|	Accounts.InvOrExpAccount,
+	|	Accounts.Class,
+	|	Accounts.Project";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_GeneralJournalAnalyticsDimensions_Accounts_Materials_InvOrExp_Difference_Amount(TablesList)
+	
+	// Add GeneralJournalAnalyticsDimensions difference InvOrExp amount table to document structure.
+	TablesList.Insert("Table_GeneralJournalAnalyticsDimensions_Accounts_Materials_InvOrExp_Difference_Amount", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // Inventory (raw materials) accounts selection
+	// ------------------------------------------------------
+	// Dimensions
+	|	InvOrExp_Dimensions.InvOrExpAccount             AS InvOrExpAccount,	
+	// ------------------------------------------------------
+	// Resources
+	|	InvOrExp_Dimensions.Amount                      AS Amount
+	// ------------------------------------------------------
+	|INTO
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_Materials_InvOrExp_Difference_Amount
+	|FROM
+	|	Table_GeneralJournal_Accounts_Materials_InvOrExp AS InvOrExp_Dimensions
+	|	LEFT JOIN Document.Assembly AS Assembly
+	|		ON True
+	|WHERE
+	|	Assembly.Ref = &Ref
+	|	AND // Amount > 0
+	|		InvOrExp_Dimensions.Amount > 0
+	|
+	|UNION ALL
+	|
+	|SELECT // Inventory (raw materials) Dimensions accounts selection
+	// ------------------------------------------------------
+	// Dimensions
+	|	InvOrExp_Dimensions.InvOrExpAccount             AS InvOrExpAccount,	
+	// ------------------------------------------------------
+	// Resources
+	|	InvOrExp_Dimensions.Amount  * -1                AS Amount
+	// ------------------------------------------------------
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_Materials_InvOrExp AS InvOrExp_Dimensions
+	|	LEFT JOIN Document.Assembly AS Assembly
+	|		ON True
+	|WHERE
+	|	Assembly.Ref = &Ref
+	|	AND // Amount > 0
+	|		InvOrExp_Dimensions.Amount > 0";	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_GeneralJournalAnalyticsDimensions_Accounts_Materials_InvOrExp_Difference(TablesList)
+	
+	// Add GeneralJournalAnalyticsDimensions difference InvOrExp table to document structure.
+	TablesList.Insert("Table_GeneralJournalAnalyticsDimensions_Accounts_Materials_InvOrExp_Difference", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // Dimensions difference selection
+	// ------------------------------------------------------
+	// Dimensions
+	|	DimensionsDifference.InvOrExpAccount       AS InvOrExpAccount,	
+	// ------------------------------------------------------
+	// Resources
+	|	SUM(DimensionsDifference.Amount)           AS Amount
+	// ------------------------------------------------------
+	|INTO
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_Materials_InvOrExp_Difference
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_Materials_InvOrExp_Difference_Amount AS DimensionsDifference
+	|GROUP BY
+	|	DimensionsDifference.InvOrExpAccount";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_GeneralJournalAnalyticsDimensions_Accounts_Services_InvOrExp(TablesList)
+	
+	// Add GeneralJournalAnalyticsDimensions services accounts table to document structure.
+	TablesList.Insert("Table_GeneralJournalAnalyticsDimensions_Accounts_Services_InvOrExp", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // Services accounts selection
+	// ------------------------------------------------------
+	// Dimensions
+	|	Accounts.ServicesAccount              AS ServicesAccount,
+	|	Accounts.Class                        AS Class,
+	|	Accounts.Project                      AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	SUM(Accounts.Amount)                  AS Amount
+	// ------------------------------------------------------
+	|INTO
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_Services_InvOrExp
+	|FROM
+	|	Table_GeneralJournal_Services AS Accounts
+	|GROUP BY
+	|	Accounts.ServicesAccount,
+	|	Accounts.Class,
+	|	Accounts.Project";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_GeneralJournalAnalyticsDimensions_Accounts_Services_InvOrExp_Difference_Amount(TablesList)
+	
+	// Add GeneralJournalAnalyticsDimensions difference InvOrExp amount table to document structure.
+	TablesList.Insert("Table_GeneralJournalAnalyticsDimensions_Accounts_Services_InvOrExp_Difference_Amount", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // Services accounts selection
+	// ------------------------------------------------------
+	// Dimensions
+	|	InvOrExp_Dimensions.ServicesAccount             AS ServicesAccount,
+	// ------------------------------------------------------
+	// Resources
+	|	InvOrExp_Dimensions.Amount                      AS Amount
+	// ------------------------------------------------------
+	|INTO
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_Services_InvOrExp_Difference_Amount
+	|FROM
+	|	Table_GeneralJournal_Accounts_Services_InvOrExp AS InvOrExp_Dimensions
+	|	LEFT JOIN Document.Assembly AS Assembly
+	|		ON True
+	|WHERE
+	|	Assembly.Ref = &Ref
+	|	AND // Amount > 0
+	|		InvOrExp_Dimensions.Amount > 0
+	|
+	|UNION ALL
+	|
+	|SELECT // Services Dimensions accounts selection
+	// ------------------------------------------------------
+	// Dimensions
+	|	InvOrExp_Dimensions.ServicesAccount             AS ServicesAccount,
+	// ------------------------------------------------------
+	// Resources
+	|	InvOrExp_Dimensions.Amount  * -1                AS Amount
+	// ------------------------------------------------------
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_Services_InvOrExp AS InvOrExp_Dimensions
+	|	LEFT JOIN Document.Assembly AS Assembly
+	|		ON True
+	|WHERE
+	|	Assembly.Ref = &Ref
+	|	AND // Amount > 0
+	|		InvOrExp_Dimensions.Amount > 0";	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_GeneralJournalAnalyticsDimensions_Accounts_Services_InvOrExp_Difference(TablesList)
+	
+	// Add GeneralJournalAnalyticsDimensions difference InvOrExp table to document structure.
+	TablesList.Insert("Table_GeneralJournalAnalyticsDimensions_Accounts_Services_InvOrExp_Difference", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // Dimensions difference selection
+	// ------------------------------------------------------
+	// Dimensions
+	|	DimensionsDifference.ServicesAccount       AS ServicesAccount,
+	// ------------------------------------------------------
+	// Resources
+	|	SUM(DimensionsDifference.Amount)           AS Amount
+	// ------------------------------------------------------
+	|INTO
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_Services_InvOrExp_Difference
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_Services_InvOrExp_Difference_Amount AS DimensionsDifference
+	|GROUP BY
+	|	DimensionsDifference.ServicesAccount";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_GeneralJournalAnalyticsDimensions_Transactions(TablesList)
+	
+	// Add GeneralJournalAnalyticsDimensions_Transactions table to document structure.
+	TablesList.Insert("Table_GeneralJournalAnalyticsDimensions_Transactions", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // Expense: Inventory (raw materials)
+	// ------------------------------------------------------
+	// Standard attributes
+	|	Assembly.Ref                          AS Recorder,
+	|	Assembly.Date                         AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccumulationRecordType.Expense) AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	InvOrExp.InvOrExpAccount              AS Account,
+	// ------------------------------------------------------
+	// Dimensions
+	|	NULL                                  AS Company,
+	|	InvOrExp.Class                        AS Class,
+	|	InvOrExp.Project                      AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	InvOrExp.Amount                       AS AmountRC
+	// ------------------------------------------------------
+	|INTO Table_GeneralJournalAnalyticsDimensions_Transactions
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_Materials_InvOrExp AS InvOrExp
+	|	LEFT JOIN Document.Assembly AS Assembly
+	|		ON True
+	|WHERE
+	|	Assembly.Ref = &Ref
+	|	AND // Amount > 0
+	|		InvOrExp.Amount > 0
+	|
+	|UNION ALL
+	|
+	|SELECT // Expense: Inventory (raw materials) (difference)
+	// ------------------------------------------------------
+	// Standard attributes
+	|	Assembly.Ref                          AS Recorder,
+	|	Assembly.Date                         AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccumulationRecordType.Expense) AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	InvOrExp.InvOrExpAccount              AS Account,
+	// ------------------------------------------------------
+	// Dimensions
+	|	NULL                                  AS Company,
+	|	NULL                                  AS Class,
+	|	NULL                                  AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	InvOrExp.Amount                       AS AmountRC
+	// ------------------------------------------------------
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_Materials_InvOrExp_Difference AS InvOrExp
+	|	LEFT JOIN Document.Assembly AS Assembly
+	|		ON True
+	|WHERE
+	|	Assembly.Ref = &Ref
+	|	AND // Amount <> 0
+	|		InvOrExp.Amount <> 0
+	|
+	|UNION ALL
+	|
+	|SELECT // Expense: Services
+	// ------------------------------------------------------
+	// Standard attributes
+	|	Assembly.Ref                          AS Recorder,
+	|	Assembly.Date                         AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccumulationRecordType.Expense) AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	InvOrExp.ServicesAccount              AS Account,
+	// ------------------------------------------------------
+	// Dimensions
+	|	NULL                                  AS Company,
+	|	InvOrExp.Class                        AS Class,
+	|	InvOrExp.Project                      AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	InvOrExp.Amount                       AS AmountRC
+	// ------------------------------------------------------
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_Services_InvOrExp AS InvOrExp
+	|	LEFT JOIN Document.Assembly AS Assembly
+	|		ON True
+	|WHERE
+	|	Assembly.Ref = &Ref
+	|	AND // Amount > 0
+	|		InvOrExp.Amount > 0
+	|UNION ALL
+	|
+	|SELECT // Expense: Services (difference)
+	// ------------------------------------------------------
+	// Standard attributes
+	|	Assembly.Ref                          AS Recorder,
+	|	Assembly.Date                         AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccumulationRecordType.Expense) AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	InvOrExp.ServicesAccount              AS Account,
+	// ------------------------------------------------------
+	// Dimensions
+	|	NULL                                  AS Company,
+	|	NULL                                  AS Class,
+	|	NULL                                  AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	InvOrExp.Amount                       AS AmountRC
+	// ------------------------------------------------------
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_Services_InvOrExp_Difference AS InvOrExp
+	|	LEFT JOIN Document.Assembly AS Assembly
+	|		ON True
+	|WHERE
+	|	Assembly.Ref = &Ref
+	|	AND // Amount <> 0
+	|		InvOrExp.Amount <> 0
+	|
+	|UNION ALL
+	|
+	|SELECT // Receipt: Wastes
+	// ------------------------------------------------------
+	// Standard attributes
+	|	Assembly.Ref                          AS Recorder,
+	|	Assembly.Date                         AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccumulationRecordType.Receipt) AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	Assembly.WasteAccount                 AS Account,
+	// ------------------------------------------------------
+	// Dimensions
+	|	NULL                                  AS Company,
+	|	NULL                                  AS Class,
+	|	NULL                                  AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	Totals.WasteCost                      AS AmountRC
+	// ------------------------------------------------------
+	|FROM
+	|	Document.Assembly AS Assembly
+	|	LEFT JOIN Table_InventoryJournal_DocumentTotal AS Totals
+	|		ON True
+	|WHERE
+	|	Assembly.Ref = &Ref
+	|	AND // Amount > 0
+	|		Totals.WasteCost > 0
+	|
+	|UNION ALL
+	|
+	|SELECT // Receipt: Assembly
+	// ------------------------------------------------------
+	// Standard attributes
+	|	Assembly.Ref                          AS Recorder,
+	|	Assembly.Date                         AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccumulationRecordType.Receipt) AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	Assembly.Product.InventoryOrExpenseAccount
+	|                                         AS Account,
+	// ------------------------------------------------------
+	// Dimensions
+	|	NULL                                  AS Company,
+	|	Assembly.Class                        AS Class,
+	|	Assembly.Project                      AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	Totals.AssemblyCost                   AS AmountRC
+	// ------------------------------------------------------
+	|FROM
+	|	Document.Assembly AS Assembly
+	|	LEFT JOIN Table_InventoryJournal_DocumentTotal AS Totals
+	|		ON True
+	|WHERE
+	|	Assembly.Ref = &Ref
+	|	AND // Amount > 0
+	|		Totals.AssemblyCost > 0
+	|
+	|UNION ALL
+	|
+	|SELECT // Receipt: Residuals
+	// ------------------------------------------------------
+	// Standard attributes
+	|	Assembly.Ref                          AS Recorder,
+	|	Assembly.Date                         AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccumulationRecordType.Receipt) AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	InvOrExp.InvOrExpAccount              AS Account,
+	// ------------------------------------------------------
+	// Dimensions
+	|	NULL                                  AS Company,
+	|	Assembly.Class                        AS Class,
+	|	Assembly.Project                      AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	InvOrExp.Amount                       AS AmountRC
+	// ------------------------------------------------------
+	|FROM
+	|	Table_GeneralJournal_Accounts_Residuals_InvOrExp AS InvOrExp
+	|	LEFT JOIN Document.Assembly AS Assembly
+	|		ON True
+	|WHERE
+	|	Assembly.Ref = &Ref
+	|	AND // Amount > 0
+	|		InvOrExp.Amount > 0";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_GeneralJournalAnalyticsDimensions(TablesList)
+	
+	// Add GeneralJournalAnalyticsDimensions table to document structure.
+	TablesList.Insert("Table_GeneralJournalAnalyticsDimensions", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // Transactions
+	// ------------------------------------------------------
+	// Standard attributes
+	|	Transaction.Recorder                  AS Recorder,
+	|	Transaction.Period                    AS Period,
+	|	Transaction.LineNumber                AS LineNumber,
+	|	Transaction.RecordType                AS RecordType,
+	|	Transaction.Active                    AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	Transaction.Account                   AS Account,
+	// ------------------------------------------------------
+	// Dimensions
+	|	Transaction.Company                   AS Company,
+	|	Transaction.Class                     AS Class,
+	|	Transaction.Project                   AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	Transaction.AmountRC                  AS AmountRC
+	// ------------------------------------------------------
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Transactions AS Transaction";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+//--//GJ--
+				 
+// Query for document data.
+Function Query_CashFlowData(TablesList)
+	
+	// Add CashFlowData table to document structure.
+	TablesList.Insert("Table_CashFlowData", TablesList.Count());
+	
+	// Collect cash flow data.
+	QueryText =
+	"SELECT // Transactions
+	// ------------------------------------------------------
+	// Standard attributes
+	|	Transaction.Recorder                  AS Recorder,
+	|	Transaction.Period                    AS Period,
+	|	Transaction.LineNumber                AS LineNumber,
+	|	Transaction.RecordType                AS RecordType,
+	|	Transaction.Active                    AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	Transaction.Account                   AS Account,
+	// ------------------------------------------------------
+	// Dimensions
+	|	Transaction.Company                   AS Company,
+	|	Assembly.Ref                          AS Document,
+	|	NULL                                  AS SalesPerson,
+	|	Transaction.Class                     AS Class,
+	|	Transaction.Project                   AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	Transaction.AmountRC                  AS AmountRC,
+	// ------------------------------------------------------
+	// Attributes
+	|	NULL                                  AS PaymentMethod
+	// ------------------------------------------------------
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Transactions AS Transaction
+	|	LEFT JOIN Document.Assembly AS Assembly
+	|		ON Assembly.Ref = &Ref";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
 
 // Query for document data.
 Function Query_ProjectData_Accounts_Wastes_Quantity(TablesList)

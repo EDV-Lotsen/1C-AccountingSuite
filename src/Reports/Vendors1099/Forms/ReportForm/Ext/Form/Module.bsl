@@ -2,7 +2,15 @@
 &AtClient
 Procedure Create(Command)
 	
+	GenerateCSVReport();
+	
 	ComposeResult();
+	
+	Try
+		CurParameters = New Structure("ObjectTypeID",ThisForm.FormName);
+		CommonUseClient.ApplyPrintFormSettings(Result,CurParameters);
+	Except
+	EndTry;
 	
 EndProcedure
 
@@ -18,52 +26,88 @@ EndProcedure
 &AtClient
 Procedure GetCSV(Command)
 	
-	//Structure = GeneralFunctions.GetCSVFile("Vendors 1099", Result);
+	Structure = GeneralFunctions.GetCSVFile("Vendors 1099", ResultCSV);
 	
-	//GetFile(Structure.Address, Structure.FileName, True); 
-	
-	OutputDocument = GetCSVAtServer();
-	//OutputDocument.Show();
+	GetFile(Structure.Address, Structure.FileName, True); 
 	
 EndProcedure
 
 &AtServer
-Function GetCSVAtServer()
+Procedure OnUpdateUserSettingSetAtServer(StandardProcessing)
 	
+	ModifiedStatePresentation();
 	
-	// Create template composer and get default data composition template.
-	TemplateComposer        = New DataCompositionTemplateComposer;
-	DataCompositionSchema   = Reports.Vendors1099.GetTemplate("List1099");
-	DataCompositionTemplate = TemplateComposer.Execute(DataCompositionSchema, DataCompositionSchema.DefaultSettings);
+EndProcedure
+
+&AtServer
+Procedure ModifiedStatePresentation()
 	
-	// Create the new data composition processor.
+	Items.Result.StatePresentation.Visible = True;
+	Items.Result.StatePresentation.Text = "Report not generated. Click ""Run report"" to obtain a report.";
+	Items.Result.StatePresentation.AdditionalShowMode = AdditionalShowMode.Irrelevance;
+	
+EndProcedure
+
+&AtServer
+Procedure GenerateCSVReport()
+	
+	MainDataCompositionSchema = Reports.Vendors1099.GetTemplate("List1099");
+	
+	DataCompositionSettingsComposer = New DataCompositionSettingsComposer;
+	DataCompositionAvailableSettingsSource = New DataCompositionAvailableSettingsSource(MainDataCompositionSchema);
+	DataCompositionSettingsComposer.Initialize(DataCompositionAvailableSettingsSource);
+	DataCompositionSettingsComposer.LoadSettings(MainDataCompositionSchema.SettingVariants.Find("CSV").Settings);
+	
+	//
+	SettingsCSV         = DataCompositionSettingsComposer.Settings;
+	UserSettingsCSV     = DataCompositionSettingsComposer.UserSettings.Items;
+	
+	TaxYearSettingIDCSV     = SettingsCSV.DataParameters.Items.Find("TaxYear").UserSettingID;
+	ModeSettingIDCSV        = SettingsCSV.DataParameters.Items.Find("Mode").UserSettingID;
+		
+	SettingsDefault     = Report.SettingsComposer.Settings;
+	UserSettingsDefault = Report.SettingsComposer.UserSettings.Items;
+
+	TaxYearSettingIDDefault = SettingsDefault.DataParameters.Items.Find("TaxYear").UserSettingID;
+	ModeSettingIDDefault    = SettingsDefault.DataParameters.Items.Find("Mode").UserSettingID;	
+	
+	UserSettingsCSV.Find(TaxYearSettingIDCSV).Value = UserSettingsDefault.Find(TaxYearSettingIDDefault).Value;
+	UserSettingsCSV.Find(TaxYearSettingIDCSV).Use   = UserSettingsDefault.Find(TaxYearSettingIDDefault).Use;
+	
+	UserSettingsCSV.Find(ModeSettingIDCSV).Value    = UserSettingsDefault.Find(ModeSettingIDDefault).Value;
+	UserSettingsCSV.Find(ModeSettingIDCSV).Use      = UserSettingsDefault.Find(ModeSettingIDDefault).Use;
+	//
+	
+	Settings = DataCompositionSettingsComposer.GetSettings();
+	
+	DataCompositionDetailsData = New DataCompositionDetailsData;
+	
+	DataCompositionTemplateComposer = New DataCompositionTemplateComposer;
+	                                                                                                                                     
+	DataCompositionTemplate = DataCompositionTemplateComposer.Execute(MainDataCompositionSchema, Settings, DataCompositionDetailsData);
+	
 	DataCompositionProcessor = New DataCompositionProcessor;
-	DataCompositionProcessor.Initialize(DataCompositionTemplate);
+	DataCompositionProcessor.Initialize(DataCompositionTemplate, , DataCompositionDetailsData);
 	
-	//OutputDocument  = New SpreadsheetDocument;
-	//OutputProcessor = New DataCompositionResultSpreadsheetDocumentOutputProcessor;
-	//OutputProcessor.SetDocument(OutputDocument);
-	//OutputProcessor.Output(DataCompositionProcessor, True);
-	//Return OutputDocument;
+	ResultCSV.Clear();
 	
-	// Request a value table from data composition processor
-	OutputTable     = New ValueTable;
-	OutputProcessor = New DataCompositionResultValueCollectionOutputProcessor;
-	OutputProcessor.SetObject(OutputTable);
-	OutputProcessor.Output(DataCompositionProcessor, True);
+	DataCompositionResultSpreadsheetDocumentOutputProcessor = New DataCompositionResultSpreadsheetDocumentOutputProcessor;
+	DataCompositionResultSpreadsheetDocumentOutputProcessor.SetDocument(ResultCSV);
 	
-	Return OutputTable;
+	DataCompositionResultSpreadsheetDocumentOutputProcessor.Output(DataCompositionProcessor); 
 	
-EndFunction
+EndProcedure
 
 &AtClient
-Procedure Print(Command)
-	PrintAtServer();
-	Result.Print(PrintDialogUseMode.Use);
+Procedure TaxYearOnChange(Item)
+	
+	ModifiedStatePresentation();
+	
 EndProcedure
 
-&AtServer
-Procedure PrintAtServer()
-	Result.PageSize = "Letter"; 
-	Result.FitToPage = True;
+&AtClient
+Procedure ShowOnChange(Item)
+	
+	ModifiedStatePresentation();
+	
 EndProcedure

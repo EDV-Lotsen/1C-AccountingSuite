@@ -150,7 +150,28 @@ Function PrepareDataStructuresForPosting(DocumentRef, AdditionalProperties, Regi
 				 Query_GeneralJournal_Accounts_InvOrExp_Amount(TablesList) +
 				 Query_GeneralJournal_Accounts_InvOrExp(TablesList) +
 				 Query_GeneralJournal(TablesList) +
-				 Query_CashFlowData(TablesList) +
+				 //--//GJ++
+	             Query_GeneralJournalAnalyticsDimensions_Accounts_Income(TablesList)+
+	             Query_GeneralJournalAnalyticsDimensions_Accounts_Income_Difference_Amount(TablesList)+
+	             Query_GeneralJournalAnalyticsDimensions_Accounts_Income_Difference(TablesList)+
+	             Query_GeneralJournalAnalyticsDimensions_Accounts_COGS_Quantity(TablesList)+
+	             Query_GeneralJournalAnalyticsDimensions_Accounts_COGS_Amount(TablesList)+
+	             Query_GeneralJournalAnalyticsDimensions_Accounts_COGS(TablesList)+
+	             Query_GeneralJournalAnalyticsDimensions_Accounts_COGS_Difference_Amount(TablesList)+
+	             Query_GeneralJournalAnalyticsDimensions_Accounts_COGS_Difference(TablesList)+
+	             Query_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp_Quantity(TablesList)+
+	             Query_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp_Amount(TablesList)+
+	             Query_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp(TablesList)+
+	             Query_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp_Difference_Amount(TablesList)+
+	             Query_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp_Difference(TablesList)+
+	             Query_GeneralJournalAnalyticsDimensions_Transactions(TablesList)+
+	             Query_GeneralJournalAnalyticsDimensions(TablesList)+
+	             //--//GJ--
+				 
+				 Query_CashFlowData_Difference_Amount(TablesList) +
+				 Query_CashFlowData_Difference(TablesList) +
+	             Query_CashFlowData(TablesList) +
+				 
 				 Query_ProjectData_Accounts_Income(TablesList) +
 				 Query_ProjectData_Accounts_COGS_Quantity(TablesList) +
 				 Query_ProjectData_Accounts_COGS_Amount(TablesList) +
@@ -216,6 +237,174 @@ Function PrepareDataStructuresForPostingClearing(DocumentRef, AdditionalProperti
 	FillRegistersCheckList(AdditionalProperties, RegisterRecords);
 	
 EndFunction
+
+// Automatically accept existing SO prepayment on posting new SI with SO in tab section.
+Procedure ProcessSalesOrdersPrepayment(DocumentRef) Export
+	
+	If Constants.UseSOPrepayment.Get() = False Then 
+		Return;
+	EndIf;	
+	
+	If False Then 
+		DocumentRef = Documents.SalesInvoice.FindByNumber("");
+	EndIf;	
+	
+	Company = DocumentRef.Company;
+	Currency = DocumentRef.Currency;
+	
+	Query = New Query;
+	Query.Text = 
+		"SELECT
+		|	SalesInvoiceLineItems.Order
+		|INTO Orders
+		|FROM
+		|	Document.SalesInvoice.LineItems AS SalesInvoiceLineItems
+		|WHERE
+		|	SalesInvoiceLineItems.Ref = &Ref
+		|	AND SalesInvoiceLineItems.Order <> VALUE(Document.SalesOrder.EmptyRef)
+		|;
+		|
+		|////////////////////////////////////////////////////////////////////////////////
+		|SELECT DISTINCT
+		|	CashReceipt.Ref
+		|INTO SOPrepayments
+		|FROM
+		|	Orders AS Orders
+		|		INNER JOIN Document.CashReceipt AS CashReceipt
+		|		ON Orders.Order = CashReceipt.SalesOrder
+		|;
+		|
+		|////////////////////////////////////////////////////////////////////////////////
+		|SELECT
+		|	GeneralJournalBalance.ExtDimension1 AS Company,
+		|	GeneralJournalBalance.ExtDimension2 As Document,
+		|	-GeneralJournalBalance.AmountBalance AS Amount,
+		|	-GeneralJournalBalance.AmountRCBalance AS AmountRC
+		|FROM
+		|	AccountingRegister.GeneralJournal.Balance(,Account = &ARPrepaymentAccount,, ExtDimension1 = (&Company) AND ExtDimension2 IN (SELECT SOPrepayments.Ref FROM SOPrepayments AS SOPrepayments)) AS GeneralJournalBalance";
+	
+	Query.SetParameter("ARPrepaymentAccount", Currency.DefaultPrepaymentAR);
+	Query.SetParameter("Company", Company);
+	Query.SetParameter("Ref", DocumentRef);
+	
+	PrepaymentTable = Query.Execute().Unload();
+	SOPrepaymentTotalAmount = 0;
+	If PrepaymentTable.Count() = 0 Then 
+		Return;
+	Else 
+		SOPrepaymentTotalAmount = PrepaymentTable.Total("Amount");
+	EndIf;	
+	
+	///////////////////////////////////////////////////////////////////////////////////////	
+	SIBalanceQuery = New Query;
+	SIBalanceQuery.Text = "SELECT
+	|	Isnull(SUM(GeneralJournalTurnovers.AmountTurnover),0) AS Amount,
+	|	Isnull(SUM(GeneralJournalTurnovers.AmountRCTurnover),0) AS AmountRC
+	|FROM
+	|	AccountingRegister.GeneralJournal.Turnovers(,,Recorder,Account = &ARAccount,, ExtDimension1 = &Company AND ExtDimension2 = &SIRef) AS GeneralJournalTurnovers
+	|WHERE
+	|	GeneralJournalTurnovers.Recorder <> &SIRef";
+	
+	
+	SIBalanceQuery.SetParameter("SIRef",  DocumentRef);			 
+	SIBalanceQuery.SetParameter("Company", Company);
+	SIBalanceQuery.SetParameter("ARAccount", Currency.DefaultARAccount);
+	QueryBalanceResult = SIBalanceQuery.Execute().Select();
+	
+	SIBalance = DocumentRef.DocumentTotal;
+	
+	While QueryBalanceResult.Next() Do 
+		SIBalance = SIBalance + QueryBalanceResult.Amount;
+	EndDo;
+	
+	If SIBalance <= 0 Then
+		Return;
+	EndIf;
+	
+	SOPrepaymentToDistribute = Min(SIBalance,SOPrepaymentTotalAmount);
+	
+	AuxCashReceipt = Documents.CashReceipt.CreateDocument();
+	AuxCashReceipt.Date = DocumentRef.Date;
+	AuxCashReceipt.Company = Company;
+	AuxCashReceipt.Currency = Currency;
+	If Not Currency.IsEmpty() Then 
+		AuxCashReceipt.Currency = Currency;
+	ElsIf Not Company.DefaultCurrency.IsEmpty() Then 
+		AuxCashReceipt.Currency = Company.DefaultCurrency;
+	ElsIf Not Company.ARAccount.Currency.IsEmpty() Then 
+		AuxCashReceipt.Currency = Company.ARAccount.Currency;
+	Else 
+		AuxCashReceipt.Currency = GeneralFunctionsReusable.DefaultCurrency();
+	EndIf;	
+		
+	EmailQuery = New Query();
+	EmailQuery.Text = "SELECT
+	|	Addresses.Email
+	|FROM
+	|	Catalog.Addresses AS Addresses
+	|WHERE
+	|	Addresses.Owner = &Company
+	|	AND Addresses.DefaultBilling";
+	EmailQuery.SetParameter("Company", Company);
+	EmailQueryResult = EmailQuery.Execute().Select();	
+	If EmailQueryResult.Next() Then
+		AuxCashReceipt.EmailTo = EmailQueryResult.Email;
+	EndIf;
+	
+	If Not Company.ARAccount.IsEmpty()Then 
+		AuxCashReceipt.ARAccount = Company.ARAccount;
+	ElsIf Not Currency.DefaultARAccount.IsEmpty() Then 
+		AuxCashReceipt.ARAccount = AuxCashReceipt.Currency.DefaultARAccount;
+	Else 
+		AuxCashReceipt.ARAccount = DocumentRef.ARAccount;
+	EndIf;
+	
+	AuxCashReceipt.BankAccount = Constants.UndepositedFundsAccount.Get();
+	AuxCashReceipt.DepositType = 1;
+	
+	
+	AuxCashReceipt.ExchangeRate = GeneralFunctions.GetExchangeRate(AuxCashReceipt.Date, AuxCashReceipt.Currency);
+	
+	LineItems = AuxCashReceipt.LineItems.Add();
+	LineItems.Document = DocumentRef;
+	LineItems.Payment =  SOPrepaymentToDistribute;
+	
+	SOPrepayQty = 0;
+	NamesOfAppliedSOPrepayments = "";
+	For Each Credit in PrepaymentTable Do 
+		If SOPrepaymentToDistribute > 0 Then 
+			DocCredit = AuxCashReceipt.CreditMemos.Add();
+			DocCredit.Document = Credit.Document;
+			DocCredit.Payment = Min(Credit.Amount,SOPrepaymentToDistribute);
+			SOPrepaymentToDistribute = SOPrepaymentToDistribute - DocCredit.Payment;
+			SOPrepayQty = SOPrepayQty + 1;
+			NamesOfAppliedSOPrepayments = NamesOfAppliedSOPrepayments + ?(NamesOfAppliedSOPrepayments = "","",", ") + Credit.Document;
+		Else
+			Break;
+		EndIf;
+	EndDo;
+	
+	AuxCashReceipt.DocumentTotal = SOPrepaymentToDistribute;
+	AuxCashReceipt.DocumentTotalRC = SOPrepaymentToDistribute*AuxCashReceipt.ExchangeRate;
+	Try
+		AuxCashReceipt.Write(DocumentWriteMode.Posting);
+		If SOPrepayQty > 1 Then 
+			Message("SO Prepayments: "+NamesOfAppliedSOPrepayments+" were applied. Was created " + AuxCashReceipt.Ref);
+		Else	
+			Message("SO Prepayment "+NamesOfAppliedSOPrepayments+" was applied. Was created " + AuxCashReceipt.Ref);
+		EndIf;	
+	Except
+		Msg = ErrorDescription();
+		Message("Error occurred on applying SO prepayments for this sales invoice: " + Msg);
+	EndTry;
+	//SelectionDetailRecords = QueryResult.Select();
+	//
+	//While SelectionDetailRecords.Next() Do
+	//	
+	//EndDo;
+
+	
+EndProcedure	
 
 //------------------------------------------------------------------------------
 // Document fill check processing
@@ -902,176 +1091,6 @@ Function Query_OrdersStatuses(TablesList)
 	|	AND LineItems.Order <> VALUE(Document.SalesOrder.EmptyRef)
 	|ORDER BY
 	|	Order";
-	
-	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
-	
-EndFunction
-
-// Query for document data.
-Function Query_OrdersRegistered(TablesList)
-	
-	// Add OrdersRegistered table to document structure.
-	TablesList.Insert("Table_OrdersRegistered", TablesList.Count());
-	
-	// Collect orders registered data.
-	QueryText =
-	"SELECT
-	// ------------------------------------------------------
-	// Standard attributes
-	|	LineItems.Ref                         AS Recorder,
-	|	LineItems.Ref.Date                    AS Period,
-	|	LineItems.LineNumber                  AS LineNumber,
-	|	VALUE(AccumulationRecordType.Receipt) AS RecordType,
-	|	True                                  AS Active,
-	// ------------------------------------------------------
-	// Dimensions
-	|	LineItems.Ref.Company                 AS Company,
-	|	LineItems.Order                       AS Order,
-	|	LineItems.Shipment                    AS Shipment,
-	|	LineItems.Product                     AS Product,
-	|	LineItems.Unit                        AS Unit,
-	|	LineItems.Location                    AS Location,
-	|	LineItems.DeliveryDate                AS DeliveryDate,
-	|	LineItems.Project                     AS Project,
-	|	LineItems.Class                       AS Class,
-	// ------------------------------------------------------
-	// Resources
-	|	0                                     AS Quantity,
-	|	CASE WHEN LineItems.Shipment <> VALUE(Document.Shipment.EmptyRef)
-	|        THEN 0
-	|	     WHEN LineItems.Product.Type = VALUE(Enum.InventoryTypes.Inventory)
-	|	     THEN CASE WHEN LineItems.QtyUnits - 
-	|	                    CASE WHEN OrdersRegisteredBalance.Shipped - OrdersRegisteredBalance.Invoiced > 0
-	|	                         THEN OrdersRegisteredBalance.Shipped - OrdersRegisteredBalance.Invoiced
-	|	                         ELSE 0 END > 0
-	|	               THEN LineItems.QtyUnits - 
-	|	                    CASE WHEN OrdersRegisteredBalance.Shipped - OrdersRegisteredBalance.Invoiced > 0
-	|	                         THEN OrdersRegisteredBalance.Shipped - OrdersRegisteredBalance.Invoiced
-	|	                         ELSE 0 END
-	|	               ELSE 0 END
-	|	     ELSE 0 END                       AS Shipped,
-	|	0                                     AS ShippedShipment,
-	|	LineItems.QtyUnits                    AS Invoiced
-	// ------------------------------------------------------
-	// Attributes
-	// ------------------------------------------------------
-	|FROM
-	|	Document.SalesInvoice.LineItems AS LineItems
-	|	LEFT JOIN Table_OrdersRegistered_Balance AS OrdersRegisteredBalance
-	|		ON  OrdersRegisteredBalance.Company      = LineItems.Ref.Company
-	|		AND OrdersRegisteredBalance.Order        = LineItems.Order
-	|		AND OrdersRegisteredBalance.Shipment     = LineItems.Shipment
-	|		AND OrdersRegisteredBalance.Product      = LineItems.Product
-	|		AND OrdersRegisteredBalance.Unit         = LineItems.Unit
-	|		AND OrdersRegisteredBalance.Location     = LineItems.Location
-	|		AND OrdersRegisteredBalance.DeliveryDate = LineItems.DeliveryDate
-	|		AND OrdersRegisteredBalance.Project      = LineItems.Project
-	|		AND OrdersRegisteredBalance.Class        = LineItems.Class
-	|WHERE
-	|	LineItems.Ref = &Ref
-	|	AND LineItems.Order <> VALUE(Document.SalesOrder.EmptyRef)
-	|ORDER BY
-	|	LineNumber";
-	
-	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
-	
-EndFunction
-
-// Query for dimensions lock data.
-Function Query_OrdersRegistered_Lock(TablesList)
-	
-	// Add OrdersRegistered - Lock table to locks structure.
-	TablesList.Insert("AccumulationRegister_OrdersRegistered", TablesList.Count());
-	
-	// Collect dimensions for orders registered locking.
-	QueryText = 
-	"SELECT DISTINCT
-	// ------------------------------------------------------
-	// Dimensions
-	|	&Company                              AS Company,
-	|	LineItems.Order                       AS Order,
-	|	LineItems.Product                     AS Product,
-	|	LineItems.Unit                        AS Unit
-	// ------------------------------------------------------
-	|FROM
-	|	Table_LineItems AS LineItems
-	|WHERE
-	|	LineItems.Order <> VALUE(Document.SalesOrder.EmptyRef)";
-	
-	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
-	
-EndFunction
-
-// Query for balances data.
-Function Query_OrdersRegistered_Balance(TablesList)
-	
-	// Add OrdersRegistered - Balances table to balances structure.
-	TablesList.Insert("Table_OrdersRegistered_Balance", TablesList.Count());
-	
-	// Collect orders registered balances.
-	QueryText =
-	"SELECT
-	// ------------------------------------------------------
-	// Dimensions
-	|	OrdersRegisteredBalance.Company         		 AS Company,
-	|	OrdersRegisteredBalance.Order           		 AS Order,
-	|	OrdersRegisteredBalance.Shipment        		 AS Shipment,
-	|	OrdersRegisteredBalance.Product         		 AS Product,
-	|	OrdersRegisteredBalance.Unit            		 AS Unit,
-	|	OrdersRegisteredBalance.Location        		 AS Location,
-	|	OrdersRegisteredBalance.DeliveryDate    		 AS DeliveryDate,
-	|	OrdersRegisteredBalance.Project         		 AS Project,
-	|	OrdersRegisteredBalance.Class           		 AS Class,
-	// ------------------------------------------------------
-	// Resources
-	|	OrdersRegisteredBalance.QuantityBalance 		 AS Quantity,
-	|	OrdersRegisteredBalance.ShippedBalance   		 AS Shipped,
-	|	OrdersRegisteredBalance.ShippedShipmentBalance   AS ShippedShipment,
-	|	OrdersRegisteredBalance.InvoicedBalance 		 AS Invoiced
-	// ------------------------------------------------------
-	|FROM
-	|	AccumulationRegister.OrdersRegistered.Balance(&PointInTime,
-	|		(Company, Order) IN
-	|		(SELECT DISTINCT &Company, LineItems.Order // Requred for proper order closing
-	|		 FROM Table_LineItems AS LineItems)) AS OrdersRegisteredBalance";
-	
-	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
-	
-EndFunction
-
-// Query for balances data.
-Function Query_OrdersRegisteredShipment_Balance(TablesList)
-	
-	// Add OrdersRegisteredShipment - Balances table to balances structure.
-	TablesList.Insert("Table_OrdersRegisteredShipment_Balance", TablesList.Count());
-	
-	// Collect orders dispatched balances.
-	QueryText =
-	"SELECT
-	// ------------------------------------------------------
-	// Dimensions
-	|	OrdersRegisteredBalance.Company            		AS Company,
-	|	VALUE(Document.SalesOrder.EmptyRef)        		AS Order,
-	|	OrdersRegisteredBalance.Shipment           		AS Shipment,
-	|	OrdersRegisteredBalance.Product            		AS Product,
-	|	OrdersRegisteredBalance.Unit              	 	AS Unit,
-	|	OrdersRegisteredBalance.Location           		AS Location,
-	|	OrdersRegisteredBalance.DeliveryDate       		AS DeliveryDate,
-	|	OrdersRegisteredBalance.Project            		AS Project,
-	|	OrdersRegisteredBalance.Class              		AS Class,
-	// ------------------------------------------------------
-	// Resources
-	|	OrdersRegisteredBalance.QuantityBalance    		AS Quantity,
-	|	OrdersRegisteredBalance.ShippedBalance    		AS Shipped,
-	|	OrdersRegisteredBalance.ShippedShipmentBalance  AS ShippedShipment,
-	|	OrdersRegisteredBalance.InvoicedBalance    		AS Invoiced
-	// ------------------------------------------------------
-	|FROM
-	|	AccumulationRegister.OrdersRegistered.Balance(&PointInTime,
-    |       (Company, Shipment) IN
-	|		(SELECT DISTINCT &Company, LineItems.Shipment // Requred for proper item Receipt closing
-	|		 FROM Table_LineItems AS LineItems
-	|        WHERE LineItems.Shipment <> VALUE(Document.Shipment.EmptyRef))) AS OrdersRegisteredBalance";
 	
 	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
 	
@@ -2435,80 +2454,631 @@ Function Query_GeneralJournal(TablesList)
 	
 EndFunction
 
+//--//GJ++
+
 // Query for document data.
-Function Query_CashFlowData(TablesList)
+Function Query_GeneralJournalAnalyticsDimensions_Accounts_Income(TablesList)
 	
-	// Add CashFlowData table to document structure.
-	TablesList.Insert("Table_CashFlowData", TablesList.Count());
+	// Add GeneralJournalAnalyticsDimensions income accounts table to document structure.
+	TablesList.Insert("Table_GeneralJournalAnalyticsDimensions_Accounts_Income", TablesList.Count());
 	
-	// Collect cash flow data.
+	// Collect accounting data.
 	QueryText =
-	"SELECT // Exp: Income
-	// ------------------------------------------------------
-	// Standard attributes
-	|	SalesInvoice.Ref                      AS Recorder,
-	|	SalesInvoice.Date                     AS Period,
-	|	0                                     AS LineNumber,
-	|	VALUE(AccumulationRecordType.Expense) AS RecordType,
-	|	True                                  AS Active,
+	"SELECT // Income Dimensions accounts selection
 	// ------------------------------------------------------
 	// Dimensions
-	|	Income.IncomeAccount                  AS Account,
-	|	SalesInvoice.Company                  AS Company,
-	|	SalesInvoice.Ref                      AS Document,
-	|	SalesInvoice.SalesPerson              AS SalesPerson,
+	|	Accounts.IncomeAccount                AS IncomeAccount,
+	|	Accounts.Class                        AS Class,
+	|	Accounts.Project                      AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	SUM(Accounts.Amount)                  AS Amount
+	// ------------------------------------------------------
+	|INTO
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_Income
+	|FROM
+	|	Table_GeneralJournal_LineItems AS Accounts
+	|GROUP BY
+	|	Accounts.IncomeAccount,
+	|	Accounts.Class,
+	|	Accounts.Project";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_GeneralJournalAnalyticsDimensions_Accounts_Income_Difference_Amount(TablesList)
+	
+	// Add GeneralJournalAnalyticsDimensions difference amount table to document structure.
+	TablesList.Insert("Table_GeneralJournalAnalyticsDimensions_Accounts_Income_Difference_Amount", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // Income accounts selection
+	// ------------------------------------------------------
+	// Dimensions
+	|	IncomeDimensions.IncomeAccount        AS IncomeAccount,
 	// ------------------------------------------------------
 	// Resources
 	|	CAST( // Format(Amount * ExchangeRate, ""ND=17; NFD=2"")
-	|		Income.Amount *
+	|		IncomeDimensions.Amount *
 	|		CASE WHEN SalesInvoice.ExchangeRate > 0
 	|			 THEN SalesInvoice.ExchangeRate
 	|			 ELSE 1 END
-	|		AS NUMBER (17, 2))                AS AmountRC,
+	|		AS NUMBER (17, 2))                AS Amount
 	// ------------------------------------------------------
-	// Attributes
-	|	NULL                                  AS PaymentMethod
-	// ------------------------------------------------------
+	|INTO
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_Income_Difference_Amount
 	|FROM
-	|	Table_GeneralJournal_Accounts_Income AS Income
+	|	Table_GeneralJournal_Accounts_Income AS IncomeDimensions
 	|	LEFT JOIN Document.SalesInvoice AS SalesInvoice
 	|		ON True
 	|WHERE
 	|	SalesInvoice.Ref = &Ref
 	|	AND // Amount > 0
-	|		Income.Amount > 0
+	|		IncomeDimensions.Amount > 0
 	|
 	|UNION ALL
 	|
-	|SELECT // Exp: Discount
+	|SELECT // Income Dimensions accounts selection
+	// ------------------------------------------------------
+	// Dimensions
+	|	IncomeDimensions.IncomeAccount        AS IncomeAccount,
+	// ------------------------------------------------------
+	// Resources
+	|	CAST( // Format(Amount * ExchangeRate, ""ND=17; NFD=2"")
+	|		IncomeDimensions.Amount *
+	|		CASE WHEN SalesInvoice.ExchangeRate > 0
+	|			 THEN SalesInvoice.ExchangeRate
+	|			 ELSE 1 END
+	|		AS NUMBER (17, 2)) * -1           AS Amount
+	// ------------------------------------------------------
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_Income AS IncomeDimensions
+	|	LEFT JOIN Document.SalesInvoice AS SalesInvoice
+	|		ON True
+	|WHERE
+	|	SalesInvoice.Ref = &Ref
+	|	AND // Amount > 0
+	|		IncomeDimensions.Amount > 0";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_GeneralJournalAnalyticsDimensions_Accounts_Income_Difference(TablesList)
+	
+	// Add GeneralJournalAnalyticsDimensions difference table to document structure.
+	TablesList.Insert("Table_GeneralJournalAnalyticsDimensions_Accounts_Income_Difference", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // Dimensions difference selection
+	// ------------------------------------------------------
+	// Dimensions
+	|	DimensionsDifference.IncomeAccount         AS IncomeAccount,
+	// ------------------------------------------------------
+	// Resources
+	|	SUM(DimensionsDifference.Amount)           AS Amount
+	// ------------------------------------------------------
+	|INTO
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_Income_Difference
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_Income_Difference_Amount AS DimensionsDifference
+	|GROUP BY
+	|	DimensionsDifference.IncomeAccount";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_GeneralJournalAnalyticsDimensions_Accounts_COGS_Quantity(TablesList)
+	
+	// Add GeneralJournalAnalyticsDimensions COGS accounts table to document structure.
+	TablesList.Insert("Table_GeneralJournalAnalyticsDimensions_Accounts_COGS_Quantity", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // COGS accounts selection
+	// ------------------------------------------------------
+	// Dimensions
+	|	Accounts.COGSAccount                  AS COGSAccount,
+	|	Accounts.Product                      AS Product,
+	|	Accounts.Class                        AS Class,
+	|	Accounts.Project                      AS Project,
+	|	Accounts.Location                     AS Location,
+	|	Accounts.Type                         AS Type,
+	// ------------------------------------------------------
+	// Resources
+	|	SUM(Accounts.Quantity)                AS Quantity
+	// ------------------------------------------------------
+	|INTO
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_COGS_Quantity
+	|FROM
+	|	Table_GeneralJournal_LineItems AS Accounts
+	|WHERE
+	|	Accounts.HasShipment = FALSE
+	|GROUP BY
+	|	Accounts.COGSAccount,
+	|	Accounts.Product,
+	|	Accounts.Class,
+	|	Accounts.Project,
+	|	Accounts.Location,
+	|	Accounts.Type";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_GeneralJournalAnalyticsDimensions_Accounts_COGS_Amount(TablesList)
+	
+	// Add GeneralJournalAnalyticsDimensions COGS accounts table to document structure.
+	TablesList.Insert("Table_GeneralJournalAnalyticsDimensions_Accounts_COGS_Amount", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // FIFO
+	// ------------------------------------------------------
+	// Dimensions
+	|	Accounts.COGSAccount                  AS COGSAccount,
+	|	Accounts.Class                        AS Class,
+	|	Accounts.Project                      AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	CASE
+	|		WHEN ISNULL(ProductCost.Quantity, 0) <= Accounts.Quantity
+	|		// The product written off completely.
+	|		THEN ISNULL(ProductCost.Amount, 0)
+	|		// The product written off partially.
+	|		ELSE CAST ( // Format(Amount / QuantityExpense / Quantity, ""ND=17; NFD=2"")
+	|			ProductCost.Amount * Accounts.Quantity / ProductCost.Quantity
+	|			AS NUMBER (17, 2))
+	|	END                                   AS Amount
+	// ------------------------------------------------------
+	|INTO
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_COGS_Amount
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_COGS_Quantity AS Accounts
+	|	LEFT JOIN Table_GeneralJournal_ProductCost_Total AS ProductCost
+	|		ON  ProductCost.Product  = Accounts.Product
+	|		AND ProductCost.Location = Accounts.Location
+	|WHERE
+	|	Accounts.Type = VALUE(Enum.InventoryCosting.FIFO)
+	|
+	|UNION ALL
+	|
+	|SELECT // WeightedAverage
+	// ------------------------------------------------------
+	// Dimensions
+	|	Accounts.COGSAccount                  AS COGSAccount,
+	|	Accounts.Class                        AS Class,
+	|	Accounts.Project                      AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	CASE
+	|		WHEN ISNULL(ProductCost.Quantity, 0) <= Accounts.Quantity
+	|		// The product written off completely.
+	|		THEN ISNULL(ProductCost.Amount, 0)
+	|		// The product written off partially.
+	|		ELSE CAST ( // Format(Amount / QuantityExpense / Quantity, ""ND=17; NFD=2"")
+	|			ProductCost.Amount * Accounts.Quantity / ProductCost.Quantity
+	|			AS NUMBER (17, 2))
+	|	END                                   AS Amount
+	// ------------------------------------------------------
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_COGS_Quantity AS Accounts
+	|	LEFT JOIN Table_GeneralJournal_ProductCost_Total AS ProductCost
+	|		ON  ProductCost.Product  = Accounts.Product
+	|		AND ProductCost.Location = VALUE(Catalog.Locations.EmptyRef)
+	|WHERE
+	|	Accounts.Type = VALUE(Enum.InventoryCosting.WeightedAverage)";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_GeneralJournalAnalyticsDimensions_Accounts_COGS(TablesList)
+	
+	// Add GeneralJournalAnalyticsDimensions COGS accounts table to document structure.
+	TablesList.Insert("Table_GeneralJournalAnalyticsDimensions_Accounts_COGS", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // COGS accounts selection
+	// ------------------------------------------------------
+	// Dimensions
+	|	Accounts.COGSAccount                  AS COGSAccount,
+	|	Accounts.Class                        AS Class,
+	|	Accounts.Project                      AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	SUM(Accounts.Amount)                  AS Amount
+	// ------------------------------------------------------
+	|INTO
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_COGS
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_COGS_Amount AS Accounts
+	|GROUP BY
+	|	Accounts.COGSAccount,
+	|	Accounts.Class,
+	|	Accounts.Project";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_GeneralJournalAnalyticsDimensions_Accounts_COGS_Difference_Amount(TablesList)
+	
+	// Add GeneralJournalAnalyticsDimensions difference COGS amount table to document structure.
+	TablesList.Insert("Table_GeneralJournalAnalyticsDimensions_Accounts_COGS_Difference_Amount", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // COGS accounts selection
+	// ------------------------------------------------------
+	// Dimensions
+	|	COGS_Dimensions.COGSAccount                      AS COGSAccount,
+	// ------------------------------------------------------
+	// Resources
+	|	COGS_Dimensions.Amount                           AS Amount
+	// ------------------------------------------------------
+	|INTO
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_COGS_Difference_Amount
+	|FROM
+	|	Table_GeneralJournal_Accounts_COGS AS COGS_Dimensions
+	|	LEFT JOIN Document.SalesInvoice AS SalesInvoice
+	|		ON True
+	|WHERE
+	|	SalesInvoice.Ref = &Ref
+	|	AND // Amount > 0
+	|		COGS_Dimensions.Amount > 0
+	|
+	|UNION ALL
+	|
+	|SELECT // COGS Dimensions accounts selection
+	// ------------------------------------------------------
+	// Dimensions
+	|	COGS_Dimensions.COGSAccount                      AS COGSAccount,
+	// ------------------------------------------------------
+	// Resources
+	|	COGS_Dimensions.Amount * -1                      AS Amount
+	// ------------------------------------------------------
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_COGS AS COGS_Dimensions
+	|	LEFT JOIN Document.SalesInvoice AS SalesInvoice
+	|		ON True
+	|WHERE
+	|	SalesInvoice.Ref = &Ref
+	|	AND // Amount > 0
+	|		COGS_Dimensions.Amount > 0";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_GeneralJournalAnalyticsDimensions_Accounts_COGS_Difference(TablesList)
+	
+	// Add GeneralJournalAnalyticsDimensions difference COGS table to document structure.
+	TablesList.Insert("Table_GeneralJournalAnalyticsDimensions_Accounts_COGS_Difference", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // Dimensions difference selection
+	// ------------------------------------------------------
+	// Dimensions
+	|	DimensionsDifference.COGSAccount           AS COGSAccount,
+	// ------------------------------------------------------
+	// Resources
+	|	SUM(DimensionsDifference.Amount)           AS Amount
+	// ------------------------------------------------------
+	|INTO
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_COGS_Difference
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_COGS_Difference_Amount AS DimensionsDifference
+	|GROUP BY
+	|	DimensionsDifference.COGSAccount";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp_Quantity(TablesList)
+	
+	// Add GeneralJournalAnalyticsDimensions InvOrExp accounts table to document structure.
+	TablesList.Insert("Table_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp_Quantity", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // InvOrExp accounts selection
+	// ------------------------------------------------------
+	// Dimensions
+	|	Accounts.InvOrExpAccount              AS InvOrExpAccount,
+	|	Accounts.Product                      AS Product,
+	|   Accounts.Class                        AS Class,
+	|   Accounts.Project                      AS Project,
+	|	Accounts.Location                     AS Location,
+	|	Accounts.Type                         AS Type,
+	// ------------------------------------------------------
+	// Resources
+	|	SUM(Accounts.Quantity)                AS Quantity
+	// ------------------------------------------------------
+	|INTO
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp_Quantity
+	|FROM
+	|	Table_GeneralJournal_LineItems AS Accounts
+	|WHERE
+	|	Accounts.HasShipment = FALSE
+	|GROUP BY
+	|	Accounts.InvOrExpAccount,
+	|	Accounts.Product,
+	|	Accounts.Class,
+	|	Accounts.Project,
+	|	Accounts.Location,
+	|	Accounts.Type";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp_Amount(TablesList)
+	
+	// Add GeneralJournalAnalyticsDimensions InvOrExp accounts table to document structure.
+	TablesList.Insert("Table_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp_Amount", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // FIFO
+	// ------------------------------------------------------
+	// Dimensions
+	|	Accounts.InvOrExpAccount              AS InvOrExpAccount,
+	|	Accounts.Class                        AS Class,
+	|	Accounts.Project                      AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	CASE
+	|		WHEN ISNULL(ProductCost.Quantity, 0) <= Accounts.Quantity
+	|		// The product written off completely.
+	|		THEN ISNULL(ProductCost.Amount, 0)
+	|		// The product written off partially.
+	|		ELSE CAST ( // Format(Amount / QuantityExpense / Quantity, ""ND=17; NFD=2"")
+	|			ProductCost.Amount * Accounts.Quantity / ProductCost.Quantity
+	|			AS NUMBER (17, 2))
+	|	END                                   AS Amount
+	// ------------------------------------------------------
+	|INTO
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp_Amount
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp_Quantity AS Accounts
+	|	LEFT JOIN Table_GeneralJournal_ProductCost_Total AS ProductCost
+	|		ON  ProductCost.Product  = Accounts.Product
+	|		AND ProductCost.Location = Accounts.Location
+	|WHERE
+	|	Accounts.Type = VALUE(Enum.InventoryCosting.FIFO)
+	|
+	|UNION ALL
+	|
+	|SELECT // WeightedAverage
+	// ------------------------------------------------------
+	// Dimensions
+	|	Accounts.InvOrExpAccount              AS InvOrExpAccount,
+	|	Accounts.Class                        AS Class,
+	|	Accounts.Project                      AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	CASE
+	|		WHEN ISNULL(ProductCost.Quantity, 0) <= Accounts.Quantity
+	|		// The product written off completely.
+	|		THEN ISNULL(ProductCost.Amount, 0)
+	|		// The product written off partially.
+	|		ELSE CAST ( // Format(Amount / QuantityExpense / Quantity, ""ND=17; NFD=2"")
+	|			ProductCost.Amount * Accounts.Quantity / ProductCost.Quantity
+	|			AS NUMBER (17, 2))
+	|	END                                   AS Amount
+	// ------------------------------------------------------
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp_Quantity AS Accounts
+	|	LEFT JOIN Table_GeneralJournal_ProductCost_Total AS ProductCost
+	|		ON  ProductCost.Product  = Accounts.Product
+	|		AND ProductCost.Location = VALUE(Catalog.Locations.EmptyRef)
+	|WHERE
+	|	Accounts.Type = VALUE(Enum.InventoryCosting.WeightedAverage)";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp(TablesList)
+	
+	// Add GeneralJournalAnalyticsDimensions InvOrExp accounts table to document structure.
+	TablesList.Insert("Table_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // InvOrExp accounts selection
+	// ------------------------------------------------------
+	// Dimensions
+	|	Accounts.InvOrExpAccount              AS InvOrExpAccount,
+	|	Accounts.Class                        AS Class,
+	|	Accounts.Project                      AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	SUM(Accounts.Amount)                  AS Amount
+	// ------------------------------------------------------
+	|INTO
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp_Amount AS Accounts
+	|GROUP BY
+	|	Accounts.InvOrExpAccount,
+	|   Accounts.Class,
+	|   Accounts.Project";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp_Difference_Amount(TablesList)
+	
+	// Add GeneralJournalAnalyticsDimensions difference InvOrExp amount table to document structure.
+	TablesList.Insert("Table_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp_Difference_Amount", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // InvOrExp accounts selection
+	// ------------------------------------------------------
+	// Dimensions
+	|	InvOrExp_Dimensions.InvOrExpAccount                  AS InvOrExpAccount,
+	// ------------------------------------------------------
+	// Resources
+	|	InvOrExp_Dimensions.Amount                           AS Amount
+	// ------------------------------------------------------
+	|INTO
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp_Difference_Amount
+	|FROM
+	|	Table_GeneralJournal_Accounts_InvOrExp AS InvOrExp_Dimensions
+	|	LEFT JOIN Document.SalesInvoice AS SalesInvoice
+	|		ON True
+	|WHERE
+	|	SalesInvoice.Ref = &Ref
+	|	AND // Amount > 0
+	|		InvOrExp_Dimensions.Amount > 0
+	|
+	|UNION ALL
+	|
+	|SELECT // InvOrExp Dimensions accounts selection
+	// ------------------------------------------------------
+	// Dimensions
+	|	InvOrExp_Dimensions.InvOrExpAccount                  AS InvOrExpAccount,
+	// ------------------------------------------------------
+	// Resources
+	|	InvOrExp_Dimensions.Amount * -1                      AS Amount
+	// ------------------------------------------------------
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp AS InvOrExp_Dimensions
+	|	LEFT JOIN Document.SalesInvoice AS SalesInvoice
+	|		ON True
+	|WHERE
+	|	SalesInvoice.Ref = &Ref
+	|	AND // Amount > 0
+	|		InvOrExp_Dimensions.Amount > 0";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp_Difference(TablesList)
+	
+	// Add GeneralJournalAnalyticsDimensions difference InvOrExp table to document structure.
+	TablesList.Insert("Table_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp_Difference", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // Dimensions difference selection
+	// ------------------------------------------------------
+	// Dimensions
+	|	DimensionsDifference.InvOrExpAccount       AS InvOrExpAccount,
+	// ------------------------------------------------------
+	// Resources
+	|	SUM(DimensionsDifference.Amount)           AS Amount
+	// ------------------------------------------------------
+	|INTO
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp_Difference
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp_Difference_Amount AS DimensionsDifference
+	|GROUP BY
+	|	DimensionsDifference.InvOrExpAccount";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_GeneralJournalAnalyticsDimensions_Transactions(TablesList)
+	
+	// Add GeneralJournalAnalyticsDimensions_Transactions table to document structure.
+	TablesList.Insert("Table_GeneralJournalAnalyticsDimensions_Transactions", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // Receipt: Accounts receivable
 	// ------------------------------------------------------
 	// Standard attributes
 	|	SalesInvoice.Ref                      AS Recorder,
 	|	SalesInvoice.Date                     AS Period,
 	|	0                                     AS LineNumber,
-	|	VALUE(AccumulationRecordType.Expense) AS RecordType,
+	|	VALUE(AccumulationRecordType.Receipt) AS RecordType,
 	|	True                                  AS Active,
 	// ------------------------------------------------------
+	// Accounting attributes
+	|	SalesInvoice.ARAccount                AS Account,
+	// ------------------------------------------------------
 	// Dimensions
+	|	SalesInvoice.Company                  AS Company,
+	|	NULL                                  AS Class,
+	|	NULL                                  AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	SalesInvoice.DocumentTotalRC          AS AmountRC,
+	// ------------------------------------------------------
+	// Attributes
+	|	1                                     AS JournalEntryIntNum,
+	|	True                                  AS JournalEntryMainRec
+	// ------------------------------------------------------
+	|INTO Table_GeneralJournalAnalyticsDimensions_Transactions
+	|FROM
+	|	Document.SalesInvoice AS SalesInvoice
+	|WHERE
+	|	SalesInvoice.Ref = &Ref
+	|	AND // Amount > 0
+	|		(SalesInvoice.DocumentTotal > 0
+	|	  OR SalesInvoice.DocumentTotalRC > 0)
+	|
+	|UNION ALL
+	|
+	|SELECT // Receipt: Discount
+	// ------------------------------------------------------
+	// Standard attributes
+	|	SalesInvoice.Ref                      AS Recorder,
+	|	SalesInvoice.Date                     AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccumulationRecordType.Receipt) AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
 	|	CASE
 	|		WHEN ISNULL(Constants.DiscountsAccount, VALUE(ChartOfAccounts.ChartOfAccounts.EmptyRef)) = VALUE(ChartOfAccounts.ChartOfAccounts.EmptyRef)
 	|		THEN Constants.ExpenseAccount     // Default expense account
 	|		ELSE Constants.DiscountsAccount   // Default discount account
 	|	END                                   AS Account,
+	// ------------------------------------------------------
+	// Dimensions
 	|	SalesInvoice.Company                  AS Company,
-	|	SalesInvoice.Ref                      AS Document,
-	|	SalesInvoice.SalesPerson              AS SalesPerson,
+	|	NULL                                  AS Class,
+	|	NULL                                  AS Project,
 	// ------------------------------------------------------
 	// Resources
-	|	CAST( // Format(Discount * ExchangeRate, ""ND=17; NFD=2"")
-	|		SalesInvoice.Discount *
-	|		CASE WHEN SalesInvoice.ExchangeRate > 0
-	|			 THEN SalesInvoice.ExchangeRate
-	|			 ELSE 1 END
-	|		AS NUMBER (17, 2))                AS AmountRC,
+	|	CAST( // Format(-Discount * ExchangeRate, ""ND=17; NFD=2"")
+	|		-SalesInvoice.Discount *
+	|		 CASE WHEN SalesInvoice.ExchangeRate > 0
+	|			  THEN SalesInvoice.ExchangeRate
+	|			  ELSE 1 END
+	|		 AS NUMBER (17, 2))               AS AmountRC,
 	// ------------------------------------------------------
 	// Attributes
-	|	NULL                                  AS PaymentMethod
+	|	1                                     AS JournalEntryIntNum,
+	|	False                                 AS JournalEntryMainRec
 	// ------------------------------------------------------
 	|FROM
 	|	Document.SalesInvoice AS SalesInvoice
@@ -2521,7 +3091,7 @@ Function Query_CashFlowData(TablesList)
 	|
 	|UNION ALL
 	|
-	|SELECT // Exp: Shipping
+	|SELECT // Expense: Shipping
 	// ------------------------------------------------------
 	// Standard attributes
 	|	SalesInvoice.Ref                      AS Recorder,
@@ -2530,15 +3100,17 @@ Function Query_CashFlowData(TablesList)
 	|	VALUE(AccumulationRecordType.Expense) AS RecordType,
 	|	True                                  AS Active,
 	// ------------------------------------------------------
-	// Dimensions
+	// Accounting attributes
 	|	CASE
 	|		WHEN ISNULL(Constants.ShippingExpenseAccount, VALUE(ChartOfAccounts.ChartOfAccounts.EmptyRef)) = VALUE(ChartOfAccounts.ChartOfAccounts.EmptyRef)
 	|		THEN Constants.IncomeAccount           // Default income account
 	|		ELSE Constants.ShippingExpenseAccount  // Default shipping expense account
 	|	END                                   AS Account,
+	// ------------------------------------------------------
+	// Dimensions
 	|	SalesInvoice.Company                  AS Company,
-	|	SalesInvoice.Ref                      AS Document,
-	|	SalesInvoice.SalesPerson              AS SalesPerson,
+	|	NULL                                  AS Class,
+	|	NULL                                  AS Project,
 	// ------------------------------------------------------
 	// Resources
 	|	CAST( // Format(Shipping * ExchangeRate, ""ND=17; NFD=2"")
@@ -2549,7 +3121,8 @@ Function Query_CashFlowData(TablesList)
 	|		AS NUMBER (17, 2))                AS AmountRC,
 	// ------------------------------------------------------
 	// Attributes
-	|	NULL                                  AS PaymentMethod
+	|	1                                     AS JournalEntryIntNum,
+	|	False                                 AS JournalEntryMainRec
 	// ------------------------------------------------------
 	|FROM
 	|	Document.SalesInvoice AS SalesInvoice
@@ -2562,7 +3135,7 @@ Function Query_CashFlowData(TablesList)
 	|
 	|UNION ALL
 	|
-	|SELECT // Exp: Sales tax
+	|SELECT // Expense: Sales tax
 	// ------------------------------------------------------
 	// Standard attributes
 	|	SalesInvoice.Ref                      AS Recorder,
@@ -2571,15 +3144,17 @@ Function Query_CashFlowData(TablesList)
 	|	VALUE(AccumulationRecordType.Expense) AS RecordType,
 	|	True                                  AS Active,
 	// ------------------------------------------------------
-	// Dimensions
+	// Accounting attributes
 	|	CASE
 	|		WHEN ISNULL(Constants.TaxPayableAccount, VALUE(ChartOfAccounts.ChartOfAccounts.EmptyRef)) = VALUE(ChartOfAccounts.ChartOfAccounts.EmptyRef)
 	|		THEN Constants.IncomeAccount      // Default income account
 	|		ELSE Constants.TaxPayableAccount  // Default tax payable account
 	|	END                                   AS Account,
+	// ------------------------------------------------------
+	// Dimensions
 	|	SalesInvoice.Company                  AS Company,
-	|	SalesInvoice.Ref                      AS Document,
-	|	SalesInvoice.SalesPerson              AS SalesPerson,
+	|	NULL                                  AS Class,
+	|	NULL                                  AS Project,
 	// ------------------------------------------------------
 	// Resources
 	|	CAST( // Format(SalesTax * ExchangeRate, ""ND=17; NFD=2"")
@@ -2590,7 +3165,8 @@ Function Query_CashFlowData(TablesList)
 	|		AS NUMBER (17, 2))                AS AmountRC,
 	// ------------------------------------------------------
 	// Attributes
-	|	NULL                                  AS PaymentMethod
+	|	1                                     AS JournalEntryIntNum,
+	|	False                                 AS JournalEntryMainRec
 	// ------------------------------------------------------
 	|FROM
 	|	Document.SalesInvoice AS SalesInvoice
@@ -2599,11 +3175,423 @@ Function Query_CashFlowData(TablesList)
 	|WHERE
 	|	SalesInvoice.Ref = &Ref
 	|	AND // SalesTax > 0
-	|		SalesInvoice.SalesTax > 0";
+	|		SalesInvoice.SalesTax > 0
+	|
+	|UNION ALL
+	|
+	|SELECT // Expense: Income
+	// ------------------------------------------------------
+	// Standard attributes
+	|	SalesInvoice.Ref                      AS Recorder,
+	|	SalesInvoice.Date                     AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccumulationRecordType.Expense) AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	Income.IncomeAccount                  AS Account,
+	// ------------------------------------------------------
+	// Dimensions
+	|	SalesInvoice.Company                  AS Company,
+	|	Income.Class                          AS Class,
+	|	Income.Project                        AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	CAST( // Format(Amount * ExchangeRate, ""ND=17; NFD=2"")
+	|		Income.Amount *
+	|		CASE WHEN SalesInvoice.ExchangeRate > 0
+	|			 THEN SalesInvoice.ExchangeRate
+	|			 ELSE 1 END
+	|		AS NUMBER (17, 2))                AS AmountRC,
+	// ------------------------------------------------------
+	// Attributes
+	|	1                                     AS JournalEntryIntNum,
+	|	False                                 AS JournalEntryMainRec
+	// ------------------------------------------------------
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_Income	AS Income
+	|	LEFT JOIN Document.SalesInvoice AS SalesInvoice
+	|		ON True
+	|WHERE
+	|	SalesInvoice.Ref = &Ref
+	|	AND // Amount > 0
+	|		Income.Amount > 0
+	|
+	|UNION ALL
+	|
+	|SELECT // Expense: Income (difference)
+	// ------------------------------------------------------
+	// Standard attributes
+	|	SalesInvoice.Ref                      AS Recorder,
+	|	SalesInvoice.Date                     AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccumulationRecordType.Expense) AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	Income.IncomeAccount                  AS Account,
+	// ------------------------------------------------------
+	// Dimensions
+	|	SalesInvoice.Company                  AS Company,
+	|	NULL                                  AS Class,
+	|	NULL                                  AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	Income.Amount                         AS AmountRC,
+	// ------------------------------------------------------
+	// Attributes
+	|	1                                     AS JournalEntryIntNum,
+	|	False                                 AS JournalEntryMainRec
+	// ------------------------------------------------------
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_Income_Difference	AS Income
+	|	LEFT JOIN Document.SalesInvoice AS SalesInvoice
+	|		ON True
+	|WHERE
+	|	SalesInvoice.Ref = &Ref
+	|	AND // Amount <> 0
+	|		Income.Amount <> 0
+	|
+	|UNION ALL
+	|
+	|SELECT // Receipt: COGS
+	// ------------------------------------------------------
+	// Standard attributes
+	|	SalesInvoice.Ref                      AS Recorder,
+	|	SalesInvoice.Date                     AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccumulationRecordType.Receipt) AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	COGS.COGSAccount                      AS Account,
+	// ------------------------------------------------------
+	// Dimensions
+	|	SalesInvoice.Company                  AS Company,
+	|	COGS.Class                            AS Class,
+	|	COGS.Project                          AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	COGS.Amount                           AS AmountRC,
+	// ------------------------------------------------------
+	// Attributes
+	|	2                                     AS JournalEntryIntNum,
+	|	True                                  AS JournalEntryMainRec
+	// ------------------------------------------------------
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_COGS AS COGS
+	|	LEFT JOIN Document.SalesInvoice AS SalesInvoice
+	|		ON True
+	|WHERE
+	|	SalesInvoice.Ref = &Ref
+	|	AND // Amount > 0
+	|		COGS.Amount > 0
+	|
+	|UNION ALL
+	|
+	|SELECT // Receipt: COGS (difference)
+	// ------------------------------------------------------
+	// Standard attributes
+	|	SalesInvoice.Ref                      AS Recorder,
+	|	SalesInvoice.Date                     AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccumulationRecordType.Receipt) AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	COGS.COGSAccount                      AS Account,
+	// ------------------------------------------------------
+	// Dimensions
+	|	SalesInvoice.Company                  AS Company,
+	|	NULL                                  AS Class,
+	|	NULL                                  AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	COGS.Amount                           AS AmountRC,
+	// ------------------------------------------------------
+	// Attributes
+	|	2                                     AS JournalEntryIntNum,
+	|	True                                  AS JournalEntryMainRec
+	// ------------------------------------------------------
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_COGS_Difference AS COGS
+	|	LEFT JOIN Document.SalesInvoice AS SalesInvoice
+	|		ON True
+	|WHERE
+	|	SalesInvoice.Ref = &Ref
+	|	AND // Amount <> 0
+	|		COGS.Amount <> 0
+	|
+	|UNION ALL
+	|
+	|SELECT // Expense: Inventory or Expenses accounts
+	// ------------------------------------------------------
+	// Standard attributes
+	|	SalesInvoice.Ref                      AS Recorder,
+	|	SalesInvoice.Date                     AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccumulationRecordType.Expense) AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	InvOrExp.InvOrExpAccount              AS Account,
+	// ------------------------------------------------------
+	// Dimensions
+	|	SalesInvoice.Company                  AS Company,
+	|	InvOrExp.Class                        AS Class,
+	|	InvOrExp.Project                      AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	InvOrExp.Amount                       AS AmountRC,
+	// ------------------------------------------------------
+	// Attributes
+	|	2                                     AS JournalEntryIntNum,
+	|	False                                 AS JournalEntryMainRec
+	// ------------------------------------------------------
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp AS InvOrExp
+	|	LEFT JOIN Document.SalesInvoice AS SalesInvoice
+	|		ON True
+	|WHERE
+	|	SalesInvoice.Ref = &Ref
+	|	AND // Amount > 0
+	|		InvOrExp.Amount > 0
+	|
+	|UNION ALL
+	|
+	|SELECT // Expense: Inventory or Expenses accounts (difference)
+	// ------------------------------------------------------
+	// Standard attributes
+	|	SalesInvoice.Ref                      AS Recorder,
+	|	SalesInvoice.Date                     AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccumulationRecordType.Expense) AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	InvOrExp.InvOrExpAccount              AS Account,
+	// ------------------------------------------------------
+	// Dimensions
+	|	SalesInvoice.Company                  AS Company,
+	|	NULL                                  AS Class,
+	|	NULL                                  AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	InvOrExp.Amount                       AS AmountRC,
+	// ------------------------------------------------------
+	// Attributes
+	|	2                                     AS JournalEntryIntNum,
+	|	False                                 AS JournalEntryMainRec
+	// ------------------------------------------------------
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp_Difference AS InvOrExp
+	|	LEFT JOIN Document.SalesInvoice AS SalesInvoice
+	|		ON True
+	|WHERE
+	|	SalesInvoice.Ref = &Ref
+	|	AND // Amount <> 0
+	|		InvOrExp.Amount <> 0";
 	
 	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
 	
 EndFunction
+
+// Query for document data.
+Function Query_GeneralJournalAnalyticsDimensions(TablesList)
+	
+	// Add GeneralJournalAnalyticsDimensions table to document structure.
+	TablesList.Insert("Table_GeneralJournalAnalyticsDimensions", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // Transactions
+	// ------------------------------------------------------
+	// Standard attributes
+	|	Transaction.Recorder                  AS Recorder,
+	|	Transaction.Period                    AS Period,
+	|	Transaction.LineNumber                AS LineNumber,
+	|	Transaction.RecordType                AS RecordType,
+	|	Transaction.Active                    AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	Transaction.Account                   AS Account,
+	// ------------------------------------------------------
+	// Dimensions
+	|	Transaction.Company                   AS Company,
+	|	Transaction.Class                     AS Class,
+	|	Transaction.Project                   AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	Transaction.AmountRC                  AS AmountRC,
+	// ------------------------------------------------------
+	// Attributes
+	|	Transaction.JournalEntryIntNum        AS JournalEntryIntNum,
+	|	Transaction.JournalEntryMainRec       AS JournalEntryMainRec
+	// ------------------------------------------------------
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Transactions AS Transaction";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+//--//GJ--
+
+
+// Query for document data.
+Function Query_CashFlowData_Difference_Amount(TablesList)
+	
+	// Add CashFlowData_Difference_Amount table to document structure.
+	TablesList.Insert("Table_CashFlowData_Difference_Amount", TablesList.Count());
+	
+	// Collect cash flow data.
+	QueryText =
+	"SELECT // Difference amount
+	// ------------------------------------------------------
+	// Resources
+	|	CASE
+	|		WHEN Transaction.RecordType = VALUE(AccumulationRecordType.Receipt)
+	|			THEN Transaction.AmountRC                   
+	|		ELSE Transaction.AmountRC * -1
+	|	END                                                  AS AmountRC
+	// ------------------------------------------------------
+	|INTO Table_CashFlowData_Difference_Amount
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Transactions AS Transaction
+	|	LEFT JOIN Constant.TaxPayableAccount AS TaxPayableAccount
+	|		ON True
+	|WHERE
+	|	Transaction.Account.AccountType <> VALUE(Enum.AccountTypes.AccountsReceivable)
+	|	AND Transaction.Account.AccountType <> VALUE(Enum.AccountTypes.AccountsPayable)
+	|	AND Transaction.Account.AccountType <> VALUE(Enum.AccountTypes.Income)
+	|	AND Transaction.Account.AccountType <> VALUE(Enum.AccountTypes.CostOfSales)
+	|	AND Transaction.Account.AccountType <> VALUE(Enum.AccountTypes.Expense)
+	|	AND Transaction.Account.AccountType <> VALUE(Enum.AccountTypes.OtherIncome)
+	|	AND Transaction.Account.AccountType <> VALUE(Enum.AccountTypes.OtherExpense)
+	|	AND Transaction.Account.AccountType <> VALUE(Enum.AccountTypes.IncomeTaxExpense)
+	|	AND Transaction.Account <> TaxPayableAccount.Value";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_CashFlowData_Difference(TablesList)
+	
+	// Add CashFlowData_Difference table to document structure.
+	TablesList.Insert("Table_CashFlowData_Difference", TablesList.Count());
+	
+	// Collect cash flow data.
+	QueryText =
+	"SELECT // Difference
+	// ------------------------------------------------------
+	// Resources
+	|	SUM(Transaction.AmountRC)            AS AmountRC
+	// ------------------------------------------------------
+	|INTO Table_CashFlowData_Difference
+	|FROM
+	|	Table_CashFlowData_Difference_Amount AS Transaction";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_CashFlowData(TablesList)
+	
+	// Add CashFlowData table to document structure.
+	TablesList.Insert("Table_CashFlowData", TablesList.Count());
+	
+	// Collect cash flow data.
+	QueryText =
+	"SELECT // Transactions of Assets
+	// ------------------------------------------------------
+	// Standard attributes
+	|	Transaction.Recorder                  AS Recorder,
+	|	Transaction.Period                    AS Period,
+	|	Transaction.LineNumber                AS LineNumber,
+	|	Transaction.RecordType                AS RecordType,
+	|	Transaction.Active                    AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	Transaction.Account                   AS Account,
+	// ------------------------------------------------------
+	// Dimensions
+	|	Transaction.Company                   AS Company,
+	|	SalesInvoice.Ref                      AS Document,
+	|	SalesInvoice.SalesPerson              AS SalesPerson,
+	|	Transaction.Class                     AS Class,
+	|	Transaction.Project                   AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	Transaction.AmountRC                  AS AmountRC,
+	// ------------------------------------------------------
+	// Attributes
+	|	NULL                                  AS PaymentMethod
+	// ------------------------------------------------------
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Transactions AS Transaction
+	|	LEFT JOIN Document.SalesInvoice AS SalesInvoice
+	|		ON SalesInvoice.Ref = &Ref
+	|	LEFT JOIN Constant.TaxPayableAccount AS TaxPayableAccount
+	|		ON True
+	|WHERE
+	|	Transaction.Account.AccountType <> VALUE(Enum.AccountTypes.AccountsReceivable)
+	|	AND Transaction.Account.AccountType <> VALUE(Enum.AccountTypes.AccountsPayable)
+	|	AND Transaction.Account.AccountType <> VALUE(Enum.AccountTypes.Income)
+	|	AND Transaction.Account.AccountType <> VALUE(Enum.AccountTypes.CostOfSales)
+	|	AND Transaction.Account.AccountType <> VALUE(Enum.AccountTypes.Expense)
+	|	AND Transaction.Account.AccountType <> VALUE(Enum.AccountTypes.OtherIncome)
+	|	AND Transaction.Account.AccountType <> VALUE(Enum.AccountTypes.OtherExpense)
+	|	AND Transaction.Account.AccountType <> VALUE(Enum.AccountTypes.IncomeTaxExpense)
+	|	AND Transaction.Account <> TaxPayableAccount.Value
+	|
+	|UNION ALL
+	|
+	|SELECT // Accounts Receivable (difference)
+	// ------------------------------------------------------
+	// Standard attributes
+	|	SalesInvoice.Ref                      AS Recorder,
+	|	SalesInvoice.Date                     AS Period,
+	|	0                                     AS LineNumber,
+	|	CASE
+	|		WHEN TransactionAR.AmountRC > 0
+	|			THEN VALUE(AccumulationRecordType.Expense)
+	|		ELSE VALUE(AccumulationRecordType.Receipt)
+	|	END                                   AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	SalesInvoice.ARAccount                AS Account,
+	// ------------------------------------------------------
+	// Dimensions
+	|	SalesInvoice.Company                  AS Company,
+	|	SalesInvoice.Ref                      AS Document,
+	|	SalesInvoice.SalesPerson              AS SalesPerson,
+	|	NULL                                  AS Class,
+	|	NULL                                  AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	CASE
+	|		WHEN TransactionAR.AmountRC > 0
+	|			THEN TransactionAR.AmountRC                
+	|		ELSE TransactionAR.AmountRC * -1
+	|	END                                   AS AmountRC,
+	// ------------------------------------------------------
+	// Attributes
+	|	NULL                                  AS PaymentMethod
+	// ------------------------------------------------------
+	|FROM
+	|	Table_CashFlowData_Difference AS TransactionAR
+	|	LEFT JOIN Document.SalesInvoice AS SalesInvoice
+	|		ON SalesInvoice.Ref = &Ref
+	|WHERE
+	|	TransactionAR.AmountRC <> 0";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
 
 // Query for document data.
 Function Query_ProjectData_Accounts_Income(TablesList)
@@ -3204,48 +4192,9 @@ Function Query_SalesTaxOwed(TablesList)
 	|	Document.SalesInvoice.SalesTaxAcrossAgencies AS SalesTax
 	|WHERE
 	|	SalesTax.Ref = &Ref
-	|	AND // Amount > 0
-	|		SalesTax.Amount > 0
 	|	AND SalesTax.Ref.UseAvatax = FALSE
 	|ORDER BY
 	|	SalesTax.LineNumber";
-	
-	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
-	
-EndFunction
-
-// Query for document data.
-Function Query_OrderTransactions(TablesList)
-	
-	// Add OrderTransactions table to document structure.
-	TablesList.Insert("Table_OrderTransactions", TablesList.Count());
-	
-	// Collect orders transactions data.
-	QueryText =
-	"SELECT DISTINCT // Exp: Order Transactions
-	// ------------------------------------------------------
-	// Standard attributes
-	|	LineItems.Ref                         AS Recorder,
-	|	LineItems.Ref.Date                    AS Period,
-	|	0                                     AS LineNumber,
-	|	VALUE(AccumulationRecordType.Expense) AS RecordType,
-	|	True                                  AS Active,
-	// ------------------------------------------------------
-	// Dimensions
-	|	LineItems.Order                       AS Order,
-	// ------------------------------------------------------
-	// Resources
-	|	0                                     AS Amount
-	// ------------------------------------------------------
-	// Attributes
-	// ------------------------------------------------------
-	|FROM
-	|	Document.SalesInvoice.LineItems AS LineItems
-	|WHERE
-	|	LineItems.Ref = &Ref
-	|	AND LineItems.Order <> VALUE(Document.SalesOrder.EmptyRef)
-	|ORDER BY
-	|	LineItems.Order.Date";
 	
 	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
 	
@@ -3304,306 +4253,6 @@ Procedure FillRegistersCheckList(AdditionalProperties, RegisterRecords)
 	// Return structure of registers to check.
 	If BalanceCheck.Count() > 0 Then
 		AdditionalProperties.Posting.Insert("BalanceCheck", BalanceCheck);
-	EndIf;
-	
-EndProcedure
-
-// Custom check for closing of parent orders.
-// Procedure uses custom data of document to check orders closing.
-// This prevents from requesting already acquired data.
-Procedure CheckCloseParentOrders(DocumentRef, AdditionalProperties, TempTablesManager)
-	Var Table_OrdersStatuses;
-	
-	// Skip check if order absent.
-	If AdditionalProperties.Orders.Count() = 0 Then
-		Return;
-	EndIf;
-	
-	// Create new query.
-	Query = New Query;
-	Query.TempTablesManager = TempTablesManager;
-	Query.SetParameter("Ref", DocumentRef);
-	
-	// Empty query text and tables.
-	QueryText   = "";
-	QueryTables = -1;
-	
-	// Put temporary table for calculating of final status.
-	// Table_OrdersRegistered_Balance already placed in TempTablesManager.
-	DocumentPosting.PutTemporaryTable(AdditionalProperties.Posting.PostingTables.Table_OrdersRegistered, "Table_OrdersRegistered", Query.TempTablesManager);
-	
-	// Create query for calculate order status.
-	QueryText = QueryText +
-	// Combine balance with document postings.
-	"SELECT
-	// ------------------------------------------------------
-	// Dimensions
-	|	OrdersRegisteredBalance.Company          AS Company,
-	|	OrdersRegisteredBalance.Order            AS Order,
-	|	VALUE(Document.Shipment.EmptyRef)        AS Shipment,
-	|	OrdersRegisteredBalance.Product          AS Product,
-	|	OrdersRegisteredBalance.Unit             AS Unit,
-	|	OrdersRegisteredBalance.Location         AS Location,
-	|	OrdersRegisteredBalance.DeliveryDate     AS DeliveryDate,
-	|	OrdersRegisteredBalance.Project          AS Project,
-	|	OrdersRegisteredBalance.Class            AS Class,
-	// ------------------------------------------------------
-	// Resources
-	|	OrdersRegisteredBalance.Quantity         AS Quantity,
-	|	OrdersRegisteredBalance.Shipped          AS Shipped,
-	|	OrdersRegisteredBalance.ShippedShipment  AS ShippedShipment,
-	|	OrdersRegisteredBalance.Invoiced         AS Invoiced
-	// ------------------------------------------------------
-	|INTO
-	|	OrdersRegistered_Balance_And_Postings
-	|FROM
-	|	Table_OrdersRegistered_Balance AS OrdersRegisteredBalance
-	|	// (Company, Order) IN (SELECT DISTINCT &Company, LineItems.Order FROM Table_LineItems AS LineItems)
-	|
-	|UNION ALL
-	|
-	|SELECT
-	// ------------------------------------------------------
-	// Dimensions
-	|	OrdersRegistered.Company,
-	|	OrdersRegistered.Order,
-	|	VALUE(Document.Shipment.EmptyRef),
-	|	OrdersRegistered.Product,
-	|	OrdersRegistered.Unit,
-	|	OrdersRegistered.Location,
-	|	OrdersRegistered.DeliveryDate,
-	|	OrdersRegistered.Project,
-	|	OrdersRegistered.Class,
-	// ------------------------------------------------------
-	// Resources
-	|	OrdersRegistered.Quantity,
-	|	OrdersRegistered.Shipped,
-	|	OrdersRegistered.ShippedShipment,
-	|	OrdersRegistered.Invoiced
-	// ------------------------------------------------------
-	|FROM
-	|	Table_OrdersRegistered AS OrdersRegistered
-	|	// Table_LineItems WHERE LineItems.Ref = &Ref AND Order <> EmptyRef()
-	|
-	|UNION ALL
-	|
-	|SELECT
-	// ------------------------------------------------------
-	// Dimensions
-	|	OrdersRegisteredShipment_Balance.Company         AS Company,
-	|	OrdersRegisteredShipment_Balance.Order           AS Order,
-	|	OrdersRegisteredShipment_Balance.Shipment        AS Shipment,
-	|	OrdersRegisteredShipment_Balance.Product         AS Product,
-	|	OrdersRegisteredShipment_Balance.Unit            AS Unit,
-	|	OrdersRegisteredShipment_Balance.Location        AS Location,
-	|	OrdersRegisteredShipment_Balance.DeliveryDate    AS DeliveryDate,
-	|	OrdersRegisteredShipment_Balance.Project         AS Project,
-	|	OrdersRegisteredShipment_Balance.Class           AS Class,
-	// ------------------------------------------------------
-	// Resources
-	|	OrdersRegisteredShipment_Balance.Quantity        AS Quantity,
-	|	OrdersRegisteredShipment_Balance.Shipped         AS Shipped,
-	|	OrdersRegisteredShipment_Balance.ShippedShipment AS ShippedShipment,
-	|	OrdersRegisteredShipment_Balance.Invoiced        AS Invoiced
-	// ------------------------------------------------------
-	|FROM
-	|	Table_OrdersRegisteredShipment_Balance AS OrdersRegisteredShipment_Balance
-    |   // (Company, Shipment) IN (SELECT DISTINCT &Company, LineItems.Shipment FROM Table_LineItems AS LineItems WHERE LineItems.Shipment <> VALUE(Document.Shipment.EmptyRef))
-	|
-	|UNION ALL
-	|
-	|SELECT
-	// ------------------------------------------------------
-	// Dimensions
-	|	OrdersRegisteredShipment.Company,
-	|	VALUE(Document.SalesOrder.EmptyRef),
-	|	OrdersRegisteredShipment.Shipment,
-	|	OrdersRegisteredShipment.Product,
-	|	OrdersRegisteredShipment.Unit,
-	|	OrdersRegisteredShipment.Location,
-	|	OrdersRegisteredShipment.DeliveryDate,
-	|	OrdersRegisteredShipment.Project,
-	|	OrdersRegisteredShipment.Class,
-	// ------------------------------------------------------
-	// Resources
-	|	OrdersRegisteredShipment.Quantity,
-	|	OrdersRegisteredShipment.Shipped,
-	|	OrdersRegisteredShipment.ShippedShipment,
-	|	OrdersRegisteredShipment.Invoiced
-	// ------------------------------------------------------
-	|FROM
-	|	Table_OrdersRegistered AS OrdersRegisteredShipment
-	|	// Table_LineItems WHERE LineItems.Ref = &Ref AND Order <> EmptyRef()
-	|WHERE
-	|	OrdersRegisteredShipment.Shipment <> VALUE(Document.Shipment.EmptyRef)
-	|";
-	QueryText   = QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
-	QueryTables = QueryTables + 1;
-	
-	// Calculate final balance after posting the invoice.
-	QueryText = QueryText +
-	"SELECT
-	// ------------------------------------------------------
-	// Dimensions
-	|	OrdersRegisteredBalance.Company              AS Company,
-	|	OrdersRegisteredBalance.Order                AS Order,
-	|	OrdersRegisteredBalance.Shipment             AS Shipment,
-	|	OrdersRegisteredBalance.Product              AS Product,
-	|	OrdersRegisteredBalance.Product.Type         AS Type,
-	|	OrdersRegisteredBalance.Unit                 AS Unit,
-	|	OrdersRegisteredBalance.Location             AS Location,
-	|	OrdersRegisteredBalance.DeliveryDate         AS DeliveryDate,
-	|	OrdersRegisteredBalance.Project              AS Project,
-	|	OrdersRegisteredBalance.Class                AS Class,
-	// ------------------------------------------------------
-	// Resources
-	|	SUM(OrdersRegisteredBalance.Quantity)        AS Quantity,
-	|	SUM(OrdersRegisteredBalance.Shipped)         AS Shipped,
-	|	SUM(OrdersRegisteredBalance.ShippedShipment) AS ShippedShipment,
-	|	SUM(OrdersRegisteredBalance.Invoiced)        AS Invoiced
-	// ------------------------------------------------------
-	|INTO
-	|	OrdersRegistered_Balance_AfterWrite
-	|FROM
-	|	OrdersRegistered_Balance_And_Postings AS OrdersRegisteredBalance
-	|GROUP BY
-	|	OrdersRegisteredBalance.Company,
-	|	OrdersRegisteredBalance.Order,
-	|	OrdersRegisteredBalance.Shipment,
-	|	OrdersRegisteredBalance.Product,
-	|	OrdersRegisteredBalance.Product.Type,
-	|	OrdersRegisteredBalance.Unit,
-	|	OrdersRegisteredBalance.Location,
-	|	OrdersRegisteredBalance.DeliveryDate,
-	|	OrdersRegisteredBalance.Project,
-	|	OrdersRegisteredBalance.Class";
-	QueryText   = QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
-	QueryTables = QueryTables + 1;
-	
-	// Calculate unshipped and(or) uninvoiced items.
-	QueryText = QueryText +
-	"SELECT
-	// ------------------------------------------------------
-	// Dimensions
-	|	OrdersRegisteredBalance.Company          AS Company,
-	|	OrdersRegisteredBalance.Order            AS Order,
-	|	OrdersRegisteredBalance.Shipment         AS Shipment,
-	|	OrdersRegisteredBalance.Product          AS Product,
-	|	OrdersRegisteredBalance.Unit             AS Unit,
-	|	OrdersRegisteredBalance.Location         AS Location,
-	|	OrdersRegisteredBalance.DeliveryDate     AS DeliveryDate,
-	|	OrdersRegisteredBalance.Project          AS Project,
-	|	OrdersRegisteredBalance.Class            AS Class,
-	// ------------------------------------------------------
-	// Resources
-	|	CASE WHEN OrdersRegisteredBalance.Shipment <> VALUE(Document.Shipment.EmptyRef)
-	|		 THEN 0
-	|		 WHEN OrdersRegisteredBalance.Type = VALUE(Enum.InventoryTypes.Inventory)
-	|	     THEN OrdersRegisteredBalance.Quantity - OrdersRegisteredBalance.Shipped
-	|	     ELSE 0 END                          AS UnShipped,
-	|	CASE WHEN OrdersRegisteredBalance.Shipment <> VALUE(Document.Shipment.EmptyRef)
-	|        THEN OrdersRegisteredBalance.ShippedShipment - OrdersRegisteredBalance.Invoiced
-	|        WHEN OrdersRegisteredBalance.Type = VALUE(Enum.InventoryTypes.Inventory)
-	|	     THEN OrdersRegisteredBalance.Shipped - OrdersRegisteredBalance.Invoiced
-	|	     WHEN OrdersRegisteredBalance.Type = VALUE(Enum.InventoryTypes.NonInventory)
-	|	     THEN OrdersRegisteredBalance.Quantity - OrdersRegisteredBalance.Invoiced
-	|	     ELSE 0 END                          AS UnInvoiced
-	// ------------------------------------------------------
-	|INTO
-	|	OrdersRegistered_Balance_Unclosed
-	|FROM
-	|	OrdersRegistered_Balance_AfterWrite AS OrdersRegisteredBalance";
-	
-	QueryText   = QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
-	QueryTables = QueryTables + 1;
-	
-	// Calculate unclosed.
-	QueryText = QueryText +
-	"SELECT
-	// ------------------------------------------------------
-	// Dimensions
-	|	OrdersRegisteredBalance.Order            AS Order,
-	|	OrdersRegisteredBalance.Shipment         AS Shipment,
-	|	SUM(OrdersRegisteredBalance.UnShipped
-	|	  + OrdersRegisteredBalance.UnInvoiced)  AS Unclosed
-	// ------------------------------------------------------
-	|INTO
-	|	OrdersRegistered_Balance_Orders_Unclosed
-	|FROM
-	|	OrdersRegistered_Balance_Unclosed AS OrdersRegisteredBalance
-	|GROUP BY
-	|	OrdersRegisteredBalance.Order,
-	|	OrdersRegisteredBalance.Shipment";
-	QueryText   = QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
-	QueryTables = QueryTables + 1;
-	
-	// Calculate closed orders (those in invoice, which don't have unclosed items in theirs balance).
-	QueryText = QueryText +
-	"SELECT DISTINCT
-	|	OrdersRegisteredBalanceUnclosed.Order       AS Order,
-	|	OrdersRegisteredBalanceUnclosed.Shipment    AS Shipment
-	|FROM
-	|	OrdersRegistered_Balance_Orders_Unclosed AS OrdersRegisteredBalanceUnclosed
-	|WHERE
-	|	// No unclosed items
-	|	OrdersRegisteredBalanceUnclosed.Unclosed = 0";
-	QueryText   = QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
-	QueryTables = QueryTables + 1;
-	
-	// Clear orders registered postings table.
-	QueryText   = QueryText + 
-	"DROP Table_OrdersRegistered";
-	QueryText   = QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
-	
-	// Clear balance with document postings table.
-	QueryText   = QueryText + 
-	"DROP OrdersRegistered_Balance_And_Postings";
-	QueryText   = QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
-	
-	// Clear final balance after posting the invoice table.
-	QueryText   = QueryText + 
-	"DROP OrdersRegistered_Balance_AfterWrite";
-	QueryText   = QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
-		
-	// Clear unshipped and uninvoiced items table.
-	QueryText   = QueryText + 
-	"DROP OrdersRegistered_Balance_Unclosed";
-	QueryText   = QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
-	
-	// Clear orders having unclosed items in balance table.
-	QueryText   = QueryText + 
-	"DROP OrdersRegistered_Balance_Orders_Unclosed";
-	QueryText   = QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
-	
-	// Execute query.
-	Query.Text  = QueryText;
-	QueryResult = Query.ExecuteBatch();
-	
-	// Check status of final query.
-	If Not QueryResult[QueryTables].IsEmpty()
-	// Update OrderStatus in prefilled table of postings.
-	And AdditionalProperties.Posting.PostingTables.Property("Table_OrdersStatuses", Table_OrdersStatuses) Then
-		
-		// Update closed orders.
-		Selection = QueryResult[QueryTables].Select();
-		While Selection.Next() Do
-			
-			Order = ?(ValueIsFilled(Selection.Shipment), Selection.Shipment, Selection.Order);
-			
-			// Set OrderStatus -> Closed.
-			Row = Table_OrdersStatuses.Find(Order, "Order");
-			If Row = Undefined Then
-				NewRow = Table_OrdersStatuses.Add();
-				NewRow.Recorder   = AdditionalProperties.Ref;
-				NewRow.Period     = AdditionalProperties.Date;
-				NewRow.LineNumber = 1;
-				NewRow.Active     = True;
-				NewRow.Order      = Order;
-				NewRow.Status     = Enums.OrderStatuses.Closed;
-			Else
-				Row.Status = Enums.OrderStatuses.Closed;
-			EndIf;
-		EndDo;
 	EndIf;
 	
 EndProcedure
@@ -3798,214 +4447,6 @@ Function Query_Filling_Document_Shipment_CommonTotals(TablesList)
 		|	ShipmentLineItems.Ref IN (&FillingData_Document_Shipment)
 		|GROUP BY
 		|	ShipmentLineItems.Ref";
-	
-	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
-	
-EndFunction
-
-// Query for document filling.
-Function Query_Filling_Document_SalesOrder_OrdersStatuses(TablesList)
-	
-	// Add OrdersStatuses table to document structure.
-	TablesList.Insert("Table_Document_SalesOrder_OrdersStatuses", TablesList.Count());
-	
-	// Collect orders statuses data.
-	QueryText =
-		"SELECT
-		// ------------------------------------------------------
-		// Dimensions
-		|	SalesOrder.Ref                          AS Order,
-		// ------------------------------------------------------
-		// Resources
-		|	CASE
-		|		WHEN SalesOrder.DeletionMark THEN
-		|			 VALUE(Enum.OrderStatuses.Deleted)
-		|		WHEN NOT SalesOrder.Posted THEN
-		|			 VALUE(Enum.OrderStatuses.Draft)
-		|		WHEN OrdersStatuses.Status IS NULL THEN
-		|			 VALUE(Enum.OrderStatuses.Open)
-		|		WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.EmptyRef) THEN
-		|			 VALUE(Enum.OrderStatuses.Open)
-		|		ELSE
-		|			 OrdersStatuses.Status
-		|	END                                     AS Status
-		// ------------------------------------------------------
-		|INTO
-		|	Table_Document_SalesOrder_OrdersStatuses
-		|FROM
-		|	Document.SalesOrder AS SalesOrder
-		|		LEFT JOIN InformationRegister.OrdersStatuses.SliceLast(, Order IN (&FillingData_Document_SalesOrder)) AS OrdersStatuses
-		|		ON SalesOrder.Ref = OrdersStatuses.Order
-		|WHERE
-		|	SalesOrder.Ref IN (&FillingData_Document_SalesOrder)";
-	
-	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
-	
-EndFunction
-
-// Query for document filling.
-Function Query_Filling_Document_Shipment_OrdersStatuses(TablesList)
-	
-	// Add OrdersStatuses table to document structure.
-	TablesList.Insert("Table_Document_Shipment_OrdersStatuses", TablesList.Count());
-	
-	// Collect orders statuses data.
-	QueryText =
-		"SELECT
-		// ------------------------------------------------------
-		// Dimensions
-		|	Shipment.Ref                          AS Order,
-		// ------------------------------------------------------
-		// Resources
-		|	CASE
-		|		WHEN Shipment.DeletionMark THEN
-		|			 VALUE(Enum.OrderStatuses.Deleted)
-		|		WHEN NOT Shipment.Posted THEN
-		|			 VALUE(Enum.OrderStatuses.Draft)
-		|		WHEN OrdersStatuses.Status IS NULL THEN
-		|			 VALUE(Enum.OrderStatuses.Open)
-		|		WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.EmptyRef) THEN
-		|			 VALUE(Enum.OrderStatuses.Open)
-		|		ELSE
-		|			 OrdersStatuses.Status
-		|	END                                     AS Status
-		// ------------------------------------------------------
-		|INTO
-		|	Table_Document_Shipment_OrdersStatuses
-		|FROM
-		|	Document.Shipment AS Shipment
-		|		LEFT JOIN InformationRegister.OrdersStatuses.SliceLast(, Order IN (&FillingData_Document_Shipment)) AS OrdersStatuses
-		|		ON Shipment.Ref = OrdersStatuses.Order
-		|WHERE
-		|	Shipment.Ref IN (&FillingData_Document_Shipment)";
-	
-	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
-	
-EndFunction
-
-// Query for document filling.
-Function Query_Filling_Document_SalesOrder_OrdersRegistered(TablesList)
-	
-	// Add OrdersRegistered table to document structure.
-	TablesList.Insert("Table_Document_SalesOrder_OrdersRegistered", TablesList.Count());
-	
-	// Collect orders items data.
-	QueryText =
-		"SELECT
-		// ------------------------------------------------------
-		// Dimensions
-		|	OrdersRegisteredBalance.Company          AS Company,
-		|	OrdersRegisteredBalance.Order            AS Order,
-		|	OrdersRegisteredBalance.Product          AS Product,
-		|	OrdersRegisteredBalance.Unit             AS Unit,
-		|	OrdersRegisteredBalance.Location         AS Location,
-		|	OrdersRegisteredBalance.DeliveryDate     AS DeliveryDate,
-		|	OrdersRegisteredBalance.Project          AS Project,
-		|	OrdersRegisteredBalance.Class            AS Class,
-		// ------------------------------------------------------
-		// Resources                                                                                                        // ---------------------------------------
-		|	OrdersRegisteredBalance.QuantityBalance  AS Quantity,                                                           // Backorder quantity calculation
-		|	CASE                                                                                                            // ---------------------------------------
-		|		WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Open)        THEN 0                                   // Order status = Open:
-		|		WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Backordered) THEN                                     //   Backorder = 0
-		|			CASE                                                                                                    // Order status = Backorder:
-		|				WHEN OrdersRegisteredBalance.Product.Type = VALUE(Enum.InventoryTypes.Inventory) THEN               //   Inventory:
-		|					CASE                                                                                            //     Backorder = Ordered - Shipped >= 0
-		|						WHEN OrdersRegisteredBalance.QuantityBalance > OrdersRegisteredBalance.ShippedBalance THEN  //     |
-		|							 OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.ShippedBalance       //     |
-		|						ELSE 0 END                                                                                  //     |
-		|				WHEN OrdersRegisteredBalance.Product.Type = VALUE(Enum.InventoryTypes.NonInventory) THEN            //   Non-inventory:
-		|					CASE                                                                                            //     Backorder = Ordered - Invoiced >= 0
-		|						WHEN OrdersRegisteredBalance.QuantityBalance > OrdersRegisteredBalance.InvoicedBalance THEN //     |
-		|							 OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.InvoicedBalance      //     |
-		|						ELSE 0 END                                                                                  //     |
-		|				ELSE 0                                                                                              //   NULL or something else:
-		|				END                                                                                                 //     0
-		|		WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Closed)      THEN 0                                   // Order status = Closed:
-		|		ELSE 0                                                                                                      //   Backorder = 0
-		|		END                                  AS Backorder
-		// ------------------------------------------------------
-		|INTO
-		|	Table_Document_SalesOrder_OrdersRegistered
-		|FROM
-		|	AccumulationRegister.OrdersRegistered.Balance(,
-		|		(Company, Order, Product, Unit, Location, DeliveryDate, Project, Class) IN
-		|			(SELECT
-		|				SalesOrderLineItems.Ref.Company,
-		|				SalesOrderLineItems.Ref,
-		|				SalesOrderLineItems.Product,
-		|				SalesOrderLineItems.Unit,
-		|				SalesOrderLineItems.Location,
-		|				SalesOrderLineItems.DeliveryDate,
-		|				SalesOrderLineItems.Project,
-		|				SalesOrderLineItems.Class
-		|			FROM
-		|				Document.SalesOrder.LineItems AS SalesOrderLineItems
-		|			WHERE
-		|				SalesOrderLineItems.Ref IN (&FillingData_Document_SalesOrder))) AS OrdersRegisteredBalance
-		|	LEFT JOIN Table_Document_SalesOrder_OrdersStatuses AS OrdersStatuses
-		|		ON OrdersRegisteredBalance.Order = OrdersStatuses.Order";
-	
-	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
-	
-EndFunction
-
-// Query for document filling.
-Function Query_Filling_Document_Shipment_OrdersRegistered(TablesList)
-	
-	// Add OrdersRegistered table to document structure.
-	TablesList.Insert("Table_Document_Shipment_OrdersRegistered", TablesList.Count());
-	
-	// Collect orders items data.
-	QueryText =
-		"SELECT
-		// ------------------------------------------------------
-		// Dimensions
-		|	OrdersRegisteredBalance.Company          		AS Company,
-		|	OrdersRegisteredBalance.Order            		AS Order,
-		|	OrdersRegisteredBalance.Shipment         		AS Shipment,
-		|	OrdersRegisteredBalance.Product          		AS Product,
-		|	OrdersRegisteredBalance.Unit             		AS Unit,
-		|	OrdersRegisteredBalance.Location         		AS Location,
-		|	OrdersRegisteredBalance.DeliveryDate     		AS DeliveryDate,
-		|	OrdersRegisteredBalance.Project          		AS Project,
-		|	OrdersRegisteredBalance.Class            		AS Class,
-		// ------------------------------------------------------
-		// Resources
-		|	OrdersRegisteredBalance.ShippedShipmentBalance  AS Quantity,
-		|	CASE
-		|		WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Open)        THEN 0
-		|		WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Backordered) THEN
-		|			 CASE                                                                                                   
-		|			      WHEN OrdersRegisteredBalance.ShippedShipmentBalance > OrdersRegisteredBalance.InvoicedBalance          
-		|				  THEN OrdersRegisteredBalance.ShippedShipmentBalance - OrdersRegisteredBalance.InvoicedBalance          
-		|			      ELSE 0 
-		|            END                                                                                                    
-		|		WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Closed)      THEN 0
-		|		ELSE 0
-		|	END                                             AS Backorder
-		// ------------------------------------------------------
-		|INTO
-		|	Table_Document_Shipment_OrdersRegistered
-		|FROM
-		|	AccumulationRegister.OrdersRegistered.Balance(,
-		|		(Company, Order, Shipment, Product, Unit, Location, DeliveryDate, Project, Class) IN
-		|			(SELECT
-		|				ShipmentLineItems.Ref.Company,
-		|				ShipmentLineItems.Order,
-		|				ShipmentLineItems.Ref,
-		|				ShipmentLineItems.Product,
-		|				ShipmentLineItems.Unit,
-		|				ShipmentLineItems.Location,
-		|				ShipmentLineItems.DeliveryDate,
-		|				ShipmentLineItems.Project,
-		|				ShipmentLineItems.Class
-		|			FROM
-		|				Document.Shipment.LineItems AS ShipmentLineItems
-		|			WHERE
-		|				ShipmentLineItems.Ref IN (&FillingData_Document_Shipment))) AS OrdersRegisteredBalance
-		|	LEFT JOIN Table_Document_Shipment_OrdersStatuses AS OrdersStatuses
-		|		ON OrdersRegisteredBalance.Shipment = OrdersStatuses.Order";
 	
 	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
 	
@@ -5134,6 +5575,721 @@ Function Query_Filling_Check(TablesList, CheckAttributes)
 	EndDo;
 	QueryText = StrReplace(QueryText, "{Selection}", SelectionText);
 	QueryText = StrReplace(QueryText, "{GroupBy}",   GroupByText);
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_OrdersRegistered(TablesList)
+	
+	// Add OrdersRegistered table to document structure.
+	TablesList.Insert("Table_OrdersRegistered", TablesList.Count());
+	
+	// Collect orders registered data.
+	QueryText =
+	"SELECT
+	// ------------------------------------------------------
+	// Standard attributes
+	|	LineItems.Ref                         AS Recorder,
+	|	LineItems.Ref.Date                    AS Period,
+	|	LineItems.LineNumber                  AS LineNumber,
+	|	VALUE(AccumulationRecordType.Receipt) AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Dimensions
+	|	LineItems.Ref.Company                 AS Company,
+	|	LineItems.Order                       AS Order,
+	|	LineItems.Shipment                    AS Shipment,
+	|	LineItems.Product                     AS Product,
+	|	LineItems.Unit                        AS Unit,
+	|	LineItems.Location                    AS Location,
+	|	LineItems.DeliveryDate                AS DeliveryDate,
+	|	LineItems.Project                     AS Project,
+	|	LineItems.Class                       AS Class,
+	// ------------------------------------------------------
+	// Resources
+	|	0                                     AS Quantity,
+	|	CASE WHEN LineItems.Shipment <> VALUE(Document.Shipment.EmptyRef)
+	|        THEN 0
+	|	     WHEN LineItems.Product.Type = VALUE(Enum.InventoryTypes.Inventory)
+	|	     THEN CASE WHEN LineItems.QtyUnits - 
+	|	                    CASE WHEN OrdersRegisteredBalance.Shipped - OrdersRegisteredBalance.Invoiced > 0
+	|	                         THEN OrdersRegisteredBalance.Shipped - OrdersRegisteredBalance.Invoiced
+	|	                         ELSE 0 END > 0
+	|	               THEN LineItems.QtyUnits - 
+	|	                    CASE WHEN OrdersRegisteredBalance.Shipped - OrdersRegisteredBalance.Invoiced > 0
+	|	                         THEN OrdersRegisteredBalance.Shipped - OrdersRegisteredBalance.Invoiced
+	|	                         ELSE 0 END
+	|	               ELSE 0 END
+	|	     ELSE 0 END                       AS Shipped,
+	|	0                                     AS ShippedShipment,
+	|	LineItems.QtyUnits                    AS Invoiced
+	// ------------------------------------------------------
+	// Attributes
+	// ------------------------------------------------------
+	|FROM
+	|	Document.SalesInvoice.LineItems AS LineItems
+	|	LEFT JOIN Table_OrdersRegistered_Balance AS OrdersRegisteredBalance
+	|		ON  OrdersRegisteredBalance.Company      = LineItems.Ref.Company
+	|		AND OrdersRegisteredBalance.Order        = LineItems.Order
+	|		AND OrdersRegisteredBalance.Shipment     = LineItems.Shipment
+	|		AND OrdersRegisteredBalance.Product      = LineItems.Product
+	|		AND OrdersRegisteredBalance.Unit         = LineItems.Unit
+	|		AND OrdersRegisteredBalance.Location     = LineItems.Location
+	|		AND OrdersRegisteredBalance.DeliveryDate = LineItems.DeliveryDate
+	|		AND OrdersRegisteredBalance.Project      = LineItems.Project
+	|		AND OrdersRegisteredBalance.Class        = LineItems.Class
+	|WHERE
+	|	LineItems.Ref = &Ref
+	|	AND LineItems.Order <> VALUE(Document.SalesOrder.EmptyRef)
+	|ORDER BY
+	|	LineNumber";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for dimensions lock data.
+Function Query_OrdersRegistered_Lock(TablesList)
+	
+	// Add OrdersRegistered - Lock table to locks structure.
+	TablesList.Insert("AccumulationRegister_OrdersRegistered", TablesList.Count());
+	
+	// Collect dimensions for orders registered locking.
+	QueryText = 
+	"SELECT DISTINCT
+	// ------------------------------------------------------
+	// Dimensions
+	|	&Company                              AS Company,
+	|	LineItems.Order                       AS Order,
+	|	LineItems.Product                     AS Product,
+	|	LineItems.Unit                        AS Unit
+	// ------------------------------------------------------
+	|FROM
+	|	Table_LineItems AS LineItems
+	|WHERE
+	|	LineItems.Order <> VALUE(Document.SalesOrder.EmptyRef)";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for balances data.
+Function Query_OrdersRegistered_Balance(TablesList)
+	
+	// Add OrdersRegistered - Balances table to balances structure.
+	TablesList.Insert("Table_OrdersRegistered_Balance", TablesList.Count());
+	
+	// Collect orders registered balances.
+	QueryText =
+	"SELECT
+	// ------------------------------------------------------
+	// Dimensions
+	|	OrdersRegisteredBalance.Company         		 AS Company,
+	|	OrdersRegisteredBalance.Order           		 AS Order,
+	|	OrdersRegisteredBalance.Shipment        		 AS Shipment,
+	|	OrdersRegisteredBalance.Product         		 AS Product,
+	|	OrdersRegisteredBalance.Unit            		 AS Unit,
+	|	OrdersRegisteredBalance.Location        		 AS Location,
+	|	OrdersRegisteredBalance.DeliveryDate    		 AS DeliveryDate,
+	|	OrdersRegisteredBalance.Project         		 AS Project,
+	|	OrdersRegisteredBalance.Class           		 AS Class,
+	// ------------------------------------------------------
+	// Resources
+	|	OrdersRegisteredBalance.QuantityBalance 		 AS Quantity,
+	|	OrdersRegisteredBalance.ShippedBalance   		 AS Shipped,
+	|	OrdersRegisteredBalance.ShippedShipmentBalance   AS ShippedShipment,
+	|	OrdersRegisteredBalance.InvoicedBalance 		 AS Invoiced
+	// ------------------------------------------------------
+	|FROM
+	|	AccumulationRegister.OrdersRegistered.Balance(&PointInTime,
+	|		(Company, Order) IN
+	|		(SELECT DISTINCT &Company, LineItems.Order // Requred for proper order closing
+	|		 FROM Table_LineItems AS LineItems)) AS OrdersRegisteredBalance";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for balances data.
+Function Query_OrdersRegisteredShipment_Balance(TablesList)
+	
+	// Add OrdersRegisteredShipment - Balances table to balances structure.
+	TablesList.Insert("Table_OrdersRegisteredShipment_Balance", TablesList.Count());
+	
+	// Collect orders dispatched balances.
+	QueryText =
+	"SELECT
+	// ------------------------------------------------------
+	// Dimensions
+	|	OrdersRegisteredBalance.Company            		AS Company,
+	|	VALUE(Document.SalesOrder.EmptyRef)        		AS Order,
+	|	OrdersRegisteredBalance.Shipment           		AS Shipment,
+	|	OrdersRegisteredBalance.Product            		AS Product,
+	|	OrdersRegisteredBalance.Unit              	 	AS Unit,
+	|	OrdersRegisteredBalance.Location           		AS Location,
+	|	OrdersRegisteredBalance.DeliveryDate       		AS DeliveryDate,
+	|	OrdersRegisteredBalance.Project            		AS Project,
+	|	OrdersRegisteredBalance.Class              		AS Class,
+	// ------------------------------------------------------
+	// Resources
+	|	OrdersRegisteredBalance.QuantityBalance    		AS Quantity,
+	|	OrdersRegisteredBalance.ShippedBalance    		AS Shipped,
+	|	OrdersRegisteredBalance.ShippedShipmentBalance  AS ShippedShipment,
+	|	OrdersRegisteredBalance.InvoicedBalance    		AS Invoiced
+	// ------------------------------------------------------
+	|FROM
+	|	AccumulationRegister.OrdersRegistered.Balance(&PointInTime,
+    |       (Company, Shipment) IN
+	|		(SELECT DISTINCT &Company, LineItems.Shipment // Requred for proper item Receipt closing
+	|		 FROM Table_LineItems AS LineItems
+	|        WHERE LineItems.Shipment <> VALUE(Document.Shipment.EmptyRef))) AS OrdersRegisteredBalance";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_OrderTransactions(TablesList)
+	
+	// Add OrderTransactions table to document structure.
+	TablesList.Insert("Table_OrderTransactions", TablesList.Count());
+	
+	// Collect orders transactions data.
+	QueryText =
+	"SELECT DISTINCT // Exp: Order Transactions
+	// ------------------------------------------------------
+	// Standard attributes
+	|	LineItems.Ref                         AS Recorder,
+	|	LineItems.Ref.Date                    AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccumulationRecordType.Expense) AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Dimensions
+	|	LineItems.Order                       AS Order,
+	// ------------------------------------------------------
+	// Resources
+	|	0                                     AS Amount
+	// ------------------------------------------------------
+	// Attributes
+	// ------------------------------------------------------
+	|FROM
+	|	Document.SalesInvoice.LineItems AS LineItems
+	|WHERE
+	|	LineItems.Ref = &Ref
+	|	AND LineItems.Order <> VALUE(Document.SalesOrder.EmptyRef)
+	|ORDER BY
+	|	LineItems.Order.Date";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Custom check for closing of parent orders.
+// Procedure uses custom data of document to check orders closing.
+// This prevents from requesting already acquired data.
+Procedure CheckCloseParentOrders(DocumentRef, AdditionalProperties, TempTablesManager)
+	Var Table_OrdersStatuses;
+	
+	// Skip check if order absent.
+	If AdditionalProperties.Orders.Count() = 0 Then
+		Return;
+	EndIf;
+	
+	// Create new query.
+	Query = New Query;
+	Query.TempTablesManager = TempTablesManager;
+	Query.SetParameter("Ref", DocumentRef);
+	
+	// Empty query text and tables.
+	QueryText   = "";
+	QueryTables = -1;
+	
+	// Put temporary table for calculating of final status.
+	// Table_OrdersRegistered_Balance already placed in TempTablesManager.
+	DocumentPosting.PutTemporaryTable(AdditionalProperties.Posting.PostingTables.Table_OrdersRegistered, "Table_OrdersRegistered", Query.TempTablesManager);
+	
+	// Create query for calculate order status.
+	QueryText = QueryText +
+	// Combine balance with document postings.
+	"SELECT
+	// ------------------------------------------------------
+	// Dimensions
+	|	OrdersRegisteredBalance.Company          AS Company,
+	|	OrdersRegisteredBalance.Order            AS Order,
+	|	VALUE(Document.Shipment.EmptyRef)        AS Shipment,
+	|	OrdersRegisteredBalance.Product          AS Product,
+	|	OrdersRegisteredBalance.Unit             AS Unit,
+	|	OrdersRegisteredBalance.Location         AS Location,
+	|	OrdersRegisteredBalance.DeliveryDate     AS DeliveryDate,
+	|	OrdersRegisteredBalance.Project          AS Project,
+	|	OrdersRegisteredBalance.Class            AS Class,
+	// ------------------------------------------------------
+	// Resources
+	|	OrdersRegisteredBalance.Quantity         AS Quantity,
+	|	OrdersRegisteredBalance.Shipped          AS Shipped,
+	|	OrdersRegisteredBalance.ShippedShipment  AS ShippedShipment,
+	|	OrdersRegisteredBalance.Invoiced         AS Invoiced
+	// ------------------------------------------------------
+	|INTO
+	|	OrdersRegistered_Balance_And_Postings
+	|FROM
+	|	Table_OrdersRegistered_Balance AS OrdersRegisteredBalance
+	|	// (Company, Order) IN (SELECT DISTINCT &Company, LineItems.Order FROM Table_LineItems AS LineItems)
+	|
+	|UNION ALL
+	|
+	|SELECT
+	// ------------------------------------------------------
+	// Dimensions
+	|	OrdersRegistered.Company,
+	|	OrdersRegistered.Order,
+	|	VALUE(Document.Shipment.EmptyRef),
+	|	OrdersRegistered.Product,
+	|	OrdersRegistered.Unit,
+	|	OrdersRegistered.Location,
+	|	OrdersRegistered.DeliveryDate,
+	|	OrdersRegistered.Project,
+	|	OrdersRegistered.Class,
+	// ------------------------------------------------------
+	// Resources
+	|	OrdersRegistered.Quantity,
+	|	OrdersRegistered.Shipped,
+	|	OrdersRegistered.ShippedShipment,
+	|	OrdersRegistered.Invoiced
+	// ------------------------------------------------------
+	|FROM
+	|	Table_OrdersRegistered AS OrdersRegistered
+	|	// Table_LineItems WHERE LineItems.Ref = &Ref AND Order <> EmptyRef()
+	|
+	|UNION ALL
+	|
+	|SELECT
+	// ------------------------------------------------------
+	// Dimensions
+	|	OrdersRegisteredShipment_Balance.Company         AS Company,
+	|	OrdersRegisteredShipment_Balance.Order           AS Order,
+	|	OrdersRegisteredShipment_Balance.Shipment        AS Shipment,
+	|	OrdersRegisteredShipment_Balance.Product         AS Product,
+	|	OrdersRegisteredShipment_Balance.Unit            AS Unit,
+	|	OrdersRegisteredShipment_Balance.Location        AS Location,
+	|	OrdersRegisteredShipment_Balance.DeliveryDate    AS DeliveryDate,
+	|	OrdersRegisteredShipment_Balance.Project         AS Project,
+	|	OrdersRegisteredShipment_Balance.Class           AS Class,
+	// ------------------------------------------------------
+	// Resources
+	|	OrdersRegisteredShipment_Balance.Quantity        AS Quantity,
+	|	OrdersRegisteredShipment_Balance.Shipped         AS Shipped,
+	|	OrdersRegisteredShipment_Balance.ShippedShipment AS ShippedShipment,
+	|	OrdersRegisteredShipment_Balance.Invoiced        AS Invoiced
+	// ------------------------------------------------------
+	|FROM
+	|	Table_OrdersRegisteredShipment_Balance AS OrdersRegisteredShipment_Balance
+    |   // (Company, Shipment) IN (SELECT DISTINCT &Company, LineItems.Shipment FROM Table_LineItems AS LineItems WHERE LineItems.Shipment <> VALUE(Document.Shipment.EmptyRef))
+	|
+	|UNION ALL
+	|
+	|SELECT
+	// ------------------------------------------------------
+	// Dimensions
+	|	OrdersRegisteredShipment.Company,
+	|	VALUE(Document.SalesOrder.EmptyRef),
+	|	OrdersRegisteredShipment.Shipment,
+	|	OrdersRegisteredShipment.Product,
+	|	OrdersRegisteredShipment.Unit,
+	|	OrdersRegisteredShipment.Location,
+	|	OrdersRegisteredShipment.DeliveryDate,
+	|	OrdersRegisteredShipment.Project,
+	|	OrdersRegisteredShipment.Class,
+	// ------------------------------------------------------
+	// Resources
+	|	OrdersRegisteredShipment.Quantity,
+	|	OrdersRegisteredShipment.Shipped,
+	|	OrdersRegisteredShipment.ShippedShipment,
+	|	OrdersRegisteredShipment.Invoiced
+	// ------------------------------------------------------
+	|FROM
+	|	Table_OrdersRegistered AS OrdersRegisteredShipment
+	|	// Table_LineItems WHERE LineItems.Ref = &Ref AND Order <> EmptyRef()
+	|WHERE
+	|	OrdersRegisteredShipment.Shipment <> VALUE(Document.Shipment.EmptyRef)
+	|";
+	QueryText   = QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	QueryTables = QueryTables + 1;
+	
+	// Calculate final balance after posting the invoice.
+	QueryText = QueryText +
+	"SELECT
+	// ------------------------------------------------------
+	// Dimensions
+	|	OrdersRegisteredBalance.Company              AS Company,
+	|	OrdersRegisteredBalance.Order                AS Order,
+	|	OrdersRegisteredBalance.Shipment             AS Shipment,
+	|	OrdersRegisteredBalance.Product              AS Product,
+	|	OrdersRegisteredBalance.Product.Type         AS Type,
+	|	OrdersRegisteredBalance.Unit                 AS Unit,
+	|	OrdersRegisteredBalance.Location             AS Location,
+	|	OrdersRegisteredBalance.DeliveryDate         AS DeliveryDate,
+	|	OrdersRegisteredBalance.Project              AS Project,
+	|	OrdersRegisteredBalance.Class                AS Class,
+	// ------------------------------------------------------
+	// Resources
+	|	SUM(OrdersRegisteredBalance.Quantity)        AS Quantity,
+	|	SUM(OrdersRegisteredBalance.Shipped)         AS Shipped,
+	|	SUM(OrdersRegisteredBalance.ShippedShipment) AS ShippedShipment,
+	|	SUM(OrdersRegisteredBalance.Invoiced)        AS Invoiced
+	// ------------------------------------------------------
+	|INTO
+	|	OrdersRegistered_Balance_AfterWrite
+	|FROM
+	|	OrdersRegistered_Balance_And_Postings AS OrdersRegisteredBalance
+	|GROUP BY
+	|	OrdersRegisteredBalance.Company,
+	|	OrdersRegisteredBalance.Order,
+	|	OrdersRegisteredBalance.Shipment,
+	|	OrdersRegisteredBalance.Product,
+	|	OrdersRegisteredBalance.Product.Type,
+	|	OrdersRegisteredBalance.Unit,
+	|	OrdersRegisteredBalance.Location,
+	|	OrdersRegisteredBalance.DeliveryDate,
+	|	OrdersRegisteredBalance.Project,
+	|	OrdersRegisteredBalance.Class";
+	QueryText   = QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	QueryTables = QueryTables + 1;
+	
+	// Calculate unshipped and(or) uninvoiced items.
+	QueryText = QueryText +
+	"SELECT
+	// ------------------------------------------------------
+	// Dimensions
+	|	OrdersRegisteredBalance.Company          AS Company,
+	|	OrdersRegisteredBalance.Order            AS Order,
+	|	OrdersRegisteredBalance.Shipment         AS Shipment,
+	|	OrdersRegisteredBalance.Product          AS Product,
+	|	OrdersRegisteredBalance.Unit             AS Unit,
+	|	OrdersRegisteredBalance.Location         AS Location,
+	|	OrdersRegisteredBalance.DeliveryDate     AS DeliveryDate,
+	|	OrdersRegisteredBalance.Project          AS Project,
+	|	OrdersRegisteredBalance.Class            AS Class,
+	// ------------------------------------------------------
+	// Resources
+	|	CASE WHEN OrdersRegisteredBalance.Shipment <> VALUE(Document.Shipment.EmptyRef)
+	|		 THEN 0
+	|		 WHEN OrdersRegisteredBalance.Type = VALUE(Enum.InventoryTypes.Inventory)
+	|	     THEN OrdersRegisteredBalance.Quantity - OrdersRegisteredBalance.Shipped
+	|	     ELSE 0 END                          AS UnShipped,
+	|	CASE WHEN OrdersRegisteredBalance.Shipment <> VALUE(Document.Shipment.EmptyRef)
+	|        THEN OrdersRegisteredBalance.ShippedShipment - OrdersRegisteredBalance.Invoiced
+	|        WHEN OrdersRegisteredBalance.Type = VALUE(Enum.InventoryTypes.Inventory)
+	|	     THEN OrdersRegisteredBalance.Shipped - OrdersRegisteredBalance.Invoiced
+	|	     WHEN OrdersRegisteredBalance.Type = VALUE(Enum.InventoryTypes.NonInventory)
+	|	     THEN OrdersRegisteredBalance.Quantity - OrdersRegisteredBalance.Invoiced
+	|	     ELSE 0 END                          AS UnInvoiced
+	// ------------------------------------------------------
+	|INTO
+	|	OrdersRegistered_Balance_Unclosed
+	|FROM
+	|	OrdersRegistered_Balance_AfterWrite AS OrdersRegisteredBalance";
+	
+	QueryText   = QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	QueryTables = QueryTables + 1;
+	
+	// Calculate unclosed.
+	QueryText = QueryText +
+	"SELECT
+	// ------------------------------------------------------
+	// Dimensions
+	|	OrdersRegisteredBalance.Order            AS Order,
+	|	OrdersRegisteredBalance.Shipment         AS Shipment,
+	|	SUM(OrdersRegisteredBalance.UnShipped
+	|	  + OrdersRegisteredBalance.UnInvoiced)  AS Unclosed
+	// ------------------------------------------------------
+	|INTO
+	|	OrdersRegistered_Balance_Orders_Unclosed
+	|FROM
+	|	OrdersRegistered_Balance_Unclosed AS OrdersRegisteredBalance
+	|GROUP BY
+	|	OrdersRegisteredBalance.Order,
+	|	OrdersRegisteredBalance.Shipment";
+	QueryText   = QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	QueryTables = QueryTables + 1;
+	
+	// Calculate closed orders (those in invoice, which don't have unclosed items in theirs balance).
+	QueryText = QueryText +
+	"SELECT DISTINCT
+	|	OrdersRegisteredBalanceUnclosed.Order       AS Order,
+	|	OrdersRegisteredBalanceUnclosed.Shipment    AS Shipment
+	|FROM
+	|	OrdersRegistered_Balance_Orders_Unclosed AS OrdersRegisteredBalanceUnclosed
+	|WHERE
+	|	// No unclosed items
+	|	OrdersRegisteredBalanceUnclosed.Unclosed = 0";
+	QueryText   = QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	QueryTables = QueryTables + 1;
+	
+	// Clear orders registered postings table.
+	QueryText   = QueryText + 
+	"DROP Table_OrdersRegistered";
+	QueryText   = QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+	// Clear balance with document postings table.
+	QueryText   = QueryText + 
+	"DROP OrdersRegistered_Balance_And_Postings";
+	QueryText   = QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+	// Clear final balance after posting the invoice table.
+	QueryText   = QueryText + 
+	"DROP OrdersRegistered_Balance_AfterWrite";
+	QueryText   = QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+		
+	// Clear unshipped and uninvoiced items table.
+	QueryText   = QueryText + 
+	"DROP OrdersRegistered_Balance_Unclosed";
+	QueryText   = QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+	// Clear orders having unclosed items in balance table.
+	QueryText   = QueryText + 
+	"DROP OrdersRegistered_Balance_Orders_Unclosed";
+	QueryText   = QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+	// Execute query.
+	Query.Text  = QueryText;
+	QueryResult = Query.ExecuteBatch();
+	
+	// Check status of final query.
+	If Not QueryResult[QueryTables].IsEmpty()
+	// Update OrderStatus in prefilled table of postings.
+	And AdditionalProperties.Posting.PostingTables.Property("Table_OrdersStatuses", Table_OrdersStatuses) Then
+		
+		// Update closed orders.
+		Selection = QueryResult[QueryTables].Select();
+		While Selection.Next() Do
+			
+			Order = ?(ValueIsFilled(Selection.Shipment), Selection.Shipment, Selection.Order);
+			
+			// Set OrderStatus -> Closed.
+			Row = Table_OrdersStatuses.Find(Order, "Order");
+			If Row = Undefined Then
+				NewRow = Table_OrdersStatuses.Add();
+				NewRow.Recorder   = AdditionalProperties.Ref;
+				NewRow.Period     = AdditionalProperties.Date;
+				NewRow.LineNumber = 1;
+				NewRow.Active     = True;
+				NewRow.Order      = Order;
+				NewRow.Status     = Enums.OrderStatuses.Closed;
+			Else
+				Row.Status = Enums.OrderStatuses.Closed;
+			EndIf;
+		EndDo;
+	EndIf;
+	
+EndProcedure
+
+// Query for document filling.
+Function Query_Filling_Document_SalesOrder_OrdersStatuses(TablesList)
+	
+	// Add OrdersStatuses table to document structure.
+	TablesList.Insert("Table_Document_SalesOrder_OrdersStatuses", TablesList.Count());
+	
+	// Collect orders statuses data.
+	QueryText =
+		"SELECT
+		// ------------------------------------------------------
+		// Dimensions
+		|	SalesOrder.Ref                          AS Order,
+		// ------------------------------------------------------
+		// Resources
+		|	CASE
+		|		WHEN SalesOrder.DeletionMark THEN
+		|			 VALUE(Enum.OrderStatuses.Deleted)
+		|		WHEN NOT SalesOrder.Posted THEN
+		|			 VALUE(Enum.OrderStatuses.Draft)
+		|		WHEN OrdersStatuses.Status IS NULL THEN
+		|			 VALUE(Enum.OrderStatuses.Open)
+		|		WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.EmptyRef) THEN
+		|			 VALUE(Enum.OrderStatuses.Open)
+		|		ELSE
+		|			 OrdersStatuses.Status
+		|	END                                     AS Status
+		// ------------------------------------------------------
+		|INTO
+		|	Table_Document_SalesOrder_OrdersStatuses
+		|FROM
+		|	Document.SalesOrder AS SalesOrder
+		|		LEFT JOIN InformationRegister.OrdersStatuses.SliceLast(, Order IN (&FillingData_Document_SalesOrder)) AS OrdersStatuses
+		|		ON SalesOrder.Ref = OrdersStatuses.Order
+		|WHERE
+		|	SalesOrder.Ref IN (&FillingData_Document_SalesOrder)";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document filling.
+Function Query_Filling_Document_Shipment_OrdersStatuses(TablesList)
+	
+	// Add OrdersStatuses table to document structure.
+	TablesList.Insert("Table_Document_Shipment_OrdersStatuses", TablesList.Count());
+	
+	// Collect orders statuses data.
+	QueryText =
+		"SELECT
+		// ------------------------------------------------------
+		// Dimensions
+		|	Shipment.Ref                          AS Order,
+		// ------------------------------------------------------
+		// Resources
+		|	CASE
+		|		WHEN Shipment.DeletionMark THEN
+		|			 VALUE(Enum.OrderStatuses.Deleted)
+		|		WHEN NOT Shipment.Posted THEN
+		|			 VALUE(Enum.OrderStatuses.Draft)
+		|		WHEN OrdersStatuses.Status IS NULL THEN
+		|			 VALUE(Enum.OrderStatuses.Open)
+		|		WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.EmptyRef) THEN
+		|			 VALUE(Enum.OrderStatuses.Open)
+		|		ELSE
+		|			 OrdersStatuses.Status
+		|	END                                     AS Status
+		// ------------------------------------------------------
+		|INTO
+		|	Table_Document_Shipment_OrdersStatuses
+		|FROM
+		|	Document.Shipment AS Shipment
+		|		LEFT JOIN InformationRegister.OrdersStatuses.SliceLast(, Order IN (&FillingData_Document_Shipment)) AS OrdersStatuses
+		|		ON Shipment.Ref = OrdersStatuses.Order
+		|WHERE
+		|	Shipment.Ref IN (&FillingData_Document_Shipment)";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document filling.
+Function Query_Filling_Document_SalesOrder_OrdersRegistered(TablesList)
+	
+	// Add OrdersRegistered table to document structure.
+	TablesList.Insert("Table_Document_SalesOrder_OrdersRegistered", TablesList.Count());
+	
+	// Collect orders items data.
+	QueryText =
+		"SELECT
+		// ------------------------------------------------------
+		// Dimensions
+		|	OrdersRegisteredBalance.Company          AS Company,
+		|	OrdersRegisteredBalance.Order            AS Order,
+		|	OrdersRegisteredBalance.Product          AS Product,
+		|	OrdersRegisteredBalance.Unit             AS Unit,
+		|	OrdersRegisteredBalance.Location         AS Location,
+		|	OrdersRegisteredBalance.DeliveryDate     AS DeliveryDate,
+		|	OrdersRegisteredBalance.Project          AS Project,
+		|	OrdersRegisteredBalance.Class            AS Class,
+		// ------------------------------------------------------
+		// Resources                                                                                                        // ---------------------------------------
+		|	OrdersRegisteredBalance.QuantityBalance  AS Quantity,                                                           // Backorder quantity calculation
+		|	CASE                                                                                                            // ---------------------------------------
+		|		WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Open)        THEN 0                                   // Order status = Open:
+		|		WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Backordered) THEN                                     //   Backorder = 0
+		|			CASE                                                                                                    // Order status = Backorder:
+		|				WHEN OrdersRegisteredBalance.Product.Type = VALUE(Enum.InventoryTypes.Inventory) THEN               //   Inventory:
+		|					CASE                                                                                            //     Backorder = Ordered - Shipped >= 0
+		|						WHEN OrdersRegisteredBalance.QuantityBalance > OrdersRegisteredBalance.ShippedBalance THEN  //     |
+		|							 OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.ShippedBalance       //     |
+		|						ELSE 0 END                                                                                  //     |
+		|				WHEN OrdersRegisteredBalance.Product.Type = VALUE(Enum.InventoryTypes.NonInventory) THEN            //   Non-inventory:
+		|					CASE                                                                                            //     Backorder = Ordered - Invoiced >= 0
+		|						WHEN OrdersRegisteredBalance.QuantityBalance > OrdersRegisteredBalance.InvoicedBalance THEN //     |
+		|							 OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.InvoicedBalance      //     |
+		|						ELSE 0 END                                                                                  //     |
+		|				ELSE 0                                                                                              //   NULL or something else:
+		|				END                                                                                                 //     0
+		|		WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Closed)      THEN 0                                   // Order status = Closed:
+		|		ELSE 0                                                                                                      //   Backorder = 0
+		|		END                                  AS Backorder
+		// ------------------------------------------------------
+		|INTO
+		|	Table_Document_SalesOrder_OrdersRegistered
+		|FROM
+		|	AccumulationRegister.OrdersRegistered.Balance(,
+		|		(Company, Order, Product, Unit, Location, DeliveryDate, Project, Class) IN
+		|			(SELECT
+		|				SalesOrderLineItems.Ref.Company,
+		|				SalesOrderLineItems.Ref,
+		|				SalesOrderLineItems.Product,
+		|				SalesOrderLineItems.Unit,
+		|				SalesOrderLineItems.Location,
+		|				SalesOrderLineItems.DeliveryDate,
+		|				SalesOrderLineItems.Project,
+		|				SalesOrderLineItems.Class
+		|			FROM
+		|				Document.SalesOrder.LineItems AS SalesOrderLineItems
+		|			WHERE
+		|				SalesOrderLineItems.Ref IN (&FillingData_Document_SalesOrder))) AS OrdersRegisteredBalance
+		|	LEFT JOIN Table_Document_SalesOrder_OrdersStatuses AS OrdersStatuses
+		|		ON OrdersRegisteredBalance.Order = OrdersStatuses.Order";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document filling.
+Function Query_Filling_Document_Shipment_OrdersRegistered(TablesList)
+	
+	// Add OrdersRegistered table to document structure.
+	TablesList.Insert("Table_Document_Shipment_OrdersRegistered", TablesList.Count());
+	
+	// Collect orders items data.
+	QueryText =
+		"SELECT
+		// ------------------------------------------------------
+		// Dimensions
+		|	OrdersRegisteredBalance.Company          		AS Company,
+		|	OrdersRegisteredBalance.Order            		AS Order,
+		|	OrdersRegisteredBalance.Shipment         		AS Shipment,
+		|	OrdersRegisteredBalance.Product          		AS Product,
+		|	OrdersRegisteredBalance.Unit             		AS Unit,
+		|	OrdersRegisteredBalance.Location         		AS Location,
+		|	OrdersRegisteredBalance.DeliveryDate     		AS DeliveryDate,
+		|	OrdersRegisteredBalance.Project          		AS Project,
+		|	OrdersRegisteredBalance.Class            		AS Class,
+		// ------------------------------------------------------
+		// Resources
+		|	OrdersRegisteredBalance.ShippedShipmentBalance  AS Quantity,
+		|	CASE
+		|		WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Open)        THEN 0
+		|		WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Backordered) THEN
+		|			 CASE                                                                                                   
+		|			      WHEN OrdersRegisteredBalance.ShippedShipmentBalance > OrdersRegisteredBalance.InvoicedBalance          
+		|				  THEN OrdersRegisteredBalance.ShippedShipmentBalance - OrdersRegisteredBalance.InvoicedBalance          
+		|			      ELSE 0 
+		|            END                                                                                                    
+		|		WHEN OrdersStatuses.Status = VALUE(Enum.OrderStatuses.Closed)      THEN 0
+		|		ELSE 0
+		|	END                                             AS Backorder
+		// ------------------------------------------------------
+		|INTO
+		|	Table_Document_Shipment_OrdersRegistered
+		|FROM
+		|	AccumulationRegister.OrdersRegistered.Balance(,
+		|		(Company, Order, Shipment, Product, Unit, Location, DeliveryDate, Project, Class) IN
+		|			(SELECT
+		|				ShipmentLineItems.Ref.Company,
+		|				ShipmentLineItems.Order,
+		|				ShipmentLineItems.Ref,
+		|				ShipmentLineItems.Product,
+		|				ShipmentLineItems.Unit,
+		|				ShipmentLineItems.Location,
+		|				ShipmentLineItems.DeliveryDate,
+		|				ShipmentLineItems.Project,
+		|				ShipmentLineItems.Class
+		|			FROM
+		|				Document.Shipment.LineItems AS ShipmentLineItems
+		|			WHERE
+		|				ShipmentLineItems.Ref IN (&FillingData_Document_Shipment))) AS OrdersRegisteredBalance
+		|	LEFT JOIN Table_Document_Shipment_OrdersStatuses AS OrdersStatuses
+		|		ON OrdersRegisteredBalance.Shipment = OrdersStatuses.Order";
 	
 	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
 	

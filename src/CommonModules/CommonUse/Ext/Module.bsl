@@ -45,7 +45,8 @@
 // Structure where keys are the same as in AttributeNames, and values are the retrieved field values.
 //
 Function GetAttributeValues(Ref, AttributeNames) Export
-
+	
+	DataSource = Ref;
 	If TypeOf(AttributeNames) = Type("Structure") Then
 		AttributeStructure = AttributeNames;
 	ElsIf TypeOf(AttributeNames) = Type("String") Then
@@ -55,33 +56,38 @@ Function GetAttributeValues(Ref, AttributeNames) Export
 			NStr("en = 'Invalid AttributeNames type: %1.'"), 
 			String(TypeOf(AttributeNames)));
 	EndIf;
-
-	FieldTexts = "";
-	For Each KeyAndValue In AttributeStructure Do
-		FieldName = ?(ValueIsFilled(KeyAndValue.Value), TrimAll(KeyAndValue.Value), TrimAll(KeyAndValue.Key));
-		Alias = TrimAll(KeyAndValue.Key);
-		FieldTexts = FieldTexts + ?(IsBlankString(FieldTexts), "	", ",
-			|	") + FieldName + " AS " + Alias;
-	EndDo;
-
-	Query = New Query(
-		"SELECT
-		|" + FieldTexts + "
-		|FROM
-		|	" + Ref.Metadata().FullName() + " AS AliasForSpecifiedTable
-		|WHERE
-		|	AliasForSpecifiedTable.Ref = &Ref
-		|");
-	Query.SetParameter("Ref", Ref);
-	Selection = Query.Execute().Select();
-	Selection.Next();
-
+	
+	If ValueIsFilled(Ref) Then
+		FieldTexts = "";
+		For Each KeyAndValue In AttributeStructure Do
+			FieldName = ?(ValueIsFilled(KeyAndValue.Value), TrimAll(KeyAndValue.Value), TrimAll(KeyAndValue.Key));
+			Alias = TrimAll(KeyAndValue.Key);
+			FieldTexts = FieldTexts + ?(IsBlankString(FieldTexts), "	", ",
+				|	") + FieldName + " AS " + Alias;
+		EndDo;
+		
+		Query = New Query(
+			"SELECT
+			|" + FieldTexts + "
+			|FROM
+			|	" + Ref.Metadata().FullName() + " AS AliasForSpecifiedTable
+			|WHERE
+			|	AliasForSpecifiedTable.Ref = &Ref
+			|");
+		Query.SetParameter("Ref", Ref);
+		Selection = Query.Execute().Select();
+		Selection.Next();
+		DataSource = Selection;
+	EndIf;
+	
 	Result = New Structure;
+	PropertiesList = "";
 	For Each KeyAndValue In AttributeStructure Do
 		Result.Insert(KeyAndValue.Key);
+		PropertiesList = ?(Not IsBlankString(PropertiesList), PropertiesList + ",", "") + TrimAll(KeyAndValue.Key);
 	EndDo;
-	FillPropertyValues(Result, Selection);
-
+	FillPropertyValues(Result, DataSource, PropertiesList);
+	
 	Return Result;
 EndFunction
 
@@ -2410,6 +2416,10 @@ Function IsConstant(MetadataObject) Export
 	
 EndFunction
 
+Function GetConstant(ConstantName) Export
+	Return Constants[ConstantName].Get();
+EndFunction
+
 //------------------------------------------------------------------------------
 // Document journals.
 
@@ -3591,3 +3601,726 @@ Procedure RepostSubordinateDocumentsOfPurchaseReturn(DocumentRef, Array)
 EndProcedure
 
 #EndRegion
+
+
+Procedure UnloadDatabase(JobResponseAddress, Template) Export
+	
+	//1.
+	MetadataDB = New ValueTable;
+	MetadataDB.Columns.Add("Name", New TypeDescription("String")); 	
+	MetadataDB.Columns.Add("Owner", New TypeDescription("String"));	
+	MetadataDB.Columns.Add("OwnerPlural", New TypeDescription("String"));	
+	MetadataDB.Columns.Add("Synonym", New TypeDescription("String"));	
+	MetadataDB.Columns.Add("Register", New TypeDescription("Boolean"));	
+	
+	Files = New ValueTable;
+	Files.Columns.Add("Address", New TypeDescription("String"));
+	Files.Columns.Add("FileName", New TypeDescription("String"));
+	
+	SD = New SpreadsheetDocument;
+	
+	//2.
+	FillMetadataDB(MetadataDB);
+	
+	For Each RowMet In MetadataDB Do 
+		
+		//Message #1
+		Inf = RowMet.OwnerPlural + ": " + RowMet.Synonym; 
+		Message(Inf);
+		
+		GetInfobaseData(RowMet.Name, RowMet.Owner, RowMet.OwnerPlural, RowMet.Synonym, RowMet.Register, Files, SD, Template);
+		
+	EndDo;
+	
+	//3.
+	//Message #5
+	Inf = "Creating a zip file..."; 
+	Message(Inf);
+	
+	CreateZIP_File(MetadataDB, Files, SD, JobResponseAddress);
+	
+EndProcedure
+
+#Region UNLOAD_DATABASE
+
+Procedure FillMetadataDB(MetadataDB)
+	
+	//1.
+	Met = Metadata.Catalogs;
+	
+	For Each RowMet In Met Do
+		
+		If RowMet.Name = "DocumentNumbering" Then
+			Continue;
+		EndIf;
+		
+		NewMet = MetadataDB.Add();	
+		NewMet.Name        = RowMet.Name;
+		NewMet.Synonym     = ?(ValueIsFilled(RowMet.Synonym), RowMet.Synonym, RowMet.Name);
+		NewMet.Owner       = "Catalog";
+		NewMet.OwnerPlural = "Catalogs";
+		NewMet.Register    = False;
+		
+	EndDo;
+	
+	//2.
+	Met = Metadata.Documents;
+	
+	For Each RowMet In Met Do
+		NewMet = MetadataDB.Add();	
+		NewMet.Name        = RowMet.Name;
+		NewMet.Synonym     = ?(ValueIsFilled(RowMet.Synonym), RowMet.Synonym, RowMet.Name);
+		NewMet.Owner       = "Document";
+		NewMet.OwnerPlural = "Documents";
+		NewMet.Register    = False;
+	EndDo;
+	
+	//3.
+	Met = Metadata.ChartsOfAccounts;
+	
+	For Each RowMet In Met Do
+		NewMet = MetadataDB.Add();	
+		NewMet.Name        = RowMet.Name;
+		NewMet.Synonym     = ?(ValueIsFilled(RowMet.Synonym), RowMet.Synonym, RowMet.Name);
+		NewMet.Owner       = "ChartOfAccounts";
+		NewMet.OwnerPlural = "ChartsOfAccounts";
+		NewMet.Register    = False;
+	EndDo;
+	
+	//4.
+	Met = Metadata.InformationRegisters;
+	
+	For Each RowMet In Met Do
+		
+		If RowMet.Name = "DocumentJournalOfCompanies"
+			Or RowMet.Name = "AuditLog"
+			Or RowMet.Name = "DocumentLastEmail"
+			Then
+			Continue;
+		EndIf;
+		
+		NewMet = MetadataDB.Add();	
+		NewMet.Name        = RowMet.Name;
+		NewMet.Synonym     = ?(ValueIsFilled(RowMet.Synonym), RowMet.Synonym, RowMet.Name);
+		NewMet.Owner       = "InformationRegister";
+		NewMet.OwnerPlural = "InformationRegisters";
+		NewMet.Register    = True;
+		
+	EndDo;
+	
+	//5.
+	Met = Metadata.AccumulationRegisters;
+	
+	For Each RowMet In Met Do
+		NewMet = MetadataDB.Add();	
+		NewMet.Name        = RowMet.Name;
+		NewMet.Synonym     = ?(ValueIsFilled(RowMet.Synonym), RowMet.Synonym, RowMet.Name);
+		NewMet.Owner       = "AccumulationRegister";
+		NewMet.OwnerPlural = "AccumulationRegisters";
+		NewMet.Register    = True;
+	EndDo;
+	
+	//6.
+	Met = Metadata.AccountingRegisters;
+	
+	For Each RowMet In Met Do
+		NewMet = MetadataDB.Add();	
+		NewMet.Name        = RowMet.Name;
+		NewMet.Synonym     = ?(ValueIsFilled(RowMet.Synonym), RowMet.Synonym, RowMet.Name);
+		NewMet.Owner       = "AccountingRegister";
+		NewMet.OwnerPlural = "AccountingRegisters";
+		NewMet.Register    = True;
+	EndDo;
+	
+EndProcedure
+
+Procedure GetInfobaseData(RowMetName, RowMetOwner, RowMetOwnerPlural, RowMetSynonym, RowMetRegister, Files, SD, Template)
+	
+	CurrentMetadata = Metadata[RowMetOwnerPlural][RowMetName];
+	
+	//1.
+	Att = New ValueTable;
+	Att.Columns.Add("FieldName", New TypeDescription("String"));
+	Att.Columns.Add("FieldNameAS", New TypeDescription("String"));
+	Att.Columns.Add("FieldSynonym", New TypeDescription("String"));
+	Att.Columns.Add("FieldHelp", New TypeDescription("String"));
+	
+	//---AdditionalAttribute---
+	NewField = Att.Add();
+	NewField.FieldName    = "AA";
+	NewField.FieldNameAS  = "AA";
+	NewField.FieldSynonym = "AA";
+	NewField.FieldHelp    = "AA";
+	
+	//---StandardAttributes---
+	For Each CurrentAtt In CurrentMetadata.StandardAttributes Do
+		
+		If CurrentAtt.Name = "Number" Or CurrentAtt.Name = "Code" Or CurrentAtt.Name = "Description" Then
+			Continue;
+		EndIf;
+		
+		NewField = Att.Add();
+		If RowMetRegister Then
+			NewField.FieldName    = "Obj." + CurrentAtt.Name;
+		Else 
+			NewField.FieldName    = "Obj.Ref." + CurrentAtt.Name;
+		EndIf;
+		NewField.FieldNameAS  = CurrentAtt.Name;
+		NewField.FieldSynonym = ?(ValueIsFilled(CurrentAtt.Synonym), CurrentAtt.Synonym, CurrentAtt.Name);
+		If CurrentAtt.Name = "Ref" Then
+			NewField.FieldSynonym = RowMetOwner;
+		EndIf;
+		NewField.FieldHelp    = "";
+	EndDo;
+	
+	If RowMetRegister Then
+		
+		//---Dimensions---
+		For Each CurrentAtt In CurrentMetadata.Dimensions Do
+			NewField = Att.Add();
+			NewField.FieldName    = "Obj." + CurrentAtt.Name;
+			NewField.FieldNameAS  = CurrentAtt.Name;
+			NewField.FieldSynonym = ?(ValueIsFilled(CurrentAtt.Synonym), CurrentAtt.Synonym, CurrentAtt.Name);
+			NewField.FieldHelp    = "";
+		EndDo;
+		
+		//---Resources---
+		For Each CurrentAtt In CurrentMetadata.Resources Do
+			NewField = Att.Add();
+			NewField.FieldName    = "Obj." + CurrentAtt.Name;
+			NewField.FieldNameAS  = CurrentAtt.Name;
+			NewField.FieldSynonym = ?(ValueIsFilled(CurrentAtt.Synonym), CurrentAtt.Synonym, CurrentAtt.Name);
+			NewField.FieldHelp    = "";
+		EndDo;
+		
+	EndIf;
+	
+	//---Attributes---
+	For Each CurrentAtt In CurrentMetadata.Attributes Do
+		NewField = Att.Add();
+		If RowMetRegister Then
+			NewField.FieldName    = "Obj." + CurrentAtt.Name;
+		Else 
+			NewField.FieldName    = "Obj.Ref." + CurrentAtt.Name;
+		EndIf;
+		NewField.FieldNameAS  = CurrentAtt.Name;
+		NewField.FieldSynonym = ?(ValueIsFilled(CurrentAtt.Synonym), CurrentAtt.Synonym, CurrentAtt.Name);
+		NewField.FieldHelp    = "";
+	EndDo;
+	
+	//2.
+	If Not RowMetRegister Then 
+		
+		For Each CurrentTabSec In CurrentMetadata.TabularSections Do
+			
+			//--TabularSections StandardAttributes---
+			For Each CurrentAtt In CurrentTabSec.StandardAttributes Do
+				NewField = Att.Add();
+				NewField.FieldName    = "Obj." + CurrentAtt.Name;
+				NewField.FieldNameAS  = CurrentTabSec.Name + CurrentAtt.Name;
+				NewField.FieldSynonym = ?(ValueIsFilled(CurrentTabSec.Synonym), CurrentTabSec.Synonym, CurrentTabSec.Name) + "." +
+				?(ValueIsFilled(CurrentAtt.Synonym), CurrentAtt.Synonym, CurrentAtt.Name);
+				NewField.FieldHelp    = CurrentTabSec.Name;
+			EndDo;
+			
+			//---TabularSections Attributes---
+			For Each CurrentAtt In CurrentTabSec.Attributes Do
+				NewField = Att.Add();
+				NewField.FieldName    = "Obj." + CurrentAtt.Name;
+				NewField.FieldNameAS  = CurrentTabSec.Name + CurrentAtt.Name;
+				NewField.FieldSynonym = ?(ValueIsFilled(CurrentTabSec.Synonym), CurrentTabSec.Synonym, CurrentTabSec.Name) + "." +
+				?(ValueIsFilled(CurrentAtt.Synonym), CurrentAtt.Synonym, CurrentAtt.Name);
+				NewField.FieldHelp    = CurrentTabSec.Name;
+			EndDo;
+			
+		EndDo;
+		
+	EndIf;
+	
+	//3.
+	QueryText   = "";
+	NewAtt      = "
+	| ";
+	NextAtt     = ",
+	| ";
+	NextQue     = "
+	|
+	|UNION ALL
+	|
+	|";
+	
+	//TabularSections
+	If (Not RowMetRegister) And (CurrentMetadata.TabularSections.Count() > 0) Then 
+		
+		//Header
+		AttributesText = "";
+		For Each CurrentAtt In Att Do
+			
+			If CurrentAtt.FieldHelp = "AA" Then 
+				AttributesText = ?(ValueIsFilled(AttributesText), AttributesText + NextAtt, NewAtt) + "2 AS " + CurrentAtt.FieldNameAS;
+			ElsIf CurrentAtt.FieldHelp = "" Then
+				AttributesText = ?(ValueIsFilled(AttributesText), AttributesText + NextAtt, NewAtt) + CurrentAtt.FieldName + " AS " + CurrentAtt.FieldNameAS;
+			Else
+				AttributesText = ?(ValueIsFilled(AttributesText), AttributesText + NextAtt, NewAtt) + "NULL AS " + CurrentAtt.FieldNameAS;
+			EndIf
+			
+		EndDo;
+		
+		FromText = "
+		|FROM " + RowMetOwner + "." + CurrentMetadata.Name + " AS Obj";
+		
+		QueryText = "SELECT" + AttributesText + FromText;
+		
+		//TabularSections
+		For Each CurrentTabSec In CurrentMetadata.TabularSections Do
+			
+			AttributesText = "";
+			For Each CurrentAtt In Att Do
+				
+				If CurrentAtt.FieldHelp = "AA" Then 
+					AttributesText = ?(ValueIsFilled(AttributesText), AttributesText + NextAtt, NewAtt) + "1 AS " + CurrentAtt.FieldNameAS;
+				ElsIf CurrentAtt.FieldHelp = "" Or CurrentAtt.FieldHelp = CurrentTabSec.Name Then
+					AttributesText = ?(ValueIsFilled(AttributesText), AttributesText + NextAtt, NewAtt) + CurrentAtt.FieldName + " AS " + CurrentAtt.FieldNameAS;
+				Else
+					AttributesText = ?(ValueIsFilled(AttributesText), AttributesText + NextAtt, NewAtt) + "NULL AS " + CurrentAtt.FieldNameAS;
+				EndIf;
+				
+			EndDo;
+			
+			FromText = "
+			|FROM " + RowMetOwner + "." + CurrentMetadata.Name + "." + CurrentTabSec.Name + " AS Obj";
+			
+			If QueryText = "" Then
+				QueryText = "SELECT" + AttributesText + FromText;
+			Else
+				QueryText = QueryText + NextQue + "SELECT" + AttributesText + FromText; 
+			EndIf;
+			
+		EndDo;
+		
+	Else
+		
+		//Header
+		AttributesText  = "";
+		HasExtDimension = False;
+		For Each CurrentAtt In Att Do
+			
+			If CurrentAtt.FieldHelp = "AA" Then 
+				AttributesText = ?(ValueIsFilled(AttributesText), AttributesText + NextAtt, NewAtt) + "0 AS " + CurrentAtt.FieldNameAS;
+			ElsIf CurrentAtt.FieldHelp = "" Then
+				
+				AttributesText = ?(ValueIsFilled(AttributesText), AttributesText + NextAtt, NewAtt) + CurrentAtt.FieldName + " AS " + CurrentAtt.FieldNameAS;
+				
+				HasExtDimension = ?(HasExtDimension, True, Find(CurrentAtt.FieldName, "ExtDimension") > 0);  
+				
+			EndIf;
+			
+		EndDo;
+		
+		FromText = "
+		|FROM " + RowMetOwner + "." + CurrentMetadata.Name + ?(HasExtDimension And RowMetOwner = "AccountingRegister", ".RecordsWithExtDimensions", "") + " AS Obj";
+		
+		QueryText = "SELECT" + AttributesText + FromText;
+		
+	EndIf;
+	
+	//4.
+	
+	//Message #2
+	Inf = RowMetOwnerPlural + ": " + RowMetSynonym + " - Receiving data..."; 
+	Message(Inf);
+	
+	Query = New Query;
+	Query.Text = QueryText;
+	VT = Query.Execute().Unload();
+	
+	If VT.Count() = 0 Then
+		Return;
+	EndIf;
+	
+	//!
+	If Not RowMetRegister Then 
+		VT.Sort("Ref, AA");
+	EndIf;
+	
+	VT_Additional = New ValueTable;
+	VT_Additional.Columns.Add("Line_ID", New TypeDescription("Number"));
+	
+	//5.
+	For Each CurrentVT In VT Do
+		
+		For Each CurrentCol In VT.Columns Do
+			
+			CurrentData  =  CurrentVT[CurrentCol.Name];
+			CurrentIndex =  VT.IndexOf(CurrentVT);
+			
+			//----
+			//Code
+			//----
+			Try
+				
+				Code       = CurrentData.Code;
+				NameNewCol = "" + CurrentCol.Name + "_Code";
+				
+				If VT_Additional.Columns.Find(NameNewCol) = Undefined Then 
+					VT_Additional.Columns.Add(NameNewCol);
+				EndIf;
+				
+				AdditionalRow = Undefined;
+				AdditionalRow = VT_Additional.Find(CurrentIndex, "Line_ID");
+				If AdditionalRow = Undefined Then
+					NewAdditionalRow = VT_Additional.Add();
+					NewAdditionalRow[NameNewCol] = Code;
+					NewAdditionalRow.Line_ID     = CurrentIndex;
+				Else
+					AdditionalRow[NameNewCol] = Code;
+				EndIf;
+				
+			Except
+			EndTry;
+			
+			//----
+			//Number
+			//----
+			Try
+				
+				Number     = CurrentData.Number;
+				NameNewCol = "" + CurrentCol.Name + "_Number";
+				
+				If VT_Additional.Columns.Find(NameNewCol) = Undefined Then 
+					VT_Additional.Columns.Add(NameNewCol);
+				EndIf;
+				
+				AdditionalRow = Undefined;
+				AdditionalRow = VT_Additional.Find(CurrentIndex, "Line_ID");
+				If AdditionalRow = Undefined Then
+					NewAdditionalRow = VT_Additional.Add();
+					NewAdditionalRow[NameNewCol] = Number;
+					NewAdditionalRow.Line_ID     = CurrentIndex;
+				Else
+					AdditionalRow[NameNewCol] = Number;
+				EndIf;
+				
+			Except
+			EndTry;
+			
+			//----
+			//UUID
+			//----
+			Try
+				
+				UUID_      = ?(ValueIsFilled(CurrentData.UUID()), CurrentData.UUID(), "");
+				NameNewCol = "" + CurrentCol.Name + "_UUID";
+				
+				If VT_Additional.Columns.Find(NameNewCol) = Undefined Then 
+					VT_Additional.Columns.Add(NameNewCol);
+				EndIf;
+				
+				AdditionalRow = Undefined;
+				AdditionalRow = VT_Additional.Find(CurrentIndex, "Line_ID");
+				If AdditionalRow = Undefined Then
+					NewAdditionalRow = VT_Additional.Add();
+					NewAdditionalRow[NameNewCol] = UUID_;
+					NewAdditionalRow.Line_ID     = CurrentIndex;
+				Else
+					AdditionalRow[NameNewCol] = UUID_;
+				EndIf;
+				
+			Except
+			EndTry;
+			
+		EndDo;
+		
+	EndDo;
+	
+	//6.
+	Cell     = Template.GetArea("Data");
+	Head     = Template.GetArea("Head");
+	
+	//
+	//!!!
+	//
+	If RowMetOwner = "Document" Then 
+		VT.Columns.Move("Posted", 3);
+		VT.Columns.Move("DeletionMark", 2);
+	ElsIf RowMetOwner = "Catalog" Then
+		VT.Columns.Move("Predefined", 1);
+		VT.Columns.Move("PredefinedDataName", 2);
+	ElsIf RowMetOwner = "ChartOfAccounts" Then
+		VT.Columns.Move("PredefinedDataName", 9);
+		VT.Columns.Move("Order", 9);
+		VT.Columns.Move("OffBalance", 9);
+		VT.Columns.Move("Type", 9);
+		VT.Columns.Move("Parent", 9);
+		VT.Columns.Move("Predefined", 9);
+		VT.Columns.Move("DeletionMark", 9);
+	EndIf;
+	
+	//Headers---------------------------------------------------------------------------------
+	Line = New SpreadsheetDocument();
+	
+	For Each CurrentCol In VT.Columns Do
+		
+		//Hide additional attribute
+		If CurrentCol.Name = "AA" Then
+			Continue;
+		EndIf;
+		
+		//
+		NameOfCol = Att.Find(CurrentCol.Name, "FieldNameAS").FieldSynonym;
+		Head.Parameters.Head = NameOfCol;     
+		Line.Join(Head);
+		
+		//----
+		//Code
+		//----
+		CurrentAddCol = "" + CurrentCol.Name + "_Code";
+		
+		If VT_Additional.Columns.Find(CurrentAddCol) <> Undefined Then 
+			
+			Head.Parameters.Head = NameOfCol + " (Code)";
+			Line.Join(Head);
+			
+		EndIf;
+		
+		//----
+		//Number
+		//----
+		CurrentAddCol = "" + CurrentCol.Name + "_Number";
+		
+		If VT_Additional.Columns.Find(CurrentAddCol) <> Undefined Then 
+			
+			Head.Parameters.Head = NameOfCol + " (Number)";
+			Line.Join(Head);
+			
+		EndIf;
+		
+		//----
+		//UUID
+		//----
+		CurrentAddCol = "" + CurrentCol.Name + "_UUID";
+		
+		If VT_Additional.Columns.Find(CurrentAddCol) <> Undefined Then 
+			
+			Head.Parameters.Head = NameOfCol + " (UUID)";
+			Line.Join(Head);
+			
+		EndIf;
+		
+	EndDo;
+	
+	SD.Put(Line);
+	
+	//Message #3
+	Inf = RowMetOwnerPlural + ": " + RowMetSynonym + " - Receiving data " + VT.Count() + " row(s)..."; 
+	Message(Inf);
+	
+	//Rows------------------------------------------------------------------------------------
+	PreviousRef = Undefined;
+	
+	For Each CurrentVT In VT Do
+		
+		//Don't show extra header row
+		If CurrentVT.AA <> 0 Then
+			
+			If CurrentVT.AA = 2 And PreviousRef = CurrentVT.Ref Then
+				PreviousRef = CurrentVT.Ref; 	
+				Continue;
+			EndIf;
+			
+			PreviousRef = CurrentVT.Ref; 	
+			
+		EndIf;
+		
+		Line         = New SpreadsheetDocument();
+		CurrentIndex =  VT.IndexOf(CurrentVT);
+		
+		For Each CurrentCol In VT.Columns Do
+			
+			//Hide additional attribute
+			If CurrentCol.Name = "AA" Then
+				Continue;
+			EndIf;
+			
+			//Show reference as description
+			Try
+				CurrentData  =  CurrentVT[CurrentCol.Name].Description;
+			Except
+				CurrentData  =  CurrentVT[CurrentCol.Name];
+			EndTry;
+			
+			Cell.Parameters.Data = CurrentData;
+			Line.Join(Cell);
+			
+			//----
+			//Code
+			//----
+			CurrentAddCol = "" + CurrentCol.Name + "_Code";
+			
+			If VT_Additional.Columns.Find(CurrentAddCol) <> Undefined Then 
+				
+				AdditionalRow = Undefined;
+				AdditionalRow = VT_Additional.Find(CurrentIndex, "Line_ID");
+				
+				CurrentAddData = "";
+				If AdditionalRow <> Undefined Then
+					CurrentAddData = AdditionalRow[CurrentAddCol];
+				EndIf;
+				
+				Cell.Parameters.Data = CurrentAddData;
+				Line.Join(Cell);
+				
+			EndIf;
+			
+			//----
+			//Number
+			//----
+			CurrentAddCol = "" + CurrentCol.Name + "_Number";
+			
+			If VT_Additional.Columns.Find(CurrentAddCol) <> Undefined Then 
+				
+				AdditionalRow = Undefined;
+				AdditionalRow = VT_Additional.Find(CurrentIndex, "Line_ID");
+				
+				CurrentAddData = "";
+				If AdditionalRow <> Undefined Then
+					CurrentAddData = AdditionalRow[CurrentAddCol];
+				EndIf;
+				
+				Cell.Parameters.Data = CurrentAddData;
+				Line.Join(Cell);
+				
+			EndIf;
+			
+			//----
+			//UUID
+			//----
+			CurrentAddCol = "" + CurrentCol.Name + "_UUID";
+			
+			If VT_Additional.Columns.Find(CurrentAddCol) <> Undefined Then 
+				
+				AdditionalRow = Undefined;
+				AdditionalRow = VT_Additional.Find(CurrentIndex, "Line_ID");
+				
+				CurrentAddData = "";
+				If AdditionalRow <> Undefined Then
+					CurrentAddData = AdditionalRow[CurrentAddCol];
+				EndIf;
+				
+				Cell.Parameters.Data = CurrentAddData;
+				Line.Join(Cell);
+				
+			EndIf;
+			
+		EndDo;	
+		
+		SD.Put(Line);
+		
+	EndDo;
+	
+	//Message #4
+	Inf = RowMetOwnerPlural + ": " + RowMetSynonym + " - Creating xlsx file..."; 
+	Message(Inf);
+	
+	CreateXLSX_File(RowMetOwnerPlural + " " + GetCorrectFileName(RowMetSynonym) + ".xlsx", Files, SD);
+	
+	//
+	//!!!
+	//
+	SD.Clear();	
+	
+EndProcedure
+
+Procedure CreateXLSX_File(NameOfFile, Files, SD)
+	
+	// Get temporary file name (a pointer to a new file).
+	TemporaryFileName = GetTempFileName(".xlsx");
+	
+	// Save the spreadsheet to the temporary file.
+	SD.Write(TemporaryFileName, SpreadsheetDocumentFileType.XLSX);
+	
+	// Update Excel format settings.
+	Try
+		COMExcel = New COMObject("Excel.Application"); 
+		Doc = COMExcel.Application.Workbooks.Open(TemporaryFileName); 
+		
+		Doc.Windows(1).DisplayWorkbookTabs = True;
+		Doc.Windows(1).TabRatio = 0.5;
+		COMExcel.ReferenceStyle = 1;
+		
+		Doc.Save();
+		Doc.Close();
+	Except
+	EndTry;
+	
+	//
+	NewFile = Files.Add();	
+	NewFile.Address  = TemporaryFileName;
+	NewFile.FileName = NameOfFile;
+	
+EndProcedure
+
+Procedure CreateZIP_File(MetadataDB, Files, SD, JobResponseAddress)
+	
+	// Get temporary file name (a pointer to a new file).
+	TemporaryFileName = GetTempFileName(".zip");
+	
+	ZipFile      = New ZipFileWriter(TemporaryFileName);
+	TempFilesDir = TempFilesDir();
+	
+	For Each RowFile In Files Do
+		
+		NameOfNewFile = TempFilesDir + RowFile.FileName;
+		MoveFile(RowFile.Address, NameOfNewFile); 
+		
+		ZipFile.Add(NameOfNewFile);
+		
+	EndDo;
+	
+	ZipFile.Write();
+	
+	// Put zip file in a temporary storage.
+	BinaryData  = New BinaryData(TemporaryFileName);
+	PutToTempStorage(BinaryData, JobResponseAddress);
+	
+	// Delete used temporary zip file.
+	DeleteFiles(TemporaryFileName);
+	
+	// Delete used temporary xlsx files.
+	For Each RowFile In Files Do
+		
+		NameOfNewFile = TempFilesDir + RowFile.FileName;
+		DeleteFiles(NameOfNewFile);
+		
+	EndDo;
+	
+	//Cleaning data 
+	MetadataDB.Clear();
+	Files.Clear();
+	SD.Clear();
+		
+EndProcedure
+
+Function GetCorrectFileName(CurrentName)
+	
+	NewCurrentName = "";
+	
+	For i = 1 To StrLen(CurrentName) Do
+		
+		Char = Mid(CurrentName, i, 1);
+		
+		If Find("#&\/:*?""<>|.", Char) > 0 Then
+			NewCurrentName = NewCurrentName + " ";	
+		Else
+			NewCurrentName = NewCurrentName + Char;	
+		EndIf;
+		
+	EndDo;	
+	
+	Return NewCurrentName;
+	
+EndFunction
+
+#EndRegion
+
+

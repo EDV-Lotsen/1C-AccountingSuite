@@ -3,5 +3,5 @@
 Procedure CommandProcessing(CommandParameter, CommandExecuteParameters)
 	//Paste handler content.
 	//FormParameters = New Structure("", );
-	OpenForm("DataProcessor.DataImport.Form", , , , ,);
+	//OpenForm("DataProcessor.DataImport.Form", , , , ,);
 EndProcedure

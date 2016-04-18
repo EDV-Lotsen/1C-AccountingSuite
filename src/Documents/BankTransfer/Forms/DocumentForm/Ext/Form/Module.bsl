@@ -1,8 +1,18 @@
 ﻿
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
+	
+	//Setup visibility of the View bank transactions hyperlink
+	If Object.Ref.IsEmpty() Then
+		Items.BankTransaction1Decoration.Visible = False;
+		Items.BankTransaction1Unavailable.Visible = False;
+		Items.BankTransaction2Decoration.Visible = False;
+		Items.BankTransaction2Unavailable.Visible = False;
+	EndIf;
+	
 	MultiCurrencyVisibilitySetup();
 	ImportantNoticeVisibilityAtServer();
+	
 EndProcedure
 
 &AtServer
@@ -155,7 +165,7 @@ Procedure BeforeWrite(Cancel, WriteParameters)
 	EndIf;
 	
 	// preventing posting if already included in a bank rec
-	If ReconciledDocumentsServerCall.RequiresExcludingFromBankReconciliation(Object.Ref, Object.Amount, Object.Date, Object.AccountTo, WriteParameters.WriteMode) Then
+	If ReconciledDocumentsServerCall.DocumentRequiresExcludingFromBankReconciliation(Object, WriteParameters.WriteMode) Then
 		Cancel = True;
 		CommonUseClient.ShowCustomMessageBox(ThisForm, "Bank reconciliation", "The transaction you are editing has been reconciled. Saving your changes could put you out of balance the next time you try to reconcile. 
 		|To modify it you should exclude it from the Bank rec. document.", PredefinedValue("Enum.MessageStatus.Warning"));
@@ -317,12 +327,6 @@ EndProcedure
 
 ////////////////////////////////////////////////////////////////////////////////
 #Region COMMANDS_HANDLERS
-
-&AtClient
-Procedure ViewBankTransaction(Command)
-	Params = New Structure("Document", Object.Ref);
-	OpenForm("DataProcessor.DownloadedTransactions.Form.BankTransactionDescription", Params, ThisForm,,,,, FormWindowOpeningMode.LockOwnerWindow);
-EndProcedure
 
 &AtClient
 Procedure AuditLogRecord(Command)

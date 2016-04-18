@@ -1,12 +1,9 @@
 ﻿
-////////////////////////////////////////////////////////////////////////////////
-// ОБРАБОТЧИКИ СОБЫТИЙ ФОРМЫ
-
-&НаСервере
-Процедура OnCreateAtServer(Отказ, СтандартнаяОбработка)
+&AtServer
+Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
-	ЗаполнитьЗначенияСвойств(ЭтотОбъект, Параметры, "BeginOfPeriod,EndOfPeriod");
-	BeginDateYear = ?(ЗначениеЗаполнено(EndOfPeriod), НачалоГода(EndOfPeriod), НачалоГода(ТекущаяДатаСеанса()));
+	FillPropertyValues(ThisObject, Parameters, "BeginOfPeriod, EndOfPeriod");
+	BeginDateYear = ?(ValueIsFilled(EndOfPeriod), BegOfYear(EndOfPeriod), BegOfYear(CurrentSessionDate()));
 	If Parameters.SelectMonths Then
 		Items.SelectQuarter1.Visible 	= False;
 		Items.SelectQuarter2.Visible 	= False;
@@ -17,248 +14,245 @@
 		Items.Select9Months.Visible 	= False;
 		Items.SelectYear.Visible		= False;
 	EndIf;
-	//--//ColorCurrentPeriod = ЦветаСтиля.ChoiceStandardPeriodФонКнопки;
 	
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура OnOpen(Отказ)
+&AtClient
+Procedure OnOpen(Cancel)
 	
-	УстановитьАктивныйПериод();
+	SetActivePeriod();
 	
-КонецПроцедуры
+EndProcedure
 
-////////////////////////////////////////////////////////////////////////////////
-// ОБРАБОТЧИКИ КОМАНД ФОРМЫ
 
-&НаКлиенте
-Процедура GoToYearBack(Команда)
-	
-	BeginDateYear = НачалоГода(BeginDateYear - 1);
-	
-	УстановитьАктивныйПериод();
-	
-КонецПроцедуры
 
-&НаКлиенте
-Процедура NavigateToForwardOfYear(Команда)
+&AtClient
+Procedure GoToYearBack(Command)
 	
-	BeginDateYear = КонецГода(BeginDateYear) + 1;
+	BeginDateYear = BegOfYear(BeginDateYear - 1);
 	
-	УстановитьАктивныйПериод();
+	SetActivePeriod();
 	
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура SelectMonth1(Команда)
+&AtClient
+Procedure NavigateToForwardOfYear(Command)
+	
+	BeginDateYear = EndOfYear(BeginDateYear) + 1;
+	
+	SetActivePeriod();
+	
+EndProcedure
+
+&AtClient
+Procedure SelectMonth1(Command)
 	
 	SelectMonth(1);
 	
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура SelectMonth2(Команда)
+&AtClient
+Procedure SelectMonth2(Command)
 	
 	SelectMonth(2);
 	
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура SelectMonth3(Команда)
+&AtClient
+Procedure SelectMonth3(Command)
 	
 	SelectMonth(3);
 	
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура SelectMonth4(Команда)
+&AtClient
+Procedure SelectMonth4(Command)
 	
 	SelectMonth(4);
 	
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура SelectMonth5(Команда)
+&AtClient
+Procedure SelectMonth5(Command)
 	
 	SelectMonth(5);
 	
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура SelectMonth6(Команда)
+&AtClient
+Procedure SelectMonth6(Command)
 	
 	SelectMonth(6);
 	
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура SelectMonth7(Команда)
+&AtClient
+Procedure SelectMonth7(Command)
 	
 	SelectMonth(7);
 	
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура SelectMonth8(Команда)
+&AtClient
+Procedure SelectMonth8(Command)
 	
 	SelectMonth(8);
 	
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура SelectMonth9(Команда)
+&AtClient
+Procedure SelectMonth9(Command)
 	
 	SelectMonth(9);
 	
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура SelectMonth10(Команда)
+&AtClient
+Procedure SelectMonth10(Command)
 	
 	SelectMonth(10);
 	
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура SelectMonth11(Команда)
+&AtClient
+Procedure SelectMonth11(Command)
 	
 	SelectMonth(11);
 	
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура SelectMonth12(Команда)
+&AtClient
+Procedure SelectMonth12(Command)
 	
 	SelectMonth(12);
 	
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура SelectQuarter1(Команда)
+&AtClient
+Procedure SelectQuarter1(Command)
 	
 	SelectQuarter(1);
 	
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура SelectQuarter2(Команда)
+&AtClient
+Procedure SelectQuarter2(Command)
 	
 	SelectQuarter(2);
 	
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура SelectQuarter3(Команда)
+&AtClient
+Procedure SelectQuarter3(Command)
 	
 	SelectQuarter(3);
 	
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура SelectQuarter4(Команда)
+&AtClient
+Procedure SelectQuarter4(Command)
 	
 	SelectQuarter(4);
 	
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура SelectHalfYear1(Команда)
+&AtClient
+Procedure SelectHalfYear1(Command)
 	
 	SelectHalfYear(1);
 	
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура SelectHalfYear2(Команда)
+&AtClient
+Procedure SelectHalfYear2(Command)
 	
 	SelectHalfYear(2);
 	
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура Select9Months(Команда)
-
-	BeginOfPeriod = BeginDateYear;
-	EndOfPeriod  = Date(Год(BeginDateYear), 9 , 30);
-	ВыполнитьВыборПериода();
-	
-КонецПроцедуры
-
-&НаКлиенте
-Процедура SelectYear(Команда)
+&AtClient
+Procedure Select9Months(Command)
 
 	BeginOfPeriod = BeginDateYear;
-	EndOfPeriod  = КонецГода(BeginDateYear);
-	ВыполнитьВыборПериода();
+	EndOfPeriod   = Date(Year(BeginDateYear), 9 , 30);
+	ProceedPeriodSelection();
 	
-КонецПроцедуры
+EndProcedure
 
-////////////////////////////////////////////////////////////////////////////////
-// СЛУЖЕБНЫЕ ПРОЦЕДУРЫ И ФУНКЦИИ
+&AtClient
+Procedure SelectYear(Command)
 
-&НаКлиенте
-Процедура УстановитьАктивныйПериод()
-
-	Если НачалоМесяца(BeginOfPeriod) = НачалоМесяца(EndOfPeriod) Тогда
-		НомерМесяца = Месяц(BeginOfPeriod);
-		ТекущийЭлемент = Элементы["SelectMonth" + НомерМесяца];
-	ИначеЕсли НачалоКвартала(BeginOfPeriod) = НачалоКвартала(EndOfPeriod) Тогда
-		НомерМесяца = Месяц(BeginOfPeriod);
-		НомерКвартала = Цел((НомерМесяца + 3) / 3);
-		ТекущийЭлемент = Элементы["SelectQuarter" + НомерКвартала];
-	ИначеЕсли НачалоГода(BeginOfPeriod) = НачалоГода(EndOfPeriod) Тогда
-		НомерМесяцаНачала = Месяц(BeginOfPeriod);
-		НомерМесяцаКонца  = Месяц(EndOfPeriod);
-		Если НомерМесяцаНачала <= 3 И НомерМесяцаКонца <= 6 Тогда
-			ТекущийЭлемент = Элементы["SelectHalfYear1"];
-		ИначеЕсли НомерМесяцаНачала <= 3 И НомерМесяцаКонца <= 9 Тогда
-			ТекущийЭлемент = Элементы["Select9Months"];
-		Иначе
-			ТекущийЭлемент = Элементы["SelectYear"];
-		КонецЕсли;
-	Иначе
-		ТекущийЭлемент = Элементы["SelectYear"];
-	КонецЕсли;
-
-	ТекущийЭлемент.ЦветФона = ColorCurrentPeriod;
+	BeginOfPeriod = BeginDateYear;
+	EndOfPeriod   = EndOfYear(BeginDateYear);
+	ProceedPeriodSelection();
 	
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура ВыполнитьВыборПериода()
+&AtClient
+Procedure SetActivePeriod()
+	
+	If BegOfMonth(BeginOfPeriod) = BegOfMonth(EndOfPeriod) Then
+		MonthNumber = Month(BeginOfPeriod);
+		CurrentItem = Items["SelectMonth" + MonthNumber];
+		
+	ElsIf BegOfQuarter(BeginOfPeriod) = BegOfQuarter(EndOfPeriod) Then
+		MonthNumber = Month(BeginOfPeriod);
+		QuartNumber = Int((MonthNumber + 3) / 3);
+		CurrentItem = Items["SelectQuarter" + QuartNumber];
+		
+	ElsIf BegOfYear(BeginOfPeriod) = BegOfYear(EndOfPeriod) Then
+		BegMonthNumber = Month(BeginOfPeriod);
+		EndMonthNumber = Month(EndOfPeriod);
+		If BegMonthNumber <= 3 And EndMonthNumber <= 6 Then
+			CurrentItem = Items["SelectHalfYear1"];
+		ElsIf BegMonthNumber <= 3 And EndMonthNumber <= 9 Then
+			CurrentItem = Items["Select9Months"];
+		Else
+			CurrentItem = Items["SelectYear"];
+		EndIf;
+	Else
+		CurrentItem = Items["SelectYear"];
+	EndIf;
+	
+	CurrentItem.BackColor = ColorCurrentPeriod;
+	
+EndProcedure
 
-	РезультатВыбора = Новый Структура("BeginOfPeriod,EndOfPeriod", BeginOfPeriod, КонецДня(EndOfPeriod));
-	ОповеститьОВыборе(РезультатВыбора);
+&AtClient
+Procedure ProceedPeriodSelection()
+	
+	SelectionResult = New Structure("BeginOfPeriod, EndOfPeriod", BeginOfPeriod, EndOfDay(EndOfPeriod));
+	NotifyChoice(SelectionResult);
+	
+EndProcedure 
 
-КонецПроцедуры 
+&AtClient
+Procedure SelectMonth(MonthNumber)
+	
+	BeginOfPeriod = Date(Year(BeginDateYear), MonthNumber, 1);
+	EndOfPeriod   = EndOfMonth(BeginOfPeriod);
+	
+	ProceedPeriodSelection();
+	
+EndProcedure
 
-&НаКлиенте
-Процедура SelectMonth(НомерМесяца)
+&AtClient
+Procedure SelectQuarter(QuartNumber)
 	
-	BeginOfPeriod = Date(Год(BeginDateYear), НомерМесяца, 1);
-	EndOfPeriod  = КонецМесяца(BeginOfPeriod);
+	BeginOfPeriod = Date(Year(BeginDateYear), 1 + (QuartNumber - 1) * 3, 1);
+	EndOfPeriod   = EndOfQuarter(BeginOfPeriod);
 	
-	ВыполнитьВыборПериода();
+	ProceedPeriodSelection();
 	
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура SelectQuarter(НомерКвартала)
+&AtClient
+Procedure SelectHalfYear(HalfYearNumber)
 	
-	BeginOfPeriod = Date(Год(BeginDateYear), 1 + (НомерКвартала - 1) * 3, 1);
+	BeginOfPeriod = Date(Year(BeginDateYear), 1 + (HalfYearNumber - 1) * 6, 1);
+	EndOfPeriod   = EndOfMonth(AddMonth(BeginOfPeriod, 5));
 	
-	EndOfPeriod  = КонецКвартала(BeginOfPeriod);
+	ProceedPeriodSelection();
 	
-	ВыполнитьВыборПериода();
-	
-КонецПроцедуры
-
-&НаКлиенте
-Процедура SelectHalfYear(НомерПолугодия)
-
-	BeginOfPeriod = Date(Год(BeginDateYear), 1 + (НомерПолугодия - 1) * 6, 1);
-	EndOfPeriod  = КонецМесяца(ДобавитьМесяц(BeginOfPeriod, 5));
-	ВыполнитьВыборПериода();
-	
-КонецПроцедуры
+EndProcedure
 

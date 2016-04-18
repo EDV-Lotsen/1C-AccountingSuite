@@ -476,6 +476,127 @@ Function GetDocumentTitle(DocumentParameters) Export
 	
 EndFunction
 
+// Return the list of visible columns (conditional appearance is not considered) of a tabular section or value table
+//
+// Parameters:
+//  ListOfColumns		- ValueList - this list gets populated 
+//  ParentItem			- FormItem - Child items of this item should be columns or column groups
+//  ExcludingColumns 	- Array - Contains table attribute names, which should be excluded from the columns list
+//  DataPathPrefix		- String - Constant prefix part of a columns data path
+//
+Procedure GetVisibleColumns(ListOfColumns, ParentItem, ExcludingColumns, DataPathPrefix) Export
+	
+	For Each ChildItem In ParentItem.ChildItems Do
+		If TypeOf(ChildItem) = Type("FormGroup") And ChildItem.Visible Then
+			GetVisibleColumns(ListOfColumns, ChildItem, ExcludingColumns, DataPathPrefix);
+		ElsIf ChildItem.Visible Then
+			If Find(ChildItem.DataPath, DataPathPrefix) > 0 Then
+				ColumnValue = StrReplace(ChildItem.DataPath, DataPathPrefix, "");
+				If ExcludingColumns.Find(ColumnValue) <> Undefined Then
+					Continue;
+				EndIf;
+				ListOfColumns.Add(ColumnValue, ChildItem.Title);
+			EndIf;
+		EndIf;
+	EndDo;
+	
+EndProcedure
+
+// Generates spreadsheet document and fills it with the tabular section data
+//
+// Parameters:
+//  TabularSection 		- TabularSection, ValueTable - data source for the spreadsheet document
+//  Filter				- Structure - containes filter parameters to be applied to TabularSection
+//  ColumnsForOutput	- ValueList - the list of tabular section attributes to export
+//  SelectedRows		- Array		- specifies row identifiers to export (Filter is ignored)
+//  Caption				- String 	- specifies caption of the spreadsheet document
+//  ReportParams		- Array of strings - specifies parameters, which are shown below caption on the spreadsheet document
+//
+Function ExportToSpreadsheetDocument(TabularSection, Filter, ColumnsForOutput, SelectedRows, Caption, ReportParams) Export
+	
+	ArrayOfRows = new Array();
+	If SelectedRows.Count() > 0 Then
+		For Each SelectedRow In SelectedRows Do
+			ArrayOfRows.Add(TabularSection.FindByID(SelectedRow));
+		EndDo;
+	Else
+		If Filter <> Undefined Then
+			ArrayOfRows = TabularSection.FindRows(Filter);
+		Else
+			ArrayOfRows = TabularSection;
+		EndIf;
+	EndIf;
+
+	Result 		= new SpreadsheetDocument();
+	Template	= GetCommonTemplate("OutputList");
+	CaptionArea		= Template.GetArea("Caption|Column");
+	ParamsArea		= Template.GetArea("ReportParam|Column");
+	HeaderArea 		= Template.GetArea("Heading|Column");
+	TableRowArea 	= Template.GetArea("TableRow|Column");
+	
+	//Output caption
+	CaptionArea.Parameters.Value = Caption;
+	Result.Put(CaptionArea);
+	
+	//Output params
+	For each Param In ReportParams Do
+		ParamsArea.Parameters.Value = Param;
+		Result.Put(ParamsArea);
+	EndDo;
+		
+	ColumnWidthes = new Array();
+	//Output table headings
+	For i = 0 To ColumnsForOutput.Count()-1 Do
+		Column = ColumnsForOutput[i];
+		HeaderArea.Parameters.Value = ?(ValueIsFilled(Column.Presentation), Column.Presentation, Column.Value);
+		ColumnWidthes.Add(StrLen(HeaderArea.Parameters.Value));
+		
+		If i = 0 Then
+			Result.Put(HeaderArea);
+		Else
+			Result.Join(HeaderArea);
+		EndIf;
+	EndDo;
+	//Output table rows
+	For Each Row In ArrayOfRows Do
+		For i = 0 To ColumnsForOutput.Count()-1 Do
+			Column = ColumnsForOutput[i];
+			TableRowArea.Parameters.Value = Row[Column.Value];
+			
+			CurWidth = StrLen(TableRowArea.Parameters.Value);
+			If ColumnWidthes[i] < CurWidth Then
+				ColumnWidthes[i] = CurWidth;
+			EndIf;
+
+			If i = 0 Then
+				Result.Put(TableRowArea);
+			Else
+				Result.Join(TableRowArea);
+			EndIf;
+		EndDo;
+	EndDo;
+	
+	//Adjust column width
+	For i = 0 To ColumnsForOutput.Count()-1 Do
+		Area = Result.Area(1, i + 1);
+		Area.ColumnWidth = ?(ColumnWidthes[i] > 10, ColumnWidthes[i] * 1.1, ColumnWidthes[i] * 1.3);
+	EndDo;
+	
+	//Merge caption cells
+	Area = Result.Area(1, 1, 1, ColumnsForOutput.Count());
+	Area.Merge();
+	Area.HorizontalAlign = HorizontalAlign.Center;
+	//Merge params cells
+	For i = 0 To ReportParams.Count() - 1 Do
+		Area = Result.Area(i + 2, 1, i + 2, ColumnsForOutput.Count());
+		Area.Merge();
+		Area.HorizontalAlign = HorizontalAlign.Left;
+	EndDo;
+	
+	return Result;
+	
+EndFunction
+
 #EndRegion
 
 ////////////////////////////////////////////////////////////////////////////////

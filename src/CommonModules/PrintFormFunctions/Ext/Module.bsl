@@ -1,5 +1,4 @@
-﻿// external module to be able to test print forms
-
+﻿
 Function PrintSO(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
 	
 	TestData = New Map(); // creating a structure of print form data for testing
@@ -51,7 +50,6 @@ Function PrintSO(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
    |	SalesOrder.SalesTaxRC,
    |	SalesOrder.DocumentTotal,
    |	SalesOrder.DocumentTotalRC,
-   |	SalesOrder.______Review______,
    |	SalesOrder.CF1String,
    |	SalesOrder.EmailNote,
    |	SalesOrder.SalesTaxRate,
@@ -98,7 +96,8 @@ Function PrintSO(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
    |	GeneralJournalBalance.AmountRCBalanceCr,
    |	GeneralJournalBalance.AmountRCSplittedBalanceDr,
    |	GeneralJournalBalance.AmountRCSplittedBalanceCr,
-   |	ISNULL(OrderTransactionsBalance.AmountBalance, 0) AS BalanceDue
+   |	ISNULL(OrderTransactionsBalance.AmountBalance, 0) AS BalanceDue,
+   |	- ISNULL(GeneralJournalOrderBalance.AmountBalance, 0) AS SOBalance
    |FROM
    |	Document.SalesOrder AS SalesOrder
    |		LEFT JOIN AccountingRegister.GeneralJournal.Balance AS GeneralJournalBalance
@@ -106,6 +105,9 @@ Function PrintSO(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
    |			AND (GeneralJournalBalance.ExtDimension2 = SalesOrder.Ref)
    |		LEFT JOIN AccumulationRegister.OrderTransactions.Balance AS OrderTransactionsBalance
    |		ON (OrderTransactionsBalance.Order = SalesOrder.Ref)
+   |		LEFT JOIN AccountingRegister.GeneralJournal.Balance (,,, ExtDimension1 REFS Catalog.Companies AND ExtDimension2 REFS Document.CashReceipt) AS GeneralJournalOrderBalance
+   |		ON (GeneralJournalOrderBalance.ExtDimension1 = SalesOrder.Company)
+   |			AND (Isnull(GeneralJournalOrderBalance.ExtDimension2.SalesOrder, Undefined) = SalesOrder.Ref)
    |WHERE
    |	SalesOrder.Ref IN(&Ref)";
    Query.SetParameter("Ref", Ref);
@@ -450,8 +452,13 @@ Function PrintSO(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
 	TemplateArea.Parameters.Total         = Format(Selection.DocumentTotal, "NFD=2; NZ=");
 	
 	If Constants.SOPrintBalance.Get() Then 
-		TemplateArea.Parameters.BalanceDueTitle = "Balance Due " + Selection.Currency.Description + ":";
-		TemplateArea.Parameters.BalanceDue      = Format(Selection.BalanceDue, "NFD=2; NZ=");
+		If Constants.UseSOPrepayment.Get() Then 
+			TemplateArea.Parameters.BalanceDueTitle = "Prepayment balance " + Selection.Currency.Description + ":";
+			TemplateArea.Parameters.BalanceDue      = Format(Selection.SOBalance, "NFD=2; NZ=");
+		Else 
+			TemplateArea.Parameters.BalanceDueTitle = "Balance due " + Selection.Currency.Description + ":";
+			TemplateArea.Parameters.BalanceDue      = Format(Selection.BalanceDue, "NFD=2; NZ=");
+		EndIf;
 	EndIf;
 
 	TestData.Insert("Total",TemplateArea.Parameters.Total); // for unit testing
@@ -521,7 +528,7 @@ Function PrintSO(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
 			Spreadsheet.Join(TemplateArea);
 	EndIf;
 		
-	Spreadsheet.PutHorizontalPageBreak(); //.ВывестиГоризонтальныйРазделительСтраниц();
+	Spreadsheet.PutHorizontalPageBreak();
 	Spreadsheet.FitToPage  = True;
 	
 	// Remove footer information if only a page.
@@ -543,11 +550,11 @@ Function PrintSI(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
 	CustomTemplate = GeneralFunctions.GetCustomTemplate("Document.SalesInvoice", SheetTitle);
 	
 	If CustomTemplate = Undefined Then
-		If Constants.SalesInvoicePO.Get() = False Then
+		//If Constants.SalesInvoicePO.Get() = False Then
 			Template = Documents.SalesInvoice.GetTemplate("New_SalesInvoice_Form");//("PF_MXL_SalesInvoice");
-		ElsIf Constants.SalesInvoicePO.Get() = True Then
-			Template = Documents.SalesInvoice.GetTemplate("PF_MXL_SalesInvoice_PO");
-		EndIf;
+		//ElsIf Constants.SalesInvoicePO.Get() = True Then
+		//	Template = Documents.SalesInvoice.GetTemplate("PF_MXL_SalesInvoice_PO");
+		//EndIf;
 	Else
 		Template = CustomTemplate;
 	EndIf;
@@ -990,7 +997,7 @@ Function PrintSI(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
 	TemplateArea = Template.GetArea("Area3|Area2");
 	TemplateArea.Parameters.LineSubtotal = Format(Selection.LineSubtotal, "NFD=2; NZ=");
 	TemplateArea.Parameters.Discount = "(" + Format(Selection.Discount, "NFD=2; NZ=") + ")";
-	TemplateArea.Parameters.Subtotal = Format(Selection.Subtotal, "NFD=2; NZ=");
+	//TemplateArea.Parameters.Subtotal = Format(Selection.Subtotal, "NFD=2; NZ=");
 	TemplateArea.Parameters.Shipping = Format(Selection.Shipping, "NFD=2; NZ=");
 	If Selection.LocationActual.Country <> Catalogs.Countries.FindByCode("US") AND Selection.LocationActual.Country <> Catalogs.Countries.EmptyRef() AND Selection.Ref.UseAvatax = True Then
 		TemplateArea.Parameters.SalesTaxTitle = "VAT (" + Selection.Ref.SalesTaxAcrossAgencies[0].Rate + "%)";
@@ -1002,12 +1009,18 @@ Function PrintSI(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
 	TemplateArea.Parameters.Total = Format(Selection.DocumentTotal, "NFD=2; NZ=");
 	// change here if need to disable showing currency if multi-currency isn't enabled
 	TemplateArea.Parameters.NetTotalTitle = "Net Total " + Selection.Currency.Description + ":";
+	//TemplateArea.Parameters.PaymentsCreditsTitle = "Payments/Credits:";
 	TemplateArea.Parameters.BalanceDueTitle = "Balance Due " + Selection.Currency.Description + ":";
 	// end change here
 	NonNullBalance = 0;
 	If Selection.Balance <> NULL Then NonNullBalance = Selection.Balance; EndIf;
 	TemplateArea.Parameters.Balance = Format(NonNullBalance, "NFD=2; NZ=");
-
+	Try
+		PaymentsCredits = ?(Selection.Posted, Selection.DocumentTotal - NonNullBalance, 0);
+		
+		TemplateArea.Parameters.PaymentsCredits = Format(PaymentsCredits, "NFD=2; NZ=");
+	Except
+	EndTry;
 	TestData.Insert("Currency",Selection.Currency.Symbol); // for unit testing
 	TestData.Insert("LineSubtotal",TemplateArea.Parameters.LineSubtotal);
 	
@@ -1088,7 +1101,7 @@ Function PrintSI(Spreadsheet, SheetTitle, Ref, TemplateName = Undefined) Export
 			Spreadsheet.Join(TemplateArea);
 	EndIf;	
 	
-	Spreadsheet.PutHorizontalPageBreak(); //.ВывестиГоризонтальныйРазделительСтраниц();
+	Spreadsheet.PutHorizontalPageBreak();
 	Spreadsheet.FitToPage  = True;
 	
 	// Remove footer information if only a page.
@@ -1755,21 +1768,21 @@ Function PrintAssembly(Spreadsheet, SheetTitle, RefArray, TemplateName = Undefin
 		MiddleHeader.Parameters.Unit               = Ref.Unit;
 		MiddleHeader.Parameters.Location           = Ref.Location;
 		
-		If Ref.Product.HasLotsSerialNumbers Then
-			If Ref.Product.UseLots = 0 Then
-				MiddleHeader.Parameters.LotTitle = "Lot:";
-				MiddleHeader.Parameters.Lot      = Ref.Lot;
-			ElsIf Ref.Product.UseLots = 1 Then
-				
-				SerialNumbersArray = New Array;
-				For Each CurrentRow In Ref.SerialNumbers Do
-					SerialNumbersArray.Add(CurrentRow.SerialNumber);
-				EndDo;
-				
-				MiddleHeader.Parameters.LotTitle = "Serial #:";
-				MiddleHeader.Parameters.Lot      = LotsSerialNumbersClientServer.FormatSerialNumbersStr(SerialNumbersArray);
-			EndIf;
-		EndIf;
+		//If Ref.Product.HasLotsSerialNumbers Then
+		//	If Ref.Product.UseLots = 0 Then
+		//		MiddleHeader.Parameters.LotTitle = "Lot:";
+		//		MiddleHeader.Parameters.Lot      = Ref.Lot;
+		//	ElsIf Ref.Product.UseLots = 1 Then
+		//		
+		//		SerialNumbersArray = New Array;
+		//		For Each CurrentRow In Ref.SerialNumbers Do
+		//			SerialNumbersArray.Add(CurrentRow.SerialNumber);
+		//		EndDo;
+		//		
+		//		MiddleHeader.Parameters.LotTitle = "Serial #:";
+		//		MiddleHeader.Parameters.Lot      = LotsSerialNumbersClientServer.FormatSerialNumbersStr(SerialNumbersArray);
+		//	EndIf;
+		//EndIf;
 						
 		//------------
 		//BottomHeader
@@ -1922,7 +1935,7 @@ Function PrintAssembly(Spreadsheet, SheetTitle, RefArray, TemplateName = Undefin
 	Spreadsheet.Header.RightText     = "Page [&PageNumber] of [&PagesTotal]";
 	
 EndFunction
-//
+
 Function GetSettingsPrintedForm(PrintedForm) Export
 	
 	SettingsPrintedForm = InformationRegisters.SettingsPrintedForms.Get(New Structure("PrintedForm", PrintedForm));	
@@ -1960,21 +1973,21 @@ Function CorrectNameStr(Salutation, FirstName, LastName) Export
 		
 EndFunction
 
-//
-Procedure SetPageSize(Spreadsheet)
+Procedure SetPageSize(Spreadsheet) Export
 	
 	//
-	Spreadsheet.PageSize     = "Letter";
+	Spreadsheet.PageSize        = "Letter";
+	Spreadsheet.PageOrientation = PageOrientation.Portrait;
 	
-	Spreadsheet.TopMargin    = 5;
-	Spreadsheet.LeftMargin   = 5;
-	Spreadsheet.RightMargin  = 5;
-	Spreadsheet.BottomMargin = 5;
+	Spreadsheet.TopMargin       = 10;
+	Spreadsheet.LeftMargin      = 10;
+	Spreadsheet.RightMargin     = 10;
+	Spreadsheet.BottomMargin    = 10;
 	
-	Spreadsheet.HeaderSize   = 5;
-	Spreadsheet.FooterSize   = 5;
+	Spreadsheet.HeaderSize      = 10;
+	Spreadsheet.FooterSize      = 10;
 	
-	Spreadsheet.FitToPage    = True;
+	Spreadsheet.FitToPage       = True;
 	
 EndProcedure
 
@@ -2012,6 +2025,63 @@ Function GetDescriptionSalesTax(DocRef, UseAvatax) Export
 		EndIf;
 	EndIf;
 	
-	Return "Sales Tax, " + Format(TaxRate, "NFD=2; NZ=") + "%:";
+	Return "Sales Tax, " + Format(TaxRate, "NFD=4; NZ=") + "%:";
 	
 EndFunction
+
+Function GetPrintFormSettings(ObjectTypeID) Export
+	
+	//PageSetupStructure 	= new Structure("PrintPageOrientation, LeftMargin, RightMargin, TopMargin, BottomMargin, HeaderSize, FooterSize, PrintScale, 
+	//|PerPage, BlackAndWhite, PageOrientation", "Letter", PageOrientation.Portrait, 10, 10, 10, 10, 10, 10, 100, False, 1, False, PageOrientation.Portrait);
+	PageSetupStructure 	= new Structure("PageSize, PrintPageOrientation, LeftMargin, RightMargin, TopMargin, BottomMargin, HeaderSize, FooterSize, PrintScale, 
+	|FitToPage, PerPage, BlackAndWhite", "Letter", 0, 31.75, 31.75, 25.4, 25.4, 0, 0, 100, True, 1, True); //PageOrientation = Portrait
+	If AccessRight("SaveUserData", Metadata) Then
+		//If GetFromStorage Then
+		//	PrintPageSetupVS	= CommonSettingsStorage.Load("PrintFormSettings");
+		//Else	
+		PrintPageSetupVS	= GetFromUserSetting(ObjectTypeID);
+		//EndIf; 
+		If PrintPageSetupVS <> Undefined Then
+			PPS					= PrintPageSetupVS.Get();
+			If TypeOf(PPS) = Type("Structure") Then
+				FillPropertyValues(PageSetupStructure, PPS);
+			EndIf;
+		EndIf;
+	EndIf;
+	
+	If ObjectTypeID = "Document.Check (Check)" Or ObjectTypeID = "Document.InvoicePayment (Check)" Then
+		PageSetupStructure.LeftMargin = 17 + Constants.CheckHorizontalAdj.Get();
+		PageSetupStructure.TopMargin = 15 + Constants.CheckVerticalAdj.Get()
+	EndIf;
+	
+	return PageSetupStructure;
+	
+EndFunction
+
+Function GetFromUserSetting(ObjectTypeID) Export
+
+	Query = New Query("SELECT
+	                  |	UserSettings.SettingValue
+	                  |FROM
+	                  |	Catalog.UserSettings AS UserSettings
+	                  |WHERE
+	                  |	UserSettings.ObjectID = &ObjectID
+	                  |	AND UserSettings.Type = VALUE(Enum.UserSettingsTypes.PagePrintSetting)
+	                  |	AND UserSettings.AvailableToAllUsers = TRUE");
+					  
+	Query.SetParameter("ObjectID",ObjectTypeID);
+	Result = Query.Execute().Select();
+	If Result.Next() Then
+		Return Result.SettingValue;
+	EndIf; 
+	Return Undefined;
+EndFunction
+
+Procedure ReportOnComposeResult(ResultDocument, DetailsData, StandardProcessing, ReportName) Export
+	
+	//Apply system print form settings
+	PrintFormSettings = PrintFormFunctions.GetPrintFormSettings(ReportName);
+	FillPropertyValues(ResultDocument, PrintFormSettings);
+	ResultDocument.PageOrientation = ?(PrintFormSettings.PrintPageOrientation = 0, PageOrientation.Portrait, PageOrientation.Landscape);
+	
+EndProcedure

@@ -1,6 +1,11 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <CommandInterface xmlns="http://v8.1c.ru/8.3/xcf/extrnprops" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
 	<CommandsVisibility>
+		<Command name="CommonForm.OutputList.StandardCommand.Open">
+			<Visibility>
+				<xr:Common>false</xr:Common>
+			</Visibility>
+		</Command>
 		<Command name="Report.ARAging.StandardCommand.Open">
 			<Visibility>
 				<xr:Common>true</xr:Common>
@@ -26,12 +31,12 @@
 				<xr:Common>true</xr:Common>
 			</Visibility>
 		</Command>
-		<Command name="Report.IncomeStatementSalesPerson.StandardCommand.Open">
+		<Command name="Report.IncomeStatementSalesPersonCashBasis.StandardCommand.Open">
 			<Visibility>
 				<xr:Common>true</xr:Common>
 			</Visibility>
 		</Command>
-		<Command name="Report.IncomeStatementSalesPersonDetail.StandardCommand.Open">
+		<Command name="Report.IncomeStatementSalesPersonCashBasisDetail.StandardCommand.Open">
 			<Visibility>
 				<xr:Common>true</xr:Common>
 			</Visibility>
@@ -118,7 +123,7 @@
 		</Command>
 		<Command name="Report.ItemActivityReport.StandardCommand.Open">
 			<Visibility>
-				<xr:Common>true</xr:Common>
+				<xr:Common>false</xr:Common>
 			</Visibility>
 		</Command>
 		<Command name="Report.GeneralLedger.StandardCommand.Open">
@@ -126,12 +131,12 @@
 				<xr:Common>true</xr:Common>
 			</Visibility>
 		</Command>
-		<Command name="Report.TrialBalance.StandardCommand.Open">
+		<Command name="Report.GeneralLedgerCashBasis.StandardCommand.Open">
 			<Visibility>
 				<xr:Common>true</xr:Common>
 			</Visibility>
 		</Command>
-		<Command name="Report.TrialBalanceExtended.StandardCommand.Open">
+		<Command name="Report.TrialBalanceAdjusted.StandardCommand.Open">
 			<Visibility>
 				<xr:Common>true</xr:Common>
 			</Visibility>
@@ -141,17 +146,27 @@
 				<xr:Common>true</xr:Common>
 			</Visibility>
 		</Command>
+		<Command name="Report.IncomeStatementDetail.StandardCommand.Open">
+			<Visibility>
+				<xr:Common>true</xr:Common>
+			</Visibility>
+		</Command>
 		<Command name="Report.IncomeStatementCashBasis.StandardCommand.Open">
 			<Visibility>
 				<xr:Common>true</xr:Common>
 			</Visibility>
 		</Command>
-		<Command name="Report.ProfitAndLossByClass.StandardCommand.Open">
+		<Command name="Report.IncomeStatementCashBasisDetail.StandardCommand.Open">
 			<Visibility>
 				<xr:Common>true</xr:Common>
 			</Visibility>
 		</Command>
-		<Command name="Report.ProfitAndLossByProject.StandardCommand.Open">
+		<Command name="Report.ProfitAndLossByClassDimensions.StandardCommand.Open">
+			<Visibility>
+				<xr:Common>true</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="Report.ProfitAndLossByProjectDimensions.StandardCommand.Open">
 			<Visibility>
 				<xr:Common>true</xr:Common>
 			</Visibility>
@@ -161,7 +176,7 @@
 				<xr:Common>true</xr:Common>
 			</Visibility>
 		</Command>
-		<Command name="0:b689b6ca-48b2-424e-b811-9a20f04ad309">
+		<Command name="Report.BalanceSheetCashBasis.StandardCommand.Open">
 			<Visibility>
 				<xr:Common>true</xr:Common>
 			</Visibility>
@@ -181,7 +196,7 @@
 				<xr:Common>true</xr:Common>
 			</Visibility>
 		</Command>
-		<Command name="Report.CheckRegister.StandardCommand.Open">
+		<Command name="0:af7c4cd7-6083-435d-aef7-0ed01e870809">
 			<Visibility>
 				<xr:Common>true</xr:Common>
 			</Visibility>
@@ -197,11 +212,6 @@
 			</Visibility>
 		</Command>
 		<Command name="Report.BankAccountsBalanceReport.StandardCommand.Open">
-			<Visibility>
-				<xr:Common>true</xr:Common>
-			</Visibility>
-		</Command>
-		<Command name="0:7bc74a24-ccc0-406c-bbad-696ea5d9998b">
 			<Visibility>
 				<xr:Common>true</xr:Common>
 			</Visibility>
@@ -228,11 +238,11 @@
 			<CommandGroup>CommandGroup.Sales</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
-		<Command name="Report.IncomeStatementSalesPerson.StandardCommand.Open">
+		<Command name="Report.IncomeStatementSalesPersonCashBasis.StandardCommand.Open">
 			<CommandGroup>CommandGroup.Sales</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
-		<Command name="Report.IncomeStatementSalesPersonDetail.StandardCommand.Open">
+		<Command name="Report.IncomeStatementSalesPersonCashBasisDetail.StandardCommand.Open">
 			<CommandGroup>CommandGroup.Sales</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
@@ -308,11 +318,11 @@
 			<CommandGroup>CommandGroup.Accounting</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
-		<Command name="Report.TrialBalance.StandardCommand.Open">
+		<Command name="Report.GeneralLedgerCashBasis.StandardCommand.Open">
 			<CommandGroup>CommandGroup.Accounting</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
-		<Command name="Report.TrialBalanceExtended.StandardCommand.Open">
+		<Command name="Report.TrialBalanceAdjusted.StandardCommand.Open">
 			<CommandGroup>CommandGroup.Accounting</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
@@ -320,15 +330,23 @@
 			<CommandGroup>CommandGroup.Accounting</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
+		<Command name="Report.IncomeStatementDetail.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Accounting</CommandGroup>
+			<Placement>Auto</Placement>
+		</Command>
 		<Command name="Report.IncomeStatementCashBasis.StandardCommand.Open">
 			<CommandGroup>CommandGroup.Accounting</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
-		<Command name="Report.ProfitAndLossByClass.StandardCommand.Open">
+		<Command name="Report.IncomeStatementCashBasisDetail.StandardCommand.Open">
 			<CommandGroup>CommandGroup.Accounting</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
-		<Command name="Report.ProfitAndLossByProject.StandardCommand.Open">
+		<Command name="Report.ProfitAndLossByClassDimensions.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Accounting</CommandGroup>
+			<Placement>Auto</Placement>
+		</Command>
+		<Command name="Report.ProfitAndLossByProjectDimensions.StandardCommand.Open">
 			<CommandGroup>CommandGroup.Accounting</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
@@ -336,7 +354,7 @@
 			<CommandGroup>CommandGroup.Accounting</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
-		<Command name="0:b689b6ca-48b2-424e-b811-9a20f04ad309">
+		<Command name="Report.BalanceSheetCashBasis.StandardCommand.Open">
 			<CommandGroup>CommandGroup.Accounting</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
@@ -352,7 +370,7 @@
 			<CommandGroup>CommandGroup.Accounting</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
-		<Command name="Report.CheckRegister.StandardCommand.Open">
+		<Command name="0:af7c4cd7-6083-435d-aef7-0ed01e870809">
 			<CommandGroup>CommandGroup.Accounting</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
@@ -365,10 +383,6 @@
 			<Placement>Auto</Placement>
 		</Command>
 		<Command name="Report.BankAccountsBalanceReport.StandardCommand.Open">
-			<CommandGroup>CommandGroup.Accounting</CommandGroup>
-			<Placement>Auto</Placement>
-		</Command>
-		<Command name="0:7bc74a24-ccc0-406c-bbad-696ea5d9998b">
 			<CommandGroup>CommandGroup.Accounting</CommandGroup>
 			<Placement>Auto</Placement>
 		</Command>
@@ -389,10 +403,10 @@
 		<Command name="Report.IncomeStatementSalesPersonAccrualBasisDetail.StandardCommand.Open">
 			<CommandGroup>CommandGroup.Sales</CommandGroup>
 		</Command>
-		<Command name="Report.IncomeStatementSalesPerson.StandardCommand.Open">
+		<Command name="Report.IncomeStatementSalesPersonCashBasis.StandardCommand.Open">
 			<CommandGroup>CommandGroup.Sales</CommandGroup>
 		</Command>
-		<Command name="Report.IncomeStatementSalesPersonDetail.StandardCommand.Open">
+		<Command name="Report.IncomeStatementSalesPersonCashBasisDetail.StandardCommand.Open">
 			<CommandGroup>CommandGroup.Sales</CommandGroup>
 		</Command>
 		<Command name="Report.SalesByItemSummary.StandardCommand.Open">
@@ -449,28 +463,34 @@
 		<Command name="Report.GeneralLedger.StandardCommand.Open">
 			<CommandGroup>CommandGroup.Accounting</CommandGroup>
 		</Command>
-		<Command name="Report.TrialBalance.StandardCommand.Open">
+		<Command name="Report.GeneralLedgerCashBasis.StandardCommand.Open">
 			<CommandGroup>CommandGroup.Accounting</CommandGroup>
 		</Command>
-		<Command name="Report.TrialBalanceExtended.StandardCommand.Open">
+		<Command name="Report.TrialBalanceAdjusted.StandardCommand.Open">
 			<CommandGroup>CommandGroup.Accounting</CommandGroup>
 		</Command>
 		<Command name="Report.IncomeStatement.StandardCommand.Open">
 			<CommandGroup>CommandGroup.Accounting</CommandGroup>
 		</Command>
+		<Command name="Report.IncomeStatementDetail.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Accounting</CommandGroup>
+		</Command>
 		<Command name="Report.IncomeStatementCashBasis.StandardCommand.Open">
 			<CommandGroup>CommandGroup.Accounting</CommandGroup>
 		</Command>
-		<Command name="Report.ProfitAndLossByClass.StandardCommand.Open">
+		<Command name="Report.IncomeStatementCashBasisDetail.StandardCommand.Open">
 			<CommandGroup>CommandGroup.Accounting</CommandGroup>
 		</Command>
-		<Command name="Report.ProfitAndLossByProject.StandardCommand.Open">
+		<Command name="Report.ProfitAndLossByClassDimensions.StandardCommand.Open">
+			<CommandGroup>CommandGroup.Accounting</CommandGroup>
+		</Command>
+		<Command name="Report.ProfitAndLossByProjectDimensions.StandardCommand.Open">
 			<CommandGroup>CommandGroup.Accounting</CommandGroup>
 		</Command>
 		<Command name="Report.BalanceSheet.StandardCommand.Open">
 			<CommandGroup>CommandGroup.Accounting</CommandGroup>
 		</Command>
-		<Command name="0:b689b6ca-48b2-424e-b811-9a20f04ad309">
+		<Command name="Report.BalanceSheetCashBasis.StandardCommand.Open">
 			<CommandGroup>CommandGroup.Accounting</CommandGroup>
 		</Command>
 		<Command name="Report.BudgetPlanActual.StandardCommand.Open">
@@ -482,7 +502,7 @@
 		<Command name="Report.Vendors1099.StandardCommand.Open">
 			<CommandGroup>CommandGroup.Accounting</CommandGroup>
 		</Command>
-		<Command name="Report.CheckRegister.StandardCommand.Open">
+		<Command name="0:af7c4cd7-6083-435d-aef7-0ed01e870809">
 			<CommandGroup>CommandGroup.Accounting</CommandGroup>
 		</Command>
 		<Command name="0:82edf143-ec04-4e45-9736-0e6ea8da1636">
@@ -492,9 +512,6 @@
 			<CommandGroup>CommandGroup.Accounting</CommandGroup>
 		</Command>
 		<Command name="Report.BankAccountsBalanceReport.StandardCommand.Open">
-			<CommandGroup>CommandGroup.Accounting</CommandGroup>
-		</Command>
-		<Command name="0:7bc74a24-ccc0-406c-bbad-696ea5d9998b">
 			<CommandGroup>CommandGroup.Accounting</CommandGroup>
 		</Command>
 	</CommandsOrder>

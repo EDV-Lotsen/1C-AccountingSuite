@@ -23,15 +23,20 @@ Procedure CommandProcessing(CommandParameter, CommandExecuteParameters)
 	// Set the proper options and open the preview.
 	Spreadsheet.ShowGrid    = False;
 	Spreadsheet.ShowHeaders = False;
-	Spreadsheet.FitToPage   = True;
+	//Spreadsheet.FitToPage   = True;
 	Spreadsheet.ReadOnly    = False;
 	Spreadsheet.Protection  = False;
-	Spreadsheet.Show(NStr("en = 'Print preview'") + ?(Not IsBlankString(SpreadsheetTitle), ": " + SpreadsheetTitle, ""));
+	FormParameters = New Structure("SpreadsheetDocument, TitleOfForm, PrintFormID", Spreadsheet, SpreadsheetTitle, CommandParameter[0]);
+	OpenForm("CommonForm.PrintForm", FormParameters);
+
 	
 EndProcedure
 
 &AtServer
 Procedure Print(Spreadsheet, SpreadsheetTitle, CommandParameter)
+	
+	//Set default settings for document
+	PrintFormFunctions.SetPageSize(Spreadsheet);
 	
 	// Call document module to print the document.
 	Documents.SalesInvoice.Print(Spreadsheet, SpreadsheetTitle, CommandParameter);

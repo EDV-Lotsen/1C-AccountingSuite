@@ -30,10 +30,6 @@
 			</appearance>
 		</field>
 		<field xsi:type="DataSetFieldField">
-			<dataPath>Company</dataPath>
-			<field>Company</field>
-		</field>
-		<field xsi:type="DataSetFieldField">
 			<dataPath>DayPeriod</dataPath>
 			<field>DayPeriod</field>
 			<role>
@@ -47,10 +43,6 @@
 					<dcscor:value xsi:type="xs:string">DLF=D</dcscor:value>
 				</dcscor:item>
 			</appearance>
-		</field>
-		<field xsi:type="DataSetFieldField">
-			<dataPath>Document</dataPath>
-			<field>Document</field>
 		</field>
 		<field xsi:type="DataSetFieldField">
 			<dataPath>LineNumber</dataPath>
@@ -158,18 +150,26 @@ END</presentationExpression>
 				</dcscor:item>
 			</appearance>
 		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Class</dataPath>
+			<field>Class</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Project</dataPath>
+			<field>Project</field>
+		</field>
 		<dataSource>DataSource1</dataSource>
 		<query>SELECT ALLOWED
 	SystemTitle.Value AS OurCompany,
-	ISNULL(CashFlowDataTurnovers.Document.SalesPerson, VALUE(Catalog.SalesPeople.EmptyRef)) AS SalesPerson,
-	CashFlowDataTurnovers.LineNumber AS LineNumber,
-	CashFlowDataTurnovers.Recorder AS Recorder,
-	CashFlowDataTurnovers.DayPeriod AS DayPeriod,
-	CashFlowDataTurnovers.WeekPeriod AS WeekPeriod,
-	CashFlowDataTurnovers.MonthPeriod AS MonthPeriod,
-	CashFlowDataTurnovers.QuarterPeriod AS QuarterPeriod,
-	CashFlowDataTurnovers.YearPeriod AS YearPeriod,
-	-CashFlowDataTurnovers.AmountRCTurnover AS AmountRCTurnover
+	ISNULL(GJAD_Turnovers.Recorder.SalesPerson, VALUE(Catalog.SalesPeople.EmptyRef)) AS SalesPerson,
+	GJAD_Turnovers.LineNumber AS LineNumber,
+	GJAD_Turnovers.Recorder AS Recorder,
+	GJAD_Turnovers.DayPeriod AS DayPeriod,
+	GJAD_Turnovers.WeekPeriod AS WeekPeriod,
+	GJAD_Turnovers.MonthPeriod AS MonthPeriod,
+	GJAD_Turnovers.QuarterPeriod AS QuarterPeriod,
+	GJAD_Turnovers.YearPeriod AS YearPeriod,
+	-GJAD_Turnovers.AmountRCTurnover AS AmountRCTurnover
 {SELECT
 	SalesPerson,
 	LineNumber,
@@ -180,27 +180,22 @@ END</presentationExpression>
 	QuarterPeriod,
 	YearPeriod}
 FROM
-	AccumulationRegister.CashFlowData.Turnovers(
-			,
-			,
-			Auto,
-			(Document REFS Document.SalesInvoice
-				OR Document REFS Document.CashSale
-				OR Document REFS Document.SalesReturn)
-				AND Account.AccountType &lt;&gt; VALUE(Enum.AccountTypes.OtherCurrentLiability)) AS CashFlowDataTurnovers
+	AccumulationRegister.GeneralJournalAnalyticsDimensions.Turnovers(, , Auto, Account.AccountType IN (VALUE(Enum.AccountTypes.Income), VALUE(Enum.AccountTypes.CostOfSales), VALUE(Enum.AccountTypes.Expense), VALUE(Enum.AccountTypes.OtherExpense), VALUE(Enum.AccountTypes.OtherIncome), VALUE(Enum.AccountTypes.IncomeTaxExpense))) AS GJAD_Turnovers
 		LEFT JOIN Constant.SystemTitle AS SystemTitle
 		ON (TRUE)
 WHERE
-	CashFlowDataTurnovers.AmountRCExpense &lt;&gt; 0
+	(GJAD_Turnovers.Recorder REFS Document.SalesInvoice
+			OR GJAD_Turnovers.Recorder REFS Document.CashSale
+			OR GJAD_Turnovers.Recorder REFS Document.SalesReturn)
 {WHERE
-	CashFlowDataTurnovers.SalesPerson AS SalesPerson,
-	CashFlowDataTurnovers.LineNumber AS LineNumber,
-	CashFlowDataTurnovers.Recorder AS Recorder,
-	CashFlowDataTurnovers.DayPeriod AS DayPeriod,
-	CashFlowDataTurnovers.WeekPeriod AS WeekPeriod,
-	CashFlowDataTurnovers.MonthPeriod AS MonthPeriod,
-	CashFlowDataTurnovers.QuarterPeriod AS QuarterPeriod,
-	CashFlowDataTurnovers.YearPeriod AS YearPeriod}</query>
+	GJAD_Turnovers.Recorder.SalesPerson AS SalesPerson,
+	GJAD_Turnovers.LineNumber AS LineNumber,
+	GJAD_Turnovers.Recorder AS Recorder,
+	GJAD_Turnovers.DayPeriod AS DayPeriod,
+	GJAD_Turnovers.WeekPeriod AS WeekPeriod,
+	GJAD_Turnovers.MonthPeriod AS MonthPeriod,
+	GJAD_Turnovers.QuarterPeriod AS QuarterPeriod,
+	GJAD_Turnovers.YearPeriod AS YearPeriod}</query>
 	</dataSet>
 	<totalField>
 		<dataPath>AmountRCTurnover</dataPath>

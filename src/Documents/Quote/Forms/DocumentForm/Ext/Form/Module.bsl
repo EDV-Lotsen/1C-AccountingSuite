@@ -91,11 +91,11 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 			//If filled on the basis of Sales Order set current value
 			SalesTaxRate = Object.SalesTaxRate;
 			TaxRate = Object.SalesTaxAcrossAgencies.Total("Rate");
-			SalesTaxRateText = "Sales tax rate: " + String(TaxRate) + "%";
+			SalesTaxRateText = "Tax rate: " + String(TaxRate) + "%";
 			Items.SalesTaxPercentDecoration.Title = SalesTaxRateText;
 		Else
 			TaxRate = Object.SalesTaxAcrossAgencies.Total("Rate");
-			SalesTaxRateText = "Sales tax rate: " + String(TaxRate) + "%";
+			SalesTaxRateText = "Tax rate: " + String(TaxRate) + "%";
 			Items.SalesTaxPercentDecoration.Title = SalesTaxRateText;
 			//Determine if document's sales tax rate is inactive (has been changed)
 			AgenciesRates = New Array();
@@ -130,19 +130,6 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
 	If Object.Ref.IsEmpty() Then
 		Object.EmailNote = Constants.QuoteFooter.Get();
-	EndIf;
-	
-	If Object.CreatedFromZoho = True Then
-		taxQuery = new Query("SELECT
-							 |	SalesTaxRates.Ref
-							 |FROM
-							 |	Catalog.SalesTaxRates AS SalesTaxRates
-							 |WHERE
-							 |	SalesTaxRates.Description = &Description");
-						   
-		taxQuery.SetParameter("Description", "TaxFromZoho"); // zoho product id
-		taxResult = taxQuery.Execute().Unload();
-		SalesTaxRate = taxResult[0].ref;
 	EndIf;
 	
 	If Object.BillTo <> Catalogs.Addresses.EmptyRef() AND Object.ShipTo <> Catalogs.Addresses.EmptyRef()  Then
@@ -228,15 +215,6 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 	
 	// Request and fill order status from database.
 	FillQuoteStatusAtServer();
-	
-	If Constants.zoho_auth_token.Get() <> "" Then
-		If Object.NewObject = True Then
-			ThisAction = "create";
-		Else
-			ThisAction = "update";
-		EndIf;
-		zoho_Functions.ZohoThisQuote(ThisAction, Object.Ref);
-	EndIf;
 	
 EndProcedure
 
@@ -362,7 +340,7 @@ Procedure CompanyOnChangeAtServer()
 	Else
 		TaxRate = Object.SalesTaxAcrossAgencies.Total("Rate");
 	EndIf;
-	SalesTaxRateText = "Sales tax rate: " + String(TaxRate) + " %";
+	SalesTaxRateText = "Tax rate: " + String(TaxRate) + " %";
 	Items.SalesTaxPercentDecoration.Title = SalesTaxRateText;
 	RecalculateTotalsAtServer();
 	
@@ -1052,7 +1030,7 @@ Procedure ShowSalesTaxRate()
 	Else
 		TaxRate = Object.SalesTaxAcrossAgencies.Total("Rate");
 	EndIf;
-	SalesTaxRateText = "Sales tax rate: " + String(TaxRate) + " %";
+	SalesTaxRateText = "Tax rate: " + String(TaxRate) + " %";
 	Items.SalesTaxPercentDecoration.Title = SalesTaxRateText;
 
 EndProcedure
@@ -1081,16 +1059,12 @@ EndProcedure
 &AtClient
 Procedure SaveAndClose(Command)
 	
-	//PerformanceMeasurementClientServer.StartTimeMeasurement("Quote SaveAndClose");
-	
 	If Write() Then Close() EndIf;
 	
 EndProcedure
 
 &AtClient
 Procedure Save(Command)
-	
-	//PerformanceMeasurementClientServer.StartTimeMeasurement("Quote Save");
 	
 	Write();
 	
@@ -1107,18 +1081,6 @@ EndProcedure
 Procedure GenerateSO(Command)
 	
 	GenerateDoc("SalesOrder");
-	
-EndProcedure
-
-&AtClient
-Procedure SendEmail(Command)
-	
-	If Object.Ref.IsEmpty() Then
-		ShowMessageBox(, NStr("en = 'An email cannot be sent until the quote is saved'"));
-	Else	
-		FormParameters = New Structure("Ref",Object.Ref );
-		OpenForm("CommonForm.EmailForm", FormParameters,,,,,, FormWindowOpeningMode.LockOwnerWindow);
-	EndIf;
 	
 EndProcedure
 

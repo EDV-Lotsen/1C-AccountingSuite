@@ -79,6 +79,17 @@
 											<DataPath>Object.Ref</DataPath>
 											<ExtendedTooltip name="DocumentShipmentCreateBasedOnExtendedTooltip" id="677"/>
 										</Button>
+										<Button name="AddPrepayment" id="719">
+											<Type>CommandBarButton</Type>
+											<CommandName>Form.Command.AddPrepayment</CommandName>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Prepayment</v8:content>
+												</v8:item>
+											</Title>
+											<ExtendedTooltip name="AddPrepaymentExtendedTooltip" id="720"/>
+										</Button>
 									</ChildItems>
 								</Popup>
 								<Popup name="GroupPrint" id="494">
@@ -104,18 +115,6 @@
 										</Button>
 									</ChildItems>
 								</Popup>
-								<Button name="SendEmail" id="500">
-									<Type>CommandBarButton</Type>
-									<OnlyInAllActions>true</OnlyInAllActions>
-									<CommandName>Form.Command.SendEmail</CommandName>
-									<Title>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Email</v8:content>
-										</v8:item>
-									</Title>
-									<ExtendedTooltip name="SendEmailExtendedTooltip" id="501"/>
-								</Button>
 								<Button name="Transactions" id="502">
 									<Type>CommandBarButton</Type>
 									<OnlyInAllActions>true</OnlyInAllActions>
@@ -246,18 +245,6 @@
 										</Button>
 									</ChildItems>
 								</Popup>
-								<Button name="FormSendEmail" id="538">
-									<Type>CommandBarButton</Type>
-									<OnlyInAllActions>false</OnlyInAllActions>
-									<CommandName>Form.Command.SendEmail</CommandName>
-									<Title>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Email</v8:content>
-										</v8:item>
-									</Title>
-									<ExtendedTooltip name="FormSendEmailExtendedTooltip" id="539"/>
-								</Button>
 								<Button name="FormTransactions" id="540">
 									<Type>CommandBarButton</Type>
 									<OnlyInAllActions>false</OnlyInAllActions>
@@ -753,7 +740,7 @@ Reference number</v8:content>
 							<Title>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Print options</v8:content>
+									<v8:content>Dropship</v8:content>
 								</v8:item>
 							</Title>
 							<Group>Horizontal</Group>
@@ -941,46 +928,6 @@ Reference number</v8:content>
 							<Group>Horizontal</Group>
 							<ExtendedTooltip name="TaxTabExtendedTooltip" id="371"/>
 							<ChildItems>
-								<RadioButtonField name="TaxEngine" id="555">
-									<DataPath>TaxEngine</DataPath>
-									<TitleLocation>None</TitleLocation>
-									<RadioButtonType>Tumbler</RadioButtonType>
-									<ColumnsCount>1</ColumnsCount>
-									<ChoiceList>
-										<xr:Item>
-											<xr:Presentation/>
-											<xr:CheckState>0</xr:CheckState>
-											<xr:Value xsi:type="FormChoiceListDesTimeValue">
-												<Presentation>
-													<v8:item>
-														<v8:lang>en</v8:lang>
-														<v8:content>Use ACSuite</v8:content>
-													</v8:item>
-												</Presentation>
-												<Value xsi:type="xs:decimal">1</Value>
-											</xr:Value>
-										</xr:Item>
-										<xr:Item>
-											<xr:Presentation/>
-											<xr:CheckState>0</xr:CheckState>
-											<xr:Value xsi:type="FormChoiceListDesTimeValue">
-												<Presentation>
-													<v8:item>
-														<v8:lang>en</v8:lang>
-														<v8:content>Use AvaTax</v8:content>
-													</v8:item>
-												</Presentation>
-												<Value xsi:type="xs:decimal">2</Value>
-											</xr:Value>
-										</xr:Item>
-									</ChoiceList>
-									<Font ref="style:NormalTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
-									<ContextMenu name="TaxEngineContextMenu" id="556"/>
-									<ExtendedTooltip name="TaxEngineExtendedTooltip" id="557"/>
-									<Events>
-										<Event name="OnChange">TaxEngineOnChange</Event>
-									</Events>
-								</RadioButtonField>
 								<Pages name="TaxParametersPages" id="558">
 									<Title>
 										<v8:item>
@@ -1219,11 +1166,6 @@ Reference number</v8:content>
 															<ContextMenu name="TaxComponentsTitleContextMenu" id="605"/>
 															<ExtendedTooltip name="TaxComponentsTitleExtendedTooltip" id="606"/>
 														</LabelDecoration>
-														<Button name="AvaTaxDetails" id="607">
-															<Type>Hyperlink</Type>
-															<CommandName>Form.Command.AvaTaxDetails</CommandName>
-															<ExtendedTooltip name="AvaTaxDetailsExtendedTooltip" id="608"/>
-														</Button>
 													</ChildItems>
 												</UsualGroup>
 												<Table name="TaxAcrossAgencies" id="609">
@@ -1487,6 +1429,7 @@ Reference number</v8:content>
 								</InputField>
 								<InputField name="LineItemsUnit" id="465">
 									<DataPath>Object.LineItems.Unit</DataPath>
+									<SkipOnInput>true</SkipOnInput>
 									<Title>
 										<v8:item>
 											<v8:lang>en</v8:lang>
@@ -2607,21 +2550,6 @@ Reference number</v8:content>
 			</ToolTip>
 			<Action>Transactions</Action>
 		</Command>
-		<Command name="SendEmail" id="2">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Email SO</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Send email</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Action>SendEmail</Action>
-		</Command>
 		<Command name="CopyMainShipping" id="3">
 			<Title>
 				<v8:item>
@@ -2722,24 +2650,20 @@ Reference number</v8:content>
 			<Action>AddLine</Action>
 			<Representation>Text</Representation>
 		</Command>
-		<Command name="AvaTaxDetails" id="10">
+		<Command name="AddPrepayment" id="11">
 			<Title>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>View details</v8:content>
+					<v8:content>Add prepayment</v8:content>
 				</v8:item>
 			</Title>
 			<ToolTip>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Ava tax details</v8:content>
+					<v8:content>Add prepayment</v8:content>
 				</v8:item>
 			</ToolTip>
-			<Picture>
-				<xr:Ref>CommonPicture.Avalara</xr:Ref>
-				<xr:LoadTransparent>true</xr:LoadTransparent>
-			</Picture>
-			<Action>AvaTax</Action>
+			<Action>AddPrepayment</Action>
 		</Command>
 	</Commands>
 	<CommandInterface>
@@ -2818,7 +2742,7 @@ Reference number</v8:content>
 				</Visible>
 			</Item>
 			<Item>
-				<Command>CommonCommand.SendEmail</Command>
+				<Command>0:017ae4f6-356a-4e94-8663-9d23bcb4b365</Command>
 				<Type>Auto</Type>
 				<CommandGroup>FormCommandBarImportant</CommandGroup>
 				<Index>1</Index>

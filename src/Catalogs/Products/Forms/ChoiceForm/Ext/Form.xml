@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
 	<WindowOpeningMode>LockOwnerWindow</WindowOpeningMode>
+	<AutoSaveDataInSettings>Use</AutoSaveDataInSettings>
 	<VerticalScroll>useIfNecessary</VerticalScroll>
 	<AutoCommandBar name="FormCommandBar" id="-1"/>
 	<Events>
@@ -228,8 +229,27 @@
 					<ContextMenu name="CF5NumContextMenu" id="46"/>
 					<ExtendedTooltip name="CF5NumExtendedTooltip" id="47"/>
 				</LabelField>
+				<CheckBoxField name="InArchive" id="78">
+					<DataPath>List.InArchive</DataPath>
+					<UserVisible>
+						<xr:Common>false</xr:Common>
+					</UserVisible>
+					<CheckBoxType>Auto</CheckBoxType>
+					<ContextMenu name="InArchiveContextMenu" id="79"/>
+					<ExtendedTooltip name="InArchiveExtendedTooltip" id="80"/>
+				</CheckBoxField>
 			</ChildItems>
 		</Table>
+		<CheckBoxField name="HideDisabledCompanies" id="81">
+			<DataPath>HideDisabledItems</DataPath>
+			<TitleLocation>Right</TitleLocation>
+			<CheckBoxType>Auto</CheckBoxType>
+			<ContextMenu name="HideDisabledCompaniesContextMenu" id="82"/>
+			<ExtendedTooltip name="HideDisabledCompaniesExtendedTooltip" id="83"/>
+			<Events>
+				<Event name="OnChange">HideDisabledItemsOnChange</Event>
+			</Events>
+		</CheckBoxField>
 	</ChildItems>
 	<Attributes>
 		<Attribute name="List" id="1">
@@ -237,6 +257,9 @@
 				<v8:Type>cfg:DynamicList</v8:Type>
 			</Type>
 			<MainAttribute>true</MainAttribute>
+			<UseAlways>
+				<Field>List.InArchive</Field>
+			</UseAlways>
 			<Settings xsi:type="DynamicList">
 				<ManualQuery>true</ManualQuery>
 				<DynamicDataRead>true</DynamicDataRead>
@@ -299,6 +322,7 @@
 	CatalogProducts.PricePrecision,
 	CatalogProducts.TaxCode,
 	CatalogProducts.DiscountIsTaxable,
+	CatalogProducts.InArchive,
 	ISNULL(TT.QtyOnSO, 0) AS QtyOnSO,
 	ISNULL(TT.QtyOnPO, 0) AS QtyOnPO,
 	ISNULL(TT.QtyOnHand, 0) AS QtyOnHand,
@@ -404,6 +428,20 @@ FROM
 					<dcsset:itemsUserSettingID>911b6018-f537-43e8-a417-da56b22f9aec</dcsset:itemsUserSettingID>
 				</ListSettings>
 			</Settings>
+		</Attribute>
+		<Attribute name="HideDisabledItems" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Hide disabled items</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
+			</Type>
+			<Save>
+				<Field>HideDisabledItems</Field>
+			</Save>
 		</Attribute>
 	</Attributes>
 </Form>

@@ -9,12 +9,6 @@
 			<ButtonGroup name="Group1" id="31">
 				<ExtendedTooltip name="Group1ExtendedTooltip" id="32"/>
 				<ChildItems>
-					<Button name="FormViewBankTransaction" id="29">
-						<Type>CommandBarButton</Type>
-						<CommandName>Form.Command.ViewBankTransaction</CommandName>
-						<BackColor>style:ColorInformationLabel</BackColor>
-						<ExtendedTooltip name="FormViewBankTransactionExtendedTooltip" id="30"/>
-					</Button>
 					<Button name="FormAuditLogRecord" id="61">
 						<Type>CommandBarButton</Type>
 						<CommandName>Form.Command.AuditLogRecord</CommandName>
@@ -26,152 +20,233 @@
 						</Title>
 						<ExtendedTooltip name="FormAuditLogRecordExtendedTooltip" id="62"/>
 					</Button>
+					<Button name="FormCommonCommandAttachedFiles" id="93">
+						<Type>CommandBarButton</Type>
+						<CommandName>CommonCommand.AttachedFiles</CommandName>
+						<DataPath>Object.Ref</DataPath>
+						<ExtendedTooltip name="FormCommonCommandAttachedFilesExtendedTooltip" id="94"/>
+					</Button>
 				</ChildItems>
 			</ButtonGroup>
 		</ChildItems>
 	</AutoCommandBar>
 	<Events>
+		<Event name="OnReadAtServer">OnReadAtServer</Event>
 		<Event name="BeforeWrite">BeforeWrite</Event>
 		<Event name="BeforeWriteAtServer">BeforeWriteAtServer</Event>
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
 		<Event name="FillCheckProcessingAtServer">FillCheckProcessingAtServer</Event>
 	</Events>
 	<ChildItems>
-		<InputField name="Number" id="1">
-			<DataPath>Object.Number</DataPath>
-			<EditMode>EnterOnInput</EditMode>
-			<Width>25</Width>
-			<HorizontalStretch>false</HorizontalStretch>
-			<ContextMenu name="NumberContextMenu" id="2"/>
-			<ExtendedTooltip name="NumberExtendedTooltip" id="19"/>
-		</InputField>
-		<InputField name="Date" id="3">
-			<DataPath>Object.Date</DataPath>
-			<EditMode>EnterOnInput</EditMode>
-			<Width>25</Width>
-			<HorizontalStretch>false</HorizontalStretch>
-			<ContextMenu name="DateContextMenu" id="4"/>
-			<ExtendedTooltip name="DateExtendedTooltip" id="20"/>
-		</InputField>
-		<InputField name="AccountFrom" id="5">
-			<DataPath>Object.AccountFrom</DataPath>
-			<Width>25</Width>
-			<HorizontalStretch>false</HorizontalStretch>
-			<ContextMenu name="AccountFromContextMenu" id="6"/>
-			<ExtendedTooltip name="AccountFromExtendedTooltip" id="22"/>
-			<Events>
-				<Event name="OnChange">AccountFromOnChange</Event>
-			</Events>
-		</InputField>
-		<InputField name="AccountTo" id="7">
-			<DataPath>Object.AccountTo</DataPath>
-			<Width>25</Width>
-			<HorizontalStretch>false</HorizontalStretch>
-			<ContextMenu name="AccountToContextMenu" id="8"/>
-			<ExtendedTooltip name="AccountToExtendedTooltip" id="25"/>
-			<Events>
-				<Event name="OnChange">AccountToOnChange</Event>
-			</Events>
-		</InputField>
-		<LabelDecoration name="ImportantNotice" id="48">
-			<Visible>false</Visible>
-			<Width>36</Width>
-			<TextColor>#CE1200</TextColor>
-			<Title formatted="false">
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Important notice</v8:content>
-				</v8:item>
-			</Title>
-			<ContextMenu name="ImportantNoticeContextMenu" id="49"/>
-			<ExtendedTooltip name="ImportantNoticeExtendedTooltip" id="50"/>
-		</LabelDecoration>
-		<InputField name="Amount" id="9">
-			<DataPath>Object.Amount</DataPath>
-			<Width>25</Width>
-			<HorizontalStretch>false</HorizontalStretch>
-			<ContextMenu name="AmountContextMenu" id="10"/>
-			<ExtendedTooltip name="AmountExtendedTooltip" id="27"/>
-			<Events>
-				<Event name="OnChange">AmountOnChange</Event>
-			</Events>
-		</InputField>
-		<UsualGroup name="MulticurrencyGroup" id="59">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Multicurrency group</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Multicurrency group</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Group>Vertical</Group>
-			<Representation>None</Representation>
+		<UsualGroup name="Group4" id="63">
+			<Group>Horizontal</Group>
 			<ShowTitle>false</ShowTitle>
-			<ExtendedTooltip name="MulticurrencyGroupExtendedTooltip" id="60"/>
+			<ExtendedTooltip name="Group4ExtendedTooltip" id="64"/>
 			<ChildItems>
-				<UsualGroup name="Group2" id="43">
-					<Group>Horizontal</Group>
-					<Representation>None</Representation>
+				<UsualGroup name="LeftColumn" id="65">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Left column</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Left column</v8:content>
+						</v8:item>
+					</ToolTip>
+					<Group>Vertical</Group>
 					<ShowTitle>false</ShowTitle>
-					<ExtendedTooltip name="Group2ExtendedTooltip" id="44"/>
+					<ExtendedTooltip name="LeftColumnExtendedTooltip" id="66"/>
 					<ChildItems>
-						<InputField name="ExchangeRate" id="40">
-							<DataPath>Object.ExchangeRate</DataPath>
+						<InputField name="Number" id="1">
+							<DataPath>Object.Number</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<Width>25</Width>
 							<HorizontalStretch>false</HorizontalStretch>
-							<ContextMenu name="ExchangeRateContextMenu" id="41"/>
-							<ExtendedTooltip name="ExchangeRateExtendedTooltip" id="42"/>
+							<ContextMenu name="NumberContextMenu" id="2"/>
+							<ExtendedTooltip name="NumberExtendedTooltip" id="19"/>
+						</InputField>
+						<InputField name="Date" id="3">
+							<DataPath>Object.Date</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<Width>25</Width>
+							<HorizontalStretch>false</HorizontalStretch>
+							<ContextMenu name="DateContextMenu" id="4"/>
+							<ExtendedTooltip name="DateExtendedTooltip" id="20"/>
+						</InputField>
+						<InputField name="AccountFrom" id="5">
+							<DataPath>Object.AccountFrom</DataPath>
+							<Width>25</Width>
+							<HorizontalStretch>false</HorizontalStretch>
+							<ChoiceButton>false</ChoiceButton>
+							<QuickChoice>true</QuickChoice>
+							<ContextMenu name="AccountFromContextMenu" id="6"/>
+							<ExtendedTooltip name="AccountFromExtendedTooltip" id="22"/>
 							<Events>
-								<Event name="OnChange">ExchangeRateOnChange</Event>
+								<Event name="OnChange">AccountFromOnChange</Event>
 							</Events>
 						</InputField>
-						<LabelDecoration name="AmountToText" id="45">
-							<ContextMenu name="AmountToTextContextMenu" id="46"/>
-							<ExtendedTooltip name="AmountToTextExtendedTooltip" id="47"/>
-						</LabelDecoration>
-					</ChildItems>
-				</UsualGroup>
-				<UsualGroup name="Group3" id="54">
-					<Group>Horizontal</Group>
-					<Representation>None</Representation>
-					<ShowTitle>false</ShowTitle>
-					<ExtendedTooltip name="Group3ExtendedTooltip" id="55"/>
-					<ChildItems>
-						<InputField name="AmountTo" id="51">
-							<DataPath>Object.AmountTo</DataPath>
-							<ContextMenu name="AmountToContextMenu" id="52"/>
-							<ExtendedTooltip name="AmountToExtendedTooltip" id="53"/>
+						<InputField name="AccountTo" id="7">
+							<DataPath>Object.AccountTo</DataPath>
+							<Width>25</Width>
+							<HorizontalStretch>false</HorizontalStretch>
+							<ChoiceButton>false</ChoiceButton>
+							<QuickChoice>true</QuickChoice>
+							<ContextMenu name="AccountToContextMenu" id="8"/>
+							<ExtendedTooltip name="AccountToExtendedTooltip" id="25"/>
+							<Events>
+								<Event name="OnChange">AccountToOnChange</Event>
+							</Events>
 						</InputField>
-						<CheckBoxField name="ManuallyEditedAmountTo" id="56">
-							<DataPath>Object.ManuallyEditedAmountTo</DataPath>
+						<InputField name="Amount" id="9">
+							<DataPath>Object.Amount</DataPath>
+							<Width>25</Width>
+							<HorizontalStretch>false</HorizontalStretch>
+							<ContextMenu name="AmountContextMenu" id="10"/>
+							<ExtendedTooltip name="AmountExtendedTooltip" id="27"/>
+							<Events>
+								<Event name="OnChange">AmountOnChange</Event>
+							</Events>
+						</InputField>
+						<LabelDecoration name="ImportantNotice" id="48">
+							<Visible>false</Visible>
+							<Width>36</Width>
+							<TextColor>#CE1200</TextColor>
+							<Title formatted="false">
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Important notice</v8:content>
+								</v8:item>
+							</Title>
+							<ContextMenu name="ImportantNoticeContextMenu" id="49"/>
+							<ExtendedTooltip name="ImportantNoticeExtendedTooltip" id="50"/>
+						</LabelDecoration>
+						<UsualGroup name="MulticurrencyGroup" id="59">
 							<Title>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Edit</v8:content>
+									<v8:content>Multicurrency group</v8:content>
 								</v8:item>
 							</Title>
-							<CheckBoxType>Auto</CheckBoxType>
-							<ContextMenu name="ManuallyEditedAmountToContextMenu" id="57"/>
-							<ExtendedTooltip name="ManuallyEditedAmountToExtendedTooltip" id="58"/>
-							<Events>
-								<Event name="OnChange">ManuallyEditedAmountToOnChange</Event>
-							</Events>
-						</CheckBoxField>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Multicurrency group</v8:content>
+								</v8:item>
+							</ToolTip>
+							<Group>Vertical</Group>
+							<Representation>None</Representation>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="MulticurrencyGroupExtendedTooltip" id="60"/>
+							<ChildItems>
+								<UsualGroup name="Group2" id="43">
+									<Group>Horizontal</Group>
+									<Representation>None</Representation>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="Group2ExtendedTooltip" id="44"/>
+									<ChildItems>
+										<InputField name="ExchangeRate" id="40">
+											<DataPath>Object.ExchangeRate</DataPath>
+											<HorizontalStretch>false</HorizontalStretch>
+											<ContextMenu name="ExchangeRateContextMenu" id="41"/>
+											<ExtendedTooltip name="ExchangeRateExtendedTooltip" id="42"/>
+											<Events>
+												<Event name="OnChange">ExchangeRateOnChange</Event>
+											</Events>
+										</InputField>
+										<LabelDecoration name="AmountToText" id="45">
+											<ContextMenu name="AmountToTextContextMenu" id="46"/>
+											<ExtendedTooltip name="AmountToTextExtendedTooltip" id="47"/>
+										</LabelDecoration>
+									</ChildItems>
+								</UsualGroup>
+								<UsualGroup name="Group3" id="54">
+									<Group>Horizontal</Group>
+									<Representation>None</Representation>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="Group3ExtendedTooltip" id="55"/>
+									<ChildItems>
+										<InputField name="AmountTo" id="51">
+											<DataPath>Object.AmountTo</DataPath>
+											<ContextMenu name="AmountToContextMenu" id="52"/>
+											<ExtendedTooltip name="AmountToExtendedTooltip" id="53"/>
+										</InputField>
+										<CheckBoxField name="ManuallyEditedAmountTo" id="56">
+											<DataPath>Object.ManuallyEditedAmountTo</DataPath>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Edit</v8:content>
+												</v8:item>
+											</Title>
+											<CheckBoxType>Auto</CheckBoxType>
+											<ContextMenu name="ManuallyEditedAmountToContextMenu" id="57"/>
+											<ExtendedTooltip name="ManuallyEditedAmountToExtendedTooltip" id="58"/>
+											<Events>
+												<Event name="OnChange">ManuallyEditedAmountToOnChange</Event>
+											</Events>
+										</CheckBoxField>
+									</ChildItems>
+								</UsualGroup>
+							</ChildItems>
+						</UsualGroup>
+						<InputField name="Memo" id="11">
+							<DataPath>Object.Memo</DataPath>
+							<Width>25</Width>
+							<HorizontalStretch>false</HorizontalStretch>
+							<ContextMenu name="MemoContextMenu" id="12"/>
+							<ExtendedTooltip name="MemoExtendedTooltip" id="28"/>
+						</InputField>
+						<UsualGroup name="NumberDateGroup" id="72">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Number date group</v8:content>
+								</v8:item>
+							</Title>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Number date group</v8:content>
+								</v8:item>
+							</ToolTip>
+							<Group>Horizontal</Group>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="NumberDateGroupExtendedTooltip" id="73"/>
+						</UsualGroup>
+					</ChildItems>
+				</UsualGroup>
+				<UsualGroup name="RightColumn" id="67">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Right column</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Right column</v8:content>
+						</v8:item>
+					</ToolTip>
+					<Group>Vertical</Group>
+					<ShowTitle>false</ShowTitle>
+					<ExtendedTooltip name="RightColumnExtendedTooltip" id="68"/>
+					<ChildItems>
+						<LabelDecoration name="Decoration1" id="77">
+							<ContextMenu name="Decoration1ContextMenu" id="78"/>
+							<ExtendedTooltip name="Decoration1ExtendedTooltip" id="79"/>
+						</LabelDecoration>
+						<LabelDecoration name="Decoration2" id="80">
+							<ContextMenu name="Decoration2ContextMenu" id="81"/>
+							<ExtendedTooltip name="Decoration2ExtendedTooltip" id="82"/>
+						</LabelDecoration>
 					</ChildItems>
 				</UsualGroup>
 			</ChildItems>
 		</UsualGroup>
-		<InputField name="Memo" id="11">
-			<DataPath>Object.Memo</DataPath>
-			<Width>25</Width>
-			<HorizontalStretch>false</HorizontalStretch>
-			<ContextMenu name="MemoContextMenu" id="12"/>
-			<ExtendedTooltip name="MemoExtendedTooltip" id="28"/>
-		</InputField>
 	</ChildItems>
 	<Attributes>
 		<Attribute name="Object" id="1">
@@ -202,21 +277,6 @@
 		</Attribute>
 	</Attributes>
 	<Commands>
-		<Command name="ViewBankTransaction" id="1">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>View bank transaction</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>View bank transaction</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Action>ViewBankTransaction</Action>
-		</Command>
 		<Command name="AuditLogRecord" id="2">
 			<Title>
 				<v8:item>

@@ -352,6 +352,36 @@
 								</Button>
 							</ChildItems>
 						</Page>
+						<Page name="MemoPage" id="172">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Memo</v8:content>
+								</v8:item>
+							</Title>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Memo page</v8:content>
+								</v8:item>
+							</ToolTip>
+							<ExtendedTooltip name="MemoPageExtendedTooltip" id="173"/>
+							<ChildItems>
+								<InputField name="Memo" id="71">
+									<DataPath>Object.Memo</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Int.</v8:content>
+										</v8:item>
+									</Title>
+									<TitleLocation>Left</TitleLocation>
+									<MultiLine>true</MultiLine>
+									<ContextMenu name="MemoContextMenu" id="72"/>
+									<ExtendedTooltip name="MemoExtendedTooltip" id="127"/>
+								</InputField>
+							</ChildItems>
+						</Page>
 					</ChildItems>
 				</Pages>
 			</ChildItems>
@@ -480,6 +510,7 @@
 						</InputField>
 						<InputField name="LineItemsUM" id="149">
 							<DataPath>Object.LineItems.Unit</DataPath>
+							<SkipOnInput>true</SkipOnInput>
 							<Title>
 								<v8:item>
 									<v8:lang>en</v8:lang>
@@ -566,48 +597,23 @@
 			<ShowTitle>false</ShowTitle>
 			<ExtendedTooltip name="FooterExtendedTooltip" id="125"/>
 			<ChildItems>
-				<UsualGroup name="FooterLeftColumn" id="97">
+				<UsualGroup name="TotalRow" id="70">
 					<Title>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Footer left column</v8:content>
+							<v8:content>Total row</v8:content>
 						</v8:item>
 					</Title>
 					<ToolTip>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Footer left column</v8:content>
+							<v8:content>Total row</v8:content>
 						</v8:item>
 					</ToolTip>
-					<Group>Vertical</Group>
+					<Group>Horizontal</Group>
 					<Representation>None</Representation>
 					<ShowTitle>false</ShowTitle>
-					<ExtendedTooltip name="FooterLeftColumnExtendedTooltip" id="126"/>
-					<ChildItems>
-						<InputField name="Memo" id="71">
-							<DataPath>Object.Memo</DataPath>
-							<ContextMenu name="MemoContextMenu" id="72"/>
-							<ExtendedTooltip name="MemoExtendedTooltip" id="127"/>
-						</InputField>
-					</ChildItems>
-				</UsualGroup>
-				<UsualGroup name="FooterRightColumn" id="70">
-					<Title>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Footer right column</v8:content>
-						</v8:item>
-					</Title>
-					<ToolTip>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Footer right column</v8:content>
-						</v8:item>
-					</ToolTip>
-					<Group>Vertical</Group>
-					<Representation>None</Representation>
-					<ShowTitle>false</ShowTitle>
-					<ExtendedTooltip name="FooterRightColumnExtendedTooltip" id="129"/>
+					<ExtendedTooltip name="TotalRowExtendedTooltip" id="129"/>
 					<ChildItems>
 						<UsualGroup name="FCYGroup" id="77">
 							<Title>
@@ -629,10 +635,17 @@
 							<ChildItems>
 								<InputField name="DocumentTotal" id="24">
 									<DataPath>Object.DocumentTotal</DataPath>
+									<ReadOnly>true</ReadOnly>
 									<ContextMenu name="DocumentTotalContextMenu" id="25"/>
 									<ExtendedTooltip name="DocumentTotalExtendedTooltip" id="134"/>
 								</InputField>
 								<LabelDecoration name="FCYCurrency" id="83">
+									<Title formatted="false">
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>$</v8:content>
+										</v8:item>
+									</Title>
 									<ContextMenu name="FCYCurrencyContextMenu" id="84"/>
 									<ExtendedTooltip name="FCYCurrencyExtendedTooltip" id="135"/>
 								</LabelDecoration>
@@ -658,10 +671,17 @@
 							<ChildItems>
 								<InputField name="DocumentTotalRC" id="38">
 									<DataPath>Object.DocumentTotalRC</DataPath>
+									<ReadOnly>true</ReadOnly>
 									<ContextMenu name="DocumentTotalRCContextMenu" id="39"/>
 									<ExtendedTooltip name="DocumentTotalRCExtendedTooltip" id="137"/>
 								</InputField>
 								<LabelDecoration name="RCCurrency" id="85">
+									<Title formatted="false">
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>$</v8:content>
+										</v8:item>
+									</Title>
 									<ContextMenu name="RCCurrencyContextMenu" id="86"/>
 									<ExtendedTooltip name="RCCurrencyExtendedTooltip" id="138"/>
 								</LabelDecoration>
@@ -717,6 +737,21 @@
 			</Title>
 			<Type>
 				<v8:Type>v8:ValueListType</v8:Type>
+			</Type>
+		</Attribute>
+		<Attribute name="FirstNumber" id="5">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>First number</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>20</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
 			</Type>
 		</Attribute>
 	</Attributes>

@@ -161,7 +161,7 @@
 		<dataSource>DataSource1</dataSource>
 		<query>SELECT
 	InventoryJournalBalance.Product AS Product,
-	InventoryJournalBalance.QuantityBalance AS OnHand
+	CAST(InventoryJournalBalance.QuantityBalance AS Number(22,4)) AS OnHand
 INTO OnHand
 FROM
 	AccumulationRegister.InventoryJournal.Balance({(&amp;EndOfPeriod)}, ) AS InventoryJournalBalance

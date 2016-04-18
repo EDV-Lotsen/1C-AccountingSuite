@@ -14,42 +14,6 @@
 			</role>
 		</field>
 		<field xsi:type="DataSetFieldField">
-			<dataPath>AmountRCClosingBalance</dataPath>
-			<field>AmountRCClosingBalance</field>
-			<title xsi:type="v8:LocalStringType">
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Balance</v8:content>
-				</v8:item>
-			</title>
-			<role>
-				<dcscom:balance>true</dcscom:balance>
-				<dcscom:balanceGroupName>AmountRC</dcscom:balanceGroupName>
-				<dcscom:balanceType>ClosingBalance</dcscom:balanceType>
-			</role>
-			<appearance>
-				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-					<dcscor:parameter>Format</dcscor:parameter>
-					<dcscor:value xsi:type="xs:string">NFD=2; NZ=0.00; NG=3,0</dcscor:value>
-				</dcscor:item>
-			</appearance>
-		</field>
-		<field xsi:type="DataSetFieldField">
-			<dataPath>AmountRCOpeningBalance</dataPath>
-			<field>AmountRCOpeningBalance</field>
-			<role>
-				<dcscom:balance>true</dcscom:balance>
-				<dcscom:balanceGroupName>AmountRC</dcscom:balanceGroupName>
-				<dcscom:balanceType>OpeningBalance</dcscom:balanceType>
-			</role>
-			<appearance>
-				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
-					<dcscor:parameter>Format</dcscor:parameter>
-					<dcscor:value xsi:type="xs:string">NFD=2; NZ=0.00; NG=3,0</dcscor:value>
-				</dcscor:item>
-			</appearance>
-		</field>
-		<field xsi:type="DataSetFieldField">
 			<dataPath>AmountRCTurnover</dataPath>
 			<field>AmountRCTurnover</field>
 			<title xsi:type="v8:LocalStringType">
@@ -66,25 +30,8 @@
 			</appearance>
 		</field>
 		<field xsi:type="DataSetFieldField">
-			<dataPath>Currency</dataPath>
-			<field>Currency</field>
-		</field>
-		<field xsi:type="DataSetFieldField">
-			<dataPath>ExtDimension1</dataPath>
-			<field>ExtDimension1</field>
-		</field>
-		<field xsi:type="DataSetFieldField">
-			<dataPath>ExtDimension2</dataPath>
-			<field>ExtDimension2</field>
-		</field>
-		<field xsi:type="DataSetFieldField">
 			<dataPath>Recorder</dataPath>
 			<field>Recorder</field>
-			<role>
-				<dcscom:periodNumber>1</dcscom:periodNumber>
-				<dcscom:periodType>Main</dcscom:periodType>
-				<dcscom:required>true</dcscom:required>
-			</role>
 			<presentationExpression>CASE
 	WHEN Recorder = UNDEFINED
 		THEN "Beginning Balance"
@@ -149,118 +96,220 @@ END</presentationExpression>
 				</v8:item>
 			</title>
 		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>AccountTypeFilter</dataPath>
+			<field>AccountTypeFilter</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Account type filter</v8:content>
+				</v8:item>
+			</title>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>CompanyFilter</dataPath>
+			<field>CompanyFilter</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Company filter</v8:content>
+				</v8:item>
+			</title>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>OpeningBalance</dataPath>
+			<field>OpeningBalance</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Opening balance</v8:content>
+				</v8:item>
+			</title>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>CustomerFilter</dataPath>
+			<field>CustomerFilter</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Customer filter</v8:content>
+				</v8:item>
+			</title>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>VendorFilter</dataPath>
+			<field>VendorFilter</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Vendor filter</v8:content>
+				</v8:item>
+			</title>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Class</dataPath>
+			<field>Class</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Company</dataPath>
+			<field>Company</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Project</dataPath>
+			<field>Project</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>OurCompany</dataPath>
+			<field>OurCompany</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Our company</v8:content>
+				</v8:item>
+			</title>
+		</field>
 		<dataSource>DataSource1</dataSource>
 		<query>SELECT
-	GeneralJournalBalanceAndTurnovers.Account,
-	2 AS SectionOrder,
-	GeneralJournalBalanceAndTurnovers.Recorder.PointInTime,
-	GeneralJournalBalanceAndTurnovers.LineNumber,
-	GeneralJournalBalanceAndTurnovers.Recorder,
-	GeneralJournalBalanceAndTurnovers.AmountRCTurnover,
-	GeneralJournalBalanceAndTurnovers.AmountRCOpeningBalance,
-	GeneralJournalBalanceAndTurnovers.AmountRCClosingBalance
-INTO GeneralJournalBalanceAndTurnovers
+	GeneralJournalAnalyticsDimensionsBalance.Account,
+	CASE
+		WHEN GeneralJournalAnalyticsDimensionsBalance.Account.AccountType = VALUE(Enum.AccountTypes.Income)
+				OR GeneralJournalAnalyticsDimensionsBalance.Account.AccountType = VALUE(Enum.AccountTypes.CostOfSales)
+				OR GeneralJournalAnalyticsDimensionsBalance.Account.AccountType = VALUE(Enum.AccountTypes.Expense)
+				OR GeneralJournalAnalyticsDimensionsBalance.Account.AccountType = VALUE(Enum.AccountTypes.OtherIncome)
+				OR GeneralJournalAnalyticsDimensionsBalance.Account.AccountType = VALUE(Enum.AccountTypes.OtherExpense)
+				OR GeneralJournalAnalyticsDimensionsBalance.Account.AccountType = VALUE(Enum.AccountTypes.IncomeTaxExpense)
+			THEN GeneralJournalAnalyticsDimensionsBalance.AmountRCBalance
+		ELSE 0
+	END AS AmountRCBalance
+INTO BeginOfFiscalYearOpeningBalance
 FROM
-	AccountingRegister.GeneralJournal.BalanceAndTurnovers({(&amp;BeginOfPeriod)}, {(&amp;EndOfPeriod)}, Auto, , , , ) AS GeneralJournalBalanceAndTurnovers
+	AccumulationRegister.GeneralJournalAnalyticsDimensions.Balance({(&amp;BeginOfFiscalYear)}, ) AS GeneralJournalAnalyticsDimensionsBalance
+;
+
+////////////////////////////////////////////////////////////////////////////////
+SELECT
+	GeneralJournalAnalyticsDimensionsBalance.Account,
+	GeneralJournalAnalyticsDimensionsBalance.AmountRCBalance
+INTO BeginOfPeriodOpeningBalance
+FROM
+	AccumulationRegister.GeneralJournalAnalyticsDimensions.Balance({(&amp;BeginOfPeriod)}, ) AS GeneralJournalAnalyticsDimensionsBalance
+;
+
+////////////////////////////////////////////////////////////////////////////////
+SELECT
+	ISNULL(BeginOfPeriodOpeningBalance.Account, BeginOfFiscalYearOpeningBalance.Account) AS Account,
+	ISNULL(BeginOfPeriodOpeningBalance.AmountRCBalance, 0) - ISNULL(BeginOfFiscalYearOpeningBalance.AmountRCBalance, 0) AS AmountRCBalance
+INTO OpeningBalance
+FROM
+	BeginOfFiscalYearOpeningBalance AS BeginOfFiscalYearOpeningBalance
+		FULL JOIN BeginOfPeriodOpeningBalance AS BeginOfPeriodOpeningBalance
+		ON BeginOfFiscalYearOpeningBalance.Account = BeginOfPeriodOpeningBalance.Account
+;
+
+////////////////////////////////////////////////////////////////////////////////
+SELECT ALLOWED
+	GeneralJournalAnalyticsDimensionsTurnovers.Account AS Account,
+	GeneralJournalAnalyticsDimensionsTurnovers.Recorder AS Recorder,
+	GeneralJournalAnalyticsDimensionsTurnovers.LineNumber AS LineNumber,
+	GeneralJournalAnalyticsDimensionsTurnovers.AmountRCReceipt AS AmountRCReceipt,
+	GeneralJournalAnalyticsDimensionsTurnovers.AmountRCExpense AS AmountRCExpense
+INTO Split
+FROM
+	AccumulationRegister.GeneralJournalAnalyticsDimensions.Turnovers({(&amp;BeginOfPeriod)}, {(&amp;EndOfPeriod)}, Auto, ) AS GeneralJournalAnalyticsDimensionsTurnovers
 WHERE
-	GeneralJournalBalanceAndTurnovers.Recorder &lt;&gt; UNDEFINED
+	GeneralJournalAnalyticsDimensionsTurnovers.LineNumber &lt;= 2
+
+INDEX BY
+	Recorder
 ;
 
 ////////////////////////////////////////////////////////////////////////////////
 SELECT
-	GeneralJournalBalanceAndTurnovers.Recorder,
-	MAX(GeneralJournalBalanceAndTurnovers.LineNumber) AS LineNumber
-INTO SplitTableA
+	SystemTitle.Value AS OurCompany,
+	GeneralJournalAnalyticsDimensionsTurnovers.Account AS Account,
+	2 AS SectionOrder,
+	COUNT(Split.Recorder) AS RecorderOrder,
+	GeneralJournalAnalyticsDimensionsTurnovers.Recorder AS Recorder,
+	SUM(GeneralJournalAnalyticsDimensionsTurnovers.AmountRCTurnover) AS AmountRCTurnover,
+	ISNULL(OpeningBalance.AmountRCBalance, 0) AS OpeningBalance,
+	ISNULL(Split.Account, "-Split-") AS Split,
+	CAST(GeneralJournalAnalyticsDimensionsTurnovers.Recorder.Memo AS STRING(1024)) AS RecorderMemo,
+	GeneralJournalAnalyticsDimensionsTurnovers.Account AS AccountFilter,
+	GeneralJournalAnalyticsDimensionsTurnovers.Account.AccountType AS AccountTypeFilter,
+	GeneralJournalAnalyticsDimensionsTurnovers.Company AS CompanyFilter,
+	GeneralJournalAnalyticsDimensionsTurnovers.Company.Vendor AS VendorFilter,
+	GeneralJournalAnalyticsDimensionsTurnovers.Company.Customer AS CustomerFilter
 FROM
-	GeneralJournalBalanceAndTurnovers AS GeneralJournalBalanceAndTurnovers
-
-GROUP BY
-	GeneralJournalBalanceAndTurnovers.Recorder
-
-HAVING
-	MAX(GeneralJournalBalanceAndTurnovers.LineNumber) = 2
-;
-
-////////////////////////////////////////////////////////////////////////////////
-SELECT
-	GeneralJournalBalanceAndTurnovers.Recorder,
-	GeneralJournalBalanceAndTurnovers.LineNumber,
-	GeneralJournalBalanceAndTurnovers.Account
-INTO SplitTable
-FROM
-	GeneralJournalBalanceAndTurnovers AS GeneralJournalBalanceAndTurnovers
-		INNER JOIN SplitTableA AS SplitTableA
-		ON GeneralJournalBalanceAndTurnovers.Recorder = SplitTableA.Recorder
-;
-
-////////////////////////////////////////////////////////////////////////////////
-SELECT
-	GeneralJournalBalanceAndTurnovers.Account,
-	GeneralJournalBalanceAndTurnovers.SectionOrder,
-	GeneralJournalBalanceAndTurnovers.RecorderPointInTime,
-	GeneralJournalBalanceAndTurnovers.LineNumber,
-	GeneralJournalBalanceAndTurnovers.Recorder,
-	GeneralJournalBalanceAndTurnovers.AmountRCTurnover,
-	GeneralJournalBalanceAndTurnovers.AmountRCOpeningBalance,
-	GeneralJournalBalanceAndTurnovers.AmountRCClosingBalance,
-	ISNULL(SplitTable.Account, "-Split-") AS Split
-INTO GeneralJournalBalanceAndTurnoversAndSplit
-FROM
-	GeneralJournalBalanceAndTurnovers AS GeneralJournalBalanceAndTurnovers
-		LEFT JOIN SplitTable AS SplitTable
-		ON GeneralJournalBalanceAndTurnovers.Recorder = SplitTable.Recorder
-			AND GeneralJournalBalanceAndTurnovers.LineNumber &lt;&gt; SplitTable.LineNumber
-;
-
-////////////////////////////////////////////////////////////////////////////////
-SELECT
-	GeneralJournalBalanceAndTurnoversAndSplit.Account AS Account,
-	GeneralJournalBalanceAndTurnoversAndSplit.SectionOrder AS SectionOrder,
-	COUNT(GeneralJournalBalanceAndTurnovers.Recorder) AS RecorderOrder,
-	GeneralJournalBalanceAndTurnoversAndSplit.Recorder AS Recorder,
-	GeneralJournalBalanceAndTurnoversAndSplit.AmountRCTurnover AS AmountRCTurnover,
-	GeneralJournalBalanceAndTurnoversAndSplit.AmountRCOpeningBalance AS AmountRCOpeningBalance,
-	GeneralJournalBalanceAndTurnoversAndSplit.AmountRCClosingBalance AS AmountRCClosingBalance,
-	GeneralJournalBalanceAndTurnoversAndSplit.Split,
-	CAST(GeneralJournalBalanceAndTurnoversAndSplit.Recorder.Memo AS STRING(1024)) AS RecorderMemo,
-	GeneralJournalBalanceAndTurnoversAndSplit.Account AS AccountFilter
-FROM
-	GeneralJournalBalanceAndTurnoversAndSplit AS GeneralJournalBalanceAndTurnoversAndSplit
-		INNER JOIN GeneralJournalBalanceAndTurnovers AS GeneralJournalBalanceAndTurnovers
-		ON GeneralJournalBalanceAndTurnoversAndSplit.Account = GeneralJournalBalanceAndTurnovers.Account
+	AccumulationRegister.GeneralJournalAnalyticsDimensions.Turnovers({(&amp;BeginOfPeriod)}, {(&amp;EndOfPeriod)}, Auto, ) AS GeneralJournalAnalyticsDimensionsTurnovers
+		LEFT JOIN Constant.SystemTitle AS SystemTitle
+		ON (TRUE)
+		LEFT JOIN OpeningBalance AS OpeningBalance
+		ON GeneralJournalAnalyticsDimensionsTurnovers.Account = OpeningBalance.Account
+		LEFT JOIN Split AS Split
+		ON GeneralJournalAnalyticsDimensionsTurnovers.Recorder = Split.Recorder
 			AND (CASE
-				WHEN GeneralJournalBalanceAndTurnoversAndSplit.RecorderPointInTime = GeneralJournalBalanceAndTurnovers.RecorderPointInTime
-						AND GeneralJournalBalanceAndTurnoversAndSplit.LineNumber &gt;= GeneralJournalBalanceAndTurnovers.LineNumber
-					THEN TRUE
-				ELSE GeneralJournalBalanceAndTurnoversAndSplit.RecorderPointInTime &gt; GeneralJournalBalanceAndTurnovers.RecorderPointInTime
+				WHEN GeneralJournalAnalyticsDimensionsTurnovers.LineNumber &lt;= 2
+					THEN CASE
+							WHEN GeneralJournalAnalyticsDimensionsTurnovers.LineNumber = 1
+								THEN CASE
+										WHEN Split.LineNumber = 2
+											THEN CASE
+													WHEN GeneralJournalAnalyticsDimensionsTurnovers.AmountRCReceipt = Split.AmountRCExpense
+															AND GeneralJournalAnalyticsDimensionsTurnovers.AmountRCExpense = Split.AmountRCReceipt
+														THEN TRUE
+													ELSE FALSE
+												END
+										ELSE FALSE
+									END
+							WHEN GeneralJournalAnalyticsDimensionsTurnovers.LineNumber = 2
+								THEN CASE
+										WHEN Split.LineNumber = 1
+											THEN CASE
+													WHEN GeneralJournalAnalyticsDimensionsTurnovers.AmountRCReceipt = Split.AmountRCExpense
+															AND GeneralJournalAnalyticsDimensionsTurnovers.AmountRCExpense = Split.AmountRCReceipt
+														THEN TRUE
+													ELSE FALSE
+												END
+										ELSE FALSE
+									END
+						END
+				ELSE FALSE
 			END)
 
 GROUP BY
-	GeneralJournalBalanceAndTurnoversAndSplit.Recorder,
-	GeneralJournalBalanceAndTurnoversAndSplit.Account,
-	GeneralJournalBalanceAndTurnoversAndSplit.SectionOrder,
-	GeneralJournalBalanceAndTurnoversAndSplit.AmountRCTurnover,
-	GeneralJournalBalanceAndTurnoversAndSplit.AmountRCOpeningBalance,
-	GeneralJournalBalanceAndTurnoversAndSplit.AmountRCClosingBalance,
-	GeneralJournalBalanceAndTurnoversAndSplit.Split,
-	CAST(GeneralJournalBalanceAndTurnoversAndSplit.Recorder.Memo AS STRING(1024)),
-	GeneralJournalBalanceAndTurnoversAndSplit.Account
+	SystemTitle.Value,
+	GeneralJournalAnalyticsDimensionsTurnovers.Recorder,
+	GeneralJournalAnalyticsDimensionsTurnovers.Account,
+	ISNULL(OpeningBalance.AmountRCBalance, 0),
+	ISNULL(Split.Account, "-Split-"),
+	CAST(GeneralJournalAnalyticsDimensionsTurnovers.Recorder.Memo AS STRING(1024)),
+	GeneralJournalAnalyticsDimensionsTurnovers.Account.AccountType,
+	GeneralJournalAnalyticsDimensionsTurnovers.Company,
+	GeneralJournalAnalyticsDimensionsTurnovers.Company.Vendor,
+	GeneralJournalAnalyticsDimensionsTurnovers.Company.Customer,
+	GeneralJournalAnalyticsDimensionsTurnovers.Account
 
 UNION ALL
 
 SELECT
-	GeneralJournalBalance.Account,
+	SystemTitle.Value,
+	OpeningBalance.Account,
 	1,
 	1,
 	UNDEFINED,
 	0,
-	0,
-	GeneralJournalBalance.AmountRCBalance,
+	OpeningBalance.AmountRCBalance,
 	"",
 	"",
-	GeneralJournalBalance.Account
+	OpeningBalance.Account,
+	OpeningBalance.Account.AccountType,
+	UNDEFINED,
+	UNDEFINED,
+	UNDEFINED
 FROM
-	AccountingRegister.GeneralJournal.Balance({(&amp;BeginOfPeriod)}, , , ) AS GeneralJournalBalance</query>
+	OpeningBalance AS OpeningBalance
+		LEFT JOIN Constant.SystemTitle AS SystemTitle
+		ON (TRUE)</query>
 	</dataSet>
 	<calculatedField>
 		<dataPath>RecorderDrillDown</dataPath>
@@ -275,23 +324,43 @@ FROM
 			<v8:TypeSet xmlns:d4p1="http://v8.1c.ru/8.1/data/enterprise/current-config">d4p1:DocumentRef</v8:TypeSet>
 		</valueType>
 	</calculatedField>
-	<totalField>
-		<dataPath>AmountRCOpeningBalance</dataPath>
-		<expression>Sum(AmountRCOpeningBalance)</expression>
-	</totalField>
-	<totalField>
-		<dataPath>AmountRCTurnover</dataPath>
-		<expression>Sum(AmountRCTurnover)</expression>
-	</totalField>
-	<totalField>
+	<calculatedField>
 		<dataPath>AmountRCClosingBalance</dataPath>
-		<expression>Sum(AmountRCClosingBalance)</expression>
-		<group>Recorder</group>
-	</totalField>
+		<expression>0</expression>
+		<title xsi:type="v8:LocalStringType">
+			<v8:item>
+				<v8:lang>en</v8:lang>
+				<v8:content>Balance</v8:content>
+			</v8:item>
+		</title>
+		<appearance>
+			<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+				<dcscor:parameter>Format</dcscor:parameter>
+				<dcscor:value xsi:type="xs:string">NFD=2; NZ=0.00; NG=3,0</dcscor:value>
+			</dcscor:item>
+		</appearance>
+		<valueType>
+			<v8:Type>xs:decimal</v8:Type>
+			<v8:NumberQualifiers>
+				<v8:Digits>0</v8:Digits>
+				<v8:FractionDigits>0</v8:FractionDigits>
+				<v8:AllowedSign>Any</v8:AllowedSign>
+			</v8:NumberQualifiers>
+		</valueType>
+	</calculatedField>
 	<totalField>
 		<dataPath>RecorderDrillDown</dataPath>
 		<expression>Max(RecorderDrillDown)</expression>
 		<group>Recorder</group>
+	</totalField>
+	<totalField>
+		<dataPath>AmountRCClosingBalance</dataPath>
+		<expression>EvalExpression("Sum(AmountRCTurnover)", , , "First", "Current") + Sum(OpeningBalance)</expression>
+		<group>Recorder</group>
+	</totalField>
+	<totalField>
+		<dataPath>AmountRCTurnover</dataPath>
+		<expression>Sum(AmountRCTurnover)</expression>
 	</totalField>
 	<parameter>
 		<name>BeginOfPeriod</name>
@@ -349,6 +418,45 @@ FROM
 		</value>
 		<useRestriction>false</useRestriction>
 	</parameter>
+	<parameter>
+		<name>BeginOfFiscalYear</name>
+		<title xsi:type="v8:LocalStringType">
+			<v8:item>
+				<v8:lang>en</v8:lang>
+				<v8:content>Begin of fiscal year</v8:content>
+			</v8:item>
+		</title>
+		<valueType>
+			<v8:Type>xs:dateTime</v8:Type>
+			<v8:DateQualifiers>
+				<v8:DateFractions>Date</v8:DateFractions>
+			</v8:DateQualifiers>
+		</valueType>
+		<value xsi:type="xs:dateTime">0001-01-01T00:00:00</value>
+		<useRestriction>true</useRestriction>
+		<expression>CASE WHEN MONTH(&amp;Period.EndDate) &gt;= Constants.FirstMonthOfFiscalYear.Get() THEN DATEADD(DATEADD(DATETIME(1, 1, 1), "MONTH",  Constants.FirstMonthOfFiscalYear.Get() - 1), "YEAR", YEAR(&amp;Period.EndDate) - 1) ELSE DATEADD(DATEADD(DATETIME(1, 1, 1), "MONTH",  Constants.FirstMonthOfFiscalYear.Get() - 1), "YEAR", YEAR(&amp;Period.EndDate) - 2) END</expression>
+		<availableAsField>false</availableAsField>
+	</parameter>
+	<parameter>
+		<name>PeriodPresentation</name>
+		<title xsi:type="v8:LocalStringType">
+			<v8:item>
+				<v8:lang>en</v8:lang>
+				<v8:content>Period presentation</v8:content>
+			</v8:item>
+		</title>
+		<valueType>
+			<v8:Type>xs:string</v8:Type>
+			<v8:StringQualifiers>
+				<v8:Length>0</v8:Length>
+				<v8:AllowedLength>Variable</v8:AllowedLength>
+			</v8:StringQualifiers>
+		</valueType>
+		<value xsi:type="xs:string"/>
+		<useRestriction>true</useRestriction>
+		<expression>ISNULL(Presentation(&amp;Period), "")</expression>
+		<availableAsField>false</availableAsField>
+	</parameter>
 	<template>
 		<name>Template1</name>
 		<template xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:AreaTemplate">
@@ -364,6 +472,14 @@ FROM
 						</dcsat:appearance>
 					</dcsat:item>
 					<dcsat:appearance>
+						<dcscor:item>
+							<dcscor:parameter>Font</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Font" faceName="Arial" height="9" bold="false" italic="false" underline="false" strikeout="false" kind="Absolute"/>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>Placement</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:DataCompositionTextPlacementType">Wrap</dcscor:value>
+						</dcscor:item>
 						<dcscor:item>
 							<dcscor:parameter>Details</dcscor:parameter>
 							<dcscor:value xsi:type="dcscor:Parameter">Details</dcscor:value>
@@ -410,6 +526,14 @@ END</dcsat:expression>
 					</dcsat:item>
 					<dcsat:appearance>
 						<dcscor:item>
+							<dcscor:parameter>Font</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Font" faceName="Arial" height="9" bold="false" italic="false" underline="false" strikeout="false" kind="Absolute"/>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>Placement</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:DataCompositionTextPlacementType">Wrap</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
 							<dcscor:parameter>Details</dcscor:parameter>
 							<dcscor:value xsi:type="dcscor:Parameter">Details</dcscor:value>
 						</dcscor:item>
@@ -449,6 +573,22 @@ END</dcsat:expression>
 					</dcsat:item>
 					<dcsat:appearance>
 						<dcscor:item>
+							<dcscor:parameter>Font</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Font" faceName="Arial" height="9" bold="false" italic="false" underline="false" strikeout="false" kind="Absolute"/>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>Placement</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:DataCompositionTextPlacementType">Wrap</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MinimumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">36</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MaximumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">36</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
 							<dcscor:parameter>Details</dcscor:parameter>
 							<dcscor:value xsi:type="dcscor:Parameter">Details</dcscor:value>
 						</dcscor:item>
@@ -478,6 +618,22 @@ END</dcsat:expression>
 						<dcsat:value xsi:type="dcscor:Parameter">Split</dcsat:value>
 					</dcsat:item>
 					<dcsat:appearance>
+						<dcscor:item>
+							<dcscor:parameter>Font</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Font" faceName="Arial" height="9" bold="false" italic="false" underline="false" strikeout="false" kind="Absolute"/>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>Placement</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:DataCompositionTextPlacementType">Wrap</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MinimumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">36</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MaximumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">36</dcscor:value>
+						</dcscor:item>
 						<dcscor:item>
 							<dcscor:parameter>Details</dcscor:parameter>
 							<dcscor:value xsi:type="dcscor:Parameter">Details</dcscor:value>
@@ -509,6 +665,22 @@ END</dcsat:expression>
 					</dcsat:item>
 					<dcsat:appearance>
 						<dcscor:item>
+							<dcscor:parameter>Font</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Font" faceName="Arial" height="9" bold="false" italic="false" underline="false" strikeout="false" kind="Absolute"/>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>Placement</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:DataCompositionTextPlacementType">Wrap</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MinimumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">30</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MaximumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">30</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
 							<dcscor:parameter>Details</dcscor:parameter>
 							<dcscor:value xsi:type="dcscor:Parameter">Details</dcscor:value>
 						</dcscor:item>
@@ -518,7 +690,7 @@ END</dcsat:expression>
 		</template>
 		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
 			<dcsat:name>Company</dcsat:name>
-			<dcsat:expression>Presentation(Recorder.Company)</dcsat:expression>
+			<dcsat:expression>Presentation(CompanyFilter)</dcsat:expression>
 		</parameter>
 		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:DetailsAreaTemplateParameter">
 			<dcsat:name>Details</dcsat:name>
@@ -527,6 +699,469 @@ END</dcsat:expression>
 				<dcsat:expression>RecorderDrillDown</dcsat:expression>
 			</dcsat:fieldExpression>
 			<dcsat:mainAction>OpenValue</dcsat:mainAction>
+		</parameter>
+	</template>
+	<template>
+		<name>Template6</name>
+		<template xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:AreaTemplate">
+			<dcsat:item xsi:type="dcsat:TableRow">
+				<dcsat:tableCell>
+					<dcsat:item xsi:type="dcsat:Field">
+						<dcsat:value xsi:type="dcscor:Parameter">Recorder</dcsat:value>
+					</dcsat:item>
+					<dcsat:appearance>
+						<dcscor:item>
+							<dcscor:parameter>Font</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Font" faceName="Arial" height="9" bold="false" italic="false" underline="false" strikeout="false" kind="Absolute"/>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>Placement</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:DataCompositionTextPlacementType">Wrap</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MinimumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">30</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MaximumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">30</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>Details</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:Parameter">Recorder</dcscor:value>
+						</dcscor:item>
+					</dcsat:appearance>
+				</dcsat:tableCell>
+			</dcsat:item>
+		</template>
+		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
+			<dcsat:name>Recorder</dcsat:name>
+			<dcsat:expression>Presentation(Recorder)</dcsat:expression>
+		</parameter>
+	</template>
+	<template>
+		<name>Template7</name>
+		<template xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:AreaTemplate">
+			<dcsat:item xsi:type="dcsat:TableRow">
+				<dcsat:tableCell>
+					<dcsat:item xsi:type="dcsat:Field">
+						<dcsat:value xsi:type="v8:LocalStringType">
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>General Ledger</v8:content>
+							</v8:item>
+						</dcsat:value>
+					</dcsat:item>
+					<dcsat:appearance>
+						<dcscor:item>
+							<dcscor:parameter>BorderStyle</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Line" width="0" gap="false">
+								<v8ui:style xsi:type="v8ui:SpreadsheetDocumentCellLineType">None</v8ui:style>
+							</dcscor:value>
+							<dcscor:item>
+								<dcscor:parameter>BorderStyle.Left</dcscor:parameter>
+								<dcscor:value xsi:type="v8ui:Line" width="1" gap="false">
+									<v8ui:style xsi:type="v8ui:SpreadsheetDocumentCellLineType">None</v8ui:style>
+								</dcscor:value>
+							</dcscor:item>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>Font</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Font" faceName="Arial" height="12" bold="true" italic="false" underline="false" strikeout="false" kind="Absolute"/>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>Placement</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:DataCompositionTextPlacementType">Wrap</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MinimumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">30</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MaximumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">30</dcscor:value>
+						</dcscor:item>
+					</dcsat:appearance>
+				</dcsat:tableCell>
+				<dcsat:tableCell>
+					<dcsat:appearance>
+						<dcscor:item>
+							<dcscor:parameter>BorderStyle</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Line" width="0" gap="false">
+								<v8ui:style xsi:type="v8ui:SpreadsheetDocumentCellLineType">None</v8ui:style>
+							</dcscor:value>
+							<dcscor:item>
+								<dcscor:parameter>BorderStyle.Left</dcscor:parameter>
+								<dcscor:value xsi:type="v8ui:Line" width="1" gap="false">
+									<v8ui:style xsi:type="v8ui:SpreadsheetDocumentCellLineType">None</v8ui:style>
+								</dcscor:value>
+							</dcscor:item>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>Font</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Font" faceName="Arial" height="9" bold="false" italic="false" underline="false" strikeout="false" kind="Absolute"/>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>Placement</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:DataCompositionTextPlacementType">Wrap</dcscor:value>
+						</dcscor:item>
+					</dcsat:appearance>
+				</dcsat:tableCell>
+				<dcsat:tableCell>
+					<dcsat:appearance>
+						<dcscor:item>
+							<dcscor:parameter>BorderStyle</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Line" width="0" gap="false">
+								<v8ui:style xsi:type="v8ui:SpreadsheetDocumentCellLineType">None</v8ui:style>
+							</dcscor:value>
+							<dcscor:item>
+								<dcscor:parameter>BorderStyle.Left</dcscor:parameter>
+								<dcscor:value xsi:type="v8ui:Line" width="1" gap="false">
+									<v8ui:style xsi:type="v8ui:SpreadsheetDocumentCellLineType">None</v8ui:style>
+								</dcscor:value>
+							</dcscor:item>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>Font</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Font" faceName="Arial" height="9" bold="false" italic="false" underline="false" strikeout="false" kind="Absolute"/>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>Placement</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:DataCompositionTextPlacementType">Wrap</dcscor:value>
+						</dcscor:item>
+					</dcsat:appearance>
+				</dcsat:tableCell>
+				<dcsat:tableCell>
+					<dcsat:appearance>
+						<dcscor:item>
+							<dcscor:parameter>BorderStyle</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Line" width="0" gap="false">
+								<v8ui:style xsi:type="v8ui:SpreadsheetDocumentCellLineType">None</v8ui:style>
+							</dcscor:value>
+							<dcscor:item>
+								<dcscor:parameter>BorderStyle.Left</dcscor:parameter>
+								<dcscor:value xsi:type="v8ui:Line" width="1" gap="false">
+									<v8ui:style xsi:type="v8ui:SpreadsheetDocumentCellLineType">None</v8ui:style>
+								</dcscor:value>
+							</dcscor:item>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>Font</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Font" faceName="Arial" height="9" bold="false" italic="false" underline="false" strikeout="false" kind="Absolute"/>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>Placement</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:DataCompositionTextPlacementType">Wrap</dcscor:value>
+						</dcscor:item>
+					</dcsat:appearance>
+				</dcsat:tableCell>
+			</dcsat:item>
+			<dcsat:item xsi:type="dcsat:TableRow">
+				<dcsat:tableCell>
+					<dcsat:item xsi:type="dcsat:Field">
+						<dcsat:value xsi:type="dcscor:Parameter">OurCompany</dcsat:value>
+					</dcsat:item>
+					<dcsat:appearance>
+						<dcscor:item>
+							<dcscor:parameter>BorderStyle</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Line" width="0" gap="false">
+								<v8ui:style xsi:type="v8ui:SpreadsheetDocumentCellLineType">None</v8ui:style>
+							</dcscor:value>
+							<dcscor:item>
+								<dcscor:parameter>BorderStyle.Left</dcscor:parameter>
+								<dcscor:value xsi:type="v8ui:Line" width="1" gap="false">
+									<v8ui:style xsi:type="v8ui:SpreadsheetDocumentCellLineType">None</v8ui:style>
+								</dcscor:value>
+							</dcscor:item>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>Font</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Font" faceName="Arial" height="9" bold="false" italic="false" underline="false" strikeout="false" kind="Absolute"/>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>Placement</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:DataCompositionTextPlacementType">Wrap</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MinimumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">30</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MaximumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">30</dcscor:value>
+						</dcscor:item>
+					</dcsat:appearance>
+				</dcsat:tableCell>
+				<dcsat:tableCell>
+					<dcsat:appearance>
+						<dcscor:item>
+							<dcscor:parameter>BorderStyle</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Line" width="0" gap="false">
+								<v8ui:style xsi:type="v8ui:SpreadsheetDocumentCellLineType">None</v8ui:style>
+							</dcscor:value>
+							<dcscor:item>
+								<dcscor:parameter>BorderStyle.Left</dcscor:parameter>
+								<dcscor:value xsi:type="v8ui:Line" width="1" gap="false">
+									<v8ui:style xsi:type="v8ui:SpreadsheetDocumentCellLineType">None</v8ui:style>
+								</dcscor:value>
+							</dcscor:item>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>Font</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Font" faceName="Arial" height="9" bold="false" italic="false" underline="false" strikeout="false" kind="Absolute"/>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>Placement</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:DataCompositionTextPlacementType">Wrap</dcscor:value>
+						</dcscor:item>
+					</dcsat:appearance>
+				</dcsat:tableCell>
+				<dcsat:tableCell>
+					<dcsat:appearance>
+						<dcscor:item>
+							<dcscor:parameter>BorderStyle</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Line" width="0" gap="false">
+								<v8ui:style xsi:type="v8ui:SpreadsheetDocumentCellLineType">None</v8ui:style>
+							</dcscor:value>
+							<dcscor:item>
+								<dcscor:parameter>BorderStyle.Left</dcscor:parameter>
+								<dcscor:value xsi:type="v8ui:Line" width="1" gap="false">
+									<v8ui:style xsi:type="v8ui:SpreadsheetDocumentCellLineType">None</v8ui:style>
+								</dcscor:value>
+							</dcscor:item>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>Font</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Font" faceName="Arial" height="9" bold="false" italic="false" underline="false" strikeout="false" kind="Absolute"/>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>Placement</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:DataCompositionTextPlacementType">Wrap</dcscor:value>
+						</dcscor:item>
+					</dcsat:appearance>
+				</dcsat:tableCell>
+				<dcsat:tableCell>
+					<dcsat:appearance>
+						<dcscor:item>
+							<dcscor:parameter>BorderStyle</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Line" width="0" gap="false">
+								<v8ui:style xsi:type="v8ui:SpreadsheetDocumentCellLineType">None</v8ui:style>
+							</dcscor:value>
+							<dcscor:item>
+								<dcscor:parameter>BorderStyle.Left</dcscor:parameter>
+								<dcscor:value xsi:type="v8ui:Line" width="1" gap="false">
+									<v8ui:style xsi:type="v8ui:SpreadsheetDocumentCellLineType">None</v8ui:style>
+								</dcscor:value>
+							</dcscor:item>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>Font</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Font" faceName="Arial" height="9" bold="false" italic="false" underline="false" strikeout="false" kind="Absolute"/>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>Placement</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:DataCompositionTextPlacementType">Wrap</dcscor:value>
+						</dcscor:item>
+					</dcsat:appearance>
+				</dcsat:tableCell>
+			</dcsat:item>
+			<dcsat:item xsi:type="dcsat:TableRow">
+				<dcsat:tableCell>
+					<dcsat:item xsi:type="dcsat:Field">
+						<dcsat:value xsi:type="dcscor:Parameter">DataParameters.PeriodPresentation</dcsat:value>
+					</dcsat:item>
+					<dcsat:appearance>
+						<dcscor:item>
+							<dcscor:parameter>BorderStyle</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Line" width="0" gap="false">
+								<v8ui:style xsi:type="v8ui:SpreadsheetDocumentCellLineType">None</v8ui:style>
+							</dcscor:value>
+							<dcscor:item>
+								<dcscor:parameter>BorderStyle.Left</dcscor:parameter>
+								<dcscor:value xsi:type="v8ui:Line" width="1" gap="false">
+									<v8ui:style xsi:type="v8ui:SpreadsheetDocumentCellLineType">None</v8ui:style>
+								</dcscor:value>
+							</dcscor:item>
+							<dcscor:item>
+								<dcscor:parameter>BorderStyle.Top</dcscor:parameter>
+								<dcscor:value xsi:type="v8ui:Line" width="1" gap="false">
+									<v8ui:style xsi:type="v8ui:SpreadsheetDocumentCellLineType">None</v8ui:style>
+								</dcscor:value>
+							</dcscor:item>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>Font</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Font" faceName="Arial" height="9" bold="false" italic="true" underline="false" strikeout="false" kind="Absolute"/>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>Placement</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:DataCompositionTextPlacementType">Wrap</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MinimumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">30</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>MaximumWidth</dcscor:parameter>
+							<dcscor:value xsi:type="xs:decimal">30</dcscor:value>
+						</dcscor:item>
+					</dcsat:appearance>
+				</dcsat:tableCell>
+				<dcsat:tableCell>
+					<dcsat:appearance>
+						<dcscor:item>
+							<dcscor:parameter>BorderStyle</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Line" width="0" gap="false">
+								<v8ui:style xsi:type="v8ui:SpreadsheetDocumentCellLineType">None</v8ui:style>
+							</dcscor:value>
+							<dcscor:item>
+								<dcscor:parameter>BorderStyle.Left</dcscor:parameter>
+								<dcscor:value xsi:type="v8ui:Line" width="1" gap="false">
+									<v8ui:style xsi:type="v8ui:SpreadsheetDocumentCellLineType">None</v8ui:style>
+								</dcscor:value>
+							</dcscor:item>
+							<dcscor:item>
+								<dcscor:parameter>BorderStyle.Top</dcscor:parameter>
+								<dcscor:value xsi:type="v8ui:Line" width="1" gap="false">
+									<v8ui:style xsi:type="v8ui:SpreadsheetDocumentCellLineType">None</v8ui:style>
+								</dcscor:value>
+							</dcscor:item>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>Font</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Font" faceName="Arial" height="9" bold="false" italic="false" underline="false" strikeout="false" kind="Absolute"/>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>Placement</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:DataCompositionTextPlacementType">Wrap</dcscor:value>
+						</dcscor:item>
+					</dcsat:appearance>
+				</dcsat:tableCell>
+				<dcsat:tableCell>
+					<dcsat:appearance>
+						<dcscor:item>
+							<dcscor:parameter>BorderStyle</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Line" width="0" gap="false">
+								<v8ui:style xsi:type="v8ui:SpreadsheetDocumentCellLineType">None</v8ui:style>
+							</dcscor:value>
+							<dcscor:item>
+								<dcscor:parameter>BorderStyle.Left</dcscor:parameter>
+								<dcscor:value xsi:type="v8ui:Line" width="1" gap="false">
+									<v8ui:style xsi:type="v8ui:SpreadsheetDocumentCellLineType">None</v8ui:style>
+								</dcscor:value>
+							</dcscor:item>
+							<dcscor:item>
+								<dcscor:parameter>BorderStyle.Top</dcscor:parameter>
+								<dcscor:value xsi:type="v8ui:Line" width="1" gap="false">
+									<v8ui:style xsi:type="v8ui:SpreadsheetDocumentCellLineType">None</v8ui:style>
+								</dcscor:value>
+							</dcscor:item>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>Font</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Font" faceName="Arial" height="9" bold="false" italic="false" underline="false" strikeout="false" kind="Absolute"/>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>Placement</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:DataCompositionTextPlacementType">Wrap</dcscor:value>
+						</dcscor:item>
+					</dcsat:appearance>
+				</dcsat:tableCell>
+				<dcsat:tableCell>
+					<dcsat:appearance>
+						<dcscor:item>
+							<dcscor:parameter>BorderStyle</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Line" width="0" gap="false">
+								<v8ui:style xsi:type="v8ui:SpreadsheetDocumentCellLineType">None</v8ui:style>
+							</dcscor:value>
+							<dcscor:item>
+								<dcscor:parameter>BorderStyle.Left</dcscor:parameter>
+								<dcscor:value xsi:type="v8ui:Line" width="1" gap="false">
+									<v8ui:style xsi:type="v8ui:SpreadsheetDocumentCellLineType">None</v8ui:style>
+								</dcscor:value>
+							</dcscor:item>
+							<dcscor:item>
+								<dcscor:parameter>BorderStyle.Top</dcscor:parameter>
+								<dcscor:value xsi:type="v8ui:Line" width="1" gap="false">
+									<v8ui:style xsi:type="v8ui:SpreadsheetDocumentCellLineType">None</v8ui:style>
+								</dcscor:value>
+							</dcscor:item>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>Font</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Font" faceName="Arial" height="9" bold="false" italic="false" underline="false" strikeout="false" kind="Absolute"/>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>Placement</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:DataCompositionTextPlacementType">Wrap</dcscor:value>
+						</dcscor:item>
+					</dcsat:appearance>
+				</dcsat:tableCell>
+			</dcsat:item>
+		</template>
+		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
+			<dcsat:name>OurCompany</dcsat:name>
+			<dcsat:expression>OurCompany</dcsat:expression>
+		</parameter>
+		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
+			<dcsat:name>DataParameters.PeriodPresentation</dcsat:name>
+			<dcsat:expression>DataParameters.PeriodPresentation</dcsat:expression>
+		</parameter>
+	</template>
+	<template>
+		<name>Template8</name>
+		<template xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:AreaTemplate">
+			<dcsat:item xsi:type="dcsat:TableRow">
+				<dcsat:tableCell>
+					<dcsat:item xsi:type="dcsat:Field">
+						<dcsat:value xsi:type="dcscor:Parameter">CurrentDate</dcsat:value>
+					</dcsat:item>
+					<dcsat:item xsi:type="dcsat:Field">
+						<dcsat:value xsi:type="v8:LocalStringType">
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content> - Accrual basis</v8:content>
+							</v8:item>
+						</dcsat:value>
+					</dcsat:item>
+					<dcsat:appearance>
+						<dcscor:item>
+							<dcscor:parameter>TextColor</dcscor:parameter>
+							<dcscor:value xmlns:d8p1="http://v8.1c.ru/8.1/data/ui/colors/web" xsi:type="v8ui:Color">d8p1:Gray</dcscor:value>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>BorderStyle</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Line" width="0" gap="false">
+								<v8ui:style xsi:type="v8ui:SpreadsheetDocumentCellLineType">None</v8ui:style>
+							</dcscor:value>
+							<dcscor:item>
+								<dcscor:parameter>BorderStyle.Left</dcscor:parameter>
+								<dcscor:value xsi:type="v8ui:Line" width="1" gap="false">
+									<v8ui:style xsi:type="v8ui:SpreadsheetDocumentCellLineType">None</v8ui:style>
+								</dcscor:value>
+							</dcscor:item>
+							<dcscor:item>
+								<dcscor:parameter>BorderStyle.Top</dcscor:parameter>
+								<dcscor:value xsi:type="v8ui:Line" width="1" gap="false">
+									<v8ui:style xsi:type="v8ui:SpreadsheetDocumentCellLineType">None</v8ui:style>
+								</dcscor:value>
+							</dcscor:item>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>Font</dcscor:parameter>
+							<dcscor:value xsi:type="v8ui:Font" faceName="Arial" height="9" bold="false" italic="true" underline="false" strikeout="false" kind="Absolute"/>
+						</dcscor:item>
+						<dcscor:item>
+							<dcscor:parameter>Placement</dcscor:parameter>
+							<dcscor:value xsi:type="dcscor:DataCompositionTextPlacementType">Wrap</dcscor:value>
+						</dcscor:item>
+					</dcsat:appearance>
+				</dcsat:tableCell>
+			</dcsat:item>
+		</template>
+		<parameter xmlns:dcsat="http://v8.1c.ru/8.1/data-composition-system/area-template" xsi:type="dcsat:ExpressionAreaTemplateParameter">
+			<dcsat:name>CurrentDate</dcsat:name>
+			<dcsat:expression>Format(CurrentDate(), "DF='dddd, MMM d, yyyy h:mm:ss tt'")</dcsat:expression>
 		</parameter>
 	</template>
 	<fieldTemplate>
@@ -546,42 +1181,27 @@ END</dcsat:expression>
 		<template>Template4</template>
 	</fieldTemplate>
 	<fieldTemplate>
-		<field>Recorder.Company</field>
+		<field>CompanyFilter</field>
 		<template>Template5</template>
 	</fieldTemplate>
+	<fieldTemplate>
+		<field>Recorder</field>
+		<template>Template6</template>
+	</fieldTemplate>
+	<groupTemplate>
+		<groupName>Header</groupName>
+		<templateType>Header</templateType>
+		<template>Template7</template>
+	</groupTemplate>
+	<groupTemplate>
+		<groupName>Footer</groupName>
+		<templateType>Header</templateType>
+		<template>Template8</template>
+	</groupTemplate>
 	<settingsVariant>
 		<dcsset:name>Default</dcsset:name>
 		<dcsset:presentation xsi:type="xs:string">Default</dcsset:presentation>
 		<dcsset:settings xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows">
-			<dcsset:selection>
-				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>Recorder</dcsset:field>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:SelectedItemFolder">
-					<dcsset:item xsi:type="dcsset:SelectedItemField">
-						<dcsset:field>Recorder.Company</dcsset:field>
-						<dcsset:lwsTitle>
-							<v8:item>
-								<v8:lang>en</v8:lang>
-								<v8:content>Company (customer / vendor)</v8:content>
-							</v8:item>
-						</dcsset:lwsTitle>
-					</dcsset:item>
-					<dcsset:placement>Auto</dcsset:placement>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>RecorderMemo</dcsset:field>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>Split</dcsset:field>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>AmountRCTurnover</dcsset:field>
-				</dcsset:item>
-				<dcsset:item xsi:type="dcsset:SelectedItemField">
-					<dcsset:field>AmountRCClosingBalance</dcsset:field>
-				</dcsset:item>
-			</dcsset:selection>
 			<dcsset:filter>
 				<dcsset:item xsi:type="dcsset:FilterItemComparison">
 					<dcsset:use>false</dcsset:use>
@@ -593,6 +1213,82 @@ END</dcsat:expression>
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Account</v8:content>
+						</v8:item>
+					</dcsset:userSettingPresentation>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:FilterItemComparison">
+					<dcsset:use>false</dcsset:use>
+					<dcsset:left xsi:type="dcscor:Field">AccountTypeFilter</dcsset:left>
+					<dcsset:comparisonType>Equal</dcsset:comparisonType>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
+					<dcsset:userSettingID>b063082f-1cb3-414f-b703-80e1d94afaa1</dcsset:userSettingID>
+					<dcsset:userSettingPresentation xsi:type="v8:LocalStringType">
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Account type</v8:content>
+						</v8:item>
+					</dcsset:userSettingPresentation>
+				</dcsset:item>
+				<dcsset:item xsi:type="dcsset:FilterItemGroup">
+					<dcsset:use>false</dcsset:use>
+					<dcsset:groupType>OrGroup</dcsset:groupType>
+					<dcsset:item xsi:type="dcsset:FilterItemComparison">
+						<dcsset:use>false</dcsset:use>
+						<dcsset:left xsi:type="dcscor:Field">CompanyFilter</dcsset:left>
+						<dcsset:comparisonType>Equal</dcsset:comparisonType>
+						<dcsset:viewMode>Normal</dcsset:viewMode>
+						<dcsset:userSettingID>98372b67-f29c-49f2-80bc-dee2daf5a179</dcsset:userSettingID>
+						<dcsset:userSettingPresentation xsi:type="v8:LocalStringType">
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>Company</v8:content>
+							</v8:item>
+						</dcsset:userSettingPresentation>
+					</dcsset:item>
+					<dcsset:item xsi:type="dcsset:FilterItemGroup">
+						<dcsset:use>false</dcsset:use>
+						<dcsset:groupType>AndGroup</dcsset:groupType>
+						<dcsset:item xsi:type="dcsset:FilterItemComparison">
+							<dcsset:use>false</dcsset:use>
+							<dcsset:left xsi:type="dcscor:Field">CustomerFilter</dcsset:left>
+							<dcsset:comparisonType>Equal</dcsset:comparisonType>
+							<dcsset:viewMode>Normal</dcsset:viewMode>
+							<dcsset:userSettingID>7c228c35-d479-4bd9-948f-b10a75d28525</dcsset:userSettingID>
+							<dcsset:userSettingPresentation xsi:type="v8:LocalStringType">
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Customer</v8:content>
+								</v8:item>
+							</dcsset:userSettingPresentation>
+						</dcsset:item>
+						<dcsset:item xsi:type="dcsset:FilterItemComparison">
+							<dcsset:use>false</dcsset:use>
+							<dcsset:left xsi:type="dcscor:Field">VendorFilter</dcsset:left>
+							<dcsset:comparisonType>Equal</dcsset:comparisonType>
+							<dcsset:viewMode>Normal</dcsset:viewMode>
+							<dcsset:userSettingID>b6a8e32b-ec08-4def-8d3a-f8c2cc6a3d6b</dcsset:userSettingID>
+							<dcsset:userSettingPresentation xsi:type="v8:LocalStringType">
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Vendor</v8:content>
+								</v8:item>
+							</dcsset:userSettingPresentation>
+						</dcsset:item>
+						<dcsset:viewMode>Normal</dcsset:viewMode>
+						<dcsset:userSettingID>481d96b9-a0d0-4f8e-be4a-4da26604633a</dcsset:userSettingID>
+						<dcsset:userSettingPresentation xsi:type="v8:LocalStringType">
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>AND group (additional)</v8:content>
+							</v8:item>
+						</dcsset:userSettingPresentation>
+					</dcsset:item>
+					<dcsset:viewMode>Normal</dcsset:viewMode>
+					<dcsset:userSettingID>bc4e06e1-a87a-41bb-883f-39fc2cf7678d</dcsset:userSettingID>
+					<dcsset:userSettingPresentation xsi:type="v8:LocalStringType">
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>OR group (additional)</v8:content>
 						</v8:item>
 					</dcsset:userSettingPresentation>
 				</dcsset:item>
@@ -703,7 +1399,7 @@ END</dcsat:expression>
 					<dcsset:appearance>
 						<dcscor:item xsi:type="dcsset:SettingsParameterValue">
 							<dcscor:parameter>Font</dcscor:parameter>
-							<dcscor:value xsi:type="v8ui:Font" ref="sys:DefaultGUIFont" bold="false" italic="true" underline="false" strikeout="false" kind="WindowsFont"/>
+							<dcscor:value xsi:type="v8ui:Font" ref="sys:DefaultGUIFont" faceName="Arial" height="9" bold="false" italic="true" underline="false" strikeout="false" kind="WindowsFont"/>
 						</dcscor:item>
 					</dcsset:appearance>
 				</dcsset:item>
@@ -713,7 +1409,48 @@ END</dcsat:expression>
 					<dcscor:parameter>VerticalOverallPlacement</dcscor:parameter>
 					<dcscor:value xsi:type="dcscor:DataCompositionTotalPlacement">None</dcscor:value>
 				</dcscor:item>
+				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+					<dcscor:use>false</dcscor:use>
+					<dcscor:parameter>TitleOutput</dcscor:parameter>
+					<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">Output</dcscor:value>
+				</dcscor:item>
+				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+					<dcscor:use>false</dcscor:use>
+					<dcscor:parameter>Title</dcscor:parameter>
+					<dcscor:value xsi:type="v8:LocalStringType">
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>General ledger (accrual basis)</v8:content>
+						</v8:item>
+					</dcscor:value>
+				</dcscor:item>
+				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+					<dcscor:parameter>DataParametersOutput</dcscor:parameter>
+					<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
+				</dcscor:item>
+				<dcscor:item xsi:type="dcsset:SettingsParameterValue">
+					<dcscor:parameter>FilterOutput</dcscor:parameter>
+					<dcscor:value xsi:type="dcsset:DataCompositionTextOutputType">DontOutput</dcscor:value>
+				</dcscor:item>
 			</dcsset:outputParameters>
+			<dcsset:item xsi:type="dcsset:StructureItemGroup">
+				<dcsset:name>Header</dcsset:name>
+				<dcsset:groupItems>
+					<dcsset:item xsi:type="dcsset:GroupItemField">
+						<dcsset:field>OurCompany</dcsset:field>
+						<dcsset:groupType>Items</dcsset:groupType>
+						<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+						<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+						<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+					</dcsset:item>
+				</dcsset:groupItems>
+				<dcsset:order>
+					<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
+				</dcsset:order>
+				<dcsset:selection>
+					<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+				</dcsset:selection>
+			</dcsset:item>
 			<dcsset:item xsi:type="dcsset:StructureItemGroup">
 				<dcsset:groupItems>
 					<dcsset:item xsi:type="dcsset:GroupItemField">
@@ -728,7 +1465,15 @@ END</dcsat:expression>
 					<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
 				</dcsset:order>
 				<dcsset:selection>
-					<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+					<dcsset:item xsi:type="dcsset:SelectedItemField">
+						<dcsset:field>Account</dcsset:field>
+					</dcsset:item>
+					<dcsset:item xsi:type="dcsset:SelectedItemField">
+						<dcsset:field>AmountRCTurnover</dcsset:field>
+					</dcsset:item>
+					<dcsset:item xsi:type="dcsset:SelectedItemField">
+						<dcsset:field>AmountRCClosingBalance</dcsset:field>
+					</dcsset:item>
 				</dcsset:selection>
 				<dcsset:conditionalAppearance>
 					<dcsset:item>
@@ -749,13 +1494,72 @@ END</dcsat:expression>
 					</dcscor:item>
 				</dcsset:outputParameters>
 				<dcsset:item xsi:type="dcsset:StructureItemGroup">
+					<dcsset:groupItems>
+						<dcsset:item xsi:type="dcsset:GroupItemField">
+							<dcsset:field>Recorder</dcsset:field>
+							<dcsset:groupType>Items</dcsset:groupType>
+							<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+							<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+							<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+						</dcsset:item>
+						<dcsset:item xsi:type="dcsset:GroupItemField">
+							<dcsset:field>CompanyFilter</dcsset:field>
+							<dcsset:groupType>Items</dcsset:groupType>
+							<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+							<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+							<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+						</dcsset:item>
+						<dcsset:item xsi:type="dcsset:GroupItemField">
+							<dcsset:field>RecorderMemo</dcsset:field>
+							<dcsset:groupType>Items</dcsset:groupType>
+							<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+							<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+							<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+						</dcsset:item>
+						<dcsset:item xsi:type="dcsset:GroupItemField">
+							<dcsset:field>Split</dcsset:field>
+							<dcsset:groupType>Items</dcsset:groupType>
+							<dcsset:periodAdditionType>None</dcsset:periodAdditionType>
+							<dcsset:periodAdditionBegin xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionBegin>
+							<dcsset:periodAdditionEnd xsi:type="xs:dateTime">0001-01-01T00:00:00</dcsset:periodAdditionEnd>
+						</dcsset:item>
+					</dcsset:groupItems>
 					<dcsset:order>
 						<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
 					</dcsset:order>
 					<dcsset:selection>
-						<dcsset:item xsi:type="dcsset:SelectedItemAuto"/>
+						<dcsset:item xsi:type="dcsset:SelectedItemField">
+							<dcsset:field>Recorder</dcsset:field>
+						</dcsset:item>
+						<dcsset:item xsi:type="dcsset:SelectedItemField">
+							<dcsset:field>CompanyFilter</dcsset:field>
+							<dcsset:lwsTitle>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Company (customer / vendor)</v8:content>
+								</v8:item>
+							</dcsset:lwsTitle>
+						</dcsset:item>
+						<dcsset:item xsi:type="dcsset:SelectedItemField">
+							<dcsset:field>RecorderMemo</dcsset:field>
+						</dcsset:item>
+						<dcsset:item xsi:type="dcsset:SelectedItemField">
+							<dcsset:field>Split</dcsset:field>
+						</dcsset:item>
+						<dcsset:item xsi:type="dcsset:SelectedItemField">
+							<dcsset:field>AmountRCTurnover</dcsset:field>
+						</dcsset:item>
+						<dcsset:item xsi:type="dcsset:SelectedItemField">
+							<dcsset:field>AmountRCClosingBalance</dcsset:field>
+						</dcsset:item>
 					</dcsset:selection>
 				</dcsset:item>
+			</dcsset:item>
+			<dcsset:item xsi:type="dcsset:StructureItemGroup">
+				<dcsset:name>Footer</dcsset:name>
+				<dcsset:order>
+					<dcsset:item xsi:type="dcsset:OrderItemAuto"/>
+				</dcsset:order>
 			</dcsset:item>
 		</dcsset:settings>
 	</settingsVariant>

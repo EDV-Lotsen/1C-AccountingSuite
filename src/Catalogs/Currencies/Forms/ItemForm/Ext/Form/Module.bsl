@@ -105,6 +105,25 @@ Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 	//	EndDo;						
 	//EndIf;
 	
+	If Constants.UseSOPrepayment.Get() And (Not ValueIsFilled(Object.DefaultPrepaymentAR)) Then
+		
+		Message = New UserMessage();
+		Message.Text  = NStr("en = 'Cannot save with no ""Prepayment A/R account""'");
+		Message.Field = "Object.DefaultPrepaymentAR";
+		Message.Message();
+		Cancel = True;
+		
+		Return;
+		
+	EndIf;
+	
+EndProcedure
+
+&AtServer
+Procedure OnCreateAtServer(Cancel, StandardProcessing)
+	If Object.Ref.IsEmpty() Then 
+		Object.AutoUpdateRates = True;
+	EndIf;	
 EndProcedure
 
 

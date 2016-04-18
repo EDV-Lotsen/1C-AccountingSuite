@@ -1,4 +1,5 @@
-﻿Procedure BeforeWrite(Cancel)
+﻿
+Procedure BeforeWrite(Cancel)
 	
 	If NewObject = True Then
 		NewObject = False
@@ -9,6 +10,5 @@
 	EndIf;
 
 EndProcedure
-
 
 

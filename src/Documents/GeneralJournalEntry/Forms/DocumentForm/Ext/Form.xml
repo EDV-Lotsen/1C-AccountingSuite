@@ -29,6 +29,12 @@
 				</Title>
 				<ExtendedTooltip name="FormInformationRegisterRecurringDocumentsOpenByValueRecurringDocumentExtendedTooltip" id="101"/>
 			</Button>
+			<Button name="FormCommonCommandAttachedFiles" id="105">
+				<Type>CommandBarButton</Type>
+				<CommandName>CommonCommand.AttachedFiles</CommandName>
+				<DataPath>Object.Ref</DataPath>
+				<ExtendedTooltip name="FormCommonCommandAttachedFilesExtendedTooltip" id="106"/>
+			</Button>
 		</ChildItems>
 	</AutoCommandBar>
 	<Events>
@@ -197,6 +203,12 @@
 							<CheckBoxType>Auto</CheckBoxType>
 							<ContextMenu name="AdjustingContextMenu" id="71"/>
 							<ExtendedTooltip name="AdjustingExtendedTooltip" id="72"/>
+						</CheckBoxField>
+						<CheckBoxField name="DoNotReconcile" id="102">
+							<DataPath>Object.DoNotReconcile</DataPath>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="DoNotReconcileContextMenu" id="103"/>
+							<ExtendedTooltip name="DoNotReconcileExtendedTooltip" id="104"/>
 						</CheckBoxField>
 					</ChildItems>
 				</UsualGroup>

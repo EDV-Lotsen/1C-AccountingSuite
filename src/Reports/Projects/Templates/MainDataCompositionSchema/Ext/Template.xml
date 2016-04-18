@@ -54,14 +54,18 @@
 			<dataPath>Account</dataPath>
 			<field>Account</field>
 		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Class</dataPath>
+			<field>Class</field>
+		</field>
 		<dataSource>DataSource1</dataSource>
 		<query>SELECT
 	ProjectDataTurnovers.Project.Description,
-	ProjectDataTurnovers.AmountReceipt,
-	ProjectDataTurnovers.AmountExpense,
-	ProjectDataTurnovers.AmountTurnover
+	ProjectDataTurnovers.AmountRCExpense AS AmountReceipt,
+	ProjectDataTurnovers.AmountRCReceipt AS AmountExpense,
+	-ProjectDataTurnovers.AmountRCTurnover AS AmountTurnover
 FROM
-	AccumulationRegister.ProjectData.Turnovers AS ProjectDataTurnovers
+	AccumulationRegister.GeneralJournalAnalyticsDimensions.Turnovers AS ProjectDataTurnovers
 		LEFT JOIN Catalog.Projects AS Projects
 		ON ProjectDataTurnovers.Project = Projects.Ref</query>
 	</dataSet>

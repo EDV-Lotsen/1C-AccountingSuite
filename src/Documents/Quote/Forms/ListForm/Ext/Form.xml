@@ -204,12 +204,6 @@
 					<ContextMenu name="EmailDateContextMenu" id="44"/>
 					<ExtendedTooltip name="EmailDateExtendedTooltip" id="45"/>
 				</LabelField>
-				<CheckBoxField name="Zoho" id="46">
-					<DataPath>List.Zoho</DataPath>
-					<CheckBoxType>Auto</CheckBoxType>
-					<ContextMenu name="ZohoContextMenu" id="47"/>
-					<ExtendedTooltip name="ZohoExtendedTooltip" id="48"/>
-				</CheckBoxField>
 			</ChildItems>
 		</Table>
 	</ChildItems>
@@ -242,20 +236,14 @@
 	DocumentQuote.DropshipCompany,
 	DocumentQuote.DocumentTotal,
 	DocumentQuote.DocumentTotalRC,
-	LastEmails.Date AS EmailDate,
-	CASE 
-		WHEN zoho_QuoteCodeMap.zoho_id &lt;&gt; ""
-			THEN TRUE
-		ELSE FALSE
-	END AS Zoho
+	LastEmails.Date AS EmailDate
 FROM
-	Catalog.zoho_QuoteCodeMap AS zoho_QuoteCodeMap
-		RIGHT JOIN Document.Quote AS DocumentQuote
-			LEFT JOIN InformationRegister.DocumentJournalOfCompanies AS DocumentJournalOfCompanies
-			ON DocumentQuote.Ref = DocumentJournalOfCompanies.Document.BaseDocument
-			LEFT JOIN InformationRegister.DocumentLastEmail AS LastEmails
-			ON (LastEmails.Document = DocumentQuote.Ref)
-		ON zoho_QuoteCodeMap.quote_ref = DocumentQuote.Ref</QueryText>
+	Document.Quote AS DocumentQuote
+	LEFT JOIN InformationRegister.DocumentJournalOfCompanies AS DocumentJournalOfCompanies
+		ON DocumentQuote.Ref = DocumentJournalOfCompanies.Document.BaseDocument
+	LEFT JOIN InformationRegister.DocumentLastEmail AS LastEmails
+		ON DocumentQuote.Ref = LastEmails.Document
+</QueryText>
 				<MainTable>Document.Quote</MainTable>
 				<ListSettings>
 					<dcsset:filter>

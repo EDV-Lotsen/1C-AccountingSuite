@@ -1,6 +1,7 @@
 ﻿
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
+	
 	ThisForm.Title = Parameters.Title;
 	If Parameters.MessageStatus = Enums.MessageStatus.NoStatus Then
 		Items.MessageIcon.Visible = False;
@@ -9,5 +10,28 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	ElsIf Parameters.MessageStatus = Enums.MessageStatus.Warning Then
 		Items.MessageIcon.Picture = PictureLib.Warning32;
 	EndIf;
-	Items.Message.Title = Parameters.Message;
+	
+	If Parameters.Property("FormattedMessage") Then
+		
+		FormattedMessage = Parameters.FormattedMessage;
+		
+		Items.Message.Visible          = False;
+		Items.FormattedMessage.Visible = True;
+		
+	Else
+		
+		Items.Message.Title = Parameters.Message;
+		
+		Items.Message.Visible          = True;
+		Items.FormattedMessage.Visible = False;
+		
+	EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure FormattedMessageURLProcessing(Item, FormattedStringURL, StandardProcessing)
+	
+	ThisForm.Close();
+	
 EndProcedure

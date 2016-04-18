@@ -3,27 +3,29 @@
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
 	If Parameters.Property("SpreadsheetDocument") Then
-		SpreadsheetDocument = Parameters.SpreadsheetDocument;
-		ThisForm.Title      = Parameters.TitleOfForm;
+		Result			= Parameters.SpreadsheetDocument;
 	Else
 		Cancel = True;	
 	EndIf;
 	
+	ThisForm.Title	= Parameters.TitleOfForm;
+	If ValueIsFilled(Parameters.PrintFormID) Then
+		PrintFormID = Parameters.PrintFormID.Metadata().FullName();
+	EndIf;
+	
+	PrintFormID = PrintFormID + " (" + Parameters.TitleOfForm + ")";
+	
+	PrintFormSettings = PrintFormFunctions.GetPrintFormSettings(PrintFormID);
+	FillPropertyValues(Result, PrintFormSettings);
+	Result.PageOrientation = ?(PrintFormSettings.PrintPageOrientation = 0, PageOrientation.Portrait, PageOrientation.Landscape);
+	
 EndProcedure
 
 &AtClient
-Procedure Print(Command)
+Procedure Excel(Command)
 	
-	PrintAtServer();
-	SpreadsheetDocument.Print(PrintDialogUseMode.Use);
+	Structure = GeneralFunctions.GetExcelFile(ThisForm.Title, Result);
 	
-EndProcedure
-
-&AtServer
-Procedure PrintAtServer()
-	
-	SpreadsheetDocument.PageSize  = "Letter"; 
-	SpreadsheetDocument.FitToPage = True;
+	GetFile(Structure.Address, Structure.FileName, True); 
 	
 EndProcedure
-

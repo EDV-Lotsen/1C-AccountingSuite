@@ -8,35 +8,9 @@
 
 #If Server Or ThickClientOrdinaryApplication Or ExternalConnection Then
 
-// -> CODE REVIEW
-Procedure BeforeDelete(Cancel)
-	
-	companies_webhook = Constants.sales_orders_webhook.Get();
-	
-	If NOT companies_webhook = "" Then	
-		
-		WebhookMap = New Map(); 
-		WebhookMap.Insert("apisecretkey",Constants.APISecretKey.Get());
-		WebhookMap.Insert("resource","salesorders");
-		WebhookMap.Insert("action","delete");
-		WebhookMap.Insert("api_code",String(Ref.UUID()));
-		
-		WebhookParams = New Array();
-		WebhookParams.Add(Constants.sales_orders_webhook.Get());
-		WebhookParams.Add(WebhookMap);
-		LongActions.ExecuteInBackground("GeneralFunctions.SendWebhook", WebhookParams);
-	
-	EndIf;
-	
-	AvaTaxServer.AvataxDocumentBeforeDelete(ThisObject, Cancel, "SalesOrder");
-	
-EndProcedure
-// <- CODE REVIEW
-
 Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 	
 	// -> CODE REVIEW
-	// For webhooks.
 	If NewObject = True Then
 		NewObject = False;
 	Else
@@ -68,22 +42,21 @@ EndProcedure
 
 Procedure FillCheckProcessing(Cancel, CheckedAttributes)
 	
-	// -> CODE REVIEW
+	// Check positive discounts.
 	If Discount > 0 Then
-		Message = New UserMessage();
-		Message.Text=NStr("en='A discount should be a negative number'");
-		//Message.Field = "Object.Description";
-		Message.Message();
-		Cancel = True;
-		Return;
+		MessageText = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = 'Specified discount: %1. A discount should be negative number.'"), Format(Discount, "NFD=2; NZ="));
+		CommonUseClientServer.MessageToUser(MessageText, Ref,,, Cancel);
 	EndIf;
-	// <- CODE REVIEW
 	
+	// Check sales tax rate filling
+	If GeneralFunctionsReusable.FunctionalOptionValue("SalesTaxCharging") And Not UseAvatax Then
+		If Not ValueIsFilled(SalesTaxRate) Then
+			CommonUseClientServer.MessageToUser(NStr("en = 'Field ""Sales tax rate"" is empty'"), Ref, "SalesTaxRate",, Cancel);
+		EndIf;
+	EndIf;
 	
 	// Check doubles in items (to be sure of proper orders placement).
-	//If Not SessionParameters.TenantValue = "1101092" Then // Locked for the tenant "1101092"
-		GeneralFunctions.CheckDoubleItems(Ref, LineItems, "Product, Unit, Location, DeliveryDate, Project, Class, LineNumber",, Cancel);
-	//EndIf;
+	GeneralFunctions.CheckDoubleItems(Ref, LineItems, "Product, Unit, Location, DeliveryDate, Project, Class, LineNumber",, Cancel);
 	
 EndProcedure
 
@@ -141,32 +114,26 @@ Procedure OnCopy(CopiedObject)
 	
 EndProcedure
 
-// -> CODE REVIEW
-Procedure OnWrite(Cancel)
+#EndIf
+
+Procedure OnSetNewNumber(StandardProcessing, Prefix)
 	
-	//companies_webhook = Constants.sales_orders_webhook.Get();
-	//
-	//If NOT companies_webhook = "" Then	
-	//	
-	//	WebhookMap = New Map(); 
-	//	WebhookMap.Insert("apisecretkey",Constants.APISecretKey.Get());
-	//	WebhookMap.Insert("resource","salesorders");
-	//	If NewObject = True Then
-	//		WebhookMap.Insert("action","create");
-	//	Else
-	//		WebhookMap.Insert("action","update");
-	//	EndIf;
-	//	WebhookMap.Insert("api_code",String(Ref.UUID()));
-	//	
-	//	WebhookParams = New Array();
-	//	WebhookParams.Add(Constants.sales_orders_webhook.Get());
-	//	WebhookParams.Add(WebhookMap);
-	//	LongActions.ExecuteInBackground("GeneralFunctions.SendWebhook", WebhookParams);
-	//
-	//EndIf;
+	StandardProcessing = False;
 	
+	Numerator = Catalogs.DocumentNumbering.SalesOrder;
+	NextNumber = GeneralFunctions.Increment(Numerator.Number);
+	
+	While Documents.SalesOrder.FindByNumber(NextNumber) <> Documents.SalesOrder.EmptyRef() And NextNumber <> "" Do
+		ObjectNumerator = Numerator.GetObject();
+		ObjectNumerator.Number = NextNumber;
+		ObjectNumerator.Write();
+		
+		NextNumber = GeneralFunctions.Increment(NextNumber);
+	EndDo;
+	
+	ThisObject.Number = NextNumber; 
+
 EndProcedure
-// <- CODE REVIEW
 
 Procedure Posting(Cancel, PostingMode)
 	
@@ -206,26 +173,6 @@ Procedure Posting(Cancel, PostingMode)
 	Record.Amount = DocumentTotalRC;
 	// <- CODE REVIEW
 	
-	so_url_webhook = Constants.sales_orders_webhook.Get();
-	
-	If NOT so_url_webhook = "" Then
-		
-		WebhookMap = GeneralFunctions.ReturnSaleOrderMap(Ref);
-		WebhookMap.Insert("resource","salesorders");
-		If NewObject = True Then
-			WebhookMap.Insert("action","create");
-		Else
-			WebhookMap.Insert("action","update");
-		EndIf;
-		WebhookMap.Insert("apisecretkey",Constants.APISecretKey.Get());
-		
-		WebhookParams = New Array();
-		WebhookParams.Add(so_url_webhook);
-		WebhookParams.Add(WebhookMap);
-		LongActions.ExecuteInBackground("GeneralFunctions.SendWebhook", WebhookParams);
-		
-	EndIf;
-		
 EndProcedure
 
 Procedure UndoPosting(Cancel)
@@ -253,27 +200,6 @@ Procedure UndoPosting(Cancel)
 	// 7. Clear used temporary document data.
 	DocumentPosting.ClearDataStructuresAfterPosting(AdditionalProperties);
 	
-EndProcedure
-
-#EndIf
-
-Procedure OnSetNewNumber(StandardProcessing, Prefix)
-	
-	StandardProcessing = False;
-	
-	Numerator = Catalogs.DocumentNumbering.SalesOrder;
-	NextNumber = GeneralFunctions.Increment(Numerator.Number);
-	
-	While Documents.SalesOrder.FindByNumber(NextNumber) <> Documents.SalesOrder.EmptyRef() And NextNumber <> "" Do
-		ObjectNumerator = Numerator.GetObject();
-		ObjectNumerator.Number = NextNumber;
-		ObjectNumerator.Write();
-		
-		NextNumber = GeneralFunctions.Increment(NextNumber);
-	EndDo;
-	
-	ThisObject.Number = NextNumber; 
-
 EndProcedure
 
 #EndRegion

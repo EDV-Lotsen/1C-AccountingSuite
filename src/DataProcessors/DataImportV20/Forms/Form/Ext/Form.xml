@@ -5,16 +5,14 @@
 			<v8:lang>en</v8:lang>
 			<v8:content>Import from a CSV file</v8:content>
 		</v8:item>
-		<v8:item>
-			<v8:lang>ru</v8:lang>
-			<v8:content>Загрузка из электронной таблицы</v8:content>
-		</v8:item>
 	</Title>
 	<AutoSaveDataInSettings>Use</AutoSaveDataInSettings>
 	<AutoTitle>false</AutoTitle>
 	<CommandBarLocation>None</CommandBarLocation>
 	<VerticalScroll>useIfNecessary</VerticalScroll>
-	<AutoCommandBar name="ФормаКоманднаяПанель" id="-1"/>
+	<AutoCommandBar name="FormCommandBar" id="-1">
+		<Autofill>false</Autofill>
+	</AutoCommandBar>
 	<Events>
 		<Event name="OnOpen">OnOpen</Event>
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
@@ -26,16 +24,8 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>Steps</v8:content>
 				</v8:item>
-				<v8:item>
-					<v8:lang>ru</v8:lang>
-					<v8:content>Этапы загрузки</v8:content>
-				</v8:item>
 			</Title>
 			<ToolTip>
-				<v8:item>
-					<v8:lang>ru</v8:lang>
-					<v8:content>Этапы загрузки</v8:content>
-				</v8:item>
 				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Load steps</v8:content>
@@ -50,16 +40,8 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Greeting</v8:content>
 						</v8:item>
-						<v8:item>
-							<v8:lang>ru</v8:lang>
-							<v8:content>Приветствие</v8:content>
-						</v8:item>
 					</Title>
 					<ToolTip>
-						<v8:item>
-							<v8:lang>ru</v8:lang>
-							<v8:content>Приветствие</v8:content>
-						</v8:item>
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Greeting</v8:content>
@@ -73,10 +55,6 @@
 								<v8:item>
 									<v8:lang>en</v8:lang>
 									<v8:content>Main greeting group</v8:content>
-								</v8:item>
-								<v8:item>
-									<v8:lang>ru</v8:lang>
-									<v8:content>Группа приветствие основная</v8:content>
 								</v8:item>
 							</Title>
 							<ToolTip>
@@ -111,10 +89,6 @@
 													<v8:lang>en</v8:lang>
 													<v8:content>This wizard will help you to import data from a CSV file. Before importing please follow the steps below:</v8:content>
 												</v8:item>
-												<v8:item>
-													<v8:lang>ru</v8:lang>
-													<v8:content>Этот мастер поможет вам импортировать данные из электронной таблицы (например: MS Office Excel, OpenOffice Calc и др.). Перед началом импорта необходимо произвести подготовительные действия.</v8:content>
-												</v8:item>
 											</Title>
 											<ContextMenu name="Label3ContextMenu" id="33"/>
 											<ExtendedTooltip name="Label3ExtendedTooltip" id="252"/>
@@ -127,10 +101,6 @@
 										<v8:item>
 											<v8:lang>en</v8:lang>
 											<v8:content>File path</v8:content>
-										</v8:item>
-										<v8:item>
-											<v8:lang>ru</v8:lang>
-											<v8:content>Путь к файлу загрузки</v8:content>
 										</v8:item>
 									</Title>
 									<Width>40</Width>
@@ -459,10 +429,6 @@
 									<v8:lang>en</v8:lang>
 									<v8:content>Greeting group footer</v8:content>
 								</v8:item>
-								<v8:item>
-									<v8:lang>ru</v8:lang>
-									<v8:content>Группа приветствие подвал</v8:content>
-								</v8:item>
 							</Title>
 							<ToolTip>
 								<v8:item>
@@ -489,16 +455,8 @@
 									<v8:lang>en</v8:lang>
 									<v8:content>Empty greeting group</v8:content>
 								</v8:item>
-								<v8:item>
-									<v8:lang>ru</v8:lang>
-									<v8:content>Группа приветствие пустая</v8:content>
-								</v8:item>
 							</Title>
 							<ToolTip>
-								<v8:item>
-									<v8:lang>ru</v8:lang>
-									<v8:content>Группа приветствие пустая</v8:content>
-								</v8:item>
 								<v8:item>
 									<v8:lang>en</v8:lang>
 									<v8:content>Greeting empty</v8:content>
@@ -522,19 +480,11 @@
 				<Page name="Mapping" id="6">
 					<Title>
 						<v8:item>
-							<v8:lang>ru</v8:lang>
-							<v8:content>Сопоставление</v8:content>
-						</v8:item>
-						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Mapping</v8:content>
 						</v8:item>
 					</Title>
 					<ToolTip>
-						<v8:item>
-							<v8:lang>ru</v8:lang>
-							<v8:content>Сопоставление</v8:content>
-						</v8:item>
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Mapping</v8:content>
@@ -555,7 +505,7 @@
 							<ExtendedTooltip name="Group7ExtendedTooltip" id="268"/>
 							<ChildItems>
 								<CommandBar name="Group4" id="894">
-									<Width>29</Width>
+									<Width>41</Width>
 									<HorizontalStretch>false</HorizontalStretch>
 									<ExtendedTooltip name="Group4ExtendedTooltip" id="895"/>
 									<ChildItems>
@@ -653,8 +603,43 @@
 												</Button>
 											</ChildItems>
 										</Popup>
+										<Button name="ShowSettings" id="905">
+											<Type>CommandBarButton</Type>
+											<CommandName>Form.Command.ShowSettings</CommandName>
+											<ExtendedTooltip name="ShowSettingsExtendedTooltip" id="906"/>
+										</Button>
 									</ChildItems>
 								</CommandBar>
+								<InputField name="Date" id="199">
+									<DataPath>Date</DataPath>
+									<ContextMenu name="DateContextMenu" id="200"/>
+									<ExtendedTooltip name="DateExtendedTooltip" id="271"/>
+								</InputField>
+								<InputField name="Date2" id="227">
+									<DataPath>Date2</DataPath>
+									<ContextMenu name="Date2ContextMenu" id="228"/>
+									<ExtendedTooltip name="Date2ExtendedTooltip" id="272"/>
+								</InputField>
+							</ChildItems>
+						</UsualGroup>
+						<UsualGroup name="AdditionalSettings" id="903">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Additional settings</v8:content>
+								</v8:item>
+							</Title>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Additional settings</v8:content>
+								</v8:item>
+							</ToolTip>
+							<Group>Horizontal</Group>
+							<Representation>None</Representation>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="AdditionalSettingsExtendedTooltip" id="904"/>
+							<ChildItems>
 								<InputField name="UpdateOption" id="900">
 									<DataPath>UpdateOption</DataPath>
 									<Title>
@@ -697,24 +682,182 @@
 									<ContextMenu name="UpdateOptionContextMenu" id="901"/>
 									<ExtendedTooltip name="UpdateOptionExtendedTooltip" id="902"/>
 								</InputField>
-								<InputField name="Date" id="199">
-									<DataPath>Date</DataPath>
-									<ContextMenu name="DateContextMenu" id="200"/>
-									<ExtendedTooltip name="DateExtendedTooltip" id="271"/>
+								<InputField name="ErrorProcessing" id="907">
+									<DataPath>ErrorProcessing</DataPath>
+									<HorizontalStretch>false</HorizontalStretch>
+									<ListChoiceMode>true</ListChoiceMode>
+									<ContextMenu name="ErrorProcessingContextMenu" id="908"/>
+									<ExtendedTooltip name="ErrorProcessingExtendedTooltip" id="909"/>
 								</InputField>
-								<InputField name="Date2" id="227">
-									<DataPath>Date2</DataPath>
-									<ContextMenu name="Date2ContextMenu" id="228"/>
-									<ExtendedTooltip name="Date2ExtendedTooltip" id="272"/>
+								<InputField name="DateFormat" id="924">
+									<DataPath>DateFormat</DataPath>
+									<ListChoiceMode>true</ListChoiceMode>
+									<ChooseType>false</ChooseType>
+									<ChoiceList>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>01/31/2015</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">mmddyyyy_Slashed</Value>
+											</xr:Value>
+										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>01-31-2015</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">mmddyyyy_Dashed</Value>
+											</xr:Value>
+										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>01.31.2015</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">mmddyyyy_Dotted</Value>
+											</xr:Value>
+										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>01/31/15</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">mmddyy_Slashed</Value>
+											</xr:Value>
+										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>01-31-15</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">mmddyy_Dashed</Value>
+											</xr:Value>
+										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>01.31.15</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">mmddyy_Dotted</Value>
+											</xr:Value>
+										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>2015.01.31</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">yyyymmdd_Dotted</Value>
+											</xr:Value>
+										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>2015/01/31</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">yyyymmdd_Slashed</Value>
+											</xr:Value>
+										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>2015-01-31</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">yyyymmdd_Dashed</Value>
+											</xr:Value>
+										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>31.01.2015</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">ddmmyyyy_Dotted</Value>
+											</xr:Value>
+										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>31-01-2015</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">ddmmyyyy_Dashed</Value>
+											</xr:Value>
+										</xr:Item>
+										<xr:Item>
+											<xr:Presentation/>
+											<xr:CheckState>0</xr:CheckState>
+											<xr:Value xsi:type="FormChoiceListDesTimeValue">
+												<Presentation>
+													<v8:item>
+														<v8:lang>en</v8:lang>
+														<v8:content>31/01/2015</v8:content>
+													</v8:item>
+												</Presentation>
+												<Value xsi:type="xs:string">ddmmyyyy_Slashed</Value>
+											</xr:Value>
+										</xr:Item>
+									</ChoiceList>
+									<ContextMenu name="DateFormatContextMenu" id="925"/>
+									<ExtendedTooltip name="DateFormatExtendedTooltip" id="926"/>
 								</InputField>
 							</ChildItems>
 						</UsualGroup>
 						<UsualGroup name="MappingGroup" id="14">
 							<ToolTip>
-								<v8:item>
-									<v8:lang>ru</v8:lang>
-									<v8:content>Группа сопоставления</v8:content>
-								</v8:item>
 								<v8:item>
 									<v8:lang>en</v8:lang>
 									<v8:content>Mapping group</v8:content>
@@ -815,16 +958,8 @@
 									<v8:lang>en</v8:lang>
 									<v8:content>Matching group footer</v8:content>
 								</v8:item>
-								<v8:item>
-									<v8:lang>ru</v8:lang>
-									<v8:content>Группа сопоставление подвал</v8:content>
-								</v8:item>
 							</Title>
 							<ToolTip>
-								<v8:item>
-									<v8:lang>ru</v8:lang>
-									<v8:content>Группа сопоставление подвал</v8:content>
-								</v8:item>
 								<v8:item>
 									<v8:lang>en</v8:lang>
 									<v8:content>Mapping group footer</v8:content>
@@ -872,16 +1007,8 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Creation</v8:content>
 						</v8:item>
-						<v8:item>
-							<v8:lang>ru</v8:lang>
-							<v8:content>Создание</v8:content>
-						</v8:item>
 					</Title>
 					<ToolTip>
-						<v8:item>
-							<v8:lang>ru</v8:lang>
-							<v8:content>Создание</v8:content>
-						</v8:item>
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Creation</v8:content>
@@ -907,14 +1034,35 @@
 											<v8:lang>en</v8:lang>
 											<v8:content>Flag the items that need to be imported</v8:content>
 										</v8:item>
-										<v8:item>
-											<v8:lang>ru</v8:lang>
-											<v8:content>Отметьте флажками позиции, которые должны быть загружены:</v8:content>
-										</v8:item>
 									</Title>
 									<ContextMenu name="Label14ContextMenu" id="80"/>
 									<ExtendedTooltip name="Label14ExtendedTooltip" id="286"/>
 								</LabelDecoration>
+							</ChildItems>
+						</UsualGroup>
+						<UsualGroup name="Group8" id="913">
+							<Group>Horizontal</Group>
+							<Representation>None</Representation>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="Group8ExtendedTooltip" id="914"/>
+							<ChildItems>
+								<Button name="SelectAll" id="59">
+									<Type>UsualButton</Type>
+									<CommandName>Form.Command.SelectAll</CommandName>
+									<ExtendedTooltip name="SelectAllExtendedTooltip" id="287"/>
+								</Button>
+								<Button name="UnselectAll" id="60">
+									<Type>UsualButton</Type>
+									<CommandName>Form.Command.UnselectAll</CommandName>
+									<ExtendedTooltip name="UnselectAllExtendedTooltip" id="288"/>
+								</Button>
+								<InputField name="ErrorProcessingCreate" id="915">
+									<DataPath>ErrorProcessing</DataPath>
+									<HorizontalStretch>false</HorizontalStretch>
+									<ListChoiceMode>true</ListChoiceMode>
+									<ContextMenu name="ErrorProcessingCreateContextMenu" id="916"/>
+									<ExtendedTooltip name="ErrorProcessingCreateExtendedTooltip" id="917"/>
+								</InputField>
 							</ChildItems>
 						</UsualGroup>
 						<Table name="DataList" id="113">
@@ -929,18 +1077,6 @@
 							<ContextMenu name="DataListContextMenu" id="114"/>
 							<AutoCommandBar name="DataListCommandBar" id="115">
 								<Autofill>false</Autofill>
-								<ChildItems>
-									<Button name="SelectAll" id="59">
-										<Type>CommandBarButton</Type>
-										<CommandName>Form.Command.SelectAll</CommandName>
-										<ExtendedTooltip name="SelectAllExtendedTooltip" id="287"/>
-									</Button>
-									<Button name="UnselectAll" id="60">
-										<Type>CommandBarButton</Type>
-										<CommandName>Form.Command.UnselectAll</CommandName>
-										<ExtendedTooltip name="UnselectAllExtendedTooltip" id="288"/>
-									</Button>
-								</ChildItems>
 							</AutoCommandBar>
 							<ExtendedTooltip name="DataListExtendedTooltip" id="289"/>
 							<SearchStringAddition name="DataListSearchString" id="799">
@@ -1909,42 +2045,6 @@
 									<ContextMenu name="DataListDepositMemoContextMenu" id="720"/>
 									<ExtendedTooltip name="DataListDepositMemoExtendedTooltip" id="721"/>
 								</InputField>
-								<InputField name="DataListDepositLineCompany" id="722">
-									<DataPath>Object.DataList.DepositLineCompany</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListDepositLineCompanyContextMenu" id="723"/>
-									<ExtendedTooltip name="DataListDepositLineCompanyExtendedTooltip" id="724"/>
-								</InputField>
-								<InputField name="DataListDepositLineAccount" id="725">
-									<DataPath>Object.DataList.DepositLineAccount</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListDepositLineAccountContextMenu" id="726"/>
-									<ExtendedTooltip name="DataListDepositLineAccountExtendedTooltip" id="727"/>
-								</InputField>
-								<InputField name="DataListDepositLineAmount" id="728">
-									<DataPath>Object.DataList.DepositLineAmount</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListDepositLineAmountContextMenu" id="729"/>
-									<ExtendedTooltip name="DataListDepositLineAmountExtendedTooltip" id="730"/>
-								</InputField>
-								<InputField name="DataListDepositLineClass" id="758">
-									<DataPath>Object.DataList.DepositLineClass</DataPath>
-									<Title>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Line class</v8:content>
-										</v8:item>
-									</Title>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListDepositLineClassContextMenu" id="759"/>
-									<ExtendedTooltip name="DataListDepositLineClassExtendedTooltip" id="760"/>
-								</InputField>
-								<InputField name="DataListDepositLineMemo" id="731">
-									<DataPath>Object.DataList.DepositLineMemo</DataPath>
-									<EditMode>EnterOnInput</EditMode>
-									<ContextMenu name="DataListDepositLineMemoContextMenu" id="732"/>
-									<ExtendedTooltip name="DataListDepositLineMemoExtendedTooltip" id="733"/>
-								</InputField>
 								<InputField name="DataListClassName" id="734">
 									<DataPath>Object.DataList.ClassName</DataPath>
 									<Title>
@@ -1989,22 +2089,25 @@
 								</InputField>
 							</ChildItems>
 						</Table>
+						<LabelDecoration name="PreprocessingMessage" id="921">
+							<Visible>false</Visible>
+							<Title formatted="false">
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Please wait. Pre-processing</v8:content>
+								</v8:item>
+							</Title>
+							<ContextMenu name="PreprocessingMessageContextMenu" id="922"/>
+							<ExtendedTooltip name="PreprocessingMessageExtendedTooltip" id="923"/>
+						</LabelDecoration>
 						<UsualGroup name="CreationFooter" id="64">
 							<Title>
-								<v8:item>
-									<v8:lang>ru</v8:lang>
-									<v8:content>Создание подвал</v8:content>
-								</v8:item>
 								<v8:item>
 									<v8:lang>en</v8:lang>
 									<v8:content>Creation footer</v8:content>
 								</v8:item>
 							</Title>
 							<ToolTip>
-								<v8:item>
-									<v8:lang>ru</v8:lang>
-									<v8:content>Создание подвал</v8:content>
-								</v8:item>
 								<v8:item>
 									<v8:lang>en</v8:lang>
 									<v8:content>Creation footer</v8:content>
@@ -2052,16 +2155,8 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Finish</v8:content>
 						</v8:item>
-						<v8:item>
-							<v8:lang>ru</v8:lang>
-							<v8:content>Завершение</v8:content>
-						</v8:item>
 					</Title>
 					<ToolTip>
-						<v8:item>
-							<v8:lang>ru</v8:lang>
-							<v8:content>Завершение</v8:content>
-						</v8:item>
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Finish</v8:content>
@@ -2104,10 +2199,6 @@
 											<v8:lang>en</v8:lang>
 											<v8:content>Import finished. You can check the results</v8:content>
 										</v8:item>
-										<v8:item>
-											<v8:lang>ru</v8:lang>
-											<v8:content>Загрузка завершена. Вы можете проверить правильность заполнения реквизитов</v8:content>
-										</v8:item>
 									</Title>
 									<ContextMenu name="Label1ContextMenu" id="29"/>
 									<ExtendedTooltip name="Label1ExtendedTooltip" id="338"/>
@@ -2118,10 +2209,6 @@
 										<v8:item>
 											<v8:lang>en</v8:lang>
 											<v8:content>here</v8:content>
-										</v8:item>
-										<v8:item>
-											<v8:lang>ru</v8:lang>
-											<v8:content>здесь</v8:content>
 										</v8:item>
 									</Title>
 									<Hyperlink>true</Hyperlink>
@@ -2209,6 +2296,12 @@
 								</Button>
 							</ChildItems>
 						</UsualGroup>
+						<TextDocumentField name="FullErrorText" id="918">
+							<DataPath>FullErrorText</DataPath>
+							<TitleLocation>None</TitleLocation>
+							<ContextMenu name="FullErrorTextContextMenu" id="919"/>
+							<ExtendedTooltip name="FullErrorTextExtendedTooltip" id="920"/>
+						</TextDocumentField>
 						<UsualGroup name="Group1" id="890">
 							<Group>Horizontal</Group>
 							<Representation>None</Representation>
@@ -2255,10 +2348,6 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>File path</v8:content>
 				</v8:item>
-				<v8:item>
-					<v8:lang>ru</v8:lang>
-					<v8:content>Путь к файлу загрузки</v8:content>
-				</v8:item>
 			</Title>
 			<Type>
 				<v8:Type>xs:string</v8:Type>
@@ -2278,10 +2367,6 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>Attributes</v8:content>
 				</v8:item>
-				<v8:item>
-					<v8:lang>ru</v8:lang>
-					<v8:content>Реквизиты</v8:content>
-				</v8:item>
 			</Title>
 			<Type>
 				<v8:Type>v8:ValueTable</v8:Type>
@@ -2292,10 +2377,6 @@
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Attribute</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>ru</v8:lang>
-							<v8:content>Реквизит</v8:content>
 						</v8:item>
 					</Title>
 					<Type>
@@ -2312,10 +2393,6 @@
 							<v8:lang>en</v8:lang>
 							<v8:content>Column #</v8:content>
 						</v8:item>
-						<v8:item>
-							<v8:lang>ru</v8:lang>
-							<v8:content>Номер колонки</v8:content>
-						</v8:item>
 					</Title>
 					<Type>
 						<v8:Type>xs:decimal</v8:Type>
@@ -2331,10 +2408,6 @@
 						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Required</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>ru</v8:lang>
-							<v8:content>Обязательный</v8:content>
 						</v8:item>
 					</Title>
 					<Type>
@@ -2375,10 +2448,6 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>Source address</v8:content>
 				</v8:item>
-				<v8:item>
-					<v8:lang>ru</v8:lang>
-					<v8:content>Источник адрес</v8:content>
-				</v8:item>
 			</Title>
 			<Type>
 				<v8:Type>xs:string</v8:Type>
@@ -2394,10 +2463,6 @@
 					<v8:lang>en</v8:lang>
 					<v8:content>Operation type</v8:content>
 				</v8:item>
-				<v8:item>
-					<v8:lang>ru</v8:lang>
-					<v8:content>Вид операции</v8:content>
-				</v8:item>
 			</Title>
 			<Type>
 				<v8:Type>xs:string</v8:Type>
@@ -2412,10 +2477,6 @@
 				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Source text</v8:content>
-				</v8:item>
-				<v8:item>
-					<v8:lang>ru</v8:lang>
-					<v8:content>Текст источника</v8:content>
 				</v8:item>
 			</Title>
 			<Type>
@@ -2696,6 +2757,140 @@
 				<v8:Type>v8:ValueListType</v8:Type>
 			</Type>
 		</Attribute>
+		<Attribute name="ErrorProcessing" id="22">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Error processing</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>25</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="FullErrorText" id="23">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Full error text</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type xmlns:d5p1="http://v8.1c.ru/8.1/data/txtedt">d5p1:TextDocument</v8:Type>
+			</Type>
+		</Attribute>
+		<Attribute name="LocationAttributeName" id="24">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Location attribute name</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="DeliveryDateActualAttributeName" id="25">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Delivery date actual attribute name</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="RowToProcessCounter" id="26">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Row to process counter</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:decimal</v8:Type>
+				<v8:NumberQualifiers>
+					<v8:Digits>10</v8:Digits>
+					<v8:FractionDigits>0</v8:FractionDigits>
+					<v8:AllowedSign>Nonnegative</v8:AllowedSign>
+				</v8:NumberQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="RowToProcessMaxCount" id="27">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Row to process max count</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:decimal</v8:Type>
+				<v8:NumberQualifiers>
+					<v8:Digits>10</v8:Digits>
+					<v8:FractionDigits>0</v8:FractionDigits>
+					<v8:AllowedSign>Nonnegative</v8:AllowedSign>
+				</v8:NumberQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="MaxRowsInBatch" id="28">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Max rows in batch</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:decimal</v8:Type>
+				<v8:NumberQualifiers>
+					<v8:Digits>10</v8:Digits>
+					<v8:FractionDigits>0</v8:FractionDigits>
+					<v8:AllowedSign>Nonnegative</v8:AllowedSign>
+				</v8:NumberQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="GlobalProcessingTimeStamp" id="29">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Global processing time stamp</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="DateFormat" id="30">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Date format</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
 		<ConditionalAppearance>
 			<dcsset:item>
 				<dcsset:selection>
@@ -2723,19 +2918,11 @@
 		<Command name="GreeetingNext" id="1">
 			<Title>
 				<v8:item>
-					<v8:lang>ru</v8:lang>
-					<v8:content>Далее -&gt;</v8:content>
-				</v8:item>
-				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Greeting next</v8:content>
 				</v8:item>
 			</Title>
 			<ToolTip>
-				<v8:item>
-					<v8:lang>ru</v8:lang>
-					<v8:content>Приветствие далее</v8:content>
-				</v8:item>
 				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Greeeting next</v8:content>
@@ -2747,19 +2934,11 @@
 		<Command name="MappingNext" id="2">
 			<Title>
 				<v8:item>
-					<v8:lang>ru</v8:lang>
-					<v8:content>Далее -&gt;</v8:content>
-				</v8:item>
-				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Mapping next</v8:content>
 				</v8:item>
 			</Title>
 			<ToolTip>
-				<v8:item>
-					<v8:lang>ru</v8:lang>
-					<v8:content>Сопоставление далее</v8:content>
-				</v8:item>
 				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Mapping next</v8:content>
@@ -2770,19 +2949,11 @@
 		<Command name="MappingBack" id="3">
 			<Title>
 				<v8:item>
-					<v8:lang>ru</v8:lang>
-					<v8:content>&lt;- Назад</v8:content>
-				</v8:item>
-				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Mapping back</v8:content>
 				</v8:item>
 			</Title>
 			<ToolTip>
-				<v8:item>
-					<v8:lang>ru</v8:lang>
-					<v8:content>Сопоставление назад</v8:content>
-				</v8:item>
 				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Mapping back</v8:content>
@@ -2793,19 +2964,11 @@
 		<Command name="SelectAll" id="4">
 			<Title>
 				<v8:item>
-					<v8:lang>ru</v8:lang>
-					<v8:content>Создание отметить все</v8:content>
-				</v8:item>
-				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Select all</v8:content>
 				</v8:item>
 			</Title>
 			<ToolTip>
-				<v8:item>
-					<v8:lang>ru</v8:lang>
-					<v8:content>Создание отметить все</v8:content>
-				</v8:item>
 				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Select all</v8:content>
@@ -2821,19 +2984,11 @@
 		<Command name="UnselectAll" id="5">
 			<Title>
 				<v8:item>
-					<v8:lang>ru</v8:lang>
-					<v8:content>Создание снять отметку</v8:content>
-				</v8:item>
-				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Unselect all</v8:content>
 				</v8:item>
 			</Title>
 			<ToolTip>
-				<v8:item>
-					<v8:lang>ru</v8:lang>
-					<v8:content>Создание снять отметку</v8:content>
-				</v8:item>
 				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Unselect all</v8:content>
@@ -2855,10 +3010,6 @@
 			</Title>
 			<ToolTip>
 				<v8:item>
-					<v8:lang>ru</v8:lang>
-					<v8:content>Создание вперед</v8:content>
-				</v8:item>
-				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Create next</v8:content>
 				</v8:item>
@@ -2868,19 +3019,11 @@
 		<Command name="CreateBack" id="8">
 			<Title>
 				<v8:item>
-					<v8:lang>ru</v8:lang>
-					<v8:content>&lt;- Назад</v8:content>
-				</v8:item>
-				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Create back</v8:content>
 				</v8:item>
 			</Title>
 			<ToolTip>
-				<v8:item>
-					<v8:lang>ru</v8:lang>
-					<v8:content>Создание назад</v8:content>
-				</v8:item>
 				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Create back</v8:content>
@@ -2891,19 +3034,11 @@
 		<Command name="Finish" id="9">
 			<Title>
 				<v8:item>
-					<v8:lang>ru</v8:lang>
-					<v8:content>Завершить работу</v8:content>
-				</v8:item>
-				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Finish</v8:content>
 				</v8:item>
 			</Title>
 			<ToolTip>
-				<v8:item>
-					<v8:lang>ru</v8:lang>
-					<v8:content>Завершить работу</v8:content>
-				</v8:item>
 				<v8:item>
 					<v8:lang>en</v8:lang>
 					<v8:content>Finish</v8:content>
@@ -3025,6 +3160,21 @@
 				<xr:LoadTransparent>true</xr:LoadTransparent>
 			</Picture>
 			<Action>LoadDefaultSettings</Action>
+		</Command>
+		<Command name="ShowSettings" id="16">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Additional Settings</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Show settings</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>ShowSettings</Action>
 		</Command>
 	</Commands>
 	<Parameters>

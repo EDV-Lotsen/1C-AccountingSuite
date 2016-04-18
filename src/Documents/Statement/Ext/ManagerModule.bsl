@@ -1,8 +1,8 @@
 ﻿
-Procedure Print(Spreadsheet, RefArray) Export
+Procedure Print(Spreadsheet, RefArray, PrintTransactions) Export
 	
 	Spreadsheet.Clear();
-	SetPageSize(Spreadsheet);
+	PrintFormFunctions.SetPageSize(Spreadsheet);
 
 	Template = Documents.Statement.GetTemplate("Print");
 		
@@ -387,15 +387,23 @@ Procedure Print(Spreadsheet, RefArray) Export
 		//***End BottomFooter***
 		
 		//***Line***
-		PreviousBalance = 0;
-		LineIsGray      = False;
-		Array           = New Array;
+		TransactionsForPrint = New Array; 
+		PreviousBalance      = 0;
+		LineIsGray           = False;
+		Array                = New Array;
 		
 		Spreadsheet.Put(TopHeader);
 		Spreadsheet.Put(MiddleHeader);
 		Spreadsheet.Put(BottomHeader);
 		
 		While ActivityOfCompany.Next() Do
+			
+			If TypeOf(ActivityOfCompany.Recorder) = Type("DocumentRef.SalesInvoice")
+				Or TypeOf(ActivityOfCompany.Recorder) = Type("DocumentRef.SalesReturn")
+				Or TypeOf(ActivityOfCompany.Recorder) = Type("DocumentRef.CashReceipt")
+				Then 
+				TransactionsForPrint.Add(ActivityOfCompany.Recorder); 	
+			EndIf;
 			
 			ParametersOfLine = New Structure;
 			ParametersOfLine.Insert("DateActivity", ActivityOfCompany.DocDate);
@@ -474,43 +482,66 @@ Procedure Print(Spreadsheet, RefArray) Export
 			
 		EndIf;
 		
-		//----------Print open Sales invoices-------------
+		//--------------Print transactions----------------
 		//------------------------------------------------
 		//------------------------------------------------
-		Query = New Query;
-		Query.Text = "SELECT DISTINCT
-		             |	DocumentSalesInvoice.Ref AS Ref
-		             |FROM
-		             |	Document.SalesInvoice AS DocumentSalesInvoice
-		             |		LEFT JOIN AccountingRegister.GeneralJournal.Balance(&EndOfPeriod, , , ExtDimension2 REFS Document.SalesInvoice) AS GeneralJournalBalance
-		             |		ON (GeneralJournalBalance.Account = DocumentSalesInvoice.ARAccount)
-		             |			AND (GeneralJournalBalance.ExtDimension1 = DocumentSalesInvoice.Company)
-		             |			AND (GeneralJournalBalance.ExtDimension2 = DocumentSalesInvoice.Ref)
-		             |WHERE
-		             |	DocumentSalesInvoice.DeletionMark = FALSE
-		             |	AND DocumentSalesInvoice.Posted = TRUE
-		             |	AND GeneralJournalBalance.AmountBalance > 0
-		             |	AND DocumentSalesInvoice.Company = &Company
-		             |
-		             |ORDER BY
-		             |	Ref";
-		
-		Query.SetParameter("Company", Ref.Company);
-		Query.SetParameter("EndOfPeriod", EndOfDay(Ref.Date) + 1);
-		
-		QueryResult = Query.Execute();
-		
-		SelectionDetailRecords = QueryResult.Select();
-		
-		While SelectionDetailRecords.Next() Do
-			Spreadsheet.PutHorizontalPageBreak();
+		If PrintTransactions And TransactionsForPrint.Count() > 0 Then
 			
-			SI_Spreadsheet = New SpreadsheetDocument;
-			SetPageSize(SI_Spreadsheet);
+			//Query = New Query;
+			//Query.Text = "SELECT DISTINCT
+			//             |	DocumentSalesInvoice.Ref AS Ref
+			//             |FROM
+			//             |	Document.SalesInvoice AS DocumentSalesInvoice
+			//             |		LEFT JOIN AccountingRegister.GeneralJournal.Balance(&EndOfPeriod, , , ExtDimension2 REFS Document.SalesInvoice) AS GeneralJournalBalance
+			//             |		ON (GeneralJournalBalance.Account = DocumentSalesInvoice.ARAccount)
+			//             |			AND (GeneralJournalBalance.ExtDimension1 = DocumentSalesInvoice.Company)
+			//             |			AND (GeneralJournalBalance.ExtDimension2 = DocumentSalesInvoice.Ref)
+			//             |WHERE
+			//             |	DocumentSalesInvoice.DeletionMark = FALSE
+			//             |	AND DocumentSalesInvoice.Posted = TRUE
+			//             |	AND GeneralJournalBalance.AmountBalance > 0
+			//             |	AND DocumentSalesInvoice.Company = &Company
+			//             |
+			//             |ORDER BY
+			//             |	Ref";
+			//
+			//Query.SetParameter("Company", Ref.Company);
+			//Query.SetParameter("EndOfPeriod", EndOfDay(Ref.Date) + 1);
+			//
+			//QueryResult = Query.Execute();
+			//
+			//SelectionDetailRecords = QueryResult.Select();
+			//
+			//While SelectionDetailRecords.Next() Do
+			//	Spreadsheet.PutHorizontalPageBreak();
+			//	
+			//	SI_Spreadsheet = New SpreadsheetDocument;
+			//	PrintFormFunctions.SetPageSize(SI_Spreadsheet);
+			//	
+			//	PrintFormFunctions.PrintSI(SI_Spreadsheet, "", SelectionDetailRecords.Ref);
+			//	Spreadsheet.Put(SI_Spreadsheet);
+			//EndDo;
 			
-			PrintFormFunctions.PrintSI(SI_Spreadsheet, "", SelectionDetailRecords.Ref);
-			Spreadsheet.Put(SI_Spreadsheet);
-		EndDo;
+			For Each CurrentDoc In TransactionsForPrint Do
+				
+				Spreadsheet.PutHorizontalPageBreak();
+				
+				Doc_Spreadsheet = New SpreadsheetDocument;
+				PrintFormFunctions.SetPageSize(Doc_Spreadsheet);
+				
+				If TypeOf(CurrentDoc) = Type("DocumentRef.SalesInvoice") Then 
+					PrintFormFunctions.PrintSI(Doc_Spreadsheet, "", CurrentDoc);
+				ElsIf TypeOf(CurrentDoc) = Type("DocumentRef.SalesReturn") Then 
+					Documents.SalesReturn.Print(Doc_Spreadsheet, "", CurrentDoc);
+				//ElsIf TypeOf(CurrentDoc) = Type("DocumentRef.CashReceipt") Then 
+				//	Documents.CashReceipt.Print(Doc_Spreadsheet, "", CurrentDoc);
+				EndIf;
+				
+				Spreadsheet.Put(Doc_Spreadsheet);
+				
+			EndDo;
+			
+		EndIf;
 		//------------------------------------------------
 		//------------------------------------------------
 
@@ -524,21 +555,4 @@ Procedure Print(Spreadsheet, RefArray) Export
 	Spreadsheet.Header.Font          = New Font(Spreadsheet.Header.Font, , , , True);
 	Spreadsheet.Header.RightText     = "Page [&PageNumber] of [&PagesTotal]";
 		
-EndProcedure
-
-Procedure SetPageSize(Spreadsheet)
-	
-	//
-	Spreadsheet.PageSize     = "Letter";
-	
-	Spreadsheet.TopMargin    = 5;
-	Spreadsheet.LeftMargin   = 5;
-	Spreadsheet.RightMargin  = 5;
-	Spreadsheet.BottomMargin = 5;
-	
-	Spreadsheet.HeaderSize   = 5;
-	Spreadsheet.FooterSize   = 5;
-	
-	Spreadsheet.FitToPage    = True;
-	
 EndProcedure

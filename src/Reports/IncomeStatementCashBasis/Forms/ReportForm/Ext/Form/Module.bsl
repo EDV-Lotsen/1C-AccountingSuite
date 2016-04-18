@@ -13,7 +13,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	GeneralFunctions.ChangeDatesByPeriod(PeriodVariant, PeriodStartDate, PeriodEndDate);
 	
 	OpeningReportForm = True;
-			
+	
 EndProcedure
 
 &AtClient
@@ -46,38 +46,240 @@ EndProcedure
 &AtClient
 Procedure ResultDetailProcessing(Item, Details, StandardProcessing)
 	
-	If Details <> Undefined And TypeOf(Details) = Type("DataCompositionDetailsID") Then 
+	Structure = GetDetailsAtServer(Details);
+	
+	If Structure <> Undefined Then
+		
+		StandardProcessing = False;
 		
 		ParametersStructure = New Structure;
 		ParametersStructure.Insert("GenerateOnOpen", True); 
-		ReportForm = GetForm("Report.IncomeStatementCashBasis.Form.ReportForm", ParametersStructure,, True);
+		ParametersStructure.Insert("VariantKey", "Default");
+		
+		ReportForm = GetForm("Report.GeneralLedgerCashBasis.Form.ReportForm", ParametersStructure,, True);
 		
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		ReportFormSettings = ReportForm.Report.SettingsComposer.Settings;
-		PeriodSettingID = ReportFormSettings.DataParameters.Items.Find("Period").UserSettingID;
-		UserSettings = ReportForm.Report.SettingsComposer.UserSettings.Items;
-		//////////////////////////////////
-		ReportFormSettingsHere = ThisForm.Report.SettingsComposer.Settings;
-		PeriodSettingIDHere = ReportFormSettingsHere.DataParameters.Items.Find("Period").UserSettingID;
-		UserSettingsHere = ThisForm.Report.SettingsComposer.UserSettings.Items;
+		UserSettings       = ReportForm.Report.SettingsComposer.UserSettings.Items;	
 		
 		//Period
-		UserSettings.Find(PeriodSettingID).Value = UserSettingsHere.Find(PeriodSettingIDHere).Value;
-		UserSettings.Find(PeriodSettingID).Use = UserSettingsHere.Find(PeriodSettingIDHere).Use;
+		PeriodSettingID       = ReportFormSettings.DataParameters.Items.Find("Period").UserSettingID;
+		
+		//Account
+		AccountField          = ReportFormSettings.Filter.FilterAvailableFields.Items.Find("AccountFilter").Field;
+		AccountSettingID      = "";
+		
+		//AccountType
+		AccountTypeField      = ReportFormSettings.Filter.FilterAvailableFields.Items.Find("AccountTypeFilter").Field;
+		AccountTypeSettingID  = "";
+		
+		//Company
+		CompanyField          = ReportFormSettings.Filter.FilterAvailableFields.Items.Find("CompanyFilter").Field;
+		CompanySettingID      = "";
+		
+		//Customer
+		CustomerField         = ReportFormSettings.Filter.FilterAvailableFields.Items.Find("CustomerFilter").Field;
+		CustomerSettingID     = "";
+		
+		//Vendor
+		VendorField           = ReportFormSettings.Filter.FilterAvailableFields.Items.Find("VendorFilter").Field;
+		VendorSettingID       = "";
+		
+		//OrGroup
+		OrGroupSettingID      = "";
+		
+		//AndGroup
+		AndGroupSettingID     = "";
+		
+		For Each Item In ReportFormSettings.Filter.Items Do
+			
+			If TypeOf(Item) = Type("DataCompositionFilterItem") Then 
+				
+				If Item.LeftValue = AccountField Then
+					AccountSettingID = Item.UserSettingID;
+				ElsIf Item.LeftValue = AccountTypeField Then 
+					AccountTypeSettingID = Item.UserSettingID;
+				EndIf;
+				
+			ElsIf TypeOf(Item) = Type("DataCompositionFilterItemGroup") Then 
+				
+				If Item.UserSettingPresentation = "OR group (additional)" Then
+					OrGroupSettingID = Item.UserSettingID; 
+				EndIf;
+				
+				For Each GroupItem In Item.Items Do
+					
+					If TypeOf(GroupItem) = Type("DataCompositionFilterItem") Then 
+						
+						If GroupItem.LeftValue = CompanyField Then 
+							CompanySettingID = GroupItem.UserSettingID;
+						EndIf;
+						
+					ElsIf TypeOf(GroupItem) = Type("DataCompositionFilterItemGroup") Then
+						
+						If GroupItem.UserSettingPresentation = "AND group (additional)" Then
+							AndGroupSettingID = GroupItem.UserSettingID; 
+						EndIf;
+						
+						For Each GroupItemItems In GroupItem.Items Do
+														
+							If GroupItemItems.LeftValue = CustomerField Then 
+								CustomerSettingID = GroupItemItems.UserSettingID;
+							ElsIf GroupItemItems.LeftValue = VendorField Then 
+								VendorSettingID = GroupItemItems.UserSettingID;
+							EndIf;
+							
+						EndDo;
+						
+					EndIf;
+					
+				EndDo;
+				
+			EndIf;
+			
+		EndDo;
+		
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		
-		ReturnStructure = ProcessDetailsAtServer(ReportForm.Report, ReportForm.Result, ReportForm.DetailsData, ReportForm.UUID, Details);
+		//AccountSettingID
+		UserSettings.Find(AccountSettingID).RightValue         = PredefinedValue("ChartOfAccounts.ChartOfAccounts.EmptyRef");
+		UserSettings.Find(AccountSettingID).ComparisonType     = DataCompositionComparisonType.Equal;
+		UserSettings.Find(AccountSettingID).Use                = False;
 		
-		If ReturnStructure <> Undefined Then
+		//AccountTypeSettingID
+		UserSettings.Find(AccountTypeSettingID).RightValue     = PredefinedValue("Enum.AccountTypes.EmptyRef");
+		UserSettings.Find(AccountTypeSettingID).ComparisonType = DataCompositionComparisonType.Equal;
+		UserSettings.Find(AccountTypeSettingID).Use            = False;
+		
+		//CompanySettingID
+		UserSettings.Find(CompanySettingID).RightValue         = PredefinedValue("Catalog.Companies.EmptyRef");
+		UserSettings.Find(CompanySettingID).ComparisonType     = DataCompositionComparisonType.Equal;
+		UserSettings.Find(CompanySettingID).Use                = False;
+		
+		//CustomerSettingID
+		UserSettings.Find(CustomerSettingID).RightValue        = False;
+		UserSettings.Find(CustomerSettingID).ComparisonType    = DataCompositionComparisonType.Equal; 
+		UserSettings.Find(CustomerSettingID).Use               = False; 
+		
+		//VendorSettingID
+		UserSettings.Find(VendorSettingID).RightValue          = False;
+		UserSettings.Find(VendorSettingID).ComparisonType      = DataCompositionComparisonType.Equal; 
+		UserSettings.Find(VendorSettingID).Use                 = False; 
+		
+		//OrGroupSettingID
+		UserSettings.Find(OrGroupSettingID).Use                = False;
+
+		//AndGroupSettingID
+		UserSettings.Find(AndGroupSettingID).Use               = False;
+		
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		ReportFormSettingsHere = ThisForm.Report.SettingsComposer.Settings;
+		UserSettingsHere       = ThisForm.Report.SettingsComposer.UserSettings.Items;
+		
+		//Period
+		PeriodSettingIDHere = ReportFormSettingsHere.DataParameters.Items.Find("Period").UserSettingID;
+		
+		If Structure.Period <> Undefined Then
+			UserSettings.Find(PeriodSettingID).Value = Structure.Period;
+			UserSettings.Find(PeriodSettingID).Use   = True;
+		Else
+			UserSettings.Find(PeriodSettingID).Value = UserSettingsHere.Find(PeriodSettingIDHere).Value;
+			UserSettings.Find(PeriodSettingID).Use   = UserSettingsHere.Find(PeriodSettingIDHere).Use;
+		EndIf;
+		
+		//Account
+		If Structure.Account <> Undefined Then
+			UserSettings.Find(AccountSettingID).RightValue     = Structure.Account;
+			UserSettings.Find(AccountSettingID).ComparisonType = ?(Structure.Hierarchy, DataCompositionComparisonType.InHierarchy, DataCompositionComparisonType.Equal); 
+			UserSettings.Find(AccountSettingID).Use            = True; 
+		Else
+			UserSettings.Find(AccountSettingID).RightValue     = PredefinedValue("ChartOfAccounts.ChartOfAccounts.EmptyRef");
+			UserSettings.Find(AccountSettingID).ComparisonType = DataCompositionComparisonType.Equal;
+			UserSettings.Find(AccountSettingID).Use            = False;
+		EndIf;
+		
+		//AccountType
+		If Structure.AccountType <> Undefined Then
+			UserSettings.Find(AccountTypeSettingID).RightValue     = Structure.AccountType;
+			UserSettings.Find(AccountTypeSettingID).ComparisonType = DataCompositionComparisonType.Equal; 
+			UserSettings.Find(AccountTypeSettingID).Use            = True; 
+		Else
+			UserSettings.Find(AccountTypeSettingID).RightValue     = PredefinedValue("Enum.AccountTypes.EmptyRef");
+			UserSettings.Find(AccountTypeSettingID).ComparisonType = DataCompositionComparisonType.Equal;
+			UserSettings.Find(AccountTypeSettingID).Use            = False;
+		EndIf;
+		
+		//OrGroup
+		If Structure.Company <> Undefined Then
 			
-			StandardProcessing = False;
+			//OrGroup
+			UserSettings.Find(OrGroupSettingID).Use             = True;
+			//Company
+			UserSettings.Find(CompanySettingID).RightValue      = Structure.Company;
+			UserSettings.Find(CompanySettingID).ComparisonType  = DataCompositionComparisonType.Equal; 
+			UserSettings.Find(CompanySettingID).Use             = True; 
 			
-			ReportForm.Result = ReturnStructure.Result;
-			ReportForm.DetailsData = ReturnStructure.DetailsData;
+			//AndGroup
+			UserSettings.Find(AndGroupSettingID).Use            = False;
+			//Customer
+			UserSettings.Find(CustomerSettingID).RightValue     = False;
+			UserSettings.Find(CustomerSettingID).ComparisonType = DataCompositionComparisonType.Equal; 
+			UserSettings.Find(CustomerSettingID).Use            = False; 
+			//Vendor
+			UserSettings.Find(VendorSettingID).RightValue       = False;
+			UserSettings.Find(VendorSettingID).ComparisonType   = DataCompositionComparisonType.Equal; 
+			UserSettings.Find(VendorSettingID).Use              = False; 
 			
-			ReportForm.Open();
+		ElsIf Structure.NotSpecified <> Undefined Then
+			
+			//OrGroup
+			UserSettings.Find(OrGroupSettingID).Use             = True;
+			//Company
+			UserSettings.Find(CompanySettingID).RightValue      = PredefinedValue("Catalog.Companies.EmptyRef");
+			UserSettings.Find(CompanySettingID).ComparisonType  = DataCompositionComparisonType.NotFilled;
+			UserSettings.Find(CompanySettingID).Use             = True;
+			
+			//AndGroup
+			UserSettings.Find(AndGroupSettingID).Use            = True;
+			//Customer
+			UserSettings.Find(CustomerSettingID).RightValue     = ?(Variant = "Customers", False, True);
+			UserSettings.Find(CustomerSettingID).ComparisonType = DataCompositionComparisonType.Equal; 
+			UserSettings.Find(CustomerSettingID).Use            = True; 
+			//Vendor
+			UserSettings.Find(VendorSettingID).RightValue       = ?(Variant = "Vendors", False, True);
+			UserSettings.Find(VendorSettingID).ComparisonType   = DataCompositionComparisonType.Equal; 
+			UserSettings.Find(VendorSettingID).Use              = True; 
+			
+		Else
+			
+			//OrGroup
+			UserSettings.Find(OrGroupSettingID).Use             = False;
+			//Company
+			UserSettings.Find(CompanySettingID).RightValue      = PredefinedValue("Catalog.Companies.EmptyRef");
+			UserSettings.Find(CompanySettingID).ComparisonType  = DataCompositionComparisonType.Equal;
+			UserSettings.Find(CompanySettingID).Use             = False;
+			
+			//AndGroup
+			UserSettings.Find(AndGroupSettingID).Use            = False;
+			//Customer
+			UserSettings.Find(CustomerSettingID).RightValue     = False;
+			UserSettings.Find(CustomerSettingID).ComparisonType = DataCompositionComparisonType.Equal; 
+			UserSettings.Find(CustomerSettingID).Use            = False; 
+			//Vendor
+			UserSettings.Find(VendorSettingID).RightValue       = False;
+			UserSettings.Find(VendorSettingID).ComparisonType   = DataCompositionComparisonType.Equal; 
+			UserSettings.Find(VendorSettingID).Use              = False; 
 			
 		EndIf;
+		
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		ReturnStructure        = ProcessDetailsAtServer(ReportForm.Report, ReportForm.Result, ReportForm.DetailsData, ReportForm.UUID, "GeneralLedgerCashBasis");
+		ReportForm.Result      = ReturnStructure.Result;
+		ReportForm.DetailsData = ReturnStructure.DetailsData;
+		
+		ReportForm.Open();
 		
 	ElsIf Details <> Undefined Then
 		
@@ -88,28 +290,96 @@ Procedure ResultDetailProcessing(Item, Details, StandardProcessing)
 EndProcedure
 
 &AtServer
-Function ProcessDetailsAtServer(Val ReportRF, Val ResultRF, Val DetailsDataRF, Val UUID_RF, Details)
+Function GetDetailsAtServer(Details)
 	
-	//1.
-	MainDataCompositionSchema = Reports.IncomeStatementCashBasis.GetTemplate("IncomeStatement");
-	DataCompositionDetailsProcess = New DataCompositionDetailsProcess(DetailsData, New DataCompositionAvailableSettingsSource(MainDataCompositionSchema));	
-	DataCompositionSettings = DataCompositionDetailsProcess.DrillDown(Details, New DataCompositionField("Recorder"));	
-	
-	//2.
-	If DataCompositionSettings <> Undefined Then 
+	If TypeOf(Details) = Type("DataCompositionDetailsID") Then 
 		
-		ReportRF.SettingsComposer.LoadSettings(DataCompositionSettings);
-		ResultRF.Clear();                                                                              
-
-		ReportObject = FormDataToValue(ReportRF, Type("ReportObject.IncomeStatementCashBasis"));
-		ReportObject.ComposeResult(ResultRF, DetailsDataRF);                                  
-		Address = PutToTempStorage(DetailsDataRF, UUID_RF); 
+		Structure = New Structure;
+		Structure.Insert("Account",      Undefined);
+		Structure.Insert("Hierarchy",    Undefined);
+		Structure.Insert("AccountType",  Undefined);
+		Structure.Insert("Company",      Undefined);
+		Structure.Insert("Period",       Undefined);
+		Structure.Insert("NotSpecified", Undefined);
 		
-		Return New Structure("Result, DetailsData", ResultRF, Address);    
+		Data = GetFromTempStorage(DetailsData);	
+		
+		//1.
+		For Each Field In Data.Items.Get(Details).GetFields() Do
+			
+			If Field.Field = "NotSpecified" Then 
+				Structure.Insert("NotSpecified", Field.Value);
+			EndIf;
+			
+		EndDo;
+		
+		//2.
+		For Each ArrayItem In Data.Items.Get(Details).GetParents() Do
+			
+			If TypeOf(ArrayItem) = Type("DataCompositionFieldDetailsItem") Then
+				
+				For Each Field In ArrayItem.GetFields() Do
+					
+					If Field.Field = "Account" Then 
+						
+						Structure.Insert("Account", Field.Value);
+						Structure.Insert("Hierarchy", Field.Hierarchy);
+						
+					ElsIf Field.Field = "AccountType" Then 
+						
+						Structure.Insert("AccountType", Field.Value);
+						
+					ElsIf Field.Field = "Company" Then 
+						
+						Structure.Insert("Company", Field.Value);
+						
+					ElsIf Field.Field = "YearPeriod" Then 
+						
+						Structure.Insert("Period", New StandardPeriod(BegOfYear(Field.Value), EndOfYear(Field.Value)));
+						
+					ElsIf Field.Field = "QuarterPeriod" Then 
+						
+						Structure.Insert("Period", New StandardPeriod(BegOfQuarter(Field.Value), EndOfQuarter(Field.Value)));
+						
+					ElsIf Field.Field = "MonthPeriod" Then 
+						
+						Structure.Insert("Period", New StandardPeriod(BegOfMonth(Field.Value), EndOfMonth(Field.Value)));
+						
+					ElsIf Field.Field = "WeekPeriod" Then 
+						
+						Structure.Insert("Period", New StandardPeriod(BegOfWeek(Field.Value), EndOfWeek(Field.Value)));
+						
+					ElsIf Field.Field = "DayPeriod" Then
+						
+						Structure.Insert("Period", New StandardPeriod(BegOfDay(Field.Value), EndOfDay(Field.Value)));
+						
+					EndIf;	
+					
+				EndDo;
+				
+			EndIf;
+			
+		EndDo;
+		
+		Return Structure; 
+		
+	Else 
+		
+		Return Undefined; 
 		
 	EndIf;
 	
-	Return Undefined;
+EndFunction
+
+&AtServer
+Function ProcessDetailsAtServer(Val ReportRF, Val ResultRF, Val DetailsDataRF, Val UUID_RF, NameReport)
+	
+	ReportObject = FormDataToValue(ReportRF, Type("ReportObject." + NameReport));
+	ResultRF.Clear();                                                                              
+	ReportObject.ComposeResult(ResultRF, DetailsDataRF);                                  
+	Address = PutToTempStorage(DetailsDataRF, UUID_RF); 
+	
+	Return New Structure("Result, DetailsData", ResultRF, Address);       
 	
 EndFunction
 
@@ -159,6 +429,61 @@ Procedure Create(Command)
 	
 	ComposeResult();
 	
+	UpdateHierarchy();
+	
+	Try
+		CurParameters = New Structure("ObjectTypeID", ThisForm.FormName);
+		CommonUseClient.ApplyPrintFormSettings(Result,CurParameters);
+	Except
+	EndTry;
+	
+EndProcedure
+
+&AtServer
+Procedure UpdateHierarchy()
+	
+	//0.
+	TableHeight = Result.TableHeight;	
+	
+	If Variant = "Total" And TableHeight > 0 Then 
+		
+		Area = Result.Area("R1:R" + TableHeight);
+		Area.Ungroup();
+		
+	EndIf;	
+	
+	RowsToDelete = New ValueList; 
+	
+	//1.
+	PreviousText     = "";
+	PreviousAddParam = "";
+	
+	For CurrentRow = 1 To TableHeight Do
+		
+		CurrentText     = Result.Area("R" + CurrentRow +"C1").Text;
+		CurrentAddParam = Result.Area("R" + CurrentRow +"C1").VerticalAlign;
+		
+		If (CurrentText = PreviousText) And (CurrentAddParam = PreviousAddParam) Then
+			RowsToDelete.Add(CurrentRow);
+		EndIf;
+		
+		PreviousText     = CurrentText;
+		PreviousAddParam = CurrentAddParam; 
+		 
+	EndDo;
+	
+	//2.
+	DeletedRows = 0;
+	
+	For Each RowToDelete In RowsToDelete Do
+		
+		DeleteArea = Result.Area("R" + (RowToDelete.Value - DeletedRows));
+		Result.DeleteArea(DeleteArea, SpreadsheetDocumentShiftType.Vertical);
+		
+		DeletedRows = DeletedRows + 1;
+		
+	EndDo;
+	
 EndProcedure
 
 &AtClient
@@ -204,6 +529,8 @@ Procedure OnUpdateUserSettingSetAtServer(StandardProcessing)
 	Else
 		GeneralFunctions.ChangePeriodIntoReportForm(ThisForm.Report.SettingsComposer, PeriodVariant, PeriodStartDate, PeriodEndDate);
 	EndIf;	
+	
+	ModifiedStatePresentation();
 		
 EndProcedure
 

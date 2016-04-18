@@ -1,37 +1,67 @@
 ﻿
 &AtClient
 Procedure MultiLocationOnChange(Item)
+	
 	Message("After enabling the multi-location feature can not be disabled.");
-	//RefreshInterface();
+	
 EndProcedure
 
 &AtClient
 Procedure MultiCurrencyOnChange(Item)
 	
 	Message("After enabling the multi-currency feature can not be disabled.");
-	SetEnabledExchangeLoss();
-
-	//RefreshInterface();
+	
 EndProcedure
 
 &AtClient
-Procedure SetEnabledExchangeLoss()
+Procedure UseSOPrepaymentOnChange(Item)
 	
-	If ConstantsSet.MultiCurrency Then
-		//Items.ExchangeLoss.Visible = True;
-	Else
-		//Items.ExchangeLoss.Visible = False;
+	If ConstantsSet.UseSOPrepayment And (Not EachCurrencyHasPrepaymentAR()) Then
+		
+		ConstantsSet.UseSOPrepayment = False;
+		
+		Title            = NStr("en = 'Information'");
+		Status           = PredefinedValue("Enum.MessageStatus.Information");
+		Link             = New FormattedString(NStr("en = 'indicate a default ""Customer Prepayments"" for each currency'"),,,,"e1cib/list/Catalog.Currencies");
+		FormattedMessage = New FormattedString(NStr("en = 'In order to use the Sales Order Pre-payment feature you must
+		                                                 |'"), Link, NStr("en = ' that is used in AccountingSuite.'"));
+		
+		Params = New Structure("Title, FormattedMessage, MessageStatus", Title, FormattedMessage, Status);
+		OpenForm("CommonForm.MessageBox", Params, ThisObject,,,,, FormWindowOpeningMode.LockWholeInterface); 
+		
 	EndIf;
 	
 EndProcedure
 
+&AtServerNoContext
+Function EachCurrencyHasPrepaymentAR()
+	
+	Query = New Query;
+	Query.Text = 
+		"SELECT
+		|	Currencies.Ref
+		|FROM
+		|	Catalog.Currencies AS Currencies
+		|WHERE
+		|	Currencies.DefaultPrepaymentAR = VALUE(ChartOfAccounts.ChartOfAccounts.EmptyRef)";
+	
+	QueryResult = Query.Execute();
+	
+	If QueryResult.IsEmpty() Then
+		Return True;
+	Else
+		Return False;
+	EndIf;
+	
+EndFunction
 
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
-			
-	old_key = Constants.APISecretKey.Get();
-	OldCompanyName = Constants.SystemTitle.Get();
-	OldZohoAuthToken = ConstantsSet.zoho_auth_token;
+	
+	If Parameters.Property("ActiveTabs") Then
+		ThisForm.Items.Common.CurrentPage = ThisForm.Items[Parameters.ActiveTabs];
+		Message(Parameters.Message);
+	EndIf;
 	
 	BinaryLogo = GeneralFunctions.GetLogo();
 	TempStorageAddress = PutToTempStorage(BinaryLogo,UUID);
@@ -65,11 +95,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	EndIf;
 	
 	FillClosingDateByModule();
-		
-	If NOT Constants.APISecretKey.Get() = "" Then
-		Items.APISecretKey.ReadOnly = True;		
-	EndIf;
-		
+	
 	If Constants.MultiCurrency.Get() Then
 		Items.MultiCurrency.ReadOnly = True;
 	EndIf;
@@ -103,114 +129,17 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	//Sales tax
 	ChargingSalesTax = ?(ConstantsSet.SalesTaxCharging, 1, 2);
 	If ConstantsSet.SalesTaxCharging Then
-		Items.SalesTaxSettingsGroup.Enabled = True;
+		Items.SalesTaxDefaults.Enabled = True;
 	Else
-		Items.SalesTaxSettingsGroup.Enabled = False;
-	EndIf;
-	SalesTaxEngine = ?(ConstantsSet.AvataxEnabled, 1, 2); 
-	If SalesTaxEngine = 1 Then
-		Items.SalesTaxBySources.PagesRepresentation = FormPagesRepresentation.TabsOnTop;
-		Items.ByAvaTaxPage.Visible = True;
-	ElsIf SalesTaxEngine = 2 Then
-		Items.SalesTaxBySources.PagesRepresentation = FormPagesRepresentation.None;
-		Items.ByAvaTaxPage.Visible = False;
-		Items.SalesTaxBySources.CurrentPage = Items.ByAccountingSuitePage;
+		Items.SalesTaxDefaults.Enabled = False;
 	EndIf;
 	
-	If IsInRole("BankAccounting") Then 
-		
-		For Each ItemL In Items.Group26.ChildItems Do 
-			ItemL.Visible = False;
-		EndDo;
-		For Each ItemL In Items.Group27.ChildItems Do 
-			ItemL.Visible = False;
-		EndDo;
-		
-		Items.AddressesContacts.Visible = True;
-		Items.Countries.Visible = True;
-		Items.States.Visible = True;
-		Items.DocumentNumbering.Visible = True;
-		Items.ActiveUserList.Visible = True;
-		Items.AddYodleeAccount.Visible = True;
-
-		
-		
-		// Cont Info 				// Leave
-		// Lists 					// Leave
-		// Features					// Part. Hide
-		For Each ItemL In Items.GeneralSettings.ChildItems Do 
-			ItemL.Visible = False;
-		EndDo;
-		Items.CheckHorizontalAdj.Visible = True;
-		Items.CheckVerticalAdj.Visible = True;
-		//Items.show_yodlee_upload_period.Visible = True;
-		//Items.DisplayExtendedAccountInfo.Visible = True;
-		Items.Group28.Visible = True;
-		Items.SetCompactUIMode.Visible = True;
-		Items.SetStandardUIMode.Visible = True;
-		Items.AllowDuplicateCheckNumbers.Visible = True;
-		Items.FirstMonthOfFiscalYear.Visible = True;
-		Items.CFO_ProcessingMonth.Visible = True;
-
-		Items.PostingAccounts.Visible = False;
-		
-		// Post Accnts				// Leave
-		// Closing books			// Part. Hide
-		Items.PeriodClosingByModule.Visible = False;
-		
-		// Sales Tax				// Hide
-		Items.SalesTax.Visible = False;
-		// Custom Fields			// Hide
-		Items.CompanyCustomFields.Visible = False;
-		// adres custom Fields		// Hide
-		Items.AddressCustomFields.Visible = False;
-		// Items custom Fields		// Hide
-		Items.ItemCustomFields.Visible = False;
-		
-		// Logo						// Leave
-		// Integration				// Hide
-		Items.Integrations.Visible = False;
-		// Development				// Hide
-		Items.Development.Visible = False;
-		// Print form setup			// Hide
-		Items.SetupPrintForms.Visible = False;
-		
-	EndIf;
+	DisplayDataImport = True;
+	Items.DataImportv2.Visible = DisplayDataImport;
+	Items.Renumbering.Visible  = DisplayDataImport;
 	
-	DisplayDataImport = False;
-	IsInternalUser1 = Find(SessionParameters.ACSUser,"@accountingsuite.com");
-	If IsInternalUser1 <> 0 Then
-		DisplayDataImport = True;	
-	EndIf;
-	IsInternalUser2 = Find(SessionParameters.ACSUser,"bsingh@cfotoday.com");
-	If IsInternalUser2 <> 0 Then
-		DisplayDataImport = True;	
-	EndIf;
-	IsInternalUser3 = Find(SessionParameters.ACSUser,"bal@allurenailsupply.com");
-	If IsInternalUser3 <> 0 Then
-		DisplayDataImport = True;	
-	EndIf;
-	IsInternalUser4 = Find(SessionParameters.ACSUser,"rh@donatellodoors.com");
-	If IsInternalUser4 <> 0 Then
-		DisplayDataImport = True;	
-	EndIf;
-	IsInternalUser5 = Find(SessionParameters.ACSUser,"ajlam88@gmail.com");
-	If IsInternalUser5 <> 0 Then
-		DisplayDataImport = True;	
-	EndIf;
-	IsInternalUser6 = Find(SessionParameters.ACSUser,"marion@counter-communications.com");
-	If IsInternalUser6 <> 0 Then
-		DisplayDataImport = True;	
-	EndIf;
-	If IsInRole("BankAccounting") Then
-	Else
-		Items.DataImportv2.Visible = DisplayDataImport;
-		Items.Register.Visible = DisplayDataImport;
-		Items.Renumbering.Visible = DisplayDataImport;
-		Items.BalanceSheetNew.Visible = DisplayDataImport;
-		Items.SearchAndReplace.Visible = DisplayDataImport;
-	EndIf;
-
+	Items.ItemActivityReport.Visible = False;
+	
 EndProcedure
 
 &AtServer
@@ -293,7 +222,6 @@ Procedure FileUpload(a,b,c,d) Export
 	
 EndProcedure
 
-// Checks if image is a valid image type
 &AtClient
 Function ImageFormatCheck(Filename)
 	
@@ -312,28 +240,8 @@ EndFunction
 Procedure PlaceImageFile(TempStorageName)
 	
 	If NOT TempStorageName = Undefined Then
-	
+		
 		BinaryData = GetFromTempStorage(TempStorageName);
-		
-		///
-		
-		HeadersMap = New Map();
-		HeadersMap.Insert("Authorization", "Client-ID " + ServiceParameters.ImgurClientID());
-		
-		HTTPRequest = New HTTPRequest("/3/image", HeadersMap);
-		HTTPRequest.SetBodyFromBinaryData(BinaryData);
-		
-		SSLConnection = New OpenSSLSecureConnection();
-		
-		HTTPConnection = New HTTPConnection("api.imgur.com",,,,,,SSLConnection); //imgur-apiv3.p.mashape.com
-		Result = HTTPConnection.Post(HTTPRequest);
-		ResponseBody = Result.GetBodyAsString(TextEncoding.UTF8);
-		ResponseJSON = InternetConnectionClientServer.DecodeJSON(ResponseBody);
-		image_url = ResponseJSON.data.link;
-		// Ctrl + _
-		ConstantsSet.logoURL = image_url;
-		
-	    ///
 		
 		NewRow = InformationRegisters.CustomPrintForms.CreateRecordManager();
 		NewRow.ObjectName = "logo";
@@ -347,20 +255,18 @@ Procedure PlaceImageFile(TempStorageName)
 	BinaryLogo = GeneralFunctions.GetLogo();
 	TempStorageAddress = PutToTempStorage(BinaryLogo,UUID);
 	ImageAddress = TempStorageAddress;
-  	
+	
 EndProcedure
 
- 
-
-&AtServer
-Function GetAPISecretKeyF()
+&AtClient
+Procedure CommonFileStorage(Command)
+	FormAttribute = New Structure;
+	FormAttribute.Insert("FormOwner",  "Commom Values");
 	
-	Return Constants.APISecretKey.Get();
-	
-EndFunction
-
-
-
+	OpenForm("InformationRegister.FileStorage.Form.ListForm", 
+	FormAttribute, 
+	ThisForm);
+EndProcedure
 
 &AtClient
 Procedure OnOpen(Cancel)
@@ -368,7 +274,6 @@ Procedure OnOpen(Cancel)
 	 If SettingAccessCheck() = false Then
 
 	    Items.Common.ChildItems.Logo.ChildItems.UploadLogo.Enabled = false;
-		//Items.Common.ChildItems.Integrations.ChildItems.Stripe.ChildItems.StripeConnect.Enabled = false;
 		Items.PeriodClosingDate.ReadOnly = True;
 		Items.PeriodClosingOption.ReadOnly = True;
 		Items.PeriodClosingPassword.ReadOnly = True;
@@ -379,22 +284,17 @@ Procedure OnOpen(Cancel)
 		Items.CompanyContact.ChildItems.Group1.ChildItems.Cell.ReadOnly = True;
 		Items.CompanyContact.ChildItems.Group1.ChildItems.Fax.ReadOnly = True;
 		Items.CompanyContact.ChildItems.Group1.ChildItems.FederalTaxID.ReadOnly = True;
-		Items.CompanyContact.ChildItems.Group2.ChildItems.CurrentUserEmail.ReadOnly = True;
 		Items.GeneralSettings.ReadOnly = True;
 		Items.PostingAccounts.ReadOnly = True;
-		Items.Development.ChildItems.APISecretKey.Visible = False;
 		Message("You are viewing settings with limited rights(Non-Admin).");
 
 	 Else
 		Items.Common.ChildItems.Logo.ChildItems.UploadLogo.Enabled = true;
-		//Items.Common.ChildItems.Integrations.ChildItems.Stripe.ChildItems.StripeConnect.Enabled = true;
 
 	Endif;
 	
 	SetEnabledPricePrecision();
 	SetEnabledOCLAccount();
-	SetEnabledTaxPayableAccount();
-	SetEnabledExchangeLoss();
 	
 EndProcedure
 
@@ -408,21 +308,6 @@ Function SettingAccessCheck()
 		Return false;
 	Endif
 EndFunction
-
-
-//&AtClient
-//Procedure VerifyEmail(Command)
-//	VerifyEmailAtServer();
-//EndProcedure
-
-
-&AtServer
-Function GetTenantValue()
-	
-	Return SessionParameters.TenantValue;
-	
-EndFunction
-
 
 &AtServer
 Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
@@ -447,15 +332,15 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 		Items.UsePricePrecision.ReadOnly = True;
 	EndIf;
 	
-	Constants.Email.Set(Constants.CurrentUserEmail.Get().Description);
-		
 EndProcedure
 
 &AtClient
 Procedure AfterWrite(WriteParameters)
+	
 	RefreshInterface();
 	RefreshReusableValues();
-EndProcedure                 
+	
+EndProcedure
 
 &AtClient
 Procedure PeriodClosingOptionOnChange(Item)
@@ -473,13 +358,6 @@ EndProcedure
 &AtServer
 Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 	
-	//If ConstantsSet.PeriodClosingOption = PredefinedValue("Enum.PeriodClosingOptions.WarnAndRequirePassword") Then
-	//	Items.PeriodClosingPassword.Visible = True;
-	//	Items.PeriodClosingPasswordConfirm.Visible = True;
-	//Else
-	//	Items.PeriodClosingPassword.Visible = False;
-	//	Items.PeriodClosingPasswordConfirm.Visible = False;
-	//EndIf;
 	If ConstantsSet.PeriodClosingOption = PredefinedValue("Enum.PeriodClosingOptions.WarnAndRequirePassword") Then
 		If Not ValueIsFilled(ConstantsSet.PeriodClosingPassword) Then
 			Cancel = True;
@@ -497,29 +375,33 @@ Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 		EndIf;
 	EndIf;
 	
-	If ConstantsSet.EnhancedInventoryReceiving And ConstantsSet.OCLAccount = ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
+	If ConstantsSet.SalesTaxCharging Then 
 		
-		Cancel = True;
+		If ConstantsSet.TaxPayableAccount = ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
 		
-		Message = New UserMessage();
-		Message.Text = NStr("en = 'Field ""OCL account"" is empty'");
-		Message.Field = "ConstantsSet.OCLAccount";
-		Message.DataPath = "ConstantsSet";
-		Message.SetData(ConstantsSet);
-		Message.Message();
+			Cancel = True;
+			
+			Message = New UserMessage();
+			Message.Text = NStr("en = 'Field ""Tax payable"" is empty'");
+			Message.Field = "ConstantsSet.TaxPayableAccount";
+			Message.DataPath = "ConstantsSet";
+			Message.SetData(ConstantsSet);
+			Message.Message();
+			
+		EndIf;
 		
-	EndIf;
-	
-	If ConstantsSet.SalesTaxCharging And ConstantsSet.TaxPayableAccount = ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
+		If ConstantsSet.SalesTaxDefault = Catalogs.SalesTaxRates.EmptyRef() Then
 		
-		Cancel = True;
-		
-		Message = New UserMessage();
-		Message.Text = NStr("en = 'Field ""Tax payable"" is empty'");
-		Message.Field = "ConstantsSet.TaxPayableAccount";
-		Message.DataPath = "ConstantsSet";
-		Message.SetData(ConstantsSet);
-		Message.Message();
+			Cancel = True;
+			
+			Message = New UserMessage();
+			Message.Text = NStr("en = 'Field ""Default sales tax"" is empty'");
+			Message.Field = "ConstantsSet.SalesTaxDefault";
+			Message.DataPath = "ConstantsSet";
+			Message.SetData(ConstantsSet);
+			Message.Message();
+			
+		EndIf;
 		
 	EndIf;
 	
@@ -536,39 +418,6 @@ Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 		
 	EndIf;
 	
-	If OldZohoAuthToken <> ConstantsSet.zoho_auth_token AND ConstantsSet.zoho_auth_token <> "" Then
-		PathDef = "crm.zoho.com/crm/private/json/Leads/";
-				
-		AuthHeader = "authtoken=" + ConstantsSet.zoho_auth_token + "&scope=crmapi";
-			
-		URLstring = PathDef + "getMyRecords?" + AuthHeader;
-		
-		HeadersMap = New Map();			
-		HTTPRequest = New HTTPRequest("", HeadersMap);	
-		SSLConnection = New OpenSSLSecureConnection();
-		HTTPConnection = New HTTPConnection(URLstring,,,,,,SSLConnection);
-		Result = HTTPConnection.Post(HTTPRequest);
-		ResultBody = Result.GetBodyAsString();
-		ResultBodyJSON = InternetConnectionClientServer.DecodeJSON(ResultBody);
-		Try errorCode = ResultBodyJSON.response.error.code Except errorCode = Undefined EndTry;
-		If errorCode = "4834" Then
-			Cancel = True;
-			Message = New UserMessage();
-			Message.Text = "The Zoho Authentication Token is invalid. Please enter a valid token or delete the code.";
-			Message.Message();
-		EndIf;
-	EndIf;
-	
-EndProcedure
-
-&AtClient
-Procedure ApiLogConnect(Command)
-	GoToURL("https://apilog.accountingsuite.com");
-EndProcedure
-
-&AtClient
-Procedure DocConnect(Command)
-	GoToURL("http://developer.accountingsuite.com");
 EndProcedure
 
 &AtClient
@@ -576,25 +425,11 @@ Procedure ChargingSalesTaxOnChange(Item)
 	
 	ConstantsSet.SalesTaxCharging = ?(ChargingSalesTax = 1, True, False);
 	If ConstantsSet.SalesTaxCharging Then
-		Items.SalesTaxSettingsGroup.Enabled = True;
+		Items.SalesTaxDefaults.Enabled = True;
+		ConstantsSet.SalesTaxMarkNewCustomersTaxable = True;
+		ConstantsSet.SalesTaxMarkNewProductsTaxable  = True;
 	Else
-		Items.SalesTaxSettingsGroup.Enabled = False;
-		ConstantsSet.AvataxEnabled = False;
-		SalesTaxEngine = 2; //Avatax disabled
-		SalesTaxEngineOnChange(Undefined);
-	EndIf;
-	
-	SetEnabledTaxPayableAccount();
-
-EndProcedure
-
-&AtClient
-Procedure SetEnabledTaxPayableAccount()
-	
-	If ConstantsSet.SalesTaxCharging Then
-		//Items.TaxPayableAccount.Visible = True;
-	Else
-		//Items.TaxPayableAccount.Visible = False;
+		Items.SalesTaxDefaults.Enabled = False;
 	EndIf;
 	
 EndProcedure
@@ -629,11 +464,6 @@ Procedure PaymentTerms(Command)
 	OpenForm("Catalog.PaymentTerms.ListForm", , , , , );
 EndProcedure
 
-//&AtClient
-//Procedure UnitsOfMeasure(Command)
-//	OpenForm("Catalog.UM.ListForm", , , , , );
-//EndProcedure
-
 &AtClient
 Procedure ShippingCarriers(Command)
 	OpenForm("Catalog.ShippingCarriers.ListForm", , , , , );
@@ -650,11 +480,6 @@ Procedure ItemCategories(Command)
 EndProcedure
 
 &AtClient
-Procedure ActiveUserList(Command)
-	OpenForm("DataProcessor.ActiveUserList.Form.ActiveUserListForm",,,,,,,);
-EndProcedure
-
-&AtClient
 Procedure SalesPeople(Command)
 	OpenForm("Catalog.SalesPeople.ListForm", , , , , );
 EndProcedure
@@ -662,11 +487,6 @@ EndProcedure
 &AtClient
 Procedure PriceLevels(Command)
 	OpenForm("Catalog.PriceLevels.ListForm", , , , , );
-EndProcedure
-
-&AtClient
-Procedure ExpensifyCategories(Command)
-	OpenForm("Catalog.ExpensifyCategories.ListForm", , , , , );
 EndProcedure
 
 &AtClient
@@ -760,11 +580,6 @@ Procedure OpenCreditMemo(Command)
 EndProcedure
 
 &AtClient
-Procedure zoho_productmapping(Command)
-	OpenForm("Catalog.zoho_productCodeMap.ListForm" );
-EndProcedure
-
-&AtClient
 Procedure PeriodClosingByModuleOnChange(Item)
 	If ConstantsSet.PeriodClosingByModule Then
 		Items.ClosingDateByModule.Visible = True;
@@ -800,107 +615,6 @@ Procedure FillClosingDate(Command)
 EndProcedure
 
 &AtClient
-Procedure SalesTaxEngineOnChange(Item)
-	ConstantsSet.AvataxEnabled = ?(SalesTaxEngine = 1, TRUE, FALSE);
-	If SalesTaxEngine = 1 Then
-		Items.SalesTaxBySources.PagesRepresentation = FormPagesRepresentation.TabsOnTop;
-		Items.ByAvaTaxPage.Visible = True;
-		If NOT ValueIsFilled(ConstantsSet.AvataxServiceURL) Then
-			If Modified Then
-				ConstantsSet.AvataxServiceURL = "https://avatax.avalara.net/";
-			Else
-				ConstantsSet.AvataxServiceURL = "https://avatax.avalara.net/";
-				Modified = False;
-			EndIf;
-		EndIf;
-	ElsIf SalesTaxEngine = 2 Then
-		Items.SalesTaxBySources.PagesRepresentation = FormPagesRepresentation.None;
-		Items.ByAvaTaxPage.Visible = False;
-		Items.SalesTaxBySources.CurrentPage = Items.ByAccountingSuitePage;
-	EndIf;
-EndProcedure
-
-&AtClient
-Procedure AvataxTestConnection(Command)
-	
-	//Testing can be done after the modifications are written
-	//If ThisForm.Modified Then
-	//	Notify = New NotifyDescription("TestConnectionAfterWrite", ThisForm); 
-	//	ShowQueryBox(Notify, "Data has been changed. To proceed you need to save changes. Save?", QuestionDialogMode.OKCancel);
-	//Else
-		AvataxTestConnectionAtClient();
-	//EndIf;		
-	
-EndProcedure
-	
-//&AtClient
-//Procedure TestConnectionAfterWrite(Result, Parameters) Export
-//	
-//	If Result <> DialogReturnCode.OK Then
-//		return;
-//	EndIf;
-//	If Write() Then
-//		AvataxTestConnectionAtClient();
-//	EndIf;
-//	
-//EndProcedure
-
-&AtClient
-Procedure AvataxTestConnectionAtClient()
-	
-	DecodedResult = AvataxTestConnectionAtServer();
-	If DecodedResult.Successful Then
-		CommonUseClient.ShowCustomMessageBox(ThisForm, "AvaTax connection test", "Connection tested successfully!", PredefinedValue("Enum.MessageStatus.Information"));
-	Else
-		CommonUseClient.ShowCustomMessageBox(ThisForm, "AvaTax connection test", "Configuration validation failed! " + DecodedResult.ErrorMessage, PredefinedValue("Enum.MessageStatus.Warning"));
-	EndIf;
-	
-EndProcedure
-
-&AtServer
-Function AvataxTestConnectionAtServer()
-	
-	// Set request parameters.
-	RequestParameters = New Structure;
-	RequestParameters.Insert("saleamount", 10);
-	
-	DecodedResultBody = AvaTaxServer.SendRequestToAvalara(Enums.AvalaraRequestTypes.ConnectionTest, RequestParameters, Undefined, New Structure("AvataxServiceURL, AvataxAuthorizationString", ConstantsSet.AvataxServiceURL, ConstantsSet.AvataxAuthorizationString));
-	return DecodedResultBody;
-	
-EndFunction
-
-&AtClient
-Procedure AvataxAdminConsoleClick(Item)
-	GotoURL(Item.Title);
-EndProcedure
-
-&AtClient
-Procedure AvataxLicenseKeyOnChange(Item)
-	GenerateAvataxAuthorizationString();
-EndProcedure
-
-&AtClient
-Procedure AvataxAccountNumberOnChange(Item)
-	GenerateAvataxAuthorizationString();
-EndProcedure
-
-&AtServer
-Procedure GenerateAvataxAuthorizationString()
-	TextDoc = New TextDocument();
-	TextDoc.SetText(TrimAll(ConstantsSet.AvataxAccountNumber) + ":" + TrimAll(ConstantsSet.AvataxLicenseKey));
-	TempFN = GetTempFileName(".txt");
-	TextDoc.Write(TempFN, TextEncoding.UTF8);
-	Binary = New BinaryData(TempFN);
-	// Convert binary data to Base64 string.
-	Base64 = Base64String(Binary);
-	Base64 = Right(Base64, StrLen(Base64)-4);
-	
-	ConstantsSet.AvataxAuthorizationString = "Basic " + Base64;
-	
-	DeleteFiles(TempFN);               
-EndProcedure
-
-&AtClient
 Procedure QtyPrecisionOnChange(Item)
 	
 	QtyPrecision = GetConstant("QtyPrecision");
@@ -917,19 +631,6 @@ Procedure QtyPrecisionOnChange(Item)
 	EndIf;
 	
 EndProcedure
-
-//&AtServer
-//Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
-//	If EmailChange = True Then
-//		Constants.Email.Set(Constants.CurrentUserEmail.Get().Description);
-//	EndIf;
-
-//EndProcedure
-
-//&AtClient
-//Procedure CurrentUserEmailOnChange(Item)
-//	EmailChange = True;
-//EndProcedure
 
 &AtClient
 Procedure UsePricePrecisionOnChange(Item)
@@ -977,35 +678,6 @@ Function GetConstant(ConstantName)
 EndFunction
 
 &AtClient
-Procedure zoho_pricebookmapping(Command)
-	OpenForm("Catalog.zoho_pricebookCodeMap.ListForm" );
-EndProcedure
-
-
-&AtClient
-Procedure zoho_accountmapping(Command)
-	OpenForm("Catalog.zoho_accountCodeMap.ListForm" );	
-EndProcedure
-
-
-&AtClient
-Procedure zoho_contactmapping(Command)
-	OpenForm("Catalog.zoho_contactCodeMap.ListForm" );	
-EndProcedure
-
-
-&AtClient
-Procedure zoho_quotemapping(Command)
-	OpenForm("Catalog.zoho_QuoteCodeMap.ListForm" );
-EndProcedure
-
-
-&AtClient
-Procedure zoho_salesordermapping(Command)
-	OpenForm("Catalog.zoho_SOCodeMap.ListForm" );
-EndProcedure
-
-&AtClient
 Procedure EnhancedInventoryShippingOnChange(Item)
 	
 	Message(NStr("en = 'After enabling the Shipment feature can not be disabled!'"), MessageStatus.Important);
@@ -1032,17 +704,14 @@ Procedure SetEnabledOCLAccount()
 	
 EndProcedure
 
-&AtClient
-Procedure zoho_invoicemapping(Command)
-	OpenForm("Catalog.zoho_SICodeMap.ListForm" );
-EndProcedure
-
-   
 &AtServer
-Function SubscribeVersion()
-	   Return Constants.VersionNumber.Get();
+Function GetEmail()
+	EmailStr = SessionParameters.ACSUser;
+	
+	InputParameters = New Structure();
+	InputParameters.Insert("email", EmailStr);
+	Return InternetConnectionClientServer.EncodeQueryData(InputParameters);
 EndFunction
-   
 
 &AtClient
 Procedure SetCompactUIMode(Command)
@@ -1099,49 +768,19 @@ Procedure SetStandardModeAtServer()
 EndProcedure
 
 &AtClient
-Procedure CFO_ProcessingMonthOnChange(Item)
-	ConstantsSet.CFO_ProcessingMonth = EndOfMonth(ConstantsSet.CFO_ProcessingMonth);	
-EndProcedure
-
-
-&AtClient
-Procedure DataImport(Command)
-	OpenForm("DataProcessor.DataImport.Form.Form");
-EndProcedure
-
-
-&AtClient
 Procedure DataImportv2(Command)
 	OpenForm("DataProcessor.DataImportV20.Form.Form");
 EndProcedure
-
 
 &AtClient
 Procedure EnableAssemblyOnChange(Item)
 	Message(NStr("en = 'After enabling the Assembly feature can not be disabled!'"), MessageStatus.Important);
 EndProcedure
 
-
 &AtClient
 Procedure EnableLotsOnChange(Item)
 	Message(NStr("en = 'After enabling the Lots and Serial Numbers feature can not be disabled!'"), MessageStatus.Important);
 EndProcedure
-
-
-&AtClient
-Procedure AddYodleeAccount(Command)
-	
-	Params = New Structure("PerformAddAccount", True);
-	OpenForm("DataProcessor.YodleeAccountsManagement.Form.Form", Params, ThisForm,,,,, FormWindowOpeningMode.LockOwnerWindow);
-	
-EndProcedure
-
-
-&AtClient
-Procedure Register(Command)
-	OpenForm("DataProcessor.BankRegister.Form.Form");
-EndProcedure
-
 
 &AtClient
 Procedure Renumbering(Command)
@@ -1149,14 +788,11 @@ Procedure Renumbering(Command)
 EndProcedure
 
 &AtClient
-Procedure BalanceSheetNew(Command)
-	OpenForm("Report.BalanceSheetNew.Form.ReportForm");
+Procedure Wizard(Command)
+	OpenForm("DataProcessor.Wizard.Form.Form");
 EndProcedure
 
 &AtClient
-Procedure SearchAndReplace(Command)
-	OpenForm("DataProcessor.SearchAndReplace.Form.Form");
+Procedure ItemActivityReport(Command)
+	OpenForm("Report.ItemActivityReport.Form");
 EndProcedure
-
-
-

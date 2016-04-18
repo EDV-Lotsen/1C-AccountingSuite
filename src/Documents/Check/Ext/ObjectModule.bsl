@@ -10,13 +10,35 @@ Procedure Posting(Cancel, PostingMode)
 		
 		If CurRowLineItems.Amount >= 0 Then
 			Record = RegisterRecords.GeneralJournal.AddDebit();
+			Record.AmountRC = CurRowLineItems.Amount * ExchangeRate;
 		Else
 			Record = RegisterRecords.GeneralJournal.AddCredit();
+			Record.AmountRC = -CurRowLineItems.Amount * ExchangeRate;
 		EndIf;
+		
 		Record.Account = CurRowLineItems.Account;
+		If CurRowLineItems.Account.AccountType = Enums.AccountTypes.AccountsPayable Then
+			Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Company] = Company;
+			Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Document] = Ref;
+			Record.Currency = Record.Account.Currency;
+			Record.Amount = ?(CurRowLineItems.Amount > 0, CurRowLineItems.Amount, - CurRowLineItems.Amount);
+		ElsIf CurRowLineItems.Account.AccountType = Enums.AccountTypes.AccountsReceivable Then
+			Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Company] = Company;
+			Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Document] = Ref;
+			Record.Currency = Record.Account.Currency;
+			Record.Amount = ?(CurRowLineItems.Amount > 0, CurRowLineItems.Amount, - CurRowLineItems.Amount);
+		ElsIf CurRowLineItems.Account.AccountType = Enums.AccountTypes.Bank Then	
+			Record.Currency = Record.Account.Currency;
+			Record.Amount = ?(CurRowLineItems.Amount > 0, CurRowLineItems.Amount, - CurRowLineItems.Amount);
+		EndIf;
+		
 		Record.Period = Date;
 		Record.Memo = CurRowLineItems.Memo;
-		Record.AmountRC = SQRT(POW((CurRowLineItems.Amount * ExchangeRate),2));
+		
+		//--//GJ++
+		ReconciledDocumentsServerCall.AddRecordForGeneralJournalAnalyticsDimensions(RegisterRecords, Record, CurRowLineItems.Class, CurRowLineItems.Project, Company);
+		//--//GJ--
+	
 		VarDocumentTotal = VarDocumentTotal + CurRowLineItems.Amount;
 		VarDocumentTotalRC = VarDocumentTotalRC + CurRowLineItems.Amount * ExchangeRate;
 		
@@ -30,9 +52,23 @@ Procedure Posting(Cancel, PostingMode)
 	Record.Amount = VarDocumentTotal;
 	Record.AmountRC = VarDocumentTotalRC;
 	
+	//--//GJ++
+	ReconciledDocumentsServerCall.AddRecordForGeneralJournalAnalyticsDimensions(RegisterRecords, Record, Null, Null, Company);
+	//--//GJ--
+	
 	// Writing bank reconciliation data
 			
 	ReconciledDocumentsServerCall.AddDocumentForReconciliation(RegisterRecords, Ref, BankAccount, Date, -1 * DocumentTotalRC);
+	
+	LineItemsGroupped = LineItems.Unload(, "Account, Amount");
+	LineItemsGroupped.GroupBy("Account", "Amount");
+	For Each CheckRow In LineItemsGroupped Do
+		If (CheckRow.Account.AccountType = Enums.AccountTypes.Bank) 
+			OR (CheckRow.Account.AccountType = Enums.AccountTypes.OtherCurrentLiability And CheckRow.Account.CreditCard = True) Then
+			ReconciledDocumentsServerCall.AddDocumentForReconciliation(RegisterRecords, Ref, CheckRow.Account, Date, CheckRow.Amount);
+		EndIf;
+	EndDo;
+
 	
 	RegisterRecords.ProjectData.Write = True;	
 	RegisterRecords.ClassData.Write = True;
@@ -52,30 +88,44 @@ Procedure Posting(Cancel, PostingMode)
 		Record.Amount = CurRowLineItems.Amount;
 	EndDo;
 	
+	
+	//CASH BASIS--------------------------------------------------------------------------------------------------
+	//------------------------------------------------------------------------------------------------------------
 	RegisterRecords.CashFlowData.Write = True;
-	For Each CurRowLineItems In LineItems Do			
+	
+	For Each CurrentTrans In RegisterRecords.GeneralJournalAnalyticsDimensions Do
 		
 		Record = RegisterRecords.CashFlowData.Add();
-		Record.RecordType = AccumulationRecordType.Receipt;
-		Record.Period = Date;
-		Record.Company = Company;
-		Record.Document = Ref;
-		Record.Account = CurRowLineItems.Account;
-		//Record.CashFlowSection = CurRowLineItems.Account.CashFlowSection;
-		Record.AmountRC = CurRowLineItems.Amount * ExchangeRate;
-		//Record.PaymentMethod = PaymentMethod;
-
-		
-		Record = RegisterRecords.CashFlowData.Add();
-		Record.RecordType = AccumulationRecordType.Expense;
-		Record.Period = Date;
-		Record.Company = Company;
-		Record.Document = Ref;
-		Record.Account = CurRowLineItems.Account;
-		//Record.CashFlowSection = CurRowLineItems.Account.CashFlowSection;
-		Record.AmountRC = CurRowLineItems.Amount * ExchangeRate;
+		Record.RecordType    = CurrentTrans.RecordType;
+		Record.Period        = CurrentTrans.Period;
+		Record.Account       = CurrentTrans.Account;
+		Record.Company       = CurrentTrans.Company;
+		Record.Document      = Ref;
+		Record.SalesPerson   = Null;
+		Record.Class         = CurrentTrans.Class;
+		Record.Project       = CurrentTrans.Project;
+		Record.AmountRC      = CurrentTrans.AmountRC;
 		Record.PaymentMethod = PaymentMethod;
+		
 	EndDo;
+	//------------------------------------------------------------------------------------------------------------
+	//CASH BASIS (end)--------------------------------------------------------------------------------------------
+
+	
+	If (ExchangeRate <> 1) and Constants.MultiCurrency.Get() Then 	
+		
+		DocumentPosting.FixUnbalancedRegister(ThisObject,Cancel,Constants.ExchangeLoss.Get());
+	Else 
+		CheckedValueTable = RegisterRecords.GeneralJournal.Unload();
+		UnbalancedAmount = 0;
+		If Not DocumentPosting.IsValueTableBalanced(CheckedValueTable, UnbalancedAmount) Then 
+			Cancel = True;
+			// Generate error message.
+			MessageText = NStr("en = 'The document %1 cannot be posted, because it''s transaction is unbalanced.'");
+			MessageText = StringFunctionsClientServer.SubstituteParametersInString(MessageText, Ref);
+			CommonUseClientServer.MessageToUser(MessageText, Ref,,, Cancel);
+		EndIf;		
+	EndIf;
 	
 EndProcedure
 
@@ -88,6 +138,10 @@ EndProcedure
 
 Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 	
+	If DataExchange.Load Then // Skip some check ups.
+		Return;
+	EndIf;
+	
 	// Document date adjustment patch (tunes the date of drafts like for the new documents).
 	If  WriteMode = DocumentWriteMode.Posting And Not Posted // Posting of new or draft (saved but unposted) document.
 	And BegOfDay(Date) = BegOfDay(CurrentSessionDate()) Then // Operational posting (by the current date).
@@ -95,7 +149,7 @@ Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 		Date = CurrentSessionDate();
 	EndIf;
 	
-	If PaymentMethod = Catalogs.PaymentMethods.Check Then
+	If (PaymentMethod = Catalogs.PaymentMethods.Check) And (WriteMode <> DocumentWriteMode.UndoPosting) Then	
 		PhysicalCheckNum = Number;
 		If ThisObject.AdditionalProperties.Property("AllowCheckNumber") Then
 			If Not ThisObject.AdditionalProperties.AllowCheckNumber Then
@@ -126,97 +180,3 @@ Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 	EndIf;
 	
 EndProcedure
-
-//Function CheckNumberAllowed(Num)
-//	
-//	Try
-//		CheckNum = Number(Number);
-//	Except
-//		Return True;
-//	EndTry;
-
-//	AllowDuplicateCheckNumbers = Constants.AllowDuplicateCheckNumbers.Get();
-//	If AllowDuplicateCheckNumbers Then
-//		return True;
-//	EndIf;
-//	Query = New Query("SELECT TOP 1
-//	                  |	ChecksWithNumber.Number,
-//	                  |	ChecksWithNumber.Ref
-//	                  |FROM
-//	                  |	(SELECT
-//	                  |		Check.PhysicalCheckNum AS Number,
-//	                  |		Check.Ref AS Ref
-//	                  |	FROM
-//	                  |		Document.Check AS Check
-//	                  |	WHERE
-//	                  |		Check.BankAccount = &BankAccount
-//	                  |		AND Check.PaymentMethod = VALUE(Catalog.PaymentMethods.Check)
-//	                  |		AND Check.PhysicalCheckNum = &CheckNum
-//	                  |	
-//	                  |	UNION ALL
-//	                  |	
-//	                  |	SELECT
-//	                  |		InvoicePayment.PhysicalCheckNum,
-//	                  |		InvoicePayment.Ref
-//	                  |	FROM
-//	                  |		Document.InvoicePayment AS InvoicePayment
-//	                  |	WHERE
-//	                  |		InvoicePayment.BankAccount = &BankAccount
-//	                  |		AND InvoicePayment.PaymentMethod = VALUE(Catalog.PaymentMethods.Check)
-//	                  |		AND InvoicePayment.PhysicalCheckNum = &CheckNum) AS ChecksWithNumber
-//	                  |WHERE
-//	                  |	ChecksWithNumber.Ref <> &CurrentRef");
-//	Query.SetParameter("BankAccount", BankAccount);
-//	Query.SetParameter("CheckNum", CheckNum);
-//	Query.SetParameter("CurrentRef", Ref);
-//	QueryResult = Query.Execute();
-//	If QueryResult.IsEmpty() Then
-//		Return True;
-//	Else	
-//		Return False;
-//	EndIf;
-//	//Try
-//	//	CheckNum = Number(Number);
-//	//	Query = New Query("SELECT
-//	//					  |	Check.PhysicalCheckNum AS Number,
-//	//					  |	Check.Ref
-//	//					  |FROM
-//	//					  |	Document.Check AS Check
-//	//					  |WHERE
-//	//					  |	Check.BankAccount = &BankAccount
-//	//					  |	AND Check.PaymentMethod = VALUE(Catalog.PaymentMethods.Check)
-//	//					  |	AND Check.PhysicalCheckNum = &CheckNum
-//	//					  |
-//	//					  |UNION ALL
-//	//					  |
-//	//					  |SELECT
-//	//					  |	InvoicePayment.PhysicalCheckNum,
-//	//					  |	InvoicePayment.Ref
-//	//					  |FROM
-//	//					  |	Document.InvoicePayment AS InvoicePayment
-//	//					  |WHERE
-//	//					  |	InvoicePayment.BankAccount = &BankAccount
-//	//					  |	AND InvoicePayment.PaymentMethod = VALUE(Catalog.PaymentMethods.Check)
-//	//					  |	AND InvoicePayment.PhysicalCheckNum = &CheckNum
-//	//					  |
-//	//					  |ORDER BY
-//	//					  |	Number DESC");
-//	//	Query.SetParameter("BankAccount", BankAccount);
-//	//	Query.SetParameter("CheckNum", CheckNum);
-//	//	//Query.SetParameter("Number", Object.Number);
-//	//	QueryResult = Query.Execute().Unload();
-//	//	If QueryResult.Count() = 0 Then
-//	//		Return False;
-//	//	ElsIf QueryResult.Count() = 1 And QueryResult[0].Ref = Ref Then
-//	//		Return False;
-//	//	Else	
-
-//	//		Return True;
-//	//	EndIf;
-//	//Except
-//	//	Return False
-//	//EndTry;
-//		
-//	
-//EndFunction
-

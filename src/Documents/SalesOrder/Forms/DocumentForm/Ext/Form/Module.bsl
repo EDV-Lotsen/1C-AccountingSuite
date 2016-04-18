@@ -173,19 +173,6 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Object.EmailNote = Constants.SalesOrderFooter.Get();
 	EndIf;
 	
-	If Object.CreatedFromZoho = True Then
-		taxQuery = new Query("SELECT
-							 |	SalesTaxRates.Ref
-							 |FROM
-							 |	Catalog.SalesTaxRates AS SalesTaxRates
-							 |WHERE
-							 |	SalesTaxRates.Description = &Description");
-						   
-		taxQuery.SetParameter("Description", "TaxFromZoho"); // zoho product id
-		taxResult = taxQuery.Execute().Unload();
-		SalesTaxRate = taxResult[0].ref;
-	EndIf;
-	
 	If Object.BillTo <> Catalogs.Addresses.EmptyRef() AND Object.ShipTo <> Catalogs.Addresses.EmptyRef()  Then
 		Items.DecorationShipTo.Visible = True;
 		Items.DecorationBillTo.Visible = True;
@@ -196,9 +183,13 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Items.DecorationBillTo.Visible = False;
 	EndIf;
 	
+	
+	If Constants.UseSOPrepayment.Get() = False Then 
+		Items.AddPrepayment.Visible = False;
+	EndIf;	
+	
 EndProcedure
 
-// -> CODE REVIEW
 &AtClient
 Procedure OnOpen(Cancel)
 	
@@ -245,9 +236,6 @@ Procedure BeforeWrite(Cancel, WriteParameters)
 		EndIf;
 	EndIf;
 	
-	//Avatax calculation
-	AvaTaxClient.ShowQueryToTheUserOnAvataxCalculation("SalesOrder", Object, ThisObject, WriteParameters, Cancel);
-	
 EndProcedure
 
 &AtServer
@@ -259,11 +247,7 @@ Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
 		CurrentObject.AdditionalProperties.Insert("PermitWrite", PermitWrite);	
 	EndIf;
 	
-	//Avatax calculation
-	AvaTaxServer.CalculateTaxBeforeWrite(CurrentObject, WriteParameters, Cancel, "SalesOrder");
-	
 EndProcedure
-// <- CODE REVIEW
 
 &AtServer
 Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
@@ -297,24 +281,9 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 		LotsSerialNumbers.FillLotOwner(Row.Product, Row.LotOwner);
 	EndDo;
 	
-	
-	If Object.Posted Then
-		If Constants.zoho_auth_token.Get() <> "" Then
-			If Object.NewObject = True Then
-				ThisAction = "create";
-			Else
-				ThisAction = "update";
-			EndIf;
-			zoho_Functions.ZohoThisSO(ThisAction, Object.Ref);
-		EndIf;
-	EndIf;
-	
-	//Avatax calculation
-	//AvaTaxServer.CalculateTaxAfterWrite(CurrentObject, WriteParameters, "SalesOrder");
-	
 	//Update tax rate
 	DisplaySalesTaxRate(ThisForm);
-
+	
 EndProcedure
 
 &AtClient
@@ -389,11 +358,8 @@ Procedure CompanyOnChangeAtServer()
 	
 	// Tax settings
 	SalesTaxRate 		= SalesTax.GetDefaultSalesTaxRate(Object.Company);
-	If GeneralFunctionsReusable.FunctionalOptionValue("AvataxEnabled") Then
-		Object.UseAvatax	= Object.Company.UseAvatax;
-	Else
-		Object.UseAvatax	= False;
-	EndIf;
+	Object.UseAvatax	= False;
+	
 	If (Not Object.UseAvatax) Then
 		TaxEngine = 1; //Use AccountingSuite
 		If SalesTaxRate <> Object.SalesTaxRate Then
@@ -404,9 +370,6 @@ Procedure CompanyOnChangeAtServer()
 	EndIf;
 	Object.SalesTaxAcrossAgencies.Clear();
 	ApplySalesTaxEngineSettings();
-	If Object.UseAvatax Then
-		AvataxServer.RestoreCalculatedSalesTax(Object);
-	EndIf;	
 	
 	RecalculateTotals(Object);
 	DisplaySalesTaxRate(ThisForm);
@@ -1182,23 +1145,12 @@ Procedure AddLine(Command)
 	
 EndProcedure
 
-&AtClient
-Procedure AvaTax(Command)
-	
-	FormParams = New Structure("ObjectRef", Object.Ref);
-	OpenForm("InformationRegister.AvataxDetails.Form.AvataxDetails", FormParams, ThisForm,,,,, FormWindowOpeningMode.LockOwnerWindow);
-	
-EndProcedure
-
 &AtServer
 Procedure TaxEngineOnChangeAtServer()
 	
 	Object.UseAvaTax = ?(TaxEngine = 1, False, True);	
 	Object.SalesTaxAcrossAgencies.Clear();
 	ApplySalesTaxEngineSettings();
-	If Object.UseAvatax Then
-		AvataxServer.RestoreCalculatedSalesTax(Object);
-	EndIf;
 	RecalculateTotals(Object);
 	DisplaySalesTaxRate(ThisForm);
 	
@@ -1580,22 +1532,6 @@ Procedure SetSalesTaxRate(NewSalesTaxRate)
 EndProcedure
 
 &AtClient
-Procedure SendEmail(Command)
-	If Object.Ref.IsEmpty() Then
-		Message("An email cannot be sent until the sales order is posted");
-	Else	
-		FormParameters = New Structure("Ref",Object.Ref );
-		OpenForm("CommonForm.EmailForm", FormParameters,,,,,, FormWindowOpeningMode.LockOwnerWindow);	
-		//SendSOEmail();
-	EndIf;
-EndProcedure
-
-&AtServer
-Procedure SendSOEmail()
-	// Insert handler contents.
-EndProcedure
-
-&AtClient
 Procedure CopyMainShipping(Command)
 	Object.DropshipCompany = Object.Company;
 	Object.DropshipRefNum = Object.RefNum;
@@ -1661,17 +1597,6 @@ EndProcedure
 &AtServer
 Procedure ApplySalesTaxEngineSettings()
 	
-	//Without AvataxEnabled allow changing of an engine only for documents, using AvaTax
-	If GeneralFunctionsReusable.FunctionalOptionValue("AvataxEnabled") Then
-		Items.TaxEngine.Visible = True;
-	Else
-		If (Not Object.Ref.IsEmpty()) And (Object.UseAvatax) Then
-			Items.TaxEngine.Visible = True;
-		Else
-			Items.TaxEngine.Visible = False;
-		EndIf;
-	EndIf;
-	
 	If Not Object.UseAvatax Then
 		Items.SalesTaxRate.ChoiceList.Clear();
 		ListOfAvailableTaxRates = SalesTax.GetSalesTaxRatesList();
@@ -1682,13 +1607,6 @@ Procedure ApplySalesTaxEngineSettings()
 		Items.TaxParametersPages.CurrentPage = Items.TaxParametersInACS;
 		Items.LineItemsTaxable.Visible		= True;
 		Items.LineItemsAvataxTaxCode.Visible = False;
-	ElsIf Object.UseAvatax Then
-		If Object.Ref.IsEmpty() Then
-			Object.AvataxShippingTaxCode = Constants.AvataxDefaultShippingTaxCode.Get();
-		EndIf;
-		Items.TaxParametersPages.CurrentPage = Items.TaxParametersInAvaTax;
-		Items.LineItemsTaxable.Visible		= False;
-		Items.LineItemsAvataxTaxCode.Visible = True;
 	EndIf;
 
 EndProcedure
@@ -1729,13 +1647,6 @@ Procedure SetDiscountTaxabilityAppearance(ThisForm)
 	Else
 		Items.LineItemsDiscountIsTaxable.Visible = False;
 	EndIf;
-	
-EndProcedure
-
-&AtClient
-Procedure TaxEngineOnChange(Item)
-	
-	TaxEngineOnChangeAtServer();
 	
 EndProcedure
 
@@ -1796,6 +1707,13 @@ Procedure SetVisibilityByDiscount(ThisForm)
 		ThisForm.Items.Discount.Readonly = True;
 	EndIf;
 	
+EndProcedure
+
+&AtClient
+Procedure AddPrepayment(Command)
+	ParamStruct = New Structure;
+	ParamStruct.Insert("SalesOrderPrepayment", Object.Ref);
+	OpenForm("Document.CashReceipt.ObjectForm",ParamStruct);
 EndProcedure
 
 &AtServerNoContext

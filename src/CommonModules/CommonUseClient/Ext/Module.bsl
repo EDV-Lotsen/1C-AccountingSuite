@@ -8,7 +8,7 @@
 //  MessageStatus = EnumRef.MessageStatuse - defines an icon, displaying severity of the problem
 //    supported values: NoStatus, Information, Warning
 //
-Procedure ShowCustomMessageBox(FormOwner, Title = "", Message, MessageStatus = Undefined) Export
+Procedure ShowCustomMessageBox(FormOwner, Title = "", Message, MessageStatus = Undefined, Notify = Undefined) Export
 	If MessageStatus = Undefined Then 
 		MessageStatus = PredefinedValue("Enum.MessageStatus.NoStatus");
 	EndIf;
@@ -26,7 +26,12 @@ Procedure ShowCustomMessageBox(FormOwner, Title = "", Message, MessageStatus = U
 		ArrayOfMessages.Add(PictureLib.Warning32);
 	EndIf;
 	ArrayOfMessages.Add("    " + Message);
-	ShowMessageBox(, New FormattedString(ArrayOfMessages),,Title);
+	If Notify <> Undefined Then
+		ShowMessageBox(Notify, New FormattedString(ArrayOfMessages),,Title);
+	Else
+		ShowMessageBox(, New FormattedString(ArrayOfMessages),,Title);
+	EndIf;
+	
 EndProcedure
 
 // Shows custom query box to the user
@@ -36,7 +41,7 @@ EndProcedure
 //  Title - String - title of the message box
 //  Message - String - message text
 //
-Procedure ShowCustomQueryBox(Notify, Message, DialogMode, Timeout, DefaultButton, Title = "") Export
+Procedure ShowCustomQueryBox(Notify, Message, DialogMode, Timeout=0, DefaultButton, Title = "") Export
 	
 	ArrayOfMessages = New Array();
 	ArrayOfMessages.Add(PictureLib.Question32);
@@ -56,7 +61,7 @@ EndProcedure
 //
 // Parameters:
 //  KeyDescription - String - Demonstrates description which shows form of long action.
-// 	KeyParameters  - Structure - Parameters for background job "CommonUse.DoLongAction".  
+//  KeyParameters  - Structure - Parameters for background job "CommonUse.DoLongAction".  
 //  FormOwner      - ManagedForm - Reference of owner form, responsible for long action.
 //
 // Returns:
@@ -153,7 +158,7 @@ Function ResultProcessingLongAction(FormOwner, KeyParameters = Undefined) Export
 		
 		// Get empty object or error description.
 		Result = ResultDescription.Result;
-				
+		
 	ElsIf ResultDescription.Description = "Pending" Then
 		// Get running job ID.
 		If ResultDescription.Result <> JobID Then
@@ -166,8 +171,8 @@ Function ResultProcessingLongAction(FormOwner, KeyParameters = Undefined) Export
 		If SplashForm = Undefined Then
 			// Define user messages.
 			SplashFormHeader  = KeyDescription;
-			SplashFormMessage = NStr("en = 'The process have been started!
-                                      |Please wait...'");
+			SplashFormMessage = NStr("en = 'Processing has been started.
+			                               |Please wait...'");
 			// Show splash form.
 			BackgroundJobParameters[3].Value = LongActionsClient.OpenLongActionForm(FormOwner, JobID, SplashFormHeader, SplashFormMessage);
 		EndIf;
@@ -187,3 +192,66 @@ Function ResultProcessingLongAction(FormOwner, KeyParameters = Undefined) Export
 EndFunction
 
 #EndRegion
+
+Procedure ApplyPrintFormSettingsOnSettingsChange(Result, Parameters) Export
+	
+	If TypeOf(Result) = Type("DialogReturnCode") Then
+		If Result <> DialogReturnCode.OK Then
+			return;
+		EndIf;
+	EndIf;
+	If TypeOf(Result) = Type("String") Then
+		If Result <> "PrintReport" Then
+			return;
+		EndIf;
+	EndIf;
+	
+	ResultDocument		= Parameters.SourceForm.Result;
+	PrintFormSettings = ApplyPrintFormSettings(ResultDocument,Parameters, False);
+		
+	If TypeOf(Result) = Type("String") Then
+		If Result = "PrintReport" Then
+			ResultDocument.Print(PrintDialogUseMode.Use);
+		EndIf;
+	EndIf;
+	
+EndProcedure
+
+Function ApplyPrintFormSettings(ResultDocument, Parameters, ProcessObjectTypeID = True) Export
+	
+	If ProcessObjectTypeID Then
+		ObjectTypeID = GetObjectTypeID(Parameters.ObjectTypeID);
+	Else
+		ObjectTypeID = Parameters.ObjectTypeID;
+	EndIf;
+	PrintFormSettings 	= PrintFormFunctions.GetPrintFormSettings(ObjectTypeID);
+	FillPropertyValues(ResultDocument, PrintFormSettings);
+	ResultDocument.PageOrientation = ?(PrintFormSettings.PrintPageOrientation = 0, PageOrientation.Portrait, PageOrientation.Landscape);
+	Return PrintFormSettings;
+	
+EndFunction
+
+Function GetObjectTypeID(Val ReportFormName) Export
+	
+	If StrFind(ReportFormName, "Report.") > 0 Then
+		ReportFormName	= StrReplace(ReportFormName, "Report.", "");
+		DotPos			= StrFind(ReportFormName, ".");
+		ReportFormName	= "Report." + Left(ReportFormName, ?(DotPos=0, DotPos, DotPos-1));
+	EndIf;
+	return ReportFormName;
+
+EndFunction
+
+Procedure Transactions(ObjectRef, FormParameters = Undefined) Export
+	
+	// Open transactions form with selected filter.
+	If FormParameters = Undefined Then
+		FormParameters = New Structure();
+		FormParameters.Insert("Source", ObjectRef);
+	EndIf;
+	NewFormType = CommonUseServerCall.GetConstantValue("UseExtendedTransactionsRepresentation");
+	//NewFormType = True;
+	OpenForm(?(NewFormType=True,"CommonForm.OrderTransactions","CommonForm.OrderTransactionsNonExtended"), FormParameters, ObjectRef, ObjectRef.UUID());
+	
+EndProcedure
+

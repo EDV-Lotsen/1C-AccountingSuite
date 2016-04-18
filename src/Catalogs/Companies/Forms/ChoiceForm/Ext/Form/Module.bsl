@@ -1,4 +1,7 @@
 ﻿
+////////////////////////////////////////////////////////////////////////////////
+#Region EVENTS_HANDLERS
+
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
@@ -89,7 +92,32 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Items.CF5Num.Visible = False;
 		Items.CF5String.Visible = False;
 	EndIf;
-
+	
 	// end custom fields
+	
+	// Disable/Enable Objects functionality.
+	DisableEnableObjects.SetConditionalAppearance(ThisObject);
+	
+EndProcedure
+
+&AtServer
+Procedure OnLoadDataFromSettingsAtServer(Settings)
+	
+	DisableEnableObjectsClientServer.SetFilterCompaniesInArchive(ThisObject, HideDisabledCompanies);
+	
+EndProcedure
+
+#EndRegion
+
+////////////////////////////////////////////////////////////////////////////////
+#Region CONTROLS_EVENTS_HANDLERS
+
+&AtClient
+Procedure HideDisabledCompaniesOnChange(Item)
+	
+	DisableEnableObjectsClientServer.SetFilterCompaniesInArchive(ThisObject, HideDisabledCompanies);
 
 EndProcedure
+
+#EndRegion
+

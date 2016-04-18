@@ -12,9 +12,9 @@
 				<xr:Common>true</xr:Common>
 			</Visibility>
 		</Command>
-		<Command name="DataProcessor.DownloadedTransactions.Command.DownloadedTransactions">
+		<Command name="0:b933756b-f1c7-46cf-946c-e3e20aa15438">
 			<Visibility>
-				<xr:Common>false</xr:Common>
+				<xr:Common>true</xr:Common>
 				<xr:Value name="Role.SalesFull">false</xr:Value>
 				<xr:Value name="Role.SalesView">false</xr:Value>
 				<xr:Value name="Role.PurchasingFull">false</xr:Value>
@@ -31,6 +31,7 @@
 				<xr:Value name="Role.ProjectsView">false</xr:Value>
 				<xr:Value name="Role.TimeTrackFull">false</xr:Value>
 				<xr:Value name="Role.TimeTrackView">false</xr:Value>
+				<xr:Value name="acfa1919-07ce-4464-8552-6b104e284dca">false</xr:Value>
 			</Visibility>
 		</Command>
 		<Command name="CommonCommand.LaunchSettings">
@@ -48,9 +49,14 @@
 				<xr:Common>false</xr:Common>
 			</Visibility>
 		</Command>
-		<Command name="Catalog.UserList.StandardCommand.OpenList">
+		<Command name="0:e0c503e3-f946-4977-bdba-d44db96a3a57">
 			<Visibility>
 				<xr:Common>true</xr:Common>
+			</Visibility>
+		</Command>
+		<Command name="0:0c93a74b-e3db-4b86-9520-6be14754e686">
+			<Visibility>
+				<xr:Common>false</xr:Common>
 			</Visibility>
 		</Command>
 		<Command name="Report.ARAging.StandardCommand.Open">
@@ -78,7 +84,7 @@
 				<xr:Common>false</xr:Common>
 			</Visibility>
 		</Command>
-		<Command name="Report.BalanceSheet.StandardCommand.Open">
+		<Command name="0:9c059244-c975-4ca7-b3f3-5517af769137">
 			<Visibility>
 				<xr:Common>false</xr:Common>
 			</Visibility>
@@ -88,7 +94,7 @@
 				<xr:Common>false</xr:Common>
 			</Visibility>
 		</Command>
-		<Command name="DataProcessor.DownloadedTransactions.StandardCommand.Open">
+		<Command name="0:9b1adefc-7bdc-48d8-9d5b-f073de4af0bd">
 			<Visibility>
 				<xr:Common>false</xr:Common>
 			</Visibility>
@@ -103,7 +109,7 @@
 			<CommandGroup>NavigationPanelImportant</CommandGroup>
 			<Placement>Manual</Placement>
 		</Command>
-		<Command name="DataProcessor.DownloadedTransactions.Command.DownloadedTransactions">
+		<Command name="0:b933756b-f1c7-46cf-946c-e3e20aa15438">
 			<CommandGroup>NavigationPanelImportant</CommandGroup>
 			<Placement>Manual</Placement>
 		</Command>
@@ -119,7 +125,11 @@
 			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
 			<Placement>Manual</Placement>
 		</Command>
-		<Command name="Catalog.UserList.StandardCommand.OpenList">
+		<Command name="0:e0c503e3-f946-4977-bdba-d44db96a3a57">
+			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
+			<Placement>Manual</Placement>
+		</Command>
+		<Command name="0:0c93a74b-e3db-4b86-9520-6be14754e686">
 			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
 			<Placement>Manual</Placement>
 		</Command>
@@ -143,7 +153,7 @@
 			<CommandGroup>ActionsPanelReports</CommandGroup>
 			<Placement>Manual</Placement>
 		</Command>
-		<Command name="Report.BalanceSheet.StandardCommand.Open">
+		<Command name="0:9c059244-c975-4ca7-b3f3-5517af769137">
 			<CommandGroup>ActionsPanelReports</CommandGroup>
 			<Placement>Manual</Placement>
 		</Command>
@@ -151,7 +161,7 @@
 			<CommandGroup>ActionsPanelReports</CommandGroup>
 			<Placement>Manual</Placement>
 		</Command>
-		<Command name="DataProcessor.DownloadedTransactions.StandardCommand.Open">
+		<Command name="0:9b1adefc-7bdc-48d8-9d5b-f073de4af0bd">
 			<CommandGroup>ActionsPanelTools</CommandGroup>
 			<Placement>Manual</Placement>
 		</Command>
@@ -163,7 +173,7 @@
 		<Command name="Catalog.Products.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelImportant</CommandGroup>
 		</Command>
-		<Command name="DataProcessor.DownloadedTransactions.Command.DownloadedTransactions">
+		<Command name="0:b933756b-f1c7-46cf-946c-e3e20aa15438">
 			<CommandGroup>NavigationPanelImportant</CommandGroup>
 		</Command>
 		<Command name="CommonCommand.LaunchSettings">
@@ -175,7 +185,10 @@
 		<Command name="Document.CashReceipt.StandardCommand.OpenList">
 			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
 		</Command>
-		<Command name="Catalog.UserList.StandardCommand.OpenList">
+		<Command name="0:e0c503e3-f946-4977-bdba-d44db96a3a57">
+			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
+		</Command>
+		<Command name="0:0c93a74b-e3db-4b86-9520-6be14754e686">
 			<CommandGroup>NavigationPanelOrdinary</CommandGroup>
 		</Command>
 		<Command name="Report.ARAging.StandardCommand.Open">
@@ -193,7 +206,7 @@
 		<Command name="Report.IncomeStatement.StandardCommand.Open">
 			<CommandGroup>ActionsPanelReports</CommandGroup>
 		</Command>
-		<Command name="Report.BalanceSheet.StandardCommand.Open">
+		<Command name="0:9c059244-c975-4ca7-b3f3-5517af769137">
 			<CommandGroup>ActionsPanelReports</CommandGroup>
 		</Command>
 		<Command name="Report.BudgetPlanActual.StandardCommand.Open">

@@ -5,207 +5,665 @@
 //
 Procedure Posting(Cancel, Mode)
 	
-	For Each DocumentLine In LineItems Do
+	RegisterRecords.GeneralJournal.Write = True;
+	RegisterRecords.CashFlowData.Write   = True;
 	
-		DocumentObject = DocumentLine.Document.GetObject();
-		 	 
-		ExchangeRate = GeneralFunctions.GetExchangeRate(Date, DocumentObject.Currency);
-		 
-		RegisterRecords.GeneralJournal.Write = True;
-		RegisterRecords.CashFlowData.Write = True;
+	BankAmount  = 0;
+	BankAmoutRC = 0;
+	
+	LineQuery = New Query;
+	LineQuery.Text = Documents.InvoicePayment.GetLineItemsAccountsQuery() +
+	";
+	|SELECT
+	|	InvoicePaymentLineItems.Payment,
+	|	InvoicePaymentLineItems.Discount,
+	|	InvoicePaymentLineItems.Document,
+	|	InvoicePaymentLineItems.Document.Date As Date,
+	|	InvoicePaymentLineItems.Currency,
+	|	ISNULL(InvoicePaymentLineItems.Document.ExchangeRate, 0) AS ExchangeRate,
+	|	CASE WHEN InvoicePaymentLineItems.Document REFS Document.PurchaseInvoice
+	|		Then InvoicePaymentLineItems.Document.APAccount
+	|	WHEN InvoicePaymentLineItems.Document REFS Document.SalesReturn
+	|		Then InvoicePaymentLineItems.Document.ARAccount
+	|	WHEN InvoicePaymentLineItems.Document REFS Document.Deposit
+	|		Then GeneralJournalTurnovers.Account
+	|	WHEN InvoicePaymentLineItems.Document REFS Document.GeneralJournalEntry
+	|		Then GeneralJournalTurnovers.Account
+	|	END AS Account
+	|FROM
+	|	Document.InvoicePayment.LineItems AS InvoicePaymentLineItems
+	|		LEFT JOIN AccountingRegister.GeneralJournal.Turnovers(, , Recorder, Account IN (SELECT APAccount FROM TmpAccnts as TmpAccnts),, 
+	//|		LEFT JOIN AccountingRegister.GeneralJournal.Turnovers(, , Recorder, Account IN (&Tst),, 
+	|			ExtDimension1 = &Company AND
+	|          (ExtDimension2 REFS Document.PurchaseInvoice 
+	|			OR ExtDimension2 REFS Document.GeneralJournalEntry
+	|			OR ExtDimension2 REFS Document.Deposit
+	|			OR ExtDimension2 REFS Document.SalesReturn)
+	|			) AS GeneralJournalTurnovers
+	|		ON InvoicePaymentLineItems.Document = GeneralJournalTurnovers.Recorder
+	|			AND InvoicePaymentLineItems.Currency = GeneralJournalTurnovers.Currency
+	|WHERE
+	|	InvoicePaymentLineItems.Ref = &Ref
+	|	AND InvoicePaymentLineItems.Check
+	|	AND InvoicePaymentLineItems.Currency = &Currency";
+	
+	
+	LineQuery.SetParameter("Company", Company);
+	LineQuery.SetParameter("Ref", Ref);
+	LineQuery.SetParameter("Currency", Currency);
+	LineResult = LineQuery.Execute().Unload();
+	
+	ExchangeRate = GeneralFunctions.GetExchangeRate(Date, Currency);
+	
+	
+	//------------------------------------------------------------------------------------------------------------
+	//TABULAR SECTION BILLS---------------------------------------------------------------------------------------
+	//------------------------------------------------------------------------------------------------------------
+	For Each DocumentLine In LineResult Do
+	
+		ExchangeRate    = GeneralFunctions.GetExchangeRate(Date, DocumentLine.Currency);
+		DocExchangeRate = DocumentLine.ExchangeRate;
+		DocRef          = DocumentLine.Document;
 		
-		If TypeOf(DocumentObject.Ref) = Type("DocumentRef.PurchaseInvoice") Then
+		//PurchaseInvoice-----------------------------------------------------------------------------------------
+		//--------------------------------------------------------------------------------------------------------
+		If TypeOf(DocRef) = Type("DocumentRef.PurchaseInvoice") Then
 			
-			For Each Acc In DocumentObject.Accounts Do
-				Record = RegisterRecords.CashFlowData.Add();
-				Record.RecordType = AccumulationRecordType.Expense;
-				Record.Period = Date;
-				Record.Company = Company;
-				Record.Document = DocumentObject.Ref;
-				Record.Account = Acc.Account;
-				//Record.CashFlowSection = Acc.Account.CashFlowSection;
-				Record.PaymentMethod = PaymentMethod;
-				Record.AmountRC = ((Acc.Amount * ExchangeRate) * DocumentLine.Payment)/DocumentObject.DocumentTotalRC;
-			EndDo;
+			//1.
+			SumFirstTrans = 0;
 			
-			For Each Item In DocumentObject.LineItems Do
-				Record = RegisterRecords.CashFlowData.Add();
-				Record.RecordType = AccumulationRecordType.Expense;
-				Record.Period = Date;
-				Record.Company = Company;
-				Record.Document = DocumentObject.Ref;
-				Record.Account = Item.Product.InventoryOrExpenseAccount;
-				If Item.Product.Type = Enums.InventoryTypes.Inventory Then
-					Record.Account = Item.Product.COGSAccount;
-				Else
-					Record.Account = Item.Product.InventoryOrExpenseAccount;
+			RecordSet =  AccumulationRegisters.GeneralJournalAnalyticsDimensions.CreateRecordSet();
+			RecordSet.Filter.Recorder.Set(DocRef);
+			RecordSet.Read();
+			
+			For Each CurrentTrans In RecordSet Do
+				If CurrentTrans.RecordType = AccumulationRecordType.Receipt
+					AND CurrentTrans.Account.AccountType <> Enums.AccountTypes.AccountsReceivable 
+					AND CurrentTrans.Account.AccountType <> Enums.AccountTypes.AccountsPayable Then
+					SumFirstTrans  = SumFirstTrans + ?(CurrentTrans.RecordType = AccumulationRecordType.Receipt, CurrentTrans.AmountRC, CurrentTrans.AmountRC * -1);
 				EndIf;
-				//Record.CashFlowSection = Item.Product.InventoryOrExpenseAccount.CashFlowSection;
-				Record.PaymentMethod = PaymentMethod;
-				Record.AmountRC = ((Item.LineTotal * ExchangeRate) * DocumentLine.Payment)/DocumentObject.DocumentTotalRC;
 			EndDo;
-
-
-		
-			Record = RegisterRecords.GeneralJournal.AddDebit();
-			Record.Account = DocumentObject.APAccount;
-			Record.Period = Date;
-			Record.Amount = DocumentLine.Payment;
-			Record.AmountRC = DocumentLine.Payment * DocumentObject.ExchangeRate;
-			Record.Currency = DocumentObject.Currency;
-			Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Company] = Company;
-			Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Document] = DocumentObject.Ref;			 			
-				
-			Record = RegisterRecords.GeneralJournal.AddCredit();
-			Record.Account = BankAccount;
-			Record.Currency = BankAccount.Currency;
-			Record.Period = Date;
-			If DocumentObject.Currency = BankAccount.Currency Then
-				Record.Amount = DocumentLine.Payment;
-			Else
-				Record.Amount = DocumentLine.Payment * ExchangeRate;
+			
+			//2.
+			FirstFullPaymentAmountRC  = Round(DocumentLine.Payment * DocExchangeRate, 2) + Round(DocumentLine.Discount * DocExchangeRate, 2);
+			FirstBalancePaymentRC     = FirstFullPaymentAmountRC;
+			
+			ActualSumFirstTrans       = 0;
+			APAmount                  = 0;
+			
+			For Each CurrentTrans In RecordSet Do
+				If CurrentTrans.RecordType = AccumulationRecordType.Receipt
+					AND (CurrentTrans.Account.AccountType = Enums.AccountTypes.Income
+						OR CurrentTrans.Account.AccountType = Enums.AccountTypes.CostOfSales
+						OR CurrentTrans.Account.AccountType = Enums.AccountTypes.Expense
+						OR CurrentTrans.Account.AccountType = Enums.AccountTypes.OtherIncome
+						OR CurrentTrans.Account.AccountType = Enums.AccountTypes.OtherExpense
+						OR CurrentTrans.Account.AccountType = Enums.AccountTypes.IncomeTaxExpense) Then
+					
+					PaymentRC        = 0;
+					CurrentPaymentRC = 0;
+					
+					ActualSumFirstTrans    = ActualSumFirstTrans + CurrentTrans.AmountRC;
+					PaymentRC              = ?(SumFirstTrans = 0, 0, Round(CurrentTrans.AmountRC * FirstFullPaymentAmountRC / SumFirstTrans, 2));
+					CurrentPaymentRC       = ?(ActualSumFirstTrans = SumFirstTrans, FirstBalancePaymentRC, PaymentRC);
+					FirstBalancePaymentRC  = FirstBalancePaymentRC - CurrentPaymentRC; 
+					
+					If CurrentPaymentRC <> 0 Then 
+						Record = RegisterRecords.CashFlowData.Add();
+						Record.RecordType    = CurrentTrans.RecordType;
+						Record.Period        = Date;
+						Record.Account       = CurrentTrans.Account;
+						Record.Company       = Company;
+						Record.Document      = DocRef;
+						Record.SalesPerson   = Null;
+						Record.Class         = CurrentTrans.Class;
+						Record.Project       = CurrentTrans.Project;
+						Record.AmountRC      = CurrentPaymentRC;
+						Record.PaymentMethod = PaymentMethod;
+						
+						APAmount = APAmount + ?(Record.RecordType = AccumulationRecordType.Receipt, Record.AmountRC * -1, Record.AmountRC); 
+					EndIf;
+					
+				EndIf;
+			EndDo;
+			
+			If APAmount <> 0 Then
+				Record = RegisterRecords.CashFlowData.Add();
+				Record.RecordType    = ?(APAmount > 0, AccumulationRecordType.Receipt, AccumulationRecordType.Expense);
+				Record.Period        = Date;
+				Record.Account       = DocRef.APAccount;
+				Record.Company       = Company;
+				Record.Document      = DocRef;
+				Record.SalesPerson   = Null;
+				Record.Class         = Null;
+				Record.Project       = Null;
+				Record.AmountRC      = ?(APAmount > 0, APAmount, APAmount * -1);
+				Record.PaymentMethod = PaymentMethod;
 			EndIf;
-			Record.AmountRC = DocumentLine.Payment * ExchangeRate;
+			
+		//Deposit-------------------------------------------------------------------------------------------------
+		//--------------------------------------------------------------------------------------------------------
+		ElsIf TypeOf(DocRef) = Type("DocumentRef.Deposit") Then
+			
+						
+		//GeneralJournalEntry-------------------------------------------------------------------------------------
+		//--------------------------------------------------------------------------------------------------------
+		ElsIf TypeOf(DocRef) = Type("DocumentRef.GeneralJournalEntry") Then
+			
+						
+		//SalesReturn---------------------------------------------------------------------------------------------
+		//--------------------------------------------------------------------------------------------------------
+		ElsIf TypeOf(DocRef) = Type("DocumentRef.SalesReturn") Then
+			
+			//1.
+			SumFirstTrans  = 0;
+			SumSecondTrans = 0;
+			
+			RecordSet =  AccumulationRegisters.GeneralJournalAnalyticsDimensions.CreateRecordSet();
+			RecordSet.Filter.Recorder.Set(DocRef);
+			RecordSet.Read();
+			
+			For Each CurrentTrans In RecordSet Do
+				If CurrentTrans.JournalEntryIntNum = 1 And CurrentTrans.JournalEntryMainRec Then
+					SumFirstTrans  = SumFirstTrans + ?(CurrentTrans.RecordType = AccumulationRecordType.Expense, CurrentTrans.AmountRC, CurrentTrans.AmountRC * -1);
+				ElsIf  CurrentTrans.JournalEntryIntNum = 2 And CurrentTrans.JournalEntryMainRec Then 
+					SumSecondTrans = SumSecondTrans + ?(CurrentTrans.RecordType = AccumulationRecordType.Expense, CurrentTrans.AmountRC, CurrentTrans.AmountRC * -1);
+				EndIf;
+			EndDo;
+			
+			//2.
+			FirstFullPaymentAmountRC  = Round(DocumentLine.Payment * DocExchangeRate, 2) + Round(DocumentLine.Discount * DocExchangeRate, 2);
+			FirstBalancePaymentRC     = FirstFullPaymentAmountRC;
+			
+			SecondFullPaymentAmountRC = ?(SumFirstTrans = 0, 0, Round(SumSecondTrans * FirstFullPaymentAmountRC / SumFirstTrans, 2));
+			SecondBalancePaymentRC    = SecondFullPaymentAmountRC;
+			
+			ActualSumFirstTrans       = 0;
+			ActualSumSecondTrans      = 0;
+			
+			ARAmount                  = 0;
+			
+			For Each CurrentTrans In RecordSet Do
+				If CurrentTrans.Account.AccountType = Enums.AccountTypes.Income
+					OR CurrentTrans.Account.AccountType = Enums.AccountTypes.CostOfSales
+					OR CurrentTrans.Account.AccountType = Enums.AccountTypes.Expense
+					OR CurrentTrans.Account.AccountType = Enums.AccountTypes.OtherIncome
+					OR CurrentTrans.Account.AccountType = Enums.AccountTypes.OtherExpense
+					OR CurrentTrans.Account.AccountType = Enums.AccountTypes.IncomeTaxExpense
+					OR CurrentTrans.Account = Constants.TaxPayableAccount.Get() Then
+					
+					PaymentRC        = 0;
+					CurrentPaymentRC = 0;
+					
+					If CurrentTrans.JournalEntryIntNum = 1 Then
+						
+						ActualSumFirstTrans    = ActualSumFirstTrans + CurrentTrans.AmountRC;
+						PaymentRC              = ?(SumFirstTrans = 0, 0, Round(CurrentTrans.AmountRC * FirstFullPaymentAmountRC / SumFirstTrans, 2));
+						CurrentPaymentRC       = ?(ActualSumFirstTrans = SumFirstTrans, FirstBalancePaymentRC, PaymentRC);
+						FirstBalancePaymentRC  = FirstBalancePaymentRC - CurrentPaymentRC; 
+						
+					ElsIf CurrentTrans.JournalEntryIntNum = 2 Then 
+						
+						ActualSumSecondTrans   = ActualSumSecondTrans + CurrentTrans.AmountRC;
+						PaymentRC              = ?(SumSecondTrans = 0, 0, Round(CurrentTrans.AmountRC * SecondFullPaymentAmountRC / SumSecondTrans, 2));
+						CurrentPaymentRC       = ?(ActualSumSecondTrans = SumSecondTrans, SecondBalancePaymentRC, PaymentRC);
+						SecondBalancePaymentRC = SecondBalancePaymentRC - CurrentPaymentRC; 
+						
+					EndIf;
+					
+					If CurrentPaymentRC <> 0 Then 
+						Record = RegisterRecords.CashFlowData.Add();
+						Record.RecordType    = CurrentTrans.RecordType;
+						Record.Period        = Date;
+						Record.Account       = CurrentTrans.Account;
+						Record.Company       = Company;
+						Record.Document      = DocRef;
+						Record.SalesPerson   = DocRef.SalesPerson;
+						Record.Class         = CurrentTrans.Class;
+						Record.Project       = CurrentTrans.Project;
+						Record.AmountRC      = CurrentPaymentRC;
+						Record.PaymentMethod = Null;
+						
+						ARAmount = ARAmount + ?(Record.RecordType = AccumulationRecordType.Receipt, Record.AmountRC * -1, Record.AmountRC); 
+					EndIf;
+					
+				EndIf;
+			EndDo;
+			
+			If ARAmount <> 0 Then
+				Record = RegisterRecords.CashFlowData.Add();
+				Record.RecordType    = ?(ARAmount > 0, AccumulationRecordType.Receipt, AccumulationRecordType.Expense);
+				Record.Period        = Date;
+				Record.Account       = DocRef.ARAccount;
+				Record.Company       = Company;
+				Record.Document      = DocRef;
+				Record.SalesPerson   = DocRef.SalesPerson;
+				Record.Class         = Null;
+				Record.Project       = Null;
+				Record.AmountRC      = ?(ARAmount > 0, ARAmount, ARAmount * -1);
+				Record.PaymentMethod = Null;
+			EndIf;
+			
+		EndIf;
+				
+		//Account Payable/Receivable------------------------------------------------------------------------------
+		//--------------------------------------------------------------------------------------------------------
+		Record = RegisterRecords.GeneralJournal.AddDebit();
+		Record.Account  = DocumentLine.Account;
+		Record.Period   = Date;
+		Record.Amount   = DocumentLine.Payment;
+		Record.AmountRC = DocumentLine.Payment * DocExchangeRate;
+		Record.Currency = DocumentLine.Currency;
+		Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Company]  = Company;
+		Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Document] = DocRef;	
 		
+		//--//GJ++
+		ReconciledDocumentsServerCall.AddRecordForGeneralJournalAnalyticsDimensions(RegisterRecords, Record, Null, Null, Company);
+		//--//GJ--
+		
+		BankAmount = BankAmount+Round(DocumentLine.Payment,2);
+		If DocumentLine.Currency = BankAccount.Currency Then
+			BankAmoutRC = BankAmoutRC + Round(DocumentLine.Payment,2);
+		Else
+			BankAmoutRC = BankAmoutRC + Round(DocumentLine.Payment * ExchangeRate,2);
+		EndIf;	
+		
+		//FXGainLoss----------------------------------------------------------------------------------------------
+		//--------------------------------------------------------------------------------------------------------
+		ExchangeLossAccount = Constants.ExchangeLoss.Get();
+		FXGainLoss          = Round(DocExchangeRate * DocumentLine.Payment, 2) - Round(ExchangeRate * DocumentLine.Payment, 2);
+		
+		If FXGainLoss > 0 Then
+			
+			Record = RegisterRecords.GeneralJournal.AddCredit();
+			Record.Account  = ExchangeLossAccount;
+			Record.Period   = Date;
+			Record.AmountRC = FXGainLoss;
+			
+			//--//GJ++
+			ReconciledDocumentsServerCall.AddRecordForGeneralJournalAnalyticsDimensions(RegisterRecords, Record, Null, Null, Company);
+			//--//GJ--
+			
+		ElsIf FXGainLoss < 0 Then
+			
+			Record = RegisterRecords.GeneralJournal.AddDebit();
+			Record.Account  = ExchangeLossAccount;
+			Record.Period   = Date;
+			Record.AmountRC = FXGainLoss * -1;
+			
+			//--//GJ++
+			ReconciledDocumentsServerCall.AddRecordForGeneralJournalAnalyticsDimensions(RegisterRecords, Record, Null, Null, Company);
+			//--//GJ--
+			
 		EndIf;
 		
-		If TypeOf(DocumentObject.Ref) = Type("DocumentRef.SalesReturn") Then
-		
+		//Discount------------------------------------------------------------------------------------------------
+		//--------------------------------------------------------------------------------------------------------
+		If DocumentLine.Discount <> 0 Then 
+			
 			Record = RegisterRecords.GeneralJournal.AddDebit();
-			Record.Account = DocumentObject.ARAccount;
-			Record.Period = Date;
-			Record.Amount = DocumentLine.Payment;
-			Record.AmountRC = DocumentLine.Payment * DocumentObject.ExchangeRate;
-			Record.Currency = DocumentObject.Currency;
-			Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Company] = Company;
-			Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Document] = DocumentObject.Ref;
+			Record.Period   = Date;
+			Record.Account  = DocumentLine.Account;
+			Record.Currency = DocumentLine.Currency;
+			Record.Amount   = DocumentLine.Discount;
+			ExchangeDifference = Round(DocumentLine.Discount * ExchangeRate, 2) - Round(DocumentLine.Discount * DocExchangeRate, 2); // Rounding errors
+			Record.AmountRC = DocumentLine.Discount * ExchangeRate - ExchangeDifference; 
+			Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Company]  = Company;
+			Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Document] = DocRef;
 			
-			Record = RegisterRecords.GeneralJournal.AddCredit();
-			Record.Account = BankAccount;
-			Record.Currency = BankAccount.Currency;
-			Record.Period = Date;
-			If DocumentObject.Currency = BankAccount.Currency Then
-				Record.Amount = DocumentLine.Payment;
-			Else
-				Record.Amount = DocumentLine.Payment * ExchangeRate;
-			EndIf;
-			Record.AmountRC = DocumentLine.Payment * ExchangeRate;
+			//--//GJ++
+			ReconciledDocumentsServerCall.AddRecordForGeneralJournalAnalyticsDimensions(RegisterRecords, Record, Null, Null, Company);
+			//--//GJ--
 			
-			//--------------------------------------------------------------------------------------------------------------------------
-			SumDoc           = 0;
-			DocObjTotal      = DocumentObject.DocumentTotal;
-			BalancePaymentRC = Round(DocumentLine.Payment * ExchangeRate, 2);
-			
-			IncomeAccount          = Constants.IncomeAccount.Get();
-			ExpenseAccount         = Constants.ExpenseAccount.Get();
-			ShippingExpenseAccount = Constants.ShippingExpenseAccount.Get();
-			TaxPayableAccount      = Constants.TaxPayableAccount.Get();
-			DiscountsAccount       = Constants.DiscountsAccount.Get();
-			
-			//Income
-			For Each Item In DocumentObject.LineItems Do
+			If ExchangeDifference > 0 Then // New amount smaller - increase Ct
 				
-				SumDoc = SumDoc + Item.LineTotal;
-				CurrentPaymentRC = ?(SumDoc = DocObjTotal, BalancePaymentRC, Round((Item.LineTotal * DocumentLine.Payment / DocObjTotal) * ExchangeRate, 2));
-				BalancePaymentRC = BalancePaymentRC - CurrentPaymentRC;
+				Record = RegisterRecords.GeneralJournal.AddCredit();
+				Record.Account  = ExchangeLossAccount;
+				Record.Period   = Date;
+				Record.AmountRC = ExchangeDifference;
 				
-				If CurrentPaymentRC <> 0 Then 
-					Record = RegisterRecords.CashFlowData.Add();
-					Record.RecordType  = AccumulationRecordType.Receipt;
-					Record.Period      = Date;
-					Record.Company     = Company;
-					Record.Document    = DocumentObject.Ref;
-					Record.Account     = Item.Product.IncomeAccount;
-					Record.SalesPerson = DocumentObject.SalesPerson;
-					Record.AmountRC    = -CurrentPaymentRC;
-				EndIf;
+				//--//GJ++
+				ReconciledDocumentsServerCall.AddRecordForGeneralJournalAnalyticsDimensions(RegisterRecords, Record, Null, Null, Company);
+				//--//GJ--
 				
-			EndDo;
-			
-			//Shipping
-			SumDoc = SumDoc + DocumentObject.Shipping;
-			CurrentPaymentRC = ?(SumDoc = DocObjTotal, BalancePaymentRC, Round((DocumentObject.Shipping * DocumentLine.Payment / DocObjTotal) * ExchangeRate, 2));
-			BalancePaymentRC = BalancePaymentRC - CurrentPaymentRC;
-			
-			If CurrentPaymentRC <> 0 Then 
-				Record = RegisterRecords.CashFlowData.Add();
-				Record.RecordType  = AccumulationRecordType.Receipt;
-				Record.Period      = Date;
-				Record.Company     = Company;
-				Record.Document    = DocumentObject.Ref;
-				Record.Account     = ?(ShippingExpenseAccount = ChartsOfAccounts.ChartOfAccounts.EmptyRef(), IncomeAccount, ShippingExpenseAccount);
-				Record.SalesPerson = DocumentObject.SalesPerson;			
-				Record.AmountRC    = -CurrentPaymentRC;
-			EndIf;
-			
-			//Sales tax
-			SalesTaxRC = 0;
-			If TypeOf(DocumentObject) = Type("DocumentObject.SalesReturn") Then
-				SalesTaxRC = Round(DocumentObject.SalesTax * DocumentObject.ExchangeRate, 2);
-			Else
-				SalesTaxRC = DocumentObject.SalesTaxRC
-			EndIf;
-			
-			SumDoc = SumDoc + SalesTaxRC;
-			CurrentPaymentRC = ?(SumDoc = DocObjTotal, BalancePaymentRC, Round((SalesTaxRC * DocumentLine.Payment / DocObjTotal) * ExchangeRate, 2));
-			BalancePaymentRC = BalancePaymentRC - CurrentPaymentRC;
-			
-			If CurrentPaymentRC <> 0 Then 
-				Record = RegisterRecords.CashFlowData.Add();
-				Record.RecordType  = AccumulationRecordType.Receipt;
-				Record.Period      = Date;
-				Record.Company     = Company;
-				Record.Document    = DocumentObject.Ref;
-				Record.Account     = ?(TaxPayableAccount = ChartsOfAccounts.ChartOfAccounts.EmptyRef(), IncomeAccount, TaxPayableAccount);
-				Record.SalesPerson = DocumentObject.SalesPerson;
-				Record.AmountRC    = -CurrentPaymentRC;
-			EndIf;
-			
-			//Discount
-			SumDoc = SumDoc + DocumentObject.Discount;
-			CurrentPaymentRC = ?(SumDoc = DocObjTotal, BalancePaymentRC, Round((DocumentObject.Discount * DocumentLine.Payment / DocObjTotal) * ExchangeRate, 2));
-			BalancePaymentRC = BalancePaymentRC - CurrentPaymentRC;
-			
-			If CurrentPaymentRC <> 0 Then 
-				Record = RegisterRecords.CashFlowData.Add();
-				Record.RecordType  = AccumulationRecordType.Receipt;
-				Record.Period      = Date;
-				Record.Company     = Company;
-				Record.Document    = DocumentObject.Ref;
-				Record.Account     = ?(DiscountsAccount = ChartsOfAccounts.ChartOfAccounts.EmptyRef(), ExpenseAccount, DiscountsAccount);
-				Record.SalesPerson = DocumentObject.SalesPerson;
-				Record.AmountRC    = -CurrentPaymentRC;
-			EndIf;		
-			//--------------------------------------------------------------------------------------------------------------------------
+			ElsIf ExchangeDifference < 0 Then // new amount bigger - increase Dt
+				
+				Record = RegisterRecords.GeneralJournal.AddDebit();
+				Record.Account  = ExchangeLossAccount;
+				Record.Period   = Date;
+				Record.AmountRC = -ExchangeDifference;
+				
+				//--//GJ++
+				ReconciledDocumentsServerCall.AddRecordForGeneralJournalAnalyticsDimensions(RegisterRecords, Record, Null, Null, Company);
+				//--//GJ--
+				
+			EndIf
 			
 		EndIf;
-				
-		FXGainLoss = (DocumentObject.ExchangeRate - ExchangeRate) * DocumentLine.Payment;
-		
-	    If FXGainLoss > 0 Then
-			
-			Record = RegisterRecords.GeneralJournal.AddCredit();
-	    	Record.Account = Constants.ExchangeLoss.Get();
-	    	Record.Period = Date;
-	    	Record.AmountRC = FXGainLoss;
-	    	
-			
-	  	Else
-			If FXGainLoss < 0 Then
-				
-	    		Record = RegisterRecords.GeneralJournal.AddDebit();
-	    		Record.Account = Constants.ExchangeLoss.Get();
-	    		Record.Period = Date;
-	    		Record.AmountRC = FXGainLoss * -1;
-	    						
-	    	Else
-	    	EndIf;
-	    EndIf;
 			 
 	EndDo;
+	//------------------------------------------------------------------------------------------------------------
+	//TABULAR SECTION BILLS (end)---------------------------------------------------------------------------------
+	//------------------------------------------------------------------------------------------------------------
+	
+	
+	CreditQuery = New Query;
+	CreditQuery.Text = Documents.InvoicePayment.GetCreditsAccountsQuery() + " ; "+
+	"SELECT
+	|	InvoicePaymentCredits.Payment,
+	|	InvoicePaymentCredits.Document,
+	|	InvoicePaymentCredits.Document.Date As Date,
+	|	ISNULL(InvoicePaymentCredits.Document.Currency, GeneralJournalTurnovers.Currency) AS Currency,
+	|	ISNULL(InvoicePaymentCredits.Document.ExchangeRate, 0) AS ExchangeRate,
+	|	CASE WHEN InvoicePaymentCredits.Document REFS Document.PurchaseReturn
+	|		Then InvoicePaymentCredits.Document.APAccount
+	|	WHEN InvoicePaymentCredits.Document REFS Document.InvoicePayment
+	|		Then GeneralJournalTurnovers.Account
+	|	WHEN InvoicePaymentCredits.Document REFS Document.Check
+	|		Then GeneralJournalTurnovers.Account
+	|	WHEN InvoicePaymentCredits.Document REFS Document.GeneralJournalEntry
+	|		Then GeneralJournalTurnovers.Account
+	|	END AS Account
+	|FROM
+	|	Document.InvoicePayment.Credits AS InvoicePaymentCredits
+	|		LEFT JOIN AccountingRegister.GeneralJournal.Turnovers(, , Recorder, Account IN (SELECT APAccount FROM TmpAccnts as TmpAccnts),, 
+	//|		LEFT JOIN AccountingRegister.GeneralJournal.Turnovers(, , Recorder, Account IN (&TestAccnt),, 
+	|			ExtDimension1 = &Company AND
+	|          (ExtDimension2 REFS Document.PurchaseReturn 
+	|			OR ExtDimension2 REFS Document.GeneralJournalEntry
+	|			OR ExtDimension2 REFS Document.Check
+	|			OR ExtDimension2 REFS Document.InvoicePayment)
+	|			) AS GeneralJournalTurnovers
+	|		ON InvoicePaymentCredits.Document = GeneralJournalTurnovers.Recorder
+	|			AND GeneralJournalTurnovers.Currency = &Currency
+	|WHERE
+	|	InvoicePaymentCredits.Ref = &Ref
+	|	AND ISNULL(InvoicePaymentCredits.Document.Currency, GeneralJournalTurnovers.Currency) = &Currency";
+	
+	
+	CreditQuery.SetParameter("Company", Company);
+	CreditQuery.SetParameter("Ref", Ref);
+	CreditQuery.SetParameter("Currency", Currency);
+	CreditResult = CreditQuery.Execute().Unload();
+	
+	
+	//------------------------------------------------------------------------------------------------------------
+	//TABULAR SECTION CREDITS-------------------------------------------------------------------------------------
+	//------------------------------------------------------------------------------------------------------------
+	For Each CreditLine In CreditResult Do
+	
+		DocRef          = CreditLine.Document;
+		
+		ExchangeRate    = GeneralFunctions.GetExchangeRate(Date, CreditLine.Currency);
+		DocExchangeRate = CreditLine.ExchangeRate;
+		
+		If DocExchangeRate = 0 Then 
+			DocExchangeRate = GeneralFunctions.GetExchangeRate(CreditLine.Date, CreditLine.Currency);
+		EndIf;	
+		
+		//PurchaseReturn------------------------------------------------------------------------------------------
+		//--------------------------------------------------------------------------------------------------------
+		If TypeOf(DocRef) = Type("DocumentRef.PurchaseReturn") Then
+			
+			//1.
+			SumFirstTrans = 0;
+			
+			RecordSet =  AccumulationRegisters.GeneralJournalAnalyticsDimensions.CreateRecordSet();
+			RecordSet.Filter.Recorder.Set(DocRef);
+			RecordSet.Read();
+			
+			For Each CurrentTrans In RecordSet Do
+				If CurrentTrans.RecordType = AccumulationRecordType.Expense
+					AND CurrentTrans.Account.AccountType <> Enums.AccountTypes.AccountsReceivable 
+					AND CurrentTrans.Account.AccountType <> Enums.AccountTypes.AccountsPayable Then
+					SumFirstTrans  = SumFirstTrans + ?(CurrentTrans.RecordType = AccumulationRecordType.Expense, CurrentTrans.AmountRC, CurrentTrans.AmountRC * -1);
+				EndIf;
+			EndDo;
+			
+			//2.
+			FirstFullPaymentAmountRC  = Round(CreditLine.Payment * DocExchangeRate, 2);
+			FirstBalancePaymentRC     = FirstFullPaymentAmountRC;
+			
+			ActualSumFirstTrans       = 0;
+			APAmount                  = 0;
+			
+			For Each CurrentTrans In RecordSet Do
+				If CurrentTrans.RecordType = AccumulationRecordType.Expense
+					AND (CurrentTrans.Account.AccountType = Enums.AccountTypes.Income
+						OR CurrentTrans.Account.AccountType = Enums.AccountTypes.CostOfSales
+						OR CurrentTrans.Account.AccountType = Enums.AccountTypes.Expense
+						OR CurrentTrans.Account.AccountType = Enums.AccountTypes.OtherIncome
+						OR CurrentTrans.Account.AccountType = Enums.AccountTypes.OtherExpense
+						OR CurrentTrans.Account.AccountType = Enums.AccountTypes.IncomeTaxExpense) Then
+					
+					PaymentRC        = 0;
+					CurrentPaymentRC = 0;
+					
+					ActualSumFirstTrans    = ActualSumFirstTrans + CurrentTrans.AmountRC;
+					PaymentRC              = ?(SumFirstTrans = 0, 0, Round(CurrentTrans.AmountRC * FirstFullPaymentAmountRC / SumFirstTrans, 2));
+					CurrentPaymentRC       = ?(ActualSumFirstTrans = SumFirstTrans, FirstBalancePaymentRC, PaymentRC);
+					FirstBalancePaymentRC  = FirstBalancePaymentRC - CurrentPaymentRC; 
+					
+					If CurrentPaymentRC <> 0 Then 
+						Record = RegisterRecords.CashFlowData.Add();
+						Record.RecordType    = CurrentTrans.RecordType;
+						Record.Period        = Date;
+						Record.Account       = CurrentTrans.Account;
+						Record.Company       = Company;
+						Record.Document      = DocRef;
+						Record.SalesPerson   = Null;
+						Record.Class         = CurrentTrans.Class;
+						Record.Project       = CurrentTrans.Project;
+						Record.AmountRC      = CurrentPaymentRC;
+						Record.PaymentMethod = PaymentMethod;
+						
+						APAmount = APAmount + ?(Record.RecordType = AccumulationRecordType.Receipt, Record.AmountRC * -1, Record.AmountRC); 
+					EndIf;
+					
+				EndIf;
+			EndDo;
+			
+			If APAmount <> 0 Then
+				Record = RegisterRecords.CashFlowData.Add();
+				Record.RecordType    = ?(APAmount > 0, AccumulationRecordType.Receipt, AccumulationRecordType.Expense);
+				Record.Period        = Date;
+				Record.Account       = DocRef.APAccount;
+				Record.Company       = Company;
+				Record.Document      = DocRef;
+				Record.SalesPerson   = Null;
+				Record.Class         = Null;
+				Record.Project       = Null;
+				Record.AmountRC      = ?(APAmount > 0, APAmount, APAmount * -1);
+				Record.PaymentMethod = PaymentMethod;
+			EndIf;
+					
+		//GeneralJournalEntry-------------------------------------------------------------------------------------
+		//--------------------------------------------------------------------------------------------------------
+		ElsIf TypeOf(DocRef) = Type("DocumentRef.GeneralJournalEntry") Then
+			
+						
+		//Check---------------------------------------------------------------------------------------------------
+		//--------------------------------------------------------------------------------------------------------
+		ElsIf TypeOf(DocRef) = Type("DocumentRef.Check") Then
+			
+					
+		//InvoicePayment------------------------------------------------------------------------------------------
+		//--------------------------------------------------------------------------------------------------------
+		ElsIf TypeOf(DocRef) = Type("DocumentRef.InvoicePayment") Then
+			
+						
+		EndIf;
+		
+		//Account Payable/Receivable------------------------------------------------------------------------------
+		//--------------------------------------------------------------------------------------------------------
+		Record = RegisterRecords.GeneralJournal.AddCredit();
+		Record.Account  = CreditLine.Account;
+		Record.Period   = Date;
+		Record.Amount   = CreditLine.Payment;
+		Record.AmountRC = CreditLine.Payment * DocExchangeRate;
+		Record.Currency = CreditLine.Currency;
+		Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Company]  = Company;
+		Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Document] = DocRef;			 			
+		
+		//--//GJ++
+		ReconciledDocumentsServerCall.AddRecordForGeneralJournalAnalyticsDimensions(RegisterRecords, Record, Null, Null, Company);
+		//--//GJ--
+		
+		BankAmount = BankAmount - Round(CreditLine.Payment,2);
+		If CreditLine.Currency = BankAccount.Currency Then
+			BankAmoutRC = BankAmoutRC - Round(CreditLine.Payment,2);
+		Else
+			BankAmoutRC = BankAmoutRC - Round(CreditLine.Payment * ExchangeRate,2);
+		EndIf;	
+		
+		//FXGainLoss----------------------------------------------------------------------------------------------
+		//--------------------------------------------------------------------------------------------------------
+		ExchangeLossAccount = Constants.ExchangeLoss.Get();
+		FXGainLoss          = Round(DocExchangeRate * CreditLine.Payment, 2) - Round(ExchangeRate * CreditLine.Payment, 2);
+		
+		If FXGainLoss > 0 Then
+			
+			Record = RegisterRecords.GeneralJournal.AddDebit();
+			Record.Account  = ExchangeLossAccount;
+			Record.Period   = Date;
+			Record.AmountRC = FXGainLoss;
+			
+			//--//GJ++
+			ReconciledDocumentsServerCall.AddRecordForGeneralJournalAnalyticsDimensions(RegisterRecords, Record, Null, Null, Company);
+			//--//GJ--
+			
+		ElsIf FXGainLoss < 0 Then
+			
+			Record = RegisterRecords.GeneralJournal.AddCredit();
+			Record.Account  = ExchangeLossAccount;
+			Record.Period   = Date;
+			Record.AmountRC = FXGainLoss * -1;
+			
+			//--//GJ++
+			ReconciledDocumentsServerCall.AddRecordForGeneralJournalAnalyticsDimensions(RegisterRecords, Record, Null, Null, Company);
+			//--//GJ--
+			
+		EndIf;
+		
+	EndDo;
+	//------------------------------------------------------------------------------------------------------------
+	//TABULAR SECTION CREDITS (end)-------------------------------------------------------------------------------
+	//------------------------------------------------------------------------------------------------------------
+	
+	
+	//BANK AMOUNT-------------------------------------------------------------------------------------------------
+	//------------------------------------------------------------------------------------------------------------
+	BankAmount = BankAmount + UnappliedPayment;
+	BankAmoutRC = BankAmoutRC + UnappliedPayment*ExchangeRate;
+	
+	If BankAmount > 0 Then 
+		
+		Record = RegisterRecords.GeneralJournal.AddCredit();
+		Record.Account  = BankAccount;
+		Record.Currency = BankAccount.Currency;
+		Record.Period   = Date;
+		Record.Amount   = BankAmount;
+		Record.AmountRC = BankAmoutRC;
+		
+		//--//GJ++
+		ReconciledDocumentsServerCall.AddRecordForGeneralJournalAnalyticsDimensions(RegisterRecords, Record, Null, Null, Company);
+		//--//GJ--
+		
+	ElsIf BankAmount < 0 Then 
+		
+		Record = RegisterRecords.GeneralJournal.AddDebit();
+		Record.Account  = BankAccount;
+		Record.Currency = BankAccount.Currency;
+		Record.Period   = Date;
+		Record.Amount   = BankAmount;
+		Record.AmountRC = BankAmoutRC;
+		
+		//--//GJ++
+		ReconciledDocumentsServerCall.AddRecordForGeneralJournalAnalyticsDimensions(RegisterRecords, Record, Null, Null, Company);
+		//--//GJ--
+		
+	EndIf;
+	//------------------------------------------------------------------------------------------------------------
+	//BANK AMOUNT (end)-------------------------------------------------------------------------------------------
+	
+	
+	//UNAPPLIED PAYMENTS------------------------------------------------------------------------------------------
+	//------------------------------------------------------------------------------------------------------------
+	If UnappliedPayment > 0  Then
+		
+		DefaultCurrency = GeneralFunctionsReusable.DefaultCurrency();
+		Record = RegisterRecords.GeneralJournal.AddDebit();
+		Record.Period   = Date;
+		Record.Account  = ?(Company.APAccount.IsEmpty(), Currency.DefaultAPAccount, Company.APAccount);
+		Record.Currency = Company.DefaultCurrency;
+		Record.Amount   = UnappliedPayment;                // MisA 11/19/2014 Amount in same currency as the customer default
+		Record.AmountRC = UnappliedPayment * ExchangeRate; // MisA 11/19/2014, changed rate to pre-defined customer rate
+		Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Company]  = Company;
+		Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Document] = Ref;
+		
+		//--//GJ++
+		ReconciledDocumentsServerCall.AddRecordForGeneralJournalAnalyticsDimensions(RegisterRecords, Record, Null, Null, Company);
+		//--//GJ--
+		
+	EndIf;
+	//------------------------------------------------------------------------------------------------------------
+	//UNAPPLIED PAYMENTS (end)------------------------------------------------------------------------------------
+	
+	
+	//DISCOUNTS---------------------------------------------------------------------------------------------------
+	//------------------------------------------------------------------------------------------------------------
+	If DiscountAmount > 0  Then
+		
+		DefaultDiscountAccount = Constants.DiscountsReceived.Get();
+		Record = RegisterRecords.GeneralJournal.AddCredit();
+		Record.Period   = Date;
+		Record.Account  = DefaultDiscountAccount;
+		Record.Amount   = DiscountAmount;                  
+		Record.AmountRC = DiscountAmount * ExchangeRate; 
+		
+		//--//GJ++
+		ReconciledDocumentsServerCall.AddRecordForGeneralJournalAnalyticsDimensions(RegisterRecords, Record, Null, Null, Company);
+		//--//GJ--
+		
+	EndIf;
+	//------------------------------------------------------------------------------------------------------------
+	//DISCOUNTS (end)---------------------------------------------------------------------------------------------
+	
+	
+	//CASH BASIS--------------------------------------------------------------------------------------------------
+	//------------------------------------------------------------------------------------------------------------
+	For Each CurrentTrans In RegisterRecords.GeneralJournalAnalyticsDimensions Do
+		
+		Record = RegisterRecords.CashFlowData.Add();
+		Record.RecordType    = CurrentTrans.RecordType;
+		Record.Period        = CurrentTrans.Period;
+		Record.Account       = CurrentTrans.Account;
+		Record.Company       = CurrentTrans.Company;
+		Record.Document      = Ref;
+		Record.SalesPerson   = Null;
+		Record.Class         = CurrentTrans.Class;
+		Record.Project       = CurrentTrans.Project;
+		Record.AmountRC      = CurrentTrans.AmountRC;
+		Record.PaymentMethod = PaymentMethod;
+		
+	EndDo;
+	//------------------------------------------------------------------------------------------------------------
+	//CASH BASIS (end)--------------------------------------------------------------------------------------------
+	
+	
+	//DocumentPosting.FixUnbalancedRegister(ThisObject, Cancel, Constants.ExchangeLoss.Get());
+	CheckedValueTable = RegisterRecords.GeneralJournal.Unload();
+	UnbalancedAmount = 0;
+	If Not DocumentPosting.IsValueTableBalanced(CheckedValueTable, UnbalancedAmount) Then 
+		Cancel = True;
+		// Generate error message.
+		MessageText = NStr("en = 'The document %1 cannot be posted, because it''s transaction is unbalanced.'");
+		MessageText = StringFunctionsClientServer.SubstituteParametersInString(MessageText, Ref);
+		CommonUseClientServer.MessageToUser(MessageText, Ref,,, Cancel);
+	EndIf;	
+	
 	
 	// Writing bank reconciliation data
-			
 	ReconciledDocumentsServerCall.AddDocumentForReconciliation(RegisterRecords, Ref, BankAccount, Date, -1 * DocumentTotalRC);
 		
 EndProcedure
@@ -219,6 +677,10 @@ EndProcedure
 
 Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 	
+	If DataExchange.Load Then // Skip some check ups.
+		Return;
+	EndIf;
+	
 	// Document date adjustment patch (tunes the date of drafts like for the new documents).
 	If  WriteMode = DocumentWriteMode.Posting And Not Posted // Posting of new or draft (saved but unposted) document.
 	And BegOfDay(Date) = BegOfDay(CurrentSessionDate()) Then // Operational posting (by the current date).
@@ -226,7 +688,7 @@ Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 		Date = CurrentSessionDate();
 	EndIf;
 	
-	If PaymentMethod = Catalogs.PaymentMethods.Check Then
+	If (PaymentMethod = Catalogs.PaymentMethods.Check) And (WriteMode <> DocumentWriteMode.UndoPosting) Then
 		PhysicalCheckNum = Number;
 		If ThisObject.AdditionalProperties.Property("AllowCheckNumber") Then
 			If Not ThisObject.AdditionalProperties.AllowCheckNumber Then
@@ -258,166 +720,9 @@ EndProcedure
 Procedure Filling(FillingData, StandardProcessing)
 	
 	If FillingData <> Undefined And TypeOf(FillingData) = Type("DocumentRef.PurchaseInvoice") Then
-		
-		Company = FillingData.Company;
-		
-		FillDocumentList(FillingData);
-		
+		// processing was moved to the form module.
 	EndIf;
 	
 EndProcedure
 
 #EndRegion
-
-#Region PRIVATE_IMPLEMENTATION
-
-// The procedure selects all vendor invoices and customer returns having an unpaid balance
-// and fills in line items of an invoice payment.
-//
-Procedure FillDocumentList(BaseDocument)
-		
-	LineItems.Clear();
-	
-	Query = New Query;
-	Query.Text = "SELECT
-	             |	GeneralJournalBalance.AmountBalance * -1 AS AmountBalance,
-	             |	GeneralJournalBalance.AmountRCBalance * -1 AS AmountRCBalance,
-	             |	GeneralJournalBalance.ExtDimension2.Ref AS Ref,
-				 |  GeneralJournalBalance.ExtDimension2.Date
-	             |FROM
-	             |	AccountingRegister.GeneralJournal.Balance AS GeneralJournalBalance
-	             |WHERE
-	             |	GeneralJournalBalance.AmountBalance <> 0
-	             |	AND (GeneralJournalBalance.ExtDimension2 REFS Document.PurchaseInvoice OR
-	             |       GeneralJournalBalance.ExtDimension2 REFS Document.SalesReturn)
-	             |	AND GeneralJournalBalance.ExtDimension1 = &Company
-				 |ORDER BY
-				 |	GeneralJournalBalance.ExtDimension2.Date";
-				 
-	Query.SetParameter("Company", Company);
-	
-	Result = Query.Execute().Select();
-	
-	While Result.Next() Do
-		
-		If Result.Ref = BaseDocument Then
-			
-			DataLine = LineItems.Add();
-			
-			DataLine.Check      = True;
-			DataLine.Document   = Result.Ref;
-			DataLine.Currency   = Result.Ref.Currency;
-			Dataline.BalanceFCY = Result.AmountBalance;
-			DataLine.Payment    = Result.AmountBalance;
-			Dataline.Balance    = Result.AmountRCBalance;
-			
-		EndIf;
-		
-	EndDo;	
-	
-	ExchangeRate = GeneralFunctions.GetExchangeRate(CurrentSessionDate(), Currency);
-	DocumentTotal = LineItems.Total("Payment");
-	If Constants.MultiCurrency.Get() Then
-		DocumentTotalRC = LineItems.Total("Payment") * ExchangeRate;
-	Else
-		DocumentTotalRC = LineItems.Total("Payment");
-	EndIf;
-	
-EndProcedure
-
-//Function CheckNumberAllowed(Num)
-//	
-//	Try
-//		CheckNum = Number(Number);
-//	Except
-//		Return True;
-//	EndTry;
-
-//	AllowDuplicateCheckNumbers = Constants.AllowDuplicateCheckNumbers.Get();
-//	If AllowDuplicateCheckNumbers Then
-//		return True;
-//	EndIf;
-//	Query = New Query("SELECT TOP 1
-//	                  |	ChecksWithNumber.Number,
-//	                  |	ChecksWithNumber.Ref
-//	                  |FROM
-//	                  |	(SELECT
-//	                  |		Check.PhysicalCheckNum AS Number,
-//	                  |		Check.Ref AS Ref
-//	                  |	FROM
-//	                  |		Document.Check AS Check
-//	                  |	WHERE
-//	                  |		Check.BankAccount = &BankAccount
-//	                  |		AND Check.PaymentMethod = VALUE(Catalog.PaymentMethods.Check)
-//	                  |		AND Check.PhysicalCheckNum = &CheckNum
-//	                  |	
-//	                  |	UNION ALL
-//	                  |	
-//	                  |	SELECT
-//	                  |		InvoicePayment.PhysicalCheckNum,
-//	                  |		InvoicePayment.Ref
-//	                  |	FROM
-//	                  |		Document.InvoicePayment AS InvoicePayment
-//	                  |	WHERE
-//	                  |		InvoicePayment.BankAccount = &BankAccount
-//	                  |		AND InvoicePayment.PaymentMethod = VALUE(Catalog.PaymentMethods.Check)
-//	                  |		AND InvoicePayment.PhysicalCheckNum = &CheckNum) AS ChecksWithNumber
-//	                  |WHERE
-//	                  |	ChecksWithNumber.Ref <> &CurrentRef");
-//	Query.SetParameter("BankAccount", BankAccount);
-//	Query.SetParameter("CheckNum", CheckNum);
-//	Query.SetParameter("CurrentRef", Ref);
-//	QueryResult = Query.Execute();
-//	If QueryResult.IsEmpty() Then
-//		Return True;
-//	Else	
-//		Return False;
-//	EndIf;
-
-//	//Try
-//	//	CheckNum = Number(Object.Number);
-//	//	Query = New Query("SELECT
-//	//					  |	Check.PhysicalCheckNum AS Number,
-//	//					  |	Check.Ref
-//	//					  |FROM
-//	//					  |	Document.Check AS Check
-//	//					  |WHERE
-//	//					  |	Check.BankAccount = &BankAccount
-//	//					  |	AND Check.PaymentMethod = VALUE(Catalog.PaymentMethods.Check)
-//	//					  |	AND Check.PhysicalCheckNum = &CheckNum
-//	//					  |
-//	//					  |UNION ALL
-//	//					  |
-//	//					  |SELECT
-//	//					  |	InvoicePayment.PhysicalCheckNum,
-//	//					  |	InvoicePayment.Ref
-//	//					  |FROM
-//	//					  |	Document.InvoicePayment AS InvoicePayment
-//	//					  |WHERE
-//	//					  |	InvoicePayment.BankAccount = &BankAccount
-//	//					  |	AND InvoicePayment.PaymentMethod = VALUE(Catalog.PaymentMethods.Check)
-//	//					  |	AND InvoicePayment.PhysicalCheckNum = &CheckNum
-//	//					  |
-//	//					  |ORDER BY
-//	//					  |	Number DESC");
-//	//	Query.SetParameter("BankAccount", Object.BankAccount);
-//	//	Query.SetParameter("CheckNum", CheckNum);
-//	//	//Query.SetParameter("Number", Object.Number);
-//	//	QueryResult = Query.Execute().Unload();
-//	//	If QueryResult.Count() = 0 Then
-//	//		Return False;
-//	//	ElsIf QueryResult.Count() = 1 And QueryResult[0].Ref = Object.Ref Then
-//	//		Return False;
-//	//	Else	
-
-//	//		Return True;
-//	//	EndIf;
-//	//Except
-//	//	Return False
-//	//EndTry;
-//		
-//	
-//EndFunction
-
-#EndRegion
-

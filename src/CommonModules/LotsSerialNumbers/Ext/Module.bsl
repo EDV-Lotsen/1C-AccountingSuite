@@ -38,6 +38,23 @@ Procedure FillLotOwner(Product, LotOwner) Export
 	
 EndProcedure
 
+// Check lot compliance to it's owner.
+// Clears lot if it doesn't comply to it's owner.
+//
+// Parameters:
+//  Lot      - CatalogRef.Lots            - Lot for checking.
+//  LotOwner - CatalogRef.Products        - Product owns lots.
+//           - CatalogRef.Characteristics - Characteristic owns product lots.
+//
+Procedure CheckLotByOwner(Lot, LotOwner) Export
+	
+	// Lots accounting settings.
+	If Lot.Owner <> LotOwner Then
+		Lot = Catalogs.Lots.EmptyRef();
+	EndIf;
+	
+EndProcedure
+
 // Check filing of lots in table part line items.
 // A message generated if lots are not filled.
 //
@@ -45,11 +62,15 @@ EndProcedure
 //  Ref       - DocumentRef           - Ref to an object while filling check.
 //  LineItems - DocumentRef.LineItems - Table part to be checked.
 //  Cancel    - Boolean               - Flag of cancel further document check.
+//  Target    - String                - Name of table part/header, where lots checking proceeds.
 //
-Procedure CheckLotsFilling(Ref, LineItems, Cancel) Export
+Procedure CheckLotsFilling(Ref, LineItems, Cancel, Target = "") Export
 	
-	// Get lots able from line items.
-	Lots = LineItems.Unload(, "LineNumber, Product, Lot");
+	// Copy document tabular section into temporary table.
+	Lots = Ref.LineItems.UnloadColumns("LineNumber, Product, Lot");
+	For Each Row In LineItems Do
+		FillPropertyValues(Lots.Add(), Row, "LineNumber, Product, Lot");
+	EndDo;
 	
 	// Check filling of lots.
 	i = 0;
@@ -69,7 +90,8 @@ Procedure CheckLotsFilling(Ref, LineItems, Cancel) Export
 	
 	// Generate message to user.
 	If Lots.Count() > 0 Then
-		MessageText = NStr("en = 'The lots are not filled in following lines:'");
+		MessageText = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = 'The lots are not filled%1%2:'"),
+		              ?(Not IsBlankString(Target), " in " + Target, ""), ?(Target <> "header", " in following lines", ""));
 		For Each Row In Lots Do
 			MessageText = MessageText + Chars.CR + Chars.LF +
 			              StringFunctionsClientServer.SubstituteParametersInString(NStr("en = '%1: %2, %3'"), Row.LineNumber, Row.Product, Row.Product.Description);
@@ -130,8 +152,9 @@ EndProcedure
 //  InOut         - Number                    - 0 - Check reception, 1 - Check issue.
 //  IgnoreField   - String                    - Name of a field, the non-empty values of which causing the error to be skipped.
 //  Cancel        - Boolean                   - Flag of cancel further document check.
+//  Target        - String                    - Name of table part/header, where serial numbers checking proceeds.
 //
-Procedure CheckSerialNumbersFilling(Ref, PointInTime, LineItems, SerialNumbers, InOut, IgnoreField, Cancel) Export
+Procedure CheckSerialNumbersFilling(Ref, PointInTime, LineItems, SerialNumbers, InOut, IgnoreField, Cancel, Target = "") Export
 	
 	// Create list of query tables.
 	TablesList  = New Structure;
@@ -144,12 +167,12 @@ Procedure CheckSerialNumbersFilling(Ref, PointInTime, LineItems, SerialNumbers, 
 	Query.SetParameter("PointInTime", New Boundary(PointInTime, BoundaryType.Excluding));
 	
 	// Copy document tabular sections into temporary tables.
-	LineItemsVT = LineItems.UnloadColumns("LineNumber, Product, ProductDescription, QtyUnits" + ?(Not IsBlankString(IgnoreField), ", " + IgnoreField, ""));
+	LineItemsVT = Ref.LineItems.UnloadColumns("LineNumber, Product, ProductDescription, QtyUnits" + ?(Not IsBlankString(IgnoreField), ", " + IgnoreField, ""));
 	LineItemsVT.Columns.Insert(1, "LineID", New TypeDescription("String",, New StringQualifiers(36)), "Line ID", 25); // UUID can't be loaded directly :(
 	For Each Row In LineItems Do
 		FillPropertyValues(LineItemsVT.Add(), Row, "LineNumber, LineID, Product, ProductDescription, QtyUnits" + ?(Not IsBlankString(IgnoreField), ", " + IgnoreField, ""));
 	EndDo;
-	SerialNumVT = SerialNumbers.UnloadColumns("SerialNumber");
+	SerialNumVT = Ref.SerialNumbers.UnloadColumns("SerialNumber");
 	SerialNumVT.Columns.Insert(0, "LineItemsLineID", New TypeDescription("String",, New StringQualifiers(36)), "Line ID", 25); // UUID can't be loaded directly :(
 	For Each Row In SerialNumbers Do
 		FillPropertyValues(SerialNumVT.Add(), Row, "LineItemsLineID, SerialNumber");
@@ -203,7 +226,8 @@ Procedure CheckSerialNumbersFilling(Ref, PointInTime, LineItems, SerialNumbers, 
 	// Define message formating.
 	QuantityFormat = GeneralFunctionsReusable.DefaultQuantityFormat();
 	IntegerFormat  = "NFD=0; NZ=0";
-	MessageParams  = New Structure("LineNumber, Product, ProductDescription, SerialNumber, QuantityExpected, QuantityFound");
+	MessageParams  = New Structure("LineNumber, Product, ProductDescription, Target, SerialNumber, QuantityExpected, QuantityFound");
+	MessageParams.Target = Target;
 	ParamsFormat   = New Structure("QuantityExpected, QuantityFound");
 	ParamsFormat.QuantityExpected = IntegerFormat;
 	ParamsFormat.QuantityFound    = IntegerFormat;
@@ -215,12 +239,13 @@ Procedure CheckSerialNumbersFilling(Ref, PointInTime, LineItems, SerialNumbers, 
 		If Int(Row.QuantityExpected) <> Row.QuantityExpected Then
 			// The items quantity is not an integer value.
 			ParamsFormat.QuantityExpected = QuantityFormat;
-			MessageTemplate = NStr("en = 'Quantity of {Product} {ProductDescription} in line {LineNumber} is not an integer value: {QuantityExpected}'");
+			MessageTemplate = NStr("en = 'Quantity of {Product} {ProductDescription}{Target} is not an integer value: {QuantityExpected}'");
 		Else
 			// The items quantity does not match the serial numbers count.
 			ParamsFormat.QuantityExpected = IntegerFormat;
-			MessageTemplate = NStr("en = 'Quantity of {Product} {ProductDescription} in line {LineNumber} does not match the serial numbers count: expected {QuantityExpected}, found {QuantityFound}.'");
+			MessageTemplate = NStr("en = 'Quantity of {Product} {ProductDescription}{Target} does not match the serial numbers count: expected {QuantityExpected}, found {QuantityFound}.'");
 		EndIf;
+		MessageTemplate = StrReplace(MessageTemplate, "{Target}", ?(Not IsBlankString(Target), " in {Target}", "") + ?(Target <> "header", " in line {LineNumber}", ""));
 		FillPropertyValues(MessageParams, Row, "LineNumber, Product, ProductDescription, QuantityExpected, QuantityFound");
 		
 		// Fill pattern with parameters.
@@ -243,7 +268,8 @@ Procedure CheckSerialNumbersFilling(Ref, PointInTime, LineItems, SerialNumbers, 
 			EndIf;
 			
 			// Parse data to prepare user message template.
-			MessageTemplate = NStr("en = 'The product {Product} {ProductDescription} with serial {SerialNumber} in line {LineNumber} already present on hand.'");
+			MessageTemplate = NStr("en = 'The product {Product} {ProductDescription} with serial {SerialNumber}{Target} already present on hand.'");
+			MessageTemplate = StrReplace(MessageTemplate, "{Target}", ?(Not IsBlankString(Target), " in {Target}", "") + ?(Target <> "header", " in line {LineNumber}", ""));
 			FillPropertyValues(MessageParams, Row, "LineNumber, Product, ProductDescription, SerialNumber");
 			
 			// Fill pattern with parameters.
@@ -267,7 +293,8 @@ Procedure CheckSerialNumbersFilling(Ref, PointInTime, LineItems, SerialNumbers, 
 			EndIf;
 			
 			// Parse data to prepare user message template.
-			MessageTemplate = NStr("en = 'The product {Product} {ProductDescription} with serial {SerialNumber} in line {LineNumber} is not present on hand.'");
+			MessageTemplate = NStr("en = 'The product {Product} {ProductDescription} with serial {SerialNumber}{Target} is not present on hand.'");
+			MessageTemplate = StrReplace(MessageTemplate, "{Target}", ?(Not IsBlankString(Target), " in {Target}", "") + ?(Target <> "header", " in line {LineNumber}", ""));
 			FillPropertyValues(MessageParams, Row, "LineNumber, Product, ProductDescription, SerialNumber");
 			
 			// Fill pattern with parameters.
@@ -290,6 +317,9 @@ Procedure CheckSerialNumbersFilling(Ref, PointInTime, LineItems, SerialNumbers, 
 	
 EndProcedure
 
+//------------------------------------------------------------------------------
+// Common lots / serial numbers servicing functions.
+
 // Update visible property of Lots and SerialNumbers columns in a form.
 //
 // Parameters:
@@ -300,8 +330,9 @@ EndProcedure
 //  InOut     - Number              - 0 - Check reception, 1 - Check issue.
 //  AllowEdit - Number              - 0 - Editing of lot / serial number is not allowed,
 //                                    1 - Editing of lots is allowed, 2 - Editing of serials is allowed.
+//  Target    - String              - Name of table part, where visibility settings must be applied
 //
-Procedure UpdateLotsSerialNumbersVisibility(Product, FormItems, InOut, AllowEdit) Export
+Procedure UpdateLotsSerialNumbersVisibility(Product, FormItems, InOut, AllowEdit, Target = "LineItems") Export
 	
 	// By default lots and serials are disabled.
 	AllowEdit = 0;
@@ -313,8 +344,8 @@ Procedure UpdateLotsSerialNumbersVisibility(Product, FormItems, InOut, AllowEdit
 		If Product.UseLots = 0 Then
 			// The product uses lots.
 			AllowEdit = 1;
-			If FormItems.Find("LineItemsLot") <> Undefined Then
-				FormItems.LineItemsLot.Visible = True;
+			If FormItems.Find(Target+"Lot") <> Undefined Then
+				FormItems[Target+"Lot"].Visible = True;
 			EndIf;
 			
 		ElsIf Product.UseLots = 1 Then
@@ -326,8 +357,8 @@ Procedure UpdateLotsSerialNumbersVisibility(Product, FormItems, InOut, AllowEdit
 				
 				// The product uses serial numbers.
 				AllowEdit = 2;
-				If FormItems.Find("LineItemsSerialNumbers") <> Undefined Then
-					FormItems.LineItemsSerialNumbers.Visible = True;
+				If FormItems.Find(Target+"SerialNumbers") <> Undefined Then
+					FormItems[Target+"SerialNumbers"].Visible = True;
 				EndIf;
 			EndIf;
 		EndIf;

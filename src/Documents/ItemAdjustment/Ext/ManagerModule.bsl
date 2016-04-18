@@ -118,7 +118,13 @@ Function PrepareDataStructuresForPosting(DocumentRef, AdditionalProperties, Regi
 	EndIf;
 	If GeneralJournalPosting Then
 		Query.Text = Query.Text +
-		             Query_GeneralJournal(TablesList);
+		             Query_GeneralJournal(TablesList)+
+				 	 //--//GJ++
+	             	 Query_GeneralJournalAnalyticsDimensions_Transactions(TablesList) +
+				 	 Query_GeneralJournalAnalyticsDimensions(TablesList) +
+				 	 //--//GJ--
+					 Query_CashFlowData(TablesList);
+
 	EndIf;
 	
 	//------------------------------------------------------------------------------
@@ -1046,6 +1052,224 @@ Function Query_GeneralJournal(TablesList)
 	
 EndFunction
 
+//--//GJ++
+	
+// Query for document data.
+Function Query_GeneralJournalAnalyticsDimensions_Transactions(TablesList)
+	
+	// Add GeneralJournalAnalyticsDimensions_Transactions table to document structure.
+	TablesList.Insert("Table_GeneralJournalAnalyticsDimensions_Transactions", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // Receipt by amount, Receipt
+	// ------------------------------------------------------
+	// Standard attributes
+	|	ItemAdjustment.Ref                    AS Recorder,
+	|	ItemAdjustment.Date                   AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccumulationRecordType.Receipt) AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	ItemAdjustment.Product.InventoryOrExpenseAccount
+	|                                         AS Account,
+	// ------------------------------------------------------
+	// Dimensions
+	|	NULL                                  AS Company,
+	|	NULL                                  AS Class,
+	|	NULL                                  AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	ItemAdjustment.Amount                 AS AmountRC
+	// ------------------------------------------------------
+	|INTO Table_GeneralJournalAnalyticsDimensions_Transactions
+	|FROM
+	|	Document.ItemAdjustment AS ItemAdjustment
+	|WHERE
+	|	ItemAdjustment.Ref = &Ref
+	|	// Receipt by amount, Revaluation defined
+	|	AND ItemAdjustment.Amount > 0
+	|	// Inventory item
+	|	AND ItemAdjustment.Product.Type = VALUE(Enum.InventoryTypes.Inventory)
+	|
+	|UNION ALL
+	|
+	|SELECT // Receipt by amount, Expense
+	// ------------------------------------------------------
+	// Standard attributes
+	|	ItemAdjustment.Ref                    AS Recorder,
+	|	ItemAdjustment.Date                   AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccumulationRecordType.Expense) AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	ItemAdjustment.IncomeExpenseAccount   AS Account,
+	// ------------------------------------------------------
+	// Dimensions
+	|	NULL                                  AS Company,
+	|	NULL                                  AS Class,
+	|	NULL                                  AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	ItemAdjustment.Amount                 AS AmountRC
+	// ------------------------------------------------------
+	|FROM
+	|	Document.ItemAdjustment AS ItemAdjustment
+	|WHERE
+	|	ItemAdjustment.Ref = &Ref
+	|	// Receipt by amount, Revaluation defined
+	|	AND ItemAdjustment.Amount > 0
+	|	// Inventory item
+	|	AND ItemAdjustment.Product.Type = VALUE(Enum.InventoryTypes.Inventory)
+	|
+	|UNION ALL
+	|
+	|SELECT // Expense by amount, Receipt
+	// ------------------------------------------------------
+	// Standard attributes
+	|	ItemAdjustment.Ref                    AS Recorder,
+	|	ItemAdjustment.Date                   AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccumulationRecordType.Receipt) AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	ItemAdjustment.IncomeExpenseAccount   AS Account,
+	// ------------------------------------------------------
+	// Dimensions
+	|	NULL                                  AS Company,
+	|	NULL                                  AS Class,
+	|	NULL                                  AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	-ItemAdjustment.Amount                AS AmountRC
+	// ------------------------------------------------------	
+	|FROM
+	|	Document.ItemAdjustment AS ItemAdjustment
+	|WHERE
+	|	ItemAdjustment.Ref = &Ref
+	|	// Expense by amount, Revaluation defined
+	|	AND ItemAdjustment.Amount < 0
+	|	// Inventory item
+	|	AND ItemAdjustment.Product.Type = VALUE(Enum.InventoryTypes.Inventory)
+	|
+	|UNION ALL
+	|
+	|SELECT // Expense by amount, Expense
+	// ------------------------------------------------------
+	// Standard attributes
+	|	ItemAdjustment.Ref                    AS Recorder,
+	|	ItemAdjustment.Date                   AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccumulationRecordType.Expense) AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	ItemAdjustment.Product.InventoryOrExpenseAccount
+	|                                         AS Account,
+	// ------------------------------------------------------
+	// Dimensions
+	|	NULL                                  AS Company,
+	|	NULL                                  AS Class,
+	|	NULL                                  AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	-ItemAdjustment.Amount          AS AmountRC
+	// ------------------------------------------------------
+	|FROM
+	|	Document.ItemAdjustment AS ItemAdjustment
+	|WHERE
+	|	ItemAdjustment.Ref = &Ref
+	|	// Expense by amount, Revaluation defined
+	|	AND ItemAdjustment.Amount < 0
+	|	// Inventory item
+	|	AND ItemAdjustment.Product.Type = VALUE(Enum.InventoryTypes.Inventory)";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_GeneralJournalAnalyticsDimensions(TablesList)
+	
+	// Add GeneralJournalAnalyticsDimensions table to document structure.
+	TablesList.Insert("Table_GeneralJournalAnalyticsDimensions", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // Transactions
+	// ------------------------------------------------------
+	// Standard attributes
+	|	Transaction.Recorder                  AS Recorder,
+	|	Transaction.Period                    AS Period,
+	|	Transaction.LineNumber                AS LineNumber,
+	|	Transaction.RecordType                AS RecordType,
+	|	Transaction.Active                    AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	Transaction.Account                   AS Account,
+	// ------------------------------------------------------
+	// Dimensions
+	|	Transaction.Company                   AS Company,
+	|	Transaction.Class                     AS Class,
+	|	Transaction.Project                   AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	Transaction.AmountRC                  AS AmountRC
+	// ------------------------------------------------------
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Transactions AS Transaction";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+//--//GJ--
+
+// Query for document data.
+Function Query_CashFlowData(TablesList)
+	
+	// Add CashFlowData table to document structure.
+	TablesList.Insert("Table_CashFlowData", TablesList.Count());
+	
+	// Collect cash flow data.
+	QueryText =
+	"SELECT // Transactions
+	// ------------------------------------------------------
+	// Standard attributes
+	|	Transaction.Recorder                  AS Recorder,
+	|	Transaction.Period                    AS Period,
+	|	Transaction.LineNumber                AS LineNumber,
+	|	Transaction.RecordType                AS RecordType,
+	|	Transaction.Active                    AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	Transaction.Account                   AS Account,
+	// ------------------------------------------------------
+	// Dimensions
+	|	Transaction.Company                   AS Company,
+	|	ItemAdjustment.Ref                    AS Document,
+	|	Null                                  AS SalesPerson,
+	|	Transaction.Class                     AS Class,
+	|	Transaction.Project                   AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	Transaction.AmountRC                  AS AmountRC,
+	// ------------------------------------------------------
+	// Attributes
+	|	NULL                                  AS PaymentMethod
+	// ------------------------------------------------------
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Transactions AS Transaction
+	|	LEFT JOIN Document.ItemAdjustment AS ItemAdjustment
+	|		ON ItemAdjustment.Ref = &Ref";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+	
 // Put structure of registers, which balance should be checked during posting.
 Procedure FillRegistersCheckList(AdditionalProperties, RegisterRecords)
 	

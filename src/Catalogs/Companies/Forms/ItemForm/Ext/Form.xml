@@ -26,20 +26,10 @@
 			<HorizontalStretch>true</HorizontalStretch>
 			<ContextMenu name="DescriptionContextMenu" id="4"/>
 			<ExtendedTooltip name="DescriptionExtendedTooltip" id="153"/>
+			<Events>
+				<Event name="OnChange">DescriptionOnChange</Event>
+			</Events>
 		</InputField>
-		<InputField name="StripeToken" id="135">
-			<DataPath>Object.StripeToken</DataPath>
-			<Visible>false</Visible>
-			<ReadOnly>true</ReadOnly>
-			<ContextMenu name="StripeTokenContextMenu" id="136"/>
-			<ExtendedTooltip name="StripeTokenExtendedTooltip" id="154"/>
-		</InputField>
-		<Button name="SalesTransactions" id="209">
-			<Type>UsualButton</Type>
-			<Visible>false</Visible>
-			<CommandName>Form.Command.SalesTransactions</CommandName>
-			<ExtendedTooltip name="SalesTransactionsExtendedTooltip" id="210"/>
-		</Button>
 		<UsualGroup name="Group2" id="42">
 			<Group>Horizontal</Group>
 			<Representation>StrongSeparation</Representation>
@@ -402,21 +392,6 @@
 							<ContextMenu name="SalesPersonContextMenu" id="341"/>
 							<ExtendedTooltip name="SalesPersonExtendedTooltip" id="342"/>
 						</InputField>
-						<InputField name="DwollaID" id="290">
-							<DataPath>Object.DwollaID</DataPath>
-							<ContextMenu name="DwollaIDContextMenu" id="291"/>
-							<ExtendedTooltip name="DwollaIDExtendedTooltip" id="292"/>
-						</InputField>
-						<InputField name="bitcoin_address" id="337">
-							<DataPath>Object.bitcoin_address</DataPath>
-							<ContextMenu name="bitcoin_addressContextMenu" id="338"/>
-							<ExtendedTooltip name="bitcoin_addressExtendedTooltip" id="339"/>
-						</InputField>
-						<InputField name="ImportMatch" id="479">
-							<DataPath>Object.ImportMatch</DataPath>
-							<ContextMenu name="ImportMatchContextMenu" id="480"/>
-							<ExtendedTooltip name="ImportMatchExtendedTooltip" id="481"/>
-						</InputField>
 					</ChildItems>
 				</Page>
 				<Page name="Group1099" id="354">
@@ -490,12 +465,6 @@
 					</ToolTip>
 					<ExtendedTooltip name="ProjectsExtendedTooltip" id="202"/>
 					<ChildItems>
-						<Button name="CatalogProjectsOpenByValue" id="205">
-							<Type>UsualButton</Type>
-							<Visible>false</Visible>
-							<CommandName>Form.Command.Projects</CommandName>
-							<ExtendedTooltip name="CatalogProjectsOpenByValueExtendedTooltip" id="206"/>
-						</Button>
 						<Table name="ProjectTable" id="230">
 							<Representation>List</Representation>
 							<CommandBarLocation>None</CommandBarLocation>
@@ -653,18 +622,6 @@
 							<ContextMenu name="NotesContextMenu" id="129"/>
 							<ExtendedTooltip name="NotesExtendedTooltip" id="181"/>
 						</InputField>
-						<InputField name="api_code" id="343">
-							<DataPath>api_code</DataPath>
-							<ReadOnly>true</ReadOnly>
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>api_code</v8:content>
-								</v8:item>
-							</Title>
-							<ContextMenu name="api_codeContextMenu" id="344"/>
-							<ExtendedTooltip name="api_codeExtendedTooltip" id="345"/>
-						</InputField>
 					</ChildItems>
 				</Page>
 				<Page name="TaxTab" id="356">
@@ -710,59 +667,10 @@
 									<v8:content>Sales tax defaults group</v8:content>
 								</v8:item>
 							</ToolTip>
-							<Group>Horizontal</Group>
+							<Group>Vertical</Group>
 							<ShowTitle>false</ShowTitle>
 							<ExtendedTooltip name="SalesTaxDefaultsGroupExtendedTooltip" id="447"/>
 							<ChildItems>
-								<UsualGroup name="TaxableAvataxGroup" id="451">
-									<Title>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Taxable avatax group</v8:content>
-										</v8:item>
-									</Title>
-									<ToolTip>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Taxable avatax group</v8:content>
-										</v8:item>
-									</ToolTip>
-									<Group>Vertical</Group>
-									<ShowTitle>false</ShowTitle>
-									<ExtendedTooltip name="TaxableAvataxGroupExtendedTooltip" id="452"/>
-									<ChildItems>
-										<CheckBoxField name="Taxable" id="358">
-											<DataPath>Object.Taxable</DataPath>
-											<Title>
-												<v8:item>
-													<v8:lang>en</v8:lang>
-													<v8:content>Customer is taxable</v8:content>
-												</v8:item>
-											</Title>
-											<CheckBoxType>Auto</CheckBoxType>
-											<ContextMenu name="TaxableContextMenu" id="359"/>
-											<ExtendedTooltip name="TaxableExtendedTooltip" id="360"/>
-											<Events>
-												<Event name="OnChange">TaxableOnChange</Event>
-											</Events>
-										</CheckBoxField>
-										<CheckBoxField name="UseAvatax" id="437">
-											<DataPath>Object.UseAvatax</DataPath>
-											<Title>
-												<v8:item>
-													<v8:lang>en</v8:lang>
-													<v8:content>Use AvaTax</v8:content>
-												</v8:item>
-											</Title>
-											<CheckBoxType>Auto</CheckBoxType>
-											<ContextMenu name="UseAvataxContextMenu" id="438"/>
-											<ExtendedTooltip name="UseAvataxExtendedTooltip" id="439"/>
-											<Events>
-												<Event name="OnChange">UseAvataxOnChange</Event>
-											</Events>
-										</CheckBoxField>
-									</ChildItems>
-								</UsualGroup>
 								<InputField name="SalesTaxRate" id="361">
 									<DataPath>Object.SalesTaxRate</DataPath>
 									<ContextMenu name="SalesTaxRateContextMenu" id="362"/>
@@ -770,83 +678,29 @@
 								</InputField>
 							</ChildItems>
 						</UsualGroup>
-						<LabelDecoration name="TaxExemptDecoration" id="443">
-							<HorizontalStretch>true</HorizontalStretch>
-							<Font ref="style:SmallTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
-							<Title formatted="false">
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Tax exempt</v8:content>
-								</v8:item>
-							</Title>
-							<Border width="1">
-								<v8ui:style xsi:type="v8ui:ControlBorderType">Underline</v8ui:style>
-							</Border>
-							<ContextMenu name="TaxExemptDecorationContextMenu" id="444"/>
-							<ExtendedTooltip name="TaxExemptDecorationExtendedTooltip" id="445"/>
-						</LabelDecoration>
-						<InputField name="AvataxCustomerUsageType" id="440">
-							<DataPath>Object.AvataxCustomerUsageType</DataPath>
-							<QuickChoice>true</QuickChoice>
-							<ChoiceHistoryOnInput>DontUse</ChoiceHistoryOnInput>
-							<ContextMenu name="AvataxCustomerUsageTypeContextMenu" id="441"/>
-							<ExtendedTooltip name="AvataxCustomerUsageTypeExtendedTooltip" id="442"/>
-						</InputField>
-						<InputField name="ResaleNO" id="364">
-							<DataPath>Object.ResaleNO</DataPath>
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Tax resale #</v8:content>
-								</v8:item>
-							</Title>
-							<Width>25</Width>
-							<ContextMenu name="ResaleNOContextMenu" id="365"/>
-							<ExtendedTooltip name="ResaleNOExtendedTooltip" id="366"/>
-						</InputField>
-						<UsualGroup name="VATGroup" id="459">
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>VATGroup</v8:content>
-								</v8:item>
-							</Title>
-							<ToolTip>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>VATGroup</v8:content>
-								</v8:item>
-							</ToolTip>
-							<Group>Vertical</Group>
-							<ShowTitle>false</ShowTitle>
-							<ExtendedTooltip name="VATGroupExtendedTooltip" id="460"/>
-							<ChildItems>
-								<LabelDecoration name="VAT" id="456">
-									<HorizontalStretch>true</HorizontalStretch>
-									<Font ref="style:SmallTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
-									<Title formatted="false">
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>VAT</v8:content>
-										</v8:item>
-									</Title>
-									<Border width="1">
-										<v8ui:style xsi:type="v8ui:ControlBorderType">Underline</v8ui:style>
-									</Border>
-									<ContextMenu name="VATContextMenu" id="457"/>
-									<ExtendedTooltip name="VATExtendedTooltip" id="458"/>
-								</LabelDecoration>
-								<InputField name="BusinessIdentificationNo" id="453">
-									<DataPath>Object.BusinessIdentificationNo</DataPath>
-									<ContextMenu name="BusinessIdentificationNoContextMenu" id="454"/>
-									<ExtendedTooltip name="BusinessIdentificationNoExtendedTooltip" id="455"/>
-								</InputField>
-							</ChildItems>
-						</UsualGroup>
 					</ChildItems>
 				</Page>
 			</ChildItems>
 		</Pages>
+		<CheckBoxField name="InArchive" id="485">
+			<DataPath>Object.InArchive</DataPath>
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Supplier is disabled</v8:content>
+				</v8:item>
+			</Title>
+			<TitleLocation>Right</TitleLocation>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Do not show in lists</v8:content>
+				</v8:item>
+			</ToolTip>
+			<CheckBoxType>Auto</CheckBoxType>
+			<ContextMenu name="InArchiveContextMenu" id="486"/>
+			<ExtendedTooltip name="InArchiveExtendedTooltip" id="487"/>
+		</CheckBoxField>
 	</ChildItems>
 	<Attributes>
 		<Attribute name="Object" id="1">
@@ -904,21 +758,6 @@ WHERE
 			</Title>
 			<Type>
 				<v8:Type>cfg:CatalogObject.Addresses</v8:Type>
-			</Type>
-		</Attribute>
-		<Attribute name="api_code" id="4">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Api code</v8:content>
-				</v8:item>
-			</Title>
-			<Type>
-				<v8:Type>xs:string</v8:Type>
-				<v8:StringQualifiers>
-					<v8:Length>100</v8:Length>
-					<v8:AllowedLength>Variable</v8:AllowedLength>
-				</v8:StringQualifiers>
 			</Type>
 		</Attribute>
 		<Attribute name="Transactions" id="5">
@@ -1030,68 +869,6 @@ WHERE
 			</Type>
 		</Attribute>
 	</Attributes>
-	<Commands>
-		<Command name="RegisterCard" id="1">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Register card in Stripe</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Register card</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Action>RegisterCard</Action>
-		</Command>
-		<Command name="Projects" id="3">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Projects / Jobs</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Projects</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Action>Projects</Action>
-		</Command>
-		<Command name="DeleteCard" id="2">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Delete card from Stripe</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Delete card</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Action>DeleteCard</Action>
-		</Command>
-		<Command name="SalesTransactions" id="4">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Sales transactions</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Sales transactions</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Action>SalesTransactions</Action>
-		</Command>
-	</Commands>
 	<CommandInterface>
 		<NavigationPanel>
 			<Item>

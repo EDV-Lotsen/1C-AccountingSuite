@@ -8,8 +8,8 @@ EndProcedure
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
 	DataWasSaved = False;
-	If Object.User = Catalogs.UserList.EmptyRef() Then
-		Object.User =  Catalogs.UserList.FindByDescription(GeneralFunctions.GetUserName());
+	If Not ValueIsFilled(Object.User) Then
+		Object.User = GeneralFunctions.GetUserName();
 	Endif;
 	Object.Billable = True;
 	
@@ -89,7 +89,7 @@ Procedure BeforeClose(Cancel, StandardProcessing)
 	Cancel = True;
 		
 	QueryNotification = New NotifyDescription("SaveDataOnClient", ThisForm);
-	QueryMessage = NStr("en = ""Data has been changed. Do you want to save changes?""; ru = ""Данные были изменены. Сохранить изменения?""");
+	QueryMessage = NStr("en = 'Data has been changed. Do you want to save changes?'");
 	If Not DataWasSaved and DaysAndHours.Count() > 0 Then 
 		ShowQueryBox(QueryNotification, QueryMessage, QuestionDialogMode.YesNoCancel); 
 	Else 	

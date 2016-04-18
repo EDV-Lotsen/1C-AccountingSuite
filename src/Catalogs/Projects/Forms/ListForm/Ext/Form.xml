@@ -241,13 +241,43 @@
 	CatalogProjects.Status,
 	CatalogProjects.Type,
 	CatalogProjects.PredefinedDataName,
-	ProjectDataTurnovers.AmountTurnover,
-	ProjectDataTurnovers.AmountReceipt,
-	ProjectDataTurnovers.AmountExpense,
+	ProjectDataTurnovers.AmountTurnover AS AmountTurnover,
+	ProjectDataTurnovers.AmountReceipt AS AmountReceipt,
+	ProjectDataTurnovers.AmountExpense AS AmountExpense,
 	ISNULL(TimeTrack.TimeComplete, 0) AS Hours
 FROM
 	Catalog.Projects AS CatalogProjects
-		LEFT JOIN AccumulationRegister.ProjectData.Turnovers AS ProjectDataTurnovers
+		LEFT JOIN (SELECT
+			GJAD.Project AS Project,
+			SUM(CASE
+					WHEN GJAD.Account.AccountType = VALUE(Enum.AccountTypes.Income)
+							OR GJAD.Account.AccountType = VALUE(Enum.AccountTypes.CostOfSales)
+							OR GJAD.Account.AccountType = VALUE(Enum.AccountTypes.Expense)
+							OR GJAD.Account.AccountType = VALUE(Enum.AccountTypes.OtherIncome)
+							OR GJAD.Account.AccountType = VALUE(Enum.AccountTypes.OtherExpense)
+							OR GJAD.Account.AccountType = VALUE(Enum.AccountTypes.IncomeTaxExpense)
+						THEN -GJAD.AmountRCTurnover
+					ELSE 0
+				END) AS AmountTurnover,
+			SUM(CASE
+					WHEN GJAD.Account.AccountType = VALUE(Enum.AccountTypes.Income)
+							OR GJAD.Account.AccountType = VALUE(Enum.AccountTypes.OtherIncome)
+						THEN -GJAD.AmountRCTurnover
+					ELSE 0
+				END) AS AmountReceipt,
+			SUM(CASE
+					WHEN GJAD.Account.AccountType = VALUE(Enum.AccountTypes.CostOfSales)
+							OR GJAD.Account.AccountType = VALUE(Enum.AccountTypes.Expense)
+							OR GJAD.Account.AccountType = VALUE(Enum.AccountTypes.OtherExpense)
+							OR GJAD.Account.AccountType = VALUE(Enum.AccountTypes.IncomeTaxExpense)
+						THEN -GJAD.AmountRCTurnover
+					ELSE 0
+				END) AS AmountExpense
+		FROM
+			AccumulationRegister.GeneralJournalAnalyticsDimensions.Turnovers(, , Auto, Account.AccountType IN (VALUE(Enum.AccountTypes.Income), VALUE(Enum.AccountTypes.CostOfSales), VALUE(Enum.AccountTypes.Expense), VALUE(Enum.AccountTypes.OtherExpense), VALUE(Enum.AccountTypes.OtherIncome), VALUE(Enum.AccountTypes.IncomeTaxExpense))) AS GJAD
+		
+		GROUP BY
+			GJAD.Project) AS ProjectDataTurnovers
 		ON (ProjectDataTurnovers.Project = CatalogProjects.Ref)
 		LEFT JOIN (SELECT
 			TT.Project AS Project,

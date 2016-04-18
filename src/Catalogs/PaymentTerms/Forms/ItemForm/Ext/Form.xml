@@ -4,9 +4,11 @@
 	<VerticalScroll>useIfNecessary</VerticalScroll>
 	<UseForFoldersAndItems>Items</UseForFoldersAndItems>
 	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<Events>
+		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+	</Events>
 	<ChildItems>
 		<InputField name="Code" id="1">
-			<DataPath>1/-2</DataPath>
 			<Visible>false</Visible>
 			<EditMode>EnterOnInput</EditMode>
 			<ContextMenu name="CodeContextMenu" id="2"/>
@@ -24,6 +26,46 @@
 			<ContextMenu name="DaysContextMenu" id="6"/>
 			<ExtendedTooltip name="DaysExtendedTooltip" id="9"/>
 		</InputField>
+		<UsualGroup name="Group1" id="16">
+			<Group>Horizontal</Group>
+			<Representation>None</Representation>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="Group1ExtendedTooltip" id="17"/>
+			<ChildItems>
+				<InputField name="DiscountPercent" id="13">
+					<DataPath>Object.DiscountPercent</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Discount percentage</v8:content>
+						</v8:item>
+					</Title>
+					<ContextMenu name="DiscountPercentContextMenu" id="14"/>
+					<ExtendedTooltip name="DiscountPercentExtendedTooltip" id="15"/>
+				</InputField>
+				<InputField name="DiscountDays" id="10">
+					<DataPath>Object.DiscountDays</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>if paid within</v8:content>
+						</v8:item>
+					</Title>
+					<ContextMenu name="DiscountDaysContextMenu" id="11"/>
+					<ExtendedTooltip name="DiscountDaysExtendedTooltip" id="12"/>
+				</InputField>
+				<LabelDecoration name="Decoration1" id="18">
+					<Title formatted="false">
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>days</v8:content>
+						</v8:item>
+					</Title>
+					<ContextMenu name="Decoration1ContextMenu" id="19"/>
+					<ExtendedTooltip name="Decoration1ExtendedTooltip" id="20"/>
+				</LabelDecoration>
+			</ChildItems>
+		</UsualGroup>
 	</ChildItems>
 	<Attributes>
 		<Attribute name="Object" id="1">

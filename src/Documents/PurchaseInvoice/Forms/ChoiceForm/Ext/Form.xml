@@ -262,6 +262,7 @@
 	DocumentPurchaseInvoice.Terms,
 	DocumentPurchaseInvoice.URL,
 	DocumentPurchaseInvoice.Paid,
+	CAST (DocumentPurchaseInvoice.Memo AS STRING(200)) AS Memo,
 	DocumentPurchaseInvoice.ManualAdjustment,
 	// Document totals
 	DocumentPurchaseInvoice.DocumentTotal,

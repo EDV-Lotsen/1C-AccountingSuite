@@ -1,30 +1,20 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
 	<VerticalScroll>useIfNecessary</VerticalScroll>
+	<CommandSet>
+		<ExcludedCommand>Tree</ExcludedCommand>
+		<ExcludedCommand>MoveItem</ExcludedCommand>
+		<ExcludedCommand>List</ExcludedCommand>
+		<ExcludedCommand>LevelDown</ExcludedCommand>
+		<ExcludedCommand>LevelUp</ExcludedCommand>
+		<ExcludedCommand>HierarchicalList</ExcludedCommand>
+	</CommandSet>
 	<AutoCommandBar name="FormCommandPanel" id="-1">
 		<ChildItems>
 			<Button name="FormGeneralLedger" id="20">
 				<Type>CommandBarButton</Type>
 				<CommandName>Form.Command.GeneralLedger</CommandName>
 				<ExtendedTooltip name="FormGeneralLedgerExtendedTooltip" id="21"/>
-			</Button>
-			<Button name="FormOutputList" id="24">
-				<Type>CommandBarButton</Type>
-				<Visible>false</Visible>
-				<Representation>PictureAndText</Representation>
-				<OnlyInAllActions>true</OnlyInAllActions>
-				<CommandName>Form.StandardCommand.OutputList</CommandName>
-				<Picture>
-					<xr:Ref>StdPicture.DataCompositionOrder</xr:Ref>
-					<xr:LoadTransparent>true</xr:LoadTransparent>
-				</Picture>
-				<Title>
-					<v8:item>
-						<v8:lang>en</v8:lang>
-						<v8:content>Export list</v8:content>
-					</v8:item>
-				</Title>
-				<ExtendedTooltip name="FormOutputListExtendedTooltip" id="25"/>
 			</Button>
 			<Button name="FormExportChartOfAccounts" id="41">
 				<Type>CommandBarButton</Type>
@@ -35,6 +25,11 @@
 				<Type>CommandBarButton</Type>
 				<CommandName>Form.Command.ImportChartOfAccounts</CommandName>
 				<ExtendedTooltip name="FormImportChartOfAccountsExtendedTooltip" id="44"/>
+			</Button>
+			<Button name="FormPrint" id="66">
+				<Type>CommandBarButton</Type>
+				<CommandName>Form.Command.Print</CommandName>
+				<ExtendedTooltip name="FormPrintExtendedTooltip" id="67"/>
 			</Button>
 			<Button name="FormRefresh" id="22">
 				<Type>CommandBarButton</Type>
@@ -60,6 +55,14 @@
 			<EnableDrag>true</EnableDrag>
 			<DataPath>List</DataPath>
 			<RowPictureDataPath>List.DefaultPicture</RowPictureDataPath>
+			<CommandSet>
+				<ExcludedCommand>HierarchicalList</ExcludedCommand>
+				<ExcludedCommand>Tree</ExcludedCommand>
+				<ExcludedCommand>List</ExcludedCommand>
+				<ExcludedCommand>LevelUp</ExcludedCommand>
+				<ExcludedCommand>MoveItem</ExcludedCommand>
+				<ExcludedCommand>LevelDown</ExcludedCommand>
+			</CommandSet>
 			<AutoRefresh>false</AutoRefresh>
 			<AutoRefreshPeriod>60</AutoRefreshPeriod>
 			<Period>
@@ -130,11 +133,6 @@
 					<ContextMenu name="CreditCardContextMenu" id="30"/>
 					<ExtendedTooltip name="CreditCardExtendedTooltip" id="31"/>
 				</CheckBoxField>
-				<LabelField name="Reclass" id="26">
-					<DataPath>List.Reclass</DataPath>
-					<ContextMenu name="ReclassContextMenu" id="27"/>
-					<ExtendedTooltip name="ReclassExtendedTooltip" id="28"/>
-				</LabelField>
 				<InputField name="Balance" id="17">
 					<DataPath>List.Balance</DataPath>
 					<Format>
@@ -156,28 +154,6 @@
 					<DataPath>List.Category1099</DataPath>
 					<ContextMenu name="Category1099ContextMenu" id="15"/>
 					<ExtendedTooltip name="Category1099ExtendedTooltip" id="16"/>
-				</LabelField>
-				<LabelField name="gc_rectype" id="57">
-					<DataPath>List.gc_rectype</DataPath>
-					<Title>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>RT</v8:content>
-						</v8:item>
-					</Title>
-					<ContextMenu name="gc_rectypeContextMenu" id="58"/>
-					<ExtendedTooltip name="gc_rectypeExtendedTooltip" id="59"/>
-				</LabelField>
-				<LabelField name="gc_totlev" id="60">
-					<DataPath>List.gc_totlev</DataPath>
-					<Title>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Tot</v8:content>
-						</v8:item>
-					</Title>
-					<ContextMenu name="gc_totlevContextMenu" id="61"/>
-					<ExtendedTooltip name="gc_totlevExtendedTooltip" id="62"/>
 				</LabelField>
 			</ChildItems>
 		</Table>
@@ -246,14 +222,11 @@
 	ChartOfAccounts.Ref AS Ref,
 	ChartOfAccounts.Code AS Code,
 	ChartOfAccounts.Parent.Code AS Parent,
-	ChartOfAccounts.ReclassAccount AS Reclass,
 	ChartOfAccounts.CreditCard AS CreditCard,
 	ChartOfAccounts.Description AS Description,
 	ChartOfAccounts.AccountType AS AccountType,
 	0 AS Balance,
-	ChartOfAccounts.Category1099 AS Category1099,
-	ChartOfAccounts.gc_rectype,
-	ChartOfAccounts.gc_totlev
+	ChartOfAccounts.Category1099 AS Category1099
 FROM
 	ChartOfAccounts.ChartOfAccounts AS ChartOfAccounts</QueryText>
 				<MainTable>ChartOfAccounts.ChartOfAccounts</MainTable>
@@ -289,6 +262,11 @@ FROM
 					<v8:FractionDigits>0</v8:FractionDigits>
 					<v8:AllowedSign>Any</v8:AllowedSign>
 				</v8:NumberQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="PrintSpreadsheet" id="3">
+			<Type>
+				<v8:Type xmlns:mxl="http://v8.1c.ru/8.2/data/spreadsheet">mxl:SpreadsheetDocument</v8:Type>
 			</Type>
 		</Attribute>
 	</Attributes>
@@ -357,6 +335,26 @@ FROM
 			</Picture>
 			<Action>RefreshList</Action>
 			<Representation>Picture</Representation>
+		</Command>
+		<Command name="Print" id="5">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Print</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Print</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Picture>
+				<xr:Ref>StdPicture.Print</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
+			<Action>Print</Action>
+			<Representation>TextPicture</Representation>
 		</Command>
 	</Commands>
 </Form>

@@ -151,6 +151,45 @@ Function CheckNumberAllowed(Num, Ref, BankAccount) Export
 	
 EndFunction
 
+// Function - Get constants values
+//
+// Parameters:
+//  Constants - Array - of strings that are names of requested constants. 
+// 
+// Returns:
+//  Structure - where Key is constant name and Value is constant value.
+//
+Function GetConstantsValues(Constants) Export
+	
+	Structure = New Structure;
+	Separator = "," + Chars.LF + Chars.Tab;
+	Strings   = New Array;
+	
+	// Create all fields descriptions.
+	For Each ConstantName In Constants Do
+		Strings.Add("Constants." + ConstantName + " AS " + ConstantName);
+	EndDo;
+	QueryFields = StrConcat(Strings, Separator); // Combine them in one string.
+	     
+	Query = New Query;
+	Query.Text = 
+		"SELECT
+		|	&QueryFields
+		|FROM
+		|	Constants AS Constants";
+	Query.Text = StrReplace(Query.Text, "&QueryFields", QueryFields);
+	
+	QuerySelection = Query.Execute().Select();
+	QuerySelection.Next();
+	
+	For Each ConstantName In Constants Do
+		Structure.Insert(ConstantName, QuerySelection[ConstantName]);
+	EndDo;
+	
+	Return Structure;
+	
+EndFunction
+
 #Region LONG_ACTION
 
 // Starting do long action process and then check it.
@@ -332,3 +371,7 @@ Function GetErrorInfo(ErrorObj)
 EndFunction
 
 #EndRegion
+
+Function GetConstantValue(ConstantName) Export
+	Return Constants[ConstantName].Get();
+EndFunction

@@ -1,5 +1,4 @@
 ﻿
-
 ////////////////////////////////////////////////////////////////////////////////
 // Shipment: Document form
 //------------------------------------------------------------------------------
@@ -186,7 +185,6 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	Items.LineItemsAvataxTaxCode.ReadOnly     = True;
 	Items.Currency2.ReadOnly                  = True;
 	Items.TaxTab.ReadOnly                     = True;
-	//
 	
 EndProcedure
 
@@ -236,9 +234,6 @@ Procedure BeforeWrite(Cancel, WriteParameters)
 		EndIf;
 	EndIf;
 	
-	//Avatax calculation
-	//AvaTaxClient.ShowQueryToTheUserOnAvataxCalculation("SalesInvoice", Object, ThisObject, WriteParameters, Cancel);
-		
 EndProcedure
 
 &AtServer
@@ -314,9 +309,6 @@ Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
 		EndIf;
 	EndIf;
 	
-	//Avatax calculation
-	//AvaTaxServer.CalculateTaxBeforeWrite(CurrentObject, WriteParameters, Cancel, "SalesOrder");
-		
 EndProcedure
 
 &AtServer
@@ -353,9 +345,6 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 		LotsSerialNumbers.FillSerialNumbers(Object.SerialNumbers, Row.Product, 1, Row.LineID, Row.SerialNumbers);
 	EndDo;
 	
-	//Avatax calculation
-	//AvaTaxServer.CalculateTaxAfterWrite(CurrentObject, WriteParameters, "SalesInvoice");
-		
 	//Update tax rate
 	DisplaySalesTaxRate(ThisForm);
 	
@@ -434,11 +423,8 @@ Procedure CompanyOnChangeAtServer()
 	
 	// Tax settings
 	SalesTaxRate 		= SalesTax.GetDefaultSalesTaxRate(Object.Company);
-	If GeneralFunctionsReusable.FunctionalOptionValue("AvataxEnabled") Then
-		Object.UseAvatax	= Object.Company.UseAvatax;
-	Else
-		Object.UseAvatax	= False;
-	EndIf;
+	Object.UseAvatax	= False;
+	
 	If (Not Object.UseAvatax) Then
 		TaxEngine = 1; //Use AccountingSuite
 		If SalesTaxRate <> Object.SalesTaxRate Then
@@ -449,9 +435,6 @@ Procedure CompanyOnChangeAtServer()
 	EndIf;
 	Object.SalesTaxAcrossAgencies.Clear();
 	ApplySalesTaxEngineSettings();
-	If Object.UseAvatax Then
-		//AvataxServer.RestoreCalculatedSalesTax(Object);
-	EndIf;	
 	
 	RecalculateTotals(Object);
 	DisplaySalesTaxRate(ThisForm);
@@ -1215,25 +1198,8 @@ EndFunction
 // Call AvaTax to request sales tax values.
 
 &AtClient
-Procedure AvaTax(Command)
-	
-	FormParams = New Structure("ObjectRef", Object.Ref);
-	OpenForm("InformationRegister.AvataxDetails.Form.AvataxDetails", FormParams, ThisForm,,,,, FormWindowOpeningMode.LockOwnerWindow);
-	
-EndProcedure
-
-&AtClient
-Procedure TaxEngineOnChange(Item)
-	
-	TaxEngineOnChangeAtServer();
-	
-EndProcedure
-
-&AtClient
 Procedure PostAndClose(Command)
 	
-	//PerformanceMeasurementClientServer.StartTimeMeasurement("Shipment Post and Close");
-		
 	Try
 		Write(New Structure("WriteMode, CloseAfterWrite", DocumentWriteMode.Posting, True));
 	Except
@@ -1246,8 +1212,6 @@ EndProcedure
 &AtClient
 Procedure Save(Command)
 	
-	//PerformanceMeasurementClientServer.StartTimeMeasurement("Shipment Save");
-	
 	Try
 		Write();
 	Except
@@ -1259,8 +1223,6 @@ EndProcedure
 
 &AtClient
 Procedure Post(Command)
-	
-	//PerformanceMeasurementClientServer.StartTimeMeasurement("Shipment Post");
 	
 	Try
 		Write(New Structure("WriteMode", DocumentWriteMode.Posting));
@@ -1761,23 +1723,11 @@ EndProcedure
 &AtServer
 Procedure TaxEngineOnChangeAtServer()
 	
-	//Tax engine depends on company settings
-	If GeneralFunctionsReusable.FunctionalOptionValue("AvataxEnabled") Then
-		CompanyAvataxSetting = ?(Object.Company.UseAvatax, 2, 1);
-		If TaxEngine <> CompanyAvataxSetting Then
-			TaxEngine = CompanyAvataxSetting;
-			CommonUseClientServer.MessageToUser("Please change company tax settings first", Object, "TaxEngine");
-			return;
-		EndIf;
-	Else
-		TaxEngine = 1; //AccountingSuite
-	EndIf;
+	TaxEngine = 1; //AccountingSuite
+	
 	Object.UseAvaTax = ?(TaxEngine = 1, False, True);	
 	Object.SalesTaxAcrossAgencies.Clear();
 	ApplySalesTaxEngineSettings();
-	If Object.UseAvatax Then
-		//AvataxServer.RestoreCalculatedSalesTax(Object);
-	EndIf;
 	RecalculateTotals(Object);
 	
 	DisplaySalesTaxRate(ThisForm);
@@ -1786,17 +1736,6 @@ EndProcedure
 
 &AtServer
 Procedure ApplySalesTaxEngineSettings()
-	
-	//Without AvataxEnabled allow changing of an engine only for documents, using AvaTax
-	If GeneralFunctionsReusable.FunctionalOptionValue("AvataxEnabled") Then
-		Items.TaxEngine.Visible = True;
-	Else
-		If (Not Object.Ref.IsEmpty()) And (Object.UseAvatax) Then
-			Items.TaxEngine.Visible = True;
-		Else
-			Items.TaxEngine.Visible = False;
-		EndIf;
-	EndIf;
 	
 	If Not Object.UseAvatax Then
 		Items.SalesTaxRate.ChoiceList.Clear();
@@ -1808,13 +1747,6 @@ Procedure ApplySalesTaxEngineSettings()
 		Items.TaxParametersPages.CurrentPage = Items.TaxParametersInACS;
 		Items.LineItemsTaxable.Visible		= True;
 		Items.LineItemsAvataxTaxCode.Visible = False;
-	ElsIf Object.UseAvatax Then
-		If Object.Ref.IsEmpty() Then
-			Object.AvataxShippingTaxCode = Constants.AvataxDefaultShippingTaxCode.Get();
-		EndIf;
-		Items.TaxParametersPages.CurrentPage = Items.TaxParametersInAvaTax;
-		Items.LineItemsTaxable.Visible		= False;
-		Items.LineItemsAvataxTaxCode.Visible = True;
 	EndIf;
 
 EndProcedure
@@ -1904,6 +1836,17 @@ EndFunction
 Procedure BillToOnChange(Item)
 	Items.DecorationBillTo.Visible = True;
 	Items.DecorationBillTo.Title = GeneralFunctions.ShowAddressDecoration(Object.BillTo);
+EndProcedure
+
+&AtClient
+Procedure AuditLogRecords(Command)
+	
+	FormParameters = New Structure();	
+	FltrParameters = New Structure();
+	FltrParameters.Insert("DocUUID", String(Object.Ref.UUID()));
+	FormParameters.Insert("Filter", FltrParameters);
+	OpenForm("CommonForm.AuditLogList",FormParameters, Object.Ref);
+
 EndProcedure
 
 #EndRegion

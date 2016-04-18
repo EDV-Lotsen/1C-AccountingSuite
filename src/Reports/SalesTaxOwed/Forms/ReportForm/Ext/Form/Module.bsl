@@ -25,18 +25,65 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	EndIf;
 	
 	Items.PeriodVariant.ChoiceList.LoadValues(GeneralFunctions.GetCustomizedPeriodsList());
-	PeriodVariant = GeneralFunctions.GetDefaultPeriodVariant();
-	GeneralFunctions.ChangeDatesByPeriod(PeriodVariant, PeriodStartDate, PeriodEndDate);
+	
+	If ThisIsDrillDown Then
+		If Parameters.Filter.Property("MonthPeriod") Then
+			PeriodStartDate = Parameters.Filter.MonthPeriod;
+			PeriodEndDate 	= EndOfMonth(Parameters.Filter.MonthPeriod);
+		ElsIf Parameters.Filter.Property("QuarterPeriod") Then
+			PeriodStartDate = Parameters.Filter.QuarterPeriod;
+			PeriodEndDate 	= EndOfQuarter(Parameters.Filter.QuarterPeriod);
+		ElsIf Parameters.Filter.Property("HalfYearPeriod") Then
+			PeriodStartDate = Parameters.Filter.HalfYearPeriod;
+			PeriodEndDate 	= EndOfMonth(AddMonth(Parameters.Filter.HalfYearPeriod, 5));
+		ElsIf Parameters.Filter.Property("YearPeriod") Then
+			PeriodStartDate = Parameters.Filter.YearPeriod;
+			PeriodEndDate 	= EndOfYear(Parameters.Filter.YearPeriod);
+		Else //Set period values from user settings if passed as a parameter
+			PeriodParameter = New DataCompositionParameter("Period");
+			For Each USItem In Parameters.UserSettings.Items Do
+				If TypeOf(USItem) = Type("DataCompositionSettingsParameterValue") Then
+					If USItem.Parameter = PeriodParameter Then
+						PeriodStartDate = USItem.Value.StartDate;
+						PeriodEndDate	= USItem.Value.EndDate;
+						Break;
+					EndIf;
+				EndIf;
+			EndDo;
+		EndIf;
+	Else
+		PeriodVariant = GeneralFunctions.GetDefaultPeriodVariant();
+		GeneralFunctions.ChangeDatesByPeriod(PeriodVariant, PeriodStartDate, PeriodEndDate);
+	EndIf;
 	
 	OpeningReportForm = True;
-	
+		
+	If Parameters.GenerateOnOpen <> Undefined And Parameters.GenerateOnOpen Then
+		GenerateOnOpen = True;
+		Parameters.GenerateOnOpen = False;
+	EndIf;
+		
 EndProcedure
 
 &AtClient
 Procedure OnOpen(Cancel)
 	
-	GeneralFunctions.ChangePeriodIntoUserSettings(ThisForm.Report.SettingsComposer, PeriodStartDate, PeriodEndDate);
+	If GenerateOnOpen Then
+		CreateAtServer();
+	Else
+		GeneralFunctions.ChangePeriodIntoUserSettings(ThisForm.Report.SettingsComposer, PeriodStartDate, PeriodEndDate);
+	EndIf;
 	
+EndProcedure
+
+&AtServer
+Procedure CreateAtServer()
+	
+	GeneralFunctions.ChangePeriodIntoUserSettings(ThisForm.Report.SettingsComposer, PeriodStartDate, PeriodEndDate);
+	Report.SettingsComposer.LoadUserSettings(Report.SettingsComposer.UserSettings);
+	
+	ComposeResult();
+
 EndProcedure
 
 &AtServer
@@ -46,7 +93,9 @@ Procedure OnUpdateUserSettingSetAtServer(StandardProcessing)
 		
 	Else
 		GeneralFunctions.ChangePeriodIntoReportForm(ThisForm.Report.SettingsComposer, PeriodVariant, PeriodStartDate, PeriodEndDate);
-	EndIf;	
+	EndIf;
+	
+	ModifiedStatePresentation();
 		
 EndProcedure
 
@@ -136,6 +185,11 @@ Procedure Create(Command)
 	Report.SettingsComposer.LoadUserSettings(Report.SettingsComposer.UserSettings);
 	
 	ComposeResult();
+Try
+	CurParameters = New Structure("ObjectTypeID",ThisForm.FormName);
+	CommonUseClient.ApplyPrintFormSettings(Result,CurParameters);
+Except
+EndTry
 	
 EndProcedure
 
@@ -214,7 +268,8 @@ Function PrepareDrilldownParametersAtServer(Details, CurrentVariantKey)
 		If DetailsStructure.Property("GrossSales") Or DetailsStructure.Property("TaxableSales")
 			Or DetailsStructure.Property("TaxAmount") Or DetailsStructure.Property("Adjustments")
 			Or DetailsStructure.Property("Payments") Or DetailsStructure.Property("Balance")
-			Or DetailsStructure.Property("DetailedBalance") Then
+			Or DetailsStructure.Property("DetailedBalance") Or DetailsStructure.Property("TotalGrossSales")
+			Or DetailsStructure.Property("TotalTaxableSales") Then
 			StandardProcessing = False;
 			
 			Filter = New Structure();
@@ -222,7 +277,8 @@ Function PrepareDrilldownParametersAtServer(Details, CurrentVariantKey)
 				If DSElement.Key = "GrossSales" Or DSElement.Key = "TaxableSales"
 					Or DSElement.Key = "TaxAmount" Or DSElement.Key = "Adjustments"
 					Or DSElement.Key = "Payments" Or DSElement.Key = "Balance" 
-					Or DSElement.Key = "DetailedBalance" Then
+					Or DSElement.Key = "DetailedBalance" Or DSElement.Key = "TotalGrossSales"
+					Or DSElement.Key = "TotalTaxableSales" Then
 					Continue;
 				EndIf;
 				Filter.Insert(DSElement.Key, DSElement.Value);
@@ -258,31 +314,35 @@ Function PrepareDrilldownParametersAtServer(Details, CurrentVariantKey)
 					If DDUSItem.Parameter = PeriodParameter Then
 						PeriodUserSetting = DDUSItem;
 						PeriodUserSetting.Value = New StandardPeriod();
+						//When filter is not set for period, pass a user setting period
+						If TypeOf(USItem.Value) = Type("StandardPeriod") Then
+							PeriodUserSetting.Value = USItem.Value;
+						EndIf;
 					EndIf;
 				Else
 					FillPropertyValues(DDUSItem, USItem);
 				EndIf;
 			EndDo;
 			
-			If PeriodUserSetting <> Undefined Then
-				If Filter.Property("MonthPeriod") Then
-					PeriodUserSetting.Value.Variant 	= StandardPeriodVariant.Custom;	
-					PeriodUserSetting.Value.StartDate 	= Filter.MonthPeriod;
-					PeriodUserSetting.Value.EndDate 	= EndOfMonth(Filter.MonthPeriod);
-				ElsIf Filter.Property("QuarterPeriod") Then
-					PeriodUserSetting.Value.Variant 	= StandardPeriodVariant.Custom;	
-					PeriodUserSetting.Value.StartDate 	= Filter.QuarterPeriod;
-					PeriodUserSetting.Value.EndDate 	= EndOfQuarter(Filter.QuarterPeriod);
-				ElsIf Filter.Property("HalfYearPeriod") Then
-					PeriodUserSetting.Value.Variant 	= StandardPeriodVariant.Custom;	
-					PeriodUserSetting.Value.StartDate 	= Filter.HalfYearPeriod;
-					PeriodUserSetting.Value.EndDate 	= EndOfMonth(AddMonth(Filter.HalfYearPeriod, 5));
-				ElsIf Filter.Property("YearPeriod") Then
-					PeriodUserSetting.Value.Variant 	= StandardPeriodVariant.Custom;	
-					PeriodUserSetting.Value.StartDate 	= Filter.YearPeriod;
-					PeriodUserSetting.Value.EndDate 	= EndOfYear(Filter.YearPeriod);
-				EndIf;
-			EndIf;
+			//If PeriodUserSetting <> Undefined Then
+			//	If Filter.Property("MonthPeriod") Then
+			//		PeriodUserSetting.Value.Variant 	= StandardPeriodVariant.Custom;	
+			//		PeriodUserSetting.Value.StartDate 	= Filter.MonthPeriod;
+			//		PeriodUserSetting.Value.EndDate 	= EndOfMonth(Filter.MonthPeriod);
+			//	ElsIf Filter.Property("QuarterPeriod") Then
+			//		PeriodUserSetting.Value.Variant 	= StandardPeriodVariant.Custom;	
+			//		PeriodUserSetting.Value.StartDate 	= Filter.QuarterPeriod;
+			//		PeriodUserSetting.Value.EndDate 	= EndOfQuarter(Filter.QuarterPeriod);
+			//	ElsIf Filter.Property("HalfYearPeriod") Then
+			//		PeriodUserSetting.Value.Variant 	= StandardPeriodVariant.Custom;	
+			//		PeriodUserSetting.Value.StartDate 	= Filter.HalfYearPeriod;
+			//		PeriodUserSetting.Value.EndDate 	= EndOfMonth(AddMonth(Filter.HalfYearPeriod, 5));
+			//	ElsIf Filter.Property("YearPeriod") Then
+			//		PeriodUserSetting.Value.Variant 	= StandardPeriodVariant.Custom;	
+			//		PeriodUserSetting.Value.StartDate 	= Filter.YearPeriod;
+			//		PeriodUserSetting.Value.EndDate 	= EndOfYear(Filter.YearPeriod);
+			//	EndIf;
+			//EndIf;
 			
 			ParametersStructure.Insert("UserSettings", DrillDownUserSettings);
 			

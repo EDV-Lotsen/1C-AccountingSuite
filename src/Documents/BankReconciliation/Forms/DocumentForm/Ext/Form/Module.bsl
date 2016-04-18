@@ -11,17 +11,16 @@
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
-	If IsInRole("BankAccounting") Then
-		Cancel = True;
-		return;
-	EndIf;
+	Raise NStr("en='Unsupported functionality.'");
 	
 	If Object.Ref.IsEmpty() Then
+		
 		If ValueIsFilled(Parameters.BankAccount) then
 			Object.BankAccount = Parameters.BankAccount;
 		Else
 			Object.BankAccount = Constants.BankAccount.Get();
 		EndIf;
+		
 		If ValueIsFilled(Parameters.StatementDate) Then
 			Object.Date = Parameters.StatementDate;
 		Else
@@ -29,15 +28,28 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		EndIf;
 		
 		//Auto-fill beginning balance and available documents
+		IdentifyTypeOfBankAccount();
 		Object.BeginningBalance = GetBeginningBalance(Object.BankAccount, Object.Date, Object.Ref);
-				
+		BeginningBalance        = ?(CreditCard, -Object.BeginningBalance, Object.BeginningBalance);
+
 		FillReconciliationSpec(Object.Date, Object.BankAccount);
 	EndIf;
-		
+	
+	IdentifyTypeOfBankAccount();
+	BeginningBalance = ?(CreditCard, -Object.BeginningBalance, Object.BeginningBalance); 
+	EndingBalance    = ?(CreditCard, -Object.EndingBalance, Object.EndingBalance); 
+	ClearedBalance   = ?(CreditCard, -Object.ClearedBalance, Object.ClearedBalance);
+	Difference       = ?(CreditCard, -Object.Difference, Object.Difference);
+	
+	UpdateAppearanceForBankAccount();
+			
 EndProcedure
 
 &AtServer
 Procedure OnReadAtServer(CurrentObject)
+	
+	//Identify the type of bank account
+	IdentifyTypeOfBankAccount();
 	
 	//Obtain bank transactions description
 	Query = New Query("SELECT
@@ -102,6 +114,11 @@ Procedure OnReadAtServer(CurrentObject)
 	                  |	UnreconciledTransactions.Company,
 	                  |	UnreconciledTransactions.Number AS DocNumber,
 	                  |	UnreconciledTransactions.Amount AS TransactionAmount,
+					  | CASE
+					  |		WHEN &CreditCard
+					  |			THEN -UnreconciledTransactions.Amount
+					  |		ELSE UnreconciledTransactions.Amount
+					  | END AS TransactionAmountUniversal,
 	                  |	CASE
 	                  |		WHEN TabularSection.Cleared IS NULL 
 	                  |			THEN CASE
@@ -118,7 +135,7 @@ Procedure OnReadAtServer(CurrentObject)
 	                  |	END AS Deposit,
 	                  |	CASE
 	                  |		WHEN UnreconciledTransactions.Amount < 0
-	                  |			THEN UnreconciledTransactions.Amount
+	                  |			THEN -UnreconciledTransactions.Amount
 	                  |		ELSE 0
 	                  |	END AS Payment,
 	                  |	ISNULL(BankTransactions.TransactionDate, DATETIME(1, 1, 1)) AS BankTransactionDate,
@@ -175,6 +192,7 @@ Procedure OnReadAtServer(CurrentObject)
 	Query.SetParameter("EndOfStatementDate", EndOfDay(Object.Date));
 	Query.SetParameter("BankAccount", Object.BankAccount);
 	Query.SetParameter("ThisDocument", Object.Ref);
+	Query.SetParameter("CreditCard", CreditCard);
 	
 	BatchResult = Query.ExecuteBatch();
 	VTResult = BatchResult[2].Unload();	
@@ -183,7 +201,8 @@ Procedure OnReadAtServer(CurrentObject)
 	BankBalancesPreviousPeriod = BatchResult[3].Unload();
 	If BankBalancesPreviousPeriod.Count() > 0 Then
 		If BankBalancesPreviousPeriod[0].EndingBalance <> Object.BeginningBalance Then
-			CommonUseClientServer.MessageToUser("Beginning Balance doesn't equal Ending Balance (" + Format(BankBalancesPreviousPeriod[0].EndingBalance, "NFD=2; NZ=") + ") of the prior period", Object, "Object.BeginningBalance");
+			PriorBalance = ?(CreditCard, -BankBalancesPreviousPeriod[0].EndingBalance, BankBalancesPreviousPeriod[0].EndingBalance);
+			CommonUseClientServer.MessageToUser("Beginning Balance doesn't equal Ending Balance (" + Format(PriorBalance, "NFD=2; NZ=") + ") of the prior period", Object, "BeginningBalance");
 		EndIf;
 	EndIf;
 
@@ -194,7 +213,9 @@ Procedure OnReadAtServer(CurrentObject)
 		Object.ClearedAmount = Object.ClearedAmount + ClearedRow.TransactionAmount;
 	EndDo;
 	Object.ClearedBalance = Object.BeginningBalance + Object.ClearedAmount;	
-	Object.Difference = Object.EndingBalance - Object.ClearedBalance;
+	ClearedBalance        = ?(CreditCard, -Object.ClearedBalance, Object.ClearedBalance);
+	Object.Difference     = Object.EndingBalance - Object.ClearedBalance;
+	Difference            = ?(CreditCard, -Object.Difference, Object.Difference);
 	
 	Items.LineItemsCleared.FooterText = Format(Object.ClearedAmount, "NFD=2; NZ=");
 	
@@ -220,12 +241,15 @@ Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
 EndProcedure
 
 &AtServer
-Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
-		     
+Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
+	
+	UpdateAppearanceForBankAccount();
+	
 EndProcedure
 
 &AtClient
 Procedure BeforeWrite(Cancel, WriteParameters)
+	
 	//Closing period
 	If PeriodClosingServerCall.DocumentPeriodIsClosed(Object.Ref, Object.Date) Then
 		Cancel = Not PeriodClosingServerCall.DocumentWritePermitted(WriteParameters);
@@ -258,6 +282,7 @@ EndProcedure
 Procedure StatementToDateOnChange(Item)
 	
 	Object.BeginningBalance = GetBeginningBalance(Object.BankAccount, Object.Date, Object.Ref);
+	BeginningBalance        = ?(CreditCard, -Object.BeginningBalance, Object.BeginningBalance);
 	RefillReconcilliation();
 		
 EndProcedure
@@ -267,6 +292,11 @@ EndProcedure
 //
 Procedure BeginningBalanceOnChange(Item)
 	
+	//Update Beginning balance
+	Modified = True;
+	Object.BeginningBalance = ?(CreditCard, -BeginningBalance, BeginningBalance); 
+	
+	//
 	RecalcClearedBalance(0);
 	
 EndProcedure
@@ -276,6 +306,11 @@ EndProcedure
 //
 Procedure EndingBalanceOnChange(Item)
 	
+	//Update Ending balance
+	Modified = True;
+	Object.EndingBalance = ?(CreditCard, -EndingBalance, EndingBalance); 
+	
+	//
 	RecalcClearedBalance(0);
 	
 EndProcedure
@@ -283,14 +318,25 @@ EndProcedure
 &AtClient
 Procedure BankAccountOnChange(Item)
 
-	If Not ValueIsFilled(Object.Date) Then
-		Object.Date = CurrentDate();
-	EndIf;
-	Object.BeginningBalance = GetBeginningBalance(Object.BankAccount, Object.Date, Object.Ref);
+	BankAccountOnChangeAtServer();
 	RefillReconcilliation();
 
 EndProcedure
 
+&AtServer
+Procedure BankAccountOnChangeAtServer()
+		
+	If Not ValueIsFilled(Object.Date) Then
+		Object.Date = CurrentSessionDate();
+	EndIf;
+	
+	IdentifyTypeOfBankAccount();
+	Object.BeginningBalance = GetBeginningBalance(Object.BankAccount, Object.Date, Object.Ref);
+	BeginningBalance        = ?(CreditCard, -Object.BeginningBalance, Object.BeginningBalance);
+	
+	UpdateAppearanceForBankAccount();
+	
+EndProcedure
 
 #EndRegion
 
@@ -472,6 +518,11 @@ Procedure FillReconciliationSpec(Date, BankAccount)
 	                  |	UnreconciledTransactions.Company,
 	                  |	UnreconciledTransactions.Number AS DocNumber,
 	                  |	UnreconciledTransactions.Amount AS TransactionAmount,
+					  | CASE
+					  |		WHEN &CreditCard
+					  |			THEN -UnreconciledTransactions.Amount
+					  |		ELSE UnreconciledTransactions.Amount
+					  | END AS TransactionAmountUniversal,
 	                  |	CASE
 	                  |		WHEN TabularSection.Cleared IS NULL 
 	                  |			THEN CASE
@@ -488,7 +539,7 @@ Procedure FillReconciliationSpec(Date, BankAccount)
 	                  |	END AS Deposit,
 	                  |	CASE
 	                  |		WHEN UnreconciledTransactions.Amount < 0
-	                  |			THEN UnreconciledTransactions.Amount
+	                  |			THEN -UnreconciledTransactions.Amount
 	                  |		ELSE 0
 	                  |	END AS Payment,
 	                  |	ISNULL(BankTransactions.TransactionDate, DATETIME(1, 1, 1)) AS BankTransactionDate,
@@ -524,6 +575,7 @@ Procedure FillReconciliationSpec(Date, BankAccount)
 	Query.SetParameter("EndOfStatementDate", EndOfDay(Date));
 	Query.SetParameter("BankAccount", BankAccount);
 	Query.SetParameter("ThisDocument", Object.Ref);
+	Query.SetParameter("CreditCard", CreditCard);
 	
 	VTResult = Query.Execute().Unload();	
 	LineItems.Load(VTResult);
@@ -536,7 +588,9 @@ Procedure FillReconciliationSpec(Date, BankAccount)
 		Object.ClearedAmount = Object.ClearedAmount + ClearedRow.TransactionAmount;
 	EndDo;
 	Object.ClearedBalance = Object.BeginningBalance + Object.ClearedAmount;	
-	Object.Difference = Object.EndingBalance - Object.ClearedBalance;
+	ClearedBalance        = ?(CreditCard, -Object.ClearedBalance, Object.ClearedBalance);
+	Object.Difference     = Object.EndingBalance - Object.ClearedBalance;
+	Difference            = ?(CreditCard, -Object.Difference, Object.Difference);
 	
 	Items.LineItemsCleared.FooterText = Format(Object.ClearedAmount, "NFD=2; NZ=");
 	
@@ -555,7 +609,9 @@ Procedure RecalcClearedBalance(Amount)
 	
 	Object.ClearedAmount = Object.ClearedAmount + Amount;	
 	Object.ClearedBalance = Object.BeginningBalance + Object.ClearedAmount;	
-	Object.Difference = Object.EndingBalance - Object.ClearedBalance;
+	ClearedBalance        = ?(CreditCard, -Object.ClearedBalance, Object.ClearedBalance);	
+	Object.Difference     = Object.EndingBalance - Object.ClearedBalance;
+	Difference            = ?(CreditCard, -Object.Difference, Object.Difference);
 	
 	//Items.LineItemsCleared.FooterText = Format(Object.ClearedAmount, "NFD=2; NZ=");	
 	
@@ -603,6 +659,52 @@ Procedure ProcessUserResponseOnDocumentPeriodClosed(Result, Parameters) Export
 			Write(Parameters);
 		EndIf;
 	EndIf;	
+EndProcedure
+
+&AtServer
+//Change appearance of form based on bank account type
+Procedure UpdateAppearanceForBankAccount()
+	
+	//Change appearance for credit cards
+	If ValueIsFilled(Object.BankAccount) And CreditCard Then
+		
+		If Object.Ref.IsEmpty() Then
+			ThisForm.Title = NStr("en = 'Credit Card reconciliation (create)'");
+		Else
+			ThisForm.Title = StringFunctionsClientServer.SubstituteParametersInString(
+								NStr("en = 'Credit Card reconciliation %1 from %2'"), Object.Number, Format(Object.Date, "DLF=D"));
+		EndIf;
+		
+		Items.LineItemsPayment.Title = NStr("en = 'Charge'");
+		Items.LineItemsDeposit.Title = NStr("en = 'Credit'");
+		
+		//Change appearance for not credit accounts
+	Else
+		
+		If Object.Ref.IsEmpty() Then
+			ThisForm.Title = NStr("en = 'Bank reconciliation (create)'");
+		Else
+			ThisForm.Title = StringFunctionsClientServer.SubstituteParametersInString(
+								NStr("en = 'Bank reconciliation %1 from %2'"), Object.Number, Format(Object.Date, "DLF=D"));
+		EndIf;
+
+		Items.LineItemsPayment.Title = NStr("en = 'Payment'");
+		Items.LineItemsDeposit.Title = NStr("en = 'Deposit'");
+		
+	EndIf;
+		
+EndProcedure
+
+&AtServer
+//Identify the type of bank account
+Procedure IdentifyTypeOfBankAccount() 
+	
+	If ValueIsFilled(Object.BankAccount) And Object.BankAccount.CreditCard Then
+		CreditCard = True;
+	Else 
+		CreditCard = False;
+	EndIf;
+	
 EndProcedure
 
 #EndRegion

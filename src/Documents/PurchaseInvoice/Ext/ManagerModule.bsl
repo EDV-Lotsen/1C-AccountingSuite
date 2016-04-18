@@ -119,9 +119,29 @@ Function PrepareDataStructuresForPosting(DocumentRef, AdditionalProperties, Regi
 	             Query_GeneralJournal_Accounts_InvOrExp(TablesList) +
 	             Query_GeneralJournal_Accounts_ExpAP(TablesList) +
 	             Query_GeneralJournal(TablesList) +
-	             Query_CashFlowData_Accounts(TablesList) +
-	             Query_CashFlowData_Accounts_InvOrExp(TablesList) +
-	             Query_CashFlowData(TablesList) +
+				 //--//GJ++
+				 Query_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp(TablesList)+
+				 Query_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp_Difference_Amount(TablesList)+
+				 Query_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp_Difference(TablesList)+
+				 Query_GeneralJournalAnalyticsDimensions_Accounts_InvOrExpNeg_Difference_Amount(TablesList)+
+				 Query_GeneralJournalAnalyticsDimensions_Accounts_InvOrExpNeg_Difference(TablesList)+
+				 Query_GeneralJournalAnalyticsDimensions_Transactions(TablesList)+
+	             Query_GeneralJournalAnalyticsDimensions(TablesList)+
+	             //--//GJ--
+
+				 Query_CashFlowData_Accounts_Positive(TablesList) +
+				 Query_CashFlowData_Accounts_Positive_Amount(TablesList) +
+				 Query_CashFlowData_Accounts_Negative(TablesList) +
+				 Query_CashFlowData_Accounts_Negative_Amount(TablesList) +
+				 Query_CashFlowData_Accounts_Paid(TablesList) +
+				 Query_CashFlowData_Accounts_Paid_Amount(TablesList) +
+				 Query_CashFlowData_Accounts_Paid_Transactions(TablesList) +
+				 Query_CashFlowData_Accounts_Paid_Transactions_Corrected(TablesList) +
+				 Query_CashFlowData_Accounts_Paid_Transactions_Amount(TablesList) +
+				 Query_CashFlowData_CB_Accounts(TablesList) +
+				 Query_CashFlowData_CB_Accounts_Amount(TablesList) +
+				 Query_CashFlowData(TablesList) +
+				 
 	             Query_ProjectData_Accounts(TablesList) +
 	             Query_ProjectData_Accounts_InvOrExp(TablesList) +
 	             Query_ProjectData(TablesList) +
@@ -420,7 +440,7 @@ Function CheckStatusOfItemReceipt(DocumentRef, FillingRef) Export
 	
 EndFunction
 
-// Check "Use Item receipt" of passed purchase order by ref. 
+// Check "Use Item receipt" of passed purchase order by ref.
 Function CheckUseItemReceiptOfPurchaseOrder(DocumentRef, FillingRef) Export
 	
 	StatusOK = FillingRef.UseIR;
@@ -919,10 +939,9 @@ Function Query_InventoryJournal(TablesList)
 	|FROM
 	|	Table_InventoryJournal_LineItems AS LineItems_FIFO
 	|	LEFT JOIN Document.PurchaseInvoice AS PurchaseInvoice
-	|		ON True
+	|		ON PurchaseInvoice.Ref = &Ref
 	|WHERE
-	|	PurchaseInvoice.Ref = &Ref
-	|	AND LineItems_FIFO.Type = VALUE(Enum.InventoryCosting.FIFO)
+	|	    LineItems_FIFO.Type = VALUE(Enum.InventoryCosting.FIFO)
 	|	AND LineItems_FIFO.QuantityRequested > 0
 	|
 	|UNION ALL
@@ -950,10 +969,9 @@ Function Query_InventoryJournal(TablesList)
 	|FROM
 	|	Table_InventoryJournal_LineItems AS LineItems_WAve
 	|	LEFT JOIN Document.PurchaseInvoice AS PurchaseInvoice
-	|		ON True
+	|		ON PurchaseInvoice.Ref = &Ref
 	|WHERE
-	|	PurchaseInvoice.Ref = &Ref
-	|	AND LineItems_WAve.Type      = VALUE(Enum.InventoryCosting.WeightedAverage)
+	|	    LineItems_WAve.Type      = VALUE(Enum.InventoryCosting.WeightedAverage)
 	|	AND LineItems_WAve.Location <> VALUE(Catalog.Locations.EmptyRef)
 	|	AND LineItems_WAve.QuantityRequested > 0
 	|
@@ -984,10 +1002,9 @@ Function Query_InventoryJournal(TablesList)
 	|FROM
 	|	Table_InventoryJournal_LineItems AS LineItems_WAve
 	|	LEFT JOIN Document.PurchaseInvoice AS PurchaseInvoice
-	|		ON True
+	|		ON PurchaseInvoice.Ref = &Ref
 	|WHERE
-	|	PurchaseInvoice.Ref = &Ref
-	|	AND LineItems_WAve.Type     = VALUE(Enum.InventoryCosting.WeightedAverage)
+	|	    LineItems_WAve.Type     = VALUE(Enum.InventoryCosting.WeightedAverage)
 	|	AND LineItems_WAve.Location = VALUE(Catalog.Locations.EmptyRef)
 	|	AND LineItems_WAve.QuantityRequested > 0";
 	
@@ -1127,20 +1144,20 @@ Function Query_GeneralJournal_Accounts_ExpAP(TablesList)
 	"SELECT // ExpAP accounts selection
 	// ------------------------------------------------------
 	// Dimensions
-	|   Constants.ExpenseAccount  AS ExpenseAccount,
+	|	Constants.ExpenseAccount  AS ExpenseAccount,
 	// ------------------------------------------------------
 	// Resources
 	|	SUM(Accounts.Amount)      AS Amount,
 	|	SUM(Accounts.IRAmount)    AS IRAmount
 	// ------------------------------------------------------
 	|INTO
-	|   Table_GeneralJournal_Accounts_ExpAP
+	|	Table_GeneralJournal_Accounts_ExpAP
 	|FROM
 	|	Table_GeneralJournal_LineItems AS Accounts
 	|		LEFT JOIN Constants AS Constants
 	|		ON (TRUE)
 	|GROUP BY
-	|   Constants.ExpenseAccount";
+	|	Constants.ExpenseAccount";
 	
 	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
 	
@@ -1173,10 +1190,16 @@ Function Query_GeneralJournal(TablesList)
 	|	NULL                                  AS ExtDimension2,
 	// ------------------------------------------------------
 	// Dimensions
-	|	NULL                                  AS Currency,
+	|	CASE 	WHEN InvOrExp.InvOrExpAccount.AccountType = VALUE(Enum.AccountTypes.Bank)
+	|			THEN InvOrExp.InvOrExpAccount.Currency
+	|			ELSE NULL
+	|	END 								  AS Currency, // Changed to case by MISA
 	// ------------------------------------------------------
 	// Resources
-	|	NULL                                  AS Amount,
+	|	CASE 	WHEN InvOrExp.InvOrExpAccount.AccountType = VALUE(Enum.AccountTypes.Bank)
+	|			THEN InvOrExp.Amount
+	|			ELSE NULL
+	|	END 								  AS Amount,   // Changed to case by MISA
 	|	CAST( // Format(Amount * ExchangeRate, ""ND=17; NFD=2"")
 	|		InvOrExp.Amount *
 	|		CASE WHEN PurchaseInvoice.ExchangeRate > 0
@@ -1190,15 +1213,14 @@ Function Query_GeneralJournal(TablesList)
 	|FROM
 	|	Table_GeneralJournal_Accounts_InvOrExp AS InvOrExp
 	|	LEFT JOIN Document.PurchaseInvoice AS PurchaseInvoice
-	|		ON True
+	|		ON PurchaseInvoice.Ref = &Ref
 	|WHERE
-	|	PurchaseInvoice.Ref = &Ref
-	|	AND // Amount > 0
-	|		InvOrExp.Amount > 0
+	|	// Amount > 0
+	|	InvOrExp.Amount > 0
 	|
 	|UNION ALL
 	|
-	|SELECT // Cr: Expences
+	|SELECT // Cr: Expenses
 	// ------------------------------------------------------
 	// Standard attributes
 	|	PurchaseInvoice.Ref                   AS Recorder,
@@ -1234,11 +1256,10 @@ Function Query_GeneralJournal(TablesList)
 	|FROM
 	|	Table_GeneralJournal_Accounts_InvOrExp AS InvOrExp
 	|	LEFT JOIN Document.PurchaseInvoice AS PurchaseInvoice
-	|		ON True
+	|		ON PurchaseInvoice.Ref = &Ref
 	|WHERE
-	|	PurchaseInvoice.Ref = &Ref
-	|	AND // Amount > 0
-	|		-InvOrExp.Amount > 0
+	|	// Amount > 0
+	|	-InvOrExp.Amount > 0
 	|
 	|UNION ALL
 	|
@@ -1276,25 +1297,67 @@ Function Query_GeneralJournal(TablesList)
 	|	Null                                  AS Memo
 	// ------------------------------------------------------
 	|FROM
-	|   Table_GeneralJournal_Accounts_ExpAP AS ExpAP
+	|	Table_GeneralJournal_Accounts_ExpAP AS ExpAP
 	|	LEFT JOIN Document.PurchaseInvoice AS PurchaseInvoice
-	|		ON True
+	|		ON PurchaseInvoice.Ref = &Ref
 	|WHERE
-	|	PurchaseInvoice.Ref = &Ref
-	|	AND // Amount > 0
-	|		ExpAP.IRAmount > 0
+	|	// Amount > 0
+	|	ExpAP.IRAmount > 0
 	|
 	|UNION ALL
 	|
-	|SELECT // Dr or Cr: Expense
+	|SELECT // Dr: Accounts payable
+	// ------------------------------------------------------
+	// Standard attributes
+	|	PurchaseInvoice.Ref                   AS Recorder,
+	|	PurchaseInvoice.Date                  AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccountingRecordType.Debit)     AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	PurchaseInvoice.APAccount             AS Account,
+	|	VALUE(ChartOfCharacteristicTypes.Dimensions.Company)
+	|	                                      AS ExtDimensionType1,
+	|	PurchaseInvoice.Company               AS ExtDimension1,
+	|	VALUE(ChartOfCharacteristicTypes.Dimensions.Document)
+	|	                                      AS ExtDimensionType2,
+	|	PurchaseInvoice.Ref                   AS ExtDimension2,
+	// ------------------------------------------------------
+	// Dimensions
+	|	PurchaseInvoice.Currency              AS Currency,
+	// ------------------------------------------------------
+	// Resources
+	|	-ExpAP.IRAmount                       AS Amount,
+	|	CAST( // Format(Amount * ExchangeRate, ""ND=17; NFD=2"")
+	|		-ExpAP.IRAmount *
+	|		CASE WHEN PurchaseInvoice.ExchangeRate > 0
+	|			 THEN PurchaseInvoice.ExchangeRate
+	|			 ELSE 1 END
+	|		AS NUMBER (17, 2))                AS AmountRC,
+	// ------------------------------------------------------
+	// Attributes
+	|	Null                                  AS Memo
+	// ------------------------------------------------------
+	|FROM
+	|	Table_GeneralJournal_Accounts_ExpAP AS ExpAP
+	|	LEFT JOIN Document.PurchaseInvoice AS PurchaseInvoice
+	|		ON PurchaseInvoice.Ref = &Ref
+	|WHERE
+	|	// Amount > 0
+	|	-ExpAP.IRAmount > 0
+	|
+	|UNION ALL
+	|
+	|SELECT // Dr or Cr: Purchase variance
 	// ------------------------------------------------------
 	// Standard attributes
 	|	PurchaseInvoice.Ref                   AS Recorder,
 	|	PurchaseInvoice.Date                  AS Period,
 	|	0                                     AS LineNumber,
 	|	CASE WHEN ExpAP.Amount - ExpAP.IRAmount > 0
-	|        THEN VALUE(AccountingRecordType.Debit)
-	|        ELSE VALUE(AccountingRecordType.Credit)
+	|	     THEN VALUE(AccountingRecordType.Debit)
+	|	     ELSE VALUE(AccountingRecordType.Credit)
 	|	END                                   AS RecordType,
 	|	True                                  AS Active,
 	// ------------------------------------------------------
@@ -1314,25 +1377,24 @@ Function Query_GeneralJournal(TablesList)
 	|	NULL                                  AS Amount,
 	|	CAST( // Format(Amount * ExchangeRate, ""ND=17; NFD=2"")
 	|	     CASE WHEN ExpAP.Amount - ExpAP.IRAmount > 0
-	|             THEN ExpAP.Amount - ExpAP.IRAmount
-	|             ELSE ExpAP.IRAmount - ExpAP.Amount
-	|        END *
-	|		 CASE WHEN PurchaseInvoice.ExchangeRate > 0
-	|		      THEN PurchaseInvoice.ExchangeRate
-	|			  ELSE 1 END
-	|		 AS NUMBER (17, 2))               AS AmountRC,
+	|	          THEN ExpAP.Amount - ExpAP.IRAmount
+	|	          ELSE ExpAP.IRAmount - ExpAP.Amount
+	|	     END *
+	|	     CASE WHEN PurchaseInvoice.ExchangeRate > 0
+	|	          THEN PurchaseInvoice.ExchangeRate
+	|	          ELSE 1 END
+	|	     AS NUMBER (17, 2))               AS AmountRC,
 	// ------------------------------------------------------
 	// Attributes
 	|	Null                                  AS Memo
 	// ------------------------------------------------------
 	|FROM
-	|   Table_GeneralJournal_Accounts_ExpAP AS ExpAP
+	|	Table_GeneralJournal_Accounts_ExpAP AS ExpAP
 	|	LEFT JOIN Document.PurchaseInvoice AS PurchaseInvoice
-	|		ON True
+	|		ON PurchaseInvoice.Ref = &Ref
 	|WHERE
-	|	PurchaseInvoice.Ref = &Ref
-	|	AND // Amount <> IRAmount
-	|		ExpAP.Amount - ExpAP.IRAmount <> 0
+	|	// Amount <> IRAmount
+	|	ExpAP.Amount - ExpAP.IRAmount <> 0
 	|
 	|UNION ALL
 	|
@@ -1343,8 +1405,8 @@ Function Query_GeneralJournal(TablesList)
 	|	PurchaseInvoice.Date                  AS Period,
 	|	0                                     AS LineNumber,
 	|	CASE WHEN ExpAP.Amount - ExpAP.IRAmount > 0
-	|        THEN VALUE(AccountingRecordType.Credit)
-	|        ELSE VALUE(AccountingRecordType.Debit)
+	|	     THEN VALUE(AccountingRecordType.Credit)
+	|	     ELSE VALUE(AccountingRecordType.Debit)
 	|	END                                   AS RecordType,
 	|	True                                  AS Active,
 	// ------------------------------------------------------
@@ -1362,9 +1424,491 @@ Function Query_GeneralJournal(TablesList)
 	// ------------------------------------------------------
 	// Resources
 	|	CASE WHEN ExpAP.Amount - ExpAP.IRAmount > 0
-	|        THEN ExpAP.Amount - ExpAP.IRAmount
-	|        ELSE ExpAP.IRAmount - ExpAP.Amount
-	|   END                                   AS Amount,
+	|	     THEN ExpAP.Amount - ExpAP.IRAmount
+	|	     ELSE ExpAP.IRAmount - ExpAP.Amount
+	|	END                                   AS Amount,
+	|	CAST( // Format(Amount * ExchangeRate, ""ND=17; NFD=2"")
+	|	     CASE WHEN ExpAP.Amount - ExpAP.IRAmount > 0
+	|	          THEN ExpAP.Amount - ExpAP.IRAmount
+	|	          ELSE ExpAP.IRAmount - ExpAP.Amount
+	|	     END *
+	|	     CASE WHEN PurchaseInvoice.ExchangeRate > 0
+	|	          THEN PurchaseInvoice.ExchangeRate
+	|	          ELSE 1 END
+	|	     AS NUMBER (17, 2))               AS AmountRC,
+	// ------------------------------------------------------
+	// Attributes
+	|	Null                                  AS Memo
+	// ------------------------------------------------------
+	|FROM
+	|   Table_GeneralJournal_Accounts_ExpAP AS ExpAP
+	|	LEFT JOIN Document.PurchaseInvoice AS PurchaseInvoice
+	|		ON PurchaseInvoice.Ref = &Ref
+	|WHERE
+	|	// Amount <> IRAmount
+	|	ExpAP.Amount - ExpAP.IRAmount <> 0";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+//--//GJ++
+
+// Query for document data.
+Function Query_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp(TablesList)
+	
+	// Add GeneralJournalAnalyticsDimensions inventory or expenses accounts table to document structure.
+	TablesList.Insert("Table_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // InvOrExp accounts selection
+	// ------------------------------------------------------
+	// Dimensions
+	|	Accounts.InvOrExpAccount              AS InvOrExpAccount,
+	|	Accounts.Class                        AS Class,
+	|	Accounts.Project                      AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	SUM(Accounts.IRAmount)                AS Amount
+	// ------------------------------------------------------
+	|INTO
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp
+	|FROM
+	|	Table_GeneralJournal_LineItems AS Accounts
+	|GROUP BY
+	|	Accounts.InvOrExpAccount,
+	|	Accounts.Class,
+	|	Accounts.Project";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp_Difference_Amount(TablesList)
+	
+	// Add GeneralJournalAnalyticsDimensions difference InvOrExp amount table to document structure.
+	TablesList.Insert("Table_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp_Difference_Amount", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+		"SELECT // InvOrExp accounts selection
+		// ------------------------------------------------------
+		// Dimensions
+		|	InvOrExp_Dimensions.InvOrExpAccount        AS InvOrExpAccount,
+		// ------------------------------------------------------
+		// Resources
+		|	CAST( // Format(Amount * ExchangeRate, ""ND=17; NFD=2"")
+		|		InvOrExp_Dimensions.Amount *
+		|		CASE WHEN PurchaseInvoice.ExchangeRate > 0
+		|			 THEN PurchaseInvoice.ExchangeRate
+		|			 ELSE 1 END
+		|		AS NUMBER (17, 2))                     AS Amount
+		// ------------------------------------------------------
+		|INTO
+		|	Table_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp_Difference_Amount
+		|FROM
+		|	Table_GeneralJournal_Accounts_InvOrExp AS InvOrExp_Dimensions
+		|	LEFT JOIN Document.PurchaseInvoice AS PurchaseInvoice
+		|		ON PurchaseInvoice.Ref = &Ref
+		|WHERE
+		|	// Amount > 0
+		|	InvOrExp_Dimensions.Amount > 0
+		|
+		|UNION ALL
+		|
+		|SELECT // InvOrExp Dimensions accounts selection
+		// ------------------------------------------------------
+		// Dimensions
+		|	InvOrExp_Dimensions.InvOrExpAccount        AS InvOrExpAccount,
+		// ------------------------------------------------------
+		// Resources
+		|	CAST( // Format(Amount * ExchangeRate, ""ND=17; NFD=2"")
+		|		InvOrExp_Dimensions.Amount *
+		|		CASE WHEN PurchaseInvoice.ExchangeRate > 0
+		|			 THEN PurchaseInvoice.ExchangeRate
+		|			 ELSE 1 END
+		|		AS NUMBER (17, 2)) * -1                AS Amount
+		// ------------------------------------------------------
+		|FROM
+		|	Table_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp AS InvOrExp_Dimensions
+		|	LEFT JOIN Document.PurchaseInvoice AS PurchaseInvoice
+		|		ON PurchaseInvoice.Ref = &Ref
+		|WHERE
+		|	// Amount > 0
+		|	InvOrExp_Dimensions.Amount > 0";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp_Difference(TablesList)
+	
+	// Add GeneralJournalAnalyticsDimensions difference InvOrExp table to document structure.
+	TablesList.Insert("Table_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp_Difference", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // Dimensions difference selection
+	// Dimensions
+	// ------------------------------------------------------
+	|	DimensionsDifference.InvOrExpAccount       AS InvOrExpAccount,
+	// ------------------------------------------------------
+	// Resources
+	|	SUM(DimensionsDifference.Amount)           AS Amount
+	// ------------------------------------------------------
+	|INTO
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp_Difference
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp_Difference_Amount AS DimensionsDifference
+	|GROUP BY
+	|	DimensionsDifference.InvOrExpAccount";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_GeneralJournalAnalyticsDimensions_Accounts_InvOrExpNeg_Difference_Amount(TablesList)
+	
+	// Add GeneralJournalAnalyticsDimensions difference InvOrExpNeg amount table to document structure.
+	TablesList.Insert("Table_GeneralJournalAnalyticsDimensions_Accounts_InvOrExpNeg_Difference_Amount", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+		"SELECT // InvOrExpNeg accounts selection
+		// ------------------------------------------------------
+		// Dimensions
+		|	InvOrExpNeg_Dimensions.InvOrExpAccount   AS InvOrExpAccount,
+		// ------------------------------------------------------
+		// Resources
+		|	CAST( // Format(Amount * ExchangeRate, ""ND=17; NFD=2"")
+		|		-InvOrExpNeg_Dimensions.Amount *
+		|		CASE WHEN PurchaseInvoice.ExchangeRate > 0
+		|			 THEN PurchaseInvoice.ExchangeRate
+		|			 ELSE 1 END
+		|		AS NUMBER (17, 2))                   AS Amount
+		// ------------------------------------------------------
+		|INTO
+		|	Table_GeneralJournalAnalyticsDimensions_Accounts_InvOrExpNeg_Difference_Amount
+		|FROM
+		|	Table_GeneralJournal_Accounts_InvOrExp AS InvOrExpNeg_Dimensions
+		|	LEFT JOIN Document.PurchaseInvoice AS PurchaseInvoice
+		|		ON PurchaseInvoice.Ref = &Ref
+		|WHERE
+		|	// Amount > 0
+		|	-InvOrExpNeg_Dimensions.Amount > 0
+		|
+		|UNION ALL
+		|
+		|SELECT // InvOrExpNeg Dimensions accounts selection
+		// ------------------------------------------------------
+		// Dimensions
+		|	InvOrExpNeg_Dimensions.InvOrExpAccount   AS InvOrExpAccount,
+		// ------------------------------------------------------
+		// Resources
+		|	CAST( // Format(Amount * ExchangeRate, ""ND=17; NFD=2"")
+		|		-InvOrExpNeg_Dimensions.Amount *
+		|		CASE WHEN PurchaseInvoice.ExchangeRate > 0
+		|			 THEN PurchaseInvoice.ExchangeRate
+		|			 ELSE 1 END
+		|		AS NUMBER (17, 2)) * -1              AS Amount
+		// ------------------------------------------------------
+		|FROM
+		|	Table_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp AS InvOrExpNeg_Dimensions
+		|	LEFT JOIN Document.PurchaseInvoice AS PurchaseInvoice
+		|		ON PurchaseInvoice.Ref = &Ref
+		|WHERE
+		|	// Amount > 0
+		|	-InvOrExpNeg_Dimensions.Amount > 0";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_GeneralJournalAnalyticsDimensions_Accounts_InvOrExpNeg_Difference(TablesList)
+	
+	// Add GeneralJournalAnalyticsDimensions difference InvOrExpNeg table to document structure.
+	TablesList.Insert("Table_GeneralJournalAnalyticsDimensions_Accounts_InvOrExpNeg_Difference", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // Dimensions difference selection
+	// ------------------------------------------------------
+	// Dimensions
+	|	DimensionsDifference.InvOrExpAccount       AS InvOrExpAccount,
+	// ------------------------------------------------------
+	// Resources
+	|	SUM(DimensionsDifference.Amount)           AS Amount
+	// ------------------------------------------------------
+	|INTO
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_InvOrExpNeg_Difference
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_InvOrExpNeg_Difference_Amount AS DimensionsDifference
+	|GROUP BY
+	|	DimensionsDifference.InvOrExpAccount";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_GeneralJournalAnalyticsDimensions_Transactions(TablesList)
+	
+	// Add GeneralJournalAnalyticsDimensions_Transactions table to document structure.
+	TablesList.Insert("Table_GeneralJournalAnalyticsDimensions_Transactions", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // Receipt: Inventory
+	// ------------------------------------------------------
+	// Standard attributes
+	|	PurchaseInvoice.Ref                   AS Recorder,
+	|	PurchaseInvoice.Date                  AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccumulationRecordType.Receipt) AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	InvOrExp.InvOrExpAccount              AS Account,
+	// ------------------------------------------------------
+	// Dimensions
+	|	PurchaseInvoice.Company               AS Company,
+	|	InvOrExp.Class                        AS Class,
+	|	InvOrExp.Project                      AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	CAST( // Format(Amount * ExchangeRate, ""ND=17; NFD=2"")
+	|		InvOrExp.Amount *
+	|		CASE WHEN PurchaseInvoice.ExchangeRate > 0
+	|			 THEN PurchaseInvoice.ExchangeRate
+	|			 ELSE 1 END
+	|		AS NUMBER (17, 2))                AS AmountRC,
+	// ------------------------------------------------------
+	// Attributes
+	|	1                                     AS JournalEntryIntNum,
+	|	False                                 AS JournalEntryMainRec
+	// ------------------------------------------------------
+	|INTO Table_GeneralJournalAnalyticsDimensions_Transactions
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp AS InvOrExp
+	|	LEFT JOIN Document.PurchaseInvoice AS PurchaseInvoice
+	|		ON PurchaseInvoice.Ref = &Ref
+	|WHERE
+	|	// Amount > 0
+	|	InvOrExp.Amount > 0
+	|
+	|UNION ALL
+	|
+	|SELECT // Receipt: Inventory (difference)
+	// ------------------------------------------------------
+	// Standard attributes
+	|	PurchaseInvoice.Ref                   AS Recorder,
+	|	PurchaseInvoice.Date                  AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccumulationRecordType.Receipt) AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	InvOrExp.InvOrExpAccount              AS Account,
+	// ------------------------------------------------------
+	// Dimensions
+	|	PurchaseInvoice.Company               AS Company,
+	|	NULL                                  AS Class,
+	|	NULL                                  AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	InvOrExp.Amount                       AS AmountRC,
+	// ------------------------------------------------------
+	// Attributes
+	|	1                                     AS JournalEntryIntNum,
+	|	False                                 AS JournalEntryMainRec
+	// ------------------------------------------------------
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp_Difference AS InvOrExp
+	|	LEFT JOIN Document.PurchaseInvoice AS PurchaseInvoice
+	|		ON PurchaseInvoice.Ref = &Ref
+	|WHERE
+	|	// Amount <> 0
+	|	InvOrExp.Amount <> 0
+	|
+	|UNION ALL
+	|
+	|SELECT // Expense: Expenses
+	// ------------------------------------------------------
+	// Standard attributes
+	|	PurchaseInvoice.Ref                   AS Recorder,
+	|	PurchaseInvoice.Date                  AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccumulationRecordType.Expense) AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	InvOrExp.InvOrExpAccount              AS Account,
+	// ------------------------------------------------------
+	// Dimensions
+	|	PurchaseInvoice.Company               AS Company,
+	|	InvOrExp.Class                        AS Class,
+	|	InvOrExp.Project                      AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	CAST( // Format(Amount * ExchangeRate, ""ND=17; NFD=2"")
+	|		-InvOrExp.Amount *
+	|		CASE WHEN PurchaseInvoice.ExchangeRate > 0
+	|			 THEN PurchaseInvoice.ExchangeRate
+	|			 ELSE 1 END
+	|		AS NUMBER (17, 2))                AS AmountRC,
+	// ------------------------------------------------------
+	// Attributes
+	|	1                                     AS JournalEntryIntNum,
+	|	False                                 AS JournalEntryMainRec
+	// ------------------------------------------------------
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp AS InvOrExp
+	|	LEFT JOIN Document.PurchaseInvoice AS PurchaseInvoice
+	|		ON PurchaseInvoice.Ref = &Ref
+	|WHERE
+	|	// Amount > 0
+	|	-InvOrExp.Amount > 0
+	|
+	|UNION ALL
+	|
+	|SELECT // Expense: Expenses (difference)
+	// ------------------------------------------------------
+	// Standard attributes
+	|	PurchaseInvoice.Ref                   AS Recorder,
+	|	PurchaseInvoice.Date                  AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccumulationRecordType.Expense) AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	InvOrExp.InvOrExpAccount              AS Account,
+	// ------------------------------------------------------
+	// Dimensions
+	|	PurchaseInvoice.Company               AS Company,
+	|	NULL                                  AS Class,
+	|	NULL                                  AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	InvOrExp.Amount                       AS AmountRC,
+	// ------------------------------------------------------
+	// Attributes
+	|	1                                     AS JournalEntryIntNum,
+	|	False                                 AS JournalEntryMainRec
+	// ------------------------------------------------------
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_InvOrExpNeg_Difference AS InvOrExp
+	|	LEFT JOIN Document.PurchaseInvoice AS PurchaseInvoice
+	|		ON PurchaseInvoice.Ref = &Ref
+	|WHERE
+	|	// Amount <> 0
+	|	InvOrExp.Amount <> 0
+	|
+	|UNION ALL
+	|
+	|SELECT // Expense: Accounts payable
+	// ------------------------------------------------------
+	// Standard attributes
+	|	PurchaseInvoice.Ref                   AS Recorder,
+	|	PurchaseInvoice.Date                  AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccumulationRecordType.Expense) AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	PurchaseInvoice.APAccount             AS Account,
+	// ------------------------------------------------------
+	// Dimensions
+	|	PurchaseInvoice.Company               AS Company,
+	|	NULL                                  AS Class,
+	|	NULL                                  AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	CAST( // Format(Amount * ExchangeRate, ""ND=17; NFD=2"")
+	|		ExpAP.IRAmount *
+	|		CASE WHEN PurchaseInvoice.ExchangeRate > 0
+	|			 THEN PurchaseInvoice.ExchangeRate
+	|			 ELSE 1 END
+	|		AS NUMBER (17, 2))                AS AmountRC,
+	// ------------------------------------------------------
+	// Attributes
+	|	1                                     AS JournalEntryIntNum,
+	|	True                                  AS JournalEntryMainRec
+	// ------------------------------------------------------
+	|FROM
+	|	Table_GeneralJournal_Accounts_ExpAP AS ExpAP
+	|	LEFT JOIN Document.PurchaseInvoice AS PurchaseInvoice
+	|		ON PurchaseInvoice.Ref = &Ref
+	|WHERE
+	|	// Amount > 0
+	|	ExpAP.IRAmount > 0
+	|
+	|UNION ALL
+	|
+	|SELECT // Receipt: Accounts payable
+	// ------------------------------------------------------
+	// Standard attributes
+	|	PurchaseInvoice.Ref                   AS Recorder,
+	|	PurchaseInvoice.Date                  AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccumulationRecordType.Receipt) AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	PurchaseInvoice.APAccount             AS Account,
+	// ------------------------------------------------------
+	// Dimensions
+	|	PurchaseInvoice.Company               AS Company,
+	|	NULL                                  AS Class,
+	|	NULL                                  AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	CAST( // Format(Amount * ExchangeRate, ""ND=17; NFD=2"")
+	|		-ExpAP.IRAmount *
+	|		CASE WHEN PurchaseInvoice.ExchangeRate > 0
+	|			 THEN PurchaseInvoice.ExchangeRate
+	|			 ELSE 1 END
+	|		AS NUMBER (17, 2))                AS AmountRC,
+	// ------------------------------------------------------
+	// Attributes
+	|	1                                     AS JournalEntryIntNum,
+	|	True                                  AS JournalEntryMainRec
+	// ------------------------------------------------------
+	|FROM
+	|	Table_GeneralJournal_Accounts_ExpAP AS ExpAP
+	|	LEFT JOIN Document.PurchaseInvoice AS PurchaseInvoice
+	|		ON PurchaseInvoice.Ref = &Ref
+	|WHERE
+	|	// Amount > 0
+	|	-ExpAP.IRAmount > 0
+	|
+	|UNION ALL
+	|
+	|SELECT // Receipt or Expense: Purchase variance
+	// ------------------------------------------------------
+	// Standard attributes
+	|	PurchaseInvoice.Ref                   AS Recorder,
+	|	PurchaseInvoice.Date                  AS Period,
+	|	0                                     AS LineNumber,
+	|	CASE WHEN ExpAP.Amount - ExpAP.IRAmount > 0
+	|        THEN VALUE(AccumulationRecordType.Receipt)
+	|        ELSE VALUE(AccumulationRecordType.Expense)
+	|	END                                   AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	ExpAP.ExpenseAccount                  AS Account,
+	// ------------------------------------------------------
+	// Dimensions
+	|	PurchaseInvoice.Company               AS Company,
+	|	NULL                                  AS Class,
+	|	NULL                                  AS Project,
+	// ------------------------------------------------------
+	// Resources
 	|	CAST( // Format(Amount * ExchangeRate, ""ND=17; NFD=2"")
 	|	     CASE WHEN ExpAP.Amount - ExpAP.IRAmount > 0
 	|             THEN ExpAP.Amount - ExpAP.IRAmount
@@ -1376,71 +1920,451 @@ Function Query_GeneralJournal(TablesList)
 	|		 AS NUMBER (17, 2))               AS AmountRC,
 	// ------------------------------------------------------
 	// Attributes
-	|	Null                                  AS Memo
+	|	1                                     AS JournalEntryIntNum,
+	|	False                                 AS JournalEntryMainRec
 	// ------------------------------------------------------
 	|FROM
 	|   Table_GeneralJournal_Accounts_ExpAP AS ExpAP
 	|	LEFT JOIN Document.PurchaseInvoice AS PurchaseInvoice
-	|		ON True
+	|		ON PurchaseInvoice.Ref = &Ref
 	|WHERE
-	|	PurchaseInvoice.Ref = &Ref
-	|	AND // Amount <> IRAmount
-	|		ExpAP.Amount - ExpAP.IRAmount <> 0";
+	|	// Amount <> IRAmount
+	|	ExpAP.Amount - ExpAP.IRAmount <> 0
+	|
+	|UNION ALL
+	|
+	|SELECT // Receipt or Expense: Accounts payable
+	// ------------------------------------------------------
+	// Standard attributes
+	|	PurchaseInvoice.Ref                   AS Recorder,
+	|	PurchaseInvoice.Date                  AS Period,
+	|	0                                     AS LineNumber,
+	|	CASE WHEN ExpAP.Amount - ExpAP.IRAmount > 0
+	|        THEN VALUE(AccumulationRecordType.Expense)
+	|        ELSE VALUE(AccumulationRecordType.Receipt)
+	|	END                                   AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	PurchaseInvoice.APAccount             AS Account,
+	// ------------------------------------------------------
+	// Dimensions
+	|	PurchaseInvoice.Company               AS Company,
+	|	NULL                                  AS Class,
+	|	NULL                                  AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	CAST( // Format(Amount * ExchangeRate, ""ND=17; NFD=2"")
+	|	     CASE WHEN ExpAP.Amount - ExpAP.IRAmount > 0
+	|             THEN ExpAP.Amount - ExpAP.IRAmount
+	|             ELSE ExpAP.IRAmount - ExpAP.Amount
+	|        END *
+	|		 CASE WHEN PurchaseInvoice.ExchangeRate > 0
+	|		      THEN PurchaseInvoice.ExchangeRate
+	|			  ELSE 1 END
+	|		 AS NUMBER (17, 2))               AS AmountRC,
+	// ------------------------------------------------------
+	// Attributes
+	|	1                                     AS JournalEntryIntNum,
+	|	True                                  AS JournalEntryMainRec
+	// ------------------------------------------------------
+	|FROM
+	|   Table_GeneralJournal_Accounts_ExpAP AS ExpAP
+	|	LEFT JOIN Document.PurchaseInvoice AS PurchaseInvoice
+	|		ON PurchaseInvoice.Ref = &Ref
+	|WHERE
+	|	// Amount <> IRAmount
+	|	ExpAP.Amount - ExpAP.IRAmount <> 0";
 	
 	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
 	
 EndFunction
 
 // Query for document data.
-Function Query_CashFlowData_Accounts(TablesList)
+Function Query_GeneralJournalAnalyticsDimensions(TablesList)
 	
-	// Add CashFlowData inventory or expenses accounts table to document structure.
-	TablesList.Insert("Table_CashFlowData_Accounts", TablesList.Count());
+	// Add GeneralJournalAnalyticsDimensions table to document structure.
+	TablesList.Insert("Table_GeneralJournalAnalyticsDimensions", TablesList.Count());
 	
 	// Collect accounting data.
 	QueryText =
-	"SELECT // InvOrExp accounts selection
+	"SELECT // Transactions
+	// ------------------------------------------------------
+	// Standard attributes
+	|	Transaction.Recorder                  AS Recorder,
+	|	Transaction.Period                    AS Period,
+	|	Transaction.LineNumber                AS LineNumber,
+	|	Transaction.RecordType                AS RecordType,
+	|	Transaction.Active                    AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	Transaction.Account                   AS Account,
 	// ------------------------------------------------------
 	// Dimensions
-	|	CASE WHEN Accounts.Type = VALUE(Enum.InventoryTypes.Inventory)
-	|	     THEN Accounts.COGSAccount
-	|	     ELSE Accounts.InvOrExpAccount
-	|	END                                   AS InvOrExpAccount,
+	|	Transaction.Company                   AS Company,
+	|	Transaction.Class                     AS Class,
+	|	Transaction.Project                   AS Project,
 	// ------------------------------------------------------
 	// Resources
-	|	Accounts.IRAmount                     AS Amount
+	|	Transaction.AmountRC                  AS AmountRC,
+	// ------------------------------------------------------
+	// Attributes
+	|	Transaction.JournalEntryIntNum        AS JournalEntryIntNum,
+	|	Transaction.JournalEntryMainRec       AS JournalEntryMainRec
+	// ------------------------------------------------------
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Transactions AS Transaction";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+//--//GJ--
+
+
+// Query for document data.
+Function Query_CashFlowData_Accounts_Positive(TablesList)
+	
+	// Add CashFlowData inventory or expenses accounts (positive) table to document structure.
+	TablesList.Insert("Table_CashFlowData_Accounts_Positive", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // Positive accounts selection
+	// Accounting attributes
+	|	AccountsTab.Account                                  AS Account,
+	// ------------------------------------------------------
+	// Dimensions
+	|	AccountsTab.Class                                    AS Class,
+	|	AccountsTab.Project                                  AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	AccountsTab.AmountRC                                 AS AmountRC
 	// ------------------------------------------------------
 	|INTO
-	|	Table_CashFlowData_Accounts
+	|	Table_CashFlowData_Accounts_Positive
 	|FROM
-	|	Table_GeneralJournal_LineItems AS Accounts";
+	|	Table_GeneralJournalAnalyticsDimensions_Transactions AS AccountsTab
+	|WHERE 
+	|	AccountsTab.RecordType = VALUE(AccumulationRecordType.Receipt)
+	|		AND AccountsTab.Account.AccountType <> VALUE(Enum.AccountTypes.AccountsReceivable)
+	|		AND AccountsTab.Account.AccountType <> VALUE(Enum.AccountTypes.AccountsPayable)";
 	
 	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
 	
 EndFunction
 
 // Query for document data.
-Function Query_CashFlowData_Accounts_InvOrExp(TablesList)
+Function Query_CashFlowData_Accounts_Positive_Amount(TablesList)
 	
-	// Add CashFlowData inventory or expenses accounts table to document structure.
-	TablesList.Insert("Table_CashFlowData_Accounts_InvOrExp", TablesList.Count());
+	// Add CashFlowData inventory or expenses accounts (positive amount) table to document structure.
+	TablesList.Insert("Table_CashFlowData_Accounts_Positive_Amount", TablesList.Count());
 	
 	// Collect accounting data.
 	QueryText =
-	"SELECT // InvOrExp accounts selection
-	// ------------------------------------------------------
-	// Dimensions
-	|	Accounts.InvOrExpAccount              AS InvOrExpAccount,
+	"SELECT // Positive accounts selection
 	// ------------------------------------------------------
 	// Resources
-	|	SUM(Accounts.Amount)                  AS Amount
+	|	SUM(Accounts.AmountRC)               AS AmountRC
 	// ------------------------------------------------------
 	|INTO
-	|	Table_CashFlowData_Accounts_InvOrExp
+	|	Table_CashFlowData_Accounts_Positive_Amount
 	|FROM
-	|	Table_CashFlowData_Accounts AS Accounts
+	|	Table_CashFlowData_Accounts_Positive AS Accounts";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_CashFlowData_Accounts_Negative(TablesList)
+	
+	// Add CashFlowData inventory or expenses accounts (negative) table to document structure.
+	TablesList.Insert("Table_CashFlowData_Accounts_Negative", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // Negative accounts selection
+	// ------------------------------------------------------
+	// Resources
+	|	AccountsTab.AmountRC                                 AS AmountRC
+	// ------------------------------------------------------
+	|INTO
+	|	Table_CashFlowData_Accounts_Negative
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Transactions AS AccountsTab
+	|WHERE 
+	|	AccountsTab.RecordType = VALUE(AccumulationRecordType.Expense)
+	|		AND AccountsTab.Account.AccountType <> VALUE(Enum.AccountTypes.AccountsReceivable)
+	|		AND AccountsTab.Account.AccountType <> VALUE(Enum.AccountTypes.AccountsPayable)";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_CashFlowData_Accounts_Negative_Amount(TablesList)
+	
+	// Add CashFlowData inventory or expenses accounts (negative amount) table to document structure.
+	TablesList.Insert("Table_CashFlowData_Accounts_Negative_Amount", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // Negative accounts selection
+	// ------------------------------------------------------
+	// Resources
+	|	SUM(Accounts.AmountRC)               AS AmountRC
+	// ------------------------------------------------------
+	|INTO
+	|	Table_CashFlowData_Accounts_Negative_Amount
+	|FROM
+	|	Table_CashFlowData_Accounts_Negative AS Accounts";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_CashFlowData_Accounts_Paid(TablesList)
+	
+	// Add CashFlowData inventory or expenses accounts (Paid) table to document structure.
+	TablesList.Insert("Table_CashFlowData_Accounts_Paid", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // Rec: Positive Inventory and Expenses (Expense)
+	// ------------------------------------------------------
+	// Dimensions
+	|	PositivePaid.Account                 AS Account,
+	// ------------------------------------------------------
+	// Dimensions
+	|	PositivePaid.Class                   AS Class,
+	|	PositivePaid.Project                 AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	CAST( // Format(Negative_Amount * (Positive * ExchangeRate) / Positive_Amount, ""ND=17; NFD=2"")
+	|		Negative_Amount.AmountRC * PositivePaid.AmountRC / Positive_Amount.AmountRC
+	|		AS NUMBER (17, 2))               AS AmountRC
+	// ------------------------------------------------------
+	|INTO
+	|	Table_CashFlowData_Accounts_Paid	
+	|FROM
+	|	Table_CashFlowData_Accounts_Positive AS PositivePaid 
+	|	LEFT JOIN Table_CashFlowData_Accounts_Positive_Amount AS Positive_Amount
+	|		ON TRUE
+	|	LEFT JOIN Table_CashFlowData_Accounts_Negative_Amount AS Negative_Amount
+	|		ON TRUE
+	|WHERE
+	|	// Amount <> 0
+	|	Negative_Amount.AmountRC <> 0
+	|		AND Positive_Amount.AmountRC <> 0
+	|		AND PositivePaid.AmountRC <> 0";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_CashFlowData_Accounts_Paid_Amount(TablesList)
+	
+	// Add CashFlowData inventory or expenses accounts (Paid amount) table to document structure.
+	TablesList.Insert("Table_CashFlowData_Accounts_Paid_Amount", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // Rec: Positive Inventory and Expenses (Expense)
+	// ------------------------------------------------------
+	// Resources
+	|	SUM(Paid.AmountRC)      AS AmountRC
+	// ------------------------------------------------------
+	|INTO
+	|	Table_CashFlowData_Accounts_Paid_Amount	
+	|FROM
+	|	Table_CashFlowData_Accounts_Paid AS Paid";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_CashFlowData_Accounts_Paid_Transactions(TablesList)
+	
+	// Add CashFlowData_Accounts_Paid_Transactions table to document structure.
+	TablesList.Insert("Table_CashFlowData_Accounts_Paid_Transactions", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // Paid Transactions
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	PaidTransaction.Account               AS Account,
+	// ------------------------------------------------------
+	// Dimensions
+	|	PaidTransaction.Class                 AS Class,
+	|	PaidTransaction.Project               AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	PaidTransaction.AmountRC              AS AmountRC
+	// ------------------------------------------------------
+	|INTO Table_CashFlowData_Accounts_Paid_Transactions
+	|FROM
+	|	Table_CashFlowData_Accounts_Paid AS PaidTransaction
+	|WHERE
+	|	PaidTransaction.AmountRC <> 0
+	|		AND (PaidTransaction.Account.AccountType = VALUE(Enum.AccountTypes.Income)
+	|			OR PaidTransaction.Account.AccountType = VALUE(Enum.AccountTypes.CostOfSales)
+	|			OR PaidTransaction.Account.AccountType = VALUE(Enum.AccountTypes.Expense)
+	|			OR PaidTransaction.Account.AccountType = VALUE(Enum.AccountTypes.OtherIncome)
+	|			OR PaidTransaction.Account.AccountType = VALUE(Enum.AccountTypes.OtherExpense)
+	|			OR PaidTransaction.Account.AccountType = VALUE(Enum.AccountTypes.IncomeTaxExpense))
+	|
+	|UNION ALL
+	|
+	|SELECT TOP 1 // Paid Transactions (difference)
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	PaidTransaction.Account                AS Account,
+	// ------------------------------------------------------
+	// Dimensions
+	|	PaidTransaction.Class                  AS Class,
+	|	PaidTransaction.Project                AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	Negative_Amount.AmountRC - Paid_Amount.AmountRC
+	|								           AS AmountRC
+	// ------------------------------------------------------
+	|FROM
+	|	Table_CashFlowData_Accounts_Paid AS PaidTransaction 
+	|	LEFT JOIN Table_CashFlowData_Accounts_Negative_Amount AS Negative_Amount
+	|		ON TRUE
+	|	LEFT JOIN Table_CashFlowData_Accounts_Paid_Amount AS Paid_Amount
+	|		ON TRUE
+	|WHERE
+	|	PaidTransaction.AmountRC <> 0
+	|		AND (PaidTransaction.Account.AccountType = VALUE(Enum.AccountTypes.Income)
+	|			OR PaidTransaction.Account.AccountType = VALUE(Enum.AccountTypes.CostOfSales)
+	|			OR PaidTransaction.Account.AccountType = VALUE(Enum.AccountTypes.Expense)
+	|			OR PaidTransaction.Account.AccountType = VALUE(Enum.AccountTypes.OtherIncome)
+	|			OR PaidTransaction.Account.AccountType = VALUE(Enum.AccountTypes.OtherExpense)
+	|			OR PaidTransaction.Account.AccountType = VALUE(Enum.AccountTypes.IncomeTaxExpense))
+	|		AND (Negative_Amount.AmountRC - Paid_Amount.AmountRC) <> 0";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_CashFlowData_Accounts_Paid_Transactions_Corrected(TablesList)
+	
+	// Add CashFlowData_Accounts_Paid_Transactions_Corrected table to document structure.
+	TablesList.Insert("Table_CashFlowData_Accounts_Paid_Transactions_Corrected", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // Paid Transactions
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	PaidTransaction.Account               AS Account,
+	// ------------------------------------------------------
+	// Dimensions
+	|	PaidTransaction.Class                 AS Class,
+	|	PaidTransaction.Project               AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	SUM(PaidTransaction.AmountRC)         AS AmountRC
+	// ------------------------------------------------------
+	|INTO Table_CashFlowData_Accounts_Paid_Transactions_Corrected
+	|FROM
+	|	Table_CashFlowData_Accounts_Paid_Transactions AS PaidTransaction
+	|WHERE
+	|	PaidTransaction.AmountRC <> 0
 	|GROUP BY
-	|	Accounts.InvOrExpAccount";
+	|	PaidTransaction.Account,
+	|	PaidTransaction.Class,
+	|	PaidTransaction.Project";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_CashFlowData_Accounts_Paid_Transactions_Amount(TablesList)
+	
+	// Add CashFlowData_Accounts_Paid_Transactions_Amount table to document structure.
+	TablesList.Insert("Table_CashFlowData_Accounts_Paid_Transactions_Amount", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // Paid Transactions
+	// ------------------------------------------------------
+	// Resources
+	|	SUM(PaidTransaction.AmountRC)         AS AmountRC
+	// ------------------------------------------------------
+	|INTO Table_CashFlowData_Accounts_Paid_Transactions_Amount
+	|FROM
+	|	Table_CashFlowData_Accounts_Paid_Transactions AS PaidTransaction
+	|WHERE
+	|	PaidTransaction.AmountRC <> 0";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_CashFlowData_CB_Accounts(TablesList)
+	
+	// Add CashFlowData CashBasis Accounts table to document structure.
+	TablesList.Insert("Table_CashFlowData_CB_Accounts", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // CashBasis Accounts
+	// ------------------------------------------------------
+	// Resources
+	|	CASE
+	|		WHEN Transaction.RecordType = VALUE(AccumulationRecordType.Receipt)
+	|			THEN Transaction.AmountRC                   
+	|		ELSE Transaction.AmountRC * -1
+	|	END                                                  AS AmountRC
+	// ------------------------------------------------------
+	|INTO
+	|	Table_CashFlowData_CB_Accounts
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Transactions AS Transaction
+	|WHERE
+	|	(Transaction.Account.AccountType <> VALUE(Enum.AccountTypes.AccountsReceivable)
+	|		AND Transaction.Account.AccountType <> VALUE(Enum.AccountTypes.AccountsPayable)
+	|		AND Transaction.Account.AccountType <> VALUE(Enum.AccountTypes.Income)
+	|		AND Transaction.Account.AccountType <> VALUE(Enum.AccountTypes.CostOfSales)
+	|		AND Transaction.Account.AccountType <> VALUE(Enum.AccountTypes.Expense)
+	|		AND Transaction.Account.AccountType <> VALUE(Enum.AccountTypes.OtherIncome)
+	|		AND Transaction.Account.AccountType <> VALUE(Enum.AccountTypes.OtherExpense)
+	|		AND Transaction.Account.AccountType <> VALUE(Enum.AccountTypes.IncomeTaxExpense))
+	|	OR (Transaction.Account.AccountType <> VALUE(Enum.AccountTypes.AccountsReceivable)
+	|		AND Transaction.Account.AccountType <> VALUE(Enum.AccountTypes.AccountsPayable)
+	|		AND Transaction.RecordType = VALUE(AccumulationRecordType.Expense))";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_CashFlowData_CB_Accounts_Amount(TablesList)
+	
+	// Add CashFlowData CashBasis Accounts Amount table to document structure.
+	TablesList.Insert("Table_CashFlowData_CB_Accounts_Amount", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // CashBasis Accounts
+	// ------------------------------------------------------
+	// Resources
+	|	SUM(Transaction.AmountRC)      AS AmountRC
+	// ------------------------------------------------------
+	|INTO
+	|	Table_CashFlowData_CB_Accounts_Amount
+	|FROM
+	|	Table_CashFlowData_CB_Accounts AS Transaction";
 	
 	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
 	
@@ -1454,7 +2378,93 @@ Function Query_CashFlowData(TablesList)
 	
 	// Collect cash flow data.
 	QueryText =
-	"SELECT // Rec: Inventory and Expenses
+	"SELECT // CashBasis Transactions 
+	// ------------------------------------------------------
+	// Standard attributes
+	|	Transaction.Recorder                  AS Recorder,
+	|	Transaction.Period                    AS Period,
+	|	Transaction.LineNumber                AS LineNumber,
+	|	Transaction.RecordType                AS RecordType,
+	|	Transaction.Active                    AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	Transaction.Account                   AS Account,
+	// ------------------------------------------------------
+	// Dimensions
+	|	Transaction.Company                   AS Company,
+	|	PurchaseInvoice.Ref                   AS Document,
+	|	NULL                                  AS SalesPerson,
+	|	Transaction.Class                     AS Class,
+	|	Transaction.Project                   AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	Transaction.AmountRC                  AS AmountRC,
+	// ------------------------------------------------------
+	// Attributes
+	|	NULL                                  AS PaymentMethod
+	// ------------------------------------------------------
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Transactions AS Transaction
+	|	LEFT JOIN Document.PurchaseInvoice AS PurchaseInvoice
+	|		ON PurchaseInvoice.Ref = &Ref
+	|WHERE
+	|	(Transaction.Account.AccountType <> VALUE(Enum.AccountTypes.AccountsReceivable)
+	|		AND Transaction.Account.AccountType <> VALUE(Enum.AccountTypes.AccountsPayable)
+	|		AND Transaction.Account.AccountType <> VALUE(Enum.AccountTypes.Income)
+	|		AND Transaction.Account.AccountType <> VALUE(Enum.AccountTypes.CostOfSales)
+	|		AND Transaction.Account.AccountType <> VALUE(Enum.AccountTypes.Expense)
+	|		AND Transaction.Account.AccountType <> VALUE(Enum.AccountTypes.OtherIncome)
+	|		AND Transaction.Account.AccountType <> VALUE(Enum.AccountTypes.OtherExpense)
+	|		AND Transaction.Account.AccountType <> VALUE(Enum.AccountTypes.IncomeTaxExpense))
+	|	OR (Transaction.Account.AccountType <> VALUE(Enum.AccountTypes.AccountsReceivable)
+	|		AND Transaction.Account.AccountType <> VALUE(Enum.AccountTypes.AccountsPayable)
+	|		AND Transaction.RecordType = VALUE(AccumulationRecordType.Expense))
+	|
+	|UNION ALL
+	|
+	|SELECT // CashBasis Transactions Accounts Payable (difference)
+	// ------------------------------------------------------
+	// Standard attributes
+	|	PurchaseInvoice.Ref                   AS Recorder,
+	|	PurchaseInvoice.Date                  AS Period,
+	|	0                                     AS LineNumber,
+	|	CASE
+	|		WHEN TransactionAP.AmountRC > 0
+	|			THEN VALUE(AccumulationRecordType.Expense)
+	|		ELSE VALUE(AccumulationRecordType.Receipt)
+	|	END                                   AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	PurchaseInvoice.APAccount             AS Account,
+	// ------------------------------------------------------
+	// Dimensions
+	|	PurchaseInvoice.Company               AS Company,
+	|	PurchaseInvoice.Ref                   AS Document,
+	|	NULL                                  AS SalesPerson,
+	|	NULL                                  AS Class,
+	|	NULL                                  AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	CASE
+	|		WHEN TransactionAP.AmountRC > 0
+	|			THEN TransactionAP.AmountRC                
+	|		ELSE TransactionAP.AmountRC * -1
+	|	END                                   AS AmountRC,
+	// ------------------------------------------------------
+	// Attributes
+	|	NULL                                  AS PaymentMethod
+	// ------------------------------------------------------
+	|FROM
+	|	Table_CashFlowData_CB_Accounts_Amount AS TransactionAP
+	|	LEFT JOIN Document.PurchaseInvoice AS PurchaseInvoice
+	|		ON PurchaseInvoice.Ref = &Ref
+	|WHERE
+	|	TransactionAP.AmountRC <> 0
+	|
+	|UNION ALL
+	|
+	|SELECT // Paid Transactions
 	// ------------------------------------------------------
 	// Standard attributes
 	|	PurchaseInvoice.Ref                   AS Recorder,
@@ -1463,35 +2473,67 @@ Function Query_CashFlowData(TablesList)
 	|	VALUE(AccumulationRecordType.Receipt) AS RecordType,
 	|	True                                  AS Active,
 	// ------------------------------------------------------
+	// Accounting attributes
+	|	PaidTransaction.Account               AS Account,
+	// ------------------------------------------------------
 	// Dimensions
-	|	InvOrExp.InvOrExpAccount              AS Account,
 	|	PurchaseInvoice.Company               AS Company,
 	|	PurchaseInvoice.Ref                   AS Document,
 	|	NULL                                  AS SalesPerson,
+	|	PaidTransaction.Class                 AS Class,
+	|	PaidTransaction.Project               AS Project,
 	// ------------------------------------------------------
 	// Resources
-	|	CAST( // Format(Amount * ExchangeRate, ""ND=17; NFD=2"")
-	|		InvOrExp.Amount *
-	|		CASE WHEN PurchaseInvoice.ExchangeRate > 0
-	|			 THEN PurchaseInvoice.ExchangeRate
-	|			 ELSE 1 END
-	|		AS NUMBER (17, 2))                AS AmountRC,
+	|	PaidTransaction.AmountRC              AS AmountRC,
 	// ------------------------------------------------------
 	// Attributes
 	|	NULL                                  AS PaymentMethod
 	// ------------------------------------------------------
 	|FROM
-	|	Table_CashFlowData_Accounts_InvOrExp AS InvOrExp
+	|	Table_CashFlowData_Accounts_Paid_Transactions_Corrected AS PaidTransaction
 	|	LEFT JOIN Document.PurchaseInvoice AS PurchaseInvoice
-	|		ON True
+	|		ON PurchaseInvoice.Ref = &Ref
 	|WHERE
-	|	PurchaseInvoice.Ref = &Ref
-	|	AND // Amount <> 0
-	|		InvOrExp.Amount <> 0";
+	|	PaidTransaction.AmountRC <> 0
+	|
+	|UNION ALL
+	|
+	|SELECT // Paid Transactions Accounts Payable (difference)
+	// ------------------------------------------------------
+	// Standard attributes
+	|	PurchaseInvoice.Ref                   AS Recorder,
+	|	PurchaseInvoice.Date                  AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccumulationRecordType.Expense) AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	PurchaseInvoice.APAccount             AS Account,
+	// ------------------------------------------------------
+	// Dimensions
+	|	PurchaseInvoice.Company               AS Company,
+	|	PurchaseInvoice.Ref                   AS Document,
+	|	NULL                                  AS SalesPerson,
+	|	NULL                                  AS Class,
+	|	NULL                                  AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	PaidTransaction.AmountRC              AS AmountRC,
+	// ------------------------------------------------------
+	// Attributes
+	|	NULL                                  AS PaymentMethod
+	// ------------------------------------------------------
+	|FROM
+	|	Table_CashFlowData_Accounts_Paid_Transactions_Amount AS PaidTransaction
+	|	LEFT JOIN Document.PurchaseInvoice AS PurchaseInvoice
+	|		ON PurchaseInvoice.Ref = &Ref
+	|WHERE
+	|	PaidTransaction.AmountRC <> 0";
 	
 	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
 	
 EndFunction
+
 
 // Query for document data.
 Function Query_ProjectData_Accounts(TablesList)
@@ -1590,11 +2632,10 @@ Function Query_ProjectData(TablesList)
 	|FROM
 	|	Table_ProjectData_Accounts_InvOrExp AS InvOrExp
 	|	LEFT JOIN Document.PurchaseInvoice AS PurchaseInvoice
-	|		ON True
+	|		ON PurchaseInvoice.Ref = &Ref
 	|WHERE
-	|	PurchaseInvoice.Ref = &Ref
-	|	AND // Amount <> 0
-	|		InvOrExp.Amount <> 0";
+	|	// Amount <> 0
+	|	InvOrExp.Amount <> 0";
 	
 	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
 	
@@ -1697,11 +2738,10 @@ Function Query_ClassData(TablesList)
 	|FROM
 	|	Table_ClassData_Accounts_InvOrExp AS InvOrExp
 	|	LEFT JOIN Document.PurchaseInvoice AS PurchaseInvoice
-	|		ON True
+	|		ON PurchaseInvoice.Ref = &Ref
 	|WHERE
-	|	PurchaseInvoice.Ref = &Ref
-	|	AND // Amount <> 0
-	|		InvOrExp.Amount <> 0";
+	|	// Amount <> 0
+	|	InvOrExp.Amount <> 0";
 	
 	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
 	
@@ -2116,8 +3156,9 @@ Procedure CheckCloseParentOrders(DocumentRef, AdditionalProperties, TempTablesMa
 	// Dimensions
 	|	OrdersDispatchedBalance.Order            AS Order,
 	|	OrdersDispatchedBalance.ItemReceipt      AS ItemReceipt,
-	|	SUM(OrdersDispatchedBalance.UnReceived
-	|	  + OrdersDispatchedBalance.UnInvoiced)  AS Unclosed
+	|	SUM(CASE WHEN OrdersDispatchedBalance.UnReceived > 0 THEN OrdersDispatchedBalance.UnReceived ELSE 0 END
+	|	  + CASE WHEN OrdersDispatchedBalance.UnInvoiced > 0 THEN OrdersDispatchedBalance.UnInvoiced ELSE 0 END)
+	|                                            AS Unclosed
 	// ------------------------------------------------------
 	|INTO
 	|	OrdersDispatched_Balance_Orders_Unclosed

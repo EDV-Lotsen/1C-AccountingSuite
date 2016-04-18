@@ -209,6 +209,11 @@ EndProcedure
 // 
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
+	// Set FirstNumber
+	If Object.Ref.IsEmpty() Then
+		FirstNumber = Object.Number;
+	EndIf;
+	
 	If Parameters.Property("Company") And Parameters.Company.Vendor Then
 		Object.Company = Parameters.Company;
 	EndIf;
@@ -304,6 +309,8 @@ EndProcedure
 
 &AtClient
 Procedure BeforeWrite(Cancel, WriteParameters)
+	
+	WriteParameters.Insert("NewObject", Not ValueIsFilled(Object.Ref));
 	
 	//Closing period
 	If PeriodClosingServerCall.DocumentPeriodIsClosed(Object.Ref, Object.Date) Then
@@ -440,6 +447,18 @@ EndProcedure
 &AtServer
 Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 	
+	If FirstNumber <> "" Then
+		
+		Numerator = Catalogs.DocumentNumbering.PurchaseReturn.GetObject();
+		NextNumber = GeneralFunctions.Increment(Numerator.Number);
+		If FirstNumber = NextNumber And NextNumber = Object.Number Then
+			Numerator.Number = FirstNumber;
+			Numerator.Write();
+		EndIf;
+		
+		FirstNumber = "";
+	EndIf;
+	
 	UpdatePointInTime();
 	
 EndProcedure
@@ -491,21 +510,21 @@ EndProcedure
 &AtClient
 Procedure AfterWrite(WriteParameters)
 	
-	/////////
-	/////////
-	
-	// Request user to repost subordinate documents.
-	Structure = New Structure("Type, DocumentRef", "RepostSubordinateDocumentsOfPurchaseReturn", Object.Ref); 
-	KeyData = CommonUseClient.StartLongAction(NStr("en = 'Posting subordinate document(s)'"), Structure, ThisForm);
-	If WriteParameters.Property("CloseAfterWrite") Then
-		BackgroundJobParameters.Add(True);// [5]
+	If WriteParameters.Property("NewObject") And WriteParameters.NewObject Then
+		
 	Else
-		BackgroundJobParameters.Add(False);// [5]
+		
+		// Request user to repost subordinate documents.
+		Structure = New Structure("Type, DocumentRef", "RepostSubordinateDocumentsOfPurchaseReturn", Object.Ref); 
+		KeyData = CommonUseClient.StartLongAction(NStr("en = 'Re-posting linked transactions'"), Structure, ThisForm);
+		If WriteParameters.Property("CloseAfterWrite") Then
+			BackgroundJobParameters.Add(True);// [5]
+		Else
+			BackgroundJobParameters.Add(False);// [5]
+		EndIf;
+		CheckObtainedData(KeyData);
+		
 	EndIf;
-	CheckObtainedData(KeyData);
-	
-	/////////
-	/////////
 	
 EndProcedure
 

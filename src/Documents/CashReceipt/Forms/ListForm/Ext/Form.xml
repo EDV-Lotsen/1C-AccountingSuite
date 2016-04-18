@@ -118,6 +118,17 @@
 					<ContextMenu name="DepositTContextMenu" id="41"/>
 					<ExtendedTooltip name="DepositTExtendedTooltip" id="42"/>
 				</LabelField>
+				<LabelField name="BankAccount" id="74">
+					<DataPath>List.BankAccount</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Account</v8:content>
+						</v8:item>
+					</Title>
+					<ContextMenu name="BankAccountContextMenu" id="75"/>
+					<ExtendedTooltip name="BankAccountExtendedTooltip" id="76"/>
+				</LabelField>
 				<CheckBoxField name="Deposited" id="34">
 					<DataPath>List.Deposited</DataPath>
 					<Visible>false</Visible>
@@ -132,6 +143,7 @@
 				</LabelField>
 				<LabelField name="DocumentTotal" id="18">
 					<DataPath>List.DocumentTotal</DataPath>
+					<Visible>false</Visible>
 					<Format>
 						<v8:item>
 							<v8:lang>en</v8:lang>
@@ -141,14 +153,25 @@
 					<ContextMenu name="DocumentTotalContextMenu" id="19"/>
 					<ExtendedTooltip name="DocumentTotalExtendedTooltip" id="29"/>
 				</LabelField>
-				<LabelField name="CashPayment" id="43">
-					<DataPath>List.CashPayment</DataPath>
+				<LabelField name="BalanceRC" id="55">
+					<DataPath>List.BalanceRC</DataPath>
 					<Title>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Total</v8:content>
+							<v8:content>Balance</v8:content>
 						</v8:item>
 					</Title>
+					<Format>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>NFD=2; NZ=0.00</v8:content>
+						</v8:item>
+					</Format>
+					<ContextMenu name="BalanceRCContextMenu" id="56"/>
+					<ExtendedTooltip name="BalanceRCExtendedTooltip" id="57"/>
+				</LabelField>
+				<LabelField name="CashPayment" id="43">
+					<DataPath>List.CashPayment</DataPath>
 					<Format>
 						<v8:item>
 							<v8:lang>en</v8:lang>
@@ -169,23 +192,6 @@
 					</Format>
 					<ContextMenu name="DocumentTotalRCContextMenu" id="17"/>
 					<ExtendedTooltip name="DocumentTotalRCExtendedTooltip" id="30"/>
-				</LabelField>
-				<LabelField name="BalanceRC" id="55">
-					<DataPath>List.BalanceRC</DataPath>
-					<Title>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>Balance</v8:content>
-						</v8:item>
-					</Title>
-					<Format>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>NFD=2; NZ=0.00</v8:content>
-						</v8:item>
-					</Format>
-					<ContextMenu name="BalanceRCContextMenu" id="56"/>
-					<ExtendedTooltip name="BalanceRCExtendedTooltip" id="57"/>
 				</LabelField>
 				<LabelField name="Memo" id="49">
 					<DataPath>List.Memo</DataPath>
@@ -249,13 +255,7 @@
 	DocumentCashReceipt.PaymentMethod,
 	DocumentCashReceipt.BankAccount,
 	DocumentCashReceipt.Currency,
-	DocumentCashReceipt.StripeID,
 	DocumentCashReceipt.ARAccount,
-	DocumentCashReceipt.StripeCardName,
-	DocumentCashReceipt.StripeAmount,
-	DocumentCashReceipt.StripeCreated,
-	DocumentCashReceipt.StripeCardType,
-	DocumentCashReceipt.StripeLast4,
 	DocumentCashReceipt.CreditMemos.(
 		Ref,
 		LineNumber,

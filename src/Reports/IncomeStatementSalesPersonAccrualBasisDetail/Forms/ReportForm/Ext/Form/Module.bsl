@@ -92,6 +92,12 @@ Procedure Create(Command)
 	
 	ComposeResult();
 	
+	Try
+		CurParameters = New Structure("ObjectTypeID", ThisForm.FormName);
+		CommonUseClient.ApplyPrintFormSettings(Result,CurParameters);
+	Except
+	EndTry;
+	
 EndProcedure
 
 &AtServer
@@ -101,7 +107,9 @@ Procedure OnUpdateUserSettingSetAtServer(StandardProcessing)
 		
 	Else
 		GeneralFunctions.ChangePeriodIntoReportForm(ThisForm.Report.SettingsComposer, PeriodVariant, PeriodStartDate, PeriodEndDate);
-	EndIf;	
+	EndIf;
+	
+	ModifiedStatePresentation();
 		
 EndProcedure
 

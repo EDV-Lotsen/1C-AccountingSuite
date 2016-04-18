@@ -30,7 +30,8 @@
 			<ChildItems>
 				<PictureDecoration name="MessageIcon" id="1">
 					<Width>4</Width>
-					<Height>2</Height>
+					<Height>4</Height>
+					<VerticalStretch>true</VerticalStretch>
 					<Title formatted="false">
 						<v8:item>
 							<v8:lang>en</v8:lang>
@@ -53,6 +54,19 @@
 					<ContextMenu name="MessageContextMenu" id="5"/>
 					<ExtendedTooltip name="MessageExtendedTooltip" id="6"/>
 				</LabelDecoration>
+				<LabelField name="FormattedMessage" id="19">
+					<DataPath>FormattedMessage</DataPath>
+					<TitleLocation>None</TitleLocation>
+					<HorizontalAlign>Center</HorizontalAlign>
+					<VerticalAlign>Center</VerticalAlign>
+					<Width>40</Width>
+					<Height>4</Height>
+					<ContextMenu name="FormattedMessageContextMenu" id="20"/>
+					<ExtendedTooltip name="FormattedMessageExtendedTooltip" id="21"/>
+					<Events>
+						<Event name="URLProcessing">FormattedMessageURLProcessing</Event>
+					</Events>
+				</LabelField>
 			</ChildItems>
 		</UsualGroup>
 		<UsualGroup name="GroupOK" id="11">
@@ -98,7 +112,13 @@
 			</ChildItems>
 		</UsualGroup>
 	</ChildItems>
-	<Attributes/>
+	<Attributes>
+		<Attribute name="FormattedMessage" id="1">
+			<Type>
+				<v8:Type>v8ui:FormattedString</v8:Type>
+			</Type>
+		</Attribute>
+	</Attributes>
 	<Parameters>
 		<Parameter name="Title">
 			<Type>

@@ -12,6 +12,11 @@ Var SalesTaxRateInactive, AgenciesRatesInactive;//Cache for storing inactive rat
 // 
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
+	// Set FirstNumber
+	If Object.Ref.IsEmpty() Then
+		FirstNumber = Object.Number;
+	EndIf;
+	
 	If Parameters.Property("Company") And Parameters.Company.Customer Then
 		Object.Company = Parameters.Company;
 	EndIf;
@@ -181,32 +186,13 @@ Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
 		Message("Cannot post with no line items.");
 		Cancel = True;
 	EndIf;
-
-	//Avatax calculation
-	AvaTaxServer.CalculateTaxBeforeWrite(CurrentObject, WriteParameters, Cancel, "ReturnOrder");
 	
-	//If Object.Ref.IsEmpty() Then
-	//
-	//	MatchVal = Increment(Constants.CreditMemoLastNumber.Get());
-	//	If Object.Number = MatchVal Then
-	//		Constants.CreditMemoLastNumber.Set(MatchVal);
-	//	Else
-	//		If Increment(Object.Number) = "" Then
-	//		Else
-	//			If StrLen(Increment(Object.Number)) > 20 Then
-	//				 Constants.CreditMemoLastNumber.Set("");
-	//			Else
-	//				Constants.CreditMemoLastNumber.Set(Increment(Object.Number));
-	//			Endif;
-
-	//		Endif;
-	//	Endif;
-	//Endif;
-
 EndProcedure
 
 &AtClient
 Procedure BeforeWrite(Cancel, WriteParameters)
+	
+	WriteParameters.Insert("NewObject", Not ValueIsFilled(Object.Ref));
 	
 	//Closing period
 	If PeriodClosingServerCall.DocumentPeriodIsClosed(Object.Ref, Object.Date) Then
@@ -225,20 +211,26 @@ Procedure BeforeWrite(Cancel, WriteParameters)
 		EndIf;
 	EndIf;
 	
-	//Avatax calculation
-	AvaTaxClient.ShowQueryToTheUserOnAvataxCalculation("SalesReturn", Object, ThisObject, WriteParameters, Cancel);
-	
 EndProcedure
 
 &AtServer
 Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 	
-	//Avatax calculation
-	AvaTaxServer.CalculateTaxAfterWrite(CurrentObject, WriteParameters, "ReturnInvoice");
+	If FirstNumber <> "" Then
 		
+		Numerator = Catalogs.DocumentNumbering.CreditMemo.GetObject();
+		NextNumber = GeneralFunctions.Increment(Numerator.Number);
+		If FirstNumber = NextNumber And NextNumber = Object.Number Then
+			Numerator.Number = FirstNumber;
+			Numerator.Write();
+		EndIf;
+		
+		FirstNumber = "";
+	EndIf;
+	
 	//Update tax rate
 	DisplaySalesTaxRate(ThisForm);
-
+	
 EndProcedure
 
 &AtClient
@@ -342,13 +334,6 @@ EndProcedure
 &AtClient
 Procedure ExchangeRateOnChange(Item)
 	RecalculateTotals(Object);
-EndProcedure
-
-&AtClient
-Procedure TaxEngineOnChange(Item)
-	
-	TaxEngineOnChangeAtServer();
-	
 EndProcedure
 
 &AtClient
@@ -508,27 +493,6 @@ EndProcedure
 ////////////////////////////////////////////////////////////////////////////////
 #Region COMMANDS_HANDLERS
 
-&AtClient
-Procedure SendEmail(Command)
-	If Object.Ref.IsEmpty() Then
-		Message("An email cannot be sent until the credit memo is posted");
-	Else	
-		FormParameters = New Structure("Ref",Object.Ref );
-		OpenForm("CommonForm.EmailForm", FormParameters,,,,,, FormWindowOpeningMode.LockOwnerWindow);	
-	EndIf;
-
-	//SendEmailAtServer();
-EndProcedure
-
-&AtClient
-Procedure AvaTax(Command)
-	
-	FormParams = New Structure("ObjectRef", Object.Ref);
-	OpenForm("InformationRegister.AvataxDetails.Form.AvataxDetails", FormParams, ThisForm,,,,, FormWindowOpeningMode.LockOwnerWindow);
-	
-EndProcedure
-
-
 #EndRegion
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -650,11 +614,7 @@ Procedure CompanyOnChangeAtServer()
 	If Not ValueIsFilled(Object.ParentDocument) Then
 		SalesTaxRate = SalesTax.GetDefaultSalesTaxRate(Object.Company);
 		// Tax settings
-		If GeneralFunctionsReusable.FunctionalOptionValue("AvataxEnabled") Then
-			Object.UseAvatax	= Object.Company.UseAvatax;
-		Else
-			Object.UseAvatax	= False;
-		EndIf;
+		Object.UseAvatax	= False;
 		If (Not Object.UseAvatax) Then
 			TaxEngine = 1; //Use AccountingSuite
 			If SalesTaxRate <> Object.SalesTaxRate Then
@@ -665,9 +625,6 @@ Procedure CompanyOnChangeAtServer()
 		EndIf;
 		Object.SalesTaxAcrossAgencies.Clear();
 		ApplySalesTaxEngineSettings();
-		If Object.UseAvatax Then
-			AvataxServer.RestoreCalculatedSalesTax(Object);
-		EndIf;	
 	EndIf;
 	
 	If Object.Company.ARAccount <> ChartsofAccounts.ChartOfAccounts.EmptyRef() Then
@@ -726,167 +683,6 @@ Procedure LineItemsQuantityOnChangeAtServer(TableSectionRow)
 EndProcedure
 
 &AtServer
-Procedure SendEmailAtServer()
-	
-//If Object.Ref.IsEmpty() Then
-//		Message("An email cannot be sent until the invoice is posted or written");
-//	Else
-//		
-//	If Object.EmailTo <> "" Then
-//		
-//	// 	//imagelogo = Base64String(GeneralFunctions.GetLogo());
-//	 	If constants.logoURL.Get() = "" Then
-//			 imagelogo = "http://www.accountingsuite.com/images/logo-a.png";
-//	 	else
-//			 imagelogo = Constants.logoURL.Get();  
-//	 	Endif;
-//	 	
-//		
-//		
-//		datastring = "";
-//		TotalAmount = 0;
-//		TotalCredits = 0;
-//		For Each DocumentLine in Object.LineItems Do
-//			
-//			TotalAmount = TotalAmount + DocumentLine.LineTotal;
-//			datastring = datastring + "<TR height=""20""><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.Product +  "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.ProductDescription + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.QtyUnits + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.PriceUnits + "</TD><TD style=""border-spacing: 0px 0px;height: 20px;"">" + DocumentLine.LineTotal + "</TD></TR>";
-
-//		EndDo;
-//		
-//			 
-//		MailProfil = New InternetMailProfile; 
-//		
-//		MailProfil.SMTPServerAddress = ServiceParameters.SMTPServer(); 
-//		//MailProfil.SMTPServerAddress = Constants.MailProfAddress.Get();
-//		MailProfil.SMTPUseSSL = ServiceParameters.SMTPUseSSL();
-//		//MailProfil.SMTPUseSSL = Constants.MailProfSSL.Get();
-//		MailProfil.SMTPPort = 465;  
-//		
-//		MailProfil.Timeout = 180; 
-//		
-//		MailProfil.SMTPPassword = ServiceParameters.SendGridPassword();
-//	 	  
-//		MailProfil.SMTPUser = ServiceParameters.SendGridUserName();
-
-//		
-//		send = New InternetMailMessage; 
-//		//send.To.Add(object.shipto.Email);
-//		//send.To.Add(object.EmailTo);
-//		
-//		If Object.EmailTo <> "" Then
-//			EAddresses = StringFunctionsClientServer.SplitStringIntoSubstringArray(Object.EmailTo, ",");
-//			For Each EmailAddress in EAddresses Do
-//				send.To.Add(EmailAddress);
-//			EndDo;
-//		Endif;
-//		
-//		If Object.EmailCC <> "" Then
-//			EAddresses = StringFunctionsClientServer.SplitStringIntoSubstringArray(Object.EmailCC, ",");
-//			For Each EmailAddress in EAddresses Do
-//				send.CC.Add(EmailAddress);
-//			EndDo;
-//		Endif;
-//		
-//		
-//		send.From.Address = Constants.Email.Get();
-//		send.From.DisplayName = "AccountingSuite";
-//		send.Subject = Constants.SystemTitle.Get() + " - Credit Memo " + Object.Number + " from " + Format(Object.Date,"DLF=D") + " - $" + Format(Object.DocumentTotalRC,"NFD=2");
-//		
-//		FormatHTML = FormAttributeToValue("Object").GetTemplate("Template").GetText();
-//	 	  
-//	 	 
-//		FormatHTML2 = StrReplace(FormatHTML,"object.number",object.RefNum);
-//		
-//		FormatHTML2 = StrReplace(FormatHTML2,"imagelogo",imagelogo);
-//	 	  FormatHTML2 = StrReplace(FormatHTML2,"object.date",Format(object.Date,"DLF=D"));
-//	 	  //BillTo
-//	 	  FormatHTML2 = StrReplace(FormatHTML2,"object.company",object.Company);
-
-//		  Query = New Query("SELECT
-//						  |	Addresses.FirstName,
-//						  |	Addresses.MiddleName,
-//						  |	Addresses.LastName,
-//						  |	Addresses.Phone,
-//						  |	Addresses.Fax,
-//						  |	Addresses.Email,
-//						  |	Addresses.AddressLine1,
-//						  |	Addresses.AddressLine2,
-//						  |	Addresses.City,
-//						  |	Addresses.State.Code AS State,
-//						  |	Addresses.Country,
-//						  |	Addresses.ZIP,
-//						  |	Addresses.RemitTo
-//						  |FROM
-//						  |	Catalog.Addresses AS Addresses
-//						  |WHERE
-//						  |	Addresses.Owner = &Company
-//						  |	AND Addresses.DefaultBilling = TRUE");
-//		Query.SetParameter("Company", object.company);
-//			QueryResult = Query.Execute();	
-//		Dataset = QueryResult.Unload();
-
-//		  
-//		  
-//		  FormatHTML2 = StrReplace(FormatHTML2,"object.shipto1",Dataset[0].AddressLine1);
-//	 	  FormatHTML2 = StrReplace(FormatHTML2,"object.shipto2",Dataset[0].AddressLine2);
-//	 	 CityStateZip = Dataset[0].City + Dataset[0].State + Dataset[0].ZIP;
-//	 	 
-//	 	 If CityStateZip = "" Then
-//	 	 	FormatHTML2 = StrReplace(FormatHTML2,"object.city object.state object.zip","");
-//	 	 Else
-//	 	  	FormatHTML2 = StrReplace(FormatHTML2,"object.city object.state object.zip",Dataset[0].City + ", " + Dataset[0].State + " " + Dataset[0].ZIP);
-//	 	 Endif;
-//	 	  FormatHTML2 = StrReplace(FormatHTML2,"object.country",Dataset[0].Country);
-//	 	  //lineitems
-//	 	  FormatHTML2 = StrReplace(FormatHTML2,"lineitems",datastring);
-// 	   
-//	 	  //User's company info
-//	 	  FormatHTML2 = StrReplace(FormatHTML2,"mycompany",Constants.SystemTitle.Get()); 
-//	 	  FormatHTML2 = StrReplace(FormatHTML2,"myaddress1",Constants.AddressLine1.Get());
-//	 	  FormatHTML2 = StrReplace(FormatHTML2,"myaddress2",Constants.AddressLine2.Get());
-//	 	  FormatHTML2 = StrReplace(FormatHTML2,"mycity mystate myzip",Constants.City.Get() + ", " + Constants.State.Get() + " " + Constants.ZIP.Get());
-//	 	  FormatHTML2 = StrReplace(FormatHTML2,"myphone",Constants.Phone.Get());
-//	 	  FormatHTML2 = StrReplace(FormatHTML2,"myemail",Constants.Email.Get());
-//	 	  
-//	 	  FormatHTML2 = StrReplace(FormatHTML2,"object.subtotal",Format(Object.DocumentTotalRC,"NFD=2"));
-//		  
-//	   If object.SalesTaxRC = 0 Then
-//			FormatHTML2 = StrReplace(FormatHTML2,"object.salestax","0.00");
-//	   Else
-//	 	 	 FormatHTML2 = StrReplace(FormatHTML2,"object.salestax",Format(object.SalesTaxRC,"NFD=2"));
-//	   Endif;
-//  
-//		  
-//	   If TotalAmount = 0 Then
-//	 	   FormatHTML2 = StrReplace(FormatHTML2,"object.total","0.00");
-//	   Else
-//	  		 FormatHTML2 = StrReplace(FormatHTML2,"object.total",Format(TotalAmount,"NFD=2"));
-//	   Endif;
-
-//	   //Note
-//	   FormatHTML2 = StrReplace(FormatHTML2,"object.note",Object.EmailNote);
-//	  
-//		send.Texts.Add(FormatHTML2,InternetMailTextType.HTML);
-//			
-//		Posta = New InternetMail; 
-//		Posta.Logon(MailProfil); 
-//		Posta.Send(send); 
-//		Posta.Logoff();
-//		
-//		Message("Credit Memo email has been sent");
-//		
-//		SentEmail = True;
-
-//		Else
-//	 		 Message("The recipient email has not been specified");
-//		Endif;
-//	 	
-//	Endif;
-	
-
- EndProcedure
- 
- &AtServer
 Procedure EmailSet()
 	Query = New Query("SELECT
 		                  |	Addresses.FirstName,
@@ -1140,23 +936,11 @@ EndProcedure
 &AtServer
 Procedure TaxEngineOnChangeAtServer()
 	
-	//Tax engine depends on company settings
-	If GeneralFunctionsReusable.FunctionalOptionValue("AvataxEnabled") Then
-		CompanyAvataxSetting = ?(Object.Company.UseAvatax, 2, 1);
-		If TaxEngine <> CompanyAvataxSetting Then
-			TaxEngine = CompanyAvataxSetting;
-			CommonUseClientServer.MessageToUser("Please change company tax settings first", Object, "TaxEngine");
-			return;
-		EndIf;
-	Else
-		TaxEngine = 1; //AccountingSuite
-	EndIf;
+	TaxEngine = 1; //AccountingSuite
+	
 	Object.UseAvaTax = ?(TaxEngine = 1, False, True);	
 	Object.SalesTaxAcrossAgencies.Clear();
 	ApplySalesTaxEngineSettings();
-	If Object.UseAvatax Then
-		AvataxServer.RestoreCalculatedSalesTax(Object);
-	EndIf;
 	RecalculateTotals(Object);
 	
 	DisplaySalesTaxRate(ThisForm);
@@ -1165,17 +949,6 @@ EndProcedure
 
 &AtServer
 Procedure ApplySalesTaxEngineSettings()
-	
-	//Without AvataxEnabled allow changing of an engine only for documents, using AvaTax
-	If GeneralFunctionsReusable.FunctionalOptionValue("AvataxEnabled") Then
-		Items.TaxEngine.Visible = True;
-	Else
-		If (Not Object.Ref.IsEmpty()) And (Object.UseAvatax) Then
-			Items.TaxEngine.Visible = True;
-		Else
-			Items.TaxEngine.Visible = False;
-		EndIf;
-	EndIf;
 	
 	If Not Object.UseAvatax Then
 		Items.SalesTaxRate.ChoiceList.Clear();
@@ -1187,13 +960,6 @@ Procedure ApplySalesTaxEngineSettings()
 		Items.TaxParametersPages.CurrentPage = Items.TaxParametersInACS;
 		Items.LineItemsTaxable.Visible		= True;
 		Items.LineItemsAvataxTaxCode.Visible = False;
-	ElsIf Object.UseAvatax Then
-		If Object.Ref.IsEmpty() Then
-			Object.AvataxShippingTaxCode = Constants.AvataxDefaultShippingTaxCode.Get();
-		EndIf;
-		Items.TaxParametersPages.CurrentPage = Items.TaxParametersInAvaTax;
-		Items.LineItemsTaxable.Visible		= False;
-		Items.LineItemsAvataxTaxCode.Visible = True;
 	EndIf;
 
 EndProcedure
@@ -1240,21 +1006,21 @@ EndProcedure
 &AtClient
 Procedure AfterWrite(WriteParameters)
 	
-	/////////
-	/////////
-	
-	// Request user to repost subordinate documents.
-	Structure = New Structure("Type, DocumentRef", "RepostSubordinateDocumentsOfSalesReturn", Object.Ref); 
-	KeyData = CommonUseClient.StartLongAction(NStr("en = 'Posting subordinate document(s)'"), Structure, ThisForm);
-	If WriteParameters.Property("CloseAfterWrite") Then
-		BackgroundJobParameters.Add(True);// [5]
+	If WriteParameters.Property("NewObject") And WriteParameters.NewObject Then
+
 	Else
-		BackgroundJobParameters.Add(False);// [5]
+		
+		// Request user to repost subordinate documents.
+		Structure = New Structure("Type, DocumentRef", "RepostSubordinateDocumentsOfSalesReturn", Object.Ref); 
+		KeyData = CommonUseClient.StartLongAction(NStr("en = 'Re-posting linked transactions'"), Structure, ThisForm);
+		If WriteParameters.Property("CloseAfterWrite") Then
+			BackgroundJobParameters.Add(True);// [5]
+		Else
+			BackgroundJobParameters.Add(False);// [5]
+		EndIf;
+		CheckObtainedData(KeyData);
+		
 	EndIf;
-	CheckObtainedData(KeyData);
-	
-	/////////
-	/////////
 	
 EndProcedure
 

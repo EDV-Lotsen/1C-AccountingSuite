@@ -1,4 +1,7 @@
 ﻿
+////////////////////////////////////////////////////////////////////////////////
+#Region EVENTS_HANDLERS
+
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
@@ -92,14 +95,31 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
 	// end custom fields
 	
-	QuantityFormat = GeneralFunctionsReusable.DefaultQuantityFormat();
-	Items.QtyOnPO.Format               = QuantityFormat; 
-	Items.QtyOnSO.Format               = QuantityFormat; 
-	Items.QtyOnHand.Format             = QuantityFormat; 
-	Items.QtyAvailableToPromise.Format = QuantityFormat; 
+	//QuantityFormat = GeneralFunctionsReusable.DefaultQuantityFormat();
+	//Items.QtyOnPO.Format               = QuantityFormat; 
+	//Items.QtyOnSO.Format               = QuantityFormat; 
+	//Items.QtyOnHand.Format             = QuantityFormat; 
+	//Items.QtyAvailableToPromise.Format = QuantityFormat; 
 	
 	// Update prices presentation.
 	PriceFormat = GeneralFunctionsReusable.DefaultPriceFormat();
 	Items.Price.Format = PriceFormat;
-
+	
+	// Disable/Enable Objects functionality.
+	DisableEnableObjects.SetConditionalAppearance(ThisObject);
+	
 EndProcedure
+
+#EndRegion
+
+////////////////////////////////////////////////////////////////////////////////
+#Region CONTROLS_EVENTS_HANDLERS
+
+&AtClient
+Procedure HideDisabledItemsOnChange(Item)
+	
+	DisableEnableObjectsClientServer.SetFilterCompaniesInArchive(ThisObject, HideDisabledItems);
+	
+EndProcedure
+
+#EndRegion

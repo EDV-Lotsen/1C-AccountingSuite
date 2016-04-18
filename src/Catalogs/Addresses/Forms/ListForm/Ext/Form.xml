@@ -191,12 +191,6 @@
 					<ContextMenu name="CF5StringContextMenu" id="75"/>
 					<ExtendedTooltip name="CF5StringExtendedTooltip" id="76"/>
 				</LabelField>
-				<CheckBoxField name="Zoho" id="77">
-					<DataPath>List.Zoho</DataPath>
-					<CheckBoxType>Auto</CheckBoxType>
-					<ContextMenu name="ZohoContextMenu" id="78"/>
-					<ExtendedTooltip name="ZohoExtendedTooltip" id="79"/>
-				</CheckBoxField>
 			</ChildItems>
 		</Table>
 	</ChildItems>
@@ -242,19 +236,10 @@
 	CatalogAddresses.CF5String,
 	CatalogAddresses.JobTitle,
 	CatalogAddresses.SalesPerson,
-	CatalogAddresses.NewObject,
-	CatalogAddresses.AddressValidated,
-	CatalogAddresses.Predefined,
-	CatalogAddresses.PredefinedDataName,
-	CASE 
-		WHEN zoho_contactCodeMap.zoho_id &lt;&gt; ""
-			THEN TRUE
-		ELSE FALSE
-	END AS Zoho
+	CatalogAddresses.NewObject
 FROM
-	Catalog.zoho_contactCodeMap AS zoho_contactCodeMap
-		RIGHT JOIN Catalog.Addresses AS CatalogAddresses
-		ON zoho_contactCodeMap.address_ref = CatalogAddresses.Ref</QueryText>
+	Catalog.Addresses AS CatalogAddresses
+</QueryText>
 				<MainTable>Catalog.Addresses</MainTable>
 				<ListSettings>
 					<dcsset:filter>

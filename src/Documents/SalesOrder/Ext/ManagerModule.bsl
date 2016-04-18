@@ -88,10 +88,12 @@ Procedure PickList(Spreadsheet, Ref) Export
 
 	QuantityFormat = GeneralFunctionsReusable.DefaultQuantityFormat();
 	Header = Template.GetArea("Header");
-	AreaHeader_1 = Template.GetArea("Header_1");
+	//AreaHeader_1 = Template.GetArea("Header_1");
 
-	AreaLineItems = Template.GetArea("LineItems");
-	AreaLineItems_1 = Template.GetArea("LineItems_1");
+	AreaLineItems     = Template.GetArea("LineItems");
+	AreaLineItemsDark = Template.GetArea("LineItemsDark");
+
+	//AreaLineItems_1 = Template.GetArea("LineItems_1");
 	Spreadsheet.Clear();
 
 	InsertPageBreak = False;
@@ -104,8 +106,9 @@ Procedure PickList(Spreadsheet, Ref) Export
 		//Header
 		Parameters = New Structure;
 		Parameters.Insert("Company", RefLine.Company);
-		Parameters.Insert("Date", RefLine.Date);
-		Parameters.Insert("Number", RefLine.Number);
+		Parameters.Insert("Date"   , RefLine.Date);
+		Parameters.Insert("Number" , RefLine.Number);
+		Parameters.Insert("RefNum" , RefLine.RefNum);
 		
 		If ValueIsFilled(RefLine.DropshipShipTo) Then
 			ThemShip = PrintTemplates.ContactInfoDataset(RefLine.DropshipCompany, "ThemShip", RefLine.DropshipShipTo);
@@ -146,7 +149,11 @@ Procedure PickList(Spreadsheet, Ref) Export
 		             |		ELSE 0
 		             |	END AS NeededBaseUM,
 		             |	SalesOrderLineItems.Unit AS Unit,
-		             |	ISNULL(InventoryJournalBalance.QuantityBalance, 0) AS ToPick,
+		             |	CASE
+		             |		WHEN ISNULL(SalesOrderLineItems.Unit.Factor, 0) = 0
+		             |			THEN 0
+		             |		ELSE ISNULL(InventoryJournalBalance.QuantityBalance, 0) / SalesOrderLineItems.Unit.Factor
+		             |	END AS OnHand,
 		             |	Units.Code AS AbbreviationBaseUM
 		             |FROM
 		             |	Document.SalesOrder.LineItems AS SalesOrderLineItems
@@ -170,44 +177,48 @@ Procedure PickList(Spreadsheet, Ref) Export
 		             |			AND SalesOrderLineItems.Product.UnitSet = Units.Owner
 		             |WHERE
 		             |	SalesOrderLineItems.Ref = &Ref
-		             |	AND SalesOrderLineItems.Product.Type = VALUE(Enum.InventoryTypes.Inventory)
-		             |
-		             |ORDER BY
-		             |	Item";
+		             |	AND SalesOrderLineItems.Product.Type = VALUE(Enum.InventoryTypes.Inventory)";
 					 
 		Query.SetParameter("Ref", RefLine.Ref);
 		
 		QueryResult = Query.Execute();
 		Selection = QueryResult.Select();
 		
+		Dark = False; 
+		
 		While Selection.Next() Do
 			
 			If Selection.Needed = 0 Then Continue; EndIf; 
 			
-			AreaLineItems.Parameters.Fill(Selection);
-			AreaLineItems.Parameters.Needed = Format(Selection.Needed, QuantityFormat)+ " " + Selection.Unit.Code;
 			
-			Spreadsheet.Put(AreaLineItems);
+			AreaLine = ?(Dark, AreaLineItemsDark, AreaLineItems);
+			Dark     = Not Dark;
+			
+			AreaLine.Parameters.Fill(Selection);
+			AreaLine.Parameters.Needed = Format(Selection.Needed, QuantityFormat)+ " " + Selection.Unit.Code;
+			AreaLine.Parameters.OnHand = Format(Selection.OnHand, QuantityFormat)+ " " + Selection.Unit.Code;
+			
+			Spreadsheet.Put(AreaLine);
 		EndDo;
 		
 		//------------------------------------------------------------------------
-		Spreadsheet.Put(AreaHeader_1);
+		//Spreadsheet.Put(AreaHeader_1);
 		
-		TT = New ValueTable;
-		TT = QueryResult.Unload();                                         
-		TT.GroupBy("Item, Description, Warehouse, ToPick, AbbreviationBaseUM", "NeededBaseUM");
-		TT.Sort("Item");
-		
-		For Each LineTT In TT Do
-			
-			If LineTT.NeededBaseUM = 0 Then Continue; EndIf; 
-			
-			AreaLineItems_1.Parameters.Fill(LineTT);
-			AreaLineItems_1.Parameters.NeededBaseUM = Format(LineTT.NeededBaseUM, QuantityFormat)+ " " + LineTT.AbbreviationBaseUM;
-			AreaLineItems_1.Parameters.ToPick = Format(LineTT.ToPick, QuantityFormat)+ " " + LineTT.AbbreviationBaseUM;
-			
-			Spreadsheet.Put(AreaLineItems_1);
-		EndDo;
+		//TT = New ValueTable;
+		//TT = QueryResult.Unload();                                         
+		//TT.GroupBy("Item, Description, Warehouse, ToPick, AbbreviationBaseUM", "NeededBaseUM");
+		//TT.Sort("Item");
+		//
+		//For Each LineTT In TT Do
+		//	
+		//	If LineTT.NeededBaseUM = 0 Then Continue; EndIf; 
+		//	
+		//	AreaLineItems_1.Parameters.Fill(LineTT);
+		//	AreaLineItems_1.Parameters.NeededBaseUM = Format(LineTT.NeededBaseUM, QuantityFormat)+ " " + LineTT.AbbreviationBaseUM;
+		//	AreaLineItems_1.Parameters.ToPick = Format(LineTT.ToPick, QuantityFormat)+ " " + LineTT.AbbreviationBaseUM;
+		//	
+		//	Spreadsheet.Put(AreaLineItems_1);
+		//EndDo;
 
 		InsertPageBreak = True;
 		

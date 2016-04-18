@@ -216,6 +216,7 @@
 				<xr:Item xsi:type="xr:MDObjectRef">InformationRegister.SerialNumbers</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">AccumulationRegister.InventoryJournal</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">AccumulationRegister.ClassData</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">AccumulationRegister.GeneralJournalAnalyticsDimensions</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">AccumulationRegister.ProjectData</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">AccumulationRegister.Lots</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">AccountingRegister.GeneralJournal</xr:Item>
@@ -880,7 +881,7 @@
 						<v8:NumberQualifiers>
 							<v8:Digits>17</v8:Digits>
 							<v8:FractionDigits>2</v8:FractionDigits>
-							<v8:AllowedSign>Nonnegative</v8:AllowedSign>
+							<v8:AllowedSign>Any</v8:AllowedSign>
 						</v8:NumberQualifiers>
 					</Type>
 					<PasswordMode>false</PasswordMode>
@@ -923,7 +924,7 @@
 						<v8:NumberQualifiers>
 							<v8:Digits>17</v8:Digits>
 							<v8:FractionDigits>2</v8:FractionDigits>
-							<v8:AllowedSign>Nonnegative</v8:AllowedSign>
+							<v8:AllowedSign>Any</v8:AllowedSign>
 						</v8:NumberQualifiers>
 					</Type>
 					<PasswordMode>false</PasswordMode>
@@ -952,8 +953,8 @@
 				</Properties>
 			</Attribute>
 			<Form>DocumentForm</Form>
-			<Form>ChoiceForm</Form>
 			<Form>ListForm</Form>
+			<Form>ChoiceForm</Form>
 			<TabularSection uuid="64507862-7b2d-4c09-aa30-f4dcd19741ab">
 				<InternalInfo>
 					<xr:GeneratedType name="DocumentTabularSection.PurchaseInvoice.LineItems" category="TabularSection">
@@ -1342,7 +1343,7 @@
 								<v8:NumberQualifiers>
 									<v8:Digits>17</v8:Digits>
 									<v8:FractionDigits>4</v8:FractionDigits>
-									<v8:AllowedSign>Nonnegative</v8:AllowedSign>
+									<v8:AllowedSign>Any</v8:AllowedSign>
 								</v8:NumberQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
@@ -1383,7 +1384,7 @@
 								<v8:NumberQualifiers>
 									<v8:Digits>17</v8:Digits>
 									<v8:FractionDigits>2</v8:FractionDigits>
-									<v8:AllowedSign>Nonnegative</v8:AllowedSign>
+									<v8:AllowedSign>Any</v8:AllowedSign>
 								</v8:NumberQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
@@ -1932,7 +1933,7 @@
 								<v8:NumberQualifiers>
 									<v8:Digits>17</v8:Digits>
 									<v8:FractionDigits>2</v8:FractionDigits>
-									<v8:AllowedSign>Nonnegative</v8:AllowedSign>
+									<v8:AllowedSign>Any</v8:AllowedSign>
 								</v8:NumberQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>

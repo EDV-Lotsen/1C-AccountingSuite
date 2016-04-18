@@ -6,10 +6,11 @@
 	<RepostOnWrite>true</RepostOnWrite>
 	<AutoCommandBar name="FormCommandPanel" id="-1">
 		<ChildItems>
-			<Button name="FormSendEmail" id="172">
+			<Button name="FormCommonCommandAttachedFiles" id="394">
 				<Type>CommandBarButton</Type>
-				<CommandName>Form.Command.SendEmail</CommandName>
-				<ExtendedTooltip name="FormSendEmailExtendedTooltip" id="173"/>
+				<CommandName>CommonCommand.AttachedFiles</CommandName>
+				<DataPath>Object.Ref</DataPath>
+				<ExtendedTooltip name="FormCommonCommandAttachedFilesExtendedTooltip" id="395"/>
 			</Button>
 		</ChildItems>
 	</AutoCommandBar>
@@ -91,6 +92,7 @@
 										</InputField>
 										<RadioButtonField name="ReturnType" id="91">
 											<DataPath>Object.ReturnType</DataPath>
+											<Visible>false</Visible>
 											<TitleLocation>Left</TitleLocation>
 											<EditMode>EnterOnInput</EditMode>
 											<RadioButtonType>RadioButtons</RadioButtonType>
@@ -515,46 +517,6 @@
 							<Group>Horizontal</Group>
 							<ExtendedTooltip name="TaxTabExtendedTooltip" id="190"/>
 							<ChildItems>
-								<RadioButtonField name="TaxEngine" id="306">
-									<DataPath>TaxEngine</DataPath>
-									<TitleLocation>None</TitleLocation>
-									<RadioButtonType>Tumbler</RadioButtonType>
-									<ColumnsCount>1</ColumnsCount>
-									<ChoiceList>
-										<xr:Item>
-											<xr:Presentation/>
-											<xr:CheckState>0</xr:CheckState>
-											<xr:Value xsi:type="FormChoiceListDesTimeValue">
-												<Presentation>
-													<v8:item>
-														<v8:lang>en</v8:lang>
-														<v8:content>Use ACSuite</v8:content>
-													</v8:item>
-												</Presentation>
-												<Value xsi:type="xs:decimal">1</Value>
-											</xr:Value>
-										</xr:Item>
-										<xr:Item>
-											<xr:Presentation/>
-											<xr:CheckState>0</xr:CheckState>
-											<xr:Value xsi:type="FormChoiceListDesTimeValue">
-												<Presentation>
-													<v8:item>
-														<v8:lang>en</v8:lang>
-														<v8:content>Use AvaTax</v8:content>
-													</v8:item>
-												</Presentation>
-												<Value xsi:type="xs:decimal">2</Value>
-											</xr:Value>
-										</xr:Item>
-									</ChoiceList>
-									<Font ref="style:NormalTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
-									<ContextMenu name="TaxEngineContextMenu" id="307"/>
-									<ExtendedTooltip name="TaxEngineExtendedTooltip" id="308"/>
-									<Events>
-										<Event name="OnChange">TaxEngineOnChange</Event>
-									</Events>
-								</RadioButtonField>
 								<Pages name="TaxParametersPages" id="309">
 									<Title>
 										<v8:item>
@@ -810,11 +772,6 @@
 															<ContextMenu name="TaxComponentsTitleContextMenu" id="329"/>
 															<ExtendedTooltip name="TaxComponentsTitleExtendedTooltip" id="330"/>
 														</LabelDecoration>
-														<Button name="AvaTaxDetails" id="331">
-															<Type>Hyperlink</Type>
-															<CommandName>Form.Command.AvaTaxDetails</CommandName>
-															<ExtendedTooltip name="AvaTaxDetailsExtendedTooltip" id="332"/>
-														</Button>
 													</ChildItems>
 												</UsualGroup>
 												<Table name="TaxAcrossAgencies" id="333">
@@ -1024,6 +981,7 @@
 						</InputField>
 						<InputField name="LineItemsUnit" id="290">
 							<DataPath>Object.LineItems.Unit</DataPath>
+							<SkipOnInput>true</SkipOnInput>
 							<Title>
 								<v8:item>
 									<v8:lang>en</v8:lang>
@@ -1725,23 +1683,23 @@
 				<v8:Type>v8:ValueListType</v8:Type>
 			</Type>
 		</Attribute>
-	</Attributes>
-	<Commands>
-		<Command name="SendEmail" id="1">
+		<Attribute name="FirstNumber" id="7">
 			<Title>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Send email</v8:content>
+					<v8:content>First number</v8:content>
 				</v8:item>
 			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Send email</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Action>SendEmail</Action>
-		</Command>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>20</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+	</Attributes>
+	<Commands>
 		<Command name="AuditLogRecord" id="2">
 			<Title>
 				<v8:item>
@@ -1756,25 +1714,6 @@
 				</v8:item>
 			</ToolTip>
 			<Action>AuditLogRecord</Action>
-		</Command>
-		<Command name="AvaTaxDetails" id="3">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>View details</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Ava tax details</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Picture>
-				<xr:Ref>CommonPicture.Avalara</xr:Ref>
-				<xr:LoadTransparent>true</xr:LoadTransparent>
-			</Picture>
-			<Action>AvaTax</Action>
 		</Command>
 	</Commands>
 	<CommandInterface>
@@ -1830,11 +1769,20 @@
 				<DefaultVisible>false</DefaultVisible>
 			</Item>
 			<Item>
-				<Command>CommonCommand.SendEmail</Command>
+				<Command>0:017ae4f6-356a-4e94-8663-9d23bcb4b365</Command>
 				<Type>Auto</Type>
 				<CommandGroup>FormCommandBarImportant</CommandGroup>
 				<Index>1</Index>
 				<DefaultVisible>false</DefaultVisible>
+				<Visible>
+					<xr:Common>false</xr:Common>
+				</Visible>
+			</Item>
+			<Item>
+				<Command>Document.SalesReturn.Command.Print</Command>
+				<Type>Auto</Type>
+				<CommandGroup>FormCommandBarImportant</CommandGroup>
+				<Index>2</Index>
 				<Visible>
 					<xr:Common>false</xr:Common>
 				</Visible>

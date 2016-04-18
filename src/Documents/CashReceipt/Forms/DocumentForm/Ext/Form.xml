@@ -10,15 +10,16 @@
 	<RepostOnWrite>true</RepostOnWrite>
 	<AutoCommandBar name="FormCommandBar" id="-1">
 		<ChildItems>
-			<Button name="FormSendEmail" id="198">
-				<Type>CommandBarButton</Type>
-				<CommandName>Form.Command.SendEmail</CommandName>
-				<ExtendedTooltip name="FormSendEmailExtendedTooltip" id="199"/>
-			</Button>
 			<Button name="FormButton1" id="230">
 				<Type>CommandBarButton</Type>
 				<CommandName>0</CommandName>
 				<ExtendedTooltip name="FormButton1ExtendedTooltip" id="231"/>
+			</Button>
+			<Button name="FormCommonCommandAttachedFiles" id="304">
+				<Type>CommandBarButton</Type>
+				<CommandName>CommonCommand.AttachedFiles</CommandName>
+				<DataPath>Object.Ref</DataPath>
+				<ExtendedTooltip name="FormCommonCommandAttachedFilesExtendedTooltip" id="305"/>
 			</Button>
 		</ChildItems>
 	</AutoCommandBar>
@@ -83,7 +84,7 @@
 											<v8:content>Left column</v8:content>
 										</v8:item>
 									</ToolTip>
-									<Width>25</Width>
+									<Width>29</Width>
 									<HorizontalStretch>false</HorizontalStretch>
 									<VerticalStretch>true</VerticalStretch>
 									<Group>Vertical</Group>
@@ -110,9 +111,8 @@
 													<v8:content>Type</v8:content>
 												</v8:item>
 											</Title>
-											<TitleLocation>None</TitleLocation>
 											<EditMode>EnterOnInput</EditMode>
-											<RadioButtonType>RadioButtons</RadioButtonType>
+											<RadioButtonType>Tumbler</RadioButtonType>
 											<ChoiceList>
 												<xr:Item>
 													<xr:Presentation/>
@@ -147,6 +147,13 @@
 												<Event name="OnChange">DepositTypeOnChange</Event>
 											</Events>
 										</RadioButtonField>
+										<LabelField name="DepositDocument" id="301">
+											<DataPath>DepositDocument</DataPath>
+											<Hiperlink>true</Hiperlink>
+											<TextColor>style:ColorInformationLabel</TextColor>
+											<ContextMenu name="DepositDocumentContextMenu" id="302"/>
+											<ExtendedTooltip name="DepositDocumentExtendedTooltip" id="303"/>
+										</LabelField>
 									</ChildItems>
 								</UsualGroup>
 								<UsualGroup name="MiddleColumn" id="49">
@@ -186,6 +193,7 @@
 											</Title>
 											<Width>15</Width>
 											<HorizontalStretch>false</HorizontalStretch>
+											<QuickChoice>true</QuickChoice>
 											<ContextMenu name="BankAccountContextMenu" id="60"/>
 											<ExtendedTooltip name="BankAccountExtendedTooltip" id="105"/>
 											<Events>
@@ -212,16 +220,14 @@
 									<ShowTitle>false</ShowTitle>
 									<ExtendedTooltip name="RightColumnExtendedTooltip" id="112"/>
 									<ChildItems>
-										<InputField name="PaidAmount" id="93">
+										<LabelField name="PaidAmount" id="93">
 											<DataPath>Object.CashPayment</DataPath>
+											<ReadOnly>true</ReadOnly>
 											<Width>15</Width>
 											<HorizontalStretch>false</HorizontalStretch>
 											<ContextMenu name="PaidAmountContextMenu" id="94"/>
 											<ExtendedTooltip name="PaidAmountExtendedTooltip" id="111"/>
-											<Events>
-												<Event name="OnChange">CashPaymentOnChange</Event>
-											</Events>
-										</InputField>
+										</LabelField>
 										<InputField name="RefNum" id="11">
 											<DataPath>Object.RefNum</DataPath>
 											<EditMode>EnterOnInput</EditMode>
@@ -257,116 +263,16 @@
 											<ContextMenu name="PaymentMethodContextMenu" id="57"/>
 											<ExtendedTooltip name="PaymentMethodExtendedTooltip" id="115"/>
 										</InputField>
-										<InputField name="SalesOrder" id="227">
+										<LabelField name="SalesOrder" id="227">
 											<DataPath>Object.SalesOrder</DataPath>
-											<Width>15</Width>
+											<ReadOnly>true</ReadOnly>
+											<TitleLocation>None</TitleLocation>
+											<Width>18</Width>
 											<HorizontalStretch>false</HorizontalStretch>
+											<Hiperlink>true</Hiperlink>
 											<ContextMenu name="SalesOrderContextMenu" id="228"/>
 											<ExtendedTooltip name="SalesOrderExtendedTooltip" id="229"/>
-										</InputField>
-									</ChildItems>
-								</UsualGroup>
-							</ChildItems>
-						</Page>
-						<Page name="Additional" id="143">
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Trx detail</v8:content>
-								</v8:item>
-							</Title>
-							<ToolTip>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Additional</v8:content>
-								</v8:item>
-							</ToolTip>
-							<Group>Horizontal</Group>
-							<ExtendedTooltip name="AdditionalExtendedTooltip" id="144"/>
-							<ChildItems>
-								<UsualGroup name="Group4" id="145">
-									<Group>Vertical</Group>
-									<ShowTitle>false</ShowTitle>
-									<ExtendedTooltip name="Group4ExtendedTooltip" id="146"/>
-									<ChildItems>
-										<InputField name="Number" id="1">
-											<DataPath>Object.Number</DataPath>
-											<Visible>false</Visible>
-											<EditMode>EnterOnInput</EditMode>
-											<Width>15</Width>
-											<HorizontalStretch>false</HorizontalStretch>
-											<ContextMenu name="NumberContextMenu" id="2"/>
-											<ExtendedTooltip name="NumberExtendedTooltip" id="101"/>
-										</InputField>
-									</ChildItems>
-								</UsualGroup>
-								<UsualGroup name="Group1" id="169">
-									<Group>Vertical</Group>
-									<ShowTitle>false</ShowTitle>
-									<ExtendedTooltip name="Group1ExtendedTooltip" id="170"/>
-									<ChildItems>
-										<InputField name="StripeID" id="96">
-											<DataPath>Object.StripeID</DataPath>
-											<ReadOnly>true</ReadOnly>
-											<Width>15</Width>
-											<HorizontalStretch>false</HorizontalStretch>
-											<ContextMenu name="StripeIDContextMenu" id="97"/>
-											<ExtendedTooltip name="StripeIDExtendedTooltip" id="107"/>
-										</InputField>
-										<InputField name="StripeCardName" id="166">
-											<DataPath>Object.StripeCardName</DataPath>
-											<ReadOnly>true</ReadOnly>
-											<Width>15</Width>
-											<HorizontalStretch>false</HorizontalStretch>
-											<ContextMenu name="StripeCardNameContextMenu" id="167"/>
-											<ExtendedTooltip name="StripeCardNameExtendedTooltip" id="168"/>
-										</InputField>
-									</ChildItems>
-								</UsualGroup>
-								<UsualGroup name="Group5" id="171">
-									<Group>Vertical</Group>
-									<ShowTitle>false</ShowTitle>
-									<ExtendedTooltip name="Group5ExtendedTooltip" id="172"/>
-									<ChildItems>
-										<InputField name="StripeAmount" id="173">
-											<DataPath>Object.StripeAmount</DataPath>
-											<ReadOnly>true</ReadOnly>
-											<Width>15</Width>
-											<HorizontalStretch>false</HorizontalStretch>
-											<ContextMenu name="StripeAmountContextMenu" id="174"/>
-											<ExtendedTooltip name="StripeAmountExtendedTooltip" id="175"/>
-										</InputField>
-										<InputField name="StripeCreated" id="176">
-											<DataPath>Object.StripeCreated</DataPath>
-											<ReadOnly>true</ReadOnly>
-											<Width>15</Width>
-											<HorizontalStretch>false</HorizontalStretch>
-											<ContextMenu name="StripeCreatedContextMenu" id="177"/>
-											<ExtendedTooltip name="StripeCreatedExtendedTooltip" id="178"/>
-										</InputField>
-									</ChildItems>
-								</UsualGroup>
-								<UsualGroup name="Group6" id="179">
-									<Group>Vertical</Group>
-									<ShowTitle>false</ShowTitle>
-									<ExtendedTooltip name="Group6ExtendedTooltip" id="180"/>
-									<ChildItems>
-										<InputField name="StripeCardType" id="181">
-											<DataPath>Object.StripeCardType</DataPath>
-											<ReadOnly>true</ReadOnly>
-											<Width>15</Width>
-											<HorizontalStretch>false</HorizontalStretch>
-											<ContextMenu name="StripeCardTypeContextMenu" id="182"/>
-											<ExtendedTooltip name="StripeCardTypeExtendedTooltip" id="183"/>
-										</InputField>
-										<InputField name="StripeLast4" id="184">
-											<DataPath>Object.StripeLast4</DataPath>
-											<ReadOnly>true</ReadOnly>
-											<Width>15</Width>
-											<HorizontalStretch>false</HorizontalStretch>
-											<ContextMenu name="StripeLast4ContextMenu" id="185"/>
-											<ExtendedTooltip name="StripeLast4ExtendedTooltip" id="186"/>
-										</InputField>
+										</LabelField>
 									</ChildItems>
 								</UsualGroup>
 							</ChildItems>
@@ -624,28 +530,73 @@
 							</ToolTip>
 							<ExtendedTooltip name="ExternalMemoExtendedTooltip" id="233"/>
 							<ChildItems>
-								<InputField name="EmailNote" id="205">
-									<DataPath>Object.EmailNote</DataPath>
-									<Title>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Ext.</v8:content>
-										</v8:item>
-									</Title>
-									<TitleLocation>Left</TitleLocation>
-									<Width>50</Width>
-									<HorizontalStretch>false</HorizontalStretch>
-									<MultiLine>true</MultiLine>
-									<InputHint>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Notes here will be shown on the printed document as well as email body</v8:content>
-										</v8:item>
-									</InputHint>
-									<ContextMenu name="EmailNoteContextMenu" id="206"/>
-									<ExtendedTooltip name="EmailNoteExtendedTooltip" id="207"/>
-								</InputField>
+								<UsualGroup name="Group9" id="296">
+									<Group>Horizontal</Group>
+									<Representation>None</Representation>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="Group9ExtendedTooltip" id="297"/>
+									<ChildItems>
+										<InputField name="EmailNote" id="205">
+											<DataPath>Object.EmailNote</DataPath>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Ext.</v8:content>
+												</v8:item>
+											</Title>
+											<TitleLocation>Left</TitleLocation>
+											<Width>44</Width>
+											<HorizontalStretch>false</HorizontalStretch>
+											<MultiLine>true</MultiLine>
+											<InputHint>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Notes here will be shown on the printed document as well as email body</v8:content>
+												</v8:item>
+											</InputHint>
+											<ContextMenu name="EmailNoteContextMenu" id="206"/>
+											<ExtendedTooltip name="EmailNoteExtendedTooltip" id="207"/>
+										</InputField>
+										<InputField name="Memo" id="13">
+											<DataPath>Object.Memo</DataPath>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Int</v8:content>
+												</v8:item>
+											</Title>
+											<TitleLocation>Left</TitleLocation>
+											<EditMode>EnterOnInput</EditMode>
+											<Width>44</Width>
+											<HorizontalStretch>false</HorizontalStretch>
+											<MultiLine>true</MultiLine>
+											<InputHint>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Internal memo</v8:content>
+												</v8:item>
+											</InputHint>
+											<ContextMenu name="MemoContextMenu" id="14"/>
+											<ExtendedTooltip name="MemoExtendedTooltip" id="135"/>
+										</InputField>
+									</ChildItems>
+								</UsualGroup>
 							</ChildItems>
+						</Page>
+						<Page name="Discount" id="278">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Discount</v8:content>
+								</v8:item>
+							</Title>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Discount</v8:content>
+								</v8:item>
+							</ToolTip>
+							<ExtendedTooltip name="DiscountExtendedTooltip" id="279"/>
 						</Page>
 					</ChildItems>
 				</Pages>
@@ -790,6 +741,12 @@
 												</InputField>
 											</ChildItems>
 										</ColumnGroup>
+										<InputField name="LineItemsSalesOrder" id="309">
+											<DataPath>Object.LineItems.SalesOrder</DataPath>
+											<EditMode>EnterOnInput</EditMode>
+											<ContextMenu name="LineItemsSalesOrderContextMenu" id="310"/>
+											<ExtendedTooltip name="LineItemsSalesOrderExtendedTooltip" id="311"/>
+										</InputField>
 										<InputField name="LineItemsCurrency" id="63">
 											<DataPath>Object.LineItems.Currency2</DataPath>
 											<Visible>false</Visible>
@@ -816,6 +773,28 @@
 											<EditMode>EnterOnInput</EditMode>
 											<ContextMenu name="LineItemsBalanceContextMenu" id="46"/>
 											<ExtendedTooltip name="LineItemsBalanceExtendedTooltip" id="132"/>
+										</InputField>
+										<InputField name="LineItemsDiscountDate" id="298">
+											<DataPath>Object.LineItems.DiscountDate</DataPath>
+											<ReadOnly>true</ReadOnly>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Disc. date</v8:content>
+												</v8:item>
+											</Title>
+											<EditMode>EnterOnInput</EditMode>
+											<ContextMenu name="LineItemsDiscountDateContextMenu" id="299"/>
+											<ExtendedTooltip name="LineItemsDiscountDateExtendedTooltip" id="300"/>
+										</InputField>
+										<InputField name="LineItemsDiscount" id="293">
+											<DataPath>Object.LineItems.Discount</DataPath>
+											<EditMode>EnterOnInput</EditMode>
+											<ContextMenu name="LineItemsDiscountContextMenu" id="294"/>
+											<ExtendedTooltip name="LineItemsDiscountExtendedTooltip" id="295"/>
+											<Events>
+												<Event name="OnChange">LineItemsDiscountOnChange</Event>
+											</Events>
 										</InputField>
 										<InputField name="LineItemsPayment" id="42">
 											<DataPath>Object.LineItems.Payment</DataPath>
@@ -948,6 +927,12 @@
 												</CheckBoxField>
 											</ChildItems>
 										</ColumnGroup>
+										<InputField name="CreditMemosSalesOrder" id="312">
+											<DataPath>Object.CreditMemos.SalesOrder</DataPath>
+											<EditMode>EnterOnInput</EditMode>
+											<ContextMenu name="CreditMemosSalesOrderContextMenu" id="313"/>
+											<ExtendedTooltip name="CreditMemosSalesOrderExtendedTooltip" id="314"/>
+										</InputField>
 										<InputField name="CreditMemosCurrency" id="88">
 											<Visible>false</Visible>
 											<ReadOnly>true</ReadOnly>
@@ -1014,16 +999,26 @@
 			<Group>Horizontal</Group>
 			<Representation>None</Representation>
 			<ShowTitle>false</ShowTitle>
+			<BackColor>web:Gainsboro</BackColor>
 			<ExtendedTooltip name="FooterExtendedTooltip" id="134"/>
 			<ChildItems>
-				<InputField name="Memo" id="13">
-					<DataPath>Object.Memo</DataPath>
-					<EditMode>EnterOnInput</EditMode>
-					<ContextMenu name="MemoContextMenu" id="14"/>
-					<ExtendedTooltip name="MemoExtendedTooltip" id="135"/>
+				<InputField name="UnappliedPayment" id="154">
+					<DataPath>Object.UnappliedPayment</DataPath>
+					<ContextMenu name="UnappliedPaymentContextMenu" id="155"/>
+					<ExtendedTooltip name="UnappliedPaymentExtendedTooltip" id="156"/>
+					<Events>
+						<Event name="OnChange">UnappliedPaymentOnChange</Event>
+					</Events>
 				</InputField>
+				<LabelField name="TotalFormula" id="315">
+					<DataPath>TotalFormula</DataPath>
+					<TitleLocation>None</TitleLocation>
+					<ContextMenu name="TotalFormulaContextMenu" id="316"/>
+					<ExtendedTooltip name="TotalFormulaExtendedTooltip" id="317"/>
+				</LabelField>
 				<InputField name="DocumentTotal" id="9">
 					<DataPath>Object.DocumentTotal</DataPath>
+					<Visible>false</Visible>
 					<ReadOnly>true</ReadOnly>
 					<EditMode>EnterOnInput</EditMode>
 					<ContextMenu name="DocumentTotalContextMenu" id="10"/>
@@ -1031,6 +1026,7 @@
 				</InputField>
 				<InputField name="DocumentTotalRC" id="21">
 					<DataPath>Object.DocumentTotalRC</DataPath>
+					<Visible>false</Visible>
 					<ReadOnly>true</ReadOnly>
 					<EditMode>EnterOnInput</EditMode>
 					<ContextMenu name="DocumentTotalRCContextMenu" id="22"/>
@@ -1041,10 +1037,11 @@
 					<ContextMenu name="AppliedCreditContextMenu" id="193"/>
 					<ExtendedTooltip name="AppliedCreditExtendedTooltip" id="194"/>
 				</InputField>
-				<InputField name="UnappliedPayment" id="154">
-					<DataPath>Object.UnappliedPayment</DataPath>
-					<ContextMenu name="UnappliedPaymentContextMenu" id="155"/>
-					<ExtendedTooltip name="UnappliedPaymentExtendedTooltip" id="156"/>
+				<InputField name="DiscountAmount" id="283">
+					<DataPath>Object.DiscountAmount</DataPath>
+					<ReadOnly>true</ReadOnly>
+					<ContextMenu name="DiscountAmountContextMenu" id="284"/>
+					<ExtendedTooltip name="DiscountAmountExtendedTooltip" id="285"/>
 				</InputField>
 			</ChildItems>
 		</UsualGroup>
@@ -1107,6 +1104,17 @@
 						</Title>
 						<Type>
 							<v8:Type>cfg:CatalogRef.Currencies</v8:Type>
+						</Type>
+					</Column>
+					<Column name="SalesOrder" id="5">
+						<Title>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>SO</v8:content>
+							</v8:item>
+						</Title>
+						<Type>
+							<v8:Type>cfg:DocumentRef.SalesOrder</v8:Type>
 						</Type>
 					</Column>
 				</AdditionalColumns>
@@ -1179,6 +1187,36 @@
 						</Title>
 						<Type>
 							<v8:Type>cfg:CatalogRef.Currencies</v8:Type>
+						</Type>
+					</Column>
+					<Column name="DiscountDate" id="6">
+						<Title>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>Discount date</v8:content>
+							</v8:item>
+						</Title>
+						<Type>
+							<v8:Type>xs:dateTime</v8:Type>
+							<v8:DateQualifiers>
+								<v8:DateFractions>Date</v8:DateFractions>
+							</v8:DateQualifiers>
+						</Type>
+					</Column>
+					<Column name="SalesOrder" id="7">
+						<Title>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>SO</v8:content>
+							</v8:item>
+						</Title>
+						<Type>
+							<v8:Type>xs:string</v8:Type>
+							<v8:Type>cfg:DocumentRef.SalesOrder</v8:Type>
+							<v8:StringQualifiers>
+								<v8:Length>7</v8:Length>
+								<v8:AllowedLength>Variable</v8:AllowedLength>
+							</v8:StringQualifiers>
 						</Type>
 					</Column>
 				</AdditionalColumns>
@@ -1324,23 +1362,34 @@
 				<v8:Type>v8:ValueListType</v8:Type>
 			</Type>
 		</Attribute>
-	</Attributes>
-	<Commands>
-		<Command name="SendEmail" id="2">
+		<Attribute name="DepositDocument" id="12">
 			<Title>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Email Receipt</v8:content>
+					<v8:content>Deposited</v8:content>
 				</v8:item>
 			</Title>
-			<ToolTip>
+			<Type>
+				<v8:Type>cfg:DocumentRef.Deposit</v8:Type>
+			</Type>
+		</Attribute>
+		<Attribute name="TotalFormula" id="13">
+			<Title>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Send email</v8:content>
+					<v8:content>Total formula</v8:content>
 				</v8:item>
-			</ToolTip>
-			<Action>SendEmail</Action>
-		</Command>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+	</Attributes>
+	<Commands>
 		<Command name="CheckAll" id="3">
 			<Title>
 				<v8:item>
@@ -1397,7 +1446,7 @@
 				<Command>AccountingRegister.GeneralJournal.StandardCommand.OpenByRecorder</Command>
 				<Type>Auto</Type>
 				<CommandGroup>FormNavigationPanelGoTo</CommandGroup>
-				<Index>2</Index>
+				<Index>1</Index>
 				<DefaultVisible>false</DefaultVisible>
 				<Visible>
 					<xr:Common>false</xr:Common>
@@ -1420,8 +1469,6 @@
 			<Item>
 				<Command>InformationRegister.DocumentJournalOfCompanies.StandardCommand.OpenByValue.Document</Command>
 				<Type>Auto</Type>
-				<CommandGroup>FormNavigationPanelGoTo</CommandGroup>
-				<Index>1</Index>
 				<DefaultVisible>false</DefaultVisible>
 				<Visible>
 					<xr:Common>false</xr:Common>
@@ -1433,5 +1480,24 @@
 				<DefaultVisible>false</DefaultVisible>
 			</Item>
 		</NavigationPanel>
+		<CommandBar>
+			<Item>
+				<Command>CommonCommand.AttachedFiles</Command>
+				<Type>Auto</Type>
+				<CommandGroup>FormCommandBarImportant</CommandGroup>
+				<Index>1</Index>
+				<Visible>
+					<xr:Common>false</xr:Common>
+				</Visible>
+			</Item>
+			<Item>
+				<Command>Document.CashReceipt.Command.Print</Command>
+				<Type>Auto</Type>
+				<CommandGroup>FormCommandBarImportant</CommandGroup>
+				<Visible>
+					<xr:Common>false</xr:Common>
+				</Visible>
+			</Item>
+		</CommandBar>
 	</CommandInterface>
 </Form>

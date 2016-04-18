@@ -12,7 +12,9 @@ EndProcedure
 
 &AtClient
 Procedure ShowSessions(Command)
+	
 	ShowSessionsAtServer();
+	
 EndProcedure
 
 &AtClient
@@ -26,9 +28,10 @@ EndProcedure
 
 &AtClient
 Procedure CloseForm(Command)
+	
 	ThisForm.Close();
+	
 EndProcedure
-
 
 &AtServer
 Procedure ShowSessionsAtServer()
@@ -53,14 +56,14 @@ Procedure ShowSessionsAtServer()
 			NewRow.Name             = User.User.FullName;
 			NewRow.SessionNumber    = User.SessionNumber;
 			NewRow.ConnectionNumber = User.ConnectionNumber;
-			NewRow.Application      = ApplicationPresentation(User.ApplicationName);	
+			NewRow.Application      = ApplicationPresentation(User.ApplicationName);
 			NewRow.SessionStarted   = User.SessionStarted;
 		EndIf;
 		
 	EndDo;
 	
 	SetPrivilegedMode(False);
-		
+	
 EndProcedure
 
 &AtServer
@@ -69,7 +72,6 @@ Procedure TerminateSessionsAtServer()
 	SetPrivilegedMode(True);
 	
 	InfoBaseConnectionString = InfoBaseConnectionString(); 
-	
 	If Find(InfoBaseConnectionString, "Srvr") > 0 Then
 		// Server
 		Find1           = Find(InfoBaseConnectionString, "Srvr=");
@@ -83,29 +85,29 @@ Procedure TerminateSessionsAtServer()
 		// For other ways this algorithm doesn't work
 		Return;
 	EndIf;
-    
-    Connector    = New COMОбъект("V83.COMConnector");
-    ConnectAgent = Connector.ConnectAgent(ServerName);
-    Clusters     = ConnectAgent.GetClusters();
+	
+	Connector    = New COMObject("V83.COMConnector");
+	ConnectAgent = Connector.ConnectAgent(ServerName);
+	Clusters     = ConnectAgent.GetClusters();
 	For Each Cluster In Clusters Do
 		
-        ConnectAgent.Authenticate(Cluster,"","");//Authenticate(<Cluster>, <Name>, <Password>)
-        WorkingProcesses = ConnectAgent.GetWorkingProcesses(Cluster);
-        DataBases        = ConnectAgent.GetInfoBases(Cluster);
+		ConnectAgent.Authenticate(Cluster,"","");
+		WorkingProcesses = ConnectAgent.GetWorkingProcesses(Cluster);
+		DataBases        = ConnectAgent.GetInfoBases(Cluster);
 		
-        For Each DataBase In DataBases Do
-            If Upper(DataBase.Name) = Upper(DataBaseName) Then
-                Sessions = ConnectAgent.GetInfoBaseSessions(Cluster, DataBase);
+		For Each DataBase In DataBases Do
+			If Upper(DataBase.Name) = Upper(DataBaseName) Then
+				Sessions = ConnectAgent.GetInfoBaseSessions(Cluster, DataBase);
 				For Each Session In Sessions Do
 					
 					Array = ListOfUsers.FindRows(New Structure("SessionNumber", Session.SessionID)); 
-					If Array.Count() > 0 Then                         
+					If Array.Count() > 0 Then
 						ConnectAgent.TerminateSession(Cluster, Session);
 					EndIf;
 					
-                EndDo;
-            EndIf; 
-        EndDo; 
+				EndDo;
+			EndIf;
+		EndDo;
 	EndDo;
 	
 	SetPrivilegedMode(False);

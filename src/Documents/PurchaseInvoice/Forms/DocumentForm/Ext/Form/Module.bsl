@@ -36,8 +36,8 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	// Request and fill invoice status.
 	FillInvoiceStatusAtServer();
 	
-	// Request and fill ordered items from database.
-	FillBackorderQuantityAtServer();
+	// Request and fill product is service flag from database.
+	FillProductIsServiceAtServer();
 	
 	//------------------------------------------------------------------------------
 	// 3. Set custom controls presentation.
@@ -68,6 +68,13 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	Items.LineItemsPrice.Format          = PriceFormat;
 	Items.LineItemsOrderPrice.EditFormat = PriceFormat;
 	Items.LineItemsOrderPrice.Format     = PriceFormat;
+	
+	// Select filled items/expenses tab.
+	ItemsCount    = Object.LineItems.Count();
+	ExpensesCount = Object.Accounts.Count();
+	Items.LineItemsSection.Title = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = 'Items [%1]'"),    ItemsCount);
+	Items.AccountsSection.Title  = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = 'Expenses [%1]'"), ExpensesCount);
+	Items.BodyTabs.CurrentPage   = Items.BodyTabs.ChildItems[?((ItemsCount > 0) Or (ItemsCount + ExpensesCount = 0), 0, 1)];
 	
 	// Set lots and serial numbers visibility.
 	Items.LineItemsLot.Visible           = False;
@@ -123,6 +130,8 @@ EndProcedure
 // -> CODE REVIEW
 &AtClient
 Procedure BeforeWrite(Cancel, WriteParameters)
+	
+	WriteParameters.Insert("NewObject", Not ValueIsFilled(Object.Ref));
 	
 	//Closing period
 	If PeriodClosingServerCall.DocumentPeriodIsClosed(Object.Ref, Object.Date) Then
@@ -271,8 +280,14 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 	// Request and fill invoice status from database.
 	FillInvoiceStatusAtServer();
 	
-	// Request and fill ordered items from database.
-	FillBackorderQuantityAtServer();
+	// Request and fill product is service flag from database.
+	FillProductIsServiceAtServer();
+	
+	// Recalculate items/expenses line numebers.
+	ItemsCount    = Object.LineItems.Count();
+	ExpensesCount = Object.Accounts.Count();
+	Items.LineItemsSection.Title = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = 'Items [%1]'"),    ItemsCount);
+	Items.AccountsSection.Title  = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = 'Expenses [%1]'"), ExpensesCount);
 	
 	// Refill lots and serial numbers values.
 	For Each Row In Object.LineItems Do
@@ -289,20 +304,26 @@ EndProcedure
 &AtClient
 Procedure AfterWrite(WriteParameters)
 	
-	// Request user to repost subordinate documents.
-	Structure = New Structure("Type, DocumentRef", "RepostSubordinateDocumentsOfPurchaseInvoice", Object.Ref); 
-	KeyData = CommonUseClient.StartLongAction(NStr("en = 'Posting subordinate document(s)'"), Structure, ThisForm);
-	If WriteParameters.Property("CloseAfterWrite") Then
-		BackgroundJobParameters.Add(True);// [5]
+	If WriteParameters.Property("NewObject") And WriteParameters.NewObject Then
+		
+		//Close the form if the command is "Post and close"
+		If WriteParameters.Property("CloseAfterWrite") Then
+			Close();
+		EndIf;
+		
 	Else
-		BackgroundJobParameters.Add(False);// [5]
+		
+		// Request user to repost subordinate documents.
+		Structure = New Structure("Type, DocumentRef", "RepostSubordinateDocumentsOfPurchaseInvoice", Object.Ref); 
+		KeyData = CommonUseClient.StartLongAction(NStr("en = 'Re-posting linked transactions'"), Structure, ThisForm);
+		If WriteParameters.Property("CloseAfterWrite") Then
+			BackgroundJobParameters.Add(True);// [5]
+		Else
+			BackgroundJobParameters.Add(False);// [5]
+		EndIf;
+		CheckObtainedData(KeyData);
+		
 	EndIf;
-	CheckObtainedData(KeyData);
-	
-	////Close the form if the command is "Post and close"
-	//If WriteParameters.Property("CloseAfterWrite") Then
-	//	Close();
-	//EndIf;
 	
 EndProcedure
 
@@ -512,7 +533,7 @@ EndProcedure
 Procedure ProjectOnChange(Item)
 	
 	// Ask user about updating the setting and update the line items and accounts accordingly.
-	CommonDefaultSettingOnChange(Item, Lower(Item.Name), NStr("en = 'items and expences'"));
+	CommonDefaultSettingOnChange(Item, Lower(Item.Name), NStr("en = 'items and expenses'"));
 	
 EndProcedure
 
@@ -520,7 +541,7 @@ EndProcedure
 Procedure ClassOnChange(Item)
 	
 	// Ask user about updating the setting and update the line items and accounts accordingly.
-	CommonDefaultSettingOnChange(Item, Lower(Item.Name), NStr("en = 'items and expences'"));
+	CommonDefaultSettingOnChange(Item, Lower(Item.Name), NStr("en = 'items and expenses'"));
 	
 EndProcedure
 
@@ -678,6 +699,10 @@ Procedure LineItemsOnChange(Item)
 			EndIf;
 		EndDo;
 		
+		// Recalculate items/expenses line numebers.
+		ItemsCount = Object.LineItems.Count();
+		Items.LineItemsSection.Title = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = 'Items [%1]'"), ItemsCount);
+		
 		// Refresh totals cache.
 		RecalculateTotals();
 	EndIf;
@@ -719,6 +744,10 @@ EndProcedure
 &AtClient
 Procedure LineItemsAfterDeleteRow(Item)
 	
+	// Recalculate items/expenses line numebers.
+	ItemsCount = Object.LineItems.Count();
+	Items.LineItemsSection.Title = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = 'Items [%1]'"), ItemsCount);
+	
 	// Recalculation common document totals.
 	RecalculateTotalsAtServer();
 	
@@ -749,20 +778,24 @@ EndProcedure
 Procedure LineItemsProductOnChangeAtServer(TableSectionRow)
 	
 	// Request product properties.
-	ProductProperties = CommonUse.GetAttributeValues(TableSectionRow.Product,   New Structure("Ref, Description, UnitSet, HasLotsSerialNumbers, UseLots, UseLotsType, Characteristic, UseSerialNumbersOnGoodsReception"));
+	ProductProperties = CommonUse.GetAttributeValues(TableSectionRow.Product,   New Structure("Ref, Description, Type, UnitSet, HasLotsSerialNumbers, UseLots, UseLotsType, Characteristic, UseSerialNumbersOnGoodsReception"));
 	UnitSetProperties = CommonUse.GetAttributeValues(ProductProperties.UnitSet, New Structure("DefaultPurchaseUnit"));
 	TableSectionRow.ProductDescription = ProductProperties.Description;
+	TableSectionRow.IsService          = ProductProperties.Type = Enums.InventoryTypes.NonInventory;
 	TableSectionRow.UnitSet            = ProductProperties.UnitSet;
 	TableSectionRow.Unit               = UnitSetProperties.DefaultPurchaseUnit;
 	TableSectionRow.PriceUnits         = Round(GeneralFunctions.ProductLastCost(TableSectionRow.Product, PointInTime) *
 	                                     ?(TableSectionRow.Unit.Factor > 0, TableSectionRow.Unit.Factor, 1) /
 	                                     ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), GeneralFunctionsReusable.PricePrecisionForOneItem(TableSectionRow.Product));
+	// Cost sign correction.
+	TableSectionRow.PriceUnits         = ?(TableSectionRow.IsService, TableSectionRow.PriceUnits, CommonUseClientServer.Abs(TableSectionRow.PriceUnits));
 	
 	// Make lots & serial numbers columns visible.
 	LotsSerialNumbers.UpdateLotsSerialNumbersVisibility(ProductProperties, Items, 0, TableSectionRow.UseLotsSerials);
 	
 	// Fill lot owner.
 	LotsSerialNumbers.FillLotOwner(ProductProperties, TableSectionRow.LotOwner);
+	LotsSerialNumbers.CheckLotByOwner(TableSectionRow.Lot, TableSectionRow.LotOwner);
 	
 	// Clear serial numbers.
 	TableSectionRow.SerialNumbers = "";
@@ -900,7 +933,7 @@ Procedure LineItemsUnitOnChangeAtServer(TableSectionRow)
 	TableSectionRow.PriceUnits = Round(GeneralFunctions.ProductLastCost(TableSectionRow.Product, PointInTime) *
 	                             ?(TableSectionRow.Unit.Factor > 0, TableSectionRow.Unit.Factor, 1) /
 	                             ?(Object.ExchangeRate > 0, Object.ExchangeRate, 1), GeneralFunctionsReusable.PricePrecisionForOneItem(TableSectionRow.Product));
-								 
+	
 	// Process settings changes.
 	LineItemsQuantityOnChangeAtServer(TableSectionRow);
 	
@@ -974,8 +1007,9 @@ EndProcedure
 &AtServer
 Procedure LineItemsPriceOnChangeAtServer(TableSectionRow)
 	
-	// Rounds price of product. 
-	TableSectionRow.PriceUnits = Round(TableSectionRow.PriceUnits, GeneralFunctionsReusable.PricePrecisionForOneItem(TableSectionRow.Product));
+	// Rounds price of product.
+	TableSectionRow.PriceUnits = Round(?(TableSectionRow.IsService, TableSectionRow.PriceUnits, CommonUseClientServer.Abs(TableSectionRow.PriceUnits)),
+	                                   GeneralFunctionsReusable.PricePrecisionForOneItem(TableSectionRow.Product));
 	
 	// Calculate total by line.
 	TableSectionRow.LineTotal = Round(Round(TableSectionRow.QtyUnits, QuantityPrecision) * TableSectionRow.PriceUnits, 2);
@@ -998,7 +1032,7 @@ Procedure LineItemsLineTotalOnChange(Item)
 	// Back-step price calculation with totals priority (interactive change only).
 	TableSectionRow.PriceUnits = ?(Round(TableSectionRow.QtyUnits, QuantityPrecision) > 0,
 	                               Round(TableSectionRow.LineTotal / Round(TableSectionRow.QtyUnits, QuantityPrecision), GeneralFunctionsReusable.PricePrecisionForOneItem(TableSectionRow.Product)), 0);
-								   
+	
 	// Load processed data back.
 	FillPropertyValues(Items.LineItems.CurrentData, TableSectionRow);
 	
@@ -1009,6 +1043,9 @@ EndProcedure
 
 &AtServer
 Procedure LineItemsLineTotalOnChangeAtServer(TableSectionRow)
+	
+	// Total sign correction.
+	TableSectionRow.LineTotal = ?(TableSectionRow.IsService, TableSectionRow.LineTotal, CommonUseClientServer.Abs(TableSectionRow.LineTotal));
 	
 	// Back-calculation of quantity in base units.
 	TableSectionRow.QtyUM      = Round(Round(TableSectionRow.QtyUnits, QuantityPrecision) *
@@ -1042,6 +1079,10 @@ Procedure AccountsOnChange(Item)
 		Item.CurrentData.Account = ExpenseAccount;
 		// -- MisA Copied from "Check" 11/19/2014
 		
+		// Recalculate items/expenses line numebers.
+		ExpensesCount = Object.Accounts.Count();
+		Items.AccountsSection.Title = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = 'Expenses [%1]'"), ExpensesCount);
+		
 		// Refresh totals cache.
 		RecalculateTotals();
 		
@@ -1070,9 +1111,38 @@ EndProcedure
 &AtClient
 Procedure AccountsAfterDeleteRow(Item)
 	
+	// Recalculate items/expenses line numebers.
+	ExpensesCount = Object.Accounts.Count();
+	Items.AccountsSection.Title = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = 'Expenses [%1]'"), ExpensesCount);
+	
 	// Recalculation common document totals.
 	RecalculateTotalsAtServer();
 	
+EndProcedure
+
+&AtClient
+Procedure AccountsAccountOnChange(Item)
+	TabularPartRow = Items.Accounts.CurrentData;
+	AccountsAccountOnChangeAtServer(TabularPartRow.Account);
+EndProcedure
+
+&AtServer
+Procedure AccountsAccountOnChangeAtServer(Account)
+	If Account.AccountType = Enums.AccountTypes.AccountsPayable or 
+		Account.AccountType = Enums.AccountTypes.AccountsReceivable Then 
+		Account = ChartsOfAccounts.ChartOfAccounts.EmptyRef();
+		Message("Accounts Receivable and Accounts Payable accounts can’t be selected on the Expenses tab");
+	ElsIf Account.AccountType = Enums.AccountTypes.Bank Then 
+		If Account.Currency <> Object.Currency Then 
+			If Constants.MultiCurrency.Get() Then 
+				MessageText = "Currency of account must be the same as in document header.";
+			Else 	
+				MessageText = "Currency of account must be the same as in document header. Please contact support team.";
+			EndIf;
+			Account = ChartsOfAccounts.ChartOfAccounts.EmptyRef();
+			Message(MessageText);
+		EndIf;	
+	EndIf;	
 EndProcedure
 
 //------------------------------------------------------------------------------
@@ -1292,83 +1362,40 @@ Procedure FillInvoiceStatusAtServer()
 EndProcedure
 
 &AtServer
-// Request demanded order items from database.
-Procedure FillBackorderQuantityAtServer()
+// Request product is service flag from database.
+Procedure FillProductIsServiceAtServer()
 	
-	// Request ordered items quantities
+	// Request ordered items quantities.
 	If ValueIsFilled(Object.Ref) Then
 		
-		//// Create new query
-		//Query = New Query;
-		//Query.SetParameter("Ref", Object.Ref);
-		//Query.SetParameter("OrderStatus", OrderStatus);
-		//
-		//Query.Text = 
-		//	"SELECT
-		//	|	LineItems.LineNumber                     AS LineNumber,
-		//	//  Request dimensions
-		//	|	OrdersDispatchedBalance.Product          AS Product,
-		//	|	OrdersDispatchedBalance.Location         AS Location,
-		//	|	OrdersDispatchedBalance.DeliveryDate     AS DeliveryDate,
-		//	|	OrdersDispatchedBalance.Project          AS Project,
-		//	|	OrdersDispatchedBalance.Class            AS Class,
-		//	//  Request resources                                                                                               // ---------------------------------------
-		//	|	OrdersDispatchedBalance.QuantityBalance  AS Quantity,                                                           // Backorder quantity calculation
-		//	|	CASE                                                                                                            // ---------------------------------------
-		//	|		WHEN &OrderStatus = VALUE(Enum.OrderStatuses.Open)        THEN 0                                            // Order status = Open:
-		//	|		WHEN &OrderStatus = VALUE(Enum.OrderStatuses.Backordered) THEN                                              //   Backorder = 0
-		//	|			CASE                                                                                                    // Order status = Backorder:
-		//	|				WHEN OrdersDispatchedBalance.Product.Type = VALUE(Enum.InventoryTypes.Inventory) THEN               //   Inventory:
-		//	|					CASE                                                                                            //     Backorder = Ordered - Received >= 0
-		//	|						WHEN OrdersDispatchedBalance.QuantityBalance > OrdersDispatchedBalance.ReceivedBalance THEN //     |
-		//	|							 OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.ReceivedBalance      //     |
-		//	|						ELSE 0 END                                                                                  //     |
-		//	|				ELSE                                                                                                //   Non-inventory:
-		//	|					CASE                                                                                            //     Backorder = Ordered - Invoiced >= 0
-		//	|						WHEN OrdersDispatchedBalance.QuantityBalance > OrdersDispatchedBalance.InvoicedBalance THEN //     |
-		//	|							 OrdersDispatchedBalance.QuantityBalance - OrdersDispatchedBalance.InvoicedBalance      //     |
-		//	|						ELSE 0 END                                                                                  //     |
-		//	|				END                                                                                                 //     |
-		//	|		WHEN &OrderStatus = VALUE(Enum.OrderStatuses.Closed)      THEN 0                                            // Order status = Closed:
-		//	|		END                                  AS Backorder,                                                          //   Backorder = 0
-		//	|	OrdersDispatchedBalance.ReceivedBalance  AS Received,
-		//	|	OrdersDispatchedBalance.InvoicedBalance  AS Invoiced
-		//	//  Request sources
-		//	|FROM
-		//	|	Document.PurchaseOrder.LineItems         AS LineItems
-		//	|	LEFT JOIN AccumulationRegister.OrdersDispatched.Balance(,Order = &Ref)
-		//	|		                                     AS OrdersDispatchedBalance
-		//	|		ON    ( LineItems.Ref.Company         = OrdersDispatchedBalance.Company
-		//	|			AND LineItems.Ref                 = OrdersDispatchedBalance.Order
-		//	|			AND LineItems.Product             = OrdersDispatchedBalance.Product
-		//	|			AND LineItems.Location            = OrdersDispatchedBalance.Location
-		//	|			AND LineItems.DeliveryDate        = OrdersDispatchedBalance.DeliveryDate
-		//	|			AND LineItems.Project             = OrdersDispatchedBalance.Project
-		//	|			AND LineItems.Class               = OrdersDispatchedBalance.Class
-		//	|			AND LineItems.Quantity            = OrdersDispatchedBalance.QuantityBalance)
-		//	//  Request filtering
-		//	|WHERE
-		//	|	LineItems.Ref = &Ref
-		//	//  Request ordering
-		//	|ORDER BY
-		//	|	LineItems.LineNumber";
-		//Selection = Query.Execute().Select();
-		//
-		//// Fill ordered items quantities
-		//SearchRec = New Structure("LineNumber, Product, Location, DeliveryDate, Project, Class, Quantity");
-		//While Selection.Next() Do
-		//	
-		//	// Search for appropriate line in tabular section of order
-		//	FillPropertyValues(SearchRec, Selection);
-		//	FoundLineItems = Object.LineItems.FindRows(SearchRec);
-		//	
-		//	// Fill quantities in tabular section
-		//	If FoundLineItems.Count() > 0 Then
-		//		FillPropertyValues(FoundLineItems[0], Selection, "Backorder, Received, Invoiced");
-		//	EndIf;
-		//	
-		//EndDo;
+		// Create new query.
+		Query = New Query;
+		Query.SetParameter("Ref", Object.Ref);
 		
+		// Request product types data.
+		Query.Text =
+			"SELECT
+			|	CASE WHEN LineItems.Product.Type = VALUE(Enum.InventoryTypes.NonInventory) THEN True
+			|	     ELSE False
+			|	END                                AS IsService
+			|FROM
+			|	Document.PurchaseInvoice.LineItems AS LineItems
+			|WHERE
+			|	LineItems.Ref = &Ref
+			|ORDER BY
+			|	LineItems.LineNumber";
+		Selection = Query.Execute().Unload();
+		
+		// Fill IsService flag in the table.
+		For Each Row In Object.LineItems Do
+			Row.IsService = Selection[Row.LineNumber - 1].IsService;
+		EndDo;
+		
+	Else
+		// Fill IsService flag in the table directly from the product.
+		For Each Row In Object.LineItems Do
+			Row.IsService = (Row.Product.Type = Enums.InventoryTypes.NonInventory);
+		EndDo;
 	EndIf;
 	
 EndProcedure
@@ -1499,6 +1526,18 @@ Function FillDocumentWithSelectedOrders(SelectedOrders)
 			LotsSerialNumbers.FillSerialNumbers(Object.SerialNumbers, Row.Product, 0, Row.LineID, Row.SerialNumbers);
 		EndDo;
 		
+		// Fill IsService flag in the table directly from the product.
+		For Each Row In Object.LineItems Do
+			Row.IsService = (Row.Product.Type = Enums.InventoryTypes.NonInventory);
+		EndDo;
+		
+		// Select filled items/expenses tab.
+		ItemsCount    = Object.LineItems.Count();
+		ExpensesCount = Object.Accounts.Count();
+		Items.LineItemsSection.Title = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = 'Items [%1]'"),    ItemsCount);
+		Items.AccountsSection.Title  = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = 'Expenses [%1]'"), ExpensesCount);
+		Items.BodyTabs.CurrentPage   = Items.BodyTabs.ChildItems[?((ItemsCount > 0) Or (ItemsCount + ExpensesCount = 0), 0, 1)];
+		
 		// Return filling success
 		Return True;
 	Else
@@ -1518,7 +1557,7 @@ Function FillDocumentWithSelectedOrders(SelectedOrders)
 EndFunction
 
 //++ MisA 11/19/2014 Copy from doc.form.Check
-// getting expence account
+// getting expense account
 &AtServer
 Function GetExpenseAccount(Vendor)
 	
@@ -1565,7 +1604,7 @@ EndProcedure
 Function GetLineItemsRowStructure()
 	
 	// Define control row fields.
-	Return New Structure("LineNumber, LineID, Product, ProductDescription, UseLotsSerials, LotOwner, Lot, SerialNumbers, UnitSet, QtyUnits, Unit, QtyUM, Ordered, Backorder, Received, Invoiced, OrderPriceUnits, PriceUnits, LineTotal, Order, ItemReceipt, Location, LocationActual, DeliveryDate, DeliveryDateActual, Project, Class");
+	Return New Structure("LineNumber, LineID, Product, ProductDescription, IsService, UseLotsSerials, LotOwner, Lot, SerialNumbers, UnitSet, QtyUnits, Unit, QtyUM, Ordered, Backorder, Received, Invoiced, OrderPriceUnits, PriceUnits, LineTotal, Order, ItemReceipt, Location, LocationActual, DeliveryDate, DeliveryDateActual, Project, Class");
 	
 EndFunction
 

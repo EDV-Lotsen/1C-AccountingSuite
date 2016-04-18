@@ -129,25 +129,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Items.CostingMethod.ReadOnly = True;
 	Else	
 		Object.UnitSet = Constants.DefaultUoMSet.Get();
-		//VerNum = Constants.VersionNumber.Get();
-		//If TrimAll(VerNum) = "6" Then 
-		//	Items.Type.ReadOnly = True;
-		//	Object.Type = Enums.InventoryTypes.NonInventory;
-		//Endif	
 	EndIf;
-	
-	
-	If GeneralFunctionsReusable.DisplayAPICodesSetting() = False Then
-		Items.api_code.Visible = False;
-	EndIf;
-	
-	If NOT Object.Ref.IsEmpty() Then
-		api_code = String(Object.Ref.UUID());
-	EndIf;
-
-	
-	//test = Object.Ref.UUID();
-	//test = Catalogs.Products.GetRef(New UUID("3b942486-4317-11e3-bebf-001c42734aa6"));
 	
 	// custom fields
 	
@@ -165,7 +147,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Items.CF1String.Visible = False;
 		Items.CF1Num.Title = Constants.CF1Name.Get();
 	ElsIf CF1Type = "String" Then
-	    Items.CF1Num.Visible = False;
+		Items.CF1Num.Visible = False;
 		Items.CF1String.Visible = True;
 		Items.CF1String.Title = Constants.CF1Name.Get();
 	ElsIf CF1Type = "" Then
@@ -181,7 +163,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Items.CF2String.Visible = False;
 		Items.CF2Num.Title = Constants.CF2Name.Get();
 	ElsIf CF2Type = "String" Then
-	    Items.CF2Num.Visible = False;
+		Items.CF2Num.Visible = False;
 		Items.CF2String.Visible = True;
 		Items.CF2String.Title = Constants.CF2Name.Get();
 	ElsIf CF2Type = "" Then
@@ -197,7 +179,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Items.CF3String.Visible = False;
 		Items.CF3Num.Title = Constants.CF3Name.Get();
 	ElsIf CF3Type = "String" Then
-	    Items.CF3Num.Visible = False;
+		Items.CF3Num.Visible = False;
 		Items.CF3String.Visible = True;
 		Items.CF3String.Title = Constants.CF3Name.Get();
 	ElsIf CF3Type = "" Then
@@ -213,7 +195,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Items.CF4String.Visible = False;
 		Items.CF4Num.Title = Constants.CF4Name.Get();
 	ElsIf CF4Type = "String" Then
-	    Items.CF4Num.Visible = False;
+		Items.CF4Num.Visible = False;
 		Items.CF4String.Visible = True;
 		Items.CF4String.Title = Constants.CF4Name.Get();
 	ElsIf CF4Type = "" Then
@@ -229,7 +211,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Items.CF5String.Visible = False;
 		Items.CF5Num.Title = Constants.CF5Name.Get();
 	ElsIf CF5Type = "String" Then
-	    Items.CF5Num.Visible = False;
+		Items.CF5Num.Visible = False;
 		Items.CF5String.Visible = True;
 		Items.CF5String.Title = Constants.CF5Name.Get();
 	ElsIf CF5Type = "" Then
@@ -256,25 +238,6 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	EndIf;
 		
 	
-	//If Object.Ref <> Catalogs.Products.EmptyRef() Then
-	//	Query = New Query("SELECT
-	//					  |	PriceListSliceLast.Price
-	//					  |FROM
-	//					  |	InformationRegister.PriceList.SliceLast AS PriceListSliceLast
-	//					  |WHERE
-	//					  |	PriceListSliceLast.Product = &Ref");
-	//	Query.SetParameter("Ref", Object.Ref);
-	//	Selection = Query.Execute();
-	//	
-	//	If Selection.IsEmpty() Then
-	//	Else
-	//		Dataset = Selection.Unload();
-	//		Price = Dataset[0][0];
-	//	EndIf;
-
-	//	
-	//EndIf;
-		
 	If Object.Type <> Enums.InventoryTypes.Inventory Then
 		Items.CostingMethod.ReadOnly = True;
 	EndIf;
@@ -392,54 +355,6 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 	
 	// Update prices presentation.
 	UpdatePricesPresentation();
-	
-	//AddPriceList();
-	
-	// zapier webhooks
-	
-	Query = New Query("SELECT
-	                  |	ZapierWebhooks.Description
-	                  |FROM
-	                  |	Catalog.ZapierWebhooks AS ZapierWebhooks
-	                  |WHERE
-	                  |	ZapierWebhooks.Code = ""new_item_webhook""");
-					  
-	QueryResult = Query.Execute();
-	If QueryResult.IsEmpty() Then		
-	Else
-		
-		WebhookMap = New Map(); 
-		WebhookMap.Insert("apisecretkey",Constants.APISecretKey.Get());
-		WebhookMap.Insert("resource","items");
-		If Object.NewObject = True Then
-			WebhookMap.Insert("action","create");
-		Else
-			WebhookMap.Insert("action","update");
-		EndIf;
-		//WebhookMap.Insert("api_code",Object.Ref.api_code);
-		WebhookMap.Insert("item_code",Object.Ref.Code);
-		WebhookMap.Insert("item_description",Object.Ref.Description);
-		
-		Selection = QueryResult.Select();
-		While Selection.Next() Do
-			
-			WebhookParams = New Array();
-			WebhookParams.Add(Selection.Description);
-			WebhookParams.Add(WebhookMap);
-			LongActions.ExecuteInBackground("GeneralFunctions.SendWebhook", WebhookParams);
-			
-		EndDo;						
-	EndIf;
-	
-	//  create item in zoho
-	If Constants.zoho_auth_token.Get() <> "" Then
-		If Object.NewObject = True Then
-			ThisAction = "create";
-		Else
-			ThisAction = "update";
-		EndIf;
-		zoho_Functions.zoho_ThisItem(ThisAction,Object.Ref);
-	EndIf;
 	
 EndProcedure
 
@@ -1001,6 +916,9 @@ Procedure IsAssemblyOnChange(Item)
 		Items.Assembly.Visible     = Object.Assembly;
 		Items.Residuals.Visible    = Object.HasResiduals;
 		Items.Services.Visible     = Object.HasServices;
+		
+		Object.WasteAccount = ?(Object.Assembly, CommonUse.GetConstant("WasteAccount"), PredefinedValue("ChartOfAccounts.ChartOfAccounts.EmptyRef"));
+		
 	EndIf;
 	
 EndProcedure
@@ -1030,6 +948,10 @@ Procedure IsAssemblyOnChangeChoiceProcessing(ChoiceResult, ChoiceParameters) Exp
 		// Disable services.
 		Object.HasServices         = False;
 		Items.HasServices.Enabled  = False;
+		
+		// Clear WasteAccount.
+		Object.WasteAccount        = PredefinedValue("ChartOfAccounts.ChartOfAccounts.EmptyRef");
+		
 	Else
 		// Restore previously entered setting.
 		Object.Assembly = True;
@@ -1224,11 +1146,14 @@ Procedure PricePrecisionOnChange(Item)
 		Object.PricePrecision = 2;
 	EndIf;
 	
-	PricePrecision = GetInfPricePrecision(Object.Ref);
+	RefreshReusable = True;
+	PricePrecision  = GetInfPricePrecision(Object.Ref);
 	
 	If Object.PricePrecision < PricePrecision.Item Then
 		
 		Object.PricePrecision = PricePrecision.Item;
+		
+		RefreshReusable       = False;
 		
 		Message = New UserMessage();
 		Message.Text = NStr("en = 'The new value of ""Price field decimals"" must be greater than or equal to the current value!'");
@@ -1241,6 +1166,10 @@ Procedure PricePrecisionOnChange(Item)
 		
 		Object.PricePrecision = PricePrecision.Constant;
 		
+		If Object.PricePrecision = PricePrecision.Item Then
+			RefreshReusable = False;
+		EndIf;
+		
 		Message = New UserMessage();
 		Text = StringFunctionsClientServer.SubstituteParametersInString(
 			   NStr("en = 'The new value of ""Price field decimals"" must be less than or equal to %1.'"), PricePrecision.Constant);
@@ -1248,6 +1177,10 @@ Procedure PricePrecisionOnChange(Item)
 		Message.Field = "Object.PricePrecision";
 		Message.Message();
 		
+	EndIf;
+	
+	If RefreshReusable Then
+		RefreshReusableValues();
 	EndIf;
 	
 EndProcedure
@@ -2141,7 +2074,7 @@ EndFunction
 &AtServerNoContext
 Function GetInfPricePrecision(Item)
 	
-	Return New Structure("Constant, Item", Constants.PricePrecision.Get(), Item.PricePrecision);
+	Return New Structure("Constant, Item", Constants.PricePrecision.Get(), CommonUse.GetAttributeValue(Item, "PricePrecision"));
 	
 EndFunction
 
@@ -2151,6 +2084,7 @@ Procedure UpdatePricesPresentation()
 	
 	PriceFormat = GeneralFunctionsReusable.PriceFormatForOneItem(Object.Ref);
 	Items.Price1.EditFormat          = PriceFormat;
+	Items.Cost.EditFormat            = PriceFormat;
 	Items.LastCost.EditFormat        = PriceFormat;
 	Items.AverageCost.EditFormat     = PriceFormat;
 	Items.AccountingCost.EditFormat  = PriceFormat;

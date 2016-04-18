@@ -1208,4 +1208,15 @@ Procedure RecalculateTotalsAtServer()
 	
 EndProcedure
 
+&AtClient
+Procedure AuditLogRecords(Command)
+	
+	FormParameters = New Structure();	
+	FltrParameters = New Structure();
+	FltrParameters.Insert("DocUUID", String(Object.Ref.UUID()));
+	FormParameters.Insert("Filter", FltrParameters);
+	OpenForm("CommonForm.AuditLogList",FormParameters, Object.Ref);
+
+EndProcedure
+
 #EndRegion

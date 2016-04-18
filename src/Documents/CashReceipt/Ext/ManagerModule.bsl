@@ -30,13 +30,7 @@
    |	CashReceipt.PaymentMethod,
    |	CashReceipt.BankAccount,
    |	CashReceipt.Currency,
-   |	CashReceipt.StripeID,
    |	CashReceipt.ARAccount,
-   |	CashReceipt.StripeCardName,
-   |	CashReceipt.StripeAmount,
-   |	CashReceipt.StripeCreated,
-   |	CashReceipt.StripeCardType,
-   |	CashReceipt.StripeLast4,
    |	CashReceipt.EmailTo,
    |	CashReceipt.EmailNote,
    |	CashReceipt.EmailCC,
@@ -138,6 +132,7 @@
     UsBill = PrintTemplates.ContactInfoDatasetUs();
     
     //ThemBill = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemBill", SelectionAddr[0].Ref);
+	
 	Try
 		ThemBill = PrintTemplates.ContactInfoDataset(Selection.Company, "ThemBill", SelectionAddr[0].Ref);
 	Except
@@ -154,7 +149,6 @@
 	EndIf;
 		
 	If Constants.CRShowFullName.Get() = True Then
-	//If SessionParameters.TenantValue = "1100674" Or Constants.SIShowFullName.Get() = True Then
 		TemplateArea.Parameters.ThemFullName = ThemBill.ThemBillSalutation + " " + ThemBill.ThemBillFirstName + " " + ThemBill.ThemBillLastName;
 	EndIf;
 	
@@ -164,6 +158,7 @@
 			TotalCredit = SelectionCreditMemos.Payment + TotalCredit;
 	EndDo;
     
+	
 	TemplateArea.Parameters.Date = Selection.Date;
 	If Selection.SalesOrder <> Documents.SalesOrder.EmptyRef() Then
 		SOStr = Selection.SalesOrder.Number + " from " + Format(Selection.SalesOrder.Date, "DLF=D");
@@ -174,49 +169,12 @@
 		TemplateArea.Parameters.SalesOrderLabel = "";
 		RightBorder = New Line(SpreadSheetDocumentCellLineType.None);
 		TemplateArea.Areas.SalesOrderLabel.RightBorder = RightBorder;		
-	EndIf; 
-    TemplateArea.Parameters.Number = Selection.Number;
+	EndIf;                                                                 
+	TemplateArea.Parameters.Number = Selection.Number;
 	TemplateArea.Parameters.TotalPaidAmount = Format(Selection.CashPayment, "NFD=2; NZ=");
 	TemplateArea.Parameters.AmountReceivedLabel = "Amount Received " + Selection.Currency.Description + ":";
-	If Selection.StripeID <> "" Then
-    	TemplateArea.Parameters.RefNum = Selection.StripeID;
-    Else
-    	TemplateArea.Parameters.RefNum = Selection.RefNum;
-	EndIf;
-	If Selection.StripeLast4 <> "" Then
-		If Selection.StripeCardType = "Visa" Then
-			creditPicture = new Picture(Picturelib.visa_logo.GetBinaryData());
-			DocumentPrinting.FillPictureInDocumentTemplate(TemplateArea, creditPicture, "CCpic");
-			TemplateArea.Parameters.PayMethod = "ending in " + Selection.StripeLast4;
-		ElsIf Selection.StripeCardType = "MasterCard" Then
-			creditPicture = new Picture(Picturelib.mastercard_logo.GetBinaryData());
-			DocumentPrinting.FillPictureInDocumentTemplate(TemplateArea, creditPicture, "CCpic");
-			TemplateArea.Parameters.PayMethod = "ending in " + Selection.StripeLast4;
-		ElsIf Selection.StripeCardType = "American Express" Then
-			creditPicture = new Picture(Picturelib.amex_logo.GetBinaryData());
-			DocumentPrinting.FillPictureInDocumentTemplate(TemplateArea, creditPicture, "CCpic");
-			TemplateArea.Parameters.PayMethod = "ending in " + Selection.StripeLast4;
-		ElsIf Selection.StripeCardType = "Discover" Then
-			creditPicture = new Picture(Picturelib.discover_logo.GetBinaryData());
-			DocumentPrinting.FillPictureInDocumentTemplate(TemplateArea, creditPicture, "CCpic");
-			TemplateArea.Parameters.PayMethod = "ending in " + Selection.StripeLast4;
-		ElsIf Selection.StripeCardType = "JCB" Then
-			creditPicture = new Picture(Picturelib.jcb_logo.GetBinaryData());
-			DocumentPrinting.FillPictureInDocumentTemplate(TemplateArea, creditPicture, "CCpic");
-			TemplateArea.Parameters.PayMethod = "ending in " + Selection.StripeLast4;
-		ElsIf Selection.StripeCardType = "Diners Club" Then
-			creditPicture = new Picture(Picturelib.dinersclub_logo.GetBinaryData());
-			DocumentPrinting.FillPictureInDocumentTemplate(TemplateArea, creditPicture, "CCpic");
-			TemplateArea.Parameters.PayMethod = "ending in " + Selection.StripeLast4;
-		Else
-		EndIf;		
-	Else
-		TemplateArea.Parameters.PayMethod = Selection.PaymentMethod;
-	EndIf;
-	
-	//creditPicture = new Picture(Picturelib.visa_logo.GetBinaryData());
-	//		DocumentPrinting.FillPictureInDocumentTemplate(TemplateArea, creditPicture, "CCpic");
-	//		TemplateArea.Parameters.PayMethod = "**** **** **** " + Selection.StripeLast4;
+	TemplateArea.Parameters.RefNum = Selection.RefNum;
+	TemplateArea.Parameters.PayMethod = Selection.PaymentMethod;
 	
     //UsBill filling
     If TemplateArea.Parameters.UsBillLine1 <> "" Then
@@ -238,11 +196,8 @@
     If TemplateArea.Parameters.UsBillEmail <> "" AND Constants.CRShowEmail.Get() = False Then
     	TemplateArea.Parameters.UsBillEmail = ""; 
     EndIf;
-
-
-    	
-    
-   // ThemBill filling
+	
+	// ThemBill filling
 	If TemplateArea.Parameters.ThemBillLine1 <> "" Then
 		TemplateArea.Parameters.ThemBillLine1 = TemplateArea.Parameters.ThemBillLine1 + Chars.LF; 
 	EndIf;
@@ -412,24 +367,22 @@
 			TemplateArea.Parameters.CRFooterTextRight = Constants.CRFooterTextRight.Get();
 			Spreadsheet.Join(TemplateArea);
 	EndIf;         
-    
-    	 
-    Spreadsheet.PutHorizontalPageBreak(); //.ВывестиГоризонтальныйРазделительСтраниц();
-    Spreadsheet.FitToPage  = True;
-
-     
-   EndDo;
-   
-   //Return SpreadsheetDocument;
+	
+	Spreadsheet.PutHorizontalPageBreak();
+	Spreadsheet.FitToPage  = True;
+	
+	EndDo;
+	
+	//Return SpreadsheetDocument;
 
 EndProcedure
 
 Function CreateTempBilling(CompanyRef)
 	newAddr = Catalogs.Addresses.CreateItem();
 	newAddr.Owner = CompanyRef;
-	newAddr.Description = "Default Billing";
+	newAddr.Description = "Default Billing_" + CurrentSessionDate();
 	newAddr.DefaultBilling = True;
 	newAddr.Write();
-	Message("Warning: There was no default billing address, so a new one was created. Please go to the address card and update any neccesasry information.");
+	Message("Warning: There was no default billing address, so a new one was created. Please go to the address card and update any necessary information.");
 	Return newAddr.Ref;
 EndFunction

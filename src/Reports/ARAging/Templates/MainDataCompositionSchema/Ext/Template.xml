@@ -256,6 +256,12 @@
 		<field xsi:type="DataSetFieldField">
 			<dataPath>ReturnType</dataPath>
 			<field>ReturnType</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>  </v8:content>
+				</v8:item>
+			</title>
 		</field>
 		<field xsi:type="DataSetFieldField">
 			<dataPath>DueDate</dataPath>
@@ -310,13 +316,14 @@
 	GeneralJournalBalance.ExtDimension1 AS Company,
 	GeneralJournalBalance.ExtDimension2 AS Document,
 	GeneralJournalBalance.Currency,
-	CASE
-		WHEN GeneralJournalBalance.ExtDimension2 REFS Document.SalesReturn
-			THEN PRESENTATION(GeneralJournalBalance.ExtDimension2.ReturnType)
-		WHEN GeneralJournalBalance.ExtDimension2 REFS Document.CashReceipt
-			THEN PRESENTATION("Cash Receipt")
-		ELSE ""
-	END AS ReturnType,
+	//CASE
+	//	WHEN GeneralJournalBalance.ExtDimension2 REFS Document.SalesReturn
+	//		THEN PRESENTATION(GeneralJournalBalance.ExtDimension2.ReturnType)
+	//	WHEN GeneralJournalBalance.ExtDimension2 REFS Document.CashReceipt
+	//		THEN PRESENTATION("Cash Receipt")
+	//	ELSE ""
+	//END AS ReturnType,
+	"" AS ReturnType,
 	CASE
 		WHEN GeneralJournalBalance.ExtDimension2 REFS Document.SalesInvoice
 			THEN GeneralJournalBalance.ExtDimension2.DueDate
@@ -345,6 +352,10 @@
 			THEN GeneralJournalBalance.AmountClosingBalance
 		WHEN GeneralJournalBalance.ExtDimension2 REFS Document.GeneralJournalEntry
 			THEN GeneralJournalBalance.AmountClosingBalance
+		WHEN GeneralJournalBalance.ExtDimension2 REFS Document.Deposit
+			THEN GeneralJournalBalance.AmountClosingBalance
+		WHEN GeneralJournalBalance.ExtDimension2 REFS Document.Check
+			THEN GeneralJournalBalance.AmountClosingBalance
 		WHEN DATEDIFF(GeneralJournalBalance.ExtDimension2.DueDate, &amp;EndOfPeriod, DAY) &gt; &amp;Interval3
 				AND GeneralJournalBalance.ExtDimension2 REFS Document.SalesReturn
 			THEN GeneralJournalBalance.AmountClosingBalance
@@ -357,6 +368,10 @@
 			THEN GeneralJournalBalance.AmountRCClosingBalance
 		WHEN GeneralJournalBalance.ExtDimension2 REFS Document.GeneralJournalEntry
 			THEN GeneralJournalBalance.AmountClosingBalance
+		WHEN GeneralJournalBalance.ExtDimension2 REFS Document.Deposit
+			THEN GeneralJournalBalance.AmountClosingBalance
+		WHEN GeneralJournalBalance.ExtDimension2 REFS Document.Check
+			THEN GeneralJournalBalance.AmountClosingBalance	
 		WHEN DATEDIFF(GeneralJournalBalance.ExtDimension2.DueDate, &amp;EndOfPeriod, DAY) &gt; &amp;Interval3
 				AND GeneralJournalBalance.ExtDimension2 REFS Document.SalesReturn
 			THEN GeneralJournalBalance.AmountRCClosingBalance
@@ -426,6 +441,10 @@ WHERE
 	(GeneralJournalBalance.ExtDimension2 REFS Document.SalesInvoice
 			OR GeneralJournalBalance.ExtDimension2 REFS Document.GeneralJournalEntry
 				AND GeneralJournalBalance.ExtDimension2.ARorAP = VALUE(Enum.GJEntryType.AR)
+			OR GeneralJournalBalance.ExtDimension2 REFS Document.Deposit
+				AND GeneralJournalBalance.Account.AccountType = VALUE(Enum.AccountTypes.AccountsReceivable)		
+			OR GeneralJournalBalance.ExtDimension2 REFS Document.Check
+				AND GeneralJournalBalance.Account.AccountType = VALUE(Enum.AccountTypes.AccountsReceivable)			
 			OR GeneralJournalBalance.ExtDimension2 REFS Document.SalesReturn
 			OR GeneralJournalBalance.ExtDimension2 REFS Document.CashReceipt)
 {WHERE

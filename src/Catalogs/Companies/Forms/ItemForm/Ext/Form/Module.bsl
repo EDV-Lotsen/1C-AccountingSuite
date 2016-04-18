@@ -10,22 +10,9 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	EndIf;
 	//--//
 	
-	//If Constants.SalesTaxCharging.Get() = True AND Object.Customer = True Then
-	//	Items.TaxTab.Visible = True;
-	//Else
-	//	Items.TaxTab.Visible = False;
-	//EndIf;
 	VendorOnChangeItemsVisibilityAtServer();
 	CustomerOnChangeItemsVisibilityAtServer();
 	ApplyTaxAttributesPresentation(ThisForm);
-	
-	If GeneralFunctionsReusable.DisplayAPICodesSetting() = False Then
-		Items.api_code.Visible = False;
-	EndIf;
-	
-	If NOT Object.Ref.IsEmpty() Then
-		api_code = String(Object.Ref.UUID());
-	EndIf;
 	
 	// custom fields
 	
@@ -43,7 +30,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Items.CF1String.Visible = False;
 		Items.CF1Num.Title = Constants.CF1CName.Get();
 	ElsIf CF1Type = "String" Then
-	    Items.CF1Num.Visible = False;
+		Items.CF1Num.Visible = False;
 		Items.CF1String.Visible = True;
 		Items.CF1String.Title = Constants.CF1CName.Get();
 	ElsIf CF1Type = "" Then
@@ -59,7 +46,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Items.CF2String.Visible = False;
 		Items.CF2Num.Title = Constants.CF2CName.Get();
 	ElsIf CF2Type = "String" Then
-	    Items.CF2Num.Visible = False;
+		Items.CF2Num.Visible = False;
 		Items.CF2String.Visible = True;
 		Items.CF2String.Title = Constants.CF2CName.Get();
 	ElsIf CF2Type = "" Then
@@ -75,7 +62,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Items.CF3String.Visible = False;
 		Items.CF3Num.Title = Constants.CF3CName.Get();
 	ElsIf CF3Type = "String" Then
-	    Items.CF3Num.Visible = False;
+		Items.CF3Num.Visible = False;
 		Items.CF3String.Visible = True;
 		Items.CF3String.Title = Constants.CF3CName.Get();
 	ElsIf CF3Type = "" Then
@@ -91,7 +78,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Items.CF4String.Visible = False;
 		Items.CF4Num.Title = Constants.CF4CName.Get();
 	ElsIf CF4Type = "String" Then
-	    Items.CF4Num.Visible = False;
+		Items.CF4Num.Visible = False;
 		Items.CF4String.Visible = True;
 		Items.CF4String.Title = Constants.CF4CName.Get();
 	ElsIf CF4Type = "" Then
@@ -114,18 +101,16 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Items.CF5Num.Visible = False;
 		Items.CF5String.Visible = False;
 	EndIf;
-
+	
 	// end custom fields
-
 	
 	LoadAddrPage();
 	If Object.Ref.IsEmpty() Then
-		   ProjectTable.Parameters.SetParameterValue("Ref", "");
+		ProjectTable.Parameters.SetParameterValue("Ref", "");
 	Else
-	ProjectTable.Parameters.SetParameterValue("Ref", Object.Ref);
+		ProjectTable.Parameters.SetParameterValue("Ref", Object.Ref);
 	Endif;
-
-		
+	
 	Try
 		Items.Customer.Title = GeneralFunctionsReusable.GetCustomerName();
 		Items.Vendor.Title = GeneralFunctionsReusable.GetVendorName();
@@ -146,24 +131,13 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		EndTry;
 	EndIf;
 		
-	If Object.Customer = False Then
-		//Items.IncomeAccount.ReadOnly = True;
-		//Items.CatalogProjectsOpenByValue.Visible = False;
-	Else
-		//Items.CatalogProjectsOpenByValue.Visible = True;
+	If Object.Customer Then
 		Items.Customer.Enabled = False;
 	EndIf;
 	
-	If Object.Vendor = False Then
-		//Items.ExpenseAccount.ReadOnly = True;
-	Else
+	If Object.Vendor Then
 		Items.Vendor.Enabled = False;
 	EndIf;
-	
-	
-	
-	//Items.FormRegisterCard.Enabled = IsBlankString(Object.StripeToken);
-	//Items.FormDeleteCard.Enabled   = Not IsBlankString(Object.StripeID);
 	
 	If Object.Ref.IsEmpty() Then
 		Transactions.Parameters.SetParameterValue("Company", Catalogs.Companies.EmptyRef());
@@ -203,8 +177,6 @@ Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 	
 	If Object.Vendor = False AND Object.Customer = False Then
 		
-		// AND NOT Object.Ref = GeneralFunctions.GetOurCompany()
-		
 		Message = New UserMessage();
 		Message.Text=NStr("en='Select if the company is a customer, vendor, or both'");
 		//Message.Field = "Object.Customer";
@@ -212,6 +184,16 @@ Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 		Cancel = True;
 		Return;
 	
+	EndIf;
+	
+	If GeneralFunctionsReusable.FunctionalOptionValue("SalesTaxCharging") And Object.Customer Then
+		If Not ValueIsFilled(Object.SalesTaxRate) Then
+			Message = New UserMessage();
+			Message.Text=NStr("en='Please, assign the default tax rate'");
+			Message.Field = "Object.SalesTaxRate";
+			Message.Message();
+			Cancel = True;
+		EndIf;
 	EndIf;
 	
 	If NOT Object.Ref.IsEmpty() Then 
@@ -261,7 +243,6 @@ Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 		
 	EndIf;
 	
-
 EndProcedure
 
 &AtServer
@@ -292,10 +273,11 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 	QueryResult = Query.Execute();
 	If QueryResult.IsEmpty() Then
 		AddressLine = Catalogs.Addresses.CreateItem();
-		AddressLine.Owner = Object.Ref;
-		AddressLine.Description = "Primary";
+		AddressLine.Owner           = Object.Ref;
+		AddressLine.Description     = "Primary";
 		AddressLine.DefaultShipping = True;
-		AddressLine.DefaultBilling = True;
+		AddressLine.DefaultBilling  = True;
+		AddressLine.DefaultRemitTo  = True;
 		AddressLine.Write();
 	EndIf;
 		
@@ -303,123 +285,12 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 	Items.Customer.Enabled = Not Object.Customer;
 	Items.Vendor.Enabled = Not Object.Vendor;
 	
-	
-	//Query = New Query("SELECT
-	//				  |	Addresses.Ref
-	//				  |FROM
-	//				  |	Catalog.Addresses AS Addresses
-	//				  |WHERE
-	//				  |	Addresses.Owner = &Ref");
-	//
-	//Query.SetParameter("Ref", Object.Ref);
-	//QueryResult = Query.Execute();
-	//If QueryResult.IsEmpty() Then
-	//Else
-	//	DataSet = QueryResult.Unload();
-	//	
-	//	//MainAddr = Catalogs.Addresses.FindByDescription("Primary",,,Object.Ref);
-	//	MainAddr = DataSet[0][0];
-	//	//MainAddr = Catalogs.Addresses.FindByCode("00001",,,Object.Ref);
-	//	MainObj = MainAddr.GetObject();
-	//	MainObj.FirstName = PrimaryAddr.FirstName;
-	//	MainObj.MiddleName = PrimaryAddr.MiddleName;
-	//	MainObj.LastName = PrimaryAddr.LastName;
-	//	MainObj.Email = PrimaryAddr.Email;
-	//	MainObj.AddressLine1 = PrimaryAddr.AddressLine1;
-	//	MainObj.AddressLine2 = PrimaryAddr.AddressLine2;
-	//	MainObj.Phone = PrimaryAddr.Phone;
-	//	MainObj.City = PrimaryAddr.City;
-	//	MainObj.State = PrimaryAddr.State;
-	//	MainObj.Country = PrimaryAddr.Country;
-	//	MainObj.ZIP = PrimaryAddr.ZIP;
-	//	MainObj.Write();
-
-	//EndIf;
-	
-	companies_url = Constants.companies_webhook.Get();
-	
-	If NOT companies_url = "" Then
-		
-		WebhookMap = GeneralFunctions.ReturnCompanyObjectMap(Object.Ref);
-		WebhookMap.Insert("resource","companies");
-		If Object.NewObject = True Then
-			WebhookMap.Insert("action","create");
-		Else
-			WebhookMap.Insert("action","update");
-		EndIf;
-		WebhookMap.Insert("apisecretkey",Constants.APISecretKey.Get());
-		
-		WebhookParams = New Array();
-		WebhookParams.Add(companies_url);
-		WebhookParams.Add(WebhookMap);
-		LongActions.ExecuteInBackground("GeneralFunctions.SendWebhook", WebhookParams);
-	
-	EndIf;
-	
-	//  create account in zoho 
-	If Constants.zoho_auth_token.Get() <> "" AND Object.Customer = True Then
-		If Object.NewObject = True Then
-			ThisAction = "create";
-		Else
-			ThisAction = "update";
-		EndIf;
-		zoho_Functions.zoho_ThisAccount(ThisAction, Object.Ref);
-	EndIf;
-		
-EndProcedure
-
-&AtServer
-Function GetAPISecretKey()
-	
-	//K.Zuzik
-	Return Constants.APISecretKey.Get();
-	
-EndFunction
-
-&AtClient
-Procedure RegisterCard(Command)
-	
-	// Check element saved.
-	If Object.Ref.IsEmpty() Or Modified Then
-		ShowMessageBox(Undefined, NStr("en = 'Current item is not saved.
-                                       |Save customer first.'"));
-		Return;
-	EndIf;
-	
-	//K.Zuzik
-	statestring = GetAPISecretKey() + Object.Code;
-	GotoURL("https://addcard.accountingsuite.com/check?state=" + statestring);
-	Close();
-	
-EndProcedure
-
-
-&AtClient
-Procedure SalesTransactions(Command)
-	
-	// setting composer values
-	// fixed filter 
-	CompanyFilter = Новый Структура("Company", Object.Ref);
-	FormParameters = Новый Структура("Отбор, СформироватьПриОткрытии, КомпоновщикНастроекПользовательскиеНастройки.Видимость",CompanyFilter,True,False);
-	OpenForm("Report.SalesTransactionDetail.ObjectForm",FormParameters,,,,,,FormWindowOpeningMode.LockWholeInterface);
-EndProcedure
-
-
-&AtClient
-Procedure Projects(Command)
-	FormParameters = New Structure();
-	
-	FltrParameters = New Structure();
-	FltrParameters.Insert("Customer", Object.Ref);
-	FormParameters.Insert("Filter", FltrParameters);
-	OpenForm("Catalog.Projects.ListForm",FormParameters, Object.Ref);
 EndProcedure
 
 &AtServer
 Procedure LoadAddrPage()
 	
 	MainAddr = Catalogs.Addresses.FindByDescription("Primary",,,Object.Ref);
-	//MainAddr = Catalogs.Addresses.FindByCode("00001",,,Object.Ref);
 	PrimaryAddr.FirstName = MainAddr.FirstName;
 	PrimaryAddr.MiddleName = MainAddr.MiddleName;
 	PrimaryAddr.LastName = MainAddr.LastName;
@@ -431,8 +302,8 @@ Procedure LoadAddrPage()
 	PrimaryAddr.State = MainAddr.State;
 	PrimaryAddr.Country = MainAddr.Country;
 	PrimaryAddr.Zip = MainAddr.ZIP;
+	
 EndProcedure
-
 
 &AtClient
 Procedure VendorOnChange(Item)
@@ -443,12 +314,14 @@ EndProcedure
 
 &AtServer
 Procedure VendorOnChangeAtServer()
+	
 	VendorOnChangeItemsVisibilityAtServer();
+	
 EndProcedure
 
 &AtServer
 Procedure VendorOnChangeItemsVisibilityAtServer()
-	//dedicated procedure for visibility to call on start
+	
 	isVendor = Object.Vendor;
 	
 	Items.ExpenseAccount.Visible = isVendor;
@@ -460,9 +333,10 @@ EndProcedure
 
 &AtClient
 Procedure CustomerOnChange(Item)
+	
 	CustomerOnChangeAtServer();
+	
 EndProcedure
-
 
 &AtServer
 Procedure CustomerOnChangeAtServer()
@@ -470,25 +344,16 @@ Procedure CustomerOnChangeAtServer()
 	CustomerOnChangeItemsVisibilityAtServer();
 	
 	If Object.Customer Then
-		If Constants.SalesTaxMarkNewCustomersTaxable.Get() = True Then
-			Object.Taxable 		= True;
-			Object.SalesTaxRate = Constants.SalesTaxDefault.Get();
-		EndIf;
-		If GeneralFunctions.FunctionalOptionValue("AvataxEnabled") Then
-			Object.UseAvatax 	= True;
-		EndIf;
+		Object.Taxable = True;
 	Else
-		Object.Taxable 		= False;
-		Object.SalesTaxRate = Catalogs.SalesTaxRates.EmptyRef();
-		Object.UseAvatax	= False;
+		Object.Taxable = False;
 	EndIf;
-	ApplyTaxAttributesPresentation(ThisForm);
 	
 EndProcedure
 
 &AtServer
 Procedure CustomerOnChangeItemsVisibilityAtServer()
-	//dedicated procedure for visibility to call on start
+	
 	If Constants.SalesTaxCharging.Get() = True AND Object.Customer = True Then
 		Items.TaxTab.Visible = True;
 	Else
@@ -501,7 +366,6 @@ Procedure CustomerOnChangeItemsVisibilityAtServer()
 	Items.ARAccount.Visible = isCustomer;
 	Items.PriceLevel.Visible = isCustomer;
 	Items.SalesPerson.Visible = isCustomer;
-	//Items.CreditCard.Visible = isCustomer;
 	
 EndProcedure
 
@@ -509,7 +373,7 @@ EndProcedure
 Procedure TaxableOnChange(Item)
 	
 	TaxableOnChangeAtServer();
-		
+	
 EndProcedure
 
 &AtServer
@@ -528,37 +392,13 @@ EndProcedure
 &AtClientAtServerNoContext
 Procedure ApplyTaxAttributesPresentation(ThisForm)
 	
-	Object 	= ThisForm.Object;
-	Items	= ThisForm.Items;
+	Object = ThisForm.Object;
+	Items  = ThisForm.Items;
 		
 	If Object.Taxable = True Then
 		Items.SalesTaxRate.Enabled = True;
 	Else
 		Items.SalesTaxRate.Enabled = False;
-	EndIf;	
-	
-	If Object.Taxable Or Object.UseAvatax Then
-		Items.ResaleNO.Enabled = True;
-	Else
-		Items.ResaleNO.Enabled = False;
-	EndIf;
-	
-	If GeneralFunctionsReusable.FunctionalOptionValue("AvataxEnabled") Then
-		If Object.UseAvatax Then
-			Items.AvataxCustomerUsageType.Enabled 	= True;
-			Items.BusinessIdentificationNo.Enabled 	= True;
-			Items.Taxable.Enabled		= False;
-			Items.SalesTaxRate.Enabled 	= False;
-		Else
-			Items.AvataxCustomerUsageType.Enabled 	= False;
-			Items.BusinessIdentificationNo.Enabled 	= False;
-			Items.Taxable.Enabled		= True;
-			Items.SalesTaxRate.Enabled 	= True;
-		EndIf;
-	Else  //Avatax disabled
-		Items.VATGroup.Visible 	= False;
-		Items.Taxable.Enabled		= True;
-		Items.SalesTaxRate.Enabled 	= True;
 	EndIf;
 	
 EndProcedure
@@ -575,13 +415,34 @@ EndProcedure
 &AtServer
 Function GetDocumentOfTransaction()
 	
-	Return Items.Transactions.CurrentRow.Document;	
+	Return Items.Transactions.CurrentRow.Document;
 	
 EndFunction
 
 &AtClient
-Procedure UseAvataxOnChange(Item)
+Procedure DescriptionOnChange(Item)
 	
-	ApplyTaxAttributesPresentation(ThisForm);
+	If (ValueIsFilled(Object.FullName)) And (Object.FullName <> Object.Description) And (Object.Vendor) Then
+		
+		ProcessingParameters = New NotifyDescription("AnswerProcessing", ThisObject);
+		QuestionText         = StringFunctionsClientServer.SubstituteParametersInString(
+		                       NStr("en = 'Would you like to change full name of company from ""%1"" to ""%2""?'"), Object.FullName, Object.Description);
+		
+		ShowQueryBox(ProcessingParameters, QuestionText, QuestionDialogMode.YesNo,,,);
+		
+	Else
+		Object.FullName = Object.Description;
+	EndIf;
 	
 EndProcedure
+
+&AtClient
+Procedure AnswerProcessing(ChoiceResult, ProcessingParameters) Export
+	
+	If ChoiceResult = DialogReturnCode.Yes Then
+		Object.FullName = Object.Description;
+	EndIf;
+	
+EndProcedure
+
+

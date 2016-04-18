@@ -3,10 +3,9 @@
 	<CommandBarLocation>None</CommandBarLocation>
 	<VerticalScroll>useIfNecessary</VerticalScroll>
 	<CommandSet>
-		<ExcludedCommand>SaveVariant</ExcludedCommand>
+		<ExcludedCommand>Print</ExcludedCommand>
 		<ExcludedCommand>LoadVariant</ExcludedCommand>
 		<ExcludedCommand>Generate</ExcludedCommand>
-		<ExcludedCommand>ChangeVariant</ExcludedCommand>
 	</CommandSet>
 	<ReportResult>Result</ReportResult>
 	<DetailsData>DetailsData</DetailsData>
@@ -18,6 +17,7 @@
 	</AutoCommandBar>
 	<Events>
 		<Event name="OnOpen">OnOpen</Event>
+		<Event name="OnLoadUserSettingsAtServer">OnLoadUserSettingsAtServer</Event>
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
 		<Event name="OnUpdateUserSettingSetAtServer">OnUpdateUserSettingSetAtServer</Event>
 	</Events>
@@ -60,16 +60,6 @@
 						<Event name="OnChange">PeriodEndDateOnChange</Event>
 					</Events>
 				</InputField>
-				<Button name="ReportSettings" id="30">
-					<Type>UsualButton</Type>
-					<Visible>false</Visible>
-					<OnlyInAllActions>true</OnlyInAllActions>
-					<CommandName>Form.StandardCommand.ReportSettings</CommandName>
-					<TextColor>#FFFFFF</TextColor>
-					<BackColor>#00A000</BackColor>
-					<BorderColor>#008200</BorderColor>
-					<ExtendedTooltip name="ReportSettingsExtendedTooltip" id="31"/>
-				</Button>
 				<CommandBar name="MainCommandBar" id="5">
 					<Title>
 						<v8:item>
@@ -84,42 +74,66 @@
 							<Type>CommandBarButton</Type>
 							<Representation>Text</Representation>
 							<DefaultButton>true</DefaultButton>
+							<SkipOnInput>false</SkipOnInput>
+							<DefaultItem>true</DefaultItem>
 							<OnlyInAllActions>true</OnlyInAllActions>
 							<CommandName>Form.Command.Create</CommandName>
 							<Font bold="true" kind="AutoFont"/>
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Run report</v8:content>
-								</v8:item>
-							</Title>
 							<ExtendedTooltip name="CreateExtendedTooltip" id="29"/>
 						</Button>
-						<Button name="Excel" id="32">
-							<Type>CommandBarButton</Type>
-							<Visible>false</Visible>
-							<OnlyInAllActions>true</OnlyInAllActions>
-							<CommandName>Form.Command.Excel</CommandName>
+						<ButtonGroup name="PrintGroup" id="36">
 							<Title>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Export to Excel</v8:content>
+									<v8:content>Print group</v8:content>
 								</v8:item>
 							</Title>
-							<ExtendedTooltip name="ExcelExtendedTooltip" id="33"/>
-						</Button>
-						<Button name="FormPrint" id="34">
-							<Type>CommandBarButton</Type>
-							<CommandName>Form.Command.Print</CommandName>
-							<ExtendedTooltip name="FormPrintExtendedTooltip" id="35"/>
-						</Button>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Print group</v8:content>
+								</v8:item>
+							</ToolTip>
+							<ExtendedTooltip name="PrintGroupExtendedTooltip" id="37"/>
+							<ChildItems>
+								<Button name="Excel" id="32">
+									<Type>CommandBarButton</Type>
+									<Representation>Picture</Representation>
+									<OnlyInAllActions>true</OnlyInAllActions>
+									<CommandName>Form.Command.Excel</CommandName>
+									<Picture>
+										<xr:Ref>CommonPicture.Excel</xr:Ref>
+										<xr:LoadTransparent>true</xr:LoadTransparent>
+									</Picture>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Export to Excel</v8:content>
+										</v8:item>
+									</Title>
+									<ExtendedTooltip name="ExcelExtendedTooltip" id="33"/>
+								</Button>
+								<Button name="FormPrint" id="34">
+									<Type>CommandBarButton</Type>
+									<Representation>Picture</Representation>
+									<OnlyInAllActions>true</OnlyInAllActions>
+									<CommandName>Form.Item.Result.StandardCommand.Print</CommandName>
+									<ExtendedTooltip name="FormPrintExtendedTooltip" id="35"/>
+								</Button>
+								<Button name="FormCommonCommandPrintFormSettings" id="38">
+									<Type>CommandBarButton</Type>
+									<OnlyInAllActions>true</OnlyInAllActions>
+									<CommandName>CommonCommand.PrintFormSettings</CommandName>
+									<ExtendedTooltip name="FormCommonCommandPrintFormSettingsExtendedTooltip" id="39"/>
+								</Button>
+							</ChildItems>
+						</ButtonGroup>
 					</ChildItems>
 				</CommandBar>
 			</ChildItems>
 		</UsualGroup>
 		<SpreadSheetDocumentField name="Result" id="9">
 			<DataPath>Result</DataPath>
-			<DefaultItem>true</DefaultItem>
 			<TitleLocation>None</TitleLocation>
 			<Width>100</Width>
 			<ContextMenu name="ResultContextMenu" id="10"/>
@@ -228,13 +242,13 @@
 			<Title>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Create</v8:content>
+					<v8:content>Run report</v8:content>
 				</v8:item>
 			</Title>
 			<ToolTip>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Create</v8:content>
+					<v8:content>Generate report</v8:content>
 				</v8:item>
 			</ToolTip>
 			<Picture>
@@ -257,26 +271,6 @@
 				</v8:item>
 			</ToolTip>
 			<Action>Excel</Action>
-		</Command>
-		<Command name="Print" id="3">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Print</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Print</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Picture>
-				<xr:Ref>StdPicture.Print</xr:Ref>
-				<xr:LoadTransparent>true</xr:LoadTransparent>
-			</Picture>
-			<Action>Print</Action>
-			<Representation>Picture</Representation>
 		</Command>
 	</Commands>
 </Form>

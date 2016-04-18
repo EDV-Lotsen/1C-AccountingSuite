@@ -10,16 +10,6 @@
 	<RepostOnWrite>true</RepostOnWrite>
 	<AutoCommandBar name="FormCommandBar" id="-1">
 		<ChildItems>
-			<Button name="FormPayWithDwolla" id="119">
-				<Type>CommandBarButton</Type>
-				<CommandName>Form.Command.PayWithDwolla</CommandName>
-				<ExtendedTooltip name="FormPayWithDwollaExtendedTooltip" id="120"/>
-			</Button>
-			<Button name="FormPayWithBitcoin" id="131">
-				<Type>CommandBarButton</Type>
-				<CommandName>Form.Command.PayWithBitcoin</CommandName>
-				<ExtendedTooltip name="FormPayWithBitcoinExtendedTooltip" id="132"/>
-			</Button>
 			<Button name="FormMarkAsVoid" id="136">
 				<Type>CommandBarButton</Type>
 				<CommandName>Form.Command.MarkAsVoid</CommandName>
@@ -30,6 +20,12 @@
 					</v8:item>
 				</Title>
 				<ExtendedTooltip name="FormMarkAsVoidExtendedTooltip" id="137"/>
+			</Button>
+			<Button name="FormCommonCommandAttachedFiles" id="166">
+				<Type>CommandBarButton</Type>
+				<CommandName>CommonCommand.AttachedFiles</CommandName>
+				<DataPath>Object.Ref</DataPath>
+				<ExtendedTooltip name="FormCommonCommandAttachedFilesExtendedTooltip" id="167"/>
 			</Button>
 		</ChildItems>
 	</AutoCommandBar>
@@ -233,6 +229,8 @@
 											<v8:content>Middle2</v8:content>
 										</v8:item>
 									</ToolTip>
+									<Width>25</Width>
+									<HorizontalStretch>false</HorizontalStretch>
 									<Group>Vertical</Group>
 									<ShowTitle>false</ShowTitle>
 									<ExtendedTooltip name="Middle2ExtendedTooltip" id="81"/>
@@ -247,6 +245,13 @@
 											<Events>
 												<Event name="OnChange">CompanyOnChange</Event>
 											</Events>
+										</InputField>
+										<InputField name="RemitTo" id="168">
+											<DataPath>Object.RemitTo</DataPath>
+											<Width>14</Width>
+											<HorizontalStretch>false</HorizontalStretch>
+											<ContextMenu name="RemitToContextMenu" id="169"/>
+											<ExtendedTooltip name="RemitToExtendedTooltip" id="170"/>
 										</InputField>
 										<InputField name="gh_date" id="163">
 											<DataPath>Object.gh_date</DataPath>
@@ -304,6 +309,9 @@
 											<HorizontalStretch>false</HorizontalStretch>
 											<ContextMenu name="ExchangeRateContextMenu" id="34"/>
 											<ExtendedTooltip name="ExchangeRateExtendedTooltip" id="52"/>
+											<Events>
+												<Event name="OnChange">ExchangeRateOnChange</Event>
+											</Events>
 										</InputField>
 									</ChildItems>
 								</UsualGroup>
@@ -325,27 +333,6 @@
 							<Group>Horizontal</Group>
 							<ExtendedTooltip name="AdditionalExtendedTooltip" id="115"/>
 							<ChildItems>
-								<UsualGroup name="Group3" id="121">
-									<Group>Vertical</Group>
-									<ShowTitle>false</ShowTitle>
-									<ExtendedTooltip name="Group3ExtendedTooltip" id="122"/>
-									<ChildItems>
-										<InputField name="DwollaPin" id="125">
-											<DataPath>DwollaPin</DataPath>
-											<PasswordMode>true</PasswordMode>
-											<ContextMenu name="DwollaPinContextMenu" id="126"/>
-											<ExtendedTooltip name="DwollaPinExtendedTooltip" id="127"/>
-										</InputField>
-										<InputField name="DwollaTrxID" id="116">
-											<DataPath>Object.DwollaTrxID</DataPath>
-											<ReadOnly>true</ReadOnly>
-											<Width>14</Width>
-											<HorizontalStretch>false</HorizontalStretch>
-											<ContextMenu name="DwollaTrxIDContextMenu" id="117"/>
-											<ExtendedTooltip name="DwollaTrxIDExtendedTooltip" id="118"/>
-										</InputField>
-									</ChildItems>
-								</UsualGroup>
 								<UsualGroup name="Group4" id="123">
 									<Group>Vertical</Group>
 									<ShowTitle>false</ShowTitle>
@@ -357,14 +344,6 @@
 											<HorizontalStretch>false</HorizontalStretch>
 											<ContextMenu name="ProjectContextMenu" id="86"/>
 											<ExtendedTooltip name="ProjectExtendedTooltip" id="87"/>
-										</InputField>
-										<InputField name="CoinbaseTrxID" id="128">
-											<DataPath>Object.CoinbaseTrxID</DataPath>
-											<ReadOnly>true</ReadOnly>
-											<Width>14</Width>
-											<HorizontalStretch>false</HorizontalStretch>
-											<ContextMenu name="CoinbaseTrxIDContextMenu" id="129"/>
-											<ExtendedTooltip name="CoinbaseTrxIDExtendedTooltip" id="130"/>
 										</InputField>
 									</ChildItems>
 								</UsualGroup>
@@ -534,6 +513,9 @@
 					<Width>10</Width>
 					<ContextMenu name="LineItemsAccountContextMenu" id="19"/>
 					<ExtendedTooltip name="LineItemsAccountExtendedTooltip" id="68"/>
+					<Events>
+						<Event name="OnChange">LineItemsAccountOnChange</Event>
+					</Events>
 				</InputField>
 				<InputField name="LineItemsAmount" id="20">
 					<DataPath>Object.LineItems.Amount</DataPath>
@@ -599,21 +581,6 @@
 				<v8:Type>xs:boolean</v8:Type>
 			</Type>
 		</Attribute>
-		<Attribute name="DwollaPin" id="4">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Dwolla PIN</v8:content>
-				</v8:item>
-			</Title>
-			<Type>
-				<v8:Type>xs:string</v8:Type>
-				<v8:StringQualifiers>
-					<v8:Length>4</v8:Length>
-					<v8:AllowedLength>Variable</v8:AllowedLength>
-				</v8:StringQualifiers>
-			</Type>
-		</Attribute>
 		<Attribute name="VoidingGJ" id="5">
 			<Title>
 				<v8:item>
@@ -641,36 +608,6 @@
 				</v8:item>
 			</ToolTip>
 			<Action>URLOpen</Action>
-		</Command>
-		<Command name="PayWithDwolla" id="2">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Pay with Dwolla</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Pay with dwolla</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Action>PayWithDwolla</Action>
-		</Command>
-		<Command name="PayWithBitcoin" id="3">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Pay with bitcoin</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Pay with bitcoin</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Action>PayWithBitcoin</Action>
 		</Command>
 		<Command name="MarkAsVoid" id="4">
 			<Title>

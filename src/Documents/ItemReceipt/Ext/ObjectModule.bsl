@@ -54,9 +54,7 @@ Procedure FillCheckProcessing(Cancel, CheckedAttributes)
 	LotsSerialNumbers.CheckSerialNumbersFilling(Ref, PointInTime(), LineItems, SerialNumbers, 0, "", Cancel);
 	
 	// Check doubles in items (to be sure of proper orders placement).
-	//If Not SessionParameters.TenantValue = "1101092" Then // Locked for the tenant "1101092"
-		GeneralFunctions.CheckDoubleItems(Ref, LineItems, "Product, Unit, Order, LocationOrder, DeliveryDateOrder, Project, Class, LineNumber",, Cancel);
-	//EndIf;
+	GeneralFunctions.CheckDoubleItems(Ref, LineItems, "Product, Unit, Order, LocationOrder, DeliveryDateOrder, Project, Class, LineNumber",, Cancel);
 	
 	// Check proper closing of order items by the item receipt items.
 	If Not Cancel Then

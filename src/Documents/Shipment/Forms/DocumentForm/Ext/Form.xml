@@ -29,7 +29,7 @@
 			<ExtendedTooltip name="CommandBarExtendedTooltip" id="840"/>
 			<ChildItems>
 				<CommandBar name="CommandBar1" id="841">
-					<Width>61</Width>
+					<Width>76</Width>
 					<HorizontalStretch>false</HorizontalStretch>
 					<ExtendedTooltip name="CommandBar1ExtendedTooltip" id="842"/>
 					<ChildItems>
@@ -788,7 +788,7 @@ Reference number</v8:content>
 							<Title>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Print options</v8:content>
+									<v8:content>Dropship</v8:content>
 								</v8:item>
 							</Title>
 							<Group>Horizontal</Group>
@@ -974,6 +974,11 @@ Reference number</v8:content>
 										</Button>
 									</ChildItems>
 								</UsualGroup>
+								<Button name="AuditLogRecords" id="1019">
+									<Type>UsualButton</Type>
+									<CommandName>Form.Command.AuditLogRecords</CommandName>
+									<ExtendedTooltip name="AuditLogRecordsExtendedTooltip" id="1020"/>
+								</Button>
 							</ChildItems>
 						</Page>
 						<Page name="MemoPage" id="607">
@@ -1031,46 +1036,6 @@ Reference number</v8:content>
 							<Group>Horizontal</Group>
 							<ExtendedTooltip name="TaxTabExtendedTooltip" id="727"/>
 							<ChildItems>
-								<RadioButtonField name="TaxEngine" id="898">
-									<DataPath>TaxEngine</DataPath>
-									<TitleLocation>None</TitleLocation>
-									<RadioButtonType>Tumbler</RadioButtonType>
-									<ColumnsCount>1</ColumnsCount>
-									<ChoiceList>
-										<xr:Item>
-											<xr:Presentation/>
-											<xr:CheckState>0</xr:CheckState>
-											<xr:Value xsi:type="FormChoiceListDesTimeValue">
-												<Presentation>
-													<v8:item>
-														<v8:lang>en</v8:lang>
-														<v8:content>Use ACSuite</v8:content>
-													</v8:item>
-												</Presentation>
-												<Value xsi:type="xs:decimal">1</Value>
-											</xr:Value>
-										</xr:Item>
-										<xr:Item>
-											<xr:Presentation/>
-											<xr:CheckState>0</xr:CheckState>
-											<xr:Value xsi:type="FormChoiceListDesTimeValue">
-												<Presentation>
-													<v8:item>
-														<v8:lang>en</v8:lang>
-														<v8:content>Use AvaTax</v8:content>
-													</v8:item>
-												</Presentation>
-												<Value xsi:type="xs:decimal">2</Value>
-											</xr:Value>
-										</xr:Item>
-									</ChoiceList>
-									<Font ref="style:NormalTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
-									<ContextMenu name="TaxEngineContextMenu" id="899"/>
-									<ExtendedTooltip name="TaxEngineExtendedTooltip" id="900"/>
-									<Events>
-										<Event name="OnChange">TaxEngineOnChange</Event>
-									</Events>
-								</RadioButtonField>
 								<Pages name="TaxParametersPages" id="901">
 									<Title>
 										<v8:item>
@@ -1333,11 +1298,6 @@ Reference number</v8:content>
 															<ContextMenu name="TaxComponentsTitleContextMenu" id="934"/>
 															<ExtendedTooltip name="TaxComponentsTitleExtendedTooltip" id="935"/>
 														</LabelDecoration>
-														<Button name="AvaTaxDetails" id="936">
-															<Type>Hyperlink</Type>
-															<CommandName>Form.Command.AvaTaxDetails</CommandName>
-															<ExtendedTooltip name="AvaTaxDetailsExtendedTooltip" id="937"/>
-														</Button>
 													</ChildItems>
 												</UsualGroup>
 												<Table name="TaxAcrossAgencies" id="915">
@@ -1608,6 +1568,7 @@ Reference number</v8:content>
 								</InputField>
 								<InputField name="LineItemsUnit" id="466">
 									<DataPath>Object.LineItems.Unit</DataPath>
+									<SkipOnInput>true</SkipOnInput>
 									<Title>
 										<v8:item>
 											<v8:lang>en</v8:lang>
@@ -3064,25 +3025,6 @@ Reference number</v8:content>
 		</ConditionalAppearance>
 	</Attributes>
 	<Commands>
-		<Command name="AvaTaxDetails" id="3">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>View details</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Ava tax details</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Picture>
-				<xr:Ref>CommonPicture.Avalara</xr:Ref>
-				<xr:LoadTransparent>true</xr:LoadTransparent>
-			</Picture>
-			<Action>AvaTax</Action>
-		</Command>
 		<Command name="PostAndClose" id="4">
 			<Title>
 				<v8:item>
@@ -3152,6 +3094,21 @@ Reference number</v8:content>
 			</Picture>
 			<Action>AddLine</Action>
 			<Representation>Text</Representation>
+		</Command>
+		<Command name="AuditLogRecords" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Audit log records</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Audit log records</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>AuditLogRecords</Action>
 		</Command>
 	</Commands>
 	<CommandInterface>
@@ -3313,7 +3270,7 @@ Reference number</v8:content>
 				</Visible>
 			</Item>
 			<Item>
-				<Command>CommonCommand.SendEmail</Command>
+				<Command>0:017ae4f6-356a-4e94-8663-9d23bcb4b365</Command>
 				<Type>Auto</Type>
 				<CommandGroup>FormCommandBarImportant</CommandGroup>
 				<Index>2</Index>

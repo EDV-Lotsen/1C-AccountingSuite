@@ -84,6 +84,13 @@ Procedure FillCheckProcessing(Cancel, CheckedAttributes)
 	// Check proper filling of serial numbers.
 	LotsSerialNumbers.CheckSerialNumbersFilling(Ref, PointInTime(), LineItems, SerialNumbers, 1, "", Cancel);
 	
+	// Check sales tax rate filling
+	If GeneralFunctionsReusable.FunctionalOptionValue("SalesTaxCharging") Then
+		If Not ValueIsFilled(SalesTaxRate) Then
+			CommonUseClientServer.MessageToUser(NStr("en = 'Field ""Sales tax rate"" is empty'"), Ref, "SalesTaxRate",, Cancel);
+		EndIf;
+	EndIf;
+	
 EndProcedure
 
 Procedure Filling(FillingData, StandardProcessing)

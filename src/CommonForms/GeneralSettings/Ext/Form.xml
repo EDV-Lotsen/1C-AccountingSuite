@@ -6,11 +6,9 @@
 	<Events>
 		<Event name="AfterWrite">AfterWrite</Event>
 		<Event name="AfterWriteAtServer">AfterWriteAtServer</Event>
-		<Event name="NotificationProcessing">NotificationProcessing</Event>
 		<Event name="OnOpen">OnOpen</Event>
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
 		<Event name="OnWriteAtServer">OnWriteAtServer</Event>
-		<Event name="OnClose">OnClose</Event>
 		<Event name="FillCheckProcessingAtServer">FillCheckProcessingAtServer</Event>
 	</Events>
 	<ChildItems>
@@ -116,18 +114,6 @@
 									<ContextMenu name="FaxContextMenu" id="722"/>
 									<ExtendedTooltip name="FaxExtendedTooltip" id="723"/>
 								</InputField>
-								<Button name="UpdateCardInfo" id="1359">
-									<Type>Hyperlink</Type>
-									<Visible>false</Visible>
-									<CommandName>Form.Command.UpdateCardInfo</CommandName>
-									<Title>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Update Payment Information</v8:content>
-										</v8:item>
-									</Title>
-									<ExtendedTooltip name="UpdateCardInfoExtendedTooltip" id="1360"/>
-								</Button>
 							</ChildItems>
 						</UsualGroup>
 						<UsualGroup name="Group2" id="716">
@@ -135,33 +121,6 @@
 							<ShowTitle>false</ShowTitle>
 							<ExtendedTooltip name="Group2ExtendedTooltip" id="717"/>
 							<ChildItems>
-								<InputField name="CurrentUserEmail" id="641">
-									<DataPath>ConstantsSet.CurrentUserEmail</DataPath>
-									<Title>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Email</v8:content>
-										</v8:item>
-									</Title>
-									<Width>20</Width>
-									<HorizontalStretch>false</HorizontalStretch>
-									<OpenButton>false</OpenButton>
-									<CreateButton>false</CreateButton>
-									<QuickChoice>true</QuickChoice>
-									<ChoiceParameters>
-										<app:item name="Filter.Verified">
-											<app:value xsi:type="FormChoiceListDesTimeValue">
-												<Presentation/>
-												<Value xsi:type="xs:boolean">true</Value>
-											</app:value>
-										</app:item>
-									</ChoiceParameters>
-									<ContextMenu name="CurrentUserEmailContextMenu" id="642"/>
-									<ExtendedTooltip name="CurrentUserEmailExtendedTooltip" id="643"/>
-									<Events>
-										<Event name="OnChange">CurrentUserEmailOnChange</Event>
-									</Events>
-								</InputField>
 								<InputField name="Website" id="407">
 									<DataPath>ConstantsSet.Website</DataPath>
 									<Width>20</Width>
@@ -276,43 +235,15 @@
 									<CommandName>Form.Command.Classes</CommandName>
 									<ExtendedTooltip name="ClassesExtendedTooltip" id="1023"/>
 								</Button>
-								<Button name="ExpensifyCategories" id="1343">
+								<Button name="CommonFileStorage" id="1457">
 									<Type>Hyperlink</Type>
-									<CommandName>Form.Command.ExpensifyCategories</CommandName>
-									<ExtendedTooltip name="ExpensifyCategoriesExtendedTooltip" id="1344"/>
+									<CommandName>Form.Command.CommonFileStorage</CommandName>
+									<ExtendedTooltip name="CommonFileStorageExtendedTooltip" id="1458"/>
 								</Button>
-								<Button name="zoho_SalesOrder_Map" id="1339">
+								<Button name="ItemActivityReport" id="1464">
 									<Type>Hyperlink</Type>
-									<CommandName>Form.Command.zoho_salesordermapping</CommandName>
-									<Title>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Zoho Sales Order Map</v8:content>
-										</v8:item>
-									</Title>
-									<ExtendedTooltip name="zoho_SalesOrder_MapExtendedTooltip" id="1340"/>
-								</Button>
-								<Button name="zoho_Quote_Map" id="1337">
-									<Type>Hyperlink</Type>
-									<CommandName>Form.Command.zoho_quotemapping</CommandName>
-									<Title>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Zoho Quote Map</v8:content>
-										</v8:item>
-									</Title>
-									<ExtendedTooltip name="zoho_Quote_MapExtendedTooltip" id="1338"/>
-								</Button>
-								<Button name="zoho_SI_Map" id="1351">
-									<Type>Hyperlink</Type>
-									<CommandName>Form.Command.zoho_invoicemapping</CommandName>
-									<Title>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Zoho Invoice Map</v8:content>
-										</v8:item>
-									</Title>
-									<ExtendedTooltip name="zoho_SI_MapExtendedTooltip" id="1352"/>
+									<CommandName>Form.Command.ItemActivityReport</CommandName>
+									<ExtendedTooltip name="ItemActivityReportExtendedTooltip" id="1465"/>
 								</Button>
 							</ChildItems>
 						</UsualGroup>
@@ -336,11 +267,6 @@
 									<CommandName>Form.Command.ItemCategories</CommandName>
 									<ExtendedTooltip name="ItemCategoriesExtendedTooltip" id="1013"/>
 								</Button>
-								<Button name="ActiveUserList" id="1014">
-									<Type>Hyperlink</Type>
-									<CommandName>Form.Command.ActiveUserList</CommandName>
-									<ExtendedTooltip name="ActiveUserListExtendedTooltip" id="1015"/>
-								</Button>
 								<Button name="SalesPeople" id="1016">
 									<Type>Hyperlink</Type>
 									<CommandName>Form.Command.SalesPeople</CommandName>
@@ -351,80 +277,15 @@
 									<CommandName>Form.Command.PriceLevels</CommandName>
 									<ExtendedTooltip name="PriceLevelsExtendedTooltip" id="1019"/>
 								</Button>
-								<Button name="zoho_pricebookMap" id="1320">
-									<Type>Hyperlink</Type>
-									<CommandName>Form.Command.zoho_pricebookmapping</CommandName>
-									<Title>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Zoho Price Book Map</v8:content>
-										</v8:item>
-									</Title>
-									<ExtendedTooltip name="zoho_pricebookMapExtendedTooltip" id="1321"/>
-								</Button>
-								<Button name="zoho_productMap" id="1175">
-									<Type>Hyperlink</Type>
-									<CommandName>Form.Command.zoho_productmapping</CommandName>
-									<Title>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Zoho Product Map</v8:content>
-										</v8:item>
-									</Title>
-									<ExtendedTooltip name="zoho_productMapExtendedTooltip" id="1176"/>
-								</Button>
-								<Button name="zoho_accountmapping" id="1330">
-									<Type>Hyperlink</Type>
-									<CommandName>Form.Command.zoho_accountmapping</CommandName>
-									<Title>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Zoho Account Map</v8:content>
-										</v8:item>
-									</Title>
-									<ExtendedTooltip name="zoho_accountmappingExtendedTooltip" id="1331"/>
-								</Button>
-								<Button name="zoho_contactmapping" id="1328">
-									<Type>Hyperlink</Type>
-									<CommandName>Form.Command.zoho_contactmapping</CommandName>
-									<Title>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Zoho Contact Map</v8:content>
-										</v8:item>
-									</Title>
-									<ExtendedTooltip name="zoho_contactmappingExtendedTooltip" id="1329"/>
-								</Button>
-								<Button name="DataImport" id="1396">
-									<Type>Hyperlink</Type>
-									<Visible>false</Visible>
-									<CommandName>Form.Command.DataImport</CommandName>
-									<ExtendedTooltip name="DataImportExtendedTooltip" id="1397"/>
-								</Button>
 								<Button name="DataImportv2" id="1413">
 									<Type>Hyperlink</Type>
 									<CommandName>Form.Command.DataImportv2</CommandName>
 									<ExtendedTooltip name="DataImportv2ExtendedTooltip" id="1414"/>
 								</Button>
-								<Button name="Register" id="1431">
-									<Type>Hyperlink</Type>
-									<CommandName>Form.Command.Register</CommandName>
-									<ExtendedTooltip name="RegisterExtendedTooltip" id="1432"/>
-								</Button>
 								<Button name="Renumbering" id="1429">
 									<Type>Hyperlink</Type>
 									<CommandName>Form.Command.Renumbering</CommandName>
 									<ExtendedTooltip name="RenumberingExtendedTooltip" id="1430"/>
-								</Button>
-								<Button name="BalanceSheetNew" id="1433">
-									<Type>Hyperlink</Type>
-									<CommandName>Form.Command.BalanceSheetNew</CommandName>
-									<ExtendedTooltip name="BalanceSheetNewExtendedTooltip" id="1434"/>
-								</Button>
-								<Button name="SearchAndReplace" id="1435">
-									<Type>Hyperlink</Type>
-									<CommandName>Form.Command.SearchAndReplace</CommandName>
-									<ExtendedTooltip name="SearchAndReplaceExtendedTooltip" id="1436"/>
 								</Button>
 							</ChildItems>
 						</UsualGroup>
@@ -446,9 +307,17 @@
 					<HorizontalStretch>false</HorizontalStretch>
 					<ExtendedTooltip name="GeneralSettingsExtendedTooltip" id="302"/>
 					<ChildItems>
+						<InputField name="AccountingMethod" id="1519">
+							<DataPath>ConstantsSet.AccountingMethod</DataPath>
+							<Width>12</Width>
+							<HorizontalStretch>false</HorizontalStretch>
+							<ContextMenu name="AccountingMethodContextMenu" id="1520"/>
+							<ExtendedTooltip name="AccountingMethodExtendedTooltip" id="1521"/>
+						</InputField>
 						<InputField name="FirstMonthOfFiscalYear" id="1388">
 							<DataPath>ConstantsSet.FirstMonthOfFiscalYear</DataPath>
 							<Width>12</Width>
+							<HorizontalStretch>false</HorizontalStretch>
 							<ListChoiceMode>true</ListChoiceMode>
 							<TextEdit>false</TextEdit>
 							<ChoiceList>
@@ -612,20 +481,6 @@
 							<ContextMenu name="FirstMonthOfFiscalYearContextMenu" id="1389"/>
 							<ExtendedTooltip name="FirstMonthOfFiscalYearExtendedTooltip" id="1390"/>
 						</InputField>
-						<InputField name="CFO_ProcessingMonth" id="1391">
-							<DataPath>ConstantsSet.CFO_ProcessingMonth</DataPath>
-							<EditFormat>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>DF=MM/yyyy</v8:content>
-								</v8:item>
-							</EditFormat>
-							<ContextMenu name="CFO_ProcessingMonthContextMenu" id="1392"/>
-							<ExtendedTooltip name="CFO_ProcessingMonthExtendedTooltip" id="1393"/>
-							<Events>
-								<Event name="OnChange">CFO_ProcessingMonthOnChange</Event>
-							</Events>
-						</InputField>
 						<CheckBoxField name="MultiLocation" id="27">
 							<DataPath>ConstantsSet.MultiLocation</DataPath>
 							<CheckBoxType>Auto</CheckBoxType>
@@ -642,6 +497,21 @@
 							<ExtendedTooltip name="MultiCurrencyExtendedTooltip" id="308"/>
 							<Events>
 								<Event name="OnChange">MultiCurrencyOnChange</Event>
+							</Events>
+						</CheckBoxField>
+						<CheckBoxField name="UseSOPrepayment" id="1516">
+							<DataPath>ConstantsSet.UseSOPrepayment</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Sales Order Pre-payments</v8:content>
+								</v8:item>
+							</Title>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="UseSOPrepaymentContextMenu" id="1517"/>
+							<ExtendedTooltip name="UseSOPrepaymentExtendedTooltip" id="1518"/>
+							<Events>
+								<Event name="OnChange">UseSOPrepaymentOnChange</Event>
 							</Events>
 						</CheckBoxField>
 						<CheckBoxField name="EnhancedInventoryShipping" id="1353">
@@ -703,6 +573,18 @@
 							<Events>
 								<Event name="OnChange">EnableLotsOnChange</Event>
 							</Events>
+						</CheckBoxField>
+						<CheckBoxField name="FileStorageProcessing" id="1472">
+							<DataPath>ConstantsSet.FileStorageProcessing</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>File storage</v8:content>
+								</v8:item>
+							</Title>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="FileStorageProcessingContextMenu" id="1473"/>
+							<ExtendedTooltip name="FileStorageProcessingExtendedTooltip" id="1474"/>
 						</CheckBoxField>
 						<InputField name="DefaultCurrency" id="155">
 							<DataPath>ConstantsSet.DefaultCurrency</DataPath>
@@ -836,37 +718,11 @@
 							<ContextMenu name="DefaultUoMSetContextMenu" id="1215"/>
 							<ExtendedTooltip name="DefaultUoMSetExtendedTooltip" id="1216"/>
 						</InputField>
-						<CheckBoxField name="show_yodlee_upload_period" id="1042">
-							<DataPath>ConstantsSet.show_yodlee_upload_period</DataPath>
-							<Visible>false</Visible>
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Display upload period in Cloud Banking</v8:content>
-								</v8:item>
-							</Title>
-							<CheckBoxType>Auto</CheckBoxType>
-							<ContextMenu name="show_yodlee_upload_periodContextMenu" id="1043"/>
-							<ExtendedTooltip name="show_yodlee_upload_periodExtendedTooltip" id="1044"/>
-						</CheckBoxField>
 						<CheckBoxField name="DisplayOrderIndicators" id="1398">
 							<DataPath>ConstantsSet.DisplayOrderIndicators</DataPath>
 							<CheckBoxType>Auto</CheckBoxType>
 							<ContextMenu name="DisplayOrderIndicatorsContextMenu" id="1399"/>
 							<ExtendedTooltip name="DisplayOrderIndicatorsExtendedTooltip" id="1400"/>
-						</CheckBoxField>
-						<CheckBoxField name="DisplayExtendedAccountInfo" id="1211">
-							<DataPath>ConstantsSet.DisplayExtendedAccountInfo</DataPath>
-							<Visible>false</Visible>
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Display extended acct. info in Cloud Banking</v8:content>
-								</v8:item>
-							</Title>
-							<CheckBoxType>Auto</CheckBoxType>
-							<ContextMenu name="DisplayExtendedAccountInfoContextMenu" id="1212"/>
-							<ExtendedTooltip name="DisplayExtendedAccountInfoExtendedTooltip" id="1213"/>
 						</CheckBoxField>
 						<CheckBoxField name="CopyDropshipPrintOptionsSO_PO" id="1170">
 							<DataPath>ConstantsSet.CopyDropshipPrintOptionsSO_PO</DataPath>
@@ -900,6 +756,7 @@
 							<ExtendedTooltip name="CCToGlobalExtendedTooltip" id="1324"/>
 						</InputField>
 						<UsualGroup name="Group28" id="1381">
+							<Visible>false</Visible>
 							<Group>Horizontal</Group>
 							<ShowTitle>false</ShowTitle>
 							<ExtendedTooltip name="Group28ExtendedTooltip" id="1382"/>
@@ -970,6 +827,12 @@
 								</InputField>
 								<InputField name="ExpenseAccount" id="99">
 									<DataPath>ConstantsSet.ExpenseAccount</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Expense</v8:content>
+										</v8:item>
+									</Title>
 									<Width>20</Width>
 									<HorizontalStretch>false</HorizontalStretch>
 									<ContextMenu name="ExpenseAccountContextMenu" id="100"/>
@@ -981,6 +844,11 @@
 									<HorizontalStretch>false</HorizontalStretch>
 									<ContextMenu name="InventoryAccountContextMenu" id="80"/>
 									<ExtendedTooltip name="InventoryAccountExtendedTooltip" id="340"/>
+								</InputField>
+								<InputField name="WasteAccount" id="1522">
+									<DataPath>ConstantsSet.WasteAccount</DataPath>
+									<ContextMenu name="WasteAccountContextMenu" id="1523"/>
+									<ExtendedTooltip name="WasteAccountExtendedTooltip" id="1524"/>
 								</InputField>
 							</ChildItems>
 						</UsualGroup>
@@ -1027,9 +895,18 @@
 									<DataPath>ConstantsSet.OCLAccount</DataPath>
 									<Width>20</Width>
 									<HorizontalStretch>false</HorizontalStretch>
-									<AutoMarkIncomplete>true</AutoMarkIncomplete>
 									<ContextMenu name="OCLAccountContextMenu" id="1349"/>
 									<ExtendedTooltip name="OCLAccountExtendedTooltip" id="1350"/>
+								</InputField>
+								<InputField name="DiscountsReceived" id="1459">
+									<DataPath>ConstantsSet.DiscountsReceived</DataPath>
+									<ContextMenu name="DiscountsReceivedContextMenu" id="1460"/>
+									<ExtendedTooltip name="DiscountsReceivedExtendedTooltip" id="1461"/>
+								</InputField>
+								<InputField name="OpeningBalanceEquity" id="1466">
+									<DataPath>ConstantsSet.OpeningBalanceEquity</DataPath>
+									<ContextMenu name="OpeningBalanceEquityContextMenu" id="1467"/>
+									<ExtendedTooltip name="OpeningBalanceEquityExtendedTooltip" id="1468"/>
 								</InputField>
 							</ChildItems>
 						</UsualGroup>
@@ -1317,518 +1194,60 @@
 								<Event name="OnChange">ChargingSalesTaxOnChange</Event>
 							</Events>
 						</RadioButtonField>
-						<UsualGroup name="SalesTaxSettingsGroup" id="1294">
+						<UsualGroup name="SalesTaxDefaults" id="944">
 							<Title>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Sales tax settings group</v8:content>
+									<v8:content>Sales tax defaults</v8:content>
 								</v8:item>
 							</Title>
 							<ToolTip>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Sales tax settings group</v8:content>
+									<v8:content>Sales tax defaults</v8:content>
 								</v8:item>
 							</ToolTip>
 							<Group>Vertical</Group>
 							<ShowTitle>false</ShowTitle>
-							<ExtendedTooltip name="SalesTaxSettingsGroupExtendedTooltip" id="1295"/>
+							<ExtendedTooltip name="SalesTaxDefaultsExtendedTooltip" id="945"/>
 							<ChildItems>
-								<RadioButtonField name="SalesTaxEngine" id="1246">
-									<DataPath>SalesTaxEngine</DataPath>
-									<Visible>false</Visible>
-									<Title>
+								<LabelDecoration name="SalesTaxDefaultsDescription" id="946">
+									<HorizontalStretch>true</HorizontalStretch>
+									<Font ref="style:SmallTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
+									<Title formatted="false">
 										<v8:item>
 											<v8:lang>en</v8:lang>
-											<v8:content>How do you want to calculate sales tax?</v8:content>
+											<v8:content>Default settings for use in catalogs and documents.</v8:content>
 										</v8:item>
 									</Title>
-									<TitleFont ref="style:SmallTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
-									<TitleLocation>Top</TitleLocation>
-									<RadioButtonType>Tumbler</RadioButtonType>
-									<ChoiceList>
-										<xr:Item>
-											<xr:Presentation/>
-											<xr:CheckState>0</xr:CheckState>
-											<xr:Value xsi:type="FormChoiceListDesTimeValue">
-												<Presentation>
-													<v8:item>
-														<v8:lang>en</v8:lang>
-														<v8:content>By AccountingSuite only</v8:content>
-													</v8:item>
-												</Presentation>
-												<Value xsi:type="xs:decimal">2</Value>
-											</xr:Value>
-										</xr:Item>
-										<xr:Item>
-											<xr:Presentation/>
-											<xr:CheckState>0</xr:CheckState>
-											<xr:Value xsi:type="FormChoiceListDesTimeValue">
-												<Presentation>
-													<v8:item>
-														<v8:lang>en</v8:lang>
-														<v8:content>By AvaTax or AccountingSuite</v8:content>
-													</v8:item>
-												</Presentation>
-												<Value xsi:type="xs:decimal">1</Value>
-											</xr:Value>
-										</xr:Item>
-									</ChoiceList>
-									<Font ref="style:NormalTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
-									<ContextMenu name="SalesTaxEngineContextMenu" id="1247"/>
-									<ExtendedTooltip name="SalesTaxEngineExtendedTooltip" id="1248"/>
+									<Border width="1">
+										<v8ui:style xsi:type="v8ui:ControlBorderType">Underline</v8ui:style>
+									</Border>
+									<ContextMenu name="SalesTaxDefaultsDescriptionContextMenu" id="947"/>
+									<ExtendedTooltip name="SalesTaxDefaultsDescriptionExtendedTooltip" id="948"/>
+								</LabelDecoration>
+								<InputField name="SalesTaxDefault" id="935">
+									<DataPath>ConstantsSet.SalesTaxDefault</DataPath>
+									<QuickChoice>true</QuickChoice>
+									<ContextMenu name="SalesTaxDefaultContextMenu" id="936"/>
+									<ExtendedTooltip name="SalesTaxDefaultExtendedTooltip" id="937"/>
 									<Events>
-										<Event name="OnChange">SalesTaxEngineOnChange</Event>
+										<Event name="OnChange">SalesTaxDefaultOnChange</Event>
 									</Events>
-								</RadioButtonField>
-								<Pages name="SalesTaxBySources" id="1288">
-									<Title>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Sales tax by sources</v8:content>
-										</v8:item>
-									</Title>
-									<TitleFont ref="style:NormalTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
-									<ToolTip>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Sales tax by sources</v8:content>
-										</v8:item>
-									</ToolTip>
-									<PagesRepresentation>None</PagesRepresentation>
-									<ExtendedTooltip name="SalesTaxBySourcesExtendedTooltip" id="1289"/>
-									<ChildItems>
-										<Page name="ByAccountingSuitePage" id="1290">
-											<Title>
-												<v8:item>
-													<v8:lang>en</v8:lang>
-													<v8:content>AccountingSuite settings</v8:content>
-												</v8:item>
-											</Title>
-											<ToolTip>
-												<v8:item>
-													<v8:lang>en</v8:lang>
-													<v8:content>By accounting suite page</v8:content>
-												</v8:item>
-											</ToolTip>
-											<ExtendedTooltip name="ByAccountingSuitePageExtendedTooltip" id="1291"/>
-											<ChildItems>
-												<UsualGroup name="SalesTaxDefaults" id="944">
-													<Title>
-														<v8:item>
-															<v8:lang>en</v8:lang>
-															<v8:content>Sales tax defaults</v8:content>
-														</v8:item>
-													</Title>
-													<ToolTip>
-														<v8:item>
-															<v8:lang>en</v8:lang>
-															<v8:content>Sales tax defaults</v8:content>
-														</v8:item>
-													</ToolTip>
-													<Group>Vertical</Group>
-													<ShowTitle>false</ShowTitle>
-													<ExtendedTooltip name="SalesTaxDefaultsExtendedTooltip" id="945"/>
-													<ChildItems>
-														<LabelDecoration name="SalesTaxDefaultsDescription" id="946">
-															<HorizontalStretch>true</HorizontalStretch>
-															<Font ref="style:SmallTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
-															<Title formatted="false">
-																<v8:item>
-																	<v8:lang>en</v8:lang>
-																	<v8:content>Default settings for use in catalogs and documents.</v8:content>
-																</v8:item>
-															</Title>
-															<Border width="1">
-																<v8ui:style xsi:type="v8ui:ControlBorderType">Underline</v8ui:style>
-															</Border>
-															<ContextMenu name="SalesTaxDefaultsDescriptionContextMenu" id="947"/>
-															<ExtendedTooltip name="SalesTaxDefaultsDescriptionExtendedTooltip" id="948"/>
-														</LabelDecoration>
-														<InputField name="SalesTaxDefault" id="935">
-															<DataPath>ConstantsSet.SalesTaxDefault</DataPath>
-															<QuickChoice>true</QuickChoice>
-															<ContextMenu name="SalesTaxDefaultContextMenu" id="936"/>
-															<ExtendedTooltip name="SalesTaxDefaultExtendedTooltip" id="937"/>
-															<Events>
-																<Event name="OnChange">SalesTaxDefaultOnChange</Event>
-															</Events>
-														</InputField>
-														<CheckBoxField name="SalesTaxMarkNewCustomersTaxable" id="938">
-															<DataPath>ConstantsSet.SalesTaxMarkNewCustomersTaxable</DataPath>
-															<CheckBoxType>Auto</CheckBoxType>
-															<ContextMenu name="SalesTaxMarkNewCustomersTaxableContextMenu" id="939"/>
-															<ExtendedTooltip name="SalesTaxMarkNewCustomersTaxableExtendedTooltip" id="940"/>
-														</CheckBoxField>
-														<CheckBoxField name="SalesTaxMarkNewProductsTaxable" id="941">
-															<DataPath>ConstantsSet.SalesTaxMarkNewProductsTaxable</DataPath>
-															<CheckBoxType>Auto</CheckBoxType>
-															<ContextMenu name="SalesTaxMarkNewProductsTaxableContextMenu" id="942"/>
-															<ExtendedTooltip name="SalesTaxMarkNewProductsTaxableExtendedTooltip" id="943"/>
-														</CheckBoxField>
-													</ChildItems>
-												</UsualGroup>
-											</ChildItems>
-										</Page>
-										<Page name="ByAvaTaxPage" id="1292">
-											<Title>
-												<v8:item>
-													<v8:lang>en</v8:lang>
-													<v8:content>AvaTax settings</v8:content>
-												</v8:item>
-											</Title>
-											<ToolTip>
-												<v8:item>
-													<v8:lang>en</v8:lang>
-													<v8:content>By ava tax page</v8:content>
-												</v8:item>
-											</ToolTip>
-											<ExtendedTooltip name="ByAvaTaxPageExtendedTooltip" id="1293"/>
-											<ChildItems>
-												<UsualGroup name="AvataxSettings" id="1249">
-													<Title>
-														<v8:item>
-															<v8:lang>en</v8:lang>
-															<v8:content>Avatax settings</v8:content>
-														</v8:item>
-													</Title>
-													<ToolTip>
-														<v8:item>
-															<v8:lang>en</v8:lang>
-															<v8:content>Avatax settings</v8:content>
-														</v8:item>
-													</ToolTip>
-													<Group>Vertical</Group>
-													<ShowTitle>false</ShowTitle>
-													<ExtendedTooltip name="AvataxSettingsExtendedTooltip" id="1250"/>
-													<ChildItems>
-														<LabelDecoration name="AvataxConnectionSettingsDecoration" id="1275">
-															<HorizontalStretch>true</HorizontalStretch>
-															<Font ref="style:SmallTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
-															<Title formatted="false">
-																<v8:item>
-																	<v8:lang>en</v8:lang>
-																	<v8:content>Connection settings</v8:content>
-																</v8:item>
-															</Title>
-															<Border width="1">
-																<v8ui:style xsi:type="v8ui:ControlBorderType">Underline</v8ui:style>
-															</Border>
-															<ContextMenu name="AvataxConnectionSettingsDecorationContextMenu" id="1276"/>
-															<ExtendedTooltip name="AvataxConnectionSettingsDecorationExtendedTooltip" id="1277"/>
-														</LabelDecoration>
-														<UsualGroup name="AvataxConnectionSettingsGroup" id="1296">
-															<Title>
-																<v8:item>
-																	<v8:lang>en</v8:lang>
-																	<v8:content>Avatax connection settings group</v8:content>
-																</v8:item>
-															</Title>
-															<ToolTip>
-																<v8:item>
-																	<v8:lang>en</v8:lang>
-																	<v8:content>Avatax connection settings group</v8:content>
-																</v8:item>
-															</ToolTip>
-															<Group>Horizontal</Group>
-															<ShowTitle>false</ShowTitle>
-															<ExtendedTooltip name="AvataxConnectionSettingsGroupExtendedTooltip" id="1297"/>
-															<ChildItems>
-																<UsualGroup name="AvataxConnectionSettings" id="1298">
-																	<Title>
-																		<v8:item>
-																			<v8:lang>en</v8:lang>
-																			<v8:content>Avatax connection settings</v8:content>
-																		</v8:item>
-																	</Title>
-																	<ToolTip>
-																		<v8:item>
-																			<v8:lang>en</v8:lang>
-																			<v8:content>Avatax connection settings</v8:content>
-																		</v8:item>
-																	</ToolTip>
-																	<Group>Vertical</Group>
-																	<ShowTitle>false</ShowTitle>
-																	<ExtendedTooltip name="AvataxConnectionSettingsExtendedTooltip" id="1299"/>
-																	<ChildItems>
-																		<UsualGroup name="AvataxConnectionCredentials" id="1302">
-																			<Title>
-																				<v8:item>
-																					<v8:lang>en</v8:lang>
-																					<v8:content>Avatax connection credentials</v8:content>
-																				</v8:item>
-																			</Title>
-																			<ToolTip>
-																				<v8:item>
-																					<v8:lang>en</v8:lang>
-																					<v8:content>Avatax connection credentials</v8:content>
-																				</v8:item>
-																			</ToolTip>
-																			<Group>Horizontal</Group>
-																			<ShowTitle>false</ShowTitle>
-																			<ExtendedTooltip name="AvataxConnectionCredentialsExtendedTooltip" id="1303"/>
-																			<ChildItems>
-																				<InputField name="AvataxAccountNumber" id="1251">
-																					<DataPath>ConstantsSet.AvataxAccountNumber</DataPath>
-																					<Title>
-																						<v8:item>
-																							<v8:lang>en</v8:lang>
-																							<v8:content>Account number</v8:content>
-																						</v8:item>
-																					</Title>
-																					<ContextMenu name="AvataxAccountNumberContextMenu" id="1252"/>
-																					<ExtendedTooltip name="AvataxAccountNumberExtendedTooltip" id="1253"/>
-																					<Events>
-																						<Event name="OnChange">AvataxAccountNumberOnChange</Event>
-																					</Events>
-																				</InputField>
-																				<InputField name="AvataxLicenseKey" id="1254">
-																					<DataPath>ConstantsSet.AvataxLicenseKey</DataPath>
-																					<Title>
-																						<v8:item>
-																							<v8:lang>en</v8:lang>
-																							<v8:content>License key</v8:content>
-																						</v8:item>
-																					</Title>
-																					<HorizontalStretch>false</HorizontalStretch>
-																					<PasswordMode>true</PasswordMode>
-																					<ContextMenu name="AvataxLicenseKeyContextMenu" id="1255"/>
-																					<ExtendedTooltip name="AvataxLicenseKeyExtendedTooltip" id="1256"/>
-																					<Events>
-																						<Event name="OnChange">AvataxLicenseKeyOnChange</Event>
-																					</Events>
-																				</InputField>
-																			</ChildItems>
-																		</UsualGroup>
-																		<InputField name="AvataxServiceURL" id="1257">
-																			<DataPath>ConstantsSet.AvataxServiceURL</DataPath>
-																			<Title>
-																				<v8:item>
-																					<v8:lang>en</v8:lang>
-																					<v8:content>Service URL</v8:content>
-																				</v8:item>
-																			</Title>
-																			<Width>43</Width>
-																			<HorizontalStretch>false</HorizontalStretch>
-																			<ContextMenu name="AvataxServiceURLContextMenu" id="1258"/>
-																			<ExtendedTooltip name="AvataxServiceURLExtendedTooltip" id="1259"/>
-																		</InputField>
-																		<UsualGroup name="AvataxAdminConsoleGroup" id="1307">
-																			<Title>
-																				<v8:item>
-																					<v8:lang>en</v8:lang>
-																					<v8:content>Avatax admin console group</v8:content>
-																				</v8:item>
-																			</Title>
-																			<ToolTip>
-																				<v8:item>
-																					<v8:lang>en</v8:lang>
-																					<v8:content>Avatax admin console group</v8:content>
-																				</v8:item>
-																			</ToolTip>
-																			<Group>Horizontal</Group>
-																			<ShowTitle>false</ShowTitle>
-																			<ExtendedTooltip name="AvataxAdminConsoleGroupExtendedTooltip" id="1308"/>
-																			<ChildItems>
-																				<LabelDecoration name="AvataxAdminConsoleCaption" id="1309">
-																					<Title formatted="false">
-																						<v8:item>
-																							<v8:lang>en</v8:lang>
-																							<v8:content>Avatax Admin Console:</v8:content>
-																						</v8:item>
-																					</Title>
-																					<ContextMenu name="AvataxAdminConsoleCaptionContextMenu" id="1310"/>
-																					<ExtendedTooltip name="AvataxAdminConsoleCaptionExtendedTooltip" id="1311"/>
-																				</LabelDecoration>
-																				<LabelDecoration name="AvataxAdminConsole" id="1304">
-																					<Title formatted="false">
-																						<v8:item>
-																							<v8:lang>en</v8:lang>
-																							<v8:content>https://admin-avatax.avalara.net/login.aspx</v8:content>
-																						</v8:item>
-																					</Title>
-																					<Hyperlink>true</Hyperlink>
-																					<ContextMenu name="AvataxAdminConsoleContextMenu" id="1305"/>
-																					<ExtendedTooltip name="AvataxAdminConsoleExtendedTooltip" id="1306"/>
-																					<Events>
-																						<Event name="Click">AvataxAdminConsoleClick</Event>
-																					</Events>
-																				</LabelDecoration>
-																			</ChildItems>
-																		</UsualGroup>
-																	</ChildItems>
-																</UsualGroup>
-																<Button name="AvataxTestConnection" id="1300">
-																	<Type>UsualButton</Type>
-																	<Representation>PictureAndText</Representation>
-																	<CommandName>Form.Command.AvataxTestConnection</CommandName>
-																	<Font ref="style:NormalTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
-																	<Picture>
-																		<xr:Ref>CommonPicture.Avalara</xr:Ref>
-																		<xr:LoadTransparent>false</xr:LoadTransparent>
-																	</Picture>
-																	<ExtendedTooltip name="AvataxTestConnectionExtendedTooltip" id="1301"/>
-																</Button>
-															</ChildItems>
-														</UsualGroup>
-														<LabelDecoration name="AvataxGeneralOptionsDecoration" id="1278">
-															<HorizontalStretch>true</HorizontalStretch>
-															<Font ref="style:SmallTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
-															<Title formatted="false">
-																<v8:item>
-																	<v8:lang>en</v8:lang>
-																	<v8:content>General options</v8:content>
-																</v8:item>
-															</Title>
-															<Border width="1">
-																<v8ui:style xsi:type="v8ui:ControlBorderType">Underline</v8ui:style>
-															</Border>
-															<ContextMenu name="AvataxGeneralOptionsDecorationContextMenu" id="1279"/>
-															<ExtendedTooltip name="AvataxGeneralOptionsDecorationExtendedTooltip" id="1280"/>
-														</LabelDecoration>
-														<UsualGroup name="AvataxDisabling" id="1281">
-															<Title>
-																<v8:item>
-																	<v8:lang>en</v8:lang>
-																	<v8:content>Avatax disabling</v8:content>
-																</v8:item>
-															</Title>
-															<ToolTip>
-																<v8:item>
-																	<v8:lang>en</v8:lang>
-																	<v8:content>Avatax disabling</v8:content>
-																</v8:item>
-															</ToolTip>
-															<Group>Horizontal</Group>
-															<ShowTitle>false</ShowTitle>
-															<ExtendedTooltip name="AvataxDisablingExtendedTooltip" id="1282"/>
-															<ChildItems>
-																<UsualGroup name="AvataxCompanyCodeAddressValidation" id="1332">
-																	<ToolTip>
-																		<v8:item>
-																			<v8:lang>en</v8:lang>
-																			<v8:content>Avatax company code address validation</v8:content>
-																		</v8:item>
-																	</ToolTip>
-																	<Group>Vertical</Group>
-																	<ShowTitle>false</ShowTitle>
-																	<ExtendedTooltip name="AvataxCompanyCodeAddressValidationExtendedTooltip" id="1333"/>
-																	<ChildItems>
-																		<InputField name="AvataxCompanyCode" id="1260">
-																			<DataPath>ConstantsSet.AvataxCompanyCode</DataPath>
-																			<Title>
-																				<v8:item>
-																					<v8:lang>en</v8:lang>
-																					<v8:content>Company code</v8:content>
-																				</v8:item>
-																			</Title>
-																			<Width>25</Width>
-																			<HorizontalStretch>false</HorizontalStretch>
-																			<ContextMenu name="AvataxCompanyCodeContextMenu" id="1261"/>
-																			<ExtendedTooltip name="AvataxCompanyCodeExtendedTooltip" id="1262"/>
-																		</InputField>
-																		<LabelDecoration name="AddressValidationFiltration" id="1334">
-																			<Width>36</Width>
-																			<TextColor>style:ColorInformationLabel</TextColor>
-																			<Title formatted="true">
-																				<v8:item>
-																					<v8:lang>en</v8:lang>
-																					<v8:content>Address validation is performed for countries: &lt;b&gt;USA, Canada&lt;/&gt;</v8:content>
-																				</v8:item>
-																			</Title>
-																			<ContextMenu name="AddressValidationFiltrationContextMenu" id="1335"/>
-																			<ExtendedTooltip name="AddressValidationFiltrationExtendedTooltip" id="1336"/>
-																		</LabelDecoration>
-																	</ChildItems>
-																</UsualGroup>
-																<UsualGroup name="AvataxDisablingTaxCalculation" id="1283">
-																	<Title>
-																		<v8:item>
-																			<v8:lang>en</v8:lang>
-																			<v8:content>Avatax disabling tax calculation</v8:content>
-																		</v8:item>
-																	</Title>
-																	<ToolTip>
-																		<v8:item>
-																			<v8:lang>en</v8:lang>
-																			<v8:content>Avatax disabling tax calculation</v8:content>
-																		</v8:item>
-																	</ToolTip>
-																	<Group>Vertical</Group>
-																	<ShowTitle>false</ShowTitle>
-																	<ExtendedTooltip name="AvataxDisablingTaxCalculationExtendedTooltip" id="1284"/>
-																	<ChildItems>
-																		<CheckBoxField name="AvataxDisableTaxCalculation" id="1263">
-																			<DataPath>ConstantsSet.AvataxDisableTaxCalculation</DataPath>
-																			<Title>
-																				<v8:item>
-																					<v8:lang>en</v8:lang>
-																					<v8:content>Disable tax calculation</v8:content>
-																				</v8:item>
-																			</Title>
-																			<CheckBoxType>Auto</CheckBoxType>
-																			<ContextMenu name="AvataxDisableTaxCalculationContextMenu" id="1264"/>
-																			<ExtendedTooltip name="AvataxDisableTaxCalculationExtendedTooltip" id="1265"/>
-																		</CheckBoxField>
-																		<CheckBoxField name="AvataxDisableAddressValidation" id="1266">
-																			<DataPath>ConstantsSet.AvataxDisableAddressValidation</DataPath>
-																			<Title>
-																				<v8:item>
-																					<v8:lang>en</v8:lang>
-																					<v8:content>Disable address validation</v8:content>
-																				</v8:item>
-																			</Title>
-																			<CheckBoxType>Auto</CheckBoxType>
-																			<ContextMenu name="AvataxDisableAddressValidationContextMenu" id="1267"/>
-																			<ExtendedTooltip name="AvataxDisableAddressValidationExtendedTooltip" id="1268"/>
-																		</CheckBoxField>
-																	</ChildItems>
-																</UsualGroup>
-															</ChildItems>
-														</UsualGroup>
-														<LabelDecoration name="AvataxDefaultsDecoration" id="1285">
-															<HorizontalStretch>true</HorizontalStretch>
-															<Font ref="style:SmallTextFont" bold="true" italic="false" underline="false" strikeout="false" kind="StyleItem"/>
-															<Title formatted="false">
-																<v8:item>
-																	<v8:lang>en</v8:lang>
-																	<v8:content>Defaults</v8:content>
-																</v8:item>
-															</Title>
-															<Border width="1">
-																<v8ui:style xsi:type="v8ui:ControlBorderType">Underline</v8ui:style>
-															</Border>
-															<ContextMenu name="AvataxDefaultsDecorationContextMenu" id="1286"/>
-															<ExtendedTooltip name="AvataxDefaultsDecorationExtendedTooltip" id="1287"/>
-														</LabelDecoration>
-														<InputField name="AvataxDefaultShippingTaxCode" id="1269">
-															<DataPath>ConstantsSet.AvataxDefaultShippingTaxCode</DataPath>
-															<Title>
-																<v8:item>
-																	<v8:lang>en</v8:lang>
-																	<v8:content>Shipping tax code</v8:content>
-																</v8:item>
-															</Title>
-															<ContextMenu name="AvataxDefaultShippingTaxCodeContextMenu" id="1270"/>
-															<ExtendedTooltip name="AvataxDefaultShippingTaxCodeExtendedTooltip" id="1271"/>
-														</InputField>
-														<InputField name="AvataxDefaultMiscellaneousTaxCode" id="1272">
-															<DataPath>ConstantsSet.AvataxDefaultMiscellaneousTaxCode</DataPath>
-															<Title>
-																<v8:item>
-																	<v8:lang>en</v8:lang>
-																	<v8:content>Miscellaneous tax code</v8:content>
-																</v8:item>
-															</Title>
-															<ContextMenu name="AvataxDefaultMiscellaneousTaxCodeContextMenu" id="1273"/>
-															<ExtendedTooltip name="AvataxDefaultMiscellaneousTaxCodeExtendedTooltip" id="1274"/>
-														</InputField>
-													</ChildItems>
-												</UsualGroup>
-											</ChildItems>
-										</Page>
-									</ChildItems>
-								</Pages>
+								</InputField>
+								<CheckBoxField name="SalesTaxMarkNewCustomersTaxable" id="938">
+									<DataPath>ConstantsSet.SalesTaxMarkNewCustomersTaxable</DataPath>
+									<Visible>false</Visible>
+									<CheckBoxType>Auto</CheckBoxType>
+									<ContextMenu name="SalesTaxMarkNewCustomersTaxableContextMenu" id="939"/>
+									<ExtendedTooltip name="SalesTaxMarkNewCustomersTaxableExtendedTooltip" id="940"/>
+								</CheckBoxField>
+								<CheckBoxField name="SalesTaxMarkNewProductsTaxable" id="941">
+									<DataPath>ConstantsSet.SalesTaxMarkNewProductsTaxable</DataPath>
+									<CheckBoxType>Auto</CheckBoxType>
+									<ContextMenu name="SalesTaxMarkNewProductsTaxableContextMenu" id="942"/>
+									<ExtendedTooltip name="SalesTaxMarkNewProductsTaxableExtendedTooltip" id="943"/>
+								</CheckBoxField>
 							</ChildItems>
 						</UsualGroup>
 					</ChildItems>
@@ -2414,6 +1833,7 @@
 					</ChildItems>
 				</Page>
 				<Page name="AddressCustomFields" id="1217">
+					<Visible>false</Visible>
 					<Title>
 						<v8:item>
 							<v8:lang>en</v8:lang>
@@ -3178,61 +2598,6 @@
 					</ToolTip>
 					<HorizontalStretch>false</HorizontalStretch>
 					<ExtendedTooltip name="IntegrationsExtendedTooltip" id="424"/>
-					<ChildItems>
-						<UsualGroup name="Zoho" id="526">
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Zoho (CRM)</v8:content>
-								</v8:item>
-							</Title>
-							<ToolTip>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Zoho</v8:content>
-								</v8:item>
-							</ToolTip>
-							<Group>Vertical</Group>
-							<ExtendedTooltip name="ZohoExtendedTooltip" id="527"/>
-							<ChildItems>
-								<InputField name="zoho_auth_token" id="528">
-									<DataPath>ConstantsSet.zoho_auth_token</DataPath>
-									<Title>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Auth token</v8:content>
-										</v8:item>
-									</Title>
-									<HorizontalStretch>false</HorizontalStretch>
-									<ContextMenu name="zoho_auth_tokenContextMenu" id="529"/>
-									<ExtendedTooltip name="zoho_auth_tokenExtendedTooltip" id="530"/>
-								</InputField>
-							</ChildItems>
-						</UsualGroup>
-						<UsualGroup name="Coinbase" id="670">
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Coinbase (bitcoin payments)</v8:content>
-								</v8:item>
-							</Title>
-							<ToolTip>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Coinbase</v8:content>
-								</v8:item>
-							</ToolTip>
-							<Group>Vertical</Group>
-							<ExtendedTooltip name="CoinbaseExtendedTooltip" id="671"/>
-							<ChildItems>
-								<InputField name="coinbase_api_key" id="672">
-									<DataPath>ConstantsSet.coinbase_api_key</DataPath>
-									<ContextMenu name="coinbase_api_keyContextMenu" id="673"/>
-									<ExtendedTooltip name="coinbase_api_keyExtendedTooltip" id="674"/>
-								</InputField>
-							</ChildItems>
-						</UsualGroup>
-					</ChildItems>
 				</Page>
 				<Page name="Development" id="464">
 					<Title>
@@ -3248,148 +2613,6 @@
 						</v8:item>
 					</ToolTip>
 					<ExtendedTooltip name="DevelopmentExtendedTooltip" id="465"/>
-					<ChildItems>
-						<InputField name="APISecretKey" id="281">
-							<DataPath>ConstantsSet.APISecretKey</DataPath>
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>apisecretkey</v8:content>
-								</v8:item>
-							</Title>
-							<Width>20</Width>
-							<HorizontalStretch>false</HorizontalStretch>
-							<ContextMenu name="APISecretKeyContextMenu" id="282"/>
-							<ExtendedTooltip name="APISecretKeyExtendedTooltip" id="318"/>
-						</InputField>
-						<CheckBoxField name="display_api_codes" id="702">
-							<DataPath>ConstantsSet.display_api_codes</DataPath>
-							<CheckBoxType>Auto</CheckBoxType>
-							<ContextMenu name="display_api_codesContextMenu" id="703"/>
-							<ExtendedTooltip name="display_api_codesExtendedTooltip" id="704"/>
-						</CheckBoxField>
-						<UsualGroup name="Webhooks" id="478">
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Webhooks
- </v8:content>
-								</v8:item>
-							</Title>
-							<ToolTip>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Webhooks</v8:content>
-								</v8:item>
-							</ToolTip>
-							<Group>Vertical</Group>
-							<ExtendedTooltip name="WebhooksExtendedTooltip" id="479"/>
-							<ChildItems>
-								<InputField name="companies_webhook" id="466">
-									<DataPath>ConstantsSet.companies_webhook</DataPath>
-									<Title>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Companies</v8:content>
-										</v8:item>
-									</Title>
-									<ContextMenu name="companies_webhookContextMenu" id="467"/>
-									<ExtendedTooltip name="companies_webhookExtendedTooltip" id="468"/>
-								</InputField>
-								<InputField name="items_webhook" id="469">
-									<DataPath>ConstantsSet.items_webhook</DataPath>
-									<Title>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Items</v8:content>
-										</v8:item>
-									</Title>
-									<ContextMenu name="items_webhookContextMenu" id="470"/>
-									<ExtendedTooltip name="items_webhookExtendedTooltip" id="471"/>
-								</InputField>
-								<InputField name="sales_orders_webhook" id="647">
-									<DataPath>ConstantsSet.sales_orders_webhook</DataPath>
-									<Title>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>SO</v8:content>
-										</v8:item>
-									</Title>
-									<ContextMenu name="sales_orders_webhookContextMenu" id="648"/>
-									<ExtendedTooltip name="sales_orders_webhookExtendedTooltip" id="649"/>
-								</InputField>
-								<InputField name="sales_invoices_webhook" id="475">
-									<DataPath>ConstantsSet.sales_invoices_webhook</DataPath>
-									<Title>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Sales invoice</v8:content>
-										</v8:item>
-									</Title>
-									<ContextMenu name="sales_invoices_webhookContextMenu" id="476"/>
-									<ExtendedTooltip name="sales_invoices_webhookExtendedTooltip" id="477"/>
-								</InputField>
-								<InputField name="cash_sales_webhook" id="472">
-									<DataPath>ConstantsSet.cash_sales_webhook</DataPath>
-									<Title>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Cash sales</v8:content>
-										</v8:item>
-									</Title>
-									<ContextMenu name="cash_sales_webhookContextMenu" id="473"/>
-									<ExtendedTooltip name="cash_sales_webhookExtendedTooltip" id="474"/>
-								</InputField>
-								<InputField name="cash_receipts_webhook" id="981">
-									<DataPath>ConstantsSet.cash_receipts_webhook</DataPath>
-									<Title>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Cash receipts</v8:content>
-										</v8:item>
-									</Title>
-									<ContextMenu name="cash_receipts_webhookContextMenu" id="982"/>
-									<ExtendedTooltip name="cash_receipts_webhookExtendedTooltip" id="983"/>
-								</InputField>
-							</ChildItems>
-						</UsualGroup>
-						<InputField name="SubStatus" id="523">
-							<DataPath>ConstantsSet.SubStatus</DataPath>
-							<Visible>false</Visible>
-							<ContextMenu name="SubStatusContextMenu" id="524"/>
-							<ExtendedTooltip name="SubStatusExtendedTooltip" id="525"/>
-						</InputField>
-						<UsualGroup name="Group14" id="901">
-							<Group>Vertical</Group>
-							<Representation>None</Representation>
-							<ShowTitle>false</ShowTitle>
-							<ExtendedTooltip name="Group14ExtendedTooltip" id="902"/>
-							<ChildItems>
-								<Button name="ApiLogLink" id="903">
-									<Type>Hyperlink</Type>
-									<CommandName>Form.Command.ApiLogConnect</CommandName>
-									<Title>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>API Log</v8:content>
-										</v8:item>
-									</Title>
-									<ExtendedTooltip name="ApiLogLinkExtendedTooltip" id="904"/>
-								</Button>
-								<Button name="Documentation" id="905">
-									<Type>Hyperlink</Type>
-									<CommandName>Form.Command.DocConnect</CommandName>
-									<Title>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Documentation</v8:content>
-										</v8:item>
-									</Title>
-									<ExtendedTooltip name="DocumentationExtendedTooltip" id="906"/>
-								</Button>
-							</ChildItems>
-						</UsualGroup>
-					</ChildItems>
 				</Page>
 				<Page name="SetupPrintForms" id="1158">
 					<Title>
@@ -3505,8 +2728,49 @@
 						</Button>
 					</ChildItems>
 				</Page>
+				<Page name="BetaPreview" id="1505">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Beta preview</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Beta preview</v8:content>
+						</v8:item>
+					</ToolTip>
+					<ExtendedTooltip name="BetaPreviewExtendedTooltip" id="1506"/>
+					<ChildItems>
+						<CheckBoxField name="UseExtendedDiscountsInPayments" id="1510">
+							<DataPath>ConstantsSet.UseExtendedDiscountsInPayments</DataPath>
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Discounts in Cash Receipt and Bill Payment</v8:content>
+								</v8:item>
+							</Title>
+							<CheckBoxType>Auto</CheckBoxType>
+							<ContextMenu name="UseExtendedDiscountsInPaymentsContextMenu" id="1511"/>
+							<ExtendedTooltip name="UseExtendedDiscountsInPaymentsExtendedTooltip" id="1512"/>
+						</CheckBoxField>
+					</ChildItems>
+				</Page>
 			</ChildItems>
 		</Pages>
+		<CheckBoxField name="PopUpSettingsPage" id="1480">
+			<DataPath>ConstantsSet.PopUpSettingsPage</DataPath>
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Open on startup</v8:content>
+				</v8:item>
+			</Title>
+			<CheckBoxType>Auto</CheckBoxType>
+			<ContextMenu name="PopUpSettingsPageContextMenu" id="1481"/>
+			<ExtendedTooltip name="PopUpSettingsPageExtendedTooltip" id="1482"/>
+		</CheckBoxField>
 	</ChildItems>
 	<Attributes>
 		<Attribute name="ConstantsSet" id="1">
@@ -3542,8 +2806,7 @@
 				<Field>ConstantsSet.CMFoot3Type.Ref</Field>
 				<Field>ConstantsSet.CMFoot2Type.Ref</Field>
 				<Field>ConstantsSet.CMFoot1Type.Ref</Field>
-				<Field>ConstantsSet.AvataxEnabled</Field>
-				<Field>ConstantsSet.AvataxAuthorizationString</Field>
+				<Field>ConstantsSet.AccountingMethod.Ref</Field>
 			</UseAlways>
 		</Attribute>
 		<Attribute name="ImageAddress" id="2">
@@ -3603,21 +2866,6 @@
 				</v8:NumberQualifiers>
 			</Type>
 			<SavedData>true</SavedData>
-		</Attribute>
-		<Attribute name="old_key" id="8">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Old key</v8:content>
-				</v8:item>
-			</Title>
-			<Type>
-				<v8:Type>xs:string</v8:Type>
-				<v8:StringQualifiers>
-					<v8:Length>0</v8:Length>
-					<v8:AllowedLength>Variable</v8:AllowedLength>
-				</v8:StringQualifiers>
-			</Type>
 		</Attribute>
 		<Attribute name="ClosingDateByModule" id="5">
 			<Title>
@@ -3693,69 +2941,6 @@
 				</Column>
 			</Columns>
 		</Attribute>
-		<Attribute name="SalesTaxEngine" id="6">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Sales tax engine</v8:content>
-				</v8:item>
-			</Title>
-			<Type>
-				<v8:Type>xs:decimal</v8:Type>
-				<v8:NumberQualifiers>
-					<v8:Digits>10</v8:Digits>
-					<v8:FractionDigits>0</v8:FractionDigits>
-					<v8:AllowedSign>Any</v8:AllowedSign>
-				</v8:NumberQualifiers>
-			</Type>
-			<SavedData>true</SavedData>
-		</Attribute>
-		<Attribute name="StripeConnectionTimer" id="7">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Stripe connection timer</v8:content>
-				</v8:item>
-			</Title>
-			<Type>
-				<v8:Type>xs:decimal</v8:Type>
-				<v8:NumberQualifiers>
-					<v8:Digits>10</v8:Digits>
-					<v8:FractionDigits>0</v8:FractionDigits>
-					<v8:AllowedSign>Any</v8:AllowedSign>
-				</v8:NumberQualifiers>
-			</Type>
-		</Attribute>
-		<Attribute name="OldCompanyName" id="9">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Old company name</v8:content>
-				</v8:item>
-			</Title>
-			<Type>
-				<v8:Type>xs:string</v8:Type>
-				<v8:StringQualifiers>
-					<v8:Length>200</v8:Length>
-					<v8:AllowedLength>Variable</v8:AllowedLength>
-				</v8:StringQualifiers>
-			</Type>
-		</Attribute>
-		<Attribute name="OldZohoAuthToken" id="10">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Old zoho auth token</v8:content>
-				</v8:item>
-			</Title>
-			<Type>
-				<v8:Type>xs:string</v8:Type>
-				<v8:StringQualifiers>
-					<v8:Length>0</v8:Length>
-					<v8:AllowedLength>Variable</v8:AllowedLength>
-				</v8:StringQualifiers>
-			</Type>
-		</Attribute>
 	</Attributes>
 	<Commands>
 		<Command name="UploadLogo" id="1">
@@ -3772,51 +2957,6 @@
 				</v8:item>
 			</ToolTip>
 			<Action>UploadLogo</Action>
-		</Command>
-		<Command name="VerifyEmail" id="3">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Verify e-mail</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>This email is required for email invoicing. Click "Verify e-mail"  to receive a verification link from Amazon SES, and confirm it, so we can send e-mails on your behalf</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Action>VerifyEmail</Action>
-		</Command>
-		<Command name="ApiLogConnect" id="11">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Api log connect</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Api log connect</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Action>ApiLogConnect</Action>
-		</Command>
-		<Command name="DocConnect" id="12">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Doc connect</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Doc connect</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Action>DocConnect</Action>
 		</Command>
 		<Command name="AddressesContacts" id="13">
 			<Title>
@@ -3947,21 +3087,6 @@
 			</ToolTip>
 			<Action>ItemCategories</Action>
 		</Command>
-		<Command name="ActiveUserList" id="24">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Active user list</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Active user list</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Action>ActiveUserList</Action>
-		</Command>
 		<Command name="SalesPeople" id="25">
 			<Title>
 				<v8:item>
@@ -3991,21 +3116,6 @@
 				</v8:item>
 			</ToolTip>
 			<Action>PriceLevels</Action>
-		</Command>
-		<Command name="ExpensifyCategories" id="27">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Expensify categories</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Expensify categories</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Action>ExpensifyCategories</Action>
 		</Command>
 		<Command name="PaymentMethods" id="28">
 			<Title>
@@ -4121,21 +3231,6 @@
 			</ToolTip>
 			<Action>OpenCreditMemo</Action>
 		</Command>
-		<Command name="zoho_productmapping" id="9">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Zoho productmapping</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Zoho productmapping</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Action>zoho_productmapping</Action>
-		</Command>
 		<Command name="OpenCashSale" id="10">
 			<Title>
 				<v8:item>
@@ -4171,96 +3266,6 @@
 			<Action>FillClosingDate</Action>
 			<Representation>TextPicture</Representation>
 		</Command>
-		<Command name="AvataxTestConnection" id="19">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Test connection</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Avatax test connection</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Action>AvataxTestConnection</Action>
-		</Command>
-		<Command name="zoho_pricebookmapping" id="29">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Zoho pricebookmapping</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Zoho pricebookmapping</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Action>zoho_pricebookmapping</Action>
-		</Command>
-		<Command name="zoho_accountmapping" id="35">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Zoho accountmapping</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Zoho accountmapping</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Action>zoho_accountmapping</Action>
-		</Command>
-		<Command name="zoho_contactmapping" id="37">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Zoho contactmapping</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Zoho contactmapping</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Action>zoho_contactmapping</Action>
-		</Command>
-		<Command name="zoho_quotemapping" id="38">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Zoho quotemapping</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Zoho quotemapping</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Action>zoho_quotemapping</Action>
-		</Command>
-		<Command name="zoho_salesordermapping" id="39">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Zoho salesordermapping</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Zoho salesordermapping</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Action>zoho_salesordermapping</Action>
-		</Command>
 		<Command name="OpenHeadersAndFooters" id="40">
 			<Title>
 				<v8:item>
@@ -4275,36 +3280,6 @@
 				</v8:item>
 			</ToolTip>
 			<Action>OpenHeadersAndFooters</Action>
-		</Command>
-		<Command name="zoho_invoicemapping" id="41">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Zoho invoicemapping</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Zoho invoicemapping</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Action>zoho_invoicemapping</Action>
-		</Command>
-		<Command name="UpdateCardInfo" id="42">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Update card info</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Update card info</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Action>UpdateCardInfo</Action>
 		</Command>
 		<Command name="OpenShipment" id="44">
 			<Title>
@@ -4351,21 +3326,6 @@
 			</ToolTip>
 			<Action>SetStandardUIMode</Action>
 		</Command>
-		<Command name="DataImport" id="43">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Data import</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Data import</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Action>DataImport</Action>
-		</Command>
 		<Command name="DataImportv2" id="45">
 			<Title>
 				<v8:item>
@@ -4411,51 +3371,6 @@
 			</ToolTip>
 			<Action>Renumbering</Action>
 		</Command>
-		<Command name="Register" id="51">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Register</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Register</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Action>Register</Action>
-		</Command>
-		<Command name="BalanceSheetNew" id="52">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Balance sheet new</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Balance sheet new</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Action>BalanceSheetNew</Action>
-		</Command>
-		<Command name="SearchAndReplace" id="53">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Search and replace</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Search and replace</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Action>SearchAndReplace</Action>
-		</Command>
 		<Command name="OpenStatement" id="54">
 			<Title>
 				<v8:item>
@@ -4470,6 +3385,39 @@
 				</v8:item>
 			</ToolTip>
 			<Action>OpenStatement</Action>
+		</Command>
+		<Command name="CommonFileStorage" id="57">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>File storage</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Common file storage</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>CommonFileStorage</Action>
+			<FunctionalOptions>
+				<Item>FunctionalOption.FileStorageProcessing</Item>
+			</FunctionalOptions>
+		</Command>
+		<Command name="ItemActivityReport" id="59">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Item activity report</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Item activity report</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>ItemActivityReport</Action>
 		</Command>
 	</Commands>
 </Form>

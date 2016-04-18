@@ -40,9 +40,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Items.CombinedOrSingle.Visible 	= False;
 		Items.Agency.ReadOnly 			= True;
 		Items.Rate.ChoiceButton 		= False;
-		If ValueIsFilled(Object.Parent) Then
-			Items.Rate.ReadOnly = True;
-		EndIf;
+		Items.Rate.ReadOnly = True;
 		If Not Object.CombinedTaxRate Then //Single tax rate
 			Items.Description.ReadOnly = True;
 		EndIf;
@@ -52,7 +50,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
 	SetVisibilityAtServer();
 	ApplyConditionalAppearance();
-	TotalCombinedRate = Format(Object.Rate, "ND=4; NFD=2; NZ=") + "%";
+	TotalCombinedRate = Format(Object.Rate, "NZ=") + "%";
 EndProcedure
 
 &AtServer
@@ -249,13 +247,17 @@ EndProcedure
 
 &AtClient
 Procedure CombinedRatesOnChange(Item)
-	Item.CurrentData.WasModified = True;
+	
+	If Item.CurrentData <> Undefined Then
+		Item.CurrentData.WasModified = True;
+	EndIf;
+	
 EndProcedure
 
 &AtClient
 Procedure CombinedRatesRateOnChange(Item)
 	Object.Rate = CombinedRates.Total("Rate");
-	TotalCombinedRate = Format(Object.Rate, "ND=4; NFD=2; NZ=") + "%";
+	TotalCombinedRate = Format(Object.Rate, "NZ=") + "%";
 EndProcedure
 
 &AtClient
@@ -275,7 +277,7 @@ Procedure CombinedRatesDescriptionOnChange(Item)
 	If Details <> Undefined Then
 		FillPropertyValues(Items.CombinedRates.CurrentData, Details);
 		Object.Rate = CombinedRates.Total("Rate");
-		TotalCombinedRate = Format(Object.Rate, "ND=4; NFD=2; NZ=") + "%";
+		TotalCombinedRate = Format(Object.Rate, "NZ=") + "%";
 	Else
 		Items.CombinedRates.CurrentData.SalesTaxComponentRef = PredefinedValue("Catalog.SalesTaxComponents.EmptyRef");
 	EndIf;
@@ -401,7 +403,7 @@ Procedure DeleteComponentOfTax(Answer, Parameters) Export
 		EndDo;
 		Object.Rate = CombinedRates.Total("Rate");
 		ThisForm.Write();
-		TotalCombinedRate = Format(Object.Rate, "ND=4; NFD=2; NZ=") + "%";
+		TotalCombinedRate = Format(Object.Rate, "NZ=") + "%";
 		NotifyChanged(Object.Ref);
 		NotifyChanged(Parameters.SalesTaxRateToDelete);
 	Except

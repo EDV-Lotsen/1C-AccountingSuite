@@ -274,6 +274,28 @@ Reference number</v8:content>
 					<ContextMenu name="DocumentTotalRCContextMenu" id="13"/>
 					<ExtendedTooltip name="DocumentTotalRCExtendedTooltip" id="28"/>
 				</LabelField>
+				<LabelField name="Amount" id="63">
+					<DataPath>List.Amount</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Prepayment balance FCY</v8:content>
+						</v8:item>
+					</Title>
+					<ContextMenu name="AmountContextMenu" id="64"/>
+					<ExtendedTooltip name="AmountExtendedTooltip" id="65"/>
+				</LabelField>
+				<LabelField name="AmountRC" id="66">
+					<DataPath>List.AmountRC</DataPath>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Prepayment balance</v8:content>
+						</v8:item>
+					</Title>
+					<ContextMenu name="AmountRCContextMenu" id="67"/>
+					<ExtendedTooltip name="AmountRCExtendedTooltip" id="68"/>
+				</LabelField>
 				<LabelField name="AmountBalance" id="35">
 					<DataPath>List.AmountBalance</DataPath>
 					<Title>
@@ -290,12 +312,6 @@ Reference number</v8:content>
 					<ContextMenu name="EmailDateContextMenu" id="43"/>
 					<ExtendedTooltip name="EmailDateExtendedTooltip" id="44"/>
 				</LabelField>
-				<CheckBoxField name="Zoho" id="45">
-					<DataPath>List.Zoho</DataPath>
-					<CheckBoxType>Auto</CheckBoxType>
-					<ContextMenu name="ZohoContextMenu" id="46"/>
-					<ExtendedTooltip name="ZohoExtendedTooltip" id="47"/>
-				</CheckBoxField>
 			</ChildItems>
 		</Table>
 	</ChildItems>
@@ -350,12 +366,11 @@ Reference number</v8:content>
 		ELSE OrdersStatuses.Status
 	END AS OrderStatus,
 	OrderTransactionsBalance.AmountBalance,
+	//------------------------------------------------------
+	// Order payment status
+	-GeneralJournalBalance.AmountRC         AS AmountRC,
+	-GeneralJournalBalance.Amount           AS Amount,
 	LastEmails.Date AS EmailDate,
-	CASE
-		WHEN zoho_SOCodeMap.zoho_id &lt;&gt; ""
-			THEN TRUE
-		ELSE FALSE
-	END AS Zoho,
 	CASE
 		WHEN DocumentSalesOrder.Posted = FALSE
 				OR DocumentSalesOrder.DeletionMark = TRUE
@@ -402,14 +417,25 @@ Reference number</v8:content>
 	END AS Invoiced
 FROM
 	Document.SalesOrder AS DocumentSalesOrder
-		LEFT JOIN Catalog.zoho_SOCodeMap AS zoho_SOCodeMap
-		ON (zoho_SOCodeMap.salesorder_ref = DocumentSalesOrder.Ref)
-		LEFT JOIN InformationRegister.OrdersStatuses.SliceLast AS OrdersStatuses
+	LEFT JOIN InformationRegister.OrdersStatuses.SliceLast AS OrdersStatuses
 		ON DocumentSalesOrder.Ref = OrdersStatuses.Order
-		LEFT JOIN AccumulationRegister.OrderTransactions.Balance AS OrderTransactionsBalance
+	LEFT JOIN AccumulationRegister.OrderTransactions.Balance AS OrderTransactionsBalance
 		ON (OrderTransactionsBalance.Order = DocumentSalesOrder.Ref)
-		LEFT JOIN InformationRegister.DocumentLastEmail AS LastEmails
+	LEFT JOIN InformationRegister.DocumentLastEmail AS LastEmails
 		ON (LastEmails.Document = DocumentSalesOrder.Ref)
+	LEFT JOIN (// Prepayment balance (based on CashReceipt documents)
+		SELECT
+			CAST(GeneralJournalBalance.ExtDimension1 AS Catalog.Companies).Ref           AS Company,
+			CAST(GeneralJournalBalance.ExtDimension2 AS Document.CashReceipt).SalesOrder AS Order,
+			SUM(GeneralJournalBalance.AmountRCBalance) AS AmountRC,
+			SUM(GeneralJournalBalance.AmountBalance) AS Amount
+		FROM
+			AccountingRegister.GeneralJournal.Balance(,,, ExtDimension1 REFS Catalog.Companies AND ExtDimension2 REFS Document.CashReceipt) AS GeneralJournalBalance
+		GROUP BY
+			CAST(GeneralJournalBalance.ExtDimension1 AS Catalog.Companies).Ref,
+			CAST(GeneralJournalBalance.ExtDimension2 AS Document.CashReceipt).SalesOrder) AS GeneralJournalBalance
+		ON  GeneralJournalBalance.Company = DocumentSalesOrder.Company
+		AND GeneralJournalBalance.Order   = DocumentSalesOrder.Ref
 		LEFT JOIN (SELECT
 			OrdersRegistered.Order AS Order,
 			MIN(OrdersRegistered.DeliveryDate) AS DeliveryDate,

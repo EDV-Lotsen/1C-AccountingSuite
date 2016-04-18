@@ -249,7 +249,6 @@ SheetTitle = "Purchase order";
 	TemplateArea.Parameters.VendorString = Upper(Constants.VendorName.Get()) + ":";
 		
 	If Constants.POShowFullName.Get() = True Then
-		//If SessionParameters.TenantValue = "1100674" Or Constants.SIShowFullName.Get() = True Then
 		If Selection.DropshipShipTo <> Catalogs.Addresses.EmptyRef() Then
 			TemplateArea.Parameters.ThemFullName = ThemShip.ThemShipSalutation + " " + ThemShip.ThemShipFirstName + " " + ThemShip.ThemShipLastName;
 		Else
@@ -266,6 +265,7 @@ SheetTitle = "Purchase order";
 
 	TemplateArea.Parameters.Date = Selection.Date;
 	TemplateArea.Parameters.Number = Selection.Number;
+	TemplateArea.Parameters.DeliveryDate = Selection.DeliveryDate;
 	Try
 	 	TemplateArea.Parameters.Terms = Selection.Terms;
 		TemplateArea.Parameters.DueDate = Selection.DueDate;
@@ -627,16 +627,16 @@ SheetTitle = "Purchase order";
 			TemplateArea.Parameters.FooterTextRight = Constants.POFooterTextRight.Get();
 			Spreadsheet.Join(TemplateArea);
 	EndIf;
-		
-	Spreadsheet.PutHorizontalPageBreak(); //.ВывестиГоризонтальныйРазделительСтраниц();
+	
+	Spreadsheet.PutHorizontalPageBreak();
 	Spreadsheet.FitToPage  = True;
 	
 	// Remove footer information if only a page.
 	If Spreadsheet.PageCount() = 1 Then
 		Spreadsheet.Footer.Enabled = False;
 	EndIf;
-
-   EndDo;	
+	
+	EndDo;
 	
 EndProcedure
 

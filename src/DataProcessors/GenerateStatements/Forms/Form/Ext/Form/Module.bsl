@@ -32,7 +32,7 @@ Procedure ShowListAtServer()
 	             |	TRUE AS Choice,
 	             |	Companies.Ref AS Company,
 	             |	ISNULL(GeneralJournalBalance.AmountBalance, 0) AS AmountBalance,
-	             |	GeneralJournalBalance.Currency AS Currency,
+	             |	ISNULL(GeneralJournalBalance.Currency, Companies.DefaultCurrency) AS Currency,
 	             |	Addresses.Ref AS Address
 	             |FROM
 	             |	Catalog.Companies AS Companies

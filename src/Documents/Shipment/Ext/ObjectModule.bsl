@@ -43,18 +43,21 @@ Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 				
 	EndIf;
 	
-	//AvaTaxServer.AvataxDocumentBeforeWrite(ThisObject, Cancel);	
-	
 EndProcedure
 
 Procedure FillCheckProcessing(Cancel, CheckedAttributes)
 	
+	// Check positive discounts.
 	If Discount > 0 Then
-		Message = New UserMessage();
-		Message.Text=NStr("en='A discount should be a negative number'");
-		Message.Message();
-		Cancel = True;
-		Return;
+		MessageText = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = 'Specified discount: %1. A discount should be negative number.'"), Format(Discount, "NFD=2; NZ="));
+		CommonUseClientServer.MessageToUser(MessageText, Ref,,, Cancel);
+	EndIf;
+	
+	// Check sales tax rate filling
+	If GeneralFunctionsReusable.FunctionalOptionValue("SalesTaxCharging") And Not UseAvatax Then
+		If Not ValueIsFilled(SalesTaxRate) Then
+			CommonUseClientServer.MessageToUser(NStr("en = 'Field ""Sales tax rate"" is empty'"), Ref, "SalesTaxRate",, Cancel);
+		EndIf;
 	EndIf;
 	
 	// Check proper filling of lots.
@@ -64,9 +67,7 @@ Procedure FillCheckProcessing(Cancel, CheckedAttributes)
 	LotsSerialNumbers.CheckSerialNumbersFilling(Ref, PointInTime(), LineItems, SerialNumbers, 1, "", Cancel);
 	
 	// Check doubles in items (to be sure of proper orders placement).
-	//If Not SessionParameters.TenantValue = "1101092" Then // Locked for the tenant "1101092"
-		GeneralFunctions.CheckDoubleItems(Ref, LineItems, "Product, Unit, Order, Location, DeliveryDate, Project, Class, LineNumber",, Cancel);
-	//EndIf;
+	GeneralFunctions.CheckDoubleItems(Ref, LineItems, "Product, Unit, Order, Location, DeliveryDate, Project, Class, LineNumber",, Cancel);
 	
 	// Check proper closing of order items by the shipment items.
 	If Not Cancel Then
@@ -223,13 +224,6 @@ Procedure UndoPosting(Cancel)
 	
 	// 7. Clear used temporary document data.
 	DocumentPosting.ClearDataStructuresAfterPosting(AdditionalProperties);
-	
-EndProcedure
-
-Procedure BeforeDelete(Cancel)
-	
-	//Avatax. Delete the document at Avatax prior to actual deletion
-	//AvaTaxServer.AvataxDocumentBeforeDelete(ThisObject, Cancel, "SalesInvoice");
 	
 EndProcedure
 

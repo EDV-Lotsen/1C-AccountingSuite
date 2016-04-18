@@ -8,17 +8,9 @@
 
 #If Server Or ThickClientOrdinaryApplication Or ExternalConnection Then
 
-Procedure BeforeDelete(Cancel)
-	
-	//Avatax. Delete the document at Avatax prior to actual deletion
-	AvaTaxServer.AvataxDocumentBeforeDelete(ThisObject, Cancel, "SalesInvoice");
-	
-EndProcedure
-
 Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 	
 	// -> CODE REVIEW
-	// For webhooks.
 	If NewObject = True Then
 		NewObject = False;
 	Else
@@ -58,10 +50,8 @@ Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 			                                    Ref, PointInTime(), Company, LineItems.Unload(, "Order, Shipment, Product, Unit, Location, LocationActual, DeliveryDate, Project, Class, QtyUM"));
 			Documents.SalesInvoice.PrepareDataBeforeWrite(AdditionalProperties, DocumentParameters, Cancel);
 		EndIf;
-				
+		
 	EndIf;
-	
-	AvaTaxServer.AvataxDocumentBeforeWrite(ThisObject, Cancel);	
 	
 EndProcedure
 
@@ -79,6 +69,13 @@ Procedure FillCheckProcessing(Cancel, CheckedAttributes)
 	EndIf;
 	// <- CODE REVIEW
 	
+	// Check sales tax rate filling
+	If GeneralFunctionsReusable.FunctionalOptionValue("SalesTaxCharging") And Not UseAvatax Then
+		If Not ValueIsFilled(SalesTaxRate) Then
+			CommonUseClientServer.MessageToUser(NStr("en = 'Field ""Sales tax rate"" is empty'"), Ref, "SalesTaxRate",, Cancel);
+		EndIf;
+	EndIf;
+	
 	// Check proper filling of lots.
 	LotsSerialNumbers.CheckLotsFilling(Ref, LineItems, Cancel);
 	
@@ -89,9 +86,7 @@ Procedure FillCheckProcessing(Cancel, CheckedAttributes)
 	FilledOrders = GeneralFunctions.InvertCollectionFilter(LineItems, LineItems.FindRows(New Structure("Order", Documents.SalesOrder.EmptyRef())));
 	
 	// Check doubles in items (to be sure of proper orders placement).
-	//If Not SessionParameters.TenantValue = "1101092" Then // Locked for the tenant "1101092"
-		GeneralFunctions.CheckDoubleItems(Ref, LineItems, "Product, Unit, Order, Shipment, Location, DeliveryDate, Project, Class, LineNumber", FilledOrders, Cancel);
-	//EndIf;
+	GeneralFunctions.CheckDoubleItems(Ref, LineItems, "Product, Unit, Order, Shipment, Location, DeliveryDate, Project, Class, LineNumber", FilledOrders, Cancel);
 	
 	// Check proper closing of order items by the invoice items.
 	If Not Cancel Then
@@ -223,8 +218,6 @@ Procedure OnCopy(CopiedObject)
 	
 	If ThisObject.IsNew() Then ThisObject.SetNewNumber(); EndIf;
 	
-	DwollaTrxID = 0;
-	
 	// Clear manual adjustment attribute.
 	ManualAdjustment = False;
 	
@@ -282,6 +275,9 @@ Procedure Posting(Cancel, PostingMode)
 	
 	// 8. Clear used temporary document data.
 	DocumentPosting.ClearDataStructuresAfterPosting(AdditionalProperties);
+	
+	// 10. Process SO prepayment processing
+	Documents.SalesInvoice.ProcessSalesOrdersPrepayment(Ref);
 	
 EndProcedure
 

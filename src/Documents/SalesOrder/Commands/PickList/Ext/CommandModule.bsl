@@ -25,7 +25,9 @@ Procedure CommandProcessing(CommandParameter, CommandExecuteParameters)
 	Spreadsheet.FitToPage   = True;
 	Spreadsheet.ReadOnly    = False;
 	Spreadsheet.Protection  = False;
-	Spreadsheet.Show(NStr("en = 'Print preview: Pick list'"));
+	SpreadsheetTitle		= "Pick list";
+	FormParameters = New Structure("SpreadsheetDocument, TitleOfForm, PrintFormID", Spreadsheet, SpreadsheetTitle, CommandParameter[0]);
+	OpenForm("CommonForm.PrintForm", FormParameters);
 	
 EndProcedure
 
@@ -38,4 +40,5 @@ Procedure PickList(Spreadsheet, CommandParameter)
 EndProcedure
 
 #EndRegion
+
 

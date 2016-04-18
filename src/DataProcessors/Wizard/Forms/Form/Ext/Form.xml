@@ -1,0 +1,1479 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<AutoCommandBar name="FormCommandBar" id="-1">
+		<HorizontalAlign>Right</HorizontalAlign>
+		<Autofill>false</Autofill>
+	</AutoCommandBar>
+	<Events>
+		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+	</Events>
+	<ChildItems>
+		<Pages name="Steps" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Steps</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Steps</v8:content>
+				</v8:item>
+			</ToolTip>
+			<PagesRepresentation>None</PagesRepresentation>
+			<ExtendedTooltip name="StepsExtendedTooltip" id="2"/>
+			<Events>
+				<Event name="OnCurrentPageChange">StepsOnCurrentPageChange</Event>
+			</Events>
+			<ChildItems>
+				<Page name="ChooseStage2" id="3">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Company type</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Choose stage2</v8:content>
+						</v8:item>
+					</ToolTip>
+					<ExtendedTooltip name="ChooseStage2ExtendedTooltip" id="4"/>
+					<ChildItems>
+						<LabelDecoration name="Decoration10" id="186">
+							<Font ref="sys:DefaultGUIFont" height="12" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
+							<Title formatted="false">
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>What type of company are you setting up?</v8:content>
+								</v8:item>
+							</Title>
+							<ContextMenu name="Decoration10ContextMenu" id="187"/>
+							<ExtendedTooltip name="Decoration10ExtendedTooltip" id="188"/>
+						</LabelDecoration>
+						<InputField name="EntityType" id="5">
+							<DataPath>EntityType</DataPath>
+							<ListChoiceMode>true</ListChoiceMode>
+							<ChoiceList>
+								<xr:Item>
+									<xr:Presentation/>
+									<xr:CheckState>0</xr:CheckState>
+									<xr:Value xsi:type="FormChoiceListDesTimeValue">
+										<Presentation>
+											<v8:item>
+												<v8:lang>en</v8:lang>
+												<v8:content>C Corp</v8:content>
+											</v8:item>
+										</Presentation>
+										<Value xsi:type="xs:string">CCorp</Value>
+									</xr:Value>
+								</xr:Item>
+								<xr:Item>
+									<xr:Presentation/>
+									<xr:CheckState>0</xr:CheckState>
+									<xr:Value xsi:type="FormChoiceListDesTimeValue">
+										<Presentation>
+											<v8:item>
+												<v8:lang>en</v8:lang>
+												<v8:content>S Corp</v8:content>
+											</v8:item>
+										</Presentation>
+										<Value xsi:type="xs:string">SCorp</Value>
+									</xr:Value>
+								</xr:Item>
+								<xr:Item>
+									<xr:Presentation/>
+									<xr:CheckState>0</xr:CheckState>
+									<xr:Value xsi:type="FormChoiceListDesTimeValue">
+										<Presentation>
+											<v8:item>
+												<v8:lang>en</v8:lang>
+												<v8:content>Sole Proprietorship</v8:content>
+											</v8:item>
+										</Presentation>
+										<Value xsi:type="xs:string">SoleProp</Value>
+									</xr:Value>
+								</xr:Item>
+							</ChoiceList>
+							<ContextMenu name="EntityTypeContextMenu" id="6"/>
+							<ExtendedTooltip name="EntityTypeExtendedTooltip" id="7"/>
+						</InputField>
+						<LabelDecoration name="Decoration8" id="180">
+							<Font ref="sys:DefaultGUIFont" height="12" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
+							<Title formatted="false">
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>What is the first month of your fiscal year?</v8:content>
+								</v8:item>
+							</Title>
+							<ContextMenu name="Decoration8ContextMenu" id="181"/>
+							<ExtendedTooltip name="Decoration8ExtendedTooltip" id="182"/>
+						</LabelDecoration>
+						<InputField name="FirstMonthOfFiscalYear" id="10">
+							<DataPath>CurConstantsSet.FirstMonthOfFiscalYear</DataPath>
+							<Width>15</Width>
+							<ListChoiceMode>true</ListChoiceMode>
+							<ChoiceList>
+								<xr:Item>
+									<xr:Presentation/>
+									<xr:CheckState>0</xr:CheckState>
+									<xr:Value xsi:type="FormChoiceListDesTimeValue">
+										<Presentation>
+											<v8:item>
+												<v8:lang>en</v8:lang>
+												<v8:content>January</v8:content>
+											</v8:item>
+										</Presentation>
+										<Value xsi:type="xs:decimal">1</Value>
+									</xr:Value>
+								</xr:Item>
+								<xr:Item>
+									<xr:Presentation/>
+									<xr:CheckState>0</xr:CheckState>
+									<xr:Value xsi:type="FormChoiceListDesTimeValue">
+										<Presentation>
+											<v8:item>
+												<v8:lang>en</v8:lang>
+												<v8:content>February</v8:content>
+											</v8:item>
+										</Presentation>
+										<Value xsi:type="xs:decimal">2</Value>
+									</xr:Value>
+								</xr:Item>
+								<xr:Item>
+									<xr:Presentation/>
+									<xr:CheckState>0</xr:CheckState>
+									<xr:Value xsi:type="FormChoiceListDesTimeValue">
+										<Presentation>
+											<v8:item>
+												<v8:lang>en</v8:lang>
+												<v8:content>March</v8:content>
+											</v8:item>
+										</Presentation>
+										<Value xsi:type="xs:decimal">3</Value>
+									</xr:Value>
+								</xr:Item>
+								<xr:Item>
+									<xr:Presentation/>
+									<xr:CheckState>0</xr:CheckState>
+									<xr:Value xsi:type="FormChoiceListDesTimeValue">
+										<Presentation>
+											<v8:item>
+												<v8:lang>en</v8:lang>
+												<v8:content>April</v8:content>
+											</v8:item>
+										</Presentation>
+										<Value xsi:type="xs:decimal">4</Value>
+									</xr:Value>
+								</xr:Item>
+								<xr:Item>
+									<xr:Presentation/>
+									<xr:CheckState>0</xr:CheckState>
+									<xr:Value xsi:type="FormChoiceListDesTimeValue">
+										<Presentation>
+											<v8:item>
+												<v8:lang>en</v8:lang>
+												<v8:content>May</v8:content>
+											</v8:item>
+										</Presentation>
+										<Value xsi:type="xs:decimal">5</Value>
+									</xr:Value>
+								</xr:Item>
+								<xr:Item>
+									<xr:Presentation/>
+									<xr:CheckState>0</xr:CheckState>
+									<xr:Value xsi:type="FormChoiceListDesTimeValue">
+										<Presentation>
+											<v8:item>
+												<v8:lang>en</v8:lang>
+												<v8:content>June</v8:content>
+											</v8:item>
+										</Presentation>
+										<Value xsi:type="xs:decimal">6</Value>
+									</xr:Value>
+								</xr:Item>
+								<xr:Item>
+									<xr:Presentation/>
+									<xr:CheckState>0</xr:CheckState>
+									<xr:Value xsi:type="FormChoiceListDesTimeValue">
+										<Presentation>
+											<v8:item>
+												<v8:lang>en</v8:lang>
+												<v8:content>July</v8:content>
+											</v8:item>
+										</Presentation>
+										<Value xsi:type="xs:decimal">7</Value>
+									</xr:Value>
+								</xr:Item>
+								<xr:Item>
+									<xr:Presentation/>
+									<xr:CheckState>0</xr:CheckState>
+									<xr:Value xsi:type="FormChoiceListDesTimeValue">
+										<Presentation>
+											<v8:item>
+												<v8:lang>en</v8:lang>
+												<v8:content>August</v8:content>
+											</v8:item>
+										</Presentation>
+										<Value xsi:type="xs:decimal">8</Value>
+									</xr:Value>
+								</xr:Item>
+								<xr:Item>
+									<xr:Presentation/>
+									<xr:CheckState>0</xr:CheckState>
+									<xr:Value xsi:type="FormChoiceListDesTimeValue">
+										<Presentation>
+											<v8:item>
+												<v8:lang>en</v8:lang>
+												<v8:content>September</v8:content>
+											</v8:item>
+										</Presentation>
+										<Value xsi:type="xs:decimal">9</Value>
+									</xr:Value>
+								</xr:Item>
+								<xr:Item>
+									<xr:Presentation/>
+									<xr:CheckState>0</xr:CheckState>
+									<xr:Value xsi:type="FormChoiceListDesTimeValue">
+										<Presentation>
+											<v8:item>
+												<v8:lang>en</v8:lang>
+												<v8:content>October</v8:content>
+											</v8:item>
+										</Presentation>
+										<Value xsi:type="xs:decimal">10</Value>
+									</xr:Value>
+								</xr:Item>
+								<xr:Item>
+									<xr:Presentation/>
+									<xr:CheckState>0</xr:CheckState>
+									<xr:Value xsi:type="FormChoiceListDesTimeValue">
+										<Presentation>
+											<v8:item>
+												<v8:lang>en</v8:lang>
+												<v8:content>November</v8:content>
+											</v8:item>
+										</Presentation>
+										<Value xsi:type="xs:decimal">11</Value>
+									</xr:Value>
+								</xr:Item>
+								<xr:Item>
+									<xr:Presentation/>
+									<xr:CheckState>0</xr:CheckState>
+									<xr:Value xsi:type="FormChoiceListDesTimeValue">
+										<Presentation>
+											<v8:item>
+												<v8:lang>en</v8:lang>
+												<v8:content>December</v8:content>
+											</v8:item>
+										</Presentation>
+										<Value xsi:type="xs:decimal">12</Value>
+									</xr:Value>
+								</xr:Item>
+							</ChoiceList>
+							<ContextMenu name="FirstMonthOfFiscalYearContextMenu" id="11"/>
+							<ExtendedTooltip name="FirstMonthOfFiscalYearExtendedTooltip" id="12"/>
+						</InputField>
+						<LabelDecoration name="Decoration9" id="183">
+							<Font ref="sys:DefaultGUIFont" height="12" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
+							<Title formatted="false">
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Is the company product-based, service-based or both?</v8:content>
+								</v8:item>
+							</Title>
+							<ContextMenu name="Decoration9ContextMenu" id="184"/>
+							<ExtendedTooltip name="Decoration9ExtendedTooltip" id="185"/>
+						</LabelDecoration>
+						<InputField name="ProductOrService" id="33">
+							<DataPath>ProductOrService</DataPath>
+							<ListChoiceMode>true</ListChoiceMode>
+							<ChoiceList>
+								<xr:Item>
+									<xr:Presentation/>
+									<xr:CheckState>0</xr:CheckState>
+									<xr:Value xsi:type="FormChoiceListDesTimeValue">
+										<Presentation>
+											<v8:item>
+												<v8:lang>en</v8:lang>
+												<v8:content>Product-based</v8:content>
+											</v8:item>
+										</Presentation>
+										<Value xsi:type="xs:string">Product-based</Value>
+									</xr:Value>
+								</xr:Item>
+								<xr:Item>
+									<xr:Presentation/>
+									<xr:CheckState>0</xr:CheckState>
+									<xr:Value xsi:type="FormChoiceListDesTimeValue">
+										<Presentation>
+											<v8:item>
+												<v8:lang>en</v8:lang>
+												<v8:content>Service-based</v8:content>
+											</v8:item>
+										</Presentation>
+										<Value xsi:type="xs:string">Service-based</Value>
+									</xr:Value>
+								</xr:Item>
+								<xr:Item>
+									<xr:Presentation/>
+									<xr:CheckState>0</xr:CheckState>
+									<xr:Value xsi:type="FormChoiceListDesTimeValue">
+										<Presentation>
+											<v8:item>
+												<v8:lang>en</v8:lang>
+												<v8:content>Product- and Service-based</v8:content>
+											</v8:item>
+										</Presentation>
+										<Value xsi:type="xs:string">Both</Value>
+									</xr:Value>
+								</xr:Item>
+							</ChoiceList>
+							<ContextMenu name="ProductOrServiceContextMenu" id="34"/>
+							<ExtendedTooltip name="ProductOrServiceExtendedTooltip" id="35"/>
+						</InputField>
+					</ChildItems>
+				</Page>
+				<Page name="ChooseStage1" id="66">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Choose stage1</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Choose stage1</v8:content>
+						</v8:item>
+					</ToolTip>
+					<ExtendedTooltip name="ChooseStage1ExtendedTooltip" id="67"/>
+					<ChildItems>
+						<LabelDecoration name="Decoration20" id="221">
+							<Font ref="sys:DefaultGUIFont" height="12" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
+							<Title formatted="false">
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Let's get some basic information about your company.</v8:content>
+								</v8:item>
+							</Title>
+							<ContextMenu name="Decoration20ContextMenu" id="222"/>
+							<ExtendedTooltip name="Decoration20ExtendedTooltip" id="223"/>
+						</LabelDecoration>
+						<UsualGroup name="Group2" id="219">
+							<Group>Horizontal</Group>
+							<Representation>None</Representation>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="Group2ExtendedTooltip" id="220"/>
+							<ChildItems>
+								<UsualGroup name="BasicGroup1" id="114">
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Basic group1</v8:content>
+										</v8:item>
+									</Title>
+									<ToolTip>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Basic group1</v8:content>
+										</v8:item>
+									</ToolTip>
+									<Group>Vertical</Group>
+									<Representation>None</Representation>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="BasicGroup1ExtendedTooltip" id="115"/>
+									<ChildItems>
+										<InputField name="ConstantSetSystemTitle" id="118">
+											<DataPath>CurConstantsSet.SystemTitle</DataPath>
+											<ContextMenu name="ConstantSetSystemTitleContextMenu" id="119"/>
+											<ExtendedTooltip name="ConstantSetSystemTitleExtendedTooltip" id="120"/>
+										</InputField>
+										<InputField name="ConstantSetFederalTaxID" id="121">
+											<DataPath>CurConstantsSet.FederalTaxID</DataPath>
+											<ContextMenu name="ConstantSetFederalTaxIDContextMenu" id="122"/>
+											<ExtendedTooltip name="ConstantSetFederalTaxIDExtendedTooltip" id="123"/>
+										</InputField>
+										<InputField name="ConstantSetStateTaxID" id="124">
+											<DataPath>CurConstantsSet.StateTaxID</DataPath>
+											<ContextMenu name="ConstantSetStateTaxIDContextMenu" id="125"/>
+											<ExtendedTooltip name="ConstantSetStateTaxIDExtendedTooltip" id="126"/>
+										</InputField>
+										<InputField name="ConstantSetFirstName" id="127">
+											<DataPath>CurConstantsSet.FirstName</DataPath>
+											<ContextMenu name="ConstantSetFirstNameContextMenu" id="128"/>
+											<ExtendedTooltip name="ConstantSetFirstNameExtendedTooltip" id="129"/>
+										</InputField>
+										<InputField name="ConstantSetMiddleName" id="130">
+											<DataPath>CurConstantsSet.MiddleName</DataPath>
+											<ContextMenu name="ConstantSetMiddleNameContextMenu" id="131"/>
+											<ExtendedTooltip name="ConstantSetMiddleNameExtendedTooltip" id="132"/>
+										</InputField>
+										<InputField name="ConstantSetLastName" id="133">
+											<DataPath>CurConstantsSet.LastName</DataPath>
+											<ContextMenu name="ConstantSetLastNameContextMenu" id="134"/>
+											<ExtendedTooltip name="ConstantSetLastNameExtendedTooltip" id="135"/>
+										</InputField>
+										<InputField name="ConstantSetPhone" id="136">
+											<DataPath>CurConstantsSet.Phone</DataPath>
+											<ContextMenu name="ConstantSetPhoneContextMenu" id="137"/>
+											<ExtendedTooltip name="ConstantSetPhoneExtendedTooltip" id="138"/>
+										</InputField>
+										<InputField name="ConstantSetCell" id="139">
+											<DataPath>CurConstantsSet.Cell</DataPath>
+											<ContextMenu name="ConstantSetCellContextMenu" id="140"/>
+											<ExtendedTooltip name="ConstantSetCellExtendedTooltip" id="141"/>
+										</InputField>
+										<InputField name="ConstantSetFax" id="142">
+											<DataPath>CurConstantsSet.Fax</DataPath>
+											<ContextMenu name="ConstantSetFaxContextMenu" id="143"/>
+											<ExtendedTooltip name="ConstantSetFaxExtendedTooltip" id="144"/>
+										</InputField>
+									</ChildItems>
+								</UsualGroup>
+								<UsualGroup name="BasicGroup2" id="116">
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Basic group1</v8:content>
+										</v8:item>
+									</Title>
+									<ToolTip>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Basic group1</v8:content>
+										</v8:item>
+									</ToolTip>
+									<Group>Vertical</Group>
+									<Representation>None</Representation>
+									<ShowTitle>false</ShowTitle>
+									<ExtendedTooltip name="BasicGroup2ExtendedTooltip" id="117"/>
+									<ChildItems>
+										<InputField name="ConstantSetWebsite" id="148">
+											<DataPath>CurConstantsSet.Website</DataPath>
+											<ContextMenu name="ConstantSetWebsiteContextMenu" id="149"/>
+											<ExtendedTooltip name="ConstantSetWebsiteExtendedTooltip" id="150"/>
+										</InputField>
+										<InputField name="ConstantSetAddressLine1" id="151">
+											<DataPath>CurConstantsSet.AddressLine1</DataPath>
+											<ContextMenu name="ConstantSetAddressLine1ContextMenu" id="152"/>
+											<ExtendedTooltip name="ConstantSetAddressLine1ExtendedTooltip" id="153"/>
+										</InputField>
+										<InputField name="ConstantSetAddressLine2" id="154">
+											<DataPath>CurConstantsSet.AddressLine2</DataPath>
+											<ContextMenu name="ConstantSetAddressLine2ContextMenu" id="155"/>
+											<ExtendedTooltip name="ConstantSetAddressLine2ExtendedTooltip" id="156"/>
+										</InputField>
+										<InputField name="ConstantSetCity" id="157">
+											<DataPath>CurConstantsSet.City</DataPath>
+											<ContextMenu name="ConstantSetCityContextMenu" id="158"/>
+											<ExtendedTooltip name="ConstantSetCityExtendedTooltip" id="159"/>
+										</InputField>
+										<InputField name="ConstantSetState" id="163">
+											<DataPath>CurConstantsSet.State</DataPath>
+											<ContextMenu name="ConstantSetStateContextMenu" id="164"/>
+											<ExtendedTooltip name="ConstantSetStateExtendedTooltip" id="165"/>
+										</InputField>
+										<InputField name="ConstantSetCountry" id="160">
+											<DataPath>CurConstantsSet.Country</DataPath>
+											<ContextMenu name="ConstantSetCountryContextMenu" id="161"/>
+											<ExtendedTooltip name="ConstantSetCountryExtendedTooltip" id="162"/>
+										</InputField>
+										<InputField name="ConstantSetZIP" id="166">
+											<DataPath>CurConstantsSet.ZIP</DataPath>
+											<ContextMenu name="ConstantSetZIPContextMenu" id="167"/>
+											<ExtendedTooltip name="ConstantSetZIPExtendedTooltip" id="168"/>
+										</InputField>
+									</ChildItems>
+								</UsualGroup>
+							</ChildItems>
+						</UsualGroup>
+					</ChildItems>
+				</Page>
+				<Page name="ChooseLogo" id="8">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>First month of fiscal year</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Choose logo</v8:content>
+						</v8:item>
+					</ToolTip>
+					<ExtendedTooltip name="ChooseLogoExtendedTooltip" id="9"/>
+					<ChildItems>
+						<LabelDecoration name="Decoration19" id="216">
+							<Font ref="sys:DefaultGUIFont" height="12" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
+							<Title formatted="false">
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Upload your company's logo</v8:content>
+								</v8:item>
+							</Title>
+							<ContextMenu name="Decoration19ContextMenu" id="217"/>
+							<ExtendedTooltip name="Decoration19ExtendedTooltip" id="218"/>
+						</LabelDecoration>
+						<Button name="LogoUploadLogo" id="169">
+							<Type>UsualButton</Type>
+							<Enabled>false</Enabled>
+							<CommandName>Form.Command.LogoUploadLogo</CommandName>
+							<ExtendedTooltip name="LogoUploadLogoExtendedTooltip" id="170"/>
+						</Button>
+						<PictureField name="Image" id="174">
+							<DataPath>ImageAddress</DataPath>
+							<TitleLocation>None</TitleLocation>
+							<Width>30</Width>
+							<Height>6</Height>
+							<HorizontalStretch>false</HorizontalStretch>
+							<VerticalStretch>false</VerticalStretch>
+							<ContextMenu name="ImageContextMenu" id="175"/>
+							<ExtendedTooltip name="ImageExtendedTooltip" id="176"/>
+						</PictureField>
+					</ChildItems>
+				</Page>
+				<Page name="ChooseStage3" id="36">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Choose stage3</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Choose stage3</v8:content>
+						</v8:item>
+					</ToolTip>
+					<ExtendedTooltip name="ChooseStage3ExtendedTooltip" id="37"/>
+					<ChildItems>
+						<UsualGroup name="Group4" id="234">
+							<Height>2</Height>
+							<Group>Horizontal</Group>
+							<Representation>None</Representation>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="Group4ExtendedTooltip" id="235"/>
+							<ChildItems>
+								<LabelDecoration name="Decoration11" id="189">
+									<Font ref="sys:DefaultGUIFont" height="12" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
+									<Title formatted="false">
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Do you charge sales tax?</v8:content>
+										</v8:item>
+									</Title>
+									<ContextMenu name="Decoration11ContextMenu" id="190"/>
+									<ExtendedTooltip name="Decoration11ExtendedTooltip" id="191"/>
+								</LabelDecoration>
+								<CheckBoxField name="UseSalesTax" id="49">
+									<DataPath>CurConstantsSet.SalesTaxCharging</DataPath>
+									<TitleLocation>None</TitleLocation>
+									<VerticalAlign>Center</VerticalAlign>
+									<CheckBoxType>Tumbler</CheckBoxType>
+									<EditFormat>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>BF=No; BT=Yes</v8:content>
+										</v8:item>
+									</EditFormat>
+									<ItemWidth>6</ItemWidth>
+									<ContextMenu name="UseSalesTaxContextMenu" id="50"/>
+									<ExtendedTooltip name="UseSalesTaxExtendedTooltip" id="51"/>
+								</CheckBoxField>
+							</ChildItems>
+						</UsualGroup>
+						<UsualGroup name="Group5" id="236">
+							<Height>2</Height>
+							<Group>Horizontal</Group>
+							<Representation>None</Representation>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="Group5ExtendedTooltip" id="237"/>
+							<ChildItems>
+								<LabelDecoration name="Decoration12" id="192">
+									<Font ref="sys:DefaultGUIFont" height="12" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
+									<Title formatted="false">
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Does the company have multiple locations?</v8:content>
+										</v8:item>
+									</Title>
+									<ContextMenu name="Decoration12ContextMenu" id="193"/>
+									<ExtendedTooltip name="Decoration12ExtendedTooltip" id="194"/>
+								</LabelDecoration>
+								<CheckBoxField name="UseMultipleLocations" id="46">
+									<DataPath>CurConstantsSet.MultiLocation</DataPath>
+									<TitleLocation>None</TitleLocation>
+									<VerticalAlign>Center</VerticalAlign>
+									<CheckBoxType>Tumbler</CheckBoxType>
+									<EditFormat>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>BF=No; BT=Yes</v8:content>
+										</v8:item>
+									</EditFormat>
+									<ItemWidth>6</ItemWidth>
+									<ContextMenu name="UseMultipleLocationsContextMenu" id="47"/>
+									<ExtendedTooltip name="UseMultipleLocationsExtendedTooltip" id="48"/>
+								</CheckBoxField>
+							</ChildItems>
+						</UsualGroup>
+						<UsualGroup name="Group6" id="238">
+							<Height>2</Height>
+							<Group>Horizontal</Group>
+							<Representation>None</Representation>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="Group6ExtendedTooltip" id="239"/>
+							<ChildItems>
+								<LabelDecoration name="Decoration13" id="195">
+									<Font ref="sys:DefaultGUIFont" height="12" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
+									<Title formatted="false">
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Does the company manufacture or assemble products?</v8:content>
+										</v8:item>
+									</Title>
+									<ContextMenu name="Decoration13ContextMenu" id="196"/>
+									<ExtendedTooltip name="Decoration13ExtendedTooltip" id="197"/>
+								</LabelDecoration>
+								<CheckBoxField name="UseAssemby" id="68">
+									<DataPath>CurConstantsSet.EnableAssembly</DataPath>
+									<TitleLocation>None</TitleLocation>
+									<VerticalAlign>Center</VerticalAlign>
+									<CheckBoxType>Tumbler</CheckBoxType>
+									<EditFormat>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>BF=No; BT=Yes</v8:content>
+										</v8:item>
+									</EditFormat>
+									<ItemWidth>6</ItemWidth>
+									<ContextMenu name="UseAssembyContextMenu" id="69"/>
+									<ExtendedTooltip name="UseAssembyExtendedTooltip" id="70"/>
+								</CheckBoxField>
+							</ChildItems>
+						</UsualGroup>
+						<UsualGroup name="Group7" id="240">
+							<Height>2</Height>
+							<Group>Horizontal</Group>
+							<Representation>None</Representation>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="Group7ExtendedTooltip" id="241"/>
+							<ChildItems>
+								<LabelDecoration name="Decoration14" id="198">
+									<Font ref="sys:DefaultGUIFont" height="12" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
+									<Title formatted="false">
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Do you need track lots and/or serial numbers?</v8:content>
+										</v8:item>
+									</Title>
+									<ContextMenu name="Decoration14ContextMenu" id="199"/>
+									<ExtendedTooltip name="Decoration14ExtendedTooltip" id="200"/>
+								</LabelDecoration>
+								<CheckBoxField name="UseLotsSerialNumbers" id="71">
+									<DataPath>CurConstantsSet.EnableLots</DataPath>
+									<TitleLocation>None</TitleLocation>
+									<VerticalAlign>Center</VerticalAlign>
+									<CheckBoxType>Tumbler</CheckBoxType>
+									<EditFormat>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>BF=No; BT=Yes</v8:content>
+										</v8:item>
+									</EditFormat>
+									<ItemWidth>6</ItemWidth>
+									<ContextMenu name="UseLotsSerialNumbersContextMenu" id="72"/>
+									<ExtendedTooltip name="UseLotsSerialNumbersExtendedTooltip" id="73"/>
+								</CheckBoxField>
+							</ChildItems>
+						</UsualGroup>
+						<UsualGroup name="Group8" id="242">
+							<Height>2</Height>
+							<Group>Horizontal</Group>
+							<Representation>None</Representation>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="Group8ExtendedTooltip" id="243"/>
+							<ChildItems>
+								<LabelDecoration name="Decoration15" id="201">
+									<Font ref="sys:DefaultGUIFont" height="12" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
+									<Title formatted="false">
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Do you receive items that you have ordered? </v8:content>
+										</v8:item>
+									</Title>
+									<ContextMenu name="Decoration15ContextMenu" id="202"/>
+									<ExtendedTooltip name="Decoration15ExtendedTooltip" id="203"/>
+								</LabelDecoration>
+								<CheckBoxField name="UseItemReceipts" id="74">
+									<DataPath>CurConstantsSet.EnhancedInventoryReceiving</DataPath>
+									<TitleLocation>None</TitleLocation>
+									<VerticalAlign>Center</VerticalAlign>
+									<CheckBoxType>Tumbler</CheckBoxType>
+									<EditFormat>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>BF=No; BT=Yes</v8:content>
+										</v8:item>
+									</EditFormat>
+									<ItemWidth>6</ItemWidth>
+									<ContextMenu name="UseItemReceiptsContextMenu" id="75"/>
+									<ExtendedTooltip name="UseItemReceiptsExtendedTooltip" id="76"/>
+								</CheckBoxField>
+							</ChildItems>
+						</UsualGroup>
+						<UsualGroup name="Group3" id="232">
+							<Height>2</Height>
+							<HorizontalStretch>true</HorizontalStretch>
+							<Group>Horizontal</Group>
+							<Representation>None</Representation>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="Group3ExtendedTooltip" id="233"/>
+							<ChildItems>
+								<LabelDecoration name="Decoration16" id="204">
+									<Font ref="sys:DefaultGUIFont" height="12" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
+									<Title formatted="false">
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Do you ship items?  </v8:content>
+										</v8:item>
+									</Title>
+									<ContextMenu name="Decoration16ContextMenu" id="205"/>
+									<ExtendedTooltip name="Decoration16ExtendedTooltip" id="206"/>
+								</LabelDecoration>
+								<CheckBoxField name="UseShipping" id="77">
+									<DataPath>CurConstantsSet.EnhancedInventoryShipping</DataPath>
+									<TitleLocation>None</TitleLocation>
+									<VerticalAlign>Center</VerticalAlign>
+									<CheckBoxType>Tumbler</CheckBoxType>
+									<EditFormat>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>BF=No; BT=Yes</v8:content>
+										</v8:item>
+									</EditFormat>
+									<ItemWidth>6</ItemWidth>
+									<ContextMenu name="UseShippingContextMenu" id="78"/>
+									<ExtendedTooltip name="UseShippingExtendedTooltip" id="79"/>
+								</CheckBoxField>
+							</ChildItems>
+						</UsualGroup>
+					</ChildItems>
+				</Page>
+				<Page name="ChooseStage4" id="58">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Choose stage4</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Choose stage4</v8:content>
+						</v8:item>
+					</ToolTip>
+					<ExtendedTooltip name="ChooseStage4ExtendedTooltip" id="59"/>
+					<ChildItems>
+						<LabelDecoration name="Decoration17" id="210">
+							<Font ref="sys:DefaultGUIFont" height="12" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
+							<Title formatted="false">
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Does your company price items using more than 2 decimals?</v8:content>
+								</v8:item>
+							</Title>
+							<ContextMenu name="Decoration17ContextMenu" id="211"/>
+							<ExtendedTooltip name="Decoration17ExtendedTooltip" id="212"/>
+						</LabelDecoration>
+						<CheckBoxField name="UsePricePrecision" id="83">
+							<DataPath>CurConstantsSet.UsePricePrecision</DataPath>
+							<TitleLocation>None</TitleLocation>
+							<CheckBoxType>Tumbler</CheckBoxType>
+							<EditFormat>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>BF=No; BT=Yes</v8:content>
+								</v8:item>
+							</EditFormat>
+							<ContextMenu name="UsePricePrecisionContextMenu" id="84"/>
+							<ExtendedTooltip name="UsePricePrecisionExtendedTooltip" id="85"/>
+							<Events>
+								<Event name="OnChange">UsePricePrecisionOnChange</Event>
+							</Events>
+						</CheckBoxField>
+						<UsualGroup name="PricePrecisionVisibleGroup" id="98">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Price precision visible group</v8:content>
+								</v8:item>
+							</Title>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Price precision visible group</v8:content>
+								</v8:item>
+							</ToolTip>
+							<Group>Vertical</Group>
+							<Representation>None</Representation>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="PricePrecisionVisibleGroupExtendedTooltip" id="99"/>
+							<ChildItems>
+								<LabelDecoration name="Decoration2" id="100">
+									<Title formatted="false">
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>How many decimals (2, 3 or 4) would you like to use when pricing*?</v8:content>
+										</v8:item>
+									</Title>
+									<ContextMenu name="Decoration2ContextMenu" id="101"/>
+									<ExtendedTooltip name="Decoration2ExtendedTooltip" id="102"/>
+								</LabelDecoration>
+								<InputField name="PricePrecision" id="80">
+									<DataPath>CurConstantsSet.PricePrecision</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Price decimals</v8:content>
+										</v8:item>
+									</Title>
+									<ContextMenu name="PricePrecisionContextMenu" id="81"/>
+									<ExtendedTooltip name="PricePrecisionExtendedTooltip" id="82"/>
+								</InputField>
+								<LabelDecoration name="Decoration3" id="103">
+									<Title formatted="false">
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>*Please note that this number may not be decreased after increasing.</v8:content>
+										</v8:item>
+									</Title>
+									<ContextMenu name="Decoration3ContextMenu" id="104"/>
+									<ExtendedTooltip name="Decoration3ExtendedTooltip" id="105"/>
+								</LabelDecoration>
+							</ChildItems>
+						</UsualGroup>
+						<LabelDecoration name="Decoration18" id="213">
+							<Font ref="sys:DefaultGUIFont" height="12" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
+							<Title formatted="false">
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Does your company sell or buy items with fractional quantities?
+</v8:content>
+								</v8:item>
+							</Title>
+							<ContextMenu name="Decoration18ContextMenu" id="214"/>
+							<ExtendedTooltip name="Decoration18ExtendedTooltip" id="215"/>
+						</LabelDecoration>
+						<CheckBoxField name="UseQuantityPrecision" id="86">
+							<DataPath>UseQuantityPrecision</DataPath>
+							<TitleLocation>None</TitleLocation>
+							<CheckBoxType>Tumbler</CheckBoxType>
+							<EditFormat>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>BF=No; BT=Yes</v8:content>
+								</v8:item>
+							</EditFormat>
+							<ContextMenu name="UseQuantityPrecisionContextMenu" id="87"/>
+							<ExtendedTooltip name="UseQuantityPrecisionExtendedTooltip" id="88"/>
+							<Events>
+								<Event name="OnChange">UseQuantityPrecisionOnChange</Event>
+							</Events>
+						</CheckBoxField>
+						<UsualGroup name="QuantityPrecisionVisibleGroup" id="106">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Quantity precision visible group</v8:content>
+								</v8:item>
+							</Title>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Quantity precision visible group</v8:content>
+								</v8:item>
+							</ToolTip>
+							<Group>Vertical</Group>
+							<Representation>None</Representation>
+							<ShowTitle>false</ShowTitle>
+							<ExtendedTooltip name="QuantityPrecisionVisibleGroupExtendedTooltip" id="107"/>
+							<ChildItems>
+								<LabelDecoration name="Decoration4" id="108">
+									<Title formatted="false">
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>How many decimals (1-4) would you like to use*?</v8:content>
+										</v8:item>
+									</Title>
+									<ContextMenu name="Decoration4ContextMenu" id="109"/>
+									<ExtendedTooltip name="Decoration4ExtendedTooltip" id="110"/>
+								</LabelDecoration>
+								<InputField name="QuantityPrecision" id="89">
+									<DataPath>CurConstantsSet.QtyPrecision</DataPath>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Quantity precision</v8:content>
+										</v8:item>
+									</Title>
+									<ContextMenu name="QuantityPrecisionContextMenu" id="90"/>
+									<ExtendedTooltip name="QuantityPrecisionExtendedTooltip" id="91"/>
+								</InputField>
+								<LabelDecoration name="Decoration5" id="111">
+									<Title formatted="false">
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>*Please note that this number may not be decreased after increasing.</v8:content>
+										</v8:item>
+									</Title>
+									<ContextMenu name="Decoration5ContextMenu" id="112"/>
+									<ExtendedTooltip name="Decoration5ExtendedTooltip" id="113"/>
+								</LabelDecoration>
+							</ChildItems>
+						</UsualGroup>
+					</ChildItems>
+				</Page>
+				<Page name="PrepareChartOfAccount" id="54">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Prepare chart of account</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Prepare chart of account</v8:content>
+						</v8:item>
+					</ToolTip>
+					<ExtendedTooltip name="PrepareChartOfAccountExtendedTooltip" id="55"/>
+					<ChildItems>
+						<LabelDecoration name="Decoration21" id="224">
+							<Font ref="sys:DefaultGUIFont" height="12" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
+							<Title formatted="false">
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Now we'll set up your a chart of accounts based on the answers you have provided.</v8:content>
+								</v8:item>
+							</Title>
+							<ContextMenu name="Decoration21ContextMenu" id="225"/>
+							<ExtendedTooltip name="Decoration21ExtendedTooltip" id="226"/>
+						</LabelDecoration>
+					</ChildItems>
+				</Page>
+				<Page name="Finish" id="227">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Finish</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Finish</v8:content>
+						</v8:item>
+					</ToolTip>
+					<ExtendedTooltip name="FinishExtendedTooltip" id="228"/>
+					<ChildItems>
+						<LabelDecoration name="Decoration22" id="229">
+							<Font ref="sys:DefaultGUIFont" height="12" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont"/>
+							<Title formatted="false">
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Done</v8:content>
+								</v8:item>
+							</Title>
+							<ContextMenu name="Decoration22ContextMenu" id="230"/>
+							<ExtendedTooltip name="Decoration22ExtendedTooltip" id="231"/>
+						</LabelDecoration>
+					</ChildItems>
+				</Page>
+			</ChildItems>
+		</Pages>
+		<UsualGroup name="Group1" id="31">
+			<Group>Horizontal</Group>
+			<Representation>None</Representation>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="Group1ExtendedTooltip" id="32"/>
+			<ChildItems>
+				<Button name="Back" id="29">
+					<Type>UsualButton</Type>
+					<CommandName>Form.Command.Back</CommandName>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>&lt;- Back</v8:content>
+						</v8:item>
+					</Title>
+					<ExtendedTooltip name="BackExtendedTooltip" id="30"/>
+				</Button>
+				<Button name="Next" id="27">
+					<Type>UsualButton</Type>
+					<CommandName>Form.Command.Next</CommandName>
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Next -&gt;</v8:content>
+						</v8:item>
+					</Title>
+					<ExtendedTooltip name="NextExtendedTooltip" id="28"/>
+				</Button>
+				<LabelDecoration name="ProgressMessage" id="207">
+					<Title formatted="false">
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Progress message</v8:content>
+						</v8:item>
+					</Title>
+					<ContextMenu name="ProgressMessageContextMenu" id="208"/>
+					<ExtendedTooltip name="ProgressMessageExtendedTooltip" id="209"/>
+				</LabelDecoration>
+			</ChildItems>
+		</UsualGroup>
+	</ChildItems>
+	<Attributes>
+		<Attribute name="Object" id="1">
+			<Type>
+				<v8:Type>cfg:DataProcessorObject.Wizard</v8:Type>
+			</Type>
+			<MainAttribute>true</MainAttribute>
+		</Attribute>
+		<Attribute name="EntityType" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Entity type</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="MessageToUser" id="4">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Message to user</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="PageCounter" id="5">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Page counter</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:decimal</v8:Type>
+				<v8:NumberQualifiers>
+					<v8:Digits>10</v8:Digits>
+					<v8:FractionDigits>0</v8:FractionDigits>
+					<v8:AllowedSign>Any</v8:AllowedSign>
+				</v8:NumberQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="MainAttributesTable" id="6">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Main attributes table</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>v8:ValueTable</v8:Type>
+			</Type>
+			<Columns>
+				<Column name="Order" id="1">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Order</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:decimal</v8:Type>
+						<v8:NumberQualifiers>
+							<v8:Digits>10</v8:Digits>
+							<v8:FractionDigits>0</v8:FractionDigits>
+							<v8:AllowedSign>Any</v8:AllowedSign>
+						</v8:NumberQualifiers>
+					</Type>
+				</Column>
+				<Column name="Active" id="2">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Active</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:boolean</v8:Type>
+					</Type>
+				</Column>
+				<Column name="TabName" id="3">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Tab name</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:string</v8:Type>
+						<v8:StringQualifiers>
+							<v8:Length>0</v8:Length>
+							<v8:AllowedLength>Variable</v8:AllowedLength>
+						</v8:StringQualifiers>
+					</Type>
+				</Column>
+				<Column name="MainMessageText" id="4">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Main message text</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:string</v8:Type>
+						<v8:StringQualifiers>
+							<v8:Length>0</v8:Length>
+							<v8:AllowedLength>Variable</v8:AllowedLength>
+						</v8:StringQualifiers>
+					</Type>
+				</Column>
+				<Column name="NextName" id="5">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Next name</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:string</v8:Type>
+						<v8:StringQualifiers>
+							<v8:Length>0</v8:Length>
+							<v8:AllowedLength>Variable</v8:AllowedLength>
+						</v8:StringQualifiers>
+					</Type>
+				</Column>
+				<Column name="OnOpen" id="6">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>On open</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:string</v8:Type>
+						<v8:StringQualifiers>
+							<v8:Length>0</v8:Length>
+							<v8:AllowedLength>Variable</v8:AllowedLength>
+						</v8:StringQualifiers>
+					</Type>
+				</Column>
+				<Column name="OnClose" id="7">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>On close</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:string</v8:Type>
+						<v8:StringQualifiers>
+							<v8:Length>0</v8:Length>
+							<v8:AllowedLength>Variable</v8:AllowedLength>
+						</v8:StringQualifiers>
+					</Type>
+				</Column>
+				<Column name="BackName" id="8">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Back name</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:string</v8:Type>
+						<v8:StringQualifiers>
+							<v8:Length>0</v8:Length>
+							<v8:AllowedLength>Variable</v8:AllowedLength>
+						</v8:StringQualifiers>
+					</Type>
+				</Column>
+			</Columns>
+		</Attribute>
+		<Attribute name="MaxPageCounter" id="7">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Max page counter</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:decimal</v8:Type>
+				<v8:NumberQualifiers>
+					<v8:Digits>10</v8:Digits>
+					<v8:FractionDigits>0</v8:FractionDigits>
+					<v8:AllowedSign>Any</v8:AllowedSign>
+				</v8:NumberQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="ProductOrService" id="9">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Product or service</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="ProcedureToExecute" id="12">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Procedure to execute</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="PricePrecision" id="17">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Price decimals</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:decimal</v8:Type>
+				<v8:NumberQualifiers>
+					<v8:Digits>1</v8:Digits>
+					<v8:FractionDigits>0</v8:FractionDigits>
+					<v8:AllowedSign>Any</v8:AllowedSign>
+				</v8:NumberQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="UsePricePrecision" id="18">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Use price precision</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
+			</Type>
+		</Attribute>
+		<Attribute name="UseQuantityPrecision" id="19">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Use quantity precision</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
+			</Type>
+		</Attribute>
+		<Attribute name="QuantityPrecision" id="20">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Quantity precision</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:decimal</v8:Type>
+				<v8:NumberQualifiers>
+					<v8:Digits>1</v8:Digits>
+					<v8:FractionDigits>0</v8:FractionDigits>
+					<v8:AllowedSign>Any</v8:AllowedSign>
+				</v8:NumberQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="SkipPage" id="22">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Skip page</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
+			</Type>
+		</Attribute>
+		<Attribute name="CurConstantsSet" id="23">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Cur constants set</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>cfg:ConstantsSet</v8:Type>
+			</Type>
+			<UseAlways>
+				<Field>CurConstantsSet.ShipmentFoot3Type.Ref</Field>
+				<Field>CurConstantsSet.ShipmentFoot2Type.Ref</Field>
+				<Field>CurConstantsSet.ShipmentFoot1Type.Ref</Field>
+				<Field>CurConstantsSet.SOFoot3Type.Ref</Field>
+				<Field>CurConstantsSet.SOFoot2Type.Ref</Field>
+				<Field>CurConstantsSet.SOFoot1Type.Ref</Field>
+				<Field>CurConstantsSet.SIFoot3Type.Ref</Field>
+				<Field>CurConstantsSet.SIFoot2Type.Ref</Field>
+				<Field>CurConstantsSet.SIFoot1Type.Ref</Field>
+				<Field>CurConstantsSet.QuoteFoot3Type.Ref</Field>
+				<Field>CurConstantsSet.QuoteFoot2Type.Ref</Field>
+				<Field>CurConstantsSet.QuoteFoot1Type.Ref</Field>
+				<Field>CurConstantsSet.PeriodClosingOption.Ref</Field>
+				<Field>CurConstantsSet.POFoot3Type.Ref</Field>
+				<Field>CurConstantsSet.POFoot2Type.Ref</Field>
+				<Field>CurConstantsSet.POFoot1Type.Ref</Field>
+				<Field>CurConstantsSet.CSFoot3Type.Ref</Field>
+				<Field>CurConstantsSet.CSFoot2Type.Ref</Field>
+				<Field>CurConstantsSet.CSFoot1Type.Ref</Field>
+				<Field>CurConstantsSet.CRFoot3Type.Ref</Field>
+				<Field>CurConstantsSet.CRFoot2Type.Ref</Field>
+				<Field>CurConstantsSet.CRFoot1Type.Ref</Field>
+				<Field>CurConstantsSet.CMFoot3Type.Ref</Field>
+				<Field>CurConstantsSet.CMFoot2Type.Ref</Field>
+				<Field>CurConstantsSet.CMFoot1Type.Ref</Field>
+				<Field>CurConstantsSet.AccountingMethod.Ref</Field>
+			</UseAlways>
+		</Attribute>
+		<Attribute name="ImageAddress" id="24">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Image address</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="ConstantSetNamesListStage1" id="25">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Constant set names list stage1</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>v8:ValueListType</v8:Type>
+			</Type>
+		</Attribute>
+		<Attribute name="ConstantSetNamesListStage2" id="26">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Constant set names list stage2</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>v8:ValueListType</v8:Type>
+			</Type>
+		</Attribute>
+		<Attribute name="ConstantSetNamesListStage3" id="27">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Constant set names list stage3</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>v8:ValueListType</v8:Type>
+			</Type>
+		</Attribute>
+		<Attribute name="ConstantSetNamesListStage4" id="28">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Constant set names list stage4</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>v8:ValueListType</v8:Type>
+			</Type>
+		</Attribute>
+	</Attributes>
+	<Commands>
+		<Command name="Next" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Next</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Next</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>Next</Action>
+		</Command>
+		<Command name="Back" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Back</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Back</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>Back</Action>
+		</Command>
+		<Command name="LogoUploadLogo" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Upload logo</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Logo upload logo</v8:content>
+				</v8:item>
+			</ToolTip>
+		</Command>
+	</Commands>
+</Form>

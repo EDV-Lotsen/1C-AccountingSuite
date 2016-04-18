@@ -43,10 +43,6 @@
 					<Name>DataList</Name>
 					<Synonym>
 						<v8:item>
-							<v8:lang>ru</v8:lang>
-							<v8:content>Data list</v8:content>
-						</v8:item>
-						<v8:item>
 							<v8:lang>en</v8:lang>
 							<v8:content>Data list</v8:content>
 						</v8:item>
@@ -87,10 +83,6 @@
 						<Properties>
 							<Name>LoadFlag</Name>
 							<Synonym>
-								<v8:item>
-									<v8:lang>ru</v8:lang>
-									<v8:content>Load flag</v8:content>
-								</v8:item>
 								<v8:item>
 									<v8:lang>en</v8:lang>
 									<v8:content>Load flag</v8:content>
@@ -4620,6 +4612,11 @@
 							<Comment/>
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
+								<v8:Type>xs:string</v8:Type>
+								<v8:StringQualifiers>
+									<v8:Length>5</v8:Length>
+									<v8:AllowedLength>Variable</v8:AllowedLength>
+								</v8:StringQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -5092,6 +5089,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -5103,6 +5101,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -5140,6 +5141,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -5151,6 +5153,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -5188,6 +5193,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -5199,6 +5205,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -5236,6 +5245,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -5247,6 +5257,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -5284,6 +5297,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -5295,6 +5309,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -5332,6 +5349,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -5343,6 +5361,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -5380,6 +5401,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -5391,6 +5413,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -5428,6 +5453,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -5439,6 +5465,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -5476,6 +5505,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -5487,6 +5517,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -5524,6 +5557,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -5535,6 +5569,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -5572,6 +5609,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -5583,6 +5621,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -5620,6 +5661,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -5631,6 +5673,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -5668,6 +5713,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -5679,6 +5725,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -5716,6 +5765,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -5727,6 +5777,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -5764,6 +5817,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -5775,6 +5829,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -5812,6 +5869,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -5823,6 +5881,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -5860,6 +5921,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -5871,6 +5933,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -5908,6 +5973,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -5919,6 +5985,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -5956,6 +6025,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -5967,6 +6037,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -6004,6 +6077,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -6015,6 +6089,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -6052,6 +6129,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -6063,6 +6141,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -6100,6 +6181,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -6111,6 +6193,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -6148,6 +6233,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -6159,6 +6245,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -6196,6 +6285,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -6207,6 +6297,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -6244,6 +6337,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -6255,6 +6349,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -6292,6 +6389,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -6303,6 +6401,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -6340,6 +6441,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -6351,6 +6453,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -6388,6 +6493,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -6399,6 +6505,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -6436,6 +6545,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -6447,6 +6557,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -6484,6 +6597,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -6495,6 +6609,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -6532,6 +6649,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -6543,6 +6661,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -6580,6 +6701,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -6591,6 +6713,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -6628,6 +6753,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -6639,6 +6765,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -6676,6 +6805,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -6687,6 +6817,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -6724,6 +6857,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -6735,6 +6869,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -6772,6 +6909,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -6783,6 +6921,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -6820,6 +6961,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -6831,6 +6973,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -6868,6 +7013,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -6879,6 +7025,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -6916,6 +7065,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -6927,6 +7077,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -6964,6 +7117,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -6975,6 +7129,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -7012,6 +7169,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -7023,6 +7181,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -7060,6 +7221,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -7071,6 +7233,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -7108,6 +7273,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -7119,6 +7285,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -7156,6 +7325,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -7167,6 +7337,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -7204,6 +7377,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -7215,6 +7389,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -7252,6 +7429,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -7263,6 +7441,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -7300,6 +7481,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -7311,6 +7493,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -7348,6 +7533,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -7359,6 +7545,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -7396,6 +7585,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -7407,6 +7597,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -7444,6 +7637,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -7455,6 +7649,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -7492,6 +7689,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -7503,6 +7701,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -7540,6 +7741,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -7551,6 +7753,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -7588,6 +7793,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -7599,6 +7805,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -7636,6 +7845,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -7647,6 +7857,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -7684,6 +7897,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -7695,6 +7909,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -7732,6 +7949,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -7743,6 +7961,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -7780,6 +8001,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -7791,6 +8013,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -7828,6 +8053,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -7839,6 +8065,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -7876,6 +8105,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -7887,6 +8117,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -7924,6 +8157,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -7935,6 +8169,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -7972,6 +8209,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -7983,6 +8221,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>
@@ -8020,6 +8261,7 @@
 							<Type>
 								<v8:Type>xs:boolean</v8:Type>
 								<v8:Type>xs:string</v8:Type>
+								<v8:Type>xs:dateTime</v8:Type>
 								<v8:Type>xs:decimal</v8:Type>
 								<v8:TypeSet>cfg:AnyRef</v8:TypeSet>
 								<v8:NumberQualifiers>
@@ -8031,6 +8273,9 @@
 									<v8:Length>150</v8:Length>
 									<v8:AllowedLength>Variable</v8:AllowedLength>
 								</v8:StringQualifiers>
+								<v8:DateQualifiers>
+									<v8:DateFractions>DateTime</v8:DateFractions>
+								</v8:DateQualifiers>
 							</Type>
 							<PasswordMode>false</PasswordMode>
 							<Format/>

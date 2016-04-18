@@ -1,0 +1,320 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<Width>50</Width>
+	<Height>12</Height>
+	<WindowOpeningMode>LockWholeInterface</WindowOpeningMode>
+	<CommandBarLocation>None</CommandBarLocation>
+	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<Events>
+		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+	</Events>
+	<ChildItems>
+		<UsualGroup name="GroupExecuteBackgroundJob" id="14">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Group execute background job</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Group execute background job</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Group>Horizontal</Group>
+			<Representation>None</Representation>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="GroupExecuteBackgroundJobExtendedTooltip" id="15"/>
+			<ChildItems>
+				<LabelDecoration name="Decoration1" id="16">
+					<HorizontalStretch>true</HorizontalStretch>
+					<ContextMenu name="Decoration1ContextMenu" id="17"/>
+					<ExtendedTooltip name="Decoration1ExtendedTooltip" id="18"/>
+				</LabelDecoration>
+				<Button name="ExecuteBackgroundJob" id="1">
+					<Type>UsualButton</Type>
+					<DefaultButton>true</DefaultButton>
+					<DefaultItem>true</DefaultItem>
+					<Width>20</Width>
+					<CommandName>Form.Command.ExecuteBackgroundJob</CommandName>
+					<ExtendedTooltip name="ExecuteBackgroundJobExtendedTooltip" id="2"/>
+				</Button>
+				<LabelDecoration name="Decoration2" id="19">
+					<HorizontalStretch>true</HorizontalStretch>
+					<ContextMenu name="Decoration2ContextMenu" id="20"/>
+					<ExtendedTooltip name="Decoration2ExtendedTooltip" id="21"/>
+				</LabelDecoration>
+			</ChildItems>
+		</UsualGroup>
+		<UsualGroup name="GroupDecorationLongAction" id="22">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Group decoration long action</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Group decoration long action</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Group>Horizontal</Group>
+			<Representation>None</Representation>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="GroupDecorationLongActionExtendedTooltip" id="23"/>
+			<ChildItems>
+				<LabelDecoration name="Decoration3" id="24">
+					<HorizontalStretch>true</HorizontalStretch>
+					<ContextMenu name="Decoration3ContextMenu" id="25"/>
+					<ExtendedTooltip name="Decoration3ExtendedTooltip" id="26"/>
+				</LabelDecoration>
+				<PictureDecoration name="DecorationLongAction" id="6">
+					<Width>20</Width>
+					<Picture>
+						<xr:Ref>CommonPicture.LongAction</xr:Ref>
+						<xr:LoadTransparent>true</xr:LoadTransparent>
+					</Picture>
+					<ContextMenu name="DecorationLongActionContextMenu" id="7"/>
+					<ExtendedTooltip name="DecorationLongActionExtendedTooltip" id="8"/>
+				</PictureDecoration>
+				<LabelDecoration name="Decoration4" id="27">
+					<HorizontalStretch>true</HorizontalStretch>
+					<ContextMenu name="Decoration4ContextMenu" id="28"/>
+					<ExtendedTooltip name="Decoration4ExtendedTooltip" id="29"/>
+				</LabelDecoration>
+			</ChildItems>
+		</UsualGroup>
+		<UsualGroup name="GroupDecorationDone" id="30">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Group decoration done</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Group decoration done</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Group>Horizontal</Group>
+			<Representation>None</Representation>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="GroupDecorationDoneExtendedTooltip" id="31"/>
+			<ChildItems>
+				<LabelDecoration name="Decoration5" id="32">
+					<HorizontalStretch>true</HorizontalStretch>
+					<ContextMenu name="Decoration5ContextMenu" id="33"/>
+					<ExtendedTooltip name="Decoration5ExtendedTooltip" id="34"/>
+				</LabelDecoration>
+				<PictureDecoration name="DecorationDone" id="9">
+					<Width>20</Width>
+					<Picture>
+						<xr:Abs>Picture.png</xr:Abs>
+						<xr:LoadTransparent>false</xr:LoadTransparent>
+					</Picture>
+					<ContextMenu name="DecorationDoneContextMenu" id="10"/>
+					<ExtendedTooltip name="DecorationDoneExtendedTooltip" id="11"/>
+				</PictureDecoration>
+				<LabelDecoration name="Decoration6" id="35">
+					<HorizontalStretch>true</HorizontalStretch>
+					<ContextMenu name="Decoration6ContextMenu" id="36"/>
+					<ExtendedTooltip name="Decoration6ExtendedTooltip" id="37"/>
+				</LabelDecoration>
+			</ChildItems>
+		</UsualGroup>
+		<UsualGroup name="GroupJobStatus" id="38">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Group job status</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Group job status</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Group>Horizontal</Group>
+			<Representation>None</Representation>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="GroupJobStatusExtendedTooltip" id="39"/>
+			<ChildItems>
+				<LabelDecoration name="Decoration7" id="40">
+					<HorizontalStretch>true</HorizontalStretch>
+					<ContextMenu name="Decoration7ContextMenu" id="41"/>
+					<ExtendedTooltip name="Decoration7ExtendedTooltip" id="42"/>
+				</LabelDecoration>
+				<LabelField name="JobStatus" id="3">
+					<DataPath>JobStatus</DataPath>
+					<TitleLocation>None</TitleLocation>
+					<Width>50</Width>
+					<Border width="1">
+						<v8ui:style xsi:type="v8ui:ControlBorderType">Underline</v8ui:style>
+					</Border>
+					<TextColor>style:FieldSelectionBackColor</TextColor>
+					<ContextMenu name="JobStatusContextMenu" id="4"/>
+					<ExtendedTooltip name="JobStatusExtendedTooltip" id="5"/>
+				</LabelField>
+				<LabelDecoration name="Decoration8" id="43">
+					<HorizontalStretch>true</HorizontalStretch>
+					<ContextMenu name="Decoration8ContextMenu" id="44"/>
+					<ExtendedTooltip name="Decoration8ExtendedTooltip" id="45"/>
+				</LabelDecoration>
+			</ChildItems>
+		</UsualGroup>
+		<UsualGroup name="GroupStopJob" id="56">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Group stop job</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Group stop job</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Group>Horizontal</Group>
+			<Representation>None</Representation>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="GroupStopJobExtendedTooltip" id="57"/>
+			<ChildItems>
+				<LabelDecoration name="Decoration11" id="58">
+					<HorizontalStretch>true</HorizontalStretch>
+					<ContextMenu name="Decoration11ContextMenu" id="59"/>
+					<ExtendedTooltip name="Decoration11ExtendedTooltip" id="60"/>
+				</LabelDecoration>
+				<Button name="StopJob" id="66">
+					<Type>UsualButton</Type>
+					<Width>20</Width>
+					<CommandName>Form.Command.StopJob</CommandName>
+					<ExtendedTooltip name="StopJobExtendedTooltip" id="67"/>
+				</Button>
+				<LabelDecoration name="Decoration12" id="63">
+					<HorizontalStretch>true</HorizontalStretch>
+					<ContextMenu name="Decoration12ContextMenu" id="64"/>
+					<ExtendedTooltip name="Decoration12ExtendedTooltip" id="65"/>
+				</LabelDecoration>
+			</ChildItems>
+		</UsualGroup>
+		<UsualGroup name="GroupGetResult" id="46">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Group get result</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Group get result</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Group>Horizontal</Group>
+			<Representation>None</Representation>
+			<ShowTitle>false</ShowTitle>
+			<ExtendedTooltip name="GroupGetResultExtendedTooltip" id="47"/>
+			<ChildItems>
+				<LabelDecoration name="Decoration9" id="48">
+					<HorizontalStretch>true</HorizontalStretch>
+					<ContextMenu name="Decoration9ContextMenu" id="49"/>
+					<ExtendedTooltip name="Decoration9ExtendedTooltip" id="50"/>
+				</LabelDecoration>
+				<Button name="GetResult" id="12">
+					<Type>UsualButton</Type>
+					<Width>20</Width>
+					<CommandName>Form.Command.GetResult</CommandName>
+					<ExtendedTooltip name="GetResultExtendedTooltip" id="13"/>
+				</Button>
+				<LabelDecoration name="Decoration10" id="53">
+					<HorizontalStretch>true</HorizontalStretch>
+					<ContextMenu name="Decoration10ContextMenu" id="54"/>
+					<ExtendedTooltip name="Decoration10ExtendedTooltip" id="55"/>
+				</LabelDecoration>
+			</ChildItems>
+		</UsualGroup>
+	</ChildItems>
+	<Attributes>
+		<Attribute name="Object" id="1">
+			<Type>
+				<v8:Type>cfg:DataProcessorObject.UnloadDatabase</v8:Type>
+			</Type>
+			<MainAttribute>true</MainAttribute>
+		</Attribute>
+		<Attribute name="JobUUID" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Job UUID</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>v8:UUID</v8:Type>
+			</Type>
+		</Attribute>
+		<Attribute name="JobResponseAddress" id="4">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Job response address</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="JobStatus" id="5">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Job status</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+	</Attributes>
+	<Commands>
+		<Command name="ExecuteBackgroundJob" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Begin unload database</v8:content>
+				</v8:item>
+			</Title>
+			<Action>ExecuteBackgroundJob</Action>
+		</Command>
+		<Command name="GetResult" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Save ZIP file</v8:content>
+				</v8:item>
+			</Title>
+			<Action>GetResult</Action>
+		</Command>
+		<Command name="StopJob" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Cancel</v8:content>
+				</v8:item>
+			</Title>
+			<Action>StopJob</Action>
+		</Command>
+	</Commands>
+</Form>

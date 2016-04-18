@@ -42,6 +42,13 @@ Procedure BeforeWrite(Cancel, WriteParameters)
 			return;
 		EndIf;
 	EndIf;
+	
+	// preventing posting if already included in a bank rec
+	If ReconciledDocumentsServerCall.DocumentRequiresExcludingFromBankReconciliation(Object, WriteParameters.WriteMode) Then
+		Cancel = True;
+		CommonUseClient.ShowCustomMessageBox(ThisForm, "Bank reconciliation", "The transaction you are editing has been reconciled. Saving your changes could put you out of balance the next time you try to reconcile. 
+		|To modify it you should exclude it from the Bank rec. document.", PredefinedValue("Enum.MessageStatus.Warning"));
+	EndIf; 
 
 	SetType();
 
@@ -68,7 +75,7 @@ Procedure BeforeWrite(Cancel, WriteParameters)
 	EndIf;
 	
 	If linkedCorrectly() = 1 Then
-		Message("Cannot indicate a company in a line with an account that is NOT A/R or A/P.");
+		Message("Cannot indicate a company in a line with an account that is NOT P&L, A/R or A/P.");
 		Cancel = True;
         Return;
 	EndIf;
@@ -180,19 +187,37 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	If Parameters.Property("InvoicePayRef") Then
 		
 		PreviousRef = Parameters.InvoicePayRef;
-		//PreviousRef = Documents.InvoicePayment.FindByNumber(PreviousRef);
 				
 		For Each LineItem In PreviousRef.LineItems Do
+			
+			//A/P or A/R account
 			NewEntry = Object.LineItems.Add();
-			NewEntry.Account = LineItem.Document.APAccount;
-			NewEntry.AmountCr = LineItem.Payment;
-			NewEntry.Company = PreviousRef.Company;
+			If TypeOf(LineItem.Document) = Type("DocumentRef.PurchaseInvoice") Then
+				NewEntry.Account = LineItem.Document.APAccount;
+			ElsIf TypeOf(LineItem.Document) = Type("DocumentRef.SalesReturn") Then
+				NewEntry.Account = LineItem.Document.ARAccount;
+			EndIf;
+			NewEntry.AmountCr    = LineItem.Payment + LineItem.Discount;
+			NewEntry.Company     = PreviousRef.Company;
 			NewEntry.VoidedEntry = LineItem.Document;
 			
+			//Bank account
 			NewEntry = Object.LineItems.Add();
-			NewEntry.Account = PreviousRef.BankAccount;
-			NewEntry.AmountDr = LineItem.Payment;
+			NewEntry.Account     = PreviousRef.BankAccount;
+			NewEntry.AmountDr    = LineItem.Payment;
 			NewEntry.VoidedEntry = LineItem.Document;
+			
+			//Discount account
+			If LineItem.Discount <> 0 Then
+				NewEntry = Object.LineItems.Add();
+				NewEntry.Account     = Constants.DiscountsReceived.Get();
+				NewEntry.AmountDr    = LineItem.Discount;
+				NewEntry.VoidedEntry = LineItem.Document;
+			EndIf;
+			
+			//???FXGainLoss???
+			//???UNAPPLIED PAYMENTS???
+			
 		EndDo;
 				
 		Object.Memo = "Voiding entry for " + PreviousRef;
@@ -262,7 +287,14 @@ Procedure CurrencyOnChange(Item)
 	
 	Object.ExchangeRate = GeneralFunctions.GetExchangeRate(Object.Date, Object.Currency);
     Items.ExchangeRate.Title = GeneralFunctionsReusable.DefaultCurrencySymbol() + "/1" + CommonUse.GetAttributeValue(Object.Currency, "Symbol");
-
+	
+	For Each Line in Object.LineItems Do 
+		LocalAccount = Line.Account;
+		If Not CheckCurrencyUsedAccountType(LocalAccount, Object.LineItems.IndexOf(Line)) Then 
+			Cancel = True;
+		EndIf;	
+	EndDo;
+	
 EndProcedure
 
 &AtClient
@@ -280,6 +312,13 @@ Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
 		PermitWrite = PeriodClosingServerCall.DocumentWritePermitted(WriteParameters);
 		CurrentObject.AdditionalProperties.Insert("PermitWrite", PermitWrite);	
 	EndIf;
+	
+	For Each Line in Object.LineItems Do 
+		LocalAccount = Line.Account;
+		If Not CheckCurrencyUsedAccountType(LocalAccount, Object.LineItems.IndexOf(Line)) Then 
+			Cancel = True;
+		EndIf;	
+	EndDo;	
 
 EndProcedure
 
@@ -297,15 +336,6 @@ Procedure ProcessUserResponseOnDocumentPeriodClosed(Result, Parameters) Export
 			Write(Parameters);
 		EndIf;
 	EndIf;	
-EndProcedure
-
-&AtClient
-Procedure ReverseCommand(Command)
-	
-	Str = New Structure;
-	Str.Insert("ReverseStuff", Object.Ref);
-	OpenForm("Document.GeneralJournalEntry.Form.DocumentForm",Str);
-
 EndProcedure
 
 &AtServer
@@ -384,8 +414,15 @@ Function linkedCorrectly()
 		
 		If CurRowLineItems.Company <> Catalogs.Companies.EmptyRef() Then
 			
-			If CurRowLineItems.Account.AccountType <> Enums.AccountTypes.AccountsPayable AND 
-					CurRowLineItems.Account.AccountType <> Enums.AccountTypes.AccountsReceivable Then
+			If CurRowLineItems.Account.AccountType <> Enums.AccountTypes.AccountsPayable 
+				AND CurRowLineItems.Account.AccountType <> Enums.AccountTypes.AccountsReceivable
+				
+				AND CurRowLineItems.Account.AccountType <> Enums.AccountTypes.Income
+				AND CurRowLineItems.Account.AccountType <> Enums.AccountTypes.CostOfSales
+				AND CurRowLineItems.Account.AccountType <> Enums.AccountTypes.Expense
+				AND CurRowLineItems.Account.AccountType <> Enums.AccountTypes.OtherIncome
+				AND CurRowLineItems.Account.AccountType <> Enums.AccountTypes.OtherExpense
+				AND CurRowLineItems.Account.AccountType <> Enums.AccountTypes.IncomeTaxExpense Then
 				Return 1; // error - other account with company
 			EndIf;
 			
@@ -419,20 +456,25 @@ EndFunction
 
 &AtClient
 Procedure LineItemsAccountOnChange(Item)
-	//LineItemsAccountOnChangeAtServer();
+	
 	TotalDr = Object.LineItems.Total("AmountDr");
 	TotalCr = Object.LineItems.Total("AmountCr");
+	TabularPartRow = Items.LineItems.CurrentData;
+	
+	If Not CheckCurrencyUsedAccountType(TabularPartRow.Account) Then 
+		Return;
+	EndIf;	
 	
 	If TotalDr > TotalCr Then
 		Difference = TotalDr - TotalCr;
-		TabularPartRow = Items.LineItems.CurrentData;
+		//TabularPartRow = Items.LineItems.CurrentData;
 		If TabularPartRow.AmountCr = 0 AND TabularPartRow.AmountDr = 0 Then
 			TabularPartRow.AmountCr = Difference;
 			TabularPartRow.AmountDr = 0;
 		EndIf;
 	Elsif TotalCr > TotalDr Then
 		Difference = TotalCr - TotalDr;
-		TabularPartRow = Items.LineItems.CurrentData;
+		//TabularPartRow = Items.LineItems.CurrentData;
 		If TabularPartRow.AmountCr = 0 AND TabularPartRow.AmountDr = 0 Then
 			TabularPartRow.AmountDr = Difference;
 			TabularPartRow.AmountCr = 0;
@@ -440,7 +482,44 @@ Procedure LineItemsAccountOnChange(Item)
 	Else
 		
 	EndIf;
+	
+	
+	
 EndProcedure
+
+&AtServer
+Function CheckCurrencyUsedAccountType(Account,LineIndex = Undefined)
+	
+	If false Then Account = ChartsOfAccounts.ChartOfAccounts.EmptyRef() EndIf;
+	
+	If GeneralFunctionsReusable.CurrencyUsedAccountType(Account.AccountType) Then 
+		DefCurrency = Constants.DefaultCurrency.Get();
+		If Object.Currency.IsEmpty() Then 
+			Object.Currency = DefCurrency;
+		EndIf;
+		
+		If Account.Currency.IsEmpty() and Object.Currency = DefCurrency Then 
+			Return True;
+		ElsIf Account.Currency = Object.Currency Then 
+			Return True;
+		Else 	
+			If Constants.MultiCurrency.Get() Then 
+				MessageText = "Currency of account must be the same as in document header.";
+			Else 	
+				MessageText = "Currency of account must be the same as in document header. Please contact support team.";
+			EndIf;	
+			If LineIndex = Undefined Then 
+				CommonUseClientServer.MessageToUser(MessageText, Object);
+			Else 	
+				CommonUseClientServer.MessageToUser(MessageText, Object, "Object.LineItems["+Format(LineIndex, "NG=")+"].Account");
+			EndIf;	
+			Account = ChartsOfAccounts.ChartOfAccounts.EmptyRef();
+			Return False;
+		EndIf;	
+	Else 	
+		Return True;
+	EndIf;	
+EndFunction
 
 &AtClient
 Procedure AfterWrite(WriteParameters)
@@ -479,4 +558,16 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 	
 EndProcedure
 
+////////////////////////////////////////////////////////////////////////////////
+#Region COMMANDS_HANDLERS
 
+&AtClient
+Procedure ReverseCommand(Command)
+	
+	Str = New Structure;
+	Str.Insert("ReverseStuff", Object.Ref);
+	OpenForm("Document.GeneralJournalEntry.Form.DocumentForm",Str);
+
+EndProcedure
+
+#EndRegion

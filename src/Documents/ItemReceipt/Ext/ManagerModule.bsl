@@ -117,7 +117,19 @@ Function PrepareDataStructuresForPosting(DocumentRef, AdditionalProperties, Regi
 				 Query_GeneralJournal_LineItems(TablesList) +
 				 Query_GeneralJournal_Accounts_InvOrExp(TablesList) +
 				 Query_GeneralJournal_Accounts_OCL(TablesList) +
-				 Query_GeneralJournal(TablesList);
+				 Query_GeneralJournal(TablesList)+
+				 //--//GJ++	
+				 Query_GeneralJournalAnalyticsDimensions_LineItems(TablesList) +
+				 Query_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp(TablesList) +
+				 Query_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp_Difference_Amount(TablesList) +
+				 Query_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp_Difference(TablesList) +
+				 Query_GeneralJournalAnalyticsDimensions_Accounts_OCL(TablesList) +
+				 Query_GeneralJournalAnalyticsDimensions_Accounts_OCL_Difference_Amount(TablesList) +
+				 Query_GeneralJournalAnalyticsDimensions_Accounts_OCL_Difference(TablesList) +
+				 Query_GeneralJournalAnalyticsDimensions_Transactions(TablesList) +
+	             Query_GeneralJournalAnalyticsDimensions(TablesList) +
+	             //--//GJ--
+				 Query_CashFlowData(TablesList);
 	
 	//------------------------------------------------------------------------------
 	// 3. Execute query and fill data structures.
@@ -1027,6 +1039,503 @@ Function Query_GeneralJournal(TablesList)
 	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
 	
 EndFunction
+
+//--//GJ++
+
+// Query for document data.
+Function Query_GeneralJournalAnalyticsDimensions_LineItems(TablesList)
+	
+	// Add GeneralJournalAnalyticsDimensions requested items table to document structure.
+	TablesList.Insert("Table_GeneralJournalAnalyticsDimensions_LineItems", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT
+	// ------------------------------------------------------
+	// Dimensions
+	|	LineItems.Product.COGSAccount               AS COGSAccount,
+	|	LineItems.Product.InventoryOrExpenseAccount AS InvOrExpAccount,
+	|   LineItems.Class                             AS Class,
+	|   LineItems.Project                           AS Project,
+	|	Constants.OCLAccount                        AS OCLAccount,
+	// ------------------------------------------------------
+	// Resources
+	|	LineItems.LineTotal                         AS Amount
+	// ------------------------------------------------------
+	|INTO
+	|	Table_GeneralJournalAnalyticsDimensions_LineItems
+	|FROM
+	|	Document.ItemReceipt.LineItems AS LineItems
+	|		LEFT JOIN Constants AS Constants
+	|		ON (TRUE)
+	|WHERE
+	|	LineItems.Ref = &Ref
+	|   AND LineItems.Product.Type = VALUE(Enum.InventoryTypes.Inventory)";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp(TablesList)
+	
+	// Add GeneralJournalAnalyticsDimensions inventory or expenses accounts table to document structure.
+	TablesList.Insert("Table_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // InvOrExp accounts selection
+	// ------------------------------------------------------
+	// Dimensions
+	|	Accounts.InvOrExpAccount              AS InvOrExpAccount,
+	|	Accounts.Class                        AS Class,
+	|	Accounts.Project                      AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	SUM(Accounts.Amount)                  AS Amount
+	// ------------------------------------------------------
+	|INTO
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_LineItems AS Accounts
+	|GROUP BY
+	|	Accounts.InvOrExpAccount,
+	|   Accounts.Class,
+	|   Accounts.Project";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp_Difference_Amount(TablesList)
+	
+	// Add GeneralJournalAnalyticsDimensions difference InvOrExp amount table to document structure.
+	TablesList.Insert("Table_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp_Difference_Amount", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // InvOrExp accounts selection
+	// ------------------------------------------------------
+	// Dimensions
+	|	InvOrExp_Dimensions.InvOrExpAccount   AS InvOrExpAccount,
+	// ------------------------------------------------------
+	// Resources
+	|	CAST( // Format(Amount * ExchangeRate, ""ND=17; NFD=2"")
+	|		InvOrExp_Dimensions.Amount *
+	|		CASE WHEN ItemReceipt.ExchangeRate > 0
+	|			 THEN ItemReceipt.ExchangeRate
+	|			 ELSE 1 END
+	|		AS NUMBER (17, 2))                AS Amount
+	// ------------------------------------------------------
+	|INTO
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp_Difference_Amount
+	|FROM
+	|	Table_GeneralJournal_Accounts_InvOrExp AS InvOrExp_Dimensions
+	|	LEFT JOIN Document.ItemReceipt AS ItemReceipt
+	|		ON True
+	|WHERE
+	|	ItemReceipt.Ref = &Ref
+	|	AND // Amount > 0
+	|		InvOrExp_Dimensions.Amount > 0
+	|
+	|UNION ALL
+	|
+	|SELECT // InvOrExp Dimensions accounts selection
+	// ------------------------------------------------------
+	// Dimensions
+	|	InvOrExp_Dimensions.InvOrExpAccount   AS InvOrExpAccount,
+	// ------------------------------------------------------
+	// Resources
+	|	CAST( // Format(Amount * ExchangeRate, ""ND=17; NFD=2"")
+	|		InvOrExp_Dimensions.Amount *
+	|		CASE WHEN ItemReceipt.ExchangeRate > 0
+	|			 THEN ItemReceipt.ExchangeRate
+	|			 ELSE 1 END
+	|		AS NUMBER (17, 2)) * -1           AS Amount
+	// ------------------------------------------------------
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp AS InvOrExp_Dimensions
+	|	LEFT JOIN Document.ItemReceipt AS ItemReceipt
+	|		ON True
+	|WHERE
+	|	ItemReceipt.Ref = &Ref
+	|	AND // Amount > 0
+	|		InvOrExp_Dimensions.Amount > 0";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp_Difference(TablesList)
+	
+	// Add GeneralJournalAnalyticsDimensions difference InvOrExp table to document structure.
+	TablesList.Insert("Table_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp_Difference", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // Dimensions difference selection
+	// ------------------------------------------------------
+	// Dimensions
+	|	DimensionsDifference.InvOrExpAccount       AS InvOrExpAccount,
+	// ------------------------------------------------------
+	// Resources
+	|	SUM(DimensionsDifference.Amount)           AS Amount
+	// ------------------------------------------------------
+	|INTO
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp_Difference
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp_Difference_Amount AS DimensionsDifference
+	|GROUP BY
+	|	DimensionsDifference.InvOrExpAccount";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_GeneralJournalAnalyticsDimensions_Accounts_OCL(TablesList)
+	
+	// Add GeneralJournalAnalyticsDimensions other current liability account table to document structure.
+	TablesList.Insert("Table_GeneralJournalAnalyticsDimensions_Accounts_OCL", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // OCL account selection
+	// ------------------------------------------------------
+	// Dimensions
+	|	Accounts.OCLAccount                   AS OCLAccount,
+	|	Accounts.Class                        AS Class,
+	|	Accounts.Project                      AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	SUM(Accounts.Amount)                  AS Amount
+	// ------------------------------------------------------
+	|INTO
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_OCL
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_LineItems AS Accounts
+	|GROUP BY
+	|	Accounts.OCLAccount,
+	|   Accounts.Class,
+	|   Accounts.Project";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_GeneralJournalAnalyticsDimensions_Accounts_OCL_Difference_Amount(TablesList)
+	
+	// Add GeneralJournalAnalyticsDimensions difference OCL amount table to document structure.
+	TablesList.Insert("Table_GeneralJournalAnalyticsDimensions_Accounts_OCL_Difference_Amount", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // OCL accounts selection
+	// ------------------------------------------------------
+	// Dimensions
+	|	OCL_Dimensions.OCLAccount             AS OCLAccount,
+	// ------------------------------------------------------
+	// Resources
+	|	CAST( // Format(Amount * ExchangeRate, ""ND=17; NFD=2"")
+	|		OCL_Dimensions.Amount *
+	|		CASE WHEN ItemReceipt.ExchangeRate > 0
+	|			 THEN ItemReceipt.ExchangeRate
+	|			 ELSE 1 END
+	|		AS NUMBER (17, 2))                AS Amount
+	// ------------------------------------------------------
+	|INTO
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_OCL_Difference_Amount
+	|FROM
+	|	Table_GeneralJournal_Accounts_OCL AS OCL_Dimensions
+	|	LEFT JOIN Document.ItemReceipt AS ItemReceipt
+	|		ON True
+	|WHERE
+	|	ItemReceipt.Ref = &Ref
+	|	AND // Amount > 0
+	|		OCL_Dimensions.Amount > 0
+	|
+	|UNION ALL
+	|
+	|SELECT // OCL Dimensions accounts selection
+	// ------------------------------------------------------
+	// Dimensions
+	|	OCL_Dimensions.OCLAccount             AS OCLAccount,
+	// ------------------------------------------------------
+	// Resources
+	|	CAST( // Format(Amount * ExchangeRate, ""ND=17; NFD=2"")
+	|		OCL_Dimensions.Amount *
+	|		CASE WHEN ItemReceipt.ExchangeRate > 0
+	|			 THEN ItemReceipt.ExchangeRate
+	|			 ELSE 1 END
+	|		AS NUMBER (17, 2)) * -1           AS Amount
+	// ------------------------------------------------------
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_OCL AS OCL_Dimensions
+	|	LEFT JOIN Document.ItemReceipt AS ItemReceipt
+	|		ON True
+	|WHERE
+	|	ItemReceipt.Ref = &Ref
+	|	AND // Amount > 0
+	|		OCL_Dimensions.Amount > 0";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_GeneralJournalAnalyticsDimensions_Accounts_OCL_Difference(TablesList)
+	
+	// Add GeneralJournalAnalyticsDimensions difference OCL table to document structure.
+	TablesList.Insert("Table_GeneralJournalAnalyticsDimensions_Accounts_OCL_Difference", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // Dimensions difference selection
+	// ------------------------------------------------------
+	// Dimensions
+	|	DimensionsDifference.OCLAccount            AS OCLAccount,
+	// ------------------------------------------------------
+	// Resources
+	|	SUM(DimensionsDifference.Amount)           AS Amount
+	// ------------------------------------------------------
+	|INTO
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_OCL_Difference
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_OCL_Difference_Amount AS DimensionsDifference
+	|GROUP BY
+	|	DimensionsDifference.OCLAccount";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_GeneralJournalAnalyticsDimensions_Transactions(TablesList)
+	
+	// Add GeneralJournalAnalyticsDimensions_Transactions table to document structure.
+	TablesList.Insert("Table_GeneralJournalAnalyticsDimensions_Transactions", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // Receipt: Inventory
+	// ------------------------------------------------------
+	// Standard attributes
+	|	ItemReceipt.Ref                       AS Recorder,
+	|	ItemReceipt.Date                      AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccumulationRecordType.Receipt) AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	InvOrExp.InvOrExpAccount              AS Account,
+	// ------------------------------------------------------
+	// Dimensions
+	|	ItemReceipt.Company                   AS Company,
+	|	InvOrExp.Class                        AS Class,
+	|	InvOrExp.Project                      AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	CAST( // Format(Amount * ExchangeRate, ""ND=17; NFD=2"")
+	|		InvOrExp.Amount *
+	|		CASE WHEN ItemReceipt.ExchangeRate > 0
+	|			 THEN ItemReceipt.ExchangeRate
+	|			 ELSE 1 END
+	|		AS NUMBER (17, 2))                AS AmountRC
+	// ------------------------------------------------------
+	|INTO Table_GeneralJournalAnalyticsDimensions_Transactions
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp AS InvOrExp
+	|	LEFT JOIN Document.ItemReceipt AS ItemReceipt
+	|		ON True
+	|WHERE
+	|	ItemReceipt.Ref = &Ref
+	|	AND // Amount > 0
+	|		InvOrExp.Amount > 0
+	|
+	|UNION ALL
+	|
+	|SELECT // Receipt: Inventory (difference)
+	// ------------------------------------------------------
+	// Standard attributes
+	|	ItemReceipt.Ref                       AS Recorder,
+	|	ItemReceipt.Date                      AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccumulationRecordType.Receipt) AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	InvOrExp.InvOrExpAccount              AS Account,
+	// ------------------------------------------------------
+	// Dimensions
+	|	ItemReceipt.Company                   AS Company,
+	|	NULL                                  AS Class,
+	|	NULL                                  AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	InvOrExp.Amount                       AS AmountRC
+	// ------------------------------------------------------
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_InvOrExp_Difference AS InvOrExp
+	|	LEFT JOIN Document.ItemReceipt AS ItemReceipt
+	|		ON True
+	|WHERE
+	|	ItemReceipt.Ref = &Ref
+	|	AND // Amount <> 0
+	|		InvOrExp.Amount <> 0
+	|
+	|UNION ALL
+	|
+	|SELECT // Expense: OCL
+	// ------------------------------------------------------
+	// Standard attributes
+	|	ItemReceipt.Ref                       AS Recorder,
+	|	ItemReceipt.Date                      AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccumulationRecordType.Expense) AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	OCL.OCLAccount                        AS Account,
+	// ------------------------------------------------------
+	// Dimensions
+	|	ItemReceipt.Company                   AS Company,
+	|	OCL.Class                             AS Class,
+	|	OCL.Project                           AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	CAST( // Format(Amount * ExchangeRate, ""ND=17; NFD=2"")
+	|		OCL.Amount *
+	|		CASE WHEN ItemReceipt.ExchangeRate > 0
+	|			 THEN ItemReceipt.ExchangeRate
+	|			 ELSE 1 END
+	|		AS NUMBER (17, 2))                AS AmountRC
+	// ------------------------------------------------------
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_OCL AS OCL
+	|	LEFT JOIN Document.ItemReceipt AS ItemReceipt
+	|		ON True
+	|WHERE
+	|	ItemReceipt.Ref = &Ref
+	|	AND // Amount > 0
+	|		OCL.Amount > 0
+	|
+	|UNION ALL
+	|
+	|SELECT // Expense: OCL (difference)
+	// ------------------------------------------------------
+	// Standard attributes
+	|	ItemReceipt.Ref                       AS Recorder,
+	|	ItemReceipt.Date                      AS Period,
+	|	0                                     AS LineNumber,
+	|	VALUE(AccumulationRecordType.Expense) AS RecordType,
+	|	True                                  AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	OCL.OCLAccount                        AS Account,
+	// ------------------------------------------------------
+	// Dimensions
+	|	ItemReceipt.Company                   AS Company,
+	|	NULL                                  AS Class,
+	|	NULL                                  AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	OCL.Amount                            AS AmountRC
+	// ------------------------------------------------------
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Accounts_OCL_Difference AS OCL
+	|	LEFT JOIN Document.ItemReceipt AS ItemReceipt
+	|		ON True
+	|WHERE
+	|	ItemReceipt.Ref = &Ref
+	|	AND // Amount <> 0
+	|		OCL.Amount <> 0";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+// Query for document data.
+Function Query_GeneralJournalAnalyticsDimensions(TablesList)
+	
+	// Add GeneralJournalAnalyticsDimensions table to document structure.
+	TablesList.Insert("Table_GeneralJournalAnalyticsDimensions", TablesList.Count());
+	
+	// Collect accounting data.
+	QueryText =
+	"SELECT // Transactions
+	// ------------------------------------------------------
+	// Standard attributes
+	|	Transaction.Recorder                  AS Recorder,
+	|	Transaction.Period                    AS Period,
+	|	Transaction.LineNumber                AS LineNumber,
+	|	Transaction.RecordType                AS RecordType,
+	|	Transaction.Active                    AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	Transaction.Account                   AS Account,
+	// ------------------------------------------------------
+	// Dimensions
+	|	Transaction.Company                   AS Company,
+	|	Transaction.Class                     AS Class,
+	|	Transaction.Project                   AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	Transaction.AmountRC                  AS AmountRC
+	// ------------------------------------------------------
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Transactions AS Transaction";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
+//--//GJ--
+
+// Query for document data.
+Function Query_CashFlowData(TablesList)
+	
+	// Add CashFlowData table to document structure.
+	TablesList.Insert("Table_CashFlowData", TablesList.Count());
+	
+	// Collect cash flow data.
+	QueryText =
+	"SELECT // Transactions
+	// ------------------------------------------------------
+	// Standard attributes
+	|	Transaction.Recorder                  AS Recorder,
+	|	Transaction.Period                    AS Period,
+	|	Transaction.LineNumber                AS LineNumber,
+	|	Transaction.RecordType                AS RecordType,
+	|	Transaction.Active                    AS Active,
+	// ------------------------------------------------------
+	// Accounting attributes
+	|	Transaction.Account                   AS Account,
+	// ------------------------------------------------------
+	// Dimensions
+	|	Transaction.Company                   AS Company,
+	|	ItemReceipt.Ref                       AS Document,
+	|	NULL                                  AS SalesPerson,
+	|	Transaction.Class                     AS Class,
+	|	Transaction.Project                   AS Project,
+	// ------------------------------------------------------
+	// Resources
+	|	Transaction.AmountRC                  AS AmountRC,
+	// ------------------------------------------------------
+	// Attributes
+	|	NULL                                  AS PaymentMethod
+	// ------------------------------------------------------
+	|FROM
+	|	Table_GeneralJournalAnalyticsDimensions_Transactions AS Transaction
+	|	LEFT JOIN Document.ItemReceipt AS ItemReceipt
+	|		ON ItemReceipt.Ref = &Ref";
+	
+	Return QueryText + DocumentPosting.GetDelimeterOfBatchQuery();
+	
+EndFunction
+
 
 // Put structure of registers, which balance should be checked during posting.
 Procedure FillRegistersCheckList(AdditionalProperties, RegisterRecords)

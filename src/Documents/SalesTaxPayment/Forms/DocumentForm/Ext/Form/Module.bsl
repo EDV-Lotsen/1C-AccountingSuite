@@ -145,3 +145,14 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 	AccrualBalance 	= ReturnStructure.Accrual;
 	CashBalance 	= ReturnStructure.Cash;
 EndProcedure
+
+&AtClient
+Procedure AuditLogRecords(Command)
+	
+	FormParameters = New Structure();	
+	FltrParameters = New Structure();
+	FltrParameters.Insert("DocUUID", String(Object.Ref.UUID()));
+	FormParameters.Insert("Filter", FltrParameters);
+	OpenForm("CommonForm.AuditLogList",FormParameters, Object.Ref);
+
+EndProcedure

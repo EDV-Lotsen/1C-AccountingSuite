@@ -7,7 +7,16 @@
 	<AutoTime>CurrentOrLast</AutoTime>
 	<UsePostingMode>Auto</UsePostingMode>
 	<RepostOnWrite>true</RepostOnWrite>
-	<AutoCommandBar name="FormCommandPanel" id="-1"/>
+	<AutoCommandBar name="FormCommandPanel" id="-1">
+		<ChildItems>
+			<Button name="FormCommonCommandAttachedFiles" id="411">
+				<Type>CommandBarButton</Type>
+				<CommandName>CommonCommand.AttachedFiles</CommandName>
+				<DataPath>Object.Ref</DataPath>
+				<ExtendedTooltip name="FormCommonCommandAttachedFilesExtendedTooltip" id="412"/>
+			</Button>
+		</ChildItems>
+	</AutoCommandBar>
 	<Events>
 		<Event name="AfterWriteAtServer">AfterWriteAtServer</Event>
 		<Event name="NotificationProcessing">NotificationProcessing</Event>
@@ -329,98 +338,6 @@
 									<ContextMenu name="DecorationBillToContextMenu" id="385"/>
 									<ExtendedTooltip name="DecorationBillToExtendedTooltip" id="386"/>
 								</LabelDecoration>
-							</ChildItems>
-						</Page>
-						<Page name="Additional" id="154">
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Trx detail</v8:content>
-								</v8:item>
-							</Title>
-							<ToolTip>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Additional</v8:content>
-								</v8:item>
-							</ToolTip>
-							<Group>Horizontal</Group>
-							<ExtendedTooltip name="AdditionalExtendedTooltip" id="155"/>
-							<ChildItems>
-								<UsualGroup name="Group1" id="158">
-									<Group>Vertical</Group>
-									<ShowTitle>false</ShowTitle>
-									<ExtendedTooltip name="Group1ExtendedTooltip" id="159"/>
-								</UsualGroup>
-								<UsualGroup name="Group2" id="160">
-									<Group>Vertical</Group>
-									<ShowTitle>false</ShowTitle>
-									<ExtendedTooltip name="Group2ExtendedTooltip" id="161"/>
-									<ChildItems>
-										<InputField name="StripeID" id="97">
-											<DataPath>Object.StripeID</DataPath>
-											<ReadOnly>true</ReadOnly>
-											<Width>15</Width>
-											<HorizontalStretch>false</HorizontalStretch>
-											<ContextMenu name="StripeIDContextMenu" id="98"/>
-											<ExtendedTooltip name="StripeIDExtendedTooltip" id="109"/>
-										</InputField>
-										<InputField name="StripeCardName" id="162">
-											<DataPath>Object.StripeCardName</DataPath>
-											<ReadOnly>true</ReadOnly>
-											<Width>15</Width>
-											<HorizontalStretch>false</HorizontalStretch>
-											<ContextMenu name="StripeCardNameContextMenu" id="163"/>
-											<ExtendedTooltip name="StripeCardNameExtendedTooltip" id="164"/>
-										</InputField>
-									</ChildItems>
-								</UsualGroup>
-								<UsualGroup name="Group4" id="165">
-									<Group>Vertical</Group>
-									<ShowTitle>false</ShowTitle>
-									<ExtendedTooltip name="Group4ExtendedTooltip" id="166"/>
-									<ChildItems>
-										<InputField name="StripeAmount" id="167">
-											<DataPath>Object.StripeAmount</DataPath>
-											<ReadOnly>true</ReadOnly>
-											<Width>15</Width>
-											<HorizontalStretch>false</HorizontalStretch>
-											<ContextMenu name="StripeAmountContextMenu" id="168"/>
-											<ExtendedTooltip name="StripeAmountExtendedTooltip" id="169"/>
-										</InputField>
-										<InputField name="StripeCreated" id="170">
-											<DataPath>Object.StripeCreated</DataPath>
-											<ReadOnly>true</ReadOnly>
-											<Width>15</Width>
-											<HorizontalStretch>false</HorizontalStretch>
-											<ContextMenu name="StripeCreatedContextMenu" id="171"/>
-											<ExtendedTooltip name="StripeCreatedExtendedTooltip" id="172"/>
-										</InputField>
-									</ChildItems>
-								</UsualGroup>
-								<UsualGroup name="Group5" id="173">
-									<Group>Vertical</Group>
-									<ShowTitle>false</ShowTitle>
-									<ExtendedTooltip name="Group5ExtendedTooltip" id="174"/>
-									<ChildItems>
-										<InputField name="StripeCardType" id="175">
-											<DataPath>Object.StripeCardType</DataPath>
-											<ReadOnly>true</ReadOnly>
-											<Width>15</Width>
-											<HorizontalStretch>false</HorizontalStretch>
-											<ContextMenu name="StripeCardTypeContextMenu" id="176"/>
-											<ExtendedTooltip name="StripeCardTypeExtendedTooltip" id="177"/>
-										</InputField>
-										<InputField name="StripeLast4" id="178">
-											<DataPath>Object.StripeLast4</DataPath>
-											<ReadOnly>true</ReadOnly>
-											<Width>15</Width>
-											<HorizontalStretch>false</HorizontalStretch>
-											<ContextMenu name="StripeLast4ContextMenu" id="179"/>
-											<ExtendedTooltip name="StripeLast4ExtendedTooltip" id="180"/>
-										</InputField>
-									</ChildItems>
-								</UsualGroup>
 							</ChildItems>
 						</Page>
 						<Page name="ProjectClass" id="357">
@@ -1029,6 +946,7 @@
 						</InputField>
 						<InputField name="LineItemsUnit" id="361">
 							<DataPath>Object.LineItems.Unit</DataPath>
+							<SkipOnInput>true</SkipOnInput>
 							<Title>
 								<v8:item>
 									<v8:lang>en</v8:lang>
@@ -1905,5 +1823,24 @@
 				</Visible>
 			</Item>
 		</NavigationPanel>
+		<CommandBar>
+			<Item>
+				<Command>0:017ae4f6-356a-4e94-8663-9d23bcb4b365</Command>
+				<Type>Auto</Type>
+				<CommandGroup>FormCommandBarImportant</CommandGroup>
+				<Index>1</Index>
+				<Visible>
+					<xr:Common>false</xr:Common>
+				</Visible>
+			</Item>
+			<Item>
+				<Command>Document.CashSale.Command.Print</Command>
+				<Type>Auto</Type>
+				<CommandGroup>FormCommandBarImportant</CommandGroup>
+				<Visible>
+					<xr:Common>false</xr:Common>
+				</Visible>
+			</Item>
+		</CommandBar>
 	</CommandInterface>
 </Form>

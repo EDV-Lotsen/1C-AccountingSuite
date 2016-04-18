@@ -83,36 +83,39 @@ END</presentationExpression>
 			<dataPath>RecorderDate</dataPath>
 			<field>RecorderDate</field>
 		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Class</dataPath>
+			<field>Class</field>
+		</field>
+		<field xsi:type="DataSetFieldField">
+			<dataPath>Project</dataPath>
+			<field>Project</field>
+		</field>
 		<dataSource>DataSource1</dataSource>
 		<query>SELECT ALLOWED
-	CashFlowDataTurnovers.Document,
-	CashFlowDataTurnovers.Company,
-	CashFlowDataTurnovers.Document.Memo AS Memo,
-	CashFlowDataTurnovers.Account,
-	-CashFlowDataTurnovers.AmountRCTurnover AS AmountRCTurnover,
-	ISNULL(CashFlowDataTurnovers.Document.SalesPerson, VALUE(Catalog.SalesPeople.EmptyRef)) AS SalesPerson,
-	CashFlowDataTurnovers.Recorder.Date,
-	CashFlowDataTurnovers.LineNumber AS LineNumber,
-	CashFlowDataTurnovers.Recorder AS Recorder
+	GJAD_Turnovers.Recorder AS Document,
+	GJAD_Turnovers.Company AS Company,
+	GJAD_Turnovers.Recorder.Memo AS Memo,
+	GJAD_Turnovers.Account,
+	-GJAD_Turnovers.AmountRCTurnover AS AmountRCTurnover,
+	ISNULL(GJAD_Turnovers.Recorder.SalesPerson, VALUE(Catalog.SalesPeople.EmptyRef)) AS SalesPerson,
+	GJAD_Turnovers.Recorder.Date,
+	GJAD_Turnovers.LineNumber AS LineNumber,
+	GJAD_Turnovers.Recorder AS Recorder
 {SELECT
 	SalesPerson,
 	LineNumber,
 	Recorder}
 FROM
-	AccumulationRegister.CashFlowData.Turnovers(
-			,
-			,
-			Auto,
-			(Document REFS Document.SalesInvoice
-				OR Document REFS Document.CashSale
-				OR Document REFS Document.SalesReturn)
-				AND Account.AccountType &lt;&gt; VALUE(Enum.AccountTypes.OtherCurrentLiability)) AS CashFlowDataTurnovers
+	AccumulationRegister.GeneralJournalAnalyticsDimensions.Turnovers(, , Auto, Account.AccountType IN (VALUE(Enum.AccountTypes.Income), VALUE(Enum.AccountTypes.CostOfSales), VALUE(Enum.AccountTypes.Expense), VALUE(Enum.AccountTypes.OtherExpense), VALUE(Enum.AccountTypes.OtherIncome), VALUE(Enum.AccountTypes.IncomeTaxExpense))) AS GJAD_Turnovers
 WHERE
-	CashFlowDataTurnovers.AmountRCExpense &lt;&gt; 0
+	(GJAD_Turnovers.Recorder REFS Document.SalesInvoice
+			OR GJAD_Turnovers.Recorder REFS Document.CashSale
+			OR GJAD_Turnovers.Recorder REFS Document.SalesReturn)
 {WHERE
-	CashFlowDataTurnovers.SalesPerson AS SalesPerson,
-	CashFlowDataTurnovers.LineNumber AS LineNumber,
-	CashFlowDataTurnovers.Recorder AS Recorder}</query>
+	GJAD_Turnovers.Recorder.SalesPerson AS SalesPerson,
+	GJAD_Turnovers.LineNumber AS LineNumber,
+	GJAD_Turnovers.Recorder AS Recorder}</query>
 	</dataSet>
 	<calculatedField>
 		<dataPath>Balance</dataPath>

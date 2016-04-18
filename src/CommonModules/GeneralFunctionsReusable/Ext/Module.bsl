@@ -4,25 +4,6 @@
 // REUSABLE IN A SESSION TO MINIMIZE SERVER CALLS
 // 
 
-Function GetRemainingDays() Export 
-	
-	Query = New Query;
-    Query.Text = "SELECT
-                 |  DATEDIFF(&CurrentDate, FreeTrial30.Value, DAY) AS DateDiff
-                 |FROM
-                 |  Constant.FreeTrial30 AS FreeTrial30";
-    Query.Parameters.Insert("CurrentDate", CurrentSessionDate());
-    QueryResult = Query.Execute().Unload();
-    Return QueryResult[0].DateDiff;
-	
-EndFunction
-
-Function DisplayAPICodesSetting() Export
-	
-	Return Constants.display_api_codes.Get();
-	
-EndFunction
-
 // Returns a value of a functional option. Used for the following functional options
 // that are desired to be reusable - units of measure, multi-location, multi-currency,
 // SA financial localization, and US financial localization.
@@ -62,6 +43,17 @@ Function DefaultCurrencySymbol() Export
 	
 	Return DefaultCurrency.Symbol; 
 
+EndFunction
+
+// Returns the system title constant
+//
+// Returned value:
+// String.
+//
+Function GetSystemTitle() Export
+	
+	Return Constants.SystemTitle.Get();	
+	
 EndFunction
 
 // Determines a name of the Customer constant for dynamic substitution in the documents,
@@ -289,8 +281,11 @@ EndFunction
 //
 Function DefaultPriceFormat() Export
 	
+	NumPrecision = DefaultPricePrecision();
+	NumLength    = 13 + NumPrecision;
+	
 	// Define format string.
-	Return "NFD=" + DefaultPricePrecision();
+	Return "ND=" + NumLength + "; NFD=" + NumPrecision;
 	
 EndFunction
 
@@ -328,8 +323,10 @@ EndFunction
 //
 Function PriceFormatForOneItem(Item) Export
 	
+	NumPrecision = PricePrecisionForOneItem(Item);
+	NumLength    = 13 + NumPrecision;
 	// Define format string.
-	Return "NFD=" + PricePrecisionForOneItem(Item);
+	Return "ND=" + NumLength + "; NFD=" + NumPrecision;
 	
 EndFunction
 
@@ -347,7 +344,7 @@ Function PricePrecisionForOneItem(Item) Export
 	PricePrecision = 2;
 	
 	If Item.PricePrecision > 2 Then
-		PricePrecision = Item.PricePrecision; 	
+		PricePrecision = Item.PricePrecision;
 	EndIf;
 	
 	Return Format(PricePrecision, "NFD=0; NZ=0; NG=0");
@@ -373,7 +370,9 @@ Function GetAcceptableAccountTypesForChange (SourceType) Export
 	MainTableOfAcceptableTypes.Columns.Add("Source",AccountTypesDescription);
 	MainTableOfAcceptableTypes.Columns.Add("Acceptable",AccountTypesDescription);
 	
-	// Expense <-> Other Expense <-> Cosr of sales
+	// Expense 			<-> Cost of sales,	
+	// Expense 			->  Other Expense,  
+	// Cost of sales  	->  Other Expense
 	
 	NewRow = MainTableOfAcceptableTypes.Add();
 	NewRow.Source =  Enums.AccountTypes.CostOfSales;
@@ -390,6 +389,16 @@ Function GetAcceptableAccountTypesForChange (SourceType) Export
 	NewRow = MainTableOfAcceptableTypes.Add();
 	NewRow.Source =  Enums.AccountTypes.Expense;
 	NewRow.Acceptable =  Enums.AccountTypes.CostOfSales;
+	
+	// OtherExpense 	-> Expense 
+	// OtherExpense 	-> CostOfSales 
+	// OtherExpense 	-> OtherCurrentAsset
+	// OtherExpense 	-> FixedAsset
+	// OtherExpense 	-> AccumulatedDepreciation 
+	// OtherExpense 	-> OtherNonCurrentAsset 
+	// OtherExpense 	-> OtherCurrentLiability
+	// OtherExpense 	-> LongTermLiability
+	// OtherExpense 	-> Equity
 	
 	NewRow = MainTableOfAcceptableTypes.Add();
 	NewRow.Source =  Enums.AccountTypes.OtherExpense;
@@ -399,6 +408,36 @@ Function GetAcceptableAccountTypesForChange (SourceType) Export
 	NewRow.Source =  Enums.AccountTypes.OtherExpense;
 	NewRow.Acceptable =  Enums.AccountTypes.CostOfSales;
 		
+	//ACS-2071/ACS-2205 {{
+	//NewRow = MainTableOfAcceptableTypes.Add();
+	//NewRow.Source =  Enums.AccountTypes.OtherExpense;
+	//NewRow.Acceptable =  Enums.AccountTypes.OtherCurrentAsset;
+	
+	//NewRow = MainTableOfAcceptableTypes.Add();
+	//NewRow.Source =  Enums.AccountTypes.OtherExpense;
+	//NewRow.Acceptable =  Enums.AccountTypes.FixedAsset;
+	
+	//NewRow = MainTableOfAcceptableTypes.Add();
+	//NewRow.Source =  Enums.AccountTypes.OtherExpense;
+	//NewRow.Acceptable =  Enums.AccountTypes.AccumulatedDepreciation;
+	
+	//NewRow = MainTableOfAcceptableTypes.Add();
+	//NewRow.Source =  Enums.AccountTypes.OtherExpense;
+	//NewRow.Acceptable =  Enums.AccountTypes.OtherNonCurrentAsset;
+	
+	//NewRow = MainTableOfAcceptableTypes.Add();
+	//NewRow.Source =  Enums.AccountTypes.OtherExpense;
+	//NewRow.Acceptable =  Enums.AccountTypes.OtherCurrentLiability;
+	
+	//NewRow = MainTableOfAcceptableTypes.Add();
+	//NewRow.Source =  Enums.AccountTypes.OtherExpense;
+	//NewRow.Acceptable =  Enums.AccountTypes.LongTermLiability;
+	
+	//NewRow = MainTableOfAcceptableTypes.Add();
+	//NewRow.Source =  Enums.AccountTypes.OtherExpense;
+	//NewRow.Acceptable =  Enums.AccountTypes.Equity;
+	//}}ACS-2071/ACS-2205
+	
 	
 	// FixedAsset <-> OtherCurrentAsset <-> AccumulatedDepreciation
 	
@@ -436,7 +475,10 @@ Function GetAcceptableAccountTypesForChange (SourceType) Export
 	NewRow.Source =  Enums.AccountTypes.OtherIncome;
 	NewRow.Acceptable =  Enums.AccountTypes.Income;
 	
-	// OtherCurrentAsset -> Bank
+	// OtherCurrentAsset 		-> Bank, 
+	// FixedAsset 				-> Bank, 
+	// AccumulatedDepreciation 	-> Bank
+	// OtherExpense 			-> Bank
 	
 	NewRow = MainTableOfAcceptableTypes.Add();
 	NewRow.Source =  Enums.AccountTypes.OtherCurrentAsset;
@@ -449,14 +491,6 @@ Function GetAcceptableAccountTypesForChange (SourceType) Export
 	NewRow = MainTableOfAcceptableTypes.Add();
 	NewRow.Source =  Enums.AccountTypes.AccumulatedDepreciation;
 	NewRow.Acceptable =  Enums.AccountTypes.Bank;
-	
-	// Bank -> OtherCurrentAsset (only fof BOA role)
-	If IsInRole("BankAccounting") Then 
-		NewRow = MainTableOfAcceptableTypes.Add();
-		NewRow.Source =  Enums.AccountTypes.Bank;
-		NewRow.Acceptable =  Enums.AccountTypes.OtherCurrentAsset;
-	EndIf;
-	
 	
 	//// In case if will make adjustable matching list - just change source from table to other source.
 	Query = New Query;

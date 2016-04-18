@@ -62,40 +62,138 @@ Procedure GeneralLedger(Command)
 				
 		ParametersStructure = New Structure;
 		ParametersStructure.Insert("GenerateOnOpen", True); 
+		ParametersStructure.Insert("VariantKey", "Default");
+		
 		ReportForm = GetForm("Report.GeneralLedger.Form.ReportForm", ParametersStructure,, True);
 		
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		ReportFormSettings = ReportForm.Report.SettingsComposer.Settings;
+		UserSettings       = ReportForm.Report.SettingsComposer.UserSettings.Items;	
 		
 		//Period
-		PeriodSettingID = ReportFormSettings.DataParameters.Items.Find("Period").UserSettingID;
+		PeriodSettingID       = ReportFormSettings.DataParameters.Items.Find("Period").UserSettingID;
 		
 		//Account
-		AccountField = ReportFormSettings.Filter.FilterAvailableFields.Items.Find("AccountFilter").Field;
-		AccountSettingID  = "";
-
+		AccountField          = ReportFormSettings.Filter.FilterAvailableFields.Items.Find("AccountFilter").Field;
+		AccountSettingID      = "";
+		
+		//AccountType
+		AccountTypeField      = ReportFormSettings.Filter.FilterAvailableFields.Items.Find("AccountTypeFilter").Field;
+		AccountTypeSettingID  = "";
+		
+		//Company
+		CompanyField          = ReportFormSettings.Filter.FilterAvailableFields.Items.Find("CompanyFilter").Field;
+		CompanySettingID      = "";
+		
+		//Customer
+		CustomerField         = ReportFormSettings.Filter.FilterAvailableFields.Items.Find("CustomerFilter").Field;
+		CustomerSettingID     = "";
+		
+		//Vendor
+		VendorField           = ReportFormSettings.Filter.FilterAvailableFields.Items.Find("VendorFilter").Field;
+		VendorSettingID       = "";
+		
+		//OrGroup
+		OrGroupSettingID      = "";
+		
+		//AndGroup
+		AndGroupSettingID     = "";
+		
 		For Each Item In ReportFormSettings.Filter.Items Do
-			If Item.LeftValue = AccountField Then
-				AccountSettingID = Item.UserSettingID;
-				Break;
+			
+			If TypeOf(Item) = Type("DataCompositionFilterItem") Then 
+				
+				If Item.LeftValue = AccountField Then
+					AccountSettingID = Item.UserSettingID;
+				ElsIf Item.LeftValue = AccountTypeField Then 
+					AccountTypeSettingID = Item.UserSettingID;
+				EndIf;
+				
+			ElsIf TypeOf(Item) = Type("DataCompositionFilterItemGroup") Then 
+				
+				If Item.UserSettingPresentation = "OR group (additional)" Then
+					OrGroupSettingID = Item.UserSettingID; 
+				EndIf;
+				
+				For Each GroupItem In Item.Items Do
+					
+					If TypeOf(GroupItem) = Type("DataCompositionFilterItem") Then 
+						
+						If GroupItem.LeftValue = CompanyField Then 
+							CompanySettingID = GroupItem.UserSettingID;
+						EndIf;
+						
+					ElsIf TypeOf(GroupItem) = Type("DataCompositionFilterItemGroup") Then
+						
+						If GroupItem.UserSettingPresentation = "AND group (additional)" Then
+							AndGroupSettingID = GroupItem.UserSettingID; 
+						EndIf;
+						
+						For Each GroupItemItems In GroupItem.Items Do
+														
+							If GroupItemItems.LeftValue = CustomerField Then 
+								CustomerSettingID = GroupItemItems.UserSettingID;
+							ElsIf GroupItemItems.LeftValue = VendorField Then 
+								VendorSettingID = GroupItemItems.UserSettingID;
+							EndIf;
+							
+						EndDo;
+						
+					EndIf;
+					
+				EndDo;
+				
 			EndIf;
+			
 		EndDo;
 		
-		UserSettings = ReportForm.Report.SettingsComposer.UserSettings.Items;
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		//AccountSettingID
+		UserSettings.Find(AccountSettingID).RightValue         = PredefinedValue("ChartOfAccounts.ChartOfAccounts.EmptyRef");
+		UserSettings.Find(AccountSettingID).ComparisonType     = DataCompositionComparisonType.Equal;
+		UserSettings.Find(AccountSettingID).Use                = False;
+		
+		//AccountTypeSettingID
+		UserSettings.Find(AccountTypeSettingID).RightValue     = PredefinedValue("Enum.AccountTypes.EmptyRef");
+		UserSettings.Find(AccountTypeSettingID).ComparisonType = DataCompositionComparisonType.Equal;
+		UserSettings.Find(AccountTypeSettingID).Use            = False;
+		
+		//CompanySettingID
+		UserSettings.Find(CompanySettingID).RightValue         = PredefinedValue("Catalog.Companies.EmptyRef");
+		UserSettings.Find(CompanySettingID).ComparisonType     = DataCompositionComparisonType.Equal;
+		UserSettings.Find(CompanySettingID).Use                = False;
+		
+		//CustomerSettingID
+		UserSettings.Find(CustomerSettingID).RightValue        = False;
+		UserSettings.Find(CustomerSettingID).ComparisonType    = DataCompositionComparisonType.Equal; 
+		UserSettings.Find(CustomerSettingID).Use               = False; 
+		
+		//VendorSettingID
+		UserSettings.Find(VendorSettingID).RightValue          = False;
+		UserSettings.Find(VendorSettingID).ComparisonType      = DataCompositionComparisonType.Equal; 
+		UserSettings.Find(VendorSettingID).Use                 = False; 
+		
+		//OrGroupSettingID
+		UserSettings.Find(OrGroupSettingID).Use                = False;
+
+		//AndGroupSettingID
+		UserSettings.Find(AndGroupSettingID).Use               = False;
+		
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		
 		//Period
 		UserSettings.Find(PeriodSettingID).Value = New StandardPeriod(AddMonth(CurrentDate(), -3), CurrentDate());
 		UserSettings.Find(PeriodSettingID).Use = True;
 		
-		//Item
+		//Account
 		UserSettings.Find(AccountSettingID).RightValue = CurrentAccount;
 		UserSettings.Find(AccountSettingID).ComparisonType = DataCompositionComparisonType.InHierarchy; 
 		UserSettings.Find(AccountSettingID).Use = True; 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		
-		ReturnStructure = ProcessDetailsAtServer(ReportForm.Report, ReportForm.Result, ReportForm.DetailsData, ReportForm.UUID);
-		ReportForm.Result = ReturnStructure.Result;
+		ReturnStructure        = ProcessDetailsAtServer(ReportForm.Report, ReportForm.Result, ReportForm.DetailsData, ReportForm.UUID, "GeneralLedger");
+		ReportForm.Result      = ReturnStructure.Result;
 		ReportForm.DetailsData = ReturnStructure.DetailsData;
 		
 		ReportForm.Open();
@@ -143,6 +241,88 @@ Procedure RefreshList(Command)
 	EndIf;
 	
 EndProcedure
+
+&AtClient
+Procedure Print(Command)
+		
+	PrintAtServer();
+	
+	PrintSpreadsheet.Print(PrintDialogUseMode.Use);
+	
+EndProcedure
+
+&AtServer
+Procedure PrintAtServer()
+	
+	//1.
+	DCScheme   = Items.List.GetPerformingDataCompositionScheme();
+	DCSettings = Items.List.GetPerformingDataCompositionSettings();
+	
+    DataCompositionTemplateComposer = New DataCompositionTemplateComposer();
+    DataCompositionTemplate = DataCompositionTemplateComposer.Execute(DCScheme, DCSettings,,,Type("DataCompositionValueCollectionTemplateGenerator"));
+    DataCompositionProcessor = New DataCompositionProcessor;
+    DataCompositionProcessor.Initialize(DataCompositionTemplate);
+    
+    DataCompositionResultValueCollectionOutputProcessor = New DataCompositionResultValueCollectionOutputProcessor ;
+    
+    VT = New ValueTable;
+    DataCompositionResultValueCollectionOutputProcessor.SetObject(VT); 
+    DataCompositionResultValueCollectionOutputProcessor.Output(DataCompositionProcessor);
+	
+	//2.
+	PrintSpreadsheet.Clear();
+	SetPageSize();
+	Template = ChartsOfAccounts.ChartOfAccounts.GetTemplate("PrintForm");
+	
+	Header = Template.GetArea("Header");
+	Header.Parameters.OurCompany = Constants.SystemTitle.Get();
+	PrintSpreadsheet.Put(Header);
+	
+	HighlightLine = False;
+	
+	For Each CurrentRow In VT Do 
+		
+		If HighlightLine Then
+			Line = Template.GetArea("Line2");
+			HighlightLine = False;
+		Else
+			Line = Template.GetArea("Line1");
+			HighlightLine = True;
+		EndIf;
+		
+		Line.Parameters.Code         = CurrentRow.Code;
+		Line.Parameters.Parent	     = ?(CurrentRow.Parent = Null, "", CurrentRow.Parent);
+		Line.Parameters.Description  = CurrentRow.Description;
+		Line.Parameters.AccountType	 = CurrentRow.AccountType;
+		Line.Parameters.Balance	     = CurrentRow.Balance;
+		
+		RowsToCheck = New Array();
+		RowsToCheck.Add(Line);
+		
+		If PrintSpreadsheet.CheckPut(RowsToCheck) = False Then			
+			PrintSpreadsheet.PutHorizontalPageBreak();
+			SetPageSize();
+
+			PrintSpreadsheet.Put(Header);
+			PrintSpreadsheet.Put(Line);
+		Else
+			PrintSpreadsheet.Put(Line);
+		EndIf;
+		
+	EndDo;
+	
+	//Header
+	PrintSpreadsheet.Header.Enabled       = True;
+	PrintSpreadsheet.Header.StartPage     = 1;
+	PrintSpreadsheet.Header.VerticalAlign = VerticalAlign.Bottom;	
+	PrintSpreadsheet.Header.Font          = New Font(PrintSpreadsheet.Header.Font, , , , True);
+	PrintSpreadsheet.Header.LeftText      = "";
+	PrintSpreadsheet.Header.CenterText    = "";
+	PrintSpreadsheet.Header.RightText     = "Page [&PageNumber] of [&PagesTotal]
+								  			|" + Format(CurrentSessionDate(), "DF='MMM d, yyyy h:mm:ss tt'");
+	
+EndProcedure
+
 
 #EndRegion
 
@@ -346,7 +526,7 @@ EndProcedure
 &AtServer
 Function ExportChartOfAccountsAtServer(Spreadsheet)
 	
-	Template = ChartsOfAccounts.ChartOfAccounts.GetTemplate("CFO_PrintForm");
+	Template = ChartsOfAccounts.ChartOfAccounts.GetTemplate("WidePrintForm");
 	
 	Header = Template.GetArea("Header");
 	Spreadsheet.Put(Header);
@@ -660,23 +840,6 @@ Procedure RecursionRowOfTree(Rows, VT)
 	
 EndProcedure
 
-#EndRegion
-
-////////////////////////////////////////////////////////////////////////////////
-#Region PRIVATE_IMPLEMENTATION
-
-&AtServer
-Function ProcessDetailsAtServer(Val ReportRF, Val ResultRF, Val DetailsDataRF, Val UUID_RF)
-	
-	ReportObject = FormDataToValue(ReportRF, Type("ReportObject.GeneralLedger"));
-	ResultRF.Clear();                                                                              
-	ReportObject.ComposeResult(ResultRF, DetailsDataRF);                                  
-	Address = PutToTempStorage(DetailsDataRF, UUID_RF); 
-	
-	Return New Structure("Result, DetailsData", ResultRF, Address);       
-	
-EndFunction
-
 &AtServerNoContext
 Function ListIsEmpty()
 	
@@ -691,6 +854,42 @@ Function ListIsEmpty()
 	Else
 		Return False;
 	EndIf;
+	
+EndFunction
+
+&AtServer
+Procedure SetPageSize() Export
+	
+	//
+	PrintSpreadsheet.PageSize        = "Letter";
+	PrintSpreadsheet.PageOrientation = PageOrientation.Portrait;
+	
+	PrintSpreadsheet.TopMargin       = 10;
+	PrintSpreadsheet.LeftMargin      = 10;
+	PrintSpreadsheet.RightMargin     = 10;
+	PrintSpreadsheet.BottomMargin    = 10;
+	
+	PrintSpreadsheet.HeaderSize      = 10;
+	PrintSpreadsheet.FooterSize      = 10;
+	
+	PrintSpreadsheet.FitToPage       = True;
+	
+EndProcedure
+
+#EndRegion
+
+////////////////////////////////////////////////////////////////////////////////
+#Region PRIVATE_IMPLEMENTATION
+
+&AtServer
+Function ProcessDetailsAtServer(Val ReportRF, Val ResultRF, Val DetailsDataRF, Val UUID_RF, NameReport)
+	
+	ReportObject = FormDataToValue(ReportRF, Type("ReportObject." + NameReport));
+	ResultRF.Clear();                                                                              
+	ReportObject.ComposeResult(ResultRF, DetailsDataRF);                                  
+	Address = PutToTempStorage(DetailsDataRF, UUID_RF); 
+	
+	Return New Structure("Result, DetailsData", ResultRF, Address);       
 	
 EndFunction
 

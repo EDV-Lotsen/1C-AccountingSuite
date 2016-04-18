@@ -2,7 +2,51 @@
 <Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
 	<WindowOpeningMode>LockOwnerWindow</WindowOpeningMode>
 	<VerticalScroll>useIfNecessary</VerticalScroll>
-	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<AutoCommandBar name="FormCommandBar" id="-1">
+		<ChildItems>
+			<Popup name="Settings" id="54">
+				<Title>
+					<v8:item>
+						<v8:lang>en</v8:lang>
+						<v8:content>Settings...</v8:content>
+					</v8:item>
+				</Title>
+				<ToolTip>
+					<v8:item>
+						<v8:lang>en</v8:lang>
+						<v8:content>Settings</v8:content>
+					</v8:item>
+				</ToolTip>
+				<ExtendedTooltip name="SettingsExtendedTooltip" id="55"/>
+				<ChildItems>
+					<Button name="FormCustomizeForm" id="56">
+						<Type>CommandBarButton</Type>
+						<OnlyInAllActions>true</OnlyInAllActions>
+						<CommandName>Form.StandardCommand.CustomizeForm</CommandName>
+						<Title>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>Customize form</v8:content>
+							</v8:item>
+						</Title>
+						<ExtendedTooltip name="FormCustomizeFormExtendedTooltip" id="57"/>
+					</Button>
+					<Button name="FormListSettings" id="58">
+						<Type>CommandBarButton</Type>
+						<OnlyInAllActions>true</OnlyInAllActions>
+						<CommandName>Form.StandardCommand.ListSettings</CommandName>
+						<Title>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>List options</v8:content>
+							</v8:item>
+						</Title>
+						<ExtendedTooltip name="FormListSettingsExtendedTooltip" id="59"/>
+					</Button>
+				</ChildItems>
+			</Popup>
+		</ChildItems>
+	</AutoCommandBar>
 	<ChildItems>
 		<Table name="List" id="1">
 			<Representation>List</Representation>
@@ -60,22 +104,19 @@
 				<ExtendedTooltip name="ListSearchControlExtendedTooltip" id="29"/>
 			</SearchControlAddition>
 			<ChildItems>
-				<LabelField name="Date" id="4">
-					<DataPath>List.Date</DataPath>
-					<DefaultItem>true</DefaultItem>
-					<HorizontalAlign>Right</HorizontalAlign>
-					<ContextMenu name="DateContextMenu" id="5"/>
-					<ExtendedTooltip name="DateExtendedTooltip" id="17"/>
+				<LabelField name="Number" id="45">
+					<DataPath>List.Number</DataPath>
+					<UserVisible>
+						<xr:Common>false</xr:Common>
+					</UserVisible>
+					<Width>15</Width>
+					<ContextMenu name="NumberContextMenu" id="46"/>
+					<ExtendedTooltip name="NumberExtendedTooltip" id="47"/>
 				</LabelField>
 				<LabelField name="BankAccount" id="12">
 					<DataPath>List.BankAccount</DataPath>
 					<ContextMenu name="BankAccountContextMenu" id="13"/>
 					<ExtendedTooltip name="BankAccountExtendedTooltip" id="18"/>
-				</LabelField>
-				<LabelField name="BankAccountDescription" id="14">
-					<DataPath>List.BankAccount.Description</DataPath>
-					<ContextMenu name="BankAccountDescriptionContextMenu" id="15"/>
-					<ExtendedTooltip name="BankAccountDescriptionExtendedTooltip" id="19"/>
 				</LabelField>
 				<LabelField name="StatementToDate" id="10">
 					<DataPath>List.Date</DataPath>
@@ -86,14 +127,93 @@
 						</v8:item>
 					</Title>
 					<HorizontalAlign>Right</HorizontalAlign>
+					<Width>15</Width>
+					<ContextMenu name="StatementToDateContextMenu" id="11"/>
+					<ExtendedTooltip name="StatementToDateExtendedTooltip" id="20"/>
+				</LabelField>
+				<LabelField name="BeginningBalance" id="30">
+					<DataPath>List.BeginningBalance</DataPath>
+					<Width>15</Width>
 					<Format>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>DLF=D</v8:content>
+							<v8:content>NFD=2; NZ=0.00</v8:content>
 						</v8:item>
 					</Format>
-					<ContextMenu name="StatementToDateContextMenu" id="11"/>
-					<ExtendedTooltip name="StatementToDateExtendedTooltip" id="20"/>
+					<ContextMenu name="BeginningBalanceContextMenu" id="31"/>
+					<ExtendedTooltip name="BeginningBalanceExtendedTooltip" id="32"/>
+				</LabelField>
+				<LabelField name="deposits" id="33">
+					<DataPath>List.deposits</DataPath>
+					<Width>15</Width>
+					<ContextMenu name="depositsContextMenu" id="34"/>
+					<ExtendedTooltip name="depositsExtendedTooltip" id="35"/>
+				</LabelField>
+				<LabelField name="payments" id="36">
+					<DataPath>List.payments</DataPath>
+					<Width>15</Width>
+					<ContextMenu name="paymentsContextMenu" id="37"/>
+					<ExtendedTooltip name="paymentsExtendedTooltip" id="38"/>
+				</LabelField>
+				<LabelField name="EndingBalance" id="39">
+					<DataPath>List.EndingBalance</DataPath>
+					<Width>15</Width>
+					<Format>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>NFD=2; NZ=0.00</v8:content>
+						</v8:item>
+					</Format>
+					<ContextMenu name="EndingBalanceContextMenu" id="40"/>
+					<ExtendedTooltip name="EndingBalanceExtendedTooltip" id="41"/>
+				</LabelField>
+				<LabelField name="Difference" id="42">
+					<DataPath>List.Difference</DataPath>
+					<Width>15</Width>
+					<Format>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>NFD=2; NZ=-</v8:content>
+						</v8:item>
+					</Format>
+					<ContextMenu name="DifferenceContextMenu" id="43"/>
+					<ExtendedTooltip name="DifferenceExtendedTooltip" id="44"/>
+				</LabelField>
+				<LabelField name="ClearedAmount" id="48">
+					<DataPath>List.ClearedAmount</DataPath>
+					<UserVisible>
+						<xr:Common>false</xr:Common>
+					</UserVisible>
+					<Width>15</Width>
+					<Format>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>NFD=2; NZ=0.00</v8:content>
+						</v8:item>
+					</Format>
+					<ContextMenu name="ClearedAmountContextMenu" id="49"/>
+					<ExtendedTooltip name="ClearedAmountExtendedTooltip" id="50"/>
+				</LabelField>
+				<LabelField name="ClearedBalance" id="51">
+					<DataPath>List.ClearedBalance</DataPath>
+					<UserVisible>
+						<xr:Common>false</xr:Common>
+					</UserVisible>
+					<Width>15</Width>
+					<Format>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>NFD=2; NZ=0.00</v8:content>
+						</v8:item>
+					</Format>
+					<ContextMenu name="ClearedBalanceContextMenu" id="52"/>
+					<ExtendedTooltip name="ClearedBalanceExtendedTooltip" id="53"/>
+				</LabelField>
+				<LabelField name="Memo" id="60">
+					<DataPath>List.Memo</DataPath>
+					<Width>30</Width>
+					<ContextMenu name="MemoContextMenu" id="61"/>
+					<ExtendedTooltip name="MemoExtendedTooltip" id="62"/>
 				</LabelField>
 			</ChildItems>
 		</Table>
@@ -105,8 +225,56 @@
 			</Type>
 			<MainAttribute>true</MainAttribute>
 			<Settings xsi:type="DynamicList">
-				<ManualQuery>false</ManualQuery>
+				<ManualQuery>true</ManualQuery>
 				<DynamicDataRead>true</DynamicDataRead>
+				<QueryText>SELECT
+	//------------------------------------------------------
+	// Standard attributes
+	BankReconciliation.Ref                        AS Ref,
+	BankReconciliation.Presentation               AS Presentation,
+	BankReconciliation.DataVersion                AS DataVersion,
+	BankReconciliation.DeletionMark               AS DeletionMark,
+	BankReconciliation.Posted                     AS Posted,
+	BankReconciliation.Number                     AS Number,
+	BankReconciliation.Date                       AS Date,
+	BankReconciliation.PointInTime                AS PointInTime,
+	//------------------------------------------------------
+	// Attributes
+	BankReconciliation.BankAccount                AS BankAccount,
+	CASE
+		WHEN BankReconciliation.BankAccount.CreditCard
+			THEN -BankReconciliation.BeginningBalance
+		ELSE BankReconciliation.BeginningBalance
+	END                                           AS BeginningBalance,
+	CASE
+		WHEN BankReconciliation.BankAccount.CreditCard
+			THEN -BankReconciliation.ClearedAmount
+		ELSE BankReconciliation.ClearedAmount
+	END                                           AS ClearedAmount,
+	CASE
+		WHEN BankReconciliation.BankAccount.CreditCard
+			THEN -BankReconciliation.ClearedBalance
+		ELSE BankReconciliation.ClearedBalance
+	END                                           AS ClearedBalance,
+	CASE
+		WHEN BankReconciliation.BankAccount.CreditCard
+			THEN -BankReconciliation.Difference
+		ELSE BankReconciliation.Difference
+	END                                           AS Difference,
+	CASE
+		WHEN BankReconciliation.BankAccount.CreditCard
+			THEN -BankReconciliation.EndingBalance
+		ELSE BankReconciliation.EndingBalance
+	END                                           AS EndingBalance,
+	CAST (BankReconciliation.Memo AS STRING(200)) AS Memo,
+	//------------------------------------------------------
+	// External IDs
+	BankReconciliation.payments                   AS payments,
+	BankReconciliation.deposits                   AS deposits
+	//------------------------------------------------------
+FROM
+	Document.BankReconciliation AS BankReconciliation
+</QueryText>
 				<MainTable>Document.BankReconciliation</MainTable>
 				<ListSettings>
 					<dcsset:filter>

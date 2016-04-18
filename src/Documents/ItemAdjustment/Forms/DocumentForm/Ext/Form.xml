@@ -4,7 +4,21 @@
 	<AutoTime>CurrentOrLast</AutoTime>
 	<UsePostingMode>Auto</UsePostingMode>
 	<RepostOnWrite>true</RepostOnWrite>
-	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<AutoCommandBar name="FormCommandBar" id="-1">
+		<ChildItems>
+			<Button name="FormAuditLogRecords" id="64">
+				<Type>CommandBarButton</Type>
+				<CommandName>Form.Command.AuditLogRecords</CommandName>
+				<ExtendedTooltip name="FormAuditLogRecordsExtendedTooltip" id="65"/>
+			</Button>
+			<Button name="FormCommonCommandAttachedFiles" id="66">
+				<Type>CommandBarButton</Type>
+				<CommandName>CommonCommand.AttachedFiles</CommandName>
+				<DataPath>Object.Ref</DataPath>
+				<ExtendedTooltip name="FormCommonCommandAttachedFilesExtendedTooltip" id="67"/>
+			</Button>
+		</ChildItems>
+	</AutoCommandBar>
 	<Events>
 		<Event name="AfterWriteAtServer">AfterWriteAtServer</Event>
 		<Event name="BeforeWrite">BeforeWrite</Event>
@@ -449,6 +463,23 @@
 			<Type/>
 		</Attribute>
 	</Attributes>
+	<Commands>
+		<Command name="AuditLogRecords" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Audit log records</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Audit log records</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>AuditLogRecords</Action>
+		</Command>
+	</Commands>
 	<CommandInterface>
 		<NavigationPanel>
 			<Item>

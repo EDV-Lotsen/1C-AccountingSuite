@@ -224,11 +224,11 @@ Procedure InformActionProgres(Val Progress = Undefined, Val Text = Undefined, Va
 	Text = "{CommonSubsystems.LongActions}" + ResultText;
 	CommonUseClientServer.MessageToUser(Text);
 	
-	GetUserMessages(Истина); // Удаление предыдущих сообщений.
+	GetUserMessages(True);
 	
 EndProcedure
 
-//Gets Background job by Job ID, and reads running status through job messages
+// Gets Background job by Job ID, and reads running status through job messages
 // Return:
 //   Structure - Background job execution status.
 //       Names and values according mapping in procedure "InformActionProgres()"
@@ -242,7 +242,7 @@ Function GetActionProgress(Val JobUID) Export
 	EndIf;
 	
 	MessagesArray = CurrentJob.GetUserMessages(True);
-	If MessagesArray = Undefined Тогда
+	If MessagesArray = Undefined Then
 		Return Result;
 	EndIf;;
 	

@@ -5,19 +5,6 @@ Procedure ExportToFile(Command)
 	GetFile(Structure.Address, Structure.FileName, True); 
 EndProcedure
 
-&AtClient
-Procedure Print(Command)
-	PrintAtServer();
-	Result.Print(PrintDialogUseMode.Use);
-EndProcedure
-
-
-&AtServer
-Procedure PrintAtServer()
-	Result.PageSize = "Letter"; 
-	Result.FitToPage = True;
-EndProcedure
-
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	Date = CurrentDate();
@@ -29,7 +16,7 @@ Procedure RunAtServer()
 	CurSettings = Report.SettingsComposer.GetSettings();
 	Param = CurSettings.DataParameters.Items.Find("Period");
 	If Param <> Undefined Then 
-		Param.Value = Date;
+		Param.Value = New Boundary(EndOfDay(Date),BoundaryType.Including);
 	EndIf;
 	Report.SettingsComposer.LoadSettings(CurSettings);
 	
@@ -39,5 +26,13 @@ EndProcedure
 
 &AtClient
 Procedure Run(Command)
+	
 	RunAtServer();
+	
+	Try
+		CurParameters = New Structure("ObjectTypeID",ThisForm.FormName);
+		CommonUseClient.ApplyPrintFormSettings(Result,CurParameters);
+	Except
+	EndTry;
+	
 EndProcedure

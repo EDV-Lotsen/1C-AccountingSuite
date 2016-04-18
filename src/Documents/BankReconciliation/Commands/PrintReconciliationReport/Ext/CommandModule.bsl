@@ -9,7 +9,10 @@ Procedure CommandProcessing(CommandParameter, CommandExecuteParameters)
 	Spreadsheet.ReadOnly = False;
 	Spreadsheet.FitToPage = True;
 	Spreadsheet.ShowHeaders = False;
-	Spreadsheet.Show(NStr("en = 'Print preview'") + ": Reconciliation Report");
+	SpreadsheetTitle	= "Reconciliation Report";
+	FormParameters = New Structure("SpreadsheetDocument, TitleOfForm, PrintFormID", Spreadsheet, SpreadsheetTitle, CommandParameter[0]);
+	OpenForm("CommonForm.PrintForm", FormParameters);
+	
 EndProcedure
 
 &AtServer

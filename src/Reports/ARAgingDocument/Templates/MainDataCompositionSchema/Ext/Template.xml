@@ -256,6 +256,12 @@
 		<field xsi:type="DataSetFieldField">
 			<dataPath>ReturnType</dataPath>
 			<field>ReturnType</field>
+			<title xsi:type="v8:LocalStringType">
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>  </v8:content>
+				</v8:item>
+			</title>
 		</field>
 		<field xsi:type="DataSetFieldField">
 			<dataPath>FullAmount</dataPath>
@@ -310,13 +316,14 @@
 			THEN GeneralJournalBalance.ExtDimension2.UnappliedPayment
 		ELSE 0
 	END AS FullAmount_FCY,
-	CASE
-		WHEN GeneralJournalBalance.ExtDimension2 REFS Document.SalesReturn
-			THEN PRESENTATION(GeneralJournalBalance.ExtDimension2.ReturnType)
-		WHEN GeneralJournalBalance.ExtDimension2 REFS Document.CashReceipt
-			THEN PRESENTATION("Cash Receipt")
-		ELSE ""
-	END AS ReturnType,
+	//CASE
+	//	WHEN GeneralJournalBalance.ExtDimension2 REFS Document.SalesReturn
+	//		THEN PRESENTATION(GeneralJournalBalance.ExtDimension2.ReturnType)
+	//	WHEN GeneralJournalBalance.ExtDimension2 REFS Document.CashReceipt
+	//		THEN PRESENTATION("Cash Receipt")
+	//	ELSE ""
+	//END AS ReturnType,
+	"" AS ReturnType,
 	CASE
 		WHEN DATEDIFF(GeneralJournalBalance.ExtDimension2.Date, &amp;EndOfPeriod, DAY) &lt;= 0
 			THEN GeneralJournalBalance.AmountClosingBalance
@@ -381,6 +388,10 @@ WHERE
 	(GeneralJournalBalance.ExtDimension2 REFS Document.SalesInvoice
 			OR GeneralJournalBalance.ExtDimension2 REFS Document.GeneralJournalEntry
 				AND GeneralJournalBalance.ExtDimension2.ARorAP = VALUE(Enum.GJEntryType.AR)
+			OR GeneralJournalBalance.ExtDimension2 REFS Document.Deposit
+				AND GeneralJournalBalance.Account.AccountType = VALUE(Enum.AccountTypes.AccountsReceivable)		
+			OR GeneralJournalBalance.ExtDimension2 REFS Document.Check
+				AND GeneralJournalBalance.Account.AccountType = VALUE(Enum.AccountTypes.AccountsReceivable)		
 			OR GeneralJournalBalance.ExtDimension2 REFS Document.SalesReturn
 			OR GeneralJournalBalance.ExtDimension2 REFS Document.CashReceipt)
 {WHERE

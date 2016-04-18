@@ -20,12 +20,20 @@ Procedure Posting(Cancel, PostingMode)
 	//Record.Account = TaxPayableAccount;
 	//Record.Period = Date;
 	//Record.AmountRC = TotalPayment;
-
+	//
+	//--//GJ++
+	//ReconciledDocumentsServerCall.AddRecordForGeneralJournalAnalyticsDimensions(RegisterRecords, Record, Null, Null, Null);
+	//--//GJ--
+	//
 	//Record = RegisterRecords.GeneralJournal.AddCredit();
 	//Record.Account = BankAccount;
 	//Record.Period = Date;
 	//Record.AmountRC = TotalPayment;
-	
+	//
+	//--//GJ++
+	//ReconciledDocumentsServerCall.AddRecordForGeneralJournalAnalyticsDimensions(RegisterRecords, Record, Null, Null, Null);
+	//--//GJ--
+	//
 	////Adjustment records
 	//	
 	//If MadeAdjustment = True Then
@@ -35,11 +43,19 @@ Procedure Posting(Cancel, PostingMode)
 	//		Record.Account = TaxPayableAccount;
 	//		Record.Period = Date;
 	//		Record.AmountRC = -1 * AdjustmentAmount;
-
+	//
+	//		//--//GJ++
+	//		ReconciledDocumentsServerCall.AddRecordForGeneralJournalAnalyticsDimensions(RegisterRecords, Record, Null, Null, Null);
+	//		//--//GJ--
+	//
 	//		Record = RegisterRecords.GeneralJournal.AddCredit();
 	//		Record.Account = AdjustmentAccount;
 	//		Record.Period = Date;
 	//		Record.AmountRC = -1 * AdjustmentAmount;
+	//
+	//		//--//GJ++
+	//		ReconciledDocumentsServerCall.AddRecordForGeneralJournalAnalyticsDimensions(RegisterRecords, Record, Null, Null, Null);
+	//		//--//GJ--
 	//		
 	//	ElsIf AdjustmentAmount > 0 Then
 	//		
@@ -47,11 +63,19 @@ Procedure Posting(Cancel, PostingMode)
 	//		Record.Account = AdjustmentAccount;
 	//		Record.Period = Date;
 	//		Record.AmountRC = AdjustmentAmount;
-
+	//
+	//		//--//GJ++
+	//		ReconciledDocumentsServerCall.AddRecordForGeneralJournalAnalyticsDimensions(RegisterRecords, Record, Null, Null, Null);
+	//		//--//GJ--
+	//
 	//		Record = RegisterRecords.GeneralJournal.AddCredit();
 	//		Record.Account = TaxPayableAccount;
 	//		Record.Period = Date;
 	//		Record.AmountRC = AdjustmentAmount;
+	//
+	//		//--//GJ++
+	//		ReconciledDocumentsServerCall.AddRecordForGeneralJournalAnalyticsDimensions(RegisterRecords, Record, Null, Null, Null);
+	//		//--//GJ--
 	//		
 	//	EndIf;
 	//EndIf;
@@ -269,6 +293,28 @@ Procedure Posting(Cancel, PostingMode)
 			Record.Reason			= "Tax advance payment";
 		EndIf;
 	EndDo;
+	
+	//CASH BASIS--------------------------------------------------------------------------------------------------
+	//------------------------------------------------------------------------------------------------------------
+	RegisterRecords.CashFlowData.Write = True;
+	
+	For Each CurrentTrans In RegisterRecords.GeneralJournalAnalyticsDimensions Do
+		
+		Record = RegisterRecords.CashFlowData.Add();
+		Record.RecordType    = CurrentTrans.RecordType;
+		Record.Period        = CurrentTrans.Period;
+		Record.Account       = CurrentTrans.Account;
+		Record.Company       = CurrentTrans.Company;
+		Record.Document      = Ref;
+		Record.SalesPerson   = Null;
+		Record.Class         = CurrentTrans.Class;
+		Record.Project       = CurrentTrans.Project;
+		Record.AmountRC      = CurrentTrans.AmountRC;
+		Record.PaymentMethod = Null;;
+		
+	EndDo;
+	//------------------------------------------------------------------------------------------------------------
+	//CASH BASIS (end)--------------------------------------------------------------------------------------------
 
 EndProcedure
 

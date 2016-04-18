@@ -192,7 +192,6 @@
 													<v8:content>Vendor</v8:content>
 												</v8:item>
 											</Title>
-											<TitleFont ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont" scale="120"/>
 											<ToolTip>
 												<v8:item>
 													<v8:lang>en</v8:lang>
@@ -202,7 +201,6 @@
 											<EditMode>EnterOnInput</EditMode>
 											<Width>15</Width>
 											<HorizontalStretch>true</HorizontalStretch>
-											<Font ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont" scale="120"/>
 											<ContextMenu name="CompanyContextMenu" id="6"/>
 											<ExtendedTooltip name="CompanyExtendedTooltip" id="109"/>
 											<Events>
@@ -238,7 +236,6 @@
 									<ChildItems>
 										<InputField name="Terms" id="257">
 											<DataPath>Object.Terms</DataPath>
-											<TitleFont ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont" scale="120"/>
 											<ToolTip>
 												<v8:item>
 													<v8:lang>en</v8:lang>
@@ -247,7 +244,6 @@
 											</ToolTip>
 											<Width>15</Width>
 											<HorizontalStretch>true</HorizontalStretch>
-											<Font ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont" scale="120"/>
 											<ContextMenu name="TermsContextMenu" id="258"/>
 											<ExtendedTooltip name="TermsExtendedTooltip" id="259"/>
 											<Events>
@@ -283,7 +279,6 @@
 											<ChildItems>
 												<InputField name="Date" id="3">
 													<DataPath>Object.Date</DataPath>
-													<TitleFont ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont" scale="120"/>
 													<ToolTip>
 														<v8:item>
 															<v8:lang>en</v8:lang>
@@ -294,7 +289,6 @@
 													<EditMode>EnterOnInput</EditMode>
 													<Width>10</Width>
 													<HorizontalStretch>false</HorizontalStretch>
-													<Font ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont" scale="120"/>
 													<ContextMenu name="DateContextMenu" id="4"/>
 													<ExtendedTooltip name="DateExtendedTooltip" id="106"/>
 													<Events>
@@ -303,7 +297,6 @@
 												</InputField>
 												<InputField name="Number" id="1">
 													<DataPath>Object.Number</DataPath>
-													<TitleFont ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont" scale="120"/>
 													<ToolTip>
 														<v8:item>
 															<v8:lang>en</v8:lang>
@@ -311,9 +304,8 @@
 														</v8:item>
 													</ToolTip>
 													<EditMode>EnterOnInput</EditMode>
-													<Width>9</Width>
+													<Width>10</Width>
 													<HorizontalStretch>false</HorizontalStretch>
-													<Font ref="sys:DefaultGUIFont" bold="true" italic="false" underline="false" strikeout="false" kind="WindowsFont" scale="120"/>
 													<ContextMenu name="NumberContextMenu" id="2"/>
 													<ExtendedTooltip name="NumberExtendedTooltip" id="102"/>
 												</InputField>
@@ -422,6 +414,34 @@
 										<Event name="OnChange">DeliveryDateActualOnChange</Event>
 									</Events>
 								</InputField>
+							</ChildItems>
+						</Page>
+						<Page name="Accounting" id="444">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Accounting</v8:content>
+								</v8:item>
+							</Title>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Accounting</v8:content>
+								</v8:item>
+							</ToolTip>
+							<ExtendedTooltip name="AccountingExtendedTooltip" id="445"/>
+							<ChildItems>
+								<Button name="AuditLogRecord" id="446">
+									<Type>UsualButton</Type>
+									<CommandName>Form.Command.AuditLogRecord</CommandName>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Audit Log Records</v8:content>
+										</v8:item>
+									</Title>
+									<ExtendedTooltip name="AuditLogRecordExtendedTooltip" id="447"/>
+								</Button>
 							</ChildItems>
 						</Page>
 						<Page name="Additional" id="163">
@@ -618,34 +638,6 @@
 								</InputField>
 							</ChildItems>
 						</Page>
-						<Page name="Accounting" id="444">
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Accounting</v8:content>
-								</v8:item>
-							</Title>
-							<ToolTip>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Accounting</v8:content>
-								</v8:item>
-							</ToolTip>
-							<ExtendedTooltip name="AccountingExtendedTooltip" id="445"/>
-							<ChildItems>
-								<Button name="AuditLogRecord" id="446">
-									<Type>UsualButton</Type>
-									<CommandName>Form.Command.AuditLogRecord</CommandName>
-									<Title>
-										<v8:item>
-											<v8:lang>en</v8:lang>
-											<v8:content>Audit Log Records</v8:content>
-										</v8:item>
-									</Title>
-									<ExtendedTooltip name="AuditLogRecordExtendedTooltip" id="447"/>
-								</Button>
-							</ChildItems>
-						</Page>
 					</ChildItems>
 				</Pages>
 			</ChildItems>
@@ -660,119 +652,6 @@
 					<HorizontalStretch>true</HorizontalStretch>
 					<ExtendedTooltip name="BodyTabsExtendedTooltip" id="269"/>
 					<ChildItems>
-						<Page name="AccountsSection" id="270">
-							<Title>
-								<v8:item>
-									<v8:lang>en</v8:lang>
-									<v8:content>Expenses</v8:content>
-								</v8:item>
-							</Title>
-							<ExtendedTooltip name="AccountsSectionExtendedTooltip" id="271"/>
-							<ChildItems>
-								<Table name="Accounts" id="272">
-									<AutoInsertNewRow>true</AutoInsertNewRow>
-									<EnableStartDrag>true</EnableStartDrag>
-									<EnableDrag>true</EnableDrag>
-									<DataPath>Object.Accounts</DataPath>
-									<SearchStringLocation>None</SearchStringLocation>
-									<ViewStatusLocation>None</ViewStatusLocation>
-									<SearchControlLocation>None</SearchControlLocation>
-									<RowFilter xsi:nil="true"/>
-									<ContextMenu name="AccountsContextMenu" id="273"/>
-									<AutoCommandBar name="AccountsCommandBar" id="274"/>
-									<ExtendedTooltip name="AccountsExtendedTooltip" id="275"/>
-									<SearchStringAddition name="AccountsSearchString" id="457">
-										<AdditionSource>
-											<Item>Accounts</Item>
-											<Type>SearchStringRepresentation</Type>
-										</AdditionSource>
-										<ContextMenu name="AccountsSearchStringContextMenu" id="458"/>
-										<ExtendedTooltip name="AccountsSearchStringExtendedTooltip" id="459"/>
-									</SearchStringAddition>
-									<ViewStatusAddition name="AccountsViewStatus" id="460">
-										<AdditionSource>
-											<Item>Accounts</Item>
-											<Type>ViewStatusRepresentation</Type>
-										</AdditionSource>
-										<ContextMenu name="AccountsViewStatusContextMenu" id="461"/>
-										<ExtendedTooltip name="AccountsViewStatusExtendedTooltip" id="462"/>
-									</ViewStatusAddition>
-									<SearchControlAddition name="AccountsSearchControl" id="463">
-										<AdditionSource>
-											<Item>Accounts</Item>
-											<Type>SearchControl</Type>
-										</AdditionSource>
-										<ContextMenu name="AccountsSearchControlContextMenu" id="464"/>
-										<ExtendedTooltip name="AccountsSearchControlExtendedTooltip" id="465"/>
-									</SearchControlAddition>
-									<Events>
-										<Event name="OnEditEnd">AccountsOnEditEnd</Event>
-										<Event name="BeforeAddRow">AccountsBeforeAddRow</Event>
-										<Event name="AfterDeleteRow">AccountsAfterDeleteRow</Event>
-										<Event name="OnChange">AccountsOnChange</Event>
-									</Events>
-									<ChildItems>
-										<LabelField name="AccountsLineNumber" id="276">
-											<DataPath>Object.Accounts.LineNumber</DataPath>
-											<EditMode>EnterOnInput</EditMode>
-											<Width>1</Width>
-											<ContextMenu name="AccountsLineNumberContextMenu" id="277"/>
-											<ExtendedTooltip name="AccountsLineNumberExtendedTooltip" id="278"/>
-										</LabelField>
-										<InputField name="AccountsAccount" id="279">
-											<DataPath>Object.Accounts.Account</DataPath>
-											<Title>
-												<v8:item>
-													<v8:lang>en</v8:lang>
-													<v8:content>Acct.</v8:content>
-												</v8:item>
-											</Title>
-											<EditMode>EnterOnInput</EditMode>
-											<Width>25</Width>
-											<ContextMenu name="AccountsAccountContextMenu" id="280"/>
-											<ExtendedTooltip name="AccountsAccountExtendedTooltip" id="281"/>
-										</InputField>
-										<InputField name="AccountsAmount" id="285">
-											<DataPath>Object.Accounts.Amount</DataPath>
-											<ToolTip>
-												<v8:item>
-													<v8:lang>en</v8:lang>
-													<v8:content>Expense amount in document currency</v8:content>
-												</v8:item>
-											</ToolTip>
-											<EditMode>EnterOnInput</EditMode>
-											<Width>10</Width>
-											<ContextMenu name="AccountsAmountContextMenu" id="286"/>
-											<ExtendedTooltip name="AccountsAmountExtendedTooltip" id="287"/>
-											<Events>
-												<Event name="OnChange">AccountsAmountOnChange</Event>
-											</Events>
-										</InputField>
-										<InputField name="AccountsMemo" id="288">
-											<DataPath>Object.Accounts.Memo</DataPath>
-											<EditMode>EnterOnInput</EditMode>
-											<Width>25</Width>
-											<ContextMenu name="AccountsMemoContextMenu" id="289"/>
-											<ExtendedTooltip name="AccountsMemoExtendedTooltip" id="290"/>
-										</InputField>
-										<InputField name="AccountsProject" id="291">
-											<DataPath>Object.Accounts.Project</DataPath>
-											<EditMode>EnterOnInput</EditMode>
-											<Width>15</Width>
-											<ContextMenu name="AccountsProjectContextMenu" id="292"/>
-											<ExtendedTooltip name="AccountsProjectExtendedTooltip" id="293"/>
-										</InputField>
-										<InputField name="AccountsClass" id="294">
-											<DataPath>Object.Accounts.Class</DataPath>
-											<EditMode>EnterOnInput</EditMode>
-											<Width>15</Width>
-											<ContextMenu name="AccountsClassContextMenu" id="295"/>
-											<ExtendedTooltip name="AccountsClassExtendedTooltip" id="296"/>
-										</InputField>
-									</ChildItems>
-								</Table>
-							</ChildItems>
-						</Page>
 						<Page name="LineItemsSection" id="46">
 							<Title>
 								<v8:item>
@@ -916,6 +795,7 @@
 										</InputField>
 										<InputField name="LineItemsUM" id="362">
 											<DataPath>Object.LineItems.Unit</DataPath>
+											<SkipOnInput>true</SkipOnInput>
 											<Title>
 												<v8:item>
 													<v8:lang>en</v8:lang>
@@ -1210,7 +1090,6 @@
 										</InputField>
 										<InputField name="LineItemsDeliveryDate" id="327">
 											<DataPath>Object.LineItems.DeliveryDate</DataPath>
-											<Visible>false</Visible>
 											<ReadOnly>true</ReadOnly>
 											<Title>
 												<v8:item>
@@ -1234,7 +1113,7 @@
 											<Title>
 												<v8:item>
 													<v8:lang>en</v8:lang>
-													<v8:content>Delivery date</v8:content>
+													<v8:content>Actual date</v8:content>
 												</v8:item>
 											</Title>
 											<ToolTip>
@@ -1273,6 +1152,116 @@
 											<Width>15</Width>
 											<ContextMenu name="LineItemsClassContextMenu" id="337"/>
 											<ExtendedTooltip name="LineItemsClassExtendedTooltip" id="338"/>
+										</InputField>
+									</ChildItems>
+								</Table>
+							</ChildItems>
+						</Page>
+						<Page name="AccountsSection" id="270">
+							<Title>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Expenses</v8:content>
+								</v8:item>
+							</Title>
+							<ExtendedTooltip name="AccountsSectionExtendedTooltip" id="271"/>
+							<ChildItems>
+								<Table name="Accounts" id="272">
+									<AutoInsertNewRow>true</AutoInsertNewRow>
+									<EnableStartDrag>true</EnableStartDrag>
+									<EnableDrag>true</EnableDrag>
+									<DataPath>Object.Accounts</DataPath>
+									<SearchStringLocation>None</SearchStringLocation>
+									<ViewStatusLocation>None</ViewStatusLocation>
+									<SearchControlLocation>None</SearchControlLocation>
+									<RowFilter xsi:nil="true"/>
+									<ContextMenu name="AccountsContextMenu" id="273"/>
+									<AutoCommandBar name="AccountsCommandBar" id="274"/>
+									<ExtendedTooltip name="AccountsExtendedTooltip" id="275"/>
+									<SearchStringAddition name="AccountsSearchString" id="457">
+										<AdditionSource>
+											<Item>Accounts</Item>
+											<Type>SearchStringRepresentation</Type>
+										</AdditionSource>
+										<ContextMenu name="AccountsSearchStringContextMenu" id="458"/>
+										<ExtendedTooltip name="AccountsSearchStringExtendedTooltip" id="459"/>
+									</SearchStringAddition>
+									<ViewStatusAddition name="AccountsViewStatus" id="460">
+										<AdditionSource>
+											<Item>Accounts</Item>
+											<Type>ViewStatusRepresentation</Type>
+										</AdditionSource>
+										<ContextMenu name="AccountsViewStatusContextMenu" id="461"/>
+										<ExtendedTooltip name="AccountsViewStatusExtendedTooltip" id="462"/>
+									</ViewStatusAddition>
+									<SearchControlAddition name="AccountsSearchControl" id="463">
+										<AdditionSource>
+											<Item>Accounts</Item>
+											<Type>SearchControl</Type>
+										</AdditionSource>
+										<ContextMenu name="AccountsSearchControlContextMenu" id="464"/>
+										<ExtendedTooltip name="AccountsSearchControlExtendedTooltip" id="465"/>
+									</SearchControlAddition>
+									<Events>
+										<Event name="OnEditEnd">AccountsOnEditEnd</Event>
+										<Event name="BeforeAddRow">AccountsBeforeAddRow</Event>
+										<Event name="AfterDeleteRow">AccountsAfterDeleteRow</Event>
+										<Event name="OnChange">AccountsOnChange</Event>
+									</Events>
+									<ChildItems>
+										<LabelField name="AccountsLineNumber" id="276">
+											<DataPath>Object.Accounts.LineNumber</DataPath>
+											<EditMode>EnterOnInput</EditMode>
+											<Width>1</Width>
+											<ContextMenu name="AccountsLineNumberContextMenu" id="277"/>
+											<ExtendedTooltip name="AccountsLineNumberExtendedTooltip" id="278"/>
+										</LabelField>
+										<InputField name="AccountsAccount" id="279">
+											<DataPath>Object.Accounts.Account</DataPath>
+											<Title>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Acct.</v8:content>
+												</v8:item>
+											</Title>
+											<EditMode>EnterOnInput</EditMode>
+											<Width>25</Width>
+											<ContextMenu name="AccountsAccountContextMenu" id="280"/>
+											<ExtendedTooltip name="AccountsAccountExtendedTooltip" id="281"/>
+											<Events>
+												<Event name="OnChange">AccountsAccountOnChange</Event>
+											</Events>
+										</InputField>
+										<InputField name="AccountsAmount" id="285">
+											<DataPath>Object.Accounts.Amount</DataPath>
+											<EditMode>EnterOnInput</EditMode>
+											<Width>10</Width>
+											<ContextMenu name="AccountsAmountContextMenu" id="286"/>
+											<ExtendedTooltip name="AccountsAmountExtendedTooltip" id="287"/>
+											<Events>
+												<Event name="OnChange">AccountsAmountOnChange</Event>
+											</Events>
+										</InputField>
+										<InputField name="AccountsMemo" id="288">
+											<DataPath>Object.Accounts.Memo</DataPath>
+											<EditMode>EnterOnInput</EditMode>
+											<Width>25</Width>
+											<ContextMenu name="AccountsMemoContextMenu" id="289"/>
+											<ExtendedTooltip name="AccountsMemoExtendedTooltip" id="290"/>
+										</InputField>
+										<InputField name="AccountsProject" id="291">
+											<DataPath>Object.Accounts.Project</DataPath>
+											<EditMode>EnterOnInput</EditMode>
+											<Width>15</Width>
+											<ContextMenu name="AccountsProjectContextMenu" id="292"/>
+											<ExtendedTooltip name="AccountsProjectExtendedTooltip" id="293"/>
+										</InputField>
+										<InputField name="AccountsClass" id="294">
+											<DataPath>Object.Accounts.Class</DataPath>
+											<EditMode>EnterOnInput</EditMode>
+											<Width>15</Width>
+											<ContextMenu name="AccountsClassContextMenu" id="295"/>
+											<ExtendedTooltip name="AccountsClassExtendedTooltip" id="296"/>
 										</InputField>
 									</ChildItems>
 								</Table>
@@ -1489,6 +1478,17 @@
 							</v8:NumberQualifiers>
 						</Type>
 					</Column>
+					<Column name="IsService" id="8">
+						<Title>
+							<v8:item>
+								<v8:lang>en</v8:lang>
+								<v8:content>Is service</v8:content>
+							</v8:item>
+						</Title>
+						<Type>
+							<v8:Type>xs:boolean</v8:Type>
+						</Type>
+					</Column>
 				</AdditionalColumns>
 			</Columns>
 		</Attribute>
@@ -1614,17 +1614,6 @@
 				<v8:Type>xs:boolean</v8:Type>
 			</Type>
 		</Attribute>
-		<Attribute name="Company" id="12">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Company</v8:content>
-				</v8:item>
-			</Title>
-			<Type>
-				<v8:Type>cfg:CatalogRef.Companies</v8:Type>
-			</Type>
-		</Attribute>
 		<Attribute name="Date" id="13">
 			<Title>
 				<v8:item>
@@ -1648,7 +1637,7 @@
 			</Title>
 			<Type/>
 		</Attribute>
-		<Attribute name="BackgroundJobParameters" id="15">
+		<Attribute name="BackgroundJobParameters" id="12">
 			<Title>
 				<v8:item>
 					<v8:lang>en</v8:lang>

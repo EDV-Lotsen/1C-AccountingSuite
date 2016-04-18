@@ -1021,17 +1021,6 @@ Procedure AfterOpen()
 	
 EndProcedure
 
-&AtClient
-Procedure SendEmail(Command)
-	If Object.Ref.IsEmpty() OR IsPosted() = False Then
-		Message("An email cannot be sent until the purchase order is posted");
-	Else	
-		FormParameters = New Structure("Ref",Object.Ref );
-		OpenForm("CommonForm.EmailForm", FormParameters,,,,,, FormWindowOpeningMode.LockOwnerWindow);	
-	EndIf;
-
-EndProcedure
-
 &AtServer
 Function IsPosted()
 	Return Object.Ref.Posted;

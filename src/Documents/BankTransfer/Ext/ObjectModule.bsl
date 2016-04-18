@@ -2,6 +2,7 @@
 Procedure Posting(Cancel, PostingMode)
 	
 	RegisterRecords.GeneralJournal.Write = True;
+	
 	DefaultCurrency = GeneralFunctionsReusable.DefaultCurrency();
 	If GeneralFunctionsReusable.FunctionalOptionValue("MultiCurrency") Then	
 		TodayDefaultRate = GeneralFunctions.GetExchangeRate(Date, Currency);
@@ -32,12 +33,42 @@ Procedure Posting(Cancel, PostingMode)
 	Record.Amount = AmountTo;
 	Record.AmountRC = Amount*TodayDefaultRate;
 	
+	//--//GJ++
+	ReconciledDocumentsServerCall.AddRecordForGeneralJournalAnalyticsDimensions(RegisterRecords, Record, Null, Null, Null);
+	//--//GJ--
+	
 	Record = RegisterRecords.GeneralJournal.AddCredit();
 	Record.Account = AccountFrom;
 	Record.Period = Date;
 	Record.Currency = Currency;
 	Record.Amount = Amount;
 	Record.AmountRC = Amount*TodayDefaultRate;
+	
+	//--//GJ++
+	ReconciledDocumentsServerCall.AddRecordForGeneralJournalAnalyticsDimensions(RegisterRecords, Record, Null, Null, Null);
+	//--//GJ--
+	
+	//CASH BASIS--------------------------------------------------------------------------------------------------
+	//------------------------------------------------------------------------------------------------------------
+	RegisterRecords.CashFlowData.Write = True;
+	
+	For Each CurrentTrans In RegisterRecords.GeneralJournalAnalyticsDimensions Do
+		
+		Record = RegisterRecords.CashFlowData.Add();
+		Record.RecordType    = CurrentTrans.RecordType;
+		Record.Period        = CurrentTrans.Period;
+		Record.Account       = CurrentTrans.Account;
+		Record.Company       = CurrentTrans.Company;
+		Record.Document      = Ref;
+		Record.SalesPerson   = Null;
+		Record.Class         = CurrentTrans.Class;
+		Record.Project       = CurrentTrans.Project;
+		Record.AmountRC      = CurrentTrans.AmountRC;
+		Record.PaymentMethod = Null;;
+		
+	EndDo;
+	//------------------------------------------------------------------------------------------------------------
+	//CASH BASIS (end)--------------------------------------------------------------------------------------------
 	
 	// Writing bank reconciliation data
 		

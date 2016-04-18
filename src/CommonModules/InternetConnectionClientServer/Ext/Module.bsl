@@ -190,7 +190,7 @@
 //
 Function CreateConnection(Val URL, ConnectionSettings = Undefined,
 	SecureConnection = Undefined, ProxySettings = Undefined,
-	ExternalHandler = Undefined, ExternalParameters = Undefined) Export
+	ExternalHandler = Undefined, ExternalParameters = Undefined, DecodeParameters = True) Export
 	
 	//--------------------------------------------------------------------------
 	// 1. Read and check connection parameters.
@@ -201,7 +201,7 @@ Function CreateConnection(Val URL, ConnectionSettings = Undefined,
 	                               |Anchor, Timeout, Passive");
 	
 	// Apply connection settings, defined in passed URL, to ConnectionData.
-	FillPropertyValues(ConnectionData, URLToStructure(URL));
+	FillPropertyValues(ConnectionData, URLToStructure(URL,, DecodeParameters));
 	
 	// Apply (and override) URL settings with connection settings,
 	// passed in ConnectionSettings structure.

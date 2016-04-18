@@ -3,10 +3,9 @@
 	<CommandBarLocation>None</CommandBarLocation>
 	<VerticalScroll>useIfNecessary</VerticalScroll>
 	<CommandSet>
-		<ExcludedCommand>SaveVariant</ExcludedCommand>
+		<ExcludedCommand>Print</ExcludedCommand>
 		<ExcludedCommand>LoadVariant</ExcludedCommand>
 		<ExcludedCommand>Generate</ExcludedCommand>
-		<ExcludedCommand>ChangeVariant</ExcludedCommand>
 	</CommandSet>
 	<ReportResult>Result</ReportResult>
 	<DetailsData>DetailsData</DetailsData>
@@ -188,24 +187,53 @@
 							</Title>
 							<ExtendedTooltip name="CreateExtendedTooltip" id="25"/>
 						</Button>
-						<Button name="FormExcel" id="17">
-							<Type>CommandBarButton</Type>
-							<Visible>false</Visible>
-							<OnlyInAllActions>true</OnlyInAllActions>
-							<CommandName>Form.Command.Excel</CommandName>
+						<ButtonGroup name="PrintGroup" id="41">
 							<Title>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Export to Excel</v8:content>
+									<v8:content>Print group</v8:content>
 								</v8:item>
 							</Title>
-							<ExtendedTooltip name="FormExcelExtendedTooltip" id="18"/>
-						</Button>
-						<Button name="FormPrint" id="37">
-							<Type>CommandBarButton</Type>
-							<CommandName>Form.Command.Print</CommandName>
-							<ExtendedTooltip name="FormPrintExtendedTooltip" id="38"/>
-						</Button>
+							<ToolTip>
+								<v8:item>
+									<v8:lang>en</v8:lang>
+									<v8:content>Print group</v8:content>
+								</v8:item>
+							</ToolTip>
+							<ExtendedTooltip name="PrintGroupExtendedTooltip" id="42"/>
+							<ChildItems>
+								<Button name="FormExcel" id="17">
+									<Type>CommandBarButton</Type>
+									<Representation>Picture</Representation>
+									<OnlyInAllActions>true</OnlyInAllActions>
+									<CommandName>Form.Command.Excel</CommandName>
+									<Picture>
+										<xr:Ref>CommonPicture.Excel</xr:Ref>
+										<xr:LoadTransparent>true</xr:LoadTransparent>
+									</Picture>
+									<Title>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Export to Excel</v8:content>
+										</v8:item>
+									</Title>
+									<ExtendedTooltip name="FormExcelExtendedTooltip" id="18"/>
+								</Button>
+								<Button name="FormPrint" id="39">
+									<Type>CommandBarButton</Type>
+									<Representation>Picture</Representation>
+									<OnlyInAllActions>true</OnlyInAllActions>
+									<CommandName>Form.Item.Result.StandardCommand.Print</CommandName>
+									<ExtendedTooltip name="FormPrintExtendedTooltip" id="40"/>
+								</Button>
+								<Button name="FormCommonCommandPrintFormSettings" id="37">
+									<Type>CommandBarButton</Type>
+									<OnlyInAllActions>true</OnlyInAllActions>
+									<CommandName>CommonCommand.PrintFormSettings</CommandName>
+									<ExtendedTooltip name="FormCommonCommandPrintFormSettingsExtendedTooltip" id="38"/>
+								</Button>
+							</ChildItems>
+						</ButtonGroup>
 					</ChildItems>
 				</CommandBar>
 			</ChildItems>
@@ -352,26 +380,6 @@
 				</v8:item>
 			</ToolTip>
 			<Action>Create</Action>
-		</Command>
-		<Command name="Print" id="3">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Print</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Print</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Picture>
-				<xr:Ref>StdPicture.Print</xr:Ref>
-				<xr:LoadTransparent>true</xr:LoadTransparent>
-			</Picture>
-			<Action>Print</Action>
-			<Representation>Picture</Representation>
 		</Command>
 	</Commands>
 </Form>

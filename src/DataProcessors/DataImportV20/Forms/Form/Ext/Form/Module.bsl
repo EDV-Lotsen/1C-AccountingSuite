@@ -2,13 +2,38 @@
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
+	DateFormat = "mmddyyyy_Slashed";
+	
 	ActionType = Parameters.ActionType;
 	FillAttributes();
 	Date = CurrentDate();
 	Date2 = CurrentDate();
+	Items.AdditionalSettings.Visible = False;
+	Items.FullErrorText.Visible = False;
 	
+	ErrorProcessingChoiceList = New Structure;
+	ErrorProcessingChoiceList.Insert("StopOnError","Stop processing if any error");
+	ErrorProcessingChoiceList.Insert("SkipErrors","Skip errors, and process other");
 	
-	//Items.ActionType.ChoiceList.Add("DirectUpload","Direct upload");
+	Items.ErrorProcessing.ChoiceList.Clear();
+	Items.ErrorProcessingCreate.ChoiceList.Clear();
+	For Each ErrorProcessingChoiceOption in ErrorProcessingChoiceList Do 
+		Items.ErrorProcessing.ChoiceList.Add(ErrorProcessingChoiceOption.Key,ErrorProcessingChoiceOption.Value);
+		Items.ErrorProcessingCreate.ChoiceList.Add(ErrorProcessingChoiceOption.Key,ErrorProcessingChoiceOption.Value);
+	EndDo;
+	
+	ErrorProcessing = "StopOnError";
+	
+	//--------------------------------------------------
+	// Temporary bug fix in case of attribute renaming
+	TmpSI = Documents.SalesInvoice.CreateDocument();
+	LocationAttributeName = "LocationActual";
+	
+	DeliveryDateActualAttributeName = "DeliveryDateActual";
+	
+	//--------------------------------------------------
+
+	
 	
 EndProcedure
 
@@ -52,8 +77,8 @@ Procedure ReadSourceFile(TempStorageAddress)
 	TempFileName = GetTempFileName("csv");
 	BinaryData.Write(TempFileName);
 	
-	RowLimit = 4000;
-	FileSizeLimit = 1000000;
+	RowLimit = 800000;
+	FileSizeLimit = 10000000;
 	
 	PreCheckPassed = True;
 	CsvFileSize =  BinaryData.Size();
@@ -306,11 +331,11 @@ Procedure FillAttributes()
 	Items.DataListDepositDate.Visible = ThisDeposits;
 	Items.DataListDepositBankAccount.Visible = ThisDeposits;
 	Items.DataListDepositMemo.Visible = ThisDeposits;
-	Items.DataListDepositLineCompany.Visible = ThisDeposits;
-	Items.DataListDepositLineAccount.Visible = ThisDeposits;
-	Items.DataListDepositLineAmount.Visible = ThisDeposits;
-	Items.DataListDepositLineClass.Visible = ThisDeposits;
-	Items.DataListDepositLineMemo.Visible = ThisDeposits;
+	//Items.DataListDepositLineCompany.Visible = ThisDeposits;
+	//Items.DataListDepositLineAccount.Visible = ThisDeposits;
+	//Items.DataListDepositLineAmount.Visible = ThisDeposits;
+	//Items.DataListDepositLineClass.Visible = ThisDeposits;
+	//Items.DataListDepositLineMemo.Visible = ThisDeposits;
 	
 	Items.DataListClassName.Visible = ThisClasses;
 	Items.DataListSubClassOf.Visible = ThisClasses;
@@ -346,26 +371,16 @@ Procedure FillAttributes()
 		
 		NewLine = Attributes.Add();
 		NewLine.AttributeName = "Deposit memo [char]";
-		//NewLine.Required = True;
-	
-		NewLine = Attributes.Add();
-		NewLine.AttributeName = "Line company [ref]";
-
-		NewLine = Attributes.Add();
-		NewLine.AttributeName = "Line account [ref]";
-		NewLine.Required = True;
-
-		NewLine = Attributes.Add();
-		NewLine.AttributeName = "Line amount [num]";
-		NewLine.Required = True;
-		
-		NewLine = Attributes.Add();
-		NewLine.AttributeName = "Line class [ref]";
-
-	    NewLine = Attributes.Add();
-		NewLine.AttributeName = "Line memo [char]";
-		
-		AddCustomAttribute(2,"Post [T - true, F - false]","ToPost",,"Post");		
+		AddCustomAttribute(2,"		Line account [ref]","LineAccount",,"Line account");
+		AddCustomAttribute(3,"		Line company [ref]","LineCompany",,"Line company");
+		AddCustomAttribute(4,"		Line Doc. number [char(20)]","LineDocNumber",,"Line doc. number");
+		AddCustomAttribute(5,"		Line Doc. type [Cash recept/Cash sale]","LineDocType",,"Line doc. type");
+		AddCustomAttribute(7,"		Line amount [num]","LineAmount",,"Line amount");
+		AddCustomAttribute(8,"		Line currency [char(3)]","LineCurrency",,"Line currency");
+		AddCustomAttribute(9,"		Line class [ref]","LineClass",,"Line class");
+		AddCustomAttribute(10,"		Line project [ref]","LineProject",,"Line project");
+		AddCustomAttribute(11,"		Line memo [char(3)]","LineMemo",,"Line memo");
+		AddCustomAttribute(12,"Post [T - true, F - false]","ToPost",,"Post");		
 		
 	ElsIf ThisClasses Then
 		
@@ -426,13 +441,14 @@ Procedure FillAttributes()
 		AddCustomAttribute(16,"Doc Total [num]","DocTotal", ,"Total");		
 		AddCustomAttribute(17,"Doc Total RC [num]","DocTotalRC",, "Total RC");		
 		// Line items
-		AddCustomAttribute(18,"Product [char(20)]","Product",);		
-		AddCustomAttribute(19,"Description [char(20)]","Description",);		
-		AddCustomAttribute(20,"Price [num)]","Price",);		
-		AddCustomAttribute(21,"Line Total [num]","LineTotal",,"Line Total");		
-		AddCustomAttribute(22,"Line Project [char(20)]","LineProject",,"Line Project");	
-		AddCustomAttribute(23,"Line Class [char(20)]","LineClass",,"Line Class");	
-		AddCustomAttribute(24,"Line Quantity [num]","LineQuantity",,"Line Quantity");	
+		//AddCustomAttribute(-1,"Tabular sections","");
+		AddCustomAttribute(18,"		Product [char(20)]","Product",);		
+		AddCustomAttribute(19,"		Description [char(20)]","Description",);		
+		AddCustomAttribute(20,"		Price [num)]","Price",);		
+		AddCustomAttribute(21,"		Line Total [num]","LineTotal",,"Line Total");		
+		AddCustomAttribute(22,"		Line Project [char(20)]","LineProject",,"Line Project");	
+		AddCustomAttribute(23,"		Line Class [char(20)]","LineClass",,"Line Class");	
+		AddCustomAttribute(24,"		Line Quantity [num]","LineQuantity",,"Line Quantity");	
 		AddCustomAttribute(25,"Post [T - true, F - false]","ToPost",,"Post");		
 		
 	ElsIf ThisBill Then //PurchaseInvoice
@@ -460,10 +476,11 @@ Procedure FillAttributes()
 		AddCustomAttribute(19,"Line Total [num]","LineTotal",,"Line Total");		
 		AddCustomAttribute(20,"Line PO # [char(20)]","LinePO",,"Line PO");	
 		AddCustomAttribute(21,"Line Class [char(20)]","LineClass",,"Line Class");	
-		AddCustomAttribute(22,"Line Quantity [num]","LineQuantity",,"Line Quantity");	
-		AddCustomAttribute(23,"Line Memo [char]","LineMemo",,"Line memo");		
-		AddCustomAttribute(24,"Line Account [char(10)]","LineAccount",,"Line account");	
-		AddCustomAttribute(25,"Post [1 - true, 0 - false]","ToPost",,"Post");			
+		AddCustomAttribute(22,"Line Project [char(20)]","LineProject",,"Line Project");	
+		AddCustomAttribute(23,"Line Quantity [num]","LineQuantity",,"Line Quantity");	
+		AddCustomAttribute(24,"Line Memo [char]","LineMemo",,"Line memo");		
+		AddCustomAttribute(25,"Line Account [char(10)]","LineAccount",,"Line account");	
+		AddCustomAttribute(26,"Post [1 - true, 0 - false]","ToPost",,"Post");			
 		
 	ElsIf ThisIR Then //ItemReceipt
 
@@ -521,38 +538,71 @@ Procedure FillAttributes()
 		
 	ElsIf ThisSaleInvoice Then //SalesInvoice                
 
-		AddCustomAttribute(1,"Number [char(20)]","Number",True);
-		AddCustomAttribute(2,"Document date [date]","DocDate", True, "Document date");
-		AddCustomAttribute(3,"Company [Ref]","Company",True);	
-		AddCustomAttribute(4,"Ship to [char (25)]","ShipToAddr",, "Ship to");	
-		AddCustomAttribute(5,"Bill to [char (25)]","BillToAddr",, "Bill to");	
-		AddCustomAttribute(6,"Confirm to [char (25)]","ConfirmToAddr",, "Confirm to");	
-		AddCustomAttribute(7,"Ref Num [char (20)]","RefNum",, "Ref Num");	
-		AddCustomAttribute(8,"Currency [char(3)]","Currency",);	
-		AddCustomAttribute(9,"AR Account [char(10)]","ARAccount",,"AR account");	
-		AddCustomAttribute(10,"Payment method [char(25)]","PaymentMethod",, "Payment method");	
-		AddCustomAttribute(11,"Due Date [char(20)]","DueDate",, "Due date");	
-		AddCustomAttribute(12,"Sales Person [char(50)]","SalesPerson",, "Sales person");	
-		AddCustomAttribute(13,"Location [char(20)]","Location",);	
-		AddCustomAttribute(14,"Delivery Date [char(20)]","DeliveryDate",, "Delivery date");	
-		AddCustomAttribute(15,"Project [char(20)]","Project",);	
-		AddCustomAttribute(16,"Class [char(20)]","Class",);	
-		AddCustomAttribute(17,"Terms [char(25)]","Terms",);	
-		AddCustomAttribute(18,"Sales tax [Num]","SalesTax",,"Sales tax");	
-		AddCustomAttribute(19,"Memo [char]","Memo",);		
+		//AddCustomAttribute(1,"Number [char(20)]","Number",True);
+		//AddCustomAttribute(2,"Document date [date]","DocDate", True, "Document date");
+		//AddCustomAttribute(3,"Company [Ref]","Company",True);	
+		//AddCustomAttribute(4,"Ship to [char (25)]","ShipToAddr",, "Ship to");	
+		//AddCustomAttribute(5,"Bill to [char (25)]","BillToAddr",, "Bill to");	
+		//AddCustomAttribute(6,"Confirm to [char (25)]","ConfirmToAddr",, "Confirm to");	
+		//AddCustomAttribute(7,"Ref Num [char (20)]","RefNum",, "Ref Num");	
+		//AddCustomAttribute(8,"Currency [char(3)]","Currency",);	
+		//AddCustomAttribute(9,"AR Account [char(10)]","ARAccount",,"AR account");	
+		//AddCustomAttribute(10,"Payment method [char(25)]","PaymentMethod",, "Payment method");	
+		//AddCustomAttribute(11,"Due Date [char(20)]","DueDate",, "Due date");	
+		//AddCustomAttribute(12,"Sales Person [char(50)]","SalesPerson",, "Sales person");	
+		//AddCustomAttribute(13,"Location [char(20)]","Location",);	
+		//AddCustomAttribute(14,"Delivery Date [char(20)]","DeliveryDate",, "Delivery date");	
+		//AddCustomAttribute(15,"Project [char(20)]","Project",);	
+		//AddCustomAttribute(16,"Class [char(20)]","Class",);	
+		//AddCustomAttribute(17,"Terms [char(25)]","Terms",);	
+		//AddCustomAttribute(18,"Sales tax [Num]","SalesTax",,"Sales tax");	
+		//AddCustomAttribute(19,"Shipping [Num]","Shipping",);	
+		//AddCustomAttribute(20,"Memo [char]","Memo",);		
+		//
+		//// Line items
+		//AddCustomAttribute(21,"Product [char(20)]","Product",);		
+		//AddCustomAttribute(22,"Description [char(20)]","Description",);		
+		//AddCustomAttribute(23,"Price [num]","Price",);		
+		//AddCustomAttribute(24,"Line Quantity [num]","LineQuantity",,"Line Quantity");	
+		//AddCustomAttribute(25,"Line Project [char(20)]","LineProject",,"Line Project");	
+		//AddCustomAttribute(26,"Line Class [char(20)]","LineClass",,"Line Class");	
+		//AddCustomAttribute(27,"Taxable amount [num]","TaxableAmount",,"Taxable amount");	
+		//AddCustomAttribute(28,"Taxable [1 - true, 0 - false]","Taxable");	
+		//AddCustomAttribute(29,"Post [1 - true, 0 - false]","ToPost",,"Post");	
+		//AddCustomAttribute(30,"Sales Order [char(20)]","LineOrder");	
+		
+		AddCustomAttribute(,"Number [char(20)]","Number",True);
+		AddCustomAttribute(,"Document date [date]","DocDate", True, "Document date");
+		AddCustomAttribute(,"Company [Ref]","Company",True);	
+		AddCustomAttribute(,"Ship to [char (25)]","ShipToAddr",, "Ship to");	
+		AddCustomAttribute(,"Bill to [char (25)]","BillToAddr",, "Bill to");	
+		AddCustomAttribute(,"Confirm to [char (25)]","ConfirmToAddr",, "Confirm to");	
+		AddCustomAttribute(,"Ref Num [char (20)]","RefNum",, "Ref Num");	
+		AddCustomAttribute(,"Currency [char(3)]","Currency",);	
+		AddCustomAttribute(,"AR Account [char(10)]","ARAccount",,"AR account");	
+		AddCustomAttribute(,"Payment method [char(25)]","PaymentMethod",, "Payment method");	
+		AddCustomAttribute(,"Due Date [char(20)]","DueDate",, "Due date");	
+		AddCustomAttribute(,"Sales Person [char(50)]","SalesPerson",, "Sales person");	
+		AddCustomAttribute(,"Location [char(20)]","Location",);	
+		AddCustomAttribute(,"Delivery Date [char(20)]","DeliveryDate",, "Delivery date");	
+		AddCustomAttribute(,"Project [char(20)]","Project",);	
+		AddCustomAttribute(,"Class [char(20)]","Class",);	
+		AddCustomAttribute(,"Terms [char(25)]","Terms",);	
+		AddCustomAttribute(,"Sales tax [Num]","SalesTax",,"Sales tax");	
+		AddCustomAttribute(,"Shipping [Num]","Shipping",);	
+		AddCustomAttribute(,"Memo [char]","Memo",);		
 		
 		// Line items
-		AddCustomAttribute(20,"Product [char(20)]","Product",);		
-		AddCustomAttribute(21,"Description [char(20)]","Description",);		
-		AddCustomAttribute(22,"Price [num)]","Price",);		
-		AddCustomAttribute(23,"Line Quantity [num]","LineQuantity",,"Line Quantity");	
-		AddCustomAttribute(24,"Line Total [num]","LineTotal",,"Line Total");		
-		AddCustomAttribute(25,"Line Project [char(20)]","LineProject",,"Line Project");	
-		AddCustomAttribute(26,"Line Class [char(20)]","LineClass",,"Line Class");	
-		AddCustomAttribute(27,"Taxable amount [num]","TaxableAmount",,"Taxable amount");	
-		AddCustomAttribute(28,"Taxable [1 - true, 0 - false]","Taxable");	
-		AddCustomAttribute(29,"Post [1 - true, 0 - false]","ToPost",,"Post");	
-		AddCustomAttribute(30,"Sales Order [char(20)]","Order");	
+		AddCustomAttribute(,"Product [char(20)]","Product",);		
+		AddCustomAttribute(,"Description [char(20)]","Description",);		
+		AddCustomAttribute(,"Price [num]","Price",);		
+		AddCustomAttribute(,"Line Quantity [num]","LineQuantity",,"Line Quantity");	
+		AddCustomAttribute(,"Line Project [char(20)]","LineProject",,"Line Project");	
+		AddCustomAttribute(,"Line Class [char(20)]","LineClass",,"Line Class");	
+		AddCustomAttribute(,"Taxable amount [num]","TaxableAmount",,"Taxable amount");	
+		AddCustomAttribute(,"Taxable [1 - true, 0 - false]","Taxable");	
+		AddCustomAttribute(,"Post [1 - true, 0 - false]","ToPost",,"Post");	
+		AddCustomAttribute(,"Sales Order [char(20)]","LineOrder");	
 		
 	ElsIf ThisSaleOrder Then //SalesOrder                
 
@@ -572,15 +622,16 @@ Procedure FillAttributes()
 		AddCustomAttribute(14,"Memo [char]","Memo",);		
 		
 		// Line items
-		AddCustomAttribute(15,"Product [char(20)]","Product",);		
-		AddCustomAttribute(16,"Description [char(20)]","Description",);		
-		AddCustomAttribute(17,"Price [num)]","Price",);		
-		AddCustomAttribute(18,"Line Quantity [num]","LineQuantity",,"Line Quantity");	
-		AddCustomAttribute(19,"Line Total [num]","LineTotal",,"Line Total");		
-		AddCustomAttribute(20,"Line Project [char(20)]","LineProject",,"Line Project");	
-		AddCustomAttribute(21,"Line Class [char(20)]","LineClass",,"Line Class");	
-		AddCustomAttribute(22,"Taxable amount [num]","TaxableAmount",,"Taxable amount");	
-		AddCustomAttribute(23,"Taxable [1 - true, 0 - false]","Taxable",,"Taxable");	
+		//AddCustomAttribute(-1,"Tabular sections","");		
+		AddCustomAttribute(15,"		Product [char(20)]","Product",);		
+		AddCustomAttribute(16,"		Description [char(20)]","Description",);		
+		AddCustomAttribute(17,"		Price [num)]","Price",);		
+		AddCustomAttribute(18,"		Line Quantity [num]","LineQuantity",,"Line Quantity");	
+		AddCustomAttribute(19,"		Line Total [num]","LineTotal",,"Line Total");		
+		AddCustomAttribute(20,"		Line Project [char(20)]","LineProject",,"Line Project");	
+		AddCustomAttribute(21,"		Line Class [char(20)]","LineClass",,"Line Class");	
+		AddCustomAttribute(22,"		Taxable amount [num]","TaxableAmount",,"Taxable amount");	
+		AddCustomAttribute(23,"		Taxable [1 - true, 0 - false]","Taxable",,"Taxable");	
 		AddCustomAttribute(24,"Post [1 - true, 0 - false]","ToPost",,"Post");	
 		
 	ElsIf ThisCashReceipt Then //CashReceipt                
@@ -595,13 +646,14 @@ Procedure FillAttributes()
 		AddCustomAttribute(8,"Payment method [char(25)]","PaymentMethod",, "Payment method");	
 		AddCustomAttribute(9,"Deposit type [1 - Undeposited, 2 - Bank]","DepositType",, "Deposit type");	
 		AddCustomAttribute(10,"AR Account [char(10)]","ARAccount",,"AR account");	
-		AddCustomAttribute(11,"Sales order [char(10)]","SalesOrder",,"Sales order");	
+		AddCustomAttribute(11,"Overpayment [Num]","Overpayment");	
 		
-		AddCustomAttribute(12,"Table type [0 - Header, 1 - Invoices, 2 - Credits]","TableType",,"Table type");	
-		AddCustomAttribute(13,"Document type [char(15)]","DocumentType",,"Document type");	
-		AddCustomAttribute(14,"Document number [char(6)]","DocumentNum",,"Document number");	
-		AddCustomAttribute(15,"Payment [Num]","Payment");	
-		AddCustomAttribute(16,"Overpayment [Num]","Overpayment");	
+		AddCustomAttribute(12,"Sales order [char(10)]","SalesOrder",,"Sales order");	
+		AddCustomAttribute(13,"Table type [0 - Header, 1 - Invoices, 2 - Credits]","TableType",,"Table type");	
+		//AddCustomAttribute(-1,"Tabular sections","");		
+		AddCustomAttribute(14,"		Document type [char(15)]","DocumentType",,"Document type");	
+		AddCustomAttribute(15,"		Document number [char(6)]","DocumentNum",,"Document number");	
+		AddCustomAttribute(16,"		Payment [Num]","Payment");	
 		
 		AddCustomAttribute(17,"Post [1 - true, 0 - false]","ToPost",,"Post");			
 		
@@ -886,74 +938,6 @@ Procedure FillAttributes()
 		AddCustomAttribute(1,"Taxable [T - true, F - false]","STaxable",,"Taxable");
 		AddCustomAttribute(2,"Sales tax rate [char(50)]","STaxRate",,"Tax rate");
 		//AddCustomAttribute(3,"Update all company data [T - true, F - false]","UpdateAll",,"Update all");
-		
-		// end address
-		///--------------------------------------------------------------------------------
-		If False then // Prepare for refactoring
-			AddCustomAttribute(1,"Type [0 - Customer, 1 - Vendor, 2 - Both]","STaxable",True,"Type");
-			AddCustomAttribute(2,"Company code [char(5)]","STaxable",,"Company code");
-			AddCustomAttribute(3,"Company name [char(150)]","STaxable",True,"company name");
-			AddCustomAttribute(4,"Full name [char(150)]","STaxable",,"Full name");
-			AddCustomAttribute(5,"Income account [ref]","STaxable",,"Income account");
-			AddCustomAttribute(6,"Expense account [ref]","STaxable",,"Expence account");
-			AddCustomAttribute(7,"1099 vendor [T - true, F - false]","CustomerVendor1099",,"1099");
-			AddCustomAttribute(8,"Employee [T - true, F - false]","CustomerEmployee",,"Employee");
-			AddCustomAttribute(9,"EIN or SSN","STaxable",,"EIN  or SSN");
-			AddCustomAttribute(0,"Vendor tax ID [char(15)]","STaxable",,"Tax ID");
-			AddCustomAttribute(11,"Default billing address [T - true, F - false","DefaultBillingAddress",,"Default Billing");
-			AddCustomAttribute(12,"Default shipping address [T - true, F - false","DefaultShippingAddress",,"Default shipping");
-			AddCustomAttribute(13,"Notes [char]","STaxable",,"Notes");
-			AddCustomAttribute(14,"Terms [ref]","STaxable",,"Terms");
-			AddCustomAttribute(15,"Customer sales person [ref]","STaxable",,"Sales person");
-			AddCustomAttribute(16,"Customer price level [ref]","STaxable",,"Price level");
-			AddCustomAttribute(17,"Website [char(200)]","STaxable",,"Website");
-			AddCustomAttribute(18,"Company CF1 string [char(100)]","",,"CF1(str)");
-			AddCustomAttribute(19,"Company CF1 num [num]","",,"CF1(Num)");
-			AddCustomAttribute(20,"Company CF2 string [char(100)]","",,"CF2(str)");
-			AddCustomAttribute(21,"Company CF2 num [num]","",,"CF2(Num)");
-			AddCustomAttribute(22,"Company CF3 string [char(100)]","",,"CF3(str)");
-			AddCustomAttribute(23,"Company CF3 num [num]","",,"CF3(Num)");
-			AddCustomAttribute(24,"Company CF4 string [char(100)]","",,"CF4(str)");
-			AddCustomAttribute(25,"Company CF4 num [num]","",,"CF4(Num)");
-			AddCustomAttribute(26,"Company CF5 string [char(100)]","",,"CF5(str)");
-			AddCustomAttribute(27,"Company CF5 num [num]","",,"CF5(Num)");
-			AddCustomAttribute(28,"Address ID [char(25)]","STaxable",,"Addr ID");
-			AddCustomAttribute(29,"Salutation [char(15)]","STaxable",,"Sal.");
-			AddCustomAttribute(30,"First name [char(200)]","STaxable",,"First name");
-			AddCustomAttribute(31,"Middle name [char(200)]","STaxable",,"Middle name");
-			AddCustomAttribute(32,"Last name [char(200)]","STaxable",,"Last Name");
-			AddCustomAttribute(33,"Suffix [char(10)]","STaxable",,"Suffix");
-			AddCustomAttribute(34,"Job title [char(200)]","STaxable",,"Job title");
-			AddCustomAttribute(35,"Phone [char(50)]","STaxable",,"Phone");
-			AddCustomAttribute(36,"Cell [char(50)","STaxable",,"Cell");
-			AddCustomAttribute(37,"Fax [char(50)","STaxable",,"Fax");
-			AddCustomAttribute(38,"E-mail [char(100)]","STaxable",,"Email");
-			AddCustomAttribute(39,"Address line 1 [char(250)]","STaxable",,"Addr Line 1");
-			AddCustomAttribute(40,"Address line 2 [char(250)]","STaxable",,"Addr Line 2");
-			AddCustomAttribute(41,"Address line 3 [char(250)]","STaxable",,"Addr Line 3");
-			AddCustomAttribute(42,"City [char(100)]","STaxable",,"City");
-			AddCustomAttribute(43,"State [ref]","STaxable",,"State");
-			AddCustomAttribute(44,"Country [ref]","STaxable",,"Country");
-			AddCustomAttribute(45,"ZIP [char(20)]","STaxable",,"Zip");
-			AddCustomAttribute(46,"Address notes [char","STaxable",,"Addr notes");
-			AddCustomAttribute(47,"Shipping address line 1 [char(250)]","STaxable",,"Ship Addr 1");
-			AddCustomAttribute(48,"Shipping address line 2 [char(250)]","STaxable",,"Ship Addr 2");
-			AddCustomAttribute(49,"Shipping address line 3 [char(250)]","STaxable",,"Ship Addr 3");
-			AddCustomAttribute(50,"Shipping City [char(100)]","STaxable",,"Ship city");
-			AddCustomAttribute(51,"Shipping State [ref]","STaxable",,"Ship state");
-			AddCustomAttribute(52,"Shipping Country [ref]","STaxable",,"Ship country");
-			AddCustomAttribute(53,"Shipping ZIP [char(20)]","STaxable",,"Taxable");
-			AddCustomAttribute(54,"Address sales person [ref]","STaxable",,"Addr Sales person");				
-			AddCustomAttribute(55,"Address CF1 string [char(200)]","",,"Addr CF1");
-			AddCustomAttribute(56,"Address CF2 string [char(200)]","",,"Addr CF2");
-			AddCustomAttribute(57,"Address CF3 string [char(200)]","",,"Addr CF3");
-			AddCustomAttribute(58,"Address CF4 string [char(200)]","",,"Addr CF4");
-			AddCustomAttribute(59,"Address CF5 string [char(200)]","",,"Addr CF5");
-			AddCustomAttribute(60,"Taxable [T - true, F - false]","STaxable",,"Taxable");
-			AddCustomAttribute(61,"Sales tax rate [char(50)]","STaxRate",,"Tax rate");
-			//AddCustomAttribute(62,"Update all company data [T - true, F - false]","UpdateAll",,"Update all");
-		Endif;             
-		
 		//---------------------------------------------------------------------------------
 		
 	ElsIf ThisProducts Then
@@ -985,9 +969,10 @@ Procedure FillAttributes()
 		AddAttribute("CF5String [char(100)]");
 		AddAttribute("CF5Num [num]");
 		AddAttribute("Update [char 50]");
-		AddCustomAttribute(1,"UOM [char(50)]","UoM");	
-		AddCustomAttribute(2,"UPC code [char(100)]","UPCCode");	
-		AddCustomAttribute(3,"Reorder point [Num(10)]","ReorderPoint");	
+		AddCustomAttribute(,"UOM [char(50)]","UoM");	
+		AddCustomAttribute(,"UPC code [char(100)]","UPCCode",, "UPC Code");	
+		AddCustomAttribute(,"Reorder point [Num(10)]","ReorderPoint",,"Reorder point");	
+		AddCustomAttribute(,"Costing method [char(50)]","CostingMethod",,"Costing method");	
 	EndIf;
 	
 EndProcedure // 
@@ -1034,6 +1019,8 @@ Function FillAttributesAtServer(RowCount)
 		
 	EndDo;
 	
+	RowToProcessMaxCount = Source.Count();
+	
 	SourceAddress = PutToTempStorage(Source, ThisForm.UUID);
 	
 	Return SourceAddress;
@@ -1065,33 +1052,32 @@ Procedure AddAttribute(AttrName,Required = False)
 EndProcedure	
 
 &AtServer
-Procedure AddCustomAttribute(Counter, AttrName, ColumnName, Required = False, ColumnTitle = "")
+Procedure AddCustomAttribute( Val Counter = 0, AttrName, ColumnName, Required = False, ColumnTitle = "")
 	
-	// ++++++ for future refactoring---------------------------------------
-	If False then 
-		RowFilter = New Structure;
-		RowFilter.Insert("AttributeName",AttrName);
-		ReplacedName = ObjectCustomFieldMap.FindRows(RowFilter);
-		
-		If ReplacedName.Count() > 0 Then 
-			If ReplacedName[0].CustomName = "(NOT USED)" Then 
-				//Do Nothing
-			Else	
-				NewLine = Attributes.Add();
-				NewLine.AttributeName = ReplacedName[0].CustomName;	
-				NewLine.Required = Required;
-			EndIf;	
-		Else 	
-			NewLine = Attributes.Add();
-			NewLine.AttributeName = AttrName;
-			NewLine.Required = Required;
-		EndIf;
-	EndIf;
-	// ------- for future refactoring---------------------------------------
+	If Counter = -1 Then 
+		Return;
+	EndIf;	
 	
 	NewLine = Attributes.Add();
 	NewLine.AttributeName = AttrName;
 	NewLine.Required = Required;
+	
+	If Counter = 0 Then 
+		Counter = Attributes.IndexOf(NewLine)+1;
+	EndIf;	
+	
+	RowFilter = New Structure;
+	RowFilter.Insert("AttributeName",AttrName);
+	ReplacedName = ObjectCustomFieldMap.FindRows(RowFilter);
+	If ReplacedName.Count() > 0 Then 
+		If ReplacedName[0].CustomName = "(NOT USED)" Then 
+			//skip attribute
+			Attributes.Delete(Attributes.IndexOf(NewLine));
+			Return;
+		Else	
+			NewLine.AttributeName = ReplacedName[0].CustomName;	
+		EndIf;	
+	EndIf;
 	
 	CustomColumn = ThisForm.Items.Find("DataListField"+Counter);
 	If CustomColumn = Undefined Then
@@ -1109,6 +1095,26 @@ Procedure AddCustomAttribute(Counter, AttrName, ColumnName, Required = False, Co
 	MapString.Order = Counter;
 	MapString.AttributeName = AttrName;
 	MapString.ColumnName = ColumnName;
+	
+	
+	//// ++++++ for future refactoring---------------------------------------
+	//If False then 
+	//	
+	//RowFilter = New Structure;
+	//RowFilter.Insert("AttributeName",AttrName);
+	//ReplacedName = ObjectCustomFieldMap.FindRows(RowFilter);
+	//If ReplacedName.Count() > 0 Then 
+	//	If ReplacedName[0].CustomName = "(NOT USED)" Then 
+	//		//Do Nothing
+	//	Else	
+	//		NewLine.AttributeName = ReplacedName[0].CustomName;	
+	//	EndIf;	
+	//Else 	
+	//	NewLine.AttributeName = AttrName;
+	//EndIf;
+	//
+	//EndIf;
+	//// ------- for future refactoring---------------------------------------
 	
 EndProcedure	
 
@@ -1145,15 +1151,22 @@ Procedure FillSourceView()
 EndProcedure
 
 &AtServer
-Procedure FillLoadTable()
+Procedure FillLoadTable(BegIndex = 0, EndIndex = Undefined )
 	
-	ListOfFilledAttributes.Clear();
-	Object.DataList.Clear();
-	UploadTable = Object.DataList.Unload();
+	If BegIndex = 0 Then 
+		ListOfFilledAttributes.Clear();
+		Object.DataList.Clear();
+	EndIf;	
+	//UploadTable = Object.DataList.Unload();
+	UploadTable = Object.DataList;
 	
 	Source = GetFromTempStorage(SourceAddress);
-		
-	For RowCounter = 0 To Source.Count() - 1 Do
+	
+	If EndIndex = Undefined Then 
+		EndIndex = Source.Count() - 1;
+	EndIf;
+	
+	For RowCounter = BegIndex To EndIndex Do
 				
 		If ActionType = "Chart of accounts" Then
 			
@@ -1265,75 +1278,8 @@ Procedure FillLoadTable()
 			ColumnStringValue = GetStringValueOfAttribute(Source[RowCounter],"Discount percent [num]");
 			If ColumnStringValue <> Undefined Then
 				NewLine.SubClassOf = ColumnStringValue;
-			EndIf;		
-	
-		ElsIf ActionType = "Expensify" Then
-			
-			NewLine = UploadTable.Add();
-			NewLine.LoadFlag = True;
-			
-			ColumnStringValue = GetStringValueOfAttribute(Source[RowCounter],"Category [char(50)]");
-			If ColumnStringValue <> Undefined Then
-				
-				Query = New Query("SELECT
-				                  |	ExpensifyCategories.Account
-				                  |FROM
-				                  |	Catalog.ExpensifyCategories AS ExpensifyCategories
-				                  |WHERE
-				                  |	ExpensifyCategories.Description = &Category");
-				Query.Parameters.Insert("Category", ColumnStringValue);
-
-				QueryResult = Query.Execute();
-				
-				If QueryResult.IsEmpty() Then
-				Else
-					Dataset = QueryResult.Unload();
-					NewLine.ExpensifyAccount = Dataset[0][0];
-				EndIf;
-
 			EndIf;
-			
-			ColumnStringValue = GetStringValueOfAttribute(Source[RowCounter],"Amount [num]");
-			If ColumnStringValue <> Undefined Then
-				NewLine.ExpensifyAmount = ColumnStringValue;
-			EndIf;
-
-			ColumnStringValue = GetStringValueOfAttribute(Source[RowCounter],"Memo [char(100)]");
-			If ColumnStringValue <> Undefined Then
-				NewLine.ExpensifyMemo = ColumnStringValue;
-			EndIf;	
-			
-			For Each Attr in CustomFieldMap Do 
-				ColumnStringValue = GetStringValueOfAttribute(Source[RowCounter],Attr.AttributeName);
-				If ColumnStringValue <> Undefined Then
-					
-					If Attr.ColumnName = "Date" Then
-						TransactionDate = '00010101';
-						DateParts = StringFunctionsClientServer.SplitStringIntoSubstringArray(ColumnStringValue, "/",,"""");
-						If DateParts.Count() = 3 then
-							Try
-								TransactionDate = Date(DateParts[2], DateParts[0], DatePArts[1]);
-							Except
-							EndTry;				
-						EndIf;
-						NewLine["CustomField"+Attr.Order] = TransactionDate;
-						
-					ElsIf Attr.ColumnName = "Number" Then
-						NewLine["CustomField"+Attr.Order] = Left(ColumnStringValue,20);		
-					ElsIf Attr.ColumnName = "Company" Then
-						VendorByCode = Catalogs.Companies.FindByCode(ColumnStringValue);
-						VendorByDescription = Catalogs.Companies.FindByDescription(ColumnStringValue);
-						If VendorByCode = Catalogs.Companies.EmptyRef() Then
-							NewLine["CustomField"+Attr.Order] = VendorByDescription;
-						Else
-							NewLine["CustomField"+Attr.Order] = VendorByCode;
-						EndIf
-					ElsIf Attr.ColumnName = "ToPost" Then
-						NewLine["CustomField"+Attr.Order] = GetValueByName(ColumnStringValue,"Boolean");		
-					EndIf;	
-				EndIf;
-			EndDo;
-			
+		
 		ElsIf ActionType = "Journal entries" Then
 		
 			NewLine = UploadTable.Add();
@@ -1341,6 +1287,7 @@ Procedure FillLoadTable()
 			
 			ColumnStringValue = GetStringValueOfAttribute(Source[RowCounter],"Date [date]");
 			If ColumnStringValue <> Undefined Then
+				CheckDateFormatForAttribute(ColumnStringValue, "Date");
 				TransactionDate = '00010101';
 				DateParts = StringFunctionsClientServer.SplitStringIntoSubstringArray(ColumnStringValue, "/",,"""");
 				If DateParts.Count() = 3 then
@@ -1408,6 +1355,7 @@ Procedure FillLoadTable()
 				If ColumnStringValue <> Undefined Then
 					
 					If Attr.ColumnName = "DocDate" Then
+						CheckDateFormatForAttribute(ColumnStringValue, "Document date");
 						TransactionDate = '00010101';
 						DateParts = StringFunctionsClientServer.SplitStringIntoSubstringArray(ColumnStringValue, "/",,"""");
 						If DateParts.Count() = 3 then
@@ -1466,6 +1414,7 @@ Procedure FillLoadTable()
 					  	NewLine["CustomField"+Attr.Order] = Location;	
 
 					ElsIf Attr.ColumnName = "DeliveryDate" Then
+						CheckDateFormatForAttribute(ColumnStringValue, "Delivery date");
 						TransactionDate = '00010101';
 						DateParts = StringFunctionsClientServer.SplitStringIntoSubstringArray(ColumnStringValue, "/",,"""");
 						If DateParts.Count() = 3 then
@@ -1533,6 +1482,7 @@ Procedure FillLoadTable()
 				If ColumnStringValue <> Undefined Then
 					
 					If Attr.ColumnName = "DocDate" Then
+						CheckDateFormatForAttribute(ColumnStringValue, "Document date");
 						TransactionDate = '00010101';
 						DateParts = StringFunctionsClientServer.SplitStringIntoSubstringArray(ColumnStringValue, "/",,"""");
 						If DateParts.Count() = 3 then
@@ -1568,6 +1518,7 @@ Procedure FillLoadTable()
 						NewLine["CustomField"+Attr.Order] = ChartsOfAccounts.ChartOfAccounts.FindByCode(ColumnStringValue);
 						
 					ElsIf Attr.ColumnName = "DueDate" Then
+						CheckDateFormatForAttribute(ColumnStringValue, "Due date");
 						TransactionDate = '00010101';
 						DateParts = StringFunctionsClientServer.SplitStringIntoSubstringArray(ColumnStringValue, "/",,"""");
 						If DateParts.Count() = 3 then
@@ -1590,6 +1541,7 @@ Procedure FillLoadTable()
 
 						
 					ElsIf Attr.ColumnName = "DeliveryDate" Then
+						CheckDateFormatForAttribute(ColumnStringValue, "Delivery date");
 						TransactionDate = '00010101';
 						DateParts = StringFunctionsClientServer.SplitStringIntoSubstringArray(ColumnStringValue, "/",,"""");
 						If DateParts.Count() = 3 then
@@ -1635,6 +1587,10 @@ Procedure FillLoadTable()
 						LClass = Catalogs.Classes.FindByDescription(ColumnStringValue);
 					  	NewLine["CustomField"+Attr.Order] = LClass;
 						
+					ElsIf Attr.ColumnName = "LineProject" Then
+						LProject = Catalogs.Projects.FindByDescription(ColumnStringValue);
+					  	NewLine["CustomField"+Attr.Order] = LProject;	
+						
 					ElsIf Attr.ColumnName = "LineQuantity" Then
 						NewLine["CustomField"+Attr.Order] = ColumnStringValue;		
 						
@@ -1660,6 +1616,7 @@ Procedure FillLoadTable()
 				If ColumnStringValue <> Undefined Then
 					
 					If Attr.ColumnName = "DocDate" Then
+						CheckDateFormatForAttribute(ColumnStringValue, "Document date");
 						TransactionDate = '00010101';
 						DateParts = StringFunctionsClientServer.SplitStringIntoSubstringArray(ColumnStringValue, "/",,"""");
 						If DateParts.Count() = 3 then
@@ -1694,6 +1651,7 @@ Procedure FillLoadTable()
 					  	NewLine["CustomField"+Attr.Order] = CurrencyRef;		
 						
 					ElsIf Attr.ColumnName = "DueDate" Then
+						CheckDateFormatForAttribute(ColumnStringValue, "Due date");
 						TransactionDate = '00010101';
 						DateParts = StringFunctionsClientServer.SplitStringIntoSubstringArray(ColumnStringValue, "/",,"""");
 						If DateParts.Count() = 3 then
@@ -1706,6 +1664,7 @@ Procedure FillLoadTable()
 						
 						
 					ElsIf Attr.ColumnName = "DeliveryDate" Then
+						CheckDateFormatForAttribute(ColumnStringValue, "Delivery date");
 						TransactionDate = '00010101';
 						DateParts = StringFunctionsClientServer.SplitStringIntoSubstringArray(ColumnStringValue, "/",,"""");
 						If DateParts.Count() = 3 then
@@ -1771,6 +1730,7 @@ Procedure FillLoadTable()
 				If ColumnStringValue <> Undefined Then
 					
 					If Attr.ColumnName = "DocDate" Then
+						CheckDateFormatForAttribute(ColumnStringValue, "Document date");
 						TransactionDate = '00010101';
 						DateParts = StringFunctionsClientServer.SplitStringIntoSubstringArray(ColumnStringValue, "/",,"""");
 						If DateParts.Count() = 3 then
@@ -1840,6 +1800,7 @@ Procedure FillLoadTable()
 					
 					If Attr.ColumnName = "DocDate" Then
 						TransactionDate = '00010101';
+						CheckDateFormatForAttribute(ColumnStringValue, "Document date");
 						DateParts = StringFunctionsClientServer.SplitStringIntoSubstringArray(ColumnStringValue, "/",,"""");
 						If DateParts.Count() = 3 then
 							Try
@@ -1918,6 +1879,7 @@ Procedure FillLoadTable()
 				If ColumnStringValue <> Undefined Then
 					
 					If Attr.ColumnName = "DocDate" Then
+						CheckDateFormatForAttribute(ColumnStringValue, "Document date");
 						TransactionDate = '00010101';
 						DateParts = StringFunctionsClientServer.SplitStringIntoSubstringArray(ColumnStringValue, "/",,"""");
 						If DateParts.Count() = 3 then
@@ -1928,6 +1890,8 @@ Procedure FillLoadTable()
 						EndIf;
 						NewLine["CustomField"+Attr.Order] = TransactionDate;
 					ElsIf Attr.ColumnName = "DueDate" Then
+						CheckDateFormatForAttribute(ColumnStringValue, "Due date");
+						
 						TransactionDate = '00010101';
 						DateParts = StringFunctionsClientServer.SplitStringIntoSubstringArray(ColumnStringValue, "/",,"""");
 						If DateParts.Count() = 3 then
@@ -1981,8 +1945,15 @@ Procedure FillLoadTable()
 						PaymentMethod = Catalogs.PaymentMethods.FindByDescription(ColumnStringValue);
 						NewLine["CustomField"+Attr.Order] = PaymentMethod;	
 						
+					ElsIf Attr.ColumnName = "Shipping" Then
+						Try
+							NewLine["CustomField"+Attr.Order] = Number(ColumnStringValue);	
+						Except	
+							NewLine["CustomField"+Attr.Order] = 0;	
+						EndTry;	
 						
 					ElsIf Attr.ColumnName = "DeliveryDate" Then
+						CheckDateFormatForAttribute(ColumnStringValue, "Delivery date");
 						TransactionDate = '00010101';
 						DateParts = StringFunctionsClientServer.SplitStringIntoSubstringArray(ColumnStringValue, "/",,"""");
 						If DateParts.Count() = 3 then
@@ -2059,6 +2030,7 @@ Procedure FillLoadTable()
 				If ColumnStringValue <> Undefined Then
 					
 					If Attr.ColumnName = "DocDate" Then
+						CheckDateFormatForAttribute(ColumnStringValue, "Document date");
 						TransactionDate = '00010101';
 						DateParts = StringFunctionsClientServer.SplitStringIntoSubstringArray(ColumnStringValue, "/",,"""");
 						If DateParts.Count() = 3 then
@@ -2069,6 +2041,7 @@ Procedure FillLoadTable()
 						EndIf;
 						NewLine["CustomField"+Attr.Order] = TransactionDate;
 					ElsIf Attr.ColumnName = "DueDate" Then
+						CheckDateFormatForAttribute(ColumnStringValue, "Due date");
 						TransactionDate = '00010101';
 						DateParts = StringFunctionsClientServer.SplitStringIntoSubstringArray(ColumnStringValue, "/",,"""");
 						If DateParts.Count() = 3 then
@@ -2172,6 +2145,7 @@ Procedure FillLoadTable()
 				If ColumnStringValue <> Undefined Then
 					
 					If Attr.ColumnName = "DocDate" Then
+						CheckDateFormatForAttribute(ColumnStringValue, "Document date");
 						TransactionDate = '00010101';
 						DateParts = StringFunctionsClientServer.SplitStringIntoSubstringArray(ColumnStringValue, "/",,"""");
 						If DateParts.Count() = 3 then
@@ -2212,6 +2186,7 @@ Procedure FillLoadTable()
 						NewLine["CustomField"+Attr.Order] = SalesPersonRef;
 						
 					ElsIf Attr.ColumnName = "DeliveryDate" Then
+						CheckDateFormatForAttribute(ColumnStringValue, "Delivery date");
 						TransactionDate = '00010101';
 						DateParts = StringFunctionsClientServer.SplitStringIntoSubstringArray(ColumnStringValue, "/",,"""");
 						If DateParts.Count() = 3 then
@@ -2285,6 +2260,7 @@ Procedure FillLoadTable()
 				If ColumnStringValue <> Undefined Then
 					
 					If Attr.ColumnName = "DocDate" Then
+						CheckDateFormatForAttribute(ColumnStringValue, "Document date");
 						TransactionDate = '00010101';
 						DateParts = StringFunctionsClientServer.SplitStringIntoSubstringArray(ColumnStringValue, "/",,"""");
 						If DateParts.Count() = 3 then
@@ -2373,7 +2349,7 @@ Procedure FillLoadTable()
 			
 			ColumnStringValue = GetStringValueOfAttribute(Source[RowCounter],"Date [char]");
 			If ColumnStringValue <> Undefined Then
-				
+				CheckDateFormatForAttribute(ColumnStringValue, "Date");
 				TransactionDate = '00010101';
 				DateParts = StringFunctionsClientServer.SplitStringIntoSubstringArray(ColumnStringValue, "/",,"""");
 				If DateParts.Count() = 3 then
@@ -2455,6 +2431,49 @@ Procedure FillLoadTable()
 				If ColumnStringValue <> Undefined Then
 					If Attr.ColumnName = "Number" Then
 						NewLine["CustomField"+Attr.Order] = Left(ColumnStringValue,20);
+					ElsIf Attr.ColumnName = "LineAccount" Then
+						AccountByCode = ChartsOfAccounts.ChartOfAccounts.FindByCode(ColumnStringValue);
+						AccountByDescription = ChartsOfAccounts.ChartOfAccounts.FindByDescription(ColumnStringValue);
+						If AccountByCode = ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
+							NewLine["CustomField"+Attr.Order] = AccountByDescription;
+						Else
+							NewLine["CustomField"+Attr.Order] = AccountByCode;
+						EndIf;
+					ElsIf Attr.ColumnName = "LineCompany" Then
+						CompanyByCode = Catalogs.Companies.FindByCode(ColumnStringValue);
+						CompanyByDescription = Catalogs.Companies.FindByDescription(ColumnStringValue);
+						If CompanyByCode = Catalogs.Companies.EmptyRef() Then
+							NewLine["CustomField"+Attr.Order] = CompanyByDescription;
+						Else
+							NewLine["CustomField"+Attr.Order] = CompanyByCode;
+						EndIf
+	                ElsIf Attr.ColumnName = "LineDocNumber" Then
+						NewLine["CustomField"+Attr.Order] = Left(ColumnStringValue,20);
+						
+					ElsIf Attr.ColumnName = "LineDocType" Then
+						NewLine["CustomField"+Attr.Order] = TrimAll(ColumnStringValue);	
+						
+					ElsIf Attr.ColumnName = "LineAmount" Then
+						Try
+							NewLine["CustomField"+Attr.Order] = Number(ColumnStringValue);		
+						Except
+							NewLine["CustomField"+Attr.Order] = ""
+						EndTry;	
+						
+					ElsIf Attr.ColumnName = "LineCurrency" Then
+						CurrencyRef = Catalogs.Currencies.FindByCode(ColumnStringValue);
+						NewLine["CustomField"+Attr.Order] = CurrencyRef;
+						
+					ElsIf Attr.ColumnName = "LineClass" Then
+						NewLine["CustomField"+Attr.Order] = Catalogs.Classes.FindByDescription(ColumnStringValue,True);
+						
+					ElsIf Attr.ColumnName = "LineProject" Then
+						LProject = Catalogs.Projects.FindByDescription(ColumnStringValue);
+						NewLine["CustomField"+Attr.Order] = LProject;	
+						
+					ElsIf Attr.ColumnName = "LineMemo" Then
+						NewLine["CustomField"+Attr.Order] = TrimAll(ColumnStringValue);	
+						
 					ElsIf Attr.ColumnName = "ToPost" Then
 						NewLine["CustomField"+Attr.Order] = GetValueByName(ColumnStringValue,"Boolean");		
 					EndIf;	
@@ -2464,6 +2483,7 @@ Procedure FillLoadTable()
 
 			ColumnStringValue = GetStringValueOfAttribute(Source[RowCounter],"Date [char]");
 			If ColumnStringValue <> Undefined Then
+				CheckDateFormatForAttribute(ColumnStringValue, "Date");
 				TransactionDate = '00010101';
 				DateParts = StringFunctionsClientServer.SplitStringIntoSubstringArray(ColumnStringValue, "/",,"""");
 				If DateParts.Count() = 3 then
@@ -2493,37 +2513,43 @@ Procedure FillLoadTable()
 				NewLine.DepositMemo = ColumnStringValue;
 			EndIf;
 		
-			ColumnStringValue = GetStringValueOfAttribute(Source[RowCounter],"Line company [ref]");
-			If ColumnStringValue <> Undefined Then
-				NewLine.DepositLineCompany = Catalogs.Companies.FindByDescription(ColumnStringValue);
-			EndIf;
+			//ColumnStringValue = GetStringValueOfAttribute(Source[RowCounter],"Line company [ref]");
+			//If ColumnStringValue <> Undefined Then
+			//	CompanyByCode = Catalogs.Companies.FindByCode(ColumnStringValue);
+			//	CompanyByDescription = Catalogs.Companies.FindByDescription(ColumnStringValue);
+			//	If CompanyByCode = Catalogs.Companies.EmptyRef() Then
+			//		NewLine["CustomField"+Attr.Order] = CompanyByDescription;
+			//	Else
+			//		NewLine["CustomField"+Attr.Order] = CompanyByCode;
+			//	EndIf
+			//EndIf;
 					
-			ColumnStringValue = GetStringValueOfAttribute(Source[RowCounter],"Line account [ref]");
-			If ColumnStringValue <> Undefined Then
-				AccountByCode = ChartsOfAccounts.ChartOfAccounts.FindByCode(ColumnStringValue);
-				AccountByDescription = ChartsOfAccounts.ChartOfAccounts.FindByDescription(ColumnStringValue);
-				If AccountByCode = ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
-					NewLine.DepositLineAccount = AccountByDescription;
-				Else
-					NewLine.DepositLineAccount = AccountByCode;
-				EndIf;
-			EndIf;
+			//ColumnStringValue = GetStringValueOfAttribute(Source[RowCounter],"Line account [ref]");
+			//If ColumnStringValue <> Undefined Then
+			//	AccountByCode = ChartsOfAccounts.ChartOfAccounts.FindByCode(ColumnStringValue);
+			//	AccountByDescription = ChartsOfAccounts.ChartOfAccounts.FindByDescription(ColumnStringValue);
+			//	If AccountByCode = ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
+			//		NewLine.DepositLineAccount = AccountByDescription;
+			//	Else
+			//		NewLine.DepositLineAccount = AccountByCode;
+			//	EndIf;
+			//EndIf;
 
-			ColumnStringValue = GetStringValueOfAttribute(Source[RowCounter],"Line amount [num]");
-			If ColumnStringValue <> Undefined Then
-				NewLine.DepositLineAmount = ColumnStringValue;
-			EndIf;
-			
-			ColumnStringValue = GetStringValueOfAttribute(Source[RowCounter],"Line class [ref]");
-			If ColumnStringValue <> Undefined Then
-				NewLine.DepositLineClass = Catalogs.Classes.FindByDescription(ColumnStringValue,True);
-			EndIf;
+			//ColumnStringValue = GetStringValueOfAttribute(Source[RowCounter],"Line amount [num]");
+			//If ColumnStringValue <> Undefined Then
+			//	NewLine.DepositLineAmount = ColumnStringValue;
+			//EndIf;
+			//
+			//ColumnStringValue = GetStringValueOfAttribute(Source[RowCounter],"Line class [ref]");
+			//If ColumnStringValue <> Undefined Then
+			//	NewLine.DepositLineClass = Catalogs.Classes.FindByDescription(ColumnStringValue,True);
+			//EndIf;
 
-			
-			ColumnStringValue = GetStringValueOfAttribute(Source[RowCounter],"Line memo [char]");
-			If ColumnStringValue <> Undefined Then
-				NewLine.DepositLineMemo = ColumnStringValue;
-			EndIf;
+			//
+			//ColumnStringValue = GetStringValueOfAttribute(Source[RowCounter],"Line memo [char]");
+			//If ColumnStringValue <> Undefined Then
+			//	NewLine.DepositLineMemo = ColumnStringValue;
+			//EndIf;
 			
 		ElsIf ActionType = "CustomersVendors" Then
 			
@@ -2947,8 +2973,8 @@ Procedure FillLoadTable()
 			
 			ColumnStringValue = GetStringValueOfAttribute(Source[RowCounter],"Taxable [T - true, F - false]");
 			If ColumnStringValue <> Undefined Then
-				//NewLine.ProductTaxable = GetValueByName(ColumnStringValue,"ItemTaxable");
-				NewLine.ProductTaxable = ColumnStringValue;
+				NewLine.ProductTaxable = GetValueByName(ColumnStringValue,"ItemTaxable");
+				//NewLine.ProductTaxable = ColumnStringValue;
 			EndIf;
 
 
@@ -2964,10 +2990,10 @@ Procedure FillLoadTable()
 				EndIf;	
 			EndIf;
 
-			ColumnStringValue = GetStringValueOfAttribute(Source[RowCounter],"UoM [ref]");
-			If ColumnStringValue <> Undefined Then
-				NewLine.ProductUoM = Catalogs.UM.FindByDescription(ColumnStringValue);
-			EndIf;
+			//ColumnStringValue = GetStringValueOfAttribute(Source[RowCounter],"UoM [ref]");
+			//If ColumnStringValue <> Undefined Then
+			//	NewLine.ProductUoM = Catalogs.UM.FindByDescription(ColumnStringValue);
+			//EndIf;
 
 			ColumnStringValue = GetStringValueOfAttribute(Source[RowCounter],"Vendor Code [char(50)]");
 			If ColumnStringValue <> Undefined Then
@@ -2976,7 +3002,13 @@ Procedure FillLoadTable()
 			
 			ColumnStringValue = GetStringValueOfAttribute(Source[RowCounter],"Prefered Vendor [char 50]");
 			If ColumnStringValue <> Undefined Then
-				NewLine.ProductPreferedVendor = Catalogs.Companies.FindByDescription(ColumnStringValue,True);
+				VendorByCode = Catalogs.Companies.FindByCode(ColumnStringValue);
+				VendorByDescription = Catalogs.Companies.FindByDescription(ColumnStringValue);
+				If VendorByCode = Catalogs.Companies.EmptyRef() Then
+					NewLine.ProductPreferedVendor = VendorByDescription;
+				Else
+					NewLine.ProductPreferedVendor = VendorByCode;
+				EndIf;
 			EndIf;
 			
 			ColumnStringValue = GetStringValueOfAttribute(Source[RowCounter],"CF1String [char(100)]");
@@ -3044,7 +3076,16 @@ Procedure FillLoadTable()
 						NewLine["CustomField"+Attr.Order] = ColumnStringValue;	
 					ElsIf Attr.ColumnName = "ReorderPoint" Then
 						NewLine["CustomField"+Attr.Order] = ColumnStringValue;		
+					ElsIf Attr.ColumnName = "CostingMethod" Then
+						SourceSearchStr = Upper(ColumnStringValue);
+						If Find(SourceSearchStr,"FIFO") > 0 Then 
+							CostMethodRef = Enums.InventoryCosting.FIFO
+						ElsIf (Find(SourceSearchStr,"WEIGHT") > 0) And (Find(SourceSearchStr,"AV") > 0) Then 	
+							CostMethodRef = Enums.InventoryCosting.WeightedAverage;
+						EndIf;	
+						NewLine["CustomField"+Attr.Order] = CostMethodRef;		
 					EndIf
+					
 				EndIf;
 			EndDo;	
 			
@@ -3053,7 +3094,7 @@ Procedure FillLoadTable()
 				
 	EndDo;
 		
-	Object.DataList.Load(UploadTable);
+	//Object.DataList.Load(UploadTable);
 	
 EndProcedure
 
@@ -3117,10 +3158,102 @@ Function GetStringValueOfAttribute(NewLine, AttributeName)
 			StringValue = TrimAll(FoundRows[0].Value);
 		EndIf;	
 	EndIf;
-	
+		
 	Return ?(StringValue = "", Undefined, StringValue);
 
 EndFunction	
+
+&AtServer
+Procedure CheckDateFormatForAttribute(StringValue, AttributeName)
+	
+	If Not ValueIsFilled(StringValue) Then 
+		Return;
+	EndIf;	
+	
+	If Find(DateFormat,"Dashed") > 0 Then 
+		DateSeperator = "-" ;
+	ElsIf Find(DateFormat,"Slashed") > 0 Then 
+		DateSeperator = "/" ;
+	ElsIf Find(DateFormat,"Dotted") > 0 Then 
+		DateSeperator = "." ;	
+	Else 	
+		WrongDateformat = True;
+		Return;
+	EndIf;	
+	
+	Year = 0;
+	YearLength = 4;
+	Month = 0;
+	Day = 0;
+	
+	ValueArray = StringFunctionsClientServer.SplitStringIntoSubstringArray(StringValue, DateSeperator,,"""");
+	
+	WrongDateformat = False;
+	If ValueArray.Count() = 3 Then 
+		
+		If Find(DateFormat,"mmddyyyy") > 0 Then
+			Year = TrimAll(ValueArray[2]);
+			Month = TrimAll(ValueArray[0]);
+			Day = TrimAll(ValueArray[1]);
+			YearLength = 4;
+		ElsIf Find(DateFormat,"mmddyy_") > 0 Then
+			Year = TrimAll(ValueArray[2]);
+			Month = TrimAll(ValueArray[0]);
+			Day = TrimAll(ValueArray[1]);
+			YearLength = 2;
+		ElsIf Find(DateFormat,"yyyymmdd") > 0 Then
+			Year = TrimAll(ValueArray[0]);
+			Month = TrimAll(ValueArray[1]);
+			Day = TrimAll(ValueArray[2]);
+			YearLength = 4;
+		ElsIf Find(DateFormat,"ddmmyyyy") > 0 Then
+			Year = TrimAll(ValueArray[2]);
+			Month = TrimAll(ValueArray[1]);
+			Day = TrimAll(ValueArray[0]);
+			YearLength = 4;
+		EndIf;	
+		
+		Try
+			If Number(Month) > 0 and Number(Month) <= 12 Then 
+				If Number(Day) > 0 and Number(Day) <= 31 Then  
+					If Number(Year) > 0 And StrLen(Year) <> YearLength Then  
+						WrongDateformat = True;
+					EndIf;	
+				EndIf;	
+			EndIf;		
+		Except
+			WrongDateformat = True;
+		EndTry;	
+	Else 	
+		WrongDateformat = True;
+	EndIf;	
+	
+	If Not WrongDateformat Then 
+		If YearLength = 4 Then 
+			StringValue = Format(Date(Year,Month,Day),"DF=MM/dd/yyyy");
+		Else
+			Year = Number(Year);
+			CurrentYear = Year(CurrentDate());
+			Century = Int(CurrentYear/100);
+			CutUpYear = CurrentYear + 15;
+			CutDownYear = CurrentYear - 85;
+			If Century*100 + Year >= CutUpYear Then 
+				FourDigitYear = (Century-1)*100 + Year;
+			ElsIf Century*100 + Year < CutDownYear Then 
+				FourDigitYear = (Century+1)*100 + Year;	
+			Else 	
+				FourDigitYear = (Century)*100 + Year;
+			EndIf;
+			StringValue = Format(Date(FourDigitYear,Month,Day),"DF=MM/dd/yyyy");
+		EndIf;	
+	EndIf;	
+	
+	If WrongDateformat Then 
+		Message("Invalid date format. Format must be "+Items.DateFormat.ChoiceList.FindByValue(DateFormat).Presentation+". Attribute """ + AttributeName + """: "+ StringValue);
+	EndIf;
+	
+	
+EndProcedure
 
 &AtServer
 Procedure LoadData(Cancel)
@@ -3240,7 +3373,11 @@ Procedure LoadData(Cancel)
 			Except
 				GlobalErrorMessage = "ERROR" + Chars.LF + "Document Line: "+LastLineNumber+ Chars.LF+ ErrorDescription();
 				Cancel = True;
-				Return;
+				If TrimAll(ErrorProcessing) = "StopOnError" Then 
+					Return;
+				ElsIf TrimAll(ErrorProcessing) = "SkipErrors" Then 
+					Continue;
+				EndIf;	
 			EndTry;
 			
 		EndDo;
@@ -3258,6 +3395,7 @@ Procedure LoadData(Cancel)
 		EndTry;
 		
 	EndIf;
+	
 	
 	If ActionType = "Items" Then
 		
@@ -3281,7 +3419,10 @@ Procedure LoadData(Cancel)
 		Params.Add(Date);
 		Params.Add(Date2);
 		Params.Add(ItemDataSet);
-		Params.Add(UpdateOption);
+		AddParams = New Structure;
+		AddParams.Insert("UpdateOption",UpdateOption);
+		AddParams.Insert("ErrorProcessing",ErrorProcessing);
+		Params.Add(AddParams);
 		
 		RunProcedureInBackgroundAsLongAction("DataProcessors.DataImportV20.CreateItemCSV", Params);
 		
@@ -3308,6 +3449,11 @@ Procedure LoadData(Cancel)
 		Params.Add(Date2);
 		Params.Add(ItemDataSet);
 		
+		AddParams = New Structure;
+		AddParams.Insert("UpdateOption",UpdateOption);
+		AddParams.Insert("ErrorProcessing",ErrorProcessing);
+		Params.Add(AddParams);
+		
 		RunProcedureInBackgroundAsLongAction("DataProcessors.DataImportV20.CreatePurchaseOrderCSV", Params);
 		//DataProcessors.DataImportV20.CreatePurchaseOrderCSV(Date,Date2,ItemDataSet);
 		
@@ -3331,6 +3477,10 @@ Procedure LoadData(Cancel)
 		Params.Add(Date);
 		Params.Add(Date2);
 		Params.Add(ItemDataSet);
+		AddParams = New Structure;
+		AddParams.Insert("UpdateOption",UpdateOption);
+		AddParams.Insert("ErrorProcessing",ErrorProcessing);
+		Params.Add(AddParams);
 		
 		RunProcedureInBackgroundAsLongAction("DataProcessors.DataImportV20.CreatePurchaseInvoiceCSV", Params);
 		
@@ -3354,6 +3504,11 @@ Procedure LoadData(Cancel)
 		Params.Add(Date);
 		Params.Add(Date2);
 		Params.Add(ItemDataSet);
+		
+		AddParams = New Structure;
+		AddParams.Insert("UpdateOption",UpdateOption);
+		AddParams.Insert("ErrorProcessing",ErrorProcessing);
+		Params.Add(AddParams);
 		
 		RunProcedureInBackgroundAsLongAction("DataProcessors.DataImportV20.CreateItemReceiptCSV", Params);
 		
@@ -3379,6 +3534,11 @@ Procedure LoadData(Cancel)
 		Params.Add(Date2);
 		Params.Add(ItemDataSet);
 		
+		AddParams = New Structure;
+		AddParams.Insert("UpdateOption",UpdateOption);
+		AddParams.Insert("ErrorProcessing",ErrorProcessing);
+		Params.Add(AddParams);
+		
 		RunProcedureInBackgroundAsLongAction("DataProcessors.DataImportV20.CreateBillPaymentCSV", Params);
 		
 	EndIf;
@@ -3402,6 +3562,13 @@ Procedure LoadData(Cancel)
 		Params.Add(Date);
 		Params.Add(Date2);
 		Params.Add(ItemDataSet);
+		
+		AddParams = New Structure;
+		AddParams.Insert("LocationAttributeName",LocationAttributeName);//DeliveryDateActualAttributeName
+		AddParams.Insert("DeliveryDateActualAttributeName",DeliveryDateActualAttributeName);//DeliveryDateActualAttributeName
+		AddParams.Insert("UpdateOption",UpdateOption);
+		AddParams.Insert("ErrorProcessing",ErrorProcessing);
+		Params.Add(AddParams);
 		
 		RunProcedureInBackgroundAsLongAction("DataProcessors.DataImportV20.CreateSalesInvoiceCSV", Params);
 		//DataProcessors.DataImportV20.CreateSalesInvoiceCSV(Date,Date2,ItemDataSet);
@@ -3427,6 +3594,11 @@ Procedure LoadData(Cancel)
 		Params.Add(Date2);
 		Params.Add(ItemDataSet);
 		
+		AddParams = New Structure;
+		AddParams.Insert("UpdateOption",UpdateOption);
+		AddParams.Insert("ErrorProcessing",ErrorProcessing);
+		Params.Add(AddParams);
+		
 		RunProcedureInBackgroundAsLongAction("DataProcessors.DataImportV20.CreateSalesOrderCSV", Params);
 		//DataProcessors.DataImportV20.CreateSalesOrderCSV(Date,Date2,ItemDataSet);
 		
@@ -3448,6 +3620,11 @@ Procedure LoadData(Cancel)
 		
 		Params = New Array();
 		Params.Add(ItemDataSet);
+		
+		AddParams = New Structure;
+		AddParams.Insert("UpdateOption",UpdateOption);
+		AddParams.Insert("ErrorProcessing",ErrorProcessing);
+		Params.Add(AddParams);
 		
 		RunProcedureInBackgroundAsLongAction("DataProcessors.DataImportV20.CreateBankTransferCSV", Params);
 		//DataProcessors.DataImportV20.CreateBankTransferCSV(ItemDataSet);
@@ -3471,7 +3648,11 @@ Procedure LoadData(Cancel)
 		
 		Params = New Array();
 		Params.Add(ItemDataSet);
-		Params.Add(UpdateOption);
+		
+		AddParams = New Structure;
+		AddParams.Insert("UpdateOption",UpdateOption);
+		AddParams.Insert("ErrorProcessing",ErrorProcessing);
+		Params.Add(AddParams);
 		RunProcedureInBackgroundAsLongAction("DataProcessors.DataImportV20.CreateProjectsCSV", Params);
 		//DataProcessors.DataImportV20.CreateProjectsCSV(ItemDataSet, UpdateOption);
 	EndIf;
@@ -3496,8 +3677,13 @@ Procedure LoadData(Cancel)
 		Params.Add(Date2);
 		Params.Add(ItemDataSet);
 		
-		RunProcedureInBackgroundAsLongAction("DataProcessors.DataImportV20.CreateCashReceipCSV", Params);
-		//DataProcessors.DataImportV20.CreateCashReceipCSV(Date,Date2,ItemDataSet);
+		AddParams = New Structure;
+		AddParams.Insert("UpdateOption",UpdateOption);
+		AddParams.Insert("ErrorProcessing",ErrorProcessing);
+		Params.Add(AddParams);
+		
+		RunProcedureInBackgroundAsLongAction("DataProcessors.DataImportV20.CreateCashReceiptCSV", Params);
+		//DataProcessors.DataImportV20.CreateCashReceiptCSV(Date,Date2,ItemDataSet, AddParams);
 		
 	EndIf;
 	
@@ -3520,6 +3706,11 @@ Procedure LoadData(Cancel)
 		Params.Add(Date);
 		Params.Add(Date2);
 		Params.Add(ItemDataSet);
+		
+		AddParams = New Structure;
+		AddParams.Insert("UpdateOption",UpdateOption);
+		AddParams.Insert("ErrorProcessing",ErrorProcessing);
+		Params.Add(AddParams);
 		
 		RunProcedureInBackgroundAsLongAction("DataProcessors.DataImportV20.CreateCreditMemoCSV", Params);
 		//DataProcessors.DataImportV20.CreateCreditMemoCSV(Date,Date2,ItemDataSet);
@@ -3557,7 +3748,11 @@ Procedure LoadData(Cancel)
 				
 		Params = New Array();
 		Params.Add(ItemDataSet);
-		Params.Add(UpdateOption);
+		
+		AddParams = New Structure;
+		AddParams.Insert("UpdateOption",UpdateOption);
+		AddParams.Insert("ErrorProcessing",ErrorProcessing);
+		Params.Add(AddParams);
 		
 		RunProcedureInBackgroundAsLongAction("DataProcessors.DataImportV20.CreateCustomerVendorCSV", Params);
 		//DataProcessors.DataImportV20.CreateCustomerVendorCSV(ItemDataSet, UpdateOption);
@@ -3585,6 +3780,11 @@ Procedure LoadData(Cancel)
 		Params = New Array();
 		Params.Add(ItemDataSet);
 		
+		AddParams = New Structure;
+		AddParams.Insert("UpdateOption",UpdateOption);
+		AddParams.Insert("ErrorProcessing",ErrorProcessing);
+		Params.Add(AddParams);
+		
 		RunProcedureInBackgroundAsLongAction("DataProcessors.DataImportV20.CreateCheckCSV", Params);
 		//CreateCheckCSV(ItemDataSet);
 		
@@ -3595,8 +3795,7 @@ Procedure LoadData(Cancel)
 		ItemDataSet = New Array();
 		For Each DataLine In Object.DataList Do
 			If DataLine.LoadFlag = True Then
-				ItemLine = New Structure("DepositDate, DepositBankAccount, DepositMemo, " + 
-				"DepositLineCompany, DepositLineAccount, DepositLineAmount, DepositLineClass, DepositLineMemo");
+				ItemLine = New Structure("DepositDate, DepositBankAccount, DepositMemo");
 				FillPropertyValues(ItemLine, DataLine);
 				
 				For Each Attr in CustomFieldMap Do 
@@ -3610,6 +3809,12 @@ Procedure LoadData(Cancel)
 
 		Params = New Array();
 		Params.Add(ItemDataSet);
+		
+		AddParams = New Structure;
+		AddParams.Insert("UpdateOption",UpdateOption);
+		AddParams.Insert("ErrorProcessing",ErrorProcessing);
+		Params.Add(AddParams);
+		
 		RunProcedureInBackgroundAsLongAction("DataProcessors.DataImportV20.CreateDepositCSV", Params);
 		
 		
@@ -3624,6 +3829,18 @@ Procedure LoadData(Cancel)
 		
 		If ActionType = "Chart of accounts" Then
 			
+			BankType = GeneralFunctionsReusable.BankAccountType(); 
+			InventoryType = GeneralFunctionsReusable.InventoryAccountType();
+			ARType = GeneralFunctionsReusable.ARAccountType();
+			OCAType = GeneralFunctionsReusable.OtherCurrentAssetAccountType();
+			FAType = GeneralFunctionsReusable.FixedAssetAccountType();
+			ADType = GeneralFunctionsReusable.AccumulatedDepreciationAccountType();
+			ONCAType = GeneralFunctionsReusable.OtherNonCurrentAssetAccountType();
+			APType = GeneralFunctionsReusable.APAccountType();
+			OCLType = GeneralFunctionsReusable.OtherCurrentLiabilityAccountType();
+			LTLType = GeneralFunctionsReusable.LongTermLiabilityAccountType();
+			EquityType = GeneralFunctionsReusable.EquityAccountType();
+
 			If DataLine.CofAUpdate = ChartsOfAccounts.ChartOfAccounts.EmptyRef() Then
 				
 				NewAccount = ChartsOfAccounts.ChartOfAccounts.CreateAccount();
@@ -3641,6 +3858,28 @@ Procedure LoadData(Cancel)
 				
 				NewAccount.AccountType = DataLine.CofAType;
 				NewAccount.CashFlowSection = DataLine.CoACashFlowSection;
+				
+				AcctType = NewAccount.AccountType;
+				
+				If NewAccount.CashFlowSection.IsEmpty() Then 
+					If AcctType = InventoryType OR AcctType = ARType OR AcctType = OCAType OR AcctType = ADType
+						OR AcctType = ONCAType OR AcctType = APType OR AcctType = OCLType Then			
+						NewAccount.CashFlowSection = GeneralFunctionsReusable.CashFlowOperatingSection();
+					Else
+					EndIf;
+					
+					If AcctType = FAType Then			
+						NewAccount.CashFlowSection = GeneralFunctionsReusable.CashFlowInvestingSection();
+					Else
+					EndIf;
+					
+					If AcctType = LTLType OR AcctType = EquityType Then			
+						NewAccount.CashFlowSection = GeneralFunctionsReusable.CashFlowFinancingSection();
+					Else
+					EndIf;
+				EndIf;
+
+				
 				NewAccount.Memo = DataLine.CofAMemo;
 				NewAccount.Order = NewAccount.Code;
 				NewAccount.Write();	
@@ -3648,19 +3887,21 @@ Procedure LoadData(Cancel)
 				Account = NewAccount.Ref;
 				AccountObject = Account.GetObject();
 				
-				Dimension = AccountObject.ExtDimensionTypes.Find(ChartsOfCharacteristicTypes.Dimensions.Company, "ExtDimensionType");
-				If Dimension = Undefined Then	
-					NewType = AccountObject.ExtDimensionTypes.Insert(0);
-					NewType.ExtDimensionType = ChartsOfCharacteristicTypes.Dimensions.Company;
-				EndIf;	
-				
-				Dimension = AccountObject.ExtDimensionTypes.Find(ChartsOfCharacteristicTypes.Dimensions.Document, "ExtDimensionType");
-				If Dimension = Undefined Then
-					NewType = AccountObject.ExtDimensionTypes.Insert(1);
-					NewType.ExtDimensionType = ChartsOfCharacteristicTypes.Dimensions.Document;
-				EndIf;	
+				If NewAccount.AccountType = APType OR NewAccount.AccountType = ARType Then				
+					Dimension = NewAccount.ExtDimensionTypes.Find(ChartsOfCharacteristicTypes.Dimensions.Company, "ExtDimensionType");
+					If Dimension = Undefined Then	
+						NewType = NewAccount.ExtDimensionTypes.Insert(0);
+						NewType.ExtDimensionType = ChartsOfCharacteristicTypes.Dimensions.Company;
+					EndIf;	
 					
-				AccountObject.Write();
+					Dimension = NewAccount.ExtDimensionTypes.Find(ChartsOfCharacteristicTypes.Dimensions.Document, "ExtDimensionType");
+					If Dimension = Undefined Then
+						NewType = NewAccount.ExtDimensionTypes.Insert(1);
+						NewType.ExtDimensionType = ChartsOfCharacteristicTypes.Dimensions.Document;
+					EndIf;	
+				EndIf;
+					
+				NewAccount.Write();
 				CountOfLoadedItems = CountOfLoadedItems + 1;
 			Else
 				
@@ -3711,9 +3952,55 @@ Procedure LoadData(Cancel)
 					UAO.Parent = ChartsOfAccounts.ChartOfAccounts.EmptyRef();
 				EndIf;	
 				
+				AcctType = UAO.AccountType;
+				If GeneralFunctionsReusable.CurrencyUsedAccountType(AcctType) And UAO.Currency.IsEmpty() Then
+					UAO.Currency = GeneralFunctionsReusable.DefaultCurrency();
+				EndIf;	
+				
+				If UAO.CashFlowSection.IsEmpty() Then 
+					If AcctType = InventoryType OR AcctType = ARType OR AcctType = OCAType OR AcctType = ADType
+						OR AcctType = ONCAType OR AcctType = APType OR AcctType = OCLType Then			
+						UAO.CashFlowSection = GeneralFunctionsReusable.CashFlowOperatingSection();
+					Else
+					EndIf;
+					
+					If AcctType = FAType Then			
+						UAO.CashFlowSection = GeneralFunctionsReusable.CashFlowInvestingSection();
+					Else
+					EndIf;
+					
+					If AcctType = LTLType OR AcctType = EquityType Then			
+						UAO.CashFlowSection = GeneralFunctionsReusable.CashFlowFinancingSection();
+					Else
+					EndIf;
+				EndIf;
+				
+				If UAO.AccountType = APType OR UAO.AccountType = ARType Then				
+					Dimension = UAO.ExtDimensionTypes.Find(ChartsOfCharacteristicTypes.Dimensions.Company, "ExtDimensionType");
+					If Dimension = Undefined Then	
+						NewType = UAO.ExtDimensionTypes.Insert(0);
+						NewType.ExtDimensionType = ChartsOfCharacteristicTypes.Dimensions.Company;
+					EndIf;	
+					
+					Dimension = UAO.ExtDimensionTypes.Find(ChartsOfCharacteristicTypes.Dimensions.Document, "ExtDimensionType");
+					If Dimension = Undefined Then
+						NewType = UAO.ExtDimensionTypes.Insert(1);
+						NewType.ExtDimensionType = ChartsOfCharacteristicTypes.Dimensions.Document;
+					EndIf;	
+				EndIf;
+
+				
 				UAO.DataExchange.Load = True;
-				UAO.Write();
-				CountOfLoadedItems = CountOfLoadedItems + 1;
+				Try
+					UAO.Write();
+					CountOfLoadedItems = CountOfLoadedItems + 1;
+				Except	
+					If TrimAll(ErrorProcessing) = "StopOnError" Then 
+						Return;
+					ElsIf TrimAll(ErrorProcessing) = "SkipErrors" Then 
+						Continue;
+					EndIf;
+				EndTry;	
 			EndIf;
 			
 			
@@ -3729,8 +4016,16 @@ Procedure LoadData(Cancel)
 			If DataLine.SubClassOf <> Catalogs.Classes.EmptyRef() Then
 				NewClass.Parent = DataLine.SubClassOf;
 			EndIf;
-			NewClass.Write();
-			CountOfLoadedItems = CountOfLoadedItems + 1;
+			Try
+				NewClass.Write();
+				CountOfLoadedItems = CountOfLoadedItems + 1;
+			Except	
+				If TrimAll(ErrorProcessing) = "StopOnError" Then 
+					Return;
+				ElsIf TrimAll(ErrorProcessing) = "SkipErrors" Then 
+					Continue;
+				EndIf;
+			EndTry;	
 			
 		ElsIf ActionType = "PaymentTerms" Then
 			
@@ -3747,8 +4042,17 @@ Procedure LoadData(Cancel)
 			NewPTerm.Days = DataLine.PTermsDays;
 			NewPTerm.DiscountDays = DataLine.PTermsDiscountDays;
 			NewPTerm.DiscountPercent = DataLine.PTermsDiscountPercent;
-			NewPTerm.Write();	
-			CountOfLoadedItems = CountOfLoadedItems + 1;
+			Try
+				NewPTerm.Write();	
+				CountOfLoadedItems = CountOfLoadedItems + 1;
+			Except	
+				If TrimAll(ErrorProcessing) = "StopOnError" Then 
+					Return;
+				ElsIf TrimAll(ErrorProcessing) = "SkipErrors" Then 
+					Continue;
+				EndIf;
+			EndTry;	
+
 			
 		ElsIf ActionType = "PriceLevels" Then
 			
@@ -3767,8 +4071,17 @@ Procedure LoadData(Cancel)
 			
 			//NewPLevel.Type = DataLine[ColumnNames["Type"]];
 			//NewPLevel.Percentage = DataLine[ColumnNames["Percentage"]];
-			NewPLevel.Write();	
-			CountOfLoadedItems = CountOfLoadedItems + 1;
+			Try
+				NewPLevel.Write();	
+				CountOfLoadedItems = CountOfLoadedItems + 1;
+			Except	
+				If TrimAll(ErrorProcessing) = "StopOnError" Then 
+					Return;
+				ElsIf TrimAll(ErrorProcessing) = "SkipErrors" Then 
+					Continue;
+				EndIf;
+			EndTry;	
+
 			
 		ElsIf ActionType = "SalesRep" Then
 			
@@ -3785,8 +4098,17 @@ Procedure LoadData(Cancel)
 				NewSalesPeople = ExistingSalesRep.GetObject();
 			EndIf;	
 			
-			NewSalesPeople.Write();	
-	 	    CountOfLoadedItems = CountOfLoadedItems + 1;
+			Try
+				NewSalesPeople.Write();	
+				CountOfLoadedItems = CountOfLoadedItems + 1;
+			Except	
+				If TrimAll(ErrorProcessing) = "StopOnError" Then 
+					Return;
+				ElsIf TrimAll(ErrorProcessing) = "SkipErrors" Then 
+					Continue;
+				EndIf;
+			EndTry;	
+
 							
 		ElsIf ActionType = "Journal entries" Then
 			
@@ -3815,7 +4137,16 @@ Procedure LoadData(Cancel)
 				NewGJ.DocumentTotal = DocTotal;
 				NewGJ.Currency = GeneralFunctionsReusable.DefaultCurrency();
 				NewGJ.ExchangeRate = 1;
-				NewGJ.Write();
+				Try
+					NewGJ.Write();
+					CountOfLoadedItems = CountOfLoadedItems + NewGJ.LineItems.Count();
+				Except	
+					If TrimAll(ErrorProcessing) = "StopOnError" Then 
+						Return;
+					ElsIf TrimAll(ErrorProcessing) = "SkipErrors" Then 
+						Continue;
+					EndIf;
+				EndTry;	
 				
 				NewGJ = Documents.GeneralJournalEntry.CreateDocument();
 				NewGJ.Date = DataLine.GJHeaderDate;
@@ -3846,7 +4177,7 @@ Procedure LoadData(Cancel)
 
 			EndIf;	
 			
-			CountOfLoadedItems = CountOfLoadedItems + 1;
+			
 						
 		EndIf;
 	
@@ -3859,7 +4190,12 @@ Procedure LoadData(Cancel)
 		NewGJ.DocumentTotal = DocTotal;
 		NewGJ.Currency = GeneralFunctionsReusable.DefaultCurrency();
 		NewGJ.ExchangeRate = 1;
-		NewGJ.Write();
+		Try
+			NewGJ.Write();
+			CountOfLoadedItems = CountOfLoadedItems + NewGJ.LineItems.Count();
+		Except	
+			Return;
+		EndTry;	
 
 	EndIf;
 
@@ -3899,10 +4235,44 @@ Procedure MappingNext(Command)
 		Return;
 	EndIf;	
 	
-	FillLoadTable();
+	MaxRowsInBatch = 500;
+	If RowToProcessMaxCount > MaxRowsInBatch Then 
+		RowToProcessCounter = 0; //Int(RowToProcessMaxCount/MaxRowsInBatch);
+		AttachIdleHandler("IddleHandlerLoadData",0.1,True);
+		Items.CreateBack.Enabled = False;
+		Items.CreateNext.Enabled = False;
+		Items.DataList.Visible = False;
+		Items.PreprocessingMessage.Visible = True;
+		Items.Group8.Visible = False;
+		Message("Wait, please. Pre-processed: 0000/"+RowToProcessMaxCount+" rows .");
+	Else 	
+		FillLoadTable();
+	EndIf;	
+	
 	Items.LoadSteps.CurrentPage = Items.LoadSteps.ChildItems.Creation;
 		
 EndProcedure
+
+&AtClient
+Procedure IddleHandlerLoadData()
+	LocalDoMax = Int(RowToProcessMaxCount/MaxRowsInBatch);
+	
+	If RowToProcessCounter < LocalDoMax Then 
+		FillLoadTable(RowToProcessCounter*MaxRowsInBatch, Min((RowToProcessCounter+1)*MaxRowsInBatch,RowToProcessMaxCount)-1);
+		AttachIdleHandler("IddleHandlerLoadData",1,False);
+		Message("Wait, please. Pre-processed: " + Min((RowToProcessCounter+1)*MaxRowsInBatch,RowToProcessMaxCount) + "/"+RowToProcessMaxCount+" rows .");
+		RowToProcessCounter = RowToProcessCounter + 1;
+	Else 
+		FillLoadTable(RowToProcessCounter*MaxRowsInBatch, Min((RowToProcessCounter+1)*MaxRowsInBatch,RowToProcessMaxCount)-1);
+		DetachIdleHandler("IddleHandlerLoadData");
+		Message("Pre-process done:"+  Min((RowToProcessCounter+1)*MaxRowsInBatch,RowToProcessMaxCount)+"/"+RowToProcessMaxCount + " rows.");
+		Items.CreateBack.Enabled = True;
+		Items.CreateNext.Enabled = True;
+		Items.DataList.Visible = True;
+		Items.Group8.Visible = True;
+		Items.PreprocessingMessage.Visible = False;
+	EndIf;	
+EndProcedure	
 
 &AtClient
 Procedure SelectAll(Command)
@@ -3934,15 +4304,7 @@ Procedure CreateNext(Command)
 	
 	ClearMessages();
 	
-	CountRowsToUpload = 0;
-	CountSkipped = 0;
-	For Each DataLine In Object.DataList Do
-		If DataLine.LoadFlag = True Then
-			CountRowsToUpload = CountRowsToUpload + 1;
-		Else 
-			CountSkipped = CountSkipped + 1;
-		EndIf;	
-	EndDo;	
+	FillMainCounters();	
 	
 	If 	ActionType = "Items" 
 		Or ActionType = "CustomersVendors" 
@@ -3960,13 +4322,28 @@ Procedure CreateNext(Command)
 		Or ActionType = "Checks" 
 		Then
 		LongActionSettings = New Structure("Finished, ResultAddres, UID, Error, DetailedErrorDescription");
-		LongActionSettings.Insert("IdleTime", 5);
+		
+		IF RowToProcessMaxCount > MaxRowsInBatch Then 
+			If RowToProcessMaxCount > 2000 Then 
+				Iddletime = 20;
+			Else	
+				Iddletime = 10;
+			EndIf;	
+		Else 
+			Iddletime = 5;
+		EndIf;	
+		
+		LongActionSettings.Insert("IdleTime", Iddletime);
 		
 		LoadingStatusText = NStr("en = 'Transfering data to server ...'");
 		ResultStructure = New Structure;
+		ResultStructure.Insert("Success",0);
+		ResultStructure.Insert("ErrorMessage");
 		VisibilitySetup("FinishRunning",ResultStructure);
-		
 		AttachIdleHandler("LoadDataInBackroundWithCLientReportInitiation", 0.1, True);
+		
+		GlobalProcessingTimeStamp = CurrentDate();
+		
 	Else 
 		Cancel = False;
 		LoadData(Cancel);
@@ -3990,6 +4367,19 @@ Procedure CreateNext(Command)
 	Return;
 	
 EndProcedure
+
+&AtServer
+Procedure FillMainCounters()
+	CountRowsToUpload = 0;
+	CountSkipped = 0;
+	For Each DataLine In Object.DataList Do
+		If DataLine.LoadFlag = True Then
+			CountRowsToUpload = CountRowsToUpload + 1;
+		Else 
+			CountSkipped = CountSkipped + 1;
+		EndIf;	
+	EndDo;
+EndProcedure	
 
 &AtClient
 // Auxiliary procedure without parameters, to initiate loading process through Handler
@@ -4016,13 +4406,19 @@ Procedure LoadDataInBackroundWithCLientReport(ProgressPosition = 1)
 		ResultStructure.Insert("Success",ProgressPosition);
 		ResultStructure.Insert("Skiped",CountSkipped);
 		ResultStructure.Insert("ToUpload",CountRowsToUpload);
+		ResultStructure.Insert("ErrorMessage");
 		VisibilitySetup("FinishRunning",ResultStructure);
 		
 		Notify("DataImportFinished",, ThisObject);
 		RefreshReusableValues(); 
 		
 		LoadData(False);
-		AttachIdleHandler("Attachable_ListeningLongAction", 0.1, True);
+		IF RowToProcessMaxCount > MaxRowsInBatch Then 
+			Iddletime = 5;
+		Else 
+			Iddletime = 0.2;
+		EndIf;	
+		AttachIdleHandler("Attachable_ListeningLongAction", Iddletime, True);
 	Else 
 		ResultStructure = New Structure;
 		ResultStructure.Insert("Success",ProgressPosition-1);
@@ -4056,49 +4452,90 @@ EndProcedure
 &AtClient
 Procedure Attachable_ListeningLongAction()
 	
+	//LocalTimeStamp = CurrentDate();
+	
 	ActionStatus = GetLongActionStatus();
-	If Not IsBlankString(ActionStatus.Error) Then 
-		CommonUseClientServer.MessageToUser(ActionStatus.Error);
+	
+	If ActionStatus.Finished Then // Job finished, probably with errors
 		
-		ResultStructure = New Structure;
-		ResultStructure.Insert("Success",ActionStatus.Progress.Progress);
-		ResultStructure.Insert("Skiped",CountSkipped);
-		ResultStructure.Insert("ToUpload",CountRowsToUpload);
-		ResultStructure.Insert("ErrorMessage",ActionStatus.Error);
-		VisibilitySetup("FinishFailure",ResultStructure);
-		
-		
-		Notify("DataImportFinished",, ThisObject);
-		Return;
-	ElsIf ActionStatus.Finished = Undefined Then 
-		
+		If Not IsBlankString(ActionStatus.Error) Then // With errors
+			CommonUseClientServer.MessageToUser(ActionStatus.Error);
+			ResultStructure = New Structure;
+			AddError = "";
+			Try
+				ResultStructure.Insert("Success",ActionStatus.Progress.Progress);
+			Except
+				//AddError = ErrorDescription(); // no status found. Because no status reports = 0;
+				ResultStructure.Insert("Success",0);
+			EndTry;	
+			ResultStructure.Insert("Skiped",CountSkipped);
+			ResultStructure.Insert("ToUpload",CountRowsToUpload);
+			ResultStructure.Insert("ErrorMessage",ActionStatus.Error + ?(AddError = "","", Chars.LF + AddError));
+			VisibilitySetup("FinishFailure",ResultStructure);
+			Notify("DataImportFinished",, ThisObject);
+			RefreshReusableValues(); 
+			Return;
+		Else // Without errors
+			ResultStructure = New Structure;
+			Try
+				ResultStructure.Insert("Success",ActionStatus.Progress.Progress);
+			Except
+				AddError = ErrorDescription(); // Weird case
+				ResultStructure.Insert("Success",0);
+			EndTry;	
+			ResultStructure.Insert("Skiped",CountSkipped);
+			ResultStructure.Insert("ToUpload",CountRowsToUpload);
+			VisibilitySetup("FinishSuccess",ResultStructure);
+			Notify("DataImportFinished",, ThisObject);
+			RefreshReusableValues(); 
+			Return;
+		EndIf;	
+	EndIf;	
+	
+	If ActionStatus.Finished = Undefined Then // Job didn't start
 		ResultStructure = New Structure;
 		ResultStructure.Insert("Success",0);
 		ResultStructure.Insert("Skiped",CountSkipped);
 		ResultStructure.Insert("ToUpload",CountRowsToUpload);
 		ResultStructure.Insert("ErrorMessage",ActionStatus.Error);
 		VisibilitySetup("FinishFailure",ResultStructure);
-		
 		Notify("DataImportFinished",, ThisObject);
 		RefreshReusableValues(); 
 		Return;
-	ElsIf ActionStatus.Finished Then
-		LoadDataInBackroundWithCLientReport(CountRowsToUpload + 1);
-		Return;
 	EndIf;
 	
-	If TypeOf(ActionStatus.Progress) = Type("Structure") Then 
-		LoadingStatusText = ActionStatus.Progress.Text;
+	If TypeOf(ActionStatus.Progress) = Type("Structure") Then  //Job in process
+		
+		If Not IsBlankString(ActionStatus.Error) Then 
+			ResultStructure = New Structure;
+			AddError = "";
+			ResultStructure.Insert("Success",ActionStatus.Progress.Progress);
+			ResultStructure.Insert("Skiped",CountSkipped);
+			ResultStructure.Insert("ToUpload",CountRowsToUpload);
+			ResultStructure.Insert("ErrorMessage",ActionStatus.Error);
+			VisibilitySetup("FinishRunning",ResultStructure);
+			Notify("DataImportInProcess",, ThisObject);
+			LoadingStatusText = ActionStatus.Progress.Text;
+		Else 
+			ResultStructure = New Structure;
+			ResultStructure.Insert("Success",ActionStatus.Progress.Progress);
+			ResultStructure.Insert("ErrorMessage","");
+			VisibilitySetup("FinishRunning",ResultStructure);
+			Notify("DataImportInProcess",, ThisObject);
+			LoadingStatusText = ActionStatus.Progress.Text;
+		EndIf;
+		
 		If CountRowsToUpload <> 0 Then 
 			LoadingIndicator = (ActionStatus.Progress.Progress/CountRowsToUpload)*100 ;		
 		EndIf;
+		
 	EndIf;
 	
 	AttachIdleHandler("Attachable_ListeningLongAction", LongActionSettings.IdleTime, True);
 	
 EndProcedure
 
-&AtServer
+&AtClient
 Procedure VisibilitySetup(ResultStatus, ResultStatusStructure = Undefined)
 	
 	CreatePage = (ResultStatus = "CreatePage");
@@ -4124,20 +4561,80 @@ Procedure VisibilitySetup(ResultStatus, ResultStatusStructure = Undefined)
 	
 	LoadingStatusText = ?(FinishRunning,LoadingStatusText,"");
 	
+	FullErrorText.Clear();
+	
 	If FinishFailure Then 
-		Items.Label1.title = "IMPORT FAILED !!!. You can check the results" + Chars.LF + Chars.LF +
+		Items.Label1.title = "IMPORT FAILED !!!. You can check the results"+ Chars.LF + Chars.LF +
 		"Rows imported: " + ResultStatusStructure["Success"] + Chars.LF +
 		"Rows skipped: " + ResultStatusStructure["Skiped"] + Chars.LF +
-		"Rows failed: " + (ResultStatusStructure["ToUpload"] - ResultStatusStructure["Success"]) + Chars.LF + Chars.LF +
-		ResultStatusStructure["ErrorMessage"];
+		"Rows failed: " + (ResultStatusStructure["ToUpload"] - ResultStatusStructure["Success"]);
+		FullErrorText.SetText(ResultStatusStructure["ErrorMessage"]);
 	ElsIf FinishSuccess Then  
 		Items.Label1.title = "Import finished. You can check the results" + Chars.LF + Chars.LF +
 		"Rows imported: " + ResultStatusStructure["Success"] + Chars.LF +
 		"Rows skipped: " + ResultStatusStructure["Skiped"] + Chars.LF +
 		"Rows failed: " + (ResultStatusStructure["ToUpload"] - ResultStatusStructure["Success"]);
+	ElsIf FinishRunning Then  
+		FullErrorText.SetText("Import in process" + Chars.LF + Chars.LF +
+		"Rows imported: " + ResultStatusStructure["Success"] +"/"+CountRowsToUpload+Chars.LF +
+		ResultStatusStructure["ErrorMessage"]);
 	Else 	
 		Items.Label1.title = "Import finished. You can check the results";
 	EndIf;
+	
+	Items.FullErrorText.Visible = (FullErrorText.LineCount() <> 0);
+	
+	
+EndProcedure	
+
+&AtServer
+Procedure VisibilitySetupServer(ResultStatus, ResultStatusStructure = Undefined)
+	
+	CreatePage = (ResultStatus = "CreatePage");
+	FinishRunning = (ResultStatus = "FinishRunning");
+	FinishFailure = (ResultStatus = "FinishFailure");
+	FinishSuccess = (ResultStatus = "FinishSuccess");
+	FinishPage = FinishFailure or FinishRunning or FinishSuccess;
+	
+	Items.ActionFinished.Visible = FinishFailure Or FinishSuccess;	// Picture with "i" sign
+	Items.ActionInProgress.Visible = FinishRunning;     			// Picture Animated "in progress"
+	Items.FinishBack.Visible = FinishFailure Or FinishSuccess;  	// Button "Back" on "Finish" screen
+	Items.StartNewImport.Visible = FinishFailure Or FinishSuccess;  // Button "StartNewImport" on "Finish" screen
+	Items.Group6.Visible = FinishFailure Or FinishSuccess;   		// Message with "Import finished. You can see results here"
+	Items.LoadingIndicator.Visible = FinishRunning;					// Progress indicator
+	Items.LoadingStatusText.Visible = FinishRunning;            	// Progress message
+	
+	
+	If FinishPage Then 
+		Items.LoadSteps.CurrentPage = Items.LoadSteps.ChildItems.Finish;
+	ElsIf CreatePage Then 
+		Items.LoadSteps.CurrentPage = Items.LoadSteps.ChildItems.Creation;
+	EndIf;	
+	
+	LoadingStatusText = ?(FinishRunning,LoadingStatusText,"");
+	
+	FullErrorText.Clear();
+	
+	If FinishFailure Then 
+		Items.Label1.title = "IMPORT FAILED !!!. You can check the results"+ Chars.LF + Chars.LF +
+		"Rows imported: " + ResultStatusStructure["Success"] + Chars.LF +
+		"Rows skipped: " + ResultStatusStructure["Skiped"] + Chars.LF +
+		"Rows failed: " + (ResultStatusStructure["ToUpload"] - ResultStatusStructure["Success"]);
+		FullErrorText.SetText(ResultStatusStructure["ErrorMessage"]);
+	ElsIf FinishSuccess Then  
+		Items.Label1.title = "Import finished. You can check the results" + Chars.LF + Chars.LF +
+		"Rows imported: " + ResultStatusStructure["Success"] + Chars.LF +
+		"Rows skipped: " + ResultStatusStructure["Skiped"] + Chars.LF +
+		"Rows failed: " + (ResultStatusStructure["ToUpload"] - ResultStatusStructure["Success"]);
+	ElsIf FinishRunning Then  
+		FullErrorText.SetText("Import in process" + Chars.LF + Chars.LF +
+		"Rows imported: " + ResultStatusStructure["Success"] +"/"+CountRowsToUpload+Chars.LF +
+		ResultStatusStructure["ErrorMessage"]);
+	Else 	
+		Items.Label1.title = "Import finished. You can check the results";
+	EndIf;
+	
+	Items.FullErrorText.Visible = (FullErrorText.LineCount() <> 0);
 	
 	
 EndProcedure	
@@ -4154,18 +4651,41 @@ Function GetLongActionStatus()
 		Result.Error                    = LongActionSettings.Error;
 	Else
 		Try
-            Result.Finished = LongActions.JobCompleted(LongActionSettings.UID);
+			Result.Finished = LongActions.JobCompleted(LongActionSettings.UID);
+		Except	
+			Result.Finished = True;
+			Info = ErrorInfo(); 
+			Result.DetailedErrorDescription = Info.Description;
+			Result.Error                    = Info.Description;
+			Try
+				// potentially progress may be saved;
+				Result.Progress  = LongActions.GetActionProgress(LongActionSettings.UID);
+			Except
+			EndTry;	
+			Return Result;
+		EndTry;
+		
+		Try
 			Result.Progress  = LongActions.GetActionProgress(LongActionSettings.UID);
-			If Left(Result.Progress.Text,5) = "ERROR" Then 
-				Result.Error = Mid(Result.Progress.text,7); 
+			
+			If TypeOf(Result.Progress) = Type("Structure") Then
+				If Left(Result.Progress.Text,5) = "ERROR" Then 
+					Result.Error = Mid(Result.Progress.text,7); 
+				ElsIf Result.Progress.Property("AdditionalParameters") and Result.Progress.AdditionalParameters.Property("Error") and Result.Progress.AdditionalParameters.Error <> "" Then 
+					Result.Error = Result.Progress.AdditionalParameters.Error; 					
+				EndIf;
+			Else 
+				// either JOB not found - was exception in "JobCompleted" method
+				// or no messages - do not raise exceptions here
 			EndIf;	
 		Except
 			Info = ErrorInfo(); 
 			Result.DetailedErrorDescription = Info.Description;
 			Result.Error                    = Info.Description;
+			Return Result;
 		EndTry;
-	EndIf;;
-	Return Result;
+	EndIf;
+	Return Result;	
 EndFunction
 
 &AtServer
@@ -4221,9 +4741,11 @@ Function GetValueByName(Name, TypeString)
 			Mapping.Insert("ItemService", Enums.InventoryTypes.NonInventory);
 			Mapping.Insert("ItemSubtotal", Enums.InventoryTypes.NonInventory);
 		ElsIf TypeString = "ItemTaxable" Then
-			Mapping.Insert("",False);
+			Mapping.Insert("",Undefined);
 			Mapping.Insert("Y",True);
 			Mapping.Insert("N",False);
+			Mapping.Insert("Yes",True);
+			Mapping.Insert("No",False);
 			Mapping.Insert("T",True);
 			Mapping.Insert("F",False);
 			Mapping.Insert("1",True);
@@ -4236,6 +4758,8 @@ Function GetValueByName(Name, TypeString)
 			Mapping.Insert("",False);
 			Mapping.Insert("Y",True);
 			Mapping.Insert("N",False);
+			Mapping.Insert("Yes",True);
+			Mapping.Insert("No",False);
 			Mapping.Insert("T",True);
 			Mapping.Insert("F",False);
 			Mapping.Insert("1",True);
@@ -4248,6 +4772,8 @@ Function GetValueByName(Name, TypeString)
 			Mapping.Insert("",False);
 			Mapping.Insert("Y",True);
 			Mapping.Insert("N",False);
+			Mapping.Insert("Yes",True);
+			Mapping.Insert("No",False);
 			Mapping.Insert("T",True);
 			Mapping.Insert("F",False);
 			Mapping.Insert("1",True);
@@ -4260,6 +4786,8 @@ Function GetValueByName(Name, TypeString)
 			Mapping.Insert("",False);
 			Mapping.Insert("Y",True);
 			Mapping.Insert("N",False);
+			Mapping.Insert("Yes",True);
+			Mapping.Insert("No",False);;
 			Mapping.Insert("T",True);
 			Mapping.Insert("F",False);
 			Mapping.Insert("1",True);
@@ -4272,6 +4800,8 @@ Function GetValueByName(Name, TypeString)
 			Mapping.Insert("",False);
 			Mapping.Insert("Y",True);
 			Mapping.Insert("N",False);
+			Mapping.Insert("Yes",True);
+			Mapping.Insert("No",False);
 			Mapping.Insert("T",True);
 			Mapping.Insert("F",False);
 			Mapping.Insert("1",True);
@@ -4284,6 +4814,8 @@ Function GetValueByName(Name, TypeString)
 			Mapping.Insert("",False);
 			Mapping.Insert("Y",True);
 			Mapping.Insert("N",False);
+			Mapping.Insert("Yes",True);
+			Mapping.Insert("No",False);
 			Mapping.Insert("T",True);
 			Mapping.Insert("F",False);
 			Mapping.Insert("1",True);
@@ -4294,6 +4826,8 @@ Function GetValueByName(Name, TypeString)
 			Mapping.Insert("",False);
 			Mapping.Insert("Y",True);
 			Mapping.Insert("N",False);
+			Mapping.Insert("Yes",True);
+			Mapping.Insert("No",False);
 			Mapping.Insert("T",True);
 			Mapping.Insert("F",False);
 			Mapping.Insert("1",True);
@@ -4304,6 +4838,8 @@ Function GetValueByName(Name, TypeString)
 			Mapping.Insert("",False);
 			Mapping.Insert("Y",True);
 			Mapping.Insert("N",False);
+			Mapping.Insert("Yes",True);
+			Mapping.Insert("No",False);
 			Mapping.Insert("T",True);
 			Mapping.Insert("F",False);
 			Mapping.Insert("1",True);
@@ -4314,6 +4850,8 @@ Function GetValueByName(Name, TypeString)
 			Mapping.Insert("",False);
 			Mapping.Insert("Y",True);
 			Mapping.Insert("N",False);
+			Mapping.Insert("Yes",True);
+			Mapping.Insert("No",False);
 			Mapping.Insert("T",True);
 			Mapping.Insert("F",False);
 			Mapping.Insert("1",True);
@@ -4324,6 +4862,8 @@ Function GetValueByName(Name, TypeString)
 			Mapping.Insert("",False);
 			Mapping.Insert("Y",True);
 			Mapping.Insert("N",False);
+			Mapping.Insert("Yes",True);
+			Mapping.Insert("No",False);
 			Mapping.Insert("T",True);
 			Mapping.Insert("F",False);
 			Mapping.Insert("1",True);
@@ -4334,6 +4874,8 @@ Function GetValueByName(Name, TypeString)
 			Mapping.Insert("",False);
 			Mapping.Insert("Y",True);
 			Mapping.Insert("N",False);
+			Mapping.Insert("Yes",True);
+			Mapping.Insert("No",False);
 			Mapping.Insert("T",True);
 			Mapping.Insert("F",False);
 			Mapping.Insert("1",True);
@@ -4474,30 +5016,6 @@ Procedure CreateCheckCSV(ItemDataSet) Export
 		
 	EndDo;
 
-	
-EndProcedure
-
-&AtServer
-Procedure CreateDepositCSV(ItemDataSet) Export
-		
-	For Each DataLine In ItemDataSet Do				
-		
-		//If DataLine.
-		NewDeposit = Documents.Deposit.CreateDocument();
-		NewDeposit.Date = DataLine.DepositDate;
-		NewDeposit.BankAccount = DataLine.DepositBankAccount;
-		NewDeposit.Memo = DataLine.DepositMemo;
-		NewDeposit.DocumentTotalRC = DataLine.DepositLineAmount;
-		NewDeposit.DocumentTotal = DataLine.DepositLineAmount;
-		NewLine = NewDeposit.Accounts.Add();
-		NewLine.Company = DataLine.DepositLineCompany;
-		NewLine.Account = DataLine.DepositLineAccount;
-		NewLine.Class = DataLine.DepositLineClass;
-		NewLine.Amount = DataLine.DepositLineAmount;
-		NewLine.Memo = DataLine.DepositLineMemo;
-		NewDeposit.Write();
-		
-	EndDo;
 	
 EndProcedure
 
@@ -4733,12 +5251,13 @@ EndProcedure
 
 &AtServer
 Procedure FinishBackAtServer()
-	VisibilitySetup("CreatePage");
+	
 EndProcedure
 
 &AtClient
 Procedure FinishBack(Command)
-	FinishBackAtServer();
+	//FinishBackAtServer();
+	VisibilitySetup("CreatePage");
 EndProcedure
 
 &AtClient
@@ -4759,4 +5278,9 @@ EndProcedure
 &AtClient
 Procedure LoadDefaultSettings(Command)
 	LoadDefaultSettingsAtServer();
+EndProcedure
+
+&AtClient
+Procedure ShowSettings(Command)
+	Items.AdditionalSettings.Visible = Not Items.AdditionalSettings.Visible;
 EndProcedure

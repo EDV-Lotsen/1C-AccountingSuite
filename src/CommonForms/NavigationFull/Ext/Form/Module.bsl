@@ -1,4 +1,21 @@
-﻿&AtClient
+﻿
+////////////////////////////////////////////////////////////////////////////////
+// Navigation full: Common form
+//------------------------------------------------------------------------------
+// Available on:
+// - Client (managed application)
+// - Server
+//
+
+///////////////////////////////////////////////////////////////////////////////
+#Region EVENTS_HANDLERS
+
+#EndRegion
+
+////////////////////////////////////////////////////////////////////////////////
+#Region COMMANDS_HANDLERS
+
+&AtClient
 Procedure SalesOrder(Command)
 	OpenForm("Document.SalesOrder.Form.DocumentForm");
 EndProcedure
@@ -6,6 +23,16 @@ EndProcedure
 &AtClient
 Procedure SalesInvoice(Command)
 	OpenForm("Document.SalesInvoice.Form.DocumentForm");
+EndProcedure
+
+&AtClient
+Procedure SalesReturn(Command)
+	OpenForm("Document.SalesReturn.Form.DocumentForm");
+EndProcedure
+
+&AtClient
+Procedure CashReceipt(Command)
+	OpenForm("Document.CashReceipt.Form.DocumentForm");
 EndProcedure
 
 &AtClient
@@ -29,18 +56,13 @@ Procedure PurchaseReturn(Command)
 EndProcedure
 
 &AtClient
-Procedure CashReceipt(Command)
-	OpenForm("Document.CashReceipt.Form.DocumentForm");
-EndProcedure
-
-&AtClient
 Procedure InvoicePayment(Command)
 	OpenForm("Document.InvoicePayment.Form.DocumentForm");
 EndProcedure
- 
+
 &AtClient
-Procedure Deposit(Command)
-	OpenForm("Document.Deposit.Form.DocumentForm");
+Procedure ItemAdjustment(Command)
+	OpenForm("Document.ItemAdjustment.Form.DocumentForm");
 EndProcedure
 
 &AtClient
@@ -49,18 +71,23 @@ Procedure Check(Command)
 EndProcedure
 
 &AtClient
+Procedure Deposit(Command)
+	OpenForm("Document.Deposit.Form.DocumentForm");
+EndProcedure
+
+&AtClient
 Procedure BankRec(Command)
 	OpenForm("Document.BankReconciliation.Form.DocumentForm");
 EndProcedure
 
 &AtClient
-Procedure ChartOfAccounts(Command)
-	OpenForm("ChartOfAccounts.ChartOfAccounts.Form.ListForm");
+Procedure GJEntry(Command)
+	OpenForm("Document.GeneralJournalEntry.Form.DocumentForm");
 EndProcedure
 
 &AtClient
-Procedure GJEntry(Command)
-	OpenForm("Document.GeneralJournalEntry.Form.DocumentForm");
+Procedure ChartOfAccounts(Command)
+	OpenForm("ChartOfAccounts.ChartOfAccounts.Form.ListForm");
 EndProcedure
 
 &AtClient
@@ -73,42 +100,9 @@ Procedure Product(Command)
 	OpenForm("Catalog.Products.Form.ListForm");
 EndProcedure
 
-&AtClient
-Procedure UserList(Command)
-	OpenForm("Catalog.UserList.Form.ListForm");
-EndProcedure
+#EndRegion
 
-&AtClient
-Procedure ItemAdjustment(Command)
-	OpenForm("Document.ItemAdjustment.Form.DocumentForm");
-EndProcedure
+////////////////////////////////////////////////////////////////////////////////
+#Region PRIVATE_IMPLEMENTATION
 
-&AtClient
-Procedure OnOpen(Cancel)
-	
-EndProcedure
-
-&AtServer
-Procedure OnCreateAtServer(Cancel, StandardProcessing)
-	
-	CurUser = InfoBaseUsers.FindByName(SessionParameters.ACSUser);
-	If CurUser.Roles.Contains(Metadata.Roles.BankAccounting) = True Then
-		Items.Group6.Visible = False;
-		Items.Group7.Visible = False;
-		Items.group8.Visible = True;
-	Else
-		Items.Group6.Visible = True;
-		Items.Group7.Visible = True;
-		Items.group8.Visible = False;
-	EndIf;
-
-EndProcedure
-
-&AtClient
-Procedure ProcessMonth(Command)
-	OpenForm("DataProcessor.BankRegisterCFOToday.Form.Form");
-EndProcedure
-
-
-
-
+#EndRegion

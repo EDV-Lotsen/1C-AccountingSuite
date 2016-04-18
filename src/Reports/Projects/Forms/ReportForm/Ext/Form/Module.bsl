@@ -80,7 +80,9 @@ Procedure OnUpdateUserSettingSetAtServer(StandardProcessing)
 		
 	Else
 		GeneralFunctions.ChangePeriodIntoReportForm(ThisForm.Report.SettingsComposer, PeriodVariant, PeriodStartDate, PeriodEndDate);
-	EndIf;	
+	EndIf;
+	
+	ModifiedStatePresentation();
 		
 EndProcedure
 

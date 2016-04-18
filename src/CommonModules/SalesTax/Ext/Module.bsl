@@ -97,8 +97,6 @@ Function GetSalesTaxRatesList() Export
 	For Each TaxRate In TaxRatesTab Do
 		RatesList.Add(TaxRate.Ref, TaxRate.Presentation);
 	EndDo;	
-	//No sales tax
-	RatesList.Add(Catalogs.SalesTaxRates.EmptyRef(), "No sales tax (0%)");
 	return RatesList;
 EndFunction
 
@@ -183,8 +181,12 @@ Function GetDefaultSalesTaxRate(Company) Export
 		return Catalogs.SalesTaxRates.EmptyRef();
 	EndIf;
 	
+	If Not ValueIsFilled(Company)Then 
+		return Catalogs.SalesTaxRates.EmptyRef();
+	EndIf;	
+	
 	Request = New Query("SELECT
-	                    |	CompanySettings.Taxable AS CompanyIsTaxable,
+	                    |	ISNULL(CompanySettings.Taxable, FALSE) AS CompanyIsTaxable,
 	                    |	CompanySettings.SalesTaxRate AS CompanySalesTaxRate,
 	                    |	SalesTaxDefault.Value AS DefaultSalesTaxRate
 	                    |FROM
@@ -197,7 +199,8 @@ Function GetDefaultSalesTaxRate(Company) Export
 	                    |		Companies.Ref = &Company) AS CompanySettings,
 	                    |	Constant.SalesTaxDefault AS SalesTaxDefault");
 	Request.SetParameter("Company", Company);
-	Sel = Request.Execute().Select();
+	Res = Request.Execute();
+	Sel = Res.Select();
 	Sel.Next();
 	If Sel.CompanyIsTaxable Then
 		return ?(ValueIsFilled(Sel.CompanySalesTaxRate), Sel.CompanySalesTaxRate, Sel.DefaultSalesTaxRate);

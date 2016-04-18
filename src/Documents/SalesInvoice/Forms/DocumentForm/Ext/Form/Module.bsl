@@ -9,7 +9,7 @@
 &AtClient
 Var SalesTaxRateInactive, AgenciesRatesInactive;//Cache for storing inactive rates previously used in the document
 
-////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 #Region EVENTS_HANDLERS
 
 &AtServer
@@ -28,8 +28,6 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Object.Company = Parameters.Company;
 		OpenOrdersSelectionForm = True; 
 	EndIf;
-
-	Items.DwollaRequest.Enabled = Object.DwollaTrxID = 0;
 	
 	//------------------------------------------------------------------------------
 	// 1. Form attributes initialization.
@@ -193,19 +191,6 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	EndIf;
 	
 	UpdateInformationPayments();
-	//UpdateAuditLogCount();
-	If Object.CreatedFromZoho = True Then
-		taxQuery = new Query("SELECT
-							 |	SalesTaxRates.Ref
-							 |FROM
-							 |	Catalog.SalesTaxRates AS SalesTaxRates
-							 |WHERE
-							 |	SalesTaxRates.Description = &Description");
-						   
-		taxQuery.SetParameter("Description", "TaxFromZoho"); // zoho product id
-		taxResult = taxQuery.Execute().Unload();
-		SalesTaxRate = taxResult[0].ref;
-	EndIf;
 	
 	If Object.BillTo <> Catalogs.Addresses.EmptyRef() AND Object.ShipTo <> Catalogs.Addresses.EmptyRef()  Then
 		Items.DecorationShipTo.Visible = True;
@@ -216,7 +201,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Items.DecorationShipTo.Visible = False;
 		Items.DecorationBillTo.Visible = False;
 	EndIf;
-		
+	
 EndProcedure
 
 // -> CODE REVIEW
@@ -275,13 +260,7 @@ Procedure OnOpenAtServer()
 	Except
 	EndTry;
 	
-	//prepay beg
-	If Object.PrePaySO <> "" Then
-		Message("You have unapplied payments to " + Object.PrePaySO + ". Please apply them using the Cash Receipt document.");
-		Object.PrePaySO = "";
-	EndIf;
-	//prepay end
-	
+
 EndProcedure
 
 &AtClient
@@ -308,6 +287,8 @@ EndProcedure
 &AtClient
 Procedure BeforeWrite(Cancel, WriteParameters)
 	
+	WriteParameters.Insert("NewObject", Not ValueIsFilled(Object.Ref));
+	
 	//Closing period
 	If PeriodClosingServerCall.DocumentPeriodIsClosed(Object.Ref, Object.Date) Then
 		Cancel = Not PeriodClosingServerCall.DocumentWritePermitted(WriteParameters);
@@ -325,9 +306,6 @@ Procedure BeforeWrite(Cancel, WriteParameters)
 		EndIf;
 	EndIf;
 	
-	//Avatax calculation
-	AvaTaxClient.ShowQueryToTheUserOnAvataxCalculation("SalesInvoice", Object, ThisObject, WriteParameters, Cancel);
-		
 EndProcedure
 
 // <- CODE REVIEW
@@ -410,9 +388,6 @@ Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
 		EndIf;
 	EndIf;
 	
-	//Avatax calculation
-	AvaTaxServer.CalculateTaxBeforeWrite(CurrentObject, WriteParameters, Cancel, "SalesOrder");
-		
 EndProcedure
 
 &AtServer
@@ -452,42 +427,34 @@ Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 	// Update Time Entries that reference this Sales Invoice.
 	UpdateTimeEntries();
 	
-	//Avatax calculation
-	AvaTaxServer.CalculateTaxAfterWrite(CurrentObject, WriteParameters, "SalesInvoice");
-		
 	//Update tax rate
 	DisplaySalesTaxRate(ThisForm);
-	
-	If Object.Posted Then
-		If Constants.zoho_auth_token.Get() <> "" Then
-			If Object.NewObject = True Then
-				ThisAction = "create";
-			Else
-				ThisAction = "update";
-			EndIf;
-			zoho_Functions.ZohoThisInvoice(ThisAction, Object.Ref);
-		EndIf;
-	EndIf;
 	
 EndProcedure
 
 &AtClient
 Procedure AfterWrite(WriteParameters)
 	
-	// Request user to repost subordinate documents.
-	Structure = New Structure("Type, DocumentRef", "RepostSubordinateDocumentsOfSalesInvoice", Object.Ref); 
-	KeyData = CommonUseClient.StartLongAction(NStr("en = 'Posting subordinate document(s)'"), Structure, ThisForm);
-	If WriteParameters.Property("CloseAfterWrite") Then
-		BackgroundJobParameters.Add(True);// [5]
+	If WriteParameters.Property("NewObject") And WriteParameters.NewObject Then
+		
+		//Close the form if the command is "Post and close"
+		If WriteParameters.Property("CloseAfterWrite") Then
+			Close();
+		EndIf;
+		
 	Else
-		BackgroundJobParameters.Add(False);// [5]
-	EndIf;
-	CheckObtainedData(KeyData);
-	
-	////Close the form if the command is "Post and close"
-	//If WriteParameters.Property("CloseAfterWrite") Then
-	//	Close();
-	//EndIf;
+		
+		// Request user to repost subordinate documents.
+		Structure = New Structure("Type, DocumentRef", "RepostSubordinateDocumentsOfSalesInvoice", Object.Ref); 
+		KeyData = CommonUseClient.StartLongAction(NStr("en = 'Re-posting linked transactions'"), Structure, ThisForm);
+		If WriteParameters.Property("CloseAfterWrite") Then
+			BackgroundJobParameters.Add(True);// [5]
+		Else
+			BackgroundJobParameters.Add(False);// [5]
+		EndIf;
+		CheckObtainedData(KeyData);
+		
+	EndIf;	
 	
 EndProcedure
 
@@ -501,9 +468,7 @@ Procedure NotificationProcessing(EventName, Parameter, Source)
 	EndIf;
 	
 	If EventName = "UpdatePayInvoiceInformation" And Parameter = Object.Company Then
-		
 		UpdateInformationPayments();
-		
 	EndIf;
 	
 EndProcedure
@@ -571,25 +536,16 @@ Procedure CompanyOnChangeAtServer()
 	TermsOnChangeAtServer();
 	
 	// Tax settings
-	SalesTaxRate 		= SalesTax.GetDefaultSalesTaxRate(Object.Company);
-	If GeneralFunctionsReusable.FunctionalOptionValue("AvataxEnabled") Then
-		Object.UseAvatax	= Object.Company.UseAvatax;
-	Else
-		Object.UseAvatax	= False;
+	SalesTaxRate     = SalesTax.GetDefaultSalesTaxRate(Object.Company);
+	Object.UseAvatax = False;
+	
+	TaxEngine = 1; 
+	If SalesTaxRate <> Object.SalesTaxRate Then
+		Object.SalesTaxRate = SalesTaxRate;
 	EndIf;
-	If (Not Object.UseAvatax) Then
-		TaxEngine = 1; //Use AccountingSuite
-		If SalesTaxRate <> Object.SalesTaxRate Then
-			Object.SalesTaxRate = SalesTaxRate;
-		EndIf;
-	Else
-		TaxEngine = 2;
-	EndIf;
+	
 	Object.SalesTaxAcrossAgencies.Clear();
 	ApplySalesTaxEngineSettings();
-	If Object.UseAvatax Then
-		AvataxServer.RestoreCalculatedSalesTax(Object);
-	EndIf;	
 	
 	RecalculateTotals(Object);
 	DisplaySalesTaxRate(ThisForm);
@@ -1457,22 +1413,6 @@ EndProcedure
 ////////////////////////////////////////////////////////////////////////////////
 #Region COMMANDS_HANDLERS
 
-// -> CODE REVIEW
-//------------------------------------------------------------------------------
-// Send invoice by email.
-
-&AtClient
-Procedure SendEmail(Command)
-	
-	If Object.Ref.IsEmpty() OR IsPosted() = False Then
-		Message("An email cannot be sent until the invoice is posted");
-	Else	
-		FormParameters = New Structure("Ref",Object.Ref );
-		OpenForm("CommonForm.EmailForm", FormParameters,,,,,, FormWindowOpeningMode.LockOwnerWindow);	
-	EndIf;
-	
-EndProcedure
-
 // Check if document has been posted, return bool value.
 
 &AtServer
@@ -1490,53 +1430,10 @@ Procedure PayInvoice(Command)
 	SIObj.Insert("SalesInvoice", Object.Ref);
 	OpenForm("Document.CashReceipt.ObjectForm",SIObj);
 	
-	// Currently is not used.
-	// PayInvoiceAtServer();
-	
 EndProcedure
-
-//&AtServer
-//Procedure PayInvoiceAtServer()
-//	
-//	If Object.Posted = False Then
-//		Message("A cash receipt cannot be created for the invoice because it has not yet been created(posted)");
-//	Else
-//	
-//		NewCashReceipt = Documents.CashReceipt.CreateDocument();
-//		NewCashReceipt.Company = Object.Company;
-//		NewCashReceipt.Date = CurrentDate();
-//		NewCashReceipt.Currency = Object.Currency;
-//		NewCashReceipt.DepositType = "1";
-//		NewCashReceipt.DocumentTotalRC = Object.DocumentTotalRC;
-//		NewCashReceipt.CashPayment = Object.DocumentTotalRC;
-//		NewCashReceipt.ARAccount = Object.ARAccount;
-//		
-//		NewLine = NewCashReceipt.LineItems.Add();
-//		NewLine.Document = Object.Ref;
-//		NewLine.Balance = Object.DocumentTotalRC;
-//		NewLine.Payment = Object.DocumentTotalRC;
-//		Newline.Currency = Object.Currency;
-//		
-//		NewCashReceipt.Write(DocumentWriteMode.Posting);
-//		CommandBar.ChildItems.FormPayInvoice.Enabled = False;
-//		InvoicePaid = True;
-//		
-//		Message("A Cash Receipt has been created for " + Object.Ref);
-//		
-//	Endif;
-//	
-//EndProcedure
 
 //------------------------------------------------------------------------------
 // Call AvaTax to request sales tax values.
-
-&AtClient
-Procedure AvaTax(Command)
-	
-	FormParams = New Structure("ObjectRef", Object.Ref);
-	OpenForm("InformationRegister.AvataxDetails.Form.AvataxDetails", FormParams, ThisForm,,,,, FormWindowOpeningMode.LockOwnerWindow);
-	
-EndProcedure
 
 &AtClient
 Procedure TaxEngineOnChange(Item)
@@ -1550,8 +1447,6 @@ EndProcedure
 &AtClient
 Procedure PostAndClose(Command)
 	
-	//PerformanceMeasurementClientServer.StartTimeMeasurement("Sales Invoice Post and Close");
-	
 	Try
 		Write(New Structure("WriteMode, CloseAfterWrite", DocumentWriteMode.Posting, True));
 	Except
@@ -1564,8 +1459,6 @@ EndProcedure
 &AtClient
 Procedure Save(Command)
 	
-	//PerformanceMeasurementClientServer.StartTimeMeasurement("Sales Invoice Save");
-	
 	Try
 		Write();
 	Except
@@ -1577,8 +1470,6 @@ EndProcedure
 
 &AtClient
 Procedure Post(Command)
-	
-	//PerformanceMeasurementClientServer.StartTimeMeasurement("Sales Invoice Post");
 	
 	Try
 		Write(New Structure("WriteMode", DocumentWriteMode.Posting));
@@ -1906,10 +1797,6 @@ Function FillDocumentWithSelectedOrders(SelectedOrders)
 			LotsSerialNumbers.FillSerialNumbers(Object.SerialNumbers, Row.Product, 1, Row.LineID, Row.SerialNumbers);
 		EndDo;
 		
-		// -> CODE REVIEW
-		PrePayCheck(SelectedOrders);
-		// <- CODE REVIEW
-		
 		//Check sales tax rates in the selected orders
 		//If they differ  - show a message to the user
 		CheckOrdersSalesTaxRates(SelectedOrders);		
@@ -1931,83 +1818,6 @@ Function FillDocumentWithSelectedOrders(SelectedOrders)
 	EndIf;
 	
 EndFunction
-
-// -> CODE REVIEW
-&AtServer
-Procedure PrePayCheck(SelectedOrders)
-	
-		SOString = "";
-		OrderCount = 0;
-		ExistBalance = False;
-		
-		
-		For Each  SelectOrder In SelectedOrders Do
-			
-			Query = New Query;
-			Query.Text = "SELECT
-			             |	CashReceipt.Ref,
-			             |	CashReceipt.Company
-			             |FROM
-			             |	Document.CashReceipt AS CashReceipt
-			             |WHERE
-			             |	CashReceipt.SalesOrder = &SaleOrder";
-			Query.SetParameter("SaleOrder", SelectOrder.Ref);
-			QueryResult = Query.Execute().Unload();
-			
-			Total = 0;
-			For Each CashRec In QueryResult Do
-				
-				Query.Text = "SELECT
-				             |	-GeneralJournalBalance.AmountBalance AS Bal,
-				             |	GeneralJournalBalance.Account.Ref
-				             |FROM
-				             |	AccountingRegister.GeneralJournal.Balance AS GeneralJournalBalance
-				             |WHERE
-				             |	GeneralJournalBalance.ExtDimension2 = &CashReceipt
-				             |	AND GeneralJournalBalance.ExtDimension1 = &Company";
-				Query.SetParameter("CashReceipt", CashRec.Ref);
-				Query.SetParameter("Company",CashRec.Company);
-
-				QueryResult2 = Query.Execute().Unload();
-
-				Total = Total + QueryResult2[0].Bal;
-				
-			EndDo;
-			OrderCount = OrderCount + 1;
-			
-			Query.Text = "SELECT
-             |	-GeneralJournalBalance.AmountBalance AS Bal,
-             |	GeneralJournalBalance.Account.Ref
-             |FROM
-             |	AccountingRegister.GeneralJournal.Balance AS GeneralJournalBalance
-             |WHERE
- 			 |			ExtDimension1 = &Company AND
-             |          (ExtDimension2 REFS Document.SalesReturn AND
-             |			ExtDimension2.ReturnType = VALUE(Enum.ReturnTypes.CreditMemo))";
-			Query.SetParameter("Company",SelectedOrders[0].Company);
-
-			QueryResult3 = Query.Execute().Unload();
-			
-			Total = Total + QueryResult3.Total("Bal");
-
-			
-			If Total > 0 Then
-				ExistBalance = True;
-				If OrderCount = SelectedOrders.Count()Then
-					SOString = SOString + SelectOrder.Ref;
-				Else
-					SOString = SOString + SelectOrder.Ref + ", ";
-				EndIf;
-			EndIf;
-
-		EndDo;
-
-		If ExistBalance = True Then
-			Message("You have unapplied payments to " + SOString + ". Please apply them using the Cash Receipt document.");
-		EndIf;	
-	
-EndProcedure
-// <- CODE REVIEW
 
 &AtServer
 Procedure CheckOrdersSalesTaxRates(SelectedOrders)
@@ -2418,23 +2228,11 @@ EndProcedure
 &AtServer
 Procedure TaxEngineOnChangeAtServer()
 	
-	//Tax engine depends on company settings
-	If GeneralFunctionsReusable.FunctionalOptionValue("AvataxEnabled") Then
-		CompanyAvataxSetting = ?(Object.Company.UseAvatax, 2, 1);
-		If TaxEngine <> CompanyAvataxSetting Then
-			TaxEngine = CompanyAvataxSetting;
-			CommonUseClientServer.MessageToUser("Please change company tax settings first", Object, "TaxEngine");
-			return;
-		EndIf;
-	Else
-		TaxEngine = 1; //AccountingSuite
-	EndIf;
+	TaxEngine = 1; //AccountingSuite
+	
 	Object.UseAvaTax = ?(TaxEngine = 1, False, True);	
 	Object.SalesTaxAcrossAgencies.Clear();
 	ApplySalesTaxEngineSettings();
-	If Object.UseAvatax Then
-		AvataxServer.RestoreCalculatedSalesTax(Object);
-	EndIf;
 	RecalculateTotals(Object);
 	
 	DisplaySalesTaxRate(ThisForm);
@@ -2443,17 +2241,6 @@ EndProcedure
 
 &AtServer
 Procedure ApplySalesTaxEngineSettings()
-	
-	//Without AvataxEnabled allow changing of an engine only for documents, using AvaTax
-	If GeneralFunctionsReusable.FunctionalOptionValue("AvataxEnabled") Then
-		Items.TaxEngine.Visible = True;
-	Else
-		If (Not Object.Ref.IsEmpty()) And (Object.UseAvatax) Then
-			Items.TaxEngine.Visible = True;
-		Else
-			Items.TaxEngine.Visible = False;
-		EndIf;
-	EndIf;
 	
 	If Not Object.UseAvatax Then
 		Items.SalesTaxRate.ChoiceList.Clear();
@@ -2465,13 +2252,6 @@ Procedure ApplySalesTaxEngineSettings()
 		Items.TaxParametersPages.CurrentPage = Items.TaxParametersInACS;
 		Items.LineItemsTaxable.Visible		= True;
 		Items.LineItemsAvataxTaxCode.Visible = False;
-	ElsIf Object.UseAvatax Then
-		If Object.Ref.IsEmpty() Then
-			Object.AvataxShippingTaxCode = Constants.AvataxDefaultShippingTaxCode.Get();
-		EndIf;
-		Items.TaxParametersPages.CurrentPage = Items.TaxParametersInAvaTax;
-		Items.LineItemsTaxable.Visible		= False;
-		Items.LineItemsAvataxTaxCode.Visible = True;
 	EndIf;
 
 EndProcedure
@@ -2636,133 +2416,6 @@ Procedure SetVisibilityByDiscount(ThisForm)
 	EndIf;
 	
 EndProcedure
-
-&AtClient
-Procedure DwollaRequest(Command)
-	
-	DAT = DwollaAccessToken();
-	
-	If DAT = "Error" Then
-		Message(NStr("en = 'Expired access token. Please Reconnect to Dwolla in Settings > Integrations.'"));
-		Return;
-	EndIf;
-	
-	If IsBlankString(DAT) Then
-		Message(NStr("en = 'Please connect to Dwolla in Settings > Integrations.'"));
-		Return;
-	EndIf;
-	
-	// Check document saved.
-	If Object.Ref.IsEmpty() Or Modified Then
-		Message(NStr("en = 'The document is not saved. Please save the document first.'"));
-		Return;
-	EndIf;
-	
-	// Check DwollaID
-	DwollaID = CommonUse.GetAttributeValue(Object.Company, "DwollaID");
-	If IsBlankString(DwollaID) Then
-		Message(NStr("en = 'Enter a Dwolla e-mail or ID on the customer card.'"));
-		Return;
-	Else
-		AtSign = Find(DwollaID,"@");
-		If AtSign = 0 Then
-			IsEmail = False;
-		Else
-			IsEmail = True;
-		EndIf;
-	EndIf;
-	
-	If IsEmail Then
-							
-		DwollaData = New Map();
-		DwollaData.Insert("sourceId", DwollaID);
-		DwollaData.Insert("oauth_token", DAT);
-		DwollaData.Insert("amount", Format(Object.DocumentTotalRC,"NG=0"));
-		DwollaData.Insert("sourceType", "Email");
-		DwollaData.Insert("notes", "Invoice " + Object.Number + " from " + Format(Object.Date,"DLF=D"));
-		
-		DataJSON = InternetConnectionClientServer.EncodeJSON(DwollaData);
-			
-	Else
-		
-		DwollaData = New Map();
-		DwollaData.Insert("sourceId", DwollaID);
-		DwollaData.Insert("oauth_token", DAT);
-		DwollaData.Insert("amount", Format(Object.DocumentTotalRC,"NG=0"));
-		DwollaData.Insert("notes", "Invoice " + Object.Number + " from " + Format(Object.Date,"DLF=D"));
-				
-		DataJSON = InternetConnectionClientServer.EncodeJSON(DwollaData);
-	
-	EndIf;
-
-			
-	//ResultBodyJSON = DwollaCharge(DataJSON);
-	ResultBodyJSON = DwollaRequestServer(DataJSON);
-	
-	If ResultBodyJSON.Success AND ResultBodyJSON.Message = "Success" Then
-		Object.DwollaTrxID = ResultBodyJSON.Response; //Format(ResultBodyJSON.Response, "NG=0");
-		Message(NStr("en = 'Request was successfully sent. Please save the document.'"));
-		Modified = True;
-		
-		UpdateMongo(Object.DwollaTrxID);
-		
-	Else
-		Message(ResultBodyJSON.Message);
-	EndIf;
-	
-	Items.DwollaRequest.Enabled = Object.DwollaTrxID = 0;
-
-EndProcedure
-
-&AtServer
-Procedure UpdateMongo(DwollaTrxID)
-	
-		HeadersMap = New Map();
-		HeadersMap.Insert("Content-Type", "application/json");
-		
-		HTTPRequest = New HTTPRequest("/api/1/clusters/rs-ds039921/databases/dataset1cproduction/collections/dwollarequests?apiKey=" + ServiceParameters.MongoAPIKey(), HeadersMap);
-		
-		RequestBodyMap = New Map();
-				
-		RequestBodyMap.Insert("DwollaRequest", DwollaTrxID);
-		RequestBodyMap.Insert("tenant", SessionParameters.TenantValue);
-		RequestBodyMap.Insert("UUID", Object.Ref.UUID());
-		RequestBodyMap.Insert("apisecretkey", Constants.APISecretKey.Get());
-		
-		RequestBodyString = InternetConnectionClientServer.EncodeJSON(RequestBodyMap);
-		
-		HTTPRequest.SetBodyFromString(RequestBodyString,TextEncoding.ANSI); // ,TextEncoding.ANSI
-		
-		SSLConnection = New OpenSSLSecureConnection();
-		
-		HTTPConnection = New HTTPConnection("api.mongolab.com",,,,,,SSLConnection);
-		Result = HTTPConnection.Post(HTTPRequest);
-		ResponseBody = Result.GetBodyAsString(TextEncoding.UTF8);
-
-	
-EndProcedure
-
-&AtServer
-Function DwollaRequestServer(DataJSON)
-	
-	HeadersMap = New Map();
-	HeadersMap.Insert("Content-Type", "application/json");		
-	ConnectionSettings = New Structure;
-	Connection = InternetConnectionClientServer.CreateConnection( "https://www.dwolla.com/oauth/rest/requests/", ConnectionSettings).Result;
-	ResultBody = InternetConnectionClientServer.SendRequest(Connection, "Post", ConnectionSettings, HeadersMap, DataJSON).Result;
-	
-	ResultBodyJSON = InternetConnectionClientServer.DecodeJSON(ResultBody);
-	
-	Return ResultBodyJSON;
-	
-EndFunction
-
-&AtServer
-Function DwollaAccessToken()
-	
-	Return GeneralFunctions.GetDwollaAccessToken();
-	
-EndFunction
 
 #Region LONG_ACTION
 

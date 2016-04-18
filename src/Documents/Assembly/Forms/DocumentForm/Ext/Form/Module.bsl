@@ -16,6 +16,11 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	//------------------------------------------------------------------------------
 	// 1. Form attributes initialization.
 	
+	// Set FirstNumber
+	If Object.Ref.IsEmpty() Then
+		FirstNumber = Object.Number;
+	EndIf;
+	
 	// Set LineItems editing flag.
 	IsNewRow = False;
 	
@@ -167,6 +172,19 @@ EndProcedure
 &AtServer
 Procedure AfterWriteAtServer(CurrentObject, WriteParameters)
 	
+	// Update numerator
+	If FirstNumber <> "" Then
+		
+		Numerator = Catalogs.DocumentNumbering.Assembly.GetObject();
+		NextNumber = GeneralFunctions.Increment(Numerator.Number);
+		If FirstNumber = NextNumber And NextNumber = Object.Number Then
+			Numerator.Number = FirstNumber;
+			Numerator.Write();
+		EndIf;
+		
+		FirstNumber = "";
+	EndIf;
+	
 	// Update point in time for requesting the balances.
 	If Object.Ref.IsEmpty() Then
 		// The new document.
@@ -211,7 +229,7 @@ Procedure ProductOnChangeAtServer()
 	Object.ProductDescription = ProductProperties.Description;
 	Object.UnitSet            = ProductProperties.UnitSet;
 	Object.Unit               = ProductProperties.UnitSet.DefaultPurchaseUnit;
-	Object.WasteAccount       = ProductProperties.WasteAccount;
+	Object.WasteAccount       = ?(ProductProperties.WasteAccount.IsEmpty(), Constants.WasteAccount.Get(), ProductProperties.WasteAccount);;
 	
 	// Set residuals visibility.
 	Items.ResidualsSection.Visible = Object.Product.HasResiduals;
@@ -1542,5 +1560,16 @@ Function GetResidualsRowStructure()
 	Return New Structure("LineNumber, Product, ProductDescription, UnitSet, QtyItem, QtyUnits, Unit, QtyUM, Percent, PriceUnits, LineTotal, Location");
 	
 EndFunction
+
+&AtClient
+Procedure AuditLogRecords(Command)
+	
+	FormParameters = New Structure();	
+	FltrParameters = New Structure();
+	FltrParameters.Insert("DocUUID", String(Object.Ref.UUID()));
+	FormParameters.Insert("Filter", FltrParameters);
+	OpenForm("CommonForm.AuditLogList",FormParameters, Object.Ref);
+
+EndProcedure
 
 #EndRegion

@@ -1,137 +1,74 @@
-﻿&AtServer
+﻿
+&AtServer
 // Calculations for cash payments
-Procedure CashPaymentCalculation(Object, PayRef) Export
+Procedure CashPaymentCalculation(Object) Export
 	
-	// Marks that CashPayment was the first field to have applied a payment
-	PayRef = True;
-
-	CashDistribute = Object.CashPayment;
+	TotalCredit = Object.CreditMemos.Total("Payment");
+	TotalAmountToDistribute = TotalCredit;
 	
-	// Sum total of current credit payments
-	CreditTotal = 0;	
-	For Each LineItemCM In Object.CreditMemos Do
-			CreditTotal = CreditTotal + LineItemCM.Payment;
-	EndDo;
-
-	// Keep track of surplus credit to be applied
-	CreditOverFlow = CreditTotal;
-
+	ClearTabularSections(Object, True, False);
 	
 	For Each LineItem In Object.LineItems Do
-		
 		LineItem.Payment = 0;
-		Balance = LineItem.BalanceFCY2;
-			
-		// If there is leftover credit to be applied, and there is still an amount to be paid for
-		// a lineitem's balance, then apply the credit from CreditOverFlow
-		While CreditOverFlow > 0 And LineItem.Payment < Balance Do
-			AmountToPay = Balance - LineItem.Payment;
-			If AmountToPay >= CreditOverFlow Then
-				LineItem.Payment = LineItem.Payment + CreditOverFlow;
-				CreditOverFlow = 0;
-				LineItem.Check = true;
-			Else
-				LineItem.Payment = LineItem.Payment + AmountToPay;
-				CreditOverFlow=  CreditOverFlow - AmountToPay;
-				LineItem.Check = true;
-			Endif;
-		EndDo;
-	EndDo;
-
-	// Now that we have applied all of the credit, we now apply the cash payment amount
-	For Each LineItem In Object.LineItems Do
 		
-		Balance = LineItem.BalanceFCY2;
-
-		// If there is still cash left in CashDistribute to be applied, and there is still an amount to be paid 
-		// for a lineitem's balance, apply cash from CashDistribute
-		While CashDistribute > 0 And LineItem.Payment < Balance Do
-			AmountToPay = Balance - LineItem.Payment;
-			If AmountToPay >= CashDistribute Then
-				LineItem.Payment = LineItem.Payment + CashDistribute;
-				CashDistribute = 0;
-				LineItem.Check = true;
-			Else
-				LineItem.Payment = LineItem.Payment + AmountToPay;
-				CashDistribute=  CashDistribute - AmountToPay;
-				LineItem.Check = true;
-			Endif;
-		EndDo;
-
-		If LineItem.Payment = 0 Then
-				LineItem.Check = False;
+		LineBalance = LineItem.BalanceFCY2;
+		If TotalAmountToDistribute = 0 Then 
+			Break;
+		ElsIf TotalAmountToDistribute < LineBalance Then 
+			FillPaymentWithDiscount(Object, LineItem.Document, LineItem.BalanceFCY2, LineItem.Payment, LineItem.Discount, TotalAmountToDistribute);
+			TotalAmountToDistribute = TotalAmountToDistribute - LineItem.Payment;
+		Else	
+			FillPaymentWithDiscount(Object, LineItem.Document, LineItem.BalanceFCY2, LineItem.Payment, LineItem.Discount);
+			TotalAmountToDistribute = TotalAmountToDistribute - LineItem.Payment;
 		EndIf;
+		
+		If LineItem.Payment > 0 Then 
+			LineItem.Check = True;
+		EndIf;	
 	EndDo;
 	
-	// If there is leftover cash after applying cashpaymment to line items, the rest goes into
-	// Unapplied payments
-	If CashDistribute > 0 Then
-		Object.UnappliedPayment = CashDistribute;
-		UnappliedCalculation(Object);
-	Elsif CashDistribute <= 0 And CreditTotal <= 0 Then
-		Object.UnappliedPayment = 0;
-	Endif;
-	
-	AdditionalPaymentCall(Object, PayRef);
-					
+	AdditionalPaymentCall(Object);
+
 EndProcedure
 
 &AtServer
 // Calculates the object's unapplied
-Procedure UnappliedCalculation(Object) Export
+Procedure UnappliedCalculation_old(Object) Export
 		
-	TotalPay = 0;
-	// Keep track of total lineitem payments
-	For Each LineItem In Object.LineItems Do
-			TotalPay = TotalPay + LineItem.Payment;
-	EndDo;
-		
-	CredTotal = 0;
-	For Each LineItem In Object.CreditMemos Do
-			CredTotal = CredTotal + LineItem.Payment;
-	EndDo;	
+	TotalLinePayment = Object.LineItems.Total("Payment");
+	TotalCredit = Object.CreditMemos.Total("Payment");
 	
 	// Unapplied payment amount is equal to the total cash payment + the total credits applied
-	// - the amount paid in lineitems (which can include cash payments and credit payments)
-	Object.UnappliedPayment = (Object.CashPayment + CredTotal) - TotalPay;
+	// The amount paid in LineItems (which can include cash payments and credit payments)
+	Object.UnappliedPayment = (Object.CashPayment + TotalCredit) - TotalLinePayment;
 	
 EndProcedure
 
 &AtServer
 // Used to recalculate the CashPayment value and DocumentTotal values when there is a change in the document
-Procedure AdditionalPaymentCall(Object, PayRef) Export
+Procedure AdditionalPaymentCall(Object, RecalcUP = True) Export
 
 	DefaultCurrency = GeneralFunctionsReusable.DefaultCurrency();
+	
+	TotalDiscount = Object.LineItems.Total("Discount");
+	TotalInvoices = Object.LineItems.Total("Payment");
+	TotalCredit = Object.CreditMemos.Total("Payment");
 
-	PayTotal = 0;	
-	For Each LineItem In Object.LineItems Do
-			PayTotal =  PayTotal + LineItem.Payment;			
-	EndDo;
+	If (Object.UnappliedPayment < TotalCredit-TotalInvoices) or RecalcUP Then 
+		Object.UnappliedPayment = TotalCredit-TotalInvoices
+	EndIf;	
 	
-	CreditTotal = 0;
-	For Each LineItemCM In Object.CreditMemos Do
-			CreditTotal =  CreditTotal + LineItemCM.Payment;
-	EndDo;
+	Object.CashPayment = Object.UnappliedPayment + TotalInvoices - TotalCredit;
 	
-	// CashPayment amount is equal to the difference of applied payments - the credits applied
-	If PayRef = False Then
-		Object.CashPayment = PayTotal - CreditTotal;
-	Endif;
 	
-	If Object.LineItems.Total("Payment") = 0 AND Object.CashPayment <> 0 Then
-		Object.DocumentTotalRC = (Object.CashPayment * Object.ExchangeRate) + (CreditTotal * Object.ExchangeRate);
-		Object.DocumentTotal = Object.CashPayment + CreditTotal;
-	Else
-		Object.DocumentTotalRC = Object.CashPayment * Object.ExchangeRate;
-		Object.DocumentTotal = Object.CashPayment;
-	EndIf;
-
-	UnappliedCalculation(Object);
+	Object.DocumentTotalRC = (Object.CashPayment * Object.ExchangeRate) + (TotalCredit * Object.ExchangeRate) + (TotalDiscount * Object.ExchangeRate);
+	Object.DocumentTotal = Object.CashPayment + TotalCredit + TotalDiscount;
+	Object.DiscountAmount = TotalDiscount;
 	
 EndProcedure
 
 &AtServer
-// Calculations for applied credits
+// Calculations for applied credits   // OLD
 Procedure AdditionalCreditPay(Object, CreditAppliedNegative, CreditAppliedPositive, CurrentLineItemPay, CurrentCheckMarkStatus) Export
 	
 	CreditTotal = 0;	
@@ -221,7 +158,7 @@ Procedure AdditionalCreditPay(Object, CreditAppliedNegative, CreditAppliedPositi
 	Endif;
 	
 	AppliedCredit = CreditOverFlow;
-	UnappliedCalculation(Object);
+	//UnappliedCalculation(Object);
 	
 EndProcedure
 
@@ -259,7 +196,9 @@ Procedure UpdateLineItemBalances(Object) Export
 	             |				,
 	             |				ExtDimension1 = &Company
 	             |					AND (ExtDimension2 REFS Document.SalesInvoice
-	             |						OR ExtDimension2 REFS Document.PurchaseReturn)) AS GeneralJournalBalance
+	             |						OR ExtDimension2 REFS Document.Check
+				 |						OR ExtDimension2 REFS Document.GeneralJournalEntry
+				 |						OR ExtDimension2 REFS Document.PurchaseReturn)) AS GeneralJournalBalance
 	             |		ON CashReceiptLineItems.Document = GeneralJournalBalance.ExtDimension2
 	             |WHERE
 	             |	CashReceiptLineItems.Ref = &Ref
@@ -285,7 +224,7 @@ Procedure UpdateLineItemBalances(Object) Export
 				 |					Document.SalesReturn
 				 |				WHERE
 				 |					Document.SalesReturn.Company = &Company
-				 |					AND Document.SalesReturn.ReturnType = VALUE(Enum.ReturnTypes.CreditMemo)
+				// |					AND Document.SalesReturn.ReturnType = VALUE(Enum.ReturnTypes.CreditMemo)
 				 |			
 				 |				UNION
 				 |			
@@ -298,7 +237,9 @@ Procedure UpdateLineItemBalances(Object) Export
 				 |			,
 				 |			ExtDimension1 = &Company
 				 |				AND (ExtDimension2 REFS Document.SalesReturn
-				 |						AND ExtDimension2.ReturnType = VALUE(Enum.ReturnTypes.CreditMemo)
+				 //|						AND ExtDimension2.ReturnType = VALUE(Enum.ReturnTypes.CreditMemo)
+				 |					OR ExtDimension2 REFS Document.GeneralJournalEntry 
+				 |					OR ExtDimension2 REFS Document.Deposit
 				 |					OR ExtDimension2 REFS Document.CashReceipt)) AS GeneralJournalBalance
 				 |		ON CashReceiptCreditMemos.Document = GeneralJournalBalance.ExtDimension2
 	             |WHERE
@@ -315,13 +256,54 @@ Procedure UpdateLineItemBalances(Object) Export
 		If FoundRows.Count()>0 Then
 			LineRow.BalanceFCY2 = FoundRows[0].BalanceFCY2;
 		EndIf;
-
+		
+		Try
+			CurrentLineDoc = LineRow.Document;
+			LineTerms = CurrentLineDoc.Terms; 
+			If ValueIsFilled(LineTerms) Then 
+				LineDiscountDays = LineTerms.DiscountDays;
+				LineRow.DiscountDate = CurrentLineDoc.Date + LineDiscountDays*3600*24;
+				If LineDiscountDays = 0 Then 
+					LineRow.DiscountDate = Date('00010101');
+				EndIf;	
+			Else 	
+				LineRow.DiscountDate = Date('00010101');
+			EndIf;
+		Except
+			LineRow.DiscountDate = Date('00010101');
+		EndTry; 
+		If TypeOf(CurrentLineDoc) = Type("DocumentRef.SalesInvoice") Then 
+			SOList = New ValueList;
+			For Each SubLine in CurrentLineDoc.LineItems Do 
+				If SOList.Count() = 2 Then 
+					
+				EndIf;
+				If Not ValueIsFilled(SubLine.Order) Then 
+					Continue;
+				EndIf;	
+				
+				If SOList.FindByValue(SubLine.Order) = Undefined Then 
+					SOList.Add(SubLine.Order);
+					If SOList.Count() > 1 Then 
+						LineRow.SalesOrder = "-Split-";
+						Break;
+					Else 	
+						LineRow.SalesOrder = SubLine.Order;
+					EndIf;	
+					
+				EndIf;	
+			EndDo;
+			
+		Endif;	
 	EndDo;
 	
 	For Each CreditRow In Object.CreditMemos Do
 		FoundRows = ResultQuery.FindRows(New Structure("TabularSection, LineNumber", "CreditMemos", CreditRow.LineNumber));
 		If FoundRows.Count()>0 Then
-				CreditRow.BalanceFCY2 = FoundRows[0].BalanceFCY2;
+			CreditRow.BalanceFCY2 = FoundRows[0].BalanceFCY2;
+			If TypeOf(CreditRow.Document) = Type("DocumentRef.CashReceipt") Then  
+				CreditRow.SalesOrder = CreditRow.Document.SalesOrder;
+			Endif;
 		EndIf;
 	EndDo;
 	
@@ -335,53 +317,166 @@ Procedure FillDocumentList(Company, Object) Export
 	Object.LineItems.Clear();
 	
 	Query = New Query;
-	Query.Text = "SELECT
-	             |	GeneralJournalBalance.AmountBalance AS BalanceFCY2,
-				 |	GeneralJournalBalance.AmountBalance * ISNULL(ExchangeRates.Rate, 1) AS Balance,
-				 |  ISNULL(ExchangeRates.Rate, 1) AS ExchangeRate,
-				 |	0 AS Payment,
-				 |	GeneralJournalBalance.ExtDimension2.Ref AS Document,
-				 |	GeneralJournalBalance.ExtDimension2.Ref.Currency Currency2
-				 |FROM
-				 |  // Get due rests from accounting balance
-	             |	AccountingRegister.GeneralJournal.Balance (,
-				 |			Account IN (SELECT ARAccount FROM Document.SalesInvoice UNION SELECT APAccount FROM Document.PurchaseReturn WHERE Company = &Company),
-				 |			,
-				 |			ExtDimension1 = &Company
-				 |			AND (ExtDimension2 REFS Document.SalesInvoice OR
-	             |			     ExtDimension2 REFS Document.PurchaseReturn)) AS GeneralJournalBalance
-				 |
-				 |	// Calculate exchange rate for a document on a present moment
-				 |	LEFT JOIN
-				 |		InformationRegister.ExchangeRates.SliceLast(&Date, ) AS ExchangeRates
-				 |	ON
-				 |		GeneralJournalBalance.ExtDimension2.Ref.Currency = ExchangeRates.Currency
-				 |
-				 |ORDER BY
-				 |  GeneralJournalBalance.ExtDimension2.Date";
-				 
+	//Query.Text = "SELECT
+	//|	GeneralJournalBalance.Account As ARAccount,
+	//|	GeneralJournalBalance.AmountBalance AS BalanceFCY2,
+	//|	GeneralJournalBalance.AmountBalance * ISNULL(ExchangeRates.Rate, 1) AS Balance,
+	//|  ISNULL(ExchangeRates.Rate, 1) AS ExchangeRate,
+	//|	0 AS Payment,
+	//|	GeneralJournalBalance.ExtDimension2.Ref AS Document,
+	//|	GeneralJournalBalance.ExtDimension2.Ref.Currency Currency2
+	//|FROM
+	//|  // Get due rests from accounting balance
+	//|	AccountingRegister.GeneralJournal.Balance (,
+	//|			Account IN (SELECT ARAccount FROM Document.SalesInvoice UNION SELECT APAccount FROM Document.PurchaseReturn WHERE Company = &Company),
+	//|			,
+	//|			ExtDimension1 = &Company
+	//|			AND (ExtDimension2 REFS Document.SalesInvoice OR
+	//|			     ExtDimension2 REFS Document.GeneralJournalEntry OR
+	//|			     ExtDimension2 REFS Document.PurchaseReturn)) AS GeneralJournalBalance
+	//|
+	//|	// Calculate exchange rate for a document on a present moment
+	//|	LEFT JOIN
+	//|		InformationRegister.ExchangeRates.SliceLast(&Date, ) AS ExchangeRates
+	//|	ON
+	//|		GeneralJournalBalance.ExtDimension2.Ref.Currency = ExchangeRates.Currency
+	//|
+	//|ORDER BY
+	//|  GeneralJournalBalance.ExtDimension2.Date";
+	
+	Query.Text = "
+	|SELECT 
+	|	Accounts.Ref As ARAccount 
+	|INTO TmpAccnts
+	|	FROM ChartOfAccounts.ChartOfAccounts As Accounts
+	|WHERE Accounts.AccountType = Value(Enum.AccountTypes.AccountsReceivable)
+	|UNION 
+	|SELECT 
+	|	APAccount 
+	|	FROM Document.PurchaseReturn 
+	|WHERE Company = &Company
+	|
+	|;
+	|SELECT
+	|	GeneralJournalBalance.Account As ARAccount,
+	|	GeneralJournalBalance.AmountBalance AS BalanceFCY2,
+	|	GeneralJournalBalance.AmountBalance * ISNULL(ExchangeRates.Rate, 1) AS Balance,
+	|  	ISNULL(ExchangeRates.Rate, 1) AS ExchangeRate,
+	|	0 AS Payment,
+	|	GeneralJournalBalance.ExtDimension2.Ref AS Document,
+	|	ISNULL(GeneralJournalBalance.ExtDimension2.Ref.Currency, GeneralJournalBalance.Currency) AS Currency2
+	|FROM
+	|  // Get due rests from accounting balance
+	|	AccountingRegister.GeneralJournal.Balance (,
+	|			Account IN (SELECT ARAccount FROM TmpAccnts as TmpAccnts),
+	|			,
+	|			ExtDimension1 = &Company
+	|			AND (ExtDimension2 REFS Document.SalesInvoice OR
+	|			     ExtDimension2 REFS Document.GeneralJournalEntry OR
+	|			     ExtDimension2 REFS Document.Check OR
+	|			     ExtDimension2 REFS Document.PurchaseReturn)) AS GeneralJournalBalance
+	|
+	|	// Calculate exchange rate for a document on a present moment
+	|	LEFT JOIN
+	|		InformationRegister.ExchangeRates.SliceLast(&Date, ) AS ExchangeRates
+	|	ON
+	|		GeneralJournalBalance.ExtDimension2.Ref.Currency = ExchangeRates.Currency
+	|
+	|ORDER BY
+	|  GeneralJournalBalance.ExtDimension2.Date";
+	
+	
 	Query.SetParameter("Date",    Object.Date);			 
 	Query.SetParameter("Company", Company);
 	
 	NonCurrencyMatch = 0;
+	NonARMatch = 0;
 	ResultSelection = Query.Execute().Select();
+	
 	While ResultSelection.Next() Do
-		//Display only if currency of lineitem matches company currency
-		If ResultSelection.Currency2 = Company.DefaultCurrency Then
-			LineItems = Object.LineItems.Add();
-			FillPropertyValues(LineItems, ResultSelection);
-		Else
+		ContinueFlag = False;
+		CurDiscountDate = Date('00010101');
+		SOList = New ValueList;
+		
+		If TypeOf(ResultSelection.Document) = Type("DocumentRef.GeneralJournalEntry") Then  
+			If ResultSelection.BalanceFCY2 < 0 Then 
+				Continue;
+			ElsIf ResultSelection.ARAccount <> Object.ARAccount Then
+				NonARMatch = NonARMatch + 1;
+				ContinueFlag = True
+			EndIf;
+			
+		ElsIf TypeOf(ResultSelection.Document) = Type("DocumentRef.SalesInvoice") Then  
+			CurrentLineDoc = ResultSelection.Document;
+			LineTerms = CurrentLineDoc.Terms; 
+			If ValueIsFilled(LineTerms) Then 
+				LineDiscountDays = LineTerms.DiscountDays;
+				If LineDiscountDays <> 0 Then 
+					CurDiscountDate = CurrentLineDoc.Date + LineDiscountDays*3600*24;
+				EndIf;	
+			EndIf;
+			If ResultSelection.ARAccount <> Object.ARAccount Then
+				NonARMatch = NonARMatch + 1;
+				ContinueFlag = True
+			Else 
+				If SOList.Count() < 2 Then 
+					For Each SubLine in CurrentLineDoc.LineItems Do 
+						If Not ValueIsFilled(SubLine.Order) Then 
+							Continue;
+						EndIf;	
+						If SOList.FindByValue(SubLine.Order) = Undefined Then 
+							SOList.Add(SubLine.Order);
+						EndIf;	
+					EndDo;
+				EndIf;	
+			EndIf;
+			
+			
+			
+		ElsIf TypeOf(ResultSelection.Document) = Type("DocumentRef.Check") Then  
+			CurrentLineDoc = ResultSelection.Document;
+			If ResultSelection.ARAccount <> Object.ARAccount Then
+				NonARMatch = NonARMatch + 1;
+				ContinueFlag = True
+			EndIf;	
+			
+		Endif;    
+		
+		If ResultSelection.Currency2 <> Company.DefaultCurrency Then
+			//Display only if currency of lineitem matches company currency
 			NonCurrencyMatch = NonCurrencyMatch + 1;
+			ContinueFlag = True
+		EndIf;	
+		
+		If ContinueFlag Then 
+			Continue;
+		EndIf;	
+		
+		LineItems = Object.LineItems.Add();
+		FillPropertyValues(LineItems, ResultSelection);
+		LineItems.DiscountDate = CurDiscountDate;
+		
+		If SOList.Count() = 1 Then 
+			LineItems.SalesOrder = SOList[0].Value;
+		ElsIf SOList.Count() > 1 Then 
+			LineItems.SalesOrder = "-Split-";
 		EndIf;
-		//Otherwise - here - we'll keep track of undisplayed lineitems here (pending)
+		
+		
 	EndDo;
 	
 	If NonCurrencyMatch = 1 Then
-		  Message(String(NonCurrencyMatch) + " invoice is not shown due to non-matching currency"); 
+		Message(String(NonCurrencyMatch) + " invoice was not shown due to non-matching currency"); 
 	ElsIf NonCurrencyMatch > 0 Then
-		  Message(String(NonCurrencyMatch) + " invoices were not shown due to non-matching currency"); 
+		Message(String(NonCurrencyMatch) + " invoices were not shown due to non-matching currency"); 
 	EndIf;
-
+	
+	If NonARMatch = 1 Then
+		Message(String(NonARMatch) + " invoice was not shown due to non-matching AR Account"); 
+	ElsIf NonARMatch > 0 Then
+		Message(String(NonARMatch) + " invoices were not shown due to non-matching AR Account"); 
+	EndIf;
+	
 EndProcedure
 
 &AtServer
@@ -393,53 +488,200 @@ Procedure FillCreditMemos(Company, Object) Export
 	
 	Query = New Query;
 	Query.Text = "SELECT
-				 |	-GeneralJournalBalance.AmountBalance AS BalanceFCY2,
-				 |	-GeneralJournalBalance.AmountBalance * ISNULL(ExchangeRates.Rate, 1) AS Balance,
-				 |  ISNULL(ExchangeRates.Rate, 1) AS ExchangeRate,
-				 |	0 AS Payment,
-				 |	GeneralJournalBalance.ExtDimension2.Ref AS Document,
-				 |	GeneralJournalBalance.ExtDimension2.Ref.Currency Currency,
-				 |  False AS Check
-				 |FROM
-				 |  // Get due rests from accounting balance
-				 |	AccountingRegister.GeneralJournal.Balance(&Date,
-				 |			Account IN (SELECT ARAccount FROM Document.SalesReturn WHERE Company = &Company AND ReturnType = VALUE(Enum.ReturnTypes.CreditMemo) UNION SELECT ARAccount FROM Document.CashReceipt WHERE Company = &Company),
-				 |			,
-				 |			ExtDimension1 = &Company AND
-				 |          ((ExtDimension2 REFS Document.SalesReturn AND
-				 |			ExtDimension2.ReturnType = VALUE(Enum.ReturnTypes.CreditMemo)) OR
-				 |			ExtDimension2 REFS Document.CashReceipt))
-				 |			AS GeneralJournalBalance
-				 |
-				 |	// Calculate exchange rate for a document on a present moment
-				 |	LEFT JOIN
-				 |		InformationRegister.ExchangeRates.SliceLast(&Date, ) AS ExchangeRates
-				 |	ON
-				 |		GeneralJournalBalance.ExtDimension2.Ref.Currency = ExchangeRates.Currency
-				 |
-				 |ORDER BY
-				 |  GeneralJournalBalance.ExtDimension2.Date";				 
-				 
-	Query.SetParameter("Date",    ?(ValueIsFilled(Object.Ref), Object.Date, CurrentSessionDate()));
+	|	Accounts.Ref As ARAccount 
+	|INTO TmpAccnts
+	|	FROM ChartOfAccounts.ChartOfAccounts As Accounts
+	|WHERE Accounts.AccountType = Value(Enum.AccountTypes.AccountsReceivable)
+	|
+	|;
+	|SELECT 
+	|	GeneralJournalBalance.Account As ARAccount,
+	|	-GeneralJournalBalance.AmountBalance AS BalanceFCY2,
+	|	-GeneralJournalBalance.AmountBalance * ISNULL(ExchangeRates.Rate, 1) AS Balance,
+	|  ISNULL(ExchangeRates.Rate, 1) AS ExchangeRate,
+	|	0 AS Payment,
+	|	GeneralJournalBalance.ExtDimension2.Ref AS Document,
+	|	ISNULL(GeneralJournalBalance.ExtDimension2.Ref.Currency,GeneralJournalBalance.Currency) Currency,
+	|  False AS Check
+	|FROM
+	|  // Get due rests from accounting balance
+	|	AccountingRegister.GeneralJournal.Balance(,
+	//|	AccountingRegister.GeneralJournal.Balance(&Date,
+	//|			Account IN (SELECT ARAccount FROM Document.SalesReturn WHERE Company = &Company AND ReturnType = VALUE(Enum.ReturnTypes.CreditMemo) UNION SELECT ARAccount FROM Document.CashReceipt WHERE Company = &Company),
+	|			Account IN (SELECT ARAccount FROM TmpAccnts as TmpAccnts),
+	|			,
+	|			ExtDimension1 = &Company AND
+	|          (ExtDimension2 REFS Document.SalesReturn OR
+	|			ExtDimension2 REFS Document.GeneralJournalEntry OR
+	|			ExtDimension2 REFS Document.Deposit OR
+	|			ExtDimension2 REFS Document.CashReceipt))
+	|			AS GeneralJournalBalance
+	|
+	|	// Calculate exchange rate for a document on a present moment
+	|	LEFT JOIN
+	|		InformationRegister.ExchangeRates.SliceLast(&Date, ) AS ExchangeRates
+	|	ON
+	|		GeneralJournalBalance.ExtDimension2.Ref.Currency = ExchangeRates.Currency
+	|
+	|ORDER BY
+	|  GeneralJournalBalance.ExtDimension2.Date";				 
+	
+	Query.SetParameter("Date",    ?(ValueIsFilled(Object.Date), Object.Date, CurrentSessionDate()));
 	Query.SetParameter("Company", Company);
 	
 	NonCurrencyMatch = 0;
+	NonARMatch = 0;
 	ResultSelection = Query.Execute().Select();
+	
 	While ResultSelection.Next() Do
-		//Display only if currency of lineitem matches company currency
-		If ResultSelection.Currency = Company.DefaultCurrency Then
-			LineItems = Object.CreditMemos.Add();
-			FillPropertyValues(LineItems, ResultSelection);
-		Else
-			NonCurrencyMatch = NonCurrencyMatch + 1;
+		ContinueFlag = False;
+		
+		CurDiscountDate = Date('00010101');
+		
+		If TypeOf(ResultSelection.Document) = Type("DocumentRef.GeneralJournalEntry") Then  
+			If ResultSelection.BalanceFCY2 < 0 Then 
+				Continue;
+			EndIf;
+		Endif;
+		
+		If ResultSelection.ARAccount <> Object.ARAccount Then
+			NonARMatch = NonARMatch + 1;
+			ContinueFlag = True
 		EndIf;
-		//Otherwise - here - we'll keep track of undisplayed lineitems here (pending)
+		
+		If ResultSelection.Currency <> Company.DefaultCurrency Then
+			NonCurrencyMatch = NonCurrencyMatch + 1;
+			ContinueFlag = True
+		EndIf;	
+		
+		If ContinueFlag Then 
+			Continue;
+		EndIf;
+		
+		LineItems = Object.CreditMemos.Add();
+		FillPropertyValues(LineItems, ResultSelection);
+		
+		If TypeOf(ResultSelection.Document) = Type("DocumentRef.CashReceipt") Then  
+			LineItems.SalesOrder = ResultSelection.Document.SalesOrder;
+		Endif;
+		
 	EndDo;
 	
+	
 	If NonCurrencyMatch = 1 Then
-		  Message(String(NonCurrencyMatch) + " credit was not shown due to non-matching currency"); 
+		Message(String(NonCurrencyMatch) + " credit was not shown due to non-matching currency"); 
 	ElsIf NonCurrencyMatch > 0 Then
-		  Message(String(NonCurrencyMatch) + " credits were not shown due to non-matching currency"); 
+		Message(String(NonCurrencyMatch) + " credits were not shown due to non-matching currency"); 
 	EndIf;
 	
+	If NonARMatch = 1 Then
+		Message(String(NonARMatch) + " credit was not shown due to non-matching AR Account"); 
+	ElsIf NonARMatch > 0 Then
+		Message(String(NonARMatch) + " credit were not shown due to non-matching AR Account"); 
+	EndIf;
+	
+	
 EndProcedure
+
+&AtServer
+// Procedure Fill Line payment according to Discount in salesInvoice
+//
+Procedure FillPaymentWithDiscount(Object, LineDocument, LineBalance, LinePayment, LineDiscount, AvailablePayment = Undefined) Export
+	
+	Try
+		Terms = LineDocument.Terms; 
+	Except
+		Terms = Undefined; // Works only for Sales Invoice
+	EndTry; 
+	
+	
+	If ValueIsFilled(Terms) Then 
+		DiscountPercent = Terms.DiscountPercent;
+		DiscountDays = Terms.DiscountDays;
+		If (LineDocument.Date + DiscountDays*3600*24) >= Object.Date Then 
+			LinePayment = LineBalance*(1-(DiscountPercent*0.01));
+			If AvailablePayment = Undefined Then 
+				LineDiscount = LineBalance * DiscountPercent*0.01;
+			ElsIf LinePayment > AvailablePayment Then 
+				If DiscountPercent = 100 Then // Safety check
+					LinePayment = 0;
+					LineDiscount = AvailablePayment;
+				Else 	
+					LinePayment = AvailablePayment;
+					LineDiscount = (LinePayment/(1-(DiscountPercent*0.01)))*DiscountPercent*0.01;
+				EndIf;	
+			Else				
+				LineDiscount = LineBalance * DiscountPercent*0.01;
+			EndIf;	
+		Else 
+			LineDiscount = 0;
+			LinePayment = ?(AvailablePayment = Undefined, LineBalance, AvailablePayment);
+		EndIf;	
+		
+	Else 
+		LineDiscount = 0;
+		LinePayment = ?(AvailablePayment = Undefined, LineBalance, AvailablePayment);
+	EndIf;	
+	
+EndProcedure	
+
+&AtServer
+// Procedure Fill Line payment according to Discount in salesInvoice and limit if it Payment + Discount > Balance
+//
+Procedure LimitPaymentWithDiscount(Object, LineDocument, LineBalance, LinePayment, LineDiscount) Export
+	
+	Try
+		Terms = LineDocument.Terms; 
+	Except
+		Terms = Undefined; // Works only for Sales Invoice
+	EndTry; 
+	
+	If LinePayment > LineBalance Then 
+		LinePayment = LineBalance;
+	EndIf;	
+	
+	If ValueIsFilled(Terms) Then 
+		DiscountPercent = Terms.DiscountPercent;
+		DiscountDays = Terms.DiscountDays;
+		If (LineDocument.Date + DiscountDays*3600*24) >= Object.Date Then 
+			If DiscountPercent <> 100 Then 
+				LineDiscount = (LinePayment/(1-(DiscountPercent*0.01)))*DiscountPercent*0.01;
+			Else 
+				LineDiscount = LineBalance;
+			EndIf;
+			If LinePayment + LineDiscount > LineBalance Then 
+				LineDiscount = LineBalance - LinePayment;
+			EndIf;	
+		Else 
+			LineDiscount = 0;
+		EndIf;	
+	Else 
+		LineDiscount = 0;
+	EndIf;	
+	
+EndProcedure	
+
+&AtServer
+// Clear and recalculate Editable and Calculated Values
+// Object: DocObject.CashReceipt or FormDataStructure(CashReceipt) From doc form
+// ClearItemLimes: If true, will be cleared all editable values in Item Lines
+// ClearCreditLines: If true, will be cleared all editable valuesIn credit Memos
+Procedure ClearTabularSections(Object, ClearItemLimes = False, ClearCreditLines = False) Export 
+	
+	If ClearItemLimes Then 
+		For Each LineRow In Object.LineItems Do 
+			LineRow.Payment = 0;
+			LineRow.Discount = 0;
+			LineRow.Check = False;
+		EndDo;	
+	EndIf;	
+	
+	If ClearCreditLines Then 
+		For Each CreditRow In Object.CreditMemos Do 
+			CreditRow.Payment = 0;
+			CreditRow.Check = False;
+		EndDo;	
+	EndIf;	
+	
+EndProcedure
+

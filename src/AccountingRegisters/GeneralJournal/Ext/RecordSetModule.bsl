@@ -6,15 +6,9 @@
 ////////////////////////////////////////////////////////////////////////////////
 #Region EVENT_HANDLERS
 
-//#If Server Or ThickClientOrdinaryApplication Or ExternalConnection Then
+#If Server Or ThickClientOrdinaryApplication Or ExternalConnection Then
 
 Procedure BeforeWrite(Cancel, Replacing)
-	
-	//RemainingDays = GeneralFunctionsReusable.GetRemainingDays();
-	//If RemainingDays <= 0 AND Constants.SubStatus.Get() = "" AND Constants.VersionNumber.Get() < 3 Then
-	//	 Cancel = True;
-	//	 Message("Trial period has expired, please click on the Pay Now button on the home screen to continue your subscription");
-	//EndIf;
 	
 	// Skip checking for loaded datasets or overwritten data.
 	If DataExchange.Load Or Not DocumentPosting.WriteChangesOnly(AdditionalProperties) Then
@@ -35,6 +29,6 @@ Procedure OnWrite(Cancel, Replacing)
 	
 EndProcedure
 
-//#EndIf
+#EndIf
 
 #EndRegion

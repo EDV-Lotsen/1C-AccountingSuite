@@ -107,6 +107,182 @@ Function IsTemporaryTable(Table) Export
 EndFunction
 
 //------------------------------------------------------------------------------
+// Adjustment of the document data
+
+// Adjust document date and time for new documents and saved drafts to the date and time of operational posting.
+//
+// Parameters:
+//  DocumentDate - Date - Document date that must be adjusted.
+//
+Procedure AdjustDocumentDate(DocumentDate) Export
+	
+	// Check operational posting (by the current date).
+	If BegOfDay(DocumentDate) = BegOfDay(CurrentSessionDate()) Then
+		// Shift document time to the time of posting.
+		DocumentDate = CurrentSessionDate();
+	EndIf;
+	
+EndProcedure
+
+// Generate document operational point in time for requesting the balance.
+//
+// Parameters:
+//  Ref  - Documents.AllRefsType() - Ref to a document.
+//  Date - DateTime                - Document date.
+//
+// Returns:
+//  PointInTime - Point in time for requesting the operational balance.
+//
+Function GetBalancePointInTime(Ref, Date) Export
+	
+	// Define point in time for requesting the balances.
+	If Ref.IsEmpty() Then
+		// The new document.
+		If ValueIsFilled(Date) And BegOfDay(Date) < BegOfDay(CurrentSessionDate()) Then
+			// New document in back-date.
+			PointInTime = New Boundary(EndOfDay(Date), BoundaryType.Including);
+		Else
+			// New actual document.
+			PointInTime = Undefined;
+		EndIf;
+	Else
+		// Document was already saved (but date can actually be changed).
+		PointInTime = New Boundary(New PointInTime(Date, Ref), BoundaryType.Including);
+	EndIf;
+	
+	// Return calculated point in time.
+	Return PointInTime;
+	
+EndFunction
+
+// Set new document ordered number.
+//
+// Parameters:
+//  Ref                - Documents.AllRefsType()    - Ref to a document.
+//  Numerator          - Catalogs.DocumentNumbering - Ref to a document numerator.
+//  StandardProcessing - Boolean                    - Flag of document module OnSetNewNumber() processor standard processing.
+//  Prefix             - String                     - Document number prefix.
+//  Number             - String                     - Generated sequencing document number.
+//
+Procedure SetNewNumber(Ref, Numerator, StandardProcessing, Prefix, Number) Export
+	
+	// Cancel automatic number assign.
+	StandardProcessing = False;
+	
+	// Increment the last used number of the passed type.
+	NextNumber = GeneralFunctions.Increment(Numerator.Number);
+	NextNumeratorNumber = Undefined;
+	
+	// Check number already exists.
+	If Not IsBlankString(NextNumber) Then
+		
+		// Check existing next suggested number.
+		Query = New Query("SELECT Ref FROM "+Ref.Metadata().FullName()+" WHERE Number = &Number");
+		Query.SetParameter("Number", NextNumber);
+		
+		// Generate the next possible number.
+		While Not Query.Execute().IsEmpty() Do
+			
+			// Update the numerator.
+			NextNumeratorNumber = NextNumber;
+			
+			// Get the next possible number.
+			NextNumber = GeneralFunctions.Increment(NextNumber);
+			Query.SetParameter("Number", NextNumber);
+		EndDo;
+		
+		// Update the numerator.
+		If NextNumeratorNumber <> Undefined Then
+			// Save numerator object.
+			ObjectNumerator = Numerator.GetObject();
+			ObjectNumerator.Number = NextNumeratorNumber;
+			ObjectNumerator.Write();
+		EndIf;
+	EndIf;
+	
+	// Assign current found number to the document object number.
+	Number = NextNumber;
+	
+EndProcedure
+
+// Update the document numerator with applied document number.
+//
+// Parameters:
+//  Ref                - Documents.AllRefsType()    - Ref to a document.
+//  Numerator          - Catalogs.DocumentNumbering - Ref to a document numerator to be updated.
+//  Number             - String                     - Assigned document number.
+//
+Procedure UpdateNumber(Ref, Numerator, Number) Export
+	
+	// Get the next possible number.
+	NextNumber = GeneralFunctions.Increment(Numerator.Number);
+	
+	// If the document number remains unchanged, save it to the numerator.
+	If NextNumber = Number Then
+		// Save numerator object.
+		ObjectNumerator = Numerator.GetObject();
+		ObjectNumerator.Number = NextNumber;
+		ObjectNumerator.Write();
+	EndIf;
+	
+EndProcedure
+
+// Check presence of boolean flag in document properties and returns it value.
+// If flag don't exist, False is returned.
+//
+// Parameters:
+//  Data          - Structure      - Document data required for building document presentation.
+//  * Name        - String         - Document name presentation.
+//  * Ref         - DocumentRef    - Ref to a document.
+//  * Date        - Date           - Document date.
+//  * Number      - Number, String - Document number as string or number as defined in metadata.
+//  StdProcessing - Boolean        - Flag of standard processing.
+//
+// Returns:
+//  String - Custom presentation of document.
+//
+Function GetDocumentPresentation(Data, StdProcessing) Export
+	
+	// Create custom document description.
+	StdProcessing = False;
+	
+	// Define document name template.
+	Presentation = "{Name} #{Number} {Date}";
+	
+	// Fill the template by the document data.
+	For Each Item In Data Do
+		Presentation = StrReplace(Presentation, "{" + Item.Key + "}", GetDocumentDataPresentation(Item.Key, Item.Value));
+	EndDo;
+	
+	// Return filled presentation;
+	Return Presentation;
+	
+EndFunction
+
+// Generates a custom presentation for selected document fields.
+//
+// Parameters:
+//  Key   - String    - Document field name.
+//  Value - Arbitrary - Document field value.
+//
+// Returns:
+//  String - Custom field presentation.
+//
+Function GetDocumentDataPresentation(Key, Value)
+	
+	// Case by field names.
+	If Key = "Date" Then
+		// Format document date by only date fraction.
+		Return Format(Value, "DLF=D");
+		
+	// All other fields.
+	Else
+		Return TrimAll(Value);
+	EndIf;
+	
+EndFunction
+
+//------------------------------------------------------------------------------
 // Preparing the document data before write an object
 
 // Save additional document parameters required for posting before writing an object.
@@ -714,7 +890,6 @@ Procedure FixUnbalancedRegister(RecorderObject, Cancel, GainLossAccount) Export
 	EndIf;		
 	
 EndProcedure
-
 
 //------------------------------------------------------------------------------
 // Check registers balances

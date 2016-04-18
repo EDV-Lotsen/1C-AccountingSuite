@@ -299,12 +299,16 @@ EndProcedure
 &AtClient
 Procedure Create(Command)
 	
-	//PerformanceMeasurementClientServer.StartTimeMeasurement("StatementOfCashFlows Create");
-	
 	GeneralFunctions.ChangePeriodIntoUserSettings(ThisForm.Report.SettingsComposer, PeriodStartDate, PeriodEndDate);
 	Report.SettingsComposer.LoadUserSettings(Report.SettingsComposer.UserSettings);
 	
 	ComposeResult();
+	
+	Try
+		CurParameters = New Structure("ObjectTypeID", ThisForm.FormName);
+		CommonUseClient.ApplyPrintFormSettings(Result,CurParameters);
+	Except
+	EndTry;
 	
 EndProcedure
 
@@ -352,16 +356,4 @@ Procedure OnUpdateUserSettingSetAtServer(StandardProcessing)
 		GeneralFunctions.ChangePeriodIntoReportForm(ThisForm.Report.SettingsComposer, PeriodVariant, PeriodStartDate, PeriodEndDate);
 	EndIf;	
 		
-EndProcedure
-
-&AtClient
-Procedure Print(Command)
-	PrintAtServer();
-	Result.Print(PrintDialogUseMode.Use);
-EndProcedure
-
-&AtServer
-Procedure PrintAtServer()
-	Result.PageSize = "Letter"; 
-	Result.FitToPage = True;
 EndProcedure

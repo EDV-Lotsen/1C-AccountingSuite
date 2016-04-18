@@ -1,4 +1,5 @@
 ﻿
+
 // The procedure posts deposit transactions
 //
 Procedure Posting(Cancel, Mode)
@@ -8,6 +9,9 @@ Procedure Posting(Cancel, Mode)
 	//	GeneralFunctions.WriteDepositData(DocumentLine.Document);
 	//	
 	//EndDo;	
+	
+	AccountCurrency = CommonUse.GetAttributeValue(BankAccount, "Currency");
+	ExchangeRate = GeneralFunctions.GetExchangeRate(Date, AccountCurrency);	
 	
 	//Clear register records
 	For Each RecordSet In RegisterRecords Do
@@ -83,36 +87,84 @@ Procedure Posting(Cancel, Mode)
 	RegisterRecords.GeneralJournal.Write = True;
 	
 	Record = RegisterRecords.GeneralJournal.AddDebit();
-	Record.Account = BankAccount;
+	Record.Account  = BankAccount;
 	Record.Currency = BankAccount.Currency;
-	Record.Period = Date;
-	Record.Amount = DocumentTotal;
+	Record.Period   = Date;
+	Record.Amount   = DocumentTotal;
 	Record.AmountRC = DocumentTotalRC;
+	
+	//--//GJ++
+	ReconciledDocumentsServerCall.AddRecordForGeneralJournalAnalyticsDimensions(RegisterRecords, Record, Null, Null, Null);
+	//--//GJ--
+	
+	//--//CB++
+	AddRecordForCashFlowData(RegisterRecords, Record, Null, Null, Null, Null);
+	//--//CB--
 	
 	If NOT TotalDepositsRC = 0 Then
 		Record = RegisterRecords.GeneralJournal.AddCredit();
-		Record.Account = Constants.UndepositedFundsAccount.Get();
-		Record.Period = Date;
+		Record.Account  = Constants.UndepositedFundsAccount.Get();
+		Record.Period   = Date;
 		Record.AmountRC = TotalDepositsRC;
+		
+		//--//GJ++
+		ReconciledDocumentsServerCall.AddRecordForGeneralJournalAnalyticsDimensions(RegisterRecords, Record, Null, Null, Null);
+		//--//GJ--	
+		
+		//--//CB++
+		AddRecordForCashFlowData(RegisterRecords, Record, Null, Null, Null, Null);
+		//--//CB--
 	EndIf;
 	
 	RegisterRecords.ProjectData.Write  = True;	
 	RegisterRecords.ClassData.Write    = True;
-	RegisterRecords.CashFlowData.Write = True;
 	
 	For Each AccountLine in Accounts Do
 		
 		If AccountLine.Amount > 0 Then
 			Record = RegisterRecords.GeneralJournal.AddCredit();
-			Record.Account = AccountLine.Account;
-			Record.Period = Date;
-			Record.AmountRC = AccountLine.Amount;
+			Record.Account  = AccountLine.Account;
+			Record.Period   = Date;
+			Record.AmountRC = AccountLine.Amount * ExchangeRate;
+			
+			//--//GJ++
+			ReconciledDocumentsServerCall.AddRecordForGeneralJournalAnalyticsDimensions(RegisterRecords, Record, AccountLine.Class, AccountLine.Project, AccountLine.Company);
+			//--//GJ--	
+			
+			//--//CB++
+			AddRecordForCashFlowData(RegisterRecords, Record, AccountLine.Class, AccountLine.Project, AccountLine.Company, AccountLine.PaymentMethod);
+			//--//CB--
 		ElsIf AccountLine.Amount < 0 Then
 			Record = RegisterRecords.GeneralJournal.AddDebit();
-			Record.Account = AccountLine.Account;
-			Record.Period = Date;
-			Record.AmountRC = AccountLine.Amount * -1;
+			Record.Account  = AccountLine.Account;
+			Record.Period   = Date;
+			Record.AmountRC = AccountLine.Amount * -ExchangeRate;
+			
+			//--//GJ++
+			ReconciledDocumentsServerCall.AddRecordForGeneralJournalAnalyticsDimensions(RegisterRecords, Record, AccountLine.Class, AccountLine.Project, AccountLine.Company);
+			//--//GJ--	
+			
+			//--//CB++
+			AddRecordForCashFlowData(RegisterRecords, Record, AccountLine.Class, AccountLine.Project, AccountLine.Company, AccountLine.PaymentMethod);
+			//--//CB--
 		EndIf;
+		
+		
+		If AccountLine.Account.AccountType = Enums.AccountTypes.AccountsPayable Then
+			Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Company] = AccountLine.Company;
+			Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Document] = Ref;
+			Record.Currency = AccountLine.Account.Currency;
+			Record.Amount = AccountLine.Amount;
+		ElsIf AccountLine.Account.AccountType = Enums.AccountTypes.AccountsReceivable Then
+			Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Company] = AccountLine.Company;
+			Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Document] = Ref;
+			Record.Currency = AccountLine.Account.Currency;
+			Record.Amount = AccountLine.Amount;
+		ElsIf AccountLine.Account.AccountType = Enums.AccountTypes.Bank Then
+			Record.Currency = AccountLine.Account.Currency;
+			Record.Amount = AccountLine.Amount;	
+		EndIf;
+		
 		
 		//Posting projects and classes
 		Record = RegisterRecords.ProjectData.Add();
@@ -120,43 +172,73 @@ Procedure Posting(Cancel, Mode)
 		Record.Period = Date;
 		Record.Account = AccountLine.Account;
 		Record.Project = AccountLine.Project;
-		Record.Amount = AccountLine.Amount;
+		Record.Amount = AccountLine.Amount*ExchangeRate;
 			
 		Record = RegisterRecords.ClassData.Add();
 		Record.RecordType = AccumulationRecordType.Receipt;
 		Record.Period = Date;
 		Record.Account = AccountLine.Account;
 		Record.Class = AccountLine.Class;
-		Record.Amount = AccountLine.Amount;
+		Record.Amount = AccountLine.Amount*ExchangeRate;
 		
-		//----------------------------------------------------------------------
-		// Writing CashFlowData
-		
-		Record = RegisterRecords.CashFlowData.Add();
-		Record.RecordType  = AccumulationRecordType.Expense;
-		Record.Period      = Date;
-		Record.Company     = AccountLine.Company;
-		Record.Document    = Ref;
-		Record.Account     = AccountLine.Account;
-		Record.AmountRC    = -AccountLine.Amount;
-		
-		Record = RegisterRecords.CashFlowData.Add();
-		Record.RecordType  = AccumulationRecordType.Receipt;
-		Record.Period      = Date;
-		Record.Company     = AccountLine.Company;
-		Record.Document    = Ref;
-		Record.Account     = AccountLine.Account;
-		Record.AmountRC    = -AccountLine.Amount;
-		
-		//----------------------------------------------------------------------
-
 	EndDo;
 	
+	
 	// Writing bank reconciliation data
-			
 	ReconciledDocumentsServerCall.AddDocumentForReconciliation(RegisterRecords, Ref, BankAccount, Date, DocumentTotalRC);
+	LineItemsGroupped = Accounts.Unload(, "Account, Amount");
+	LineItemsGroupped.GroupBy("Account", "Amount");
+	For Each DepositRow In LineItemsGroupped Do
+		If (DepositRow.Account.AccountType = Enums.AccountTypes.Bank) 
+			OR (DepositRow.Account.AccountType = Enums.AccountTypes.OtherCurrentLiability And DepositRow.Account.CreditCard = True) Then
+			ReconciledDocumentsServerCall.AddDocumentForReconciliation(RegisterRecords, Ref, DepositRow.Account, Date, -1 * DepositRow.Amount);
+		EndIf;
+	EndDo;
+	
+	CheckedValueTable = RegisterRecords.GeneralJournal.Unload();
+	UnbalancedAmount = 0;
+	If Not DocumentPosting.IsValueTableBalanced(CheckedValueTable, UnbalancedAmount) Then 
+		Cancel = True;
+		// Generate error message.
+		MessageText = NStr("en = 'The document %1 cannot be posted, because it''s transaction is unbalanced.'");
+		MessageText = StringFunctionsClientServer.SubstituteParametersInString(MessageText, Ref);
+		CommonUseClientServer.MessageToUser(MessageText, Ref,,, Cancel);
+	EndIf;		
 
 EndProcedure
+
+// Posts the document to the Cash flow data accumulation register
+// Parameters:
+//  RegisterRecords                 - RegisterRecordsCollection - Document postings list, containing CashFlowData register records
+//  CurrentAccountingRegisterRecord - AccountingRegisterRecord - Current General journal record
+//  Class                           - CatalogRef.Classes - Class of record
+//  Project                         - CatalogRef.Projects - Project of record 
+//  Company                         - CatalogRef.Companies - Company of record
+//  PaymentMethod                   - CatalogRef.PaymentMethods - Payment method of record
+Procedure AddRecordForCashFlowData(RegisterRecords, CurrentAccountingRegisterRecord, Class, Project, Company, PaymentMethod)
+	
+	If Not RegisterRecords.CashFlowData.Write Then
+		RegisterRecords.CashFlowData.Write = True;
+	EndIf;
+	
+	If CurrentAccountingRegisterRecord.RecordType = AccountingRecordType.Debit Then
+		Record = RegisterRecords.CashFlowData.AddReceipt();
+	Else
+		Record = RegisterRecords.CashFlowData.AddExpense();
+	EndIf;
+	
+	Record.Period        = CurrentAccountingRegisterRecord.Period;
+	Record.Account       = CurrentAccountingRegisterRecord.Account;
+	Record.AmountRC      = CurrentAccountingRegisterRecord.AmountRC;
+	Record.Company       = Company;
+	Record.Class         = Class;
+	Record.Project	     = Project;
+	Record.PaymentMethod = PaymentMethod;	
+	Record.Document      = Ref;
+	Record.SalesPerson   = Null;
+		
+EndProcedure
+
 
 // The procedure prevents re-posting if the Allow Voiding functional option is disabled.
 //

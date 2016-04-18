@@ -276,7 +276,7 @@
 				<i>7</i>
 				<c>
 					<f>13</f>
-					<parameter>DocumentTotalRC</parameter>
+					<parameter>CashPayment</parameter>
 				</c>
 			</c>
 		</row>
@@ -825,7 +825,7 @@
 					<tl>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Terms</v8:content>
+							<v8:content>Inv Date</v8:content>
 						</v8:item>
 					</tl>
 				</c>
@@ -848,7 +848,7 @@
 					<tl>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Reference</v8:content>
+							<v8:content>Ref / Num</v8:content>
 						</v8:item>
 					</tl>
 				</c>
@@ -980,7 +980,7 @@
 			<formatIndex>11</formatIndex>
 			<c>
 				<c>
-					<f>28</f>
+					<f>35</f>
 					<parameter>BankAccount</parameter>
 				</c>
 			</c>
@@ -994,7 +994,7 @@
 			<c>
 				<i>7</i>
 				<c>
-					<f>34</f>
+					<f>36</f>
 					<parameter>DocumentTotalRC2</parameter>
 				</c>
 			</c>
@@ -1151,12 +1151,12 @@
 			</c>
 			<c>
 				<c>
-					<f>35</f>
+					<f>37</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>36</f>
+					<f>38</f>
 				</c>
 			</c>
 			<c>
@@ -1238,7 +1238,7 @@
 					<tl>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Terms</v8:content>
+							<v8:content>Inv Date</v8:content>
 						</v8:item>
 					</tl>
 				</c>
@@ -1261,7 +1261,7 @@
 					<tl>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Reference</v8:content>
+							<v8:content>Ref / Num</v8:content>
 						</v8:item>
 					</tl>
 				</c>
@@ -1424,7 +1424,7 @@
 			<formatIndex>11</formatIndex>
 			<c>
 				<c>
-					<f>28</f>
+					<f>35</f>
 					<parameter>BankAccount</parameter>
 				</c>
 			</c>
@@ -1438,7 +1438,7 @@
 			<c>
 				<i>7</i>
 				<c>
-					<f>34</f>
+					<f>36</f>
 					<parameter>DocumentTotalRC2</parameter>
 				</c>
 			</c>
@@ -1861,10 +1861,6 @@
 				<v8:lang>en</v8:lang>
 				<v8:content>DF=MM/dd/yy</v8:content>
 			</v8:item>
-			<v8:item>
-				<v8:lang>de</v8:lang>
-				<v8:content>Datumformat= tt/MM/jj</v8:content>
-			</v8:item>
 		</format>
 	</format>
 	<format>
@@ -1881,6 +1877,12 @@
 		<verticalAlignment>Bottom</verticalAlignment>
 		<textPlacement>Auto</textPlacement>
 		<fillType>Parameter</fillType>
+		<format>
+			<v8:item>
+				<v8:lang>en</v8:lang>
+				<v8:content>NFD=2; NZ=0.00</v8:content>
+			</v8:item>
+		</format>
 	</format>
 	<format>
 		<font>0</font>
@@ -1919,10 +1921,6 @@
 			<v8:item>
 				<v8:lang>en</v8:lang>
 				<v8:content>DF=MM/dd/yy</v8:content>
-			</v8:item>
-			<v8:item>
-				<v8:lang>de</v8:lang>
-				<v8:content>Datumformat= tt/MM/jj</v8:content>
 			</v8:item>
 		</format>
 	</format>
@@ -1998,6 +1996,22 @@
 			<v8:item>
 				<v8:lang>en</v8:lang>
 				<v8:content>NFD=2</v8:content>
+			</v8:item>
+		</format>
+	</format>
+	<format>
+		<font>2</font>
+		<width>64</width>
+		<fillType>Parameter</fillType>
+	</format>
+	<format>
+		<font>2</font>
+		<horizontalAlignment>Left</horizontalAlignment>
+		<fillType>Parameter</fillType>
+		<format>
+			<v8:item>
+				<v8:lang>en</v8:lang>
+				<v8:content>NFD=2; NZ=0.00</v8:content>
 			</v8:item>
 		</format>
 	</format>

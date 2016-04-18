@@ -76,12 +76,6 @@
 					<ContextMenu name="DescriptionContextMenu" id="8"/>
 					<ExtendedTooltip name="DescriptionExtendedTooltip" id="9"/>
 				</LabelField>
-				<CheckBoxField name="Zoho" id="10">
-					<DataPath>List.Zoho</DataPath>
-					<CheckBoxType>Auto</CheckBoxType>
-					<ContextMenu name="ZohoContextMenu" id="11"/>
-					<ExtendedTooltip name="ZohoExtendedTooltip" id="12"/>
-				</CheckBoxField>
 			</ChildItems>
 		</Table>
 	</ChildItems>
@@ -93,23 +87,14 @@
 			<MainAttribute>true</MainAttribute>
 			<Settings xsi:type="DynamicList">
 				<ManualQuery>true</ManualQuery>
-				<DynamicDataRead>true</DynamicDataRead>
+				<DynamicDataRead>false</DynamicDataRead>
 				<QueryText>SELECT
 	CatalogPriceLevels.Ref,
 	CatalogPriceLevels.DeletionMark,
-	CatalogPriceLevels.Description,
-	CatalogPriceLevels.NewObject,
-	CatalogPriceLevels.Predefined,
-	CatalogPriceLevels.PredefinedDataName,
-	CASE 
-		WHEN zoho_pricebookCodeMap.zoho_id &lt;&gt; ""
-			THEN TRUE
-		ELSE FALSE
-	END AS Zoho
+	CatalogPriceLevels.Description
 FROM
-	Catalog.zoho_pricebookCodeMap AS zoho_pricebookCodeMap
-		RIGHT JOIN Catalog.PriceLevels AS CatalogPriceLevels
-		ON zoho_pricebookCodeMap.pricelevel_ref = CatalogPriceLevels.Ref</QueryText>
+	Catalog.PriceLevels AS CatalogPriceLevels
+</QueryText>
 				<MainTable>Catalog.PriceLevels</MainTable>
 				<ListSettings>
 					<dcsset:filter>

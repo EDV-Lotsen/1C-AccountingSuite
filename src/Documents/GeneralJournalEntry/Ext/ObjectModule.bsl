@@ -20,312 +20,56 @@ Procedure BeforeWrite(Cancel, WriteMode, PostingMode)
 EndProcedure
 
 Procedure Posting(Cancel, Mode)
-	
-	RegisterRecords.CashFlowData.Write = True;
-	For Each CurRowLineItems In LineItems Do
-		
-		If CurRowLineItems.Account.AccountType = Enums.AccountTypes.Income OR
-		   CurRowLineItems.Account.AccountType = Enums.AccountTypes.OtherIncome Then
-		
-				Record = RegisterRecords.CashFlowData.Add();
-				Record.RecordType = AccumulationRecordType.Expense;
-				Record.Period = Date;
-				Record.Document = Ref;
-				Record.Account = CurRowLineItems.Account;
-				If CurRowLineItems.AmountCr > 0 Then
-					Record.AmountRC = CurRowLineItems.AmountCr * ExchangeRate;
-				ElsIf CurRowLineItems.AmountDr > 0 Then
-					Record.AmountRC = CurRowLineItems.AmountDr * ExchangeRate * -1;
-				EndIf;
 				
-				Record = RegisterRecords.CashFlowData.Add();
-				Record.RecordType = AccumulationRecordType.Receipt;
-				Record.Period = Date;
-				Record.Document = Ref;
-				Record.Account = CurRowLineItems.Account;
-				If CurRowLineItems.AmountCr > 0 Then
-					Record.AmountRC = CurRowLineItems.AmountCr * ExchangeRate;
-				ElsIf CurRowLineItems.AmountDr > 0 Then
-					Record.AmountRC = CurRowLineItems.AmountDr * ExchangeRate * -1;
-				EndIf;
-				
-			EndIf;
-			
-		If CurRowLineItems.Account.AccountType = Enums.AccountTypes.CostOfSales OR
-		   CurRowLineItems.Account.AccountType = Enums.AccountTypes.Expense OR
-		   CurRowLineItems.Account.AccountType = Enums.AccountTypes.OtherExpense OR
-		   CurRowLineItems.Account.AccountType = Enums.AccountTypes.IncomeTaxExpense Then
-		   
-		   		Record = RegisterRecords.CashFlowData.Add();
-				Record.RecordType = AccumulationRecordType.Receipt;
-				Record.Period = Date;
-				Record.Document = Ref;
-				Record.Account = CurRowLineItems.Account;
-				If CurRowLineItems.AmountDr > 0 Then
-					Record.AmountRC = CurRowLineItems.AmountDr * ExchangeRate;
-				ElsIf CurRowLineItems.AmountCr > 0 Then
-					Record.AmountRC = CurRowLineItems.AmountCr * ExchangeRate * -1;
-				EndIf;
-				
-				Record = RegisterRecords.CashFlowData.Add();
-				Record.RecordType = AccumulationRecordType.Expense;
-				Record.Period = Date;
-				Record.Document = Ref;
-				Record.Account = CurRowLineItems.Account;
-				If CurRowLineItems.AmountDr > 0 Then
-					Record.AmountRC = CurRowLineItems.AmountDr * ExchangeRate;
-				ElsIf CurRowLineItems.AmountCr > 0 Then
-					Record.AmountRC = CurRowLineItems.AmountCr * ExchangeRate * -1;
-				EndIf;
-
-		   
-		EndIf;
-		
-		//for Journal Entries that void Bill Payments
-		If CurRowLineItems.Account.AccountType = Enums.AccountTypes.AccountsPayable Then
-			If ValueIsFilled(VoidingEntry) Then
-				
-				//ExchangeRate = GeneralFunctions.GetExchangeRate(Date, DocumentObject.Currency);
-				ExchangeRate = 1;
-				
-				RegisterRecords.CashFlowData.Write = True;
-		
-				If TypeOf(CurRowLineItems.VoidedEntry) = Type("DocumentRef.PurchaseInvoice") Then
-					
-					For Each Acc In CurRowLineItems.VoidedEntry.Accounts Do
-						Record = RegisterRecords.CashFlowData.Add();
-						Record.RecordType = AccumulationRecordType.Receipt;
-						Record.Period = Date;
-						Record.Company = CurRowLineItems.VoidedEntry.Company;
-						Record.Document = CurRowLineItems.VoidedEntry;
-						Record.Account = Acc.Account;
-						//Record.CashFlowSection = Acc.Account.CashFlowSection;
-						Record.PaymentMethod = VoidingEntry.PaymentMethod;
-						Record.AmountRC = ((Acc.Amount * ExchangeRate) * CurRowLineItems.AmountCr)/CurRowLineItems.VoidedEntry.DocumentTotalRC;
-					EndDo;
-					
-					For Each Item In CurRowLineItems.VoidedEntry.LineItems Do
-						Record = RegisterRecords.CashFlowData.Add();
-						Record.RecordType = AccumulationRecordType.Receipt;
-						Record.Period = Date;
-						Record.Company = CurRowLineItems.VoidedEntry.Company;
-						Record.Document = CurRowLineItems.VoidedEntry;
-						Record.Account = Item.Product.InventoryOrExpenseAccount;
-						If Item.Product.Type = Enums.InventoryTypes.Inventory Then
-							Record.Account = Item.Product.COGSAccount;
-						Else
-							Record.Account = Item.Product.InventoryOrExpenseAccount;
-						EndIf;
-						//Record.CashFlowSection = Item.Product.InventoryOrExpenseAccount.CashFlowSection;
-						Record.PaymentMethod = VoidingEntry.PaymentMethod;
-						Record.AmountRC = ((Item.LineTotal * ExchangeRate) * CurRowLineItems.AmountCr)/CurRowLineItems.VoidedEntry.DocumentTotalRC;
-					EndDo;
-					
-				EndIf;
-
-			EndIf;
-			
-		EndIf;
-
-	EndDo;
-
-	
-	CompaniesPresent = False;
-	For Each CurRowLineItems In LineItems Do
-		If CurRowLineItems.Company <> Catalogs.Companies.EmptyRef() Then
-			CompaniesPresent = True;	
-		EndIf;
-	EndDo;
-	
-	OneARorAPLine = False;
-	If CompaniesPresent = True Then
-		For Each CurRowLineItems In LineItems Do
-			If (CurRowLineItems.Account.AccountType <> Enums.AccountTypes.AccountsPayable AND
-				CurRowLineItems.Account.AccountType <> Enums.AccountTypes.AccountsReceivable) AND
-					CurRowLineItems.Company <> Catalogs.Companies.EmptyRef() Then
-			OneARorAPLine = True;	
-			EndIf;
-		EndDo;
-	EndIf;
-	
+	//Posting General journal
 	RegisterRecords.GeneralJournal.Write = True;
-	
-	// scenario 1 - Companies present, one or more A/R, A/P lines, one other line
-	If CompaniesPresent = True AND OneARorAPLine = False Then
-		
-		For Each CurRowLineItems In LineItems Do
-			
-			If CurRowLineItems.AmountDr > 0 Then
-			
-			 	Record = RegisterRecords.GeneralJournal.AddDebit();
-				Record.Account = CurRowLineItems.Account;
-				If Record.Account.AccountType = Enums.AccountTypes.Bank OR Record.Account.AccountType = Enums.AccountTypes.AccountsPayable OR Record.Account.AccountType = Enums.AccountTypes.AccountsReceivable Then
-					Record.Currency = Record.Account.Currency;
-				EndIf;	
-				Record.Period = Date;
-				If Record.Account.AccountType = Enums.AccountTypes.Bank OR Record.Account.AccountType = Enums.AccountTypes.AccountsPayable OR Record.Account.AccountType = Enums.AccountTypes.AccountsReceivable Then
-					Record.Amount = CurRowLineItems.AmountDr;
-				EndIf;
-				Record.AmountRC = CurRowLineItems.AmountDr * ExchangeRate;
-				Record.Memo = CurRowLineItems.Memo;
-				
-				If CurRowLineItems.Company <> Catalogs.Companies.EmptyRef() Then
-					Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Company] = CurRowLineItems.Company;
-					Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Document] = Ref;
-				EndIf;
 
-			Else
-			
-				Record = RegisterRecords.GeneralJournal.AddCredit();
-				Record.Account = CurRowLineItems.Account;
-				If Record.Account.AccountType = Enums.AccountTypes.Bank OR Record.Account.AccountType = Enums.AccountTypes.AccountsPayable OR Record.Account.AccountType = Enums.AccountTypes.AccountsReceivable Then
-					Record.Currency = Record.Account.Currency;
-				EndIf;	
-				Record.Period = Date;
-				If Record.Account.AccountType = Enums.AccountTypes.Bank OR Record.Account.AccountType = Enums.AccountTypes.AccountsPayable OR Record.Account.AccountType = Enums.AccountTypes.AccountsReceivable Then
-					Record.Amount = CurRowLineItems.AmountCr;
-				EndIf;
-				Record.AmountRC = CurRowLineItems.AmountCr * ExchangeRate;
-				Record.Memo = CurRowLineItems.Memo;
-				
-				If CurRowLineItems.Company <> Catalogs.Companies.EmptyRef() Then
-					Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Company] = CurRowLineItems.Company;
-					
-					//If entry is used for voiding, take the lineitem's voided document
-					If VoidingEntry <> Undefined Then
-						Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Document] = CurRowLineItems.VoidedEntry;
-					Else
-						Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Document] = Ref;
-					EndIf;
-					
-				EndIf;
-			
-			EndIf;
-			
-		EndDo;
-	EndIf;
-	
-	// scenario 2 - Companies present, one A/R or A/P line, multiple other lines
-	
-	TransactionARorAPAccount = ChartsOfAccounts.ChartOfAccounts.EmptyRef();
 	For Each CurRowLineItems In LineItems Do
-		If CurRowLineItems.Account.AccountType = Enums.AccountTypes.AccountsPayable OR
-			CurRowLineItems.Account.AccountType = Enums.AccountTypes.AccountsReceivable Then
-				TransactionARorAPAccount = CurRowLineItems.Account;	
+		
+		Amount = 0;
+		
+		If CurRowLineItems.AmountDr > 0 Then
+			Record = RegisterRecords.GeneralJournal.AddDebit();
+			Amount = CurRowLineItems.AmountDr;
+		Else
+			Record = RegisterRecords.GeneralJournal.AddCredit();
+			Amount = CurRowLineItems.AmountCr;
 		EndIf;
-	EndDo;
-	
-	If CompaniesPresent = True AND OneARorAPLine = True Then
 		
-		For Each CurRowLineItems In LineItems Do
+		Record.Period   = Date;
+		Record.Account  = CurRowLineItems.Account;
+		Record.AmountRC = Amount * ExchangeRate;
+		Record.Memo     = CurRowLineItems.Memo;
+		
+		If Record.Account.AccountType = Enums.AccountTypes.Bank
+			OR Record.Account.AccountType = Enums.AccountTypes.AccountsPayable
+			OR Record.Account.AccountType = Enums.AccountTypes.AccountsReceivable Then
 			
-			If CurRowLineItems.Account.AccountType <> Enums.AccountTypes.AccountsPayable AND
-				CurRowLineItems.Account.AccountType <> Enums.AccountTypes.AccountsReceivable Then
+			Record.Currency = Record.Account.Currency;
+			Record.Amount   = Amount;
 			
-				If CurRowLineItems.AmountDr > 0 Then
-				
-				 	Record = RegisterRecords.GeneralJournal.AddDebit();
-					Record.Account = CurRowLineItems.Account;
-					If Record.Account.AccountType = Enums.AccountTypes.Bank OR Record.Account.AccountType = Enums.AccountTypes.AccountsPayable OR Record.Account.AccountType = Enums.AccountTypes.AccountsReceivable Then
-						Record.Currency = Record.Account.Currency;
-					EndIf;	
-					Record.Period = Date;
-					If Record.Account.AccountType = Enums.AccountTypes.Bank OR Record.Account.AccountType = Enums.AccountTypes.AccountsPayable OR Record.Account.AccountType = Enums.AccountTypes.AccountsReceivable Then
-						Record.Amount = CurRowLineItems.AmountDr;
-					EndIf;
-					Record.AmountRC = CurRowLineItems.AmountDr * ExchangeRate;
-					Record.Memo = CurRowLineItems.Memo;
-					
-					Record = RegisterRecords.GeneralJournal.AddCredit();
-					Record.Account = TransactionARorAPAccount;
-					If Record.Account.AccountType = Enums.AccountTypes.Bank OR Record.Account.AccountType = Enums.AccountTypes.AccountsPayable OR Record.Account.AccountType = Enums.AccountTypes.AccountsReceivable Then
-						Record.Currency = Record.Account.Currency;
-					EndIf;	
-					Record.Period = Date;
-					If Record.Account.AccountType = Enums.AccountTypes.Bank OR Record.Account.AccountType = Enums.AccountTypes.AccountsPayable OR Record.Account.AccountType = Enums.AccountTypes.AccountsReceivable Then
-						Record.Amount = CurRowLineItems.AmountDr;
-					EndIf;
-					Record.AmountRC = CurRowLineItems.AmountDr * ExchangeRate;
-					Record.Memo = CurRowLineItems.Memo;
-					
-					Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Company] = CurRowLineItems.Company;
-					Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Document] = Ref;
-
-				Else
-				
-					Record = RegisterRecords.GeneralJournal.AddCredit();
-					Record.Account = CurRowLineItems.Account;
-					If Record.Account.AccountType = Enums.AccountTypes.Bank OR Record.Account.AccountType = Enums.AccountTypes.AccountsPayable OR Record.Account.AccountType = Enums.AccountTypes.AccountsReceivable Then
-						Record.Currency = Record.Account.Currency;
-					EndIf;	
-					Record.Period = Date;
-					If Record.Account.AccountType = Enums.AccountTypes.Bank OR Record.Account.AccountType = Enums.AccountTypes.AccountsPayable OR Record.Account.AccountType = Enums.AccountTypes.AccountsReceivable Then
-						Record.Amount = CurRowLineItems.AmountCr;
-					EndIf;
-					Record.AmountRC = CurRowLineItems.AmountCr * ExchangeRate;
-					Record.Memo = CurRowLineItems.Memo;
-					
-					Record = RegisterRecords.GeneralJournal.AddDebit();
-					Record.Account = TransactionARorAPAccount;
-					If Record.Account.AccountType = Enums.AccountTypes.Bank OR Record.Account.AccountType = Enums.AccountTypes.AccountsPayable OR Record.Account.AccountType = Enums.AccountTypes.AccountsReceivable Then
-						Record.Currency = Record.Account.Currency;
-					EndIf;	
-					Record.Period = Date;
-					If Record.Account.AccountType = Enums.AccountTypes.Bank OR Record.Account.AccountType = Enums.AccountTypes.AccountsPayable OR Record.Account.AccountType = Enums.AccountTypes.AccountsReceivable Then
-						Record.Amount = CurRowLineItems.AmountDr;
-					EndIf;
-					Record.AmountRC = CurRowLineItems.AmountCr * ExchangeRate;
-					Record.Memo = CurRowLineItems.Memo;
-
-					Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Company] = CurRowLineItems.Company;
-					Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Document] = Ref;
-				
-				EndIf;
-				
-			EndIf;
+		EndIf;	
+		
+		If Record.Account.AccountType = Enums.AccountTypes.AccountsPayable
+			OR Record.Account.AccountType = Enums.AccountTypes.AccountsReceivable Then
 			
-		EndDo;
-	EndIf;
-
-	
-	// scenario 3 - basic transaction, no Companies present
-	If CompaniesPresent = False Then 
-	
-		For Each CurRowLineItems In LineItems Do
+			Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Company]      = CurRowLineItems.Company;
 			
-			If CurRowLineItems.AmountDr > 0 Then
-			
-			 	Record = RegisterRecords.GeneralJournal.AddDebit();
-				Record.Account = CurRowLineItems.Account;
-				If Record.Account.AccountType = Enums.AccountTypes.Bank OR Record.Account.AccountType = Enums.AccountTypes.AccountsPayable OR Record.Account.AccountType = Enums.AccountTypes.AccountsReceivable Then
-					Record.Currency = Record.Account.Currency;
-				EndIf;	
-				Record.Period = Date;
-				If Record.Account.AccountType = Enums.AccountTypes.Bank OR Record.Account.AccountType = Enums.AccountTypes.AccountsPayable OR Record.Account.AccountType = Enums.AccountTypes.AccountsReceivable Then
-					Record.Amount = CurRowLineItems.AmountDr;
-				EndIf;
-				Record.AmountRC = CurRowLineItems.AmountDr * ExchangeRate;
-				Record.Memo = CurRowLineItems.Memo;
-
+			//If entry is used for voiding, take the lineitem's voided document
+			If VoidingEntry <> Undefined Then
+				Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Document] = CurRowLineItems.VoidedEntry;
 			Else
-			
-				Record = RegisterRecords.GeneralJournal.AddCredit();
-				Record.Account = CurRowLineItems.Account;
-				If Record.Account.AccountType = Enums.AccountTypes.Bank OR Record.Account.AccountType = Enums.AccountTypes.AccountsPayable OR Record.Account.AccountType = Enums.AccountTypes.AccountsReceivable Then
-					Record.Currency = Record.Account.Currency;
-				EndIf;	
-				Record.Period = Date;
-				If Record.Account.AccountType = Enums.AccountTypes.Bank OR Record.Account.AccountType = Enums.AccountTypes.AccountsPayable OR Record.Account.AccountType = Enums.AccountTypes.AccountsReceivable Then
-					Record.Amount = CurRowLineItems.AmountCr;
-				EndIf;
-				Record.AmountRC = CurRowLineItems.AmountCr * ExchangeRate;
-				Record.Memo = CurRowLineItems.Memo;
-			
+				Record.ExtDimensions[ChartsOfCharacteristicTypes.Dimensions.Document] = Ref;
 			EndIf;
 			
-		EndDo;
+		EndIf;
 		
-	EndIf;
+		//--//GJ++
+		CurrentCompany = ?(ValueIsFilled(VoidingEntry), VoidingEntry.Company, CurRowLineItems.Company);
+		ReconciledDocumentsServerCall.AddRecordForGeneralJournalAnalyticsDimensions(RegisterRecords, Record, CurRowLineItems.Class, CurRowLineItems.Project, CurrentCompany);
+		//--//GJ--
+		
+	EndDo;
 	
 	//Posting classes and projects
 	RegisterRecords.ClassData.Write = True;
@@ -368,6 +112,217 @@ Procedure Posting(Cancel, Mode)
 	EndDo;
 	
 	
+	//CASH BASIS--------------------------------------------------------------------------------------------------
+	//------------------------------------------------------------------------------------------------------------
+	RegisterRecords.CashFlowData.Write = True;
+	
+	//1.
+	If ValueIsFilled(VoidingEntry) Then
+		For Each CurrentRow In LineItems Do
+			
+			DocRef             = CurrentRow.VoidedEntry;
+			CurrentRowAmountRC = Round(?(CurrentRow.AmountCr <> 0, CurrentRow.AmountCr, CurrentRow.AmountDr) * DocRef.ExchangeRate, 2);
+			
+			If ValueIsFilled(DocRef) Then
+				
+				//PurchaseInvoice-----------------------------------------------------------------------------------------
+				//--------------------------------------------------------------------------------------------------------
+				If TypeOf(DocRef) = Type("DocumentRef.PurchaseInvoice")
+					And CurrentRow.Account.AccountType = Enums.AccountTypes.AccountsPayable Then
+					
+					//1.
+					SumFirstTrans = 0;
+					
+					RecordSet =  AccumulationRegisters.GeneralJournalAnalyticsDimensions.CreateRecordSet();
+					RecordSet.Filter.Recorder.Set(DocRef);
+					RecordSet.Read();
+					
+					For Each CurrentTrans In RecordSet Do
+						If CurrentTrans.RecordType = AccumulationRecordType.Receipt
+							AND CurrentTrans.Account.AccountType <> Enums.AccountTypes.AccountsReceivable 
+							AND CurrentTrans.Account.AccountType <> Enums.AccountTypes.AccountsPayable Then
+							SumFirstTrans  = SumFirstTrans + ?(CurrentTrans.RecordType = AccumulationRecordType.Receipt, CurrentTrans.AmountRC, CurrentTrans.AmountRC * -1);
+						EndIf;
+					EndDo;
+					
+					//2.
+					FirstFullPaymentAmountRC  = CurrentRowAmountRC;
+					FirstBalancePaymentRC     = FirstFullPaymentAmountRC;
+					
+					ActualSumFirstTrans       = 0;
+					APAmount                  = 0;
+					
+					For Each CurrentTrans In RecordSet Do
+						If CurrentTrans.RecordType = AccumulationRecordType.Receipt
+							AND (CurrentTrans.Account.AccountType = Enums.AccountTypes.Income
+							OR CurrentTrans.Account.AccountType = Enums.AccountTypes.CostOfSales
+							OR CurrentTrans.Account.AccountType = Enums.AccountTypes.Expense
+							OR CurrentTrans.Account.AccountType = Enums.AccountTypes.OtherIncome
+							OR CurrentTrans.Account.AccountType = Enums.AccountTypes.OtherExpense
+							OR CurrentTrans.Account.AccountType = Enums.AccountTypes.IncomeTaxExpense) Then
+							
+							PaymentRC        = 0;
+							CurrentPaymentRC = 0;
+							
+							ActualSumFirstTrans    = ActualSumFirstTrans + CurrentTrans.AmountRC;
+							PaymentRC              = ?(SumFirstTrans = 0, 0, Round(CurrentTrans.AmountRC * FirstFullPaymentAmountRC / SumFirstTrans, 2));
+							CurrentPaymentRC       = ?(ActualSumFirstTrans = SumFirstTrans, FirstBalancePaymentRC, PaymentRC);
+							FirstBalancePaymentRC  = FirstBalancePaymentRC - CurrentPaymentRC; 
+							
+							If CurrentPaymentRC <> 0 Then 
+								Record = RegisterRecords.CashFlowData.Add();
+								Record.RecordType    = ?(CurrentTrans.RecordType = AccumulationRecordType.Receipt, AccumulationRecordType.Expense, AccumulationRecordType.Receipt);
+								Record.Period        = Date;
+								Record.Account       = CurrentTrans.Account;
+								Record.Company       = VoidingEntry.Company;
+								Record.Document      = DocRef;
+								Record.SalesPerson   = Null;
+								Record.Class         = CurrentTrans.Class;
+								Record.Project       = CurrentTrans.Project;
+								Record.AmountRC      = CurrentPaymentRC;
+								Record.PaymentMethod = VoidingEntry.PaymentMethod;
+								
+								APAmount = APAmount + ?(Record.RecordType = AccumulationRecordType.Receipt, Record.AmountRC * -1, Record.AmountRC); 
+							EndIf;
+							
+						EndIf;
+					EndDo;
+					
+					If APAmount <> 0 Then
+						Record = RegisterRecords.CashFlowData.Add();
+						Record.RecordType    = ?(APAmount > 0, AccumulationRecordType.Receipt, AccumulationRecordType.Expense);
+						Record.Period        = Date;
+						Record.Account       = DocRef.APAccount;
+						Record.Company       = VoidingEntry.Company;
+						Record.Document      = DocRef;
+						Record.SalesPerson   = Null;
+						Record.Class         = Null;
+						Record.Project       = Null;
+						Record.AmountRC      = ?(APAmount > 0, APAmount, APAmount * -1);
+						Record.PaymentMethod = VoidingEntry.PaymentMethod;
+					EndIf;
+					
+				//SalesReturn---------------------------------------------------------------------------------------------
+				//--------------------------------------------------------------------------------------------------------
+				ElsIf TypeOf(DocRef) = Type("DocumentRef.SalesReturn")
+					And CurrentRow.Account.AccountType = Enums.AccountTypes.AccountsReceivable Then
+					
+					//1.
+					SumFirstTrans  = 0;
+					SumSecondTrans = 0;
+					
+					RecordSet =  AccumulationRegisters.GeneralJournalAnalyticsDimensions.CreateRecordSet();
+					RecordSet.Filter.Recorder.Set(DocRef);
+					RecordSet.Read();
+					
+					For Each CurrentTrans In RecordSet Do
+						If CurrentTrans.JournalEntryIntNum = 1 And CurrentTrans.JournalEntryMainRec Then
+							SumFirstTrans  = SumFirstTrans + ?(CurrentTrans.RecordType = AccumulationRecordType.Expense, CurrentTrans.AmountRC, CurrentTrans.AmountRC * -1);
+						ElsIf  CurrentTrans.JournalEntryIntNum = 2 And CurrentTrans.JournalEntryMainRec Then 
+							SumSecondTrans = SumSecondTrans + ?(CurrentTrans.RecordType = AccumulationRecordType.Expense, CurrentTrans.AmountRC, CurrentTrans.AmountRC * -1);
+						EndIf;
+					EndDo;
+					
+					//2.
+					FirstFullPaymentAmountRC  = CurrentRowAmountRC;
+					FirstBalancePaymentRC     = FirstFullPaymentAmountRC;
+					
+					SecondFullPaymentAmountRC = ?(SumFirstTrans = 0, 0, Round(SumSecondTrans * FirstFullPaymentAmountRC / SumFirstTrans, 2));
+					SecondBalancePaymentRC    = SecondFullPaymentAmountRC;
+					
+					ActualSumFirstTrans       = 0;
+					ActualSumSecondTrans      = 0;
+					
+					ARAmount                  = 0;
+					
+					For Each CurrentTrans In RecordSet Do
+						If CurrentTrans.Account.AccountType = Enums.AccountTypes.Income
+							OR CurrentTrans.Account.AccountType = Enums.AccountTypes.CostOfSales
+							OR CurrentTrans.Account.AccountType = Enums.AccountTypes.Expense
+							OR CurrentTrans.Account.AccountType = Enums.AccountTypes.OtherIncome
+							OR CurrentTrans.Account.AccountType = Enums.AccountTypes.OtherExpense
+							OR CurrentTrans.Account.AccountType = Enums.AccountTypes.IncomeTaxExpense
+							OR CurrentTrans.Account = Constants.TaxPayableAccount.Get() Then
+							
+							PaymentRC        = 0;
+							CurrentPaymentRC = 0;
+							
+							If CurrentTrans.JournalEntryIntNum = 1 Then
+								
+								ActualSumFirstTrans    = ActualSumFirstTrans + CurrentTrans.AmountRC;
+								PaymentRC              = ?(SumFirstTrans = 0, 0, Round(CurrentTrans.AmountRC * FirstFullPaymentAmountRC / SumFirstTrans, 2));
+								CurrentPaymentRC       = ?(ActualSumFirstTrans = SumFirstTrans, FirstBalancePaymentRC, PaymentRC);
+								FirstBalancePaymentRC  = FirstBalancePaymentRC - CurrentPaymentRC; 
+								
+							ElsIf CurrentTrans.JournalEntryIntNum = 2 Then 
+								
+								ActualSumSecondTrans   = ActualSumSecondTrans + CurrentTrans.AmountRC;
+								PaymentRC              = ?(SumSecondTrans = 0, 0, Round(CurrentTrans.AmountRC * SecondFullPaymentAmountRC / SumSecondTrans, 2));
+								CurrentPaymentRC       = ?(ActualSumSecondTrans = SumSecondTrans, SecondBalancePaymentRC, PaymentRC);
+								SecondBalancePaymentRC = SecondBalancePaymentRC - CurrentPaymentRC; 
+								
+							EndIf;
+							
+							If CurrentPaymentRC <> 0 Then 
+								Record = RegisterRecords.CashFlowData.Add();
+								Record.RecordType    = ?(CurrentTrans.RecordType = AccumulationRecordType.Receipt, AccumulationRecordType.Expense, AccumulationRecordType.Receipt);
+								Record.Period        = Date;
+								Record.Account       = CurrentTrans.Account;
+								Record.Company       = VoidingEntry.Company;
+								Record.Document      = DocRef;
+								Record.SalesPerson   = DocRef.SalesPerson;
+								Record.Class         = CurrentTrans.Class;
+								Record.Project       = CurrentTrans.Project;
+								Record.AmountRC      = CurrentPaymentRC;
+								Record.PaymentMethod = Null;
+								
+								ARAmount = ARAmount + ?(Record.RecordType = AccumulationRecordType.Receipt, Record.AmountRC * -1, Record.AmountRC); 
+							EndIf;
+							
+						EndIf;
+					EndDo;
+					
+					If ARAmount <> 0 Then
+						Record = RegisterRecords.CashFlowData.Add();
+						Record.RecordType    = ?(ARAmount > 0, AccumulationRecordType.Receipt, AccumulationRecordType.Expense);
+						Record.Period        = Date;
+						Record.Account       = DocRef.ARAccount;
+						Record.Company       = VoidingEntry.Company;
+						Record.Document      = DocRef;
+						Record.SalesPerson   = DocRef.SalesPerson;
+						Record.Class         = Null;
+						Record.Project       = Null;
+						Record.AmountRC      = ?(ARAmount > 0, ARAmount, ARAmount * -1);
+						Record.PaymentMethod = Null;
+					EndIf;
+					
+				EndIf;
+				
+			EndIf;
+			
+		EndDo;
+	EndIf;
+
+	//2.
+	For Each CurrentTrans In RegisterRecords.GeneralJournalAnalyticsDimensions Do
+		
+		Record = RegisterRecords.CashFlowData.Add();
+		Record.RecordType    = CurrentTrans.RecordType;
+		Record.Period        = CurrentTrans.Period;
+		Record.Account       = CurrentTrans.Account;
+		Record.Company       = CurrentTrans.Company;
+		Record.Document      = ?(ValueIsFilled(VoidingEntry), VoidingEntry.Ref, Ref);
+		Record.SalesPerson   = Null;
+		Record.Class         = CurrentTrans.Class;
+		Record.Project       = CurrentTrans.Project;
+		Record.AmountRC      = CurrentTrans.AmountRC;
+		Record.PaymentMethod = ?(ValueIsFilled(VoidingEntry), VoidingEntry.PaymentMethod, Null);
+		
+	EndDo;
+	//------------------------------------------------------------------------------------------------------------
+	//CASH BASIS (end)--------------------------------------------------------------------------------------------
+
+	
 	TotalDr = LineItems.Total("AmountDr");
 	TotalCr = LineItems.Total("AmountCr"); 
 	If TotalDr <> TotalCr Then
@@ -392,18 +347,17 @@ Procedure Posting(Cancel, Mode)
 	EndIf;
 	
 	//Writing bank reconciliation data
-	LineItemsGroupped = LineItems.Unload(, "Account, AmountDr, AmountCr");
-	LineItemsGroupped.Columns.Add("AccountType", New TypeDescription("EnumRef.AccountTypes"));
-	For Each LineItem In LineItemsGroupped Do
-		LineItem.AccountType = LineItem.Account.AccountType;
-	EndDo;
-	LineItemsGroupped.GroupBy("AccountType, Account", "AmountDr, AmountCr");
-	For Each BankRow In LineItemsGroupped Do
-		If (BankRow.AccountType = Enums.AccountTypes.Bank) OR (BankRow.AccountType = Enums.AccountTypes.OtherCurrentAsset)
-			OR (BankRow.AccountType = Enums.AccountTypes.OtherCurrentLiability) Then
-			ReconciledDocumentsServerCall.AddDocumentForReconciliation(RegisterRecords, Ref, BankRow.Account, Date, BankRow.AmountDr-BankRow.AmountCr);
-		EndIf;
-	EndDo;
+	If Not DoNotReconcile Then
+		LineItemsGroupped = LineItems.Unload(, "Account, AmountDr, AmountCr");
+		LineItemsGroupped.GroupBy("Account", "AmountDr, AmountCr");
+		For Each BankRow In LineItemsGroupped Do
+			If (BankRow.Account.AccountType = Enums.AccountTypes.Bank)
+				OR (BankRow.Account.AccountType = Enums.AccountTypes.OtherCurrentLiability And BankRow.Account.CreditCard = True) Then
+				ReconciledDocumentsServerCall.AddDocumentForReconciliation(RegisterRecords, Ref, BankRow.Account, Date, BankRow.AmountDr-BankRow.AmountCr);
+			EndIf;
+		EndDo;
+	EndIf;
+
 EndProcedure
 
 Procedure Filling(FillingData, StandardProcessing)

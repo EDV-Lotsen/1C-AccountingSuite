@@ -513,7 +513,7 @@ EndFunction
 //
 Function CopyRecursive(Source) Export
 	
-	Var Receiver;
+	Var Destination;
 	
 	SourceType = TypeOf(Source);
 	If SourceType = Type("Structure") Then
@@ -532,7 +532,7 @@ Function CopyRecursive(Source) Export
 		Destination = Source;
 	EndIf;
 	
-	Return Receiver;
+	Return Destination;
 	
 EndFunction
 
@@ -713,6 +713,87 @@ Function CompareVersions(Val VersionString1, Val VersionString2) Export
 			Return Result;
 		EndIf;
 	EndDo;
+	Return Result;
+	
+EndFunction
+
+#EndRegion
+
+////////////////////////////////////////////////////////////////////////////////
+#Region Mathematical_functions
+
+// Returns absolute value of number.
+//
+// Parameters
+//  Value – Number – Signed decimal number.
+//
+// Returns:
+//  Number – Absolute value.
+//
+Function Abs(Value) Export
+	
+	// Check value convertible to the numeric.
+	NumericValue = Number(Value);
+	
+	// Return absolute value.
+	Return ?(NumericValue < 0, -NumericValue, NumericValue);
+	
+EndFunction
+
+// Returns maximum value from passed collection.
+//
+// Parameters
+//  Collection – Array, Structure, Map, ValueList, ValueTable, ValueTree – Collection for serching the maximum value.
+//  Column     - String - Name of column for searching the value for ValueTable or ValueTree collections.
+//
+// Returns:
+//  Number, String, Date, Boolean – Maximum value of collection column. If empty collection passed, Undefined returned.
+//
+Function MaxValue(Collection, Column = "") Export
+	Result = Undefined;
+	
+	// Define value index in collection item (if any).
+	Index = ?(Not IsBlankString(Column), Column, "Value");
+	
+	// Search the maximum value from collection.
+	For Each Item In Collection Do
+		// Get current value in collection.
+		Try Value = Item[Index]; Except Value = Item; EndTry;
+		
+		// Compare current value with expected maximum.
+		Result = ?(Result = Undefined, Value, Max(Value, Result));
+	EndDo;
+	
+	// Return found maximum value (if any).
+	Return Result;
+	
+EndFunction
+
+// Returns minimum value from passed collection.
+//
+// Parameters
+//  Collection – Array, Structure, Map, ValueList, ValueTable, ValueTree – Collection for serching the minimum value.
+//  Column     - String - Name of column for searching the value for ValueTable or ValueTree collections.
+//
+// Returns:
+//  Number, String, Date, Boolean – Minimum value of collection column. If empty collection passed, Undefined returned.
+//
+Function MinValue(Collection, Column = "") Export
+	Result = Undefined;
+	
+	// Define value index in collection item (if any).
+	Index = ?(Not IsBlankString(Column), Column, "Value");
+	
+	// Search the minimum value from collection.
+	For Each Item In Collection Do
+		// Get current value in collection.
+		Try Value = Item[Index]; Except Value = Item; EndTry;
+		
+		// Compare current value with expected minimum.
+		Result = ?(Result = Undefined, Value, Min(Value, Result));
+	EndDo;
+	
+	// Return found minimum value (if any).
 	Return Result;
 	
 EndFunction
@@ -1495,16 +1576,16 @@ Procedure DeleteFilterItems(Val AreaToDelete,
 										Val Presentation = Undefined) Export
 	
 	If ValueIsFilled(FieldName) Then
-		SearchMethod = New DataCompositionField(FieldName);
+		SearchValue = New DataCompositionField(FieldName);
 		SearchMethod = 1;
 	Else
 		SearchMethod = 2;
-		SearchMethod = Presentation;
+		SearchValue = Presentation;
 	EndIf;
 	
 	ItemArray = New Array;
 	
-	FindRecursively(AreaToDelete.Items, ItemArray, SearchMethod, SearchMethod);
+	FindRecursively(AreaToDelete.Items, ItemArray, SearchMethod, SearchValue);
 	
 	For Each Item In ItemArray Do
 		If Item.Parent = Undefined Then

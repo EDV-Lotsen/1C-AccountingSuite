@@ -1806,12 +1806,25 @@
 			<ShowTitle>false</ShowTitle>
 			<ExtendedTooltip name="IndicatorsExtendedTooltip" id="125"/>
 		</UsualGroup>
-		<InputField name="api_code" id="152">
-			<DataPath>api_code</DataPath>
-			<ReadOnly>true</ReadOnly>
-			<ContextMenu name="api_codeContextMenu" id="153"/>
-			<ExtendedTooltip name="api_codeExtendedTooltip" id="154"/>
-		</InputField>
+		<CheckBoxField name="InArchive" id="483">
+			<DataPath>Object.InArchive</DataPath>
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Item is disabled</v8:content>
+				</v8:item>
+			</Title>
+			<TitleLocation>Right</TitleLocation>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Do not show in lists</v8:content>
+				</v8:item>
+			</ToolTip>
+			<CheckBoxType>Auto</CheckBoxType>
+			<ContextMenu name="InArchiveContextMenu" id="484"/>
+			<ExtendedTooltip name="InArchiveExtendedTooltip" id="485"/>
+		</CheckBoxField>
 	</ChildItems>
 	<Attributes>
 		<Attribute name="Object" id="1">
@@ -1947,21 +1960,6 @@
 					<v8:FractionDigits>4</v8:FractionDigits>
 					<v8:AllowedSign>Any</v8:AllowedSign>
 				</v8:NumberQualifiers>
-			</Type>
-		</Attribute>
-		<Attribute name="api_code" id="10">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>api_code</v8:content>
-				</v8:item>
-			</Title>
-			<Type>
-				<v8:Type>xs:string</v8:Type>
-				<v8:StringQualifiers>
-					<v8:Length>100</v8:Length>
-					<v8:AllowedLength>Variable</v8:AllowedLength>
-				</v8:StringQualifiers>
 			</Type>
 		</Attribute>
 		<Attribute name="Margin" id="11">

@@ -1,18 +1,39 @@
 ﻿
-Procedure CreateCustomerVendorCSV(ItemDataSet, UpdateOption = "AllFields") Export
+Procedure CreateCustomerVendorCSV(ItemDataSet, AdParams) Export
+	
+	LongActions.InformActionProgres(0,"Current progress: 0%");
+	
+	UpdateOption = AdParams.UpdateOption;
+	ErrorProcessing = AdParams.ErrorProcessing;
+	ErrorMessagesArray = "";
+	ErrorCounter = 0;
+	
 	
 	Counter = 0;
 	Counter10 = 0;
 	MaxCount = ItemDataSet.count();
 	ToRefill = (UpdateOption = "AllFields");
 		
+	If MaxCount > 1000 then 
+		ReportStep = 100;
+	Else 
+		ReportStep = MaxCount/100;
+	EndIf;
+	
 	For Each DataLine In ItemDataSet Do
 		
-		Progress = Int((Counter/MaxCount)*10); 
-		If Counter10 <> Progress then
-			Counter10 = Progress;
-			LongActions.InformActionProgres(Counter,"Current progress: "+(Counter10*10) +"%");
-		EndIf;	
+		Progress = (Counter/MaxCount); 
+		If INT(Counter/ReportStep)*ReportStep = Counter then
+			Counter10 = Int(Progress*100);
+			If TrimAll(ErrorProcessing) = "SkipErrors" and  ErrorMessagesArray <> "" Then
+				AdNotificationParams = New Structure;
+				AdNotificationParams.Insert("Error",ErrorMessagesArray);
+				LongActions.InformActionProgres(Counter,"Current progress: "+(Counter10) +"%", AdNotificationParams);
+			Else 	
+				LongActions.InformActionProgres(Counter,"Current progress: "+(Counter10) +"%");
+			EndIf;	
+		EndIf;		
+		
 		Counter = Counter + 1;
 		LastLineNumber = DataLine.LineNumber;
 		
@@ -68,7 +89,7 @@ Procedure CreateCustomerVendorCSV(ItemDataSet, UpdateOption = "AllFields") Expor
 			NewCompany.ExpenseAccount = DataLine.CustomerExpenseAccount;
 		EndIf;
 		
-		If ToRefill Then 
+		If ToRefill Or NewCompany.DefaultCurrency.IsEmpty() Then 
 			NewCompany.DefaultCurrency = Constants.DefaultCurrency.Get();
 		EndIf;	
 		
@@ -170,13 +191,25 @@ Procedure CreateCustomerVendorCSV(ItemDataSet, UpdateOption = "AllFields") Expor
 		EndIf;
 		
 		Except
-			
-			ErrorText = "ERROR" + Chars.LF + "Document Line: "+LastLineNumber+ Chars.LF+ ErrorDescription();
-			LongActions.InformActionProgres(Counter-1,ErrorText);
-			Return;
+			StrErrorDescription = "Document Line: "+LastLineNumber+ Chars.LF+ ErrorDescription();
+			If TrimAll(ErrorProcessing) = "StopOnError" Then 
+				ErrorText = "ERROR" + Chars.LF + StrErrorDescription;
+				LongActions.InformActionProgres(Counter-1,ErrorText);
+				Return;
+			ElsIf TrimAll(ErrorProcessing) = "SkipErrors" Then 
+				ErrorMessagesArray = ErrorMessagesArray + ?(ErrorMessagesArray = "","",Chars.LF)+StrErrorDescription;
+				ErrorCounter = ErrorCounter + 1;
+			EndIf;	
 		EndTry;
 				
 	EndDo;
+	
+	If ErrorMessagesArray <> "" Then 
+		ErrorText = "ERROR" + Chars.LF + ErrorMessagesArray;
+		LongActions.InformActionProgres(Counter - ErrorCounter,ErrorText);
+	Else 
+		LongActions.InformActionProgres(Counter - ErrorCounter,"");	
+	EndIf;	
 	
 
 EndProcedure
@@ -663,10 +696,6 @@ EndProcedure
 
 Procedure CheckSimilarAddressNames(Owner, Name, Ref) 
 	
-	 	//{{QUERY_BUILDER_WITH_RESULT_PROCESSING
-	// Данный фрагмент построен конструктором.
-	// При повторном использовании конструктора, внесенные вручную изменения будут утеряны!!!
-	
 	Query = New Query;
 	Query.Text = 
 	"SELECT
@@ -690,12 +719,17 @@ Procedure CheckSimilarAddressNames(Owner, Name, Ref)
 		Obj.Description = Obj.Description +"_" +Obj.Code;
 		Obj.Write();
 	EndDo;
-	
-	//}}QUERY_BUILDER_WITH_RESULT_PROCESSING
 
 EndProcedure	
 
-Procedure CreatePurchaseOrderCSV(Date, Date2, ItemDataSet) Export
+Procedure CreatePurchaseOrderCSV(Date, Date2, ItemDataSet, AdParams) Export
+	
+	LongActions.InformActionProgres(0,"Current progress: 0%");
+	
+	UpdateOption = AdParams.UpdateOption;
+	ErrorProcessing = AdParams.ErrorProcessing;
+	ErrorMessagesArray = "";
+	ErrorCounter = 0;
 	
 	Counter = 0;
 	Counter10 = 0;
@@ -707,14 +741,24 @@ Procedure CreatePurchaseOrderCSV(Date, Date2, ItemDataSet) Export
 	
 	QuantityPrecision = GeneralFunctionsReusable.DefaultQuantityPrecision();
 	
+	If MaxCount > 1000 then 
+		ReportStep = 100;
+	Else 
+		ReportStep = MaxCount/100;
+	EndIf;	
 	For Each DataLine In ItemDataSet Do
 		
-		Progress = Int((Counter/MaxCount)*10); 
-		If Counter10 <> Progress then
-			Counter10 = Progress;
-			//LongActions.InformActionProgres(Counter10*10,"Current progress: "+(Counter10*10) +"%");
-			LongActions.InformActionProgres(Counter,"Current progress: "+(Counter10*10) +"%");
-		EndIf;	
+		Progress = (Counter/MaxCount); 
+		If INT(Counter/ReportStep)*ReportStep = Counter then
+			Counter10 = Int(Progress*100);
+			If TrimAll(ErrorProcessing) = "SkipErrors" and  ErrorMessagesArray <> "" Then
+				AdNotificationParams = New Structure;
+				AdNotificationParams.Insert("Error",ErrorMessagesArray);
+				LongActions.InformActionProgres(Counter,"Current progress: "+(Counter10) +"%", AdNotificationParams);
+			Else 	
+				LongActions.InformActionProgres(Counter,"Current progress: "+(Counter10) +"%");
+			EndIf;	
+		EndIf;
 		Counter = Counter + 1;
 		LastLineNumber = DataLine.LineNumber;
 		
@@ -881,9 +925,15 @@ Procedure CreatePurchaseOrderCSV(Date, Date2, ItemDataSet) Export
 			EndIf;
 			
 		Except
-			ErrorText = "ERROR" + Chars.LF + "Document Line: "+LastLineNumber+ Chars.LF+ ErrorDescription();
-			LongActions.InformActionProgres(Counter-1,ErrorText);			
-			Return;
+			StrErrorDescription = "Document Line: "+LastLineNumber+ Chars.LF+ ErrorDescription();
+			If TrimAll(ErrorProcessing) = "StopOnError" Then 
+				ErrorText = "ERROR" + Chars.LF + StrErrorDescription;
+				LongActions.InformActionProgres(Counter-1,ErrorText);
+				Return;
+			ElsIf TrimAll(ErrorProcessing) = "SkipErrors" Then 
+				ErrorMessagesArray = ErrorMessagesArray + ?(ErrorMessagesArray = "","",Chars.LF)+StrErrorDescription;
+				ErrorCounter = ErrorCounter + 1;
+			EndIf;
 		EndTry;
 		
 	EndDo;
@@ -897,16 +947,36 @@ Procedure CreatePurchaseOrderCSV(Date, Date2, ItemDataSet) Export
 			DocObject.Write(?(DocPost,DocumentWriteMode.Posting,DocumentWriteMode.Write));
 		EndIf;	
 	Except
-		ErrorText = "ERROR" + Chars.LF + "Document Line: "+LastLineNumber+ Chars.LF+ ErrorDescription();
-		LongActions.InformActionProgres(Counter-1,ErrorText);			
-		Return;
+		StrErrorDescription = "Document Line: "+LastLineNumber+ Chars.LF+ ErrorDescription();
+		If TrimAll(ErrorProcessing) = "StopOnError" Then 
+			ErrorText = "ERROR" + Chars.LF + StrErrorDescription;
+			LongActions.InformActionProgres(Counter-1,ErrorText);
+			Return;
+		ElsIf TrimAll(ErrorProcessing) = "SkipErrors" Then 
+			ErrorMessagesArray = ErrorMessagesArray + ?(ErrorMessagesArray = "","",Chars.LF)+StrErrorDescription;
+			ErrorCounter = ErrorCounter + 1;
+		EndIf;
 	EndTry;	
+	
+	If ErrorMessagesArray <> "" Then 
+		ErrorText = "ERROR" + Chars.LF + ErrorMessagesArray;
+		LongActions.InformActionProgres(Counter - ErrorCounter,ErrorText);
+	Else 
+		LongActions.InformActionProgres(Counter - ErrorCounter,"");	
+	EndIf;	
 
 	
 	
 EndProcedure
 
-Procedure CreatePurchaseInvoiceCSV(Date, Date2, ItemDataSet) Export
+Procedure CreatePurchaseInvoiceCSV(Date, Date2, ItemDataSet, AdParams) Export
+	
+	LongActions.InformActionProgres(0,"Current progress: 0%");
+	
+	UpdateOption = AdParams.UpdateOption;
+	ErrorProcessing = AdParams.ErrorProcessing;
+	ErrorMessagesArray = "";
+	ErrorCounter = 0;
 	
 	Counter = 0;
 	Counter10 = 0;
@@ -918,14 +988,24 @@ Procedure CreatePurchaseInvoiceCSV(Date, Date2, ItemDataSet) Export
 	
 	QuantityPrecision = GeneralFunctionsReusable.DefaultQuantityPrecision();
 	
+	If MaxCount > 1000 then 
+		ReportStep = 100;
+	Else 
+		ReportStep = MaxCount/100;
+	EndIf;	
 	For Each DataLine In ItemDataSet Do
 		
-		Progress = Int((Counter/MaxCount)*10); 
-		If Counter10 <> Progress then
-			Counter10 = Progress;
-			//LongActions.InformActionProgres(Counter10*10,"Current progress: "+(Counter10*10) +"%");
-			LongActions.InformActionProgres(Counter,"Current progress: "+(Counter10*10) +"%");
-		EndIf;	
+		Progress = (Counter/MaxCount); 
+		If INT(Counter/ReportStep)*ReportStep = Counter then
+			Counter10 = Int(Progress*100);
+			If TrimAll(ErrorProcessing) = "SkipErrors" and  ErrorMessagesArray <> "" Then
+				AdNotificationParams = New Structure;
+				AdNotificationParams.Insert("Error",ErrorMessagesArray);
+				LongActions.InformActionProgres(Counter,"Current progress: "+(Counter10) +"%", AdNotificationParams);
+			Else 	
+				LongActions.InformActionProgres(Counter,"Current progress: "+(Counter10) +"%");
+			EndIf;	
+		EndIf;		
 		Counter = Counter + 1;
 		LastLineNumber = DataLine.LineNumber;
 		
@@ -1073,6 +1153,10 @@ Procedure CreatePurchaseInvoiceCSV(Date, Date2, ItemDataSet) Export
 					DocLineItem.LineTotal = DataLine.LineTotal;
 				EndIf;
 				
+				If ValueIsFilled(DataLine.LineProject) Then 
+					DocLineItem.Project = DataLine.LineProject;
+				EndIf;
+				
 				If ValueIsFilled(DataLine.LinePO) Then 
 					DocLineItem.Order = DataLine.LinePO;
 				Else 
@@ -1166,9 +1250,9 @@ Procedure CreatePurchaseInvoiceCSV(Date, Date2, ItemDataSet) Export
 					DocLineExpenses.Memo = DataLine.LineMemo;
 				EndIf;
 				
-				//If ValueIsFilled(DataLine.LineProject) Then 
-				//	DocLineExpenses.Project = DataLine.LineProject;
-				//EndIf;
+				If ValueIsFilled(DataLine.LineProject) Then 
+					DocLineExpenses.Project = DataLine.LineProject;
+				EndIf;
 				
 				If ValueIsFilled(DataLine.LineClass) Then 
 					DocLineExpenses.Class = DataLine.LineClass;
@@ -1177,9 +1261,15 @@ Procedure CreatePurchaseInvoiceCSV(Date, Date2, ItemDataSet) Export
 			EndIf;
 			
 		Except
-			ErrorText = "ERROR" + Chars.LF + "Document Line: "+LastLineNumber+ Chars.LF+ ErrorDescription();
-			LongActions.InformActionProgres(Counter-1,ErrorText);			
-			Return;
+			StrErrorDescription = "Document Line: "+LastLineNumber+ Chars.LF+ ErrorDescription();
+			If TrimAll(ErrorProcessing) = "StopOnError" Then 
+				ErrorText = "ERROR" + Chars.LF + StrErrorDescription;
+				LongActions.InformActionProgres(Counter-1,ErrorText);
+				Return;
+			ElsIf TrimAll(ErrorProcessing) = "SkipErrors" Then 
+				ErrorMessagesArray = ErrorMessagesArray + ?(ErrorMessagesArray = "","",Chars.LF)+StrErrorDescription;
+				ErrorCounter = ErrorCounter + 1;
+			EndIf;
 		EndTry;
 		
 	EndDo;
@@ -1193,16 +1283,34 @@ Procedure CreatePurchaseInvoiceCSV(Date, Date2, ItemDataSet) Export
 			DocObject.Write(?(DocPost,DocumentWriteMode.Posting,DocumentWriteMode.Write));
 		EndIf;	
 	Except
-		ErrorText = "ERROR" + Chars.LF + "Document Line: "+LastLineNumber+ Chars.LF+ ErrorDescription();
-		LongActions.InformActionProgres(Counter-1,ErrorText);			
-		Return;
+		StrErrorDescription = "Document Line: "+LastLineNumber+ Chars.LF+ ErrorDescription();
+		If TrimAll(ErrorProcessing) = "StopOnError" Then 
+			ErrorText = "ERROR" + Chars.LF + StrErrorDescription;
+			LongActions.InformActionProgres(Counter-1,ErrorText);
+			Return;
+		ElsIf TrimAll(ErrorProcessing) = "SkipErrors" Then 
+			ErrorMessagesArray = ErrorMessagesArray + ?(ErrorMessagesArray = "","",Chars.LF)+StrErrorDescription;
+			ErrorCounter = ErrorCounter + 1;
+		EndIf;
 	EndTry;	
-
 	
+	If ErrorMessagesArray <> "" Then 
+		ErrorText = "ERROR" + Chars.LF + ErrorMessagesArray;
+		LongActions.InformActionProgres(Counter - ErrorCounter,ErrorText);
+	Else 
+		LongActions.InformActionProgres(Counter - ErrorCounter,"");	
+	EndIf;	
 	
 EndProcedure
 
-Procedure CreateItemReceiptCSV(Date, Date2, ItemDataSet) Export
+Procedure CreateItemReceiptCSV(Date, Date2, ItemDataSet, AdParams) Export
+	
+	LongActions.InformActionProgres(0,"Current progress: 0%");
+	
+	UpdateOption = AdParams.UpdateOption;
+	ErrorProcessing = AdParams.ErrorProcessing;
+	ErrorMessagesArray = "";
+	ErrorCounter = 0;
 	
 	Counter = 0;
 	Counter10 = 0;
@@ -1214,13 +1322,23 @@ Procedure CreateItemReceiptCSV(Date, Date2, ItemDataSet) Export
 	
 	QuantityPrecision = GeneralFunctionsReusable.DefaultQuantityPrecision();
 	
+	If MaxCount > 1000 then 
+		ReportStep = 100;
+	Else 
+		ReportStep = MaxCount/100;
+	EndIf;	
 	For Each DataLine In ItemDataSet Do
 		
-		Progress = Int((Counter/MaxCount)*10); 
-		If Counter10 <> Progress then
-			Counter10 = Progress;
-			//LongActions.InformActionProgres(Counter10*10,"Current progress: "+(Counter10*10) +"%");
-			LongActions.InformActionProgres(Counter,"Current progress: "+(Counter10*10) +"%");
+		Progress = (Counter/MaxCount); 
+		If INT(Counter/ReportStep)*ReportStep = Counter then
+			Counter10 = Int(Progress*100);
+			If TrimAll(ErrorProcessing) = "SkipErrors" and  ErrorMessagesArray <> "" Then
+				AdNotificationParams = New Structure;
+				AdNotificationParams.Insert("Error",ErrorMessagesArray);
+				LongActions.InformActionProgres(Counter,"Current progress: "+(Counter10) +"%", AdNotificationParams);
+			Else 	
+				LongActions.InformActionProgres(Counter,"Current progress: "+(Counter10) +"%");
+			EndIf;	
 		EndIf;	
 		Counter = Counter + 1;
 		LastLineNumber = DataLine.LineNumber;
@@ -1292,11 +1410,11 @@ Procedure CreateItemReceiptCSV(Date, Date2, ItemDataSet) Export
 				EndIf;
 				
 				If ValueIsFilled(DataLine.Location) Then 
-					DocObject.LocationActual = DataLine.Location;
+					DocObject.Location = DataLine.Location;
 				EndIf;
 				
 				//If ValueIsFilled(DataLine.DeliveryDate) Then 
-					DocObject.DeliveryDateActual = DataLine.DeliveryDate;
+					DocObject.DeliveryDate = DataLine.DeliveryDate;
 				//EndIf;
 				
 				If ValueIsFilled(DataLine.Project) Then 
@@ -1398,9 +1516,15 @@ Procedure CreateItemReceiptCSV(Date, Date2, ItemDataSet) Export
 			EndIf;
 			
 		Except
-			ErrorText = "ERROR" + Chars.LF + "Document Line: "+LastLineNumber+ Chars.LF+ ErrorDescription();
-			LongActions.InformActionProgres(Counter-1,ErrorText);
-			Return;
+			StrErrorDescription = "Document Line: "+LastLineNumber+ Chars.LF+ ErrorDescription();
+			If TrimAll(ErrorProcessing) = "StopOnError" Then 
+				ErrorText = "ERROR" + Chars.LF + StrErrorDescription;
+				LongActions.InformActionProgres(Counter-1,ErrorText);
+				Return;
+			ElsIf TrimAll(ErrorProcessing) = "SkipErrors" Then 
+				ErrorMessagesArray = ErrorMessagesArray + ?(ErrorMessagesArray = "","",Chars.LF)+StrErrorDescription;
+				ErrorCounter = ErrorCounter + 1;
+			EndIf;
 		EndTry;
 		
 	EndDo;
@@ -1414,30 +1538,58 @@ Procedure CreateItemReceiptCSV(Date, Date2, ItemDataSet) Export
 			DocObject.Write(?(DocPost,DocumentWriteMode.Posting,DocumentWriteMode.Write));
 		EndIf;	
 	Except
-		ErrorText = "ERROR" + Chars.LF + "Document Line: "+LastLineNumber+ Chars.LF+ ErrorDescription();
-		LongActions.InformActionProgres(Counter-1,ErrorText);
-		Return;
+		StrErrorDescription = "Document Line: "+LastLineNumber+ Chars.LF+ ErrorDescription();
+		If TrimAll(ErrorProcessing) = "StopOnError" Then 
+			ErrorText = "ERROR" + Chars.LF + StrErrorDescription;
+			LongActions.InformActionProgres(Counter-1,ErrorText);
+			Return;
+		ElsIf TrimAll(ErrorProcessing) = "SkipErrors" Then 
+			ErrorMessagesArray = ErrorMessagesArray + ?(ErrorMessagesArray = "","",Chars.LF)+StrErrorDescription;
+			ErrorCounter = ErrorCounter + 1;
+		EndIf;
 	EndTry;	
 
-	
+	If ErrorMessagesArray <> "" Then 
+		ErrorText = "ERROR" + Chars.LF + ErrorMessagesArray;
+		LongActions.InformActionProgres(Counter - ErrorCounter,ErrorText);
+	Else 
+		LongActions.InformActionProgres(Counter - ErrorCounter,"");	
+	EndIf;		
 	
 EndProcedure
 
-Procedure CreateItemCSV(Date, Date2, ItemDataSet, UpdateOption = "AllFields") Export
+Procedure CreateItemCSV(Date, Date2, ItemDataSet, AdParams) Export
 	
+	LongActions.InformActionProgres(0,"Current progress: 0%");
+	
+	UpdateOption = AdParams.UpdateOption;
+	ErrorProcessing = AdParams.ErrorProcessing;
+	ErrorMessagesArray = "";
+	ErrorCounter = 0;
 	
 	// add transactions 1-500
 	Counter = 0;
 	Counter10 = 0;
 	MaxCount = ItemDataSet.count();
+	If MaxCount > 1000 then 
+		ReportStep = 100;
+	Else 
+		ReportStep = MaxCount/100;
+	EndIf;	
 	For Each DataLine In ItemDataSet Do
 		
-		Progress = Int((Counter/MaxCount)*10); 
-		If Counter10 <> Progress then
-			Counter10 = Progress;
-			//LongActions.InformActionProgres(Counter10*10,"Current progress: "+(Counter10*10) +"%");
-			LongActions.InformActionProgres(Counter,"Current progress: "+(Counter10*10) +"%");
+		Progress = (Counter/MaxCount); 
+		If INT(Counter/ReportStep)*ReportStep = Counter then
+			Counter10 = Int(Progress*100);
+			If TrimAll(ErrorProcessing) = "SkipErrors" and  ErrorMessagesArray <> "" Then
+				AdNotificationParams = New Structure;
+				AdNotificationParams.Insert("Error",ErrorMessagesArray);
+				LongActions.InformActionProgres(Counter,"Current progress: "+(Counter10) +"%", AdNotificationParams);
+			Else 	
+				LongActions.InformActionProgres(Counter,"Current progress: "+(Counter10) +"%");
+			EndIf;	
 		EndIf;	
+		
 		Counter = Counter + 1;
 		LastLineNumber = DataLine.LineNumber;
 		
@@ -1550,28 +1702,32 @@ Procedure CreateItemCSV(Date, Date2, ItemDataSet, UpdateOption = "AllFields") Ex
 				NewProduct.CF5Num = DataLine.ProductCF5Num;
 			EndIf;
 			
-			If (NewProduct.Type = Enums.InventoryTypes.Inventory) and ToRefill Then
-				NewProduct.CostingMethod = Enums.InventoryCosting.WeightedAverage;
+			If NewProduct.Type = Enums.InventoryTypes.Inventory Then
+				If ValueIsFilled(DataLine.CostingMethod) Then 
+					NewProduct.CostingMethod = DataLine.CostingMethod;
+				Else 	
+					NewProduct.CostingMethod = Enums.InventoryCosting.WeightedAverage;
+				EndIf;	
 			EndIf;
 			
 			If UpdateFieldValue(DataLine.ProductTaxable,UpdateOption) Then
-				NewProduct.Taxable = (TrimAll(DataLine.ProductTaxable) = "T");
+				NewProduct.Taxable = DataLine.ProductTaxable;
 			EndIf;
 			
 			NewProduct.Write();
 			
-			If UpdateFieldValue(DataLine.ProductPrice,UpdateOption) Then
-				RecordSet = InformationRegisters.PriceList.CreateRecordSet();
-				RecordSet.Filter.Product.Set(NewProduct.Ref);
-				RecordSet.Filter.Period.Set(Date);
-				NewRecord = RecordSet.Add();
-				NewRecord.Period = Date;
-				NewRecord.Product = NewProduct.Ref;
-				NewRecord.Price = DataLine.ProductPrice;
-				RecordSet.Write();
-			EndIf;
+			//If UpdateFieldValue(DataLine.ProductPrice,UpdateOption) Then
+			//	RecordSet = InformationRegisters.PriceList.CreateRecordSet();
+			//	RecordSet.Filter.Product.Set(NewProduct.Ref);
+			//	RecordSet.Filter.Period.Set(Date);
+			//	NewRecord = RecordSet.Add();
+			//	NewRecord.Period = Date;
+			//	NewRecord.Product = NewProduct.Ref;
+			//	NewRecord.Price = DataLine.ProductPrice;
+			//	RecordSet.Write();
+			//EndIf;
 			
-			If UpdateFieldValue(DataLine.ProductQty,UpdateOption) Then
+			If ValueIsFilled(DataLine.ProductQty) Then // make adjustment only for non-zero quantities
 				IBB = Documents.ItemAdjustment.CreateDocument();
 				IBB.SetNewNumber();
 				IBB.Date = Date2;
@@ -1579,43 +1735,70 @@ Procedure CreateItemCSV(Date, Date2, ItemDataSet, UpdateOption = "AllFields") Ex
 				IBB.Location = Catalogs.Locations.MainWarehouse;
 				IBB.Quantity = DataLine.ProductQty;
 				IBB.Amount = Dataline.ProductValue;
-				Try
-					If IBB.Amount <> 0 Then
-						PricePrecision = GeneralFunctionsReusable.PricePrecisionForOneItem(IBB.Product);
-						IBB.Cost = Round(IBB.Amount / IBB.Quantity, PricePrecision);
-					ElsIf DataLine.ProductCost <> 0 Then 
-						IBB.Cost = DataLine.ProductCost;
-						IBB.Amount = IBB.cost*IBB.Quantity;
-					EndIf;	
-				Except	
-				EndTry;	
+				IBB.IncomeExpenseAccount = NewProduct.COGSAccount;
+				If IBB.IncomeExpenseAccount.IsEmpty() Then 
+					If NewProduct.Type = Enums.InventoryTypes.Inventory Then	
+						Ibb.IncomeExpenseAccount = GeneralFunctions.InventoryAcct(Enums.InventoryTypes.Inventory);	
+					ElsIf NewProduct.Type = Enums.InventoryTypes.NonInventory Then		
+						Ibb.IncomeExpenseAccount = GeneralFunctions.InventoryAcct(Enums.InventoryTypes.NonInventory);
+					EndIf;
+				EndIf;
+				
 				IBB.Write(DocumentWriteMode.Posting);
 			EndIf;
 			
 		Except
-			ErrorText = "ERROR" + Chars.LF + "Document Line: "+LastLineNumber+ Chars.LF+ ErrorDescription();
-			LongActions.InformActionProgres(Counter-1,ErrorText);
-			Return;
+			StrErrorDescription = "Document Line: "+LastLineNumber+ Chars.LF+ ErrorDescription();
+			If TrimAll(ErrorProcessing) = "StopOnError" Then 
+				ErrorText = "ERROR" + Chars.LF + StrErrorDescription;
+				LongActions.InformActionProgres(Counter-1,ErrorText);
+				Return;
+			ElsIf TrimAll(ErrorProcessing) = "SkipErrors" Then 
+				ErrorMessagesArray = ErrorMessagesArray + ?(ErrorMessagesArray = "","",Chars.LF)+StrErrorDescription;
+				ErrorCounter = ErrorCounter + 1;
+			EndIf;		
 		EndTry;
-
 		
 	EndDo;
 
+	If ErrorMessagesArray <> "" Then 
+		ErrorText = "ERROR" + Chars.LF + ErrorMessagesArray;
+		LongActions.InformActionProgres(Counter - ErrorCounter,ErrorText);
+	Else 
+		LongActions.InformActionProgres(Counter - ErrorCounter,"");
+	EndIf;	
 	
 EndProcedure
 
-Procedure CreateProjectsCSV(ItemDataSet, UpdateOption = "AllFields") Export
+Procedure CreateProjectsCSV(ItemDataSet, AdParams) Export
 	
+	LongActions.InformActionProgres(0,"Current progress: 0%");
+	
+	UpdateOption = AdParams.UpdateOption;
+	ErrorProcessing = AdParams.ErrorProcessing;
+	ErrorMessagesArray = "";
+	ErrorCounter = 0;
 	
 	Counter = 0;
 	Counter10 = 0;
 	MaxCount = ItemDataSet.count();
+	If MaxCount > 1000 then 
+		ReportStep = 100;
+	Else 
+		ReportStep = MaxCount/100;
+	EndIf;	
 	For Each DataLine In ItemDataSet Do
 		
-		Progress = Int((Counter/MaxCount)*10); 
-		If Counter10 <> Progress then
-			Counter10 = Progress;
-			LongActions.InformActionProgres(Counter,"Current progress: "+(Counter10*10) +"%");
+		Progress = (Counter/MaxCount); 
+		If INT(Counter/ReportStep)*ReportStep = Counter then
+			Counter10 = Int(Progress*100);
+			If TrimAll(ErrorProcessing) = "SkipErrors" and  ErrorMessagesArray <> "" Then
+				AdNotificationParams = New Structure;
+				AdNotificationParams.Insert("Error",ErrorMessagesArray);
+				LongActions.InformActionProgres(Counter,"Current progress: "+(Counter10) +"%", AdNotificationParams);
+			Else 	
+				LongActions.InformActionProgres(Counter,"Current progress: "+(Counter10) +"%");
+			EndIf;	
 		EndIf;	
 		Counter = Counter + 1;
 		LastLineNumber = DataLine.LineNumber;
@@ -1672,18 +1855,36 @@ Procedure CreateProjectsCSV(ItemDataSet, UpdateOption = "AllFields") Export
 			NewProduct.Write();
 			
 		Except
-			ErrorText = "ERROR" + Chars.LF + "Document Line: "+LastLineNumber+ Chars.LF+ ErrorDescription();
-			LongActions.InformActionProgres(Counter-1,ErrorText);
-			Return;
+			StrErrorDescription = "Document Line: "+LastLineNumber+ Chars.LF+ ErrorDescription();
+			If TrimAll(ErrorProcessing) = "StopOnError" Then 
+				ErrorText = "ERROR" + Chars.LF + StrErrorDescription;
+				LongActions.InformActionProgres(Counter-1,ErrorText);
+				Return;
+			ElsIf TrimAll(ErrorProcessing) = "SkipErrors" Then 
+				ErrorMessagesArray = ErrorMessagesArray + ?(ErrorMessagesArray = "","",Chars.LF)+StrErrorDescription;
+				ErrorCounter = ErrorCounter + 1;
+			EndIf;	
 		EndTry;
-
-		
 	EndDo;
+	
+	If ErrorMessagesArray <> "" Then 
+		ErrorText = "ERROR" + Chars.LF + ErrorMessagesArray;
+		LongActions.InformActionProgres(Counter - ErrorCounter,ErrorText);
+	Else 
+		LongActions.InformActionProgres(Counter - ErrorCounter,"");	
+	EndIf;	
 
 	
 EndProcedure
 
-Procedure CreateBillPaymentCSV(Date, Date2, ItemDataSet) Export
+Procedure CreateBillPaymentCSV(Date, Date2, ItemDataSet, AdParams) Export
+	
+	LongActions.InformActionProgres(0,"Current progress: 0%");
+	
+	UpdateOption = AdParams.UpdateOption;
+	ErrorProcessing = AdParams.ErrorProcessing;
+	ErrorMessagesArray = "";
+	ErrorCounter = 0;
 	
 	Counter = 0;
 	Counter10 = 0;
@@ -1696,12 +1897,23 @@ Procedure CreateBillPaymentCSV(Date, Date2, ItemDataSet) Export
 	QuantityPrecision = GeneralFunctionsReusable.DefaultQuantityPrecision();
 	DefaultCurrency = GeneralFunctionsReusable.DefaultCurrency();
 	
+	If MaxCount > 1000 then 
+		ReportStep = 100;
+	Else 
+		ReportStep = MaxCount/100;
+	EndIf;	
 	For Each DataLine In ItemDataSet Do
 		
-		Progress = Int((Counter/MaxCount)*10); 
-		If Counter10 <> Progress then
-			Counter10 = Progress;
-			LongActions.InformActionProgres(Counter,"Current progress: "+(Counter10*10) +"%");
+		Progress = (Counter/MaxCount); 
+		If INT(Counter/ReportStep)*ReportStep = Counter then
+			Counter10 = Int(Progress*100);
+			If TrimAll(ErrorProcessing) = "SkipErrors" and  ErrorMessagesArray <> "" Then
+				AdNotificationParams = New Structure;
+				AdNotificationParams.Insert("Error",ErrorMessagesArray);
+				LongActions.InformActionProgres(Counter,"Current progress: "+(Counter10) +"%", AdNotificationParams);
+			Else 	
+				LongActions.InformActionProgres(Counter,"Current progress: "+(Counter10) +"%");
+			EndIf;	
 		EndIf;	
 		Counter = Counter + 1;
 		LastLineNumber = DataLine.LineNumber;
@@ -1799,11 +2011,16 @@ Procedure CreateBillPaymentCSV(Date, Date2, ItemDataSet) Export
 			//EndIf;
 			
 		Except
-			ErrorText = "ERROR" + Chars.LF + "Document Line: "+LastLineNumber+ Chars.LF+ ErrorDescription();
-			LongActions.InformActionProgres(Counter-1,ErrorText);
-			Return;
+			StrErrorDescription = "Document Line: "+LastLineNumber+ Chars.LF+ ErrorDescription();
+			If TrimAll(ErrorProcessing) = "StopOnError" Then 
+				ErrorText = "ERROR" + Chars.LF + StrErrorDescription;
+				LongActions.InformActionProgres(Counter-1,ErrorText);
+				Return;
+			ElsIf TrimAll(ErrorProcessing) = "SkipErrors" Then 
+				ErrorMessagesArray = ErrorMessagesArray + ?(ErrorMessagesArray = "","",Chars.LF)+StrErrorDescription;
+				ErrorCounter = ErrorCounter + 1;
+			EndIf;
 		EndTry;
-		
 	EndDo;
 	
 	Try
@@ -1825,16 +2042,34 @@ Procedure CreateBillPaymentCSV(Date, Date2, ItemDataSet) Export
 			DocObject.Write(?(DocPost,DocumentWriteMode.Posting,DocumentWriteMode.Write));
 		EndIf;	
 	Except
-		ErrorText = "ERROR" + Chars.LF + "Document Line: "+LastLineNumber+ Chars.LF+ ErrorDescription();
-		LongActions.InformActionProgres(Counter-1,ErrorText);
-		Return;
+		StrErrorDescription = "Document Line: "+LastLineNumber+ Chars.LF+ ErrorDescription();
+		If TrimAll(ErrorProcessing) = "StopOnError" Then 
+			ErrorText = "ERROR" + Chars.LF + StrErrorDescription;
+			LongActions.InformActionProgres(Counter-1,ErrorText);
+			Return;
+		ElsIf TrimAll(ErrorProcessing) = "SkipErrors" Then 
+			ErrorMessagesArray = ErrorMessagesArray + ?(ErrorMessagesArray = "","",Chars.LF)+StrErrorDescription;
+			ErrorCounter = ErrorCounter + 1;
+		EndIf;
 	EndTry;	
 
-	
+	If ErrorMessagesArray <> "" Then 
+		ErrorText = "ERROR" + Chars.LF + ErrorMessagesArray;
+		LongActions.InformActionProgres(Counter - ErrorCounter,ErrorText);
+	Else 
+		LongActions.InformActionProgres(Counter - ErrorCounter,"");	
+	EndIf;	
 	
 EndProcedure
 
-Procedure CreateSalesInvoiceCSV(Date, Date2, ItemDataSet) Export
+Procedure CreateSalesInvoiceCSV(Date, Date2, ItemDataSet, AdParams) Export
+	
+	LongActions.InformActionProgres(0,"Current progress: 0%");
+	
+	UpdateOption = AdParams.UpdateOption;
+	ErrorProcessing = AdParams.ErrorProcessing;
+	ErrorMessagesArray = "";
+	ErrorCounter = 0;
 	
 	Counter = 0;
 	Counter10 = 0;
@@ -1846,12 +2081,23 @@ Procedure CreateSalesInvoiceCSV(Date, Date2, ItemDataSet) Export
 	
 	QuantityPrecision = GeneralFunctionsReusable.DefaultQuantityPrecision();
 	
+	If MaxCount > 1000 then 
+		ReportStep = 100;
+	Else 
+		ReportStep = MaxCount/100;
+	EndIf;	
 	For Each DataLine In ItemDataSet Do
 		
-		Progress = Int((Counter/MaxCount)*10); 
-		If Counter10 <> Progress then
-			Counter10 = Progress;
-			LongActions.InformActionProgres(Counter,"Current progress: "+(Counter10*10) +"%");
+		Progress = (Counter/MaxCount); 
+		If INT(Counter/ReportStep)*ReportStep = Counter then
+			Counter10 = Int(Progress*100);
+			If TrimAll(ErrorProcessing) = "SkipErrors" and  ErrorMessagesArray <> "" Then
+				AdNotificationParams = New Structure;
+				AdNotificationParams.Insert("Error",ErrorMessagesArray);
+				LongActions.InformActionProgres(Counter,"Current progress: "+(Counter10) +"%", AdNotificationParams);
+			Else 	
+				LongActions.InformActionProgres(Counter,"Current progress: "+(Counter10) +"%");
+			EndIf;	
 		EndIf;
 		Counter = Counter + 1;
 		LastLineNumber = DataLine.LineNumber;
@@ -1864,6 +2110,15 @@ Procedure CreateSalesInvoiceCSV(Date, Date2, ItemDataSet) Export
 				If DocObject <> Undefined Then
 					
 					SalesInvoiceRecalculateTotals(DocObject);
+					//DocFillingPreCheck = SalesInvoiceCheckOrders(DocObject,AdParams);
+					DocFillingPreCheck = SalesInvoiceCheckOrders(DocObject);
+					If DocFillingPreCheck <> "" Then 
+						If DocPost Then 
+							Raise DocFillingPreCheck; 
+						Else 
+							CommonUseClientServer.MessageToUser("Non fatal error, Document Line: "+LastLineNumber+ Chars.LF+ DocFillingPreCheck);
+						EndIf;	
+					EndIf;	
 					
 					DocObject.Write(?(DocPost,DocumentWriteMode.Posting,DocumentWriteMode.Write));
 				EndIf;	
@@ -1893,10 +2148,26 @@ Procedure CreateSalesInvoiceCSV(Date, Date2, ItemDataSet) Export
 				If ValueIsFilled(DataLine.Currency) Then 
 					DocObject.Currency = DataLine.Currency;
 					DocObject.ExchangeRate = GeneralFunctions.GetExchangeRate(DocObject.Date, DocObject.Currency);
+				ElsIf DocObject.Currency.IsEmpty() Then 
+					If Not DocObject.Company.DefaultCurrency.IsEmpty() Then 
+						DocObject.Currency = DocObject.Company.DefaultCurrency;
+					Else
+						DocObject.Currency = Constants.DefaultCurrency.Get();
+					EndIf;
+					DocObject.ExchangeRate = GeneralFunctions.GetExchangeRate(DocObject.Date, DocObject.Currency);
 				EndIf;
+				
 				
 				If ValueIsFilled(DataLine.ARAccount) Then 
 					DocObject.ARAccount = DataLine.ARAccount;
+				Elsif DocObject.ARAccount.IsEmpty() Then 
+					If Not DocObject.Currency.DefaultARAccount.IsEmpty() Then 
+						DocObject.ARAccount = DocObject.Currency.DefaultARAccount;
+					ElsIf Not DocObject.Company.ARAccount.IsEmpty() Then 
+						DocObject.ARAccount = DocObject.Company.ARAccount;
+					Else 	
+						DocObject.ARAccount = Constants.DefaultCurrency.Get().DefaultARAccount;
+					EndIf;
 				EndIf;
 				
 				If ValueIsFilled(DataLine.DueDate) Then 
@@ -1908,13 +2179,13 @@ Procedure CreateSalesInvoiceCSV(Date, Date2, ItemDataSet) Export
 				EndIf;
 				
 				If ValueIsFilled(DataLine.Location) Then 
-					DocObject.LocationActual 	= DataLine.Location;
+					DocObject[AdParams.LocationAttributeName]	= DataLine.Location;
 				Else 	
-					DocObject.LocationActual 	= GeneralFunctions.GetDefaultLocation();
+					DocObject[AdParams.LocationAttributeName]	= GeneralFunctions.GetDefaultLocation();
 				EndIf;
 				
 				If ValueIsFilled(DataLine.DeliveryDate) Then 
-					DocObject.DeliveryDateActual = DataLine.DeliveryDate;
+					DocObject[AdParams.DeliveryDateActualAttributeName] = DataLine.DeliveryDate;
 				EndIf;
 				
 				If ValueIsFilled(DataLine.Project) Then 
@@ -1933,12 +2204,16 @@ Procedure CreateSalesInvoiceCSV(Date, Date2, ItemDataSet) Export
 					DocObject.Memo = DataLine.Memo;
 				EndIf;
 				
+				If ValueIsFilled(DataLine.Shipping) Then 
+					DocObject.Shipping = DataLine.Shipping;
+				EndIf;
+				
 				DocPost = (DataLine.ToPost = True);
 				
 			EndIf;
 			
 			DocLineItem = DocObject.LineItems.Add();
-			FillPropertyValues(DocLineItem, DocObject, "LocationActual, DeliveryDateActual, Project, Class");
+			FillPropertyValues(DocLineItem, DocObject, ""+AdParams.LocationAttributeName+", "+ AdParams.DeliveryDateActualAttributeName+", Project, Class");
 			
 			If ValueIsFilled(DataLine.Product) Then 
 				DocLineItem.Product = DataLine.Product;
@@ -1951,8 +2226,11 @@ Procedure CreateSalesInvoiceCSV(Date, Date2, ItemDataSet) Export
 				DocLineItem.Product = Catalogs.Products.FindByCode("comment",True);
 			EndIf;
 			
-			DocLineItem.Location = DocLineItem.LocationActual;
-			DocLineItem.DeliveryDate = DocLineItem.DeliveryDateActual;
+			Try
+				DocLineItem.Location = DocLineItem.LocationActual;
+				DocLineItem.DeliveryDate = DocLineItem.DeliveryDateActual;
+			Except
+			EndTry;	
 			                                                          			
 			If ValueIsFilled(DataLine.Taxable) Then 
 				DocLineItem.Taxable = DataLine.Taxable;
@@ -1976,17 +2254,17 @@ Procedure CreateSalesInvoiceCSV(Date, Date2, ItemDataSet) Export
 				?(DocLineItem.Unit.Factor > 0, DocLineItem.Unit.Factor, 1), QuantityPrecision);
 			EndIf;
 			
-			If ValueIsFilled(DataLine.LineTotal) Then 
-				DocLineItem.LineTotal = DataLine.LineTotal;
-			EndIf;
-			
-			If ValueIsFilled(DataLine.Order) Then 
-				DocLineItem.Order = DataLine.Order;
-			EndIf;
+			//TableSectionRow.PriceUnits = Round(TableSectionRow.PriceUnits, GeneralFunctionsReusable.PricePrecisionForOneItem(TableSectionRow.Product));
+	 		DocLineItem.LineTotal = Round(Round(DocLineItem.QtyUnits, QuantityPrecision) * DocLineItem.PriceUnits, 2);
 			
 			If ValueIsFilled(DataLine.LineClass) Then 
 				DocLineItem.Class = DataLine.LineClass;
 			EndIf;
+			
+			If ValueIsFilled(DataLine.LineOrder) Then 
+				DocLineItem.Order = DataLine.LineOrder;
+				SalesInvoiceFillEmptyLineAttributesFromOrder(DocLineItem);				
+			EndIf;		
 			
 			If ValueIsFilled(DataLine.Taxable) Then 
 				DocLineItem.Taxable = DataLine.Taxable;
@@ -1995,9 +2273,15 @@ Procedure CreateSalesInvoiceCSV(Date, Date2, ItemDataSet) Export
 			
 			
 		Except
-			ErrorText = "ERROR" + Chars.LF + "Document Line: "+LastLineNumber+ Chars.LF+ ErrorDescription();
-			LongActions.InformActionProgres(Counter-1,ErrorText);
-			Return;
+			StrErrorDescription = "Document Line: "+LastLineNumber+ Chars.LF+ ErrorDescription();
+			If TrimAll(ErrorProcessing) = "StopOnError" Then 
+				ErrorText = "ERROR" + Chars.LF + StrErrorDescription;
+				LongActions.InformActionProgres(Counter-1,ErrorText);
+				Return;
+			ElsIf TrimAll(ErrorProcessing) = "SkipErrors" Then 
+				ErrorMessagesArray = ErrorMessagesArray + ?(ErrorMessagesArray = "","",Chars.LF)+StrErrorDescription;
+				ErrorCounter = ErrorCounter + 1;
+			EndIf;
 		EndTry;
 		
 	EndDo;
@@ -2005,19 +2289,46 @@ Procedure CreateSalesInvoiceCSV(Date, Date2, ItemDataSet) Export
 	Try
 		If DocObject <> Undefined Then
 			SalesInvoiceRecalculateTotals(DocObject);
+			//DocFillingPreCheck = SalesInvoiceCheckOrders(DocObject,AdParams);
+			DocFillingPreCheck = SalesInvoiceCheckOrders(DocObject);
+			If DocFillingPreCheck <> "" Then 
+				If DocPost Then 
+					Raise DocFillingPreCheck; 
+				Else 
+					CommonUseClientServer.MessageToUser("Non fatal error, Document Line: "+LastLineNumber+ Chars.LF+ DocFillingPreCheck);
+				EndIf;	
+			EndIf;	
 			DocObject.Write(?(DocPost,DocumentWriteMode.Posting,DocumentWriteMode.Write));
 		EndIf;	
 	Except
-		ErrorText = "ERROR" + Chars.LF + "Document Line: "+LastLineNumber+ Chars.LF+ ErrorDescription();
-		LongActions.InformActionProgres(Counter-1,ErrorText);
-		Return;
+		StrErrorDescription = "Document Line: "+LastLineNumber+ Chars.LF+ ErrorDescription();
+		If TrimAll(ErrorProcessing) = "StopOnError" Then 
+			ErrorText = "ERROR" + Chars.LF + StrErrorDescription;
+			LongActions.InformActionProgres(Counter-1,ErrorText);
+			Return;
+		ElsIf TrimAll(ErrorProcessing) = "SkipErrors" Then 
+			ErrorMessagesArray = ErrorMessagesArray + ?(ErrorMessagesArray = "","",Chars.LF)+StrErrorDescription;
+			ErrorCounter = ErrorCounter + 1;
+		EndIf;
 	EndTry;	
 
-	
+	If ErrorMessagesArray <> "" Then 
+		ErrorText = "ERROR" + Chars.LF + ErrorMessagesArray;
+		LongActions.InformActionProgres(Counter - ErrorCounter,ErrorText);
+	Else 
+		LongActions.InformActionProgres(Counter - ErrorCounter,"");	
+	EndIf;	
 	
 EndProcedure
 
-Procedure CreateCashReceipCSV(Date, Date2, ItemDataSet) Export
+Procedure CreateCashReceiptCSV(Date, Date2, ItemDataSet, AdParams) Export
+	
+	LongActions.InformActionProgres(0,"Current progress: 0%");
+	
+	UpdateOption = AdParams.UpdateOption;
+	ErrorProcessing = AdParams.ErrorProcessing;
+	ErrorMessagesArray = "";
+	ErrorCounter = 0;
 	
 	Counter = 0;
 	Counter10 = 0;
@@ -2029,12 +2340,23 @@ Procedure CreateCashReceipCSV(Date, Date2, ItemDataSet) Export
 	
 	QuantityPrecision = GeneralFunctionsReusable.DefaultQuantityPrecision();
 	
+	If MaxCount > 1000 then 
+		ReportStep = 100;
+	Else 
+		ReportStep = MaxCount/100;
+	EndIf;	
 	For Each DataLine In ItemDataSet Do
 		
-		Progress = Int((Counter/MaxCount)*10); 
-		If Counter10 <> Progress then
-			Counter10 = Progress;
-			LongActions.InformActionProgres(Counter,"Current progress: "+(Counter10*10) +"%");
+		Progress = (Counter/MaxCount); 
+		If INT(Counter/ReportStep)*ReportStep = Counter then
+			Counter10 = Int(Progress*100);
+			If TrimAll(ErrorProcessing) = "SkipErrors" and  ErrorMessagesArray <> "" Then
+				AdNotificationParams = New Structure;
+				AdNotificationParams.Insert("Error",ErrorMessagesArray);
+				LongActions.InformActionProgres(Counter,"Current progress: "+(Counter10) +"%", AdNotificationParams);
+			Else 	
+				LongActions.InformActionProgres(Counter,"Current progress: "+(Counter10) +"%");
+			EndIf;	
 		EndIf;	
 		Counter = Counter + 1;
 		LastLineNumber = DataLine.LineNumber;
@@ -2057,7 +2379,7 @@ Procedure CreateCashReceipCSV(Date, Date2, ItemDataSet) Export
 				EndIf;	
 				
 				// First row, need to fill up document, Lines will be filled later
-				ExistingDoc = FindDocumentByAttributes("CashReceipt",DataLine.Number,Date(DataLine.DocDate)+1,DataLine.Company, DataLine.RefNum);
+				ExistingDoc = FindDocumentByAttributes("CashReceipt",DataLine.Number, Date(DataLine.DocDate), DataLine.Company, DataLine.RefNum);
 				If ValueIsFilled(ExistingDoc) Then 
 					DocObject = ExistingDoc.GetObject();
 					DocObject.LineItems.Clear();
@@ -2071,7 +2393,7 @@ Procedure CreateCashReceipCSV(Date, Date2, ItemDataSet) Export
 					EndIf;	
 				EndIf;
 				// Filling document attributes
-				DocObject.Date = Date(DataLine.DocDate)+1;
+				DocObject.Date = Date(DataLine.DocDate);
 				DocObject.Company = DataLine.Company;
 				
 				CashReceiptCompanyOnChange(DocObject);
@@ -2083,10 +2405,26 @@ Procedure CreateCashReceipCSV(Date, Date2, ItemDataSet) Export
 				If ValueIsFilled(DataLine.Currency) Then 
 					DocObject.Currency = DataLine.Currency;
 					DocObject.ExchangeRate = GeneralFunctions.GetExchangeRate(DocObject.Date, DocObject.Currency);
+				ElsIf DocObject.Currency.IsEmpty() Then 
+					If Not DocObject.Company.DefaultCurrency.IsEmpty() Then 
+						DocObject.Currency = DocObject.Company.DefaultCurrency;
+					Else
+						DocObject.Currency = Constants.DefaultCurrency.Get();
+					EndIf;
+					DocObject.ExchangeRate = GeneralFunctions.GetExchangeRate(DocObject.Date, DocObject.Currency);
 				EndIf;
+				
 				
 				If ValueIsFilled(DataLine.ARAccount) Then 
 					DocObject.ARAccount = DataLine.ARAccount;
+				Elsif DocObject.ARAccount.IsEmpty() Then 
+					If Not DocObject.Currency.DefaultARAccount.IsEmpty() Then 
+						DocObject.ARAccount = DocObject.Currency.DefaultARAccount;
+					ElsIf Not DocObject.Company.ARAccount.IsEmpty() Then 
+						DocObject.ARAccount = DocObject.Company.ARAccount;
+					Else 	
+						DocObject.ARAccount = Constants.DefaultCurrency.Get().DefaultARAccount;
+					EndIf;
 				EndIf;
 				
 				If ValueIsFilled(DataLine.BankAccount) Then 
@@ -2147,9 +2485,15 @@ Procedure CreateCashReceipCSV(Date, Date2, ItemDataSet) Export
 			DocLineItem.Payment = DataLine.Payment;
 			
 		Except
-			ErrorText = "ERROR" + Chars.LF + "Document Line: "+LastLineNumber+ Chars.LF+ ErrorDescription();
-			LongActions.InformActionProgres(Counter-1,ErrorText);
-			Return;
+			StrErrorDescription = "Document Line: "+LastLineNumber+ Chars.LF+ ErrorDescription();
+			If TrimAll(ErrorProcessing) = "StopOnError" Then 
+				ErrorText = "ERROR" + Chars.LF + StrErrorDescription;
+				LongActions.InformActionProgres(Counter-1,ErrorText);
+				Return;
+			ElsIf TrimAll(ErrorProcessing) = "SkipErrors" Then 
+				ErrorMessagesArray = ErrorMessagesArray + ?(ErrorMessagesArray = "","",Chars.LF)+StrErrorDescription;
+				ErrorCounter = ErrorCounter + 1;
+			EndIf;
 		EndTry;
 		
 	EndDo;
@@ -2160,16 +2504,34 @@ Procedure CreateCashReceipCSV(Date, Date2, ItemDataSet) Export
 			DocObject.Write(?(DocPost,DocumentWriteMode.Posting,DocumentWriteMode.Write));
 		EndIf;	
 	Except
-		ErrorText = "ERROR" + Chars.LF + "Document Line: "+LastLineNumber+ Chars.LF+ ErrorDescription();
-		LongActions.InformActionProgres(Counter-1,ErrorText);
-		Return;
+		StrErrorDescription = "Document Line: "+LastLineNumber+ Chars.LF+ ErrorDescription();
+		If TrimAll(ErrorProcessing) = "StopOnError" Then 
+			ErrorText = "ERROR" + Chars.LF + StrErrorDescription;
+			LongActions.InformActionProgres(Counter-1,ErrorText);
+			Return;
+		ElsIf TrimAll(ErrorProcessing) = "SkipErrors" Then 
+			ErrorMessagesArray = ErrorMessagesArray + ?(ErrorMessagesArray = "","",Chars.LF)+StrErrorDescription;
+			ErrorCounter = ErrorCounter + 1;
+		EndIf;
 	EndTry;	
 
-	
+	If ErrorMessagesArray <> "" Then 
+		ErrorText = "ERROR" + Chars.LF + ErrorMessagesArray;
+		LongActions.InformActionProgres(Counter - ErrorCounter,ErrorText);
+	Else 
+		LongActions.InformActionProgres(Counter - ErrorCounter,"");	
+	EndIf;	
 	
 EndProcedure
 
-Procedure CreateSalesOrderCSV(Date, Date2, ItemDataSet) Export
+Procedure CreateSalesOrderCSV(Date, Date2, ItemDataSet, AdParams) Export
+	
+	LongActions.InformActionProgres(0,"Current progress: 0%");
+	
+	UpdateOption = AdParams.UpdateOption;
+	ErrorProcessing = AdParams.ErrorProcessing;
+	ErrorMessagesArray = "";
+	ErrorCounter = 0;
 	
 	Counter = 0;
 	Counter10 = 0;
@@ -2181,13 +2543,23 @@ Procedure CreateSalesOrderCSV(Date, Date2, ItemDataSet) Export
 	
 	QuantityPrecision = GeneralFunctionsReusable.DefaultQuantityPrecision();
 	
+	If MaxCount > 1000 then 
+		ReportStep = 100;
+	Else 
+		ReportStep = MaxCount/100;
+	EndIf;	
 	For Each DataLine In ItemDataSet Do
 		
-		
-		Progress = Int((Counter/MaxCount)*10); 
-		If Counter10 <> Progress then
-			Counter10 = Progress;
-			LongActions.InformActionProgres(Counter,"Current progress: "+(Counter10*10) +"%");
+		Progress = (Counter/MaxCount); 
+		If INT(Counter/ReportStep)*ReportStep = Counter then
+			Counter10 = Int(Progress*100);
+			If TrimAll(ErrorProcessing) = "SkipErrors" and  ErrorMessagesArray <> "" Then
+				AdNotificationParams = New Structure;
+				AdNotificationParams.Insert("Error",ErrorMessagesArray);
+				LongActions.InformActionProgres(Counter,"Current progress: "+(Counter10) +"%", AdNotificationParams);
+			Else 	
+				LongActions.InformActionProgres(Counter,"Current progress: "+(Counter10) +"%");
+			EndIf;	
 		EndIf;	
 		Counter = Counter + 1;
 		LastLineNumber = DataLine.LineNumber;
@@ -2220,6 +2592,15 @@ Procedure CreateSalesOrderCSV(Date, Date2, ItemDataSet) Export
 				
 				SalesOrderCompanyOnChangeAtServer(DocObject);
 				
+				If DocObject.Currency.IsEmpty() Then 
+					If Not DocObject.Company.DefaultCurrency.IsEmpty() Then 
+						DocObject.Currency = DocObject.Company.DefaultCurrency;
+					Else
+						DocObject.Currency = Constants.DefaultCurrency.Get();
+					EndIf;
+					DocObject.ExchangeRate = GeneralFunctions.GetExchangeRate(DocObject.Date, DocObject.Currency);
+				EndIf;
+								
 				If ValueIsFilled(DataLine.RefNum) Then 
 					DocObject.RefNum = DataLine.RefNum;
 				EndIf;
@@ -2299,9 +2680,15 @@ Procedure CreateSalesOrderCSV(Date, Date2, ItemDataSet) Export
 			
 			
 		Except
-			ErrorText = "ERROR" + Chars.LF + "Document Line: "+LastLineNumber+ Chars.LF+ ErrorDescription();
-			LongActions.InformActionProgres(Counter-1,ErrorText);
-			Return;
+			StrErrorDescription = "Document Line: "+LastLineNumber+ Chars.LF+ ErrorDescription();
+			If TrimAll(ErrorProcessing) = "StopOnError" Then 
+				ErrorText = "ERROR" + Chars.LF + StrErrorDescription;
+				LongActions.InformActionProgres(Counter-1,ErrorText);
+				Return;
+			ElsIf TrimAll(ErrorProcessing) = "SkipErrors" Then 
+				ErrorMessagesArray = ErrorMessagesArray + ?(ErrorMessagesArray = "","",Chars.LF)+StrErrorDescription;
+				ErrorCounter = ErrorCounter + 1;
+			EndIf;
 		EndTry;
 		
 	EndDo;
@@ -2312,16 +2699,34 @@ Procedure CreateSalesOrderCSV(Date, Date2, ItemDataSet) Export
 			DocObject.Write(?(DocPost,DocumentWriteMode.Posting,DocumentWriteMode.Write));
 		EndIf;	
 	Except
-		ErrorText = "ERROR" + Chars.LF + "Document Line: "+LastLineNumber+ Chars.LF+ ErrorDescription();
-		LongActions.InformActionProgres(Counter-1,ErrorText);
-		Return;
+		StrErrorDescription = "Document Line: "+LastLineNumber+ Chars.LF+ ErrorDescription();
+		If TrimAll(ErrorProcessing) = "StopOnError" Then 
+			ErrorText = "ERROR" + Chars.LF + StrErrorDescription;
+			LongActions.InformActionProgres(Counter-1,ErrorText);
+			Return;
+		ElsIf TrimAll(ErrorProcessing) = "SkipErrors" Then 
+			ErrorMessagesArray = ErrorMessagesArray + ?(ErrorMessagesArray = "","",Chars.LF)+StrErrorDescription;
+			ErrorCounter = ErrorCounter + 1;
+		EndIf;
 	EndTry;	
 
-	
+	If ErrorMessagesArray <> "" Then 
+		ErrorText = "ERROR" + Chars.LF + ErrorMessagesArray;
+		LongActions.InformActionProgres(Counter - ErrorCounter,ErrorText);
+	Else 
+		LongActions.InformActionProgres(Counter - ErrorCounter,"");	
+	EndIf;	
 	
 EndProcedure
 
-Procedure CreateCreditMemoCSV(Date, Date2, ItemDataSet) Export
+Procedure CreateCreditMemoCSV(Date, Date2, ItemDataSet, AdParams) Export
+	
+	LongActions.InformActionProgres(0,"Current progress: 0%");
+	
+	UpdateOption = AdParams.UpdateOption;
+	ErrorProcessing = AdParams.ErrorProcessing;
+	ErrorMessagesArray = "";
+	ErrorCounter = 0;
 	
 	Counter = 0;
 	Counter10 = 0;
@@ -2333,12 +2738,23 @@ Procedure CreateCreditMemoCSV(Date, Date2, ItemDataSet) Export
 	
 	QuantityPrecision = GeneralFunctionsReusable.DefaultQuantityPrecision();
 	
+	If MaxCount > 1000 then 
+		ReportStep = 100;
+	Else 
+		ReportStep = MaxCount/100;
+	EndIf;	
 	For Each DataLine In ItemDataSet Do
 		
-		Progress = Int((Counter/MaxCount)*10); 
-		If Counter10 <> Progress then
-			Counter10 = Progress;
-			LongActions.InformActionProgres(Counter,"Current progress: "+(Counter10*10) +"%");
+		Progress = (Counter/MaxCount); 
+		If INT(Counter/ReportStep)*ReportStep = Counter then
+			Counter10 = Int(Progress*100);
+			If TrimAll(ErrorProcessing) = "SkipErrors" and  ErrorMessagesArray <> "" Then
+				AdNotificationParams = New Structure;
+				AdNotificationParams.Insert("Error",ErrorMessagesArray);
+				LongActions.InformActionProgres(Counter,"Current progress: "+(Counter10) +"%", AdNotificationParams);
+			Else 	
+				LongActions.InformActionProgres(Counter,"Current progress: "+(Counter10) +"%");
+			EndIf;	
 		EndIf;
 		Counter = Counter + 1;
 		LastLineNumber = DataLine.LineNumber;
@@ -2389,13 +2805,30 @@ Procedure CreateCreditMemoCSV(Date, Date2, ItemDataSet) Export
 				
 				SalesReturnCompanyOnChangeAtServer(DocObject);
 				
+				
 				If ValueIsFilled(DataLine.Currency) Then 
 					DocObject.Currency = DataLine.Currency;
 					DocObject.ExchangeRate = GeneralFunctions.GetExchangeRate(DocObject.Date, DocObject.Currency);
+				ElsIf DocObject.Currency.IsEmpty() Then 
+					If Not DocObject.Company.DefaultCurrency.IsEmpty() Then 
+						DocObject.Currency = DocObject.Company.DefaultCurrency;
+					Else
+						DocObject.Currency = Constants.DefaultCurrency.Get();
+					EndIf;
+					DocObject.ExchangeRate = GeneralFunctions.GetExchangeRate(DocObject.Date, DocObject.Currency);
 				EndIf;
+				
 				
 				If ValueIsFilled(DataLine.ARAccount) Then 
 					DocObject.ARAccount = DataLine.ARAccount;
+				Elsif DocObject.ARAccount.IsEmpty() Then 
+					If Not DocObject.Currency.DefaultARAccount.IsEmpty() Then 
+						DocObject.ARAccount = DocObject.Currency.DefaultARAccount;
+					ElsIf Not DocObject.Company.ARAccount.IsEmpty() Then 
+						DocObject.ARAccount = DocObject.Company.ARAccount;
+					Else 	
+						DocObject.ARAccount = Constants.DefaultCurrency.Get().DefaultARAccount;
+					EndIf;
 				EndIf;
 				
 				If ValueIsFilled(DataLine.DueDate) Then 
@@ -2477,9 +2910,15 @@ Procedure CreateCreditMemoCSV(Date, Date2, ItemDataSet) Export
 			
 			
 		Except
-			ErrorText = "ERROR" + Chars.LF + "Document Line: "+LastLineNumber+ Chars.LF+ ErrorDescription();
-			LongActions.InformActionProgres(Counter-1,ErrorText);
-			Return;
+			StrErrorDescription = "Document Line: "+LastLineNumber+ Chars.LF+ ErrorDescription();
+			If TrimAll(ErrorProcessing) = "StopOnError" Then 
+				ErrorText = "ERROR" + Chars.LF + StrErrorDescription;
+				LongActions.InformActionProgres(Counter-1,ErrorText);
+				Return;
+			ElsIf TrimAll(ErrorProcessing) = "SkipErrors" Then 
+				ErrorMessagesArray = ErrorMessagesArray + ?(ErrorMessagesArray = "","",Chars.LF)+StrErrorDescription;
+				ErrorCounter = ErrorCounter + 1;
+			EndIf;
 		EndTry;
 		
 	EndDo;
@@ -2490,14 +2929,34 @@ Procedure CreateCreditMemoCSV(Date, Date2, ItemDataSet) Export
 			DocObject.Write(?(DocPost,DocumentWriteMode.Posting,DocumentWriteMode.Write));
 		EndIf;	
 	Except
-		ErrorText = "ERROR" + Chars.LF + "Document Line: "+LastLineNumber+ Chars.LF+ ErrorDescription();
-		LongActions.InformActionProgres(Counter-1,ErrorText);
-		Return;
+		StrErrorDescription = "Document Line: "+LastLineNumber+ Chars.LF+ ErrorDescription();
+		If TrimAll(ErrorProcessing) = "StopOnError" Then 
+			ErrorText = "ERROR" + Chars.LF + StrErrorDescription;
+			LongActions.InformActionProgres(Counter-1,ErrorText);
+			Return;
+		ElsIf TrimAll(ErrorProcessing) = "SkipErrors" Then 
+			ErrorMessagesArray = ErrorMessagesArray + ?(ErrorMessagesArray = "","",Chars.LF)+StrErrorDescription;
+			ErrorCounter = ErrorCounter + 1;
+		EndIf;
 	EndTry;	
+	
+	If ErrorMessagesArray <> "" Then 
+		ErrorText = "ERROR" + Chars.LF + ErrorMessagesArray;
+		LongActions.InformActionProgres(Counter - ErrorCounter,ErrorText);
+	Else 
+		LongActions.InformActionProgres(Counter - ErrorCounter,"");	
+	EndIf;	
 
 EndProcedure
 
-Procedure CreateDepositCSV(ItemDataSet) Export
+Procedure CreateDepositCSV(ItemDataSet, AdParams) Export
+	
+	LongActions.InformActionProgres(0,"Current progress: 0%");
+	
+	UpdateOption = AdParams.UpdateOption;
+	ErrorProcessing = AdParams.ErrorProcessing;
+	ErrorMessagesArray = "";
+	ErrorCounter = 0;
 	
 	Counter = 0;
 	Counter10 = 0;
@@ -2510,12 +2969,23 @@ Procedure CreateDepositCSV(ItemDataSet) Export
 	QuantityPrecision = GeneralFunctionsReusable.DefaultQuantityPrecision();
 	DefaultCurrency = GeneralFunctionsReusable.DefaultCurrency();
 	
+	If MaxCount > 1000 then 
+		ReportStep = 100;
+	Else 
+		ReportStep = MaxCount/100;
+	EndIf;	
 	For Each DataLine In ItemDataSet Do
 		
-		Progress = Int((Counter/MaxCount)*10); 
-		If Counter10 <> Progress then
-			Counter10 = Progress;
-			LongActions.InformActionProgres(Counter,"Current progress: "+(Counter10*10) +"%");
+		Progress = (Counter/MaxCount); 
+		If INT(Counter/ReportStep)*ReportStep = Counter then
+			Counter10 = Int(Progress*100);
+			If TrimAll(ErrorProcessing) = "SkipErrors" and  ErrorMessagesArray <> "" Then
+				AdNotificationParams = New Structure;
+				AdNotificationParams.Insert("Error",ErrorMessagesArray);
+				LongActions.InformActionProgres(Counter,"Current progress: "+(Counter10) +"%", AdNotificationParams);
+			Else 	
+				LongActions.InformActionProgres(Counter,"Current progress: "+(Counter10) +"%");
+			EndIf;	
 		EndIf;
 		Counter = Counter + 1;
 		LastLineNumber = DataLine.LineNumber;
@@ -2530,19 +3000,15 @@ Procedure CreateDepositCSV(ItemDataSet) Export
 			EndDo;	
 			
 			If MarkOfNewDoc Then 
-				FillPropertyValues(PrevSearchBase,DataLine);
-				// Writing previous document
 				If DocObject <> Undefined Then
-					
 					DocObject.TotalDeposits = DocObject.LineItems.Total("DocumentTotal");
 					DocObject.TotalDepositsRC = DocObject.LineItems.Total("DocumentTotalRC");
-					
 					DocObject.DocumentTotal = DocObject.TotalDeposits + DocObject.Accounts.Total("Amount");
 					DocObject.DocumentTotalRC = DocObject.TotalDepositsRC + DocObject.Accounts.Total("Amount");
-
 					DocObject.Write(?(DocPost,DocumentWriteMode.Posting,DocumentWriteMode.Write));
 				EndIf;	
 				
+				FillPropertyValues(PrevSearchBase,DataLine);
 				ExistingDoc = FindDocumentByAttributes("Deposit",DataLine.Number,Date(DataLine.DepositDate)+1,,,DataLine.DepositBankAccount);
 				
 				If ValueIsFilled(ExistingDoc) Then 
@@ -2573,59 +3039,120 @@ Procedure CreateDepositCSV(ItemDataSet) Export
 				
 			EndIf;
 			
-			DocLineItem = DocObject.Accounts.Add();
+			///////////////////////////////////////////////////////////////////
 			
-			If ValueIsFilled(DataLine.DepositLineCompany) Then 
-				DocLineItem.Company = DataLine.DepositLineCompany;
-			EndIf;
-			
-			If ValueIsFilled(DataLine.DepositLineAccount) Then 
-				DocLineItem.Account = DataLine.DepositLineAccount;
-			EndIf;
-			
-			If ValueIsFilled(DataLine.DepositLineClass) Then 
-				DocLineItem.Class = DataLine.DepositLineClass;
-			EndIf;
-
-			If ValueIsFilled(DataLine.DepositLineMemo) Then 
-				DocLineItem.Memo = DataLine.DepositLineMemo;
-			EndIf;
-			
-			If ValueIsFilled(DataLine.DepositLineAmount) Then 
-				DocLineItem.Amount = DataLine.DepositLineAmount;
+			If ValueIsFilled(DataLine.LineAccount) Then 
+				
+				DocLineItem = DocObject.Accounts.Add();
+				
+				If ValueIsFilled(DataLine.LineCompany) Then 
+					DocLineItem.Company = DataLine.LineCompany;
+				EndIf;
+				
+				If ValueIsFilled(DataLine.LineAccount) Then 
+					DocLineItem.Account = DataLine.LineAccount;
+				EndIf;
+				
+				If ValueIsFilled(DataLine.LineClass) Then 
+					DocLineItem.Class = DataLine.LineClass;
+				EndIf;
+				
+				If ValueIsFilled(DataLine.LineProject) Then 
+					DocLineItem.Project = DataLine.LineProject;
+				EndIf;
+				
+				If ValueIsFilled(DataLine.LineMemo) Then 
+					DocLineItem.Memo = DataLine.LineMemo;
+				EndIf;
+				
+				If ValueIsFilled(DataLine.LineAmount) Then 
+					DocLineItem.Amount = DataLine.LineAmount;
+				EndIf;
+				
+			ElsIf ValueIsFilled(DataLine.LineDocNumber) Then 
+				
+				DocLineItem = DocObject.LineItems.Add();
+				
+				If ValueIsFilled(DataLine.LineDocType) Then 
+					If ValueIsFilled(DataLine.LineDocNumber) Then 
+						If Find(Upper(DataLine.LineDocType),"RECEIPT") > 0 Then 
+							DocLineItem.Document = Documents.CashReceipt.FindByNumber(TrimAll(DataLine.LineDocNumber));
+						ElsIf Find(Upper(DataLine.LineDocType),"SALE") > 0 Then 	
+							DocLineItem.Document = Documents.CashSale.FindByNumber(TrimAll(DataLine.LineDocNumber));
+						EndIf;	
+					EndIf;	
+				EndIf;
+				
+				If ValueIsFilled(DataLine.LineCompany) Then 
+					DocLineItem.Customer = DataLine.LineCompany;
+				EndIf;
+				
+				If ValueIsFilled(DataLine.LineCurrency) Then 
+					DocLineItem.Currency = DataLine.LineCurrency;
+				EndIf;
+				
+				If ValueIsFilled(DataLine.LineAmount) Then 
+					DocLineItem.Payment = True;
+					DocLineItem.DocumentTotal = DataLine.LineAmount;
+					DocLineItem.DocumentTotalRC = DataLine.LineAmount;
+				ElsIf ValueIsFilled(DocLineItem.Document) Then 
+					DocLineItem.Payment = True;
+					DocLineItem.DocumentTotal = DocLineItem.Document.DocumentTotal;
+					DocLineItem.DocumentTotalRC = DocLineItem.Document.DocumentTotalRC;
+				EndIf;
 			EndIf;
 			
 		Except
-			ErrorText = "ERROR" + Chars.LF + "Document Line: "+LastLineNumber+ Chars.LF+ ErrorDescription();
-			LongActions.InformActionProgres(Counter-1,ErrorText);
-			Return;
+			StrErrorDescription = "Document Line: "+LastLineNumber+ Chars.LF+ ErrorDescription();
+			If TrimAll(ErrorProcessing) = "StopOnError" Then 
+				ErrorText = "ERROR" + Chars.LF + StrErrorDescription;
+				LongActions.InformActionProgres(Counter-1,ErrorText);
+				Return;
+			ElsIf TrimAll(ErrorProcessing) = "SkipErrors" Then 
+				ErrorMessagesArray = ErrorMessagesArray + ?(ErrorMessagesArray = "","",Chars.LF)+StrErrorDescription;
+				ErrorCounter = ErrorCounter + 1;
+			EndIf;
 		EndTry;
 		
 	EndDo;
 	
 	Try
 		If DocObject <> Undefined Then
-			
 			DocObject.TotalDeposits = DocObject.LineItems.Total("DocumentTotal");
 			DocObject.TotalDepositsRC = DocObject.LineItems.Total("DocumentTotalRC");
-			
 			DocObject.DocumentTotal = DocObject.TotalDeposits + DocObject.Accounts.Total("Amount");
 			DocObject.DocumentTotalRC = DocObject.TotalDepositsRC + DocObject.Accounts.Total("Amount");
-			
-			
 			DocObject.Write(?(DocPost,DocumentWriteMode.Posting,DocumentWriteMode.Write));
 		EndIf;	
 	Except
-		ErrorText = "ERROR" + Chars.LF + "Document Line: "+LastLineNumber+ Chars.LF+ ErrorDescription();
-		LongActions.InformActionProgres(Counter-1,ErrorText);
-		Return;
+		StrErrorDescription = "Document Line: "+LastLineNumber+ Chars.LF+ ErrorDescription();
+		If TrimAll(ErrorProcessing) = "StopOnError" Then 
+			ErrorText = "ERROR" + Chars.LF + StrErrorDescription;
+			LongActions.InformActionProgres(Counter-1,ErrorText);
+			Return;
+		ElsIf TrimAll(ErrorProcessing) = "SkipErrors" Then 
+			ErrorMessagesArray = ErrorMessagesArray + ?(ErrorMessagesArray = "","",Chars.LF)+StrErrorDescription;
+			ErrorCounter = ErrorCounter + 1;
+		EndIf;
 	EndTry;	
 
-	
+	If ErrorMessagesArray <> "" Then 
+		ErrorText = "ERROR" + Chars.LF + ErrorMessagesArray;
+		LongActions.InformActionProgres(Counter - ErrorCounter,ErrorText);
+	Else 
+		LongActions.InformActionProgres(Counter - ErrorCounter,"");	
+	EndIf;	
 	
 EndProcedure
 
-Procedure CreateBankTransferCSV(ItemDataSet) Export
+Procedure CreateBankTransferCSV(ItemDataSet, AdParams) Export
+	
+	LongActions.InformActionProgres(0,"Current progress: 0%");
+	
+	UpdateOption = AdParams.UpdateOption;
+	ErrorProcessing = AdParams.ErrorProcessing;
+	ErrorMessagesArray = "";
+	ErrorCounter = 0;
 	
 	Counter = 0;
 	Counter10 = 0;
@@ -2637,12 +3164,23 @@ Procedure CreateBankTransferCSV(ItemDataSet) Export
 	QuantityPrecision = GeneralFunctionsReusable.DefaultQuantityPrecision();
 	DefaultCurrency = GeneralFunctionsReusable.DefaultCurrency();
 	
+	If MaxCount > 1000 then 
+		ReportStep = 100;
+	Else 
+		ReportStep = MaxCount/100;
+	EndIf;	
 	For Each DataLine In ItemDataSet Do
 		
-		Progress = Int((Counter/MaxCount)*10); 
-		If Counter10 <> Progress then
-			Counter10 = Progress;
-			LongActions.InformActionProgres(Counter,"Current progress: "+(Counter10*10) +"%");
+		Progress = (Counter/MaxCount); 
+		If INT(Counter/ReportStep)*ReportStep = Counter then
+			Counter10 = Int(Progress*100);
+			If TrimAll(ErrorProcessing) = "SkipErrors" and  ErrorMessagesArray <> "" Then
+				AdNotificationParams = New Structure;
+				AdNotificationParams.Insert("Error",ErrorMessagesArray);
+				LongActions.InformActionProgres(Counter,"Current progress: "+(Counter10) +"%", AdNotificationParams);
+			Else 	
+				LongActions.InformActionProgres(Counter,"Current progress: "+(Counter10) +"%");
+			EndIf;	
 		EndIf;
 		Counter = Counter + 1;
 		LastLineNumber = DataLine.LineNumber;
@@ -2674,16 +3212,36 @@ Procedure CreateBankTransferCSV(ItemDataSet) Export
 			DocObject.Write(?(DocPost,DocumentWriteMode.Posting,DocumentWriteMode.Write));
 			
 		Except
-			ErrorText = "ERROR" + Chars.LF + "Document Line: "+LastLineNumber+ Chars.LF+ ErrorDescription();
-			LongActions.InformActionProgres(Counter-1,ErrorText);
-			Return;
+			StrErrorDescription = "Document Line: "+LastLineNumber+ Chars.LF+ ErrorDescription();
+			If TrimAll(ErrorProcessing) = "StopOnError" Then 
+				ErrorText = "ERROR" + Chars.LF + StrErrorDescription;
+				LongActions.InformActionProgres(Counter-1,ErrorText);
+				Return;
+			ElsIf TrimAll(ErrorProcessing) = "SkipErrors" Then 
+				ErrorMessagesArray = ErrorMessagesArray + ?(ErrorMessagesArray = "","",Chars.LF)+StrErrorDescription;
+				ErrorCounter = ErrorCounter + 1;
+			EndIf;
 		EndTry;
 		
 	EndDo;
 	
+	If ErrorMessagesArray <> "" Then 
+		ErrorText = "ERROR" + Chars.LF + ErrorMessagesArray;
+		LongActions.InformActionProgres(Counter - ErrorCounter,ErrorText);
+	Else 
+		LongActions.InformActionProgres(Counter - ErrorCounter,"");	
+	EndIf;	
+	
 EndProcedure
 
-Procedure CreateCheckCSV(ItemDataSet) Export
+Procedure CreateCheckCSV(ItemDataSet, AdParams) Export
+	
+	LongActions.InformActionProgres(0,"Current progress: 0%");
+	
+	UpdateOption = AdParams.UpdateOption;
+	ErrorProcessing = AdParams.ErrorProcessing;
+	ErrorMessagesArray = "";
+	ErrorCounter = 0;
 	
 	Counter = 0;
 	Counter10 = 0;
@@ -2696,12 +3254,23 @@ Procedure CreateCheckCSV(ItemDataSet) Export
 	QuantityPrecision = GeneralFunctionsReusable.DefaultQuantityPrecision();
 	DefaultCurrency = GeneralFunctionsReusable.DefaultCurrency();
 	
+	If MaxCount > 1000 then 
+		ReportStep = 100;
+	Else 
+		ReportStep = MaxCount/100;
+	EndIf;	
 	For Each DataLine In ItemDataSet Do
 		
-		Progress = Int((Counter/MaxCount)*10); 
-		If Counter10 <> Progress then
-			Counter10 = Progress;
-			LongActions.InformActionProgres(Counter,"Current progress: "+(Counter10*10) +"%");
+		Progress = (Counter/MaxCount); 
+		If INT(Counter/ReportStep)*ReportStep = Counter then
+			Counter10 = Int(Progress*100);
+			If TrimAll(ErrorProcessing) = "SkipErrors" and  ErrorMessagesArray <> "" Then
+				AdNotificationParams = New Structure;
+				AdNotificationParams.Insert("Error",ErrorMessagesArray);
+				LongActions.InformActionProgres(Counter,"Current progress: "+(Counter10) +"%", AdNotificationParams);
+			Else 	
+				LongActions.InformActionProgres(Counter,"Current progress: "+(Counter10) +"%");
+			EndIf;	
 		EndIf;	
 		Counter = Counter + 1;
 		LastLineNumber = DataLine.LineNumber;
@@ -2779,28 +3348,43 @@ Procedure CreateCheckCSV(ItemDataSet) Export
 			EndIf;
 			
 		Except
-			ErrorText = "ERROR" + Chars.LF + "Document Line: "+LastLineNumber+ Chars.LF+ ErrorDescription();
-			LongActions.InformActionProgres(Counter-1,ErrorText);
-			Return;
+			StrErrorDescription = "Document Line: "+LastLineNumber+ Chars.LF+ ErrorDescription();
+			If TrimAll(ErrorProcessing) = "StopOnError" Then 
+				ErrorText = "ERROR" + Chars.LF + StrErrorDescription;
+				LongActions.InformActionProgres(Counter-1,ErrorText);
+				Return;
+			ElsIf TrimAll(ErrorProcessing) = "SkipErrors" Then 
+				ErrorMessagesArray = ErrorMessagesArray + ?(ErrorMessagesArray = "","",Chars.LF)+StrErrorDescription;
+				ErrorCounter = ErrorCounter + 1;
+			EndIf;
 		EndTry;
 		
 	EndDo;
 	
 	Try
 		If DocObject <> Undefined Then
-			
 			DocObject.DocumentTotal = DocObject.LineItems.Total("Amount");
 			DocObject.DocumentTotalRC = DocObject.LineItems.Total("Amount") * DocObject.ExchangeRate;
-			
 			DocObject.Write(?(DocPost,DocumentWriteMode.Posting,DocumentWriteMode.Write));
 		EndIf;	
 	Except
-		ErrorText = "ERROR" + Chars.LF + "Document Line: "+LastLineNumber+ Chars.LF+ ErrorDescription();
-		LongActions.InformActionProgres(Counter-1,ErrorText);
-		Return;
+		StrErrorDescription = "Document Line: "+LastLineNumber+ Chars.LF+ ErrorDescription();
+		If TrimAll(ErrorProcessing) = "StopOnError" Then 
+			ErrorText = "ERROR" + Chars.LF + StrErrorDescription;
+			LongActions.InformActionProgres(Counter-1,ErrorText);
+			Return;
+		ElsIf TrimAll(ErrorProcessing) = "SkipErrors" Then 
+			ErrorMessagesArray = ErrorMessagesArray + ?(ErrorMessagesArray = "","",Chars.LF)+StrErrorDescription;
+			ErrorCounter = ErrorCounter + 1;
+		EndIf;
 	EndTry;	
 
-	
+	If ErrorMessagesArray <> "" Then 
+		ErrorText = "ERROR" + Chars.LF + ErrorMessagesArray;
+		LongActions.InformActionProgres(Counter - ErrorCounter,ErrorText);
+	Else 
+		LongActions.InformActionProgres(Counter - ErrorCounter,"");	
+	EndIf;	
 	
 EndProcedure
 
@@ -2928,7 +3512,6 @@ Function FindObjectByAttribute(ObjectMetaName, AttributeName, AttributeValue, No
 EndFunction	
 
 // ++ Copied and modified from SI form module
-&AtServer
 Procedure SalesInvoiceRecalculateTotals(Object) Export 
 	
 	// Calculate document totals.
@@ -3002,12 +3585,7 @@ Procedure SalesInvoiceRecalculateTotals(Object) Export
 				CurrentAgenciesRates.Add(New Structure("Agency, Rate, SalesTaxRate, SalesTaxComponent", AgencyRate.Agency, AgencyRate.Rate, AgencyRate.SalesTaxRate, AgencyRate.SalesTaxComponent));
 			EndDo;
 		EndIf;
-		#If Client Then
-		SalesTaxAcrossAgencies = SalesTaxClient.CalculateSalesTax(Object.TaxableSubtotal, Object.SalesTaxRate, CurrentAgenciesRates);
-		#EndIf
-		#If Server Then
 		SalesTaxAcrossAgencies = SalesTax.CalculateSalesTax(Object.TaxableSubtotal, Object.SalesTaxRate, CurrentAgenciesRates);
-		#EndIf
 		Object.SalesTaxAcrossAgencies.Clear();
 		For Each STAcrossAgencies In SalesTaxAcrossAgencies Do 
 			NewRow = Object.SalesTaxAcrossAgencies.Add();
@@ -3028,7 +3606,7 @@ Procedure SalesInvoiceRecalculateTotals(Object) Export
 
 EndProcedure
 
-&AtServer
+
 Procedure SalesInvoiceCompanyOnChangeAtServer(Object)
 	
 	// Reset company adresses (if company was changed).
@@ -3054,11 +3632,8 @@ Procedure SalesInvoiceCompanyOnChangeAtServer(Object)
 	
 	// Tax settings
 	SalesTaxRate 		= SalesTax.GetDefaultSalesTaxRate(Object.Company);
-	If GeneralFunctionsReusable.FunctionalOptionValue("AvataxEnabled") Then
-		Object.UseAvatax	= Object.Company.UseAvatax;
-	Else
-		Object.UseAvatax	= False;
-	EndIf;
+
+	Object.UseAvatax	= False;
 	If (Not Object.UseAvatax) Then
 		TaxEngine = 1; //Use AccountingSuite
 		If SalesTaxRate <> Object.SalesTaxRate Then
@@ -3068,10 +3643,6 @@ Procedure SalesInvoiceCompanyOnChangeAtServer(Object)
 		TaxEngine = 2;
 	EndIf;
 	Object.SalesTaxAcrossAgencies.Clear();
-	
-	If Object.UseAvatax Then
-		AvataxServer.RestoreCalculatedSalesTax(Object);
-	EndIf;	
 	
 	SalesInvoiceRecalculateTotals(Object);
 	//DisplaySalesTaxRate(ThisForm);
@@ -3091,7 +3662,7 @@ Procedure SalesInvoiceCompanyOnChangeAtServer(Object)
 	
 EndProcedure
 
-&AtServer
+
 Procedure SalesInvoiceFillCompanyAddressesAtServer(Company, ShipTo, BillTo = Undefined, ConfirmTo = Undefined);
 	
 	// Check if company changed and addresses are required to be refilled.
@@ -3130,7 +3701,7 @@ Procedure SalesInvoiceFillCompanyAddressesAtServer(Company, ShipTo, BillTo = Und
 	
 EndProcedure
 
-&AtServer
+
 Procedure SalesInvoiceLineItemsProductOnChangeAtServer(TableSectionRow, Object)
 	
 	// Request product properties.
@@ -3165,8 +3736,13 @@ Procedure SalesInvoiceLineItemsProductOnChangeAtServer(TableSectionRow, Object)
 	TableSectionRow.Location           = Catalogs.Locations.EmptyRef();
 	
 	// Reset default values.
-	TableSectionRow.DeliveryDateActual = Object.DeliveryDateActual;
-	TableSectionRow.LocationActual     = Object.LocationActual;
+	Try
+		TableSectionRow.DeliveryDateActual = Object.DeliveryDateActual;
+		TableSectionRow.LocationActual     = Object.LocationActual;
+	Except
+		TableSectionRow.DeliveryDate = Object.DeliveryDate;
+		TableSectionRow.Location     = Object.Location;
+	EndTry;	
 	TableSectionRow.Project            = Object.Project;
 	TableSectionRow.Class              = Object.Class;
 	
@@ -3182,33 +3758,71 @@ Procedure SalesInvoiceLineItemsProductOnChangeAtServer(TableSectionRow, Object)
 	TableSectionRow.LineTotal  		= 0;
 	TableSectionRow.TaxableAmount 	= 0;
 	
-	SalesInvoiceUpdateInformationCurrentRow(TableSectionRow, Object);
+	//SalesInvoiceUpdateInformationCurrentRow(TableSectionRow, Object);
 	
 EndProcedure
 
-&AtServer
-Procedure SalesInvoiceUpdateInformationCurrentRow(CurrentRow,Object)
+
+Procedure SalesInvoiceFillEmptyLineAttributesFromOrder(DataLine) 
 	
-	InformationCurrentRow = "";
-	
-	If CurrentRow.Product <> Undefined And CurrentRow.Product <> PredefinedValue("Catalog.Products.EmptyRef") Then
-		
-		LineItems = Object.LineItems.Unload(, "LineNumber, Product, QtyUM, LineTotal");
-		
-		LineItem = LineItems.Find(CurrentRow.LineNumber, "LineNumber");
-		LineItem.Product   = CurrentRow.Product;
-		LineItem.QtyUM     = CurrentRow.QtyUM;
-		LineItem.LineTotal = CurrentRow.LineTotal;
-		
-		InformationCurrentRow = GeneralFunctions.GetMarginInformation(CurrentRow.Product, CurrentRow.LocationActual, CurrentRow.QtyUM, CurrentRow.LineTotal,
-																	  Object.Currency, Object.ExchangeRate, Object.DiscountPercent, LineItems); 
-		InformationCurrentRow = "" + InformationCurrentRow;
-		
+	If False Then 
+		DataLine = Documents.SalesInvoice.CreateDocument().LineItems[0];
 	EndIf;
 	
-EndProcedure
+	Order = DataLine.Order;
+	OrderLine = Undefined;
+	For Each Line in Order.LineItems Do 
+		If Line.Product = DataLine.Product 
+		And Line.Unit = DataLine.Unit Then 
+			OrderLine = Line;		
+		EndIf;	
+	EndDo;
+	
+	If OrderLine = Undefined Then 
+		Return;
+	EndIf;	
+	
+	If DataLine.Project.IsEmpty() Then 
+		DataLine.Project = OrderLine.Project;
+	EndIf;
+	
+	If DataLine.Location.IsEmpty() Then 
+		DataLine.Location = OrderLine.Location;
+	EndIf;
+	
+	If DataLine.DeliveryDate = '00010101' Then 
+		DataLine.DeliveryDate = OrderLine.DeliveryDate;
+	EndIf;
+	
+	If DataLine.Class.IsEmpty() Then 
+		DataLine.Class = OrderLine.Class;
+	EndIf;
+	
+EndProcedure	
 
-&AtServer
+//
+//Procedure SalesInvoiceUpdateInformationCurrentRow(CurrentRow,Object)
+//	
+//	InformationCurrentRow = "";
+//	
+//	If CurrentRow.Product <> Undefined And CurrentRow.Product <> PredefinedValue("Catalog.Products.EmptyRef") Then
+//		
+//		LineItems = Object.LineItems.Unload(, "LineNumber, Product, QtyUM, LineTotal");
+//		
+//		LineItem = LineItems.Find(CurrentRow.LineNumber, "LineNumber");
+//		LineItem.Product   = CurrentRow.Product;
+//		LineItem.QtyUM     = CurrentRow.QtyUM;
+//		LineItem.LineTotal = CurrentRow.LineTotal;
+//		
+//		InformationCurrentRow = GeneralFunctions.GetMarginInformation(CurrentRow.Product, CurrentRow.LocationActual, CurrentRow.QtyUM, CurrentRow.LineTotal,
+//																	  Object.Currency, Object.ExchangeRate, Object.DiscountPercent, LineItems); 
+//		InformationCurrentRow = "" + InformationCurrentRow;
+//		
+//	EndIf;
+//	
+//EndProcedure
+
+
 Procedure SalesInvoiceLineItemsTaxableOnChangeAtServer(TableSectionRow,Object)
 	
 	//// Calculate sales tax by line total.
@@ -3229,11 +3843,114 @@ Procedure SalesInvoiceLineItemsTaxableOnChangeAtServer(TableSectionRow,Object)
 	
 EndProcedure
 
+//Function SalesInvoiceCheckOrders(Object, AdParams)
+Function SalesInvoiceCheckOrders(Object)	
+	ErrorsCount = 0;
+	MessageText = "";
+	
+	
+	If False Then 
+		Object = Documents.SalesInvoice.CreateDocument();
+	EndIf;	
+	
+	//InvoiceLineItems = Object.LineItems.Unload(,"LineNumber, Order, Shipment, Product, Unit, "+AdParams.LocationAttributeName+", "+ AdParams.DeliveryDateActualAttributeName+", Project, Class, QtyUnits");
+	InvoiceLineItems = Object.LineItems.Unload(,"LineNumber, Order, Shipment, Product, Unit, Location, DeliveryDate, Project, Class, QtyUnits");
+	
+	ListOfEmptyOrders = New Array;
+	For Each DocLine in InvoiceLineItems Do 
+		If Not ValueIsFilled(DocLine.Order) Then 
+			ListOfEmptyOrders.Add(DocLine.Order);
+		EndIf;	
+	EndDo;	
+	
+	For Each RowToDelete in ListOfEmptyOrders Do 
+		InvoiceLineItems.Delete(RowToDelete);	
+	EndDo;	
+	
+	If InvoiceLineItems.Count() = 0 Then 
+		Return "";
+	EndIf;	
+	
+	Query = New Query;
+	Query.TempTablesManager = New TempTablesManager;
+	Query.SetParameter("Date", Object.Date);
+	
+	InvoiceLineItems.Columns.Insert(1, "Company", New TypeDescription("CatalogRef.Companies"), "", 20);
+	InvoiceLineItems.FillValues(Object.Company, "Company");
+	DocumentPosting.PutTemporaryTable(InvoiceLineItems, "InvoiceLineItems", Query.TempTablesManager);
+	
+	// 3. Request uninvoiced items for each line item.
+	Query.Text = "
+		|SELECT
+		|	LineItems.LineNumber          AS LineNumber,
+		|	LineItems.Order               AS Order,
+		|	LineItems.Shipment            AS Shipment,
+		|	LineItems.Product.Code        AS ProductCode,
+		|	LineItems.Product.Description AS ProductDescription,
+		|	CASE 
+		|       WHEN LineItems.Shipment <> VALUE(Document.Shipment.EmptyRef) 
+		|		    THEN OrdersRegisteredBalance.ShippedShipmentBalance - OrdersRegisteredBalance.InvoicedBalance - LineItems.QtyUnits 
+		|		ELSE OrdersRegisteredBalance.QuantityBalance - OrdersRegisteredBalance.InvoicedBalance - LineItems.QtyUnits
+		|   END                           AS UninvoicedQuantity	
+		|FROM
+		|	InvoiceLineItems AS LineItems
+		|	LEFT JOIN AccumulationRegister.OrdersRegistered.Balance(&Date, (Company, Order, Shipment, Product, Unit, Location, DeliveryDate, Project, Class)
+		|		      IN (SELECT Company, Order, Shipment, Product, Unit, Location, DeliveryDate, Project, Class FROM InvoiceLineItems)) AS OrdersRegisteredBalance
+		|		ON  LineItems.Company      = OrdersRegisteredBalance.Company
+		|		AND LineItems.Order        = OrdersRegisteredBalance.Order
+		|		AND LineItems.Shipment     = OrdersRegisteredBalance.Shipment
+		|		AND LineItems.Product      = OrdersRegisteredBalance.Product
+		|		AND LineItems.Unit         = OrdersRegisteredBalance.Unit
+		|		AND LineItems.Location	   = OrdersRegisteredBalance.Location
+		|		AND LineItems.DeliveryDate = OrdersRegisteredBalance.DeliveryDate
+		|		AND LineItems.Project      = OrdersRegisteredBalance.Project
+		|		AND LineItems.Class        = OrdersRegisteredBalance.Class
+		|ORDER BY
+		|	LineItems.LineNumber";
+	UninvoicedItems = Query.Execute().Unload();
+	sel = Query.Execute().Select();
+	While sel.Next() Do 
+		dddd= sel.UninvoicedQuantity;
+	EndDo;	
+		
+	// 4. Process status of line items and create diagnostic message.
+	For Each Row In UninvoicedItems Do
+		If Row.UninvoicedQuantity = Null Then
+			ErrorsCount = ErrorsCount + 1;
+			If ErrorsCount <= 10 Then
+				MessageText = MessageText + ?(Not IsBlankString(MessageText), Chars.LF, "") +
+				                            StringFunctionsClientServer.SubstituteParametersInString(
+				                            NStr("en = 'The product %1 in line %2 was not declared in %3.'"), TrimAll(Row.ProductCode) + " " + TrimAll(Row.ProductDescription), Row.LineNumber, ?(ValueIsFilled(Row.Shipment), Row.Shipment, Row.Order));
+			EndIf;
+			
+		ElsIf Row.UninvoicedQuantity < 0 Then
+			ErrorsCount = ErrorsCount + 1;
+			If ErrorsCount <= 10 Then
+				MessageText = MessageText + ?(Not IsBlankString(MessageText), Chars.LF, "") +
+				                            StringFunctionsClientServer.SubstituteParametersInString(
+				                            NStr("en = 'The invoiced quantity of product %1 in line %2 exceeds ordered quantity in %3.'"), TrimAll(Row.ProductCode) + " " + TrimAll(Row.ProductDescription), Row.LineNumber, ?(ValueIsFilled(Row.Shipment), Row.Shipment, Row.Order));
+			EndIf;
+		EndIf;
+	EndDo;
+	If ErrorsCount > 10 Then
+		MessageText = MessageText + Chars.LF + StringFunctionsClientServer.SubstituteParametersInString(
+		                                       NStr("en = 'There are also %1 error(s) found'"), Format(ErrorsCount - 10, "NFD=0; NG=0"));
+	EndIf;
+	
+	// 5. Notify user if failed items found.
+	If ErrorsCount > 0 Then
+		Return MessageText;
+	EndIf;
+	
+	Return "";
+	
+EndFunction
+
 // -- Copied and modified from SI form module
 
 
 // ++ Copied and modified from SO form module
-&AtServer
+
 Procedure SalesOrderRecalculateTotals(Object)
 	
 	// Calculate document totals.
@@ -3302,12 +4019,7 @@ Procedure SalesOrderRecalculateTotals(Object)
 				CurrentAgenciesRates.Add(New Structure("Agency, Rate, SalesTaxRate, SalesTaxComponent", AgencyRate.Agency, AgencyRate.Rate, AgencyRate.SalesTaxRate, AgencyRate.SalesTaxComponent));
 			EndDo;
 		EndIf;
-		#If Client Then
-		SalesTaxAcrossAgencies = SalesTaxClient.CalculateSalesTax(Object.TaxableSubtotal, Object.SalesTaxRate, CurrentAgenciesRates);
-		#EndIf
-		#If Server Then
 		SalesTaxAcrossAgencies = SalesTax.CalculateSalesTax(Object.TaxableSubtotal, Object.SalesTaxRate, CurrentAgenciesRates);
-		#EndIf
 		Object.SalesTaxAcrossAgencies.Clear();
 		For Each STAcrossAgencies In SalesTaxAcrossAgencies Do 
 			NewRow = Object.SalesTaxAcrossAgencies.Add();
@@ -3327,7 +4039,7 @@ Procedure SalesOrderRecalculateTotals(Object)
 
 EndProcedure
 
-&AtServer
+
 Procedure SalesOrderCompanyOnChangeAtServer(Object)
 	
 	// Reset company adresses (if company was changed).
@@ -3341,11 +4053,8 @@ Procedure SalesOrderCompanyOnChangeAtServer(Object)
 	//CurrencyOnChangeAtServer();
 	Object.ExchangeRate = GeneralFunctions.GetExchangeRate(Object.Date, Object.Currency);
 	SalesTaxRate 		= SalesTax.GetDefaultSalesTaxRate(Object.Company);
-	If GeneralFunctionsReusable.FunctionalOptionValue("AvataxEnabled") Then
-		Object.UseAvatax	= Object.Company.UseAvatax;
-	Else
-		Object.UseAvatax	= False;
-	EndIf;
+	Object.UseAvatax	= False;
+
 	If (Not Object.UseAvatax) Then
 		TaxEngine = 1; //Use AccountingSuite
 		If SalesTaxRate <> Object.SalesTaxRate Then
@@ -3355,16 +4064,12 @@ Procedure SalesOrderCompanyOnChangeAtServer(Object)
 		TaxEngine = 2;
 	EndIf;
 	Object.SalesTaxAcrossAgencies.Clear();
-	//ApplySalesTaxEngineSettings();
-	If Object.UseAvatax Then
-		AvataxServer.RestoreCalculatedSalesTax(Object);
-	EndIf;	
 	
 	SalesOrderRecalculateTotals(Object);
 		
 EndProcedure
 
-&AtServer
+
 Procedure SalesOrderFillCompanyAddressesAtServer(Company, ShipTo, BillTo = Undefined, ConfirmTo = Undefined);
 	
 	// Check if company changed and addresses are required to be refilled.
@@ -3405,7 +4110,7 @@ EndProcedure
 // -- Copied and modified from SO form module
 
 // ++ Copied and modified from CR form module
-&AtServer                                    
+                                    
 Procedure CashReceiptCompanyOnChange(Object)
 	
 	Query = New Query("SELECT
@@ -3454,7 +4159,11 @@ Procedure CashReceipRecalculateTotals(Object)
 	
 	TotalLinePayment = Object.LineItems.Total("Payment");
 	TotalCredit = Object.CreditMemos.Total("Payment");
-	TotalDiscount = Object.LineItems.Total("Discount");
+	Try
+		TotalDiscount = Object.LineItems.Total("Discount");
+	Except
+		TotalDiscount = 0;
+	EndTry;	
 	
 	// Calculation based on Unapplied Payment
 	
@@ -3475,13 +4184,16 @@ Procedure CashReceipRecalculateTotals(Object)
 	
 	Object.DocumentTotalRC = (Object.CashPayment * Object.ExchangeRate) + (TotalCredit * Object.ExchangeRate) + (TotalDiscount * Object.ExchangeRate);
 	Object.DocumentTotal = Object.CashPayment + TotalCredit + TotalDiscount;
-	Object.DiscountAmount = TotalDiscount;
+	Try
+		Object.DiscountAmount = TotalDiscount;
+	Except	
+	EndTry;	
 	
 EndProcedure	
 
 // -- Copied and modified from CR form module
 
-&AtServer                                    
+                                    
 // ++ Copied and modified from BankTransfer
 Procedure BankTransferRecalculateExchangeRate(Object)
 	If GeneralFunctionsReusable.FunctionalOptionValue("MultiCurrency") Then	
@@ -3562,12 +4274,7 @@ Procedure SalesReturnRecalculateTotals(Object)
 				CurrentAgenciesRates.Add(New Structure("Agency, Rate, SalesTaxRate, SalesTaxComponent", AgencyRate.Agency, AgencyRate.Rate, AgencyRate.SalesTaxRate, AgencyRate.SalesTaxComponent));
 			EndDo;
 		EndIf;
-		#If Client Then
-		SalesTaxAcrossAgencies = SalesTaxClient.CalculateSalesTax(Object.TaxableSubtotal, Object.SalesTaxRate, CurrentAgenciesRates);
-		#EndIf
-		#If Server Then
 		SalesTaxAcrossAgencies = SalesTax.CalculateSalesTax(Object.TaxableSubtotal, Object.SalesTaxRate, CurrentAgenciesRates);
-		#EndIf
 		Object.SalesTaxAcrossAgencies.Clear();
 		For Each STAcrossAgencies In SalesTaxAcrossAgencies Do 
 			NewRow = Object.SalesTaxAcrossAgencies.Add();
@@ -3597,11 +4304,8 @@ Procedure SalesReturnCompanyOnChangeAtServer(Object)
 	If Not ValueIsFilled(Object.ParentDocument) Then
 		SalesTaxRate = SalesTax.GetDefaultSalesTaxRate(Object.Company);
 		
-		If GeneralFunctionsReusable.FunctionalOptionValue("AvataxEnabled") Then
-			Object.UseAvatax	= Object.Company.UseAvatax;
-		Else
-			Object.UseAvatax	= False;
-		EndIf;
+		Object.UseAvatax	= False;
+		
 		If (Not Object.UseAvatax) Then
 			TaxEngine = 1; //Use AccountingSuite
 			If SalesTaxRate <> Object.SalesTaxRate Then
@@ -3612,12 +4316,6 @@ Procedure SalesReturnCompanyOnChangeAtServer(Object)
 		EndIf;
 		Object.SalesTaxAcrossAgencies.Clear();
 		
-		If Object.UseAvatax Then
-			If Object.Ref.IsEmpty() Then
-				Object.AvataxShippingTaxCode = Constants.AvataxDefaultShippingTaxCode.Get();
-			EndIf;
-			AvataxServer.RestoreCalculatedSalesTax(Object);
-		EndIf;	
 	EndIf;
 	
 	If Object.Company.ARAccount <> ChartsofAccounts.ChartOfAccounts.EmptyRef() Then

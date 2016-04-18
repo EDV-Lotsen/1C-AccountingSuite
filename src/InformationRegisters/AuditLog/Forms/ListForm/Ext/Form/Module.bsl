@@ -41,12 +41,18 @@ Function ReturnDocRef(DocUUID, DocType)
 		Return Documents.ItemReceipt.GetRef(DocUUID);
 	ElsIf DocType = "Bill Payment (Check)" Then
 		Return Documents.InvoicePayment.GetRef(DocUUID);
+	ElsIf DocType = "Bill Payment" Then
+		Return Documents.InvoicePayment.GetRef(DocUUID);
 	ElsIf DocType = "General Journal Entry" Then
+		Return Documents.GeneralJournalEntry.GetRef(DocUUID);
+	ElsIf DocType = "General Journal" Then
 		Return Documents.GeneralJournalEntry.GetRef(DocUUID);
 	ElsIf DocType = "Deposit" Then
 		Return Documents.Deposit.GetRef(DocUUID);
 	ElsIf DocType = "Payment (Check)" Then
 		Return Documents.Check.GetRef(DocUUID);
+	ElsIf DocType = "Payment" Then
+		Return Documents.Check.GetRef(DocUUID);	
 	ElsIf DocType = "Cash Sale" Then
 		Return Documents.CashSale.GetRef(DocUUID);
 	ElsIf DocType = "Cash Receipt" Then
@@ -61,11 +67,12 @@ Function ReturnDocRef(DocUUID, DocType)
 		Return Documents.ItemAdjustment.GetRef(DocUUID);
 	ElsIf DocType = "Sales Tax Payment" Then
 		Return Documents.SalesTaxPayment.GetRef(DocUUID);
-	ElsIf DocType = "Statement" Then
-		Return Documents.Statement.GetRef(DocUUID);
-	ElsIf DocType = "Quote" Then
-		Return Documents.Quote.GetRef(DocUUID);
+	ElsIf DocType = "Shipment" Then
+		Return Documents.Shipment.GetRef(DocUUID);
+	ElsIf DocType = "Assembly Build" Then
+		Return Documents.Assembly.GetRef(DocUUID);
 	EndIf;
+
 
 EndFunction
 
@@ -88,11 +95,17 @@ Function OpenDocument(DocRef, DocType)
 		OpenForm("Document.ItemReceipt.ObjectForm", FormParameters);
 	ElsIf DocType = "Bill Payment (Check)" Then
 		OpenForm("Document.InvoicePayment.ObjectForm", FormParameters);
+	ElsIf DocType = "Bill Payment" Then
+		OpenForm("Document.InvoicePayment.ObjectForm", FormParameters);	
 	ElsIf DocType = "General Journal Entry" Then
+		OpenForm("Document.GeneralJournalEntry.ObjectForm", FormParameters);
+	ElsIf DocType = "Journal Entry" Then
 		OpenForm("Document.GeneralJournalEntry.ObjectForm", FormParameters);
 	ElsIf DocType = "Deposit" Then
 		OpenForm("Document.Deposit.ObjectForm", FormParameters);
 	ElsIf DocType = "Payment (Check)" Then
+		OpenForm("Document.Check.ObjectForm", FormParameters);
+	ElsIf DocType = "Payment" Then
 		OpenForm("Document.Check.ObjectForm", FormParameters);
 	ElsIf DocType = "Cash Sale" Then
 		OpenForm("Document.CashSale.ObjectForm", FormParameters);
@@ -108,11 +121,12 @@ Function OpenDocument(DocRef, DocType)
 		OpenForm("Document.ItemAdjustment.ObjectForm", FormParameters);
 	ElsIf DocType = "Sales Tax Payment" Then
 		OpenForm("Document.SalesTaxPayment.ObjectForm", FormParameters);
-	ElsIf DocType = "Statement" Then
-		OpenForm("Document.Statement.ObjectForm", FormParameters);
-	ElsIf DocType = "Quote" Then
-		OpenForm("Document.Quote.ObjectForm", FormParameters);
+	ElsIf DocType = "Shipment" Then
+		OpenForm("Document.Shipment.ObjectForm", FormParameters);
+	ElsIf DocType = "Assembly Build" Then
+		OpenForm("Document.Assembly.ObjectForm", FormParameters);
 	EndIf;
+
 
 EndFunction
 	

@@ -50,34 +50,14 @@ EndProcedure
 Procedure PlaceImageFile(TempStorageName)
 	
 	If NOT TempStorageName = Undefined Then
-	
+		
 		BinaryData = GetFromTempStorage(TempStorageName);
-		
-		///
-		
-		HeadersMap = New Map();
-		HeadersMap.Insert("Authorization", "Client-ID " + ServiceParameters.ImgurClientID());
-		
-		HTTPRequest = New HTTPRequest("/3/image", HeadersMap);
-		HTTPRequest.SetBodyFromBinaryData(BinaryData);
-		
-		SSLConnection = New OpenSSLSecureConnection();
-		
-		HTTPConnection = New HTTPConnection("api.imgur.com",,,,,,SSLConnection); //imgur-apiv3.p.mashape.com
-		Result = HTTPConnection.Post(HTTPRequest);
-		ResponseBody = Result.GetBodyAsString(TextEncoding.UTF8);
-		ResponseJSON = InternetConnectionClientServer.DecodeJSON(ResponseBody);
-		image_url = ResponseJSON.data.link;
-		// Ctrl + _
-		ConstantsSet.logoURL = image_url;
-		
-	    ///
 		
 		NewRow = InformationRegisters.CustomPrintForms.CreateRecordManager();
 		NewRow.ObjectName = "logo";
 		NewRow.TemplateName = "logo";
 		NewRow.Template = New ValueStorage(BinaryData, New Deflation(9));
-		NewRow.Write();	
+		NewRow.Write();
 		DeleteFromTempStorage(TempStorageName);
 		
 	EndIf;
@@ -85,7 +65,7 @@ Procedure PlaceImageFile(TempStorageName)
 	BinaryLogo = GeneralFunctions.GetLogo();
 	TempStorageAddress = PutToTempStorage(BinaryLogo,UUID);
 	ImageAddress = TempStorageAddress;
-  	
+	
 EndProcedure
 
 &AtClient

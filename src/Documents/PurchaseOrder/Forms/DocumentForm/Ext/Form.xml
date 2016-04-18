@@ -6,16 +6,11 @@
 	<RepostOnWrite>true</RepostOnWrite>
 	<AutoCommandBar name="FormCommandBar" id="-1">
 		<ChildItems>
-			<Button name="FormSendEmail" id="299">
+			<Button name="FormCommonCommandAttachedFiles" id="318">
 				<Type>CommandBarButton</Type>
-				<CommandName>Form.Command.SendEmail</CommandName>
-				<Title>
-					<v8:item>
-						<v8:lang>en</v8:lang>
-						<v8:content>Email</v8:content>
-					</v8:item>
-				</Title>
-				<ExtendedTooltip name="FormSendEmailExtendedTooltip" id="300"/>
+				<CommandName>CommonCommand.AttachedFiles</CommandName>
+				<DataPath>Object.Ref</DataPath>
+				<ExtendedTooltip name="FormCommonCommandAttachedFilesExtendedTooltip" id="319"/>
 			</Button>
 		</ChildItems>
 	</AutoCommandBar>
@@ -345,7 +340,7 @@ Destination location</v8:content>
 							<Title>
 								<v8:item>
 									<v8:lang>en</v8:lang>
-									<v8:content>Print options</v8:content>
+									<v8:content>Dropship</v8:content>
 								</v8:item>
 							</Title>
 							<Group>Horizontal</Group>
@@ -680,6 +675,7 @@ Reference number</v8:content>
 								</InputField>
 								<InputField name="LineItemsUnit" id="230">
 									<DataPath>Object.LineItems.Unit</DataPath>
+									<SkipOnInput>true</SkipOnInput>
 									<Title>
 										<v8:item>
 											<v8:lang>en</v8:lang>
@@ -1202,23 +1198,6 @@ Reference number</v8:content>
 			<Type/>
 		</Attribute>
 	</Attributes>
-	<Commands>
-		<Command name="SendEmail" id="1">
-			<Title>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Email Receipt</v8:content>
-				</v8:item>
-			</Title>
-			<ToolTip>
-				<v8:item>
-					<v8:lang>en</v8:lang>
-					<v8:content>Send email</v8:content>
-				</v8:item>
-			</ToolTip>
-			<Action>SendEmail</Action>
-		</Command>
-	</Commands>
 	<CommandInterface>
 		<NavigationPanel>
 			<Item>
@@ -1235,12 +1214,41 @@ Reference number</v8:content>
 			<Item>
 				<Command>Document.PurchaseInvoice.StandardCommand.CreateBasedOn</Command>
 				<Type>Auto</Type>
+				<CommandGroup>FormCommandBarCreateBasedOn</CommandGroup>
+				<Index>2</Index>
 				<DefaultVisible>false</DefaultVisible>
 			</Item>
 			<Item>
 				<Command>0:349faa7b-a8e2-492c-b6d6-ed3c598ea1cd</Command>
 				<Type>Auto</Type>
 				<DefaultVisible>false</DefaultVisible>
+			</Item>
+			<Item>
+				<Command>Document.PurchaseOrder.Command.Print</Command>
+				<Type>Auto</Type>
+				<CommandGroup>FormCommandBarImportant</CommandGroup>
+				<Visible>
+					<xr:Common>false</xr:Common>
+				</Visible>
+			</Item>
+			<Item>
+				<Command>CommonCommand.AttachedFiles</Command>
+				<Type>Auto</Type>
+				<CommandGroup>FormCommandBarImportant</CommandGroup>
+				<Index>1</Index>
+				<DefaultVisible>false</DefaultVisible>
+				<Visible>
+					<xr:Common>false</xr:Common>
+				</Visible>
+			</Item>
+			<Item>
+				<Command>Document.ItemReceipt.StandardCommand.CreateBasedOn</Command>
+				<Type>Auto</Type>
+				<CommandGroup>FormCommandBarCreateBasedOn</CommandGroup>
+				<Index>1</Index>
+				<Visible>
+					<xr:Common>false</xr:Common>
+				</Visible>
 			</Item>
 		</CommandBar>
 	</CommandInterface>

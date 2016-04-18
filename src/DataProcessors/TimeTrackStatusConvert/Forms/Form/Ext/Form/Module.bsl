@@ -41,7 +41,3 @@ Procedure TimerControl(Command)
 	EndIf;
 EndProcedure
 
-&AtServer
-Procedure ReadForm()
-	ThisForm.Read();
-EndProcedure

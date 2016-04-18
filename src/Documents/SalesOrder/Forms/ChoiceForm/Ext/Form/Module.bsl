@@ -20,6 +20,14 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	Items.DropshipCompany.Title   = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = 'Dropship %1'"), Lower(CustomerName));
 	Items.DropshipCompany.ToolTip = StringFunctionsClientServer.SubstituteParametersInString(NStr("en = 'Dropship %1 name'"), Lower(CustomerName));
 	
+	If Constants.UseSOPrepayment.Get() Then
+		Items.Amount.Visible = True;
+		Items.AmountRC.Visible = True;
+	Else 	
+		Items.Amount.Visible = False;
+		Items.AmountRC.Visible = False;
+	EndIf;	
+	
 EndProcedure
 
 #EndRegion

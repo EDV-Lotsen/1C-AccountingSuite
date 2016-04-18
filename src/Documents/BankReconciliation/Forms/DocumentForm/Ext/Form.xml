@@ -1,16 +1,17 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2">
+	<AutoTitle>false</AutoTitle>
 	<VerticalScroll>useIfNecessary</VerticalScroll>
 	<AutoTime>CurrentOrLast</AutoTime>
 	<UsePostingMode>Auto</UsePostingMode>
 	<RepostOnWrite>true</RepostOnWrite>
 	<AutoCommandBar name="FormCommandBar" id="-1"/>
 	<Events>
+		<Event name="AfterWriteAtServer">AfterWriteAtServer</Event>
 		<Event name="OnReadAtServer">OnReadAtServer</Event>
 		<Event name="BeforeWrite">BeforeWrite</Event>
 		<Event name="BeforeWriteAtServer">BeforeWriteAtServer</Event>
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
-		<Event name="FillCheckProcessingAtServer">FillCheckProcessingAtServer</Event>
 	</Events>
 	<ChildItems>
 		<UsualGroup name="DocumentCap" id="127">
@@ -113,7 +114,7 @@
 															<v8:content>Bank account</v8:content>
 														</v8:item>
 													</Title>
-													<ChoiceButton>true</ChoiceButton>
+													<ChoiceButton>false</ChoiceButton>
 													<QuickChoice>true</QuickChoice>
 													<ContextMenu name="BankAccountContextMenu" id="63"/>
 													<ExtendedTooltip name="BankAccountExtendedTooltip" id="72"/>
@@ -122,9 +123,10 @@
 													</Events>
 												</InputField>
 												<InputField name="BeginningBalance" id="21">
-													<DataPath>Object.BeginningBalance</DataPath>
+													<DataPath>BeginningBalance</DataPath>
 													<EditMode>EnterOnInput</EditMode>
-													<HorizontalStretch>true</HorizontalStretch>
+													<Width>30</Width>
+													<HorizontalStretch>false</HorizontalStretch>
 													<ContextMenu name="BeginningBalanceContextMenu" id="22"/>
 													<ExtendedTooltip name="BeginningBalanceExtendedTooltip" id="75"/>
 													<Events>
@@ -148,8 +150,8 @@
 													</Title>
 													<HorizontalAlign>Right</HorizontalAlign>
 													<EditMode>EnterOnInput</EditMode>
-													<Width>14</Width>
-													<HorizontalStretch>true</HorizontalStretch>
+													<Width>20</Width>
+													<HorizontalStretch>false</HorizontalStretch>
 													<EditFormat>
 														<v8:item>
 															<v8:lang>en</v8:lang>
@@ -163,9 +165,10 @@
 													</Events>
 												</InputField>
 												<InputField name="EndingBalance" id="23">
-													<DataPath>Object.EndingBalance</DataPath>
+													<DataPath>EndingBalance</DataPath>
 													<EditMode>EnterOnInput</EditMode>
-													<HorizontalStretch>true</HorizontalStretch>
+													<Width>30</Width>
+													<HorizontalStretch>false</HorizontalStretch>
 													<ContextMenu name="EndingBalanceContextMenu" id="24"/>
 													<ExtendedTooltip name="EndingBalanceExtendedTooltip" id="76"/>
 													<Events>
@@ -225,7 +228,7 @@
 									<Title formatted="false">
 										<v8:item>
 											<v8:lang>en</v8:lang>
-											<v8:content>Cloud Banking:</v8:content>
+											<v8:content>Bank:</v8:content>
 										</v8:item>
 									</Title>
 									<HorizontalAlign>Right</HorizontalAlign>
@@ -527,14 +530,6 @@
 					<Group>Horizontal</Group>
 					<ExtendedTooltip name="LineItemsTransactionAmountGroupExtendedTooltip" id="155"/>
 					<ChildItems>
-						<InputField name="LineItemsDeposit" id="212">
-							<DataPath>LineItems.Deposit</DataPath>
-							<ReadOnly>true</ReadOnly>
-							<EditMode>EnterOnInput</EditMode>
-							<FooterHorizontalAlign>Right</FooterHorizontalAlign>
-							<ContextMenu name="LineItemsDepositContextMenu" id="213"/>
-							<ExtendedTooltip name="LineItemsDepositExtendedTooltip" id="214"/>
-						</InputField>
 						<InputField name="LineItemsPayment" id="215">
 							<DataPath>LineItems.Payment</DataPath>
 							<ReadOnly>true</ReadOnly>
@@ -543,10 +538,18 @@
 							<ContextMenu name="LineItemsPaymentContextMenu" id="216"/>
 							<ExtendedTooltip name="LineItemsPaymentExtendedTooltip" id="217"/>
 						</InputField>
+						<InputField name="LineItemsDeposit" id="212">
+							<DataPath>LineItems.Deposit</DataPath>
+							<ReadOnly>true</ReadOnly>
+							<EditMode>EnterOnInput</EditMode>
+							<FooterHorizontalAlign>Right</FooterHorizontalAlign>
+							<ContextMenu name="LineItemsDepositContextMenu" id="213"/>
+							<ExtendedTooltip name="LineItemsDepositExtendedTooltip" id="214"/>
+						</InputField>
 					</ChildItems>
 				</ColumnGroup>
 				<InputField name="LineItemsTransactionAmount" id="203">
-					<DataPath>LineItems.TransactionAmount</DataPath>
+					<DataPath>LineItems.TransactionAmountUniversal</DataPath>
 					<ReadOnly>true</ReadOnly>
 					<EditMode>EnterOnInput</EditMode>
 					<ContextMenu name="LineItemsTransactionAmountContextMenu" id="204"/>
@@ -590,21 +593,14 @@
 					<ContextMenu name="MemoContextMenu" id="61"/>
 					<ExtendedTooltip name="MemoExtendedTooltip" id="90"/>
 				</InputField>
-				<InputField name="ClearedAmount" id="56">
-					<DataPath>Object.ClearedAmount</DataPath>
-					<Visible>false</Visible>
-					<ReadOnly>true</ReadOnly>
-					<ContextMenu name="ClearedAmountContextMenu" id="57"/>
-					<ExtendedTooltip name="ClearedAmountExtendedTooltip" id="92"/>
-				</InputField>
 				<InputField name="ClearedBalance" id="54">
-					<DataPath>Object.ClearedBalance</DataPath>
+					<DataPath>ClearedBalance</DataPath>
 					<ReadOnly>true</ReadOnly>
 					<ContextMenu name="ClearedBalanceContextMenu" id="55"/>
 					<ExtendedTooltip name="ClearedBalanceExtendedTooltip" id="93"/>
 				</InputField>
 				<InputField name="Difference" id="52">
-					<DataPath>Object.Difference</DataPath>
+					<DataPath>Difference</DataPath>
 					<ReadOnly>true</ReadOnly>
 					<ContextMenu name="DifferenceContextMenu" id="53"/>
 					<ExtendedTooltip name="DifferenceExtendedTooltip" id="94"/>
@@ -855,7 +851,92 @@
 						</v8:NumberQualifiers>
 					</Type>
 				</Column>
+				<Column name="TransactionAmountUniversal" id="13">
+					<Title>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Transaction amount</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:decimal</v8:Type>
+						<v8:NumberQualifiers>
+							<v8:Digits>17</v8:Digits>
+							<v8:FractionDigits>2</v8:FractionDigits>
+							<v8:AllowedSign>Any</v8:AllowedSign>
+						</v8:NumberQualifiers>
+					</Type>
+				</Column>
 			</Columns>
+		</Attribute>
+		<Attribute name="BeginningBalance" id="7">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Beginning balance</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:decimal</v8:Type>
+				<v8:NumberQualifiers>
+					<v8:Digits>17</v8:Digits>
+					<v8:FractionDigits>2</v8:FractionDigits>
+					<v8:AllowedSign>Any</v8:AllowedSign>
+				</v8:NumberQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="EndingBalance" id="8">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Ending balance</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:decimal</v8:Type>
+				<v8:NumberQualifiers>
+					<v8:Digits>17</v8:Digits>
+					<v8:FractionDigits>2</v8:FractionDigits>
+					<v8:AllowedSign>Any</v8:AllowedSign>
+				</v8:NumberQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="CreditCard" id="9">
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
+			</Type>
+		</Attribute>
+		<Attribute name="Difference" id="10">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Difference</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:decimal</v8:Type>
+				<v8:NumberQualifiers>
+					<v8:Digits>17</v8:Digits>
+					<v8:FractionDigits>2</v8:FractionDigits>
+					<v8:AllowedSign>Any</v8:AllowedSign>
+				</v8:NumberQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="ClearedBalance" id="11">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Cleared balance</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:decimal</v8:Type>
+				<v8:NumberQualifiers>
+					<v8:Digits>17</v8:Digits>
+					<v8:FractionDigits>2</v8:FractionDigits>
+					<v8:AllowedSign>Any</v8:AllowedSign>
+				</v8:NumberQualifiers>
+			</Type>
 		</Attribute>
 	</Attributes>
 	<Commands>
@@ -945,5 +1026,15 @@
 				</Visible>
 			</Item>
 		</NavigationPanel>
+		<CommandBar>
+			<Item>
+				<Command>Document.BankReconciliation.Command.PrintReconciliationReport</Command>
+				<Type>Auto</Type>
+				<CommandGroup>FormCommandBarImportant</CommandGroup>
+				<Visible>
+					<xr:Common>false</xr:Common>
+				</Visible>
+			</Item>
+		</CommandBar>
 	</CommandInterface>
 </Form>

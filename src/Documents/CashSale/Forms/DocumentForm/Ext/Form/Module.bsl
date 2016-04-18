@@ -91,7 +91,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 			SalesTaxRate = Object.SalesTaxRate;
 		Else
 			TaxRate = Object.SalesTaxAcrossAgencies.Total("Rate");
-			SalesTaxRateText = "Sales tax rate: " + String(TaxRate) + "%";
+			SalesTaxRateText = "Tax rate: " + String(TaxRate) + "%";
 			Items.SalesTaxPercentDecoration.Title = SalesTaxRateText;
 			//Determine if document's sales tax rate is inactive (has been changed)
 			AgenciesRates = New Array();
@@ -126,9 +126,6 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	Items.FCYCurrency.Title          = ForeignCurrencySymbol;
 	Items.SalesTaxCurrency.Title     = ForeignCurrencySymbol;
 	Items.TaxableSubtotalCurrency.Title = ForeignCurrencySymbol;
-	
-	// Update elements status.
-	//Items.FormChargeWithStripe.Enabled = IsBlankString(Object.StripeID);
 	
 	If NOT GeneralFunctionsReusable.FunctionalOptionValue("MultiCurrency") Then
 		//Items.FCYCurrency.Visible = False;
@@ -179,16 +176,6 @@ Procedure AfterOpen()
 EndProcedure
 
 &AtClient
-Procedure OnClose()
-	OnCloseAtServer();
-EndProcedure
-
-&AtServer
-Procedure OnCloseAtServer()
-
-EndProcedure
-
-&AtClient
 Procedure BeforeWrite(Cancel, WriteParameters)
 	
 	//Closing period
@@ -209,7 +196,7 @@ Procedure BeforeWrite(Cancel, WriteParameters)
 	EndIf;
 	
 	// preventing posting if already included in a bank rec
-	If ReconciledDocumentsServerCall.RequiresExcludingFromBankReconciliation(Object.Ref, Object.DocumentTotalRC, Object.Date, Object.BankAccount, WriteParameters.WriteMode) Then
+	If ReconciledDocumentsServerCall.DocumentRequiresExcludingFromBankReconciliation(Object, WriteParameters.WriteMode) Then
 		Cancel = True;
 		CommonUseClient.ShowCustomMessageBox(ThisForm, "Bank reconciliation", "The transaction you are editing has been reconciled. Saving your changes could put you out of balance the next time you try to reconcile. 
 		|To modify it you should exclude it from the Bank rec. document.", PredefinedValue("Enum.MessageStatus.Warning"));
@@ -1081,17 +1068,6 @@ Procedure AuditLogRecord(Command)
 
 EndProcedure
 
-//------------------------------------------------------------------------------
-// Stripe.
-
-
-&AtServer
-Function SessionTenant()
-	
-	Return SessionParameters.TenantValue;
-	
-EndFunction
-
 #EndRegion
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1468,7 +1444,7 @@ Procedure ShowSalesTaxRate()
 	Else
 		TaxRate = Object.SalesTaxAcrossAgencies.Total("Rate");
 	EndIf;
-	SalesTaxRateText = "Sales tax rate: " + String(TaxRate) + " %";
+	SalesTaxRateText = "Tax rate: " + String(TaxRate) + " %";
 	Items.SalesTaxPercentDecoration.Title = SalesTaxRateText;
 
 EndProcedure
@@ -1496,6 +1472,16 @@ Procedure UpdateInformationCurrentRow(CurrentRow)
 		
 	EndIf;
 	
+EndProcedure
+
+&AtClient
+Procedure OnClose()
+	OnCloseAtServer();
+EndProcedure
+
+&AtServer
+Procedure OnCloseAtServer()
+
 EndProcedure
 
 #EndRegion
