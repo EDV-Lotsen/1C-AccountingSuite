@@ -1,0 +1,104 @@
+What's New
+
+Improvements to Customer/Vendor Center
+
+- The label for Customers / Vendors was changed to Customer / Vendor Central.  Fields were re-arranged to put the most important within view without scrolling.
+- Deposits and General Journal Entries are now included when viewing customer transactions.
+- When creating a new document  (invoice, receipt, PO, etc) in Customer / Vendor Central, customer/vendor data is automatically copied to the new document.
+- The Create menu is now dynamic and has choices that are only applicable to the customer/vendor highlighted.
+- Balances for each Customer/Vendor may now be easily seen by highlighting the customer/vendor in the list.
+- The column that housed the document number and date was split into three fields to allow sorting by each of these fields.  The new columns are document type, date, and document number.
+- The Refresh button now refreshes both the Customer / Vendor list and the Transactions list.
+
+Feature Additions to Inventory
+
+- The Weighted Average Costing Method is now calculated globally across all locations rather that by each single location.
+- A completely redesigned Inventory Adjustment document simplifies adjustments to inventory.
+- The new Item Location Lookup button on an item instantly displays location and quantity information for that item.
+- On Inventoried Items, get an accurate picture of your inventory right from the card with the new section showing the item count on POs, Sales Order and quantity on hand.
+
+Sales Tax Overhaul
+
+We've completed the overhaul of the Sales Tax functionality and are happy to announce the following features:
+
+- Automatic calculation of sales tax using flexible, user-defined rates.
+- Ability to create and apply single or combined sale tax rates.
+- Granular control, with the ability to choose whether to apply sales tax on discounts, customers and items on the fly.
+- A new Sales Tax Owed instantly shows what sales tax is owed to each agency.
+- A new Sales Tax Payment form records the payments made to each agency.
+- Sales Tax Components are now saved for reuse in other Combined Tax Rates.  Create the component once, use it as much as you'd like!
+- Sales Tax Component is now listed in the Combined Sales Tax table on the Sales Tax tab on all of the documents that include this functionality.
+
+Sales Quotes
+
+- This new module provides for creating quotes based on customer inquiries.  Quotes can be converted into a Sales Order or a Sales Invoice without any data re-entry.
+ 
+Other Improvements
+
+- A Salesperson entered on a Sales Order is transferred to a Sales Invoice when using the Generate Sales Order feature.
+- Salesperson is now included on Cash Sales.
+- Emailed Documents will now appear in the inbox from the Company Name that was entered in Settings.
+- Shipping and Discounts have been added to Sales Returns.
+- Shipping amounts are now included on emailed documents.
+- Multi-currency functionality has been added to Cash Receipts.
+- Email history log has been added to Cash Receipts, allowing the user to see the last time (if any) the document was sent and to whom.
+- Export to Excel and Refresh buttons were added to all list screens.
+- Sales Orders and Invoices may now be un-linked in Time Tracking records.
+- Classes have been added to Cash Sales.
+- When changing the Date on a Sales Order or Sales Invoice, a dialog asking the user if they wish to recalculate Prices has been added.
+- Applied the new Flexible Document Numbering system to Sales Orders and Sales Invoices.  
+- New print and email forms!  Sales Quotes, Sales Orders, Sales Invoices,  and Cash Receipts all get a sleek new look.    New email functionality creates a summary for the recipient and a detailed pdf attached to the email.
+- A new tab showing all Transactions was added to the Customer card.
+- Modified document numbering so gaps in numbering are eliminated when new documents are created and closed without saving.
+
+Reporting
+
+New Reports
+
+- Sales by Sales person Report: with quarterly, yearly, monthly, weekly and daily reporting options.
+- Quantity on Hand by Location: A new inventory report that gives to up to date inventory of an item across all locations.
+- Inventory Valuation Summary: View average and accounting costs, asset value and retail value instantly.   Group Items for inclusion in reports and or just include service items.
+- Inventory Item Quick Report: A useful inventory report showing a detailed list of transactions for an item during a given time period.
+- Inventory Valuation Detail Report:  View all transactions by an item and with running valuation totals and get an instant picture of how well and item is performing over time.
+- Inventory Stock Status by Item Report:  Easily see availability of an item on a granular level by viewing amount available to promise based on calculations that consider Purchase Orders and Sales Invoices currently in-flight.
+- Cash Based Income Statement: For companies using the cash-based accounting method.
+- Open Sales by Item: Quickly view open orders by item.
+- Open Purchases by Item:  Gain more Inventory Control by monitoring incoming items.
+- Profit & Loss by Class (accrual-based):  Print Profit and Loss statements that break down totals by class.
+- A new Budget Report shows how the projected budget compares to the actuals for the given time period.
+- Profit and Loss Report by Project.    Easily see profit profitability (or loss) with this new report that shows income and expenses related to a project.
+- Unbilled Time Tracking Detail Report.
+- A/R Aging Reports have an additional column that show full invoice amount in addition to the existing aging amounts.
+- Customer Statements - a new report that shows a list of transactions and their effect on account balances over a specified period of time.
+
+Improvements to Existing Reports
+
+- A new Sales Invoice setting allows you to attach a copy of the invoice in pdf form when using the Email Invoice feature.
+- Drill down functionality has been added to most logical locations in the reports.  For example, in the Balance Sheet click the Cost of Good Sold total to see all transactions contributing to the total.
+- Added a feature in the Balance Sheet Report to automatically close Net Income to Retained Earnings.
+- Added a feature in the Balance Sheet Report to drill down to the Income Statement.
+- Accounts Receivable Aging and Accounts Payable Aging reports now show Due Date.
+- General Ledger Report now shows sub-accounts.
+- Changed the process by which reports are exported into excel, making it much easier and intuitive.  Also improved the format of the exported reports.
+
+Integration Improvements
+
+- Added the ability to Re-generate API Key.
+- Connections to Dwolla and Stripe may be removed if desired.
+- Streamlined many reports and improved user experience with filters and settings.
+
+What's Changed
+
+- The icons in the header were hidden as a default to allow for more space on the screen.  These may be re-enabled by navigating to File –> View –> Sections panel setup and choosing Icon and Text from the drop down at the bottom of the Sections panel setup window.
+- The Default Billing and Default Shipping address checkboxes on Customer cards have been moved closer to the top so scrolling is not needed when creating or updating addresses.
+- When changing the date on Sales Orders and Sales Invoices, the system will ask if the prices should be adjusted to the prices that were effective on the new date.
+- Print Form Customizations is a new tab that combines the Sales Invoice, Sales Order, Sales Quote, Cash Receipt and Purchase Order customizations.  This tab replaces the Sales Invoice tab and the Purchase Order tab.
+- Item Adjustments has been renamed to Inventory Adjustments
+- In the Chart of Accounts, the (Account) Description field has been renamed to (Account) Name
+- On Purchase documents, Price label has been changed to Cost to more accurately describe the field's contents.
+
+Bug Fixes
+
+- Fix a bug where under certain conditions inventory items might have a negative inventory balance.
+- Fixed an issue with duplicate transactions appearing for some banks in Cloud Banking.
+- Fixed an issue with using multiple email addresses when emailing documents.
