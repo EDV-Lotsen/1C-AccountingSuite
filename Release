@@ -1,0 +1,12 @@
+The new functionality is based primarily on feedback of clients using the application. These are the main new features:
+1. Added sales and purchase order statuses (Open, Closed, Backordered) that update automatically based on invoices
+2. Added the ability to create invoices based on multiple orders (when a customer/vendor is selected in an invoice a window with all Open and Backordered orders is displayed where you can select multiple orders). Invoices created based on orders are now prepopulated with remaining (backordered) quantities.
+3. Added last item costs (based on purchase invoice costs) that prepopulate prices in the Purchase Order document
+4. Added a new document - Bank Transfer
+5. Changed the business logic behind the Bank Reconciliation document - now documents are displayed based on the (invisible) "cleared" tag, not based on the date range
+6. General Journal entry now allows entering customers and vendors for A/R and A/P accounts.
+7. The URL field in the Purchase Invoice document allows you to enter a link to the document, which can be displayed with the Open button. For example, you can upload purchase invoices to a folder in Google Drive, put sharing url's in the URL field, and everybody who this folder is shared with (including external accountants) can view the purchase invoice just clicking on the Open button.
+8. Improvement in the A/R aging, A/P aging, Trial balance, and General ledger reports
+9. New sales and purchasing transaction detail reports
+10. Modified presentation of the General Journal
+11. Miscellaneous improvements and squished bugs
